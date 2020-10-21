@@ -1,13 +1,15 @@
 #include "datamanager.h"
+
 #include "files.h"
-#include "s2.h"
 
 QList<DataManager::SignalsStruct> DataManager::s_outputList;
 QMutex DataManager::s_outListMutex;
 QMutex DataManager::s_inQueueMutex;
-QQueue<DataTypes::Command> s_inputQueue;
+QQueue<QVariant> s_inputQueue;
 
-DataManager::DataManager(QObject *parent) : QObject(parent) { }
+DataManager::DataManager(QObject *parent) : QObject(parent)
+{
+}
 
 Error::Msg DataManager::getSignals(
     quint32 firstSignalAdr, quint32 lastSignalAdr, SignalTypes type, QList<SignalsStruct> &outlist)
@@ -125,6 +127,57 @@ Error::Msg DataManager::getConfig(quint32 firstID, quint32 lastID, QList<DataTyp
                     addSignalToOutList(SignalTypes::ConfParameter, cfp);
             }
         }
+    }
+    return Error::Msg::ResEmpty;
+}
+
+void DataManager::setConfig(S2ConfigType *s2config)
+{
+    Queries::Command104 inp;
+    inp.ba.resize(65535);
+    S2::StoreDataMem(&inp.ba.data()[0], s2config, 0x0001);
+    quint32 basize = static_cast<quint8>(inp.ba.data()[4]);
+    basize += static_cast<quint8>(inp.ba.data()[5]) * 256;
+    basize += static_cast<quint8>(inp.ba.data()[6]) * 65536;
+    basize += static_cast<quint8>(inp.ba.data()[7]) * 16777216;
+    basize += sizeof(S2::FileHeader); // baHeader
+    inp.ba.resize(basize);
+    inp.cmd = Queries::Commands104::CM104_FILEREADY;
+    addToInQueue(inp);
+}
+
+Error::Msg DataManager::deQueue104(Queries::Command104 &cmd)
+{
+    if (!s_inputQueue.isEmpty())
+    {
+        s_inQueueMutex.lock();
+        QVariant inp = s_inputQueue.first();
+        if (inp.canConvert<Queries::Command104>())
+        {
+            s_inputQueue.dequeue();
+            s_inQueueMutex.unlock();
+            cmd = qvariant_cast<Queries::Command104>(inp);
+            return Error::Msg::NoError;
+        }
+        s_inQueueMutex.unlock();
+    }
+    return Error::Msg::ResEmpty;
+}
+
+Error::Msg DataManager::deQueueMBS(Queries::CommandMBS &cmd)
+{
+    if (!s_inputQueue.isEmpty())
+    {
+        s_inQueueMutex.lock();
+        QVariant inp = s_inputQueue.first();
+        if (inp.canConvert<Queries::CommandMBS>())
+        {
+            s_inputQueue.dequeue();
+            s_inQueueMutex.unlock();
+            cmd = qvariant_cast<Queries::CommandMBS>(inp);
+            return Error::Msg::NoError;
+        }
+        s_inQueueMutex.unlock();
     }
     return Error::Msg::ResEmpty;
 }

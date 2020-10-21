@@ -1,44 +1,26 @@
 #ifndef S2_H
 #define S2_H
 
-#include "datamanager.h"
+#include "datatypes.h"
+#include "error.h"
 
 #include <QVector>
 
 class S2
 {
 public:
-    // S2: Определение типа заголовка
-    typedef struct
-    {
-        quint16 fname;
-        quint16 service;
-        quint32 size;
-        quint32 crc32;
-        quint32 thetime;
-    } FileHeader;
-
-    // S2: Определение типа записи
-
-    typedef struct DataRec
-    {
-        quint32 id;
-        quint32 num_byte;
-        void *thedata;
-    } DataRec;
-
-    QVector<S2::DataRec> Config;
+    QVector<S2DataTypes::DataRec> Config;
     S2();
     // S2: Сборщик в память:
     // 0 - успешно, иначе код ошибки S2: получение размера:
-    static Error::Msg StoreDataMem(void *, QVector<DataRec> *, int fname);
+    static Error::Msg StoreDataMem(void *, QVector<S2DataTypes::DataRec> *, int fname);
     //>0 - успешно, иначе код ошибки  S2: Разборщик из памяти
-    static int StoreDataSize(FileHeader *, DataRec *);
+    static int StoreDataSize(S2DataTypes::FileHeader *, S2DataTypes::DataRec *);
     // 0 - успешно, иначе код ошибки S2: Поиск элемента в массиве описаний
-    static Error::Msg RestoreDataMem(void *mem, quint32 memsize, QVector<DataRec> *dr);
+    static Error::Msg RestoreDataMem(void *mem, quint32 memsize, QVector<S2DataTypes::DataRec> *dr);
     // restore IDs and contents in ConfParameters list
     static Error::Msg RestoreData(QByteArray &bain, QList<DataTypes::ConfParameter> &outlist);
-    static DataRec *FindElem(QVector<DataRec> *, quint32);
+    static S2DataTypes::DataRec *FindElem(QVector<S2DataTypes::DataRec> *, quint32);
     static quint32 getTime32();
     static quint32 GetCRC32(char *, quint32);
     static void updCRC32(char byte, quint32 *dwCRC32);
@@ -48,7 +30,7 @@ private:
     //    const unsigned long dwPolynomial = 0xEDB88320;
 };
 
-typedef QVector<S2::DataRec> S2ConfigType;
+typedef QVector<S2DataTypes::DataRec> S2ConfigType;
 
 static const unsigned long _crc32_t[256] = { 0x00000000, 0x77073096, 0xEE0E612C, 0x990951BA, 0x076DC419, 0x706AF48F,
     0xE963A535, 0x9E6495A3, 0x0EDB8832, 0x79DCB8A4, 0xE0D5E91E, 0x97D2D988, 0x09B64C2B, 0x7EB17CBD, 0xE7B82D07,

@@ -2,6 +2,7 @@
 
 #include "../dialogs/keypressdialog.h"
 #include "../gen/board.h"
+#include "../gen/datamanager.h"
 #include "../gen/error.h"
 #include "../gen/files.h"
 #include "../gen/stdfunc.h"
@@ -15,7 +16,9 @@
 #include <QMessageBox>
 #include <QTextEdit>
 
-AbstractConfDialog::AbstractConfDialog(QWidget *parent) : UDialog(parent) { }
+AbstractConfDialog::AbstractConfDialog(QWidget *parent) : UDialog(parent)
+{
+}
 
 void AbstractConfDialog::ReadConf()
 {
@@ -69,7 +72,8 @@ void AbstractConfDialog::WriteConf()
         switch (Board::GetInstance().interfaceType())
         {
         case Board::InterfaceType::Ethernet:
-            emit writeConfFile(S2Config);
+            //            emit writeConfFile(S2Config);
+            DataManager::setConfig(S2Config);
             break;
         case Board::InterfaceType::USB:
         {
@@ -84,6 +88,8 @@ void AbstractConfDialog::WriteConf()
                     this, "Ошибка", "Ошибка записи конфигурации" + QVariant::fromValue(res).toString());
             break;
         }
+        default:
+            break;
         }
     }
 }

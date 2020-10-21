@@ -1,5 +1,6 @@
 #ifndef IEC104_H
 #define IEC104_H
+#include "../gen/datamanager.h"
 #include "../gen/logclass.h"
 #include "../gen/s2.h"
 #include "iec104thread.h"
@@ -104,8 +105,8 @@ public:
 
     bool Working();
     void Connect(Settings &st);
-    static void getSignalsFrom104(quint32 firstSignalAdr, quint32 signalCount, IEC104Thread::IEC104SignalTypes type,
-        QList<IEC104Thread::SignalsStruct> &outlist);
+    static void getSignalsFrom104(quint32 firstSignalAdr, quint32 signalCount, DataManager::SignalTypes type,
+        QList<DataManager::SignalsStruct> &outlist);
 
 public slots:
     void SelectFile(char);
@@ -137,7 +138,7 @@ signals:
 private:
     bool EthThreadWorking, ParseThreadWorking, AboutToFinish;
     LogClass *Log;
-    QQueue<IEC104Thread::InputStruct> m_inputQueue;
+    //    QQueue<IEC104Thread::InputStruct> m_inputQueue;
     //    QList<IEC104Thread::SignalsStruct> m_outputList;
     S2ConfigType *S2Config;
 

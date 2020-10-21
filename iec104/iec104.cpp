@@ -20,9 +20,14 @@ IEC104::IEC104(S2ConfigType *s2, QObject *parent) : QObject(parent)
     Log->info("=== Log started ===");
 }
 
-IEC104::~IEC104() { }
+IEC104::~IEC104()
+{
+}
 
-bool IEC104::Working() { return (EthThreadWorking | ParseThreadWorking); }
+bool IEC104::Working()
+{
+    return (EthThreadWorking | ParseThreadWorking);
+}
 
 void IEC104::Connect(Settings &st)
 {
@@ -42,7 +47,7 @@ void IEC104::Connect(Settings &st)
     connect(eth, &Ethernet::Connected, this, &IEC104::EthThreadStarted);
     connect(eth, &Ethernet::Disconnected, this, &IEC104::EthThreadFinished);
 
-    IEC104Thread *m_thread104 = new IEC104Thread(Log, m_inputQueue, S2Config);
+    IEC104Thread *m_thread104 = new IEC104Thread(Log);
     QThread *thr2 = new QThread;
     m_thread104->moveToThread(thr2);
     connect(this, &IEC104::StopAll, m_thread104, &IEC104Thread::Stop);
@@ -65,15 +70,15 @@ void IEC104::Connect(Settings &st)
     //    connect(
     //        m_thread104, &IEC104Thread::Sponsignalsreceived, this, &IEC104::Sponsignalsready,
     //        Qt::BlockingQueuedConnection);
-    connect(m_thread104, &IEC104Thread::SendS2fromParse, this, &IEC104::SendS2fromiec104);
-    connect(m_thread104, &IEC104Thread::SendJourSysfromParse, this, &IEC104::SendJourSysfromiec104);
-    connect(m_thread104, &IEC104Thread::SendJourWorkfromParse, this, &IEC104::SendJourWorkfromiec104);
-    connect(m_thread104, &IEC104Thread::SendJourMeasfromParse, this, &IEC104::SendJourMeasfromiec104);
+    //    connect(m_thread104, &IEC104Thread::SendS2fromParse, this, &IEC104::SendS2fromiec104);
+    //    connect(m_thread104, &IEC104Thread::SendJourSysfromParse, this, &IEC104::SendJourSysfromiec104);
+    //    connect(m_thread104, &IEC104Thread::SendJourWorkfromParse, this, &IEC104::SendJourWorkfromiec104);
+    //    connect(m_thread104, &IEC104Thread::SendJourMeasfromParse, this, &IEC104::SendJourMeasfromiec104);
 
     connect(m_thread104, &IEC104Thread::SendMessageOk, this, &IEC104::SendMessageOk);
 
-    connect(m_thread104, &IEC104Thread::SetDataSize, this, &IEC104::SetDataSize);
-    connect(m_thread104, &IEC104Thread::SetDataCount, this, &IEC104::SetDataCount);
+    //    connect(m_thread104, &IEC104Thread::SetDataSize, this, &IEC104::SetDataSize);
+    //    connect(m_thread104, &IEC104Thread::SetDataCount, this, &IEC104::SetDataCount);
     connect(m_thread104, &IEC104Thread::SendMessagefromParse, this, &IEC104::SendConfMessageOk);
 
     m_thread104->SetBaseAdr(st.baseadr);
@@ -153,7 +158,10 @@ void IEC104::com51WriteTime(uint time)
     IEC104Thread::s_ParseWriteMutex.unlock();
 }
 
-void IEC104::EthThreadStarted() { EthThreadWorking = true; }
+void IEC104::EthThreadStarted()
+{
+    EthThreadWorking = true;
+}
 
 void IEC104::EthThreadFinished()
 {
@@ -162,7 +170,10 @@ void IEC104::EthThreadFinished()
         emit Finished();
 }
 
-void IEC104::ParseThreadStarted() { ParseThreadWorking = true; }
+void IEC104::ParseThreadStarted()
+{
+    ParseThreadWorking = true;
+}
 
 void IEC104::ParseThreadFinished()
 {

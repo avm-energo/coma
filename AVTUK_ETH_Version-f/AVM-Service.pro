@@ -125,6 +125,7 @@ HEADERS += \
 ../config/confktfdialog.h \
 ../dialogs/fwuploaddialog.h \
     ../gen/datamanager.h \
+    ../gen/datatypes.h \
 ../gen/udialog.h \
     ../iec104/iec104thread.h \
 ../module/alarm.h \

@@ -7,13 +7,9 @@
 QMutex IEC104Thread::s_ParseReadMutex;
 QMutex IEC104Thread::s_ParseWriteMutex;
 
-IEC104Thread::IEC104Thread(LogClass *log, QQueue<InputStruct> &queue, S2ConfigType *s2, QObject *parent)
-    : QObject(parent)
+IEC104Thread::IEC104Thread(LogClass *log, QObject *parent) : QObject(parent)
 {
-    DR = s2;
     FirstParse = true;
-    m_inputQueue = &queue;
-    //    m_outputList = &outList;
     Log = log;
     ThreadMustBeFinished = false;
     V_S = V_R = 0;
@@ -32,9 +28,14 @@ IEC104Thread::IEC104Thread(LogClass *log, QQueue<InputStruct> &queue, S2ConfigTy
     NoAnswer = 0;
 }
 
-IEC104Thread::~IEC104Thread() { }
+IEC104Thread::~IEC104Thread()
+{
+}
 
-void IEC104Thread::SetBaseAdr(quint16 adr) { BaseAdr = adr; }
+void IEC104Thread::SetBaseAdr(quint16 adr)
+{
+    BaseAdr = adr;
+}
 
 void IEC104Thread::Run()
 {
@@ -62,36 +63,35 @@ void IEC104Thread::Run()
         }
         if (!FileSending)
         {
-            if (!m_inputQueue->isEmpty())
+            Queries::Command104 inp;
+            if (DataManager::deQueue104(inp) == Error::Msg::NoError)
             {
-                s_ParseWriteMutex.lock();
-                InputStruct inp = m_inputQueue->dequeue();
-                s_ParseWriteMutex.unlock();
                 switch (inp.cmd)
                 {
-                case CM104_COM45:
-                    Com45(inp.args.uintarg);
+                case Queries::Commands104::CM104_COM45:
+                    Com45(inp.uintarg);
                     break;
-                case CM104_COM50:
-                    Com50(inp.args.uintarg, inp.args.flarg);
+                case Queries::Commands104::CM104_COM50:
+                    Com50(inp.uintarg, inp.flarg);
                     break;
-                case CM104_FILEREADY:
+                case Queries::Commands104::CM104_FILEREADY:
                 {
                     //                    S2ConfigType *ptr = reinterpret_cast<S2ConfigType
                     //                    *>(inp.args.ptrarg); FileReady(ptr);
+                    File = inp.ba;
                     FileReady();
                     break;
                 }
-                case CM104_SELECTFILE:
-                    SelectFile(inp.args.uintarg);
+                case Queries::Commands104::CM104_SELECTFILE:
+                    SelectFile(inp.uintarg);
                     break;
-                case CM104_COM51WRITETIME:
-                    Com51WriteTime(inp.args.uintarg);
+                case Queries::Commands104::CM104_COM51WRITETIME:
+                    Com51WriteTime(inp.uintarg);
                     break;
-                case CM104_CORREADREQUEST:
+                case Queries::Commands104::CM104_CORREADREQUEST:
                     CorReadRequest();
                     break;
-                case CM104_INTERROGATETIMEGR15:
+                case Queries::Commands104::CM104_INTERROGATETIMEGR15:
                     InterrogateTimeGr15();
                     break;
                 }
@@ -271,7 +271,7 @@ void IEC104Thread::ParseIFormat(QByteArray &ba) // основной разбор
                 //                    ERMSG("out of array flSignals");
                 //                    return;
                 //                }
-                IEC104Signals::FloatWithTime signal;
+                DataTypes::FloatWithTime signal;
                 signal.sigAdr = objectAdr;
                 float value;
                 memcpy(&value, &(ba.data()[index]), 4);
@@ -285,7 +285,7 @@ void IEC104Thread::ParseIFormat(QByteArray &ba) // основной разбор
                 memcpy(&time, &(ba.data()[index]), 8);
                 index += 8;
                 signal.CP56Time = time;
-                addSignalToQueue(IEC104SignalTypes::FloatWithTime, signal);
+                DataManager::addSignalToOutList(DataManager::SignalTypes::FloatWithTime, signal);
                 //                cntflTimestamp++;
                 break;
             }
@@ -295,7 +295,7 @@ void IEC104Thread::ParseIFormat(QByteArray &ba) // основной разбор
 
             case M_ME_NC_1: // 13 тип - измеренные данные с плавающей запятой
             {
-                IEC104Signals::FloatWithTime signal;
+                DataTypes::FloatWithTime signal;
                 //                if (cntfl >= DUI.qualifier.Number)
                 //                {
                 //                    ERMSG("out of array flSignals");
@@ -312,7 +312,7 @@ void IEC104Thread::ParseIFormat(QByteArray &ba) // основной разбор
                 memcpy(&signal.sigQuality, &(ba.data()[index]), 1);
                 index++;
                 //                signal.SigQuality = quality;
-                addSignalToQueue(IEC104SignalTypes::FloatWithTime, signal);
+                DataManager::addSignalToOutList(DataManager::SignalTypes::FloatWithTime, signal);
                 //                cntfl++;
                 break;
             }
@@ -324,7 +324,7 @@ void IEC104Thread::ParseIFormat(QByteArray &ba) // основной разбор
                 //                    ERMSG("out of array sponsignals");
                 //                    return;
                 //                }
-                IEC104Signals::SinglePointWithTime signal;
+                DataTypes::SinglePointWithTime signal;
                 signal.sigAdr = objectAdr;
                 //                quint8 value;
                 //                memcpy(&value, &(ba.data()[index]), 1);
@@ -332,7 +332,7 @@ void IEC104Thread::ParseIFormat(QByteArray &ba) // основной разбор
                 //                index += 1;
                 //                sponsignals->Spon[cntspon].SigVal = value;
                 //                cntspon++;
-                addSignalToQueue(IEC104SignalTypes::SinglePointWithTime, signal);
+                DataManager::addSignalToOutList(DataManager::SignalTypes::SinglePointWithTime, signal);
                 break;
             }
 
@@ -343,7 +343,7 @@ void IEC104Thread::ParseIFormat(QByteArray &ba) // основной разбор
                 //                    ERMSG("out of array sponsignals");
                 //                    return;
                 //                }
-                IEC104Signals::SinglePointWithTime signal;
+                DataTypes::SinglePointWithTime signal;
                 signal.sigAdr = objectAdr;
                 //                quint8 value;
                 memcpy(&signal.sigVal, &(ba.data()[index++]), 1);
@@ -354,7 +354,7 @@ void IEC104Thread::ParseIFormat(QByteArray &ba) // основной разбор
                 index += 7;
                 //                sponsignals->Spon[cntspon].CP56Time = time;
                 //                cntspon++;
-                addSignalToQueue(IEC104SignalTypes::SinglePointWithTime, signal);
+                DataManager::addSignalToOutList(DataManager::SignalTypes::SinglePointWithTime, signal);
                 break;
             }
 
@@ -365,7 +365,7 @@ void IEC104Thread::ParseIFormat(QByteArray &ba) // основной разбор
                 //                    ERMSG("out of array BS104Signals");
                 //                    return;
                 //                }
-                IEC104Signals::BitString signal;
+                DataTypes::BitString signal;
                 //                int j;
                 //                for (j = 0; j < 3; j++)
                 //                    signal.sigAdr[j] = (objectAdr >> 8 * j);
@@ -380,7 +380,7 @@ void IEC104Thread::ParseIFormat(QByteArray &ba) // основной разбор
                 //                index++;
                 //                (BS104Signals + cntbs)->BS.SigQuality = quality;
                 //                cntbs++;
-                addSignalToQueue(IEC104SignalTypes::BitString, signal);
+                DataManager::addSignalToOutList(DataManager::SignalTypes::BitString, signal);
                 break;
             }
 

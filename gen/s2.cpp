@@ -1,25 +1,28 @@
 #include "s2.h"
+
 #include "error.h"
 
 #include <QDateTime>
 
-S2::S2() { }
+S2::S2()
+{
+}
 
-Error::Msg S2::StoreDataMem(void *mem, QVector<DataRec> *dr,
+Error::Msg S2::StoreDataMem(void *mem, QVector<S2DataTypes::DataRec> *dr,
     int fname) // 0 - успешно, иначе код ошибки
 {
     quint32 crc = 0xFFFFFFFF;
-    FileHeader header;
-    DataRec R;
+    S2DataTypes::FileHeader header;
+    S2DataTypes::DataRec R;
     quint32 i;
     char *m = static_cast<char *>(mem);
-    m += sizeof(FileHeader);
+    m += sizeof(S2DataTypes::FileHeader);
     header.size = 0;
-    for (QVector<DataRec>::iterator it = dr->begin(); it != dr->end(); ++it)
+    for (QVector<S2DataTypes::DataRec>::iterator it = dr->begin(); it != dr->end(); ++it)
     {
         R = *it;
         void *Rptr = static_cast<void *>(it);
-        quint32 tmpi = sizeof(DataRec) - sizeof(void *);
+        quint32 tmpi = sizeof(S2DataTypes::DataRec) - sizeof(void *);
         memcpy(m, &R, tmpi);
         header.size += tmpi;
         for (i = 0; i < tmpi; i++)
@@ -45,17 +48,17 @@ Error::Msg S2::StoreDataMem(void *mem, QVector<DataRec> *dr,
     return Error::Msg::NoError;
 }
 
-Error::Msg S2::RestoreDataMem(void *mem, quint32 memsize, QVector<DataRec> *dr)
+Error::Msg S2::RestoreDataMem(void *mem, quint32 memsize, QVector<S2DataTypes::DataRec> *dr)
 {
     unsigned char *m = static_cast<unsigned char *>(mem);
-    DataRec R;
-    DataRec *r;
-    FileHeader header;
+    S2DataTypes::DataRec R;
+    S2DataTypes::DataRec *r;
+    S2DataTypes::FileHeader header;
     quint32 tmpi, pos;
     bool noIDs = true; // признак того, что не встретился ни один из ID в dr
 
     // копируем FileHeader
-    quint32 fhsize = sizeof(FileHeader);
+    quint32 fhsize = sizeof(S2DataTypes::FileHeader);
     if (fhsize > memsize)
     {
         ERMSG("S2: out of memory"); // выход за границу принятых байт
@@ -74,7 +77,7 @@ Error::Msg S2::RestoreDataMem(void *mem, quint32 memsize, QVector<DataRec> *dr)
     R.id = 0;
     while ((R.id != 0xFFFFFFFF) && (pos < memsize))
     {
-        tmpi = sizeof(DataRec) - sizeof(void *);
+        tmpi = sizeof(S2DataTypes::DataRec) - sizeof(void *);
         pos += tmpi;
         if (pos > memsize)
         {
@@ -132,16 +135,16 @@ Error::Msg S2::RestoreDataMem(void *mem, quint32 memsize, QVector<DataRec> *dr)
 Error::Msg S2::RestoreData(QByteArray &bain, QList<DataTypes::ConfParameter> &outlist)
 {
     //    unsigned char *m = static_cast<unsigned char *>(mem);
-    DataRec DR;
+    S2DataTypes::DataRec DR;
     //    DataRec *r;
     //    FileHeader header;
     //    quint32 tmpi, pos;
     //    bool noIDs = true; // признак того, что не встретился ни один из ID в dr
 
     // копируем FileHeader
-    FileHeader fh;
-    memcpy(&fh, &bain.data()[0], sizeof(FileHeader));
-    bain.remove(0, sizeof(FileHeader));
+    S2DataTypes::FileHeader fh;
+    memcpy(&fh, &bain.data()[0], sizeof(S2DataTypes::FileHeader));
+    bain.remove(0, sizeof(S2DataTypes::FileHeader));
     //    quint32 fhsize = sizeof(FileHeader);
     //    if (fhsize > memsize)
     //    {
@@ -162,7 +165,7 @@ Error::Msg S2::RestoreData(QByteArray &bain, QList<DataTypes::ConfParameter> &ou
     while ((DR.id != 0xFFFFFFFF) && (!bain.isEmpty()))
     //    while ((R.id != 0xFFFFFFFF) && (pos < memsize))
     {
-        int size = sizeof(DataRec) - sizeof(void *);
+        int size = sizeof(S2DataTypes::DataRec) - sizeof(void *);
         //        pos += tmpi;
         if (size > bain.size())
         {
@@ -228,11 +231,11 @@ Error::Msg S2::RestoreData(QByteArray &bain, QList<DataTypes::ConfParameter> &ou
     return Error::Msg::NoError;
 }
 
-S2::DataRec *S2::FindElem(QVector<DataRec> *dr, quint32 id)
+S2DataTypes::DataRec *S2::FindElem(QVector<S2DataTypes::DataRec> *dr, quint32 id)
 {
-    for (QVector<DataRec>::iterator it = dr->begin(); it != dr->end(); ++it)
+    for (QVector<S2DataTypes::DataRec>::iterator it = dr->begin(); it != dr->end(); ++it)
     {
-        DataRec R = *it;
+        S2DataTypes::DataRec R = *it;
         if (R.id == id)
             return it;
         if (R.id == static_cast<quint32>(0xFFFF))
