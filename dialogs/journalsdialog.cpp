@@ -9,8 +9,9 @@
 #include "../gen/timefunc.h"
 #include "../usb/commands.h"
 #include "../widgets/wd_func.h"
-
+#ifdef MODELDEBUG
 #include <QAbstractItemModelTester>
+#endif
 #include <QDateTime>
 #include <QDebug>
 #include <QHeaderView>

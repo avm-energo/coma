@@ -9,10 +9,11 @@ QMAKE_TARGET_COPYRIGHT = EvelSoft
 QMAKE_TARGET_PRODUCT = AVTUK-S
 RC_ICONS = ../coma.ico
 CONFIG += c++17
+CONFIG -= console
 VERSION = 1.1.2
 
-QT       += core gui printsupport network serialport widgets testlib concurrent
-
+QT       += core gui printsupport network serialport widgets concurrent testlib
+QT.testlib.CONFIG -= console
 TARGET = AVM-Service
 DEFINES += PROGNAME='\\"AVM-Service\\"'
 DEFINES += PROGCAPTION='\\"AVM-Service\\040v\\040"$$VERSION"\\040\\"'

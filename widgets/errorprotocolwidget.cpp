@@ -2,8 +2,9 @@
 
 #include "../gen/colors.h"
 #include "../models/errorprotocolmodel.h"
-
+#ifdef MODELDEBUG
 #include <QAbstractItemModelTester>
+#endif
 #include <QHeaderView>
 #include <QLabel>
 #include <QTableView>
