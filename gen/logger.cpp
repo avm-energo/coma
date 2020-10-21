@@ -40,7 +40,7 @@ void Logging::messageHandler(QtMsgType type, const QMessageLogContext &context, 
     const char colon = ':';
     QStringList buffer = QString(context.file).split("\\");
     QString sourceFile = !buffer.isEmpty() ? buffer.takeLast() : "";
-    QString fileName(LOGFILE);
+    QString fileName(StdFunc::GetSystemHomeDir() + LOGFILE);
     QFile logFile;
     QTextStream out;
 
@@ -60,7 +60,6 @@ void Logging::messageHandler(QtMsgType type, const QMessageLogContext &context, 
             msg                                                           // Message
         };
         ErrorQueue::GetInstance().pushError(tmpm);
-        fileName.prepend(StdFunc::GetSystemHomeDir());
         break;
     }
     case QtDebugMsg:
@@ -68,13 +67,13 @@ void Logging::messageHandler(QtMsgType type, const QMessageLogContext &context, 
         std::cout << sourceFile.toStdString() << colon << context.line << space << function << space << colon << space
                   << msg.toStdString() << std::endl;
 #endif
-        break;
+        return;
     case QtWarningMsg:
 #ifdef QT_DEBUG
         std::cout << sourceFile.toStdString() << colon << context.line << space << colon << space << msg.toStdString()
                   << std::endl;
 #endif
-        break;
+        return;
     case QtCriticalMsg:
     {
         Error::ErMsg tmpm {
@@ -85,11 +84,9 @@ void Logging::messageHandler(QtMsgType type, const QMessageLogContext &context, 
             msg                                                           // Message
         };
         ErrorQueue::GetInstance().pushError(tmpm);
-        fileName.prepend(StdFunc::GetSystemHomeDir());
         break;
     }
     case QtFatalMsg:
-        fileName.prepend(StdFunc::GetSystemHomeDir());
         break;
     }
     logFile.setFileName(fileName);

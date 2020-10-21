@@ -72,7 +72,6 @@ void registerForDeviceNotification(Coma *ptr)
 
 Coma::Coma(QWidget *parent) : QMainWindow(parent)
 {
-    qInfo("=== Log started ===\n");
     QSplashScreen *splash = new QSplashScreen(QPixmap("images/2.1.x.png"));
     splash->show();
     splash->showMessage("Подготовка окружения...", Qt::AlignRight, Qt::white);
@@ -81,7 +80,7 @@ Coma::Coma(QWidget *parent) : QMainWindow(parent)
     if (!dir.exists())
         dir.mkpath(".");
     StdFunc::Init();
-    // Error::Init();
+    qInfo("=== Log started ===\n");
 
 #ifdef __linux__
     // linux code goes here
@@ -145,9 +144,6 @@ void convertPixmap(size_t size, QAction *jourAct)
     else
         painter.drawText(QRect(20, 0, 20, 20), Qt::AlignCenter, QString::number(size));
     painter.setPen(Qt::yellow);
-    QFile file("yourFile" + QString::number(size) + ".png");
-    file.open(QIODevice::WriteOnly);
-    pix.save(&file, "PNG");
     jourAct->setIcon(pix);
 }
 
