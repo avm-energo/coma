@@ -79,7 +79,7 @@ QWidget *CheckKTFDialog::BdUI(int bdnum)
 
 void CheckKTFDialog::PrepareHeadersForFile(int row)
 {
-    Q_UNUSED(row)
+   Q_UNUSED(row)
 }
 
 void CheckKTFDialog::WriteToFile(int row, int bdnum)

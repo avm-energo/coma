@@ -35,9 +35,6 @@ CheckKIVDialog::CheckKIVDialog(QWidget *parent) : AbstractCheckDialog(parent)
     //    BdNum = 11;
     setAttribute(Qt::WA_DeleteOnClose);
 
-    SetBd(BD_COMMON, &Ch->Bd_block0, sizeof(Check::Bd0));
-    SetBd(6, &ChKIV->Bd_block1, sizeof(CheckKIV::Bd1));
-
     if (Config::MTB_A2)
         sl = QStringList { "Основные", "Дополнительные" };
 
@@ -72,61 +69,14 @@ QWidget *CheckKIVDialog::BdUI(int bdnum)
 
 void CheckKIVDialog::PrepareHeadersForFile(int row)
 {
-    QString phase[3] = { "A:", "B:", "C:" };
-
-    for (int i = 0; i < 3; i++)
-    {
-        xlsx->write(row, i + 2, QVariant(("Ueff ф") + phase[i] + ", кВ"));
-        xlsx->write(row, i + 5, QVariant("Ieff ф" + phase[i] + ", А"));
-        xlsx->write(row, i + 8, QVariant("Cbush ф" + phase[i] + ", пФ"));
-        xlsx->write(row, i + 11, QVariant("Tg_d ф" + phase[i] + ", %"));
-        xlsx->write(row, i + 14, QVariant("dCbush ф" + phase[i] + ", пФ"));
-        xlsx->write(row, i + 17, QVariant("dTg_d ф" + phase[i] + ", %"));
-    }
-    xlsx->write(row, 20, QVariant("U0"));
-    xlsx->write(row, 21, QVariant("U1"));
-    xlsx->write(row, 22, QVariant("U2"));
-    xlsx->write(row, 23, QVariant("I0"));
-    xlsx->write(row, 24, QVariant("I1"));
-    xlsx->write(row, 25, QVariant("I2"));
-    xlsx->write(row, 26, QVariant("Iunb, мА"));
-    xlsx->write(row, 27, QVariant("Phy_unb, град"));
-    xlsx->write(row, 28, QVariant("Tmk, °С"));
-
-    xlsx->write(row, 29, QVariant("Tamb, °С"));
-
-    xlsx->write(row, 30, QVariant("Freq, Гц"));
+    Q_UNUSED(row)
 }
 
 void CheckKIVDialog::WriteToFile(int row, int bdnum)
 {
     Q_UNUSED(row)
     Q_UNUSED(bdnum)
-    // получение текущих аналоговых сигналов от модуля
-    QXlsx::Format format;
-    for (int i = 0; i < 3; i++)
-    {
-        format.setNumberFormat("0.0000");
-        xlsx->write(WRow, i + 2, ChKIV->Bd_block1.Ueff[i], format);
-        xlsx->write(WRow, i + 5, ChKIV->Bd_block1.Ieff[i], format);
-        xlsx->write(WRow, i + 8, ChKIV->Bd_block1.Cbush[i], format);
-        xlsx->write(WRow, i + 11, ChKIV->Bd_block1.Tg_d[i], format);
-        xlsx->write(WRow, i + 14, ChKIV->Bd_block1.dCbush[i], format);
-        xlsx->write(WRow, i + 17, ChKIV->Bd_block1.dTg_d[i], format);
-    }
-    xlsx->write(WRow, 20, ChKIV->Bd_block1.U0, format);
-    xlsx->write(WRow, 21, ChKIV->Bd_block1.U1, format);
-    xlsx->write(WRow, 22, ChKIV->Bd_block1.U2, format);
-    xlsx->write(WRow, 23, ChKIV->Bd_block1.I0, format);
-    xlsx->write(WRow, 24, ChKIV->Bd_block1.I1, format);
-    xlsx->write(WRow, 25, ChKIV->Bd_block1.I2, format);
-    xlsx->write(WRow, 26, ChKIV->Bd_block1.Iunb, format);
-    xlsx->write(WRow, 27, ChKIV->Bd_block1.Phy_unb, format);
-    xlsx->write(WRow, 28, ChKIV->Bd_block1.Tmk, format);
 
-    xlsx->write(WRow, 29, ChKIV->Bd_block1.Tamb, format);
-
-    xlsx->write(WRow, 30, ChKIV->Bd_block1.Frequency, format);
 }
 
 void CheckKIVDialog::ChooseValuesToWrite()
