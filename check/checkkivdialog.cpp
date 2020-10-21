@@ -179,13 +179,13 @@ void CheckKIVDialog::MBSUpdate()
 
 void CheckKIVDialog::updateFloatData()
 {
-    QList<IEC104Thread::SignalsStruct> list;
-    IEC104::getSignalsFrom104(0, 99999, IEC104Thread::IEC104SignalTypes::FloatWithTime, list);
+    QList<DataManager::SignalsStruct> list;
+    DataManager::getSignals(0, 99999, DataManager::SignalTypes::FloatWithTime, list);
     if (!list.isEmpty())
     {
-        foreach (IEC104Thread::SignalsStruct signal, list)
+        foreach (DataManager::SignalsStruct signal, list)
         {
-            IEC104Signals::FloatWithTime fwt = qvariant_cast<IEC104Signals::FloatWithTime>(signal.data);
+            DataTypes::FloatWithTime fwt = qvariant_cast<DataTypes::FloatWithTime>(signal.data);
             ChKIV->FillBd(this, QString::number(fwt.sigAdr), WDFunc::StringValueWithCheck(fwt.sigVal, 3));
         }
     }
@@ -193,13 +193,13 @@ void CheckKIVDialog::updateFloatData()
 
 void CheckKIVDialog::updateSPData()
 {
-    QList<IEC104Thread::SignalsStruct> list;
-    IEC104::getSignalsFrom104(3011, 3035, IEC104Thread::IEC104SignalTypes::SinglePointWithTime, list);
+    QList<DataManager::SignalsStruct> list;
+    DataManager::getSignals(3011, 3035, DataManager::SignalTypes::SinglePointWithTime, list);
     if (!list.isEmpty())
     {
-        foreach (IEC104Thread::SignalsStruct signal, list)
+        foreach (DataManager::SignalsStruct signal, list)
         {
-            IEC104Signals::SinglePointWithTime sp = qvariant_cast<IEC104Signals::SinglePointWithTime>(signal.data);
+            DataTypes::SinglePointWithTime sp = qvariant_cast<DataTypes::SinglePointWithTime>(signal.data);
             if ((sp.sigAdr >= 3011) && (sp.sigAdr <= 3013))
                 WDFunc::SetLBLTColor(this, QString::number(sp.sigAdr - 2011),
                     (sp.sigVal == 1) ? Colors::TABCOLORA1 : Colors::ACONFOCLR); // Colors::TABCOLORA1

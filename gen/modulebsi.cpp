@@ -44,13 +44,13 @@ void ModuleBSI::USBUpdate()
 
 void ModuleBSI::ETHUpdate()
 {
-    QList<IEC104Thread::SignalsStruct> list;
-    IEC104::getSignalsFrom104(BSIREG, BSIENDREG, IEC104Thread::IEC104SignalTypes::BitString, list);
+    QList<DataManager::SignalsStruct> list;
+    DataManager::getSignals(BSIREG, BSIENDREG, DataManager::SignalTypes::BitString, list);
     if (!list.isEmpty())
     {
-        foreach (IEC104Thread::SignalsStruct signal, list)
+        foreach (DataManager::SignalsStruct signal, list)
         {
-            IEC104Signals::BitString bs = qvariant_cast<IEC104Signals::BitString>(signal.data);
+            DataTypes::BitString bs = qvariant_cast<DataTypes::BitString>(signal.data);
             //            memcpy(&startadr, &(sig->BS.SigAdr[0]), sizeof(sig->BS.SigAdr));
             //            signum = sig->SigNumber;
             //            INFOMSG("FillBSIe(): address=" + QString::number(startadr));

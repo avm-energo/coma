@@ -179,13 +179,13 @@ void AlarmClass::UpdateAlarm104()
         int acount = 0; // alarm counter
         quint32 minAddress = w->m_startWarnAddress;
         quint32 maxAddress = w->m_startWarnAddress + 31; // only 32 bits
-        QList<IEC104Thread::SignalsStruct> list;
-        IEC104::getSignalsFrom104(minAddress, maxAddress, IEC104Thread::IEC104SignalTypes::SinglePointWithTime, list);
+        QList<DataManager::SignalsStruct> list;
+        DataManager::getSignals(minAddress, maxAddress, DataManager::SignalTypes::SinglePointWithTime, list);
         if (!list.isEmpty())
         {
-            foreach (IEC104Thread::SignalsStruct signal, list)
+            foreach (DataManager::SignalsStruct signal, list)
             {
-                IEC104Signals::SinglePointWithTime sp = qvariant_cast<IEC104Signals::SinglePointWithTime>(signal.data);
+                DataTypes::SinglePointWithTime sp = qvariant_cast<DataTypes::SinglePointWithTime>(signal.data);
 
                 //        for (int i = 0; i < Signal->SigNumber; i++)
                 //        {
