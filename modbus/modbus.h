@@ -2,6 +2,7 @@
 #define MODBUS_H
 
 #include "../gen/datamanager.h"
+#include "../gen/logclass.h"
 #include "serialport.h"
 
 #include <QMutex>

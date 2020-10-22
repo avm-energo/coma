@@ -7,9 +7,7 @@ QMutex DataManager::s_outListMutex;
 QMutex DataManager::s_inQueueMutex;
 QQueue<QVariant> s_inputQueue;
 
-DataManager::DataManager(QObject *parent) : QObject(parent)
-{
-}
+DataManager::DataManager(QObject *parent) : QObject(parent) { }
 
 Error::Msg DataManager::getSignals(
     quint32 firstSignalAdr, quint32 lastSignalAdr, SignalTypes type, QList<SignalsStruct> &outlist)
@@ -86,11 +84,13 @@ Error::Msg DataManager::getFile(quint32 filenum, QByteArray &outba)
                 if (fl.filenum == filenum)
                 {
                     outba = fl.filedata;
+                    s_outListMutex.unlock();
                     return Error::Msg::NoError;
                 }
             }
         }
     }
+    s_outListMutex.unlock();
     return Error::Msg::ResEmpty;
 }
 
@@ -131,6 +131,26 @@ Error::Msg DataManager::getConfig(quint32 firstID, quint32 lastID, QList<DataTyp
     return Error::Msg::ResEmpty;
 }
 
+Error::Msg DataManager::getResponse(DataTypes::GeneralResponseStruct &response)
+{
+    s_outListMutex.lock();
+    foreach (SignalsStruct sig, s_outputList)
+    {
+        if (sig.type == SignalTypes::GeneralResponse)
+        {
+            if (sig.data.canConvert<DataTypes::GeneralResponseStruct>())
+            {
+                response = qvariant_cast<DataTypes::GeneralResponseStruct>(sig.data);
+                s_outputList.removeOne(sig);
+                s_outListMutex.unlock();
+                return Error::Msg::NoError;
+            }
+        }
+    }
+    s_outListMutex.unlock();
+    return Error::Msg::ResEmpty;
+}
+
 void DataManager::setConfig(S2ConfigType *s2config)
 {
     Queries::Command104 inp;
@@ -140,10 +160,16 @@ void DataManager::setConfig(S2ConfigType *s2config)
     basize += static_cast<quint8>(inp.ba.data()[5]) * 256;
     basize += static_cast<quint8>(inp.ba.data()[6]) * 65536;
     basize += static_cast<quint8>(inp.ba.data()[7]) * 16777216;
-    basize += sizeof(S2::FileHeader); // baHeader
+    basize += sizeof(S2DataTypes::FileHeader); // baHeader
     inp.ba.resize(basize);
     inp.cmd = Queries::Commands104::CM104_FILEREADY;
     addToInQueue(inp);
+}
+
+void DataManager::reqStartup()
+{
+    Queries::Command104 inp { Queries::Commands104::CM104_CORREADREQUEST, 0, 0, {} };
+    DataManager::addToInQueue(inp);
 }
 
 Error::Msg DataManager::deQueue104(Queries::Command104 &cmd)

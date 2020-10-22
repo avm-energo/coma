@@ -5,6 +5,13 @@
 
 namespace DataTypes
 {
+enum GeneralResponseTypes
+{
+    Ok,
+    DataSize,
+    DataCount
+};
+
 struct BitString
 {
     //    quint8 sigAdr[3];
@@ -45,6 +52,12 @@ struct ConfParameter
 {
     quint32 ID;
     QByteArray data;
+};
+
+struct GeneralResponseStruct
+{
+    GeneralResponseTypes type;
+    quint64 data;
 };
 }
 
@@ -111,7 +124,7 @@ Q_DECLARE_METATYPE(DataTypes::FloatWithTime)
 Q_DECLARE_METATYPE(DataTypes::SinglePointWithTime)
 Q_DECLARE_METATYPE(DataTypes::File)
 Q_DECLARE_METATYPE(DataTypes::ConfParameter)
+Q_DECLARE_METATYPE(DataTypes::GeneralResponseStruct)
 Q_DECLARE_METATYPE(Queries::Command104)
 Q_DECLARE_METATYPE(Queries::CommandMBS)
-
 #endif // DATATYPES_H

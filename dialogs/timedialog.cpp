@@ -25,9 +25,7 @@ TimeDialog::TimeDialog(QWidget *parent) : UDialog(parent)
     SetupUI();
 }
 
-TimeDialog::~TimeDialog()
-{
-}
+TimeDialog::~TimeDialog() { }
 
 void TimeDialog::SetupUI()
 {
@@ -176,7 +174,7 @@ void TimeDialog::ETHUpdate()
 {
     uint unixtimestamp = 0;
     QList<DataManager::SignalsStruct> list;
-    DataManager::getSignals(4600, 4600, DataManager::SignalTypes::BitString, list);
+    DataManager::getSignals(MBS_TIMEREG, MBS_TIMEREG, DataManager::SignalTypes::BitString, list);
     if (!list.isEmpty())
     {
         foreach (DataManager::SignalsStruct signal, list)
@@ -191,7 +189,7 @@ void TimeDialog::ETHUpdate()
     //    int startadr = 0;
     //    memcpy(&startadr, &(Time->BS.SigAdr[0]), sizeof(Time->BS.SigAdr));
 
-    //    if (startadr == 4600)
+    //    if (startadr == MBS_TIMEREG)
     //    {
     //        memcpy((quint32 *)(&unixtimestamp), ((quint32 *)(&Time->BS.SigVal)), sizeof(Time->BS.SigVal));
     //        SetTime(unixtimestamp);
@@ -249,19 +247,13 @@ void TimeDialog::MBSUpdate()
             ERMSG("Некорректное время");
             return;
         }
-        if (Time.at(0).SigAdr == 4600)
+        if (Time.at(0).SigAdr == MBS_TIMEREG)
         {
             unixtimestamp = Time.at(0).Val;
             SetTime(unixtimestamp);
         } */
 }
 
-void TimeDialog::ErrorRead()
-{
-    WDFunc::SetLEData(this, "systime2", "Ошибка чтения");
-}
+void TimeDialog::ErrorRead() { WDFunc::SetLEData(this, "systime2", "Ошибка чтения"); }
 
-void TimeDialog::TimeWritten()
-{
-    QMessageBox::information(this, "Успешно", "Время записано успешно");
-}
+void TimeDialog::TimeWritten() { QMessageBox::information(this, "Успешно", "Время записано успешно"); }

@@ -1,4 +1,5 @@
 #include "iec104thread.h"
+#include "../gen/datamanager.h"
 
 #include <QCoreApplication>
 #include <QThread>
@@ -28,14 +29,9 @@ IEC104Thread::IEC104Thread(LogClass *log, QObject *parent) : QObject(parent)
     NoAnswer = 0;
 }
 
-IEC104Thread::~IEC104Thread()
-{
-}
+IEC104Thread::~IEC104Thread() { }
 
-void IEC104Thread::SetBaseAdr(quint16 adr)
-{
-    BaseAdr = adr;
-}
+void IEC104Thread::SetBaseAdr(quint16 adr) { BaseAdr = adr; }
 
 void IEC104Thread::Run()
 {
@@ -489,7 +485,8 @@ void IEC104Thread::ParseIFormat(QByteArray &ba) // основной разбор
             case C_SC_NA_1:
             {
                 if (DUI.cause.cause == 10)
-                    emit SendMessageOk();
+                    //                    emit SendMessageOk();
+                    DataManager::addSignalToOutList(DataManager::SignalTypes::GeneralResponse, signal);
                 break;
             }
 

@@ -25,7 +25,7 @@ StartupKIVDialog::StartupKIVDialog(QWidget *parent) : AbstractStartupDialog(pare
     CorBlock = new CorData;
     CorBlock->Phy_unb_init = 0;
     CorBlock->Iunb_init = 0;
-    first = 0;
+    //    first = 0;
 
     /*MessageTimer = new QTimer;
     MessageTimer->setInterval(5000);
@@ -38,13 +38,12 @@ StartupKIVDialog::StartupKIVDialog(QWidget *parent) : AbstractStartupDialog(pare
         CorBlock->corTg[i] = 0;
     }
     setAttribute(Qt::WA_DeleteOnClose);
+    SetStartupBlock(7, &CorBlock, sizeof(CorData));
     SetupUI();
     // MessageTimer->start();
 }
 
-StartupKIVDialog::~StartupKIVDialog()
-{
-}
+StartupKIVDialog::~StartupKIVDialog() { }
 
 void StartupKIVDialog::SetupUI()
 {
@@ -91,63 +90,10 @@ void StartupKIVDialog::SetupUI()
     glyout->addWidget(WDFunc::NewLBL(this, "Начальное значение угла тока небаланса, град.:"), row, 1, 1, 1);
     glyout->addWidget(WDFunc::NewSPB(this, QString::number(4010), 0, 10000, 1, paramcolor), row, 2, 1, 3);
 
-    row++;
+    //    row++;
 
-    // QString tmps = ((DEVICETYPE == DEVICETYPE_MODULE) ? "модуля" : "прибора");
-    QPushButton *pb = new QPushButton("Прочитать из модуля");
-    connect(pb, SIGNAL(clicked()), this, SLOT(GetCorBdButton()));
-    if (StdFunc::IsInEmulateMode())
-        pb->setEnabled(false);
-
-    glyout->addWidget(pb, row, 1, 1, 2);
-
-    pb = new QPushButton("Записать в модуль");
-    connect(pb, SIGNAL(clicked()), this, SLOT(WriteCorBd()));
-    if (StdFunc::IsInEmulateMode())
-        pb->setEnabled(false);
-
-    glyout->addWidget(pb, row, 3, 1, 2);
-
-    // row++;
-
-    row++;
-
-    pb = new QPushButton("Сбросить начальные значения");
-    connect(pb, SIGNAL(clicked()), this, SLOT(ResetCor()));
-    if (StdFunc::IsInEmulateMode())
-        pb->setEnabled(false);
-
-    glyout->addWidget(pb, row, 1, 1, 2);
-
-    pb = new QPushButton("Задать начальные значения");
-    connect(pb, SIGNAL(clicked()), this, SLOT(WriteCor()));
-    if (StdFunc::IsInEmulateMode())
-        pb->setEnabled(false);
-
-    glyout->addWidget(pb, row, 3, 1, 2);
-
-    // row++;
-
-    row++;
-
-    pb = new QPushButton("Прочитать значения из файла");
-    connect(pb, SIGNAL(clicked()), this, SLOT(ReadFromFile()));
-    if (StdFunc::IsInEmulateMode())
-        pb->setEnabled(false);
-
-    glyout->addWidget(pb, row, 1, 1, 2);
-
-    pb = new QPushButton("Сохранить значения в файл");
-    connect(pb, SIGNAL(clicked()), this, SLOT(SaveToFile()));
-    if (StdFunc::IsInEmulateMode())
-        pb->setEnabled(false);
-
-    glyout->addWidget(pb, row, 3, 1, 2);
-
-    // row++;
-
-    // hlyout->addWidget(glyout,Qt::AlignTop);
     lyout->addLayout(glyout, Qt::AlignTop);
+    lyout->addWidget(buttonWidget());
     lyout->addWidget(tv, 89);
     setLayout(lyout);
     setObjectName("corDialog");
@@ -213,34 +159,34 @@ void StartupKIVDialog::GetCorBd()
     }
     //    }
 }
-void StartupKIVDialog::GetCorBdButton()
-{
-    switch (Board::GetInstance().interfaceType())
-    {
-    case Board::InterfaceType::USB:
-    {
-        if (Commands::GetBd(7, CorBlock, sizeof(CorData)) == Error::Msg::NoError)
-        {
-            FillCor();
-            QMessageBox::information(this, "INFO", "Прочитано успешно");
-        }
-        break;
-    }
-    case Board::InterfaceType::RS485:
-    {
-        ModBus::Information info;
-        info.size = (sizeof(CorData) / 4);
-        info.adr = 4000;
-        emit RS485ReadCorBd(info);
-        break;
-    }
-    case Board::InterfaceType::Ethernet:
-    {
-        emit CorReadRequest();
-        break;
-    }
-    }
-}
+// void StartupKIVDialog::GetCorBdButton()
+//{
+//    switch (Board::GetInstance().interfaceType())
+//    {
+//    case Board::InterfaceType::USB:
+//    {
+//        if (Commands::GetBd(7, CorBlock, sizeof(CorData)) == Error::Msg::NoError)
+//        {
+//            FillCor();
+//            QMessageBox::information(this, "INFO", "Прочитано успешно");
+//        }
+//        break;
+//    }
+//    case Board::InterfaceType::RS485:
+//    {
+//        ModBus::Information info;
+//        info.size = (sizeof(CorData) / 4);
+//        info.adr = 4000;
+//        emit RS485ReadCorBd(info);
+//        break;
+//    }
+//    case Board::InterfaceType::Ethernet:
+//    {
+//        emit CorReadRequest();
+//        break;
+//    }
+//    }
+//}
 
 void StartupKIVDialog::WriteCorBd()
 {
@@ -314,8 +260,8 @@ void StartupKIVDialog::WriteCor()
         }
         case Board::InterfaceType::USB:
         {
-            if (Commands::WriteCom(1) == Error::Msg::NoError) // задание общей коррекции
-                                                              //{
+            if (Commands::WriteCom(Commands::WriteInitValues) == Error::Msg::NoError) // задание общей коррекции
+                                                                                      //{
                 if (Commands::GetBd(7, CorBlock, sizeof(CorData)) == Error::Msg::NoError)
                 {
                     FillCor();
@@ -341,7 +287,7 @@ void StartupKIVDialog::SetCor()
     }
     case Board::InterfaceType::USB:
     {
-        if (Commands::WriteCom(4) == Error::Msg::NoError)
+        if (Commands::WriteCom(Commands::WriteStartupValues) == Error::Msg::NoError)
             QMessageBox::information(this, "INFO", "Записано успешно");
         else
             QMessageBox::information(this, "INFO", "Ошибка");
@@ -371,7 +317,7 @@ void StartupKIVDialog::ResetCor()
         }
         case Board::InterfaceType::USB:
         {
-            if (Commands::WriteCom(5) == Error::Msg::NoError)
+            if (Commands::WriteCom(Commands::ClearStartupValues) == Error::Msg::NoError)
                 QMessageBox::information(this, "INFO", "Сброшено успешно");
             else
                 QMessageBox::information(this, "INFO", "Ошибка");
@@ -397,10 +343,7 @@ float StartupKIVDialog::ToFloat(QString text)
     return tmpf;
 }
 
-void StartupKIVDialog::MessageOk()
-{
-    QMessageBox::information(this, "INFO", "Записано успешно");
-}
+void StartupKIVDialog::MessageOk() { QMessageBox::information(this, "INFO", "Записано успешно"); }
 
 // void CorDialog::UpdateFlCorData(IEC104Thread::FlSignals104 *Signal)
 //{
@@ -521,18 +464,15 @@ Error::Msg StartupKIVDialog::WriteCheckPassword()
 //    emit WritePasswordChecked();
 //}
 
-void StartupKIVDialog::TimerTimeout()
-{
-    MessageTimer->stop();
-    // first = 1;
-}
+// void StartupKIVDialog::TimerTimeout()
+//{
+//    MessageTimer->stop();
+//    // first = 1;
+//}
 
 /*void CorDialog::WriteCorMessageOk()
 {
    QMessageBox::information(this, "Успешно", "Записано успешно!");
 } */
 
-void StartupKIVDialog::ErrorRead()
-{
-    QMessageBox::information(this, "Ошибка", "Ошибка чтения");
-}
+void StartupKIVDialog::ErrorRead() { QMessageBox::information(this, "Ошибка", "Ошибка чтения"); }

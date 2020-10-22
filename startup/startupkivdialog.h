@@ -22,10 +22,10 @@ public:
 private:
     struct CorData
     {
-        float C_init[3];    //Начальные значени емкостей вводов
-        float Tg_init[3];   //Начальные значения tgδ вводов
-        float corTg[3];     // коррекция  tg δ вводов
-        float Iunb_init;    // Начальное действ. значение тока небаланса
+        float C_init[3]; //Начальные значени емкостей вводов
+        float Tg_init[3]; //Начальные значения tgδ вводов
+        float corTg[3]; // коррекция  tg δ вводов
+        float Iunb_init; // Начальное действ. значение тока небаланса
         float Phy_unb_init; // Начальное значение угла тока небаланса
     };
 
@@ -46,7 +46,7 @@ signals:
     //    void WritePasswordChecked();
 
 public slots:
-    void GetCorBdButton() override;
+    //    void GetCorBdButton() override;
     void WriteCorBd() override;
     void WriteCor() override;
     void MessageOk();
@@ -57,7 +57,7 @@ public slots:
     void SaveToFile() override;
     void ReadFromFile() override;
     //    void WritePasswordCheck(QString psw);
-    void TimerTimeout();
+    //    void TimerTimeout();
     void ErrorRead();
 
 private slots:

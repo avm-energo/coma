@@ -26,7 +26,9 @@ public:
         JourSys = 4,
         JourWork = 5,
         JourMeas = 6,
-        JourSw = 17
+        JourSw = 17,
+        JourEv = 18, // events journal (12->62)
+        FileOsc = 1000 // oscilloscope info
     };
     Files();
 

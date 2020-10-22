@@ -20,15 +20,23 @@ public:
         AnswerWasReceived = 2
     };
 
+    struct StartupBlockStruct
+    {
+        int num;
+        void *block;
+        quint32 size;
+    };
+
     explicit AbstractStartupDialog(QWidget *parent = nullptr);
     //    ~AbstractCorDialog();
-
-    QTimer *MessageTimer;
+    void SetStartupBlock(int blocknum, void *block, quint32 blocksize);
+    //    QTimer *MessageTimer;
 
     //    int corDIndex;
-    bool ok;
-    int first;
+    //    bool ok;
+    //    int first;
 
+    QWidget *buttonWidget();
     Error::Msg WriteCheckPassword();
     virtual void GetCorBd();
     void ETHUpdate();
@@ -36,6 +44,8 @@ public:
 
 private:
     UpdateStates m_updateState;
+    StartupBlockStruct m_startupBlockDescription;
+
     virtual void FillCor() = 0;
     virtual void FillBackCor() = 0;
     //    virtual void FillWb7() = 0;
@@ -54,18 +64,19 @@ signals:
     //    void WritePasswordChecked();
 
 public slots:
-    virtual void GetCorBdButton() = 0;
+    void GetCorBdButton();
     virtual void WriteCorBd() = 0;
     virtual void WriteCor() = 0;
-    void MessageOk();
+    //    void MessageOk();
     void SetCor();
     virtual void ResetCor() = 0;
     void updateFloatData();
+    void updateStatus();
     void ModBusUpdateCorData(QList<ModBus::SignalStruct> Signal);
     virtual void SaveToFile() = 0;
     virtual void ReadFromFile() = 0;
     //    void WritePasswordCheck(QString psw);
-    void TimerTimeout();
+    //    void TimerTimeout();
     void ErrorRead();
     void update() override;
 };

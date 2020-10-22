@@ -21,7 +21,8 @@ public:
         SinglePointWithTime,
         ByteArray,
         File,
-        ConfParameter
+        ConfParameter,
+        GeneralResponse
     };
 
     struct SignalsStruct
@@ -36,7 +37,9 @@ public:
         QList<DataManager::SignalsStruct> &outlist);
     static Error::Msg getFile(quint32 filenum, QByteArray &outba);
     static Error::Msg getConfig(quint32 firstID, quint32 lastID, QList<DataTypes::ConfParameter> &outlist);
+    static Error::Msg getResponse(DataTypes::GeneralResponseStruct &response);
     static void setConfig(S2ConfigType *s2config);
+    static void reqStartup();
     template <typename T> static void addSignalToOutList(SignalTypes type, T signal)
     {
         SignalsStruct str;

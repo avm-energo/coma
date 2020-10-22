@@ -7,9 +7,15 @@
 
 class Commands : QObject
 {
-
     Q_OBJECT
 public:
+    enum CommandsEnum
+    {
+        WriteInitValues = 1,
+        WriteStartupValues = 4,
+        ClearStartupValues = 5
+    };
+
     explicit Commands();
     static Error::Msg GetBsi(ModuleBSI::Bsi &bsi);
     static Error::Msg GetFileWithRestore(int filenum, S2ConfigType *data);
