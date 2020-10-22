@@ -139,11 +139,11 @@ void convertPixmap(size_t size, QAction *jourAct)
     QFont font(painter.font());
     font.setPixelSize(14);
     painter.setFont(font);
+    painter.setPen(Qt::white);
     if (size > 10)
         painter.drawText(QRect(20, 0, 20, 20), Qt::AlignCenter, "...");
     else
         painter.drawText(QRect(20, 0, 20, 20), Qt::AlignCenter, QString::number(size));
-    painter.setPen(Qt::yellow);
     jourAct->setIcon(pix);
 }
 
@@ -156,7 +156,7 @@ QToolBar *Coma::createToolBar()
     tb->addAction(QIcon("images/play.png"), "Соединение", this, &Coma::StartWork);
     tb->addAction(QIcon("images/stop.png"), "Разрыв соединения", this, &Coma::DisconnectAndClear);
     tb->addSeparator();
-    tb->addAction(QIcon("images/settings.png"), "Настройки", [this]() {
+    tb->addAction(QIcon("images/settings.svg"), "Настройки", [this]() {
         SettingsDialog *dlg = new SettingsDialog;
         dlg->setAttribute(Qt::WA_DeleteOnClose);
         dlg->show();
