@@ -8,6 +8,7 @@
 #include "../widgets/wd_func.h"
 
 #include <QCoreApplication>
+#include <QDebug>
 #include <QFileDialog>
 #include <QGroupBox>
 #include <QHBoxLayout>
@@ -103,7 +104,7 @@ void CheckKTFDialog::USBUpdate()
     QTabWidget *CheckTW = this->findChild<QTabWidget *>("checktw1");
     if (CheckTW == nullptr)
     {
-        DBGMSG;
+        qDebug() << "CheckTW is null";
         return;
     }
 

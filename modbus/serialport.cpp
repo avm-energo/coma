@@ -4,6 +4,7 @@
 #include "../gen/error.h"
 
 #include <QCoreApplication>
+#include <QDebug>
 
 SerialPort::SerialPort(QObject *parent) : QObject(parent)
 {

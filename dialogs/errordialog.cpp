@@ -1,21 +1,15 @@
 #include "errordialog.h"
 
 #include "../gen/colors.h"
+#include "../widgets/errorprotocolwidget.h"
 
 #include <QHBoxLayout>
 #include <QPushButton>
 #include <QVBoxLayout>
 #include <QWidget>
-
 ErrorDialog::ErrorDialog(QWidget *parent) : QDialog(parent)
 {
     SetupUI();
-    InitDialog();
-}
-
-void ErrorDialog::InitDialog()
-{
-    ErrorWidget->InitModel();
 }
 
 void ErrorDialog::SetupUI()
@@ -29,7 +23,7 @@ void ErrorDialog::SetupUI()
     ErrorWidget->setAutoFillBackground(true);
     lyout->addWidget(ErrorWidget);
     QPushButton *pb = new QPushButton("Закрыть");
-    connect(pb, SIGNAL(clicked(bool)), this, SLOT(close()));
+    connect(pb, &QAbstractButton::clicked, this, &QWidget::close);
     hlyout->addStretch(100);
     hlyout->addWidget(pb);
     hlyout->addStretch(100);

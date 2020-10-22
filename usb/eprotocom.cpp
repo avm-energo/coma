@@ -229,7 +229,7 @@ void EProtocom::WriteDataToPort(QByteArray &ba)
     if (Command == CN::Unknown) // игнорируем вызовы процедуры без команды
     {
         ERMSG("Не пришла ещё шапка файла");
-        Error::ShowErMsg(Error::Msg::USB_WRONGCOMER);
+        qCritical() << QVariant::fromValue(Error::Msg::USB_WRONGCOMER).toString();
         return;
     }
     int byteswritten = 0;
@@ -245,7 +245,7 @@ void EProtocom::WriteDataToPort(QByteArray &ba)
             && Board::GetInstance().interfaceType() == Board::InterfaceType::USB)
         {
             ERMSG("Ошибка записи RawWrite");
-            Error::ShowErMsg(Error::Msg::COM_WRITEER);
+            qCritical() << QVariant::fromValue(Error::Msg::COM_WRITEER).toString();
             Disconnect();
             // TTimer->start();
             return;
@@ -267,8 +267,8 @@ void EProtocom::Finish(Error::Msg msg)
 
         qDebug(__PRETTY_FUNCTION__);
         CnLog->WriteRaw("### ОШИБКА В ПЕРЕДАННЫХ ДАННЫХ ###\n");
-        WARNMSG("ОШИБКА В ПЕРЕДАННЫХ ДАННЫХ!!!");
-        Error::ShowErMsg(msg);
+        qWarning("ОШИБКА В ПЕРЕДАННЫХ ДАННЫХ!!!");
+        qCritical() << QVariant::fromValue(msg).toString();
     }
     m_result = msg;
     emit QueryFinished();

@@ -31,10 +31,12 @@
 #include "../config/confkdvdialog.h"
 #include "../config/confkivdialog.h"
 #include "../config/confktfdialog.h"
+#include "../widgets/wd_func.h"
 #include "../dialogs/errordialog.h"
 #include "../dialogs/keypressdialog.h"
 #include "../dialogs/settingsdialog.h"
 #include "../gen/logger.h"
+#include "../gen/errorqueue.h"
 #include "../gen/stdfunc.h"
 
 #include <QApplication>
@@ -45,6 +47,7 @@
 #include <QSplashScreen>
 #include <QToolBar>
 #include <QtGlobal>
+#include <functional>
 
 #ifdef _WIN32
 // clang-format off
@@ -75,7 +78,7 @@ Coma::Coma(QWidget *parent) : QMainWindow(parent)
     if (!dir.exists())
         dir.mkpath(".");
     StdFunc::Init();
-    Error::Init();
+    qInfo("=== Log started ===\n");
 
 #ifdef __linux__
     // linux code goes here
@@ -123,6 +126,56 @@ Coma::~Coma()
 {
     //    Disconnect();
 }
+void convertPixmap(size_t size, QAction *jourAct)
+{
+    const QIcon jourIcon("images/skull-and-bones.png");
+    QPixmap pix = jourIcon.pixmap(QSize(40, 40), QIcon::Disabled);
+    QPainter painter(&pix);
+    painter.drawPixmap(QRect(20, 0, 20, 20), WDFunc::NewCircle(Qt::red, 20));
+    QFont font(painter.font());
+    font.setPixelSize(14);
+    painter.setFont(font);
+    if (size > 10)
+        painter.drawText(QRect(20, 0, 20, 20), Qt::AlignCenter, "...");
+    else
+        painter.drawText(QRect(20, 0, 20, 20), Qt::AlignCenter, QString::number(size));
+    painter.setPen(Qt::yellow);
+    jourAct->setIcon(pix);
+}
+
+QToolBar *Coma::createToolBar()
+{
+    QToolBar *tb = new QToolBar(this);
+    tb->setContextMenuPolicy(Qt::PreventContextMenu);
+    tb->setStyleSheet("QToolBar {background: 0px; margin: 0px; spacing: 5px; padding: 0px;}");
+    tb->setIconSize(QSize(40, 40));
+    tb->addAction(QIcon("images/play.png"), "Соединение", this, &Coma::StartWork);
+    tb->addAction(QIcon("images/stop.png"), "Разрыв соединения", this, &Coma::DisconnectAndClear);
+    tb->addSeparator();
+    tb->addAction(QIcon("images/settings.png"), "Настройки", [this]() {
+        SettingsDialog *dlg = new SettingsDialog;
+        dlg->setAttribute(Qt::WA_DeleteOnClose);
+        dlg->show();
+        this->SaveSettings();
+    });
+    const QIcon jourIcon("images/skull-and-bones.png");
+
+    QAction *jourAct = new QAction(jourIcon, tr("&Журнал..."), this);
+    jourAct->setShortcuts(QKeySequence::Open);
+    jourAct->setStatusTip(tr("Открыть протокол работы"));
+
+    connect(jourAct, &QAction::triggered, this, []() {
+        ErrorDialog *dlg = new ErrorDialog;
+        dlg->setAttribute(Qt::WA_DeleteOnClose);
+        dlg->show();
+    });
+    connect(jourAct, &QAction::triggered, [jourAct, jourIcon] { jourAct->setIcon(jourIcon); });
+    const auto &queue = ErrorQueue::GetInstance();
+    connect(&queue, &ErrorQueue::errCounts, this, std::bind(&convertPixmap, std::placeholders::_1, jourAct),
+        Qt::QueuedConnection);
+    tb->addAction(jourAct);
+    return tb;
+}
 
 void Coma::SetupUI()
 {
@@ -133,28 +186,11 @@ void Coma::SetupUI()
     QWidget *wdgt = new QWidget(this);
     QVBoxLayout *lyout = new QVBoxLayout(wdgt);
     QHBoxLayout *hlyout = new QHBoxLayout;
-    QToolBar *tb = new QToolBar(this);
 
-    tb->setStyleSheet("QToolBar {background: 0px; margin: 0px; spacing: 5px; padding: 0px;}");
-    tb->setIconSize(QSize(20, 20));
-    tb->addAction(QIcon("images/play.png"), "Соединение", this, &Coma::StartWork);
-    tb->addAction(QIcon("images/stop.png"), "Разрыв соединения", this, &Coma::DisconnectAndClear);
-    tb->addSeparator();
-    tb->addAction(QIcon("images/settings.png"), "Настройки", [this]() {
-        SettingsDialog *dlg = new SettingsDialog;
-        dlg->setAttribute(Qt::WA_DeleteOnClose);
-        dlg->show();
-        this->SaveSettings();
-    });
-    tb->addAction(QIcon("images/skull-and-bones.png"), "Соединение", []() {
-        ErrorDialog *dlg = new ErrorDialog;
-        dlg->setAttribute(Qt::WA_DeleteOnClose);
-        dlg->show();
-    });
-
-    hlyout->addWidget(tb);
+    hlyout->addWidget(createToolBar());
 
     AlarmW = new AlarmWidget(Alarm);
+    // AlarmW->setMaximumWidth(780);
     hlyout->addWidget(AlarmW, Qt::AlignCenter);
 
     lyout->addLayout(hlyout);
@@ -368,7 +404,7 @@ void Coma::StartWork()
     auto const &board = Board::GetInstance();
     if (board.connectionState() != Board::ConnectionState::Closed)
         return;
-    AlarmStateAllDialog = new AlarmStateAll(AlarmW);
+    AlarmStateAllDialog = new AlarmStateAll(this);
     if (!Reconnect)
     {
         QEventLoop loop;
@@ -445,9 +481,9 @@ void Coma::StartWork()
     //        MainTW->addTab(jourDialog, "Журналы");
 
     if (ModuleBSI::Health() & HTH_CONFIG) // нет конфигурации
-        Error::ShowErMsg(Error::Msg::ER_NOCONF);
+        qCritical() << QVariant::fromValue(Error::Msg::ER_NOCONF).toString();
     if (ModuleBSI::Health() & HTH_REGPARS) // нет коэффициентов
-        Error::ShowErMsg(Error::Msg::ER_NOTUNECOEF);
+        qCritical() << QVariant::fromValue(Error::Msg::ER_NOTUNECOEF).toString();
     //    if (board.interfaceType() == Board::InterfaceType::USB)
     //    {
     //        fwUpDialog = new fwupdialog;
@@ -698,7 +734,7 @@ void Coma::NewTimers()
     BdaTimer = new QTimer;
     BdaTimer->setInterval(1000);
 
-    AlrmTimer = new QTimer;
+    AlrmTimer = new QTimer(this);
     AlrmTimer->setInterval(5000);
     AlrmTimer->start();
 
@@ -1004,7 +1040,7 @@ void Coma::FileTimeOut()
     if (prb == nullptr)
     {
         // qCritical(logCritical(), ("Пустой prb"));
-        DBGMSG;
+        qDebug("Пустой prb");
         return;
     }
     WDFunc::SetLBLText(this, lblname, StdFunc::PrbMessage() + QString::number(0), false);
@@ -1031,7 +1067,7 @@ void Coma::SetProgressBarSize(int prbnum, int size)
     QProgressBar *prb = this->findChild<QProgressBar *>(prbname);
     if (prb == nullptr)
     {
-        DBGMSG;
+        qDebug("Пустой prb");
         return;
     }
     WDFunc::SetLBLText(this, lblname, StdFunc::PrbMessage() + QString::number(size), false);

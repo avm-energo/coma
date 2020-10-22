@@ -20,7 +20,6 @@ EUsbWorker::EUsbWorker(DeviceConnectStruct dev, LogClass *logh, bool writelog, Q
 
 EUsbWorker::~EUsbWorker()
 {
-    qDebug(__PRETTY_FUNCTION__);
 }
 
 Error::Msg EUsbWorker::setupConnection()
@@ -126,7 +125,7 @@ Error::Msg EUsbWorker::WriteData(QByteArray &ba)
         {
             if (WriteUSBLog)
                 log->WriteRaw("UsbThread: WRONG SEGMENT LENGTH!\n");
-            ERMSG("Длина сегмента больше " + QString::number(UH::MaxSegmenthLength) + " байт");
+            qCritical() << "Длина сегмента больше " << QString::number(UH::MaxSegmenthLength) << " байт";
             return Error::Msg::GeneralError;
         }
         if (ba.size() < UH::MaxSegmenthLength)

@@ -27,7 +27,7 @@ AlarmWidget::AlarmWidget(AlarmClass *alarm, QWidget *parent) : QWidget(parent)
     {
         QHBoxLayout *hlyout = new QHBoxLayout;
         QPushButton *pb = new QPushButton(Description.at(i));
-        pb->setMinimumSize(QSize(230, 30));
+        pb->setMinimumSize(QSize(geometry().width() / 3, 30));
         int signal = metaObject()->indexOfSignal(QString((ButtonList.at(i) + "()")).toStdString().c_str());
         auto method = metaObject()->method(signal);
         connect(pb, QMetaMethod::fromSignal(&QAbstractButton::clicked), this, method);

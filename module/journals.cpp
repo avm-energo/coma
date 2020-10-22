@@ -286,7 +286,7 @@ void Journals::ResultReady()
         order = Qt::AscendingOrder;
         break;
     default:
-        DBGMSG;
+        qDebug("Default case");
         return;
     }
 

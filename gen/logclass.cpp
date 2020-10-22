@@ -1,22 +1,19 @@
+#include "logclass.h"
+
+#include "s2.h"
+#include "stdfunc.h"
+
+#include <QDataStream>
 #include <QDateTime>
+#include <QDebug>
 #include <QDir>
 #include <QMutexLocker>
-#define LZMA_API_STATIC
-#include "error.h"
-#include "logclass.h"
-#ifdef _WIN32
-#include "lzma/lzma.h"
-#endif
-#ifdef __linux__
-#include "lzma.h"
-#endif
-
-#include "stdfunc.h"
 
 LogClass::LogClass(QObject *parent) : QObject(parent)
 {
     fp = nullptr;
     mtx = new QMutex;
+    CanLog = false;
 }
 
 LogClass::~LogClass()
@@ -71,7 +68,7 @@ void LogClass::WriteFile(const QString &Prepend, const QString &msg)
 {
     if (fp != nullptr)
     {
-        mtx->lock();
+        QMutexLocker locker(mtx);
         QString tmps = "[" + QDateTime::currentDateTime().toString("dd-MM-yyyy hh:mm:ss.zzz") + "]";
         fp->write(tmps.toLocal8Bit());
         tmps = "[" + Prepend + "] ";
@@ -79,8 +76,7 @@ void LogClass::WriteFile(const QString &Prepend, const QString &msg)
         fp->write(msg.toLocal8Bit());
         fp->write("\n");
         fp->flush();
-        CheckAndGz();
-        mtx->unlock();
+        CheckAndCompress();
     }
 }
 
@@ -101,109 +97,36 @@ void LogClass::WriteRaw(const QByteArray &ba)
             return;
         if (!fp->flush())
             return;
-        CheckAndGz();
+        CheckAndCompress();
     }
 }
 
-void LogClass::CheckAndGz()
+void LogClass::CheckAndCompress()
 {
     QString GZippedLogFile = LogFile;
-    if (fp->size() >= LOG_MAX_SIZE)
+    if (fp->size() < LOG_MAX_SIZE)
+        return;
+    if (!StdFunc::checkArchiveExist(GZippedLogFile))
+        return;
+    GZippedLogFile += ".0.gz";
+
+    QFile fileIn, fileOut;
+    fileIn.setFileName(LogFile);
+    if (!fileIn.open(QIODevice::ReadOnly | QIODevice::Text))
     {
-        int i;
-        // rotating
-        for (i = 9; i > 0; --i)
-        {
-            QString tmpsnew = GZippedLogFile + "." + QString::number(i) + ".xz";
-            QString tmpsold = GZippedLogFile + "." + QString::number(i - 1) + ".xz";
-            QFile fn;
-            fn.setFileName(tmpsnew);
-            if (fn.exists())
-                fn.remove();
-            fn.setFileName(tmpsold);
-            if (fn.exists())
-            {
-                if (fn.rename(tmpsnew) == false) // error
-                {
-                    ERMSG("Cannot rename file");
-                    return;
-                }
-            }
-        }
-        GZippedLogFile += ".0.xz";
-        // gzip log file and clearing current one
-        lzma_stream strm = LZMA_STREAM_INIT;
-        lzma_ret ret = lzma_easy_encoder(&strm, 6, LZMA_CHECK_CRC64);
-        if (ret != LZMA_OK)
-        {
-            ERMSG("Something wrong with lzma_easy_encoder");
-            return;
-        }
-        uint8_t inbuf[BUFSIZ];
-        uint8_t outbuf[BUFSIZ];
-        strm.next_in = NULL;
-        strm.avail_in = 0;
-        strm.next_out = outbuf;
-        strm.avail_out = sizeof(outbuf);
-        QFile fd, fr;
-        fd.setFileName(LogFile);
-        if (!fd.open(QIODevice::ReadOnly | QIODevice::Text))
-        {
-            ERMSG("Cannot open the file" + LogFile);
-            return;
-        }
-        fr.setFileName(GZippedLogFile);
-        if (!fr.open(QIODevice::WriteOnly | QIODevice::Truncate))
-        {
-            ERMSG("Cannot open the file" + GZippedLogFile);
-            return;
-        }
-        lzma_action action = LZMA_RUN;
-        while (true)
-        {
-            // Fill the input buffer if it is empty.
-            if ((strm.avail_in == 0) && !fd.atEnd())
-            {
-                strm.next_in = inbuf;
-                strm.avail_in = fd.read(reinterpret_cast<char *>(&(inbuf[0])), sizeof(inbuf));
-                if (fd.atEnd())
-                    action = LZMA_FINISH;
-            }
-            lzma_ret ret = lzma_code(&strm, action);
-            if ((strm.avail_out == 0) || (ret == LZMA_STREAM_END))
-            {
-                // When lzma_code() has returned LZMA_STREAM_END,
-                // the output buffer is likely to be only partially
-                // full. Calculate how much new data there is to
-                // be written to the output file.
-                size_t write_size = sizeof(outbuf) - strm.avail_out;
-                size_t written_size = fr.write(reinterpret_cast<char *>(&(outbuf[0])), write_size);
-                if (written_size != write_size)
-                {
-                    ERMSG("Write error");
-                    return;
-                }
-                strm.next_out = outbuf;
-                strm.avail_out = sizeof(outbuf);
-            }
-            if (ret != LZMA_OK)
-            {
-                // Once everything has been encoded successfully, the
-                // return value of lzma_code() will be LZMA_STREAM_END.
-                //
-                // It is important to check for LZMA_STREAM_END. Do not
-                // assume that getting ret != LZMA_OK would mean that
-                // everything has gone well.
-                if (ret == LZMA_STREAM_END)
-                {
-                    fr.flush();
-                    fr.close();
-                    fd.close();
-                    fp->close();
-                    fp->open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text);
-                    break;
-                }
-            }
-        }
+        qCritical() << "Cannot open the file" << LogFile;
+        return;
     }
+    fileOut.setFileName(GZippedLogFile);
+    if (!fileOut.open(QIODevice::WriteOnly | QIODevice::Truncate))
+    {
+        qCritical() << "Cannot open the file" << GZippedLogFile;
+        return;
+    }
+    fp->close();
+
+    fileOut.write(StdFunc::compress(fileIn.readAll()));
+    fileIn.close();
+    fileOut.close();
+    fp->open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text);
 }

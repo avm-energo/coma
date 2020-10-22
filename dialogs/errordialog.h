@@ -1,10 +1,10 @@
 #ifndef ERRORDIALOG_H
 #define ERRORDIALOG_H
 
-#include "../widgets/errorprotocolwidget.h"
+#include "../gen/error.h"
 
 #include <QDialog>
-
+class ErrorProtocolWidget;
 class ErrorDialog : public QDialog
 {
     Q_OBJECT

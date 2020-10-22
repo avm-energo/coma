@@ -193,11 +193,11 @@ bool ETableModel::removeColumns(int position, int columns, const QModelIndex &in
     return true;
 }
 
-bool ETableModel::insertRows(int position, int rows, const QModelIndex &index)
+bool ETableModel::insertRows(int row, int count, const QModelIndex &index)
 {
     Q_UNUSED(index)
-    beginInsertRows(QModelIndex(), position, position + rows - 1);
-    for (int i = 0; i < rows; i++)
+    beginInsertRows(QModelIndex(), row, row + count - 1);
+    for (int i = 0; i < count; i++)
     {
         ETableItem *item = new ETableItem();
         //        for (int j = 0; j < hdr.size(); j++)
@@ -208,7 +208,7 @@ bool ETableModel::insertRows(int position, int rows, const QModelIndex &index)
             // qDebug("Row has been appended");
         }
         else
-            maindata.insert(position, item);
+            maindata.insert(row, item);
     }
     endInsertRows();
     return true;

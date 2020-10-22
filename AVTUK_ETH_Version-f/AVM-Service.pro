@@ -9,10 +9,11 @@ QMAKE_TARGET_COPYRIGHT = EvelSoft
 QMAKE_TARGET_PRODUCT = AVTUK-S
 RC_ICONS = ../coma.ico
 CONFIG += c++17
-VERSION = 1.1
+CONFIG -= console
+VERSION = 1.1.2
 
-QT       += core gui printsupport network serialport qml widgets testlib concurrent
-
+QT       += core gui printsupport network serialport widgets concurrent testlib
+QT.testlib.CONFIG -= console
 TARGET = AVM-Service
 DEFINES += PROGNAME='\\"AVM-Service\\"'
 DEFINES += PROGCAPTION='\\"AVM-Service\\040v\\040"$$VERSION"\\040\\"'
@@ -71,6 +72,9 @@ main.cpp \
 ../config/confkivdialog.cpp \
 ../config/confkxxdialog.cpp \
 ../dialogs/connectdialog.cpp \
+    ../gen/errorqueue.cpp \
+    ../gen/logger.cpp \
+    ../models/errorprotocolmodel.cpp \
 ../dialogs/errordialog.cpp \
 ../dialogs/infodialog.cpp \
 ../dialogs/journalsdialog.cpp \
@@ -161,6 +165,9 @@ coma.h \
 ../config/confkivdialog.h \
 ../config/confkxxdialog.h \
 ../dialogs/connectdialog.h \
+    ../gen/errorqueue.h \
+    ../gen/logger.h \
+    ../models/errorprotocolmodel.h \
 ../dialogs/errordialog.h \
 ../dialogs/infodialog.h \
 ../dialogs/journalsdialog.h \
@@ -232,33 +239,31 @@ win32 {
        message("Windows x64 build")
        ## Windows x64 (64bit) specific build here
        CONFIG(debug, debug|release) {
-       LIBS += -L$$PWD/../../libs/win64/debug/  -lliblzma -lhidapi
+       LIBS += -L$$PWD/../../libs/win64/debug/ -lhidapi
        DESTDIR = $${PWD}/../../build/win64/debug
        } else {
-       LIBS += -L$$PWD/../../libs/win64/release/ -lliblzma -lhidapi
+       LIBS += -L$$PWD/../../libs/win64/release/ -lhidapi
        DESTDIR = $${PWD}/../../build/win64/release
        LIBS_FILES += \
-       $$PWD/../../libs/win64/release/hidapi.dll \
-       $$PWD/../../libs/win64/release/liblzma.dll
+       $$PWD/../../libs/win64/release/hidapi.dll
        }
     } else {
         message("Windows x86 build")
         ## Windows x86 (32bit) specific build here
         CONFIG(debug, debug|release) {
-        LIBS += -L$$PWD/../../libs/win32/debug/  -lliblzma -lhidapi
+        LIBS += -L$$PWD/../../libs/win32/debug/ -lhidapi
         DESTDIR = $${PWD}/../../build/win32/debug
         } else {
-        LIBS += -L$$PWD/../../libs/win32/release/  -lliblzma -lhidapi
+        LIBS += -L$$PWD/../../libs/win32/release/ -lhidapi
         DESTDIR = $${PWD}/../../build/win32/release
         LIBS_FILES += \
-        $$PWD/../../libs/win32/release/hidapi.dll \
-        $$PWD/../../libs/win32/release/liblzma.dll
+        $$PWD/../../libs/win32/release/hidapi.dll
         }
     }
 }
 
 unix {
-LIBS += -llzma
+LIBS += -lhidapi-hidraw
 contains(QT_ARCH, x86_64) {
         message("Unix x64 build")
         ## Unix x64 (64bit) specific build here
@@ -298,5 +303,3 @@ defineTest(copyToDestDir) {
 copyToDestDir($$IMAGE_FILE, $$DESTDIR/images/)
 copyToDestDir($$ERROR_FILES, $$DESTDIR/errors/)
 copyToDestDir($$LIBS_FILES, $$DESTDIR/)
-
-unix: LIBS += -lhidapi-hidraw

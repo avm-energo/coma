@@ -24,7 +24,7 @@ public:
     int columnCount(const QModelIndex &index = QModelIndex()) const override;
     bool insertColumns(int position, int columns, const QModelIndex &index = QModelIndex()) override;
     bool removeColumns(int position, int columns, const QModelIndex &index = QModelIndex()) override;
-    bool insertRows(int position, int rows, const QModelIndex &index = QModelIndex()) override;
+    bool insertRows(int row, int count, const QModelIndex &index = QModelIndex()) override;
     bool removeRows(int position, int rows, const QModelIndex &index = QModelIndex()) override;
     int headerPosition(QVariant hdrtext, Qt::Orientation orientation = Qt::Horizontal,
         int role = Qt::DisplayRole) const; // получение индекса элемента в заголовке, который содержит текст hdrtext

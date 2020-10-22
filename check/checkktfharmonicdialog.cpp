@@ -107,7 +107,7 @@ void CheckKTFHarmonicDialog::USBUpdate()
     QTabWidget *CheckTW = this->findChild<QTabWidget *>("checktw0");
     if (CheckTW == nullptr)
     {
-        DBGMSG;
+        qDebug("CheckTW is null");
         return;
     }
 

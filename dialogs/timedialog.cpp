@@ -247,7 +247,6 @@ void TimeDialog::MBSUpdate()
     /*    if (Time.size() == 0)
         {
             ERMSG("Некорректное время");
-            DBGMSG;
             return;
         }
         if (Time.at(0).SigAdr == 4600)

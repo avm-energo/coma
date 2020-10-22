@@ -1,36 +1,21 @@
-#ifndef ERROR_H
-#define ERROR_H
+#pragma once
 
-#include "logclass.h"
-
-#include <QList>
+#include <QObject>
 #include <QString>
-
 // Макросы для выдачи сообщений
-#define ERMSG(a) Error::AddErrMsg(Error::ER_MSG, __FILE__, __LINE__, a)
-#define DBGMSG Error::AddErrMsg(Error::DBG_MSG, __FILE__, __LINE__, "")
-#define INFOMSG(a) Error::AddErrMsg(Error::INFO_MSG, __FILE__, __LINE__, a)
-#define WARNMSG(a) Error::AddErrMsg(Error::WARN_MSG, __FILE__, __LINE__, a)
-
-#define ER_BUFMAX 16
-#define LOGFILE "coma.log"
+#define ERMSG qCritical
+#define DBGMSG qDebug
+#define INFOMSG qInfo
+#define WARNMSG qWarning
 
 class Error : public QObject
 {
     Q_OBJECT
 public:
-    enum ErMsgType
-    {
-        ER_MSG,
-        WARN_MSG,
-        INFO_MSG,
-        DBG_MSG
-    };
-
     struct ErMsg
     {
         QString DateTime;
-        ErMsgType type;
+        QtMsgType type;
         QString file;
         int line;
         QString msg;
@@ -229,21 +214,6 @@ public:
         FILE_OPEN
     };
     Q_ENUM(Msg)
-
-    Error();
-    static void Init();
-    static void AddErrMsg(ErMsgType msgtype, QString file = nullptr, int line = 0, QString msg = "");
-    static void ShowErMsg(Error::Msg msg);
-    static int ErMsgPoolSize();
-    static ErMsg ErMsgAt(int idx);
-
-private:
-    static QStringList ErrMsgs;
-    static QList<ErMsg> ErMsgPool;
-    static LogClass LogFile;
-
-    void addmessage(QStringList &sl, QString mes);
-    void SetErMsg(int ernum);
 };
 
-#endif // ERROR_H
+QStringList &operator<<(QStringList &l, const Error::ErMsg &obj);

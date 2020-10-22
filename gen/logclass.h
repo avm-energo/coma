@@ -27,7 +27,7 @@ private:
     QFile *fp;
     QMutex *mtx;
 
-    void CheckAndGz();
+    void CheckAndCompress();
 };
 
 #endif // LOG_H

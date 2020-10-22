@@ -222,7 +222,7 @@ void AlarmClass::UpdateAlarm104()
     {
         QString str = "Exception: ";
         str.append(ex.what());
-        ERMSG(str);
+        ERMSG() << str;
     }
     catch (...)
     {

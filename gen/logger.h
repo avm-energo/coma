@@ -1,7 +1,5 @@
 #pragma once
 
-#include <QDateTime>
-#include <QFile>
 #include <QLoggingCategory>
 #include <QtCore>
 
@@ -14,7 +12,6 @@ class Logging
 {
 public:
     void static messageHandler(QtMsgType type, const QMessageLogContext &context, const QString &msg);
-    void static checkNGzip(QString &fileName);
 
 protected:
     Logging() = delete;

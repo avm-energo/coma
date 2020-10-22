@@ -9,8 +9,9 @@
 #include "../gen/timefunc.h"
 #include "../usb/commands.h"
 #include "../widgets/wd_func.h"
-
+#ifdef MODELDEBUG
 #include <QAbstractItemModelTester>
+#endif
 #include <QDateTime>
 #include <QDebug>
 #include <QHeaderView>
@@ -155,7 +156,7 @@ QWidget *JournalDialog::JourTab(int jourtype)
         mdl = ProxyMeasModel;
         break;
     default:
-        DBGMSG;
+        qDebug("Default case");
         return w;
         break;
     }
@@ -304,14 +305,14 @@ int JournalDialog::GetJourNum(const QString &objname)
 
     if (sl.size() < 2)
     {
-        DBGMSG;
+        qDebug() << "sl.size() < 2";
         return INT_MAX;
     }
     int jourtype = sl.at(1).toInt(&ok);
     QString jourprefix = sl.at(0);
     if (((jourprefix != "gj") && (jourprefix != "ej") && (jourprefix != "sj") && (jourprefix != "mj")) || !ok)
     {
-        DBGMSG;
+        qDebug("Bad jourprefix");
         return INT_MAX;
     }
     return jourtype;
@@ -361,7 +362,6 @@ void JournalDialog::StartReadJourFile()
 void JournalDialog::Done(QString msg, int)
 {
     Q_UNUSED(msg)
-    qDebug() << __PRETTY_FUNCTION__;
     // new QAbstractItemModelTester(ProxyWorkModel, QAbstractItemModelTester::FailureReportingMode::Warning, this);
 
     disconnect(JourFuncs, &Journals::resendMaxResult, this->progress, &QProgressDialog::setMaximum);
@@ -373,7 +373,7 @@ void JournalDialog::Error(QString msg)
 {
     disconnect(JourFuncs, &Journals::resendMaxResult, this->progress, &QProgressDialog::setMaximum);
     disconnect(JourFuncs, &Journals::resendResult, this->progress, &QProgressDialog::setValue);
-    ERMSG(msg);
+    qCritical() << msg;
     QMessageBox::critical(this, "Ошибка", msg);
 }
 
