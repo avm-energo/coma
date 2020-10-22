@@ -144,10 +144,10 @@ void Journals::FillEventsTable(QByteArray &ba)
             vl << TimeFunc::UnixTime64ToInvStringFractional(event.Time);
             memcpy(&N, &event.EvNum, sizeof(event.EvNum));
             N = (N & 0x00FFFFFF) - mineventid;
-            if ((N < sl.size()) && (N > 0))
+            Q_ASSERT((N <= sl.size()) && (N > 0));
+            if ((N <= sl.size()) && (N > 0))
             {
-                --N;
-                vl << sl.at(N);
+                vl << sl.at(--N);
             }
             else
                 vl << "Некорректный номер события";
