@@ -63,37 +63,26 @@ struct GeneralResponseStruct
 
 namespace Queries
 {
-enum Commands104
+enum Commands
 {
-    CM104_INTERROGATETIMEGR15,
+    MBS_READHOLDINGREGISTERS,
+    MBS_READINPUTREGISTER,
+    MBS_WRITEMULTIPLEREGISTERS,
+    CM104_REQGROUP,
     CM104_COM51WRITETIME,
     CM104_COM45,
     CM104_COM50,
-    CM104_CORREADREQUEST,
+    //    CM104_CORREADREQUEST,
     CM104_SELECTFILE,
     CM104_FILEREADY
 };
-enum CommandsMBS
-{
-    MBS_READHOLDINGREGISTERS = 0x03,
-    MBS_READINPUTREGISTER = 0x04,
-    MBS_WRITEMULTIPLEREGISTERS = 0x10
-};
 
-struct Command104
+struct Command
 {
-    Commands104 cmd;
+    Commands cmd;
     quint32 uintarg;
     float flarg;
     QByteArray ba;
-};
-struct CommandMBS
-{
-    CommandsMBS command;
-    quint16 address;
-    quint16 quantity;
-    quint8 sizeBytes;
-    QByteArray data;
 };
 }
 
@@ -125,6 +114,5 @@ Q_DECLARE_METATYPE(DataTypes::SinglePointWithTime)
 Q_DECLARE_METATYPE(DataTypes::File)
 Q_DECLARE_METATYPE(DataTypes::ConfParameter)
 Q_DECLARE_METATYPE(DataTypes::GeneralResponseStruct)
-Q_DECLARE_METATYPE(Queries::Command104)
-Q_DECLARE_METATYPE(Queries::CommandMBS)
+Q_DECLARE_METATYPE(Queries::Command)
 #endif // DATATYPES_H

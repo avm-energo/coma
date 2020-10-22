@@ -1,4 +1,5 @@
 #include "iec104thread.h"
+
 #include "../gen/datamanager.h"
 
 #include <QCoreApplication>
@@ -29,9 +30,14 @@ IEC104Thread::IEC104Thread(LogClass *log, QObject *parent) : QObject(parent)
     NoAnswer = 0;
 }
 
-IEC104Thread::~IEC104Thread() { }
+IEC104Thread::~IEC104Thread()
+{
+}
 
-void IEC104Thread::SetBaseAdr(quint16 adr) { BaseAdr = adr; }
+void IEC104Thread::SetBaseAdr(quint16 adr)
+{
+    BaseAdr = adr;
+}
 
 void IEC104Thread::Run()
 {
@@ -59,18 +65,18 @@ void IEC104Thread::Run()
         }
         if (!FileSending)
         {
-            Queries::Command104 inp;
-            if (DataManager::deQueue104(inp) == Error::Msg::NoError)
+            Queries::Command inp;
+            if (DataManager::deQueue(inp) == Error::Msg::NoError)
             {
                 switch (inp.cmd)
                 {
-                case Queries::Commands104::CM104_COM45:
+                case Queries::Commands::CM104_COM45:
                     Com45(inp.uintarg);
                     break;
-                case Queries::Commands104::CM104_COM50:
+                case Queries::Commands::CM104_COM50:
                     Com50(inp.uintarg, inp.flarg);
                     break;
-                case Queries::Commands104::CM104_FILEREADY:
+                case Queries::Commands::CM104_FILEREADY:
                 {
                     //                    S2ConfigType *ptr = reinterpret_cast<S2ConfigType
                     //                    *>(inp.args.ptrarg); FileReady(ptr);
@@ -78,17 +84,17 @@ void IEC104Thread::Run()
                     FileReady();
                     break;
                 }
-                case Queries::Commands104::CM104_SELECTFILE:
+                case Queries::Commands::CM104_SELECTFILE:
                     SelectFile(inp.uintarg);
                     break;
-                case Queries::Commands104::CM104_COM51WRITETIME:
+                case Queries::Commands::CM104_COM51WRITETIME:
                     Com51WriteTime(inp.uintarg);
                     break;
-                case Queries::Commands104::CM104_CORREADREQUEST:
+                case Queries::Commands::CM104_CORREADREQUEST:
                     CorReadRequest();
                     break;
-                case Queries::Commands104::CM104_INTERROGATETIMEGR15:
-                    InterrogateTimeGr15();
+                case Queries::Commands::CM104_REQGROUP:
+                    reqGroup(inp.uintarg);
                     break;
                 }
             }
@@ -681,16 +687,6 @@ void IEC104Thread::SendTestCon()
     Send(0, GI); // ASDU = QByteArray()
 }
 
-void IEC104Thread::CorReadRequest()
-{
-    Log->info("CorReadRequest()");
-    ASDU GCor = ASDU6Prefix(C_IC_NA_1, 0);
-    GCor.append('\x16');
-    APCI GI = CreateGI(0x0e);
-    Send(1, GI, GCor); // ASDU = QByteArray()
-    AckVR = V_R;
-}
-
 void IEC104Thread::SendTestAct()
 {
     if (NoAnswer)
@@ -870,12 +866,23 @@ void IEC104Thread::Com50(quint32 adr, float param)
     Send(1, GI, cmd); // ASDU = QByteArray()
 }
 
-void IEC104Thread::InterrogateTimeGr15()
+void IEC104Thread::reqGroup(int groupNum)
 {
     ASDU GTime = ASDU6Prefix(C_IC_NA_1, 0);
-    GTime.append(0x23);
+    //    GTime.append(0x23);
+    GTime.append(groupNum + 20); // group 0 (GI) -> 20, group 1 -> 21 etc
     APCI GI = CreateGI(0x0e);
     Send(1, GI, GTime); // ASDU = QByteArray()
+    AckVR = V_R;
+}
+
+void IEC104Thread::CorReadRequest()
+{
+    Log->info("CorReadRequest()");
+    ASDU GCor = ASDU6Prefix(C_IC_NA_1, 0);
+    GCor.append('\x16');
+    APCI GI = CreateGI(0x0e);
+    Send(1, GI, GCor); // ASDU = QByteArray()
     AckVR = V_R;
 }
 

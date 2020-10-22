@@ -16,9 +16,9 @@
 #define SIGNALGROUPSNUM 7
 #define MAINSLEEPCYCLETIME 50
 
-//#define READHOLDINGREGISTERS 0x03
-//#define READINPUTREGISTER 0x04
-//#define WRITEMULTIPLEREGISTERS 0x10
+#define READHOLDINGREGISTERS 0x03
+#define READINPUTREGISTER 0x04
+#define WRITEMULTIPLEREGISTERS 0x10
 
 //#define INITREG 4000
 //#define TIMEREG 4600
@@ -39,15 +39,15 @@ public:
         SECONDBYTEQ = 4
     };
 
-    struct InOutStruct
-    {
-        int Command;
-        QByteArray Ba;
-        int TaskNum;
-        Error::Msg Res;
-        qint64 ReadSize;
-        bool Checked;
-    };
+    //    struct InOutStruct
+    //    {
+    //        int Command;
+    //        QByteArray Ba;
+    //        int TaskNum;
+    //        Error::Msg Res;
+    //        qint64 ReadSize;
+    //        bool Checked;
+    //    };
 
     typedef struct
     {
@@ -61,11 +61,11 @@ public:
         int SigAdr;
     } BSISignalStruct;
 
-    struct Information
-    {
-        quint16 adr;
-        int size;
-    };
+    //    struct Information
+    //    {
+    //        quint16 adr;
+    //        int size;
+    //    };
 
     //    struct ComInfo
     //    {
@@ -91,7 +91,7 @@ public:
     int CheckIndex, CheckHarmIndex, CheckVibrIndex, CorIndex, TimeIndex;
 
 public slots:
-    Error::Msg SendAndGetResult(Queries::CommandMBS &request, ModBus::InOutStruct &outp);
+    //    Error::Msg SendAndGetResult(Queries::CommandMBS &request, ModBus::InOutStruct &outp);
     void ModWriteCor(ModBus::Information info, float *); //, int*);
     void ModReadCor(ModBus::Information info);
     void ReadTime();
@@ -124,12 +124,12 @@ private:
     bool TimePollEnabled, MainPollEnabled, AboutToFinish;
     QByteArray SignalGroups[SIGNALGROUPSNUM];
     int _taskCounter;
-    QQueue<InOutStruct> InQueue;
-    QList<InOutStruct> OutList;
+    //    QQueue<InOutStruct> InQueue;
+    //    QList<InOutStruct> OutList;
     LogClass *Log;
 
-    Error::Msg SendAndGet(InOutStruct &inp, InOutStruct &outp);
-    bool GetResultFromOutQueue(int index, InOutStruct &outp);
+    //    Error::Msg SendAndGet(InOutStruct &inp, InOutStruct &outp);
+    //    bool GetResultFromOutQueue(int index, InOutStruct &outp);
     Error::Msg GetSignalsFromByteArray(
         QByteArray &bain, int startadr, QList<BSISignalStruct> &BSIsig, unsigned int &size);
     Error::Msg GetFloatSignalsFromByteArray(QByteArray &bain, int startadr, QList<SignalStruct> &Sig, int &size);
@@ -150,7 +150,7 @@ public:
     ~ModbusThread();
 
     // ConnectionStates State();
-    void Init(QQueue<ModBus::InOutStruct> *inq, QList<ModBus::InOutStruct> *outl);
+    //    void Init(QQueue<ModBus::InOutStruct> *inq, QList<ModBus::InOutStruct> *outl);
 
 public slots:
     void Run();
@@ -163,11 +163,11 @@ signals:
     void Write(QByteArray);
 
 private:
-    QQueue<ModBus::InOutStruct> *InQueue;
-    QList<ModBus::InOutStruct> *OutList;
+    //    QQueue<ModBus::InOutStruct> *InQueue;
+    //    QList<ModBus::InOutStruct> *OutList;
     bool Busy; // port is busy with write/read operation
     bool AboutToFinish;
-    ModBus::InOutStruct Inp, Outp;
+    //    ModBus::InOutStruct Inp, Outp;
     // ConnectionStates _state;
     LogClass *Log;
 
@@ -203,10 +203,10 @@ private:
         0x8B, 0x8A, 0x4A, 0x4E, 0x8E, 0x8F, 0x4F, 0x8D, 0x4D, 0x4C, 0x8C, 0x44, 0x84, 0x85, 0x45, 0x87, 0x47, 0x46,
         0x86, 0x82, 0x42, 0x43, 0x83, 0x41, 0x81, 0x80, 0x40 };
 
-    void SendAndGetResult(ModBus::InOutStruct &inp);
+    //    void SendAndGetResult(ModBus::InOutStruct &inp);
     void Send();
     quint16 CalcCRC(QByteArray &Dat);
-    void AddToOutQueue(ModBus::InOutStruct &outp);
+    //    void AddToOutQueue(ModBus::InOutStruct &outp);
 };
 
 #endif

@@ -25,7 +25,9 @@ TimeDialog::TimeDialog(QWidget *parent) : UDialog(parent)
     SetupUI();
 }
 
-TimeDialog::~TimeDialog() { }
+TimeDialog::~TimeDialog()
+{
+}
 
 void TimeDialog::SetupUI()
 {
@@ -200,7 +202,8 @@ void TimeDialog::update()
 {
     if (m_updatesEnabled)
     {
-        switch (Board::GetInstance().interfaceType())
+        // send command to get time
+        gfhjfhgjf switch (Board::GetInstance().interfaceType())
         {
         case Board::InterfaceType::USB:
             USBUpdate();
@@ -215,7 +218,6 @@ void TimeDialog::update()
             break;
         }
     }
-    USBUpdate();
 }
 
 void TimeDialog::SetTime(quint32 unixtimestamp)
@@ -254,6 +256,12 @@ void TimeDialog::MBSUpdate()
         } */
 }
 
-void TimeDialog::ErrorRead() { WDFunc::SetLEData(this, "systime2", "Ошибка чтения"); }
+void TimeDialog::ErrorRead()
+{
+    WDFunc::SetLEData(this, "systime2", "Ошибка чтения");
+}
 
-void TimeDialog::TimeWritten() { QMessageBox::information(this, "Успешно", "Время записано успешно"); }
+void TimeDialog::TimeWritten()
+{
+    QMessageBox::information(this, "Успешно", "Время записано успешно");
+}

@@ -20,9 +20,14 @@ IEC104::IEC104(QObject *parent) : QObject(parent)
     Log->info("=== Log started ===");
 }
 
-IEC104::~IEC104() { }
+IEC104::~IEC104()
+{
+}
 
-bool IEC104::Working() { return (EthThreadWorking | ParseThreadWorking); }
+bool IEC104::Working()
+{
+    return (EthThreadWorking | ParseThreadWorking);
+}
 
 void IEC104::Connect(Settings &st)
 {
@@ -74,7 +79,7 @@ void IEC104::Connect(Settings &st)
 
     //    connect(m_thread104, &IEC104Thread::SetDataSize, this, &IEC104::SetDataSize);
     //    connect(m_thread104, &IEC104Thread::SetDataCount, this, &IEC104::SetDataCount);
-    connect(m_thread104, &IEC104Thread::SendMessagefromParse, this, &IEC104::SendConfMessageOk);
+    //    connect(m_thread104, &IEC104Thread::SendMessagefromParse, this, &IEC104::SendConfMessageOk);
 
     m_thread104->SetBaseAdr(st.baseadr);
     m_thread104->incLS = 0;
@@ -83,6 +88,12 @@ void IEC104::Connect(Settings &st)
     thr->start();
     thr2->start();
 }
+
+// void IEC104::reqStartup()
+//{
+//    Queries::Command inp { Queries::Commands::CM104_CORREADREQUEST, 0, 0, {} };
+//    DataManager::addToInQueue(inp);
+//}
 
 // void IEC104::CorReadRequest()
 //{
@@ -97,7 +108,7 @@ void IEC104::Connect(Settings &st)
 
 void IEC104::SelectFile(char numFile)
 {
-    Queries::Command104 inp { Queries::Commands104::CM104_SELECTFILE, static_cast<quint32>(numFile), 0, {} };
+    Queries::Command inp { Queries::Commands::CM104_SELECTFILE, static_cast<quint32>(numFile), 0, {} };
     DataManager::addToInQueue(inp);
     //    IEC104Thread::InputStruct inp;
     //    inp.cmd = IEC104Thread::CM104_SELECTFILE;
@@ -111,7 +122,7 @@ void IEC104::FileReady(S2ConfigType *s2config)
 {
     QByteArray ba;
     S2::StoreDataMem(&ba.data()[0], s2config, Files::Config);
-    Queries::Command104 inp { Queries::Commands104::CM104_FILEREADY, Files::Config, 0, ba };
+    Queries::Command inp { Queries::Commands::CM104_FILEREADY, Files::Config, 0, ba };
     DataManager::addToInQueue(inp);
     //    IEC104Thread::InputStruct inp;
     //    inp.cmd = IEC104Thread::CM104_FILEREADY;
@@ -123,7 +134,7 @@ void IEC104::FileReady(S2ConfigType *s2config)
 
 void IEC104::Com45(quint32 com)
 {
-    Queries::Command104 inp { Queries::Commands104::CM104_COM45, com, 0, {} };
+    Queries::Command inp { Queries::Commands::CM104_COM45, com, 0, {} };
     DataManager::addToInQueue(inp);
     //    IEC104Thread::InputStruct inp;
     //    inp.cmd = IEC104Thread::CM104_COM45;
@@ -135,7 +146,7 @@ void IEC104::Com45(quint32 com)
 
 void IEC104::Com50(quint32 adr, float param)
 {
-    Queries::Command104 inp { Queries::Commands104::CM104_COM50, adr, param, {} };
+    Queries::Command inp { Queries::Commands::CM104_COM50, adr, param, {} };
     DataManager::addToInQueue(inp);
     //    IEC104Thread::InputStruct inp;
     //    inp.cmd = IEC104Thread::CM104_COM50;
@@ -146,9 +157,9 @@ void IEC104::Com50(quint32 adr, float param)
     //    IEC104Thread::s_ParseWriteMutex.unlock();
 }
 
-void IEC104::InterrogateTimeGr15()
+void IEC104::reqGroup(quint32 groupNum)
 {
-    Queries::Command104 inp { Queries::Commands104::CM104_INTERROGATETIMEGR15, 0, 0, {} };
+    Queries::Command inp { Queries::Commands::CM104_REQGROUP, groupNum, 0, {} };
     DataManager::addToInQueue(inp);
     //    IEC104Thread::InputStruct inp;
     //    inp.cmd = IEC104Thread::CM104_INTERROGATETIMEGR15;
@@ -159,7 +170,7 @@ void IEC104::InterrogateTimeGr15()
 
 void IEC104::com51WriteTime(uint time)
 {
-    Queries::Command104 inp { Queries::Commands104::CM104_COM51WRITETIME, time, 0, {} };
+    Queries::Command inp { Queries::Commands::CM104_COM51WRITETIME, time, 0, {} };
     DataManager::addToInQueue(inp);
     //    IEC104Thread::InputStruct inp;
     //    inp.cmd = IEC104Thread::CM104_COM51WRITETIME;
@@ -169,7 +180,10 @@ void IEC104::com51WriteTime(uint time)
     //    IEC104Thread::s_ParseWriteMutex.unlock();
 }
 
-void IEC104::EthThreadStarted() { EthThreadWorking = true; }
+void IEC104::EthThreadStarted()
+{
+    EthThreadWorking = true;
+}
 
 void IEC104::EthThreadFinished()
 {
@@ -178,7 +192,10 @@ void IEC104::EthThreadFinished()
         emit Finished();
 }
 
-void IEC104::ParseThreadStarted() { ParseThreadWorking = true; }
+void IEC104::ParseThreadStarted()
+{
+    ParseThreadWorking = true;
+}
 
 void IEC104::ParseThreadFinished()
 {

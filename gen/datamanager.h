@@ -57,8 +57,8 @@ public:
         s_inputQueue.enqueue(var);
         s_inQueueMutex.unlock();
     }
-    static Error::Msg deQueue104(Queries::Command104 &cmd);
-    static Error::Msg deQueueMBS(Queries::CommandMBS &cmd);
+    static Error::Msg deQueue(Queries::Command &cmd);
+    //    static Error::Msg deQueueMBS(Queries::CommandMBS &cmd);
     static QQueue<QVariant> s_inputQueue;
     static QList<SignalsStruct> s_outputList;
     static QMutex s_outListMutex;

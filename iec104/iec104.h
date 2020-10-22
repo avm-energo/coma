@@ -109,14 +109,15 @@ public:
     //        QList<DataManager::SignalsStruct> &outlist);
 
 public slots:
-    void SelectFile(char);
+    static void SelectFile(char);
     void StopAllThreads();
-    void Com45(quint32 com);
-    void Com50(quint32 adr, float param);
+    static void Com45(quint32 com);
+    static void Com50(quint32 adr, float param);
     //    void CorReadRequest();
-    void FileReady(S2ConfigType *s2config);
-    void InterrogateTimeGr15();
-    void com51WriteTime(uint time);
+    //    static void reqStartup();
+    static void FileReady(S2ConfigType *s2config);
+    static void reqGroup(quint32 groupNum);
+    static void com51WriteTime(uint time);
 
 signals:
     void StopAll();

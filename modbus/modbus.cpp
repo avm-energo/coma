@@ -35,7 +35,9 @@ ModBus::ModBus(QObject *parent) : QObject(parent)
     Log->info("=== Log started ===");
 }
 
-ModBus::~ModBus() { }
+ModBus::~ModBus()
+{
+}
 
 Error::Msg ModBus::Connect(SerialPort::Settings &settings)
 {
@@ -43,7 +45,7 @@ Error::Msg ModBus::Connect(SerialPort::Settings &settings)
     Settings = settings;
     SerialPort *port = new SerialPort();
     ModbusThread *cthr = new ModbusThread();
-    cthr->Init(&InQueue, &OutList);
+    //    cthr->Init(&InQueue, &OutList);
     QThread *thr = new QThread;
     cthr->moveToThread(thr);
     connect(thr, &QThread::started, cthr, &ModbusThread::Run);
@@ -60,7 +62,7 @@ Error::Msg ModBus::Connect(SerialPort::Settings &settings)
         return Error::Msg::GeneralError;
     thr->start();
     StdFunc::Wait(1000);
-    StartPolling();
+    //    StartPolling();
     AboutToFinish = false;
     Log->info("Polling started, thread initiated");
     return Error::Msg::NoError;
@@ -71,7 +73,7 @@ Error::Msg ModBus::SendAndGetResult(Queries::CommandMBS &request, InOutStruct &o
     QByteArray bytes {};
 
     bytes.append(static_cast<char>(Settings.Address)); // адрес устройства
-    bytes.append(request.command); //аналоговый выход
+    bytes.append(request.command);                     //аналоговый выход
     bytes.append(static_cast<char>((request.address & 0xFF00) >> 8));
     bytes.append(static_cast<char>(request.address & 0x00FF));
     bytes.append(static_cast<char>((request.quantity & 0xFF00) >> 8));
@@ -84,12 +86,12 @@ Error::Msg ModBus::SendAndGetResult(Queries::CommandMBS &request, InOutStruct &o
     Log->info("Send bytes: " + bytes.toHex());
 
     InOutStruct inp {
-        request.command, // Command
-        bytes, // Ba
-        0, // TaskNum
+        request.command,     // Command
+        bytes,               // Ba
+        0,                   // TaskNum
         Error::Msg::NoError, // Res
-        0, // ReadSize
-        0 // Checked
+        0,                   // ReadSize
+        0                    // Checked
     };
     if (request.command == Queries::CommandsMBS::MBS_WRITEMULTIPLEREGISTERS)
         inp.ReadSize = 8;
@@ -227,10 +229,10 @@ void ModBus::BSIrequest()
 {
     Queries::CommandMBS request {
         Queries::CommandsMBS::MBS_READINPUTREGISTER, // Command
-        BSIREG, // Address
-        30, // Quantity
-        60, // SizeBytes
-        {} // Data
+        BSIREG,                                      // Address
+        30,                                          // Quantity
+        60,                                          // SizeBytes
+        {}                                           // Data
     };
     InOutStruct outp {};
 
@@ -255,10 +257,10 @@ void ModBus::ModWriteCor(ModBus::Information info, float *data) //, int* size)
 {
     Queries::CommandMBS request {
         Queries::CommandsMBS::MBS_WRITEMULTIPLEREGISTERS, // Command
-        info.adr, // Address
-        0, // Quantity
-        0, // SizeBytes
-        {} // Data
+        info.adr,                                         // Address
+        0,                                                // Quantity
+        0,                                                // SizeBytes
+        {}                                                // Data
     };
     InOutStruct outp {};
 
@@ -293,10 +295,10 @@ void ModBus::ModReadCor(ModBus::Information info)
 {
     Queries::CommandMBS request {
         Queries::CommandsMBS::MBS_READINPUTREGISTER, // Command
-        info.adr, // Address
-        static_cast<quint8>(info.size * 2), // Quantity
-        static_cast<quint8>(info.size * 4), // SizeBytes
-        {} // Data
+        info.adr,                                    // Address
+        static_cast<quint8>(info.size * 2),          // Quantity
+        static_cast<quint8>(info.size * 4),          // SizeBytes
+        {}                                           // Data
     };
     InOutStruct outp {};
 
@@ -314,10 +316,10 @@ void ModBus::ReadTime()
 {
     Queries::CommandMBS request {
         Queries::CommandsMBS::MBS_READHOLDINGREGISTERS, // Command
-        MBS_TIMEREG, // Address
-        2, // Quantity
-        4, // SizeBytes
-        {} // Data
+        MBS_TIMEREG,                                    // Address
+        2,                                              // Quantity
+        4,                                              // SizeBytes
+        {}                                              // Data
     };
     InOutStruct outp {};
 
@@ -405,10 +407,10 @@ void ModBus::WriteTime(uint time)
     timeArray.append(static_cast<char>(time >> 16));
     Queries::CommandMBS request {
         Queries::CommandsMBS::MBS_WRITEMULTIPLEREGISTERS, // Command
-        MBS_TIMEREG, // Address
-        2, // Quantity
-        4, // SizeBytes
-        timeArray // Data
+        MBS_TIMEREG,                                      // Address
+        2,                                                // Quantity
+        4,                                                // SizeBytes
+        timeArray                                         // Data
     };
     Error::Msg res = SendAndGetResult(request, outp);
     if (res != Error::Msg::NoError)
@@ -453,9 +455,15 @@ void ModBus::Tabs(int index)
     //    }
 }
 
-void ModBus::StartPolling() { PollingTimer->start(); }
+void ModBus::StartPolling()
+{
+    PollingTimer->start();
+}
 
-void ModBus::StopPolling() { PollingTimer->stop(); }
+void ModBus::StopPolling()
+{
+    PollingTimer->stop();
+}
 
 ModbusThread::ModbusThread(QObject *parent) : QObject(parent)
 {
@@ -465,13 +473,15 @@ ModbusThread::ModbusThread(QObject *parent) : QObject(parent)
     AboutToFinish = false;
 }
 
-ModbusThread::~ModbusThread() { }
-
-void ModbusThread::Init(QQueue<ModBus::InOutStruct> *inq, QList<ModBus::InOutStruct> *outl)
+ModbusThread::~ModbusThread()
 {
-    InQueue = inq;
-    OutList = outl;
 }
+
+// void ModbusThread::Init(QQueue<ModBus::InOutStruct> *inq, QList<ModBus::InOutStruct> *outl)
+//{
+//    InQueue = inq;
+//    OutList = outl;
+//}
 
 void ModbusThread::Run()
 {
@@ -480,14 +490,21 @@ void ModbusThread::Run()
         RunMutex.lock();
         RunWC.wait(&RunMutex, 20);
         RunMutex.unlock();
-        while (!InQueue->isEmpty())
+        Queries::Command inp;
+        if (DataManager::deQueue(inp) == Error::Msg::NoError)
+        //        while (!InQueue->isEmpty())
+        //        {
+        //            InMutex.lock();
+        //            //            ModBus::InOutStruct inp = InQueue->dequeue();
+        //            Queries::CommandMBS inp;
+        //            if (DataManager::deQueue(inp) == Error::Msg::NoError)
+        //                InMutex.unlock();
+        //            SendAndGetResult(inp);
         {
-            InMutex.lock();
-            //            ModBus::InOutStruct inp = InQueue->dequeue();
-            Queries::CommandMBS inp;
-            if (DataManager::deQueue104(inp) == Error::Msg::NoError)
-                InMutex.unlock();
-            SendAndGetResult(inp);
+            switch (inp.cmd)
+            {
+            case Queries::CommandsMBS::MBS_READINPUTREGISTER:
+            }
         }
         QCoreApplication::processEvents();
     }
@@ -582,7 +599,10 @@ void ModbusThread::ParseReply(QByteArray ba)
     }
 }
 
-void ModbusThread::FinishThread() { AboutToFinish = true; }
+void ModbusThread::FinishThread()
+{
+    AboutToFinish = true;
+}
 
 quint16 ModbusThread::CalcCRC(QByteArray &ba)
 {
