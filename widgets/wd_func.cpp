@@ -191,23 +191,23 @@ QString WDFunc::CBData(QWidget *w, const QString &cbname)
     return cb->currentText();
 }
 
-QMetaObject::Connection WDFunc::CBConnect(
-    QWidget *w, const QString &cbname, int cbconnecttype, const QObject *receiver, const char *method)
-{
-    EComboBox *cb = w->findChild<EComboBox *>(cbname);
-    if (cb == nullptr)
-        return QMetaObject::Connection();
-    switch (cbconnecttype)
-    {
-    case CT_INDEXCHANGED:
-        return QObject::connect(cb, SIGNAL(currentIndexChanged(int)), receiver, method);
-    case CT_TEXTCHANGED:
-        return QObject::connect(cb, SIGNAL(currentTextChanged(const QString &)), receiver, method);
-    default:
-        break;
-    }
-    return QMetaObject::Connection();
-}
+// QMetaObject::Connection WDFunc::CBConnect(
+//    QWidget *w, const QString &cbname, int cbconnecttype, const QObject *receiver, const char *method)
+//{
+//    EComboBox *cb = w->findChild<EComboBox *>(cbname);
+//    if (cb == nullptr)
+//        return QMetaObject::Connection();
+//    switch (cbconnecttype)
+//    {
+//    case CT_INDEXCHANGED:
+//        return QObject::connect(cb, SIGNAL(currentIndexChanged(int)), receiver, method);
+//    case CT_TEXTCHANGED:
+//        return QObject::connect(cb, SIGNAL(currentTextChanged(const QString &)), receiver, method);
+//    default:
+//        break;
+//    }
+//    return QMetaObject::Connection();
+//}
 
 bool WDFunc::SetCBData(QWidget *w, const QString &cbname, const QString &cbvalue)
 {
@@ -743,14 +743,14 @@ QPushButton *WDFunc::NewPB(QWidget *parent, const QString &pbname, const QString
     return pb;
 }
 
-QMetaObject::Connection WDFunc::PBConnect(
-    QWidget *w, const QString &pbname, const QObject *receiver, const char *method)
-{
-    QPushButton *pb = w->findChild<QPushButton *>(pbname);
-    if (pb == nullptr)
-        return QMetaObject::Connection();
-    return QObject::connect(pb, SIGNAL(clicked(bool)), receiver, method);
-}
+// QMetaObject::Connection WDFunc::PBConnect(
+//    QWidget *w, const QString &pbname, const QObject *receiver, const char *method)
+//{
+//    QPushButton *pb = w->findChild<QPushButton *>(pbname);
+//    if (pb == nullptr)
+//        return QMetaObject::Connection();
+//    return QObject::connect(pb, SIGNAL(clicked(bool)), receiver, method);
+//}
 
 ETableView *WDFunc::NewTV(QWidget *w, const QString &tvname, QAbstractItemModel *model)
 {
@@ -805,27 +805,28 @@ void WDFunc::SetQTVModel(QWidget *w, const QString &tvname, QAbstractItemModel *
     delete m;
 }
 
-void WDFunc::TVConnect(QWidget *w, const QString &tvname, int signaltype, const QObject *receiver, const char *method)
-{
-    ETableView *tv = w->findChild<ETableView *>(tvname);
-    if (tv == nullptr)
-        return;
-    switch (signaltype)
-    {
-    case CT_DCLICKED:
-        QObject::connect(tv, SIGNAL(doubleClicked(QModelIndex)), receiver, method);
-        break;
-    case CT_CLICKED:
-        QObject::connect(tv, SIGNAL(clicked(QModelIndex)), receiver, method);
-        break;
-    case CT_CONTEXT:
-        tv->setContextMenuPolicy(Qt::CustomContextMenu);
-        QObject::connect(tv, SIGNAL(customContextMenuRequested(QPoint)), receiver, method);
-        break;
-    default:
-        break;
-    }
-}
+// void WDFunc::TVConnect(QWidget *w, const QString &tvname, int signaltype, const QObject *receiver, const char
+// *method)
+//{
+//    ETableView *tv = w->findChild<ETableView *>(tvname);
+//    if (tv == nullptr)
+//        return;
+//    switch (signaltype)
+//    {
+//    case CT_DCLICKED:
+//        QObject::connect(tv, SIGNAL(doubleClicked(QModelIndex)), receiver, method);
+//        break;
+//    case CT_CLICKED:
+//        QObject::connect(tv, SIGNAL(clicked(QModelIndex)), receiver, method);
+//        break;
+//    case CT_CONTEXT:
+//        tv->setContextMenuPolicy(Qt::CustomContextMenu);
+//        QObject::connect(tv, SIGNAL(customContextMenuRequested(QPoint)), receiver, method);
+//        break;
+//    default:
+//        break;
+//    }
+//}
 
 void WDFunc::SortTV(QWidget *w, const QString &tvname, int column, Qt::SortOrder sortorder)
 {
