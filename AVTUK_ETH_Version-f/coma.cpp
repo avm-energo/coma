@@ -33,6 +33,7 @@
 #include "../config/confdialogktf.h"
 #include "../dialogs/keypressdialog.h"
 #include "../gen/logger.h"
+#include "../widgets/splashscreen.h"
 #include "../widgets/wd_func.h"
 #ifdef AVM_DEBUG
 #include "../tune/tunedialogKIV.h"
@@ -72,9 +73,8 @@ void registerForDeviceNotification(Coma *ptr)
 
 Coma::Coma(QWidget *parent) : QMainWindow(parent)
 {
-    QSplashScreen *splash = new QSplashScreen(QPixmap("images/2.1.x.png"));
+    SplashScreen *splash = new SplashScreen(QPixmap("images/surgery.png"));
     splash->show();
-    splash->showMessage("Подготовка окружения...", Qt::AlignRight, Qt::white);
     // http://stackoverflow.com/questions/2241808/checking-if-a-folder-exists-and-creating-folders-in-qt-c
     QDir dir(StdFunc::GetHomeDir());
     if (!dir.exists())
@@ -120,7 +120,6 @@ Coma::Coma(QWidget *parent) : QMainWindow(parent)
 
     NewTimers();
     LoadSettings();
-
     splash->finish(this);
     splash->deleteLater();
     setStatusBar(WDFunc::NewSB(this));

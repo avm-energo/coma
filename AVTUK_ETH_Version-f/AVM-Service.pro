@@ -4,8 +4,8 @@
 #
 #-------------------------------------------------
 
-QMAKE_TARGET_COMPANY = EvelSoft
-QMAKE_TARGET_COPYRIGHT = EvelSoft
+QMAKE_TARGET_COMPANY = AVM-Energo
+QMAKE_TARGET_COPYRIGHT = AVM-Energo
 QMAKE_TARGET_PRODUCT = AVTUK-S
 RC_ICONS = ../coma.ico
 CONFIG += c++17
@@ -19,7 +19,7 @@ DEFINES += PROGNAME='\\"AVM-Service\\"'
 DEFINES += PROGCAPTION='\\"AVM-Service\\040v\\040"$$VERSION"\\040\\"'
 DEFINES += COMAVERSION='\\"$$VERSION\\"'
 DEFINES += DEVICETYPE=1 # 1 - module, 2 - pribor, for diagnostic messages
-DEFINES += SOFTDEVELOPER='\\"EvelSoft\\"'
+DEFINES += SOFTDEVELOPER='\\"AVM-Energo\\"'
 DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000
 
 # DEFINES += DEBUG
@@ -71,6 +71,7 @@ SOURCES += \
     ../usb/eprotocom.cpp \
     ../usb/eusbworker.cpp \
     ../widgets/edoublespinbox.cpp \
+    ../widgets/splashscreen.cpp \
     coma.cpp \
     main.cpp \
     ../check/check.cpp \
@@ -155,6 +156,7 @@ HEADERS += \
     ../usb/eprotocom.h \
     ../usb/eusbworker.h \
     ../widgets/edoublespinbox.h \
+    ../widgets/splashscreen.h \
     coma.h \
     ../check/check.h \
     ../check/eabstractcheckdialog.h \
