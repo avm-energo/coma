@@ -4,17 +4,18 @@
 #include "../gen/modulebsi.h"
 #include "../gen/s2.h"
 #include "../gen/singleton.h"
+#include "baseinterface.h"
 #include "eusbworker.h"
 
 #include <QEventLoop>
 #include <QThread>
 #include <QTimer>
 
-class EProtocom final : public QObject, public Singleton<EProtocom>
+class EProtocom final : public BaseInterface, public Singleton<EProtocom>
 {
     Q_OBJECT
 public:
-    explicit EProtocom(token);
+    explicit EProtocom(token, QWidget *parent = nullptr);
     ~EProtocom();
 
     bool Connect(int devicePosition);
@@ -29,6 +30,14 @@ public:
 
     EUsbWorker *usbWorker() const;
     QThread *workerThread();
+
+    bool start(const ConnectStruct &st);
+    void reqStartup();
+    void reqFile();
+    void writeFile();
+    void reqTime();
+    void writeTime();
+    void writeCommand(quint32 cmd);
 
     void SendCmd(unsigned char command, int parameter = 0);
     void SendIn(unsigned char command, char parameter, QByteArray &ba, qint64 maxdatasize);

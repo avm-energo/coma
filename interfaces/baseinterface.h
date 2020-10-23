@@ -20,7 +20,7 @@ public:
 
     explicit BaseInterface(QObject *parent = nullptr);
 
-    virtual void start(const ConnectStruct &st) = 0;
+    virtual bool start(const ConnectStruct &st) = 0;
     virtual void reqStartup() = 0;
     virtual void reqFile() = 0;
     virtual void writeFile() = 0;

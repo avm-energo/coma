@@ -26,7 +26,7 @@
 
 bool EProtocom::m_writeUSBLog;
 
-EProtocom::EProtocom(token)
+EProtocom::EProtocom(token, QWidget *parent) : BaseInterface(parent)
 {
     // Q_UNUSED(parent)
     QString tmps = "=== CLog started ===\n";
@@ -832,15 +832,15 @@ EProtocom::~EProtocom()
     m_waitTimer->deleteLater();
 }
 
-bool EProtocom::Connect(int devicePosition)
+bool EProtocom::start(const ConnectStruct &st)
 {
     if (Board::GetInstance().connectionState() == Board::ConnectionState::Connected
         && Board::GetInstance().interfaceType() == Board::InterfaceType::USB)
         ///
         Disconnect();
     //    m_usbWorker = new EUsbWorker(m_devices.at(m_devicePosition), CnLog, isWriteUSBLog());
-    m_usbWorker = new EUsbWorker(m_devices.at(devicePosition), CnLog, isWriteUSBLog());
-    m_devicePosition = devicePosition;
+    m_usbWorker = new EUsbWorker(m_devices.at(st.usbDevicePosition), CnLog, isWriteUSBLog());
+    m_devicePosition = st.usbDevicePosition;
     m_usbWorker->moveToThread(&m_workerThread);
     connect(&m_workerThread, &QThread::started, m_usbWorker, &EUsbWorker::interact);
 

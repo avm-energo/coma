@@ -3,6 +3,7 @@
 
 #include "../gen/datamanager.h"
 #include "../gen/logclass.h"
+#include "baseinterface.h"
 #include "serialport.h"
 
 #include <QMutex>
@@ -25,7 +26,7 @@
 //#define SETINITREG 900
 //#define CLEARREG 905
 
-class ModBus : public QObject
+class ModBus : public BaseInterface
 {
     Q_OBJECT
 
@@ -85,7 +86,7 @@ public:
     ModBus(QObject *parent = nullptr);
     ~ModBus();
 
-    Error::Msg Connect(SerialPort::Settings &settings);
+    bool start(const ConnectStruct &st);
     void BSIrequest();
 
     int CheckIndex, CheckHarmIndex, CheckVibrIndex, CorIndex, TimeIndex;
