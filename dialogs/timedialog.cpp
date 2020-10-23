@@ -181,7 +181,7 @@ void TimeDialog::ETHUpdate()
     {
         foreach (DataManager::SignalsStruct signal, list)
         {
-            DataTypes::BitString bs = qvariant_cast<DataTypes::BitString>(signal.data);
+            DataTypes::BitStringStruct bs = qvariant_cast<DataTypes::BitStringStruct>(signal.data);
             memcpy(&unixtimestamp, &bs.sigVal, sizeof(quint32));
             SetTime(unixtimestamp);
         }

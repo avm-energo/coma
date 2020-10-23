@@ -67,27 +67,17 @@ QWidget *CheckKIVDialog::BdUI(int bdnum)
     }
 }
 
-void CheckKIVDialog::PrepareHeadersForFile(int row)
-{
-    Q_UNUSED(row)
-}
+void CheckKIVDialog::PrepareHeadersForFile(int row) { Q_UNUSED(row) }
 
 void CheckKIVDialog::WriteToFile(int row, int bdnum)
 {
     Q_UNUSED(row)
     Q_UNUSED(bdnum)
-
 }
 
-void CheckKIVDialog::ChooseValuesToWrite()
-{
-}
-void CheckKIVDialog::SetDefaultValuesToWrite()
-{
-}
-void CheckKIVDialog::PrepareAnalogMeasurements()
-{
-}
+void CheckKIVDialog::ChooseValuesToWrite() { }
+void CheckKIVDialog::SetDefaultValuesToWrite() { }
+void CheckKIVDialog::PrepareAnalogMeasurements() { }
 
 void CheckKIVDialog::USBUpdate()
 {
@@ -123,9 +113,7 @@ void CheckKIVDialog::ETHUpdate()
     updateSPData();
 }
 
-void CheckKIVDialog::MBSUpdate()
-{
-}
+void CheckKIVDialog::MBSUpdate() { }
 
 void CheckKIVDialog::updateFloatData()
 {
@@ -135,7 +123,7 @@ void CheckKIVDialog::updateFloatData()
     {
         foreach (DataManager::SignalsStruct signal, list)
         {
-            DataTypes::FloatWithTime fwt = qvariant_cast<DataTypes::FloatWithTime>(signal.data);
+            DataTypes::FloatWithTimeStruct fwt = qvariant_cast<DataTypes::FloatWithTimeStruct>(signal.data);
             ChKIV->FillBd(this, QString::number(fwt.sigAdr), WDFunc::StringValueWithCheck(fwt.sigVal, 3));
         }
     }
@@ -149,7 +137,7 @@ void CheckKIVDialog::updateSPData()
     {
         foreach (DataManager::SignalsStruct signal, list)
         {
-            DataTypes::SinglePointWithTime sp = qvariant_cast<DataTypes::SinglePointWithTime>(signal.data);
+            DataTypes::SinglePointWithTimeStruct sp = qvariant_cast<DataTypes::SinglePointWithTimeStruct>(signal.data);
             if ((sp.sigAdr >= 3011) && (sp.sigAdr <= 3013))
                 WDFunc::SetLBLTColor(this, QString::number(sp.sigAdr - 2011),
                     (sp.sigVal == 1) ? Colors::TABCOLORA1 : Colors::ACONFOCLR); // Colors::TABCOLORA1

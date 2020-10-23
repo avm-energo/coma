@@ -27,27 +27,6 @@ TEMPLATE = app
 
 
 SOURCES += \
-../check/checkkdvdialog.cpp \
-../check/checkkdvharmonicdialog.cpp \
-../check/checkkdvvibrdialog.cpp \
-../check/checkktfdialog.cpp \
-../check/checkktfharmonicdialog.cpp \
-../config/confkdvdialog.cpp \
-../config/confktfdialog.cpp \
-../dialogs/fwuploaddialog.cpp \
-    ../gen/datamanager.cpp \
-../gen/udialog.cpp \
-    ../iec104/iec104thread.cpp \
-../module/alarm.cpp \
-    ../module/alarmkdv.cpp \
-    ../module/journals.cpp \
-    ../module/journkdv.cpp \
-    ../module/journkiv.cpp \
-    ../module/journktf.cpp \
-../module/warn.cpp \
-    ../module/warnkdv.cpp \
-../startup/startupkdvdialog.cpp \
-    ../widgets/edoublespinbox.cpp \
 coma.cpp \
 main.cpp \
 ../alarm/alarmclass.cpp \
@@ -62,6 +41,11 @@ main.cpp \
 ../check/checkkivdialog.cpp \
 ../check/checkktf.cpp \
 ../check/checkvibrkdv.cpp \
+../check/checkkdvdialog.cpp \
+../check/checkkdvharmonicdialog.cpp \
+../check/checkkdvvibrdialog.cpp \
+../check/checkktfdialog.cpp \
+../check/checkktfharmonicdialog.cpp \
 ../config/abstractconfdialog.cpp \
 ../config/config.cpp \
 ../config/confdialog.cpp \
@@ -70,12 +54,12 @@ main.cpp \
 ../config/configktf.cpp \
 ../config/configkxx.cpp \
 ../config/confkivdialog.cpp \
+../config/confkdvdialog.cpp \
+../config/confktfdialog.cpp \
 ../config/confkxxdialog.cpp \
 ../dialogs/connectdialog.cpp \
-    ../gen/errorqueue.cpp \
-    ../gen/logger.cpp \
-    ../models/errorprotocolmodel.cpp \
 ../dialogs/errordialog.cpp \
+../dialogs/fwuploaddialog.cpp \
 ../dialogs/infodialog.cpp \
 ../dialogs/journalsdialog.cpp \
 ../dialogs/keypressdialog.cpp \
@@ -83,32 +67,49 @@ main.cpp \
 ../dialogs/timedialog.cpp \
 ../gen/board.cpp \
 ../gen/error.cpp \
+../gen/datamanager.cpp \
+../gen/errorqueue.cpp \
 ../gen/files.cpp \
 ../gen/logclass.cpp \
+../gen/logger.cpp \
 ../gen/modulebsi.cpp \
 ../gen/s2.cpp \
 ../gen/stdfunc.cpp \
 ../gen/timefunc.cpp \
-../iec104/ethernet.cpp \
-../iec104/iec104.cpp \
-../modbus/modbus.cpp \
-../modbus/serialport.cpp \
+../gen/udialog.cpp \
+../interfaces/baseinterface.cpp \
+../interfaces/commands.cpp \
+../interfaces/eprotocom.cpp \
+../interfaces/ethernet.cpp \
+../interfaces/eusbworker.cpp \
+../interfaces/iec104.cpp \
+../interfaces/iec104thread.cpp \
+../interfaces/modbus.cpp \
+../interfaces/serialport.cpp \
 ../models/checkdelegate.cpp \
+../models/errorprotocolmodel.cpp \
 ../models/etableitem.cpp \
 ../models/etablemodel.cpp \
 ../models/valuemodel.cpp \
+../module/alarm.cpp \
+../module/alarmkdv.cpp \
 ../module/alarmkiv.cpp \
 ../module/alarmktf.cpp \
+../module/journals.cpp \
+../module/journkdv.cpp \
+../module/journkiv.cpp \
+../module/journktf.cpp \
 ../module/module.cpp \
+../module/warn.cpp \
+../module/warnkdv.cpp \
 ../module/warnkiv.cpp \
 ../module/warnktf.cpp \
 ../startup/abstractstartupdialog.cpp \
+../startup/startupkdvdialog.cpp \
 ../startup/startupkivdialog.cpp \
 ../startup/startupktfdialog.cpp \
-../usb/commands.cpp \
-../usb/eprotocom.cpp \
-../usb/eusbworker.cpp \
 ../widgets/ecombobox.cpp \
+../widgets/edoublespinbox.cpp \
 ../widgets/errorprotocolwidget.cpp \
 ../widgets/estackedwidget.cpp \
 ../widgets/etableview.cpp \
@@ -120,28 +121,7 @@ main.cpp \
 ../widgets/wd_func.cpp
 
 HEADERS += \
-../check/checkkdvdialog.h \
-../check/checkkdvharmonicdialog.h \
-../check/checkkdvvibrdialog.h \
-../check/checkktfdialog.h \
-../check/checkktfharmonicdialog.h \
-../config/confkdvdialog.h \
-../config/confktfdialog.h \
-../dialogs/fwuploaddialog.h \
-    ../gen/datamanager.h \
-    ../gen/datatypes.h \
-../gen/udialog.h \
-    ../iec104/iec104thread.h \
-../module/alarm.h \
-    ../module/alarmkdv.h \
-    ../module/journals.h \
-    ../module/journkdv.h \
-    ../module/journkiv.h \
-    ../module/journktf.h \
-../module/warn.h \
-    ../module/warnkdv.h \
-../startup/startupkdvdialog.h \
-    ../widgets/edoublespinbox.h \
+    ../interfaces/eprotocom.h \
 coma.h \
 ../alarm/alarmclass.h \
 ../alarm/alarmstateall.h \
@@ -151,9 +131,14 @@ coma.h \
 ../check/checkharmonickdv.h \
 ../check/checkharmonicktf.h \
 ../check/checkkdv.h \
+../check/checkkdvdialog.h \
+../check/checkkdvharmonicdialog.h \
+../check/checkkdvvibrdialog.h \
 ../check/checkkiv.h \
 ../check/checkkivdialog.h \
 ../check/checkktf.h \
+../check/checkktfdialog.h \
+../check/checkktfharmonicdialog.h \
 ../check/checkvibrkdv.h \
 ../config/abstractconfdialog.h \
 ../config/config.h \
@@ -163,12 +148,12 @@ coma.h \
 ../config/configktf.h \
 ../config/configkxx.h \
 ../config/confkivdialog.h \
+../config/confkdvdialog.h \
+../config/confktfdialog.h \
 ../config/confkxxdialog.h \
 ../dialogs/connectdialog.h \
-    ../gen/errorqueue.h \
-    ../gen/logger.h \
-    ../models/errorprotocolmodel.h \
 ../dialogs/errordialog.h \
+../dialogs/fwuploaddialog.h \
 ../dialogs/infodialog.h \
 ../dialogs/journalsdialog.h \
 ../dialogs/keypressdialog.h \
@@ -176,27 +161,44 @@ coma.h \
 ../dialogs/timedialog.h \
 ../gen/board.h \
 ../gen/colors.h \
+../gen/datamanager.h \
+../gen/datatypes.h \
 ../gen/error.h \
+../gen/errorqueue.h \
 ../gen/files.h \
+../gen/logger.h \
 ../gen/logclass.h \
 ../gen/modulebsi.h \
 ../gen/s2.h \
 ../gen/stdfunc.h \
 ../gen/timefunc.h \
-../iec104/ethernet.h \
-../iec104/iec104.h \
-../modbus/modbus.h \
-../modbus/serialport.h \
+../gen/udialog.h \
+../interfaces/baseinterface.h \
+../interfaces/ethernet.h \
+../interfaces/iec104.h \
+../interfaces/iec104thread.h \
+../interfaces/modbus.h \
+../interfaces/serialport.h \
 ../models/checkdelegate.h \
+../models/errorprotocolmodel.h \
 ../models/etableitem.h \
 ../models/etablemodel.h \
 ../models/valuemodel.h \
+../module/alarm.h \
+../module/alarmkdv.h \
 ../module/alarmkiv.h \
 ../module/alarmktf.h \
+../module/journals.h \
+../module/journkdv.h \
+../module/journkiv.h \
+../module/journktf.h \
 ../module/module.h \
+../module/warn.h \
+../module/warnkdv.h \
 ../module/warnkiv.h \
 ../module/warnktf.h \
 ../startup/abstractstartupdialog.h \
+../startup/startupkdvdialog.h \
 ../startup/startupkivdialog.h \
 ../startup/startupktfdialog.h \
 ../usb/commands.h \
@@ -204,6 +206,7 @@ coma.h \
 ../usb/eprotocom.h \
 ../usb/eusbworker.h \
 ../widgets/ecombobox.h \
+../widgets/edoublespinbox.h \
 ../widgets/errorprotocolwidget.h \
 ../widgets/estackedwidget.h \
 ../widgets/etableview.h \

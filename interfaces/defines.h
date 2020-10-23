@@ -39,7 +39,7 @@ constexpr byte ResultOk = 0x11;
 // запуск, остановка теста
 constexpr byte Test = 0x49;
 // ответ "ошибка"
-constexpr byte ResultError = 0xf0;
+constexpr byte ResultError = 0x0f0;
 // неизвестная команда
 constexpr byte Unknown = 0xff;
 namespace Read

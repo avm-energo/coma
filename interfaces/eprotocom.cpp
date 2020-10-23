@@ -50,40 +50,19 @@ EProtocom::EProtocom(token)
     setWriteUSBLog(writeUSBLog);
 }
 
-int EProtocom::devicePosition() const
-{
-    return m_devicePosition;
-}
+// int EProtocom::devicePosition() const { return m_devicePosition; }
 
-void EProtocom::setDevicePosition(int devicePosition)
-{
-    m_devicePosition = devicePosition;
-}
+// void EProtocom::setDevicePosition(int devicePosition) { m_devicePosition = devicePosition; }
 
-QString EProtocom::usbSerial() const
-{
-    return m_devices.at(m_devicePosition).serial;
-}
+// QString EProtocom::usbSerial() const { return m_devices.at(m_devicePosition).serial; }
 
-Error::Msg EProtocom::result() const
-{
-    return m_result;
-}
+Error::Msg EProtocom::result() const { return m_result; }
 
-void EProtocom::setResult(const Error::Msg &result)
-{
-    m_result = result;
-}
+void EProtocom::setResult(const Error::Msg &result) { m_result = result; }
 
-bool EProtocom::isWriteUSBLog()
-{
-    return m_writeUSBLog;
-}
+bool EProtocom::isWriteUSBLog() { return m_writeUSBLog; }
 
-void EProtocom::setWriteUSBLog(bool writeUSBLog)
-{
-    m_writeUSBLog = writeUSBLog;
-}
+void EProtocom::setWriteUSBLog(bool writeUSBLog) { m_writeUSBLog = writeUSBLog; }
 
 void EProtocom::Send(char command, char parameter, QByteArray &ba, qint64 datasize)
 {
@@ -128,7 +107,7 @@ void EProtocom::InitiateSend()
     switch (Command)
     {
     case CN::Read::BlkStartInfo: // запрос блока стартовой информации
-    case CN::Read::Progress:     // запрос текущего прогресса
+    case CN::Read::Progress: // запрос текущего прогресса
     case CN::Read::Variant:
     case CN::Read::Mode:
     case CN::Read::Time:
@@ -140,12 +119,12 @@ void EProtocom::InitiateSend()
         WriteDataToPort(WriteData);
         break;
     }
-    case CN::Read::BlkAC:    // чтение настроечных коэффициентов
+    case CN::Read::BlkAC: // чтение настроечных коэффициентов
     case CN::Read::BlkDataA: // чтение текущих данных без настройки
-    case CN::Read::BlkData:  // запрос блока (подблока) текущих данных
+    case CN::Read::BlkData: // запрос блока (подблока) текущих данных
     case CN::Write::Variant:
     case CN::Write::Mode:
-    case CN::Read::BlkTech:    // чтение технологического блока
+    case CN::Read::BlkTech: // чтение технологического блока
     case CN::Write::EraseTech: // команда стирания технологического блока
     case CN::Write::BlkCmd:
     case CN::Test:
@@ -384,7 +363,7 @@ void EProtocom::ParseIncomeData(QByteArray ba)
         Finish(Error::Msg::CN_RCVDATAERROR);
         return;
     }
-    if (ReadDataChunk.at(1) == CN::ResultError)
+    if (static_cast<unsigned char>(ReadDataChunk.at(1)) == CN::ResultError)
     {
         if (rdsize < 5) // некорректная посылка
             Finish(Error::Msg::CN_RCVDATAERROR);
@@ -559,7 +538,7 @@ void EProtocom::ParseIncomeData(QByteArray ba)
             // устройства
             ReadDataChunk.truncate(ReadDataChunkLength);
             OutData.append(ReadDataChunk);
-            int outdatasize = OutData.size();
+            quint32 outdatasize = OutData.size();
             // сигнал для прогрессбара
             emit SetDataCount(outdatasize);
             ReadDataChunk.clear();
@@ -576,8 +555,8 @@ void EProtocom::ParseIncomeData(QByteArray ba)
         case CN::Read::File:
         {
             // чтение файла количеством байт RDLength = (sizeof(FileHeader) + size)
-            int outdatasize = OutData.size();
-            int tmpi = outdatasize + ReadDataChunkLength;
+            quint32 outdatasize = OutData.size();
+            quint32 tmpi = outdatasize + ReadDataChunkLength;
             // проверка на выход за диапазон
             if (tmpi > RDLength)
                 // копируем только требуемое количество байт
@@ -626,20 +605,17 @@ void EProtocom::CheckForData()
     ParseIncomeData(ba);
 }
 
-void EProtocom::OscTimerTimeout()
-{
-    SendCmd(CN::Read::Progress);
-}
+void EProtocom::OscTimerTimeout() { SendCmd(CN::Read::Progress); }
 
-QString EProtocom::deviceName() const
-{
-    return m_deviceName;
-}
+// QString EProtocom::deviceName() const
+//{
+//    return m_deviceName;
+//}
 
-void EProtocom::setDeviceName(const QString &deviceName)
-{
-    m_deviceName = deviceName;
-}
+// void EProtocom::setDeviceName(const QString &deviceName)
+//{
+//    m_deviceName = deviceName;
+//}
 
 void EProtocom::SendCmd(unsigned char command, int parameter)
 {
@@ -750,9 +726,11 @@ void EProtocom::usbStateChanged(void *message)
             {
                 if (m_devices.contains(m_usbWorker->deviceInfo()))
                 {
-                    int index = m_devices.indexOf(m_usbWorker->deviceInfo());
-                    setDevicePosition(index);
-                    m_usbWorker->setDeviceInfo(m_devices.at(index));
+                    //                    int index = m_devices.indexOf(m_usbWorker->deviceInfo());
+                    m_devicePosition = m_devices.indexOf(m_usbWorker->deviceInfo());
+                    //                    setDevicePosition(index);
+                    //                    m_usbWorker->setDeviceInfo(m_devices.at(index));
+                    m_usbWorker->setDeviceInfo(m_devices.at(m_devicePosition));
                     qDebug("Device arrived again");
                     if (!Reconnect())
                     {
@@ -854,14 +832,15 @@ EProtocom::~EProtocom()
     m_waitTimer->deleteLater();
 }
 
-bool EProtocom::Connect()
+bool EProtocom::Connect(int devicePosition)
 {
     if (Board::GetInstance().connectionState() == Board::ConnectionState::Connected
         && Board::GetInstance().interfaceType() == Board::InterfaceType::USB)
         ///
         Disconnect();
-    m_usbWorker = new EUsbWorker(m_devices.at(m_devicePosition), CnLog, isWriteUSBLog());
-
+    //    m_usbWorker = new EUsbWorker(m_devices.at(m_devicePosition), CnLog, isWriteUSBLog());
+    m_usbWorker = new EUsbWorker(m_devices.at(devicePosition), CnLog, isWriteUSBLog());
+    m_devicePosition = devicePosition;
     m_usbWorker->moveToThread(&m_workerThread);
     connect(&m_workerThread, &QThread::started, m_usbWorker, &EUsbWorker::interact);
 
@@ -910,11 +889,7 @@ QByteArray EProtocom::RawRead(int bytes)
     return QByteArray();
 }
 
-int EProtocom::RawWrite(QByteArray &ba)
-{
-
-    return m_usbWorker->WriteDataAttempt(ba);
-}
+int EProtocom::RawWrite(QByteArray &ba) { return m_usbWorker->WriteDataAttempt(ba); }
 
 void EProtocom::RawClose()
 {
@@ -966,12 +941,6 @@ QList<QStringList> EProtocom::DevicesFound()
     return sl;
 }
 
-QThread *EProtocom::workerThread()
-{
-    return &m_workerThread;
-}
+QThread *EProtocom::workerThread() { return &m_workerThread; }
 
-EUsbWorker *EProtocom::usbWorker() const
-{
-    return m_usbWorker;
-}
+EUsbWorker *EProtocom::usbWorker() const { return m_usbWorker; }

@@ -61,7 +61,7 @@ void registerForDeviceNotification(Coma *ptr)
     ZeroMemory(&devInt, sizeof(devInt));
     devInt.dbcc_size = sizeof(DEV_BROADCAST_DEVICEINTERFACE);
     devInt.dbcc_devicetype = DBT_DEVTYP_DEVICEINTERFACE;
-    devInt.dbcc_classguid = { 0x25dbce51, 0x6c8f, 0x4a72, 0x8a, 0x6d, 0xb5, 0x4c, 0x2b, 0x4f, 0xc8, 0x35 };
+    devInt.dbcc_classguid = { 0x25dbce51, 0x6c8f, 0x4a72, { 0x8a, 0x6d, 0xb5, 0x4c, 0x2b, 0x4f, 0xc8, 0x35 } };
 
     HDEVNOTIFY blub;
     blub = RegisterDeviceNotification((HDEVNOTIFY)ptr->winId(), &devInt, DEVICE_NOTIFY_WINDOW_HANDLE);
@@ -114,7 +114,7 @@ Coma::Coma(QWidget *parent) : QMainWindow(parent)
     ActiveThreads = 0;
     Alarm = new AlarmClass(this);
 
-    NewTimers();
+    newTimers();
     LoadSettings();
 
     splash->finish(this);
@@ -506,14 +506,14 @@ void Coma::StartWork()
     msgSerialNumber->setText(QString::number(ModuleBSI::SerialNum(BT_NONE), 16));
 }
 
-void Coma::setupQConnections()
+/*void Coma::setupQConnections()
 {
     connect(AlarmW, &AlarmWidget::AlarmButtonPressed, AlarmStateAllDialog, &QDialog::show);
     connect(AlarmW, &AlarmWidget::ModuleWarnButtonPressed, m_Module->getWarn(), &QDialog::show);
     connect(AlarmW, &AlarmWidget::ModuleAlarmButtonPressed, m_Module->getAlarm(), &QDialog::show);
-    NewTimersBda();
+    setupConnections();
 
-    /*    switch (Board::GetInstance().typeB())
+        switch (Board::GetInstance().typeB())
         {
         case Config::MTB_A2:
         {
@@ -650,8 +650,8 @@ void Coma::setupQConnections()
         }
         default:
             break;
-        } */
-}
+        }
+} */
 
 void Coma::PrepareDialogs()
 {
@@ -661,7 +661,7 @@ void Coma::PrepareDialogs()
     m_Module = Module::createModule(BdaTimer);
     Alarm->setModule(m_Module);
     AlarmStateAllDialog = new AlarmStateAll;
-    setupQConnections();
+    setupConnections();
 }
 
 void Coma::CloseDialogs()
@@ -688,12 +688,12 @@ void Coma::CloseDialogs()
 
 void Coma::New104()
 {
-    Ch104 = new IEC104(S2Config);
+    Ch104 = new IEC104;
     connect(this, &Coma::StopCommunications, Ch104, &IEC104::StopAllThreads);
     connect(Ch104, &IEC104::Finished, [this]() { ActiveThreads &= ~THREAD::P104; });
     // connect(Ch104,SIGNAL(Sponsignalsready(IEC104Thread::SponSignals*)),this,SLOT(UpdatePredAlarmEvents(IEC104Thread::SponSignals*)));
-    connect(Ch104, &IEC104::SetDataSize, this, &Coma::SetProgressBar1Size);
-    connect(Ch104, &IEC104::SetDataCount, this, &Coma::SetProgressBar1);
+    //    connect(Ch104, &IEC104::SetDataSize, this, &Coma::SetProgressBar1Size);
+    //    connect(Ch104, &IEC104::SetDataCount, this, &Coma::SetProgressBar1);
     connect(Ch104, &IEC104::ReconnectSignal, this, &Coma::ReConnect);
     //    connect(Ch104, &IEC104::Sponsignalsready, Alarm, &AlarmClass::UpdateAlarm104);
     //    connect(Ch104, &IEC104::Bs104signalsready, this, qOverload<IEC104Thread::BS104Signals *>(&Coma::FillBSI));
@@ -723,7 +723,7 @@ void Coma::NewUSB()
         [this](const QString &msg) { QMessageBox::critical(this, "Ошибка", msg, QMessageBox::Ok); });
 }
 
-void Coma::NewTimers()
+void Coma::newTimers()
 {
     //    TimeTimer = new QTimer(this);
     //    TimeTimer->setInterval(1000);
@@ -764,11 +764,15 @@ void Coma::NewTimers()
     //    connect(ReconnectTimer, &QTimer::timeout, this, &Coma::AttemptToRec);
 }
 
-void Coma::NewTimersBda()
+void Coma::setupConnections()
 {
+    connect(AlarmW, &AlarmWidget::AlarmButtonPressed, AlarmStateAllDialog, &QDialog::show);
+    connect(AlarmW, &AlarmWidget::ModuleWarnButtonPressed, m_Module->getWarn(), &QDialog::show);
+    connect(AlarmW, &AlarmWidget::ModuleAlarmButtonPressed, m_Module->getAlarm(), &QDialog::show);
     connect(AlrmTimer, &QTimer::timeout, Alarm, &AlarmClass::update);
     if (AlarmStateAllDialog != nullptr)
         connect(AlrmTimer, &QTimer::timeout, AlarmStateAllDialog, &AlarmStateAll::CallUpdateHealth);
+    connect(BdaTimer, &QTimer::timeout, this, &Coma::update);
     //    connect(BdaTimer, &QTimer::timeout, Alarm, &AlarmClass::UpdateAlarmUSB);
     //    //   connect(BdaTimer, &QTimer::timeout, AlarmStateAllDialog, &AlarmStateAll::UpdateHealth);
 
@@ -828,8 +832,6 @@ void Coma::ReConnect()
 {
     if (Reconnect)
     {
-        // QDialog *dlg = new QDialog;
-
         INFOMSG("Reconnect()");
         //        TimeTimer->stop();
         if (Board::GetInstance().connectionState() == Board::ConnectionState::Connected)
@@ -1290,6 +1292,15 @@ void Coma::SetDefConf()
     //        setConf(++i);
     //    Fill();
     QMessageBox::information(this, "Успешно", "Конфигурация по умолчанию", QMessageBox::Ok);
+}
+
+void Coma::update()
+{
+    DataTypes::GeneralResponseStruct rs;
+    if (DataManager::getResponse(DataTypes::GeneralResponseTypes::DataCount, rs) != Error::Msg::ResEmpty)
+        SetProgressBar1(rs.data);
+    if (DataManager::getResponse(DataTypes::GeneralResponseTypes::DataSize, rs) != Error::Msg::ResEmpty)
+        SetProgressBar1Size(rs.data);
 }
 
 void Coma::closeEvent(QCloseEvent *event)

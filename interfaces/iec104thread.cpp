@@ -11,43 +11,43 @@ QMutex IEC104Thread::s_ParseWriteMutex;
 
 IEC104Thread::IEC104Thread(LogClass *log, QObject *parent) : QObject(parent)
 {
-    FirstParse = true;
-    Log = log;
-    ThreadMustBeFinished = false;
-    V_S = V_R = 0;
-    AckVR = I104_W;
-    APDUFormat = I104_WRONG;
-    FileSending = false;
-    Timer104 = new QTimer;
-    Timer104->setInterval(15000);
-    ConTimer = new QTimer;
-    ConTimer->setInterval(5000);
+    m_isFirstParse = true;
+    m_log = log;
+    m_threadMustBeFinished = false;
+    m_signalCounter = 0;
+    m_V_S = m_V_R = 0;
+    m_ackVR = I104_W;
+    m_APDUFormat = I104_WRONG;
+    m_isFileSending = false;
+    m_timer104 = new QTimer;
+    m_timer104->setInterval(15000);
+    m_sendTestTimer = new QTimer;
+    m_sendTestTimer->setInterval(5000);
 #ifndef DEBUG
-    connect(Timer104, SIGNAL(timeout()), this, SLOT(Stop()));
-    connect(ConTimer, SIGNAL(timeout()), this, SLOT(SendTestAct()));
-    ConTimer->start();
+    connect(m_timer104, SIGNAL(timeout()), this, SLOT(Stop()));
+    connect(m_sendTestTimer, SIGNAL(timeout()), this, SLOT(SendTestAct()));
+    m_sendTestTimer->start();
 #endif
-    NoAnswer = 0;
+    m_noAnswer = 0;
 }
 
-IEC104Thread::~IEC104Thread()
-{
-}
+IEC104Thread::~IEC104Thread() { }
 
 void IEC104Thread::SetBaseAdr(quint16 adr)
 {
-    BaseAdr = adr;
+    m_baseAdrHigh = adr >> 8;
+    m_baseAdrLow = adr;
 }
 
 void IEC104Thread::Run()
 {
     emit Started();
-    while (!ThreadMustBeFinished)
+    while (!m_threadMustBeFinished)
     {
-        if (!ParseData.isEmpty())
+        if (!m_parseData.isEmpty())
         {
             s_ParseReadMutex.lock();
-            QByteArray tmpba = ParseData.takeFirst();
+            QByteArray tmpba = m_parseData.takeFirst();
             s_ParseReadMutex.unlock();
             if (!tmpba.isEmpty())
             {
@@ -55,7 +55,7 @@ void IEC104Thread::Run()
                 if (tmpi == Error::Msg::NoError) // если поймали правильное начало данных,
                                                  // переходим к их обработке
                 {
-                    if (APDUFormat == I104_I)
+                    if (m_APDUFormat == I104_I)
                     {
                         tmpba = tmpba.mid(6);
                         ParseIFormat(tmpba); // без APCI
@@ -63,7 +63,7 @@ void IEC104Thread::Run()
                 }
             }
         }
-        if (!FileSending)
+        if (!m_isFileSending)
         {
             Queries::Command inp;
             if (DataManager::deQueue(inp) == Error::Msg::NoError)
@@ -80,7 +80,7 @@ void IEC104Thread::Run()
                 {
                     //                    S2ConfigType *ptr = reinterpret_cast<S2ConfigType
                     //                    *>(inp.args.ptrarg); FileReady(ptr);
-                    File = inp.ba;
+                    m_file = inp.ba;
                     FileReady();
                     break;
                 }
@@ -90,15 +90,17 @@ void IEC104Thread::Run()
                 case Queries::Commands::CM104_COM51WRITETIME:
                     Com51WriteTime(inp.uintarg);
                     break;
-                case Queries::Commands::CM104_CORREADREQUEST:
-                    CorReadRequest();
-                    break;
+                    //                case Queries::Commands::CM104_CORREADREQUEST:
+                    //                    CorReadRequest();
+                    //                    break;
                 case Queries::Commands::CM104_REQGROUP:
                     reqGroup(inp.uintarg);
                     break;
+                default:
+                    break;
                 }
             }
-            if (V_R > (AckVR + I104_W))
+            if (m_V_R > (m_ackVR + I104_W))
                 SendS();
         }
         QCoreApplication::processEvents();
@@ -108,37 +110,37 @@ void IEC104Thread::Run()
 
 void IEC104Thread::GetSomeData(QByteArray ba)
 {
-    if (FirstParse)
-        Log->info("<-- " + ba.toHex());
-    FirstParse = false;
+    if (m_isFirstParse)
+        m_log->info("<-- " + ba.toHex());
+    m_isFirstParse = false;
     quint32 basize = static_cast<quint32>(ba.size());
-    if (CutPckt.size() > 1)
+    if (m_cutPckt.size() > 1)
     {
-        quint32 cutpcktlen = static_cast<quint8>(CutPckt.at(1));
+        quint32 cutpcktlen = static_cast<quint8>(m_cutPckt.at(1));
         cutpcktlen += 2;
-        quint32 cutpcktsize = static_cast<quint32>(CutPckt.size());
+        quint32 cutpcktsize = static_cast<quint32>(m_cutPckt.size());
         quint32 missing_num = cutpcktlen - cutpcktsize; // взяли длину остатка от предыдущего пакета
         if (missing_num > basize)
         {
-            CutPckt.append(ba);
+            m_cutPckt.append(ba);
             return; // если так и не достигли конца пакета, надо брать следующий пакет
                     // в cutpckt
         }
-        CutPckt.append(ba.left(missing_num)); // взяли из текущего пакета сами байты
+        m_cutPckt.append(ba.left(missing_num)); // взяли из текущего пакета сами байты
         ba.remove(0, missing_num);
         s_ParseReadMutex.lock();
-        ParseData.append(CutPckt);
+        m_parseData.append(m_cutPckt);
         s_ParseReadMutex.unlock();
-        CutPckt.clear();
+        m_cutPckt.clear();
         basize = static_cast<quint32>(ba.size());
     }
     if (basize < 2) // ba is empty or there's not enough symbols to parse in it
         return;
 
-    CutPckt = ba.left(2);
+    m_cutPckt = ba.left(2);
     ba = ba.mid(2);
     GetSomeData(ba);
-    FirstParse = true;
+    m_isFirstParse = true;
 }
 
 Error::Msg IEC104Thread::isIncomeDataValid(QByteArray ba)
@@ -148,36 +150,36 @@ Error::Msg IEC104Thread::isIncomeDataValid(QByteArray ba)
         if (ba.at(0) != 0x68)
             // return I104_RCVWRONG;
             return Error::Msg::GeneralError;
-        APDULength = static_cast<quint8>(ba.at(1)); // в 1-м байте лежит длина
-        if ((APDULength < 4) || (APDULength > 253))
+        m_APDULength = static_cast<quint8>(ba.at(1)); // в 1-м байте лежит длина
+        if ((m_APDULength < 4) || (m_APDULength > 253))
             // return I104_RCVWRONG;
             return Error::Msg::GeneralError;
         if (!(ba.at(2) & 0x01)) // I
-            APDUFormat = I104_I;
+            m_APDUFormat = I104_I;
         else
         {
             if (!(ba.at(2) & 0x02)) // S
-                APDUFormat = I104_S;
+                m_APDUFormat = I104_S;
             else
-                APDUFormat = I104_U;
+                m_APDUFormat = I104_U;
         }
-        switch (APDUFormat)
+        switch (m_APDUFormat)
         {
         case I104_I:
         {
             quint16 V_Rrcv = static_cast<quint8>(ba.at(3)) * 256 + static_cast<quint8>(ba.at(2) & 0xFE);
             V_Rrcv >>= 1;
-            if (V_Rrcv != V_R)
+            if (V_Rrcv != m_V_R)
             {
-                Log->error("V_Rrcv != V_R");
+                m_log->error("V_Rrcv != V_R");
                 // return I104_RCVWRONG;
                 return Error::Msg::GeneralError;
             }
-            V_R++;
+            m_V_R++;
             quint16 V_Srcv = static_cast<quint8>(ba.at(5)) * 256 + static_cast<quint8>(ba.at(4) & 0xFE);
             V_Srcv >>= 1;
-            if (V_Srcv != V_S)
-                V_S = V_Srcv; // временно, нужно исправить проблему несовпадения s посылок
+            if (V_Srcv != m_V_S)
+                m_V_S = V_Srcv; // временно, нужно исправить проблему несовпадения s посылок
             // return I104_RCVNORM;
             return Error::Msg::NoError;
         }
@@ -185,8 +187,8 @@ Error::Msg IEC104Thread::isIncomeDataValid(QByteArray ba)
         {
             quint16 V_Srcv = static_cast<quint8>(ba.at(5)) * 256 + static_cast<quint8>(ba.at(4) & 0xFE);
             V_Srcv >>= 1;
-            if (V_Srcv != V_S)
-                V_S = V_Srcv;
+            if (V_Srcv != m_V_S)
+                m_V_S = V_Srcv;
             // return I104_RCVNORM;
             return Error::Msg::NoError;
         }
@@ -194,22 +196,23 @@ Error::Msg IEC104Thread::isIncomeDataValid(QByteArray ba)
         {
             unsigned char baat2 = ba.at(2);
             if ((baat2 == I104_STARTDT_CON)
-                && (Command == I104_STARTDT_ACT)) // если пришло подтверждение старта и перед этим мы старт запрашивали
+                && (m_command
+                    == I104_STARTDT_ACT)) // если пришло подтверждение старта и перед этим мы старт запрашивали
             {
-                Timer104->stop();
-                Command = I104_STARTDT_CON;
+                m_timer104->stop();
+                m_command = I104_STARTDT_CON;
                 SendGI();
             }
             if ((baat2 == I104_STOPDT_CON)
-                && (Command == I104_STOPDT_ACT)) // если пришло подтверждение стопа и перед этим мы стоп запрашивали
-                Command = I104_STOPDT_CON;
+                && (m_command == I104_STOPDT_ACT)) // если пришло подтверждение стопа и перед этим мы стоп запрашивали
+                m_command = I104_STOPDT_CON;
             if ((baat2 == I104_TESTFR_CON)
-                && (Command == I104_TESTFR_ACT)) // если пришло подтверждение теста и перед этим мы тест запрашивали
-                Command = I104_TESTFR_CON;
+                && (m_command == I104_TESTFR_ACT)) // если пришло подтверждение теста и перед этим мы тест запрашивали
+                m_command = I104_TESTFR_CON;
             if (baat2 == I104_TESTFR_ACT)
                 SendTestCon();
 
-            NoAnswer = 0;
+            m_noAnswer = 0;
 
             // return I104_RCVNORM;
             return Error::Msg::NoError;
@@ -273,7 +276,7 @@ void IEC104Thread::ParseIFormat(QByteArray &ba) // основной разбор
                 //                    ERMSG("out of array flSignals");
                 //                    return;
                 //                }
-                DataTypes::FloatWithTime signal;
+                DataTypes::FloatWithTimeStruct signal;
                 signal.sigAdr = objectAdr;
                 float value;
                 memcpy(&value, &(ba.data()[index]), 4);
@@ -297,7 +300,7 @@ void IEC104Thread::ParseIFormat(QByteArray &ba) // основной разбор
 
             case M_ME_NC_1: // 13 тип - измеренные данные с плавающей запятой
             {
-                DataTypes::FloatWithTime signal;
+                DataTypes::FloatWithTimeStruct signal;
                 //                if (cntfl >= DUI.qualifier.Number)
                 //                {
                 //                    ERMSG("out of array flSignals");
@@ -326,7 +329,7 @@ void IEC104Thread::ParseIFormat(QByteArray &ba) // основной разбор
                 //                    ERMSG("out of array sponsignals");
                 //                    return;
                 //                }
-                DataTypes::SinglePointWithTime signal;
+                DataTypes::SinglePointWithTimeStruct signal;
                 signal.sigAdr = objectAdr;
                 //                quint8 value;
                 //                memcpy(&value, &(ba.data()[index]), 1);
@@ -345,7 +348,7 @@ void IEC104Thread::ParseIFormat(QByteArray &ba) // основной разбор
                 //                    ERMSG("out of array sponsignals");
                 //                    return;
                 //                }
-                DataTypes::SinglePointWithTime signal;
+                DataTypes::SinglePointWithTimeStruct signal;
                 signal.sigAdr = objectAdr;
                 //                quint8 value;
                 memcpy(&signal.sigVal, &(ba.data()[index++]), 1);
@@ -367,7 +370,7 @@ void IEC104Thread::ParseIFormat(QByteArray &ba) // основной разбор
                 //                    ERMSG("out of array BS104Signals");
                 //                    return;
                 //                }
-                DataTypes::BitString signal;
+                DataTypes::BitStringStruct signal;
                 //                int j;
                 //                for (j = 0; j < 3; j++)
                 //                    signal.sigAdr[j] = (objectAdr >> 8 * j);
@@ -388,65 +391,70 @@ void IEC104Thread::ParseIFormat(QByteArray &ba) // основной разбор
 
             case F_SR_NA_1: // секция готова
             {
-                Log->info("Section ready");
+                m_log->info("Section ready");
                 GetSection(ba[9]);
                 break;
             }
 
             case F_FR_NA_1: // файл готов
             {
-                Log->info("File ready");
-                ReadData.clear();
-                RDSize = 0;
-                RDLength = 0;
+                m_log->info("File ready");
+                m_readData.clear();
+                m_readSize = 0;
+                m_readPos = 0;
                 fileSize = (static_cast<quint8>(ba[13]) << 16) | (static_cast<quint8>(ba[12]) << 8)
                     | (static_cast<quint8>(ba[11]));
-                emit SetDataSize(fileSize);
+                setGeneralResponse(DataTypes::GeneralResponseTypes::DataSize, fileSize);
+                //                emit SetDataSize(fileSize);
                 CallFile(ba[9]);
                 break;
             }
 
             case F_SG_NA_1: // сегмент
             {
-                Log->info("Segment ready: RDSize=" + QString::number(ba[12], 16) + ", num=" + QString::number(ba[13]));
-                RDSize = static_cast<quint8>(ba[12]);
-                RDSize &= 0xFF;
-                if (RDSize) //>= RDLength)
+                m_log->info(
+                    "Segment ready: RDSize=" + QString::number(ba[12], 16) + ", num=" + QString::number(ba[13]));
+                m_readSize = static_cast<quint8>(ba[12]);
+                m_readSize &= 0xFF;
+                if (m_readSize) //>= RDLength)
                 {
-                    ReadData.append(&(ba.data()[13]), RDSize);
-                    RDLength += RDSize;
-                    emit SetDataCount(RDLength);
+                    m_readData.append(&(ba.data()[13]), m_readSize);
+                    m_readPos += m_readSize;
+                    setGeneralResponse(DataTypes::GeneralResponseTypes::DataCount, m_readPos);
+                    //                    emit SetDataCount(RDLength);
                 }
                 break;
             }
 
             case F_LS_NA_1: // последняя секция, последнй сегмент
             {
-                Log->info("Last section, ba[12] = " + QString::number(ba[12]));
+                m_log->info("Last section, ba[12] = " + QString::number(ba[12]));
                 switch (ba[12])
                 {
                 case 1:
                 {
                     ConfirmFile(num);
-                    ConTimer->start();
-                    FileSending = false;
-                    Log->info("FileSending clear");
+                    m_sendTestTimer->start();
+                    m_isFileSending = false;
+                    m_log->info("FileSending clear");
 
                     int filetype = ba.at(9);
-                    if (filetype == 0x01) // если файл конфигурации
-                    {
-                        Error::Msg res = S2::RestoreDataMem(ReadData.data(), RDLength, DR);
-                        if (res == Error::Msg::NoError)
-                            emit SendS2fromParse(DR);
-                    }
-                    else if (filetype == 0x04) // если файл системного журнала
-                        emit SendJourSysfromParse(ReadData);
-                    else if (filetype == 0x05) // если файл рабочего журнала
-                        emit SendJourWorkfromParse(ReadData);
-                    else if (filetype == 6) // если файл журнала измерений
-                        emit SendJourMeasfromParse(ReadData);
-                    RDLength = 0;
-                    RDSize = 0;
+                    DataTypes::FileStruct df { static_cast<quint32>(filetype), m_readData };
+                    DataManager::addSignalToOutList(DataManager::SignalTypes::File, df);
+                    //                    if (filetype == 0x01) // если файл конфигурации
+                    //                    {
+                    //                        Error::Msg res = S2::RestoreDataMem(ReadData.data(), RDLength, DR);
+                    //                        if (res == Error::Msg::NoError)
+                    //                            emit SendS2fromParse(DR);
+                    //                    }
+                    //                    else if (filetype == 0x04) // если файл системного журнала
+                    //                        emit SendJourSysfromParse(ReadData);
+                    //                    else if (filetype == 0x05) // если файл рабочего журнала
+                    //                        emit SendJourWorkfromParse(ReadData);
+                    //                    else if (filetype == 6) // если файл журнала измерений
+                    //                        emit SendJourMeasfromParse(ReadData);
+                    m_readPos = 0;
+                    m_readSize = 0;
                     break;
                 }
 
@@ -463,12 +471,12 @@ void IEC104Thread::ParseIFormat(QByteArray &ba) // основной разбор
             {
                 if (ba.at(12) == 0x02) //запрос файла
                 {
-                    Log->info("File query");
+                    m_log->info("File query");
                     SectionReady();
                 }
                 if (ba.at(12) == 0x06)
                 {
-                    Log->info("Segment query");
+                    m_log->info("Segment query");
                     SendSegments();
                 }
                 break;
@@ -476,13 +484,13 @@ void IEC104Thread::ParseIFormat(QByteArray &ba) // основной разбор
 
             case F_AF_NA_1: // подтверждение файла, секции
             {
-                Log->info("Last section of file " + QString::number(ba[12]) + " confirm");
+                m_log->info("Last section of file " + QString::number(ba[12]) + " confirm");
                 if (ba.at(12) == 0x03) // подтверждение секции
                     LastSection();
                 if (ba.at(12) == 0x01) // подтверждение файла
                 {
-                    Log->info("FileSending clear");
-                    FileSending = false;
+                    m_log->info("FileSending clear");
+                    m_isFileSending = false;
                     emit SendMessagefromParse();
                 }
                 break;
@@ -491,27 +499,35 @@ void IEC104Thread::ParseIFormat(QByteArray &ba) // основной разбор
             case C_SC_NA_1:
             {
                 if (DUI.cause.cause == 10)
+                {
                     //                    emit SendMessageOk();
-                    DataManager::addSignalToOutList(DataManager::SignalTypes::GeneralResponse, signal);
+                    DataTypes::GeneralResponseStruct grs;
+                    grs.type = DataTypes::GeneralResponseTypes::Ok;
+                    DataManager::addSignalToOutList(DataManager::SignalTypes::GeneralResponse, grs);
+                }
                 break;
             }
 
             case C_SE_NC_1:
             {
                 if (DUI.cause.cause == 10)
-                    count++;
+                    m_signalCounter++;
 
-                emit SetDataCount(count);
+                setGeneralResponse(DataTypes::GeneralResponseTypes::DataCount, m_signalCounter);
+                //                emit SetDataCount(count);
                 quint32 adr = ba[6] + (ba[7] + 1) * 256; //+ (ba[8]<<16);
 
                 if ((adr == 920) && (DUI.cause.cause == 10)) // если адрес последнего параметра коррекции
                 {
                     if (ba.at(13) == 0)
                     {
-                        emit SendMessageOk();
-                        emit SetDataCount(11);
+                        setGeneralResponse(DataTypes::GeneralResponseTypes::Ok);
+                        //                        emit SendMessageOk();
+                        setGeneralResponse(
+                            DataTypes::GeneralResponseTypes::DataCount, 11); // send to progressbar max count of bytes
+                        //                        emit SetDataCount(11);
                     }
-                    count = 0;
+                    m_signalCounter = 0;
                 }
                 break;
             }
@@ -553,50 +569,50 @@ void IEC104Thread::ParseIFormat(QByteArray &ba) // основной разбор
     }
     catch (...)
     {
-        Log->error("Catch exception");
+        m_log->error("Catch exception");
     }
 }
 
 void IEC104Thread::StartDT()
 {
-    Log->info("Start()");
+    m_log->info("Start()");
     APCI StartDT;
     StartDT.append(I104_START);
     StartDT.append(0x04);
     StartDT.append(I104_STARTDT_ACT);
     StartDT.append(QByteArrayLiteral("\x00\x00\x00"));
-    Command = I104_STARTDT_ACT;
+    m_command = I104_STARTDT_ACT;
     Send(0, StartDT);
-    Timer104->start();
+    m_timer104->start();
 }
 
 void IEC104Thread::StopDT()
 {
-    Log->info("Stop()");
+    m_log->info("Stop()");
     APCI StopDT;
     StopDT.append(I104_START);
     StopDT.append(0x04);
     StopDT.append(I104_STOPDT_ACT);
     StopDT.append(QByteArrayLiteral("\x00\x00\x00"));
-    Command = I104_STOPDT_ACT;
+    m_command = I104_STOPDT_ACT;
     Send(0, StopDT); // ASDU = QByteArray()
-    ConTimer->stop();
+    m_sendTestTimer->stop();
 }
 
 void IEC104Thread::Send(int inc, APCI apci, ASDU asdu)
 {
     QByteArray ba = apci;
     ba.append(asdu);
-    Log->info("--> " + ba.toHex());
+    m_log->info("--> " + ba.toHex());
     emit WriteData(ba);
     if (inc)
-        V_S++;
+        m_V_S++;
 }
 
 void IEC104Thread::Stop()
 {
-    ThreadMustBeFinished = true;
-    Timer104->stop();
+    m_threadMustBeFinished = true;
+    m_timer104->stop();
 }
 
 QByteArray IEC104Thread::CreateGI(unsigned char apdulength)
@@ -604,11 +620,11 @@ QByteArray IEC104Thread::CreateGI(unsigned char apdulength)
     QByteArray GI;
     GI.append(I104_START);
     GI.append(apdulength);
-    GI.append((V_S & 0x007F) << 1);
-    GI.append((V_S & 0x7F80) >> 7);
-    GI.append((V_R & 0x007F) << 1);
-    GI.append((V_R & 0x7F80) >> 7);
-    Command = I104_S;
+    GI.append((m_V_S & 0x007F) << 1);
+    GI.append((m_V_S & 0x7F80) >> 7);
+    GI.append((m_V_R & 0x007F) << 1);
+    GI.append((m_V_R & 0x7F80) >> 7);
+    m_command = I104_S;
     return GI;
 }
 
@@ -617,8 +633,8 @@ QByteArray IEC104Thread::ASDUFilePrefix(unsigned char cmd, unsigned char filenum
     QByteArray ba;
     ba.append(cmd);
     ba.append(QByteArrayLiteral("\x01\x0d\x00"));
-    ba.append(BaseAdr);
-    ba.append(BaseAdr >> 8);
+    ba.append(m_baseAdrLow);
+    ba.append(m_baseAdrHigh);
     ba.append(QByteArrayLiteral("\x00\x00\x00"));
     ba.append(filenum);
     ba.append('\x00');
@@ -631,8 +647,8 @@ QByteArray IEC104Thread::ASDU6Prefix(unsigned char cmd, quint32 adr)
     ASDU ba;
     ba.append(cmd);
     ba.append(QByteArrayLiteral("\x01\x06\x00"));
-    ba.append(BaseAdr);
-    ba.append(BaseAdr >> 8);
+    ba.append(m_baseAdrLow);
+    ba.append(m_baseAdrHigh);
     ba.append(adr);
     ba.append(adr >> 8);
     ba.append(adr >> 16);
@@ -645,7 +661,7 @@ void IEC104Thread::SendGI()
     GInter.append('\x14');
     APCI GI = CreateGI(0x0e);
     Send(1, GI, GInter); // ASDU = QByteArray()
-    AckVR = V_R;
+    m_ackVR = m_V_R;
 }
 
 template <typename T> QByteArray IEC104Thread::ToByteArray(T var)
@@ -669,11 +685,11 @@ void IEC104Thread::SendS()
     Confirm.append(0x04);
     Confirm.append(I104_S);
     Confirm.append('\x0');
-    Confirm.append((V_R & 0x007F) << 1);
-    Confirm.append((V_R & 0x7F80) >> 7);
-    Command = I104_S;
+    Confirm.append((m_V_R & 0x007F) << 1);
+    Confirm.append((m_V_R & 0x7F80) >> 7);
+    m_command = I104_S;
     Send(0, Confirm); // ASDU = QByteArray()
-    AckVR = V_R;
+    m_ackVR = m_V_R;
 }
 
 void IEC104Thread::SendTestCon()
@@ -683,38 +699,38 @@ void IEC104Thread::SendTestCon()
     GI.append(0x04);
     GI.append(I104_TESTFR_CON);
     GI.append(QByteArrayLiteral("\x00\x00\x00"));
-    Command = I104_TESTFR_CON;
+    m_command = I104_TESTFR_CON;
     Send(0, GI); // ASDU = QByteArray()
 }
 
 void IEC104Thread::SendTestAct()
 {
-    if (NoAnswer)
+    if (m_noAnswer)
     {
         emit ReconnectSignal();
         ERMSG("No answer");
         return;
     }
     else
-        NoAnswer = 1;
+        m_noAnswer = 1;
     qDebug("ConTimer->stop()");
-    ConTimer->stop();
+    m_sendTestTimer->stop();
     APCI GI;
     GI.append(I104_START);
     GI.append(0x04);
     GI.append(I104_TESTFR_ACT);
     GI.append(QByteArrayLiteral("\x00\x00\x00"));
-    Command = I104_TESTFR_ACT;
+    m_command = I104_TESTFR_ACT;
     Send(0, GI); // ASDU = QByteArray()
 }
 
 void IEC104Thread::SelectFile(char numfile)
 {
-    SecNum = 1;
-    FileSending = true;
-    Log->info("FileSending set");
-    ConTimer->stop();
-    Log->info("SelectFile(" + QString::number(numfile) + ")");
+    m_sectionNum = 1;
+    m_isFileSending = true;
+    m_log->info("FileSending set");
+    m_sendTestTimer->stop();
+    m_log->info("SelectFile(" + QString::number(numfile) + ")");
     ASDU cmd = ASDUFilePrefix(F_SC_NA_1, numfile, 0x00);
     cmd.append('\x01');
     APCI GI = CreateGI(0x11);
@@ -731,7 +747,7 @@ void IEC104Thread::CallFile(unsigned char numFile)
 
 void IEC104Thread::GetSection(unsigned char numFile)
 {
-    ASDU cmd = ASDUFilePrefix(F_SC_NA_1, numFile, SecNum);
+    ASDU cmd = ASDUFilePrefix(F_SC_NA_1, numFile, m_sectionNum);
     cmd.append('\x06');
     APCI GI = CreateGI(0x11);
     Send(1, GI, cmd); // ASDU = QByteArray()
@@ -739,16 +755,16 @@ void IEC104Thread::GetSection(unsigned char numFile)
 
 void IEC104Thread::ConfirmSection(unsigned char numFile)
 {
-    ASDU cmd = ASDUFilePrefix(F_AF_NA_1, numFile, SecNum);
+    ASDU cmd = ASDUFilePrefix(F_AF_NA_1, numFile, m_sectionNum);
     cmd.append('\x03');
     APCI GI = CreateGI(0x11);
     Send(1, GI, cmd); // ASDU = QByteArray()
-    SecNum++;
+    m_sectionNum++;
 }
 
 void IEC104Thread::ConfirmFile(unsigned char numFile)
 {
-    ASDU cmd = ASDUFilePrefix(F_AF_NA_1, numFile, SecNum);
+    ASDU cmd = ASDUFilePrefix(F_AF_NA_1, numFile, m_sectionNum);
     cmd.append('\x01');
     APCI GI = CreateGI(0x11);
     Send(1, GI, cmd); // ASDU = QByteArray()
@@ -757,34 +773,35 @@ void IEC104Thread::ConfirmFile(unsigned char numFile)
 // void IEC104Thread::FileReady(S2ConfigType *file)
 void IEC104Thread::FileReady()
 {
-    FileSending = true;
-    Log->info("FileSending set");
+    m_isFileSending = true;
+    m_log->info("FileSending set");
     //    DR = file;
-    SecNum = 1;
+    m_sectionNum = 1;
     ASDU cmd = ASDUFilePrefix(F_FR_NA_1, 0x01, 0x00);
     cmd.chop(1);
-    File.resize(65535);
-    S2::StoreDataMem(&(File.data()[0]), DR,
-        0x0001); // 0x0001 - номер файла конфигурации
-    FileLen = static_cast<quint8>(File.data()[4]);
-    FileLen += static_cast<quint8>(File.data()[5]) * 256;
-    FileLen += static_cast<quint8>(File.data()[6]) * 65536;
-    FileLen += static_cast<quint8>(File.data()[7]) * 16777216;
-    FileLen += sizeof(S2::FileHeader); // FileHeader
-    File.resize(FileLen);
-    cmd.append(FileLen & 0xFF);
-    cmd.append((FileLen & 0xFF00) >> 8);
-    cmd.append((FileLen & 0xFF0000) >> 16);
+    //    m_file.resize(65535);
+    //    S2::StoreDataMem(&(m_file.data()[0]), DR,
+    //        0x0001); // 0x0001 - номер файла конфигурации
+    //    m_fileLen = static_cast<quint8>(m_file.data()[4]);
+    //    m_fileLen += static_cast<quint8>(m_file.data()[5]) * 256;
+    //    m_fileLen += static_cast<quint8>(m_file.data()[6]) * 65536;
+    //    m_fileLen += static_cast<quint8>(m_file.data()[7]) * 16777216;
+    //    m_fileLen += sizeof(S2::FileHeader); // FileHeader
+    //    m_file.resize(m_fileLen);
+    m_fileLen = m_file.size();
+    cmd.append(m_fileLen & 0xFF);
+    cmd.append((m_fileLen & 0xFF00) >> 8);
+    cmd.append((m_fileLen & 0xFF0000) >> 16);
     APCI GI = CreateGI(0x12);
     Send(1, GI, cmd); // ASDU = QByteArray()
 }
 
 void IEC104Thread::SectionReady()
 {
-    ASDU cmd = ASDUFilePrefix(F_SR_NA_1, 0x01, SecNum);
-    cmd.append(FileLen & 0xFF);
-    cmd.append((FileLen & 0xFF00) >> 8);
-    cmd.append((FileLen & 0xFF0000) >> 16);
+    ASDU cmd = ASDUFilePrefix(F_SR_NA_1, 0x01, m_sectionNum);
+    cmd.append(m_fileLen & 0xFF);
+    cmd.append((m_fileLen & 0xFF00) >> 8);
+    cmd.append((m_fileLen & 0xFF0000) >> 16);
     APCI GI = CreateGI(0x13);
     Send(1, GI, cmd); // ASDU = QByteArray()
 }
@@ -792,8 +809,8 @@ void IEC104Thread::SectionReady()
 void IEC104Thread::SendSegments()
 {
     APCI GI;
-    KSS = 0;
-    KSF = 0;
+    m_KSS = 0;
+    m_KSF = 0;
 
     unsigned int pos = 0;
     /*    if (FileLen > static_cast<quint32>(File.size()))
@@ -801,47 +818,49 @@ void IEC104Thread::SendSegments()
             ERMSG("FileLen is bigger than file");
             return;
         } */
-    emit SetDataSize(FileLen);
-    ASDU cmd = ASDUFilePrefix(F_SG_NA_1, 0x01, SecNum);
+    setGeneralResponse(DataTypes::GeneralResponseTypes::DataSize, m_fileLen);
+    //    emit SetDataSize(FileLen);
+    ASDU cmd = ASDUFilePrefix(F_SG_NA_1, 0x01, m_sectionNum);
     cmd.append('\x0');
     unsigned char diff;
     do
     {
-        quint32 filesize = File.size();
+        quint32 filesize = m_file.size();
         if (filesize > SEGMENTSIZE)
             diff = SEGMENTSIZE;
         else
             diff = filesize;
-        cmd.append(File.left(diff));
+        cmd.append(m_file.left(diff));
         for (int i = 0; i < diff; ++i)
         {
-            KSS += static_cast<quint8>(File.data()[i]);
-            KSF += static_cast<quint8>(File.data()[i]);
+            m_KSS += static_cast<quint8>(m_file.data()[i]);
+            m_KSF += static_cast<quint8>(m_file.data()[i]);
         }
-        File = File.mid(diff);
+        m_file = m_file.mid(diff);
         pos += diff;
-        emit SetDataCount(pos);
+        setGeneralResponse(DataTypes::GeneralResponseTypes::DataCount, pos);
+        //        emit SetDataCount(pos);
         cmd[12] = static_cast<unsigned char>(diff);
         GI = CreateGI(diff + 17);
         Send(1, GI, cmd); // ASDU = QByteArray()
         cmd = cmd.left(13);
         QThread::msleep(100);
-    } while (!File.isEmpty());
+    } while (!m_file.isEmpty());
 
-    cmd = ASDUFilePrefix(F_LS_NA_1, 1, SecNum);
+    cmd = ASDUFilePrefix(F_LS_NA_1, 1, m_sectionNum);
     cmd.append('\x03');
-    cmd.append(KSS);
-    KSS = 0;
+    cmd.append(m_KSS);
+    m_KSS = 0;
     GI = CreateGI(0x12);
     Send(1, GI, cmd); // ASDU = QByteArray()
 }
 
 void IEC104Thread::LastSection()
 {
-    ASDU cmd = ASDUFilePrefix(F_LS_NA_1, 1, SecNum);
+    ASDU cmd = ASDUFilePrefix(F_LS_NA_1, 1, m_sectionNum);
     cmd.append('\x01');
-    cmd.append(KSF);
-    KSF = 0;
+    cmd.append(m_KSF);
+    m_KSF = 0;
     APCI GI = CreateGI(0x12);
     Send(1, GI, cmd); // ASDU = QByteArray()
 }
@@ -857,7 +876,9 @@ void IEC104Thread::Com45(quint32 com)
 void IEC104Thread::Com50(quint32 adr, float param)
 {
     if (adr == 910)
-        emit SetDataSize(11);
+        setGeneralResponse(DataTypes::GeneralResponseTypes::DataSize, 11);
+
+    //        emit SetDataSize(11);
 
     ASDU cmd = ASDU6Prefix(C_SE_NC_1, adr);
     cmd.append(ToByteArray(param));
@@ -868,23 +889,23 @@ void IEC104Thread::Com50(quint32 adr, float param)
 
 void IEC104Thread::reqGroup(int groupNum)
 {
-    ASDU GTime = ASDU6Prefix(C_IC_NA_1, 0);
+    ASDU req = ASDU6Prefix(C_IC_NA_1, 0);
     //    GTime.append(0x23);
-    GTime.append(groupNum + 20); // group 0 (GI) -> 20, group 1 -> 21 etc
+    req.append(groupNum + 20); // group 0 (GI) -> 20, group 1 -> 21 etc
     APCI GI = CreateGI(0x0e);
-    Send(1, GI, GTime); // ASDU = QByteArray()
-    AckVR = V_R;
+    Send(1, GI, req); // ASDU = QByteArray()
+    m_ackVR = m_V_R;
 }
 
-void IEC104Thread::CorReadRequest()
-{
-    Log->info("CorReadRequest()");
-    ASDU GCor = ASDU6Prefix(C_IC_NA_1, 0);
-    GCor.append('\x16');
-    APCI GI = CreateGI(0x0e);
-    Send(1, GI, GCor); // ASDU = QByteArray()
-    AckVR = V_R;
-}
+// void IEC104Thread::CorReadRequest()
+//{
+//    Log->info("CorReadRequest()");
+//    ASDU GCor = ASDU6Prefix(C_IC_NA_1, 0);
+//    GCor.append('\x16');
+//    APCI GI = CreateGI(0x0e);
+//    Send(1, GI, GCor); // ASDU = QByteArray()
+//    AckVR = V_R;
+//}
 
 void IEC104Thread::Com51WriteTime(quint32 time)
 {
@@ -892,6 +913,14 @@ void IEC104Thread::Com51WriteTime(quint32 time)
     cmd.append(ToByteArray(time));
     APCI GI = CreateGI(0x11);
     Send(1, GI, cmd); // ASDU = QByteArray()
+}
+
+void IEC104Thread::setGeneralResponse(DataTypes::GeneralResponseTypes type, quint64 data)
+{
+    DataTypes::GeneralResponseStruct grs;
+    grs.type = type;
+    grs.data = data;
+    DataManager::addSignalToOutList(DataManager::SignalTypes::GeneralResponse, grs);
 }
 
 // void IEC104Thread::convert(IEC104Thread::SponSignals *signal) { emit Sponsignalsreceived(signal); }

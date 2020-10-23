@@ -1,10 +1,22 @@
 #ifndef DATATYPES_H
 #define DATATYPES_H
 
+#include <QVariant>
 #include <qmetatype.h>
 
 namespace DataTypes
 {
+enum SignalTypes
+{
+    BitString,
+    FloatWithTime,
+    SinglePointWithTime,
+    ByteArray,
+    File,
+    ConfParameter,
+    GeneralResponse
+};
+
 enum GeneralResponseTypes
 {
     Ok,
@@ -12,7 +24,7 @@ enum GeneralResponseTypes
     DataCount
 };
 
-struct BitString
+struct BitStringStruct
 {
     //    quint8 sigAdr[3];
     quint32 sigAdr;
@@ -21,7 +33,7 @@ struct BitString
 }; // первое - номера сигналов, второе - их значения ("" ~ недостоверное
    // значение), третье - метка времени
 
-struct FloatWithTime
+struct FloatWithTimeStruct
 {
     quint32 sigAdr;
     float sigVal;
@@ -29,29 +41,35 @@ struct FloatWithTime
     quint64 CP56Time;
 };
 
-struct Float
+struct FloatStruct
 {
     quint32 sigAdr;
     float sigVal;
 };
 
-struct SinglePointWithTime
+struct SinglePointWithTimeStruct
 {
     quint32 sigAdr;
     quint8 sigVal;
     quint64 CP56Time;
 };
 
-struct File
+struct FileStruct
 {
     quint32 filenum;
     QByteArray filedata;
 };
 
-struct ConfParameter
+struct ConfParameterStruct
 {
     quint32 ID;
     QByteArray data;
+};
+
+struct SignalsStruct
+{
+    SignalTypes type;
+    QVariant data;
 };
 
 struct GeneralResponseStruct
@@ -108,11 +126,11 @@ typedef struct DataRec
 } DataRec;
 }
 
-Q_DECLARE_METATYPE(DataTypes::BitString)
-Q_DECLARE_METATYPE(DataTypes::FloatWithTime)
-Q_DECLARE_METATYPE(DataTypes::SinglePointWithTime)
-Q_DECLARE_METATYPE(DataTypes::File)
-Q_DECLARE_METATYPE(DataTypes::ConfParameter)
+Q_DECLARE_METATYPE(DataTypes::BitStringStruct)
+Q_DECLARE_METATYPE(DataTypes::FloatWithTimeStruct)
+Q_DECLARE_METATYPE(DataTypes::SinglePointWithTimeStruct)
+Q_DECLARE_METATYPE(DataTypes::FileStruct)
+Q_DECLARE_METATYPE(DataTypes::ConfParameterStruct)
 Q_DECLARE_METATYPE(DataTypes::GeneralResponseStruct)
 Q_DECLARE_METATYPE(Queries::Command)
 #endif // DATATYPES_H

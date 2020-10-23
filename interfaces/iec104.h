@@ -3,13 +3,18 @@
 #include "../gen/datamanager.h"
 #include "../gen/logclass.h"
 #include "../gen/s2.h"
+#include "baseinterface.h"
 #include "iec104thread.h"
 
 #include <QMutex>
 #include <QQueue>
 #include <QTimer>
 
-class IEC104 : public QObject
+#define STARTUPGROUP 2
+#define BSIGROUP 1
+#define TIMEGROUP 15
+
+class IEC104 : public BaseInterface
 {
     Q_OBJECT
 
@@ -104,7 +109,7 @@ public:
     //    QString IP;
 
     bool Working();
-    void Connect(Settings &st);
+    void start(const ConnectStruct &st);
     //    static void getSignalsFrom104(quint32 firstSignalAdr, quint32 signalCount, DataManager::SignalTypes type,
     //        QList<DataManager::SignalsStruct> &outlist);
 
@@ -114,9 +119,9 @@ public slots:
     static void Com45(quint32 com);
     static void Com50(quint32 adr, float param);
     //    void CorReadRequest();
-    //    static void reqStartup();
+    void reqStartup();
     static void FileReady(S2ConfigType *s2config);
-    static void reqGroup(quint32 groupNum);
+    static void getTime();
     static void com51WriteTime(uint time);
 
 signals:

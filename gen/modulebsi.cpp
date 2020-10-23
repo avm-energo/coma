@@ -50,7 +50,7 @@ void ModuleBSI::ETHUpdate()
     {
         foreach (DataManager::SignalsStruct signal, list)
         {
-            DataTypes::BitString bs = qvariant_cast<DataTypes::BitString>(signal.data);
+            DataTypes::BitStringStruct bs = qvariant_cast<DataTypes::BitStringStruct>(signal.data);
             //            memcpy(&startadr, &(sig->BS.SigAdr[0]), sizeof(sig->BS.SigAdr));
             //            signum = sig->SigNumber;
             //            INFOMSG("FillBSIe(): address=" + QString::number(startadr));

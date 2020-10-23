@@ -152,7 +152,7 @@ void AbstractStartupDialog::updateFloatData()
     {
         foreach (DataManager::SignalsStruct signal, list)
         {
-            DataTypes::FloatWithTime fwt = qvariant_cast<DataTypes::FloatWithTime>(signal.data);
+            DataTypes::FloatWithTimeStruct fwt = qvariant_cast<DataTypes::FloatWithTimeStruct>(signal.data);
 
             //    if (((Signal)->fl.SigAdr >= MBS_INITREG) && ((Signal)->fl.SigAdr <= 4010))
             //    {

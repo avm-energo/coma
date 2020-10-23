@@ -10,7 +10,7 @@
 #include <QThread>
 #include <QVBoxLayout>
 
-IEC104::IEC104(QObject *parent) : QObject(parent)
+IEC104::IEC104(QObject *parent) : BaseInterface(parent)
 {
     EthThreadWorking = false;
     ParseThreadWorking = false;
@@ -20,16 +20,11 @@ IEC104::IEC104(QObject *parent) : QObject(parent)
     Log->info("=== Log started ===");
 }
 
-IEC104::~IEC104()
-{
-}
+IEC104::~IEC104() { }
 
-bool IEC104::Working()
-{
-    return (EthThreadWorking | ParseThreadWorking);
-}
+bool IEC104::Working() { return (EthThreadWorking | ParseThreadWorking); }
 
-void IEC104::Connect(Settings &st)
+void IEC104::start(const ConnectStruct &st)
 {
     INFOMSG("IEC104: connect");
     EthThreadWorking = false;
@@ -38,7 +33,7 @@ void IEC104::Connect(Settings &st)
     QThread *thr = new QThread;
     Ethernet *eth = new Ethernet;
     eth->moveToThread(thr);
-    eth->IP = st.ip;
+    eth->IP = st.iec104st.ip;
     connect(eth, &Ethernet::Finished, thr, &QThread::quit);
     connect(eth, &Ethernet::Finished, eth, &QObject::deleteLater);
     connect(thr, &QThread::started, eth, &Ethernet::Run);
@@ -81,19 +76,19 @@ void IEC104::Connect(Settings &st)
     //    connect(m_thread104, &IEC104Thread::SetDataCount, this, &IEC104::SetDataCount);
     //    connect(m_thread104, &IEC104Thread::SendMessagefromParse, this, &IEC104::SendConfMessageOk);
 
-    m_thread104->SetBaseAdr(st.baseadr);
-    m_thread104->incLS = 0;
-    m_thread104->count = 0;
+    m_thread104->SetBaseAdr(st.iec104st.baseadr);
+    //    m_thread104->incLS = 0;
+    //    m_thread104->count = 0;
 
     thr->start();
     thr2->start();
 }
 
-// void IEC104::reqStartup()
-//{
-//    Queries::Command inp { Queries::Commands::CM104_CORREADREQUEST, 0, 0, {} };
-//    DataManager::addToInQueue(inp);
-//}
+void IEC104::reqStartup()
+{
+    Queries::Command inp { Queries::Commands::CM104_REQGROUP, STARTUPGROUP, 0, {} };
+    DataManager::addToInQueue(inp);
+}
 
 // void IEC104::CorReadRequest()
 //{
@@ -157,9 +152,9 @@ void IEC104::Com50(quint32 adr, float param)
     //    IEC104Thread::s_ParseWriteMutex.unlock();
 }
 
-void IEC104::reqGroup(quint32 groupNum)
+void IEC104::getTime()
 {
-    Queries::Command inp { Queries::Commands::CM104_REQGROUP, groupNum, 0, {} };
+    Queries::Command inp { Queries::Commands::CM104_REQGROUP, TIMEGROUP, 0, {} };
     DataManager::addToInQueue(inp);
     //    IEC104Thread::InputStruct inp;
     //    inp.cmd = IEC104Thread::CM104_INTERROGATETIMEGR15;
@@ -180,10 +175,7 @@ void IEC104::com51WriteTime(uint time)
     //    IEC104Thread::s_ParseWriteMutex.unlock();
 }
 
-void IEC104::EthThreadStarted()
-{
-    EthThreadWorking = true;
-}
+void IEC104::EthThreadStarted() { EthThreadWorking = true; }
 
 void IEC104::EthThreadFinished()
 {
@@ -192,10 +184,7 @@ void IEC104::EthThreadFinished()
         emit Finished();
 }
 
-void IEC104::ParseThreadStarted()
-{
-    ParseThreadWorking = true;
-}
+void IEC104::ParseThreadStarted() { ParseThreadWorking = true; }
 
 void IEC104::ParseThreadFinished()
 {

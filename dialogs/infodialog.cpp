@@ -2,6 +2,7 @@
 
 #include "../gen/board.h"
 #include "../gen/colors.h"
+#include "../gen/datamanager.h"
 #include "../gen/error.h"
 #include "../gen/modulebsi.h"
 #include "../gen/stdfunc.h"
@@ -98,4 +99,11 @@ void InfoDialog::ClearBsi()
     //    WDFunc::SetLBLText(this, "snmle", "");
     //    WDFunc::SetLBLText(this, "hwmle", "");
     // расшифровка Hth
+}
+
+void InfoDialog::update()
+{
+    QList<DataTypes::SignalsStruct> list;
+
+    if (DataManager::getSignals(BSIREG, BSIENDREG, DataTypes::BitString, list) != Error::Msg::ResEmpty) { }
 }

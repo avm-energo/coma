@@ -185,7 +185,7 @@ void AlarmClass::UpdateAlarm104()
         {
             foreach (DataManager::SignalsStruct signal, list)
             {
-                DataTypes::SinglePointWithTime sp = qvariant_cast<DataTypes::SinglePointWithTime>(signal.data);
+                DataTypes::SinglePointWithTimeStruct sp = qvariant_cast<DataTypes::SinglePointWithTimeStruct>(signal.data);
 
                 //        for (int i = 0; i < Signal->SigNumber; i++)
                 //        {

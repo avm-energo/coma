@@ -139,16 +139,13 @@ private slots:
     void GetAbout();
     void closeEvent(QCloseEvent *event) override;
     void SetDefConf();
+    void update();
 
     //    void setConf(unsigned char);
     //    void Fill();
     //    void FillBSI(IEC104Thread::BS104Signals *sig);
     void FillBSI(QList<ModBus::BSISignalStruct> sig, unsigned int sigsize);
     // void PasswordCheck(QString psw);
-    void SetProgressBar1Size(int size);
-    void SetProgressBar1(int cursize);
-    void SetProgressBar2Size(int size);
-    void SetProgressBar2(int cursize);
     void MainTWTabClicked(int tabindex);
 
 private:
@@ -210,22 +207,26 @@ private:
     void New104();
     void NewModbus();
     void NewUSB();
-    void NewTimers();
+    void newTimers();
     void SetupUI();
     void CloseDialogs();
     void PrepareDialogs();
-    void NewTimersBda();
+    void setupConnections();
+    void SetProgressBar1Size(int size);
+    void SetProgressBar1(int cursize);
+    void SetProgressBar2Size(int size);
+    void SetProgressBar2(int cursize);
 
     virtual bool nativeEvent(const QByteArray &eventType, void *message, long *result) override;
 
     //    void addConfTab(ETabWidget *MainTW, QString str);
     // Дурацкое название
-    void setupQConnections();
+    //    void setupQConnections();
 
     //    void setupDialogs(ETabWidget *MainTW);
 
-    QToolBar * createToolBar();
-    
+    QToolBar *createToolBar();
+
 protected:
     void keyPressEvent(QKeyEvent *e) override;
     void resizeEvent(QResizeEvent *e) override;

@@ -3,7 +3,6 @@
 #include "../gen/board.h"
 #include "../gen/error.h"
 #include "../gen/stdfunc.h"
-#include "../usb/eprotocom.h"
 #include "../widgets/wd_func.h"
 
 #include <QDebug>
@@ -20,7 +19,7 @@
 #include <QtConcurrent/QtConcurrentMap>
 #include <QtNetwork/QHostAddress>
 
-ConnectDialog::ConnectDialog()
+ConnectDialog::ConnectDialog(QWidget *parent) : QDialog(parent)
 {
     QStringList intersl { "USB", "Ethernet", "RS485" };
     setMinimumWidth(150);
@@ -105,7 +104,7 @@ void ConnectDialog::SetInterface()
 
 void ConnectDialog::SetUsb(QModelIndex index)
 {
-    ConnectStruct st; // temporary var
+    BaseInterface::ConnectStruct st; // temporary var
     if (index.isValid())
     {
         QDialog *dlg = this->findChild<QDialog *>("connectdlg");
@@ -199,10 +198,7 @@ void ConnectDialog::RsAccepted()
     }
 }
 
-void ConnectDialog::SetCancelled()
-{
-    emit Cancelled();
-}
+void ConnectDialog::SetCancelled() { emit Cancelled(); }
 
 void ConnectDialog::SetEth()
 {
@@ -241,10 +237,7 @@ void ConnectDialog::handlePing()
     watcher->deleteLater();
 }
 
-void ConnectDialog::handlePingFinish()
-{
-    createPortTask();
-}
+void ConnectDialog::handlePingFinish() { createPortTask(); }
 
 void ConnectDialog::handlePortFinish()
 {

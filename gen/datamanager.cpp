@@ -2,17 +2,15 @@
 
 #include "files.h"
 
-QList<DataManager::SignalsStruct> DataManager::s_outputList;
+QList<DataTypes::SignalsStruct> DataManager::s_outputList;
 QMutex DataManager::s_outListMutex;
 QMutex DataManager::s_inQueueMutex;
 QQueue<QVariant> s_inputQueue;
 
-DataManager::DataManager(QObject *parent) : QObject(parent)
-{
-}
+DataManager::DataManager(QObject *parent) : QObject(parent) { }
 
-Error::Msg DataManager::getSignals(
-    quint32 firstSignalAdr, quint32 lastSignalAdr, SignalTypes type, QList<SignalsStruct> &outlist)
+Error::Msg DataManager::getSignals(quint32 firstSignalAdr, quint32 lastSignalAdr, DataTypes::SignalTypes type,
+    QList<DataTypes::SignalsStruct> &outlist)
 {
     s_outListMutex.lock();
     if (s_outputList.isEmpty())
@@ -20,38 +18,39 @@ Error::Msg DataManager::getSignals(
         s_outListMutex.unlock();
         return Error::Msg::ResEmpty;
     }
-    foreach (SignalsStruct sig, s_outputList)
+    foreach (DataTypes::SignalsStruct sig, s_outputList)
     {
         if (sig.type == type)
         {
             QVariant signal = sig.data;
             switch (type)
             {
-            case SignalTypes::BitString:
+            case DataTypes::SignalTypes::BitString:
             {
-                if (signal.canConvert<DataTypes::BitString>())
+                if (signal.canConvert<DataTypes::BitStringStruct>())
                 {
-                    DataTypes::BitString bs = qvariant_cast<DataTypes::BitString>(signal);
+                    DataTypes::BitStringStruct bs = qvariant_cast<DataTypes::BitStringStruct>(signal);
                     if ((bs.sigAdr >= firstSignalAdr) && (bs.sigAdr <= lastSignalAdr))
                         outlist.removeAll(sig);
                 }
                 break;
             }
-            case SignalTypes::FloatWithTime:
+            case DataTypes::SignalTypes::FloatWithTime:
             {
-                if (signal.canConvert<DataTypes::FloatWithTime>())
+                if (signal.canConvert<DataTypes::FloatWithTimeStruct>())
                 {
-                    DataTypes::FloatWithTime fwt = qvariant_cast<DataTypes::FloatWithTime>(signal);
+                    DataTypes::FloatWithTimeStruct fwt = qvariant_cast<DataTypes::FloatWithTimeStruct>(signal);
                     if ((fwt.sigAdr >= firstSignalAdr) && (fwt.sigAdr <= lastSignalAdr))
                         outlist.removeAll(sig);
                 }
                 break;
             }
-            case SignalTypes::SinglePointWithTime:
+            case DataTypes::SignalTypes::SinglePointWithTime:
             {
-                if (signal.canConvert<DataTypes::SinglePointWithTime>())
+                if (signal.canConvert<DataTypes::SinglePointWithTimeStruct>())
                 {
-                    DataTypes::SinglePointWithTime sp = qvariant_cast<DataTypes::SinglePointWithTime>(signal);
+                    DataTypes::SinglePointWithTimeStruct sp
+                        = qvariant_cast<DataTypes::SinglePointWithTimeStruct>(signal);
                     if ((sp.sigAdr >= firstSignalAdr) && (sp.sigAdr <= lastSignalAdr))
                         outlist.removeAll(sig);
                 }
@@ -76,13 +75,13 @@ Error::Msg DataManager::getFile(quint32 filenum, QByteArray &outba)
         s_outListMutex.unlock();
         return Error::Msg::ResEmpty;
     }
-    foreach (SignalsStruct sig, s_outputList)
+    foreach (DataTypes::SignalsStruct sig, s_outputList)
     {
-        if (sig.type == SignalTypes::File)
+        if (sig.type == DataTypes::SignalTypes::File)
         {
-            if (sig.data.canConvert<DataTypes::File>())
+            if (sig.data.canConvert<DataTypes::FileStruct>())
             {
-                DataTypes::File fl = qvariant_cast<DataTypes::File>(sig.data);
+                DataTypes::FileStruct fl = qvariant_cast<DataTypes::FileStruct>(sig.data);
                 if (fl.filenum == filenum)
                 {
                     outba = fl.filedata;
@@ -96,19 +95,19 @@ Error::Msg DataManager::getFile(quint32 filenum, QByteArray &outba)
     return Error::Msg::ResEmpty;
 }
 
-Error::Msg DataManager::getConfig(quint32 firstID, quint32 lastID, QList<DataTypes::ConfParameter> &outlist)
+Error::Msg DataManager::getConfig(quint32 firstID, quint32 lastID, QList<DataTypes::ConfParameterStruct> &outlist)
 {
     QByteArray ba;
     assert(firstID <= lastID);
     // check needed IDs for exist in s_outputList
     s_outListMutex.lock();
-    foreach (SignalsStruct sig, s_outputList)
+    foreach (DataTypes::SignalsStruct sig, s_outputList)
     {
-        if (sig.type == SignalTypes::ConfParameter)
+        if (sig.type == DataTypes::SignalTypes::ConfParameter)
         {
-            if (sig.data.canConvert<DataTypes::ConfParameter>())
+            if (sig.data.canConvert<DataTypes::ConfParameterStruct>())
             {
-                DataTypes::ConfParameter cfp = qvariant_cast<DataTypes::ConfParameter>(sig.data);
+                DataTypes::ConfParameterStruct cfp = qvariant_cast<DataTypes::ConfParameterStruct>(sig.data);
                 if ((cfp.ID >= firstID) && (cfp.ID <= lastID))
                 {
                     outlist.append(cfp);
@@ -123,27 +122,30 @@ Error::Msg DataManager::getConfig(quint32 firstID, quint32 lastID, QList<DataTyp
         if (S2::RestoreData(ba, outlist) == Error::Msg::NoError)
         {
             // check for needed IDs and move not mentioned into s_outputList
-            foreach (DataTypes::ConfParameter cfp, outlist)
+            foreach (DataTypes::ConfParameterStruct cfp, outlist)
             {
                 if ((cfp.ID < firstID) || (cfp.ID > lastID))
-                    addSignalToOutList(SignalTypes::ConfParameter, cfp);
+                    addSignalToOutList(DataTypes::SignalTypes::ConfParameter, cfp);
             }
         }
     }
     return Error::Msg::ResEmpty;
 }
 
-Error::Msg DataManager::getResponse(DataTypes::GeneralResponseStruct &response)
+Error::Msg DataManager::getResponse(DataTypes::GeneralResponseTypes type, DataTypes::GeneralResponseStruct &response)
 {
     s_outListMutex.lock();
-    foreach (SignalsStruct sig, s_outputList)
+    foreach (DataTypes::SignalsStruct sig, s_outputList)
     {
-        if (sig.type == SignalTypes::GeneralResponse)
+        if (sig.type == DataTypes::SignalTypes::GeneralResponse)
         {
             if (sig.data.canConvert<DataTypes::GeneralResponseStruct>())
             {
                 response = qvariant_cast<DataTypes::GeneralResponseStruct>(sig.data);
-                s_outputList.removeOne(sig);
+                if (response.type == type)
+                    s_outputList.removeOne(sig);
+                else
+                    continue;
                 s_outListMutex.unlock();
                 return Error::Msg::NoError;
             }

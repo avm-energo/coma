@@ -14,35 +14,18 @@ class DataManager : public QObject
 {
     Q_OBJECT
 public:
-    enum SignalTypes
-    {
-        BitString,
-        FloatWithTime,
-        SinglePointWithTime,
-        ByteArray,
-        File,
-        ConfParameter,
-        GeneralResponse
-    };
-
-    struct SignalsStruct
-    {
-        SignalTypes type;
-        QVariant data;
-    };
-
     explicit DataManager(QObject *parent = nullptr);
 
-    static Error::Msg getSignals(quint32 firstSignalAdr, quint32 lastSignalAdr, DataManager::SignalTypes type,
-        QList<DataManager::SignalsStruct> &outlist);
+    static Error::Msg getSignals(quint32 firstSignalAdr, quint32 lastSignalAdr, DataTypes::SignalTypes type,
+        QList<DataTypes::SignalsStruct> &outlist);
     static Error::Msg getFile(quint32 filenum, QByteArray &outba);
-    static Error::Msg getConfig(quint32 firstID, quint32 lastID, QList<DataTypes::ConfParameter> &outlist);
-    static Error::Msg getResponse(DataTypes::GeneralResponseStruct &response);
+    static Error::Msg getConfig(quint32 firstID, quint32 lastID, QList<DataTypes::ConfParameterStruct> &outlist);
+    static Error::Msg getResponse(DataTypes::GeneralResponseTypes type, DataTypes::GeneralResponseStruct &response);
     static void setConfig(S2ConfigType *s2config);
     static void reqStartup();
-    template <typename T> static void addSignalToOutList(SignalTypes type, T signal)
+    template <typename T> static void addSignalToOutList(DataTypes::SignalTypes type, T signal)
     {
-        SignalsStruct str;
+        DataTypes::SignalsStruct str;
         str.type = type;
         str.data.setValue(signal);
         s_outListMutex.lock();
@@ -60,7 +43,7 @@ public:
     static Error::Msg deQueue(Queries::Command &cmd);
     //    static Error::Msg deQueueMBS(Queries::CommandMBS &cmd);
     static QQueue<QVariant> s_inputQueue;
-    static QList<SignalsStruct> s_outputList;
+    static QList<DataTypes::SignalsStruct> s_outputList;
     static QMutex s_outListMutex;
     static QMutex s_inQueueMutex;
 

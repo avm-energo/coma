@@ -132,7 +132,7 @@ Error::Msg S2::RestoreDataMem(void *mem, quint32 memsize, QVector<S2DataTypes::D
     return Error::Msg::NoError;
 }
 
-Error::Msg S2::RestoreData(QByteArray &bain, QList<DataTypes::ConfParameter> &outlist)
+Error::Msg S2::RestoreData(QByteArray &bain, QList<DataTypes::ConfParameterStruct> &outlist)
 {
     //    unsigned char *m = static_cast<unsigned char *>(mem);
     S2DataTypes::DataRec DR;
@@ -176,7 +176,7 @@ Error::Msg S2::RestoreData(QByteArray &bain, QList<DataTypes::ConfParameter> &ou
         bain.remove(0, size);
         if (DR.id != 0xFFFFFFFF)
         {
-            DataTypes::ConfParameter cfp;
+            DataTypes::ConfParameterStruct cfp;
             cfp.ID = DR.id;
             size = DR.num_byte;
             if (size > bain.size())

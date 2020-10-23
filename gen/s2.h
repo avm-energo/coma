@@ -19,7 +19,7 @@ public:
     // 0 - успешно, иначе код ошибки S2: Поиск элемента в массиве описаний
     static Error::Msg RestoreDataMem(void *mem, quint32 memsize, QVector<S2DataTypes::DataRec> *dr);
     // restore IDs and contents in ConfParameters list
-    static Error::Msg RestoreData(QByteArray &bain, QList<DataTypes::ConfParameter> &outlist);
+    static Error::Msg RestoreData(QByteArray &bain, QList<DataTypes::ConfParameterStruct> &outlist);
     static S2DataTypes::DataRec *FindElem(QVector<S2DataTypes::DataRec> *, quint32);
     static quint32 getTime32();
     static quint32 GetCRC32(char *, quint32);

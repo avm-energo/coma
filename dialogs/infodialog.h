@@ -24,6 +24,7 @@ signals:
 
 public slots:
     void ClearBsi();
+    void update();
 
 private:
 };

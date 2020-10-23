@@ -33,11 +33,11 @@
 // определения типа данных
 // TYPE IDENTIFICATION
 
-#define M_SP_NA_1 1  // Single-point information
-#define M_DP_NA_1 3  // Double-point information
-#define M_ST_NA_1 5  // Step position information
-#define M_BO_NA_1 7  // Bitstring of 32 bit
-#define M_ME_NA_1 9  // Measured value, normalized value
+#define M_SP_NA_1 1 // Single-point information
+#define M_DP_NA_1 3 // Double-point information
+#define M_ST_NA_1 5 // Step position information
+#define M_BO_NA_1 7 // Bitstring of 32 bit
+#define M_ME_NA_1 9 // Measured value, normalized value
 #define M_ME_NC_1 13 // Measured value, short floating point value
 #define M_SP_TB_1 30 // Single-point information with time tag CP56Time2a
 #define M_DP_TB_1 31 // Double-point information with time tag CP56Time2a
@@ -50,10 +50,10 @@
 #define C_RC_NA_1 47 // Regulating step command
 #define C_SE_NA_1 48 // Set point command, normalised value
 #define C_SE_NC_1 50
-#define C_BO_NA_1 51  // Bitstring of 32 bit
-#define C_SC_TA_1 58  // Single command with time tag CP56Time2a
-#define C_DC_TA_1 59  // Double command with time tag CP56Time2a
-#define M_EI_NA_1 70  // End of initialization
+#define C_BO_NA_1 51 // Bitstring of 32 bit
+#define C_SC_TA_1 58 // Single command with time tag CP56Time2a
+#define C_DC_TA_1 59 // Double command with time tag CP56Time2a
+#define M_EI_NA_1 70 // End of initialization
 #define C_IC_NA_1 100 // Interrrogation command
 #define C_CI_NA_1 101 // Counter interrrogation command
 #define C_CS_NA_1 103 // Clock syncronization command
@@ -113,23 +113,6 @@ public:
             int SigNumber;
         } BS104Signals; */
 
-    QByteArray File;
-    QList<QByteArray> ParseData;
-    quint32 ReadDataSize;
-    quint16 V_S, V_R, AckVR;
-    int Command;
-    QTimer *Timer104;
-    QByteArray ReadData;
-    quint8 RDSize; // длина всей посылки
-    int RDLength;
-    //    S2ConfigType *DR; // ссылка на структуру DataRec, по которой собирать/восстанавливать S2
-    //    S2ConfigType *DRJour;
-    quint32 FileLen;
-    int incLS, count, NoAnswer;
-    bool FileSending;
-    static QMutex s_ParseReadMutex;
-    static QMutex s_ParseWriteMutex;
-
     IEC104Thread(LogClass *log, QObject *parent = nullptr);
     ~IEC104Thread();
 
@@ -163,14 +146,14 @@ private:
     typedef struct
     {
         unsigned char Number; // number of Informational Objects
-        unsigned char SQ;     // Single <0> or Series <1> of Objects
+        unsigned char SQ; // Single <0> or Series <1> of Objects
     } QualifierVariableStructute;
 
     typedef struct
     {
-        unsigned char cause;     // <0..63> cause number
-        unsigned char confirm;   // <0> - positive , <1> - negative
-        unsigned char test;      // <0> - not a test, <1> - test
+        unsigned char cause; // <0..63> cause number
+        unsigned char confirm; // <0> - positive , <1> - negative
+        unsigned char test; // <0> - not a test, <1> - test
         unsigned char initiator; // number of initiating address
     } CauseOfTransmission;
 
@@ -184,17 +167,34 @@ private:
 
     typedef QByteArray APCI, ASDU;
 
-    bool ThreadMustBeFinished;
-    quint8 APDULength;
-    quint8 APDUFormat;
-    quint8 SecNum;
-    LogClass *Log;
-    quint16 BaseAdr;
-    QTimer *ConTimer;
-    quint8 KSS;
-    quint8 KSF;
-    QByteArray CutPckt;
-    bool FirstParse;
+    static QMutex s_ParseReadMutex;
+    static QMutex s_ParseWriteMutex;
+    //    int incLS;
+    int m_signalCounter, m_noAnswer;
+    bool m_isFileSending;
+    QByteArray m_file;
+    QList<QByteArray> m_parseData;
+    //    quint32 ReadDataSize;
+    quint16 m_V_S, m_V_R, m_ackVR;
+    int m_command;
+    //    S2ConfigType *DR; // ссылка на структуру DataRec, по которой собирать/восстанавливать S2
+    //    S2ConfigType *DRJour;
+    quint32 m_fileLen;
+    QTimer *m_timer104;
+    QByteArray m_readData;
+    quint8 m_readSize; // длина всей посылки
+    int m_readPos;
+    bool m_threadMustBeFinished;
+    quint8 m_APDULength;
+    quint8 m_APDUFormat;
+    quint8 m_sectionNum;
+    LogClass *m_log;
+    quint8 m_baseAdrHigh, m_baseAdrLow;
+    QTimer *m_sendTestTimer;
+    quint8 m_KSS;
+    quint8 m_KSF;
+    QByteArray m_cutPckt;
+    bool m_isFirstParse;
 
     void ParseIFormat(QByteArray &ba);
     Error::Msg isIncomeDataValid(QByteArray);
@@ -206,7 +206,7 @@ private:
     void SendGI();
     void SendS();
     void SendTestCon();
-    void CorReadRequest();
+    //    void CorReadRequest();
     void SelectFile(char numfile);
     void CallFile(unsigned char);
     void GetSection(unsigned char);
@@ -221,6 +221,7 @@ private:
     void reqGroup(int groupNum);
     void Com51WriteTime(quint32 time);
     //    void convert(IEC104Thread::SponSignals *signal);
+    void setGeneralResponse(DataTypes::GeneralResponseTypes type, quint64 data = 0);
 
 private slots:
     void SendTestAct();
