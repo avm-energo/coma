@@ -410,8 +410,8 @@ void Coma::StartWork()
         QEventLoop loop;
         Cancelled = false;
         ConnectDialog *dlg = new ConnectDialog;
-        connect(dlg, &ConnectDialog::Accepted, [this](ConnectDialog::ConnectStruct *st) {
-            this->ConnectSettings = *st;
+        connect(dlg, &ConnectDialog::Accepted, [this](BaseInterface::ConnectStruct st) {
+            this->ConnectSettings = st;
             emit CloseConnectDialog();
         });
         connect(dlg, &ConnectDialog::Cancelled, [this]() {
@@ -689,7 +689,7 @@ void Coma::CloseDialogs()
 void Coma::New104()
 {
     Ch104 = new IEC104;
-    connect(this, &Coma::StopCommunications, Ch104, &IEC104::StopAllThreads);
+    connect(this, &Coma::StopCommunications, Ch104, &IEC104::stop);
     connect(Ch104, &IEC104::Finished, [this]() { ActiveThreads &= ~THREAD::P104; });
     // connect(Ch104,SIGNAL(Sponsignalsready(IEC104Thread::SponSignals*)),this,SLOT(UpdatePredAlarmEvents(IEC104Thread::SponSignals*)));
     //    connect(Ch104, &IEC104::SetDataSize, this, &Coma::SetProgressBar1Size);
@@ -702,7 +702,7 @@ void Coma::New104()
 void Coma::NewModbus()
 {
     ChModbus = new ModBus;
-    connect(this, &Coma::StopCommunications, ChModbus, &ModBus::Stop);
+    connect(this, &Coma::StopCommunications, ChModbus, &ModBus::stop);
     connect(ChModbus, &ModBus::Finished, [this]() { ActiveThreads &= ~THREAD::MODBUS; });
     //  connect(ChModbus,SIGNAL(CoilSignalsReady(ModBus::Coils)), this,
     //  SLOT(ModBusUpdatePredAlarmEvents(ModBus::Coils)));
@@ -1151,7 +1151,7 @@ void Coma::Connect()
     case Board::InterfaceType::Ethernet:
     {
         New104();
-        if (!Ch104->Working())
+        if (!Ch104->isWorking())
             Ch104->Connect(ConnectSettings.iec104st);
         ActiveThreads |= THREAD::P104;
         break;

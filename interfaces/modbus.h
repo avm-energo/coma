@@ -31,6 +31,13 @@ class ModBus : public BaseInterface
     Q_OBJECT
 
 public:
+    enum CommandsMBS
+    {
+        MBS_READHOLDINGREGISTERS,
+        MBS_READINPUTREGISTER,
+        MBS_WRITEMULTIPLEREGISTERS,
+    };
+
     enum ModbusGroupsEnum
     {
         SIGNALTYPE = 0,
@@ -89,6 +96,13 @@ public:
     bool start(const ConnectStruct &st);
     void BSIrequest();
 
+    void reqStartup();
+    void reqFile(quint32 filenum);
+    void writeFile(quint32 filenum, const QByteArray &file);
+    void reqTime();
+    void writeTime();
+    void writeCommand(quint32 cmd, QList<DataTypes::SignalsStruct> &list);
+
     int CheckIndex, CheckHarmIndex, CheckVibrIndex, CorIndex, TimeIndex;
 
 public slots:
@@ -100,7 +114,7 @@ public slots:
     void Tabs(int);
     void StartPolling();
     void StopPolling();
-    void Stop();
+    void stop();
 
 signals:
     void SignalsReceived(QList<ModBus::SignalStruct> Signal);

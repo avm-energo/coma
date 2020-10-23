@@ -13,7 +13,6 @@
 
 #include <QByteArray>
 #include <QDialog>
-#include <QMap>
 
 #define BSIWARNMASK 0x00005F55
 #define BSIALARMMASK 0x000020AA

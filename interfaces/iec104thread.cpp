@@ -65,35 +65,35 @@ void IEC104Thread::Run()
         }
         if (!m_isFileSending)
         {
-            Queries::Command inp;
+            Commands104::CommandStruct inp;
             if (DataManager::deQueue(inp) == Error::Msg::NoError)
             {
                 switch (inp.cmd)
                 {
-                case Queries::Commands::CM104_COM45:
+                case Commands104::CM104_COM45:
                     Com45(inp.uintarg);
                     break;
-                case Queries::Commands::CM104_COM50:
+                case Commands104::CM104_COM50:
                     Com50(inp.uintarg, inp.flarg);
                     break;
-                case Queries::Commands::CM104_FILEREADY:
+                case Commands104::WRITEFILE:
                 {
                     //                    S2ConfigType *ptr = reinterpret_cast<S2ConfigType
                     //                    *>(inp.args.ptrarg); FileReady(ptr);
                     m_file = inp.ba;
-                    FileReady();
+                    FileReady(inp.uintarg);
                     break;
                 }
-                case Queries::Commands::CM104_SELECTFILE:
+                case Commands104::REQFILE:
                     SelectFile(inp.uintarg);
                     break;
-                case Queries::Commands::CM104_COM51WRITETIME:
+                case Commands104::CM104_COM51WRITETIME:
                     Com51WriteTime(inp.uintarg);
                     break;
-                    //                case Queries::Commands::CM104_CORREADREQUEST:
+                    //                case Commands104::CM104_CORREADREQUEST:
                     //                    CorReadRequest();
                     //                    break;
-                case Queries::Commands::CM104_REQGROUP:
+                case Commands104::CM104_REQGROUP:
                     reqGroup(inp.uintarg);
                     break;
                 default:
@@ -250,7 +250,7 @@ void IEC104Thread::ParseIFormat(QByteArray &ba) // основной разбор
         //        IEC104Thread::FlSignals104 *flSignals = new IEC104Thread::FlSignals104[DUI.qualifier.Number];
         //        IEC104Thread::SponSignals *sponsignals = new IEC104Thread::SponSignals[DUI.qualifier.Number];
         //        IEC104Thread::BS104Signals *BS104Signals = new IEC104Thread::BS104Signals[DUI.qualifier.Number];
-        unsigned char num = ba[9];
+        unsigned char filenum = ba[9] | (ba[10] << 8);
 
         for (i = 0; i < DUI.qualifier.Number; i++)
         {
@@ -259,7 +259,7 @@ void IEC104Thread::ParseIFormat(QByteArray &ba) // основной разбор
                 objectAdr = ba[index++];
                 objectAdr &= 0x00FF;
                 objectAdr |= ba[index++] << 8;
-                objectAdr += ba[index++] * 0x10000;
+                objectAdr |= ba[index++] << 16;
             }
             else
                 objectAdr++;
@@ -392,7 +392,7 @@ void IEC104Thread::ParseIFormat(QByteArray &ba) // основной разбор
             case F_SR_NA_1: // секция готова
             {
                 m_log->info("Section ready");
-                GetSection(ba[9]);
+                GetSection(filenum);
                 break;
             }
 
@@ -406,7 +406,7 @@ void IEC104Thread::ParseIFormat(QByteArray &ba) // основной разбор
                     | (static_cast<quint8>(ba[11]));
                 setGeneralResponse(DataTypes::GeneralResponseTypes::DataSize, fileSize);
                 //                emit SetDataSize(fileSize);
-                CallFile(ba[9]);
+                CallFile(filenum);
                 break;
             }
 
@@ -433,7 +433,7 @@ void IEC104Thread::ParseIFormat(QByteArray &ba) // основной разбор
                 {
                 case 1:
                 {
-                    ConfirmFile(num);
+                    ConfirmFile(filenum);
                     m_sendTestTimer->start();
                     m_isFileSending = false;
                     m_log->info("FileSending clear");
@@ -460,7 +460,7 @@ void IEC104Thread::ParseIFormat(QByteArray &ba) // основной разбор
 
                 case 3:
                 {
-                    ConfirmSection(num);
+                    ConfirmSection(filenum);
                     break;
                 }
                 }
@@ -771,13 +771,13 @@ void IEC104Thread::ConfirmFile(unsigned char numFile)
 }
 
 // void IEC104Thread::FileReady(S2ConfigType *file)
-void IEC104Thread::FileReady()
+void IEC104Thread::FileReady(quint16 numfile)
 {
     m_isFileSending = true;
     m_log->info("FileSending set");
     //    DR = file;
     m_sectionNum = 1;
-    ASDU cmd = ASDUFilePrefix(F_FR_NA_1, 0x01, 0x00);
+    ASDU cmd = ASDUFilePrefix(F_FR_NA_1, numfile, 0x00);
     cmd.chop(1);
     //    m_file.resize(65535);
     //    S2::StoreDataMem(&(m_file.data()[0]), DR,

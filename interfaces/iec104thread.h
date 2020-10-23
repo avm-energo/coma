@@ -91,6 +91,54 @@
 #define FHSIZE 16
 #define SYSTEM_JOUR_SIZE 65568
 
+namespace Commands104
+{
+enum CommandRegisters
+{
+    SetNewConfigurationReg = 801,
+    StartFirmwareUpgradeReg = 802,
+    StartWorkingChannelReg = 803,
+    EraseJournalsReg = 806,
+    SetStartupValuesReg = 900,
+    ClearStartupValuesReg = 905,
+};
+
+enum Commands
+{
+    CM104_REQGROUP,
+    CM104_COM51WRITETIME,
+    CM104_COM45,
+    CM104_COM50,
+    //    CM104_CORREADREQUEST,
+    REQFILE,
+    WRITEFILE
+};
+
+struct CommandStruct
+{
+    Commands cmd;
+    quint32 uintarg;
+    float flarg;
+    QByteArray ba;
+};
+
+// map to translate real commands like "erase memory block" into iec104 commands: 45 or 50 or something else
+QMap<Queries::Commands, CommandStruct> CommandsTranslateMap()
+{
+    QMap<Queries::Commands, CommandStruct> map;
+    map[Queries::QC_SetNewConfiguration] = { CM104_COM45, SetNewConfigurationReg, 0, {} };
+    map[Queries::QC_ClearStartupValues] = { CM104_COM45, ClearStartupValuesReg, 0, {} };
+    map[Queries::QC_Command50] = { CM104_COM50, 0, 0, {} };
+    map[Queries::QC_EraseJournals] = { CM104_COM45, EraseJournalsReg, 0, {} };
+    map[Queries::QC_SetStartupValues] = { CM104_COM45, SetStartupValuesReg, 0, {} };
+    map[Queries::QC_StartFirmwareUpgrade] = { CM104_COM45, StartFirmwareUpgradeReg, 0, {} };
+    map[Queries::QC_StartWorkingChannel] = { CM104_COM45, StartWorkingChannelReg, 0, {} };
+    return map;
+}
+}
+
+Q_DECLARE_METATYPE(Commands104::CommandStruct)
+
 class IEC104Thread : public QObject
 {
     Q_OBJECT
@@ -212,7 +260,7 @@ private:
     void GetSection(unsigned char);
     void ConfirmSection(unsigned char);
     void ConfirmFile(unsigned char);
-    void FileReady();
+    void FileReady(quint16 numfile);
     void SectionReady();
     void SendSegments();
     void LastSection();

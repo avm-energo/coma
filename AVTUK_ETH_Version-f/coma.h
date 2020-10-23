@@ -4,6 +4,8 @@
 #include "../alarm/alarmstateall.h"
 #include "../alarm/alarmwidget.h"
 #include "../dialogs/connectdialog.h"
+#include "../interfaces/iec104.h"
+#include "../interfaces/modbus.h"
 #include "../module/module.h"
 #include "../widgets/etabwidget.h"
 
@@ -198,7 +200,7 @@ private:
     IEC104 *Ch104;
     ModBus *ChModbus;
 
-    ConnectDialog::ConnectStruct ConnectSettings;
+    BaseInterface::ConnectStruct ConnectSettings;
 
     void LoadSettings();
     void SaveSettings();

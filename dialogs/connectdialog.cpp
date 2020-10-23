@@ -3,6 +3,7 @@
 #include "../gen/board.h"
 #include "../gen/error.h"
 #include "../gen/stdfunc.h"
+#include "../interfaces/eprotocom.h"
 #include "../widgets/wd_func.h"
 
 #include <QDebug>
@@ -107,11 +108,12 @@ void ConnectDialog::SetUsb(QModelIndex index)
     BaseInterface::ConnectStruct st; // temporary var
     if (index.isValid())
     {
-        QDialog *dlg = this->findChild<QDialog *>("connectdlg");
-        EProtocom::GetInstance().setDeviceName(WDFunc::TVData(dlg, "usbtv", 1).toString());
-        EProtocom::GetInstance().setDevicePosition(index.row());
+        //        QDialog *dlg = this->findChild<QDialog *>("connectdlg");
+        //        EProtocom::GetInstance().setDeviceName(WDFunc::TVData(dlg, "usbtv", 1).toString());
+        //        EProtocom::GetInstance().setDevicePosition(index.row());
+        st.usbDevicePosition = index.row();
+        emit Accepted(st);
     }
-    emit Accepted(&st);
 }
 
 void ConnectDialog::AddEth()
@@ -200,28 +202,28 @@ void ConnectDialog::RsAccepted()
 
 void ConnectDialog::SetCancelled() { emit Cancelled(); }
 
-void ConnectDialog::SetEth()
-{
-    ConnectStruct st;
-    QDialog *dlg = this->findChild<QDialog *>("connectdlg");
-    if (dlg != nullptr)
-    {
-        st.name = WDFunc::TVData(dlg, "ethtv", 1).toString();
-        st.iec104st.ip = WDFunc::TVData(dlg, "ethtv", 2).toString();
-        st.iec104st.baseadr = WDFunc::TVData(dlg, "ethtv", 3).toUInt();
-    }
-    emit Accepted(&st);
-}
+// void ConnectDialog::SetEth()
+//{
+//    BaseInterface::ConnectStruct st;
+//    QDialog *dlg = this->findChild<QDialog *>("connectdlg");
+//    if (dlg != nullptr)
+//    {
+//        st.name = WDFunc::TVData(dlg, "ethtv", 1).toString();
+//        st.iec104st.ip = WDFunc::TVData(dlg, "ethtv", 2).toString();
+//        st.iec104st.baseadr = WDFunc::TVData(dlg, "ethtv", 3).toUInt();
+//    }
+//    emit Accepted(st);
+//}
 
 void ConnectDialog::SetEth(QModelIndex index)
 {
-    ConnectStruct st;
+    BaseInterface::ConnectStruct st;
     auto *mdl = index.model();
     int row = index.row();
     st.name = mdl->data(mdl->index(row, 0)).toString();
     st.iec104st.ip = mdl->data(mdl->index(row, 1)).toString();
     st.iec104st.baseadr = mdl->data(mdl->index(row, 2)).toUInt();
-    emit Accepted(&st);
+    emit Accepted(st);
 }
 
 void ConnectDialog::handlePing()
@@ -359,25 +361,25 @@ void ConnectDialog::AddRs()
     dlg->exec();
 }
 
-void ConnectDialog::SetRs()
-{
-    ConnectStruct st;
-    QDialog *dlg = this->findChild<QDialog *>("connectdlg");
-    if (dlg != nullptr)
-    {
-        st.name = WDFunc::TVData(dlg, "rstv", 1).toString();
-        st.serialst.Port = WDFunc::TVData(dlg, "rstv", 2).toString();
-        st.serialst.Baud = WDFunc::TVData(dlg, "rstv", 3).toUInt();
-        st.serialst.Parity = WDFunc::TVData(dlg, "rstv", 4).toString();
-        st.serialst.Stop = WDFunc::TVData(dlg, "rstv", 5).toString();
-        st.serialst.Address = WDFunc::TVData(dlg, "rstv", 6).toUInt();
-    }
-    emit Accepted(&st);
-}
+// void ConnectDialog::SetRs()
+//{
+//    BaseInterface::ConnectStruct st;
+//    QDialog *dlg = this->findChild<QDialog *>("connectdlg");
+//    if (dlg != nullptr)
+//    {
+//        st.name = WDFunc::TVData(dlg, "rstv", 1).toString();
+//        st.serialst.Port = WDFunc::TVData(dlg, "rstv", 2).toString();
+//        st.serialst.Baud = WDFunc::TVData(dlg, "rstv", 3).toUInt();
+//        st.serialst.Parity = WDFunc::TVData(dlg, "rstv", 4).toString();
+//        st.serialst.Stop = WDFunc::TVData(dlg, "rstv", 5).toString();
+//        st.serialst.Address = WDFunc::TVData(dlg, "rstv", 6).toUInt();
+//    }
+//    emit Accepted(st);
+//}
 
 void ConnectDialog::SetRs(QModelIndex index)
 {
-    ConnectStruct st;
+    BaseInterface::ConnectStruct st;
     auto *mdl = index.model();
     int row = index.row();
     st.name = mdl->data(mdl->index(row, 0)).toString();
@@ -386,7 +388,7 @@ void ConnectDialog::SetRs(QModelIndex index)
     st.serialst.Parity = mdl->data(mdl->index(row, 3)).toString();
     st.serialst.Stop = mdl->data(mdl->index(row, 4)).toString();
     st.serialst.Address = mdl->data(mdl->index(row, 5)).toUInt();
-    emit Accepted(&st);
+    emit Accepted(st);
 }
 
 void ConnectDialog::RotateSettings(const QString &type, const QString &name)

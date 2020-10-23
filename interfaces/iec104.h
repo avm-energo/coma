@@ -108,19 +108,26 @@ public:
 
     //    QString IP;
 
-    bool Working();
-    void start(const ConnectStruct &st);
+    //    bool Working();
+    bool start(const ConnectStruct &st);
     //    static void getSignalsFrom104(quint32 firstSignalAdr, quint32 signalCount, DataManager::SignalTypes type,
     //        QList<DataManager::SignalsStruct> &outlist);
 
 public slots:
-    static void SelectFile(char);
-    void StopAllThreads();
+    void reqStartup();
+    void reqFile(quint32 filenum);
+    void writeFile(quint32 filenum, const QByteArray &file);
+    void writeConfigFile(S2ConfigType *s2config);
+    void reqTime();
+    void writeTime();
+    void writeCommand(Queries::Commands cmd, QList<DataTypes::SignalsStruct> &list);
+
+    //    static void SelectFile(char);
+    void stop();
     static void Com45(quint32 com);
     static void Com50(quint32 adr, float param);
     //    void CorReadRequest();
-    void reqStartup();
-    static void FileReady(S2ConfigType *s2config);
+    //    static void FileReady(S2ConfigType *s2config);
     static void getTime();
     static void com51WriteTime(uint time);
 
@@ -143,7 +150,7 @@ signals:
 
 private:
     bool EthThreadWorking, ParseThreadWorking, AboutToFinish;
-    LogClass *Log;
+    //    LogClass *Log;
     //    QQueue<IEC104Thread::InputStruct> m_inputQueue;
     //    QList<IEC104Thread::SignalsStruct> m_outputList;
     //    S2ConfigType *S2Config;

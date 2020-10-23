@@ -156,11 +156,11 @@ void ModBus::SendReconnectSignal()
         emit ReconnectSignal();
 }
 
-void ModBus::Stop()
+void ModBus::stop()
 {
     Log->info("Stop()");
     AboutToFinish = true;
-    StopPolling();
+    //    StopPolling();
     emit FinishModbusThread();
 }
 

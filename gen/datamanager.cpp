@@ -5,7 +5,7 @@
 QList<DataTypes::SignalsStruct> DataManager::s_outputList;
 QMutex DataManager::s_outListMutex;
 QMutex DataManager::s_inQueueMutex;
-QQueue<QVariant> s_inputQueue;
+std::queue<QVariant> s_inputQueue;
 
 DataManager::DataManager(QObject *parent) : QObject(parent) { }
 
@@ -31,7 +31,10 @@ Error::Msg DataManager::getSignals(quint32 firstSignalAdr, quint32 lastSignalAdr
                 {
                     DataTypes::BitStringStruct bs = qvariant_cast<DataTypes::BitStringStruct>(signal);
                     if ((bs.sigAdr >= firstSignalAdr) && (bs.sigAdr <= lastSignalAdr))
-                        outlist.removeAll(sig);
+                    {
+                        outlist.append(sig);
+                        s_outputList.removeAll(sig);
+                    }
                 }
                 break;
             }
@@ -41,7 +44,10 @@ Error::Msg DataManager::getSignals(quint32 firstSignalAdr, quint32 lastSignalAdr
                 {
                     DataTypes::FloatWithTimeStruct fwt = qvariant_cast<DataTypes::FloatWithTimeStruct>(signal);
                     if ((fwt.sigAdr >= firstSignalAdr) && (fwt.sigAdr <= lastSignalAdr))
-                        outlist.removeAll(sig);
+                    {
+                        outlist.append(sig);
+                        s_outputList.removeAll(sig);
+                    }
                 }
                 break;
             }
@@ -52,7 +58,10 @@ Error::Msg DataManager::getSignals(quint32 firstSignalAdr, quint32 lastSignalAdr
                     DataTypes::SinglePointWithTimeStruct sp
                         = qvariant_cast<DataTypes::SinglePointWithTimeStruct>(signal);
                     if ((sp.sigAdr >= firstSignalAdr) && (sp.sigAdr <= lastSignalAdr))
-                        outlist.removeAll(sig);
+                    {
+                        outlist.append(sig);
+                        s_outputList.removeAll(sig);
+                    }
                 }
                 break;
             }
@@ -85,6 +94,7 @@ Error::Msg DataManager::getFile(quint32 filenum, QByteArray &outba)
                 if (fl.filenum == filenum)
                 {
                     outba = fl.filedata;
+                    s_outputList.removeAll(sig);
                     s_outListMutex.unlock();
                     return Error::Msg::NoError;
                 }
@@ -155,38 +165,20 @@ Error::Msg DataManager::getResponse(DataTypes::GeneralResponseTypes type, DataTy
     return Error::Msg::ResEmpty;
 }
 
-void DataManager::setConfig(S2ConfigType *s2config)
-{
-    Queries::Command inp;
-    inp.ba.resize(65535);
-    S2::StoreDataMem(&inp.ba.data()[0], s2config, 0x0001);
-    quint32 basize = static_cast<quint8>(inp.ba.data()[4]);
-    basize += static_cast<quint8>(inp.ba.data()[5]) * 256;
-    basize += static_cast<quint8>(inp.ba.data()[6]) * 65536;
-    basize += static_cast<quint8>(inp.ba.data()[7]) * 16777216;
-    basize += sizeof(S2DataTypes::FileHeader); // baHeader
-    inp.ba.resize(basize);
-    inp.cmd = Queries::Commands::CM104_FILEREADY;
-    addToInQueue(inp);
-}
-
-Error::Msg DataManager::deQueue(Queries::Command &cmd)
-{
-    if (!s_inputQueue.isEmpty())
-    {
-        s_inQueueMutex.lock();
-        QVariant inp = s_inputQueue.first();
-        if (inp.canConvert<Queries::Command>())
-        {
-            s_inputQueue.dequeue();
-            s_inQueueMutex.unlock();
-            cmd = qvariant_cast<Queries::Command>(inp);
-            return Error::Msg::NoError;
-        }
-        s_inQueueMutex.unlock();
-    }
-    return Error::Msg::ResEmpty;
-}
+// void DataManager::setConfig(S2ConfigType *s2config)
+//{
+//    Queries::Command inp;
+//    inp.ba.resize(65535);
+//    S2::StoreDataMem(&inp.ba.data()[0], s2config, 0x0001);
+//    quint32 basize = static_cast<quint8>(inp.ba.data()[4]);
+//    basize += static_cast<quint8>(inp.ba.data()[5]) * 256;
+//    basize += static_cast<quint8>(inp.ba.data()[6]) * 65536;
+//    basize += static_cast<quint8>(inp.ba.data()[7]) * 16777216;
+//    basize += sizeof(S2DataTypes::FileHeader); // baHeader
+//    inp.ba.resize(basize);
+//    inp.cmd = Queries::Commands::WRITEFILE;
+//    addToInQueue(inp);
+//}
 
 // Error::Msg DataManager::deQueueMBS(Queries::CommandMBS &cmd)
 //{

@@ -16,7 +16,7 @@ public:
     explicit ConnectDialog(QWidget *parent = nullptr);
 
 signals:
-    void Accepted(BaseInterface::ConnectStruct *);
+    void Accepted(BaseInterface::ConnectStruct);
     void Cancelled();
     void PingFinished();
     void ModelUpdated();
@@ -28,11 +28,11 @@ private slots:
     void EthAccepted();
     void RsAccepted();
     void SetCancelled();
-    void SetEth();
+    //    void SetEth();
     void SetEth(QModelIndex index);
     void ScanEth();
     void AddRs();
-    void SetRs();
+    //    void SetRs();
     void SetRs(QModelIndex index);
 
     //    void ScanRs();

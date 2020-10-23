@@ -9,6 +9,9 @@
 #include <QObject>
 #include <QQueue>
 #include <QVariant>
+#include <queue>
+
+#define INQUEUEMAXSIZE 100
 
 class DataManager : public QObject
 {
@@ -21,7 +24,7 @@ public:
     static Error::Msg getFile(quint32 filenum, QByteArray &outba);
     static Error::Msg getConfig(quint32 firstID, quint32 lastID, QList<DataTypes::ConfParameterStruct> &outlist);
     static Error::Msg getResponse(DataTypes::GeneralResponseTypes type, DataTypes::GeneralResponseStruct &response);
-    static void setConfig(S2ConfigType *s2config);
+    //    static void setConfig(S2ConfigType *s2config);
     static void reqStartup();
     template <typename T> static void addSignalToOutList(DataTypes::SignalTypes type, T signal)
     {
@@ -37,12 +40,28 @@ public:
         QVariant var;
         var.setValue(data);
         s_inQueueMutex.lock();
-        s_inputQueue.enqueue(var);
+        s_inputQueue.push(var);
         s_inQueueMutex.unlock();
     }
-    static Error::Msg deQueue(Queries::Command &cmd);
-    //    static Error::Msg deQueueMBS(Queries::CommandMBS &cmd);
-    static QQueue<QVariant> s_inputQueue;
+    template <typename T> static Error::Msg deQueue(T &cmd)
+    {
+        if (!s_inputQueue.empty())
+        {
+            s_inQueueMutex.lock();
+            QVariant inp = s_inputQueue.front();
+            if (inp.canConvert<T>())
+            {
+                s_inputQueue.pop();
+                s_inQueueMutex.unlock();
+                cmd = qvariant_cast<T>(inp);
+                return Error::Msg::NoError;
+            }
+            s_inQueueMutex.unlock();
+        }
+        return Error::Msg::ResEmpty;
+    }
+
+    static std::queue<QVariant> s_inputQueue;
     static QList<DataTypes::SignalsStruct> s_outputList;
     static QMutex s_outListMutex;
     static QMutex s_inQueueMutex;

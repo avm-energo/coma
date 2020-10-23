@@ -83,16 +83,13 @@ namespace Queries
 {
 enum Commands
 {
-    MBS_READHOLDINGREGISTERS,
-    MBS_READINPUTREGISTER,
-    MBS_WRITEMULTIPLEREGISTERS,
-    CM104_REQGROUP,
-    CM104_COM51WRITETIME,
-    CM104_COM45,
-    CM104_COM50,
-    //    CM104_CORREADREQUEST,
-    CM104_SELECTFILE,
-    CM104_FILEREADY
+    QC_SetNewConfiguration,
+    QC_StartFirmwareUpgrade,
+    QC_StartWorkingChannel,
+    QC_EraseJournals,
+    QC_SetStartupValues,
+    QC_ClearStartupValues,
+    QC_Command50
 };
 
 struct Command
