@@ -1,21 +1,37 @@
 #ifndef BASEINTERFACE_H
 #define BASEINTERFACE_H
 
+#include "../gen/datatypes.h"
 #include "../gen/logclass.h"
-#include "iec104.h"
-#include "serialport.h"
+#include "../gen/s2.h"
+
 #include <QObject>
 
 class BaseInterface : public QObject
 {
     Q_OBJECT
 public:
+    struct IEC104Settings
+    {
+        quint16 baseadr;
+        QString ip;
+    };
+
+    struct SerialPortSettings
+    {
+        quint32 Baud;
+        QString Parity;
+        QString Stop;
+        quint8 Address;
+        QString Port;
+    };
+
     struct ConnectStruct
     {
         QString name;
         int usbDevicePosition;
-        IEC104::Settings iec104st; // IEC104 settings
-        SerialPort::Settings serialst;
+        IEC104Settings iec104st; // IEC104 settings
+        SerialPortSettings serialst;
     };
     bool m_working;
     LogClass *Log;
@@ -26,12 +42,15 @@ public:
     virtual void reqStartup() = 0;
     virtual void reqFile(quint32) = 0;
     virtual void writeFile(quint32, const QByteArray &) = 0;
-    virtual void writeConfigFile(S2ConfigType *s2config);
+    virtual void writeConfigFile(S2ConfigType *);
     virtual void reqTime() = 0;
-    virtual void writeTime() = 0;
+    virtual void writeTime(quint32) = 0;
     virtual void writeCommand(Queries::Commands, QList<DataTypes::SignalsStruct> &) = 0;
 
-    bool isWorking() { return m_working; }
+    bool isWorking()
+    {
+        return m_working;
+    }
 
 signals:
     void reconnect();

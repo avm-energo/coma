@@ -21,7 +21,9 @@ IEC104::IEC104(QObject *parent) : BaseInterface(parent)
     Log->info("=== Log started ===");
 }
 
-IEC104::~IEC104() { }
+IEC104::~IEC104()
+{
+}
 
 // bool IEC104::Working() { return (EthThreadWorking | ParseThreadWorking); }
 
@@ -84,6 +86,7 @@ bool IEC104::start(const ConnectStruct &st)
 
     thr->start();
     thr2->start();
+    return true;
 }
 
 void IEC104::reqStartup()
@@ -94,13 +97,13 @@ void IEC104::reqStartup()
 
 void IEC104::reqFile(quint32 filenum)
 {
-    Commands104::CommandStruct inp { Commands104::REQFILE, filenum, 0, {} };
+    Commands104::CommandStruct inp { Commands104::CM104_REQFILE, filenum, 0, {} };
     DataManager::addToInQueue(inp);
 }
 
 void IEC104::writeFile(quint32 filenum, const QByteArray &file)
 {
-    Commands104::CommandStruct inp { Commands104::WRITEFILE, filenum, 0, file };
+    Commands104::CommandStruct inp { Commands104::CM104_WRITEFILE, filenum, 0, file };
     DataManager::addToInQueue(inp);
 }
 
@@ -108,7 +111,19 @@ void IEC104::writeConfigFile(S2ConfigType *s2config)
 {
     QByteArray ba;
     S2::StoreDataMem(&ba.data()[0], s2config, Files::Config);
-    Commands104::CommandStruct inp { Commands104::WRITEFILE, Files::Config, 0, ba };
+    Commands104::CommandStruct inp { Commands104::CM104_WRITEFILE, Files::Config, 0, ba };
+    DataManager::addToInQueue(inp);
+}
+
+void IEC104::reqTime()
+{
+    Commands104::CommandStruct inp { Commands104::CM104_REQGROUP, TIMEGROUP, 0, {} };
+    DataManager::addToInQueue(inp);
+}
+
+void IEC104::writeTime(quint32 time)
+{
+    Commands104::CommandStruct inp { Commands104::CM104_COM51, time, 0, {} };
     DataManager::addToInQueue(inp);
 }
 
@@ -118,11 +133,22 @@ void IEC104::writeCommand(Queries::Commands cmd, QList<DataTypes::SignalsStruct>
     if (cmd == Queries::QC_Command50)
     {
         // for each signal in list form the 50 command and set it into the input queue
-        inp = { Commands104::CM104_COM50, adr, param, {} };
+        foreach (DataTypes::SignalsStruct str, list)
+        {
+            QVariant var = str.data;
+            if (var.canConvert<DataTypes::FloatStruct>())
+            {
+                DataTypes::FloatStruct flstr = var.value<DataTypes::FloatStruct>();
+                inp = { Commands104::CM104_COM50, flstr.sigAdr, flstr.sigVal, {} };
+                DataManager::addToInQueue(inp);
+            }
+        }
     }
     else
+    {
         inp = Commands104::CommandsTranslateMap().value(cmd);
-    DataManager::addToInQueue(inp);
+        DataManager::addToInQueue(inp);
+    }
 }
 
 // void IEC104::CorReadRequest()
@@ -162,55 +188,58 @@ void IEC104::writeCommand(Queries::Commands cmd, QList<DataTypes::SignalsStruct>
 //    //    IEC104Thread::s_ParseWriteMutex.unlock();
 //}
 
-void IEC104::Com45(quint32 com)
-{
-    Commands104::CommandStruct inp { Commands104::CM104_COM45, com, 0, {} };
-    DataManager::addToInQueue(inp);
-    //    IEC104Thread::InputStruct inp;
-    //    inp.cmd = IEC104Thread::CM104_COM45;
-    //    inp.args.uintarg = com;
-    //    IEC104Thread::s_ParseWriteMutex.lock();
-    //    m_inputQueue.enqueue(inp);
-    //    IEC104Thread::s_ParseWriteMutex.unlock();
-}
+// void IEC104::Com45(quint32 com)
+//{
+//    Commands104::CommandStruct inp { Commands104::CM104_COM45, com, 0, {} };
+//    DataManager::addToInQueue(inp);
+//    //    IEC104Thread::InputStruct inp;
+//    //    inp.cmd = IEC104Thread::CM104_COM45;
+//    //    inp.args.uintarg = com;
+//    //    IEC104Thread::s_ParseWriteMutex.lock();
+//    //    m_inputQueue.enqueue(inp);
+//    //    IEC104Thread::s_ParseWriteMutex.unlock();
+//}
 
-void IEC104::Com50(quint32 adr, float param)
-{
-    Commands104::CommandStruct inp { Commands104::CM104_COM50, adr, param, {} };
-    DataManager::addToInQueue(inp);
-    //    IEC104Thread::InputStruct inp;
-    //    inp.cmd = IEC104Thread::CM104_COM50;
-    //    inp.args.uintarg = adr;
-    //    inp.args.flarg = param;
-    //    IEC104Thread::s_ParseWriteMutex.lock();
-    //    m_inputQueue.enqueue(inp);
-    //    IEC104Thread::s_ParseWriteMutex.unlock();
-}
+// void IEC104::Com50(quint32 adr, float param)
+//{
+//    Commands104::CommandStruct inp { Commands104::CM104_COM50, adr, param, {} };
+//    DataManager::addToInQueue(inp);
+//    //    IEC104Thread::InputStruct inp;
+//    //    inp.cmd = IEC104Thread::CM104_COM50;
+//    //    inp.args.uintarg = adr;
+//    //    inp.args.flarg = param;
+//    //    IEC104Thread::s_ParseWriteMutex.lock();
+//    //    m_inputQueue.enqueue(inp);
+//    //    IEC104Thread::s_ParseWriteMutex.unlock();
+//}
 
-void IEC104::getTime()
-{
-    Commands104::CommandStruct inp { Commands104::CM104_REQGROUP, TIMEGROUP, 0, {} };
-    DataManager::addToInQueue(inp);
-    //    IEC104Thread::InputStruct inp;
-    //    inp.cmd = IEC104Thread::CM104_INTERROGATETIMEGR15;
-    //    IEC104Thread::s_ParseWriteMutex.lock();
-    //    m_inputQueue.enqueue(inp);
-    //    IEC104Thread::s_ParseWriteMutex.unlock();
-}
+// void IEC104::getTime()
+//{
+//    Commands104::CommandStruct inp { Commands104::CM104_REQGROUP, TIMEGROUP, 0, {} };
+//    DataManager::addToInQueue(inp);
+//    //    IEC104Thread::InputStruct inp;
+//    //    inp.cmd = IEC104Thread::CM104_INTERROGATETIMEGR15;
+//    //    IEC104Thread::s_ParseWriteMutex.lock();
+//    //    m_inputQueue.enqueue(inp);
+//    //    IEC104Thread::s_ParseWriteMutex.unlock();
+//}
 
-void IEC104::com51WriteTime(uint time)
-{
-    Commands104::CommandStruct inp { Commands104::CM104_COM51WRITETIME, time, 0, {} };
-    DataManager::addToInQueue(inp);
-    //    IEC104Thread::InputStruct inp;
-    //    inp.cmd = IEC104Thread::CM104_COM51WRITETIME;
-    //    inp.args.uintarg = time;
-    //    IEC104Thread::s_ParseWriteMutex.lock();
-    //    m_inputQueue.enqueue(inp);
-    //    IEC104Thread::s_ParseWriteMutex.unlock();
-}
+// void IEC104::com51WriteTime(uint time)
+//{
+//    Commands104::CommandStruct inp { Commands104::CM104_COM51, time, 0, {} };
+//    DataManager::addToInQueue(inp);
+//    //    IEC104Thread::InputStruct inp;
+//    //    inp.cmd = IEC104Thread::CM104_COM51WRITETIME;
+//    //    inp.args.uintarg = time;
+//    //    IEC104Thread::s_ParseWriteMutex.lock();
+//    //    m_inputQueue.enqueue(inp);
+//    //    IEC104Thread::s_ParseWriteMutex.unlock();
+//}
 
-void IEC104::EthThreadStarted() { m_working = EthThreadWorking = true; }
+void IEC104::EthThreadStarted()
+{
+    m_working = EthThreadWorking = true;
+}
 
 void IEC104::EthThreadFinished()
 {
@@ -222,7 +251,10 @@ void IEC104::EthThreadFinished()
     }
 }
 
-void IEC104::ParseThreadStarted() { m_working = ParseThreadWorking = true; }
+void IEC104::ParseThreadStarted()
+{
+    m_working = ParseThreadWorking = true;
+}
 
 void IEC104::ParseThreadFinished()
 {

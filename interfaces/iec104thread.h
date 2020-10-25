@@ -33,11 +33,11 @@
 // определения типа данных
 // TYPE IDENTIFICATION
 
-#define M_SP_NA_1 1 // Single-point information
-#define M_DP_NA_1 3 // Double-point information
-#define M_ST_NA_1 5 // Step position information
-#define M_BO_NA_1 7 // Bitstring of 32 bit
-#define M_ME_NA_1 9 // Measured value, normalized value
+#define M_SP_NA_1 1  // Single-point information
+#define M_DP_NA_1 3  // Double-point information
+#define M_ST_NA_1 5  // Step position information
+#define M_BO_NA_1 7  // Bitstring of 32 bit
+#define M_ME_NA_1 9  // Measured value, normalized value
 #define M_ME_NC_1 13 // Measured value, short floating point value
 #define M_SP_TB_1 30 // Single-point information with time tag CP56Time2a
 #define M_DP_TB_1 31 // Double-point information with time tag CP56Time2a
@@ -50,10 +50,10 @@
 #define C_RC_NA_1 47 // Regulating step command
 #define C_SE_NA_1 48 // Set point command, normalised value
 #define C_SE_NC_1 50
-#define C_BO_NA_1 51 // Bitstring of 32 bit
-#define C_SC_TA_1 58 // Single command with time tag CP56Time2a
-#define C_DC_TA_1 59 // Double command with time tag CP56Time2a
-#define M_EI_NA_1 70 // End of initialization
+#define C_BO_NA_1 51  // Bitstring of 32 bit
+#define C_SC_TA_1 58  // Single command with time tag CP56Time2a
+#define C_DC_TA_1 59  // Double command with time tag CP56Time2a
+#define M_EI_NA_1 70  // End of initialization
 #define C_IC_NA_1 100 // Interrrogation command
 #define C_CI_NA_1 101 // Counter interrrogation command
 #define C_CS_NA_1 103 // Clock syncronization command
@@ -106,12 +106,11 @@ enum CommandRegisters
 enum Commands
 {
     CM104_REQGROUP,
-    CM104_COM51WRITETIME,
+    CM104_COM51,
     CM104_COM45,
     CM104_COM50,
-    //    CM104_CORREADREQUEST,
-    REQFILE,
-    WRITEFILE
+    CM104_REQFILE,
+    CM104_WRITEFILE
 };
 
 struct CommandStruct
@@ -194,14 +193,14 @@ private:
     typedef struct
     {
         unsigned char Number; // number of Informational Objects
-        unsigned char SQ; // Single <0> or Series <1> of Objects
+        unsigned char SQ;     // Single <0> or Series <1> of Objects
     } QualifierVariableStructute;
 
     typedef struct
     {
-        unsigned char cause; // <0..63> cause number
-        unsigned char confirm; // <0> - positive , <1> - negative
-        unsigned char test; // <0> - not a test, <1> - test
+        unsigned char cause;     // <0..63> cause number
+        unsigned char confirm;   // <0> - positive , <1> - negative
+        unsigned char test;      // <0> - not a test, <1> - test
         unsigned char initiator; // number of initiating address
     } CauseOfTransmission;
 

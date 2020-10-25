@@ -2,6 +2,7 @@
 #define SERIALPORT_H
 
 #include "../gen/error.h"
+#include "baseinterface.h"
 
 #include <QPointer>
 #include <QSerialPort>
@@ -11,18 +12,9 @@ class SerialPort : public QObject
 
     Q_OBJECT
 public:
-    struct Settings
-    {
-        quint32 Baud;
-        QString Parity;
-        QString Stop;
-        quint8 Address;
-        QString Port;
-    };
-
     explicit SerialPort(QObject *parent = nullptr);
     ~SerialPort();
-    Error::Msg Init(Settings settings);
+    Error::Msg Init(BaseInterface::SerialPortSettings settings);
 
 signals:
     void Read(QByteArray);

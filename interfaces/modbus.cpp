@@ -6,6 +6,7 @@
 #include "../gen/s2.h"
 #include "../gen/stdfunc.h"
 #include "../gen/timefunc.h"
+#include "modbusthread.h"
 
 #include <QStandardPaths>
 #include <QThread>
@@ -35,15 +36,18 @@ ModBus::ModBus(QObject *parent) : BaseInterface(parent)
     Log->info("=== Log started ===");
 }
 
-ModBus::~ModBus() { }
+ModBus::~ModBus()
+{
+}
 
 bool ModBus::start(const ConnectStruct &st)
 {
     INFOMSG("Modbus: connect");
     Settings = st.serialst;
     SerialPort *port = new SerialPort();
-    ModbusThread *cthr = new ModbusThread();
+    ModbusThread *cthr = new ModbusThread;
     //    cthr->Init(&InQueue, &OutList);
+    cthr->setDeviceAddress(Settings.Address);
     QThread *thr = new QThread;
     cthr->moveToThread(thr);
     connect(thr, &QThread::started, cthr, &ModbusThread::Run);
@@ -68,14 +72,14 @@ bool ModBus::start(const ConnectStruct &st)
 
 Error::Msg ModBus::SendAndGetResult(Queries::CommandMBS &request, InOutStruct &outp)
 {
-    QByteArray bytes {};
+    //    QByteArray bytes {};
 
-    bytes.append(static_cast<char>(Settings.Address)); // адрес устройства
-    bytes.append(request.command); //аналоговый выход
-    bytes.append(static_cast<char>((request.address & 0xFF00) >> 8));
-    bytes.append(static_cast<char>(request.address & 0x00FF));
-    bytes.append(static_cast<char>((request.quantity & 0xFF00) >> 8));
-    bytes.append(static_cast<char>(request.quantity & 0x00FF));
+    //    bytes.append(static_cast<char>(Settings.Address)); // адрес устройства
+    //    bytes.append(request.command); //аналоговый выход
+    //    bytes.append(static_cast<char>((request.address & 0xFF00) >> 8));
+    //    bytes.append(static_cast<char>(request.address & 0x00FF));
+    //    bytes.append(static_cast<char>((request.quantity & 0xFF00) >> 8));
+    //    bytes.append(static_cast<char>(request.quantity & 0x00FF));
     if (request.command == 0x10)
         bytes.append(static_cast<char>(request.sizeBytes));
     if (request.data.size())
@@ -84,12 +88,12 @@ Error::Msg ModBus::SendAndGetResult(Queries::CommandMBS &request, InOutStruct &o
     Log->info("Send bytes: " + bytes.toHex());
 
     InOutStruct inp {
-        request.command, // Command
-        bytes, // Ba
-        0, // TaskNum
+        request.command,     // Command
+        bytes,               // Ba
+        0,                   // TaskNum
         Error::Msg::NoError, // Res
-        0, // ReadSize
-        0 // Checked
+        0,                   // ReadSize
+        0                    // Checked
     };
     if (request.command == Queries::CommandsMBS::MBS_WRITEMULTIPLEREGISTERS)
         inp.ReadSize = 8;
@@ -227,10 +231,10 @@ void ModBus::BSIrequest()
 {
     Queries::CommandMBS request {
         Queries::CommandsMBS::MBS_READINPUTREGISTER, // Command
-        BSIREG, // Address
-        30, // Quantity
-        60, // SizeBytes
-        {} // Data
+        BSIREG,                                      // Address
+        30,                                          // Quantity
+        60,                                          // SizeBytes
+        {}                                           // Data
     };
     InOutStruct outp {};
 
@@ -251,14 +255,18 @@ void ModBus::BSIrequest()
     emit BsiFromModbus(BSIsig, sigsize);
 }
 
+void ModBus::reqStartup()
+{
+}
+
 void ModBus::ModWriteCor(ModBus::Information info, float *data) //, int* size)
 {
     Queries::CommandMBS request {
         Queries::CommandsMBS::MBS_WRITEMULTIPLEREGISTERS, // Command
-        info.adr, // Address
-        0, // Quantity
-        0, // SizeBytes
-        {} // Data
+        info.adr,                                         // Address
+        0,                                                // Quantity
+        0,                                                // SizeBytes
+        {}                                                // Data
     };
     InOutStruct outp {};
 
@@ -291,12 +299,13 @@ void ModBus::ModWriteCor(ModBus::Information info, float *data) //, int* size)
 
 void ModBus::ModReadCor(ModBus::Information info)
 {
+
     Queries::CommandMBS request {
         Queries::CommandsMBS::MBS_READINPUTREGISTER, // Command
-        info.adr, // Address
-        static_cast<quint8>(info.size * 2), // Quantity
-        static_cast<quint8>(info.size * 4), // SizeBytes
-        {} // Data
+        info.adr,                                    // Address
+        static_cast<quint8>(info.size * 2),          // Quantity
+        static_cast<quint8>(info.size * 4),          // SizeBytes
+        {}                                           // Data
     };
     InOutStruct outp {};
 
@@ -314,10 +323,10 @@ void ModBus::ReadTime()
 {
     Queries::CommandMBS request {
         Queries::CommandsMBS::MBS_READHOLDINGREGISTERS, // Command
-        MBS_TIMEREG, // Address
-        2, // Quantity
-        4, // SizeBytes
-        {} // Data
+        MBS_TIMEREG,                                    // Address
+        2,                                              // Quantity
+        4,                                              // SizeBytes
+        {}                                              // Data
     };
     InOutStruct outp {};
 
@@ -405,10 +414,10 @@ void ModBus::WriteTime(uint time)
     timeArray.append(static_cast<char>(time >> 16));
     Queries::CommandMBS request {
         Queries::CommandsMBS::MBS_WRITEMULTIPLEREGISTERS, // Command
-        MBS_TIMEREG, // Address
-        2, // Quantity
-        4, // SizeBytes
-        timeArray // Data
+        MBS_TIMEREG,                                      // Address
+        2,                                                // Quantity
+        4,                                                // SizeBytes
+        timeArray                                         // Data
     };
     Error::Msg res = SendAndGetResult(request, outp);
     if (res != Error::Msg::NoError)
@@ -453,159 +462,12 @@ void ModBus::Tabs(int index)
     //    }
 }
 
-void ModBus::StartPolling() { PollingTimer->start(); }
-
-void ModBus::StopPolling() { PollingTimer->stop(); }
-
-ModbusThread::ModbusThread(QObject *parent) : QObject(parent)
+void ModBus::StartPolling()
 {
-    Log = new LogClass;
-    Log->Init("modbusprot.log");
-    Log->info("=== Log started ===");
-    AboutToFinish = false;
+    PollingTimer->start();
 }
 
-ModbusThread::~ModbusThread() { }
-
-// void ModbusThread::Init(QQueue<ModBus::InOutStruct> *inq, QList<ModBus::InOutStruct> *outl)
-//{
-//    InQueue = inq;
-//    OutList = outl;
-//}
-
-void ModbusThread::Run()
+void ModBus::StopPolling()
 {
-    while (!AboutToFinish)
-    {
-        RunMutex.lock();
-        RunWC.wait(&RunMutex, 20);
-        RunMutex.unlock();
-        Queries::Command inp;
-        if (DataManager::deQueue(inp) == Error::Msg::NoError)
-        //        while (!InQueue->isEmpty())
-        //        {
-        //            InMutex.lock();
-        //            //            ModBus::InOutStruct inp = InQueue->dequeue();
-        //            Queries::CommandMBS inp;
-        //            if (DataManager::deQueue(inp) == Error::Msg::NoError)
-        //                InMutex.unlock();
-        //            SendAndGetResult(inp);
-        {
-            switch (inp.cmd)
-            {
-            case Queries::CommandsMBS::MBS_READINPUTREGISTER:
-            }
-        }
-        QCoreApplication::processEvents();
-    }
-    emit Finished();
-}
-
-void ModbusThread::SendAndGetResult(ModBus::InOutStruct &inp)
-{
-    Inp = inp;
-    Send();
-    Outp.TaskNum = Inp.TaskNum;
-    AddToOutQueue(Outp);
-}
-
-void ModbusThread::AddToOutQueue(ModBus::InOutStruct &outp)
-{
-    OutMutex.lock();
-    OutList->append(outp);
-    OutMutex.unlock();
-    OutWC.wakeAll();
-}
-
-void ModbusThread::Send()
-{
-    // data to send is in Inp.Ba
-    quint16 KSS = CalcCRC(Inp.Ba);
-    Inp.Ba.append(static_cast<char>(KSS >> 8));
-    Inp.Ba.append(static_cast<char>(KSS));
-    Outp.Ba.clear();
-    Inp.Checked = false;
-    Busy = true;
-    Log->info("-> " + Inp.Ba.toHex());
-    //    qint64 st = SerialPort->write(Inp.Ba.data(), Inp.Ba.size());
-    emit Write(Inp.Ba);
-    /*    if (st < Inp.Ba.size())
-        {
-            Outp.Res = RESEMPTY;
-            return;
-        } */
-    QElapsedTimer tme;
-    tme.start();
-    while ((Busy) && (tme.elapsed() < RECONNECTTIME)) // ждём, пока либо сервер не отработает,
-                                                      // либо не наступит таймаут
-        QCoreApplication::processEvents();
-    if (Busy)
-    {
-        Busy = false;
-        Log->error("Timeout");
-        Outp.Res = Error::Msg::GeneralError;
-    }
-}
-
-void ModbusThread::ParseReply(QByteArray ba)
-{
-    Outp.Ba.append(ba);
-    //    Log->info("<- " + Outp.Ba.toHex());
-    if ((!Inp.Checked) && (Outp.Ba.size() >= 2))
-    {
-        Inp.Checked = true;
-        if (Outp.Ba.at(1) == (Inp.Command & 0x80)) // error
-        {
-            Log->error("Error in module");
-            ERMSG("modbus error response: " + Outp.Ba.toHex());
-        }
-        if (Outp.Ba.at(1) != Inp.Command) // wrong response
-        {
-            Log->error("Wrong response: " + Outp.Ba.toHex());
-            ERMSG("modbus wrong command");
-        }
-    }
-
-    if (Outp.Ba.size() >= Inp.ReadSize)
-    {
-        Log->info("<- " + Outp.Ba.toHex());
-        int rdsize = Outp.Ba.size();
-
-        quint16 crcfinal = (static_cast<quint8>(Outp.Ba.data()[rdsize - 2]) << 8)
-            | (static_cast<quint8>(Outp.Ba.data()[rdsize - 1]));
-        Outp.Ba.chop(2);
-        quint16 MYKSS = CalcCRC(Outp.Ba);
-
-        if (MYKSS != crcfinal)
-        {
-            Log->error("Crc error");
-            ERMSG("modbus crc error");
-            //            emit ErrorCrc();
-            Outp.Res = Error::Msg::GeneralError;
-            return;
-        }
-        Outp.Res = Error::Msg::NoError;
-        Busy = false;
-    }
-}
-
-void ModbusThread::FinishThread() { AboutToFinish = true; }
-
-quint16 ModbusThread::CalcCRC(QByteArray &ba)
-{
-    quint8 CRChi = 0xFF;
-    quint8 CRClo = 0xFF;
-    quint8 Ind;
-    quint16 crc;
-    int count = 0;
-
-    while (count < ba.size())
-    {
-        Ind = CRChi ^ ba.at(count);
-        count++;
-        CRChi = CRClo ^ TabCRChi[Ind];
-        CRClo = TabCRClo[Ind];
-    }
-    crc = ((CRChi << 8) | CRClo);
-    return crc;
+    PollingTimer->stop();
 }

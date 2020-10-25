@@ -27,11 +27,11 @@ public:
     //    IEC104Thread::FlSignals104 *flSignals;
     //    static QQueue<QVariant> s_104InputQueue;
 
-    struct Settings
-    {
-        quint16 baseadr;
-        QString ip;
-    };
+    //    struct Settings
+    //    {
+    //        quint16 baseadr;
+    //        QString ip;
+    //    };
 
     //    typedef struct
     //    {
@@ -119,17 +119,17 @@ public slots:
     void writeFile(quint32 filenum, const QByteArray &file);
     void writeConfigFile(S2ConfigType *s2config);
     void reqTime();
-    void writeTime();
+    void writeTime(quint32 time);
     void writeCommand(Queries::Commands cmd, QList<DataTypes::SignalsStruct> &list);
 
     //    static void SelectFile(char);
     void stop();
-    static void Com45(quint32 com);
-    static void Com50(quint32 adr, float param);
+    //    static void Com45(quint32 com);
+    //    static void Com50(quint32 adr, float param);
     //    void CorReadRequest();
     //    static void FileReady(S2ConfigType *s2config);
-    static void getTime();
-    static void com51WriteTime(uint time);
+    //    static void getTime();
+    //    static void com51WriteTime(uint time);
 
 signals:
     void StopAll();

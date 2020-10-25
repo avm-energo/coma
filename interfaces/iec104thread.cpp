@@ -31,7 +31,9 @@ IEC104Thread::IEC104Thread(LogClass *log, QObject *parent) : QObject(parent)
     m_noAnswer = 0;
 }
 
-IEC104Thread::~IEC104Thread() { }
+IEC104Thread::~IEC104Thread()
+{
+}
 
 void IEC104Thread::SetBaseAdr(quint16 adr)
 {
@@ -76,7 +78,7 @@ void IEC104Thread::Run()
                 case Commands104::CM104_COM50:
                     Com50(inp.uintarg, inp.flarg);
                     break;
-                case Commands104::WRITEFILE:
+                case Commands104::CM104_WRITEFILE:
                 {
                     //                    S2ConfigType *ptr = reinterpret_cast<S2ConfigType
                     //                    *>(inp.args.ptrarg); FileReady(ptr);
@@ -84,10 +86,10 @@ void IEC104Thread::Run()
                     FileReady(inp.uintarg);
                     break;
                 }
-                case Commands104::REQFILE:
+                case Commands104::CM104_REQFILE:
                     SelectFile(inp.uintarg);
                     break;
-                case Commands104::CM104_COM51WRITETIME:
+                case Commands104::CM104_COM51:
                     Com51WriteTime(inp.uintarg);
                     break;
                     //                case Commands104::CM104_CORREADREQUEST:
@@ -440,7 +442,7 @@ void IEC104Thread::ParseIFormat(QByteArray &ba) // основной разбор
 
                     int filetype = ba.at(9);
                     DataTypes::FileStruct df { static_cast<quint32>(filetype), m_readData };
-                    DataManager::addSignalToOutList(DataManager::SignalTypes::File, df);
+                    DataManager::addSignalToOutList(DataTypes::SignalTypes::File, df);
                     //                    if (filetype == 0x01) // если файл конфигурации
                     //                    {
                     //                        Error::Msg res = S2::RestoreDataMem(ReadData.data(), RDLength, DR);
@@ -503,7 +505,7 @@ void IEC104Thread::ParseIFormat(QByteArray &ba) // основной разбор
                     //                    emit SendMessageOk();
                     DataTypes::GeneralResponseStruct grs;
                     grs.type = DataTypes::GeneralResponseTypes::Ok;
-                    DataManager::addSignalToOutList(DataManager::SignalTypes::GeneralResponse, grs);
+                    DataManager::addSignalToOutList(DataTypes::SignalTypes::GeneralResponse, grs);
                 }
                 break;
             }

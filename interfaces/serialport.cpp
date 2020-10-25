@@ -16,7 +16,7 @@ SerialPort::~SerialPort()
         Port->close();
 }
 
-Error::Msg SerialPort::Init(SerialPort::Settings settings)
+Error::Msg SerialPort::Init(BaseInterface::SerialPortSettings settings)
 {
     //    if (Port != 0)
     //    {

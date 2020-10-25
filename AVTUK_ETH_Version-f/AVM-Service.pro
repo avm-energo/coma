@@ -27,6 +27,7 @@ TEMPLATE = app
 
 
 SOURCES += \
+    ../interfaces/modbusthread.cpp \
 coma.cpp \
 main.cpp \
 ../alarm/alarmclass.cpp \
@@ -122,6 +123,7 @@ main.cpp \
 
 HEADERS += \
     ../interfaces/eprotocom.h \
+    ../interfaces/modbusthread.h \
 coma.h \
 ../alarm/alarmclass.h \
 ../alarm/alarmstateall.h \
