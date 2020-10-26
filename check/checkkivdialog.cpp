@@ -4,7 +4,8 @@
 #include "../gen/colors.h"
 #include "../gen/error.h"
 #include "../gen/modulebsi.h"
-#include "../usb/commands.h"
+//#include "../usb/commands.h"
+#include "../gen/datamanager.h"
 #include "../widgets/etabwidget.h"
 #include "../widgets/wd_func.h"
 
@@ -67,7 +68,10 @@ QWidget *CheckKIVDialog::BdUI(int bdnum)
     }
 }
 
-void CheckKIVDialog::PrepareHeadersForFile(int row) { Q_UNUSED(row) }
+void CheckKIVDialog::PrepareHeadersForFile(int row)
+{
+    Q_UNUSED(row)
+}
 
 void CheckKIVDialog::WriteToFile(int row, int bdnum)
 {
@@ -75,9 +79,15 @@ void CheckKIVDialog::WriteToFile(int row, int bdnum)
     Q_UNUSED(bdnum)
 }
 
-void CheckKIVDialog::ChooseValuesToWrite() { }
-void CheckKIVDialog::SetDefaultValuesToWrite() { }
-void CheckKIVDialog::PrepareAnalogMeasurements() { }
+void CheckKIVDialog::ChooseValuesToWrite()
+{
+}
+void CheckKIVDialog::SetDefaultValuesToWrite()
+{
+}
+void CheckKIVDialog::PrepareAnalogMeasurements()
+{
+}
 
 void CheckKIVDialog::USBUpdate()
 {
@@ -107,21 +117,23 @@ void CheckKIVDialog::USBUpdate()
     }
 }
 
-void CheckKIVDialog::ETHUpdate()
+void CheckKIVDialog::update()
 {
-    updateFloatData();
-    updateSPData();
+    if ((m_updatesEnabled) && m_timerCounter) // every second tick of the timer
+    {
+        updateFloatData();
+        updateSPData();
+        m_timerCounter = !m_timerCounter;
+    }
 }
-
-void CheckKIVDialog::MBSUpdate() { }
 
 void CheckKIVDialog::updateFloatData()
 {
-    QList<DataManager::SignalsStruct> list;
-    DataManager::getSignals(0, 99999, DataManager::SignalTypes::FloatWithTime, list);
+    QList<DataTypes::SignalsStruct> list;
+    DataManager::getSignals(0, 99999, DataTypes::SignalTypes::FloatWithTime, list);
     if (!list.isEmpty())
     {
-        foreach (DataManager::SignalsStruct signal, list)
+        foreach (DataTypes::SignalsStruct signal, list)
         {
             DataTypes::FloatWithTimeStruct fwt = qvariant_cast<DataTypes::FloatWithTimeStruct>(signal.data);
             ChKIV->FillBd(this, QString::number(fwt.sigAdr), WDFunc::StringValueWithCheck(fwt.sigVal, 3));
@@ -270,6 +282,14 @@ void CheckKIVDialog::SetWarnColor(int position, bool value)
         WDFunc::SetLBLTColor(
             this, QString::number(2432 + position - 13), (value) ? Colors::TABCOLORA1 : Colors::ACONFOCLR);
     }
+}
+
+void CheckKIVDialog::getFloatData()
+{
+}
+
+void CheckKIVDialog::getSPData()
+{
 }
 
 void CheckKIVDialog::SetAlarmColor(int position, bool value)

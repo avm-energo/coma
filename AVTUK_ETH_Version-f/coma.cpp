@@ -817,7 +817,10 @@ bool Coma::nativeEvent(const QByteArray &eventType, void *message, long *result)
     return false;
 }
 
-void Coma::SetMode(int mode) { Mode = mode; }
+void Coma::SetMode(int mode)
+{
+    Mode = mode;
+}
 
 void Coma::Go(const QString &parameter)
 {
@@ -1049,9 +1052,15 @@ void Coma::FileTimeOut()
         QMessageBox::information(this, "Ошибка", "Ошибка", QMessageBox::Ok);
 }
 
-void Coma::SetProgressBar2Size(int size) { SetProgressBarSize(2, size); }
+void Coma::SetProgressBar2Size(int size)
+{
+    SetProgressBarSize(2, size);
+}
 
-void Coma::SetProgressBar2(int cursize) { SetProgressBar(2, cursize); }
+void Coma::SetProgressBar2(int cursize)
+{
+    SetProgressBar(2, cursize);
+}
 
 void Coma::SetProgressBarSize(int prbnum, int size)
 {
@@ -1121,15 +1130,16 @@ void Coma::Connect()
     {
     case Board::InterfaceType::USB:
     {
+        m_iface = new USBWorker();
         NewUSB();
-        res = Commands::Connect();
-        if (res != Error::Msg::NoError)
-        {
-            QMessageBox::critical(this, "Ошибка", "Не удалось установить связь", QMessageBox::Ok);
-            QApplication::restoreOverrideCursor();
-            ERMSG("cn: can't connect");
-            return;
-        }
+        //        res = Commands::Connect();
+        //        if (res != Error::Msg::NoError)
+        //        {
+        //            QMessageBox::critical(this, "Ошибка", "Не удалось установить связь", QMessageBox::Ok);
+        //            QApplication::restoreOverrideCursor();
+        //            ERMSG("cn: can't connect");
+        //            return;
+        //        }
         //        res = ModuleBSI::USBUpdate();
         //        if (res != Error::Msg::NoError)
         //        {
@@ -1143,35 +1153,46 @@ void Coma::Connect()
         //            ERMSG("BSI read error");
         //            return;
         //        }
-        ActiveThreads |= THREAD::USB;
+        //        ActiveThreads |= THREAD::USB;
         //        Board::GetInstance().setTypeB(ModuleBSI::GetMType(BoardTypes::BT_BASE));
         //        Board::GetInstance().setTypeM(ModuleBSI::GetMType(BoardTypes::BT_MEZONIN));
         break;
     }
     case Board::InterfaceType::Ethernet:
     {
-        New104();
-        if (!Ch104->isWorking())
-            Ch104->Connect(ConnectSettings.iec104st);
-        ActiveThreads |= THREAD::P104;
+        m_iface = new IEC104;
+        //        New104();
+        //        if (!Ch104->isWorking())
+        //            Ch104->Connect(ConnectSettings.iec104st);
+        //        ActiveThreads |= THREAD::P104;
         break;
     }
     case Board::InterfaceType::RS485:
     {
-        NewModbus();
-        res = ChModbus->Connect(ConnectSettings.serialst);
-        if (res != Error::Msg::NoError)
-        {
-            ERMSG("Modbus not connected");
-            return;
-        }
-        ChModbus->BSIrequest();
-        ActiveThreads |= THREAD::MODBUS;
+        m_iface = new ModBus;
+        //        NewModbus();
+        //        res = ChModbus->Connect(ConnectSettings.serialst);
+        //        if (res != Error::Msg::NoError)
+        //        {
+        //            ERMSG("Modbus not connected");
+        //            return;
+        //        }
+        //        ChModbus->BSIrequest();
+        //        ActiveThreads |= THREAD::MODBUS;
         break;
     }
     default:
         qFatal("Connection type error");
     }
+    if (!m_iface->start(ConnectSettings))
+    //    if (res != Error::Msg::NoError)
+    {
+        QMessageBox::critical(this, "Ошибка", "Не удалось установить связь", QMessageBox::Ok);
+        QApplication::restoreOverrideCursor();
+        ERMSG("cn: can't connect");
+        return;
+    }
+    ActiveThreads = true;
 }
 
 void Coma::DisconnectAndClear()
@@ -1215,7 +1236,10 @@ void Coma::DisconnectAndClear()
     Reconnect = false;
 }
 
-void Coma::resizeEvent(QResizeEvent *e) { QMainWindow::resizeEvent(e); }
+void Coma::resizeEvent(QResizeEvent *e)
+{
+    QMainWindow::resizeEvent(e);
+}
 
 void Coma::keyPressEvent(QKeyEvent *e)
 {
