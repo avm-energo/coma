@@ -79,8 +79,9 @@ void ConnectDialog::SetInterface()
         lyout->addWidget(table);
         QHBoxLayout *hlyout = new QHBoxLayout;
         hlyout->addStretch(10);
-        hlyout->addWidget(WDFunc::NewPB(dlg, "newrspb", "Добавить", this, SLOT(AddRs())));
-        hlyout->addWidget(WDFunc::NewPB(dlg, "scanrspb", "Сканировать", this, SLOT(ScanRs())));
+        // hlyout->addWidget(WDFunc::NewPB(dlg, "newrspb", "Добавить", this, SLOT(AddRs())));
+        hlyout->addWidget(WDFunc::NewPB2(dlg, "newrspb", "Добавить", this, &ConnectDialog::AddRs));
+        // hlyout->addWidget(WDFunc::NewPB(dlg, "scanrspb", "Сканировать", this, SLOT(ScanRs())));
         hlyout->addStretch(10);
         lyout->addLayout(hlyout);
         connect(table, &QTableView::doubleClicked, this, qOverload<QModelIndex>(&ConnectDialog::SetRs));
@@ -136,7 +137,7 @@ void ConnectDialog::AddEth()
     lyout->addWidget(WDFunc::NewLBL(dlg, "Адрес БС:"), count, 0, 1, 1, Qt::AlignLeft);
     lyout->addWidget(WDFunc::NewSPB(dlg, "bsadrspb", 1, 255, 0), count++, 1, 1, 7);
     lyout->addWidget(WDFunc::NewPB2(dlg, "acceptpb", "Сохранить", this, &ConnectDialog::EthAccepted), count, 0, 1, 4);
-    lyout->addWidget(WDFunc::NewPB(dlg, "cancelpb", "Отмена", dlg, SLOT(close())), count, 4, 1, 3);
+    lyout->addWidget(WDFunc::NewPB2(dlg, "cancelpb", "Отмена", [dlg] { dlg->close(); }), count, 4, 1, 3);
     dlg->setLayout(lyout);
     dlg->exec();
 }
@@ -354,8 +355,9 @@ void ConnectDialog::AddRs()
     lyout->addWidget(WDFunc::NewLBL(dlg, "Адрес:"), count, 0, 1, 1, Qt::AlignLeft);
     lyout->addWidget(WDFunc::NewSPB(dlg, "addressspb", 1, 255, 0), count++, 1, 1, 1);
     QHBoxLayout *hlyout = new QHBoxLayout;
-    hlyout->addWidget(WDFunc::NewPB(dlg, "acceptpb", "Сохранить", this, SLOT(RsAccepted())));
-    hlyout->addWidget(WDFunc::NewPB(dlg, "cancelpb", "Отмена", dlg, SLOT(close())));
+    hlyout->addWidget(WDFunc::NewPB2(dlg, "acceptpb", "Сохранить", this, &ConnectDialog::RsAccepted));
+    hlyout->addWidget(WDFunc::NewPB2(dlg, "cancelpb", "Отмена", [dlg] { dlg->close(); }));
+
     lyout->addLayout(hlyout, count, 0, 1, 2, Qt::AlignCenter);
     dlg->setLayout(lyout);
     dlg->exec();
@@ -462,7 +464,7 @@ bool ConnectDialog::UpdateModel()
         if (USBsl.isEmpty())
         {
             QMessageBox::critical(this, "Ошибка", "Устройства не найдены");
-            qCritical() << QVariant::fromValue(Error::Msg::CN_NOPORTSERROR).toString();
+            qCritical() << QVariant::fromValue(Error::Msg::NoDeviceError).toString();
             return false;
         }
         mdl->setHorizontalHeaderLabels(sl);

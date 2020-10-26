@@ -232,13 +232,13 @@ void StartupKTFDialog::SaveToFile()
     case Error::Msg::NoError:
         QMessageBox::information(this, "Внимание", "Файл коэффициентов коррекции записан успешно!");
         break;
-    case Error::Msg::FILE_WRITE:
+    case Error::Msg::FileWriteError:
         QMessageBox::critical(this, "Ошибка", "Ошибка при записи файла!");
         break;
-    case Error::Msg::FILE_NAMEEMP:
+    case Error::Msg::FileNameError:
         QMessageBox::critical(this, "Ошибка", "Пустое имя файла!");
         break;
-    case Error::Msg::FILE_OPEN:
+    case Error::Msg::FileOpenError:
         QMessageBox::critical(this, "Ошибка", "Ошибка открытия файла!");
         break;
     default:

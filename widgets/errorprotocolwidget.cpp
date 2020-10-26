@@ -1,6 +1,7 @@
 #include "errorprotocolwidget.h"
 
 #include "../gen/colors.h"
+#include "../gen/error.h"
 #include "../models/errorprotocolmodel.h"
 #ifdef MODELDEBUG
 #include <QAbstractItemModelTester>
@@ -65,7 +66,7 @@ ErrorProtocolWidget::~ErrorProtocolWidget()
 {
 }
 
-void ErrorProtocolWidget::AddRowToProt(Error::ErMsg ermsg)
+void ErrorProtocolWidget::AddRowToProt(ErrorMsg ermsg)
 {
     Model->appendRow(ermsg);
 }

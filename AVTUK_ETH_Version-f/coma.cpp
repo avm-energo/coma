@@ -33,6 +33,9 @@
 #include "../config/confktfdialog.h"
 #include "../dialogs/errordialog.h"
 #include "../dialogs/keypressdialog.h"
+#include "../gen/logger.h"
+#include "../widgets/splashscreen.h"
+#include "../widgets/wd_func.h"
 #include "../dialogs/settingsdialog.h"
 #include "../gen/errorqueue.h"
 #include "../gen/logger.h"
@@ -70,9 +73,8 @@ void registerForDeviceNotification(Coma *ptr)
 
 Coma::Coma(QWidget *parent) : QMainWindow(parent)
 {
-    QSplashScreen *splash = new QSplashScreen(QPixmap("images/2.1.x.png"));
+    SplashScreen *splash = new SplashScreen(QPixmap("images/surgery.png"));
     splash->show();
-    splash->showMessage("Подготовка окружения...", Qt::AlignRight, Qt::white);
     // http://stackoverflow.com/questions/2241808/checking-if-a-folder-exists-and-creating-folders-in-qt-c
     QDir dir(StdFunc::GetHomeDir());
     if (!dir.exists())
@@ -116,7 +118,6 @@ Coma::Coma(QWidget *parent) : QMainWindow(parent)
 
     newTimers();
     LoadSettings();
-
     splash->finish(this);
     splash->deleteLater();
     setStatusBar(WDFunc::NewSB(this));
@@ -135,11 +136,11 @@ void convertPixmap(size_t size, QAction *jourAct)
     QFont font(painter.font());
     font.setPixelSize(14);
     painter.setFont(font);
+    painter.setPen(Qt::white);
     if (size > 10)
         painter.drawText(QRect(20, 0, 20, 20), Qt::AlignCenter, "...");
     else
         painter.drawText(QRect(20, 0, 20, 20), Qt::AlignCenter, QString::number(size));
-    painter.setPen(Qt::yellow);
     jourAct->setIcon(pix);
 }
 
@@ -152,7 +153,7 @@ QToolBar *Coma::createToolBar()
     tb->addAction(QIcon("images/play.png"), "Соединение", this, &Coma::StartWork);
     tb->addAction(QIcon("images/stop.png"), "Разрыв соединения", this, &Coma::DisconnectAndClear);
     tb->addSeparator();
-    tb->addAction(QIcon("images/settings.png"), "Настройки", [this]() {
+    tb->addAction(QIcon("images/settings.svg"), "Настройки", [this]() {
         SettingsDialog *dlg = new SettingsDialog;
         dlg->setAttribute(Qt::WA_DeleteOnClose);
         dlg->show();
@@ -481,9 +482,9 @@ void Coma::StartWork()
     //        MainTW->addTab(jourDialog, "Журналы");
 
     if (ModuleBSI::Health() & HTH_CONFIG) // нет конфигурации
-        qCritical() << QVariant::fromValue(Error::Msg::ER_NOCONF).toString();
+        qCritical() << QVariant::fromValue(Error::Msg::NoConfError).toString();
     if (ModuleBSI::Health() & HTH_REGPARS) // нет коэффициентов
-        qCritical() << QVariant::fromValue(Error::Msg::ER_NOTUNECOEF).toString();
+        qCritical() << QVariant::fromValue(Error::Msg::NoTuneError).toString();
     //    if (board.interfaceType() == Board::InterfaceType::USB)
     //    {
     //        fwUpDialog = new fwupdialog;

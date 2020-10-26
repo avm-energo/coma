@@ -52,7 +52,7 @@ void Logging::messageHandler(QtMsgType type, const QMessageLogContext &context, 
     {
     case QtInfoMsg:
     {
-        Error::ErMsg tmpm {
+        ErrorMsg tmpm {
             QDateTime::currentDateTime().toString("dd-MM-yyyy hh:mm:ss"), // DateTime
             type,                                                         // Msg type
             sourceFile,                                                   // File
@@ -76,7 +76,7 @@ void Logging::messageHandler(QtMsgType type, const QMessageLogContext &context, 
         return;
     case QtCriticalMsg:
     {
-        Error::ErMsg tmpm {
+        ErrorMsg tmpm {
             QDateTime::currentDateTime().toString("dd-MM-yyyy hh:mm:ss"), // DateTime
             type,                                                         // Msg type
             sourceFile,                                                   // File

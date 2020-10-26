@@ -18,7 +18,7 @@ public:
 
 signals:
     void Read(QByteArray);
-    // void State(ConnectionStates);
+
     void Reconnect();
 
 private:

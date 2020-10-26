@@ -1,6 +1,7 @@
 #include "errordialog.h"
 
 #include "../gen/colors.h"
+#include "../gen/error.h"
 #include "../widgets/errorprotocolwidget.h"
 
 #include <QHBoxLayout>
@@ -32,7 +33,7 @@ void ErrorDialog::SetupUI()
     setAttribute(Qt::WA_DeleteOnClose);
 }
 
-void ErrorDialog::AddErrMsg(Error::ErMsg msg)
+void ErrorDialog::AddErrMsg(ErrorMsg msg)
 {
     ErrorWidget->AddRowToProt(msg);
 }

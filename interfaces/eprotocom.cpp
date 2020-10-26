@@ -71,7 +71,7 @@ void EProtocom::Send(char command, char parameter, QByteArray &ba, qint64 datasi
     {
         qDebug() << "Передача в отключенный прибор";
         ERMSG("В канальную процедуру переданы некорректные данные");
-        m_result = Error::Msg::CN_NULLDATAERROR;
+        m_result = Error::Msg::NullDataError;
         return;
     }
     try
@@ -191,7 +191,7 @@ void EProtocom::InitiateSend()
     default:
     {
         ERMSG("Неизвестная команда");
-        Finish(Error::Msg::CN_UNKNOWNCMDERROR);
+        Finish(Error::Msg::WrongCommandError);
         return;
     }
     }
@@ -208,7 +208,7 @@ void EProtocom::WriteDataToPort(QByteArray &ba)
     if (Command == CN::Unknown) // игнорируем вызовы процедуры без команды
     {
         ERMSG("Не пришла ещё шапка файла");
-        qCritical() << QVariant::fromValue(Error::Msg::USB_WRONGCOMER).toString();
+        qCritical() << QVariant::fromValue(Error::Msg::WrongCommandError).toString();
         return;
     }
     int byteswritten = 0;
@@ -224,7 +224,7 @@ void EProtocom::WriteDataToPort(QByteArray &ba)
             && Board::GetInstance().interfaceType() == Board::InterfaceType::USB)
         {
             ERMSG("Ошибка записи RawWrite");
-            qCritical() << QVariant::fromValue(Error::Msg::COM_WRITEER).toString();
+            qCritical() << QVariant::fromValue(Error::Msg::WriteError).toString();
             Disconnect();
             // TTimer->start();
             return;
@@ -360,16 +360,16 @@ void EProtocom::ParseIncomeData(QByteArray ba)
     if (ReadDataChunk.at(0) != CN::Message::Module)
     {
         ERMSG("Ошибка при приеме данных");
-        Finish(Error::Msg::CN_RCVDATAERROR);
+        Finish(Error::Msg::ReadError);
         return;
     }
     if (static_cast<unsigned char>(ReadDataChunk.at(1)) == CN::ResultError)
     {
         if (rdsize < 5) // некорректная посылка
-            Finish(Error::Msg::CN_RCVDATAERROR);
+            Finish(Error::Msg::ReadError);
         else
             // Finish(Error::Msg::USO_NOERR + ReadDataChunk.at(4));
-            Finish(Error::Msg::USO_NOERR);
+            Finish(Error::Msg::NoError);
         return;
     }
     switch (bStep)
@@ -392,7 +392,7 @@ void EProtocom::ParseIncomeData(QByteArray ba)
             if ((ReadDataChunk.at(1) != CN::ResultOk) || (ReadDataChunk.at(2) != 0x00) || (ReadDataChunk.at(3) != 0x00))
             {
                 ERMSG("Ошибка при приеме данных");
-                Finish(Error::Msg::CN_RCVDATAERROR);
+                Finish(Error::Msg::ReadError);
                 return;
             }
             if (Command == CN::Write::EraseTech)
@@ -410,7 +410,7 @@ void EProtocom::ParseIncomeData(QByteArray ba)
             if ((ReadDataChunk.at(1) != CN::ResultOk) || (ReadDataChunk.at(2) != 0x00) || (ReadDataChunk.at(3) != 0x00))
             {
                 ERMSG("Ошибка при приеме данных");
-                Finish(Error::Msg::CN_RCVDATAERROR);
+                Finish(Error::Msg::ReadError);
                 return;
             }
             if (!SegLeft)
@@ -436,7 +436,7 @@ void EProtocom::ParseIncomeData(QByteArray ba)
             if (!GetLength())
             {
                 ERMSG("Несовпадение длины");
-                Finish(Error::Msg::CN_RCVDATAERROR);
+                Finish(Error::Msg::ReadError);
                 return;
             }
             if (ReadDataChunkLength == 0)
@@ -456,7 +456,7 @@ void EProtocom::ParseIncomeData(QByteArray ba)
             if (!GetLength())
             {
                 ERMSG("Несовпадение длины");
-                Finish(Error::Msg::CN_RCVDATAERROR);
+                Finish(Error::Msg::ReadError);
                 return;
             }
             if (ReadDataChunkLength == 0)
@@ -484,7 +484,7 @@ void EProtocom::ParseIncomeData(QByteArray ba)
             filenum += tmpi;
             if (filenum != FNum)
             {
-                Finish(Error::Msg::USO_UNKNFILESENT);
+                Finish(Error::Msg::WrongFileError);
                 return;
             }
             // вытаскиваем размер файла
@@ -494,7 +494,7 @@ void EProtocom::ParseIncomeData(QByteArray ba)
             if (RDLength > CN::Limits::MaxGetFileSize)
             {
                 ERMSG("Некорректная длина блока");
-                Finish(Error::Msg::CN_RCVLENGTHERROR);
+                Finish(Error::Msg::SizeError);
                 return;
             }
             emit SetDataSize(RDLength);
@@ -504,7 +504,7 @@ void EProtocom::ParseIncomeData(QByteArray ba)
         }
 
         default:
-            Finish(Error::Msg::CN_UNKNOWNCMDERROR);
+            Finish(Error::Msg::WrongCommandError);
             break;
         }
     }
@@ -514,7 +514,7 @@ void EProtocom::ParseIncomeData(QByteArray ba)
     {
         if (!GetLength())
         {
-            Finish(Error::Msg::CN_RCVDATAERROR);
+            Finish(Error::Msg::ReadError);
             return;
         }
         // пока не набрали целый буфер соответственно присланной длине или не
@@ -591,7 +591,7 @@ void EProtocom::ParseIncomeData(QByteArray ba)
 
         default:
         {
-            Finish(Error::Msg::CN_UNKNOWNCMDERROR);
+            Finish(Error::Msg::WrongCommandError);
             break;
         }
         }
@@ -631,7 +631,7 @@ void EProtocom::SendCmd(unsigned char command, int parameter)
     case CN::Write::EraseTech:
         break;
     default:
-        Finish(Error::Msg::CN_UNKNOWNCMDERROR);
+        Finish(Error::Msg::WrongCommandError);
         ERMSG("Неизвестная команда");
         return;
     }
@@ -655,7 +655,7 @@ void EProtocom::SendIn(unsigned char command, char parameter, QByteArray &ba, qi
         break;
     default:
         ERMSG("Неизвестная команда");
-        Finish(Error::Msg::CN_UNKNOWNCMDERROR);
+        Finish(Error::Msg::WrongCommandError);
         return;
     }
     Send(command, parameter, ba, maxdatasize);
@@ -676,7 +676,7 @@ void EProtocom::SendOut(unsigned char command, char board_type, QByteArray &ba)
         break;
     default:
         ERMSG("Неизвестная команда");
-        Finish(Error::Msg::CN_UNKNOWNCMDERROR);
+        Finish(Error::Msg::WrongCommandError);
         return;
     }
     Send(command, board_type, ba, 0);
@@ -692,7 +692,7 @@ void EProtocom::SendFile(unsigned char command, char board_type, int filenum, QB
         break;
     default:
         ERMSG("Неизвестная команда");
-        Finish(Error::Msg::CN_UNKNOWNCMDERROR);
+        Finish(Error::Msg::WrongCommandError);
         return;
     }
     FNum = filenum;
@@ -761,7 +761,7 @@ void EProtocom::usbStateChanged(void *message)
                     qDebug() << "Device " << m_usbWorker->deviceInfo().serial << " removed completely";
                     WriteData.clear();
                     OutData.clear();
-                    Finish(Error::Msg::CN_NULLDATAERROR);
+                    Finish(Error::Msg::NullDataError);
                     m_loop.exit();
                     QMessageBox::critical(nullptr, "Ошибка", "Связь с прибором была разорвана", QMessageBox::Ok);
                 }

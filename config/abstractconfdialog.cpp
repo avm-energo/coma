@@ -148,13 +148,13 @@ void AbstractConfDialog::SaveConfToFile()
     case Error::Msg::NoError:
         QMessageBox::information(this, "Внимание", "Записано успешно!");
         break;
-    case Error::Msg::FILE_WRITE:
+    case Error::Msg::FileWriteError:
         ERMSG("Ошибка при записи файла!");
         break;
-    case Error::Msg::FILE_NAMEEMP:
+    case Error::Msg::FileNameError:
         ERMSG("Пустое имя файла!");
         break;
-    case Error::Msg::FILE_OPEN:
+    case Error::Msg::FileOpenError:
         ERMSG("Ошибка открытия файла!");
         break;
     default:
