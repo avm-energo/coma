@@ -64,7 +64,7 @@ void registerForDeviceNotification(Coma *ptr)
     ZeroMemory(&devInt, sizeof(devInt));
     devInt.dbcc_size = sizeof(DEV_BROADCAST_DEVICEINTERFACE);
     devInt.dbcc_devicetype = DBT_DEVTYP_DEVICEINTERFACE;
-    devInt.dbcc_classguid = { 0x25dbce51, 0x6c8f, 0x4a72, 0x8a, 0x6d, 0xb5, 0x4c, 0x2b, 0x4f, 0xc8, 0x35 };
+    devInt.dbcc_classguid = { 0x25dbce51, 0x6c8f, 0x4a72, { 0x8a, 0x6d, 0xb5, 0x4c, 0x2b, 0x4f, 0xc8, 0x35 } };
 
     HDEVNOTIFY blub;
     blub = RegisterDeviceNotification((HDEVNOTIFY)ptr->winId(), &devInt, DEVICE_NOTIFY_WINDOW_HANDLE);
@@ -481,9 +481,9 @@ void Coma::StartWork()
         MainTW->addTab(jourDialog, "Журналы");
 
     if (ModuleBSI::Health() & HTH_CONFIG) // нет конфигурации
-        qCritical() << QVariant::fromValue(Error::Msg::ER_NOCONF).toString();
+        qCritical() << QVariant::fromValue(Error::Msg::NoConfError).toString();
     if (ModuleBSI::Health() & HTH_REGPARS) // нет коэффициентов
-        qCritical() << QVariant::fromValue(Error::Msg::ER_NOTUNECOEF).toString();
+        qCritical() << QVariant::fromValue(Error::Msg::NoTuneError).toString();
     if (board.interfaceType() == Board::InterfaceType::USB)
     {
         fwUpDialog = new fwupdialog;
@@ -1111,7 +1111,7 @@ void Coma::Connect()
         res = ModuleBSI::SetupBSI();
         if (res != Error::Msg::NoError)
         {
-            if (res == Error::Msg::ResEmpty)
+            if (res == Error::ResEmpty)
             {
                 QMessageBox::critical(this, "Ошибка", "Неизвестный тип модуля", QMessageBox::Ok);
                 ERMSG("Unknown module type");

@@ -469,7 +469,7 @@ bool ConnectDialog::UpdateModel()
         if (USBsl.isEmpty())
         {
             QMessageBox::critical(this, "Ошибка", "Устройства не найдены");
-            qCritical() << QVariant::fromValue(Error::Msg::CN_NOPORTSERROR).toString();
+            qCritical() << QVariant::fromValue(Error::Msg::NoDeviceError).toString();
             return false;
         }
         mdl->setHorizontalHeaderLabels(sl);

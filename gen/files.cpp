@@ -31,14 +31,14 @@ Error::Msg Files::LoadFromFile(const QString &filename, QByteArray &ba)
     if (filename.isEmpty())
     {
         ERMSG("Пустое имя файла");
-        return Error::Msg::FILE_NAMEEMP; // Пустое имя файла
+        return Error::Msg::FileNameError; // Пустое имя файла
     }
     QFile *file = new QFile;
     file->setFileName(filename);
     if (!file->open(QIODevice::ReadOnly))
     {
         ERMSG("Ошибка открытия файла");
-        return Error::Msg::FILE_OPEN; // Ошибка открытия файла
+        return Error::Msg::FileOpenError; // Ошибка открытия файла
     }
     ba = file->readAll();
     file->close();
@@ -77,7 +77,7 @@ Error::Msg Files::SaveToFile(const QString &filename, QByteArray &src, unsigned 
     QFile *file = new QFile;
     file->setFileName(filename);
     if (!file->open(QIODevice::WriteOnly))
-        return Error::Msg::FILE_OPEN; // Ошибка открытия файла
+        return Error::Msg::FileOpenError; // Ошибка открытия файла
     if (file->write(src, numbytes) != -1)
     {
         // нет ошибок
@@ -90,7 +90,7 @@ Error::Msg Files::SaveToFile(const QString &filename, QByteArray &src, unsigned 
         // ошибка записи
         file->close();
         delete file;
-        return Error::Msg::FILE_WRITE;
+        return Error::Msg::FileWriteError;
     }
 }
 
