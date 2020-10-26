@@ -21,9 +21,7 @@ IEC104::IEC104(QObject *parent) : BaseInterface(parent)
     Log->info("=== Log started ===");
 }
 
-IEC104::~IEC104()
-{
-}
+IEC104::~IEC104() { }
 
 // bool IEC104::Working() { return (EthThreadWorking | ParseThreadWorking); }
 
@@ -89,8 +87,11 @@ bool IEC104::start(const ConnectStruct &st)
     return true;
 }
 
-void IEC104::reqStartup()
+void IEC104::reqStartup(quint32 sigAdr, quint32 sigCount)
 {
+    // adr & count are used in modbus only, 104 has special group STARTUPGROUP for these parameters
+    Q_UNUSED(sigAdr)
+    Q_UNUSED(sigCount)
     Commands104::CommandStruct inp { Commands104::CM104_REQGROUP, STARTUPGROUP, 0, {} };
     DataManager::addToInQueue(inp);
 }
@@ -236,10 +237,7 @@ void IEC104::writeCommand(Queries::Commands cmd, QList<DataTypes::SignalsStruct>
 //    //    IEC104Thread::s_ParseWriteMutex.unlock();
 //}
 
-void IEC104::EthThreadStarted()
-{
-    m_working = EthThreadWorking = true;
-}
+void IEC104::EthThreadStarted() { m_working = EthThreadWorking = true; }
 
 void IEC104::EthThreadFinished()
 {
@@ -251,10 +249,7 @@ void IEC104::EthThreadFinished()
     }
 }
 
-void IEC104::ParseThreadStarted()
-{
-    m_working = ParseThreadWorking = true;
-}
+void IEC104::ParseThreadStarted() { m_working = ParseThreadWorking = true; }
 
 void IEC104::ParseThreadFinished()
 {

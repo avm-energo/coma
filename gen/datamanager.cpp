@@ -51,6 +51,19 @@ Error::Msg DataManager::getSignals(quint32 firstSignalAdr, quint32 lastSignalAdr
                 }
                 break;
             }
+            case DataTypes::SignalTypes::Float:
+            {
+                if (signal.canConvert<DataTypes::FloatStruct>())
+                {
+                    DataTypes::FloatStruct fwt = qvariant_cast<DataTypes::FloatStruct>(signal);
+                    if ((fwt.sigAdr >= firstSignalAdr) && (fwt.sigAdr <= lastSignalAdr))
+                    {
+                        outlist.append(sig);
+                        s_outputList.removeAll(sig);
+                    }
+                }
+                break;
+            }
             case DataTypes::SignalTypes::SinglePointWithTime:
             {
                 if (signal.canConvert<DataTypes::SinglePointWithTimeStruct>())
