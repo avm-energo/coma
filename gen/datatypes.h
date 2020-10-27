@@ -10,6 +10,7 @@ enum SignalTypes
 {
     BitString,
     FloatWithTime,
+    Float,
     SinglePointWithTime,
     ByteArray,
     File,

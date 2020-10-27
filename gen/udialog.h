@@ -4,6 +4,8 @@
 // simple dialog class to populate from
 // has virtual methods setUpdatesDisabled & setUpdatesEnabled
 
+#include "../interfaces/baseinterface.h"
+
 #include <QDialog>
 
 class UDialog : public QDialog
@@ -18,12 +20,14 @@ public:
     virtual void setUpdatesDisabled();
     const QString getCaption();
     void setCaption(const QString &caption);
+    void setInterface(BaseInterface *iface);
 
 public slots:
     virtual void update();
 
 private:
     QString m_caption;
+    BaseInterface *m_iface;
 };
 
 #endif // UDIALOG_H

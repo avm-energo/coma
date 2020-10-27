@@ -38,10 +38,11 @@ Module::Module(QObject *parent) : QObject(parent)
     m_oldTabIndex = m_currentTabIndex = 0;
 }
 
-Module *Module::createModule(QTimer *updateTimer)
+Module *Module::createModule(QTimer *updateTimer, BaseInterface *iface)
 {
     Journals *JOUR;
     Module *m = new Module;
+    m->m_iface = iface;
     S2ConfigType *s2Config = new S2ConfigType;
     quint16 typeb = Board::GetInstance().typeB();
     if (Board::GetInstance().getBaseBoardsList().contains(typeb)) // there must be two-part module
@@ -152,6 +153,7 @@ Module *Module::createModule(QTimer *updateTimer)
     {
         connect(updateTimer, &QTimer::timeout, d, &UDialog::update);
         d->setUpdatesDisabled();
+        d->setInterface(m->m_iface);
     }
     return m;
 }
@@ -180,9 +182,15 @@ void Module::addDialogToList(UDialog *dlg, const QString &caption, const QString
     m_Dialogs.append(dlg);
 }
 
-Alarm *Module::getAlarm() { return m_Alarm; }
+Alarm *Module::getAlarm()
+{
+    return m_Alarm;
+}
 
-Warn *Module::getWarn() { return m_Warn; }
+Warn *Module::getWarn()
+{
+    return m_Warn;
+}
 
 void Module::parentTWTabClicked(int index)
 {

@@ -199,6 +199,7 @@ private:
 
     IEC104 *Ch104;
     ModBus *ChModbus;
+    BaseInterface *m_iface;
 
     BaseInterface::ConnectStruct ConnectSettings;
 

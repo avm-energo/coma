@@ -39,18 +39,15 @@ public:
     explicit BaseInterface(QObject *parent = nullptr);
 
     virtual bool start(const ConnectStruct &) = 0;
-    virtual void reqStartup() = 0;
-    virtual void reqFile(quint32 filenum) = 0;
-    virtual void writeFile(quint32 filenum, const QByteArray &file) = 0;
-    virtual void writeConfigFile(S2ConfigType *s2config);
+    virtual void reqStartup(quint32 sigAdr = 0, quint32 sigCount = 0) = 0;
+    virtual void reqFile(quint32) = 0;
+    virtual void writeFile(quint32, const QByteArray &) = 0;
+    virtual void writeConfigFile(S2ConfigType *);
     virtual void reqTime() = 0;
     virtual void writeTime(quint32 time) = 0;
     virtual void writeCommand(Queries::Commands cmd, QList<DataTypes::SignalsStruct> &list) = 0;
 
-    bool isWorking()
-    {
-        return m_working;
-    }
+    bool isWorking() { return m_working; }
 
 signals:
     void reconnect();
