@@ -90,7 +90,8 @@ enum Commands
     QC_EraseJournals,
     QC_SetStartupValues,
     QC_ClearStartupValues,
-    QC_WriteUserValues
+    QC_WriteUserValues,
+    QC_ReqAlarms
 };
 
 struct Command

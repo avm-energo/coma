@@ -920,7 +920,7 @@ void IEC104Thread::setGeneralResponse(DataTypes::GeneralResponseTypes type, quin
     DataTypes::GeneralResponseStruct grs;
     grs.type = type;
     grs.data = data;
-    DataManager::addSignalToOutList(DataManager::SignalTypes::GeneralResponse, grs);
+    DataManager::addSignalToOutList(DataTypes::SignalTypes::GeneralResponse, grs);
 }
 
 // void IEC104Thread::convert(IEC104Thread::SponSignals *signal) { emit Sponsignalsreceived(signal); }

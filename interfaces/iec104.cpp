@@ -102,6 +102,14 @@ void IEC104::reqBSI()
     DataManager::addToInQueue(inp);
 }
 
+void IEC104::reqAlarms(quint32 sigAdr, quint32 sigCount)
+{
+    Q_UNUSED(sigAdr)
+    Q_UNUSED(sigCount)
+    Commands104::CommandStruct inp { Commands104::CM104_REQGROUP, ALARMGROUP, 0, {} };
+    DataManager::addToInQueue(inp);
+}
+
 void IEC104::reqFile(quint32 filenum)
 {
     Commands104::CommandStruct inp { Commands104::CM104_REQFILE, filenum, 0, {} };
