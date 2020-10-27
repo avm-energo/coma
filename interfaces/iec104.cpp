@@ -96,6 +96,12 @@ void IEC104::reqStartup(quint32 sigAdr, quint32 sigCount)
     DataManager::addToInQueue(inp);
 }
 
+void IEC104::reqBSI()
+{
+    Commands104::CommandStruct inp { Commands104::CM104_REQGROUP, BSIGROUP, 0, {} };
+    DataManager::addToInQueue(inp);
+}
+
 void IEC104::reqFile(quint32 filenum)
 {
     Commands104::CommandStruct inp { Commands104::CM104_REQFILE, filenum, 0, {} };
@@ -131,7 +137,7 @@ void IEC104::writeTime(quint32 time)
 void IEC104::writeCommand(Queries::Commands cmd, QList<DataTypes::SignalsStruct> &list)
 {
     Commands104::CommandStruct inp;
-    if (cmd == Queries::QC_Command50)
+    if (cmd == Queries::QC_WriteUserValues)
     {
         // for each signal in list form the 50 command and set it into the input queue
         foreach (DataTypes::SignalsStruct str, list)

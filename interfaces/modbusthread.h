@@ -1,8 +1,9 @@
 #ifndef MODBUSTHREAD_H
 #define MODBUSTHREAD_H
 
+#include "../gen/datatypes.h"
 #include "../gen/logclass.h"
-
+#include <QMap>
 #include <QObject>
 #define RECONNECTTIME 5000
 
@@ -38,6 +39,20 @@ enum ModbusGroupsEnum
     FIRSTBYTEQ = 3,
     SECONDBYTEQ = 4
 };
+// map to translate real commands like "erase memory block" into iec104 commands: 45 or 50 or something else
+QMap<Queries::Commands, CommandStruct> CommandsTranslateMap()
+{
+    QMap<Queries::Commands, CommandStruct> map;
+    //    map[Queries::QC_SetNewConfiguration] = { CM104_COM45, SetNewConfigurationReg, 0, {} };
+    map[Queries::QC_ClearStartupValues] = { MBS_WRITEMULTIPLEREGISTERS, ClearStartupValuesReg, 2, { 0x01, 0x01 } };
+    map[Queries::QC_WriteUserValues] = { MBS_WRITEMULTIPLEREGISTERS, 0, 0, {} };
+    //    map[Queries::QC_Command50] = { CM104_COM50, 0, 0, {} };
+    //    map[Queries::QC_EraseJournals] = { CM104_COM45, EraseJournalsReg, 0, {} };
+    map[Queries::QC_SetStartupValues] = { MBS_WRITEMULTIPLEREGISTERS, SetStartupValuesReg, 2, { 0x01, 0x01 } };
+    //    map[Queries::QC_StartFirmwareUpgrade] = { CM104_COM45, StartFirmwareUpgradeReg, 0, {} };
+    //    map[Queries::QC_StartWorkingChannel] = { CM104_COM45, StartWorkingChannelReg, 0, {} };
+    return map;
+}
 }
 
 Q_DECLARE_METATYPE(CommandsMBS::CommandStruct)
@@ -76,11 +91,16 @@ private:
     CommandsMBS::CommandStruct m_commandSent;
     int m_bytesToReceive;
 
-    void readInputRegisters(CommandsMBS::CommandStruct &cms);
+    void readRegisters(CommandsMBS::CommandStruct &cms);
+    //    void readHoldingRegisters(CommandsMBS::CommandStruct &cms);
+    void writeMultipleRegisters(CommandsMBS::CommandStruct &cms);
     void setQueryStartBytes(CommandsMBS::CommandStruct &cms, QByteArray &ba);
     void send(QByteArray &ba);
     void parseAndSetToOutList(QByteArray &ba);
     void getFloatSignals(QByteArray &bain);
+    void getIntegerSignals(QByteArray &bain);
+    void getCommandResponse(QByteArray &bain);
+    bool checkReceivedByteArray(QByteArray &bain);
 
     const unsigned char TabCRChi[256] = { 0x00, 0xC1, 0x81, 0x40, 0x01, 0xC0, 0x80, 0x41, 0x01, 0xC0, 0x80, 0x41, 0x00,
         0xC1, 0x81, 0x40, 0x01, 0xC0, 0x80, 0x41, 0x00, 0xC1, 0x81, 0x40, 0x00, 0xC1, 0x81, 0x40, 0x01, 0xC0, 0x80,

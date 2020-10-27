@@ -111,7 +111,7 @@ Coma::Coma(QWidget *parent) : QMainWindow(parent)
         PredAlarmEvents[i] = 0;
         AlarmEvents[i] = 0;
     }
-    ActiveThreads = 0;
+    ActiveThreads = false;
     Alarm = new AlarmClass(this);
 
     newTimers();
@@ -658,7 +658,7 @@ void Coma::PrepareDialogs()
     //    infoDialog = new InfoDialog(this);
     //    jourDialog = new JournalDialog(Ch104);
     //    timeDialog = new MNKTime(this);
-    m_Module = Module::createModule(BdaTimer);
+    m_Module = Module::createModule(BdaTimer, m_iface);
     Alarm->setModule(m_Module);
     AlarmStateAllDialog = new AlarmStateAll;
     setupConnections();
@@ -690,7 +690,8 @@ void Coma::New104()
 {
     Ch104 = new IEC104;
     connect(this, &Coma::StopCommunications, Ch104, &IEC104::stop);
-    connect(Ch104, &IEC104::Finished, [this]() { ActiveThreads &= ~THREAD::P104; });
+    //    connect(Ch104, &IEC104::Finished, [this]() { ActiveThreads &= ~THREAD::P104; });
+    connect(Ch104, &IEC104::Finished, [this]() { ActiveThreads = false; });
     // connect(Ch104,SIGNAL(Sponsignalsready(IEC104Thread::SponSignals*)),this,SLOT(UpdatePredAlarmEvents(IEC104Thread::SponSignals*)));
     //    connect(Ch104, &IEC104::SetDataSize, this, &Coma::SetProgressBar1Size);
     //    connect(Ch104, &IEC104::SetDataCount, this, &Coma::SetProgressBar1);
@@ -703,20 +704,23 @@ void Coma::NewModbus()
 {
     ChModbus = new ModBus;
     connect(this, &Coma::StopCommunications, ChModbus, &ModBus::stop);
-    connect(ChModbus, &ModBus::Finished, [this]() { ActiveThreads &= ~THREAD::MODBUS; });
+    //    connect(ChModbus, &ModBus::Finished, [this]() { ActiveThreads &= ~THREAD::MODBUS; });
+    connect(ChModbus, &ModBus::Finished, [this]() { ActiveThreads = false; });
     //  connect(ChModbus,SIGNAL(CoilSignalsReady(ModBus::Coils)), this,
     //  SLOT(ModBusUpdatePredAlarmEvents(ModBus::Coils)));
     connect(ChModbus, &ModBus::ReconnectSignal, this, &Coma::ReConnect);
-    connect(ChModbus, &ModBus::CoilSignalsReady, Alarm, &AlarmClass::UpdateAlarmModBus);
+    //    connect(ChModbus, &ModBus::CoilSignalsReady, Alarm, &AlarmClass::UpdateAlarmModBus);
 
-    connect(ChModbus, &ModBus::BsiFromModbus, this,
-        qOverload<QList<ModBus::BSISignalStruct>, unsigned int>(&Coma::FillBSI));
+    //    connect(ChModbus, &ModBus::BsiFromModbus, this,
+    //        qOverload<QList<ModBus::BSISignalStruct>, unsigned int>(&Coma::FillBSI));
 }
 
 void Coma::NewUSB()
 {
     connect(this, &Coma::StopCommunications, &EProtocom::GetInstance(), &EProtocom::Disconnect);
-    connect(EProtocom::GetInstance().workerThread(), &QThread::finished, [=]() { ActiveThreads &= ~THREAD::USB; });
+    //    connect(EProtocom::GetInstance().workerThread(), &QThread::finished, [=]() { ActiveThreads &= ~THREAD::USB;
+    //    });
+    connect(EProtocom::GetInstance().workerThread(), &QThread::finished, [=]() { ActiveThreads = false; });
     connect(&EProtocom::GetInstance(), &EProtocom::SetDataSize, this, &Coma::SetProgressBar1Size);
     connect(&EProtocom::GetInstance(), &EProtocom::SetDataCount, this, &Coma::SetProgressBar1);
     connect(&EProtocom::GetInstance(), &EProtocom::ShowError,
@@ -817,10 +821,7 @@ bool Coma::nativeEvent(const QByteArray &eventType, void *message, long *result)
     return false;
 }
 
-void Coma::SetMode(int mode)
-{
-    Mode = mode;
-}
+void Coma::SetMode(int mode) { Mode = mode; }
 
 void Coma::Go(const QString &parameter)
 {
@@ -841,7 +842,7 @@ void Coma::ReConnect()
         {
             qDebug() << "call Disconnect";
             Disconnect();
-            emit ClearBsi();
+            //            emit ClearBsi();
             ClearTW();
             ETabWidget *MainTW = this->findChild<ETabWidget *>("maintw");
             if (MainTW == nullptr)
@@ -993,22 +994,22 @@ void Coma::ClearTW()
 //        AlarmStateAllDialog->UpdateHealth(ModuleBSI::ModuleBsi.Hth);
 //}
 
-void Coma::FillBSI(QList<ModBus::BSISignalStruct> sig, unsigned int sigsize)
-{
-    int startadr = sig.at(0).SigAdr;
+// void Coma::FillBSI(QList<ModBus::BSISignalStruct> sig, unsigned int sigsize)
+//{
+//    int startadr = sig.at(0).SigAdr;
 
-    INFOMSG("FillBSIm()");
+//    INFOMSG("FillBSIm()");
 
-    if ((sigsize < sizeof(ModuleBSI::ModuleBsi)) && (startadr == BSIREG))
-    {
-        for (size_t i = 0; i < sigsize; ++i)
-            memcpy(((quint32 *)(&ModuleBSI::ModuleBsi) + (i + startadr - 1)), &sig.at(i).Val, sizeof(sig.at(i).Val));
-        Board::GetInstance().setTypeB(ModuleBSI::ModuleBsi.MTypeB);
-        Board::GetInstance().setTypeM(ModuleBSI::ModuleBsi.MTypeM);
-    }
-    if (AlarmStateAllDialog != nullptr)
-        AlarmStateAllDialog->UpdateHealth(ModuleBSI::ModuleBsi.Hth);
-}
+//    if ((sigsize < sizeof(ModuleBSI::ModuleBsi)) && (startadr == BSIREG))
+//    {
+//        for (size_t i = 0; i < sigsize; ++i)
+//            memcpy(((quint32 *)(&ModuleBSI::ModuleBsi) + (i + startadr - 1)), &sig.at(i).Val, sizeof(sig.at(i).Val));
+//        Board::GetInstance().setTypeB(ModuleBSI::ModuleBsi.MTypeB);
+//        Board::GetInstance().setTypeM(ModuleBSI::ModuleBsi.MTypeM);
+//    }
+//    if (AlarmStateAllDialog != nullptr)
+//        AlarmStateAllDialog->UpdateHealth(ModuleBSI::ModuleBsi.Hth);
+//}
 
 // void Coma::PasswordCheck(QString psw)
 //{
@@ -1052,15 +1053,9 @@ void Coma::FileTimeOut()
         QMessageBox::information(this, "Ошибка", "Ошибка", QMessageBox::Ok);
 }
 
-void Coma::SetProgressBar2Size(int size)
-{
-    SetProgressBarSize(2, size);
-}
+void Coma::SetProgressBar2Size(int size) { SetProgressBarSize(2, size); }
 
-void Coma::SetProgressBar2(int cursize)
-{
-    SetProgressBar(2, cursize);
-}
+void Coma::SetProgressBar2(int cursize) { SetProgressBar(2, cursize); }
 
 void Coma::SetProgressBarSize(int prbnum, int size)
 {
@@ -1204,7 +1199,7 @@ void Coma::DisconnectAndClear()
         AlarmW->Clear();
         Disconnect();
         CloseDialogs();
-        emit ClearBsi();
+        //        emit ClearBsi();
         ClearTW();
         ETabWidget *MainTW = this->findChild<ETabWidget *>("maintw");
         if (MainTW == nullptr)
@@ -1236,10 +1231,7 @@ void Coma::DisconnectAndClear()
     Reconnect = false;
 }
 
-void Coma::resizeEvent(QResizeEvent *e)
-{
-    QMainWindow::resizeEvent(e);
-}
+void Coma::resizeEvent(QResizeEvent *e) { QMainWindow::resizeEvent(e); }
 
 void Coma::keyPressEvent(QKeyEvent *e)
 {
@@ -1325,6 +1317,11 @@ void Coma::update()
         SetProgressBar1(rs.data);
     if (DataManager::getResponse(DataTypes::GeneralResponseTypes::DataSize, rs) != Error::Msg::ResEmpty)
         SetProgressBar1Size(rs.data);
+    if (ModuleBSI::update())
+    {
+        if (AlarmStateAllDialog != nullptr)
+            AlarmStateAllDialog->UpdateHealth(ModuleBSI::ModuleBsi.Hth);
+    }
 }
 
 void Coma::closeEvent(QCloseEvent *event)
