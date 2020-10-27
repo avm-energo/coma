@@ -3,6 +3,7 @@
 #include "../gen/error.h"
 #include "../gen/logclass.h"
 #include "defines.h"
+#include "datamanager.h"
 #include "hidapi/hidapi.h"
 
 class EUsbWorker : public QObject
@@ -24,7 +25,7 @@ public:
 
 signals:
     void NewDataReceived(QByteArray ba);
-    void Finished();
+    void finished();
     void started();
 
 public slots:
@@ -41,6 +42,7 @@ private:
 
     Error::Msg WriteData(QByteArray &ba);
     void CheckWriteQueue();
+    void checkQueue();
     void Finish();
 
 private slots:

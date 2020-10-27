@@ -1,7 +1,6 @@
 #ifndef CHECKDIALOGHARMONICKTF_H
 #define CHECKDIALOGHARMONICKTF_H
 
-#include "../iec104/iec104.h"
 #include "abstractcheckdialog.h"
 #include "checkharmonicktf.h"
 

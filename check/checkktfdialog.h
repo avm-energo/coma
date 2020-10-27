@@ -1,7 +1,6 @@
 #ifndef CHEKDIALOGKTF_H
 #define CHEKDIALOGKTF_H
 
-#include "../iec104/iec104.h"
 #include "abstractcheckdialog.h"
 #include "checkktf.h"
 

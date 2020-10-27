@@ -28,6 +28,7 @@ TEMPLATE = app
 
 SOURCES += \
     ../interfaces/modbusthread.cpp \
+    ../interfaces/usbparser.cpp \
 coma.cpp \
 main.cpp \
 ../alarm/alarmclass.cpp \
@@ -124,6 +125,7 @@ main.cpp \
 HEADERS += \
     ../interfaces/eprotocom.h \
     ../interfaces/modbusthread.h \
+    ../interfaces/usbparser.h \
 coma.h \
 ../alarm/alarmclass.h \
 ../alarm/alarmstateall.h \
@@ -203,10 +205,10 @@ coma.h \
 ../startup/startupkdvdialog.h \
 ../startup/startupkivdialog.h \
 ../startup/startupktfdialog.h \
-../usb/commands.h \
-../usb/defines.h \
-../usb/eprotocom.h \
-../usb/eusbworker.h \
+../interfaces/commands.h \
+../interfaces/defines.h \
+../interfaces/eprotocom.h \
+../interfaces/eusbworker.h \
 ../widgets/ecombobox.h \
 ../widgets/edoublespinbox.h \
 ../widgets/errorprotocolwidget.h \

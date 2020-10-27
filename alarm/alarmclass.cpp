@@ -1,7 +1,6 @@
 #include "alarmclass.h"
 
 #include "../gen/board.h"
-#include "../usb/commands.h"
 
 #include <QApplication>
 #include <QBoxLayout>
@@ -185,7 +184,8 @@ void AlarmClass::UpdateAlarm104()
         {
             foreach (DataManager::SignalsStruct signal, list)
             {
-                DataTypes::SinglePointWithTimeStruct sp = qvariant_cast<DataTypes::SinglePointWithTimeStruct>(signal.data);
+                DataTypes::SinglePointWithTimeStruct sp
+                    = qvariant_cast<DataTypes::SinglePointWithTimeStruct>(signal.data);
 
                 //        for (int i = 0; i < Signal->SigNumber; i++)
                 //        {

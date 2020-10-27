@@ -171,6 +171,7 @@ Error::Msg Commands::RunVPO()
     return EProtocom::GetInstance().result();
 }
 
+// Не нашел использования
 Error::Msg Commands::TestCom(char OnOff)
 {
     EProtocom::GetInstance().SendCmd(CN::Test, OnOff);

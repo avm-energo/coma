@@ -18,7 +18,6 @@
 
 #include "../gen/modulebsi.h"
 #include "../gen/udialog.h"
-#include "../modbus/modbus.h"
 #include "check.h"
 #include "xlsxdocument.h"
 

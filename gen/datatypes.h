@@ -89,7 +89,10 @@ enum Commands
     QC_EraseJournals,
     QC_SetStartupValues,
     QC_ClearStartupValues,
-    QC_Command50
+    QC_Command50,
+    QC_Test,
+    QC_EraseTechBlock,
+    QC_WriteHiddenBlock
 };
 
 struct Command

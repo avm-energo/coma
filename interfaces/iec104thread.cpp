@@ -1,6 +1,6 @@
 #include "iec104thread.h"
 
-#include "../gen/datamanager.h"
+#include "datamanager.h"
 
 #include <QCoreApplication>
 #include <QThread>
@@ -292,7 +292,7 @@ void IEC104Thread::ParseIFormat(QByteArray &ba) // основной разбор
                 memcpy(&time, &(ba.data()[index]), 8);
                 index += 8;
                 signal.CP56Time = time;
-                DataManager::addSignalToOutList(DataManager::SignalTypes::FloatWithTime, signal);
+                DataManager::addSignalToOutList(DataTypes::SignalTypes::FloatWithTime, signal);
                 //                cntflTimestamp++;
                 break;
             }
@@ -319,7 +319,7 @@ void IEC104Thread::ParseIFormat(QByteArray &ba) // основной разбор
                 memcpy(&signal.sigQuality, &(ba.data()[index]), 1);
                 index++;
                 //                signal.SigQuality = quality;
-                DataManager::addSignalToOutList(DataManager::SignalTypes::FloatWithTime, signal);
+                DataManager::addSignalToOutList(DataTypes::SignalTypes::FloatWithTime, signal);
                 //                cntfl++;
                 break;
             }
@@ -339,7 +339,7 @@ void IEC104Thread::ParseIFormat(QByteArray &ba) // основной разбор
                 //                index += 1;
                 //                sponsignals->Spon[cntspon].SigVal = value;
                 //                cntspon++;
-                DataManager::addSignalToOutList(DataManager::SignalTypes::SinglePointWithTime, signal);
+                DataManager::addSignalToOutList(DataTypes::SignalTypes::SinglePointWithTime, signal);
                 break;
             }
 
@@ -361,7 +361,7 @@ void IEC104Thread::ParseIFormat(QByteArray &ba) // основной разбор
                 index += 7;
                 //                sponsignals->Spon[cntspon].CP56Time = time;
                 //                cntspon++;
-                DataManager::addSignalToOutList(DataManager::SignalTypes::SinglePointWithTime, signal);
+                DataManager::addSignalToOutList(DataTypes::SignalTypes::SinglePointWithTime, signal);
                 break;
             }
 
@@ -387,7 +387,7 @@ void IEC104Thread::ParseIFormat(QByteArray &ba) // основной разбор
                 //                index++;
                 //                (BS104Signals + cntbs)->BS.SigQuality = quality;
                 //                cntbs++;
-                DataManager::addSignalToOutList(DataManager::SignalTypes::BitString, signal);
+                DataManager::addSignalToOutList(DataTypes::SignalTypes::BitString, signal);
                 break;
             }
 
@@ -922,7 +922,7 @@ void IEC104Thread::setGeneralResponse(DataTypes::GeneralResponseTypes type, quin
     DataTypes::GeneralResponseStruct grs;
     grs.type = type;
     grs.data = data;
-    DataManager::addSignalToOutList(DataManager::SignalTypes::GeneralResponse, grs);
+    DataManager::addSignalToOutList(DataTypes::SignalTypes::GeneralResponse, grs);
 }
 
 // void IEC104Thread::convert(IEC104Thread::SponSignals *signal) { emit Sponsignalsreceived(signal); }

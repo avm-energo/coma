@@ -109,21 +109,21 @@ public:
     //    QString IP;
 
     //    bool Working();
-    bool start(const ConnectStruct &st);
+    bool start(const ConnectStruct &st) override;
     //    static void getSignalsFrom104(quint32 firstSignalAdr, quint32 signalCount, DataManager::SignalTypes type,
     //        QList<DataManager::SignalsStruct> &outlist);
 
 public slots:
-    void reqStartup();
-    void reqFile(quint32 filenum);
-    void writeFile(quint32 filenum, const QByteArray &file);
-    void writeConfigFile(S2ConfigType *s2config);
-    void reqTime();
-    void writeTime(quint32 time);
-    void writeCommand(Queries::Commands cmd, QList<DataTypes::SignalsStruct> &list);
+    void reqStartup() override;
+    void reqFile(quint32 filenum) override;
+    void writeFile(quint32 filenum, const QByteArray &file) override;
+    void writeConfigFile(S2ConfigType *s2config) override;
+    void reqTime() override;
+    void writeTime(quint32 time) override;
+    void writeCommand(Queries::Commands cmd, QList<DataTypes::SignalsStruct> &list) override;
 
     //    static void SelectFile(char);
-    void stop();
+    void stop() override;
     //    static void Com45(quint32 com);
     //    static void Com50(quint32 adr, float param);
     //    void CorReadRequest();

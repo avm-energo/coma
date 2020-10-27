@@ -1,7 +1,5 @@
 #include "configkiv.h"
 
-#include "../usb/commands.h"
-
 ConfigKIV::ConfigKIV(S2ConfigType *config)
 {
     m_S2Config = config;

@@ -3,6 +3,8 @@
 #include "../gen/board.h"
 #include "../gen/error.h"
 #include "../gen/stdfunc.h"
+#include "datamanager.h"
+#include "defines.h"
 
 #include <QDebug>
 #include <QElapsedTimer>
@@ -23,16 +25,98 @@
 #if _MSC_VER && !__INTEL_COMPILER
 #define __PRETTY_FUNCTION__ __FUNCSIG__
 #endif
+const QMap<Queries::Commands, byte> EProtocom::m_dict {
+    { Queries::Commands::QC_StartFirmwareUpgrade, CN::Write::Upgrade },
+    { Queries::QC_SetStartupValues, CN::Read::BlkStartInfo }
+
+};
 
 bool EProtocom::m_writeUSBLog;
+
+using namespace Queries;
+using namespace CN;
+
+byte translate(Queries::Commands cmd)
+{
+    switch (cmd)
+    {
+    case QC_SetNewConfiguration:
+        break;
+    case QC_StartFirmwareUpgrade:
+        return Write::Upgrade;
+    case QC_StartWorkingChannel:
+        break;
+    case QC_EraseJournals:
+        break;
+    case QC_SetStartupValues:
+        break;
+    case QC_ClearStartupValues:
+        break;
+    case QC_Command50:
+        break;
+    case QC_Test:
+        break;
+    default:
+        break;
+    }
+}
+// namespace Read
+//{
+//// чтение блока стартовой информации
+// constexpr byte BlkStartInfo = 0x21;
+//// чтение настроечных коэффициентов
+// constexpr byte BlkAC = 0x22;
+//// чтение текущих данных без настройки
+// constexpr byte BlkDataA = 0x23;
+//// чтение блока текущих данных
+// constexpr byte BlkData = 0x24;
+//// чтение технологического блока
+// constexpr byte BlkTech = 0x26;
+//// чтение файла
+// constexpr byte File = 0x25;
+//// чтение номера варианта использования
+// constexpr byte Variant = 0x27;
+//// чтение текущего режима работы
+// constexpr byte Mode = 0x28;
+//// чтение времени из МНК в формате UNIX
+// constexpr byte Time = 0x29;
+
+//} // namespace Read
+// namespace Write
+//{
+//// запись настроечных коэффициентов
+// constexpr byte BlkAC = 0x31;
+//// посылка блока данных
+// constexpr byte BlkData = 0x34;
+//// посылка команды
+// constexpr byte BlkCmd = 0x35;
+//// запись технологического блока
+// constexpr byte BlkTech = 0x2B;
+//// запись файла
+// constexpr byte File = 0x32;
+//// задание варианта использования
+// constexpr byte Variant = 0x44;
+//// задание текущего режима работы
+// constexpr byte Mode = 0x43;
+//// запись времени в МНК в формате UNIX
+// constexpr byte Time = 0x2A;
+//// переход на новое ПО
+// constexpr byte Upgrade = 0x40;
+//// стирание технологического блока
+// constexpr byte EraseTech = 0x45;
+//// стирание счётчиков дискретных состояний
+// constexpr byte EraseCnt = 0x47;
+//// запись версии аппаратуры модуля/серийного номера/типа платы
+// constexpr byte Hardware = 0x48;
+//} // namespace Write
 
 EProtocom::EProtocom(token, QWidget *parent) : BaseInterface(parent)
 {
     // Q_UNUSED(parent)
     QString tmps = "=== CLog started ===\n";
-    CnLog = new LogClass;
-    CnLog->Init("canal.log");
-    CnLog->WriteRaw(tmps.toUtf8());
+    Log = new LogClass;
+    Log->Init("canal.log");
+    Log->WriteRaw(tmps.toUtf8());
     RDLength = 0;
     SegEnd = 0;
     SegLeft = 0;
@@ -45,9 +129,9 @@ EProtocom::EProtocom(token, QWidget *parent) : BaseInterface(parent)
     connect(OscTimer, &QTimer::timeout, this, &EProtocom::OscTimerTimeout);
     connect(m_waitTimer, &QTimer::timeout, &m_loop, &QEventLoop::quit);
     connect(this, &EProtocom::QueryFinished, &m_loop, &QEventLoop::quit);
-    QSharedPointer<QSettings> sets = QSharedPointer<QSettings>(new QSettings("EvelSoft", PROGNAME));
-    bool writeUSBLog = sets->value("WriteLog", "0").toBool();
-    setWriteUSBLog(writeUSBLog);
+    // QSharedPointer<QSettings> sets = QSharedPointer<QSettings>(new QSettings("EvelSoft", PROGNAME));
+    // bool writeUSBLog = sets->value("WriteLog", "0").toBool();
+    setWriteUSBLog(true);
 }
 
 // int EProtocom::devicePosition() const { return m_devicePosition; }
@@ -56,13 +140,25 @@ EProtocom::EProtocom(token, QWidget *parent) : BaseInterface(parent)
 
 // QString EProtocom::usbSerial() const { return m_devices.at(m_devicePosition).serial; }
 
-Error::Msg EProtocom::result() const { return m_result; }
+Error::Msg EProtocom::result() const
+{
+    return m_result;
+}
 
-void EProtocom::setResult(const Error::Msg &result) { m_result = result; }
+void EProtocom::setResult(const Error::Msg &result)
+{
+    m_result = result;
+}
 
-bool EProtocom::isWriteUSBLog() { return m_writeUSBLog; }
+bool EProtocom::isWriteUSBLog()
+{
+    return m_writeUSBLog;
+}
 
-void EProtocom::setWriteUSBLog(bool writeUSBLog) { m_writeUSBLog = writeUSBLog; }
+void EProtocom::setWriteUSBLog(bool writeUSBLog)
+{
+    m_writeUSBLog = writeUSBLog;
+}
 
 void EProtocom::Send(char command, char parameter, QByteArray &ba, qint64 datasize)
 {
@@ -107,7 +203,7 @@ void EProtocom::InitiateSend()
     switch (Command)
     {
     case CN::Read::BlkStartInfo: // запрос блока стартовой информации
-    case CN::Read::Progress: // запрос текущего прогресса
+    case CN::Read::Progress:     // запрос текущего прогресса
     case CN::Read::Variant:
     case CN::Read::Mode:
     case CN::Read::Time:
@@ -119,12 +215,12 @@ void EProtocom::InitiateSend()
         WriteDataToPort(WriteData);
         break;
     }
-    case CN::Read::BlkAC: // чтение настроечных коэффициентов
+    case CN::Read::BlkAC:    // чтение настроечных коэффициентов
     case CN::Read::BlkDataA: // чтение текущих данных без настройки
-    case CN::Read::BlkData: // запрос блока (подблока) текущих данных
+    case CN::Read::BlkData:  // запрос блока (подблока) текущих данных
     case CN::Write::Variant:
     case CN::Write::Mode:
-    case CN::Read::BlkTech: // чтение технологического блока
+    case CN::Read::BlkTech:    // чтение технологического блока
     case CN::Write::EraseTech: // команда стирания технологического блока
     case CN::Write::BlkCmd:
     case CN::Test:
@@ -218,7 +314,7 @@ void EProtocom::WriteDataToPort(QByteArray &ba)
         if (isWriteUSBLog())
         {
             QByteArray tmps = "->" + tmpba.toHex() + "\n";
-            CnLog->WriteRaw(tmps);
+            Log->WriteRaw(tmps);
         }
         if (Board::GetInstance().connectionState() == Board::ConnectionState::Closed
             && Board::GetInstance().interfaceType() == Board::InterfaceType::USB)
@@ -245,7 +341,7 @@ void EProtocom::Finish(Error::Msg msg)
     {
 
         qDebug(__PRETTY_FUNCTION__);
-        CnLog->WriteRaw("### ОШИБКА В ПЕРЕДАННЫХ ДАННЫХ ###\n");
+        Log->WriteRaw("### ОШИБКА В ПЕРЕДАННЫХ ДАННЫХ ###\n");
         qWarning("ОШИБКА В ПЕРЕДАННЫХ ДАННЫХ!!!");
         qCritical() << QVariant::fromValue(msg).toString();
     }
@@ -344,7 +440,7 @@ void EProtocom::ParseIncomeData(QByteArray ba)
     if (isWriteUSBLog())
     {
         QByteArray tmps = "<-" + ba.toHex() + "\n";
-        CnLog->WriteRaw(tmps);
+        Log->WriteRaw(tmps);
     }
     if (Command == CN::Unknown) // игнорирование вызова процедуры, если не было
                                 // послано никакой команды
@@ -605,7 +701,10 @@ void EProtocom::CheckForData()
     ParseIncomeData(ba);
 }
 
-void EProtocom::OscTimerTimeout() { SendCmd(CN::Read::Progress); }
+void EProtocom::OscTimerTimeout()
+{
+    SendCmd(CN::Read::Progress);
+}
 
 // QString EProtocom::deviceName() const
 //{
@@ -825,9 +924,8 @@ void EProtocom::usbStateChanged(void *message)
 
 EProtocom::~EProtocom()
 {
-    m_workerThread.quit();
-    m_workerThread.wait();
-    CnLog->deleteLater();
+
+    Log->deleteLater();
     OscTimer->deleteLater();
     m_waitTimer->deleteLater();
 }
@@ -836,30 +934,78 @@ bool EProtocom::start(const ConnectStruct &st)
 {
     if (Board::GetInstance().connectionState() == Board::ConnectionState::Connected
         && Board::GetInstance().interfaceType() == Board::InterfaceType::USB)
-        ///
         Disconnect();
-    //    m_usbWorker = new EUsbWorker(m_devices.at(m_devicePosition), CnLog, isWriteUSBLog());
-    m_usbWorker = new EUsbWorker(m_devices.at(st.usbDevicePosition), CnLog, isWriteUSBLog());
+    m_usbWorker = new EUsbWorker(m_devices.at(st.usbDevicePosition), Log, isWriteUSBLog());
     m_devicePosition = st.usbDevicePosition;
-    m_usbWorker->moveToThread(&m_workerThread);
-    connect(&m_workerThread, &QThread::started, m_usbWorker, &EUsbWorker::interact);
+    QThread *workerThread = new QThread;
+    m_usbWorker->moveToThread(workerThread);
 
-    connect(m_usbWorker, &EUsbWorker::Finished, &m_workerThread, &QThread::quit);
-
-    // connect(&m_workerThread, &QThread::finished, &m_workerThread, &QThread::deleteLater);
-    connect(m_usbWorker, &EUsbWorker::Finished, m_usbWorker, &EUsbWorker::deleteLater);
-
+    connect(workerThread, &QThread::started, m_usbWorker, &EUsbWorker::interact);
+    connect(workerThread, &QThread::started, [this] { m_workerStatus = true; });
+    connect(workerThread, &QThread::finished, [this] { m_workerStatus = false; });
+    connect(workerThread, &QThread::finished, workerThread, &QThread::deleteLater);
+    connect(m_usbWorker, &EUsbWorker::finished, workerThread, &QThread::quit);
+    connect(m_usbWorker, &EUsbWorker::finished, m_usbWorker, &EUsbWorker::deleteLater);
     connect(m_usbWorker, &EUsbWorker::NewDataReceived, this, &EProtocom::ParseIncomeData);
+
+    QThread *parserThread = new QThread;
+
+    connect(parserThread, &QThread::started, [this] { m_parserStatus = true; });
+    connect(parserThread, &QThread::finished, [this] { m_parserStatus = false; });
+    connect(parserThread, &QThread::finished, parserThread, &QThread::deleteLater);
 
     if (m_usbWorker->setupConnection() == Error::Msg::NoError
         && Board::GetInstance().interfaceType() == Board::InterfaceType::USB)
     {
         Board::GetInstance().setConnectionState(Board::ConnectionState::Connected);
-        m_workerThread.start();
+        workerThread->start();
     }
     else
         return false;
     return true;
+}
+
+void EProtocom::reqStartup()
+{
+}
+
+void EProtocom::reqTime()
+{
+    CommandStruct inp { CN::Read::Time, 0, 0, {} };
+    DataManager::addToInQueue(inp);
+}
+
+void EProtocom::reqFile(quint32 filenum)
+{
+    CommandStruct inp { CN::Read::File, filenum, 0, {} };
+    DataManager::addToInQueue(inp);
+}
+
+void EProtocom::writeFile(quint32 filenum, const QByteArray &file)
+{
+    CommandStruct inp { CN::Write::File, filenum, 0, file };
+    DataManager::addToInQueue(inp);
+}
+
+void EProtocom::writeTime(quint32 time)
+{
+    CommandStruct inp { CN::Write::Time, time, 0, {} };
+    DataManager::addToInQueue(inp);
+}
+
+void EProtocom::writeCommand(Queries::Commands cmd, QList<DataTypes::SignalsStruct> &list)
+{
+    CommandStruct inp;
+    switch (cmd)
+    {
+    default:
+    {
+        {
+            inp = { translate(cmd), 0, 0, QByteArray {} };
+        }
+    }
+    }
+    DataManager::addToInQueue(inp);
 }
 
 bool EProtocom::Reconnect()
@@ -869,7 +1015,7 @@ bool EProtocom::Reconnect()
         && Board::GetInstance().interfaceType() == Board::InterfaceType::USB)
     {
         Board::GetInstance().setConnectionState(Board::ConnectionState::Connected);
-        m_workerThread.start();
+        // m_workerThread.start();
     }
     else
         return false;
@@ -880,7 +1026,7 @@ void EProtocom::Disconnect()
 {
     qDebug(__PRETTY_FUNCTION__);
     RawClose();
-    CnLog->WriteRaw("Disconnected!\n");
+    Log->WriteRaw("Disconnected!\n");
 }
 
 QByteArray EProtocom::RawRead(int bytes)
@@ -889,7 +1035,10 @@ QByteArray EProtocom::RawRead(int bytes)
     return QByteArray();
 }
 
-int EProtocom::RawWrite(QByteArray &ba) { return m_usbWorker->WriteDataAttempt(ba); }
+int EProtocom::RawWrite(QByteArray &ba)
+{
+    return m_usbWorker->WriteDataAttempt(ba);
+}
 
 void EProtocom::RawClose()
 {
@@ -898,6 +1047,20 @@ void EProtocom::RawClose()
     {
         Board::GetInstance().setConnectionState(Board::ConnectionState::Closed);
     }
+}
+
+byte EProtocom::translate(const Queries::Commands cmd)
+{
+    if (m_dict.contains(cmd))
+        return m_dict.value(cmd);
+    else
+        return 0;
+}
+
+Commands EProtocom::translate(const byte cmd)
+{
+    // TODO  Реализовать проверку если нет такого value
+    return m_dict.key(cmd);
 }
 
 QList<QStringList> EProtocom::DevicesFound()
@@ -941,6 +1104,7 @@ QList<QStringList> EProtocom::DevicesFound()
     return sl;
 }
 
-QThread *EProtocom::workerThread() { return &m_workerThread; }
-
-EUsbWorker *EProtocom::usbWorker() const { return m_usbWorker; }
+EUsbWorker *EProtocom::usbWorker() const
+{
+    return m_usbWorker;
+}

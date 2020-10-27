@@ -3,6 +3,7 @@
 #include "../gen/board.h"
 #include "../gen/error.h"
 #include "../gen/stdfunc.h"
+#include "eprotocom.h"
 
 #include <QCoreApplication>
 #include <QDebug>
@@ -114,7 +115,7 @@ void EUsbWorker::Finish()
 {
     closeConnection();
     INFOMSG("UThread finished");
-    emit Finished();
+    emit finished();
 }
 
 Error::Msg EUsbWorker::WriteData(QByteArray &ba)
@@ -154,5 +155,20 @@ void EUsbWorker::CheckWriteQueue()
     {
         QByteArray ba = WriteQueue.takeFirst();
         WriteData(ba);
+    }
+}
+
+void EUsbWorker::checkQueue()
+{
+    EProtocom::CommandStruct inp;
+    if (DataManager::deQueue(inp) == Error::Msg::NoError)
+    {
+        switch (inp.cmd)
+        {
+
+            break;
+        default:
+            break;
+        }
     }
 }

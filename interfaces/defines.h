@@ -158,3 +158,4 @@ struct DeviceConnectStruct
     QString serial;
     QString path;
 };
+
