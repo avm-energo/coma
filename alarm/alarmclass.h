@@ -7,9 +7,9 @@
 #include "../gen/colors.h"
 #include "../gen/error.h"
 #include "../gen/modulebsi.h"
-#include "../iec104/ethernet.h"
-#include "../iec104/iec104.h"
-#include "../modbus/modbus.h"
+//#include "../iec104/ethernet.h"
+//#include "../iec104/iec104.h"
+//#include "../modbus/modbus.h"
 #include "../module/module.h"
 #include "../widgets/wd_func.h"
 
@@ -62,9 +62,9 @@ signals:
     void SetFirstButton();
 
 public slots:
-    void UpdateAlarmUSB();
-    void UpdateAlarmModBus();
-    void UpdateAlarm104();
+    //    void UpdateAlarmUSB();
+    //    void UpdateAlarmModBus();
+    //    void UpdateAlarm104();
     void update();
 
 private:

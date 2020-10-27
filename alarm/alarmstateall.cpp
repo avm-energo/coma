@@ -3,7 +3,7 @@
 #include "../gen/colors.h"
 #include "../gen/error.h"
 #include "../gen/modulebsi.h"
-#include "../usb/commands.h"
+//#include "../usb/commands.h"
 #include "../widgets/wd_func.h"
 
 #include <QBoxLayout>
@@ -12,10 +12,7 @@
 #define __PRETTY_FUNCTION__ __FUNCSIG__
 #endif
 
-AlarmStateAll::AlarmStateAll(QWidget *parent) : UDialog(parent)
-{
-    AlarmState();
-}
+AlarmStateAll::AlarmStateAll(QWidget *parent) : UDialog(parent) { AlarmState(); }
 
 void AlarmStateAll::AlarmState()
 {
@@ -26,7 +23,7 @@ void AlarmStateAll::AlarmState()
     QWidget *w = new QWidget;
     w->setObjectName("window");
     w->setStyleSheet("QWidget {margin: 0; border-width: 0; padding: 0;};"); // color:
-    float circleRadius = CIRCLE_RADIUS;                                     // rgba(220,220,220,255);
+    float circleRadius = CIRCLE_RADIUS; // rgba(220,220,220,255);
 
     for (int i = 0; i < HthToolTip().size(); ++i)
     {
@@ -70,11 +67,6 @@ void AlarmStateAll::UpdateHealth(quint32 health)
     }
 }
 
-void AlarmStateAll::CallUpdateHealth()
-{
-    this->UpdateHealth(ModuleBSI::ModuleBsi.Hth);
-}
+void AlarmStateAll::CallUpdateHealth() { this->UpdateHealth(ModuleBSI::ModuleBsi.Hth); }
 
-void AlarmStateAll::Update(QList<bool>)
-{
-}
+void AlarmStateAll::Update(QList<bool>) { }

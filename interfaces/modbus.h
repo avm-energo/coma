@@ -84,6 +84,7 @@ public:
     void reqStartup(quint32 sigAdr, quint32 sigCount);
     void reqBSI();
     void reqFile(quint32 filenum);
+    //    void reqAlarms(quint32 sigAdr, quint32 sigCount);
     void writeFile(quint32 filenum, const QByteArray &file);
     void reqTime();
     void writeTime(quint32 time);
