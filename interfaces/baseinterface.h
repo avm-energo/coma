@@ -48,6 +48,8 @@ public:
     virtual void writeTime(quint32 time) = 0;
     virtual void writeCommand(Queries::Commands cmd, QList<DataTypes::SignalsStruct> &list) = 0;
 
+    void reqAlarms(quint32 sigAdr = 0, quint32 sigCount = 0);
+
     bool isWorking() { return m_working; }
 
 signals:

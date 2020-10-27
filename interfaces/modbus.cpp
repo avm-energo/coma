@@ -270,6 +270,12 @@ void ModBus::reqBSI()
 
 void ModBus::reqFile(quint32 filenum) { Q_UNUSED(filenum) }
 
+// void ModBus::reqAlarms(quint32 sigAdr, quint32 sigCount)
+//{
+//    CommandsMBS::CommandStruct inp { CommandsMBS::Commands::MBS_READHOLDINGREGISTERS, TIMEREG, 2, {} };
+//    DataManager::addToInQueue(inp);
+//}
+
 void ModBus::writeFile(quint32 filenum, const QByteArray &file)
 {
     Q_UNUSED(filenum)
@@ -339,6 +345,28 @@ void ModBus::writeCommand(Queries::Commands cmd, QList<DataTypes::SignalsStruct>
     else
     {
         CommandsMBS::CommandStruct inp(CommandsMBS::CommandsTranslateMap().value(cmd));
+        if (cmd == Queries::QC_ReqAlarms)
+        {
+            // get sigAdr from the first var and sigCount - from the second one
+            if (list.size() < 2) // must be sigAdr & sigCount
+                return;
+            QVariant var = list.at(0).data;
+            if (var.canConvert<DataTypes::SignalsStruct>())
+            {
+                DataTypes::SignalsStruct bstr = var.value<DataTypes::SignalsStruct>();
+                inp.adr = bstr.data.toUInt();
+                QVariant var = list.at(1).data;
+                if (var.canConvert<DataTypes::SignalsStruct>())
+                {
+                    DataTypes::SignalsStruct bstr = var.value<DataTypes::SignalsStruct>();
+                    inp.quantity = bstr.data.toUInt();
+                }
+                else
+                    return;
+            }
+            else
+                return;
+        }
         DataManager::addToInQueue(inp);
     }
 }

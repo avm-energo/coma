@@ -19,7 +19,8 @@ enum Commands
 {
     MBS_READHOLDINGREGISTERS,
     MBS_READINPUTREGISTER,
-    MBS_WRITEMULTIPLEREGISTERS
+    MBS_WRITEMULTIPLEREGISTERS,
+    MBS_READCOILS
 };
 
 struct CommandStruct
@@ -46,6 +47,7 @@ QMap<Queries::Commands, CommandStruct> CommandsTranslateMap()
     //    map[Queries::QC_SetNewConfiguration] = { CM104_COM45, SetNewConfigurationReg, 0, {} };
     map[Queries::QC_ClearStartupValues] = { MBS_WRITEMULTIPLEREGISTERS, ClearStartupValuesReg, 2, { 0x01, 0x01 } };
     map[Queries::QC_WriteUserValues] = { MBS_WRITEMULTIPLEREGISTERS, 0, 0, {} };
+    map[Queries::QC_ReqAlarms] = { MBS_READCOILS, 0, 0, {} };
     //    map[Queries::QC_Command50] = { CM104_COM50, 0, 0, {} };
     //    map[Queries::QC_EraseJournals] = { CM104_COM45, EraseJournalsReg, 0, {} };
     map[Queries::QC_SetStartupValues] = { MBS_WRITEMULTIPLEREGISTERS, SetStartupValuesReg, 2, { 0x01, 0x01 } };

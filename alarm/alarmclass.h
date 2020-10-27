@@ -59,9 +59,9 @@ signals:
     void SetFirstButton();
 
 public slots:
-    void UpdateAlarmUSB();
-    void UpdateAlarmModBus();
-    void UpdateAlarm104();
+    //    void UpdateAlarmUSB();
+    //    void UpdateAlarmModBus();
+    //    void UpdateAlarm104();
     void update();
 
 private:

@@ -94,7 +94,9 @@ enum Commands
     QC_Test,
     QC_EraseTechBlock,
     QC_WriteHiddenBlock,
-    QC_WriteUserValues
+    QC_WriteUserValues,
+    QC_ReqAlarms
+
 };
 
 struct Command

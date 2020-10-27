@@ -7,10 +7,6 @@
 
 #include <QBoxLayout>
 
-#if _MSC_VER && !__INTEL_COMPILER
-#define __PRETTY_FUNCTION__ __FUNCSIG__
-#endif
-
 AlarmStateAll::AlarmStateAll(QWidget *parent) : UDialog(parent)
 {
     AlarmState();

@@ -88,9 +88,7 @@ void AbstractCheckDialog::SetupUI(QStringList &tabnames)
 
 // QWidget *AbstractCheckDialog::CustomTab() { return nullptr; }
 
-void AbstractCheckDialog::Check1PPS()
-{
-}
+void AbstractCheckDialog::Check1PPS() { }
 
 void AbstractCheckDialog::SetBd(int bdnum, void *block, int blocksize, bool toxlsx)
 {
@@ -225,21 +223,15 @@ void AbstractCheckDialog::ReadAnalogMeasurementsAndWriteToFile()
     Busy = false;
 }
 
-void AbstractCheckDialog::StartBdMeasurements()
-{
-    BdTimer->start();
-}
+void AbstractCheckDialog::StartBdMeasurements() { BdTimer->start(); }
 
-void AbstractCheckDialog::StopBdMeasurements()
-{
-    BdTimer->stop();
-}
+void AbstractCheckDialog::StopBdMeasurements() { BdTimer->stop(); }
 
-void AbstractCheckDialog::onModbusStateChanged()
-{
-    if (Board::GetInstance().connectionState() == Board::ConnectionState::Connected)
-        QMessageBox::information(this, "Успешно", "Связь по MODBUS установлена");
-}
+// void AbstractCheckDialog::onModbusStateChanged()
+//{
+//    if (Board::GetInstance().connectionState() == Board::ConnectionState::Connected)
+//        QMessageBox::information(this, "Успешно", "Связь по MODBUS установлена");
+//}
 
 void AbstractCheckDialog::StartAnalogMeasurements()
 {
@@ -272,10 +264,7 @@ void AbstractCheckDialog::StopAnalogMeasurements()
     Timer->stop();
 }
 
-void AbstractCheckDialog::TimerTimeout()
-{
-    ReadAnalogMeasurementsAndWriteToFile();
-}
+void AbstractCheckDialog::TimerTimeout() { ReadAnalogMeasurementsAndWriteToFile(); }
 
 void AbstractCheckDialog::SetTimerPeriod()
 {

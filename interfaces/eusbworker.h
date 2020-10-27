@@ -2,7 +2,6 @@
 
 #include "../gen/error.h"
 #include "../gen/logclass.h"
-#include "datamanager.h"
 #include "defines.h"
 #include "hidapi/hidapi.h"
 

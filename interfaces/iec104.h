@@ -13,6 +13,7 @@
 #define STARTUPGROUP 2
 #define BSIGROUP 1
 #define TIMEGROUP 15
+#define ALARMGROUP 3
 
 class IEC104 : public BaseInterface
 {
@@ -116,6 +117,7 @@ public:
 public slots:
     void reqStartup(quint32 sigAdr = 0, quint32 sigCount = 0);
     void reqBSI();
+    void reqAlarms(quint32 sigAdr = 0, quint32 sigCount = 0);
     void reqFile(quint32 filenum);
     void writeFile(quint32 filenum, const QByteArray &file);
     void writeConfigFile(S2ConfigType *s2config);

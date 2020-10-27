@@ -235,17 +235,17 @@ QWidget *Coma::Least()
     inlyout->addWidget(prb);
     lyout->addLayout(inlyout);
 
-    inlyout = new QHBoxLayout;
-    inlyout->addWidget(WDFunc::NewLBLT(this, "Отсчёт"));
-    inlyout->addWidget(WDFunc::NewLBLT(this, "", "prb2lbl"));
+    //    inlyout = new QHBoxLayout;
+    //    inlyout->addWidget(WDFunc::NewLBLT(this, "Отсчёт"));
+    //    inlyout->addWidget(WDFunc::NewLBLT(this, "", "prb2lbl"));
 
-    prb = new QProgressBar;
-    prb->setObjectName("prb2prb");
-    prb->setOrientation(Qt::Horizontal);
-    // prb->setMinimumWidth(50);
-    prb->setMaximumHeight(height() / 50);
-    inlyout->addWidget(prb);
-    lyout->addLayout(inlyout);
+    //    prb = new QProgressBar;
+    //    prb->setObjectName("prb2prb");
+    //    prb->setOrientation(Qt::Horizontal);
+    //    // prb->setMinimumWidth(50);
+    //    prb->setMaximumHeight(height() / 50);
+    //    inlyout->addWidget(prb);
+    //    lyout->addLayout(inlyout);
     w->setLayout(lyout);
     return w;
 }
@@ -1054,9 +1054,9 @@ void Coma::FileTimeOut()
         QMessageBox::information(this, "Ошибка", "Ошибка", QMessageBox::Ok);
 }
 
-void Coma::SetProgressBar2Size(int size) { SetProgressBarSize(2, size); }
+// void Coma::SetProgressBar2Size(int size) { SetProgressBarSize(2, size); }
 
-void Coma::SetProgressBar2(int cursize) { SetProgressBar(2, cursize); }
+// void Coma::SetProgressBar2(int cursize) { SetProgressBar(2, cursize); }
 
 void Coma::SetProgressBarSize(int prbnum, int size)
 {
@@ -1323,6 +1323,9 @@ void Coma::update()
         if (AlarmStateAllDialog != nullptr)
             AlarmStateAllDialog->UpdateHealth(ModuleBSI::ModuleBsi.Hth);
     }
+    // send alarms query
+    Warn *w = m_Module->getWarn();
+    m_iface->reqAlarms(w->m_startWarnAddress, 32);
 }
 
 void Coma::closeEvent(QCloseEvent *event)
