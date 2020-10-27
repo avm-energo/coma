@@ -6,7 +6,6 @@
 #include "../gen/files.h"
 #include "../gen/s2.h"
 #include "../gen/timefunc.h"
-#include "../usb/commands.h"
 #include "../widgets/wd_func.h"
 #include "xlsxdocument.h"
 
@@ -42,11 +41,19 @@ void Journals::SetProxyModels(
     // this);
 }
 
-Journals::~Journals() { }
+Journals::~Journals()
+{
+}
 
-void Journals::SetJourType(int jourtype) { m_jourType = jourtype; }
+void Journals::SetJourType(int jourtype)
+{
+    m_jourType = jourtype;
+}
 
-void Journals::SetJourFile(const QString &jourfile) { m_jourFile = jourfile; }
+void Journals::SetJourFile(const QString &jourfile)
+{
+    m_jourFile = jourfile;
+}
 /*
 void Journals::SetParentWidget(QWidget *w)
 {

@@ -112,7 +112,7 @@ public:
     void Go(const QString &parameter = "");
     void ClearTW();
     void SetupMenubar();
-    QWidget *MainInfoWidget();
+    //    QWidget *MainInfoWidget();
 
     QWidget *Least();
     // Error::Msg CheckPassword();
@@ -122,7 +122,7 @@ public:
 signals:
     void CloseConnectDialog();
     // void PasswordChecked();
-    void ClearBsi();
+    //    void ClearBsi();
     void Finished();
     void StopCommunications();
     // void ConnectMes(QString *);
@@ -146,7 +146,7 @@ private slots:
     //    void setConf(unsigned char);
     //    void Fill();
     //    void FillBSI(IEC104Thread::BS104Signals *sig);
-    void FillBSI(QList<ModBus::BSISignalStruct> sig, unsigned int sigsize);
+    //    void FillBSI(QList<ModBus::BSISignalStruct> sig, unsigned int sigsize);
     // void PasswordCheck(QString psw);
     void MainTWTabClicked(int tabindex);
 
@@ -181,7 +181,8 @@ private:
     int fileSize, curfileSize;
     //    int CheckIndex, TimeIndex, ConfIndex, CheckHarmIndex, CheckVibrIndex, CurTabIndex;
     quint8 HaveAlreadyRed = 0;
-    quint8 ActiveThreads;
+    //    quint8 ActiveThreads;
+    bool ActiveThreads;
     quint32 Mes;
 
     QString SavePort;
@@ -217,8 +218,8 @@ private:
     void setupConnections();
     void SetProgressBar1Size(int size);
     void SetProgressBar1(int cursize);
-    void SetProgressBar2Size(int size);
-    void SetProgressBar2(int cursize);
+    //    void SetProgressBar2Size(int size);
+    //    void SetProgressBar2(int cursize);
 
     virtual bool nativeEvent(const QByteArray &eventType, void *message, long *result) override;
 

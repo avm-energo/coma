@@ -2,8 +2,8 @@
 
 #include "../gen/error.h"
 #include "../gen/logclass.h"
-#include "defines.h"
 #include "datamanager.h"
+#include "defines.h"
 #include "hidapi/hidapi.h"
 
 class EUsbWorker : public QObject
@@ -20,6 +20,8 @@ public:
 
     void closeConnection();
 
+    void initiateReceive(QByteArray ba);
+    void initiateSend(const CommandStruct &cmdStr);
     DeviceConnectStruct deviceInfo() const;
     void setDeviceInfo(DeviceConnectStruct deviceInfo);
 

@@ -33,7 +33,7 @@ void ModbusThread::Run()
             switch (inp.cmd)
             {
             case CommandsMBS::MBS_READINPUTREGISTER:
-                readInputRegisters(inp); // send command to the port
+                readRegisters(inp); // send command to the port
                 break;
                 //                Com45(inp.uintarg);
                 //                RunMutex.lock();
@@ -47,11 +47,19 @@ void ModbusThread::Run()
                 //            if (DataManager::deQueue(inp) == Error::Msg::NoError)
                 //                InMutex.unlock();
                 //            SendAndGetResult(inp);
-                QCoreApplication::processEvents();
+            case CommandsMBS::MBS_READHOLDINGREGISTERS:
+                readRegisters(inp);
+                break;
+            case CommandsMBS::MBS_WRITEMULTIPLEREGISTERS:
+                writeMultipleRegisters(inp);
+                break;
+            default:
+                break;
             }
-            emit Finished();
         }
+        QCoreApplication::processEvents();
     }
+    emit Finished();
 }
 // void ModbusThread::SendAndGetResult(ModBus::InOutStruct &inp)
 //{
@@ -174,17 +182,6 @@ void ModbusThread::ParseReply(QByteArray ba)
     //    }
 }
 
-void ModbusThread::setQueryStartBytes(CommandsMBS::CommandStruct &cms, QByteArray &ba)
-{
-    m_commandSent = cms;
-    ba.append(deviceAddress); // адрес устройства
-    ba.append(cms.cmd); //аналоговый выход
-    ba.append(static_cast<char>((cms.adr & 0xFF00) >> 8));
-    ba.append(static_cast<char>(cms.adr & 0x00FF));
-    ba.append(static_cast<char>((cms.quantity & 0xFF00) >> 8));
-    ba.append(static_cast<char>(cms.quantity & 0x00FF));
-}
-
 void ModbusThread::send(QByteArray &ba)
 {
     quint16 KSS = CalcCRC(ba);
@@ -210,9 +207,19 @@ void ModbusThread::parseAndSetToOutList(QByteArray &ba)
 {
     switch (m_commandSent.cmd)
     {
-    case CommandsMBS::MBS_WRITEMULTIPLEREGISTERS:
+    case CommandsMBS::MBS_READINPUTREGISTER:
     {
         getFloatSignals(ba);
+        break;
+    }
+    case CommandsMBS::MBS_READHOLDINGREGISTERS:
+    {
+        getIntegerSignals(ba);
+        break;
+    }
+    case CommandsMBS::MBS_WRITEMULTIPLEREGISTERS:
+    {
+        getCommandResponse(ba);
         break;
     }
     default:
@@ -223,6 +230,12 @@ void ModbusThread::parseAndSetToOutList(QByteArray &ba)
 void ModbusThread::getFloatSignals(QByteArray &bain)
 {
     DataTypes::FloatStruct signal;
+
+    if (bain.size() < 3)
+    {
+        Log->error("Wrong inbuf size");
+        return;
+    }
     int byteSize = bain.data()[2];
     QByteArray ba = bain.mid(3);
     if (byteSize > ba.size())
@@ -239,6 +252,52 @@ void ModbusThread::getFloatSignals(QByteArray &bain)
         signal.sigAdr = m_commandSent.adr + i;
         DataManager::addSignalToOutList(DataTypes::SignalTypes::Float, signal);
     }
+}
+
+void ModbusThread::getIntegerSignals(QByteArray &bain)
+{
+    DataTypes::BitStringStruct signal;
+
+    if (bain.size() < 3)
+    {
+        Log->error("Wrong inbuf size");
+        return;
+    }
+    int byteSize = bain.data()[2];
+    QByteArray ba = bain.mid(3);
+    if (byteSize > ba.size())
+    {
+        ERMSG("Wrong byte size in response");
+        return;
+    }
+    int signalsSize = byteSize / 4; // количество байт float или u32
+    for (int i = 0; i < signalsSize; ++i)
+    {
+        quint32 ival = ((ba.data()[2 + 4 * i] << 24) & 0xFF000000) + ((ba.data()[3 + 4 * i] << 16) & 0x00FF0000)
+            + ((ba.data()[4 * i] << 8) & 0x0000FF00) + ((ba.data()[1 + 4 * i] & 0x000000FF));
+        memcpy(&signal.sigVal, &ival, sizeof(quint32));
+        signal.sigAdr = m_commandSent.adr + i;
+        DataManager::addSignalToOutList(DataTypes::SignalTypes::BitString, signal);
+    }
+}
+
+void ModbusThread::getCommandResponse(QByteArray &bain)
+{
+    if (bain.size() < 3)
+    {
+        Log->error("Wrong inbuf size");
+        return;
+    }
+    int byteSize = bain.data()[2];
+    QByteArray ba = bain.mid(3);
+    if (byteSize > ba.size())
+    {
+        ERMSG("Wrong byte size in response");
+        return;
+    }
+    DataTypes::GeneralResponseStruct grs;
+    grs.type = DataTypes::GeneralResponseTypes::Ok;
+    DataManager::addSignalToOutList(DataTypes::SignalTypes::GeneralResponse, grs);
 }
 
 void ModbusThread::FinishThread() { AboutToFinish = true; }
@@ -262,7 +321,7 @@ quint16 ModbusThread::CalcCRC(QByteArray &ba)
     return crc;
 }
 
-void ModbusThread::readInputRegisters(CommandsMBS::CommandStruct &cms)
+void ModbusThread::readRegisters(CommandsMBS::CommandStruct &cms)
 {
     QByteArray ba;
 
@@ -272,3 +331,33 @@ void ModbusThread::readInputRegisters(CommandsMBS::CommandStruct &cms)
     Log->info("Send bytes: " + ba.toHex());
     m_bytesToReceive = cms.quantity * 2 + 5; // address, function code, bytes count, crc (2)
 }
+
+void ModbusThread::writeMultipleRegisters(CommandsMBS::CommandStruct &cms)
+{
+    QByteArray ba;
+    setQueryStartBytes(cms, ba);
+    ba.append(cms.quantity * 2);
+    if (cms.data.size())
+        ba.append(cms.data);
+    Log->info("Send bytes: " + ba.toHex());
+    m_bytesToReceive = 8; // address, function code, address (2), quantity (2), crc (2)
+}
+
+void ModbusThread::setQueryStartBytes(CommandsMBS::CommandStruct &cms, QByteArray &ba)
+{
+    m_commandSent = cms;
+    ba.append(deviceAddress); // адрес устройства
+    ba.append(cms.cmd); //аналоговый выход
+    ba.append(static_cast<char>((cms.adr & 0xFF00) >> 8));
+    ba.append(static_cast<char>(cms.adr & 0x00FF));
+    ba.append(static_cast<char>((cms.quantity & 0xFF00) >> 8));
+    ba.append(static_cast<char>(cms.quantity & 0x00FF));
+}
+
+// void ModbusThread::readHoldingRegisters(CommandsMBS::CommandStruct &cms)
+//{
+//    QByteArray ba;
+
+//    setQueryStartBytes(cms, ba);
+
+//}
