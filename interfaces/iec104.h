@@ -114,7 +114,7 @@ public:
     //        QList<DataManager::SignalsStruct> &outlist);
 
 public slots:
-    void reqStartup();
+    void reqStartup(quint32 sigAdr = 0, quint32 sigCount = 0);
     void reqFile(quint32 filenum);
     void writeFile(quint32 filenum, const QByteArray &file);
     void writeConfigFile(S2ConfigType *s2config);

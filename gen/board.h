@@ -3,11 +3,6 @@
 #define DEVICETYPE_MODULE 1 // модуль
 #define DEVICETYPE_DEVICE 2 // прибор
 
-#define MBS_INITREG 4000
-#define MBS_TIMEREG 4600
-#define MBS_SETINITREG 900
-#define MBS_CLEARREG 905
-
 #include "singleton.h"
 
 #include <QMap>

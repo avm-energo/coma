@@ -36,9 +36,7 @@ ModBus::ModBus(QObject *parent) : BaseInterface(parent)
     Log->info("=== Log started ===");
 }
 
-ModBus::~ModBus()
-{
-}
+ModBus::~ModBus() { }
 
 bool ModBus::start(const ConnectStruct &st)
 {
@@ -88,12 +86,12 @@ Error::Msg ModBus::SendAndGetResult(Queries::CommandMBS &request, InOutStruct &o
     Log->info("Send bytes: " + bytes.toHex());
 
     InOutStruct inp {
-        request.command,     // Command
-        bytes,               // Ba
-        0,                   // TaskNum
+        request.command, // Command
+        bytes, // Ba
+        0, // TaskNum
         Error::Msg::NoError, // Res
-        0,                   // ReadSize
-        0                    // Checked
+        0, // ReadSize
+        0 // Checked
     };
     if (request.command == Queries::CommandsMBS::MBS_WRITEMULTIPLEREGISTERS)
         inp.ReadSize = 8;
@@ -231,10 +229,10 @@ void ModBus::BSIrequest()
 {
     Queries::CommandMBS request {
         Queries::CommandsMBS::MBS_READINPUTREGISTER, // Command
-        BSIREG,                                      // Address
-        30,                                          // Quantity
-        60,                                          // SizeBytes
-        {}                                           // Data
+        BSIREG, // Address
+        30, // Quantity
+        60, // SizeBytes
+        {} // Data
     };
     InOutStruct outp {};
 
@@ -255,18 +253,20 @@ void ModBus::BSIrequest()
     emit BsiFromModbus(BSIsig, sigsize);
 }
 
-void ModBus::reqStartup()
+void ModBus::reqStartup(quint32 sigAdr, quint32 sigCount)
 {
+    CommandsMBS::CommandStruct inp { CommandsMBS::Commands::MBS_READINPUTREGISTER, static_cast<quint16>(sigAdr),
+        static_cast<quint8>(sigCount * 2), {} };
 }
 
 void ModBus::ModWriteCor(ModBus::Information info, float *data) //, int* size)
 {
     Queries::CommandMBS request {
         Queries::CommandsMBS::MBS_WRITEMULTIPLEREGISTERS, // Command
-        info.adr,                                         // Address
-        0,                                                // Quantity
-        0,                                                // SizeBytes
-        {}                                                // Data
+        info.adr, // Address
+        0, // Quantity
+        0, // SizeBytes
+        {} // Data
     };
     InOutStruct outp {};
 
@@ -297,36 +297,36 @@ void ModBus::ModWriteCor(ModBus::Information info, float *data) //, int* size)
     emit CorSignalsWritten();
 }
 
-void ModBus::ModReadCor(ModBus::Information info)
-{
+// void ModBus::ModReadCor(ModBus::Information info)
+//{
 
-    Queries::CommandMBS request {
-        Queries::CommandsMBS::MBS_READINPUTREGISTER, // Command
-        info.adr,                                    // Address
-        static_cast<quint8>(info.size * 2),          // Quantity
-        static_cast<quint8>(info.size * 4),          // SizeBytes
-        {}                                           // Data
-    };
-    InOutStruct outp {};
+//    Queries::CommandMBS request {
+//        Queries::CommandsMBS::MBS_READINPUTREGISTER, // Command
+//        info.adr, // Address
+//        static_cast<quint8>(info.size * 2), // Quantity
+//        static_cast<quint8>(info.size * 4), // SizeBytes
+//        {} // Data
+//    };
+//    InOutStruct outp {};
 
-    Log->info("ReadCor()");
+//    Log->info("ReadCor()");
 
-    SendAndGetResult(request, outp);
+//    SendAndGetResult(request, outp);
 
-    QList<SignalStruct> Sig;
-    int sigsize;
-    GetFloatSignalsFromByteArray(outp.Ba, info.adr, Sig, sigsize);
-    emit CorSignalsReceived(Sig);
-}
+//    QList<SignalStruct> Sig;
+//    int sigsize;
+//    GetFloatSignalsFromByteArray(outp.Ba, info.adr, Sig, sigsize);
+//    emit CorSignalsReceived(Sig);
+//}
 
 void ModBus::ReadTime()
 {
     Queries::CommandMBS request {
         Queries::CommandsMBS::MBS_READHOLDINGREGISTERS, // Command
-        MBS_TIMEREG,                                    // Address
-        2,                                              // Quantity
-        4,                                              // SizeBytes
-        {}                                              // Data
+        MBS_TIMEREG, // Address
+        2, // Quantity
+        4, // SizeBytes
+        {} // Data
     };
     InOutStruct outp {};
 
@@ -374,33 +374,33 @@ Error::Msg ModBus::GetSignalsFromByteArray(
     return Error::Msg::NoError;
 }
 
-Error::Msg ModBus::GetFloatSignalsFromByteArray(QByteArray &bain, int startadr, QList<SignalStruct> &Sig, int &size)
-{
-    if (bain.size() < 3)
-    {
-        Log->error("Wrong inbuf size");
-        return Error::Msg::GeneralError;
-    }
-    int byteSize = bain.data()[2];
-    QByteArray ba = bain.mid(3);
-    if (byteSize > ba.size())
-    {
-        ERMSG("wrong byte size in response");
-        return Error::Msg::GeneralError;
-    }
-    int signalsSize = byteSize / 4; // количество байт float или u32
-    SignalStruct sig;
-    for (int i = 0; i < signalsSize; ++i)
-    {
-        quint32 ival = ((ba.data()[2 + 4 * i] << 24) & 0xFF000000) + ((ba.data()[3 + 4 * i] << 16) & 0x00FF0000)
-            + ((ba.data()[4 * i] << 8) & 0x0000FF00) + ((ba.data()[1 + 4 * i] & 0x000000FF));
-        sig.flVal = *(reinterpret_cast<float *>(&ival));
-        sig.SigAdr = i + startadr;
-        Sig.append(sig);
-    }
-    size = signalsSize;
-    return Error::Msg::NoError;
-}
+// Error::Msg ModBus::GetFloatSignalsFromByteArray(QByteArray &bain, int startadr, QList<SignalStruct> &Sig, int &size)
+//{
+//    if (bain.size() < 3)
+//    {
+//        Log->error("Wrong inbuf size");
+//        return Error::Msg::GeneralError;
+//    }
+//    int byteSize = bain.data()[2];
+//    QByteArray ba = bain.mid(3);
+//    if (byteSize > ba.size())
+//    {
+//        ERMSG("wrong byte size in response");
+//        return Error::Msg::GeneralError;
+//    }
+//    int signalsSize = byteSize / 4; // количество байт float или u32
+//    SignalStruct sig;
+//    for (int i = 0; i < signalsSize; ++i)
+//    {
+//        quint32 ival = ((ba.data()[2 + 4 * i] << 24) & 0xFF000000) + ((ba.data()[3 + 4 * i] << 16) & 0x00FF0000)
+//            + ((ba.data()[4 * i] << 8) & 0x0000FF00) + ((ba.data()[1 + 4 * i] & 0x000000FF));
+//        sig.flVal = *(reinterpret_cast<float *>(&ival));
+//        sig.SigAdr = i + startadr;
+//        Sig.append(sig);
+//    }
+//    size = signalsSize;
+//    return Error::Msg::NoError;
+//}
 
 void ModBus::WriteTime(uint time)
 {
@@ -414,10 +414,10 @@ void ModBus::WriteTime(uint time)
     timeArray.append(static_cast<char>(time >> 16));
     Queries::CommandMBS request {
         Queries::CommandsMBS::MBS_WRITEMULTIPLEREGISTERS, // Command
-        MBS_TIMEREG,                                      // Address
-        2,                                                // Quantity
-        4,                                                // SizeBytes
-        timeArray                                         // Data
+        MBS_TIMEREG, // Address
+        2, // Quantity
+        4, // SizeBytes
+        timeArray // Data
     };
     Error::Msg res = SendAndGetResult(request, outp);
     if (res != Error::Msg::NoError)
@@ -462,12 +462,6 @@ void ModBus::Tabs(int index)
     //    }
 }
 
-void ModBus::StartPolling()
-{
-    PollingTimer->start();
-}
+void ModBus::StartPolling() { PollingTimer->start(); }
 
-void ModBus::StopPolling()
-{
-    PollingTimer->stop();
-}
+void ModBus::StopPolling() { PollingTimer->stop(); }

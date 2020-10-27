@@ -21,7 +21,7 @@ public:
 
     explicit Module(QObject *parent = nullptr);
 
-    static Module *createModule(QTimer *updateTimer);
+    static Module *createModule(QTimer *updateTimer, BaseInterface *iface);
     QList<UDialog *> dialogs();
     QList<UDialog *> confDialogs();
     void addDialogToList(UDialog *dlg, const QString &caption = "", const QString &name = "");
@@ -42,6 +42,7 @@ private:
     Alarm *m_Alarm;
     Warn *m_Warn;
     int m_currentTabIndex, m_oldTabIndex;
+    BaseInterface *m_iface;
 };
 
 #endif // MODULEFABRIC_H

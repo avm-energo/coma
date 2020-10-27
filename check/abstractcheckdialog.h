@@ -18,7 +18,7 @@
 
 #include "../gen/modulebsi.h"
 #include "../gen/udialog.h"
-#include "../modbus/modbus.h"
+//#include "../modbus/modbus.h"
 #include "check.h"
 #include "xlsxdocument.h"
 
@@ -63,19 +63,17 @@ public:
     int BdUINum;
     // тип платы
     QList<int> IndexWd;
+    bool m_timerCounter;
 
 signals:
 
 public slots:
     void StopAnalogMeasurements();
-    virtual void USBUpdate() = 0; // update BDs from USB
-    virtual void ETHUpdate() = 0; // update BDs from Ethernet (by 104 protocol)
-    virtual void MBSUpdate() = 0; // update BDs from RS485 (by modbus protocol)
     virtual void SetWarnColor(int position, bool value) = 0;
     virtual void SetAlarmColor(int position, bool value) = 0;
     virtual void StartBdMeasurements();
     virtual void StopBdMeasurements();
-    void update();
+    //    void update();
 
 private:
     struct BdBlocks
@@ -95,7 +93,6 @@ private:
     Bip Bip_block;
     bool Busy;
     QElapsedTimer *ElapsedTimeCounter;
-    bool m_timerCounter;
 
     void CheckIP();
     void GetIP();
@@ -111,8 +108,8 @@ protected:
                                  "color: blue; font: bold 10px;}";
 
 protected slots:
-    virtual void UpdateModBusData(QList<ModBus::SignalStruct> Signal) = 0;
-    void onModbusStateChanged();
+    //    virtual void UpdateModBusData(QList<ModBus::SignalStruct> Signal) = 0;
+    //    void onModbusStateChanged();
 
 private slots:
     void SetTimerPeriod();

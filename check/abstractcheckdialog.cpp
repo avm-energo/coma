@@ -235,29 +235,6 @@ void AbstractCheckDialog::StopBdMeasurements()
     BdTimer->stop();
 }
 
-void AbstractCheckDialog::update()
-{
-    if ((m_updatesEnabled) && m_timerCounter) // every second tick of the timer
-    {
-        switch (Board::GetInstance().interfaceType())
-        {
-        case Board::InterfaceType::USB:
-            USBUpdate();
-            break;
-        case Board::InterfaceType::Ethernet:
-            ETHUpdate();
-            break;
-        case Board::InterfaceType::RS485:
-            MBSUpdate();
-            break;
-        default:
-            break;
-        }
-
-        m_timerCounter = !m_timerCounter;
-    }
-}
-
 void AbstractCheckDialog::onModbusStateChanged()
 {
     if (Board::GetInstance().connectionState() == Board::ConnectionState::Connected)

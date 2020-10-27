@@ -12,7 +12,6 @@
 #include <QTimer>
 #include <QWaitCondition>
 
-#define RECONNECTTIME 5000
 #define POLLINGINTERVAL 300 // polling cycle time
 #define SIGNALGROUPSNUM 7
 #define MAINSLEEPCYCLETIME 50
@@ -21,10 +20,12 @@
 #define READINPUTREGISTER 0x04
 #define WRITEMULTIPLEREGISTERS 0x10
 
-//#define INITREG 4000
-//#define TIMEREG 4600
-//#define SETINITREG 900
-//#define CLEARREG 905
+#define INITREG 4000
+#define INITREGCOUNT 11 // 11 floats results in 22 bytes
+#define TIMEREG 4600
+#define TIMEREGCOUNT 1
+#define SETINITREG 900
+#define CLEARREG 905
 
 class ModBus : public BaseInterface
 {
@@ -80,7 +81,7 @@ public:
     bool start(const ConnectStruct &st);
     void BSIrequest();
 
-    void reqStartup();
+    void reqStartup(quint32 sigAdr, quint32 sigCount);
     void reqFile(quint32 filenum);
     void writeFile(quint32 filenum, const QByteArray &file);
     void reqTime();

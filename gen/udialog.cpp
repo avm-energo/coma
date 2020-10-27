@@ -25,6 +25,11 @@ void UDialog::setCaption(const QString &caption)
     m_caption = caption;
 }
 
+void UDialog::setInterface(BaseInterface *iface)
+{
+    m_iface = iface;
+}
+
 void UDialog::update()
 {
 }

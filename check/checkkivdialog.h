@@ -1,7 +1,7 @@
 #ifndef CHECKDIALOGKIV_H
 #define CHECKDIALOGKIV_H
 
-#include "../iec104/iec104.h"
+#include "../interfaces/baseinterface.h"
 #include "abstractcheckdialog.h"
 #include "check.h"
 #include "checkkiv.h"
@@ -16,12 +16,12 @@ public:
 public slots:
     void SetAlarmColor(int position, bool value) override;
     void SetWarnColor(int position, bool value) override;
+    void getFloatData();
+    void getSPData();
     void updateFloatData();
     void updateSPData();
-    void USBUpdate() override;
-    void ETHUpdate() override;
-    void MBSUpdate() override;
     //    void MainTWTabClicked(int tabindex);
+    void update() override;
 
 private:
     CheckKIV *ChKIV;
@@ -38,6 +38,6 @@ private:
     //    QWidget *CustomTab() override;
 
 private slots:
-    void UpdateModBusData(QList<ModBus::SignalStruct> Signal) override;
+    //    void UpdateModBusData(QList<ModBus::SignalStruct> Signal) override;
 };
 #endif // CHECKDIALOG84_H

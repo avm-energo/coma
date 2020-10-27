@@ -4,6 +4,7 @@
 #include "../gen/logclass.h"
 
 #include <QObject>
+#define RECONNECTTIME 5000
 
 namespace CommandsMBS
 {
@@ -25,7 +26,7 @@ struct CommandStruct
     Commands cmd;
     quint16 adr;
     quint16 quantity;
-    quint8 sizebytes;
+    //    quint8 sizebytes;
     QByteArray data;
 };
 
@@ -71,9 +72,16 @@ private:
     //    ModBus::InOutStruct Inp, Outp;
     // ConnectionStates _state;
     LogClass *Log;
-    void readInputRegisters(CommandsMBS::CommandStruct &cms);
+    QByteArray m_readData;
+    CommandsMBS::CommandStruct m_commandSent;
+    int m_bytesToReceive;
 
+    void readInputRegisters(CommandsMBS::CommandStruct &cms);
     void setQueryStartBytes(CommandsMBS::CommandStruct &cms, QByteArray &ba);
+    void send(QByteArray &ba);
+    void parseAndSetToOutList(QByteArray &ba);
+    void getFloatSignals(QByteArray &bain);
+
     const unsigned char TabCRChi[256] = { 0x00, 0xC1, 0x81, 0x40, 0x01, 0xC0, 0x80, 0x41, 0x01, 0xC0, 0x80, 0x41, 0x00,
         0xC1, 0x81, 0x40, 0x01, 0xC0, 0x80, 0x41, 0x00, 0xC1, 0x81, 0x40, 0x00, 0xC1, 0x81, 0x40, 0x01, 0xC0, 0x80,
         0x41, 0x01, 0xC0, 0x80, 0x41, 0x00, 0xC1, 0x81, 0x40, 0x00, 0xC1, 0x81, 0x40, 0x01, 0xC0, 0x80, 0x41, 0x00,
