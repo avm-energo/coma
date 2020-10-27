@@ -2,8 +2,9 @@
 
 #include "../config/config.h"
 #include "../gen/board.h"
-#include "../iec104/iec104.h"
-#include "../usb/commands.h"
+#include "../gen/datamanager.h"
+//#include "../iec104/iec104.h"
+//#include "../usb/commands.h"
 #include "error.h"
 #include "stdfunc.h"
 
@@ -14,78 +15,40 @@ quint32 ModuleBSI::MType = 0;
 ModuleBSI::Bsi ModuleBSI::ModuleBsi;
 QString ModuleBSI::ModuleTypeString = "";
 
-ModuleBSI::ModuleBSI()
-{
-    ModuleBsi.MTypeB = ModuleBsi.MTypeM = 0xFFFFFFFF;
-}
+ModuleBSI::ModuleBSI() { ModuleBsi.MTypeB = ModuleBsi.MTypeM = 0xFFFFFFFF; }
 
-void ModuleBSI::USBUpdate()
-{
-    if (Commands::GetBsi(ModuleBsi) != Error::Msg::NoError)
-        return;
-    Config::ModuleDesc typeb = Config::ModuleBaseBoards().value(ModuleBsi.MTypeB);
-    Config::ModuleDesc typem = Config::ModuleMezzanineBoards().value(ModuleBsi.MTypeM);
-    if ((ModuleBsi.MTypeB << 8) >= 0xA000 || (Config::ModuleMezzanineBoards()[ModuleBsi.MTypeM].Hex) >= 0x00A0)
-    {
-        quint32 Type = (typeb.Hex << 8) + typem.Hex;
-        ModuleTypeString = Config::ModuleBoards()[Type];
-    }
-    else
-    {
-        ModuleTypeString = typeb.TextString + typem.TextString;
-    }
-    Board::GetInstance().setTypeB(ModuleBSI::GetMType(BoardTypes::BT_BASE));
-    Board::GetInstance().setTypeM(ModuleBSI::GetMType(BoardTypes::BT_MEZONIN));
+// void ModuleBSI::USBUpdate()
+//{
+//    if (Commands::GetBsi(ModuleBsi) != Error::Msg::NoError)
+//        return;
+//    Config::ModuleDesc typeb = Config::ModuleBaseBoards().value(ModuleBsi.MTypeB);
+//    Config::ModuleDesc typem = Config::ModuleMezzanineBoards().value(ModuleBsi.MTypeM);
+//    if ((ModuleBsi.MTypeB << 8) >= 0xA000 || (Config::ModuleMezzanineBoards()[ModuleBsi.MTypeM].Hex) >= 0x00A0)
+//    {
+//        quint32 Type = (typeb.Hex << 8) + typem.Hex;
+//        ModuleTypeString = Config::ModuleBoards()[Type];
+//    }
+//    else
+//    {
+//        ModuleTypeString = typeb.TextString + typem.TextString;
+//    }
+//    Board::GetInstance().setTypeB(ModuleBSI::GetMType(BoardTypes::BT_BASE));
+//    Board::GetInstance().setTypeM(ModuleBSI::GetMType(BoardTypes::BT_MEZONIN));
 
-    //    if (!IsKnownModule())
-    //        return Error::Msg::ResEmpty;
-    //    return Error::Msg::NoError;
-}
+//    //    if (!IsKnownModule())
+//    //        return Error::Msg::ResEmpty;
+//    //    return Error::Msg::NoError;
+//}
 
-void ModuleBSI::ETHUpdate()
-{
-    QList<DataManager::SignalsStruct> list;
-    DataManager::getSignals(BSIREG, BSIENDREG, DataManager::SignalTypes::BitString, list);
-    if (!list.isEmpty())
-    {
-        foreach (DataManager::SignalsStruct signal, list)
-        {
-            DataTypes::BitStringStruct bs = qvariant_cast<DataTypes::BitStringStruct>(signal.data);
-            //            memcpy(&startadr, &(sig->BS.SigAdr[0]), sizeof(sig->BS.SigAdr));
-            //            signum = sig->SigNumber;
-            //            INFOMSG("FillBSIe(): address=" + QString::number(startadr));
+// void ModuleBSI::ETHUpdate() { }
 
-            //            if ((signum < sizeof(ModuleBSI::ModuleBsi)) && (startadr >= BSIREG && startadr <= BSIENDREG))
-            //            {
-            //                for (size_t i = 0; i < signum; ++i)
-            //                    memcpy(((quint32 *)(&ModuleBSI::ModuleBsi) + (i + startadr - 1)), (((quint32
-            //                    *)(&sig->BS.SigVal) + 4 * i)),
-            //                        sizeof(sig->BS.SigVal));
-            memcpy(((quint32 *)(&ModuleBSI::ModuleBsi) + (bs.sigAdr - 1)), &bs.sigVal, sizeof(quint32));
-        }
-        Board::GetInstance().setTypeB(ModuleBSI::GetMType(BoardTypes::BT_BASE));
-        Board::GetInstance().setTypeM(ModuleBSI::GetMType(BoardTypes::BT_MEZONIN));
-    }
-}
+// void ModuleBSI::MBSUpdate() { }
 
-void ModuleBSI::MBSUpdate()
-{
-}
+QString ModuleBSI::GetModuleTypeString() { return ModuleTypeString; }
 
-QString ModuleBSI::GetModuleTypeString()
-{
-    return ModuleTypeString;
-}
+quint32 ModuleBSI::GetMType(BoardTypes type) { return (type == BT_MEZONIN) ? ModuleBsi.MTypeM : ModuleBsi.MTypeB; }
 
-quint32 ModuleBSI::GetMType(BoardTypes type)
-{
-    return (type == BT_MEZONIN) ? ModuleBsi.MTypeM : ModuleBsi.MTypeB;
-}
-
-quint32 ModuleBSI::Health()
-{
-    return ModuleBsi.Hth;
-}
+quint32 ModuleBSI::Health() { return ModuleBsi.Hth; }
 
 quint32 ModuleBSI::SerialNum(BoardTypes type)
 {
@@ -106,10 +69,7 @@ ModuleBSI::Bsi ModuleBSI::GetBsi()
     return bsi;
 }
 
-quint32 ModuleBSI::GetHealth()
-{
-    return ModuleBsi.Hth;
-}
+quint32 ModuleBSI::GetHealth() { return ModuleBsi.Hth; }
 
 bool ModuleBSI::IsKnownModule()
 {
@@ -154,26 +114,50 @@ Error::Msg ModuleBSI::PrereadConf(QWidget *w, S2ConfigType *S2Config)
     return Error::Msg::NoError;
 }
 
-void ModuleBSI::update()
+bool ModuleBSI::update()
 {
-    switch (Board::GetInstance().interfaceType())
+    //    switch (Board::GetInstance().interfaceType())
+    //    {
+    //    case Board::InterfaceType::USB:
+    //        USBUpdate();
+    //        break;
+    //    case Board::InterfaceType::Ethernet:
+    //        ETHUpdate();
+    //        break;
+    //    case Board::InterfaceType::RS485:
+    //        MBSUpdate();
+    //        break;
+    //    default:
+    //        break;
+    //    }
+    QList<DataTypes::SignalsStruct> list;
+    DataManager::getSignals(BSIREG, BSIENDREG, DataTypes::SignalTypes::BitString, list);
+    if (!list.isEmpty())
     {
-    case Board::InterfaceType::USB:
-        USBUpdate();
-        break;
-    case Board::InterfaceType::Ethernet:
-        ETHUpdate();
-        break;
-    case Board::InterfaceType::RS485:
-        MBSUpdate();
-        break;
-    default:
-        break;
+        foreach (DataTypes::SignalsStruct signal, list)
+        {
+            DataTypes::BitStringStruct bs = qvariant_cast<DataTypes::BitStringStruct>(signal.data);
+            //            memcpy(&startadr, &(sig->BS.SigAdr[0]), sizeof(sig->BS.SigAdr));
+            //            signum = sig->SigNumber;
+            //            INFOMSG("FillBSIe(): address=" + QString::number(startadr));
+
+            //            if ((signum < sizeof(ModuleBSI::ModuleBsi)) && (startadr >= BSIREG && startadr <= BSIENDREG))
+            //            {
+            //                for (size_t i = 0; i < signum; ++i)
+            //                    memcpy(((quint32 *)(&ModuleBSI::ModuleBsi) + (i + startadr - 1)), (((quint32
+            //                    *)(&sig->BS.SigVal) + 4 * i)),
+            //                        sizeof(sig->BS.SigVal));
+            memcpy(((quint32 *)(&ModuleBSI::ModuleBsi) + (bs.sigAdr - 1)), &bs.sigVal, sizeof(quint32));
+        }
+        Board::GetInstance().setTypeB(ModuleBSI::GetMType(BoardTypes::BT_BASE));
+        Board::GetInstance().setTypeM(ModuleBSI::GetMType(BoardTypes::BT_MEZONIN));
+        return true;
     }
+    return false;
 }
 
-void MBSUpdate()
-{
-    Board::GetInstance().setTypeB(ModuleBSI::GetMType(BoardTypes::BT_BASE));
-    Board::GetInstance().setTypeM(ModuleBSI::GetMType(BoardTypes::BT_MEZONIN));
-}
+// void MBSUpdate()
+//{
+//    Board::GetInstance().setTypeB(ModuleBSI::GetMType(BoardTypes::BT_BASE));
+//    Board::GetInstance().setTypeM(ModuleBSI::GetMType(BoardTypes::BT_MEZONIN));
+//}
