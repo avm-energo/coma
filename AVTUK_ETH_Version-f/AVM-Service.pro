@@ -122,6 +122,8 @@ main.cpp \
 ../widgets/waitwidget.cpp \
 ../widgets/wd_func.cpp
 
+PRECOMPILED_HEADER = ../gen/pch.h
+
 HEADERS += \
     ../interfaces/eprotocom.h \
     ../interfaces/modbusthread.h \

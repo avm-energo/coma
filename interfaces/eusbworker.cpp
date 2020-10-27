@@ -13,6 +13,15 @@
 #if _MSC_VER && !__INTEL_COMPILER
 #define __PRETTY_FUNCTION__ __FUNCSIG__
 #endif
+
+void appendSize(QByteArray &ba, int size)
+{
+    char byte = static_cast<char>(size % 0x100);
+    ba.append(byte);
+    byte = static_cast<char>(size / 0x100);
+    ba.append(byte);
+}
+
 EUsbWorker::EUsbWorker(DeviceConnectStruct dev, LogClass *logh, bool writelog, QObject *parent)
     : m_deviceInfo(dev), log(logh), WriteUSBLog(writelog), QObject(parent)
 {
@@ -160,15 +169,118 @@ void EUsbWorker::CheckWriteQueue()
 
 void EUsbWorker::checkQueue()
 {
-    EProtocom::CommandStruct inp;
+    CommandStruct inp;
     if (DataManager::deQueue(inp) == Error::Msg::NoError)
     {
         switch (inp.cmd)
         {
-
-            break;
         default:
+            initiateSend(inp);
             break;
         }
+    }
+}
+
+void EUsbWorker::initiateSend(const CommandStruct &cmdStr)
+{
+    switch (cmdStr.cmd)
+    {
+    case CN::Write::Upgrade:
+    {
+        QByteArray ba;
+        ba.append(CN::Message::Start);
+        ba.append(cmdStr.cmd);
+        appendSize(ba, 0);
+        WriteDataAttempt(ba);
+        break;
+    }
+    case CN::Write::Variant:
+    case CN::Write::Mode:
+    case CN::Write::EraseTech: // команда стирания технологического блока
+    case CN::Write::BlkCmd:
+    case CN::Test:
+    {
+        QByteArray ba;
+        ba.append(CN::Message::Start);
+        ba.append(cmdStr.cmd);
+        appendSize(ba, 1);
+        WriteDataAttempt(ba);
+        break;
+    }
+    case CN::Write::Hardware:
+    {
+        QByteArray ba;
+        ba.append(CN::Message::Start);
+        ba.append(cmdStr.cmd);
+        int size = (cmdStr.uintarg == BoardTypes::BT_BSMZ) ? WHV_SIZE_TWOBOARDS : WHV_SIZE_ONEBOARD;
+        appendSize(ba, size); // BoardType(1), HiddenBlock(16)
+        ba.append(cmdStr.uintarg);
+        WriteDataAttempt(ba);
+        break;
+    }
+    case CN::Write::BlkAC:
+    case CN::Write::EraseCnt:
+    case CN::Write::BlkTech:
+    case CN::Write::BlkData:
+    {
+        QByteArray ba;
+        ba.append(cmdStr.uintarg);
+        ba.append(cmdStr.ba);
+        // WRLength = InDataSize + 1;
+        // SetWRSegNum();
+        // WRCheckForNextSegment(true);
+        break;
+    }
+    default:
+    {
+        qCritical() << QVariant::fromValue(Error::Msg::WrongCommandError).toString();
+        return;
+    }
+    }
+}
+
+void EUsbWorker::initiateReceive(QByteArray ba)
+{
+    using namespace DataTypes;
+    using namespace CN::Message;
+
+    QByteArray tmps = "<-" + ba.toHex() + "\n";
+    log->WriteRaw(tmps);
+    if (ba.size() < 4)
+    {
+        qCritical("Small byte array");
+        return;
+    }
+    switch (ba.front())
+    {
+    case Start:
+    {
+        byte cmd = ba.at(1);
+        quint16 size;
+        memcpy(&size, &ba.constData()[2], 2);
+        /// Обработка команды и в очередь ее
+        // DataManager::addSignalToOutList();
+    }
+    case Continue:
+    {
+        byte cmd = ba.at(1);
+        quint16 size;
+        memcpy(&size, &ba.constData()[2], 2);
+        int end = ba.indexOf("0000");
+        // Contains
+        if (size != 768)
+        {
+            /// Обработка команды и в очередь ее
+        }
+        else
+        {
+            ba.remove(0, 4);
+            buffer.first += size;
+            buffer.second.append(ba);
+        }
+    }
+    default:
+        qCritical() << QVariant::fromValue(CN::Unknown).toString();
+        return;
     }
 }
