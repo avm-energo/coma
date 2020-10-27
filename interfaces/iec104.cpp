@@ -166,6 +166,22 @@ void IEC104::writeCommand(Queries::Commands cmd, QList<DataTypes::SignalsStruct>
     }
 }
 
+void IEC104::reqFloats(quint32 sigAdr, quint32 sigCount)
+{
+    Q_UNUSED(sigAdr)
+    Q_UNUSED(sigCount)
+    Commands104::CommandStruct inp { Commands104::CM104_REQGROUP, MAINFLOATGROUP, 0, {} };
+    DataManager::addToInQueue(inp);
+}
+
+// void IEC104::reqBitStrings(quint32 sigAdr, quint32 sigCount)
+//{
+//    Q_UNUSED(sigAdr)
+//    Q_UNUSED(sigCount)
+//    Commands104::CommandStruct inp { Commands104::CM104_REQGROUP, MAINBITSTRINGGROUP, 0, {} };
+//    DataManager::addToInQueue(inp);
+//}
+
 // void IEC104::CorReadRequest()
 //{
 //    Commands104::CommandStruct104 inp { Commands104104::CM104_CORREADREQUEST, 0, 0, {} };

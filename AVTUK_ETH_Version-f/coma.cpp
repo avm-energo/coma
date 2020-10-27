@@ -717,14 +717,14 @@ void Coma::NewModbus()
 
 void Coma::NewUSB()
 {
-    connect(this, &Coma::StopCommunications, &EProtocom::GetInstance(), &EProtocom::Disconnect);
+    //    connect(this, &Coma::StopCommunications, &EProtocom::GetInstance(), &EProtocom::Disconnect);
     //    connect(EProtocom::GetInstance().workerThread(), &QThread::finished, [=]() { ActiveThreads &= ~THREAD::USB;
     //    });
-    connect(EProtocom::GetInstance().workerThread(), &QThread::finished, [=]() { ActiveThreads = false; });
-    connect(&EProtocom::GetInstance(), &EProtocom::SetDataSize, this, &Coma::SetProgressBar1Size);
-    connect(&EProtocom::GetInstance(), &EProtocom::SetDataCount, this, &Coma::SetProgressBar1);
-    connect(&EProtocom::GetInstance(), &EProtocom::ShowError,
-        [this](const QString &msg) { QMessageBox::critical(this, "Ошибка", msg, QMessageBox::Ok); });
+    //    connect(EProtocom::GetInstance().workerThread(), &QThread::finished, [=]() { ActiveThreads = false; });
+    //    connect(&EProtocom::GetInstance(), &EProtocom::SetDataSize, this, &Coma::SetProgressBar1Size);
+    //    connect(&EProtocom::GetInstance(), &EProtocom::SetDataCount, this, &Coma::SetProgressBar1);
+    //    connect(&EProtocom::GetInstance(), &EProtocom::ShowError,
+    //        [this](const QString &msg) { QMessageBox::critical(this, "Ошибка", msg, QMessageBox::Ok); });
 }
 
 void Coma::newTimers()
@@ -808,7 +808,7 @@ bool Coma::nativeEvent(const QByteArray &eventType, void *message, long *result)
                 BdaTimer->stop();
             if (AlrmTimer->isActive())
                 AlrmTimer->stop();
-            EProtocom::GetInstance().usbStateChanged(message);
+            //            EProtocom::GetInstance().usbStateChanged(message);
             if (Board::GetInstance().connectionState() == Board::ConnectionState::Connected
                 && Board::GetInstance().interfaceType() == Board::InterfaceType::USB)
             {
@@ -1103,8 +1103,8 @@ void Coma::Disconnect()
         if (Board::GetInstance().interfaceType() == Board::InterfaceType::USB)
         {
             BdaTimer->stop();
-            if (Board::GetInstance().connectionState() != Board::ConnectionState::Closed)
-                EProtocom::GetInstance().Disconnect();
+            //            if (Board::GetInstance().connectionState() != Board::ConnectionState::Closed)
+            //                EProtocom::GetInstance().Disconnect();
         }
         else
         {
@@ -1125,7 +1125,7 @@ void Coma::Connect()
     {
     case Board::InterfaceType::USB:
     {
-        m_iface = new USBWorker();
+        //        m_iface = new USBWorker();
         NewUSB();
         //        res = Commands::Connect();
         //        if (res != Error::Msg::NoError)

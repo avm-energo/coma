@@ -4,7 +4,8 @@
 #include "../gen/colors.h"
 #include "../gen/error.h"
 #include "../gen/modulebsi.h"
-#include "../usb/commands.h"
+//#include "../usb/commands.h"
+#include "../gen/datamanager.h"
 #include "../widgets/wd_func.h"
 
 #include <QCoreApplication>
@@ -81,10 +82,7 @@ QWidget *CheckKTFHarmonicDialog::BdUI(int bdnum)
     }
 }
 
-void CheckKTFHarmonicDialog::PrepareHeadersForFile(int row)
-{
-    Q_UNUSED(row)
-}
+void CheckKTFHarmonicDialog::PrepareHeadersForFile(int row) { Q_UNUSED(row) }
 
 void CheckKTFHarmonicDialog::WriteToFile(int row, int bdnum)
 {
@@ -92,60 +90,56 @@ void CheckKTFHarmonicDialog::WriteToFile(int row, int bdnum)
     Q_UNUSED(bdnum);
 }
 
-void CheckKTFHarmonicDialog::ChooseValuesToWrite()
-{
-}
-void CheckKTFHarmonicDialog::SetDefaultValuesToWrite()
-{
-}
-void CheckKTFHarmonicDialog::PrepareAnalogMeasurements()
-{
-}
+void CheckKTFHarmonicDialog::ChooseValuesToWrite() { }
+void CheckKTFHarmonicDialog::SetDefaultValuesToWrite() { }
+void CheckKTFHarmonicDialog::PrepareAnalogMeasurements() { }
 
-void CheckKTFHarmonicDialog::USBUpdate()
-{
-    QTabWidget *CheckTW = this->findChild<QTabWidget *>("checktw0");
-    if (CheckTW == nullptr)
-    {
-        qDebug("CheckTW is null");
-        return;
-    }
+// void CheckKTFHarmonicDialog::USBUpdate()
+//{
+//    QTabWidget *CheckTW = this->findChild<QTabWidget *>("checktw0");
+//    if (CheckTW == nullptr)
+//    {
+//        qDebug("CheckTW is null");
+//        return;
+//    }
 
-    for (int i = 0; i < 5; i++)
-    {
-        if (CheckTW->currentIndex() == IndexWd.at(i))
-        {
-            if (Commands::GetBd(5, &ChHarmKTF->Bd_block5, sizeof(CheckHarmonicKTF::Bd5)) == Error::Msg::NoError)
-                ChHarmKTF->FillBd5(this);
-        }
-    }
+//    for (int i = 0; i < 5; i++)
+//    {
+//        if (CheckTW->currentIndex() == IndexWd.at(i))
+//        {
+//            if (Commands::GetBd(5, &ChHarmKTF->Bd_block5, sizeof(CheckHarmonicKTF::Bd5)) == Error::Msg::NoError)
+//                ChHarmKTF->FillBd5(this);
+//        }
+//    }
 
-    for (int i = 6; i < 12; i++)
-    {
-        if (CheckTW->currentIndex() == IndexWd.at(i))
-        {
-            if (Commands::GetBd(7, &ChHarmKTF->Bd_block7, sizeof(CheckHarmonicKTF::Bd7)) == Error::Msg::NoError)
-                ChHarmKTF->FillBd7(this);
-        }
-    }
-}
+//    for (int i = 6; i < 12; i++)
+//    {
+//        if (CheckTW->currentIndex() == IndexWd.at(i))
+//        {
+//            if (Commands::GetBd(7, &ChHarmKTF->Bd_block7, sizeof(CheckHarmonicKTF::Bd7)) == Error::Msg::NoError)
+//                ChHarmKTF->FillBd7(this);
+//        }
+//    }
+//}
 
-void CheckKTFHarmonicDialog::ETHUpdate()
-{
-    updateFloatData();
-}
+// void CheckKTFHarmonicDialog::ETHUpdate()
+//{
+//    updateFloatData();
+//}
 
-void CheckKTFHarmonicDialog::MBSUpdate()
-{
-}
+// void CheckKTFHarmonicDialog::MBSUpdate()
+//{
+//}
+
+void CheckKTFHarmonicDialog::update() { updateFloatData(); }
 
 void CheckKTFHarmonicDialog::updateFloatData()
 {
-    QList<DataManager::SignalsStruct> list;
-    DataManager::getSignals(0, 99999, DataManager::SignalTypes::FloatWithTime, list);
+    QList<DataTypes::SignalsStruct> list;
+    DataManager::getSignals(0, 99999, DataTypes::SignalTypes::FloatWithTime, list);
     if (!list.isEmpty())
     {
-        foreach (DataManager::SignalsStruct signal, list)
+        foreach (DataTypes::SignalsStruct signal, list)
         {
             DataTypes::FloatWithTimeStruct fwt = qvariant_cast<DataTypes::FloatWithTimeStruct>(signal.data);
             ChHarmKTF->FillBd(this, QString::number(fwt.sigAdr), WDFunc::StringValueWithCheck(fwt.sigVal, 3));
@@ -153,22 +147,23 @@ void CheckKTFHarmonicDialog::updateFloatData()
     }
 }
 
-void CheckKTFHarmonicDialog::UpdateModBusData(QList<ModBus::SignalStruct> Signal)
-{
+// void CheckKTFHarmonicDialog::UpdateModBusData(QList<ModBus::SignalStruct> Signal)
+//{
 
-    int i = 0;
-    for (i = 0; i < Signal.size(); ++i)
-    {
-        // sig = *(Signal+i);
-        if ((((Signal.at(i).SigAdr >= 1011) && (Signal.at(i).SigAdr <= 1015)))
-            || ((Signal.at(i).SigAdr >= 1111) && (Signal.at(i).SigAdr <= 1115)))
-            ChHarmKTF->FillBd(
-                this, QString::number((Signal.at(i).SigAdr) + 9), WDFunc::StringValueWithCheck(Signal.at(i).flVal, 3));
-        else
-            ChHarmKTF->FillBd(
-                this, QString::number(Signal.at(i).SigAdr), WDFunc::StringValueWithCheck(Signal.at(i).flVal, 3));
-    }
-}
+//    int i = 0;
+//    for (i = 0; i < Signal.size(); ++i)
+//    {
+//        // sig = *(Signal+i);
+//        if ((((Signal.at(i).SigAdr >= 1011) && (Signal.at(i).SigAdr <= 1015)))
+//            || ((Signal.at(i).SigAdr >= 1111) && (Signal.at(i).SigAdr <= 1115)))
+//            ChHarmKTF->FillBd(
+//                this, QString::number((Signal.at(i).SigAdr) + 9), WDFunc::StringValueWithCheck(Signal.at(i).flVal,
+//                3));
+//        else
+//            ChHarmKTF->FillBd(
+//                this, QString::number(Signal.at(i).SigAdr), WDFunc::StringValueWithCheck(Signal.at(i).flVal, 3));
+//    }
+//}
 void CheckKTFHarmonicDialog::SetWarnColor(int position, bool value)
 {
     Q_UNUSED(position)

@@ -371,6 +371,13 @@ void ModBus::writeCommand(Queries::Commands cmd, QList<DataTypes::SignalsStruct>
     }
 }
 
+void ModBus::reqFloats(quint32 sigAdr, quint32 sigCount)
+{
+    CommandsMBS::CommandStruct inp { CommandsMBS::Commands::MBS_READINPUTREGISTER, static_cast<quint16>(sigAdr),
+        static_cast<quint8>(sigCount * 2), {} };
+    DataManager::addToInQueue(inp);
+}
+
 // void ModBus::ModWriteCor(ModBus::Information info, float *data) //, int* size)
 //{
 //    Queries::CommandMBS request {

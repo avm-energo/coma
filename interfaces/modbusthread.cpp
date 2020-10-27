@@ -222,6 +222,11 @@ void ModbusThread::parseAndSetToOutList(QByteArray &ba)
         getCommandResponse(ba);
         break;
     }
+    case CommandsMBS::MBS_READCOILS:
+    {
+        getSinglePointSignals(ba);
+        break;
+    }
     default:
         break;
     }
@@ -298,6 +303,34 @@ void ModbusThread::getCommandResponse(QByteArray &bain)
     DataTypes::GeneralResponseStruct grs;
     grs.type = DataTypes::GeneralResponseTypes::Ok;
     DataManager::addSignalToOutList(DataTypes::SignalTypes::GeneralResponse, grs);
+}
+
+void ModbusThread::getSinglePointSignals(QByteArray &bain)
+{
+    DataTypes::SinglePointWithTimeStruct signal;
+
+    if (bain.size() < 3)
+    {
+        Log->error("Wrong inbuf size");
+        return;
+    }
+    int byteSize = bain.data()[2];
+    QByteArray ba = bain.mid(3);
+    if (byteSize > ba.size())
+    {
+        ERMSG("Wrong byte size in response");
+        return;
+    }
+    for (int i = 0; i < byteSize; ++i)
+    {
+        quint8 ival = ba.at(i);
+        for (int j = 0; j < 8; ++j)
+        {
+            signal.sigAdr = m_commandSent.adr + i * 8 + j;
+            signal.sigVal = ((0x01 << j) & ival) ? 1 : 0;
+            DataManager::addSignalToOutList(DataTypes::SignalTypes::SinglePointWithTime, signal);
+        }
+    }
 }
 
 void ModbusThread::FinishThread() { AboutToFinish = true; }

@@ -5,7 +5,8 @@
 #include "../gen/colors.h"
 #include "../gen/error.h"
 #include "../gen/modulebsi.h"
-#include "../usb/commands.h"
+//#include "../usb/commands.h"
+#include "../gen/datamanager.h"
 #include "../widgets/wd_func.h"
 
 #include <QCoreApplication>
@@ -115,17 +116,11 @@ void CheckKDVDialog::WriteToFile(int row, int bdnum)
     Q_UNUSED(bdnum);
 }
 
-void CheckKDVDialog::ChooseValuesToWrite()
-{
-}
-void CheckKDVDialog::SetDefaultValuesToWrite()
-{
-}
-void CheckKDVDialog::PrepareAnalogMeasurements()
-{
-}
+void CheckKDVDialog::ChooseValuesToWrite() { }
+void CheckKDVDialog::SetDefaultValuesToWrite() { }
+void CheckKDVDialog::PrepareAnalogMeasurements() { }
 
-void CheckKDVDialog::USBUpdate()
+/*void CheckKDVDialog::USBUpdate()
 {
     QTabWidget *CheckTW = this->findChild<QTabWidget *>("checktw0");
     if (CheckTW == nullptr)
@@ -205,16 +200,16 @@ void CheckKDVDialog::USBUpdate()
         if (Commands::GetBd(18, &ChKDV->Bd_block18, sizeof(CheckKDV::Bd18)) == Error::Msg::NoError)
             ChKDV->FillBd18(this);
     }
-}
+} */
 
-void CheckKDVDialog::ETHUpdate()
-{
-    updateFloatData();
-}
+// void CheckKDVDialog::ETHUpdate()
+//{
+//    updateFloatData();
+//}
 
-void CheckKDVDialog::MBSUpdate()
-{
-}
+// void CheckKDVDialog::MBSUpdate()
+//{
+//}
 
 void CheckKDVDialog::SetWarnColor(int position, bool value)
 {
@@ -252,11 +247,11 @@ void CheckKDVDialog::SetAlarmColor(int position, bool value)
 
 void CheckKDVDialog::updateFloatData()
 {
-    QList<DataManager::SignalsStruct> list;
-    DataManager::getSignals(0, 99999, DataManager::SignalTypes::FloatWithTime, list);
+    QList<DataTypes::SignalsStruct> list;
+    DataManager::getSignals(0, 99999, DataTypes::SignalTypes::FloatWithTime, list);
     if (!list.isEmpty())
     {
-        foreach (DataManager::SignalsStruct signal, list)
+        foreach (DataTypes::SignalsStruct signal, list)
         {
             DataTypes::FloatWithTimeStruct fwt = qvariant_cast<DataTypes::FloatWithTimeStruct>(signal.data);
             ChKDV->FillBd(this, QString::number(fwt.sigAdr), WDFunc::StringValueWithCheck(fwt.sigVal, 3));
@@ -264,7 +259,7 @@ void CheckKDVDialog::updateFloatData()
     }
 }
 
-void CheckKDVDialog::UpdateModBusData(QList<ModBus::SignalStruct> Signal)
+/*void CheckKDVDialog::UpdateModBusData(QList<ModBus::SignalStruct> Signal)
 {
 
     int i = 0;
@@ -279,4 +274,4 @@ void CheckKDVDialog::UpdateModBusData(QList<ModBus::SignalStruct> Signal)
             ChKDV->FillBd(
                 this, QString::number(Signal.at(i).SigAdr), WDFunc::StringValueWithCheck(Signal.at(i).flVal, 3));
     }
-}
+} */

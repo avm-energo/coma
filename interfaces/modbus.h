@@ -90,6 +90,8 @@ public:
     void writeTime(quint32 time);
     // writeCommand writes only float signals whose addresses are the lowest and are sequentally lays in the list
     void writeCommand(Queries::Commands cmd, QList<DataTypes::SignalsStruct> &list);
+    void reqFloats(quint32 sigAdr, quint32 sigCount);
+    //    void reqBitStrings(quint32 sigAdr, quint32 sigCount);
 
     //    int CheckIndex, CheckHarmIndex, CheckVibrIndex, CorIndex, TimeIndex;
 

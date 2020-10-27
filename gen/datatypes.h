@@ -91,7 +91,9 @@ enum Commands
     QC_SetStartupValues,
     QC_ClearStartupValues,
     QC_WriteUserValues,
-    QC_ReqAlarms
+    QC_ReqAlarms,
+    QC_ReqFloats,
+    QC_ReqBitStrings
 };
 
 struct Command

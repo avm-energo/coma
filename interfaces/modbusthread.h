@@ -102,6 +102,7 @@ private:
     void getFloatSignals(QByteArray &bain);
     void getIntegerSignals(QByteArray &bain);
     void getCommandResponse(QByteArray &bain);
+    void getSinglePointSignals(QByteArray &bain);
     bool checkReceivedByteArray(QByteArray &bain);
 
     const unsigned char TabCRChi[256] = { 0x00, 0xC1, 0x81, 0x40, 0x01, 0xC0, 0x80, 0x41, 0x01, 0xC0, 0x80, 0x41, 0x00,
