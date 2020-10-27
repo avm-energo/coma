@@ -107,7 +107,7 @@ namespace Message
     // length is 2 bytes
     constexpr byte Length2Byte = 0x02;
 } // namespace Message
-enum class Commands : quint8
+enum class Commands : byte
 {
     // ответ "всё в порядке"
     ResultOk = 0x11,
@@ -167,8 +167,9 @@ enum class Commands : quint8
     // запись версии аппаратуры модуля/серийного номера/типа платы
     WriteHardware = 0x48
 };
-Q_ENUM_NS(Commands);
+Q_ENUM_NS(Commands)
 } // namespace CN
+
 namespace UH
 {
 constexpr unsigned VID = 0xC251;
@@ -225,7 +226,7 @@ struct DeviceConnectStruct
 
 struct CommandStruct
 {
-    byte cmd;
+    CN::Commands cmd;
     quint32 uintarg;
     float flarg;
     QByteArray ba;

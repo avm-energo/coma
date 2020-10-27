@@ -11,20 +11,12 @@
 #include <QEventLoop>
 #include <QThread>
 #include <QTimer>
-typedef unsigned char byte;
 class EProtocom final : public BaseInterface, public Singleton<EProtocom>
 {
 
     Q_OBJECT
 
 public:
-    struct CommandStruct
-    {
-        byte cmd;
-        quint32 uintarg;
-        float flarg;
-        QByteArray ba;
-    };
     explicit EProtocom(token, QWidget *parent = nullptr);
     ~EProtocom();
 
@@ -37,9 +29,12 @@ public:
     EUsbWorker *usbWorker() const;
 
     bool start(const ConnectStruct &st) override;
-    void reqStartup() override;
+
     void reqTime() override;
     void reqFile(quint32 filenum) override;
+    void reqStartup(quint32 sigAdr, quint32 sigCount) override;
+    void reqBSI() override;
+
     void writeFile(quint32 filenum, const QByteArray &file) override;
     void writeTime(quint32 time) override;
     void writeCommand(Queries::Commands cmd, QList<DataTypes::SignalsStruct> &list) override;
@@ -129,17 +124,16 @@ private:
     int RawWrite(QByteArray &ba);
     void RawClose();
 
-    static byte translate(const Queries::Commands cmd);
-    static Queries::Commands translate(const byte cmd);
+    static CN::Commands translate(const Queries::Commands cmd);
+    static Queries::Commands translate(const CN::Commands cmd);
 
-    const static QMap<Queries::Commands, byte> m_dict;
+    const static QMap<Queries::Commands, CN::Commands> m_dict;
 
 signals:
-    // сигналы для прогрессбаров - отслеживание принятых данных, стёртых осциллограмм и т.п.
-    void SetDataSize(int);
-    void SetDataCount(int);
-    void readbytessignal(QByteArray);  // for TE updating
-    void writebytessignal(QByteArray); // for TE updating
+
     void ShowError(QString message);
     void QueryFinished();
+
+    // BaseInterface interface
+public:
 };

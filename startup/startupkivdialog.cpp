@@ -8,16 +8,13 @@
 #include "../gen/s2.h"
 #include "../gen/stdfunc.h"
 #include "../gen/timefunc.h"
-#include "../usb/commands.h"
 #include "../widgets/etableview.h"
 #include "../widgets/wd_func.h"
 
 #include <QDebug>
 #include <QGridLayout>
 #include <QMessageBox>
-#if _MSC_VER && !__INTEL_COMPILER
-#define __PRETTY_FUNCTION__ __FUNCSIG__
-#endif
+
 StartupKIVDialog::StartupKIVDialog(QWidget *parent) : AbstractStartupDialog(parent)
 {
     int i;
@@ -43,7 +40,9 @@ StartupKIVDialog::StartupKIVDialog(QWidget *parent) : AbstractStartupDialog(pare
     // MessageTimer->start();
 }
 
-StartupKIVDialog::~StartupKIVDialog() { }
+StartupKIVDialog::~StartupKIVDialog()
+{
+}
 
 void StartupKIVDialog::SetupUI()
 {
@@ -343,7 +342,10 @@ float StartupKIVDialog::ToFloat(QString text)
     return tmpf;
 }
 
-void StartupKIVDialog::MessageOk() { QMessageBox::information(this, "INFO", "Записано успешно"); }
+void StartupKIVDialog::MessageOk()
+{
+    QMessageBox::information(this, "INFO", "Записано успешно");
+}
 
 // void CorDialog::UpdateFlCorData(IEC104Thread::FlSignals104 *Signal)
 //{
@@ -475,4 +477,7 @@ Error::Msg StartupKIVDialog::WriteCheckPassword()
    QMessageBox::information(this, "Успешно", "Записано успешно!");
 } */
 
-void StartupKIVDialog::ErrorRead() { QMessageBox::information(this, "Ошибка", "Ошибка чтения"); }
+void StartupKIVDialog::ErrorRead()
+{
+    QMessageBox::information(this, "Ошибка", "Ошибка чтения");
+}

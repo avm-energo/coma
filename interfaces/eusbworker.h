@@ -42,6 +42,9 @@ private:
     QList<QByteArray> WriteQueue;
     DeviceConnectStruct m_deviceInfo;
 
+    QPair<quint64, QByteArray> m_buffer;
+    void handleCommand(const CN::Commands cmd);
+
     Error::Msg WriteData(QByteArray &ba);
     void CheckWriteQueue();
     void checkQueue();

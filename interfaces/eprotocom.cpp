@@ -1,9 +1,9 @@
 #include "eprotocom.h"
 
 #include "../gen/board.h"
+#include "../gen/datamanager.h"
 #include "../gen/error.h"
 #include "../gen/stdfunc.h"
-#include "datamanager.h"
 #include "defines.h"
 
 #include <QDebug>
@@ -25,41 +25,15 @@
 #if _MSC_VER && !__INTEL_COMPILER
 #define __PRETTY_FUNCTION__ __FUNCSIG__
 #endif
-const QMap<Queries::Commands, byte> EProtocom::m_dict {
-    { Queries::Commands::QC_StartFirmwareUpgrade, CN::Write::Upgrade },
-    { Queries::QC_SetStartupValues, CN::Read::BlkStartInfo }
+
+const QMap<Queries::Commands, CN::Commands> EProtocom::m_dict {
+    { Queries::Commands::QC_StartFirmwareUpgrade, CN::Commands::WriteUpgrade },
+    { Queries::QC_SetStartupValues, CN::Commands::ReadBlkStartInfo }
 
 };
 
 bool EProtocom::m_writeUSBLog;
 
-using namespace Queries;
-using namespace CN;
-
-byte translate(Queries::Commands cmd)
-{
-    switch (cmd)
-    {
-    case QC_SetNewConfiguration:
-        break;
-    case QC_StartFirmwareUpgrade:
-        return Write::Upgrade;
-    case QC_StartWorkingChannel:
-        break;
-    case QC_EraseJournals:
-        break;
-    case QC_SetStartupValues:
-        break;
-    case QC_ClearStartupValues:
-        break;
-    case QC_Command50:
-        break;
-    case QC_Test:
-        break;
-    default:
-        break;
-    }
-}
 // namespace Read
 //{
 //// чтение блока стартовой информации
@@ -257,7 +231,6 @@ void EProtocom::InitiateSend()
     {
         WriteData = InData;
         WRLength = WriteData.length();
-        emit SetDataSize(WRLength); // сигнал для прогрессбара
         SetWRSegNum();
         WRCheckForNextSegment(true);
         break;
@@ -270,7 +243,6 @@ void EProtocom::InitiateSend()
         WriteData.append(BoardType);
         WriteData.append(InData);
         WRLength = InDataSize + 1;
-        emit SetDataSize(WRLength); // сигнал для прогрессбара
         SetWRSegNum();
         WRCheckForNextSegment(true);
         break;
@@ -327,8 +299,7 @@ void EProtocom::WriteDataToPort(QByteArray &ba)
         }
         int tmpi = RawWrite(tmpba);
         byteswritten += tmpi;
-        emit writebytessignal(tmpba.left(tmpi));
-        tmpba = tmpba.remove(0, tmpi);
+        tmpba.remove(0, tmpi);
     }
 }
 
@@ -385,7 +356,6 @@ void EProtocom::WRCheckForNextSegment(int first)
         WriteData.clear();
         // ForMihalich = 1;
     }
-    emit SetDataCount(SegEnd);
     WriteDataToPort(tmpba);
 
     // if(ForMihalich == 1)
@@ -436,7 +406,6 @@ bool EProtocom::GetLength()
 
 void EProtocom::ParseIncomeData(QByteArray ba)
 {
-    emit readbytessignal(ba);
     if (isWriteUSBLog())
     {
         QByteArray tmps = "<-" + ba.toHex() + "\n";
@@ -540,10 +509,7 @@ void EProtocom::ParseIncomeData(QByteArray ba)
                 Finish(Error::Msg::NoError);
                 return;
             }
-            if (Command == CN::Read::Progress)
-                emit SetDataSize(100);
-            else
-                emit SetDataSize(0); // длина неизвестна для команд с ответами без длины
+
             bStep++;
             break;
         }
@@ -593,7 +559,6 @@ void EProtocom::ParseIncomeData(QByteArray ba)
                 Finish(Error::Msg::SizeError);
                 return;
             }
-            emit SetDataSize(RDLength);
             //                OutData.resize(RDLength);
             bStep++;
             break;
@@ -636,12 +601,10 @@ void EProtocom::ParseIncomeData(QByteArray ba)
             OutData.append(ReadDataChunk);
             quint32 outdatasize = OutData.size();
             // сигнал для прогрессбара
-            emit SetDataCount(outdatasize);
             ReadDataChunk.clear();
             if ((outdatasize >= InDataSize) || (ReadDataChunkLength < CN::Limits::MaxSegmenthLength))
             {
-                // установка размера прогрессбара, чтобы не мелькал
-                emit SetDataSize(outdatasize);
+
                 Finish(Error::Msg::NoError);
             }
             else
@@ -660,8 +623,7 @@ void EProtocom::ParseIncomeData(QByteArray ba)
             ReadDataChunk.truncate(ReadDataChunkLength);
             OutData.append(ReadDataChunk);
             outdatasize += ReadDataChunkLength;
-            // сигнал для прогрессбара
-            emit SetDataCount(outdatasize);
+
             ReadDataChunk.clear();
             if (outdatasize >= RDLength)
             {
@@ -675,7 +637,6 @@ void EProtocom::ParseIncomeData(QByteArray ba)
         case CN::Read::Progress:
         {
             quint16 OscNum = static_cast<quint8>(ReadDataChunk.at(0)) + static_cast<quint8>(ReadDataChunk.at(1)) * 256;
-            emit SetDataCount(OscNum);
             if (OscNum == 100)
             {
                 Finish(Error::Msg::NoError);
@@ -965,31 +926,27 @@ bool EProtocom::start(const ConnectStruct &st)
     return true;
 }
 
-void EProtocom::reqStartup()
-{
-}
-
 void EProtocom::reqTime()
 {
-    CommandStruct inp { CN::Read::Time, 0, 0, {} };
+    CommandStruct inp { CN::Commands::ReadTime, 0, 0, {} };
     DataManager::addToInQueue(inp);
 }
 
 void EProtocom::reqFile(quint32 filenum)
 {
-    CommandStruct inp { CN::Read::File, filenum, 0, {} };
+    CommandStruct inp { CN::Commands::ReadFile, filenum, 0, {} };
     DataManager::addToInQueue(inp);
 }
 
 void EProtocom::writeFile(quint32 filenum, const QByteArray &file)
 {
-    CommandStruct inp { CN::Write::File, filenum, 0, file };
+    CommandStruct inp { CN::Commands::WriteFile, filenum, 0, file };
     DataManager::addToInQueue(inp);
 }
 
 void EProtocom::writeTime(quint32 time)
 {
-    CommandStruct inp { CN::Write::Time, time, 0, {} };
+    CommandStruct inp { CN::Commands::WriteTime, time, 0, {} };
     DataManager::addToInQueue(inp);
 }
 
@@ -1049,15 +1006,15 @@ void EProtocom::RawClose()
     }
 }
 
-byte EProtocom::translate(const Queries::Commands cmd)
+CN::Commands EProtocom::translate(const Queries::Commands cmd)
 {
     if (m_dict.contains(cmd))
         return m_dict.value(cmd);
     else
-        return 0;
+        return CN::Commands::Unknown;
 }
 
-Commands EProtocom::translate(const byte cmd)
+Queries::Commands EProtocom::translate(const CN::Commands cmd)
 {
     // TODO  Реализовать проверку если нет такого value
     return m_dict.key(cmd);

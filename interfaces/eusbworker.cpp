@@ -1,13 +1,15 @@
 #include "eusbworker.h"
 
 #include "../gen/board.h"
+#include "../gen/datamanager.h"
 #include "../gen/error.h"
+#include "../gen/modulebsi.h"
 #include "../gen/stdfunc.h"
-#include "eprotocom.h"
 
 #include <QCoreApplication>
 #include <QDebug>
 #include <QElapsedTimer>
+#include <QMetaEnum>
 #include <QThread>
 
 #if _MSC_VER && !__INTEL_COMPILER
@@ -20,6 +22,20 @@ void appendSize(QByteArray &ba, int size)
     ba.append(byte);
     byte = static_cast<char>(size / 0x100);
     ba.append(byte);
+}
+
+inline bool checkCommand(char cmd)
+{
+    if (cmd == -1)
+    {
+        qCritical() << Error::WrongCommandError;
+        return false;
+    }
+    return true;
+}
+
+void checkForNextSegment(QByteArray &ba)
+{
 }
 
 EUsbWorker::EUsbWorker(DeviceConnectStruct dev, LogClass *logh, bool writelog, QObject *parent)
@@ -82,12 +98,16 @@ void EUsbWorker::interact()
             if (bytes > 0)
             {
                 QByteArray ba(reinterpret_cast<char *>(data), bytes);
-                emit NewDataReceived(ba);
+                initiateReceive(ba);
             }
             CheckWriteQueue(); // write data to port if there's something delayed in out queue
         }
     }
     Finish();
+}
+
+void EUsbWorker::handleCommand(const CN::Commands cmd)
+{
 }
 
 DeviceConnectStruct EUsbWorker::deviceInfo() const
@@ -183,52 +203,51 @@ void EUsbWorker::checkQueue()
 
 void EUsbWorker::initiateSend(const CommandStruct &cmdStr)
 {
+    using namespace CN;
     switch (cmdStr.cmd)
     {
-    case CN::Write::Upgrade:
+    case Commands::WriteUpgrade:
     {
         QByteArray ba;
-        ba.append(CN::Message::Start);
-        ba.append(cmdStr.cmd);
+        ba.append(Message::Start);
+        ba.append(static_cast<char>((cmdStr.cmd)));
         appendSize(ba, 0);
         WriteDataAttempt(ba);
         break;
     }
-    case CN::Write::Variant:
-    case CN::Write::Mode:
-    case CN::Write::EraseTech: // команда стирания технологического блока
-    case CN::Write::BlkCmd:
-    case CN::Test:
+    case Commands::WriteVariant:
+    case Commands::WriteMode:
+    case Commands::EraseTech: // команда стирания технологического блока
+    case Commands::WriteBlkCmd:
+    case Commands::Test:
     {
         QByteArray ba;
         ba.append(CN::Message::Start);
-        ba.append(cmdStr.cmd);
+        ba.append(static_cast<char>((cmdStr.cmd)));
         appendSize(ba, 1);
         WriteDataAttempt(ba);
         break;
     }
-    case CN::Write::Hardware:
+    case Commands::WriteHardware:
     {
         QByteArray ba;
         ba.append(CN::Message::Start);
-        ba.append(cmdStr.cmd);
+        ba.append(static_cast<char>((cmdStr.cmd)));
         int size = (cmdStr.uintarg == BoardTypes::BT_BSMZ) ? WHV_SIZE_TWOBOARDS : WHV_SIZE_ONEBOARD;
         appendSize(ba, size); // BoardType(1), HiddenBlock(16)
         ba.append(cmdStr.uintarg);
         WriteDataAttempt(ba);
         break;
     }
-    case CN::Write::BlkAC:
-    case CN::Write::EraseCnt:
-    case CN::Write::BlkTech:
-    case CN::Write::BlkData:
+    case Commands::WriteBlkAC:
+    case Commands::EraseCnt:
+    case Commands::WriteBlkTech:
+    case Commands::WriteBlkData:
     {
         QByteArray ba;
         ba.append(cmdStr.uintarg);
         ba.append(cmdStr.ba);
-        // WRLength = InDataSize + 1;
-        // SetWRSegNum();
-        // WRCheckForNextSegment(true);
+        checkForNextSegment(ba);
         break;
     }
     default:
@@ -241,46 +260,49 @@ void EUsbWorker::initiateSend(const CommandStruct &cmdStr)
 
 void EUsbWorker::initiateReceive(QByteArray ba)
 {
-    using namespace DataTypes;
     using namespace CN::Message;
 
     QByteArray tmps = "<-" + ba.toHex() + "\n";
     log->WriteRaw(tmps);
     if (ba.size() < 4)
     {
-        qCritical("Small byte array");
+        qCritical() << Error::SizeError;
         return;
     }
+    if (!checkCommand(QMetaEnum::fromType<CN::Commands>().value(ba.at(1))))
+        return;
+    byte cmd = ba.at(1);
     switch (ba.front())
     {
     case Start:
     {
-        byte cmd = ba.at(1);
         quint16 size;
         memcpy(&size, &ba.constData()[2], 2);
-        /// Обработка команды и в очередь ее
-        // DataManager::addSignalToOutList();
+        m_buffer.first = size;
+        m_buffer.second.setRawData(&ba.constData()[4], size);
+        handleCommand(CN::Commands(cmd));
     }
     case Continue:
     {
-        byte cmd = ba.at(1);
         quint16 size;
         memcpy(&size, &ba.constData()[2], 2);
-        int end = ba.indexOf("0000");
-        // Contains
+        // TODO Переписать без условия
         if (size != 768)
         {
-            /// Обработка команды и в очередь ее
+            ba.truncate(size);
+            m_buffer.first += size;
+            m_buffer.second.append(ba);
+            handleCommand(CN::Commands(cmd));
         }
         else
         {
             ba.remove(0, 4);
-            buffer.first += size;
-            buffer.second.append(ba);
+            m_buffer.first += size;
+            m_buffer.second.append(ba);
         }
     }
     default:
-        qCritical() << QVariant::fromValue(CN::Unknown).toString();
+        qCritical() << Error::WrongCommandError;
         return;
     }
 }
