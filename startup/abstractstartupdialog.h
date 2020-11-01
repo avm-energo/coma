@@ -3,8 +3,8 @@
 
 #include "../gen/error.h"
 #include "../gen/udialog.h"
-#include "../iec104/iec104.h"
-#include "../modbus/modbus.h"
+//#include "../iec104/iec104.h"
+#include "../interfaces/modbus.h"
 #include "../models/etablemodel.h"
 
 #include <QByteArray>
@@ -22,6 +22,7 @@ public:
 
     struct StartupBlockStruct
     {
+        quint32 initStartRegAdr;
         int num;
         void *block;
         quint32 size;
@@ -29,7 +30,7 @@ public:
 
     explicit AbstractStartupDialog(QWidget *parent = nullptr);
     //    ~AbstractCorDialog();
-    void SetStartupBlock(int blocknum, void *block, quint32 blocksize);
+    void SetStartupBlock(int blocknum, void *block, quint32 blocksize, quint32 startAdr);
     //    QTimer *MessageTimer;
 
     //    int corDIndex;
@@ -39,8 +40,8 @@ public:
     QWidget *buttonWidget();
     Error::Msg WriteCheckPassword();
     virtual void GetCorBd();
-    void ETHUpdate();
-    void MBSUpdate();
+    //    void ETHUpdate();
+    //    void MBSUpdate();
 
 private:
     UpdateStates m_updateState;
@@ -56,11 +57,11 @@ private:
     void FillBd(QWidget *parent, QString Name, float Value);
 
 signals:
-    void SendCom45(quint32);
-    void SendCom50(quint32 adr, float data);
-    void RS485WriteCorBd(ModBus::Information, float *);
-    void RS485ReadCorBd(ModBus::Information);
-    void CorReadRequest();
+    //    void SendCom45(quint32);
+    //    void SendCom50(quint32 adr, float data);
+    //    void RS485WriteCorBd(ModBus::Information, float *);
+    //    void RS485ReadCorBd(ModBus::Information);
+    //    void CorReadRequest();
     //    void WritePasswordChecked();
 
 public slots:
@@ -72,7 +73,7 @@ public slots:
     virtual void ResetCor() = 0;
     void updateFloatData();
     void updateStatus();
-    void ModBusUpdateCorData(QList<ModBus::SignalStruct> Signal);
+    //    void ModBusUpdateCorData(QList<ModBus::SignalStruct> Signal);
     virtual void SaveToFile() = 0;
     virtual void ReadFromFile() = 0;
     //    void WritePasswordCheck(QString psw);

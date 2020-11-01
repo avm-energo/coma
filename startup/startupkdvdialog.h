@@ -1,8 +1,8 @@
 #ifndef CORDIALOGKDV_H
 #define CORDIALOGKDV_H
 
-#include "../iec104/iec104.h"
-#include "../modbus/modbus.h"
+//#include "../iec104/iec104.h"
+//#include "../modbus/modbus.h"
 #include "../models/etablemodel.h"
 #include "abstractstartupdialog.h"
 
@@ -51,7 +51,7 @@ private:
     void FillCor() override;
     void FillBackWBd8();
 
-    float ToFloat(QString text);
+    //    float ToFloat(QString text);
     void SetupUI() override;
     void FillBd(QWidget *parent, QString Name, QString Value);
 
@@ -63,7 +63,7 @@ signals:
     //    void CorReadRequest();
 
 public slots:
-    void GetCorBdButton() override;
+    //    void GetCorBdButton() override;
     void WriteCorBd() override;
     void WriteCor() override;
     void ResetCor() override;

@@ -176,7 +176,11 @@ coma.h \
 ../gen/timefunc.h \
 ../gen/udialog.h \
 ../interfaces/baseinterface.h \
+../interfaces/commands.h \
+../interfaces/defines.h \
+../interfaces/eprotocom.h \
 ../interfaces/ethernet.h \
+../interfaces/eusbworker.h \
 ../interfaces/iec104.h \
 ../interfaces/iec104thread.h \
 ../interfaces/modbus.h \
@@ -203,10 +207,6 @@ coma.h \
 ../startup/startupkdvdialog.h \
 ../startup/startupkivdialog.h \
 ../startup/startupktfdialog.h \
-../usb/commands.h \
-../usb/defines.h \
-../usb/eprotocom.h \
-../usb/eusbworker.h \
 ../widgets/ecombobox.h \
 ../widgets/edoublespinbox.h \
 ../widgets/errorprotocolwidget.h \

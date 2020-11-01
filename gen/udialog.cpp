@@ -30,6 +30,11 @@ void UDialog::setInterface(BaseInterface *iface)
     m_iface = iface;
 }
 
+BaseInterface *UDialog::iface()
+{
+    return m_iface;
+}
+
 void UDialog::update()
 {
 }

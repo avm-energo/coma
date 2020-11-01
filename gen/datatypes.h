@@ -129,9 +129,11 @@ typedef struct DataRec
 
 Q_DECLARE_METATYPE(DataTypes::BitStringStruct)
 Q_DECLARE_METATYPE(DataTypes::FloatWithTimeStruct)
+Q_DECLARE_METATYPE(DataTypes::FloatStruct)
 Q_DECLARE_METATYPE(DataTypes::SinglePointWithTimeStruct)
 Q_DECLARE_METATYPE(DataTypes::FileStruct)
 Q_DECLARE_METATYPE(DataTypes::ConfParameterStruct)
+Q_DECLARE_METATYPE(DataTypes::SignalsStruct)
 Q_DECLARE_METATYPE(DataTypes::GeneralResponseStruct)
 Q_DECLARE_METATYPE(Queries::Command)
 #endif // DATATYPES_H

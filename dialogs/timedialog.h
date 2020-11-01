@@ -2,8 +2,8 @@
 #define MNKTIME_H
 
 #include "../gen/udialog.h"
-#include "../iec104/iec104.h"
-#include "../modbus/modbus.h"
+//#include "../iec104/iec104.h"
+#include "../interfaces/modbus.h"
 
 class TimeDialog : public UDialog
 {
@@ -22,18 +22,18 @@ private:
     void WriteTime(QDateTime &myDateTime);
 
 signals:
-    void ethTimeRequest();
-    void modBusTimeRequest();
-    void ethWriteTimeToModule(uint);
-    void modbusWriteTimeToModule(uint);
+    //    void ethTimeRequest();
+    //    void modBusTimeRequest();
+    //    void ethWriteTimeToModule(uint);
+    //    void modbusWriteTimeToModule(uint);
 
 public slots:
     void ErrorRead();
     void TimeWritten();
-    void slot_timeOut();
-    void USBUpdate();
-    void MBSUpdate();
-    void ETHUpdate();
+    void updateSysTime();
+    //    void USBUpdate();
+    //    void MBSUpdate();
+    //    void ETHUpdate();
     void update();
 
 private slots:

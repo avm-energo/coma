@@ -141,7 +141,7 @@ Module *Module::createModule(QTimer *updateTimer, BaseInterface *iface)
 
     if (Board::GetInstance().interfaceType() != Board::InterfaceType::USB)
     {
-        //        m->addDialogToList(new JournalDialog(JOUR, ), "Журналы");
+        m->addDialogToList(new JournalDialog(JOUR), "Журналы");
     }
     if (Board::GetInstance().interfaceType() == Board::InterfaceType::USB)
         m->addDialogToList(new FWUploadDialog, "Загрузка ВПО");

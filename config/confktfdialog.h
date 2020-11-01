@@ -4,8 +4,8 @@
 #include "../config/confdialog.h"
 #include "../config/configktf.h"
 #include "../config/confkxxdialog.h"
-#include "../iec104/ethernet.h"
-#include "../iec104/iec104.h"
+//#include "../iec104/ethernet.h"
+//#include "../iec104/iec104.h"
 #include "abstractconfdialog.h"
 
 #include <QDialog>

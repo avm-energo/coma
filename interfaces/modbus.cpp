@@ -299,7 +299,7 @@ void ModBus::writeTime(quint32 time)
     DataManager::addToInQueue(inp);
 }
 
-void ModBus::writeCommand(Queries::Commands cmd, QList<DataTypes::SignalsStruct> &list)
+void ModBus::writeCommand(Queries::Commands cmd, QList<DataTypes::SignalsStruct> list)
 {
     QByteArray sigArray;
     QMap<quint32, float> floatsMap;

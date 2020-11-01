@@ -21,6 +21,7 @@ public:
     const QString getCaption();
     void setCaption(const QString &caption);
     void setInterface(BaseInterface *iface);
+    BaseInterface *iface();
 
 public slots:
     virtual void update();

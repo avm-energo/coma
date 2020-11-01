@@ -1,12 +1,14 @@
 #ifndef CORDIALOG_H
 #define CORDIALOG_H
 
-#include "../iec104/iec104.h"
-#include "../modbus/modbus.h"
+//#include "../iec104/iec104.h"
+//#include "../modbus/modbus.h"
 #include "abstractstartupdialog.h"
 
 #include <QByteArray>
 #include <QDialog>
+
+#define KIVSTARTUPINITREG 4000
 
 class StartupKIVDialog : public AbstractStartupDialog
 {
@@ -22,10 +24,10 @@ public:
 private:
     struct CorData
     {
-        float C_init[3]; //Начальные значени емкостей вводов
-        float Tg_init[3]; //Начальные значения tgδ вводов
-        float corTg[3]; // коррекция  tg δ вводов
-        float Iunb_init; // Начальное действ. значение тока небаланса
+        float C_init[3];    //Начальные значени емкостей вводов
+        float Tg_init[3];   //Начальные значения tgδ вводов
+        float corTg[3];     // коррекция  tg δ вводов
+        float Iunb_init;    // Начальное действ. значение тока небаланса
         float Phy_unb_init; // Начальное значение угла тока небаланса
     };
 
@@ -33,7 +35,7 @@ private:
 
     void FillCor() override;
     void FillBackCor() override;
-    float ToFloat(QString text);
+    //    float ToFloat(QString text);
     void SetupUI() override;
     // void FillBd(QWidget *parent, QString Name, QString Value);
 

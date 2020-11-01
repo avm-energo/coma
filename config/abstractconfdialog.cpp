@@ -7,8 +7,8 @@
 #include "../gen/files.h"
 #include "../gen/stdfunc.h"
 #include "../gen/timefunc.h"
-#include "../iec104/iec104.h"
-#include "../usb/commands.h"
+//#include "../iec104/iec104.h"
+//#include "../usb/commands.h"
 #include "../widgets/wd_func.h"
 
 #include <QGridLayout>
@@ -22,7 +22,6 @@ AbstractConfDialog::AbstractConfDialog(QWidget *parent) : UDialog(parent)
 
 void AbstractConfDialog::ReadConf()
 {
-
     TimeFunc::Wait(100);
     switch (Board::GetInstance().interfaceType())
     {
