@@ -188,7 +188,7 @@ void ConnectDialog::RsAccepted()
         sets->setValue("port", WDFunc::CBData(dlg, "portcb"));
         sets->setValue("speed", WDFunc::CBData(dlg, "speedcb"));
         sets->setValue("parity", WDFunc::CBData(dlg, "paritycb"));
-        sets->setValue("stop", WDFunc::CBData(dlg, "stopcb"));
+        sets->setValue("stop", WDFunc::CBData(dlg, "stopbitcb"));
         int spbdata;
         WDFunc::SPBData(dlg, "addressspb", spbdata);
         sets->setValue("address", QString::number(spbdata));
