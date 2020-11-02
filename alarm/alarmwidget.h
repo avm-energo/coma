@@ -1,7 +1,7 @@
 #ifndef ALARMWIDGET_H
 #define ALARMWIDGET_H
 
-#include "../alarm/alarmclass.h"
+//#include "../alarm/alarmclass.h"
 #include "../gen/colors.h"
 #include "../gen/error.h"
 #include "../gen/modulebsi.h"
@@ -21,7 +21,7 @@ class AlarmWidget : public QWidget
 {
     Q_OBJECT
 public:
-    explicit AlarmWidget(AlarmClass *alarm, QWidget *parent = nullptr);
+    explicit AlarmWidget(QWidget *parent = nullptr);
     void Clear();
 
 signals:
@@ -39,9 +39,10 @@ public slots:
     void UpdateSecondUSB(bool);
     void UpdateThirdUSB(bool);
     void UpdateIndicator(bool);
+    void update(bool w, bool a);
 
 private:
-    AlarmClass *Alarm;
+    //    AlarmClass *Alarm;
 };
 
 #endif // ALARMWIDGET_H

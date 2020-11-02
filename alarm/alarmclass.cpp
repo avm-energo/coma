@@ -182,7 +182,7 @@ void AlarmClass::update()
         //        WarnAlarmEvents.clear();
         //        AvarAlarmEvents.clear();
         int index = 0;
-        bool warnFlag = false; // warning flag
+        bool warnFlag = false;  // warning flag
         bool alarmFlag = false; // alarm flag
         quint32 minAddress = w->m_startWarnAddress;
         quint32 maxAddress = w->m_startWarnAddress + 31; // only 32 bits
@@ -230,9 +230,10 @@ void AlarmClass::update()
 
             //        emit SetWarnAlarmColor(WarnAlarmEvents);
             //        emit SetAlarmColor(AvarAlarmEvents);
-            emit setWarnColor(warnFlag);
-            emit setAlarmColor(alarmFlag);
-            emit SetFirstButton();
+            emit setWarnsAndAlarms(warnFlag, alarmFlag);
+            //            emit setWarnColor(warnFlag);
+            //            emit setAlarmColor(alarmFlag);
+            //            emit SetFirstButton();
         }
     }
     catch (const std::exception &ex)

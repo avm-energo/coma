@@ -95,7 +95,7 @@ Coma::Coma(QWidget *parent) : QMainWindow(parent)
     //    mainConfDialog = nullptr;
     //    confBDialog = confMDialog = nullptr;
     //    checkBDialog = checkMDialog = nullptr;
-    AlarmStateAllDialog = nullptr;
+    //    AlarmStateAllDialog = nullptr;
     //    AlarmKIVDialog = nullptr;
     //    WarnKIVDialog = nullptr;
     //    AlarmKTFDialog = nullptr;
@@ -189,7 +189,13 @@ void Coma::SetupUI()
 
     hlyout->addWidget(createToolBar());
 
-    AlarmW = new AlarmWidget(Alarm);
+    AlarmW = new AlarmWidget;
+    connect(Alarm, &AlarmClass::setWarnsAndAlarms, AlarmW, &AlarmWidget::update);
+    //    connect(Alarm, &AlarmClass::SetFirstButton, AlarmW, &AlarmWidget::UpdateFirstUSB);
+    //    connect(Alarm, &AlarmClass::setWarnColor, AlarmW, &AlarmWidget::UpdateSecondUSB);
+    //    connect(Alarm, &AlarmClass::setAlarmColor, AlarmW, &AlarmWidget::UpdateThirdUSB);
+    //    connect(Alarm, &AlarmClass::SetIndicator, AlarmW, &AlarmWidget::UpdateIndicator);
+
     // AlarmW->setMaximumWidth(780);
     hlyout->addWidget(AlarmW, Qt::AlignCenter);
 
@@ -404,7 +410,7 @@ void Coma::StartWork()
     auto const &board = Board::GetInstance();
     if (board.connectionState() != Board::ConnectionState::Closed)
         return;
-    AlarmStateAllDialog = new AlarmStateAll(this);
+    //    AlarmStateAllDialog = new AlarmStateAll(this);
     if (!Reconnect)
     {
         QEventLoop loop;
@@ -465,8 +471,8 @@ void Coma::StartWork()
         //            Disconnect();
         return;
     }
-    if (AlarmStateAllDialog != nullptr)
-        AlarmStateAllDialog->UpdateHealth(ModuleBSI::ModuleBsi.Hth);
+    //    if (AlarmStateAllDialog != nullptr)
+    //        AlarmStateAllDialog->UpdateHealth(ModuleBSI::ModuleBsi.Hth);
     Board::GetInstance().setConnectionState(Board::ConnectionState::Connected);
     quint16 serialNumber = Board::GetInstance().type();
     QString deviceName = QVariant::fromValue(Board::DeviceModel(serialNumber)).toString();
@@ -660,19 +666,19 @@ void Coma::PrepareDialogs()
     //    timeDialog = new MNKTime(this);
     m_Module = Module::createModule(BdaTimer, m_iface);
     Alarm->setModule(m_Module);
-    AlarmStateAllDialog = new AlarmStateAll;
+    //    AlarmStateAllDialog = new AlarmStateAll;
     setupConnections();
 }
 
 void Coma::CloseDialogs()
 {
     m_Module->closeDialogs();
-    if (AlarmStateAllDialog != nullptr)
-    {
-        AlrmTimer->stop();
-        AlarmStateAllDialog->close();
-        AlarmStateAllDialog = nullptr;
-    }
+    //    if (AlarmStateAllDialog != nullptr)
+    //    {
+    //        AlrmTimer->stop();
+    //        AlarmStateAllDialog->close();
+    //        AlarmStateAllDialog = nullptr;
+    //    }
 
     //    AlrmTimer->stop();
 
@@ -770,12 +776,12 @@ void Coma::newTimers()
 
 void Coma::setupConnections()
 {
-    connect(AlarmW, &AlarmWidget::AlarmButtonPressed, AlarmStateAllDialog, &QDialog::show);
+    connect(AlarmW, &AlarmWidget::AlarmButtonPressed, m_Module->getAlarmStateAll(), &QDialog::show);
     connect(AlarmW, &AlarmWidget::ModuleWarnButtonPressed, m_Module->getWarn(), &QDialog::show);
     connect(AlarmW, &AlarmWidget::ModuleAlarmButtonPressed, m_Module->getAlarm(), &QDialog::show);
     connect(AlrmTimer, &QTimer::timeout, Alarm, &AlarmClass::update);
-    if (AlarmStateAllDialog != nullptr)
-        connect(AlrmTimer, &QTimer::timeout, AlarmStateAllDialog, &AlarmStateAll::CallUpdateHealth);
+    //    if (AlarmStateAllDialog != nullptr)
+    //        connect(AlrmTimer, &QTimer::timeout, AlarmStateAllDialog, &AlarmStateAll::CallUpdateHealth);
     connect(BdaTimer, &QTimer::timeout, this, &Coma::update);
     //    connect(BdaTimer, &QTimer::timeout, Alarm, &AlarmClass::UpdateAlarmUSB);
     //    //   connect(BdaTimer, &QTimer::timeout, AlarmStateAllDialog, &AlarmStateAll::UpdateHealth);
@@ -821,7 +827,10 @@ bool Coma::nativeEvent(const QByteArray &eventType, void *message, long *result)
     return false;
 }
 
-void Coma::SetMode(int mode) { Mode = mode; }
+void Coma::SetMode(int mode)
+{
+    Mode = mode;
+}
 
 void Coma::Go(const QString &parameter)
 {
@@ -1231,7 +1240,10 @@ void Coma::DisconnectAndClear()
     Reconnect = false;
 }
 
-void Coma::resizeEvent(QResizeEvent *e) { QMainWindow::resizeEvent(e); }
+void Coma::resizeEvent(QResizeEvent *e)
+{
+    QMainWindow::resizeEvent(e);
+}
 
 void Coma::keyPressEvent(QKeyEvent *e)
 {
