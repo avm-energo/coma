@@ -8,7 +8,7 @@
 #include "../gen/s2.h"
 #include "../gen/stdfunc.h"
 #include "../gen/timefunc.h"
-#include "../usb/commands.h"
+#include "../interfaces/commands.h"
 #include "../widgets/etableview.h"
 #include "../widgets/wd_func.h"
 
@@ -99,7 +99,9 @@ QWidget *AbstractStartupDialog::buttonWidget()
     glyout->addWidget(pb, row, 3, 1, 2);
 }
 
-void AbstractStartupDialog::GetCorBd() { }
+void AbstractStartupDialog::GetCorBd()
+{
+}
 
 void AbstractStartupDialog::ETHUpdate()
 {
@@ -107,7 +109,9 @@ void AbstractStartupDialog::ETHUpdate()
     m_updateState = AnswerWasReceived;
 }
 
-void AbstractStartupDialog::MBSUpdate() { }
+void AbstractStartupDialog::MBSUpdate()
+{
+}
 
 void AbstractStartupDialog::SetCor()
 {
@@ -256,7 +260,10 @@ Error::Msg AbstractStartupDialog::WriteCheckPassword()
 
 // void AbstractStartupDialog::TimerTimeout() { MessageTimer->stop(); }
 
-void AbstractStartupDialog::ErrorRead() { QMessageBox::information(this, "Ошибка", "Ошибка чтения"); }
+void AbstractStartupDialog::ErrorRead()
+{
+    QMessageBox::information(this, "Ошибка", "Ошибка чтения");
+}
 
 void AbstractStartupDialog::update()
 {

@@ -109,6 +109,7 @@ namespace Message
 } // namespace Message
 enum class Commands : byte
 {
+
     // ответ "всё в порядке"
     ResultOk = 0x11,
     // запуск, остановка теста
@@ -160,6 +161,14 @@ enum class Commands : byte
     WriteTime = 0x2A,
     // переход на новое ПО
     WriteUpgrade = 0x40,
+
+    WriteInitValues = 0x01,
+
+    WriteStartupValues = 0x04,
+    ///
+    /// namespace ERASE
+    ///
+    EraseStartupValues = 0x05,
     // стирание технологического блока
     EraseTech = 0x45,
     // стирание счётчиков дискретных состояний
@@ -206,7 +215,7 @@ constexpr unsigned MainLoopDelay = 20;
 struct DeviceConnectStruct
 {
     explicit DeviceConnectStruct() = default;
-    explicit DeviceConnectStruct(unsigned short dev, unsigned short pid, QString arr, QString str)
+    explicit DeviceConnectStruct(unsigned short dev, unsigned short pid, const QString &arr, const QString &str)
         : vendor_id(dev), product_id(pid), serial(arr), path(str)
     {
     }

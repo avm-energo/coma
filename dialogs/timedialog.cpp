@@ -203,7 +203,7 @@ void TimeDialog::update()
     if (m_updatesEnabled)
     {
         // send command to get time
-        gfhjfhgjf switch (Board::GetInstance().interfaceType())
+        switch (Board::GetInstance().interfaceType())
         {
         case Board::InterfaceType::USB:
             USBUpdate();

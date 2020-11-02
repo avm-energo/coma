@@ -11,7 +11,6 @@
 #include <QMessageBox>
 #include <QSettings>
 #include <QTimer>
-//#include <string>
 
 //#define MAX_STR 255
 #ifdef _WIN32
@@ -28,7 +27,9 @@
 
 const QMap<Queries::Commands, CN::Commands> EProtocom::m_dict {
     { Queries::Commands::QC_StartFirmwareUpgrade, CN::Commands::WriteUpgrade },
-    { Queries::QC_SetStartupValues, CN::Commands::ReadBlkStartInfo }
+    { Queries::QC_SetStartupValues, CN::Commands::WriteStartupValues },
+    { Queries::QC_ClearStartupValues, CN::Commands::EraseStartupValues },
+    { Queries::QC_SetNewConfiguration, CN::Commands::WriteInitValues }
 
 };
 
@@ -86,7 +87,6 @@ bool EProtocom::m_writeUSBLog;
 
 EProtocom::EProtocom(token, QWidget *parent) : BaseInterface(parent)
 {
-    // Q_UNUSED(parent)
     QString tmps = "=== CLog started ===\n";
     Log = new LogClass;
     Log->Init("canal.log");
@@ -107,12 +107,6 @@ EProtocom::EProtocom(token, QWidget *parent) : BaseInterface(parent)
     // bool writeUSBLog = sets->value("WriteLog", "0").toBool();
     setWriteUSBLog(true);
 }
-
-// int EProtocom::devicePosition() const { return m_devicePosition; }
-
-// void EProtocom::setDevicePosition(int devicePosition) { m_devicePosition = devicePosition; }
-
-// QString EProtocom::usbSerial() const { return m_devices.at(m_devicePosition).serial; }
 
 Error::Msg EProtocom::result() const
 {
@@ -139,36 +133,18 @@ void EProtocom::Send(char command, char parameter, QByteArray &ba, qint64 datasi
     if (Board::GetInstance().connectionState() == Board::ConnectionState::Closed
         && Board::GetInstance().interfaceType() == Board::InterfaceType::USB)
     {
-        qDebug() << "Передача в отключенный прибор";
-        ERMSG("В канальную процедуру переданы некорректные данные");
-        m_result = Error::Msg::NullDataError;
+        qDebug() << Error::Msg::NoDeviceError;
+        m_result = Error::Msg::NoDeviceError;
         return;
     }
-    try
-    {
-        InData = ba;
-        InDataSize = datasize; // размер области данных, в которую производить запись
-        Command = command;
-        /*    if (parameter == BoardTypes::BT_BASE)
-                BoardType = 0x01;
-            else if (parameter == BoardTypes::BT_MEZONIN)
-                BoardType = 0x02;
-            else if (parameter == BoardTypes::BT_NONE)
-                BoardType = 0x00;
-            else */
-        BoardType = parameter; // in GBd command it is a block number
-        InitiateSend();
-        m_waitTimer->start();
-        m_loop.exec(QEventLoop::ExcludeUserInputEvents);
-    }
-    catch (const std::exception &e)
-    {
-        qDebug() << __PRETTY_FUNCTION__ << e.what();
-    }
-    catch (...)
-    {
-        qDebug() << __PRETTY_FUNCTION__ << "Exception";
-    }
+
+    InData = ba;
+    InDataSize = datasize; // размер области данных, в которую производить запись
+    Command = command;
+    BoardType = parameter; // in GBd command it is a block number
+    InitiateSend();
+    m_waitTimer->start();
+    m_loop.exec(QEventLoop::ExcludeUserInputEvents);
 }
 
 void EProtocom::InitiateSend()
@@ -294,7 +270,6 @@ void EProtocom::WriteDataToPort(QByteArray &ba)
             ERMSG("Ошибка записи RawWrite");
             qCritical() << QVariant::fromValue(Error::Msg::WriteError).toString();
             Disconnect();
-            // TTimer->start();
             return;
         }
         int tmpi = RawWrite(tmpba);
@@ -354,12 +329,8 @@ void EProtocom::WRCheckForNextSegment(int first)
         tmpba += WriteData.right(WriteData.size() - SegEnd);
         SegEnd = WriteData.size();
         WriteData.clear();
-        // ForMihalich = 1;
     }
     WriteDataToPort(tmpba);
-
-    // if(ForMihalich == 1)
-    // SendOk(true);
 }
 
 void EProtocom::AppendSize(QByteArray &ba, int size)
@@ -667,16 +638,6 @@ void EProtocom::OscTimerTimeout()
     SendCmd(CN::Read::Progress);
 }
 
-// QString EProtocom::deviceName() const
-//{
-//    return m_deviceName;
-//}
-
-// void EProtocom::setDeviceName(const QString &deviceName)
-//{
-//    m_deviceName = deviceName;
-//}
-
 void EProtocom::SendCmd(unsigned char command, int parameter)
 {
     // only for these commands
@@ -786,10 +747,7 @@ void EProtocom::usbStateChanged(void *message)
             {
                 if (m_devices.contains(m_usbWorker->deviceInfo()))
                 {
-                    //                    int index = m_devices.indexOf(m_usbWorker->deviceInfo());
                     m_devicePosition = m_devices.indexOf(m_usbWorker->deviceInfo());
-                    //                    setDevicePosition(index);
-                    //                    m_usbWorker->setDeviceInfo(m_devices.at(index));
                     m_usbWorker->setDeviceInfo(m_devices.at(m_devicePosition));
                     qDebug("Device arrived again");
                     if (!Reconnect())
@@ -861,27 +819,6 @@ void EProtocom::usbStateChanged(void *message)
     }
 #endif
 }
-// void EProtocom::TranslateDeviceAndSave(const QString &str)
-//{
-//    // формат строки: "VEN_" + QString::number(venid, 16) + "_ & DEV_" +
-//    // QString::number(prodid, 16) + "_ & SN_" + sn+"_ & Path_"+path;
-//    QStringList sl = str.split("_"); // 1,3,5,7 - полезная нагрузка
-//    if (sl.size() < 8)
-//    {
-//        ERMSG("Неправильная длина имени порта");
-//        DBGMSG;
-//        return;
-//    }
-//    QString tmps = sl.at(1);
-//    // UsbPort.vendor_id = tmps.toUShort(nullptr, 16);
-//    tmps = sl.at(3);
-//    // UsbPort.product_id = tmps.toUShort(nullptr, 16);
-//    tmps = sl.at(5);
-//    // int z = tmps.toWCharArray(UsbPort.serial);
-//    // UsbPort.serial[z] = '\x0';
-//    tmps = sl.at(7);
-//    // strcpy(UsbPort.path, tmps.toStdString().c_str());
-//}
 
 EProtocom::~EProtocom()
 {
@@ -909,11 +846,11 @@ bool EProtocom::start(const ConnectStruct &st)
     connect(m_usbWorker, &EUsbWorker::finished, m_usbWorker, &EUsbWorker::deleteLater);
     connect(m_usbWorker, &EUsbWorker::NewDataReceived, this, &EProtocom::ParseIncomeData);
 
-    QThread *parserThread = new QThread;
+    //    QThread *parserThread = new QThread;
 
-    connect(parserThread, &QThread::started, [this] { m_parserStatus = true; });
-    connect(parserThread, &QThread::finished, [this] { m_parserStatus = false; });
-    connect(parserThread, &QThread::finished, parserThread, &QThread::deleteLater);
+    //    connect(parserThread, &QThread::started, [this] { m_parserStatus = true; });
+    //    connect(parserThread, &QThread::finished, [this] { m_parserStatus = false; });
+    //    connect(parserThread, &QThread::finished, parserThread, &QThread::deleteLater);
 
     if (m_usbWorker->setupConnection() == Error::Msg::NoError
         && Board::GetInstance().interfaceType() == Board::InterfaceType::USB)
@@ -934,13 +871,34 @@ void EProtocom::reqTime()
 
 void EProtocom::reqFile(quint32 filenum)
 {
-    CommandStruct inp { CN::Commands::ReadFile, filenum, 0, {} };
+    CommandStruct inp {
+        CN::Commands::ReadFile, // Command
+        filenum,                // File number
+        0,                      // Empty float arg
+        {}                      // Empty QByteArray
+    };
+    DataManager::addToInQueue(inp);
+}
+
+void EProtocom::reqBSI()
+{
+    CommandStruct inp {
+        CN::Commands::ReadBlkStartInfo,                       // Command
+        BoardTypes::BT_NONE,                                  // Board type
+        0,                                                    // Empty float arg
+        QByteArray(sizeof(ModuleBSI::Bsi), Qt::Uninitialized) // Buffer for bsi
+    };
     DataManager::addToInQueue(inp);
 }
 
 void EProtocom::writeFile(quint32 filenum, const QByteArray &file)
 {
-    CommandStruct inp { CN::Commands::WriteFile, filenum, 0, file };
+    CommandStruct inp {
+        CN::Commands::WriteFile, // Command
+        filenum,                 // File number
+        0,                       // Empty float arg
+        file                     // Buffer with file
+    };
     DataManager::addToInQueue(inp);
 }
 
@@ -972,7 +930,6 @@ bool EProtocom::Reconnect()
         && Board::GetInstance().interfaceType() == Board::InterfaceType::USB)
     {
         Board::GetInstance().setConnectionState(Board::ConnectionState::Connected);
-        // m_workerThread.start();
     }
     else
         return false;
@@ -1036,22 +993,18 @@ QList<QStringList> EProtocom::DevicesFound()
             const DeviceConnectStruct buffer(cur_dev->vendor_id, cur_dev->product_id,
                 QString::fromWCharArray(cur_dev->serial_number), QString(cur_dev->path));
 
-            //#ifdef __linux__
-            //            wstr[0] = 0x0000;
-            //            res = hid_get_serial_number_string(handle, wstr, MAX_STR);
-            //            if (res < 0)
-            //                printf("Unable to read serial number string\n");
-            //#endif
-            //#ifdef _WIN32
+            /*#ifdef __linux__
+                        wstr[0] = 0x0000;
+                        res = hid_get_serial_number_string(handle, wstr, MAX_STR);
+                        if (res < 0)
+                            printf("Unable to read serial number string\n");
+            #endif
+            #ifdef _WIN32
 
-            // sn = QString::fromWCharArray(cur_dev->serial_number);
-            //#endif
+             sn = QString::fromWCharArray(cur_dev->serial_number);
+            #endif*/
             QStringList tmps { QString::number(buffer.vendor_id, 16), QString::number(buffer.product_id, 16),
                 buffer.serial, buffer.path };
-            // QString tmps = "VEN_" + QString::number(buffer.vendor_id, 16) + "_ &
-            // DEV_"
-            //   + QString::number(buffer.product_id, 16) + "_ & SN_" + buffer.serial
-            //   + "_ & Path_" + buffer.path;
             sl.append(tmps);
             m_devices.push_back(buffer);
         }

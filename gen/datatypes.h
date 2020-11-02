@@ -2,7 +2,6 @@
 #define DATATYPES_H
 
 #include <QVariant>
-#include <qmetatype.h>
 
 namespace DataTypes
 {
@@ -132,6 +131,7 @@ typedef struct DataRec
 
 Q_DECLARE_METATYPE(DataTypes::BitStringStruct)
 Q_DECLARE_METATYPE(DataTypes::FloatWithTimeStruct)
+Q_DECLARE_METATYPE(DataTypes::FloatStruct)
 Q_DECLARE_METATYPE(DataTypes::SinglePointWithTimeStruct)
 Q_DECLARE_METATYPE(DataTypes::FileStruct)
 Q_DECLARE_METATYPE(DataTypes::ConfParameterStruct)

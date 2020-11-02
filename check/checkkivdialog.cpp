@@ -2,10 +2,9 @@
 
 #include "../config/config.h"
 #include "../gen/colors.h"
+#include "../gen/datamanager.h"
 #include "../gen/error.h"
 #include "../gen/modulebsi.h"
-//#include "../usb/commands.h"
-#include "../gen/datamanager.h"
 #include "../widgets/etabwidget.h"
 #include "../widgets/wd_func.h"
 
@@ -94,7 +93,6 @@ void CheckKIVDialog::USBUpdate()
     QTabWidget *CheckTW = this->findChild<QTabWidget *>("checktw0");
     if (CheckTW == nullptr)
     {
-        DBGMSG;
         return;
     }
 

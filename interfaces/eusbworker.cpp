@@ -12,10 +12,6 @@
 #include <QMetaEnum>
 #include <QThread>
 
-#if _MSC_VER && !__INTEL_COMPILER
-#define __PRETTY_FUNCTION__ __FUNCSIG__
-#endif
-
 void appendSize(QByteArray &ba, int size)
 {
     char byte = static_cast<char>(size % 0x100);
@@ -38,8 +34,8 @@ void checkForNextSegment(QByteArray &ba)
 {
 }
 
-EUsbWorker::EUsbWorker(DeviceConnectStruct dev, LogClass *logh, bool writelog, QObject *parent)
-    : m_deviceInfo(dev), log(logh), WriteUSBLog(writelog), QObject(parent)
+EUsbWorker::EUsbWorker(const DeviceConnectStruct &dev, LogClass *logh, bool writelog, QObject *parent)
+    : QObject(parent), log(logh), WriteUSBLog(writelog), m_deviceInfo(dev)
 {
     HidDevice = nullptr;
 }

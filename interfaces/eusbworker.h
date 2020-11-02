@@ -9,7 +9,7 @@ class EUsbWorker : public QObject
 {
     Q_OBJECT
 public:
-    explicit EUsbWorker(DeviceConnectStruct dev, LogClass *logh, bool writelog = false, QObject *parent = 0);
+    explicit EUsbWorker(const DeviceConnectStruct &dev, LogClass *logh, bool writelog = false, QObject *parent = 0);
     ~EUsbWorker();
 
     LogClass *log;
