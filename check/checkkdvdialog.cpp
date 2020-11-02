@@ -120,6 +120,11 @@ void CheckKDVDialog::ChooseValuesToWrite() { }
 void CheckKDVDialog::SetDefaultValuesToWrite() { }
 void CheckKDVDialog::PrepareAnalogMeasurements() { }
 
+void CheckKDVDialog::setConnections()
+{
+    connect(&DataManager::GetInstance(), &DataManager::floatReceived, this, &CheckKDVDialog::updateFloatData);
+}
+
 /*void CheckKDVDialog::USBUpdate()
 {
     QTabWidget *CheckTW = this->findChild<QTabWidget *>("checktw0");

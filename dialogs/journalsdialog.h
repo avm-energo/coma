@@ -28,6 +28,7 @@ private:
     void SetupUI();
     QWidget *JourTab(int jourtype);
     int GetJourNum(const QString &objname);
+    void setConnections() override;
 
 signals:
     //    void WritePasswordChecked();

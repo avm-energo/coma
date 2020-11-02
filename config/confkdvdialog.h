@@ -29,6 +29,7 @@ private:
     void FillBack() override;
     void SetupUI() override;
     void CheckConf() override;
+    void setConnections() override;
 
 public slots:
     //    void Set104(double);

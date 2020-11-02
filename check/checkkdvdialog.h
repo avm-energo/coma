@@ -31,6 +31,7 @@ private:
     void SetDefaultValuesToWrite() override;
     void PrepareAnalogMeasurements() override;
     //    QWidget *CustomTab() override;
+    void setConnections() override;
 
 private slots:
     //    void UpdateModBusData(QList<ModBus::SignalStruct> Signal) override;

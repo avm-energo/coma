@@ -144,6 +144,11 @@ void CheckKDVHarmonicDialog::updateFloatData()
     }
 }
 
+void CheckKDVHarmonicDialog::setConnections()
+{
+    connect(&DataManager::GetInstance(), &DataManager::floatReceived, this, &CheckKDVHarmonicDialog::updateFloatData);
+}
+
 // void CheckKDVHarmonicDialog::UpdateModBusData(QList<ModBus::SignalStruct> Signal)
 //{
 
@@ -174,4 +179,4 @@ void CheckKDVHarmonicDialog::SetAlarmColor(int position, bool value)
     Q_UNUSED(value)
 }
 
-void CheckKDVHarmonicDialog::update() { updateFloatData(); }
+// void CheckKDVHarmonicDialog::update() { updateFloatData(); }

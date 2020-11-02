@@ -2,6 +2,7 @@
 
 #include "../gen/board.h"
 #include "../gen/colors.h"
+#include "../gen/datamanager.h"
 #include "../gen/error.h"
 #include "../widgets/ecombobox.h"
 #include "../widgets/wd_func.h"
@@ -580,6 +581,11 @@ void ConfKDVDialog::FillBack()
 }
 
 void ConfKDVDialog::CheckConf() { }
+
+void ConfKDVDialog::setConnections()
+{
+    //    connect(&DataManager, &DataManager::floatReceived)
+}
 
 void ConfKDVDialog::SetDefConf()
 {
