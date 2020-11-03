@@ -7,7 +7,7 @@
 #include "../gen/s2.h"
 #include "../gen/stdfunc.h"
 #include "../gen/timefunc.h"
-#include "../usb/commands.h"
+//#include "../usb/commands.h"
 #include "../widgets/etableview.h"
 #include "../widgets/wd_func.h"
 
@@ -287,7 +287,7 @@ void StartupKDVDialog::ReadFromFile()
 
     memcpy(&Bd9Block->Age, &(ba.data()[0]), sizeof(float));
     memcpy(&Bd9Block->MotHnorm, &(ba.data()[sizeof(*WBd7Block)]), sizeof(float));
-    memcpy(&Bd9Block->MotHover, &(ba.data()[sizeof(*WBd7Block)+sizeof(float)]), sizeof(float));
+    memcpy(&Bd9Block->MotHover, &(ba.data()[sizeof(*WBd7Block) + sizeof(float)]), sizeof(float));
     FillCor();
     QMessageBox::information(this, "Внимание", "Загрузка прошла успешно!");
 }

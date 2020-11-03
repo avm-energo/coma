@@ -18,9 +18,11 @@ public:
 
     virtual void setUpdatesEnabled();
     virtual void setUpdatesDisabled();
+    virtual void setConnections() = 0;
     const QString getCaption();
     void setCaption(const QString &caption);
     void setInterface(BaseInterface *iface);
+    BaseInterface *iface();
 
 public slots:
     virtual void update();

@@ -4,8 +4,8 @@
 #include "../config/confdialog.h"
 #include "../config/configkdv.h"
 #include "../config/confkxxdialog.h"
-#include "../iec104/ethernet.h"
-#include "../iec104/iec104.h"
+//#include "../interfaces/ethernet.h"
+//#include "../iec104/iec104.h"
 #include "abstractconfdialog.h"
 
 #include <QVBoxLayout>
@@ -29,6 +29,7 @@ private:
     void FillBack() override;
     void SetupUI() override;
     void CheckConf() override;
+    void setConnections() override;
 
 public slots:
     //    void Set104(double);

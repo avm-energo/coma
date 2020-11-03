@@ -4,7 +4,8 @@
 #include "../gen/colors.h"
 #include "../gen/error.h"
 #include "../gen/modulebsi.h"
-#include "../usb/commands.h"
+//#include "../usb/commands.h"
+#include "../gen/datamanager.h"
 #include "../widgets/wd_func.h"
 
 #include <QCoreApplication>
@@ -81,70 +82,61 @@ QWidget *CheckKDVHarmonicDialog::BdUI(int bdnum)
         return new QWidget;
     }
 }
-void CheckKDVHarmonicDialog::PrepareHeadersForFile(int row)
-{
-    Q_UNUSED(row)
-}
+void CheckKDVHarmonicDialog::PrepareHeadersForFile(int row) { Q_UNUSED(row) }
 
 void CheckKDVHarmonicDialog::WriteToFile(int row, int bdnum)
 {
     Q_UNUSED(row)
     Q_UNUSED(bdnum)
 }
-void CheckKDVHarmonicDialog::ChooseValuesToWrite()
-{
-}
-void CheckKDVHarmonicDialog::SetDefaultValuesToWrite()
-{
-}
-void CheckKDVHarmonicDialog::PrepareAnalogMeasurements()
-{
-}
+void CheckKDVHarmonicDialog::ChooseValuesToWrite() { }
+void CheckKDVHarmonicDialog::SetDefaultValuesToWrite() { }
+void CheckKDVHarmonicDialog::PrepareAnalogMeasurements() { }
 
-void CheckKDVHarmonicDialog::USBUpdate()
-{
-    QTabWidget *CheckTW = this->findChild<QTabWidget *>("checktw1");
-    if (CheckTW == nullptr)
-    {
-        qDebug() << "CheckTW is null";
-        return;
-    }
+// void CheckKDVHarmonicDialog::USBUpdate()
+//{
+//    QTabWidget *CheckTW = this->findChild<QTabWidget *>("checktw1");
+//    if (CheckTW == nullptr)
+//    {
+//        qDebug() << "CheckTW is null";
+//        return;
+//    }
 
-    for (int i = 0; i < 5; i++)
-    {
-        if (CheckTW->currentIndex() == IndexWd.at(i))
-        {
-            if (Commands::GetBd(5, &ChHarmKDV->Bd_block5, sizeof(CheckHarmonicKDV::Bd_5_7)) == Error::Msg::NoError)
-                ChHarmKDV->FillBd5(this);
-        }
-    }
+//    for (int i = 0; i < 5; i++)
+//    {
+//        if (CheckTW->currentIndex() == IndexWd.at(i))
+//        {
+//            if (Commands::GetBd(5, &ChHarmKDV->Bd_block5, sizeof(CheckHarmonicKDV::Bd_5_7)) == Error::Msg::NoError)
+//                ChHarmKDV->FillBd5(this);
+//        }
+//    }
 
-    for (int i = 6; i < 12; i++)
-    {
-        if (CheckTW->currentIndex() == IndexWd.at(i))
-        {
-            if (Commands::GetBd(7, &ChHarmKDV->Bd_block7, sizeof(CheckHarmonicKDV::Bd_5_7)) == Error::Msg::NoError)
-                ChHarmKDV->FillBd7(this);
-        }
-    }
-}
+//    for (int i = 6; i < 12; i++)
+//    {
+//        if (CheckTW->currentIndex() == IndexWd.at(i))
+//        {
+//            if (Commands::GetBd(7, &ChHarmKDV->Bd_block7, sizeof(CheckHarmonicKDV::Bd_5_7)) == Error::Msg::NoError)
+//                ChHarmKDV->FillBd7(this);
+//        }
+//    }
+//}
 
-void CheckKDVHarmonicDialog::ETHUpdate()
-{
-    updateFloatData();
-}
+// void CheckKDVHarmonicDialog::ETHUpdate()
+//{
+//    updateFloatData();
+//}
 
-void CheckKDVHarmonicDialog::MBSUpdate()
-{
-}
+// void CheckKDVHarmonicDialog::MBSUpdate()
+//{
+//}
 
 void CheckKDVHarmonicDialog::updateFloatData()
 {
-    QList<DataManager::SignalsStruct> list;
-    DataManager::getSignals(0, 99999, DataManager::SignalTypes::FloatWithTime, list);
+    QList<DataTypes::SignalsStruct> list;
+    DataManager::getSignals(0, 99999, DataTypes::SignalTypes::FloatWithTime, list);
     if (!list.isEmpty())
     {
-        foreach (DataManager::SignalsStruct signal, list)
+        foreach (DataTypes::SignalsStruct signal, list)
         {
             DataTypes::FloatWithTimeStruct fwt = qvariant_cast<DataTypes::FloatWithTimeStruct>(signal.data);
             ChHarmKDV->FillBd(this, QString::number(fwt.sigAdr), WDFunc::StringValueWithCheck(fwt.sigVal, 3));
@@ -152,22 +144,28 @@ void CheckKDVHarmonicDialog::updateFloatData()
     }
 }
 
-void CheckKDVHarmonicDialog::UpdateModBusData(QList<ModBus::SignalStruct> Signal)
+void CheckKDVHarmonicDialog::setConnections()
 {
-
-    int i = 0;
-    for (i = 0; i < Signal.size(); ++i)
-    {
-        // sig = *(Signal+i);
-        if ((((Signal.at(i).SigAdr >= 1011) && (Signal.at(i).SigAdr <= 1015)))
-            || ((Signal.at(i).SigAdr >= 1111) && (Signal.at(i).SigAdr <= 1115)))
-            ChHarmKDV->FillBd(
-                this, QString::number((Signal.at(i).SigAdr) + 9), WDFunc::StringValueWithCheck(Signal.at(i).flVal, 3));
-        else
-            ChHarmKDV->FillBd(
-                this, QString::number(Signal.at(i).SigAdr), WDFunc::StringValueWithCheck(Signal.at(i).flVal, 3));
-    }
+    connect(&DataManager::GetInstance(), &DataManager::floatReceived, this, &CheckKDVHarmonicDialog::updateFloatData);
 }
+
+// void CheckKDVHarmonicDialog::UpdateModBusData(QList<ModBus::SignalStruct> Signal)
+//{
+
+//    int i = 0;
+//    for (i = 0; i < Signal.size(); ++i)
+//    {
+//        // sig = *(Signal+i);
+//        if ((((Signal.at(i).SigAdr >= 1011) && (Signal.at(i).SigAdr <= 1015)))
+//            || ((Signal.at(i).SigAdr >= 1111) && (Signal.at(i).SigAdr <= 1115)))
+//            ChHarmKDV->FillBd(
+//                this, QString::number((Signal.at(i).SigAdr) + 9), WDFunc::StringValueWithCheck(Signal.at(i).flVal,
+//                3));
+//        else
+//            ChHarmKDV->FillBd(
+//                this, QString::number(Signal.at(i).SigAdr), WDFunc::StringValueWithCheck(Signal.at(i).flVal, 3));
+//    }
+//}
 
 void CheckKDVHarmonicDialog::SetWarnColor(int position, bool value)
 {
@@ -180,3 +178,5 @@ void CheckKDVHarmonicDialog::SetAlarmColor(int position, bool value)
     Q_UNUSED(position)
     Q_UNUSED(value)
 }
+
+// void CheckKDVHarmonicDialog::update() { updateFloatData(); }

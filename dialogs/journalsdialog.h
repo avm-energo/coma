@@ -2,20 +2,20 @@
 #define JOURNALDIALOG_H
 
 //#include "../gen/journals.h"
-#include "../iec104/iec104.h"
+//#include "../iec104/iec104.h"
+#include "../gen/udialog.h"
 #include "../module/journals.h"
 
-#include <QDialog>
 #include <QMessageBox>
 #include <QProgressDialog>
 
 #define MAXSWJNUM 262144
 
-class JournalDialog : public QDialog
+class JournalDialog : public UDialog
 {
     Q_OBJECT
 public:
-    JournalDialog(Journals *jour, IEC104 *iec, QWidget *parent = nullptr);
+    JournalDialog(Journals *jour, QWidget *parent = nullptr);
     ~JournalDialog();
 
     quint8 start;
@@ -28,6 +28,7 @@ private:
     void SetupUI();
     QWidget *JourTab(int jourtype);
     int GetJourNum(const QString &objname);
+    void setConnections() override;
 
 signals:
     //    void WritePasswordChecked();

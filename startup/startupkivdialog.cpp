@@ -8,6 +8,7 @@
 #include "../gen/s2.h"
 #include "../gen/stdfunc.h"
 #include "../gen/timefunc.h"
+//#include "../usb/commands.h"
 #include "../widgets/etableview.h"
 #include "../widgets/wd_func.h"
 
@@ -35,7 +36,7 @@ StartupKIVDialog::StartupKIVDialog(QWidget *parent) : AbstractStartupDialog(pare
         CorBlock->corTg[i] = 0;
     }
     setAttribute(Qt::WA_DeleteOnClose);
-    SetStartupBlock(7, &CorBlock, sizeof(CorData));
+    SetStartupBlock(7, &CorBlock, sizeof(CorData), KIVSTARTUPINITREG);
     SetupUI();
     // MessageTimer->start();
 }
@@ -329,18 +330,18 @@ void StartupKIVDialog::ResetCor()
     }
 }
 
-float StartupKIVDialog::ToFloat(QString text)
-{
-    bool ok;
-    float tmpf;
-    tmpf = text.toFloat(&ok);
-    if (!ok)
-    {
-        qCritical() << "Значение " << text << " не может быть переведено во float";
-        return 0;
-    }
-    return tmpf;
-}
+// float StartupKIVDialog::ToFloat(QString text)
+//{
+//    bool ok;
+//    float tmpf;
+//    tmpf = text.toFloat(&ok);
+//    if (!ok)
+//    {
+//        qCritical() << "Значение " << text << " не может быть переведено во float";
+//        return 0;
+//    }
+//    return tmpf;
+//}
 
 void StartupKIVDialog::MessageOk()
 {

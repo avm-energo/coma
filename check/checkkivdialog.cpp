@@ -67,10 +67,7 @@ QWidget *CheckKIVDialog::BdUI(int bdnum)
     }
 }
 
-void CheckKIVDialog::PrepareHeadersForFile(int row)
-{
-    Q_UNUSED(row)
-}
+void CheckKIVDialog::PrepareHeadersForFile(int row) { Q_UNUSED(row) }
 
 void CheckKIVDialog::WriteToFile(int row, int bdnum)
 {
@@ -78,17 +75,11 @@ void CheckKIVDialog::WriteToFile(int row, int bdnum)
     Q_UNUSED(bdnum)
 }
 
-void CheckKIVDialog::ChooseValuesToWrite()
-{
-}
-void CheckKIVDialog::SetDefaultValuesToWrite()
-{
-}
-void CheckKIVDialog::PrepareAnalogMeasurements()
-{
-}
+void CheckKIVDialog::ChooseValuesToWrite() { }
+void CheckKIVDialog::SetDefaultValuesToWrite() { }
+void CheckKIVDialog::PrepareAnalogMeasurements() { }
 
-void CheckKIVDialog::USBUpdate()
+/*void CheckKIVDialog::USBUpdate()
 {
     QTabWidget *CheckTW = this->findChild<QTabWidget *>("checktw0");
     if (CheckTW == nullptr)
@@ -113,12 +104,14 @@ void CheckKIVDialog::USBUpdate()
         if (Commands::GetBd(8, &ChKIV->Bd_block8, sizeof(CheckKIV::Bd8)) == Error::Msg::NoError)
             ChKIV->FillBd8(this);
     }
-}
+} */
 
 void CheckKIVDialog::update()
 {
     if ((m_updatesEnabled) && m_timerCounter) // every second tick of the timer
     {
+        getFloatData();
+        getSPData();
         updateFloatData();
         updateSPData();
         m_timerCounter = !m_timerCounter;
@@ -141,11 +134,11 @@ void CheckKIVDialog::updateFloatData()
 
 void CheckKIVDialog::updateSPData()
 {
-    QList<DataManager::SignalsStruct> list;
-    DataManager::getSignals(3011, 3035, DataManager::SignalTypes::SinglePointWithTime, list);
+    QList<DataTypes::SignalsStruct> list;
+    DataManager::getSignals(3011, 3035, DataTypes::SignalTypes::SinglePointWithTime, list);
     if (!list.isEmpty())
     {
-        foreach (DataManager::SignalsStruct signal, list)
+        foreach (DataTypes::SignalsStruct signal, list)
         {
             DataTypes::SinglePointWithTimeStruct sp = qvariant_cast<DataTypes::SinglePointWithTimeStruct>(signal.data);
             if ((sp.sigAdr >= 3011) && (sp.sigAdr <= 3013))
@@ -229,7 +222,7 @@ void CheckKIVDialog::updateSPData()
     }
 }
 
-void CheckKIVDialog::UpdateModBusData(QList<ModBus::SignalStruct> Signal)
+/*void CheckKIVDialog::UpdateModBusData(QList<ModBus::SignalStruct> Signal)
 {
 
     // ModBusSignal sig = *new ModBusSignal;
@@ -245,7 +238,7 @@ void CheckKIVDialog::UpdateModBusData(QList<ModBus::SignalStruct> Signal)
             ChKIV->FillBd(
                 this, QString::number(Signal.at(i).SigAdr), WDFunc::StringValueWithCheck(Signal.at(i).flVal, 3));
     }
-}
+} */
 
 void CheckKIVDialog::SetWarnColor(int position, bool value)
 {
@@ -282,13 +275,9 @@ void CheckKIVDialog::SetWarnColor(int position, bool value)
     }
 }
 
-void CheckKIVDialog::getFloatData()
-{
-}
+void CheckKIVDialog::getFloatData() { }
 
-void CheckKIVDialog::getSPData()
-{
-}
+void CheckKIVDialog::getSPData() { }
 
 void CheckKIVDialog::SetAlarmColor(int position, bool value)
 {

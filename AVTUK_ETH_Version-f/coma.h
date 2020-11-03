@@ -1,6 +1,7 @@
 #ifndef COMA_H
 #define COMA_H
 
+#include "../alarm/alarmclass.h"
 #include "../alarm/alarmstateall.h"
 #include "../alarm/alarmwidget.h"
 #include "../dialogs/connectdialog.h"
@@ -159,7 +160,7 @@ private:
     //    AlarmKIV *AlarmKIVDialog;
     //    WarnKTF *WarnKTFDialog;
     //    AlarmKTF *AlarmKTFDialog;
-    AlarmStateAll *AlarmStateAllDialog;
+    //    AlarmStateAll *AlarmStateAllDialog;
     AlarmClass *Alarm;
     //    QWidget *Parent;
 

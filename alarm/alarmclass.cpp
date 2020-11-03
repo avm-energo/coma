@@ -229,9 +229,10 @@ void AlarmClass::update()
 
             //        emit SetWarnAlarmColor(WarnAlarmEvents);
             //        emit SetAlarmColor(AvarAlarmEvents);
-            emit setWarnColor(warnFlag);
-            emit setAlarmColor(alarmFlag);
-            emit SetFirstButton();
+            emit setWarnsAndAlarms(warnFlag, alarmFlag);
+            //            emit setWarnColor(warnFlag);
+            //            emit setAlarmColor(alarmFlag);
+            //            emit SetFirstButton();
         }
     }
     catch (const std::exception &ex)

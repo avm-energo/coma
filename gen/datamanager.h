@@ -4,6 +4,7 @@
 #include "datatypes.h"
 #include "error.h"
 #include "s2.h"
+#include "singleton.h"
 
 #include <QMutex>
 #include <QObject>
@@ -13,11 +14,11 @@
 
 #define INQUEUEMAXSIZE 100
 
-class DataManager : public QObject
+class DataManager : public QObject, public Singleton<DataManager>
 {
     Q_OBJECT
 public:
-    explicit DataManager(QObject *parent = nullptr);
+    explicit DataManager(token, QObject *parent = nullptr);
 
     static Error::Msg getSignals(quint32 firstSignalAdr, quint32 lastSignalAdr, DataTypes::SignalTypes type,
         QList<DataTypes::SignalsStruct> &outlist);
@@ -26,11 +27,13 @@ public:
     static Error::Msg getResponse(DataTypes::GeneralResponseTypes type, DataTypes::GeneralResponseStruct &response);
     //    static void setConfig(S2ConfigType *s2config);
     static void reqStartup();
+    static void checkTypeAndSendSignals(DataTypes::SignalsStruct &str);
     template <typename T> static void addSignalToOutList(DataTypes::SignalTypes type, T signal)
     {
         DataTypes::SignalsStruct str;
         str.type = type;
         str.data.setValue(signal);
+        checkTypeAndSendSignals(str);
         s_outListMutex.lock();
         s_outputList.append(str);
         s_outListMutex.unlock();
@@ -67,6 +70,12 @@ public:
     static QMutex s_inQueueMutex;
 
 signals:
+    void dataReceived(DataTypes::SignalsStruct &);
+    void bitStringReceived(DataTypes::BitStringStruct &);
+    void floatReceived(DataTypes::FloatStruct &);
+    void fileReceived(DataTypes::FileStruct &);
+    void confParameterReceived(DataTypes::ConfParameterStruct &);
+    void responseReceived(DataTypes::GeneralResponseStruct &);
 };
 
 #endif // DATAMANAGER_H

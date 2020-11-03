@@ -7,9 +7,9 @@
 #include <QGroupBox>
 #include <QMenu>
 #include <QtCore>
-AlarmWidget::AlarmWidget(AlarmClass *alarm, QWidget *parent) : QWidget(parent)
+AlarmWidget::AlarmWidget(QWidget *parent) : QWidget(parent)
 {
-    Alarm = alarm;
+    //    Alarm = alarm;
 
     QMenu *menu = new QMenu;
     QString tmps = "QMenuBar {background-color: " + QString(Colors::MAINWINCLR)
@@ -54,10 +54,10 @@ AlarmWidget::AlarmWidget(AlarmClass *alarm, QWidget *parent) : QWidget(parent)
         vlyout->addLayout(hlyout2);
     setLayout(vlyout);
 
-    connect(Alarm, &AlarmClass::SetFirstButton, this, &AlarmWidget::UpdateFirstUSB);
-    connect(Alarm, &AlarmClass::setWarnColor, this, &AlarmWidget::UpdateSecondUSB);
-    connect(Alarm, &AlarmClass::setAlarmColor, this, &AlarmWidget::UpdateThirdUSB);
-    connect(Alarm, &AlarmClass::SetIndicator, this, &AlarmWidget::UpdateIndicator);
+    //    connect(Alarm, &AlarmClass::SetFirstButton, this, &AlarmWidget::UpdateFirstUSB);
+    //    connect(Alarm, &AlarmClass::setWarnColor, this, &AlarmWidget::UpdateSecondUSB);
+    //    connect(Alarm, &AlarmClass::setAlarmColor, this, &AlarmWidget::UpdateThirdUSB);
+    //    connect(Alarm, &AlarmClass::SetIndicator, this, &AlarmWidget::UpdateIndicator);
 }
 
 void AlarmWidget::UpdateIndicator(bool indx)
@@ -67,6 +67,13 @@ void AlarmWidget::UpdateIndicator(bool indx)
     qDebug() << this->height();
     WDFunc::SetLBLImage(this, "953", &pixmap);
     WDFunc::SetVisible(this, "953", true);
+}
+
+void AlarmWidget::update(bool w, bool a)
+{
+    UpdateFirstUSB();
+    UpdateSecondUSB(w);
+    UpdateThirdUSB(a);
 }
 
 // void AlarmWidget::UpdateSecondUSB(QList<bool> warnalarm)
@@ -112,24 +119,28 @@ void AlarmWidget::UpdateThirdUSB(bool alarm)
 
 void AlarmWidget::UpdateFirstUSB()
 {
+    Qt::GlobalColor color;
     if (ModuleBSI::ModuleBsi.Hth & BSIALARMMASK)
-    {
-        auto pixmap = WDFunc::NewCircle(Qt::red, this->height() / 4);
-        WDFunc::SetLBLImage(this, "950", &pixmap);
-        WDFunc::SetVisible(this, "950", true);
-    }
+        color = Qt::red;
+    //    {
+    //        auto pixmap = WDFunc::NewCircle(Qt::red, this->height() / 4);
+    //        WDFunc::SetLBLImage(this, "950", &pixmap);
+    //        WDFunc::SetVisible(this, "950", true);
+    //    }
     else if (ModuleBSI::ModuleBsi.Hth & BSIWARNMASK)
-    {
-        auto pixmap = WDFunc::NewCircle(Qt::yellow, this->height() / 4);
-        WDFunc::SetLBLImage(this, "950", &pixmap);
-        WDFunc::SetVisible(this, "950", true);
-    }
+        color = Qt::yellow;
+    //    {
+    //        auto pixmap = WDFunc::NewCircle(Qt::yellow, this->height() / 4);
+    //        WDFunc::SetLBLImage(this, "950", &pixmap);
+    //        WDFunc::SetVisible(this, "950", true);
+    //    }
     else
-    {
-        auto pixmap = WDFunc::NewCircle(Qt::green, this->height() / 4);
-        WDFunc::SetLBLImage(this, "950", &pixmap);
-        WDFunc::SetVisible(this, "950", true);
-    }
+        color = Qt::green;
+    //    {
+    auto pixmap = WDFunc::NewCircle(color, this->height() / 4);
+    WDFunc::SetLBLImage(this, "950", &pixmap);
+    WDFunc::SetVisible(this, "950", true);
+    //    }
 }
 
 void AlarmWidget::Clear()

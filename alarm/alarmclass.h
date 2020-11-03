@@ -52,11 +52,12 @@ public:
 signals:
     //    void SetWarnAlarmColor(QList<bool>);
     //    void SetAlarmColor(QList<bool>);
-    void setWarnColor(bool);
-    void setAlarmColor(bool);
-    void SetIndicator(bool);
+    void setWarnsAndAlarms(bool w, bool a);
+    //    void setWarnColor(bool);
+    //    void setAlarmColor(bool);
+    //    void SetIndicator(bool);
     //    void AlarmColor(QList<bool>);
-    void SetFirstButton();
+    //    void SetFirstButton();
 
 public slots:
     //    void UpdateAlarmUSB();

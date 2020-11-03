@@ -44,7 +44,7 @@ private:
 
     void FillCor() override;
     void FillBackCor() override;
-    float ToFloat(QString text);
+    //    float ToFloat(QString text);
     void SetupUI() override;
     void FillBd(QWidget *parent, QString Name, QString Value);
 

@@ -13,11 +13,11 @@ public:
 
 public slots:
 
-    void AlarmState();
+    //    void AlarmState();
     void UpdateHealth(quint32 health);
-    void CallUpdateHealth();
+    //    void CallUpdateHealth();
 
-    void Update(QList<bool>);
+    void update() override;
 
     static QStringList HthToolTip()
     {
@@ -46,6 +46,8 @@ signals:
 
 private:
     const QList<int> WarnPositions = { 1, 3, 5, 7, 13 };
+
+    void setConnections() override;
 };
 
 #endif // ALARMSTATE_H

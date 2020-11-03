@@ -4,13 +4,15 @@
 #include "../gen/colors.h"
 #include "../gen/error.h"
 #include "../gen/timefunc.h"
-#include "../usb/commands.h"
+//#include "../usb/commands.h"
+#include "../gen/datamanager.h"
 #include "../widgets/wd_func.h"
 
 #include <QDateTime>
 #include <QGridLayout>
 #include <QGroupBox>
 #include <QMessageBox>
+#include <QTimer>
 #include <QVBoxLayout>
 #if _MSC_VER && !__INTEL_COMPILER
 #define __PRETTY_FUNCTION__ __FUNCSIG__
@@ -21,7 +23,7 @@ TimeDialog::TimeDialog(QWidget *parent) : UDialog(parent)
     setAttribute(Qt::WA_DeleteOnClose);
     First = false;
     Timer = new QTimer(this);
-    connect(Timer, SIGNAL(timeout()), this, SLOT(slot_timeOut()));
+    connect(Timer, SIGNAL(timeout()), this, SLOT(updateSysTime()));
     SetupUI();
 }
 
@@ -100,7 +102,7 @@ void TimeDialog::SetupUI()
     Timer->start(1000);
 }
 
-void TimeDialog::slot_timeOut()
+void TimeDialog::updateSysTime()
 {
     QString tmps;
     int cbidx = WDFunc::CBIndex(this, "TimeZone");
@@ -111,26 +113,26 @@ void TimeDialog::slot_timeOut()
     WDFunc::SetLBLText(this, "systime", tmps);
 }
 
-void TimeDialog::USBUpdate()
-{
+// void TimeDialog::USBUpdate()
+//{
 
-    switch (Board::GetInstance().interfaceType())
-    {
-    case Board::InterfaceType::USB:
-    {
-        uint unixtimestamp = 0;
-        if (Commands::GetTimeMNK(unixtimestamp) == Error::Msg::NoError)
-            SetTime(unixtimestamp);
-        break;
-    }
-    case Board::InterfaceType::Ethernet:
-        emit ethTimeRequest();
-        break;
-    case Board::InterfaceType::RS485:
-        emit modBusTimeRequest();
-        break;
-    }
-}
+//    switch (Board::GetInstance().interfaceType())
+//    {
+//    case Board::InterfaceType::USB:
+//    {
+//        uint unixtimestamp = 0;
+//        if (Commands::GetTimeMNK(unixtimestamp) == Error::Msg::NoError)
+//            SetTime(unixtimestamp);
+//        break;
+//    }
+//    case Board::InterfaceType::Ethernet:
+//        emit ethTimeRequest();
+//        break;
+//    case Board::InterfaceType::RS485:
+//        emit modBusTimeRequest();
+//        break;
+//    }
+//}
 
 void TimeDialog::Write_PCDate()
 {
@@ -146,24 +148,25 @@ void TimeDialog::Write_PCDate()
 void TimeDialog::WriteTime(QDateTime &myDateTime)
 {
     uint time = myDateTime.toSecsSinceEpoch();
-    switch (Board::GetInstance().interfaceType())
-    {
-    case Board::InterfaceType::USB:
-    {
-        TimeFunc::Wait(100);
-        if (Commands::WriteTimeMNK(time, sizeof(uint)) != Error::Msg::NoError)
-            QMessageBox::information(this, "INFO",
-                "Ошибка"); // QMessageBox::information(this,
-                           // "INFO", "Записано успешно");
-        break;
-    }
-    case Board::InterfaceType::Ethernet:
-        emit ethWriteTimeToModule(time);
-        break;
-    case Board::InterfaceType::RS485:
-        emit modbusWriteTimeToModule(time);
-        break;
-    }
+    iface()->writeTime(time);
+    //    switch (Board::GetInstance().interfaceType())
+    //    {
+    //    case Board::InterfaceType::USB:
+    //    {
+    //        TimeFunc::Wait(100);
+    //        if (Commands::WriteTimeMNK(time, sizeof(uint)) != Error::Msg::NoError)
+    //            QMessageBox::information(this, "INFO",
+    //                "Ошибка"); // QMessageBox::information(this,
+    //                           // "INFO", "Записано успешно");
+    //        break;
+    //    }
+    //    case Board::InterfaceType::Ethernet:
+    //        emit ethWriteTimeToModule(time);
+    //        break;
+    //    case Board::InterfaceType::RS485:
+    //        emit modbusWriteTimeToModule(time);
+    //        break;
+    //    }
 }
 
 void TimeDialog::Write_Date()
@@ -174,18 +177,6 @@ void TimeDialog::Write_Date()
 
 void TimeDialog::ETHUpdate()
 {
-    uint unixtimestamp = 0;
-    QList<DataManager::SignalsStruct> list;
-    DataManager::getSignals(MBS_TIMEREG, MBS_TIMEREG, DataManager::SignalTypes::BitString, list);
-    if (!list.isEmpty())
-    {
-        foreach (DataManager::SignalsStruct signal, list)
-        {
-            DataTypes::BitStringStruct bs = qvariant_cast<DataTypes::BitStringStruct>(signal.data);
-            memcpy(&unixtimestamp, &bs.sigVal, sizeof(quint32));
-            SetTime(unixtimestamp);
-        }
-    }
     // QString qStr;
     // QDateTime myDateTime;
     //    int startadr = 0;
@@ -202,21 +193,33 @@ void TimeDialog::update()
 {
     if (m_updatesEnabled)
     {
-        // send command to get time
-        switch (Board::GetInstance().interfaceType())
+        uint unixtimestamp = 0;
+        QList<DataTypes::SignalsStruct> list;
+        DataManager::getSignals(TIMEREG, TIMEREG, DataTypes::SignalTypes::BitString, list);
+        if (!list.isEmpty())
         {
-        case Board::InterfaceType::USB:
-            USBUpdate();
-            break;
-        case Board::InterfaceType::Ethernet:
-            ETHUpdate();
-            break;
-        case Board::InterfaceType::RS485:
-            MBSUpdate();
-            break;
-        default:
-            break;
+            foreach (DataTypes::SignalsStruct signal, list)
+            {
+                DataTypes::BitStringStruct bs = qvariant_cast<DataTypes::BitStringStruct>(signal.data);
+                memcpy(&unixtimestamp, &bs.sigVal, sizeof(quint32));
+                SetTime(unixtimestamp);
+            }
         }
+        //        // send command to get time
+        //        switch (Board::GetInstance().interfaceType())
+        //        {
+        //        case Board::InterfaceType::USB:
+        //            USBUpdate();
+        //            break;
+        //        case Board::InterfaceType::Ethernet:
+        //            ETHUpdate();
+        //            break;
+        //        case Board::InterfaceType::RS485:
+        //            MBSUpdate();
+        //            break;
+        //        default:
+        //            break;
+        //        }
     }
 }
 
@@ -240,21 +243,21 @@ void TimeDialog::SetTime(quint32 unixtimestamp)
 }
 
 // void TimeDialog::MBSUpdate(QList<ModBus::BSISignalStruct> Time)
-void TimeDialog::MBSUpdate()
-{
-    uint unixtimestamp = 0;
+// void TimeDialog::MBSUpdate()
+//{
+//    uint unixtimestamp = 0;
 
-    /*    if (Time.size() == 0)
-        {
-            ERMSG("Некорректное время");
-            return;
-        }
-        if (Time.at(0).SigAdr == MBS_TIMEREG)
-        {
-            unixtimestamp = Time.at(0).Val;
-            SetTime(unixtimestamp);
-        } */
-}
+//    /*    if (Time.size() == 0)
+//        {
+//            ERMSG("Некорректное время");
+//            return;
+//        }
+//        if (Time.at(0).SigAdr == MBS_TIMEREG)
+//        {
+//            unixtimestamp = Time.at(0).Val;
+//            SetTime(unixtimestamp);
+//        } */
+//}
 
 void TimeDialog::ErrorRead()
 {

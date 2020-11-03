@@ -21,7 +21,9 @@ IEC104::IEC104(QObject *parent) : BaseInterface(parent)
     Log->info("=== Log started ===");
 }
 
-IEC104::~IEC104() { }
+IEC104::~IEC104()
+{
+}
 
 // bool IEC104::Working() { return (EthThreadWorking | ParseThreadWorking); }
 
@@ -142,7 +144,7 @@ void IEC104::writeTime(quint32 time)
     DataManager::addToInQueue(inp);
 }
 
-void IEC104::writeCommand(Queries::Commands cmd, QList<DataTypes::SignalsStruct> &list)
+void IEC104::writeCommand(Queries::Commands cmd, QList<DataTypes::SignalsStruct> list)
 {
     Commands104::CommandStruct inp;
     if (cmd == Queries::QC_WriteUserValues)
@@ -165,6 +167,22 @@ void IEC104::writeCommand(Queries::Commands cmd, QList<DataTypes::SignalsStruct>
         DataManager::addToInQueue(inp);
     }
 }
+
+void IEC104::reqFloats(quint32 sigAdr, quint32 sigCount)
+{
+    Q_UNUSED(sigAdr)
+    Q_UNUSED(sigCount)
+    Commands104::CommandStruct inp { Commands104::CM104_REQGROUP, MAINFLOATGROUP, 0, {} };
+    DataManager::addToInQueue(inp);
+}
+
+// void IEC104::reqBitStrings(quint32 sigAdr, quint32 sigCount)
+//{
+//    Q_UNUSED(sigAdr)
+//    Q_UNUSED(sigCount)
+//    Commands104::CommandStruct inp { Commands104::CM104_REQGROUP, MAINBITSTRINGGROUP, 0, {} };
+//    DataManager::addToInQueue(inp);
+//}
 
 // void IEC104::CorReadRequest()
 //{
@@ -251,7 +269,10 @@ void IEC104::writeCommand(Queries::Commands cmd, QList<DataTypes::SignalsStruct>
 //    //    IEC104Thread::s_ParseWriteMutex.unlock();
 //}
 
-void IEC104::EthThreadStarted() { m_working = EthThreadWorking = true; }
+void IEC104::EthThreadStarted()
+{
+    m_working = EthThreadWorking = true;
+}
 
 void IEC104::EthThreadFinished()
 {
@@ -263,7 +284,10 @@ void IEC104::EthThreadFinished()
     }
 }
 
-void IEC104::ParseThreadStarted() { m_working = ParseThreadWorking = true; }
+void IEC104::ParseThreadStarted()
+{
+    m_working = ParseThreadWorking = true;
+}
 
 void IEC104::ParseThreadFinished()
 {

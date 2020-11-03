@@ -1,6 +1,7 @@
 #ifndef MODULEFABRIC_H
 #define MODULEFABRIC_H
 
+#include "../alarm/alarmstateall.h"
 #include "../gen/board.h"
 #include "../gen/udialog.h"
 #include "alarm.h"
@@ -27,6 +28,7 @@ public:
     void addDialogToList(UDialog *dlg, const QString &caption = "", const QString &name = "");
     Alarm *getAlarm();
     Warn *getWarn();
+    AlarmStateAll *getAlarmStateAll();
     void startTimeTimer();
     void stopTimeTimer();
     void parentTWTabClicked(int index);
@@ -38,9 +40,10 @@ signals:
 public slots:
 
 private:
-    QList<UDialog *> m_Dialogs;
-    Alarm *m_Alarm;
-    Warn *m_Warn;
+    QList<UDialog *> m_dialogs;
+    Alarm *m_alarm;
+    AlarmStateAll *m_alarmStateAllDialog;
+    Warn *m_warn;
     int m_currentTabIndex, m_oldTabIndex;
     BaseInterface *m_iface;
 };

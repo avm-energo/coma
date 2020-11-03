@@ -4,8 +4,10 @@
 #include "../gen/board.h"
 #include "../gen/error.h"
 #include "../gen/files.h"
+#include "../gen/modulebsi.h"
 #include "../gen/s2.h"
 #include "../gen/timefunc.h"
+//#include "../usb/commands.h"
 #include "../widgets/wd_func.h"
 #include "xlsxdocument.h"
 
@@ -307,7 +309,7 @@ void Journals::ResultReady()
 
 void Journals::prepareJour(QByteArray &ba, int JourType)
 {
-    S2::FileHeader header;
+    S2DataTypes::FileHeader header;
     quint32 basize = ba.size();
     if (basize < 17)
     {
@@ -316,7 +318,7 @@ void Journals::prepareJour(QByteArray &ba, int JourType)
 #ifdef __STDC_LIB_EXT1__
     memcpy_s(&header, sizeof(S2::FileHeader), ba.data(), sizeof(S2::FileHeader));
 #endif
-    memcpy(&header, ba.data(), sizeof(S2::FileHeader));
+    memcpy(&header, ba.data(), sizeof(S2DataTypes::FileHeader));
     if (!S2::CheckCRC32(&(ba.data())[16], (basize - 16), header.crc32))
     {
         ERMSG("CRC error");
@@ -325,69 +327,86 @@ void Journals::prepareJour(QByteArray &ba, int JourType)
     {
         ERMSG("Wrong filename");
     }
-    int fhsize = sizeof(S2::FileHeader);
+    int fhsize = sizeof(S2DataTypes::FileHeader);
     ba.remove(0, fhsize);
-    int drsize = sizeof(S2::DataRec) - sizeof(void *);
-    S2::DataRec *record = reinterpret_cast<S2::DataRec *>(ba.data());
+    int drsize = sizeof(S2DataTypes::DataRec) - sizeof(void *);
+    S2DataTypes::DataRec *record = reinterpret_cast<S2DataTypes::DataRec *>(ba.data());
     ba.truncate(record->num_byte);
     ba.remove(0, drsize);
 }
 
-void Journals::FillSysJour(QByteArray ba)
+void Journals::FillJour(DataTypes::FileStruct &fs)
 {
-    prepareJour(ba, Files::JourSys);
-    FillEventsTable(ba);
-}
-
-void Journals::FillMeasJour(QByteArray ba)
-{
-    prepareJour(ba, Files::JourMeas);
-
-    FillMeasTable(ba);
-}
-
-void Journals::FillWorkJour(QByteArray ba)
-{
-    prepareJour(ba, Files::JourWork);
-    FillEventsTable(ba);
-}
-
-void Journals::StartGetJour()
-{
-    switch (Board::GetInstance().interfaceType())
+    prepareJour(fs.filedata, fs.filenum);
+    switch (fs.filenum)
     {
-
-    case Board::InterfaceType::Ethernet:
-    {
-        emit ReadJour(m_jourType);
+    case Files::JourMeas:
+        FillMeasTable(fs.filedata);
+        break;
+    case Files::JourSys:
+    case Files::JourWork:
+        FillEventsTable(fs.filedata);
+        break;
+    default:
         break;
     }
-    case Board::InterfaceType::USB:
-    {
-        QByteArray ba;
-        if (Commands::GetFile(m_jourType, ba) == Error::Msg::NoError)
-        {
-            switch (m_jourType)
-            {
-            case Files::JourSys:
-                FillEventsTable(ba);
-                break;
-            case Files::JourWork:
-                FillEventsTable(ba);
-                break;
-            case Files::JourMeas:
-                FillMeasTable(ba);
-                break;
-            default:
-                break;
-            }
-        }
-        else
-            emit Error("Ошибка чтения журнала");
-        break;
-    }
-    }
 }
+
+// void Journals::FillSysJour(QByteArray ba)
+//{
+//    prepareJour(ba, Files::JourSys);
+//    FillEventsTable(ba);
+//}
+
+// void Journals::FillMeasJour(QByteArray ba)
+//{
+//    prepareJour(ba, Files::JourMeas);
+
+//    FillMeasTable(ba);
+//}
+
+// void Journals::FillWorkJour(QByteArray ba)
+//{
+//    prepareJour(ba, Files::JourWork);
+//    FillEventsTable(ba);
+//}
+
+// void Journals::StartGetJour()
+//{
+//    switch (Board::GetInstance().interfaceType())
+//    {
+
+//    case Board::InterfaceType::Ethernet:
+//    {
+//        emit ReadJour(m_jourType);
+//        break;
+//    }
+//    case Board::InterfaceType::USB:
+//    {
+//        QByteArray ba;
+//        if (Commands::GetFile(m_jourType, ba) == Error::Msg::NoError)
+//        {
+//            switch (m_jourType)
+//            {
+//            case Files::JourSys:
+//                FillEventsTable(ba);
+//                break;
+//            case Files::JourWork:
+//                FillEventsTable(ba);
+//                break;
+//            case Files::JourMeas:
+//                FillMeasTable(ba);
+//                break;
+//            default:
+//                break;
+//            }
+//        }
+//        else
+//            emit Error("Ошибка чтения журнала");
+//        break;
+//    }
+//    }
+//}
 
 void Journals::StartSaveJour(int jtype, QAbstractItemModel *amdl, QString filename)
 {

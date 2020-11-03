@@ -14,6 +14,8 @@
 #define BSIGROUP 1
 #define TIMEGROUP 15
 #define ALARMGROUP 3
+#define MAINFLOATGROUP 4
+#define MAINBITSTRINGGROUP 4
 
 class IEC104 : public BaseInterface
 {
@@ -123,7 +125,9 @@ public slots:
     void writeConfigFile(S2ConfigType *s2config);
     void reqTime();
     void writeTime(quint32 time);
-    void writeCommand(Queries::Commands cmd, QList<DataTypes::SignalsStruct> &list);
+    void writeCommand(Queries::Commands cmd, QList<DataTypes::SignalsStruct> list = QList<DataTypes::SignalsStruct>());
+    void reqFloats(quint32 sigAdr = 0, quint32 sigCount = 0);
+    //    void reqBitStrings(quint32 sigAdr = 0, quint32 sigCount = 0);
 
     //    static void SelectFile(char);
     void stop() override;

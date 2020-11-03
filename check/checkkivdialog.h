@@ -1,7 +1,7 @@
 #ifndef CHECKDIALOGKIV_H
 #define CHECKDIALOGKIV_H
 
-#include "../interfaces/baseinterface.h"
+//#include "../interfaces/baseinterface.h"
 #include "abstractcheckdialog.h"
 #include "check.h"
 #include "checkkiv.h"

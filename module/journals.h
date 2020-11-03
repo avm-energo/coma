@@ -1,8 +1,8 @@
 #ifndef JOURNALS_H
 #define JOURNALS_H
 
+#include "../gen/datatypes.h"
 #include "../models/etablemodel.h"
-
 #include <QSortFilterProxyModel>
 
 #define SYSJOURID 0
@@ -264,11 +264,12 @@ private:
     void prepareJour(QByteArray &ba, int JourType);
 
 public slots:
-    void FillSysJour(QByteArray ba);
-    void FillMeasJour(QByteArray ba);
-    void FillWorkJour(QByteArray ba);
+    void FillJour(DataTypes::FileStruct &fs);
+    //    void FillSysJour(QByteArray ba);
+    //    void FillMeasJour(QByteArray ba);
+    //    void FillWorkJour(QByteArray ba);
     void ReadJourFileAndProcessIt();
-    void StartGetJour();
+    //    void StartGetJour();
     void StartSaveJour(int jtype, QAbstractItemModel *mdl, QString filename);
 };
 

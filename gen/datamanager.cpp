@@ -7,7 +7,7 @@ QMutex DataManager::s_outListMutex;
 QMutex DataManager::s_inQueueMutex;
 std::queue<QVariant> s_inputQueue;
 
-DataManager::DataManager(QObject *parent) : QObject(parent) { }
+DataManager::DataManager(Singleton::token, QObject *parent) : QObject(parent) { }
 
 Error::Msg DataManager::getSignals(quint32 firstSignalAdr, quint32 lastSignalAdr, DataTypes::SignalTypes type,
     QList<DataTypes::SignalsStruct> &outlist)
@@ -176,6 +176,70 @@ Error::Msg DataManager::getResponse(DataTypes::GeneralResponseTypes type, DataTy
     }
     s_outListMutex.unlock();
     return Error::Msg::ResEmpty;
+}
+
+void DataManager::checkTypeAndSendSignals(DataTypes::SignalsStruct &str)
+{
+    emit DataManager::GetInstance().dataReceived(str);
+    switch (str.type)
+    {
+    case DataTypes::BitString:
+    {
+        if (str.data.canConvert<DataTypes::BitStringStruct>())
+        {
+            DataTypes::BitStringStruct bs = qvariant_cast<DataTypes::BitStringStruct>(str.data);
+            emit DataManager::GetInstance().bitStringReceived(bs);
+        }
+        break;
+    }
+    case DataTypes::Float:
+    case DataTypes::FloatWithTime:
+    {
+        if (str.data.canConvert<DataTypes::FloatWithTimeStruct>())
+        {
+            DataTypes::FloatWithTimeStruct flt = qvariant_cast<DataTypes::FloatWithTimeStruct>(str.data);
+            DataTypes::FloatStruct fl;
+            fl.sigAdr = flt.sigAdr;
+            fl.sigVal = flt.sigVal;
+            emit DataManager::GetInstance().floatReceived(fl);
+        }
+        else if (str.data.canConvert<DataTypes::FloatStruct>())
+        {
+            DataTypes::FloatStruct fl = qvariant_cast<DataTypes::FloatStruct>(str.data);
+            emit DataManager::GetInstance().floatReceived(fl);
+        }
+        break;
+    }
+    case DataTypes::File:
+    {
+        if (str.data.canConvert<DataTypes::FileStruct>())
+        {
+            DataTypes::FileStruct fl = qvariant_cast<DataTypes::FileStruct>(str.data);
+            emit DataManager::GetInstance().fileReceived(fl);
+        }
+        break;
+    }
+    case DataTypes::ConfParameter:
+    {
+        if (str.data.canConvert<DataTypes::ConfParameterStruct>())
+        {
+            DataTypes::ConfParameterStruct cp = qvariant_cast<DataTypes::ConfParameterStruct>(str.data);
+            emit DataManager::GetInstance().confParameterReceived(cp);
+        }
+        break;
+    }
+    case DataTypes::GeneralResponse:
+    {
+        if (str.data.canConvert<DataTypes::GeneralResponseStruct>())
+        {
+            DataTypes::GeneralResponseStruct gr = qvariant_cast<DataTypes::GeneralResponseStruct>(str.data);
+            emit DataManager::GetInstance().responseReceived(gr);
+        }
+        break;
+    }
+    default:
+        break;
+    }
 }
 
 // void DataManager::setConfig(S2ConfigType *s2config)
