@@ -42,12 +42,13 @@ private:
     DeviceConnectStruct m_deviceInfo;
 
     QPair<quint64, QByteArray> m_buffer;
-    void handleCommand(const CN::Commands cmd);
+    void handle(const CN::Commands cmd);
 
     Error::Msg WriteData(QByteArray &ba);
+
+    CommandStruct m_currentCommand;
     void CheckWriteQueue();
     void checkQueue();
     void Finish();
-
 private slots:
 };

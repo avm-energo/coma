@@ -9,11 +9,7 @@
 
 AlarmStateAll::AlarmStateAll(QWidget *parent) : UDialog(parent)
 {
-    AlarmState();
-}
 
-AlarmStateAll::AlarmStateAll(QWidget *parent) : UDialog(parent)
-{
     QVBoxLayout *lyout = new QVBoxLayout;
     QVBoxLayout *vlayout = new QVBoxLayout;
     //    QWidget *w = new QWidget;

@@ -1,6 +1,6 @@
 #include "iec104thread.h"
 
-#include "datamanager.h"
+#include "../gen/datamanager.h"
 
 #include <QCoreApplication>
 #include <QThread>
@@ -31,7 +31,9 @@ IEC104Thread::IEC104Thread(LogClass *log, QObject *parent) : QObject(parent)
     m_noAnswer = 0;
 }
 
-IEC104Thread::~IEC104Thread() { }
+IEC104Thread::~IEC104Thread()
+{
+}
 
 void IEC104Thread::SetBaseAdr(quint16 adr)
 {

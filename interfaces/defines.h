@@ -1,6 +1,7 @@
 #pragma once
 #include <QObject>
 #include <QString>
+#include <QVariant>
 // Обмен с модулями
 // Канал связи с модулем
 typedef unsigned char byte;
@@ -236,7 +237,11 @@ struct DeviceConnectStruct
 struct CommandStruct
 {
     CN::Commands cmd;
-    quint32 uintarg;
-    float flarg;
+    QVariant arg1;
+    QVariant arg2;
     QByteArray ba;
 };
+
+// GBsi,ErPg - bitstring,
+// GBac, GBda, GBd,GBt - float,
+// GF - file

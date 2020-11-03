@@ -158,7 +158,7 @@ Error::Msg S2::RestoreData(QByteArray &bain, QList<DataTypes::ConfParameterStruc
     if (!CheckCRC32(&bain.data()[0], bain.size(), fh.crc32))
     {
         ERMSG("S2: CRC error"); // выход за границу принятых байт
-        return Error::Msg::S2_CRCERROR;
+        return Error::Msg::CrcError;
     }
     //    pos = fhsize;
     DR.id = 0;
@@ -170,7 +170,7 @@ Error::Msg S2::RestoreData(QByteArray &bain, QList<DataTypes::ConfParameterStruc
         if (size > bain.size())
         {
             ERMSG("S2: out of memory"); // выход за границу принятых байт
-            return Error::Msg::S2_SIZEERROR;
+            return Error::Msg::SizeError;
         }
         memcpy(&DR, &bain.data()[0], size);
         bain.remove(0, size);
@@ -182,7 +182,7 @@ Error::Msg S2::RestoreData(QByteArray &bain, QList<DataTypes::ConfParameterStruc
             if (size > bain.size())
             {
                 ERMSG("S2: out of memory"); // выход за границу принятых байт
-                return Error::Msg::S2_SIZEERROR;
+                return Error::Msg::SizeError;
             }
             cfp.data = bain.left(size);
             bain.remove(0, size);

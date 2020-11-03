@@ -37,7 +37,8 @@ public:
 
     void writeFile(quint32 filenum, const QByteArray &file) override;
     void writeTime(quint32 time) override;
-    void writeCommand(Queries::Commands cmd, QList<DataTypes::SignalsStruct> &list) override;
+    void writeCommand(Queries::Commands cmd, QList<DataTypes::SignalsStruct> list) override;
+    void reqFloats(quint32 sigAdr, quint32 sigCount) override;
 
     void SendCmd(unsigned char command, int parameter = 0);
     // read
@@ -133,7 +134,4 @@ signals:
 
     void ShowError(QString message);
     void QueryFinished();
-
-    // BaseInterface interface
-public:
 };

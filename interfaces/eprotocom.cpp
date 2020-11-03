@@ -880,6 +880,10 @@ void EProtocom::reqFile(quint32 filenum)
     DataManager::addToInQueue(inp);
 }
 
+void EProtocom::reqStartup(quint32 sigAdr, quint32 sigCount)
+{
+}
+
 void EProtocom::reqBSI()
 {
     CommandStruct inp {
@@ -908,7 +912,14 @@ void EProtocom::writeTime(quint32 time)
     DataManager::addToInQueue(inp);
 }
 
-void EProtocom::writeCommand(Queries::Commands cmd, QList<DataTypes::SignalsStruct> &list)
+void EProtocom::reqFloats(quint32 sigAdr, quint32 sigCount)
+{
+    // TODO CN::Commands::Unknown
+    CommandStruct inp { CN::Commands::Unknown, sigAdr, sigCount, {} };
+    DataManager::addToInQueue(inp);
+}
+
+void EProtocom::writeCommand(Queries::Commands cmd, QList<DataTypes::SignalsStruct> list)
 {
     CommandStruct inp;
     switch (cmd)
