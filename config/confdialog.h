@@ -21,11 +21,15 @@ protected:
 
 private:
     Config *ConfigMain;
+    //    S2ConfigType *S2Config;
     QString ValuesFormat, WidgetFormat;
     QList<QWidget *> WidgetList;
     QObject *ParentMainbl, *ParentCtype;
 
+    //    void setConnections() override;
     // AbstractConfDialog interface
+    // private slots:
+    //    void confParameterReceived(DataTypes::ConfParameterStruct &cfp);
 };
 
 #endif // CONFDIALOG_H

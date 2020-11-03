@@ -21,9 +21,7 @@ IEC104::IEC104(QObject *parent) : BaseInterface(parent)
     Log->info("=== Log started ===");
 }
 
-IEC104::~IEC104()
-{
-}
+IEC104::~IEC104() { }
 
 // bool IEC104::Working() { return (EthThreadWorking | ParseThreadWorking); }
 
@@ -112,9 +110,10 @@ void IEC104::reqAlarms(quint32 sigAdr, quint32 sigCount)
     DataManager::addToInQueue(inp);
 }
 
-void IEC104::reqFile(quint32 filenum)
+void IEC104::reqFile(quint32 filenum, bool isConfigFile)
 {
-    Commands104::CommandStruct inp { Commands104::CM104_REQFILE, filenum, 0, {} };
+    Commands104::CommandStruct inp { (isConfigFile) ? Commands104::CM104_REQCONFIGFILE : Commands104::CM104_REQFILE,
+        filenum, 0, {} };
     DataManager::addToInQueue(inp);
 }
 
@@ -269,10 +268,7 @@ void IEC104::reqFloats(quint32 sigAdr, quint32 sigCount)
 //    //    IEC104Thread::s_ParseWriteMutex.unlock();
 //}
 
-void IEC104::EthThreadStarted()
-{
-    m_working = EthThreadWorking = true;
-}
+void IEC104::EthThreadStarted() { m_working = EthThreadWorking = true; }
 
 void IEC104::EthThreadFinished()
 {
@@ -284,10 +280,7 @@ void IEC104::EthThreadFinished()
     }
 }
 
-void IEC104::ParseThreadStarted()
-{
-    m_working = ParseThreadWorking = true;
-}
+void IEC104::ParseThreadStarted() { m_working = ParseThreadWorking = true; }
 
 void IEC104::ParseThreadFinished()
 {

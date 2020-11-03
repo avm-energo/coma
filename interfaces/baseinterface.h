@@ -41,7 +41,7 @@ public:
     virtual bool start(const ConnectStruct &) = 0;
     virtual void reqStartup(quint32 sigAdr = 0, quint32 sigCount = 0) = 0;
     virtual void reqBSI() = 0;
-    virtual void reqFile(quint32) = 0;
+    virtual void reqFile(quint32, bool isConfigFile = false) = 0;
     virtual void writeFile(quint32, const QByteArray &) = 0;
     virtual void writeConfigFile(S2ConfigType *);
     virtual void reqTime() = 0;
@@ -54,10 +54,7 @@ public:
     virtual void reqFloats(quint32 sigAdr = 0, quint32 sigCount = 0) = 0;
     //    virtual void reqBitStrings(quint32 sigAdr = 0, quint32 sigCount = 0) = 0;
 
-    bool isWorking()
-    {
-        return m_working;
-    }
+    bool isWorking() { return m_working; }
 
 signals:
     void reconnect();

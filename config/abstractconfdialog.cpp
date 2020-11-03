@@ -5,6 +5,7 @@
 #include "../gen/datamanager.h"
 #include "../gen/error.h"
 #include "../gen/files.h"
+#include "../gen/modulebsi.h"
 #include "../gen/stdfunc.h"
 #include "../gen/timefunc.h"
 //#include "../iec104/iec104.h"
@@ -20,43 +21,52 @@ AbstractConfDialog::AbstractConfDialog(QWidget *parent) : UDialog(parent)
 {
 }
 
-void AbstractConfDialog::ReadConf()
+void AbstractConfDialog::setConnections()
 {
-    TimeFunc::Wait(100);
-    switch (Board::GetInstance().interfaceType())
-    {
-    case Board::InterfaceType::Ethernet:
-    {
-        if ((ModuleBSI::Health() & HTH_CONFIG) || (StdFunc::IsInEmulateMode())) // если в модуле нет конфигурации,
-                                                                                // заполнить поля по умолчанию
-        {
-            emit DefConfToBeLoaded();
-        }
-        else // иначе заполнить значениями из модуля
-        {
-            emit ReadConfig(1);
-        }
-        break;
-    }
-    case Board::InterfaceType::USB:
-    {
-        Error::Msg res = ModuleBSI::PrereadConf(this, S2Config);
-        if (res == Error::Msg::ResEmpty)
-            emit DefConfToBeLoaded();
-        else if (res == Error::Msg::NoError)
-            emit NewConfToBeLoaded();
-        break;
-    }
-    default:
-        break;
-    }
+    connect(&DataManager::GetInstance(), &DataManager::confParametersReceived, this,
+        &AbstractConfDialog::confParameterReceived);
 }
 
-void AbstractConfDialog::FillConf(S2ConfigType *DR)
+void AbstractConfDialog::ReadConf()
 {
-    S2Config = DR;
-    emit NewConfToBeLoaded();
+    iface()->reqFile(Files::Config, true);
+    //    TimeFunc::Wait(100);
+    //    switch (Board::GetInstance().interfaceType())
+    //    {
+    //    case Board::InterfaceType::Ethernet:
+    //    {
+    //        //        if ((ModuleBSI::Health() & HTH_CONFIG) || (StdFunc::IsInEmulateMode())) // если в модуле нет
+    //        //        конфигурации,
+    //        if (ModuleBSI::noConfig()) // если в модуле нет конфигурации,
+    //                                   // заполнить поля по умолчанию
+    //        {
+    //            emit DefConfToBeLoaded();
+    //        }
+    //        else // иначе заполнить значениями из модуля
+    //        {
+    //            emit ReadConfig(1);
+    //        }
+    //        break;
+    //    }
+    //    case Board::InterfaceType::USB:
+    //    {
+    //        Error::Msg res = ModuleBSI::PrereadConf(this, S2Config);
+    //        if (res == Error::Msg::ResEmpty)
+    //            emit DefConfToBeLoaded();
+    //        else if (res == Error::Msg::NoError)
+    //            emit NewConfToBeLoaded();
+    //        break;
+    //    }
+    //    default:
+    //        break;
+    //    }
 }
+
+// void AbstractConfDialog::FillConf(S2ConfigType *DR)
+//{
+//    S2Config = DR;
+//    emit NewConfToBeLoaded();
+//}
 
 void AbstractConfDialog::WriteConf()
 {
@@ -68,29 +78,37 @@ void AbstractConfDialog::WriteConf()
             ERMSG("Ошибка чтения конфигурации");
             return;
         }
-        switch (Board::GetInstance().interfaceType())
-        {
-        case Board::InterfaceType::Ethernet:
-            //            emit writeConfFile(S2Config);
-            DataManager::setConfig(S2Config);
-            break;
-        case Board::InterfaceType::USB:
-        {
-            res = Commands::WriteFile(1, S2Config);
-            if (res == Error::Msg::NoError)
-            {
-                emit BsiIsNeedToBeAcquiredAndChecked();
-                QMessageBox::information(this, "Внимание", "Запись конфигурации и переход прошли успешно!");
-            }
-            else
-                QMessageBox::critical(
-                    this, "Ошибка", "Ошибка записи конфигурации" + QVariant::fromValue(res).toString());
-            break;
-        }
-        default:
-            break;
-        }
+        iface()->writeConfigFile(S2Config);
+        //        switch (Board::GetInstance().interfaceType())
+        //        {
+        //        case Board::InterfaceType::Ethernet:
+        //            //            emit writeConfFile(S2Config);
+        //            DataManager::setConfig(S2Config);
+        //            break;
+        //        case Board::InterfaceType::USB:
+        //        {
+        //            res = Commands::WriteFile(1, S2Config);
+        //            if (res == Error::Msg::NoError)
+        //            {
+        //                emit BsiIsNeedToBeAcquiredAndChecked();
+        //                QMessageBox::information(this, "Внимание", "Запись конфигурации и переход прошли успешно!");
+        //            }
+        //            else
+        //                QMessageBox::critical(
+        //                    this, "Ошибка", "Ошибка записи конфигурации" + QVariant::fromValue(res).toString());
+        //            break;
+        //        }
+        //        default:
+        //            break;
+        //        }
     }
+}
+
+void AbstractConfDialog::confParameterReceived(DataTypes::ConfParametersListStruct &cfpl)
+{
+    foreach (DataTypes::ConfParameterStruct cfp, cfpl.parlist)
+        S2::findElemAndWriteIt(S2Config, cfp);
+    Fill();
 }
 
 Error::Msg AbstractConfDialog::WriteCheckPassword()
@@ -140,7 +158,7 @@ void AbstractConfDialog::SaveConfToFile()
     BaLength += static_cast<quint8>(ba.data()[5]) * 256;
     BaLength += static_cast<quint8>(ba.data()[6]) * 65536;
     BaLength += static_cast<quint8>(ba.data()[7]) * 16777216;
-    BaLength += sizeof(S2::FileHeader); // FileHeader
+    BaLength += sizeof(S2DataTypes::FileHeader); // FileHeader
     Error::Msg res = Files::SaveToFile(Files::ChooseFileForSave(this, "Config files (*.cf)", "cf"), ba, BaLength);
     switch (res)
     {
@@ -175,7 +193,8 @@ void AbstractConfDialog::LoadConfFromFile()
         WARNMSG("Ошибка при разборе файла конфигурации");
         return;
     }
-    emit NewConfToBeLoaded();
+    //    emit NewConfToBeLoaded();
+    Fill();
     QMessageBox::information(this, "Успешно", "Загрузка прошла успешно!");
 }
 
@@ -205,7 +224,7 @@ QWidget *AbstractConfDialog::ConfButtons()
     connect(pb, &QAbstractButton::clicked, this, &AbstractConfDialog::SaveConfToFile);
     wdgtlyout->addWidget(pb, 1, 1, 1, 1);
     pb = new QPushButton("Взять конфигурацию по умолчанию");
-    connect(pb, &QAbstractButton::clicked, this, &AbstractConfDialog::DefConfToBeLoaded);
+    connect(pb, &QAbstractButton::clicked, this, &AbstractConfDialog::SetDefConf);
     wdgtlyout->addWidget(pb, 2, 0, 1, 2);
     wdgt->setLayout(wdgtlyout);
     return wdgt;
@@ -213,33 +232,37 @@ QWidget *AbstractConfDialog::ConfButtons()
 
 void AbstractConfDialog::ButtonReadConf()
 {
-    switch (Board::GetInstance().interfaceType())
-    {
-    case Board::InterfaceType::Ethernet:
-    {
-        if ((ModuleBSI::Health() & HTH_CONFIG) || (StdFunc::IsInEmulateMode())) // если в модуле нет конфигурации,
-                                                                                // заполнить поля по умолчанию
-            emit DefConfToBeLoaded();
-        else // иначе заполнить значениями из модуля
-            emit ReadConfig(1);
-        break;
-    }
-    case Board::InterfaceType::USB:
-    {
-        Error::Msg res = ModuleBSI::PrereadConf(this, S2Config);
-        if (res == Error::Msg::ResEmpty)
-            emit DefConfToBeLoaded();
-        else if (res == Error::Msg::NoError)
-            emit NewConfToBeLoaded();
-        break;
-    }
-    }
+    ReadConf();
+    //    switch (Board::GetInstance().interfaceType())
+    //    {
+    //    case Board::InterfaceType::Ethernet:
+    //    {
+    //        //        if ((ModuleBSI::Health() & HTH_CONFIG) || (StdFunc::IsInEmulateMode())) // если в модуле нет
+    //        //        конфигурации,
+    //        if ((ModuleBSI::noConfig()) || (StdFunc::IsInEmulateMode())) // если в модуле нет конфигурации,
+    //                                                                     // заполнить поля по умолчанию
+    //            emit DefConfToBeLoaded();
+    //        else // иначе заполнить значениями из модуля
+    //            emit ReadConfig(1);
+    //        break;
+    //    }
+    //    case Board::InterfaceType::USB:
+    //    {
+    //        Error::Msg res = ModuleBSI::PrereadConf(this, S2Config);
+    //        if (res == Error::Msg::ResEmpty)
+    //            emit DefConfToBeLoaded();
+    //        else if (res == Error::Msg::NoError)
+    //            emit NewConfToBeLoaded();
+    //        break;
+    //    }
+    //    }
 }
 
 void AbstractConfDialog::PrereadConf()
 {
-    if ((ModuleBSI::Health() & HTH_CONFIG) || (StdFunc::IsInEmulateMode())) // если в модуле нет конфигурации, заполнить
-                                                                            // поля по умолчанию
+    //    if ((ModuleBSI::Health() & HTH_CONFIG) || (StdFunc::IsInEmulateMode())) // если в модуле нет конфигурации,
+    //    заполнить
+    if (ModuleBSI::noConfig()) // если в модуле нет конфигурации, заполнить поля по умолчанию
     {
         SetDefConf();
         QMessageBox::information(this, "Успешно", "Задана конфигурация по умолчанию", QMessageBox::Ok);
@@ -295,23 +318,23 @@ void AbstractConfDialog::WriteConfMessageOk()
     QMessageBox::information(this, "Внимание", "Запись конфигурации и переход прошли успешно!");
 }
 
-void AbstractConfDialog::update()
-{
-    if (m_updatesEnabled)
-    {
-        switch (Board::GetInstance().interfaceType())
-        {
-        case Board::InterfaceType::USB:
-            USBUpdate();
-            break;
-        case Board::InterfaceType::Ethernet:
-            ETHUpdate();
-            break;
-        case Board::InterfaceType::RS485:
-            MBSUpdate();
-            break;
-        default:
-            break;
-        }
-    }
-}
+// void AbstractConfDialog::update()
+//{
+//    if (m_updatesEnabled)
+//    {
+//        switch (Board::GetInstance().interfaceType())
+//        {
+//        case Board::InterfaceType::USB:
+//            USBUpdate();
+//            break;
+//        case Board::InterfaceType::Ethernet:
+//            ETHUpdate();
+//            break;
+//        case Board::InterfaceType::RS485:
+//            MBSUpdate();
+//            break;
+//        default:
+//            break;
+//        }
+//    }
+//}

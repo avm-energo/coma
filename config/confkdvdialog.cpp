@@ -24,7 +24,7 @@ ConfKDVDialog::ConfKDVDialog(ConfigKDV *ckdv, QWidget *parent) : AbstractConfDia
     QString tmps = "QDialog {background-color: " + QString(Colors::ACONFCLR) + ";}";
     setStyleSheet(tmps);
     S2Config = ckdv->S2Config();
-    KDV = ckdv;
+    CKDV = ckdv;
     Conf = new ConfDialog(S2Config, Board::GetInstance().typeB(), Board::GetInstance().typeM());
     ConfKxx = new ConfKxxDialog(S2Config);
     setAttribute(Qt::WA_DeleteOnClose);
@@ -440,66 +440,66 @@ void ConfKDVDialog::Fill()
     int cbidx;
 
     //.........................................................
-    cbidx = (KDV->Bci_block.Eq_type & 0x02) ? 2 : ((KDV->Bci_block.Eq_type & 0x01) ? 1 : 0);
+    cbidx = (CKDV->Bci_block.Eq_type & 0x02) ? 2 : ((CKDV->Bci_block.Eq_type & 0x01) ? 1 : 0);
     WDFunc::SetCBIndex(this, "Eq_type", cbidx);
-    cbidx = ((KDV->Bci_block.Cool_type & 0x01) ? 1 : 0);
+    cbidx = ((CKDV->Bci_block.Cool_type & 0x01) ? 1 : 0);
     WDFunc::SetCBIndex(this, "Cool_type", cbidx);
-    cbidx = ((KDV->Bci_block.W_mat & 0x01) ? 1 : 0);
+    cbidx = ((CKDV->Bci_block.W_mat & 0x01) ? 1 : 0);
     WDFunc::SetCBIndex(this, "W_mat", cbidx);
 
-    WDFunc::SetChBData(this, "oscchb.0", (KDV->Bci_block.DDosc & 0x0001));
+    WDFunc::SetChBData(this, "oscchb.0", (CKDV->Bci_block.DDosc & 0x0001));
     //    WDFunc::SetChBData(this, "oscchb.1", (KDV->Bci_block.DDosc & 0x0002));
-    WDFunc::SetChBData(this, "oscchb.2", (KDV->Bci_block.DDosc & 0x0004));
-    WDFunc::SetSPBData(this, "NFiltr", KDV->Bci_block.NFiltr);
-    WDFunc::SetSPBData(this, "NHarmFilt", KDV->Bci_block.NHarmFilt);
+    WDFunc::SetChBData(this, "oscchb.2", (CKDV->Bci_block.DDosc & 0x0004));
+    WDFunc::SetSPBData(this, "NFiltr", CKDV->Bci_block.NFiltr);
+    WDFunc::SetSPBData(this, "NHarmFilt", CKDV->Bci_block.NHarmFilt);
 
     // WDFunc::SetSPBData(this, "DDOsc", CKDV->Bci_block.DDOsc);
-    WDFunc::SetSPBData(this, "Unom1", KDV->Bci_block.Unom1);
-    WDFunc::SetSPBData(this, "U2nom", KDV->Bci_block.U2nom);
-    WDFunc::SetSPBData(this, "ITT1nom", KDV->Bci_block.ITT1nom);
-    WDFunc::SetSPBData(this, "ITT2nom", KDV->Bci_block.ITT2nom);
-    WDFunc::SetSPBData(this, "Iwnom", KDV->Bci_block.Iwnom);
-    WDFunc::SetSPBData(this, "DUosc", KDV->Bci_block.DUosc);
-    WDFunc::SetSPBData(this, "DIosc", KDV->Bci_block.DIosc);
-    WDFunc::SetSPBData(this, "DUImin", KDV->Bci_block.DUImin);
-    WDFunc::SetSPBData(this, "Imin", KDV->Bci_block.Imin);
-    WDFunc::SetSPBData(this, "TNNTdop", KDV->Bci_block.TNNTdop);
-    WDFunc::SetSPBData(this, "TNNTpred", KDV->Bci_block.TNNTpred);
-    WDFunc::SetSPBData(this, "Tamb_nom", KDV->Bci_block.Tamb_nom);
-    WDFunc::SetSPBData(this, "dTNNTnom", KDV->Bci_block.dTNNTnom);
-    WDFunc::SetSPBData(this, "Kdob", KDV->Bci_block.Kdob);
-    WDFunc::SetSPBData(this, "TauWnom", KDV->Bci_block.TauWnom);
-    WDFunc::SetSPBData(this, "Umax", KDV->Bci_block.Umax);
-    WDFunc::SetSPBData(this, "Imax", KDV->Bci_block.Imax);
-    WDFunc::SetSPBData(this, "GTnnt", KDV->Bci_block.GTnnt);
-    WDFunc::SetSPBData(this, "GOvc", KDV->Bci_block.GOvc);
+    WDFunc::SetSPBData(this, "Unom1", CKDV->Bci_block.Unom1);
+    WDFunc::SetSPBData(this, "U2nom", CKDV->Bci_block.U2nom);
+    WDFunc::SetSPBData(this, "ITT1nom", CKDV->Bci_block.ITT1nom);
+    WDFunc::SetSPBData(this, "ITT2nom", CKDV->Bci_block.ITT2nom);
+    WDFunc::SetSPBData(this, "Iwnom", CKDV->Bci_block.Iwnom);
+    WDFunc::SetSPBData(this, "DUosc", CKDV->Bci_block.DUosc);
+    WDFunc::SetSPBData(this, "DIosc", CKDV->Bci_block.DIosc);
+    WDFunc::SetSPBData(this, "DUImin", CKDV->Bci_block.DUImin);
+    WDFunc::SetSPBData(this, "Imin", CKDV->Bci_block.Imin);
+    WDFunc::SetSPBData(this, "TNNTdop", CKDV->Bci_block.TNNTdop);
+    WDFunc::SetSPBData(this, "TNNTpred", CKDV->Bci_block.TNNTpred);
+    WDFunc::SetSPBData(this, "Tamb_nom", CKDV->Bci_block.Tamb_nom);
+    WDFunc::SetSPBData(this, "dTNNTnom", CKDV->Bci_block.dTNNTnom);
+    WDFunc::SetSPBData(this, "Kdob", CKDV->Bci_block.Kdob);
+    WDFunc::SetSPBData(this, "TauWnom", CKDV->Bci_block.TauWnom);
+    WDFunc::SetSPBData(this, "Umax", CKDV->Bci_block.Umax);
+    WDFunc::SetSPBData(this, "Imax", CKDV->Bci_block.Imax);
+    WDFunc::SetSPBData(this, "GTnnt", CKDV->Bci_block.GTnnt);
+    WDFunc::SetSPBData(this, "GOvc", CKDV->Bci_block.GOvc);
 
-    WDFunc::SetSPBData(this, "Fnom", KDV->Bci_block.Fnom);
-    WDFunc::SetSPBData(this, "nom_slip", KDV->Bci_block.nom_slip);
-    WDFunc::SetSPBData(this, "UVmax", KDV->Bci_block.UVmax);
-    WDFunc::SetSPBData(this, "Kvibr", KDV->Bci_block.Kvibr);
-    WDFunc::SetSPBData(this, "VibrA_pred", KDV->Bci_block.VibrA_pred);
-    WDFunc::SetSPBData(this, "VibrV_pred", KDV->Bci_block.VibrV_pred);
-    WDFunc::SetSPBData(this, "VibrD_pred", KDV->Bci_block.VibrD_pred);
-    WDFunc::SetSPBData(this, "VibrA_alarm", KDV->Bci_block.VibrA_alarm);
-    WDFunc::SetSPBData(this, "VibrV_alarm", KDV->Bci_block.VibrV_alarm);
-    WDFunc::SetSPBData(this, "VibrD_alarm", KDV->Bci_block.VibrD_alarm);
-    WDFunc::SetSPBData(this, "VVibrA_pred", KDV->Bci_block.VVibrA_pred);
-    WDFunc::SetSPBData(this, "VVibrV_pred", KDV->Bci_block.VVibrV_pred);
-    WDFunc::SetSPBData(this, "VVibrD_pred", KDV->Bci_block.VVibrD_pred);
-    WDFunc::SetSPBData(this, "VVibrA_alarm", KDV->Bci_block.VVibrA_alarm);
-    WDFunc::SetSPBData(this, "VVibrV_alarm", KDV->Bci_block.VVibrV_alarm);
-    WDFunc::SetSPBData(this, "VVibrD_alarm", KDV->Bci_block.VVibrD_alarm);
-    WDFunc::SetSPBData(this, "NumA", KDV->Bci_block.NumA);
-    WDFunc::SetSPBData(this, "Poles", KDV->Bci_block.Poles);
-    WDFunc::SetSPBData(this, "Stator_Slotes", KDV->Bci_block.Stator_Slotes);
-    WDFunc::SetSPBData(this, "Rotor_bars", KDV->Bci_block.Rotor_bars);
-    WDFunc::SetSPBData(this, "VibroType", KDV->Bci_block.VibroType);
-    WDFunc::SetSPBData(this, "Sensors", KDV->Bci_block.Sensors);
+    WDFunc::SetSPBData(this, "Fnom", CKDV->Bci_block.Fnom);
+    WDFunc::SetSPBData(this, "nom_slip", CKDV->Bci_block.nom_slip);
+    WDFunc::SetSPBData(this, "UVmax", CKDV->Bci_block.UVmax);
+    WDFunc::SetSPBData(this, "Kvibr", CKDV->Bci_block.Kvibr);
+    WDFunc::SetSPBData(this, "VibrA_pred", CKDV->Bci_block.VibrA_pred);
+    WDFunc::SetSPBData(this, "VibrV_pred", CKDV->Bci_block.VibrV_pred);
+    WDFunc::SetSPBData(this, "VibrD_pred", CKDV->Bci_block.VibrD_pred);
+    WDFunc::SetSPBData(this, "VibrA_alarm", CKDV->Bci_block.VibrA_alarm);
+    WDFunc::SetSPBData(this, "VibrV_alarm", CKDV->Bci_block.VibrV_alarm);
+    WDFunc::SetSPBData(this, "VibrD_alarm", CKDV->Bci_block.VibrD_alarm);
+    WDFunc::SetSPBData(this, "VVibrA_pred", CKDV->Bci_block.VVibrA_pred);
+    WDFunc::SetSPBData(this, "VVibrV_pred", CKDV->Bci_block.VVibrV_pred);
+    WDFunc::SetSPBData(this, "VVibrD_pred", CKDV->Bci_block.VVibrD_pred);
+    WDFunc::SetSPBData(this, "VVibrA_alarm", CKDV->Bci_block.VVibrA_alarm);
+    WDFunc::SetSPBData(this, "VVibrV_alarm", CKDV->Bci_block.VVibrV_alarm);
+    WDFunc::SetSPBData(this, "VVibrD_alarm", CKDV->Bci_block.VVibrD_alarm);
+    WDFunc::SetSPBData(this, "NumA", CKDV->Bci_block.NumA);
+    WDFunc::SetSPBData(this, "Poles", CKDV->Bci_block.Poles);
+    WDFunc::SetSPBData(this, "Stator_Slotes", CKDV->Bci_block.Stator_Slotes);
+    WDFunc::SetSPBData(this, "Rotor_bars", CKDV->Bci_block.Rotor_bars);
+    WDFunc::SetSPBData(this, "VibroType", CKDV->Bci_block.VibroType);
+    WDFunc::SetSPBData(this, "Sensors", CKDV->Bci_block.Sensors);
 
-    WDFunc::SetSPBData(this, "T_Data_Rec", KDV->Bci_block.T_Data_Rec);
-    WDFunc::SetSPBData(this, "OscPoints", KDV->Bci_block.OscPoints);
-    WDFunc::SetSPBData(this, "TdatNum", KDV->Bci_block.TdatNum);
+    WDFunc::SetSPBData(this, "T_Data_Rec", CKDV->Bci_block.T_Data_Rec);
+    WDFunc::SetSPBData(this, "OscPoints", CKDV->Bci_block.OscPoints);
+    WDFunc::SetSPBData(this, "TdatNum", CKDV->Bci_block.TdatNum);
 
     //.........................................................
     ConfKxx->Fill();
@@ -515,72 +515,74 @@ void ConfKDVDialog::FillBack()
     //.........................................................
 
     cbidx = WDFunc::CBIndex(this, "Eq_type");
-    KDV->Bci_block.Eq_type = cbidx;
+    CKDV->Bci_block.Eq_type = cbidx;
     cbidx = WDFunc::CBIndex(this, "Cool_type");
-    KDV->Bci_block.Cool_type = cbidx;
+    CKDV->Bci_block.Cool_type = cbidx;
     cbidx = WDFunc::CBIndex(this, "W_mat");
-    KDV->Bci_block.W_mat = cbidx;
-    WDFunc::SPBData(this, "NFiltr", KDV->Bci_block.NFiltr);
-    WDFunc::SPBData(this, "NHarmFilt", KDV->Bci_block.NHarmFilt);
+    CKDV->Bci_block.W_mat = cbidx;
+    WDFunc::SPBData(this, "NFiltr", CKDV->Bci_block.NFiltr);
+    WDFunc::SPBData(this, "NHarmFilt", CKDV->Bci_block.NHarmFilt);
     // WDFunc::SPBData(this, "DDOsc", CKDV->Bci_block.DDOsc);
 
     WDFunc::ChBData(this, "oscchb.0", tmpb);
-    KDV->Bci_block.DDosc = 0;
-    KDV->Bci_block.DDosc |= (tmpb) ? 0x0001 : 0x0000;
+    CKDV->Bci_block.DDosc = 0;
+    CKDV->Bci_block.DDosc |= (tmpb) ? 0x0001 : 0x0000;
     //    WDFunc::ChBData(this, "oscchb.1", tmpb);
     //    KDV->Bci_block.DDosc |= (tmpb) ? 0x0002 : 0x0000;
     WDFunc::ChBData(this, "oscchb.2", tmpb);
-    KDV->Bci_block.DDosc |= (tmpb) ? 0x0004 : 0x0000;
+    CKDV->Bci_block.DDosc |= (tmpb) ? 0x0004 : 0x0000;
 
-    WDFunc::SPBData(this, "Unom1", KDV->Bci_block.Unom1);
-    WDFunc::SPBData(this, "U2nom", KDV->Bci_block.U2nom);
-    WDFunc::SPBData(this, "ITT1nom", KDV->Bci_block.ITT1nom);
-    WDFunc::SPBData(this, "ITT2nom", KDV->Bci_block.ITT2nom);
-    WDFunc::SPBData(this, "Iwnom", KDV->Bci_block.Iwnom);
-    WDFunc::SPBData(this, "DUosc", KDV->Bci_block.DUosc);
-    WDFunc::SPBData(this, "DIosc", KDV->Bci_block.DIosc);
-    WDFunc::SPBData(this, "DUImin", KDV->Bci_block.DUImin);
-    WDFunc::SPBData(this, "Imin", KDV->Bci_block.Imin);
-    WDFunc::SPBData(this, "TNNTdop", KDV->Bci_block.TNNTdop);
-    WDFunc::SPBData(this, "TNNTpred", KDV->Bci_block.TNNTpred);
-    WDFunc::SPBData(this, "Tamb_nom", KDV->Bci_block.Tamb_nom);
-    WDFunc::SPBData(this, "dTNNTnom", KDV->Bci_block.dTNNTnom);
-    WDFunc::SPBData(this, "Kdob", KDV->Bci_block.Kdob);
-    WDFunc::SPBData(this, "TauWnom", KDV->Bci_block.TauWnom);
-    WDFunc::SPBData(this, "Umax", KDV->Bci_block.Umax);
-    WDFunc::SPBData(this, "Imax", KDV->Bci_block.Imax);
-    WDFunc::SPBData(this, "GTnnt", KDV->Bci_block.GTnnt);
-    WDFunc::SPBData(this, "GOvc", KDV->Bci_block.GOvc);
-    WDFunc::SPBData(this, "Fnom", KDV->Bci_block.Fnom);
-    WDFunc::SPBData(this, "nom_slip", KDV->Bci_block.nom_slip);
-    WDFunc::SPBData(this, "UVmax", KDV->Bci_block.UVmax);
-    WDFunc::SPBData(this, "Kvibr", KDV->Bci_block.Kvibr);
-    WDFunc::SPBData(this, "VibrA_pred", KDV->Bci_block.VibrA_pred);
-    WDFunc::SPBData(this, "VibrV_pred", KDV->Bci_block.VibrV_pred);
-    WDFunc::SPBData(this, "VibrD_pred", KDV->Bci_block.VibrD_pred);
-    WDFunc::SPBData(this, "VibrA_alarm", KDV->Bci_block.VibrA_alarm);
-    WDFunc::SPBData(this, "VibrV_alarm", KDV->Bci_block.VibrV_alarm);
-    WDFunc::SPBData(this, "VibrD_alarm", KDV->Bci_block.VibrD_alarm);
-    WDFunc::SPBData(this, "VVibrA_pred", KDV->Bci_block.VVibrA_pred);
-    WDFunc::SPBData(this, "VVibrV_pred", KDV->Bci_block.VVibrV_pred);
-    WDFunc::SPBData(this, "VVibrD_pred", KDV->Bci_block.VVibrD_pred);
-    WDFunc::SPBData(this, "VVibrA_alarm", KDV->Bci_block.VVibrA_alarm);
-    WDFunc::SPBData(this, "VVibrV_alarm", KDV->Bci_block.VVibrV_alarm);
-    WDFunc::SPBData(this, "VVibrD_alarm", KDV->Bci_block.VVibrD_alarm);
-    WDFunc::SPBData(this, "NumA", KDV->Bci_block.NumA);
-    WDFunc::SPBData(this, "Poles", KDV->Bci_block.Poles);
-    WDFunc::SPBData(this, "Stator_Slotes", KDV->Bci_block.Stator_Slotes);
-    WDFunc::SPBData(this, "Rotor_bars", KDV->Bci_block.Rotor_bars);
-    WDFunc::SPBData(this, "VibroType", KDV->Bci_block.VibroType);
-    WDFunc::SPBData(this, "Sensors", KDV->Bci_block.Sensors);
-    WDFunc::SPBData(this, "T_Data_Rec", KDV->Bci_block.T_Data_Rec);
-    WDFunc::SPBData(this, "OscPoints", KDV->Bci_block.OscPoints);
-    WDFunc::SPBData(this, "TdatNum", KDV->Bci_block.TdatNum);
+    WDFunc::SPBData(this, "Unom1", CKDV->Bci_block.Unom1);
+    WDFunc::SPBData(this, "U2nom", CKDV->Bci_block.U2nom);
+    WDFunc::SPBData(this, "ITT1nom", CKDV->Bci_block.ITT1nom);
+    WDFunc::SPBData(this, "ITT2nom", CKDV->Bci_block.ITT2nom);
+    WDFunc::SPBData(this, "Iwnom", CKDV->Bci_block.Iwnom);
+    WDFunc::SPBData(this, "DUosc", CKDV->Bci_block.DUosc);
+    WDFunc::SPBData(this, "DIosc", CKDV->Bci_block.DIosc);
+    WDFunc::SPBData(this, "DUImin", CKDV->Bci_block.DUImin);
+    WDFunc::SPBData(this, "Imin", CKDV->Bci_block.Imin);
+    WDFunc::SPBData(this, "TNNTdop", CKDV->Bci_block.TNNTdop);
+    WDFunc::SPBData(this, "TNNTpred", CKDV->Bci_block.TNNTpred);
+    WDFunc::SPBData(this, "Tamb_nom", CKDV->Bci_block.Tamb_nom);
+    WDFunc::SPBData(this, "dTNNTnom", CKDV->Bci_block.dTNNTnom);
+    WDFunc::SPBData(this, "Kdob", CKDV->Bci_block.Kdob);
+    WDFunc::SPBData(this, "TauWnom", CKDV->Bci_block.TauWnom);
+    WDFunc::SPBData(this, "Umax", CKDV->Bci_block.Umax);
+    WDFunc::SPBData(this, "Imax", CKDV->Bci_block.Imax);
+    WDFunc::SPBData(this, "GTnnt", CKDV->Bci_block.GTnnt);
+    WDFunc::SPBData(this, "GOvc", CKDV->Bci_block.GOvc);
+    WDFunc::SPBData(this, "Fnom", CKDV->Bci_block.Fnom);
+    WDFunc::SPBData(this, "nom_slip", CKDV->Bci_block.nom_slip);
+    WDFunc::SPBData(this, "UVmax", CKDV->Bci_block.UVmax);
+    WDFunc::SPBData(this, "Kvibr", CKDV->Bci_block.Kvibr);
+    WDFunc::SPBData(this, "VibrA_pred", CKDV->Bci_block.VibrA_pred);
+    WDFunc::SPBData(this, "VibrV_pred", CKDV->Bci_block.VibrV_pred);
+    WDFunc::SPBData(this, "VibrD_pred", CKDV->Bci_block.VibrD_pred);
+    WDFunc::SPBData(this, "VibrA_alarm", CKDV->Bci_block.VibrA_alarm);
+    WDFunc::SPBData(this, "VibrV_alarm", CKDV->Bci_block.VibrV_alarm);
+    WDFunc::SPBData(this, "VibrD_alarm", CKDV->Bci_block.VibrD_alarm);
+    WDFunc::SPBData(this, "VVibrA_pred", CKDV->Bci_block.VVibrA_pred);
+    WDFunc::SPBData(this, "VVibrV_pred", CKDV->Bci_block.VVibrV_pred);
+    WDFunc::SPBData(this, "VVibrD_pred", CKDV->Bci_block.VVibrD_pred);
+    WDFunc::SPBData(this, "VVibrA_alarm", CKDV->Bci_block.VVibrA_alarm);
+    WDFunc::SPBData(this, "VVibrV_alarm", CKDV->Bci_block.VVibrV_alarm);
+    WDFunc::SPBData(this, "VVibrD_alarm", CKDV->Bci_block.VVibrD_alarm);
+    WDFunc::SPBData(this, "NumA", CKDV->Bci_block.NumA);
+    WDFunc::SPBData(this, "Poles", CKDV->Bci_block.Poles);
+    WDFunc::SPBData(this, "Stator_Slotes", CKDV->Bci_block.Stator_Slotes);
+    WDFunc::SPBData(this, "Rotor_bars", CKDV->Bci_block.Rotor_bars);
+    WDFunc::SPBData(this, "VibroType", CKDV->Bci_block.VibroType);
+    WDFunc::SPBData(this, "Sensors", CKDV->Bci_block.Sensors);
+    WDFunc::SPBData(this, "T_Data_Rec", CKDV->Bci_block.T_Data_Rec);
+    WDFunc::SPBData(this, "OscPoints", CKDV->Bci_block.OscPoints);
+    WDFunc::SPBData(this, "TdatNum", CKDV->Bci_block.TdatNum);
     //.........................................................
     ConfKxx->FillBack();
 }
 
-void ConfKDVDialog::CheckConf() { }
+void ConfKDVDialog::CheckConf()
+{
+}
 
 void ConfKDVDialog::setConnections()
 {
@@ -589,7 +591,7 @@ void ConfKDVDialog::setConnections()
 
 void ConfKDVDialog::SetDefConf()
 {
-    KDV->SetDefConf();
+    CKDV->SetDefConf();
     Conf->SetDefConf();
     ConfKxx->SetDefConf();
     Fill();

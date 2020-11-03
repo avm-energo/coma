@@ -217,17 +217,17 @@ void Module::parentTWTabClicked(int index)
     m_oldTabIndex = m_currentTabIndex;
 }
 
-void Module::setDefConf()
-{
-    foreach (QDialog *dlg, m_dialogs)
-    {
-        if (dlg->objectName().contains("conf"))
-        {
-            static_cast<AbstractConfDialog *>(dlg)->SetDefConf();
-            static_cast<AbstractConfDialog *>(dlg)->Fill();
-        }
-    }
-}
+// void Module::setDefConf()
+//{
+//    foreach (QDialog *dlg, m_dialogs)
+//    {
+//        if (dlg->objectName().contains("conf"))
+//        {
+//            static_cast<AbstractConfDialog *>(dlg)->SetDefConf();
+//            static_cast<AbstractConfDialog *>(dlg)->Fill();
+//        }
+//    }
+//}
 
 void Module::closeDialogs()
 {

@@ -141,7 +141,7 @@ private slots:
     void StartWork();
     void GetAbout();
     void closeEvent(QCloseEvent *event) override;
-    void SetDefConf();
+    //    void SetDefConf();
     void update();
 
     //    void setConf(unsigned char);

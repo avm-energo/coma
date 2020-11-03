@@ -14,7 +14,7 @@ enum SignalTypes
     SinglePointWithTime,
     ByteArray,
     File,
-    ConfParameter,
+    ConfParametersList,
     GeneralResponse
 };
 
@@ -65,6 +65,11 @@ struct ConfParameterStruct
 {
     quint32 ID;
     QByteArray data;
+};
+
+struct ConfParametersListStruct
+{
+    QList<ConfParameterStruct> parlist;
 };
 
 struct SignalsStruct
@@ -132,7 +137,7 @@ Q_DECLARE_METATYPE(DataTypes::FloatWithTimeStruct)
 Q_DECLARE_METATYPE(DataTypes::FloatStruct)
 Q_DECLARE_METATYPE(DataTypes::SinglePointWithTimeStruct)
 Q_DECLARE_METATYPE(DataTypes::FileStruct)
-Q_DECLARE_METATYPE(DataTypes::ConfParameterStruct)
+Q_DECLARE_METATYPE(DataTypes::ConfParametersListStruct)
 Q_DECLARE_METATYPE(DataTypes::SignalsStruct)
 Q_DECLARE_METATYPE(DataTypes::GeneralResponseStruct)
 Q_DECLARE_METATYPE(Queries::Command)

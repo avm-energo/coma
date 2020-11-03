@@ -31,7 +31,9 @@ IEC104Thread::IEC104Thread(LogClass *log, QObject *parent) : QObject(parent)
     m_noAnswer = 0;
 }
 
-IEC104Thread::~IEC104Thread() { }
+IEC104Thread::~IEC104Thread()
+{
+}
 
 void IEC104Thread::SetBaseAdr(quint16 adr)
 {
@@ -80,10 +82,15 @@ void IEC104Thread::Run()
                 {
                     //                    S2ConfigType *ptr = reinterpret_cast<S2ConfigType
                     //                    *>(inp.args.ptrarg); FileReady(ptr);
+                    m_fileIsConfigFile = false;
                     m_file = inp.ba;
                     FileReady(inp.uintarg);
                     break;
                 }
+                case Commands104::CM104_REQCONFIGFILE:
+                    m_fileIsConfigFile = true;
+                    SelectFile(inp.uintarg);
+                    break;
                 case Commands104::CM104_REQFILE:
                     SelectFile(inp.uintarg);
                     break;
@@ -439,8 +446,25 @@ void IEC104Thread::ParseIFormat(QByteArray &ba) // основной разбор
                     m_log->info("FileSending clear");
 
                     int filetype = ba.at(9);
-                    DataTypes::FileStruct df { static_cast<quint32>(filetype), m_readData };
-                    DataManager::addSignalToOutList(DataTypes::SignalTypes::File, df);
+                    if (m_fileIsConfigFile)
+                    {
+                        QList<DataTypes::ConfParameterStruct> outlist;
+                        if (S2::RestoreData(ba, outlist) == Error::Msg::NoError)
+                            //                        {
+                            DataManager::addSignalToOutList(DataTypes::ConfParametersList, outlist);
+                        //                            // check for needed IDs and move not mentioned into s_outputList
+                        //                            foreach (DataTypes::ConfParameterStruct cfp, outlist)
+                        //                                DataManager::addSignalToOutList(DataTypes::ConfParametersList,
+                        //                                cfp);
+                        //                        }
+                        else
+                            m_log->error("Error while income file S2 parsing");
+                    }
+                    else
+                    {
+                        DataTypes::FileStruct df { static_cast<quint32>(filetype), m_readData };
+                        DataManager::addSignalToOutList(DataTypes::SignalTypes::File, df);
+                    }
                     //                    if (filetype == 0x01) // если файл конфигурации
                     //                    {
                     //                        Error::Msg res = S2::RestoreDataMem(ReadData.data(), RDLength, DR);

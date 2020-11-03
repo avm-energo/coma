@@ -20,13 +20,13 @@ class DataManager : public QObject, public Singleton<DataManager>
 public:
     explicit DataManager(token, QObject *parent = nullptr);
 
-    static Error::Msg getSignals(quint32 firstSignalAdr, quint32 lastSignalAdr, DataTypes::SignalTypes type,
-        QList<DataTypes::SignalsStruct> &outlist);
-    static Error::Msg getFile(quint32 filenum, QByteArray &outba);
-    static Error::Msg getConfig(quint32 firstID, quint32 lastID, QList<DataTypes::ConfParameterStruct> &outlist);
-    static Error::Msg getResponse(DataTypes::GeneralResponseTypes type, DataTypes::GeneralResponseStruct &response);
-    //    static void setConfig(S2ConfigType *s2config);
-    static void reqStartup();
+    //    static Error::Msg getSignals(quint32 firstSignalAdr, quint32 lastSignalAdr, DataTypes::SignalTypes type,
+    //        QList<DataTypes::SignalsStruct> &outlist);
+    //    static Error::Msg getFile(quint32 filenum, QByteArray &outba);
+    //    static Error::Msg getConfig(quint32 firstID, quint32 lastID, QList<DataTypes::ConfParameterStruct> &outlist);
+    //    static Error::Msg getResponse(DataTypes::GeneralResponseTypes type, DataTypes::GeneralResponseStruct
+    //    &response); static void setConfig(S2ConfigType *s2config);
+    //    static void reqStartup();
     static void checkTypeAndSendSignals(DataTypes::SignalsStruct &str);
     template <typename T> static void addSignalToOutList(DataTypes::SignalTypes type, T signal)
     {
@@ -34,9 +34,9 @@ public:
         str.type = type;
         str.data.setValue(signal);
         checkTypeAndSendSignals(str);
-        s_outListMutex.lock();
-        s_outputList.append(str);
-        s_outListMutex.unlock();
+        //        s_outListMutex.lock();
+        //        s_outputList.append(str);
+        //        s_outListMutex.unlock();
     }
     template <typename T> static void addToInQueue(T data)
     {
@@ -65,8 +65,8 @@ public:
     }
 
     static std::queue<QVariant> s_inputQueue;
-    static QList<DataTypes::SignalsStruct> s_outputList;
-    static QMutex s_outListMutex;
+    //    static QList<DataTypes::SignalsStruct> s_outputList;
+    //    static QMutex s_outListMutex;
     static QMutex s_inQueueMutex;
 
 signals:
@@ -74,7 +74,7 @@ signals:
     void bitStringReceived(DataTypes::BitStringStruct &);
     void floatReceived(DataTypes::FloatStruct &);
     void fileReceived(DataTypes::FileStruct &);
-    void confParameterReceived(DataTypes::ConfParameterStruct &);
+    void confParametersReceived(DataTypes::ConfParametersListStruct &);
     void responseReceived(DataTypes::GeneralResponseStruct &);
 };
 

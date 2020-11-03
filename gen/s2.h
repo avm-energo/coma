@@ -21,6 +21,7 @@ public:
     // restore IDs and contents in ConfParameters list
     static Error::Msg RestoreData(QByteArray &bain, QList<DataTypes::ConfParameterStruct> &outlist);
     static S2DataTypes::DataRec *FindElem(QVector<S2DataTypes::DataRec> *, quint32);
+    static Error::Msg findElemAndWriteIt(QVector<S2DataTypes::DataRec> *s2config, DataTypes::ConfParameterStruct &cfp);
     static quint32 getTime32();
     static quint32 GetCRC32(char *, quint32);
     static void updCRC32(char byte, quint32 *dwCRC32);
@@ -28,6 +29,7 @@ public:
 
     static quint32 updateCRC32(unsigned char ch, quint32 crc);
     static quint32 crc32buf(const QByteArray &data);
+
 private:
     //    const unsigned long dwPolynomial = 0xEDB88320;
 };

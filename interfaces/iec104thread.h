@@ -110,6 +110,7 @@ enum Commands
     CM104_COM45,
     CM104_COM50,
     CM104_REQFILE,
+    CM104_REQCONFIGFILE,
     CM104_WRITEFILE
 };
 
@@ -219,6 +220,7 @@ private:
     //    int incLS;
     int m_signalCounter, m_noAnswer;
     bool m_isFileSending;
+    bool m_fileIsConfigFile; // flag indicates that S2::RestoreData should be executed upon file received
     QByteArray m_file;
     QList<QByteArray> m_parseData;
     //    quint32 ReadDataSize;

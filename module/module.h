@@ -32,7 +32,7 @@ public:
     void startTimeTimer();
     void stopTimeTimer();
     void parentTWTabClicked(int index);
-    void setDefConf();
+    //    void setDefConf();
     void closeDialogs();
 
 signals:

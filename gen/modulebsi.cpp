@@ -15,7 +15,10 @@ quint32 ModuleBSI::MType = 0;
 ModuleBSI::Bsi ModuleBSI::ModuleBsi;
 QString ModuleBSI::ModuleTypeString = "";
 
-ModuleBSI::ModuleBSI() { ModuleBsi.MTypeB = ModuleBsi.MTypeM = 0xFFFFFFFF; }
+ModuleBSI::ModuleBSI()
+{
+    ModuleBsi.MTypeB = ModuleBsi.MTypeM = 0xFFFFFFFF;
+}
 
 // void ModuleBSI::USBUpdate()
 //{
@@ -44,11 +47,20 @@ ModuleBSI::ModuleBSI() { ModuleBsi.MTypeB = ModuleBsi.MTypeM = 0xFFFFFFFF; }
 
 // void ModuleBSI::MBSUpdate() { }
 
-QString ModuleBSI::GetModuleTypeString() { return ModuleTypeString; }
+QString ModuleBSI::GetModuleTypeString()
+{
+    return ModuleTypeString;
+}
 
-quint32 ModuleBSI::GetMType(BoardTypes type) { return (type == BT_MEZONIN) ? ModuleBsi.MTypeM : ModuleBsi.MTypeB; }
+quint32 ModuleBSI::GetMType(BoardTypes type)
+{
+    return (type == BT_MEZONIN) ? ModuleBsi.MTypeM : ModuleBsi.MTypeB;
+}
 
-quint32 ModuleBSI::Health() { return ModuleBsi.Hth; }
+quint32 ModuleBSI::Health()
+{
+    return ModuleBsi.Hth;
+}
 
 quint32 ModuleBSI::SerialNum(BoardTypes type)
 {
@@ -69,7 +81,20 @@ ModuleBSI::Bsi ModuleBSI::GetBsi()
     return bsi;
 }
 
-quint32 ModuleBSI::GetHealth() { return ModuleBsi.Hth; }
+quint32 ModuleBSI::GetHealth()
+{
+    return ModuleBsi.Hth;
+}
+
+bool ModuleBSI::noConfig()
+{
+    return ((Health() & HTH_CONFIG) || (StdFunc::IsInEmulateMode()));
+}
+
+bool ModuleBSI::noRegPars()
+{
+    return Health() & HTH_REGPARS;
+}
 
 bool ModuleBSI::IsKnownModule()
 {
@@ -92,13 +117,13 @@ bool ModuleBSI::IsKnownModule()
 
 Error::Msg ModuleBSI::PrereadConf(QWidget *w, S2ConfigType *S2Config)
 {
-    quint32 Bsi;
+    //    quint32 Bsi;
 
     /*    if(!StopRead)
         { */
-    Bsi = ModuleBSI::Health();
-    if ((Bsi & HTH_CONFIG) || (StdFunc::IsInEmulateMode())) // если в модуле нет конфигурации, заполнить
-                                                            // поля по умолчанию
+    //    Bsi = ModuleBSI::Health();
+    //    if ((Bsi & HTH_CONFIG) || (StdFunc::IsInEmulateMode())) // если в модуле нет конфигурации, заполнить
+    if (noConfig()) // если в модуле нет конфигурации, заполнить поля по умолчанию
         return Error::Msg::ResEmpty;
     else // иначе заполнить значениями из модуля
     {

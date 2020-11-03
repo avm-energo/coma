@@ -20,11 +20,10 @@ public:
     virtual void Fill() = 0;
     // ввести информацию из полей вывода в конфигурацию
     virtual void FillBack() = 0;
-    // задать конфигурацию по умолчанию
-    virtual void SetDefConf() = 0;
     // проверить конфигурацию на корректность, признаком наличия некорректностей является непустой список
     // CheckConfErrors
     virtual void CheckConf() = 0;
+    void setConnections() override;
 
     void ReadConf();
     //
@@ -35,7 +34,9 @@ public:
 
 public slots:
     void WriteConfMessageOk();
-    void update();
+    //    void update() override;
+    // задать конфигурацию по умолчанию
+    virtual void SetDefConf() = 0;
 
 protected:
     bool ok;
@@ -53,19 +54,20 @@ private slots:
     void ButtonReadConf();
     void WriteConf();
     //    void WritePasswordCheck(QString psw);
+    void confParameterReceived(DataTypes::ConfParametersListStruct &cfpl);
 
-public slots:
-    void FillConf(S2ConfigType *);
+    // public slots:
+    //    void FillConf(S2ConfigType *);
 
-signals:
-    void writeConfFile(S2ConfigType *);
-    void ReadConfig(char);
-    // signal to reload start block  emitted when new configuration has been sent to module
-    void BsiIsNeedToBeAcquiredAndChecked();
-    // signal to load configuration in all windows (main conf, base conf, mez conf)
-    void NewConfToBeLoaded();
-    // signal to load default configuration
-    void DefConfToBeLoaded();
+    // signals:
+    //    void writeConfFile(S2ConfigType *);
+    //    void ReadConfig(char);
+    //    // signal to reload start block  emitted when new configuration has been sent to module
+    //    void BsiIsNeedToBeAcquiredAndChecked();
+    //    // signal to load configuration in all windows (main conf, base conf, mez conf)
+    //    void NewConfToBeLoaded();
+    //    // signal to load default configuration
+    //    void DefConfToBeLoaded();
     //    void StopRead(int);
     //    void WritePasswordChecked();
 };
