@@ -53,29 +53,29 @@ QWidget *CheckKDVHarmonicDialog::BdUI(int bdnum)
     {
 
     case 0:
-        return ChHarmKDV->Bd6W(this);
+        return ChHarmKDV->BdUWidget(this,1028,2,12 );
     case 1:
-        return ChHarmKDV->Bd7W(this);
+        return ChHarmKDV->BdUWidget(this,1038,12,22);
     case 2:
-        return ChHarmKDV->Bd8W(this);
+        return ChHarmKDV->BdUWidget(this,1048,22,32);
     case 3:
-        return ChHarmKDV->Bd9W(this);
+        return ChHarmKDV->BdUWidget(this,1058,32,42);
     case 4:
-        return ChHarmKDV->Bd10W(this);
+        return ChHarmKDV->BdUWidget(this,1068,42,52);
     case 5:
-        return ChHarmKDV->Bd11W(this);
+        return ChHarmKDV->BdUWidget(this,1078,52,63);
     case 6:
-        return ChHarmKDV->Bd12W(this);
+        return ChHarmKDV->BdIWidget(this,1428,2,12);
     case 7:
-        return ChHarmKDV->Bd13W(this);
+        return ChHarmKDV->BdIWidget(this,1438,12,22);
     case 8:
-        return ChHarmKDV->Bd14W(this);
+        return ChHarmKDV->BdIWidget(this,1448,22,32);
     case 9:
-        return ChHarmKDV->Bd15W(this);
+        return ChHarmKDV->BdIWidget(this,1458,32,42);
     case 10:
-        return ChHarmKDV->Bd16W(this);
+        return ChHarmKDV->BdIWidget(this,1468,42,52);
     case 11:
-        return ChHarmKDV->Bd17W(this);
+        return ChHarmKDV->BdIWidget(this,1478,52,63);
 
     default:
         return new QWidget;
