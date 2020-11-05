@@ -1,6 +1,7 @@
 #include "confdialog.h"
 
 #include "../gen/colors.h"
+#include "../gen/datamanager.h"
 #include "../gen/error.h"
 #include "../widgets/ecombobox.h"
 #include "../widgets/wd_func.h"
@@ -13,10 +14,11 @@
 #include <QStackedWidget>
 #include <QVBoxLayout>
 
-ConfDialog::ConfDialog(S2ConfigType *S2Config, quint32 MTypeB, quint32 MTypeM, QWidget *parent)
+ConfDialog::ConfDialog(S2ConfigType *s2config, quint32 MTypeB, quint32 MTypeM, QWidget *parent)
     : AbstractConfDialog(parent)
 {
-    ConfigMain = new Config(S2Config, MTypeB, MTypeM); // добавляем к переданному S2Config общую часть
+    //    S2Config = s2config;
+    ConfigMain = new Config(s2config, MTypeB, MTypeM); // добавляем к переданному S2Config общую часть
                                                        // SetupUI();
 
     ValuesFormat = "QLabel {border: 1px solid green; border-radius: 4px; "
@@ -115,6 +117,17 @@ void ConfDialog::SetupUI()
 {
 }
 
+// void ConfDialog::setConnections()
+//{
+//    connect(&DataManager::GetInstance(), &DataManager::confParameterReceived, this,
+//    &ConfDialog::confParameterReceived);
+//}
+
+// void ConfDialog::confParameterReceived(DataTypes::ConfParameterStruct &cfp)
+//{
+//    S2::findElemAndWriteIt(S2Config, cfp);
+//}
+
 void ConfDialog::Fill()
 {
     int cbidx;
@@ -173,4 +186,7 @@ void ConfDialog::CheckConf()
 {
 }
 
-void ConfDialog::SetDefConf() { ConfigMain->SetDefBlock(); }
+void ConfDialog::SetDefConf()
+{
+    ConfigMain->SetDefBlock();
+}

@@ -17,7 +17,7 @@ public:
     ConfKDVDialog(ConfigKDV *ckdv, QWidget *parent = nullptr);
 
 private:
-    ConfigKDV *KDV;
+    ConfigKDV *CKDV;
     ConfDialog *Conf;
     ConfKxxDialog *ConfKxx;
     //    Config *ConfigMain;

@@ -453,7 +453,7 @@ void Coma::StartWork()
     if (MainTW == nullptr)
     {
         // qCritical(logCritical(), ("MainTW is empty"));
-        ERMSG("MainTW is empty");
+        ERMSG("No MainTW in widgets list");
         return;
     }
     connect(MainTW, &ETabWidget::tabClicked, this, &Coma::MainTWTabClicked);
@@ -487,9 +487,11 @@ void Coma::StartWork()
     //    if (board.interfaceType() != Board::InterfaceType::RS485)
     //        MainTW->addTab(jourDialog, "Журналы");
 
-    if (ModuleBSI::Health() & HTH_CONFIG) // нет конфигурации
+    //    if (ModuleBSI::Health() & HTH_CONFIG) // нет конфигурации
+    if (ModuleBSI::noConfig()) // нет конфигурации
         qCritical() << QVariant::fromValue(Error::Msg::NoConfError).toString();
-    if (ModuleBSI::Health() & HTH_REGPARS) // нет коэффициентов
+    //    if (ModuleBSI::Health() & HTH_REGPARS) // нет коэффициентов
+    if (ModuleBSI::noRegPars()) // нет коэффициентов
         qCritical() << QVariant::fromValue(Error::Msg::NoTuneError).toString();
     //    if (board.interfaceType() == Board::InterfaceType::USB)
     //    {
@@ -1314,14 +1316,14 @@ void Coma::MainTWTabClicked(int tabindex)
     //    }
 }
 
-void Coma::SetDefConf()
-{
-    m_Module->setDefConf();
-    //    for (unsigned char i = 0x00; i != 0x03;)
-    //        setConf(++i);
-    //    Fill();
-    QMessageBox::information(this, "Успешно", "Конфигурация по умолчанию", QMessageBox::Ok);
-}
+// void Coma::SetDefConf()
+//{
+//    m_Module->setDefConf();
+//    //    for (unsigned char i = 0x00; i != 0x03;)
+//    //        setConf(++i);
+//    //    Fill();
+//    QMessageBox::information(this, "Успешно", "Конфигурация по умолчанию", QMessageBox::Ok);
+//}
 
 void Coma::update()
 {

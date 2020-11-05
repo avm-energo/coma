@@ -268,7 +268,11 @@ void ModBus::reqBSI()
     DataManager::addToInQueue(inp);
 }
 
-void ModBus::reqFile(quint32 filenum) { Q_UNUSED(filenum) }
+void ModBus::reqFile(quint32 filenum, bool isConfigFile)
+{
+    Q_UNUSED(filenum)
+    Q_UNUSED(isConfigFile)
+}
 
 // void ModBus::reqAlarms(quint32 sigAdr, quint32 sigCount)
 //{

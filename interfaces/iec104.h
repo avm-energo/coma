@@ -120,7 +120,7 @@ public slots:
     void reqStartup(quint32 sigAdr = 0, quint32 sigCount = 0);
     void reqBSI();
     void reqAlarms(quint32 sigAdr = 0, quint32 sigCount = 0);
-    void reqFile(quint32 filenum);
+    void reqFile(quint32 filenum, bool isConfigFile);
     void writeFile(quint32 filenum, const QByteArray &file);
     void writeConfigFile(S2ConfigType *s2config);
     void reqTime();

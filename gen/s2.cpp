@@ -244,6 +244,28 @@ S2DataTypes::DataRec *S2::FindElem(QVector<S2DataTypes::DataRec> *dr, quint32 id
     return nullptr;
 }
 
+Error::Msg S2::findElemAndWriteIt(QVector<S2DataTypes::DataRec> *s2config, DataTypes::ConfParameterStruct &cfp)
+{
+    for (QVector<S2DataTypes::DataRec>::iterator it = s2config->begin(); it != s2config->end(); ++it)
+    {
+        S2DataTypes::DataRec R = *it;
+        if (R.id == cfp.ID)
+        {
+            if (R.num_byte == static_cast<quint32>(cfp.data.size()))
+            {
+                memcpy(&R.thedata, cfp.data, cfp.data.size());
+                return Error::Msg::NoError;
+            }
+            else
+            {
+                ERMSG("S2: Wrong element size in ConfParameter");
+                return Error::Msg::S2_DHSZERROR;
+            }
+        }
+    }
+    return Error::Msg::ResEmpty;
+}
+
 void inline S2::updCRC32(char byte, quint32 *dwCRC32)
 {
     *dwCRC32 = ((*dwCRC32) >> 8) ^ _crc32_t[static_cast<quint8>(byte) ^ ((*dwCRC32) & 0x000000FF)];

@@ -45,10 +45,10 @@ AlarmWidget::AlarmWidget(QWidget *parent) : QWidget(parent)
     //    hlyout->addWidget(WDFunc::NewLBL(this, "", "", QString::number(953), &map), 1);
     //    hlyout2->addLayout(hlyout);
 
-    QHBoxLayout *hlyout = new QHBoxLayout;
-    QPixmap map;
-    hlyout->addWidget(WDFunc::NewLBL(this, "", "", QString::number(953), &map, "Индикатор включения машины"), 1);
-    hlyout2->addLayout(hlyout);
+    //    QHBoxLayout *hlyout = new QHBoxLayout;
+    //    QPixmap map;
+    //    hlyout->addWidget(WDFunc::NewLBL(this, "", "", QString::number(953), &map, "Индикатор включения машины"), 1);
+    //    hlyout2->addLayout(hlyout);
 
     if (hlyout2->count())
         vlyout->addLayout(hlyout2);

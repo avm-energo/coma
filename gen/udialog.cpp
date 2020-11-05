@@ -2,18 +2,18 @@
 
 UDialog::UDialog(QWidget *parent) : QDialog(parent)
 {
-    m_updatesEnabled = false;
+    //    m_updatesEnabled = false;
 }
 
-void UDialog::setUpdatesEnabled()
-{
-    m_updatesEnabled = true;
-}
+// void UDialog::setUpdatesEnabled()
+//{
+//    m_updatesEnabled = true;
+//}
 
-void UDialog::setUpdatesDisabled()
-{
-    m_updatesEnabled = false;
-}
+// void UDialog::setUpdatesDisabled()
+//{
+//    m_updatesEnabled = false;
+//}
 
 const QString UDialog::getCaption()
 {
@@ -35,6 +35,6 @@ BaseInterface *UDialog::iface()
     return m_iface;
 }
 
-void UDialog::update()
-{
-}
+// void UDialog::update()
+//{
+//}
