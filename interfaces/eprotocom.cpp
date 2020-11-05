@@ -3,6 +3,7 @@
 #include "../gen/board.h"
 #include "../gen/datamanager.h"
 #include "../gen/error.h"
+#include "../gen/pch.h"
 #include "../gen/stdfunc.h"
 #include "defines.h"
 
@@ -21,69 +22,15 @@
 // clang-format on
 #endif
 
-#if _MSC_VER && !__INTEL_COMPILER
-#define __PRETTY_FUNCTION__ __FUNCSIG__
-#endif
-
-const QMap<Queries::Commands, CN::Commands> EProtocom::m_dict {
-    { Queries::Commands::QC_StartFirmwareUpgrade, CN::Commands::WriteUpgrade },
+const QMap<Queries::Commands, CN::Commands> EProtocom::m_dict { { Queries::Commands::QC_StartFirmwareUpgrade,
+                                                                    CN::Commands::WriteUpgrade },
     { Queries::QC_SetStartupValues, CN::Commands::WriteStartupValues },
     { Queries::QC_ClearStartupValues, CN::Commands::EraseStartupValues },
-    { Queries::QC_SetNewConfiguration, CN::Commands::WriteInitValues }
-
-};
+    { Queries::QC_SetNewConfiguration, CN::Commands::WriteInitValues },
+    { Queries::QC_EraseJournals, CN::Commands::EraseStartupValues },
+    { Queries::QC_EraseTechBlock, CN::Commands::EraseStartupValues }, { Queries::QC_Test, CN::Commands::Test } };
 
 bool EProtocom::m_writeUSBLog;
-
-// namespace Read
-//{
-//// чтение блока стартовой информации
-// constexpr byte BlkStartInfo = 0x21;
-//// чтение настроечных коэффициентов
-// constexpr byte BlkAC = 0x22;
-//// чтение текущих данных без настройки
-// constexpr byte BlkDataA = 0x23;
-//// чтение блока текущих данных
-// constexpr byte BlkData = 0x24;
-//// чтение технологического блока
-// constexpr byte BlkTech = 0x26;
-//// чтение файла
-// constexpr byte File = 0x25;
-//// чтение номера варианта использования
-// constexpr byte Variant = 0x27;
-//// чтение текущего режима работы
-// constexpr byte Mode = 0x28;
-//// чтение времени из МНК в формате UNIX
-// constexpr byte Time = 0x29;
-
-//} // namespace Read
-// namespace Write
-//{
-//// запись настроечных коэффициентов
-// constexpr byte BlkAC = 0x31;
-//// посылка блока данных
-// constexpr byte BlkData = 0x34;
-//// посылка команды
-// constexpr byte BlkCmd = 0x35;
-//// запись технологического блока
-// constexpr byte BlkTech = 0x2B;
-//// запись файла
-// constexpr byte File = 0x32;
-//// задание варианта использования
-// constexpr byte Variant = 0x44;
-//// задание текущего режима работы
-// constexpr byte Mode = 0x43;
-//// запись времени в МНК в формате UNIX
-// constexpr byte Time = 0x2A;
-//// переход на новое ПО
-// constexpr byte Upgrade = 0x40;
-//// стирание технологического блока
-// constexpr byte EraseTech = 0x45;
-//// стирание счётчиков дискретных состояний
-// constexpr byte EraseCnt = 0x47;
-//// запись версии аппаратуры модуля/серийного номера/типа платы
-// constexpr byte Hardware = 0x48;
-//} // namespace Write
 
 EProtocom::EProtocom(token, QWidget *parent) : BaseInterface(parent)
 {
@@ -869,8 +816,9 @@ void EProtocom::reqTime()
     DataManager::addToInQueue(inp);
 }
 
-void EProtocom::reqFile(quint32 filenum)
+void EProtocom::reqFile(quint32 filenum, bool isConfigFile)
 {
+    // TODO Как использовать флаг?
     CommandStruct inp {
         CN::Commands::ReadFile, // Command
         filenum,                // File number
@@ -882,6 +830,13 @@ void EProtocom::reqFile(quint32 filenum)
 
 void EProtocom::reqStartup(quint32 sigAdr, quint32 sigCount)
 {
+    CommandStruct inp {
+        CN::Commands::ReadBlkData,                                 // Command
+        sigAdr,                                                    // Board type
+        sigCount,                                                  // Empty float arg
+        QByteArray(sizeof(sigCount) * sigCount, Qt::Uninitialized) // Buffer for bsi
+    };
+    DataManager::addToInQueue(inp);
 }
 
 void EProtocom::reqBSI()

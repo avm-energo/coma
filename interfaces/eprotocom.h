@@ -31,7 +31,7 @@ public:
     bool start(const ConnectStruct &st) override;
 
     void reqTime() override;
-    void reqFile(quint32 filenum) override;
+    void reqFile(quint32 filenum, bool isConfigFile = false) override;
     void reqStartup(quint32 sigAdr, quint32 sigCount) override;
     void reqBSI() override;
 
