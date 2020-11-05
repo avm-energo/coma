@@ -12,7 +12,7 @@
 #define __PRETTY_FUNCTION__ __FUNCSIG__
 #endif
 
-AlarmStateAll::AlarmStateAll(QWidget *parent) : UDialog(parent)
+AlarmStateAll::AlarmStateAll(QWidget *parent) : QWidget(parent)
 {
     QVBoxLayout *lyout = new QVBoxLayout;
     QVBoxLayout *vlayout = new QVBoxLayout;
@@ -49,6 +49,7 @@ AlarmStateAll::AlarmStateAll(QWidget *parent) : UDialog(parent)
     connect(pb, SIGNAL(clicked()), this, SLOT(hide()));
     lyout->addWidget(pb, 0);
     this->setLayout(lyout);
+    connect(&ModuleBSI::GetInstance(), &ModuleBSI::BSIHealthUpdated, this, &AlarmStateAll::UpdateHealth);
 }
 
 // void AlarmStateAll::AlarmState()
@@ -75,10 +76,5 @@ void AlarmStateAll::UpdateHealth(quint32 health)
 
 void AlarmStateAll::update()
 {
-    if (m_updatesEnabled)
-        UpdateHealth(ModuleBSI::ModuleBsi.Hth);
-}
-
-void AlarmStateAll::setConnections()
-{
+    UpdateHealth(ModuleBSI::ModuleBsi.Hth);
 }

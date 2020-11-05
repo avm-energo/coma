@@ -1,6 +1,7 @@
 #include "alarmwidget.h"
 
 #include "../gen/board.h"
+#include "../gen/datamanager.h"
 
 #include <QBoxLayout>
 #include <QDebug>

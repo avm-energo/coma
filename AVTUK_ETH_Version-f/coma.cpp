@@ -781,10 +781,11 @@ void Coma::setupConnections()
     connect(AlarmW, &AlarmWidget::AlarmButtonPressed, m_Module->getAlarmStateAll(), &QDialog::show);
     connect(AlarmW, &AlarmWidget::ModuleWarnButtonPressed, m_Module->getWarn(), &QDialog::show);
     connect(AlarmW, &AlarmWidget::ModuleAlarmButtonPressed, m_Module->getAlarm(), &QDialog::show);
-    connect(AlrmTimer, &QTimer::timeout, Alarm, &AlarmClass::update);
+    //    connect(AlrmTimer, &QTimer::timeout, Alarm, &AlarmClass::update);
     //    if (AlarmStateAllDialog != nullptr)
     //        connect(AlrmTimer, &QTimer::timeout, AlarmStateAllDialog, &AlarmStateAll::CallUpdateHealth);
-    connect(BdaTimer, &QTimer::timeout, this, &Coma::update);
+    //    connect(BdaTimer, &QTimer::timeout, this, &Coma::update);
+    connect(&DataManager::GetInstance(), &DataManager::responseReceived, this, &Coma::update);
     //    connect(BdaTimer, &QTimer::timeout, Alarm, &AlarmClass::UpdateAlarmUSB);
     //    //   connect(BdaTimer, &QTimer::timeout, AlarmStateAllDialog, &AlarmStateAll::UpdateHealth);
 
@@ -1131,7 +1132,7 @@ void Coma::Connect()
 {
     m_BSITimer->start();
     auto const &board = Board::GetInstance();
-    Error::Msg res;
+    //    Error::Msg res;
     switch (board.interfaceType())
     {
     case Board::InterfaceType::USB:
@@ -1324,21 +1325,23 @@ void Coma::MainTWTabClicked(int tabindex)
 //    QMessageBox::information(this, "Успешно", "Конфигурация по умолчанию", QMessageBox::Ok);
 //}
 
-void Coma::update()
+void Coma::update(DataTypes::GeneralResponseStruct &rsp)
 {
-    DataTypes::GeneralResponseStruct rs;
-    if (DataManager::getResponse(DataTypes::GeneralResponseTypes::DataCount, rs) != Error::Msg::ResEmpty)
-        SetProgressBar1(rs.data);
-    if (DataManager::getResponse(DataTypes::GeneralResponseTypes::DataSize, rs) != Error::Msg::ResEmpty)
-        SetProgressBar1Size(rs.data);
-    if (ModuleBSI::update())
-    {
-        if (AlarmStateAllDialog != nullptr)
-            AlarmStateAllDialog->UpdateHealth(ModuleBSI::ModuleBsi.Hth);
-    }
+    //    DataTypes::GeneralResponseStruct rs;
+    //    if (DataManager::getResponse(DataTypes::GeneralResponseTypes::DataCount, rs) != Error::Msg::ResEmpty)
+    if (rsp.type == DataTypes::GeneralResponseTypes::DataCount)
+        SetProgressBar1(rsp.data);
+    //    if (DataManager::getResponse(DataTypes::GeneralResponseTypes::DataSize, rs) != Error::Msg::ResEmpty)
+    if (rsp.type == DataTypes::GeneralResponseTypes::DataSize)
+        SetProgressBar1Size(rsp.data);
+    //    if (ModuleBSI::update())
+    //    {
+    //        if (AlarmStateAllDialog != nullptr)
+    //            AlarmStateAllDialog->UpdateHealth(ModuleBSI::ModuleBsi.Hth);
+    //    }
     // send alarms query
-    Warn *w = m_Module->getWarn();
-    m_iface->reqAlarms(w->m_startWarnAddress, 32);
+    //    Warn *w = m_Module->getWarn();
+    //    m_iface->reqAlarms(w->m_startWarnAddress, 32);
 }
 
 void Coma::closeEvent(QCloseEvent *event)

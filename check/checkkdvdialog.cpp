@@ -116,9 +116,15 @@ void CheckKDVDialog::WriteToFile(int row, int bdnum)
     Q_UNUSED(bdnum);
 }
 
-void CheckKDVDialog::ChooseValuesToWrite() { }
-void CheckKDVDialog::SetDefaultValuesToWrite() { }
-void CheckKDVDialog::PrepareAnalogMeasurements() { }
+void CheckKDVDialog::ChooseValuesToWrite()
+{
+}
+void CheckKDVDialog::SetDefaultValuesToWrite()
+{
+}
+void CheckKDVDialog::PrepareAnalogMeasurements()
+{
+}
 
 void CheckKDVDialog::setConnections()
 {
@@ -250,18 +256,22 @@ void CheckKDVDialog::SetAlarmColor(int position, bool value)
         WDFunc::SetLBLTColor(this, QString::number(2432), (value) ? Colors::REDCOLOR : Colors::ACONFOCLR);
 }
 
-void CheckKDVDialog::updateFloatData()
+void CheckKDVDialog::updateFloatData(DataTypes::FloatStruct &floatsignal)
 {
-    QList<DataTypes::SignalsStruct> list;
-    DataManager::getSignals(0, 99999, DataTypes::SignalTypes::FloatWithTime, list);
-    if (!list.isEmpty())
-    {
-        foreach (DataTypes::SignalsStruct signal, list)
-        {
-            DataTypes::FloatWithTimeStruct fwt = qvariant_cast<DataTypes::FloatWithTimeStruct>(signal.data);
-            ChKDV->FillBd(this, QString::number(fwt.sigAdr), WDFunc::StringValueWithCheck(fwt.sigVal, 3));
-        }
-    }
+    if (updatesEnabled())
+        ChKDV->FillBd(this, QString::number(floatsignal.sigAdr), WDFunc::StringValueWithCheck(floatsignal.sigVal, 3));
+    //    {
+    //        QList<DataTypes::SignalsStruct> list;
+    //        DataManager::getSignals(0, 99999, DataTypes::SignalTypes::FloatWithTime, list);
+    //        if (!list.isEmpty())
+    //        {
+    //            foreach (DataTypes::SignalsStruct signal, list)
+    //            {
+    //                DataTypes::FloatWithTimeStruct fwt = qvariant_cast<DataTypes::FloatWithTimeStruct>(signal.data);
+    //                ChKDV->FillBd(this, QString::number(fwt.sigAdr), WDFunc::StringValueWithCheck(fwt.sigVal, 3));
+    //            }
+    //        }
+    //    }
 }
 
 /*void CheckKDVDialog::UpdateModBusData(QList<ModBus::SignalStruct> Signal)

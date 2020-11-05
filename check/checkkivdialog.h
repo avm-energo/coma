@@ -18,9 +18,10 @@ public slots:
     void SetWarnColor(int position, bool value) override;
     void getFloatData();
     void getSPData();
-    void updateFloatData();
-    void updateSPData();
+    void updateFloatData(DataTypes::FloatStruct &fl);
+    void updateSPData(DataTypes::SinglePointWithTimeStruct &sp);
     //    void MainTWTabClicked(int tabindex);
+    void setConnections() override;
     void update() override;
 
 private:

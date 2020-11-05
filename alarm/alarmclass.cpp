@@ -42,6 +42,7 @@ AlarmClass::AlarmClass(QObject *parent) : QObject(parent)
 
     //    MapAlarm[Board::DeviceModel::KIV] = KIV;
     //    MapAlarm[Board::DeviceModel::KTF] = KTF;
+    connect(&DataManager::GetInstance(), &DataManager::bitStringReceived, this, &AlarmClass::updateAlarms);
 }
 
 void AlarmClass::setModule(Module *m)
@@ -167,7 +168,7 @@ void AlarmClass::setModule(Module *m)
 //{
 //}
 
-void AlarmClass::update()
+void AlarmClass::updateAlarms(DataTypes::BitStringStruct &bs)
 {
     if (!m_moduleIsSet)
     {
@@ -176,57 +177,60 @@ void AlarmClass::update()
     }
     try
     {
-        // send read alarms command
         Warn *w = m_Module->getWarn();
         Alarm *a = m_Module->getAlarm();
+        // send read alarms command
         //        WarnAlarmEvents.clear();
         //        AvarAlarmEvents.clear();
-        int index = 0;
+        //        int index = 0;
         bool warnFlag = false;  // warning flag
         bool alarmFlag = false; // alarm flag
         quint32 minAddress = w->m_startWarnAddress;
         quint32 maxAddress = w->m_startWarnAddress + 31; // only 32 bits
-        QList<DataTypes::SignalsStruct> list;
-        DataManager::getSignals(minAddress, maxAddress, DataTypes::SignalTypes::SinglePointWithTime, list);
-        if (!list.isEmpty())
+        if ((bs.sigAdr >= minAddress) && (bs.sigAdr <= maxAddress))
         {
-            foreach (DataTypes::SignalsStruct signal, list)
-            {
-                DataTypes::SinglePointWithTimeStruct sp
-                    = qvariant_cast<DataTypes::SinglePointWithTimeStruct>(signal.data);
+            //        QList<DataTypes::SignalsStruct> list;
+            //        DataManager::getSignals(minAddress, maxAddress, DataTypes::SignalTypes::SinglePointWithTime,
+            //        list); if (!list.isEmpty())
+            //        {
+            //            foreach (DataTypes::SignalsStruct signal, list)
+            //            {
+            //                DataTypes::SinglePointWithTimeStruct sp
+            //                    = qvariant_cast<DataTypes::SinglePointWithTimeStruct>(signal.data);
 
-                //        for (int i = 0; i < Signal->SigNumber; i++)
-                //        {
-                quint8 sigval = sp.sigVal;
-                if (!(sigval & 0x80))
+            //        for (int i = 0; i < Signal->SigNumber; i++)
+            //        {
+            int index = bs.sigAdr - minAddress;
+            quint8 sigval = bs.sigVal;
+            if (!(sigval & 0x80))
+            {
+                //                quint32 sigadr = Signal->Spon[i].SigAdr;
+                //                if ((minAddress <= sigadr) && (sigadr <= maxAddress))
+                //                {
+                if (w->m_warnFlags[index])
                 {
-                    //                quint32 sigadr = Signal->Spon[i].SigAdr;
-                    //                if ((minAddress <= sigadr) && (sigadr <= maxAddress))
-                    //                {
-                    if (w->m_warnFlags[index])
-                    {
-                        warnFlag = true;
-                        w->updatePixmap(sigval & 0x00000001, index);
-                    }
-                    if (a->m_alarmFlags[index])
-                    {
-                        alarmFlag = true;
-                        a->updatePixmap(sigval & 0x00000001, index);
-                    }
-                    ++index;
-                    //                }
-                    //                bool alarm = (sigval & 0x00000001) ? 1 : 0;
-                    //                quint32 AdrAlarm = MapAlarm[Board::GetInstance().type()].AdrAlarm;
-                    //                int WarnsSize = MapAlarm[Board::GetInstance().type()].warns.size();
-                    //                if ((AdrAlarm <= sigadr) && (sigadr <= AdrAlarm + WarnsSize))
-                    //                {
-                    //                    if (MapAlarm[Board::GetInstance().type()].warns.at(i))
-                    //                        WarnAlarmEvents.append(alarm);
-                    //                    else if (MapAlarm[Board::GetInstance().type()].avars.at(i))
-                    //                        AvarAlarmEvents.append(alarm);
-                    //                }
+                    warnFlag = true;
+                    w->updatePixmap(sigval & 0x00000001, index);
                 }
+                if (a->m_alarmFlags[index])
+                {
+                    alarmFlag = true;
+                    a->updatePixmap(sigval & 0x00000001, index);
+                }
+                //                ++index;
+                //                }
+                //                bool alarm = (sigval & 0x00000001) ? 1 : 0;
+                //                quint32 AdrAlarm = MapAlarm[Board::GetInstance().type()].AdrAlarm;
+                //                int WarnsSize = MapAlarm[Board::GetInstance().type()].warns.size();
+                //                if ((AdrAlarm <= sigadr) && (sigadr <= AdrAlarm + WarnsSize))
+                //                {
+                //                    if (MapAlarm[Board::GetInstance().type()].warns.at(i))
+                //                        WarnAlarmEvents.append(alarm);
+                //                    else if (MapAlarm[Board::GetInstance().type()].avars.at(i))
+                //                        AvarAlarmEvents.append(alarm);
+                //                }
             }
+            //            }
 
             //        emit SetWarnAlarmColor(WarnAlarmEvents);
             //        emit SetAlarmColor(AvarAlarmEvents);

@@ -57,7 +57,7 @@ public:
     // Check_84();
     QWidget *Bd1W(QWidget *parent);
     QWidget *Bd2W(QWidget *parent);
-    QWidget *Bd3W(QWidget *parent);
+    //    QWidget *Bd3W(QWidget *parent);
     void FillBd(QWidget *parent, QString Name, QString Value);
     void FillBdUSB(QWidget *parent);
     void FillBd8(QWidget *parent);

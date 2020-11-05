@@ -66,7 +66,7 @@ public slots:
     //    void UpdateAlarmUSB();
     //    void UpdateAlarmModBus();
     //    void UpdateAlarm104();
-    void update();
+    void updateAlarms(DataTypes::BitStringStruct &bs);
 
 private:
     Module *m_Module;

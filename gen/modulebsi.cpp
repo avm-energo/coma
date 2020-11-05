@@ -15,9 +15,10 @@ quint32 ModuleBSI::MType = 0;
 ModuleBSI::Bsi ModuleBSI::ModuleBsi;
 QString ModuleBSI::ModuleTypeString = "";
 
-ModuleBSI::ModuleBSI()
+ModuleBSI::ModuleBSI(Singleton::token, QObject *parent) : QObject(parent)
 {
     ModuleBsi.MTypeB = ModuleBsi.MTypeM = 0xFFFFFFFF;
+    connect(&DataManager::GetInstance(), &DataManager::bitStringReceived, this, &ModuleBSI::update);
 }
 
 // void ModuleBSI::USBUpdate()
@@ -115,31 +116,31 @@ bool ModuleBSI::IsKnownModule()
     return false;
 }
 
-Error::Msg ModuleBSI::PrereadConf(QWidget *w, S2ConfigType *S2Config)
-{
-    //    quint32 Bsi;
+// Error::Msg ModuleBSI::PrereadConf(QWidget *w, S2ConfigType *S2Config)
+//{
+//    //    quint32 Bsi;
 
-    /*    if(!StopRead)
-        { */
-    //    Bsi = ModuleBSI::Health();
-    //    if ((Bsi & HTH_CONFIG) || (StdFunc::IsInEmulateMode())) // если в модуле нет конфигурации, заполнить
-    if (noConfig()) // если в модуле нет конфигурации, заполнить поля по умолчанию
-        return Error::Msg::ResEmpty;
-    else // иначе заполнить значениями из модуля
-    {
-        // iec104::GetFile();
-        if ((Commands::GetFileWithRestore(1, S2Config)) != Error::Msg::NoError)
-        {
-            QString tmps = ((DEVICETYPE == DEVICETYPE_MODULE) ? "модуля " : "прибора ");
-            QMessageBox::critical(w, "ошибка", "Ошибка чтения конфигурации из " + tmps);
-            return Error::Msg::GeneralError;
-        }
-    }
-    //    }
-    return Error::Msg::NoError;
-}
+//    /*    if(!StopRead)
+//        { */
+//    //    Bsi = ModuleBSI::Health();
+//    //    if ((Bsi & HTH_CONFIG) || (StdFunc::IsInEmulateMode())) // если в модуле нет конфигурации, заполнить
+//    if (noConfig()) // если в модуле нет конфигурации, заполнить поля по умолчанию
+//        return Error::Msg::ResEmpty;
+//    else // иначе заполнить значениями из модуля
+//    {
+//        // iec104::GetFile();
+//        if ((Commands::GetFileWithRestore(1, S2Config)) != Error::Msg::NoError)
+//        {
+//            QString tmps = ((DEVICETYPE == DEVICETYPE_MODULE) ? "модуля " : "прибора ");
+//            QMessageBox::critical(w, "ошибка", "Ошибка чтения конфигурации из " + tmps);
+//            return Error::Msg::GeneralError;
+//        }
+//    }
+//    //    }
+//    return Error::Msg::NoError;
+//}
 
-bool ModuleBSI::update()
+void ModuleBSI::update(DataTypes::BitStringStruct &bs)
 {
     //    switch (Board::GetInstance().interfaceType())
     //    {
@@ -155,30 +156,32 @@ bool ModuleBSI::update()
     //    default:
     //        break;
     //    }
-    QList<DataTypes::SignalsStruct> list;
-    DataManager::getSignals(BSIREG, BSIENDREG, DataTypes::SignalTypes::BitString, list);
-    if (!list.isEmpty())
-    {
-        foreach (DataTypes::SignalsStruct signal, list)
-        {
-            DataTypes::BitStringStruct bs = qvariant_cast<DataTypes::BitStringStruct>(signal.data);
-            //            memcpy(&startadr, &(sig->BS.SigAdr[0]), sizeof(sig->BS.SigAdr));
-            //            signum = sig->SigNumber;
-            //            INFOMSG("FillBSIe(): address=" + QString::number(startadr));
+    //    QList<DataTypes::SignalsStruct> list;
+    //    DataManager::getSignals(BSIREG, BSIENDREG, DataTypes::SignalTypes::BitString, list);
+    //    if (!list.isEmpty())
+    //    {
+    //        foreach (DataTypes::SignalsStruct signal, list)
+    //        {
+    //            DataTypes::BitStringStruct bs = qvariant_cast<DataTypes::BitStringStruct>(signal.data);
+    //            memcpy(&startadr, &(sig->BS.SigAdr[0]), sizeof(sig->BS.SigAdr));
+    //            signum = sig->SigNumber;
+    //            INFOMSG("FillBSIe(): address=" + QString::number(startadr));
 
-            //            if ((signum < sizeof(ModuleBSI::ModuleBsi)) && (startadr >= BSIREG && startadr <= BSIENDREG))
-            //            {
-            //                for (size_t i = 0; i < signum; ++i)
-            //                    memcpy(((quint32 *)(&ModuleBSI::ModuleBsi) + (i + startadr - 1)), (((quint32
-            //                    *)(&sig->BS.SigVal) + 4 * i)),
-            //                        sizeof(sig->BS.SigVal));
-            memcpy(((quint32 *)(&ModuleBSI::ModuleBsi) + (bs.sigAdr - 1)), &bs.sigVal, sizeof(quint32));
-        }
-        Board::GetInstance().setTypeB(ModuleBSI::GetMType(BoardTypes::BT_BASE));
-        Board::GetInstance().setTypeM(ModuleBSI::GetMType(BoardTypes::BT_MEZONIN));
-        return true;
-    }
-    return false;
+    //            if ((signum < sizeof(ModuleBSI::ModuleBsi)) && (startadr >= BSIREG && startadr <= BSIENDREG))
+    //            {
+    //                for (size_t i = 0; i < signum; ++i)
+    //                    memcpy(((quint32 *)(&ModuleBSI::ModuleBsi) + (i + startadr - 1)), (((quint32
+    //                    *)(&sig->BS.SigVal) + 4 * i)),
+    //                        sizeof(sig->BS.SigVal));
+    memcpy(((quint32 *)(&ModuleBSI::ModuleBsi) + (bs.sigAdr - 1)), &bs.sigVal, sizeof(quint32));
+    if (bs.sigAdr == BSIHTHREG)
+        emit ModuleBSI::GetInstance().BSIHealthUpdated(GetHealth());
+    //        }
+    Board::GetInstance().setTypeB(ModuleBSI::GetMType(BoardTypes::BT_BASE));
+    Board::GetInstance().setTypeM(ModuleBSI::GetMType(BoardTypes::BT_MEZONIN));
+    //        return true;
+    //    }
+    //    return false;
 }
 
 // void MBSUpdate()

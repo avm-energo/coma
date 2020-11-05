@@ -3,6 +3,9 @@
 
 #include "../gen/error.h"
 #include "../gen/s2.h"
+#include "singleton.h"
+
+#include <QObject>
 
 #define MAXERRORFLAGNUM 32
 
@@ -16,6 +19,7 @@
 #define HTH_TUPP 0x00000004    // перегрев модуля
 
 #define BSIREG 1
+#define BSIHTHREG 15
 #define BSIENDREG 15 // конечный регистр BSI в 104 и modbus
 
 enum BoardTypes
@@ -27,8 +31,9 @@ enum BoardTypes
     BT_MODULE = 4
 };
 
-class ModuleBSI
+class ModuleBSI : public QObject, public Singleton<ModuleBSI>
 {
+    Q_OBJECT
 public:
     typedef struct
     {
@@ -49,7 +54,7 @@ public:
         quint32 Hth;
     } Bsi;
 
-    ModuleBSI();
+    ModuleBSI(token, QObject *parent = nullptr);
 
     //    static void USBUpdate();
     //    static void ETHUpdate();
@@ -63,15 +68,16 @@ public:
     static bool noConfig();
     static bool noRegPars();
     static bool IsKnownModule();
-    static Error::Msg PrereadConf(QWidget *w, S2ConfigType *S2Config);
+    //    static Error::Msg PrereadConf(QWidget *w, S2ConfigType *S2Config);
     static Bsi ModuleBsi;
     static QString ModuleTypeString;
 
 signals:
-    void readConf();
+    //    void readConf();
+    void BSIHealthUpdated(quint32 health);
 
 public slots:
-    static bool update(); // if there's no any updates, return false
+    static void update(DataTypes::BitStringStruct &bs); // if there's no any updates, return false
     // int PrereadConf(QWidget *w, S2ConfigType *S2Config);
 
 private:

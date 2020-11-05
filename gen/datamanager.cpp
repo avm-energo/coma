@@ -194,6 +194,15 @@ void DataManager::checkTypeAndSendSignals(DataTypes::SignalsStruct &str)
         }
         break;
     }
+    case DataTypes::SinglePointWithTime:
+    {
+        if (str.data.canConvert<DataTypes::SinglePointWithTimeStruct>())
+        {
+            DataTypes::SinglePointWithTimeStruct sp = qvariant_cast<DataTypes::SinglePointWithTimeStruct>(str.data);
+            emit DataManager::GetInstance().singlePointReceived(sp);
+        }
+        break;
+    }
     case DataTypes::Float:
     case DataTypes::FloatWithTime:
     {

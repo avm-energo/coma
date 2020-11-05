@@ -1,11 +1,11 @@
 #ifndef ALARMSTATEALL_H
 #define ALARMSTATEALL_H
 
-#include "../gen/udialog.h"
-
 #define CIRCLE_RADIUS 15
 
-class AlarmStateAll : public UDialog
+#include <QWidget>
+
+class AlarmStateAll : public QWidget
 {
     Q_OBJECT
 public:
@@ -17,7 +17,7 @@ public slots:
     void UpdateHealth(quint32 health);
     //    void CallUpdateHealth();
 
-    void update() override;
+    void update();
 
     static QStringList HthToolTip()
     {
@@ -46,8 +46,6 @@ signals:
 
 private:
     const QList<int> WarnPositions = { 1, 3, 5, 7, 13 };
-
-    void setConnections() override;
 };
 
 #endif // ALARMSTATE_H

@@ -15,7 +15,7 @@ public:
 public slots:
     void SetWarnColor(int position, bool value) override;
     void SetAlarmColor(int position, bool value) override;
-    void updateFloatData();
+    void updateFloatData(DataTypes::FloatStruct &floatsignal);
     //    void USBUpdate() override;
     //    void ETHUpdate() override;
     //    void MBSUpdate() override;

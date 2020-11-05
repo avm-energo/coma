@@ -72,6 +72,7 @@ public:
 signals:
     void dataReceived(DataTypes::SignalsStruct &);
     void bitStringReceived(DataTypes::BitStringStruct &);
+    void singlePointReceived(DataTypes::SinglePointWithTimeStruct &);
     void floatReceived(DataTypes::FloatStruct &);
     void fileReceived(DataTypes::FileStruct &);
     void confParametersReceived(DataTypes::ConfParametersListStruct &);

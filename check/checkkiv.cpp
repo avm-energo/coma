@@ -206,73 +206,73 @@ QWidget *CheckKIV::Bd2W(QWidget *parent)
     return w;
 }
 
-QWidget *CheckKIV::Bd3W(QWidget *parent)
-{
+// QWidget *CheckKIV::Bd3W(QWidget *parent)
+//{
 
-    QWidget *w = new QWidget(parent);
-    QVBoxLayout *lyout = new QVBoxLayout;
-    QGridLayout *glyout = new QGridLayout;
-    QString phase[3] = { "A", "B", "C" };
-    QFont font;
-    QString title;
+//    QWidget *w = new QWidget(parent);
+//    QVBoxLayout *lyout = new QVBoxLayout;
+//    QGridLayout *glyout = new QGridLayout;
+//    QString phase[3] = { "A", "B", "C" };
+//    QFont font;
+//    QString title;
 
-    QGroupBox *gb = new QGroupBox("Отладка");
-    font.setFamily("Times");
-    font.setPointSize(11);
-    // setFont(font);
-    gb->setFont(font);
-    // gb->setTitle(title);
-    QVBoxLayout *vlyout2 = new QVBoxLayout;
-    QVBoxLayout *vlyout1 = new QVBoxLayout;
+//    QGroupBox *gb = new QGroupBox("Отладка");
+//    font.setFamily("Times");
+//    font.setPointSize(11);
+//    // setFont(font);
+//    gb->setFont(font);
+//    // gb->setTitle(title);
+//    QVBoxLayout *vlyout2 = new QVBoxLayout;
+//    QVBoxLayout *vlyout1 = new QVBoxLayout;
 
-    glyout->addWidget(WDFunc::NewLBL(parent, "13000"), 0, 0, 1, 1);
-    glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(13000), ValuesFormat, ""), 1, 0, 1, 1);
-    glyout->addWidget(WDFunc::NewLBL(parent, "13001"), 0, 1, 1, 1);
-    glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(13001), ValuesFormat, ""), 1, 1, 1, 1);
-    glyout->addWidget(WDFunc::NewLBL(parent, "13002"), 0, 2, 1, 1);
-    glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(13002), ValuesFormat, ""), 1, 2, 1, 1);
+//    glyout->addWidget(WDFunc::NewLBL(parent, "13000"), 0, 0, 1, 1);
+//    glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(13000), ValuesFormat, ""), 1, 0, 1, 1);
+//    glyout->addWidget(WDFunc::NewLBL(parent, "13001"), 0, 1, 1, 1);
+//    glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(13001), ValuesFormat, ""), 1, 1, 1, 1);
+//    glyout->addWidget(WDFunc::NewLBL(parent, "13002"), 0, 2, 1, 1);
+//    glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(13002), ValuesFormat, ""), 1, 2, 1, 1);
 
-    glyout->addWidget(WDFunc::NewLBL(parent, "13003"), 2, 0, 1, 1);
-    glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(13003), ValuesFormat, ""), 3, 0, 1, 1);
-    glyout->addWidget(WDFunc::NewLBL(parent, "13004"), 2, 1, 1, 1);
-    glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(13004), ValuesFormat, ""), 3, 1, 1, 1);
-    glyout->addWidget(WDFunc::NewLBL(parent, "13005"), 2, 2, 1, 1);
-    glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(13005), ValuesFormat, ""), 3, 2, 1, 1);
+//    glyout->addWidget(WDFunc::NewLBL(parent, "13003"), 2, 0, 1, 1);
+//    glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(13003), ValuesFormat, ""), 3, 0, 1, 1);
+//    glyout->addWidget(WDFunc::NewLBL(parent, "13004"), 2, 1, 1, 1);
+//    glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(13004), ValuesFormat, ""), 3, 1, 1, 1);
+//    glyout->addWidget(WDFunc::NewLBL(parent, "13005"), 2, 2, 1, 1);
+//    glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(13005), ValuesFormat, ""), 3, 2, 1, 1);
 
-    glyout->addWidget(WDFunc::NewLBL(parent, "13006"), 4, 0, 1, 1);
-    glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(13006), ValuesFormat, ""), 5, 0, 1, 1);
-    glyout->addWidget(WDFunc::NewLBL(parent, "13007"), 4, 1, 1, 1);
-    glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(13007), ValuesFormat, ""), 5, 1, 1, 1);
-    glyout->addWidget(WDFunc::NewLBL(parent, "13008"), 4, 2, 1, 1);
-    glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(13008), ValuesFormat, ""), 5, 2, 1, 1);
+//    glyout->addWidget(WDFunc::NewLBL(parent, "13006"), 4, 0, 1, 1);
+//    glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(13006), ValuesFormat, ""), 5, 0, 1, 1);
+//    glyout->addWidget(WDFunc::NewLBL(parent, "13007"), 4, 1, 1, 1);
+//    glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(13007), ValuesFormat, ""), 5, 1, 1, 1);
+//    glyout->addWidget(WDFunc::NewLBL(parent, "13008"), 4, 2, 1, 1);
+//    glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(13008), ValuesFormat, ""), 5, 2, 1, 1);
 
-    glyout->addWidget(WDFunc::NewLBL(parent, "13009"), 6, 0, 1, 1);
-    glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(13009), ValuesFormat, ""), 7, 0, 1, 1);
-    glyout->addWidget(WDFunc::NewLBL(parent, "13010"), 6, 1, 1, 1);
-    glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(13010), ValuesFormat, ""), 7, 1, 1, 1);
-    glyout->addWidget(WDFunc::NewLBL(parent, "13011"), 6, 2, 1, 1);
-    glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(13011), ValuesFormat, ""), 7, 2, 1, 1);
+//    glyout->addWidget(WDFunc::NewLBL(parent, "13009"), 6, 0, 1, 1);
+//    glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(13009), ValuesFormat, ""), 7, 0, 1, 1);
+//    glyout->addWidget(WDFunc::NewLBL(parent, "13010"), 6, 1, 1, 1);
+//    glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(13010), ValuesFormat, ""), 7, 1, 1, 1);
+//    glyout->addWidget(WDFunc::NewLBL(parent, "13011"), 6, 2, 1, 1);
+//    glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(13011), ValuesFormat, ""), 7, 2, 1, 1);
 
-    glyout->addWidget(WDFunc::NewLBL(parent, "13012"), 8, 0, 1, 1);
-    glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(13012), ValuesFormat, ""), 9, 0, 1, 1);
-    glyout->addWidget(WDFunc::NewLBL(parent, "13013"), 8, 1, 1, 1);
-    glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(13013), ValuesFormat, ""), 9, 1, 1, 1);
-    glyout->addWidget(WDFunc::NewLBL(parent, "13014"), 8, 2, 1, 1);
-    glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(13014), ValuesFormat, ""), 9, 2, 1, 1);
+//    glyout->addWidget(WDFunc::NewLBL(parent, "13012"), 8, 0, 1, 1);
+//    glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(13012), ValuesFormat, ""), 9, 0, 1, 1);
+//    glyout->addWidget(WDFunc::NewLBL(parent, "13013"), 8, 1, 1, 1);
+//    glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(13013), ValuesFormat, ""), 9, 1, 1, 1);
+//    glyout->addWidget(WDFunc::NewLBL(parent, "13014"), 8, 2, 1, 1);
+//    glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(13014), ValuesFormat, ""), 9, 2, 1, 1);
 
-    glyout->addWidget(WDFunc::NewLBL(parent, "13015"), 10, 0, 1, 1);
-    glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(13015), ValuesFormat, ""), 11, 0, 1, 1);
+//    glyout->addWidget(WDFunc::NewLBL(parent, "13015"), 10, 0, 1, 1);
+//    glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(13015), ValuesFormat, ""), 11, 0, 1, 1);
 
-    vlyout2->addLayout(glyout);
-    gb->setLayout(vlyout2);
-    vlyout1->addWidget(gb);
+//    vlyout2->addLayout(glyout);
+//    gb->setLayout(vlyout2);
+//    vlyout1->addWidget(gb);
 
-    lyout->addLayout(vlyout1);
-    lyout->addStretch(100);
-    w->setLayout(lyout);
-    w->setStyleSheet(WidgetFormat);
-    return w;
-}
+//    lyout->addLayout(vlyout1);
+//    lyout->addStretch(100);
+//    w->setLayout(lyout);
+//    w->setStyleSheet(WidgetFormat);
+//    return w;
+//}
 
 void CheckKIV::FillBd(QWidget *parent, QString Name, QString Value)
 {
