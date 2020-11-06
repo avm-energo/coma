@@ -103,9 +103,9 @@ void EUsbWorker::interact()
     Finish();
 }
 // TODO Проверить длину получаемой строки, если равна 4 то убрать проверки и сделать каст
-inline void handleTime(const char *str)
+void handleTime(const char *str)
 {
-    quint64 time;
+    quint64 time = 0;
     std::copy_n(str, 4, &time);
     DataTypes::GeneralResponseStruct resp { DataTypes::GeneralResponseTypes::Ok, time };
     DataManager::addSignalToOutList(DataTypes::SignalTypes::GeneralResponse, resp);
@@ -116,18 +116,42 @@ inline void handleBitString(const QByteArray &ba)
     // 3c21 3c00
     // a200000087000000000003010b0002000e0000006a020000320043000451383233393736020000004323330000000004785634126070e712001
 }
-inline void handleFloat(const QByteArray &ba, quint16 addr)
+
+void handleFloat(const QByteArray &ba, quint16 addr)
 {
     float blk = 0.0;
     std::copy_n(ba.constData(), sizeof(float), blk);
     DataTypes::FloatStruct resp { addr, blk };
     DataManager::addSignalToOutList(DataTypes::SignalTypes::Float, resp);
 }
-inline void handleFile(const QByteArray &ba, quint16 addr)
+
+void handleFile(const QByteArray &ba, quint16 addr)
 {
     DataTypes::FileStruct resp { addr, ba };
     DataManager::addSignalToOutList(DataTypes::SignalTypes::File, resp);
 }
+
+void handleInt(const byte num)
+{
+    DataTypes::GeneralResponseStruct resp { DataTypes::GeneralResponseTypes::Ok, num };
+    DataManager::addSignalToOutList(DataTypes::SignalTypes::GeneralResponse, resp);
+}
+
+void handleBool(const bool status = true, int errorSize = 0, int errorCode = 0)
+{
+    if (status)
+    {
+        DataTypes::GeneralResponseStruct resp { DataTypes::GeneralResponseTypes::Ok, 0 };
+        DataManager::addSignalToOutList(DataTypes::SignalTypes::GeneralResponse, resp);
+    }
+    else
+    {
+        DataTypes::GeneralResponseStruct resp { DataTypes::GeneralResponseTypes::Error, 0 };
+        DataManager::addSignalToOutList(DataTypes::SignalTypes::GeneralResponse, resp);
+        qCritical() << "Error size: " << errorSize << "Error code: " << errorCode;
+    }
+}
+
 inline void handleCommand(const QByteArray &ba)
 {
     qCritical("We should be here, something went wrong");
@@ -135,21 +159,23 @@ inline void handleCommand(const QByteArray &ba)
 
 void EUsbWorker::handle(const CN::Commands cmd)
 {
+    // NOTE using enum after cpp20
     using namespace CN;
     using namespace DataTypes;
     uint addr = m_currentCommand.arg1.toUInt();
-    // using enum after cpp20
     switch (cmd)
     {
     case Commands::ResultOk:
 
-        // TODO не забыть про  GVar MS c 0 0    SS OK 1 0 V и  GMode MS c 0 0   SS OK 1 0 V
-        qInfo();
+        //  GVar MS GMode MS
+        if (!m_buffer.second.isEmpty())
+            handleInt(m_buffer.second.front());
+        handleBool();
         return;
 
     case Commands::ResultError:
 
-        qCritical() << "Error size: " << m_buffer.first << "Error code: " << m_buffer.second.front();
+        handleBool(false, m_buffer.first, m_buffer.second.front());
         return;
 
     case Commands::ReadTime:

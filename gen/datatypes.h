@@ -20,6 +20,7 @@ enum SignalTypes
 enum GeneralResponseTypes
 {
     Ok,
+    Error,
     DataSize,
     DataCount
 };
