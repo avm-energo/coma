@@ -31,16 +31,19 @@ void Warn::showEvent(QShowEvent *e)
 
 void Warn::updatePixmap(bool isset, int position)
 {
-    if (isset)
-    {
-        auto pixmap = WDFunc::NewCircle(Qt::yellow, CIRCLE_RADIUS);
-        WDFunc::SetLBLImage(this, (QString::number(position)), &pixmap);
-    }
-    else
-    {
-        auto pixmap = WDFunc::NewCircle(Qt::green, CIRCLE_RADIUS);
-        WDFunc::SetLBLImage(this, (QString::number(position)), &pixmap);
-    }
+    auto pixmap = WDFunc::NewCircle((isset) ? Qt::yellow : Qt::green, CIRCLE_RADIUS);
+    WDFunc::SetLBLImage(this, (QString::number(position)), &pixmap);
+    //    emit updateWarn(position, isset);
+    //    if (isset)
+    //    {
+    //        auto pixmap = WDFunc::NewCircle(Qt::yellow, CIRCLE_RADIUS);
+    //        WDFunc::SetLBLImage(this, (QString::number(position)), &pixmap);
+    //    }
+    //    else
+    //    {
+    //        auto pixmap = WDFunc::NewCircle(Qt::green, CIRCLE_RADIUS);
+    //        WDFunc::SetLBLImage(this, (QString::number(position)), &pixmap);
+    //    }
 }
 
 void Warn::setupUI(const QStringList &events)

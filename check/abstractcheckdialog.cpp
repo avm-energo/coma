@@ -88,7 +88,9 @@ void AbstractCheckDialog::SetupUI(QStringList &tabnames)
 
 // QWidget *AbstractCheckDialog::CustomTab() { return nullptr; }
 
-void AbstractCheckDialog::Check1PPS() { }
+void AbstractCheckDialog::Check1PPS()
+{
+}
 
 void AbstractCheckDialog::SetBd(int bdnum, void *block, int blocksize, bool toxlsx)
 {
@@ -223,9 +225,9 @@ void AbstractCheckDialog::ReadAnalogMeasurementsAndWriteToFile()
     Busy = false;
 }
 
-void AbstractCheckDialog::StartBdMeasurements() { BdTimer->start(); }
+// void AbstractCheckDialog::StartBdMeasurements() { BdTimer->start(); }
 
-void AbstractCheckDialog::StopBdMeasurements() { BdTimer->stop(); }
+// void AbstractCheckDialog::StopBdMeasurements() { BdTimer->stop(); }
 
 // void AbstractCheckDialog::onModbusStateChanged()
 //{
@@ -264,7 +266,10 @@ void AbstractCheckDialog::StopAnalogMeasurements()
     Timer->stop();
 }
 
-void AbstractCheckDialog::TimerTimeout() { ReadAnalogMeasurementsAndWriteToFile(); }
+void AbstractCheckDialog::TimerTimeout()
+{
+    ReadAnalogMeasurementsAndWriteToFile();
+}
 
 void AbstractCheckDialog::SetTimerPeriod()
 {

@@ -22,8 +22,8 @@ public:
 public slots:
     //    void Update(std::bitset<32> &states);
 
-signals:
-    void updateAlarm(int position, bool value);
+    // signals:
+    //    void updateAlarm(int position, bool value);
 
 private:
     int m_realAlarmSize;

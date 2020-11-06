@@ -23,8 +23,8 @@ public:
 public slots:
     //    void Update(std::bitset<32> &states);
 
-signals:
-    void updateWarn(int position, bool value);
+    // signals:
+    //    void updateWarn(int position, bool value);
 
 private:
     int m_realWarnSize;

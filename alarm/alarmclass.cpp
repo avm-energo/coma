@@ -41,7 +41,7 @@ AlarmClass::AlarmClass(QObject *parent) : QObject(parent)
 
     //    MapAlarm[Board::DeviceModel::KIV] = KIV;
     //    MapAlarm[Board::DeviceModel::KTF] = KTF;
-    connect(&DataManager::GetInstance(), &DataManager::bitStringReceived, this, &AlarmClass::updateAlarms);
+    connect(&DataManager::GetInstance(), &DataManager::singlePointReceived, this, &AlarmClass::updateAlarms);
 }
 
 void AlarmClass::setModule(Module *m)
@@ -167,7 +167,7 @@ void AlarmClass::setModule(Module *m)
 //{
 //}
 
-void AlarmClass::updateAlarms(DataTypes::BitStringStruct &bs)
+void AlarmClass::updateAlarms(DataTypes::SinglePointWithTimeStruct &sp)
 {
     if (!m_moduleIsSet)
     {
@@ -186,7 +186,7 @@ void AlarmClass::updateAlarms(DataTypes::BitStringStruct &bs)
         bool alarmFlag = false; // alarm flag
         quint32 minAddress = w->m_startWarnAddress;
         quint32 maxAddress = w->m_startWarnAddress + 31; // only 32 bits
-        if ((bs.sigAdr >= minAddress) && (bs.sigAdr <= maxAddress))
+        if ((sp.sigAdr >= minAddress) && (sp.sigAdr <= maxAddress))
         {
             //        QList<DataTypes::SignalsStruct> list;
             //        DataManager::getSignals(minAddress, maxAddress, DataTypes::SignalTypes::SinglePointWithTime,
@@ -199,8 +199,8 @@ void AlarmClass::updateAlarms(DataTypes::BitStringStruct &bs)
 
             //        for (int i = 0; i < Signal->SigNumber; i++)
             //        {
-            int index = bs.sigAdr - minAddress;
-            quint8 sigval = bs.sigVal;
+            int index = sp.sigAdr - minAddress;
+            quint8 sigval = sp.sigVal;
             if (!(sigval & 0x80))
             {
                 //                quint32 sigadr = Signal->Spon[i].SigAdr;

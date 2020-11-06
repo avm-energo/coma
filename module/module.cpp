@@ -89,8 +89,8 @@ Module *Module::createModule(QTimer *updateTimer, BaseInterface *iface)
             m->addDialogToList(new StartupKIVDialog, "Начальные значения");
             m->m_warn = new WarnKIV;
             m->m_alarm = new AlarmKIV;
-            connect(m->m_warn, &Warn::updateWarn, cdkiv, &AbstractCheckDialog::SetWarnColor);
-            connect(m->m_alarm, &Alarm::updateAlarm, cdkiv, &AbstractCheckDialog::SetAlarmColor);
+            //            connect(m->m_warn, &Warn::updateWarn, cdkiv, &AbstractCheckDialog::SetWarnColor);
+            //            connect(m->m_alarm, &Alarm::updateAlarm, cdkiv, &AbstractCheckDialog::SetAlarmColor);
         }
         case Board::DeviceModel::KTF:
         {
@@ -107,8 +107,8 @@ Module *Module::createModule(QTimer *updateTimer, BaseInterface *iface)
             m->addDialogToList(new CheckKTFHarmonicDialog, "Гармоники");
             m->m_warn = new WarnKTF;
             m->m_alarm = new AlarmKTF;
-            connect(m->m_warn, &Warn::updateWarn, cdktf, &AbstractCheckDialog::SetWarnColor);
-            connect(m->m_alarm, &Alarm::updateAlarm, cdktf, &AbstractCheckDialog::SetAlarmColor);
+            //            connect(m->m_warn, &Warn::updateWarn, cdktf, &AbstractCheckDialog::SetWarnColor);
+            //            connect(m->m_alarm, &Alarm::updateAlarm, cdktf, &AbstractCheckDialog::SetAlarmColor);
             break;
         }
         case Board::DeviceModel::KDV:
@@ -129,8 +129,8 @@ Module *Module::createModule(QTimer *updateTimer, BaseInterface *iface)
             //            connect(BdaTimer, &QTimer::timeout, VibrDialog, &AbstractCheckDialog::USBUpdate);
             m->m_warn = new WarnKDV;
             m->m_alarm = new AlarmKDV;
-            connect(m->m_warn, &Warn::updateWarn, cdkdv, &AbstractCheckDialog::SetWarnColor);
-            connect(m->m_alarm, &Alarm::updateAlarm, cdkdv, &AbstractCheckDialog::SetAlarmColor);
+            //            connect(m->m_warn, &Warn::updateWarn, cdkdv, &AbstractCheckDialog::SetWarnColor);
+            //            connect(m->m_alarm, &Alarm::updateAlarm, cdkdv, &AbstractCheckDialog::SetAlarmColor);
             break;
         }
         default:

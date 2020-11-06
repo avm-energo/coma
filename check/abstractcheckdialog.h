@@ -69,10 +69,10 @@ signals:
 
 public slots:
     void StopAnalogMeasurements();
-    virtual void SetWarnColor(int position, bool value) = 0;
-    virtual void SetAlarmColor(int position, bool value) = 0;
-    virtual void StartBdMeasurements();
-    virtual void StopBdMeasurements();
+    //    virtual void SetWarnColor(int position, bool value) = 0;
+    //    virtual void SetAlarmColor(int position, bool value) = 0;
+    //    virtual void StartBdMeasurements();
+    //    virtual void StopBdMeasurements();
     //    void update();
 
 private:
@@ -101,7 +101,7 @@ private:
 
 protected:
     Check *Ch;
-    QTimer *BdTimer;
+    //    QTimer *BdTimer;
     int BdNum;
     bool XlsxWriting;
     const QString ValuesFormat = "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; "
