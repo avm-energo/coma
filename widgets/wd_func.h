@@ -62,8 +62,8 @@ public:
             return -1;
         return cb->currentIndex();
     }
-    static QMetaObject::Connection CBConnect(
-        QWidget *w, const QString &cbname, int cbconnecttype, const QObject *receiver, const char *method);
+    //    static QMetaObject::Connection CBConnect(
+    //        QWidget *w, const QString &cbname, int cbconnecttype, const QObject *receiver, const char *method);
 
     static QDoubleSpinBox *NewSPB(
         QWidget *parent, const QString &spbname, double min, double max, int decimals, const QString &spbcolor = "");
@@ -112,9 +112,54 @@ public:
     static QImage *TwoImages(const QString &first, const QString &second);
     static QPushButton *NewPB(QWidget *parent, const QString &pbname, const QString &text, const QObject *receiver,
         const char *method, const QString &icon = "", const QString &pbtooltip = "");
+
     template <typename Func>
-    static QPushButton *NewPB2(QWidget *parent, const QString &pbname, const QString &text, const Func *receiver,
+    inline static QPushButton *NewPB2(QWidget *parent, const QString &pbname, const QString &text, const Func *receiver,
         void (Func::*method)(), const QString &icon = "", const QString &pbtooltip = "")
+    {
+        QPushButton *pb = NewPB2(parent, pbname, text, icon, pbtooltip);
+        QObject::connect(pb, &QPushButton::clicked, receiver, method);
+        return pb;
+    }
+    template <typename Functor>
+    inline static QPushButton *NewPB2(QWidget *parent, const QString &pbname, const QString &text, Functor &&functor,
+        const QString &icon = "", const QString &pbtooltip = "")
+    {
+        QPushButton *pb = NewPB2(parent, pbname, text, icon, pbtooltip);
+        QObject::connect(pb, &QPushButton::clicked, functor);
+        return pb;
+    }
+    template <typename Functor>
+    inline static QPushButton *NewPB2(QWidget *parent, const QString &pbname, const QString &text, QObject *context,
+        Functor &&functor, const QString &icon = "", const QString &pbtooltip = "")
+    {
+        QPushButton *pb = NewPB2(parent, pbname, text, icon, pbtooltip);
+        QObject::connect(pb, &QPushButton::clicked, context, functor);
+        return pb;
+    }
+
+    //    static QMetaObject::Connection PBConnect(
+    //        QWidget *w, const QString &pbname, const QObject *receiver, const char *method);
+    static void SetTVModel(QWidget *w, const QString &tvname, QAbstractItemModel *model, bool sortenable = false);
+    static void SetQTVModel(QWidget *w, const QString &tvname, QAbstractItemModel *model, bool sortenable = false);
+    static ETableView *NewTV(QWidget *w, const QString &tvname, QAbstractItemModel *model);
+    static QTableView *NewQTV(QWidget *w, const QString &tvname, QAbstractItemModel *model);
+    static QAbstractItemModel *TVModel(QWidget *w, const QString &tvname);
+    //    static void TVConnect(
+    //        QWidget *w, const QString &tvname, int signaltype, const QObject *receiver, const char *method);
+    static bool LE_read_data(QObject *w, const QString &lename, QString &levalue);
+    static bool LE_write_data(QObject *w, const QString &levalue, const QString &lename);
+    static void SortTV(QWidget *w, const QString &tvname, int column, Qt::SortOrder sortorder);
+    static QVariant TVData(QWidget *w, const QString &tvname, int column);
+
+    static QStatusBar *NewSB(QWidget *w);
+    static QPixmap NewCircle(QColor color, float radius);
+    static QPixmap NewLedIndicator(QColor color, float height);
+    static QPixmap NewSVG(QString &str, QSize size);
+
+private:
+    static QPushButton *NewPB2(QWidget *parent, const QString &pbname, const QString &text, const QString &icon = "",
+        const QString &pbtooltip = "")
     {
         QPushButton *pb = new QPushButton(parent);
         pb->setStyleSheet("QPushButton {background-color: rgba(0,0,0,0); border: 1px solid gray; "
@@ -126,27 +171,8 @@ public:
             pb->setIcon(QIcon(icon));
         pb->setText(text);
         pb->setToolTip(pbtooltip);
-        QObject::connect(pb, &QPushButton::clicked, receiver, method);
         return pb;
     }
-    static QMetaObject::Connection PBConnect(
-        QWidget *w, const QString &pbname, const QObject *receiver, const char *method);
-    static void SetTVModel(QWidget *w, const QString &tvname, QAbstractItemModel *model, bool sortenable = false);
-    static void SetQTVModel(QWidget *w, const QString &tvname, QAbstractItemModel *model, bool sortenable = false);
-    static ETableView *NewTV(QWidget *w, const QString &tvname, QAbstractItemModel *model);
-    static QTableView *NewQTV(QWidget *w, const QString &tvname, QAbstractItemModel *model);
-    static QAbstractItemModel *TVModel(QWidget *w, const QString &tvname);
-    static void TVConnect(
-        QWidget *w, const QString &tvname, int signaltype, const QObject *receiver, const char *method);
-    static bool LE_read_data(QObject *w, const QString &lename, QString &levalue);
-    static bool LE_write_data(QObject *w, const QString &levalue, const QString &lename);
-    static void SortTV(QWidget *w, const QString &tvname, int column, Qt::SortOrder sortorder);
-    static QVariant TVData(QWidget *w, const QString &tvname, int column);
-
-    static QStatusBar *NewSB(QWidget *w);
-    static QPixmap NewCircle(QColor color, float radius);
-    static QPixmap NewLedIndicator(QColor color, float height);
-    static QPixmap NewSVG(QString &str, QSize size);
 };
 
 #endif // WD_FUNC

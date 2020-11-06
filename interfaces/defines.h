@@ -1,10 +1,14 @@
 #pragma once
+#include <QObject>
 #include <QString>
+#include <QVariant>
 // Обмен с модулями
 // Канал связи с модулем
+typedef unsigned char byte;
 namespace CN
 {
-typedef unsigned char byte;
+Q_NAMESPACE
+
 namespace Limits
 {
     // 64-4 ('<',cmd,L,L)
@@ -104,7 +108,78 @@ namespace Message
     // length is 2 bytes
     constexpr byte Length2Byte = 0x02;
 } // namespace Message
+enum class Commands : byte
+{
+
+    // ответ "всё в порядке"
+    ResultOk = 0x11,
+    // запуск, остановка теста
+    Test = 0x49,
+    // ответ "ошибка"
+    ResultError = 0x0f0,
+    // неизвестная команда
+    Unknown = 0xff,
+    ///
+    /// namespace READ
+    ///
+    ReadBlkStartInfo = 0x21,
+    // чтение настроечных коэффициентов
+    ReadBlkAC = 0x22,
+    // чтение текущих данных без настройки
+    ReadBlkDataA = 0x23,
+    // чтение блока текущих данных
+    ReadBlkData = 0x24,
+    // чтение технологического блока
+    ReadBlkTech = 0x26,
+    // чтение файла
+    ReadFile = 0x25,
+    // чтение номера варианта использования
+    ReadVariant = 0x27,
+    // чтение текущего режима работы
+    ReadMode = 0x28,
+    // чтение времени из МНК в формате UNIX
+    ReadTime = 0x29,
+    // запрос текущего прогресса
+    ReadProgress = 0x46,
+    ///
+    /// namespace WRITE
+    ///
+    // запись настроечных коэффициентов
+    WriteBlkAC = 0x31,
+    // посылка блока данных
+    WriteBlkData = 0x34,
+    // посылка команды
+    WriteBlkCmd = 0x35,
+    // запись технологического блока
+    WriteBlkTech = 0x2B,
+    // запись файла
+    WriteFile = 0x32,
+    // задание варианта использования
+    WriteVariant = 0x44,
+    // задание текущего режима работы
+    WriteMode = 0x43,
+    // запись времени в МНК в формате UNIX
+    WriteTime = 0x2A,
+    // переход на новое ПО
+    WriteUpgrade = 0x40,
+
+    WriteInitValues = 0x01,
+
+    WriteStartupValues = 0x04,
+    ///
+    /// namespace ERASE
+    ///
+    EraseStartupValues = 0x05,
+    // стирание технологического блока
+    EraseTech = 0x45,
+    // стирание счётчиков дискретных состояний
+    EraseCnt = 0x47,
+    // запись версии аппаратуры модуля/серийного номера/типа платы
+    WriteHardware = 0x48
+};
+Q_ENUM_NS(Commands)
 } // namespace CN
+
 namespace UH
 {
 constexpr unsigned VID = 0xC251;
@@ -141,7 +216,7 @@ constexpr unsigned MainLoopDelay = 20;
 struct DeviceConnectStruct
 {
     explicit DeviceConnectStruct() = default;
-    explicit DeviceConnectStruct(unsigned short dev, unsigned short pid, QString arr, QString str)
+    explicit DeviceConnectStruct(unsigned short dev, unsigned short pid, const QString &arr, const QString &str)
         : vendor_id(dev), product_id(pid), serial(arr), path(str)
     {
     }
@@ -158,3 +233,15 @@ struct DeviceConnectStruct
     QString serial;
     QString path;
 };
+
+struct CommandStruct
+{
+    CN::Commands cmd;
+    QVariant arg1;
+    QVariant arg2;
+    QByteArray ba;
+};
+
+// GBsi,ErPg - bitstring,
+// GBac, GBda, GBd,GBt - float,
+// GF - file

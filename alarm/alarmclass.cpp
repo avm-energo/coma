@@ -2,7 +2,6 @@
 
 #include "../gen/board.h"
 #include "../gen/datamanager.h"
-//#include "../usb/commands.h"
 
 #include <QApplication>
 #include <QBoxLayout>

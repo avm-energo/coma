@@ -5,15 +5,17 @@
 #include "../gen/s2.h"
 #include "../gen/singleton.h"
 #include "baseinterface.h"
+#include "defines.h"
 #include "eusbworker.h"
 
 #include <QEventLoop>
 #include <QThread>
 #include <QTimer>
-
 class EProtocom final : public BaseInterface, public Singleton<EProtocom>
 {
+
     Q_OBJECT
+
 public:
     explicit EProtocom(token, QWidget *parent = nullptr);
     ~EProtocom();
@@ -23,25 +25,27 @@ public:
     void Disconnect();
 
     QList<QStringList> DevicesFound();
-    //    QString deviceName() const;
-    //    void setDeviceName(const QString &deviceName);
-    // функция, разбивающая строку устройства и складывающая в соотв. структуру
-    // void TranslateDeviceAndSave(const QString &str);
 
     EUsbWorker *usbWorker() const;
-    QThread *workerThread();
 
-    bool start(const ConnectStruct &st);
-    void reqStartup();
-    void reqFile();
-    void writeFile();
-    void reqTime();
-    void writeTime();
-    void writeCommand(quint32 cmd);
+    bool start(const ConnectStruct &st) override;
+
+    void reqTime() override;
+    void reqFile(quint32 filenum, bool isConfigFile = false) override;
+    void reqStartup(quint32 sigAdr, quint32 sigCount) override;
+    void reqBSI() override;
+
+    void writeFile(quint32 filenum, const QByteArray &file) override;
+    void writeTime(quint32 time) override;
+    void writeCommand(Queries::Commands cmd, QList<DataTypes::SignalsStruct> list) override;
+    void reqFloats(quint32 sigAdr, quint32 sigCount) override;
 
     void SendCmd(unsigned char command, int parameter = 0);
+    // read
     void SendIn(unsigned char command, char parameter, QByteArray &ba, qint64 maxdatasize);
+    // write
     void SendOut(unsigned char command, char board_type, QByteArray &ba);
+    // write file
     void SendFile(unsigned char command, char board_type, int filenum, QByteArray &ba);
 
     // void Timeout();
@@ -58,12 +62,24 @@ public:
     //    void setDevicePosition(int devicePosition);
 
     //    QString usbSerial() const;
+    inline bool isWorkerRunning() const
+    {
+        return m_workerStatus;
+    };
+    inline bool isParserRunning() const
+    {
+        return m_parserStatus;
+    };
+
+public slots:
+    void stop() override;
 
 private:
     static bool m_writeUSBLog;
 
     EUsbWorker *m_usbWorker;
-    QThread m_workerThread;
+
+    bool m_workerStatus, m_parserStatus;
 
     char BoardType;
     unsigned char Command;
@@ -71,10 +87,10 @@ private:
     Error::Msg m_result;
     int FNum;
     quint32 ReadDataChunkLength, RDLength; // длина всей посылки
-    quint32 WRLength; // длина всей посылки
+    quint32 WRLength;                      // длина всей посылки
     qint64 InDataSize;
     int SegLeft; // количество оставшихся сегментов
-    int SegEnd; // номер последнего байта в ReadData текущего сегмента
+    int SegEnd;  // номер последнего байта в ReadData текущего сегмента
     int m_devicePosition;
 
     // bool LastBlock; // признак того, что блок последний, и больше запрашивать не надо
@@ -85,7 +101,6 @@ private:
     //    QString m_deviceName;
     QVector<DeviceConnectStruct> m_devices;
 
-    LogClass *CnLog;
     QTimer *OscTimer;
     QTimer *m_waitTimer;
     QEventLoop m_loop;
@@ -110,12 +125,13 @@ private:
     int RawWrite(QByteArray &ba);
     void RawClose();
 
+    static CN::Commands translate(const Queries::Commands cmd);
+    static Queries::Commands translate(const CN::Commands cmd);
+
+    const static QMap<Queries::Commands, CN::Commands> m_dict;
+
 signals:
-    // сигналы для прогрессбаров - отслеживание принятых данных, стёртых осциллограмм и т.п.
-    void SetDataSize(int);
-    void SetDataCount(int);
-    void readbytessignal(QByteArray); // for TE updating
-    void writebytessignal(QByteArray); // for TE updating
+
     void ShowError(QString message);
     void QueryFinished();
 };

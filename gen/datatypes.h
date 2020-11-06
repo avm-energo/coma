@@ -2,7 +2,6 @@
 #define DATATYPES_H
 
 #include <QVariant>
-#include <qmetatype.h>
 
 namespace DataTypes
 {
@@ -95,10 +94,15 @@ enum Commands
     QC_EraseJournals,
     QC_SetStartupValues,
     QC_ClearStartupValues,
+    QC_Command50,
+    QC_Test,
+    QC_EraseTechBlock,
+    QC_WriteHiddenBlock,
     QC_WriteUserValues,
     QC_ReqAlarms,
     QC_ReqFloats,
     QC_ReqBitStrings
+
 };
 
 struct Command

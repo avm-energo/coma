@@ -15,9 +15,7 @@
 #include <QDebug>
 #include <QGridLayout>
 #include <QMessageBox>
-#if _MSC_VER && !__INTEL_COMPILER
-#define __PRETTY_FUNCTION__ __FUNCSIG__
-#endif
+
 StartupKIVDialog::StartupKIVDialog(QWidget *parent) : AbstractStartupDialog(parent)
 {
     int i;
@@ -404,13 +402,13 @@ void StartupKIVDialog::SaveToFile()
     case Error::Msg::NoError:
         QMessageBox::information(this, "Внимание", "Файл коэффициентов коррекции записан успешно!");
         break;
-    case Error::Msg::FILE_WRITE:
+    case Error::Msg::FileWriteError:
         QMessageBox::critical(this, "Ошибка", "Ошибка при записи файла!");
         break;
-    case Error::Msg::FILE_NAMEEMP:
+    case Error::Msg::FileNameError:
         QMessageBox::critical(this, "Ошибка", "Пустое имя файла!");
         break;
-    case Error::Msg::FILE_OPEN:
+    case Error::Msg::FileOpenError:
         QMessageBox::critical(this, "Ошибка", "Ошибка открытия файла!");
         break;
     default:

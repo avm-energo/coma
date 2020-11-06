@@ -9,7 +9,7 @@ class EUsbWorker : public QObject
 {
     Q_OBJECT
 public:
-    explicit EUsbWorker(DeviceConnectStruct dev, LogClass *logh, bool writelog = false, QObject *parent = 0);
+    explicit EUsbWorker(const DeviceConnectStruct &dev, LogClass *logh, bool writelog = false, QObject *parent = 0);
     ~EUsbWorker();
 
     LogClass *log;
@@ -19,12 +19,14 @@ public:
 
     void closeConnection();
 
+    void initiateReceive(QByteArray ba);
+    void initiateSend(const CommandStruct &cmdStr);
     DeviceConnectStruct deviceInfo() const;
     void setDeviceInfo(DeviceConnectStruct deviceInfo);
 
 signals:
     void NewDataReceived(QByteArray ba);
-    void Finished();
+    void finished();
     void started();
 
 public slots:
@@ -39,9 +41,14 @@ private:
     QList<QByteArray> WriteQueue;
     DeviceConnectStruct m_deviceInfo;
 
-    Error::Msg WriteData(QByteArray &ba);
-    void CheckWriteQueue();
-    void Finish();
+    QPair<quint64, QByteArray> m_buffer;
+    void handle(const CN::Commands cmd);
 
+    Error::Msg WriteData(QByteArray &ba);
+
+    CommandStruct m_currentCommand;
+    void CheckWriteQueue();
+    void checkQueue();
+    void Finish();
 private slots:
 };

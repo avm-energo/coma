@@ -7,19 +7,19 @@ ErrorQueue::ErrorQueue(Singleton::token)
     m_errMsgPool = {};
 }
 
-const std::queue<Error::ErMsg> *ErrorQueue::errMsgPool()
+const std::queue<ErrorMsg> *ErrorQueue::errMsgPool()
 {
     return &m_errMsgPool;
 }
 
-Error::ErMsg ErrorQueue::popError()
+ErrorMsg ErrorQueue::popError()
 {
-    Error::ErMsg error = m_errMsgPool.front();
+    ErrorMsg error = m_errMsgPool.front();
     m_errMsgPool.pop();
     return error;
 }
 
-void ErrorQueue::pushError(const Error::ErMsg &msg)
+void ErrorQueue::pushError(const ErrorMsg &msg)
 {
     if (m_errMsgPool.size() > LOG_BUFFER_SIZE)
         popError();

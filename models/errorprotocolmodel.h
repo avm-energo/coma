@@ -1,10 +1,10 @@
 #pragma once
 
-#include <../gen/error.h>
 #include <QAbstractItemModel>
 typedef QPair<QStringList, QtMsgType> ErrorPair;
 typedef QList<ErrorPair> ErrorList;
 
+struct ErrorMsg;
 class ErrorProtocolModel : public QAbstractTableModel
 {
     Q_OBJECT
@@ -28,7 +28,7 @@ public:
         return insertRow(rowCount(), pair);
     }
 
-    void appendRow(Error::ErMsg ermsg);
+    void appendRow(ErrorMsg ermsg);
     void initModel();
 
 protected:

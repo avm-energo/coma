@@ -1,9 +1,8 @@
 #ifndef ERRORPROTOCOLWIDGET_H
 #define ERRORPROTOCOLWIDGET_H
 
-#include "../gen/error.h"
-
 #include <QWidget>
+struct ErrorMsg;
 class ErrorProtocolModel;
 class ErrorProtocolWidget : public QWidget
 {
@@ -12,7 +11,7 @@ public:
     explicit ErrorProtocolWidget(QWidget *parent = 0);
     ~ErrorProtocolWidget();
 
-    void AddRowToProt(Error::ErMsg ermsg);
+    void AddRowToProt(ErrorMsg ermsg);
 
 private:
     ErrorProtocolModel *Model;

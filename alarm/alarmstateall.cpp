@@ -3,17 +3,13 @@
 #include "../gen/colors.h"
 #include "../gen/error.h"
 #include "../gen/modulebsi.h"
-//#include "../usb/commands.h"
 #include "../widgets/wd_func.h"
 
 #include <QBoxLayout>
 
-#if _MSC_VER && !__INTEL_COMPILER
-#define __PRETTY_FUNCTION__ __FUNCSIG__
-#endif
-
 AlarmStateAll::AlarmStateAll(QWidget *parent) : QWidget(parent)
 {
+
     QVBoxLayout *lyout = new QVBoxLayout;
     QVBoxLayout *vlayout = new QVBoxLayout;
     //    QWidget *w = new QWidget;

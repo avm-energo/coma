@@ -112,7 +112,7 @@ public:
     //    QString IP;
 
     //    bool Working();
-    bool start(const ConnectStruct &st);
+    bool start(const ConnectStruct &st) override;
     //    static void getSignalsFrom104(quint32 firstSignalAdr, quint32 signalCount, DataManager::SignalTypes type,
     //        QList<DataManager::SignalsStruct> &outlist);
 
@@ -130,7 +130,7 @@ public slots:
     //    void reqBitStrings(quint32 sigAdr = 0, quint32 sigCount = 0);
 
     //    static void SelectFile(char);
-    void stop();
+    void stop() override;
     //    static void Com45(quint32 com);
     //    static void Com50(quint32 adr, float param);
     //    void CorReadRequest();

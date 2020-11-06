@@ -1,15 +1,17 @@
 #include "eprotocom.h"
 
 #include "../gen/board.h"
+#include "../gen/datamanager.h"
 #include "../gen/error.h"
+#include "../gen/pch.h"
 #include "../gen/stdfunc.h"
+#include "defines.h"
 
 #include <QDebug>
 #include <QElapsedTimer>
 #include <QMessageBox>
 #include <QSettings>
 #include <QTimer>
-//#include <string>
 
 //#define MAX_STR 255
 #ifdef _WIN32
@@ -20,19 +22,22 @@
 // clang-format on
 #endif
 
-#if _MSC_VER && !__INTEL_COMPILER
-#define __PRETTY_FUNCTION__ __FUNCSIG__
-#endif
+const QMap<Queries::Commands, CN::Commands> EProtocom::m_dict { { Queries::Commands::QC_StartFirmwareUpgrade,
+                                                                    CN::Commands::WriteUpgrade },
+    { Queries::QC_SetStartupValues, CN::Commands::WriteStartupValues },
+    { Queries::QC_ClearStartupValues, CN::Commands::EraseStartupValues },
+    { Queries::QC_SetNewConfiguration, CN::Commands::WriteInitValues },
+    { Queries::QC_EraseJournals, CN::Commands::EraseStartupValues },
+    { Queries::QC_EraseTechBlock, CN::Commands::EraseStartupValues }, { Queries::QC_Test, CN::Commands::Test } };
 
 bool EProtocom::m_writeUSBLog;
 
 EProtocom::EProtocom(token, QWidget *parent) : BaseInterface(parent)
 {
-    // Q_UNUSED(parent)
     QString tmps = "=== CLog started ===\n";
-    CnLog = new LogClass;
-    CnLog->Init("canal.log");
-    CnLog->WriteRaw(tmps.toUtf8());
+    Log = new LogClass;
+    Log->Init("canal.log");
+    Log->WriteRaw(tmps.toUtf8());
     RDLength = 0;
     SegEnd = 0;
     SegLeft = 0;
@@ -45,60 +50,48 @@ EProtocom::EProtocom(token, QWidget *parent) : BaseInterface(parent)
     connect(OscTimer, &QTimer::timeout, this, &EProtocom::OscTimerTimeout);
     connect(m_waitTimer, &QTimer::timeout, &m_loop, &QEventLoop::quit);
     connect(this, &EProtocom::QueryFinished, &m_loop, &QEventLoop::quit);
-    QSharedPointer<QSettings> sets = QSharedPointer<QSettings>(new QSettings("EvelSoft", PROGNAME));
-    bool writeUSBLog = sets->value("WriteLog", "0").toBool();
-    setWriteUSBLog(writeUSBLog);
+    // QSharedPointer<QSettings> sets = QSharedPointer<QSettings>(new QSettings("EvelSoft", PROGNAME));
+    // bool writeUSBLog = sets->value("WriteLog", "0").toBool();
+    setWriteUSBLog(true);
 }
 
-// int EProtocom::devicePosition() const { return m_devicePosition; }
+Error::Msg EProtocom::result() const
+{
+    return m_result;
+}
 
-// void EProtocom::setDevicePosition(int devicePosition) { m_devicePosition = devicePosition; }
+void EProtocom::setResult(const Error::Msg &result)
+{
+    m_result = result;
+}
 
-// QString EProtocom::usbSerial() const { return m_devices.at(m_devicePosition).serial; }
+bool EProtocom::isWriteUSBLog()
+{
+    return m_writeUSBLog;
+}
 
-Error::Msg EProtocom::result() const { return m_result; }
-
-void EProtocom::setResult(const Error::Msg &result) { m_result = result; }
-
-bool EProtocom::isWriteUSBLog() { return m_writeUSBLog; }
-
-void EProtocom::setWriteUSBLog(bool writeUSBLog) { m_writeUSBLog = writeUSBLog; }
+void EProtocom::setWriteUSBLog(bool writeUSBLog)
+{
+    m_writeUSBLog = writeUSBLog;
+}
 
 void EProtocom::Send(char command, char parameter, QByteArray &ba, qint64 datasize)
 {
     if (Board::GetInstance().connectionState() == Board::ConnectionState::Closed
         && Board::GetInstance().interfaceType() == Board::InterfaceType::USB)
     {
-        qDebug() << "Передача в отключенный прибор";
-        ERMSG("В канальную процедуру переданы некорректные данные");
-        m_result = Error::Msg::CN_NULLDATAERROR;
+        qDebug() << Error::Msg::NoDeviceError;
+        m_result = Error::Msg::NoDeviceError;
         return;
     }
-    try
-    {
-        InData = ba;
-        InDataSize = datasize; // размер области данных, в которую производить запись
-        Command = command;
-        /*    if (parameter == BoardTypes::BT_BASE)
-                BoardType = 0x01;
-            else if (parameter == BoardTypes::BT_MEZONIN)
-                BoardType = 0x02;
-            else if (parameter == BoardTypes::BT_NONE)
-                BoardType = 0x00;
-            else */
-        BoardType = parameter; // in GBd command it is a block number
-        InitiateSend();
-        m_waitTimer->start();
-        m_loop.exec(QEventLoop::ExcludeUserInputEvents);
-    }
-    catch (const std::exception &e)
-    {
-        qDebug() << __PRETTY_FUNCTION__ << e.what();
-    }
-    catch (...)
-    {
-        qDebug() << __PRETTY_FUNCTION__ << "Exception";
-    }
+
+    InData = ba;
+    InDataSize = datasize; // размер области данных, в которую производить запись
+    Command = command;
+    BoardType = parameter; // in GBd command it is a block number
+    InitiateSend();
+    m_waitTimer->start();
+    m_loop.exec(QEventLoop::ExcludeUserInputEvents);
 }
 
 void EProtocom::InitiateSend()
@@ -107,7 +100,7 @@ void EProtocom::InitiateSend()
     switch (Command)
     {
     case CN::Read::BlkStartInfo: // запрос блока стартовой информации
-    case CN::Read::Progress: // запрос текущего прогресса
+    case CN::Read::Progress:     // запрос текущего прогресса
     case CN::Read::Variant:
     case CN::Read::Mode:
     case CN::Read::Time:
@@ -119,12 +112,12 @@ void EProtocom::InitiateSend()
         WriteDataToPort(WriteData);
         break;
     }
-    case CN::Read::BlkAC: // чтение настроечных коэффициентов
+    case CN::Read::BlkAC:    // чтение настроечных коэффициентов
     case CN::Read::BlkDataA: // чтение текущих данных без настройки
-    case CN::Read::BlkData: // запрос блока (подблока) текущих данных
+    case CN::Read::BlkData:  // запрос блока (подблока) текущих данных
     case CN::Write::Variant:
     case CN::Write::Mode:
-    case CN::Read::BlkTech: // чтение технологического блока
+    case CN::Read::BlkTech:    // чтение технологического блока
     case CN::Write::EraseTech: // команда стирания технологического блока
     case CN::Write::BlkCmd:
     case CN::Test:
@@ -161,7 +154,6 @@ void EProtocom::InitiateSend()
     {
         WriteData = InData;
         WRLength = WriteData.length();
-        emit SetDataSize(WRLength); // сигнал для прогрессбара
         SetWRSegNum();
         WRCheckForNextSegment(true);
         break;
@@ -174,7 +166,6 @@ void EProtocom::InitiateSend()
         WriteData.append(BoardType);
         WriteData.append(InData);
         WRLength = InDataSize + 1;
-        emit SetDataSize(WRLength); // сигнал для прогрессбара
         SetWRSegNum();
         WRCheckForNextSegment(true);
         break;
@@ -191,7 +182,7 @@ void EProtocom::InitiateSend()
     default:
     {
         ERMSG("Неизвестная команда");
-        Finish(Error::Msg::CN_UNKNOWNCMDERROR);
+        Finish(Error::Msg::WrongCommandError);
         return;
     }
     }
@@ -208,7 +199,7 @@ void EProtocom::WriteDataToPort(QByteArray &ba)
     if (Command == CN::Unknown) // игнорируем вызовы процедуры без команды
     {
         ERMSG("Не пришла ещё шапка файла");
-        qCritical() << QVariant::fromValue(Error::Msg::USB_WRONGCOMER).toString();
+        qCritical() << QVariant::fromValue(Error::Msg::WrongCommandError).toString();
         return;
     }
     int byteswritten = 0;
@@ -218,21 +209,19 @@ void EProtocom::WriteDataToPort(QByteArray &ba)
         if (isWriteUSBLog())
         {
             QByteArray tmps = "->" + tmpba.toHex() + "\n";
-            CnLog->WriteRaw(tmps);
+            Log->WriteRaw(tmps);
         }
         if (Board::GetInstance().connectionState() == Board::ConnectionState::Closed
             && Board::GetInstance().interfaceType() == Board::InterfaceType::USB)
         {
             ERMSG("Ошибка записи RawWrite");
-            qCritical() << QVariant::fromValue(Error::Msg::COM_WRITEER).toString();
+            qCritical() << QVariant::fromValue(Error::Msg::WriteError).toString();
             Disconnect();
-            // TTimer->start();
             return;
         }
         int tmpi = RawWrite(tmpba);
         byteswritten += tmpi;
-        emit writebytessignal(tmpba.left(tmpi));
-        tmpba = tmpba.remove(0, tmpi);
+        tmpba.remove(0, tmpi);
     }
 }
 
@@ -245,7 +234,7 @@ void EProtocom::Finish(Error::Msg msg)
     {
 
         qDebug(__PRETTY_FUNCTION__);
-        CnLog->WriteRaw("### ОШИБКА В ПЕРЕДАННЫХ ДАННЫХ ###\n");
+        Log->WriteRaw("### ОШИБКА В ПЕРЕДАННЫХ ДАННЫХ ###\n");
         qWarning("ОШИБКА В ПЕРЕДАННЫХ ДАННЫХ!!!");
         qCritical() << QVariant::fromValue(msg).toString();
     }
@@ -287,13 +276,8 @@ void EProtocom::WRCheckForNextSegment(int first)
         tmpba += WriteData.right(WriteData.size() - SegEnd);
         SegEnd = WriteData.size();
         WriteData.clear();
-        // ForMihalich = 1;
     }
-    emit SetDataCount(SegEnd);
     WriteDataToPort(tmpba);
-
-    // if(ForMihalich == 1)
-    // SendOk(true);
 }
 
 void EProtocom::AppendSize(QByteArray &ba, int size)
@@ -340,11 +324,10 @@ bool EProtocom::GetLength()
 
 void EProtocom::ParseIncomeData(QByteArray ba)
 {
-    emit readbytessignal(ba);
     if (isWriteUSBLog())
     {
         QByteArray tmps = "<-" + ba.toHex() + "\n";
-        CnLog->WriteRaw(tmps);
+        Log->WriteRaw(tmps);
     }
     if (Command == CN::Unknown) // игнорирование вызова процедуры, если не было
                                 // послано никакой команды
@@ -360,16 +343,16 @@ void EProtocom::ParseIncomeData(QByteArray ba)
     if (ReadDataChunk.at(0) != CN::Message::Module)
     {
         ERMSG("Ошибка при приеме данных");
-        Finish(Error::Msg::CN_RCVDATAERROR);
+        Finish(Error::Msg::ReadError);
         return;
     }
     if (static_cast<unsigned char>(ReadDataChunk.at(1)) == CN::ResultError)
     {
         if (rdsize < 5) // некорректная посылка
-            Finish(Error::Msg::CN_RCVDATAERROR);
+            Finish(Error::Msg::ReadError);
         else
             // Finish(Error::Msg::USO_NOERR + ReadDataChunk.at(4));
-            Finish(Error::Msg::USO_NOERR);
+            Finish(Error::Msg::NoError);
         return;
     }
     switch (bStep)
@@ -392,7 +375,7 @@ void EProtocom::ParseIncomeData(QByteArray ba)
             if ((ReadDataChunk.at(1) != CN::ResultOk) || (ReadDataChunk.at(2) != 0x00) || (ReadDataChunk.at(3) != 0x00))
             {
                 ERMSG("Ошибка при приеме данных");
-                Finish(Error::Msg::CN_RCVDATAERROR);
+                Finish(Error::Msg::ReadError);
                 return;
             }
             if (Command == CN::Write::EraseTech)
@@ -410,7 +393,7 @@ void EProtocom::ParseIncomeData(QByteArray ba)
             if ((ReadDataChunk.at(1) != CN::ResultOk) || (ReadDataChunk.at(2) != 0x00) || (ReadDataChunk.at(3) != 0x00))
             {
                 ERMSG("Ошибка при приеме данных");
-                Finish(Error::Msg::CN_RCVDATAERROR);
+                Finish(Error::Msg::ReadError);
                 return;
             }
             if (!SegLeft)
@@ -436,7 +419,7 @@ void EProtocom::ParseIncomeData(QByteArray ba)
             if (!GetLength())
             {
                 ERMSG("Несовпадение длины");
-                Finish(Error::Msg::CN_RCVDATAERROR);
+                Finish(Error::Msg::ReadError);
                 return;
             }
             if (ReadDataChunkLength == 0)
@@ -444,10 +427,7 @@ void EProtocom::ParseIncomeData(QByteArray ba)
                 Finish(Error::Msg::NoError);
                 return;
             }
-            if (Command == CN::Read::Progress)
-                emit SetDataSize(100);
-            else
-                emit SetDataSize(0); // длина неизвестна для команд с ответами без длины
+
             bStep++;
             break;
         }
@@ -456,7 +436,7 @@ void EProtocom::ParseIncomeData(QByteArray ba)
             if (!GetLength())
             {
                 ERMSG("Несовпадение длины");
-                Finish(Error::Msg::CN_RCVDATAERROR);
+                Finish(Error::Msg::ReadError);
                 return;
             }
             if (ReadDataChunkLength == 0)
@@ -484,7 +464,7 @@ void EProtocom::ParseIncomeData(QByteArray ba)
             filenum += tmpi;
             if (filenum != FNum)
             {
-                Finish(Error::Msg::USO_UNKNFILESENT);
+                Finish(Error::Msg::WrongFileError);
                 return;
             }
             // вытаскиваем размер файла
@@ -494,17 +474,16 @@ void EProtocom::ParseIncomeData(QByteArray ba)
             if (RDLength > CN::Limits::MaxGetFileSize)
             {
                 ERMSG("Некорректная длина блока");
-                Finish(Error::Msg::CN_RCVLENGTHERROR);
+                Finish(Error::Msg::SizeError);
                 return;
             }
-            emit SetDataSize(RDLength);
             //                OutData.resize(RDLength);
             bStep++;
             break;
         }
 
         default:
-            Finish(Error::Msg::CN_UNKNOWNCMDERROR);
+            Finish(Error::Msg::WrongCommandError);
             break;
         }
     }
@@ -514,7 +493,7 @@ void EProtocom::ParseIncomeData(QByteArray ba)
     {
         if (!GetLength())
         {
-            Finish(Error::Msg::CN_RCVDATAERROR);
+            Finish(Error::Msg::ReadError);
             return;
         }
         // пока не набрали целый буфер соответственно присланной длине или не
@@ -540,12 +519,10 @@ void EProtocom::ParseIncomeData(QByteArray ba)
             OutData.append(ReadDataChunk);
             quint32 outdatasize = OutData.size();
             // сигнал для прогрессбара
-            emit SetDataCount(outdatasize);
             ReadDataChunk.clear();
             if ((outdatasize >= InDataSize) || (ReadDataChunkLength < CN::Limits::MaxSegmenthLength))
             {
-                // установка размера прогрессбара, чтобы не мелькал
-                emit SetDataSize(outdatasize);
+
                 Finish(Error::Msg::NoError);
             }
             else
@@ -564,8 +541,7 @@ void EProtocom::ParseIncomeData(QByteArray ba)
             ReadDataChunk.truncate(ReadDataChunkLength);
             OutData.append(ReadDataChunk);
             outdatasize += ReadDataChunkLength;
-            // сигнал для прогрессбара
-            emit SetDataCount(outdatasize);
+
             ReadDataChunk.clear();
             if (outdatasize >= RDLength)
             {
@@ -579,7 +555,6 @@ void EProtocom::ParseIncomeData(QByteArray ba)
         case CN::Read::Progress:
         {
             quint16 OscNum = static_cast<quint8>(ReadDataChunk.at(0)) + static_cast<quint8>(ReadDataChunk.at(1)) * 256;
-            emit SetDataCount(OscNum);
             if (OscNum == 100)
             {
                 Finish(Error::Msg::NoError);
@@ -591,7 +566,7 @@ void EProtocom::ParseIncomeData(QByteArray ba)
 
         default:
         {
-            Finish(Error::Msg::CN_UNKNOWNCMDERROR);
+            Finish(Error::Msg::WrongCommandError);
             break;
         }
         }
@@ -605,17 +580,10 @@ void EProtocom::CheckForData()
     ParseIncomeData(ba);
 }
 
-void EProtocom::OscTimerTimeout() { SendCmd(CN::Read::Progress); }
-
-// QString EProtocom::deviceName() const
-//{
-//    return m_deviceName;
-//}
-
-// void EProtocom::setDeviceName(const QString &deviceName)
-//{
-//    m_deviceName = deviceName;
-//}
+void EProtocom::OscTimerTimeout()
+{
+    SendCmd(CN::Read::Progress);
+}
 
 void EProtocom::SendCmd(unsigned char command, int parameter)
 {
@@ -631,7 +599,7 @@ void EProtocom::SendCmd(unsigned char command, int parameter)
     case CN::Write::EraseTech:
         break;
     default:
-        Finish(Error::Msg::CN_UNKNOWNCMDERROR);
+        Finish(Error::Msg::WrongCommandError);
         ERMSG("Неизвестная команда");
         return;
     }
@@ -655,7 +623,7 @@ void EProtocom::SendIn(unsigned char command, char parameter, QByteArray &ba, qi
         break;
     default:
         ERMSG("Неизвестная команда");
-        Finish(Error::Msg::CN_UNKNOWNCMDERROR);
+        Finish(Error::Msg::WrongCommandError);
         return;
     }
     Send(command, parameter, ba, maxdatasize);
@@ -676,7 +644,7 @@ void EProtocom::SendOut(unsigned char command, char board_type, QByteArray &ba)
         break;
     default:
         ERMSG("Неизвестная команда");
-        Finish(Error::Msg::CN_UNKNOWNCMDERROR);
+        Finish(Error::Msg::WrongCommandError);
         return;
     }
     Send(command, board_type, ba, 0);
@@ -692,7 +660,7 @@ void EProtocom::SendFile(unsigned char command, char board_type, int filenum, QB
         break;
     default:
         ERMSG("Неизвестная команда");
-        Finish(Error::Msg::CN_UNKNOWNCMDERROR);
+        Finish(Error::Msg::WrongCommandError);
         return;
     }
     FNum = filenum;
@@ -726,10 +694,7 @@ void EProtocom::usbStateChanged(void *message)
             {
                 if (m_devices.contains(m_usbWorker->deviceInfo()))
                 {
-                    //                    int index = m_devices.indexOf(m_usbWorker->deviceInfo());
                     m_devicePosition = m_devices.indexOf(m_usbWorker->deviceInfo());
-                    //                    setDevicePosition(index);
-                    //                    m_usbWorker->setDeviceInfo(m_devices.at(index));
                     m_usbWorker->setDeviceInfo(m_devices.at(m_devicePosition));
                     qDebug("Device arrived again");
                     if (!Reconnect())
@@ -761,7 +726,7 @@ void EProtocom::usbStateChanged(void *message)
                     qDebug() << "Device " << m_usbWorker->deviceInfo().serial << " removed completely";
                     WriteData.clear();
                     OutData.clear();
-                    Finish(Error::Msg::CN_NULLDATAERROR);
+                    Finish(Error::Msg::NullDataError);
                     m_loop.exit();
                     QMessageBox::critical(nullptr, "Ошибка", "Связь с прибором была разорвана", QMessageBox::Ok);
                 }
@@ -801,33 +766,11 @@ void EProtocom::usbStateChanged(void *message)
     }
 #endif
 }
-// void EProtocom::TranslateDeviceAndSave(const QString &str)
-//{
-//    // формат строки: "VEN_" + QString::number(venid, 16) + "_ & DEV_" +
-//    // QString::number(prodid, 16) + "_ & SN_" + sn+"_ & Path_"+path;
-//    QStringList sl = str.split("_"); // 1,3,5,7 - полезная нагрузка
-//    if (sl.size() < 8)
-//    {
-//        ERMSG("Неправильная длина имени порта");
-//        DBGMSG;
-//        return;
-//    }
-//    QString tmps = sl.at(1);
-//    // UsbPort.vendor_id = tmps.toUShort(nullptr, 16);
-//    tmps = sl.at(3);
-//    // UsbPort.product_id = tmps.toUShort(nullptr, 16);
-//    tmps = sl.at(5);
-//    // int z = tmps.toWCharArray(UsbPort.serial);
-//    // UsbPort.serial[z] = '\x0';
-//    tmps = sl.at(7);
-//    // strcpy(UsbPort.path, tmps.toStdString().c_str());
-//}
 
 EProtocom::~EProtocom()
 {
-    m_workerThread.quit();
-    m_workerThread.wait();
-    CnLog->deleteLater();
+
+    Log->deleteLater();
     OscTimer->deleteLater();
     m_waitTimer->deleteLater();
 }
@@ -836,30 +779,114 @@ bool EProtocom::start(const ConnectStruct &st)
 {
     if (Board::GetInstance().connectionState() == Board::ConnectionState::Connected
         && Board::GetInstance().interfaceType() == Board::InterfaceType::USB)
-        ///
         Disconnect();
-    //    m_usbWorker = new EUsbWorker(m_devices.at(m_devicePosition), CnLog, isWriteUSBLog());
-    m_usbWorker = new EUsbWorker(m_devices.at(st.usbDevicePosition), CnLog, isWriteUSBLog());
+    m_usbWorker = new EUsbWorker(m_devices.at(st.usbDevicePosition), Log, isWriteUSBLog());
     m_devicePosition = st.usbDevicePosition;
-    m_usbWorker->moveToThread(&m_workerThread);
-    connect(&m_workerThread, &QThread::started, m_usbWorker, &EUsbWorker::interact);
+    QThread *workerThread = new QThread;
+    m_usbWorker->moveToThread(workerThread);
 
-    connect(m_usbWorker, &EUsbWorker::Finished, &m_workerThread, &QThread::quit);
-
-    // connect(&m_workerThread, &QThread::finished, &m_workerThread, &QThread::deleteLater);
-    connect(m_usbWorker, &EUsbWorker::Finished, m_usbWorker, &EUsbWorker::deleteLater);
-
+    connect(workerThread, &QThread::started, m_usbWorker, &EUsbWorker::interact);
+    connect(workerThread, &QThread::started, [this] { m_workerStatus = true; });
+    connect(workerThread, &QThread::finished, [this] { m_workerStatus = false; });
+    connect(workerThread, &QThread::finished, workerThread, &QThread::deleteLater);
+    connect(m_usbWorker, &EUsbWorker::finished, workerThread, &QThread::quit);
+    connect(m_usbWorker, &EUsbWorker::finished, m_usbWorker, &EUsbWorker::deleteLater);
     connect(m_usbWorker, &EUsbWorker::NewDataReceived, this, &EProtocom::ParseIncomeData);
+
+    //    QThread *parserThread = new QThread;
+
+    //    connect(parserThread, &QThread::started, [this] { m_parserStatus = true; });
+    //    connect(parserThread, &QThread::finished, [this] { m_parserStatus = false; });
+    //    connect(parserThread, &QThread::finished, parserThread, &QThread::deleteLater);
 
     if (m_usbWorker->setupConnection() == Error::Msg::NoError
         && Board::GetInstance().interfaceType() == Board::InterfaceType::USB)
     {
         Board::GetInstance().setConnectionState(Board::ConnectionState::Connected);
-        m_workerThread.start();
+        workerThread->start();
     }
     else
         return false;
     return true;
+}
+
+void EProtocom::reqTime()
+{
+    CommandStruct inp { CN::Commands::ReadTime, 0, 0, {} };
+    DataManager::addToInQueue(inp);
+}
+
+void EProtocom::reqFile(quint32 filenum, bool isConfigFile)
+{
+    // TODO Как использовать флаг?
+    CommandStruct inp {
+        CN::Commands::ReadFile, // Command
+        filenum,                // File number
+        0,                      // Empty float arg
+        {}                      // Empty QByteArray
+    };
+    DataManager::addToInQueue(inp);
+}
+
+void EProtocom::reqStartup(quint32 sigAdr, quint32 sigCount)
+{
+    CommandStruct inp {
+        CN::Commands::ReadBlkData,                                 // Command
+        sigAdr,                                                    // Board type
+        sigCount,                                                  // Empty float arg
+        QByteArray(sizeof(sigCount) * sigCount, Qt::Uninitialized) // Buffer for bsi
+    };
+    DataManager::addToInQueue(inp);
+}
+
+void EProtocom::reqBSI()
+{
+    CommandStruct inp {
+        CN::Commands::ReadBlkStartInfo,                       // Command
+        BoardTypes::BT_NONE,                                  // Board type
+        0,                                                    // Empty float arg
+        QByteArray(sizeof(ModuleBSI::Bsi), Qt::Uninitialized) // Buffer for bsi
+    };
+    DataManager::addToInQueue(inp);
+}
+
+void EProtocom::writeFile(quint32 filenum, const QByteArray &file)
+{
+    CommandStruct inp {
+        CN::Commands::WriteFile, // Command
+        filenum,                 // File number
+        0,                       // Empty float arg
+        file                     // Buffer with file
+    };
+    DataManager::addToInQueue(inp);
+}
+
+void EProtocom::writeTime(quint32 time)
+{
+    CommandStruct inp { CN::Commands::WriteTime, time, 0, {} };
+    DataManager::addToInQueue(inp);
+}
+
+void EProtocom::reqFloats(quint32 sigAdr, quint32 sigCount)
+{
+    // TODO CN::Commands::Unknown
+    CommandStruct inp { CN::Commands::Unknown, sigAdr, sigCount, {} };
+    DataManager::addToInQueue(inp);
+}
+
+void EProtocom::writeCommand(Queries::Commands cmd, QList<DataTypes::SignalsStruct> list)
+{
+    CommandStruct inp;
+    switch (cmd)
+    {
+    default:
+    {
+        {
+            inp = { translate(cmd), 0, 0, QByteArray {} };
+        }
+    }
+    }
+    DataManager::addToInQueue(inp);
 }
 
 bool EProtocom::Reconnect()
@@ -869,7 +896,6 @@ bool EProtocom::Reconnect()
         && Board::GetInstance().interfaceType() == Board::InterfaceType::USB)
     {
         Board::GetInstance().setConnectionState(Board::ConnectionState::Connected);
-        m_workerThread.start();
     }
     else
         return false;
@@ -880,7 +906,7 @@ void EProtocom::Disconnect()
 {
     qDebug(__PRETTY_FUNCTION__);
     RawClose();
-    CnLog->WriteRaw("Disconnected!\n");
+    Log->WriteRaw("Disconnected!\n");
 }
 
 QByteArray EProtocom::RawRead(int bytes)
@@ -889,7 +915,10 @@ QByteArray EProtocom::RawRead(int bytes)
     return QByteArray();
 }
 
-int EProtocom::RawWrite(QByteArray &ba) { return m_usbWorker->WriteDataAttempt(ba); }
+int EProtocom::RawWrite(QByteArray &ba)
+{
+    return m_usbWorker->WriteDataAttempt(ba);
+}
 
 void EProtocom::RawClose()
 {
@@ -898,6 +927,20 @@ void EProtocom::RawClose()
     {
         Board::GetInstance().setConnectionState(Board::ConnectionState::Closed);
     }
+}
+
+CN::Commands EProtocom::translate(const Queries::Commands cmd)
+{
+    if (m_dict.contains(cmd))
+        return m_dict.value(cmd);
+    else
+        return CN::Commands::Unknown;
+}
+
+Queries::Commands EProtocom::translate(const CN::Commands cmd)
+{
+    // TODO  Реализовать проверку если нет такого value
+    return m_dict.key(cmd);
 }
 
 QList<QStringList> EProtocom::DevicesFound()
@@ -916,22 +959,18 @@ QList<QStringList> EProtocom::DevicesFound()
             const DeviceConnectStruct buffer(cur_dev->vendor_id, cur_dev->product_id,
                 QString::fromWCharArray(cur_dev->serial_number), QString(cur_dev->path));
 
-            //#ifdef __linux__
-            //            wstr[0] = 0x0000;
-            //            res = hid_get_serial_number_string(handle, wstr, MAX_STR);
-            //            if (res < 0)
-            //                printf("Unable to read serial number string\n");
-            //#endif
-            //#ifdef _WIN32
+            /*#ifdef __linux__
+                        wstr[0] = 0x0000;
+                        res = hid_get_serial_number_string(handle, wstr, MAX_STR);
+                        if (res < 0)
+                            printf("Unable to read serial number string\n");
+            #endif
+            #ifdef _WIN32
 
-            // sn = QString::fromWCharArray(cur_dev->serial_number);
-            //#endif
+             sn = QString::fromWCharArray(cur_dev->serial_number);
+            #endif*/
             QStringList tmps { QString::number(buffer.vendor_id, 16), QString::number(buffer.product_id, 16),
                 buffer.serial, buffer.path };
-            // QString tmps = "VEN_" + QString::number(buffer.vendor_id, 16) + "_ &
-            // DEV_"
-            //   + QString::number(buffer.product_id, 16) + "_ & SN_" + buffer.serial
-            //   + "_ & Path_" + buffer.path;
             sl.append(tmps);
             m_devices.push_back(buffer);
         }
@@ -941,6 +980,7 @@ QList<QStringList> EProtocom::DevicesFound()
     return sl;
 }
 
-QThread *EProtocom::workerThread() { return &m_workerThread; }
-
-EUsbWorker *EProtocom::usbWorker() const { return m_usbWorker; }
+EUsbWorker *EProtocom::usbWorker() const
+{
+    return m_usbWorker;
+}

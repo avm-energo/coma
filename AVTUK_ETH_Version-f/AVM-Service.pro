@@ -4,8 +4,8 @@
 #
 #-------------------------------------------------
 
-QMAKE_TARGET_COMPANY = EvelSoft
-QMAKE_TARGET_COPYRIGHT = EvelSoft
+QMAKE_TARGET_COMPANY = AVM-Energo
+QMAKE_TARGET_COPYRIGHT = AVM-Energo
 QMAKE_TARGET_PRODUCT = AVTUK-S
 RC_ICONS = ../coma.ico
 CONFIG += c++17
@@ -19,7 +19,7 @@ DEFINES += PROGNAME='\\"AVM-Service\\"'
 DEFINES += PROGCAPTION='\\"AVM-Service\\040v\\040"$$VERSION"\\040\\"'
 DEFINES += COMAVERSION='\\"$$VERSION\\"'
 DEFINES += DEVICETYPE=1 # 1 - module, 2 - pribor, for diagnostic messages
-DEFINES += SOFTDEVELOPER='\\"EvelSoft\\"'
+DEFINES += SOFTDEVELOPER='\\"AVM-Energo\\"'
 DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000
 
 # DEFINES += DEBUG
@@ -28,6 +28,7 @@ TEMPLATE = app
 
 SOURCES += \
     ../interfaces/modbusthread.cpp \
+    ../interfaces/usbparser.cpp \
 coma.cpp \
 main.cpp \
 ../alarm/alarmclass.cpp \
@@ -121,9 +122,12 @@ main.cpp \
 ../widgets/waitwidget.cpp \
 ../widgets/wd_func.cpp
 
+PRECOMPILED_HEADER = ../gen/pch.h
+
 HEADERS += \
     ../interfaces/eprotocom.h \
     ../interfaces/modbusthread.h \
+    ../interfaces/usbparser.h \
 coma.h \
 ../alarm/alarmclass.h \
 ../alarm/alarmstateall.h \
@@ -207,6 +211,10 @@ coma.h \
 ../startup/startupkdvdialog.h \
 ../startup/startupkivdialog.h \
 ../startup/startupktfdialog.h \
+../interfaces/commands.h \
+../interfaces/defines.h \
+../interfaces/eprotocom.h \
+../interfaces/eusbworker.h \
 ../widgets/ecombobox.h \
 ../widgets/edoublespinbox.h \
 ../widgets/errorprotocolwidget.h \
