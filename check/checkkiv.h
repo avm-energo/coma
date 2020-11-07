@@ -5,8 +5,8 @@
 
 #include <QWidget>
 
-#define C84_BDA_IN 1
-#define C84_BDA_IN2 2
+//#define C84_BDA_IN 1
+//#define C84_BDA_IN2 2
 
 class CheckKIV
 {
@@ -55,17 +55,17 @@ public:
     Bd8 Bd_block8;
 
     // Check_84();
-    QWidget *Bd1W(QWidget *parent);
-    QWidget *Bd2W(QWidget *parent);
+    //    QWidget *Bd1W(QWidget *parent);
+    //    QWidget *Bd2W(QWidget *parent);
     //    QWidget *Bd3W(QWidget *parent);
-    void FillBd(QWidget *parent, QString Name, QString Value);
+    //    void FillBd(QWidget *parent, QString Name, QString Value);
     void FillBdUSB(QWidget *parent);
     void FillBd8(QWidget *parent);
     void FillBd5(QWidget *parent);
     // void FillBd2(QWidget *parent);
     // void FillBd3(QWidget *parent);
-    QWidget *BdUI(int bdnum); // визуализация наборов текущих данных от модуля
-    QWidget *CustomTab();
+    //    QWidget *BdUI(int bdnum); // визуализация наборов текущих данных от модуля
+    //    QWidget *CustomTab();
     //    void RefreshAnalogValues(int bdnum);  // обновление полей в GUI из полученного
     //                                          // соответствующего Bd_block
     //    void PrepareHeadersForFile(int row);  // row - строка для записи заголовков

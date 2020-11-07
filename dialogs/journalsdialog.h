@@ -3,8 +3,8 @@
 
 //#include "../gen/journals.h"
 //#include "../iec104/iec104.h"
-#include "../gen/udialog.h"
 #include "../module/journals.h"
+#include "../widgets/udialog.h"
 
 #include <QMessageBox>
 #include <QProgressDialog>

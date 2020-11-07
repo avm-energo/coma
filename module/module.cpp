@@ -205,14 +205,24 @@ void Module::parentTWTabClicked(int index)
         return;
     m_currentTabIndex = index;
 
-    QDialog *dlg = m_dialogs.at(m_oldTabIndex);
-    UDialog *udlg = qobject_cast<UDialog *>(dlg);
-    if (udlg)
-        udlg->setUpdatesDisabled();
-    dlg = m_dialogs.at(m_currentTabIndex);
-    udlg = qobject_cast<UDialog *>(dlg);
-    if (udlg)
-        udlg->setUpdatesEnabled();
+    if (m_oldTabIndex >= m_dialogs.size())
+    {
+        DBGMSG("BdUIList size");
+        return;
+    }
+    UDialog *udlg = m_dialogs.at(m_oldTabIndex);
+    //    UDialog *udlg = qobject_cast<UDialog *>(dlg);
+    //    if (udlg)
+    udlg->setUpdatesDisabled();
+    if (m_currentTabIndex >= m_dialogs.size())
+    {
+        DBGMSG("BdUIList size");
+        return;
+    }
+    udlg = m_dialogs.at(m_currentTabIndex);
+    //    udlg = qobject_cast<UDialog *>(dlg);
+    //    if (udlg)
+    udlg->setUpdatesEnabled();
     udlg->update();
     m_oldTabIndex = m_currentTabIndex;
 }

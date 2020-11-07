@@ -1,20 +1,18 @@
-#ifndef UDIALOG_H
-#define UDIALOG_H
+#ifndef UWIDGET_H
+#define UWIDGET_H
 
-// simple dialog class to populate from
+// simple widget class to populate from
 // has virtual methods setUpdatesDisabled & setUpdatesEnabled
 
 #include "../interfaces/baseinterface.h"
 
-#include <QDialog>
+#include <QWidget>
 
-class UDialog : public QDialog
+class UWidget : public QWidget
 {
     Q_OBJECT
 public:
-    bool m_updatesEnabled;
-
-    UDialog(QWidget *parent = nullptr);
+    explicit UWidget(QWidget *parent = nullptr);
 
     void setUpdatesEnabled();
     void setUpdatesDisabled();
@@ -23,13 +21,15 @@ public:
     void setCaption(const QString &caption);
     void setInterface(BaseInterface *iface);
     BaseInterface *iface();
+signals:
 
 public slots:
     virtual void update();
 
 private:
+    bool m_updatesEnabled;
     QString m_caption;
     BaseInterface *m_iface;
 };
 
-#endif // UDIALOG_H
+#endif // UWIDGET_H

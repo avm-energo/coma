@@ -82,16 +82,19 @@ QWidget *CheckKDVHarmonicDialog::BdUI(int bdnum)
         return new QWidget;
     }
 }
-void CheckKDVHarmonicDialog::PrepareHeadersForFile(int row) { Q_UNUSED(row) }
+void CheckKDVHarmonicDialog::PrepareHeadersForFile(int row)
+{
+    Q_UNUSED(row)
+}
 
 void CheckKDVHarmonicDialog::WriteToFile(int row, int bdnum)
 {
     Q_UNUSED(row)
     Q_UNUSED(bdnum)
 }
-void CheckKDVHarmonicDialog::ChooseValuesToWrite() { }
-void CheckKDVHarmonicDialog::SetDefaultValuesToWrite() { }
-void CheckKDVHarmonicDialog::PrepareAnalogMeasurements() { }
+// void CheckKDVHarmonicDialog::ChooseValuesToWrite() { }
+// void CheckKDVHarmonicDialog::SetDefaultValuesToWrite() { }
+// void CheckKDVHarmonicDialog::PrepareAnalogMeasurements() { }
 
 // void CheckKDVHarmonicDialog::USBUpdate()
 //{
@@ -167,16 +170,16 @@ void CheckKDVHarmonicDialog::setConnections()
 //    }
 //}
 
-void CheckKDVHarmonicDialog::SetWarnColor(int position, bool value)
-{
-    Q_UNUSED(position)
-    Q_UNUSED(value)
-}
+// void CheckKDVHarmonicDialog::SetWarnColor(int position, bool value)
+//{
+//    Q_UNUSED(position)
+//    Q_UNUSED(value)
+//}
 
-void CheckKDVHarmonicDialog::SetAlarmColor(int position, bool value)
-{
-    Q_UNUSED(position)
-    Q_UNUSED(value)
-}
+// void CheckKDVHarmonicDialog::SetAlarmColor(int position, bool value)
+//{
+//    Q_UNUSED(position)
+//    Q_UNUSED(value)
+//}
 
 // void CheckKDVHarmonicDialog::update() { updateFloatData(); }

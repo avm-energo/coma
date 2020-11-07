@@ -29,6 +29,7 @@ AbstractCheckDialog::AbstractCheckDialog(QWidget *parent) : UDialog(parent)
     Busy = false;
     xlsx = nullptr;
     WRow = 0;
+    m_oldTabIndex = m_currentTabIndex = 0;
     Timer = new QTimer(this);
     Timer->setObjectName("checktimer");
     connect(Timer, &QTimer::timeout, this, &AbstractCheckDialog::TimerTimeout);
@@ -72,18 +73,37 @@ void AbstractCheckDialog::SetupUI(QStringList &tabnames)
 
     CheckTW->tabBar()->setStyleSheet(ConfTWss);
     //    CheckTW->addTab(AutoCheckUI(),"  Автоматическая проверка  ");
-    for (int i = 0; i < BdUINum; ++i)
+    //    for (int i = 0; i < BdUINum; ++i)
+    //    {
+    //        CheckTW->addTab(BdUI(i), "  " + tabnames.at(i) + "  ");
+    //        IndexWd.append(i);
+    //    }
+    foreach (BdUIStruct w, m_BdUIList)
     {
-        CheckTW->addTab(BdUI(i), "  " + tabnames.at(i) + "  ");
-        IndexWd.append(i);
+        CheckTW->addTab(w.widget, " " + w.widgetCaption + " ");
     }
-
     //    QWidget *w = CustomTab();
     //    if (w != nullptr)
     //        CheckTW->addTab(w, "  Прочее  ");
     lyout->addWidget(CheckTW);
     // lyout->addWidget(BottomUI());
     setLayout(lyout);
+    connect(CheckTW, &QTabWidget::tabBarClicked, this, &AbstractCheckDialog::TWTabClicked);
+}
+
+void AbstractCheckDialog::PrepareHeadersForFile(int row)
+{
+    Q_UNUSED(row)
+}
+
+void AbstractCheckDialog::WriteToFile(int row, int bdnum)
+{
+    Q_UNUSED(row)
+    Q_UNUSED(bdnum)
+}
+
+void AbstractCheckDialog::PrepareAnalogMeasurements()
+{
 }
 
 // QWidget *AbstractCheckDialog::CustomTab() { return nullptr; }
@@ -269,6 +289,30 @@ void AbstractCheckDialog::StopAnalogMeasurements()
 void AbstractCheckDialog::TimerTimeout()
 {
     ReadAnalogMeasurementsAndWriteToFile();
+}
+
+void AbstractCheckDialog::TWTabClicked(int index)
+{
+    if (index == m_currentTabIndex) // to prevent double function invocation by doubleclicking on tab
+        return;
+    m_currentTabIndex = index;
+
+    if (m_oldTabIndex >= m_BdUIList.size())
+    {
+        DBGMSG("BdUIList size");
+        return;
+    }
+    UWidget *w = m_BdUIList.at(m_oldTabIndex).widget;
+    w->setUpdatesDisabled();
+    if (m_currentTabIndex >= m_BdUIList.size())
+    {
+        DBGMSG("BdUIList size");
+        return;
+    }
+    w = m_BdUIList.at(m_currentTabIndex).widget;
+    w->setUpdatesEnabled();
+    w->update();
+    m_oldTabIndex = m_currentTabIndex;
 }
 
 void AbstractCheckDialog::SetTimerPeriod()

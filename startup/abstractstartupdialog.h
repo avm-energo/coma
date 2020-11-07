@@ -2,7 +2,7 @@
 #define ABSTRACTCORDIALOG_H
 
 #include "../gen/error.h"
-#include "../gen/udialog.h"
+#include "../widgets/udialog.h"
 //#include "../iec104/iec104.h"
 #include "../interfaces/modbus.h"
 #include "../models/etablemodel.h"

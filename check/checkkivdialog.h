@@ -15,10 +15,10 @@ public:
     ~CheckKIVDialog();
 
 public slots:
-    void SetAlarmColor(int position, bool value) override;
-    void SetWarnColor(int position, bool value) override;
-    void getFloatData();
-    void getSPData();
+    //    void SetAlarmColor(int position, bool value) override;
+    //    void SetWarnColor(int position, bool value) override;
+    //    void getFloatData();
+    //    void getSPData();
     void updateFloatData(DataTypes::FloatStruct &fl);
     void updateSPData(DataTypes::SinglePointWithTimeStruct &sp);
     //    void MainTWTabClicked(int tabindex);
@@ -72,14 +72,17 @@ private:
     CheckKIV *ChKIV;
     QBitArray m_stColor;
 
-    QWidget *AutoCheckUI();            // UI для автоматической проверки модуля
+    //    QWidget *AutoCheckUI();            // UI для автоматической проверки модуля
     QWidget *BdUI(int bdnum) override; // визуализация наборов текущих данных от модуля
     void PrepareHeadersForFile(int row) override;  // row - строка для записи заголовков
     void WriteToFile(int row, int bdnum) override; // row - номер строки для записи в файл
                                                    // xlsx, bdnum - номер блока данных
-    void ChooseValuesToWrite() override;
-    void SetDefaultValuesToWrite() override;
-    void PrepareAnalogMeasurements() override;
+                                                   //    void ChooseValuesToWrite() override;
+                                                   //    void SetDefaultValuesToWrite() override;
+                                                   //    void PrepareAnalogMeasurements() override;
+    UWidget *Bd1W();
+    QWidget *Bd2W();
+
     //    QWidget *CustomTab() override;
 
 private slots:

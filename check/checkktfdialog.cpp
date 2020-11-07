@@ -49,7 +49,10 @@ CheckKTFDialog::CheckKTFDialog(QWidget *parent) : AbstractCheckDialog(parent)
     Timer->setInterval(ANMEASINT);
 }
 
-CheckKTFDialog::~CheckKTFDialog() { delete ChKTF; }
+CheckKTFDialog::~CheckKTFDialog()
+{
+    delete ChKTF;
+}
 
 QWidget *CheckKTFDialog::BdUI(int bdnum)
 {
@@ -76,7 +79,10 @@ QWidget *CheckKTFDialog::BdUI(int bdnum)
     }
 }
 
-void CheckKTFDialog::PrepareHeadersForFile(int row) { Q_UNUSED(row) }
+void CheckKTFDialog::PrepareHeadersForFile(int row)
+{
+    Q_UNUSED(row)
+}
 
 void CheckKTFDialog::WriteToFile(int row, int bdnum)
 {
@@ -84,9 +90,9 @@ void CheckKTFDialog::WriteToFile(int row, int bdnum)
     Q_UNUSED(bdnum)
 }
 
-void CheckKTFDialog::ChooseValuesToWrite() { }
-void CheckKTFDialog::SetDefaultValuesToWrite() { }
-void CheckKTFDialog::PrepareAnalogMeasurements() { }
+// void CheckKTFDialog::ChooseValuesToWrite() { }
+// void CheckKTFDialog::SetDefaultValuesToWrite() { }
+// void CheckKTFDialog::PrepareAnalogMeasurements() { }
 
 // void CheckKTFDialog::USBUpdate()
 //{
@@ -214,16 +220,19 @@ void CheckKTFDialog::updateFloatData()
 //    }
 //}
 
-void CheckKTFDialog::SetWarnColor(int position, bool value)
+// void CheckKTFDialog::SetWarnColor(int position, bool value)
+//{
+//    Q_UNUSED(position)
+//    Q_UNUSED(value)
+//}
+
+void CheckKTFDialog::update()
 {
-    Q_UNUSED(position)
-    Q_UNUSED(value)
+    updateFloatData();
 }
 
-void CheckKTFDialog::update() { updateFloatData(); }
-
-void CheckKTFDialog::SetAlarmColor(int position, bool value)
-{
-    Q_UNUSED(position)
-    Q_UNUSED(value)
-}
+// void CheckKTFDialog::SetAlarmColor(int position, bool value)
+//{
+//    Q_UNUSED(position)
+//    Q_UNUSED(value)
+//}

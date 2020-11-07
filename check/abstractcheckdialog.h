@@ -17,7 +17,7 @@
 #define ABSTRACTCHECKDIALOG_H
 
 #include "../gen/modulebsi.h"
-#include "../gen/udialog.h"
+#include "../widgets/udialog.h"
 //#include "../modbus/modbus.h"
 #include "check.h"
 #include "xlsxdocument.h"
@@ -38,23 +38,11 @@ class AbstractCheckDialog : public UDialog
 {
     Q_OBJECT
 public:
-    explicit AbstractCheckDialog(QWidget *parent = nullptr);
-    ~AbstractCheckDialog();
-    void SetupUI(QStringList &tabnames);
-
-    // визуализация наборов текущих данных от модуля
-    virtual QWidget *BdUI(int bdnum) = 0;
-    // row - строка для записи заголовков
-    virtual void PrepareHeadersForFile(int row) = 0;
-    // row - номер строки для записи в файл xlsx, bdnum - номер блока данных
-    virtual void WriteToFile(int row, int bdnum) = 0;
-
-    virtual void ChooseValuesToWrite() = 0;
-    virtual void SetDefaultValuesToWrite() = 0;
-    // функция подготовки к измерениям (например,   запрос постоянных данных)
-    virtual void PrepareAnalogMeasurements() = 0;
-    void SetBd(int bdnum, void *block, int blocksize, bool toxlsx = true);
-    QWidget *BottomUI();
+    struct BdUIStruct
+    {
+        QString widgetCaption;
+        UWidget *widget;
+    };
 
     QXlsx::Document *xlsx;
     QTimer *Timer;
@@ -64,6 +52,25 @@ public:
     // тип платы
     QList<int> IndexWd;
     bool m_timerCounter;
+    QList<BdUIStruct> m_BdUIList;
+
+    explicit AbstractCheckDialog(QWidget *parent = nullptr);
+    ~AbstractCheckDialog();
+    void SetupUI(QStringList &tabnames);
+
+    // визуализация наборов текущих данных от модуля
+    virtual QWidget *BdUI(int bdnum) = 0;
+    // row - строка для записи заголовков
+    virtual void PrepareHeadersForFile(int row);
+    // row - номер строки для записи в файл xlsx, bdnum - номер блока данных
+    virtual void WriteToFile(int row, int bdnum);
+
+    //    virtual void ChooseValuesToWrite() = 0;
+    //    virtual void SetDefaultValuesToWrite() = 0;
+    // функция подготовки к измерениям (например,   запрос постоянных данных)
+    void PrepareAnalogMeasurements();
+    void SetBd(int bdnum, void *block, int blocksize, bool toxlsx = true);
+    QWidget *BottomUI();
 
 signals:
 
@@ -93,6 +100,7 @@ private:
     Bip Bip_block;
     bool Busy;
     QElapsedTimer *ElapsedTimeCounter;
+    int m_currentTabIndex, m_oldTabIndex;
 
     void CheckIP();
     void GetIP();
@@ -116,6 +124,7 @@ private slots:
     void StartAnalogMeasurementsToFile();
     void StartAnalogMeasurements();
     void TimerTimeout();
+    void TWTabClicked(int index);
 };
 
 #endif // ABSTRACTCHECKDIALOG_H

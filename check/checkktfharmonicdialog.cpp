@@ -82,7 +82,10 @@ QWidget *CheckKTFHarmonicDialog::BdUI(int bdnum)
     }
 }
 
-void CheckKTFHarmonicDialog::PrepareHeadersForFile(int row) { Q_UNUSED(row) }
+void CheckKTFHarmonicDialog::PrepareHeadersForFile(int row)
+{
+    Q_UNUSED(row)
+}
 
 void CheckKTFHarmonicDialog::WriteToFile(int row, int bdnum)
 {
@@ -90,9 +93,9 @@ void CheckKTFHarmonicDialog::WriteToFile(int row, int bdnum)
     Q_UNUSED(bdnum);
 }
 
-void CheckKTFHarmonicDialog::ChooseValuesToWrite() { }
-void CheckKTFHarmonicDialog::SetDefaultValuesToWrite() { }
-void CheckKTFHarmonicDialog::PrepareAnalogMeasurements() { }
+// void CheckKTFHarmonicDialog::ChooseValuesToWrite() { }
+// void CheckKTFHarmonicDialog::SetDefaultValuesToWrite() { }
+// void CheckKTFHarmonicDialog::PrepareAnalogMeasurements() { }
 
 // void CheckKTFHarmonicDialog::USBUpdate()
 //{
@@ -131,7 +134,10 @@ void CheckKTFHarmonicDialog::PrepareAnalogMeasurements() { }
 //{
 //}
 
-void CheckKTFHarmonicDialog::update() { updateFloatData(); }
+void CheckKTFHarmonicDialog::update()
+{
+    updateFloatData();
+}
 
 void CheckKTFHarmonicDialog::updateFloatData()
 {
@@ -164,14 +170,14 @@ void CheckKTFHarmonicDialog::updateFloatData()
 //                this, QString::number(Signal.at(i).SigAdr), WDFunc::StringValueWithCheck(Signal.at(i).flVal, 3));
 //    }
 //}
-void CheckKTFHarmonicDialog::SetWarnColor(int position, bool value)
-{
-    Q_UNUSED(position)
-    Q_UNUSED(value)
-}
+// void CheckKTFHarmonicDialog::SetWarnColor(int position, bool value)
+//{
+//    Q_UNUSED(position)
+//    Q_UNUSED(value)
+//}
 
-void CheckKTFHarmonicDialog::SetAlarmColor(int position, bool value)
-{
-    Q_UNUSED(position)
-    Q_UNUSED(value)
-}
+// void CheckKTFHarmonicDialog::SetAlarmColor(int position, bool value)
+//{
+//    Q_UNUSED(position)
+//    Q_UNUSED(value)
+//}

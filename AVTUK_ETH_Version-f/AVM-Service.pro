@@ -27,8 +27,6 @@ TEMPLATE = app
 
 
 SOURCES += \
-    ../interfaces/modbusthread.cpp \
-    ../interfaces/usbparser.cpp \
 coma.cpp \
 main.cpp \
 ../alarm/alarmclass.cpp \
@@ -78,7 +76,6 @@ main.cpp \
 ../gen/s2.cpp \
 ../gen/stdfunc.cpp \
 ../gen/timefunc.cpp \
-../gen/udialog.cpp \
 ../interfaces/baseinterface.cpp \
 ../interfaces/commands.cpp \
 ../interfaces/eprotocom.cpp \
@@ -87,7 +84,9 @@ main.cpp \
 ../interfaces/iec104.cpp \
 ../interfaces/iec104thread.cpp \
 ../interfaces/modbus.cpp \
+../interfaces/modbusthread.cpp \
 ../interfaces/serialport.cpp \
+../interfaces/usbparser.cpp \
 ../models/checkdelegate.cpp \
 ../models/errorprotocolmodel.cpp \
 ../models/etableitem.cpp \
@@ -119,15 +118,14 @@ main.cpp \
 ../widgets/lineeditfield.cpp \
 ../widgets/passwordlineedit.cpp \
 ../widgets/signalchoosewidget.cpp \
+../widgets/udialog.cpp \
+../widgets/uwidget.cpp \
 ../widgets/waitwidget.cpp \
 ../widgets/wd_func.cpp
 
 PRECOMPILED_HEADER = ../gen/pch.h
 
 HEADERS += \
-    ../interfaces/eprotocom.h \
-    ../interfaces/modbusthread.h \
-    ../interfaces/usbparser.h \
 coma.h \
 ../alarm/alarmclass.h \
 ../alarm/alarmstateall.h \
@@ -178,16 +176,17 @@ coma.h \
 ../gen/s2.h \
 ../gen/stdfunc.h \
 ../gen/timefunc.h \
-../gen/udialog.h \
 ../interfaces/baseinterface.h \
 ../interfaces/commands.h \
 ../interfaces/defines.h \
+../interfaces/usbparser.h \
 ../interfaces/eprotocom.h \
 ../interfaces/ethernet.h \
 ../interfaces/eusbworker.h \
 ../interfaces/iec104.h \
 ../interfaces/iec104thread.h \
 ../interfaces/modbus.h \
+../interfaces/modbusthread.h \
 ../interfaces/serialport.h \
 ../models/checkdelegate.h \
 ../models/errorprotocolmodel.h \
@@ -225,6 +224,8 @@ coma.h \
 ../widgets/lineeditfield.h \
 ../widgets/passwordlineedit.h \
 ../widgets/signalchoosewidget.h \
+../widgets/udialog.h \
+../widgets/uwidget.h \
 ../widgets/waitwidget.h \
 ../widgets/wd_func.h
 

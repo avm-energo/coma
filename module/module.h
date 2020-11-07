@@ -3,7 +3,7 @@
 
 #include "../alarm/alarmstateall.h"
 #include "../gen/board.h"
-#include "../gen/udialog.h"
+#include "../widgets/udialog.h"
 #include "alarm.h"
 #include "warn.h"
 

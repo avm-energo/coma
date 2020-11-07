@@ -13,8 +13,8 @@ public:
 
     QWidget *EParent;
 public slots:
-    void SetWarnColor(int position, bool value) override;
-    void SetAlarmColor(int position, bool value) override;
+    //    void SetWarnColor(int position, bool value) override;
+    //    void SetAlarmColor(int position, bool value) override;
     void updateFloatData(DataTypes::FloatStruct &floatsignal);
     //    void USBUpdate() override;
     //    void ETHUpdate() override;
@@ -22,14 +22,14 @@ public slots:
 
 private:
     CheckKDV *ChKDV;
-    QWidget *AutoCheckUI(); // UI для автоматической проверки модуля
+    QWidget *AutoCheckUI();            // UI для автоматической проверки модуля
     QWidget *BdUI(int bdnum) override; // визуализация наборов текущих данных от модуля
-    void PrepareHeadersForFile(int row) override; // row - строка для записи заголовков
+    void PrepareHeadersForFile(int row) override;  // row - строка для записи заголовков
     void WriteToFile(int row, int bdnum) override; // row - номер строки для записи в файл
                                                    // xlsx, bdnum - номер блока данных
-    void ChooseValuesToWrite() override;
-    void SetDefaultValuesToWrite() override;
-    void PrepareAnalogMeasurements() override;
+                                                   //    void ChooseValuesToWrite() override;
+                                                   //    void SetDefaultValuesToWrite() override;
+                                                   //    void PrepareAnalogMeasurements() override;
     //    QWidget *CustomTab() override;
     void setConnections() override;
 

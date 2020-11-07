@@ -2,7 +2,7 @@
 
 #define MAXBYTEARRAY 65535
 
-#include "../gen/udialog.h"
+#include "../widgets/udialog.h"
 #include "config.h"
 
 #define MAXCONFSIZE 4096 // максимальный размер файла конфигурации

@@ -116,15 +116,15 @@ void CheckKDVDialog::WriteToFile(int row, int bdnum)
     Q_UNUSED(bdnum);
 }
 
-void CheckKDVDialog::ChooseValuesToWrite()
-{
-}
-void CheckKDVDialog::SetDefaultValuesToWrite()
-{
-}
-void CheckKDVDialog::PrepareAnalogMeasurements()
-{
-}
+// void CheckKDVDialog::ChooseValuesToWrite()
+//{
+//}
+// void CheckKDVDialog::SetDefaultValuesToWrite()
+//{
+//}
+// void CheckKDVDialog::PrepareAnalogMeasurements()
+//{
+//}
 
 void CheckKDVDialog::setConnections()
 {
@@ -222,39 +222,40 @@ void CheckKDVDialog::setConnections()
 //{
 //}
 
-void CheckKDVDialog::SetWarnColor(int position, bool value)
-{
-    if ((position >= 0) && (position < 3))
-        WDFunc::SetLBLTColor(this, QString::number(1000 + position), (value) ? Colors::TABCOLORA1 : Colors::ACONFOCLR);
+// void CheckKDVDialog::SetWarnColor(int position, bool value)
+//{
+//    if ((position >= 0) && (position < 3))
+//        WDFunc::SetLBLTColor(this, QString::number(1000 + position), (value) ? Colors::TABCOLORA1 :
+//        Colors::ACONFOCLR);
 
-    if ((position >= 3) && (position < 6))
-        WDFunc::SetLBLTColor(
-            this, QString::number(1100 + position - 3), (value) ? Colors::TABCOLORA1 : Colors::ACONFOCLR);
+//    if ((position >= 3) && (position < 6))
+//        WDFunc::SetLBLTColor(
+//            this, QString::number(1100 + position - 3), (value) ? Colors::TABCOLORA1 : Colors::ACONFOCLR);
 
-    if ((position >= 7) && (position < 10))
-        WDFunc::SetLBLTColor(
-            this, QString::number(1000 + position - 7), (value) ? Colors::TABCOLORA1 : Colors::ACONFOCLR);
+//    if ((position >= 7) && (position < 10))
+//        WDFunc::SetLBLTColor(
+//            this, QString::number(1000 + position - 7), (value) ? Colors::TABCOLORA1 : Colors::ACONFOCLR);
 
-    if ((position >= 10) && (position < 13))
-        WDFunc::SetLBLTColor(
-            this, QString::number(2429 + position - 10), (value) ? Colors::TABCOLORA1 : Colors::ACONFOCLR);
-    if ((position >= 13) && (position < 16))
-        WDFunc::SetLBLTColor(
-            this, QString::number(2426 + position - 13), (value) ? Colors::TABCOLORA1 : Colors::ACONFOCLR);
-    if (position == 17)
-        WDFunc::SetLBLTColor(this, "2432", (value) ? Colors::TABCOLORA1 : Colors::ACONFOCLR);
-}
+//    if ((position >= 10) && (position < 13))
+//        WDFunc::SetLBLTColor(
+//            this, QString::number(2429 + position - 10), (value) ? Colors::TABCOLORA1 : Colors::ACONFOCLR);
+//    if ((position >= 13) && (position < 16))
+//        WDFunc::SetLBLTColor(
+//            this, QString::number(2426 + position - 13), (value) ? Colors::TABCOLORA1 : Colors::ACONFOCLR);
+//    if (position == 17)
+//        WDFunc::SetLBLTColor(this, "2432", (value) ? Colors::TABCOLORA1 : Colors::ACONFOCLR);
+//}
 
-void CheckKDVDialog::SetAlarmColor(int position, bool value)
-{
-    if (position < 3)
-        WDFunc::SetLBLTColor(this, QString::number(2429 + position), (value) ? Colors::REDCOLOR : Colors::ACONFOCLR);
-    else if ((position >= 3) && (position < 6))
-        WDFunc::SetLBLTColor(
-            this, QString::number(2426 + position - 3), (value) ? Colors::REDCOLOR : Colors::ACONFOCLR);
-    else if (position == 6)
-        WDFunc::SetLBLTColor(this, QString::number(2432), (value) ? Colors::REDCOLOR : Colors::ACONFOCLR);
-}
+// void CheckKDVDialog::SetAlarmColor(int position, bool value)
+//{
+//    if (position < 3)
+//        WDFunc::SetLBLTColor(this, QString::number(2429 + position), (value) ? Colors::REDCOLOR : Colors::ACONFOCLR);
+//    else if ((position >= 3) && (position < 6))
+//        WDFunc::SetLBLTColor(
+//            this, QString::number(2426 + position - 3), (value) ? Colors::REDCOLOR : Colors::ACONFOCLR);
+//    else if (position == 6)
+//        WDFunc::SetLBLTColor(this, QString::number(2432), (value) ? Colors::REDCOLOR : Colors::ACONFOCLR);
+//}
 
 void CheckKDVDialog::updateFloatData(DataTypes::FloatStruct &floatsignal)
 {

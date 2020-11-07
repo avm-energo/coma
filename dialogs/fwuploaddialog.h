@@ -4,7 +4,7 @@
 #define MAXSIZE 2000000
 
 #include "../gen/error.h"
-#include "../gen/udialog.h"
+#include "../widgets/udialog.h"
 
 class FWUploadDialog : public UDialog
 {
