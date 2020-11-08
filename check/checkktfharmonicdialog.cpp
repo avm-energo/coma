@@ -51,31 +51,30 @@ QWidget *CheckKTFHarmonicDialog::BdUI(int bdnum)
 {
     switch (bdnum)
     {
-
     case 0:
-        return ChHarmKTF->Bd6W(this);
+        return ChHarmKTF->BdUWidget(this,1028,2,12 );
     case 1:
-        return ChHarmKTF->Bd7W(this);
+        return ChHarmKTF->BdUWidget(this,1038,12,22);
     case 2:
-        return ChHarmKTF->Bd8W(this);
+        return ChHarmKTF->BdUWidget(this,1048,22,32);
     case 3:
-        return ChHarmKTF->Bd9W(this);
+        return ChHarmKTF->BdUWidget(this,1058,32,42);
     case 4:
-        return ChHarmKTF->Bd10W(this);
+        return ChHarmKTF->BdUWidget(this,1068,42,52);
     case 5:
-        return ChHarmKTF->Bd11W(this);
+        return ChHarmKTF->BdUWidget(this,1078,52,63);
     case 6:
-        return ChHarmKTF->Bd12W(this);
+        return ChHarmKTF->BdIWidget(this,1428,2,12);
     case 7:
-        return ChHarmKTF->Bd13W(this);
+        return ChHarmKTF->BdIWidget(this,1438,12,22);
     case 8:
-        return ChHarmKTF->Bd14W(this);
+        return ChHarmKTF->BdIWidget(this,1448,22,32);
     case 9:
-        return ChHarmKTF->Bd15W(this);
+        return ChHarmKTF->BdIWidget(this,1458,32,42);
     case 10:
-        return ChHarmKTF->Bd16W(this);
+        return ChHarmKTF->BdIWidget(this,1468,42,52);
     case 11:
-        return ChHarmKTF->Bd17W(this);
+        return ChHarmKTF->BdIWidget(this,1478,52,63);
 
     default:
         return new QWidget;

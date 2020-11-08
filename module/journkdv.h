@@ -17,21 +17,19 @@ public:
         float Ueff[3];
         float Ieff[3];
         float Frequency;
-        float U0;
         float U1;
         float U2;
-        float I0;
         float I1;
         float I2;
-        float Cbush[3];
-        float Tg_d[3];
-        float dCbush[3];
-        float dTg_d[3];
-        float Iunb;
-        float Phy_unb;
+        float Pf_sum;
+        float Qf_sum;
+        float Sf_sum;
+        float CosPhi;
         float Tmk;
         float Tamb;
-        quint32 res;
+        float Twin;
+        float VibrSCZ_V[6];
+        float VibrSCZ_D[6];
     };
 
     JournKDV(QObject *parent = nullptr);

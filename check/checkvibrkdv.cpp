@@ -355,6 +355,8 @@ QWidget *CheckVibrKDV::Bd3W(QWidget *parent)
     return w;
 }
 
+
+
 void CheckVibrKDV::FillBd19(QWidget *parent)
 {
     for (int i = 0; i < 6; i++)
