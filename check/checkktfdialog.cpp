@@ -187,19 +187,19 @@ void CheckKTFDialog::WriteToFile(int row, int bdnum)
 //{
 //}
 
-void CheckKTFDialog::updateFloatData()
-{
-    QList<DataTypes::SignalsStruct> list;
-    DataManager::getSignals(0, 99999, DataTypes::SignalTypes::FloatWithTime, list);
-    if (!list.isEmpty())
-    {
-        foreach (DataTypes::SignalsStruct signal, list)
-        {
-            DataTypes::FloatWithTimeStruct fwt = qvariant_cast<DataTypes::FloatWithTimeStruct>(signal.data);
-            ChKTF->FillBd(this, QString::number(fwt.sigAdr), WDFunc::StringValueWithCheck(fwt.sigVal, 3));
-        }
-    }
-}
+// void CheckKTFDialog::updateFloatData()
+//{
+//    QList<DataTypes::SignalsStruct> list;
+//    DataManager::getSignals(0, 99999, DataTypes::SignalTypes::FloatWithTime, list);
+//    if (!list.isEmpty())
+//    {
+//        foreach (DataTypes::SignalsStruct signal, list)
+//        {
+//            DataTypes::FloatWithTimeStruct fwt = qvariant_cast<DataTypes::FloatWithTimeStruct>(signal.data);
+//            ChKTF->FillBd(this, QString::number(fwt.sigAdr), WDFunc::StringValueWithCheck(fwt.sigVal, 3));
+//        }
+//    }
+//}
 
 // void CheckKTFDialog::UpdateModBusData(QList<ModBus::SignalStruct> Signal)
 //{
@@ -226,10 +226,10 @@ void CheckKTFDialog::updateFloatData()
 //    Q_UNUSED(value)
 //}
 
-void CheckKTFDialog::update()
-{
-    updateFloatData();
-}
+// void CheckKTFDialog::reqUpdate()
+//{
+//    updateFloatData();
+//}
 
 // void CheckKTFDialog::SetAlarmColor(int position, bool value)
 //{

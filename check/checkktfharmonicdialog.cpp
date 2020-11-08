@@ -134,24 +134,24 @@ void CheckKTFHarmonicDialog::WriteToFile(int row, int bdnum)
 //{
 //}
 
-void CheckKTFHarmonicDialog::update()
-{
-    updateFloatData();
-}
+// void CheckKTFHarmonicDialog::reqUpdate()
+//{
+//    updateFloatData();
+//}
 
-void CheckKTFHarmonicDialog::updateFloatData()
-{
-    QList<DataTypes::SignalsStruct> list;
-    DataManager::getSignals(0, 99999, DataTypes::SignalTypes::FloatWithTime, list);
-    if (!list.isEmpty())
-    {
-        foreach (DataTypes::SignalsStruct signal, list)
-        {
-            DataTypes::FloatWithTimeStruct fwt = qvariant_cast<DataTypes::FloatWithTimeStruct>(signal.data);
-            ChHarmKTF->FillBd(this, QString::number(fwt.sigAdr), WDFunc::StringValueWithCheck(fwt.sigVal, 3));
-        }
-    }
-}
+// void CheckKTFHarmonicDialog::updateFloatData()
+//{
+//    QList<DataTypes::SignalsStruct> list;
+//    DataManager::getSignals(0, 99999, DataTypes::SignalTypes::FloatWithTime, list);
+//    if (!list.isEmpty())
+//    {
+//        foreach (DataTypes::SignalsStruct signal, list)
+//        {
+//            DataTypes::FloatWithTimeStruct fwt = qvariant_cast<DataTypes::FloatWithTimeStruct>(signal.data);
+//            ChHarmKTF->FillBd(this, QString::number(fwt.sigAdr), WDFunc::StringValueWithCheck(fwt.sigVal, 3));
+//        }
+//    }
+//}
 
 // void CheckKTFHarmonicDialog::UpdateModBusData(QList<ModBus::SignalStruct> Signal)
 //{

@@ -133,24 +133,24 @@ void CheckKDVHarmonicDialog::WriteToFile(int row, int bdnum)
 //{
 //}
 
-void CheckKDVHarmonicDialog::updateFloatData()
-{
-    QList<DataTypes::SignalsStruct> list;
-    DataManager::getSignals(0, 99999, DataTypes::SignalTypes::FloatWithTime, list);
-    if (!list.isEmpty())
-    {
-        foreach (DataTypes::SignalsStruct signal, list)
-        {
-            DataTypes::FloatWithTimeStruct fwt = qvariant_cast<DataTypes::FloatWithTimeStruct>(signal.data);
-            ChHarmKDV->FillBd(this, QString::number(fwt.sigAdr), WDFunc::StringValueWithCheck(fwt.sigVal, 3));
-        }
-    }
-}
+// void CheckKDVHarmonicDialog::updateFloatData()
+//{
+//    QList<DataTypes::SignalsStruct> list;
+//    DataManager::getSignals(0, 99999, DataTypes::SignalTypes::FloatWithTime, list);
+//    if (!list.isEmpty())
+//    {
+//        foreach (DataTypes::SignalsStruct signal, list)
+//        {
+//            DataTypes::FloatWithTimeStruct fwt = qvariant_cast<DataTypes::FloatWithTimeStruct>(signal.data);
+//            ChHarmKDV->FillBd(this, QString::number(fwt.sigAdr), WDFunc::StringValueWithCheck(fwt.sigVal, 3));
+//        }
+//    }
+//}
 
-void CheckKDVHarmonicDialog::setConnections()
-{
-    connect(&DataManager::GetInstance(), &DataManager::floatReceived, this, &CheckKDVHarmonicDialog::updateFloatData);
-}
+// void CheckKDVHarmonicDialog::setConnections()
+//{
+//    connect(&DataManager::GetInstance(), &DataManager::floatReceived, this, &CheckKDVHarmonicDialog::updateFloatData);
+//}
 
 // void CheckKDVHarmonicDialog::UpdateModBusData(QList<ModBus::SignalStruct> Signal)
 //{

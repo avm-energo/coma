@@ -14,16 +14,16 @@ public:
 public slots:
     //    void SetWarnColor(int position, bool value) override;
     //    void SetAlarmColor(int position, bool value) override;
-    void updateFloatData();
+    //    void updateFloatData();
     //    void USBUpdate() override;
     //    void ETHUpdate() override;
     //    void MBSUpdate() override;
-    void update() override;
+    //    void reqUpdate() override;
 
 private:
     CheckHarmonicKTF *ChHarmKTF;
-    QWidget *AutoCheckUI();            // UI для автоматической проверки модуля
-    QWidget *BdUI(int bdnum) override; // визуализация наборов текущих данных от модуля
+    //    QWidget *AutoCheckUI();            // UI для автоматической проверки модуля
+    //    QWidget *BdUI(int bdnum) override; // визуализация наборов текущих данных от модуля
 
     void PrepareHeadersForFile(int row) override;  // row - строка для записи заголовков
     void WriteToFile(int row, int bdnum) override; // row - номер строки для записи в файл

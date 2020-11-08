@@ -126,10 +126,10 @@ void CheckKDVDialog::WriteToFile(int row, int bdnum)
 //{
 //}
 
-void CheckKDVDialog::setConnections()
-{
-    connect(&DataManager::GetInstance(), &DataManager::floatReceived, this, &CheckKDVDialog::updateFloatData);
-}
+// void CheckKDVDialog::setConnections()
+//{
+//    connect(&DataManager::GetInstance(), &DataManager::floatReceived, this, &CheckKDVDialog::updateFloatData);
+//}
 
 /*void CheckKDVDialog::USBUpdate()
 {
@@ -257,23 +257,23 @@ void CheckKDVDialog::setConnections()
 //        WDFunc::SetLBLTColor(this, QString::number(2432), (value) ? Colors::REDCOLOR : Colors::ACONFOCLR);
 //}
 
-void CheckKDVDialog::updateFloatData(DataTypes::FloatStruct &floatsignal)
-{
-    if (updatesEnabled())
-        ChKDV->FillBd(this, QString::number(floatsignal.sigAdr), WDFunc::StringValueWithCheck(floatsignal.sigVal, 3));
-    //    {
-    //        QList<DataTypes::SignalsStruct> list;
-    //        DataManager::getSignals(0, 99999, DataTypes::SignalTypes::FloatWithTime, list);
-    //        if (!list.isEmpty())
-    //        {
-    //            foreach (DataTypes::SignalsStruct signal, list)
-    //            {
-    //                DataTypes::FloatWithTimeStruct fwt = qvariant_cast<DataTypes::FloatWithTimeStruct>(signal.data);
-    //                ChKDV->FillBd(this, QString::number(fwt.sigAdr), WDFunc::StringValueWithCheck(fwt.sigVal, 3));
-    //            }
-    //        }
-    //    }
-}
+// void CheckKDVDialog::updateFloatData(DataTypes::FloatStruct &floatsignal)
+//{
+//    if (updatesEnabled())
+//        ChKDV->FillBd(this, QString::number(floatsignal.sigAdr), WDFunc::StringValueWithCheck(floatsignal.sigVal, 3));
+//    //    {
+//    //        QList<DataTypes::SignalsStruct> list;
+//    //        DataManager::getSignals(0, 99999, DataTypes::SignalTypes::FloatWithTime, list);
+//    //        if (!list.isEmpty())
+//    //        {
+//    //            foreach (DataTypes::SignalsStruct signal, list)
+//    //            {
+//    //                DataTypes::FloatWithTimeStruct fwt = qvariant_cast<DataTypes::FloatWithTimeStruct>(signal.data);
+//    //                ChKDV->FillBd(this, QString::number(fwt.sigAdr), WDFunc::StringValueWithCheck(fwt.sigVal, 3));
+//    //            }
+//    //        }
+//    //    }
+//}
 
 /*void CheckKDVDialog::UpdateModBusData(QList<ModBus::SignalStruct> Signal)
 {

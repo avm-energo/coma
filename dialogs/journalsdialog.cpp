@@ -26,6 +26,7 @@
 JournalDialog::JournalDialog(Journals *jour, QWidget *parent) : UDialog(parent)
 {
     JourFuncs = jour;
+    connect(&DataManager::GetInstance(), &DataManager::fileReceived, JourFuncs, &Journals::FillJour);
     ProxyWorkModel = new QSortFilterProxyModel(this);
     ProxySysModel = new QSortFilterProxyModel(this);
     ProxyMeasModel = new QSortFilterProxyModel(this);
@@ -54,7 +55,9 @@ JournalDialog::JournalDialog(Journals *jour, QWidget *parent) : UDialog(parent)
     SetupUI();
 }
 
-JournalDialog::~JournalDialog() { }
+JournalDialog::~JournalDialog()
+{
+}
 
 void JournalDialog::SetupUI()
 {
@@ -235,7 +238,10 @@ void JournalDialog::GetJour()
     emit StartGetJour();
 }
 
-void JournalDialog::JourFileChoosed(QString &file) { JourFile = file; }
+void JournalDialog::JourFileChoosed(QString &file)
+{
+    JourFile = file;
+}
 
 void JournalDialog::EraseJour()
 {
@@ -326,10 +332,9 @@ int JournalDialog::GetJourNum(const QString &objname)
     return jourtype;
 }
 
-void JournalDialog::setConnections()
-{
-    connect(&DataManager::GetInstance(), &DataManager::fileReceived, JourFuncs, &Journals::FillJour);
-}
+// void JournalDialog::setConnections()
+//{
+//}
 
 Error::Msg JournalDialog::WriteCheckPassword()
 {

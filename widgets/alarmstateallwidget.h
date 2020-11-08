@@ -2,7 +2,7 @@
 #define ALARMSTATEALL_H
 
 #define CIRCLE_RADIUS 15
-
+#define BSI_HEALTH_MASK 0xFFFF
 #include <QWidget>
 
 class AlarmStateAll : public QWidget
@@ -43,6 +43,7 @@ public slots:
     }
 
 signals:
+    void BSIUpdated(bool isset);
 
 private:
     const QList<int> WarnPositions = { 1, 3, 5, 7, 13 };

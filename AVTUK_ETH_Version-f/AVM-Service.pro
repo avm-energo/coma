@@ -29,9 +29,6 @@ TEMPLATE = app
 SOURCES += \
 coma.cpp \
 main.cpp \
-../alarm/alarmclass.cpp \
-../alarm/alarmstateall.cpp \
-../alarm/alarmwidget.cpp \
 ../check/abstractcheckdialog.cpp \
 ../check/check.cpp \
 ../check/checkharmonickdv.cpp \
@@ -109,6 +106,8 @@ main.cpp \
 ../startup/startupkdvdialog.cpp \
 ../startup/startupkivdialog.cpp \
 ../startup/startupktfdialog.cpp \
+../widgets/alarmstateallwidget.cpp \
+../widgets/alarmwidget.cpp \
 ../widgets/ecombobox.cpp \
 ../widgets/edoublespinbox.cpp \
 ../widgets/errorprotocolwidget.cpp \
@@ -127,9 +126,6 @@ PRECOMPILED_HEADER = ../gen/pch.h
 
 HEADERS += \
 coma.h \
-../alarm/alarmclass.h \
-../alarm/alarmstateall.h \
-../alarm/alarmwidget.h \
 ../check/check.h \
 ../check/abstractcheckdialog.h \
 ../check/checkharmonickdv.h \
@@ -214,6 +210,8 @@ coma.h \
 ../interfaces/defines.h \
 ../interfaces/eprotocom.h \
 ../interfaces/eusbworker.h \
+../widgets/alarmstateallwidget.h \
+../widgets/alarmwidget.h \
 ../widgets/ecombobox.h \
 ../widgets/edoublespinbox.h \
 ../widgets/errorprotocolwidget.h \

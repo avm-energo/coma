@@ -1,6 +1,8 @@
 #ifndef WARN_H
 #define WARN_H
 
+#include "../widgets/uwidget.h"
+
 #include <QBitArray>
 #include <QShowEvent>
 #include <QWidget>
@@ -8,13 +10,14 @@
 
 #define CIRCLE_RADIUS 15
 
-class Warn : public QWidget
+class Warn : public UWidget
 {
     Q_OBJECT
 public:
     int m_warnBdNum;
     int m_startWarnAddress;
     std::bitset<32> m_warnFlags; // '1' equals warning
+    std::bitset<32> m_actualWarnFlags;
 
     explicit Warn(QWidget *parent = nullptr);
     int realWarnSize();
@@ -22,9 +25,10 @@ public:
 
 public slots:
     //    void Update(std::bitset<32> &states);
+    void updateSpData(DataTypes::SinglePointWithTimeStruct &sp);
 
-    // signals:
-    //    void updateWarn(int position, bool value);
+signals:
+    void updateWarn(bool value);
 
 private:
     int m_realWarnSize;

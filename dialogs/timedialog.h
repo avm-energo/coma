@@ -34,7 +34,7 @@ public slots:
     //    void USBUpdate();
     //    void MBSUpdate();
     //    void ETHUpdate();
-    void update();
+    void reqUpdate();
 
 private slots:
 

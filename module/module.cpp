@@ -13,10 +13,10 @@
 #include "../dialogs/infodialog.h"
 #include "../dialogs/journalsdialog.h"
 #include "../dialogs/timedialog.h"
-#include "../gen/udialog.h"
 #include "../startup/startupkdvdialog.h"
 #include "../startup/startupkivdialog.h"
 #include "../startup/startupktfdialog.h"
+#include "../widgets/udialog.h"
 #ifdef AVM_DEBUG
 //#include "../tune/kiv/tunekdvdialog.h"
 #include "../tune/kiv/tunekivdialog.h"
@@ -38,7 +38,7 @@ Module::Module(QObject *parent) : QObject(parent)
     m_oldTabIndex = m_currentTabIndex = 0;
 }
 
-Module *Module::createModule(QTimer *updateTimer, BaseInterface *iface)
+Module *Module::createModule(QTimer *updateTimer, BaseInterface *iface, AlarmWidget *aw)
 {
     Journals *JOUR;
     Module *m = new Module;
@@ -153,10 +153,16 @@ Module *Module::createModule(QTimer *updateTimer, BaseInterface *iface)
     QList<UDialog *> dlgs = m->dialogs();
     foreach (UDialog *d, dlgs)
     {
-        connect(updateTimer, &QTimer::timeout, d, &UDialog::update);
+        connect(updateTimer, &QTimer::timeout, d, &UDialog::reqUpdate);
         d->setUpdatesDisabled();
         d->setInterface(m->m_iface);
     }
+    connect(aw, &AlarmWidget::AlarmButtonPressed, m->m_alarmStateAllDialog, &QDialog::show);
+    connect(aw, &AlarmWidget::ModuleWarnButtonPressed, m->m_warn, &QDialog::show);
+    connect(aw, &AlarmWidget::ModuleAlarmButtonPressed, m->m_alarm, &QDialog::show);
+    connect(m->m_warn, &Warn::updateWarn, aw, &AlarmWidget::updateWarn);
+    connect(m->m_alarm, &Alarm::updateAlarm, aw, &AlarmWidget::updateAlarm);
+    connect(m->m_alarmStateAllDialog, &AlarmStateAll::BSIUpdated, aw, &AlarmWidget::updateMain);
     return m;
 }
 
@@ -223,7 +229,7 @@ void Module::parentTWTabClicked(int index)
     //    udlg = qobject_cast<UDialog *>(dlg);
     //    if (udlg)
     udlg->setUpdatesEnabled();
-    udlg->update();
+    udlg->reqUpdate();
     m_oldTabIndex = m_currentTabIndex;
 }
 

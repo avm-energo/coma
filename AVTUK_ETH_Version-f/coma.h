@@ -1,13 +1,13 @@
 #ifndef COMA_H
 #define COMA_H
 
-#include "../alarm/alarmclass.h"
-#include "../alarm/alarmstateall.h"
-#include "../alarm/alarmwidget.h"
+//#include "../alarm/alarmclass.h"
 #include "../dialogs/connectdialog.h"
 #include "../interfaces/iec104.h"
 #include "../interfaces/modbus.h"
 #include "../module/module.h"
+#include "../widgets/alarmstateallwidget.h"
+#include "../widgets/alarmwidget.h"
 #include "../widgets/etabwidget.h"
 
 #include <QMainWindow>
@@ -161,7 +161,7 @@ private:
     //    WarnKTF *WarnKTFDialog;
     //    AlarmKTF *AlarmKTFDialog;
     //    AlarmStateAll *AlarmStateAllDialog;
-    AlarmClass *Alarm;
+    //    AlarmClass *Alarm;
     //    QWidget *Parent;
 
     //    InfoDialog *infoDialog;
@@ -192,8 +192,8 @@ private:
     //    QVector<S2::DataRec> *S2Config;
     S2ConfigType *S2Config;
 
-    quint8 PredAlarmEvents[20];
-    quint8 AlarmEvents[20];
+    //    quint8 PredAlarmEvents[20];
+    //    quint8 AlarmEvents[20];
 
     QTimer *ReceiveTimer, *m_BSITimer;
     //    QTimer *ReconnectTimer;

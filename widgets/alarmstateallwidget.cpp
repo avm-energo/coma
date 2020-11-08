@@ -63,6 +63,7 @@ void AlarmStateAll::UpdateHealth(quint32 health)
                                                       : WDFunc::NewCircle(Qt::red, circleRadius);
         WDFunc::SetLBLImage(this, (QString::number(i)), &circle);
     }
+    emit BSIUpdated((health & BSI_HEALTH_MASK) == 0x0000);
 }
 
 // void AlarmStateAll::CallUpdateHealth()

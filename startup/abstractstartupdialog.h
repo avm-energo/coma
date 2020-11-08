@@ -79,7 +79,7 @@ public slots:
     //    void WritePasswordCheck(QString psw);
     //    void TimerTimeout();
     void ErrorRead();
-    void update() override;
+    void reqUpdate() override;
 };
 
 #endif // ABSTRACTCORDIALOG_H

@@ -17,13 +17,13 @@ public slots:
     //    void USBUpdate() override;
     //    void ETHUpdate() override;
     //    void MBSUpdate() override;
-    void update() override;
+    //    void reqUpdate() override;
 
 private:
     CheckHarmonicKDV *ChHarmKDV;
 
-    QWidget *AutoCheckUI();            // UI для автоматической проверки модуля
-    QWidget *BdUI(int bdnum) override; // визуализация наборов текущих данных от модуля
+    //    QWidget *AutoCheckUI();            // UI для автоматической проверки модуля
+    //    QWidget *BdUI(int bdnum) override; // визуализация наборов текущих данных от модуля
 
     void PrepareHeadersForFile(int row) override;  // row - строка для записи заголовков
     void WriteToFile(int row, int bdnum) override; // row - номер строки для записи в файл
@@ -31,8 +31,8 @@ private:
     //    void ChooseValuesToWrite() override;
     //    void SetDefaultValuesToWrite() override;
     //    void PrepareAnalogMeasurements() override;
-    void updateFloatData();
-    void setConnections() override;
+    //    void updateFloatData();
+    //    void setConnections() override;
 
 private slots:
     //    void UpdateModBusData(QList<ModBus::SignalStruct> Signal) override;

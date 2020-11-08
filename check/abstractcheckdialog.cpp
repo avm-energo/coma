@@ -2,6 +2,7 @@
 
 #include "../gen/board.h"
 #include "../gen/colors.h"
+#include "../gen/datamanager.h"
 #include "../gen/error.h"
 #include "../gen/stdfunc.h"
 #include "../widgets/etabwidget.h"
@@ -26,7 +27,7 @@ AbstractCheckDialog::AbstractCheckDialog(QWidget *parent) : UDialog(parent)
 {
     m_newTWIndex = 0;
     XlsxWriting = false;
-    Busy = false;
+    m_readDataInProgress = false;
     xlsx = nullptr;
     WRow = 0;
     m_oldTabIndex = m_currentTabIndex = 0;
@@ -43,19 +44,20 @@ AbstractCheckDialog::~AbstractCheckDialog()
     Bd_blocks.clear();
 }
 
-void AbstractCheckDialog::SetupUI(QStringList &tabnames)
+// void AbstractCheckDialog::SetupUI(QStringList &tabnames)
+void AbstractCheckDialog::SetupUI()
 {
-    IndexWd.clear();
-    if (tabnames.size() < BdUINum)
-    {
-        ERMSG("Wrong BdTab size");
-        return;
-    }
+    //    IndexWd.clear();
+    //    if (tabnames.size() < BdUINum)
+    //    {
+    //        ERMSG("Wrong BdTab size");
+    //        return;
+    //    }
     QVBoxLayout *lyout = new QVBoxLayout;
     QTabWidget *CheckTW = new QTabWidget;
 
-    CheckTW->setObjectName("checktw" + QString::number(m_newTWIndex++));
-    qDebug() << CheckTW->objectName();
+    //    CheckTW->setObjectName("checktw" + QString::number(m_newTWIndex++));
+    //    qDebug() << CheckTW->objectName();
     QString ConfTWss = "QTabBar::tab:selected {background-color: " + QString(Colors::TABCOLORA1) + ";}";
 
     //    QString ConfTWss = "QTabBar::tab {margin-right: 0px; margin-left: 0px; padding: 5px;}"
@@ -80,7 +82,10 @@ void AbstractCheckDialog::SetupUI(QStringList &tabnames)
     //    }
     foreach (BdUIStruct w, m_BdUIList)
     {
+        w.widget->setInterface(iface());
         CheckTW->addTab(w.widget, " " + w.widgetCaption + " ");
+        connect(&DataManager::GetInstance(), &DataManager::floatReceived, w.widget, &UWidget::updateFloatData);
+        connect(&DataManager::GetInstance(), &DataManager::singlePointReceived, w.widget, &UWidget::updateSPData);
     }
     //    QWidget *w = CustomTab();
     //    if (w != nullptr)
@@ -108,9 +113,9 @@ void AbstractCheckDialog::PrepareAnalogMeasurements()
 
 // QWidget *AbstractCheckDialog::CustomTab() { return nullptr; }
 
-void AbstractCheckDialog::Check1PPS()
-{
-}
+// void AbstractCheckDialog::Check1PPS()
+//{
+//}
 
 void AbstractCheckDialog::SetBd(int bdnum, void *block, int blocksize, bool toxlsx)
 {
@@ -213,13 +218,13 @@ void AbstractCheckDialog::ReadAnalogMeasurementsAndWriteToFile()
 {
 
     // получение текущих аналоговых сигналов от модуля
-    if (Busy)
+    if (m_readDataInProgress)
     {
         ERMSG("Ещё не завершена предыдущая операция");
         return;
     }
 
-    Busy = true;
+    m_readDataInProgress = true;
     if (XlsxWriting)
     {
         xlsx->write(WRow, 1, QVariant(QDateTime::currentDateTime().toString("hh:mm:ss.zzz")));
@@ -242,7 +247,7 @@ void AbstractCheckDialog::ReadAnalogMeasurementsAndWriteToFile()
     }
 
     WRow++;
-    Busy = false;
+    m_readDataInProgress = false;
 }
 
 // void AbstractCheckDialog::StartBdMeasurements() { BdTimer->start(); }
@@ -286,6 +291,14 @@ void AbstractCheckDialog::StopAnalogMeasurements()
     Timer->stop();
 }
 
+void AbstractCheckDialog::reqUpdate()
+{
+    foreach (BdUIStruct bd, m_BdUIList)
+    {
+        bd.widget->reqUpdate();
+    }
+}
+
 void AbstractCheckDialog::TimerTimeout()
 {
     ReadAnalogMeasurementsAndWriteToFile();
@@ -311,7 +324,7 @@ void AbstractCheckDialog::TWTabClicked(int index)
     }
     w = m_BdUIList.at(m_currentTabIndex).widget;
     w->setUpdatesEnabled();
-    w->update();
+    w->reqUpdate();
     m_oldTabIndex = m_currentTabIndex;
 }
 

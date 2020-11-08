@@ -584,10 +584,10 @@ void ConfKDVDialog::CheckConf()
 {
 }
 
-void ConfKDVDialog::setConnections()
-{
-    //    connect(&DataManager, &DataManager::floatReceived)
-}
+// void ConfKDVDialog::setConnections()
+//{
+//    //    connect(&DataManager, &DataManager::floatReceived)
+//}
 
 void ConfKDVDialog::SetDefConf()
 {

@@ -33,13 +33,11 @@
 #include "../config/confktfdialog.h"
 #include "../dialogs/errordialog.h"
 #include "../dialogs/keypressdialog.h"
-#include "../gen/logger.h"
-#include "../widgets/splashscreen.h"
-#include "../widgets/wd_func.h"
 #include "../dialogs/settingsdialog.h"
 #include "../gen/errorqueue.h"
 #include "../gen/logger.h"
 #include "../gen/stdfunc.h"
+#include "../widgets/splashscreen.h"
 #include "../widgets/wd_func.h"
 
 #include <QApplication>
@@ -108,13 +106,13 @@ Coma::Coma(QWidget *parent) : QMainWindow(parent)
     //    S2Config = nullptr;
     //    S2ConfigForTune = nullptr;
     //    CurTabIndex = -1;
-    for (int i = 0; i < 20; ++i)
-    {
-        PredAlarmEvents[i] = 0;
-        AlarmEvents[i] = 0;
-    }
+    //    for (int i = 0; i < 20; ++i)
+    //    {
+    //        PredAlarmEvents[i] = 0;
+    //        AlarmEvents[i] = 0;
+    //    }
     ActiveThreads = false;
-    Alarm = new AlarmClass(this);
+    //    Alarm = new AlarmClass(this);
 
     newTimers();
     LoadSettings();
@@ -191,7 +189,7 @@ void Coma::SetupUI()
     hlyout->addWidget(createToolBar());
 
     AlarmW = new AlarmWidget;
-    connect(Alarm, &AlarmClass::setWarnsAndAlarms, AlarmW, &AlarmWidget::update);
+    //    connect(Alarm, &AlarmClass::setWarnsAndAlarms, AlarmW, &AlarmWidget::update);
     //    connect(Alarm, &AlarmClass::SetFirstButton, AlarmW, &AlarmWidget::UpdateFirstUSB);
     //    connect(Alarm, &AlarmClass::setWarnColor, AlarmW, &AlarmWidget::UpdateSecondUSB);
     //    connect(Alarm, &AlarmClass::setAlarmColor, AlarmW, &AlarmWidget::UpdateThirdUSB);
@@ -667,8 +665,8 @@ void Coma::PrepareDialogs()
     //    infoDialog = new InfoDialog(this);
     //    jourDialog = new JournalDialog(Ch104);
     //    timeDialog = new MNKTime(this);
-    m_Module = Module::createModule(BdaTimer, m_iface);
-    Alarm->setModule(m_Module);
+    m_Module = Module::createModule(BdaTimer, m_iface, AlarmW);
+    //    Alarm->setModule(m_Module);
     //    AlarmStateAllDialog = new AlarmStateAll;
     setupConnections();
 }
@@ -779,9 +777,9 @@ void Coma::newTimers()
 
 void Coma::setupConnections()
 {
-    connect(AlarmW, &AlarmWidget::AlarmButtonPressed, m_Module->getAlarmStateAll(), &QDialog::show);
-    connect(AlarmW, &AlarmWidget::ModuleWarnButtonPressed, m_Module->getWarn(), &QDialog::show);
-    connect(AlarmW, &AlarmWidget::ModuleAlarmButtonPressed, m_Module->getAlarm(), &QDialog::show);
+    //    connect(AlarmW, &AlarmWidget::AlarmButtonPressed, m_Module->getAlarmStateAll(), &QDialog::show);
+    //    connect(AlarmW, &AlarmWidget::ModuleWarnButtonPressed, m_Module->getWarn(), &QDialog::show);
+    //    connect(AlarmW, &AlarmWidget::ModuleAlarmButtonPressed, m_Module->getAlarm(), &QDialog::show);
     //    connect(AlrmTimer, &QTimer::timeout, Alarm, &AlarmClass::update);
     //    if (AlarmStateAllDialog != nullptr)
     //        connect(AlrmTimer, &QTimer::timeout, AlarmStateAllDialog, &AlarmStateAll::CallUpdateHealth);

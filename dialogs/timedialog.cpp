@@ -189,7 +189,7 @@ void TimeDialog::ETHUpdate()
     //    }
 }
 
-void TimeDialog::update()
+void TimeDialog::reqUpdate()
 {
     if (m_updatesEnabled)
     {

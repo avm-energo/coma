@@ -23,7 +23,7 @@ public:
     // проверить конфигурацию на корректность, признаком наличия некорректностей является непустой список
     // CheckConfErrors
     virtual void CheckConf() = 0;
-    void setConnections() override;
+    //    void setConnections() override;
 
     void ReadConf();
     //

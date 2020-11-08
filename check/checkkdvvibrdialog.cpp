@@ -111,24 +111,24 @@ void CheckKDVVibrDialog::WriteToFile(int row, int bdnum)
 //    }
 //}
 
-void CheckKDVVibrDialog::updateFloatData()
-{
-    QList<DataTypes::SignalsStruct> list;
-    DataManager::getSignals(0, 99999, DataTypes::SignalTypes::FloatWithTime, list);
-    if (!list.isEmpty())
-    {
-        foreach (DataTypes::SignalsStruct signal, list)
-        {
-            DataTypes::FloatWithTimeStruct fwt = qvariant_cast<DataTypes::FloatWithTimeStruct>(signal.data);
-            ChVibrKDV->FillBd(this, QString::number(fwt.sigAdr), WDFunc::StringValueWithCheck(fwt.sigVal, 3));
-        }
-    }
-}
+// void CheckKDVVibrDialog::updateFloatData()
+//{
+//    QList<DataTypes::SignalsStruct> list;
+//    DataManager::getSignals(0, 99999, DataTypes::SignalTypes::FloatWithTime, list);
+//    if (!list.isEmpty())
+//    {
+//        foreach (DataTypes::SignalsStruct signal, list)
+//        {
+//            DataTypes::FloatWithTimeStruct fwt = qvariant_cast<DataTypes::FloatWithTimeStruct>(signal.data);
+//            ChVibrKDV->FillBd(this, QString::number(fwt.sigAdr), WDFunc::StringValueWithCheck(fwt.sigVal, 3));
+//        }
+//    }
+//}
 
-void CheckKDVVibrDialog::update()
-{
-    updateFloatData();
-}
+// void CheckKDVVibrDialog::reqUpdate()
+//{
+//    updateFloatData();
+//}
 
 // void CheckKDVVibrDialog::UpdateModBusData(QList<ModBus::SignalStruct> Signal)
 //{
