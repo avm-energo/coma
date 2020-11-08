@@ -11,23 +11,23 @@
 #define BCI_STOPBIT 27
 #define BCI_ADRMB 28
 
-#define DEF_IP 172, 16, 29, 12
-#define DEF_MASK 255, 255, 252, 0
-#define DEF_GW 172, 16, 29, 1
-#define DEF_PORT 2404, 2405, 502, 502
-#define DEF_SNTP 172, 16, 31, 220
+//#define DEF_IP 172, 16, 29, 12
+//#define DEF_MASK 255, 255, 252, 0
+//#define DEF_GW 172, 16, 29, 1
+//#define DEF_PORT 2404, 2405, 502, 502
+//#define DEF_SNTP 172, 16, 31, 220
 #define DEF_BAUD 9600
 #define DEF_PARITY 0
 #define DEF_STOPBIT 0
 #define DEF_ADRMB 0
-#define DEF_ISNTP 0
-#define DEF_ISPPS 0
+//#define DEF_ISNTP 0
+//#define DEF_ISPPS 0
 
 #define BCI_RTERM 1027
 #define BCI_W100 1028
 
 #define DEF_RTERM 100
-#define DEF_W100 1.385
+#define DEF_W100 1.385f
 
 #define BCI_TRELE_PRED 1037
 #define BCI_TRELE_ALARM 1038

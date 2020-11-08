@@ -3,6 +3,12 @@
 
 Config::Config(S2ConfigType *config, quint32 MTypeB, quint32 MTypeM)
 {
+    /// TODO Check this
+    config->erase(
+        std::remove_if(config->begin(), config->end(), [](S2DataTypes::DataRec i) { return i.id == 0xFFFFFFFF; }),
+        config->end());
+    /// TODO end
+    ///
     MainBlk.MTypeB = MTypeB;
     MainBlk.MTypeM = MTypeM;
 

@@ -91,39 +91,39 @@ void ConfigKIV::setDefConf(Bci &bci)
     }
 }
 
-Error::Msg ConfigKIV::getAndPushConfig()
-{
-    if (Commands::GetFileWithRestore(CM_CONFIGFILE, m_S2Config) == Error::Msg::NoError)
-    {
-        Bci newBciBlock;
-        memcpy(&newBciBlock, &Bci_block, sizeof(Bci));
-        m_BciStack.push(newBciBlock);
-    }
-    else
-        return Error::Msg::GeneralError;
-    return Error::Msg::NoError;
-}
+// Error::Msg ConfigKIV::getAndPushConfig()
+//{
+//    if (Commands::GetFileWithRestore(CM_CONFIGFILE, m_S2Config) == Error::Msg::NoError)
+//    {
+//        Bci newBciBlock;
+//        memcpy(&newBciBlock, &Bci_block, sizeof(Bci));
+//        m_BciStack.push(newBciBlock);
+//    }
+//    else
+//        return Error::Msg::GeneralError;
+//    return Error::Msg::NoError;
+//}
 
-ConfigKIV::Bci ConfigKIV::popConfig()
-{
-    if (m_BciStack.isEmpty())
-    {
-        Bci newBciBlock;
-        setDefConf(newBciBlock);
-        return newBciBlock;
-    }
-    return m_BciStack.pop();
-}
+// ConfigKIV::Bci ConfigKIV::popConfig()
+//{
+//    if (m_BciStack.isEmpty())
+//    {
+//        Bci newBciBlock;
+//        setDefConf(newBciBlock);
+//        return newBciBlock;
+//    }
+//    return m_BciStack.pop();
+//}
 
-Error::Msg ConfigKIV::popAndWriteConfig()
-{
-    Bci tempBciBlock;
-    memcpy(&tempBciBlock, &Bci_block, sizeof(Bci)); // push current Bci
-    Bci_block = popConfig();
-    Error::Msg err = Commands::WriteFile(CM_CONFIGFILE, m_S2Config);
-    memcpy(&Bci_block, &tempBciBlock, sizeof(Bci)); // pop current Bci
-    return err;
-}
+// Error::Msg ConfigKIV::popAndWriteConfig()
+//{
+//    Bci tempBciBlock;
+//    memcpy(&tempBciBlock, &Bci_block, sizeof(Bci)); // push current Bci
+//    Bci_block = popConfig();
+//    Error::Msg err = Commands::WriteFile(CM_CONFIGFILE, m_S2Config);
+//    memcpy(&Bci_block, &tempBciBlock, sizeof(Bci)); // pop current Bci
+//    return err;
+//}
 
 S2ConfigType *ConfigKIV::getS2Config()
 {

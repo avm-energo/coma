@@ -230,7 +230,7 @@ QWidget *ConfKxxDialog::SetupModBus(QObject *parent)
     glyout->addWidget(line1, 1, 4, 1, 1);
 
     line1 = new QLabel(this);
-    line1->setText("переуд опроса");
+    line1->setText("период опроса");
     line1->setAlignment(Qt::AlignCenter);
     line1->setStyleSheet("QLabel {border: 1px solid  darkgreen;}");
     glyout->addWidget(line1, 1, 5, 1, 1);

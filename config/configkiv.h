@@ -57,12 +57,12 @@ public:
 
     Bci Bci_block;
 
-    QStack<Bci> m_BciStack;
+    //    QStack<Bci> m_BciStack;
 
     void setDefConf();
-    Error::Msg getAndPushConfig();
-    Bci popConfig();
-    Error::Msg popAndWriteConfig();
+    //    Error::Msg getAndPushConfig();
+    //    Bci popConfig();
+    //    Error::Msg popAndWriteConfig();
     S2ConfigType *getS2Config();
     void setS2Config(S2ConfigType *s2config);
 

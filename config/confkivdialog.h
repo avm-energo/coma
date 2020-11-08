@@ -29,6 +29,14 @@ private:
     void SetupUI() override;
     void CheckConf() override;
 
+    QWidget *analogWidget();
+
+    QWidget *thresholdsWidget();
+
+    QWidget *remainsWidget();
+
+    QWidget *connectionWidget();
+
 signals:
 
 public slots:

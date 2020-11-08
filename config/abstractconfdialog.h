@@ -25,7 +25,7 @@ public:
     virtual void CheckConf() = 0;
     //    void setConnections() override;
 
-    void ReadConf();
+    //    void ReadConf();
     //
     void PrereadConf();
     // int GetChNumFromObjectName(QString ObjectName);
@@ -33,7 +33,7 @@ public:
     Error::Msg WriteCheckPassword();
 
 public slots:
-    void WriteConfMessageOk();
+    void WriteConfMessageOk(DataTypes::GeneralResponseStruct &rsp);
     //    void update() override;
     // задать конфигурацию по умолчанию
     virtual void SetDefConf() = 0;
@@ -51,7 +51,7 @@ protected:
 private slots:
     void SaveConfToFile();
     void LoadConfFromFile();
-    void ButtonReadConf();
+    void ReadConf();
     void WriteConf();
     //    void WritePasswordCheck(QString psw);
     void confParameterReceived(DataTypes::ConfParametersListStruct &cfpl);
