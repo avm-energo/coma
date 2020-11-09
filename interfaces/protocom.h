@@ -1,24 +1,16 @@
 #pragma once
 
 #include "../gen/logclass.h"
-#include "../gen/modulebsi.h"
-#include "../gen/s2.h"
-#include "../gen/singleton.h"
-#include "baseinterface.h"
-#include "defines.h"
-#include "eusbworker.h"
+#include "usbhidport.h"
 
 #include <QEventLoop>
-#include <QThread>
 #include <QTimer>
-class EProtocom final : public BaseInterface, public Singleton<EProtocom>
+class Protocom final : public QObject
 {
-
     Q_OBJECT
-
 public:
-    explicit EProtocom(token, QWidget *parent = nullptr);
-    ~EProtocom();
+    explicit Protocom(QWidget *parent = nullptr);
+    ~Protocom();
 
     bool Connect(int devicePosition);
     bool Reconnect();
@@ -26,19 +18,8 @@ public:
 
     QList<QStringList> DevicesFound();
 
-    EUsbWorker *usbWorker() const;
-
-    bool start(const ConnectStruct &st) override;
-
-    void reqTime() override;
-    void reqFile(quint32 filenum, bool isConfigFile = false) override;
-    void reqStartup(quint32 sigAdr, quint32 sigCount) override;
-    void reqBSI() override;
-
-    void writeFile(quint32 filenum, const QByteArray &file) override;
-    void writeTime(quint32 time) override;
-    void writeCommand(Queries::Commands cmd, QList<DataTypes::SignalsStruct> list) override;
-    void reqFloats(quint32 sigAdr, quint32 sigCount) override;
+    UsbHidPort *usbWorker() const;
+    bool start(const int &devPos);
 
     void SendCmd(unsigned char command, int parameter = 0);
     // read
@@ -48,8 +29,6 @@ public:
     // write file
     void SendFile(unsigned char command, char board_type, int filenum, QByteArray &ba);
 
-    // void Timeout();
-
     void usbStateChanged(void *message);
 
     static bool isWriteUSBLog();
@@ -58,10 +37,6 @@ public:
     Error::Msg result() const;
     void setResult(const Error::Msg &result);
 
-    //    int devicePosition() const;
-    //    void setDevicePosition(int devicePosition);
-
-    //    QString usbSerial() const;
     inline bool isWorkerRunning() const
     {
         return m_workerStatus;
@@ -71,13 +46,10 @@ public:
         return m_parserStatus;
     };
 
-public slots:
-    void stop() override;
-
 private:
     static bool m_writeUSBLog;
 
-    EUsbWorker *m_usbWorker;
+    UsbHidPort *m_usbWorker;
 
     bool m_workerStatus, m_parserStatus;
 
@@ -125,10 +97,7 @@ private:
     int RawWrite(QByteArray &ba);
     void RawClose();
 
-    static CN::Commands translate(const Queries::Commands cmd);
-    static Queries::Commands translate(const CN::Commands cmd);
-
-    const static QMap<Queries::Commands, CN::Commands> m_dict;
+    LogClass *Log;
 
 signals:
 

@@ -4,6 +4,7 @@
 #include "../gen/files.h"
 #include "../gen/timefunc.h"
 #include "ethernet.h"
+#include "iec104thread.h"
 
 #include <QCoreApplication>
 #include <QDialog>
@@ -21,7 +22,9 @@ IEC104::IEC104(QObject *parent) : BaseInterface(parent)
     Log->info("=== Log started ===");
 }
 
-IEC104::~IEC104() { }
+IEC104::~IEC104()
+{
+}
 
 // bool IEC104::Working() { return (EthThreadWorking | ParseThreadWorking); }
 
@@ -268,7 +271,10 @@ void IEC104::reqFloats(quint32 sigAdr, quint32 sigCount)
 //    //    IEC104Thread::s_ParseWriteMutex.unlock();
 //}
 
-void IEC104::EthThreadStarted() { m_working = EthThreadWorking = true; }
+void IEC104::EthThreadStarted()
+{
+    m_working = EthThreadWorking = true;
+}
 
 void IEC104::EthThreadFinished()
 {
@@ -280,7 +286,10 @@ void IEC104::EthThreadFinished()
     }
 }
 
-void IEC104::ParseThreadStarted() { m_working = ParseThreadWorking = true; }
+void IEC104::ParseThreadStarted()
+{
+    m_working = ParseThreadWorking = true;
+}
 
 void IEC104::ParseThreadFinished()
 {

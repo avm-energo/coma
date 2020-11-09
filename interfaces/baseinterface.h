@@ -7,6 +7,7 @@
 
 #include <QObject>
 
+struct SerialPortSettings;
 class BaseInterface : public QObject
 {
     Q_OBJECT

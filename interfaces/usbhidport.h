@@ -5,12 +5,23 @@
 #include "defines.h"
 #include "hidapi/hidapi.h"
 
-class EUsbWorker : public QObject
+namespace HID
+{
+constexpr unsigned VID = 0xC251;
+constexpr unsigned PID = 0x3505;
+// максимальная длина одного сегмента (0x40)
+constexpr unsigned MaxSegmenthLength = 64;
+// 20 ms main loop sleep
+constexpr unsigned MainLoopDelay = 20;
+
+} // namespace HID
+
+class UsbHidPort : public QObject
 {
     Q_OBJECT
 public:
-    explicit EUsbWorker(const DeviceConnectStruct &dev, LogClass *logh, bool writelog = false, QObject *parent = 0);
-    ~EUsbWorker();
+    explicit UsbHidPort(const DeviceConnectStruct &dev, LogClass *logh, bool writelog = false, QObject *parent = 0);
+    ~UsbHidPort();
 
     LogClass *log;
 
@@ -30,7 +41,7 @@ signals:
     void started();
 
 public slots:
-    void interact();
+    void poll();
 
 private:
     hid_device *HidDevice;
@@ -50,5 +61,4 @@ private:
     void CheckWriteQueue();
     void checkQueue();
     void Finish();
-private slots:
 };

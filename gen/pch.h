@@ -4,4 +4,8 @@
 #define __PRETTY_FUNCTION__ __FUNCSIG__
 #endif
 
+#ifndef __GNUC__
+#define MAXFLOAT 3.40282347E+38F
+#endif
+
 #include <QObject>

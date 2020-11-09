@@ -89,6 +89,7 @@ namespace Queries
 {
 enum Commands
 {
+    QC_Unknown, // NOTE Temporary warn command
     QC_SetNewConfiguration,
     QC_StartFirmwareUpgrade,
     QC_StartWorkingChannel,
@@ -103,7 +104,6 @@ enum Commands
     QC_ReqAlarms,
     QC_ReqFloats,
     QC_ReqBitStrings
-
 };
 
 struct Command

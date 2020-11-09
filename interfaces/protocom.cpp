@@ -1,8 +1,8 @@
-#include "eprotocom.h"
+#include "protocom.h"
 
 #include "../gen/board.h"
-#include "../gen/datamanager.h"
 #include "../gen/error.h"
+#include "../gen/modulebsi.h"
 #include "../gen/pch.h"
 #include "../gen/stdfunc.h"
 #include "defines.h"
@@ -11,6 +11,7 @@
 #include <QElapsedTimer>
 #include <QMessageBox>
 #include <QSettings>
+#include <QThread>
 #include <QTimer>
 
 //#define MAX_STR 255
@@ -21,18 +22,9 @@
 #include <dbt.h>
 // clang-format on
 #endif
+bool Protocom::m_writeUSBLog;
 
-const QMap<Queries::Commands, CN::Commands> EProtocom::m_dict { { Queries::Commands::QC_StartFirmwareUpgrade,
-                                                                    CN::Commands::WriteUpgrade },
-    { Queries::QC_SetStartupValues, CN::Commands::WriteStartupValues },
-    { Queries::QC_ClearStartupValues, CN::Commands::EraseStartupValues },
-    { Queries::QC_SetNewConfiguration, CN::Commands::WriteInitValues },
-    { Queries::QC_EraseJournals, CN::Commands::EraseStartupValues },
-    { Queries::QC_EraseTechBlock, CN::Commands::EraseStartupValues }, { Queries::QC_Test, CN::Commands::Test } };
-
-bool EProtocom::m_writeUSBLog;
-
-EProtocom::EProtocom(token, QWidget *parent) : BaseInterface(parent)
+Protocom::Protocom(QWidget *parent)
 {
     QString tmps = "=== CLog started ===\n";
     Log = new LogClass;
@@ -47,35 +39,35 @@ EProtocom::EProtocom(token, QWidget *parent) : BaseInterface(parent)
     OscTimer->setSingleShot(false);
     m_waitTimer = new QTimer;
     m_waitTimer->setInterval(CN::Timeout);
-    connect(OscTimer, &QTimer::timeout, this, &EProtocom::OscTimerTimeout);
+    connect(OscTimer, &QTimer::timeout, this, &Protocom::OscTimerTimeout);
     connect(m_waitTimer, &QTimer::timeout, &m_loop, &QEventLoop::quit);
-    connect(this, &EProtocom::QueryFinished, &m_loop, &QEventLoop::quit);
+    connect(this, &Protocom::QueryFinished, &m_loop, &QEventLoop::quit);
     // QSharedPointer<QSettings> sets = QSharedPointer<QSettings>(new QSettings("EvelSoft", PROGNAME));
     // bool writeUSBLog = sets->value("WriteLog", "0").toBool();
     setWriteUSBLog(true);
 }
 
-Error::Msg EProtocom::result() const
+Error::Msg Protocom::result() const
 {
     return m_result;
 }
 
-void EProtocom::setResult(const Error::Msg &result)
+void Protocom::setResult(const Error::Msg &result)
 {
     m_result = result;
 }
 
-bool EProtocom::isWriteUSBLog()
+bool Protocom::isWriteUSBLog()
 {
     return m_writeUSBLog;
 }
 
-void EProtocom::setWriteUSBLog(bool writeUSBLog)
+void Protocom::setWriteUSBLog(bool writeUSBLog)
 {
     m_writeUSBLog = writeUSBLog;
 }
 
-void EProtocom::Send(char command, char parameter, QByteArray &ba, qint64 datasize)
+void Protocom::Send(char command, char parameter, QByteArray &ba, qint64 datasize)
 {
     if (Board::GetInstance().connectionState() == Board::ConnectionState::Closed
         && Board::GetInstance().interfaceType() == Board::InterfaceType::USB)
@@ -94,7 +86,7 @@ void EProtocom::Send(char command, char parameter, QByteArray &ba, qint64 datasi
     m_loop.exec(QEventLoop::ExcludeUserInputEvents);
 }
 
-void EProtocom::InitiateSend()
+void Protocom::InitiateSend()
 {
     WriteData.clear();
     switch (Command)
@@ -193,7 +185,7 @@ void EProtocom::InitiateSend()
     RDLength = 0;
 }
 
-void EProtocom::WriteDataToPort(QByteArray &ba)
+void Protocom::WriteDataToPort(QByteArray &ba)
 {
     QByteArray tmpba = ba;
     if (Command == CN::Unknown) // игнорируем вызовы процедуры без команды
@@ -225,7 +217,7 @@ void EProtocom::WriteDataToPort(QByteArray &ba)
     }
 }
 
-void EProtocom::Finish(Error::Msg msg)
+void Protocom::Finish(Error::Msg msg)
 {
     // предотвращение вызова newdataarrived по приходу чего-то в канале, если
     // ничего не было послано
@@ -242,7 +234,7 @@ void EProtocom::Finish(Error::Msg msg)
     emit QueryFinished();
 }
 
-void EProtocom::SetWRSegNum()
+void Protocom::SetWRSegNum()
 {
     if (WRLength > CN::Limits::MaxSegmenthLength)
         SegLeft = (WRLength / CN::Limits::MaxSegmenthLength) + 1;
@@ -251,7 +243,7 @@ void EProtocom::SetWRSegNum()
     SegEnd = 0;
 }
 
-void EProtocom::WRCheckForNextSegment(int first)
+void Protocom::WRCheckForNextSegment(int first)
 {
     // quint8 ForMihalich = 0;
     QByteArray tmpba;
@@ -280,7 +272,7 @@ void EProtocom::WRCheckForNextSegment(int first)
     WriteDataToPort(tmpba);
 }
 
-void EProtocom::AppendSize(QByteArray &ba, int size)
+void Protocom::AppendSize(QByteArray &ba, int size)
 {
     char byte = static_cast<char>(size % 0x100);
     ba.append(byte);
@@ -288,7 +280,7 @@ void EProtocom::AppendSize(QByteArray &ba, int size)
     ba.append(byte);
 }
 
-void EProtocom::SendOk(bool cont)
+void Protocom::SendOk(bool cont)
 {
     QByteArray tmpba;
     if (cont)
@@ -301,7 +293,7 @@ void EProtocom::SendOk(bool cont)
     WriteDataToPort(tmpba);
 }
 
-void EProtocom::SendErr()
+void Protocom::SendErr()
 {
     QByteArray tmpba;
     tmpba.append(CN::Message::Start);
@@ -312,7 +304,7 @@ void EProtocom::SendErr()
     WriteDataToPort(tmpba);
 }
 
-bool EProtocom::GetLength()
+bool Protocom::GetLength()
 {
     if (ReadDataChunk.at(1) != Command)
         return false;
@@ -322,7 +314,7 @@ bool EProtocom::GetLength()
     return true;
 }
 
-void EProtocom::ParseIncomeData(QByteArray ba)
+void Protocom::ParseIncomeData(QByteArray ba)
 {
     if (isWriteUSBLog())
     {
@@ -574,18 +566,18 @@ void EProtocom::ParseIncomeData(QByteArray ba)
     }
 }
 
-void EProtocom::CheckForData()
+void Protocom::CheckForData()
 {
     QByteArray ba = RawRead(1000);
     ParseIncomeData(ba);
 }
 
-void EProtocom::OscTimerTimeout()
+void Protocom::OscTimerTimeout()
 {
     SendCmd(CN::Read::Progress);
 }
 
-void EProtocom::SendCmd(unsigned char command, int parameter)
+void Protocom::SendCmd(unsigned char command, int parameter)
 {
     // only for these commands
     switch (command)
@@ -607,7 +599,7 @@ void EProtocom::SendCmd(unsigned char command, int parameter)
     Send(command, parameter, ba, 0);
 }
 
-void EProtocom::SendIn(unsigned char command, char parameter, QByteArray &ba, qint64 maxdatasize)
+void Protocom::SendIn(unsigned char command, char parameter, QByteArray &ba, qint64 maxdatasize)
 {
     // only for these commands
     switch (command)
@@ -630,7 +622,7 @@ void EProtocom::SendIn(unsigned char command, char parameter, QByteArray &ba, qi
     ba = OutData;
 }
 
-void EProtocom::SendOut(unsigned char command, char board_type, QByteArray &ba)
+void Protocom::SendOut(unsigned char command, char board_type, QByteArray &ba)
 {
     // only for these commands
     switch (command)
@@ -650,7 +642,7 @@ void EProtocom::SendOut(unsigned char command, char board_type, QByteArray &ba)
     Send(command, board_type, ba, 0);
 }
 
-void EProtocom::SendFile(unsigned char command, char board_type, int filenum, QByteArray &ba)
+void Protocom::SendFile(unsigned char command, char board_type, int filenum, QByteArray &ba)
 {
     // only for these commands
     switch (command)
@@ -668,7 +660,7 @@ void EProtocom::SendFile(unsigned char command, char board_type, int filenum, QB
     ba = OutData;
 }
 
-void EProtocom::usbStateChanged(void *message)
+void Protocom::usbStateChanged(void *message)
 {
 #ifdef _WIN32
     MSG *msg = static_cast<MSG *>(message);
@@ -767,7 +759,7 @@ void EProtocom::usbStateChanged(void *message)
 #endif
 }
 
-EProtocom::~EProtocom()
+Protocom::~Protocom()
 {
 
     Log->deleteLater();
@@ -775,23 +767,23 @@ EProtocom::~EProtocom()
     m_waitTimer->deleteLater();
 }
 
-bool EProtocom::start(const ConnectStruct &st)
+bool Protocom::start(const int &devPos)
 {
     if (Board::GetInstance().connectionState() == Board::ConnectionState::Connected
         && Board::GetInstance().interfaceType() == Board::InterfaceType::USB)
         Disconnect();
-    m_usbWorker = new EUsbWorker(m_devices.at(st.usbDevicePosition), Log, isWriteUSBLog());
-    m_devicePosition = st.usbDevicePosition;
+    m_usbWorker = new UsbHidPort(m_devices.at(devPos), Log, isWriteUSBLog());
+    m_devicePosition = devPos;
     QThread *workerThread = new QThread;
     m_usbWorker->moveToThread(workerThread);
 
-    connect(workerThread, &QThread::started, m_usbWorker, &EUsbWorker::interact);
+    connect(workerThread, &QThread::started, m_usbWorker, &UsbHidPort::poll);
     connect(workerThread, &QThread::started, [this] { m_workerStatus = true; });
     connect(workerThread, &QThread::finished, [this] { m_workerStatus = false; });
     connect(workerThread, &QThread::finished, workerThread, &QThread::deleteLater);
-    connect(m_usbWorker, &EUsbWorker::finished, workerThread, &QThread::quit);
-    connect(m_usbWorker, &EUsbWorker::finished, m_usbWorker, &EUsbWorker::deleteLater);
-    connect(m_usbWorker, &EUsbWorker::NewDataReceived, this, &EProtocom::ParseIncomeData);
+    connect(m_usbWorker, &UsbHidPort::finished, workerThread, &QThread::quit);
+    connect(m_usbWorker, &UsbHidPort::finished, m_usbWorker, &UsbHidPort::deleteLater);
+    connect(m_usbWorker, &UsbHidPort::NewDataReceived, this, &Protocom::ParseIncomeData);
 
     //    QThread *parserThread = new QThread;
 
@@ -810,86 +802,7 @@ bool EProtocom::start(const ConnectStruct &st)
     return true;
 }
 
-void EProtocom::reqTime()
-{
-    CommandStruct inp { CN::Commands::ReadTime, 0, 0, {} };
-    DataManager::addToInQueue(inp);
-}
-
-void EProtocom::reqFile(quint32 filenum, bool isConfigFile)
-{
-    // TODO Как использовать флаг?
-    CommandStruct inp {
-        CN::Commands::ReadFile, // Command
-        filenum,                // File number
-        0,                      // Empty float arg
-        {}                      // Empty QByteArray
-    };
-    DataManager::addToInQueue(inp);
-}
-
-void EProtocom::reqStartup(quint32 sigAdr, quint32 sigCount)
-{
-    CommandStruct inp {
-        CN::Commands::ReadBlkData,                                 // Command
-        sigAdr,                                                    // Board type
-        sigCount,                                                  // Empty float arg
-        QByteArray(sizeof(sigCount) * sigCount, Qt::Uninitialized) // Buffer for bsi
-    };
-    DataManager::addToInQueue(inp);
-}
-
-void EProtocom::reqBSI()
-{
-    CommandStruct inp {
-        CN::Commands::ReadBlkStartInfo,                       // Command
-        BoardTypes::BT_NONE,                                  // Board type
-        0,                                                    // Empty float arg
-        QByteArray(sizeof(ModuleBSI::Bsi), Qt::Uninitialized) // Buffer for bsi
-    };
-    DataManager::addToInQueue(inp);
-}
-
-void EProtocom::writeFile(quint32 filenum, const QByteArray &file)
-{
-    CommandStruct inp {
-        CN::Commands::WriteFile, // Command
-        filenum,                 // File number
-        0,                       // Empty float arg
-        file                     // Buffer with file
-    };
-    DataManager::addToInQueue(inp);
-}
-
-void EProtocom::writeTime(quint32 time)
-{
-    CommandStruct inp { CN::Commands::WriteTime, time, 0, {} };
-    DataManager::addToInQueue(inp);
-}
-
-void EProtocom::reqFloats(quint32 sigAdr, quint32 sigCount)
-{
-    // TODO CN::Commands::Unknown
-    CommandStruct inp { CN::Commands::Unknown, sigAdr, sigCount, {} };
-    DataManager::addToInQueue(inp);
-}
-
-void EProtocom::writeCommand(Queries::Commands cmd, QList<DataTypes::SignalsStruct> list)
-{
-    CommandStruct inp;
-    switch (cmd)
-    {
-    default:
-    {
-        {
-            inp = { translate(cmd), 0, 0, QByteArray {} };
-        }
-    }
-    }
-    DataManager::addToInQueue(inp);
-}
-
-bool EProtocom::Reconnect()
+bool Protocom::Reconnect()
 {
     m_usbWorker->closeConnection();
     if (m_usbWorker->setupConnection() == Error::Msg::NoError
@@ -902,25 +815,25 @@ bool EProtocom::Reconnect()
     return true;
 }
 
-void EProtocom::Disconnect()
+void Protocom::Disconnect()
 {
     qDebug(__PRETTY_FUNCTION__);
     RawClose();
     Log->WriteRaw("Disconnected!\n");
 }
 
-QByteArray EProtocom::RawRead(int bytes)
+QByteArray Protocom::RawRead(int bytes)
 {
     Q_UNUSED(bytes)
     return QByteArray();
 }
 
-int EProtocom::RawWrite(QByteArray &ba)
+int Protocom::RawWrite(QByteArray &ba)
 {
     return m_usbWorker->WriteDataAttempt(ba);
 }
 
-void EProtocom::RawClose()
+void Protocom::RawClose()
 {
     if (Board::GetInstance().connectionState() != Board::ConnectionState::Closed
         && Board::GetInstance().interfaceType() == Board::InterfaceType::USB)
@@ -929,21 +842,7 @@ void EProtocom::RawClose()
     }
 }
 
-CN::Commands EProtocom::translate(const Queries::Commands cmd)
-{
-    if (m_dict.contains(cmd))
-        return m_dict.value(cmd);
-    else
-        return CN::Commands::Unknown;
-}
-
-Queries::Commands EProtocom::translate(const CN::Commands cmd)
-{
-    // TODO  Реализовать проверку если нет такого value
-    return m_dict.key(cmd);
-}
-
-QList<QStringList> EProtocom::DevicesFound()
+QList<QStringList> Protocom::DevicesFound()
 {
     hid_device_info *devs, *cur_dev;
 
@@ -980,7 +879,7 @@ QList<QStringList> EProtocom::DevicesFound()
     return sl;
 }
 
-EUsbWorker *EProtocom::usbWorker() const
+UsbHidPort *Protocom::usbWorker() const
 {
     return m_usbWorker;
 }

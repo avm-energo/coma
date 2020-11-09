@@ -2,9 +2,7 @@
 #define IEC104_H
 #include "../gen/datamanager.h"
 #include "../gen/logclass.h"
-#include "../gen/s2.h"
 #include "baseinterface.h"
-#include "iec104thread.h"
 
 #include <QMutex>
 #include <QQueue>

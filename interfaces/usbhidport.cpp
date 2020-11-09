@@ -1,4 +1,4 @@
-#include "eusbworker.h"
+#include "usbhidport.h"
 
 #include "../gen/board.h"
 #include "../gen/datamanager.h"
@@ -11,6 +11,7 @@
 #include <QElapsedTimer>
 #include <QMetaEnum>
 #include <QThread>
+#include <array>
 
 void appendSize(QByteArray &ba, int size)
 {
@@ -35,17 +36,17 @@ void checkForNextSegment(QByteArray &ba)
     if (ba.size() > 60) { }
 }
 
-EUsbWorker::EUsbWorker(const DeviceConnectStruct &dev, LogClass *logh, bool writelog, QObject *parent)
+UsbHidPort::UsbHidPort(const DeviceConnectStruct &dev, LogClass *logh, bool writelog, QObject *parent)
     : QObject(parent), log(logh), WriteUSBLog(writelog), m_deviceInfo(dev)
 {
     HidDevice = nullptr;
 }
 
-EUsbWorker::~EUsbWorker()
+UsbHidPort::~UsbHidPort()
 {
 }
 
-Error::Msg EUsbWorker::setupConnection()
+Error::Msg UsbHidPort::setupConnection()
 {
     if ((deviceInfo().vendor_id == 0) || (deviceInfo().product_id == 0))
     {
@@ -57,7 +58,7 @@ Error::Msg EUsbWorker::setupConnection()
     HidDevice = hid_open_path(deviceInfo().path.toStdString().c_str());
 #endif
 #ifdef _WIN32
-    HidDevice = hid_open(deviceInfo().vendor_id, deviceInfo().product_id, (wchar_t *)deviceInfo().serial.utf16());
+    HidDevice = hid_open(deviceInfo().vendor_id, deviceInfo().product_id, deviceInfo().serial.toStdWString().c_str());
 #endif
     if (!HidDevice)
     {
@@ -71,31 +72,30 @@ Error::Msg EUsbWorker::setupConnection()
     return Error::Msg::NoError;
 }
 
-void EUsbWorker::interact()
+void UsbHidPort::poll()
 {
     int bytes;
-    unsigned char data[UH::MaxSegmenthLength + 1]; // +1 to ID
-
+    std::array<byte, HID::MaxSegmenthLength + 1> array; // +1 to ID
     while (Board::GetInstance().connectionState() != Board::ConnectionState::Closed)
     {
         // check if there's any data in input buffer
         if (Board::GetInstance().connectionState() == Board::ConnectionState::AboutToFinish)
             continue;
-        if (HidDevice != nullptr)
+        if (HidDevice)
         {
-            bytes = hid_read(HidDevice, data, UH::MaxSegmenthLength + 1);
+            bytes = hid_read_timeout(HidDevice, array.data(), HID::MaxSegmenthLength + 1, HID::MainLoopDelay);
             // Write
             if (bytes < 0)
             {
-                if (WriteUSBLog)
-                    log->WriteRaw("UsbThread: Unable to hid_read()");
+                // -1 is the only error value according to hidapi documentation.
+                Q_ASSERT(bytes == -1);
                 continue;
             }
             // Read
             if (bytes > 0)
             {
-                QByteArray ba(reinterpret_cast<char *>(data), bytes);
-                initiateReceive(ba);
+                QByteArray ba(reinterpret_cast<char *>(array.data()), bytes);
+                emit NewDataReceived(ba);
             }
             CheckWriteQueue(); // write data to port if there's something delayed in out queue
         }
@@ -111,7 +111,7 @@ void handleTime(const char *str)
     DataManager::addSignalToOutList(DataTypes::SignalTypes::GeneralResponse, resp);
 }
 
-inline void handleBitString(const QByteArray &ba)
+void handleBitString(const QByteArray &ba)
 {
     // 3c21 3c00
     // a200000087000000000003010b0002000e0000006a020000320043000451383233393736020000004323330000000004785634126070e712001
@@ -157,7 +157,7 @@ inline void handleCommand(const QByteArray &ba)
     qCritical("We should be here, something went wrong");
 }
 
-void EUsbWorker::handle(const CN::Commands cmd)
+void UsbHidPort::handle(const CN::Commands cmd)
 {
     // NOTE using enum after cpp20
     using namespace CN;
@@ -226,23 +226,23 @@ void EUsbWorker::handle(const CN::Commands cmd)
     }
 }
 
-DeviceConnectStruct EUsbWorker::deviceInfo() const
+DeviceConnectStruct UsbHidPort::deviceInfo() const
 {
     return m_deviceInfo;
 }
 
-void EUsbWorker::setDeviceInfo(DeviceConnectStruct deviceInfo)
+void UsbHidPort::setDeviceInfo(DeviceConnectStruct deviceInfo)
 {
     m_deviceInfo = deviceInfo;
 }
 
-int EUsbWorker::WriteDataAttempt(QByteArray &ba)
+int UsbHidPort::WriteDataAttempt(QByteArray &ba)
 {
     WriteQueue.append(ba);
     return ba.size();
 }
 
-void EUsbWorker::closeConnection()
+void UsbHidPort::closeConnection()
 {
     qDebug(__PRETTY_FUNCTION__);
     if (HidDevice)
@@ -256,26 +256,26 @@ void EUsbWorker::closeConnection()
     }
 }
 
-void EUsbWorker::Finish()
+void UsbHidPort::Finish()
 {
     closeConnection();
     INFOMSG("UThread finished");
     emit finished();
 }
 
-Error::Msg EUsbWorker::WriteData(QByteArray &ba)
+Error::Msg UsbHidPort::WriteData(QByteArray &ba)
 {
     if (HidDevice)
     {
-        if (ba.size() > UH::MaxSegmenthLength)
+        if (ba.size() > HID::MaxSegmenthLength)
         {
             if (WriteUSBLog)
                 log->WriteRaw("UsbThread: WRONG SEGMENT LENGTH!\n");
-            qCritical() << "Длина сегмента больше " << QString::number(UH::MaxSegmenthLength) << " байт";
+            qCritical() << "Длина сегмента больше " << QString::number(HID::MaxSegmenthLength) << " байт";
             return Error::Msg::SizeError;
         }
-        if (ba.size() < UH::MaxSegmenthLength)
-            ba.append(UH::MaxSegmenthLength - ba.size(), static_cast<char>(0x00));
+        if (ba.size() < HID::MaxSegmenthLength)
+            ba.append(HID::MaxSegmenthLength - ba.size(), static_cast<char>(0x00));
         ba.prepend(static_cast<char>(0x00)); // inserting ID field
         if (WriteUSBLog)
         {
@@ -293,7 +293,7 @@ Error::Msg EUsbWorker::WriteData(QByteArray &ba)
     return Error::Msg::NoDeviceError;
 }
 
-void EUsbWorker::CheckWriteQueue()
+void UsbHidPort::CheckWriteQueue()
 {
     QMutexLocker locker(&mutex_);
     if (!WriteQueue.isEmpty())
@@ -303,7 +303,7 @@ void EUsbWorker::CheckWriteQueue()
     }
 }
 
-void EUsbWorker::checkQueue()
+void UsbHidPort::checkQueue()
 {
     CommandStruct inp;
     if (DataManager::deQueue(inp) == Error::Msg::NoError)
@@ -329,7 +329,7 @@ QByteArray prepareBlock(CommandStruct &cmdStr)
     return ba;
 }
 
-void EUsbWorker::initiateSend(const CommandStruct &cmdStr)
+void UsbHidPort::initiateSend(const CommandStruct &cmdStr)
 {
     using namespace CN;
     QByteArray ba;
@@ -395,7 +395,7 @@ void EUsbWorker::initiateSend(const CommandStruct &cmdStr)
     WriteDataAttempt(ba);
 }
 
-void EUsbWorker::initiateReceive(QByteArray ba)
+void UsbHidPort::initiateReceive(QByteArray ba)
 {
     using namespace CN::Message;
 

@@ -122,6 +122,7 @@ enum class Commands : byte
     ///
     /// namespace READ
     ///
+    // чтение блока стартовой информации
     ReadBlkStartInfo = 0x21,
     // чтение настроечных коэффициентов
     ReadBlkAC = 0x22,
@@ -180,16 +181,6 @@ enum class Commands : byte
 Q_ENUM_NS(Commands)
 } // namespace CN
 
-namespace UH
-{
-constexpr unsigned VID = 0xC251;
-constexpr unsigned PID = 0x3505;
-// максимальная длина одного сегмента (0x40)
-constexpr unsigned MaxSegmenthLength = 64;
-// 20 ms main loop sleep
-constexpr unsigned MainLoopDelay = 20;
-
-} // namespace UH
 #define WHV_SIZE_ONEBOARD 17
 #define WHV_SIZE_TWOBOARDS 33
 
@@ -208,10 +199,6 @@ constexpr unsigned MainLoopDelay = 20;
 #define WORK_MODE 0
 #define TUNE_MODE_1000 1
 #define TUNE_MODE_100 2
-
-#ifndef __GNUC__
-#define MAXFLOAT 3.40282347E+38F
-#endif
 
 struct DeviceConnectStruct
 {
