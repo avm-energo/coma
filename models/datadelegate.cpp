@@ -8,69 +8,79 @@
 #include <QPainter>
 #include <QVBoxLayout>
 
-DataDelegate::DataDelegate(QObject *parent) : QStyledItemDelegate(parent) { }
+DataDelegate::DataDelegate(QObject *parent) : QStyledItemDelegate(parent)
+{
+}
 
 void DataDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
     QStyledItemDelegate::paint(painter, option, index);
     painter->save();
-    ValueItem *item = qvariant_cast<ValueItem *>(index.data(Qt::DisplayRole));
-    if (item->format() != ValueItem::SIMPLE_CELL)
+    if (index.data(Qt::DisplayRole).canConvert<ValueItem *>())
     {
-        // ohh it's my column
-        // better do something creative
-        QString textToDisplay;
-        switch (item->format())
+        ValueItem *item = qvariant_cast<ValueItem *>(index.data(Qt::DisplayRole));
+        if (item->format() != ValueItem::SIMPLE_CELL)
         {
-        case ValueItem::OUTVALUEINT:
-        {
-            qint32 *data = static_cast<qint32 *>(item->dataPtr());
-            textToDisplay = QString::number(*data);
-            break;
-        }
-        case ValueItem::OUTVALUEHEX:
-        {
-            quint32 *data = static_cast<quint32 *>(item->dataPtr());
-            textToDisplay = QString::number(*data, 16);
-            break;
-        }
-        case ValueItem::OUTVALUEFLOAT0:
-        case ValueItem::OUTVALUEFLOAT1:
-        case ValueItem::OUTVALUEFLOAT2:
-        case ValueItem::OUTVALUEFLOAT3:
-        case ValueItem::OUTVALUEFLOAT4:
-        case ValueItem::OUTVALUEFLOAT5:
-        {
-            float *data = static_cast<float *>(item->dataPtr());
-            textToDisplay = QString::number(*data, 'g', item->format() - 2);
-            break;
-        }
-        case ValueItem::OUTVALUEDOUBLE:
-        {
-            double *data = static_cast<double *>(item->dataPtr());
-            textToDisplay = QString::number(*data, 'e', 4);
-            break;
-        }
-        case ValueItem::OUTVALUESTRING:
-        default:
-        {
-            QString *data = static_cast<QString *>(item->dataPtr());
-            textToDisplay = *data;
-            break;
-        }
-        }
+            // ohh it's my column
+            // better do something creative
+            QString textToDisplay;
+            switch (item->format())
+            {
+            case ValueItem::OUTVALUEINT:
+            {
+                qint32 *data = static_cast<qint32 *>(item->dataPtr());
+                textToDisplay = QString::number(*data);
+                break;
+            }
+            case ValueItem::OUTVALUEHEX:
+            {
+                quint32 *data = static_cast<quint32 *>(item->dataPtr());
+                textToDisplay = QString::number(*data, 16);
+                break;
+            }
+            case ValueItem::OUTVALUEFLOAT0:
+            case ValueItem::OUTVALUEFLOAT1:
+            case ValueItem::OUTVALUEFLOAT2:
+            case ValueItem::OUTVALUEFLOAT3:
+            case ValueItem::OUTVALUEFLOAT4:
+            case ValueItem::OUTVALUEFLOAT5:
+            {
+                float *data = static_cast<float *>(item->dataPtr());
+                textToDisplay = QString::number(*data, 'g', item->format() - 2);
+                break;
+            }
+            case ValueItem::OUTVALUEDOUBLE:
+            {
+                double *data = static_cast<double *>(item->dataPtr());
+                textToDisplay = QString::number(*data, 'e', 4);
+                break;
+            }
+            case ValueItem::OUTVALUESTRING:
+            default:
+            {
+                QString *data = static_cast<QString *>(item->dataPtr());
+                textToDisplay = *data;
+                break;
+            }
+            }
 
+            QRect rect = option.rect;
+            QBrush brush;
+            brush.setColor(QColor(Colors::ACONFOCLR));
+            painter->setPen(Qt::SolidLine);
+            painter->setBrush(brush);
+            if (option.state & QStyle::State_Selected)
+                painter->setPen(QColor(Qt::darkGreen));
+            else
+                painter->setPen(QColor(Qt::lightGray));
+            painter->drawRoundedRect(rect, 3, 3);
+            painter->drawText(rect, textToDisplay);
+        }
+    }
+    else
+    {
         QRect rect = option.rect;
-        QBrush brush;
-        brush.setColor(QColor(Colors::ACONFOCLR));
-        painter->setPen(Qt::SolidLine);
-        painter->setBrush(brush);
-        if (option.state & QStyle::State_Selected)
-            painter->setPen(QColor(Qt::darkGreen));
-        else
-            painter->setPen(QColor(Qt::lightGray));
-        painter->drawRoundedRect(rect, 3, 3);
-        painter->drawText(rect, textToDisplay);
+        painter->drawText(rect, index.data(Qt::DisplayRole).toString());
     }
     painter->restore();
 }
@@ -107,7 +117,9 @@ QWidget *DataDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem 
     return wdgt;
 }
 
-void DataDelegate::setEditorData(QWidget *editor, const QModelIndex &index) const { }
+void DataDelegate::setEditorData(QWidget *editor, const QModelIndex &index) const
+{
+}
 
 // Error::Msg DataDelegate::getStyleAndFormat(const QModelIndex &index) const
 //{

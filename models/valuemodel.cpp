@@ -1,6 +1,8 @@
 #include "valuemodel.h"
 
-ValueModel::ValueModel(QObject *parent) : QAbstractTableModel(parent) { }
+ValueModel::ValueModel(QObject *parent) : QAbstractTableModel(parent)
+{
+}
 
 QVariant ValueModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
@@ -86,7 +88,7 @@ int ValueModel::rowCount(const QModelIndex &index) const
     return m_data.size();
 }
 
-void ValueModel::setValueData(const QModelIndex &index, void *valuePtr)
+void ValueModel::setValueData(const QModelIndex &index, QVariant *valuePtr)
 {
     QPersistentModelIndex *pindex = new QPersistentModelIndex(index);
     m_valuePtrMap[pindex] = valuePtr;
@@ -100,25 +102,34 @@ void ValueModel::setModel(const QList<ValueItem *> &vl, int dataColumns)
     {
         QVariant value;
         value.setValue(vi);
+        setData(index(currow, curcol++), vi->name(), Qt::EditRole);
         setData(index(currow, curcol), value, Qt::EditRole);
+        setData(index(currow, curcol), vi->tooltip(), Qt::ToolTipRole);
+        setValueData(index(currow, curcol++), vi->dataPtr());
+        if (curcol > dataColumns)
+        {
+            currow++;
+            curcol = 0;
+        }
     }
-    m_VModel->setData(m_VModel->index(m_curModelRow, m_curModelColumn++), dd.name);
-    m_VModel->setData(
-        m_VModel->index(m_curModelRow, m_curModelColumn), DataFormat::OUTVALUEINT, ETableModel::DataFormatRole);
-    m_VModel->setData(m_VModel->index(m_curModelRow, m_curModelColumn), qobject_cast<QVariant>(dd.adddata),
-        ETableModel::AdditionalDataRole);
-    m_VModel->setData(m_VModel->index(m_curModelRow, m_curModelColumn), dd.tooltip, Qt::ToolTipRole);
-    m_VModel->setValueData(m_VModel->index(m_curModelRow, m_curModelColumn++), dd.dataptr);
-    if (m_curModelColumn > MAX_VALUEMODEL_COLUMNS)
-    {
-        m_curModelRow++;
-        m_curModelColumn = 0;
-    }
+    //    m_VModel->setData(m_VModel->index(m_curModelRow, m_curModelColumn++), dd.name);
+    //    m_VModel->setData(
+    //        m_VModel->index(m_curModelRow, m_curModelColumn), DataFormat::OUTVALUEINT, ETableModel::DataFormatRole);
+    //    m_VModel->setData(m_VModel->index(m_curModelRow, m_curModelColumn), qobject_cast<QVariant>(dd.adddata),
+    //        ETableModel::AdditionalDataRole);
+    //    m_VModel->setData(m_VModel->index(m_curModelRow, m_curModelColumn), dd.tooltip, Qt::ToolTipRole);
+    //    m_VModel->setValueData(m_VModel->index(m_curModelRow, m_curModelColumn++), dd.dataptr);
+    //    if (m_curModelColumn > MAX_VALUEMODEL_COLUMNS)
+    //    {
+    //        m_curModelRow++;
+    //        m_curModelColumn = 0;
+    //    }
 }
 
 void ValueModel::updateModel()
 {
-    for (QMap<QPersistentModelIndex *, void *>::iterator it = m_valuePtrMap.begin(); it != m_valuePtrMap.end(); ++it)
+    for (QMap<QPersistentModelIndex *, QVariant *>::iterator it = m_valuePtrMap.begin(); it != m_valuePtrMap.end();
+         ++it)
     {
         QPersistentModelIndex *pindex = it.key();
         QVariant *value = static_cast<QVariant *>(it.value());
@@ -128,7 +139,8 @@ void ValueModel::updateModel()
 
 void ValueModel::updateFromModel()
 {
-    for (QMap<QPersistentModelIndex *, void *>::iterator it = m_valuePtrMap.begin(); it != m_valuePtrMap.end(); ++it)
+    for (QMap<QPersistentModelIndex *, QVariant *>::iterator it = m_valuePtrMap.begin(); it != m_valuePtrMap.end();
+         ++it)
     {
         QPersistentModelIndex *pindex = it.key();
         QVariant *value = static_cast<QVariant *>(it.value());

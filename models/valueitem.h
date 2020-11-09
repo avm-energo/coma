@@ -2,15 +2,23 @@
 #define VALUEITEM_H
 
 #include <QObject>
+#include <QVariant>
 
-class SpbDataStyleAdditionalDataClass : public QObject
+// class SpbDataStyleAdditionalDataClass : public QObject
+//{
+// public:
+//    SpbDataStyleAdditionalDataClass() = default;
+//    ~SpbDataStyleAdditionalDataClass() = default;
+//    SpbDataStyleAdditionalDataClass(const SpbDataStyleAdditionalDataClass &cpy);
+//    SpbDataStyleAdditionalDataClass &operator=(const SpbDataStyleAdditionalDataClass &cpy);
+
+//    double min;
+//    double max;
+//    int decimals;
+//};
+
+struct SpbAddDataStruct
 {
-public:
-    SpbDataStyleAdditionalDataClass() = default;
-    ~SpbDataStyleAdditionalDataClass() = default;
-    SpbDataStyleAdditionalDataClass(const SpbDataStyleAdditionalDataClass &cpy);
-    SpbDataStyleAdditionalDataClass &operator=(const SpbDataStyleAdditionalDataClass &cpy);
-
     double min;
     double max;
     int decimals;
@@ -30,8 +38,8 @@ public:
 
     enum DataFormat
     {
-        SIMPLE_CELL = 0, // general data output
-        OUTVALUEINT = 1, // int
+        SIMPLE_CELL = 0,    // general data output
+        OUTVALUEINT = 1,    // int
         OUTVALUEFLOAT0 = 2, // 0 digits after zero
         OUTVALUEFLOAT1 = 3,
         OUTVALUEFLOAT2 = 4,
@@ -40,7 +48,7 @@ public:
         OUTVALUEFLOAT5 = 7, // 5 digits after zero
         OUTVALUESTRING = 8, // abracadabra
         OUTVALUEDOUBLE = 9, // 16e-018
-        OUTVALUEHEX = 10 // 0x5af3
+        OUTVALUEHEX = 10    // 0x5af3
     };
 
     //    explicit ValueItem(QObject *parent = nullptr);
@@ -63,8 +71,8 @@ public:
         *newsl = *sl;
     }
 
-    void *dataPtr();
-    void setDataPtr(void *ptr);
+    QVariant *dataPtr();
+    void setData(QVariant *ptr);
     QString name();
     void setName(const QString &str);
     QString tooltip();
@@ -79,14 +87,14 @@ public:
 signals:
 
 private:
-    void *m_dataPtr; // pointer to the variable with data
-    QString m_name; // label name
-    QString m_tooltip; // tooltip on the screen
+    QVariant *m_data;   // pointer to the variable with data
+    QString m_name;     // label name
+    QString m_tooltip;  // tooltip on the screen
     DataStyles m_style; // style
     DataFormat m_format;
-    void *m_addData; // for ComboBoxes - QStringList *, for SpinBoxes - SpbDataStyleAdditionalDataClass *
+    QVariant m_addData; // for ComboBoxes - QStringList *, for SpinBoxes - SpbDataStyleAdditionalDataClass *
 };
 
 Q_DECLARE_METATYPE(ValueItem);
-
+Q_DECLARE_METATYPE(SpbAddDataStruct);
 #endif // VALUEITEM_H

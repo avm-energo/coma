@@ -4,6 +4,7 @@
 #include "../gen/error.h"
 #include "../models/valueitem.h"
 #include "../models/valuemodel.h"
+
 #include <QWidget>
 
 class DataBlock : public QWidget
@@ -19,15 +20,15 @@ public:
 
     struct BlockDescriptionStruct
     {
-        int blocknum; // number of the block to send corresponding command
-        QString blockname; // block name to set it to the GroupBox GUI
+        int blocknum;                        // number of the block to send corresponding command
+        QString blockname;                   // block name to set it to the GroupBox GUI
         DataBlock::DataBlockTypes blocktype; // type of the block to choose proper command
-        void *block; // pointer to the block
-        int blocksize; // size of the block to make a mem copy
+        void *block;                         // pointer to the block
+        int blocksize;                       // size of the block to make a mem copy
     };
 
     explicit DataBlock(const BlockDescriptionStruct &bds, QWidget *parent = nullptr);
-    virtual void setupUI() = 0; // frontend for block visualisation
+    virtual void setupUI() = 0;                                     // frontend for block visualisation
     void setModel(const QList<ValueItem *> &dd, int columnsnumber); // default columnsnumber = 5
     void setWidget();
 
@@ -47,7 +48,7 @@ private:
 
 public slots:
     void updateModel();
-    void updateWidget();
+    void updateValues();
     Error::Msg writeBlockToModule(bool update);
     Error::Msg readBlockFromModule(bool update);
 };

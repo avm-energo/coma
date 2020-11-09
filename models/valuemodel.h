@@ -2,8 +2,8 @@
 #define VALUEMODEL_H
 
 #include "../gen/datablock.h"
-#include <QAbstractTableModel>
 
+#include <QAbstractTableModel>
 #include <QObject>
 
 class ValueModel : public QAbstractTableModel
@@ -30,13 +30,13 @@ public:
     bool insertRows(int position, int rows, const QModelIndex &index = QModelIndex()) override;
     bool removeRows(int position, int rows, const QModelIndex &index = QModelIndex()) override;
 
-    void setValueData(const QModelIndex &index, void *valuePtr);
+    void setValueData(const QModelIndex &index, QVariant *valuePtr);
     void setModel(const QList<ValueItem *> &vl, int dataColumns);
     void updateModel();
     void updateFromModel();
 
 private:
-    QMap<QPersistentModelIndex *, void *> m_valuePtrMap;
+    QMap<QPersistentModelIndex *, QVariant *> m_valuePtrMap;
     QVector<QVector<ValueItem *>> m_data;
 };
 

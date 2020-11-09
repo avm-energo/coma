@@ -24,9 +24,11 @@
  * */
 
 #include "datablock.h"
+
 #include "../models/datadelegate.h"
 #include "../usb/commands.h"
 #include "../widgets/wd_func.h"
+
 #include <QGroupBox>
 #include <QVBoxLayout>
 
@@ -42,7 +44,10 @@ DataBlock::DataBlock(const BlockDescriptionStruct &bds, QWidget *parent) : QWidg
     //    m_curModelColumn = m_curModelRow = 0;
 }
 
-void DataBlock::setModel(const QList<ValueItem *> &dd, int columnsnumber) { m_VModel->setModel(dd, columnsnumber); }
+void DataBlock::setModel(const QList<ValueItem *> &dd, int columnsnumber)
+{
+    m_VModel->setModel(dd, columnsnumber);
+}
 
 void DataBlock::setWidget()
 {
@@ -59,9 +64,15 @@ void DataBlock::setWidget()
     setLayout(lyout);
 }
 
-void DataBlock::updateModel() { m_VModel->updateModel(); }
+void DataBlock::updateModel()
+{
+    m_VModel->updateModel();
+}
 
-void DataBlock::updateWidget() { m_VModel->updateFromModel(); }
+void DataBlock::updateValues()
+{
+    m_VModel->updateFromModel();
+}
 
 Error::Msg DataBlock::writeBlockToModule(bool update)
 {
@@ -70,7 +81,7 @@ Error::Msg DataBlock::writeBlockToModule(bool update)
     case DataBlockTypes::BacBlock:
     {
         if (update)
-            updateModel();
+            updateValues();
         if (Commands::WriteBac(m_blockDescription.blocknum, &m_blockDescription.block, m_blockDescription.blocksize)
             != Error::Msg::NoError)
             return Error::Msg::GeneralError;
@@ -102,7 +113,7 @@ Error::Msg DataBlock::readBlockFromModule(bool update)
             != Error::Msg::NoError)
             return Error::Msg::GeneralError;
         if (update)
-            updateWidget();
+            updateModel();
         break;
     }
     case DataBlockTypes::BdBlock:
@@ -111,7 +122,7 @@ Error::Msg DataBlock::readBlockFromModule(bool update)
             != Error::Msg::NoError)
             return Error::Msg::GeneralError;
         if (update)
-            updateWidget();
+            updateModel();
         break;
     }
     case DataBlockTypes::BdaBlock:
@@ -120,7 +131,7 @@ Error::Msg DataBlock::readBlockFromModule(bool update)
             != Error::Msg::NoError)
             return Error::Msg::GeneralError;
         if (update)
-            updateWidget();
+            updateModel();
         break;
     }
     default:
