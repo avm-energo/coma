@@ -22,9 +22,15 @@
 #include <dbt.h>
 // clang-format on
 #endif
-bool ProtocomThread::m_writeUSBLog;
 
-ProtocomThread::ProtocomThread(QWidget *parent)
+int getLength(const QByteArray &ba)
+{
+    quint16 len = static_cast<quint8>(ba.at(2));
+    len += static_cast<quint8>(ba.at(3)) * 256;
+    return len;
+}
+
+ProtocomThread::ProtocomThread(QObject *parent) : QObject(parent)
 {
     QString tmps = "=== CLog started ===\n";
     Log = new LogClass;
@@ -33,15 +39,15 @@ ProtocomThread::ProtocomThread(QWidget *parent)
     RDLength = 0;
     SegEnd = 0;
     SegLeft = 0;
-    OscNum = 0;
-    OscTimer = new QTimer;
-    OscTimer->setInterval(CN::TimeoutOscillogram);
-    OscTimer->setSingleShot(false);
+    // OscNum = 0;
+    // OscTimer = new QTimer;
+    // OscTimer->setInterval(CN::TimeoutOscillogram);
+    // OscTimer->setSingleShot(false);
     m_waitTimer = new QTimer;
     m_waitTimer->setInterval(CN::Timeout);
-    connect(OscTimer, &QTimer::timeout, this, &ProtocomThread::OscTimerTimeout);
-    connect(m_waitTimer, &QTimer::timeout, &m_loop, &QEventLoop::quit);
-    connect(this, &ProtocomThread::QueryFinished, &m_loop, &QEventLoop::quit);
+    // connect(OscTimer, &QTimer::timeout, this, &ProtocomThread::OscTimerTimeout);
+    // connect(m_waitTimer, &QTimer::timeout, &m_loop, &QEventLoop::quit);
+    // connect(this, &ProtocomThread::QueryFinished, &m_loop, &QEventLoop::quit);
     // QSharedPointer<QSettings> sets = QSharedPointer<QSettings>(new QSettings("EvelSoft", PROGNAME));
     // bool writeUSBLog = sets->value("WriteLog", "0").toBool();
     setWriteUSBLog(true);
@@ -57,14 +63,22 @@ void ProtocomThread::setResult(const Error::Msg &result)
     m_result = result;
 }
 
-bool ProtocomThread::isWriteUSBLog()
+void ProtocomThread::setReadDataChunk(const QByteArray &readDataChunk)
 {
-    return m_writeUSBLog;
+    m_rwLocker.lockForWrite();
+    m_readDataChunk = readDataChunk;
+    m_rwLocker.unlock();
 }
 
-void ProtocomThread::setWriteUSBLog(bool writeUSBLog)
+void ProtocomThread::appendReadDataChunk(const QByteArray &readDataChunk)
 {
-    m_writeUSBLog = writeUSBLog;
+    m_rwLocker.lockForWrite();
+    m_readDataChunk.append(readDataChunk);
+    m_rwLocker.unlock();
+}
+
+void ProtocomThread::parse()
+{
 }
 
 void ProtocomThread::Send(char command, char parameter, QByteArray &ba, qint64 datasize)
@@ -82,13 +96,13 @@ void ProtocomThread::Send(char command, char parameter, QByteArray &ba, qint64 d
     Command = command;
     BoardType = parameter; // in GBd command it is a block number
     InitiateSend();
-    m_waitTimer->start();
-    m_loop.exec(QEventLoop::ExcludeUserInputEvents);
+    // m_waitTimer->start();
+    // m_loop.exec(QEventLoop::ExcludeUserInputEvents);
 }
 
 void ProtocomThread::InitiateSend()
 {
-    WriteData.clear();
+    m_writeData.clear();
     switch (Command)
     {
     case CN::Read::BlkStartInfo: // запрос блока стартовой информации
@@ -98,10 +112,10 @@ void ProtocomThread::InitiateSend()
     case CN::Read::Time:
     case CN::Write::Upgrade:
     {
-        WriteData.append(CN::Message::Start);
-        WriteData.append(Command);
-        AppendSize(WriteData, 0);
-        WriteDataToPort(WriteData);
+        m_writeData.append(CN::Message::Start);
+        m_writeData.append(Command);
+        AppendSize(m_writeData, 0);
+        WriteDataToPort(m_writeData);
         break;
     }
     case CN::Read::BlkAC:    // чтение настроечных коэффициентов
@@ -114,38 +128,38 @@ void ProtocomThread::InitiateSend()
     case CN::Write::BlkCmd:
     case CN::Test:
     {
-        WriteData.append(CN::Message::Start);
-        WriteData.append(Command);
-        AppendSize(WriteData, 1);
-        WriteData.append(BoardType);
-        WriteDataToPort(WriteData);
+        m_writeData.append(CN::Message::Start);
+        m_writeData.append(Command);
+        AppendSize(m_writeData, 1);
+        m_writeData.append(BoardType);
+        WriteDataToPort(m_writeData);
         break;
     }
     case CN::Read::File: // запрос файла
     {
-        WriteData.append(CN::Message::Start);
-        WriteData.append(Command);
-        AppendSize(WriteData, 2);
-        WriteData.append(static_cast<char>(FNum & 0x00FF));
-        WriteData.append(static_cast<char>((FNum & 0xFF00) >> 8));
-        WriteDataToPort(WriteData);
+        m_writeData.append(CN::Message::Start);
+        m_writeData.append(Command);
+        AppendSize(m_writeData, 2);
+        m_writeData.append(static_cast<char>(FNum & 0x00FF));
+        m_writeData.append(static_cast<char>((FNum & 0xFF00) >> 8));
+        WriteDataToPort(m_writeData);
         break;
     }
     case CN::Write::Hardware:
     {
-        WriteData.append(CN::Message::Start);
-        WriteData.append(Command);
-        int size = (BoardType == BoardTypes::BT_BSMZ) ? WHV_SIZE_TWOBOARDS : WHV_SIZE_ONEBOARD;
-        AppendSize(WriteData, size); // BoardType(1), HiddenBlock(16)
-        WriteData.append(BoardType);
-        WriteData.append(InData);
-        WriteDataToPort(WriteData);
+        m_writeData.append(CN::Message::Start);
+        m_writeData.append(Command);
+        int size = (BoardType == BoardTypes::BT_BSMZ) ? CN::WHV_SIZE_TWOBOARDS : CN::WHV_SIZE_ONEBOARD;
+        AppendSize(m_writeData, size); // BoardType(1), HiddenBlock(16)
+        m_writeData.append(BoardType);
+        m_writeData.append(InData);
+        WriteDataToPort(m_writeData);
         break;
     }
     case CN::Write::File: // запись файла
     {
-        WriteData = InData;
-        WRLength = WriteData.length();
+        m_writeData = InData;
+        WRLength = m_writeData.length();
         SetWRSegNum();
         WRCheckForNextSegment(true);
         break;
@@ -155,8 +169,8 @@ void ProtocomThread::InitiateSend()
     case CN::Write::BlkTech:
     case CN::Write::BlkData:
     {
-        WriteData.append(BoardType);
-        WriteData.append(InData);
+        m_writeData.append(BoardType);
+        m_writeData.append(InData);
         WRLength = InDataSize + 1;
         SetWRSegNum();
         WRCheckForNextSegment(true);
@@ -164,11 +178,11 @@ void ProtocomThread::InitiateSend()
     }
     case CN::Write::Time:
     {
-        WriteData.append(CN::Message::Start);
-        WriteData.append(Command);
-        AppendSize(WriteData, InDataSize);
-        WriteData.append(InData);
-        WriteDataToPort(WriteData);
+        m_writeData.append(CN::Message::Start);
+        m_writeData.append(Command);
+        AppendSize(m_writeData, InDataSize);
+        m_writeData.append(InData);
+        WriteDataToPort(m_writeData);
         break;
     }
     default:
@@ -179,7 +193,7 @@ void ProtocomThread::InitiateSend()
     }
     }
     OutData.clear();
-    ReadDataChunk.clear();
+    m_readDataChunk.clear();
     // LastBlock = false;
     bStep = 0;
     RDLength = 0;
@@ -187,34 +201,30 @@ void ProtocomThread::InitiateSend()
 
 void ProtocomThread::WriteDataToPort(QByteArray &ba)
 {
-    QByteArray tmpba = ba;
-    if (Command == CN::Unknown) // игнорируем вызовы процедуры без команды
+    CN::Commands command = CN::Commands(ba.at(1));
+    if (command == CN::Commands::Unknown) // игнорируем вызовы процедуры без команды
     {
-        ERMSG("Не пришла ещё шапка файла");
         qCritical() << QVariant::fromValue(Error::Msg::WrongCommandError).toString();
         return;
     }
-    int byteswritten = 0;
-    int basize = tmpba.size();
-    while ((byteswritten < basize) && (!tmpba.isEmpty()))
+    if (ba.isEmpty())
     {
-        if (isWriteUSBLog())
-        {
-            QByteArray tmps = "->" + tmpba.toHex() + "\n";
-            Log->WriteRaw(tmps);
-        }
-        if (Board::GetInstance().connectionState() == Board::ConnectionState::Closed
-            && Board::GetInstance().interfaceType() == Board::InterfaceType::USB)
-        {
-            ERMSG("Ошибка записи RawWrite");
-            qCritical() << QVariant::fromValue(Error::Msg::WriteError).toString();
-            Disconnect();
-            return;
-        }
-        int tmpi = RawWrite(tmpba);
-        byteswritten += tmpi;
-        tmpba.remove(0, tmpi);
+        qCritical() << Error::Msg::SizeError;
+        return;
     }
+    if (isWriteUSBLog())
+    {
+        QByteArray tmps = "->" + ba.toHex() + "\n";
+        Log->WriteRaw(tmps);
+    }
+    if (Board::GetInstance().connectionState() == Board::ConnectionState::Closed
+        && Board::GetInstance().interfaceType() == Board::InterfaceType::USB)
+    {
+        qCritical() << QVariant::fromValue(Error::Msg::WriteError).toString();
+        Disconnect();
+        return;
+    }
+    emit writeDataAttempt(ba);
 }
 
 void ProtocomThread::Finish(Error::Msg msg)
@@ -259,15 +269,15 @@ void ProtocomThread::WRCheckForNextSegment(int first)
     if (SegLeft)
     {
         AppendSize(tmpba, CN::Limits::MaxSegmenthLength);
-        tmpba += WriteData.mid(SegEnd, CN::Limits::MaxSegmenthLength); // -4 = '<', cmd, L, L
+        tmpba += m_writeData.mid(SegEnd, CN::Limits::MaxSegmenthLength); // -4 = '<', cmd, L, L
         SegEnd += CN::Limits::MaxSegmenthLength;
     }
     else
     {
-        AppendSize(tmpba, (WriteData.size() - SegEnd));
-        tmpba += WriteData.right(WriteData.size() - SegEnd);
-        SegEnd = WriteData.size();
-        WriteData.clear();
+        AppendSize(tmpba, (m_writeData.size() - SegEnd));
+        tmpba += m_writeData.right(m_writeData.size() - SegEnd);
+        SegEnd = m_writeData.size();
+        m_writeData.clear();
     }
     WriteDataToPort(tmpba);
 }
@@ -306,11 +316,11 @@ void ProtocomThread::SendErr()
 
 bool ProtocomThread::GetLength()
 {
-    if (ReadDataChunk.at(1) != Command)
+    if (m_readDataChunk.at(1) != Command)
         return false;
-    ReadDataChunkLength = static_cast<quint8>(ReadDataChunk.at(2));
+    ReadDataChunkLength = static_cast<quint8>(m_readDataChunk.at(2));
     // посчитали длину посылки
-    ReadDataChunkLength += static_cast<quint8>(ReadDataChunk.at(3)) * 256;
+    ReadDataChunkLength += static_cast<quint8>(m_readDataChunk.at(3)) * 256;
     return true;
 }
 
@@ -327,18 +337,18 @@ void ProtocomThread::ParseIncomeData(QByteArray ba)
         ERMSG("Игнорирование вызова процедуры, если не было послано никакой команды");
         return;
     }
-    ReadDataChunk.append(ba);
-    qint64 rdsize = ReadDataChunk.size();
+    m_readDataChunk.append(ba);
+    qint64 rdsize = m_readDataChunk.size();
     if (rdsize < 4) // ждём, пока принятый буфер не будет хотя бы длиной 3 байта
                     // или не произойдёт таймаут
         return;
-    if (ReadDataChunk.at(0) != CN::Message::Module)
+    if (m_readDataChunk.at(0) != CN::Message::Module)
     {
         ERMSG("Ошибка при приеме данных");
         Finish(Error::Msg::ReadError);
         return;
     }
-    if (static_cast<unsigned char>(ReadDataChunk.at(1)) == CN::ResultError)
+    if (static_cast<unsigned char>(m_readDataChunk.at(1)) == CN::ResultError)
     {
         if (rdsize < 5) // некорректная посылка
             Finish(Error::Msg::ReadError);
@@ -364,7 +374,8 @@ void ProtocomThread::ParseIncomeData(QByteArray ba)
         case CN::Write::Upgrade:
         case CN::Test:
         {
-            if ((ReadDataChunk.at(1) != CN::ResultOk) || (ReadDataChunk.at(2) != 0x00) || (ReadDataChunk.at(3) != 0x00))
+            if ((m_readDataChunk.at(1) != CN::ResultOk) || (m_readDataChunk.at(2) != 0x00)
+                || (m_readDataChunk.at(3) != 0x00))
             {
                 ERMSG("Ошибка при приеме данных");
                 Finish(Error::Msg::ReadError);
@@ -382,7 +393,8 @@ void ProtocomThread::ParseIncomeData(QByteArray ba)
         case CN::Write::BlkTech:
         case CN::Write::BlkData:
         {
-            if ((ReadDataChunk.at(1) != CN::ResultOk) || (ReadDataChunk.at(2) != 0x00) || (ReadDataChunk.at(3) != 0x00))
+            if ((m_readDataChunk.at(1) != CN::ResultOk) || (m_readDataChunk.at(2) != 0x00)
+                || (m_readDataChunk.at(3) != 0x00))
             {
                 ERMSG("Ошибка при приеме данных");
                 Finish(Error::Msg::ReadError);
@@ -393,7 +405,7 @@ void ProtocomThread::ParseIncomeData(QByteArray ba)
                 Finish(Error::Msg::NoError);
                 return;
             }
-            ReadDataChunk.clear();
+            m_readDataChunk.clear();
             WRCheckForNextSegment(false);
             return;
         }
@@ -450,9 +462,9 @@ void ProtocomThread::ParseIncomeData(QByteArray ba)
             // DWORD crc32;     // контрольная сумма
             // DWORD thetime;	// время создания файла
 
-            quint8 tmpi = ReadDataChunk[5];
+            quint8 tmpi = m_readDataChunk[5];
             quint16 filenum = quint16(tmpi * 256);
-            tmpi = ReadDataChunk[4];
+            tmpi = m_readDataChunk[4];
             filenum += tmpi;
             if (filenum != FNum)
             {
@@ -460,7 +472,7 @@ void ProtocomThread::ParseIncomeData(QByteArray ba)
                 return;
             }
             // вытаскиваем размер файла
-            memcpy(&RDLength, &(ReadDataChunk.data()[8]), sizeof(quint32));
+            memcpy(&RDLength, &(m_readDataChunk.data()[8]), sizeof(quint32));
             RDLength += 16;
             // размер файла должен быть не более 16М
             if (RDLength > CN::Limits::MaxGetFileSize)
@@ -493,7 +505,7 @@ void ProtocomThread::ParseIncomeData(QByteArray ba)
         if (rdsize < ReadDataChunkLength)
             return;
         // убираем заголовок с < и длиной
-        ReadDataChunk.remove(0, 4);
+        m_readDataChunk.remove(0, 4);
         switch (Command)
         {
         case CN::Read::BlkStartInfo:
@@ -507,11 +519,11 @@ void ProtocomThread::ParseIncomeData(QByteArray ba)
         {
             // команды с чтением определённого InDataSize количества байт из
             // устройства
-            ReadDataChunk.truncate(ReadDataChunkLength);
-            OutData.append(ReadDataChunk);
+            m_readDataChunk.truncate(ReadDataChunkLength);
+            OutData.append(m_readDataChunk);
             quint32 outdatasize = OutData.size();
             // сигнал для прогрессбара
-            ReadDataChunk.clear();
+            m_readDataChunk.clear();
             if ((outdatasize >= InDataSize) || (ReadDataChunkLength < CN::Limits::MaxSegmenthLength))
             {
 
@@ -530,11 +542,11 @@ void ProtocomThread::ParseIncomeData(QByteArray ba)
             if (tmpi > RDLength)
                 // копируем только требуемое количество байт
                 ReadDataChunkLength = RDLength - outdatasize;
-            ReadDataChunk.truncate(ReadDataChunkLength);
-            OutData.append(ReadDataChunk);
+            m_readDataChunk.truncate(ReadDataChunkLength);
+            OutData.append(m_readDataChunk);
             outdatasize += ReadDataChunkLength;
 
-            ReadDataChunk.clear();
+            m_readDataChunk.clear();
             if (outdatasize >= RDLength)
             {
                 Finish(Error::Msg::NoError);
@@ -546,7 +558,8 @@ void ProtocomThread::ParseIncomeData(QByteArray ba)
         }
         case CN::Read::Progress:
         {
-            quint16 OscNum = static_cast<quint8>(ReadDataChunk.at(0)) + static_cast<quint8>(ReadDataChunk.at(1)) * 256;
+            quint16 OscNum
+                = static_cast<quint8>(m_readDataChunk.at(0)) + static_cast<quint8>(m_readDataChunk.at(1)) * 256;
             if (OscNum == 100)
             {
                 Finish(Error::Msg::NoError);
@@ -660,6 +673,7 @@ void ProtocomThread::SendFile(unsigned char command, char board_type, int filenu
     ba = OutData;
 }
 
+// FIXME Вынести из Протокома в UsbHidPort
 void ProtocomThread::usbStateChanged(void *message)
 {
 #ifdef _WIN32
@@ -681,20 +695,20 @@ void ProtocomThread::usbStateChanged(void *message)
             break;
         case DBT_DEVICEARRIVAL:
         {
-            DevicesFound();
+            // DevicesFound();
             if (Board::GetInstance().connectionState() == Board::ConnectionState::AboutToFinish)
             {
-                if (m_devices.contains(m_usbWorker->deviceInfo()))
-                {
-                    m_devicePosition = m_devices.indexOf(m_usbWorker->deviceInfo());
-                    m_usbWorker->setDeviceInfo(m_devices.at(m_devicePosition));
-                    qDebug("Device arrived again");
-                    if (!Reconnect())
-                    {
-                        qDebug("Reconnection failed");
-                        Disconnect();
-                    }
-                }
+                //                if (m_devices.contains(m_usbWorker->deviceInfo()))
+                //                {
+                //                    m_devicePosition = m_devices.indexOf(m_usbWorker->deviceInfo());
+                //                    m_usbWorker->setDeviceInfo(m_devices.at(m_devicePosition));
+                //                    qDebug("Device arrived again");
+                //                    if (!Reconnect())
+                //                    {
+                //                        qDebug("Reconnection failed");
+                //                        Disconnect();
+                //                    }
+                //                }
             }
             break;
         }
@@ -710,18 +724,18 @@ void ProtocomThread::usbStateChanged(void *message)
         case DBT_DEVICEREMOVECOMPLETE:
         {
             qDebug("DBT_DEVICEREMOVECOMPLETE");
-            qDebug() << DevicesFound();
+            // qDebug() << DevicesFound();
             if (Board::GetInstance().connectionState() != Board::ConnectionState::Closed)
             {
-                if (!m_devices.contains(m_usbWorker->deviceInfo()))
-                {
-                    qDebug() << "Device " << m_usbWorker->deviceInfo().serial << " removed completely";
-                    WriteData.clear();
-                    OutData.clear();
-                    Finish(Error::Msg::NullDataError);
-                    m_loop.exit();
-                    QMessageBox::critical(nullptr, "Ошибка", "Связь с прибором была разорвана", QMessageBox::Ok);
-                }
+                //                if (!m_devices.contains(m_usbWorker->deviceInfo()))
+                //                {
+                //                    qDebug() << "Device " << m_usbWorker->deviceInfo().serial << " removed
+                //                    completely"; m_writeData.clear(); OutData.clear();
+                //                    Finish(Error::Msg::NullDataError);
+                //                    m_loop.exit();
+                //                    QMessageBox::critical(nullptr, "Ошибка", "Связь с прибором была разорвана",
+                //                    QMessageBox::Ok);
+                //                }
             }
             break;
         }
@@ -740,11 +754,11 @@ void ProtocomThread::usbStateChanged(void *message)
             // прибор
             if (Board::GetInstance().connectionState() == Board::ConnectionState::Connected)
             {
-                if (!m_devices.contains(m_usbWorker->deviceInfo()))
-                {
-                    qDebug() << "Device " << m_usbWorker->deviceInfo().serial << " state changed";
-                    Board::GetInstance().setConnectionState(Board::ConnectionState::AboutToFinish);
-                }
+                //                if (!m_devices.contains(m_usbWorker->deviceInfo()))
+                //                {
+                //                    qDebug() << "Device " << m_usbWorker->deviceInfo().serial << " state changed";
+                //                    Board::GetInstance().setConnectionState(Board::ConnectionState::AboutToFinish);
+                //                }
             }
             break;
         }
@@ -769,49 +783,24 @@ ProtocomThread::~ProtocomThread()
 
 bool ProtocomThread::start(const int &devPos)
 {
+    // FIXME Не реализовано
     if (Board::GetInstance().connectionState() == Board::ConnectionState::Connected
         && Board::GetInstance().interfaceType() == Board::InterfaceType::USB)
         Disconnect();
-    m_usbWorker = new UsbHidPort(m_devices.at(devPos), Log, isWriteUSBLog());
-    m_devicePosition = devPos;
-    QThread *workerThread = new QThread;
-    m_usbWorker->moveToThread(workerThread);
-
-    connect(workerThread, &QThread::started, m_usbWorker, &UsbHidPort::poll);
-    connect(workerThread, &QThread::started, [this] { m_workerStatus = true; });
-    connect(workerThread, &QThread::finished, [this] { m_workerStatus = false; });
-    connect(workerThread, &QThread::finished, workerThread, &QThread::deleteLater);
-    connect(m_usbWorker, &UsbHidPort::finished, workerThread, &QThread::quit);
-    connect(m_usbWorker, &UsbHidPort::finished, m_usbWorker, &UsbHidPort::deleteLater);
-    connect(m_usbWorker, &UsbHidPort::NewDataReceived, this, &ProtocomThread::ParseIncomeData);
-
-    //    QThread *parserThread = new QThread;
-
-    //    connect(parserThread, &QThread::started, [this] { m_parserStatus = true; });
-    //    connect(parserThread, &QThread::finished, [this] { m_parserStatus = false; });
-    //    connect(parserThread, &QThread::finished, parserThread, &QThread::deleteLater);
-
-    if (m_usbWorker->setupConnection() == Error::Msg::NoError
-        && Board::GetInstance().interfaceType() == Board::InterfaceType::USB)
-    {
-        Board::GetInstance().setConnectionState(Board::ConnectionState::Connected);
-        workerThread->start();
-    }
-    else
-        return false;
     return true;
 }
 
 bool ProtocomThread::Reconnect()
 {
-    m_usbWorker->closeConnection();
-    if (m_usbWorker->setupConnection() == Error::Msg::NoError
-        && Board::GetInstance().interfaceType() == Board::InterfaceType::USB)
-    {
-        Board::GetInstance().setConnectionState(Board::ConnectionState::Connected);
-    }
-    else
-        return false;
+    // FIXME Сделать reconnect
+    //    m_usbWorker->closeConnection();
+    //    if (m_usbWorker->setupConnection() == Error::Msg::NoError
+    //        && Board::GetInstance().interfaceType() == Board::InterfaceType::USB)
+    //    {
+    //        Board::GetInstance().setConnectionState(Board::ConnectionState::Connected);
+    //    }
+    //    else
+    //        return false;
     return true;
 }
 
@@ -828,11 +817,6 @@ QByteArray ProtocomThread::RawRead(int bytes)
     return QByteArray();
 }
 
-int ProtocomThread::RawWrite(QByteArray &ba)
-{
-    return m_usbWorker->WriteDataAttempt(ba);
-}
-
 void ProtocomThread::RawClose()
 {
     if (Board::GetInstance().connectionState() != Board::ConnectionState::Closed
@@ -842,44 +826,24 @@ void ProtocomThread::RawClose()
     }
 }
 
-QList<QStringList> ProtocomThread::DevicesFound()
+QList<DeviceConnectStruct> ProtocomThread::DevicesFound(quint16 vid)
 {
     hid_device_info *devs, *cur_dev;
-
+    // Enumerate all, extract only needed
     devs = hid_enumerate(0x0, 0x0);
     cur_dev = devs;
-    QList<QStringList> sl;
-    m_devices.clear();
+    QList<DeviceConnectStruct> sl;
     while (cur_dev)
     {
-
-        if (cur_dev->vendor_id == 0xC251)
+        if (cur_dev->vendor_id == vid)
         {
-            const DeviceConnectStruct buffer(cur_dev->vendor_id, cur_dev->product_id,
-                QString::fromWCharArray(cur_dev->serial_number), QString(cur_dev->path));
+            DeviceConnectStruct buffer { cur_dev->vendor_id, cur_dev->product_id,
+                QString::fromWCharArray(cur_dev->serial_number), QString(cur_dev->path) };
 
-            /*#ifdef __linux__
-                        wstr[0] = 0x0000;
-                        res = hid_get_serial_number_string(handle, wstr, MAX_STR);
-                        if (res < 0)
-                            printf("Unable to read serial number string\n");
-            #endif
-            #ifdef _WIN32
-
-             sn = QString::fromWCharArray(cur_dev->serial_number);
-            #endif*/
-            QStringList tmps { QString::number(buffer.vendor_id, 16), QString::number(buffer.product_id, 16),
-                buffer.serial, buffer.path };
-            sl.append(tmps);
-            m_devices.push_back(buffer);
+            sl.push_back(buffer);
         }
         cur_dev = cur_dev->next;
     }
     hid_free_enumeration(devs);
     return sl;
-}
-
-UsbHidPort *ProtocomThread::usbWorker() const
-{
-    return m_usbWorker;
 }

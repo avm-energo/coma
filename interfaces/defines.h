@@ -28,6 +28,11 @@ namespace Limits
     constexpr byte MaxJournalId = 6;
     // минимальный ИД журналов
     constexpr byte MinJournalId = 4;
+
+    constexpr byte ConfigFileId = 1;
+    constexpr byte FirmwareFileId = 3;
+    constexpr byte SwjFileId = 17;
+    constexpr byte EventFileId = 18;
 } // namespace Limits
 // Канал связи с модулем
 // таймаут по USB в мс
@@ -181,24 +186,17 @@ enum class Commands : byte
 Q_ENUM_NS(Commands)
 } // namespace CN
 
-#define WHV_SIZE_ONEBOARD 17
-#define WHV_SIZE_TWOBOARDS 33
+namespace CN
+{
+constexpr byte WHV_SIZE_ONEBOARD = 17;
+constexpr byte WHV_SIZE_TWOBOARDS = 33;
+}
 
-//#define TECH_Bd0    0   // блок данных с температурой кристалла и напряжением
-//батареи
-#define TECH_Bo 1  // технологический блок осциллограмм
-#define TECH_Be 2  // технологический блок событий
-#define TECH_Bte 3 // технологический блок технологических событий
-#define TECH_SWJ 4 // технологический блок журнала переключений
-#define TECH_RA 5  // технологический блок рабочего архива
-
-#define CM_CONFIGFILE 1
-#define CM_FIRMWAREFILE 3
-#define CM_SWJFILE 17
-#define CM_EVENTSFILE 18
 #define WORK_MODE 0
 #define TUNE_MODE_1000 1
 #define TUNE_MODE_100 2
+
+#define HIDUSB_LOG
 
 struct DeviceConnectStruct
 {
@@ -232,3 +230,16 @@ struct CommandStruct
 // GBsi,ErPg - bitstring,
 // GBac, GBda, GBd,GBt - float,
 // GF - file
+
+//#define TECH_Bd0    0   // блок данных с температурой кристалла и напряжением
+//батареи
+#define TECH_Bo 1  // технологический блок осциллограмм
+#define TECH_Be 2  // технологический блок событий
+#define TECH_Bte 3 // технологический блок технологических событий
+#define TECH_SWJ 4 // технологический блок журнала переключений
+#define TECH_RA 5  // технологический блок рабочего архива
+
+// Получаем номер блока по номеру регистра
+// Количество регистров необхимо для проверки
+const QMap<quint16, QPair<quint8, quint16>> getBlkByReg { { 2420, { 4, 14 } }, { 2400, { 5, 14 } }, { 4501, { 8, 2 } },
+    { 1000, { 2, 16 } }, { 1100, { 3, 16 } }, { 101, { 0, 2 } } };

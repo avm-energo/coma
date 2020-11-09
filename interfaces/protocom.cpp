@@ -1,8 +1,13 @@
 #include "protocom.h"
 
+#include "../gen/board.h"
 #include "../gen/datamanager.h"
 #include "../gen/modulebsi.h"
 #include "defines.h"
+#include "protocomthread.h"
+#include "usbhidport.h"
+
+#include <QThread>
 
 const QMap<Queries::Commands, CN::Commands> Protocom::m_dict { { Queries::Commands::QC_StartFirmwareUpgrade,
                                                                    CN::Commands::WriteUpgrade },
@@ -14,6 +19,37 @@ const QMap<Queries::Commands, CN::Commands> Protocom::m_dict { { Queries::Comman
 
 Protocom::Protocom(QObject *parent) : BaseInterface(parent)
 {
+}
+
+bool Protocom::start(const BaseInterface::ConnectStruct &st)
+{
+    Q_ASSERT(Board::GetInstance().interfaceType() == Board::InterfaceType::USB);
+    UsbHidPort *port = new UsbHidPort(DeviceConnectStruct(), Log, true);
+    ProtocomThread *parser = new ProtocomThread(this);
+
+    QThread *portThread = new QThread;
+    QThread *parseThread = new QThread;
+
+    port->moveToThread(portThread);
+    parser->moveToThread(parseThread);
+
+    // FIXME Разобраться с удалением и закрытием потоков
+    connect(portThread, &QThread::started, port, &UsbHidPort::poll);
+    connect(parseThread, &QThread::started, parser, &ProtocomThread::parse);
+
+    connect(port, &UsbHidPort::finished, portThread, &QThread::quit);
+    connect(port, &UsbHidPort::finished, portThread, &QThread::deleteLater);
+    connect(port, &UsbHidPort::finished, port, &UsbHidPort::deleteLater);
+
+    connect(port, &UsbHidPort::NewDataReceived, parser, &ProtocomThread::appendReadDataChunk);
+
+    if (port->setupConnection() != Error::Msg::NoError)
+        return false;
+
+    Board::GetInstance().setConnectionState(Board::ConnectionState::Connected);
+    portThread->start();
+    parseThread->start();
+    return true;
 }
 
 void Protocom::reqTime()

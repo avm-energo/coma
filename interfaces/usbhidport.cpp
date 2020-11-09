@@ -13,6 +13,9 @@
 #include <QThread>
 #include <array>
 
+// TODO Придумать вариант получше
+#define IN 1
+#define OUT 0
 void appendSize(QByteArray &ba, int size)
 {
     char byte = static_cast<char>(size % 0x100);
@@ -37,7 +40,7 @@ void checkForNextSegment(QByteArray &ba)
 }
 
 UsbHidPort::UsbHidPort(const DeviceConnectStruct &dev, LogClass *logh, bool writelog, QObject *parent)
-    : QObject(parent), log(logh), WriteUSBLog(writelog), m_deviceInfo(dev)
+    : QObject(parent), log(logh), m_deviceInfo(dev)
 {
     HidDevice = nullptr;
 }
@@ -52,7 +55,7 @@ Error::Msg UsbHidPort::setupConnection()
     {
         ERMSG("DeviceInfo is null");
         Finish();
-        return Error::Msg::GeneralError;
+        return Error::Msg::NoDeviceError;
     }
 #ifdef __linux__
     HidDevice = hid_open_path(deviceInfo().path.toStdString().c_str());
@@ -236,10 +239,9 @@ void UsbHidPort::setDeviceInfo(DeviceConnectStruct deviceInfo)
     m_deviceInfo = deviceInfo;
 }
 
-int UsbHidPort::WriteDataAttempt(QByteArray &ba)
+void UsbHidPort::WriteDataAttempt(QByteArray &ba)
 {
     WriteQueue.append(ba);
-    return ba.size();
 }
 
 void UsbHidPort::closeConnection()
@@ -263,34 +265,47 @@ void UsbHidPort::Finish()
     emit finished();
 }
 
-Error::Msg UsbHidPort::WriteData(QByteArray &ba)
+void UsbHidPort::writeLog(bool in_out, QByteArray ba)
+{
+#ifdef HIDUSB_LOG
+    QByteArray tmpba = QByteArray(metaObject()->className());
+    if (in_out)
+        tmpba.append(": <-");
+    else
+        tmpba.append(": ->");
+    tmpba.append(ba).append("\n");
+    log->WriteRaw(tmpba);
+#endif
+}
+
+bool UsbHidPort::WriteData(QByteArray &ba)
 {
     if (HidDevice)
     {
         if (ba.size() > HID::MaxSegmenthLength)
         {
-            if (WriteUSBLog)
-                log->WriteRaw("UsbThread: WRONG SEGMENT LENGTH!\n");
-            qCritical() << "Длина сегмента больше " << QString::number(HID::MaxSegmenthLength) << " байт";
-            return Error::Msg::SizeError;
+            writeLog(OUT, Error::Msg::SizeError);
+            qCritical() << Error::Msg::SizeError;
+            return false;
         }
         if (ba.size() < HID::MaxSegmenthLength)
             ba.append(HID::MaxSegmenthLength - ba.size(), static_cast<char>(0x00));
         ba.prepend(static_cast<char>(0x00)); // inserting ID field
-        if (WriteUSBLog)
-        {
-            QByteArray tmpba = "UsbThread: ->" + ba.toHex() + "\n";
-            log->WriteRaw(tmpba);
-        }
+
+        writeLog(OUT, ba.toHex());
+
         size_t tmpt = static_cast<size_t>(ba.size());
         if (hid_write(HidDevice, reinterpret_cast<unsigned char *>(ba.data()), tmpt) != -1)
-            return Error::Msg::NoError;
-        else
-            return Error::Msg::WriteError;
+            return true;
+
+        qCritical() << Error::Msg::WriteError;
+        return false;
     }
-    if (log != nullptr)
-        log->WriteRaw("UsbThread: null hid device");
-    return Error::Msg::NoDeviceError;
+
+    writeLog(OUT, Error::Msg::NoDeviceError);
+    qCritical() << Error::Msg::NoDeviceError;
+
+    return false;
 }
 
 void UsbHidPort::CheckWriteQueue()

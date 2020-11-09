@@ -10,7 +10,7 @@ namespace HID
 constexpr unsigned VID = 0xC251;
 constexpr unsigned PID = 0x3505;
 // максимальная длина одного сегмента (0x40)
-constexpr unsigned MaxSegmenthLength = 64;
+constexpr int MaxSegmenthLength = 64;
 // 20 ms main loop sleep
 constexpr unsigned MainLoopDelay = 20;
 
@@ -26,7 +26,7 @@ public:
     LogClass *log;
 
     Error::Msg setupConnection();
-    int WriteDataAttempt(QByteArray &ba);
+    void WriteDataAttempt(QByteArray &ba);
 
     void closeConnection();
 
@@ -45,8 +45,11 @@ public slots:
 
 private:
     hid_device *HidDevice;
-
-    bool WriteUSBLog;
+    void writeLog(bool in_out, QByteArray ba);
+    void writeLog(bool in_out, Error::Msg msg)
+    {
+        writeLog(in_out, QVariant::fromValue(msg).toByteArray());
+    }
 
     QMutex mutex_;
     QList<QByteArray> WriteQueue;
@@ -55,7 +58,7 @@ private:
     QPair<quint64, QByteArray> m_buffer;
     void handle(const CN::Commands cmd);
 
-    Error::Msg WriteData(QByteArray &ba);
+    bool WriteData(QByteArray &ba);
 
     CommandStruct m_currentCommand;
     void CheckWriteQueue();

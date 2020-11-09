@@ -24,12 +24,12 @@ public:
     void reqFloats(quint32 sigAdr, quint32 sigCount) override;
 
 private:
-    // Return 0 if not exists
+    // Return 0 if not exist
     static CN::Commands translate(const Queries::Commands cmd)
     {
         return m_dict.value(cmd);
     }
-    // Return 0 if not exists
+    // Return 0 if not exist
     static Queries::Commands translate(const CN::Commands cmd)
     {
         return m_dict.key(cmd);

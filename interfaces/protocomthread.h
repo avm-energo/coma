@@ -4,19 +4,20 @@
 #include "usbhidport.h"
 
 #include <QEventLoop>
+#include <QReadWriteLock>
 #include <QTimer>
 class ProtocomThread : public QObject
 {
     Q_OBJECT
 public:
-    explicit ProtocomThread(QWidget *parent = nullptr);
+    explicit ProtocomThread(QObject *parent = nullptr);
     ~ProtocomThread();
 
     bool Connect(int devicePosition);
     bool Reconnect();
     void Disconnect();
 
-    QList<QStringList> DevicesFound();
+    static QList<DeviceConnectStruct> DevicesFound(quint16 vid = 0xC251);
 
     UsbHidPort *usbWorker() const;
     bool start(const int &devPos);
@@ -46,11 +47,12 @@ public:
         return m_parserStatus;
     };
 
+    void setReadDataChunk(const QByteArray &readDataChunk);
+    void appendReadDataChunk(const QByteArray &readDataChunk);
+
+    void parse();
+
 private:
-    static bool m_writeUSBLog;
-
-    UsbHidPort *m_usbWorker;
-
     bool m_workerStatus, m_parserStatus;
 
     char BoardType;
@@ -68,10 +70,10 @@ private:
     // bool LastBlock; // признак того, что блок последний, и больше запрашивать не надо
 
     QByteArray InData, OutData;
-    QByteArray ReadDataChunk;
-    QByteArray WriteData;
+    QByteArray m_readDataChunk;
+    QByteArray m_writeData;
     //    QString m_deviceName;
-    QVector<DeviceConnectStruct> m_devices;
+    static QVector<DeviceConnectStruct> m_devices;
 
     QTimer *OscTimer;
     QTimer *m_waitTimer;
@@ -94,13 +96,15 @@ private:
     void OscTimerTimeout();
     void ParseIncomeData(QByteArray ba);
     QByteArray RawRead(int bytes);
-    int RawWrite(QByteArray &ba);
     void RawClose();
 
     LogClass *Log;
+
+    QReadWriteLock m_rwLocker;
 
 signals:
 
     void ShowError(QString message);
     void QueryFinished();
+    void writeDataAttempt(const QByteArray);
 };
