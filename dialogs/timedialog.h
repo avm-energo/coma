@@ -1,7 +1,7 @@
 #ifndef MNKTIME_H
 #define MNKTIME_H
 
-#include "../gen/udialog.h"
+#include "../widgets/udialog.h"
 //#include "../iec104/iec104.h"
 #include "../interfaces/modbus.h"
 
@@ -34,7 +34,7 @@ public slots:
     //    void USBUpdate();
     //    void MBSUpdate();
     //    void ETHUpdate();
-    void update();
+    void reqUpdate();
 
 private slots:
 

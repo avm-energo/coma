@@ -45,17 +45,17 @@ CheckKDVVibrDialog::CheckKDVVibrDialog(QWidget *parent) : AbstractCheckDialog(pa
     Timer->setInterval(ANMEASINT);
 }
 
-void CheckKDVVibrDialog::SetWarnColor(int position, bool value)
-{
-    Q_UNUSED(position)
-    Q_UNUSED(value)
-}
+// void CheckKDVVibrDialog::SetWarnColor(int position, bool value)
+//{
+//    Q_UNUSED(position)
+//    Q_UNUSED(value)
+//}
 
-void CheckKDVVibrDialog::SetAlarmColor(int position, bool value)
-{
-    Q_UNUSED(position)
-    Q_UNUSED(value)
-}
+// void CheckKDVVibrDialog::SetAlarmColor(int position, bool value)
+//{
+//    Q_UNUSED(position)
+//    Q_UNUSED(value)
+//}
 
 QWidget *CheckKDVVibrDialog::BdUI(int bdnum)
 {
@@ -74,7 +74,10 @@ QWidget *CheckKDVVibrDialog::BdUI(int bdnum)
     }
 }
 
-void CheckKDVVibrDialog::PrepareHeadersForFile(int row) { Q_UNUSED(row) }
+void CheckKDVVibrDialog::PrepareHeadersForFile(int row)
+{
+    Q_UNUSED(row)
+}
 
 void CheckKDVVibrDialog::WriteToFile(int row, int bdnum)
 {
@@ -82,9 +85,9 @@ void CheckKDVVibrDialog::WriteToFile(int row, int bdnum)
     Q_UNUSED(bdnum)
 }
 
-void CheckKDVVibrDialog::ChooseValuesToWrite() { }
-void CheckKDVVibrDialog::SetDefaultValuesToWrite() { }
-void CheckKDVVibrDialog::PrepareAnalogMeasurements() { }
+// void CheckKDVVibrDialog::ChooseValuesToWrite() { }
+// void CheckKDVVibrDialog::SetDefaultValuesToWrite() { }
+// void CheckKDVVibrDialog::PrepareAnalogMeasurements() { }
 
 // void CheckKDVVibrDialog::USBUpdate()
 //{
@@ -108,21 +111,24 @@ void CheckKDVVibrDialog::PrepareAnalogMeasurements() { }
 //    }
 //}
 
-void CheckKDVVibrDialog::updateFloatData()
-{
-    QList<DataTypes::SignalsStruct> list;
-    DataManager::getSignals(0, 99999, DataTypes::SignalTypes::FloatWithTime, list);
-    if (!list.isEmpty())
-    {
-        foreach (DataTypes::SignalsStruct signal, list)
-        {
-            DataTypes::FloatWithTimeStruct fwt = qvariant_cast<DataTypes::FloatWithTimeStruct>(signal.data);
-            ChVibrKDV->FillBd(this, QString::number(fwt.sigAdr), WDFunc::StringValueWithCheck(fwt.sigVal, 3));
-        }
-    }
-}
+// void CheckKDVVibrDialog::updateFloatData()
+//{
+//    QList<DataTypes::SignalsStruct> list;
+//    DataManager::getSignals(0, 99999, DataTypes::SignalTypes::FloatWithTime, list);
+//    if (!list.isEmpty())
+//    {
+//        foreach (DataTypes::SignalsStruct signal, list)
+//        {
+//            DataTypes::FloatWithTimeStruct fwt = qvariant_cast<DataTypes::FloatWithTimeStruct>(signal.data);
+//            ChVibrKDV->FillBd(this, QString::number(fwt.sigAdr), WDFunc::StringValueWithCheck(fwt.sigVal, 3));
+//        }
+//    }
+//}
 
-void CheckKDVVibrDialog::update() { updateFloatData(); }
+// void CheckKDVVibrDialog::reqUpdate()
+//{
+//    updateFloatData();
+//}
 
 // void CheckKDVVibrDialog::UpdateModBusData(QList<ModBus::SignalStruct> Signal)
 //{

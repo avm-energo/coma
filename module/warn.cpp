@@ -1,12 +1,15 @@
 #include "warn.h"
 
+#include "../gen/datamanager.h"
 #include "../widgets/wd_func.h"
 
 #include <QVBoxLayout>
 #include <QtDebug>
 
-Warn::Warn(QWidget *parent) : QWidget(parent)
+Warn::Warn(QWidget *parent) : UWidget(parent)
 {
+    m_actualWarnFlags = 0x0000;
+    connect(&DataManager::GetInstance(), &DataManager::singlePointReceived, this, &Warn::updateSpData);
 }
 
 int Warn::realWarnSize()
@@ -31,15 +34,40 @@ void Warn::showEvent(QShowEvent *e)
 
 void Warn::updatePixmap(bool isset, int position)
 {
-    if (isset)
+    auto pixmap = WDFunc::NewCircle((isset) ? Qt::yellow : Qt::green, CIRCLE_RADIUS);
+    WDFunc::SetLBLImage(this, (QString::number(position)), &pixmap);
+    m_actualWarnFlags[position] = isset;
+    emit updateWarn(m_actualWarnFlags != 0x0000);
+    //    emit updateWarn(position, isset);
+    //    if (isset)
+    //    {
+    //        auto pixmap = WDFunc::NewCircle(Qt::yellow, CIRCLE_RADIUS);
+    //        WDFunc::SetLBLImage(this, (QString::number(position)), &pixmap);
+    //    }
+    //    else
+    //    {
+    //        auto pixmap = WDFunc::NewCircle(Qt::green, CIRCLE_RADIUS);
+    //        WDFunc::SetLBLImage(this, (QString::number(position)), &pixmap);
+    //    }
+}
+
+void Warn::updateSpData(DataTypes::SinglePointWithTimeStruct &sp)
+{
+    bool warnFlag = false; // warning flag
+    quint32 minAddress = m_startWarnAddress;
+    quint32 maxAddress = m_startWarnAddress + 31; // only 32 bits
+    if ((sp.sigAdr >= minAddress) && (sp.sigAdr <= maxAddress))
     {
-        auto pixmap = WDFunc::NewCircle(Qt::yellow, CIRCLE_RADIUS);
-        WDFunc::SetLBLImage(this, (QString::number(position)), &pixmap);
-    }
-    else
-    {
-        auto pixmap = WDFunc::NewCircle(Qt::green, CIRCLE_RADIUS);
-        WDFunc::SetLBLImage(this, (QString::number(position)), &pixmap);
+        int index = sp.sigAdr - minAddress;
+        quint8 sigval = sp.sigVal;
+        if (!(sigval & 0x80))
+        {
+            if (m_warnFlags[index])
+            {
+                warnFlag = true;
+                updatePixmap(sigval & 0x00000001, index);
+            }
+        }
     }
 }
 

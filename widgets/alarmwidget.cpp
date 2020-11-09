@@ -8,7 +8,7 @@
 #include <QGroupBox>
 #include <QMenu>
 #include <QtCore>
-AlarmWidget::AlarmWidget(QWidget *parent) : QWidget(parent)
+AlarmWidget::AlarmWidget(QWidget *parent) : UWidget(parent)
 {
     //    Alarm = alarm;
 
@@ -70,79 +70,107 @@ void AlarmWidget::UpdateIndicator(bool indx)
     WDFunc::SetVisible(this, "953", true);
 }
 
-void AlarmWidget::update(bool w, bool a)
-{
-    UpdateFirstUSB();
-    UpdateSecondUSB(w);
-    UpdateThirdUSB(a);
-}
+// void AlarmWidget::update(bool w, bool a)
+//{
+//    UpdateFirstUSB();
+//    UpdateSecondUSB(w);
+//    UpdateThirdUSB(a);
+//}
 
-// void AlarmWidget::UpdateSecondUSB(QList<bool> warnalarm)
-void AlarmWidget::UpdateSecondUSB(bool warn)
+void AlarmWidget::updateWarn(bool isset)
 {
-    //    // int i;
-    //    int alarm = 0;
-
-    //    // for(i=0; i<warnalarmcount.size(); i++)
-    //    foreach (bool item, warnalarm)
-    //    {
-    //        if (item == true)
-    //        {
-    //            alarm++;
-    //            break;
-    //        }
-    //    }
-    auto pixmap = WDFunc::NewCircle((warn) ? Qt::yellow : Qt::green, this->height() / 4);
+    auto pixmap = WDFunc::NewCircle((isset) ? Qt::yellow : Qt::green, this->height() / 4);
     WDFunc::SetLBLImage(this, "951", &pixmap);
     WDFunc::SetVisible(this, "951", true);
 }
 
-// void AlarmWidget::UpdateThirdUSB(QList<bool> avar)
-void AlarmWidget::UpdateThirdUSB(bool alarm)
+void AlarmWidget::updateAlarm(bool isset)
 {
-    //    int alarm = 0;
-
-    //    //     for(i=0; i<alarmcount.size(); i++)
-    //    //    if(std::any_of(avar.constBegin(),avar.constEnd(),[](const bool state){return state;}))
-    //    //        alarm++;
-    //    foreach (bool item, avar)
-    //    {
-    //        if (item == true)
-    //        {
-    //            alarm++;
-    //            break;
-    //        }
-    //    }
-    auto pixmap = WDFunc::NewCircle((alarm) ? Qt::red : Qt::green, this->height() / 4);
+    auto pixmap = WDFunc::NewCircle((isset) ? Qt::red : Qt::green, this->height() / 4);
     WDFunc::SetLBLImage(this, "952", &pixmap);
     WDFunc::SetVisible(this, "952", true);
 }
 
-void AlarmWidget::UpdateFirstUSB()
+void AlarmWidget::updateMain(bool isset)
 {
     Qt::GlobalColor color;
     if (ModuleBSI::ModuleBsi.Hth & BSIALARMMASK)
         color = Qt::red;
-    //    {
-    //        auto pixmap = WDFunc::NewCircle(Qt::red, this->height() / 4);
-    //        WDFunc::SetLBLImage(this, "950", &pixmap);
-    //        WDFunc::SetVisible(this, "950", true);
-    //    }
     else if (ModuleBSI::ModuleBsi.Hth & BSIWARNMASK)
         color = Qt::yellow;
-    //    {
-    //        auto pixmap = WDFunc::NewCircle(Qt::yellow, this->height() / 4);
-    //        WDFunc::SetLBLImage(this, "950", &pixmap);
-    //        WDFunc::SetVisible(this, "950", true);
-    //    }
     else
         color = Qt::green;
-    //    {
     auto pixmap = WDFunc::NewCircle(color, this->height() / 4);
     WDFunc::SetLBLImage(this, "950", &pixmap);
     WDFunc::SetVisible(this, "950", true);
-    //    }
 }
+
+// void AlarmWidget::UpdateSecondUSB(QList<bool> warnalarm)
+// void AlarmWidget::UpdateSecondUSB(bool warn)
+//{
+//    //    // int i;
+//    //    int alarm = 0;
+
+//    //    // for(i=0; i<warnalarmcount.size(); i++)
+//    //    foreach (bool item, warnalarm)
+//    //    {
+//    //        if (item == true)
+//    //        {
+//    //            alarm++;
+//    //            break;
+//    //        }
+//    //    }
+//    auto pixmap = WDFunc::NewCircle((warn) ? Qt::yellow : Qt::green, this->height() / 4);
+//    WDFunc::SetLBLImage(this, "951", &pixmap);
+//    WDFunc::SetVisible(this, "951", true);
+//}
+
+// void AlarmWidget::UpdateThirdUSB(QList<bool> avar)
+// void AlarmWidget::UpdateThirdUSB(bool alarm)
+//{
+//    //    int alarm = 0;
+
+//    //    //     for(i=0; i<alarmcount.size(); i++)
+//    //    //    if(std::any_of(avar.constBegin(),avar.constEnd(),[](const bool state){return state;}))
+//    //    //        alarm++;
+//    //    foreach (bool item, avar)
+//    //    {
+//    //        if (item == true)
+//    //        {
+//    //            alarm++;
+//    //            break;
+//    //        }
+//    //    }
+//    auto pixmap = WDFunc::NewCircle((alarm) ? Qt::red : Qt::green, this->height() / 4);
+//    WDFunc::SetLBLImage(this, "952", &pixmap);
+//    WDFunc::SetVisible(this, "952", true);
+//}
+
+// void AlarmWidget::UpdateFirstUSB()
+//{
+//    Qt::GlobalColor color;
+//    if (ModuleBSI::ModuleBsi.Hth & BSIALARMMASK)
+//        color = Qt::red;
+//    //    {
+//    //        auto pixmap = WDFunc::NewCircle(Qt::red, this->height() / 4);
+//    //        WDFunc::SetLBLImage(this, "950", &pixmap);
+//    //        WDFunc::SetVisible(this, "950", true);
+//    //    }
+//    else if (ModuleBSI::ModuleBsi.Hth & BSIWARNMASK)
+//        color = Qt::yellow;
+//    //    {
+//    //        auto pixmap = WDFunc::NewCircle(Qt::yellow, this->height() / 4);
+//    //        WDFunc::SetLBLImage(this, "950", &pixmap);
+//    //        WDFunc::SetVisible(this, "950", true);
+//    //    }
+//    else
+//        color = Qt::green;
+//    //    {
+//    auto pixmap = WDFunc::NewCircle(color, this->height() / 4);
+//    WDFunc::SetLBLImage(this, "950", &pixmap);
+//    WDFunc::SetVisible(this, "950", true);
+//    //    }
+//}
 
 void AlarmWidget::Clear()
 {

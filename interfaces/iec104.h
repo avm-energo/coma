@@ -115,16 +115,17 @@ public:
     //        QList<DataManager::SignalsStruct> &outlist);
 
 public slots:
-    void reqStartup(quint32 sigAdr = 0, quint32 sigCount = 0);
-    void reqBSI();
+    void reqStartup(quint32 sigAdr = 0, quint32 sigCount = 0) override;
+    void reqBSI() override;
     void reqAlarms(quint32 sigAdr = 0, quint32 sigCount = 0);
-    void reqFile(quint32 filenum, bool isConfigFile);
-    void writeFile(quint32 filenum, const QByteArray &file);
-    void writeConfigFile(S2ConfigType *s2config);
-    void reqTime();
-    void writeTime(quint32 time);
-    void writeCommand(Queries::Commands cmd, QList<DataTypes::SignalsStruct> list = QList<DataTypes::SignalsStruct>());
-    void reqFloats(quint32 sigAdr = 0, quint32 sigCount = 0);
+    void reqFile(quint32 filenum, bool isConfigFile) override;
+    void writeFile(quint32 filenum, const QByteArray &file) override;
+    void writeConfigFile(S2ConfigType *s2config) override;
+    void reqTime() override;
+    void writeTime(quint32 time) override;
+    void writeCommand(
+        Queries::Commands cmd, QList<DataTypes::SignalsStruct> list = QList<DataTypes::SignalsStruct>()) override;
+    void reqFloats(quint32 sigAdr = 0, quint32 sigCount = 0) override;
     //    void reqBitStrings(quint32 sigAdr = 0, quint32 sigCount = 0);
 
     //    static void SelectFile(char);

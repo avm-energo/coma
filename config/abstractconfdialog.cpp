@@ -19,13 +19,14 @@
 
 AbstractConfDialog::AbstractConfDialog(QWidget *parent) : UDialog(parent)
 {
-}
-
-void AbstractConfDialog::setConnections()
-{
     connect(&DataManager::GetInstance(), &DataManager::confParametersReceived, this,
         &AbstractConfDialog::confParameterReceived);
+    connect(&DataManager::GetInstance(), &DataManager::responseReceived, this, &AbstractConfDialog::WriteConfMessageOk);
 }
+
+// void AbstractConfDialog::setConnections()
+//{
+//}
 
 void AbstractConfDialog::ReadConf()
 {
@@ -204,7 +205,7 @@ QWidget *AbstractConfDialog::ConfButtons()
     QGridLayout *wdgtlyout = new QGridLayout;
     QString tmps = ((DEVICETYPE == DEVICETYPE_MODULE) ? "модуля" : "прибора");
     QPushButton *pb = new QPushButton("Прочитать из " + tmps);
-    connect(pb, &QAbstractButton::clicked, this, &AbstractConfDialog::ButtonReadConf);
+    connect(pb, &QAbstractButton::clicked, this, &AbstractConfDialog::ReadConf);
     if (StdFunc::IsInEmulateMode())
         pb->setEnabled(false);
     wdgtlyout->addWidget(pb, 0, 0, 1, 1);
@@ -230,33 +231,33 @@ QWidget *AbstractConfDialog::ConfButtons()
     return wdgt;
 }
 
-void AbstractConfDialog::ButtonReadConf()
-{
-    ReadConf();
-    //    switch (Board::GetInstance().interfaceType())
-    //    {
-    //    case Board::InterfaceType::Ethernet:
-    //    {
-    //        //        if ((ModuleBSI::Health() & HTH_CONFIG) || (StdFunc::IsInEmulateMode())) // если в модуле нет
-    //        //        конфигурации,
-    //        if ((ModuleBSI::noConfig()) || (StdFunc::IsInEmulateMode())) // если в модуле нет конфигурации,
-    //                                                                     // заполнить поля по умолчанию
-    //            emit DefConfToBeLoaded();
-    //        else // иначе заполнить значениями из модуля
-    //            emit ReadConfig(1);
-    //        break;
-    //    }
-    //    case Board::InterfaceType::USB:
-    //    {
-    //        Error::Msg res = ModuleBSI::PrereadConf(this, S2Config);
-    //        if (res == Error::Msg::ResEmpty)
-    //            emit DefConfToBeLoaded();
-    //        else if (res == Error::Msg::NoError)
-    //            emit NewConfToBeLoaded();
-    //        break;
-    //    }
-    //    }
-}
+// void AbstractConfDialog::ButtonReadConf()
+//{
+//    ReadConf();
+//    switch (Board::GetInstance().interfaceType())
+//    {
+//    case Board::InterfaceType::Ethernet:
+//    {
+//        //        if ((ModuleBSI::Health() & HTH_CONFIG) || (StdFunc::IsInEmulateMode())) // если в модуле нет
+//        //        конфигурации,
+//        if ((ModuleBSI::noConfig()) || (StdFunc::IsInEmulateMode())) // если в модуле нет конфигурации,
+//                                                                     // заполнить поля по умолчанию
+//            emit DefConfToBeLoaded();
+//        else // иначе заполнить значениями из модуля
+//            emit ReadConfig(1);
+//        break;
+//    }
+//    case Board::InterfaceType::USB:
+//    {
+//        Error::Msg res = ModuleBSI::PrereadConf(this, S2Config);
+//        if (res == Error::Msg::ResEmpty)
+//            emit DefConfToBeLoaded();
+//        else if (res == Error::Msg::NoError)
+//            emit NewConfToBeLoaded();
+//        break;
+//    }
+//    }
+//}
 
 void AbstractConfDialog::PrereadConf()
 {
@@ -293,7 +294,7 @@ bool AbstractConfDialog::PrepareConfToWrite()
 {
     FillBack();
     CheckConfErrors.clear();
-    // CheckConf();
+    CheckConf();
     if (!CheckConfErrors.isEmpty())
     {
         QDialog *dlg = new QDialog;
@@ -313,9 +314,10 @@ bool AbstractConfDialog::PrepareConfToWrite()
     return true;
 }
 
-void AbstractConfDialog::WriteConfMessageOk()
+void AbstractConfDialog::WriteConfMessageOk(DataTypes::GeneralResponseStruct &rsp)
 {
-    QMessageBox::information(this, "Внимание", "Запись конфигурации и переход прошли успешно!");
+    if (rsp.type == DataTypes::GeneralResponseTypes::Ok)
+        QMessageBox::information(this, "Внимание", "Запись конфигурации и переход прошли успешно!");
 }
 
 // void AbstractConfDialog::update()

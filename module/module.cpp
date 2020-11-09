@@ -13,10 +13,10 @@
 #include "../dialogs/infodialog.h"
 #include "../dialogs/journalsdialog.h"
 #include "../dialogs/timedialog.h"
-#include "../gen/udialog.h"
 #include "../startup/startupkdvdialog.h"
 #include "../startup/startupkivdialog.h"
 #include "../startup/startupktfdialog.h"
+#include "../widgets/udialog.h"
 #ifdef AVM_DEBUG
 //#include "../tune/kiv/tunekdvdialog.h"
 #include "../tune/kiv/tunekivdialog.h"
@@ -38,7 +38,7 @@ Module::Module(QObject *parent) : QObject(parent)
     m_oldTabIndex = m_currentTabIndex = 0;
 }
 
-Module *Module::createModule(QTimer *updateTimer, BaseInterface *iface)
+Module *Module::createModule(QTimer *updateTimer, BaseInterface *iface, AlarmWidget *aw)
 {
     Journals *JOUR;
     Module *m = new Module;
@@ -89,8 +89,8 @@ Module *Module::createModule(QTimer *updateTimer, BaseInterface *iface)
             m->addDialogToList(new StartupKIVDialog, "Начальные значения");
             m->m_warn = new WarnKIV;
             m->m_alarm = new AlarmKIV;
-            connect(m->m_warn, &Warn::updateWarn, cdkiv, &AbstractCheckDialog::SetWarnColor);
-            connect(m->m_alarm, &Alarm::updateAlarm, cdkiv, &AbstractCheckDialog::SetAlarmColor);
+            //            connect(m->m_warn, &Warn::updateWarn, cdkiv, &AbstractCheckDialog::SetWarnColor);
+            //            connect(m->m_alarm, &Alarm::updateAlarm, cdkiv, &AbstractCheckDialog::SetAlarmColor);
         }
         case Board::DeviceModel::KTF:
         {
@@ -107,8 +107,8 @@ Module *Module::createModule(QTimer *updateTimer, BaseInterface *iface)
             m->addDialogToList(new CheckKTFHarmonicDialog, "Гармоники");
             m->m_warn = new WarnKTF;
             m->m_alarm = new AlarmKTF;
-            connect(m->m_warn, &Warn::updateWarn, cdktf, &AbstractCheckDialog::SetWarnColor);
-            connect(m->m_alarm, &Alarm::updateAlarm, cdktf, &AbstractCheckDialog::SetAlarmColor);
+            //            connect(m->m_warn, &Warn::updateWarn, cdktf, &AbstractCheckDialog::SetWarnColor);
+            //            connect(m->m_alarm, &Alarm::updateAlarm, cdktf, &AbstractCheckDialog::SetAlarmColor);
             break;
         }
         case Board::DeviceModel::KDV:
@@ -129,8 +129,8 @@ Module *Module::createModule(QTimer *updateTimer, BaseInterface *iface)
             //            connect(BdaTimer, &QTimer::timeout, VibrDialog, &AbstractCheckDialog::USBUpdate);
             m->m_warn = new WarnKDV;
             m->m_alarm = new AlarmKDV;
-            connect(m->m_warn, &Warn::updateWarn, cdkdv, &AbstractCheckDialog::SetWarnColor);
-            connect(m->m_alarm, &Alarm::updateAlarm, cdkdv, &AbstractCheckDialog::SetAlarmColor);
+            //            connect(m->m_warn, &Warn::updateWarn, cdkdv, &AbstractCheckDialog::SetWarnColor);
+            //            connect(m->m_alarm, &Alarm::updateAlarm, cdkdv, &AbstractCheckDialog::SetAlarmColor);
             break;
         }
         default:
@@ -153,10 +153,16 @@ Module *Module::createModule(QTimer *updateTimer, BaseInterface *iface)
     QList<UDialog *> dlgs = m->dialogs();
     foreach (UDialog *d, dlgs)
     {
-        connect(updateTimer, &QTimer::timeout, d, &UDialog::update);
+        connect(updateTimer, &QTimer::timeout, d, &UDialog::reqUpdate);
         d->setUpdatesDisabled();
         d->setInterface(m->m_iface);
     }
+    connect(aw, &AlarmWidget::AlarmButtonPressed, m->m_alarmStateAllDialog, &QDialog::show);
+    connect(aw, &AlarmWidget::ModuleWarnButtonPressed, m->m_warn, &QDialog::show);
+    connect(aw, &AlarmWidget::ModuleAlarmButtonPressed, m->m_alarm, &QDialog::show);
+    connect(m->m_warn, &Warn::updateWarn, aw, &AlarmWidget::updateWarn);
+    connect(m->m_alarm, &Alarm::updateAlarm, aw, &AlarmWidget::updateAlarm);
+    connect(m->m_alarmStateAllDialog, &AlarmStateAll::BSIUpdated, aw, &AlarmWidget::updateMain);
     return m;
 }
 
@@ -205,15 +211,25 @@ void Module::parentTWTabClicked(int index)
         return;
     m_currentTabIndex = index;
 
-    QDialog *dlg = m_dialogs.at(m_oldTabIndex);
-    UDialog *udlg = qobject_cast<UDialog *>(dlg);
-    if (udlg)
-        udlg->setUpdatesDisabled();
-    dlg = m_dialogs.at(m_currentTabIndex);
-    udlg = qobject_cast<UDialog *>(dlg);
-    if (udlg)
-        udlg->setUpdatesEnabled();
-    udlg->update();
+    if (m_oldTabIndex >= m_dialogs.size())
+    {
+        DBGMSG("BdUIList size");
+        return;
+    }
+    UDialog *udlg = m_dialogs.at(m_oldTabIndex);
+    //    UDialog *udlg = qobject_cast<UDialog *>(dlg);
+    //    if (udlg)
+    udlg->setUpdatesDisabled();
+    if (m_currentTabIndex >= m_dialogs.size())
+    {
+        DBGMSG("BdUIList size");
+        return;
+    }
+    udlg = m_dialogs.at(m_currentTabIndex);
+    //    udlg = qobject_cast<UDialog *>(dlg);
+    //    if (udlg)
+    udlg->setUpdatesEnabled();
+    udlg->reqUpdate();
     m_oldTabIndex = m_currentTabIndex;
 }
 

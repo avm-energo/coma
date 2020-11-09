@@ -131,37 +131,37 @@ void StartupKTFDialog::GetCorBd()
         }
     }
 }
-void StartupKTFDialog::GetCorBdButton()
-{
-    switch (Board::GetInstance().interfaceType())
-    {
-    case Board::InterfaceType::USB:
-        // if (MainInterface == I_USB)
-        {
-            if (Commands::GetBd(9, Bd9Block, sizeof(Bd9)) == Error::Msg::NoError)
-            {
-                FillCor();
-                QMessageBox::information(this, "INFO", "Прочитано успешно");
-            }
-            break;
-        }
-    case Board::InterfaceType::RS485:
-        // else if (MainInterface == I_RS485)
-        {
-            ModBus::Information info;
-            info.size = (sizeof(Bd9) / 4);
-            info.adr = 4000;
-            emit RS485ReadCorBd(info);
-            break;
-        }
-    case Board::InterfaceType::Ethernet:
-        // else if (MainInterface == I_ETHERNET)
-        {
-            emit CorReadRequest();
-            break;
-        }
-    }
-}
+// void StartupKTFDialog::GetCorBdButton()
+//{
+//    switch (Board::GetInstance().interfaceType())
+//    {
+//    case Board::InterfaceType::USB:
+//        // if (MainInterface == I_USB)
+//        {
+//            if (Commands::GetBd(9, Bd9Block, sizeof(Bd9)) == Error::Msg::NoError)
+//            {
+//                FillCor();
+//                QMessageBox::information(this, "INFO", "Прочитано успешно");
+//            }
+//            break;
+//        }
+//    case Board::InterfaceType::RS485:
+//        // else if (MainInterface == I_RS485)
+//        {
+//            ModBus::Information info;
+//            info.size = (sizeof(Bd9) / 4);
+//            info.adr = 4000;
+//            emit RS485ReadCorBd(info);
+//            break;
+//        }
+//    case Board::InterfaceType::Ethernet:
+//        // else if (MainInterface == I_ETHERNET)
+//        {
+//            emit CorReadRequest();
+//            break;
+//        }
+//    }
+//}
 
 void StartupKTFDialog::WriteCorBd()
 {

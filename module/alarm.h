@@ -1,6 +1,8 @@
 #ifndef ALARM_H
 #define ALARM_H
 
+#include "../gen/datatypes.h"
+
 #include <QBitArray>
 #include <QWidget>
 #include <bitset>
@@ -13,7 +15,8 @@ class Alarm : public QWidget
 public:
     int m_alarmBdNum;
     int m_startAlarmAddress;
-    std::bitset<32> m_alarmFlags; // '1' equals alarm
+    std::bitset<32> m_alarmFlags;       // '1' equals alarm
+    std::bitset<32> m_actualAlarmFlags; // '1' equals alarm
 
     explicit Alarm(QWidget *parent = nullptr);
     int realAlarmSize();
@@ -21,9 +24,10 @@ public:
 
 public slots:
     //    void Update(std::bitset<32> &states);
+    void updateSpData(DataTypes::SinglePointWithTimeStruct &sp);
 
 signals:
-    void updateAlarm(int position, bool value);
+    void updateAlarm(bool value);
 
 private:
     int m_realAlarmSize;

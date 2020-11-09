@@ -5,7 +5,7 @@
 #define MTYPE_KIV 0xA284
 #define MTYPE_KDV 0xA387
 
-#include "../gen/udialog.h"
+#include "../widgets/udialog.h"
 
 #include <QMap>
 
@@ -24,7 +24,7 @@ signals:
 
 public slots:
     void ClearBsi();
-    void update();
+    void reqUpdate();
 
 private:
 };

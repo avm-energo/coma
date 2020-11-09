@@ -2,7 +2,7 @@
 
 #define MAXBYTEARRAY 65535
 
-#include "../gen/udialog.h"
+#include "../widgets/udialog.h"
 #include "config.h"
 
 #define MAXCONFSIZE 4096 // максимальный размер файла конфигурации
@@ -23,9 +23,9 @@ public:
     // проверить конфигурацию на корректность, признаком наличия некорректностей является непустой список
     // CheckConfErrors
     virtual void CheckConf() = 0;
-    void setConnections() override;
+    //    void setConnections() override;
 
-    void ReadConf();
+    //    void ReadConf();
     //
     void PrereadConf();
     // int GetChNumFromObjectName(QString ObjectName);
@@ -33,7 +33,7 @@ public:
     Error::Msg WriteCheckPassword();
 
 public slots:
-    void WriteConfMessageOk();
+    void WriteConfMessageOk(DataTypes::GeneralResponseStruct &rsp);
     //    void update() override;
     // задать конфигурацию по умолчанию
     virtual void SetDefConf() = 0;
@@ -51,7 +51,7 @@ protected:
 private slots:
     void SaveConfToFile();
     void LoadConfFromFile();
-    void ButtonReadConf();
+    void ReadConf();
     void WriteConf();
     //    void WritePasswordCheck(QString psw);
     void confParameterReceived(DataTypes::ConfParametersListStruct &cfpl);

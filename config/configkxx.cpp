@@ -11,7 +11,8 @@ ConfigKxx::ConfigKxx(S2ConfigType *config)
     //        }
     //    }
     /// TODO Check this
-    config->erase(std::remove_if(config->begin(), config->end(), [](S2::DataRec i) { return i.id == 0xFFFFFFFF; }),
+    config->erase(
+        std::remove_if(config->begin(), config->end(), [](S2DataTypes::DataRec i) { return i.id == 0xFFFFFFFF; }),
         config->end());
     /// TODO end
     ///
@@ -43,7 +44,7 @@ ConfigKxx::ConfigKxx(S2ConfigType *config)
 void ConfigKxx::SetDefConf()
 {
     TempConf.RTerm = DEF_RTERM;
-    TempConf.W100 = static_cast<float>(DEF_W100);
+    TempConf.W100 = DEF_W100;
 
     StrTrele.Trele_pred = DEF_TRELE_PRED;
     StrTrele.Trele_alarm = DEF_TRELE_ALARM;

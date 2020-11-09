@@ -1,5 +1,6 @@
 #include "alarm.h"
 
+#include "../gen/datamanager.h"
 #include "../widgets/wd_func.h"
 
 #include <QVBoxLayout>
@@ -7,6 +8,8 @@
 
 Alarm::Alarm(QWidget *parent) : QWidget(parent)
 {
+    m_actualAlarmFlags = 0x0000;
+    connect(&DataManager::GetInstance(), &DataManager::singlePointReceived, this, &Alarm::updateSpData);
 }
 
 int Alarm::realAlarmSize()
@@ -31,15 +34,40 @@ void Alarm::showEvent(QShowEvent *e)
 
 void Alarm::updatePixmap(bool isset, int position)
 {
-    if (isset)
+    auto pixmap = WDFunc::NewCircle((isset) ? Qt::red : Qt::green, CIRCLE_RADIUS);
+    WDFunc::SetLBLImage(this, (QString::number(position)), &pixmap);
+    m_actualAlarmFlags[position] = isset;
+    emit updateAlarm(m_actualAlarmFlags != 0x0000);
+    //    emit updateAlarm(position, isset);
+    //    if (isset)
+    //    {
+    //        auto pixmap = WDFunc::NewCircle(Qt::red, CIRCLE_RADIUS);
+    //        WDFunc::SetLBLImage(this, (QString::number(position)), &pixmap);
+    //    }
+    //    else
+    //    {
+    //        auto pixmap = WDFunc::NewCircle(Qt::green, CIRCLE_RADIUS);
+    //        WDFunc::SetLBLImage(this, (QString::number(position)), &pixmap);
+    //    }
+}
+
+void Alarm::updateSpData(DataTypes::SinglePointWithTimeStruct &sp)
+{
+    bool alarmFlag = false; // warning flag
+    quint32 minAddress = m_startAlarmAddress;
+    quint32 maxAddress = m_startAlarmAddress + 31; // only 32 bits
+    if ((sp.sigAdr >= minAddress) && (sp.sigAdr <= maxAddress))
     {
-        auto pixmap = WDFunc::NewCircle(Qt::red, CIRCLE_RADIUS);
-        WDFunc::SetLBLImage(this, (QString::number(position)), &pixmap);
-    }
-    else
-    {
-        auto pixmap = WDFunc::NewCircle(Qt::green, CIRCLE_RADIUS);
-        WDFunc::SetLBLImage(this, (QString::number(position)), &pixmap);
+        int index = sp.sigAdr - minAddress;
+        quint8 sigval = sp.sigVal;
+        if (!(sigval & 0x80))
+        {
+            if (m_alarmFlags[index])
+            {
+                alarmFlag = true;
+                updatePixmap(sigval & 0x00000001, index);
+            }
+        }
     }
 }
 

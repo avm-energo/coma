@@ -256,7 +256,7 @@ void AbstractStartupDialog::ErrorRead()
     QMessageBox::information(this, "Ошибка", "Ошибка чтения");
 }
 
-void AbstractStartupDialog::update()
+void AbstractStartupDialog::reqUpdate()
 {
     if (m_updatesEnabled)
     {

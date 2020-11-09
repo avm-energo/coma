@@ -1,8 +1,8 @@
 #ifndef CORDIALOGKTF_H
 #define CORDIALOGKTF_H
 
-#include "../iec104/iec104.h"
-#include "../modbus/modbus.h"
+//#include "../iec104/iec104.h"
+//#include "../modbus/modbus.h"
 #include "../models/etablemodel.h"
 #include "abstractstartupdialog.h"
 
@@ -51,7 +51,7 @@ private:
 signals:
 
 public slots:
-    void GetCorBdButton() override;
+    //    void GetCorBdButton() override;
     void WriteCorBd() override;
     void WriteCor() override;
     void ResetCor() override;

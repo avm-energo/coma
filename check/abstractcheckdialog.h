@@ -17,7 +17,7 @@
 #define ABSTRACTCHECKDIALOG_H
 
 #include "../gen/modulebsi.h"
-#include "../gen/udialog.h"
+#include "../widgets/udialog.h"
 //#include "../modbus/modbus.h"
 #include "check.h"
 #include "xlsxdocument.h"
@@ -38,42 +38,49 @@ class AbstractCheckDialog : public UDialog
 {
     Q_OBJECT
 public:
-    explicit AbstractCheckDialog(QWidget *parent = nullptr);
-    ~AbstractCheckDialog();
-    void SetupUI(QStringList &tabnames);
-
-    // визуализация наборов текущих данных от модуля
-    virtual QWidget *BdUI(int bdnum) = 0;
-    // row - строка для записи заголовков
-    virtual void PrepareHeadersForFile(int row) = 0;
-    // row - номер строки для записи в файл xlsx, bdnum - номер блока данных
-    virtual void WriteToFile(int row, int bdnum) = 0;
-
-    virtual void ChooseValuesToWrite() = 0;
-    virtual void SetDefaultValuesToWrite() = 0;
-    // функция подготовки к измерениям (например,   запрос постоянных данных)
-    virtual void PrepareAnalogMeasurements() = 0;
-    void SetBd(int bdnum, void *block, int blocksize, bool toxlsx = true);
-    QWidget *BottomUI();
+    struct BdUIStruct
+    {
+        QString widgetCaption;
+        UWidget *widget;
+    };
 
     QXlsx::Document *xlsx;
     QTimer *Timer;
     int WRow;
     // количество вкладок с выводом блоков данных модуля, один блок может быть разделён на несколько вкладок
-    int BdUINum;
+    //    int BdUINum;
     // тип платы
-    QList<int> IndexWd;
+    //    QList<int> IndexWd;
     bool m_timerCounter;
+    QList<BdUIStruct> m_BdUIList;
+
+    explicit AbstractCheckDialog(QWidget *parent = nullptr);
+    ~AbstractCheckDialog();
+    void SetupUI();
+
+    // визуализация наборов текущих данных от модуля
+    //    virtual QWidget *BdUI(int bdnum) = 0;
+    // row - строка для записи заголовков
+    virtual void PrepareHeadersForFile(int row);
+    // row - номер строки для записи в файл xlsx, bdnum - номер блока данных
+    virtual void WriteToFile(int row, int bdnum);
+
+    //    virtual void ChooseValuesToWrite() = 0;
+    //    virtual void SetDefaultValuesToWrite() = 0;
+    // функция подготовки к измерениям (например,   запрос постоянных данных)
+    void PrepareAnalogMeasurements();
+    void SetBd(int bdnum, void *block, int blocksize, bool toxlsx = true);
+    QWidget *BottomUI();
 
 signals:
 
 public slots:
     void StopAnalogMeasurements();
-    virtual void SetWarnColor(int position, bool value) = 0;
-    virtual void SetAlarmColor(int position, bool value) = 0;
-    virtual void StartBdMeasurements();
-    virtual void StopBdMeasurements();
-    //    void update();
+    //    virtual void SetWarnColor(int position, bool value) = 0;
+    //    virtual void SetAlarmColor(int position, bool value) = 0;
+    //    virtual void StartBdMeasurements();
+    //    virtual void StopBdMeasurements();
+    void reqUpdate();
 
 private:
     struct BdBlocks
@@ -84,25 +91,26 @@ private:
     };
 
     QMap<int, BdBlocks *> Bd_blocks;
-    struct Bip
-    {
-        quint8 ip[4];
-    };
+    //    struct Bip
+    //    {
+    //        quint8 ip[4];
+    //    };
 
-    int m_newTWIndex;
-    Bip Bip_block;
-    bool Busy;
+    //    int m_newTWIndex;
+    //    Bip Bip_block;
+    bool m_readDataInProgress;
     QElapsedTimer *ElapsedTimeCounter;
+    int m_currentTabIndex, m_oldTabIndex;
 
-    void CheckIP();
-    void GetIP();
-    void Check1PPS();
+    //    void CheckIP();
+    //    void GetIP();
+    //    void Check1PPS();
     void ReadAnalogMeasurementsAndWriteToFile();
 
 protected:
     Check *Ch;
-    QTimer *BdTimer;
-    int BdNum;
+    //    QTimer *BdTimer;
+    //    int BdNum;
     bool XlsxWriting;
     const QString ValuesFormat = "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; "
                                  "color: blue; font: bold 10px;}";
@@ -116,6 +124,7 @@ private slots:
     void StartAnalogMeasurementsToFile();
     void StartAnalogMeasurements();
     void TimerTimeout();
+    void TWTabClicked(int index);
 };
 
 #endif // ABSTRACTCHECKDIALOG_H

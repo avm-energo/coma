@@ -1,6 +1,8 @@
 #ifndef COLORS_H
 #define COLORS_H
 
+#include <QMap>
+
 namespace Colors
 {
 constexpr char TABCOLOR[] = "#AFFFAF";
@@ -21,7 +23,7 @@ constexpr char ACONFGCLR[] = "#B0FFB0";
 // constexpr char ACONFRCLR[] = "#FFFFDD";
 // constexpr char ACONFYCLR[] = "#FFFFDD";
 constexpr char ACONFOCLR[] = "#FFDDAA";
- constexpr char ACONFYCLR[] = "#FFFA54";
+constexpr char ACONFYCLR[] = "#FFFA54";
 constexpr char UCONFCLR[] = "#FFFFD0";
 // constexpr char UCONFWCLR[] = "#FFFFC0";
 // constexpr char ERRCLR[] = "#FF0000";
@@ -37,6 +39,40 @@ constexpr char NFTCOLOR[] = "#9FC79F";
 // constexpr char YLDCOLOR[] = "#CCCC00";
 // constexpr char BLDCOLOR[] = "#0000FF";
 // constexpr char BLUCOLOR[] = "#2222FF";
+enum ColorsNumbers
+{
+    Tab,
+    TabA1,
+    ErProt,
+    MainWin,
+    MainWinA1,
+    AConf,
+    AConfW,
+    AConfG,
+    AConfO,
+    AConfY,
+    UConf,
+    Red,
+    Nft
+};
+const QMap<int, QString> ColorsMap()
+{
+    QMap<int, QString> map;
+    map[Tab] = TABCOLOR;
+    map[TabA1] = TABCOLORA1;
+    map[ErProt] = ERPROTCLR;
+    map[MainWin] = MAINWINCLR;
+    map[MainWinA1] = MAINWINCLRA1;
+    map[AConf] = ACONFCLR;
+    map[AConfW] = ACONFWCLR;
+    map[AConfG] = ACONFGCLR;
+    map[AConfO] = ACONFOCLR;
+    map[AConfY] = ACONFYCLR;
+    map[UConf] = UCONFCLR;
+    map[Red] = REDCOLOR;
+    map[Nft] = NFTCOLOR;
+    return map;
+}
 }
 
 #endif // COLORS_H

@@ -51,38 +51,40 @@ QWidget *CheckKTFHarmonicDialog::BdUI(int bdnum)
 {
     switch (bdnum)
     {
-
     case 0:
-        return ChHarmKTF->Bd6W(this);
+        return ChHarmKTF->BdUWidget(this,1028,2,12 );
     case 1:
-        return ChHarmKTF->Bd7W(this);
+        return ChHarmKTF->BdUWidget(this,1038,12,22);
     case 2:
-        return ChHarmKTF->Bd8W(this);
+        return ChHarmKTF->BdUWidget(this,1048,22,32);
     case 3:
-        return ChHarmKTF->Bd9W(this);
+        return ChHarmKTF->BdUWidget(this,1058,32,42);
     case 4:
-        return ChHarmKTF->Bd10W(this);
+        return ChHarmKTF->BdUWidget(this,1068,42,52);
     case 5:
-        return ChHarmKTF->Bd11W(this);
+        return ChHarmKTF->BdUWidget(this,1078,52,63);
     case 6:
-        return ChHarmKTF->Bd12W(this);
+        return ChHarmKTF->BdIWidget(this,1428,2,12);
     case 7:
-        return ChHarmKTF->Bd13W(this);
+        return ChHarmKTF->BdIWidget(this,1438,12,22);
     case 8:
-        return ChHarmKTF->Bd14W(this);
+        return ChHarmKTF->BdIWidget(this,1448,22,32);
     case 9:
-        return ChHarmKTF->Bd15W(this);
+        return ChHarmKTF->BdIWidget(this,1458,32,42);
     case 10:
-        return ChHarmKTF->Bd16W(this);
+        return ChHarmKTF->BdIWidget(this,1468,42,52);
     case 11:
-        return ChHarmKTF->Bd17W(this);
+        return ChHarmKTF->BdIWidget(this,1478,52,63);
 
     default:
         return new QWidget;
     }
 }
 
-void CheckKTFHarmonicDialog::PrepareHeadersForFile(int row) { Q_UNUSED(row) }
+void CheckKTFHarmonicDialog::PrepareHeadersForFile(int row)
+{
+    Q_UNUSED(row)
+}
 
 void CheckKTFHarmonicDialog::WriteToFile(int row, int bdnum)
 {
@@ -90,9 +92,9 @@ void CheckKTFHarmonicDialog::WriteToFile(int row, int bdnum)
     Q_UNUSED(bdnum);
 }
 
-void CheckKTFHarmonicDialog::ChooseValuesToWrite() { }
-void CheckKTFHarmonicDialog::SetDefaultValuesToWrite() { }
-void CheckKTFHarmonicDialog::PrepareAnalogMeasurements() { }
+// void CheckKTFHarmonicDialog::ChooseValuesToWrite() { }
+// void CheckKTFHarmonicDialog::SetDefaultValuesToWrite() { }
+// void CheckKTFHarmonicDialog::PrepareAnalogMeasurements() { }
 
 // void CheckKTFHarmonicDialog::USBUpdate()
 //{
@@ -131,21 +133,24 @@ void CheckKTFHarmonicDialog::PrepareAnalogMeasurements() { }
 //{
 //}
 
-void CheckKTFHarmonicDialog::update() { updateFloatData(); }
+// void CheckKTFHarmonicDialog::reqUpdate()
+//{
+//    updateFloatData();
+//}
 
-void CheckKTFHarmonicDialog::updateFloatData()
-{
-    QList<DataTypes::SignalsStruct> list;
-    DataManager::getSignals(0, 99999, DataTypes::SignalTypes::FloatWithTime, list);
-    if (!list.isEmpty())
-    {
-        foreach (DataTypes::SignalsStruct signal, list)
-        {
-            DataTypes::FloatWithTimeStruct fwt = qvariant_cast<DataTypes::FloatWithTimeStruct>(signal.data);
-            ChHarmKTF->FillBd(this, QString::number(fwt.sigAdr), WDFunc::StringValueWithCheck(fwt.sigVal, 3));
-        }
-    }
-}
+// void CheckKTFHarmonicDialog::updateFloatData()
+//{
+//    QList<DataTypes::SignalsStruct> list;
+//    DataManager::getSignals(0, 99999, DataTypes::SignalTypes::FloatWithTime, list);
+//    if (!list.isEmpty())
+//    {
+//        foreach (DataTypes::SignalsStruct signal, list)
+//        {
+//            DataTypes::FloatWithTimeStruct fwt = qvariant_cast<DataTypes::FloatWithTimeStruct>(signal.data);
+//            ChHarmKTF->FillBd(this, QString::number(fwt.sigAdr), WDFunc::StringValueWithCheck(fwt.sigVal, 3));
+//        }
+//    }
+//}
 
 // void CheckKTFHarmonicDialog::UpdateModBusData(QList<ModBus::SignalStruct> Signal)
 //{
@@ -164,14 +169,14 @@ void CheckKTFHarmonicDialog::updateFloatData()
 //                this, QString::number(Signal.at(i).SigAdr), WDFunc::StringValueWithCheck(Signal.at(i).flVal, 3));
 //    }
 //}
-void CheckKTFHarmonicDialog::SetWarnColor(int position, bool value)
-{
-    Q_UNUSED(position)
-    Q_UNUSED(value)
-}
+// void CheckKTFHarmonicDialog::SetWarnColor(int position, bool value)
+//{
+//    Q_UNUSED(position)
+//    Q_UNUSED(value)
+//}
 
-void CheckKTFHarmonicDialog::SetAlarmColor(int position, bool value)
-{
-    Q_UNUSED(position)
-    Q_UNUSED(value)
-}
+// void CheckKTFHarmonicDialog::SetAlarmColor(int position, bool value)
+//{
+//    Q_UNUSED(position)
+//    Q_UNUSED(value)
+//}

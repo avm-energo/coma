@@ -101,7 +101,7 @@ void InfoDialog::ClearBsi()
     // расшифровка Hth
 }
 
-void InfoDialog::update()
+void InfoDialog::reqUpdate()
 {
     QList<DataTypes::SignalsStruct> list;
 

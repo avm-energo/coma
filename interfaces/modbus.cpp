@@ -37,7 +37,9 @@ ModBus::ModBus(QObject *parent) : BaseInterface(parent)
     Log->info("=== Log started ===");
 }
 
-ModBus::~ModBus() { }
+ModBus::~ModBus()
+{
+}
 
 bool ModBus::start(const ConnectStruct &st)
 {
@@ -364,6 +366,7 @@ void ModBus::writeCommand(Queries::Commands cmd, QList<DataTypes::SignalsStruct>
                 {
                     DataTypes::SignalsStruct bstr = var.value<DataTypes::SignalsStruct>();
                     inp.quantity = bstr.data.toUInt();
+                    inp.cmd = CommandsMBS::Commands::MBS_READCOILS;
                 }
                 else
                     return;

@@ -2,7 +2,7 @@
 #define ABSTRACTCORDIALOG_H
 
 #include "../gen/error.h"
-#include "../gen/udialog.h"
+#include "../widgets/udialog.h"
 //#include "../iec104/iec104.h"
 #include "../interfaces/modbus.h"
 #include "../models/etablemodel.h"
@@ -79,7 +79,7 @@ public slots:
     //    void WritePasswordCheck(QString psw);
     //    void TimerTimeout();
     void ErrorRead();
-    void update() override;
+    void reqUpdate() override;
 };
 
 #endif // ABSTRACTCORDIALOG_H

@@ -1,0 +1,85 @@
+#include "uwidget.h"
+
+#include "../gen/colors.h"
+#include "wd_func.h"
+
+UWidget::UWidget(QWidget *parent) : QWidget(parent)
+{
+    m_updatesEnabled = false;
+    m_timerCounter = 0;
+    m_timerMax = 2; // 2 seconds by default
+    m_floatBdQueryList.clear();
+    m_spBdQueryList.clear();
+    m_highlightMap.clear();
+}
+
+void UWidget::setUpdatesEnabled()
+{
+    m_updatesEnabled = true;
+}
+
+void UWidget::setUpdatesDisabled()
+{
+    m_updatesEnabled = false;
+}
+
+const QString UWidget::getCaption()
+{
+    return m_caption;
+}
+
+void UWidget::setCaption(const QString &caption)
+{
+    m_caption = caption;
+}
+
+void UWidget::setUpdateTimerPeriod(quint32 period)
+{
+    m_timerMax = period;
+}
+
+void UWidget::setHighlightMap(QMap<int, QList<UWidget::HighlightWarnAlarmStruct>> &map)
+{
+    m_highlightMap = map;
+}
+
+void UWidget::setFloatBdQuery(const QList<UWidget::BdQuery> &list)
+{
+    m_floatBdQueryList = list;
+}
+
+void UWidget::setSpBdQuery(const QList<UWidget::BdQuery> &list)
+{
+    m_spBdQueryList = list;
+}
+
+void UWidget::updateFloatData(DataTypes::FloatStruct &fl)
+{
+    if ((m_updatesEnabled) && (m_timerCounter >= m_timerMax)) // every second tick of the timer
+        WDFunc::SetLBLText(this, QString::number(fl.sigAdr), WDFunc::StringValueWithCheck(fl.sigVal, 3));
+}
+
+void UWidget::updateSPData(DataTypes::SinglePointWithTimeStruct &sp)
+{
+    QList<HighlightWarnAlarmStruct> hstlist = m_highlightMap[sp.sigAdr];
+    foreach (HighlightWarnAlarmStruct hst, hstlist)
+        WDFunc::SetLBLTColor(this, QString::number(hst.fieldnum), (sp.sigVal == 1) ? Colors::TABCOLORA1 : hst.color);
+}
+
+void UWidget::reqUpdate()
+{
+    foreach (BdQuery query, m_floatBdQueryList)
+        iface()->reqFloats(query.sigAdr, query.sigQuantity);
+    foreach (BdQuery query, m_spBdQueryList)
+        iface()->reqAlarms(query.sigAdr, query.sigQuantity);
+}
+
+void UWidget::setInterface(BaseInterface *iface)
+{
+    m_iface = iface;
+}
+
+BaseInterface *UWidget::iface()
+{
+    return m_iface;
+}

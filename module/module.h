@@ -1,9 +1,10 @@
 #ifndef MODULEFABRIC_H
 #define MODULEFABRIC_H
 
-#include "../alarm/alarmstateall.h"
 #include "../gen/board.h"
-#include "../gen/udialog.h"
+#include "../widgets/alarmstateallwidget.h"
+#include "../widgets/alarmwidget.h"
+#include "../widgets/udialog.h"
 #include "alarm.h"
 #include "warn.h"
 
@@ -22,7 +23,7 @@ public:
 
     explicit Module(QObject *parent = nullptr);
 
-    static Module *createModule(QTimer *updateTimer, BaseInterface *iface);
+    static Module *createModule(QTimer *updateTimer, BaseInterface *iface, AlarmWidget *aw);
     QList<UDialog *> dialogs();
     QList<UDialog *> confDialogs();
     void addDialogToList(UDialog *dlg, const QString &caption = "", const QString &name = "");
