@@ -3,7 +3,6 @@
 #include "../gen/board.h"
 #include "../gen/error.h"
 #include "../gen/stdfunc.h"
-#include "../interfaces/eprotocom.h"
 #include "../widgets/wd_func.h"
 
 #include <QDebug>
@@ -201,7 +200,10 @@ void ConnectDialog::RsAccepted()
     }
 }
 
-void ConnectDialog::SetCancelled() { emit Cancelled(); }
+void ConnectDialog::SetCancelled()
+{
+    emit Cancelled();
+}
 
 // void ConnectDialog::SetEth()
 //{
@@ -240,7 +242,10 @@ void ConnectDialog::handlePing()
     watcher->deleteLater();
 }
 
-void ConnectDialog::handlePingFinish() { createPortTask(); }
+void ConnectDialog::handlePingFinish()
+{
+    createPortTask();
+}
 
 void ConnectDialog::handlePortFinish()
 {
@@ -457,27 +462,28 @@ bool ConnectDialog::UpdateModel()
     {
     case Board::InterfaceType::USB:
     {
-        QList<QStringList> USBsl = EProtocom::GetInstance().DevicesFound();
-        QStringList sl { "VID", "PID", "Serial", "Path" };
-        QStandardItemModel *mdl = new QStandardItemModel(dlg);
+        // FIXME After create usb
+        //        QList<QStringList> USBsl = EProtocom::GetInstance().DevicesFound();
+        //        QStringList sl { "VID", "PID", "Serial", "Path" };
+        //        QStandardItemModel *mdl = new QStandardItemModel(dlg);
 
-        if (USBsl.isEmpty())
-        {
-            QMessageBox::critical(this, "Ошибка", "Устройства не найдены");
-            qCritical() << QVariant::fromValue(Error::Msg::NoDeviceError).toString();
-            return false;
-        }
-        mdl->setHorizontalHeaderLabels(sl);
-        for (const auto &row : USBsl)
-        {
-            QList<QStandardItem *> items;
-            for (const auto &column : row)
-            {
-                items.append(new QStandardItem(column));
-            }
-            mdl->appendRow(items);
-        }
-        WDFunc::SetQTVModel(dlg, "usbtv", mdl);
+        //        if (USBsl.isEmpty())
+        //        {
+        //            QMessageBox::critical(this, "Ошибка", "Устройства не найдены");
+        //            qCritical() << QVariant::fromValue(Error::Msg::NoDeviceError).toString();
+        //            return false;
+        //        }
+        //        mdl->setHorizontalHeaderLabels(sl);
+        //        for (const auto &row : USBsl)
+        //        {
+        //            QList<QStandardItem *> items;
+        //            for (const auto &column : row)
+        //            {
+        //                items.append(new QStandardItem(column));
+        //            }
+        //            mdl->appendRow(items);
+        //        }
+        //        WDFunc::SetQTVModel(dlg, "usbtv", mdl);
         break;
     }
     case Board::InterfaceType::Ethernet:

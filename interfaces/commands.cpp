@@ -13,7 +13,7 @@ Commands::Commands()
 Error::Msg Commands::Connect()
 {
 
-    if (Protocom::GetInstance().Connect())
+    if (ProtocomThread::GetInstance().Connect())
         return Error::Msg::NoError;
     else
         return Error::Msg::GeneralError;
@@ -21,22 +21,22 @@ Error::Msg Commands::Connect()
 
 void Commands::Disconnect()
 {
-    Protocom::GetInstance().Disconnect();
+    ProtocomThread::GetInstance().Disconnect();
 }
 
 Error::Msg Commands::GetBsi(ModuleBSI::Bsi &bsi)
 {
     QByteArray ba;
-    Protocom::GetInstance().SendIn(CN::Read::BlkStartInfo, BoardTypes::BT_NONE, ba, sizeof(ModuleBSI::Bsi));
+    ProtocomThread::GetInstance().SendIn(CN::Read::BlkStartInfo, BoardTypes::BT_NONE, ba, sizeof(ModuleBSI::Bsi));
     // cn->SendIn(CN::Read::BlkStartInfo, BoardTypes::BT_NONE, ba, sizeof(ModuleBSI::Bsi));
     memcpy(&bsi, &(ba.data()[0]), sizeof(ModuleBSI::Bsi));
-    return Protocom::GetInstance().result();
+    return ProtocomThread::GetInstance().result();
 }
 
 Error::Msg Commands::GetFileWithRestore(int filenum, S2ConfigType *data)
 {
     QByteArray ba;
-    Protocom::GetInstance().SendFile(CN::Read::File, BoardTypes::BT_NONE, filenum, ba);
+    ProtocomThread::GetInstance().SendFile(CN::Read::File, BoardTypes::BT_NONE, filenum, ba);
     // проверка контрольной суммы файла
     quint32 crctocheck;
     quint32 basize = ba.size();
@@ -54,7 +54,7 @@ Error::Msg Commands::GetFileWithRestore(int filenum, S2ConfigType *data)
 
 Error::Msg Commands::GetFile(int filenum, QByteArray &ba)
 {
-    Protocom::GetInstance().SendFile(CN::Read::File, BoardTypes::BT_NONE, filenum, ba);
+    ProtocomThread::GetInstance().SendFile(CN::Read::File, BoardTypes::BT_NONE, filenum, ba);
     quint32 crctocheck;
     quint32 basize = ba.size();
     if (basize < 17)
@@ -65,7 +65,7 @@ Error::Msg Commands::GetFile(int filenum, QByteArray &ba)
     memcpy(&crctocheck, &(ba.data())[8], sizeof(quint32));
     if (!S2::CheckCRC32(&(ba.data())[16], (basize - 16), crctocheck))
         return Error::Msg::GeneralError;
-    return Protocom::GetInstance().result();
+    return ProtocomThread::GetInstance().result();
 }
 
 Error::Msg Commands::WriteFile(int filenum, S2ConfigType *data)
@@ -80,115 +80,115 @@ Error::Msg Commands::WriteFile(int filenum, S2ConfigType *data)
     wrlength += static_cast<quint8>(ba.at(4));
     wrlength += sizeof(S2::FileHeader); // sizeof(FileHeader)
     ba.resize(wrlength);
-    Protocom::GetInstance().SendFile(CN::Write::File, BoardTypes::BT_BASE, filenum, ba);
-    return Protocom::GetInstance().result();
+    ProtocomThread::GetInstance().SendFile(CN::Write::File, BoardTypes::BT_BASE, filenum, ba);
+    return ProtocomThread::GetInstance().result();
 }
 
 Error::Msg Commands::WriteHiddenBlock(char board, void *HPtr, int HPtrSize)
 {
     QByteArray ba = QByteArray::fromRawData(static_cast<const char *>(HPtr), HPtrSize);
-    Protocom::GetInstance().SendOut(CN::Write::Hardware, board, ba);
-    return Protocom::GetInstance().result();
+    ProtocomThread::GetInstance().SendOut(CN::Write::Hardware, board, ba);
+    return ProtocomThread::GetInstance().result();
 }
 
 Error::Msg Commands::GetBac(char BacNum, void *BacPtr, int BacPtrSize)
 {
     QByteArray ba;
-    Protocom::GetInstance().SendIn(CN::Read::BlkAC, BacNum, ba, BacPtrSize);
+    ProtocomThread::GetInstance().SendIn(CN::Read::BlkAC, BacNum, ba, BacPtrSize);
     memcpy(BacPtr, &(ba.data()[0]), BacPtrSize);
-    return Protocom::GetInstance().result();
+    return ProtocomThread::GetInstance().result();
 }
 
 Error::Msg Commands::GetBd(char BdNum, void *BdPtr, int BdPtrSize)
 {
     QByteArray ba;
-    Protocom::GetInstance().SendIn(CN::Read::BlkData, BdNum, ba, BdPtrSize);
+    ProtocomThread::GetInstance().SendIn(CN::Read::BlkData, BdNum, ba, BdPtrSize);
     memcpy(BdPtr, &(ba.data()[0]), BdPtrSize);
-    return Protocom::GetInstance().result();
+    return ProtocomThread::GetInstance().result();
 }
 
 Error::Msg Commands::GetBda(char board, void *BdPtr, int BdPtrSize)
 {
     QByteArray ba;
-    Protocom::GetInstance().SendIn(CN::Read::BlkDataA, board, ba, BdPtrSize);
+    ProtocomThread::GetInstance().SendIn(CN::Read::BlkDataA, board, ba, BdPtrSize);
     memcpy(BdPtr, &(ba.data()[0]), BdPtrSize);
-    return Protocom::GetInstance().result();
+    return ProtocomThread::GetInstance().result();
 }
 
 Error::Msg Commands::GetBt(char BtNum, void *BtPtr, int &BtPtrSize)
 {
     QByteArray ba;
-    Protocom::GetInstance().SendIn(CN::Read::BlkTech, BtNum, ba, BtPtrSize);
+    ProtocomThread::GetInstance().SendIn(CN::Read::BlkTech, BtNum, ba, BtPtrSize);
     memcpy(BtPtr, &(ba.data()[0]), BtPtrSize);
-    return Protocom::GetInstance().result();
+    return ProtocomThread::GetInstance().result();
 }
 
 Error::Msg Commands::WriteBac(char BacNum, void *BacPtr, int BacPtrSize)
 {
     QByteArray ba = QByteArray::fromRawData(static_cast<const char *>(BacPtr), BacPtrSize);
-    Protocom::GetInstance().SendOut(CN::Write::BlkAC, BacNum, ba);
-    return Protocom::GetInstance().result();
+    ProtocomThread::GetInstance().SendOut(CN::Write::BlkAC, BacNum, ba);
+    return ProtocomThread::GetInstance().result();
 }
 
 Error::Msg Commands::EraseTechBlock(char block)
 {
-    Protocom::GetInstance().SendCmd(CN::Write::EraseTech, block);
-    return Protocom::GetInstance().result();
+    ProtocomThread::GetInstance().SendCmd(CN::Write::EraseTech, block);
+    return ProtocomThread::GetInstance().result();
 }
 
 Error::Msg Commands::WriteTimeMNK(uint32_t Time, int TimeSize)
 {
     QByteArray ba = QByteArray::fromRawData(reinterpret_cast<const char *>(&Time), TimeSize);
-    Protocom::GetInstance().SendOut(CN::Write::Time, BoardTypes::BT_NONE, ba);
-    return Protocom::GetInstance().result();
+    ProtocomThread::GetInstance().SendOut(CN::Write::Time, BoardTypes::BT_NONE, ba);
+    return ProtocomThread::GetInstance().result();
 }
 
 Error::Msg Commands::GetTimeMNK(uint &Time)
 {
     QByteArray ba;
 
-    Protocom::GetInstance().SendIn(CN::Read::Time, BoardTypes::BT_NONE, ba, sizeof(uint));
+    ProtocomThread::GetInstance().SendIn(CN::Read::Time, BoardTypes::BT_NONE, ba, sizeof(uint));
     memcpy(&Time, &(ba.data()[0]), sizeof(uint));
-    return Protocom::GetInstance().result();
+    return ProtocomThread::GetInstance().result();
 }
 
 Error::Msg Commands::WriteBd(char BdNum, void *BdPtr, int BdPtrSize)
 {
     QByteArray ba = QByteArray::fromRawData(static_cast<const char *>(BdPtr), BdPtrSize);
-    Protocom::GetInstance().SendOut(CN::Write::BlkData, BdNum, ba);
-    return Protocom::GetInstance().result();
+    ProtocomThread::GetInstance().SendOut(CN::Write::BlkData, BdNum, ba);
+    return ProtocomThread::GetInstance().result();
 }
 
 Error::Msg Commands::WriteCom(char ComNum)
 {
-    Protocom::GetInstance().SendCmd(CN::Write::BlkCmd, ComNum);
-    return Protocom::GetInstance().result();
+    ProtocomThread::GetInstance().SendCmd(CN::Write::BlkCmd, ComNum);
+    return ProtocomThread::GetInstance().result();
 }
 
 Error::Msg Commands::RunVPO()
 {
-    Protocom::GetInstance().SendCmd(CN::Write::Upgrade);
-    return Protocom::GetInstance().result();
+    ProtocomThread::GetInstance().SendCmd(CN::Write::Upgrade);
+    return ProtocomThread::GetInstance().result();
 }
 
 // Не нашел использования
 Error::Msg Commands::TestCom(char OnOff)
 {
-    Protocom::GetInstance().SendCmd(CN::Test, OnOff);
-    return Protocom::GetInstance().result();
+    ProtocomThread::GetInstance().SendCmd(CN::Test, OnOff);
+    return ProtocomThread::GetInstance().result();
 }
 
 Error::Msg Commands::SetMode(int mode)
 {
-    Protocom::GetInstance().SendCmd(CN::Write::Mode, mode);
-    return Protocom::GetInstance().result();
+    ProtocomThread::GetInstance().SendCmd(CN::Write::Mode, mode);
+    return ProtocomThread::GetInstance().result();
 }
 
 int Commands::GetMode()
 {
     QByteArray ba;
-    Protocom::GetInstance().SendIn(CN::Read::Mode, 0, ba, 0);
-    if (Protocom::GetInstance().result() != Error::Msg::GeneralError)
+    ProtocomThread::GetInstance().SendIn(CN::Read::Mode, 0, ba, 0);
+    if (ProtocomThread::GetInstance().result() != Error::Msg::GeneralError)
         return ba.at(0);
     else
         return -1;

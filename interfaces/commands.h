@@ -3,7 +3,6 @@
 
 #include "../gen/modulebsi.h"
 #include "../gen/s2.h"
-#include "protocom.h"
 
 class Commands : QObject
 {

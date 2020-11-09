@@ -259,7 +259,7 @@ Error::Msg S2::findElemAndWriteIt(QVector<S2DataTypes::DataRec> *s2config, DataT
             else
             {
                 ERMSG("S2: Wrong element size in ConfParameter");
-                return Error::Msg::S2_DHSZERROR;
+                return Error::Msg::HeaderSizeError;
             }
         }
     }

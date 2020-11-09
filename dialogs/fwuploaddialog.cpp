@@ -8,7 +8,6 @@
 #include "../gen/s2.h"
 #include "../gen/stdfunc.h"
 #include "../gen/timefunc.h"
-#include "../usb/commands.h"
 #include "../widgets/etableview.h"
 #include "../widgets/wd_func.h"
 
@@ -84,15 +83,16 @@ void FWUploadDialog::RunSoft()
     if (WriteCheckPassword() == Error::Msg::NoError)
     {
         TimeFunc::Wait(100);
-        if (Commands::RunVPO() != Error::Msg::NoError)
-        {
-            WARNMSG("Ошибка перехода на новое ПО");
-            QMessageBox::information(this, "Ошибка", "Ошибка");
-        }
-        else
-        {
-            QMessageBox::information(this, "Успешно", "Переход на новое ПО выполнен успешно");
-        }
+        // FIXME After create usb
+        //        if (Commands::RunVPO() != Error::Msg::NoError)
+        //        {
+        //            WARNMSG("Ошибка перехода на новое ПО");
+        //            QMessageBox::information(this, "Ошибка", "Ошибка");
+        //        }
+        //        else
+        //        {
+        //            QMessageBox::information(this, "Успешно", "Переход на новое ПО выполнен успешно");
+        //        }
     }
 }
 
@@ -351,11 +351,12 @@ Error::Msg FWUploadDialog::ParseHexToS2(QByteArray ba)
     memcpy(&BaForSend->data()[0], &ForProcess->data()[0],
     (BaForSend->size()+16));*/
 
-    if (Commands::WriteFile(3, &S2DR) != Error::Msg::NoError)
-    {
-        QMessageBox::information(this, "Ошибка", "Ошибка записи в модуль!");
-        return Error::Msg::GeneralError;
-    }
+    // FIXME After create usb
+    //    if (Commands::WriteFile(3, &S2DR) != Error::Msg::NoError)
+    //    {
+    //        QMessageBox::information(this, "Ошибка", "Ошибка записи в модуль!");
+    //        return Error::Msg::GeneralError;
+    //    }
     QMessageBox::information(this, "Успешно", "Загрузка ПО версии " + st + " прошла успешно!");
     return Error::Msg::NoError;
 

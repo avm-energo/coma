@@ -175,19 +175,19 @@ void TimeDialog::Write_Date()
     WriteTime(myDateTime);
 }
 
-void TimeDialog::ETHUpdate()
-{
-    // QString qStr;
-    // QDateTime myDateTime;
-    //    int startadr = 0;
-    //    memcpy(&startadr, &(Time->BS.SigAdr[0]), sizeof(Time->BS.SigAdr));
+// void TimeDialog::ETHUpdate()
+//{
+// QString qStr;
+// QDateTime myDateTime;
+//    int startadr = 0;
+//    memcpy(&startadr, &(Time->BS.SigAdr[0]), sizeof(Time->BS.SigAdr));
 
-    //    if (startadr == MBS_TIMEREG)
-    //    {
-    //        memcpy((quint32 *)(&unixtimestamp), ((quint32 *)(&Time->BS.SigVal)), sizeof(Time->BS.SigVal));
-    //        SetTime(unixtimestamp);
-    //    }
-}
+//    if (startadr == MBS_TIMEREG)
+//    {
+//        memcpy((quint32 *)(&unixtimestamp), ((quint32 *)(&Time->BS.SigVal)), sizeof(Time->BS.SigVal));
+//        SetTime(unixtimestamp);
+//    }
+//}
 
 void TimeDialog::reqUpdate()
 {
