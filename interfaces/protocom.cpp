@@ -24,7 +24,7 @@ Protocom::Protocom(QObject *parent) : BaseInterface(parent)
 bool Protocom::start(const BaseInterface::ConnectStruct &st)
 {
     Q_ASSERT(Board::GetInstance().interfaceType() == Board::InterfaceType::USB);
-    UsbHidPort *port = new UsbHidPort(DeviceConnectStruct(), Log, true);
+    UsbHidPort *port = new UsbHidPort(DeviceConnectStruct(), Log, this);
     ProtocomThread *parser = new ProtocomThread(this);
 
     QThread *portThread = new QThread;
@@ -41,9 +41,9 @@ bool Protocom::start(const BaseInterface::ConnectStruct &st)
     connect(port, &UsbHidPort::finished, portThread, &QThread::deleteLater);
     connect(port, &UsbHidPort::finished, port, &UsbHidPort::deleteLater);
 
-    connect(port, &UsbHidPort::NewDataReceived, parser, &ProtocomThread::appendReadDataChunk);
+    connect(port, &UsbHidPort::dataReceived, parser, &ProtocomThread::appendReadDataChunk);
 
-    if (port->setupConnection() != Error::Msg::NoError)
+    if (!port->setupConnection())
         return false;
 
     Board::GetInstance().setConnectionState(Board::ConnectionState::Connected);

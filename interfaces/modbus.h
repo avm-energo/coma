@@ -120,7 +120,7 @@ signals:
     void FinishModbusThread();
     //    void CoilSignalsReady(ModBus::Coils);
     //    void TimeReadError();
-    void ReconnectSignal();
+    // void ReconnectSignal();
 
 private:
     BaseInterface::SerialPortSettings Settings;
@@ -132,7 +132,7 @@ private:
     //    int _taskCounter;
     //    QQueue<InOutStruct> InQueue;
     //    QList<InOutStruct> OutList;
-    LogClass *Log;
+    // LogClass *Log;
 
     //    Error::Msg SendAndGet(InOutStruct &inp, InOutStruct &outp);
     //    bool GetResultFromOutQueue(int index, InOutStruct &outp);

@@ -158,7 +158,7 @@ bool ModBus::start(const ConnectStruct &st)
 void ModBus::SendReconnectSignal()
 {
     if (!AboutToFinish)
-        emit ReconnectSignal();
+        emit reconnect();
 }
 
 void ModBus::stop()

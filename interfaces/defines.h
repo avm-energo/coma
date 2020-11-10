@@ -104,12 +104,13 @@ namespace Write
 } // namespace Write
 namespace Message
 {
+    //  request–response
     // начало посылки
-    constexpr byte Start = 0x3e;
+    constexpr byte StartReq = 0x3e;
     // продолжение посылки
     constexpr byte Continue = 0x23;
     // начало посылки модуля
-    constexpr byte Module = 0x3c;
+    constexpr byte StartRes = 0x3c;
     // length is 2 bytes
     constexpr byte Length2Byte = 0x02;
 } // namespace Message
@@ -188,15 +189,22 @@ Q_ENUM_NS(Commands)
 
 namespace CN
 {
-constexpr byte WHV_SIZE_ONEBOARD = 17;
-constexpr byte WHV_SIZE_TWOBOARDS = 33;
+// constexpr byte WHV_SIZE_ONEBOARD = 17;
+// constexpr byte WHV_SIZE_TWOBOARDS = 33;
 }
 
-#define WORK_MODE 0
-#define TUNE_MODE_1000 1
-#define TUNE_MODE_100 2
+//#define WORK_MODE 0
+//#define TUNE_MODE_1000 1
+//#define TUNE_MODE_100 2
 
 #define HIDUSB_LOG
+#define CANALUSB_LOG
+enum Direction
+{
+    NoDirection,
+    ToDevice,
+    FromDevice
+};
 
 struct DeviceConnectStruct
 {

@@ -20,23 +20,20 @@ class UsbHidPort : public QObject
 {
     Q_OBJECT
 public:
-    explicit UsbHidPort(const DeviceConnectStruct &dev, LogClass *logh, bool writelog = false, QObject *parent = 0);
+    explicit UsbHidPort(const DeviceConnectStruct &dev, LogClass *logh, QObject *parent = 0);
     ~UsbHidPort();
 
-    LogClass *log;
-
-    Error::Msg setupConnection();
-    void WriteDataAttempt(QByteArray &ba);
-
+    bool setupConnection();
     void closeConnection();
+    void writeDataAttempt(QByteArray &ba);
 
-    void initiateReceive(QByteArray ba);
-    void initiateSend(const CommandStruct &cmdStr);
     DeviceConnectStruct deviceInfo() const;
     void setDeviceInfo(DeviceConnectStruct deviceInfo);
+    static QList<DeviceConnectStruct> devicesFound(quint16 vid = 0xC251);
+    void usbStateChanged(void *message);
 
 signals:
-    void NewDataReceived(QByteArray ba);
+    void dataReceived(QByteArray ba);
     void finished();
     void started();
 
@@ -44,24 +41,20 @@ public slots:
     void poll();
 
 private:
-    hid_device *HidDevice;
-    void writeLog(bool in_out, QByteArray ba);
-    void writeLog(bool in_out, Error::Msg msg)
+    void writeLog(QByteArray ba, Direction dir = NoDirection);
+    void writeLog(Error::Msg msg, Direction dir = NoDirection)
     {
-        writeLog(in_out, QVariant::fromValue(msg).toByteArray());
+        writeLog(QVariant::fromValue(msg).toByteArray(), dir);
     }
 
-    QMutex mutex_;
-    QList<QByteArray> WriteQueue;
-    DeviceConnectStruct m_deviceInfo;
+    bool writeData(QByteArray &ba);
 
-    QPair<quint64, QByteArray> m_buffer;
-    void handle(const CN::Commands cmd);
-
-    bool WriteData(QByteArray &ba);
-
-    CommandStruct m_currentCommand;
-    void CheckWriteQueue();
     void checkQueue();
-    void Finish();
+    void finish();
+
+    hid_device *m_hidDevice;
+    LogClass *log;
+    QMutex mutex_;
+    QList<QByteArray> m_writeQueue;
+    DeviceConnectStruct m_deviceInfo;
 };

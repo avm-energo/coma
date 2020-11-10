@@ -28,6 +28,7 @@ enum Msg
     WriteError,
     NoDeviceError,
     ReadError,
+    OpenError,
     NullDataError,
     WrongFileError,
     FileOpenError,

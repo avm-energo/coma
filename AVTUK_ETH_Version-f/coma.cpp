@@ -702,7 +702,7 @@ void Coma::New104()
     // connect(Ch104,SIGNAL(Sponsignalsready(IEC104Thread::SponSignals*)),this,SLOT(UpdatePredAlarmEvents(IEC104Thread::SponSignals*)));
     //    connect(Ch104, &IEC104::SetDataSize, this, &Coma::SetProgressBar1Size);
     //    connect(Ch104, &IEC104::SetDataCount, this, &Coma::SetProgressBar1);
-    connect(Ch104, &IEC104::ReconnectSignal, this, &Coma::ReConnect);
+    connect(Ch104, &BaseInterface::reconnect, this, &Coma::ReConnect);
     //    connect(Ch104, &IEC104::Sponsignalsready, Alarm, &AlarmClass::UpdateAlarm104);
     //    connect(Ch104, &IEC104::Bs104signalsready, this, qOverload<IEC104Thread::BS104Signals *>(&Coma::FillBSI));
 }
@@ -715,7 +715,7 @@ void Coma::NewModbus()
     connect(ChModbus, &ModBus::Finished, [this]() { ActiveThreads = false; });
     //  connect(ChModbus,SIGNAL(CoilSignalsReady(ModBus::Coils)), this,
     //  SLOT(ModBusUpdatePredAlarmEvents(ModBus::Coils)));
-    connect(ChModbus, &ModBus::ReconnectSignal, this, &Coma::ReConnect);
+    connect(ChModbus, &BaseInterface::reconnect, this, &Coma::ReConnect);
     //    connect(ChModbus, &ModBus::CoilSignalsReady, Alarm, &AlarmClass::UpdateAlarmModBus);
 
     //    connect(ChModbus, &ModBus::BsiFromModbus, this,

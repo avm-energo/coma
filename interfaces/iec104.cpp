@@ -304,7 +304,7 @@ void IEC104::ParseThreadFinished()
 void IEC104::EmitReconnectSignal()
 {
     if (!AboutToFinish)
-        emit ReconnectSignal();
+        emit reconnect();
 }
 
 void IEC104::stop()

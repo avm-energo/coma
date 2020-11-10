@@ -151,7 +151,7 @@ signals:
     //    void SetDataSize(int);
     //    void SetDataCount(int);
     //    void SendConfMessageOk();
-    void ReconnectSignal();
+    // void ReconnectSignal();
     void Finished();
 
 private:
