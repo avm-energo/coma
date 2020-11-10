@@ -17,13 +17,7 @@
 #include <QTimer>
 
 //#define MAX_STR 255
-
-quint16 getLength(const QByteArray &ba)
-{
-    quint16 len = static_cast<quint8>(ba.at(2));
-    len += static_cast<quint8>(ba.at(3)) * 256;
-    return len;
-}
+typedef QQueue<QByteArray> ByteQueue;
 
 quint16 extractLength(const QByteArray &ba)
 {
@@ -53,15 +47,58 @@ void checkForNextSegment(QByteArray &ba)
     if (ba.size() > 60) { }
 }
 
-QByteArray prepareBlock(CommandStruct &cmdStr)
+QByteArray prepareOk(bool isStart)
+{
+    QByteArray tmpba;
+    if (isStart)
+        tmpba.append(CN::Message::StartReq);
+    else
+        tmpba.append(CN::Message::Continue);
+
+    tmpba.append(static_cast<char>(CN::Commands::ResultOk));
+    appendInt16(tmpba, 0);
+    return tmpba;
+}
+
+QByteArray prepareError()
+{
+    QByteArray tmpba;
+    tmpba.append(CN::Message::StartReq);
+    tmpba.append(CN::ResultError);
+    appendInt16(tmpba, 1);
+    // модулю не нужны коды ошибок
+    tmpba.append(char(CN::NullByte));
+    return tmpba;
+}
+
+QByteArray prepareBlock(CommandStruct &cmdStr, CN::Starters startByte = CN::Starters::Request)
 {
     QByteArray ba;
-    ba.append(CN::Message::StartReq);
+    ba.append(static_cast<char>(startByte));
     ba.append(static_cast<char>((cmdStr.cmd)));
     appendInt16(ba, cmdStr.ba.size() > 0 ? cmdStr.ba.size() : 1);
     ba.append(cmdStr.arg1.toUInt());
     ba.append(cmdStr.ba);
     return ba;
+}
+
+ByteQueue prepareLongBlk(CommandStruct &cmdStr)
+{
+    ByteQueue bq;
+    using CN::Limits::MaxSegmenthLength;
+    // Количество сегментов
+    quint64 segCount = cmdStr.ba.size() / MaxSegmenthLength + 1;
+    bq.reserve(segCount);
+
+    CommandStruct temp { cmdStr.cmd, cmdStr.arg1, cmdStr.arg2, cmdStr.ba.left(MaxSegmenthLength) };
+    bq << prepareBlock(temp);
+
+    for (int pos = MaxSegmenthLength; pos < cmdStr.ba.size(); pos += MaxSegmenthLength)
+    {
+        CommandStruct temp { cmdStr.cmd, cmdStr.arg1, cmdStr.arg2, cmdStr.ba.mid(pos, MaxSegmenthLength) };
+        bq << prepareBlock(temp, CN::Starters::Continue);
+    }
+    return bq;
 }
 
 QByteArray prepareHiddenBlock(CommandStruct &cmdStr)
@@ -204,7 +241,8 @@ void ProtocomThread::InitiateSend()
         m_writeData = InData;
         // WRLength = m_writeData.length();
         SetWRSegNum(m_writeData.length());
-        WRCheckForNextSegment(true);
+        QByteArray tmpba = WRCheckForNextSegment(true);
+        WriteDataToPort(tmpba);
         break;
     }
     case CN::Write::BlkAC:
@@ -216,7 +254,8 @@ void ProtocomThread::InitiateSend()
         m_writeData.append(InData);
         // WRLength = InDataSize + 1;
         SetWRSegNum(InDataSize + 1);
-        WRCheckForNextSegment(true);
+        QByteArray tmpba = WRCheckForNextSegment(true);
+        WriteDataToPort(tmpba);
         break;
     }
     case CN::Write::Time:
@@ -293,7 +332,7 @@ void ProtocomThread::SetWRSegNum(quint32 WRLength)
     SegEnd = 0;
 }
 
-void ProtocomThread::WRCheckForNextSegment(int first)
+QByteArray ProtocomThread::WRCheckForNextSegment(int first)
 {
 
     QByteArray tmpba;
@@ -319,31 +358,7 @@ void ProtocomThread::WRCheckForNextSegment(int first)
         SegEnd = m_writeData.size();
         m_writeData.clear();
     }
-    WriteDataToPort(tmpba);
-}
-
-void ProtocomThread::SendOk(bool cont)
-{
-    QByteArray tmpba;
-    if (cont)
-        tmpba.append(CN::Message::Continue);
-    else
-        tmpba.append(CN::Message::StartReq);
-    tmpba.append(Command);
-    appendInt16(tmpba, 0);
-    // отправляем "ОК" и переходим к следующему сегменту
-    WriteDataToPort(tmpba);
-}
-
-void ProtocomThread::SendErr()
-{
-    QByteArray tmpba;
-    tmpba.append(CN::Message::StartReq);
-    tmpba.append(CN::ResultError);
-    appendInt16(tmpba, 1);
-    // модулю не нужны коды ошибок
-    tmpba.append(char(CN::NullByte));
-    WriteDataToPort(tmpba);
+    return tmpba;
 }
 
 void ProtocomThread::ParseIncomeData(QByteArray ba)
@@ -420,7 +435,8 @@ void ProtocomThread::ParseIncomeData(QByteArray ba)
                 return;
             }
             m_buffer.second.clear();
-            WRCheckForNextSegment(false);
+            QByteArray tmpba = WRCheckForNextSegment(false);
+            WriteDataToPort(tmpba);
             return;
         }
         // команды с ответом SS c L L ... и продолжением
@@ -434,11 +450,6 @@ void ProtocomThread::ParseIncomeData(QByteArray ba)
         case CN::Read::Mode:
         case CN::Read::Time:
         {
-            //            if (!GetLength())
-            //            {
-            //                Finish(Error::Msg::SizeError);
-            //                return;
-            //            }
             if (!m_buffer.first)
             {
                 Finish(Error::Msg::NoError);
@@ -450,11 +461,6 @@ void ProtocomThread::ParseIncomeData(QByteArray ba)
         }
         case CN::Read::File:
         {
-            //            if (!GetLength())
-            //            {
-            //                Finish(Error::Msg::SizeError);
-            //                return;
-            //            }
             if (!m_buffer.first)
             {
                 Finish(Error::Msg::NoError);
@@ -537,11 +543,13 @@ void ProtocomThread::ParseIncomeData(QByteArray ba)
             m_buffer.second.clear();
             if ((outdatasize >= InDataSize) || (m_buffer.first < CN::Limits::MaxSegmenthLength))
             {
-
                 Finish(Error::Msg::NoError);
             }
             else
-                SendOk(true);
+            {
+                QByteArray tmpba = prepareOk(false);
+                WriteDataToPort(ba);
+            }
             break;
         }
         case CN::Read::File:
@@ -564,7 +572,10 @@ void ProtocomThread::ParseIncomeData(QByteArray ba)
                 return;
             }
             else
-                SendOk(true);
+            {
+                QByteArray tmpba = prepareOk(false);
+                WriteDataToPort(ba);
+            }
             break;
         }
         case CN::Read::Progress:
@@ -735,8 +746,7 @@ void ProtocomThread::stop()
 // TODO Проверить длину получаемой строки, если равна 4 то убрать проверки и сделать каст
 void handleTime(const char *str)
 {
-    quint64 time = 0;
-    std::copy_n(str, 4, &time);
+    quint64 time = reinterpret_cast<quint64>(str);
     DataTypes::GeneralResponseStruct resp { DataTypes::GeneralResponseTypes::Ok, time };
     DataManager::addSignalToOutList(DataTypes::SignalTypes::GeneralResponse, resp);
 }

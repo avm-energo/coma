@@ -114,6 +114,16 @@ namespace Message
     // length is 2 bytes
     constexpr byte Length2Byte = 0x02;
 } // namespace Message
+enum class Starters : byte
+{
+    // начало посылки
+    Request = 0x3e,
+    // продолжение посылки
+    Continue = 0x23,
+    // начало посылки модуля
+    Response = 0x3c
+};
+
 enum class Commands : byte
 {
 

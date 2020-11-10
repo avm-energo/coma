@@ -72,9 +72,7 @@ private:
     void WriteDataToPort(QByteArray &ba);
     void Finish(Error::Msg msg);
     void SetWRSegNum(quint32 WRLength);
-    void WRCheckForNextSegment(int first);
-    void SendOk(bool cont = false); // cont = 1 -> send CN_MS3 instead CN_MS
-    void SendErr();
+    QByteArray WRCheckForNextSegment(int first);
 
     void CheckForData();
     void OscTimerTimeout();
