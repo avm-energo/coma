@@ -68,7 +68,7 @@ void Protocom::reqFile(quint32 filenum, bool isConfigFile)
     CommandStruct inp {
         CN::Commands::ReadFile, // Command
         filenum,                // File number
-        0,                      // Empty float arg
+        QVariant(),             // Null float arg
         {}                      // Empty QByteArray
     };
     DataManager::addToInQueue(inp);
@@ -90,7 +90,7 @@ void Protocom::reqBSI()
     CommandStruct inp {
         CN::Commands::ReadBlkStartInfo,                       // Command
         BoardTypes::BT_NONE,                                  // Board type
-        0,                                                    // Empty float arg
+        QVariant(),                                           // Null float arg
         QByteArray(sizeof(ModuleBSI::Bsi), Qt::Uninitialized) // Buffer for bsi
     };
     DataManager::addToInQueue(inp);
@@ -101,7 +101,7 @@ void Protocom::writeFile(quint32 filenum, const QByteArray &file)
     CommandStruct inp {
         CN::Commands::WriteFile, // Command
         filenum,                 // File number
-        0,                       // Empty float arg
+        QVariant(),              // Null float arg
         file                     // Buffer with file
     };
     DataManager::addToInQueue(inp);
@@ -109,7 +109,7 @@ void Protocom::writeFile(quint32 filenum, const QByteArray &file)
 
 void Protocom::writeTime(quint32 time)
 {
-    CommandStruct inp { CN::Commands::WriteTime, time, 0, {} };
+    CommandStruct inp { CN::Commands::WriteTime, time, QVariant(), {} };
     DataManager::addToInQueue(inp);
 }
 
@@ -124,7 +124,7 @@ void handleInt(CN::Commands cmd, int block)
     CommandStruct inp {
         cmd,          // Command
         block,        // Block for erasure
-        0,            // Empty arg
+        QVariant(),   // Null arg
         QByteArray {} // Empty ba
     };
     DataManager::addToInQueue(inp);
@@ -132,7 +132,7 @@ void handleInt(CN::Commands cmd, int block)
 
 void handleCommand(CN::Commands cmd)
 {
-    CommandStruct inp { cmd, 0, 0, QByteArray {} };
+    CommandStruct inp { cmd, QVariant(), QVariant(), QByteArray {} };
     DataManager::addToInQueue(inp);
 }
 
