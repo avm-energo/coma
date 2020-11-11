@@ -25,10 +25,10 @@ public:
 
     bool setupConnection();
     void closeConnection();
-    void writeDataAttempt(QByteArray &ba);
+    void writeDataAttempt(const QByteArray &ba);
 
     DeviceConnectStruct deviceInfo() const;
-    void setDeviceInfo(DeviceConnectStruct deviceInfo);
+    void setDeviceInfo(const DeviceConnectStruct &deviceInfo);
     static QList<DeviceConnectStruct> devicesFound(quint16 vid = 0xC251);
     void usbStateChanged(void *message);
 

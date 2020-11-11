@@ -25,6 +25,11 @@ UsbHidPort::~UsbHidPort()
 {
 }
 
+inline hid_device *openDevice(const DeviceConnectStruct &dev)
+{
+    return hid_open(dev.vendor_id, dev.product_id, dev.serial.toStdWString().c_str());
+}
+
 bool UsbHidPort::setupConnection()
 {
     if ((deviceInfo().vendor_id == 0) || (deviceInfo().product_id == 0))
@@ -37,7 +42,7 @@ bool UsbHidPort::setupConnection()
     HidDevice = hid_open_path(deviceInfo().path.toStdString().c_str());
 #endif
 #ifdef _WIN32
-    m_hidDevice = hid_open(deviceInfo().vendor_id, deviceInfo().product_id, deviceInfo().serial.toStdWString().c_str());
+    m_hidDevice = openDevice(m_deviceInfo);
 #endif
     if (!m_hidDevice)
     {
@@ -88,12 +93,12 @@ DeviceConnectStruct UsbHidPort::deviceInfo() const
     return m_deviceInfo;
 }
 
-void UsbHidPort::setDeviceInfo(DeviceConnectStruct deviceInfo)
+void UsbHidPort::setDeviceInfo(const DeviceConnectStruct &deviceInfo)
 {
     m_deviceInfo = deviceInfo;
 }
 
-void UsbHidPort::writeDataAttempt(QByteArray &ba)
+void UsbHidPort::writeDataAttempt(const QByteArray &ba)
 {
     QMutexLocker locker(&mutex_);
     m_writeQueue.append(ba);

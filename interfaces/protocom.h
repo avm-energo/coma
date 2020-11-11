@@ -3,7 +3,6 @@
 #include "baseinterface.h"
 #include "defines.h"
 
-#include <QObject>
 class Protocom : public BaseInterface
 {
     Q_OBJECT

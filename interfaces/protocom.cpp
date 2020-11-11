@@ -3,7 +3,6 @@
 #include "../gen/board.h"
 #include "../gen/datamanager.h"
 #include "../gen/modulebsi.h"
-#include "defines.h"
 #include "protocomthread.h"
 #include "usbhidport.h"
 
@@ -41,7 +40,11 @@ bool Protocom::start(const BaseInterface::ConnectStruct &st)
     connect(port, &UsbHidPort::finished, portThread, &QThread::deleteLater);
     connect(port, &UsbHidPort::finished, port, &UsbHidPort::deleteLater);
 
-    connect(port, &UsbHidPort::dataReceived, parser, &ProtocomThread::appendReadDataChunk);
+    connect(port, &UsbHidPort::dataReceived, [&](const QByteArray &ba) {
+        parser->appendReadDataChunk(ba);
+        parseThread->start();
+    });
+
     connect(parser, &ProtocomThread::writeDataAttempt, port, &UsbHidPort::writeDataAttempt);
 
     if (!port->setupConnection())
