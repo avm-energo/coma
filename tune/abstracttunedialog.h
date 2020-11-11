@@ -1,10 +1,10 @@
 #ifndef ABSTRACTTUNEDIALOG_H
 #define ABSTRACTTUNEDIALOG_H
 
+#include "../gen/datablock.h"
 #include "../gen/report.h"
 #include "../gen/s2.h"
 #include "../gen/udialog.h"
-#include "../models/valuemodel.h"
 
 #include <QByteArray>
 #include <QCloseEvent>
@@ -23,20 +23,22 @@ class AbstractTuneDialog : public UDialog
 {
     Q_OBJECT
 public:
-    struct BlockStruct
-    {
-        void *block;
-        int blocksize;
-    };
+    //    struct BlockStruct
+    //    {
+    //        void *block;
+    //        int blocksize;
+    //    };
 
     explicit AbstractTuneDialog(QWidget *parent = nullptr);
     ~AbstractTuneDialog();
 
     bool IsNeededDefConf;
 
-    int m_ConfigCounter;
-    QMap<int, BlockStruct> m_TuneBlockMap;
-    QMap<int, BlockStruct> m_ConfigBlockMap;
+    //    int m_ConfigCounter;
+    //    QMap<int, BlockStruct> m_TuneBlockMap;
+    //    QMap<int, BlockStruct> m_ConfigBlockMap;
+    QMap<int, DataBlock *> m_blocks;
+    int m_blockCount;
 
     QStringList lbls;
     bool Skipped, MeasurementEnabled, ok, TuneFileSaved;
@@ -49,19 +51,21 @@ public:
     int TuneVariant;       // вариант регулировочных параметров
     ReportModel *RepModel; // модель, в которую заносим данные для отчёта
     //    QString OrganizationString; // наименование организации, работающей с программой
-    ValueModel *m_VModel;
+    //    ValueModel *m_VModel;
     int m_tuneStep;
 
-    virtual void SetupUI() = 0;
+    void SetupUI();
     QWidget *TuneUI();
-    QWidget *BottomUI(int bacnum);
-    //    void addTuneBlock(void *block, int blocknum, int blocksize); // установка указателя на блок Bac
+    QWidget *BottomUI();
+    virtual QWidget *MainUI() = 0;
+    int addDataBlock(DataBlock::DataBlockTypes type, const QString &caption, void *block, void *defblock, int blocknum,
+        int blocksize);
     //    int setConfigPtr(void *ptr, int size);
 
     void WaitNSeconds(int SecondsToWait, bool isAllowedToStop = false);
     void Wait15Seconds();
 
-    void ProcessTune();
+    //    void ProcessTune();
     Error::Msg CheckPassword();
     virtual void SetLbls() = 0; // заполнить список сообщений
     virtual void SetPf() = 0;   // заполнить список функций настройки
@@ -80,7 +84,7 @@ public:
     virtual void FillBackBac(int bacnum) = 0;
     void SaveToFileEx(int bacnum);
     //    void ShowTable();
-    void ReadTuneCoefsByBac(int bacnum);
+    void ReadBlocks(DataBlock::DataBlockTypes type);
     Error::Msg LoadTuneSequenceFile();
     Error::Msg CheckCalibrStep();
     void SaveTuneSequenceFile();
@@ -97,7 +101,7 @@ signals:
 
 public slots:
     void CancelTune();
-    void ReadAllTuneCoefs();
+    //    void ReadAllTuneCoefs();
     void ReadTuneCoefs();
     bool WriteTuneCoefsSlot();
     void Good();

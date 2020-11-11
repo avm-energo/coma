@@ -18,13 +18,13 @@ private:
     ConfigKIV *CKIV;
     ConfigKIV::Bci m_BciSaveBlock;
 
-    void SetupUI() override;
     void SetLbls() override;
     void SetPf() override;
     void FillBac(int bacnum) override;
     void FillBackBac(int bacnum) override;
     void GetBdAndFill() override;
     Error::Msg SaveWorkConfig(int configblocknum) override;
+    QWidget *MainUI() override;
 
 private slots:
     int ReadAnalogMeasurements() override;

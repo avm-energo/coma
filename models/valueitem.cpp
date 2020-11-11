@@ -100,12 +100,12 @@ ValueItem &ValueItem::operator=(const ValueItem &item)
     return *this;
 }
 
-QVariant *ValueItem::dataPtr()
+QVariant ValueItem::data()
 {
     return m_data;
 }
 
-void ValueItem::setData(QVariant *data)
+void ValueItem::setData(QVariant data)
 {
     m_data = data;
 }
@@ -160,25 +160,26 @@ void ValueItem::setFormat(ValueItem::DataFormat fmt)
     m_format = fmt;
 }
 
-void *ValueItem::addData()
+QVariant ValueItem::addData()
 {
     return m_addData;
 }
 
-void ValueItem::setAddData(void *ptr)
+void ValueItem::setAddData(QVariant adddata)
 {
-    m_addData = ptr;
+    m_addData = adddata;
 }
 
-SpbDataStyleAdditionalDataClass::SpbDataStyleAdditionalDataClass(const SpbDataStyleAdditionalDataClass &cpy)
-    : min(cpy.min), max(cpy.max), decimals(cpy.decimals)
-{
-}
+// SpbDataStyleAdditionalDataClass::SpbDataStyleAdditionalDataClass(const SpbDataStyleAdditionalDataClass &cpy)
+//    : min(cpy.min), max(cpy.max), decimals(cpy.decimals)
+//{
+//}
 
-SpbDataStyleAdditionalDataClass &SpbDataStyleAdditionalDataClass::operator=(const SpbDataStyleAdditionalDataClass &cpy)
-{
-    min = cpy.min;
-    max = cpy.max;
-    decimals = cpy.decimals;
-    return *this;
-}
+// SpbDataStyleAdditionalDataClass &SpbDataStyleAdditionalDataClass::operator=(const SpbDataStyleAdditionalDataClass
+// &cpy)
+//{
+//    min = cpy.min;
+//    max = cpy.max;
+//    decimals = cpy.decimals;
+//    return *this;
+//}

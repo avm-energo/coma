@@ -36,7 +36,7 @@ SOURCES += \
     ../dialogs/fwuploaddialog.cpp \
     ../gen/datablock.cpp \
     ../gen/udialog.cpp \
-    ../models/datadelegate.cpp \
+    ../models/valuedelegate.cpp \
     ../models/valueitem.cpp \
     ../module/alarm.cpp \
     ../module/warn.cpp \
@@ -129,7 +129,7 @@ HEADERS += \
     ../dialogs/fwuploaddialog.h \
     ../gen/datablock.h \
     ../gen/udialog.h \
-    ../models/datadelegate.h \
+    ../models/valuedelegate.h \
     ../models/valueitem.h \
     ../module/alarm.h \
     ../module/warn.h \

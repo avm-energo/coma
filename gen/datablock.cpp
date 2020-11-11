@@ -25,16 +25,16 @@
 
 #include "datablock.h"
 
-#include "../models/datadelegate.h"
+#include "../models/valuedelegate.h"
 #include "../usb/commands.h"
 #include "../widgets/wd_func.h"
 
 #include <QGroupBox>
 #include <QVBoxLayout>
 
-DataBlock::DataBlock(const BlockDescriptionStruct &bds, QWidget *parent) : QWidget(parent)
+DataBlock::DataBlock(const BlockStruct &bds, QWidget *parent) : QWidget(parent)
 {
-    m_blockDescription = bds;
+    m_block = bds;
     //    m_blockNum = blocknum;
     //    m_blockType = blocktype;
     //    m_block = block;
@@ -49,13 +49,13 @@ void DataBlock::setModel(const QList<ValueItem *> &dd, int columnsnumber)
     m_VModel->setModel(dd, columnsnumber);
 }
 
-void DataBlock::setWidget()
+void DataBlock::widget()
 {
     QVBoxLayout *lyout = new QVBoxLayout;
     QVBoxLayout *vlyout = new QVBoxLayout;
-    QGroupBox *gb = new QGroupBox(m_blockDescription.blockname);
+    QGroupBox *gb = new QGroupBox(m_block.caption);
     ETableView *tv = new ETableView;
-    DataDelegate *chdg = new DataDelegate;
+    ValueDelegate *chdg = new ValueDelegate;
     tv->setItemDelegate(chdg);
     tv->setModel(m_VModel);
     vlyout->addWidget(tv);
@@ -64,26 +64,30 @@ void DataBlock::setWidget()
     setLayout(lyout);
 }
 
-void DataBlock::updateModel()
+DataBlock::BlockStruct DataBlock::block()
 {
-    m_VModel->updateModel();
+    return m_block;
 }
 
-void DataBlock::updateValues()
-{
-    m_VModel->updateFromModel();
-}
+// void DataBlock::updateModel()
+//{
+//    m_VModel->updateModel();
+//}
 
-Error::Msg DataBlock::writeBlockToModule(bool update)
+// void DataBlock::updateValues()
+//{
+//    m_VModel->updateFromModel();
+//}
+
+Error::Msg DataBlock::writeBlockToModule()
 {
-    switch (m_blockDescription.blocktype)
+    switch (m_block.blocktype)
     {
     case DataBlockTypes::BacBlock:
     {
-        if (update)
-            updateValues();
-        if (Commands::WriteBac(m_blockDescription.blocknum, &m_blockDescription.block, m_blockDescription.blocksize)
-            != Error::Msg::NoError)
+        //        if (update)
+        //            updateValues();
+        if (Commands::WriteBac(m_block.blocknum, &m_block.block, m_block.blocksize) != Error::Msg::NoError)
             return Error::Msg::GeneralError;
         break;
     }
@@ -103,39 +107,38 @@ Error::Msg DataBlock::writeBlockToModule(bool update)
     return Error::Msg::NoError;
 }
 
-Error::Msg DataBlock::readBlockFromModule(bool update)
+Error::Msg DataBlock::readBlockFromModule()
 {
-    switch (m_blockDescription.blocktype)
+    switch (m_block.blocktype)
     {
     case DataBlockTypes::BacBlock:
     {
-        if (Commands::GetBac(m_blockDescription.blocknum, &m_blockDescription.block, m_blockDescription.blocksize)
-            != Error::Msg::NoError)
+        if (Commands::GetBac(m_block.blocknum, &m_block.block, m_block.blocksize) != Error::Msg::NoError)
             return Error::Msg::GeneralError;
-        if (update)
-            updateModel();
+        //        if (update)
+        //            updateModel();
         break;
     }
     case DataBlockTypes::BdBlock:
     {
-        if (Commands::GetBd(m_blockDescription.blocknum, &m_blockDescription.block, m_blockDescription.blocksize)
-            != Error::Msg::NoError)
+        if (Commands::GetBd(m_block.blocknum, &m_block.block, m_block.blocksize) != Error::Msg::NoError)
             return Error::Msg::GeneralError;
-        if (update)
-            updateModel();
+        //        if (update)
+        //            updateModel();
         break;
     }
     case DataBlockTypes::BdaBlock:
     {
-        if (Commands::GetBda(m_blockDescription.blocknum, &m_blockDescription.block, m_blockDescription.blocksize)
-            != Error::Msg::NoError)
+        if (Commands::GetBda(m_block.blocknum, &m_block.block, m_block.blocksize) != Error::Msg::NoError)
             return Error::Msg::GeneralError;
-        if (update)
-            updateModel();
+        //        if (update)
+        //            updateModel();
         break;
     }
     default:
         break;
     }
+    //    emit m_VModel->dataChanged();
+
     return Error::Msg::NoError;
 }

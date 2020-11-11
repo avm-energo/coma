@@ -56,23 +56,23 @@ public:
     ~ValueItem() = default;
     ValueItem(const ValueItem &);
     ValueItem &operator=(const ValueItem &item);
-    template <typename T> void *newVar(const void *oldvar)
-    {
-        T *sl = static_cast<T *>(oldvar);
-        T *newsl = new T;
-        *newsl = *sl;
-        return newsl;
-    }
+    //    template <typename T> void *newVar(const void *oldvar)
+    //    {
+    //        T *sl = static_cast<T *>(oldvar);
+    //        T *newsl = new T;
+    //        *newsl = *sl;
+    //        return newsl;
+    //    }
 
-    template <typename T> void setVar(void *newvar, const void *oldvar)
-    {
-        T *sl = static_cast<T *>(oldvar);
-        T *newsl = static_cast<T *>(newvar);
-        *newsl = *sl;
-    }
+    //    template <typename T> void setVar(void *newvar, const void *oldvar)
+    //    {
+    //        T *sl = static_cast<T *>(oldvar);
+    //        T *newsl = static_cast<T *>(newvar);
+    //        *newsl = *sl;
+    //    }
 
-    QVariant *dataPtr();
-    void setData(QVariant *ptr);
+    QVariant data();
+    void setData(QVariant ptr);
     QString name();
     void setName(const QString &str);
     QString tooltip();
@@ -81,13 +81,13 @@ public:
     void setStyle(DataStyles stl);
     DataFormat format();
     void setFormat(DataFormat fmt);
-    void *addData();
-    void setAddData(void *ptr);
+    QVariant addData();
+    void setAddData(QVariant adddata);
 
 signals:
 
 private:
-    QVariant *m_data;   // pointer to the variable with data
+    QVariant m_data;    // pointer to the variable with data
     QString m_name;     // label name
     QString m_tooltip;  // tooltip on the screen
     DataStyles m_style; // style

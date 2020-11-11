@@ -4,22 +4,22 @@ ValueModel::ValueModel(QObject *parent) : QAbstractTableModel(parent)
 {
 }
 
-QVariant ValueModel::headerData(int section, Qt::Orientation orientation, int role) const
-{
-    Q_UNUSED(section)
-    Q_UNUSED(orientation)
-    Q_UNUSED(role)
-    return QVariant();
-}
+// QVariant ValueModel::headerData(int section, Qt::Orientation orientation, int role) const
+//{
+//    Q_UNUSED(section)
+//    Q_UNUSED(orientation)
+//    Q_UNUSED(role)
+//    return QVariant();
+//}
 
-bool ValueModel::setHeaderData(int section, Qt::Orientation orientation, const QVariant &value, int role)
-{
-    Q_UNUSED(section)
-    Q_UNUSED(orientation)
-    Q_UNUSED(value)
-    Q_UNUSED(role)
-    return true;
-}
+// bool ValueModel::setHeaderData(int section, Qt::Orientation orientation, const QVariant &value, int role)
+//{
+//    Q_UNUSED(section)
+//    Q_UNUSED(orientation)
+//    Q_UNUSED(value)
+//    Q_UNUSED(role)
+//    return true;
+//}
 
 QVariant ValueModel::data(const QModelIndex &index, int role) const
 {
@@ -88,11 +88,23 @@ int ValueModel::rowCount(const QModelIndex &index) const
     return m_data.size();
 }
 
-void ValueModel::setValueData(const QModelIndex &index, QVariant *valuePtr)
+int ValueModel::columnCount(const QModelIndex &index) const
 {
-    QPersistentModelIndex *pindex = new QPersistentModelIndex(index);
-    m_valuePtrMap[pindex] = valuePtr;
+    Q_UNUSED(index)
+    int maxsize = 0;
+    foreach (QVector<ValueItem *> vect, m_data)
+    {
+        if (maxsize < vect.size())
+            maxsize = vect.size();
+    }
+    return maxsize;
 }
+
+// void ValueModel::setValueData(const QModelIndex &index, QVariant valuePtr)
+//{
+//    QPersistentModelIndex *pindex = new QPersistentModelIndex(index);
+//    m_valuePtrMap[pindex] = valuePtr;
+//}
 
 void ValueModel::setModel(const QList<ValueItem *> &vl, int dataColumns)
 {
@@ -105,7 +117,7 @@ void ValueModel::setModel(const QList<ValueItem *> &vl, int dataColumns)
         setData(index(currow, curcol++), vi->name(), Qt::EditRole);
         setData(index(currow, curcol), value, Qt::EditRole);
         setData(index(currow, curcol), vi->tooltip(), Qt::ToolTipRole);
-        setValueData(index(currow, curcol++), vi->dataPtr());
+        //        setValueData(index(currow, curcol++), value);
         if (curcol > dataColumns)
         {
             currow++;
@@ -126,24 +138,24 @@ void ValueModel::setModel(const QList<ValueItem *> &vl, int dataColumns)
     //    }
 }
 
-void ValueModel::updateModel()
-{
-    for (QMap<QPersistentModelIndex *, QVariant *>::iterator it = m_valuePtrMap.begin(); it != m_valuePtrMap.end();
-         ++it)
-    {
-        QPersistentModelIndex *pindex = it.key();
-        QVariant *value = static_cast<QVariant *>(it.value());
-        setData(*pindex, *value, Qt::EditRole);
-    }
-}
+// void ValueModel::updateModel()
+//{
+//    for (QMap<QPersistentModelIndex *, QVariant >::iterator it = m_valuePtrMap.begin(); it != m_valuePtrMap.end();
+//         ++it)
+//    {
+//        QPersistentModelIndex *pindex = it.key();
+//        QVariant value = static_cast<QVariant >(it.value());
+//        setData(*pindex, value, Qt::EditRole);
+//    }
+//}
 
-void ValueModel::updateFromModel()
-{
-    for (QMap<QPersistentModelIndex *, QVariant *>::iterator it = m_valuePtrMap.begin(); it != m_valuePtrMap.end();
-         ++it)
-    {
-        QPersistentModelIndex *pindex = it.key();
-        QVariant *value = static_cast<QVariant *>(it.value());
-        *value = data(*pindex, Qt::DisplayRole);
-    }
-}
+// void ValueModel::updateFromModel()
+//{
+//    for (QMap<QPersistentModelIndex *, QVariant>::iterator it = m_valuePtrMap.begin(); it != m_valuePtrMap.end();
+//         ++it)
+//    {
+//        QPersistentModelIndex *pindex = it.key();
+//        QVariant value = static_cast<QVariant>(it.value());
+//        value = data(*pindex, Qt::DisplayRole);
+//    }
+//}
