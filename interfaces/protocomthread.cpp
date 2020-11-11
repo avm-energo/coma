@@ -107,6 +107,7 @@ void ProtocomThread::handle(const CN::Commands cmd)
     case Commands::ResultOk:
 
         // Ignore replies to splitted packet
+        // Не прибавляем никаких 1 или 2, надо будет проверить
         if (!isOneSegment(m_currentCommand.ba.size()))
             return;
         //  GVar MS GMode MS
@@ -346,7 +347,11 @@ ByteQueue prepareLongBlk(CommandStruct &cmdStr)
     ByteQueue bq;
     using CN::Limits::MaxSegmenthLength;
     // Количество сегментов
-    quint64 segCount = cmdStr.ba.size() / MaxSegmenthLength + 1;
+    quint64 segCount
+        = (cmdStr.ba.size()
+              + 1) // +1 Т.к. некоторые команды имеют в значимой части один дополнительный байт (ReadFile 2 байта)
+            / MaxSegmenthLength // Максимальная длинна сегмента
+        + 1; // Добавляем еще один сегмент в него попадет последняя часть
     bq.reserve(segCount);
 
     CommandStruct temp { cmdStr.cmd, cmdStr.arg1, cmdStr.arg2, cmdStr.ba.left(MaxSegmenthLength) };
