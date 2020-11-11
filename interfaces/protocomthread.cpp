@@ -10,13 +10,10 @@
 
 #include <QDebug>
 #include <QElapsedTimer>
-#include <QMessageBox>
 #include <QMetaEnum>
-#include <QSettings>
 #include <QThread>
 #include <QTimer>
 
-//#define MAX_STR 255
 typedef QQueue<QByteArray> ByteQueue;
 
 quint16 extractLength(const QByteArray &ba)
@@ -32,7 +29,7 @@ void appendInt16(QByteArray &ba, quint16 size)
     ba.append(static_cast<char>(size / 0x100));
 }
 
-bool checkCommand(char cmd)
+bool isCommandExist(int cmd)
 {
     if (cmd == -1)
     {
@@ -42,20 +39,27 @@ bool checkCommand(char cmd)
     return true;
 }
 
-void checkForNextSegment(QByteArray &ba)
+// Если размер меньше MaxSegmenthLength то
+// сегмент считается последним, тогда обрабатываем
+// полученные данные
+inline bool isOneSegment(unsigned len)
 {
-    if (ba.size() > 60) { }
+    using CN::Limits::MaxSegmenthLength;
+    Q_ASSERT(len <= MaxSegmenthLength);
+    if (len != MaxSegmenthLength)
+        return true;
+    return false;
 }
 
 QByteArray prepareOk(bool isStart)
 {
     QByteArray tmpba;
     if (isStart)
-        tmpba.append(CN::Message::StartReq);
+        tmpba.append(CN::Starters::Request);
     else
-        tmpba.append(CN::Message::Continue);
+        tmpba.append(CN::Starters::Continue);
 
-    tmpba.append(static_cast<char>(CN::Commands::ResultOk));
+    tmpba.append(CN::Commands::ResultOk);
     appendInt16(tmpba, 0);
     return tmpba;
 }
@@ -63,19 +67,20 @@ QByteArray prepareOk(bool isStart)
 QByteArray prepareError()
 {
     QByteArray tmpba;
-    tmpba.append(CN::Message::StartReq);
-    tmpba.append(CN::ResultError);
+    tmpba.append(CN::Starters::Request);
+    tmpba.append(CN::Commands::ResultError);
     appendInt16(tmpba, 1);
     // модулю не нужны коды ошибок
-    tmpba.append(char(CN::NullByte));
+    tmpba.append(static_cast<char>(CN::NullByte));
     return tmpba;
 }
 
 QByteArray prepareBlock(CommandStruct &cmdStr, CN::Starters startByte = CN::Starters::Request)
 {
     QByteArray ba;
-    ba.append(static_cast<char>(startByte));
-    ba.append(static_cast<char>((cmdStr.cmd)));
+    ba.append(startByte);
+    ba.append(cmdStr.cmd);
+    // TODO Проверить
     appendInt16(ba, cmdStr.ba.size() > 0 ? cmdStr.ba.size() : 1);
     ba.append(cmdStr.arg1.toUInt());
     ba.append(cmdStr.ba);
@@ -95,7 +100,7 @@ ByteQueue prepareLongBlk(CommandStruct &cmdStr)
 
     for (int pos = MaxSegmenthLength; pos < cmdStr.ba.size(); pos += MaxSegmenthLength)
     {
-        CommandStruct temp { cmdStr.cmd, cmdStr.arg1, cmdStr.arg2, cmdStr.ba.mid(pos, MaxSegmenthLength) };
+        temp = { cmdStr.cmd, cmdStr.arg1, cmdStr.arg2, cmdStr.ba.mid(pos, MaxSegmenthLength) };
         bq << prepareBlock(temp, CN::Starters::Continue);
     }
     return bq;
@@ -105,7 +110,7 @@ QByteArray prepareHiddenBlock(CommandStruct &cmdStr)
 {
     QByteArray ba;
     ba.append(CN::Message::StartReq);
-    ba.append(static_cast<char>((cmdStr.cmd)));
+    ba.append(cmdStr.cmd);
     appendInt16(ba, cmdStr.ba.size() > 0 ? cmdStr.ba.size() : 1);
     ba.append(cmdStr.arg1.toUInt());
     ba.append(cmdStr.ba);
@@ -114,24 +119,14 @@ QByteArray prepareHiddenBlock(CommandStruct &cmdStr)
 
 ProtocomThread::ProtocomThread(QObject *parent) : QObject(parent)
 {
-    QString tmps = "=== Log started ===\n";
+    QString tmps = "=== Log started ===";
     log = new LogClass;
     log->Init("canal.log");
     writeLog(tmps.toUtf8());
     RDLength = 0;
     SegEnd = 0;
     SegLeft = 0;
-    // OscNum = 0;
-    // OscTimer = new QTimer;
-    // OscTimer->setInterval(CN::TimeoutOscillogram);
-    // OscTimer->setSingleShot(false);
-    m_waitTimer = new QTimer;
-    m_waitTimer->setInterval(CN::Timeout);
-    // connect(OscTimer, &QTimer::timeout, this, &ProtocomThread::OscTimerTimeout);
-    // connect(m_waitTimer, &QTimer::timeout, &m_loop, &QEventLoop::quit);
-    // connect(this, &ProtocomThread::QueryFinished, &m_loop, &QEventLoop::quit);
-    // QSharedPointer<QSettings> sets = QSharedPointer<QSettings>(new QSettings("EvelSoft", PROGNAME));
-    // bool writeUSBLog = sets->value("WriteLog", "0").toBool();
+    connect(this, &ProtocomThread::readyRead, &ProtocomThread::initiateReceive);
 }
 
 Error::Msg ProtocomThread::result() const
@@ -156,6 +151,7 @@ void ProtocomThread::appendReadDataChunk(const QByteArray &readDataChunk)
     m_rwLocker.lockForWrite();
     m_buffer.second.append(readDataChunk);
     m_rwLocker.unlock();
+    emit readyRead();
 }
 
 void ProtocomThread::parse()
@@ -239,7 +235,6 @@ void ProtocomThread::InitiateSend()
     case CN::Write::File: // запись файла
     {
         m_writeData = InData;
-        // WRLength = m_writeData.length();
         SetWRSegNum(m_writeData.length());
         QByteArray tmpba = WRCheckForNextSegment(true);
         WriteDataToPort(tmpba);
@@ -320,7 +315,7 @@ void ProtocomThread::Finish(Error::Msg msg)
         qCritical() << msg;
     }
     m_result = msg;
-    emit QueryFinished();
+    emit errorOccurred(msg);
 }
 
 void ProtocomThread::SetWRSegNum(quint32 WRLength)
@@ -375,6 +370,7 @@ void ProtocomThread::ParseIncomeData(QByteArray ba)
     // ждём, пока принятый буфер не будет хотя бы длиной 3 байта или не произойдёт таймаут
     if (rdsize < 4)
         return;
+    byte startByte = ba.front();
     if (m_buffer.second.at(0) != CN::Message::StartRes)
     {
         Finish(Error::Msg::ReadError);
@@ -466,7 +462,6 @@ void ProtocomThread::ParseIncomeData(QByteArray ba)
                 Finish(Error::Msg::NoError);
                 return;
             }
-            // надо проверить, тот ли номер файла принимаем
             // не пришла ещё шапка файла
             if (rdsize < 20)
             {
@@ -474,32 +469,6 @@ void ProtocomThread::ParseIncomeData(QByteArray ba)
                 return;
             }
 
-            // шапка:
-            // WORD fname;		// имя файла
-            // WORD service;	// сервисное слово (по умолчанию 0xFF)
-            // DWORD size;		// размер файла (без заголовка)
-            // DWORD crc32;     // контрольная сумма
-            // DWORD thetime;	// время создания файла
-
-            quint8 tmpi = m_buffer.second.at(5);
-            quint16 filenum = quint16(tmpi * 256);
-            tmpi = m_buffer.second.at(4);
-            filenum += tmpi;
-            if (filenum != FNum)
-            {
-                Finish(Error::Msg::WrongFileError);
-                return;
-            }
-            // вытаскиваем размер файла
-            memcpy(&RDLength, &(m_buffer.second.data()[8]), sizeof(quint32));
-            RDLength += 16;
-            // размер файла должен быть не более 16М
-            if (RDLength > CN::Limits::MaxGetFileSize)
-            {
-                Finish(Error::Msg::SizeError);
-                return;
-            }
-            //                OutData.resize(RDLength);
             bStep++;
             break;
         }
@@ -601,13 +570,6 @@ void ProtocomThread::ParseIncomeData(QByteArray ba)
     }
 }
 
-void ProtocomThread::CheckForData()
-{
-    // QByteArray ba = RawRead(1000);
-    QByteArray ba;
-    ParseIncomeData(ba);
-}
-
 void ProtocomThread::OscTimerTimeout()
 {
     SendCmd(CN::Read::Progress);
@@ -695,8 +657,8 @@ void ProtocomThread::SendFile(unsigned char command, char board_type, int filenu
 ProtocomThread::~ProtocomThread()
 {
     log->deleteLater();
-    OscTimer->deleteLater();
-    m_waitTimer->deleteLater();
+    // OscTimer->deleteLater();
+    // m_waitTimer->deleteLater();
 }
 
 bool ProtocomThread::start(const int &devPos)
@@ -810,7 +772,8 @@ void ProtocomThread::handle(const CN::Commands cmd)
         //  GVar MS GMode MS
         if (!m_buffer.second.isEmpty())
             handleInt(m_buffer.second.front());
-        handleBool();
+        else
+            handleBool();
         return;
 
     case Commands::ResultError:
@@ -941,55 +904,64 @@ void ProtocomThread::initiateSend(const CommandStruct &cmdStr)
         return;
     }
     }
-    writeDataAttempt(ba);
+    emit writeDataAttempt(ba);
 }
 
 void ProtocomThread::initiateReceive(QByteArray ba)
 {
-    using namespace CN::Message;
+    using namespace CN;
 
     QByteArray tmps = "<-" + ba.toHex() + "\n";
     log->WriteRaw(tmps);
+    // Нет шапки
     if (ba.size() < 4)
     {
-        qCritical() << Error::SizeError;
+        qCritical() << Error::HeaderSizeError;
         return;
     }
-    if (!checkCommand(QMetaEnum::fromType<CN::Commands>().value(ba.at(1))))
-        return;
     byte cmd = ba.at(1);
+    int cmdCode = QMetaEnum::fromType<Commands>().value(cmd);
+    if (!isCommandExist(cmdCode))
+        return;
+
+    quint16 size;
+    std::copy(&ba.constData()[2], &ba.constData()[3], &size);
     switch (ba.front())
     {
-    case StartReq:
+    //    case Response:
+    //    {
+
+    //        m_buffer.first = size;
+    //        m_buffer.second.setRawData(&ba.constData()[4], size);
+    //        handle(Commands(cmd));
+    //    }
+    //    case Continue:
+    //    {
+
+    //        ba.remove(0, 4);
+    //        m_buffer.first += size;
+    //        m_buffer.second.append(ba);
+    //        // Если размер меньше MaxSegmenthLength то
+    //        // сегмент считается последним, тогда обрабатываем
+    //        // полученные данные
+    //        if (size != MaxSegmenthLength)
+    //            handle(Commands(cmd));
+    //    }
+    case Response:
     {
-        quint16 size;
-        std::copy(&ba.constData()[2], &ba.constData()[4], &size);
-        m_buffer.first = size;
-        m_buffer.second.setRawData(&ba.constData()[4], size);
-        handle(CN::Commands(cmd));
-    }
-    case Continue:
-    {
-        quint16 size;
-        std::copy(&ba.constData()[2], &ba.constData()[4], &size);
-        // TODO Переписать без условия
-        if (size != 768)
-        {
-            ba.truncate(size);
-            m_buffer.first += size;
-            m_buffer.second.append(ba);
-            handle(CN::Commands(cmd));
-        }
+        ba.remove(0, 4);
+        m_buffer.first += size;
+        m_buffer.second.append(ba);
+
+        if (isOneSegment(size))
+            handle(Commands(cmd));
         else
-        {
-            ba.remove(0, 4);
-            m_buffer.first += size;
-            m_buffer.second.append(ba);
-        }
+            prepareOk(false);
+        break;
     }
     default:
         qCritical() << Error::WrongCommandError;
-        return;
+        break;
     }
 }
 

@@ -44,13 +44,13 @@ constexpr unsigned MainLoopDelay = 100;
 //'\x00'
 constexpr byte NullByte = 0x00;
 // ответ "всё в порядке"
-constexpr byte ResultOk = 0x11;
+// constexpr byte ResultOk = 0x11;
 // запуск, остановка теста
-constexpr byte Test = 0x49;
+// constexpr byte Test = 0x49;
 // ответ "ошибка"
-constexpr byte ResultError = 0x0f0;
+// constexpr byte ResultError = 0x0f0;
 // неизвестная команда
-constexpr byte Unknown = 0xff;
+// constexpr byte Unknown = 0xff;
 namespace Read
 {
     // чтение блока стартовой информации
@@ -114,7 +114,7 @@ namespace Message
     // length is 2 bytes
     constexpr byte Length2Byte = 0x02;
 } // namespace Message
-enum class Starters : byte
+enum Starters : byte
 {
     // начало посылки
     Request = 0x3e,
@@ -124,7 +124,7 @@ enum class Starters : byte
     Response = 0x3c
 };
 
-enum class Commands : byte
+enum Commands : byte
 {
 
     // ответ "всё в порядке"

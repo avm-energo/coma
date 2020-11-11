@@ -42,6 +42,7 @@ bool Protocom::start(const BaseInterface::ConnectStruct &st)
     connect(port, &UsbHidPort::finished, port, &UsbHidPort::deleteLater);
 
     connect(port, &UsbHidPort::dataReceived, parser, &ProtocomThread::appendReadDataChunk);
+    connect(parser, &ProtocomThread::writeDataAttempt, port, &UsbHidPort::writeDataAttempt);
 
     if (!port->setupConnection())
         return false;

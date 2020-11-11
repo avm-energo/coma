@@ -56,16 +56,8 @@ private:
     int SegEnd;  // номер последнего байта в ReadData текущего сегмента
     int m_devicePosition;
 
-    // bool LastBlock; // признак того, что блок последний, и больше запрашивать не надо
-
     QByteArray InData, OutData;
     QByteArray m_writeData;
-    //    QString m_deviceName;
-
-    QTimer *OscTimer;
-    QTimer *m_waitTimer;
-
-    quint16 OscNum;
 
     void Send(char command, char parameter, QByteArray &ba, qint64 datasize);
     void InitiateSend();
@@ -74,15 +66,12 @@ private:
     void SetWRSegNum(quint32 WRLength);
     QByteArray WRCheckForNextSegment(int first);
 
-    void CheckForData();
     void OscTimerTimeout();
     void ParseIncomeData(QByteArray ba);
-    QByteArray RawRead(int bytes);
 
     void initiateReceive(QByteArray ba);
     void initiateSend(const CommandStruct &cmdStr);
     void handle(const CN::Commands cmd);
-    // void RawClose();
 
     LogClass *log;
 
@@ -103,4 +92,8 @@ signals:
     void ShowError(QString message);
     void QueryFinished();
     void writeDataAttempt(const QByteArray);
+
+    void errorOccurred(Error::Msg);
+    /// Like a QIODevice::readyRead()
+    void readyRead();
 };

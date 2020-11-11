@@ -151,6 +151,13 @@ bool UsbHidPort::writeData(QByteArray &ba)
         return false;
     }
 
+    if (ba.isEmpty())
+    {
+        writeLog(Error::Msg::NullDataError);
+        qCritical() << Error::Msg::NullDataError;
+        return false;
+    }
+
     if (ba.size() < HID::MaxSegmenthLength)
         ba.append(HID::MaxSegmenthLength - ba.size(), static_cast<char>(0x00));
 
@@ -159,7 +166,8 @@ bool UsbHidPort::writeData(QByteArray &ba)
     writeLog(ba.toHex(), ToDevice);
     size_t tmpt = static_cast<size_t>(ba.size());
 
-    if (hid_write(m_hidDevice, reinterpret_cast<unsigned char *>(ba.data()), tmpt) == -1)
+    int errorCode = hid_write(m_hidDevice, reinterpret_cast<unsigned char *>(ba.data()), tmpt);
+    if (errorCode == -1)
     {
         qCritical() << Error::Msg::WriteError;
         return false;
@@ -203,6 +211,7 @@ QList<DeviceConnectStruct> UsbHidPort::devicesFound(quint16 vid)
     return sl;
 }
 
+// FIXME Не реализовано
 void UsbHidPort::usbStateChanged(void *message)
 {
 #ifdef _WIN32
