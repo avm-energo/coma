@@ -5,6 +5,7 @@
 #include "../gen/timefunc.h"
 #include "ethernet.h"
 #include "iec104thread.h"
+#include "settingstypes.h"
 
 #include <QCoreApplication>
 #include <QDialog>
@@ -30,7 +31,11 @@ IEC104::~IEC104()
 
 bool IEC104::start(const ConnectStruct &st)
 {
+    Q_ASSERT(std::holds_alternative<IEC104Settings>(st.settings));
     INFOMSG("IEC104: connect");
+    if (!std::holds_alternative<IEC104Settings>(st.settings))
+        return false;
+
     m_working = false;
     EthThreadWorking = false;
     ParseThreadWorking = false;
@@ -38,7 +43,7 @@ bool IEC104::start(const ConnectStruct &st)
     QThread *thr = new QThread;
     Ethernet *eth = new Ethernet;
     eth->moveToThread(thr);
-    eth->IP = st.iec104st.ip;
+
     connect(eth, &Ethernet::Finished, thr, &QThread::quit);
     connect(eth, &Ethernet::Finished, eth, &QObject::deleteLater);
     connect(thr, &QThread::started, eth, &Ethernet::Run);
@@ -81,7 +86,10 @@ bool IEC104::start(const ConnectStruct &st)
     //    connect(m_thread104, &IEC104Thread::SetDataCount, this, &IEC104::SetDataCount);
     //    connect(m_thread104, &IEC104Thread::SendMessagefromParse, this, &IEC104::SendConfMessageOk);
 
-    m_thread104->SetBaseAdr(st.iec104st.baseadr);
+    auto settings = std::get<IEC104Settings>(st.settings);
+    eth->IP = settings.ip;
+    m_thread104->SetBaseAdr(settings.baseadr);
+
     //    m_thread104->incLS = 0;
     //    m_thread104->count = 0;
 

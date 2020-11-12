@@ -182,6 +182,7 @@ HEADERS += \
     ../interfaces/protocomthread.h \
     ../interfaces/usbhidport.h \
     ../interfaces/protocom.h \
+    ../interfaces/settingstypes.h \
     ../models/checkdelegate.h \
     ../models/errorprotocolmodel.h \
     ../models/etableitem.h \

@@ -7,6 +7,8 @@
 #include "../gen/stdfunc.h"
 #include "../gen/timefunc.h"
 #include "modbusthread.h"
+#include "serialport.h"
+#include "settingstypes.h"
 
 #include <QStandardPaths>
 #include <QThread>
@@ -43,8 +45,12 @@ ModBus::~ModBus()
 
 bool ModBus::start(const ConnectStruct &st)
 {
+    Q_ASSERT(std::holds_alternative<SerialPortSettings>(st.settings));
     INFOMSG("Modbus: connect");
-    Settings = st.serialst;
+    if (!std::holds_alternative<SerialPortSettings>(st.settings))
+        return false;
+
+    Settings = std::get<SerialPortSettings>(st.settings);
     SerialPort *port = new SerialPort();
     ModbusThread *cthr = new ModbusThread;
     //    cthr->Init(&InQueue, &OutList);

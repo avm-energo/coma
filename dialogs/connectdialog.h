@@ -1,7 +1,7 @@
 #ifndef CONNECTDIALOG_H
 #define CONNECTDIALOG_H
 
-#include "../interfaces/baseinterface.h"
+#include "../interfaces/settingstypes.h"
 
 #include <QDialog>
 #include <QModelIndex>
@@ -16,7 +16,7 @@ public:
     explicit ConnectDialog(QWidget *parent = nullptr);
 
 signals:
-    void Accepted(BaseInterface::ConnectStruct);
+    void Accepted(ConnectStruct);
     void Cancelled();
     void PingFinished();
     void ModelUpdated();
@@ -42,7 +42,7 @@ private slots:
     bool UpdateModel();
 
 private:
-    BaseInterface::ConnectStruct Connect;
+    ConnectStruct Connect;
 
     QList<quint32> m_hosts;
 

@@ -35,9 +35,10 @@
 #include "../dialogs/keypressdialog.h"
 #include "../dialogs/settingsdialog.h"
 #include "../gen/errorqueue.h"
-#include "../interfaces/protocom.h"
 #include "../gen/logger.h"
 #include "../gen/stdfunc.h"
+#include "../interfaces/protocom.h"
+#include "../interfaces/settingstypes.h"
 #include "../widgets/splashscreen.h"
 #include "../widgets/wd_func.h"
 
@@ -416,7 +417,7 @@ void Coma::StartWork()
         QEventLoop loop;
         Cancelled = false;
         ConnectDialog *dlg = new ConnectDialog;
-        connect(dlg, &ConnectDialog::Accepted, [this](BaseInterface::ConnectStruct st) {
+        connect(dlg, &ConnectDialog::Accepted, [this](const ConnectStruct &st) {
             this->ConnectSettings = st;
             emit CloseConnectDialog();
         });

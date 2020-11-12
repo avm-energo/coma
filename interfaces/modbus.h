@@ -4,7 +4,7 @@
 #include "../gen/datamanager.h"
 #include "../gen/logclass.h"
 #include "baseinterface.h"
-#include "serialport.h"
+#include "settingstypes.h"
 
 #include <QMutex>
 #include <QQueue>
@@ -123,7 +123,7 @@ signals:
     // void ReconnectSignal();
 
 private:
-    BaseInterface::SerialPortSettings Settings;
+    SerialPortSettings Settings;
     //    int CycleGroup;
     //    QTimer *PollingTimer;
     //    bool TimePollEnabled, MainPollEnabled;

@@ -4,6 +4,7 @@
 #include "../gen/datamanager.h"
 #include "../gen/modulebsi.h"
 #include "protocomthread.h"
+#include "settingstypes.h"
 #include "usbhidport.h"
 
 #include <QThread>
@@ -20,10 +21,15 @@ Protocom::Protocom(QObject *parent) : BaseInterface(parent)
 {
 }
 
-bool Protocom::start(const BaseInterface::ConnectStruct &st)
+bool Protocom::start(const ConnectStruct &st)
 {
     Q_ASSERT(Board::GetInstance().interfaceType() == Board::InterfaceType::USB);
-    UsbHidPort *port = new UsbHidPort(DeviceConnectStruct(), Log, this);
+    Q_ASSERT(std::holds_alternative<UsbHidSettings>(st.settings));
+    INFOMSG("Modbus: connect");
+    if (!std::holds_alternative<UsbHidSettings>(st.settings))
+        return false;
+
+    UsbHidPort *port = new UsbHidPort(std::get<UsbHidSettings>(st.settings), Log, this);
     ProtocomThread *parser = new ProtocomThread(this);
 
     QThread *portThread = new QThread;

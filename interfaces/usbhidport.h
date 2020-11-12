@@ -4,6 +4,7 @@
 #include "../gen/logclass.h"
 #include "defines.h"
 #include "hidapi/hidapi.h"
+#include "settingstypes.h"
 
 namespace HID
 {
@@ -20,16 +21,16 @@ class UsbHidPort : public QObject
 {
     Q_OBJECT
 public:
-    explicit UsbHidPort(const DeviceConnectStruct &dev, LogClass *logh, QObject *parent = 0);
+    explicit UsbHidPort(const UsbHidSettings &dev, LogClass *logh, QObject *parent = 0);
     ~UsbHidPort();
 
     bool setupConnection();
     void closeConnection();
     void writeDataAttempt(const QByteArray &ba);
 
-    DeviceConnectStruct deviceInfo() const;
-    void setDeviceInfo(const DeviceConnectStruct &deviceInfo);
-    static QList<DeviceConnectStruct> devicesFound(quint16 vid = 0xC251);
+    UsbHidSettings deviceInfo() const;
+    void setDeviceInfo(const UsbHidSettings &deviceInfo);
+    static QList<UsbHidSettings> devicesFound(quint16 vid = 0xC251);
     void usbStateChanged(void *message);
 
 signals:
@@ -56,5 +57,5 @@ private:
     LogClass *log;
     QMutex mutex_;
     QList<QByteArray> m_writeQueue;
-    DeviceConnectStruct m_deviceInfo;
+    UsbHidSettings m_deviceInfo;
 };

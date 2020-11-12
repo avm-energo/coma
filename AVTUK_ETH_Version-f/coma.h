@@ -1,10 +1,10 @@
 #ifndef COMA_H
 #define COMA_H
 
-//#include "../alarm/alarmclass.h"
 #include "../dialogs/connectdialog.h"
 #include "../interfaces/iec104.h"
 #include "../interfaces/modbus.h"
+#include "../interfaces/settingstypes.h"
 #include "../module/module.h"
 #include "../widgets/alarmstateallwidget.h"
 #include "../widgets/alarmwidget.h"
@@ -203,7 +203,7 @@ private:
     ModBus *ChModbus;
     BaseInterface *m_iface;
 
-    BaseInterface::ConnectStruct ConnectSettings;
+    ConnectStruct ConnectSettings;
 
     void LoadSettings();
     void SaveSettings();

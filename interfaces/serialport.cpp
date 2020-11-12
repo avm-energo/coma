@@ -17,7 +17,7 @@ SerialPort::~SerialPort()
         Port->close();
 }
 
-Error::Msg SerialPort::Init(BaseInterface::SerialPortSettings settings)
+Error::Msg SerialPort::Init(SerialPortSettings settings)
 {
     Q_ASSERT(Board::GetInstance().interfaceType() == Board::InterfaceType::RS485);
 

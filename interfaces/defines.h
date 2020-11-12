@@ -146,27 +146,6 @@ enum Direction
     FromDevice
 };
 
-struct DeviceConnectStruct
-{
-    explicit DeviceConnectStruct() = default;
-    explicit DeviceConnectStruct(unsigned short dev, unsigned short pid, const QString &arr, const QString &str)
-        : vendor_id(dev), product_id(pid), serial(arr), path(str)
-    {
-    }
-    friend bool operator==(const DeviceConnectStruct &lhs, const DeviceConnectStruct &rhs)
-    {
-        return ((lhs.product_id == rhs.product_id) && (lhs.vendor_id == rhs.vendor_id) && (lhs.serial == rhs.serial));
-    }
-    friend bool operator!=(const DeviceConnectStruct &lhs, const DeviceConnectStruct &rhs)
-    {
-        return !(lhs == rhs);
-    }
-    unsigned short vendor_id;
-    unsigned short product_id;
-    QString serial;
-    QString path;
-};
-
 struct CommandStruct
 {
     CN::Commands cmd;

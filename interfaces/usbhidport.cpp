@@ -15,7 +15,7 @@
 // clang-format on
 #endif
 
-UsbHidPort::UsbHidPort(const DeviceConnectStruct &dev, LogClass *logh, QObject *parent)
+UsbHidPort::UsbHidPort(const UsbHidSettings &dev, LogClass *logh, QObject *parent)
     : QObject(parent), log(logh), m_deviceInfo(dev)
 {
     m_hidDevice = nullptr;
@@ -25,7 +25,7 @@ UsbHidPort::~UsbHidPort()
 {
 }
 
-inline hid_device *openDevice(const DeviceConnectStruct &dev)
+inline hid_device *openDevice(const UsbHidSettings &dev)
 {
     return hid_open(dev.vendor_id, dev.product_id, dev.serial.toStdWString().c_str());
 }
@@ -88,12 +88,12 @@ void UsbHidPort::poll()
     finish();
 }
 
-DeviceConnectStruct UsbHidPort::deviceInfo() const
+UsbHidSettings UsbHidPort::deviceInfo() const
 {
     return m_deviceInfo;
 }
 
-void UsbHidPort::setDeviceInfo(const DeviceConnectStruct &deviceInfo)
+void UsbHidPort::setDeviceInfo(const UsbHidSettings &deviceInfo)
 {
     m_deviceInfo = deviceInfo;
 }
@@ -190,18 +190,18 @@ void UsbHidPort::checkQueue()
     }
 }
 
-QList<DeviceConnectStruct> UsbHidPort::devicesFound(quint16 vid)
+QList<UsbHidSettings> UsbHidPort::devicesFound(quint16 vid)
 {
     hid_device_info *devs, *cur_dev;
     // Enumerate all, extract only needed
     devs = hid_enumerate(0x0, 0x0);
     cur_dev = devs;
-    QList<DeviceConnectStruct> sl;
+    QList<UsbHidSettings> sl;
     while (cur_dev)
     {
         if (cur_dev->vendor_id == vid)
         {
-            DeviceConnectStruct buffer {
+            UsbHidSettings buffer {
                 cur_dev->vendor_id,                              // Vendor ID
                 cur_dev->product_id,                             // Product ID
                 QString::fromWCharArray(cur_dev->serial_number), // Serial number

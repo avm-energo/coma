@@ -105,15 +105,18 @@ void ConnectDialog::SetInterface()
 
 void ConnectDialog::SetUsb(QModelIndex index)
 {
-    BaseInterface::ConnectStruct st; // temporary var
-    if (index.isValid())
-    {
-        //        QDialog *dlg = this->findChild<QDialog *>("connectdlg");
-        //        EProtocom::GetInstance().setDeviceName(WDFunc::TVData(dlg, "usbtv", 1).toString());
-        //        EProtocom::GetInstance().setDevicePosition(index.row());
-        st.usbDevicePosition = index.row();
-        emit Accepted(st);
-    }
+    if (!index.isValid())
+        return;
+    auto *mdl = index.model();
+    int row = index.row();
+
+    UsbHidSettings settings;
+    settings.vendor_id = mdl->data(mdl->index(row, 0)).toUInt();
+    settings.product_id = mdl->data(mdl->index(row, 1)).toUInt();
+    settings.serial = mdl->data(mdl->index(row, 2)).toString();
+    settings.path = mdl->data(mdl->index(row, 3)).toString();
+    ConnectStruct st { QString(), settings };
+    emit Accepted(st);
 }
 
 void ConnectDialog::AddEth()
@@ -220,12 +223,13 @@ void ConnectDialog::SetCancelled()
 
 void ConnectDialog::SetEth(QModelIndex index)
 {
-    BaseInterface::ConnectStruct st;
     auto *mdl = index.model();
     int row = index.row();
-    st.name = mdl->data(mdl->index(row, 0)).toString();
-    st.iec104st.ip = mdl->data(mdl->index(row, 1)).toString();
-    st.iec104st.baseadr = mdl->data(mdl->index(row, 2)).toUInt();
+    QString name = mdl->data(mdl->index(row, 0)).toString();
+    IEC104Settings settings;
+    settings.ip = mdl->data(mdl->index(row, 1)).toString();
+    settings.baseadr = mdl->data(mdl->index(row, 2)).toUInt();
+    ConnectStruct st { name, settings };
     emit Accepted(st);
 }
 
@@ -386,15 +390,18 @@ void ConnectDialog::AddRs()
 
 void ConnectDialog::SetRs(QModelIndex index)
 {
-    BaseInterface::ConnectStruct st;
+
     auto *mdl = index.model();
     int row = index.row();
-    st.name = mdl->data(mdl->index(row, 0)).toString();
-    st.serialst.Port = mdl->data(mdl->index(row, 1)).toString();
-    st.serialst.Baud = mdl->data(mdl->index(row, 2)).toUInt();
-    st.serialst.Parity = mdl->data(mdl->index(row, 3)).toString();
-    st.serialst.Stop = mdl->data(mdl->index(row, 4)).toString();
-    st.serialst.Address = mdl->data(mdl->index(row, 5)).toUInt();
+
+    QString name = mdl->data(mdl->index(row, 0)).toString();
+    SerialPortSettings settings;
+    settings.Port = mdl->data(mdl->index(row, 1)).toString();
+    settings.Baud = mdl->data(mdl->index(row, 2)).toUInt();
+    settings.Parity = mdl->data(mdl->index(row, 3)).toString();
+    settings.Stop = mdl->data(mdl->index(row, 4)).toString();
+    settings.Address = mdl->data(mdl->index(row, 5)).toUInt();
+    ConnectStruct st { name, settings };
     emit Accepted(st);
 }
 

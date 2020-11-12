@@ -7,33 +7,11 @@
 
 #include <QObject>
 
-struct SerialPortSettings;
+struct ConnectStruct;
 class BaseInterface : public QObject
 {
     Q_OBJECT
 public:
-    struct IEC104Settings
-    {
-        quint16 baseadr;
-        QString ip;
-    };
-
-    struct SerialPortSettings
-    {
-        quint32 Baud;
-        QString Parity;
-        QString Stop;
-        quint8 Address;
-        QString Port;
-    };
-
-    struct ConnectStruct
-    {
-        QString name;
-        int usbDevicePosition;
-        IEC104Settings iec104st; // IEC104 settings
-        SerialPortSettings serialst;
-    };
     bool m_working;
     LogClass *Log;
 
