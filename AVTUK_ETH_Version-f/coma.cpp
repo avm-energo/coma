@@ -35,6 +35,7 @@
 #include "../dialogs/keypressdialog.h"
 #include "../dialogs/settingsdialog.h"
 #include "../gen/errorqueue.h"
+#include "../interfaces/protocom.h"
 #include "../gen/logger.h"
 #include "../gen/stdfunc.h"
 #include "../widgets/splashscreen.h"
@@ -1137,7 +1138,7 @@ void Coma::Connect()
     case Board::InterfaceType::USB:
     {
         //        m_iface = new USBWorker();
-        NewUSB();
+        m_iface = new Protocom;
         //        res = Commands::Connect();
         //        if (res != Error::Msg::NoError)
         //        {
