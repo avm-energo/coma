@@ -16,7 +16,9 @@ TuneKIVCheck::TuneKIVCheck(ConfigKIV *ckiv, TuneKIV *kiv, QWidget *parent) : Abs
     SetupUI();
 }
 
-void TuneKIVCheck::SetupUI() { }
+void TuneKIVCheck::SetupUI()
+{
+}
 
 void TuneKIVCheck::SetLbls()
 {
@@ -45,11 +47,11 @@ void TuneKIVCheck::SetPf()
     pf[lbls.at(count++)] = func;
 }
 
-void TuneKIVCheck::FillBac(int bacnum) { Q_UNUSED(bacnum) }
+// void TuneKIVCheck::FillBac(int bacnum) { Q_UNUSED(bacnum) }
 
-void TuneKIVCheck::FillBackBac(int bacnum) { Q_UNUSED(bacnum) }
+// void TuneKIVCheck::FillBackBac(int bacnum) { Q_UNUSED(bacnum) }
 
-void TuneKIVCheck::GetBdAndFill() { }
+// void TuneKIVCheck::GetBdAndFill() { }
 
 Error::Msg TuneKIVCheck::SaveWorkConfig(int configblocknum)
 {
@@ -61,11 +63,19 @@ Error::Msg TuneKIVCheck::SaveWorkConfig(int configblocknum)
     return Error::Msg::NoError;
 }
 
-int TuneKIVCheck::ReadAnalogMeasurements() { return 0; }
+int TuneKIVCheck::ReadAnalogMeasurements()
+{
+    return 0;
+}
 
-void TuneKIVCheck::SetDefCoefs() { }
+void TuneKIVCheck::SetDefCoefs()
+{
+}
 
-Error::Msg TuneKIVCheck::setSMode2() { return Commands::SetMode(0x02); }
+Error::Msg TuneKIVCheck::setSMode2()
+{
+    return Commands::SetMode(0x02);
+}
 
 Error::Msg TuneKIVCheck::setNewConfig()
 {

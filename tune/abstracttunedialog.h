@@ -37,7 +37,7 @@ public:
     //    int m_ConfigCounter;
     //    QMap<int, BlockStruct> m_TuneBlockMap;
     //    QMap<int, BlockStruct> m_ConfigBlockMap;
-    QMap<int, DataBlock *> m_blocks;
+    QList<DataBlock *> m_blocks;
     int m_blockCount;
 
     QStringList lbls;
@@ -76,19 +76,21 @@ public:
     void SkMsgSetVisible(int msg, bool Visible = true);
     void MsgClear();
     //    QByteArray *ChooseFileForOpen(QString mask);
-    bool WriteTuneCoefs(int bacnum);
-    Error::Msg SaveAllTuneCoefs();
+    bool WriteTuneCoefs(int blocknum);
+    Error::Msg SaveTuneBlocksToFiles();
     void PrereadConf();
-    virtual void GetBdAndFill() = 0;
-    virtual void FillBac(int bacnum) = 0;
-    virtual void FillBackBac(int bacnum) = 0;
-    void SaveToFileEx(int bacnum);
+    //    void GetBdAndFill();
+
+    //    virtual void FillBac(int bacnum) = 0;
+    //    virtual void FillBackBac(int bacnum) = 0;
+    //    void SaveToFileEx(int bacnum);
     //    void ShowTable();
     void ReadBlocks(DataBlock::DataBlockTypes type);
+    void WriteBlocks(DataBlock::DataBlockTypes type);
     Error::Msg LoadTuneSequenceFile();
     Error::Msg CheckCalibrStep();
     void SaveTuneSequenceFile();
-    virtual Error::Msg SaveWorkConfig(int configblocknum = 0);
+    Error::Msg SaveWorkConfig(int configblocknum);
 
 signals:
     //    void PasswordChecked();
@@ -110,7 +112,7 @@ public slots:
     virtual void SetDefCoefs() = 0;
     void TuneReadCoefs(int);
 
-    void SaveToFile();
+    //    void SaveToFile();
 
 private:
     void SetMeasurementEnabled(bool enabled);
@@ -121,7 +123,7 @@ private slots:
     virtual int ReadAnalogMeasurements() = 0;
     //    void UpdateNSecondsWidget();
     void MeasTimerTimeout(); // по событию от таймера при активном режиме измерений обновить данные
-    void LoadFromFile();
+    void LoadTuneBlocksFromFile();
 
 protected:
     void closeEvent(QCloseEvent *e);

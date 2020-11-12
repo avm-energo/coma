@@ -20,9 +20,9 @@ private:
 
     void SetLbls() override;
     void SetPf() override;
-    void FillBac(int bacnum) override;
-    void FillBackBac(int bacnum) override;
-    void GetBdAndFill() override;
+    //    void FillBac(int bacnum) override;
+    //    void FillBackBac(int bacnum) override;
+    //    void GetBdAndFill() override;
     Error::Msg SaveWorkConfig(int configblocknum) override;
     QWidget *MainUI() override;
 
