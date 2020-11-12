@@ -6,6 +6,7 @@
 
 #include <QDebug>
 #include <QMetaEnum>
+#include <array>
 
 typedef QQueue<QByteArray> ByteQueue;
 
@@ -22,9 +23,10 @@ QByteArray prepareError();
 QByteArray prepareBlock(CommandStruct &cmdStr, CN::Starters startByte = CN::Starters::Request);
 ByteQueue prepareLongBlk(CommandStruct &cmdStr);
 
-void handleTime(const QByteArray &ba);
-void handleBitString(const QByteArray &ba);
-void handleFloat(const QByteArray &ba, quint16 addr);
+void handleBitString(const QByteArray &ba, quint16 sigAddr);
+void handleBitStringArray(const QByteArray &ba, QList<quint16> arr_addr);
+void handleFloat(const QByteArray &ba, quint32 sigAddr);
+void handleFloatArray(const QByteArray &ba, quint32 sigAddr, quint32 sigCount);
 void handleFile(const QByteArray &ba, quint16 addr);
 void handleInt(const byte num);
 void handleBool(const bool status = true, int errorSize = 0, int errorCode = 0);
@@ -101,7 +103,8 @@ void ProtocomThread::handle(const CN::Commands cmd)
 {
     using namespace CN;
     using namespace DataTypes;
-    uint addr = m_currentCommand.arg1.toUInt();
+    quint32 addr = m_currentCommand.arg1.toUInt();
+    quint32 count = m_currentCommand.arg2.toUInt();
     switch (cmd)
     {
     case Commands::ResultOk:
@@ -124,37 +127,37 @@ void ProtocomThread::handle(const CN::Commands cmd)
 
     case Commands::ReadTime:
 
-        handleTime(m_buffer.second);
+        handleBitString(m_buffer.second, addr);
         return;
 
     case Commands::ReadBlkStartInfo:
 
-        handleBitString(m_buffer.second);
+        handleBitStringArray(m_buffer.second, bsiReg);
         return;
 
     case Commands::ReadBlkAC:
 
-        handleFloat(m_buffer.second, addr);
+        handleFloatArray(m_buffer.second, addr, count);
         return;
 
     case Commands::ReadBlkDataA:
 
-        handleFloat(m_buffer.second, addr);
+        handleFloatArray(m_buffer.second, addr, count);
         return;
 
     case Commands::ReadBlkData:
 
-        handleFloat(m_buffer.second, addr);
+        handleFloatArray(m_buffer.second, addr, count);
         return;
 
     case Commands::ReadBlkTech:
 
-        handleFloat(m_buffer.second, addr);
+        handleFloatArray(m_buffer.second, addr, count);
         return;
 
     case Commands::ReadProgress:
 
-        handleBitString(m_buffer.second);
+        handleBitString(m_buffer.second, addr);
         return;
 
     case Commands::ReadFile:
@@ -365,25 +368,43 @@ ByteQueue prepareLongBlk(CommandStruct &cmdStr)
     return bq;
 }
 
-void handleTime(const QByteArray &ba)
+void handleBitString(const QByteArray &ba, quint16 sigAddr)
 {
-    quint64 time = ba.toULongLong();
-    DataTypes::GeneralResponseStruct resp { DataTypes::GeneralResponseTypes::Ok, time };
-    DataManager::addSignalToOutList(DataTypes::SignalTypes::GeneralResponse, resp);
+    Q_ASSERT(ba.size() != 4);
+    quint32 value = ba.toUInt();
+    DataTypes::BitStringStruct resp { sigAddr, value, NULL };
+    DataManager::addSignalToOutList(DataTypes::SignalTypes::BitString, resp);
 }
 
-void handleBitString(const QByteArray &ba)
+void handleBitStringArray(const QByteArray &ba, QList<quint16> arr_addr)
 {
-    // 3c21 3c00
-    // a200000087000000000003010b0002000e0000006a020000320043000451383233393736020000004323330000000004785634126070e712001
+    Q_ASSERT(ba.size() / 4 != arr_addr.size());
+    for (int i = 0; i != arr_addr.size(); i++)
+    {
+        QByteArray temp = ba.mid(sizeof(qint32) * i, sizeof(qint32));
+        handleBitString(temp, arr_addr.at(i));
+    }
 }
 
-void handleFloat(const QByteArray &ba, quint16 addr)
+void handleFloat(const QByteArray &ba, quint32 sigAddr)
 {
+    Q_ASSERT(ba.size() != 4);
     float blk = ba.toFloat();
     // std::copy_n(ba.constData(), sizeof(float), blk);
-    DataTypes::FloatStruct resp { addr, blk };
+    DataTypes::FloatStruct resp { sigAddr, blk };
     DataManager::addSignalToOutList(DataTypes::SignalTypes::Float, resp);
+}
+
+void handleFloatArray(const QByteArray &ba, quint32 sigAddr, quint32 sigCount)
+{
+    if (!sigCount)
+        handleFloat(ba, sigAddr);
+    Q_ASSERT(ba.size() != (sigCount * 4));
+    for (quint32 i = 0; i != sigCount; i++)
+    {
+        QByteArray temp = ba.mid(sizeof(qint32) * i, sizeof(qint32));
+        handleFloat(temp, sigAddr + i);
+    }
 }
 
 void handleFile(const QByteArray &ba, quint16 addr)

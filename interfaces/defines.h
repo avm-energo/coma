@@ -43,77 +43,7 @@ constexpr unsigned TimeoutOscillogram = 1000;
 constexpr unsigned MainLoopDelay = 100;
 //'\x00'
 constexpr byte NullByte = 0x00;
-// ответ "всё в порядке"
-// constexpr byte ResultOk = 0x11;
-// запуск, остановка теста
-// constexpr byte Test = 0x49;
-// ответ "ошибка"
-// constexpr byte ResultError = 0x0f0;
-// неизвестная команда
-// constexpr byte Unknown = 0xff;
-namespace Read
-{
-    // чтение блока стартовой информации
-    constexpr byte BlkStartInfo = 0x21;
-    // чтение настроечных коэффициентов
-    constexpr byte BlkAC = 0x22;
-    // чтение текущих данных без настройки
-    constexpr byte BlkDataA = 0x23;
-    // чтение блока текущих данных
-    constexpr byte BlkData = 0x24;
-    // чтение технологического блока
-    constexpr byte BlkTech = 0x26;
-    // чтение файла
-    constexpr byte File = 0x25;
-    // чтение номера варианта использования
-    constexpr byte Variant = 0x27;
-    // чтение текущего режима работы
-    constexpr byte Mode = 0x28;
-    // чтение времени из МНК в формате UNIX
-    constexpr byte Time = 0x29;
-    // запрос текущего прогресса
-    constexpr byte Progress = 0x46;
 
-} // namespace Read
-namespace Write
-{
-    // запись настроечных коэффициентов
-    constexpr byte BlkAC = 0x31;
-    // посылка блока данных
-    constexpr byte BlkData = 0x34;
-    // посылка команды
-    constexpr byte BlkCmd = 0x35;
-    // запись технологического блока
-    constexpr byte BlkTech = 0x2B;
-    // запись файла
-    constexpr byte File = 0x32;
-    // задание варианта использования
-    constexpr byte Variant = 0x44;
-    // задание текущего режима работы
-    constexpr byte Mode = 0x43;
-    // запись времени в МНК в формате UNIX
-    constexpr byte Time = 0x2A;
-    // переход на новое ПО
-    constexpr byte Upgrade = 0x40;
-    // стирание технологического блока
-    constexpr byte EraseTech = 0x45;
-    // стирание счётчиков дискретных состояний
-    constexpr byte EraseCnt = 0x47;
-    // запись версии аппаратуры модуля/серийного номера/типа платы
-    constexpr byte Hardware = 0x48;
-} // namespace Write
-namespace Message
-{
-    //  request–response
-    // начало посылки
-    constexpr byte StartReq = 0x3e;
-    // продолжение посылки
-    constexpr byte Continue = 0x23;
-    // начало посылки модуля
-    constexpr byte StartRes = 0x3c;
-    // length is 2 bytes
-    constexpr byte Length2Byte = 0x02;
-} // namespace Message
 enum Starters : byte
 {
     // начало посылки
@@ -245,6 +175,9 @@ struct CommandStruct
     QByteArray ba;
 };
 
+// Список регистров BSI
+const QList<quint16> bsiReg { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };
+
 // GBsi,ErPg - bitstring,
 // GBac, GBda, GBd,GBt - float,
 // GF - file
@@ -259,5 +192,11 @@ struct CommandStruct
 
 // Получаем номер блока по номеру регистра
 // Количество регистров необхимо для проверки
-const QMap<quint16, QPair<quint8, quint16>> getBlkByReg { { 2420, { 4, 14 } }, { 2400, { 5, 14 } }, { 4501, { 8, 2 } },
-    { 1000, { 2, 16 } }, { 1100, { 3, 16 } }, { 101, { 0, 2 } } };
+const QMap<quint16, QPair<quint8, quint16>> getBlkByReg {
+    { 2420, { 4, 14 } }, //
+    { 2400, { 5, 14 } }, //
+    { 4501, { 8, 2 } },  //
+    { 1000, { 2, 16 } }, //
+    { 1100, { 3, 16 } }, //
+    { 101, { 0, 2 } }    //
+};
