@@ -11,7 +11,7 @@ class ConfKIVDialog : public AbstractConfDialog
 {
     Q_OBJECT
 public:
-    explicit ConfKIVDialog(S2ConfigType *S2Config, QWidget *parent = nullptr);
+    explicit ConfKIVDialog(ConfigKIV *ckiv, QWidget *parent = nullptr);
     ~ConfKIVDialog();
 
 private:
@@ -35,8 +35,8 @@ public slots:
 
 private slots:
     void SetDefConf() override;
-    void Start_Timer();
-    void Stop_Timer();
+    //    void Start_Timer();
+    //    void Stop_Timer();
 };
 
 #endif // CONFDIALOG84_H

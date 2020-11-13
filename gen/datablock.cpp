@@ -28,11 +28,12 @@
 #include "../models/valuedelegate.h"
 #include "../usb/commands.h"
 #include "../widgets/wd_func.h"
+#include "files.h"
 
 #include <QGroupBox>
 #include <QVBoxLayout>
 
-DataBlock::DataBlock(const BlockStruct &bds, QWidget *parent) : QWidget(parent)
+DataBlock::DataBlock(const BlockStruct &bds, QObject *parent) : QObject(parent)
 {
     m_block = bds;
     //    m_blockNum = blocknum;
@@ -49,8 +50,9 @@ void DataBlock::setModel(const QList<ValueItem *> &dd, int columnsnumber)
     m_VModel->setModel(dd, columnsnumber);
 }
 
-void DataBlock::widget()
+QWidget *DataBlock::widget()
 {
+    QWidget *w = new QWidget;
     QVBoxLayout *lyout = new QVBoxLayout;
     QVBoxLayout *vlyout = new QVBoxLayout;
     QGroupBox *gb = new QGroupBox(m_block.caption);
@@ -61,7 +63,8 @@ void DataBlock::widget()
     vlyout->addWidget(tv);
     gb->setLayout(vlyout);
     lyout->addWidget(gb);
-    setLayout(lyout);
+    w->setLayout(lyout);
+    return w;
 }
 
 DataBlock::BlockStruct DataBlock::block()
@@ -135,10 +138,32 @@ Error::Msg DataBlock::readBlockFromModule()
         //            updateModel();
         break;
     }
+    case DataBlock::DataBlockTypes::BciBlock:
+    {
+        S2ConfigType *s2 = static_cast<S2ConfigType *>(m_block.block);
+        return Commands::GetFileWithRestore(1, s2);
+    }
     default:
         break;
     }
     //    emit m_VModel->dataChanged();
 
     return Error::Msg::NoError;
+}
+
+void DataBlock::getFileProperties(DataBlock::DataBlockTypes type, FilePropertiesStruct &st)
+{
+    QString usbserialnum = EProtocom::GetInstance().usbSerial();
+    //    QString fileExt, fileName, fileMask;
+    if (type == DataBlock::DataBlockTypes::BacBlock)
+    {
+        st.extension = "tn";
+        st.mask = "Tune files (*.tn?)";
+    }
+    else if (type == DataBlock::DataBlockTypes::BciBlock)
+    {
+        st.extension = "cf";
+        st.mask = "Configuration files (*.cf?)";
+    }
+    st.filename = usbserialnum + "." + st.extension;
 }

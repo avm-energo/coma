@@ -61,7 +61,7 @@ Module *Module::createModule(QTimer *updateTimer)
         case Board::DeviceModel::KIV:
         {
             ConfigKIV *CKIV = new ConfigKIV(s2Config);
-            TuneKIV *TKIV = new TuneKIV(0, s2Config);
+            //            TuneKIV *TKIV = new TuneKIV(0, s2Config);
             m->addDialogToList(new ConfKIVDialog(s2Config), "Конфигурирование", "conf1");
             CheckKIVDialog *cdkiv = new CheckKIVDialog;
             m->addDialogToList(cdkiv, "Проверка");
@@ -189,9 +189,15 @@ void Module::addDialogToList(UDialog *dlg, const QString &caption, const QString
     m_Dialogs.append(dlg);
 }
 
-Alarm *Module::getAlarm() { return m_Alarm; }
+Alarm *Module::getAlarm()
+{
+    return m_Alarm;
+}
 
-Warn *Module::getWarn() { return m_Warn; }
+Warn *Module::getWarn()
+{
+    return m_Warn;
+}
 
 void Module::parentTWTabClicked(int index)
 {

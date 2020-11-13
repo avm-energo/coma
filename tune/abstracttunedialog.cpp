@@ -16,11 +16,11 @@
 #include <QScrollBar>
 #include <QVBoxLayout>
 
-AbstractTuneDialog::AbstractTuneDialog(QWidget *parent) : UDialog(parent)
+AbstractTuneDialog::AbstractTuneDialog(int tuneStep, QWidget *parent) : UDialog(parent)
 {
     TuneVariant = 0;
     setAttribute(Qt::WA_DeleteOnClose);
-    SetMeasurementEnabled(false);
+    //    SetMeasurementEnabled(false);
     MeasurementTimer = new QTimer;
     MeasurementTimer->setInterval(MEASTIMERINT);
     IsNeededDefConf = false;
@@ -28,6 +28,8 @@ AbstractTuneDialog::AbstractTuneDialog(QWidget *parent) : UDialog(parent)
     RepModel = new ReportModel;
     //    m_ConfigCounter = 0;
     m_blockCount = 0;
+    m_tuneStep = tuneStep;
+    SetupUI();
 }
 
 AbstractTuneDialog::~AbstractTuneDialog()
@@ -42,15 +44,16 @@ void AbstractTuneDialog::SetupUI()
     hlyout->addWidget(MainUI());
     vlyout->addLayout(hlyout);
     vlyout->addWidget(BottomUI());
+    setLayout(vlyout);
 }
 
 QWidget *AbstractTuneDialog::TuneUI()
 {
-    lbls.clear();
-    pf.clear();
+    m_messages.clear();
+    m_tuneFunctions.clear();
 
-    SetLbls();
-    SetPf();
+    setMessages();
+    setTuneFunctions();
 
     int i;
     // CP1 - НАСТРОЙКА ПРИБОРА/МОДУЛЯ
@@ -72,10 +75,10 @@ QWidget *AbstractTuneDialog::TuneUI()
     area->setWidgetResizable(true);
     QWidget *w2 = new QWidget;
     QVBoxLayout *w2lyout = new QVBoxLayout;
-    for (i = 0; i < lbls.size(); ++i)
+    for (i = 0; i < m_messages.size(); ++i)
     {
         QHBoxLayout *hlyout = new QHBoxLayout;
-        hlyout->addWidget(WDFunc::NewLBL(this, lbls.at(i), "", "tunemsg" + QString::number(i)));
+        hlyout->addWidget(WDFunc::NewLBL(this, m_messages.at(i), "", "tunemsg" + QString::number(i)));
         hlyout->addWidget(WDFunc::NewLBL(this, "", "", "tunemsgres" + QString::number(i)));
         hlyout->addStretch(1);
         w2lyout->addLayout(hlyout);
@@ -86,7 +89,7 @@ QWidget *AbstractTuneDialog::TuneUI()
     lyout->addWidget(area);
     area->verticalScrollBar()->setValue(area->verticalScrollBar()->maximum());
     lyout->addWidget(WDFunc::NewLBL(this, "Настройка завершена!", "", "tunemsg" + QString::number(i)));
-    for (int i = 0; i < lbls.size() + 1; ++i)
+    for (int i = 0; i < m_messages.size() + 1; ++i)
     {
         WDFunc::SetVisible(this, "tunemsg" + QString::number(i), false);
         WDFunc::SetVisible(this, "tunemsgres" + QString::number(i), false);
@@ -111,7 +114,7 @@ QWidget *AbstractTuneDialog::BottomUI()
     pb = new QPushButton(tmps);
     //    pb->setObjectName(QString::number(bacnum));
 
-    connect(pb, SIGNAL(clicked()), this, SLOT(ReadTuneCoefs()));
+    connect(pb, SIGNAL(clicked()), this, SLOT(readTuneCoefs()));
 
     if (StdFunc::IsInEmulateMode())
         pb->setEnabled(false);
@@ -121,7 +124,7 @@ QWidget *AbstractTuneDialog::BottomUI()
     pb = new QPushButton(tmps);
     //    pb->setObjectName(QString::number(bacnum));
 
-    connect(pb, SIGNAL(clicked()), this, SLOT(WriteTuneCoefsSlot()));
+    connect(pb, SIGNAL(clicked()), this, SLOT(writeTuneCoefs()));
 
     if (StdFunc::IsInEmulateMode())
         pb->setEnabled(false);
@@ -214,99 +217,126 @@ Error::Msg AbstractTuneDialog::CheckPassword()
     }
 }*/
 
-void AbstractTuneDialog::MsgSetVisible(int msg, bool Visible)
-{
-    WDFunc::SetVisible(this, "tunemsg" + QString::number(msg), Visible);
-}
+// void AbstractTuneDialog::MsgSetVisible(int msg, bool Visible)
+//{
+//    WDFunc::SetVisible(this, "tunemsg" + QString::number(msg), Visible);
+//}
 
-void AbstractTuneDialog::OkMsgSetVisible(int msg, bool Visible)
+void AbstractTuneDialog::MsgSetVisible(AbstractTuneDialog::MsgTypes type, int msg, bool Visible)
 {
-    QPixmap *pm = new QPixmap("images/ok.png");
+    QPixmap *pm;
+    switch (type)
+    {
+    case OkMsg:
+        pm = new QPixmap("images/ok.png");
+        break;
+    case ErMsg:
+        pm = new QPixmap("images/cross.png");
+        break;
+    case SkMsg:
+        pm = new QPixmap("images/hr.png");
+        break;
+    case NoMsg:
+        WDFunc::SetVisible(this, "tunemsg" + QString::number(msg), Visible);
+        return;
+    }
     WDFunc::SetVisible(this, "tunemsgres" + QString::number(msg), Visible);
     WDFunc::SetLBLImage(this, "tunemsgres" + QString::number(msg), pm);
 }
 
-void AbstractTuneDialog::ErMsgSetVisible(int msg, bool Visible)
-{
-    QPixmap *pm = new QPixmap("images/cross.png");
-    WDFunc::SetVisible(this, "tunemsgres" + QString::number(msg), Visible);
-    WDFunc::SetLBLImage(this, "tunemsgres" + QString::number(msg), pm);
-}
+// void AbstractTuneDialog::OkMsgSetVisible(int msg, bool Visible)
+//{
+//    QPixmap *pm = new QPixmap();
+//    WDFunc::SetVisible(this, "tunemsgres" + QString::number(msg), Visible);
+//    WDFunc::SetLBLImage(this, "tunemsgres" + QString::number(msg), pm);
+//}
 
-void AbstractTuneDialog::SkMsgSetVisible(int msg, bool Visible)
-{
-    QPixmap *pm = new QPixmap("images/hr.png");
-    WDFunc::SetVisible(this, "tunemsgres" + QString::number(msg), Visible);
-    WDFunc::SetLBLImage(this, "tunemsgres" + QString::number(msg), pm);
-}
+// void AbstractTuneDialog::ErMsgSetVisible(int msg, bool Visible)
+//{
+//    QPixmap *pm = new QPixmap("images/cross.png");
+//    WDFunc::SetVisible(this, "tunemsgres" + QString::number(msg), Visible);
+//    WDFunc::SetLBLImage(this, "tunemsgres" + QString::number(msg), pm);
+//}
+
+// void AbstractTuneDialog::SkMsgSetVisible(int msg, bool Visible)
+//{
+//    QPixmap *pm = new QPixmap("images/hr.png");
+//    WDFunc::SetVisible(this, "tunemsgres" + QString::number(msg), Visible);
+//    WDFunc::SetLBLImage(this, "tunemsgres" + QString::number(msg), pm);
+//}
 
 void AbstractTuneDialog::MsgClear()
 {
     int i;
-    for (i = 0; i < lbls.size(); ++i)
+    for (i = 0; i < m_messages.size(); ++i)
     {
-        MsgSetVisible(i, false);
-        OkMsgSetVisible(i, false);
+        MsgSetVisible(NoMsg, i, false);
+        MsgSetVisible(OkMsg, i, false);
     }
-    MsgSetVisible(i, false);
+    MsgSetVisible(NoMsg, i, false);
 }
 
 Error::Msg AbstractTuneDialog::StartMeasurement()
 {
     MeasurementTimer->start();
-    SetMeasurementEnabled(true);
-    while (MeasurementEnabled && !StdFunc::IsCancelled())
+    //    SetMeasurementEnabled(true);
+    //    while (MeasurementEnabled && !StdFunc::isCancelled())
+    while (!StdFunc::isCancelled())
         TimeFunc::Wait();
     MeasurementTimer->stop();
-    if (StdFunc::IsCancelled())
+    if (StdFunc::isCancelled())
         return Error::Msg::GeneralError;
     return Error::Msg::NoError;
 }
 
-// ####################### SLOTS #############################
-
 void AbstractTuneDialog::StartTune()
 {
     WDFunc::SetEnabled(this, "starttune", false);
-    if (lbls.size() > pf.size())
+    if (m_messages.size() > m_tuneFunctions.size())
     {
         ERMSG("lbls size > pf size");
         WDFunc::SetEnabled(this, "starttune", true);
         return;
     }
     // сохраняем на всякий случай настроечные коэффициенты
-    if (SaveTuneBlocksToFiles() == Error::Msg::NoError)
-        TuneFileSaved = true;
-    else
-        TuneFileSaved = false;
+    if (SaveBlocksToFiles(DataBlock::DataBlockTypes::BacBlock) != Error::Msg::NoError)
+    {
+        if (QMessageBox::question(this, "Вопрос", "Сохранение настроечных коэффициентов не произведено, продолжать?")
+            == QMessageBox::No)
+            return;
+    }
+    //        TuneFileSaved = true;
+    //    else
+    //        TuneFileSaved = false;
     //    ReadAllTuneCoefs();
-    ReadTuneCoefs();
+    readTuneCoefs();
     //    MeasurementTimer->start();
-    StdFunc::ClearCancel();
-    Skipped = false;
+    StdFunc::clearCancel();
+    //    Skipped = false;
     MsgClear(); // очистка экрана с сообщениями
-    for (bStep = 0; bStep < lbls.size(); ++bStep)
+    for (bStep = 0; bStep < m_messages.size(); ++bStep)
     {
         //        WaitNSeconds(2);
-        MsgSetVisible(bStep);
-        Error::Msg res = (this->*pf[lbls.at(bStep)])();
-        if ((res == Error::Msg::GeneralError) || (StdFunc::IsCancelled()))
+        MsgSetVisible(NoMsg, bStep);
+        Error::Msg res = (this->*m_tuneFunctions[m_messages.at(bStep)])();
+        if ((res == Error::Msg::GeneralError) || (StdFunc::isCancelled()))
         {
-            ErMsgSetVisible(bStep);
+            MsgSetVisible(ErMsg, bStep);
             WDFunc::SetEnabled(this, "starttune", true);
-            WARNMSG(lbls.at(bStep));
+            WARNMSG(m_messages.at(bStep));
             //           MeasurementTimer->stop();
             return;
         }
         else if (res == Error::Msg::ResEmpty)
-            SkMsgSetVisible(bStep);
+            MsgSetVisible(SkMsg, bStep);
         else
-            OkMsgSetVisible(bStep);
+            MsgSetVisible(OkMsg, bStep);
     }
-    MsgSetVisible(bStep); // выдаём надпись "Настройка завершена!"
+    MsgSetVisible(NoMsg, bStep); // выдаём надпись "Настройка завершена!"
     //    MeasurementTimer->stop();
     WDFunc::SetEnabled(this, "starttune", true);
     QMessageBox::information(this, "Готово", "Настройка завершена!");
+    saveTuneSequenceFile();
 }
 
 // void AbstractTuneDialog::PasswordCheck(QString psw)
@@ -319,39 +349,39 @@ void AbstractTuneDialog::StartTune()
 //    emit PasswordChecked();
 //}
 
-void AbstractTuneDialog::TuneReadCoefs(int index)
-{
-    Q_UNUSED(index);
-    /*if(!MainWindow::TheEnd)
-    {
-        if(index == TuneIndex)
-        {
-            if(TimeIndex)
-            emit stopRead(TimeIndex);
+// void AbstractTuneDialog::TuneReadCoefs(int index)
+//{
+//    Q_UNUSED(index);
+//    /*if(!MainWindow::TheEnd)
+//    {
+//        if(index == TuneIndex)
+//        {
+//            if(TimeIndex)
+//            emit stopRead(TimeIndex);
 
-            if(CheckIndex)
-            emit stopRead(CheckIndex);*/
+//            if(CheckIndex)
+//            emit stopRead(CheckIndex);*/
 
-    TimeFunc::Wait(100);
+//    TimeFunc::Wait(100);
 
-    for (int i = 0; i < m_TuneBlockMap.keys().size(); i++)
-    {
-        int bacnum;
-        if (Board::GetInstance().typeM() == 135)
-            bacnum = i + 1;
-        else
-            bacnum = i + 2;
-        if (m_TuneBlockMap.keys().contains(bacnum))
-        {
-            ReadTuneCoefsByBac(bacnum);
-            TimeFunc::Wait(100);
-        }
-    }
-    //  }
-    // }
-}
+//    for (int i = 0; i < m_TuneBlockMap.keys().size(); i++)
+//    {
+//        int bacnum;
+//        if (Board::GetInstance().typeM() == 135)
+//            bacnum = i + 1;
+//        else
+//            bacnum = i + 2;
+//        if (m_TuneBlockMap.keys().contains(bacnum))
+//        {
+//            ReadTuneCoefsByBac(bacnum);
+//            TimeFunc::Wait(100);
+//        }
+//    }
+//    //  }
+//    // }
+//}
 
-void AbstractTuneDialog::ReadTuneCoefs()
+void AbstractTuneDialog::readTuneCoefs()
 {
     //    int bacnum = sender()->objectName().toInt();
     //    ReadTuneCoefsByBac(bacnum);
@@ -368,47 +398,7 @@ void AbstractTuneDialog::ReadTuneCoefs()
 //    }
 //}
 
-Error::Msg AbstractTuneDialog::LoadTuneSequenceFile()
-{
-    return Error::Msg::NoError;
-}
-
-Error::Msg AbstractTuneDialog::CheckCalibrStep()
-{
-    QString usbserialnum = EProtocom::GetInstance().usbSerial();
-    QSettings storedcalibrations(StdFunc::GetSystemHomeDir() + "calibr.ini", QSettings::IniFormat);
-    if (!storedcalibrations.contains(usbserialnum))
-    {
-        QMessageBox::warning(this, "Внимание",
-            "Не выполнены предыдущие шаги регулировки, пожалуйста,\n"
-            "начните заново с шага 1");
-        return Error::Msg::ResEmpty;
-    }
-    int calibrstep = storedcalibrations.value(usbserialnum + "/step", "1").toInt();
-    if (calibrstep < m_tuneStep)
-    {
-        QMessageBox::warning(this, "Внимание",
-            "Перед выполнением шага " + QString::number(m_tuneStep) + " необходимо\nвыполнить шаг " + calibrstep + "!");
-
-        return Error::Msg::ResEmpty;
-    }
-    return Error::Msg::NoError;
-}
-
-void AbstractTuneDialog::SaveTuneSequenceFile()
-{
-}
-
-Error::Msg AbstractTuneDialog::SaveWorkConfig(int configblocknum)
-{
-    if (Commands::GetFileWithRestore(CM_CONFIGFILE, S2Config) == Error::Msg::NoError)
-        memcpy(&m_BciSaveBlock, &CKIV->Bci_block, sizeof(ConfigKIV::Bci));
-    else
-        return Error::Msg::GeneralError;
-    return Error::Msg::NoError;
-}
-
-bool AbstractTuneDialog::WriteTuneCoefsSlot()
+bool AbstractTuneDialog::writeTuneCoefs()
 {
     //    int bacnum = sender()->objectName().toInt();
     if (CheckPassword() != Error::Msg::NoError)
@@ -445,58 +435,157 @@ bool AbstractTuneDialog::WriteTuneCoefsSlot()
     return true;
 }
 
-bool AbstractTuneDialog::WriteTuneCoefs(int blocknum)
+// Error::Msg AbstractTuneDialog::LoadTuneSequenceFile()
+//{
+//    return Error::Msg::NoError;
+//}
+
+Error::Msg AbstractTuneDialog::checkCalibrStep()
 {
-    // if (QMessageBox::question(this, "Вопрос", "Сохранить регулировочные коэффициенты?\n(Результаты предыдущей
-    // регулировки будут потеряны)") == false)
-    //    return false;
-    QString tmps = ((DEVICETYPE == DEVICETYPE_MODULE) ? "модуль" : "прибор");
-    if (blocknum < m_blocks.size())
+    QString usbserialnum = EProtocom::GetInstance().usbSerial();
+    QSettings storedcalibrations(StdFunc::GetSystemHomeDir() + "calibr.ini", QSettings::IniFormat);
+    if (!storedcalibrations.contains(usbserialnum))
     {
-        if (m_blocks.at(blocknum)->block().blocktype == DataBlock::DataBlockTypes::BacBlock)
-        {
-            m_blocks.at(blocknum)->writeBlockToModule();
-            QMessageBox::information(this, "Внимание", "Коэффициенты переданы в " + tmps + " успешно!");
-            return true;
-        }
-        WARNMSG("Тип блока неверен, не настроечный блок");
-        return false;
+        QMessageBox::warning(this, "Внимание",
+            "Не выполнены предыдущие шаги регулировки, пожалуйста,\n"
+            "начните заново с шага 1");
+        return Error::Msg::ResEmpty;
     }
-    //    if (m_TuneBlockMap.keys().contains(blocknum))
-    //    {
-    //        if (Commands::WriteBac(blocknum, m_TuneBlockMap[blocknum].block, m_TuneBlockMap[blocknum].blocksize)
-    //            == Error::Msg::NoError)
-    //        {
-    //            // QMessageBox::information(this, "Внимание", "Коэффициенты переданы в " + tmps + " успешно!");
-    //            return true;
-    //        }
-    //    }
-    QMessageBox::critical(this, "Ошибка", "Ошибка записи коэффициентов в " + tmps + "!");
-    return false;
+    int calibrstep = storedcalibrations.value(usbserialnum + "/step", "1").toInt();
+    if (calibrstep < m_tuneStep)
+    {
+        QMessageBox::warning(this, "Внимание",
+            "Перед выполнением шага " + QString::number(m_tuneStep) + " необходимо\nвыполнить шаг " + calibrstep + "!");
+
+        return Error::Msg::ResEmpty;
+    }
+    return Error::Msg::NoError;
 }
 
-Error::Msg AbstractTuneDialog::SaveTuneBlocksToFiles()
+void AbstractTuneDialog::saveTuneSequenceFile()
 {
+    QString usbserialnum = EProtocom::GetInstance().usbSerial();
+    QSettings storedcalibrations(StdFunc::GetSystemHomeDir() + "calibr.ini", QSettings::IniFormat);
+    storedcalibrations.setValue(usbserialnum + "/step", m_tuneStep);
+}
+
+Error::Msg AbstractTuneDialog::saveWorkConfig()
+{
+    return SaveBlocksToFiles(DataBlock::DataBlockTypes::BciBlock);
+    //    if (Commands::GetFileWithRestore(CM_CONFIGFILE, S2Config) == Error::Msg::NoError)
+    //        memcpy(&m_BciSaveBlock, &CKIV->Bci_block, sizeof(ConfigKIV::Bci));
+    //    else
+    //        return Error::Msg::GeneralError;
+    //    return Error::Msg::NoError;
+}
+
+Error::Msg AbstractTuneDialog::loadWorkConfig()
+{
+    return LoadBlocksFromFiles(DataBlock::DataBlockTypes::BciBlock);
+}
+
+// bool AbstractTuneDialog::WriteTuneCoefs(int blocknum)
+//{
+//    // if (QMessageBox::question(this, "Вопрос", "Сохранить регулировочные коэффициенты?\n(Результаты предыдущей
+//    // регулировки будут потеряны)") == false)
+//    //    return false;
+//    QString tmps = ((DEVICETYPE == DEVICETYPE_MODULE) ? "модуль" : "прибор");
+//    if (blocknum < m_blocks.size())
+//    {
+//        if (m_blocks.at(blocknum)->block().blocktype == DataBlock::DataBlockTypes::BacBlock)
+//        {
+//            m_blocks.at(blocknum)->writeBlockToModule();
+//            QMessageBox::information(this, "Внимание", "Коэффициенты переданы в " + tmps + " успешно!");
+//            return true;
+//        }
+//        WARNMSG("Тип блока неверен, не настроечный блок");
+//        return false;
+//    }
+//    //    if (m_TuneBlockMap.keys().contains(blocknum))
+//    //    {
+//    //        if (Commands::WriteBac(blocknum, m_TuneBlockMap[blocknum].block, m_TuneBlockMap[blocknum].blocksize)
+//    //            == Error::Msg::NoError)
+//    //        {
+//    //            // QMessageBox::information(this, "Внимание", "Коэффициенты переданы в " + tmps + " успешно!");
+//    //            return true;
+//    //        }
+//    //    }
+//    QMessageBox::critical(this, "Ошибка", "Ошибка записи коэффициентов в " + tmps + "!");
+//    return false;
+//}
+
+void AbstractTuneDialog::SaveTuneBlocksToFiles()
+{
+    SaveBlocksToFiles(DataBlock::DataBlockTypes::BacBlock);
+}
+
+Error::Msg AbstractTuneDialog::SaveBlocksToFiles(DataBlock::DataBlockTypes type, bool userChoose)
+{
+    DataBlock::FilePropertiesStruct fst;
+    DataBlock::getFileProperties(type, fst);
     foreach (DataBlock *dblock, m_blocks)
     {
-        if (dblock->block().blocktype == DataBlock::DataBlockTypes::BacBlock)
+        if (dblock->block().blocktype == type)
         {
             DataBlock::BlockStruct block = dblock->block();
             QByteArray ba;
             ba.resize(block.blocksize);
             memcpy(&(ba.data()[0]), block.block, block.blocksize);
-            if (Files::SaveToFile(StdFunc::GetSystemHomeDir() + "temptune.tn" + block.blocknum, ba, block.blocksize)
-                != Error::Msg::NoError)
+            Error::Msg res;
+            if (userChoose)
+                res = Files::SaveToFile(Files::ChooseFileForSave(this, fst.mask, fst.extension), ba);
+            else
+                res = Files::SaveToFile(StdFunc::GetSystemHomeDir() + fst.filename + block.blocknum, ba);
+            if (res != Error::Msg::NoError)
+            {
+                QMessageBox::critical(this, "Ошибка", "Ошибка при сохранении файла");
                 return Error::Msg::GeneralError;
+            }
         }
     }
     return Error::Msg::NoError;
 }
 
-void AbstractTuneDialog::PrereadConf()
+Error::Msg AbstractTuneDialog::LoadBlocksFromFiles(DataBlock::DataBlockTypes type, bool userChoose)
 {
-    IsNeededDefConf = (ModuleBSI::PrereadConf(this, S2Config) == Error::Msg::ResEmpty) ? true : false;
+    DataBlock::FilePropertiesStruct fst;
+    DataBlock::getFileProperties(type, fst);
+    //    int bacnum = sender()->objectName().toInt();
+    QByteArray ba;
+    //    ba.resize(MAXTUNESIZE);
+    //    QString tunenum = QString::number(bacnum, 16);
+    //    if (!m_TuneBlockMap.keys().contains(bacnum))
+    //    {
+    //        QMessageBox::critical(this, "Ошибка", "Блок Bac с индексом " + tunenum + " не найден!");
+    //        return;
+    //    }
+    foreach (DataBlock *dblock, m_blocks)
+    {
+        if (dblock->block().blocktype == type)
+        {
+            DataBlock::BlockStruct block = dblock->block();
+            QByteArray ba;
+            Error::Msg res;
+            if (userChoose)
+                res = Files::LoadFromFile(Files::ChooseFileForOpen(this, fst.mask), ba);
+            else
+                res = Files::LoadFromFile(StdFunc::GetSystemHomeDir() + fst.filename + block.blocknum, ba);
+            if (res != Error::Msg::NoError)
+            {
+                QMessageBox::critical(this, "Ошибка", "Ошибка при загрузке файла");
+                return Error::Msg::GeneralError;
+            }
+            memcpy(block.block, &(ba.data()[0]), block.blocksize);
+        }
+    }
+    QMessageBox::information(this, "Внимание", "Загрузка прошла успешно!");
+    return Error::Msg::NoError;
 }
+
+// void AbstractTuneDialog::PrereadConf()
+//{
+//    IsNeededDefConf = (ModuleBSI::PrereadConf(this, S2Config) == Error::Msg::ResEmpty) ? true : false;
+//}
 
 // void AbstractTuneDialog::SaveToFileEx(int bacnum)
 //{
@@ -557,66 +646,41 @@ void AbstractTuneDialog::WriteBlocks(DataBlock::DataBlockTypes type)
 //    SaveToFileEx(bacnum);
 //}
 
-void AbstractTuneDialog::SetMeasurementEnabled(bool enabled)
-{
-    if (enabled)
-    {
-        WDFunc::SetEnabled(this, "Good", true);
-        WDFunc::SetEnabled(this, "NoGood", true);
-        MeasurementEnabled = true;
-    }
-    else
-    {
-        WDFunc::SetEnabled(this, "Good", false);
-        WDFunc::SetEnabled(this, "NoGood", false);
-        MeasurementEnabled = false;
-    }
-}
+// void AbstractTuneDialog::SetMeasurementEnabled(bool enabled)
+//{
+//    if (enabled)
+//    {
+//        WDFunc::SetEnabled(this, "Good", true);
+//        WDFunc::SetEnabled(this, "NoGood", true);
+//        MeasurementEnabled = true;
+//    }
+//    else
+//    {
+//        WDFunc::SetEnabled(this, "Good", false);
+//        WDFunc::SetEnabled(this, "NoGood", false);
+//        MeasurementEnabled = false;
+//    }
+//}
 
 void AbstractTuneDialog::LoadTuneBlocksFromFile()
 {
-    //    int bacnum = sender()->objectName().toInt();
-    QByteArray ba;
-    //    ba.resize(MAXTUNESIZE);
-    //    QString tunenum = QString::number(bacnum, 16);
-    //    if (!m_TuneBlockMap.keys().contains(bacnum))
-    //    {
-    //        QMessageBox::critical(this, "Ошибка", "Блок Bac с индексом " + tunenum + " не найден!");
-    //        return;
-    //    }
-    foreach (DataBlock *dblock, m_blocks)
-    {
-        if (dblock->block().blocktype == DataBlock::DataBlockTypes::BacBlock)
-        {
-            DataBlock::BlockStruct block = dblock->block();
-            QByteArray ba;
-            Error::Msg res = Files::LoadFromFile(
-                Files::ChooseFileForOpen(this, "Tune files (*.tn" + QString::number(block.blocknum) + ")"), ba);
-            if (res != Error::Msg::NoError)
-            {
-                QMessageBox::critical(this, "Ошибка", "Ошибка при загрузке файла");
-                return;
-            }
-            memcpy(block.block, &(ba.data()[0]), block.blocksize);
-        }
-    }
-    QMessageBox::information(this, "Внимание", "Загрузка прошла успешно!");
+    LoadBlocksFromFiles(DataBlock::DataBlockTypes::BacBlock);
 }
 
-void AbstractTuneDialog::Good()
-{
-    SetMeasurementEnabled(false);
-}
+// void AbstractTuneDialog::Good()
+//{
+//    SetMeasurementEnabled(false);
+//}
 
-void AbstractTuneDialog::NoGood()
-{
-    SetMeasurementEnabled(false);
-    StdFunc::Cancel();
-}
+// void AbstractTuneDialog::NoGood()
+//{
+//    SetMeasurementEnabled(false);
+//    StdFunc::cancel();
+//}
 
 void AbstractTuneDialog::CancelTune()
 {
-    StdFunc::Cancel();
+    StdFunc::cancel();
     emit Finished();
 }
 
@@ -629,7 +693,7 @@ void AbstractTuneDialog::MeasTimerTimeout()
 
 void AbstractTuneDialog::closeEvent(QCloseEvent *e)
 {
-    emit stopall();
+    //    emit stopall();
     e->accept();
 }
 
@@ -638,6 +702,6 @@ void AbstractTuneDialog::keyPressEvent(QKeyEvent *e)
     if ((e->key() == Qt::Key_Enter) || (e->key() == Qt::Key_Return))
         emit Finished();
     if (e->key() == Qt::Key_Escape)
-        StdFunc::Cancel();
+        StdFunc::cancel();
     QDialog::keyPressEvent(e);
 }

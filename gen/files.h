@@ -14,7 +14,7 @@ public:
     static Error::Msg LoadFromFile(const QString &filename, QByteArray &ba);
     static QString ChooseFileForSave(
         QWidget *parent, const QString &mask, const QString &ext, const QString &filenamestr = "");
-    static Error::Msg SaveToFile(const QString &filename, QByteArray &src, unsigned int numbytes);
+    static Error::Msg SaveToFile(const QString &filename, QByteArray &src);
     static QStringList Drives();
     static QStringList SearchForFile(QStringList &di, const QString &filename, bool subdirs = false);
     static QString GetFirstDriveWithLabel(QStringList &filepaths, const QString &label);

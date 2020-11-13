@@ -14,14 +14,14 @@
 #if _MSC_VER && !__INTEL_COMPILER
 #define __PRETTY_FUNCTION__ __FUNCSIG__
 #endif
-ConfKIVDialog::ConfKIVDialog(S2ConfigType *S2Config, QWidget *parent) : AbstractConfDialog(parent)
+ConfKIVDialog::ConfKIVDialog(ConfigKIV *ckiv, QWidget *parent) : AbstractConfDialog(parent)
 {
     QString tmps = "QDialog {background-color: " + QString(Colors::ACONFCLR) + ";}";
     setStyleSheet(tmps);
-    this->S2Config = S2Config;
-    CKIV = new ConfigKIV(S2Config);
-    Conf = new ConfDialog(S2Config, Board::GetInstance().typeB(), Board::GetInstance().typeM(), this);
-    ConfKxx = new ConfKxxDialog(S2Config, this);
+    CKIV = ckiv;
+    //    CKIV = new ConfigKIV(ckiv);
+    Conf = new ConfDialog(ckiv, Board::GetInstance().typeB(), Board::GetInstance().typeM(), this);
+    ConfKxx = new ConfKxxDialog(ckiv, this);
     setAttribute(Qt::WA_DeleteOnClose);
     SetupUI();
     PrereadConf();
@@ -420,12 +420,12 @@ void ConfKIVDialog::SetDefConf()
     Fill();
 }
 
-void ConfKIVDialog::Start_Timer()
-{
-    timerRead->start(1000);
-}
+// void ConfKIVDialog::Start_Timer()
+//{
+//    timerRead->start(1000);
+//}
 
-void ConfKIVDialog::Stop_Timer()
-{
-    timerRead->stop();
-}
+// void ConfKIVDialog::Stop_Timer()
+//{
+//    timerRead->stop();
+//}

@@ -4,6 +4,7 @@
 #define ID8084_START 1012
 #define ID8084_COM 20
 
+#include "../gen/datablock.h"
 #include "config.h"
 
 #include <QStack>
@@ -55,6 +56,8 @@ public:
 
     } Bci;
 
+    DataBlock *m_dblock;
+
     Bci Bci_block;
 
     QStack<Bci> m_BciStack;
@@ -63,7 +66,7 @@ public:
     Error::Msg getAndPushConfig();
     Bci popConfig();
     Error::Msg popAndWriteConfig();
-    S2ConfigType *getS2Config();
+    S2ConfigType *S2Config();
     void setS2Config(S2ConfigType *s2config);
 
 private:

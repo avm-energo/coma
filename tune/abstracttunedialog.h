@@ -28,8 +28,15 @@ public:
     //        void *block;
     //        int blocksize;
     //    };
+    enum MsgTypes
+    {
+        OkMsg,
+        ErMsg,
+        SkMsg,
+        NoMsg
+    };
 
-    explicit AbstractTuneDialog(QWidget *parent = nullptr);
+    explicit AbstractTuneDialog(int tuneStep, QWidget *parent = nullptr);
     ~AbstractTuneDialog();
 
     bool IsNeededDefConf;
@@ -40,13 +47,13 @@ public:
     QList<DataBlock *> m_blocks;
     int m_blockCount;
 
-    QStringList lbls;
-    bool Skipped, MeasurementEnabled, ok, TuneFileSaved;
+    QStringList m_messages;
+    //    bool Skipped, MeasurementEnabled; //, ok; //, TuneFileSaved;
     //    bool Cancelled;
     QTimer *MeasurementTimer;
-    S2ConfigType *S2Config;
+    //    S2ConfigType *S2Config;
     quint32 SecondsToEnd15SecondsInterval;
-    QHash<QString, Error::Msg (AbstractTuneDialog::*)()> pf;
+    QHash<QString, Error::Msg (AbstractTuneDialog::*)()> m_tuneFunctions;
     quint8 bStep;
     int TuneVariant;       // вариант регулировочных параметров
     ReportModel *RepModel; // модель, в которую заносим данные для отчёта
@@ -67,18 +74,21 @@ public:
 
     //    void ProcessTune();
     Error::Msg CheckPassword();
-    virtual void SetLbls() = 0; // заполнить список сообщений
-    virtual void SetPf() = 0;   // заполнить список функций настройки
-                                //    bool IsWithinLimits(double number, double base, double threshold);
-    void MsgSetVisible(int msg, bool Visible = true);
-    void OkMsgSetVisible(int msg, bool Visible = true);
-    void ErMsgSetVisible(int msg, bool Visible = true);
-    void SkMsgSetVisible(int msg, bool Visible = true);
+    virtual void setMessages() = 0;      // заполнить список сообщений
+    virtual void setTuneFunctions() = 0; // заполнить список функций настройки
+                                         //    bool IsWithinLimits(double number, double base, double threshold);
+                                         //    void MsgSetVisible(int msg, bool Visible = true);
+    void MsgSetVisible(MsgTypes type, int msg, bool Visible = true);
+    //    void OkMsgSetVisible(int msg, bool Visible = true);
+    //    void ErMsgSetVisible(int msg, bool Visible = true);
+    //    void SkMsgSetVisible(int msg, bool Visible = true);
     void MsgClear();
     //    QByteArray *ChooseFileForOpen(QString mask);
-    bool WriteTuneCoefs(int blocknum);
-    Error::Msg SaveTuneBlocksToFiles();
-    void PrereadConf();
+    //    bool WriteTuneCoefs(int blocknum);
+    void SaveTuneBlocksToFiles();
+    Error::Msg SaveBlocksToFiles(DataBlock::DataBlockTypes type, bool userChoose = false);
+    Error::Msg LoadBlocksFromFiles(DataBlock::DataBlockTypes type, bool userChoose = false);
+    //    void PrereadConf();
     //    void GetBdAndFill();
 
     //    virtual void FillBac(int bacnum) = 0;
@@ -87,35 +97,36 @@ public:
     //    void ShowTable();
     void ReadBlocks(DataBlock::DataBlockTypes type);
     void WriteBlocks(DataBlock::DataBlockTypes type);
-    Error::Msg LoadTuneSequenceFile();
-    Error::Msg CheckCalibrStep();
-    void SaveTuneSequenceFile();
-    Error::Msg SaveWorkConfig(int configblocknum);
+    //    Error::Msg LoadTuneSequenceFile();
+    Error::Msg checkCalibrStep();
+    void saveTuneSequenceFile();
+    Error::Msg saveWorkConfig();
+    Error::Msg loadWorkConfig();
 
 signals:
     //    void PasswordChecked();
-    void stopall();
-    void dataready(QByteArray);
+    //    void stopall();
+    //    void dataready(QByteArray);
     //    void SecondsRemaining(quint32);
     void Finished();
     void LoadDefConf();
-    void stopRead(int);
+    //    void stopRead(int);
 
 public slots:
     void CancelTune();
     //    void ReadAllTuneCoefs();
-    void ReadTuneCoefs();
-    bool WriteTuneCoefsSlot();
-    void Good();
-    void NoGood();
+    void readTuneCoefs();
+    bool writeTuneCoefs();
+    //    void Good();
+    //    void NoGood();
     Error::Msg StartMeasurement();
     virtual void SetDefCoefs() = 0;
-    void TuneReadCoefs(int);
+    //    void TuneReadCoefs(int);
 
     //    void SaveToFile();
 
-private:
-    void SetMeasurementEnabled(bool enabled);
+    // private:
+    //    void SetMeasurementEnabled(bool enabled);
 
 private slots:
     void StartTune();

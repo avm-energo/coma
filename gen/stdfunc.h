@@ -23,9 +23,9 @@ public:
     static QString ForDeviceIP();
     static void SetOrganizationString(const QString &str);
     static QString OrganizationString();
-    static void Cancel();
-    static void ClearCancel();
-    static bool IsCancelled();
+    static void cancel();
+    static void clearCancel();
+    static bool isCancelled();
     static bool IsInEmulateMode();
     static void SetEmulated(bool tb);
     static int IndexByBit(quint32 dword); // возвращение номера первого, начиная с младшего,

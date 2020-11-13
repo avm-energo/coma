@@ -6,7 +6,7 @@
 
 #include <QWidget>
 
-class DataBlock : public QWidget
+class DataBlock : public QObject
 {
     Q_OBJECT
 public:
@@ -14,7 +14,8 @@ public:
     {
         BacBlock,
         BdaBlock,
-        BdBlock
+        BdBlock,
+        BciBlock
     };
 
     struct BlockStruct
@@ -22,16 +23,24 @@ public:
         int blocknum;                        // number of the block to send corresponding command
         QString caption;                     // block name to set it to the GroupBox GUI
         DataBlock::DataBlockTypes blocktype; // type of the block to choose proper command
-        void *block;                         // pointer to the block
-        void *defblock;                      // pointer to the block with default values
-        int blocksize;                       // size of the block to make a mem copy
+        void *block;    // pointer to the block, for S2Config blocks it's a pointer to S2ConfigDataType
+        void *defblock; // pointer to the block with default values
+        int blocksize;  // size of the block to make a mem copy
     };
 
-    explicit DataBlock(const BlockStruct &bds, QWidget *parent = nullptr);
+    struct FilePropertiesStruct
+    {
+        QString extension;
+        QString mask;
+        QString filename;
+    };
+
+    explicit DataBlock(const BlockStruct &bds, QObject *parent = nullptr);
     //    virtual void setupUI() = 0;                                     // frontend for block visualisation
     void setModel(const QList<ValueItem *> &dd, int columnsnumber); // default columnsnumber = 5
-    void widget();
+    QWidget *widget();
     BlockStruct block();
+    static void getFileProperties(DataBlock::DataBlockTypes type, FilePropertiesStruct &st);
 
 signals:
 

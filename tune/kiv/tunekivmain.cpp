@@ -10,9 +10,9 @@ TuneKIVMain::TuneKIVMain(TuneKIV *kiv, QWidget *parent) : AbstractTuneDialog(par
 
 void TuneKIVMain::SetupUI() { }
 
-void TuneKIVMain::SetLbls() { }
+void TuneKIVMain::setMessages() { }
 
-void TuneKIVMain::SetPf() { }
+void TuneKIVMain::setTuneFunctions() { }
 
 void TuneKIVMain::FillBac(int bacnum) { Q_UNUSED(bacnum) }
 

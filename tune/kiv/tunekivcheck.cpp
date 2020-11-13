@@ -7,44 +7,50 @@
 #include <QPushButton>
 #include <QVBoxLayout>
 
-TuneKIVCheck::TuneKIVCheck(ConfigKIV *ckiv, TuneKIV *kiv, QWidget *parent) : AbstractTuneDialog(parent)
+TuneKIVCheck::TuneKIVCheck(int tuneStep, ConfigKIV *ckiv, TuneKIV *kiv, QWidget *parent)
+    : AbstractTuneDialog(tuneStep, parent)
 {
     TKIV = kiv;
     CKIV = ckiv;
-    S2Config = TKIV->getS2Config();
-    m_tuneStep = 1;
-    SetupUI();
+    //    S2Config = TKIV->getS2Config();
+    //    m_tuneStep = 1;
+    //    SetupUI();
+    addDataBlock()
 }
 
-void TuneKIVCheck::SetupUI()
+// void TuneKIVCheck::SetupUI()
+//{
+//}
+
+void TuneKIVCheck::setMessages()
 {
+    m_messages.append("1. Ввод пароля...");
+    m_messages.append("2. Сохранение текущей конфигурации...");
+    m_messages.append("3. Задание режима конфигурирования модуля...");
+    m_messages.append("4. Установка новой конфигурации...");
+    m_messages.append("5. Отображение схемы подключения...");
+    m_messages.append("6. Ожидание 15 с...");
 }
 
-void TuneKIVCheck::SetLbls()
-{
-    lbls.append("1. Ввод пароля...");
-    lbls.append("2. Сохранение текущей конфигурации...");
-    lbls.append("3. Задание режима конфигурирования модуля...");
-    lbls.append("4. Установка новой конфигурации...");
-    lbls.append("5. Отображение схемы подключения...");
-    lbls.append("6. Ожидание 15 с...");
-}
-
-void TuneKIVCheck::SetPf()
+void TuneKIVCheck::setTuneFunctions()
 {
     int count = 0;
-    pf[lbls.at(count++)] = &AbstractTuneDialog::CheckPassword;
+    m_tuneFunctions[m_messages.at(count++)] = &AbstractTuneDialog::CheckPassword;
     Error::Msg (AbstractTuneDialog::*func)()
-        = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVCheck::SaveWorkConfig);
-    pf[lbls.at(count++)] = func;
+        = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVCheck::saveWorkConfig);
+    m_tuneFunctions[m_messages.at(count++)] = func;
     func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVCheck::setSMode2);
-    pf[lbls.at(count++)] = func;
+    m_tuneFunctions[m_messages.at(count++)] = func;
     func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVCheck::setNewConfig);
-    pf[lbls.at(count++)] = func;
+    m_tuneFunctions[m_messages.at(count++)] = func;
     func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVCheck::showScheme);
-    pf[lbls.at(count++)] = func;
+    m_tuneFunctions[m_messages.at(count++)] = func;
     func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&AbstractTuneDialog::Wait15Seconds);
-    pf[lbls.at(count++)] = func;
+    m_tuneFunctions[m_messages.at(count++)] = func;
+}
+
+QWidget *TuneKIVCheck::MainUI()
+{
 }
 
 // void TuneKIVCheck::FillBac(int bacnum) { Q_UNUSED(bacnum) }
@@ -53,15 +59,15 @@ void TuneKIVCheck::SetPf()
 
 // void TuneKIVCheck::GetBdAndFill() { }
 
-Error::Msg TuneKIVCheck::SaveWorkConfig(int configblocknum)
-{
-    Q_UNUSED(configblocknum)
-    if (Commands::GetFileWithRestore(CM_CONFIGFILE, S2Config) == Error::Msg::NoError)
-        memcpy(&m_BciSaveBlock, &CKIV->Bci_block, sizeof(ConfigKIV::Bci));
-    else
-        return Error::Msg::GeneralError;
-    return Error::Msg::NoError;
-}
+// Error::Msg TuneKIVCheck::saveWorkConfig(int configblocknum)
+//{
+//    Q_UNUSED(configblocknum)
+//    if (Commands::GetFileWithRestore(CM_CONFIGFILE, S2Config) == Error::Msg::NoError)
+//        memcpy(&m_BciSaveBlock, &CKIV->Bci_block, sizeof(ConfigKIV::Bci));
+//    else
+//        return Error::Msg::GeneralError;
+//    return Error::Msg::NoError;
+//}
 
 int TuneKIVCheck::ReadAnalogMeasurements()
 {
@@ -81,7 +87,7 @@ Error::Msg TuneKIVCheck::setNewConfig()
 {
     CKIV->Bci_block.Unom = 220;
     CKIV->Bci_block.C_pasp[0] = CKIV->Bci_block.C_pasp[1] = CKIV->Bci_block.C_pasp[2] = 9000;
-    return Commands::WriteFile(CM_CONFIGFILE, S2Config);
+    return Commands::WriteFile(CM_CONFIGFILE, CKIV->S2Config());
 }
 
 Error::Msg TuneKIVCheck::showScheme()

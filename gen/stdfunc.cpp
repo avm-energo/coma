@@ -102,17 +102,17 @@ QString StdFunc::OrganizationString()
     return s_OrganizationString;
 }
 
-void StdFunc::Cancel()
+void StdFunc::cancel()
 {
     Cancelled = true;
 }
 
-void StdFunc::ClearCancel()
+void StdFunc::clearCancel()
 {
     Cancelled = false;
 }
 
-bool StdFunc::IsCancelled()
+bool StdFunc::isCancelled()
 {
     return Cancelled;
 }
