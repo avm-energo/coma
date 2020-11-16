@@ -372,7 +372,7 @@ void handleBitString(const QByteArray &ba, quint16 sigAddr)
 {
     Q_ASSERT(ba.size() != 4);
     quint32 value = ba.toUInt();
-    DataTypes::BitStringStruct resp { sigAddr, value, NULL };
+    DataTypes::BitStringStruct resp { sigAddr, value, {} };
     DataManager::addSignalToOutList(DataTypes::SignalTypes::BitString, resp);
 }
 
