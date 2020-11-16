@@ -8,8 +8,6 @@
 
 namespace HID
 {
-constexpr unsigned VID = 0xC251;
-constexpr unsigned PID = 0x3505;
 // максимальная длина одного сегмента (0x40)
 constexpr int MaxSegmenthLength = 64;
 // 20 ms main loop sleep
@@ -30,7 +28,6 @@ public:
 
     UsbHidSettings deviceInfo() const;
     void setDeviceInfo(const UsbHidSettings &deviceInfo);
-    static QList<UsbHidSettings> devicesFound(quint16 vid = 0xC251);
     void usbStateChanged(void *message);
 
 signals:

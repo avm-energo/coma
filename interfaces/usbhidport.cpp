@@ -69,7 +69,7 @@ void UsbHidPort::poll()
             continue;
         if (m_hidDevice)
         {
-            bytes = hid_read_timeout(m_hidDevice, array.data(), HID::MaxSegmenthLength + 1, HID::MainLoopDelay);
+            bytes = hid_read(m_hidDevice, array.data(), HID::MaxSegmenthLength + 1);
             // Write
             if (bytes < 0)
             {
@@ -190,32 +190,6 @@ void UsbHidPort::checkQueue()
         QByteArray ba = m_writeQueue.takeFirst();
         writeData(ba);
     }
-}
-
-QList<UsbHidSettings> UsbHidPort::devicesFound(quint16 vid)
-{
-    hid_device_info *devs, *cur_dev;
-    // Enumerate all, extract only needed
-    devs = hid_enumerate(0x0, 0x0);
-    cur_dev = devs;
-    QList<UsbHidSettings> sl;
-    while (cur_dev)
-    {
-        if (cur_dev->vendor_id == vid)
-        {
-            UsbHidSettings buffer {
-                cur_dev->vendor_id,                              // Vendor ID
-                cur_dev->product_id,                             // Product ID
-                QString::fromWCharArray(cur_dev->serial_number), // Serial number
-                QString(cur_dev->path)                           // Path
-            };
-
-            sl.push_back(buffer);
-        }
-        cur_dev = cur_dev->next;
-    }
-    hid_free_enumeration(devs);
-    return sl;
 }
 
 // FIXME Не реализовано
