@@ -67,7 +67,7 @@ bool ModBus::start(const ConnectStruct &st)
     connect(port, &SerialPort::Read, cthr, &ModbusThread::ParseReply);
     connect(cthr, &ModbusThread::Write, port, &SerialPort::WriteBytes);
     connect(port, &SerialPort::Reconnect, this, &ModBus::SendReconnectSignal);
-    if (port->Init(Settings) != Error::Msg::NoError)
+    if (!port->Init(Settings))
         return false;
     thr->start();
     StdFunc::Wait(1000);
