@@ -34,7 +34,7 @@ public:
     const QString getCaption();
     void setCaption(const QString &caption);
     void setUpdateTimerPeriod(quint32 period);
-    void setHighlightMap(QMap<int, QList<HighlightWarnAlarmStruct>> &map);
+    void setHighlightMap(const QMap<int, QList<HighlightWarnAlarmStruct>> &map);
     void setFloatBdQuery(const QList<BdQuery> &list);
     void setSpBdQuery(const QList<BdQuery> &list);
     void setInterface(BaseInterface *iface);
@@ -44,8 +44,8 @@ signals:
 
 public slots:
     virtual void reqUpdate();
-    void updateFloatData(DataTypes::FloatStruct &fl);
-    void updateSPData(DataTypes::SinglePointWithTimeStruct &sp);
+    void updateFloatData(const DataTypes::FloatStruct &fl);
+    void updateSPData(const DataTypes::SinglePointWithTimeStruct &sp);
 
 protected:
     bool m_updatesEnabled;

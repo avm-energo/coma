@@ -486,10 +486,10 @@ void Coma::StartWork()
 
     //    if (ModuleBSI::Health() & HTH_CONFIG) // нет конфигурации
     if (ModuleBSI::noConfig()) // нет конфигурации
-        qCritical() << QVariant::fromValue(Error::Msg::NoConfError).toString();
+        qCritical() << Error::Msg::NoConfError;
     //    if (ModuleBSI::Health() & HTH_REGPARS) // нет коэффициентов
     if (ModuleBSI::noRegPars()) // нет коэффициентов
-        qCritical() << QVariant::fromValue(Error::Msg::NoTuneError).toString();
+        qCritical() << Error::Msg::NoTuneError;
     //    if (board.interfaceType() == Board::InterfaceType::USB)
     //    {
     //        fwUpDialog = new fwupdialog;
@@ -500,7 +500,7 @@ void Coma::StartWork()
     //    infoDialog->FillBsi();
 
     QList<UDialog *> dlgs = m_Module->dialogs();
-    foreach (UDialog *d, dlgs)
+    for (auto *d : dlgs)
         MainTW->addTab(d, d->getCaption());
     MainTW->repaint();
     MainTW->show();
@@ -1194,7 +1194,7 @@ void Coma::Connect()
     {
         QMessageBox::critical(this, "Ошибка", "Не удалось установить связь", QMessageBox::Ok);
         QApplication::restoreOverrideCursor();
-        ERMSG("cn: can't connect");
+        qCritical("Can't connect");
         return;
     }
     ActiveThreads = true;
@@ -1202,7 +1202,7 @@ void Coma::Connect()
 
 void Coma::DisconnectAndClear()
 {
-    INFOMSG("DisconnectAndClear()");
+    qInfo(__PRETTY_FUNCTION__);
     //    TimeTimer->stop();
     if (Board::GetInstance().connectionState() != Board::ConnectionState::Closed)
     {

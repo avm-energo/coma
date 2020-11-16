@@ -3,6 +3,7 @@
 #include "../gen/board.h"
 #include "../gen/datamanager.h"
 #include "../gen/modulebsi.h"
+#include "QDebug"
 #include "protocomthread.h"
 #include "settingstypes.h"
 #include "usbhidport.h"
@@ -37,12 +38,12 @@ bool Protocom::start(const ConnectStruct &st)
 {
     Q_ASSERT(Board::GetInstance().interfaceType() == Board::InterfaceType::USB);
     Q_ASSERT(std::holds_alternative<UsbHidSettings>(st.settings));
-    INFOMSG("Modbus: connect");
+    qInfo() << metaObject()->className() << "connected";
     if (!std::holds_alternative<UsbHidSettings>(st.settings))
         return false;
-
-    UsbHidPort *port = new UsbHidPort(std::get<UsbHidSettings>(st.settings), Log, this);
-    ProtocomThread *parser = new ProtocomThread(this);
+    const auto settings = std::get<UsbHidSettings>(st.settings);
+    UsbHidPort *port = new UsbHidPort(settings, Log);
+    ProtocomThread *parser = new ProtocomThread;
 
     QThread *portThread = new QThread;
     QThread *parseThread = new QThread;
@@ -87,7 +88,6 @@ void Protocom::reqTime()
 
 void Protocom::reqFile(quint32 filenum, bool isConfigFile)
 {
-    // TODO Как использовать флаг?
     CommandStruct inp {
         Proto::Commands::ReadFile, // Command
         filenum,                   // File number

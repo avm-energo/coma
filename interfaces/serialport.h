@@ -1,7 +1,6 @@
 #ifndef SERIALPORT_H
 #define SERIALPORT_H
 
-#include "../gen/error.h"
 #include "settingstypes.h"
 
 #include <QPointer>
@@ -14,7 +13,7 @@ class SerialPort : public QObject
 public:
     explicit SerialPort(QObject *parent = nullptr);
     ~SerialPort();
-    Error::Msg Init(SerialPortSettings settings);
+    bool Init(SerialPortSettings settings);
 
 signals:
     void Read(QByteArray);
