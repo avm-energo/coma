@@ -40,6 +40,7 @@ public:
     void setModel(const QList<ValueItem *> &dd, int columnsnumber); // default columnsnumber = 5
     QWidget *widget();
     BlockStruct block();
+    void SetDefBlock();
     static void getFileProperties(DataBlock::DataBlockTypes type, FilePropertiesStruct &st);
 
 signals:

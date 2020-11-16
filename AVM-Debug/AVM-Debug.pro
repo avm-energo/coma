@@ -31,6 +31,7 @@ SOURCES += \
     ../check/checkkdvvibrdialog.cpp \
     ../check/checkktfdialog.cpp \
     ../check/checkktfharmonicdialog.cpp \
+    ../config/baseconfig.cpp \
     ../config/confkdvdialog.cpp \
     ../config/confktfdialog.cpp \
     ../dialogs/fwuploaddialog.cpp \
@@ -124,6 +125,7 @@ HEADERS += \
     ../check/checkkdvvibrdialog.h \
     ../check/checkktfdialog.h \
     ../check/checkktfharmonicdialog.h \
+    ../config/baseconfig.h \
     ../config/confkdvdialog.h \
     ../config/confktfdialog.h \
     ../dialogs/fwuploaddialog.h \
