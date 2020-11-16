@@ -67,6 +67,8 @@ struct ConfParameterStruct
     QByteArray data;
 };
 
+typedef ConfParameterStruct BlkParameterStruct;
+
 struct ConfParametersListStruct
 {
     QList<ConfParameterStruct> parlist;
@@ -76,6 +78,12 @@ struct SignalsStruct
 {
     SignalTypes type;
     QVariant data;
+};
+
+struct Signal
+{
+    quint16 addr;
+    quint16 value;
 };
 
 struct GeneralResponseStruct
@@ -103,7 +111,12 @@ enum Commands
     QC_WriteUserValues,
     QC_ReqAlarms,
     QC_ReqFloats,
-    QC_ReqBitStrings
+    QC_ReqBitStrings,
+    QUSB_ReqTuningCoef,
+    QUSB_WriteTuningCoef,
+    QUSB_ReqBlkDataA,
+    QUSB_ReqBlkDataTech,
+    QUSB_WriteBlkDataTech
 };
 
 struct Command
@@ -144,6 +157,7 @@ Q_DECLARE_METATYPE(DataTypes::SinglePointWithTimeStruct)
 Q_DECLARE_METATYPE(DataTypes::FileStruct)
 Q_DECLARE_METATYPE(DataTypes::ConfParametersListStruct)
 Q_DECLARE_METATYPE(DataTypes::SignalsStruct)
+Q_DECLARE_METATYPE(DataTypes::Signal)
 Q_DECLARE_METATYPE(DataTypes::GeneralResponseStruct)
 Q_DECLARE_METATYPE(Queries::Command)
 #endif // DATATYPES_H
