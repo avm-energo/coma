@@ -27,7 +27,7 @@ void handleBitString(const QByteArray &ba, quint16 sigAddr);
 void handleBitStringArray(const QByteArray &ba, QList<quint16> arr_addr);
 void handleFloat(const QByteArray &ba, quint32 sigAddr);
 void handleFloatArray(const QByteArray &ba, quint32 sigAddr, quint32 sigCount);
-void handleFile(const QByteArray &ba, quint16 addr);
+void handleFile(QByteArray &ba, quint16 addr, bool isShouldRestored);
 void handleInt(const byte num);
 void handleBool(const bool status = true, int errorSize = 0, int errorCode = 0);
 inline void handleCommand(const QByteArray &ba);
@@ -118,72 +118,73 @@ void ProtocomThread::handle(const CN::Commands cmd)
             handleInt(m_buffer.second.front());
         else
             handleBool();
-        return;
+        break;
 
     case Commands::ResultError:
 
         handleBool(false, m_buffer.first, m_buffer.second.front());
-        return;
+        break;
 
     case Commands::ReadTime:
 
         handleBitString(m_buffer.second, addr);
-        return;
+        break;
 
     case Commands::ReadBlkStartInfo:
 
         handleBitStringArray(m_buffer.second, bsiReg);
-        return;
+        break;
 
     case Commands::ReadBlkAC:
 
         handleFloatArray(m_buffer.second, addr, count);
-        return;
+        break;
 
     case Commands::ReadBlkDataA:
 
         handleFloatArray(m_buffer.second, addr, count);
-        return;
+        break;
 
     case Commands::ReadBlkData:
 
         handleFloatArray(m_buffer.second, addr, count);
-        return;
+        break;
 
     case Commands::ReadBlkTech:
 
         handleFloatArray(m_buffer.second, addr, count);
-        return;
+        break;
 
     case Commands::ReadProgress:
 
         handleBitString(m_buffer.second, addr);
-        return;
+        break;
 
     case Commands::ReadFile:
 
-        handleFile(m_buffer.second, addr);
-        return;
+        handleFile(m_buffer.second, addr, static_cast<bool>(count));
+        break;
 
     default:
 
         handleCommand(m_buffer.second);
-        return;
+        break;
     }
+    m_buffer.first = 0;
+    m_buffer.second.clear();
 }
 
 void ProtocomThread::checkQueue()
 {
     CommandStruct inp;
-    if (DataManager::deQueue(inp) == Error::Msg::NoError)
+    if (DataManager::deQueue(inp) != Error::Msg::NoError)
+        return;
+    switch (inp.cmd)
     {
-        switch (inp.cmd)
-        {
-        default:
-            m_currentCommand = inp;
-            parseRequest(inp);
-            break;
-        }
+    default:
+        m_currentCommand = inp;
+        parseRequest(inp);
+        break;
     }
 }
 
@@ -192,7 +193,7 @@ void ProtocomThread::parseRequest(const CommandStruct &cmdStr)
     // Предполагается не хранить текущую команду
     Q_UNUSED(cmdStr)
     using namespace CN;
-    QByteArray ba;
+
     switch (m_currentCommand.cmd)
     {
     default:
@@ -204,11 +205,13 @@ void ProtocomThread::parseRequest(const CommandStruct &cmdStr)
                 emit writeDataAttempt(query.dequeue());
         }
         else
-            ba = prepareBlock(m_currentCommand);
+        {
+            QByteArray ba = prepareBlock(m_currentCommand);
+            emit writeDataAttempt(ba);
+        }
         break;
     }
     }
-    emit writeDataAttempt(ba);
 }
 
 void ProtocomThread::parseResponse(QByteArray ba)
@@ -220,7 +223,7 @@ void ProtocomThread::parseResponse(QByteArray ba)
     // Нет шапки
     if (ba.size() < 4)
     {
-        qCritical() << Error::HeaderSizeError;
+        qCritical() << Error::HeaderSizeError << ba.toHex();
         return;
     }
     byte cmd = ba.at(1);
@@ -407,10 +410,23 @@ void handleFloatArray(const QByteArray &ba, quint32 sigAddr, quint32 sigCount)
     }
 }
 
-void handleFile(const QByteArray &ba, quint16 addr)
+void handleFile(QByteArray &ba, quint16 addr, bool isShouldRestored)
 {
-    DataTypes::FileStruct resp { addr, ba };
-    DataManager::addSignalToOutList(DataTypes::SignalTypes::File, resp);
+
+    if (isShouldRestored)
+    {
+        QList<DataTypes::ConfParameterStruct> outlist;
+        Error::Msg error_code = S2::RestoreData(ba, outlist);
+        if (error_code == Error::Msg::NoError)
+            DataManager::addSignalToOutList(DataTypes::ConfParametersList, outlist);
+        else
+            qCritical() << error_code;
+    }
+    else
+    {
+        DataTypes::FileStruct resp { addr, ba };
+        DataManager::addSignalToOutList(DataTypes::SignalTypes::File, resp);
+    }
 }
 
 void handleInt(const byte num)

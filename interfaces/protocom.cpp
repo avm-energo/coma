@@ -84,7 +84,7 @@ void Protocom::reqFile(quint32 filenum, bool isConfigFile)
     CommandStruct inp {
         CN::Commands::ReadFile, // Command
         filenum,                // File number
-        QVariant(),             // Null float arg
+        isConfigFile,           // Is file should be restored
         {}                      // Empty QByteArray
     };
     DataManager::addToInQueue(inp);
@@ -100,7 +100,7 @@ void Protocom::reqStartup(quint32 sigAdr, quint32 sigCount)
         CN::Commands::ReadBlkData,                                 // Command
         blk,                                                       // Block number
         QVariant(),                                                // Null arg
-        QByteArray(sizeof(sigCount) * sigCount, Qt::Uninitialized) // Buffer for bsi
+        QByteArray(sizeof(sigCount) * sigCount, Qt::Uninitialized) // Buffer
     };
     DataManager::addToInQueue(inp);
 }
@@ -145,7 +145,7 @@ void handleBlk(const CN::Commands cmd, const quint32 blk, QByteArray data = {})
         cmd,        // Command
         blk,        // Block number, cmd number for WriteCommand, or empty for some cmds
         QVariant(), // Null arg
-        data        // Empty ba
+        data        // QByteArray data, maybe empty
     };
     DataManager::addToInQueue(inp);
 }
