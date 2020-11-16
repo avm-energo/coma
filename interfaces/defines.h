@@ -110,19 +110,21 @@ enum Commands : byte
     // переход на новое ПО
     WriteUpgrade = 0x40,
 
-    WriteInitValues = 0x01,
-
-    WriteStartupValues = 0x04,
     ///
     /// namespace ERASE
     ///
-    EraseStartupValues = 0x05,
+
     // стирание технологического блока
     EraseTech = 0x45,
     // стирание счётчиков дискретных состояний
     EraseCnt = 0x47,
     // запись версии аппаратуры модуля/серийного номера/типа платы
-    WriteHardware = 0x48
+    WriteHardware = 0x48,
+
+    /// Блок дополнительных команд
+    EraseStartupValues = 0x05,
+    InitStartupValues = 0x01,
+    WriteStartupValues = 0x04
 };
 Q_ENUM_NS(Commands)
 } // namespace CN
@@ -153,7 +155,7 @@ struct CommandStruct
     QVariant arg2;
     QByteArray ba;
 };
-
+Q_DECLARE_METATYPE(CommandStruct)
 // Список регистров BSI
 const QList<quint16> bsiReg { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };
 
@@ -170,7 +172,7 @@ const QList<quint16> bsiReg { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 
 #define TECH_RA 5  // технологический блок рабочего архива
 
 // Получаем номер блока по номеру регистра
-// Количество регистров необхимо для проверки
+// Количество регистров необходимо для проверки
 const QMap<quint16, QPair<quint8, quint16>> getBlkByReg {
     { 2420, { 4, 14 } }, //
     { 2400, { 5, 14 } }, //
