@@ -198,7 +198,7 @@ void TimeDialog::reqUpdate()
         DataManager::getSignals(TIMEREG, TIMEREG, DataTypes::SignalTypes::BitString, list);
         if (!list.isEmpty())
         {
-            foreach (DataTypes::SignalsStruct signal, list)
+            for (auto signal : list)
             {
                 DataTypes::BitStringStruct bs = qvariant_cast<DataTypes::BitStringStruct>(signal.data);
                 memcpy(&unixtimestamp, &bs.sigVal, sizeof(quint32));
