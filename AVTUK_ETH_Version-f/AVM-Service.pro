@@ -83,6 +83,7 @@ SOURCES += \
     ../interfaces/usbhidport.cpp \
     ../interfaces/protocom.cpp \
     ../interfaces/protocomthread.cpp \
+    ../interfaces/usbhidportinfo.cpp \
     ../models/checkdelegate.cpp \
     ../models/errorprotocolmodel.cpp \
     ../models/etableitem.cpp \
@@ -186,6 +187,7 @@ HEADERS += \
     ../interfaces/iec104private.h \
     ../interfaces/modbusprivate.h \
     ../interfaces/usbprivate.h \
+    ../interfaces/usbhidportinfo.h \
     ../models/checkdelegate.h \
     ../models/errorprotocolmodel.h \
     ../models/etableitem.h \
