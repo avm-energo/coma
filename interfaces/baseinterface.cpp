@@ -1,13 +1,12 @@
 #include "baseinterface.h"
 
-BaseInterface::BaseInterface(QObject *parent) : QObject(parent) { }
+BaseInterface::BaseInterface(QObject *parent) : QObject(parent), m_working(false), Log(new LogClass(this))
+{
+}
 
 void BaseInterface::reqAlarms(quint32 sigAdr, quint32 sigCount)
 {
-    QList<DataTypes::SignalsStruct> list;
-    DataTypes::SignalsStruct sig { DataTypes::SignalTypes::BitString, sigAdr };
-    list.append(sig);
-    sig = { DataTypes::SignalTypes::BitString, sigCount };
-    list.append(sig);
-    writeCommand(Queries::QC_ReqAlarms, list);
+    // NOTE Избежать сужающих кастов
+    DataTypes::Signal signal { static_cast<quint16>(sigAdr), static_cast<quint16>(sigCount) };
+    writeCommand(Queries::QC_ReqAlarms, QVariant::fromValue(signal));
 }

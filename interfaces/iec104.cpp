@@ -113,13 +113,13 @@ void IEC104::reqBSI()
     DataManager::addToInQueue(inp);
 }
 
-void IEC104::reqAlarms(quint32 sigAdr, quint32 sigCount)
-{
-    Q_UNUSED(sigAdr)
-    Q_UNUSED(sigCount)
-    Commands104::CommandStruct inp { Commands104::CM104_REQGROUP, ALARMGROUP, 0, {} };
-    DataManager::addToInQueue(inp);
-}
+// void IEC104::reqAlarms(quint32 sigAdr, quint32 sigCount)
+//{
+//    Q_UNUSED(sigAdr)
+//    Q_UNUSED(sigCount)
+//    Commands104::CommandStruct inp { Commands104::CM104_REQGROUP, ALARMGROUP, 0, {} };
+//    DataManager::addToInQueue(inp);
+//}
 
 void IEC104::reqFile(quint32 filenum, bool isConfigFile)
 {
@@ -154,27 +154,34 @@ void IEC104::writeTime(quint32 time)
     DataManager::addToInQueue(inp);
 }
 
-void IEC104::writeCommand(Queries::Commands cmd, QList<DataTypes::SignalsStruct> list)
+void IEC104::writeCommand(Queries::Commands cmd, QVariant item)
 {
+
     Commands104::CommandStruct inp;
-    if (cmd == Queries::QC_WriteUserValues)
+
+    switch (cmd)
     {
-        // for each signal in list form the 50 command and set it into the input queue
-        foreach (DataTypes::SignalsStruct str, list)
-        {
-            QVariant var = str.data;
-            if (var.canConvert<DataTypes::FloatStruct>())
-            {
-                DataTypes::FloatStruct flstr = var.value<DataTypes::FloatStruct>();
-                inp = { Commands104::CM104_COM50, flstr.sigAdr, flstr.sigVal, {} };
-                DataManager::addToInQueue(inp);
-            }
-        }
+    case Queries::QC_WriteUserValues:
+    {
+        if (!item.canConvert<DataTypes::FloatStruct>())
+            return;
+
+        DataTypes::FloatStruct flstr = item.value<DataTypes::FloatStruct>();
+        inp = { Commands104::CM104_COM50, flstr.sigAdr, flstr.sigVal, {} };
+        DataManager::addToInQueue(inp);
+        break;
     }
-    else
+    case Queries::QC_ReqAlarms:
+    {
+        inp = { Commands104::CM104_REQGROUP, ALARMGROUP, 0, {} };
+        DataManager::addToInQueue(inp);
+        break;
+    }
+    default:
     {
         inp = Commands104::CommandsTranslateMap().value(cmd);
         DataManager::addToInQueue(inp);
+    }
     }
 }
 

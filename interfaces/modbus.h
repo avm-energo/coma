@@ -78,19 +78,19 @@ public:
     ModBus(QObject *parent = nullptr);
     ~ModBus();
 
-    bool start(const ConnectStruct &st);
+    bool start(const ConnectStruct &st) override;
     //    void BSIrequest();
 
-    void reqStartup(quint32 sigAdr, quint32 sigCount);
-    void reqBSI();
-    void reqFile(quint32 filenum, bool isConfigFile);
+    void reqStartup(quint32 sigAdr, quint32 sigCount) override;
+    void reqBSI() override;
+    void reqFile(quint32 filenum, bool isConfigFile) override;
     //    void reqAlarms(quint32 sigAdr, quint32 sigCount);
-    void writeFile(quint32 filenum, const QByteArray &file);
-    void reqTime();
-    void writeTime(quint32 time);
+    void writeFile(quint32 filenum, const QByteArray &file) override;
+    void reqTime() override;
+    void writeTime(quint32 time) override;
     // writeCommand writes only float signals whose addresses are the lowest and are sequentally lays in the list
-    void writeCommand(Queries::Commands cmd, QList<DataTypes::SignalsStruct> list = QList<DataTypes::SignalsStruct>());
-    void reqFloats(quint32 sigAdr, quint32 sigCount);
+    void writeCommand(Queries::Commands cmd, QVariant item) override;
+    void reqFloats(quint32 sigAdr, quint32 sigCount) override;
     //    void reqBitStrings(quint32 sigAdr, quint32 sigCount);
 
     //    int CheckIndex, CheckHarmIndex, CheckVibrIndex, CorIndex, TimeIndex;
@@ -104,7 +104,7 @@ public slots:
     //    void Tabs(int);
     //    void StartPolling();
     //    void StopPolling();
-    void stop();
+    void stop() override;
 
 signals:
     //    void SignalsReceived(QList<ModBus::SignalStruct> Signal);
