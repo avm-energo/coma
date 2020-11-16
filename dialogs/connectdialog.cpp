@@ -3,6 +3,7 @@
 #include "../gen/board.h"
 #include "../gen/error.h"
 #include "../gen/stdfunc.h"
+#include "../interfaces/usbhidportinfo.h"
 #include "../widgets/wd_func.h"
 
 #include <QDebug>
@@ -111,8 +112,9 @@ void ConnectDialog::SetUsb(QModelIndex index)
     int row = index.row();
 
     UsbHidSettings settings;
-    settings.vendor_id = mdl->data(mdl->index(row, 0)).toUInt();
-    settings.product_id = mdl->data(mdl->index(row, 1)).toUInt();
+
+    settings.vendor_id = mdl->data(mdl->index(row, 0)).toString().toUInt(nullptr, 16);
+    settings.product_id = mdl->data(mdl->index(row, 1)).toString().toUInt(nullptr, 16);
     settings.serial = mdl->data(mdl->index(row, 2)).toString();
     settings.path = mdl->data(mdl->index(row, 3)).toString();
     ConnectStruct st { QString(), settings };
@@ -469,28 +471,30 @@ bool ConnectDialog::UpdateModel()
     {
     case Board::InterfaceType::USB:
     {
-        // FIXME After create usb
-        //        QList<QStringList> USBsl = EProtocom::GetInstance().DevicesFound();
-        //        QStringList sl { "VID", "PID", "Serial", "Path" };
-        //        QStandardItemModel *mdl = new QStandardItemModel(dlg);
+        auto usbDevices = UsbHidPortInfo::devicesFound();
 
-        //        if (USBsl.isEmpty())
-        //        {
-        //            QMessageBox::critical(this, "Ошибка", "Устройства не найдены");
-        //            qCritical() << QVariant::fromValue(Error::Msg::NoDeviceError).toString();
-        //            return false;
-        //        }
-        //        mdl->setHorizontalHeaderLabels(sl);
-        //        for (const auto &row : USBsl)
-        //        {
-        //            QList<QStandardItem *> items;
-        //            for (const auto &column : row)
-        //            {
-        //                items.append(new QStandardItem(column));
-        //            }
-        //            mdl->appendRow(items);
-        //        }
-        //        WDFunc::SetQTVModel(dlg, "usbtv", mdl);
+        QStringList sl { "VID", "PID", "Serial", "Path" };
+        QStandardItemModel *mdl = new QStandardItemModel(dlg);
+
+        if (usbDevices.isEmpty())
+        {
+            QMessageBox::critical(this, "Ошибка", "Устройства не найдены");
+            qCritical() << Error::Msg::NoDeviceError;
+            return false;
+        }
+        mdl->setHorizontalHeaderLabels(sl);
+        for (const auto &row : usbDevices)
+        {
+            QList<QStandardItem *> device {
+                new QStandardItem(QString::number(row.vendor_id, 16)),  //
+                new QStandardItem(QString::number(row.product_id, 16)), //
+                new QStandardItem(row.serial),                          //
+                new QStandardItem(row.path)                             //
+
+            };
+            mdl->appendRow(device);
+        }
+        WDFunc::SetQTVModel(dlg, "usbtv", mdl);
         break;
     }
     case Board::InterfaceType::Ethernet:
