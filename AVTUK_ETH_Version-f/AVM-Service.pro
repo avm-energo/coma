@@ -116,6 +116,7 @@ SOURCES += \
     ../widgets/lineeditfield.cpp \
     ../widgets/passwordlineedit.cpp \
     ../widgets/signalchoosewidget.cpp \
+    ../widgets/splashscreen.cpp \
     ../widgets/udialog.cpp \
     ../widgets/uwidget.cpp \
     ../widgets/waitwidget.cpp \
@@ -172,7 +173,6 @@ HEADERS += \
     ../gen/stdfunc.h \
     ../gen/timefunc.h \
     ../interfaces/baseinterface.h \
-    ../interfaces/defines.h \
     ../interfaces/ethernet.h \
     ../interfaces/iec104.h \
     ../interfaces/iec104thread.h \
@@ -183,6 +183,9 @@ HEADERS += \
     ../interfaces/usbhidport.h \
     ../interfaces/protocom.h \
     ../interfaces/settingstypes.h \
+    ../interfaces/iec104private.h \
+    ../interfaces/modbusprivate.h \
+    ../interfaces/usbprivate.h \
     ../models/checkdelegate.h \
     ../models/errorprotocolmodel.h \
     ../models/etableitem.h \
@@ -217,6 +220,7 @@ HEADERS += \
     ../widgets/lineeditfield.h \
     ../widgets/passwordlineedit.h \
     ../widgets/signalchoosewidget.h \
+    ../widgets/splashscreen.h \
     ../widgets/udialog.h \
     ../widgets/uwidget.h \
     ../widgets/waitwidget.h \

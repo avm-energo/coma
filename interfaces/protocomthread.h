@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../gen/error.h"
-#include "defines.h"
+#include "usbprivate.h"
 
 #include <QReadWriteLock>
 class LogClass;
@@ -24,19 +24,19 @@ private:
     void finish(Error::Msg msg);
 
     void parseResponse(QByteArray ba);
-    void parseRequest(const CommandStruct &cmdStr);
-    void handle(const CN::Commands cmd);
+    void parseRequest(const Proto::CommandStruct &cmdStr);
+    void handle(const Proto::Commands cmd);
 
     LogClass *log;
 
     QReadWriteLock m_rwLocker;
-    void writeLog(QByteArray ba, Direction dir = NoDirection);
-    void writeLog(Error::Msg msg, Direction dir = NoDirection)
+    void writeLog(QByteArray ba, Proto::Direction dir = Proto::NoDirection);
+    void writeLog(Error::Msg msg, Proto::Direction dir = Proto::NoDirection)
     {
         writeLog(QVariant::fromValue(msg).toByteArray(), dir);
     }
 
-    CommandStruct m_currentCommand;
+    Proto::CommandStruct m_currentCommand;
     QPair<quint64, QByteArray> m_buffer;
     void checkQueue();
 

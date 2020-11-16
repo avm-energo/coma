@@ -5,7 +5,7 @@
 // QList<DataTypes::SignalsStruct> DataManager::s_outputList;
 // QMutex DataManager::s_outListMutex;
 QMutex DataManager::s_inQueueMutex;
-std::queue<QVariant> s_inputQueue;
+std::queue<QVariant> DataManager::s_inputQueue;
 
 DataManager::DataManager(Singleton::token, QObject *parent) : QObject(parent)
 {

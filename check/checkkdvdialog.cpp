@@ -29,7 +29,7 @@ CheckKDVDialog::CheckKDVDialog(QWidget *parent) : AbstractCheckDialog(parent)
     QString tmps = "QDialog {background-color: " + QString(Colors::UCONFCLR) + ";}";
     setStyleSheet(tmps);
     QStringList sl;
-    BdNum = 6;
+    // BdNum = 6;
     ChKDV = new CheckKDV;
     Ch = new Check;
     //    BdNum = 11;
@@ -51,36 +51,36 @@ CheckKDVDialog::CheckKDVDialog(QWidget *parent) : AbstractCheckDialog(parent)
 
     sl = QStringList { "Основные", "Модель", "Ресурс", "1-я гармоника", "Несимметрия" };
 
-    BdUINum = sl.size();
+    // BdUINum = sl.size();
 
-    SetupUI(sl);
+    // SetupUI(sl);
 
     Timer->setInterval(ANMEASINT);
 }
 
-QWidget *CheckKDVDialog::BdUI(int bdnum)
-{
-    switch (bdnum)
-    {
+// QWidget *CheckKDVDialog::BdUI(int bdnum)
+//{
+//    switch (bdnum)
+//    {
 
-    case 0:
-        return ChKDV->Bd1W(this);
+//    case 0:
+//        return ChKDV->Bd1W(this);
 
-    case 1:
-        return ChKDV->Bd2W(this);
+//    case 1:
+//        return ChKDV->Bd2W(this);
 
-    case 2:
-        return ChKDV->Bd3W(this);
+//    case 2:
+//        return ChKDV->Bd3W(this);
 
-    case 3:
-        return ChKDV->Bd4W(this);
-    case 4:
-        return ChKDV->Bd5W(this);
+//    case 3:
+//        return ChKDV->Bd4W(this);
+//    case 4:
+//        return ChKDV->Bd5W(this);
 
-    default:
-        return new QWidget;
-    }
-}
+//    default:
+//        return new QWidget;
+//    }
+//}
 
 void CheckKDVDialog::PrepareHeadersForFile(int row)
 {

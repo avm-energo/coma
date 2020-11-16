@@ -138,8 +138,8 @@ float AbstractStartupDialog::ToFloat(QString text)
 void AbstractStartupDialog::updateFloatData()
 {
     QList<DataTypes::SignalsStruct> list;
-    DataManager::getSignals(m_startupBlockDescription.initStartRegAdr, m_startupBlockDescription.size / 4,
-        DataTypes::SignalTypes::FloatWithTime, list); // /4 => float data by default
+    //    DataManager::getSignals(m_startupBlockDescription.initStartRegAdr, m_startupBlockDescription.size / 4,
+    //        DataTypes::SignalTypes::FloatWithTime, list); // /4 => float data by default
     if (!list.isEmpty())
     {
         foreach (DataTypes::SignalsStruct signal, list)
@@ -166,9 +166,9 @@ void AbstractStartupDialog::updateFloatData()
 void AbstractStartupDialog::updateStatus()
 {
     DataTypes::GeneralResponseStruct grs;
-    while (DataManager::getResponse(DataTypes::GeneralResponseTypes::Ok, grs)
-        != Error::Msg::ResEmpty) // get all responses from outList
-        TimeFunc::Wait();
+    //    while (DataManager::getResponse(DataTypes::GeneralResponseTypes::Ok, grs)
+    //        != Error::Msg::ResEmpty) // get all responses from outList
+    //        TimeFunc::Wait();
     if (grs.type == DataTypes::GeneralResponseTypes::Ok)
         QMessageBox::information(this, "INFO", "Записано успешно");
 }

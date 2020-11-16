@@ -1,14 +1,8 @@
 #ifndef COMA_H
 #define COMA_H
 
-#include "../dialogs/connectdialog.h"
-#include "../interfaces/iec104.h"
-#include "../interfaces/modbus.h"
 #include "../interfaces/settingstypes.h"
 #include "../module/module.h"
-#include "../widgets/alarmstateallwidget.h"
-#include "../widgets/alarmwidget.h"
-#include "../widgets/etabwidget.h"
 
 #include <QMainWindow>
 #include <QResizeEvent>
@@ -199,8 +193,8 @@ private:
     //    QTimer *ReconnectTimer;
     QTimer *BdaTimer, *AlrmTimer; //, *HarmTimer, *VibrTimer;
 
-    IEC104 *Ch104;
-    ModBus *ChModbus;
+    //    IEC104 *Ch104;
+    //    ModBus *ChModbus;
     BaseInterface *m_iface;
 
     ConnectStruct ConnectSettings;

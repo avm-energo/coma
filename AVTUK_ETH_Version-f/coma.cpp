@@ -22,28 +22,25 @@
 
 #include "coma.h"
 
-#include "../check/checkkdvdialog.h"
-#include "../check/checkkdvharmonicdialog.h"
-#include "../check/checkkdvvibrdialog.h"
-#include "../check/checkkivdialog.h"
-#include "../check/checkktfdialog.h"
-#include "../check/checkktfharmonicdialog.h"
-#include "../config/confkdvdialog.h"
-#include "../config/confkivdialog.h"
-#include "../config/confktfdialog.h"
+#include "../dialogs/connectdialog.h"
 #include "../dialogs/errordialog.h"
 #include "../dialogs/keypressdialog.h"
 #include "../dialogs/settingsdialog.h"
+#include "../gen/datamanager.h"
 #include "../gen/errorqueue.h"
 #include "../gen/logger.h"
 #include "../gen/stdfunc.h"
+#include "../interfaces/iec104.h"
+#include "../interfaces/modbus.h"
 #include "../interfaces/protocom.h"
 #include "../interfaces/settingstypes.h"
+#include "../widgets/etabwidget.h"
 #include "../widgets/splashscreen.h"
 #include "../widgets/wd_func.h"
 
 #include <QApplication>
 #include <QDir>
+#include <QHBoxLayout>
 #include <QMenuBar>
 #include <QMessageBox>
 #include <QProgressBar>
@@ -697,27 +694,27 @@ void Coma::CloseDialogs()
 
 void Coma::New104()
 {
-    Ch104 = new IEC104;
-    connect(this, &Coma::StopCommunications, Ch104, &IEC104::stop);
+    // Ch104 = new IEC104;
+    // connect(this, &Coma::StopCommunications, Ch104, &IEC104::stop);
     //    connect(Ch104, &IEC104::Finished, [this]() { ActiveThreads &= ~THREAD::P104; });
-    connect(Ch104, &IEC104::Finished, [this]() { ActiveThreads = false; });
+    // connect(Ch104, &IEC104::Finished, [this]() { ActiveThreads = false; });
     // connect(Ch104,SIGNAL(Sponsignalsready(IEC104Thread::SponSignals*)),this,SLOT(UpdatePredAlarmEvents(IEC104Thread::SponSignals*)));
     //    connect(Ch104, &IEC104::SetDataSize, this, &Coma::SetProgressBar1Size);
     //    connect(Ch104, &IEC104::SetDataCount, this, &Coma::SetProgressBar1);
-    connect(Ch104, &BaseInterface::reconnect, this, &Coma::ReConnect);
+    // connect(Ch104, &BaseInterface::reconnect, this, &Coma::ReConnect);
     //    connect(Ch104, &IEC104::Sponsignalsready, Alarm, &AlarmClass::UpdateAlarm104);
     //    connect(Ch104, &IEC104::Bs104signalsready, this, qOverload<IEC104Thread::BS104Signals *>(&Coma::FillBSI));
 }
 
 void Coma::NewModbus()
 {
-    ChModbus = new ModBus;
-    connect(this, &Coma::StopCommunications, ChModbus, &ModBus::stop);
+    // ChModbus = new ModBus;
+    // connect(this, &Coma::StopCommunications, ChModbus, &ModBus::stop);
     //    connect(ChModbus, &ModBus::Finished, [this]() { ActiveThreads &= ~THREAD::MODBUS; });
-    connect(ChModbus, &ModBus::Finished, [this]() { ActiveThreads = false; });
+    // connect(ChModbus, &ModBus::Finished, [this]() { ActiveThreads = false; });
     //  connect(ChModbus,SIGNAL(CoilSignalsReady(ModBus::Coils)), this,
     //  SLOT(ModBusUpdatePredAlarmEvents(ModBus::Coils)));
-    connect(ChModbus, &BaseInterface::reconnect, this, &Coma::ReConnect);
+    // connect(ChModbus, &BaseInterface::reconnect, this, &Coma::ReConnect);
     //    connect(ChModbus, &ModBus::CoilSignalsReady, Alarm, &AlarmClass::UpdateAlarmModBus);
 
     //    connect(ChModbus, &ModBus::BsiFromModbus, this,
@@ -742,7 +739,7 @@ void Coma::newTimers()
     //    TimeTimer->setInterval(1000);
     m_BSITimer = new QTimer;
     m_BSITimer->setInterval(1000);
-    connect(m_BSITimer, &QTimer::timeout, &ModuleBSI::update);
+    // connect(m_BSITimer, &QTimer::timeout, &ModuleBSI::update);
 
     BdaTimer = new QTimer;
     BdaTimer->setInterval(1000);

@@ -3,61 +3,11 @@
 
 #include "../gen/datatypes.h"
 #include "../gen/logclass.h"
+#include "modbusprivate.h"
+
 #include <QMap>
 #include <QObject>
 #define RECONNECTTIME 5000
-
-namespace CommandsMBS
-{
-enum CommandRegisters
-{
-    SetStartupValuesReg = 900,
-    ClearStartupValuesReg = 905
-};
-
-enum Commands
-{
-    MBS_READHOLDINGREGISTERS,
-    MBS_READINPUTREGISTER,
-    MBS_WRITEMULTIPLEREGISTERS,
-    MBS_READCOILS
-};
-
-struct CommandStruct
-{
-    Commands cmd;
-    quint16 adr;
-    quint16 quantity;
-    //    quint8 sizebytes;
-    QByteArray data;
-};
-
-enum ModbusGroupsEnum
-{
-    SIGNALTYPE = 0,
-    FIRSTBYTEADR = 1,
-    SECONDBYTEADR = 2,
-    FIRSTBYTEQ = 3,
-    SECONDBYTEQ = 4
-};
-// map to translate real commands like "erase memory block" into iec104 commands: 45 or 50 or something else
-QMap<Queries::Commands, CommandStruct> CommandsTranslateMap()
-{
-    QMap<Queries::Commands, CommandStruct> map;
-    //    map[Queries::QC_SetNewConfiguration] = { CM104_COM45, SetNewConfigurationReg, 0, {} };
-    map[Queries::QC_ClearStartupValues] = { MBS_WRITEMULTIPLEREGISTERS, ClearStartupValuesReg, 2, { 0x01, 0x01 } };
-    map[Queries::QC_WriteUserValues] = { MBS_WRITEMULTIPLEREGISTERS, 0, 0, {} };
-    map[Queries::QC_ReqAlarms] = { MBS_READCOILS, 0, 0, {} };
-    //    map[Queries::QC_Command50] = { CM104_COM50, 0, 0, {} };
-    //    map[Queries::QC_EraseJournals] = { CM104_COM45, EraseJournalsReg, 0, {} };
-    map[Queries::QC_SetStartupValues] = { MBS_WRITEMULTIPLEREGISTERS, SetStartupValuesReg, 2, { 0x01, 0x01 } };
-    //    map[Queries::QC_StartFirmwareUpgrade] = { CM104_COM45, StartFirmwareUpgradeReg, 0, {} };
-    //    map[Queries::QC_StartWorkingChannel] = { CM104_COM45, StartWorkingChannelReg, 0, {} };
-    return map;
-}
-}
-
-Q_DECLARE_METATYPE(CommandsMBS::CommandStruct)
 
 class ModbusThread : public QObject
 {

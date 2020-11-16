@@ -47,8 +47,10 @@ public slots:
     void updateFloatData(DataTypes::FloatStruct &fl);
     void updateSPData(DataTypes::SinglePointWithTimeStruct &sp);
 
-private:
+protected:
     bool m_updatesEnabled;
+
+private:
     QString m_caption;
     quint32 m_timerCounter;
     quint32 m_timerMax;

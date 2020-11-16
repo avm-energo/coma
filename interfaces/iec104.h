@@ -3,17 +3,28 @@
 #include "../gen/datamanager.h"
 #include "../gen/logclass.h"
 #include "baseinterface.h"
+#include "iec104private.h"
 
 #include <QMutex>
 #include <QQueue>
 #include <QTimer>
 
-#define STARTUPGROUP 2
-#define BSIGROUP 1
-#define TIMEGROUP 15
-#define ALARMGROUP 3
-#define MAINFLOATGROUP 4
-#define MAINBITSTRINGGROUP 4
+namespace Commands104
+{
+using namespace Queries;
+// map to translate real commands like "erase memory block" into
+// iec104 commands: 45 or 50 or something else
+const QMap<Queries::Commands, CommandStruct> CommandsTranslateMap {
+    { QC_SetNewConfiguration, { CM104_COM45, SetNewConfigurationReg, 0, {} } },   //
+    { QC_ClearStartupValues, { CM104_COM45, ClearStartupValuesReg, 0, {} } },     //
+    { QC_WriteUserValues, { CM104_COM50, 0, 0, {} } },                            //
+    { QC_EraseJournals, { CM104_COM45, EraseJournalsReg, 0, {} } },               //
+    { QC_SetStartupValues, { CM104_COM45, SetStartupValuesReg, 0, {} } },         //
+    { QC_StartFirmwareUpgrade, { CM104_COM45, StartFirmwareUpgradeReg, 0, {} } }, //
+    { QC_StartWorkingChannel, { CM104_COM45, StartWorkingChannelReg, 0, {} } }    //
+
+};
+}
 
 class IEC104 : public BaseInterface
 {

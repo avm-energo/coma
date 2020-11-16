@@ -2,9 +2,9 @@
 
 #include "../gen/error.h"
 #include "../gen/logclass.h"
-#include "defines.h"
 #include "hidapi/hidapi.h"
 #include "settingstypes.h"
+#include "usbprivate.h"
 
 namespace HID
 {
@@ -42,8 +42,8 @@ public slots:
     void poll();
 
 private:
-    void writeLog(QByteArray ba, Direction dir = NoDirection);
-    void writeLog(Error::Msg msg, Direction dir = NoDirection)
+    void writeLog(QByteArray ba, Proto::Direction dir = Proto::NoDirection);
+    void writeLog(Error::Msg msg, Proto::Direction dir = Proto::NoDirection)
     {
         writeLog(QVariant::fromValue(msg).toByteArray(), dir);
     }

@@ -1,6 +1,7 @@
 #include "iec104thread.h"
 
 #include "../gen/datamanager.h"
+#include "iec104private.h"
 
 #include <QCoreApplication>
 #include <QThread>

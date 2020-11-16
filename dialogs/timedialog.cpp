@@ -195,7 +195,7 @@ void TimeDialog::reqUpdate()
     {
         uint unixtimestamp = 0;
         QList<DataTypes::SignalsStruct> list;
-        DataManager::getSignals(TIMEREG, TIMEREG, DataTypes::SignalTypes::BitString, list);
+        // DataManager::getSignals(TIMEREG, TIMEREG, DataTypes::SignalTypes::BitString, list);
         if (!list.isEmpty())
         {
             for (auto signal : list)

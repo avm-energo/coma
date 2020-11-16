@@ -179,7 +179,7 @@ void IEC104::writeCommand(Queries::Commands cmd, QVariant item)
     }
     default:
     {
-        inp = Commands104::CommandsTranslateMap().value(cmd);
+        inp = Commands104::CommandsTranslateMap.value(cmd);
         DataManager::addToInQueue(inp);
     }
     }

@@ -14,7 +14,9 @@
 #include <dbt.h>
 // clang-format on
 #endif
-
+using Proto::CommandStruct;
+using Proto::Direction;
+using Proto::Starters;
 UsbHidPort::UsbHidPort(const UsbHidSettings &dev, LogClass *logh, QObject *parent)
     : QObject(parent), log(logh), m_deviceInfo(dev)
 {
@@ -128,9 +130,9 @@ void UsbHidPort::writeLog(QByteArray ba, Direction dir)
     QByteArray tmpba = QByteArray(metaObject()->className());
     switch (dir)
     {
-    case FromDevice:
+    case Proto::FromDevice:
         tmpba.append(": <-");
-    case ToDevice:
+    case Proto::ToDevice:
         tmpba.append(": ->");
     default:
         tmpba.append(":  ");
@@ -168,7 +170,7 @@ bool UsbHidPort::writeData(QByteArray &ba)
 
     // inserting ID field
     ba.prepend(static_cast<char>(0x00));
-    writeLog(ba.toHex(), ToDevice);
+    writeLog(ba.toHex(), Proto::ToDevice);
     size_t tmpt = static_cast<size_t>(ba.size());
 
     int errorCode = hid_write(m_hidDevice, reinterpret_cast<unsigned char *>(ba.data()), tmpt);

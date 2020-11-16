@@ -8,23 +8,25 @@
 #include "usbhidport.h"
 
 #include <QThread>
-
+using Proto::CommandStruct;
+using Proto::Direction;
+using Proto::Starters;
 // clang-format off
-const QMap<Queries::Commands, CN::Commands> Protocom::m_dict
+const QMap<Queries::Commands, Proto::Commands> Protocom::m_dict
 {
-    { Queries::Commands::QC_StartFirmwareUpgrade, CN::Commands::WriteUpgrade },
-    { Queries::QC_SetStartupValues, CN::Commands::InitStartupValues },
-    { Queries::QC_ClearStartupValues, CN::Commands::EraseStartupValues },
-    { Queries::QC_SetNewConfiguration, CN::Commands::WriteBlkTech },
-    { Queries::QC_EraseJournals, CN::Commands::EraseTech },
-    { Queries::QC_ReqBitStrings, CN::Commands::ReadProgress },
-    { Queries::QC_EraseTechBlock, CN::Commands::EraseTech },
-    { Queries::QC_Test, CN::Commands::Test },
-    { Queries::QUSB_ReqTuningCoef, CN::Commands::ReadBlkAC },
-    { Queries::QUSB_WriteTuningCoef, CN::Commands::WriteBlkAC },
-    { Queries::QUSB_ReqBlkDataA, CN::Commands::ReadBlkDataA },
-    { Queries::QUSB_ReqBlkDataTech, CN::Commands::ReadBlkTech },
-    { Queries::QUSB_WriteBlkDataTech, CN::Commands::WriteBlkTech }
+    { Queries::Commands::QC_StartFirmwareUpgrade, Proto::Commands::WriteUpgrade },
+    { Queries::QC_SetStartupValues, Proto::Commands::InitStartupValues },
+    { Queries::QC_ClearStartupValues, Proto::Commands::EraseStartupValues },
+    { Queries::QC_SetNewConfiguration, Proto::Commands::WriteBlkTech },
+    { Queries::QC_EraseJournals, Proto::Commands::EraseTech },
+    { Queries::QC_ReqBitStrings, Proto::Commands::ReadProgress },
+    { Queries::QC_EraseTechBlock, Proto::Commands::EraseTech },
+    { Queries::QC_Test, Proto::Commands::Test },
+    { Queries::QUSB_ReqTuningCoef, Proto::Commands::ReadBlkAC },
+    { Queries::QUSB_WriteTuningCoef, Proto::Commands::WriteBlkAC },
+    { Queries::QUSB_ReqBlkDataA, Proto::Commands::ReadBlkDataA },
+    { Queries::QUSB_ReqBlkDataTech, Proto::Commands::ReadBlkTech },
+    { Queries::QUSB_WriteBlkDataTech, Proto::Commands::WriteBlkTech }
 };
 // clang-format on
 Protocom::Protocom(QObject *parent) : BaseInterface(parent)
@@ -72,9 +74,14 @@ bool Protocom::start(const ConnectStruct &st)
     return true;
 }
 
+void Protocom::stop()
+{
+    // FIXME Реализовать
+}
+
 void Protocom::reqTime()
 {
-    CommandStruct inp { CN::Commands::ReadTime, 0, 0, {} };
+    CommandStruct inp { Proto::Commands::ReadTime, 0, 0, {} };
     DataManager::addToInQueue(inp);
 }
 
@@ -82,22 +89,22 @@ void Protocom::reqFile(quint32 filenum, bool isConfigFile)
 {
     // TODO Как использовать флаг?
     CommandStruct inp {
-        CN::Commands::ReadFile, // Command
-        filenum,                // File number
-        isConfigFile,           // Is file should be restored
-        {}                      // Empty QByteArray
+        Proto::Commands::ReadFile, // Command
+        filenum,                   // File number
+        isConfigFile,              // Is file should be restored
+        {}                         // Empty QByteArray
     };
     DataManager::addToInQueue(inp);
 }
 
 void Protocom::reqStartup(quint32 sigAdr, quint32 sigCount)
 {
-    Q_ASSERT(!getBlkByReg.contains(sigAdr));
-    auto blkPair = getBlkByReg.value(sigAdr);
+    Q_ASSERT(!Proto::getBlkByReg.contains(sigAdr));
+    auto blkPair = Proto::getBlkByReg.value(sigAdr);
     Q_ASSERT(blkPair.second != sigCount);
     quint32 blk = blkPair.first;
     CommandStruct inp {
-        CN::Commands::ReadBlkData,                                 // Command
+        Proto::Commands::ReadBlkData,                              // Command
         blk,                                                       // Block number
         QVariant(),                                                // Null arg
         QByteArray(sizeof(sigCount) * sigCount, Qt::Uninitialized) // Buffer
@@ -108,7 +115,7 @@ void Protocom::reqStartup(quint32 sigAdr, quint32 sigCount)
 void Protocom::reqBSI()
 {
     CommandStruct inp {
-        CN::Commands::ReadBlkStartInfo,                       // Command
+        Proto::Commands::ReadBlkStartInfo,                    // Command
         BoardTypes::BT_NONE,                                  // Board type
         QVariant(),                                           // Null arg
         QByteArray(sizeof(ModuleBSI::Bsi), Qt::Uninitialized) // Buffer for bsi
@@ -119,27 +126,27 @@ void Protocom::reqBSI()
 void Protocom::writeFile(quint32 filenum, const QByteArray &file)
 {
     CommandStruct inp {
-        CN::Commands::WriteFile, // Command
-        filenum,                 // File number
-        QVariant(),              // Null arg
-        file                     // Buffer with file
+        Proto::Commands::WriteFile, // Command
+        filenum,                    // File number
+        QVariant(),                 // Null arg
+        file                        // Buffer with file
     };
     DataManager::addToInQueue(inp);
 }
 
 void Protocom::writeTime(quint32 time)
 {
-    CommandStruct inp { CN::Commands::WriteTime, time, QVariant(), {} };
+    CommandStruct inp { Proto::Commands::WriteTime, time, QVariant(), {} };
     DataManager::addToInQueue(inp);
 }
 
 void Protocom::reqFloats(quint32 sigAdr, quint32 sigCount)
 {
-    CommandStruct inp { CN::Commands::ReadBlkData, sigAdr, sigCount, {} };
+    CommandStruct inp { Proto::Commands::ReadBlkData, sigAdr, sigCount, {} };
     DataManager::addToInQueue(inp);
 }
 
-void handleBlk(const CN::Commands cmd, const quint32 blk, QByteArray data = {})
+void handleBlk(const Proto::Commands cmd, const quint32 blk, QByteArray data = {})
 {
     CommandStruct inp {
         cmd,        // Command
@@ -150,30 +157,30 @@ void handleBlk(const CN::Commands cmd, const quint32 blk, QByteArray data = {})
     DataManager::addToInQueue(inp);
 }
 
-inline void handleBlk(CN::Commands cmd, quint32 addr, quint32 count)
+inline void handleBlk(Proto::Commands cmd, quint32 addr, quint32 count)
 {
-    Q_ASSERT(!getBlkByReg.contains(addr));
-    auto blkPair = getBlkByReg.value(addr);
+    Q_ASSERT(!Proto::getBlkByReg.contains(addr));
+    auto blkPair = Proto::getBlkByReg.value(addr);
     Q_ASSERT(blkPair.second != count);
     handleBlk(cmd, blkPair.first);
 }
 
-inline void handleInt(CN::Commands cmd, QByteArray data)
+inline void handleInt(Proto::Commands cmd, QByteArray data)
 {
     handleBlk(cmd, NULL, data);
 }
 
-inline void handleBlk(const CN::Commands cmd, const DataTypes::Signal &signal)
+inline void handleBlk(const Proto::Commands cmd, const DataTypes::Signal &signal)
 {
     handleBlk(cmd, signal.addr, signal.value);
 }
 
-inline void handleBlk(const CN::Commands cmd, const DataTypes::ConfParameterStruct &str)
+inline void handleBlk(const Proto::Commands cmd, const DataTypes::ConfParameterStruct &str)
 {
     handleBlk(cmd, str.ID, str.data);
 }
 
-void handleCommand(const CN::Commands cmd)
+void handleCommand(const Proto::Commands cmd)
 {
     CommandStruct inp { cmd, QVariant(), QVariant(), QByteArray {} };
     DataManager::addToInQueue(inp);
@@ -181,7 +188,7 @@ void handleCommand(const CN::Commands cmd)
 
 void Protocom::writeCommand(Queries::Commands cmd, QVariant item)
 {
-    using namespace CN;
+    using namespace Proto;
     using DataTypes::Signal;
     auto ourCmd = translate(cmd);
     switch (ourCmd)

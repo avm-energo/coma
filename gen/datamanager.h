@@ -64,6 +64,7 @@ public:
         return Error::Msg::ResEmpty;
     }
 
+private:
     static std::queue<QVariant> s_inputQueue;
     //    static QList<DataTypes::SignalsStruct> s_outputList;
     //    static QMutex s_outListMutex;

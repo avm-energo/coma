@@ -9,7 +9,9 @@
 #include <array>
 
 typedef QQueue<QByteArray> ByteQueue;
-
+using Proto::CommandStruct;
+using Proto::Direction;
+using Proto::Starters;
 quint16 extractLength(const QByteArray &ba);
 void appendInt16(QByteArray &ba, quint16 size);
 
@@ -20,7 +22,7 @@ inline bool isOneSegment(unsigned len);
 // TODO вынести в отдельный класс как static методы?
 QByteArray prepareOk(bool isStart);
 QByteArray prepareError();
-QByteArray prepareBlock(CommandStruct &cmdStr, CN::Starters startByte = CN::Starters::Request);
+QByteArray prepareBlock(CommandStruct &cmdStr, Starters startByte = Starters::Request);
 ByteQueue prepareLongBlk(CommandStruct &cmdStr);
 
 void handleBitString(const QByteArray &ba, quint16 sigAddr);
@@ -99,9 +101,9 @@ ProtocomThread::~ProtocomThread()
 //    return true;
 //}
 
-void ProtocomThread::handle(const CN::Commands cmd)
+void ProtocomThread::handle(const Proto::Commands cmd)
 {
-    using namespace CN;
+    using namespace Proto;
     using namespace DataTypes;
     quint32 addr = m_currentCommand.arg1.toUInt();
     quint32 count = m_currentCommand.arg2.toUInt();
@@ -192,7 +194,7 @@ void ProtocomThread::parseRequest(const CommandStruct &cmdStr)
 {
     // Предполагается не хранить текущую команду
     Q_UNUSED(cmdStr)
-    using namespace CN;
+    using namespace Proto;
 
     switch (m_currentCommand.cmd)
     {
@@ -216,7 +218,7 @@ void ProtocomThread::parseRequest(const CommandStruct &cmdStr)
 
 void ProtocomThread::parseResponse(QByteArray ba)
 {
-    using namespace CN;
+    using namespace Proto;
 
     QByteArray tmps = "<-" + ba.toHex() + "\n";
     log->WriteRaw(tmps);
@@ -261,9 +263,9 @@ void ProtocomThread::writeLog(QByteArray ba, Direction dir)
     QByteArray tmpba = QByteArray(metaObject()->className());
     switch (dir)
     {
-    case FromDevice:
+    case Proto::FromDevice:
         tmpba.append(": <-");
-    case ToDevice:
+    case Proto::ToDevice:
         tmpba.append(": ->");
     default:
         tmpba.append(":  ");
@@ -298,7 +300,7 @@ bool isCommandExist(int cmd)
 
 bool isOneSegment(unsigned len)
 {
-    using CN::Limits::MaxSegmenthLength;
+    using Proto::Limits::MaxSegmenthLength;
     Q_ASSERT(len <= MaxSegmenthLength);
     if (len != MaxSegmenthLength)
         return true;
@@ -309,11 +311,11 @@ QByteArray prepareOk(bool isStart)
 {
     QByteArray tmpba;
     if (isStart)
-        tmpba.append(CN::Starters::Request);
+        tmpba.append(Proto::Starters::Request);
     else
-        tmpba.append(CN::Starters::Continue);
+        tmpba.append(Proto::Starters::Continue);
 
-    tmpba.append(CN::Commands::ResultOk);
+    tmpba.append(Proto::Commands::ResultOk);
     appendInt16(tmpba, 0);
     return tmpba;
 }
@@ -321,15 +323,15 @@ QByteArray prepareOk(bool isStart)
 QByteArray prepareError()
 {
     QByteArray tmpba;
-    tmpba.append(CN::Starters::Request);
-    tmpba.append(CN::Commands::ResultError);
+    tmpba.append(Proto::Starters::Request);
+    tmpba.append(Proto::Commands::ResultError);
     appendInt16(tmpba, 1);
     // модулю не нужны коды ошибок
-    tmpba.append(static_cast<char>(CN::NullByte));
+    tmpba.append(static_cast<char>(Proto::NullByte));
     return tmpba;
 }
 
-QByteArray prepareBlock(CommandStruct &cmdStr, CN::Starters startByte)
+QByteArray prepareBlock(CommandStruct &cmdStr, Proto::Starters startByte)
 {
     QByteArray ba;
     ba.append(startByte);
@@ -338,7 +340,7 @@ QByteArray prepareBlock(CommandStruct &cmdStr, CN::Starters startByte)
     if (!cmdStr.arg1.isNull())
     {
         // Номер файла 2 байта, в остальных случаях аргумент 1 байт
-        if (cmdStr.cmd != CN::Commands::ReadFile)
+        if (cmdStr.cmd != Proto::Commands::ReadFile)
             ba.append(cmdStr.arg1.toChar());
         else
             ba.append(cmdStr.arg1.toUInt());
@@ -351,7 +353,7 @@ QByteArray prepareBlock(CommandStruct &cmdStr, CN::Starters startByte)
 ByteQueue prepareLongBlk(CommandStruct &cmdStr)
 {
     ByteQueue bq;
-    using CN::Limits::MaxSegmenthLength;
+    using Proto::Limits::MaxSegmenthLength;
     // Количество сегментов
     quint64 segCount
         = (cmdStr.ba.size()
@@ -366,7 +368,7 @@ ByteQueue prepareLongBlk(CommandStruct &cmdStr)
     for (int pos = MaxSegmenthLength; pos < cmdStr.ba.size(); pos += MaxSegmenthLength)
     {
         temp = { cmdStr.cmd, cmdStr.arg1, cmdStr.arg2, cmdStr.ba.mid(pos, MaxSegmenthLength) };
-        bq << prepareBlock(temp, CN::Starters::Continue);
+        bq << prepareBlock(temp, Proto::Starters::Continue);
     }
     return bq;
 }

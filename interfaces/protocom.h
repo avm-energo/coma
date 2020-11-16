@@ -1,7 +1,7 @@
 #pragma once
 
 #include "baseinterface.h"
-#include "defines.h"
+#include "usbprivate.h"
 
 class Protocom : public BaseInterface
 {
@@ -18,21 +18,22 @@ public:
     void reqBSI() override;
 
     void writeFile(quint32 filenum, const QByteArray &file) override;
+    void writeConfigFile(S2ConfigType *) override {};
     void writeTime(quint32 time) override;
     void writeCommand(Queries::Commands cmd, QVariant item) override;
     void reqFloats(quint32 sigAdr, quint32 sigCount) override;
 
 private:
     // Return 0 if not exist
-    static CN::Commands translate(const Queries::Commands cmd)
+    static Proto::Commands translate(const Queries::Commands cmd)
     {
         return m_dict.value(cmd);
     }
     // Return 0 if not exist
-    static Queries::Commands translate(const CN::Commands cmd)
+    static Queries::Commands translate(const Proto::Commands cmd)
     {
         return m_dict.key(cmd);
     }
 
-    const static QMap<Queries::Commands, CN::Commands> m_dict;
+    const static QMap<Queries::Commands, Proto::Commands> m_dict;
 };
