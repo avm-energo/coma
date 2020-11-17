@@ -25,8 +25,10 @@ signals:
 public slots:
     void ClearBsi();
     void reqUpdate();
+    void update();
 
 private:
+    bool m_oneShotUpdateFlag;
 };
 
 #endif // INFODIALOG_H

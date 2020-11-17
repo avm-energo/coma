@@ -49,6 +49,22 @@ ConfigKIV::ConfigKIV(S2ConfigType *config)
         config->append({ 1050, sizeof(Bci_block.Unom_1), &Bci_block.Unom_1 });
     }
     config->append({ 0xFFFFFFFF, 0, nullptr });
+    DataBlock::BlockStruct dbs {
+        1,
+        "Конфигурация",
+        DataBlock::DataBlockTypes::BciBlock,
+        m_S2Config,
+    };
+    m_dblock = new DataBlock(dbs);
+    struct BlockStruct
+    {
+        int blocknum;                        // number of the block to send corresponding command
+        QString caption;                     // block name to set it to the GroupBox GUI
+        DataBlock::DataBlockTypes blocktype; // type of the block to choose proper command
+        void *block;    // pointer to the block, for S2Config blocks it's a pointer to S2ConfigDataType
+        void *defblock; // pointer to the block with default values
+        int blocksize;  // size of the block to make a mem copy
+    };
 }
 
 void ConfigKIV::setDefConf()
@@ -125,7 +141,7 @@ void ConfigKIV::setDefConf(Bci &bci)
 //    return err;
 //}
 
-S2ConfigType *ConfigKIV::getS2Config()
+S2ConfigType *ConfigKIV::S2Config()
 {
     return m_S2Config;
 }

@@ -5,7 +5,7 @@
 #include "../gen/files.h"
 #include "../gen/modulebsi.h"
 #include "../gen/stdfunc.h"
-#include "../models/checkdelegate.h"
+#include "../models/datadelegate.h"
 #include "../usb/commands.h"
 #include "../widgets/wd_func.h"
 #include "tunekivcheck.h"
@@ -46,19 +46,19 @@ void TuneKIVDialog::SetupUI()
     QVBoxLayout *lyout = new QVBoxLayout;
 
     lyout->addLayout(newTunePBLayout("1. Проверка правильности измерения входных сигналов", [this]() {
-        TuneKIVCheck *check = new TuneKIVCheck(TKIV);
+        TuneKIVCheck *check = new TuneKIVCheck(1, CKIV, TKIV);
         check->exec();
     }));
     lyout->addLayout(newTunePBLayout("2. Основная регулировка", [this]() {
-        TuneKIVMain *tkmain = new TuneKIVMain(TKIV);
+        TuneKIVMain *tkmain = new TuneKIVMain(2, TKIV);
         tkmain->exec();
     }));
     lyout->addLayout(newTunePBLayout("3. Настройка температурной коррекции +60 °С", [this]() {
-        TuneKIVTemp60 *tk60 = new TuneKIVTemp60(TKIV);
+        TuneKIVTemp60 *tk60 = new TuneKIVTemp60(3, TKIV);
         tk60->exec();
     }));
     lyout->addLayout(newTunePBLayout("4. Настройка температурной коррекции -20 °С", [this]() {
-        TuneKIVTemp_20 *tk_20 = new TuneKIVTemp_20(TKIV);
+        TuneKIVTemp_20 *tk_20 = new TuneKIVTemp_20(4, TKIV);
         tk_20->exec();
     }));
     lyout->addLayout(newTunePBLayout("5. Генерация протокола регулировки", [this]() { close(); }));

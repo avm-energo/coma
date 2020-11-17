@@ -2,6 +2,7 @@
 #define CONFIG
 
 #include "../gen/s2.h"
+#include "baseconfig.h"
 
 #include <QMap>
 
@@ -31,10 +32,10 @@
 #define MTYPE_KIV 0xA284
 #define MTYPE_KDV 0xA387
 
-class Config
+class Config : public BaseConfig
 {
 public:
-    explicit Config(S2ConfigType *config, quint32 MTypeB, quint32 MTypeM);
+    explicit Config(S2ConfigType *config);
 
     enum BaseBoards
     {
@@ -76,15 +77,15 @@ public:
     {
         quint32 MTypeB;
         quint32 MTypeM;
-        quint32 Ctype; // Тип синхронизации времени от модуля Ц
+        quint32 Ctype;   // Тип синхронизации времени от модуля Ц
         quint32 Abs_104; // Адрес базовой станции для протокола 104
         quint32 Cycle_104; // Интервал циклического опроса по протоколу МЭК 60870-5-104
         quint32 T1_104; // тайм-аут Т1 для протокола 104
         quint32 T2_104; // тайм-аут Т2 для протокола 104
         quint32 T3_104; // тайм-аут Т3 для протокола 104
-        quint32 k_104; // макс. кол-во неподтв. сообщений
-        quint32 w_104; // макс. кол-во сообщений, после которых необх. выдать
-                       // подтверждение
+        quint32 k_104;  // макс. кол-во неподтв. сообщений
+        quint32 w_104;  // макс. кол-во сообщений, после которых необх. выдать
+                        // подтверждение
     };
 
     Bci_Main MainBlk; // Основной блок (см. config.h)
@@ -143,6 +144,7 @@ public:
         return Map;
     }
 
+    void setConfig(S2ConfigType *config);
     void SetDefBlock();
     // void Fill();
 };

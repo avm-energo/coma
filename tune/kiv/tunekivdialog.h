@@ -7,8 +7,7 @@
 #include "../config/configkiv.h"
 #include "../gen/modulebsi.h"
 #include "../gen/udialog.h"
-#include "../iec104/iec104.h"
-#include "limereport/lrreportengine.h"
+//#include "../iec104/iec104.h"
 #include "tunekiv.h"
 
 #include <QHBoxLayout>
@@ -53,8 +52,8 @@ class TuneKIVDialog : public UDialog
 public:
     explicit TuneKIVDialog(ConfigKIV *ckiv, TuneKIV *tkiv, QWidget *parent = nullptr);
 
-signals:
-    void Send();
+    // signals:
+    //    void Send();
 
 public slots:
 

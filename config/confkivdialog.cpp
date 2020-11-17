@@ -18,11 +18,10 @@ ConfKIVDialog::ConfKIVDialog(ConfigKIV *ckiv, QWidget *parent) : AbstractConfDia
 {
     QString tmps = "QDialog {background-color: " + QString(Colors::ACONFCLR) + ";}";
     setStyleSheet(tmps);
-    //    this->S2Config = ckiv;
     CKIV = ckiv;
-    S2Config = ckiv->getS2Config();
-    Conf = new ConfDialog(S2Config, Board::GetInstance().typeB(), Board::GetInstance().typeM(), this);
-    ConfKxx = new ConfKxxDialog(S2Config, this);
+    //    CKIV = new ConfigKIV(ckiv);
+    Conf = new ConfDialog(ckiv, Board::GetInstance().typeB(), Board::GetInstance().typeM(), this);
+    ConfKxx = new ConfKxxDialog(ckiv, this);
     setAttribute(Qt::WA_DeleteOnClose);
     SetupUI();
     PrereadConf();
@@ -469,6 +468,12 @@ void ConfKIVDialog::SetDefConf()
     Fill();
 }
 
-// void ConfKIVDialog::Start_Timer() { timerRead->start(1000); }
+// void ConfKIVDialog::Start_Timer()
+//{
+//    timerRead->start(1000);
+//}
 
-// void ConfKIVDialog::Stop_Timer() { timerRead->stop(); }
+// void ConfKIVDialog::Stop_Timer()
+//{
+//    timerRead->stop();
+//}

@@ -26,7 +26,7 @@ private:
 
     //    QWidget *AutoCheckUI();            // UI для автоматической проверки модуля
     //    QWidget *BdUI(int bdnum) override; // визуализация наборов текущих данных от модуля
-    void PrepareHeadersForFile(int row) override;  // row - строка для записи заголовков
+    void PrepareHeadersForFile(int row) override; // row - строка для записи заголовков
     void WriteToFile(int row, int bdnum) override; // row - номер строки для записи в файл
                                                    // xlsx, bdnum - номер блока данных
                                                    //    void ChooseValuesToWrite() override;

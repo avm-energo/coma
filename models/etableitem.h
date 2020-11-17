@@ -16,6 +16,8 @@ public:
     void setData(int column, const QString &value);
     QVariant uData(int column) const;
     void setUData(int column, QVariant data);
+    QObject *aData(int column) const;
+    void setAData(int column, QObject *data);
     void appendData(const QString &value);
     void setColor(int column, QColor color);
     void setFont(int column, QFont font);
@@ -27,12 +29,13 @@ public:
     int TextAlignment(int column);
 
 private:
-    QStringList itemData;      // содержимое строки
-    QList<QVariant> itemUData; // содержимое по UserRole
+    QStringList itemData; // содержимое строки
+    QList<QVariant> itemUData; // содержимое по DataFormatRole
     QList<QColor> itemColor;
     QList<QFont> itemFont;
     QList<QIcon> itemIcon;
     QList<int> itemTextAlignment;
+    QList<QObject *> itemAData; // содержимое по AdditionalDataRole
 };
 
 #endif // ETABLEITEM_H

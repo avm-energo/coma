@@ -1,17 +1,20 @@
 // config.cpp
 #include "config.h"
 
-Config::Config(S2ConfigType *config, quint32 MTypeB, quint32 MTypeM)
+#include "../gen/board.h"
+Config::Config(S2ConfigType *config) : BaseConfig()
 {
-    /// TODO Check this
-    config->erase(
-        std::remove_if(config->begin(), config->end(), [](S2DataTypes::DataRec i) { return i.id == 0xFFFFFFFF; }),
-        config->end());
-    /// TODO end
-    ///
-    MainBlk.MTypeB = MTypeB;
-    MainBlk.MTypeM = MTypeM;
+    //    MainBlk.MTypeB = MTypeB;
+    //    MainBlk.MTypeM = MTypeM;
+    MainBlk.MTypeB = Board::GetInstance().typeB();
+    MainBlk.MTypeM = Board::GetInstance().typeM();
+    setConfig(config);
+}
 
+void Config::setConfig(S2ConfigType *config)
+{
+    config->erase(std::remove_if(config->begin(), config->end(), [](S2::DataRec i) { return i.id == 0xFFFFFFFF; }),
+        config->end());
     // общая часть
     config->append({ BCI_MTYPEB, sizeof(MainBlk.MTypeB), &MainBlk.MTypeB });
     config->append({ BCI_MTYPEM, sizeof(MainBlk.MTypeM), &MainBlk.MTypeM });
@@ -23,6 +26,7 @@ Config::Config(S2ConfigType *config, quint32 MTypeB, quint32 MTypeM)
     config->append({ BCI_T3_104, sizeof(MainBlk.T3_104), &MainBlk.T3_104 });
     config->append({ BCI_K_104, sizeof(MainBlk.k_104), &MainBlk.k_104 });
     config->append({ BCI_W_104, sizeof(MainBlk.w_104), &MainBlk.w_104 });
+    config->append({ 0xFFFFFFFF, 0, nullptr });
 }
 
 void Config::SetDefBlock()

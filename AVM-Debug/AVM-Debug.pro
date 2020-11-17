@@ -31,10 +31,14 @@ SOURCES += \
     ../check/checkkdvvibrdialog.cpp \
     ../check/checkktfdialog.cpp \
     ../check/checkktfharmonicdialog.cpp \
+    ../config/baseconfig.cpp \
     ../config/confkdvdialog.cpp \
     ../config/confktfdialog.cpp \
     ../dialogs/fwuploaddialog.cpp \
+    ../gen/datablock.cpp \
     ../gen/udialog.cpp \
+    ../models/valuedelegate.cpp \
+    ../models/valueitem.cpp \
     ../module/alarm.cpp \
     ../module/warn.cpp \
     ../startup/startupkdvdialog.cpp \
@@ -84,7 +88,6 @@ SOURCES += \
     ../iec104/iec104.cpp \
     ../modbus/modbus.cpp \
     ../modbus/serialport.cpp \
-    ../models/checkdelegate.cpp \
     ../models/etableitem.cpp \
     ../models/etablemodel.cpp \
     ../models/valuemodel.cpp \
@@ -122,10 +125,14 @@ HEADERS += \
     ../check/checkkdvvibrdialog.h \
     ../check/checkktfdialog.h \
     ../check/checkktfharmonicdialog.h \
+    ../config/baseconfig.h \
     ../config/confkdvdialog.h \
     ../config/confktfdialog.h \
     ../dialogs/fwuploaddialog.h \
+    ../gen/datablock.h \
     ../gen/udialog.h \
+    ../models/valuedelegate.h \
+    ../models/valueitem.h \
     ../module/alarm.h \
     ../module/warn.h \
     ../startup/startupkdvdialog.h \
@@ -175,7 +182,6 @@ HEADERS += \
     ../iec104/iec104.h \
     ../modbus/modbus.h \
     ../modbus/serialport.h \
-    ../models/checkdelegate.h \
     ../models/etableitem.h \
     ../models/etablemodel.h \
     ../models/valuemodel.h \
