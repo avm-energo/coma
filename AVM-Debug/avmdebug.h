@@ -1,10 +1,11 @@
 #ifndef AVMDEBUG_H
 #define AVMDEBUG_H
 
-#include "../alarm/alarmstateall.h"
-#include "../alarm/alarmwidget.h"
 #include "../dialogs/connectdialog.h"
+#include "../interfaces/settingstypes.h"
 #include "../module/module.h"
+#include "../widgets/alarmstateallwidget.h"
+#include "../widgets/alarmwidget.h"
 #include "../widgets/etabwidget.h"
 
 #include <QMainWindow>
@@ -112,11 +113,12 @@ public:
     void Go(const QString &parameter = "");
     void ClearTW();
     void SetupMenubar();
-    QWidget *MainInfoWidget();
+    //    QWidget *MainInfoWidget();
 
     QWidget *Least();
-    Error::Msg CheckPassword();
+    //    Error::Msg CheckPassword();
     void Disconnect();
+    void Connect();
 
 signals:
     void CloseConnectDialog();
@@ -124,8 +126,8 @@ signals:
     void ClearBsi();
     void Finished();
     void StopCommunications();
-    void ConnectMes(QString *);
-    void stateChanged(bool);
+    //    void ConnectMes(QString *);
+    //    void stateChanged(bool);
 
 public slots:
     void DisconnectAndClear();
@@ -139,18 +141,17 @@ private slots:
     void StartWork();
     void GetAbout();
     void closeEvent(QCloseEvent *event) override;
-    void SetDefConf();
+    //    void SetDefConf();
+    void update(DataTypes::GeneralResponseStruct &rsp);
 
-    void SetProgressBar1Size(int size);
-    void SetProgressBar1(int cursize);
-    void SetProgressBar2Size(int size);
-    void SetProgressBar2(int cursize);
+    void SetProgressBarSize(int prbnum, int size);
+    void SetProgressBar(int prbnum, int cursize);
     void MainTWTabClicked(int tabindex);
 
 private:
     AlarmWidget *AlarmW;
-    AlarmStateAll *AlarmStateAllDialog;
-    AlarmClass *Alarm;
+    //    AlarmStateAll *AlarmStateAllDialog;
+    //    AlarmClass *Alarm;
     Module *m_Module;
     bool TimeThrFinished;
     bool Cancelled;
@@ -165,15 +166,17 @@ private:
 
     S2ConfigType *S2Config;
 
-    QTimer *ReceiveTimer;
+    QTimer *ReceiveTimer, *m_BSITimer;
     QTimer *BdaTimer, *AlrmTimer;
 
-    ConnectDialog::ConnectStruct ConnectSettings;
+    ConnectStruct ConnectSettings;
 
     void LoadSettings();
     void SaveSettings();
-    void SetProgressBarSize(int prbnum, int size);
-    void SetProgressBar(int prbnum, int cursize);
+    void SetProgressBar1Size(int size);
+    void SetProgressBar1(int cursize);
+    //    void SetProgressBarSize(int prbnum, int size);
+    //    void SetProgressBar(int prbnum, int cursize);
     void NewUSB();
     void NewTimers();
     void SetupUI();
@@ -183,7 +186,8 @@ private:
 
     virtual bool nativeEvent(const QByteArray &eventType, void *message, long *result) override;
 
-    void setupConnections();
+    //    void setupConnections();
+    QToolBar *createToolBar();
 
 protected:
     void keyPressEvent(QKeyEvent *e) override;

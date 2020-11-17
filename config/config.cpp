@@ -2,7 +2,7 @@
 #include "config.h"
 
 #include "../gen/board.h"
-Config::Config(S2ConfigType *config) : BaseConfig()
+Config::Config(S2ConfigType *config)
 {
     //    MainBlk.MTypeB = MTypeB;
     //    MainBlk.MTypeM = MTypeM;
@@ -13,7 +13,8 @@ Config::Config(S2ConfigType *config) : BaseConfig()
 
 void Config::setConfig(S2ConfigType *config)
 {
-    config->erase(std::remove_if(config->begin(), config->end(), [](S2::DataRec i) { return i.id == 0xFFFFFFFF; }),
+    config->erase(
+        std::remove_if(config->begin(), config->end(), [](S2DataTypes::DataRec i) { return i.id == 0xFFFFFFFF; }),
         config->end());
     // общая часть
     config->append({ BCI_MTYPEB, sizeof(MainBlk.MTypeB), &MainBlk.MTypeB });

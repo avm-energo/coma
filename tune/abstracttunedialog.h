@@ -1,10 +1,9 @@
 #ifndef ABSTRACTTUNEDIALOG_H
 #define ABSTRACTTUNEDIALOG_H
 
-#include "../gen/datablock.h"
 #include "../gen/report.h"
 #include "../gen/s2.h"
-#include "../gen/udialog.h"
+#include "../widgets/udialog.h"
 
 #include <QByteArray>
 #include <QCloseEvent>
@@ -44,7 +43,6 @@ public:
     //    int m_ConfigCounter;
     //    QMap<int, BlockStruct> m_TuneBlockMap;
     //    QMap<int, BlockStruct> m_ConfigBlockMap;
-    QList<DataBlock *> m_blocks;
     int m_blockCount;
 
     QStringList m_messages;
@@ -65,8 +63,6 @@ public:
     QWidget *TuneUI();
     QWidget *BottomUI();
     virtual QWidget *MainUI() = 0;
-    int addDataBlock(DataBlock::DataBlockTypes type, const QString &caption, void *block, void *defblock, int blocknum,
-        int blocksize);
     //    int setConfigPtr(void *ptr, int size);
 
     void WaitNSeconds(int SecondsToWait, bool isAllowedToStop = false);
@@ -84,20 +80,16 @@ public:
     //    void SkMsgSetVisible(int msg, bool Visible = true);
     void MsgClear();
     //    QByteArray *ChooseFileForOpen(QString mask);
-    //    bool WriteTuneCoefs(int blocknum);
+    bool WriteTuneCoefs(int blocknum);
     void SaveTuneBlocksToFiles();
-    Error::Msg SaveBlocksToFiles(DataBlock::DataBlockTypes type, bool userChoose = false);
-    Error::Msg LoadBlocksFromFiles(DataBlock::DataBlockTypes type, bool userChoose = false);
-    //    void PrereadConf();
+    void PrereadConf();
     //    void GetBdAndFill();
 
-    //    virtual void FillBac(int bacnum) = 0;
-    //    virtual void FillBackBac(int bacnum) = 0;
+    virtual void FillBac(int bacnum) = 0;
+    virtual void FillBackBac(int bacnum) = 0;
     //    void SaveToFileEx(int bacnum);
     //    void ShowTable();
-    void ReadBlocks(DataBlock::DataBlockTypes type);
-    void WriteBlocks(DataBlock::DataBlockTypes type);
-    //    Error::Msg LoadTuneSequenceFile();
+    Error::Msg LoadTuneSequenceFile();
     Error::Msg checkCalibrStep();
     void saveTuneSequenceFile();
     Error::Msg saveWorkConfig();

@@ -4,7 +4,6 @@
 #define ID8084_START 1012
 #define ID8084_COM 20
 
-#include "../gen/datablock.h"
 #include "config.h"
 
 #include <QStack>
@@ -55,8 +54,6 @@ public:
         float C_pasp[3];
 
     } Bci;
-
-    DataBlock *m_dblock;
 
     Bci Bci_block;
 
