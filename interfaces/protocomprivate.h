@@ -121,13 +121,24 @@ enum Commands : byte
     // запись версии аппаратуры модуля/серийного номера/типа платы
     WriteHardware = 0x48,
 
+};
+Q_ENUM_NS(Proto::Commands);
+
+enum WCommands
+{
     /// Блок дополнительных команд
     EraseStartupValues = 0x05,
-    InitStartupValues = 0x01,
-    WriteStartupValues = 0x04
+    InitStartupValues = 0x01
 };
 
-Q_ENUM_NS(Commands)
+enum HiddenBlockModule : byte
+{
+    Base = 0x01,
+    Mezz = 0x02,
+    BaseMezz = 0x03,
+    Add = 0x04,
+    BaseMezzAdd = 0x07
+};
 
 enum Direction
 {

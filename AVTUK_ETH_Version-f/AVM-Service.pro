@@ -186,8 +186,8 @@ HEADERS += \
     ../interfaces/settingstypes.h \
     ../interfaces/iec104private.h \
     ../interfaces/modbusprivate.h \
-    ../interfaces/usbprivate.h \
     ../interfaces/usbhidportinfo.h \
+    ../interfaces/protocomprivate.h \
     ../models/checkdelegate.h \
     ../models/errorprotocolmodel.h \
     ../models/etableitem.h \
