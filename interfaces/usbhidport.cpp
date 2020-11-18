@@ -2,6 +2,7 @@
 
 #include "../gen/board.h"
 
+#include <QCoreApplication>
 #include <QDebug>
 #include <QElapsedTimer>
 #include <QMetaEnum>
@@ -20,6 +21,10 @@ using Proto::Starters;
 UsbHidPort::UsbHidPort(const UsbHidSettings &dev, LogClass *logh, QObject *parent)
     : QObject(parent), log(logh), m_deviceInfo(dev)
 {
+    QString filename(metaObject()->className());
+    filename.append(".").append(::logExt);
+    log->Init(filename);
+    log->WriteRaw(::logStart);
     m_hidDevice = nullptr;
 }
 
@@ -81,8 +86,10 @@ void UsbHidPort::poll()
             if (bytes > 0)
             {
                 QByteArray ba(reinterpret_cast<char *>(array.data()), bytes);
+                writeLog(ba.toHex(), Direction::FromDevice);
                 emit dataReceived(ba);
             }
+            QCoreApplication::processEvents(QEventLoop::AllEvents);
             // write data to port if there's something delayed in out queue
             checkQueue();
         }
@@ -131,11 +138,14 @@ void UsbHidPort::writeLog(QByteArray ba, Direction dir)
     switch (dir)
     {
     case Proto::FromDevice:
-        tmpba.append(": <-");
+        tmpba.append(": -> ");
+        break;
     case Proto::ToDevice:
-        tmpba.append(": ->");
+        tmpba.append(": <- ");
+        break;
     default:
         tmpba.append(":  ");
+        break;
     }
     tmpba.append(ba).append("\n");
     log->WriteRaw(tmpba);
@@ -164,13 +174,14 @@ bool UsbHidPort::writeData(QByteArray &ba)
         qCritical() << Error::Msg::NullDataError;
         return false;
     }
-
+    // NOTE
+    writeLog(ba.toHex(), Proto::ToDevice);
     if (ba.size() < HID::MaxSegmenthLength)
         ba.append(HID::MaxSegmenthLength - ba.size(), static_cast<char>(0x00));
 
-    // inserting ID field
+    // inserting ID field for HID protocol
     ba.prepend(static_cast<char>(0x00));
-    writeLog(ba.toHex(), Proto::ToDevice);
+
     size_t tmpt = static_cast<size_t>(ba.size());
 
     int errorCode = hid_write(m_hidDevice, reinterpret_cast<unsigned char *>(ba.data()), tmpt);

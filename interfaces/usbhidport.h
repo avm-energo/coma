@@ -3,8 +3,8 @@
 #include "../gen/error.h"
 #include "../gen/logclass.h"
 #include "hidapi/hidapi.h"
+#include "protocomprivate.h"
 #include "settingstypes.h"
-#include "usbprivate.h"
 
 namespace HID
 {

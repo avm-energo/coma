@@ -1,6 +1,6 @@
 #pragma once
+#include "protocomprivate.h"
 #include "settingstypes.h"
-#include "usbprivate.h"
 namespace HID
 {
 constexpr quint16 VID = 0xC251;
