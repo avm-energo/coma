@@ -10,6 +10,7 @@
 #include "serialport.h"
 #include "settingstypes.h"
 
+#include <QDebug>
 #include <QStandardPaths>
 #include <QThread>
 #include <algorithm>
@@ -46,7 +47,7 @@ ModBus::~ModBus()
 bool ModBus::start(const ConnectStruct &st)
 {
     Q_ASSERT(std::holds_alternative<SerialPortSettings>(st.settings));
-    INFOMSG("Modbus: connect");
+    qInfo() << metaObject()->className() << "connect";
     if (!std::holds_alternative<SerialPortSettings>(st.settings))
         return false;
 
@@ -322,8 +323,8 @@ void ModBus::writeCommand(Queries::Commands cmd, QVariant item)
 
         // now write floats to the out sigArray
 
-        quint32 tmpi = 0;
-        memcpy(&tmpi, &flstr.sigVal, sizeof(float));
+        quint32 tmpi = static_cast<quint32>(flstr.sigVal);
+
         sigArray.append(static_cast<char>(tmpi >> 8));
         sigArray.append(static_cast<char>(tmpi));
         sigArray.append(static_cast<char>(tmpi >> 24));
