@@ -190,7 +190,7 @@ void DataManager::checkTypeAndSendSignals(DataTypes::SignalsStruct &str)
         if (str.data.canConvert<DataTypes::BitStringStruct>())
         {
             DataTypes::BitStringStruct bs = qvariant_cast<DataTypes::BitStringStruct>(str.data);
-            emit DataManager::GetInstance().bitStringReceived(bs);
+            emit bitStringReceived(bs);
         }
         break;
     }
@@ -199,7 +199,7 @@ void DataManager::checkTypeAndSendSignals(DataTypes::SignalsStruct &str)
         if (str.data.canConvert<DataTypes::SinglePointWithTimeStruct>())
         {
             DataTypes::SinglePointWithTimeStruct sp = qvariant_cast<DataTypes::SinglePointWithTimeStruct>(str.data);
-            emit DataManager::GetInstance().singlePointReceived(sp);
+            emit singlePointReceived(sp);
         }
         break;
     }
@@ -212,12 +212,12 @@ void DataManager::checkTypeAndSendSignals(DataTypes::SignalsStruct &str)
             DataTypes::FloatStruct fl;
             fl.sigAdr = flt.sigAdr;
             fl.sigVal = flt.sigVal;
-            emit DataManager::GetInstance().floatReceived(fl);
+            emit floatReceived(fl);
         }
         else if (str.data.canConvert<DataTypes::FloatStruct>())
         {
             DataTypes::FloatStruct fl = qvariant_cast<DataTypes::FloatStruct>(str.data);
-            emit DataManager::GetInstance().floatReceived(fl);
+            emit floatReceived(fl);
         }
         break;
     }
@@ -226,7 +226,7 @@ void DataManager::checkTypeAndSendSignals(DataTypes::SignalsStruct &str)
         if (str.data.canConvert<DataTypes::FileStruct>())
         {
             DataTypes::FileStruct fl = qvariant_cast<DataTypes::FileStruct>(str.data);
-            emit DataManager::GetInstance().fileReceived(fl);
+            emit fileReceived(fl);
         }
         break;
     }
@@ -235,7 +235,7 @@ void DataManager::checkTypeAndSendSignals(DataTypes::SignalsStruct &str)
         if (str.data.canConvert<DataTypes::ConfParametersListStruct>())
         {
             DataTypes::ConfParametersListStruct cp = qvariant_cast<DataTypes::ConfParametersListStruct>(str.data);
-            emit DataManager::GetInstance().confParametersReceived(cp);
+            emit confParametersReceived(cp);
         }
         break;
     }
@@ -244,7 +244,7 @@ void DataManager::checkTypeAndSendSignals(DataTypes::SignalsStruct &str)
         if (str.data.canConvert<DataTypes::GeneralResponseStruct>())
         {
             DataTypes::GeneralResponseStruct gr = qvariant_cast<DataTypes::GeneralResponseStruct>(str.data);
-            emit DataManager::GetInstance().responseReceived(gr);
+            emit responseReceived(gr);
         }
         break;
     }
