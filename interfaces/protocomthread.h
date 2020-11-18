@@ -1,9 +1,11 @@
 #pragma once
 
 #include "../gen/error.h"
-#include "usbprivate.h"
+#include "protocomprivate.h"
 
+#include <QMutex>
 #include <QReadWriteLock>
+#include <QWaitCondition>
 class LogClass;
 class ProtocomThread : public QObject
 {
@@ -14,6 +16,7 @@ public:
 
     void setReadDataChunk(const QByteArray &readDataChunk);
     void appendReadDataChunk(const QByteArray &readDataChunk);
+    void wakeUp();
 
     void parse();
 
@@ -30,6 +33,8 @@ private:
     LogClass *log;
 
     QReadWriteLock m_rwLocker;
+    // QMutex _mutex;
+    QWaitCondition _waiter;
     void writeLog(QByteArray ba, Proto::Direction dir = Proto::NoDirection);
     void writeLog(Error::Msg msg, Proto::Direction dir = Proto::NoDirection)
     {
