@@ -1,7 +1,7 @@
-#pragma once
+﻿#pragma once
 
 #include "baseinterface.h"
-#include "usbprivate.h"
+#include "protocomprivate.h"
 
 class Protocom : public BaseInterface
 {
@@ -24,16 +24,31 @@ public:
     void reqFloats(quint32 sigAdr, quint32 sigCount) override;
 
 private:
-    // Return 0 if not exist
-    static Proto::Commands translate(const Queries::Commands cmd)
-    {
-        return m_dict.value(cmd);
-    }
-    // Return 0 if not exist
-    static Queries::Commands translate(const Proto::Commands cmd)
-    {
-        return m_dict.key(cmd);
-    }
-
-    const static QMap<Queries::Commands, Proto::Commands> m_dict;
 };
+
+namespace
+{
+
+const QMap<Queries::Commands, Proto::Commands> getProtoCommand {
+
+    { Queries::Commands::QC_StartFirmwareUpgrade, Proto::Commands::WriteUpgrade }, //
+    { Queries::QC_SetNewConfiguration, Proto::Commands::WriteBlkTech },            //
+    { Queries::QC_EraseJournals, Proto::Commands::EraseTech },                     //
+    { Queries::QC_ReqBitStrings, Proto::Commands::ReadProgress },                  //
+    { Queries::QC_EraseTechBlock, Proto::Commands::EraseTech },                    //
+    { Queries::QC_Test, Proto::Commands::Test },                                   //
+    { Queries::QUSB_ReqTuningCoef, Proto::Commands::ReadBlkAC },                   //
+    { Queries::QUSB_WriteTuningCoef, Proto::Commands::WriteBlkAC },                //
+    { Queries::QUSB_ReqBlkDataA, Proto::Commands::ReadBlkDataA },                  //
+    { Queries::QUSB_ReqBlkDataTech, Proto::Commands::ReadBlkTech },                //
+    { Queries::QUSB_WriteBlkDataTech, Proto::Commands::WriteBlkTech }              //
+};
+
+const QMap<Queries::Commands, Proto::WCommands> getWCommand {
+
+    { Queries::QC_SetStartupValues, Proto::WCommands::InitStartupValues },    //
+    { Queries::QC_ClearStartupValues, Proto::WCommands::EraseStartupValues }, //
+
+};
+
+}

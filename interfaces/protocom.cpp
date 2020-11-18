@@ -3,33 +3,15 @@
 #include "../gen/board.h"
 #include "../gen/datamanager.h"
 #include "../gen/modulebsi.h"
-#include "QDebug"
 #include "protocomthread.h"
 #include "settingstypes.h"
 #include "usbhidport.h"
 
+#include <QDebug>
 #include <QThread>
 using Proto::CommandStruct;
 using Proto::Direction;
 using Proto::Starters;
-// clang-format off
-const QMap<Queries::Commands, Proto::Commands> Protocom::m_dict
-{
-    { Queries::Commands::QC_StartFirmwareUpgrade, Proto::Commands::WriteUpgrade },
-    { Queries::QC_SetStartupValues, Proto::Commands::InitStartupValues },
-    { Queries::QC_ClearStartupValues, Proto::Commands::EraseStartupValues },
-    { Queries::QC_SetNewConfiguration, Proto::Commands::WriteBlkTech },
-    { Queries::QC_EraseJournals, Proto::Commands::EraseTech },
-    { Queries::QC_ReqBitStrings, Proto::Commands::ReadProgress },
-    { Queries::QC_EraseTechBlock, Proto::Commands::EraseTech },
-    { Queries::QC_Test, Proto::Commands::Test },
-    { Queries::QUSB_ReqTuningCoef, Proto::Commands::ReadBlkAC },
-    { Queries::QUSB_WriteTuningCoef, Proto::Commands::WriteBlkAC },
-    { Queries::QUSB_ReqBlkDataA, Proto::Commands::ReadBlkDataA },
-    { Queries::QUSB_ReqBlkDataTech, Proto::Commands::ReadBlkTech },
-    { Queries::QUSB_WriteBlkDataTech, Proto::Commands::WriteBlkTech }
-};
-// clang-format on
 Protocom::Protocom(QObject *parent) : BaseInterface(parent)
 {
 }
@@ -59,11 +41,14 @@ bool Protocom::start(const ConnectStruct &st)
     connect(port, &UsbHidPort::finished, portThread, &QThread::deleteLater);
     connect(port, &UsbHidPort::finished, port, &UsbHidPort::deleteLater);
 
-    connect(port, &UsbHidPort::dataReceived, [&](const QByteArray &ba) {
-        parser->appendReadDataChunk(ba);
-        parseThread->start();
-    });
-
+    connect(
+        port, &UsbHidPort::dataReceived, this,
+        [parser](const QByteArray &ba) {
+            parser->appendReadDataChunk(ba);
+            parser->wakeUp();
+        },
+        Qt::DirectConnection);
+    qDebug() << QThread::currentThreadId();
     connect(parser, &ProtocomThread::writeDataAttempt, port, &UsbHidPort::writeDataAttempt);
 
     if (!port->setupConnection())
@@ -88,26 +73,31 @@ void Protocom::reqTime()
 
 void Protocom::reqFile(quint32 filenum, bool isConfigFile)
 {
+    // QByteArray ba;
+    // ba.setNum(filenum);
+    QByteArray ba(sizeof(quint16), 0);
+    *(reinterpret_cast<quint16 *>(ba.data())) = filenum;
+
     CommandStruct inp {
         Proto::Commands::ReadFile, // Command
-        filenum,                   // File number
+        QVariant(),                // File number
         isConfigFile,              // Is file should be restored
-        {}                         // Empty QByteArray
+        ba                         // Empty QByteArray
     };
     DataManager::addToInQueue(inp);
 }
 
 void Protocom::reqStartup(quint32 sigAdr, quint32 sigCount)
 {
-    Q_ASSERT(!Proto::getBlkByReg.contains(sigAdr));
+    Q_ASSERT(Proto::getBlkByReg.contains(sigAdr));
     auto blkPair = Proto::getBlkByReg.value(sigAdr);
-    Q_ASSERT(blkPair.second != sigCount);
+    Q_ASSERT(blkPair.second == sigCount);
     quint32 blk = blkPair.first;
     CommandStruct inp {
-        Proto::Commands::ReadBlkData,                              // Command
-        blk,                                                       // Block number
-        QVariant(),                                                // Null arg
-        QByteArray(sizeof(sigCount) * sigCount, Qt::Uninitialized) // Buffer
+        Proto::Commands::ReadBlkData, // Command
+        blk,                          // Block number
+        QVariant(),                   // Null arg
+        {}                            // QByteArray(sizeof(sigCount) * sigCount, Qt::Uninitialized) // Buffer
     };
     DataManager::addToInQueue(inp);
 }
@@ -115,10 +105,10 @@ void Protocom::reqStartup(quint32 sigAdr, quint32 sigCount)
 void Protocom::reqBSI()
 {
     CommandStruct inp {
-        Proto::Commands::ReadBlkStartInfo,                    // Command
-        BoardTypes::BT_NONE,                                  // Board type
-        QVariant(),                                           // Null arg
-        QByteArray(sizeof(ModuleBSI::Bsi), Qt::Uninitialized) // Buffer for bsi
+        Proto::Commands::ReadBlkStartInfo, // Command
+        BoardTypes::BT_NONE,               // Board type
+        QVariant(),                        // Null arg
+        {}                                 // QByteArray(sizeof(ModuleBSI::Bsi), Qt::Uninitialized) // Buffer for bsi
     };
     DataManager::addToInQueue(inp);
 }
@@ -142,7 +132,11 @@ void Protocom::writeTime(quint32 time)
 
 void Protocom::reqFloats(quint32 sigAdr, quint32 sigCount)
 {
-    CommandStruct inp { Proto::Commands::ReadBlkData, sigAdr, sigCount, {} };
+    Q_ASSERT(Proto::getBlkByReg.contains(sigAdr));
+    auto blkPair = Proto::getBlkByReg.value(sigAdr);
+    Q_ASSERT(blkPair.second == sigCount);
+    quint32 blk = blkPair.first;
+    CommandStruct inp { Proto::Commands::ReadBlkData, blk, QVariant(), {} };
     DataManager::addToInQueue(inp);
 }
 
@@ -186,88 +180,81 @@ void handleCommand(const Proto::Commands cmd)
     DataManager::addToInQueue(inp);
 }
 
+void handleCommand(const Proto::WCommands cmd)
+{
+    CommandStruct inp { Proto::WriteBlkCmd, cmd, QVariant(), QByteArray {} };
+    DataManager::addToInQueue(inp);
+}
+
 void Protocom::writeCommand(Queries::Commands cmd, QVariant item)
 {
     using namespace Proto;
     using DataTypes::Signal;
-    auto ourCmd = translate(cmd);
-    switch (ourCmd)
+    auto protoCmd = getProtoCommand.value(cmd);
+    if (!protoCmd)
     {
-        // Раздел псевдо команд
-    case Commands::EraseStartupValues:
-
-        Q_ASSERT(item.canConvert<quint32>());
-        handleInt(Commands::WriteBlkCmd, QByteArray::number(item.toUInt()));
-        break;
-    case Commands::InitStartupValues:
-
-        Q_ASSERT(item.canConvert<quint32>());
-        handleInt(Commands::WriteBlkCmd, QByteArray::number(item.toUInt()));
-        break;
-
-    case Commands::WriteStartupValues:
-
-        Q_ASSERT(item.canConvert<quint32>());
-        handleInt(Commands::WriteBlkCmd, QByteArray::number(item.toUInt()));
-        break;
-        // Конец раздела псевдо команд
+        auto wCmd = getWCommand.value(cmd);
+        handleCommand(wCmd);
+    }
+    switch (protoCmd)
+    {
     case Commands::ReadBlkData:
 
         Q_ASSERT(item.canConvert<Signal>());
-        handleBlk(ourCmd, item.value<Signal>());
+        handleBlk(protoCmd, item.value<Signal>());
         break;
 
     case Commands::ReadBlkAC:
 
         Q_ASSERT(item.canConvert<quint32>());
-        handleBlk(ourCmd, item.toUInt());
+        handleBlk(protoCmd, item.toUInt());
         break;
 
     case Commands::ReadBlkDataA:
 
         Q_ASSERT(item.canConvert<quint32>());
-        handleBlk(ourCmd, item.toUInt());
+        handleBlk(protoCmd, item.toUInt());
         break;
 
     case Commands::ReadBlkTech:
 
         Q_ASSERT(item.canConvert<quint32>());
-        handleBlk(ourCmd, item.toUInt());
+        handleBlk(protoCmd, item.toUInt());
         break;
 
     case Commands::WriteBlkAC:
 
-        Q_ASSERT(item.canConvert<DataTypes::ConfParameterStruct>());
-        handleBlk(ourCmd, item.value<DataTypes::ConfParameterStruct>());
+        Q_ASSERT(item.canConvert<DataTypes::BlkParameterStruct>());
+        handleBlk(protoCmd, item.value<DataTypes::BlkParameterStruct>());
         break;
 
     case Commands::WriteBlkTech:
 
         Q_ASSERT(item.canConvert<DataTypes::BlkParameterStruct>());
-        handleBlk(ourCmd, item.value<DataTypes::BlkParameterStruct>());
+        handleBlk(protoCmd, item.value<DataTypes::BlkParameterStruct>());
         break;
 
     case Commands::WriteBlkCmd:
 
         Q_ASSERT(item.canConvert<quint32>());
-        handleBlk(ourCmd, item.toUInt());
+        handleBlk(protoCmd, item.toUInt());
         break;
 
     case Commands::WriteMode:
 
         Q_ASSERT(item.canConvert<quint32>());
-        handleInt(ourCmd, QByteArray::number(item.toUInt()));
+        handleInt(protoCmd, QByteArray::number(item.toUInt()));
         break;
 
     case Commands::WriteVariant:
 
         Q_ASSERT(item.canConvert<quint32>());
-        handleInt(ourCmd, QByteArray::number(item.toUInt()));
+        handleInt(protoCmd, QByteArray::number(item.toUInt()));
         break;
 
     default:
     {
-        handleCommand(ourCmd);
+        handleCommand(protoCmd);
     }
     }
 }
