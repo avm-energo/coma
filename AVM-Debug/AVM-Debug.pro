@@ -76,7 +76,6 @@ SOURCES += \
     ../gen/files.cpp \
     ../module/journals.cpp \
     ../gen/logclass.cpp \
-    ../gen/modulebsi.cpp \
     ../gen/report.cpp \
     ../gen/s2.cpp \
     ../gen/stdfunc.cpp \
@@ -111,6 +110,8 @@ SOURCES += \
     ../widgets/signalchoosewidget.cpp \
     ../widgets/waitwidget.cpp \
     ../widgets/wd_func.cpp
+
+PRECOMPILED_HEADER = ../gen/pch.h
 
 HEADERS += \
     ../check/checkkdvdialog.h \
@@ -166,7 +167,6 @@ HEADERS += \
     ../gen/files.h \
     ../module/journals.h \
     ../gen/logclass.h \
-    ../gen/modulebsi.h \
     ../gen/report.h \
     ../gen/s2.h \
     ../gen/stdfunc.h \
