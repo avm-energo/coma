@@ -1,6 +1,8 @@
 #ifndef CONFIGKXX_H
 #define CONFIGKXX_H
 
+#include "../gen/s2.h"
+
 #define BCI_IP 20
 #define BCI_MASK 21
 #define BCI_GW 22
@@ -42,8 +44,6 @@
 #define BCI_MBMAB4 1064
 
 #define DEF_MBMASTER 0
-
-#include "../gen/modulebsi.h"
 
 class ConfigKxx
 {

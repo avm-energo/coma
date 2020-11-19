@@ -6,9 +6,9 @@
 #include <QVBoxLayout>
 #include <QtDebug>
 
-Warn::Warn(QWidget *parent) : UWidget(parent)
+Warn::Warn(QWidget *parent) : UWidget(parent), m_actualWarnFlags(0x0000)
 {
-    m_actualWarnFlags = 0x0000;
+
     connect(&DataManager::GetInstance(), &DataManager::singlePointReceived, this, &Warn::updateSpData);
 }
 
@@ -51,7 +51,7 @@ void Warn::updatePixmap(bool isset, int position)
     //    }
 }
 
-void Warn::updateSpData(DataTypes::SinglePointWithTimeStruct &sp)
+void Warn::updateSpData(const DataTypes::SinglePointWithTimeStruct &sp)
 {
     bool warnFlag = false; // warning flag
     quint32 minAddress = m_startWarnAddress;

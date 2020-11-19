@@ -94,9 +94,10 @@ void AlarmWidget::updateAlarm(bool isset)
 void AlarmWidget::updateMain(bool isset)
 {
     Qt::GlobalColor color;
-    if (ModuleBSI::ModuleBsi.Hth & BSIALARMMASK)
+    const auto &board = Board::GetInstance();
+    if (board.health() & BSIALARMMASK)
         color = Qt::red;
-    else if (ModuleBSI::ModuleBsi.Hth & BSIWARNMASK)
+    else if (board.health() & BSIWARNMASK)
         color = Qt::yellow;
     else
         color = Qt::green;

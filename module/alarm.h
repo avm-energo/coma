@@ -24,7 +24,7 @@ public:
 
 public slots:
     //    void Update(std::bitset<32> &states);
-    void updateSpData(DataTypes::SinglePointWithTimeStruct &sp);
+    void updateSpData(const DataTypes::SinglePointWithTimeStruct &sp);
 
 signals:
     void updateAlarm(bool value);

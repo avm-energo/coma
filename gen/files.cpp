@@ -1,7 +1,7 @@
 #include "files.h"
 
+#include "board.h"
 #include "error.h"
-#include "modulebsi.h"
 #include "stdfunc.h"
 
 #include <QDirIterator>
@@ -50,13 +50,12 @@ Error::Msg Files::LoadFromFile(const QString &filename, QByteArray &ba)
 
 QString Files::ChooseFileForSave(QWidget *parent, const QString &mask, const QString &ext, const QString &filenamestr)
 {
-    QString MTypeM = (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) == 0)
-        ? "00"
-        : QString::number(ModuleBSI::GetMType(BoardTypes::BT_MEZONIN), 16);
+    const auto &board = Board::GetInstance();
+    QString MTypeM = (board.typeM() == 0) ? "00" : QString::number(board.typeM(), 16);
     QString tmps;
     if (filenamestr.isEmpty())
-        tmps = StdFunc::GetHomeDir() + "/" + QString::number(ModuleBSI::GetMType(BoardTypes::BT_BASE), 16) + MTypeM
-            + "-" + QString("%1").arg(ModuleBSI::SerialNum(BoardTypes::BT_MODULE), 8, 10, QChar('0')) + "." + ext;
+        tmps = StdFunc::GetHomeDir() + "/" + QString::number(board.typeB(), 16) + MTypeM + "-"
+            + QString("%1").arg(board.serialNumber(Board::BaseMezz), 8, 10, QChar('0')) + "." + ext;
     else
         tmps = filenamestr;
     QFileDialog *dlg = new QFileDialog;

@@ -6,9 +6,8 @@
 #include <QVBoxLayout>
 #include <QtDebug>
 
-Alarm::Alarm(QWidget *parent) : QWidget(parent)
+Alarm::Alarm(QWidget *parent) : QWidget(parent), m_actualAlarmFlags(0x0000)
 {
-    m_actualAlarmFlags = 0x0000;
     connect(&DataManager::GetInstance(), &DataManager::singlePointReceived, this, &Alarm::updateSpData);
 }
 
@@ -51,8 +50,9 @@ void Alarm::updatePixmap(bool isset, int position)
     //    }
 }
 
-void Alarm::updateSpData(DataTypes::SinglePointWithTimeStruct &sp)
+void Alarm::updateSpData(const DataTypes::SinglePointWithTimeStruct &sp)
 {
+    // NOTE alarmFlag unused!
     bool alarmFlag = false; // warning flag
     quint32 minAddress = m_startAlarmAddress;
     quint32 maxAddress = m_startAlarmAddress + 31; // only 32 bits

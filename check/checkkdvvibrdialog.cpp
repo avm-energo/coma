@@ -3,10 +3,8 @@
 #include "../config/config.h"
 #include "../gen/board.h"
 #include "../gen/colors.h"
-#include "../gen/error.h"
-#include "../gen/modulebsi.h"
-//#include "../usb/commands.h"
 #include "../gen/datamanager.h"
+#include "../gen/error.h"
 #include "../widgets/wd_func.h"
 
 #include <QCoreApplication>

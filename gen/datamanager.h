@@ -71,13 +71,13 @@ private:
     static QMutex s_inQueueMutex;
 
 signals:
-    void dataReceived(DataTypes::SignalsStruct &);
-    void bitStringReceived(DataTypes::BitStringStruct &);
-    void singlePointReceived(DataTypes::SinglePointWithTimeStruct &);
-    void floatReceived(DataTypes::FloatStruct &);
-    void fileReceived(DataTypes::FileStruct &);
-    void confParametersReceived(DataTypes::ConfParametersListStruct &);
-    void responseReceived(DataTypes::GeneralResponseStruct &);
+    void dataReceived(const DataTypes::SignalsStruct &);
+    void bitStringReceived(const DataTypes::BitStringStruct &);
+    void singlePointReceived(const DataTypes::SinglePointWithTimeStruct &);
+    void floatReceived(const DataTypes::FloatStruct &);
+    void fileReceived(const DataTypes::FileStruct &);
+    void confParametersReceived(const DataTypes::ConfParametersListStruct &);
+    void responseReceived(const DataTypes::GeneralResponseStruct &);
 };
 
 #endif // DATAMANAGER_H

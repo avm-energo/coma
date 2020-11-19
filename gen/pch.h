@@ -9,3 +9,5 @@
 #endif
 
 #include <QObject>
+
+typedef unsigned char byte;

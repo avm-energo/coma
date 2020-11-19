@@ -3,8 +3,8 @@
 #include "../gen/board.h"
 #include "../gen/colors.h"
 #include "../gen/error.h"
-#include "../gen/modulebsi.h"
 #include "../models/etablemodel.h"
+#include "../module/modules.h"
 #include "edoublespinbox.h"
 #include "etableview.h"
 
@@ -450,8 +450,8 @@ QStatusBar *WDFunc::NewSB(QWidget *w)
     }
 
     QObject::connect(&Board::GetInstance(), &Board::typeChanged, [msgModel]() {
-        quint16 serialNumber = Board::GetInstance().type();
-        QString deviceName = QVariant::fromValue(Board::DeviceModel(serialNumber)).toString();
+        quint16 mtype = Board::GetInstance().type();
+        QString deviceName = QVariant::fromValue(Modules::Model(mtype)).toString();
         msgModel->setText(deviceName);
     });
 

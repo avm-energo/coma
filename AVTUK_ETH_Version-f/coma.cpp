@@ -441,8 +441,6 @@ void Coma::StartWork()
 
     DisconnectAndClear();
 
-    Board::GetInstance().setTypeB(0);
-    Board::GetInstance().setTypeM(0);
     S2Config = new QVector<S2DataTypes::DataRec>;
     //    S2ConfigForTune = new QVector<S2::DataRec>;
     //    CurTabIndex = -1;
@@ -450,7 +448,7 @@ void Coma::StartWork()
     if (MainTW == nullptr)
     {
         // qCritical(logCritical(), ("MainTW is empty"));
-        ERMSG("No MainTW in widgets list");
+        qCritical("No MainTW in widgets list");
         return;
     }
     connect(MainTW, &ETabWidget::tabClicked, this, &Coma::MainTWTabClicked);
@@ -458,14 +456,14 @@ void Coma::StartWork()
     Connect();
     QElapsedTimer tmr;
     tmr.start();
-    while ((board.typeM() == 0) && (tmr.elapsed() < INTERVAL::WAIT) && !Cancelled)
+    while ((board.type() == 0) && (tmr.elapsed() < INTERVAL::WAIT) && !Cancelled)
         QCoreApplication::processEvents();
     m_BSITimer->stop();
-    if (board.typeM() == 0)
+    if (board.type() == 0)
     {
         QMessageBox::critical(this, "Ошибка", "Не удалось соединиться с прибором", QMessageBox::Ok);
         DisconnectAndClear();
-        ERMSG("Не получили BSI, нет соединения");
+        qCritical("Не получили BSI, нет соединения");
         //            Disconnect();
         return;
     }
@@ -473,7 +471,7 @@ void Coma::StartWork()
     //        AlarmStateAllDialog->UpdateHealth(ModuleBSI::ModuleBsi.Hth);
     Board::GetInstance().setConnectionState(Board::ConnectionState::Connected);
     quint16 serialNumber = Board::GetInstance().type();
-    QString deviceName = QVariant::fromValue(Board::DeviceModel(serialNumber)).toString();
+    QString deviceName = QVariant::fromValue(Modules::Model(serialNumber)).toString();
     QMessageBox::information(this, "Связь установлена", "Удалось установить связь с " + deviceName, QMessageBox::Ok);
     Reconnect = true;
 
@@ -485,10 +483,10 @@ void Coma::StartWork()
     //        MainTW->addTab(jourDialog, "Журналы");
 
     //    if (ModuleBSI::Health() & HTH_CONFIG) // нет конфигурации
-    if (ModuleBSI::noConfig()) // нет конфигурации
+    if (board.noConfig()) // нет конфигурации
         qCritical() << Error::Msg::NoConfError;
     //    if (ModuleBSI::Health() & HTH_REGPARS) // нет коэффициентов
-    if (ModuleBSI::noRegPars()) // нет коэффициентов
+    if (board.noRegPars()) // нет коэффициентов
         qCritical() << Error::Msg::NoTuneError;
     //    if (board.interfaceType() == Board::InterfaceType::USB)
     //    {
@@ -509,7 +507,7 @@ void Coma::StartWork()
     if (board.interfaceType() == Board::InterfaceType::USB)
         BdaTimer->start();
     auto *msgSerialNumber = statusBar()->findChild<QLabel *>("SerialNumber");
-    msgSerialNumber->setText(QString::number(ModuleBSI::SerialNum(BT_NONE), 16));
+    // msgSerialNumber->setText(QString::number(ModuleBSI::serialNumber(BT_NONE), 16));
 }
 
 /*void Coma::setupQConnections()
@@ -846,7 +844,7 @@ void Coma::ReConnect()
 {
     if (Reconnect)
     {
-        INFOMSG("Reconnect()");
+        qInfo(__PRETTY_FUNCTION__);
         //        TimeTimer->stop();
         if (Board::GetInstance().connectionState() == Board::ConnectionState::Connected)
         {
@@ -887,8 +885,10 @@ void Coma::ConnectMessage()
 
     msgBox.setIcon(QMessageBox::Information);
     // if (MainInterface == I_USB)
+    // FIXME Исправить карты модулей
     if (Board::GetInstance().interfaceType() == Board::InterfaceType::USB)
-        msgBox.setText("Связь с " + ModuleBSI::ModuleTypeString + " установлена");
+        // msgBox.setText("Связь с " + ModuleBSI::ModuleTypeString + " установлена");
+        msgBox.setText("Связь установлена");
     else
         msgBox.setText("Связь с " + ConnectSettings.name + " установлена");
     msgBox.show();
@@ -1106,7 +1106,7 @@ void Coma::GetAbout()
 
 void Coma::Disconnect()
 {
-    INFOMSG("Disconnect()");
+    qInfo(__PRETTY_FUNCTION__);
     AlarmW->Clear();
     if (!StdFunc::IsInEmulateMode())
     {
@@ -1130,6 +1130,7 @@ void Coma::Connect()
 {
     m_BSITimer->start();
     auto const &board = Board::GetInstance();
+    connect(&DataManager::GetInstance(), &DataManager::bitStringReceived, &Board::GetInstance(), &Board::update);
     //    Error::Msg res;
     switch (board.interfaceType())
     {
@@ -1198,6 +1199,9 @@ void Coma::Connect()
         return;
     }
     ActiveThreads = true;
+    m_iface->reqBSI();
+    // m_iface->reqTime();
+    // m_iface->reqFile(4);
 }
 
 void Coma::DisconnectAndClear()
@@ -1323,7 +1327,7 @@ void Coma::MainTWTabClicked(int tabindex)
 //    QMessageBox::information(this, "Успешно", "Конфигурация по умолчанию", QMessageBox::Ok);
 //}
 
-void Coma::update(DataTypes::GeneralResponseStruct &rsp)
+void Coma::update(const DataTypes::GeneralResponseStruct &rsp)
 {
     //    DataTypes::GeneralResponseStruct rs;
     //    if (DataManager::getResponse(DataTypes::GeneralResponseTypes::DataCount, rs) != Error::Msg::ResEmpty)

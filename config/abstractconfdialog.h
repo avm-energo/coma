@@ -33,7 +33,7 @@ public:
     Error::Msg WriteCheckPassword();
 
 public slots:
-    void WriteConfMessageOk(DataTypes::GeneralResponseStruct &rsp);
+    void WriteConfMessageOk(const DataTypes::GeneralResponseStruct &rsp);
     //    void update() override;
     // задать конфигурацию по умолчанию
     virtual void SetDefConf() = 0;
@@ -54,7 +54,7 @@ private slots:
     void ReadConf();
     void WriteConf();
     //    void WritePasswordCheck(QString psw);
-    void confParameterReceived(DataTypes::ConfParametersListStruct &cfpl);
+    void confParameterReceived(const DataTypes::ConfParametersListStruct &cfpl);
 
     // public slots:
     //    void FillConf(S2ConfigType *);

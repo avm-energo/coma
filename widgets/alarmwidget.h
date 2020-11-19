@@ -4,7 +4,6 @@
 //#include "../alarm/alarmclass.h"
 #include "../gen/colors.h"
 #include "../gen/error.h"
-#include "../gen/modulebsi.h"
 #include "../widgets/uwidget.h"
 #include "../widgets/wd_func.h"
 

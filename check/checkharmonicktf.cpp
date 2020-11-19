@@ -3,7 +3,6 @@
 
 #include "../config/config.h"
 #include "../gen/colors.h"
-#include "../gen/modulebsi.h"
 #include "../widgets/wd_func.h"
 
 #include <QGroupBox>
@@ -19,7 +18,7 @@ CheckHarmonicKTF::CheckHarmonicKTF()
     WidgetFormat = "QWidget {background-color: " + QString(Colors::UCONFCLR) + ";}";
 }
 
-QWidget *CheckHarmonicKTF::BdIWidget(QWidget *parent, int value , int min, int max)
+QWidget *CheckHarmonicKTF::BdIWidget(QWidget *parent, int value, int min, int max)
 {
     int i;
     QWidget *w = new QWidget(parent);
@@ -70,7 +69,6 @@ QWidget *CheckHarmonicKTF::BdIWidget(QWidget *parent, int value , int min, int m
     w->setLayout(lyout);
     w->setStyleSheet(WidgetFormat);
     return w;
-
 }
 
 QWidget *CheckHarmonicKTF::BdUWidget(QWidget *parent, int value, int min, int max)
@@ -125,7 +123,6 @@ QWidget *CheckHarmonicKTF::BdUWidget(QWidget *parent, int value, int min, int ma
     w->setLayout(lyout);
     w->setStyleSheet(WidgetFormat);
     return w;
-
 }
 
 void CheckHarmonicKTF::FillBd5(QWidget *parent)

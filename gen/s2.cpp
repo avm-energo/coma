@@ -244,7 +244,7 @@ S2DataTypes::DataRec *S2::FindElem(QVector<S2DataTypes::DataRec> *dr, quint32 id
     return nullptr;
 }
 
-Error::Msg S2::findElemAndWriteIt(QVector<S2DataTypes::DataRec> *s2config, DataTypes::ConfParameterStruct &cfp)
+Error::Msg S2::findElemAndWriteIt(QVector<S2DataTypes::DataRec> *s2config, const DataTypes::ConfParameterStruct &cfp)
 {
     for (QVector<S2DataTypes::DataRec>::iterator it = s2config->begin(); it != s2config->end(); ++it)
     {

@@ -28,6 +28,7 @@
 #include "journkdv.h"
 #include "journkiv.h"
 #include "journktf.h"
+#include "modules.h"
 #include "warnkdv.h"
 #include "warnkiv.h"
 #include "warnktf.h"
@@ -40,20 +41,22 @@ Module::Module(QObject *parent) : QObject(parent)
 
 Module *Module::createModule(QTimer *updateTimer, BaseInterface *iface, AlarmWidget *aw)
 {
+    using namespace Modules;
+    const auto &board = Board::GetInstance();
     Journals *JOUR;
     Module *m = new Module;
     m->m_iface = iface;
     S2ConfigType *s2Config = new S2ConfigType;
     m->m_alarmStateAllDialog = new AlarmStateAll;
-    m->m_alarmStateAllDialog->UpdateHealth(ModuleBSI::ModuleBsi.Hth);
+    m->m_alarmStateAllDialog->UpdateHealth(board.health());
     quint16 typeb = Board::GetInstance().typeB();
-    if (Board::GetInstance().getBaseBoardsList().contains(typeb)) // there must be two-part module
+    if (BaseBoards.contains(typeb)) // there must be two-part module
     {
         quint16 typem = Board::GetInstance().typeM();
         Q_UNUSED(typem)
         switch (typeb)
         {
-        case Board::BaseBoards::MTB_00:
+        case BaseBoards::MTB_00:
             /*
                 str = (checkMDialog == nullptr) ? "Текущие параметры" : "Текущие параметры\nБазовая";
                 if (checkBDialog != nullptr)
@@ -75,7 +78,7 @@ Module *Module::createModule(QTimer *updateTimer, BaseInterface *iface, AlarmWid
         quint16 mtype = Board::GetInstance().type();
         switch (mtype)
         {
-        case Board::DeviceModel::KIV:
+        case Model::KIV:
         {
             JOUR = new JournKIV;
             ConfigKIV *CKIV = new ConfigKIV(s2Config);
@@ -91,14 +94,15 @@ Module *Module::createModule(QTimer *updateTimer, BaseInterface *iface, AlarmWid
             m->m_alarm = new AlarmKIV;
             //            connect(m->m_warn, &Warn::updateWarn, cdkiv, &AbstractCheckDialog::SetWarnColor);
             //            connect(m->m_alarm, &Alarm::updateAlarm, cdkiv, &AbstractCheckDialog::SetAlarmColor);
+            break;
         }
-        case Board::DeviceModel::KTF:
+        case Model::KTF:
         {
             JOUR = new JournKTF;
             ConfigKTF *CKTF = new ConfigKTF(s2Config);
             m->addDialogToList(new ConfKTFDialog(CKTF), "Конфигурирование", "conf1");
             CheckKTFDialog *cdktf = new CheckKTFDialog;
-            m->addDialogToList(new CheckKTFDialog);
+            m->addDialogToList(cdktf);
 #ifdef AVM_DEBUG
             //            TuneKTF *TKTF = new TuneKTF(0, s2Config);
 //                        m->addDialogToList(new TuneKTFDialog(CKTF, TKTF));
@@ -111,13 +115,13 @@ Module *Module::createModule(QTimer *updateTimer, BaseInterface *iface, AlarmWid
             //            connect(m->m_alarm, &Alarm::updateAlarm, cdktf, &AbstractCheckDialog::SetAlarmColor);
             break;
         }
-        case Board::DeviceModel::KDV:
+        case Model::KDV:
         {
             JOUR = new JournKDV;
             ConfigKDV *CKDV = new ConfigKDV(s2Config);
             m->addDialogToList(new ConfKDVDialog(CKDV), "Конфигурирование", "conf1");
             CheckKDVDialog *cdkdv = new CheckKDVDialog;
-            m->addDialogToList(new CheckKDVDialog);
+            m->addDialogToList(cdkdv);
 #ifdef AVM_DEBUG
             TuneKDV *TKDV = new TuneKDV(0, s2Config);
             m->addDialogToList(new TuneKDVDialog(CKDV, TKDV));

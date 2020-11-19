@@ -16,7 +16,6 @@
 #ifndef ABSTRACTCHECKDIALOG_H
 #define ABSTRACTCHECKDIALOG_H
 
-#include "../gen/modulebsi.h"
 #include "../widgets/udialog.h"
 //#include "../modbus/modbus.h"
 #include "check.h"

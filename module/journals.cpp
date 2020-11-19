@@ -4,10 +4,8 @@
 #include "../gen/board.h"
 #include "../gen/error.h"
 #include "../gen/files.h"
-#include "../gen/modulebsi.h"
 #include "../gen/s2.h"
 #include "../gen/timefunc.h"
-//#include "../usb/commands.h"
 #include "../widgets/wd_func.h"
 #include "xlsxdocument.h"
 
@@ -335,17 +333,17 @@ void Journals::prepareJour(QByteArray &ba, int JourType)
     ba.remove(0, drsize);
 }
 
-void Journals::FillJour(DataTypes::FileStruct &fs)
+void Journals::FillJour(const DataTypes::FileStruct &fs)
 {
-    prepareJour(fs.filedata, fs.filenum);
+    // prepareJour(fs.filedata, fs.filenum);
     switch (fs.filenum)
     {
     case Files::JourMeas:
-        FillMeasTable(fs.filedata);
+        // FillMeasTable(fs.filedata);
         break;
     case Files::JourSys:
     case Files::JourWork:
-        FillEventsTable(fs.filedata);
+        // FillEventsTable(fs.filedata);
         break;
     default:
         break;
@@ -446,11 +444,12 @@ void Journals::StartSaveJour(int jtype, QAbstractItemModel *amdl, QString filena
 
     workSheet->writeString(cellModuleType, "Модуль: ");
     cellModuleType.setColumn(2);
-    workSheet->writeString(cellModuleType, ModuleBSI::GetModuleTypeString());
+    // FIXME Сделать карту модулей
+    // workSheet->writeString(cellModuleType, ModuleBSI::GetModuleTypeString());
     cellModuleType.setColumn(3);
     workSheet->writeString(cellModuleType, "сер. ном. ");
     cellModuleType.setColumn(4);
-    workSheet->writeString(cellModuleType, QString::number(ModuleBSI::SerialNum(BoardTypes::BT_MODULE), 16));
+    workSheet->writeString(cellModuleType, QString::number(Board::GetInstance().serialNumber(Board::BaseMezzAdd), 16));
 
     workSheet->writeString(cellDate, "Дата: ");
     cellDate.setColumn(2);

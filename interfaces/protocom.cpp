@@ -2,7 +2,7 @@
 
 #include "../gen/board.h"
 #include "../gen/datamanager.h"
-#include "../gen/modulebsi.h"
+#include "../gen/stdfunc.h"
 #include "protocomthread.h"
 #include "settingstypes.h"
 #include "usbhidport.h"
@@ -75,8 +75,7 @@ void Protocom::reqFile(quint32 filenum, bool isConfigFile)
 {
     // QByteArray ba;
     // ba.setNum(filenum);
-    QByteArray ba(sizeof(quint16), 0);
-    *(reinterpret_cast<quint16 *>(ba.data())) = filenum;
+    QByteArray ba = StdFunc::arrayFromNumber(quint16(filenum));
 
     CommandStruct inp {
         Proto::Commands::ReadFile, // Command
@@ -106,7 +105,7 @@ void Protocom::reqBSI()
 {
     CommandStruct inp {
         Proto::Commands::ReadBlkStartInfo, // Command
-        BoardTypes::BT_NONE,               // Board type
+        Board::None,                       // Board type
         QVariant(),                        // Null arg
         {}                                 // QByteArray(sizeof(ModuleBSI::Bsi), Qt::Uninitialized) // Buffer for bsi
     };
