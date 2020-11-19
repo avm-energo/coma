@@ -52,8 +52,8 @@ quint16 Board::typeM() const
 
 quint16 Board::type() const
 {
-    const quint16 Mtypem = typeM();
-    const quint16 Mtypeb = typeB() >> 8;
+    const quint16 Mtypem = typeM() >> 8;
+    const quint16 Mtypeb = typeB();
     return quint16(Mtypeb + Mtypem);
 }
 
@@ -150,7 +150,7 @@ bool Board::noRegPars() const
     return health() & HTH_REGPARS;
 }
 
-Modules::BaseSerialInfo Board::baseSerialInfo() const
+Modules::StartupInfoBlock Board::baseSerialInfo() const
 {
     return m_baseSerialInfo;
 }

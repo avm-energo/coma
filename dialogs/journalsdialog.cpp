@@ -18,9 +18,6 @@
 #include <QSortFilterProxyModel>
 #include <QVBoxLayout>
 
-#if _MSC_VER && !__INTEL_COMPILER
-#define __PRETTY_FUNCTION__ __FUNCSIG__
-#endif
 JournalDialog::JournalDialog(Journals *jour, QWidget *parent) : UDialog(parent)
 {
     JourFuncs = jour;

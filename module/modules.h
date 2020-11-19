@@ -6,6 +6,7 @@
  */
 namespace Modules
 {
+
 Q_NAMESPACE
 enum Model
 {
@@ -13,6 +14,7 @@ enum Model
     KIV = 0xA284,
     KDV = 0xA387
 };
+
 Q_ENUM_NS(Model);
 enum BaseBoards
 {
@@ -74,7 +76,7 @@ static const QMap<quint16, QString> MezzanineBoards {
     { MTM_85, "85 (УСК)" }    // 3U3I УСК (перегрузка по току 20х), комбинируется с 85
 };
 
-struct BaseSerialInfo
+struct StartupInfoBlock
 {
     quint32 MTypeB;
     quint32 MTypeM;
@@ -93,7 +95,7 @@ struct BaseSerialInfo
     quint32 Hth;
 };
 
-struct BaseSerialInfoExt
+struct StartupInfoBlockExt
 {
 };
 
