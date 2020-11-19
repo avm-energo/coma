@@ -61,6 +61,7 @@ public:
     //    static void MBSUpdate();
     static QString GetModuleTypeString();
     static quint32 GetMType(BoardTypes type);
+    static QString UID();
     static quint32 Health();
     static quint32 SerialNum(BoardTypes type); // возвращает серийный номер, по-умолчанию номер модуля
     static Bsi GetBsi();

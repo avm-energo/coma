@@ -58,6 +58,12 @@ quint32 ModuleBSI::GetMType(BoardTypes type)
     return (type == BT_MEZONIN) ? ModuleBsi.MTypeM : ModuleBsi.MTypeB;
 }
 
+QString ModuleBSI::UID()
+{
+    return (QString::number(ModuleBsi.UIDHigh, 16) + QString::number(ModuleBsi.UIDMid, 16)
+        + QString::number(ModuleBsi.UIDLow, 16));
+}
+
 quint32 ModuleBSI::Health()
 {
     return ModuleBsi.Hth;

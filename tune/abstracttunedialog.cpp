@@ -6,7 +6,7 @@
 #include "../gen/files.h"
 #include "../gen/stdfunc.h"
 #include "../gen/timefunc.h"
-#include "../usb/commands.h"
+#include "../interfaces/protocom.h"
 #include "../widgets/waitwidget.h"
 #include "../widgets/wd_func.h"
 #include "limereport/lrreportengine.h"
@@ -15,6 +15,7 @@
 #include <QScrollArea>
 #include <QScrollBar>
 #include <QVBoxLayout>
+#include <QtDebug>
 
 AbstractTuneDialog::AbstractTuneDialog(int tuneStep, QWidget *parent) : UDialog(parent)
 {
@@ -146,19 +147,12 @@ QWidget *AbstractTuneDialog::BottomUI()
     return w;
 }
 
-int AbstractTuneDialog::addDataBlock(
-    DataBlock::DataBlockTypes type, const QString &caption, void *block, void *defblock, int blocknum, int blocksize)
+void AbstractTuneDialog::SetBac(void *block, int blocknum, int blocksize)
 {
-    DataBlock::BlockStruct bds;
-    bds.block = block;
-    bds.defblock = defblock;
-    bds.blocknum = blocknum;
-    bds.blocksize = blocksize;
-    bds.caption = caption;
-    bds.blocktype = type;
-    DataBlock *dblock = new DataBlock(bds);
-    m_blocks.append(dblock);
-    return m_blockCount++;
+    BacStruct Bac;
+    Bac.BacBlock = block;
+    Bac.BacBlockSize = blocksize;
+    AbsBac[blocknum] = Bac;
 }
 
 /*void AbstractTuneDialog::ShowTable()
@@ -299,7 +293,8 @@ void AbstractTuneDialog::StartTune()
         return;
     }
     // сохраняем на всякий случай настроечные коэффициенты
-    if (SaveBlocksToFiles(DataBlock::DataBlockTypes::BacBlock) != Error::Msg::NoError)
+    //    if (SaveBlocksToFiles(DataBlock::DataBlockTypes::BacBlock) != Error::Msg::NoError)
+    if (SaveAllTuneCoefs() != Error::Msg::NoError)
     {
         if (QMessageBox::question(this, "Вопрос", "Сохранение настроечных коэффициентов не произведено, продолжать?")
             == QMessageBox::No)
@@ -323,7 +318,7 @@ void AbstractTuneDialog::StartTune()
         {
             MsgSetVisible(ErMsg, bStep);
             WDFunc::SetEnabled(this, "starttune", true);
-            WARNMSG(m_messages.at(bStep));
+            qWarning() << m_messages.at(bStep);
             //           MeasurementTimer->stop();
             return;
         }
@@ -337,6 +332,21 @@ void AbstractTuneDialog::StartTune()
     WDFunc::SetEnabled(this, "starttune", true);
     QMessageBox::information(this, "Готово", "Настройка завершена!");
     saveTuneSequenceFile();
+}
+
+int AbstractTuneDialog::SaveAllTuneCoefs()
+{
+    QString tunenum;
+    for (QMap<int, BacStruct>::Iterator it = AbsBac.begin(); it != AbsBac.end(); ++it)
+    {
+        tunenum = QString::number(it.key(), 16); // key is the number of Bac block
+        QByteArray ba;
+        ba.resize(it.value().BacBlockSize);
+        memcpy(&(ba.data()[0]), it.value().BacBlock, it.value().BacBlockSize);
+        if (Files::SaveToFile(StdFunc::GetSystemHomeDir() + "temptune.tn" + tunenum, ba) != Error::Msg::NoError)
+            return Error::Msg::GeneralError;
+    }
+    return Error::Msg::NoError;
 }
 
 // void AbstractTuneDialog::PasswordCheck(QString psw)
@@ -383,20 +393,26 @@ void AbstractTuneDialog::StartTune()
 
 void AbstractTuneDialog::readTuneCoefs()
 {
-    //    int bacnum = sender()->objectName().toInt();
-    //    ReadTuneCoefsByBac(bacnum);
-    ReadBlocks(DataBlock::DataBlockTypes::BacBlock);
+    int bacnum = sender()->objectName().toInt();
+    ReadTuneCoefsByBac(bacnum);
+    //    ReadBlocks(DataBlock::DataBlockTypes::BacBlock);
 }
 
-// void AbstractTuneDialog::ReadTuneCoefsByBac(int bacnum)
-//{
-//    if (m_TuneBlockMap.keys().contains(bacnum))
-//    {
-//        Error::Msg res = Commands::GetBac(bacnum, m_TuneBlockMap[bacnum].block, m_TuneBlockMap[bacnum].blocksize);
-//        if (res == Error::Msg::NoError)
-//            FillBac(bacnum);
-//    }
-//}
+void AbstractTuneDialog::ReadTuneCoefsByBac(int bacnum)
+{
+    //    if (m_TuneBlockMap.keys().contains(bacnum))
+    //    {
+    //        Error::Msg res = Commands::GetBac(bacnum, m_TuneBlockMap[bacnum].block, m_TuneBlockMap[bacnum].blocksize);
+    //        if (res == Error::Msg::NoError)
+    //            FillBac(bacnum);
+    //    }
+    if (AbsBac.keys().contains(bacnum))
+    {
+        int res = Commands::GetBac(bacnum, AbsBac[bacnum].BacBlock, AbsBac[bacnum].BacBlockSize);
+        if (res == Error::Msg::NoError)
+            FillBac(bacnum);
+    }
+}
 
 bool AbstractTuneDialog::writeTuneCoefs()
 {
@@ -516,7 +532,7 @@ Error::Msg AbstractTuneDialog::loadWorkConfig()
 
 void AbstractTuneDialog::SaveTuneBlocksToFiles()
 {
-    SaveBlocksToFiles(DataBlock::DataBlockTypes::BacBlock);
+    //    SaveBlocksToFiles(DataBlock::DataBlockTypes::BacBlock);
 }
 
 Error::Msg AbstractTuneDialog::SaveBlocksToFiles(DataBlock::DataBlockTypes type, bool userChoose)

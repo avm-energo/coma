@@ -95,6 +95,20 @@ public:
     Error::Msg saveWorkConfig();
     Error::Msg loadWorkConfig();
 
+private:
+    struct BacStruct
+    {
+        void *BacBlock;
+        int BacBlockSize;
+        //        char BacBlockNum;
+    };
+
+    QMap<int, BacStruct> AbsBac;
+
+    void SetBac(void *block, int blocknum, int blocksize);
+
+    int SaveAllTuneCoefs();
+    void ReadTuneCoefsByBac(int bacnum);
 signals:
     //    void PasswordChecked();
     //    void stopall();
