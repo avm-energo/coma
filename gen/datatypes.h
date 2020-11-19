@@ -57,6 +57,38 @@ struct SinglePointWithTimeStruct
 
 struct FileStruct
 {
+    FileStruct() = default;
+    ~FileStruct()
+    {
+    }
+    FileStruct(const quint32 num, const QByteArray &file) : filenum(num), filedata(file)
+    {
+    }
+    FileStruct(const FileStruct &source) : FileStruct(source.filenum, source.filedata)
+    {
+    }
+    FileStruct &operator=(const FileStruct &source)
+    {
+        filenum = source.filenum;
+        filedata = source.filedata;
+        return *this;
+    }
+    FileStruct(FileStruct &&rhs) noexcept : filenum(rhs.filenum), filedata(rhs.filedata)
+    {
+        rhs.filenum = NULL;
+        rhs.filedata = nullptr;
+    }
+    FileStruct operator=(FileStruct &&rhs) noexcept
+    {
+        if (this != &rhs)
+        {
+            filenum = rhs.filenum;
+            filedata = rhs.filedata;
+            rhs.filenum = NULL;
+            rhs.filedata = nullptr;
+        }
+        return *this;
+    }
     quint32 filenum;
     QByteArray filedata;
 };
