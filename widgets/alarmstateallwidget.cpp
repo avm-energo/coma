@@ -1,15 +1,15 @@
 #include "alarmstateallwidget.h"
 
+#include "../gen/board.h"
 #include "../gen/colors.h"
 #include "../gen/error.h"
-#include "../gen/modulebsi.h"
 #include "../widgets/wd_func.h"
 
 #include <QBoxLayout>
 
 AlarmStateAll::AlarmStateAll(QWidget *parent) : QWidget(parent)
 {
-
+    const auto &board = Board::GetInstance();
     QVBoxLayout *lyout = new QVBoxLayout;
     QVBoxLayout *vlayout = new QVBoxLayout;
     //    QWidget *w = new QWidget;
@@ -22,7 +22,7 @@ AlarmStateAll::AlarmStateAll(QWidget *parent) : QWidget(parent)
         QHBoxLayout *hlyout = new QHBoxLayout;
         hlyout->setObjectName("hlyout" + QString::number(i));
 
-        if (ModuleBSI::ModuleBsi.Hth & (0x00000001 << i))
+        if (board.health() & (0x00000001 << i))
         {
             QPixmap circle = WDFunc::NewCircle(Qt::red, circleRadius);
             hlyout->addWidget(WDFunc::NewLBL(this, "", "", QString::number(i), &circle));
@@ -45,7 +45,7 @@ AlarmStateAll::AlarmStateAll(QWidget *parent) : QWidget(parent)
     connect(pb, SIGNAL(clicked()), this, SLOT(hide()));
     lyout->addWidget(pb, 0);
     this->setLayout(lyout);
-    connect(&ModuleBSI::GetInstance(), &ModuleBSI::BSIHealthUpdated, this, &AlarmStateAll::UpdateHealth);
+    connect(&board, &Board::healthChanged, this, &AlarmStateAll::UpdateHealth);
 }
 
 // void AlarmStateAll::AlarmState()
@@ -73,5 +73,5 @@ void AlarmStateAll::UpdateHealth(quint32 health)
 
 void AlarmStateAll::update()
 {
-    UpdateHealth(ModuleBSI::ModuleBsi.Hth);
+    UpdateHealth(Board::GetInstance().health());
 }

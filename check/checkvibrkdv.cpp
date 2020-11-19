@@ -2,7 +2,6 @@
 
 #include "../config/config.h"
 #include "../gen/colors.h"
-#include "../gen/modulebsi.h"
 #include "../widgets/wd_func.h"
 
 #include <QGroupBox>
@@ -354,8 +353,6 @@ QWidget *CheckVibrKDV::Bd3W(QWidget *parent)
     w->setStyleSheet(WidgetFormat);
     return w;
 }
-
-
 
 void CheckVibrKDV::FillBd19(QWidget *parent)
 {

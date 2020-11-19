@@ -4,7 +4,6 @@
 #include "../gen/colors.h"
 #include "../gen/datamanager.h"
 #include "../gen/error.h"
-#include "../gen/modulebsi.h"
 #include "../gen/stdfunc.h"
 #include "../widgets/wd_func.h"
 
@@ -63,8 +62,8 @@ void InfoDialog::SetupUI()
 
 void InfoDialog::FillBsi()
 {
-    ModuleBSI::Bsi bsi = ModuleBSI::GetBsi();
-    ModuleBSI::ModuleBsi.Hth = bsi.Hth;
+    const auto bsi = Board::GetInstance().baseSerialInfo();
+
     WDFunc::SetLBLText(this, "snle", QString::number(bsi.SerialNum, 16));
     WDFunc::SetLBLText(this, "fwverle", StdFunc::VerToStr(bsi.Fwver));
     WDFunc::SetLBLText(this, "cfcrcle", "0x" + QString::number(static_cast<uint>(bsi.Cfcrc), 16));

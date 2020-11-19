@@ -136,7 +136,7 @@ private slots:
     void GetAbout();
     void closeEvent(QCloseEvent *event) override;
     //    void SetDefConf();
-    void update(DataTypes::GeneralResponseStruct &rsp);
+    void update(const DataTypes::GeneralResponseStruct &rsp);
 
     //    void setConf(unsigned char);
     //    void Fill();

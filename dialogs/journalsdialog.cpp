@@ -3,13 +3,11 @@
 #include "../dialogs/keypressdialog.h"
 #include "../gen/board.h"
 #include "../gen/colors.h"
+#include "../gen/datamanager.h"
 #include "../gen/error.h"
 #include "../gen/files.h"
 #include "../gen/stdfunc.h"
 #include "../gen/timefunc.h"
-//#include "../usb/commands.h"
-#include "../gen/datamanager.h"
-#include "../gen/modulebsi.h"
 #include "../widgets/wd_func.h"
 #ifdef MODELDEBUG
 #include <QAbstractItemModelTester>
@@ -300,8 +298,9 @@ void JournalDialog::SaveJour()
     }
     // jourfilestr += QString::number(MTypeB, 16) + QString::number(MTypeM, 16) + " #"
     //    + QString("%1").arg(ModuleBSI::SerialNum(BoardTypes::BT_MODULE), 8, 10, QChar('0')) + " ";
-    jourfilestr += QString::number(Board::GetInstance().typeB(), 16) + QString::number(Board::GetInstance().typeM(), 16)
-        + " #" + QString("%1").arg(ModuleBSI::SerialNum(BoardTypes::BT_MODULE), 8, 10, QChar('0')) + " ";
+    const auto &board = Board::GetInstance();
+    jourfilestr += QString::number(board.typeB(), 16) + QString::number(board.typeM(), 16) + " #"
+        + QString("%1").arg(board.serialNumber(Board::BaseAdd), 8, 10, QChar('0')) + " ";
     jourfilestr += QDate::currentDate().toString("dd-MM-yyyy") + ".xlsx";
     // запрашиваем имя файла для сохранения
     QString filename = Files::ChooseFileForSave(nullptr, "Excel documents (*.xlsx)", "xlsx", jourfilestr);

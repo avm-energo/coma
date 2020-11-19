@@ -69,7 +69,6 @@ SOURCES += \
     ../gen/files.cpp \
     ../gen/logclass.cpp \
     ../gen/logger.cpp \
-    ../gen/modulebsi.cpp \
     ../gen/s2.cpp \
     ../gen/stdfunc.cpp \
     ../gen/timefunc.cpp \
@@ -169,7 +168,6 @@ HEADERS += \
     ../gen/files.h \
     ../gen/logger.h \
     ../gen/logclass.h \
-    ../gen/modulebsi.h \
     ../gen/s2.h \
     ../gen/stdfunc.h \
     ../gen/timefunc.h \
@@ -206,6 +204,8 @@ HEADERS += \
     ../module/warnkdv.h \
     ../module/warnkiv.h \
     ../module/warnktf.h \
+    ../module/modules.h \
+    ../module/registers.h \
     ../startup/abstractstartupdialog.h \
     ../startup/startupkdvdialog.h \
     ../startup/startupkivdialog.h \

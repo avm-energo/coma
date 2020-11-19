@@ -3,7 +3,6 @@
 #include "../config/config.h"
 #include "../gen/datamanager.h"
 #include "../gen/error.h"
-#include "../gen/modulebsi.h"
 #include "../widgets/etabwidget.h"
 #include "../widgets/wd_func.h"
 

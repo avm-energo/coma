@@ -195,9 +195,10 @@ void AbstractCheckDialog::StartAnalogMeasurementsToFile()
     XlsxWriting = true;
     xlsx = new QXlsx::Document(Filename);
     QString tmps = ((DEVICETYPE == DEVICETYPE_MODULE) ? "Модуль" : "Прибор");
-    xlsx->write(1, 1,
-        QVariant(tmps + ": " + ModuleBSI::GetModuleTypeString() + " сер. ном. "
-            + QString::number(ModuleBSI::SerialNum(BoardTypes::BT_MODULE), 10)));
+    // FIXME Исправить карты модулей
+    //    xlsx->write(1, 1,
+    //        QVariant(tmps + ": " + ModuleBSI::GetModuleTypeString() + " сер. ном. "
+    //            + QString::number(ModuleBSI::serialNumber(BoardTypes::BT_MODULE), 10)));
     xlsx->write(2, 1, QVariant("Дата начала записи: " + QDateTime::currentDateTime().toString("dd-MM-yyyy")));
     xlsx->write(3, 1, QVariant("Время начала записи: " + QDateTime::currentDateTime().toString("hh:mm:ss")));
     xlsx->write(5, 1, QVariant("Дата и время отсчёта"));

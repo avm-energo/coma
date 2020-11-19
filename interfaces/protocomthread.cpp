@@ -7,6 +7,7 @@
 #include <QDebug>
 #include <QMetaEnum>
 #include <QThread>
+#include <QtEndian>
 #include <array>
 
 typedef QQueue<QByteArray> ByteQueue;
@@ -259,18 +260,15 @@ void ProtocomThread::parseResponse(QByteArray ba)
         // Q_ASSERT(size == ba.size());
         m_buffer.first += size;
         m_buffer.second.append(ba);
-
-        if (isOneSegment(size))
+        // Потому что на эту команду модуль не отдает пустой ответ
+        if (isOneSegment(size) || (cmd == ReadBlkStartInfo))
             handle(Commands(cmd));
         else
         {
-            // Потому что на эту команду модуль не отдает пустой ответ
-            if (cmd != ReadBlkStartInfo)
-            {
-                auto tba = prepareOk(false, cmd);
-                Q_ASSERT(tba.size() == 4);
-                emit writeDataAttempt(tba);
-            }
+
+            auto tba = prepareOk(false, cmd);
+            Q_ASSERT(tba.size() == 4);
+            emit writeDataAttempt(tba);
         }
         break;
     }
@@ -392,15 +390,16 @@ ByteQueue prepareLongBlk(CommandStruct &cmdStr)
 
 void handleBitString(const QByteArray &ba, quint16 sigAddr)
 {
-    Q_ASSERT(ba.size() != 4);
-    quint32 value = ba.toUInt();
+    Q_ASSERT(ba.size() == sizeof(quint32));
+    // NOTE Переделать ужас
+    quint32 value = qFromBigEndian<quint32>(ba.data());
     DataTypes::BitStringStruct resp { sigAddr, value, {} };
     DataManager::addSignalToOutList(DataTypes::SignalTypes::BitString, resp);
 }
 
 void handleBitStringArray(const QByteArray &ba, QList<quint16> arr_addr)
 {
-    Q_ASSERT(ba.size() / 4 != arr_addr.size());
+    Q_ASSERT(ba.size() / 4 == arr_addr.size());
     for (int i = 0; i != arr_addr.size(); i++)
     {
         QByteArray temp = ba.mid(sizeof(qint32) * i, sizeof(qint32));
@@ -421,7 +420,7 @@ void handleFloatArray(const QByteArray &ba, quint32 sigAddr, quint32 sigCount)
 {
     if (!sigCount)
         handleFloat(ba, sigAddr);
-    Q_ASSERT(ba.size() != int(sigCount * 4));
+    Q_ASSERT(ba.size() == int(sigCount * 4));
     for (quint32 i = 0; i != sigCount; i++)
     {
         QByteArray temp = ba.mid(sizeof(qint32) * i, sizeof(qint32));

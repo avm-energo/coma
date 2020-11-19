@@ -3,6 +3,7 @@
 
 #include "../gen/datatypes.h"
 #include "../models/etablemodel.h"
+
 #include <QSortFilterProxyModel>
 
 #define SYSJOURID 0
@@ -264,7 +265,7 @@ private:
     void prepareJour(QByteArray &ba, int JourType);
 
 public slots:
-    void FillJour(DataTypes::FileStruct &fs);
+    void FillJour(const DataTypes::FileStruct &fs);
     //    void FillSysJour(QByteArray ba);
     //    void FillMeasJour(QByteArray ba);
     //    void FillWorkJour(QByteArray ba);

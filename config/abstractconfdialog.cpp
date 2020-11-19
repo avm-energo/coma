@@ -5,7 +5,6 @@
 #include "../gen/datamanager.h"
 #include "../gen/error.h"
 #include "../gen/files.h"
-#include "../gen/modulebsi.h"
 #include "../gen/stdfunc.h"
 #include "../gen/timefunc.h"
 //#include "../iec104/iec104.h"
@@ -105,9 +104,9 @@ void AbstractConfDialog::WriteConf()
     }
 }
 
-void AbstractConfDialog::confParameterReceived(DataTypes::ConfParametersListStruct &cfpl)
+void AbstractConfDialog::confParameterReceived(const DataTypes::ConfParametersListStruct &cfpl)
 {
-    foreach (DataTypes::ConfParameterStruct cfp, cfpl.parlist)
+    for (const auto &cfp : cfpl.parlist)
         S2::findElemAndWriteIt(S2Config, cfp);
     Fill();
 }
@@ -263,7 +262,7 @@ void AbstractConfDialog::PrereadConf()
 {
     //    if ((ModuleBSI::Health() & HTH_CONFIG) || (StdFunc::IsInEmulateMode())) // если в модуле нет конфигурации,
     //    заполнить
-    if (ModuleBSI::noConfig()) // если в модуле нет конфигурации, заполнить поля по умолчанию
+    if (Board::GetInstance().noConfig()) // если в модуле нет конфигурации, заполнить поля по умолчанию
     {
         SetDefConf();
         QMessageBox::information(this, "Успешно", "Задана конфигурация по умолчанию", QMessageBox::Ok);
@@ -314,7 +313,7 @@ bool AbstractConfDialog::PrepareConfToWrite()
     return true;
 }
 
-void AbstractConfDialog::WriteConfMessageOk(DataTypes::GeneralResponseStruct &rsp)
+void AbstractConfDialog::WriteConfMessageOk(const DataTypes::GeneralResponseStruct &rsp)
 {
     if (rsp.type == DataTypes::GeneralResponseTypes::Ok)
         QMessageBox::information(this, "Внимание", "Запись конфигурации и переход прошли успешно!");

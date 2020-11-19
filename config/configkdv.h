@@ -107,7 +107,6 @@
 #define DEF_VVIBRD_ALARM 6.0
 #define DEF_NUMA 1
 
-#include "../gen/modulebsi.h"
 #include "config.h"
 
 class ConfigKDV

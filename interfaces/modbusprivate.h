@@ -8,13 +8,6 @@
 #define READINPUTREGISTER 0x04
 #define WRITEMULTIPLEREGISTERS 0x10
 
-//#define INITREG 4000
-//#define INITREGCOUNT 11 // 11 floats results in 22 bytes
-#define TIMEREG 4600
-#define TIMEREGCOUNT 1
-#define SETINITREG 900
-#define CLEARREG 905
-
 namespace CommandsMBS
 {
 enum CommandRegisters
