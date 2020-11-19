@@ -144,8 +144,14 @@ public:
     }
 
     void setConfig(S2ConfigType *config);
-    void SetDefBlock();
-    // void Fill();
+    void SetDefConf();
+    QWidget *MainWidget(QWidget *parent);
+    QWidget *TimeWidget(QWidget *parent);
+    void Fill();
+    void FillBack();
+
+private:
+    QObject *ParentMainbl, *ParentCtype;
 };
 
 #endif // CONFIG

@@ -25,11 +25,11 @@ ConfKDVDialog::ConfKDVDialog(ConfigKDV *ckdv, QWidget *parent) : AbstractConfDia
     setStyleSheet(tmps);
     S2Config = ckdv->S2Config();
     CKDV = ckdv;
-    Conf = new ConfDialog(S2Config, Board::GetInstance().typeB(), Board::GetInstance().typeM());
+    //    Conf = new ConfDialog(S2Config, Board::GetInstance().typeB(), Board::GetInstance().typeM());
     ConfKxx = new ConfKxxDialog(S2Config);
     setAttribute(Qt::WA_DeleteOnClose);
     SetupUI();
-    PrereadConf();
+    //    PrereadConf();
 }
 
 void ConfKDVDialog::SetupUI()
@@ -582,6 +582,11 @@ void ConfKDVDialog::FillBack()
 
 void ConfKDVDialog::CheckConf()
 {
+}
+
+void ConfKDVDialog::uponInterfaceSetting()
+{
+    PrereadConf();
 }
 
 // void ConfKDVDialog::setConnections()

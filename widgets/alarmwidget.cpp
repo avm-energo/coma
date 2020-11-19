@@ -180,3 +180,7 @@ void AlarmWidget::Clear()
     WDFunc::SetVisible(this, "952", false);
     WDFunc::SetVisible(this, "953", false);
 }
+
+void AlarmWidget::uponInterfaceSetting()
+{
+}

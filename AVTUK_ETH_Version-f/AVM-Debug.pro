@@ -6,14 +6,16 @@
 
 QMAKE_TARGET_COMPANY = AVM-Energo
 QMAKE_TARGET_COPYRIGHT = AVM-Energo
-QMAKE_TARGET_PRODUCT = AVTUK-S
+QMAKE_TARGET_PRODUCT = AVTUK
 RC_ICONS = ../coma.ico
 CONFIG += c++17
+CONFIG -= console
 VERSION = 2.0
 
-QT       += core gui printsupport network serialport qml widgets testlib svg concurrent
+QT       += core gui printsupport network qml serialport widgets testlib concurrent
+QT.testlib.CONFIG -= console
 
-TARGET = AVM-Service
+TARGET = AVM-Debug
 DEFINES += PROGNAME='\\"AVM-Debug\\"'
 DEFINES += PROGCAPTION='\\"AVM-Debug\\040v\\040"$$VERSION"\\040\\"'
 DEFINES += COMAVERSION='\\"$$VERSION\\"'
@@ -26,6 +28,9 @@ TEMPLATE = app
 
 
 SOURCES += \
+    ../widgets/uwidget.cpp \
+    coma.cpp \
+    main.cpp \
     ../check/checkkdvdialog.cpp \
     ../check/checkkdvharmonicdialog.cpp \
     ../check/checkkdvvibrdialog.cpp \
@@ -42,8 +47,6 @@ SOURCES += \
     ../startup/startupkdvdialog.cpp \
     ../tune/kiv/tunekivmain.cpp \
     ../tune/kiv/tunekivtemp_20.cpp \
-    avmdebug.cpp \
-    main.cpp \
     ../widgets/alarmstateallwidget.cpp \
     ../widgets/alarmwidget.cpp \
     ../check/abstractcheckdialog.cpp \
@@ -57,13 +60,11 @@ SOURCES += \
     ../check/checkvibrkdv.cpp \
     ../config/abstractconfdialog.cpp \
     ../config/config.cpp \
-    ../config/confdialog.cpp \
     ../config/configkdv.cpp \
     ../config/configkiv.cpp \
     ../config/configktf.cpp \
     ../config/configkxx.cpp \
     ../config/confkivdialog.cpp \
-    ../config/confkxxdialog.cpp \
     ../dialogs/connectdialog.cpp \
     ../dialogs/errordialog.cpp \
     ../dialogs/infodialog.cpp \
@@ -76,7 +77,6 @@ SOURCES += \
     ../gen/files.cpp \
     ../module/journals.cpp \
     ../gen/logclass.cpp \
-    ../gen/modulebsi.cpp \
     ../gen/report.cpp \
     ../gen/s2.cpp \
     ../gen/stdfunc.cpp \
@@ -112,7 +112,11 @@ SOURCES += \
     ../widgets/waitwidget.cpp \
     ../widgets/wd_func.cpp
 
+PRECOMPILED_HEADER = ../gen/pch.h
+
 HEADERS += \
+    ../widgets/uwidget.h \
+    coma.h \
     ../check/checkkdvdialog.h \
     ../check/checkkdvharmonicdialog.h \
     ../check/checkkdvvibrdialog.h \
@@ -132,7 +136,6 @@ HEADERS += \
     ../startup/startupkdvdialog.h \
     ../tune/kiv/tunekivmain.h \
     ../tune/kiv/tunekivtemp_20.h \
-    avmdebug.h \
     ../widgets/alarmstateallwidget.h \
     ../widgets/alarmwidget.h \
     ../check/check.h \
@@ -146,13 +149,11 @@ HEADERS += \
     ../check/checkvibrkdv.h \
     ../config/abstractconfdialog.h \
     ../config/config.h \
-    ../config/confdialog.h \
     ../config/configkdv.h \
     ../config/configkiv.h \
     ../config/configktf.h \
     ../config/configkxx.h \
     ../config/confkivdialog.h \
-    ../config/confkxxdialog.h \
     ../dialogs/connectdialog.h \
     ../dialogs/errordialog.h \
     ../dialogs/infodialog.h \
@@ -166,7 +167,6 @@ HEADERS += \
     ../gen/files.h \
     ../module/journals.h \
     ../gen/logclass.h \
-    ../gen/modulebsi.h \
     ../gen/report.h \
     ../gen/s2.h \
     ../gen/stdfunc.h \
@@ -177,6 +177,8 @@ HEADERS += \
     ../module/alarmkiv.h \
     ../module/alarmktf.h \
     ../module/module.h \
+    ../module/modules.h \
+    ../module/registers.h \
     ../module/warnkiv.h \
     ../module/warnktf.h \
     ../startup/abstractstartupdialog.h \
@@ -220,21 +222,19 @@ QXLSX_HEADERPATH=./../QXlsx/QXlsx/header/  # current QXlsx header path is ./head
 QXLSX_SOURCEPATH=./../QXlsx/QXlsx/source/  # current QXlsx source path is ./source/
 include(./../QXlsx/QXlsx/QXlsx.pri)
 
-equals(QMAKE_PLATFORM, win32)
-{
+win32 {
     LIBS += -luser32
     contains(QMAKE_TARGET.arch, x86_64) {
         message("x64 build")
        ## Windows x64 (64bit) specific build here
        CONFIG(debug, debug|release) {
-       LIBS += -L$$PWD/../../libs/win64/debug/ -llimereportd -lliblzma -lhidapi
+       LIBS += -L$$PWD/../../libs/win64/debug/ -llimereportd -lhidapi
        DESTDIR = $${PWD}/../../build/win64/debug
        } else {
-       LIBS += -L$$PWD/../../libs/win64/release/ -llimereport -lliblzma -lhidapi
+       LIBS += -L$$PWD/../../libs/win64/release/ -llimereport -lhidapi
        DESTDIR = $${PWD}/../../build/win64/release
        LIBS_FILES += \
        $$PWD/../../libs/win64/release/hidapi.dll \
-       $$PWD/../../libs/win64/release/liblzma.dll \
        $$PWD/../../libs/win64/release/limereport.dll \
        $$PWD/../../libs/win64/release/QtZint.dll
        }
@@ -242,21 +242,20 @@ equals(QMAKE_PLATFORM, win32)
         message("x86 build")
         ## Windows x86 (32bit) specific build here
         CONFIG(debug, debug|release) {
-        LIBS += -L$$PWD/../../libs/win32/debug/ -llimereportd -lliblzma -lhidapi
+        LIBS += -L$$PWD/../../libs/win32/debug/ -llimereportd -lhidapi
         DESTDIR = $${PWD}/../../build/win32/debug
         } else {
-        LIBS += -L$$PWD/../../libs/win32/release/ -llimereport -lliblzma -lhidapi
+        LIBS += -L$$PWD/../../libs/win32/release/ -llimereport -lhidapi
         DESTDIR = $${PWD}/../../build/win32/release
         LIBS_FILES += \
         $$PWD/../../libs/win32/release/hidapi.dll \
-        $$PWD/../../libs/win32/release/liblzma.dll \
         $$PWD/../../libs/win32/release/limereport.dll \
         $$PWD/../../libs/win32/release/QtZint.dll
         }
     }
 }
 
-unix: LIBS += -L$$PWD/libs/win32/debug/ -llimereportd -lliblzma
+unix: LIBS += -L$$PWD/libs/win32/debug/ -llimereportd
 
 
 # copies the given files to the destination directory

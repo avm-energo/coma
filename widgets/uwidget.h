@@ -38,6 +38,7 @@ public:
     void setFloatBdQuery(const QList<BdQuery> &list);
     void setSpBdQuery(const QList<BdQuery> &list);
     void setInterface(BaseInterface *iface);
+    void uponInterfaceSetting();
     BaseInterface *iface();
 
 signals:

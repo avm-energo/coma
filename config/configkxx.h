@@ -45,10 +45,11 @@
 
 #define DEF_MBMASTER 0
 
-class ConfigKxx
+class ConfigKxx : public QObject
 {
+    Q_OBJECT
 public:
-    ConfigKxx(S2ConfigType *config);
+    ConfigKxx(S2ConfigType *config, QObject *parent = nullptr);
 
     struct TempConfStruct
     {
@@ -89,7 +90,21 @@ public:
     } Com;
     Com Com_param;
 
+    void setConfig(S2ConfigType *config);
     void SetDefConf();
+    void Fill();
+    void FillBack();
+    QWidget *ComParam(QWidget *parent);
+    QWidget *ModbusWidget(QWidget *parent);
+    QWidget *VariousWidget(QWidget *parent);
+
+private:
+    QObject *ParentMB, *ParentSetup, *ParentSetupBl;
+    QStringList m_constSBaudList { "1200", "2400", "4800", "9600", "19200", "38400", "57600", "115200" };
+    QList<QWidget *> WidgetList;
+
+private slots:
+    void ChangeModbusGUI(int num);
 };
 
 #endif // CONFIGKXX_H

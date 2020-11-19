@@ -77,6 +77,11 @@ void UWidget::reqUpdate()
 void UWidget::setInterface(BaseInterface *iface)
 {
     m_iface = iface;
+    uponInterfaceSetting();
+}
+
+void UWidget::uponInterfaceSetting()
+{
 }
 
 BaseInterface *UWidget::iface()

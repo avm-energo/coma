@@ -42,7 +42,7 @@ protected:
     bool ok;
     S2ConfigType *S2Config;
     QStringList CheckConfErrors;
-    QStringList Sbaud { "1200", "2400", "4800", "9600", "19200", "38400", "57600", "115200" };
+    //    QStringList Sbaud { "1200", "2400", "4800", "9600", "19200", "38400", "57600", "115200" };
     QWidget *ConfButtons();
 
     virtual void SetupUI() = 0;

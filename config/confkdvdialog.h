@@ -1,7 +1,7 @@
 #ifndef CONFDIALOGKDV_H
 #define CONFDIALOGKDV_H
 
-#include "../config/confdialog.h"
+//#include "../config/confdialog.h"
 #include "../config/configkdv.h"
 #include "../config/confkxxdialog.h"
 //#include "../interfaces/ethernet.h"
@@ -18,7 +18,7 @@ public:
 
 private:
     ConfigKDV *CKDV;
-    ConfDialog *Conf;
+    //    ConfDialog *Conf;
     ConfKxxDialog *ConfKxx;
     //    Config *ConfigMain;
 
@@ -29,6 +29,7 @@ private:
     void FillBack() override;
     void SetupUI() override;
     void CheckConf() override;
+    void uponInterfaceSetting();
     //    void setConnections() override;
 
 public slots:

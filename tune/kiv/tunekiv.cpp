@@ -1,6 +1,6 @@
 #include "tunekiv.h"
 
-#include "../../models/valuedelegate.h"
+//#include "../../models/valuedelegate.h"
 #include "../../widgets/wd_func.h"
 
 #include <QGroupBox>

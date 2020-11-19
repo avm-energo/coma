@@ -5,6 +5,7 @@
 #define ID8084_COM 20
 
 #include "config.h"
+#include "configkxx.h"
 
 #include <QStack>
 
@@ -65,11 +66,14 @@ public:
     //    Error::Msg popAndWriteConfig();
     S2ConfigType *S2Config();
     void setS2Config(S2ConfigType *s2config);
+    Config *MainConfig();
+    ConfigKxx *KxxConfig();
 
 private:
-    S2ConfigType *m_S2Config;
+    Config *m_mainConfig;
+    ConfigKxx *m_KxxConfig;
 
-    void setDefConf(Bci &bci);
+    S2ConfigType *m_S2Config;
 };
 
 #endif // CONFIGKIV_H
