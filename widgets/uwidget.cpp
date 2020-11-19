@@ -1,6 +1,7 @@
 #include "uwidget.h"
 
 #include "../gen/colors.h"
+#include "../gen/datamanager.h"
 #include "wd_func.h"
 
 UWidget::UWidget(QWidget *parent) : QWidget(parent)
@@ -53,6 +54,13 @@ void UWidget::setSpBdQuery(const QList<UWidget::BdQuery> &list)
     m_spBdQueryList = list;
 }
 
+void UWidget::sendCommandWithResult(Queries::Commands cmd, QVariant item, int count)
+{
+    m_regCount = m_regLeast = count;
+    connect(&DataManager::GetInstance(), &DataManager::floatReceived, this, &UWidget::updateFloatData);
+    m_iface->writeCommand(cmd, item);
+}
+
 void UWidget::updateFloatData(const DataTypes::FloatStruct &fl)
 {
     if ((m_updatesEnabled) && (m_timerCounter >= m_timerMax)) // every second tick of the timer
@@ -64,6 +72,12 @@ void UWidget::updateSPData(const DataTypes::SinglePointWithTimeStruct &sp)
     QList<HighlightWarnAlarmStruct> hstlist = m_highlightMap.value(sp.sigAdr);
     for (const auto &hst : hstlist)
         WDFunc::SetLBLTColor(this, QString::number(hst.fieldnum), (sp.sigVal == 1) ? Colors::TABCOLORA1 : hst.color);
+}
+
+void UWidget::resultReady(const DataTypes::FloatStruct &fl)
+{
+    disconnect(&DataManager::GetInstance(), &DataManager::floatReceived, this, &UWidget::updateFloatData);
+    m_busy = false;
 }
 
 void UWidget::reqUpdate()
