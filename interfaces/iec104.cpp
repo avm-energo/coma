@@ -32,7 +32,7 @@ IEC104::~IEC104()
 bool IEC104::start(const ConnectStruct &st)
 {
     Q_ASSERT(std::holds_alternative<IEC104Settings>(st.settings));
-    INFOMSG("IEC104: connect");
+    qInfo() << metaObject()->className() << "connect";
     if (!std::holds_alternative<IEC104Settings>(st.settings))
         return false;
 
@@ -179,7 +179,7 @@ void IEC104::writeCommand(Queries::Commands cmd, QVariant item)
     }
     default:
     {
-        inp = Commands104::CommandsTranslateMap().value(cmd);
+        inp = Commands104::CommandsTranslateMap.value(cmd);
         DataManager::addToInQueue(inp);
     }
     }

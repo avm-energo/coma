@@ -2,14 +2,12 @@
 
 #include "../gen/error.h"
 #include "../gen/logclass.h"
-#include "defines.h"
 #include "hidapi/hidapi.h"
+#include "protocomprivate.h"
 #include "settingstypes.h"
 
 namespace HID
 {
-constexpr unsigned VID = 0xC251;
-constexpr unsigned PID = 0x3505;
 // максимальная длина одного сегмента (0x40)
 constexpr int MaxSegmenthLength = 64;
 // 20 ms main loop sleep
@@ -30,7 +28,6 @@ public:
 
     UsbHidSettings deviceInfo() const;
     void setDeviceInfo(const UsbHidSettings &deviceInfo);
-    static QList<UsbHidSettings> devicesFound(quint16 vid = 0xC251);
     void usbStateChanged(void *message);
 
 signals:
@@ -42,8 +39,8 @@ public slots:
     void poll();
 
 private:
-    void writeLog(QByteArray ba, Direction dir = NoDirection);
-    void writeLog(Error::Msg msg, Direction dir = NoDirection)
+    void writeLog(QByteArray ba, Proto::Direction dir = Proto::NoDirection);
+    void writeLog(Error::Msg msg, Proto::Direction dir = Proto::NoDirection)
     {
         writeLog(QVariant::fromValue(msg).toByteArray(), dir);
     }

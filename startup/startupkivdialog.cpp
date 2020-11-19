@@ -144,16 +144,16 @@ void StartupKIVDialog::GetCorBd()
     {
     case Board::InterfaceType::USB:
     {
-        if (Commands::GetBd(7, CorBlock, sizeof(CorData)) == Error::Msg::NoError)
-        {
-            FillCor();
-            QMessageBox::information(this, "INFO", "Прочитано успешно");
-        }
+        //        if (Commands::GetBd(7, CorBlock, sizeof(CorData)) == Error::Msg::NoError)
+        //        {
+        //            FillCor();
+        //            QMessageBox::information(this, "INFO", "Прочитано успешно");
+        //        }
         break;
     }
     case Board::InterfaceType::Ethernet:
     {
-        emit CorReadRequest();
+        // emit CorReadRequest();
         break;
     }
     }
@@ -205,28 +205,28 @@ void StartupKIVDialog::WriteCorBd()
             {
                 float corblocki;
                 memcpy(&corblocki, reinterpret_cast<float *>(CorBlock) + i, sizeof(float));
-                emit SendCom50(adr[i], corblocki);
+                // emit SendCom50(adr[i], corblocki);
                 TimeFunc::Wait(300);
             }
             break;
         }
         case Board::InterfaceType::RS485:
         {
-            ModBus::Information info;
-            info.size = (sizeof(CorData) / 4);
-            info.adr = adr[0];
-            emit RS485WriteCorBd(info, (float *)CorBlock);
+            //            ModBus::Information info;
+            //            info.size = (sizeof(CorData) / 4);
+            //            info.adr = adr[0];
+            //            emit RS485WriteCorBd(info, (float *)CorBlock);
             break;
         }
         case Board::InterfaceType::USB:
         {
-            if (Commands::WriteBd(7, CorBlock, sizeof(CorData)) == Error::Msg::NoError)
-                QMessageBox::information(this, "INFO", "Записано успешно");
-            else
-                QMessageBox::information(this, "INFO", "Ошибка");
+            //            if (Commands::WriteBd(7, CorBlock, sizeof(CorData)) == Error::Msg::NoError)
+            //                QMessageBox::information(this, "INFO", "Записано успешно");
+            //            else
+            //                QMessageBox::information(this, "INFO", "Ошибка");
 
-            if (Commands::GetBd(7, CorBlock, sizeof(CorData)) == Error::Msg::NoError)
-                FillCor();
+            //            if (Commands::GetBd(7, CorBlock, sizeof(CorData)) == Error::Msg::NoError)
+            //                FillCor();
             break;
         }
         }
@@ -241,35 +241,36 @@ void StartupKIVDialog::WriteCor()
         {
         case Board::InterfaceType::Ethernet:
         {
-            emit SendCom45(SETINITREG);
-            QMessageBox::information(this, "INFO", "Задано успешно");
-            emit CorReadRequest();
+            //            emit SendCom45(SETINITREG);
+            //            QMessageBox::information(this, "INFO", "Задано успешно");
+            //            emit CorReadRequest();
             break;
         }
         case Board::InterfaceType::RS485:
         {
-            ModBus::Information info;
-            info.size = 1;
-            info.adr = SETINITREG;
-            emit RS485WriteCorBd(info, nullptr);
-            QMessageBox::information(this, "INFO", "Задано успешно");
-            info.size = (sizeof(CorData) / 4);
-            info.adr = 4000;
-            emit RS485ReadCorBd(info);
+            //            ModBus::Information info;
+            //            info.size = 1;
+            //            info.adr = SETINITREG;
+            //            emit RS485WriteCorBd(info, nullptr);
+            //            QMessageBox::information(this, "INFO", "Задано успешно");
+            //            info.size = (sizeof(CorData) / 4);
+            //            info.adr = 4000;
+            //            emit RS485ReadCorBd(info);
             break;
         }
         case Board::InterfaceType::USB:
         {
-            if (Commands::WriteCom(Commands::WriteInitValues) == Error::Msg::NoError) // задание общей коррекции
-                                                                                      //{
-                if (Commands::GetBd(7, CorBlock, sizeof(CorData)) == Error::Msg::NoError)
-                {
-                    FillCor();
-                    QMessageBox::information(this, "INFO", "Задано и прочитано успешно");
-                }
-                // }
-                else
-                    QMessageBox::information(this, "INFO", "Ошибка");
+            //            if (Commands::WriteCom(Commands::WriteInitValues) == Error::Msg::NoError) // задание общей
+            //            коррекции
+            //                                                                                      //{
+            //                if (Commands::GetBd(7, CorBlock, sizeof(CorData)) == Error::Msg::NoError)
+            //                {
+            //                    FillCor();
+            //                    QMessageBox::information(this, "INFO", "Задано и прочитано успешно");
+            //                }
+            //                // }
+            //                else
+            //                    QMessageBox::information(this, "INFO", "Ошибка");
             break;
         }
         }
@@ -282,15 +283,15 @@ void StartupKIVDialog::SetCor()
     {
     case Board::InterfaceType::Ethernet:
     {
-        emit SendCom45(903);
+        // emit SendCom45(903);
         break;
     }
     case Board::InterfaceType::USB:
     {
-        if (Commands::WriteCom(Commands::WriteStartupValues) == Error::Msg::NoError)
-            QMessageBox::information(this, "INFO", "Записано успешно");
-        else
-            QMessageBox::information(this, "INFO", "Ошибка");
+        //        if (Commands::WriteCom(Commands::WriteStartupValues) == Error::Msg::NoError)
+        //            QMessageBox::information(this, "INFO", "Записано успешно");
+        //        else
+        //            QMessageBox::information(this, "INFO", "Ошибка");
         break;
     }
     }
@@ -300,33 +301,33 @@ void StartupKIVDialog::ResetCor()
 {
     if (WriteCheckPassword() == Error::Msg::NoError)
     {
-        switch (Board::GetInstance().interfaceType())
-        {
-        case Board::InterfaceType::Ethernet:
-        {
-            emit SendCom45(CLEARREG);
-            break;
-        }
-        case Board::InterfaceType::RS485:
-        {
-            ModBus::Information info;
-            info.size = 1;
-            info.adr = CLEARREG;
-            emit RS485WriteCorBd(info, nullptr);
-            break;
-        }
-        case Board::InterfaceType::USB:
-        {
-            if (Commands::WriteCom(Commands::ClearStartupValues) == Error::Msg::NoError)
-                QMessageBox::information(this, "INFO", "Сброшено успешно");
-            else
-                QMessageBox::information(this, "INFO", "Ошибка");
+        //        switch (Board::GetInstance().interfaceType())
+        //        {
+        //        case Board::InterfaceType::Ethernet:
+        //        {
+        //            emit SendCom45(CLEARREG);
+        //            break;
+        //        }
+        //        case Board::InterfaceType::RS485:
+        //        {
+        //            ModBus::Information info;
+        //            info.size = 1;
+        //            info.adr = CLEARREG;
+        //            emit RS485WriteCorBd(info, nullptr);
+        //            break;
+        //        }
+        //        case Board::InterfaceType::USB:
+        //        {
+        //            if (Commands::WriteCom(Commands::ClearStartupValues) == Error::Msg::NoError)
+        //                QMessageBox::information(this, "INFO", "Сброшено успешно");
+        //            else
+        //                QMessageBox::information(this, "INFO", "Ошибка");
 
-            if (Commands::GetBd(7, CorBlock, sizeof(CorBlock)) == Error::Msg::NoError)
-                FillCor();
-            break;
-        }
-        }
+        //            if (Commands::GetBd(7, CorBlock, sizeof(CorBlock)) == Error::Msg::NoError)
+        //                FillCor();
+        //            break;
+        //        }
+        //        }
     }
 }
 

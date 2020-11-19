@@ -1,9 +1,11 @@
 #pragma once
 
 #include "../gen/error.h"
-#include "defines.h"
+#include "protocomprivate.h"
 
+#include <QMutex>
 #include <QReadWriteLock>
+#include <QWaitCondition>
 class LogClass;
 class ProtocomThread : public QObject
 {
@@ -14,6 +16,7 @@ public:
 
     void setReadDataChunk(const QByteArray &readDataChunk);
     void appendReadDataChunk(const QByteArray &readDataChunk);
+    void wakeUp();
 
     void parse();
 
@@ -24,19 +27,21 @@ private:
     void finish(Error::Msg msg);
 
     void parseResponse(QByteArray ba);
-    void parseRequest(const CommandStruct &cmdStr);
-    void handle(const CN::Commands cmd);
+    void parseRequest(const Proto::CommandStruct &cmdStr);
+    void handle(const Proto::Commands cmd);
 
     LogClass *log;
 
     QReadWriteLock m_rwLocker;
-    void writeLog(QByteArray ba, Direction dir = NoDirection);
-    void writeLog(Error::Msg msg, Direction dir = NoDirection)
+    // QMutex _mutex;
+    QWaitCondition _waiter;
+    void writeLog(QByteArray ba, Proto::Direction dir = Proto::NoDirection);
+    void writeLog(Error::Msg msg, Proto::Direction dir = Proto::NoDirection)
     {
         writeLog(QVariant::fromValue(msg).toByteArray(), dir);
     }
 
-    CommandStruct m_currentCommand;
+    Proto::CommandStruct m_currentCommand;
     QPair<quint64, QByteArray> m_buffer;
     void checkQueue();
 

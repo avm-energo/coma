@@ -28,7 +28,7 @@ CheckKTFDialog::CheckKTFDialog(QWidget *parent) : AbstractCheckDialog(parent)
     QString tmps = "QDialog {background-color: " + QString(Colors::UCONFCLR) + ";}";
     setStyleSheet(tmps);
     QStringList sl;
-    BdNum = 17;
+    // BdNum = 17;
     ChKTF = new CheckKTF;
     Ch = new Check;
 
@@ -41,10 +41,10 @@ CheckKTFDialog::CheckKTFDialog(QWidget *parent) : AbstractCheckDialog(parent)
 
         sl = QStringList { "Основные", "Модель", "Ресурс", "1-я гармоника", "Несимметрия" };
 
-    BdUINum = sl.size();
+    // BdUINum = sl.size();
     // m_RCount = rcount;
 
-    SetupUI(sl);
+    // SetupUI(sl);
 
     Timer->setInterval(ANMEASINT);
 }
@@ -54,30 +54,30 @@ CheckKTFDialog::~CheckKTFDialog()
     delete ChKTF;
 }
 
-QWidget *CheckKTFDialog::BdUI(int bdnum)
-{
-    switch (bdnum)
-    {
+// QWidget *CheckKTFDialog::BdUI(int bdnum)
+//{
+//    switch (bdnum)
+//    {
 
-    case 0:
-        //        return ChKTF->Bd1W(m_RCount,this);
-        return ChKTF->Bd1W(this);
+//    case 0:
+//        //        return ChKTF->Bd1W(m_RCount,this);
+//        return ChKTF->Bd1W(this);
 
-    case 1:
-        return ChKTF->Bd2W(this);
+//    case 1:
+//        return ChKTF->Bd2W(this);
 
-    case 2:
-        return ChKTF->Bd3W(this);
+//    case 2:
+//        return ChKTF->Bd3W(this);
 
-    case 3:
-        return ChKTF->Bd4W(this);
-    case 4:
-        return ChKTF->Bd5W(this);
+//    case 3:
+//        return ChKTF->Bd4W(this);
+//    case 4:
+//        return ChKTF->Bd5W(this);
 
-    default:
-        return new QWidget;
-    }
-}
+//    default:
+//        return new QWidget;
+//    }
+//}
 
 void CheckKTFDialog::PrepareHeadersForFile(int row)
 {

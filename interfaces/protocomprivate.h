@@ -5,7 +5,7 @@
 // Обмен с модулями
 // Канал связи с модулем
 typedef unsigned char byte;
-namespace CN
+namespace Proto
 {
 Q_NAMESPACE
 
@@ -121,26 +121,25 @@ enum Commands : byte
     // запись версии аппаратуры модуля/серийного номера/типа платы
     WriteHardware = 0x48,
 
+};
+Q_ENUM_NS(Proto::Commands);
+
+enum WCommands
+{
     /// Блок дополнительных команд
     EraseStartupValues = 0x05,
-    InitStartupValues = 0x01,
-    WriteStartupValues = 0x04
+    InitStartupValues = 0x01
 };
-Q_ENUM_NS(Commands)
-} // namespace CN
 
-namespace CN
+enum HiddenBlockModule : byte
 {
-// constexpr byte WHV_SIZE_ONEBOARD = 17;
-// constexpr byte WHV_SIZE_TWOBOARDS = 33;
-}
+    Base = 0x01,
+    Mezz = 0x02,
+    BaseMezz = 0x03,
+    Add = 0x04,
+    BaseMezzAdd = 0x07
+};
 
-//#define WORK_MODE 0
-//#define TUNE_MODE_1000 1
-//#define TUNE_MODE_100 2
-
-#define HIDUSB_LOG
-#define CANALUSB_LOG
 enum Direction
 {
     NoDirection,
@@ -150,26 +149,16 @@ enum Direction
 
 struct CommandStruct
 {
-    CN::Commands cmd;
+    Proto::Commands cmd;
     QVariant arg1;
     QVariant arg2;
     QByteArray ba;
 };
-Q_DECLARE_METATYPE(CommandStruct)
-// Список регистров BSI
-const QList<quint16> bsiReg { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };
-
 // GBsi,ErPg - bitstring,
 // GBac, GBda, GBd,GBt - float,
 // GF - file
-
-//#define TECH_Bd0    0   // блок данных с температурой кристалла и напряжением
-//батареи
-#define TECH_Bo 1  // технологический блок осциллограмм
-#define TECH_Be 2  // технологический блок событий
-#define TECH_Bte 3 // технологический блок технологических событий
-#define TECH_SWJ 4 // технологический блок журнала переключений
-#define TECH_RA 5  // технологический блок рабочего архива
+// Список регистров BSI
+const QList<quint16> bsiReg { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };
 
 // Получаем номер блока по номеру регистра
 // Количество регистров необходимо для проверки
@@ -181,3 +170,21 @@ const QMap<quint16, QPair<quint8, quint16>> getBlkByReg {
     { 1100, { 3, 16 } }, //
     { 101, { 0, 2 } }    //
 };
+
+}
+Q_DECLARE_METATYPE(Proto::CommandStruct)
+
+//#define WORK_MODE 0
+//#define TUNE_MODE_1000 1
+//#define TUNE_MODE_100 2
+
+#define HIDUSB_LOG
+#define CANALUSB_LOG
+
+//#define TECH_Bd0    0   // блок данных с температурой кристалла и напряжением
+//батареи
+#define TECH_Bo 1  // технологический блок осциллограмм
+#define TECH_Be 2  // технологический блок событий
+#define TECH_Bte 3 // технологический блок технологических событий
+#define TECH_SWJ 4 // технологический блок журнала переключений
+#define TECH_RA 5  // технологический блок рабочего архива

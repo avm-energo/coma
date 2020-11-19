@@ -1,7 +1,7 @@
-#pragma once
+﻿#pragma once
 
 #include "baseinterface.h"
-#include "defines.h"
+#include "protocomprivate.h"
 
 class Protocom : public BaseInterface
 {
@@ -18,21 +18,37 @@ public:
     void reqBSI() override;
 
     void writeFile(quint32 filenum, const QByteArray &file) override;
+    void writeConfigFile(S2ConfigType *) override {};
     void writeTime(quint32 time) override;
     void writeCommand(Queries::Commands cmd, QVariant item) override;
     void reqFloats(quint32 sigAdr, quint32 sigCount) override;
 
 private:
-    // Return 0 if not exist
-    static CN::Commands translate(const Queries::Commands cmd)
-    {
-        return m_dict.value(cmd);
-    }
-    // Return 0 if not exist
-    static Queries::Commands translate(const CN::Commands cmd)
-    {
-        return m_dict.key(cmd);
-    }
-
-    const static QMap<Queries::Commands, CN::Commands> m_dict;
 };
+
+namespace
+{
+
+const QMap<Queries::Commands, Proto::Commands> getProtoCommand {
+
+    { Queries::Commands::QC_StartFirmwareUpgrade, Proto::Commands::WriteUpgrade }, //
+    { Queries::QC_SetNewConfiguration, Proto::Commands::WriteBlkTech },            //
+    { Queries::QC_EraseJournals, Proto::Commands::EraseTech },                     //
+    { Queries::QC_ReqBitStrings, Proto::Commands::ReadProgress },                  //
+    { Queries::QC_EraseTechBlock, Proto::Commands::EraseTech },                    //
+    { Queries::QC_Test, Proto::Commands::Test },                                   //
+    { Queries::QUSB_ReqTuningCoef, Proto::Commands::ReadBlkAC },                   //
+    { Queries::QUSB_WriteTuningCoef, Proto::Commands::WriteBlkAC },                //
+    { Queries::QUSB_ReqBlkDataA, Proto::Commands::ReadBlkDataA },                  //
+    { Queries::QUSB_ReqBlkDataTech, Proto::Commands::ReadBlkTech },                //
+    { Queries::QUSB_WriteBlkDataTech, Proto::Commands::WriteBlkTech }              //
+};
+
+const QMap<Queries::Commands, Proto::WCommands> getWCommand {
+
+    { Queries::QC_SetStartupValues, Proto::WCommands::InitStartupValues },    //
+    { Queries::QC_ClearStartupValues, Proto::WCommands::EraseStartupValues }, //
+
+};
+
+}

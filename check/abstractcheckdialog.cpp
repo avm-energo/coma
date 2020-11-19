@@ -25,7 +25,7 @@
 
 AbstractCheckDialog::AbstractCheckDialog(QWidget *parent) : UDialog(parent)
 {
-    m_newTWIndex = 0;
+    // m_newTWIndex = 0;
     XlsxWriting = false;
     m_readDataInProgress = false;
     xlsx = nullptr;
@@ -80,7 +80,7 @@ void AbstractCheckDialog::SetupUI()
     //        CheckTW->addTab(BdUI(i), "  " + tabnames.at(i) + "  ");
     //        IndexWd.append(i);
     //    }
-    foreach (BdUIStruct w, m_BdUIList)
+    for (const auto &w : m_BdUIList)
     {
         w.widget->setInterface(iface());
         CheckTW->addTab(w.widget, " " + w.widgetCaption + " ");
@@ -136,18 +136,18 @@ QWidget *AbstractCheckDialog::BottomUI()
     QRadioButton *rb = new QRadioButton;
     rb->setObjectName("1000");
     rb->setText("1");
-    connect(rb, SIGNAL(clicked()), this, SLOT(SetTimerPeriod()));
+    connect(rb, &QAbstractButton::clicked, this, &AbstractCheckDialog::SetTimerPeriod);
     hlyout->addWidget(rb);
     rb = new QRadioButton;
     rb->setObjectName("2000");
     rb->setText("2");
     rb->setChecked(true);
-    connect(rb, SIGNAL(clicked()), this, SLOT(SetTimerPeriod()));
+    connect(rb, &QAbstractButton::clicked, this, &AbstractCheckDialog::SetTimerPeriod);
     hlyout->addWidget(rb);
     rb = new QRadioButton;
     rb->setObjectName("10000");
     rb->setText("10");
-    connect(rb, SIGNAL(clicked()), this, SLOT(SetTimerPeriod()));
+    connect(rb, &QAbstractButton::clicked, this, &AbstractCheckDialog::SetTimerPeriod);
     hlyout->addWidget(rb);
     lyout->addLayout(hlyout);
 
@@ -293,7 +293,7 @@ void AbstractCheckDialog::StopAnalogMeasurements()
 
 void AbstractCheckDialog::reqUpdate()
 {
-    foreach (BdUIStruct bd, m_BdUIList)
+    for (const auto &bd : m_BdUIList)
     {
         bd.widget->reqUpdate();
     }

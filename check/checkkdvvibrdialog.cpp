@@ -28,7 +28,7 @@ CheckKDVVibrDialog::CheckKDVVibrDialog(QWidget *parent) : AbstractCheckDialog(pa
     QString tmps = "QDialog {background-color: " + QString(Colors::UCONFCLR) + ";}";
     setStyleSheet(tmps);
     QStringList sl;
-    BdNum = 12;
+    // BdNum = 12;
     Ch = new Check;
     ChVibrKDV = new CheckVibrKDV;
 
@@ -38,9 +38,9 @@ CheckKDVVibrDialog::CheckKDVVibrDialog(QWidget *parent) : AbstractCheckDialog(pa
 
         sl = QStringList { "Вибрации", "Вибрации", "Вибрации" };
 
-    BdUINum = sl.size();
+    // BdUINum = sl.size();
 
-    SetupUI(sl);
+    // SetupUI(sl);
 
     Timer->setInterval(ANMEASINT);
 }
@@ -57,22 +57,22 @@ CheckKDVVibrDialog::CheckKDVVibrDialog(QWidget *parent) : AbstractCheckDialog(pa
 //    Q_UNUSED(value)
 //}
 
-QWidget *CheckKDVVibrDialog::BdUI(int bdnum)
-{
-    switch (bdnum)
-    {
+// QWidget *CheckKDVVibrDialog::BdUI(int bdnum)
+//{
+//    switch (bdnum)
+//    {
 
-    case 0:
-        return ChVibrKDV->Bd1W(this);
-    case 1:
-        return ChVibrKDV->Bd2W(this);
-    case 2:
-        return ChVibrKDV->Bd3W(this);
+//    case 0:
+//        return ChVibrKDV->Bd1W(this);
+//    case 1:
+//        return ChVibrKDV->Bd2W(this);
+//    case 2:
+//        return ChVibrKDV->Bd3W(this);
 
-    default:
-        return new QWidget;
-    }
-}
+//    default:
+//        return new QWidget;
+//    }
+//}
 
 void CheckKDVVibrDialog::PrepareHeadersForFile(int row)
 {

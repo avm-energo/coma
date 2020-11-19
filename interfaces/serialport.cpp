@@ -17,7 +17,7 @@ SerialPort::~SerialPort()
         Port->close();
 }
 
-Error::Msg SerialPort::Init(SerialPortSettings settings)
+bool SerialPort::Init(SerialPortSettings settings)
 {
     Q_ASSERT(Board::GetInstance().interfaceType() == Board::InterfaceType::RS485);
 
@@ -35,20 +35,21 @@ Error::Msg SerialPort::Init(SerialPortSettings settings)
     Port->setReadBufferSize(1024);
     connect(Port.data(), &QSerialPort::errorOccurred, this, &SerialPort::ErrorOccurred);
     connect(Port, &QIODevice::readyRead, this, &SerialPort::ReadBytes);
-    if (Port->open(QIODevice::ReadWrite))
-        Board::GetInstance().setConnectionState(Board::ConnectionState::Connected);
-    else
-    {
-        Board::GetInstance().setConnectionState(Board::ConnectionState::Closed);
-        ERMSG("Error opening COM-port");
-        return Error::Msg::GeneralError;
-    }
+    if (!Port->open(QIODevice::ReadWrite))
+        return false;
+    Board::GetInstance().setConnectionState(Board::ConnectionState::Connected);
+    //    else
+    //    {
+    //        Board::GetInstance().setConnectionState(Board::ConnectionState::Closed);
+    //        ERMSG("Error opening COM-port");
+
+    //    }
     QTimer *connectionTimer = new QTimer(this);
     connectionTimer->setInterval(TIMEOUT);
     connect(Port, &QIODevice::bytesWritten, [connectionTimer] { connectionTimer->start(); });
     connect(Port, &QIODevice::readyRead, connectionTimer, &QTimer::stop);
     connect(connectionTimer, &QTimer::timeout, [] { qCritical("RS485 Timeout Error"); });
-    return Error::Msg::NoError;
+    return true;
 }
 
 void SerialPort::WriteBytes(QByteArray ba)

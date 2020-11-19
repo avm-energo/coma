@@ -22,7 +22,7 @@ public:
     virtual void reqBSI() = 0;
     virtual void reqFile(quint32, bool isConfigFile = false) = 0;
     virtual void writeFile(quint32, const QByteArray &) = 0;
-    virtual void writeConfigFile(S2ConfigType *);
+    virtual void writeConfigFile(S2ConfigType *) = 0;
     virtual void reqTime() = 0;
     virtual void writeTime(quint32) = 0;
     virtual void writeCommand(Queries::Commands, QVariant = 0) = 0;

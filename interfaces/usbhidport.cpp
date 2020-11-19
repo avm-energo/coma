@@ -2,6 +2,7 @@
 
 #include "../gen/board.h"
 
+#include <QCoreApplication>
 #include <QDebug>
 #include <QElapsedTimer>
 #include <QMetaEnum>
@@ -14,10 +15,16 @@
 #include <dbt.h>
 // clang-format on
 #endif
-
+using Proto::CommandStruct;
+using Proto::Direction;
+using Proto::Starters;
 UsbHidPort::UsbHidPort(const UsbHidSettings &dev, LogClass *logh, QObject *parent)
     : QObject(parent), log(logh), m_deviceInfo(dev)
 {
+    QString filename(metaObject()->className());
+    filename.append(".").append(::logExt);
+    log->Init(filename);
+    log->WriteRaw(::logStart);
     m_hidDevice = nullptr;
 }
 
@@ -67,7 +74,7 @@ void UsbHidPort::poll()
             continue;
         if (m_hidDevice)
         {
-            bytes = hid_read_timeout(m_hidDevice, array.data(), HID::MaxSegmenthLength + 1, HID::MainLoopDelay);
+            bytes = hid_read(m_hidDevice, array.data(), HID::MaxSegmenthLength + 1);
             // Write
             if (bytes < 0)
             {
@@ -79,8 +86,10 @@ void UsbHidPort::poll()
             if (bytes > 0)
             {
                 QByteArray ba(reinterpret_cast<char *>(array.data()), bytes);
+                writeLog(ba.toHex(), Direction::FromDevice);
                 emit dataReceived(ba);
             }
+            QCoreApplication::processEvents(QEventLoop::AllEvents);
             // write data to port if there's something delayed in out queue
             checkQueue();
         }
@@ -128,12 +137,15 @@ void UsbHidPort::writeLog(QByteArray ba, Direction dir)
     QByteArray tmpba = QByteArray(metaObject()->className());
     switch (dir)
     {
-    case FromDevice:
-        tmpba.append(": <-");
-    case ToDevice:
-        tmpba.append(": ->");
+    case Proto::FromDevice:
+        tmpba.append(": -> ");
+        break;
+    case Proto::ToDevice:
+        tmpba.append(": <- ");
+        break;
     default:
         tmpba.append(":  ");
+        break;
     }
     tmpba.append(ba).append("\n");
     log->WriteRaw(tmpba);
@@ -162,13 +174,14 @@ bool UsbHidPort::writeData(QByteArray &ba)
         qCritical() << Error::Msg::NullDataError;
         return false;
     }
-
+    // NOTE
+    writeLog(ba.toHex(), Proto::ToDevice);
     if (ba.size() < HID::MaxSegmenthLength)
         ba.append(HID::MaxSegmenthLength - ba.size(), static_cast<char>(0x00));
 
-    // inserting ID field
+    // inserting ID field for HID protocol
     ba.prepend(static_cast<char>(0x00));
-    writeLog(ba.toHex(), ToDevice);
+
     size_t tmpt = static_cast<size_t>(ba.size());
 
     int errorCode = hid_write(m_hidDevice, reinterpret_cast<unsigned char *>(ba.data()), tmpt);
@@ -188,32 +201,6 @@ void UsbHidPort::checkQueue()
         QByteArray ba = m_writeQueue.takeFirst();
         writeData(ba);
     }
-}
-
-QList<UsbHidSettings> UsbHidPort::devicesFound(quint16 vid)
-{
-    hid_device_info *devs, *cur_dev;
-    // Enumerate all, extract only needed
-    devs = hid_enumerate(0x0, 0x0);
-    cur_dev = devs;
-    QList<UsbHidSettings> sl;
-    while (cur_dev)
-    {
-        if (cur_dev->vendor_id == vid)
-        {
-            UsbHidSettings buffer {
-                cur_dev->vendor_id,                              // Vendor ID
-                cur_dev->product_id,                             // Product ID
-                QString::fromWCharArray(cur_dev->serial_number), // Serial number
-                QString(cur_dev->path)                           // Path
-            };
-
-            sl.push_back(buffer);
-        }
-        cur_dev = cur_dev->next;
-    }
-    hid_free_enumeration(devs);
-    return sl;
 }
 
 // FIXME Не реализовано

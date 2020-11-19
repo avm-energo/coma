@@ -120,5 +120,5 @@ void InfoDialog::reqUpdate()
 {
     QList<DataTypes::SignalsStruct> list;
 
-    if (DataManager::getSignals(BSIREG, BSIENDREG, DataTypes::BitString, list) != Error::Msg::ResEmpty) { }
+    // if (DataManager::getSignals(BSIREG, BSIENDREG, DataTypes::BitString, list) != Error::Msg::ResEmpty) { }
 }

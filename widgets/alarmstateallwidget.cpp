@@ -1,4 +1,4 @@
-#include "alarmstateall.h"
+#include "alarmstateallwidget.h"
 
 #include "../gen/colors.h"
 #include "../gen/error.h"
