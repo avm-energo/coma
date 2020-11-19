@@ -251,8 +251,7 @@ void StartupKDVDialog::SaveToFile()
     ba.resize(sizeof(*WBd7Block) + sizeof(*WBd8Block));
     memcpy(&(ba.data()[0]), WBd7Block, sizeof(*WBd7Block));
     memcpy(&(ba.data()[sizeof(*WBd7Block)]), WBd8Block, sizeof(*WBd8Block));
-    Error::Msg res = Files::SaveToFile(
-        Files::ChooseFileForSave(this, "Tune files (*.cor)", "cor"), ba, sizeof(*WBd7Block) + sizeof(*WBd8Block));
+    Error::Msg res = Files::SaveToFile(Files::ChooseFileForSave(this, "Tune files (*.cor)", "cor"), ba);
     switch (res)
     {
     case Error::Msg::NoError:

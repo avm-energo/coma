@@ -159,7 +159,7 @@ private:
     int Mode; // режим запуска программы
     int fileSize, curfileSize;
     quint8 HaveAlreadyRed = 0;
-    bool ActiveUSBThread;
+    bool ActiveThreads;
     quint32 Mes;
 
     QString SavePort;

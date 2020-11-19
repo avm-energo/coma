@@ -25,7 +25,9 @@
 #include "../dialogs/errordialog.h"
 #include "../dialogs/keypressdialog.h"
 #include "../dialogs/settingsdialog.h"
+#include "../gen/errorqueue.h"
 #include "../gen/stdfunc.h"
+#include "../widgets/splashscreen.h"
 
 #include <QApplication>
 #include <QDir>
@@ -45,7 +47,7 @@ void registerForDeviceNotification(AvmDebug *ptr)
     ZeroMemory(&devInt, sizeof(devInt));
     devInt.dbcc_size = sizeof(DEV_BROADCAST_DEVICEINTERFACE);
     devInt.dbcc_devicetype = DBT_DEVTYP_DEVICEINTERFACE;
-    devInt.dbcc_classguid = { 0x25dbce51, 0x6c8f, 0x4a72, 0x8a, 0x6d, 0xb5, 0x4c, 0x2b, 0x4f, 0xc8, 0x35 };
+    devInt.dbcc_classguid = { 0x25dbce51, 0x6c8f, 0x4a72, { 0x8a, 0x6d, 0xb5, 0x4c, 0x2b, 0x4f, 0xc8, 0x35 } };
 
     HDEVNOTIFY blub;
     blub = RegisterDeviceNotification((HDEVNOTIFY)ptr->winId(), &devInt, DEVICE_NOTIFY_WINDOW_HANDLE);
@@ -53,7 +55,7 @@ void registerForDeviceNotification(AvmDebug *ptr)
 
 AvmDebug::AvmDebug(QWidget *parent) : QMainWindow(parent)
 {
-    QSplashScreen *splash = new QSplashScreen(QPixmap("images/2.1.x.png"));
+    SplashScreen *splash = new SplashScreen(QPixmap("images/surgery.png"));
     splash->show();
     splash->showMessage("Подготовка окружения...", Qt::AlignRight, Qt::white);
     // http://stackoverflow.com/questions/2241808/checking-if-a-folder-exists-and-creating-folders-in-qt-c
@@ -61,7 +63,7 @@ AvmDebug::AvmDebug(QWidget *parent) : QMainWindow(parent)
     if (!dir.exists())
         dir.mkpath(".");
     StdFunc::Init();
-    Error::Init();
+    qInfo("=== Log started ===\n");
 
 #ifdef __linux__
     // linux code goes here
@@ -74,19 +76,71 @@ AvmDebug::AvmDebug(QWidget *parent) : QMainWindow(parent)
 
     S2Config = new S2ConfigType;
     Reconnect = false;
-    AlarmStateAllDialog = nullptr;
-    ActiveUSBThread = false;
-    Alarm = new AlarmClass(this);
+    //    AlarmStateAllDialog = nullptr;
+    ActiveThreads = false;
+    //    Alarm = new AlarmClass(this);
 
     NewTimers();
     LoadSettings();
 
     splash->finish(this);
+    splash->deleteLater();
     setStatusBar(WDFunc::NewSB(this));
 }
 
 AvmDebug::~AvmDebug()
 {
+}
+
+void convertPixmap(size_t size, QAction *jourAct)
+{
+    const QIcon jourIcon("images/skull-and-bones.png");
+    QPixmap pix = jourIcon.pixmap(QSize(40, 40), QIcon::Disabled);
+    QPainter painter(&pix);
+    painter.drawPixmap(QRect(20, 0, 20, 20), WDFunc::NewCircle(Qt::red, 20));
+    QFont font(painter.font());
+    font.setPixelSize(14);
+    painter.setFont(font);
+    painter.setPen(Qt::white);
+    if (size > 10)
+        painter.drawText(QRect(20, 0, 20, 20), Qt::AlignCenter, "...");
+    else
+        painter.drawText(QRect(20, 0, 20, 20), Qt::AlignCenter, QString::number(size));
+    jourAct->setIcon(pix);
+}
+
+QToolBar *AvmDebug::createToolBar()
+{
+    QToolBar *tb = new QToolBar(this);
+    tb->setContextMenuPolicy(Qt::PreventContextMenu);
+    tb->setStyleSheet("QToolBar {background: 0px; margin: 0px; spacing: 5px; padding: 0px;}");
+    tb->setIconSize(QSize(40, 40));
+    tb->addAction(QIcon("images/play.png"), "Соединение", this, &AvmDebug::StartWork);
+    tb->addAction(QIcon("images/stop.png"), "Разрыв соединения", this, &AvmDebug::DisconnectAndClear);
+    tb->addSeparator();
+    tb->addAction(QIcon("images/settings.svg"), "Настройки", [this]() {
+        SettingsDialog *dlg = new SettingsDialog;
+        dlg->setAttribute(Qt::WA_DeleteOnClose);
+        dlg->show();
+        this->SaveSettings();
+    });
+    const QIcon jourIcon("images/skull-and-bones.png");
+
+    QAction *jourAct = new QAction(jourIcon, tr("&Журнал..."), this);
+    jourAct->setShortcuts(QKeySequence::Open);
+    jourAct->setStatusTip(tr("Открыть протокол работы"));
+
+    connect(jourAct, &QAction::triggered, this, []() {
+        ErrorDialog *dlg = new ErrorDialog;
+        dlg->setAttribute(Qt::WA_DeleteOnClose);
+        dlg->show();
+    });
+    connect(jourAct, &QAction::triggered, [jourAct, jourIcon] { jourAct->setIcon(jourIcon); });
+    const auto &queue = ErrorQueue::GetInstance();
+    connect(&queue, &ErrorQueue::errCounts, this, std::bind(&convertPixmap, std::placeholders::_1, jourAct),
+        Qt::QueuedConnection);
+    tb->addAction(jourAct);
+    return tb;
 }
 
 void AvmDebug::SetupUI()
@@ -98,28 +152,9 @@ void AvmDebug::SetupUI()
     QWidget *wdgt = new QWidget(this);
     QVBoxLayout *lyout = new QVBoxLayout(wdgt);
     QHBoxLayout *hlyout = new QHBoxLayout;
-    QToolBar *tb = new QToolBar(this);
+    hlyout->addWidget(createToolBar());
 
-    tb->setStyleSheet("QToolBar {background: 0px; margin: 0px; spacing: 5px; padding: 0px;}");
-    tb->setIconSize(QSize(20, 20));
-    tb->addAction(QIcon("images/play.png"), "Соединение", this, &AvmDebug::StartWork);
-    tb->addAction(QIcon("images/stop.png"), "Разрыв соединения", this, &AvmDebug::DisconnectAndClear);
-    tb->addSeparator();
-    tb->addAction(QIcon("images/settings.png"), "Настройки", [this]() {
-        SettingsDialog *dlg = new SettingsDialog;
-        dlg->setAttribute(Qt::WA_DeleteOnClose);
-        dlg->show();
-        this->SaveSettings();
-    });
-    tb->addAction(QIcon("images/skull-and-bones.png"), "Соединение", []() {
-        ErrorDialog *dlg = new ErrorDialog;
-        dlg->setAttribute(Qt::WA_DeleteOnClose);
-        dlg->show();
-    });
-
-    hlyout->addWidget(tb);
-
-    AlarmW = new AlarmWidget(Alarm, this);
+    AlarmW = new AlarmWidget;
     hlyout->addWidget(AlarmW, Qt::AlignCenter);
 
     lyout->addLayout(hlyout);

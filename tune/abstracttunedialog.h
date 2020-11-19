@@ -85,6 +85,7 @@ public:
     void PrereadConf();
     //    void GetBdAndFill();
 
+    void SetBac(void *block, int blocknum, int blocksize);
     virtual void FillBac(int bacnum) = 0;
     virtual void FillBackBac(int bacnum) = 0;
     //    void SaveToFileEx(int bacnum);
@@ -104,8 +105,6 @@ private:
     };
 
     QMap<int, BacStruct> AbsBac;
-
-    void SetBac(void *block, int blocknum, int blocksize);
 
     int SaveAllTuneCoefs();
     void ReadTuneCoefsByBac(int bacnum);

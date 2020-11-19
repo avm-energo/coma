@@ -65,8 +65,8 @@ public:
         float dpsiU[2]; // interphase voltages angles (B-A, C-B)
     };
 
-    //    Bac m_Bac;
-    //    Bda m_Bda;
+    Bac m_Bac;
+    Bda m_Bda;
     //    Bac m_Bac_block, m_Bac_newblock;
     //    Bda_in_struct m_Bda_in, m_Bda_block20, m_Bda_block60, m_Bda_blockMinus20;
     //    BdaStruct m_Bda_block, m_BdaPt100_80Om, m_BdaPt100_120Om;

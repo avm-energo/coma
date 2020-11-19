@@ -4,6 +4,7 @@
 #include "../gen/board.h"
 #include "../gen/error.h"
 #include "../gen/files.h"
+#include "../gen/modulebsi.h"
 #include "../gen/stdfunc.h"
 #include "../gen/timefunc.h"
 #include "../interfaces/protocom.h"
@@ -408,19 +409,20 @@ void AbstractTuneDialog::ReadTuneCoefsByBac(int bacnum)
     //    }
     if (AbsBac.keys().contains(bacnum))
     {
-        int res = Commands::GetBac(bacnum, AbsBac[bacnum].BacBlock, AbsBac[bacnum].BacBlockSize);
-        if (res == Error::Msg::NoError)
-            FillBac(bacnum);
+        iface()->writeCommand(Queries::QUSB_ReqTuningCoef, bacnum);
+        //        int res = Commands::GetBac(bacnum, AbsBac[bacnum].BacBlock, AbsBac[bacnum].BacBlockSize);
+        //        if (res == Error::Msg::NoError)
+        FillBac(bacnum);
     }
 }
 
 bool AbstractTuneDialog::writeTuneCoefs()
 {
-    //    int bacnum = sender()->objectName().toInt();
+    int bacnum = sender()->objectName().toInt();
     if (CheckPassword() != Error::Msg::NoError)
         return false;
-    // FillBackBac(bacnum);
-    // return WriteTuneCoefs(bacnum);
+    FillBackBac(bacnum);
+    return WriteTuneCoefs(bacnum);
 
     if (QMessageBox::question(this, "Вопрос",
             "Сохранить регулировочные коэффициенты?\n(Результаты предыдущей регулировки будут потеряны)")
@@ -445,7 +447,7 @@ bool AbstractTuneDialog::writeTuneCoefs()
     //            TimeFunc::Wait(100);
     //        }
     //    }
-    WriteBlocks(DataBlock::DataBlockTypes::BacBlock);
+    //    WriteBlocks(DataBlock::DataBlockTypes::BacBlock);
     QString tmps = ((DEVICETYPE == DEVICETYPE_MODULE) ? "модуль" : "прибор");
     QMessageBox::information(this, "Внимание", "Коэффициенты переданы в " + tmps + " успешно!");
     return true;
@@ -458,16 +460,16 @@ bool AbstractTuneDialog::writeTuneCoefs()
 
 Error::Msg AbstractTuneDialog::checkCalibrStep()
 {
-    QString usbserialnum = EProtocom::GetInstance().usbSerial();
+    QString cpuserialnum = ModuleBSI::GetInstance().UID();
     QSettings storedcalibrations(StdFunc::GetSystemHomeDir() + "calibr.ini", QSettings::IniFormat);
-    if (!storedcalibrations.contains(usbserialnum))
+    if (!storedcalibrations.contains(cpuserialnum))
     {
         QMessageBox::warning(this, "Внимание",
             "Не выполнены предыдущие шаги регулировки, пожалуйста,\n"
             "начните заново с шага 1");
         return Error::Msg::ResEmpty;
     }
-    int calibrstep = storedcalibrations.value(usbserialnum + "/step", "1").toInt();
+    int calibrstep = storedcalibrations.value(cpuserialnum + "/step", "1").toInt();
     if (calibrstep < m_tuneStep)
     {
         QMessageBox::warning(this, "Внимание",
@@ -480,19 +482,19 @@ Error::Msg AbstractTuneDialog::checkCalibrStep()
 
 void AbstractTuneDialog::saveTuneSequenceFile()
 {
-    QString usbserialnum = EProtocom::GetInstance().usbSerial();
+    QString cpuserialnum = ModuleBSI::GetInstance().UID();
     QSettings storedcalibrations(StdFunc::GetSystemHomeDir() + "calibr.ini", QSettings::IniFormat);
-    storedcalibrations.setValue(usbserialnum + "/step", m_tuneStep);
+    storedcalibrations.setValue(cpuserialnum + "/step", m_tuneStep);
 }
 
 Error::Msg AbstractTuneDialog::saveWorkConfig()
 {
-    return SaveBlocksToFiles(DataBlock::DataBlockTypes::BciBlock);
-    //    if (Commands::GetFileWithRestore(CM_CONFIGFILE, S2Config) == Error::Msg::NoError)
-    //        memcpy(&m_BciSaveBlock, &CKIV->Bci_block, sizeof(ConfigKIV::Bci));
-    //    else
-    //        return Error::Msg::GeneralError;
-    //    return Error::Msg::NoError;
+    //    return SaveBlocksToFiles(DataBlock::DataBlockTypes::BciBlock);
+    if (Commands::GetFileWithRestore(CM_CONFIGFILE, S2Config) == Error::Msg::NoError)
+        memcpy(&m_BciSaveBlock, &CKIV->Bci_block, sizeof(ConfigKIV::Bci));
+    else
+        return Error::Msg::GeneralError;
+    return Error::Msg::NoError;
 }
 
 Error::Msg AbstractTuneDialog::loadWorkConfig()

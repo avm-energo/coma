@@ -34,6 +34,8 @@ SOURCES += \
     ../config/confkdvdialog.cpp \
     ../config/confktfdialog.cpp \
     ../dialogs/fwuploaddialog.cpp \
+    ../interfaces/usbhidportinfo.cpp \
+    ../widgets/splashscreen.cpp \
     ../widgets/udialog.cpp \
     ../module/alarm.cpp \
     ../module/warn.cpp \
@@ -119,6 +121,11 @@ HEADERS += \
     ../config/confkdvdialog.h \
     ../config/confktfdialog.h \
     ../dialogs/fwuploaddialog.h \
+    ../interfaces/iec104private.h \
+    ../interfaces/modbusprivate.h \
+    ../interfaces/protocomprivate.h \
+    ../interfaces/usbhidportinfo.h \
+    ../widgets/splashscreen.h \
     ../widgets/udialog.h \
     ../module/alarm.h \
     ../module/warn.h \
@@ -182,7 +189,6 @@ HEADERS += \
     ../tune/kiv/tunekivtemp60.h \
     ../tune/tuneclass.h \
     ../interfaces/usbhidport.h \
-    ../interfaces/defines.h \
     ../interfaces/protocom.h \
     ../interfaces/protocomthread.h \
     ../widgets/ecombobox.h \
