@@ -82,6 +82,9 @@ void UWidget::resultReady(const DataTypes::FloatStruct &fl)
 
 void UWidget::reqUpdate()
 {
+    // NOTE Костыль
+    if (!m_updatesEnabled)
+        return;
     for (const auto &query : m_floatBdQueryList)
         iface()->reqFloats(query.sigAdr, query.sigQuantity);
     for (const auto &query : m_spBdQueryList)

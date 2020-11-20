@@ -52,8 +52,8 @@ quint16 Board::typeM() const
 
 quint16 Board::type() const
 {
-    const quint16 Mtypem = typeM();
-    const quint16 Mtypeb = typeB() >> 8;
+    const quint16 Mtypem = typeM() >> 8;
+    const quint16 Mtypeb = typeB();
     return quint16(Mtypeb + Mtypem);
 }
 
@@ -84,6 +84,21 @@ quint32 Board::serialNumber(Board::Types type) const
         return 0;
     default:
         return m_baseSerialInfo.SerialNum;
+    }
+}
+
+quint32 Board::UID(Range ran) const
+{
+    switch (ran)
+    {
+    case High:
+        return m_baseSerialInfo.UIDHigh;
+    case Mid:
+        return m_baseSerialInfo.UIDMid;
+    case Low:
+        return m_baseSerialInfo.UIDLow;
+    default:
+        return 0;
     }
 }
 
@@ -135,7 +150,7 @@ bool Board::noRegPars() const
     return health() & HTH_REGPARS;
 }
 
-Modules::BaseSerialInfo Board::baseSerialInfo() const
+Modules::StartupInfoBlock Board::baseSerialInfo() const
 {
     return m_baseSerialInfo;
 }

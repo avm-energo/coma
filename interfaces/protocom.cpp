@@ -79,7 +79,7 @@ void Protocom::reqFile(quint32 filenum, bool isConfigFile)
 
     CommandStruct inp {
         Proto::Commands::ReadFile, // Command
-        QVariant(),                // File number
+        filenum,                   // File number
         isConfigFile,              // Is file should be restored
         ba                         // Empty QByteArray
     };
@@ -89,15 +89,8 @@ void Protocom::reqFile(quint32 filenum, bool isConfigFile)
 void Protocom::reqStartup(quint32 sigAdr, quint32 sigCount)
 {
     Q_ASSERT(Proto::getBlkByReg.contains(sigAdr));
-    auto blkPair = Proto::getBlkByReg.value(sigAdr);
-    Q_ASSERT(blkPair.second == sigCount);
-    quint32 blk = blkPair.first;
-    CommandStruct inp {
-        Proto::Commands::ReadBlkData, // Command
-        blk,                          // Block number
-        QVariant(),                   // Null arg
-        {}                            // QByteArray(sizeof(sigCount) * sigCount, Qt::Uninitialized) // Buffer
-    };
+    Q_ASSERT(Proto::getBlkByReg.value(sigAdr).second == sigCount);
+    CommandStruct inp { Proto::Commands::ReadBlkData, sigAdr, sigCount, {} };
     DataManager::addToInQueue(inp);
 }
 
@@ -132,10 +125,8 @@ void Protocom::writeTime(quint32 time)
 void Protocom::reqFloats(quint32 sigAdr, quint32 sigCount)
 {
     Q_ASSERT(Proto::getBlkByReg.contains(sigAdr));
-    auto blkPair = Proto::getBlkByReg.value(sigAdr);
-    Q_ASSERT(blkPair.second == sigCount);
-    quint32 blk = blkPair.first;
-    CommandStruct inp { Proto::Commands::ReadBlkData, blk, QVariant(), {} };
+    Q_ASSERT(Proto::getBlkByReg.value(sigAdr).second == sigCount);
+    CommandStruct inp { Proto::Commands::ReadBlkData, sigAdr, sigCount, {} };
     DataManager::addToInQueue(inp);
 }
 
@@ -189,7 +180,9 @@ void Protocom::writeCommand(Queries::Commands cmd, QVariant item)
 {
     using namespace Proto;
     using DataTypes::Signal;
+
     auto protoCmd = getProtoCommand.value(cmd);
+    // Q_ASSERT(protoCmd != ReadBlkData && "This command couldn't be used directly");
     if (!protoCmd)
     {
         auto wCmd = getWCommand.value(cmd);
@@ -199,6 +192,7 @@ void Protocom::writeCommand(Queries::Commands cmd, QVariant item)
     {
     case Commands::ReadBlkData:
 
+        //  NOTE Эта команда выполняется иначе
         Q_ASSERT(item.canConvert<Signal>());
         handleBlk(protoCmd, item.value<Signal>());
         break;
@@ -223,14 +217,14 @@ void Protocom::writeCommand(Queries::Commands cmd, QVariant item)
 
     case Commands::WriteBlkAC:
 
-        Q_ASSERT(item.canConvert<DataTypes::BlkParameterStruct>());
-        handleBlk(protoCmd, item.value<DataTypes::BlkParameterStruct>());
+        Q_ASSERT(item.canConvert<DataTypes::BlockStruct>());
+        handleBlk(protoCmd, item.value<DataTypes::BlockStruct>());
         break;
 
     case Commands::WriteBlkTech:
 
-        Q_ASSERT(item.canConvert<DataTypes::BlkParameterStruct>());
-        handleBlk(protoCmd, item.value<DataTypes::BlkParameterStruct>());
+        Q_ASSERT(item.canConvert<DataTypes::BlockStruct>());
+        handleBlk(protoCmd, item.value<DataTypes::BlockStruct>());
         break;
 
     case Commands::WriteBlkCmd:

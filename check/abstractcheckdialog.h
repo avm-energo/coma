@@ -79,7 +79,7 @@ public slots:
     //    virtual void SetAlarmColor(int position, bool value) = 0;
     //    virtual void StartBdMeasurements();
     //    virtual void StopBdMeasurements();
-    void reqUpdate();
+    void reqUpdate() override;
 
 private:
     struct BdBlocks
@@ -113,6 +113,7 @@ protected:
     bool XlsxWriting;
     const QString ValuesFormat = "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; "
                                  "color: blue; font: bold 10px;}";
+    void uponInterfaceSetting() override;
 
 protected slots:
     //    virtual void UpdateModBusData(QList<ModBus::SignalStruct> Signal) = 0;
@@ -124,6 +125,8 @@ private slots:
     void StartAnalogMeasurements();
     void TimerTimeout();
     void TWTabClicked(int index);
+
+    // UWidget interface
 };
 
 #endif // ABSTRACTCHECKDIALOG_H

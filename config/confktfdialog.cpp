@@ -27,13 +27,16 @@ ConfKTFDialog::ConfKTFDialog(ConfigKTF *cktf, QWidget *parent) : AbstractConfDia
     Conf = new ConfDialog(S2Config, Board::GetInstance().typeB(), Board::GetInstance().typeM());
     ConfKxx = new ConfKxxDialog(S2Config);
     setAttribute(Qt::WA_DeleteOnClose);
-    SetupUI();
-    PrereadConf();
 }
 
-ConfKTFDialog::~ConfKTFDialog() { }
+ConfKTFDialog::~ConfKTFDialog()
+{
+}
 
-int ConfKTFDialog::getRCount() { return CKTF->Bci_block.TdatNum; }
+int ConfKTFDialog::getRCount()
+{
+    return CKTF->Bci_block.TdatNum;
+}
 
 void ConfKTFDialog::SetupUI()
 {
@@ -466,7 +469,9 @@ void ConfKTFDialog::FillBack()
     ConfKxx->FillBack();
 }
 
-void ConfKTFDialog::CheckConf() { }
+void ConfKTFDialog::CheckConf()
+{
+}
 
 void ConfKTFDialog::SetDefConf()
 {

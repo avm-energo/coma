@@ -40,7 +40,6 @@ CheckKIVDialog::CheckKIVDialog(QWidget *parent) : AbstractCheckDialog(parent)
 
     //    SetupUI(sl);
     m_BdUIList = { { "Основные", Bd1W() }, { "Дополнительные", Bd2W() } };
-    SetupUI();
 
     Timer->setInterval(ANMEASINT);
 }

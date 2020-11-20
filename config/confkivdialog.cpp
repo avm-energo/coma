@@ -11,9 +11,7 @@
 #include <QScrollBar>
 #include <QTimer>
 #include <QVBoxLayout>
-#if _MSC_VER && !__INTEL_COMPILER
-#define __PRETTY_FUNCTION__ __FUNCSIG__
-#endif
+
 ConfKIVDialog::ConfKIVDialog(ConfigKIV *ckiv, QWidget *parent) : AbstractConfDialog(parent)
 {
     QString tmps = "QDialog {background-color: " + QString(Colors::ACONFCLR) + ";}";
@@ -23,8 +21,6 @@ ConfKIVDialog::ConfKIVDialog(ConfigKIV *ckiv, QWidget *parent) : AbstractConfDia
     //    Conf = new ConfDialog(ckiv->S2Config(), this);
     //    ConfKxx = new ConfKxxDialog(ckiv->S2Config(), this);
     setAttribute(Qt::WA_DeleteOnClose);
-    SetupUI();
-    //    PrereadConf();
 }
 
 ConfKIVDialog::~ConfKIVDialog()

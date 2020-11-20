@@ -47,6 +47,7 @@ protected:
 
     virtual void SetupUI() = 0;
     bool PrepareConfToWrite();
+    void uponInterfaceSetting() override;
 
 private slots:
     void SaveConfToFile();
@@ -70,4 +71,6 @@ private slots:
     //    void DefConfToBeLoaded();
     //    void StopRead(int);
     //    void WritePasswordChecked();
+
+    // UWidget interface
 };

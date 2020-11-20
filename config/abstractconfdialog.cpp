@@ -313,6 +313,12 @@ bool AbstractConfDialog::PrepareConfToWrite()
     return true;
 }
 
+void AbstractConfDialog::uponInterfaceSetting()
+{
+    PrereadConf();
+    SetupUI();
+}
+
 void AbstractConfDialog::WriteConfMessageOk(const DataTypes::GeneralResponseStruct &rsp)
 {
     if (rsp.type == DataTypes::GeneralResponseTypes::Ok)

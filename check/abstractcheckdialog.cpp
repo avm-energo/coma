@@ -80,7 +80,7 @@ void AbstractCheckDialog::SetupUI()
     //        CheckTW->addTab(BdUI(i), "  " + tabnames.at(i) + "  ");
     //        IndexWd.append(i);
     //    }
-    for (const auto &w : m_BdUIList)
+    for (auto &w : m_BdUIList)
     {
         w.widget->setInterface(iface());
         CheckTW->addTab(w.widget, " " + w.widgetCaption + " ");
@@ -249,6 +249,11 @@ void AbstractCheckDialog::ReadAnalogMeasurementsAndWriteToFile()
 
     WRow++;
     m_readDataInProgress = false;
+}
+
+void AbstractCheckDialog::uponInterfaceSetting()
+{
+    SetupUI();
 }
 
 // void AbstractCheckDialog::StartBdMeasurements() { BdTimer->start(); }

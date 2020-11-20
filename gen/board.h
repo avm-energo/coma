@@ -18,6 +18,13 @@ public:
         Device
     };
 
+    enum Range
+    {
+        High,
+        Mid,
+        Low
+    };
+
     /**
      *  Перечисление для хранения списка интерфейсов
      */
@@ -73,6 +80,7 @@ public:
     quint16 type(Types type) const;
 
     quint32 serialNumber(Types type) const;
+    quint32 UID(Range ran) const;
 
     InterfaceType interfaceType() const;
     void setInterfaceType(InterfaceType iface);
@@ -94,7 +102,7 @@ public:
     bool noConfig() const;
     bool noRegPars() const;
 
-    Modules::BaseSerialInfo baseSerialInfo() const;
+    Modules::StartupInfoBlock baseSerialInfo() const;
 
 private:
     InterfaceType m_interfaceType;
@@ -102,8 +110,8 @@ private:
     Types m_boardType;
     ConnectionState m_connectionState;
 
-    Modules::BaseSerialInfo m_baseSerialInfo {};
-    Modules::BaseSerialInfoExt m_baseSerialInfoExt {};
+    Modules::StartupInfoBlock m_baseSerialInfo {};
+    Modules::StartupInfoBlockExt m_baseSerialInfoExt {};
 
     template <typename T> bool isSerialNumberSet(T value)
     {

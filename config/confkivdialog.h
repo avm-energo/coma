@@ -29,7 +29,6 @@ private:
     void FillBack() override;
     void SetupUI() override;
     void CheckConf() override;
-    void uponInterfaceSetting();
 
     QWidget *analogWidget();
 
@@ -38,10 +37,6 @@ private:
     QWidget *remainsWidget();
 
     QWidget *connectionWidget();
-
-signals:
-
-public slots:
 
 private slots:
     void SetDefConf() override;

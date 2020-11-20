@@ -39,7 +39,6 @@ public:
     void setSpBdQuery(const QList<BdQuery> &list);
     void sendCommandWithResult(Queries::Commands cmd, QVariant item, int count);
     void setInterface(BaseInterface *iface);
-    void uponInterfaceSetting();
     BaseInterface *iface();
 
 signals:
@@ -51,6 +50,7 @@ public slots:
 
 protected:
     bool m_updatesEnabled;
+    virtual void uponInterfaceSetting();
 
 private:
     QString m_caption;
