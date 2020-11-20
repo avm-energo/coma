@@ -98,7 +98,7 @@ void Protocom::reqBSI()
 {
     CommandStruct inp {
         Proto::Commands::ReadBlkStartInfo, // Command
-        Board::None,                       // Board type
+        QVariant(),                        // Board type
         QVariant(),                        // Null arg
         {}                                 // QByteArray(sizeof(ModuleBSI::Bsi), Qt::Uninitialized) // Buffer for bsi
     };

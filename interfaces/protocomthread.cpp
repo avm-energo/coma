@@ -78,7 +78,8 @@ void ProtocomThread::parse()
             parseResponse(m_readData);
             m_readData.clear();
         }
-        checkQueue();
+        else
+            checkQueue();
         m_rwLocker.unlock();
     }
 }
@@ -281,7 +282,8 @@ void ProtocomThread::parseRequest(const CommandStruct &cmdStr)
         }
         else
         {
-            m_currentCommand.ba.prepend(StdFunc::arrayFromNumber(m_currentCommand.arg1.value<quint8>()));
+            if (m_currentCommand.arg1.isValid())
+                m_currentCommand.ba.prepend(StdFunc::arrayFromNumber(m_currentCommand.arg1.value<quint8>()));
             QByteArray ba = prepareBlock(m_currentCommand);
             emit writeDataAttempt(ba);
         }
@@ -488,7 +490,7 @@ void handleBitStringArray(const QByteArray &ba, QList<quint16> arr_addr)
 
 void handleFloat(const QByteArray &ba, quint32 sigAddr)
 {
-    Q_ASSERT(ba.size() != 4);
+    Q_ASSERT(ba.size() == 4);
     float blk = ba.toFloat();
     // std::copy_n(ba.constData(), sizeof(float), blk);
     DataTypes::FloatStruct resp { sigAddr, blk };
