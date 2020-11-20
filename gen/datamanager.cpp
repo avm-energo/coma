@@ -1,5 +1,4 @@
 #include "datamanager.h"
-
 #include "files.h"
 
 // QList<DataTypes::SignalsStruct> DataManager::s_outputList;
@@ -237,6 +236,15 @@ void DataManager::checkTypeAndSendSignals(DataTypes::SignalsStruct &str)
         {
             ConfParametersListStruct cp = qvariant_cast<ConfParametersListStruct>(str.data);
             emit confParametersReceived(cp);
+        }
+        break;
+    }
+    case Block:
+    {
+        if (str.data.canConvert<BlockStruct>())
+        {
+            BlockStruct bs = qvariant_cast<BlockStruct>(str.data);
+            emit blockReceived(bs);
         }
         break;
     }

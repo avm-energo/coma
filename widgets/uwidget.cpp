@@ -54,9 +54,8 @@ void UWidget::setSpBdQuery(const QList<UWidget::BdQuery> &list)
     m_spBdQueryList = list;
 }
 
-void UWidget::sendCommandWithResult(Queries::Commands cmd, QVariant item, int count)
+void UWidget::sendCommandWithResult(Queries::Commands cmd, QVariant item)
 {
-    m_regCount = m_regLeast = count;
     connect(&DataManager::GetInstance(), &DataManager::floatReceived, this, &UWidget::updateFloatData);
     m_iface->writeCommand(cmd, item);
 }

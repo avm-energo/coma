@@ -37,7 +37,7 @@ public:
     void setHighlightMap(const QMap<int, QList<HighlightWarnAlarmStruct>> &map);
     void setFloatBdQuery(const QList<BdQuery> &list);
     void setSpBdQuery(const QList<BdQuery> &list);
-    void sendCommandWithResult(Queries::Commands cmd, QVariant item, int count);
+    void sendCommandWithResult(Queries::Commands cmd, QVariant item);
     void setInterface(BaseInterface *iface);
     BaseInterface *iface();
 

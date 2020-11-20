@@ -28,35 +28,21 @@ TEMPLATE = app
 
 
 SOURCES += \
-    ../widgets/uwidget.cpp \
     coma.cpp \
     main.cpp \
-    ../check/checkkdvdialog.cpp \
-    ../check/checkkdvharmonicdialog.cpp \
-    ../check/checkkdvvibrdialog.cpp \
-    ../check/checkktfdialog.cpp \
-    ../check/checkktfharmonicdialog.cpp \
-    ../config/confkdvdialog.cpp \
-    ../config/confktfdialog.cpp \
-    ../dialogs/fwuploaddialog.cpp \
-    ../interfaces/usbhidportinfo.cpp \
-    ../widgets/splashscreen.cpp \
-    ../widgets/udialog.cpp \
-    ../module/alarm.cpp \
-    ../module/warn.cpp \
-    ../startup/startupkdvdialog.cpp \
-    ../tune/kiv/tunekivmain.cpp \
-    ../tune/kiv/tunekivtemp_20.cpp \
-    ../widgets/alarmstateallwidget.cpp \
-    ../widgets/alarmwidget.cpp \
     ../check/abstractcheckdialog.cpp \
     ../check/check.cpp \
     ../check/checkharmonickdv.cpp \
     ../check/checkharmonicktf.cpp \
     ../check/checkkdv.cpp \
+    ../check/checkkdvdialog.cpp \
+    ../check/checkkdvharmonicdialog.cpp \
+    ../check/checkkdvvibrdialog.cpp \
     ../check/checkkiv.cpp \
     ../check/checkkivdialog.cpp \
     ../check/checkktf.cpp \
+    ../check/checkktfdialog.cpp \
+    ../check/checkktfharmonicdialog.cpp \
     ../check/checkvibrkdv.cpp \
     ../config/abstractconfdialog.cpp \
     ../config/config.cpp \
@@ -65,9 +51,12 @@ SOURCES += \
     ../config/configktf.cpp \
     ../config/configkxx.cpp \
     ../config/confkivdialog.cpp \
+    ../config/confkdvdialog.cpp \
+    ../config/confktfdialog.cpp \
     ../dialogs/connectdialog.cpp \
     ../dialogs/errordialog.cpp \
     ../dialogs/infodialog.cpp \
+    ../dialogs/fwuploaddialog.cpp \
     ../dialogs/journalsdialog.cpp \
     ../dialogs/keypressdialog.cpp \
     ../dialogs/settingsdialog.cpp \
@@ -75,32 +64,41 @@ SOURCES += \
     ../gen/board.cpp \
     ../gen/error.cpp \
     ../gen/files.cpp \
-    ../module/journals.cpp \
+    ../gen/datamanager.cpp \
     ../gen/logclass.cpp \
     ../gen/report.cpp \
     ../gen/s2.cpp \
     ../gen/stdfunc.cpp \
     ../gen/timefunc.cpp \
     ../interfaces/baseinterface.cpp \
+    ../interfaces/protocom.cpp \
+    ../interfaces/protocomthread.cpp \
+    ../interfaces/usbhidport.cpp\
+    ../interfaces/usbhidportinfo.cpp \
     ../models/etableitem.cpp \
     ../models/etablemodel.cpp \
+    ../module/alarm.cpp \
     ../module/alarmkiv.cpp \
     ../module/alarmktf.cpp \
+    ../module/journals.cpp \
     ../module/module.cpp \
+    ../module/warn.cpp \
     ../module/warnkiv.cpp \
     ../module/warnktf.cpp \
     ../startup/abstractstartupdialog.cpp \
+    ../startup/startupkdvdialog.cpp \
     ../startup/startupkivdialog.cpp \
     ../startup/startupktfdialog.cpp \
     ../tune/abstracttunedialog.cpp \
     ../tune/kiv/tunekiv.cpp \
     ../tune/kiv/tunekivcheck.cpp \
     ../tune/kiv/tunekivdialog.cpp \
+    ../tune/kiv/tunekivmain.cpp \
     ../tune/kiv/tunekivtemp60.cpp \
+    ../tune/kiv/tunekivtemp_20.cpp \
     ../tune/tuneclass.cpp \
-    ../interfaces/usbhidport.cpp\
-    ../interfaces/protocom.cpp \
-    ../interfaces/protocomthread.cpp \
+    ../widgets/alarmstateallwidget.cpp \
+    ../widgets/alarmwidget.cpp \
     ../widgets/ecombobox.cpp \
     ../widgets/errorprotocolwidget.cpp \
     ../widgets/estackedwidget.cpp \
@@ -109,44 +107,32 @@ SOURCES += \
     ../widgets/lineeditfield.cpp \
     ../widgets/passwordlineedit.cpp \
     ../widgets/signalchoosewidget.cpp \
+    ../widgets/splashscreen.cpp \
+    ../widgets/udialog.cpp \
+    ../widgets/uwidget.cpp \
     ../widgets/waitwidget.cpp \
     ../widgets/wd_func.cpp
 
 PRECOMPILED_HEADER = ../gen/pch.h
 
 HEADERS += \
-    ../widgets/uwidget.h \
     coma.h \
-    ../check/checkkdvdialog.h \
-    ../check/checkkdvharmonicdialog.h \
-    ../check/checkkdvvibrdialog.h \
-    ../check/checkktfdialog.h \
-    ../check/checkktfharmonicdialog.h \
-    ../config/confkdvdialog.h \
-    ../config/confktfdialog.h \
-    ../dialogs/fwuploaddialog.h \
-    ../interfaces/iec104private.h \
-    ../interfaces/modbusprivate.h \
-    ../interfaces/protocomprivate.h \
-    ../interfaces/usbhidportinfo.h \
-    ../widgets/splashscreen.h \
-    ../widgets/udialog.h \
-    ../module/alarm.h \
-    ../module/warn.h \
-    ../startup/startupkdvdialog.h \
-    ../tune/kiv/tunekivmain.h \
-    ../tune/kiv/tunekivtemp_20.h \
-    ../widgets/alarmstateallwidget.h \
-    ../widgets/alarmwidget.h \
-    ../check/check.h \
     ../check/abstractcheckdialog.h \
+    ../check/check.h \
     ../check/checkharmonickdv.h \
     ../check/checkharmonicktf.h \
     ../check/checkkdv.h \
+    ../check/checkkdvdialog.h \
+    ../check/checkkdvharmonicdialog.h \
+    ../check/checkkdvvibrdialog.h \
     ../check/checkkiv.h \
     ../check/checkkivdialog.h \
     ../check/checkktf.h \
+    ../check/checkktfdialog.h \
+    ../check/checkktfharmonicdialog.h \
     ../check/checkvibrkdv.h \
+    ../config/confkdvdialog.h \
+    ../config/confktfdialog.h \
     ../config/abstractconfdialog.h \
     ../config/config.h \
     ../config/configkdv.h \
@@ -157,42 +143,55 @@ HEADERS += \
     ../dialogs/connectdialog.h \
     ../dialogs/errordialog.h \
     ../dialogs/infodialog.h \
+    ../dialogs/fwuploaddialog.h \
     ../dialogs/journalsdialog.h \
     ../dialogs/keypressdialog.h \
     ../dialogs/settingsdialog.h \
     ../dialogs/timedialog.h \
     ../gen/board.h \
     ../gen/colors.h \
+    ../gen/datamanager.h \
     ../gen/error.h \
     ../gen/files.h \
-    ../module/journals.h \
     ../gen/logclass.h \
     ../gen/report.h \
     ../gen/s2.h \
     ../gen/stdfunc.h \
     ../gen/timefunc.h \
     ../interfaces/baseinterface.h \
+    ../interfaces/iec104private.h \
+    ../interfaces/modbusprivate.h \
+    ../interfaces/protocomprivate.h \
+    ../interfaces/protocom.h \
+    ../interfaces/protocomthread.h \
+    ../interfaces/usbhidport.h \
+    ../interfaces/usbhidportinfo.h \
     ../models/etableitem.h \
     ../models/etablemodel.h \
+    ../module/alarm.h \
     ../module/alarmkiv.h \
     ../module/alarmktf.h \
+    ../module/journals.h \
     ../module/module.h \
     ../module/modules.h \
     ../module/registers.h \
+    ../module/warn.h \
     ../module/warnkiv.h \
     ../module/warnktf.h \
     ../startup/abstractstartupdialog.h \
+    ../startup/startupkdvdialog.h \
     ../startup/startupkivdialog.h \
     ../startup/startupktfdialog.h \
     ../tune/abstracttunedialog.h \
     ../tune/kiv/tunekivcheck.h \
     ../tune/kiv/tunekiv.h \
     ../tune/kiv/tunekivdialog.h \
+    ../tune/kiv/tunekivmain.h \
     ../tune/kiv/tunekivtemp60.h \
+    ../tune/kiv/tunekivtemp_20.h \
     ../tune/tuneclass.h \
-    ../interfaces/usbhidport.h \
-    ../interfaces/protocom.h \
-    ../interfaces/protocomthread.h \
+    ../widgets/alarmstateallwidget.h \
+    ../widgets/alarmwidget.h \
     ../widgets/ecombobox.h \
     ../widgets/errorprotocolwidget.h \
     ../widgets/estackedwidget.h \
@@ -202,6 +201,9 @@ HEADERS += \
     ../widgets/lineeditfield.h \
     ../widgets/passwordlineedit.h \
     ../widgets/signalchoosewidget.h \
+    ../widgets/splashscreen.h \
+    ../widgets/udialog.h \
+    ../widgets/uwidget.h \
     ../widgets/waitwidget.h \
     ../widgets/wd_func.h
 
