@@ -65,7 +65,7 @@ private:
     QMap<int, QList<HighlightWarnAlarmStruct>> m_highlightMap;
 
 private slots:
-    void resultReady(const DataTypes::FloatStruct &fl);
+    void resultReady(const DataTypes::BlockStruct &bs);
 };
 
 #endif // UWIDGET_H
