@@ -222,12 +222,11 @@ void StartupKTFDialog::ResetCor()
 
 void StartupKTFDialog::SaveToFile()
 {
-    QByteArray ba;
+    QByteArray ba = QByteArray::fromRawData(reinterpret_cast<char *>(WBd7Block), sizeof(WBd7Block));
     FillBackCor();
-    ba.resize(sizeof(*WBd7Block));
-    memcpy(&(ba.data()[0]), WBd7Block, sizeof(*WBd7Block));
-    Error::Msg res
-        = Files::SaveToFile(Files::ChooseFileForSave(this, "Tune files (*.cor)", "cor"), ba, sizeof(*WBd7Block));
+
+    Error::Msg res = Files::SaveToFile(Files::ChooseFileForSave(this, "Tune files (*.cor)", "cor"), ba);
+
     switch (res)
     {
     case Error::Msg::NoError:

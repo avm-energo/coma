@@ -392,12 +392,10 @@ void StartupKIVDialog::MessageOk()
 
 void StartupKIVDialog::SaveToFile()
 {
-    QByteArray ba;
+    QByteArray ba = QByteArray::fromRawData(reinterpret_cast<char *>(CorBlock), sizeof(CorBlock));
     FillBackCor();
-    ba.resize(sizeof(*CorBlock));
-    memcpy(&(ba.data()[0]), CorBlock, sizeof(*CorBlock));
-    Error::Msg res
-        = Files::SaveToFile(Files::ChooseFileForSave(this, "Tune files (*.cor)", "cor"), ba, sizeof(*CorBlock));
+
+    Error::Msg res = Files::SaveToFile(Files::ChooseFileForSave(this, "Tune files (*.cor)", "cor"), ba);
     switch (res)
     {
     case Error::Msg::NoError:
