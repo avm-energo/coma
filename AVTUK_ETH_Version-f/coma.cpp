@@ -177,7 +177,9 @@ QToolBar *Coma::createToolBar()
 
 void Coma::SetupUI()
 {
-    setWindowTitle(PROGCAPTION);
+    QString caption(PROGNAME);
+    caption.append(" v. ").append(COMAVERSION);
+    setWindowTitle(caption);
     QString tmps = "QMainWindow {background-color: " + QString(Colors::MAINWINCLR) + ";}";
     setStyleSheet(tmps);
     setMinimumSize(QSize(1050, 700));
@@ -1097,8 +1099,10 @@ void Coma::SetProgressBar(int prbnum, int cursize)
 
 void Coma::GetAbout()
 {
+    QString caption(PROGNAME);
+    caption.append(" v. ").append(COMAVERSION);
     setWindowIcon(QPixmap("images/avm-energo.png"));
-    QMessageBox::about(this, PROGCAPTION,
+    QMessageBox::about(this, caption,
         "ООО \"АВМ-Энерго\" \n"
         "2015-2020 гг.\n"
         "info@avmenergo.ru");
@@ -1199,6 +1203,7 @@ void Coma::Connect()
         return;
     }
     ActiveThreads = true;
+    // m_iface->reqFloats(4501, 2);
     m_iface->reqBSI();
     // m_iface->reqTime();
     // m_iface->reqFile(4);

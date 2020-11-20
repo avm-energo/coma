@@ -16,11 +16,12 @@ QT       += core gui printsupport network serialport widgets concurrent testlib
 QT.testlib.CONFIG -= console
 TARGET = AVM-Service
 DEFINES += PROGNAME='\\"AVM-Service\\"'
-DEFINES += PROGCAPTION='\\"AVM-Service\\040v\\040"$$VERSION"\\040\\"'
 DEFINES += COMAVERSION='\\"$$VERSION\\"'
 DEFINES += DEVICETYPE=1 # 1 - module, 2 - pribor, for diagnostic messages
-DEFINES += SOFTDEVELOPER='\\"AVM-Energo\\"'
+DEFINES += SOFTDEVELOPER='\\"$$QMAKE_TARGET_COMPANY\\"'
 DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000
+DEFINES += GIT_VERSION='$(shell git describe --always)'
+DEFINES += BUILD_DATE='"\\\"$(shell date)\\\""'
 
 # DEFINES += DEBUG
 TEMPLATE = app

@@ -12,7 +12,9 @@ int main(int argc, char *argv[])
     a.setStyle("cleanlooks");
     Coma w;
     w.SetMode(Coma::COMA_GENERALMODE);
-    QCoreApplication::setApplicationName(PROGCAPTION);
+    QString caption(PROGNAME);
+    caption.append(" v. ").append(COMAVERSION);
+    QCoreApplication::setApplicationName(caption);
     QCoreApplication::setApplicationVersion(COMAVERSION);
     if (argc > 1) // есть аргументы запуска
     {
