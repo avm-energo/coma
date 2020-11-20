@@ -69,7 +69,7 @@ QString Files::ChooseFileForSave(QWidget *parent, const QString &mask, const QSt
     return filename;
 }
 
-Error::Msg Files::SaveToFile(const QString &filename, QByteArray &src, unsigned int numbytes)
+Error::Msg Files::SaveToFile(const QString &filename, QByteArray &src)
 {
     if (filename.isEmpty())
         return Error::Msg::NoError; // Пустое имя файла
@@ -77,7 +77,7 @@ Error::Msg Files::SaveToFile(const QString &filename, QByteArray &src, unsigned 
     file->setFileName(filename);
     if (!file->open(QIODevice::WriteOnly))
         return Error::Msg::FileOpenError; // Ошибка открытия файла
-    if (file->write(src, numbytes) != -1)
+    if (file->write(src, src.size()) != -1)
     {
         // нет ошибок
         file->close();

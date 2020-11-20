@@ -27,8 +27,6 @@ ConfKTFDialog::ConfKTFDialog(ConfigKTF *cktf, QWidget *parent) : AbstractConfDia
     Conf = new ConfDialog(S2Config, Board::GetInstance().typeB(), Board::GetInstance().typeM());
     ConfKxx = new ConfKxxDialog(S2Config);
     setAttribute(Qt::WA_DeleteOnClose);
-    SetupUI();
-    // PrereadConf();
 }
 
 ConfKTFDialog::~ConfKTFDialog()

@@ -6,14 +6,16 @@
 
 QMAKE_TARGET_COMPANY = AVM-Energo
 QMAKE_TARGET_COPYRIGHT = AVM-Energo
-QMAKE_TARGET_PRODUCT = AVTUK-S
+QMAKE_TARGET_PRODUCT = AVTUK
 RC_ICONS = ../coma.ico
 CONFIG += c++17
+CONFIG -= console
 VERSION = 2.0
 
-QT       += core gui printsupport network serialport qml widgets testlib svg concurrent
+QT       += core gui printsupport network qml serialport widgets testlib concurrent
+QT.testlib.CONFIG -= console
 
-TARGET = AVM-Service
+TARGET = AVM-Debug
 DEFINES += PROGNAME='\\"AVM-Debug\\"'
 DEFINES += PROGCAPTION='\\"AVM-Debug\\040v\\040"$$VERSION"\\040\\"'
 DEFINES += COMAVERSION='\\"$$VERSION\\"'
@@ -26,6 +28,9 @@ TEMPLATE = app
 
 
 SOURCES += \
+    ../widgets/uwidget.cpp \
+    coma.cpp \
+    main.cpp \
     ../check/checkkdvdialog.cpp \
     ../check/checkkdvharmonicdialog.cpp \
     ../check/checkkdvvibrdialog.cpp \
@@ -34,17 +39,16 @@ SOURCES += \
     ../config/confkdvdialog.cpp \
     ../config/confktfdialog.cpp \
     ../dialogs/fwuploaddialog.cpp \
-    ../gen/udialog.cpp \
+    ../interfaces/usbhidportinfo.cpp \
+    ../widgets/splashscreen.cpp \
+    ../widgets/udialog.cpp \
     ../module/alarm.cpp \
     ../module/warn.cpp \
     ../startup/startupkdvdialog.cpp \
     ../tune/kiv/tunekivmain.cpp \
     ../tune/kiv/tunekivtemp_20.cpp \
-    avmdebug.cpp \
-    main.cpp \
-    ../alarm/alarmclass.cpp \
-    ../alarm/alarmstateall.cpp \
-    ../alarm/alarmwidget.cpp \
+    ../widgets/alarmstateallwidget.cpp \
+    ../widgets/alarmwidget.cpp \
     ../check/abstractcheckdialog.cpp \
     ../check/check.cpp \
     ../check/checkharmonickdv.cpp \
@@ -56,13 +60,11 @@ SOURCES += \
     ../check/checkvibrkdv.cpp \
     ../config/abstractconfdialog.cpp \
     ../config/config.cpp \
-    ../config/confdialog.cpp \
     ../config/configkdv.cpp \
     ../config/configkiv.cpp \
     ../config/configktf.cpp \
     ../config/configkxx.cpp \
     ../config/confkivdialog.cpp \
-    ../config/confkxxdialog.cpp \
     ../dialogs/connectdialog.cpp \
     ../dialogs/errordialog.cpp \
     ../dialogs/infodialog.cpp \
@@ -73,21 +75,15 @@ SOURCES += \
     ../gen/board.cpp \
     ../gen/error.cpp \
     ../gen/files.cpp \
-    ../gen/journals.cpp \
+    ../module/journals.cpp \
     ../gen/logclass.cpp \
-    ../gen/modulebsi.cpp \
     ../gen/report.cpp \
     ../gen/s2.cpp \
     ../gen/stdfunc.cpp \
     ../gen/timefunc.cpp \
-    ../iec104/ethernet.cpp \
-    ../iec104/iec104.cpp \
-    ../modbus/modbus.cpp \
-    ../modbus/serialport.cpp \
-    ../models/checkdelegate.cpp \
+    ../interfaces/baseinterface.cpp \
     ../models/etableitem.cpp \
     ../models/etablemodel.cpp \
-    ../models/valuemodel.cpp \
     ../module/alarmkiv.cpp \
     ../module/alarmktf.cpp \
     ../module/module.cpp \
@@ -102,9 +98,9 @@ SOURCES += \
     ../tune/kiv/tunekivdialog.cpp \
     ../tune/kiv/tunekivtemp60.cpp \
     ../tune/tuneclass.cpp \
-    ../usb/commands.cpp \
-    ../usb/eprotocom.cpp \
-    ../usb/eusbworker.cpp \
+    ../interfaces/usbhidport.cpp\
+    ../interfaces/protocom.cpp \
+    ../interfaces/protocomthread.cpp \
     ../widgets/ecombobox.cpp \
     ../widgets/errorprotocolwidget.cpp \
     ../widgets/estackedwidget.cpp \
@@ -116,7 +112,11 @@ SOURCES += \
     ../widgets/waitwidget.cpp \
     ../widgets/wd_func.cpp
 
+PRECOMPILED_HEADER = ../gen/pch.h
+
 HEADERS += \
+    ../widgets/uwidget.h \
+    coma.h \
     ../check/checkkdvdialog.h \
     ../check/checkkdvharmonicdialog.h \
     ../check/checkkdvvibrdialog.h \
@@ -125,16 +125,19 @@ HEADERS += \
     ../config/confkdvdialog.h \
     ../config/confktfdialog.h \
     ../dialogs/fwuploaddialog.h \
-    ../gen/udialog.h \
+    ../interfaces/iec104private.h \
+    ../interfaces/modbusprivate.h \
+    ../interfaces/protocomprivate.h \
+    ../interfaces/usbhidportinfo.h \
+    ../widgets/splashscreen.h \
+    ../widgets/udialog.h \
     ../module/alarm.h \
     ../module/warn.h \
     ../startup/startupkdvdialog.h \
     ../tune/kiv/tunekivmain.h \
     ../tune/kiv/tunekivtemp_20.h \
-    avmdebug.h \
-    ../alarm/alarmclass.h \
-    ../alarm/alarmstateall.h \
-    ../alarm/alarmwidget.h \
+    ../widgets/alarmstateallwidget.h \
+    ../widgets/alarmwidget.h \
     ../check/check.h \
     ../check/abstractcheckdialog.h \
     ../check/checkharmonickdv.h \
@@ -146,13 +149,11 @@ HEADERS += \
     ../check/checkvibrkdv.h \
     ../config/abstractconfdialog.h \
     ../config/config.h \
-    ../config/confdialog.h \
     ../config/configkdv.h \
     ../config/configkiv.h \
     ../config/configktf.h \
     ../config/configkxx.h \
     ../config/confkivdialog.h \
-    ../config/confkxxdialog.h \
     ../dialogs/connectdialog.h \
     ../dialogs/errordialog.h \
     ../dialogs/infodialog.h \
@@ -164,24 +165,20 @@ HEADERS += \
     ../gen/colors.h \
     ../gen/error.h \
     ../gen/files.h \
-    ../gen/journals.h \
+    ../module/journals.h \
     ../gen/logclass.h \
-    ../gen/modulebsi.h \
     ../gen/report.h \
     ../gen/s2.h \
     ../gen/stdfunc.h \
     ../gen/timefunc.h \
-    ../iec104/ethernet.h \
-    ../iec104/iec104.h \
-    ../modbus/modbus.h \
-    ../modbus/serialport.h \
-    ../models/checkdelegate.h \
+    ../interfaces/baseinterface.h \
     ../models/etableitem.h \
     ../models/etablemodel.h \
-    ../models/valuemodel.h \
     ../module/alarmkiv.h \
     ../module/alarmktf.h \
     ../module/module.h \
+    ../module/modules.h \
+    ../module/registers.h \
     ../module/warnkiv.h \
     ../module/warnktf.h \
     ../startup/abstractstartupdialog.h \
@@ -193,10 +190,9 @@ HEADERS += \
     ../tune/kiv/tunekivdialog.h \
     ../tune/kiv/tunekivtemp60.h \
     ../tune/tuneclass.h \
-    ../usb/commands.h \
-    ../usb/defines.h \
-    ../usb/eprotocom.h \
-    ../usb/eusbworker.h \
+    ../interfaces/usbhidport.h \
+    ../interfaces/protocom.h \
+    ../interfaces/protocomthread.h \
     ../widgets/ecombobox.h \
     ../widgets/errorprotocolwidget.h \
     ../widgets/estackedwidget.h \
@@ -226,21 +222,19 @@ QXLSX_HEADERPATH=./../QXlsx/QXlsx/header/  # current QXlsx header path is ./head
 QXLSX_SOURCEPATH=./../QXlsx/QXlsx/source/  # current QXlsx source path is ./source/
 include(./../QXlsx/QXlsx/QXlsx.pri)
 
-equals(QMAKE_PLATFORM, win32)
-{
+win32 {
     LIBS += -luser32
     contains(QMAKE_TARGET.arch, x86_64) {
         message("x64 build")
        ## Windows x64 (64bit) specific build here
        CONFIG(debug, debug|release) {
-       LIBS += -L$$PWD/../../libs/win64/debug/ -llimereportd -lliblzma -lhidapi
+       LIBS += -L$$PWD/../../libs/win64/debug/ -llimereportd -lhidapi
        DESTDIR = $${PWD}/../../build/win64/debug
        } else {
-       LIBS += -L$$PWD/../../libs/win64/release/ -llimereport -lliblzma -lhidapi
+       LIBS += -L$$PWD/../../libs/win64/release/ -llimereport -lhidapi
        DESTDIR = $${PWD}/../../build/win64/release
        LIBS_FILES += \
        $$PWD/../../libs/win64/release/hidapi.dll \
-       $$PWD/../../libs/win64/release/liblzma.dll \
        $$PWD/../../libs/win64/release/limereport.dll \
        $$PWD/../../libs/win64/release/QtZint.dll
        }
@@ -248,21 +242,20 @@ equals(QMAKE_PLATFORM, win32)
         message("x86 build")
         ## Windows x86 (32bit) specific build here
         CONFIG(debug, debug|release) {
-        LIBS += -L$$PWD/../../libs/win32/debug/ -llimereportd -lliblzma -lhidapi
+        LIBS += -L$$PWD/../../libs/win32/debug/ -llimereportd -lhidapi
         DESTDIR = $${PWD}/../../build/win32/debug
         } else {
-        LIBS += -L$$PWD/../../libs/win32/release/ -llimereport -lliblzma -lhidapi
+        LIBS += -L$$PWD/../../libs/win32/release/ -llimereport -lhidapi
         DESTDIR = $${PWD}/../../build/win32/release
         LIBS_FILES += \
         $$PWD/../../libs/win32/release/hidapi.dll \
-        $$PWD/../../libs/win32/release/liblzma.dll \
         $$PWD/../../libs/win32/release/limereport.dll \
         $$PWD/../../libs/win32/release/QtZint.dll
         }
     }
 }
 
-unix: LIBS += -L$$PWD/libs/win32/debug/ -llimereportd -lliblzma
+unix: LIBS += -L$$PWD/libs/win32/debug/ -llimereportd
 
 
 # copies the given files to the destination directory

@@ -8,13 +8,9 @@
 // ######################################## Переопределение методов QAbstractTableModel
 // ####################################
 
-ETableModel::ETableModel(QObject *parent) : QAbstractTableModel(parent)
-{
-}
+ETableModel::ETableModel(QObject *parent) : QAbstractTableModel(parent) { }
 
-ETableModel::~ETableModel()
-{
-}
+ETableModel::~ETableModel() { }
 
 QVariant ETableModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
@@ -81,8 +77,6 @@ QVariant ETableModel::data(const QModelIndex &index, int role) const
                 return QVariant::fromValue(QIcon(maindata.at(row)->icon(column)));
             case Qt::TextAlignmentRole:
                 return maindata.at(row)->TextAlignment(column);
-            case Qt::UserRole:
-                return maindata.at(row)->uData(column);
             }
         }
     }
@@ -125,9 +119,6 @@ bool ETableModel::setData(const QModelIndex &index, const QVariant &value, int r
             return true;
         case Qt::TextAlignmentRole:
             maindata.last()->setTextAlignment(index.column(), value.toInt());
-            return true;
-        case Qt::UserRole:
-            maindata.last()->setUData(index.column(), value);
             return true;
         }
     }
@@ -308,10 +299,7 @@ void ETableModel::setRowTextAlignment(int row, int alignment)
         setData(index(row, i, QModelIndex()), QVariant(alignment), Qt::TextAlignmentRole);
 }
 
-bool ETableModel::isEmpty() const
-{
-    return maindata.isEmpty();
-}
+bool ETableModel::isEmpty() const { return maindata.isEmpty(); }
 
 void ETableModel::setColumnFormat(int column, int format)
 {

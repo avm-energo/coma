@@ -11,6 +11,7 @@
 
 InfoDialog::InfoDialog(QWidget *parent) : UDialog(parent)
 {
+    m_oneShotUpdateFlag = false;
     SetupUI();
     FillBsi();
 }
@@ -98,6 +99,20 @@ void InfoDialog::ClearBsi()
     //    WDFunc::SetLBLText(this, "snmle", "");
     //    WDFunc::SetLBLText(this, "hwmle", "");
     // расшифровка Hth
+}
+
+void InfoDialog::update()
+{
+    if (m_updatesEnabled)
+    {
+        if (!m_oneShotUpdateFlag)
+        {
+            m_oneShotUpdateFlag = true;
+            FillBsi();
+        }
+    }
+    else
+        m_oneShotUpdateFlag = false;
 }
 
 void InfoDialog::reqUpdate()

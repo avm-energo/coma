@@ -45,7 +45,6 @@ SOURCES += \
     ../check/checkktfharmonicdialog.cpp \
     ../config/abstractconfdialog.cpp \
     ../config/config.cpp \
-    ../config/confdialog.cpp \
     ../config/configkdv.cpp \
     ../config/configkiv.cpp \
     ../config/configktf.cpp \
@@ -53,7 +52,6 @@ SOURCES += \
     ../config/confkivdialog.cpp \
     ../config/confkdvdialog.cpp \
     ../config/confktfdialog.cpp \
-    ../config/confkxxdialog.cpp \
     ../dialogs/connectdialog.cpp \
     ../dialogs/errordialog.cpp \
     ../dialogs/fwuploaddialog.cpp \
@@ -83,11 +81,9 @@ SOURCES += \
     ../interfaces/protocom.cpp \
     ../interfaces/protocomthread.cpp \
     ../interfaces/usbhidportinfo.cpp \
-    ../models/checkdelegate.cpp \
     ../models/errorprotocolmodel.cpp \
     ../models/etableitem.cpp \
     ../models/etablemodel.cpp \
-    ../models/valuemodel.cpp \
     ../module/alarm.cpp \
     ../module/alarmkdv.cpp \
     ../module/alarmkiv.cpp \
@@ -142,7 +138,6 @@ HEADERS += \
     ../check/checkvibrkdv.h \
     ../config/abstractconfdialog.h \
     ../config/config.h \
-    ../config/confdialog.h \
     ../config/configkdv.h \
     ../config/configkiv.h \
     ../config/configktf.h \
@@ -150,7 +145,6 @@ HEADERS += \
     ../config/confkivdialog.h \
     ../config/confkdvdialog.h \
     ../config/confktfdialog.h \
-    ../config/confkxxdialog.h \
     ../dialogs/connectdialog.h \
     ../dialogs/errordialog.h \
     ../dialogs/fwuploaddialog.h \
@@ -186,11 +180,9 @@ HEADERS += \
     ../interfaces/modbusprivate.h \
     ../interfaces/usbhidportinfo.h \
     ../interfaces/protocomprivate.h \
-    ../models/checkdelegate.h \
     ../models/errorprotocolmodel.h \
     ../models/etableitem.h \
     ../models/etablemodel.h \
-    ../models/valuemodel.h \
     ../module/alarm.h \
     ../module/alarmkdv.h \
     ../module/alarmkiv.h \

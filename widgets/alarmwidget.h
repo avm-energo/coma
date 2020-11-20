@@ -19,6 +19,7 @@ class AlarmWidget : public UWidget
 public:
     explicit AlarmWidget(QWidget *parent = nullptr);
     void Clear();
+    void uponInterfaceSetting();
 
 signals:
     //    void SetWarnAlarmColor(QList<bool>);

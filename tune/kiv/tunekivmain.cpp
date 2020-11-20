@@ -1,10 +1,10 @@
 #include "tunekivmain.h"
 
-TuneKIVMain::TuneKIVMain(TuneKIV *kiv, QWidget *parent) : AbstractTuneDialog(parent)
+TuneKIVMain::TuneKIVMain(TuneKIV *kiv, QWidget *parent) : AbstractTuneDialog(1, parent)
 {
     TKIV = kiv;
-    m_tuneStep = 1;
-    addTuneBlock(&TKIV->m_Bac_block, 0, sizeof(TKIV->m_Bac_block));
+    //    m_tuneStep = 1;
+    SetBac(&TKIV->m_Bac, 0, sizeof(TKIV->m_Bac));
     SetupUI();
 }
 
@@ -12,11 +12,11 @@ void TuneKIVMain::SetupUI()
 {
 }
 
-void TuneKIVMain::SetLbls()
+void TuneKIVMain::setMessages()
 {
 }
 
-void TuneKIVMain::SetPf()
+void TuneKIVMain::setTuneFunctions()
 {
 }
 

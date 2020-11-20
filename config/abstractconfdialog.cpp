@@ -154,12 +154,12 @@ void AbstractConfDialog::SaveConfToFile()
     ba.resize(MAXBYTEARRAY);
     S2::StoreDataMem(&(ba.data()[0]), S2Config,
         0x0001); // 0x0001 - номер файла конфигурации
-    quint32 BaLength = static_cast<quint8>(ba.data()[4]);
-    BaLength += static_cast<quint8>(ba.data()[5]) * 256;
-    BaLength += static_cast<quint8>(ba.data()[6]) * 65536;
-    BaLength += static_cast<quint8>(ba.data()[7]) * 16777216;
-    BaLength += sizeof(S2DataTypes::FileHeader); // FileHeader
-    Error::Msg res = Files::SaveToFile(Files::ChooseFileForSave(this, "Config files (*.cf)", "cf"), ba, BaLength);
+                 //    quint32 BaLength = static_cast<quint8>(ba.data()[4]);
+                 //    BaLength += static_cast<quint8>(ba.data()[5]) * 256;
+                 //    BaLength += static_cast<quint8>(ba.data()[6]) * 65536;
+                 //    BaLength += static_cast<quint8>(ba.data()[7]) * 16777216;
+                 //    BaLength += sizeof(S2::FileHeader); // FileHeader
+    Error::Msg res = Files::SaveToFile(Files::ChooseFileForSave(this, "Config files (*.cf)", "cf"), ba);
     switch (res)
     {
     case Error::Msg::NoError:
@@ -313,9 +313,10 @@ bool AbstractConfDialog::PrepareConfToWrite()
     return true;
 }
 
-void AbstractConfDialog::initAfterConnect()
+void AbstractConfDialog::uponInterfaceSetting()
 {
     PrereadConf();
+    SetupUI();
 }
 
 void AbstractConfDialog::WriteConfMessageOk(const DataTypes::GeneralResponseStruct &rsp)

@@ -18,12 +18,12 @@ KeyPressDialog::KeyPressDialog(QWidget *parent) : QDialog(parent)
 Error::Msg KeyPressDialog::CheckPassword(const QString &psw)
 {
     //    m_pswValid = false;
-    StdFunc::ClearCancel();
+    StdFunc::clearCancel();
     QEventLoop PasswordLoop;
     connect(this, &KeyPressDialog::PasswordChecked, &PasswordLoop, &QEventLoop::quit);
     show();
     PasswordLoop.exec();
-    if (StdFunc::IsCancelled())
+    if (StdFunc::isCancelled())
     {
         ERMSG("Отмена ввода пароля");
         return Error::Msg::GeneralError;
@@ -66,7 +66,7 @@ void KeyPressDialog::keyPressEvent(QKeyEvent *e)
     }
     if (e->key() == Qt::Key_Escape)
     {
-        StdFunc::Cancel();
+        StdFunc::cancel();
         emit PasswordChecked();
     }
     QDialog::keyPressEvent(e);

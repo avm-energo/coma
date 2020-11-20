@@ -66,13 +66,9 @@ void UWidget::updateSPData(const DataTypes::SinglePointWithTimeStruct &sp)
         WDFunc::SetLBLTColor(this, QString::number(hst.fieldnum), (sp.sigVal == 1) ? Colors::TABCOLORA1 : hst.color);
 }
 
-void UWidget::initAfterConnect()
-{
-}
-
 void UWidget::reqUpdate()
 {
-    // NOTE РљРѕСЃС‚С‹Р»СЊ
+    // NOTE Костыль
     if (!m_updatesEnabled)
         return;
     for (const auto &query : m_floatBdQueryList)
@@ -84,7 +80,11 @@ void UWidget::reqUpdate()
 void UWidget::setInterface(BaseInterface *iface)
 {
     m_iface = iface;
-    initAfterConnect();
+    uponInterfaceSetting();
+}
+
+void UWidget::uponInterfaceSetting()
+{
 }
 
 BaseInterface *UWidget::iface()

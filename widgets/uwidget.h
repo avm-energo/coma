@@ -49,7 +49,7 @@ public slots:
 
 protected:
     bool m_updatesEnabled;
-    virtual void initAfterConnect();
+    virtual void uponInterfaceSetting();
 
 private:
     QString m_caption;

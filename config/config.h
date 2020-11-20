@@ -34,7 +34,7 @@
 class Config
 {
 public:
-    explicit Config(S2ConfigType *config, quint32 MTypeB, quint32 MTypeM);
+    explicit Config(S2ConfigType *config);
 
     enum BaseBoards
     {
@@ -143,8 +143,15 @@ public:
         return Map;
     }
 
-    void SetDefBlock();
-    // void Fill();
+    void setConfig(S2ConfigType *config);
+    void SetDefConf();
+    QWidget *MainWidget(QWidget *parent);
+    QWidget *TimeWidget(QWidget *parent);
+    void Fill();
+    void FillBack();
+
+private:
+    QObject *ParentMainbl, *ParentCtype;
 };
 
 #endif // CONFIG

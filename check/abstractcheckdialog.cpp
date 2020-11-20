@@ -251,7 +251,7 @@ void AbstractCheckDialog::ReadAnalogMeasurementsAndWriteToFile()
     m_readDataInProgress = false;
 }
 
-void AbstractCheckDialog::initAfterConnect()
+void AbstractCheckDialog::uponInterfaceSetting()
 {
     SetupUI();
 }
