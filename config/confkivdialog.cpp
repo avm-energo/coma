@@ -465,11 +465,6 @@ void ConfKIVDialog::CheckConf()
 {
 }
 
-void ConfKIVDialog::uponInterfaceSetting()
-{
-    PrereadConf();
-}
-
 void ConfKIVDialog::SetDefConf()
 {
     CKIV->setDefConf();

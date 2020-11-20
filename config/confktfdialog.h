@@ -21,8 +21,8 @@ public:
 
 private:
     ConfigKTF *CKTF;
-    ConfDialog *Conf;
-    ConfKxxDialog *ConfKxx;
+    //    ConfDialog *Conf;
+    //    ConfKxxDialog *ConfKxx;
     QLabel *SysTime;
     //    QTimer *timer;
     //    QTimer *timerRead;

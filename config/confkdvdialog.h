@@ -18,7 +18,7 @@ public:
 private:
     ConfigKDV *CKDV;
     //    ConfDialog *Conf;
-    ConfKxxDialog *ConfKxx;
+    //    ConfKxxDialog *ConfKxx;
     //    Config *ConfigMain;
 
     bool Variable;

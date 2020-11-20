@@ -26,7 +26,7 @@ ConfKDVDialog::ConfKDVDialog(ConfigKDV *ckdv, QWidget *parent) : AbstractConfDia
     S2Config = ckdv->S2Config();
     CKDV = ckdv;
     //    Conf = new ConfDialog(S2Config, Board::GetInstance().typeB(), Board::GetInstance().typeM());
-    ConfKxx = new ConfKxxDialog(S2Config);
+    // ConfKxx = new ConfKxxDialog(S2Config);
     setAttribute(Qt::WA_DeleteOnClose);
 }
 
@@ -389,8 +389,8 @@ void ConfKDVDialog::SetupUI()
     gb->setTitle("Настройки протокола МЭК-60870-5-104");
     gb->setFont(font);
 
-    gridlyout->addWidget(Conf->SetupMainBlk(this), 0, 0, 1, 1);
-    gridlyout->addWidget(ConfKxx->SetupComParam(this), 0, 1, 1, 1);
+    //    gridlyout->addWidget(Conf->SetupMainBlk(this), 0, 0, 1, 1);
+    //    gridlyout->addWidget(ConfKxx->SetupComParam(this), 0, 1, 1, 1);
 
     vlyout2->addLayout(gridlyout);
     gb->setLayout(vlyout2);
@@ -400,7 +400,7 @@ void ConfKDVDialog::SetupUI()
     vlyout2 = new QVBoxLayout;
     gb->setFont(font);
 
-    vlyout2->addWidget(Conf->SetupTime(this));
+    //    vlyout2->addWidget(Conf->SetupTime(this));
 
     gb->setLayout(vlyout2);
     vlyout1->addWidget(gb);
@@ -420,8 +420,8 @@ void ConfKDVDialog::SetupUI()
     ConfTW->addTab(area2, "Уставки");
 
     ConfTW->addTab(scrArea, "Связь");
-    ConfTW->addTab(ConfKxx->SetupModBus(this), "ModBus");
-    ConfTW->addTab(ConfKxx->SetupBl(this), "Общее");
+    //    ConfTW->addTab(ConfKxx->SetupModBus(this), "ModBus");
+    //    ConfTW->addTab(ConfKxx->SetupBl(this), "Общее");
 
     ConfTW->addTab(Leftconf, "Остальное");
     lyout->addWidget(ConfTW);
@@ -433,7 +433,7 @@ void ConfKDVDialog::SetupUI()
 
 void ConfKDVDialog::Fill()
 {
-    Conf->Fill();
+    //    Conf->Fill();
 
     int cbidx;
 
@@ -500,12 +500,12 @@ void ConfKDVDialog::Fill()
     WDFunc::SetSPBData(this, "TdatNum", CKDV->Bci_block.TdatNum);
 
     //.........................................................
-    ConfKxx->Fill();
+    //    ConfKxx->Fill();
 }
 
 void ConfKDVDialog::FillBack()
 {
-    Conf->FillBack();
+    // Conf->FillBack();
 
     int cbidx;
     bool tmpb;
@@ -575,16 +575,11 @@ void ConfKDVDialog::FillBack()
     WDFunc::SPBData(this, "OscPoints", CKDV->Bci_block.OscPoints);
     WDFunc::SPBData(this, "TdatNum", CKDV->Bci_block.TdatNum);
     //.........................................................
-    ConfKxx->FillBack();
+    //    ConfKxx->FillBack();
 }
 
 void ConfKDVDialog::CheckConf()
 {
-}
-
-void ConfKDVDialog::uponInterfaceSetting()
-{
-    PrereadConf();
 }
 
 // void ConfKDVDialog::setConnections()
@@ -595,8 +590,8 @@ void ConfKDVDialog::uponInterfaceSetting()
 void ConfKDVDialog::SetDefConf()
 {
     CKDV->SetDefConf();
-    Conf->SetDefConf();
-    ConfKxx->SetDefConf();
+    //    Conf->SetDefConf();
+    //    ConfKxx->SetDefConf();
     Fill();
 }
 
