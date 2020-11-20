@@ -99,7 +99,7 @@ struct ConfParameterStruct
     QByteArray data;
 };
 
-typedef ConfParameterStruct BlkParameterStruct;
+typedef ConfParameterStruct BlockStruct;
 
 struct ConfParametersListStruct
 {

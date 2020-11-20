@@ -3,6 +3,7 @@
 #include "../gen/datamanager.h"
 #include "../gen/logclass.h"
 #include "../gen/pch.h"
+#include "../gen/stdfunc.h"
 
 #include <QDebug>
 #include <QMetaEnum>
@@ -24,7 +25,8 @@ inline bool isOneSegment(unsigned len);
 // TODO вынести в отдельный класс как static методы?
 QByteArray prepareOk(bool isStart, byte cmd);
 QByteArray prepareError();
-QByteArray prepareBlock(CommandStruct &cmdStr, Starters startByte = Starters::Request, quint16 size = 0);
+QByteArray prepareBlock(CommandStruct &cmdStr, Starters startByte = Starters::Request);
+QByteArray prepareBlock(Proto::Commands cmd, QByteArray &data, Proto::Starters startByte = Starters::Request);
 ByteQueue prepareLongBlk(CommandStruct &cmdStr);
 
 void handleBitString(const QByteArray &ba, quint16 sigAddr);
@@ -211,6 +213,64 @@ void ProtocomThread::parseRequest(const CommandStruct &cmdStr)
 
     switch (m_currentCommand.cmd)
     {
+    case Commands::ReadBlkData:
+    {
+        quint8 blk = Proto::getBlkByReg.value(m_currentCommand.arg1.value<quint16>()).first;
+        m_currentCommand.ba = StdFunc::arrayFromNumber(blk);
+        QByteArray ba = prepareBlock(m_currentCommand);
+        emit writeDataAttempt(ba);
+        break;
+    }
+        //    case Commands::ReadBlkDataA:
+        //    {
+        //        m_currentCommand.ba = StdFunc::arrayFromNumber(m_currentCommand.arg1.value<quint8>());
+        //        QByteArray ba = prepareBlock(m_currentCommand);
+        //        emit writeDataAttempt(ba);
+        //    }
+        //    case Commands::ReadBlkAC:
+        //    {
+        //        m_currentCommand.ba = StdFunc::arrayFromNumber(m_currentCommand.arg1.value<quint8>());
+        //        QByteArray ba = prepareBlock(m_currentCommand);
+        //        emit writeDataAttempt(ba);
+        //    }
+        //    case Commands::ReadBlkTech:
+        //    {
+        //        m_currentCommand.ba = StdFunc::arrayFromNumber(m_currentCommand.arg1.value<quint8>());
+        //        QByteArray ba = prepareBlock(m_currentCommand);
+        //        emit writeDataAttempt(ba);
+        //    }
+    case Commands::ReadFile:
+    {
+        m_currentCommand.ba = StdFunc::arrayFromNumber(m_currentCommand.arg1.value<quint16>());
+        QByteArray ba = prepareBlock(m_currentCommand);
+        emit writeDataAttempt(ba);
+        break;
+    }
+    case Commands::WriteTime:
+    {
+        m_currentCommand.ba = StdFunc::arrayFromNumber(m_currentCommand.arg1.value<quint32>());
+        QByteArray ba = prepareBlock(m_currentCommand);
+        emit writeDataAttempt(ba);
+        break;
+    }
+        //    case Commands::WriteMode:
+        //    {
+        //        m_currentCommand.ba = StdFunc::arrayFromNumber(m_currentCommand.arg1.value<quint8>());
+        //        QByteArray ba = prepareBlock(m_currentCommand);
+        //        emit writeDataAttempt(ba);
+        //    }
+        //    case Commands::WriteVariant:
+        //    {
+        //        m_currentCommand.ba = StdFunc::arrayFromNumber(m_currentCommand.arg1.value<quint8>());
+        //        QByteArray ba = prepareBlock(m_currentCommand);
+        //        emit writeDataAttempt(ba);
+        //    }
+        //    case Commands::Test:
+        //    {
+        //        m_currentCommand.ba = StdFunc::arrayFromNumber(m_currentCommand.arg1.value<quint8>());
+        //        QByteArray ba = prepareBlock(m_currentCommand);
+        //        emit writeDataAttempt(ba);
+        //    }
     default:
     {
         if (!isOneSegment(m_currentCommand.ba.size()))
@@ -221,6 +281,7 @@ void ProtocomThread::parseRequest(const CommandStruct &cmdStr)
         }
         else
         {
+            m_currentCommand.ba.prepend(StdFunc::arrayFromNumber(m_currentCommand.arg1.value<quint8>()));
             QByteArray ba = prepareBlock(m_currentCommand);
             emit writeDataAttempt(ba);
         }
@@ -353,18 +414,32 @@ QByteArray prepareError()
     return tmpba;
 }
 
-QByteArray prepareBlock(CommandStruct &cmdStr, Proto::Starters startByte, quint16 size)
+QByteArray prepareBlock(CommandStruct &cmdStr, Proto::Starters startByte)
 {
     QByteArray ba;
     ba.append(startByte);
     ba.append(cmdStr.cmd);
     appendInt16(ba, cmdStr.ba.size());
-    if (!cmdStr.arg1.isNull())
-        ba.append(cmdStr.arg1.toUInt());
+    //    if (!cmdStr.arg1.isNull())
+    //        ba.append(cmdStr.arg1.toUInt());
     if (!cmdStr.ba.isEmpty())
         ba.append(cmdStr.ba);
     return ba;
 }
+
+QByteArray prepareBlock(Proto::Commands cmd, QByteArray &data, Proto::Starters startByte)
+{
+    QByteArray ba;
+    ba.append(startByte);
+    ba.append(cmd);
+    appendInt16(ba, data.size());
+    //    if (!cmdStr.arg1.isNull())
+    //        ba.append(cmdStr.arg1.toUInt());
+    if (!data.isEmpty())
+        ba.append(data);
+    return ba;
+}
+
 // NOTE Не проверено
 ByteQueue prepareLongBlk(CommandStruct &cmdStr)
 {
@@ -377,13 +452,17 @@ ByteQueue prepareLongBlk(CommandStruct &cmdStr)
         + 1; // Добавляем еще один сегмент в него попадет последняя часть
     bq.reserve(segCount);
 
-    CommandStruct temp { cmdStr.cmd, cmdStr.arg1, cmdStr.arg2, cmdStr.ba.left(MaxSegmenthLength) };
-    bq << prepareBlock(temp);
+    QByteArray tba = StdFunc::arrayFromNumber(cmdStr.arg1.value<quint8>());
+    tba.append(cmdStr.ba.left(MaxSegmenthLength - 1));
+    // CommandStruct temp { cmdStr.cmd, cmdStr.arg1, cmdStr.arg2, tba };
+    bq << prepareBlock(cmdStr.cmd, tba);
 
-    for (int pos = MaxSegmenthLength; pos < cmdStr.ba.size(); pos += MaxSegmenthLength)
+    for (int pos = MaxSegmenthLength - 1; pos < cmdStr.ba.size(); pos += MaxSegmenthLength)
     {
-        temp = { cmdStr.cmd, cmdStr.arg1, cmdStr.arg2, cmdStr.ba.mid(pos, MaxSegmenthLength) };
-        bq << prepareBlock(temp, Proto::Starters::Continue);
+        // temp = { cmdStr.cmd, cmdStr.arg1, cmdStr.arg2, cmdStr.ba.mid(pos, MaxSegmenthLength) };
+        tba = cmdStr.ba.mid(pos, MaxSegmenthLength);
+        bq << prepareBlock(cmdStr.cmd, tba, Proto::Starters::Continue);
+        // bq << prepareBlock(temp, Proto::Starters::Continue);
     }
     return bq;
 }
