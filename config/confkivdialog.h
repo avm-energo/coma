@@ -37,10 +37,6 @@ private:
 
     QWidget *connectionWidget();
 
-signals:
-
-public slots:
-
 private slots:
     void SetDefConf() override;
     //    void Start_Timer();

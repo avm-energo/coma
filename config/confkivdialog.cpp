@@ -23,7 +23,6 @@ ConfKIVDialog::ConfKIVDialog(ConfigKIV *ckiv, QWidget *parent) : AbstractConfDia
     ConfKxx = new ConfKxxDialog(S2Config, this);
     setAttribute(Qt::WA_DeleteOnClose);
     SetupUI();
-    PrereadConf();
 }
 
 ConfKIVDialog::~ConfKIVDialog()

@@ -29,7 +29,7 @@ ConfKDVDialog::ConfKDVDialog(ConfigKDV *ckdv, QWidget *parent) : AbstractConfDia
     ConfKxx = new ConfKxxDialog(S2Config);
     setAttribute(Qt::WA_DeleteOnClose);
     SetupUI();
-    PrereadConf();
+    // PrereadConf();
 }
 
 void ConfKDVDialog::SetupUI()

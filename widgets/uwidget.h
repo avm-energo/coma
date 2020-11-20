@@ -49,6 +49,7 @@ public slots:
 
 protected:
     bool m_updatesEnabled;
+    virtual void initAfterConnect();
 
 private:
     QString m_caption;
