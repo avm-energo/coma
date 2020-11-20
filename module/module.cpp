@@ -155,7 +155,7 @@ Module *Module::createModule(QTimer *updateTimer, BaseInterface *iface, AlarmWid
     m->addDialogToList(new InfoDialog, "О приборе", "info");
 
     QList<UDialog *> dlgs = m->dialogs();
-    foreach (UDialog *d, dlgs)
+    for (auto *d : dlgs)
     {
         connect(updateTimer, &QTimer::timeout, d, &UDialog::reqUpdate);
         d->setUpdatesDisabled();
