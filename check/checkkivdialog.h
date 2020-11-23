@@ -65,7 +65,7 @@ private:
     //        quint32 sigAdr;
     //        quint32 sigQuantity;
     //    };
-    //    const QList<BdQuery> FloatBdQueryList { { 101, 2 }, { 1000, 16 }, { 1100, 16 }, { 2400, 14 }, { 2420, 14 },
+    //    const QList<BdQuery> FloatBdQueryList { { 101, 2 }, { 1000, 16 }, { 1100, 16 }, { 2400, 7 }, { 2420, 14 },
     //        { 4501, 2 } };
     //    const QList<BdQuery> SpBdQueryList { { 3011, 25 } };
 
