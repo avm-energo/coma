@@ -8,9 +8,7 @@
 #include "settingstypes.h"
 
 #include <QCoreApplication>
-#include <QDialog>
 #include <QThread>
-#include <QVBoxLayout>
 
 IEC104::IEC104(QObject *parent) : BaseInterface(parent)
 {

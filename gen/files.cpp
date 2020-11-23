@@ -6,13 +6,16 @@
 
 #include <QDirIterator>
 #include <QFile>
+#ifdef QT_GUI_LIB
+
 #include <QFileDialog>
+#endif
 #include <QStorageInfo>
 
 Files::Files()
 {
 }
-
+#ifdef QT_GUI_LIB
 QString Files::ChooseFileForOpen(QWidget *parent, QString mask)
 {
     QFileDialog *dlg = new QFileDialog;
@@ -130,3 +133,4 @@ QString Files::GetFirstDriveWithLabel(QStringList &filepaths, const QString &lab
     }
     return str;
 }
+#endif

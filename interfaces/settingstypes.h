@@ -1,6 +1,6 @@
 #pragma once
-#include <variant>
 #include <QObject>
+#include <variant>
 
 struct IEC104Settings
 {
@@ -33,6 +33,7 @@ struct UsbHidSettings
     {
         return !(lhs == rhs);
     }
+
     unsigned short vendor_id;
     unsigned short product_id;
     QString serial;

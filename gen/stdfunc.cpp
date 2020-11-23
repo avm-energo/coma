@@ -1,14 +1,13 @@
 #include "stdfunc.h"
 
 #include "../gen/s2.h"
-#include "board.h"
 
 #include <QCoreApplication>
+#include <QDataStream>
 #include <QDateTime>
 #include <QDir>
 #include <QElapsedTimer>
 #include <QFile>
-#include <QFileDialog>
 #include <QHostAddress>
 #include <QProcess>
 #include <QSettings>

@@ -1,5 +1,4 @@
 #include "datamanager.h"
-#include "files.h"
 
 // QList<DataTypes::SignalsStruct> DataManager::s_outputList;
 // QMutex DataManager::s_outListMutex;

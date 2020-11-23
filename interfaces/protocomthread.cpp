@@ -2,7 +2,6 @@
 
 #include "../gen/datamanager.h"
 #include "../gen/logclass.h"
-#include "../gen/pch.h"
 #include "../gen/s2.h"
 #include "../gen/stdfunc.h"
 

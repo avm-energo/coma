@@ -59,7 +59,9 @@ void Logging::messageHandler(QtMsgType type, const QMessageLogContext &context, 
             context.line,                                                 // Line
             msg                                                           // Message
         };
+#ifdef QT_GUI_LIB
         ErrorQueue::GetInstance().pushError(tmpm);
+#endif
         break;
     }
     case QtDebugMsg:
@@ -83,7 +85,9 @@ void Logging::messageHandler(QtMsgType type, const QMessageLogContext &context, 
             context.line,                                                 // Line
             msg                                                           // Message
         };
+#ifdef QT_GUI_LIB
         ErrorQueue::GetInstance().pushError(tmpm);
+#endif
         break;
     }
     case QtFatalMsg:

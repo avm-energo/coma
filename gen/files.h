@@ -3,8 +3,9 @@
 #include "../gen/error.h"
 
 #include <QString>
+#ifdef QT_GUI_LIB
 #include <QWidget>
-
+#endif
 class Files
 {
 public:
@@ -27,11 +28,11 @@ public:
         JourWork = 5,
         JourMeas = 6,
         JourSw = 17,
-        JourEv = 18, // events journal (12->62)
+        JourEv = 18,   // events journal (12->62)
         FileOsc = 1000 // oscilloscope info
     };
     Files();
-
+#ifdef QT_GUI_LIB
     static QString ChooseFileForOpen(QWidget *parent, QString mask);
     static Error::Msg LoadFromFile(const QString &filename, QByteArray &ba);
     static QString ChooseFileForSave(
@@ -40,6 +41,7 @@ public:
     static QStringList Drives();
     static QStringList SearchForFile(QStringList &di, const QString &filename, bool subdirs = false);
     static QString GetFirstDriveWithLabel(QStringList &filepaths, const QString &label);
+#endif
 };
 
 #endif // FILES_H
