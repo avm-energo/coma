@@ -126,8 +126,8 @@ private:
 signals:
     void interfaceTypeChanged(Board::InterfaceType);
     void deviceTypeChanged(Board::DeviceType);
-    void boardTypeChanged(Types);
+    void boardTypeChanged(Board::Types);
     void typeChanged();
-    void connectionStateChanged(ConnectionState);
+    void connectionStateChanged(Board::ConnectionState);
     void healthChanged(quint32);
 };
