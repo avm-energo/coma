@@ -181,6 +181,8 @@ typedef struct DataRec
     quint32 num_byte;
     void *thedata;
 } DataRec;
+
+typedef QVector<S2DataTypes::DataRec> S2ConfigType;
 }
 
 Q_DECLARE_METATYPE(DataTypes::BitStringStruct)

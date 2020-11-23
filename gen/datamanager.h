@@ -3,7 +3,6 @@
 
 #include "datatypes.h"
 #include "error.h"
-#include "s2.h"
 #include "singleton.h"
 
 #include <QMutex>

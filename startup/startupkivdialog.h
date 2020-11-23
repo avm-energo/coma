@@ -18,7 +18,7 @@ public:
     explicit StartupKIVDialog(QWidget *parent = nullptr);
     ~StartupKIVDialog();
 
-    Error::Msg WriteCheckPassword();
+    bool WriteCheckPassword();
     void GetCorBd() override;
 
 private:

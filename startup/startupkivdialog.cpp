@@ -434,7 +434,7 @@ void StartupKIVDialog::ReadFromFile()
     QMessageBox::information(this, "Внимание", "Загрузка прошла успешно!");
 }
 
-Error::Msg StartupKIVDialog::WriteCheckPassword()
+bool StartupKIVDialog::WriteCheckPassword()
 {
     KeyPressDialog dlg; // = new KeyPressDialog;
     return dlg.CheckPassword("121941");

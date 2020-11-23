@@ -46,7 +46,7 @@ Module *Module::createModule(QTimer *updateTimer, BaseInterface *iface, AlarmWid
     Journals *JOUR;
     Module *m = new Module;
     m->m_iface = iface;
-    S2ConfigType *s2Config = new S2ConfigType;
+    S2DataTypes::S2ConfigType *s2Config = new S2DataTypes::S2ConfigType;
     m->m_alarmStateAllDialog = new AlarmStateAll;
     m->m_alarmStateAllDialog->UpdateHealth(board.health());
     quint16 typeb = Board::GetInstance().typeB();

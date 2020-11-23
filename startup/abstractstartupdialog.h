@@ -38,7 +38,7 @@ public:
     //    int first;
 
     QWidget *buttonWidget();
-    Error::Msg WriteCheckPassword();
+    bool WriteCheckPassword();
     virtual void GetCorBd();
     //    void ETHUpdate();
     //    void MBSUpdate();

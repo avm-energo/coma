@@ -2,7 +2,7 @@
 
 #include "config.h"
 
-ConfigKTF::ConfigKTF(S2ConfigType *config)
+ConfigKTF::ConfigKTF(S2DataTypes::S2ConfigType *config)
 {
     m_S2Config = config;
     for (int i = 0; i < m_S2Config->size(); ++i)
@@ -45,7 +45,7 @@ ConfigKTF::ConfigKTF(S2ConfigType *config)
     m_S2Config->append({ 0xFFFFFFFF, 0, nullptr });
 }
 
-S2ConfigType *ConfigKTF::S2Config()
+S2DataTypes::S2ConfigType *ConfigKTF::S2Config()
 {
     return m_S2Config;
 }

@@ -1,6 +1,6 @@
 #include "configkdv.h"
 
-ConfigKDV::ConfigKDV(S2ConfigType *config)
+ConfigKDV::ConfigKDV(S2DataTypes::S2ConfigType *config)
 {
     m_S2Config = config;
     for (int i = 0; i < m_S2Config->size(); ++i)
@@ -66,7 +66,7 @@ ConfigKDV::ConfigKDV(S2ConfigType *config)
     m_S2Config->append({ 0xFFFFFFFF, 0, nullptr });
 }
 
-S2ConfigType *ConfigKDV::S2Config()
+S2DataTypes::S2ConfigType *ConfigKDV::S2Config()
 {
     return m_S2Config;
 }

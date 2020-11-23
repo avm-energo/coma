@@ -184,7 +184,7 @@ private:
 
     //    QVector<S2::DataRec> *S2ConfigForTune;
     //    QVector<S2::DataRec> *S2Config;
-    S2ConfigType *S2Config;
+    S2DataTypes::S2ConfigType *S2Config;
 
     //    quint8 PredAlarmEvents[20];
     //    quint8 AlarmEvents[20];

@@ -88,7 +88,7 @@ Coma::Coma(QWidget *parent) : QMainWindow(parent)
 
 #endif
 
-    S2Config = new S2ConfigType;
+    S2Config = new S2DataTypes::S2ConfigType;
     Reconnect = false;
     //    timeDialog = nullptr;
     //    mainConfDialog = nullptr;
@@ -1203,7 +1203,13 @@ void Coma::Connect()
         return;
     }
     ActiveThreads = true;
-    // m_iface->reqFloats(4501, 2);
+    //    m_iface->reqFloats(2420, 14);
+    //    m_iface->reqFloats(2400, 7);
+    //    m_iface->reqFloats(4501, 2);
+    //    m_iface->reqFloats(1000, 16);
+    //    m_iface->reqFloats(2420, 14);
+    //    m_iface->reqFloats(1100, 16);
+    //    m_iface->reqFloats(101, 2);
     m_iface->reqBSI();
     // m_iface->reqTime();
     // m_iface->reqFile(4);

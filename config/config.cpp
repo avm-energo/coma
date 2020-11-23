@@ -6,7 +6,7 @@
 #include "../widgets/wd_func.h"
 
 #include <QVBoxLayout>
-Config::Config(S2ConfigType *config)
+Config::Config(S2DataTypes::S2ConfigType *config)
 {
     //    MainBlk.MTypeB = MTypeB;
     //    MainBlk.MTypeM = MTypeM;
@@ -15,7 +15,7 @@ Config::Config(S2ConfigType *config)
     setConfig(config);
 }
 
-void Config::setConfig(S2ConfigType *config)
+void Config::setConfig(S2DataTypes::S2ConfigType *config)
 {
     config->erase(
         std::remove_if(config->begin(), config->end(), [](S2DataTypes::DataRec i) { return i.id == 0xFFFFFFFF; }),

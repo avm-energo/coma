@@ -244,7 +244,7 @@ void AbstractStartupDialog::GetCorBdButton()
 //    }
 //}
 
-Error::Msg AbstractStartupDialog::WriteCheckPassword()
+bool AbstractStartupDialog::WriteCheckPassword()
 {
     KeyPressDialog dlg; // = new KeyPressDialog;
     return dlg.CheckPassword("121941");

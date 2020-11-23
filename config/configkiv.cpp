@@ -1,8 +1,6 @@
 #include "configkiv.h"
 
-//#include "../usb/commands.h"
-
-ConfigKIV::ConfigKIV(S2ConfigType *config)
+ConfigKIV::ConfigKIV(S2DataTypes::S2ConfigType *config)
 {
     m_S2Config = config;
     m_mainConfig = new Config(m_S2Config);
@@ -140,12 +138,12 @@ void ConfigKIV::setDefConf()
 //    return err;
 //}
 
-S2ConfigType *ConfigKIV::S2Config()
+S2DataTypes::S2ConfigType *ConfigKIV::S2Config()
 {
     return m_S2Config;
 }
 
-void ConfigKIV::setS2Config(S2ConfigType *s2config)
+void ConfigKIV::setS2Config(S2DataTypes::S2ConfigType *s2config)
 {
     m_S2Config = s2config;
 }

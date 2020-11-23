@@ -332,7 +332,7 @@ int JournalDialog::GetJourNum(const QString &objname)
 //{
 //}
 
-Error::Msg JournalDialog::WriteCheckPassword()
+bool JournalDialog::WriteCheckPassword()
 {
     KeyPressDialog dlg; // = new KeyPressDialog;
     return dlg.CheckPassword("121941");

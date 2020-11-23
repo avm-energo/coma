@@ -15,7 +15,7 @@ KeyPressDialog::KeyPressDialog(QWidget *parent) : QDialog(parent)
     SetPhrase("Введите пароль\nПодтверждение: клавиша Enter\nОтмена: клавиша Esc");
 }
 
-Error::Msg KeyPressDialog::CheckPassword(const QString &psw)
+bool KeyPressDialog::CheckPassword(const QString &psw)
 {
     //    m_pswValid = false;
     StdFunc::clearCancel();
@@ -25,16 +25,16 @@ Error::Msg KeyPressDialog::CheckPassword(const QString &psw)
     PasswordLoop.exec();
     if (StdFunc::isCancelled())
     {
-        ERMSG("Отмена ввода пароля");
-        return Error::Msg::GeneralError;
+        qCritical("Отмена ввода пароля");
+        return false;
     }
     if (m_pswEntered != psw)
     {
-        ERMSG("Пароль введён неверно");
+        qCritical("Пароль введён неверно");
         QMessageBox::critical(this, "Неправильно", "Пароль введён неверно", QMessageBox::Ok);
-        return Error::Msg::GeneralError;
+        return false;
     }
-    return Error::Msg::NoError;
+    return true;
 }
 
 void KeyPressDialog::SetupUI()

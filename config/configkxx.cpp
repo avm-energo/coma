@@ -8,12 +8,12 @@
 #include <QStackedWidget>
 #include <QVBoxLayout>
 
-ConfigKxx::ConfigKxx(S2ConfigType *config, QObject *parent) : QObject(parent)
+ConfigKxx::ConfigKxx(S2DataTypes::S2ConfigType *config, QObject *parent) : QObject(parent)
 {
     setConfig(config);
 }
 
-void ConfigKxx::setConfig(S2ConfigType *config)
+void ConfigKxx::setConfig(S2DataTypes::S2ConfigType *config)
 {
     //    for (int i = 0; i < config->size(); ++i)
     //    {

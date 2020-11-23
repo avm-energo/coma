@@ -96,7 +96,7 @@ void FWUploadDialog::RunSoft()
     }
 }
 
-Error::Msg FWUploadDialog::WriteCheckPassword()
+bool FWUploadDialog::WriteCheckPassword()
 {
     KeyPressDialog dlg; // = new KeyPressDialog;
     return dlg.CheckPassword("admin");
@@ -136,7 +136,7 @@ Error::Msg FWUploadDialog::ParseHexToS2(QByteArray ba)
     // quint32 tmpi = 0;
     // void *Rptr = static_cast<void *>(&PV_file.Type);
     // tmpi = sizeof(PV_file.Type)+sizeof(PV_file.File.FileDatHeader);
-    S2ConfigType S2DR;
+    S2DataTypes::S2ConfigType S2DR;
     uint usize;
     int i, j = 0, k, h, p, size, copysize, iVal;
     QString str, st;

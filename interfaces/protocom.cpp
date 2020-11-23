@@ -10,7 +10,7 @@
 #include <QDebug>
 #include <QThread>
 using Proto::CommandStruct;
-using Proto::Direction;
+// using Proto::Direction;
 using Proto::Starters;
 Protocom::Protocom(QObject *parent) : BaseInterface(parent)
 {
@@ -44,7 +44,7 @@ bool Protocom::start(const ConnectStruct &st)
     connect(this, &Protocom::wakeUpParser, parser, &ProtocomThread::wakeUp, Qt::DirectConnection);
     connect(port, &UsbHidPort::dataReceived, parser, &ProtocomThread::appendReadDataChunk, Qt::DirectConnection);
     qDebug() << QThread::currentThreadId();
-    connect(parser, &ProtocomThread::writeDataAttempt, port, &UsbHidPort::writeDataAttempt);
+    connect(parser, &ProtocomThread::writeDataAttempt, port, &UsbHidPort::writeDataAttempt, Qt::DirectConnection);
 
     if (!port->setupConnection())
         return false;
@@ -114,6 +114,10 @@ void Protocom::writeFile(quint32 filenum, const QByteArray &file)
     };
     DataManager::addToInQueue(inp);
     emit wakeUpParser();
+}
+
+void Protocom::writeConfigFile(S2DataTypes::S2ConfigType *)
+{
 }
 
 void Protocom::writeTime(quint32 time)

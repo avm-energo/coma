@@ -5,10 +5,9 @@
 #include "../gen/datamanager.h"
 #include "../gen/error.h"
 #include "../gen/files.h"
+#include "../gen/s2.h"
 #include "../gen/stdfunc.h"
 #include "../gen/timefunc.h"
-//#include "../iec104/iec104.h"
-//#include "../usb/commands.h"
 #include "../widgets/wd_func.h"
 
 #include <QGridLayout>
@@ -70,8 +69,8 @@ void AbstractConfDialog::ReadConf()
 
 void AbstractConfDialog::WriteConf()
 {
-    Error::Msg res = WriteCheckPassword();
-    if (res == Error::Msg::NoError)
+
+    if (WriteCheckPassword())
     {
         if (!PrepareConfToWrite())
         {
@@ -111,7 +110,7 @@ void AbstractConfDialog::confParameterReceived(const DataTypes::ConfParametersLi
     Fill();
 }
 
-Error::Msg AbstractConfDialog::WriteCheckPassword()
+bool AbstractConfDialog::WriteCheckPassword()
 {
     KeyPressDialog dlg; // = new KeyPressDialog;
     return dlg.CheckPassword("121941");

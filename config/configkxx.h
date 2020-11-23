@@ -1,7 +1,7 @@
 #ifndef CONFIGKXX_H
 #define CONFIGKXX_H
 
-#include "../gen/s2.h"
+#include "../gen/datatypes.h"
 
 #define BCI_IP 20
 #define BCI_MASK 21
@@ -49,7 +49,7 @@ class ConfigKxx : public QObject
 {
     Q_OBJECT
 public:
-    ConfigKxx(S2ConfigType *config, QObject *parent = nullptr);
+    ConfigKxx(S2DataTypes::S2ConfigType *config, QObject *parent = nullptr);
 
     struct TempConfStruct
     {
@@ -90,7 +90,7 @@ public:
     } Com;
     Com Com_param;
 
-    void setConfig(S2ConfigType *config);
+    void setConfig(S2DataTypes::S2ConfigType *config);
     void SetDefConf();
     void Fill();
     void FillBack();

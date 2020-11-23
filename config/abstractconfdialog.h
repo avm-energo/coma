@@ -30,7 +30,7 @@ public:
     void PrereadConf();
     // int GetChNumFromObjectName(QString ObjectName);
 
-    Error::Msg WriteCheckPassword();
+    bool WriteCheckPassword();
 
 public slots:
     void WriteConfMessageOk(const DataTypes::GeneralResponseStruct &rsp);
@@ -40,7 +40,7 @@ public slots:
 
 protected:
     bool ok;
-    S2ConfigType *S2Config;
+    S2DataTypes::S2ConfigType *S2Config;
     QStringList CheckConfErrors;
     //    QStringList Sbaud { "1200", "2400", "4800", "9600", "19200", "38400", "57600", "115200" };
     QWidget *ConfButtons();

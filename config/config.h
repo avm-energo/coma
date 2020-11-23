@@ -1,7 +1,7 @@
 #ifndef CONFIG
 #define CONFIG
 
-#include "../gen/s2.h"
+#include "../gen/datatypes.h"
 
 #include <QMap>
 
@@ -34,7 +34,7 @@
 class Config
 {
 public:
-    explicit Config(S2ConfigType *config);
+    explicit Config(S2DataTypes::S2ConfigType *config);
 
     enum BaseBoards
     {
@@ -143,7 +143,7 @@ public:
         return Map;
     }
 
-    void setConfig(S2ConfigType *config);
+    void setConfig(S2DataTypes::S2ConfigType *config);
     void SetDefConf();
     QWidget *MainWidget(QWidget *parent);
     QWidget *TimeWidget(QWidget *parent);

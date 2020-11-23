@@ -14,7 +14,7 @@ public:
 
     void SetupUI();
     Error::Msg ParseHexToS2(QByteArray ba);
-    Error::Msg WriteCheckPassword();
+    bool WriteCheckPassword();
 
     quint32 NN;
 
