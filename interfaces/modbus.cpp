@@ -13,6 +13,7 @@
 #include <QDebug>
 #include <QStandardPaths>
 #include <QThread>
+#include <QWaitCondition>
 #include <algorithm>
 
 QMutex RunMutex, InMutex, OutMutex, OutWaitMutex;
