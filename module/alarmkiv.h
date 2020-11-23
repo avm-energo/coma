@@ -3,8 +3,6 @@
 
 #include "alarm.h"
 
-#define KIVALARMCOUNT 7
-
 class AlarmKIV : public Alarm
 {
     Q_OBJECT

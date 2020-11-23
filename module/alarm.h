@@ -3,7 +3,6 @@
 
 #include "../gen/datatypes.h"
 
-#include <QBitArray>
 #include <QWidget>
 #include <bitset>
 
