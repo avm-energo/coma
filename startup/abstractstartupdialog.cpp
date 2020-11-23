@@ -169,6 +169,7 @@ void AbstractStartupDialog::updateStatus()
     //    while (DataManager::getResponse(DataTypes::GeneralResponseTypes::Ok, grs)
     //        != Error::Msg::ResEmpty) // get all responses from outList
     //        TimeFunc::Wait();
+    // FIXME grs uninit
     if (grs.type == DataTypes::GeneralResponseTypes::Ok)
         QMessageBox::information(this, "INFO", "Записано успешно");
 }
