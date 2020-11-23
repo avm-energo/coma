@@ -13,7 +13,7 @@ class ConfKDVDialog : public AbstractConfDialog
 {
     Q_OBJECT
 public:
-    ConfKDVDialog(ConfigKDV *ckdv, QWidget *parent = nullptr);
+    explicit ConfKDVDialog(ConfigKDV *ckdv, QWidget *parent = nullptr);
 
 private:
     ConfigKDV *CKDV;
@@ -29,6 +29,8 @@ private:
     void SetupUI() override;
     void CheckConf() override;
     //    void setConnections() override;
+
+    QWidget *analogWidget();
 
 public slots:
     //    void Set104(double);
