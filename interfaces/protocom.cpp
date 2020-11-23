@@ -20,11 +20,16 @@ bool Protocom::start(const ConnectStruct &st)
 {
     Q_ASSERT(Board::GetInstance().interfaceType() == Board::InterfaceType::USB);
     Q_ASSERT(std::holds_alternative<UsbHidSettings>(st.settings));
-    qInfo() << metaObject()->className() << "connected";
+
     if (!std::holds_alternative<UsbHidSettings>(st.settings))
         return false;
     const auto settings = std::get<UsbHidSettings>(st.settings);
-    UsbHidPort *port = new UsbHidPort(settings, Log);
+    return start(settings);
+}
+
+bool Protocom::start(const UsbHidSettings &usbhid)
+{
+    UsbHidPort *port = new UsbHidPort(usbhid, Log);
     ProtocomThread *parser = new ProtocomThread;
 
     QThread *portThread = new QThread;
@@ -52,6 +57,7 @@ bool Protocom::start(const ConnectStruct &st)
     Board::GetInstance().setConnectionState(Board::ConnectionState::Connected);
     portThread->start();
     parseThread->start();
+    qInfo() << metaObject()->className() << "connected";
     return true;
 }
 

@@ -3,6 +3,7 @@
 #include "baseinterface.h"
 #include "protocomprivate.h"
 
+struct UsbHidSettings;
 class Protocom : public BaseInterface
 {
     Q_OBJECT
@@ -10,6 +11,7 @@ public:
     explicit Protocom(QObject *parent = nullptr);
 
     bool start(const ConnectStruct &st) override;
+    bool start(const UsbHidSettings &usbhid);
     void stop() override;
 
     void reqTime() override;
