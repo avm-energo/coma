@@ -1,7 +1,12 @@
 #include "uwidget.h"
 
 #include "../gen/colors.h"
+#include "../gen/datamanager.h"
+#include "../gen/stdfunc.h"
 #include "wd_func.h"
+
+#include <QCoreApplication>
+#include <QEventLoop>
 
 UWidget::UWidget(QWidget *parent) : QWidget(parent)
 {
@@ -53,6 +58,18 @@ void UWidget::setSpBdQuery(const QList<UWidget::BdQuery> &list)
     m_spBdQueryList = list;
 }
 
+void UWidget::sendCommandWithResult(Queries::Commands cmd, QVariant item)
+{
+    m_busy = true;
+    connect(&DataManager::GetInstance(), &DataManager::blockReceived, this, &UWidget::resultReady);
+    m_iface->writeCommand(cmd, item);
+    while (m_busy)
+    {
+        QCoreApplication::processEvents(QEventLoop::AllEvents);
+        StdFunc::Wait();
+    }
+}
+
 void UWidget::updateFloatData(const DataTypes::FloatStruct &fl)
 {
     if ((m_updatesEnabled) && (m_timerCounter >= m_timerMax)) // every second tick of the timer
@@ -66,9 +83,16 @@ void UWidget::updateSPData(const DataTypes::SinglePointWithTimeStruct &sp)
         WDFunc::SetLBLTColor(this, QString::number(hst.fieldnum), (sp.sigVal == 1) ? Colors::TABCOLORA1 : hst.color);
 }
 
+void UWidget::resultReady(const DataTypes::BlockStruct &bs)
+{
+    disconnect(&DataManager::GetInstance(), &DataManager::blockReceived, this, &UWidget::resultReady);
+
+    m_busy = false;
+}
+
 void UWidget::reqUpdate()
 {
-    // NOTE Костыль
+    // NOTE: POS (Piece Of Shit)
     if (!m_updatesEnabled)
         return;
     for (const auto &query : m_floatBdQueryList)

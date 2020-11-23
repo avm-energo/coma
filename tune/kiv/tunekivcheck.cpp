@@ -1,6 +1,6 @@
 #include "tunekivcheck.h"
 
-#include "../../usb/commands.h"
+#include "../../interfaces/protocom.h"
 #include "../../widgets/wd_func.h"
 
 #include <QDialog>
@@ -15,7 +15,7 @@ TuneKIVCheck::TuneKIVCheck(int tuneStep, ConfigKIV *ckiv, TuneKIV *kiv, QWidget 
     //    S2Config = TKIV->getS2Config();
     //    m_tuneStep = 1;
     //    SetupUI();
-    addDataBlock()
+    //    addDataBlock()
 }
 
 // void TuneKIVCheck::SetupUI()
@@ -80,7 +80,7 @@ void TuneKIVCheck::SetDefCoefs()
 
 Error::Msg TuneKIVCheck::setSMode2()
 {
-    return Commands::SetMode(0x02);
+    //    return Commands::SetMode(0x02);
 }
 
 Error::Msg TuneKIVCheck::setNewConfig()

@@ -14,6 +14,7 @@ enum SignalTypes
     ByteArray,
     File,
     ConfParametersList,
+    Block,
     GeneralResponse
 };
 

@@ -37,6 +37,7 @@ public:
     void setHighlightMap(const QMap<int, QList<HighlightWarnAlarmStruct>> &map);
     void setFloatBdQuery(const QList<BdQuery> &list);
     void setSpBdQuery(const QList<BdQuery> &list);
+    void sendCommandWithResult(Queries::Commands cmd, QVariant item);
     void setInterface(BaseInterface *iface);
     BaseInterface *iface();
 
@@ -56,10 +57,15 @@ private:
     quint32 m_timerCounter;
     quint32 m_timerMax;
     BaseInterface *m_iface;
+    bool m_busy;
+    int m_regLeast, m_regCount;
 
     QList<BdQuery> m_floatBdQueryList;
     QList<BdQuery> m_spBdQueryList;
     QMap<int, QList<HighlightWarnAlarmStruct>> m_highlightMap;
+
+private slots:
+    void resultReady(const DataTypes::BlockStruct &bs);
 };
 
 #endif // UWIDGET_H

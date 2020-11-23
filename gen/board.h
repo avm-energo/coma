@@ -80,7 +80,7 @@ public:
     quint16 type(Types type) const;
 
     quint32 serialNumber(Types type) const;
-    quint32 UID(Range ran) const;
+    QString UID() const;
 
     InterfaceType interfaceType() const;
     void setInterfaceType(InterfaceType iface);

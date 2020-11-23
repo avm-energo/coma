@@ -4,7 +4,7 @@
 #include "../gen/board.h"
 #include "../gen/error.h"
 #include "../gen/files.h"
-#include "../gen/modulebsi.h"
+//#include "../gen/modulebsi.h"
 #include "../gen/stdfunc.h"
 #include "../gen/timefunc.h"
 #include "../interfaces/protocom.h"
@@ -460,7 +460,7 @@ bool AbstractTuneDialog::writeTuneCoefs()
 
 Error::Msg AbstractTuneDialog::checkCalibrStep()
 {
-    QString cpuserialnum = ModuleBSI::GetInstance().UID();
+    QString cpuserialnum = Board::GetInstance().UID();
     QSettings storedcalibrations(StdFunc::GetSystemHomeDir() + "calibr.ini", QSettings::IniFormat);
     if (!storedcalibrations.contains(cpuserialnum))
     {
@@ -482,7 +482,7 @@ Error::Msg AbstractTuneDialog::checkCalibrStep()
 
 void AbstractTuneDialog::saveTuneSequenceFile()
 {
-    QString cpuserialnum = ModuleBSI::GetInstance().UID();
+    QString cpuserialnum = Board::GetInstance().UID();
     QSettings storedcalibrations(StdFunc::GetSystemHomeDir() + "calibr.ini", QSettings::IniFormat);
     storedcalibrations.setValue(cpuserialnum + "/step", m_tuneStep);
 }
@@ -490,10 +490,9 @@ void AbstractTuneDialog::saveTuneSequenceFile()
 Error::Msg AbstractTuneDialog::saveWorkConfig()
 {
     //    return SaveBlocksToFiles(DataBlock::DataBlockTypes::BciBlock);
-    if (Commands::GetFileWithRestore(CM_CONFIGFILE, S2Config) == Error::Msg::NoError)
-        memcpy(&m_BciSaveBlock, &CKIV->Bci_block, sizeof(ConfigKIV::Bci));
-    else
-        return Error::Msg::GeneralError;
+    iface()->reqFile(Files::FilesEnum::Config, true);
+    memcpy(&m_BciSaveBlock, &CKIV->Bci_block, sizeof(ConfigKIV::Bci));
+    else return Error::Msg::GeneralError;
     return Error::Msg::NoError;
 }
 

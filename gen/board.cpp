@@ -87,19 +87,21 @@ quint32 Board::serialNumber(Board::Types type) const
     }
 }
 
-quint32 Board::UID(Range ran) const
+QString Board::UID() const
 {
-    switch (ran)
-    {
-    case High:
-        return m_baseSerialInfo.UIDHigh;
-    case Mid:
-        return m_baseSerialInfo.UIDMid;
-    case Low:
-        return m_baseSerialInfo.UIDLow;
-    default:
-        return 0;
-    }
+    //    switch (ran)
+    //    {
+    //    case High:
+    //        return m_baseSerialInfo.UIDHigh;
+    //    case Mid:
+    //        return m_baseSerialInfo.UIDMid;
+    //    case Low:
+    //        return m_baseSerialInfo.UIDLow;
+    //    default:
+    //        return 0;
+    //    }
+    return QString::number(m_baseSerialInfo.UIDHigh, 16) + QString::number(m_baseSerialInfo.UIDMid, 16)
+        + QString::number(m_baseSerialInfo.UIDLow, 16);
 }
 
 Board::InterfaceType Board::interfaceType() const

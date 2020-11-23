@@ -24,15 +24,15 @@ namespace Limits
     // по-своему
     constexpr unsigned MinOscillogramId = 1000;
 
-    // максимальный ИД журналов
-    constexpr byte MaxJournalId = 6;
-    // минимальный ИД журналов
-    constexpr byte MinJournalId = 4;
+    //    // максимальный ИД журналов
+    //    constexpr byte MaxJournalId = 6;
+    //    // минимальный ИД журналов
+    //    constexpr byte MinJournalId = 4;
 
-    constexpr byte ConfigFileId = 1;
-    constexpr byte FirmwareFileId = 3;
-    constexpr byte SwjFileId = 17;
-    constexpr byte EventFileId = 18;
+    //    constexpr byte ConfigFileId = 1;
+    //    constexpr byte FirmwareFileId = 3;
+    //    constexpr byte SwjFileId = 17;
+    //    constexpr byte EventFileId = 18;
 } // namespace Limits
 // Канал связи с модулем
 // таймаут по USB в мс

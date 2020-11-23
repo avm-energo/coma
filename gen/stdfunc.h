@@ -34,7 +34,7 @@ public:
                                         // => 0, 1 => 1, 2 => 2, 3 => 4, ...)
     static QString PrbMessage();
     static void SetPrbMessage(const QString &msg);
-    static void Wait(int ms);
+    static void Wait(int ms = MAINSLEEP);
 
     static quint32 ping(quint32 addr);
     static quint32 checkPort(quint32 ip4Addr, quint16 port);
