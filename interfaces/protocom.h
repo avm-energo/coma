@@ -24,6 +24,9 @@ public:
     void reqFloats(quint32 sigAdr, quint32 sigCount) override;
 
 private:
+signals:
+    void wakeUpParser();
+    void wakeUpPort();
 };
 
 namespace

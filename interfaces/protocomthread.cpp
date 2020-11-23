@@ -48,39 +48,41 @@ ProtocomThread::ProtocomThread(QObject *parent) : QObject(parent)
 
 void ProtocomThread::setReadDataChunk(const QByteArray &readDataChunk)
 {
-    m_rwLocker.lockForWrite();
+    // QMutexLocker locker(&_mutex);
     m_readData = readDataChunk;
-    m_rwLocker.unlock();
+    _waiter.wakeOne();
+    emit readyRead();
 }
 
 void ProtocomThread::appendReadDataChunk(const QByteArray &readDataChunk)
 {
-    m_rwLocker.lockForWrite();
+    // QMutexLocker locker(&_mutex);
     m_readData.append(readDataChunk);
-    m_rwLocker.unlock();
+    _waiter.wakeOne();
     emit readyRead();
 }
 
 void ProtocomThread::wakeUp()
 {
-    _waiter.wakeAll();
+    _waiter.wakeOne();
 }
 
 void ProtocomThread::parse()
 {
     forever
     {
-        m_rwLocker.lockForWrite();
-        //_waiter.wait(&m_rwLocker);
-        if (!m_readData.isEmpty())
+        _mutex.lock();
+        if (!isCommandRequested)
+            checkQueue();
+        if (m_readData.isEmpty())
+            _waiter.wait(&_mutex);
+        else
         {
-
             parseResponse(m_readData);
             m_readData.clear();
         }
-        else
-            checkQueue();
-        m_rwLocker.unlock();
+
+        _mutex.unlock();
     }
 }
 
@@ -187,6 +189,7 @@ void ProtocomThread::handle(const Proto::Commands cmd)
         handleCommand(m_buffer.second);
         break;
     }
+    isCommandRequested = false;
     m_buffer.first = 0;
     m_buffer.second.clear();
 }
@@ -199,6 +202,7 @@ void ProtocomThread::checkQueue()
     switch (inp.cmd)
     {
     default:
+        isCommandRequested = true;
         m_currentCommand = inp;
         parseRequest(inp);
         break;

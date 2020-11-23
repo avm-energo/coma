@@ -23,7 +23,7 @@ public:
 private:
     QByteArray InData, OutData;
     QByteArray m_writeData, m_readData;
-
+    bool isCommandRequested = false;
     void finish(Error::Msg msg);
 
     void parseResponse(QByteArray ba);
@@ -32,7 +32,7 @@ private:
 
     LogClass *log;
 
-    QReadWriteLock m_rwLocker;
+    QMutex _mutex;
     // QMutex _mutex;
     QWaitCondition _waiter;
     void writeLog(QByteArray ba, Proto::Direction dir = Proto::NoDirection);

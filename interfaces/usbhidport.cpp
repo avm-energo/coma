@@ -66,33 +66,33 @@ bool UsbHidPort::setupConnection()
 void UsbHidPort::poll()
 {
     int bytes;
-    std::array<byte, HID::MaxSegmenthLength + 1> array; // +1 to ID
+
     while (Board::GetInstance().connectionState() != Board::ConnectionState::Closed)
     {
         // check if there's any data in input buffer
         if (Board::GetInstance().connectionState() == Board::ConnectionState::AboutToFinish)
             continue;
-        if (m_hidDevice)
+        if (!m_hidDevice)
+            continue;
+        std::array<byte, HID::MaxSegmenthLength + 1> array; // +1 to ID
+        bytes = hid_read(m_hidDevice, array.data(), HID::MaxSegmenthLength + 1);
+        // Write
+        if (bytes < 0)
         {
-            bytes = hid_read(m_hidDevice, array.data(), HID::MaxSegmenthLength + 1);
-            // Write
-            if (bytes < 0)
-            {
-                // -1 is the only error value according to hidapi documentation.
-                Q_ASSERT(bytes == -1);
-                continue;
-            }
-            // Read
-            if (bytes > 0)
-            {
-                QByteArray ba(reinterpret_cast<char *>(array.data()), bytes);
-                writeLog(ba.toHex(), Direction::FromDevice);
-                emit dataReceived(ba);
-            }
-            QCoreApplication::processEvents(QEventLoop::AllEvents);
-            // write data to port if there's something delayed in out queue
-            checkQueue();
+            // -1 is the only error value according to hidapi documentation.
+            Q_ASSERT(bytes == -1);
+            continue;
         }
+        // Read
+        if (bytes > 0)
+        {
+            QByteArray ba(reinterpret_cast<char *>(array.data()), bytes);
+            writeLog(ba.toHex(), Direction::FromDevice);
+            emit dataReceived(ba);
+        }
+        QCoreApplication::processEvents(QEventLoop::AllEvents);
+        // write data to port if there's something delayed in out queue
+        checkQueue();
     }
     finish();
 }
