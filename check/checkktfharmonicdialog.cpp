@@ -4,6 +4,7 @@
 #include "../gen/colors.h"
 #include "../gen/datamanager.h"
 #include "../gen/error.h"
+#include "../module/modules.h"
 #include "../widgets/wd_func.h"
 
 #include <QCoreApplication>
@@ -32,7 +33,7 @@ CheckKTFHarmonicDialog::CheckKTFHarmonicDialog(QWidget *parent) : AbstractCheckD
 
     setAttribute(Qt::WA_DeleteOnClose);
 
-    if (Config::MTB_A2)
+    if (Modules::MTB_A2)
 
         sl = QStringList { "Гармоники U 2-11", "Гармоники U 12-21", "Гармоники U 22-31", "Гармоники U 32-41",
             "Гармоники U 42-51", "Гармоники U 52-61", "Гармоники I 2-11", "Гармоники I 12-21", "Гармоники I 22-31",

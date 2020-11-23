@@ -131,7 +131,7 @@ QWidget *ConfKIVDialog::analogWidget()
     QFont font;
     QVBoxLayout *lyout = new QVBoxLayout;
     QGridLayout *gridlyout = new QGridLayout;
-    QString phase[3] = { "Фаза A:", "Фаза B:", "Фаза C:" };
+    const QStringList phase { "Фаза A:", "Фаза B:", "Фаза C:" };
     //    QString paramcolor = Colors::MAINWINCLR;
     int row = 0;
     QGroupBox *gb = new QGroupBox("Аналоговые параметры");
@@ -147,9 +147,9 @@ QWidget *ConfKIVDialog::analogWidget()
     gridlyout->addWidget(WDFunc::NewSPB(this, "U2nom", 0, 10000, 1, Colors::MAINWINCLR), row, 2, 1, 3);
     row++;
 
-    for (int i = 0; i < 3; i++)
+    for (int i = 0; i < phase.size(); i++)
     {
-        gridlyout->addWidget(WDFunc::NewLBL(this, phase[i]), row, 2 + i, 1, 1, Qt::AlignTop);
+        gridlyout->addWidget(WDFunc::NewLBL(this, phase.at(i)), row, 2 + i, 1, 1, Qt::AlignTop);
     }
     row++;
 

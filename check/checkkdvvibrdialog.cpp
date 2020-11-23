@@ -32,7 +32,7 @@ CheckKDVVibrDialog::CheckKDVVibrDialog(QWidget *parent) : AbstractCheckDialog(pa
 
     setAttribute(Qt::WA_DeleteOnClose);
 
-    if (Config::MTB_A2)
+    if (Modules::MTB_A2)
 
         sl = QStringList { "Вибрации", "Вибрации", "Вибрации" };
 

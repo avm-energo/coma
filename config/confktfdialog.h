@@ -2,8 +2,6 @@
 #define CONFDIALOGKTF_H
 
 #include "../config/configktf.h"
-//#include "../iec104/ethernet.h"
-//#include "../iec104/iec104.h"
 #include "abstractconfdialog.h"
 
 #include <QDialog>
@@ -14,7 +12,7 @@ class ConfKTFDialog : public AbstractConfDialog
 {
     Q_OBJECT
 public:
-    ConfKTFDialog(ConfigKTF *cktf, QWidget *parent = nullptr);
+    explicit ConfKTFDialog(ConfigKTF *cktf, QWidget *parent = nullptr);
     ~ConfKTFDialog();
 
     int getRCount();
@@ -27,7 +25,7 @@ private:
     //    QTimer *timer;
     //    QTimer *timerRead;
 
-    QStringList Rates = { "256", "128", "64", "32", "16" };
+    const QStringList Rates { "256", "128", "64", "32", "16" };
 
     bool DDosc;
     bool Mb;

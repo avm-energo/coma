@@ -35,7 +35,7 @@ CheckKTFDialog::CheckKTFDialog(QWidget *parent) : AbstractCheckDialog(parent)
     //    SetBd(BD_COMMON, &Ch->Bd_block0, sizeof(Check::Bd0));
     //    SetBd(17, &ChKTF->Bd_block13, sizeof(CheckKTF::Bd13));
 
-    if (Config::MTB_A2) //(ModuleBSI::GetMType(BoardTypes::BT_BASE) << 8)
+    if (Modules::MTB_A2) //(ModuleBSI::GetMType(BoardTypes::BT_BASE) << 8)
 
         sl = QStringList { "Основные", "Модель", "Ресурс", "1-я гармоника", "Несимметрия" };
 

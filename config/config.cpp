@@ -36,8 +36,8 @@ void Config::setConfig(S2DataTypes::S2ConfigType *config)
 
 void Config::SetDefConf()
 {
-    MainBlk.MTypeB = DEF_MTYPEB;
-    MainBlk.MTypeM = DEF_MTYPEM;
+    MainBlk.MTypeB = Modules::MTB_00;
+    MainBlk.MTypeM = Modules::MTM_00;
     MainBlk.Ctype = DEF_CTYPE;
     MainBlk.Abs_104 = DEF_ABS_104;
     MainBlk.Cycle_104 = DEF_CYCLE_104;
