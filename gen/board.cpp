@@ -30,7 +30,7 @@ Board::Board(Singleton::token)
 
 quint16 Board::typeB() const
 {
-    return (m_baseSerialInfo.MTypeB >> 16);
+    return m_baseSerialInfo.MTypeB;
 }
 
 // void Board::setTypeB(const quint16 &typeB)
@@ -41,7 +41,7 @@ quint16 Board::typeB() const
 
 quint16 Board::typeM() const
 {
-    return (m_baseSerialInfo.MTypeM >> 16);
+    return m_baseSerialInfo.MTypeM;
 }
 
 // void Board::setTypeM(const quint16 &typeM)
@@ -52,8 +52,8 @@ quint16 Board::typeM() const
 
 quint16 Board::type() const
 {
-    const quint16 Mtypem = typeM() >> 8;
-    const quint16 Mtypeb = typeB();
+    const quint16 Mtypem = typeM();
+    const quint16 Mtypeb = typeB() << 8;
     return quint16(Mtypeb + Mtypem);
 }
 

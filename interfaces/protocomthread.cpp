@@ -8,7 +8,6 @@
 #include <QDebug>
 #include <QMetaEnum>
 #include <QThread>
-#include <QtEndian>
 #include <array>
 
 typedef QQueue<QByteArray> ByteQueue;
@@ -481,8 +480,8 @@ ByteQueue prepareLongBlk(CommandStruct &cmdStr)
 void handleBitString(const QByteArray &ba, quint16 sigAddr)
 {
     Q_ASSERT(ba.size() == sizeof(quint32));
-    // NOTE Переделать ужас
-    quint32 value = qFromBigEndian<quint32>(ba.data());
+
+    quint32 value = *reinterpret_cast<const quint32 *>(ba.data());
     DataTypes::BitStringStruct resp { sigAddr, value, {} };
     DataManager::addSignalToOutList(DataTypes::SignalTypes::BitString, resp);
 }
@@ -500,7 +499,7 @@ void handleBitStringArray(const QByteArray &ba, QList<quint16> arr_addr)
 void handleFloat(const QByteArray &ba, quint32 sigAddr)
 {
     Q_ASSERT(ba.size() == 4);
-    float blk = qFromLittleEndian<float>(ba.data());
+    float blk = *reinterpret_cast<const float *>(ba.data());
     DataTypes::FloatStruct resp { sigAddr, blk };
     DataManager::addSignalToOutList(DataTypes::SignalTypes::Float, resp);
 }

@@ -29,6 +29,7 @@ private:
         float corTg[3];     // коррекция  tg δ вводов
         float Iunb_init;    // Начальное действ. значение тока небаланса
         float Phy_unb_init; // Начальное значение угла тока небаланса
+        quint32 stat;
     };
 
     CorData *CorBlock;
