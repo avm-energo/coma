@@ -10,8 +10,18 @@
 #include <QDebug>
 #include <QThread>
 using Proto::CommandStruct;
-// using Proto::Direction;
 using Proto::Starters;
+
+void handleBlk(const Proto::Commands cmd, const quint32 blk, QByteArray data = {});
+inline void handleBlk(Proto::Commands cmd, quint32 addr, quint32 count);
+inline void handleInt(Proto::Commands cmd, QByteArray data);
+inline void handleBlk(const Proto::Commands cmd, const DataTypes::Signal &signal);
+inline void handleBlk(const Proto::Commands cmd, const DataTypes::ConfParameterStruct &str);
+inline void handleBlk(const Proto::Commands cmd, const DataTypes::BlockStruct &str);
+
+void handleCommand(const Proto::Commands cmd);
+void handleCommand(const Proto::WCommands cmd);
+
 Protocom::Protocom(QObject *parent) : BaseInterface(parent)
 {
 }
@@ -142,52 +152,6 @@ void Protocom::reqFloats(quint32 sigAdr, quint32 sigCount)
     emit wakeUpParser();
 }
 
-void handleBlk(const Proto::Commands cmd, const quint32 blk, QByteArray data = {})
-{
-    CommandStruct inp {
-        cmd,        // Command
-        blk,        // Block number, cmd number for WriteCommand, or empty for some cmds
-        QVariant(), // Null arg
-        data        // QByteArray data, maybe empty
-    };
-    DataManager::addToInQueue(inp);
-}
-
-inline void handleBlk(Proto::Commands cmd, quint32 addr, quint32 count)
-{
-    Q_ASSERT(!Proto::getBlkByReg.contains(addr));
-    auto blkPair = Proto::getBlkByReg.value(addr);
-    Q_ASSERT(blkPair.second != count);
-    handleBlk(cmd, blkPair.first);
-}
-
-inline void handleInt(Proto::Commands cmd, QByteArray data)
-{
-    handleBlk(cmd, NULL, data);
-}
-
-inline void handleBlk(const Proto::Commands cmd, const DataTypes::Signal &signal)
-{
-    handleBlk(cmd, signal.addr, signal.value);
-}
-
-inline void handleBlk(const Proto::Commands cmd, const DataTypes::ConfParameterStruct &str)
-{
-    handleBlk(cmd, str.ID, str.data);
-}
-
-void handleCommand(const Proto::Commands cmd)
-{
-    CommandStruct inp { cmd, QVariant(), QVariant(), QByteArray {} };
-    DataManager::addToInQueue(inp);
-}
-
-void handleCommand(const Proto::WCommands cmd)
-{
-    CommandStruct inp { Proto::WriteBlkCmd, cmd, QVariant(), QByteArray {} };
-    DataManager::addToInQueue(inp);
-}
-
 void Protocom::writeCommand(Queries::Commands cmd, QVariant item)
 {
     using namespace Proto;
@@ -210,6 +174,8 @@ void Protocom::writeCommand(Queries::Commands cmd, QVariant item)
     case Commands::ReadBlkData:
 
         //  NOTE Эта команда выполняется иначе
+        // принимает адрес регистров и количество
+        // Можно сделать и параллельно блоки
         Q_ASSERT(item.canConvert<Signal>());
         handleBlk(protoCmd, item.value<Signal>());
         break;
@@ -268,4 +234,55 @@ void Protocom::writeCommand(Queries::Commands cmd, QVariant item)
     }
     }
     emit wakeUpParser();
+}
+
+void handleBlk(const Proto::Commands cmd, const quint32 blk, QByteArray data)
+{
+    CommandStruct inp {
+        cmd,        // Command
+        blk,        // Block number or empty for some cmds
+        QVariant(), // Null arg
+        data        // QByteArray data, maybe empty
+    };
+    DataManager::addToInQueue(inp);
+}
+
+inline void handleBlk(Proto::Commands cmd, quint32 addr, quint32 count)
+{
+    Q_ASSERT(!Proto::getBlkByReg.contains(addr));
+    auto blkPair = Proto::getBlkByReg.value(addr);
+    Q_ASSERT(blkPair.second != count);
+    handleBlk(cmd, blkPair.first);
+}
+
+inline void handleInt(Proto::Commands cmd, QByteArray data)
+{
+    handleBlk(cmd, NULL, data);
+}
+
+inline void handleBlk(const Proto::Commands cmd, const DataTypes::Signal &signal)
+{
+    handleBlk(cmd, signal.addr, signal.value);
+}
+
+inline void handleBlk(const Proto::Commands cmd, const DataTypes::ConfParameterStruct &str)
+{
+    handleBlk(cmd, str.ID, str.data);
+}
+
+inline void handleBlk(const Proto::Commands cmd, const DataTypes::BlockStruct &str)
+{
+    handleBlk(cmd, str.ID, str.data);
+}
+
+void handleCommand(const Proto::Commands cmd)
+{
+    CommandStruct inp { cmd, QVariant(), QVariant(), QByteArray {} };
+    DataManager::addToInQueue(inp);
+}
+
+void handleCommand(const Proto::WCommands cmd)
+{
+    CommandStruct inp { Proto::WriteBlkCmd, cmd, QVariant(), QByteArray {} };
+    DataManager::addToInQueue(inp);
 }

@@ -36,9 +36,10 @@ void handleFloatArray(const QByteArray &ba, quint32 sigAddr, quint32 sigCount);
 void handleFile(QByteArray &ba, quint16 addr, bool isShouldRestored);
 void handleInt(const byte num);
 void handleBool(const bool status = true, int errorSize = 0, int errorCode = 0);
+void handleRawBlock(const QByteArray &ba, quint32 blkNum);
 inline void handleCommand(const QByteArray &ba);
 
-ProtocomThread::ProtocomThread(QObject *parent) : QObject(parent)
+ProtocomThread::ProtocomThread(QObject *parent) : QObject(parent), m_currentCommand({})
 {
     // QString tmps = "=== Log started ===";
     // log = new LogClass;
@@ -156,12 +157,14 @@ void ProtocomThread::handle(const Proto::Commands cmd)
 
     case Commands::ReadBlkAC:
 
-        handleFloatArray(m_buffer.second, addr, count);
+        // handleFloatArray(m_buffer.second, addr, count);
+        handleRawBlock(m_buffer.second, addr);
         break;
 
     case Commands::ReadBlkDataA:
 
-        handleFloatArray(m_buffer.second, addr, count);
+        // handleFloatArray(m_buffer.second, addr, count);
+        handleRawBlock(m_buffer.second, addr);
         break;
 
     case Commands::ReadBlkData:
@@ -211,9 +214,10 @@ void ProtocomThread::checkQueue()
 
 void ProtocomThread::parseRequest(const CommandStruct &cmdStr)
 {
+    qDebug("Start parse request");
     // Предполагается не хранить текущую команду
     Q_UNUSED(cmdStr)
-    qDebug() << QThread::currentThreadId();
+    // qDebug() << QThread::currentThreadId();
     using namespace Proto;
 
     switch (m_currentCommand.cmd)
@@ -298,6 +302,7 @@ void ProtocomThread::parseRequest(const CommandStruct &cmdStr)
 
 void ProtocomThread::parseResponse(QByteArray ba)
 {
+    qDebug("Start parse response");
     using namespace Proto;
 
     // QByteArray tmps = "<-" + ba.toHex() + "\n";
@@ -553,7 +558,14 @@ void handleBool(const bool status, int errorSize, int errorCode)
     }
 }
 
+void handleRawBlock(const QByteArray &ba, quint32 blkNum)
+{
+    DataTypes::BlockStruct resp { blkNum, ba };
+    DataManager::addSignalToOutList(DataTypes::SignalTypes::Block, resp);
+}
+
 void handleCommand(const QByteArray &ba)
 {
     qCritical("We should be here, something went wrong");
+    qDebug() << ba.toHex();
 }

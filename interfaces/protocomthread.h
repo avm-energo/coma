@@ -30,7 +30,7 @@ private:
     void parseRequest(const Proto::CommandStruct &cmdStr);
     void handle(const Proto::Commands cmd);
 
-    LogClass *log;
+    // LogClass *log;
 
     QMutex _mutex;
     // QMutex _mutex;
