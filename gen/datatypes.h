@@ -100,7 +100,11 @@ struct ConfParameterStruct
     QByteArray data;
 };
 
-typedef ConfParameterStruct BlockStruct;
+struct BlockStruct
+{
+    quint32 ID;
+    QByteArray data;
+};
 
 struct ConfParametersListStruct
 {
@@ -191,6 +195,7 @@ Q_DECLARE_METATYPE(DataTypes::FloatStruct)
 Q_DECLARE_METATYPE(DataTypes::SinglePointWithTimeStruct)
 Q_DECLARE_METATYPE(DataTypes::FileStruct)
 Q_DECLARE_METATYPE(DataTypes::ConfParameterStruct)
+Q_DECLARE_METATYPE(DataTypes::BlockStruct)
 Q_DECLARE_METATYPE(DataTypes::ConfParametersListStruct)
 Q_DECLARE_METATYPE(DataTypes::SignalsStruct)
 Q_DECLARE_METATYPE(DataTypes::Signal)
