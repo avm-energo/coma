@@ -500,8 +500,7 @@ void handleBitStringArray(const QByteArray &ba, QList<quint16> arr_addr)
 void handleFloat(const QByteArray &ba, quint32 sigAddr)
 {
     Q_ASSERT(ba.size() == 4);
-    float blk = ba.toFloat();
-    // std::copy_n(ba.constData(), sizeof(float), blk);
+    float blk = qFromLittleEndian<float>(ba.data());
     DataTypes::FloatStruct resp { sigAddr, blk };
     DataManager::addSignalToOutList(DataTypes::SignalTypes::Float, resp);
 }
