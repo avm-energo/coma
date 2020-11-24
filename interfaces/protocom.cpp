@@ -216,6 +216,12 @@ void Protocom::writeCommand(Queries::Commands cmd, QVariant item)
         handleBlk(protoCmd, item.toUInt());
         break;
 
+    case Commands::WriteBlkData:
+
+        Q_ASSERT(item.canConvert<DataTypes::BlockStruct>());
+        handleBlk(protoCmd, item.value<DataTypes::BlockStruct>());
+        break;
+
     case Commands::WriteMode:
 
         Q_ASSERT(item.canConvert<quint32>());

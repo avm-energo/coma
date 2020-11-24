@@ -38,6 +38,7 @@ const QMap<Queries::Commands, Proto::Commands> getProtoCommand {
 
     { Queries::Commands::QC_StartFirmwareUpgrade, Proto::Commands::WriteUpgrade }, //
     { Queries::QC_SetNewConfiguration, Proto::Commands::WriteBlkTech },            //
+    { Queries::QC_WriteUserValues, Proto::Commands::WriteBlkData },                //
     { Queries::QC_EraseJournals, Proto::Commands::EraseTech },                     //
     { Queries::QC_ReqBitStrings, Proto::Commands::ReadProgress },                  //
     { Queries::QC_EraseTechBlock, Proto::Commands::EraseTech },                    //
