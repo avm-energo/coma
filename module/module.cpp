@@ -145,7 +145,7 @@ Module *Module::createModule(QTimer *updateTimer, BaseInterface *iface, AlarmWid
     TimeDialog *tdlg = new TimeDialog;
     m->addDialogToList(tdlg, "Время", "time");
 
-    if (Board::GetInstance().interfaceType() != Board::InterfaceType::USB)
+    if (Board::GetInstance().interfaceType() != Board::InterfaceType::RS485)
     {
         m->addDialogToList(new JournalDialog(JOUR), "Журналы");
     }
