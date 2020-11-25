@@ -30,7 +30,6 @@ ConfKIVDialog::~ConfKIVDialog()
 
 void ConfKIVDialog::Fill()
 {
-    int i;
 
     CKIV->MainConfig()->Fill();
     CKIV->KxxConfig()->Fill();
@@ -41,7 +40,7 @@ void ConfKIVDialog::Fill()
     WDFunc::SetSPBData(this, "Umin", CKIV->Bci_block.Umin);
     WDFunc::SetSPBData(this, "Imin", CKIV->Bci_block.Imin);
 
-    for (i = 0; i < 3; i++)
+    for (int i = 0; i < 3; i++)
     {
 
         WDFunc::SetSPBData(this, "Tg_pasp." + QString::number(i), CKIV->Bci_block.Tg_pasp[i]);

@@ -130,4 +130,5 @@ signals:
     void typeChanged();
     void connectionStateChanged(Board::ConnectionState);
     void healthChanged(quint32);
+    void readyRead();
 };

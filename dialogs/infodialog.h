@@ -19,13 +19,14 @@ public:
 
     void SetupUI();
     void FillBsi();
+    void uponInterfaceSetting();
 
 signals:
 
 public slots:
     void ClearBsi();
     void reqUpdate();
-    void update();
+    void sync();
 
 private:
     bool m_oneShotUpdateFlag;

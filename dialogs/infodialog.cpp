@@ -12,8 +12,7 @@
 InfoDialog::InfoDialog(QWidget *parent) : UDialog(parent)
 {
     m_oneShotUpdateFlag = false;
-    SetupUI();
-    FillBsi();
+    connect(&Board::GetInstance(), &Board::readyRead, this, &InfoDialog::sync);
 }
 
 void InfoDialog::SetupUI()
@@ -79,6 +78,12 @@ void InfoDialog::FillBsi()
     WDFunc::SetLBLText(this, "hwmle", StdFunc::VerToStr(bsi.HwverM));
 }
 
+void InfoDialog::uponInterfaceSetting()
+{
+    SetupUI();
+    FillBsi();
+}
+
 void InfoDialog::ClearBsi()
 {
     QList<QLabel *> allLabels = this->findChildren<QLabel *>();
@@ -101,7 +106,7 @@ void InfoDialog::ClearBsi()
     // расшифровка Hth
 }
 
-void InfoDialog::update()
+void InfoDialog::sync()
 {
     if (m_updatesEnabled)
     {
@@ -117,7 +122,5 @@ void InfoDialog::update()
 
 void InfoDialog::reqUpdate()
 {
-    QList<DataTypes::SignalsStruct> list;
-
-    // if (DataManager::getSignals(BSIREG, BSIENDREG, DataTypes::BitString, list) != Error::Msg::ResEmpty) { }
+    iface()->reqBSI();
 }

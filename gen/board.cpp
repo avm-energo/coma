@@ -133,8 +133,12 @@ void Board::update(const DataTypes::BitStringStruct &bs)
     quint32 &item = *(reinterpret_cast<quint32 *>(&m_baseSerialInfo) + (bs.sigAdr - BSIREG));
     std::copy_n(&bs.sigVal, sizeof(quint32), &item);
 
+    // Last value updated
     if (&item == &m_baseSerialInfo.Hth)
+    {
         emit healthChanged(m_baseSerialInfo.Hth);
+    }
+    emit readyRead();
 }
 
 quint32 Board::health() const
