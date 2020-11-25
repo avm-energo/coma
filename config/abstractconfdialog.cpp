@@ -314,8 +314,8 @@ bool AbstractConfDialog::PrepareConfToWrite()
 
 void AbstractConfDialog::uponInterfaceSetting()
 {
-    PrereadConf();
     SetupUI();
+    PrereadConf();
 }
 
 void AbstractConfDialog::WriteConfMessageOk(const DataTypes::GeneralResponseStruct &rsp)
