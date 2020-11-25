@@ -47,7 +47,8 @@ const QMap<Queries::Commands, Proto::Commands> getProtoCommand {
     { Queries::QUSB_WriteTuningCoef, Proto::Commands::WriteBlkAC },                //
     { Queries::QUSB_ReqBlkDataA, Proto::Commands::ReadBlkDataA },                  //
     { Queries::QUSB_ReqBlkDataTech, Proto::Commands::ReadBlkTech },                //
-    { Queries::QUSB_WriteBlkDataTech, Proto::Commands::WriteBlkTech }              //
+    { Queries::QUSB_WriteBlkDataTech, Proto::Commands::WriteBlkTech },             //
+    { Queries::QC_ReqAlarms, Proto::Commands::ReadBlkData }                        //
 };
 
 const QMap<Queries::Commands, Proto::WCommands> getWCommand {

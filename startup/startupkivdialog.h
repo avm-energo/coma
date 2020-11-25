@@ -1,12 +1,7 @@
 #ifndef CORDIALOG_H
 #define CORDIALOG_H
 
-//#include "../iec104/iec104.h"
-//#include "../modbus/modbus.h"
 #include "abstractstartupdialog.h"
-
-#include <QByteArray>
-#include <QDialog>
 
 #define KIVSTARTUPINITREG 4000
 

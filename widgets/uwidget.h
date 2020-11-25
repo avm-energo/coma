@@ -8,7 +8,6 @@
 #include "../interfaces/baseinterface.h"
 
 #include <QWidget>
-#include <list>
 
 class UWidget : public QWidget
 {

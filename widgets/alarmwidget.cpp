@@ -1,10 +1,11 @@
 #include "alarmwidget.h"
 
 #include "../gen/board.h"
+#include "../gen/colors.h"
 #include "../gen/datamanager.h"
+#include "wd_func.h"
 
 #include <QBoxLayout>
-#include <QDebug>
 #include <QGroupBox>
 #include <QMenu>
 #include <QtCore>

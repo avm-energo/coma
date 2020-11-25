@@ -26,6 +26,8 @@
 #include "../dialogs/errordialog.h"
 #include "../dialogs/keypressdialog.h"
 #include "../dialogs/settingsdialog.h"
+#include "../gen/board.h"
+#include "../gen/colors.h"
 #include "../gen/datamanager.h"
 #include "../gen/errorqueue.h"
 #include "../gen/logger.h"
@@ -43,8 +45,8 @@
 #include <QHBoxLayout>
 #include <QMenuBar>
 #include <QMessageBox>
+#include <QPainter>
 #include <QProgressBar>
-#include <QSplashScreen>
 #include <QToolBar>
 #include <QtGlobal>
 #include <functional>

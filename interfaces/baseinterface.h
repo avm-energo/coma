@@ -4,8 +4,6 @@
 #include "../gen/datatypes.h"
 #include "../gen/logclass.h"
 
-#include <QObject>
-
 struct ConnectStruct;
 class BaseInterface : public QObject
 {

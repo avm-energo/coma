@@ -90,13 +90,13 @@ void Journals::FillEventsTable(QByteArray &ba)
 {
     QVector<QVector<QVariant>> ValueLists;
     ETableModel *model;
-    EventStruct event;
+    AVM::EventStruct event;
     QStringList sl;
     int mineventid = -1;
     if (m_jourType == Files::JourSys)
     // int joursize = 0; // размер считанного буфера с информацией
     {
-        mineventid = SYSJOURID;
+        mineventid = AVM::sysJourId;
         sl = SysJourDescription;
         model = m_sysModel;
     }
@@ -130,7 +130,7 @@ void Journals::FillEventsTable(QByteArray &ba)
     int N = 0;
     int basize = ba.size();
     char *file = ba.data();
-    int recordsize = sizeof(EventStruct);
+    int recordsize = sizeof(AVM::EventStruct);
     int counter = 0;
     int i = 0;
     while (i < basize)

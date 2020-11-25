@@ -5,7 +5,6 @@
 #include "../module/module.h"
 
 #include <QMainWindow>
-#include <QResizeEvent>
 
 enum INTERVAL
 {
@@ -47,59 +46,6 @@ public:
         quint32 predAlarm;
         quint32 alarm;
     };
-
-    static QStringList Hth()
-    {
-        // sl.append("ERR");
-        // clang-format off
-        QStringList sl
-        {
-            "ADCI",
-            "FLS",
-            "TUP",
-            "ADCB",
-            "1PPS",
-            "ADCM",
-            "REGB",
-            "RCN",
-            "HWIB",
-            "HWIM",
-            "REGM",
-            "BAT",
-            "NTP",
-            "FLS2",
-            "FRM"
-        };
-        // clang-format on
-        return sl;
-    }
-
-    static QStringList HthToolTip()
-    {
-        // sl.append("Что-то не в порядке");
-        // clang-format off
-        QStringList sl
-        {
-            "Проблемы со встроенным АЦП ",
-            "Не работает внешняя flash-память",
-            "Перегрев",
-            "Проблемы с АЦП (нет связи) (базовая)",
-            "Нет сигнала 1PPS с антенны",
-            "Проблемы с АЦП (нет связи) (мезонин)",
-            "Ошибка регулировочных коэффициентов (базовая)",
-            "Ошибка загрузки конфигурации из flash-памяти. Работает конфигурация по умолчанию",
-            "Некорректная Hardware информация (базовая)",
-            "Некорректная Hardware информация (мезонин)",
-            "Ошибка регулировочных коэффициентов (мезонин)",
-            "Напряжение батареи низко (< 2,5 В)",
-            "Нет связи с NTP-сервером",
-            "Не работает внешняя flash-память (мезонин)",
-            "Не работает внешняя fram",
-            "Проблемы со встроенным АЦП "
-        };
-        // clang-format on
-        return sl;
-    }
 
     Coma(QWidget *parent = nullptr);
     ~Coma();

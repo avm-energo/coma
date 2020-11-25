@@ -4,7 +4,6 @@
 #include "../gen/logclass.h"
 #include "../gen/s2.h"
 
-#include <QObject>
 #include <QQueue>
 #include <QVariant>
 

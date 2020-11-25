@@ -1,14 +1,7 @@
 #ifndef ALARMWIDGET_H
 #define ALARMWIDGET_H
 
-//#include "../alarm/alarmclass.h"
-#include "../gen/colors.h"
-#include "../gen/error.h"
 #include "../widgets/uwidget.h"
-#include "../widgets/wd_func.h"
-
-#include <QByteArray>
-#include <QDialog>
 
 #define BSIWARNMASK 0x00005F55
 #define BSIALARMMASK 0x000020AA

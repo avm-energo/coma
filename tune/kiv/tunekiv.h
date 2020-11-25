@@ -4,13 +4,13 @@
 #define M_BACBLOCKNUM 0
 
 //#include "../tuneclass.h"
-#include <QWidget>
-#include <QtGlobal>
+//#include <QWidget>
+//#include <QtGlobal>
 
 // class TuneKIV : public TuneClass
 class TuneKIV
 {
-    Q_OBJECT
+    //    Q_OBJECT
 public:
     struct Bac
     { // Структура калибровочных параметров

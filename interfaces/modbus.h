@@ -9,7 +9,6 @@
 
 #include <QMutex>
 #include <QTimer>
-//#include <QWaitCondition>
 
 namespace CommandsMBS
 {

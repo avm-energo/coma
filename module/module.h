@@ -1,14 +1,11 @@
 #ifndef MODULEFABRIC_H
 #define MODULEFABRIC_H
 
-#include "../gen/board.h"
 #include "../widgets/alarmstateallwidget.h"
 #include "../widgets/alarmwidget.h"
 #include "../widgets/udialog.h"
 #include "alarm.h"
 #include "warn.h"
-
-#include <QObject>
 
 class Module : public QObject
 {

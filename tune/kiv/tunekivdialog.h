@@ -5,8 +5,7 @@
 #include "../check/checkkiv.h"
 #include "../config/config.h"
 #include "../config/configkiv.h"
-#include "../gen/modulebsi.h"
-#include "../gen/udialog.h"
+#include "../widgets/udialog.h"
 //#include "../iec104/iec104.h"
 #include "tunekiv.h"
 

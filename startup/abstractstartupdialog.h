@@ -1,13 +1,7 @@
 #ifndef ABSTRACTCORDIALOG_H
 #define ABSTRACTCORDIALOG_H
 
-#include "../gen/error.h"
 #include "../widgets/udialog.h"
-//#include "../iec104/iec104.h"
-#include "../interfaces/modbus.h"
-#include "../models/etablemodel.h"
-
-#include <QByteArray>
 
 class AbstractStartupDialog : public UDialog
 {

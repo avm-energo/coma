@@ -1,6 +1,5 @@
 #include "tuneclass.h"
 
-#include "../../usb/commands.h"
 #include "../../widgets/wd_func.h"
 #include "../gen/board.h"
 #include "../gen/stdfunc.h"
@@ -9,14 +8,16 @@
 #include <QMessageBox>
 #include <QVBoxLayout>
 
-TuneClass::TuneClass(int bacnum, S2ConfigType *S2Config, QObject *parent) : QObject(parent)
+S2DataTypes::S2ConfigType *TuneClass::getS2Config()
 {
-    this->S2Config = S2Config;
-    m_BacNum = bacnum;
+    return S2Config;
 }
 
-S2ConfigType *TuneClass::getS2Config() { return S2Config; }
+void TuneClass::ReadTuneCoefs()
+{
+}
 
-void TuneClass::ReadTuneCoefs() { }
-
-bool TuneClass::WriteTuneCoefsSlot() { return true; }
+bool TuneClass::WriteTuneCoefsSlot()
+{
+    return true;
+}

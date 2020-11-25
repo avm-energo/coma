@@ -5,6 +5,7 @@
 #include "../gen/error.h"
 #include "../gen/files.h"
 //#include "../gen/modulebsi.h"
+#include "../config/configkiv.h"
 #include "../gen/stdfunc.h"
 #include "../gen/timefunc.h"
 #include "../interfaces/protocom.h"

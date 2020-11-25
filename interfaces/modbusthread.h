@@ -5,8 +5,6 @@
 #include "../gen/logclass.h"
 #include "modbusprivate.h"
 
-#include <QMap>
-#include <QObject>
 #define RECONNECTTIME 5000
 
 class ModbusThread : public QObject

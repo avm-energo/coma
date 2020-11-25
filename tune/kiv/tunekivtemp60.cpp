@@ -2,12 +2,11 @@
 
 #include "../gen/colors.h"
 #include "../gen/stdfunc.h"
-#include "../usb/eprotocom.h"
 
 #include <QMessageBox>
 #include <QVBoxLayout>
 
-TuneKIVTemp60::TuneKIVTemp60(TuneKIV *tkiv, QWidget *parent) : AbstractTuneDialog(parent)
+TuneKIVTemp60::TuneKIVTemp60(TuneKIV *tkiv, QWidget *parent) : AbstractTuneDialog(2, parent)
 {
     m_tuneStep = 2;
     TKIV = tkiv;
