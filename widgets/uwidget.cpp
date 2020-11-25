@@ -72,8 +72,12 @@ void UWidget::sendCommandWithResult(Queries::Commands cmd, QVariant item)
 
 void UWidget::updateFloatData(const DataTypes::FloatStruct &fl)
 {
+    ++m_timerCounter;
     if ((m_updatesEnabled) && (m_timerCounter >= m_timerMax)) // every second tick of the timer
+    {
         WDFunc::SetLBLText(this, QString::number(fl.sigAdr), WDFunc::StringValueWithCheck(fl.sigVal, 3));
+        m_timerCounter = 0;
+    }
 }
 
 void UWidget::updateSPData(const DataTypes::SinglePointWithTimeStruct &sp)
