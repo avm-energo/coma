@@ -32,6 +32,7 @@ void handleBitString(const QByteArray &ba, quint16 sigAddr);
 void handleBitStringArray(const QByteArray &ba, QList<quint16> arr_addr);
 void handleFloat(const QByteArray &ba, quint32 sigAddr);
 void handleFloatArray(const QByteArray &ba, quint32 sigAddr, quint32 sigCount);
+void handleSinglePoint(const QByteArray &ba);
 void handleFile(QByteArray &ba, quint16 addr, bool isShouldRestored);
 void handleInt(const byte num);
 void handleBool(const bool status = true, int errorSize = 0, int errorCode = 0);
@@ -157,18 +158,25 @@ void ProtocomThread::handle(const Proto::Commands cmd)
     case Commands::ReadBlkAC:
 
         // handleFloatArray(m_buffer.second, addr, count);
+        // Ожидается что в addr хранится номер блока
         handleRawBlock(m_buffer.second, addr);
         break;
 
     case Commands::ReadBlkDataA:
 
         // handleFloatArray(m_buffer.second, addr, count);
+        // Ожидается что в addr хранится номер блока
         handleRawBlock(m_buffer.second, addr);
         break;
 
     case Commands::ReadBlkData:
 
-        handleFloatArray(m_buffer.second, addr, count);
+        // Превосходный костыль для сигнализации
+        if (addr != alarm_reg)
+            handleFloatArray(m_buffer.second, addr, count);
+        else
+            handleSinglePoint(m_buffer.second);
+
         break;
 
     case Commands::ReadBlkTech:
@@ -216,15 +224,14 @@ void ProtocomThread::parseRequest(const CommandStruct &cmdStr)
     qDebug("Start parse request");
     // Предполагается не хранить текущую команду
     Q_UNUSED(cmdStr)
-    // qDebug() << QThread::currentThreadId();
     using namespace Proto;
 
     switch (m_currentCommand.cmd)
     {
     case Commands::ReadBlkData:
     {
-        quint8 blk = Proto::getBlkByReg.value(m_currentCommand.arg1.value<quint16>()).first;
-        m_currentCommand.ba = StdFunc::arrayFromNumber(blk);
+        quint16 blk = Proto::getBlkByReg.value(m_currentCommand.arg1.value<quint16>()).first;
+        m_currentCommand.ba = StdFunc::arrayFromNumber(quint8(blk));
         QByteArray ba = prepareBlock(m_currentCommand);
         emit writeDataAttempt(ba);
         break;
@@ -513,6 +520,16 @@ void handleFloatArray(const QByteArray &ba, quint32 sigAddr, quint32 sigCount)
     {
         QByteArray temp = ba.mid(sizeof(qint32) * i, sizeof(qint32));
         handleFloat(temp, sigAddr + i);
+    }
+}
+
+void handleSinglePoint(const QByteArray &ba)
+{
+    for (quint32 i = 0; i != quint32(ba.size()); ++i)
+    {
+        quint8 value = ba.at(i);
+        DataTypes::SinglePointWithTimeStruct data { i, value, 0 };
+        DataManager::addSignalToOutList(DataTypes::SinglePointWithTime, data);
     }
 }
 

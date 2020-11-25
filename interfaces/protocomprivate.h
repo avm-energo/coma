@@ -188,3 +188,5 @@ Q_DECLARE_METATYPE(Proto::CommandStruct)
 #define TECH_Bte 3 // технологический блок технологических событий
 #define TECH_SWJ 4 // технологический блок журнала переключений
 #define TECH_RA 5  // технологический блок рабочего архива
+
+constexpr int alarm_reg = 3011;
