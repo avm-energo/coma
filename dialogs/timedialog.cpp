@@ -20,7 +20,8 @@ TimeDialog::TimeDialog(QWidget *parent) : UDialog(parent)
     setAttribute(Qt::WA_DeleteOnClose);
     First = false;
     Timer = new QTimer(this);
-    connect(Timer, SIGNAL(timeout()), this, SLOT(updateSysTime()));
+    connect(Timer, &QTimer::timeout, this, &TimeDialog::updateSysTime);
+
     SetupUI();
 }
 
@@ -190,18 +191,19 @@ void TimeDialog::reqUpdate()
 {
     if (m_updatesEnabled)
     {
-        uint unixtimestamp = 0;
-        QList<DataTypes::SignalsStruct> list;
-        // DataManager::getSignals(TIMEREG, TIMEREG, DataTypes::SignalTypes::BitString, list);
-        if (!list.isEmpty())
-        {
-            for (auto signal : list)
-            {
-                DataTypes::BitStringStruct bs = qvariant_cast<DataTypes::BitStringStruct>(signal.data);
-                memcpy(&unixtimestamp, &bs.sigVal, sizeof(quint32));
-                SetTime(unixtimestamp);
-            }
-        }
+        iface()->reqTime();
+        //        uint unixtimestamp = 0;
+        //        QList<DataTypes::SignalsStruct> list;
+        //        // DataManager::getSignals(TIMEREG, TIMEREG, DataTypes::SignalTypes::BitString, list);
+        //        if (!list.isEmpty())
+        //        {
+        //            for (auto signal : list)
+        //            {
+        //                DataTypes::BitStringStruct bs = qvariant_cast<DataTypes::BitStringStruct>(signal.data);
+        //                memcpy(&unixtimestamp, &bs.sigVal, sizeof(quint32));
+        //                SetTime(unixtimestamp);
+        //            }
+        //        }
         //        // send command to get time
         //        switch (Board::GetInstance().interfaceType())
         //        {

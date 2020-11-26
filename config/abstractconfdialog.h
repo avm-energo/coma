@@ -42,7 +42,6 @@ protected:
     bool ok;
     S2DataTypes::S2ConfigType *S2Config;
     QStringList CheckConfErrors;
-    //    QStringList Sbaud { "1200", "2400", "4800", "9600", "19200", "38400", "57600", "115200" };
     QWidget *ConfButtons();
 
     virtual void SetupUI() = 0;
@@ -54,7 +53,6 @@ private slots:
     void LoadConfFromFile();
     void ReadConf();
     void WriteConf();
-    //    void WritePasswordCheck(QString psw);
     void confParameterReceived(const DataTypes::ConfParametersListStruct &cfpl);
 
     // public slots:

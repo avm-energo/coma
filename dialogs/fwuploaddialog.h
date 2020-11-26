@@ -13,7 +13,7 @@ public:
     explicit FWUploadDialog(QWidget *parent = nullptr);
 
     void SetupUI();
-    Error::Msg ParseHexToS2(QByteArray ba);
+    bool ParseHexToS2(QByteArray ba);
     bool WriteCheckPassword();
 
     quint32 NN;
@@ -64,7 +64,7 @@ signals:
     //    void WritePasswordChecked();
 
 public slots:
-    Error::Msg LoadFW();
+    bool LoadFW();
     void RunSoft();
     //    void WritePasswordCheck(QString psw);
 };

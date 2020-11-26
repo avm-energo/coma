@@ -4,12 +4,7 @@
 #include "../gen/board.h"
 #include "../gen/colors.h"
 #include "../gen/datamanager.h"
-#include "../gen/error.h"
-#include "../gen/files.h"
-#include "../gen/s2.h"
 #include "../gen/stdfunc.h"
-#include "../gen/timefunc.h"
-//#include "../usb/commands.h"
 #include "../widgets/etableview.h"
 #include "../widgets/wd_func.h"
 
@@ -26,10 +21,6 @@
 #include <QMessageBox>
 #include <QPushButton>
 #include <QSpinBox>
-#include <QStringListModel>
-#include <QTabBar>
-#include <QTabWidget>
-#include <QVBoxLayout>
 
 AbstractStartupDialog::AbstractStartupDialog(QWidget *parent) : UDialog(parent)
 {
@@ -50,38 +41,23 @@ QWidget *AbstractStartupDialog::buttonWidget()
     QVBoxLayout *lyout = new QVBoxLayout;
     QHBoxLayout *hlyout = new QHBoxLayout;
     QString tmps = ((DEVICETYPE == DEVICETYPE_MODULE) ? "модуля" : "прибора");
-    QPushButton *pb = new QPushButton("Прочитать из " + tmps);
-    connect(pb, SIGNAL(clicked()), this, SLOT(GetCorBdButton()));
-    if (StdFunc::IsInEmulateMode())
-        pb->setEnabled(false);
-    hlyout->addWidget(pb);
-    pb = new QPushButton("Записать в модуль");
-    connect(pb, SIGNAL(clicked()), this, SLOT(WriteCorBd()));
-    if (StdFunc::IsInEmulateMode())
-        pb->setEnabled(false);
-    hlyout->addWidget(pb);
-    lyout->addLayout(hlyout);
-    pb = new QPushButton("Сбросить начальные значения");
-    connect(pb, SIGNAL(clicked()), this, SLOT(ResetCor()));
-    if (StdFunc::IsInEmulateMode())
-        pb->setEnabled(false);
-    hlyout->addWidget(pb);
-    pb = new QPushButton("Задать начальные значения");
-    connect(pb, SIGNAL(clicked()), this, SLOT(WriteCor()));
-    if (StdFunc::IsInEmulateMode())
-        pb->setEnabled(false);
-    hlyout->addWidget(pb);
-    lyout->addLayout(hlyout);
-    pb = new QPushButton("Прочитать значения из файла");
-    connect(pb, SIGNAL(clicked()), this, SLOT(ReadFromFile()));
-    if (StdFunc::IsInEmulateMode())
-        pb->setEnabled(false);
-    hlyout->addWidget(pb);
-    pb = new QPushButton("Сохранить значения в файл");
-    connect(pb, SIGNAL(clicked()), this, SLOT(SaveToFile()));
-    if (StdFunc::IsInEmulateMode())
-        pb->setEnabled(false);
-    hlyout->addWidget(pb);
+
+    const QList<QPair<QString, std::function<void()>>> funcs {
+        { "Прочитать из " + tmps, [this]() { GetCorBdButton(); } },      //
+        { "Записать в модуль", [this]() { WriteCorBd(); } },             //
+        { "Сбросить начальные значения", [this]() { ResetCor(); } },     //
+        { "Задать начальные значения", [this]() { WriteCor(); } },       //
+        { "Прочитать значения из файла", [this]() { ReadFromFile(); } }, //
+        { "Сохранить значения в файл", [this]() { SaveToFile(); } }      //
+    };
+    for (auto &i : funcs)
+    {
+        QPushButton *pb = new QPushButton(i.first);
+        connect(pb, &QAbstractButton::clicked, this, i.second);
+        if (StdFunc::IsInEmulateMode())
+            pb->setEnabled(false);
+        hlyout->addWidget(pb);
+    }
     lyout->addLayout(hlyout);
     w->setLayout(lyout);
     return w;
@@ -142,7 +118,7 @@ void AbstractStartupDialog::updateFloatData()
     //        DataTypes::SignalTypes::FloatWithTime, list); // /4 => float data by default
     if (!list.isEmpty())
     {
-        foreach (DataTypes::SignalsStruct signal, list)
+        for (const auto &signal : list)
         {
             DataTypes::FloatWithTimeStruct fwt = qvariant_cast<DataTypes::FloatWithTimeStruct>(signal.data);
 
@@ -163,10 +139,18 @@ void AbstractStartupDialog::updateFloatData()
     }
 }
 
+void AbstractStartupDialog::updateFloatData(const DataTypes::FloatStruct &fl)
+{
+    if (fl.sigAdr > 4000 && fl.sigAdr < 4000 + 12)
+    {
+        FillBd(this, QString::number(fl.sigAdr), fl.sigVal);
+    }
+}
+
 void AbstractStartupDialog::updateStatus()
 {
     DataTypes::GeneralResponseStruct grs;
-    //    while (DataManager::getResponse(DataTypes::GeneralResponseTypes::Ok, grs)
+    // while (DataManager::getResponse(DataTypes::GeneralResponseTypes::Ok, grs)
     //        != Error::Msg::ResEmpty) // get all responses from outList
     //        TimeFunc::Wait();
     // FIXME grs uninit
@@ -257,6 +241,11 @@ void AbstractStartupDialog::ErrorRead()
     QMessageBox::information(this, "Ошибка", "Ошибка чтения");
 }
 
+void AbstractStartupDialog::uponInterfaceSetting()
+{
+    SetupUI();
+}
+
 void AbstractStartupDialog::reqUpdate()
 {
     if (m_updatesEnabled)
@@ -272,17 +261,6 @@ void AbstractStartupDialog::reqUpdate()
             updateFloatData();
             m_updateState = AnswerWasReceived;
             break;
-            //            switch (Board::GetInstance().interfaceType())
-            //            {
-            //            case Board::InterfaceType::Ethernet:
-            //                ETHUpdate();
-            //                break;
-            //            case Board::InterfaceType::RS485:
-            //                MBSUpdate();
-            //                break;
-            //            default:
-            //                break;
-            //            }
         }
         break;
         case AnswerWasReceived:

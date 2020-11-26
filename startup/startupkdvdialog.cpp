@@ -36,7 +36,7 @@ StartupKDVDialog::StartupKDVDialog(QWidget *parent) : AbstractStartupDialog(pare
     WBd8Block = new WBd8;
 
     setAttribute(Qt::WA_DeleteOnClose);
-    SetupUI();
+    // SetupUI();
 }
 
 StartupKDVDialog::~StartupKDVDialog()
@@ -65,14 +65,14 @@ void StartupKDVDialog::SetupUI()
     row++;
 
     QPushButton *pb = new QPushButton("Прочитать из модуля");
-    connect(pb, SIGNAL(clicked()), this, SLOT(GetCorBdButton()));
+    connect(pb, &QAbstractButton::clicked, this, &AbstractStartupDialog::GetCorBdButton);
     if (StdFunc::IsInEmulateMode())
         pb->setEnabled(false);
 
     glyout->addWidget(pb, row, 1, 1, 2);
 
     pb = new QPushButton("Записать в модуль");
-    connect(pb, SIGNAL(clicked()), this, SLOT(WriteCorBd()));
+    connect(pb, &QAbstractButton::clicked, this, &StartupKDVDialog::WriteCorBd);
     if (StdFunc::IsInEmulateMode())
         pb->setEnabled(false);
 
@@ -81,14 +81,14 @@ void StartupKDVDialog::SetupUI()
     row++;
 
     pb = new QPushButton("Прочитать значения из файла");
-    connect(pb, SIGNAL(clicked()), this, SLOT(ReadFromFile()));
+    connect(pb, &QAbstractButton::clicked, this, &StartupKDVDialog::ReadFromFile);
     if (StdFunc::IsInEmulateMode())
         pb->setEnabled(false);
 
     glyout->addWidget(pb, row, 1, 1, 2);
 
     pb = new QPushButton("Сохранить значения в файл");
-    connect(pb, SIGNAL(clicked()), this, SLOT(SaveToFile()));
+    connect(pb, &QAbstractButton::clicked, this, &StartupKDVDialog::SaveToFile);
     if (StdFunc::IsInEmulateMode())
         pb->setEnabled(false);
 

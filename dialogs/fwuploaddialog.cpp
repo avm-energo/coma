@@ -30,14 +30,14 @@ void FWUploadDialog::SetupUI()
 
     QString tmps = ((DEVICETYPE == DEVICETYPE_MODULE) ? "модуля" : "прибора");
     QPushButton *pb = new QPushButton("Записать ПО в память " + tmps);
-    connect(pb, SIGNAL(clicked()), this, SLOT(LoadFW()));
+    connect(pb, &QAbstractButton::clicked, this, &FWUploadDialog::LoadFW);
     if (StdFunc::IsInEmulateMode())
         pb->setEnabled(false);
 
     glyout->addWidget(pb, 1, 1, 1, 1);
 
     pb = new QPushButton("Перейти на новое ПО");
-    connect(pb, SIGNAL(clicked()), this, SLOT(RunSoft()));
+    connect(pb, &QAbstractButton::clicked, this, &FWUploadDialog::RunSoft);
     if (StdFunc::IsInEmulateMode())
         pb->setEnabled(false);
 
@@ -49,7 +49,7 @@ void FWUploadDialog::SetupUI()
     setLayout(lyout);
 }
 
-Error::Msg FWUploadDialog::LoadFW()
+bool FWUploadDialog::LoadFW()
 {
     QByteArray ba;
     // File_struct PV_file;
@@ -60,62 +60,44 @@ Error::Msg FWUploadDialog::LoadFW()
     // tmpi = sizeof(PV_file.Type)+sizeof(PV_file.File.FileDatHeader);
     // S2ConfigType S2DR;
 
-    if (WriteCheckPassword() == Error::Msg::NoError)
+    if (WriteCheckPassword() != Error::Msg::NoError)
+        return false;
+    Error::Msg res = Files::LoadFromFile(Files::ChooseFileForOpen(this, "Program Version (*.hex)"), ba);
+    if (res != Error::Msg::NoError)
     {
-        Error::Msg res = Files::LoadFromFile(Files::ChooseFileForOpen(this, "Program Version (*.hex)"), ba);
-        if (res != Error::Msg::NoError)
-        {
-            WARNMSG("Ошибка файла ПО");
-            return Error::Msg::GeneralError;
-        }
-
-        ParseHexToS2(ba);
-
-        // PV_file.File_xxx_header.size=sizeof(PV_file.Type) +
-        // sizeof(PV_file.File.FileDatHeader) + sizeof(ba) +
-        // sizeof(PV_file.void_recHeader);
+        qCritical("Ошибка файла ПО");
+        return false;
     }
-    return Error::Msg::NoError;
+
+    // PV_file.File_xxx_header.size=sizeof(PV_file.Type) +
+    // sizeof(PV_file.File.FileDatHeader) + sizeof(ba) +
+    // sizeof(PV_file.void_recHeader);
+
+    return ParseHexToS2(ba);
+    ;
 }
 
 void FWUploadDialog::RunSoft()
 {
-    if (WriteCheckPassword() == Error::Msg::NoError)
-    {
-        TimeFunc::Wait(100);
-        // FIXME After create usb
-        //        if (Commands::RunVPO() != Error::Msg::NoError)
-        //        {
-        //            WARNMSG("Ошибка перехода на новое ПО");
-        //            QMessageBox::information(this, "Ошибка", "Ошибка");
-        //        }
-        //        else
-        //        {
-        //            QMessageBox::information(this, "Успешно", "Переход на новое ПО выполнен успешно");
-        //        }
-    }
+    if (WriteCheckPassword() != Error::Msg::NoError)
+        return;
+    // FIXME After create usb
+    iface()->writeCommand(Queries::QC_StartFirmwareUpgrade);
+    //        if (Commands::RunVPO() != Error::Msg::NoError)
+    //        {
+    //            WARNMSG("Ошибка перехода на новое ПО");
+    //            QMessageBox::information(this, "Ошибка", "Ошибка");
+    //        }
+    //        else
+    //        {
+    //            QMessageBox::information(this, "Успешно", "Переход на новое ПО выполнен успешно");
+    //        }
 }
 
 bool FWUploadDialog::WriteCheckPassword()
 {
     KeyPressDialog dlg; // = new KeyPressDialog;
     return dlg.CheckPassword("admin");
-    //    ok = false;
-    //    StdFunc::ClearCancel();
-    //    QEventLoop PasswordLoop;
-    //    KeyPressDialog *dlg = new KeyPressDialog("Введите пароль\nПодтверждение: клавиша Enter\nОтмена: клавиша Esc");
-    //    connect(dlg, SIGNAL(Finished(QString)), this, SLOT(WritePasswordCheck(QString)));
-    //    connect(this, SIGNAL(WritePasswordChecked()), &PasswordLoop, SLOT(quit()));
-    //    dlg->show();
-    //    PasswordLoop.exec();
-    //    if (StdFunc::IsCancelled())
-    //        return Error::Msg::GeneralError;
-    //    if (!ok)
-    //    {
-    //        QMessageBox::critical(this, "Неправильно", "Пароль введён неверно");
-    //        return Error::Msg::GeneralError;
-    //    }
-    //    return Error::Msg::NoError;
 }
 
 // void FWUploadDialog::WritePasswordCheck(QString psw)
@@ -127,7 +109,7 @@ bool FWUploadDialog::WriteCheckPassword()
 //    emit WritePasswordChecked();
 //}
 
-Error::Msg FWUploadDialog::ParseHexToS2(QByteArray ba)
+bool FWUploadDialog::ParseHexToS2(QByteArray ba)
 {
 
     File_struct *PV_file = new File_struct;
@@ -350,15 +332,12 @@ Error::Msg FWUploadDialog::ParseHexToS2(QByteArray ba)
     //BaForSend->resize(ForProcess->size());
     memcpy(&BaForSend->data()[0], &ForProcess->data()[0],
     (BaForSend->size()+16));*/
-
     // FIXME After create usb
     //    if (Commands::WriteFile(3, &S2DR) != Error::Msg::NoError)
     //    {
     //        QMessageBox::information(this, "Ошибка", "Ошибка записи в модуль!");
     //        return Error::Msg::GeneralError;
     //    }
-    QMessageBox::information(this, "Успешно", "Загрузка ПО версии " + st + " прошла успешно!");
-    return Error::Msg::NoError;
-
-    return Error::Msg::NoError;
+    // QMessageBox::information(this, "Успешно", "Загрузка ПО версии " + st + " прошла успешно!");
+    return true;
 }

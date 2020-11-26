@@ -13,10 +13,10 @@ public:
     explicit StartupKIVDialog(QWidget *parent = nullptr);
     ~StartupKIVDialog();
 
-    bool WriteCheckPassword();
     void GetCorBd() override;
 
 private:
+    bool WriteCheckPassword();
     struct CorData
     {
         float C_init[3];    //Начальные значени емкостей вводов
@@ -36,12 +36,6 @@ private:
     // void FillBd(QWidget *parent, QString Name, QString Value);
 
 signals:
-    //    void SendCom45(quint32);
-    //    void SendCom50(quint32 adr, float data);
-    //    void RS485WriteCorBd(ModBus::Information, float *);
-    //    void RS485ReadCorBd(ModBus::Information);
-    //    void CorReadRequest();
-    //    void WritePasswordChecked();
 
 public slots:
     //    void GetCorBdButton() override;

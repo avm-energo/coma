@@ -25,17 +25,23 @@ public:
     explicit AbstractStartupDialog(QWidget *parent = nullptr);
     //    ~AbstractCorDialog();
     void SetStartupBlock(int blocknum, void *block, quint32 blocksize, quint32 startAdr);
-    //    QTimer *MessageTimer;
-
-    //    int corDIndex;
-    //    bool ok;
-    //    int first;
 
     QWidget *buttonWidget();
     bool WriteCheckPassword();
     virtual void GetCorBd();
-    //    void ETHUpdate();
-    //    void MBSUpdate();
+
+protected:
+    virtual void WriteCorBd() = 0;
+    virtual void WriteCor() = 0;
+    void SetCor();
+    virtual void ResetCor() = 0;
+    void updateFloatData();
+    void updateFloatData(const DataTypes::FloatStruct &fl) override;
+    void updateStatus();
+    virtual void SaveToFile() = 0;
+    virtual void ReadFromFile() = 0;
+    void ErrorRead();
+    void uponInterfaceSetting() override;
 
 private:
     UpdateStates m_updateState;
@@ -50,29 +56,8 @@ private:
     void FillBd(QWidget *parent, QString Name, QString Value);
     void FillBd(QWidget *parent, QString Name, float Value);
 
-signals:
-    //    void SendCom45(quint32);
-    //    void SendCom50(quint32 adr, float data);
-    //    void RS485WriteCorBd(ModBus::Information, float *);
-    //    void RS485ReadCorBd(ModBus::Information);
-    //    void CorReadRequest();
-    //    void WritePasswordChecked();
-
 public slots:
     void GetCorBdButton();
-    virtual void WriteCorBd() = 0;
-    virtual void WriteCor() = 0;
-    //    void MessageOk();
-    void SetCor();
-    virtual void ResetCor() = 0;
-    void updateFloatData();
-    void updateStatus();
-    //    void ModBusUpdateCorData(QList<ModBus::SignalStruct> Signal);
-    virtual void SaveToFile() = 0;
-    virtual void ReadFromFile() = 0;
-    //    void WritePasswordCheck(QString psw);
-    //    void TimerTimeout();
-    void ErrorRead();
     void reqUpdate() override;
 };
 

@@ -4,8 +4,6 @@
 #include "../widgets/uwidget.h"
 
 #include <QBitArray>
-#include <QShowEvent>
-#include <QWidget>
 #include <bitset>
 
 #define CIRCLE_RADIUS 15

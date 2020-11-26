@@ -44,7 +44,7 @@ signals:
 
 public slots:
     virtual void reqUpdate();
-    void updateFloatData(const DataTypes::FloatStruct &fl);
+    virtual void updateFloatData(const DataTypes::FloatStruct &fl);
     void updateSPData(const DataTypes::SinglePointWithTimeStruct &sp);
 
 protected:

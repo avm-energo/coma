@@ -237,10 +237,10 @@ void AbstractCheckDialog::ReadAnalogMeasurementsAndWriteToFile()
             pb->setText("Идёт запись: " + TimeElapsed);
         }
     }
-    int bdkeyssize = Bd_blocks.keys().size();
+    int bdkeyssize = Bd_blocks.size();
     for (int bdnum = 0; bdnum < bdkeyssize; ++bdnum)
     {
-        if (XlsxWriting && (Bd_blocks[Bd_blocks.keys().at(bdnum)]->toxlsxwrite))
+        if (XlsxWriting && (Bd_blocks.value(bdnum)->toxlsxwrite))
         {
             if (XlsxWriting)
                 WriteToFile(WRow, bdnum);
