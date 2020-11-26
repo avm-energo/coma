@@ -2,6 +2,7 @@
 
 #include "../gen/colors.h"
 #include "../widgets/wd_func.h"
+#include "config.h"
 
 #include <QComboBox>
 #include <QGroupBox>
@@ -15,20 +16,9 @@ ConfigKxx::ConfigKxx(S2DataTypes::S2ConfigType *config, QObject *parent) : QObje
 
 void ConfigKxx::setConfig(S2DataTypes::S2ConfigType *config)
 {
-    //    for (int i = 0; i < config->size(); ++i)
-    //    {
-    //        if (config->at(i).id == 0xFFFFFFFF)
-    //        {
-    //            config->remove(i);
-    //            --i;
-    //        }
-    //    }
-    /// TODO Check parent
-    config->erase(
-        std::remove_if(config->begin(), config->end(), [](S2DataTypes::DataRec i) { return i.id == 0xFFFFFFFF; }),
-        config->end());
-    /// TODO end
-    ///
+
+    Config::removeFotter(config);
+
     config->append({ BCI_RTERM, sizeof(TempConf.RTerm), &TempConf.RTerm });
     config->append({ BCI_W100, sizeof(TempConf.W100), &TempConf.W100 });
 

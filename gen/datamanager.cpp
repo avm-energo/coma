@@ -229,12 +229,21 @@ void DataManager::checkTypeAndSendSignals(DataTypes::SignalsStruct &str)
         }
         break;
     }
-    case ConfParametersList:
+    case ConfParameter:
+    {
+        if (str.data.canConvert<ConfParameterStruct>())
+        {
+            ConfParameterStruct cp = qvariant_cast<ConfParameterStruct>(str.data);
+            emit confParameterReceived(cp);
+        }
+        break;
+    }
+    case ConfParameterList:
     {
         if (str.data.canConvert<ConfParametersListStruct>())
         {
             ConfParametersListStruct cp = qvariant_cast<ConfParametersListStruct>(str.data);
-            emit confParametersReceived(cp);
+            emit confParametersListReceived(cp);
         }
         break;
     }

@@ -75,7 +75,8 @@ signals:
     void singlePointReceived(const DataTypes::SinglePointWithTimeStruct &);
     void floatReceived(const DataTypes::FloatStruct &);
     void fileReceived(const DataTypes::FileStruct &);
-    void confParametersReceived(const DataTypes::ConfParametersListStruct &);
+    void confParameterReceived(const DataTypes::ConfParameterStruct &);
+    void confParametersListReceived(const DataTypes::ConfParametersListStruct &);
     void responseReceived(const DataTypes::GeneralResponseStruct &);
     void blockReceived(const DataTypes::BlockStruct &);
 };

@@ -8,14 +8,7 @@ ConfigKIV::ConfigKIV(S2DataTypes::S2ConfigType *config)
     // параметры входных сигналов
     quint32 StartInIndex = ID8084_START;
     //    quint32 StartComIndex = ID8084_COM;
-    for (int i = 0; i < config->size(); ++i)
-    {
-        if (config->at(i).id == 0xFFFFFFFF)
-        {
-            config->remove(i);
-            --i;
-        }
-    }
+    Config::removeFotter(config);
 
     if (StartInIndex != 0)
     {

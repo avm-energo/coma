@@ -17,9 +17,10 @@
 
 AbstractConfDialog::AbstractConfDialog(QWidget *parent) : UDialog(parent)
 {
-    connect(&DataManager::GetInstance(), &DataManager::confParametersReceived, this,
-        &AbstractConfDialog::confParameterReceived);
-    connect(&DataManager::GetInstance(), &DataManager::responseReceived, this, &AbstractConfDialog::WriteConfMessageOk);
+    const auto &manager = DataManager::GetInstance();
+    connect(&manager, &DataManager::confParametersListReceived, this, &AbstractConfDialog::confParametersListReceived);
+    connect(&manager, &DataManager::confParameterReceived, this, &AbstractConfDialog::confParameterReceived);
+    connect(&manager, &DataManager::responseReceived, this, &AbstractConfDialog::WriteConfMessageOk);
 }
 
 // void AbstractConfDialog::setConnections()
@@ -70,44 +71,48 @@ void AbstractConfDialog::ReadConf()
 void AbstractConfDialog::WriteConf()
 {
 
-    if (WriteCheckPassword())
+    if (!WriteCheckPassword())
+        return;
+    if (!PrepareConfToWrite())
     {
-        if (!PrepareConfToWrite())
-        {
-            ERMSG("Ошибка чтения конфигурации");
-            return;
-        }
-        iface()->writeConfigFile(S2Config);
-        //        switch (Board::GetInstance().interfaceType())
-        //        {
-        //        case Board::InterfaceType::Ethernet:
-        //            //            emit writeConfFile(S2Config);
-        //            DataManager::setConfig(S2Config);
-        //            break;
-        //        case Board::InterfaceType::USB:
-        //        {
-        //            res = Commands::WriteFile(1, S2Config);
-        //            if (res == Error::Msg::NoError)
-        //            {
-        //                emit BsiIsNeedToBeAcquiredAndChecked();
-        //                QMessageBox::information(this, "Внимание", "Запись конфигурации и переход прошли успешно!");
-        //            }
-        //            else
-        //                QMessageBox::critical(
-        //                    this, "Ошибка", "Ошибка записи конфигурации" + QVariant::fromValue(res).toString());
-        //            break;
-        //        }
-        //        default:
-        //            break;
-        //        }
+        ERMSG("Ошибка чтения конфигурации");
+        return;
     }
+    iface()->writeConfigFile(S2Config);
+    //        switch (Board::GetInstance().interfaceType())
+    //        {
+    //        case Board::InterfaceType::Ethernet:
+    //            //            emit writeConfFile(S2Config);
+    //            DataManager::setConfig(S2Config);
+    //            break;
+    //        case Board::InterfaceType::USB:
+    //        {
+    //            res = Commands::WriteFile(1, S2Config);
+    //            if (res == Error::Msg::NoError)
+    //            {
+    //                emit BsiIsNeedToBeAcquiredAndChecked();
+    //                QMessageBox::information(this, "Внимание", "Запись конфигурации и переход прошли успешно!");
+    //            }
+    //            else
+    //                QMessageBox::critical(
+    //                    this, "Ошибка", "Ошибка записи конфигурации" + QVariant::fromValue(res).toString());
+    //            break;
+    //        }
+    //        default:
+    //            break;
+    //        }
 }
 
-void AbstractConfDialog::confParameterReceived(const DataTypes::ConfParametersListStruct &cfpl)
+void AbstractConfDialog::confParametersListReceived(const DataTypes::ConfParametersListStruct &cfpl)
 {
-    for (const auto &cfp : cfpl.parlist)
+    for (const auto &cfp : cfpl)
         S2::findElemAndWriteIt(S2Config, cfp);
     Fill();
+}
+
+void AbstractConfDialog::confParameterReceived(const DataTypes::ConfParameterStruct &cfp)
+{
+    S2::findElemAndWriteIt(S2Config, cfp);
 }
 
 bool AbstractConfDialog::WriteCheckPassword()

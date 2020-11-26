@@ -5,14 +5,7 @@
 ConfigKTF::ConfigKTF(S2DataTypes::S2ConfigType *config)
 {
     m_S2Config = config;
-    for (int i = 0; i < m_S2Config->size(); ++i)
-    {
-        if (m_S2Config->at(i).id == 0xFFFFFFFF)
-        {
-            m_S2Config->remove(i);
-            --i;
-        }
-    }
+    Config::removeFotter(config);
 
     m_S2Config->append({ BCI_NFILTR, sizeof(Bci_block.NFiltr), &Bci_block.NFiltr });
     m_S2Config->append({ BCI_NHARMFILT, sizeof(Bci_block.NHarmFilt), &Bci_block.NHarmFilt });

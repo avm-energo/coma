@@ -538,12 +538,16 @@ void handleFile(QByteArray &ba, quint16 addr, bool isShouldRestored)
 
     if (isShouldRestored)
     {
-        QList<DataTypes::ConfParameterStruct> outlist;
+        DataTypes::ConfParametersListStruct outlist;
         Error::Msg error_code = S2::RestoreData(ba, outlist);
-        if (error_code == Error::Msg::NoError)
-            DataManager::addSignalToOutList(DataTypes::ConfParametersList, outlist);
-        else
+        if (error_code != Error::Msg::NoError)
+        {
             qCritical() << error_code;
+            return;
+        }
+        DataManager::addSignalToOutList(DataTypes::ConfParameterList, outlist);
+        //        for (const auto &param : outlist)
+        //            DataManager::addSignalToOutList(DataTypes::ConfParameter, param);
     }
     else
     {

@@ -8,8 +8,6 @@
 #include <QVBoxLayout>
 Config::Config(S2DataTypes::S2ConfigType *config)
 {
-    //    MainBlk.MTypeB = MTypeB;
-    //    MainBlk.MTypeM = MTypeM;
     MainBlk.MTypeB = Board::GetInstance().typeB();
     MainBlk.MTypeM = Board::GetInstance().typeM();
     setConfig(config);
@@ -17,9 +15,8 @@ Config::Config(S2DataTypes::S2ConfigType *config)
 
 void Config::setConfig(S2DataTypes::S2ConfigType *config)
 {
-    config->erase(
-        std::remove_if(config->begin(), config->end(), [](S2DataTypes::DataRec i) { return i.id == 0xFFFFFFFF; }),
-        config->end());
+    removeFotter(config);
+
     // общая часть
     config->append({ BCI_MTYPEB, sizeof(MainBlk.MTypeB), &MainBlk.MTypeB });
     config->append({ BCI_MTYPEM, sizeof(MainBlk.MTypeM), &MainBlk.MTypeM });
@@ -119,6 +116,7 @@ QWidget *Config::TimeWidget(QWidget *parent)
 void Config::Fill()
 {
     int cbidx;
+    Q_CHECK_PTR(ParentMainbl);
     WDFunc::SetSPBData(ParentMainbl, "Abs_104", MainBlk.Abs_104);
     WDFunc::SetSPBData(ParentMainbl, "Cycle_104", MainBlk.Cycle_104);
     WDFunc::SetSPBData(ParentMainbl, "T1_104", MainBlk.T1_104);
@@ -168,4 +166,11 @@ void Config::FillBack()
         MainBlk.Ctype = 10;
         break;
     }
+}
+
+void Config::removeFotter(S2DataTypes::S2ConfigType *config)
+{
+    config->erase(
+        std::remove_if(config->begin(), config->end(), [](S2DataTypes::DataRec i) { return i.id == 0xFFFFFFFF; }),
+        config->end());
 }

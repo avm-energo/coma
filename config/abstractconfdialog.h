@@ -53,7 +53,8 @@ private slots:
     void LoadConfFromFile();
     void ReadConf();
     void WriteConf();
-    void confParameterReceived(const DataTypes::ConfParametersListStruct &cfpl);
+    void confParametersListReceived(const DataTypes::ConfParametersListStruct &cfpl);
+    void confParameterReceived(const DataTypes::ConfParameterStruct &cfp);
 
     // public slots:
     //    void FillConf(S2ConfigType *);

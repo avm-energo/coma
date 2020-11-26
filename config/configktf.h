@@ -2,7 +2,7 @@
 #define CONFIGKTF_H
 
 //#define ID8084_START    1012
-#define ID_COM 20
+//#define ID_COM 20
 
 #define BCI_NFILTR 1003
 #define BCI_NHARMFILT 1004

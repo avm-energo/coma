@@ -13,7 +13,8 @@ enum SignalTypes
     SinglePointWithTime,
     ByteArray,
     File,
-    ConfParametersList,
+    ConfParameter,
+    ConfParameterList,
     Block,
     GeneralResponse
 };
@@ -106,10 +107,12 @@ struct BlockStruct
     QByteArray data;
 };
 
-struct ConfParametersListStruct
-{
-    QList<ConfParameterStruct> parlist;
-};
+typedef QList<ConfParameterStruct> ConfParametersListStruct;
+
+// struct ConfParametersListStruct
+//{
+//    QList<ConfParameterStruct> parlist;
+//};
 
 struct SignalsStruct
 {

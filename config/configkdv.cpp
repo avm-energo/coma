@@ -3,14 +3,7 @@
 ConfigKDV::ConfigKDV(S2DataTypes::S2ConfigType *config)
 {
     m_S2Config = config;
-    for (int i = 0; i < m_S2Config->size(); ++i)
-    {
-        if (m_S2Config->at(i).id == 0xFFFFFFFF)
-        {
-            m_S2Config->remove(i);
-            --i;
-        }
-    }
+    Config::removeFotter(config);
 
     m_S2Config->append({ BCI_EQ_TYPE, sizeof(Bci_block.Eq_type), &Bci_block.Eq_type });
     m_S2Config->append({ BCI_COOL_TYPE, sizeof(Bci_block.Cool_type), &Bci_block.Cool_type });
