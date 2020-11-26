@@ -40,6 +40,8 @@ private slots:
 
     void Write_PCDate();
     void Write_Date();
+    void uponInterfaceSetting();
+    void updateBitStringData(const DataTypes::BitStringStruct &bs);
 };
 
 #endif // MNKTIME_H

@@ -21,8 +21,6 @@ TimeDialog::TimeDialog(QWidget *parent) : UDialog(parent)
     First = false;
     Timer = new QTimer(this);
     connect(Timer, &QTimer::timeout, this, &TimeDialog::updateSysTime);
-
-    SetupUI();
 }
 
 TimeDialog::~TimeDialog()
@@ -67,7 +65,7 @@ void TimeDialog::SetupUI()
     QPushButton *Button = new QPushButton("Записать дату и время ПК в модуль");
     Button->setStyleSheet(tmps);
     glyout->addWidget(Button, row++, 1, 1, 6, Qt::AlignTop);
-    connect(Button, SIGNAL(clicked()), this, SLOT(Write_PCDate()));
+    connect(Button, &QAbstractButton::clicked, this, &TimeDialog::Write_PCDate);
     glyout->addWidget(WDFunc::NewLBL(this, "Дата и время в модуле:"), row, 1, 1, 1);
     glyout->addWidget(WDFunc::NewLE(this, "systime2", "dd-MM-yyyy HH:mm:ss"), row++, 2, 1, 4);
     glyout->addWidget(WDFunc::NewLBL(this, "Дата и время для записи в модуль"), row, 1, 1, 1);
@@ -76,7 +74,7 @@ void TimeDialog::SetupUI()
     Button = new QPushButton("Записать заданное время в модуль");
     Button->setStyleSheet(tmps);
     glyout->addWidget(Button, row, 1, 1, 6, Qt::AlignTop);
-    connect(Button, SIGNAL(clicked()), this, SLOT(Write_Date()));
+    connect(Button, &QAbstractButton::clicked, this, &TimeDialog::Write_Date);
 
     for (int i = 0; i < 6; i++)
     {
@@ -171,6 +169,21 @@ void TimeDialog::Write_Date()
 {
     QDateTime myDateTime = QDateTime::fromString(WDFunc::LEData(this, "Date"), "dd-MM-yyyy HH:mm:ss");
     WriteTime(myDateTime);
+}
+
+void TimeDialog::uponInterfaceSetting()
+{
+    SetupUI();
+    connect(&DataManager::GetInstance(), &DataManager::bitStringReceived, this, &::TimeDialog::updateBitStringData);
+}
+
+void TimeDialog::updateBitStringData(const DataTypes::BitStringStruct &bs)
+{
+    // Time doesnt have address
+    // USB +
+    if (bs.sigAdr)
+        return;
+    SetTime(bs.sigVal);
 }
 
 // void TimeDialog::ETHUpdate()
