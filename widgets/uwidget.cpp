@@ -58,18 +58,6 @@ void UWidget::setSpBdQuery(const QList<UWidget::BdQuery> &list)
     m_spBdQueryList = list;
 }
 
-void UWidget::sendCommandWithResult(Queries::Commands cmd, QVariant item)
-{
-    m_busy = true;
-    connect(&DataManager::GetInstance(), &DataManager::blockReceived, this, &UWidget::resultReady);
-    m_iface->writeCommand(cmd, item);
-    while (m_busy)
-    {
-        QCoreApplication::processEvents(QEventLoop::AllEvents);
-        StdFunc::Wait();
-    }
-}
-
 void UWidget::updateFloatData(const DataTypes::FloatStruct &fl)
 {
     ++m_timerCounter;
@@ -85,13 +73,6 @@ void UWidget::updateSPData(const DataTypes::SinglePointWithTimeStruct &sp)
     QList<HighlightWarnAlarmStruct> hstlist = m_highlightMap.value(sp.sigAdr);
     for (const auto &hst : hstlist)
         WDFunc::SetLBLTColor(this, QString::number(hst.fieldnum), (sp.sigVal == 1) ? Colors::TABCOLORA1 : hst.color);
-}
-
-void UWidget::resultReady(const DataTypes::BlockStruct &bs)
-{
-    disconnect(&DataManager::GetInstance(), &DataManager::blockReceived, this, &UWidget::resultReady);
-
-    m_busy = false;
 }
 
 void UWidget::reqUpdate()

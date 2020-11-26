@@ -193,7 +193,7 @@ void AbstractTuneDialog::Wait15Seconds()
     WaitNSeconds(15, false);
 }
 
-Error::Msg AbstractTuneDialog::CheckPassword()
+bool AbstractTuneDialog::CheckPassword()
 {
     KeyPressDialog dlg; // = new KeyPressDialog;
     return dlg.CheckPassword("121941");
