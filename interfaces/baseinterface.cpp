@@ -20,10 +20,17 @@ void BaseInterface::reqBlockSync(quint32 blocknum, DataBlockTypes blocktype, voi
 {
     m_busy = true;
     connect(&DataManager::GetInstance(), &DataManager::blockReceived, this, &BaseInterface::resultReady);
+    QMap<DataBlockTypes, Queries::Commands> blockmap;
+    blockmap[DataBlockTypes::BacBlock] = Queries::QUSB_ReqTuningCoef;
+    blockmap[DataBlockTypes::BdaBlock] = Queries::QUSB_ReqBlkDataA;
+    //    blockmap[DataBlockTypes::BdBlock] = Queries::;
+    //    blockmap[DataBlockTypes::BciBlock] = Queries::;
+    writeCommand(blockmap[blocktype], blocknum);
     switch (blocktype)
     {
     case DataBlockTypes::BacBlock:
-        writeCommand(Queries::QUSB_ReqTuningCoef);
+        writeCommand(Queries::QUSB_ReqTuningCoef, blocknum);
+        break;
     }
 
     writeCommand(Queries::QC_, item);
