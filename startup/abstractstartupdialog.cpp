@@ -142,10 +142,9 @@ void AbstractStartupDialog::updateFloatData(const DataTypes::FloatStruct &fl)
 {
     if (!m_updatesEnabled)
         return;
-    if (fl.sigAdr > m_regMap.constBegin().key() && fl.sigAdr < m_regMap.constEnd().key())
-    {
+    // Игнорируем 4011 т.к. он нам не важен и все чужие регистры тоже игнорируем
+    if (fl.sigAdr >= m_regMap.firstKey() && fl.sigAdr < m_regMap.lastKey())
         FillBd(this, QString::number(fl.sigAdr), fl.sigVal);
-    }
 }
 
 void AbstractStartupDialog::updateStatus()
@@ -175,7 +174,10 @@ void AbstractStartupDialog::FillBd(QWidget *parent, QString Name, QString Value)
 void AbstractStartupDialog::FillBd(QWidget *parent, QString Name, float Value)
 {
     if (!WDFunc::SetSPBData(parent, Name, Value))
-        qDebug() << "Failed to find SpinBox";
+    {
+        qDebug() << "Failed to find SpinBox with name:" << Name << "and parent:" << parent->objectName()
+                 << "to setup value: " << Value;
+    }
 }
 
 void AbstractStartupDialog::GetCorBdButton()
@@ -214,12 +216,14 @@ void AbstractStartupDialog::reqUpdate()
             break;
         case QueryWasInitiated:
         {
-            updateFloatData();
+            //            updateFloatData();
             m_updateState = AnswerWasReceived;
             break;
         }
         break;
         case AnswerWasReceived:
+            //            FillCor();
+            //            m_updateState = ThereWasNoUpdatesRecently;
             break;
         }
     }

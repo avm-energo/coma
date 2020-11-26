@@ -129,5 +129,6 @@ void InfoDialog::sync()
 
 void InfoDialog::reqUpdate()
 {
-    iface()->reqBSI();
+    if (m_updatesEnabled)
+        iface()->reqBSI();
 }

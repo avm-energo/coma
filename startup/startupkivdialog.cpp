@@ -109,6 +109,7 @@ void StartupKIVDialog::FillBackCor()
     while (i != m_regMap.constEnd())
     {
         WDFunc::SPBData(this, QString::number(i.key()), *i.value());
+        ++i;
     }
 }
 
