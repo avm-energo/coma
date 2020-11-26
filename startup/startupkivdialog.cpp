@@ -6,10 +6,8 @@
 #include "../gen/datamanager.h"
 #include "../gen/error.h"
 #include "../gen/files.h"
-//#include "../gen/s2.h"
 #include "../gen/stdfunc.h"
 #include "../gen/timefunc.h"
-//#include "../usb/commands.h"
 #include "../widgets/etableview.h"
 #include "../widgets/wd_func.h"
 
@@ -19,26 +17,30 @@
 
 StartupKIVDialog::StartupKIVDialog(QWidget *parent) : AbstractStartupDialog(parent)
 {
-    int i;
+    //    int i;
+    // Default initialization
+    // Do not need set null value
+    CorBlock = new CorData();
 
-    CorBlock = new CorData;
-    CorBlock->Phy_unb_init = 0;
-    CorBlock->Iunb_init = 0;
-    //    first = 0;
+    m_regMap[4000] = &CorBlock->C_init[0];
+    m_regMap[4001] = &CorBlock->C_init[1];
+    m_regMap[4002] = &CorBlock->C_init[2];
+    m_regMap[4003] = &CorBlock->Tg_init[0];
+    m_regMap[4004] = &CorBlock->C_init[1];
+    m_regMap[4005] = &CorBlock->C_init[2];
+    m_regMap[4006] = &CorBlock->corTg[0];
+    m_regMap[4007] = &CorBlock->corTg[1];
+    m_regMap[4008] = &CorBlock->corTg[2];
+    m_regMap[4009] = &CorBlock->Iunb_init;
+    m_regMap[4010] = &CorBlock->Phy_unb_init;
+    m_regMap[4011] = reinterpret_cast<float *>(&CorBlock->stat);
 
     /*MessageTimer = new QTimer;
     MessageTimer->setInterval(5000);
     connect(MessageTimer,SIGNAL(timeout()),this,SLOT(TimerTimeout()));*/
 
-    for (i = 0; i < 3; i++)
-    {
-        CorBlock->C_init[i] = 0;
-        CorBlock->Tg_init[i] = 0;
-        CorBlock->corTg[i] = 0;
-    }
     setAttribute(Qt::WA_DeleteOnClose);
     SetStartupBlock(7, &CorBlock, sizeof(CorData), KIVSTARTUPINITREG);
-    // SetupUI();
     // MessageTimer->start();
 }
 
@@ -103,62 +105,26 @@ void StartupKIVDialog::SetupUI()
 
 void StartupKIVDialog::FillBackCor()
 {
-    // QString tmps;
-
-    WDFunc::SPBData(this, QString::number(4010), CorBlock->Phy_unb_init);
-    WDFunc::SPBData(this, QString::number(4009), CorBlock->Iunb_init);
-
-    for (int i = 0; i < 3; i++)
+    auto i = m_regMap.constBegin();
+    while (i != m_regMap.constEnd())
     {
-        WDFunc::SPBData(this, QString::number(4000 + i), CorBlock->C_init[i]);
-
-        // WDFunc::LEData(this, "C_init1."+QString::number(i), tmps);
-        // CorBlock->C_init[i]=ToFloat(tmps);
-        WDFunc::SPBData(this, QString::number(4003 + i), CorBlock->Tg_init[i]);
-        WDFunc::SPBData(this, QString::number(4006 + i), CorBlock->corTg[i]);
+        WDFunc::SPBData(this, QString::number(i.key()), *i.value());
     }
 }
 
 void StartupKIVDialog::FillCor()
 {
-
-    WDFunc::SetSPBData(this, QString::number(4010), CorBlock->Phy_unb_init);
-    WDFunc::SetSPBData(this, QString::number(4009), CorBlock->Iunb_init);
-
-    for (int i = 0; i < 3; i++)
+    auto i = m_regMap.begin();
+    while (i != m_regMap.end())
     {
-
-        // WDFunc::SetLEData(this, "C_init1."+QString::number(i),
-        // QString::number(CorBlock->C_init[i], 'f', 5));
-        WDFunc::SetSPBData(this, QString::number(4000 + i), CorBlock->C_init[i]);
-        WDFunc::SetSPBData(this, QString::number(4003 + i), CorBlock->Tg_init[i]);
-        WDFunc::SetSPBData(this, QString::number(4006 + i), CorBlock->corTg[i]);
+        WDFunc::SetSPBData(this, QString::number(i.key()), *i.value());
+        ++i;
     }
 }
 
 void StartupKIVDialog::GetCorBd()
 {
-    //    if (index == corDIndex)
-    //    {
     iface()->reqFloats(4000, 12);
-    switch (Board::GetInstance().interfaceType())
-    {
-    case Board::InterfaceType::USB:
-    {
-        //        if (Commands::GetBd(7, CorBlock, sizeof(CorData)) == Error::Msg::NoError)
-        //        {
-        //            FillCor();
-        //            QMessageBox::information(this, "INFO", "Прочитано успешно");
-        //        }
-        break;
-    }
-    case Board::InterfaceType::Ethernet:
-    {
-        // emit CorReadRequest();
-        break;
-    }
-    }
-    //    }
 }
 // void StartupKIVDialog::GetCorBdButton()
 //{
@@ -382,7 +348,8 @@ void StartupKIVDialog::MessageOk()
 //        {
 //            for (i = 0; i < Signal.size(); ++i)
 //            {
-//                FillBd(this, QString::number(Signal.at(i).SigAdr), WDFunc::StringValueWithCheck(Signal.at(i).flVal));
+//                FillBd(this, QString::number(Signal.at(i).SigAdr),
+//                WDFunc::StringValueWithCheck(Signal.at(i).flVal));
 //            }
 //            QMessageBox::information(this, "INFO", "Прочитано успешно");
 //        }

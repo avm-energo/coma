@@ -116,32 +116,33 @@ void AbstractStartupDialog::updateFloatData()
     QList<DataTypes::SignalsStruct> list;
     //    DataManager::getSignals(m_startupBlockDescription.initStartRegAdr, m_startupBlockDescription.size / 4,
     //        DataTypes::SignalTypes::FloatWithTime, list); // /4 => float data by default
-    if (!list.isEmpty())
+    if (list.isEmpty())
+        return;
+    for (const auto &signal : list)
     {
-        for (const auto &signal : list)
-        {
-            DataTypes::FloatWithTimeStruct fwt = qvariant_cast<DataTypes::FloatWithTimeStruct>(signal.data);
+        DataTypes::FloatWithTimeStruct fwt = qvariant_cast<DataTypes::FloatWithTimeStruct>(signal.data);
 
-            //    if (((Signal)->fl.SigAdr >= MBS_INITREG) && ((Signal)->fl.SigAdr <= 4010))
-            //    {
-            //        for (int i = 0; i < Signal->SigNumber; i++)
-            //        {
-            // FillBd(
-            //    this, QString::number((Signal + i)->fl.SigAdr), WDFunc::StringValueWithCheck((Signal +
-            //    i)->fl.SigVal));
-            FillBd(this, QString::number(fwt.sigAdr), fwt.sigVal);
-        }
-
-        //        if (first)
-        QMessageBox::information(this, "INFO", "Прочитано успешно");
-        //        else
-        //            first = 1;
+        //    if (((Signal)->fl.SigAdr >= MBS_INITREG) && ((Signal)->fl.SigAdr <= 4010))
+        //    {
+        //        for (int i = 0; i < Signal->SigNumber; i++)
+        //        {
+        // FillBd(
+        //    this, QString::number((Signal + i)->fl.SigAdr), WDFunc::StringValueWithCheck((Signal +
+        //    i)->fl.SigVal));
+        FillBd(this, QString::number(fwt.sigAdr), fwt.sigVal);
     }
+
+    //        if (first)
+    QMessageBox::information(this, "INFO", "Прочитано успешно");
+    //        else
+    //            first = 1;
 }
 
 void AbstractStartupDialog::updateFloatData(const DataTypes::FloatStruct &fl)
 {
-    if (fl.sigAdr > 4000 && fl.sigAdr < 4000 + 12)
+    if (!m_updatesEnabled)
+        return;
+    if (fl.sigAdr > m_regMap.constBegin().key() && fl.sigAdr < m_regMap.constEnd().key())
     {
         FillBd(this, QString::number(fl.sigAdr), fl.sigVal);
     }
@@ -179,54 +180,9 @@ void AbstractStartupDialog::FillBd(QWidget *parent, QString Name, float Value)
 
 void AbstractStartupDialog::GetCorBdButton()
 {
-    iface()->reqStartup(
-        m_startupBlockDescription.initStartRegAdr, m_startupBlockDescription.size / 4); // /4 => float by default
-    //    switch (Board::GetInstance().interfaceType())
-    //    {
-    //    case Board::InterfaceType::USB:
-    //    {
-    //        if (Commands::GetBd(
-    //                m_startupBlockDescription.num, m_startupBlockDescription.block, m_startupBlockDescription.size)
-    //            == Error::Msg::NoError)
-    //        {
-    //            FillCor();
-    //            QMessageBox::information(this, "INFO", "Прочитано успешно");
-    //        }
-    //        break;
-    //    }
-    //    case Board::InterfaceType::RS485:
-    //    {
-    //        ModBus::Information info;
-    //        info.size = (sizeof(CorData) / 4);
-    //        info.adr = 4000;
-    //        emit RS485ReadCorBd(info);
-    //        break;
-    //    }
-    //    case Board::InterfaceType::Ethernet:
-    //    {
-    //        DataManager::reqStartup();
-    //        //        emit CorReadRequest();
-    //        break;
-    //    }
-    //    }
+    iface()->reqStartup(m_startupBlockDescription.initStartRegAdr,
+        m_startupBlockDescription.size / sizeof(float)); // /4 => float by default
 }
-
-// void AbstractStartupDialog::ModBusUpdateCorData(QList<ModBus::SignalStruct> Signal)
-//{
-//    int i = 0;
-
-//    if (Signal.size() > 0)
-//    {
-//        if (Signal.at(0).SigAdr == MBS_INITREG)
-//        {
-//            for (i = 0; i < Signal.size(); ++i)
-//            {
-//                FillBd(this, QString::number(Signal.at(i).SigAdr), Signal.at(i).flVal);
-//            }
-//            QMessageBox::information(this, "INFO", "Прочитано успешно");
-//        }
-//    }
-//}
 
 bool AbstractStartupDialog::WriteCheckPassword()
 {

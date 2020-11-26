@@ -42,6 +42,7 @@ protected:
     virtual void ReadFromFile() = 0;
     void ErrorRead();
     void uponInterfaceSetting() override;
+    QMap<quint16, float *> m_regMap;
 
 private:
     UpdateStates m_updateState;
