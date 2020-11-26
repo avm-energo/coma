@@ -30,7 +30,7 @@ Board::Board(Singleton::token)
 
 quint16 Board::typeB() const
 {
-    return m_baseSerialInfo.MTypeB;
+    return m_startupInfoBlock.MTypeB;
 }
 
 // void Board::setTypeB(const quint16 &typeB)
@@ -41,7 +41,7 @@ quint16 Board::typeB() const
 
 quint16 Board::typeM() const
 {
-    return m_baseSerialInfo.MTypeM;
+    return m_startupInfoBlock.MTypeM;
 }
 
 // void Board::setTypeM(const quint16 &typeM)
@@ -77,13 +77,13 @@ quint32 Board::serialNumber(Board::Types type) const
     switch (type)
     {
     case Base:
-        return m_baseSerialInfo.SerialNumB;
+        return m_startupInfoBlock.SerialNumB;
     case Mezzanine:
-        return m_baseSerialInfo.SerialNumM;
+        return m_startupInfoBlock.SerialNumM;
     case None:
         return 0;
     default:
-        return m_baseSerialInfo.SerialNum;
+        return m_startupInfoBlock.SerialNum;
     }
 }
 
@@ -100,8 +100,8 @@ QString Board::UID() const
     //    default:
     //        return 0;
     //    }
-    return QString::number(m_baseSerialInfo.UIDHigh, 16) + QString::number(m_baseSerialInfo.UIDMid, 16)
-        + QString::number(m_baseSerialInfo.UIDLow, 16);
+    return QString::number(m_startupInfoBlock.UIDHigh, 16) + QString::number(m_startupInfoBlock.UIDMid, 16)
+        + QString::number(m_startupInfoBlock.UIDLow, 16);
 }
 
 Board::InterfaceType Board::interfaceType() const
@@ -130,20 +130,25 @@ void Board::setConnectionState(ConnectionState connectionState)
 
 void Board::update(const DataTypes::BitStringStruct &bs)
 {
-    quint32 &item = *(reinterpret_cast<quint32 *>(&m_baseSerialInfo) + (bs.sigAdr - BSIREG));
-    std::copy_n(&bs.sigVal, sizeof(quint32), &item);
-
+    // NOTE Необходимо сделать проверку: пришел ли это сигнал с
+    // нужным нам адресом(наш сигнал) или нет - чужие данные
+    // Ignore empty address
+    if (!bs.sigAdr)
+        return;
+    quint32 &item = *(reinterpret_cast<quint32 *>(&m_startupInfoBlock) + (bs.sigAdr - BSIREG));
+    // std::copy_n(&bs.sigVal, sizeof(quint32), &item);
+    item = bs.sigVal;
     // Last value updated
-    if (&item == &m_baseSerialInfo.Hth)
+    if (&item == &m_startupInfoBlock.Hth)
     {
-        emit healthChanged(m_baseSerialInfo.Hth);
+        emit healthChanged(m_startupInfoBlock.Hth);
     }
     emit readyRead();
 }
 
 quint32 Board::health() const
 {
-    return m_baseSerialInfo.Hth;
+    return m_startupInfoBlock.Hth;
 }
 
 bool Board::noConfig() const
@@ -158,7 +163,7 @@ bool Board::noRegPars() const
 
 Modules::StartupInfoBlock Board::baseSerialInfo() const
 {
-    return m_baseSerialInfo;
+    return m_startupInfoBlock;
 }
 
 // QList<quint16> Board::getBaseBoardsList() const

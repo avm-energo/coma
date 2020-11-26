@@ -110,8 +110,8 @@ private:
     Types m_boardType;
     ConnectionState m_connectionState;
 
-    Modules::StartupInfoBlock m_baseSerialInfo {};
-    Modules::StartupInfoBlockExt m_baseSerialInfoExt {};
+    Modules::StartupInfoBlock m_startupInfoBlock {};
+    Modules::StartupInfoBlockExt m_startupInfoBlockExt {};
 
     template <typename T> bool isSerialNumberSet(T value)
     {
