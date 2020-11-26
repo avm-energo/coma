@@ -69,7 +69,7 @@ public:
     void Wait15Seconds();
 
     //    void ProcessTune();
-    Error::Msg CheckPassword();
+    bool CheckPassword();
     virtual void setMessages() = 0;      // заполнить список сообщений
     virtual void setTuneFunctions() = 0; // заполнить список функций настройки
                                          //    bool IsWithinLimits(double number, double base, double threshold);

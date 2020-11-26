@@ -9,6 +9,14 @@ class BaseInterface : public QObject
 {
     Q_OBJECT
 public:
+    enum DataBlockTypes
+    {
+        BacBlock,
+        BdaBlock,
+        BdBlock,
+        BciBlock
+    };
+
     bool m_working;
     LogClass *Log;
 
@@ -39,12 +47,19 @@ public:
         return m_working;
     }
 
+    void reqBlockSync(quint32 blocknum, DataBlockTypes blocktype, void *block, quint32 blocksize);
+
 signals:
     void reconnect();
 
 private:
+    bool m_busy;
+
 public slots:
     virtual void stop() = 0;
+
+private slots:
+    void resultReady(const DataTypes::BlockStruct &result);
 };
 
 #endif // BASEINTERFACE_H
