@@ -32,16 +32,6 @@ void Config::setConfig(S2DataTypes::S2ConfigType *config)
         config->append({ quint32(iter.key()), sizeof(iter.value()), iter.value() });
         ++iter;
     }
-    //    config->append({ BCI_MTYPEB, sizeof(MainBlk.MTypeB), &MainBlk.MTypeB });
-    //    config->append({ BCI_MTYPEM, sizeof(MainBlk.MTypeM), &MainBlk.MTypeM });
-    //    config->append({ BCI_CTYPE, sizeof(MainBlk.Ctype), &MainBlk.Ctype });
-    //    config->append({ BCI_ABS_104, sizeof(MainBlk.Abs_104), &MainBlk.Abs_104 });
-    //    config->append({ BCI_CYCLE_104, sizeof(MainBlk.Cycle_104), &MainBlk.Cycle_104 });
-    //    config->append({ BCI_T1_104, sizeof(MainBlk.T1_104), &MainBlk.T1_104 });
-    //    config->append({ BCI_T2_104, sizeof(MainBlk.T2_104), &MainBlk.T2_104 });
-    //    config->append({ BCI_T3_104, sizeof(MainBlk.T3_104), &MainBlk.T3_104 });
-    //    config->append({ BCI_K_104, sizeof(MainBlk.K_104), &MainBlk.K_104 });
-    //    config->append({ BCI_W_104, sizeof(MainBlk.W_104), &MainBlk.W_104 });
     config->append({ 0xFFFFFFFF, 0, nullptr });
 }
 
@@ -125,13 +115,18 @@ void Config::Fill()
 {
     int cbidx;
     Q_CHECK_PTR(ParentMainbl);
-    WDFunc::SetSPBData(ParentMainbl, "Abs_104", MainBlk.Abs_104);
-    WDFunc::SetSPBData(ParentMainbl, "Cycle_104", MainBlk.Cycle_104);
-    WDFunc::SetSPBData(ParentMainbl, "T1_104", MainBlk.T1_104);
-    WDFunc::SetSPBData(ParentMainbl, "T2_104", MainBlk.T2_104);
-    WDFunc::SetSPBData(ParentMainbl, "T3_104", MainBlk.T3_104);
-    WDFunc::SetSPBData(ParentMainbl, "k_104", MainBlk.K_104);
-    WDFunc::SetSPBData(ParentMainbl, "w_104", MainBlk.W_104);
+    //    WDFunc::SetSPBData(ParentMainbl, "Abs_104", MainBlk.Abs_104);
+    //    WDFunc::SetSPBData(ParentMainbl, "Cycle_104", MainBlk.Cycle_104);
+    //    WDFunc::SetSPBData(ParentMainbl, "T1_104", MainBlk.T1_104);
+    //    WDFunc::SetSPBData(ParentMainbl, "T2_104", MainBlk.T2_104);
+    //    WDFunc::SetSPBData(ParentMainbl, "T3_104", MainBlk.T3_104);
+    //    WDFunc::SetSPBData(ParentMainbl, "k_104", MainBlk.K_104);
+    //    WDFunc::SetSPBData(ParentMainbl, "w_104", MainBlk.W_104);
+    // Miss first 3 value
+    int i = 3;
+    auto defValues = QMetaEnum::fromType<Bci::BciDefMainValues>();
+    std::for_each(regs.begin() + 3, regs.end(),
+        [&](quint32 *value) { WDFunc::SetSPBData(ParentMainbl, defValues.key(i++), *value); });
 
     switch (MainBlk.Ctype)
     {
@@ -153,13 +148,18 @@ void Config::Fill()
 void Config::FillBack()
 {
     int cbidx;
-    WDFunc::SPBData(ParentMainbl, "Abs_104", MainBlk.Abs_104);
-    WDFunc::SPBData(ParentMainbl, "Cycle_104", MainBlk.Cycle_104);
-    WDFunc::SPBData(ParentMainbl, "T1_104", MainBlk.T1_104);
-    WDFunc::SPBData(ParentMainbl, "T2_104", MainBlk.T2_104);
-    WDFunc::SPBData(ParentMainbl, "T3_104", MainBlk.T3_104);
-    WDFunc::SPBData(ParentMainbl, "k_104", MainBlk.K_104);
-    WDFunc::SPBData(ParentMainbl, "w_104", MainBlk.W_104);
+    int i = 3;
+    auto defValues = QMetaEnum::fromType<Bci::BciDefMainValues>();
+    std::for_each(regs.begin() + 3, regs.end(),
+        [&](quint32 *value) { WDFunc::SPBData(ParentMainbl, defValues.key(i++), *value); });
+
+    //    WDFunc::SPBData(ParentMainbl, "Abs_104", MainBlk.Abs_104);
+    //    WDFunc::SPBData(ParentMainbl, "Cycle_104", MainBlk.Cycle_104);
+    //    WDFunc::SPBData(ParentMainbl, "T1_104", MainBlk.T1_104);
+    //    WDFunc::SPBData(ParentMainbl, "T2_104", MainBlk.T2_104);
+    //    WDFunc::SPBData(ParentMainbl, "T3_104", MainBlk.T3_104);
+    //    WDFunc::SPBData(ParentMainbl, "k_104", MainBlk.K_104);
+    //    WDFunc::SPBData(ParentMainbl, "w_104", MainBlk.W_104);
 
     cbidx = WDFunc::CBIndex(ParentCtype, "Ctype");
     switch (cbidx)

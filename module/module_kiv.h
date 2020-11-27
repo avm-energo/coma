@@ -1,6 +1,7 @@
 #pragma once
 #define ID8084_START 1012
 #define ID8084_COM 20
+#include "../gen/pch.h"
 namespace AVM_KIV
 {
 

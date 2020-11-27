@@ -8,7 +8,7 @@ class Keypress : public QWidget
 {
     Q_OBJECT
 public:
-    explicit Keypress(QWidget *parent = 0);
+    explicit Keypress(QWidget *parent = nullptr);
 
 signals:
     void Finished();

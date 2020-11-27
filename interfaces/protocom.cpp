@@ -263,7 +263,7 @@ inline void handleBlk(Proto::Commands cmd, quint32 addr, quint32 count)
 
 inline void handleInt(Proto::Commands cmd, QByteArray data)
 {
-    handleBlk(cmd, NULL, data);
+    handleBlk(cmd, 0, data);
 }
 
 inline void handleBlk(const Proto::Commands cmd, const DataTypes::Signal &signal)

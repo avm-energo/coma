@@ -5,8 +5,8 @@
 #include "../gen/s2.h"
 
 #include <QQueue>
+#include <QTimer>
 #include <QVariant>
-
 class IEC104Thread : public QObject
 {
     Q_OBJECT
