@@ -123,6 +123,7 @@ PRECOMPILED_HEADER = ../gen/pch.h
 
 HEADERS += \
     ../module/module_kiv.h \
+    ../module/module_kxx.h \
     coma.h \
     ../check/check.h \
     ../check/abstractcheckdialog.h \

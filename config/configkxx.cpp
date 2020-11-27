@@ -1,6 +1,7 @@
 #include "configkxx.h"
 
 #include "../gen/colors.h"
+#include "../module/module_kxx.h"
 #include "../widgets/wd_func.h"
 #include "config.h"
 
@@ -19,79 +20,37 @@ void ConfigKxx::setConfig(S2DataTypes::S2ConfigType *config)
 
     Config::removeFotter(config);
 
-    config->append({ BCI_RTERM, sizeof(TempConf.RTerm), &TempConf.RTerm });
-    config->append({ BCI_W100, sizeof(TempConf.W100), &TempConf.W100 });
+    config->append({ Bci::RTERM, sizeof(TempConf.RTerm), &TempConf.RTerm });
+    config->append({ Bci::W100, sizeof(TempConf.W100), &TempConf.W100 });
 
-    config->append({ BCI_TRELE_PRED, sizeof(StrTrele.Trele_pred), &StrTrele.Trele_pred });
-    config->append({ BCI_TRELE_ALARM, sizeof(StrTrele.Trele_alarm), &StrTrele.Trele_alarm });
+    config->append({ Bci::TRELE_PRED, sizeof(StrTrele.Trele_pred), &StrTrele.Trele_pred });
+    config->append({ Bci::TRELE_ALARM, sizeof(StrTrele.Trele_alarm), &StrTrele.Trele_alarm });
 
-    config->append({ BCI_MBMASTER, sizeof(StrModBus.MBMaster), &StrModBus.MBMaster });
-    config->append({ BCI_MBMAB1, sizeof(StrModBus.MBMab1), &StrModBus.MBMab1 });
-    config->append({ BCI_MBMAB2, sizeof(StrModBus.MBMab2), &StrModBus.MBMab2 });
-    config->append({ BCI_MBMAB3, sizeof(StrModBus.MBMab3), &StrModBus.MBMab3 });
-    config->append({ BCI_MBMAB4, sizeof(StrModBus.MBMab4), &StrModBus.MBMab4 });
+    config->append({ Bci::MBMASTER, sizeof(StrModBus.MBMaster), &StrModBus.MBMaster });
+    config->append({ Bci::MBMAB1, sizeof(StrModBus.MBMab1), &StrModBus.MBMab1 });
+    config->append({ Bci::MBMAB2, sizeof(StrModBus.MBMab2), &StrModBus.MBMab2 });
+    config->append({ Bci::MBMAB3, sizeof(StrModBus.MBMab3), &StrModBus.MBMab3 });
+    config->append({ Bci::MBMAB4, sizeof(StrModBus.MBMab4), &StrModBus.MBMab4 });
 
-    config->append({ BCI_IP, sizeof(Com_param.IP), &Com_param.IP });
-    config->append({ BCI_MASK, sizeof(Com_param.Mask), &Com_param.Mask });
-    config->append({ BCI_GW, sizeof(Com_param.GateWay), &Com_param.GateWay });
-    config->append({ BCI_PORT, sizeof(Com_param.Port), &Com_param.Port });
-    config->append({ BCI_SNTP, sizeof(Com_param.SNTP), &Com_param.SNTP });
-    config->append({ BCI_BAUD, sizeof(Com_param.Baud), &Com_param.Baud });
-    config->append({ BCI_PARITY, sizeof(Com_param.Parity), &Com_param.Parity });
-    config->append({ BCI_STOPBIT, sizeof(Com_param.Stopbit), &Com_param.Stopbit });
-    config->append({ BCI_ADRMB, sizeof(Com_param.adrMB), &Com_param.adrMB });
+    config->append({ Bci::IP, sizeof(Com_param.IP), &Com_param.IP });
+    config->append({ Bci::MASK, sizeof(Com_param.Mask), &Com_param.Mask });
+    config->append({ Bci::GW, sizeof(Com_param.GateWay), &Com_param.GateWay });
+    config->append({ Bci::PORT, sizeof(Com_param.Port), &Com_param.Port });
+    config->append({ Bci::SNTP, sizeof(Com_param.SNTP), &Com_param.SNTP });
+    config->append({ Bci::BAUD, sizeof(Com_param.Baud), &Com_param.Baud });
+    config->append({ Bci::PARITY, sizeof(Com_param.Parity), &Com_param.Parity });
+    config->append({ Bci::STOPBIT, sizeof(Com_param.Stopbit), &Com_param.Stopbit });
+    config->append({ Bci::ADRMB, sizeof(Com_param.adrMB), &Com_param.adrMB });
 
     config->append({ 0xFFFFFFFF, 0, nullptr });
 }
 
 void ConfigKxx::SetDefConf()
 {
-    TempConf.RTerm = DEF_RTERM;
-    TempConf.W100 = DEF_W100;
-
-    StrTrele.Trele_pred = DEF_TRELE_PRED;
-    StrTrele.Trele_alarm = DEF_TRELE_ALARM;
-
-    StrModBus.MBMaster = DEF_MBMASTER;
-
-    for (int i = 0; i < 8; i++)
-    {
-
-        StrModBus.MBMab1[i] = 0;
-        StrModBus.MBMab2[i] = 0;
-        StrModBus.MBMab3[i] = 0;
-        StrModBus.MBMab4[i] = 0;
-    }
-
-    Com_param.IP[0] = 172;
-    Com_param.IP[1] = 16;
-    Com_param.IP[2] = 29;
-    Com_param.IP[3] = 12;
-
-    Com_param.Mask[0] = 255;
-    Com_param.Mask[1] = 255;
-    Com_param.Mask[2] = 252;
-    Com_param.Mask[3] = 0;
-
-    Com_param.GateWay[0] = 172;
-    Com_param.GateWay[1] = 16;
-    Com_param.GateWay[2] = 29;
-    Com_param.GateWay[3] = 1;
-
-    Com_param.Port[0] = 2404;
-    Com_param.Port[1] = 2405;
-    Com_param.Port[2] = 502;
-    Com_param.Port[3] = 502;
-
-    Com_param.SNTP[0] = 172;
-    Com_param.SNTP[1] = 16;
-    Com_param.SNTP[2] = 31;
-    Com_param.SNTP[3] = 220;
-
-    Com_param.Baud = DEF_BAUD;
-    Com_param.Parity = DEF_PARITY;
-    Com_param.Stopbit = DEF_STOPBIT;
-    Com_param.adrMB = DEF_ADRMB;
+    TempConf = Bci::TempConfStruct();
+    StrTrele = Bci::StructTrele();
+    StrModBus = Bci::StructModBus();
+    Com_param = Bci::Com();
 }
 
 void ConfigKxx::Fill()
@@ -257,7 +216,7 @@ void ConfigKxx::Fill()
 
     for (int i = 0; i < 8; i++)
     {
-        if (Com_param.Baud == m_constSBaudList.at(i).toUInt())
+        if (Com_param.Baud == m_baudList.at(i).toUInt())
             cbidx = i;
     }
     WDFunc::SetCBIndex(ParentSetup, "Baud_ID", cbidx);
@@ -278,7 +237,7 @@ void ConfigKxx::FillBack()
 {
     int i, cbidx;
     quint16 tmp16;
-    quint8 tmp;
+    quint8 tmp = 0;
     //.......................................................................
 
     WDFunc::SPBData(ParentSetupBl, "RTerm", TempConf.RTerm);
@@ -433,7 +392,7 @@ void ConfigKxx::FillBack()
     WDFunc::SPBData(ParentSetup, "Port_ID" + QString::number(0), Com_param.Port[0]);
 
     cbidx = WDFunc::CBIndex(ParentSetup, "Baud_ID");
-    Com_param.Baud = (m_constSBaudList.at(cbidx).toInt());
+    Com_param.Baud = m_baudList.at(cbidx).toInt();
     cbidx = WDFunc::CBIndex(ParentSetup, "Parity_ID");
     Com_param.Parity = cbidx;
     cbidx = WDFunc::CBIndex(ParentSetup, "Stopbit_ID");
@@ -548,7 +507,7 @@ QWidget *ConfigKxx::ModbusWidget(QWidget *parent)
     glyout->addWidget(lbl, row, 0, 1, 1, Qt::AlignLeft);
     QStringList dopcbl = QStringList { "slave", "master" };
     EComboBox *dopcb = WDFunc::NewCB(parent, "MBMaster", dopcbl, paramcolor);
-    connect(dopcb, SIGNAL(currentIndexChanged(int)), this, SLOT(ChangeModbusGUI(int)));
+    connect(dopcb, &QComboBox::currentIndexChanged, this, &ConfigKxx::ChangeModbusGUI);
     glyout->addWidget(dopcb, row, 1, 1, 1);
     row++;
 
@@ -564,7 +523,7 @@ QWidget *ConfigKxx::ModbusWidget(QWidget *parent)
     row++;
     lbl = WDFunc::NewLBL(parent, "Скорость RS485 интерфейса:");
     glyout->addWidget(lbl, row, 0, 1, 1);
-    cb = WDFunc::NewCB(parent, "Baud_ID", m_constSBaudList, paramcolor);
+    cb = WDFunc::NewCB(parent, "Baud_ID", m_baudList, paramcolor);
     glyout->addWidget(cb, row, 1, 1, 1, Qt::AlignLeft);
 
     row++;
@@ -696,7 +655,7 @@ QWidget *ConfigKxx::ModbusWidget(QWidget *parent)
         cb = WDFunc::NewCB(parent, "MBMab" + QString::number(i) + "[0]", cbl, paramcolor);
         glyout->addWidget(cb, j, 1, 1, 1);
 
-        cb = WDFunc::NewCB(parent, "MBMab" + QString::number(i) + "sk[1]", m_constSBaudList, paramcolor);
+        cb = WDFunc::NewCB(parent, "MBMab" + QString::number(i) + "sk[1]", m_baudList, paramcolor);
         glyout->addWidget(cb, j, 2, 1, 1);
 
         cbl = QStringList { "нет", "even", "odd" };

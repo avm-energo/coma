@@ -50,7 +50,8 @@ public:
     static bool SetTEData(QWidget *w, const QString &tename, const QString &tetext);
     static bool TEData(QWidget *w, const QString &tename, QString &tevalue);
     static bool SetLBLTColor(QWidget *w, const QString &lblname, const QString &color);
-    static EComboBox *NewCB(QWidget *parent, const QString &cbname, QStringList &cbsl, const QString &cbcolor = "");
+    static EComboBox *NewCB(
+        QWidget *parent, const QString &cbname, const QStringList &cbsl, const QString &cbcolor = "");
     static bool SetCBData(QWidget *w, const QString &cbname, const QString &cbvalue);
     static bool SetCBIndex(QObject *w, const QString &cbname, int index);
     static bool SetCBColor(QWidget *w, const QString &cbname, const QString &color);
