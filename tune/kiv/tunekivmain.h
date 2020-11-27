@@ -10,7 +10,7 @@ class TuneKIVMain : public AbstractTuneDialog
 {
     Q_OBJECT
 public:
-    TuneKIVMain(TuneKIV *kiv, QWidget *parent = nullptr);
+    TuneKIVMain(int tuneStep, TuneKIV *kiv, QWidget *parent = nullptr);
 
 private:
     TuneKIV *TKIV;
@@ -19,11 +19,12 @@ private:
     void setTuneFunctions();
     void FillBac(int bacnum);
     void FillBackBac(int bacnum);
-    void GetBdAndFill();
+    QWidget *MainUI();
+    //    void GetBdAndFill();
 
 private slots:
-    int ReadAnalogMeasurements();
-    void SetDefCoefs();
+    //    int ReadAnalogMeasurements();
+    //    void SetDefCoefs();
 };
 
 #endif // TUNEKIVMAIN_H

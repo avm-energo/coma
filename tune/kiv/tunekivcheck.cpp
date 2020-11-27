@@ -1,5 +1,6 @@
 #include "tunekivcheck.h"
 
+#include "../../gen/files.h"
 #include "../../interfaces/protocom.h"
 #include "../../widgets/wd_func.h"
 
@@ -51,11 +52,22 @@ void TuneKIVCheck::setTuneFunctions()
 
 QWidget *TuneKIVCheck::MainUI()
 {
+    return nullptr;
 }
 
-// void TuneKIVCheck::FillBac(int bacnum) { Q_UNUSED(bacnum) }
+Error::Msg TuneKIVCheck::saveWorkConfig()
+{
+}
 
-// void TuneKIVCheck::FillBackBac(int bacnum) { Q_UNUSED(bacnum) }
+void TuneKIVCheck::FillBac(int bacnum)
+{
+    Q_UNUSED(bacnum)
+}
+
+void TuneKIVCheck::FillBackBac(int bacnum)
+{
+    Q_UNUSED(bacnum)
+}
 
 // void TuneKIVCheck::GetBdAndFill() { }
 
@@ -69,25 +81,27 @@ QWidget *TuneKIVCheck::MainUI()
 //    return Error::Msg::NoError;
 //}
 
-int TuneKIVCheck::ReadAnalogMeasurements()
-{
-    return 0;
-}
+// int TuneKIVCheck::ReadAnalogMeasurements()
+//{
+//    return 0;
+//}
 
-void TuneKIVCheck::SetDefCoefs()
-{
-}
+// void TuneKIVCheck::SetDefCoefs()
+//{
+//}
 
 Error::Msg TuneKIVCheck::setSMode2()
 {
+    iface()->writeCommand(Queries::QUSB_SetMode, 0x02);
     //    return Commands::SetMode(0x02);
+    return Error::Msg::NoError;
 }
 
 Error::Msg TuneKIVCheck::setNewConfig()
 {
     CKIV->Bci_block.Unom = 220;
     CKIV->Bci_block.C_pasp[0] = CKIV->Bci_block.C_pasp[1] = CKIV->Bci_block.C_pasp[2] = 9000;
-    return Commands::WriteFile(CM_CONFIGFILE, CKIV->S2Config());
+    return iface()->writeS2FileSync(Files::Config);
 }
 
 Error::Msg TuneKIVCheck::showScheme()
@@ -111,9 +125,9 @@ Error::Msg TuneKIVCheck::showScheme()
         this, "6. Убедитесь, что частота мигания светодиода «Работа»  на лицевой панели увеличилась до 1 Гц;"));
     lyout->addWidget(WDFunc::NewLBL(this, "7. Установите на магазине сопротивлений сопротивление 100,0 Ом."));
     lyout->addWidget(WDFunc::NewPB(this, "", "Готово", dlg, SLOT(close())));
-    lyout->addWidget(WDFunc::NewPB(this, "cancelpb", "Отмена", dlg, SLOT(close())));
+    lyout->addWidget(WDFunc::NewPB2(this, "cancelpb", "Отмена", dlg, &QDialog::close));
     dlg->setLayout(lyout);
-    WDFunc::PBConnect(dlg, "cancelpb", this, SLOT(CancelTune()));
+    WDFunc::PBConnect(dlg, "cancelpb", this, &TuneKIVCheck::CancelTune);
     dlg->exec();
     return Error::Msg::NoError;
 }

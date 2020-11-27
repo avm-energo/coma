@@ -8,6 +8,7 @@ int main(int argc, char *argv[])
 {
     QString Parameter;
     QApplication a(argc, argv);
+    Logging::writeStart();
     qInstallMessageHandler(Logging::messageHandler);
     a.setStyle("cleanlooks");
     Coma w;

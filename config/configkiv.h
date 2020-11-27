@@ -12,7 +12,7 @@
 class ConfigKIV
 {
 public:
-    explicit ConfigKIV(S2DataTypes::S2ConfigType *config);
+    explicit ConfigKIV();
 
     struct Bci
     {
@@ -76,8 +76,8 @@ public:
     //    Error::Msg getAndPushConfig();
     //    Bci popConfig();
     //    Error::Msg popAndWriteConfig();
-    S2DataTypes::S2ConfigType *S2Config();
-    void setS2Config(S2DataTypes::S2ConfigType *s2config);
+    //    S2DataTypes::S2ConfigType *S2Config();
+    //    void setS2Config(S2DataTypes::S2ConfigType *s2config);
     Config *MainConfig();
     ConfigKxx *KxxConfig();
 

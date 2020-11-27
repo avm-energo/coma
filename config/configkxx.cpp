@@ -1,6 +1,7 @@
 #include "configkxx.h"
 
 #include "../gen/colors.h"
+#include "../gen/s2.h"
 #include "../widgets/wd_func.h"
 #include "config.h"
 
@@ -9,39 +10,39 @@
 #include <QStackedWidget>
 #include <QVBoxLayout>
 
-ConfigKxx::ConfigKxx(S2DataTypes::S2ConfigType *config, QObject *parent) : QObject(parent)
+ConfigKxx::ConfigKxx(QObject *parent) : QObject(parent)
 {
-    setConfig(config);
+    setConfig();
 }
 
-void ConfigKxx::setConfig(S2DataTypes::S2ConfigType *config)
+void ConfigKxx::setConfig()
 {
 
-    Config::removeFotter(config);
+    Config::removeFotter();
 
-    config->append({ BCI_RTERM, sizeof(TempConf.RTerm), &TempConf.RTerm });
-    config->append({ BCI_W100, sizeof(TempConf.W100), &TempConf.W100 });
+    S2Config->append({ BCI_RTERM, sizeof(TempConf.RTerm), &TempConf.RTerm });
+    S2Config->append({ BCI_W100, sizeof(TempConf.W100), &TempConf.W100 });
 
-    config->append({ BCI_TRELE_PRED, sizeof(StrTrele.Trele_pred), &StrTrele.Trele_pred });
-    config->append({ BCI_TRELE_ALARM, sizeof(StrTrele.Trele_alarm), &StrTrele.Trele_alarm });
+    S2Config->append({ BCI_TRELE_PRED, sizeof(StrTrele.Trele_pred), &StrTrele.Trele_pred });
+    S2Config->append({ BCI_TRELE_ALARM, sizeof(StrTrele.Trele_alarm), &StrTrele.Trele_alarm });
 
-    config->append({ BCI_MBMASTER, sizeof(StrModBus.MBMaster), &StrModBus.MBMaster });
-    config->append({ BCI_MBMAB1, sizeof(StrModBus.MBMab1), &StrModBus.MBMab1 });
-    config->append({ BCI_MBMAB2, sizeof(StrModBus.MBMab2), &StrModBus.MBMab2 });
-    config->append({ BCI_MBMAB3, sizeof(StrModBus.MBMab3), &StrModBus.MBMab3 });
-    config->append({ BCI_MBMAB4, sizeof(StrModBus.MBMab4), &StrModBus.MBMab4 });
+    S2Config->append({ BCI_MBMASTER, sizeof(StrModBus.MBMaster), &StrModBus.MBMaster });
+    S2Config->append({ BCI_MBMAB1, sizeof(StrModBus.MBMab1), &StrModBus.MBMab1 });
+    S2Config->append({ BCI_MBMAB2, sizeof(StrModBus.MBMab2), &StrModBus.MBMab2 });
+    S2Config->append({ BCI_MBMAB3, sizeof(StrModBus.MBMab3), &StrModBus.MBMab3 });
+    S2Config->append({ BCI_MBMAB4, sizeof(StrModBus.MBMab4), &StrModBus.MBMab4 });
 
-    config->append({ BCI_IP, sizeof(Com_param.IP), &Com_param.IP });
-    config->append({ BCI_MASK, sizeof(Com_param.Mask), &Com_param.Mask });
-    config->append({ BCI_GW, sizeof(Com_param.GateWay), &Com_param.GateWay });
-    config->append({ BCI_PORT, sizeof(Com_param.Port), &Com_param.Port });
-    config->append({ BCI_SNTP, sizeof(Com_param.SNTP), &Com_param.SNTP });
-    config->append({ BCI_BAUD, sizeof(Com_param.Baud), &Com_param.Baud });
-    config->append({ BCI_PARITY, sizeof(Com_param.Parity), &Com_param.Parity });
-    config->append({ BCI_STOPBIT, sizeof(Com_param.Stopbit), &Com_param.Stopbit });
-    config->append({ BCI_ADRMB, sizeof(Com_param.adrMB), &Com_param.adrMB });
+    S2Config->append({ BCI_IP, sizeof(Com_param.IP), &Com_param.IP });
+    S2Config->append({ BCI_MASK, sizeof(Com_param.Mask), &Com_param.Mask });
+    S2Config->append({ BCI_GW, sizeof(Com_param.GateWay), &Com_param.GateWay });
+    S2Config->append({ BCI_PORT, sizeof(Com_param.Port), &Com_param.Port });
+    S2Config->append({ BCI_SNTP, sizeof(Com_param.SNTP), &Com_param.SNTP });
+    S2Config->append({ BCI_BAUD, sizeof(Com_param.Baud), &Com_param.Baud });
+    S2Config->append({ BCI_PARITY, sizeof(Com_param.Parity), &Com_param.Parity });
+    S2Config->append({ BCI_STOPBIT, sizeof(Com_param.Stopbit), &Com_param.Stopbit });
+    S2Config->append({ BCI_ADRMB, sizeof(Com_param.adrMB), &Com_param.adrMB });
 
-    config->append({ 0xFFFFFFFF, 0, nullptr });
+    S2Config->append({ 0xFFFFFFFF, 0, nullptr });
 }
 
 void ConfigKxx::SetDefConf()

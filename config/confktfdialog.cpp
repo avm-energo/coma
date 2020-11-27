@@ -22,7 +22,7 @@ ConfKTFDialog::ConfKTFDialog(ConfigKTF *cktf, QWidget *parent) : AbstractConfDia
 {
     QString tmps = "QDialog {background-color: " + QString(Colors::ACONFCLR) + ";}";
     setStyleSheet(tmps);
-    S2Config = cktf->S2Config();
+    //    S2Config = cktf->S2Config();
     CKTF = cktf;
     //    Conf = new ConfDialog(S2Config, Board::GetInstance().typeB(), Board::GetInstance().typeM());
     //    ConfKxx = new ConfKxxDialog(S2Config);

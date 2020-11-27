@@ -3,32 +3,33 @@
 
 #include "../gen/board.h"
 #include "../gen/colors.h"
+#include "../gen/s2.h"
 #include "../widgets/wd_func.h"
 
 #include <QVBoxLayout>
-Config::Config(S2DataTypes::S2ConfigType *config)
+Config::Config()
 {
     MainBlk.MTypeB = Board::GetInstance().typeB();
     MainBlk.MTypeM = Board::GetInstance().typeM();
-    setConfig(config);
+    setConfig();
 }
 
-void Config::setConfig(S2DataTypes::S2ConfigType *config)
+void Config::setConfig()
 {
-    removeFotter(config);
+    removeFotter();
 
     // общая часть
-    config->append({ BCI_MTYPEB, sizeof(MainBlk.MTypeB), &MainBlk.MTypeB });
-    config->append({ BCI_MTYPEM, sizeof(MainBlk.MTypeM), &MainBlk.MTypeM });
-    config->append({ BCI_CTYPE, sizeof(MainBlk.Ctype), &MainBlk.Ctype });
-    config->append({ BCI_ABS_104, sizeof(MainBlk.Abs_104), &MainBlk.Abs_104 });
-    config->append({ BCI_CYCLE_104, sizeof(MainBlk.Cycle_104), &MainBlk.Cycle_104 });
-    config->append({ BCI_T1_104, sizeof(MainBlk.T1_104), &MainBlk.T1_104 });
-    config->append({ BCI_T2_104, sizeof(MainBlk.T2_104), &MainBlk.T2_104 });
-    config->append({ BCI_T3_104, sizeof(MainBlk.T3_104), &MainBlk.T3_104 });
-    config->append({ BCI_K_104, sizeof(MainBlk.k_104), &MainBlk.k_104 });
-    config->append({ BCI_W_104, sizeof(MainBlk.w_104), &MainBlk.w_104 });
-    config->append({ 0xFFFFFFFF, 0, nullptr });
+    S2Config->append({ BCI_MTYPEB, sizeof(MainBlk.MTypeB), &MainBlk.MTypeB });
+    S2Config->append({ BCI_MTYPEM, sizeof(MainBlk.MTypeM), &MainBlk.MTypeM });
+    S2Config->append({ BCI_CTYPE, sizeof(MainBlk.Ctype), &MainBlk.Ctype });
+    S2Config->append({ BCI_ABS_104, sizeof(MainBlk.Abs_104), &MainBlk.Abs_104 });
+    S2Config->append({ BCI_CYCLE_104, sizeof(MainBlk.Cycle_104), &MainBlk.Cycle_104 });
+    S2Config->append({ BCI_T1_104, sizeof(MainBlk.T1_104), &MainBlk.T1_104 });
+    S2Config->append({ BCI_T2_104, sizeof(MainBlk.T2_104), &MainBlk.T2_104 });
+    S2Config->append({ BCI_T3_104, sizeof(MainBlk.T3_104), &MainBlk.T3_104 });
+    S2Config->append({ BCI_K_104, sizeof(MainBlk.k_104), &MainBlk.k_104 });
+    S2Config->append({ BCI_W_104, sizeof(MainBlk.w_104), &MainBlk.w_104 });
+    S2Config->append({ 0xFFFFFFFF, 0, nullptr });
 }
 
 void Config::SetDefConf()
@@ -168,9 +169,9 @@ void Config::FillBack()
     }
 }
 
-void Config::removeFotter(S2DataTypes::S2ConfigType *config)
+void Config::removeFotter()
 {
-    config->erase(
-        std::remove_if(config->begin(), config->end(), [](S2DataTypes::DataRec i) { return i.id == 0xFFFFFFFF; }),
-        config->end());
+    S2Config->erase(
+        std::remove_if(S2Config->begin(), S2Config->end(), [](S2DataTypes::DataRec i) { return i.id == 0xFFFFFFFF; }),
+        S2Config->end());
 }

@@ -84,7 +84,7 @@
 class ConfigKTF
 {
 public:
-    explicit ConfigKTF(S2DataTypes::S2ConfigType *config);
+    explicit ConfigKTF();
 
     typedef struct
     {
@@ -120,11 +120,11 @@ public:
 
     Bci Bci_block;
 
-    S2DataTypes::S2ConfigType *S2Config();
+    //    S2DataTypes::S2ConfigType *S2Config();
     void SetDefConf();
 
 private:
-    S2DataTypes::S2ConfigType *m_S2Config;
+    //    S2DataTypes::S2ConfigType *m_S2Config;
 };
 
 #endif // CONFIGKTF_H

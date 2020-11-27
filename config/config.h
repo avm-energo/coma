@@ -28,7 +28,7 @@ constexpr int DEF_W_104 = 8;
 class Config
 {
 public:
-    explicit Config(S2DataTypes::S2ConfigType *config);
+    explicit Config();
 
     struct Bci_Main
     {
@@ -47,14 +47,14 @@ public:
 
     Bci_Main MainBlk; // Основной блок (см. config.h)
 
-    void setConfig(S2DataTypes::S2ConfigType *config);
+    void setConfig();
     void SetDefConf();
     QWidget *MainWidget(QWidget *parent);
     QWidget *TimeWidget(QWidget *parent);
     void Fill();
     void FillBack();
 
-    static void removeFotter(S2DataTypes::S2ConfigType *config);
+    static void removeFotter();
 
 private:
     QObject *ParentMainbl, *ParentCtype;

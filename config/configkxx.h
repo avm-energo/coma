@@ -49,7 +49,7 @@ class ConfigKxx : public QObject
 {
     Q_OBJECT
 public:
-    ConfigKxx(S2DataTypes::S2ConfigType *config, QObject *parent = nullptr);
+    ConfigKxx(QObject *parent = nullptr);
 
     struct TempConfStruct
     {
@@ -90,7 +90,7 @@ public:
     } Com;
     Com Com_param;
 
-    void setConfig(S2DataTypes::S2ConfigType *config);
+    void setConfig();
     void SetDefConf();
     void Fill();
     void FillBack();

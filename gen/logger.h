@@ -12,6 +12,7 @@ class Logging
 {
 public:
     void static messageHandler(QtMsgType type, const QMessageLogContext &context, const QString &msg);
+    void static writeStart();
 
 protected:
     Logging() = delete;

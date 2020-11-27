@@ -9,7 +9,6 @@
 class S2
 {
 public:
-    QVector<S2DataTypes::DataRec> Config;
     S2();
     // S2: Сборщик в память:
     // 0 - успешно, иначе код ошибки S2: получение размера:
@@ -34,6 +33,8 @@ public:
 private:
     //    const unsigned long dwPolynomial = 0xEDB88320;
 };
+
+extern QVector<S2DataTypes::DataRec> *S2Config;
 
 // typedef QVector<S2DataTypes::DataRec> S2ConfigType;
 

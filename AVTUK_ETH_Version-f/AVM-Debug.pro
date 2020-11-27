@@ -20,8 +20,10 @@ DEFINES += PROGNAME='\\"AVM-Debug\\"'
 DEFINES += PROGCAPTION='\\"AVM-Debug\\040v\\040"$$VERSION"\\040\\"'
 DEFINES += COMAVERSION='\\"$$VERSION\\"'
 DEFINES += DEVICETYPE=1 # 1 - module, 2 - pribor, for diagnostic messages
-DEFINES += SOFTDEVELOPER='\\"AVM-Energo\\"'
+DEFINES += SOFTDEVELOPER='\\"$$QMAKE_TARGET_COMPANY\\"'
 DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000
+DEFINES += GIT_VERSION='$(shell git describe --always)'
+DEFINES += BUILD_DATE='"\\\"$(shell date)\\\""'
 
 DEFINES += AVM_DEBUG
 TEMPLATE = app
@@ -66,6 +68,7 @@ SOURCES += \
     ../gen/files.cpp \
     ../gen/datamanager.cpp \
     ../gen/logclass.cpp \
+    ../gen/logger.cpp \
     ../gen/report.cpp \
     ../gen/s2.cpp \
     ../gen/stdfunc.cpp \
@@ -116,6 +119,8 @@ SOURCES += \
 PRECOMPILED_HEADER = ../gen/pch.h
 
 HEADERS += \
+    ../interfaces/iec104private.h \
+    ../interfaces/modbusprivate.h \
     coma.h \
     ../check/abstractcheckdialog.h \
     ../check/check.h \
@@ -154,13 +159,12 @@ HEADERS += \
     ../gen/error.h \
     ../gen/files.h \
     ../gen/logclass.h \
+    ../gen/logger.h \
     ../gen/report.h \
     ../gen/s2.h \
     ../gen/stdfunc.h \
     ../gen/timefunc.h \
     ../interfaces/baseinterface.h \
-    ../interfaces/iec104private.h \
-    ../interfaces/modbusprivate.h \
     ../interfaces/protocomprivate.h \
     ../interfaces/protocom.h \
     ../interfaces/protocomthread.h \

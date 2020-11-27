@@ -69,7 +69,7 @@ public:
     void Wait15Seconds();
 
     //    void ProcessTune();
-    bool CheckPassword();
+    Error::Msg CheckPassword();
     virtual void setMessages() = 0;      // заполнить список сообщений
     virtual void setTuneFunctions() = 0; // заполнить список функций настройки
                                          //    bool IsWithinLimits(double number, double base, double threshold);
@@ -80,9 +80,9 @@ public:
     //    void SkMsgSetVisible(int msg, bool Visible = true);
     void MsgClear();
     //    QByteArray *ChooseFileForOpen(QString mask);
-    bool WriteTuneCoefs(int blocknum);
-    void SaveTuneBlocksToFiles();
-    void PrereadConf();
+    //    bool WriteTuneCoefs(int blocknum);
+    //    void SaveTuneBlocksToFiles();
+    //    void PrereadConf();
     //    void GetBdAndFill();
 
     void SetBac(void *block, int blocknum, int blocksize);
@@ -95,19 +95,22 @@ public:
     void saveTuneSequenceFile();
     Error::Msg saveWorkConfig();
     Error::Msg loadWorkConfig();
+    Error::Msg saveAllTuneCoefs();
+    Error::Msg loadAllTuneCoefs();
 
 private:
-    struct BacStruct
+    struct BlockStruct
     {
         void *BacBlock;
         int BacBlockSize;
         //        char BacBlockNum;
     };
 
-    QMap<int, BacStruct> AbsBac;
+    QMap<int, BlockStruct> AbsBac;
+    BlockStruct InitialBci;
 
-    int SaveAllTuneCoefs();
-    void ReadTuneCoefsByBac(int bacnum);
+    void readTuneCoefsByBac(int bacnum);
+    Error::Msg writeTuneCoefsByBac(int bacnum);
 signals:
     //    void PasswordChecked();
     //    void stopall();
@@ -125,7 +128,7 @@ public slots:
     //    void Good();
     //    void NoGood();
     Error::Msg StartMeasurement();
-    virtual void SetDefCoefs() = 0;
+    //    virtual void SetDefCoefs() = 0;
     //    void TuneReadCoefs(int);
 
     //    void SaveToFile();
@@ -136,10 +139,10 @@ public slots:
 private slots:
     void StartTune();
     //    void PasswordCheck(QString psw);
-    virtual int ReadAnalogMeasurements() = 0;
+    //    virtual int ReadAnalogMeasurements() = 0;
     //    void UpdateNSecondsWidget();
     void MeasTimerTimeout(); // по событию от таймера при активном режиме измерений обновить данные
-    void LoadTuneBlocksFromFile();
+    //    void LoadTuneBlocksFromFile();
 
 protected:
     void closeEvent(QCloseEvent *e);

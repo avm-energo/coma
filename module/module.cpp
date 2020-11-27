@@ -46,7 +46,7 @@ Module *Module::createModule(QTimer *updateTimer, BaseInterface *iface, AlarmWid
     Journals *JOUR;
     Module *m = new Module;
     m->m_iface = iface;
-    S2DataTypes::S2ConfigType *s2Config = new S2DataTypes::S2ConfigType;
+    S2Config = new S2DataTypes::S2ConfigType;
     m->m_alarmStateAllDialog = new AlarmStateAll;
     m->m_alarmStateAllDialog->UpdateHealth(board.health());
     quint16 typeb = Board::GetInstance().typeB();
@@ -81,12 +81,12 @@ Module *Module::createModule(QTimer *updateTimer, BaseInterface *iface, AlarmWid
         case Model::KIV:
         {
             JOUR = new JournKIV;
-            ConfigKIV *CKIV = new ConfigKIV(s2Config);
+            ConfigKIV *CKIV = new ConfigKIV;
             m->addDialogToList(new ConfKIVDialog(CKIV), "Конфигурирование", "conf1");
             CheckKIVDialog *cdkiv = new CheckKIVDialog;
             m->addDialogToList(cdkiv, "Проверка");
 #ifdef AVM_DEBUG
-            TuneKIV *TKIV = new TuneKIV(0, s2Config);
+            TuneKIV *TKIV = new TuneKIV;
             m->addDialogToList(new TuneKIVDialog(CKIV, TKIV), "Регулировка");
 #endif
             m->addDialogToList(new StartupKIVDialog, "Начальные значения");
@@ -99,7 +99,7 @@ Module *Module::createModule(QTimer *updateTimer, BaseInterface *iface, AlarmWid
         case Model::KTF:
         {
             JOUR = new JournKTF;
-            ConfigKTF *CKTF = new ConfigKTF(s2Config);
+            ConfigKTF *CKTF = new ConfigKTF;
             m->addDialogToList(new ConfKTFDialog(CKTF), "Конфигурирование", "conf1");
             CheckKTFDialog *cdktf = new CheckKTFDialog;
             m->addDialogToList(cdktf);
@@ -118,13 +118,13 @@ Module *Module::createModule(QTimer *updateTimer, BaseInterface *iface, AlarmWid
         case Model::KDV:
         {
             JOUR = new JournKDV;
-            ConfigKDV *CKDV = new ConfigKDV(s2Config);
+            ConfigKDV *CKDV = new ConfigKDV;
             m->addDialogToList(new ConfKDVDialog(CKDV), "Конфигурирование", "conf1");
             CheckKDVDialog *cdkdv = new CheckKDVDialog;
             m->addDialogToList(cdkdv);
 #ifdef AVM_DEBUG
-            TuneKDV *TKDV = new TuneKDV(0, s2Config);
-            m->addDialogToList(new TuneKDVDialog(CKDV, TKDV));
+//            TuneKDV *TKDV = new TuneKDV;
+//            m->addDialogToList(new TuneKDVDialog(CKDV, TKDV));
 #endif
             m->addDialogToList(new StartupKDVDialog, "Старение изоляции");
             m->addDialogToList(new CheckKDVHarmonicDialog, "Гармоники");

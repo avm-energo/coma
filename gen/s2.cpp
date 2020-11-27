@@ -4,6 +4,8 @@
 
 #include <QDateTime>
 
+QVector<S2DataTypes::DataRec> *S2Config;
+
 S2::S2()
 {
 }

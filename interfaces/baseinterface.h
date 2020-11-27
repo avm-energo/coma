@@ -2,6 +2,7 @@
 #define BASEINTERFACE_H
 
 #include "../gen/datatypes.h"
+#include "../gen/error.h"
 #include "../gen/logclass.h"
 
 struct ConnectStruct;
@@ -9,14 +10,6 @@ class BaseInterface : public QObject
 {
     Q_OBJECT
 public:
-    enum DataBlockTypes
-    {
-        BacBlock,
-        BdaBlock,
-        BdBlock,
-        BciBlock
-    };
-
     bool m_working;
     LogClass *Log;
 
@@ -47,19 +40,28 @@ public:
         return m_working;
     }
 
-    void reqBlockSync(quint32 blocknum, DataBlockTypes blocktype, void *block, quint32 blocksize);
+    // Bac & Bda blocks only supported for now
+    Error::Msg reqBlockSync(quint32 blocknum, DataTypes::DataBlockTypes blocktype, void *block, quint32 blocksize);
+    Error::Msg writeBlockSync(quint32 blocknum, DataTypes::DataBlockTypes blocktype, void *block, quint32 blocksize);
+    Error::Msg writeS2FileSync(quint32 filenum);
+    Error::Msg readS2FileSync(quint32 filenum);
 
 signals:
     void reconnect();
 
 private:
-    bool m_busy;
+    bool m_busy, m_timeout;
+    QByteArray m_byteArrayResult;
+    bool m_responseResult;
 
 public slots:
     virtual void stop() = 0;
 
 private slots:
     void resultReady(const DataTypes::BlockStruct &result);
+    void responseReceived(const DataTypes::GeneralResponseStruct &response);
+    void confParameterBlockReceived(const DataTypes::ConfParametersListStruct &cfpl);
+    void timeout();
 };
 
 #endif // BASEINTERFACE_H

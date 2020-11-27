@@ -20,15 +20,16 @@ private:
 
     void setMessages() override;
     void setTuneFunctions() override;
-    //    void FillBac(int bacnum) override;
-    //    void FillBackBac(int bacnum) override;
+    void FillBac(int bacnum) override;
+    void FillBackBac(int bacnum) override;
     //    void GetBdAndFill() override;
     //    Error::Msg saveWorkConfig(int configblocknum) override;
     QWidget *MainUI() override;
+    Error::Msg saveWorkConfig();
 
 private slots:
-    int ReadAnalogMeasurements() override;
-    void SetDefCoefs() override;
+    //    int ReadAnalogMeasurements() override;
+    //    void SetDefCoefs() override;
 
     Error::Msg setSMode2();
     Error::Msg setNewConfig();
