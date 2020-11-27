@@ -364,10 +364,13 @@ void ProtocomThread::writeLog(QByteArray ba, Direction dir)
     {
     case Proto::FromDevice:
         tmpba.append(": <-");
+        break;
     case Proto::ToDevice:
         tmpba.append(": ->");
+        break;
     default:
         tmpba.append(":  ");
+        break;
     }
     tmpba.append(ba).append("\n");
     // log->WriteRaw(tmpba);
@@ -545,7 +548,7 @@ void handleFile(QByteArray &ba, quint16 addr, bool isShouldRestored)
             qCritical() << error_code;
             return;
         }
-        DataManager::addSignalToOutList(DataTypes::ConfParameterList, outlist);
+        DataManager::addSignalToOutList(DataTypes::ConfParametersList, outlist);
         //        for (const auto &param : outlist)
         //            DataManager::addSignalToOutList(DataTypes::ConfParameter, param);
     }

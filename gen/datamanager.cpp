@@ -238,7 +238,7 @@ void DataManager::checkTypeAndSendSignals(DataTypes::SignalsStruct &str)
         }
         break;
     }
-    case ConfParameterList:
+    case ConfParametersList:
     {
         if (str.data.canConvert<ConfParametersListStruct>())
         {
