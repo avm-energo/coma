@@ -24,17 +24,17 @@ int main(int argc, char *argv[])
     Protocom usbdevice;
     usbdevice.start(devices.first());
     usbdevice.reqBSI();
-    usbdevice.writeCommand(Queries::QUSB_ReqBlkDataA, 1);
-    usbdevice.writeCommand(Queries::QUSB_ReqBlkDataA, 1);
-    usbdevice.writeCommand(Queries::QUSB_ReqBlkDataA, 1);
-    usbdevice.writeCommand(Queries::QUSB_ReqBlkDataA, 1);
+    //    usbdevice.writeCommand(Queries::QUSB_ReqBlkDataA, 1);
+    //    usbdevice.writeCommand(Queries::QUSB_ReqBlkDataA, 1);
+    //    usbdevice.writeCommand(Queries::QUSB_ReqBlkDataA, 1);
+    //    usbdevice.writeCommand(Queries::QUSB_ReqBlkDataA, 1);
     //    usbdevice.writeCommand(Queries::QUSB_ReqBlkDataTech, 1);
     //    usbdevice.writeCommand(Queries::QUSB_ReqBlkDataTech, 2);
     //    usbdevice.writeCommand(Queries::QUSB_ReqBlkDataTech, 3);
     //    usbdevice.writeCommand(Queries::QUSB_ReqBlkDataTech, 4);
     //    usbdevice.writeCommand(Queries::QUSB_ReqBlkDataTech, 5);
-    usbdevice.reqBSI();
-    usbdevice.reqBSI();
+    //    usbdevice.reqBSI();
+    //    usbdevice.reqBSI();
     auto data = QByteArray::fromHex(
         "000000000000000000000000b81e853e9a99993e9a99993eb81e85be9a9999be9a9999be0000000000000000");
     quint16 blk = 7;
@@ -42,7 +42,7 @@ int main(int argc, char *argv[])
     QVariant value;
     value.setValue(block);
     // usbdevice.reqFloats(2420, 14);
-    usbdevice.reqBSI();
+    //    usbdevice.reqBSI();
     //    usbdevice.writeCommand(Queries::QUSB_ReqBlkDataA, 1);
     // usbdevice.reqFloats(2400, 7);
     //    usbdevice.reqBSI();
@@ -50,7 +50,7 @@ int main(int argc, char *argv[])
     // usbdevice.reqFloats(4501, 2);
     //    usbdevice.reqBSI();
     //    usbdevice.writeCommand(Queries::QUSB_ReqBlkDataA, 1);
-    usbdevice.reqFloats(1000, 16);
+    // usbdevice.reqFloats(1000, 16);
     //    usbdevice.reqBSI();
     //    usbdevice.writeCommand(Queries::QUSB_ReqBlkDataA, 1);
     //    usbdevice.reqFloats(2420, 14);
@@ -60,7 +60,7 @@ int main(int argc, char *argv[])
     //    usbdevice.reqBSI();
     //    usbdevice.writeCommand(Queries::QUSB_ReqBlkDataA, 1);
     //    usbdevice.reqFloats(101, 2);
-    //    usbdevice.writeCommand(Queries::QC_WriteUserValues, value);
+    //usbdevice.writeCommand(Queries::QC_WriteUserValues, value);
     qDebug() << "Hello world";
     return a.exec();
 }

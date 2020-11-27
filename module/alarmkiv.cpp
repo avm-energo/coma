@@ -1,5 +1,6 @@
 #include "alarmkiv.h"
 
+#include "module_kiv.h"
 #include "modules.h"
 AlarmKIV::AlarmKIV(QWidget *parent) : Alarm(parent)
 {

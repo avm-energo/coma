@@ -458,7 +458,7 @@ void IEC104Thread::ParseIFormat(QByteArray &ba) // основной разбор
                         QList<DataTypes::ConfParameterStruct> outlist;
                         if (S2::RestoreData(ba, outlist) == Error::Msg::NoError)
                             //                        {
-                            DataManager::addSignalToOutList(DataTypes::ConfParametersList, outlist);
+                            DataManager::addSignalToOutList(DataTypes::ConfParameter, outlist);
                         //                            // check for needed IDs and move not mentioned into s_outputList
                         //                            foreach (DataTypes::ConfParameterStruct cfp, outlist)
                         //                                DataManager::addSignalToOutList(DataTypes::ConfParametersList,

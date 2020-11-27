@@ -1,6 +1,7 @@
 #include "journkiv.h"
 
 #include "../gen/timefunc.h"
+#include "module_kiv.h"
 #include "modules.h"
 JournKIV::JournKIV(QObject *parent) : Journals(parent)
 {

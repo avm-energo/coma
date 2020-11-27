@@ -122,6 +122,7 @@ SOURCES += \
 PRECOMPILED_HEADER = ../gen/pch.h
 
 HEADERS += \
+    ../module/module_kiv.h \
     coma.h \
     ../check/check.h \
     ../check/abstractcheckdialog.h \

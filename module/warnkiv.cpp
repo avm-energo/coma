@@ -1,5 +1,6 @@
 #include "warnkiv.h"
 
+#include "module_kiv.h"
 #include "modules.h"
 
 WarnKIV::WarnKIV(QWidget *parent) : Warn(parent)

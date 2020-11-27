@@ -5,9 +5,12 @@
 #include "../gen/colors.h"
 #include "../widgets/wd_func.h"
 
+#include <QDebug>
+#include <QMetaEnum>
 #include <QVBoxLayout>
 Config::Config(S2DataTypes::S2ConfigType *config)
 {
+    Q_ASSERT(sizeof(Bci::BciMain) / 4 == regs.size());
     MainBlk.MTypeB = Board::GetInstance().typeB();
     MainBlk.MTypeM = Board::GetInstance().typeM();
     setConfig(config);
@@ -18,31 +21,36 @@ void Config::setConfig(S2DataTypes::S2ConfigType *config)
     removeFotter(config);
 
     // общая часть
-    config->append({ BCI_MTYPEB, sizeof(MainBlk.MTypeB), &MainBlk.MTypeB });
-    config->append({ BCI_MTYPEM, sizeof(MainBlk.MTypeM), &MainBlk.MTypeM });
-    config->append({ BCI_CTYPE, sizeof(MainBlk.Ctype), &MainBlk.Ctype });
-    config->append({ BCI_ABS_104, sizeof(MainBlk.Abs_104), &MainBlk.Abs_104 });
-    config->append({ BCI_CYCLE_104, sizeof(MainBlk.Cycle_104), &MainBlk.Cycle_104 });
-    config->append({ BCI_T1_104, sizeof(MainBlk.T1_104), &MainBlk.T1_104 });
-    config->append({ BCI_T2_104, sizeof(MainBlk.T2_104), &MainBlk.T2_104 });
-    config->append({ BCI_T3_104, sizeof(MainBlk.T3_104), &MainBlk.T3_104 });
-    config->append({ BCI_K_104, sizeof(MainBlk.k_104), &MainBlk.k_104 });
-    config->append({ BCI_W_104, sizeof(MainBlk.w_104), &MainBlk.w_104 });
+    //    for (const auto &item:regs)
+    //    {
+
+    //        config->append({item})
+    //    }
+    auto iter = regs.cbegin();
+    while (iter != regs.end())
+    {
+        config->append({ quint32(iter.key()), sizeof(iter.value()), iter.value() });
+        ++iter;
+    }
+    //    config->append({ BCI_MTYPEB, sizeof(MainBlk.MTypeB), &MainBlk.MTypeB });
+    //    config->append({ BCI_MTYPEM, sizeof(MainBlk.MTypeM), &MainBlk.MTypeM });
+    //    config->append({ BCI_CTYPE, sizeof(MainBlk.Ctype), &MainBlk.Ctype });
+    //    config->append({ BCI_ABS_104, sizeof(MainBlk.Abs_104), &MainBlk.Abs_104 });
+    //    config->append({ BCI_CYCLE_104, sizeof(MainBlk.Cycle_104), &MainBlk.Cycle_104 });
+    //    config->append({ BCI_T1_104, sizeof(MainBlk.T1_104), &MainBlk.T1_104 });
+    //    config->append({ BCI_T2_104, sizeof(MainBlk.T2_104), &MainBlk.T2_104 });
+    //    config->append({ BCI_T3_104, sizeof(MainBlk.T3_104), &MainBlk.T3_104 });
+    //    config->append({ BCI_K_104, sizeof(MainBlk.K_104), &MainBlk.K_104 });
+    //    config->append({ BCI_W_104, sizeof(MainBlk.W_104), &MainBlk.W_104 });
     config->append({ 0xFFFFFFFF, 0, nullptr });
 }
 
 void Config::SetDefConf()
 {
-    MainBlk.MTypeB = Modules::MTB_00;
-    MainBlk.MTypeM = Modules::MTM_00;
-    MainBlk.Ctype = DEF_CTYPE;
-    MainBlk.Abs_104 = DEF_ABS_104;
-    MainBlk.Cycle_104 = DEF_CYCLE_104;
-    MainBlk.T1_104 = DEF_T1_104;
-    MainBlk.T2_104 = DEF_T2_104;
-    MainBlk.T3_104 = DEF_T3_104;
-    MainBlk.k_104 = DEF_K_104;
-    MainBlk.w_104 = DEF_W_104;
+    auto defValues = QMetaEnum::fromType<Bci::BciDefMainValues>();
+    int i = 0;
+
+    std::for_each(regs.begin(), regs.end(), [&](quint32 *value) { *value = defValues.value(i++); });
 }
 
 QWidget *Config::MainWidget(QWidget *parent)
@@ -122,8 +130,8 @@ void Config::Fill()
     WDFunc::SetSPBData(ParentMainbl, "T1_104", MainBlk.T1_104);
     WDFunc::SetSPBData(ParentMainbl, "T2_104", MainBlk.T2_104);
     WDFunc::SetSPBData(ParentMainbl, "T3_104", MainBlk.T3_104);
-    WDFunc::SetSPBData(ParentMainbl, "k_104", MainBlk.k_104);
-    WDFunc::SetSPBData(ParentMainbl, "w_104", MainBlk.w_104);
+    WDFunc::SetSPBData(ParentMainbl, "k_104", MainBlk.K_104);
+    WDFunc::SetSPBData(ParentMainbl, "w_104", MainBlk.W_104);
 
     switch (MainBlk.Ctype)
     {
@@ -150,8 +158,8 @@ void Config::FillBack()
     WDFunc::SPBData(ParentMainbl, "T1_104", MainBlk.T1_104);
     WDFunc::SPBData(ParentMainbl, "T2_104", MainBlk.T2_104);
     WDFunc::SPBData(ParentMainbl, "T3_104", MainBlk.T3_104);
-    WDFunc::SPBData(ParentMainbl, "k_104", MainBlk.k_104);
-    WDFunc::SPBData(ParentMainbl, "w_104", MainBlk.w_104);
+    WDFunc::SPBData(ParentMainbl, "k_104", MainBlk.K_104);
+    WDFunc::SPBData(ParentMainbl, "w_104", MainBlk.W_104);
 
     cbidx = WDFunc::CBIndex(ParentCtype, "Ctype");
     switch (cbidx)
@@ -170,7 +178,13 @@ void Config::FillBack()
 
 void Config::removeFotter(S2DataTypes::S2ConfigType *config)
 {
-    config->erase(
-        std::remove_if(config->begin(), config->end(), [](S2DataTypes::DataRec i) { return i.id == 0xFFFFFFFF; }),
+    quint64 counter = 0;
+    config->erase(std::remove_if(config->begin(), config->end(),
+                      [&](S2DataTypes::DataRec i) {
+                          if (i.id == 0xFFFFFFFF)
+                              counter++;
+                          return i.id == 0xFFFFFFFF;
+                      }),
         config->end());
+    Q_ASSERT(counter < 2);
 }

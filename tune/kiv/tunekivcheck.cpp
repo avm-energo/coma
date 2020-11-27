@@ -87,7 +87,7 @@ Error::Msg TuneKIVCheck::setNewConfig()
 {
     CKIV->Bci_block.Unom = 220;
     CKIV->Bci_block.C_pasp[0] = CKIV->Bci_block.C_pasp[1] = CKIV->Bci_block.C_pasp[2] = 9000;
-    return Commands::WriteFile(CM_CONFIGFILE, CKIV->S2Config());
+    // return Commands::WriteFile(CM_CONFIGFILE, CKIV->S2Config());
 }
 
 Error::Msg TuneKIVCheck::showScheme()

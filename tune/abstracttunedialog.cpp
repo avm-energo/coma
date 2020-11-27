@@ -9,6 +9,8 @@
 #include "../gen/stdfunc.h"
 #include "../gen/timefunc.h"
 #include "../interfaces/protocom.h"
+#include "../module/module_kiv.h"
+#include "../module/modules.h"
 #include "../widgets/waitwidget.h"
 #include "../widgets/wd_func.h"
 #include "limereport/lrreportengine.h"
@@ -193,7 +195,7 @@ void AbstractTuneDialog::Wait15Seconds()
     WaitNSeconds(15, false);
 }
 
-Error::Msg AbstractTuneDialog::CheckPassword()
+bool AbstractTuneDialog::CheckPassword()
 {
     KeyPressDialog dlg; // = new KeyPressDialog;
     return dlg.CheckPassword("121941");
@@ -492,7 +494,7 @@ Error::Msg AbstractTuneDialog::saveWorkConfig()
 {
     //    return SaveBlocksToFiles(DataBlock::DataBlockTypes::BciBlock);
     iface()->reqFile(Files::FilesEnum::Config, true);
-    memcpy(&m_BciSaveBlock, &CKIV->Bci_block, sizeof(ConfigKIV::Bci));
+    memcpy(&m_BciSaveBlock, &CKIV->Bci_block, sizeof(AVM_KIV::Bci));
     else return Error::Msg::GeneralError;
     return Error::Msg::NoError;
 }

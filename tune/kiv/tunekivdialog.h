@@ -57,7 +57,7 @@ public:
 public slots:
 
 private:
-    ConfigKIV::Bci m_Bci_block_work, m_Bci_block_temporary;
+    AVM_KIV::Bci m_Bci_block_work, m_Bci_block_temporary;
     TuneKIV *TKIV;
     ConfigKIV *CKIV;
 
