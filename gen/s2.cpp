@@ -247,28 +247,28 @@ S2DataTypes::DataRec *S2::FindElem(QVector<S2DataTypes::DataRec> *dr, quint32 id
     return nullptr;
 }
 
-Error::Msg S2::findElemAndWriteIt(QVector<S2DataTypes::DataRec> *s2config, const DataTypes::ConfParameterStruct &cfp)
+void S2::findElemAndWriteIt(QVector<S2DataTypes::DataRec> *s2config, const DataTypes::ConfParameterStruct &cfp)
 {
-    for (QVector<S2DataTypes::DataRec>::iterator it = s2config->begin(); it != s2config->end(); ++it)
+    std::for_each(s2config->begin(), s2config->end(), [&](S2DataTypes::DataRec &record) {
+        findElemAndWriteIt(&record, cfp); //
+    });
+}
+
+Error::Msg S2::findElemAndWriteIt(S2DataTypes::DataRec *record, const DataTypes::ConfParameterStruct &cfp)
+{
+    if (record->id != cfp.ID)
+        return Error::DescError;
+
+    if (record->num_byte != static_cast<quint32>(cfp.data.size()))
     {
-        S2DataTypes::DataRec R = *it;
-        if (R.id == cfp.ID)
-        {
-            if (R.num_byte == static_cast<quint32>(cfp.data.size()))
-            {
-                memcpy(&R.thedata, cfp.data, cfp.data.size());
-                return Error::Msg::NoError;
-            }
-            else
-            {
-                ERMSG("S2: Wrong element size in ConfParameter");
-                qDebug() << "Wait for element" << R.id << "with size:" << R.num_byte
-                         << "but get size:" << cfp.data.size();
-                return Error::Msg::HeaderSizeError;
-            }
-        }
+        qCritical("S2: Wrong element size in ConfParameter");
+        qDebug() << "Wait for element" << record->id    //
+                 << "with size:" << record->num_byte    //
+                 << "but get size:" << cfp.data.size(); //
+        return Error::Msg::HeaderSizeError;
     }
-    return Error::Msg::ResEmpty;
+    memcpy(record->thedata, cfp.data, cfp.data.size());
+    return Error::Msg::NoError;
 }
 
 void inline S2::updCRC32(char byte, quint32 *dwCRC32)

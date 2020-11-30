@@ -106,18 +106,17 @@ void AbstractConfDialog::WriteConf()
 
 void AbstractConfDialog::confParametersListReceived(const DataTypes::ConfParametersListStruct &cfpl)
 {
+    auto &config = S2::config;
     for (const auto &cfp : cfpl)
     {
-        auto status = S2::findElemAndWriteIt(S2::config, cfp);
-        if (status != Error::NoError)
-            qCritical() << status;
+        S2::findElemAndWriteIt(config, cfp);
     }
     Fill();
 }
 
 void AbstractConfDialog::confParameterReceived(const DataTypes::ConfParameterStruct &cfp)
 {
-    S2::findElemAndWriteIt(S2::config, cfp);
+    // S2::findElemAndWriteIt(S2::config, cfp);
 }
 
 bool AbstractConfDialog::WriteCheckPassword()
@@ -199,12 +198,12 @@ void AbstractConfDialog::LoadConfFromFile()
     Error::Msg res = Files::LoadFromFile(Files::ChooseFileForOpen(this, "Config files (*.cf)"), ba);
     if (res != Error::Msg::NoError)
     {
-        WARNMSG("Ошибка при загрузке файла конфигурации");
+        qCritical("Ошибка при загрузке файла конфигурации");
         return;
     }
     if (S2::RestoreDataMem(&(ba.data()[0]), ba.size(), S2::config) != Error::Msg::NoError)
     {
-        WARNMSG("Ошибка при разборе файла конфигурации");
+        qCritical("Ошибка при разборе файла конфигурации");
         return;
     }
     //    emit NewConfToBeLoaded();

@@ -116,38 +116,58 @@ struct StartupInfoBlockExt
 namespace Bci
 {
 Q_NAMESPACE
-enum class BciMainEnum : byte
-{
-    MTypeB = 1,
-    MTypeM = 2,
-    Ctype = 3,
-    Abs_104 = 4,
-    Cycle_104 = 5,
-    T1_104 = 6,
-    T2_104 = 7,
-    T3_104 = 8,
-    K_104 = 9,
-    W_104 = 10
-};
-Q_ENUM_NS(Bci::BciMainEnum);
+// enum class BciMainEnum : byte
+//{
+//    MTypeB = 1,
+//    MTypeM = 2,
+//    Ctype = 3,
+//    Abs_104 = 4,
+//    Cycle_104 = 5,
+//    T1_104 = 6,
+//    T2_104 = 7,
+//    T3_104 = 8,
+//    K_104 = 9,
+//    W_104 = 10
+//};
+// Q_ENUM_NS(Bci::BciMainEnum);
 
-enum class BciDefMainValues : byte
-{
-    MTypeB = 0,
-    MTypeM = 0,
-    Ctype = 1,
-    Abs_104 = 205,
-    Cycle_104 = 5,
-    T1_104 = 15,
-    T2_104 = 10,
-    T3_104 = 20,
-    K_104 = 12,
-    W_104 = 8
-};
-Q_ENUM_NS(Bci::BciDefMainValues);
-
+// enum class BciDefMainValues : byte
+//{
+//    MTypeB = 0,
+//    MTypeM = 0,
+//    Ctype = 1,
+//    Abs_104 = 205,
+//    Cycle_104 = 5,
+//    T1_104 = 15,
+//    T2_104 = 10,
+//    T3_104 = 20,
+//    K_104 = 12,
+//    W_104 = 8
+//};
+// Q_ENUM_NS(Bci::BciDefMainValues);
+constexpr int DEF_CTYPE = 1;
+constexpr int DEF_ABS_104 = 205;
+constexpr int DEF_CYCLE_104 = 5;
+constexpr int DEF_T1_104 = 15;
+constexpr int DEF_T2_104 = 10;
+constexpr int DEF_T3_104 = 20;
+constexpr int DEF_K_104 = 12;
+constexpr int DEF_W_104 = 8;
 struct BciMain
 {
+    BciMain()
+    {
+        MTypeB = Modules::MTB_00;
+        MTypeM = Modules::MTM_00;
+        Ctype = DEF_CTYPE;
+        Abs_104 = DEF_ABS_104;
+        Cycle_104 = DEF_CYCLE_104;
+        T1_104 = DEF_T1_104;
+        T2_104 = DEF_T2_104;
+        T3_104 = DEF_T3_104;
+        K_104 = DEF_K_104;
+        W_104 = DEF_W_104;
+    }
     quint32 MTypeB;
     quint32 MTypeM;
     // Тип синхронизации времени от модуля Ц
@@ -180,14 +200,6 @@ constexpr int BCI_T3_104 = 8;
 constexpr int BCI_K_104 = 9;
 constexpr int BCI_W_104 = 10;
 
-constexpr int DEF_CTYPE = 1;
-constexpr int DEF_ABS_104 = 205;
-constexpr int DEF_CYCLE_104 = 5;
-constexpr int DEF_T1_104 = 15;
-constexpr int DEF_T2_104 = 10;
-constexpr int DEF_T3_104 = 20;
-constexpr int DEF_K_104 = 12;
-constexpr int DEF_W_104 = 8;
 /// Bci
 
 namespace AVM
