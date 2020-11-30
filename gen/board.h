@@ -63,16 +63,11 @@ public:
     Q_ENUM(Types)
     Q_ENUM(ConnectionState)
 
-    Q_PROPERTY(InterfaceType interfaceType READ interfaceType WRITE setInterfaceType NOTIFY interfaceTypeChanged)
-    Q_PROPERTY(DeviceType deviceType READ deviceType WRITE setDeviceType NOTIFY deviceTypeChanged)
-    Q_PROPERTY(Types boardType READ boardType WRITE setBoardType NOTIFY boardTypeChanged)
-    Q_PROPERTY(ConnectionState connectionState     // clangbackend
-            READ connectionState                   // error
-                WRITE setConnectionState           // if all macro
-                    NOTIFY connectionStateChanged) // on one line
-                                                   //    Q_PROPERTY(
-    //        ConnectionState connectionState READ connectionState WRITE setConnectionState NOTIFY
-    //        connectionStateChanged)
+    Q_PROPERTY(InterfaceType interface READ interfaceType WRITE setInterfaceType NOTIFY interfaceTypeChanged)
+    Q_PROPERTY(DeviceType device READ deviceType WRITE setDeviceType NOTIFY deviceTypeChanged)
+    Q_PROPERTY(Types board READ boardType WRITE setBoardType NOTIFY boardTypeChanged)
+    Q_PROPERTY(ConnectionState connection READ connectionState WRITE setConnectionState NOTIFY connectionStateChanged)
+
     explicit Board(token);
 
     quint16 typeB() const;

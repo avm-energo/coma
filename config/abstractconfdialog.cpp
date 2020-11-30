@@ -10,6 +10,7 @@
 #include "../gen/timefunc.h"
 #include "../widgets/wd_func.h"
 
+#include <QDebug>
 #include <QGridLayout>
 #include <QGroupBox>
 #include <QMessageBox>
@@ -19,7 +20,7 @@ AbstractConfDialog::AbstractConfDialog(QWidget *parent) : UDialog(parent)
 {
     const auto &manager = DataManager::GetInstance();
     connect(&manager, &DataManager::confParametersListReceived, this, &AbstractConfDialog::confParametersListReceived);
-    connect(&manager, &DataManager::confParameterReceived, this, &AbstractConfDialog::confParameterReceived);
+    // connect(&manager, &DataManager::confParameterReceived, this, &AbstractConfDialog::confParameterReceived);
     connect(&manager, &DataManager::responseReceived, this, &AbstractConfDialog::WriteConfMessageOk);
 }
 
@@ -106,7 +107,11 @@ void AbstractConfDialog::WriteConf()
 void AbstractConfDialog::confParametersListReceived(const DataTypes::ConfParametersListStruct &cfpl)
 {
     for (const auto &cfp : cfpl)
-        S2::findElemAndWriteIt(S2Config, cfp);
+    {
+        auto status = S2::findElemAndWriteIt(S2Config, cfp);
+        if (status != Error::NoError)
+            qCritical() << status;
+    }
     Fill();
 }
 
@@ -156,13 +161,18 @@ void AbstractConfDialog::SaveConfToFile()
         return;
     }
     ba.resize(MAXBYTEARRAY);
-    S2::StoreDataMem(&(ba.data()[0]), S2Config,
+    auto status = S2::StoreDataMem(&(ba.data()[0]), S2Config,
         0x0001); // 0x0001 - номер файла конфигурации
                  //    quint32 BaLength = static_cast<quint8>(ba.data()[4]);
                  //    BaLength += static_cast<quint8>(ba.data()[5]) * 256;
                  //    BaLength += static_cast<quint8>(ba.data()[6]) * 65536;
                  //    BaLength += static_cast<quint8>(ba.data()[7]) * 16777216;
                  //    BaLength += sizeof(S2::FileHeader); // FileHeader
+    if (status != Error::NoError)
+    {
+        qCritical() << status;
+        return;
+    }
     Error::Msg res = Files::SaveToFile(Files::ChooseFileForSave(this, "Config files (*.cf)", "cf"), ba);
     switch (res)
     {
