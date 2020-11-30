@@ -40,7 +40,7 @@ public slots:
 
 protected:
     bool ok;
-    S2DataTypes::S2ConfigType *S2Config;
+    // S2DataTypes::S2ConfigType *S2Config;
     QStringList CheckConfErrors;
     QWidget *ConfButtons();
 

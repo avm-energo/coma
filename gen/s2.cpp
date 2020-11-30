@@ -4,6 +4,9 @@
 
 #include <QDateTime>
 #include <QDebug>
+
+// QVector<S2DataTypes::DataRec> *S2::S2Config;
+QVector<S2DataTypes::DataRec> *S2::config = nullptr;
 S2::S2()
 {
 }

@@ -51,7 +51,7 @@ void AbstractConfDialog::ReadConf()
     //    }
     //    case Board::InterfaceType::USB:
     //    {
-    //        Error::Msg res = ModuleBSI::PrereadConf(this, S2Config);
+    //        Error::Msg res = ModuleBSI::PrereadConf(this, S2::config);
     //        if (res == Error::Msg::ResEmpty)
     //            emit DefConfToBeLoaded();
     //        else if (res == Error::Msg::NoError)
@@ -63,9 +63,9 @@ void AbstractConfDialog::ReadConf()
     //    }
 }
 
-// void AbstractConfDialog::FillConf(S2ConfigType *DR)
+// void AbstractConfDialog::FillConf(S2::configType *DR)
 //{
-//    S2Config = DR;
+//    S2::config = DR;
 //    emit NewConfToBeLoaded();
 //}
 
@@ -79,16 +79,16 @@ void AbstractConfDialog::WriteConf()
         ERMSG("Ошибка чтения конфигурации");
         return;
     }
-    iface()->writeConfigFile(S2Config);
+    iface()->writeConfigFile(S2::config);
     //        switch (Board::GetInstance().interfaceType())
     //        {
     //        case Board::InterfaceType::Ethernet:
-    //            //            emit writeConfFile(S2Config);
-    //            DataManager::setConfig(S2Config);
+    //            //            emit writeConfFile(S2::config);
+    //            DataManager::setConfig(S2::config);
     //            break;
     //        case Board::InterfaceType::USB:
     //        {
-    //            res = Commands::WriteFile(1, S2Config);
+    //            res = Commands::WriteFile(1, S2::config);
     //            if (res == Error::Msg::NoError)
     //            {
     //                emit BsiIsNeedToBeAcquiredAndChecked();
@@ -108,7 +108,7 @@ void AbstractConfDialog::confParametersListReceived(const DataTypes::ConfParamet
 {
     for (const auto &cfp : cfpl)
     {
-        auto status = S2::findElemAndWriteIt(S2Config, cfp);
+        auto status = S2::findElemAndWriteIt(S2::config, cfp);
         if (status != Error::NoError)
             qCritical() << status;
     }
@@ -117,7 +117,7 @@ void AbstractConfDialog::confParametersListReceived(const DataTypes::ConfParamet
 
 void AbstractConfDialog::confParameterReceived(const DataTypes::ConfParameterStruct &cfp)
 {
-    S2::findElemAndWriteIt(S2Config, cfp);
+    S2::findElemAndWriteIt(S2::config, cfp);
 }
 
 bool AbstractConfDialog::WriteCheckPassword()
@@ -161,7 +161,7 @@ void AbstractConfDialog::SaveConfToFile()
         return;
     }
     ba.resize(MAXBYTEARRAY);
-    auto status = S2::StoreDataMem(&(ba.data()[0]), S2Config,
+    auto status = S2::StoreDataMem(&(ba.data()[0]), S2::config,
         0x0001); // 0x0001 - номер файла конфигурации
                  //    quint32 BaLength = static_cast<quint8>(ba.data()[4]);
                  //    BaLength += static_cast<quint8>(ba.data()[5]) * 256;
@@ -202,7 +202,7 @@ void AbstractConfDialog::LoadConfFromFile()
         WARNMSG("Ошибка при загрузке файла конфигурации");
         return;
     }
-    if (S2::RestoreDataMem(&(ba.data()[0]), ba.size(), S2Config) != Error::Msg::NoError)
+    if (S2::RestoreDataMem(&(ba.data()[0]), ba.size(), S2::config) != Error::Msg::NoError)
     {
         WARNMSG("Ошибка при разборе файла конфигурации");
         return;
@@ -262,7 +262,7 @@ QWidget *AbstractConfDialog::ConfButtons()
 //    }
 //    case Board::InterfaceType::USB:
 //    {
-//        Error::Msg res = ModuleBSI::PrereadConf(this, S2Config);
+//        Error::Msg res = ModuleBSI::PrereadConf(this, S2::config);
 //        if (res == Error::Msg::ResEmpty)
 //            emit DefConfToBeLoaded();
 //        else if (res == Error::Msg::NoError)

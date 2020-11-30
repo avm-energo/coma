@@ -4,6 +4,7 @@
 #include <QString>
 
 #define MAINSLEEP 20
+#define MAINTIMEOUT 2000 // 2 sec timeout for general operations
 
 class StdFunc
 {

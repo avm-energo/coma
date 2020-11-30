@@ -1,6 +1,7 @@
 #pragma once
 #include <QObject>
 #include <variant>
+
 struct IEC104Settings
 {
     quint16 baseadr;

@@ -5,7 +5,7 @@
 
 //#include "../tuneclass.h"
 //#include <QWidget>
-//#include <QtGlobal>
+#include <QtGlobal>
 
 // class TuneKIV : public TuneClass
 class TuneKIV

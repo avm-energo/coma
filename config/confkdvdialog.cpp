@@ -23,7 +23,7 @@ ConfKDVDialog::ConfKDVDialog(ConfigKDV *ckdv, QWidget *parent) : AbstractConfDia
 {
     QString tmps = "QDialog {background-color: " + QString(Colors::ACONFCLR) + ";}";
     setStyleSheet(tmps);
-    S2Config = ckdv->S2Config();
+    // S2Config = ckdv->S2Config();
     CKDV = ckdv;
     //    Conf = new ConfDialog(S2Config, Board::GetInstance().typeB(), Board::GetInstance().typeM());
     // ConfKxx = new ConfKxxDialog(S2Config);

@@ -9,7 +9,6 @@
 class S2
 {
 public:
-    QVector<S2DataTypes::DataRec> Config;
     S2();
     // S2: Сборщик в память:
     // 0 - успешно, иначе код ошибки S2: получение размера:
@@ -30,6 +29,8 @@ public:
 
     static quint32 updateCRC32(unsigned char ch, quint32 crc);
     static quint32 crc32buf(const QByteArray &data);
+
+    static QVector<S2DataTypes::DataRec> *config;
 
 private:
     //    const unsigned long dwPolynomial = 0xEDB88320;

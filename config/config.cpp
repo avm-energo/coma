@@ -3,22 +3,23 @@
 
 #include "../gen/board.h"
 #include "../gen/colors.h"
+#include "../gen/s2.h"
 #include "../widgets/wd_func.h"
 
 #include <QDebug>
 #include <QMetaEnum>
 #include <QVBoxLayout>
-Config::Config(S2DataTypes::S2ConfigType *config)
+Config::Config()
 {
     Q_ASSERT(sizeof(Bci::BciMain) / 4 == regs.size());
     MainBlk.MTypeB = Board::GetInstance().typeB();
     MainBlk.MTypeM = Board::GetInstance().typeM();
-    setConfig(config);
+    setConfig();
 }
 
-void Config::setConfig(S2DataTypes::S2ConfigType *config)
+void Config::setConfig()
 {
-    removeFotter(config);
+    removeFotter();
 
     // общая часть
     //    for (const auto &item:regs)
@@ -29,10 +30,10 @@ void Config::setConfig(S2DataTypes::S2ConfigType *config)
     auto iter = regs.cbegin();
     while (iter != regs.end())
     {
-        config->append({ quint32(iter.key()), sizeof(quint32), iter.value() });
+        S2::config->append({ quint32(iter.key()), sizeof(quint32), iter.value() });
         ++iter;
     }
-    config->append({ 0xFFFFFFFF, 0, nullptr });
+    S2::config->append({ 0xFFFFFFFF, 0, nullptr });
 }
 
 void Config::SetDefConf()
@@ -176,15 +177,15 @@ void Config::FillBack()
     }
 }
 
-void Config::removeFotter(S2DataTypes::S2ConfigType *config)
+void Config::removeFotter()
 {
     quint64 counter = 0;
-    config->erase(std::remove_if(config->begin(), config->end(),
-                      [&](S2DataTypes::DataRec i) {
-                          if (i.id == 0xFFFFFFFF)
-                              counter++;
-                          return i.id == 0xFFFFFFFF;
-                      }),
-        config->end());
+    S2::config->erase(std::remove_if(S2::config->begin(), S2::config->end(),
+                          [&](S2DataTypes::DataRec i) {
+                              if (i.id == 0xFFFFFFFF)
+                                  counter++;
+                              return i.id == 0xFFFFFFFF;
+                          }),
+        S2::config->end());
     Q_ASSERT(counter < 2);
 }

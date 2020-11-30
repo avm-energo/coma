@@ -9,18 +9,18 @@
 class Config
 {
 public:
-    explicit Config(S2DataTypes::S2ConfigType *config);
+    explicit Config();
 
     Bci::BciMain MainBlk;
 
-    void setConfig(S2DataTypes::S2ConfigType *config);
+    void setConfig();
     void SetDefConf();
     QWidget *MainWidget(QWidget *parent);
     QWidget *TimeWidget(QWidget *parent);
     void Fill();
     void FillBack();
 
-    static void removeFotter(S2DataTypes::S2ConfigType *config);
+    static void removeFotter();
 
 private:
     QObject *ParentMainbl, *ParentCtype;

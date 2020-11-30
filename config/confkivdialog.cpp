@@ -3,6 +3,7 @@
 #include "../gen/board.h"
 #include "../gen/colors.h"
 #include "../gen/error.h"
+#include "../gen/s2.h"
 #include "../widgets/wd_func.h"
 
 #include <QGridLayout>
@@ -17,7 +18,7 @@ ConfKIVDialog::ConfKIVDialog(ConfigKIV *ckiv, QWidget *parent) : AbstractConfDia
     QString tmps = "QDialog {background-color: " + QString(Colors::ACONFCLR) + ";}";
     setStyleSheet(tmps);
     CKIV = ckiv;
-    S2Config = ckiv->S2Config();
+    // S2Config = S2Config;
     //    CKIV = new ConfigKIV(ckiv);
     //    Conf = new ConfDialog(ckiv->S2Config(), this);
     //    ConfKxx = new ConfKxxDialog(ckiv->S2Config(), this);

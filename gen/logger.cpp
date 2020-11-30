@@ -105,6 +105,22 @@ void Logging::messageHandler(QtMsgType type, const QMessageLogContext &context, 
     logFile.close();
     checkNGzip(fileName);
 }
+
+void Logging::writeStart()
+{
+    QString fileName(StdFunc::GetSystemHomeDir() + LOGFILE);
+    QFile logFile(fileName);
+    QTextStream out;
+    out.setDevice(&logFile);
+    logFile.open(QFile::Append | QFile::Text);
+    out << "=====================================\nLog file started at "
+        << QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss.zzz") + "\n"
+        << PROGNAME << " v." << COMAVERSION;
+    out.flush();
+    logFile.close();
+    checkNGzip(fileName);
+}
+
 /// Категории мы сейчас не используем, задел на будущее
 Q_LOGGING_CATEGORY(logDebug, "Debug")
 Q_LOGGING_CATEGORY(logInfo, "Info")

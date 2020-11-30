@@ -5,6 +5,14 @@
 
 namespace DataTypes
 {
+enum DataBlockTypes
+{
+    BacBlock,
+    BdaBlock,
+    BdBlock,
+    BciBlock
+};
+
 enum SignalTypes
 {
     BitString,
@@ -156,7 +164,9 @@ enum Commands
     QUSB_WriteTuningCoef,
     QUSB_ReqBlkDataA,
     QUSB_ReqBlkDataTech,
-    QUSB_WriteBlkDataTech
+    QUSB_WriteBlkDataTech,
+    QUSB_SetMode, // SMode (0x43) - not realized yet
+    QUSB_GetMode // GMode (0x28) - not realized yet
 };
 
 struct Command

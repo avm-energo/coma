@@ -2,6 +2,7 @@
 
 #include "../dialogs/keypressdialog.h"
 #include "../gen/board.h"
+#include "../gen/datatypes.h"
 #include "../gen/error.h"
 #include "../gen/files.h"
 //#include "../gen/modulebsi.h"
@@ -153,7 +154,7 @@ QWidget *AbstractTuneDialog::BottomUI()
 
 void AbstractTuneDialog::SetBac(void *block, int blocknum, int blocksize)
 {
-    BacStruct Bac;
+    BlockStruct Bac;
     Bac.BacBlock = block;
     Bac.BacBlockSize = blocksize;
     AbsBac[blocknum] = Bac;
@@ -198,7 +199,7 @@ void AbstractTuneDialog::Wait15Seconds()
 bool AbstractTuneDialog::CheckPassword()
 {
     KeyPressDialog dlg; // = new KeyPressDialog;
-    return dlg.CheckPassword("121941");
+    return (dlg.CheckPassword("121941")) ? Error::Msg::NoError : Error::Msg::GeneralError;
 }
 
 /*bool AbstractTuneDialog::IsWithinLimits(double number, double base, double threshold)
@@ -298,7 +299,7 @@ void AbstractTuneDialog::StartTune()
     }
     // сохраняем на всякий случай настроечные коэффициенты
     //    if (SaveBlocksToFiles(DataBlock::DataBlockTypes::BacBlock) != Error::Msg::NoError)
-    if (SaveAllTuneCoefs() != Error::Msg::NoError)
+    if (saveAllTuneCoefs() != Error::Msg::NoError)
     {
         if (QMessageBox::question(this, "Вопрос", "Сохранение настроечных коэффициентов не произведено, продолжать?")
             == QMessageBox::No)
@@ -324,6 +325,7 @@ void AbstractTuneDialog::StartTune()
             WDFunc::SetEnabled(this, "starttune", true);
             qWarning() << m_messages.at(bStep);
             //           MeasurementTimer->stop();
+            loadAllTuneCoefs();
             return;
         }
         else if (res == Error::Msg::ResEmpty)
@@ -338,10 +340,10 @@ void AbstractTuneDialog::StartTune()
     saveTuneSequenceFile();
 }
 
-int AbstractTuneDialog::SaveAllTuneCoefs()
+Error::Msg AbstractTuneDialog::saveAllTuneCoefs()
 {
     QString tunenum;
-    for (QMap<int, BacStruct>::Iterator it = AbsBac.begin(); it != AbsBac.end(); ++it)
+    for (QMap<int, BlockStruct>::Iterator it = AbsBac.begin(); it != AbsBac.end(); ++it)
     {
         tunenum = QString::number(it.key(), 16); // key is the number of Bac block
         QByteArray ba;
@@ -349,6 +351,19 @@ int AbstractTuneDialog::SaveAllTuneCoefs()
         memcpy(&(ba.data()[0]), it.value().BacBlock, it.value().BacBlockSize);
         if (Files::SaveToFile(StdFunc::GetSystemHomeDir() + "temptune.tn" + tunenum, ba) != Error::Msg::NoError)
             return Error::Msg::GeneralError;
+    }
+    return Error::Msg::NoError;
+}
+
+Error::Msg AbstractTuneDialog::loadAllTuneCoefs()
+{
+    QString tunenum;
+    for (QMap<int, BlockStruct>::Iterator it = AbsBac.begin(); it != AbsBac.end(); ++it)
+    {
+        tunenum = QString::number(it.key(), 16); // key is the number of Bac block
+        QByteArray ba;
+        if (Files::LoadFromFile(StdFunc::GetSystemHomeDir() + "temptune.tn" + tunenum, ba) == Error::Msg::NoError)
+            memcpy(it.value().BacBlock, &(ba.data()[0]), it.value().BacBlockSize);
     }
     return Error::Msg::NoError;
 }
@@ -397,12 +412,16 @@ int AbstractTuneDialog::SaveAllTuneCoefs()
 
 void AbstractTuneDialog::readTuneCoefs()
 {
-    int bacnum = sender()->objectName().toInt();
-    ReadTuneCoefsByBac(bacnum);
+    //    int bacnum = sender()->objectName().toInt();
+    for (QMap<int, BlockStruct>::Iterator it = AbsBac.begin(); it != AbsBac.end(); ++it)
+    {
+        readTuneCoefsByBac(it.key());
+    }
     //    ReadBlocks(DataBlock::DataBlockTypes::BacBlock);
 }
 
-void AbstractTuneDialog::ReadTuneCoefsByBac(int bacnum)
+// на будущее, если вдруг будем регулировать модуль по частям
+void AbstractTuneDialog::readTuneCoefsByBac(int bacnum)
 {
     //    if (m_TuneBlockMap.keys().contains(bacnum))
     //    {
@@ -412,25 +431,44 @@ void AbstractTuneDialog::ReadTuneCoefsByBac(int bacnum)
     //    }
     if (AbsBac.keys().contains(bacnum))
     {
-        iface()->writeCommand(Queries::QUSB_ReqTuningCoef, bacnum);
-        //        int res = Commands::GetBac(bacnum, AbsBac[bacnum].BacBlock, AbsBac[bacnum].BacBlockSize);
-        //        if (res == Error::Msg::NoError)
-        FillBac(bacnum);
+        //        iface()->writeCommand(Queries::QUSB_ReqTuningCoef, bacnum);
+        if (iface()->reqBlockSync(
+                bacnum, DataTypes::DataBlockTypes::BacBlock, AbsBac[bacnum].BacBlock, AbsBac[bacnum].BacBlockSize)
+            == Error::Msg::NoError)
+            //        int res = Commands::GetBac(bacnum, AbsBac[bacnum].BacBlock, AbsBac[bacnum].BacBlockSize);
+            //        if (res == Error::Msg::NoError)
+            FillBac(bacnum);
     }
+}
+
+Error::Msg AbstractTuneDialog::writeTuneCoefsByBac(int bacnum)
+{
+    if (AbsBac.keys().contains(bacnum))
+    {
+        FillBackBac(bacnum);
+        return iface()->writeBlockSync(
+            bacnum, DataTypes::DataBlockTypes::BacBlock, AbsBac[bacnum].BacBlock, AbsBac[bacnum].BacBlockSize);
+    }
+    return Error::Msg::GeneralError;
 }
 
 bool AbstractTuneDialog::writeTuneCoefs()
 {
-    int bacnum = sender()->objectName().toInt();
+    //    int bacnum = sender()->objectName().toInt();
     if (CheckPassword() != Error::Msg::NoError)
         return false;
-    FillBackBac(bacnum);
-    return WriteTuneCoefs(bacnum);
 
     if (QMessageBox::question(this, "Вопрос",
             "Сохранить регулировочные коэффициенты?\n(Результаты предыдущей регулировки будут потеряны)")
         == false)
         return false;
+
+    for (QMap<int, BlockStruct>::Iterator it = AbsBac.begin(); it != AbsBac.end(); ++it)
+    {
+        FillBackBac(it.key());
+        if (writeTuneCoefsByBac(it.key()) != Error::Msg::NoError)
+            return false;
+    }
 
     //    for (int i = 0; i < m_TuneBlockMap.keys().size(); i++)
     //    {
@@ -493,15 +531,18 @@ void AbstractTuneDialog::saveTuneSequenceFile()
 Error::Msg AbstractTuneDialog::saveWorkConfig()
 {
     //    return SaveBlocksToFiles(DataBlock::DataBlockTypes::BciBlock);
-    iface()->reqFile(Files::FilesEnum::Config, true);
-    memcpy(&m_BciSaveBlock, &CKIV->Bci_block, sizeof(AVM_KIV::Bci));
-    else return Error::Msg::GeneralError;
+    //    iface()->reqFile(Files::FilesEnum::Config, true);
+    //    memcpy(&m_BciSaveBlock, &CKIV->Bci_block, sizeof(ConfigKIV::Bci));
+    //    else return Error::Msg::GeneralError;
     return Error::Msg::NoError;
 }
 
 Error::Msg AbstractTuneDialog::loadWorkConfig()
 {
-    return LoadBlocksFromFiles(DataBlock::DataBlockTypes::BciBlock);
+    //    return LoadBlocksFromFiles(DataBlock::DataBlockTypes::BciBlock);
+    //    if (Files::LoadFromFile(StdFunc::GetSystemHomeDir() + "temptune.cf") == Error::Msg::NoError)
+    //        memcpy(it.value().BacBlock, &(ba.data()[0]), it.value().BacBlockSize);
+    return Error::Msg::NoError;
 }
 
 // bool AbstractTuneDialog::WriteTuneCoefs(int blocknum)
@@ -534,73 +575,73 @@ Error::Msg AbstractTuneDialog::loadWorkConfig()
 //    return false;
 //}
 
-void AbstractTuneDialog::SaveTuneBlocksToFiles()
-{
-    //    SaveBlocksToFiles(DataBlock::DataBlockTypes::BacBlock);
-}
+// void AbstractTuneDialog::SaveTuneBlocksToFiles()
+//{
+//        SaveBlocksToFiles(DataBlock::DataBlockTypes::BacBlock);
+//}
 
-Error::Msg AbstractTuneDialog::SaveBlocksToFiles(DataBlock::DataBlockTypes type, bool userChoose)
-{
-    DataBlock::FilePropertiesStruct fst;
-    DataBlock::getFileProperties(type, fst);
-    foreach (DataBlock *dblock, m_blocks)
-    {
-        if (dblock->block().blocktype == type)
-        {
-            DataBlock::BlockStruct block = dblock->block();
-            QByteArray ba;
-            ba.resize(block.blocksize);
-            memcpy(&(ba.data()[0]), block.block, block.blocksize);
-            Error::Msg res;
-            if (userChoose)
-                res = Files::SaveToFile(Files::ChooseFileForSave(this, fst.mask, fst.extension), ba);
-            else
-                res = Files::SaveToFile(StdFunc::GetSystemHomeDir() + fst.filename + block.blocknum, ba);
-            if (res != Error::Msg::NoError)
-            {
-                QMessageBox::critical(this, "Ошибка", "Ошибка при сохранении файла");
-                return Error::Msg::GeneralError;
-            }
-        }
-    }
-    return Error::Msg::NoError;
-}
+// Error::Msg AbstractTuneDialog::SaveBlocksToFiles(DataBlock::DataBlockTypes type, bool userChoose)
+//{
+//    DataBlock::FilePropertiesStruct fst;
+//    DataBlock::getFileProperties(type, fst);
+//    foreach (DataBlock *dblock, m_blocks)
+//    {
+//        if (dblock->block().blocktype == type)
+//        {
+//            DataBlock::BlockStruct block = dblock->block();
+//            QByteArray ba;
+//            ba.resize(block.blocksize);
+//            memcpy(&(ba.data()[0]), block.block, block.blocksize);
+//            Error::Msg res;
+//            if (userChoose)
+//                res = Files::SaveToFile(Files::ChooseFileForSave(this, fst.mask, fst.extension), ba);
+//            else
+//                res = Files::SaveToFile(StdFunc::GetSystemHomeDir() + fst.filename + block.blocknum, ba);
+//            if (res != Error::Msg::NoError)
+//            {
+//                QMessageBox::critical(this, "Ошибка", "Ошибка при сохранении файла");
+//                return Error::Msg::GeneralError;
+//            }
+//        }
+//    }
+//    return Error::Msg::NoError;
+//}
 
-Error::Msg AbstractTuneDialog::LoadBlocksFromFiles(DataBlock::DataBlockTypes type, bool userChoose)
-{
-    DataBlock::FilePropertiesStruct fst;
-    DataBlock::getFileProperties(type, fst);
-    //    int bacnum = sender()->objectName().toInt();
-    QByteArray ba;
-    //    ba.resize(MAXTUNESIZE);
-    //    QString tunenum = QString::number(bacnum, 16);
-    //    if (!m_TuneBlockMap.keys().contains(bacnum))
-    //    {
-    //        QMessageBox::critical(this, "Ошибка", "Блок Bac с индексом " + tunenum + " не найден!");
-    //        return;
-    //    }
-    foreach (DataBlock *dblock, m_blocks)
-    {
-        if (dblock->block().blocktype == type)
-        {
-            DataBlock::BlockStruct block = dblock->block();
-            QByteArray ba;
-            Error::Msg res;
-            if (userChoose)
-                res = Files::LoadFromFile(Files::ChooseFileForOpen(this, fst.mask), ba);
-            else
-                res = Files::LoadFromFile(StdFunc::GetSystemHomeDir() + fst.filename + block.blocknum, ba);
-            if (res != Error::Msg::NoError)
-            {
-                QMessageBox::critical(this, "Ошибка", "Ошибка при загрузке файла");
-                return Error::Msg::GeneralError;
-            }
-            memcpy(block.block, &(ba.data()[0]), block.blocksize);
-        }
-    }
-    QMessageBox::information(this, "Внимание", "Загрузка прошла успешно!");
-    return Error::Msg::NoError;
-}
+// Error::Msg AbstractTuneDialog::LoadBlocksFromFiles(DataBlock::DataBlockTypes type, bool userChoose)
+//{
+//    DataBlock::FilePropertiesStruct fst;
+//    DataBlock::getFileProperties(type, fst);
+//    //    int bacnum = sender()->objectName().toInt();
+//    QByteArray ba;
+//    //    ba.resize(MAXTUNESIZE);
+//    //    QString tunenum = QString::number(bacnum, 16);
+//    //    if (!m_TuneBlockMap.keys().contains(bacnum))
+//    //    {
+//    //        QMessageBox::critical(this, "Ошибка", "Блок Bac с индексом " + tunenum + " не найден!");
+//    //        return;
+//    //    }
+//    foreach (DataBlock *dblock, m_blocks)
+//    {
+//        if (dblock->block().blocktype == type)
+//        {
+//            DataBlock::BlockStruct block = dblock->block();
+//            QByteArray ba;
+//            Error::Msg res;
+//            if (userChoose)
+//                res = Files::LoadFromFile(Files::ChooseFileForOpen(this, fst.mask), ba);
+//            else
+//                res = Files::LoadFromFile(StdFunc::GetSystemHomeDir() + fst.filename + block.blocknum, ba);
+//            if (res != Error::Msg::NoError)
+//            {
+//                QMessageBox::critical(this, "Ошибка", "Ошибка при загрузке файла");
+//                return Error::Msg::GeneralError;
+//            }
+//            memcpy(block.block, &(ba.data()[0]), block.blocksize);
+//        }
+//    }
+//    QMessageBox::information(this, "Внимание", "Загрузка прошла успешно!");
+//    return Error::Msg::NoError;
+//}
 
 // void AbstractTuneDialog::PrereadConf()
 //{
@@ -640,23 +681,23 @@ Error::Msg AbstractTuneDialog::LoadBlocksFromFiles(DataBlock::DataBlockTypes typ
 //    }
 //}
 
-void AbstractTuneDialog::ReadBlocks(DataBlock::DataBlockTypes type)
-{
-    foreach (DataBlock *dblock, m_blocks)
-    {
-        if (dblock->block().blocktype == type)
-            dblock->readBlockFromModule();
-    }
-}
+// void AbstractTuneDialog::ReadBlocks(DataBlock::DataBlockTypes type)
+//{
+//    foreach (DataBlock *dblock, m_blocks)
+//    {
+//        if (dblock->block().blocktype == type)
+//            dblock->readBlockFromModule();
+//    }
+//}
 
-void AbstractTuneDialog::WriteBlocks(DataBlock::DataBlockTypes type)
-{
-    foreach (DataBlock *dblock, m_blocks)
-    {
-        if (dblock->block().blocktype == type)
-            dblock->writeBlockToModule();
-    }
-}
+// void AbstractTuneDialog::WriteBlocks(DataBlock::DataBlockTypes type)
+//{
+//    foreach (DataBlock *dblock, m_blocks)
+//    {
+//        if (dblock->block().blocktype == type)
+//            dblock->writeBlockToModule();
+//    }
+//}
 
 // void AbstractTuneDialog::SaveToFile()
 //{
@@ -682,10 +723,10 @@ void AbstractTuneDialog::WriteBlocks(DataBlock::DataBlockTypes type)
 //    }
 //}
 
-void AbstractTuneDialog::LoadTuneBlocksFromFile()
-{
-    LoadBlocksFromFiles(DataBlock::DataBlockTypes::BacBlock);
-}
+// void AbstractTuneDialog::LoadTuneBlocksFromFile()
+//{
+//    LoadBlocksFromFiles(DataBlock::DataBlockTypes::BacBlock);
+//}
 
 // void AbstractTuneDialog::Good()
 //{
@@ -704,10 +745,10 @@ void AbstractTuneDialog::CancelTune()
     emit Finished();
 }
 
-void AbstractTuneDialog::MeasTimerTimeout()
-{
-    ReadBlocks(DataBlock::DataBlockTypes::BdBlock);
-}
+// void AbstractTuneDialog::MeasTimerTimeout()
+//{
+//    ReadBlocks(DataBlock::DataBlockTypes::BdBlock);
+//}
 
 // ##################### PROTECTED ####################
 
@@ -723,5 +764,5 @@ void AbstractTuneDialog::keyPressEvent(QKeyEvent *e)
         emit Finished();
     if (e->key() == Qt::Key_Escape)
         StdFunc::cancel();
-    QDialog::keyPressEvent(e);
+    UDialog::keyPressEvent(e);
 }
