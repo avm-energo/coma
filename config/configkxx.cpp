@@ -507,7 +507,7 @@ QWidget *ConfigKxx::ModbusWidget(QWidget *parent)
     glyout->addWidget(lbl, row, 0, 1, 1, Qt::AlignLeft);
     QStringList dopcbl = QStringList { "slave", "master" };
     EComboBox *dopcb = WDFunc::NewCB(parent, "MBMaster", dopcbl, paramcolor);
-    connect(dopcb, &QComboBox::currentIndexChanged, this, &ConfigKxx::ChangeModbusGUI);
+    connect(dopcb, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &ConfigKxx::ChangeModbusGUI);
     glyout->addWidget(dopcb, row, 1, 1, 1);
     row++;
 
