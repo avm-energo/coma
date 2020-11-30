@@ -14,7 +14,7 @@ enum SignalTypes
     ByteArray,
     File,
     ConfParameter,
-    ConfParameterList,
+    ConfParametersList,
     Block,
     GeneralResponse
 };
@@ -77,7 +77,7 @@ struct FileStruct
     }
     FileStruct(FileStruct &&rhs) noexcept : filenum(rhs.filenum), filedata(rhs.filedata)
     {
-        rhs.filenum = NULL;
+        rhs.filenum = 0;
         rhs.filedata = nullptr;
     }
     FileStruct operator=(FileStruct &&rhs) noexcept
@@ -86,7 +86,7 @@ struct FileStruct
         {
             filenum = rhs.filenum;
             filedata = rhs.filedata;
-            rhs.filenum = NULL;
+            rhs.filenum = 0;
             rhs.filedata = nullptr;
         }
         return *this;

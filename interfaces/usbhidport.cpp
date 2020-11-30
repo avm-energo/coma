@@ -46,7 +46,7 @@ bool UsbHidPort::setupConnection()
         return false;
     }
 #ifdef __linux__
-    HidDevice = hid_open_path(deviceInfo().path.toStdString().c_str());
+    m_hidDevice = hid_open_path(deviceInfo().path.toStdString().c_str());
 #endif
 #ifdef _WIN32
     m_hidDevice = openDevice(m_deviceInfo);

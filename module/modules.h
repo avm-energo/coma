@@ -1,6 +1,6 @@
 #pragma once
 #include <QMap>
-
+#include <QObject>
 /**
  *  Перечисление для хранения списка приборов
  */
