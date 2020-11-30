@@ -3,7 +3,7 @@
 #include "error.h"
 
 #include <QDateTime>
-
+#include <QDebug>
 S2::S2()
 {
 }
@@ -259,6 +259,8 @@ Error::Msg S2::findElemAndWriteIt(QVector<S2DataTypes::DataRec> *s2config, const
             else
             {
                 ERMSG("S2: Wrong element size in ConfParameter");
+                qDebug() << "Wait for element" << R.id << "with size:" << R.num_byte
+                         << "but get size:" << cfp.data.size();
                 return Error::Msg::HeaderSizeError;
             }
         }

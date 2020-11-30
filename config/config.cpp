@@ -29,7 +29,7 @@ void Config::setConfig(S2DataTypes::S2ConfigType *config)
     auto iter = regs.cbegin();
     while (iter != regs.end())
     {
-        config->append({ quint32(iter.key()), sizeof(iter.value()), iter.value() });
+        config->append({ quint32(iter.key()), sizeof(quint32), iter.value() });
         ++iter;
     }
     //    config->append({ BCI_MTYPEB, sizeof(MainBlk.MTypeB), &MainBlk.MTypeB });
