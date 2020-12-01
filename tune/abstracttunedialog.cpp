@@ -534,7 +534,11 @@ Error::Msg AbstractTuneDialog::saveWorkConfig()
     //    iface()->reqFile(Files::FilesEnum::Config, true);
     //    memcpy(&m_BciSaveBlock, &CKIV->Bci_block, sizeof(ConfigKIV::Bci));
     //    else return Error::Msg::GeneralError;
-    return Error::Msg::NoError;
+    QByteArray ba;
+    if (iface()->readFileSync(Files::Config, ba) != Error::Msg::NoError)
+        return Error::Msg::GeneralError;
+    return Files::SaveToFile(StdFunc::GetSystemHomeDir() + Board::GetInstance().UID() + ".cf", ba);
+    //    return Error::Msg::NoError;
 }
 
 Error::Msg AbstractTuneDialog::loadWorkConfig()
@@ -542,7 +546,11 @@ Error::Msg AbstractTuneDialog::loadWorkConfig()
     //    return LoadBlocksFromFiles(DataBlock::DataBlockTypes::BciBlock);
     //    if (Files::LoadFromFile(StdFunc::GetSystemHomeDir() + "temptune.cf") == Error::Msg::NoError)
     //        memcpy(it.value().BacBlock, &(ba.data()[0]), it.value().BacBlockSize);
-    return Error::Msg::NoError;
+    QByteArray ba;
+    if (Files::LoadFromFile(StdFunc::GetSystemHomeDir() + Board::GetInstance().UID() + ".cf", ba)
+        != Error::Msg::NoError)
+        return iface()->writeFileSync(Files::Config, ba);
+    return Error::Msg::GeneralError;
 }
 
 // bool AbstractTuneDialog::WriteTuneCoefs(int blocknum)
