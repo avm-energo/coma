@@ -2,6 +2,8 @@
 
 #include "../gen/board.h"
 #include "../gen/datamanager.h"
+#include "../gen/files.h"
+#include "../gen/s2.h"
 #include "../gen/stdfunc.h"
 #include "protocomthread.h"
 #include "settingstypes.h"
@@ -132,9 +134,12 @@ void Protocom::writeFile(quint32 filenum, const QByteArray &file)
     emit wakeUpParser();
 }
 
-void Protocom::writeConfigFile(S2DataTypes::S2ConfigType *)
-{
-}
+// void Protocom::writeConfigFile()
+//{
+//    QByteArray ba;
+//    S2::StoreDataMem(&ba.data()[0], S2::config, Files::Config);
+//    writeFile(Files::Config, ba);
+//}
 
 void Protocom::writeTime(quint32 time)
 {

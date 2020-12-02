@@ -41,8 +41,8 @@ void TuneKIVCheck::setTuneFunctions()
     Error::Msg (AbstractTuneDialog::*func)()
         = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVCheck::saveWorkConfig);
     m_tuneFunctions[m_messages.at(count++)] = func;
-    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVCheck::setSMode2);
-    m_tuneFunctions[m_messages.at(count++)] = func;
+    //    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVCheck::setSMode2);
+    //    m_tuneFunctions[m_messages.at(count++)] = func;
     func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVCheck::setNewConfig);
     m_tuneFunctions[m_messages.at(count++)] = func;
     func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVCheck::showScheme);
@@ -103,7 +103,7 @@ Error::Msg TuneKIVCheck::setNewConfig()
     CKIV->Bci_block.Unom = 220;
     CKIV->Bci_block.C_pasp[0] = CKIV->Bci_block.C_pasp[1] = CKIV->Bci_block.C_pasp[2] = 9000;
 
-    return iface()->writeS2FileSync(Files::Config);
+    return iface()->writeConfFileSync();
 }
 
 Error::Msg TuneKIVCheck::showScheme()

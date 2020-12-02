@@ -1,6 +1,7 @@
 #include "baseinterface.h"
 
 #include "../gen/datamanager.h"
+#include "../gen/files.h"
 #include "../gen/s2.h"
 #include "../gen/stdfunc.h"
 
@@ -9,6 +10,13 @@
 
 BaseInterface::BaseInterface(QObject *parent) : QObject(parent), m_working(false), Log(new LogClass(this))
 {
+}
+
+void BaseInterface::writeConfigFile()
+{
+    QByteArray ba;
+    S2::StoreDataMem(&ba.data()[0], S2::config, Files::Config);
+    writeFile(Files::Config, ba);
 }
 
 void BaseInterface::reqAlarms(quint32 sigAdr, quint32 sigCount)
@@ -77,11 +85,11 @@ Error::Msg BaseInterface::writeBlockSync(
     }
 }
 
-Error::Msg BaseInterface::writeS2FileSync(quint32 filenum)
+Error::Msg BaseInterface::writeConfFileSync()
 {
     QByteArray ba;
     ba.resize(30000);
-    S2::StoreDataMem(&(ba.data()[0]), S2::config, filenum);
+    S2::StoreDataMem(&ba.data()[0], S2::config, Files::Config);
     // считываем длину файла из полученной в StoreDataMem и вычисляем количество сегментов
     quint32 wrlength = static_cast<quint8>(ba.at(7)) * 16777216; // с 4 байта начинается FileHeader.size
     wrlength += static_cast<quint8>(ba.at(6)) * 65536;
@@ -89,6 +97,11 @@ Error::Msg BaseInterface::writeS2FileSync(quint32 filenum)
     wrlength += static_cast<quint8>(ba.at(4));
     wrlength += sizeof(S2DataTypes::FileHeader); // sizeof(FileHeader)
     ba.resize(wrlength);
+    return writeFileSync(Files::Config, ba);
+}
+
+Error::Msg BaseInterface::writeFileSync(int filenum, QByteArray &ba)
+{
     m_busy = true;
     m_timeout = false;
     QTimer *timer = new QTimer;
@@ -127,6 +140,26 @@ Error::Msg BaseInterface::readS2FileSync(quint32 filenum)
     return (m_responseResult) ? Error::Msg::NoError : Error::Msg::GeneralError;
 }
 
+Error::Msg BaseInterface::readFileSync(quint32 filenum, QByteArray &ba)
+{
+    m_busy = true;
+    m_timeout = false;
+    QTimer *timer = new QTimer;
+    timer->setInterval(MAINTIMEOUT);
+    connect(timer, &QTimer::timeout, this, &BaseInterface::timeout);
+    connect(&DataManager::GetInstance(), &DataManager::fileReceived, this, &BaseInterface::fileReceived);
+    reqFile(filenum, true);
+    while (m_busy)
+    {
+        QCoreApplication::processEvents(QEventLoop::AllEvents);
+        StdFunc::Wait();
+    }
+    if (m_timeout)
+        return Error::Msg::GeneralError;
+    ba = m_byteArrayResult;
+    return Error::Msg::NoError;
+}
+
 void BaseInterface::resultReady(const DataTypes::BlockStruct &result)
 {
     disconnect(&DataManager::GetInstance(), &DataManager::blockReceived, this, &BaseInterface::resultReady);
@@ -143,6 +176,17 @@ void BaseInterface::responseReceived(const DataTypes::GeneralResponseStruct &res
 
 void BaseInterface::confParameterBlockReceived(const DataTypes::ConfParametersListStruct &cfpl)
 {
+    disconnect(&DataManager::GetInstance(), &DataManager::confParametersListReceived, this,
+        &BaseInterface::confParameterBlockReceived);
+    // m_responseResult = (response.type == DataTypes::GeneralResponseTypes::Ok);
+    m_busy = false;
+}
+
+void BaseInterface::fileReceived(const DataTypes::FileStruct &file)
+{
+    disconnect(&DataManager::GetInstance(), &DataManager::fileReceived, this, &BaseInterface::fileReceived);
+    m_byteArrayResult = file.filedata;
+    m_busy = false;
 }
 
 void BaseInterface::timeout()

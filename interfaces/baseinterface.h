@@ -20,7 +20,7 @@ public:
     virtual void reqBSI() = 0;
     virtual void reqFile(quint32, bool isConfigFile = false) = 0;
     virtual void writeFile(quint32, const QByteArray &) = 0;
-    virtual void writeConfigFile(S2DataTypes::S2ConfigType *) = 0;
+    virtual void writeConfigFile();
     virtual void reqTime() = 0;
     virtual void writeTime(quint32) = 0;
     virtual void writeCommand(Queries::Commands, QVariant = 0) = 0;
@@ -43,8 +43,10 @@ public:
     // Bac & Bda blocks only supported for now
     Error::Msg reqBlockSync(quint32 blocknum, DataTypes::DataBlockTypes blocktype, void *block, quint32 blocksize);
     Error::Msg writeBlockSync(quint32 blocknum, DataTypes::DataBlockTypes blocktype, void *block, quint32 blocksize);
-    Error::Msg writeS2FileSync(quint32 filenum);
+    Error::Msg writeConfFileSync();
+    Error::Msg writeFileSync(int filenum, QByteArray &ba);
     Error::Msg readS2FileSync(quint32 filenum);
+    Error::Msg readFileSync(quint32 filenum, QByteArray &ba);
 
 signals:
     void reconnect();
@@ -61,6 +63,7 @@ private slots:
     void resultReady(const DataTypes::BlockStruct &result);
     void responseReceived(const DataTypes::GeneralResponseStruct &response);
     void confParameterBlockReceived(const DataTypes::ConfParametersListStruct &cfpl);
+    void fileReceived(const DataTypes::FileStruct &file);
     void timeout();
 };
 

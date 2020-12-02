@@ -79,7 +79,7 @@ void AbstractConfDialog::WriteConf()
         ERMSG("Ошибка чтения конфигурации");
         return;
     }
-    iface()->writeConfigFile(S2::config);
+    iface()->writeConfigFile();
     //        switch (Board::GetInstance().interfaceType())
     //        {
     //        case Board::InterfaceType::Ethernet:
