@@ -2,11 +2,18 @@
 
 #include "modules.h"
 
-AlarmKTF::AlarmKTF(QWidget *parent) : Alarm(parent)
+CritKTF::CritKTF(QWidget *parent) : BaseAlarm(parent)
 {
-    m_alarmBdNum = 2;
     m_startAlarmAddress = 5011;
-    m_alarmFlags = std::bitset<32>(AVM_KTF::accidentFlags);
+    m_alarmFlags = std::bitset<32>(AVM_KTF::criticalFlags);
 
-    setupUI(AVM_KTF::accidentEvents);
+    setupUI(AVM_KTF::criticalEvents);
+}
+
+WarnKTF::WarnKTF(QWidget *parent) : BaseAlarm(parent)
+{
+    m_startAlarmAddress = 5011;
+    m_alarmFlags = std::bitset<32>(AVM_KTF::warningFlags);
+
+    setupUI(AVM_KTF::warningEvents);
 }

@@ -23,7 +23,7 @@ signals:
     void BSIUpdated(bool isset);
 
 private:
-    const QList<int> WarnPositions = { 1, 3, 5, 7, 13 };
+    const QList<int> WarnPositions { 1, 3, 5, 7, 13 };
 };
 
 #endif // ALARMSTATE_H

@@ -85,9 +85,6 @@ SOURCES += \
     ../module/alarmktf.cpp \
     ../module/journals.cpp \
     ../module/module.cpp \
-    ../module/warn.cpp \
-    ../module/warnkiv.cpp \
-    ../module/warnktf.cpp \
     ../startup/abstractstartupdialog.cpp \
     ../startup/startupkdvdialog.cpp \
     ../startup/startupkivdialog.cpp \
@@ -181,9 +178,6 @@ HEADERS += \
     ../module/module_kxx.h \
     ../module/module_kiv.h \
     ../module/registers.h \
-    ../module/warn.h \
-    ../module/warnkiv.h \
-    ../module/warnktf.h \
     ../startup/abstractstartupdialog.h \
     ../startup/startupkdvdialog.h \
     ../startup/startupkivdialog.h \

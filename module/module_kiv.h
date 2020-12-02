@@ -5,7 +5,7 @@
 namespace AVM_KIV
 {
 
-const QStringList accidentEvents {
+const QStringList criticalEvents {
     "Авария по приращению тангенса дельта ввода фазы А", //
     "Авария по приращению тангенса дельта ввода фазы B", //
     "Авария по приращению тангенса дельта ввода фазы C", //
@@ -14,9 +14,9 @@ const QStringList accidentEvents {
     "Авария по приращению C ввода фазы C              ", //
     "Авария по недопустимому небалансу токов          "  //
 };
-constexpr quint32 accidentFlags = 0x00000e39;
-const quint32 accidentCount = accidentEvents.size();
-const QStringList warnEvents {
+constexpr quint32 criticalFlags = 0x00000e39;
+const quint32 criticalCount = criticalEvents.size();
+const QStringList warningEvents {
     "Отсутствует сигнал напряжения фазы A                   ", //
     "Отсутствует сигнал напряжения фазы B                   ", //
     "Отсутствует сигнал напряжения фазы С                   ", //
@@ -36,7 +36,8 @@ const QStringList warnEvents {
     "Не заданы паспортные значения                          ", //
     "Сигнализация по повышенному небалансу токов            "  //
 };
-constexpr quint32 warnFlags = 0x1fff1ec6;
+
+constexpr quint32 warningFlags = 0x001fff1c6; // 1FFF1C6//0x1fff1ec6;
 constexpr quint32 workJourId = 3010;
 struct MeasureStruct
 {

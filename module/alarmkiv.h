@@ -1,14 +1,19 @@
-#ifndef AVARALARMKIV_H
-#define AVARALARMKIV_H
+#pragma once
 
 #include "alarm.h"
 
-class AlarmKIV : public Alarm
+class CritKIV : public BaseAlarm
 {
     Q_OBJECT
 
 public:
-    explicit AlarmKIV(QWidget *parent = nullptr);
+    explicit CritKIV(QWidget *parent = nullptr);
 };
 
-#endif // AVARALARM84_H
+class WarnKIV : public BaseAlarm
+{
+    Q_OBJECT
+
+public:
+    explicit WarnKIV(QWidget *parent = nullptr);
+};
