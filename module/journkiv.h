@@ -10,7 +10,7 @@ public:
     JournKIV(QObject *parent = nullptr);
     void setWorkJourDescription() override;
     void setMeasJourHeaders() override;
-    void setMeasRecord(char *file, QVector<QVariant> &outvl) override;
+    QVector<QVariant> createMeasRecord(const char *file) override;
     int measureSize() override;
     int workJournalID() override;
 };

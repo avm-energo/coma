@@ -45,7 +45,7 @@ Journals::~Journals()
 {
 }
 
-void Journals::SetJourType(int jourtype)
+void Journals::SetJourType(DataTypes::FilesEnum jourtype)
 {
     m_jourType = jourtype;
 }
@@ -60,44 +60,63 @@ void Journals::SetParentWidget(QWidget *w)
     _parent = w;
 } */
 
-void Journals::ReadJourFileAndProcessIt()
+// void Journals::ReadJourFileAndProcessIt()
+//{
+//    QFile file(m_jourFile);
+//    if (!file.open(QIODevice::ReadOnly))
+//    {
+//        emit Error("Ошибка чтения файла");
+//        return;
+//    }
+//    QByteArray ba = file.readAll();
+//    switch (m_jourType)
+//    {
+//    case DataTypes::JourSys:
+//        FillEventsTable(ba);
+//        break;
+//    case DataTypes::JourWork:
+//        FillEventsTable(ba);
+//        break;
+//    case DataTypes::JourMeas:
+//        FillMeasTable(ba);
+//        break;
+//    default:
+//        ERMSG("Incorrect jour type");
+//        return;
+//    }
+//}
+
+QVector<QVariant> prepareRow(AVM::EventStruct &event, int eventID, int eventNumber, QStringList &eventDesc)
 {
-    QFile file(m_jourFile);
-    if (!file.open(QIODevice::ReadOnly))
+    int N;
+    QVector<QVariant> vl { eventNumber, TimeFunc::UnixTime64ToInvStringFractional(event.Time) };
+
+    memcpy(&N, &event.EvNum, sizeof(event.EvNum));
+    N = (N & 0x00FFFFFF) - eventID;
+    Q_ASSERT((N <= eventDesc.size()) && (N > 0));
+    if ((N <= eventDesc.size()) && (N > 0))
     {
-        emit Error("Ошибка чтения файла");
-        return;
+        vl << eventDesc.at(--N);
     }
-    QByteArray ba = file.readAll();
-    switch (m_jourType)
-    {
-    case Files::Files::JourSys:
-        FillEventsTable(ba);
-        break;
-    case Files::Files::JourWork:
-        FillEventsTable(ba);
-        break;
-    case Files::Files::JourMeas:
-        FillMeasTable(ba);
-        break;
-    default:
-        ERMSG("Incorrect jour type");
-        return;
-    }
+    else
+        vl << "Некорректный номер события";
+    if (event.EvType)
+        vl << "Пришло";
+    else
+        vl << "Ушло";
+    return vl;
 }
 
-void Journals::FillEventsTable(QByteArray &ba)
+void Journals::FillEventsTable(const QByteArray &ba)
 {
-    QVector<QVector<QVariant>> ValueLists;
     ETableModel *model;
     AVM::EventStruct event;
     QStringList sl;
     int mineventid = -1;
-    if (m_jourType == Files::JourSys)
-    // int joursize = 0; // размер считанного буфера с информацией
+    if (m_jourType == DataTypes::JourSys)
     {
         mineventid = AVM::sysJourId;
-        sl = SysJourDescription;
+        sl = AVM::sysJourDescription;
         model = m_sysModel;
     }
     else
@@ -105,158 +124,61 @@ void Journals::FillEventsTable(QByteArray &ba)
         mineventid = workJournalID();
         sl = m_workJourDescription;
         model = m_workModel;
-        //        switch (Board::GetInstance().typeB())
-        //        {
-        //        case Config::MTB_A2:
-        //            switch (Board::GetInstance().typeM())
-        //            {
-        //            case Config::MTM_84:
-        //                sl = WorkJourDescription;
-        //                mineventid = WORKJOURID;
-        //                break;
-        //            case Config::MTM_87:
-        //                sl = WorkJourDescriptionKTF;
-        //                mineventid = WORKJOURIDKTF;
-        //                break;
-        //            }
-        //            break;
-        //        case Config::MTB_A3:
-        //            break;
-        //        }
-        //        model = m_workModel;
     }
     if (mineventid == -1)
         return;
-    int N = 0;
-    int basize = ba.size();
-    char *file = ba.data();
-    int recordsize = sizeof(AVM::EventStruct);
-    int counter = 0;
-    int i = 0;
-    while (i < basize)
+    const auto basize = ba.size();
+    const char *file = ba.constData();
+    const auto recordsize = sizeof(AVM::EventStruct);
+    int counter, i;
+    QVector<QVector<QVariant>> ValueLists;
+    ValueLists.reserve(basize / recordsize);
+
+    for (i = 0, counter = 0; i < basize; i += recordsize)
     {
         memcpy(&event, file, recordsize);
         file += recordsize;
         i += recordsize;
-        if (event.Time != ULLONG_MAX)
-        {
-            QVector<QVariant> vl;
-            ++counter;
-            vl << counter;
-            vl << TimeFunc::UnixTime64ToInvStringFractional(event.Time);
-            memcpy(&N, &event.EvNum, sizeof(event.EvNum));
-            N = (N & 0x00FFFFFF) - mineventid;
-            Q_ASSERT((N <= sl.size()) && (N > 0));
-            if ((N <= sl.size()) && (N > 0))
-            {
-                vl << sl.at(--N);
-            }
-            else
-                vl << "Некорректный номер события";
-            if (event.EvType)
-                vl << "Пришло";
-            else
-                vl << "Ушло";
-            ValueLists.append(vl);
-        }
+        if (event.Time == ULLONG_MAX)
+            continue;
+        ++counter;
+        QVector<QVariant> vl(prepareRow(event, mineventid, counter, sl));
+        ValueLists.append(vl);
     }
     if (!model->isEmpty())
         model->clearModel();
-    model->setHeaders(EventJourHeaders);
+    model->setHeaders(AVM::eventJourHeaders);
     model->fillModel(ValueLists);
     ResultReady();
 }
 
-void Journals::FillMeasTable(QByteArray &ba)
+void Journals::FillMeasTable(const QByteArray &ba)
 {
     if (ba.isNull() || ba.isEmpty())
     {
         qWarning() << "Meas Byte Array is empty";
         return;
     }
-    //    qDebug() << ba.size();
     ETableModel *model = _measModel;
     QVector<QVector<QVariant>> ValueLists;
-    //    QStringList headers;
 
-    //    int recordsize;
-    int basize = ba.size();
-    char *file = ba.data();
-    int i = 0;
-    //    switch (Board::GetInstance().typeB())
-    //    {
-    //    case Config::MTB_A2:
-    //        switch (Board::GetInstance().typeM())
-    //        {
-    //        case Config::MTM_84:
-    //        {
-    //            QElapsedTimer timer;
-    //            timer.start();
-    //            MeasureStruct meas;
-    //            qDebug() << sizeof(MeasureStruct);
-    //            recordsize = sizeof(MeasureStruct);
-    //            headers = MeasJourHeaders;
-    //            while (i < basize)
-    //            {
-    //                QVector<QVariant> vl;
-    //                memcpy(&meas, file, recordsize);
-    //                file += recordsize;
-    //                i += recordsize;
-    //                // MeasureStruct meas = std::move(mem);
-    //                if (meas.Time != 0xFFFFFFFF)
-    //                {
-    //                    vl = { meas.NUM, TimeFunc::UnixTime32ToInvString(meas.Time), meas.Ueff[0], meas.Ueff[1],
-    //                        meas.Ueff[2], meas.Ieff[0], meas.Ieff[1], meas.Ieff[2], meas.Frequency, meas.U0, meas.U1,
-    //                        meas.U2, meas.I0, meas.I1, meas.I2, meas.Cbush[0], meas.Cbush[1], meas.Cbush[2],
-    //                        meas.Tg_d[0], meas.Tg_d[1], meas.Tg_d[2], meas.dCbush[0], meas.dCbush[1], meas.dCbush[2],
-    //                        meas.dTg_d[0], meas.dTg_d[1], meas.dTg_d[2], meas.Iunb, meas.Phy_unb, meas.Tmk, meas.Tamb
-    //                        };
-    //                    if (!vl.isEmpty())
-    //                        ValueLists.append(vl);
-    //                }
-    //            }
-    //            qDebug() << "The slow operation took" << timer.elapsed() << "milliseconds";
-    //            break;
-    //        }
-    //        case Config::MTM_87:
-    //        {
-    //            MeasureStructKTF mem;
-    //            int recordsize = sizeof(MeasureStructKTF);
-    int recordsize = measureSize();
-    //            headers = MeasJourKTFHeaders;
-    while (i < basize)
+    const auto basize = ba.size();
+    const char *file = ba.constData();
+    const auto recordsize = measureSize();
+    for (int i = 0; i < basize; i += recordsize)
     {
-        QVector<QVariant> vl;
-        setMeasRecord(file, vl);
-        //                memcpy(&mem, file, recordsize);
+        QVector<QVariant> vl(createMeasRecord(file));
+
         file += recordsize;
-        i += recordsize;
-        //                MeasureStructKTF meas = std::move(mem);
-        //                if (meas.Time != 0xFFFFFFFF)
-        //                {
-        //                    vl = { meas.NUM, TimeFunc::UnixTime32ToInvString(meas.Time), meas.Ueff[0],
-        //                    meas.Ueff[1],
-        //                        meas.Ueff[2], meas.Ieff[0], meas.Ieff[1], meas.Ieff[2], meas.Frequency,
-        //                        meas.U0, meas.U1, meas.U2, meas.I0, meas.I1, meas.I2, meas.Pf[0], meas.Pf[1],
-        //                        meas.Pf[2], meas.Pf[3], meas.Qf[0], meas.Qf[1], meas.Qf[2], meas.Qf[3],
-        //                        meas.Sf[0], meas.Sf[1], meas.Sf[2], meas.Sf[3], meas.Cosphi, meas.Tmk,
-        //                        meas.Tamb, meas.Twin };
+
         if (!vl.isEmpty())
             ValueLists.append(vl);
-        //                }
     }
-    //            break;
-    //        }
-    //        }
-    //    case Config::MTB_A3:
-    //        break;
-    //    default:
-    //        break;
-    //    };
 
     if (!model->isEmpty())
         model->clearModel();
-    //    model->setHeaders(headers);
+    setMeasJourHeaders();
+    Q_ASSERT(!m_measJourHeaders.isEmpty());
     model->setHeaders(m_measJourHeaders);
     if (model->columnCount() < 3)
     {
@@ -277,17 +199,17 @@ void Journals::ResultReady()
 
     switch (m_jourType)
     {
-    case Files::JourWork:
+    case DataTypes::JourWork:
         mdl = m_workModel;
         pmdl = _proxyWorkModel;
         order = Qt::DescendingOrder;
         break;
-    case Files::JourSys:
+    case DataTypes::JourSys:
         mdl = m_sysModel;
         pmdl = _proxySysModel;
         order = Qt::DescendingOrder;
         break;
-    case Files::JourMeas:
+    case DataTypes::JourMeas:
         mdl = _measModel;
         pmdl = _proxyMeasModel;
         order = Qt::AscendingOrder;
@@ -305,106 +227,51 @@ void Journals::ResultReady()
     emit Done("Прочитано успешно", m_jourType);
 }
 
-void Journals::prepareJour(QByteArray &ba, int JourType)
-{
-    S2DataTypes::FileHeader header;
-    quint32 basize = ba.size();
-    if (basize < 17)
-    {
-        ERMSG("basize");
-    }
-#ifdef __STDC_LIB_EXT1__
-    memcpy_s(&header, sizeof(S2::FileHeader), ba.data(), sizeof(S2::FileHeader));
-#endif
-    memcpy(&header, ba.data(), sizeof(S2DataTypes::FileHeader));
-    if (!S2::CheckCRC32(&(ba.data())[16], (basize - 16), header.crc32))
-    {
-        ERMSG("CRC error");
-    }
-    if (header.fname != JourType)
-    {
-        ERMSG("Wrong filename");
-    }
-    int fhsize = sizeof(S2DataTypes::FileHeader);
-    ba.remove(0, fhsize);
-    int drsize = sizeof(S2DataTypes::DataRec) - sizeof(void *);
-    S2DataTypes::DataRec *record = reinterpret_cast<S2DataTypes::DataRec *>(ba.data());
-    ba.truncate(record->num_byte);
-    ba.remove(0, drsize);
-}
+// void Journals::prepareJour(QByteArray &ba, int JourType)
+//{
+//    S2DataTypes::FileHeader header;
+//    quint32 basize = ba.size();
+//    if (basize < 17)
+//    {
+//        ERMSG("basize");
+//    }
+//#ifdef __STDC_LIB_EXT1__
+//    memcpy_s(&header, sizeof(S2::FileHeader), ba.data(), sizeof(S2::FileHeader));
+//#endif
+//    memcpy(&header, ba.data(), sizeof(S2DataTypes::FileHeader));
+//    if (!S2::CheckCRC32(&(ba.data())[16], (basize - 16), header.crc32))
+//    {
+//        ERMSG("CRC error");
+//    }
+//    if (header.fname != JourType)
+//    {
+//        ERMSG("Wrong filename");
+//    }
+//    int fhsize = sizeof(S2DataTypes::FileHeader);
+//    ba.remove(0, fhsize);
+//    int drsize = sizeof(S2DataTypes::DataRec) - sizeof(void *);
+//    S2DataTypes::DataRec *record = reinterpret_cast<S2DataTypes::DataRec *>(ba.data());
+//    ba.truncate(record->num_byte);
+//    ba.remove(0, drsize);
+//}
 
 void Journals::FillJour(const DataTypes::FileStruct &fs)
 {
-    // prepareJour(fs.filedata, fs.filenum);
+    m_jourType = fs.filenum;
     switch (fs.filenum)
     {
-    case Files::JourMeas:
-        // FillMeasTable(fs.filedata);
+    case DataTypes::JourMeas:
+        FillMeasTable(fs.filedata);
         break;
-    case Files::JourSys:
-    case Files::JourWork:
-        // FillEventsTable(fs.filedata);
+    case DataTypes::JourSys:
+        FillEventsTable(fs.filedata);
+    case DataTypes::JourWork:
+        FillEventsTable(fs.filedata);
         break;
     default:
         break;
     }
 }
-
-// void Journals::FillSysJour(QByteArray ba)
-//{
-//    prepareJour(ba, Files::JourSys);
-//    FillEventsTable(ba);
-//}
-
-// void Journals::FillMeasJour(QByteArray ba)
-//{
-//    prepareJour(ba, Files::JourMeas);
-
-//    FillMeasTable(ba);
-//}
-
-// void Journals::FillWorkJour(QByteArray ba)
-//{
-//    prepareJour(ba, Files::JourWork);
-//    FillEventsTable(ba);
-//}
-
-// void Journals::StartGetJour()
-//{
-//    switch (Board::GetInstance().interfaceType())
-//    {
-
-//    case Board::InterfaceType::Ethernet:
-//    {
-//        emit ReadJour(m_jourType);
-//        break;
-//    }
-//    case Board::InterfaceType::USB:
-//    {
-//        QByteArray ba;
-//        if (Commands::GetFile(m_jourType, ba) == Error::Msg::NoError)
-//        {
-//            switch (m_jourType)
-//            {
-//            case Files::JourSys:
-//                FillEventsTable(ba);
-//                break;
-//            case Files::JourWork:
-//                FillEventsTable(ba);
-//                break;
-//            case Files::JourMeas:
-//                FillMeasTable(ba);
-//                break;
-//            default:
-//                break;
-//            }
-//        }
-//        else
-//            emit Error("Ошибка чтения журнала");
-//        break;
-//    }
-//    }
-//}
 
 void Journals::StartSaveJour(int jtype, QAbstractItemModel *amdl, QString filename)
 {
@@ -412,15 +279,15 @@ void Journals::StartSaveJour(int jtype, QAbstractItemModel *amdl, QString filena
     Qt::SortOrder order = Qt::AscendingOrder;
     switch (jtype)
     {
-    case Files::JourSys:
+    case DataTypes::JourSys:
         jourtypestr = "Системный журнал";
         order = Qt::DescendingOrder;
         break;
-    case Files::JourMeas:
+    case DataTypes::JourMeas:
         jourtypestr = "Журнал измерений";
         order = Qt::AscendingOrder;
         break;
-    case Files::JourWork:
+    case DataTypes::JourWork:
         jourtypestr = "Журнал событий";
         order = Qt::DescendingOrder;
         break;

@@ -469,7 +469,7 @@ void IEC104Thread::ParseIFormat(QByteArray &ba) // основной разбор
                     }
                     else
                     {
-                        DataTypes::FileStruct df { static_cast<quint32>(filetype), m_readData };
+                        DataTypes::FileStruct df { static_cast<DataTypes::FilesEnum>(filetype), m_readData };
                         DataManager::addSignalToOutList(DataTypes::SignalTypes::File, df);
                     }
                     //                    if (filetype == 0x01) // если файл конфигурации

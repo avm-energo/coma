@@ -30,7 +30,7 @@ AbstractConfDialog::AbstractConfDialog(QWidget *parent) : UDialog(parent)
 
 void AbstractConfDialog::ReadConf()
 {
-    iface()->reqFile(Files::Config, true);
+    iface()->reqFile(DataTypes::Config, true);
     //    TimeFunc::Wait(100);
     //    switch (Board::GetInstance().interfaceType())
     //    {

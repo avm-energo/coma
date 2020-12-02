@@ -242,6 +242,7 @@ const QStringList eventJourHeaders {
 constexpr quint32 sysJourId = 0;
 struct EventStruct
 {
+    EventStruct() = default;
     quint64 Time;
     quint8 EvType;
     quint8 EvNum[3];

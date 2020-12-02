@@ -43,6 +43,7 @@ int main(int argc, char *argv[])
     QVariant value;
     value.setValue(block);
     usbdevice.reqAlarms(3011, 25);
+    usbdevice.reqFile(DataTypes::FilesEnum::JourSys);
     // usbdevice.reqFloats(2420, 14);
     //    usbdevice.reqBSI();
     //    usbdevice.writeCommand(Queries::QUSB_ReqBlkDataA, 1);

@@ -1,7 +1,6 @@
 #include "baseinterface.h"
 
 #include "../gen/datamanager.h"
-#include "../gen/files.h"
 #include "../gen/s2.h"
 #include "../gen/stdfunc.h"
 
@@ -15,8 +14,8 @@ BaseInterface::BaseInterface(QObject *parent) : QObject(parent), m_working(false
 void BaseInterface::writeConfigFile()
 {
     QByteArray ba;
-    S2::StoreDataMem(&ba.data()[0], S2::config, Files::Config);
-    writeFile(Files::Config, ba);
+    S2::StoreDataMem(&ba.data()[0], S2::config, DataTypes::Config);
+    writeFile(DataTypes::Config, ba);
 }
 
 void BaseInterface::reqAlarms(quint32 sigAdr, quint32 sigCount)
@@ -89,7 +88,7 @@ Error::Msg BaseInterface::writeConfFileSync()
 {
     QByteArray ba;
     ba.resize(30000);
-    S2::StoreDataMem(&ba.data()[0], S2::config, Files::Config);
+    S2::StoreDataMem(&ba.data()[0], S2::config, DataTypes::Config);
     // считываем длину файла из полученной в StoreDataMem и вычисляем количество сегментов
     quint32 wrlength = static_cast<quint8>(ba.at(7)) * 16777216; // с 4 байта начинается FileHeader.size
     wrlength += static_cast<quint8>(ba.at(6)) * 65536;
@@ -97,7 +96,7 @@ Error::Msg BaseInterface::writeConfFileSync()
     wrlength += static_cast<quint8>(ba.at(4));
     wrlength += sizeof(S2DataTypes::FileHeader); // sizeof(FileHeader)
     ba.resize(wrlength);
-    return writeFileSync(Files::Config, ba);
+    return writeFileSync(DataTypes::Config, ba);
 }
 
 Error::Msg BaseInterface::writeFileSync(int filenum, QByteArray &ba)

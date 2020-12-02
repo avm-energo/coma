@@ -535,7 +535,7 @@ Error::Msg AbstractTuneDialog::saveWorkConfig()
     //    memcpy(&m_BciSaveBlock, &CKIV->Bci_block, sizeof(ConfigKIV::Bci));
     //    else return Error::Msg::GeneralError;
     QByteArray ba;
-    if (iface()->readFileSync(Files::Config, ba) != Error::Msg::NoError)
+    if (iface()->readFileSync(DataTypes::Config, ba) != Error::Msg::NoError)
         return Error::Msg::GeneralError;
     return Files::SaveToFile(StdFunc::GetSystemHomeDir() + Board::GetInstance().UID() + ".cf", ba);
     //    return Error::Msg::NoError;
@@ -549,7 +549,7 @@ Error::Msg AbstractTuneDialog::loadWorkConfig()
     QByteArray ba;
     if (Files::LoadFromFile(StdFunc::GetSystemHomeDir() + Board::GetInstance().UID() + ".cf", ba)
         != Error::Msg::NoError)
-        return iface()->writeFileSync(Files::Config, ba);
+        return iface()->writeFileSync(DataTypes::Config, ba);
     return Error::Msg::GeneralError;
 }
 

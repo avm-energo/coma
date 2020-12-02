@@ -87,8 +87,6 @@ void Protocom::reqTime()
 
 void Protocom::reqFile(quint32 filenum, bool isConfigFile)
 {
-    // QByteArray ba;
-    // ba.setNum(filenum);
     QByteArray ba = StdFunc::arrayFromNumber(quint16(filenum));
 
     CommandStruct inp {
@@ -125,10 +123,10 @@ void Protocom::reqBSI()
 void Protocom::writeFile(quint32 filenum, const QByteArray &file)
 {
     CommandStruct inp {
-        Proto::Commands::WriteFile, // Command
-        filenum,                    // File number
-        QVariant(),                 // Null arg
-        file                        // Buffer with file
+        Proto::Commands::WriteFile,    // Command
+        DataTypes::FilesEnum(filenum), // File number
+        QVariant(),                    // Null arg
+        file                           // Buffer with file
     };
     DataManager::addToInQueue(inp);
     emit wakeUpParser();

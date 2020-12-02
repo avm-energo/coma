@@ -65,13 +65,36 @@ struct SinglePointWithTimeStruct
     quint64 CP56Time;
 };
 
+/*!
+    Приложение 3. Номера файлов
+        */
+enum FilesEnum : quint16
+{
+    /// Конфигурация
+    Config = 1,
+    /// Встроенное ПО (Firmware)
+    Firmware = 3,
+    /// Системный журнал
+    JourSys = 4,
+    /// Рабочий журнал
+    JourWork = 5,
+    /// Журнал измерений
+    JourMeas = 6,
+    /// Журнал переключений
+    JourSw = 17,
+    /// events journal (12->62)
+    JourEv = 18,
+    /// oscilloscope info
+    FileOsc = 1000
+};
+
 struct FileStruct
 {
     FileStruct() = default;
     ~FileStruct()
     {
     }
-    FileStruct(const quint32 num, const QByteArray &file) : filenum(num), filedata(file)
+    FileStruct(const FilesEnum num, const QByteArray &file) : filenum(num), filedata(file)
     {
     }
     FileStruct(const FileStruct &source) : FileStruct(source.filenum, source.filedata)
@@ -85,7 +108,7 @@ struct FileStruct
     }
     FileStruct(FileStruct &&rhs) noexcept : filenum(rhs.filenum), filedata(rhs.filedata)
     {
-        rhs.filenum = 0;
+        // rhs.filenum = 0;
         rhs.filedata = nullptr;
     }
     FileStruct operator=(FileStruct &&rhs) noexcept
@@ -94,12 +117,12 @@ struct FileStruct
         {
             filenum = rhs.filenum;
             filedata = rhs.filedata;
-            rhs.filenum = 0;
+            // rhs.filenum = NULL;
             rhs.filedata = nullptr;
         }
         return *this;
     }
-    quint32 filenum;
+    FilesEnum filenum;
     QByteArray filedata;
 };
 
@@ -166,7 +189,7 @@ enum Commands
     QUSB_ReqBlkDataTech,
     QUSB_WriteBlkDataTech,
     QUSB_SetMode, // SMode (0x43) - not realized yet
-    QUSB_GetMode // GMode (0x28) - not realized yet
+    QUSB_GetMode  // GMode (0x28) - not realized yet
 };
 
 struct Command
@@ -207,6 +230,7 @@ Q_DECLARE_METATYPE(DataTypes::FloatWithTimeStruct)
 Q_DECLARE_METATYPE(DataTypes::FloatStruct)
 Q_DECLARE_METATYPE(DataTypes::SinglePointWithTimeStruct)
 Q_DECLARE_METATYPE(DataTypes::FileStruct)
+Q_DECLARE_METATYPE(DataTypes::FilesEnum)
 Q_DECLARE_METATYPE(DataTypes::ConfParameterStruct)
 Q_DECLARE_METATYPE(DataTypes::BlockStruct)
 Q_DECLARE_METATYPE(DataTypes::ConfParametersListStruct)

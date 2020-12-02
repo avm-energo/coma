@@ -29,25 +29,6 @@ QString Files::ChooseFileForOpen(QWidget *parent, QString mask)
     return filename;
 }
 
-Error::Msg Files::LoadFromFile(const QString &filename, QByteArray &ba)
-{
-    if (filename.isEmpty())
-    {
-        ERMSG("Пустое имя файла");
-        return Error::Msg::FileNameError; // Пустое имя файла
-    }
-    QFile *file = new QFile;
-    file->setFileName(filename);
-    if (!file->open(QIODevice::ReadOnly))
-    {
-        ERMSG("Ошибка открытия файла");
-        return Error::Msg::FileOpenError; // Ошибка открытия файла
-    }
-    ba = file->readAll();
-    file->close();
-    return Error::Msg::NoError;
-}
-
 // Input: QString mask: описание файлов, например: "Файлы журналов (*.swj)";
 // QString ext - расширение по умолчанию Output: QString filename
 
@@ -70,6 +51,26 @@ QString Files::ChooseFileForSave(QWidget *parent, const QString &mask, const QSt
     StdFunc::SetHomeDir(info.absolutePath());
     dlg->close();
     return filename;
+}
+#endif
+
+Error::Msg Files::LoadFromFile(const QString &filename, QByteArray &ba)
+{
+    if (filename.isEmpty())
+    {
+        ERMSG("Пустое имя файла");
+        return Error::Msg::FileNameError; // Пустое имя файла
+    }
+    QFile *file = new QFile;
+    file->setFileName(filename);
+    if (!file->open(QIODevice::ReadOnly))
+    {
+        ERMSG("Ошибка открытия файла");
+        return Error::Msg::FileOpenError; // Ошибка открытия файла
+    }
+    ba = file->readAll();
+    file->close();
+    return Error::Msg::NoError;
 }
 
 Error::Msg Files::SaveToFile(const QString &filename, QByteArray &src)
@@ -133,4 +134,3 @@ QString Files::GetFirstDriveWithLabel(QStringList &filepaths, const QString &lab
     }
     return str;
 }
-#endif

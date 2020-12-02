@@ -16,7 +16,7 @@ void JournKDV::setMeasJourHeaders()
     m_measJourHeaders = AVM_KDV::measJourHeaders;
 }
 
-void JournKDV::setMeasRecord(char *file, QVector<QVariant> &outvl)
+QVector<QVariant> JournKDV::createMeasRecord(const char *file)
 {
     AVM_KDV::MeasureStruct KDVdata;
     memcpy(&KDVdata, file, sizeof(AVM_KDV::MeasureStruct));
@@ -27,6 +27,7 @@ void JournKDV::setMeasRecord(char *file, QVector<QVariant> &outvl)
     //            KDVdata.Cbush[2], KDVdata.Tg_d[0], KDVdata.Tg_d[1], KDVdata.Tg_d[2], KDVdata.dCbush[0],
     //            KDVdata.dCbush[1], KDVdata.dCbush[2], KDVdata.dTg_d[0], KDVdata.dTg_d[1], KDVdata.dTg_d[2],
     //            KDVdata.Iunb, KDVdata.Phy_unb, KDVdata.Tmk, KDVdata.Tamb };
+    return QVector<QVariant>();
 }
 
 int JournKDV::measureSize()

@@ -145,6 +145,14 @@ public:
         if (pb != nullptr)
             QObject::connect(pb, &QPushButton::clicked, context, functor);
     }
+    template <typename Object>
+    inline static void PBConnect(
+        QWidget *parent, const QString &pbname, const Object *receiver, void (Object::*method)())
+    {
+        QPushButton *pb = parent->findChild<QPushButton *>(pbname);
+        if (pb != nullptr)
+            QObject::connect(pb, &QPushButton::clicked, receiver, method);
+    }
 
     //    static QMetaObject::Connection PBConnect(
     //        QWidget *w, const QString &pbname, const QObject *receiver, const char *method);

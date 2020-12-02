@@ -8,9 +8,13 @@
 // ######################################## Переопределение методов QAbstractTableModel
 // ####################################
 
-ETableModel::ETableModel(QObject *parent) : QAbstractTableModel(parent) { }
+ETableModel::ETableModel(QObject *parent) : QAbstractTableModel(parent)
+{
+}
 
-ETableModel::~ETableModel() { }
+ETableModel::~ETableModel()
+{
+}
 
 QVariant ETableModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
@@ -256,7 +260,6 @@ void ETableModel::addRow()
 
 void ETableModel::fillModel(QVector<QVector<QVariant>> &lsl)
 {
-    QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
     emit pushMaxProgress(lsl.size());
     for (int i = 0; i < lsl.size(); ++i)
     {
@@ -299,7 +302,10 @@ void ETableModel::setRowTextAlignment(int row, int alignment)
         setData(index(row, i, QModelIndex()), QVariant(alignment), Qt::TextAlignmentRole);
 }
 
-bool ETableModel::isEmpty() const { return maindata.isEmpty(); }
+bool ETableModel::isEmpty() const
+{
+    return maindata.isEmpty();
+}
 
 void ETableModel::setColumnFormat(int column, int format)
 {
