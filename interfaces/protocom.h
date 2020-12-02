@@ -22,7 +22,7 @@ public:
     void writeFile(quint32 filenum, const QByteArray &file) override;
     void writeConfigFile(S2DataTypes::S2ConfigType *) override;
     void writeTime(quint32 time) override;
-    void writeCommand(Queries::Commands cmd, QVariant item) override;
+    void writeCommand(Queries::Commands cmd, QVariant item = 0) override;
     void reqFloats(quint32 sigAdr, quint32 sigCount) override;
 
 private:
@@ -48,7 +48,9 @@ const QMap<Queries::Commands, Proto::Commands> getProtoCommand {
     { Queries::QUSB_ReqBlkDataA, Proto::Commands::ReadBlkDataA },                  //
     { Queries::QUSB_ReqBlkDataTech, Proto::Commands::ReadBlkTech },                //
     { Queries::QUSB_WriteBlkDataTech, Proto::Commands::WriteBlkTech },             //
-    { Queries::QC_ReqAlarms, Proto::Commands::ReadBlkData }                        //
+    { Queries::QC_ReqAlarms, Proto::Commands::ReadBlkData },                       //
+    { Queries::QUSB_GetMode, Proto::Commands::ReadMode },                          //
+    { Queries::QUSB_SetMode, Proto::Commands::WriteMode }                          //
 };
 
 const QMap<Queries::Commands, Proto::WCommands> getWCommand {

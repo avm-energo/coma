@@ -32,7 +32,7 @@ void handleBitString(const QByteArray &ba, quint16 sigAddr);
 void handleBitStringArray(const QByteArray &ba, QList<quint16> arr_addr);
 void handleFloat(const QByteArray &ba, quint32 sigAddr);
 void handleFloatArray(const QByteArray &ba, quint32 sigAddr, quint32 sigCount);
-void handleSinglePoint(const QByteArray &ba);
+void handleSinglePoint(const QByteArray &ba, const quint16 addr);
 void handleFile(QByteArray &ba, quint16 addr, bool isShouldRestored);
 void handleInt(const byte num);
 void handleBool(const bool status = true, int errorSize = 0, int errorCode = 0);
@@ -175,7 +175,7 @@ void ProtocomThread::handle(const Proto::Commands cmd)
         if (addr != alarm_reg)
             handleFloatArray(m_buffer.second, addr, count);
         else
-            handleSinglePoint(m_buffer.second);
+            handleSinglePoint(m_buffer.second, addr);
 
         break;
 
@@ -526,12 +526,12 @@ void handleFloatArray(const QByteArray &ba, quint32 sigAddr, quint32 sigCount)
     }
 }
 
-void handleSinglePoint(const QByteArray &ba)
+void handleSinglePoint(const QByteArray &ba, const quint16 addr)
 {
     for (quint32 i = 0; i != quint32(ba.size()); ++i)
     {
         quint8 value = ba.at(i);
-        DataTypes::SinglePointWithTimeStruct data { i, value, 0 };
+        DataTypes::SinglePointWithTimeStruct data { (addr + i), value, 0 };
         DataManager::addSignalToOutList(DataTypes::SinglePointWithTime, data);
     }
 }

@@ -224,8 +224,8 @@ void Protocom::writeCommand(Queries::Commands cmd, QVariant item)
 
     case Commands::WriteMode:
 
-        Q_ASSERT(item.canConvert<quint32>());
-        handleInt(protoCmd, QByteArray::number(item.toUInt()));
+        Q_ASSERT(item.canConvert<quint8>());
+        handleInt(protoCmd, item.toByteArray());
         break;
 
     case Commands::WriteVariant:
