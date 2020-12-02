@@ -20,7 +20,7 @@ public:
     void reqBSI() override;
 
     void writeFile(quint32 filenum, const QByteArray &file) override;
-    void writeConfigFile() override;
+    // void writeConfigFile() override;
     void writeTime(quint32 time) override;
     void writeCommand(Queries::Commands cmd, QVariant item) override;
     void reqFloats(quint32 sigAdr, quint32 sigCount) override;

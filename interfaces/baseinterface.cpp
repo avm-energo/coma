@@ -12,6 +12,13 @@ BaseInterface::BaseInterface(QObject *parent) : QObject(parent), m_working(false
 {
 }
 
+void BaseInterface::writeConfigFile()
+{
+    QByteArray ba;
+    S2::StoreDataMem(&ba.data()[0], S2::config, Files::Config);
+    writeFile(Files::Config, ba);
+}
+
 void BaseInterface::reqAlarms(quint32 sigAdr, quint32 sigCount)
 {
     // NOTE Избежать сужающих кастов
@@ -171,7 +178,7 @@ void BaseInterface::confParameterBlockReceived(const DataTypes::ConfParametersLi
 {
     disconnect(&DataManager::GetInstance(), &DataManager::confParametersListReceived, this,
         &BaseInterface::confParameterBlockReceived);
-    m_responseResult = (response.type == DataTypes::GeneralResponseTypes::Ok);
+    // m_responseResult = (response.type == DataTypes::GeneralResponseTypes::Ok);
     m_busy = false;
 }
 

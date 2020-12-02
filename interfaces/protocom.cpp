@@ -134,12 +134,12 @@ void Protocom::writeFile(quint32 filenum, const QByteArray &file)
     emit wakeUpParser();
 }
 
-void Protocom::writeConfigFile()
-{
-    QByteArray ba;
-    S2::StoreDataMem(&ba.data()[0], S2::config, Files::Config);
-    writeFile(Files::Config, ba);
-}
+// void Protocom::writeConfigFile()
+//{
+//    QByteArray ba;
+//    S2::StoreDataMem(&ba.data()[0], S2::config, Files::Config);
+//    writeFile(Files::Config, ba);
+//}
 
 void Protocom::writeTime(quint32 time)
 {
