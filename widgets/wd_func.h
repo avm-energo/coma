@@ -37,7 +37,7 @@ public:
     static PasswordLineEdit *NewPswLE(QWidget *w, const QString &lename,
         QLineEdit::EchoMode echostyle = QLineEdit::Normal, const QString &lestyle = "");
     static bool SetLEData(QWidget *w, const QString &lename, const QString &levalue, const QString &restring = "");
-    static QString LEData(QWidget *w, const QString &lename);
+    static QString LEData(QObject *w, const QString &lename);
     template <typename T> static bool LENumber(QWidget *w, const QString &lename, T &levalue)
     {
         QLineEdit *le = w->findChild<QLineEdit *>(lename);

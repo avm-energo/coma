@@ -72,8 +72,8 @@ public:
     bool CheckPassword();
     virtual void setMessages() = 0;      // заполнить список сообщений
     virtual void setTuneFunctions() = 0; // заполнить список функций настройки
-                                         //    bool IsWithinLimits(double number, double base, double threshold);
-                                         //    void MsgSetVisible(int msg, bool Visible = true);
+    bool IsWithinLimits(double number, double base, double threshold);
+    //    void MsgSetVisible(int msg, bool Visible = true);
     void MsgSetVisible(MsgTypes type, int msg, bool Visible = true);
     //    void OkMsgSetVisible(int msg, bool Visible = true);
     //    void ErMsgSetVisible(int msg, bool Visible = true);
@@ -97,6 +97,7 @@ public:
     Error::Msg loadWorkConfig();
     Error::Msg saveAllTuneCoefs();
     Error::Msg loadAllTuneCoefs();
+    float ToFloat(QString text);
 
 private:
     struct BlockStruct

@@ -155,8 +155,6 @@ private:
         int CheckTuneCoefs();
         // int CheckMip();
         void GetBdAndFill();
-        int Start7_2_1();
-        int Start_7_2_7();
         int Start7_3_1();
         int Start7_3_1_1();
         int Start7_3_2();
@@ -178,8 +176,6 @@ private:
         int ShowRetomDialog(double U, double I, double Y);
         int SetNewTuneCoefs(); // заполнение Bac_newblock, чтобы не было пурги после настройки
         int LoadWorkConfig();
-        QWidget *Bd1W(QWidget *parent);
-        void FillBd1(QWidget *parent);
         void RefreshAnalogValues(int bdnum);
         int Show80();
         int Show120();
@@ -196,8 +192,7 @@ private:
         int ReadAnalogTemp60();
         void Enter20Data();
         void Enterminus20Data();
-        void Enter60Data();
-        float ToFloat(QString text); */
+        void Enter60Data(); */
 
     QString ValuesFormat, WidgetFormat;
 

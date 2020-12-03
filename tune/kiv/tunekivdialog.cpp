@@ -217,31 +217,6 @@ void TuneKIVDialog::SetPf()
 void TuneKIVDialog::FillBac(int bacnum)
 {
     Q_UNUSED(bacnum);
-    for (int i = 0; i < 3; i++)
-    {
-        WDFunc::SetLEData(this, "tune" + QString::number(i), QString::number(m_Bac_block.N1_TT[i], 'g', 5));
-        WDFunc::SetLEData(this, "tune" + QString::number(i + 3), QString::number(m_Bac_block.KmU[i], 'f', 5));
-        WDFunc::SetLEData(this, "tune" + QString::number(i + 6), QString::number(m_Bac_block.KmI1[i], 'f', 5));
-        WDFunc::SetLEData(this, "tune" + QString::number(i + 9), QString::number(m_Bac_block.KmI2[i], 'f', 5));
-        WDFunc::SetLEData(this, "tune" + QString::number(i + 12), QString::number(m_Bac_block.KmI4[i], 'f', 5));
-        WDFunc::SetLEData(this, "tune" + QString::number(i + 15), QString::number(m_Bac_block.KmI8[i], 'f', 5));
-        WDFunc::SetLEData(this, "tune" + QString::number(i + 18), QString::number(m_Bac_block.KmI16[i], 'f', 5));
-        WDFunc::SetLEData(this, "tune" + QString::number(i + 21), QString::number(m_Bac_block.KmI32[i], 'f', 5));
-        WDFunc::SetLEData(this, "tune" + QString::number(i + 24), QString::number(m_Bac_block.TKPsi_a[i], 'e', 5));
-        WDFunc::SetLEData(this, "tune" + QString::number(i + 27), QString::number(m_Bac_block.TKPsi_b[i], 'e', 5));
-    }
-
-    for (int i = 0; i < 6; i++)
-    {
-        WDFunc::SetLEData(this, "tune" + QString::number(i + 30), QString::number(m_Bac_block.DPsi[i], 'f', 5));
-        WDFunc::SetLEData(this, "tune" + QString::number(i + 36), QString::number(m_Bac_block.TKUa[i], 'e', 5));
-        WDFunc::SetLEData(this, "tune" + QString::number(i + 42), QString::number(m_Bac_block.TKUb[i], 'e', 5));
-    }
-
-    WDFunc::SetLEData(this, "tune48", QString::number(m_Bac_block.K_freq, 'f', 5));
-    WDFunc::SetLEData(this, "tune49", QString::number(m_Bac_block.Art, 'f', 5));
-    WDFunc::SetLEData(this, "tune50", QString::number(m_Bac_block.Brt, 'f', 5));
-    WDFunc::SetLEData(this, "tune51", QString::number(m_Bac_block.Tmk0, 'f', 5));
 }
 
 void TuneKIVDialog::FillNewBac()
@@ -277,48 +252,6 @@ void TuneKIVDialog::FillBackBac(int bacnum)
 {
     Q_UNUSED(bacnum);
     QString tmps;
-    for (int i = 0; i < 3; i++)
-    {
-        WDFunc::LE_read_data(this, "tune" + QString::number(i), tmps);
-        m_Bac_block.N1_TT[i] = tmps.toUInt();
-        WDFunc::LE_read_data(this, "tune" + QString::number(i + 3), tmps);
-        m_Bac_block.KmU[i] = ToFloat(tmps);
-        WDFunc::LE_read_data(this, "tune" + QString::number(i + 6), tmps);
-        m_Bac_block.KmI1[i] = ToFloat(tmps);
-        WDFunc::LE_read_data(this, "tune" + QString::number(i + 9), tmps);
-        m_Bac_block.KmI2[i] = ToFloat(tmps);
-        WDFunc::LE_read_data(this, "tune" + QString::number(i + 12), tmps);
-        m_Bac_block.KmI4[i] = ToFloat(tmps);
-        WDFunc::LE_read_data(this, "tune" + QString::number(i + 15), tmps);
-        m_Bac_block.KmI8[i] = ToFloat(tmps);
-        WDFunc::LE_read_data(this, "tune" + QString::number(i + 18), tmps);
-        m_Bac_block.KmI16[i] = ToFloat(tmps);
-        WDFunc::LE_read_data(this, "tune" + QString::number(i + 21), tmps);
-        m_Bac_block.KmI32[i] = ToFloat(tmps);
-        WDFunc::LE_read_data(this, "tune" + QString::number(i + 24), tmps);
-        m_Bac_block.TKPsi_a[i] = ToFloat(tmps);
-        WDFunc::LE_read_data(this, "tune" + QString::number(i + 27), tmps);
-        m_Bac_block.TKPsi_b[i] = ToFloat(tmps);
-    }
-
-    for (int i = 0; i < 6; i++)
-    {
-        WDFunc::LE_read_data(this, "tune" + QString::number(i + 30), tmps);
-        m_Bac_block.DPsi[i] = ToFloat(tmps);
-        WDFunc::LE_read_data(this, "tune" + QString::number(i + 36), tmps);
-        m_Bac_block.TKUa[i] = ToFloat(tmps);
-        WDFunc::LE_read_data(this, "tune" + QString::number(i + 42), tmps);
-        m_Bac_block.TKUb[i] = ToFloat(tmps);
-    }
-
-    WDFunc::LE_read_data(this, "tune48", tmps);
-    m_Bac_block.K_freq = ToFloat(tmps);
-    WDFunc::LE_read_data(this, "tune49", tmps);
-    m_Bac_block.Art = ToFloat(tmps);
-    WDFunc::LE_read_data(this, "tune50", tmps);
-    m_Bac_block.Brt = ToFloat(tmps);
-    WDFunc::LE_read_data(this, "tune51", tmps);
-    m_Bac_block.Tmk0 = ToFloat(tmps);
 }
 
 int TuneKIVDialog::SetNewTuneCoefs()
@@ -349,19 +282,6 @@ int TuneKIVDialog::SetNewTuneCoefs()
         m_Bac_newblock.TKPsi_b[i] = m_Bac_block.TKPsi_b[i];
     }
     return NOERROR;
-}
-
-float TuneKIVDialog::ToFloat(QString text)
-{
-    bool ok;
-    float tmpf;
-    tmpf = text.toFloat(&ok);
-    if (!ok)
-    {
-        ERMSG("Значение " + text + " не может быть переведено во float");
-        return 0;
-    }
-    return tmpf;
 }
 
 int TuneKIVDialog::Start7_3_1()
@@ -1041,28 +961,6 @@ int TuneDialogKIV::CalcTuneCoefsKadc32()
 
 void TuneKIVDialog::GetBdAndFill() { }
 
-int TuneKIVDialog::Start7_2_1()
-{
-    CKIV->Bci_block.Unom = 220;
-    CKIV->Bci_block.C_pasp = 9000; // Imax = 600 mA
-    return Commands::WriteFile(CM_CONFIGFILE, S2ConfigForTune);
-}
-
-int TuneKIVDialog::Start_7_2_7()
-{
-    WaitNSeconds(15);
-    if (Commands::GetBda(BT_NONE, &m_Bda_block, sizeof(BdaStruct)) != NOERROR)
-        return GENERALERROR;
-    for (int i = 0; i < 6; ++i)
-        if (!IsWithinLimits(m_Bda_block.Ueff_ADC[i], 2150000.0, 150000.0))
-            return GENERALERROR;
-    if (!IsWithinLimits(m_Bda_block.Pt100, 1175.0, 120.0))
-        return GENERALERROR;
-    if (!IsWithinLimits(m_Bda_block.Frequency, 51.0, 0.2))
-        return GENERALERROR;
-    return NOERROR;
-}
-
 int TuneKIVDialog::ReadAnalogMeasurements()
 {
     int i, j;
@@ -1348,55 +1246,6 @@ void TuneKIVDialog::CancelExtData()
         return;
     StdFunc::Cancel();
     dlg->close();
-}
-
-QWidget *TuneKIVDialog::Bd1W(QWidget *parent)
-{
-    int i;
-    WidgetFormat = "QWidget {background-color: " + QString(Colors::UCONFCLR) + ";}";
-    QString ValuesFormat = "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; color: black;"
-                           "background-color: "
-        + QString(Colors::ACONFOCLR) + "; font: bold 10px;}";
-
-    QWidget *w = new QWidget(parent);
-    QVBoxLayout *lyout = new QVBoxLayout;
-    QGridLayout *glyout = new QGridLayout;
-    QHBoxLayout *hlyout = new QHBoxLayout;
-
-    lyout->addLayout(hlyout);
-
-    for (i = 0; i < 6; ++i)
-    {
-        QString IndexStr = "[" + QString::number(i) + "]";
-        glyout->addWidget(WDFunc::NewLBL(parent, "Ueff_ADC" + IndexStr), 0, i, 1, 1);
-        glyout->addWidget(WDFunc::NewLBLT(parent, "", "value" + QString::number(i), ValuesFormat,
-                              QString::number(i) + "Ueff_ADC" + IndexStr + ".Измеренные сигналы в кодах АЦП"),
-            1, i, 1, 1);
-    }
-
-    glyout->addWidget(WDFunc::NewLBL(parent, "Frequency"), 2, 0, 1, 1);
-    glyout->addWidget(WDFunc::NewLBLT(parent, "", "value6", ValuesFormat, "Частота"), 3, 0, 1, 1);
-    glyout->addWidget(WDFunc::NewLBL(parent, "Pt100"), 4, 0, 1, 1);
-    glyout->addWidget(WDFunc::NewLBLT(parent, "", "value7", ValuesFormat, "Температура"), 5, 0, 1, 1);
-
-    lyout->addLayout(glyout);
-    lyout->addStretch(100);
-    w->setLayout(lyout);
-    w->setStyleSheet(WidgetFormat);
-    return w;
-}
-
-void TuneKIVDialog::FillBd1(QWidget *parent)
-{
-
-    for (int i = 0; i < 6; i++)
-    {
-        WDFunc::SetLBLText(
-            parent, "value" + QString::number(i), WDFunc::StringValueWithCheck(m_Bda_block.Ueff_ADC[i], 4));
-    }
-
-    WDFunc::SetLBLText(parent, "value6", WDFunc::StringValueWithCheck(m_Bda_block.Frequency, 4));
-    WDFunc::SetLBLText(parent, "value7", WDFunc::StringValueWithCheck(m_Bda_block.Pt100, 4));
 }
 
 void TuneKIVDialog::CancelTune() { StdFunc::Cancel(); }

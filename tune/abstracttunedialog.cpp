@@ -202,7 +202,7 @@ bool AbstractTuneDialog::CheckPassword()
     return (dlg.CheckPassword("121941")) ? Error::Msg::NoError : Error::Msg::GeneralError;
 }
 
-/*bool AbstractTuneDialog::IsWithinLimits(double number, double base, double threshold)
+bool AbstractTuneDialog::IsWithinLimits(double number, double base, double threshold)
 {
     float tmpf = fabs(number - base);
     if (tmpf < fabs(threshold))
@@ -214,7 +214,7 @@ bool AbstractTuneDialog::CheckPassword()
                 + QString::number(threshold, 'f', 5) + ", а получили: " + QString::number(number, 'f', 5));
         return false;
     }
-}*/
+}
 
 // void AbstractTuneDialog::MsgSetVisible(int msg, bool Visible)
 //{
@@ -773,4 +773,17 @@ void AbstractTuneDialog::keyPressEvent(QKeyEvent *e)
     if (e->key() == Qt::Key_Escape)
         StdFunc::cancel();
     UDialog::keyPressEvent(e);
+}
+
+float AbstractTuneDialog::ToFloat(QString text)
+{
+    bool ok;
+    float tmpf;
+    tmpf = text.toFloat(&ok);
+    if (!ok)
+    {
+        ERMSG("Значение " + text + " не может быть переведено во float");
+        return 0;
+    }
+    return tmpf;
 }

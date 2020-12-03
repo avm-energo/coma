@@ -4,7 +4,7 @@
 #define M_BACBLOCKNUM 0
 
 //#include "../tuneclass.h"
-//#include <QWidget>
+#include <QWidget>
 #include <QtGlobal>
 
 // class TuneKIV : public TuneClass
@@ -74,15 +74,23 @@ public:
 
     //    TuneKIV(int bacnum, S2ConfigType *, QObject *parent = nullptr);
     TuneKIV();
-    //    QWidget *BacWidget();
-    //    QWidget *BdaWidget();
+    QWidget *BacWidget();
+    QWidget *BdaWidget();
     Bac defBacBlock();
 
     // private slots:
 private:
     Bac m_defBacBlock;
+    QWidget *m_BacWidget, *m_BdaWidget;
+    bool m_BacWidgetIsSet, m_BdaWidgetIsSet;
 
     void SetDefCoefs();
+
+public slots:
+    void updateBacWidget();
+    void updateBdaWidget();
+    void updateFromBacWidget();
+    void updateFromBdaWidget();
 };
 
 #endif // TUNEKIV_H

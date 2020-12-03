@@ -372,10 +372,14 @@ void ConfigKxx::FillBack()
     QString NameIP = "IP_ID", NameMask = "Mask_ID", NameSNTP = "SNTP_ID", NameGate = "GW_ID";
     QStringList inIP, inMask, inSNTP, inGate;
 
-    WDFunc::LE_read_data(ParentSetup, NameIP, StrIP);
-    WDFunc::LE_read_data(ParentSetup, NameSNTP, StrSNTP);
-    WDFunc::LE_read_data(ParentSetup, NameGate, StrGate);
-    WDFunc::LE_read_data(ParentSetup, NameMask, StrMask);
+    //    WDFunc::LE_read_data(ParentSetup, NameIP, StrIP);
+    //    WDFunc::LE_read_data(ParentSetup, NameSNTP, StrSNTP);
+    //    WDFunc::LE_read_data(ParentSetup, NameGate, StrGate);
+    //    WDFunc::LE_read_data(ParentSetup, NameMask, StrMask);
+    StrIP = WDFunc::LEData(ParentSetup, NameIP);
+    StrSNTP = WDFunc::LEData(ParentSetup, NameSNTP);
+    StrGate = WDFunc::LEData(ParentSetup, NameGate);
+    StrMask = WDFunc::LEData(ParentSetup, NameMask);
 
     inIP.append(StrIP.split("."));
     inMask.append(StrMask.split("."));

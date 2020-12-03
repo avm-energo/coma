@@ -44,7 +44,7 @@ PasswordLineEdit *WDFunc::NewPswLE(
     return le;
 }
 
-QString WDFunc::LEData(QWidget *w, const QString &lename)
+QString WDFunc::LEData(QObject *w, const QString &lename)
 {
     QLineEdit *le = w->findChild<QLineEdit *>(lename);
     if (le == nullptr)

@@ -31,6 +31,7 @@ void TuneKIVCheck::setMessages()
     m_messages.append("4. Установка новой конфигурации...");
     m_messages.append("5. Отображение схемы подключения...");
     m_messages.append("6. Ожидание 15 с...");
+    m_messages.append("7. Проверка...");
 }
 
 void TuneKIVCheck::setTuneFunctions()
@@ -39,7 +40,7 @@ void TuneKIVCheck::setTuneFunctions()
     m_tuneFunctions[m_messages.at(count++)]
         = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&AbstractTuneDialog::CheckPassword);
     Error::Msg (AbstractTuneDialog::*func)()
-        = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVCheck::saveWorkConfig);
+        = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&AbstractTuneDialog::saveWorkConfig);
     m_tuneFunctions[m_messages.at(count++)] = func;
     //    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVCheck::setSMode2);
     //    m_tuneFunctions[m_messages.at(count++)] = func;
@@ -49,15 +50,13 @@ void TuneKIVCheck::setTuneFunctions()
     m_tuneFunctions[m_messages.at(count++)] = func;
     func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&AbstractTuneDialog::Wait15Seconds);
     m_tuneFunctions[m_messages.at(count++)] = func;
+    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVCheck::check);
+    m_tuneFunctions[m_messages.at(count++)] = func;
 }
 
 QWidget *TuneKIVCheck::MainUI()
 {
     return nullptr;
-}
-
-Error::Msg TuneKIVCheck::saveWorkConfig()
-{
 }
 
 void TuneKIVCheck::FillBac(int bacnum)
@@ -70,33 +69,12 @@ void TuneKIVCheck::FillBackBac(int bacnum)
     Q_UNUSED(bacnum)
 }
 
-// void TuneKIVCheck::GetBdAndFill() { }
-
-// Error::Msg TuneKIVCheck::saveWorkConfig(int configblocknum)
+// Error::Msg TuneKIVCheck::setSMode2()
 //{
-//    Q_UNUSED(configblocknum)
-//    if (Commands::GetFileWithRestore(CM_CONFIGFILE, S2Config) == Error::Msg::NoError)
-//        memcpy(&m_BciSaveBlock, &CKIV->Bci_block, sizeof(ConfigKIV::Bci));
-//    else
-//        return Error::Msg::GeneralError;
+//    iface()->writeCommand(Queries::QUSB_SetMode, 0x02);
+//    //    return Commands::SetMode(0x02);
 //    return Error::Msg::NoError;
 //}
-
-// int TuneKIVCheck::ReadAnalogMeasurements()
-//{
-//    return 0;
-//}
-
-// void TuneKIVCheck::SetDefCoefs()
-//{
-//}
-
-Error::Msg TuneKIVCheck::setSMode2()
-{
-    iface()->writeCommand(Queries::QUSB_SetMode, 0x02);
-    //    return Commands::SetMode(0x02);
-    return Error::Msg::NoError;
-}
 
 Error::Msg TuneKIVCheck::setNewConfig()
 {
@@ -129,7 +107,20 @@ Error::Msg TuneKIVCheck::showScheme()
     lyout->addWidget(WDFunc::NewPB2(this, "", "Готово", [dlg] { dlg->close(); }));
     lyout->addWidget(WDFunc::NewPB2(this, "cancelpb", "Отмена", [dlg] { dlg->close(); }));
     dlg->setLayout(lyout);
-    WDFunc::PBConnect(dlg, "cancelpb", this, &TuneKIVCheck::CancelTune);
+    WDFunc::PBConnect(dlg, "cancelpb", this, &AbstractTuneDialog::CancelTune);
     dlg->exec();
+    return Error::Msg::NoError;
+}
+
+Error::Msg TuneKIVCheck::check()
+{
+    iface()->reqBlockSync(1, DataTypes::DataBlockTypes::BdaBlock, &TKIV->m_Bda, sizeof(TKIV->m_Bda));
+    for (int i = 0; i < 6; ++i)
+        if (!IsWithinLimits(TKIV->m_Bda.Ueff_ADC[i], 2150000.0, 150000.0))
+            return Error::Msg::GeneralError;
+    if (!IsWithinLimits(TKIV->m_Bda.Pt100, 1175.0, 120.0))
+        return Error::Msg::GeneralError;
+    if (!IsWithinLimits(TKIV->m_Bda.Frequency, 51.0, 0.05))
+        return Error::Msg::GeneralError;
     return Error::Msg::NoError;
 }

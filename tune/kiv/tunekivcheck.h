@@ -25,15 +25,14 @@ private:
     //    void GetBdAndFill() override;
     //    Error::Msg saveWorkConfig(int configblocknum) override;
     QWidget *MainUI() override;
-    Error::Msg saveWorkConfig();
 
+    //    Error::Msg setSMode2();
+    Error::Msg setNewConfig();
+    Error::Msg showScheme();
+    Error::Msg check();
 private slots:
     //    int ReadAnalogMeasurements() override;
     //    void SetDefCoefs() override;
-
-    Error::Msg setSMode2();
-    Error::Msg setNewConfig();
-    Error::Msg showScheme();
 };
 
 #endif // TUNEKIVCHECK_H

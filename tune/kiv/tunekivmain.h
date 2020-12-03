@@ -14,13 +14,13 @@ public:
 
 private:
     TuneKIV *TKIV;
-    void SetupUI();
     void setMessages();
     void setTuneFunctions();
     void FillBac(int bacnum);
     void FillBackBac(int bacnum);
     QWidget *MainUI();
-    //    void GetBdAndFill();
+
+    Error::Msg showPreWarning();
 
 private slots:
     //    int ReadAnalogMeasurements();
