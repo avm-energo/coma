@@ -81,7 +81,7 @@ void Journals::ReadJourFileAndProcessIt()
         FillMeasTable(ba);
         break;
     default:
-        ERMSG("Incorrect jour type");
+        ERMSG("Некорректный тип журнала");
         return;
     }
 }
@@ -260,7 +260,7 @@ void Journals::FillMeasTable(QByteArray &ba)
     model->setHeaders(m_measJourHeaders);
     if (model->columnCount() < 3)
     {
-        ERMSG("Column count error");
+        ERMSG("Некорректное количество столбцов в модели");
         return;
     }
     for (int i = 2; i < model->columnCount(); ++i)
@@ -311,7 +311,7 @@ void Journals::prepareJour(QByteArray &ba, int JourType)
     quint32 basize = ba.size();
     if (basize < 17)
     {
-        ERMSG("basize");
+        ERMSG("Размер журнала меньше 17 байт");
     }
 #ifdef __STDC_LIB_EXT1__
     memcpy_s(&header, sizeof(S2::FileHeader), ba.data(), sizeof(S2::FileHeader));
@@ -319,11 +319,11 @@ void Journals::prepareJour(QByteArray &ba, int JourType)
     memcpy(&header, ba.data(), sizeof(S2DataTypes::FileHeader));
     if (!S2::CheckCRC32(&(ba.data())[16], (basize - 16), header.crc32))
     {
-        ERMSG("CRC error");
+        ERMSG("Ошибка CRC");
     }
     if (header.fname != JourType)
     {
-        ERMSG("Wrong filename");
+        ERMSG("Некорректное имя файла");
     }
     int fhsize = sizeof(S2DataTypes::FileHeader);
     ba.remove(0, fhsize);

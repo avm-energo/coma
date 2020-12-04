@@ -293,7 +293,7 @@ void AbstractTuneDialog::StartTune()
     WDFunc::SetEnabled(this, "starttune", false);
     if (m_messages.size() > m_tuneFunctions.size())
     {
-        ERMSG("lbls size > pf size");
+        DBGMSG("lbls size > pf size");
         WDFunc::SetEnabled(this, "starttune", true);
         return;
     }
@@ -773,17 +773,4 @@ void AbstractTuneDialog::keyPressEvent(QKeyEvent *e)
     if (e->key() == Qt::Key_Escape)
         StdFunc::cancel();
     UDialog::keyPressEvent(e);
-}
-
-float AbstractTuneDialog::ToFloat(QString text)
-{
-    bool ok;
-    float tmpf;
-    tmpf = text.toFloat(&ok);
-    if (!ok)
-    {
-        ERMSG("Значение " + text + " не может быть переведено во float");
-        return 0;
-    }
-    return tmpf;
 }

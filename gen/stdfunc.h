@@ -16,7 +16,8 @@ public:
 
     static void Init();
     static QString VerToStr(quint32);
-    static bool FloatInRange(float var, float value, float tolerance = 0.1f);
+    static bool floatIsWithinLimits(double var, double value, double tolerance = 0.1);
+    static bool toFloat(const QString &text);
     static void SetHomeDir(const QString &dir);
     static QString GetHomeDir();
     static QString GetSystemHomeDir();

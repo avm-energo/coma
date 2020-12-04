@@ -1,5 +1,6 @@
 #include "stdfunc.h"
 
+#include "../gen/error.h"
 #include "../gen/s2.h"
 
 #include <QCoreApplication>
@@ -53,12 +54,25 @@ QString StdFunc::VerToStr(quint32 num)
     return tmpString;
 }
 
-bool StdFunc::FloatInRange(float var, float value, float tolerance)
+bool StdFunc::floatIsWithinLimits(double var, double value, double tolerance)
 {
     if ((var >= (value - tolerance)) && (var <= (value + tolerance)))
         return true;
     else
         return false;
+}
+
+bool StdFunc::toFloat(const QString &text)
+{
+    bool ok;
+    float tmpf;
+    tmpf = text.toFloat(&ok);
+    if (!ok)
+    {
+        ERMSG("Значение "); // + text + " не может быть переведено во float");
+        return 0;
+    }
+    return tmpf;
 }
 
 void StdFunc::SetHomeDir(const QString &dir)

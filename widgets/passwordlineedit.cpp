@@ -29,7 +29,7 @@ void PasswordLineEdit::PswLEToggleEchoMode()
     QLineEdit *le = this->findChild<QLineEdit *>("pswle");
     if (le == nullptr)
     {
-        ERMSG("Пустой le");
+        DBGMSG("LE не определён");
         return;
     }
     if (le->echoMode() == QLineEdit::Normal)

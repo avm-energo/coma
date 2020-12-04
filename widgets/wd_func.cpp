@@ -382,7 +382,7 @@ void WDFunc::TVAutoResize(QWidget *w, const QString &tvname)
     ETableView *tv = w->findChild<ETableView *>(tvname);
     if (tv == nullptr)
     {
-        ERMSG("Пустой tv");
+        DBGMSG("Пустой tv");
         return;
     }
     tv->update();
@@ -780,7 +780,7 @@ void WDFunc::SetTVModel(QWidget *w, const QString &tvname, QAbstractItemModel *m
     ETableView *tv = w->findChild<ETableView *>(tvname);
     if (tv == nullptr)
     {
-        ERMSG("Пустой tv");
+        DBGMSG("Пустой tv");
         return;
     }
     QItemSelectionModel *m = tv->selectionModel();
@@ -795,7 +795,7 @@ void WDFunc::SetQTVModel(QWidget *w, const QString &tvname, QAbstractItemModel *
     QTableView *tv = w->findChild<QTableView *>(tvname);
     if (tv == nullptr)
     {
-        ERMSG("Пустой tv");
+        DBGMSG("Пустой tv");
         return;
     }
     QItemSelectionModel *m = tv->selectionModel();
@@ -833,7 +833,7 @@ void WDFunc::SortTV(QWidget *w, const QString &tvname, int column, Qt::SortOrder
     ETableView *tv = w->findChild<ETableView *>(tvname);
     if (tv == nullptr)
     {
-        ERMSG("Пустой tv");
+        DBGMSG("Пустой tv");
         return;
     }
     if (column >= 0)

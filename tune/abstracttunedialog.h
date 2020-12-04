@@ -97,7 +97,6 @@ public:
     Error::Msg loadWorkConfig();
     Error::Msg saveAllTuneCoefs();
     Error::Msg loadAllTuneCoefs();
-    float ToFloat(QString text);
 
 private:
     struct BlockStruct
