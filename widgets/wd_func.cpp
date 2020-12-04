@@ -97,7 +97,15 @@ QLabel *WDFunc::NewLBL(QWidget *w, const QString &text, const QString &lblcolor,
     lbl->setToolTip(lbltip);
     return lbl;
 }
-
+/*!
+Копирует содержимое из исходной области памяти в целевую область память
+\param w Родитель будущего виджета
+\param text Текст для QLabel
+\param lblname Имя для QLabel
+\param lblstyle StyleSheet для QLabel
+\param lbltip ToolTip для QLabel
+\param Fixed Фиксированного размера?
+*/
 QLabel *WDFunc::NewLBLT(
     QWidget *w, const QString &text, const QString &lblname, const QString &lblstyle, const QString &lbltip, bool Fixed)
 {
@@ -677,17 +685,12 @@ void WDFunc::SetVisible(QWidget *w, const QString &wname, bool visible)
 
 QString WDFunc::StringValueWithCheck(float value, int precision, bool exp)
 {
-    QString tmps;
-    QLocale german(QLocale::German);
     if (value >= FLT_MAX || value <= -FLT_MAX)
-        tmps = "***";
+        return "***";
     else if (exp == true)
-        tmps = german.toString(value, 'e', precision);
-
+        return QString::number(value, 'e', precision);
     else
-        tmps = german.toString(value, 'f', precision);
-
-    return tmps;
+        return QString::number(value, 'f', precision);
 }
 
 QVariant WDFunc::FloatValueWithCheck(float value)

@@ -59,28 +59,6 @@ signals:
     void SendMessagefromParse();
 
 private:
-    typedef struct
-    {
-        unsigned char Number; // number of Informational Objects
-        unsigned char SQ;     // Single <0> or Series <1> of Objects
-    } QualifierVariableStructute;
-
-    typedef struct
-    {
-        unsigned char cause;     // <0..63> cause number
-        unsigned char confirm;   // <0> - positive , <1> - negative
-        unsigned char test;      // <0> - not a test, <1> - test
-        unsigned char initiator; // number of initiating address
-    } CauseOfTransmission;
-
-    typedef struct
-    {
-        quint8 typeIdent;
-        QualifierVariableStructute qualifier;
-        CauseOfTransmission cause;
-        quint8 commonAdrASDU;
-    } DataUnitIdentifier;
-
     typedef QByteArray APCI, ASDU;
 
     static QMutex s_ParseReadMutex;

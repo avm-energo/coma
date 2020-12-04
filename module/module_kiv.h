@@ -38,7 +38,7 @@ const QStringList warningEvents {
     "Сигнализация по повышенному небалансу токов            "  //
 };
 // NOTE Проверить
-constexpr quint32 warningFlags = 0xC71FFF /*0x001fff1c6*/; // 1FFF1C6//0x1fff1ec6;
+constexpr quint32 warningFlags = 0xC71FFF /*0x001fff1c6*/; // 0x1fff1ec6;
 constexpr quint32 workJourId = 3010;
 struct MeasureStruct
 {

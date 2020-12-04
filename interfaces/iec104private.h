@@ -31,58 +31,190 @@
 
 // определения типа данных
 // TYPE IDENTIFICATION
-
-#define M_SP_NA_1 1  // Single-point information
-#define M_DP_NA_1 3  // Double-point information
-#define M_ST_NA_1 5  // Step position information
-#define M_BO_NA_1 7  // Bitstring of 32 bit
-#define M_ME_NA_1 9  // Measured value, normalized value
-#define M_ME_NC_1 13 // Measured value, short floating point value
-#define M_SP_TB_1 30 // Single-point information with time tag CP56Time2a
-#define M_DP_TB_1 31 // Double-point information with time tag CP56Time2a
-#define M_ST_TB_1 32 // Step position information with time tag CP56Time2a
-#define M_ME_TD_1 34 // Measured value, normalized value with time tag CP56Time2a
-#define M_ME_TF_1 36 // Measured value, short floating point value with time tag CP56Time2a
-#define M_IT_TB_1 37 // Integrated totals value with time tag CP56Time2a
-#define C_SC_NA_1 45 // Single command
-#define C_DC_NA_1 46 // Double command
-#define C_RC_NA_1 47 // Regulating step command
-#define C_SE_NA_1 48 // Set point command, normalised value
-#define C_SE_NC_1 50
-#define C_BO_NA_1 51  // Bitstring of 32 bit
-#define C_SC_TA_1 58  // Single command with time tag CP56Time2a
-#define C_DC_TA_1 59  // Double command with time tag CP56Time2a
-#define M_EI_NA_1 70  // End of initialization
-#define C_IC_NA_1 100 // Interrrogation command
-#define C_CI_NA_1 101 // Counter interrrogation command
-#define C_CS_NA_1 103 // Clock syncronization command
-#define C_TS_NB_1 104 // Test command
-#define C_RP_NC_1 105 // Reset process command
-
-#define F_FR_NA_1 120 // File ready
-#define F_SR_NA_1 121 // Section ready
-#define F_SC_NA_1 122 // Call file
-#define F_LS_NA_1 123 // Last section
-#define F_AF_NA_1 124 // Confirm receive
-#define F_SG_NA_1 125 // Segment of the section
-#define F_DR_TA_1 126 // Directory
+/**
+ * \brief Message type IDs
+ */
+enum TypeId : quint8
+{
+    /// Single-point information
+    M_SP_NA_1 = 1,
+    ///
+    M_SP_TA_1 = 2,
+    /// Double-point information
+    M_DP_NA_1 = 3,
+    ///
+    M_DP_TA_1 = 4,
+    /// Step position information
+    M_ST_NA_1 = 5,
+    ///
+    M_ST_TA_1 = 6,
+    /// Bitstring of 32 bit
+    M_BO_NA_1 = 7,
+    ///
+    M_BO_TA_1 = 8,
+    /// Measured value, normalized value
+    M_ME_NA_1 = 9,
+    ///
+    M_ME_TA_1 = 10,
+    ///
+    M_ME_NB_1 = 11,
+    ///
+    M_ME_TB_1 = 12,
+    /// Measured value, short floating point value - измеренные данные с плавающей запятой
+    M_ME_NC_1 = 13,
+    ///
+    M_ME_TC_1 = 14,
+    ///
+    M_IT_NA_1 = 15,
+    ///
+    M_IT_TA_1 = 16,
+    ///
+    M_EP_TA_1 = 17,
+    ///
+    M_EP_TB_1 = 18,
+    ///
+    M_EP_TC_1 = 19,
+    ///
+    M_PS_NA_1 = 20,
+    ///
+    M_ME_ND_1 = 21,
+    /// Single-point information with time tag CP56Time2a
+    M_SP_TB_1 = 30,
+    /// Double-point information with time tag CP56Time2a
+    M_DP_TB_1 = 31,
+    /// Step position information with time tag CP56Time2a
+    M_ST_TB_1 = 32,
+    ///
+    M_BO_TB_1 = 33,
+    /// Measured value, normalized value with time tag CP56Time2a
+    M_ME_TD_1 = 34,
+    ///
+    M_ME_TE_1 = 35,
+    /// Measured value, short floating point value with time tag CP56Time2a  - измеренные данные с плавающей запятой
+    M_ME_TF_1 = 36,
+    /// Integrated totals value with time tag CP56Time2a
+    M_IT_TB_1 = 37,
+    ///
+    M_EP_TD_1 = 38,
+    ///
+    M_EP_TE_1 = 39,
+    ///
+    M_EP_TF_1 = 40,
+    ///
+    S_IT_TC_1 = 41,
+    /// Single command
+    C_SC_NA_1 = 45,
+    /// Double command
+    C_DC_NA_1 = 46,
+    /// Regulating step command
+    C_RC_NA_1 = 47,
+    /// Set point command, normalised value
+    C_SE_NA_1 = 48,
+    ///
+    C_SE_NB_1 = 49,
+    /// s
+    C_SE_NC_1 = 50,
+    /// Bitstring of 32 bit
+    C_BO_NA_1 = 51,
+    /// Single command with time tag CP56Time2a
+    C_SC_TA_1 = 58,
+    /// Double command with time tag CP56Time2a
+    C_DC_TA_1 = 59,
+    ///
+    C_RC_TA_1 = 60,
+    ///
+    C_SE_TA_1 = 61,
+    ///
+    C_SE_TB_1 = 62,
+    ///
+    C_SE_TC_1 = 63,
+    ///
+    C_BO_TA_1 = 64,
+    /// End of initialization - подтверждение окончания инициализации
+    M_EI_NA_1 = 70,
+    ///
+    S_CH_NA_1 = 81,
+    ///
+    S_RP_NA_1 = 82,
+    ///
+    S_AR_NA_1 = 83,
+    ///
+    S_KR_NA_1 = 84,
+    ///
+    S_KS_NA_1 = 85,
+    ///
+    S_KC_NA_1 = 86,
+    ///
+    S_ER_NA_1 = 87,
+    ///
+    S_US_NA_1 = 90,
+    ///
+    S_UQ_NA_1 = 91,
+    ///
+    S_UR_NA_1 = 92,
+    ///
+    S_UK_NA_1 = 93,
+    ///
+    S_UA_NA_1 = 94,
+    ///
+    S_UC_NA_1 = 95,
+    /// Interrrogation command
+    C_IC_NA_1 = 100,
+    /// Counter interrrogation command
+    C_CI_NA_1 = 101,
+    ///
+    C_RD_NA_1 = 102,
+    /// Clock syncronization command
+    C_CS_NA_1 = 103,
+    /// Test command
+    C_TS_NA_1 = 104,
+    /// Reset process command
+    C_RP_NA_1 = 105,
+    ///
+    C_CD_NA_1 = 106,
+    ///
+    C_TS_TA_1 = 107,
+    ///
+    P_ME_NA_1 = 110,
+    ///
+    P_ME_NB_1 = 111,
+    ///
+    P_ME_NC_1 = 112,
+    ///
+    P_AC_NA_1 = 113,
+    /// File ready - файл готов
+    F_FR_NA_1 = 120,
+    /// Section ready - секция готова
+    F_SR_NA_1 = 121,
+    /// Call file - запрос файла, секции
+    F_SC_NA_1 = 122,
+    /// Last section - последняя секция, последнй сегмент
+    F_LS_NA_1 = 123,
+    /// Confirm receive - подтверждение файла, секции
+    F_AF_NA_1 = 124,
+    /// Segment of the section - сегмент
+    F_SG_NA_1 = 125,
+    /// Directory
+    F_DR_TA_1 = 126,
+    F_SC_NB_1 = 127
+};
 
 // CAUSE OF TRANSMISSION: define causes
 
-#define COT_PERIODIC 1
-#define COT_BACKGROUND 2
-#define COT_SPONTANEOUS 3
-#define COT_INITIALISED 4
-#define COT_REQUEST 5
-#define COT_ACTIVATION 6
-#define COT_ACTIVATIONCONFIRM 7
-#define COT_DEACTIVATION 8
-#define COT_DEACTIVATIONCONFIRM 9
-#define COT_ACTIVATIONTERMINATION 10
-#define COT_REMOTECOMMAND 11
-#define COT_LOCALCOMMAND 12
-#define COT_FILETRANSFER 13
-#define COT_INTERROGATION 20
+//#define COT_PERIODIC 1
+//#define COT_BACKGROUND 2
+//#define COT_SPONTANEOUS 3
+//#define COT_INITIALISED 4
+//#define COT_REQUEST 5
+//#define COT_ACTIVATION 6
+//#define COT_ACTIVATIONCONFIRM 7
+//#define COT_DEACTIVATION 8
+//#define COT_DEACTIVATIONCONFIRM 9
+//#define COT_ACTIVATIONTERMINATION 10
+//#define COT_REMOTECOMMAND 11
+//#define COT_LOCALCOMMAND 12
+//#define COT_FILETRANSFER 13
+//#define COT_INTERROGATION 20
 
 #define SECTIONSIZE 2048
 #define SEGMENTSIZE 230
@@ -119,6 +251,28 @@ struct CommandStruct
     quint32 uintarg;
     float flarg;
     QByteArray ba;
+};
+
+struct QualifierVariableStructute
+{
+    unsigned char Number; // number of Informational Objects
+    unsigned char SQ;     // Single <0> or Series <1> of Objects
+};
+
+struct CauseOfTransmission
+{
+    unsigned char cause;     // <0..63> cause number
+    unsigned char confirm;   // <0> - positive , <1> - negative
+    unsigned char test;      // <0> - not a test, <1> - test
+    unsigned char initiator; // number of initiating address
+};
+
+struct DataUnitIdentifier
+{
+    TypeId typeIdent;
+    QualifierVariableStructute qualifier;
+    CauseOfTransmission cause;
+    quint8 commonAdrASDU;
 };
 
 }
