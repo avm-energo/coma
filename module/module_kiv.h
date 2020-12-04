@@ -14,7 +14,8 @@ const QStringList criticalEvents {
     "Авария по приращению C ввода фазы C              ", //
     "Авария по недопустимому небалансу токов          "  //
 };
-constexpr quint32 criticalFlags = 0x00000e39;
+// NOTE Проверить
+constexpr quint32 criticalFlags = 0x9CE000 /*0x00000e39*/;
 const quint32 criticalCount = criticalEvents.size();
 const QStringList warningEvents {
     "Отсутствует сигнал напряжения фазы A                   ", //
@@ -36,8 +37,8 @@ const QStringList warningEvents {
     "Не заданы паспортные значения                          ", //
     "Сигнализация по повышенному небалансу токов            "  //
 };
-
-constexpr quint32 warningFlags = 0x001fff1c6; // 1FFF1C6//0x1fff1ec6;
+// NOTE Проверить
+constexpr quint32 warningFlags = 0xC71FFF /*0x001fff1c6*/; // 1FFF1C6//0x1fff1ec6;
 constexpr quint32 workJourId = 3010;
 struct MeasureStruct
 {
