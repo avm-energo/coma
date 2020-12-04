@@ -182,7 +182,7 @@ QWidget *TuneKIV::BdaWidget()
         QString IndexStr = "[" + QString::number(i) + "]";
         glyout->addWidget(WDFunc::NewLBL(m_BdaWidget, "Ueff_ADC" + IndexStr), 0, i, 1, 1);
         glyout->addWidget(WDFunc::NewLBLT(m_BdaWidget, "", "bdavalue" + QString::number(i), ValuesFormat,
-                              QString::number(i) + "Ueff_ADC" + IndexStr + ".Измеренные сигналы в кодах АЦП"),
+                              "Ueff_ADC" + IndexStr + ".Измеренные сигналы в кодах АЦП"),
             1, i, 1, 1);
     }
 
@@ -212,6 +212,59 @@ QWidget *TuneKIV::BdaWidget()
     m_BdaWidget->setLayout(lyout);
     m_BdaWidgetIsSet = true;
     return m_BdaWidget;
+}
+
+QWidget *TuneKIV::BdaInWidget()
+{
+    if (m_Bda_inWidgetIsSet)
+        return m_Bda_inWidget;
+    QString ValuesFormat = "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; color: black;"
+                           "background-color: "
+        + QString(Colors::AConfO) + "; font: bold 10px;}";
+    m_Bda_inWidget = new QWidget;
+    QVBoxLayout *lyout = new QVBoxLayout;
+    //    QVBoxLayout *vlyout = new QVBoxLayout;
+    QGridLayout *glyout = new QGridLayout;
+    QGroupBox *gb = new QGroupBox("Измеренные данные");
+    for (int i = 0; i < 6; ++i)
+    {
+        QString IndexStr = "[" + QString::number(i) + "]";
+        glyout->addWidget(WDFunc::NewLBL(m_BdaWidget, "IUefNat_filt" + IndexStr), 0, i, 1, 1);
+        glyout->addWidget(WDFunc::NewLBLT(m_BdaWidget, "", "bdainvalue" + QString::number(i), ValuesFormat,
+                              "Истинные действующие значения сигналов в В или мА на входе"),
+            1, i, 1, 1);
+        glyout->addWidget(WDFunc::NewLBL(m_BdaWidget, "IUeff_filtered" + IndexStr), 2, i, 1, 1);
+        glyout->addWidget(WDFunc::NewLBLT(m_BdaWidget, "", "bdainvalue" + QString::number(i + 6), ValuesFormat,
+                              "Действующие значения сигналов по 1-й гармонике"),
+            3, i, 1, 1);
+        glyout->addWidget(WDFunc::NewLBL(m_BdaWidget, "phi_next_f" + IndexStr), 4, i, 1, 1);
+        glyout->addWidget(WDFunc::NewLBLT(m_BdaWidget, "", "bdainvalue" + QString::number(i + 12), ValuesFormat,
+                              "Углы сдвига сигналов по 1-й гармонике относительно Ua в градусах"),
+            5, i, 1, 1);
+    }
+    for (int i = 0; i < 3; ++i)
+    {
+        QString IndexStr = "[" + QString::number(i) + "]";
+        glyout->addWidget(WDFunc::NewLBL(m_BdaWidget, "Cbush" + IndexStr), 6, i, 1, 1);
+        glyout->addWidget(
+            WDFunc::NewLBLT(m_BdaWidget, "", "bdainvalue" + QString::number(i + 18), ValuesFormat, "Емкости вводов"), 7,
+            i, 1, 1);
+        glyout->addWidget(WDFunc::NewLBL(m_BdaWidget, "Tg d" + IndexStr), 6, i + 3, 1, 1);
+        glyout->addWidget(
+            WDFunc::NewLBLT(m_BdaWidget, "", "bdainvalue" + QString::number(i + 21), ValuesFormat, "Tg delta вводов"),
+            7, i + 3, 1, 1);
+    }
+    glyout->addWidget(WDFunc::NewLBL(m_BdaWidget, "Frequency"), 8, 0, 1, 3);
+    glyout->addWidget(WDFunc::NewLBLT(m_BdaWidget, "", "bdainvalue24", ValuesFormat, "Частота в сети, Гц"), 9, 0, 1, 3);
+    glyout->addWidget(WDFunc::NewLBL(m_BdaWidget, "Pt100"), 8, 3, 1, 3);
+    glyout->addWidget(
+        WDFunc::NewLBLT(m_BdaWidget, "", "bdainvalue25", ValuesFormat, "Измеренное сопротивление термометра, Ом"), 9, 3,
+        1, 3);
+    gb->setLayout(glyout);
+    lyout->addWidget(gb);
+    m_Bda_inWidget->setLayout(lyout);
+    m_Bda_inWidgetIsSet = true;
+    return m_Bda_inWidget;
 }
 
 void TuneKIV::SetDefCoefs()
@@ -284,6 +337,29 @@ void TuneKIV::updateBdaWidget()
 
     WDFunc::SetLBLText(m_BdaWidget, "bdavalue6", WDFunc::StringValueWithCheck(m_Bda.Frequency, 4));
     WDFunc::SetLBLText(m_BdaWidget, "bdavalue7", WDFunc::StringValueWithCheck(m_Bda.Pt100, 4));
+}
+
+void TuneKIV::updateBdaInWidget()
+{
+    for (int i = 0; i < 6; i++)
+    {
+        WDFunc::SetLBLText(m_Bda_inWidget, "bdainvalue" + QString::number(i),
+            WDFunc::StringValueWithCheck(m_Bda_in.IUefNat_filt[i], 3));
+        WDFunc::SetLBLText(m_Bda_inWidget, "bdainvalue" + QString::number(i + 6),
+            WDFunc::StringValueWithCheck(m_Bda_in.IUeff_filtered[i], 3));
+        WDFunc::SetLBLText(m_Bda_inWidget, "bdainvalue" + QString::number(i + 12),
+            WDFunc::StringValueWithCheck(m_Bda_in.phi_next_f[i], 4));
+        if (i < 3)
+        {
+            WDFunc::SetLBLText(m_Bda_inWidget, "bdainvalue" + QString::number(i + 18),
+                WDFunc::StringValueWithCheck(m_Bda_in.Cbush[i], 1));
+            WDFunc::SetLBLText(m_Bda_inWidget, "bdainvalue" + QString::number(i + 21),
+                WDFunc::StringValueWithCheck(m_Bda_in.Tg_d[i], 4));
+        }
+    }
+
+    WDFunc::SetLBLText(m_Bda_inWidget, "bdavalue24", WDFunc::StringValueWithCheck(m_Bda_in.Frequency, 4));
+    WDFunc::SetLBLText(m_Bda_inWidget, "bdavalue25", WDFunc::StringValueWithCheck(m_Bda_in.Pt100_R, 3));
 }
 
 void TuneKIV::updateFromBacWidget()

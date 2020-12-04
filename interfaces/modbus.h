@@ -87,7 +87,7 @@ public:
     void reqFile(quint32 filenum, bool isConfigFile) override;
     //    void reqAlarms(quint32 sigAdr, quint32 sigCount);
     void writeFile(quint32 filenum, const QByteArray &file) override;
-    void writeConfigFile(S2DataTypes::S2ConfigType *) override {};
+//    void writeConfigFile(S2DataTypes::S2ConfigType *) override {};
     void reqTime() override;
     void writeTime(quint32 time) override;
     // writeCommand writes only float signals whose addresses are the lowest and are sequentally lays in the list

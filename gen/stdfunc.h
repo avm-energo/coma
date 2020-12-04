@@ -25,6 +25,8 @@ public:
     static QString ForDeviceIP();
     static void SetOrganizationString(const QString &str);
     static QString OrganizationString();
+    static void setN(int n);
+    static int N();
     static void cancel();
     static void clearCancel();
     static bool isCancelled();
@@ -62,6 +64,7 @@ private:
     static bool Emul;
     static bool Cancelled;
     static QString PrbMsg;
+    static int m_N; // степень усреднения для регулировки
 };
 
 #endif // STDFUNC_H

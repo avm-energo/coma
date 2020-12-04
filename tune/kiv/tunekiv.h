@@ -67,6 +67,7 @@ public:
 
     Bac m_Bac;
     Bda m_Bda;
+    Bda_in m_Bda_in;
     //    Bac m_Bac_block, m_Bac_newblock;
     //    Bda_in_struct m_Bda_in, m_Bda_block20, m_Bda_block60, m_Bda_blockMinus20;
     //    BdaStruct m_Bda_block, m_BdaPt100_80Om, m_BdaPt100_120Om;
@@ -76,19 +77,21 @@ public:
     TuneKIV();
     QWidget *BacWidget();
     QWidget *BdaWidget();
+    QWidget *BdaInWidget();
     Bac defBacBlock();
 
     // private slots:
 private:
     Bac m_defBacBlock;
-    QWidget *m_BacWidget, *m_BdaWidget;
-    bool m_BacWidgetIsSet, m_BdaWidgetIsSet;
+    QWidget *m_BacWidget, *m_BdaWidget, *m_Bda_inWidget;
+    bool m_BacWidgetIsSet, m_BdaWidgetIsSet, m_Bda_inWidgetIsSet;
 
     void SetDefCoefs();
 
 public slots:
     void updateBacWidget();
     void updateBdaWidget();
+    void updateBdaInWidget();
     void updateFromBacWidget();
     void updateFromBdaWidget();
 };
