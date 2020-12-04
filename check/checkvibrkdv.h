@@ -30,9 +30,6 @@ public:
     void FillBd19(QWidget *parent);
     void FillBd20(QWidget *parent);
 
-    QWidget *Bd1W(QWidget *parent);
-    QWidget *Bd2W(QWidget *parent);
-    QWidget *Bd3W(QWidget *parent);
 
 private:
     QString ValuesFormat, WidgetFormat;

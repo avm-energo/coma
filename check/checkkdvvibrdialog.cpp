@@ -5,7 +5,6 @@
 #include "../gen/colors.h"
 #include "../gen/error.h"
 #include "../gen/modulebsi.h"
-//#include "../usb/commands.h"
 #include "../gen/datamanager.h"
 #include "../widgets/wd_func.h"
 
@@ -28,51 +27,16 @@ CheckKDVVibrDialog::CheckKDVVibrDialog(QWidget *parent) : AbstractCheckDialog(pa
     QString tmps = "QDialog {background-color: " + QString(Colors::UCONFCLR) + ";}";
     setStyleSheet(tmps);
     QStringList sl;
-    BdNum = 12;
-    Ch = new Check;
-    ChVibrKDV = new CheckVibrKDV;
 
     setAttribute(Qt::WA_DeleteOnClose);
 
-    if (Config::MTB_A2)
-
-        sl = QStringList { "Вибрации", "Вибрации", "Вибрации" };
-
-    BdUINum = sl.size();
-
-    SetupUI(sl);
+        m_BdUIList = { { "Вибрации", Bd1W() }, { "Вибрации", Bd2W() } , { "Вибрации", Bd3W() }};
+        SetupUI();
 
     Timer->setInterval(ANMEASINT);
 }
 
-// void CheckKDVVibrDialog::SetWarnColor(int position, bool value)
-//{
-//    Q_UNUSED(position)
-//    Q_UNUSED(value)
-//}
 
-// void CheckKDVVibrDialog::SetAlarmColor(int position, bool value)
-//{
-//    Q_UNUSED(position)
-//    Q_UNUSED(value)
-//}
-
-QWidget *CheckKDVVibrDialog::BdUI(int bdnum)
-{
-    switch (bdnum)
-    {
-
-    case 0:
-        return ChVibrKDV->Bd1W(this);
-    case 1:
-        return ChVibrKDV->Bd2W(this);
-    case 2:
-        return ChVibrKDV->Bd3W(this);
-
-    default:
-        return new QWidget;
-    }
-}
 
 void CheckKDVVibrDialog::PrepareHeadersForFile(int row)
 {
@@ -83,6 +47,343 @@ void CheckKDVVibrDialog::WriteToFile(int row, int bdnum)
 {
     Q_UNUSED(row)
     Q_UNUSED(bdnum)
+}
+
+UWidget *CheckKDVVibrDialog::Bd1W()
+{
+    int i;
+    int row, column;
+    UWidget *w = new UWidget();
+    QVBoxLayout *lyout = new QVBoxLayout;
+    QVBoxLayout *vlyout = new QVBoxLayout;
+    QGridLayout *glyout = new QGridLayout;
+    //    QString phase[3] = { "ф.A ", "ф.B ", "ф.C " };
+
+    //...................................
+
+    QFont ffont;
+    QGroupBox *gb = new QGroupBox();
+    ffont.setFamily("Times");
+    ffont.setPointSize(11);
+    gb->setFont(ffont);
+
+    gb = new QGroupBox("Среднеквадратичные значения вибросигналов, Вольт");
+    gb->setFont(ffont);
+
+    column = 0;
+    for (i = 0; i < 3; i++)
+    {
+        row = 0;
+
+        glyout->addWidget(WDFunc::NewLBL(this, "Датчик №" + QString::number(1 + i)), row, column, 1, 1);
+        row++;
+        glyout->addWidget(WDFunc::NewLBLT(this, "", QString::number(60 + i), ValuesFormat,
+                              "Среднеквадратичное значение виброускорения по каналу " + QString::number(i) + ", м/с2"),
+            row, column, 1, 1);
+        column++;
+    }
+
+    column = 0;
+    for (i = 0; i < 3; i++)
+    {
+        row = 2;
+
+        glyout->addWidget(WDFunc::NewLBL(this, "Датчик №" + QString::number(4 + i)), row, column, 1, 1);
+        row++;
+        glyout->addWidget(WDFunc::NewLBLT(this, "", QString::number(63 + i), ValuesFormat,
+                              "Среднеквадратичное значение виброускорения по каналу " + QString::number(i) + ", м/с2"),
+            row, column, 1, 1);
+        column++;
+    }
+
+    vlyout->addLayout(glyout);
+    gb->setLayout(vlyout);
+    lyout->addWidget(gb);
+
+    // ......................................
+
+    lyout->addLayout(glyout);
+    lyout->addStretch(100);
+    w->setLayout(lyout);
+    w->setFloatBdQuery({  { 60, 6 }});
+    return w;
+}
+
+UWidget *CheckKDVVibrDialog::Bd2W()
+{
+    int i;
+    int row, column;
+    UWidget *w = new UWidget();
+    QVBoxLayout *lyout = new QVBoxLayout;
+    QVBoxLayout *vlyout = new QVBoxLayout;
+    QGridLayout *glyout = new QGridLayout;
+    //    QString phase[3] = { "ф.A ", "ф.B ", "ф.C " };
+
+    //...................................
+
+    QFont ffont;
+    QGroupBox *gb = new QGroupBox();
+    ffont.setFamily("Times");
+    ffont.setPointSize(11);
+    gb->setFont(ffont);
+
+    gb = new QGroupBox("Среднеквадратичные значения виброускорений, м/с2");
+    gb->setFont(ffont);
+
+    column = 0;
+    for (i = 0; i < 3; i++)
+    {
+        row = 0;
+
+        glyout->addWidget(WDFunc::NewLBL(this, "Датчик №" + QString::number(1 + i)), row, column, 1, 1);
+        row++;
+        glyout->addWidget(WDFunc::NewLBLT(this, "", QString::number(6040 + i), ValuesFormat,
+                              "Среднеквадратичное значение виброускорения по каналу " + QString::number(i) + ", м/с2"),
+            row, column, 1, 1);
+        column++;
+    }
+
+    column = 0;
+    for (i = 0; i < 3; i++)
+    {
+        row = 2;
+
+        glyout->addWidget(WDFunc::NewLBL(this, "Датчик №" + QString::number(4 + i)), row, column, 1, 1);
+        row++;
+        glyout->addWidget(WDFunc::NewLBLT(this, "", QString::number(6043 + i), ValuesFormat,
+                              "Среднеквадратичное значение виброускорения по каналу " + QString::number(i) + ", м/с2"),
+            row, column, 1, 1);
+        column++;
+    }
+
+    vlyout->addLayout(glyout);
+    gb->setLayout(vlyout);
+    lyout->addWidget(gb);
+
+    // ......................................
+
+    gb = new QGroupBox("Среднеквадратичные значения виброскоростей, мм/с");
+    gb->setFont(ffont);
+    vlyout = new QVBoxLayout;
+    glyout = new QGridLayout;
+
+    column = 0;
+    for (i = 0; i < 3; i++)
+    {
+        row = 0;
+
+        glyout->addWidget(WDFunc::NewLBL(this, "Датчик №" + QString::number(1 + i)), row, column, 1, 1);
+        row++;
+        glyout->addWidget(
+            WDFunc::NewLBLT(this, "", QString::number(6046 + i), ValuesFormat,
+                "Среднеквадратичное значение виброскорости по каналу   " + QString::number(1 + i) + ", мм/с"),
+            row, column, 1, 1);
+        column++;
+    }
+
+    column = 0;
+    for (i = 0; i < 3; i++)
+    {
+        row = 2;
+
+        glyout->addWidget(WDFunc::NewLBL(this, "Датчик №" + QString::number(4 + i)), row, column, 1, 1);
+        row++;
+        glyout->addWidget(
+            WDFunc::NewLBLT(this, "", QString::number(6049 + i), ValuesFormat,
+                "Среднеквадратичное значение виброскорости по каналу " + QString::number(4 + i) + ", мм/с"),
+            row, column, 1, 1);
+        column++;
+    }
+
+    vlyout->addLayout(glyout);
+    gb->setLayout(vlyout);
+    lyout->addWidget(gb);
+
+    // ......................................
+
+    gb = new QGroupBox("Среднеквадратичные значения виброперемещений, мкм");
+    gb->setFont(ffont);
+    vlyout = new QVBoxLayout;
+    glyout = new QGridLayout;
+
+    column = 0;
+    for (i = 0; i < 3; i++)
+    {
+        row = 0;
+
+        glyout->addWidget(WDFunc::NewLBL(this, "Датчик №" + QString::number(1 + i)), row, column, 1, 1);
+        row++;
+        glyout->addWidget(
+            WDFunc::NewLBLT(this, "", QString::number(6052 + i), ValuesFormat,
+                "Среднеквадратичное значение виброперемещения по каналу " + QString::number(1 + i) + ", мкм"),
+            row, column, 1, 1);
+        column++;
+    }
+
+    column = 0;
+    for (i = 0; i < 3; i++)
+    {
+        row = 2;
+
+        glyout->addWidget(WDFunc::NewLBL(this, "Датчик №" + QString::number(4 + i)), row, column, 1, 1);
+        row++;
+        glyout->addWidget(
+            WDFunc::NewLBLT(this, "", QString::number(6055 + i), ValuesFormat,
+                "Среднеквадратичное значение виброперемещения по каналу " + QString::number(4 + i) + ", мкм"),
+            row, column, 1, 1);
+        column++;
+    }
+
+    vlyout->addLayout(glyout);
+    gb->setLayout(vlyout);
+    lyout->addWidget(gb);
+
+    // ......................................
+
+    lyout->addLayout(glyout);
+    lyout->addStretch(100);
+    w->setLayout(lyout);
+    w->setFloatBdQuery({ { 6040, 18 }});
+    return w;
+}
+
+UWidget *CheckKDVVibrDialog::Bd3W()
+{
+    int i;
+    int row, column;
+    UWidget *w = new UWidget();
+    QVBoxLayout *lyout = new QVBoxLayout;
+    QVBoxLayout *vlyout = new QVBoxLayout;
+    QGridLayout *glyout = new QGridLayout;
+
+    //...................................
+
+    QFont ffont;
+    QGroupBox *gb = new QGroupBox();
+    ffont.setFamily("Times");
+    ffont.setPointSize(11);
+    gb->setFont(ffont);
+
+    gb = new QGroupBox("Скорость изменения среднеквадратичного значения виброускорения, м/с2/час");
+    gb->setFont(ffont);
+
+    column = 0;
+    for (i = 0; i < 3; i++)
+    {
+        row = 0;
+
+        glyout->addWidget(WDFunc::NewLBL(this, "Датчик №" + QString::number(1 + i)), row, column, 1, 1);
+        row++;
+        glyout->addWidget(WDFunc::NewLBLT(this, "", QString::number(6060 + i), ValuesFormat,
+                              "Скорость изменения среднеквадратичного значения виброускорения по каналу"
+                                  + QString::number(1 + i) + ", м/с2/час"),
+            row, column, 1, 1);
+        column++;
+    }
+
+    column = 0;
+    for (i = 0; i < 3; i++)
+    {
+        row = 2;
+
+        glyout->addWidget(WDFunc::NewLBL(this, "Датчик №" + QString::number(4 + i)), row, column, 1, 1);
+        row++;
+        glyout->addWidget(WDFunc::NewLBLT(this, "", QString::number(6063 + i), ValuesFormat,
+                              "Скорость изменения среднеквадратичного значения виброускорения по каналу"
+                                  + QString::number(4 + i) + ", м/с2/час"),
+            row, column, 1, 1);
+        column++;
+    }
+
+    vlyout->addLayout(glyout);
+    gb->setLayout(vlyout);
+    lyout->addWidget(gb);
+
+    // ......................................
+
+    gb = new QGroupBox("Скорость изменения среднеквадратичного значения виброскорости, мм/с/час");
+    gb->setFont(ffont);
+    vlyout = new QVBoxLayout;
+    glyout = new QGridLayout;
+
+    column = 0;
+    for (i = 0; i < 3; i++)
+    {
+        row = 0;
+
+        glyout->addWidget(WDFunc::NewLBL(this, "Датчик №" + QString::number(1 + i)), row, column, 1, 1);
+        row++;
+        glyout->addWidget(WDFunc::NewLBLT(this, "", QString::number(6066 + i), ValuesFormat,
+                              "Скорость изменения среднеквадратичного значения виброскорости по каналу "
+                                  + QString::number(1 + i) + ", мм/с/час"),
+            row, column, 1, 1);
+        column++;
+    }
+
+    column = 0;
+    for (i = 0; i < 3; i++)
+    {
+        row = 2;
+
+        glyout->addWidget(WDFunc::NewLBL(this, "Датчик №" + QString::number(4 + i)), row, column, 1, 1);
+        row++;
+        glyout->addWidget(WDFunc::NewLBLT(this, "", QString::number(6069 + i), ValuesFormat,
+                              "Скорость изменения среднеквадратичного значения виброскорости по каналу  "
+                                  + QString::number(4 + i) + ", мм/с/час"),
+            row, column, 1, 1);
+        column++;
+    }
+
+    vlyout->addLayout(glyout);
+    gb->setLayout(vlyout);
+    lyout->addWidget(gb);
+
+    // ......................................
+
+    gb = new QGroupBox("Скорость изменения среднеквадратичного значения виброперемещения, мкм/час");
+    gb->setFont(ffont);
+    vlyout = new QVBoxLayout;
+    glyout = new QGridLayout;
+
+    column = 0;
+    for (i = 0; i < 3; i++)
+    {
+        row = 0;
+
+        glyout->addWidget(WDFunc::NewLBL(this, "Датчик №" + QString::number(1 + i)), row, column, 1, 1);
+        row++;
+        glyout->addWidget(WDFunc::NewLBLT(this, "", QString::number(6052 + i), ValuesFormat,
+                              "Скорость изменения среднеквадратичного значения виброперемещения по каналу "
+                                  + QString::number(1 + i) + ", мкм/час"),
+            row, column, 1, 1);
+        column++;
+    }
+
+    column = 0;
+    for (i = 0; i < 3; i++)
+    {
+        row = 2;
+
+        glyout->addWidget(WDFunc::NewLBL(this, "Датчик №" + QString::number(4 + i)), row, column, 1, 1);
+        row++;
+        glyout->addWidget(WDFunc::NewLBLT(this, "", QString::number(6055 + i), ValuesFormat,
+                              "Скорость изменения среднеквадратичного значения виброперемещения по каналу "
+                                  + QString::number(4 + i) + ", мкм/час"),
+            row, column, 1, 1);
+        column++;
+    }
+
+    vlyout->addLayout(glyout);
+    gb->setLayout(vlyout);
+    lyout->addWidget(gb);
+
+    // ......................................
+
+    lyout->addLayout(glyout);
+    lyout->addStretch(100);
+    w->setLayout(lyout);
+    w->setFloatBdQuery({ { 6060, 18 }});
+    return w;
 }
 
 // void CheckKDVVibrDialog::ChooseValuesToWrite() { }

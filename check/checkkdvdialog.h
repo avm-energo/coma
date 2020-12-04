@@ -30,6 +30,16 @@ private:
                                                    //    void ChooseValuesToWrite() override;
                                                    //    void SetDefaultValuesToWrite() override;
                                                    //    void PrepareAnalogMeasurements() override;
+
+    UWidget *Bd1W();
+    UWidget *Bd2W();
+    UWidget *Bd3W();
+    UWidget *Bd4W();
+    UWidget *Bd5W();
+    UWidget *Bd6W();
+    UWidget *Bd7W();
+    UWidget *Bd8W();
+
     //    QWidget *CustomTab() override;
     //    void setConnections() override;
 

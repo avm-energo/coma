@@ -25,7 +25,7 @@
 
 AbstractCheckDialog::AbstractCheckDialog(QWidget *parent) : UDialog(parent)
 {
-    m_newTWIndex = 0;
+    // m_newTWIndex = 0;
     XlsxWriting = false;
     m_readDataInProgress = false;
     xlsx = nullptr;

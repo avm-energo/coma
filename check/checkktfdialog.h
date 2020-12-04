@@ -32,6 +32,11 @@ private:
                                                    //    void ChooseValuesToWrite() override;
                                                    //    void SetDefaultValuesToWrite() override;
                                                    //    void PrepareAnalogMeasurements() override;
+    UWidget *Bd1W();
+    UWidget *Bd2W();
+    UWidget *Bd3W();
+    UWidget *Bd4W();
+    UWidget *Bd5W();
     //    void updateFloatData();
 
 private slots:
