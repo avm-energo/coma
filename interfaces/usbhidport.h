@@ -49,7 +49,7 @@ private:
 
     void checkQueue();
     void finish();
-
+    bool m_waitForReply;
     hid_device *m_hidDevice;
     LogClass *log;
     QMutex mutex_;

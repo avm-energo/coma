@@ -24,6 +24,7 @@ public:
     void writeTime(quint32 time) override;
     void writeCommand(Queries::Commands cmd, QVariant item = 0) override;
     void reqFloats(quint32 sigAdr, quint32 sigCount) override;
+    void writeRaw(const QByteArray &ba) override;
 
 private:
 signals:

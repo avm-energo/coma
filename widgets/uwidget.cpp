@@ -6,6 +6,7 @@
 #include "wd_func.h"
 
 #include <QCoreApplication>
+#include <QDebug>
 #include <QEventLoop>
 
 UWidget::UWidget(QWidget *parent) : QWidget(parent)
@@ -61,9 +62,11 @@ void UWidget::setSpBdQuery(const QList<UWidget::BdQuery> &list)
 void UWidget::updateFloatData(const DataTypes::FloatStruct &fl)
 {
     ++m_timerCounter;
-    if ((m_updatesEnabled) && (m_timerCounter >= m_timerMax)) // every second tick of the timer
+    if ((m_updatesEnabled) /*&& (m_timerCounter >= m_timerMax)*/) // every second tick of the timer
     {
-        WDFunc::SetLBLText(this, QString::number(fl.sigAdr), WDFunc::StringValueWithCheck(fl.sigVal, 3));
+        bool result = WDFunc::SetLBLText(this, QString::number(fl.sigAdr), WDFunc::StringValueWithCheck(fl.sigVal, 3));
+        if (!result)
+            qDebug() << Error::DescError << QString::number(fl.sigAdr) << WDFunc::StringValueWithCheck(fl.sigVal, 3);
         m_timerCounter = 0;
     }
 }

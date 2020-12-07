@@ -15,8 +15,8 @@ using Proto::CommandStruct;
 using Proto::Starters;
 
 void handleBlk(const Proto::Commands cmd, const quint32 blk, QByteArray data = {}, const quint32 count = 0);
-inline void handleBlk(Proto::Commands cmd, quint32 addr, quint32 count);
-inline void handleInt(Proto::Commands cmd, QByteArray data);
+inline void handleBlk(const Proto::Commands cmd, const quint32 addr, const quint32 count);
+inline void handleInt(const Proto::Commands cmd, const QByteArray data);
 inline void handleBlk(const Proto::Commands cmd, const DataTypes::Signal &signal);
 inline void handleBlk(const Proto::Commands cmd, const DataTypes::ConfParameterStruct &str);
 inline void handleBlk(const Proto::Commands cmd, const DataTypes::BlockStruct &str);
@@ -123,10 +123,10 @@ void Protocom::reqBSI()
 void Protocom::writeFile(quint32 filenum, const QByteArray &file)
 {
     CommandStruct inp {
-        Proto::Commands::WriteFile,    // Command
-        DataTypes::FilesEnum(filenum), // File number
-        QVariant(),                    // Null arg
-        file                           // Buffer with file
+        Proto::Commands::WriteFile,                    // Command
+        QVariant(), /*DataTypes::FilesEnum(filenum),*/ // File number
+        QVariant(),                                    // Null arg
+        file                                           // Buffer with file
     };
     DataManager::addToInQueue(inp);
     emit wakeUpParser();
@@ -151,6 +151,13 @@ void Protocom::reqFloats(quint32 sigAdr, quint32 sigCount)
     Q_ASSERT(Proto::getBlkByReg.contains(sigAdr));
     Q_ASSERT(Proto::getBlkByReg.value(sigAdr).second == sigCount);
     CommandStruct inp { Proto::Commands::ReadBlkData, sigAdr, sigCount, {} };
+    DataManager::addToInQueue(inp);
+    emit wakeUpParser();
+}
+
+void Protocom::writeRaw(const QByteArray &ba)
+{
+    CommandStruct inp { Proto::Commands::RawCommand, QVariant(), QVariant(), ba };
     DataManager::addToInQueue(inp);
     emit wakeUpParser();
 }
@@ -256,7 +263,7 @@ void handleBlk(const Proto::Commands cmd, const quint32 blk, QByteArray data, co
     DataManager::addToInQueue(inp);
 }
 
-inline void handleBlk(Proto::Commands cmd, quint32 addr, quint32 count)
+inline void handleBlk(const Proto::Commands cmd, const quint32 addr, const quint32 count)
 {
     Q_ASSERT(Proto::getBlkByReg.contains(addr));
     auto blkPair = Proto::getBlkByReg.value(addr);
@@ -264,7 +271,7 @@ inline void handleBlk(Proto::Commands cmd, quint32 addr, quint32 count)
     handleBlk(cmd, blkPair.first);
 }
 
-inline void handleInt(Proto::Commands cmd, QByteArray data)
+inline void handleInt(const Proto::Commands cmd, const QByteArray data)
 {
     handleBlk(cmd, 0, data);
 }

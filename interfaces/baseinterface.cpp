@@ -11,11 +11,21 @@ BaseInterface::BaseInterface(QObject *parent) : QObject(parent), m_working(false
 {
 }
 
-void BaseInterface::writeConfigFile()
+void BaseInterface::writeS2File(DataTypes::FilesEnum number, S2DataTypes::S2ConfigType *file)
 {
     QByteArray ba;
-    S2::StoreDataMem(&ba.data()[0], S2::config, DataTypes::Config);
-    writeFile(DataTypes::Config, ba);
+    S2::StoreDataMem(ba, file, number);
+
+    // с 4 байта начинается FileHeader.size
+    quint32 length = *reinterpret_cast<quint32 *>(&ba.data()[4]);
+    length += sizeof(S2DataTypes::FileHeader);
+    Q_ASSERT(length == quint32(ba.size()));
+    writeFile(number, ba);
+}
+
+void BaseInterface::writeConfigFile()
+{
+    writeS2File(DataTypes::Config, S2::config);
 }
 
 void BaseInterface::reqAlarms(quint32 sigAdr, quint32 sigCount)
@@ -190,6 +200,7 @@ void BaseInterface::fileReceived(const DataTypes::FileStruct &file)
 
 void BaseInterface::timeout()
 {
+    // FIXME Should be checked before cast
     QTimer *tmr = qobject_cast<QTimer *>(sender());
     tmr->deleteLater();
     m_busy = false;

@@ -188,8 +188,8 @@ enum Commands
     QUSB_ReqBlkDataA,
     QUSB_ReqBlkDataTech,
     QUSB_WriteBlkDataTech,
-    QUSB_SetMode, // SMode (0x43) - not realized yet
-    QUSB_GetMode  // GMode (0x28) - not realized yet
+    QUSB_SetMode, // SMode (0x43) - not tested yet
+    QUSB_GetMode  // GMode (0x28) - not tested yet
 };
 
 struct Command
@@ -204,24 +204,58 @@ struct Command
 namespace S2DataTypes
 {
 // S2: Определение типа заголовка
-typedef struct
+/// Заголовок файла (Прил. 1)
+struct FileHeader
 {
     quint16 fname;
     quint16 service;
     quint32 size;
     quint32 crc32;
     quint32 thetime;
-} FileHeader;
+};
 
 // S2: Определение типа записи
 
-typedef struct DataRec
+struct DataRec
 {
     quint32 id;
     quint32 num_byte;
     void *thedata;
-} DataRec;
+};
+struct DataRecHeader
+{
+    // id
+    quint32 id;
+    // количество байт в TypeTheData
+    quint32 NumByte;
+};
 
+/// Тип группы плат
+struct DataRecT
+{
+    // заголовок записи
+    DataRecHeader TypeHeader;
+    quint8 TypeTheData[4];
+    quint8 VerPO[4];
+};
+/// Файл ВПО в формате BIN
+struct DataRecF
+{
+    /// заголовок записи
+    DataRecHeader FileDatHeader;
+    QByteArray Data;
+};
+
+#pragma pack(push, 1)
+struct File_struct
+{
+    FileHeader File_xxx_header;
+    DataRecT Type;
+    DataRecF File;
+    // заголовок пустой записи
+    DataRecHeader void_recHeader;
+};
+#pragma pack(pop)
 typedef QVector<S2DataTypes::DataRec> S2ConfigType;
 }
 

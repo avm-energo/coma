@@ -159,19 +159,11 @@ void AbstractConfDialog::SaveConfToFile()
         ERMSG("Ошибка чтения конфигурации");
         return;
     }
-    ba.resize(MAXBYTEARRAY);
-    auto status = S2::StoreDataMem(&(ba.data()[0]), S2::config,
-        0x0001); // 0x0001 - номер файла конфигурации
-                 //    quint32 BaLength = static_cast<quint8>(ba.data()[4]);
-                 //    BaLength += static_cast<quint8>(ba.data()[5]) * 256;
-                 //    BaLength += static_cast<quint8>(ba.data()[6]) * 65536;
-                 //    BaLength += static_cast<quint8>(ba.data()[7]) * 16777216;
-                 //    BaLength += sizeof(S2::FileHeader); // FileHeader
-    if (status != Error::NoError)
-    {
-        qCritical() << status;
-        return;
-    }
+    S2::StoreDataMem(ba, S2::config, DataTypes::Config);
+    quint32 length = *reinterpret_cast<quint32 *>(&ba.data()[4]);
+    length += sizeof(S2DataTypes::FileHeader);
+    Q_ASSERT(length == quint32(ba.size()));
+
     Error::Msg res = Files::SaveToFile(Files::ChooseFileForSave(this, "Config files (*.cf)", "cf"), ba);
     switch (res)
     {
