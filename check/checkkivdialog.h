@@ -1,11 +1,10 @@
 #ifndef CHECKDIALOGKIV_H
 #define CHECKDIALOGKIV_H
 
-//#include "../interfaces/baseinterface.h"
 #include "../gen/colors.h"
 #include "abstractcheckdialog.h"
 #include "check.h"
-#include "checkkiv.h"
+//#include "checkkiv.h"
 
 class CheckKIVDialog : public AbstractCheckDialog
 {

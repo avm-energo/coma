@@ -75,7 +75,7 @@ public slots:
     void FileTimeOut();
     void ReConnect();
     void AttemptToRec();
-    void ConnectMessage();
+    // void ConnectMessage();
 
 private slots:
     void StartWork();
@@ -89,7 +89,7 @@ private slots:
     //    void FillBSI(IEC104Thread::BS104Signals *sig);
     //    void FillBSI(QList<ModBus::BSISignalStruct> sig, unsigned int sigsize);
     // void PasswordCheck(QString psw);
-    void MainTWTabClicked(int tabindex);
+    void MainTWTabChanged(int tabindex);
 
 private:
     // constexpr QVector<int> MTBs = { 0x21, 0x22, 0x31, 0x35, 0x80, 0x81, 0x84 };

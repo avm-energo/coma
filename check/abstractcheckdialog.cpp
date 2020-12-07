@@ -20,8 +20,8 @@
 #include <QTabWidget>
 #include <QTime>
 #include <QVBoxLayout>
-#include <QtMath>
-#include <QtTest/QTest>
+//#include <QtMath>
+//#include <QtTest/QTest>
 
 AbstractCheckDialog::AbstractCheckDialog(QWidget *parent) : UDialog(parent)
 {
@@ -30,7 +30,7 @@ AbstractCheckDialog::AbstractCheckDialog(QWidget *parent) : UDialog(parent)
     m_readDataInProgress = false;
     xlsx = nullptr;
     WRow = 0;
-    m_oldTabIndex = m_currentTabIndex = 0;
+    // m_oldTabIndex = m_currentTabIndex = 0;
     Timer = new QTimer(this);
     Timer->setObjectName("checktimer");
     connect(Timer, &QTimer::timeout, this, &AbstractCheckDialog::TimerTimeout);
@@ -93,7 +93,7 @@ void AbstractCheckDialog::SetupUI()
     lyout->addWidget(CheckTW);
     // lyout->addWidget(BottomUI());
     setLayout(lyout);
-    connect(CheckTW, &QTabWidget::tabBarClicked, this, &AbstractCheckDialog::TWTabClicked);
+    connect(CheckTW, &QTabWidget::currentChanged, this, &AbstractCheckDialog::TWTabChanged);
 }
 
 void AbstractCheckDialog::PrepareHeadersForFile(int row)
@@ -153,18 +153,18 @@ QWidget *AbstractCheckDialog::BottomUI()
 
     QPushButton *pb = new QPushButton("Запустить чтение аналоговых сигналов");
     pb->setObjectName("pbmeasurements");
-    connect(pb, SIGNAL(clicked()), this, SLOT(StartAnalogMeasurements()));
+    connect(pb, &QAbstractButton::clicked, this, &AbstractCheckDialog::StartAnalogMeasurements);
     if (StdFunc::IsInEmulateMode())
         pb->setEnabled(false);
     lyout->addWidget(pb);
     pb = new QPushButton("Запустить чтение аналоговых сигналов в файл");
     pb->setObjectName("pbfilemeasurements");
-    connect(pb, SIGNAL(clicked()), this, SLOT(StartAnalogMeasurementsToFile()));
+    connect(pb, &QAbstractButton::clicked, this, &AbstractCheckDialog::StartAnalogMeasurementsToFile);
     if (StdFunc::IsInEmulateMode())
         pb->setEnabled(false);
     lyout->addWidget(pb);
     pb = new QPushButton("Остановить чтение аналоговых сигналов");
-    connect(pb, SIGNAL(clicked()), this, SLOT(StopAnalogMeasurements()));
+    connect(pb, &QAbstractButton::clicked, this, &AbstractCheckDialog::StopAnalogMeasurements);
     if (StdFunc::IsInEmulateMode())
         pb->setEnabled(false);
     lyout->addWidget(pb);
@@ -299,7 +299,7 @@ void AbstractCheckDialog::StopAnalogMeasurements()
 
 void AbstractCheckDialog::reqUpdate()
 {
-    for (const auto &bd : m_BdUIList)
+    for (auto &bd : m_BdUIList)
     {
         bd.widget->reqUpdate();
     }
@@ -310,28 +310,19 @@ void AbstractCheckDialog::TimerTimeout()
     ReadAnalogMeasurementsAndWriteToFile();
 }
 
-void AbstractCheckDialog::TWTabClicked(int index)
+void AbstractCheckDialog::TWTabChanged(int index)
 {
-    if (index == m_currentTabIndex) // to prevent double function invocation by doubleclicking on tab
+    if (index == -1)
         return;
-    m_currentTabIndex = index;
+    for (auto &item : m_BdUIList)
+        item.widget->setUpdatesDisabled();
+    Q_ASSERT(m_BdUIList.size() >= index);
+    if (m_BdUIList.size() < index)
+        return;
+    UWidget *w = m_BdUIList.at(index).widget;
 
-    if (m_oldTabIndex >= m_BdUIList.size())
-    {
-        DBGMSG("BdUIList size");
-        return;
-    }
-    UWidget *w = m_BdUIList.at(m_oldTabIndex).widget;
-    w->setUpdatesDisabled();
-    if (m_currentTabIndex >= m_BdUIList.size())
-    {
-        DBGMSG("BdUIList size");
-        return;
-    }
-    w = m_BdUIList.at(m_currentTabIndex).widget;
     w->setUpdatesEnabled();
     w->reqUpdate();
-    m_oldTabIndex = m_currentTabIndex;
 }
 
 void AbstractCheckDialog::SetTimerPeriod()

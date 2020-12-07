@@ -28,7 +28,7 @@ public:
     AlarmStateAll *getAlarmStateAll();
     void startTimeTimer();
     void stopTimeTimer();
-    void parentTWTabClicked(int index);
+    void parentTWTabChanged(int index);
     //    void setDefConf();
     void closeDialogs();
 
