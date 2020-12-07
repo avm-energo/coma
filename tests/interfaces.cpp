@@ -23,17 +23,17 @@ int main(int argc, char *argv[])
         qDebug() << device;
     Protocom usbdevice;
     usbdevice.start(devices.first());
-    usbdevice.reqBSI();
+    //    usbdevice.reqBSI();
     usbdevice.writeCommand(Queries::QUSB_GetMode);
-    //    usbdevice.writeCommand(Queries::QUSB_ReqBlkDataA, 1);
-    //    usbdevice.writeCommand(Queries::QUSB_ReqBlkDataA, 1);
-    //    usbdevice.writeCommand(Queries::QUSB_ReqBlkDataA, 1);
-    //    usbdevice.writeCommand(Queries::QUSB_ReqBlkDataA, 1);
-    //    usbdevice.writeCommand(Queries::QUSB_ReqBlkDataTech, 1);
-    //    usbdevice.writeCommand(Queries::QUSB_ReqBlkDataTech, 2);
-    //    usbdevice.writeCommand(Queries::QUSB_ReqBlkDataTech, 3);
-    //    usbdevice.writeCommand(Queries::QUSB_ReqBlkDataTech, 4);
-    //    usbdevice.writeCommand(Queries::QUSB_ReqBlkDataTech, 5);
+    usbdevice.writeCommand(Queries::QUSB_ReqBlkDataA, 1);
+    usbdevice.writeCommand(Queries::QUSB_ReqBlkDataA, 1);
+    usbdevice.writeCommand(Queries::QUSB_ReqBlkDataA, 1);
+    usbdevice.writeCommand(Queries::QUSB_ReqBlkDataA, 1);
+    usbdevice.writeCommand(Queries::QUSB_ReqBlkDataTech, 1);
+    usbdevice.writeCommand(Queries::QUSB_ReqBlkDataTech, 2);
+    usbdevice.writeCommand(Queries::QUSB_ReqBlkDataTech, 3);
+    usbdevice.writeCommand(Queries::QUSB_ReqBlkDataTech, 4);
+    usbdevice.writeCommand(Queries::QUSB_ReqBlkDataTech, 5);
     //    usbdevice.reqBSI();
     //    usbdevice.reqBSI();
     auto data = QByteArray::fromHex(
@@ -42,8 +42,8 @@ int main(int argc, char *argv[])
     DataTypes::BlockStruct block { blk, data };
     QVariant value;
     value.setValue(block);
-    usbdevice.reqAlarms(3011, 25);
-    usbdevice.reqFile(DataTypes::FilesEnum::JourSys);
+    //    usbdevice.reqAlarms(3011, 25);
+    // usbdevice.reqFile(DataTypes::FilesEnum::JourSys);
     // usbdevice.reqFloats(2420, 14);
     //    usbdevice.reqBSI();
     //    usbdevice.writeCommand(Queries::QUSB_ReqBlkDataA, 1);
@@ -63,7 +63,15 @@ int main(int argc, char *argv[])
     //    usbdevice.reqBSI();
     //    usbdevice.writeCommand(Queries::QUSB_ReqBlkDataA, 1);
     //    usbdevice.reqFloats(101, 2);
-    // usbdevice.writeCommand(Queries::QC_WriteUserValues, value);
+    usbdevice.writeCommand(Queries::QC_WriteUserValues, value);
+    /// 3e323c000100ffffc6020000b8dc427a21b7c85feb0300000400000064000000ee0300000400000000005c43f4030000040000000000003ff503000004000000
+    /// 3e323b000100ffffc6020000a46958f93645ca5f01000000040000000000000002000000040000000000000003000000040000000000000004000000040000
+    /// 3e323c00000100ffffc6020000a46958f90a44ca5f01000000040000000000000002000000040000000000000003000000040000000000000004000000040000
+    /// 3e323c00010100ffffc6020000a46958f9a01eca5f01000000040000000000000002000000040000000000000003000000040000000000000004000000040000
+    //    auto ba =
+    //    QByteArray::fromHex("3e323c000100ffffc6020000b8dc427a21b7c85feb0300000400000064000000ee030000040000000000"
+    //                                  "5c43f4030000040000000000003ff503000004000000");
+    //    usbdevice.writeRaw(ba);
     qDebug() << "Hello world";
     return a.exec();
 }
