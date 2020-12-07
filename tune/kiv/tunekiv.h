@@ -49,6 +49,12 @@ public:
         float Pt100_R;  // Измеренное сопротивление термометра, Ом
     };
 
+    struct Bd0
+    {
+        float Tmk;  // Температура кристалла микроконтроллера, °С
+        float Vbat; // Напряжение аккумуляторной батареи, В
+    };
+
     struct Bda
     {
         float Ueff_ADC[6];
@@ -68,6 +74,7 @@ public:
     Bac m_Bac;
     Bda m_Bda;
     Bda_in m_Bda_in;
+    Bd0 m_Bd0;
     //    Bac m_Bac_block, m_Bac_newblock;
     //    Bda_in_struct m_Bda_in, m_Bda_block20, m_Bda_block60, m_Bda_blockMinus20;
     //    BdaStruct m_Bda_block, m_BdaPt100_80Om, m_BdaPt100_120Om;
@@ -78,13 +85,14 @@ public:
     QWidget *BacWidget();
     QWidget *BdaWidget();
     QWidget *BdaInWidget();
+    QWidget *Bd0Widget();
     Bac defBacBlock();
 
     // private slots:
 private:
     Bac m_defBacBlock;
-    QWidget *m_BacWidget, *m_BdaWidget, *m_Bda_inWidget;
-    bool m_BacWidgetIsSet, m_BdaWidgetIsSet, m_Bda_inWidgetIsSet;
+    QWidget *m_BacWidget, *m_BdaWidget, *m_Bda_inWidget, *m_Bd0Widget;
+    bool m_BacWidgetIsSet, m_BdaWidgetIsSet, m_Bda_inWidgetIsSet, m_Bd0WidgetIsSet;
 
     void SetDefCoefs();
 
@@ -92,6 +100,7 @@ public slots:
     void updateBacWidget();
     void updateBdaWidget();
     void updateBdaInWidget();
+    void updateBd0Widget();
     void updateFromBacWidget();
     void updateFromBdaWidget();
 };

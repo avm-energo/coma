@@ -72,7 +72,7 @@ signals:
 public slots:
     void DisconnectAndClear();
 
-    void FileTimeOut();
+    //    void FileTimeOut();
     void ReConnect();
     void AttemptToRec();
     void ConnectMessage();
@@ -90,6 +90,8 @@ private slots:
     //    void FillBSI(QList<ModBus::BSISignalStruct> sig, unsigned int sigsize);
     // void PasswordCheck(QString psw);
     void MainTWTabClicked(int tabindex);
+    void setGeneralProgressBarSize(quint32 size);
+    void setGeneralProgressBarCount(quint32 count);
 
 private:
     // constexpr QVector<int> MTBs = { 0x21, 0x22, 0x31, 0x35, 0x80, 0x81, 0x84 };
@@ -119,7 +121,7 @@ private:
     bool Cancelled;
     bool Reconnect;
     int Mode; // режим запуска программы
-    int fileSize, curfileSize;
+              //    int fileSize, m_curFileCount;
     //    int CheckIndex, TimeIndex, ConfIndex, CheckHarmIndex, CheckVibrIndex, CurTabIndex;
     quint8 HaveAlreadyRed = 0;
     //    quint8 ActiveThreads;
@@ -135,7 +137,8 @@ private:
     //    quint8 PredAlarmEvents[20];
     //    quint8 AlarmEvents[20];
 
-    QTimer *ReceiveTimer, *m_BSITimer;
+    //    QTimer *ReceiveTimer;
+    QTimer *m_BSITimer;
     //    QTimer *ReconnectTimer;
     QTimer *BdaTimer, *AlrmTimer; //, *HarmTimer, *VibrTimer;
 
@@ -148,7 +151,7 @@ private:
     void LoadSettings();
     void SaveSettings();
     void SetProgressBarSize(int prbnum, int size);
-    void SetProgressBar(int prbnum, int cursize);
+    void SetProgressBarCount(int prbnum, int count);
     void New104();
     void NewModbus();
     void NewUSB();
@@ -157,10 +160,8 @@ private:
     void CloseDialogs();
     void PrepareDialogs();
     void setupConnections();
-    void SetProgressBar1Size(int size);
-    void SetProgressBar1(int cursize);
-    //    void SetProgressBar2Size(int size);
-    //    void SetProgressBar2(int cursize);
+    //    void SetProgressBar1Size(int size);
+    //    void SetProgressBar1Count(int count);
 
     virtual bool nativeEvent(const QByteArray &eventType, void *message, long *result) override;
 

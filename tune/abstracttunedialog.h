@@ -58,6 +58,7 @@ public:
     //    QString OrganizationString; // наименование организации, работающей с программой
     //    ValueModel *m_VModel;
     int m_tuneStep;
+    bool m_finished;
 
     void SetupUI();
     QWidget *TuneUI();

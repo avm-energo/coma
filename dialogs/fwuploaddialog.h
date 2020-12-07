@@ -1,7 +1,7 @@
 #ifndef FWUPDIALOG_H
 #define FWUPDIALOG_H
 
-#define MAXSIZE 2000000
+//#define MAXSIZE 2000000
 
 #include "../gen/error.h"
 #include "../widgets/udialog.h"

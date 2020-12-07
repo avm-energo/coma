@@ -3,6 +3,7 @@
 //#include "../../models/valuedelegate.h"
 #include "../../widgets/wd_func.h"
 #include "../gen/colors.h"
+#include "../gen/stdfunc.h"
 
 #include <QGroupBox>
 #include <QVBoxLayout>
@@ -22,7 +23,7 @@ TuneKIV::TuneKIV()
     //        m_Bac_newblock.DPsi[i] = 0;
     //        m_Bac_newblock.DPsi[i + 3] = 0;
     //    }
-    m_BdaWidgetIsSet = m_BacWidgetIsSet = false;
+    m_BdaWidgetIsSet = m_BacWidgetIsSet = m_Bd0WidgetIsSet = false;
     SetDefCoefs();
 }
 
@@ -267,6 +268,47 @@ QWidget *TuneKIV::BdaInWidget()
     return m_Bda_inWidget;
 }
 
+QWidget *TuneKIV::Bd0Widget()
+{
+    if (m_Bd0WidgetIsSet)
+        return m_Bd0Widget;
+    QString ValuesFormat = "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; color: black;"
+                           "background-color: "
+        + QString(Colors::AConfO) + "; font: bold 10px;}";
+    m_Bd0Widget = new QWidget;
+    QVBoxLayout *lyout = new QVBoxLayout;
+    QHBoxLayout *hlyout = new QHBoxLayout;
+    QGroupBox *gb = new QGroupBox("Общие данные");
+    hlyout->addWidget(WDFunc::NewLBL(m_Bd0Widget, "Tmk0"));
+    hlyout->addWidget(WDFunc::NewLBLT(m_Bd0Widget, "", "tmk0", ValuesFormat, "Температура процессора"));
+    lyout->addLayout(hlyout);
+    hlyout->addWidget(WDFunc::NewLBL(m_Bd0Widget, "VBat"));
+    hlyout->addWidget(WDFunc::NewLBLT(m_Bd0Widget, "", "vbat", ValuesFormat, "Напряжение батарейки"));
+    lyout->addLayout(hlyout);
+    //    ETableView *tv = new ETableView;
+    //    bdavalueDelegate *chdg = new bdavalueDelegate;
+    //    tv->setItemDelegate(chdg);
+    //    for (int i = 0; i < 6; i++)
+    //    {
+    //        m_VModel->setData(m_VModel->index(0, i * 2), "Ueff_ADC[" + QString::number(i) + "]");
+    //        m_VModel->setData(m_VModel->index(0, i * 2 + 1), ValueItem::OUTVALUEINT);
+    //        m_VModel->setValueData(m_VModel->index(0, i * 2 + 1), &m_Bda.Ueff_ADC[i]);
+    //    }
+    //    m_VModel->setData(m_VModel->index(1, 0), "Frequency");
+    //    m_VModel->setData(m_VModel->index(1, 1), ValueItem::OUTVALUEINT);
+    //    m_VModel->setValueData(m_VModel->index(1, 1), &m_Bda.Frequency);
+    //    m_VModel->setData(m_VModel->index(1, 2), "Pt100");
+    //    m_VModel->setData(m_VModel->index(1, 3), ValueItem::OUTVALUEINT);
+    //    m_VModel->setValueData(m_VModel->index(1, 3), &m_Bda.Pt100);
+    //    tv->setModel(m_VModel);
+    //    vlyout->addWidget(tv);
+    gb->setLayout(lyout);
+    lyout->addWidget(gb);
+    m_Bd0Widget->setLayout(lyout);
+    m_Bd0WidgetIsSet = true;
+    return m_Bd0Widget;
+}
+
 void TuneKIV::SetDefCoefs()
 {
     m_defBacBlock.Art = 44.65f;
@@ -362,39 +404,45 @@ void TuneKIV::updateBdaInWidget()
     WDFunc::SetLBLText(m_Bda_inWidget, "bdavalue25", WDFunc::StringValueWithCheck(m_Bda_in.Pt100_R, 3));
 }
 
+void TuneKIV::updateBd0Widget()
+{
+    WDFunc::SetLBLText(m_Bd0Widget, "tmk0", WDFunc::StringValueWithCheck(m_Bd0.Tmk, 3));
+    WDFunc::SetLBLText(m_Bd0Widget, "vbat", WDFunc::StringValueWithCheck(m_Bd0.Vbat, 3));
+}
+
 void TuneKIV::updateFromBacWidget()
 {
     QString tmps;
     for (int i = 0; i < 3; i++)
     {
         m_Bac.N1_TT[i] = WDFunc::LEData(m_BacWidget, "tune" + QString::number(i)).toUInt();
-        m_Bac.KmU[i] = ToFloat(WDFunc::LEData(m_BacWidget, "tune" + QString::number(i + 3)));
-        m_Bac.KmI1[i] = ToFloat(WDFunc::LEData(m_BacWidget, "tune" + QString::number(i + 6)));
-        m_Bac.KmI2[i] = ToFloat(WDFunc::LEData(m_BacWidget, "tune" + QString::number(i + 9)));
-        m_Bac.KmI4[i] = ToFloat(WDFunc::LEData(m_BacWidget, "tune" + QString::number(i + 12)));
-        m_Bac.KmI8[i] = ToFloat(WDFunc::LEData(m_BacWidget, "tune" + QString::number(i + 15)));
-        m_Bac.KmI16[i] = ToFloat(WDFunc::LEData(m_BacWidget, "tune" + QString::number(i + 18)));
-        m_Bac.KmI32[i] = ToFloat(WDFunc::LEData(m_BacWidget, "tune" + QString::number(i + 21)));
-        m_Bac.TKPsi_a[i] = ToFloat(WDFunc::LEData(m_BacWidget, "tune" + QString::number(i + 24)));
-        m_Bac.TKPsi_b[i] = ToFloat(WDFunc::LEData(m_BacWidget, "tune" + QString::number(i + 27)));
+        m_Bac.KmU[i] = StdFunc::toFloat(WDFunc::LEData(m_BacWidget, "tune" + QString::number(i + 3)));
+        m_Bac.KmI1[i] = StdFunc::toFloat(WDFunc::LEData(m_BacWidget, "tune" + QString::number(i + 6)));
+        m_Bac.KmI2[i] = StdFunc::toFloat(WDFunc::LEData(m_BacWidget, "tune" + QString::number(i + 9)));
+        m_Bac.KmI4[i] = StdFunc::toFloat(WDFunc::LEData(m_BacWidget, "tune" + QString::number(i + 12)));
+        m_Bac.KmI8[i] = StdFunc::toFloat(WDFunc::LEData(m_BacWidget, "tune" + QString::number(i + 15)));
+        m_Bac.KmI16[i] = StdFunc::toFloat(WDFunc::LEData(m_BacWidget, "tune" + QString::number(i + 18)));
+        m_Bac.KmI32[i] = StdFunc::toFloat(WDFunc::LEData(m_BacWidget, "tune" + QString::number(i + 21)));
+        m_Bac.TKPsi_a[i] = StdFunc::toFloat(WDFunc::LEData(m_BacWidget, "tune" + QString::number(i + 24)));
+        m_Bac.TKPsi_b[i] = StdFunc::toFloat(WDFunc::LEData(m_BacWidget, "tune" + QString::number(i + 27)));
     }
 
     for (int i = 0; i < 6; i++)
     {
         WDFunc::LEData(m_BacWidget, "tune" + QString::number(i + 30));
-        m_Bac.DPsi[i] = ToFloat(tmps);
+        m_Bac.DPsi[i] = StdFunc::toFloat(tmps);
         WDFunc::LEData(m_BacWidget, "tune" + QString::number(i + 36));
-        m_Bac.TKUa[i] = ToFloat(tmps);
+        m_Bac.TKUa[i] = StdFunc::toFloat(tmps);
         WDFunc::LEData(m_BacWidget, "tune" + QString::number(i + 42));
-        m_Bac.TKUb[i] = ToFloat(tmps);
+        m_Bac.TKUb[i] = StdFunc::toFloat(tmps);
     }
 
     WDFunc::LEData(m_BacWidget, "tune48");
-    m_Bac.K_freq = ToFloat(tmps);
+    m_Bac.K_freq = StdFunc::toFloat(tmps);
     WDFunc::LEData(m_BacWidget, "tune49");
-    m_Bac.Art = ToFloat(tmps);
+    m_Bac.Art = StdFunc::toFloat(tmps);
     WDFunc::LEData(m_BacWidget, "tune50");
-    m_Bac.Brt = ToFloat(tmps);
+    m_Bac.Brt = StdFunc::toFloat(tmps);
     WDFunc::LEData(m_BacWidget, "tune51");
-    m_Bac.Tmk0 = ToFloat(tmps);
+    m_Bac.Tmk0 = StdFunc::toFloat(tmps);
 }

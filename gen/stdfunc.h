@@ -17,7 +17,7 @@ public:
     static void Init();
     static QString VerToStr(quint32);
     static bool floatIsWithinLimits(double var, double value, double tolerance = 0.1);
-    static bool toFloat(const QString &text);
+    static float toFloat(const QString &text);
     static void SetHomeDir(const QString &dir);
     static QString GetHomeDir();
     static QString GetSystemHomeDir();
@@ -25,8 +25,8 @@ public:
     static QString ForDeviceIP();
     static void SetOrganizationString(const QString &str);
     static QString OrganizationString();
-    static void setN(int n);
-    static int N();
+    static void setTuneRequestCount(int n);
+    static int tuneRequestCount();
     static void cancel();
     static void clearCancel();
     static bool isCancelled();
@@ -36,8 +36,8 @@ public:
                                           // установленного бита, нумерация с 1, dword=0 => return 0
     static quint32 BitByIndex(int idx); // возвращение битовой маски по индексу (0
                                         // => 0, 1 => 1, 2 => 2, 3 => 4, ...)
-    static QString PrbMessage();
-    static void SetPrbMessage(const QString &msg);
+                                        //    static QString PrbMessage();
+                                        //    static void SetPrbMessage(const QString &msg);
     static void Wait(int ms = MAINSLEEP);
 
     static quint32 ping(quint32 addr);
@@ -63,8 +63,8 @@ private:
     static QString SystemHomeDir; // системный каталог программы
     static bool Emul;
     static bool Cancelled;
-    static QString PrbMsg;
-    static int m_N; // степень усреднения для регулировки
+    //    static QString PrbMsg;
+    static int m_tuneRequestCount; // степень усреднения для регулировки
 };
 
 #endif // STDFUNC_H

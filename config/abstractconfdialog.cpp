@@ -114,10 +114,10 @@ void AbstractConfDialog::confParametersListReceived(const DataTypes::ConfParamet
     Fill();
 }
 
-void AbstractConfDialog::confParameterReceived(const DataTypes::ConfParameterStruct &cfp)
-{
-    // S2::findElemAndWriteIt(S2::config, cfp);
-}
+// void AbstractConfDialog::confParameterReceived(const DataTypes::ConfParameterStruct &cfp)
+//{
+//    // S2::findElemAndWriteIt(S2::config, cfp);
+//}
 
 bool AbstractConfDialog::WriteCheckPassword()
 {

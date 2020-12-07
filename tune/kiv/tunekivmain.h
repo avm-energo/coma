@@ -17,6 +17,10 @@ private:
     TuneKIV *TKIV;
     ConfigKIV *CKIV;
     double m_pt100;
+    bool m_isEnergoMonitorDialogCreated;
+    int m_curTuneStep;
+    TuneKIV::Bda_in m_bdain;
+    TuneKIV::Bac m_bac;
 
     void setMessages();
     void setTuneFunctions();
@@ -36,16 +40,22 @@ private:
     Error::Msg ADCCoef8();
     Error::Msg ADCCoef16();
     Error::Msg ADCCoef32();
+    Error::Msg Tmk0();
+    Error::Msg SendBac();
+    Error::Msg CheckTune();
 
     void setR(int r);
     double processR(); // get BDA.Pt100 several times and return back value
+    Error::Msg ADCCoef(int coef);
     Error::Msg setADCCoef(int coef);
     Error::Msg showRetomDialog(int coef);
     void showTWTab(int num);
     QWidget *BdWidget();
     bool checkBdaIn();
+    Error::Msg showEnergomonitorInputDialog();
 
 private slots:
+    void CalcTuneCoefs();
 };
 
 #endif // TUNEKIVMAIN_H

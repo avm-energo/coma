@@ -23,7 +23,7 @@ QString StdFunc::HomeDir = "";       // рабочий каталог прогр
 QString StdFunc::SystemHomeDir = ""; // системный каталог программы
 bool StdFunc::Emul = false;
 bool StdFunc::Cancelled = false;
-QString StdFunc::PrbMsg = "";
+// QString StdFunc::PrbMsg = "";
 QString StdFunc::DeviceIP = "";
 QString StdFunc::s_OrganizationString = "";
 
@@ -42,7 +42,7 @@ void StdFunc::Init()
     QScopedPointer<QSettings> sets = QScopedPointer<QSettings>(new QSettings("EvelSoft", PROGNAME));
     SetOrganizationString(sets->value("OrganizationString", "Р&К").toString());
     SetDeviceIP(sets->value("DeviceIP", "172.16.11.12").toString());
-    setN(sets->value("N", "20").toInt());
+    setTuneRequestCount(sets->value("TuneRequestCount", "20").toInt());
 }
 
 QString StdFunc::VerToStr(quint32 num)
@@ -68,7 +68,7 @@ bool StdFunc::floatIsWithinLimits(double var, double base, double tolerance)
     }
 }
 
-bool StdFunc::toFloat(const QString &text)
+float StdFunc::toFloat(const QString &text)
 {
     bool ok;
     float tmpf;
@@ -120,14 +120,14 @@ QString StdFunc::OrganizationString()
     return s_OrganizationString;
 }
 
-void StdFunc::setN(int n)
+void StdFunc::setTuneRequestCount(int n)
 {
-    m_N = n;
+    m_tuneRequestCount = n;
 }
 
-int StdFunc::N()
+int StdFunc::tuneRequestCount()
 {
-    return m_N;
+    return m_tuneRequestCount;
 }
 
 void StdFunc::cancel()
@@ -171,15 +171,15 @@ quint32 StdFunc::BitByIndex(int idx)
     return (0x00000001 << (idx - 1));
 }
 
-QString StdFunc::PrbMessage()
-{
-    return PrbMsg;
-}
+// QString StdFunc::PrbMessage()
+//{
+//    return PrbMsg;
+//}
 
-void StdFunc::SetPrbMessage(const QString &msg)
-{
-    PrbMsg = msg;
-}
+// void StdFunc::SetPrbMessage(const QString &msg)
+//{
+//    PrbMsg = msg;
+//}
 
 void StdFunc::Wait(int ms)
 {

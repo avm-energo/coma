@@ -242,17 +242,17 @@ QWidget *Coma::Least()
     inlyout->addWidget(prb);
     lyout->addLayout(inlyout);
 
-    //    inlyout = new QHBoxLayout;
-    //    inlyout->addWidget(WDFunc::NewLBLT(this, "Отсчёт"));
-    //    inlyout->addWidget(WDFunc::NewLBLT(this, "", "prb2lbl"));
+    inlyout = new QHBoxLayout;
+    inlyout->addWidget(WDFunc::NewLBLT(this, "Отсчёт"));
+    inlyout->addWidget(WDFunc::NewLBLT(this, "", "prb2lbl"));
 
-    //    prb = new QProgressBar;
-    //    prb->setObjectName("prb2prb");
-    //    prb->setOrientation(Qt::Horizontal);
-    //    // prb->setMinimumWidth(50);
-    //    prb->setMaximumHeight(height() / 50);
-    //    inlyout->addWidget(prb);
-    //    lyout->addLayout(inlyout);
+    prb = new QProgressBar;
+    prb->setObjectName("prb2prb");
+    prb->setOrientation(Qt::Horizontal);
+    // prb->setMinimumWidth(50);
+    prb->setMaximumHeight(height() / 50);
+    inlyout->addWidget(prb);
+    lyout->addLayout(inlyout);
     w->setLayout(lyout);
     return w;
 }
@@ -510,7 +510,7 @@ void Coma::StartWork()
     INFOMSG("MainTW created");
     if (board.interfaceType() == Board::InterfaceType::USB)
         BdaTimer->start();
-    auto *msgSerialNumber = statusBar()->findChild<QLabel *>("SerialNumber");
+    //    auto *msgSerialNumber = statusBar()->findChild<QLabel *>("SerialNumber");
     // msgSerialNumber->setText(QString::number(ModuleBSI::serialNumber(BT_NONE), 16));
 }
 
@@ -750,9 +750,9 @@ void Coma::newTimers()
     AlrmTimer->setInterval(5000);
     AlrmTimer->start();
 
-    ReceiveTimer = new QTimer;
-    ReceiveTimer->setInterval(2000);
-    connect(ReceiveTimer, &QTimer::timeout, this, &Coma::FileTimeOut);
+    //    ReceiveTimer = new QTimer;
+    //    ReceiveTimer->setInterval(2000);
+    //    connect(ReceiveTimer, &QTimer::timeout, this, &Coma::FileTimeOut);
 
     // BdaTimer = new QTimer(this);
     //    BdaTimer->setInterval(ANMEASINT);
@@ -786,6 +786,12 @@ void Coma::setupConnections()
     //        connect(AlrmTimer, &QTimer::timeout, AlarmStateAllDialog, &AlarmStateAll::CallUpdateHealth);
     //    connect(BdaTimer, &QTimer::timeout, this, &Coma::update);
     connect(&DataManager::GetInstance(), &DataManager::responseReceived, this, &Coma::update);
+    for (auto *d : m_Module->dialogs())
+    {
+        connect(d, &UWidget::setGeneralProgressBarCount, this, &Coma::setGeneralProgressBarCount);
+        connect(d, &UWidget::setGeneralProgressBarSize, this, &Coma::setGeneralProgressBarSize);
+    }
+
     //    connect(BdaTimer, &QTimer::timeout, Alarm, &AlarmClass::UpdateAlarmUSB);
     //    //   connect(BdaTimer, &QTimer::timeout, AlarmStateAllDialog, &AlarmStateAll::UpdateHealth);
 
@@ -1034,42 +1040,49 @@ void Coma::ClearTW()
 //    emit PasswordChecked();
 //}
 
-void Coma::SetProgressBar1Size(int size)
+// void Coma::SetProgressBar1Size(int size)
+//{
+//    //    fileSize = size;
+//    SetProgressBarSize(1, size);
+//}
+
+// void Coma::SetProgressBar1Count(int count)
+//{
+//    //    m_curFileCount = count;
+//    //    ReceiveTimer->stop();
+//    //    ReceiveTimer->setInterval(5000);
+//    SetProgressBarCount(1, count);
+//    //    ReceiveTimer->start();
+//}
+
+// void Coma::FileTimeOut()
+//{
+//    QString prbname = "prb1prb";
+//    QString lblname = "prb1lbl";
+//    QProgressBar *prb = this->findChild<QProgressBar *>(prbname);
+//    if (prb == nullptr)
+//    {
+//        // qCritical(logCritical(), ("Пустой prb"));
+//        qDebug("Пустой prb");
+//        return;
+//    }
+//    WDFunc::SetLBLText(this, lblname, StdFunc::PrbMessage() + QString::number(0), false);
+
+//    ReceiveTimer->stop();
+//    if (fileSize != curfileSize && Board::GetInstance().interfaceType() != Board::InterfaceType::USB)
+//        QMessageBox::information(this, "Ошибка", "Ошибка", QMessageBox::Ok);
+//}
+
+void Coma::setGeneralProgressBarSize(quint32 size)
 {
-    fileSize = size;
-    SetProgressBarSize(1, size);
+    SetProgressBarSize(2, size);
+    SetProgressBarCount(2, 0);
 }
 
-void Coma::SetProgressBar1(int cursize)
+void Coma::setGeneralProgressBarCount(quint32 count)
 {
-    curfileSize = cursize;
-    ReceiveTimer->stop();
-    ReceiveTimer->setInterval(5000);
-    SetProgressBar(1, cursize);
-    ReceiveTimer->start();
+    SetProgressBarCount(2, count);
 }
-
-void Coma::FileTimeOut()
-{
-    QString prbname = "prb1prb";
-    QString lblname = "prb1lbl";
-    QProgressBar *prb = this->findChild<QProgressBar *>(prbname);
-    if (prb == nullptr)
-    {
-        // qCritical(logCritical(), ("Пустой prb"));
-        qDebug("Пустой prb");
-        return;
-    }
-    WDFunc::SetLBLText(this, lblname, StdFunc::PrbMessage() + QString::number(0), false);
-
-    ReceiveTimer->stop();
-    if (fileSize != curfileSize && Board::GetInstance().interfaceType() != Board::InterfaceType::USB)
-        QMessageBox::information(this, "Ошибка", "Ошибка", QMessageBox::Ok);
-}
-
-// void Coma::SetProgressBar2Size(int size) { SetProgressBarSize(2, size); }
-
-// void Coma::SetProgressBar2(int cursize) { SetProgressBar(2, cursize); }
 
 void Coma::SetProgressBarSize(int prbnum, int size)
 {
@@ -1081,21 +1094,20 @@ void Coma::SetProgressBarSize(int prbnum, int size)
         qDebug("Пустой prb");
         return;
     }
-    WDFunc::SetLBLText(this, lblname, StdFunc::PrbMessage() + QString::number(size), false);
+    WDFunc::SetLBLText(this, lblname, QString::number(size), false);
     prb->setMinimum(0);
     prb->setMaximum(size);
 }
 
-void Coma::SetProgressBar(int prbnum, int cursize)
+void Coma::SetProgressBarCount(int prbnum, int count)
 {
     QString prbname = "prb" + QString::number(prbnum) + "prb";
     QString lblname = "prb" + QString::number(prbnum) + "lbl";
     QProgressBar *prb = this->findChild<QProgressBar *>(prbname);
     if (prb != nullptr)
     {
-        prb->setValue(cursize);
-        WDFunc::SetLBLText(
-            this, lblname, StdFunc::PrbMessage() + QString::number(cursize) + " из " + QString::number(prb->maximum()));
+        prb->setValue(count);
+        WDFunc::SetLBLText(this, lblname, QString::number(count) + " из " + QString::number(prb->maximum()));
     }
 }
 
@@ -1345,10 +1357,12 @@ void Coma::update(const DataTypes::GeneralResponseStruct &rsp)
     //    DataTypes::GeneralResponseStruct rs;
     //    if (DataManager::getResponse(DataTypes::GeneralResponseTypes::DataCount, rs) != Error::Msg::ResEmpty)
     if (rsp.type == DataTypes::GeneralResponseTypes::DataCount)
-        SetProgressBar1(rsp.data);
+        SetProgressBarCount(1, rsp.data);
+    //        SetProgressBar1Count(rsp.data);
     //    if (DataManager::getResponse(DataTypes::GeneralResponseTypes::DataSize, rs) != Error::Msg::ResEmpty)
     if (rsp.type == DataTypes::GeneralResponseTypes::DataSize)
-        SetProgressBar1Size(rsp.data);
+        //        SetProgressBar1Size(rsp.data);
+        SetProgressBarSize(1, rsp.data);
     //    if (ModuleBSI::update())
     //    {
     //        if (AlarmStateAllDialog != nullptr)

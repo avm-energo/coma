@@ -116,6 +116,7 @@ SOURCES += \
 PRECOMPILED_HEADER = ../gen/pch.h
 
 HEADERS += \
+    ../gen/datatypes.h \
     ../interfaces/iec104private.h \
     ../interfaces/modbusprivate.h \
     coma.h \
