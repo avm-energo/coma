@@ -61,7 +61,7 @@ void KeyPressDialog::keyPressEvent(QKeyEvent *e)
     }
     if ((e->key() == Qt::Key_Enter) || (e->key() == Qt::Key_Return))
     {
-        if (WDFunc::LE_read_data(this, "pswle", m_pswEntered))
+        if ((m_pswEntered = WDFunc::LEData(this, "pswle")) != "")
             emit PasswordChecked();
     }
     if (e->key() == Qt::Key_Escape)
@@ -75,7 +75,7 @@ void KeyPressDialog::keyPressEvent(QKeyEvent *e)
 void KeyPressDialog::closeEvent(QCloseEvent *e)
 {
     QString str;
-    WDFunc::LE_read_data(this, "pswle", m_pswEntered);
+    m_pswEntered = WDFunc::LEData(this, "pswle");
     emit PasswordChecked();
     //    else
     //        emit Finished(QString());

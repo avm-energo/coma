@@ -917,7 +917,7 @@ void Coma::ClearTW()
     ETabWidget *MainTW = this->findChild<ETabWidget *>("maintw");
     if (MainTW == nullptr)
     {
-        ERMSG("Пустой MainTW");
+        DBGMSG("Пустой MainTW");
         return;
     }
 
@@ -1230,7 +1230,7 @@ void Coma::DisconnectAndClear()
         ETabWidget *MainTW = this->findChild<ETabWidget *>("maintw");
         if (MainTW == nullptr)
         {
-            ERMSG("Пустой MainTW");
+            DBGMSG("Пустой MainTW");
             return;
         }
         //        if (S2Config)

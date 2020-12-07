@@ -1,5 +1,6 @@
 #include "stdfunc.h"
 
+#include "../gen/error.h"
 #include "../gen/s2.h"
 
 #include <QCoreApplication>
@@ -41,6 +42,7 @@ void StdFunc::Init()
     QScopedPointer<QSettings> sets = QScopedPointer<QSettings>(new QSettings("EvelSoft", PROGNAME));
     SetOrganizationString(sets->value("OrganizationString", "Р&К").toString());
     SetDeviceIP(sets->value("DeviceIP", "172.16.11.12").toString());
+    setN(sets->value("N", "20").toInt());
 }
 
 QString StdFunc::VerToStr(quint32 num)
@@ -53,12 +55,30 @@ QString StdFunc::VerToStr(quint32 num)
     return tmpString;
 }
 
-bool StdFunc::FloatInRange(float var, float value, float tolerance)
+bool StdFunc::floatIsWithinLimits(double var, double base, double tolerance)
 {
-    if ((var >= (value - tolerance)) && (var <= (value + tolerance)))
+    float tmpf = fabs(var - base);
+    if (tmpf < fabs(tolerance))
         return true;
     else
+    {
+        qCritical() << "Ошибочное значение: должно быть " << QString::number(base, 'f', 5) << "±"
+                    << QString::number(tolerance, 'f', 5) << ", а получили: " << QString::number(var, 'f', 5);
         return false;
+    }
+}
+
+bool StdFunc::toFloat(const QString &text)
+{
+    bool ok;
+    float tmpf;
+    tmpf = text.toFloat(&ok);
+    if (!ok)
+    {
+        qCritical() << "Значение " << text << " не может быть переведено во float";
+        return 0;
+    }
+    return tmpf;
 }
 
 void StdFunc::SetHomeDir(const QString &dir)
@@ -98,6 +118,16 @@ void StdFunc::SetOrganizationString(const QString &str)
 QString StdFunc::OrganizationString()
 {
     return s_OrganizationString;
+}
+
+void StdFunc::setN(int n)
+{
+    m_N = n;
+}
+
+int StdFunc::N()
+{
+    return m_N;
 }
 
 void StdFunc::cancel()

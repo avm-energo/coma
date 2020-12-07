@@ -43,11 +43,11 @@ void TuneKIVDialog::SetupUI()
     QVBoxLayout *lyout = new QVBoxLayout;
 
     lyout->addLayout(newTunePBLayout("1. Проверка правильности измерения входных сигналов", [this]() {
-        TuneKIVCheck *check = new TuneKIVCheck(1, CKIV, TKIV);
+        TuneKIVCheck *check = new TuneKIVCheck(1, TKIV);
         check->show();
     }));
     lyout->addLayout(newTunePBLayout("2. Основная регулировка", [this]() {
-        TuneKIVMain *tkmain = new TuneKIVMain(2, TKIV);
+        TuneKIVMain *tkmain = new TuneKIVMain(2, CKIV, TKIV);
         tkmain->show();
     }));
     lyout->addLayout(newTunePBLayout("3. Настройка температурной коррекции +60 °С", [this]() {
@@ -217,31 +217,6 @@ void TuneKIVDialog::SetPf()
 void TuneKIVDialog::FillBac(int bacnum)
 {
     Q_UNUSED(bacnum);
-    for (int i = 0; i < 3; i++)
-    {
-        WDFunc::SetLEData(this, "tune" + QString::number(i), QString::number(m_Bac_block.N1_TT[i], 'g', 5));
-        WDFunc::SetLEData(this, "tune" + QString::number(i + 3), QString::number(m_Bac_block.KmU[i], 'f', 5));
-        WDFunc::SetLEData(this, "tune" + QString::number(i + 6), QString::number(m_Bac_block.KmI1[i], 'f', 5));
-        WDFunc::SetLEData(this, "tune" + QString::number(i + 9), QString::number(m_Bac_block.KmI2[i], 'f', 5));
-        WDFunc::SetLEData(this, "tune" + QString::number(i + 12), QString::number(m_Bac_block.KmI4[i], 'f', 5));
-        WDFunc::SetLEData(this, "tune" + QString::number(i + 15), QString::number(m_Bac_block.KmI8[i], 'f', 5));
-        WDFunc::SetLEData(this, "tune" + QString::number(i + 18), QString::number(m_Bac_block.KmI16[i], 'f', 5));
-        WDFunc::SetLEData(this, "tune" + QString::number(i + 21), QString::number(m_Bac_block.KmI32[i], 'f', 5));
-        WDFunc::SetLEData(this, "tune" + QString::number(i + 24), QString::number(m_Bac_block.TKPsi_a[i], 'e', 5));
-        WDFunc::SetLEData(this, "tune" + QString::number(i + 27), QString::number(m_Bac_block.TKPsi_b[i], 'e', 5));
-    }
-
-    for (int i = 0; i < 6; i++)
-    {
-        WDFunc::SetLEData(this, "tune" + QString::number(i + 30), QString::number(m_Bac_block.DPsi[i], 'f', 5));
-        WDFunc::SetLEData(this, "tune" + QString::number(i + 36), QString::number(m_Bac_block.TKUa[i], 'e', 5));
-        WDFunc::SetLEData(this, "tune" + QString::number(i + 42), QString::number(m_Bac_block.TKUb[i], 'e', 5));
-    }
-
-    WDFunc::SetLEData(this, "tune48", QString::number(m_Bac_block.K_freq, 'f', 5));
-    WDFunc::SetLEData(this, "tune49", QString::number(m_Bac_block.Art, 'f', 5));
-    WDFunc::SetLEData(this, "tune50", QString::number(m_Bac_block.Brt, 'f', 5));
-    WDFunc::SetLEData(this, "tune51", QString::number(m_Bac_block.Tmk0, 'f', 5));
 }
 
 void TuneKIVDialog::FillNewBac()
@@ -277,48 +252,6 @@ void TuneKIVDialog::FillBackBac(int bacnum)
 {
     Q_UNUSED(bacnum);
     QString tmps;
-    for (int i = 0; i < 3; i++)
-    {
-        WDFunc::LE_read_data(this, "tune" + QString::number(i), tmps);
-        m_Bac_block.N1_TT[i] = tmps.toUInt();
-        WDFunc::LE_read_data(this, "tune" + QString::number(i + 3), tmps);
-        m_Bac_block.KmU[i] = ToFloat(tmps);
-        WDFunc::LE_read_data(this, "tune" + QString::number(i + 6), tmps);
-        m_Bac_block.KmI1[i] = ToFloat(tmps);
-        WDFunc::LE_read_data(this, "tune" + QString::number(i + 9), tmps);
-        m_Bac_block.KmI2[i] = ToFloat(tmps);
-        WDFunc::LE_read_data(this, "tune" + QString::number(i + 12), tmps);
-        m_Bac_block.KmI4[i] = ToFloat(tmps);
-        WDFunc::LE_read_data(this, "tune" + QString::number(i + 15), tmps);
-        m_Bac_block.KmI8[i] = ToFloat(tmps);
-        WDFunc::LE_read_data(this, "tune" + QString::number(i + 18), tmps);
-        m_Bac_block.KmI16[i] = ToFloat(tmps);
-        WDFunc::LE_read_data(this, "tune" + QString::number(i + 21), tmps);
-        m_Bac_block.KmI32[i] = ToFloat(tmps);
-        WDFunc::LE_read_data(this, "tune" + QString::number(i + 24), tmps);
-        m_Bac_block.TKPsi_a[i] = ToFloat(tmps);
-        WDFunc::LE_read_data(this, "tune" + QString::number(i + 27), tmps);
-        m_Bac_block.TKPsi_b[i] = ToFloat(tmps);
-    }
-
-    for (int i = 0; i < 6; i++)
-    {
-        WDFunc::LE_read_data(this, "tune" + QString::number(i + 30), tmps);
-        m_Bac_block.DPsi[i] = ToFloat(tmps);
-        WDFunc::LE_read_data(this, "tune" + QString::number(i + 36), tmps);
-        m_Bac_block.TKUa[i] = ToFloat(tmps);
-        WDFunc::LE_read_data(this, "tune" + QString::number(i + 42), tmps);
-        m_Bac_block.TKUb[i] = ToFloat(tmps);
-    }
-
-    WDFunc::LE_read_data(this, "tune48", tmps);
-    m_Bac_block.K_freq = ToFloat(tmps);
-    WDFunc::LE_read_data(this, "tune49", tmps);
-    m_Bac_block.Art = ToFloat(tmps);
-    WDFunc::LE_read_data(this, "tune50", tmps);
-    m_Bac_block.Brt = ToFloat(tmps);
-    WDFunc::LE_read_data(this, "tune51", tmps);
-    m_Bac_block.Tmk0 = ToFloat(tmps);
 }
 
 int TuneKIVDialog::SetNewTuneCoefs()
@@ -351,109 +284,8 @@ int TuneKIVDialog::SetNewTuneCoefs()
     return NOERROR;
 }
 
-float TuneKIVDialog::ToFloat(QString text)
-{
-    bool ok;
-    float tmpf;
-    tmpf = text.toFloat(&ok);
-    if (!ok)
-    {
-        ERMSG("Значение " + text + " не может быть переведено во float");
-        return 0;
-    }
-    return tmpf;
-}
-
-int TuneKIVDialog::Start7_3_1()
-{
-
-    QDialog *dlg = new QDialog;
-    QVBoxLayout *lyout = new QVBoxLayout;
-    QLabel *lbl
-        = new QLabel("Для регулировки необходимо поместить прибор в термокамеру\n"
-                     "с диапазоном регулирования температуры от минус 20 до +60°С.\n"
-                     "Установить нормальное значение температуры в камере 20±5°С.\n"
-                     "Источники сигналов и эталонный прибор остаются вне камеры \n при нормальной температуре.");
-    lyout->addWidget(lbl);
-    QPushButton *pb = new QPushButton("Готово");
-    connect(pb, SIGNAL(clicked()), dlg, SLOT(close()));
-    lyout->addWidget(pb);
-    pb = new QPushButton("Отмена");
-    connect(pb, SIGNAL(clicked()), this, SLOT(CancelTune()));
-    connect(pb, SIGNAL(clicked()), dlg, SLOT(close()));
-    lyout->addWidget(pb);
-    dlg->setLayout(lyout);
-    dlg->exec();
-
-    return NOERROR;
-}
-
-int TuneKIVDialog::Start7_3_2()
-{
-    int i;
-    if (Commands::GetBac(BT_MEZONIN, &m_Bac_block, sizeof(Bac)) != NOERROR)
-    {
-        WARNMSG("Ошибка при приёме данных");
-        return GENERALERROR;
-    }
-    m_Bac_newblock = m_Bac_block;
-    // обновление коэффициентов в соответствующих полях на экране
-    //    FillBac(0);
-    m_VModel->updateModel();
-
-    for (i = 0; i < 3; i++)
-        CKIV->Bci_block.C_pasp[i] = C15036;
-    // CKIV->Bci_block.Imax[i] = 600;
-
-    if (Commands::WriteFile(1, S2ConfigForTune) != NOERROR)
-        return GENERALERROR;
-
-    return NOERROR;
-}
-
-int TuneKIVDialog::Start7_3_4()
-{
-
-    QDialog *dlg = new QDialog;
-    QVBoxLayout *lyout = new QVBoxLayout;
-    QLabel *lbl = new QLabel("Значение тока и напряжения при этом контролируются по показаниям прибора Энергомонитор.\n"
-                             "При использовании в качестве источника сигналов РЕТОМ-51 задается угол между током и\n"
-                             "напряжением в фазе А, при использовании имитатора АВМ-КИВ задается значение tg δ.");
-    lyout->addWidget(lbl);
-    QPushButton *pb = new QPushButton("Готово");
-    connect(pb, SIGNAL(clicked()), dlg, SLOT(close()));
-    lyout->addWidget(pb);
-    pb = new QPushButton("Отмена");
-    connect(pb, SIGNAL(clicked()), this, SLOT(CancelTune()));
-    connect(pb, SIGNAL(clicked()), dlg, SLOT(close()));
-    lyout->addWidget(pb);
-    dlg->setLayout(lyout);
-    dlg->exec();
-
-    return NOERROR;
-}
-
 int TuneKIVDialog::Start7_3_4_2()
 {
-    QGridLayout *glyout = new QGridLayout;
-    QVBoxLayout *vlyout = new QVBoxLayout;
-    QLabel *lbl = new QLabel("Количество усреднений");
-    ledit = new QLineEdit;
-    ledit->setObjectName("N");
-    QPushButton *pb = new QPushButton;
-    ask = new QDialog();
-    ask->setAttribute(Qt::WA_DeleteOnClose);
-
-    glyout->addWidget(lbl, 0, 1, 1, 1);
-    glyout->addWidget(ledit, 1, 1, 1, 1);
-    pb = new QPushButton("Ok");
-    connect(pb, SIGNAL(clicked()), this, SLOT(ReadN()));
-    glyout->addWidget(pb, 2, 1, 1, 1);
-    vlyout->addLayout(glyout);
-    ask->setLayout(vlyout);
-    ask->exec();
-
-    ShowRetomDialog(57.5, 290, 89.9);
     m_Kadc = 1;
     EnterDataTune();
     return NOERROR;
@@ -954,7 +786,7 @@ int TuneKIVDialog::CalcTuneCoefs()
 
     ask->close();
 
-    if (ReadAnalogMeasurements() != NOERROR)
+    if (() != NOERROR)
     {
         QMessageBox::information(this, "Внимание", "Ошибка при приёме данных");
         return GENERALERROR;
@@ -1040,28 +872,6 @@ int TuneDialogKIV::CalcTuneCoefsKadc32()
 }
 
 void TuneKIVDialog::GetBdAndFill() { }
-
-int TuneKIVDialog::Start7_2_1()
-{
-    CKIV->Bci_block.Unom = 220;
-    CKIV->Bci_block.C_pasp = 9000; // Imax = 600 mA
-    return Commands::WriteFile(CM_CONFIGFILE, S2ConfigForTune);
-}
-
-int TuneKIVDialog::Start_7_2_7()
-{
-    WaitNSeconds(15);
-    if (Commands::GetBda(BT_NONE, &m_Bda_block, sizeof(BdaStruct)) != NOERROR)
-        return GENERALERROR;
-    for (int i = 0; i < 6; ++i)
-        if (!IsWithinLimits(m_Bda_block.Ueff_ADC[i], 2150000.0, 150000.0))
-            return GENERALERROR;
-    if (!IsWithinLimits(m_Bda_block.Pt100, 1175.0, 120.0))
-        return GENERALERROR;
-    if (!IsWithinLimits(m_Bda_block.Frequency, 51.0, 0.2))
-        return GENERALERROR;
-    return NOERROR;
-}
 
 int TuneKIVDialog::ReadAnalogMeasurements()
 {
@@ -1285,29 +1095,6 @@ int TuneKIVDialog::SaveUeff()
     return NOERROR;
 }
 
-int TuneKIVDialog::ShowRetomDialog(double U, double I, double Y)
-{
-    QDialog *dlg = new QDialog;
-    QVBoxLayout *lyout = new QVBoxLayout;
-    QLabel *lbl = new QLabel("Задайте на РЕТОМ трёхфазный режим токов и напряжений (Uabc, Iabc)"
-                             "Угол между токами и напряжениями: "
-        + QString::number(Y, 'f', 2)
-        + " град.,\n"
-          "Значения напряжений: "
-        + QString::number(U, 'f', 2) + " В, токов: " + QString::number(I, 'f', 2) + " мА");
-    lyout->addWidget(lbl);
-    QPushButton *pb = new QPushButton("Готово");
-    connect(pb, SIGNAL(clicked()), dlg, SLOT(close()));
-    lyout->addWidget(pb);
-    pb = new QPushButton("Отмена");
-    connect(pb, SIGNAL(clicked()), this, SLOT(CancelTune()));
-    connect(pb, SIGNAL(clicked()), dlg, SLOT(close()));
-    lyout->addWidget(pb);
-    dlg->setLayout(lyout);
-    dlg->exec();
-    return NOERROR;
-}
-
 int TuneKIVDialog::LoadWorkConfig()
 {
     // пишем ранее запомненный конфигурационный блок
@@ -1350,55 +1137,6 @@ void TuneKIVDialog::CancelExtData()
     dlg->close();
 }
 
-QWidget *TuneKIVDialog::Bd1W(QWidget *parent)
-{
-    int i;
-    WidgetFormat = "QWidget {background-color: " + QString(Colors::UCONFCLR) + ";}";
-    QString ValuesFormat = "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; color: black;"
-                           "background-color: "
-        + QString(Colors::ACONFOCLR) + "; font: bold 10px;}";
-
-    QWidget *w = new QWidget(parent);
-    QVBoxLayout *lyout = new QVBoxLayout;
-    QGridLayout *glyout = new QGridLayout;
-    QHBoxLayout *hlyout = new QHBoxLayout;
-
-    lyout->addLayout(hlyout);
-
-    for (i = 0; i < 6; ++i)
-    {
-        QString IndexStr = "[" + QString::number(i) + "]";
-        glyout->addWidget(WDFunc::NewLBL(parent, "Ueff_ADC" + IndexStr), 0, i, 1, 1);
-        glyout->addWidget(WDFunc::NewLBLT(parent, "", "value" + QString::number(i), ValuesFormat,
-                              QString::number(i) + "Ueff_ADC" + IndexStr + ".Измеренные сигналы в кодах АЦП"),
-            1, i, 1, 1);
-    }
-
-    glyout->addWidget(WDFunc::NewLBL(parent, "Frequency"), 2, 0, 1, 1);
-    glyout->addWidget(WDFunc::NewLBLT(parent, "", "value6", ValuesFormat, "Частота"), 3, 0, 1, 1);
-    glyout->addWidget(WDFunc::NewLBL(parent, "Pt100"), 4, 0, 1, 1);
-    glyout->addWidget(WDFunc::NewLBLT(parent, "", "value7", ValuesFormat, "Температура"), 5, 0, 1, 1);
-
-    lyout->addLayout(glyout);
-    lyout->addStretch(100);
-    w->setLayout(lyout);
-    w->setStyleSheet(WidgetFormat);
-    return w;
-}
-
-void TuneKIVDialog::FillBd1(QWidget *parent)
-{
-
-    for (int i = 0; i < 6; i++)
-    {
-        WDFunc::SetLBLText(
-            parent, "value" + QString::number(i), WDFunc::StringValueWithCheck(m_Bda_block.Ueff_ADC[i], 4));
-    }
-
-    WDFunc::SetLBLText(parent, "value6", WDFunc::StringValueWithCheck(m_Bda_block.Frequency, 4));
-    WDFunc::SetLBLText(parent, "value7", WDFunc::StringValueWithCheck(m_Bda_block.Pt100, 4));
-}
-
 void TuneKIVDialog::CancelTune() { StdFunc::Cancel(); }
 
 void TuneKIVDialog::RefreshAnalogValues(int bdnum)
@@ -1413,181 +1151,6 @@ void TuneKIVDialog::RefreshAnalogValues(int bdnum)
     default:
         return;
     }
-}
-
-int TuneKIVDialog::TunePt100Channel()
-{
-    QGridLayout *glyout = new QGridLayout;
-    QVBoxLayout *vlyout = new QVBoxLayout;
-    QLabel *lbl = new QLabel("Количество усреднений");
-    ledit = new QLineEdit;
-    ledit->setObjectName("N");
-    QPushButton *pb = new QPushButton;
-    ask = new QDialog();
-    ask->setAttribute(Qt::WA_DeleteOnClose);
-
-    if (EAbstractTuneDialog::CheckPassword() == NOERROR)
-    {
-        // StdFunc::ClearCancel();
-        // QEventLoop EnterLoop;
-        glyout->addWidget(lbl, 0, 1, 1, 1);
-        glyout->addWidget(ledit, 1, 1, 1, 1);
-        pb = new QPushButton("Ok");
-        connect(pb, SIGNAL(clicked()), this, SLOT(TuneChannel()));
-        // connect(pb,SIGNAL(clicked()),&EnterLoop,SLOT(quit()));
-        glyout->addWidget(pb, 2, 1, 1, 1);
-        vlyout->addLayout(glyout);
-        ask->setLayout(vlyout);
-        ask->show();
-        // ask->setModal(false);
-
-        return NOERROR;
-    }
-    return GENERALERROR;
-}
-
-int TuneKIVDialog::TuneChannel()
-{
-
-    int i;
-    QString tmps;
-    WDFunc::LE_read_data(ask, "N", tmps);
-    m_filterSteps = tmps.toInt();
-    ask->close();
-    float sum = 0.0;
-    SaveWorkConfig();
-
-    if (Commands::GetBac(BT_MEZONIN, &m_Bac_block, sizeof(Bac)) != NOERROR)
-    {
-        WARNMSG("Ошибка при приёме данных");
-        return GENERALERROR;
-    }
-    // обновление коэффициентов в соответствующих полях на экране
-    //    FillBac(0);
-    m_VModel->updateModel();
-    m_Bac_newblock = m_Bac_block;
-
-    if (Show80() == GENERALERROR)
-        return GENERALERROR;
-    else
-    {
-        sum = 0;
-        for (i = 0; i < m_filterSteps; i++)
-        {
-            if (Commands::GetBda(BT_NONE, &m_BdaPt100_80Om, sizeof(m_BdaPt100_80Om)) == NOERROR)
-            {
-                sum += m_BdaPt100_80Om.Pt100;
-                QThread::msleep(500);
-            }
-            else
-                return GENERALERROR;
-        }
-        m_BdaPt100_80Om.Pt100 = sum / m_filterSteps; // усредняем
-    }
-
-    if (Show120() == GENERALERROR)
-        return GENERALERROR;
-    else
-    {
-        sum = 0;
-        for (i = 0; i < m_filterSteps; i++)
-        {
-            if (Commands::GetBda(BT_NONE, &m_BdaPt100_120Om, sizeof(m_BdaPt100_120Om)) == NOERROR)
-            {
-                sum += m_BdaPt100_120Om.Pt100;
-                QThread::msleep(500);
-            }
-            else
-                return GENERALERROR;
-        }
-        m_BdaPt100_120Om.Pt100 = sum / m_filterSteps; // усредняем
-    }
-
-    m_Bda_block = m_BdaPt100_120Om;
-    FillBd1(this);
-    CalcNewPt100Coefs();
-    FillNewBac();
-    WaitNSeconds(5);
-
-    if (Commands::WriteBac(BT_MEZONIN, &m_Bac_newblock, sizeof(m_Bac_newblock)) == NOERROR)
-    {
-        QMessageBox::information(this, "Настройка", "Настройка завершена");
-        return NOERROR;
-    }
-    else
-        return GENERALERROR;
-}
-
-int TuneKIVDialog::Show80()
-{
-    if (QMessageBox::question(this, "Настройка",
-            "Подключите банк сопротивлений к модулю\n"
-            "На банке сопротивлений задайте напряжение 80 Ом"
-            " и нажмите OK",
-            nullptr, "Ok", "Close"))
-        return NOERROR;
-    else
-        return GENERALERROR;
-}
-
-int TuneKIVDialog::Show120()
-{
-
-    if (QMessageBox::question(this, "Настройка",
-            "Подключите банк сопротивлений к модулю\n"
-            "На банке сопротивлений задайте напряжение 120 Ом"
-            " и нажмите OK",
-            nullptr, "Ok", "Close"))
-    {
-
-        return NOERROR;
-    }
-    else
-        return GENERALERROR;
-}
-
-void TuneKIVDialog::CalcNewPt100Coefs()
-{
-    if (StdFunc::FloatInRange(m_BdaPt100_120Om.Pt100, m_BdaPt100_80Om.Pt100))
-    {
-        WARNMSG("Ошибка в настроечных коэффициентах, деление на ноль");
-    }
-    else
-    {
-        m_Bac_newblock.Art = ((m_BdaPt100_120Om.Pt100 - m_BdaPt100_80Om.Pt100) / 40); //[ед.АЦП/Ом],
-        m_Bac_newblock.Brt = (2 * m_BdaPt100_120Om.Pt100 - 3 * m_BdaPt100_80Om.Pt100); //[ед.АЦП]
-    }
-}
-
-int TuneKIVDialog::TuneTemp()
-{
-    QGridLayout *glyout = new QGridLayout;
-    QVBoxLayout *vlyout = new QVBoxLayout;
-    QLabel *lbl = new QLabel("Количество усреднений");
-    ledit = new QLineEdit;
-    ledit->setObjectName("N");
-    QPushButton *pb = new QPushButton;
-    ask = new QDialog();
-    ask->setAttribute(Qt::WA_DeleteOnClose);
-
-    if (EAbstractTuneDialog::CheckPassword() == NOERROR)
-    {
-        // StdFunc::ClearCancel();
-        // QEventLoop EnterLoop;
-        glyout->addWidget(lbl, 0, 1, 1, 1);
-        glyout->addWidget(ledit, 1, 1, 1, 1);
-        pb = new QPushButton("Ok");
-        connect(pb, SIGNAL(clicked()), this, SLOT(TuneTempCor()));
-        // connect(pb,SIGNAL(clicked()),&EnterLoop,SLOT(quit()));
-        glyout->addWidget(pb, 2, 1, 1, 1);
-        vlyout->addLayout(glyout);
-        ask->setLayout(vlyout);
-        ask->show();
-        // ask->setModal(false);
-
-        return NOERROR;
-    }
-    return GENERALERROR;
 }
 
 int TuneKIVDialog::TuneTempCor()

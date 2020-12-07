@@ -11,11 +11,11 @@ class TuneKIVCheck : public AbstractTuneDialog
 {
     Q_OBJECT
 public:
-    TuneKIVCheck(int tuneStep, ConfigKIV *ckiv, TuneKIV *kiv, QWidget *parent = nullptr);
+    TuneKIVCheck(int tuneStep, TuneKIV *kiv, QWidget *parent = nullptr);
 
 private:
     TuneKIV *TKIV;
-    ConfigKIV *CKIV;
+    //    ConfigKIV *CKIV;
     //    ConfigKIV::Bci m_BciSaveBlock;
 
     void setMessages() override;
@@ -25,15 +25,13 @@ private:
     //    void GetBdAndFill() override;
     //    Error::Msg saveWorkConfig(int configblocknum) override;
     QWidget *MainUI() override;
-    Error::Msg saveWorkConfig();
 
+    //    Error::Msg setSMode2();
+    Error::Msg showScheme();
+    Error::Msg check();
 private slots:
     //    int ReadAnalogMeasurements() override;
     //    void SetDefCoefs() override;
-
-    Error::Msg setSMode2();
-    Error::Msg setNewConfig();
-    Error::Msg showScheme();
 };
 
 #endif // TUNEKIVCHECK_H

@@ -196,25 +196,28 @@ void AbstractTuneDialog::Wait15Seconds()
     WaitNSeconds(15, false);
 }
 
+void AbstractTuneDialog::startWait()
+{
+    WaitWidget *ww = new WaitWidget;
+    ww->setObjectName("ww");
+    WaitWidget::ww_struct wws = { true, true, WaitWidget::WW_SIMPLE, 0 }; // isallowedtostop = true
+    ww->Init(wws);
+    ww->SetMessage("Пожалуйста, подождите");
+    ww->Start();
+}
+
+void AbstractTuneDialog::stopWait()
+{
+    WaitWidget *ww = this->findChild<WaitWidget *>("ww");
+    if (ww != nullptr)
+        ww->Stop();
+}
+
 bool AbstractTuneDialog::CheckPassword()
 {
     KeyPressDialog dlg; // = new KeyPressDialog;
     return (dlg.CheckPassword("121941")) ? Error::Msg::NoError : Error::Msg::GeneralError;
 }
-
-/*bool AbstractTuneDialog::IsWithinLimits(double number, double base, double threshold)
-{
-    float tmpf = fabs(number - base);
-    if (tmpf < fabs(threshold))
-        return true;
-    else
-    {
-        QMessageBox::critical(this, "Ошибка",
-            "Ошибочное значение: должно быть " + QString::number(base, 'f', 5) + "±"
-                + QString::number(threshold, 'f', 5) + ", а получили: " + QString::number(number, 'f', 5));
-        return false;
-    }
-}*/
 
 // void AbstractTuneDialog::MsgSetVisible(int msg, bool Visible)
 //{
@@ -293,12 +296,13 @@ void AbstractTuneDialog::StartTune()
     WDFunc::SetEnabled(this, "starttune", false);
     if (m_messages.size() > m_tuneFunctions.size())
     {
-        ERMSG("lbls size > pf size");
+        DBGMSG("lbls size > pf size");
         WDFunc::SetEnabled(this, "starttune", true);
         return;
     }
     // сохраняем на всякий случай настроечные коэффициенты
     //    if (SaveBlocksToFiles(DataBlock::DataBlockTypes::BacBlock) != Error::Msg::NoError)
+    readTuneCoefs();
     if (saveAllTuneCoefs() != Error::Msg::NoError)
     {
         if (QMessageBox::question(this, "Вопрос", "Сохранение настроечных коэффициентов не произведено, продолжать?")
@@ -309,7 +313,6 @@ void AbstractTuneDialog::StartTune()
     //    else
     //        TuneFileSaved = false;
     //    ReadAllTuneCoefs();
-    readTuneCoefs();
     //    MeasurementTimer->start();
     StdFunc::clearCancel();
     //    Skipped = false;

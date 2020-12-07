@@ -67,13 +67,14 @@ public:
 
     void WaitNSeconds(int SecondsToWait, bool isAllowedToStop = false);
     void Wait15Seconds();
+    void startWait();
+    void stopWait();
 
     //    void ProcessTune();
     bool CheckPassword();
     virtual void setMessages() = 0;      // заполнить список сообщений
     virtual void setTuneFunctions() = 0; // заполнить список функций настройки
-                                         //    bool IsWithinLimits(double number, double base, double threshold);
-                                         //    void MsgSetVisible(int msg, bool Visible = true);
+    //    void MsgSetVisible(int msg, bool Visible = true);
     void MsgSetVisible(MsgTypes type, int msg, bool Visible = true);
     //    void OkMsgSetVisible(int msg, bool Visible = true);
     //    void ErMsgSetVisible(int msg, bool Visible = true);

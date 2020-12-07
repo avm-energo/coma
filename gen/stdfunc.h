@@ -16,7 +16,8 @@ public:
 
     static void Init();
     static QString VerToStr(quint32);
-    static bool FloatInRange(float var, float value, float tolerance = 0.1f);
+    static bool floatIsWithinLimits(double var, double value, double tolerance = 0.1);
+    static bool toFloat(const QString &text);
     static void SetHomeDir(const QString &dir);
     static QString GetHomeDir();
     static QString GetSystemHomeDir();
@@ -24,6 +25,8 @@ public:
     static QString ForDeviceIP();
     static void SetOrganizationString(const QString &str);
     static QString OrganizationString();
+    static void setN(int n);
+    static int N();
     static void cancel();
     static void clearCancel();
     static bool isCancelled();
@@ -61,6 +64,7 @@ private:
     static bool Emul;
     static bool Cancelled;
     static QString PrbMsg;
+    static int m_N; // степень усреднения для регулировки
 };
 
 #endif // STDFUNC_H
