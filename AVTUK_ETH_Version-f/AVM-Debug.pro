@@ -73,6 +73,7 @@ SOURCES += \
     ../gen/s2.cpp \
     ../gen/stdfunc.cpp \
     ../gen/timefunc.cpp \
+    ../gen/pch.cpp \
     ../interfaces/baseinterface.cpp \
     ../interfaces/protocom.cpp \
     ../interfaces/protocomthread.cpp \

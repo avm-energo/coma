@@ -455,7 +455,7 @@ void Coma::StartWork()
         qCritical("No MainTW in widgets list");
         return;
     }
-    connect(MainTW, &ETabWidget::tabClicked, this, &Coma::MainTWTabClicked);
+    connect(MainTW, &ETabWidget::currentChanged, this, &Coma::MainTWTabChanged);
 
     Connect();
     QElapsedTimer tmr;
@@ -889,22 +889,21 @@ void Coma::AttemptToRec()
     StartWork();
 }
 
-void Coma::ConnectMessage()
-{
-    QMessageBox msgBox;
+// void Coma::ConnectMessage()
+//{
+//    QMessageBox msgBox;
 
-    msgBox.setIcon(QMessageBox::Information);
-    // if (MainInterface == I_USB)
-    // FIXME Исправить карты модулей
-    if (Board::GetInstance().interfaceType() == Board::InterfaceType::USB)
-        // msgBox.setText("Связь с " + ModuleBSI::ModuleTypeString + " установлена");
-        msgBox.setText("Связь установлена");
-    else
-        msgBox.setText("Связь с " + ConnectSettings.name + " установлена");
-    msgBox.show();
-    StdFunc::Wait(INTERVAL::WAIT);
-    msgBox.close();
-}
+//    msgBox.setIcon(QMessageBox::Information);
+//    // FIXME Исправить карты модулей
+//    //    if (Board::GetInstance().interfaceType() == Board::InterfaceType::USB)
+//    //        // msgBox.setText("Связь с " + ModuleBSI::ModuleTypeString + " установлена");
+//    //        msgBox.setText("Связь установлена");
+//    //    else
+//    msgBox.setText("Связь с " + ConnectSettings.name + " установлена");
+//    msgBox.show();
+//    StdFunc::Wait(INTERVAL::WAIT);
+//    msgBox.close();
+//}
 
 void Coma::LoadSettings()
 {
@@ -1284,9 +1283,9 @@ void Coma::keyPressEvent(QKeyEvent *e)
     QMainWindow::keyPressEvent(e);
 }
 
-void Coma::MainTWTabClicked(int tabindex)
+void Coma::MainTWTabChanged(int tabindex)
 {
-    m_Module->parentTWTabClicked(tabindex);
+    m_Module->parentTWTabChanged(tabindex);
     //    if (tabindex == CurTabIndex) // to prevent double function invocation by doubleclicking on tab
     //        return;
     //    CurTabIndex = tabindex;

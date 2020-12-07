@@ -20,7 +20,8 @@ public:
     virtual void reqBSI() = 0;
     virtual void reqFile(quint32, bool isConfigFile = false) = 0;
     virtual void writeFile(quint32, const QByteArray &) = 0;
-    virtual void writeConfigFile();
+    void writeS2File(DataTypes::FilesEnum, S2DataTypes::S2ConfigType *);
+    void writeConfigFile();
     virtual void reqTime() = 0;
     virtual void writeTime(quint32) = 0;
     virtual void writeCommand(Queries::Commands, QVariant = 0) = 0;
@@ -34,7 +35,10 @@ public:
     void reqAlarms(quint32 sigAdr = 0, quint32 sigCount = 0);
     virtual void reqFloats(quint32 sigAdr = 0, quint32 sigCount = 0) = 0;
     //    virtual void reqBitStrings(quint32 sigAdr = 0, quint32 sigCount = 0) = 0;
-
+    /// Прямая запись данных
+    virtual void writeRaw(const QByteArray &)
+    {
+    }
     bool isWorking()
     {
         return m_working;

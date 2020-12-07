@@ -21,6 +21,7 @@ void appendInt16(QByteArray &ba, quint16 size);
 bool isCommandExist(int cmd);
 // Если размер меньше MaxSegmenthLength то сегмент считается последним (единственным)
 inline bool isOneSegment(unsigned len);
+inline bool isSplitted(unsigned len);
 
 // TODO вынести в отдельный класс как static методы?
 QByteArray prepareOk(bool isStart, byte cmd);
@@ -37,6 +38,16 @@ void handleSinglePoint(const QByteArray &ba, const quint16 addr);
 void handleFile(QByteArray &ba, DataTypes::FilesEnum addr, bool isShouldRestored);
 void handleInt(const byte num);
 void handleBool(const bool status = true, int errorSize = 0, int errorCode = 0);
+void handleProgress(const quint64 progress)
+{
+    DataTypes::GeneralResponseStruct resp { DataTypes::GeneralResponseTypes::DataCount, progress };
+    DataManager::addSignalToOutList(DataTypes::SignalTypes::GeneralResponse, resp);
+}
+void handleMaxProgress(const quint64 progress)
+{
+    DataTypes::GeneralResponseStruct resp { DataTypes::GeneralResponseTypes::DataSize, progress };
+    DataManager::addSignalToOutList(DataTypes::SignalTypes::GeneralResponse, resp);
+}
 void handleRawBlock(const QByteArray &ba, quint32 blkNum);
 inline void handleCommand(const QByteArray &ba);
 
@@ -132,8 +143,21 @@ void ProtocomThread::handle(const Proto::Commands cmd)
 
         // Ignore replies to splitted packet
         // Не прибавляем никаких 1 или 2, надо будет проверить
-        if (!isOneSegment(m_currentCommand.ba.size()))
+        if (isSplitted(m_currentCommand.ba.size()))
+        {
+            // For first segment
+            if (progress == NULL)
+                handleMaxProgress(m_currentCommand.ba.size());
+            progress += Proto::Limits::MaxSegmenthLength;
+            // For last segment
+            if (progress > m_currentCommand.ba.size())
+            {
+                progress = m_currentCommand.ba.size();
+            }
+            handleProgress(progress);
+            // m_currentCommand.ba.chop(Proto::Limits::MaxSegmenthLength);
             return;
+        }
         //  GVar MS GMode MS
         if (!m_buffer.second.isEmpty())
             handleInt(m_buffer.second.front());
@@ -214,6 +238,7 @@ void ProtocomThread::checkQueue()
     {
     default:
         isCommandRequested = true;
+        progress = 0;
         m_currentCommand = inp;
         parseRequest(inp);
         break;
@@ -369,6 +394,15 @@ void ProtocomThread::parseRequest(const CommandStruct &cmdStr)
         emit writeDataAttempt(ba);
         break;
     }
+    case Commands::RawCommand:
+    {
+        emit writeDataAttempt(m_currentCommand.ba);
+        break;
+    }
+    case Commands::WriteFile:
+    {
+    }
+
         //    case Commands::WriteMode:
         //    {
         //        m_currentCommand.ba = StdFunc::arrayFromNumber(m_currentCommand.arg1.value<quint8>());
@@ -389,7 +423,7 @@ void ProtocomThread::parseRequest(const CommandStruct &cmdStr)
         //    }
     default:
     {
-        if (!isOneSegment(m_currentCommand.ba.size()))
+        if (isSplitted(m_currentCommand.ba.size()))
         {
             auto query = prepareLongBlk(m_currentCommand);
             while (!query.isEmpty())
@@ -510,6 +544,14 @@ bool isOneSegment(unsigned len)
     return false;
 }
 
+bool isSplitted(unsigned len)
+{
+    using Proto::Limits::MaxSegmenthLength;
+    if (len < MaxSegmenthLength)
+        return false;
+    return true;
+}
+
 QByteArray prepareOk(bool isStart, byte cmd)
 {
     QByteArray tmpba;
@@ -572,9 +614,13 @@ ByteQueue prepareLongBlk(CommandStruct &cmdStr)
             / MaxSegmenthLength  // Максимальная длинна сегмента
         + 1; // Добавляем еще один сегмент в него попадет последняя часть
     bq.reserve(segCount);
-
-    QByteArray tba = StdFunc::arrayFromNumber(cmdStr.arg1.value<quint8>());
+    //    if (cmdStr.arg1.isValid())
+    //    {
+    QByteArray tba;
+    if (cmdStr.arg1.isValid())
+        tba = StdFunc::arrayFromNumber(cmdStr.arg1.value<quint8>());
     tba.append(cmdStr.ba.left(MaxSegmenthLength - 1));
+    //  }
     // CommandStruct temp { cmdStr.cmd, cmdStr.arg1, cmdStr.arg2, tba };
     bq << prepareBlock(cmdStr.cmd, tba);
 
@@ -677,7 +723,8 @@ void handleBool(const bool status, int errorSize, int errorCode)
     {
         DataTypes::GeneralResponseStruct resp { DataTypes::GeneralResponseTypes::Error, 0 };
         DataManager::addSignalToOutList(DataTypes::SignalTypes::GeneralResponse, resp);
-        qCritical() << "Error size: " << errorSize << "Error code: " << errorCode;
+        // Module error code
+        qCritical() << "Error size: " << errorSize << "Error code: " << QString::number(errorCode, 16);
     }
 }
 

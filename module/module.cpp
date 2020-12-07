@@ -176,7 +176,7 @@ QList<UDialog *> Module::dialogs()
 QList<UDialog *> Module::confDialogs()
 {
     QList<UDialog *> list;
-    foreach (UDialog *dlg, m_dialogs)
+    for (UDialog *dlg : m_dialogs)
     {
         if (dlg->objectName().contains("conf"))
             list.append(dlg);
@@ -206,32 +206,36 @@ AlarmStateAll *Module::getAlarmStateAll()
     return m_alarmStateAllDialog;
 }
 
-void Module::parentTWTabClicked(int index)
+void Module::parentTWTabChanged(int index)
 {
-    if (index == m_currentTabIndex) // to prevent double function invocation by doubleclicking on tab
+    if (index == -1)
         return;
-    m_currentTabIndex = index;
+    //    if (index == m_currentTabIndex) // to prevent double function invocation by doubleclicking on tab
+    //        return;
+    //    m_currentTabIndex = index;
 
-    if (m_oldTabIndex >= m_dialogs.size())
-    {
-        DBGMSG("BdUIList size");
-        return;
-    }
-    UDialog *udlg = m_dialogs.at(m_oldTabIndex);
+    //    if (m_oldTabIndex >= m_dialogs.size())
+    //    {
+    //        DBGMSG("BdUIList size");
+    //        return;
+    //    }
+    // UDialog *udlg = m_dialogs.at(m_oldTabIndex);
+    for (auto &dialog : m_dialogs)
+        dialog->setUpdatesDisabled();
     //    UDialog *udlg = qobject_cast<UDialog *>(dlg);
     //    if (udlg)
-    udlg->setUpdatesDisabled();
-    if (m_currentTabIndex >= m_dialogs.size())
-    {
-        DBGMSG("BdUIList size");
-        return;
-    }
-    udlg = m_dialogs.at(m_currentTabIndex);
+    // udlg->setUpdatesDisabled();
+    //    if (m_currentTabIndex >= m_dialogs.size())
+    //    {
+    //        DBGMSG("BdUIList size");
+    //        return;
+    //    }
+    UDialog *udlg = m_dialogs.at(index);
     //    udlg = qobject_cast<UDialog *>(dlg);
     //    if (udlg)
     udlg->setUpdatesEnabled();
     udlg->reqUpdate();
-    m_oldTabIndex = m_currentTabIndex;
+    // m_oldTabIndex = m_currentTabIndex;
 }
 
 // void Module::setDefConf()

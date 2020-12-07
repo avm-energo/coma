@@ -26,6 +26,7 @@ bool StdFunc::Cancelled = false;
 // QString StdFunc::PrbMsg = "";
 QString StdFunc::DeviceIP = "";
 QString StdFunc::s_OrganizationString = "";
+int StdFunc::m_N = 0;
 
 StdFunc::StdFunc()
 {

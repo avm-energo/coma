@@ -75,7 +75,7 @@ public slots:
     //    void FileTimeOut();
     void ReConnect();
     void AttemptToRec();
-    void ConnectMessage();
+    // void ConnectMessage();
 
 private slots:
     void StartWork();
@@ -89,7 +89,7 @@ private slots:
     //    void FillBSI(IEC104Thread::BS104Signals *sig);
     //    void FillBSI(QList<ModBus::BSISignalStruct> sig, unsigned int sigsize);
     // void PasswordCheck(QString psw);
-    void MainTWTabClicked(int tabindex);
+    void MainTWTabChanged(int tabindex);
     void setGeneralProgressBarSize(quint32 size);
     void setGeneralProgressBarCount(quint32 count);
 

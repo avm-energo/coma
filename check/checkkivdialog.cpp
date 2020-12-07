@@ -18,7 +18,6 @@
 #include <QTabWidget>
 #include <QTime>
 #include <QVBoxLayout>
-#include <QtMath>
 
 CheckKIVDialog::CheckKIVDialog(QWidget *parent) : AbstractCheckDialog(parent)
 {
@@ -33,37 +32,15 @@ CheckKIVDialog::CheckKIVDialog(QWidget *parent) : AbstractCheckDialog(parent)
     //    BdNum = 11;
     setAttribute(Qt::WA_DeleteOnClose);
 
-    //    if (Config::MTB_A2)
-    //        sl = QStringList { "Основные", "Дополнительные" };
-
-    //    BdUINum = sl.size();
-
-    //    SetupUI(sl);
     m_BdUIList = { { "Основные", Bd1W() }, { "Дополнительные", Bd2W() } };
+    m_BdUIList.first().widget->setUpdatesEnabled();
 
     Timer->setInterval(ANMEASINT);
 }
 
 CheckKIVDialog::~CheckKIVDialog()
 {
-    //    delete ChKIV;
-    //    delete Ch;
 }
-
-// QWidget *CheckKIVDialog::BdUI(int bdnum)
-//{
-//    switch (bdnum)
-//    {
-
-//    case 0: // Блок #1
-//        return Bd1W();
-//    case 1: // Блок #1
-//        return Bd2W();
-
-//    default:
-//        return new QWidget;
-//    }
-//}
 
 void CheckKIVDialog::PrepareHeadersForFile(int row)
 {
@@ -76,16 +53,6 @@ void CheckKIVDialog::WriteToFile(int row, int bdnum)
     Q_UNUSED(bdnum)
 }
 
-// void CheckKIVDialog::ChooseValuesToWrite()
-//{
-//}
-// void CheckKIVDialog::SetDefaultValuesToWrite()
-//{
-//}
-// void CheckKIVDialog::PrepareAnalogMeasurements()
-//{
-//}
-
 UWidget *CheckKIVDialog::Bd1W()
 {
     int i;
@@ -94,7 +61,7 @@ UWidget *CheckKIVDialog::Bd1W()
     QVBoxLayout *vlyout = new QVBoxLayout;
     QGridLayout *glyout = new QGridLayout;
     // QHBoxLayout *hlyout = new QHBoxLayout;
-    QString phase[3] = { "A", "B", "C" };
+    QString phase { "ABC" };
     // hlyout->addWidget(WDFunc::NewLBL(this, "Номер:"), 0);
     // hlyout->addWidget(WDFunc::NewLBLT(this, "", "value0", ValuesFormat,
     // "Номер"), 0);
@@ -105,13 +72,7 @@ UWidget *CheckKIVDialog::Bd1W()
     // setFont(font);
     gb->setFont(font);
     glyout->addWidget(WDFunc::NewLBL(this, "Температура микроконтроллера, °С"), 0, 0, 1, 1);
-
-    //    QLabel *lbl = new QLabel;
-    //    lbl->setText("Температура микроконтроллера, °С");
-    //    glyout->addWidget(lbl, 0, 0, 1, 1);
-
     glyout->addWidget(WDFunc::NewLBLT(this, "", "101", ValuesFormat, "Температура микроконтроллера, °С"), 1, 0, 1, 1);
-    // hlyout->addWidget(WDFunc::NewLBL(this, "                     "));
     glyout->addWidget(WDFunc::NewLBL(this, "Tamb, °С"), 0, 1, 1, 1);
     glyout->addWidget(WDFunc::NewLBLT(this, "", "4501", ValuesFormat, "Температура окружающей среды, °С"), 1, 1, 1, 1);
     glyout->addWidget(WDFunc::NewLBL(this, "Частота, Гц"), 0, 2, 1, 1);
@@ -127,7 +88,6 @@ UWidget *CheckKIVDialog::Bd1W()
     glyout = new QGridLayout;
     for (i = 0; i < 3; ++i)
     {
-        // QString IndexStr = "[" + QString::number(i) + "]";
         glyout->addWidget(WDFunc::NewLBL(this, "Ueff ф." + phase[i] + ", кВ"), 2, i, 1, 1);
         glyout->addWidget(WDFunc::NewLBLT(this, "", QString::number(1000 + i), ValuesFormat,
                               "Действующие значения напряжений по 1-й гармонике, кВ"),
@@ -143,7 +103,7 @@ UWidget *CheckKIVDialog::Bd1W()
         glyout->addWidget(
             WDFunc::NewLBLT(this, "", QString::number(2423 + i), ValuesFormat, "Тангенсы дельта вводов, %"), 9, i, 1,
             1);
-        glyout->addWidget(WDFunc::NewLBL(this, "dCbush ф." + phase[i] + ", %"), 10, i, 1, 1);
+        glyout->addWidget(WDFunc::NewLBL(this, "dCbush ф." + QString(phase.at(i)) + ", %"), 10, i, 1, 1);
         glyout->addWidget(
             WDFunc::NewLBLT(this, "", QString::number(2426 + i), ValuesFormat, "Изменение емкостей вводов, пФ"), 11, i,
             1, 1);
@@ -214,7 +174,7 @@ UWidget *CheckKIVDialog::Bd2W()
     UWidget *w = new UWidget;
     QVBoxLayout *lyout = new QVBoxLayout;
     QGridLayout *glyout = new QGridLayout;
-    QString phase[3] = { "A", "B", "C" };
+    QString phase { "ABC" };
     QFont font;
 
     QGroupBox *gb = new QGroupBox("Симметричные составляющие");
@@ -286,33 +246,6 @@ UWidget *CheckKIVDialog::Bd2W()
     w->setFloatBdQuery({ { 1000, 16 }, { 1100, 16 }, { 4501, 2 } });
     return w;
 }
-
-/*void CheckKIVDialog::USBUpdate()
-{
-    QTabWidget *CheckTW = this->findChild<QTabWidget *>("checktw0");
-    if (CheckTW == nullptr)
-    {
-        return;
-    }
-
-    if (CheckTW->currentIndex() == IndexWd.at(0) || CheckTW->currentIndex() == IndexWd.at(1))
-    {
-        if (Commands::GetBd(BdNum, &ChKIV->Bd_block1, sizeof(CheckKIV::Bd1)) == Error::Msg::NoError)
-            ChKIV->FillBdUSB(this);
-    }
-
-    if (CheckTW->currentIndex() == IndexWd.at(0) || CheckTW->currentIndex() == IndexWd.at(1))
-    {
-        if (Commands::GetBd(5, &ChKIV->Bd_block5, sizeof(CheckKIV::Bd5)) == Error::Msg::NoError)
-            ChKIV->FillBd5(this);
-    }
-
-    if (CheckTW->currentIndex() == IndexWd.at(1))
-    {
-        if (Commands::GetBd(8, &ChKIV->Bd_block8, sizeof(CheckKIV::Bd8)) == Error::Msg::NoError)
-            ChKIV->FillBd8(this);
-    }
-} */
 
 // void CheckKIVDialog::setConnections()
 //{

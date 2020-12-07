@@ -51,6 +51,13 @@ public:
     // тип платы
     //    QList<int> IndexWd;
     bool m_timerCounter;
+    /*!
+       \brief QList для вкладок текущего виджета
+
+           QList для вкладок текущего виджета, по умолчанию обновление отключено
+            для всех вкладок, если хотим обновлять какую-то вкладку сразу, то
+            необходимо включить обновление для нее
+    */
     QList<BdUIStruct> m_BdUIList;
 
     explicit AbstractCheckDialog(QWidget *parent = nullptr);
@@ -99,7 +106,7 @@ private:
     //    Bip Bip_block;
     bool m_readDataInProgress;
     QElapsedTimer *ElapsedTimeCounter;
-    int m_currentTabIndex, m_oldTabIndex;
+    //  int m_currentTabIndex, m_oldTabIndex;
 
     //    void CheckIP();
     //    void GetIP();
@@ -115,16 +122,12 @@ protected:
                                  "color: blue; font: bold 10px;}";
     void uponInterfaceSetting() override;
 
-protected slots:
-    //    virtual void UpdateModBusData(QList<ModBus::SignalStruct> Signal) = 0;
-    //    void onModbusStateChanged();
-
 private slots:
     void SetTimerPeriod();
     void StartAnalogMeasurementsToFile();
     void StartAnalogMeasurements();
     void TimerTimeout();
-    void TWTabClicked(int index);
+    void TWTabChanged(int index);
 
     // UWidget interface
 };

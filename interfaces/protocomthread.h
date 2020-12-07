@@ -22,9 +22,10 @@ public:
     void parse();
 
 private:
-    QByteArray InData, OutData;
+    // QByteArray InData, OutData;
     QByteArray m_writeData, m_readData;
     bool isCommandRequested = false;
+    quint64 progress = 0;
     void finish(Error::Msg msg);
 
     void parseResponse(QByteArray ba);

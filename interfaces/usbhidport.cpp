@@ -66,7 +66,7 @@ bool UsbHidPort::setupConnection()
 void UsbHidPort::poll()
 {
     int bytes;
-
+    m_waitForReply = false;
     while (Board::GetInstance().connectionState() != Board::ConnectionState::Closed)
     {
         // check if there's any data in input buffer
@@ -89,8 +89,11 @@ void UsbHidPort::poll()
             QByteArray ba(reinterpret_cast<char *>(array.data()), bytes);
             writeLog(ba.toHex(), Direction::FromDevice);
             emit dataReceived(ba);
+            m_waitForReply = false;
         }
         QCoreApplication::processEvents(QEventLoop::AllEvents);
+        if (m_waitForReply)
+            continue;
         // write data to port if there's something delayed in out queue
         checkQueue();
     }
@@ -200,6 +203,7 @@ void UsbHidPort::checkQueue()
     {
         QByteArray ba = m_writeQueue.takeFirst();
         writeData(ba);
+        m_waitForReply = true;
     }
 }
 
