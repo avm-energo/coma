@@ -5,14 +5,15 @@
 #include "error.h"
 
 #include <QVector>
-
+#define MAXSIZE 200000
 class S2
 {
 public:
     S2();
     // S2: Сборщик в память:
     // 0 - успешно, иначе код ошибки S2: получение размера:
-    static Error::Msg StoreDataMem(void *, QVector<S2DataTypes::DataRec> *, int fname);
+    static void StoreDataMem(void *, QVector<S2DataTypes::DataRec> *, int fname);
+    static void StoreDataMem(QByteArray &, QVector<S2DataTypes::DataRec> *, int fname);
     //>0 - успешно, иначе код ошибки  S2: Разборщик из памяти
     static int StoreDataSize(S2DataTypes::FileHeader *, S2DataTypes::DataRec *);
     // 0 - успешно, иначе код ошибки S2: Поиск элемента в массиве описаний
@@ -22,15 +23,16 @@ public:
     static S2DataTypes::DataRec *FindElem(QVector<S2DataTypes::DataRec> *, quint32);
     static void findElemAndWriteIt(QVector<S2DataTypes::DataRec> *s2config, const DataTypes::ConfParameterStruct &cfp);
     static Error::Msg findElemAndWriteIt(S2DataTypes::DataRec *record, const DataTypes::ConfParameterStruct &cfp);
+    static S2DataTypes::S2ConfigType ParseHexToS2(QByteArray &ba);
     static quint32 getTime32();
     static quint32 GetCRC32(char *, quint32);
-    static void updCRC32(char byte, quint32 *dwCRC32);
-    static bool CheckCRC32(void *m, quint32 length, quint32 crctocheck);
+    static void updCRC32(const char byte, quint32 *dwCRC32);
+    static bool CheckCRC32(void *m, const quint32 length, const quint32 crctocheck);
 
     static quint32 updateCRC32(unsigned char ch, quint32 crc);
     static quint32 crc32buf(const QByteArray &data);
 
-    static QVector<S2DataTypes::DataRec> *config;
+    static S2DataTypes::S2ConfigType *config;
 
 private:
     //    const unsigned long dwPolynomial = 0xEDB88320;

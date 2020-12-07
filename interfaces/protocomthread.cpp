@@ -1,6 +1,7 @@
 #include "protocomthread.h"
 
 #include "../gen/datamanager.h"
+#include "../gen/files.h"
 #include "../gen/logclass.h"
 #include "../gen/s2.h"
 #include "../gen/stdfunc.h"
@@ -32,8 +33,8 @@ void handleBitString(const QByteArray &ba, quint16 sigAddr);
 void handleBitStringArray(const QByteArray &ba, QList<quint16> arr_addr);
 void handleFloat(const QByteArray &ba, quint32 sigAddr);
 void handleFloatArray(const QByteArray &ba, quint32 sigAddr, quint32 sigCount);
-void handleSinglePoint(const QByteArray &ba);
-void handleFile(QByteArray &ba, quint16 addr, bool isShouldRestored);
+void handleSinglePoint(const QByteArray &ba, const quint16 addr);
+void handleFile(QByteArray &ba, DataTypes::FilesEnum addr, bool isShouldRestored);
 void handleInt(const byte num);
 void handleBool(const bool status = true, int errorSize = 0, int errorCode = 0);
 void handleRawBlock(const QByteArray &ba, quint32 blkNum);
@@ -175,7 +176,7 @@ void ProtocomThread::handle(const Proto::Commands cmd)
         if (addr != alarm_reg)
             handleFloatArray(m_buffer.second, addr, count);
         else
-            handleSinglePoint(m_buffer.second);
+            handleSinglePoint(m_buffer.second, addr);
 
         break;
 
@@ -191,7 +192,7 @@ void ProtocomThread::handle(const Proto::Commands cmd)
 
     case Commands::ReadFile:
 
-        handleFile(m_buffer.second, addr, static_cast<bool>(count));
+        handleFile(m_buffer.second, FilesEnum(addr), static_cast<bool>(count));
         break;
 
     default:
@@ -217,6 +218,107 @@ void ProtocomThread::checkQueue()
         parseRequest(inp);
         break;
     }
+}
+
+// void JournalDialog::TryGetJourByUSB()
+//{
+//    QString filetofind;
+//    int jourtype = GetJourNum(sender()->objectName());
+//    switch (jourtype)
+//    {
+//    case Files::JourSys:
+//        filetofind = "system.dat";
+//        break;
+//    case Files::JourWork:
+//        filetofind = "workj.dat";
+//        break;
+//    case Files::JourMeas:
+//        filetofind = "measj.dat";
+//        break;
+//    default:
+//        ERMSG("Incorrect jour type");
+//        return;
+//        break;
+//    }
+
+//    JourType = jourtype;
+//    JourFuncs->SetJourType(jourtype);
+//    // QByteArray ba;
+//    QStringList drives = Files::Drives();
+//    if (!drives.isEmpty())
+//    {
+//        QStringList files = Files::SearchForFile(drives, filetofind);
+//        if (!files.isEmpty())
+//        {
+//            JourFile = Files::GetFirstDriveWithLabel(files, "AVM");
+//            JourFuncs->SetJourFile(JourFile);
+//            if (JourFile.isEmpty())
+//                GetJour();
+//            else
+//                StartReadJourFile();
+//        }
+//        else
+//            GetJour();
+//    }
+//    else
+//        GetJour();
+//}
+void ProtocomThread::fileHelper(DataTypes::FilesEnum fileNum)
+{
+    QString fileToFind;
+    switch (fileNum)
+    {
+    case DataTypes::JourSys:
+    {
+        fileToFind = "system.dat";
+        break;
+    }
+    case DataTypes::JourMeas:
+    {
+        fileToFind = "measj.dat";
+        break;
+    }
+    case DataTypes::JourWork:
+    {
+        fileToFind = "workj.dat";
+        break;
+    }
+
+    default:
+    {
+        m_currentCommand.ba = StdFunc::arrayFromNumber(fileNum);
+        QByteArray ba = prepareBlock(m_currentCommand);
+        emit writeDataAttempt(ba);
+        return;
+    }
+    }
+    QStringList drives = Files::Drives();
+    if (drives.isEmpty())
+    {
+        qCritical() << Error::NoDeviceError;
+        return;
+    }
+    QStringList files = Files::SearchForFile(drives, fileToFind);
+    if (files.isEmpty())
+    {
+        qCritical() << Error::FileNameError;
+        return;
+    }
+    QString JourFile = Files::GetFirstDriveWithLabel(files, "AVM");
+    if (JourFile.isEmpty())
+    {
+        qCritical() << Error::FileNameError;
+        return;
+    }
+    QFile file(JourFile);
+    if (!file.open(QIODevice::ReadOnly))
+    {
+        qCritical() << Error::FileOpenError;
+        return;
+    }
+    QByteArray ba = file.readAll();
+    handleFile(ba, fileNum, false);
+    isCommandRequested = false;
 }
 
 void ProtocomThread::parseRequest(const CommandStruct &cmdStr)
@@ -256,9 +358,8 @@ void ProtocomThread::parseRequest(const CommandStruct &cmdStr)
         //    }
     case Commands::ReadFile:
     {
-        m_currentCommand.ba = StdFunc::arrayFromNumber(m_currentCommand.arg1.value<quint16>());
-        QByteArray ba = prepareBlock(m_currentCommand);
-        emit writeDataAttempt(ba);
+        // const Files::FilesEnum fileNumber = m_currentCommand.arg1.value<Files::FilesEnum>();
+        fileHelper(m_currentCommand.arg1.value<DataTypes::FilesEnum>());
         break;
     }
     case Commands::WriteTime:
@@ -526,17 +627,17 @@ void handleFloatArray(const QByteArray &ba, quint32 sigAddr, quint32 sigCount)
     }
 }
 
-void handleSinglePoint(const QByteArray &ba)
+void handleSinglePoint(const QByteArray &ba, const quint16 addr)
 {
     for (quint32 i = 0; i != quint32(ba.size()); ++i)
     {
         quint8 value = ba.at(i);
-        DataTypes::SinglePointWithTimeStruct data { i, value, 0 };
+        DataTypes::SinglePointWithTimeStruct data { (addr + i), value, 0 };
         DataManager::addSignalToOutList(DataTypes::SinglePointWithTime, data);
     }
 }
 
-void handleFile(QByteArray &ba, quint16 addr, bool isShouldRestored)
+void handleFile(QByteArray &ba, DataTypes::FilesEnum addr, bool isShouldRestored)
 {
 
     if (isShouldRestored)

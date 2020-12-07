@@ -110,23 +110,23 @@ void JournalDialog::SetupUI()
     QTabWidget *ConfTW = new QTabWidget;
     ConfTW->setObjectName("conftw4");
     ConfTW->tabBar()->setStyleSheet(ConfTWss);
-    ConfTW->addTab(JourTab(Files::JourWork), "Рабочий журнал");
-    ConfTW->addTab(JourTab(Files::JourSys), "Системный журнал");
-    ConfTW->addTab(JourTab(Files::JourMeas), "Журнал измерений");
+    ConfTW->addTab(JourTab(DataTypes::JourWork), "Рабочий журнал");
+    ConfTW->addTab(JourTab(DataTypes::JourSys), "Системный журнал");
+    ConfTW->addTab(JourTab(DataTypes::JourMeas), "Журнал измерений");
 
     lyout->addWidget(ConfTW);
     setLayout(lyout);
     if (StdFunc::IsInEmulateMode())
     {
-        WDFunc::SetEnabled(this, "gj." + QString::number(Files::JourSys), false);
-        WDFunc::SetEnabled(this, "gj." + QString::number(Files::JourMeas), false);
-        WDFunc::SetEnabled(this, "gj." + QString::number(Files::JourWork), false);
-        WDFunc::SetEnabled(this, "ej." + QString::number(Files::JourSys), false);
-        WDFunc::SetEnabled(this, "ej." + QString::number(Files::JourMeas), false);
-        WDFunc::SetEnabled(this, "ej." + QString::number(Files::JourWork), false);
-        WDFunc::SetEnabled(this, "sj." + QString::number(Files::JourSys), false);
-        WDFunc::SetEnabled(this, "sj." + QString::number(Files::JourMeas), false);
-        WDFunc::SetEnabled(this, "sj." + QString::number(Files::JourWork), false);
+        WDFunc::SetEnabled(this, "gj." + QString::number(DataTypes::JourSys), false);
+        WDFunc::SetEnabled(this, "gj." + QString::number(DataTypes::JourMeas), false);
+        WDFunc::SetEnabled(this, "gj." + QString::number(DataTypes::JourWork), false);
+        WDFunc::SetEnabled(this, "ej." + QString::number(DataTypes::JourSys), false);
+        WDFunc::SetEnabled(this, "ej." + QString::number(DataTypes::JourMeas), false);
+        WDFunc::SetEnabled(this, "ej." + QString::number(DataTypes::JourWork), false);
+        WDFunc::SetEnabled(this, "sj." + QString::number(DataTypes::JourSys), false);
+        WDFunc::SetEnabled(this, "sj." + QString::number(DataTypes::JourMeas), false);
+        WDFunc::SetEnabled(this, "sj." + QString::number(DataTypes::JourWork), false);
     }
 }
 
@@ -140,17 +140,17 @@ QWidget *JournalDialog::JourTab(int jourtype)
 
     switch (jourtype)
     {
-    case Files::JourWork:
+    case DataTypes::JourWork:
         str = "рабочий журнал";
         tvname = "work";
         mdl = ProxyWorkModel;
         break;
-    case Files::JourSys:
+    case DataTypes::JourSys:
         str = "системный журнал";
         tvname = "system";
         mdl = ProxySysModel;
         break;
-    case Files::JourMeas:
+    case DataTypes::JourMeas:
         str = "журнал измерений";
         tvname = "meas";
         mdl = ProxyMeasModel;
@@ -186,44 +186,45 @@ void JournalDialog::TryGetJourByUSB()
 {
     QString filetofind;
     int jourtype = GetJourNum(sender()->objectName());
-    switch (jourtype)
-    {
-    case Files::JourSys:
-        filetofind = "system.dat";
-        break;
-    case Files::JourWork:
-        filetofind = "workj.dat";
-        break;
-    case Files::JourMeas:
-        filetofind = "measj.dat";
-        break;
-    default:
-        ERMSG("Incorrect jour type");
-        return;
-        break;
-    }
+    iface()->reqFile(DataTypes::FilesEnum(jourtype));
+    //    switch (jourtype)
+    //    {
+    //    case DataTypes::JourSys:
+    //        filetofind = "system.dat";
+    //        break;
+    //    case DataTypes::JourWork:
+    //        filetofind = "workj.dat";
+    //        break;
+    //    case DataTypes::JourMeas:
+    //        filetofind = "measj.dat";
+    //        break;
+    //    default:
+    //        ERMSG("Incorrect jour type");
+    //        return;
+    //        break;
+    //    }
 
-    JourType = jourtype;
-    JourFuncs->SetJourType(jourtype);
-    // QByteArray ba;
-    QStringList drives = Files::Drives();
-    if (!drives.isEmpty())
-    {
-        QStringList files = Files::SearchForFile(drives, filetofind);
-        if (!files.isEmpty())
-        {
-            JourFile = Files::GetFirstDriveWithLabel(files, "AVM");
-            JourFuncs->SetJourFile(JourFile);
-            if (JourFile.isEmpty())
-                GetJour();
-            else
-                StartReadJourFile();
-        }
-        else
-            GetJour();
-    }
-    else
-        GetJour();
+    //    JourType = jourtype;
+    //    JourFuncs->SetJourType(DataTypes::FilesEnum(jourtype));
+    //    // QByteArray ba;
+    //    QStringList drives = Files::Drives();
+    //    if (!drives.isEmpty())
+    //    {
+    //        QStringList files = Files::SearchForFile(drives, filetofind);
+    //        if (!files.isEmpty())
+    //        {
+    //            JourFile = Files::GetFirstDriveWithLabel(files, "AVM");
+    //            JourFuncs->SetJourFile(JourFile);
+    //            if (JourFile.isEmpty())
+    //                GetJour();
+    //            else
+    //                StartReadJourFile();
+    //        }
+    //        else
+    //            GetJour();
+    //    }
+    //    else
+    //        GetJour();
 }
 
 void JournalDialog::GetJour()
@@ -270,15 +271,15 @@ void JournalDialog::SaveJour()
     int jtype = GetJourNum(sender()->objectName());
     switch (jtype)
     {
-    case Files::JourSys:
+    case DataTypes::JourSys:
         tvname = "system";
         jourfilestr += "SysJ ";
         break;
-    case Files::JourWork:
+    case DataTypes::JourWork:
         tvname = "work";
         jourfilestr += "WorkJ ";
         break;
-    case Files::JourMeas:
+    case DataTypes::JourMeas:
         tvname = "meas";
         jourfilestr += "MeasJ ";
         break;

@@ -242,6 +242,7 @@ const QStringList eventJourHeaders {
 constexpr quint32 sysJourId = 0;
 struct EventStruct
 {
+    EventStruct() = default;
     quint64 Time;
     quint8 EvType;
     quint8 EvNum[3];
@@ -290,13 +291,13 @@ const QStringList HthToolTip {
 
 namespace AVM_KTF
 {
-const QStringList accidentEvents {
+const QStringList criticalEvents {
     "Аварийное сообщение по недопустимому превышению температуры обмотки", //
     "Аварийное сообщение по недопустимому уровню пускового тока         "  //
 };
-const quint32 accidentCount = accidentEvents.size();
-constexpr quint32 accidentFlags = 0x00000005;
-const QStringList warnEvents {
+const quint32 criticalCount = criticalEvents.size();
+constexpr quint32 criticalFlags = 0x00000005;
+const QStringList warningEvents {
     "Отсутствует сигнал напряжения фазы A                   ", //
     "Отсутствует сигнал напряжения фазы B                   ", //
     "Отсутствует сигнал напряжения фазы С                   ", //
@@ -311,7 +312,7 @@ const QStringList warnEvents {
     "Неисправны все датчики температуры обмотки             ", //
     "Сигнализация по опасному уровню пускового тока         "  //
 };
-constexpr quint32 warnFlags = 0xfffa;
+constexpr quint32 warningFlags = 0xfffa;
 constexpr quint32 workJourId = 5011;
 struct MeasureStruct
 {
@@ -390,13 +391,13 @@ const QStringList measJourHeaders {
 
 namespace AVM_KDV
 {
-const QStringList accidentEvents {
+const QStringList criticalEvents {
     "Аварийное сообщение по недопустимому превышению температуры обмотки", //
     "Аварийное сообщение по недопустимому уровню пускового тока         "  //
 };
-const quint32 accidentCount = accidentEvents.size();
-constexpr quint32 accidentFlags = 0x00000005;
-const QStringList warnEvents {
+const quint32 criticalCount = criticalEvents.size();
+constexpr quint32 criticalFlags = 0x00000005;
+const QStringList warningEvents {
     "Отсутствует сигнал напряжения фазы A                   ", //
     "Отсутствует сигнал напряжения фазы B                   ", //
     "Отсутствует сигнал напряжения фазы С                   ", //
@@ -416,7 +417,7 @@ const QStringList warnEvents {
     "Не заданы паспортные значения                          ", //
     "Сигнализация по повышенному небалансу токов            "  //
 };
-constexpr quint32 warnFlags = 0x1fff1ec6;
+constexpr quint32 warningFlags = 0x1fff1ec6;
 constexpr quint32 workJourId = 3010;
 struct MeasureStruct
 {

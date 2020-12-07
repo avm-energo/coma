@@ -24,6 +24,7 @@ int main(int argc, char *argv[])
     Protocom usbdevice;
     usbdevice.start(devices.first());
     usbdevice.reqBSI();
+    usbdevice.writeCommand(Queries::QUSB_GetMode);
     //    usbdevice.writeCommand(Queries::QUSB_ReqBlkDataA, 1);
     //    usbdevice.writeCommand(Queries::QUSB_ReqBlkDataA, 1);
     //    usbdevice.writeCommand(Queries::QUSB_ReqBlkDataA, 1);
@@ -41,6 +42,8 @@ int main(int argc, char *argv[])
     DataTypes::BlockStruct block { blk, data };
     QVariant value;
     value.setValue(block);
+    usbdevice.reqAlarms(3011, 25);
+    usbdevice.reqFile(DataTypes::FilesEnum::JourSys);
     // usbdevice.reqFloats(2420, 14);
     //    usbdevice.reqBSI();
     //    usbdevice.writeCommand(Queries::QUSB_ReqBlkDataA, 1);
@@ -60,7 +63,7 @@ int main(int argc, char *argv[])
     //    usbdevice.reqBSI();
     //    usbdevice.writeCommand(Queries::QUSB_ReqBlkDataA, 1);
     //    usbdevice.reqFloats(101, 2);
-    //usbdevice.writeCommand(Queries::QC_WriteUserValues, value);
+    // usbdevice.writeCommand(Queries::QC_WriteUserValues, value);
     qDebug() << "Hello world";
     return a.exec();
 }

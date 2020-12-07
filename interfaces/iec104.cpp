@@ -132,13 +132,13 @@ void IEC104::writeFile(quint32 filenum, const QByteArray &file)
     DataManager::addToInQueue(inp);
 }
 
-void IEC104::writeConfigFile(S2DataTypes::S2ConfigType *s2config)
-{
-    QByteArray ba;
-    S2::StoreDataMem(&ba.data()[0], s2config, Files::Config);
-    Commands104::CommandStruct inp { Commands104::CM104_WRITEFILE, Files::Config, 0, ba };
-    DataManager::addToInQueue(inp);
-}
+// void IEC104::writeConfigFile(S2DataTypes::S2ConfigType *s2config)
+//{
+//    QByteArray ba;
+//    S2::StoreDataMem(&ba.data()[0], s2config, Files::Config);
+//    Commands104::CommandStruct inp { Commands104::CM104_WRITEFILE, Files::Config, 0, ba };
+//    DataManager::addToInQueue(inp);
+//}
 
 void IEC104::reqTime()
 {

@@ -25,8 +25,8 @@ IEC104Thread::IEC104Thread(LogClass *log, QObject *parent) : QObject(parent)
     m_sendTestTimer = new QTimer;
     m_sendTestTimer->setInterval(5000);
 #ifndef DEBUG
-    connect(m_timer104, SIGNAL(timeout()), this, SLOT(Stop()));
-    connect(m_sendTestTimer, SIGNAL(timeout()), this, SLOT(SendTestAct()));
+    connect(m_timer104, &QTimer::timeout, this, &IEC104Thread::Stop);
+    connect(m_sendTestTimer, &QTimer::timeout, this, &IEC104Thread::SendTestAct);
     m_sendTestTimer->start();
 #endif
     m_noAnswer = 0;
@@ -240,10 +240,11 @@ Error::Msg IEC104Thread::isIncomeDataValid(QByteArray ba)
 
 void IEC104Thread::ParseIFormat(QByteArray &ba) // основной разборщик
 {
+    using namespace Commands104;
     DataUnitIdentifier DUI;
     try
     {
-        DUI.typeIdent = ba.at(0);
+        DUI.typeIdent = TypeId(ba.at(0));
         DUI.qualifier.Number = ba.at(1) & 0x7f;
         DUI.qualifier.SQ = ba.at(1) >> 7;
         DUI.cause.cause = ba.at(2) & 0x3F;
@@ -272,11 +273,12 @@ void IEC104Thread::ParseIFormat(QByteArray &ba) // основной разбор
                 objectAdr++;
             switch (DUI.typeIdent)
             {
-            case M_EI_NA_1: // 70 тип - подтверждение окончания инициализации
+
+            case TypeId::M_EI_NA_1:
             {
                 break;
             }
-            case M_ME_TF_1: // 36 тип - измеренные данные с плавающей запятой
+            case TypeId::M_ME_TF_1:
             {
                 //                if (cntflTimestamp >= DUI.qualifier.Number)
                 //                {
@@ -303,10 +305,10 @@ void IEC104Thread::ParseIFormat(QByteArray &ba) // основной разбор
                 break;
             }
 
-            case C_IC_NA_1: // 100
+            case TypeId::C_IC_NA_1:
                 break;
 
-            case M_ME_NC_1: // 13 тип - измеренные данные с плавающей запятой
+            case TypeId::M_ME_NC_1:
             {
                 DataTypes::FloatWithTimeStruct signal;
                 //                if (cntfl >= DUI.qualifier.Number)
@@ -331,7 +333,7 @@ void IEC104Thread::ParseIFormat(QByteArray &ba) // основной разбор
                 break;
             }
 
-            case M_SP_NA_1:
+            case TypeId::M_SP_NA_1:
             {
                 //                if (cntspon > 255)
                 //                {
@@ -351,7 +353,7 @@ void IEC104Thread::ParseIFormat(QByteArray &ba) // основной разбор
                 break;
             }
 
-            case M_SP_TB_1:
+            case TypeId::M_SP_TB_1:
             {
                 //                if (cntspon > 255)
                 //                {
@@ -374,7 +376,7 @@ void IEC104Thread::ParseIFormat(QByteArray &ba) // основной разбор
                 break;
             }
 
-            case M_BO_NA_1:
+            case TypeId::M_BO_NA_1:
             {
                 //                if (cntbs >= DUI.qualifier.Number)
                 //                {
@@ -400,7 +402,7 @@ void IEC104Thread::ParseIFormat(QByteArray &ba) // основной разбор
                 break;
             }
 
-            case F_SR_NA_1: // секция готова
+            case TypeId::F_SR_NA_1:
             {
                 m_log->info("Section ready");
                 unsigned char filenum = ba.at(9) | (ba.at(10) << 8);
@@ -408,7 +410,7 @@ void IEC104Thread::ParseIFormat(QByteArray &ba) // основной разбор
                 break;
             }
 
-            case F_FR_NA_1: // файл готов
+            case TypeId::F_FR_NA_1:
             {
                 m_log->info("File ready");
                 unsigned char filenum = ba.at(9) | (ba.at(10) << 8);
@@ -423,7 +425,7 @@ void IEC104Thread::ParseIFormat(QByteArray &ba) // основной разбор
                 break;
             }
 
-            case F_SG_NA_1: // сегмент
+            case TypeId::F_SG_NA_1:
             {
                 m_log->info(
                     "Segment ready: RDSize=" + QString::number(ba.at(12), 16) + ", num=" + QString::number(ba.at(13)));
@@ -439,7 +441,7 @@ void IEC104Thread::ParseIFormat(QByteArray &ba) // основной разбор
                 break;
             }
 
-            case F_LS_NA_1: // последняя секция, последнй сегмент
+            case TypeId::F_LS_NA_1:
             {
                 m_log->info("Last section, ba[12] = " + QString::number(ba.at(12)));
                 switch (ba.at(12))
@@ -469,7 +471,7 @@ void IEC104Thread::ParseIFormat(QByteArray &ba) // основной разбор
                     }
                     else
                     {
-                        DataTypes::FileStruct df { static_cast<quint32>(filetype), m_readData };
+                        DataTypes::FileStruct df { static_cast<DataTypes::FilesEnum>(filetype), m_readData };
                         DataManager::addSignalToOutList(DataTypes::SignalTypes::File, df);
                     }
                     //                    if (filetype == 0x01) // если файл конфигурации
@@ -499,7 +501,7 @@ void IEC104Thread::ParseIFormat(QByteArray &ba) // основной разбор
                 break;
             }
 
-            case F_SC_NA_1: // запрос файла, секции
+            case TypeId::F_SC_NA_1:
             {
                 if (ba.at(12) == 0x02) //запрос файла
                 {
@@ -514,7 +516,7 @@ void IEC104Thread::ParseIFormat(QByteArray &ba) // основной разбор
                 break;
             }
 
-            case F_AF_NA_1: // подтверждение файла, секции
+            case TypeId::F_AF_NA_1:
             {
                 m_log->info("Last section of file " + QString::number(ba[12]) + " confirm");
                 if (ba.at(12) == 0x03) // подтверждение секции
@@ -528,7 +530,7 @@ void IEC104Thread::ParseIFormat(QByteArray &ba) // основной разбор
                 break;
             }
 
-            case C_SC_NA_1:
+            case TypeId::C_SC_NA_1:
             {
                 if (DUI.cause.cause == 10)
                 {
@@ -540,7 +542,7 @@ void IEC104Thread::ParseIFormat(QByteArray &ba) // основной разбор
                 break;
             }
 
-            case C_SE_NC_1:
+            case TypeId::C_SE_NC_1:
             {
                 if (DUI.cause.cause == 10)
                     m_signalCounter++;

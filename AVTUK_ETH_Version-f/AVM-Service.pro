@@ -68,6 +68,7 @@ SOURCES += \
     ../gen/files.cpp \
     ../gen/logclass.cpp \
     ../gen/logger.cpp \
+    ../gen/helper.cpp \
     ../gen/s2.cpp \
     ../gen/stdfunc.cpp \
     ../gen/timefunc.cpp \
@@ -94,10 +95,6 @@ SOURCES += \
     ../module/journkiv.cpp \
     ../module/journktf.cpp \
     ../module/module.cpp \
-    ../module/warn.cpp \
-    ../module/warnkdv.cpp \
-    ../module/warnkiv.cpp \
-    ../module/warnktf.cpp \
     ../startup/abstractstartupdialog.cpp \
     ../startup/startupkdvdialog.cpp \
     ../startup/startupkivdialog.cpp \
@@ -122,8 +119,6 @@ SOURCES += \
 PRECOMPILED_HEADER = ../gen/pch.h
 
 HEADERS += \
-    ../module/module_kiv.h \
-    ../module/module_kxx.h \
     coma.h \
     ../check/check.h \
     ../check/abstractcheckdialog.h \
@@ -165,6 +160,7 @@ HEADERS += \
     ../gen/files.h \
     ../gen/logger.h \
     ../gen/logclass.h \
+    ../gen/helper.h \
     ../gen/s2.h \
     ../gen/stdfunc.h \
     ../gen/timefunc.h \
@@ -195,11 +191,9 @@ HEADERS += \
     ../module/journkiv.h \
     ../module/journktf.h \
     ../module/module.h \
-    ../module/warn.h \
-    ../module/warnkdv.h \
-    ../module/warnkiv.h \
-    ../module/warnktf.h \
     ../module/modules.h \
+    ../module/module_kiv.h \
+    ../module/module_kxx.h \
     ../module/registers.h \
     ../startup/abstractstartupdialog.h \
     ../startup/startupkdvdialog.h \

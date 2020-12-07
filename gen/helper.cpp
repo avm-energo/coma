@@ -2,14 +2,14 @@
 
 QDebug operator<<(QDebug debug, const DataTypes::BitStringStruct &st)
 {
-    debug.nospace() << QString::number(st.sigAdr, 16) << ":" << QString::number(st.sigVal, 16) << ":"
+    debug.nospace() << QString::number(st.sigAdr) << ":" << QString::number(st.sigVal, 16) << ":"
                     << QString::number(st.sigQuality, 16);
     return debug.maybeSpace();
 }
 
 QDebug operator<<(QDebug debug, const DataTypes::FloatWithTimeStruct &st)
 {
-    debug.nospace() << QString::number(st.sigAdr, 16) << ":" << QString::number(st.sigVal) << ":"
+    debug.nospace() << QString::number(st.sigAdr) << ":" << QString::number(st.sigVal) << ":"
                     << QString::number(st.sigQuality, 16) << ":" << QString::number(st.CP56Time, 16);
     return debug.maybeSpace();
 }
@@ -22,21 +22,21 @@ QDebug operator<<(QDebug debug, const DataTypes::FloatStruct &st)
 
 QDebug operator<<(QDebug debug, const DataTypes::SinglePointWithTimeStruct &st)
 {
-    debug.nospace() << QString::number(st.sigAdr, 16) << ":" << QString::number(st.sigVal, 16) << ":"
+    debug.nospace() << QString::number(st.sigAdr) << ":" << QString::number(st.sigVal, 16) << ":"
                     << QString::number(st.CP56Time, 16);
     return debug.maybeSpace();
 }
 
 QDebug operator<<(QDebug debug, const DataTypes::FileStruct &st)
 {
-    debug.nospace() << QString::number(st.filenum, 16) << ":"
+    debug.nospace() << QString::number(st.filenum) << ":"
                     << "File size: " << QString::number(st.filedata.size());
     return debug.maybeSpace();
 }
 
 QDebug operator<<(QDebug debug, const DataTypes::ConfParameterStruct &st)
 {
-    debug.nospace() << QString::number(st.ID, 16) << ":" << st.data.toHex();
+    debug.nospace() << QString::number(st.ID) << ":" << st.data.toHex();
     return debug.maybeSpace();
 }
 
@@ -48,7 +48,7 @@ QDebug operator<<(QDebug debug, const DataTypes::BlockStruct &st)
 
 QDebug operator<<(QDebug debug, const DataTypes::ConfParametersListStruct &list)
 {
-    for (const auto &st : list.parlist)
+    for (const auto &st : list)
         debug.nospace() << st;
     return debug.maybeSpace();
 }

@@ -8,17 +8,17 @@
 
 #define CIRCLE_RADIUS 15
 
-class Alarm : public QWidget
+class BaseAlarm : public QWidget
 {
     Q_OBJECT
 public:
-    int m_alarmBdNum;
+    // int m_alarmBdNum;
     int m_startAlarmAddress;
     std::bitset<32> m_alarmFlags;       // '1' equals alarm
     std::bitset<32> m_actualAlarmFlags; // '1' equals alarm
 
-    explicit Alarm(QWidget *parent = nullptr);
-    int realAlarmSize();
+    explicit BaseAlarm(QWidget *parent = nullptr);
+    // int realAlarmSize();
     void updatePixmap(bool isset, int position);
 
 public slots:
@@ -29,7 +29,7 @@ signals:
     void updateAlarm(bool value);
 
 private:
-    int m_realAlarmSize;
+    // int m_realAlarmSize;
 
 protected:
     void showEvent(QShowEvent *e);

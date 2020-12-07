@@ -16,7 +16,7 @@ Console::Console(QObject *parent) : QObject(parent)
         [this](const DataTypes::SinglePointWithTimeStruct &st) { print(st); });
     connect(&manager, &DataManager::floatReceived, [this](const DataTypes::FloatStruct &st) { print(st); });
     connect(&manager, &DataManager::fileReceived, [this](const DataTypes::FileStruct &st) { print(st); });
-    connect(&manager, &DataManager::confParametersReceived,
+    connect(&manager, &DataManager::confParametersListReceived,
         [this](const DataTypes::ConfParametersListStruct &st) { print(st); });
     connect(
         &manager, &DataManager::responseReceived, [this](const DataTypes::GeneralResponseStruct &st) { print(st); });

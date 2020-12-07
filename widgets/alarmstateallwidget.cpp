@@ -40,11 +40,8 @@ AlarmStateAll::AlarmStateAll(QWidget *parent) : QWidget(parent)
 
     //    w->setLayout(vlayout);
     lyout->addLayout(vlayout);
-
-    //    lyout->addWidget(w);
-    QPushButton *pb = new QPushButton("Ok");
-    connect(pb, SIGNAL(clicked()), this, SLOT(hide()));
-    lyout->addWidget(pb, 0);
+    lyout->addWidget(WDFunc::NewPB(this, "", "Ok", this, SLOT(hide())), 0);
+    //   lyout->addWidget(pb, 0);
     this->setLayout(lyout);
     connect(&board, &Board::healthChanged, this, &AlarmStateAll::UpdateHealth);
 }

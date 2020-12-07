@@ -5,7 +5,6 @@
 #include "../widgets/alarmwidget.h"
 #include "../widgets/udialog.h"
 #include "alarm.h"
-#include "warn.h"
 
 class Module : public QObject
 {
@@ -24,8 +23,8 @@ public:
     QList<UDialog *> dialogs();
     QList<UDialog *> confDialogs();
     void addDialogToList(UDialog *dlg, const QString &caption = "", const QString &name = "");
-    Alarm *getAlarm();
-    Warn *getWarn();
+    BaseAlarm *getAlarm();
+    BaseAlarm *getWarn();
     AlarmStateAll *getAlarmStateAll();
     void startTimeTimer();
     void stopTimeTimer();
@@ -39,9 +38,9 @@ public slots:
 
 private:
     QList<UDialog *> m_dialogs;
-    Alarm *m_alarm;
+    BaseAlarm *m_accAlarm;
     AlarmStateAll *m_alarmStateAllDialog;
-    Warn *m_warn;
+    BaseAlarm *m_warnAlarm;
     int m_currentTabIndex, m_oldTabIndex;
     BaseInterface *m_iface;
 };

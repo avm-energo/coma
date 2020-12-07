@@ -30,9 +30,6 @@
 #include "journkiv.h"
 #include "journktf.h"
 #include "modules.h"
-#include "warnkdv.h"
-#include "warnkiv.h"
-#include "warnktf.h"
 Module::Module(QObject *parent) : QObject(parent)
 {
     m_dialogs.clear();
@@ -90,8 +87,8 @@ Module *Module::createModule(QTimer *updateTimer, BaseInterface *iface, AlarmWid
             m->addDialogToList(new TuneKIVDialog(CKIV, TKIV), "Регулировка");
 #endif
             m->addDialogToList(new StartupKIVDialog, "Начальные значения");
-            m->m_warn = new WarnKIV;
-            m->m_alarm = new AlarmKIV;
+            m->m_warnAlarm = new WarnKIV;
+            m->m_accAlarm = new CritKIV;
             //            connect(m->m_warn, &Warn::updateWarn, cdkiv, &AbstractCheckDialog::SetWarnColor);
             //            connect(m->m_alarm, &Alarm::updateAlarm, cdkiv, &AbstractCheckDialog::SetAlarmColor);
             break;
@@ -109,8 +106,8 @@ Module *Module::createModule(QTimer *updateTimer, BaseInterface *iface, AlarmWid
 #endif
             m->addDialogToList(new StartupKTFDialog, "Старение изоляции");
             m->addDialogToList(new CheckKTFHarmonicDialog, "Гармоники");
-            m->m_warn = new WarnKTF;
-            m->m_alarm = new AlarmKTF;
+            m->m_warnAlarm = new WarnKTF;
+            m->m_accAlarm = new CritKTF;
             //            connect(m->m_warn, &Warn::updateWarn, cdktf, &AbstractCheckDialog::SetWarnColor);
             //            connect(m->m_alarm, &Alarm::updateAlarm, cdktf, &AbstractCheckDialog::SetAlarmColor);
             break;
@@ -131,8 +128,8 @@ Module *Module::createModule(QTimer *updateTimer, BaseInterface *iface, AlarmWid
             m->addDialogToList(new CheckKDVVibrDialog, "Вибрации");
             //            VibrDialog = new CheckDialogVibrKDV(BoardTypes::BT_BASE);
             //            connect(BdaTimer, &QTimer::timeout, VibrDialog, &AbstractCheckDialog::USBUpdate);
-            m->m_warn = new WarnKDV;
-            m->m_alarm = new AlarmKDV;
+            m->m_warnAlarm = new WarnKDV;
+            m->m_accAlarm = new CritKDV;
             //            connect(m->m_warn, &Warn::updateWarn, cdkdv, &AbstractCheckDialog::SetWarnColor);
             //            connect(m->m_alarm, &Alarm::updateAlarm, cdkdv, &AbstractCheckDialog::SetAlarmColor);
             break;
@@ -162,10 +159,10 @@ Module *Module::createModule(QTimer *updateTimer, BaseInterface *iface, AlarmWid
         d->setInterface(m->m_iface);
     }
     connect(aw, &AlarmWidget::AlarmButtonPressed, m->m_alarmStateAllDialog, &QDialog::show);
-    connect(aw, &AlarmWidget::ModuleWarnButtonPressed, m->m_warn, &QDialog::show);
-    connect(aw, &AlarmWidget::ModuleAlarmButtonPressed, m->m_alarm, &QDialog::show);
-    connect(m->m_warn, &Warn::updateWarn, aw, &AlarmWidget::updateWarn);
-    connect(m->m_alarm, &Alarm::updateAlarm, aw, &AlarmWidget::updateAlarm);
+    connect(aw, &AlarmWidget::ModuleWarnButtonPressed, m->m_warnAlarm, &QDialog::show);
+    connect(aw, &AlarmWidget::ModuleAlarmButtonPressed, m->m_accAlarm, &QDialog::show);
+    connect(m->m_warnAlarm, &::BaseAlarm::updateAlarm, aw, &AlarmWidget::updateWarn);
+    connect(m->m_accAlarm, &BaseAlarm::updateAlarm, aw, &AlarmWidget::updateAlarm);
     connect(m->m_alarmStateAllDialog, &AlarmStateAll::BSIUpdated, aw, &AlarmWidget::updateMain);
     return m;
 }
@@ -194,14 +191,14 @@ void Module::addDialogToList(UDialog *dlg, const QString &caption, const QString
     m_dialogs.append(dlg);
 }
 
-Alarm *Module::getAlarm()
+BaseAlarm *Module::getAlarm()
 {
-    return m_alarm;
+    return m_accAlarm;
 }
 
-Warn *Module::getWarn()
+BaseAlarm *Module::getWarn()
 {
-    return m_warn;
+    return m_warnAlarm;
 }
 
 AlarmStateAll *Module::getAlarmStateAll()

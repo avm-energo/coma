@@ -166,7 +166,6 @@ void Config::Fill()
 
 void Config::FillBack()
 {
-    int cbidx;
     //    int i = 3;
     //    auto defValues = QMetaEnum::fromType<Bci::BciDefMainValues>();
     //    std::for_each(regs.begin() + 3, regs.end(),
@@ -180,7 +179,7 @@ void Config::FillBack()
     WDFunc::SPBData(ParentMainbl, NAMEOF(MainBlk.K_104), MainBlk.K_104);
     WDFunc::SPBData(ParentMainbl, NAMEOF(MainBlk.W_104), MainBlk.W_104);
 
-    cbidx = WDFunc::CBIndex(ParentCtype, "Ctype");
+    int cbidx = WDFunc::CBIndex(ParentCtype, "Ctype");
     switch (cbidx)
     {
     case 0:

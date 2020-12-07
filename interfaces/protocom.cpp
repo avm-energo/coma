@@ -87,8 +87,6 @@ void Protocom::reqTime()
 
 void Protocom::reqFile(quint32 filenum, bool isConfigFile)
 {
-    // QByteArray ba;
-    // ba.setNum(filenum);
     QByteArray ba = StdFunc::arrayFromNumber(quint16(filenum));
 
     CommandStruct inp {
@@ -125,21 +123,21 @@ void Protocom::reqBSI()
 void Protocom::writeFile(quint32 filenum, const QByteArray &file)
 {
     CommandStruct inp {
-        Proto::Commands::WriteFile, // Command
-        filenum,                    // File number
-        QVariant(),                 // Null arg
-        file                        // Buffer with file
+        Proto::Commands::WriteFile,    // Command
+        DataTypes::FilesEnum(filenum), // File number
+        QVariant(),                    // Null arg
+        file                           // Buffer with file
     };
     DataManager::addToInQueue(inp);
     emit wakeUpParser();
 }
 
-void Protocom::writeConfigFile()
-{
-    QByteArray ba;
-    S2::StoreDataMem(&ba.data()[0], S2::config, Files::Config);
-    writeFile(Files::Config, ba);
-}
+// void Protocom::writeConfigFile()
+//{
+//    QByteArray ba;
+//    S2::StoreDataMem(&ba.data()[0], S2::config, Files::Config);
+//    writeFile(Files::Config, ba);
+//}
 
 void Protocom::writeTime(quint32 time)
 {
@@ -229,8 +227,8 @@ void Protocom::writeCommand(Queries::Commands cmd, QVariant item)
 
     case Commands::WriteMode:
 
-        Q_ASSERT(item.canConvert<quint32>());
-        handleInt(protoCmd, QByteArray::number(item.toUInt()));
+        Q_ASSERT(item.canConvert<quint8>());
+        handleInt(protoCmd, item.toByteArray());
         break;
 
     case Commands::WriteVariant:

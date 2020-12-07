@@ -60,7 +60,7 @@ enum Commands : byte
     // запуск, остановка теста
     Test = 0x49,
     // ответ "ошибка"
-    ResultError = 0x0f0,
+    ResultError = 0xf0,
     // неизвестная команда
     Unknown = 0xff,
     ///
@@ -118,6 +118,7 @@ enum Commands : byte
     EraseCnt = 0x47,
     // запись версии аппаратуры модуля/серийного номера/типа платы
     WriteHardware = 0x48,
+    RawCommand = 0x01
 
 };
 Q_ENUM_NS(Proto::Commands);

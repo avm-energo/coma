@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../gen/datatypes.h"
 #include "../gen/error.h"
 #include "protocomprivate.h"
 
@@ -44,6 +45,8 @@ private:
     Proto::CommandStruct m_currentCommand;
     QPair<quint64, QByteArray> m_buffer;
     void checkQueue();
+
+    void fileHelper(DataTypes::FilesEnum fileNum);
 
 signals:
     void writeDataAttempt(const QByteArray);
