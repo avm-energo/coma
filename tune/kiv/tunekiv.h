@@ -62,6 +62,12 @@ public:
         float Pt100;
     };
 
+    struct Bda_temp
+    {
+        float temperature;
+        float resistance;
+    };
+
     struct RealDataStruct
     {
         float f[3];     // frequencies
@@ -75,6 +81,8 @@ public:
     Bda m_Bda;
     Bda_in m_Bda_in;
     Bd0 m_Bd0;
+    Bda_temp m_Bda_temp;
+
     //    Bac m_Bac_block, m_Bac_newblock;
     //    Bda_in_struct m_Bda_in, m_Bda_block20, m_Bda_block60, m_Bda_blockMinus20;
     //    BdaStruct m_Bda_block, m_BdaPt100_80Om, m_BdaPt100_120Om;
@@ -86,13 +94,14 @@ public:
     QWidget *BdaWidget();
     QWidget *BdaInWidget();
     QWidget *Bd0Widget();
+    QWidget *BdaTempWidget();
     Bac defBacBlock();
 
     // private slots:
 private:
     Bac m_defBacBlock;
-    QWidget *m_BacWidget, *m_BdaWidget, *m_Bda_inWidget, *m_Bd0Widget;
-    bool m_BacWidgetIsSet, m_BdaWidgetIsSet, m_Bda_inWidgetIsSet, m_Bd0WidgetIsSet;
+    QWidget *m_BacWidget, *m_BdaWidget, *m_Bda_inWidget, *m_Bd0Widget, *m_BdaTempWidget;
+    bool m_BacWidgetIsSet, m_BdaWidgetIsSet, m_Bda_inWidgetIsSet, m_Bd0WidgetIsSet, m_BdaTempWidgetIsSet;
 
     void SetDefCoefs();
 
@@ -101,6 +110,7 @@ public slots:
     void updateBdaWidget();
     void updateBdaInWidget();
     void updateBd0Widget();
+    void updateBdaTempWidget();
     void updateFromBacWidget();
     void updateFromBdaWidget();
 };

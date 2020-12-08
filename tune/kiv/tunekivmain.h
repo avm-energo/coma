@@ -53,6 +53,7 @@ private:
     QWidget *BdWidget();
     bool checkBdaIn();
     Error::Msg showEnergomonitorInputDialog();
+    void saveIntermediateResults();
 
 private slots:
     void CalcTuneCoefs();

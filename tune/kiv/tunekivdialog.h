@@ -57,16 +57,13 @@ public:
 public slots:
 
 private:
-    AVM_KIV::Bci m_Bci_block_work, m_Bci_block_temporary;
+    //    AVM_KIV::Bci m_Bci_block_work, m_Bci_block_temporary;
     TuneKIV *TKIV;
     ConfigKIV *CKIV;
 
-    QDialog *ask;
-    QLineEdit *ledit;
-    QTimer *timer;
-
-    float m_Uet[3], m_Iet[3], m_PHIet[6], m_FREQet, m_UetMinus20[3], m_IetMinus20[3], m_PHIetMinus20[6],
-        m_FREQetMinus20, m_Uet60[3], m_Iet60[3], m_PHIet60[6], m_FREQet60;
+    //    QDialog *ask;
+    //    QLineEdit *ledit;
+    //    QTimer *timer;
 
     enum TuneModes
     {
@@ -78,11 +75,11 @@ private:
     LimeReport::ReportEngine *m_Report;
 
     int m_tuneControlType;
-    bool m_Cancelled = false, m_defConfig;
+    //    bool m_Cancelled = false, m_defConfig;
 
     void SetupUI();
 
-    int m_filterSteps;
+    //    int m_filterSteps;
 
     /*struct ReportHeaderStructure
     {
@@ -133,10 +130,10 @@ private:
     double PhiLoad[21] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 45, 90, 180, 270 };*/
 
     //    RealDataStruct m_RealData;
-    float m_IUefNat_filt_old[6]; // для сохранения значений по п. 7.3.2
-    float m_MipDat[46];
-    int m_GED_Type;
-    int m_Kadc;
+    //    float m_IUefNat_filt_old[6]; // для сохранения значений по п. 7.3.2
+    //    float m_MipDat[46];
+    //    int m_GED_Type;
+    //    int m_Kadc;
 
     // QHBoxLayout *MipPars(int parnum, const QString &groupname);
     /*    void FillBac(int bacnum);
@@ -181,16 +178,7 @@ private:
 
     QString ValuesFormat, WidgetFormat;
 
-    QHBoxLayout *newTunePBLayout(const QString &pbtext, const std::function<void()> fun)
-    {
-        QHBoxLayout *hlyout = new QHBoxLayout;
-        hlyout->addStretch(100);
-        QPushButton *pb = new QPushButton(pbtext);
-        connect(pb, &QPushButton::clicked, fun);
-        hlyout->addWidget(pb);
-        hlyout->addStretch(100);
-        return hlyout;
-    }
+    QHBoxLayout *newTunePBLayout(const QString &pbtext, const std::function<void()> fun);
 
 private slots:
 

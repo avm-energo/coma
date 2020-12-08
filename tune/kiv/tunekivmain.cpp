@@ -43,7 +43,7 @@ void TuneKIVMain::setMessages()
     m_messages.append("20. Регулировка для Кацп = 32...");
     m_messages.append("21. Отображение диалога задания входных данных...");
     m_messages.append("22. Регулировка канала Tmk0...");
-    m_messages.append("23. Запись настроечных коэффициентов...");
+    m_messages.append("23. Запись настроечных коэффициентов и восстановление конфигурации...");
     m_messages.append("24. Проверка регулировки...");
 }
 
@@ -274,6 +274,11 @@ Error::Msg TuneKIVMain::ADCCoef(int coef)
         emit setGeneralProgressBarCount(i);
         StdFunc::Wait(500);
     }
+    for (int i = 0; i < 6; ++i)
+    {
+        m_bdain.IUefNat_filt[i] /= StdFunc::tuneRequestCount();
+        m_bdain.phi_next_f[i] /= StdFunc::tuneRequestCount();
+    }
     if (StdFunc::isCancelled())
         return Error::Msg::GeneralError;
     return Error::Msg::NoError;
@@ -334,6 +339,8 @@ Error::Msg TuneKIVMain::Tmk0()
 Error::Msg TuneKIVMain::SendBac()
 {
     if (!writeTuneCoefs())
+        return Error::Msg::GeneralError;
+    if (!loadWorkConfig())
         return Error::Msg::GeneralError;
     return Error::Msg::NoError;
 }
@@ -505,6 +512,30 @@ Error::Msg TuneKIVMain::showEnergomonitorInputDialog()
         WDFunc::SetVisible(this, "ValuetuneU" + QString::number(i), enabled);
         WDFunc::SetVisible(this, "ValuetuneY" + QString::number(i), enabled);
     }
+}
+
+void TuneKIVMain::saveIntermediateResults()
+{
+    struct tunedescrstruct
+    {
+        QString parametername;
+        float *parameter;
+    };
+
+    QVector<tunedescrstruct> tuneDescrVector;
+    for (int i = 0; i < 6; ++i)
+        tuneDescrVector.append({ "u_p" + QString::number(i), &m_bdain.IUefNat_filt[i] });
+    for (int i = 0; i < 3; ++i)
+        tuneDescrVector.append({ "y_p" + QString::number(i), &m_bdain.phi_next_f[i] });
+    tuneDescrVector.append({ "tmk_p", &m_midTuneStruct.tmk });
+    tuneDescrVector.append({ "uet_p", &m_midTuneStruct.uet });
+    tuneDescrVector.append({ "iet_p", &m_midTuneStruct.iet });
+    tuneDescrVector.append({ "yet_p", &m_midTuneStruct.yet });
+    QString cpuserialnum = Board::GetInstance().UID();
+    QSettings storedcalibrations(StdFunc::GetSystemHomeDir() + "calibr.ini", QSettings::IniFormat);
+    foreach (tunedescrstruct item, tuneDescrVector)
+        storedcalibrations.setValue(cpuserialnum + "/" + item.parametername, *item.parameter);
+    loadWorkConfig();
 }
 
 void TuneKIVMain::CalcTuneCoefs()

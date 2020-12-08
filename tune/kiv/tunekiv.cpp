@@ -23,7 +23,7 @@ TuneKIV::TuneKIV()
     //        m_Bac_newblock.DPsi[i] = 0;
     //        m_Bac_newblock.DPsi[i + 3] = 0;
     //    }
-    m_BdaWidgetIsSet = m_BacWidgetIsSet = m_Bd0WidgetIsSet = false;
+    m_BdaWidgetIsSet = m_BacWidgetIsSet = m_Bd0WidgetIsSet = m_BdaTempWidgetIsSet = false;
     SetDefCoefs();
 }
 
@@ -303,10 +303,33 @@ QWidget *TuneKIV::Bd0Widget()
     //    tv->setModel(m_VModel);
     //    vlyout->addWidget(tv);
     gb->setLayout(lyout);
+    lyout = new QVBoxLayout;
     lyout->addWidget(gb);
     m_Bd0Widget->setLayout(lyout);
     m_Bd0WidgetIsSet = true;
     return m_Bd0Widget;
+}
+
+QWidget *TuneKIV::BdaTempWidget()
+{
+    if (m_BdaTempWidgetIsSet)
+        return m_BdaTempWidget;
+    QString ValuesFormat = "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; color: black;"
+                           "background-color: "
+        + QString(Colors::AConfO) + "; font: bold 10px;}";
+    m_BdaTempWidget = new QWidget;
+    QVBoxLayout *lyout = new QVBoxLayout;
+    QHBoxLayout *hlyout = new QHBoxLayout;
+    //    QGroupBox *gb = new QGroupBox("Общие данные");
+    hlyout->addWidget(WDFunc::NewLBL(m_BdaTempWidget, "temp"));
+    hlyout->addWidget(WDFunc::NewLBLT(m_BdaTempWidget, "", "temp", ValuesFormat, "Температура"));
+    lyout->addLayout(hlyout);
+    hlyout->addWidget(WDFunc::NewLBL(m_BdaTempWidget, "resist"));
+    hlyout->addWidget(WDFunc::NewLBLT(m_BdaTempWidget, "", "resist", ValuesFormat, "Сопротивление"));
+    lyout->addLayout(hlyout);
+    m_BdaTempWidget->setLayout(lyout);
+    m_BdaTempWidgetIsSet = true;
+    return m_BdaTempWidget;
 }
 
 void TuneKIV::SetDefCoefs()
@@ -408,6 +431,12 @@ void TuneKIV::updateBd0Widget()
 {
     WDFunc::SetLBLText(m_Bd0Widget, "tmk0", WDFunc::StringValueWithCheck(m_Bd0.Tmk, 3));
     WDFunc::SetLBLText(m_Bd0Widget, "vbat", WDFunc::StringValueWithCheck(m_Bd0.Vbat, 3));
+}
+
+void TuneKIV::updateBdaTempWidget()
+{
+    WDFunc::SetLBLText(m_Bd0Widget, "temp", WDFunc::StringValueWithCheck(m_Bda_temp.temperature, 3));
+    WDFunc::SetLBLText(m_Bd0Widget, "resist", WDFunc::StringValueWithCheck(m_Bda_temp.resistance, 3));
 }
 
 void TuneKIV::updateFromBacWidget()

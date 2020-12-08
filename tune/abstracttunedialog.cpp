@@ -294,6 +294,8 @@ Error::Msg AbstractTuneDialog::StartMeasurement()
 
 void AbstractTuneDialog::StartTune()
 {
+    if (checkCalibrStep() != Error::Msg::NoError)
+        return;
     WDFunc::SetEnabled(this, "starttune", false);
     if (m_messages.size() > m_tuneFunctions.size())
     {
