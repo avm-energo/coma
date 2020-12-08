@@ -40,6 +40,10 @@ public:
     BaseInterface *iface();
 
 signals:
+    // signals to set "ProgressBar2" in main Coma
+    void setGeneralProgressBarSize(quint32 size);
+    void setGeneralProgressBarCount(quint32 count);
+    void setGeneralProgressBarMessage(const QString &msg);
 
 public slots:
     virtual void reqUpdate();

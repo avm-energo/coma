@@ -35,6 +35,7 @@ AbstractTuneDialog::AbstractTuneDialog(int tuneStep, QWidget *parent) : UDialog(
     //    m_ConfigCounter = 0;
     m_blockCount = 0;
     m_tuneStep = tuneStep;
+    m_finished = false;
     SetupUI();
 }
 
@@ -461,9 +462,7 @@ bool AbstractTuneDialog::writeTuneCoefs()
     if (CheckPassword() != Error::Msg::NoError)
         return false;
 
-    if (QMessageBox::question(this, "Вопрос",
-            "Сохранить регулировочные коэффициенты?\n(Результаты предыдущей регулировки будут потеряны)")
-        == false)
+    if (QMessageBox::question(this, "Вопрос", "Сохранить регулировочные коэффициенты?") == false)
         return false;
 
     for (QMap<int, BlockStruct>::Iterator it = AbsBac.begin(); it != AbsBac.end(); ++it)
@@ -772,7 +771,10 @@ void AbstractTuneDialog::closeEvent(QCloseEvent *e)
 void AbstractTuneDialog::keyPressEvent(QKeyEvent *e)
 {
     if ((e->key() == Qt::Key_Enter) || (e->key() == Qt::Key_Return))
+    {
+        m_finished = true;
         emit Finished();
+    }
     if (e->key() == Qt::Key_Escape)
         StdFunc::cancel();
     UDialog::keyPressEvent(e);

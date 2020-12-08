@@ -436,67 +436,6 @@ void TuneKIVDialog::ReadN()
     ask->close();
 }
 
-void TuneKIVDialog::EnterDataTune()
-{
-    int i;
-    ask = new QDialog(this);
-    // QVBoxLayout *lyout = new QVBoxLayout;
-    ask->setAttribute(Qt::WA_DeleteOnClose);
-    ask->setObjectName("EnterDlg");
-    QGridLayout *glyout = new QGridLayout;
-    ledit = new QLineEdit();
-    QLabel *lbl = new QLabel("Введите значения сигналов c Энергомонитора:");
-    glyout->addWidget(lbl, 0, 0, 1, 6);
-
-    for (i = 0; i < 3; i++)
-    {
-        lbl = new QLabel("Uэт[" + QString::number(i) + "]:");
-        glyout->addWidget(lbl, 1, i, 1, 1);
-        ledit = new QLineEdit();
-        ledit->setObjectName("ValuetuneU" + QString::number(i));
-        glyout->addWidget(ledit, 2, i, 1, 1);
-    }
-
-    for (i = 0; i < 3; i++)
-    {
-        lbl = new QLabel("Iэт[" + QString::number(i) + "]:");
-        glyout->addWidget(lbl, 3, i, 1, 1);
-        ledit = new QLineEdit();
-        ledit->setObjectName("ValuetuneI" + QString::number(i));
-        glyout->addWidget(ledit, 4, i, 1, 1);
-    }
-
-    for (i = 0; i < 6; i++)
-    {
-        lbl = new QLabel("φэт[" + QString::number(i) + "]:");
-        glyout->addWidget(lbl, 5, i, 1, 1);
-        ledit = new QLineEdit();
-        ledit->setObjectName("ValuetunePhi" + QString::number(i));
-        glyout->addWidget(ledit, 6, i, 1, 1);
-    }
-
-    lbl = new QLabel("fэт:");
-    glyout->addWidget(lbl, 7, 0, 1, 1);
-    ledit = new QLineEdit();
-    ledit->setObjectName("ValuetuneF");
-    glyout->addWidget(ledit, 8, 0, 1, 1);
-
-    QPushButton *pb = new QPushButton("Настроить");
-    connect(pb, SIGNAL(clicked()), this, SLOT(CalcTuneCoefs()));
-    glyout->addWidget(pb, 9, 2, 1, 2);
-//     pb = new QPushButton("Отмена");
-//     connect(pb,SIGNAL(clicked()),this,SLOT(CancelTune()));
-//     connect(pb,SIGNAL(clicked()),this,SLOT(close()));
-//     connect(pb,SIGNAL(clicked()),this,SLOT(CloseAsk()));
-//     glyout->addWidget(pb,9,3,1,3);
-
-    ask->setLayout(glyout);
-    ask->exec();
-
-//    lyout->addWidget(pb);
-//    dlg->setLayout(lyout);
-//    dlg->exec();
-}
 
 void TuneKIVDialog::Enter20Data()
 {
@@ -763,26 +702,6 @@ int TuneKIVDialog::CalcTuneCoefs()
     int i;
     QString tmps;
 
-    for (i = 0; i < 3; i++)
-    {
-        WDFunc::LE_read_data(ask, "ValuetuneU" + QString::number(i), tmps);
-        m_Uet[i] = tmps.toFloat();
-    }
-
-    for (i = 0; i < 3; i++)
-    {
-        WDFunc::LE_read_data(ask, "ValuetuneI" + QString::number(i), tmps);
-        m_Iet[i] = tmps.toFloat();
-    }
-
-    for (i = 0; i < 6; i++)
-    {
-        WDFunc::LE_read_data(ask, "ValuetunePhi" + QString::number(i), tmps);
-        m_PHIet[i] = tmps.toFloat();
-    }
-
-    WDFunc::LE_read_data(ask, "ValuetuneF", tmps);
-    m_FREQet = tmps.toFloat();
 
     ask->close();
 
@@ -794,26 +713,9 @@ int TuneKIVDialog::CalcTuneCoefs()
 
     if (m_Kadc == 1)
     {
-        for (i = 0; i < 3; i++)
-        {
-            m_Bac_newblock.KmU[i] = m_Bac_block.KmU[i] * m_Uet[i] / m_Bda_in.IUefNat_filt[i];
-            m_Bac_newblock.KmI1[i] = m_Bac_block.KmI1[i] * m_Iet[i] / m_Bda_in.IUefNat_filt[i + 3];
-        }
-
-        m_Bac_newblock.K_freq = m_Bac_block.K_freq * m_FREQet / m_Bda_in.Frequency;
-
-        for (i = 1; i < 3; i++)
-            m_Bac_newblock.DPsi[i] = m_Bac_block.DPsi[i] - m_Bda_in.phi_next_f[i];
-
-        for (i = 3; i < 6; i++)
-            m_Bac_newblock.DPsi[i] = m_Bac_block.DPsi[i] + m_PHIet[i] - m_Bda_in.phi_next_f[i];
     }
     else if (m_Kadc == 2)
     {
-        for (i = 0; i < 3; i++)
-        {
-            m_Bac_newblock.KmI2[i] = m_Bac_block.KmI2[i] * m_Iet[i] / m_Bda_in.IUefNat_filt[i + 3];
-        }
     }
     else if (m_Kadc == 4)
     {

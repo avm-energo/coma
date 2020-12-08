@@ -153,6 +153,7 @@ HEADERS += \
     ../dialogs/timedialog.h \
     ../gen/board.h \
     ../gen/colors.h \
+    ../gen/datatypes.h \
     ../gen/datamanager.h \
     ../gen/error.h \
     ../gen/files.h \

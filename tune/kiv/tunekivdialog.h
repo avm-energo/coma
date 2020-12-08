@@ -82,13 +82,6 @@ private:
 
     void SetupUI();
 
-    struct Bd0
-    {
-        float Tmk;  // Температура кристалла микроконтроллера, °С
-        float Vbat; // Напряжение аккумуляторной батареи, В
-    };
-
-    Bd0 m_Bd_block20, m_Bd_block_minus20, m_Bd_block_plus60;
     int m_filterSteps;
 
     /*struct ReportHeaderStructure
@@ -174,7 +167,6 @@ private:
         int LoadWorkConfig();
         void RefreshAnalogValues(int bdnum);
         void CalcTempCorCoefs();
-        void EnterDataTune();
         int Show125mA();
         int AskTemp20();
         int AskTempMinus20();
