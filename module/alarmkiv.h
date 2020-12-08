@@ -1,8 +1,8 @@
 #pragma once
 
-#include "alarm.h"
+#include "modulealarm.h"
 
-class CritKIV : public BaseAlarm
+class CritKIV : public ModuleAlarm
 {
     Q_OBJECT
 
@@ -10,7 +10,7 @@ public:
     explicit CritKIV(QWidget *parent = nullptr);
 };
 
-class WarnKIV : public BaseAlarm
+class WarnKIV : public ModuleAlarm
 {
     Q_OBJECT
 

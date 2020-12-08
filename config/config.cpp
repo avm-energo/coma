@@ -37,7 +37,7 @@ void Config::setConfig()
     //        ++iter;
     //    }
     // общая часть
-    qDebug() << NAMEOF(MainBlk.MTypeB);
+    // qDebug() << NAMEOF(MainBlk.MTypeB);
     config->append({ BCI_MTYPEB, sizeof(MainBlk.MTypeB), &MainBlk.MTypeB });
     config->append({ BCI_MTYPEM, sizeof(MainBlk.MTypeM), &MainBlk.MTypeM });
     config->append({ BCI_CTYPE, sizeof(MainBlk.Ctype), &MainBlk.Ctype });

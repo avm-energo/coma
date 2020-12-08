@@ -77,18 +77,8 @@ void InfoDialog::FillBsi()
 
 void InfoDialog::uponInterfaceSetting()
 {
-#ifdef _DEBUG
-    QElapsedTimer timer;
-    timer.start();
-#endif
     SetupUI();
-#ifdef _DEBUG
-    qDebug() << timer.elapsed();
-#endif
     FillBsi();
-#ifdef _DEBUG
-    qDebug() << timer.elapsed();
-#endif
 }
 
 void InfoDialog::ClearBsi()

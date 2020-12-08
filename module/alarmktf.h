@@ -1,8 +1,8 @@
 #pragma once
 
-#include "alarm.h"
+#include "modulealarm.h"
 
-class CritKTF : public BaseAlarm
+class CritKTF : public ModuleAlarm
 {
     Q_OBJECT
 
@@ -10,7 +10,7 @@ public:
     explicit CritKTF(QWidget *parent = nullptr);
 };
 
-class WarnKTF : public BaseAlarm
+class WarnKTF : public ModuleAlarm
 {
     Q_OBJECT
 
