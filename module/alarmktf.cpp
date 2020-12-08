@@ -2,7 +2,7 @@
 
 #include "modules.h"
 
-CritKTF::CritKTF(QWidget *parent) : BaseAlarm(parent)
+CritKTF::CritKTF(QWidget *parent) : ModuleAlarm(parent)
 {
     m_startAlarmAddress = 5011;
     m_alarmFlags = std::bitset<32>(AVM_KTF::criticalFlags);
@@ -10,10 +10,10 @@ CritKTF::CritKTF(QWidget *parent) : BaseAlarm(parent)
     setupUI(AVM_KTF::criticalEvents);
 }
 
-WarnKTF::WarnKTF(QWidget *parent) : BaseAlarm(parent)
+WarnKTF::WarnKTF(QWidget *parent) : ModuleAlarm(parent)
 {
     m_startAlarmAddress = 5011;
     m_alarmFlags = std::bitset<32>(AVM_KTF::warningFlags);
-
+    m_alarmColor = Qt::yellow;
     setupUI(AVM_KTF::warningEvents);
 }

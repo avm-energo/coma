@@ -81,11 +81,12 @@ SOURCES += \
     ../interfaces/usbhidportinfo.cpp \
     ../models/etableitem.cpp \
     ../models/etablemodel.cpp \
-    ../module/alarm.cpp \
     ../module/alarmkiv.cpp \
     ../module/alarmktf.cpp \
     ../module/journals.cpp \
     ../module/module.cpp \
+    ../module/basealarm.cpp \
+    ../module/modulealarm.cpp \
     ../startup/abstractstartupdialog.cpp \
     ../startup/startupkdvdialog.cpp \
     ../startup/startupkivdialog.cpp \
@@ -98,8 +99,9 @@ SOURCES += \
     ../tune/kiv/tunekivtemp60.cpp \
     ../tune/kiv/tunekivtemp_20.cpp \
     ../tune/tuneclass.cpp \
-    ../widgets/alarmstateallwidget.cpp \
     ../widgets/alarmwidget.cpp \
+    ../widgets/alarmbutton.cpp \
+    ../widgets/alarmstateall.cpp \
     ../widgets/ecombobox.cpp \
     ../widgets/errorprotocolwidget.cpp \
     ../widgets/estackedwidget.cpp \
@@ -117,8 +119,6 @@ SOURCES += \
 PRECOMPILED_HEADER = ../gen/pch.h
 
 HEADERS += \
-    ../interfaces/iec104private.h \
-    ../interfaces/modbusprivate.h \
     coma.h \
     ../check/abstractcheckdialog.h \
     ../check/check.h \
@@ -168,9 +168,10 @@ HEADERS += \
     ../interfaces/protocomthread.h \
     ../interfaces/usbhidport.h \
     ../interfaces/usbhidportinfo.h \
+    ../interfaces/iec104private.h \
+    ../interfaces/modbusprivate.h \
     ../models/etableitem.h \
     ../models/etablemodel.h \
-    ../module/alarm.h \
     ../module/alarmkiv.h \
     ../module/alarmktf.h \
     ../module/journals.h \
@@ -179,6 +180,8 @@ HEADERS += \
     ../module/module_kxx.h \
     ../module/module_kiv.h \
     ../module/registers.h \
+    ../module/basealarm.h \
+    ../module/modulealarm.h \
     ../startup/abstractstartupdialog.h \
     ../startup/startupkdvdialog.h \
     ../startup/startupkivdialog.h \
@@ -191,7 +194,8 @@ HEADERS += \
     ../tune/kiv/tunekivtemp60.h \
     ../tune/kiv/tunekivtemp_20.h \
     ../tune/tuneclass.h \
-    ../widgets/alarmstateallwidget.h \
+    ../widgets/alarmbutton.h \
+    ../widgets/alarmstateall.h \
     ../widgets/alarmwidget.h \
     ../widgets/ecombobox.h \
     ../widgets/errorprotocolwidget.h \

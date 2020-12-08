@@ -1112,7 +1112,7 @@ void Coma::GetAbout()
 void Coma::Disconnect()
 {
     qInfo(__PRETTY_FUNCTION__);
-    AlarmW->Clear();
+    AlarmW->clear();
     if (!StdFunc::IsInEmulateMode())
     {
         if (Board::GetInstance().interfaceType() == Board::InterfaceType::USB)
@@ -1222,7 +1222,7 @@ void Coma::DisconnectAndClear()
     //    TimeTimer->stop();
     if (Board::GetInstance().connectionState() != Board::ConnectionState::Closed)
     {
-        AlarmW->Clear();
+        AlarmW->clear();
         Disconnect();
         CloseDialogs();
         //        emit ClearBsi();

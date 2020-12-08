@@ -33,7 +33,7 @@
 Module::Module(QObject *parent) : QObject(parent)
 {
     m_dialogs.clear();
-    m_oldTabIndex = m_currentTabIndex = 0;
+    // m_oldTabIndex = m_currentTabIndex = 0;
 }
 
 Module *Module::createModule(QTimer *updateTimer, BaseInterface *iface, AlarmWidget *aw)
@@ -44,9 +44,15 @@ Module *Module::createModule(QTimer *updateTimer, BaseInterface *iface, AlarmWid
     Module *m = new Module;
     m->m_iface = iface;
     S2::config = new S2DataTypes::S2ConfigType;
-    m->m_alarmStateAllDialog = new AlarmStateAll;
-    m->m_alarmStateAllDialog->UpdateHealth(board.health());
+    // ModuleAlarm *criticalAlarm;
+
+    // ModuleAlarm *warningAlarm;
+    // m->m_alarmStateAllDialog->UpdateHealth(board.health());
     quint16 typeb = Board::GetInstance().typeB();
+    aw->setInterface(iface);
+    AlarmStateAll *alarmStateAll = new AlarmStateAll;
+    alarmStateAll->setupUI(AVM::HthToolTip);
+    aw->addAlarm(alarmStateAll);
     if (BaseBoards.contains(typeb)) // there must be two-part module
     {
         quint16 typem = Board::GetInstance().typeM();
@@ -77,7 +83,7 @@ Module *Module::createModule(QTimer *updateTimer, BaseInterface *iface, AlarmWid
         {
         case Model::KIV:
         {
-            JOUR = new JournKIV;
+            JOUR = new JournKIV(m);
             ConfigKIV *CKIV = new ConfigKIV;
             m->addDialogToList(new ConfKIVDialog(CKIV), "Конфигурирование", "conf1");
             CheckKIVDialog *cdkiv = new CheckKIVDialog;
@@ -87,15 +93,15 @@ Module *Module::createModule(QTimer *updateTimer, BaseInterface *iface, AlarmWid
             m->addDialogToList(new TuneKIVDialog(CKIV, TKIV), "Регулировка");
 #endif
             m->addDialogToList(new StartupKIVDialog, "Начальные значения");
-            m->m_warnAlarm = new WarnKIV;
-            m->m_accAlarm = new CritKIV;
+            aw->addAlarm(new WarnKIV);
+            aw->addAlarm(new CritKIV);
             //            connect(m->m_warn, &Warn::updateWarn, cdkiv, &AbstractCheckDialog::SetWarnColor);
             //            connect(m->m_alarm, &Alarm::updateAlarm, cdkiv, &AbstractCheckDialog::SetAlarmColor);
             break;
         }
         case Model::KTF:
         {
-            JOUR = new JournKTF;
+            JOUR = new JournKTF(m);
             ConfigKTF *CKTF = new ConfigKTF;
             m->addDialogToList(new ConfKTFDialog(CKTF), "Конфигурирование", "conf1");
             CheckKTFDialog *cdktf = new CheckKTFDialog;
@@ -106,15 +112,15 @@ Module *Module::createModule(QTimer *updateTimer, BaseInterface *iface, AlarmWid
 #endif
             m->addDialogToList(new StartupKTFDialog, "Старение изоляции");
             m->addDialogToList(new CheckKTFHarmonicDialog, "Гармоники");
-            m->m_warnAlarm = new WarnKTF;
-            m->m_accAlarm = new CritKTF;
+            aw->addAlarm(new WarnKTF);
+            aw->addAlarm(new CritKTF);
             //            connect(m->m_warn, &Warn::updateWarn, cdktf, &AbstractCheckDialog::SetWarnColor);
             //            connect(m->m_alarm, &Alarm::updateAlarm, cdktf, &AbstractCheckDialog::SetAlarmColor);
             break;
         }
         case Model::KDV:
         {
-            JOUR = new JournKDV;
+            JOUR = new JournKDV(m);
             ConfigKDV *CKDV = new ConfigKDV;
             m->addDialogToList(new ConfKDVDialog(CKDV), "Конфигурирование", "conf1");
             CheckKDVDialog *cdkdv = new CheckKDVDialog;
@@ -128,8 +134,8 @@ Module *Module::createModule(QTimer *updateTimer, BaseInterface *iface, AlarmWid
             m->addDialogToList(new CheckKDVVibrDialog, "Вибрации");
             //            VibrDialog = new CheckDialogVibrKDV(BoardTypes::BT_BASE);
             //            connect(BdaTimer, &QTimer::timeout, VibrDialog, &AbstractCheckDialog::USBUpdate);
-            m->m_warnAlarm = new WarnKDV;
-            m->m_accAlarm = new CritKDV;
+            aw->addAlarm(new WarnKDV);
+            aw->addAlarm(new CritKDV);
             //            connect(m->m_warn, &Warn::updateWarn, cdkdv, &AbstractCheckDialog::SetWarnColor);
             //            connect(m->m_alarm, &Alarm::updateAlarm, cdkdv, &AbstractCheckDialog::SetAlarmColor);
             break;
@@ -146,6 +152,8 @@ Module *Module::createModule(QTimer *updateTimer, BaseInterface *iface, AlarmWid
     {
         m->addDialogToList(new JournalDialog(JOUR), "Журналы");
     }
+    else
+        delete JOUR;
     if (Board::GetInstance().interfaceType() == Board::InterfaceType::USB)
         m->addDialogToList(new FWUploadDialog, "Загрузка ВПО");
 
@@ -158,12 +166,10 @@ Module *Module::createModule(QTimer *updateTimer, BaseInterface *iface, AlarmWid
         d->setUpdatesDisabled();
         d->setInterface(m->m_iface);
     }
-    connect(aw, &AlarmWidget::AlarmButtonPressed, m->m_alarmStateAllDialog, &QDialog::show);
-    connect(aw, &AlarmWidget::ModuleWarnButtonPressed, m->m_warnAlarm, &QDialog::show);
-    connect(aw, &AlarmWidget::ModuleAlarmButtonPressed, m->m_accAlarm, &QDialog::show);
-    connect(m->m_warnAlarm, &::BaseAlarm::updateAlarm, aw, &AlarmWidget::updateWarn);
-    connect(m->m_accAlarm, &BaseAlarm::updateAlarm, aw, &AlarmWidget::updateAlarm);
-    connect(m->m_alarmStateAllDialog, &AlarmStateAll::BSIUpdated, aw, &AlarmWidget::updateMain);
+
+    //    aw->addAlarm(warningAlarm);
+    //    aw->addAlarm(criticalAlarm);
+
     return m;
 }
 
@@ -191,20 +197,20 @@ void Module::addDialogToList(UDialog *dlg, const QString &caption, const QString
     m_dialogs.append(dlg);
 }
 
-BaseAlarm *Module::getAlarm()
-{
-    return m_accAlarm;
-}
+// ModuleAlarm *Module::getAlarm()
+//{
+//    return m_accAlarm;
+//}
 
-BaseAlarm *Module::getWarn()
-{
-    return m_warnAlarm;
-}
+// ModuleAlarm *Module::getWarn()
+//{
+//    return m_warnAlarm;
+//}
 
-AlarmStateAll *Module::getAlarmStateAll()
-{
-    return m_alarmStateAllDialog;
-}
+// AlarmStateAll *Module::getAlarmStateAll()
+//{
+//    return m_alarmStateAllDialog;
+//}
 
 void Module::parentTWTabChanged(int index)
 {

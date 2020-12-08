@@ -169,7 +169,7 @@ public:
     static QVariant TVData(QWidget *w, const QString &tvname, int column);
 
     static QStatusBar *NewSB(QWidget *w);
-    static QPixmap NewCircle(QColor color, float radius);
+    static QPixmap NewCircle(QColor color, int radius);
     static QPixmap NewLedIndicator(QColor color, float height);
     static QPixmap NewSVG(QString &str, QSize size);
 

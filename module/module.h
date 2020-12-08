@@ -1,10 +1,10 @@
 #ifndef MODULEFABRIC_H
 #define MODULEFABRIC_H
 
-#include "../widgets/alarmstateallwidget.h"
+#include "../widgets/alarmstateall.h"
 #include "../widgets/alarmwidget.h"
 #include "../widgets/udialog.h"
-#include "alarm.h"
+#include "modulealarm.h"
 
 class Module : public QObject
 {
@@ -23,9 +23,9 @@ public:
     QList<UDialog *> dialogs();
     QList<UDialog *> confDialogs();
     void addDialogToList(UDialog *dlg, const QString &caption = "", const QString &name = "");
-    BaseAlarm *getAlarm();
-    BaseAlarm *getWarn();
-    AlarmStateAll *getAlarmStateAll();
+    //    ModuleAlarm *getAlarm();
+    //    ModuleAlarm *getWarn();
+    //    AlarmStateAll *getAlarmStateAll();
     void startTimeTimer();
     void stopTimeTimer();
     void parentTWTabChanged(int index);
@@ -38,10 +38,10 @@ public slots:
 
 private:
     QList<UDialog *> m_dialogs;
-    BaseAlarm *m_accAlarm;
-    AlarmStateAll *m_alarmStateAllDialog;
-    BaseAlarm *m_warnAlarm;
-    int m_currentTabIndex, m_oldTabIndex;
+    //    ModuleAlarm *m_accAlarm;
+    //    AlarmStateAll *m_alarmStateAllDialog;
+    //    ModuleAlarm *m_warnAlarm;
+    //    int m_currentTabIndex, m_oldTabIndex;
     BaseInterface *m_iface;
 };
 

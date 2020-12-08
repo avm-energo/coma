@@ -348,7 +348,9 @@ void ProtocomThread::fileHelper(DataTypes::FilesEnum fileNum)
 
 void ProtocomThread::parseRequest(const CommandStruct &cmdStr)
 {
+#ifdef PROTOCOM_DEBUG
     qDebug("Start parse request");
+#endif
     // Предполагается не хранить текущую команду
     Q_UNUSED(cmdStr)
     using namespace Proto;
@@ -443,7 +445,9 @@ void ProtocomThread::parseRequest(const CommandStruct &cmdStr)
 
 void ProtocomThread::parseResponse(QByteArray ba)
 {
+#ifdef PROTOCOM_DEBUG
     qDebug("Start parse response");
+#endif
     using namespace Proto;
 
     // QByteArray tmps = "<-" + ba.toHex() + "\n";
@@ -493,7 +497,7 @@ void ProtocomThread::parseResponse(QByteArray ba)
 
 void ProtocomThread::writeLog(QByteArray ba, Direction dir)
 {
-#ifdef CANALUSB_LOG
+#ifdef PROTOCOM_DEBUG
     QByteArray tmpba = QByteArray(metaObject()->className());
     switch (dir)
     {

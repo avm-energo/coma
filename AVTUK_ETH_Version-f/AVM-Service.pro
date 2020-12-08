@@ -28,6 +28,8 @@ TEMPLATE = app
 
 
 SOURCES += \
+    ../widgets/alarmbutton.cpp \
+    ../widgets/alarmstateall.cpp \
     coma.cpp \
     main.cpp \
     ../check/abstractcheckdialog.cpp \
@@ -87,7 +89,8 @@ SOURCES += \
     ../models/errorprotocolmodel.cpp \
     ../models/etableitem.cpp \
     ../models/etablemodel.cpp \
-    ../module/alarm.cpp \
+    ../module/basealarm.cpp \
+    ../module/modulealarm.cpp \
     ../module/alarmkdv.cpp \
     ../module/alarmkiv.cpp \
     ../module/alarmktf.cpp \
@@ -100,7 +103,6 @@ SOURCES += \
     ../startup/startupkdvdialog.cpp \
     ../startup/startupkivdialog.cpp \
     ../startup/startupktfdialog.cpp \
-    ../widgets/alarmstateallwidget.cpp \
     ../widgets/alarmwidget.cpp \
     ../widgets/ecombobox.cpp \
     ../widgets/edoublespinbox.cpp \
@@ -120,6 +122,8 @@ SOURCES += \
 PRECOMPILED_HEADER = ../gen/pch.h
 
 HEADERS += \
+    ../widgets/alarmbutton.h \
+    ../widgets/alarmstateall.h \
     coma.h \
     ../check/check.h \
     ../check/abstractcheckdialog.h \
@@ -183,7 +187,8 @@ HEADERS += \
     ../models/errorprotocolmodel.h \
     ../models/etableitem.h \
     ../models/etablemodel.h \
-    ../module/alarm.h \
+    ../module/modulealarm.h \
+    ../module/basealarm.h \
     ../module/alarmkdv.h \
     ../module/alarmkiv.h \
     ../module/alarmktf.h \
@@ -200,7 +205,6 @@ HEADERS += \
     ../startup/startupkdvdialog.h \
     ../startup/startupkivdialog.h \
     ../startup/startupktfdialog.h \
-    ../widgets/alarmstateallwidget.h \
     ../widgets/alarmwidget.h \
     ../widgets/ecombobox.h \
     ../widgets/edoublespinbox.h \

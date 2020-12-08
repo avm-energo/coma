@@ -180,7 +180,7 @@ Q_DECLARE_METATYPE(Proto::CommandStruct)
 //#define TUNE_MODE_100 2
 
 #define HIDUSB_LOG
-#define CANALUSB_LOG
+//#define PROTOCOM_DEBUG
 
 //#define TECH_Bd0    0   // блок данных с температурой кристалла и напряжением
 //батареи
