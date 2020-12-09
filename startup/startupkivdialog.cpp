@@ -125,7 +125,7 @@ void StartupKIVDialog::FillCor()
 
 void StartupKIVDialog::GetCorBd()
 {
-    iface()->reqFloats(4000, 12);
+    BaseInterface::iface()->reqFloats(4000, 12);
 }
 // void StartupKIVDialog::GetCorBdButton()
 //{

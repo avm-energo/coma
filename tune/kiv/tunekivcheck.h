@@ -20,8 +20,8 @@ private:
 
     void setMessages() override;
     void setTuneFunctions() override;
-    void FillBac(int bacnum) override;
-    void FillBackBac(int bacnum) override;
+    //    void FillBac(int bacnum) override;
+    //    void FillBackBac(int bacnum) override;
     //    void GetBdAndFill() override;
     //    Error::Msg saveWorkConfig(int configblocknum) override;
     QWidget *MainUI() override;

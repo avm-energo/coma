@@ -186,7 +186,7 @@ void JournalDialog::TryGetJourByUSB()
 {
     QString filetofind;
     int jourtype = GetJourNum(sender()->objectName());
-    iface()->reqFile(DataTypes::FilesEnum(jourtype));
+    BaseInterface::iface()->reqFile(DataTypes::FilesEnum(jourtype));
     //    switch (jourtype)
     //    {
     //    case DataTypes::JourSys:
@@ -230,7 +230,7 @@ void JournalDialog::TryGetJourByUSB()
 void JournalDialog::GetJour()
 {
     QByteArray ba;
-    iface()->reqFile(JourType);
+    BaseInterface::iface()->reqFile(JourType);
     emit StartGetJour();
 }
 
@@ -244,7 +244,7 @@ void JournalDialog::EraseJour()
     //    if (Board::GetInstance().interfaceType() == Board::InterfaceType::USB)
     if (WriteCheckPassword() == Error::Msg::NoError)
         //        {
-        iface()->writeCommand(Queries::QC_EraseJournals);
+        BaseInterface::iface()->writeCommand(Queries::QC_EraseJournals);
     //            int jourtype = GetJourNum(sender()->objectName());
     //            if (jourtype == INT_MAX)
     //            {

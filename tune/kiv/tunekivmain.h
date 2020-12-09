@@ -20,12 +20,12 @@ private:
     bool m_isEnergoMonitorDialogCreated;
     int m_curTuneStep;
     TuneKIV::Bda_in m_bdain;
-    TuneKIV::Bac m_bac;
+    //    TuneKIV::Bac m_bac;
 
     void setMessages();
     void setTuneFunctions();
-    void FillBac(int bacnum);
-    void FillBackBac(int bacnum);
+    //    void FillBac(int bacnum);
+    //    void FillBackBac(int bacnum);
     QWidget *MainUI();
 
     Error::Msg showPreWarning();
@@ -53,6 +53,7 @@ private:
     QWidget *BdWidget();
     bool checkBdaIn();
     Error::Msg showEnergomonitorInputDialog();
+    //    void saveIntermediateResults();
 
 private slots:
     void CalcTuneCoefs();

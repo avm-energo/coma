@@ -153,12 +153,14 @@ QWidget *AbstractTuneDialog::BottomUI()
     return w;
 }
 
-void AbstractTuneDialog::SetBac(void *block, int blocknum, int blocksize)
+// void AbstractTuneDialog::SetBac(void *block, int blocknum, int blocksize)
+void AbstractTuneDialog::SetBac(DataBlock *block)
 {
-    BlockStruct Bac;
-    Bac.BacBlock = block;
-    Bac.BacBlockSize = blocksize;
-    AbsBac[blocknum] = Bac;
+    AbsBac[block->block().blocknum] = block;
+    //    BlockStruct Bac;
+    //    Bac.BacBlock = block;
+    //    Bac.BacBlockSize = blocksize;
+    //    AbsBac[blocknum] = Bac;
 }
 
 /*void AbstractTuneDialog::ShowTable()
@@ -294,6 +296,8 @@ Error::Msg AbstractTuneDialog::StartMeasurement()
 
 void AbstractTuneDialog::StartTune()
 {
+    if (checkCalibrStep() != Error::Msg::NoError)
+        return;
     WDFunc::SetEnabled(this, "starttune", false);
     if (m_messages.size() > m_tuneFunctions.size())
     {
@@ -347,12 +351,15 @@ void AbstractTuneDialog::StartTune()
 Error::Msg AbstractTuneDialog::saveAllTuneCoefs()
 {
     QString tunenum;
-    for (QMap<int, BlockStruct>::Iterator it = AbsBac.begin(); it != AbsBac.end(); ++it)
+    //    for (QMap<int, BlockStruct>::Iterator it = AbsBac.begin(); it != AbsBac.end(); ++it)
+    for (QMap<int, DataBlock *>::Iterator it = AbsBac.begin(); it != AbsBac.end(); ++it)
     {
         tunenum = QString::number(it.key(), 16); // key is the number of Bac block
         QByteArray ba;
-        ba.resize(it.value().BacBlockSize);
-        memcpy(&(ba.data()[0]), it.value().BacBlock, it.value().BacBlockSize);
+        //        ba.resize(it.value().BacBlockSize);
+        //        memcpy(&(ba.data()[0]), it.value().BacBlock, it.value().BacBlockSize);
+        ba.resize(it.value()->block().blocksize);
+        memcpy(&(ba.data()[0]), it.value()->block().block, it.value()->block().blocksize);
         if (Files::SaveToFile(StdFunc::GetSystemHomeDir() + "temptune.tn" + tunenum, ba) != Error::Msg::NoError)
             return Error::Msg::GeneralError;
     }
@@ -362,12 +369,14 @@ Error::Msg AbstractTuneDialog::saveAllTuneCoefs()
 Error::Msg AbstractTuneDialog::loadAllTuneCoefs()
 {
     QString tunenum;
-    for (QMap<int, BlockStruct>::Iterator it = AbsBac.begin(); it != AbsBac.end(); ++it)
+    //    for (QMap<int, BlockStruct>::Iterator it = AbsBac.begin(); it != AbsBac.end(); ++it)
+    for (QMap<int, DataBlock *>::Iterator it = AbsBac.begin(); it != AbsBac.end(); ++it)
     {
         tunenum = QString::number(it.key(), 16); // key is the number of Bac block
         QByteArray ba;
         if (Files::LoadFromFile(StdFunc::GetSystemHomeDir() + "temptune.tn" + tunenum, ba) == Error::Msg::NoError)
-            memcpy(it.value().BacBlock, &(ba.data()[0]), it.value().BacBlockSize);
+            //            memcpy(it.value().BacBlock, &(ba.data()[0]), it.value().BacBlockSize);
+            memcpy(it.value()->block().block, &(ba.data()[0]), it.value()->block().blocksize);
     }
     return Error::Msg::NoError;
 }
@@ -417,7 +426,8 @@ Error::Msg AbstractTuneDialog::loadAllTuneCoefs()
 void AbstractTuneDialog::readTuneCoefs()
 {
     //    int bacnum = sender()->objectName().toInt();
-    for (QMap<int, BlockStruct>::Iterator it = AbsBac.begin(); it != AbsBac.end(); ++it)
+    //    for (QMap<int, BlockStruct>::Iterator it = AbsBac.begin(); it != AbsBac.end(); ++it)
+    for (QMap<int, DataBlock *>::Iterator it = AbsBac.begin(); it != AbsBac.end(); ++it)
     {
         readTuneCoefsByBac(it.key());
     }
@@ -435,13 +445,18 @@ void AbstractTuneDialog::readTuneCoefsByBac(int bacnum)
     //    }
     if (AbsBac.keys().contains(bacnum))
     {
-        //        iface()->writeCommand(Queries::QUSB_ReqTuningCoef, bacnum);
-        if (iface()->reqBlockSync(
-                bacnum, DataTypes::DataBlockTypes::BacBlock, AbsBac[bacnum].BacBlock, AbsBac[bacnum].BacBlockSize)
+        //        BaseInterface::iface()->writeCommand(Queries::QUSB_ReqTuningCoef, bacnum);
+        //        if (BaseInterface::iface()->reqBlockSync(
+        //                bacnum, DataTypes::DataBlockTypes::BacBlock, AbsBac[bacnum].BacBlock,
+        //                AbsBac[bacnum].BacBlockSize)
+        //            == Error::Msg::NoError)
+        if (BaseInterface::iface()->reqBlockSync(bacnum, DataTypes::DataBlockTypes::BacBlock,
+                AbsBac[bacnum]->block().block, AbsBac[bacnum]->block().blocksize)
             == Error::Msg::NoError)
             //        int res = Commands::GetBac(bacnum, AbsBac[bacnum].BacBlock, AbsBac[bacnum].BacBlockSize);
             //        if (res == Error::Msg::NoError)
-            FillBac(bacnum);
+            //            FillBac(bacnum);
+            AbsBac[bacnum]->updateWidget();
     }
 }
 
@@ -449,9 +464,13 @@ Error::Msg AbstractTuneDialog::writeTuneCoefsByBac(int bacnum)
 {
     if (AbsBac.keys().contains(bacnum))
     {
-        FillBackBac(bacnum);
-        return iface()->writeBlockSync(
-            bacnum, DataTypes::DataBlockTypes::BacBlock, AbsBac[bacnum].BacBlock, AbsBac[bacnum].BacBlockSize);
+        AbsBac[bacnum]->updateFromWidget();
+        //        FillBackBac(bacnum);
+        //        return BaseInterface::iface()->writeBlockSync(
+        //            bacnum, DataTypes::DataBlockTypes::BacBlock, AbsBac[bacnum].BacBlock,
+        //            AbsBac[bacnum].BacBlockSize);
+        return BaseInterface::iface()->writeBlockSync(bacnum, DataTypes::DataBlockTypes::BacBlock,
+            AbsBac[bacnum]->block().block, AbsBac[bacnum]->block().blocksize);
     }
     return Error::Msg::GeneralError;
 }
@@ -465,9 +484,11 @@ bool AbstractTuneDialog::writeTuneCoefs()
     if (QMessageBox::question(this, "Вопрос", "Сохранить регулировочные коэффициенты?") == false)
         return false;
 
-    for (QMap<int, BlockStruct>::Iterator it = AbsBac.begin(); it != AbsBac.end(); ++it)
+    //    for (QMap<int, BlockStruct>::Iterator it = AbsBac.begin(); it != AbsBac.end(); ++it)
+    for (QMap<int, DataBlock *>::Iterator it = AbsBac.begin(); it != AbsBac.end(); ++it)
     {
-        FillBackBac(it.key());
+        it.value()->updateFromWidget();
+        //        FillBackBac(it.key());
         if (writeTuneCoefsByBac(it.key()) != Error::Msg::NoError)
             return false;
     }
@@ -533,11 +554,11 @@ void AbstractTuneDialog::saveTuneSequenceFile()
 Error::Msg AbstractTuneDialog::saveWorkConfig()
 {
     //    return SaveBlocksToFiles(DataBlock::DataBlockTypes::BciBlock);
-    //    iface()->reqFile(Files::FilesEnum::Config, true);
+    //    BaseInterface::iface()->reqFile(Files::FilesEnum::Config, true);
     //    memcpy(&m_BciSaveBlock, &CKIV->Bci_block, sizeof(ConfigKIV::Bci));
     //    else return Error::Msg::GeneralError;
     QByteArray ba;
-    if (iface()->readFileSync(DataTypes::Config, ba) != Error::Msg::NoError)
+    if (BaseInterface::iface()->readFileSync(DataTypes::Config, ba) != Error::Msg::NoError)
         return Error::Msg::GeneralError;
     return Files::SaveToFile(StdFunc::GetSystemHomeDir() + Board::GetInstance().UID() + ".cf", ba);
     //    return Error::Msg::NoError;
@@ -551,7 +572,7 @@ Error::Msg AbstractTuneDialog::loadWorkConfig()
     QByteArray ba;
     if (Files::LoadFromFile(StdFunc::GetSystemHomeDir() + Board::GetInstance().UID() + ".cf", ba)
         != Error::Msg::NoError)
-        return iface()->writeFileSync(DataTypes::Config, ba);
+        return BaseInterface::iface()->writeFileSync(DataTypes::Config, ba);
     return Error::Msg::GeneralError;
 }
 

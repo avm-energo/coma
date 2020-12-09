@@ -57,16 +57,13 @@ public:
 public slots:
 
 private:
-    AVM_KIV::Bci m_Bci_block_work, m_Bci_block_temporary;
+    //    AVM_KIV::Bci m_Bci_block_work, m_Bci_block_temporary;
     TuneKIV *TKIV;
     ConfigKIV *CKIV;
 
-    QDialog *ask;
-    QLineEdit *ledit;
-    QTimer *timer;
-
-    float m_Uet[3], m_Iet[3], m_PHIet[6], m_FREQet, m_UetMinus20[3], m_IetMinus20[3], m_PHIetMinus20[6],
-        m_FREQetMinus20, m_Uet60[3], m_Iet60[3], m_PHIet60[6], m_FREQet60;
+    //    QDialog *ask;
+    //    QLineEdit *ledit;
+    //    QTimer *timer;
 
     enum TuneModes
     {
@@ -78,11 +75,11 @@ private:
     LimeReport::ReportEngine *m_Report;
 
     int m_tuneControlType;
-    bool m_Cancelled = false, m_defConfig;
+    //    bool m_Cancelled = false, m_defConfig;
 
     void SetupUI();
 
-    int m_filterSteps;
+    //    int m_filterSteps;
 
     /*struct ReportHeaderStructure
     {
@@ -128,69 +125,7 @@ private:
     QStandardItemModel *ReportModel, *ViewModel; // модель, в которую заносим данные для отчёта
     int RowCount, ColumnCount; // количество рядов и столбцов в модели*/
 
-    /*double U[21] =       {60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 72, 48, 36, 24, 12, 60, 60, 60, 60 };
-    double I[21] =       {0.2, 0.4, 0.6, 0.8, 1.0, 1.2, 1, 2, 3, 4, 5, 6,  5, 5, 5, 5, 5, 5, 5, 5, 5 };
-    double PhiLoad[21] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 45, 90, 180, 270 };*/
-
-    //    RealDataStruct m_RealData;
-    float m_IUefNat_filt_old[6]; // для сохранения значений по п. 7.3.2
-    float m_MipDat[46];
-    int m_GED_Type;
-    int m_Kadc;
-
-    // QHBoxLayout *MipPars(int parnum, const QString &groupname);
-    /*    void FillBac(int bacnum);
-        void FillBackBac(int bacnum);
-        void PrepareConsts();
-        void FillNewBac();
-
-        void Tune3p();
-        int CheckTuneCoefs();
-        // int CheckMip();
-        void GetBdAndFill();
-        int Start7_3_1_1();
-        int Start7_3_4_2();
-        int Start7_3_4_6();
-        int Start7_3_4_7();
-        int Start7_3_4_11();
-        int Start7_3_4_12();
-        int Start7_3_4_13();
-        int Start7_3_4_14();
-        int Start7_3_4_15();
-        int Start7_3_4_16();
-        int Start7_3_4_17();
-        int Start7_3_4_18();
-        int Start7_3_5();
-        int ShowScheme();
-        int SaveUeff();
-        int SetNewTuneCoefs(); // заполнение Bac_newblock, чтобы не было пурги после настройки
-        int LoadWorkConfig();
-        void RefreshAnalogValues(int bdnum);
-        void CalcTempCorCoefs();
-        int Show125mA();
-        int AskTemp20();
-        int AskTempMinus20();
-        int AskTemp60();
-        int Average();
-        int ReadAnalogTemp20();
-        int ReadAnalogTempMinus20();
-        int ReadAnalogTemp60();
-        void Enter20Data();
-        void Enterminus20Data();
-        void Enter60Data(); */
-
-    QString ValuesFormat, WidgetFormat;
-
-    QHBoxLayout *newTunePBLayout(const QString &pbtext, const std::function<void()> fun)
-    {
-        QHBoxLayout *hlyout = new QHBoxLayout;
-        hlyout->addStretch(100);
-        QPushButton *pb = new QPushButton(pbtext);
-        connect(pb, &QPushButton::clicked, fun);
-        hlyout->addWidget(pb);
-        hlyout->addStretch(100);
-        return hlyout;
-    }
+    QHBoxLayout *newTunePBLayout(const QString &pbtext, const std::function<void()> fun);
 
 private slots:
 

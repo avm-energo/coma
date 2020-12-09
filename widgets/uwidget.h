@@ -36,8 +36,9 @@ public:
     void setHighlightMap(const QMap<int, QList<HighlightWarnAlarmStruct>> &map);
     void setFloatBdQuery(const QList<BdQuery> &list);
     void setSpBdQuery(const QList<BdQuery> &list);
-    void setInterface(BaseInterface *iface);
-    BaseInterface *iface();
+    //    void setInterface(BaseInterface *iface);
+    //    BaseInterface *iface();
+    virtual void uponInterfaceSetting();
 
 signals:
     // signals to set "ProgressBar2" in main Coma
@@ -52,7 +53,6 @@ public slots:
 
 protected:
     bool m_updatesEnabled;
-    virtual void uponInterfaceSetting();
 
 private:
     QString m_caption;

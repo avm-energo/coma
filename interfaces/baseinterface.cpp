@@ -7,8 +7,20 @@
 #include <QCoreApplication>
 #include <QTimer>
 
+BaseInterface *BaseInterface::m_iface;
+
 BaseInterface::BaseInterface(QObject *parent) : QObject(parent), m_working(false), Log(new LogClass(this))
 {
+}
+
+BaseInterface *BaseInterface::iface()
+{
+    return m_iface;
+}
+
+void BaseInterface::setIface(BaseInterface *iface)
+{
+    m_iface = iface;
 }
 
 void BaseInterface::writeS2File(DataTypes::FilesEnum number, S2DataTypes::S2ConfigType *file)
@@ -185,6 +197,7 @@ void BaseInterface::responseReceived(const DataTypes::GeneralResponseStruct &res
 
 void BaseInterface::confParameterBlockReceived(const DataTypes::ConfParametersListStruct &cfpl)
 {
+    Q_UNUSED(cfpl)
     disconnect(&DataManager::GetInstance(), &DataManager::confParametersListReceived, this,
         &BaseInterface::confParameterBlockReceived);
     // m_responseResult = (response.type == DataTypes::GeneralResponseTypes::Ok);

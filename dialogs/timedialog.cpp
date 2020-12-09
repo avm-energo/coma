@@ -144,7 +144,7 @@ void TimeDialog::Write_PCDate()
 void TimeDialog::WriteTime(QDateTime &myDateTime)
 {
     uint time = myDateTime.toSecsSinceEpoch();
-    iface()->writeTime(time);
+    BaseInterface::iface()->writeTime(time);
     //    switch (Board::GetInstance().interfaceType())
     //    {
     //    case Board::InterfaceType::USB:
@@ -204,7 +204,7 @@ void TimeDialog::reqUpdate()
 {
     if (m_updatesEnabled)
     {
-        iface()->reqTime();
+        BaseInterface::iface()->reqTime();
         //        uint unixtimestamp = 0;
         //        QList<DataTypes::SignalsStruct> list;
         //        // DataManager::getSignals(TIMEREG, TIMEREG, DataTypes::SignalTypes::BitString, list);

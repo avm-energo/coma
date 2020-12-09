@@ -56,8 +56,10 @@ void AlarmStateAll::update(quint32 health)
 
 void AlarmStateAll::reqUpdate()
 {
-    Q_ASSERT(iface() != nullptr);
-    iface()->reqBSI();
+    //    Q_ASSERT(iface() != nullptr);
+    //    iface()->reqBSI();
+    Q_ASSERT(BaseInterface::iface() != nullptr);
+    BaseInterface::iface()->reqBSI();
     // update(Board::GetInstance().health());
 }
 

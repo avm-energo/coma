@@ -2,11 +2,11 @@
 #define WD_FUNC
 
 #include "ecombobox.h"
+#include "edoublespinbox.h"
 #include "etableview.h"
 #include "passwordlineedit.h"
 
 #include <QCheckBox>
-#include <QDoubleSpinBox>
 #include <QLabel>
 #include <QLineEdit>
 #include <QPushButton>
@@ -66,7 +66,7 @@ public:
     //    static QMetaObject::Connection CBConnect(
     //        QWidget *w, const QString &cbname, int cbconnecttype, const QObject *receiver, const char *method);
 
-    static QDoubleSpinBox *NewSPB(
+    static EDoubleSpinBox *NewSPB(
         QWidget *parent, const QString &spbname, double min, double max, int decimals, const QString &spbcolor = "");
 
     static bool SetSPBData(QObject *w, const QString &spbname, const double &spbvalue);

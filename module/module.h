@@ -19,7 +19,7 @@ public:
 
     explicit Module(QObject *parent = nullptr);
 
-    static Module *createModule(QTimer *updateTimer, BaseInterface *iface, AlarmWidget *aw);
+    static Module *createModule(QTimer *updateTimer, AlarmWidget *aw);
     QList<UDialog *> dialogs();
     QList<UDialog *> confDialogs();
     void addDialogToList(UDialog *dlg, const QString &caption = "", const QString &name = "");
@@ -42,7 +42,7 @@ private:
     //    AlarmStateAll *m_alarmStateAllDialog;
     //    ModuleAlarm *m_warnAlarm;
     //    int m_currentTabIndex, m_oldTabIndex;
-    BaseInterface *m_iface;
+    //    BaseInterface *m_iface;
 };
 
 #endif // MODULEFABRIC_H

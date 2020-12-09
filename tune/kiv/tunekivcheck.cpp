@@ -59,15 +59,15 @@ QWidget *TuneKIVCheck::MainUI()
     return nullptr;
 }
 
-void TuneKIVCheck::FillBac(int bacnum)
-{
-    Q_UNUSED(bacnum)
-}
+// void TuneKIVCheck::FillBac(int bacnum)
+//{
+//    Q_UNUSED(bacnum)
+//}
 
-void TuneKIVCheck::FillBackBac(int bacnum)
-{
-    Q_UNUSED(bacnum)
-}
+// void TuneKIVCheck::FillBackBac(int bacnum)
+//{
+//    Q_UNUSED(bacnum)
+//}
 
 // Error::Msg TuneKIVCheck::setSMode2()
 //{
@@ -109,7 +109,7 @@ Error::Msg TuneKIVCheck::showScheme()
 
 Error::Msg TuneKIVCheck::check()
 {
-    iface()->reqBlockSync(1, DataTypes::DataBlockTypes::BdaBlock, &TKIV->m_Bda, sizeof(TKIV->m_Bda));
+    BaseInterface::iface()->reqBlockSync(1, DataTypes::DataBlockTypes::BdaBlock, &TKIV->m_Bda, sizeof(TKIV->m_Bda));
     for (int i = 0; i < 6; ++i)
         if (!StdFunc::floatIsWithinLimits(TKIV->m_Bda.Ueff_ADC[i], 2150000.0, 150000.0))
             return Error::Msg::GeneralError;

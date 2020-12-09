@@ -68,6 +68,8 @@ void UWidget::updateFloatData(const DataTypes::FloatStruct &fl)
 #ifdef UWIDGET_DEBUG
         if (!result)
             qDebug() << Error::DescError << QString::number(fl.sigAdr) << WDFunc::StringValueWithCheck(fl.sigVal, 3);
+#else
+        Q_UNUSED(result)
 #endif
         m_timerCounter = 0;
     }
@@ -86,22 +88,22 @@ void UWidget::reqUpdate()
     if (!m_updatesEnabled)
         return;
     for (const auto &query : m_floatBdQueryList)
-        iface()->reqFloats(query.sigAdr, query.sigQuantity);
+        BaseInterface::iface()->reqFloats(query.sigAdr, query.sigQuantity);
     for (const auto &query : m_spBdQueryList)
-        iface()->reqAlarms(query.sigAdr, query.sigQuantity);
+        BaseInterface::iface()->reqAlarms(query.sigAdr, query.sigQuantity);
 }
 
-void UWidget::setInterface(BaseInterface *iface)
-{
-    m_iface = iface;
-    uponInterfaceSetting();
-}
+// void UWidget::setInterface(BaseInterface *iface)
+//{
+//    m_iface = iface;
+//    uponInterfaceSetting();
+//}
 
 void UWidget::uponInterfaceSetting()
 {
 }
 
-BaseInterface *UWidget::iface()
-{
-    return m_iface;
-}
+// BaseInterface *UWidget::iface()
+//{
+//    return m_iface;
+//}

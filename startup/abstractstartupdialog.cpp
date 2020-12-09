@@ -82,7 +82,7 @@ void AbstractStartupDialog::GetCorBd()
 
 void AbstractStartupDialog::SetCor()
 {
-    iface()->writeCommand(Queries::QC_SetStartupValues);
+    BaseInterface::iface()->writeCommand(Queries::QC_SetStartupValues);
     // if (MainInterface == I_ETHERNET)
     //{
     //    if (Board::GetInstance().interfaceType() == Board::InterfaceType::Ethernet)
@@ -187,7 +187,7 @@ void AbstractStartupDialog::FillBd(QWidget *parent, QString Name, float Value)
 
 void AbstractStartupDialog::GetCorBdButton()
 {
-    iface()->reqStartup(m_startupBlockDescription.initStartRegAdr,
+    BaseInterface::iface()->reqStartup(m_startupBlockDescription.initStartRegAdr,
         m_startupBlockDescription.size / sizeof(float)); // /4 => float by default
 }
 
