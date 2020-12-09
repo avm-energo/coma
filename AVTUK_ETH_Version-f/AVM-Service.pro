@@ -20,9 +20,10 @@ DEFINES += COMAVERSION='\\"$$VERSION\\"'
 DEFINES += DEVICETYPE=1 # 1 - module, 2 - pribor, for diagnostic messages
 DEFINES += SOFTDEVELOPER='\\"$$QMAKE_TARGET_COMPANY\\"'
 DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000
-DEFINES += GIT_VERSION='$(shell git describe --always)'
-DEFINES += BUILD_DATE='"\\\"$(shell date)\\\""'
-
+#// NOTE Реализовать
+#DEFINES += GIT_VERSION='$(shell git describe --always)'
+#DEFINES += GIT_TAG="\\\"$(shell git describe --tags)\\\""
+#DEFINES += GIT_CURRENT_SHA1="\\\"$(shell git -C \""$$_PRO_FILE_PWD_"\" describe)\\\""
 # DEFINES += DEBUG
 TEMPLATE = app
 
@@ -313,3 +314,6 @@ copyToDestDir($$LIBS_FILES, $$DESTDIR/)
 
 DISTFILES += \
     ../interfaces/interfaces.qmodel
+
+RESOURCES += \
+    ../images/vectorIcons.qrc

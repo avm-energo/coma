@@ -220,6 +220,8 @@ IMAGE_FILE += \
 ERROR_FILES += \
     $$PWD/../errors
 
+RESOURCES += \
+    ../images/vectorIcons.qrc
 
 
 INCLUDEPATH += $$PWD/../../includes

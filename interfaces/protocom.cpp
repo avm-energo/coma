@@ -60,7 +60,7 @@ bool Protocom::start(const UsbHidSettings &usbhid)
 
     connect(this, &Protocom::wakeUpParser, parser, &ProtocomThread::wakeUp, Qt::DirectConnection);
     connect(port, &UsbHidPort::dataReceived, parser, &ProtocomThread::appendReadDataChunk, Qt::DirectConnection);
-    qDebug() << QThread::currentThreadId();
+
     connect(parser, &ProtocomThread::writeDataAttempt, port, &UsbHidPort::writeDataAttempt, Qt::DirectConnection);
 
     if (!port->setupConnection())
