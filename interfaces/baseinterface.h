@@ -14,6 +14,8 @@ public:
     LogClass *Log;
 
     explicit BaseInterface(QObject *parent = nullptr);
+    static BaseInterface *iface();
+    static void setIface(BaseInterface *iface);
 
     virtual bool start(const ConnectStruct &) = 0;
     virtual void reqStartup(quint32 sigAdr = 0, quint32 sigCount = 0) = 0;
@@ -59,6 +61,7 @@ private:
     bool m_busy, m_timeout;
     QByteArray m_byteArrayResult;
     bool m_responseResult;
+    static BaseInterface *m_iface;
 
 public slots:
     virtual void stop() = 0;

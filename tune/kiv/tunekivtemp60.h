@@ -24,14 +24,33 @@ private:
         float yet;
     };
 
+    struct TuneDescrStruct
+    {
+        QString parametername;
+        float *parameter;
+    };
+
     TuneKIV *TKIV;
     ConfigKIV *CKIV;
     MidTuneStruct m_midTuneStruct;
+    QVector<TuneDescrStruct> m_tuneDescrVector()
+    {
+        QVector<TuneDescrStruct> vect;
+        for (int i = 0; i < 6; ++i)
+            vect.append({ "u_p" + QString::number(i), &m_midTuneStruct.u[i] });
+        for (int i = 0; i < 3; ++i)
+            vect.append({ "y_p" + QString::number(i), &m_midTuneStruct.y[i] });
+        vect.append({ "tmk_p", &m_midTuneStruct.tmk });
+        vect.append({ "uet_p", &m_midTuneStruct.uet });
+        vect.append({ "iet_p", &m_midTuneStruct.iet });
+        vect.append({ "yet_p", &m_midTuneStruct.yet });
+        return vect;
+    };
 
     void setMessages();
     void setTuneFunctions();
-    void FillBac(int bacnum);
-    void FillBackBac(int bacnum);
+    //    void FillBac(int bacnum);
+    //    void FillBackBac(int bacnum);
     QWidget *MainUI();
     //    void GetBdAndFill();
     //    Error::Msg LoadTuneSequenceFile();
@@ -42,11 +61,17 @@ private:
     Error::Msg showSignalsDialog();
     Error::Msg analogMeasurement();
     Error::Msg inputEnergomonitorValues();
+
     Error::Msg calcTuneCoefsAndWrite();
-    void loadIntermediateResults(MidTuneStruct &tunestr);
+    void loadIntermediateResults();
+    Error::Msg showTuneCoefs();
+
+signals:
+    void closeShowTuneDialog();
 
 private slots:
     void saveIntermediateResults();
+    void acceptTuneCoefs();
     //    int ReadAnalogMeasurements();
     //    void SetDefCoefs();
 };

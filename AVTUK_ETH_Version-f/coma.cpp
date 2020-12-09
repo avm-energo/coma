@@ -666,7 +666,8 @@ void Coma::PrepareDialogs()
     //    infoDialog = new InfoDialog(this);
     //    jourDialog = new JournalDialog(Ch104);
     //    timeDialog = new MNKTime(this);
-    m_Module = Module::createModule(BdaTimer, m_iface, AlarmW);
+    //    m_Module = Module::createModule(BdaTimer, m_iface, AlarmW);
+    m_Module = Module::createModule(BdaTimer, AlarmW);
     //    Alarm->setModule(m_Module);
     //    AlarmStateAllDialog = new AlarmStateAll;
     setupConnections();
@@ -1154,7 +1155,8 @@ void Coma::Connect()
     case Board::InterfaceType::USB:
     {
         //        m_iface = new USBWorker();
-        m_iface = new Protocom;
+        //        m_iface = new Protocom;
+        BaseInterface::setIface(new Protocom);
         //        res = Commands::Connect();
         //        if (res != Error::Msg::NoError)
         //        {
@@ -1183,16 +1185,21 @@ void Coma::Connect()
     }
     case Board::InterfaceType::Ethernet:
     {
-        m_iface = new IEC104;
+#ifndef AVM_DEBUG
+        //        m_iface = new IEC104;
+        BaseInterface::setIface(new IEC104);
         //        New104();
         //        if (!Ch104->isWorking())
         //            Ch104->Connect(ConnectSettings.iec104st);
         //        ActiveThreads |= THREAD::P104;
+#endif
         break;
     }
     case Board::InterfaceType::RS485:
     {
-        m_iface = new ModBus;
+#ifndef AVM_DEBUG
+        //        m_iface = new ModBus;
+        BaseInterface::setIface(new ModBus);
         //        NewModbus();
         //        res = ChModbus->Connect(ConnectSettings.serialst);
         //        if (res != Error::Msg::NoError)
@@ -1202,12 +1209,15 @@ void Coma::Connect()
         //        }
         //        ChModbus->BSIrequest();
         //        ActiveThreads |= THREAD::MODBUS;
+#endif
         break;
     }
     default:
         qFatal("Connection type error");
     }
-    if (!m_iface->start(ConnectSettings))
+    //    if (!m_iface->start(ConnectSettings))
+    if (!BaseInterface::iface()->start(ConnectSettings))
+
     //    if (res != Error::Msg::NoError)
     {
         QMessageBox::critical(this, "Ошибка", "Не удалось установить связь", QMessageBox::Ok);
@@ -1223,7 +1233,8 @@ void Coma::Connect()
     //    m_iface->reqFloats(2420, 14);
     //    m_iface->reqFloats(1100, 16);
     //    m_iface->reqFloats(101, 2);
-    m_iface->reqBSI();
+    //    m_iface->reqBSI();
+    BaseInterface::iface()->reqBSI();
     // m_iface->reqTime();
     // m_iface->reqFile(4);
 }

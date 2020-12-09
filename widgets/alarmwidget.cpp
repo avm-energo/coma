@@ -247,7 +247,7 @@ void AlarmWidget::addAlarm(BaseAlarm *alarm)
     pb->setMinimumSize(QSize(3 * geometry().width() / 10, 30));
     pb->setPixmap(WDFunc::NewCircle(Qt::green, 15));
     connect(pb, &QPushButton::clicked, alarm, &QDialog::show);
-    alarm->setInterface(iface());
+    //    alarm->setInterface(iface());
     if (!m_timer->isActive())
         m_timer->start();
     connect(m_timer, &QTimer::timeout, alarm, &BaseAlarm::reqUpdate);

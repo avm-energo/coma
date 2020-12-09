@@ -79,7 +79,8 @@ void FWUploadDialog::LoadFW()
     //    QByteArray ba2(300000,Qt::Uninitialized);
     //    S2::ParseHexToS2()
 
-    iface()->writeS2File(DataTypes::Firmware, &firmwareS2);
+    //    BaseInterface::iface()->writeS2File(DataTypes::Firmware, &firmwareS2);
+
     //    if (!ParseHexToS2(ba))
     //        qCritical() << Error::ReadError;
     return;
@@ -106,7 +107,7 @@ void FWUploadDialog::RunSoft()
     if (!WriteCheckPassword())
         return;
     // FIXME After create usb
-    iface()->writeCommand(Queries::QC_StartFirmwareUpgrade);
+    BaseInterface::iface()->writeCommand(Queries::QC_StartFirmwareUpgrade);
     //        if (Commands::RunVPO() != Error::Msg::NoError)
     //        {
     //            WARNMSG("Ошибка перехода на новое ПО");
@@ -135,6 +136,7 @@ bool FWUploadDialog::WriteCheckPassword()
 
 bool FWUploadDialog::ParseHexToS2(QByteArray ba)
 {
+    Q_UNUSED(ba)
 
     // FIXME After create usb
     //    if (Commands::WriteFile(3, &S2DR) != Error::Msg::NoError)

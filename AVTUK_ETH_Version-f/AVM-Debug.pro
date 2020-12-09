@@ -30,6 +30,16 @@ TEMPLATE = app
 
 
 SOURCES += \
+    ../datablocks/bd0.cpp \
+    ../datablocks/datablock.cpp \
+    ../datablocks/kiv/bac.cpp \
+    ../gen/errorqueue.cpp \
+    ../models/errorprotocolmodel.cpp \
+    ../module/alarmkdv.cpp \
+    ../module/journkdv.cpp \
+    ../module/journkiv.cpp \
+    ../module/journktf.cpp \
+    ../widgets/edoublespinbox.cpp \
     coma.cpp \
     main.cpp \
     ../check/abstractcheckdialog.cpp \
@@ -119,6 +129,16 @@ SOURCES += \
 PRECOMPILED_HEADER = ../gen/pch.h
 
 HEADERS += \
+    ../datablocks/bd0.h \
+    ../datablocks/datablock.h \
+    ../datablocks/kiv/bac.h \
+    ../gen/errorqueue.h \
+    ../models/errorprotocolmodel.h \
+    ../module/alarmkdv.h \
+    ../module/journkdv.h \
+    ../module/journkiv.h \
+    ../module/journktf.h \
+    ../widgets/edoublespinbox.h \
     coma.h \
     ../check/abstractcheckdialog.h \
     ../check/check.h \
@@ -169,8 +189,6 @@ HEADERS += \
     ../interfaces/protocomthread.h \
     ../interfaces/usbhidport.h \
     ../interfaces/usbhidportinfo.h \
-    ../interfaces/iec104private.h \
-    ../interfaces/modbusprivate.h \
     ../models/etableitem.h \
     ../models/etablemodel.h \
     ../module/alarmkiv.h \

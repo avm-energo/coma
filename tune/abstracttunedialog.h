@@ -1,6 +1,7 @@
 #ifndef ABSTRACTTUNEDIALOG_H
 #define ABSTRACTTUNEDIALOG_H
 
+#include "../datablocks/datablock.h"
 #include "../gen/report.h"
 #include "../gen/s2.h"
 #include "../widgets/udialog.h"
@@ -87,9 +88,10 @@ public:
     //    void PrereadConf();
     //    void GetBdAndFill();
 
-    void SetBac(void *block, int blocknum, int blocksize);
-    virtual void FillBac(int bacnum) = 0;
-    virtual void FillBackBac(int bacnum) = 0;
+    //    void SetBac(void *block, int blocknum, int blocksize);
+    void SetBac(DataBlock *block);
+    //    virtual void FillBac(int bacnum) = 0;
+    //    virtual void FillBackBac(int bacnum) = 0;
     //    void SaveToFileEx(int bacnum);
     //    void ShowTable();
     Error::Msg LoadTuneSequenceFile();
@@ -101,15 +103,16 @@ public:
     Error::Msg loadAllTuneCoefs();
 
 private:
-    struct BlockStruct
-    {
-        void *BacBlock;
-        int BacBlockSize;
-        //        char BacBlockNum;
-    };
+    //    struct BlockStruct
+    //    {
+    //        void *BacBlock;
+    //        int BacBlockSize;
+    //        //        char BacBlockNum;
+    //    };
 
-    QMap<int, BlockStruct> AbsBac;
-    BlockStruct InitialBci;
+    //    QMap<int, BlockStruct> AbsBac;
+    QMap<int, DataBlock *> AbsBac;
+    //    BlockStruct InitialBci;
 
     void readTuneCoefsByBac(int bacnum);
     Error::Msg writeTuneCoefsByBac(int bacnum);
@@ -143,7 +146,7 @@ private slots:
     //    void PasswordCheck(QString psw);
     //    virtual int ReadAnalogMeasurements() = 0;
     //    void UpdateNSecondsWidget();
-    void MeasTimerTimeout(); // по событию от таймера при активном режиме измерений обновить данные
+    //    void MeasTimerTimeout(); // по событию от таймера при активном режиме измерений обновить данные
     //    void LoadTuneBlocksFromFile();
 
 protected:

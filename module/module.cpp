@@ -36,26 +36,30 @@ Module::Module(QObject *parent) : QObject(parent)
     // m_oldTabIndex = m_currentTabIndex = 0;
 }
 
-Module *Module::createModule(QTimer *updateTimer, BaseInterface *iface, AlarmWidget *aw)
+// Module *Module::createModule(QTimer *updateTimer, BaseInterface *iface, AlarmWidget *aw)
+Module *Module::createModule(QTimer *updateTimer, AlarmWidget *aw)
 {
     using namespace Modules;
     const auto &board = Board::GetInstance();
     Journals *JOUR;
     Module *m = new Module;
-    m->m_iface = iface;
+    //    m->m_iface = iface;
     S2::config = new S2DataTypes::S2ConfigType;
     // ModuleAlarm *criticalAlarm;
 
     // ModuleAlarm *warningAlarm;
     // m->m_alarmStateAllDialog->UpdateHealth(board.health());
-    quint16 typeb = Board::GetInstance().typeB();
-    aw->setInterface(iface);
+    //    quint16 typeb = Board::GetInstance().typeB();
+    quint16 typeb = board.typeB();
+    //    aw->setInterface(iface);
+    aw->uponInterfaceSetting();
     AlarmStateAll *alarmStateAll = new AlarmStateAll;
     alarmStateAll->setupUI(AVM::HthToolTip);
     aw->addAlarm(alarmStateAll);
     if (BaseBoards.contains(typeb)) // there must be two-part module
     {
-        quint16 typem = Board::GetInstance().typeM();
+        //        quint16 typem = Board::GetInstance().typeM();
+        quint16 typem = board.typeM();
         Q_UNUSED(typem)
         switch (typeb)
         {
@@ -78,7 +82,8 @@ Module *Module::createModule(QTimer *updateTimer, BaseInterface *iface, AlarmWid
     }
     else
     {
-        quint16 mtype = Board::GetInstance().type();
+        //        quint16 mtype = Board::GetInstance().type();
+        quint16 mtype = board.type();
         switch (mtype)
         {
         case Model::KIV:
@@ -148,13 +153,15 @@ Module *Module::createModule(QTimer *updateTimer, BaseInterface *iface, AlarmWid
     TimeDialog *tdlg = new TimeDialog;
     m->addDialogToList(tdlg, "Время", "time");
 
-    if (Board::GetInstance().interfaceType() != Board::InterfaceType::RS485)
+    //    if (Board::GetInstance().interfaceType() != Board::InterfaceType::RS485)
+    if (board.interfaceType() != Board::InterfaceType::RS485)
     {
         m->addDialogToList(new JournalDialog(JOUR), "Журналы");
     }
     else
         delete JOUR;
-    if (Board::GetInstance().interfaceType() == Board::InterfaceType::USB)
+    //    if (Board::GetInstance().interfaceType() == Board::InterfaceType::USB)
+    if (board.interfaceType() != Board::InterfaceType::USB)
         m->addDialogToList(new FWUploadDialog, "Загрузка ВПО");
 
     m->addDialogToList(new InfoDialog, "О приборе", "info");
@@ -164,7 +171,8 @@ Module *Module::createModule(QTimer *updateTimer, BaseInterface *iface, AlarmWid
     {
         connect(updateTimer, &QTimer::timeout, d, &UDialog::reqUpdate);
         d->setUpdatesDisabled();
-        d->setInterface(m->m_iface);
+        d->uponInterfaceSetting();
+        //        d->setInterface(m->m_iface);
     }
 
     //    aw->addAlarm(warningAlarm);

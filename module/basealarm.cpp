@@ -5,10 +5,12 @@
 
 #include <QDebug>
 #include <QVBoxLayout>
-BaseAlarm::BaseAlarm(BaseInterface *interface, QWidget *parent)
-    : QWidget(parent), m_actualAlarmFlags(0x0000), m_iface(interface)
-{
-}
+// BaseAlarm::BaseAlarm(BaseInterface *interface, QWidget *parent)
+//    : QWidget(parent), m_actualAlarmFlags(0x0000), m_iface(interface)
+// BaseAlarm::BaseAlarm(QWidget *parent)
+//    : QWidget(parent), m_actualAlarmFlags(0x0000)
+//{
+//}
 
 BaseAlarm::BaseAlarm(QWidget *parent) : QWidget(parent), m_actualAlarmFlags(0x0000)
 {
@@ -16,15 +18,15 @@ BaseAlarm::BaseAlarm(QWidget *parent) : QWidget(parent), m_actualAlarmFlags(0x00
     m_alarmColor = Qt::red;
 }
 
-void BaseAlarm::setInterface(BaseInterface *interface) noexcept
-{
-    m_iface = interface;
-}
+// void BaseAlarm::setInterface(BaseInterface *interface) noexcept
+//{
+//    m_iface = interface;
+//}
 
-BaseInterface *BaseAlarm::iface() const noexcept
-{
-    return m_iface;
-}
+// BaseInterface *BaseAlarm::iface() const noexcept
+//{
+//    return m_iface;
+//}
 
 void BaseAlarm::setupUI(const QStringList &events)
 {

@@ -38,57 +38,24 @@ void TuneKIVDialog::SetupUI()
     QVBoxLayout *lyout = new QVBoxLayout;
 
     lyout->addLayout(newTunePBLayout("1. Проверка правильности измерения входных сигналов", [this]() {
-        TuneKIVCheck *check = new TuneKIVCheck(1, TKIV);
+        TuneKIVCheck *check = new TuneKIVCheck(TuneKIV::TS_CHECKING, TKIV);
         check->show();
     }));
     lyout->addLayout(newTunePBLayout("2. Основная регулировка", [this]() {
-        TuneKIVMain *tkmain = new TuneKIVMain(2, CKIV, TKIV);
+        TuneKIVMain *tkmain = new TuneKIVMain(TuneKIV::TS_MAINTUNING, CKIV, TKIV);
         tkmain->show();
     }));
     lyout->addLayout(newTunePBLayout("3. Настройка температурной коррекции +60 °С", [this]() {
-        TuneKIVTemp60 *tk60 = new TuneKIVTemp60(3, CKIV, TKIV);
+        TuneKIVTemp60 *tk60 = new TuneKIVTemp60(TuneKIV::TS_60TUNING, CKIV, TKIV);
         tk60->show();
     }));
     lyout->addLayout(newTunePBLayout("4. Настройка температурной коррекции -20 °С", [this]() {
-        TuneKIVTemp60 *tk_20 = new TuneKIVTemp60(4, CKIV, TKIV);
+        TuneKIVTemp60 *tk_20 = new TuneKIVTemp60(TuneKIV::TS_20TUNING, CKIV, TKIV);
         tk_20->show();
     }));
     lyout->addLayout(newTunePBLayout("5. Генерация протокола регулировки", [this]() { close(); }));
     setLayout(lyout);
 }
-
-void TuneKIVDialog::CalcTempCorCoefs()
-{
-    int i;
-    float deltaTplus, deltaTminus, dUplus[3], dUminus[3], deltaPhiplus[3], deltaPhiminus[3];
-
-    deltaTplus = m_Bd_block_plus60.Tmk - m_Bd_block20.Tmk;
-    deltaTminus = m_Bd_block_minus20.Tmk - m_Bd_block20.Tmk;
-
-    for (i = 0; i < 3; i++)
-    {
-        dUplus[i] = ((m_Bda_block60.IUefNat_filt[i] * m_Uet[i]) / (m_Bda_block20.IUefNat_filt[i] * m_Uet60[i])) - 1;
-        dUminus[i]
-            = ((m_Bda_blockMinus20.IUefNat_filt[i] * m_Uet[i]) / (m_Bda_block20.IUefNat_filt[i] * m_UetMinus20[i])) - 1;
-        m_Bac_newblock.TKUa[i] = ((dUminus[i] * deltaTplus * deltaTplus) - (dUplus[i] * deltaTminus * deltaTminus))
-            / (deltaTplus * deltaTminus * (deltaTplus - deltaTminus));
-        m_Bac_newblock.TKUb[i] = ((dUplus[i] * deltaTminus) - (dUminus[i] * deltaTplus))
-            / (deltaTplus * deltaTminus * (deltaTplus - deltaTminus));
-    }
-
-    for (i = 0; i < 6; i++)
-    {
-        deltaPhiplus[i] = (m_Bda_block60.phi_next_f[i] - m_Bda_block20.phi_next_f[i]) - (m_PHIet60[i] - m_PHIet[i]);
-        deltaPhiminus[i]
-            = (m_Bda_blockMinus20.phi_next_f[i] - m_Bda_block20.phi_next_f[i]) - (m_PHIetMinus20[i] - m_PHIet[i]);
-        m_Bac_newblock.TKPsi_a[i]
-            = ((deltaPhiminus[i] * deltaTplus * deltaTplus) - (deltaPhiplus[i] * deltaTminus * deltaTminus))
-            / (deltaTplus * deltaTminus * (deltaTplus - deltaTminus));
-        m_Bac_newblock.TKPsi_b[i] = ((deltaPhiplus[i] * deltaTminus) - (deltaPhiminus[i] * deltaTplus))
-            / (deltaTplus * deltaTminus * (deltaTplus - deltaTminus));
-    }
-}
-* /
 
     void TuneKIVDialog::GenerateReport()
 {
