@@ -176,6 +176,8 @@ private:
 protected:
     void keyPressEvent(QKeyEvent *e) override;
     void resizeEvent(QResizeEvent *e) override;
+signals:
+    void sendMessage(void *);
 };
 
 #endif // COMA_H

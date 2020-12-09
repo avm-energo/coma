@@ -30,6 +30,9 @@ public:
     void setDeviceInfo(const UsbHidSettings &deviceInfo);
     void usbStateChanged(void *message);
 
+    bool isShouldBeStopped() const;
+    void shouldBeStopped();
+
 signals:
     void dataReceived(QByteArray ba);
     void finished();
@@ -51,6 +54,7 @@ private:
     void finish();
     bool m_waitForReply;
     hid_device *m_hidDevice;
+    bool m_isShouldBeStopped;
     LogClass *log;
     QMutex mutex_;
     QList<QByteArray> m_writeQueue;

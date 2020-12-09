@@ -72,6 +72,11 @@ quint16 Board::type(Board::Types type) const
     }
 }
 
+QString Board::moduleName() const
+{
+    return QVariant::fromValue(Modules::Model(type())).toString();
+}
+
 quint32 Board::serialNumber(Board::Types type) const
 {
     switch (type)

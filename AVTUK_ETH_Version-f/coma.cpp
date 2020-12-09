@@ -57,16 +57,21 @@
 // Header dbt must be the last header, thanx to microsoft
 #include <dbt.h>
 // clang-format on
-void registerForDeviceNotification(Coma *ptr)
+void registerForDeviceNotification(QWidget *ptr)
 {
     DEV_BROADCAST_DEVICEINTERFACE devInt;
     ZeroMemory(&devInt, sizeof(devInt));
+    // GUID _guid1 = { 0x25dbce51, 0x6c8f, 0x4a72, { 0x8a, 0x6d, 0xb5, 0x4c, 0x2b, 0x4f, 0xc8, 0x35 } };
+
+    GUID _guid = { 0xa5dcbf10, 0x6530, 0x11d2, { 0x90, 0x1f, 0x00, 0xc0, 0x4f, 0xb9, 0x51, 0xed } };
     devInt.dbcc_size = sizeof(DEV_BROADCAST_DEVICEINTERFACE);
     devInt.dbcc_devicetype = DBT_DEVTYP_DEVICEINTERFACE;
-    devInt.dbcc_classguid = { 0x25dbce51, 0x6c8f, 0x4a72, { 0x8a, 0x6d, 0xb5, 0x4c, 0x2b, 0x4f, 0xc8, 0x35 } };
+    devInt.dbcc_classguid = _guid;
 
     HDEVNOTIFY blub;
-    blub = RegisterDeviceNotification((HDEVNOTIFY)ptr->winId(), &devInt, DEVICE_NOTIFY_WINDOW_HANDLE);
+    // NOTE Проверить со всеми модулями
+    blub = RegisterDeviceNotification((HDEVNOTIFY)ptr->winId(), &devInt,
+        /*DEVICE_NOTIFY_ALL_INTERFACE_CLASSES*/ DBT_DEVTYP_OEM /*DEVICE_NOTIFY_WINDOW_HANDLE*/);
 }
 #endif
 
@@ -817,22 +822,24 @@ bool Coma::nativeEvent(const QByteArray &eventType, void *message, long *result)
 #ifdef _WIN32
         MSG *msg = static_cast<MSG *>(message);
         int msgType = msg->message;
-        if (msgType == WM_DEVICECHANGE)
+        if (msgType != WM_DEVICECHANGE)
+            return false;
+        emit sendMessage(message);
+
+        if (BdaTimer->isActive())
+            BdaTimer->stop();
+        if (AlrmTimer->isActive())
+            AlrmTimer->stop();
+        //            EProtocom::GetInstance().usbStateChanged(message);
+        if (Board::GetInstance().connectionState() == Board::ConnectionState::Connected
+            && Board::GetInstance().interfaceType() == Board::InterfaceType::USB)
         {
-            if (BdaTimer->isActive())
-                BdaTimer->stop();
-            if (AlrmTimer->isActive())
-                AlrmTimer->stop();
-            //            EProtocom::GetInstance().usbStateChanged(message);
-            if (Board::GetInstance().connectionState() == Board::ConnectionState::Connected
-                && Board::GetInstance().interfaceType() == Board::InterfaceType::USB)
-            {
-                BdaTimer->start();
-                AlrmTimer->start();
-            }
+            BdaTimer->start();
+            AlrmTimer->start();
         }
-#endif
     }
+#endif
+
     return false;
 }
 
@@ -1216,6 +1223,7 @@ void Coma::Connect()
         return;
     }
     ActiveThreads = true;
+    connect(this, &Coma::sendMessage, m_iface, &BaseInterface::nativeEvent);
     //    m_iface->reqFloats(2420, 14);
     //    m_iface->reqFloats(2400, 7);
     //    m_iface->reqFloats(4501, 2);

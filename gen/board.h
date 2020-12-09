@@ -79,6 +79,8 @@ public:
     quint16 type() const;
     quint16 type(Types type) const;
 
+    QString moduleName() const;
+
     quint32 serialNumber(Types type) const;
     QString UID() const;
 

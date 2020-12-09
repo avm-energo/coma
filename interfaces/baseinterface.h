@@ -16,6 +16,8 @@ public:
     explicit BaseInterface(QObject *parent = nullptr);
 
     virtual bool start(const ConnectStruct &) = 0;
+    virtual void pause() = 0;
+    virtual void resume() = 0;
     virtual void reqStartup(quint32 sigAdr = 0, quint32 sigCount = 0) = 0;
     virtual void reqBSI() = 0;
     virtual void reqFile(quint32, bool isConfigFile = false) = 0;
@@ -31,6 +33,7 @@ public:
         for (const auto &item : list)
             writeCommand(cmd, item);
     }
+    virtual void nativeEvent(void *message) = 0;
 
     void reqAlarms(quint32 sigAdr = 0, quint32 sigCount = 0);
     virtual void reqFloats(quint32 sigAdr = 0, quint32 sigCount = 0) = 0;

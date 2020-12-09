@@ -67,8 +67,12 @@ void UsbHidPort::poll()
 {
     int bytes;
     m_waitForReply = false;
+    m_isShouldBeStopped = false;
     while (Board::GetInstance().connectionState() != Board::ConnectionState::Closed)
     {
+        QCoreApplication::processEvents(QEventLoop::AllEvents);
+        if (isShouldBeStopped())
+            return;
         // check if there's any data in input buffer
         if (Board::GetInstance().connectionState() == Board::ConnectionState::AboutToFinish)
             continue;
@@ -132,6 +136,16 @@ void UsbHidPort::finish()
     closeConnection();
     qInfo("UThread finished");
     emit finished();
+}
+
+bool UsbHidPort::isShouldBeStopped() const
+{
+    return m_isShouldBeStopped;
+}
+
+void UsbHidPort::shouldBeStopped()
+{
+    m_isShouldBeStopped = true;
 }
 
 void UsbHidPort::writeLog(QByteArray ba, Direction dir)

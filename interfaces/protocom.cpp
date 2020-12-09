@@ -3,6 +3,7 @@
 #include "../gen/board.h"
 #include "../gen/datamanager.h"
 #include "../gen/files.h"
+#include "../gen/helper.h"
 #include "../gen/s2.h"
 #include "../gen/stdfunc.h"
 #include "protocomthread.h"
@@ -11,6 +12,14 @@
 
 #include <QDebug>
 #include <QThread>
+
+#ifdef _WIN32
+// clang-format off
+#include <windows.h>
+// Header dbt must be the last header, thanx to microsoft
+#include <dbt.h>
+// clang-format on
+#endif
 using Proto::CommandStruct;
 using Proto::Starters;
 
@@ -55,6 +64,8 @@ bool Protocom::start(const UsbHidSettings &usbhid)
     connect(parseThread, &QThread::started, parser, &ProtocomThread::parse);
 
     connect(port, &UsbHidPort::finished, portThread, &QThread::quit);
+    // connect(this, &Protocom::requestInterrupt, portThread, &QThread::quit);
+    connect(this, &Protocom::requestInterrupt, port, &UsbHidPort::shouldBeStopped);
     connect(port, &UsbHidPort::finished, portThread, &QThread::deleteLater);
     connect(port, &UsbHidPort::finished, port, &UsbHidPort::deleteLater);
 
@@ -78,6 +89,47 @@ void Protocom::stop()
     // FIXME Реализовать
 }
 
+void Protocom::nativeEvent(void *message)
+{
+    MSG *msg = static_cast<MSG *>(message);
+    int msgType = msg->message;
+    Q_ASSERT(msgType == WM_DEVICECHANGE);
+
+    DEV_BROADCAST_DEVICEINTERFACE *devint = reinterpret_cast<DEV_BROADCAST_DEVICEINTERFACE *>(msg->lParam);
+
+    switch (msg->wParam)
+    {
+
+    case DBT_DEVICEARRIVAL:
+    {
+        if (devint->dbcc_devicetype != DBT_DEVTYP_DEVICEINTERFACE)
+            return;
+        std::wstring wstr = &devint->dbcc_name[0];
+
+        const auto st = UsbHidSettings::fromWString(wstr);
+
+        qDebug() << wstr << st << devint->dbcc_devicetype;
+        break;
+    }
+    case DBT_DEVICEREMOVECOMPLETE:
+    {
+        if (devint->dbcc_devicetype != DBT_DEVTYP_DEVICEINTERFACE)
+            return;
+        std::wstring str = &devint->dbcc_name[0];
+        qDebug() << str << devint->dbcc_devicetype;
+        break;
+    }
+    case DBT_DEVNODES_CHANGED:
+    {
+        emit requestInterrupt();
+        pause();
+        Board::GetInstance().setConnectionState(Board::ConnectionState::AboutToFinish);
+        break;
+    }
+    default:
+        qInfo() << "Unhadled case" << QString::number(msg->wParam, 16);
+    }
+}
 void Protocom::reqTime()
 {
     CommandStruct inp { Proto::Commands::ReadTime, 0, 0, {} };

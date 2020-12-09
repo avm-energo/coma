@@ -25,22 +25,21 @@ void InfoDialog::SetupUI()
     setAttribute(Qt::WA_DeleteOnClose);
     QVBoxLayout *lyout = new QVBoxLayout;
     QGridLayout *slyout = new QGridLayout;
-    QString moduleName = QVariant::fromValue(Modules::Model(Board::GetInstance().type())).toString();
 
     const QList<QPair<QString, QString>> dialogPage {
-        { moduleName, "Тип устройства:" },                 //
-        { "snle", "Серийный номер устройства:" },          //
-        { "fwverle", "Версия ПО:" },                       //
-        { "cfcrcle", "КС конфигурации:" },                 //
-        { "rstle", "Последний сброс:" },                   //
-        { "rstcountle", "Количество сбросов:" },           //
-        { "cpuidle", "ИД процессора:" },                   //
-        { "typeble", "Тип базовой платы:" },               //
-        { "snble", "Серийный номер базовой платы:" },      //
-        { "hwble", "Аппаратная версия базовой платы:" },   //
-        { "typemle", "Тип мезонинной платы:" },            //
-        { "snmle", "Серийный номер мезонинной платы:" },   //
-        { "hwmle", "Аппаратная версия мезонинной платы:" } //
+        { Board::GetInstance().moduleName(), "Тип устройства:" }, //
+        { "snle", "Серийный номер устройства:" },                 //
+        { "fwverle", "Версия ПО:" },                              //
+        { "cfcrcle", "КС конфигурации:" },                        //
+        { "rstle", "Последний сброс:" },                          //
+        { "rstcountle", "Количество сбросов:" },                  //
+        { "cpuidle", "ИД процессора:" },                          //
+        { "typeble", "Тип базовой платы:" },                      //
+        { "snble", "Серийный номер базовой платы:" },             //
+        { "hwble", "Аппаратная версия базовой платы:" },          //
+        { "typemle", "Тип мезонинной платы:" },                   //
+        { "snmle", "Серийный номер мезонинной платы:" },          //
+        { "hwmle", "Аппаратная версия мезонинной платы:" }        //
 
     };
     for (int i = 0; i < dialogPage.size(); ++i)
@@ -60,6 +59,7 @@ void InfoDialog::FillBsi()
 
     const auto bsi = Board::GetInstance().baseSerialInfo();
 
+    WDFunc::SetLBLText(this, Board::GetInstance().moduleName(), Board::GetInstance().moduleName());
     WDFunc::SetLBLText(this, "snle", QString::number(bsi.SerialNum, 16));
     WDFunc::SetLBLText(this, "fwverle", StdFunc::VerToStr(bsi.Fwver));
     WDFunc::SetLBLText(this, "cfcrcle", "0x" + QString::number(static_cast<uint>(bsi.Cfcrc), 16));

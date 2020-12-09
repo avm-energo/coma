@@ -38,6 +38,19 @@ struct UsbHidSettings
     unsigned short product_id;
     QString serial;
     QString path;
+    /// From Windows message string
+    static UsbHidSettings fromWString(std::wstring &wstr)
+    {
+        auto strList = QString::fromStdWString(wstr).split("#");
+        strList.pop_back();
+        strList.pop_front();
+        auto vidpidList = strList.front().split("&");
+        const unsigned short vid = vidpidList.first().split("_").last().toInt(nullptr, 16);
+        const unsigned short pid = vidpidList.last().split("_").last().toInt(nullptr, 16);
+        const QString serialNumber = strList.last().split("_").last();
+        UsbHidSettings settings { vid, pid, serialNumber, NULL };
+        return settings;
+    }
 };
 
 struct ConnectStruct
