@@ -1233,7 +1233,7 @@ void Coma::Connect()
         return;
     }
     ActiveThreads = true;
-    connect(this, &Coma::sendMessage, m_iface, &BaseInterface::nativeEvent);
+    connect(this, &Coma::sendMessage, BaseInterface::iface(), &BaseInterface::nativeEvent);
     //    m_iface->reqFloats(2420, 14);
     //    m_iface->reqFloats(2400, 7);
     //    m_iface->reqFloats(4501, 2);
