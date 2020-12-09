@@ -2,9 +2,7 @@
 
 #include <QDebug>
 
-ETableItem::ETableItem(QObject *parent) : QObject(parent)
-{
-}
+ETableItem::ETableItem(QObject *parent) : QObject(parent) { }
 
 QString ETableItem::data(int column) const
 {
@@ -24,10 +22,7 @@ void ETableItem::setData(int column, const QString &data)
     itemData.replace(column, data);
 }
 
-void ETableItem::appendData(const QString &value)
-{
-    itemData.append(value);
-}
+void ETableItem::appendData(const QString &value) { itemData.append(value); }
 
 void ETableItem::setColor(int column, QColor color)
 {
@@ -109,4 +104,18 @@ void ETableItem::setUData(int column, QVariant data)
 {
     itemUData.reserve(column + 1);
     itemUData.insert(column, data);
+}
+
+QObject *ETableItem::aData(int column) const
+{
+    if (!itemAData.isEmpty() && column < itemAData.size())
+        return itemAData.at(column);
+    else
+        return nullptr;
+}
+
+void ETableItem::setAData(int column, QObject *data)
+{
+    itemAData.reserve(column + 1);
+    itemAData.insert(column, data);
 }

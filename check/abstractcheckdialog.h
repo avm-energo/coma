@@ -16,7 +16,6 @@
 #ifndef ABSTRACTCHECKDIALOG_H
 #define ABSTRACTCHECKDIALOG_H
 
-#include "../gen/modulebsi.h"
 #include "../widgets/udialog.h"
 //#include "../modbus/modbus.h"
 #include "check.h"
@@ -52,6 +51,13 @@ public:
     // тип платы
     //    QList<int> IndexWd;
     bool m_timerCounter;
+    /*!
+       \brief QList для вкладок текущего виджета
+
+           QList для вкладок текущего виджета, по умолчанию обновление отключено
+            для всех вкладок, если хотим обновлять какую-то вкладку сразу, то
+            необходимо включить обновление для нее
+    */
     QList<BdUIStruct> m_BdUIList;
 
     explicit AbstractCheckDialog(QWidget *parent = nullptr);
@@ -80,7 +86,7 @@ public slots:
     //    virtual void SetAlarmColor(int position, bool value) = 0;
     //    virtual void StartBdMeasurements();
     //    virtual void StopBdMeasurements();
-    void reqUpdate();
+    void reqUpdate() override;
 
 private:
     struct BdBlocks
@@ -100,7 +106,7 @@ private:
     //    Bip Bip_block;
     bool m_readDataInProgress;
     QElapsedTimer *ElapsedTimeCounter;
-    int m_currentTabIndex, m_oldTabIndex;
+    //  int m_currentTabIndex, m_oldTabIndex;
 
     //    void CheckIP();
     //    void GetIP();
@@ -114,17 +120,16 @@ protected:
     bool XlsxWriting;
     const QString ValuesFormat = "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; "
                                  "color: blue; font: bold 10px;}";
-
-protected slots:
-    //    virtual void UpdateModBusData(QList<ModBus::SignalStruct> Signal) = 0;
-    //    void onModbusStateChanged();
+    void uponInterfaceSetting() override;
 
 private slots:
     void SetTimerPeriod();
     void StartAnalogMeasurementsToFile();
     void StartAnalogMeasurements();
     void TimerTimeout();
-    void TWTabClicked(int index);
+    void TWTabChanged(int index);
+
+    // UWidget interface
 };
 
 #endif // ABSTRACTCHECKDIALOG_H

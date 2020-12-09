@@ -3,8 +3,8 @@
 #include "../gen/board.h"
 #include "../gen/colors.h"
 #include "../gen/error.h"
-#include "../gen/modulebsi.h"
 #include "../models/etablemodel.h"
+#include "../module/modules.h"
 #include "edoublespinbox.h"
 #include "etableview.h"
 
@@ -44,7 +44,7 @@ PasswordLineEdit *WDFunc::NewPswLE(
     return le;
 }
 
-QString WDFunc::LEData(QWidget *w, const QString &lename)
+QString WDFunc::LEData(QObject *w, const QString &lename)
 {
     QLineEdit *le = w->findChild<QLineEdit *>(lename);
     if (le == nullptr)
@@ -97,7 +97,15 @@ QLabel *WDFunc::NewLBL(QWidget *w, const QString &text, const QString &lblcolor,
     lbl->setToolTip(lbltip);
     return lbl;
 }
-
+/*!
+Копирует содержимое из исходной области памяти в целевую область память
+\param w Родитель будущего виджета
+\param text Текст для QLabel
+\param lblname Имя для QLabel
+\param lblstyle StyleSheet для QLabel
+\param lbltip ToolTip для QLabel
+\param Fixed Фиксированного размера?
+*/
 QLabel *WDFunc::NewLBLT(
     QWidget *w, const QString &text, const QString &lblname, const QString &lblstyle, const QString &lbltip, bool Fixed)
 {
@@ -168,7 +176,7 @@ bool WDFunc::TEData(QWidget *w, const QString &tename, QString &tevalue)
     return true;
 }
 
-EComboBox *WDFunc::NewCB(QWidget *parent, const QString &cbname, QStringList &cbsl, const QString &cbcolor)
+EComboBox *WDFunc::NewCB(QWidget *parent, const QString &cbname, const QStringList &cbsl, const QString &cbcolor)
 {
     EComboBox *cb = new EComboBox(parent);
     cb->setObjectName(cbname);
@@ -382,7 +390,7 @@ void WDFunc::TVAutoResize(QWidget *w, const QString &tvname)
     ETableView *tv = w->findChild<ETableView *>(tvname);
     if (tv == nullptr)
     {
-        ERMSG("Пустой tv");
+        DBGMSG("Пустой tv");
         return;
     }
     tv->update();
@@ -450,8 +458,8 @@ QStatusBar *WDFunc::NewSB(QWidget *w)
     }
 
     QObject::connect(&Board::GetInstance(), &Board::typeChanged, [msgModel]() {
-        quint16 serialNumber = Board::GetInstance().type();
-        QString deviceName = QVariant::fromValue(Board::DeviceModel(serialNumber)).toString();
+        quint16 mtype = Board::GetInstance().type();
+        QString deviceName = QVariant::fromValue(Modules::Model(mtype)).toString();
         msgModel->setText(deviceName);
     });
 
@@ -474,15 +482,15 @@ QStatusBar *WDFunc::NewSB(QWidget *w)
     return bar;
 }
 
-QPixmap WDFunc::NewCircle(QColor color, float radius)
+QPixmap WDFunc::NewCircle(QColor color, int radius)
 {
-    int intRadius = radius;
-    QPixmap myPix(QSize(intRadius, intRadius));
+    // int intRadius = radius;
+    QPixmap myPix(QSize(radius, radius));
     myPix.fill(Qt::transparent);
     QPainter painter(&myPix); // Create object of QPainter
     painter.setRenderHint(QPainter::Antialiasing);
     painter.setPen(QPen(Qt::black, 1, Qt::SolidLine, Qt::RoundCap));
-    QRadialGradient gradient(intRadius / 2, intRadius / 2, intRadius);
+    QRadialGradient gradient(radius / 2, radius / 2, radius);
     gradient.setColorAt(0, color);
     gradient.setColorAt(1, Qt::black);
     painter.setBrush(QBrush(gradient));
@@ -677,17 +685,12 @@ void WDFunc::SetVisible(QWidget *w, const QString &wname, bool visible)
 
 QString WDFunc::StringValueWithCheck(float value, int precision, bool exp)
 {
-    QString tmps;
-    QLocale german(QLocale::German);
     if (value >= FLT_MAX || value <= -FLT_MAX)
-        tmps = "***";
+        return "***";
     else if (exp == true)
-        tmps = german.toString(value, 'e', precision);
-
+        return QString::number(value, 'e', precision);
     else
-        tmps = german.toString(value, 'f', precision);
-
-    return tmps;
+        return QString::number(value, 'f', precision);
 }
 
 QVariant WDFunc::FloatValueWithCheck(float value)
@@ -780,7 +783,7 @@ void WDFunc::SetTVModel(QWidget *w, const QString &tvname, QAbstractItemModel *m
     ETableView *tv = w->findChild<ETableView *>(tvname);
     if (tv == nullptr)
     {
-        ERMSG("Пустой tv");
+        DBGMSG("Пустой tv");
         return;
     }
     QItemSelectionModel *m = tv->selectionModel();
@@ -795,7 +798,7 @@ void WDFunc::SetQTVModel(QWidget *w, const QString &tvname, QAbstractItemModel *
     QTableView *tv = w->findChild<QTableView *>(tvname);
     if (tv == nullptr)
     {
-        ERMSG("Пустой tv");
+        DBGMSG("Пустой tv");
         return;
     }
     QItemSelectionModel *m = tv->selectionModel();
@@ -833,7 +836,7 @@ void WDFunc::SortTV(QWidget *w, const QString &tvname, int column, Qt::SortOrder
     ETableView *tv = w->findChild<ETableView *>(tvname);
     if (tv == nullptr)
     {
-        ERMSG("Пустой tv");
+        DBGMSG("Пустой tv");
         return;
     }
     if (column >= 0)

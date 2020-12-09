@@ -4,11 +4,11 @@
 #include "../gen/files.h"
 #include "../gen/timefunc.h"
 #include "ethernet.h"
+#include "iec104thread.h"
+#include "settingstypes.h"
 
 #include <QCoreApplication>
-#include <QDialog>
 #include <QThread>
-#include <QVBoxLayout>
 
 IEC104::IEC104(QObject *parent) : BaseInterface(parent)
 {
@@ -21,13 +21,19 @@ IEC104::IEC104(QObject *parent) : BaseInterface(parent)
     Log->info("=== Log started ===");
 }
 
-IEC104::~IEC104() { }
+IEC104::~IEC104()
+{
+}
 
 // bool IEC104::Working() { return (EthThreadWorking | ParseThreadWorking); }
 
 bool IEC104::start(const ConnectStruct &st)
 {
-    INFOMSG("IEC104: connect");
+    Q_ASSERT(std::holds_alternative<IEC104Settings>(st.settings));
+    qInfo() << metaObject()->className() << "connect";
+    if (!std::holds_alternative<IEC104Settings>(st.settings))
+        return false;
+
     m_working = false;
     EthThreadWorking = false;
     ParseThreadWorking = false;
@@ -35,7 +41,7 @@ bool IEC104::start(const ConnectStruct &st)
     QThread *thr = new QThread;
     Ethernet *eth = new Ethernet;
     eth->moveToThread(thr);
-    eth->IP = st.iec104st.ip;
+
     connect(eth, &Ethernet::Finished, thr, &QThread::quit);
     connect(eth, &Ethernet::Finished, eth, &QObject::deleteLater);
     connect(thr, &QThread::started, eth, &Ethernet::Run);
@@ -78,7 +84,10 @@ bool IEC104::start(const ConnectStruct &st)
     //    connect(m_thread104, &IEC104Thread::SetDataCount, this, &IEC104::SetDataCount);
     //    connect(m_thread104, &IEC104Thread::SendMessagefromParse, this, &IEC104::SendConfMessageOk);
 
-    m_thread104->SetBaseAdr(st.iec104st.baseadr);
+    auto settings = std::get<IEC104Settings>(st.settings);
+    eth->IP = settings.ip;
+    m_thread104->SetBaseAdr(settings.baseadr);
+
     //    m_thread104->incLS = 0;
     //    m_thread104->count = 0;
 
@@ -102,13 +111,13 @@ void IEC104::reqBSI()
     DataManager::addToInQueue(inp);
 }
 
-void IEC104::reqAlarms(quint32 sigAdr, quint32 sigCount)
-{
-    Q_UNUSED(sigAdr)
-    Q_UNUSED(sigCount)
-    Commands104::CommandStruct inp { Commands104::CM104_REQGROUP, ALARMGROUP, 0, {} };
-    DataManager::addToInQueue(inp);
-}
+// void IEC104::reqAlarms(quint32 sigAdr, quint32 sigCount)
+//{
+//    Q_UNUSED(sigAdr)
+//    Q_UNUSED(sigCount)
+//    Commands104::CommandStruct inp { Commands104::CM104_REQGROUP, ALARMGROUP, 0, {} };
+//    DataManager::addToInQueue(inp);
+//}
 
 void IEC104::reqFile(quint32 filenum, bool isConfigFile)
 {
@@ -123,13 +132,13 @@ void IEC104::writeFile(quint32 filenum, const QByteArray &file)
     DataManager::addToInQueue(inp);
 }
 
-void IEC104::writeConfigFile(S2ConfigType *s2config)
-{
-    QByteArray ba;
-    S2::StoreDataMem(&ba.data()[0], s2config, Files::Config);
-    Commands104::CommandStruct inp { Commands104::CM104_WRITEFILE, Files::Config, 0, ba };
-    DataManager::addToInQueue(inp);
-}
+// void IEC104::writeConfigFile(S2DataTypes::S2ConfigType *s2config)
+//{
+//    QByteArray ba;
+//    S2::StoreDataMem(&ba.data()[0], s2config, Files::Config);
+//    Commands104::CommandStruct inp { Commands104::CM104_WRITEFILE, Files::Config, 0, ba };
+//    DataManager::addToInQueue(inp);
+//}
 
 void IEC104::reqTime()
 {
@@ -143,27 +152,34 @@ void IEC104::writeTime(quint32 time)
     DataManager::addToInQueue(inp);
 }
 
-void IEC104::writeCommand(Queries::Commands cmd, QList<DataTypes::SignalsStruct> list)
+void IEC104::writeCommand(Queries::Commands cmd, QVariant item)
 {
+
     Commands104::CommandStruct inp;
-    if (cmd == Queries::QC_WriteUserValues)
+
+    switch (cmd)
     {
-        // for each signal in list form the 50 command and set it into the input queue
-        foreach (DataTypes::SignalsStruct str, list)
-        {
-            QVariant var = str.data;
-            if (var.canConvert<DataTypes::FloatStruct>())
-            {
-                DataTypes::FloatStruct flstr = var.value<DataTypes::FloatStruct>();
-                inp = { Commands104::CM104_COM50, flstr.sigAdr, flstr.sigVal, {} };
-                DataManager::addToInQueue(inp);
-            }
-        }
-    }
-    else
+    case Queries::QC_WriteUserValues:
     {
-        inp = Commands104::CommandsTranslateMap().value(cmd);
+        if (!item.canConvert<DataTypes::FloatStruct>())
+            return;
+
+        DataTypes::FloatStruct flstr = item.value<DataTypes::FloatStruct>();
+        inp = { Commands104::CM104_COM50, flstr.sigAdr, flstr.sigVal, {} };
         DataManager::addToInQueue(inp);
+        break;
+    }
+    case Queries::QC_ReqAlarms:
+    {
+        inp = { Commands104::CM104_REQGROUP, ALARMGROUP, 0, {} };
+        DataManager::addToInQueue(inp);
+        break;
+    }
+    default:
+    {
+        inp = Commands104::CommandsTranslateMap.value(cmd);
+        DataManager::addToInQueue(inp);
+    }
     }
 }
 
@@ -268,7 +284,10 @@ void IEC104::reqFloats(quint32 sigAdr, quint32 sigCount)
 //    //    IEC104Thread::s_ParseWriteMutex.unlock();
 //}
 
-void IEC104::EthThreadStarted() { m_working = EthThreadWorking = true; }
+void IEC104::EthThreadStarted()
+{
+    m_working = EthThreadWorking = true;
+}
 
 void IEC104::EthThreadFinished()
 {
@@ -280,7 +299,10 @@ void IEC104::EthThreadFinished()
     }
 }
 
-void IEC104::ParseThreadStarted() { m_working = ParseThreadWorking = true; }
+void IEC104::ParseThreadStarted()
+{
+    m_working = ParseThreadWorking = true;
+}
 
 void IEC104::ParseThreadFinished()
 {
@@ -295,7 +317,7 @@ void IEC104::ParseThreadFinished()
 void IEC104::EmitReconnectSignal()
 {
     if (!AboutToFinish)
-        emit ReconnectSignal();
+        emit reconnect();
 }
 
 void IEC104::stop()

@@ -4,28 +4,14 @@
 #include "../gen/colors.h"
 #include "../gen/error.h"
 #include "../gen/files.h"
-#include "../gen/s2.h"
+//#include "../gen/s2.h"
 #include "../gen/stdfunc.h"
 #include "../gen/timefunc.h"
-#include "../usb/commands.h"
 #include "../widgets/etableview.h"
 #include "../widgets/wd_func.h"
 
-#include <QCheckBox>
-#include <QComboBox>
-#include <QCoreApplication>
-#include <QDoubleSpinBox>
-#include <QFileDialog>
 #include <QGridLayout>
-#include <QGroupBox>
-#include <QLabel>
-#include <QLineEdit>
 #include <QMessageBox>
-#include <QPushButton>
-#include <QSpinBox>
-#include <QStringListModel>
-#include <QTabBar>
-#include <QTabWidget>
 #include <QVBoxLayout>
 
 StartupKTFDialog::StartupKTFDialog(QWidget *parent) : AbstractStartupDialog(parent)
@@ -38,7 +24,7 @@ StartupKTFDialog::StartupKTFDialog(QWidget *parent) : AbstractStartupDialog(pare
     //  first = 0;
 
     setAttribute(Qt::WA_DeleteOnClose);
-    SetupUI();
+    // SetupUI();
 }
 
 StartupKTFDialog::~StartupKTFDialog()
@@ -62,14 +48,14 @@ void StartupKTFDialog::SetupUI()
     row++;
 
     QPushButton *pb = new QPushButton("Прочитать из модуля");
-    connect(pb, SIGNAL(clicked()), this, SLOT(GetCorBdButton()));
+    connect(pb, &QAbstractButton::clicked, this, &AbstractStartupDialog::GetCorBdButton);
     if (StdFunc::IsInEmulateMode())
         pb->setEnabled(false);
 
     glyout->addWidget(pb, row, 1, 1, 2);
 
     pb = new QPushButton("Записать в модуль");
-    connect(pb, SIGNAL(clicked()), this, SLOT(WriteCorBd()));
+    connect(pb, &QAbstractButton::clicked, this, &StartupKTFDialog::WriteCorBd);
     if (StdFunc::IsInEmulateMode())
         pb->setEnabled(false);
 
@@ -78,14 +64,14 @@ void StartupKTFDialog::SetupUI()
     row++;
 
     pb = new QPushButton("Прочитать значения из файла");
-    connect(pb, SIGNAL(clicked()), this, SLOT(ReadFromFile()));
+    connect(pb, &QAbstractButton::clicked, this, &StartupKTFDialog::ReadFromFile);
     if (StdFunc::IsInEmulateMode())
         pb->setEnabled(false);
 
     glyout->addWidget(pb, row, 1, 1, 2);
 
     pb = new QPushButton("Сохранить значения в файл");
-    connect(pb, SIGNAL(clicked()), this, SLOT(SaveToFile()));
+    connect(pb, &QAbstractButton::clicked, this, &StartupKTFDialog::SaveToFile);
     if (StdFunc::IsInEmulateMode())
         pb->setEnabled(false);
 
@@ -116,19 +102,21 @@ void StartupKTFDialog::GetCorBd()
 
         // if (MainInterface == I_USB)
         {
-            if (Commands::GetBd(9, Bd9Block, sizeof(Bd9)) == Error::Msg::NoError)
-            {
-                FillCor();
-                QMessageBox::information(this, "INFO", "Прочитано успешно");
-            }
+            //            if (Commands::GetBd(9, Bd9Block, sizeof(Bd9)) == Error::Msg::NoError)
+            //            {
+            //                FillCor();
+            //                QMessageBox::information(this, "INFO", "Прочитано успешно");
+            //            }
             break;
         }
     case Board::InterfaceType::Ethernet:
+    {
+    }
         // else if (MainInterface == I_ETHERNET)
-        {
-            emit CorReadRequest();
-            break;
-        }
+        //        {
+        //            emit CorReadRequest();
+        //            break;
+        //        }
     }
 }
 // void StartupKTFDialog::GetCorBdButton()
@@ -170,43 +158,42 @@ void StartupKTFDialog::WriteCorBd()
 
     FillBackCor();
 
-    if (WriteCheckPassword() == Error::Msg::NoError)
+    if (WriteCheckPassword() != Error::Msg::NoError)
+        return;
+    switch (Board::GetInstance().interfaceType())
     {
-        switch (Board::GetInstance().interfaceType())
+    case Board::InterfaceType::Ethernet:
+        // if (MainInterface == I_ETHERNET)
         {
-        case Board::InterfaceType::Ethernet:
-            // if (MainInterface == I_ETHERNET)
-            {
 
-                float corblocki;
-                memcpy(&corblocki, reinterpret_cast<float *>(WBd7Block), sizeof(float));
-                emit SendCom50(adr, corblocki);
-                TimeFunc::Wait(300);
-                break;
-            }
-        case Board::InterfaceType::RS485:
-            // else if (MainInterface == I_RS485)
-            {
-                ModBus::Information info;
-                info.size = (sizeof(WBd7) / 4);
-                info.adr = adr;
-                emit RS485WriteCorBd(info, (float *)WBd7Block);
-                break;
-            }
-        case Board::InterfaceType::USB:
-            // else if (MainInterface == I_USB)
-            {
-                if (Commands::WriteBd(7, WBd7Block, sizeof(WBd7)) == Error::Msg::NoError)
-                    QMessageBox::information(this, "INFO", "Записано успешно");
-                else
-                    QMessageBox::information(this, "INFO", "Ошибка");
+            float corblocki;
+            memcpy(&corblocki, reinterpret_cast<float *>(WBd7Block), sizeof(float));
+            //                emit SendCom50(adr, corblocki);
+            TimeFunc::Wait(300);
+            break;
+        }
+    case Board::InterfaceType::RS485:
+        // else if (MainInterface == I_RS485)
+        {
+            //                ModBus::Information info;
+            //                info.size = (sizeof(WBd7) / 4);
+            //                info.adr = adr;
+            //                emit RS485WriteCorBd(info, (float *)WBd7Block);
+            break;
+        }
+    case Board::InterfaceType::USB:
+        // else if (MainInterface == I_USB)
+        {
+            //                if (Commands::WriteBd(7, WBd7Block, sizeof(WBd7)) == Error::Msg::NoError)
+            //                    QMessageBox::information(this, "INFO", "Записано успешно");
+            //                else
+            //                    QMessageBox::information(this, "INFO", "Ошибка");
 
-                //......
-                //            QThread::sleep(1);
-                if (Commands::GetBd(9, Bd9Block, sizeof(Bd9Block)) == Error::Msg::NoError)
-                    FillCor();
-                break;
-            }
+            //                //......
+            //                //            QThread::sleep(1);
+            //                if (Commands::GetBd(9, Bd9Block, sizeof(Bd9Block)) == Error::Msg::NoError)
+            //                    FillCor();
+            break;
         }
     }
 }
@@ -221,12 +208,11 @@ void StartupKTFDialog::ResetCor()
 
 void StartupKTFDialog::SaveToFile()
 {
-    QByteArray ba;
+    QByteArray ba = QByteArray::fromRawData(reinterpret_cast<char *>(WBd7Block), sizeof(WBd7Block));
     FillBackCor();
-    ba.resize(sizeof(*WBd7Block));
-    memcpy(&(ba.data()[0]), WBd7Block, sizeof(*WBd7Block));
-    Error::Msg res
-        = Files::SaveToFile(Files::ChooseFileForSave(this, "Tune files (*.cor)", "cor"), ba, sizeof(*WBd7Block));
+
+    Error::Msg res = Files::SaveToFile(Files::ChooseFileForSave(this, "Tune files (*.cor)", "cor"), ba);
+
     switch (res)
     {
     case Error::Msg::NoError:

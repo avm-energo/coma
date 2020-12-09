@@ -14,9 +14,9 @@ Q_NAMESPACE
 
 enum Msg
 {
-    ResEmpty = -2,
-    GeneralError,
-    NoError,
+    ResEmpty = -2, // WARNING ResEmpty hardcoded as -2
+    GeneralError,  // WARNING GeneralError hardcoded as -1
+    NoError,       // WARNING NoError hardcoded as 0
     WrongCommandError,
     SizeError,
     DescError,
@@ -28,6 +28,7 @@ enum Msg
     WriteError,
     NoDeviceError,
     ReadError,
+    OpenError,
     NullDataError,
     WrongFileError,
     FileOpenError,

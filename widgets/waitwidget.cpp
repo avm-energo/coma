@@ -150,7 +150,7 @@ void WaitWidget::keyPressEvent(QKeyEvent *e)
 {
     if ((e->key() == Qt::Key_Escape) && IsAllowedToStop)
     {
-        StdFunc::Cancel();
+        StdFunc::cancel();
         Stop();
         //        emit CountZero();
     }

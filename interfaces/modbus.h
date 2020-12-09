@@ -4,28 +4,29 @@
 #include "../gen/datamanager.h"
 #include "../gen/logclass.h"
 #include "baseinterface.h"
-#include "serialport.h"
+#include "modbusprivate.h"
+#include "settingstypes.h"
 
 #include <QMutex>
-#include <QQueue>
-#include <QSerialPort>
 #include <QTimer>
-#include <QWaitCondition>
 
-#define POLLINGINTERVAL 300 // polling cycle time
-#define SIGNALGROUPSNUM 7
-#define MAINSLEEPCYCLETIME 50
-
-#define READHOLDINGREGISTERS 0x03
-#define READINPUTREGISTER 0x04
-#define WRITEMULTIPLEREGISTERS 0x10
-
-//#define INITREG 4000
-//#define INITREGCOUNT 11 // 11 floats results in 22 bytes
-#define TIMEREG 4600
-#define TIMEREGCOUNT 1
-#define SETINITREG 900
-#define CLEARREG 905
+namespace CommandsMBS
+{
+using namespace Queries;
+// map to translate real commands like "erase memory block" into
+// iec104 commands: 45 or 50 or something else
+const QMap<Queries::Commands, CommandStruct> CommandsTranslateMap {
+    //    map[Queries::QC_SetNewConfiguration] = { CM104_COM45, SetNewConfigurationReg, 0, {} };
+    { QC_ClearStartupValues, { MBS_WRITEMULTIPLEREGISTERS, ClearStartupValuesReg, 2, { 0x01, 0x01 } } }, //
+    { QC_WriteUserValues, { MBS_WRITEMULTIPLEREGISTERS, 0, 0, {} } },                                    //
+    { QC_ReqAlarms, { MBS_READCOILS, 0, 0, {} } },                                                       //
+    //    map[Queries::QC_Command50] = { CM104_COM50, 0, 0, {} };
+    //    map[Queries::QC_EraseJournals] = { CM104_COM45, EraseJournalsReg, 0, {} };
+    { QC_SetStartupValues, { MBS_WRITEMULTIPLEREGISTERS, SetStartupValuesReg, 2, { 0x01, 0x01 } } } //
+    //    map[Queries::QC_StartFirmwareUpgrade] = { CM104_COM45, StartFirmwareUpgradeReg, 0, {} };
+    //    map[Queries::QC_StartWorkingChannel] = { CM104_COM45, StartWorkingChannelReg, 0, {} };
+};
+}
 
 class ModBus : public BaseInterface
 {
@@ -78,19 +79,20 @@ public:
     ModBus(QObject *parent = nullptr);
     ~ModBus();
 
-    bool start(const ConnectStruct &st);
+    bool start(const ConnectStruct &st) override;
     //    void BSIrequest();
 
-    void reqStartup(quint32 sigAdr, quint32 sigCount);
-    void reqBSI();
-    void reqFile(quint32 filenum, bool isConfigFile);
+    void reqStartup(quint32 sigAdr, quint32 sigCount) override;
+    void reqBSI() override;
+    void reqFile(quint32 filenum, bool isConfigFile) override;
     //    void reqAlarms(quint32 sigAdr, quint32 sigCount);
-    void writeFile(quint32 filenum, const QByteArray &file);
-    void reqTime();
-    void writeTime(quint32 time);
+    void writeFile(quint32 filenum, const QByteArray &file) override;
+//    void writeConfigFile(S2DataTypes::S2ConfigType *) override {};
+    void reqTime() override;
+    void writeTime(quint32 time) override;
     // writeCommand writes only float signals whose addresses are the lowest and are sequentally lays in the list
-    void writeCommand(Queries::Commands cmd, QList<DataTypes::SignalsStruct> list = QList<DataTypes::SignalsStruct>());
-    void reqFloats(quint32 sigAdr, quint32 sigCount);
+    void writeCommand(Queries::Commands cmd, QVariant item) override;
+    void reqFloats(quint32 sigAdr, quint32 sigCount) override;
     //    void reqBitStrings(quint32 sigAdr, quint32 sigCount);
 
     //    int CheckIndex, CheckHarmIndex, CheckVibrIndex, CorIndex, TimeIndex;
@@ -104,7 +106,7 @@ public slots:
     //    void Tabs(int);
     //    void StartPolling();
     //    void StopPolling();
-    void stop();
+    void stop() override;
 
 signals:
     //    void SignalsReceived(QList<ModBus::SignalStruct> Signal);
@@ -120,10 +122,10 @@ signals:
     void FinishModbusThread();
     //    void CoilSignalsReady(ModBus::Coils);
     //    void TimeReadError();
-    void ReconnectSignal();
+    // void ReconnectSignal();
 
 private:
-    BaseInterface::SerialPortSettings Settings;
+    SerialPortSettings Settings;
     //    int CycleGroup;
     //    QTimer *PollingTimer;
     //    bool TimePollEnabled, MainPollEnabled;
@@ -132,7 +134,7 @@ private:
     //    int _taskCounter;
     //    QQueue<InOutStruct> InQueue;
     //    QList<InOutStruct> OutList;
-    LogClass *Log;
+    // LogClass *Log;
 
     //    Error::Msg SendAndGet(InOutStruct &inp, InOutStruct &outp);
     //    bool GetResultFromOutQueue(int index, InOutStruct &outp);

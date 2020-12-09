@@ -2,7 +2,6 @@
 
 #include "../config/config.h"
 #include "../gen/colors.h"
-#include "../gen/modulebsi.h"
 #include "../widgets/wd_func.h"
 
 #include <QGroupBox>

@@ -2,7 +2,7 @@
 #define CONFIGKTF_H
 
 //#define ID8084_START    1012
-#define ID_COM 20
+//#define ID_COM 20
 
 #define BCI_NFILTR 1003
 #define BCI_NHARMFILT 1004
@@ -79,12 +79,12 @@
 #define DEF_GOVC 2
 #define DEF_TDATNUM 0
 
-#include "../gen/s2.h"
+#include "../gen/datatypes.h"
 
 class ConfigKTF
 {
 public:
-    explicit ConfigKTF(S2ConfigType *config);
+    explicit ConfigKTF();
 
     typedef struct
     {
@@ -120,11 +120,11 @@ public:
 
     Bci Bci_block;
 
-    S2ConfigType *S2Config();
+    //    S2DataTypes::S2ConfigType *S2Config();
     void SetDefConf();
 
 private:
-    S2ConfigType *m_S2Config;
+    //    S2DataTypes::S2ConfigType *m_S2Config;
 };
 
 #endif // CONFIGKTF_H

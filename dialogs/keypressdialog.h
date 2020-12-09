@@ -19,7 +19,7 @@ class KeyPressDialog : public QDialog
     Q_OBJECT
 public:
     explicit KeyPressDialog(QWidget *parent = nullptr); // PswPhrase - фраза, которую надо написать пользователю
-    Error::Msg CheckPassword(const QString &psw);
+    bool CheckPassword(const QString &psw);
 
 signals:
     //    void Finished(QString str);

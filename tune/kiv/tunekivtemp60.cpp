@@ -2,12 +2,11 @@
 
 #include "../gen/colors.h"
 #include "../gen/stdfunc.h"
-#include "../usb/eprotocom.h"
 
 #include <QMessageBox>
 #include <QVBoxLayout>
 
-TuneKIVTemp60::TuneKIVTemp60(TuneKIV *tkiv, QWidget *parent) : AbstractTuneDialog(parent)
+TuneKIVTemp60::TuneKIVTemp60(TuneKIV *tkiv, QWidget *parent) : AbstractTuneDialog(2, parent)
 {
     m_tuneStep = 2;
     TKIV = tkiv;
@@ -28,33 +27,33 @@ void TuneKIVTemp60::SetupUI()
     TuneTW->addTab(cp1, "Протокол наладки");
 }
 
-void TuneKIVTemp60::SetLbls()
+void TuneKIVTemp60::setMessages()
 {
 
-    lbls.append("5. Установка коэффициентов...");
-    lbls.append("7. 7_3_2. Получение текущих аналоговых данных...");
-    lbls.append("8. 7.3.4. Информация...");
-    lbls.append(
+    m_messages.append("5. Установка коэффициентов...");
+    m_messages.append("7. 7_3_2. Получение текущих аналоговых данных...");
+    m_messages.append("8. 7.3.4. Информация...");
+    m_messages.append(
         "9. 7.3.4.2. Конфигуратор рассчитывает новые значения калибровочных коэффициентов по току для Кацп=1...");
-    lbls.append("10. 7.3.4.6 Переход на новую конфигурацию 400мА...");
-    lbls.append(
+    m_messages.append("10. 7.3.4.6 Переход на новую конфигурацию 400мА...");
+    m_messages.append(
         "11. 7.3.4.7. Конфигуратор рассчитывает новые значения калибровочных коэффициентов по току для Кацп=2...");
-    lbls.append("12. 7.3.4.11. Переход на новую конфигурацию 200мА......");
-    lbls.append(
+    m_messages.append("12. 7.3.4.11. Переход на новую конфигурацию 200мА......");
+    m_messages.append(
         "13. 7.3.4.12. Конфигуратор рассчитывает новые значения калибровочных коэффициентов по току для Кацп=4...");
-    lbls.append("14. 7.3.4.13. Переход на новую конфигурацию 100мА......");
-    lbls.append(
+    m_messages.append("14. 7.3.4.13. Переход на новую конфигурацию 100мА......");
+    m_messages.append(
         "15. 7.3.4.14. Конфигуратор рассчитывает новые значения калибровочных коэффициентов по току для Кацп=8...");
-    lbls.append("16. 7.3.4.15. Переход на новую конфигурацию 50мА......");
-    lbls.append(
+    m_messages.append("16. 7.3.4.15. Переход на новую конфигурацию 50мА......");
+    m_messages.append(
         "17. 7.3.4.16. Конфигуратор рассчитывает новые значения калибровочных коэффициентов по току для Кацп=16...");
-    lbls.append("18. 7.3.4.17. Переход на новую конфигурацию 25мА......");
-    lbls.append(
+    m_messages.append("18. 7.3.4.17. Переход на новую конфигурацию 25мА......");
+    m_messages.append(
         "19. 7.3.4.18. Конфигуратор рассчитывает новые значения калибровочных коэффициентов по току для Кацп=32...");
-    lbls.append("20. 7.3.5. Восстановление сохранённой конфигурации и проверка...");
+    m_messages.append("20. 7.3.5. Восстановление сохранённой конфигурации и проверка...");
 }
 
-void TuneKIVTemp60::SetPf()
+void TuneKIVTemp60::setTuneFunctions()
 {
     /*    int count = 0;
         pf[lbls.at(count++)] = &EAbstractTuneDialog::CheckPassword;
@@ -213,7 +212,7 @@ void TuneKIVTemp60::GetBdAndFill()
 
 Error::Msg TuneKIVTemp60::LoadTuneSequenceFile()
 {
-    return CheckCalibrStep();
+    return checkCalibrStep();
 }
 
 int TuneKIVTemp60::ReadAnalogMeasurements()

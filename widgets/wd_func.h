@@ -37,7 +37,7 @@ public:
     static PasswordLineEdit *NewPswLE(QWidget *w, const QString &lename,
         QLineEdit::EchoMode echostyle = QLineEdit::Normal, const QString &lestyle = "");
     static bool SetLEData(QWidget *w, const QString &lename, const QString &levalue, const QString &restring = "");
-    static QString LEData(QWidget *w, const QString &lename);
+    static QString LEData(QObject *w, const QString &lename);
     template <typename T> static bool LENumber(QWidget *w, const QString &lename, T &levalue)
     {
         QLineEdit *le = w->findChild<QLineEdit *>(lename);
@@ -50,7 +50,8 @@ public:
     static bool SetTEData(QWidget *w, const QString &tename, const QString &tetext);
     static bool TEData(QWidget *w, const QString &tename, QString &tevalue);
     static bool SetLBLTColor(QWidget *w, const QString &lblname, const QString &color);
-    static EComboBox *NewCB(QWidget *parent, const QString &cbname, QStringList &cbsl, const QString &cbcolor = "");
+    static EComboBox *NewCB(
+        QWidget *parent, const QString &cbname, const QStringList &cbsl, const QString &cbcolor = "");
     static bool SetCBData(QWidget *w, const QString &cbname, const QString &cbvalue);
     static bool SetCBIndex(QObject *w, const QString &cbname, int index);
     static bool SetCBColor(QWidget *w, const QString &cbname, const QString &color);
@@ -137,6 +138,21 @@ public:
         QObject::connect(pb, &QPushButton::clicked, context, functor);
         return pb;
     }
+    template <typename Functor>
+    inline static void PBConnect(QWidget *parent, const QString &pbname, QObject *context, Functor &&functor)
+    {
+        QPushButton *pb = parent->findChild<QPushButton *>(pbname);
+        if (pb != nullptr)
+            QObject::connect(pb, &QPushButton::clicked, context, functor);
+    }
+    template <typename Object>
+    inline static void PBConnect(
+        QWidget *parent, const QString &pbname, const Object *receiver, void (Object::*method)())
+    {
+        QPushButton *pb = parent->findChild<QPushButton *>(pbname);
+        if (pb != nullptr)
+            QObject::connect(pb, &QPushButton::clicked, receiver, method);
+    }
 
     //    static QMetaObject::Connection PBConnect(
     //        QWidget *w, const QString &pbname, const QObject *receiver, const char *method);
@@ -153,7 +169,7 @@ public:
     static QVariant TVData(QWidget *w, const QString &tvname, int column);
 
     static QStatusBar *NewSB(QWidget *w);
-    static QPixmap NewCircle(QColor color, float radius);
+    static QPixmap NewCircle(QColor color, int radius);
     static QPixmap NewLedIndicator(QColor color, float height);
     static QPixmap NewSVG(QString &str, QSize size);
 

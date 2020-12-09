@@ -15,8 +15,8 @@ public:
 private:
     TuneKIV *TKIV;
     void SetupUI();
-    void SetLbls();
-    void SetPf();
+    void setMessages();
+    void setTuneFunctions();
     void FillBac(int bacnum);
     void FillBackBac(int bacnum);
     void GetBdAndFill();

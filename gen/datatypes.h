@@ -5,6 +5,14 @@
 
 namespace DataTypes
 {
+enum DataBlockTypes
+{
+    BacBlock,
+    BdaBlock,
+    BdBlock,
+    BciBlock
+};
+
 enum SignalTypes
 {
     BitString,
@@ -13,13 +21,16 @@ enum SignalTypes
     SinglePointWithTime,
     ByteArray,
     File,
+    ConfParameter,
     ConfParametersList,
+    Block,
     GeneralResponse
 };
 
 enum GeneralResponseTypes
 {
     Ok,
+    Error,
     DataSize,
     DataCount
 };
@@ -54,9 +65,64 @@ struct SinglePointWithTimeStruct
     quint64 CP56Time;
 };
 
+/*!
+    Приложение 3. Номера файлов
+        */
+enum FilesEnum : quint16
+{
+    /// Конфигурация
+    Config = 1,
+    /// Встроенное ПО (Firmware)
+    Firmware = 3,
+    /// Системный журнал
+    JourSys = 4,
+    /// Рабочий журнал
+    JourWork = 5,
+    /// Журнал измерений
+    JourMeas = 6,
+    /// Журнал переключений
+    JourSw = 17,
+    /// events journal (12->62)
+    JourEv = 18,
+    /// oscilloscope info
+    FileOsc = 1000
+};
+
 struct FileStruct
 {
-    quint32 filenum;
+    FileStruct() = default;
+    ~FileStruct()
+    {
+    }
+    FileStruct(const FilesEnum num, const QByteArray &file) : filenum(num), filedata(file)
+    {
+    }
+    FileStruct(const FileStruct &source) : FileStruct(source.filenum, source.filedata)
+    {
+    }
+    FileStruct &operator=(const FileStruct &source)
+    {
+        filenum = source.filenum;
+        filedata = source.filedata;
+        return *this;
+    }
+    FileStruct(FileStruct &&rhs) noexcept : filenum(rhs.filenum), filedata(rhs.filedata)
+    {
+        // rhs.filenum = 0;
+        rhs.filedata = nullptr;
+    }
+    FileStruct operator=(FileStruct &&rhs) noexcept
+    {
+        if (this != &rhs)
+        {
+            filenum = rhs.filenum;
+            filedata = rhs.filedata;
+            // rhs.filenum = NULL;
+            rhs.filedata = nullptr;
+        }
+        return *this;
+    }
+    FilesEnum filenum;
     QByteArray filedata;
 };
 
@@ -66,15 +132,29 @@ struct ConfParameterStruct
     QByteArray data;
 };
 
-struct ConfParametersListStruct
+struct BlockStruct
 {
-    QList<ConfParameterStruct> parlist;
+    quint32 ID;
+    QByteArray data;
 };
+
+typedef QList<ConfParameterStruct> ConfParametersListStruct;
+
+// struct ConfParametersListStruct
+//{
+//    QList<ConfParameterStruct> parlist;
+//};
 
 struct SignalsStruct
 {
     SignalTypes type;
     QVariant data;
+};
+
+struct Signal
+{
+    quint16 addr;
+    quint16 value;
 };
 
 struct GeneralResponseStruct
@@ -88,6 +168,7 @@ namespace Queries
 {
 enum Commands
 {
+    QC_Unknown, // NOTE Temporary warn command
     QC_SetNewConfiguration,
     QC_StartFirmwareUpgrade,
     QC_StartWorkingChannel,
@@ -101,8 +182,14 @@ enum Commands
     QC_WriteUserValues,
     QC_ReqAlarms,
     QC_ReqFloats,
-    QC_ReqBitStrings
-
+    QC_ReqBitStrings,
+    QUSB_ReqTuningCoef,
+    QUSB_WriteTuningCoef,
+    QUSB_ReqBlkDataA,
+    QUSB_ReqBlkDataTech,
+    QUSB_WriteBlkDataTech,
+    QUSB_SetMode, // SMode (0x43) - not tested yet
+    QUSB_GetMode  // GMode (0x28) - not tested yet
 };
 
 struct Command
@@ -117,23 +204,59 @@ struct Command
 namespace S2DataTypes
 {
 // S2: Определение типа заголовка
-typedef struct
+/// Заголовок файла (Прил. 1)
+struct FileHeader
 {
     quint16 fname;
     quint16 service;
     quint32 size;
     quint32 crc32;
     quint32 thetime;
-} FileHeader;
+};
 
 // S2: Определение типа записи
 
-typedef struct DataRec
+struct DataRec
 {
     quint32 id;
     quint32 num_byte;
     void *thedata;
-} DataRec;
+};
+struct DataRecHeader
+{
+    // id
+    quint32 id;
+    // количество байт в TypeTheData
+    quint32 NumByte;
+};
+
+/// Тип группы плат
+struct DataRecT
+{
+    // заголовок записи
+    DataRecHeader TypeHeader;
+    quint8 TypeTheData[4];
+    quint8 VerPO[4];
+};
+/// Файл ВПО в формате BIN
+struct DataRecF
+{
+    /// заголовок записи
+    DataRecHeader FileDatHeader;
+    QByteArray Data;
+};
+
+#pragma pack(push, 1)
+struct File_struct
+{
+    FileHeader File_xxx_header;
+    DataRecT Type;
+    DataRecF File;
+    // заголовок пустой записи
+    DataRecHeader void_recHeader;
+};
+#pragma pack(pop)
+typedef QVector<S2DataTypes::DataRec> S2ConfigType;
 }
 
 Q_DECLARE_METATYPE(DataTypes::BitStringStruct)
@@ -141,8 +264,12 @@ Q_DECLARE_METATYPE(DataTypes::FloatWithTimeStruct)
 Q_DECLARE_METATYPE(DataTypes::FloatStruct)
 Q_DECLARE_METATYPE(DataTypes::SinglePointWithTimeStruct)
 Q_DECLARE_METATYPE(DataTypes::FileStruct)
+Q_DECLARE_METATYPE(DataTypes::FilesEnum)
+Q_DECLARE_METATYPE(DataTypes::ConfParameterStruct)
+Q_DECLARE_METATYPE(DataTypes::BlockStruct)
 Q_DECLARE_METATYPE(DataTypes::ConfParametersListStruct)
 Q_DECLARE_METATYPE(DataTypes::SignalsStruct)
+Q_DECLARE_METATYPE(DataTypes::Signal)
 Q_DECLARE_METATYPE(DataTypes::GeneralResponseStruct)
 Q_DECLARE_METATYPE(Queries::Command)
 #endif // DATATYPES_H

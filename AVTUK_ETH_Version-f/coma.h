@@ -1,17 +1,10 @@
 #ifndef COMA_H
 #define COMA_H
 
-//#include "../alarm/alarmclass.h"
-#include "../dialogs/connectdialog.h"
-#include "../interfaces/iec104.h"
-#include "../interfaces/modbus.h"
+#include "../interfaces/settingstypes.h"
 #include "../module/module.h"
-#include "../widgets/alarmstateallwidget.h"
-#include "../widgets/alarmwidget.h"
-#include "../widgets/etabwidget.h"
 
 #include <QMainWindow>
-#include <QResizeEvent>
 
 enum INTERVAL
 {
@@ -54,59 +47,6 @@ public:
         quint32 alarm;
     };
 
-    static QStringList Hth()
-    {
-        // sl.append("ERR");
-        // clang-format off
-        QStringList sl
-        {
-            "ADCI",
-            "FLS",
-            "TUP",
-            "ADCB",
-            "1PPS",
-            "ADCM",
-            "REGB",
-            "RCN",
-            "HWIB",
-            "HWIM",
-            "REGM",
-            "BAT",
-            "NTP",
-            "FLS2",
-            "FRM"
-        };
-        // clang-format on
-        return sl;
-    }
-
-    static QStringList HthToolTip()
-    {
-        // sl.append("Что-то не в порядке");
-        // clang-format off
-        QStringList sl
-        {
-            "Проблемы со встроенным АЦП ",
-            "Не работает внешняя flash-память",
-            "Перегрев",
-            "Проблемы с АЦП (нет связи) (базовая)",
-            "Нет сигнала 1PPS с антенны",
-            "Проблемы с АЦП (нет связи) (мезонин)",
-            "Ошибка регулировочных коэффициентов (базовая)",
-            "Ошибка загрузки конфигурации из flash-памяти. Работает конфигурация по умолчанию",
-            "Некорректная Hardware информация (базовая)",
-            "Некорректная Hardware информация (мезонин)",
-            "Ошибка регулировочных коэффициентов (мезонин)",
-            "Напряжение батареи низко (< 2,5 В)",
-            "Нет связи с NTP-сервером",
-            "Не работает внешняя flash-память (мезонин)",
-            "Не работает внешняя fram",
-            "Проблемы со встроенным АЦП "
-        };
-        // clang-format on
-        return sl;
-    }
-
     Coma(QWidget *parent = nullptr);
     ~Coma();
     void SetMode(int mode);
@@ -132,24 +72,26 @@ signals:
 public slots:
     void DisconnectAndClear();
 
-    void FileTimeOut();
+    //    void FileTimeOut();
     void ReConnect();
     void AttemptToRec();
-    void ConnectMessage();
+    // void ConnectMessage();
 
 private slots:
     void StartWork();
     void GetAbout();
     void closeEvent(QCloseEvent *event) override;
     //    void SetDefConf();
-    void update(DataTypes::GeneralResponseStruct &rsp);
+    void update(const DataTypes::GeneralResponseStruct &rsp);
 
     //    void setConf(unsigned char);
     //    void Fill();
     //    void FillBSI(IEC104Thread::BS104Signals *sig);
     //    void FillBSI(QList<ModBus::BSISignalStruct> sig, unsigned int sigsize);
     // void PasswordCheck(QString psw);
-    void MainTWTabClicked(int tabindex);
+    void MainTWTabChanged(int tabindex);
+    void setGeneralProgressBarSize(quint32 size);
+    void setGeneralProgressBarCount(quint32 count);
 
 private:
     // constexpr QVector<int> MTBs = { 0x21, 0x22, 0x31, 0x35, 0x80, 0x81, 0x84 };
@@ -179,7 +121,7 @@ private:
     bool Cancelled;
     bool Reconnect;
     int Mode; // режим запуска программы
-    int fileSize, curfileSize;
+              //    int fileSize, m_curFileCount;
     //    int CheckIndex, TimeIndex, ConfIndex, CheckHarmIndex, CheckVibrIndex, CurTabIndex;
     quint8 HaveAlreadyRed = 0;
     //    quint8 ActiveThreads;
@@ -190,25 +132,26 @@ private:
 
     //    QVector<S2::DataRec> *S2ConfigForTune;
     //    QVector<S2::DataRec> *S2Config;
-    S2ConfigType *S2Config;
+    S2DataTypes::S2ConfigType *S2Config;
 
     //    quint8 PredAlarmEvents[20];
     //    quint8 AlarmEvents[20];
 
-    QTimer *ReceiveTimer, *m_BSITimer;
+    //    QTimer *ReceiveTimer;
+    QTimer *m_BSITimer;
     //    QTimer *ReconnectTimer;
     QTimer *BdaTimer, *AlrmTimer; //, *HarmTimer, *VibrTimer;
 
-    IEC104 *Ch104;
-    ModBus *ChModbus;
+    //    IEC104 *Ch104;
+    //    ModBus *ChModbus;
     BaseInterface *m_iface;
 
-    BaseInterface::ConnectStruct ConnectSettings;
+    ConnectStruct ConnectSettings;
 
     void LoadSettings();
     void SaveSettings();
     void SetProgressBarSize(int prbnum, int size);
-    void SetProgressBar(int prbnum, int cursize);
+    void SetProgressBarCount(int prbnum, int count);
     void New104();
     void NewModbus();
     void NewUSB();
@@ -217,10 +160,8 @@ private:
     void CloseDialogs();
     void PrepareDialogs();
     void setupConnections();
-    void SetProgressBar1Size(int size);
-    void SetProgressBar1(int cursize);
-    //    void SetProgressBar2Size(int size);
-    //    void SetProgressBar2(int cursize);
+    //    void SetProgressBar1Size(int size);
+    //    void SetProgressBar1Count(int count);
 
     virtual bool nativeEvent(const QByteArray &eventType, void *message, long *result) override;
 

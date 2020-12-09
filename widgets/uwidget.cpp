@@ -1,7 +1,13 @@
 #include "uwidget.h"
 
 #include "../gen/colors.h"
+#include "../gen/datamanager.h"
+#include "../gen/stdfunc.h"
 #include "wd_func.h"
+
+#include <QCoreApplication>
+#include <QDebug>
+#include <QEventLoop>
 
 UWidget::UWidget(QWidget *parent) : QWidget(parent)
 {
@@ -38,7 +44,7 @@ void UWidget::setUpdateTimerPeriod(quint32 period)
     m_timerMax = period;
 }
 
-void UWidget::setHighlightMap(QMap<int, QList<UWidget::HighlightWarnAlarmStruct>> &map)
+void UWidget::setHighlightMap(const QMap<int, QList<UWidget::HighlightWarnAlarmStruct>> &map)
 {
     m_highlightMap = map;
 }
@@ -53,30 +59,46 @@ void UWidget::setSpBdQuery(const QList<UWidget::BdQuery> &list)
     m_spBdQueryList = list;
 }
 
-void UWidget::updateFloatData(DataTypes::FloatStruct &fl)
+void UWidget::updateFloatData(const DataTypes::FloatStruct &fl)
 {
-    if ((m_updatesEnabled) && (m_timerCounter >= m_timerMax)) // every second tick of the timer
-        WDFunc::SetLBLText(this, QString::number(fl.sigAdr), WDFunc::StringValueWithCheck(fl.sigVal, 3));
+    ++m_timerCounter;
+    if ((m_updatesEnabled) /*&& (m_timerCounter >= m_timerMax)*/) // every second tick of the timer
+    {
+        bool result = WDFunc::SetLBLText(this, QString::number(fl.sigAdr), WDFunc::StringValueWithCheck(fl.sigVal, 3));
+#ifdef UWIDGET_DEBUG
+        if (!result)
+            qDebug() << Error::DescError << QString::number(fl.sigAdr) << WDFunc::StringValueWithCheck(fl.sigVal, 3);
+#endif
+        m_timerCounter = 0;
+    }
 }
 
-void UWidget::updateSPData(DataTypes::SinglePointWithTimeStruct &sp)
+void UWidget::updateSPData(const DataTypes::SinglePointWithTimeStruct &sp)
 {
-    QList<HighlightWarnAlarmStruct> hstlist = m_highlightMap[sp.sigAdr];
-    foreach (HighlightWarnAlarmStruct hst, hstlist)
+    QList<HighlightWarnAlarmStruct> hstlist = m_highlightMap.value(sp.sigAdr);
+    for (const auto &hst : hstlist)
         WDFunc::SetLBLTColor(this, QString::number(hst.fieldnum), (sp.sigVal == 1) ? Colors::TABCOLORA1 : hst.color);
 }
 
 void UWidget::reqUpdate()
 {
-    foreach (BdQuery query, m_floatBdQueryList)
+    // NOTE: POS (Piece Of Shit)
+    if (!m_updatesEnabled)
+        return;
+    for (const auto &query : m_floatBdQueryList)
         iface()->reqFloats(query.sigAdr, query.sigQuantity);
-    foreach (BdQuery query, m_spBdQueryList)
+    for (const auto &query : m_spBdQueryList)
         iface()->reqAlarms(query.sigAdr, query.sigQuantity);
 }
 
 void UWidget::setInterface(BaseInterface *iface)
 {
     m_iface = iface;
+    uponInterfaceSetting();
+}
+
+void UWidget::uponInterfaceSetting()
+{
 }
 
 BaseInterface *UWidget::iface()

@@ -1,16 +1,19 @@
-#ifndef AVARALARMKIV_H
-#define AVARALARMKIV_H
+#pragma once
 
-#include "alarm.h"
+#include "modulealarm.h"
 
-#define KIVALARMCOUNT 7
-
-class AlarmKIV : public Alarm
+class CritKIV : public ModuleAlarm
 {
     Q_OBJECT
 
 public:
-    explicit AlarmKIV(QWidget *parent = nullptr);
+    explicit CritKIV(QWidget *parent = nullptr);
 };
 
-#endif // AVARALARM84_H
+class WarnKIV : public ModuleAlarm
+{
+    Q_OBJECT
+
+public:
+    explicit WarnKIV(QWidget *parent = nullptr);
+};

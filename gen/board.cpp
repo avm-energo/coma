@@ -1,40 +1,107 @@
 #include "board.h"
+
+#include "../module/modules.h"
+#include "../module/registers.h"
+#include "stdfunc.h"
+
+#include <QDebug>
+
+bool isKnownModule(quint16 mtypeb, quint16 mtypem)
+{
+    if (Modules::BaseBoards.contains(mtypeb))
+    {
+        if (mtypeb != Modules::MTM_00)
+        {
+            return Modules::MezzanineBoards.contains(mtypem);
+        }
+        return true;
+    }
+    return false;
+}
+
 Board::Board(Singleton::token)
 {
-    m_typeB = 0;
-    m_typeM = 0;
     m_interfaceType = Unknown;
     m_connectionState = ConnectionState::Closed;
-    m_boardType = BoardType::NONE;
+    m_boardType = Types::None;
     m_deviceType = DeviceType::Module;
     //    Q_UNUSED(parent)
 }
 
 quint16 Board::typeB() const
 {
-    return m_typeB;
+    return m_startupInfoBlock.MTypeB;
 }
 
-void Board::setTypeB(const quint16 &typeB)
-{
-    m_typeB = typeB;
-    emit typeChanged();
-}
+// void Board::setTypeB(const quint16 &typeB)
+//{
+//    m_typeB = typeB;
+//    emit typeChanged();
+//}
 
 quint16 Board::typeM() const
 {
-    return m_typeM;
+    return m_startupInfoBlock.MTypeM;
 }
 
-void Board::setTypeM(const quint16 &typeM)
-{
-    m_typeM = typeM;
-    emit typeChanged();
-}
+// void Board::setTypeM(const quint16 &typeM)
+//{
+//    m_typeM = typeM;
+//    emit typeChanged();
+//}
 
 quint16 Board::type() const
 {
-    return quint16((typeB() << 8) + typeM());
+    const quint16 Mtypem = typeM();
+    const quint16 Mtypeb = typeB() << 8;
+    return quint16(Mtypeb + Mtypem);
+}
+
+quint16 Board::type(Board::Types type) const
+{
+    switch (type)
+    {
+    case Base:
+        return typeB();
+    case Mezzanine:
+        return typeM();
+    case None:
+        return 0;
+    default:
+        return Board::type();
+    }
+}
+
+quint32 Board::serialNumber(Board::Types type) const
+{
+    switch (type)
+    {
+    case Base:
+        return m_startupInfoBlock.SerialNumB;
+    case Mezzanine:
+        return m_startupInfoBlock.SerialNumM;
+    case None:
+        return 0;
+    default:
+        return m_startupInfoBlock.SerialNum;
+    }
+}
+
+QString Board::UID() const
+{
+    //    switch (ran)
+    //    {
+    //    case High:
+    //        return m_baseSerialInfo.UIDHigh;
+    //    case Mid:
+    //        return m_baseSerialInfo.UIDMid;
+    //    case Low:
+    //        return m_baseSerialInfo.UIDLow;
+    //    default:
+    //        return 0;
+    //    }
+    return QString::number(m_startupInfoBlock.UIDHigh, 16) + QString::number(m_startupInfoBlock.UIDMid, 16)
+        + QString::number(m_startupInfoBlock.UIDLow, 16);
 }
 
 Board::InterfaceType Board::interfaceType() const
@@ -61,18 +128,56 @@ void Board::setConnectionState(ConnectionState connectionState)
     emit connectionStateChanged(connectionState);
 }
 
-QList<quint16> Board::getBaseBoardsList() const
+void Board::update(const DataTypes::BitStringStruct &bs)
 {
-    QList<quint16> list = m_ModuleBaseBoards().keys();
-    return list;
+    // NOTE Необходимо сделать проверку: пришел ли это сигнал с
+    // нужным нам адресом(наш сигнал) или нет - чужие данные
+    // Ignore empty address
+    if (!bs.sigAdr)
+        return;
+    quint32 &item = *(reinterpret_cast<quint32 *>(&m_startupInfoBlock) + (bs.sigAdr - BSIREG));
+    // std::copy_n(&bs.sigVal, sizeof(quint32), &item);
+    item = bs.sigVal;
+    // Last value updated
+    if (&item == &m_startupInfoBlock.Hth)
+    {
+        emit healthChanged(m_startupInfoBlock.Hth);
+    }
+    emit readyRead();
 }
 
-Board::BoardType Board::boardType() const
+quint32 Board::health() const
+{
+    return m_startupInfoBlock.Hth;
+}
+
+bool Board::noConfig() const
+{
+    return (health() & HTH_CONFIG) || StdFunc::IsInEmulateMode();
+}
+
+bool Board::noRegPars() const
+{
+    return health() & HTH_REGPARS;
+}
+
+Modules::StartupInfoBlock Board::baseSerialInfo() const
+{
+    return m_startupInfoBlock;
+}
+
+// QList<quint16> Board::getBaseBoardsList() const
+//{
+//    QList<quint16> list = Modules::BaseBoards.keys();
+//    return list;
+//}
+
+Board::Types Board::boardType() const
 {
     return m_boardType;
 }
 
-void Board::setBoardType(const BoardType &boardType)
+void Board::setBoardType(const Types &boardType)
 {
     m_boardType = boardType;
     emit boardTypeChanged(boardType);

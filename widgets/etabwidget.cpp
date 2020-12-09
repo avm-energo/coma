@@ -1,5 +1,10 @@
 #include "etabwidget.h"
 
+#include "../gen/colors.h"
+
+#include <QStyleOptionTab>
+#include <QStylePainter>
+
 ETabWidget::ETabWidget(QWidget *parent) : QTabWidget(parent)
 {
     setTabBar(new ETabBar);

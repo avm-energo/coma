@@ -1,11 +1,19 @@
 #include "alarmktf.h"
 
-AlarmKTF::AlarmKTF(QWidget *parent) : Alarm(parent)
+#include "modules.h"
+
+CritKTF::CritKTF(QWidget *parent) : ModuleAlarm(parent)
 {
-    m_alarmBdNum = 2;
     m_startAlarmAddress = 5011;
-    m_alarmFlags = std::bitset<32>(0x00000005);
-    QStringList events = QStringList() << "Аварийное сообщение по недопустимому превышению температуры обмотки"
-                                       << "Аварийное сообщение по недопустимому уровню пускового тока         ";
-    setupUI(events);
+    m_alarmFlags = std::bitset<32>(AVM_KTF::criticalFlags);
+
+    setupUI(AVM_KTF::criticalEvents);
+}
+
+WarnKTF::WarnKTF(QWidget *parent) : ModuleAlarm(parent)
+{
+    m_startAlarmAddress = 5011;
+    m_alarmFlags = std::bitset<32>(AVM_KTF::warningFlags);
+    m_alarmColor = Qt::yellow;
+    setupUI(AVM_KTF::warningEvents);
 }

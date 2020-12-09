@@ -3,9 +3,8 @@
 #include "../config/config.h"
 #include "../gen/board.h"
 #include "../gen/colors.h"
-#include "../gen/error.h"
-#include "../gen/modulebsi.h"
 #include "../gen/datamanager.h"
+#include "../gen/error.h"
 #include "../widgets/wd_func.h"
 #include "../widgets/etabwidget.h"
 
@@ -29,6 +28,10 @@ CheckKDVDialog::CheckKDVDialog(QWidget *parent) : AbstractCheckDialog(parent)
     QString tmps = "QDialog {background-color: " + QString(Colors::UCONFCLR) + ";}";
     setStyleSheet(tmps);
     QStringList sl;
+    // BdNum = 6;
+    ChKDV = new CheckKDV;
+    Ch = new Check;
+    //    BdNum = 11;
     setAttribute(Qt::WA_DeleteOnClose);
 
     m_BdUIList = { { "Основные", Bd1W() }, { "Модель", Bd2W() } , { "Ресурс", Bd3W() }, { "1-я гармоника", Bd4W() }, { "Несимметрия", Bd5W() }};
@@ -37,11 +40,13 @@ CheckKDVDialog::CheckKDVDialog(QWidget *parent) : AbstractCheckDialog(parent)
     Timer->setInterval(ANMEASINT);
 }
 
-
 void CheckKDVDialog::PrepareHeadersForFile(int row)
 {
   Q_UNUSED(row)
 }
+    // BdUINum = sl.size();
+
+    // SetupUI(sl);
 
 void CheckKDVDialog::WriteToFile(int row, int bdnum)
 {
@@ -49,6 +54,7 @@ void CheckKDVDialog::WriteToFile(int row, int bdnum)
     Q_UNUSED(bdnum);
 }
 
+// check !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 UWidget *CheckKDVDialog::Bd1W()
 {

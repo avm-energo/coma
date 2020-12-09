@@ -1,11 +1,9 @@
 #include "datamanager.h"
 
-#include "files.h"
-
 // QList<DataTypes::SignalsStruct> DataManager::s_outputList;
 // QMutex DataManager::s_outListMutex;
 QMutex DataManager::s_inQueueMutex;
-std::queue<QVariant> s_inputQueue;
+std::queue<QVariant> DataManager::s_inputQueue;
 
 DataManager::DataManager(Singleton::token, QObject *parent) : QObject(parent)
 {
@@ -182,69 +180,88 @@ DataManager::DataManager(Singleton::token, QObject *parent) : QObject(parent)
 
 void DataManager::checkTypeAndSendSignals(DataTypes::SignalsStruct &str)
 {
-    emit DataManager::GetInstance().dataReceived(str);
+    using namespace DataTypes;
+    emit dataReceived(str);
     switch (str.type)
     {
-    case DataTypes::BitString:
+    case BitString:
     {
-        if (str.data.canConvert<DataTypes::BitStringStruct>())
+        if (str.data.canConvert<BitStringStruct>())
         {
-            DataTypes::BitStringStruct bs = qvariant_cast<DataTypes::BitStringStruct>(str.data);
-            emit DataManager::GetInstance().bitStringReceived(bs);
+            BitStringStruct bs = str.data.value<BitStringStruct>();
+            emit bitStringReceived(bs);
         }
         break;
     }
-    case DataTypes::SinglePointWithTime:
+    case SinglePointWithTime:
     {
-        if (str.data.canConvert<DataTypes::SinglePointWithTimeStruct>())
+        if (str.data.canConvert<SinglePointWithTimeStruct>())
         {
-            DataTypes::SinglePointWithTimeStruct sp = qvariant_cast<DataTypes::SinglePointWithTimeStruct>(str.data);
-            emit DataManager::GetInstance().singlePointReceived(sp);
+            SinglePointWithTimeStruct sp = qvariant_cast<SinglePointWithTimeStruct>(str.data);
+            emit singlePointReceived(sp);
         }
         break;
     }
-    case DataTypes::Float:
-    case DataTypes::FloatWithTime:
+    case Float:
+    case FloatWithTime:
     {
-        if (str.data.canConvert<DataTypes::FloatWithTimeStruct>())
+        if (str.data.canConvert<FloatWithTimeStruct>())
         {
-            DataTypes::FloatWithTimeStruct flt = qvariant_cast<DataTypes::FloatWithTimeStruct>(str.data);
-            DataTypes::FloatStruct fl;
+            FloatWithTimeStruct flt = qvariant_cast<FloatWithTimeStruct>(str.data);
+            FloatStruct fl;
             fl.sigAdr = flt.sigAdr;
             fl.sigVal = flt.sigVal;
-            emit DataManager::GetInstance().floatReceived(fl);
+            emit floatReceived(fl);
         }
-        else if (str.data.canConvert<DataTypes::FloatStruct>())
+        else if (str.data.canConvert<FloatStruct>())
         {
-            DataTypes::FloatStruct fl = qvariant_cast<DataTypes::FloatStruct>(str.data);
-            emit DataManager::GetInstance().floatReceived(fl);
-        }
-        break;
-    }
-    case DataTypes::File:
-    {
-        if (str.data.canConvert<DataTypes::FileStruct>())
-        {
-            DataTypes::FileStruct fl = qvariant_cast<DataTypes::FileStruct>(str.data);
-            emit DataManager::GetInstance().fileReceived(fl);
+            FloatStruct fl = qvariant_cast<FloatStruct>(str.data);
+            emit floatReceived(fl);
         }
         break;
     }
-    case DataTypes::ConfParametersList:
+    case File:
     {
-        if (str.data.canConvert<DataTypes::ConfParametersListStruct>())
+        if (str.data.canConvert<FileStruct>())
         {
-            DataTypes::ConfParametersListStruct cp = qvariant_cast<DataTypes::ConfParametersListStruct>(str.data);
-            emit DataManager::GetInstance().confParametersReceived(cp);
+            FileStruct fl = qvariant_cast<FileStruct>(str.data);
+            emit fileReceived(fl);
         }
         break;
     }
-    case DataTypes::GeneralResponse:
+    case ConfParameter:
     {
-        if (str.data.canConvert<DataTypes::GeneralResponseStruct>())
+        if (str.data.canConvert<ConfParameterStruct>())
         {
-            DataTypes::GeneralResponseStruct gr = qvariant_cast<DataTypes::GeneralResponseStruct>(str.data);
-            emit DataManager::GetInstance().responseReceived(gr);
+            ConfParameterStruct cp = qvariant_cast<ConfParameterStruct>(str.data);
+            emit confParameterReceived(cp);
+        }
+        break;
+    }
+    case ConfParametersList:
+    {
+        if (str.data.canConvert<ConfParametersListStruct>())
+        {
+            ConfParametersListStruct cp = qvariant_cast<ConfParametersListStruct>(str.data);
+            emit confParametersListReceived(cp);
+        }
+        break;
+    }
+    case Block:
+    {
+        if (str.data.canConvert<BlockStruct>())
+        {
+            BlockStruct bs = qvariant_cast<BlockStruct>(str.data);
+            emit blockReceived(bs);
+        }
+        break;
+    }
+    case GeneralResponse:
+    {
+        if (str.data.canConvert<GeneralResponseStruct>())
+        {
+            GeneralResponseStruct gr = qvariant_cast<GeneralResponseStruct>(str.data);
+            emit responseReceived(gr);
         }
         break;
     }

@@ -22,30 +22,31 @@
 
 #include "coma.h"
 
-#include "../check/checkkdvdialog.h"
-#include "../check/checkkdvharmonicdialog.h"
-#include "../check/checkkdvvibrdialog.h"
-#include "../check/checkkivdialog.h"
-#include "../check/checkktfdialog.h"
-#include "../check/checkktfharmonicdialog.h"
-#include "../config/confkdvdialog.h"
-#include "../config/confkivdialog.h"
-#include "../config/confktfdialog.h"
+#include "../dialogs/connectdialog.h"
 #include "../dialogs/errordialog.h"
 #include "../dialogs/keypressdialog.h"
 #include "../dialogs/settingsdialog.h"
+#include "../gen/board.h"
+#include "../gen/colors.h"
+#include "../gen/datamanager.h"
 #include "../gen/errorqueue.h"
 #include "../gen/logger.h"
 #include "../gen/stdfunc.h"
+#include "../interfaces/iec104.h"
+#include "../interfaces/modbus.h"
+#include "../interfaces/protocom.h"
+#include "../interfaces/settingstypes.h"
+#include "../widgets/etabwidget.h"
 #include "../widgets/splashscreen.h"
 #include "../widgets/wd_func.h"
 
 #include <QApplication>
 #include <QDir>
+#include <QHBoxLayout>
 #include <QMenuBar>
 #include <QMessageBox>
+#include <QPainter>
 #include <QProgressBar>
-#include <QSplashScreen>
 #include <QToolBar>
 #include <QtGlobal>
 #include <functional>
@@ -89,7 +90,7 @@ Coma::Coma(QWidget *parent) : QMainWindow(parent)
 
 #endif
 
-    S2Config = new S2ConfigType;
+    S2Config = new S2DataTypes::S2ConfigType;
     Reconnect = false;
     //    timeDialog = nullptr;
     //    mainConfDialog = nullptr;
@@ -178,7 +179,9 @@ QToolBar *Coma::createToolBar()
 
 void Coma::SetupUI()
 {
-    setWindowTitle(PROGCAPTION);
+    QString caption(PROGNAME);
+    caption.append(" v. ").append(COMAVERSION);
+    setWindowTitle(caption);
     QString tmps = "QMainWindow {background-color: " + QString(Colors::MAINWINCLR) + ";}";
     setStyleSheet(tmps);
     setMinimumSize(QSize(1050, 700));
@@ -239,17 +242,17 @@ QWidget *Coma::Least()
     inlyout->addWidget(prb);
     lyout->addLayout(inlyout);
 
-    //    inlyout = new QHBoxLayout;
-    //    inlyout->addWidget(WDFunc::NewLBLT(this, "Отсчёт"));
-    //    inlyout->addWidget(WDFunc::NewLBLT(this, "", "prb2lbl"));
+    inlyout = new QHBoxLayout;
+    inlyout->addWidget(WDFunc::NewLBLT(this, "Отсчёт"));
+    inlyout->addWidget(WDFunc::NewLBLT(this, "", "prb2lbl"));
 
-    //    prb = new QProgressBar;
-    //    prb->setObjectName("prb2prb");
-    //    prb->setOrientation(Qt::Horizontal);
-    //    // prb->setMinimumWidth(50);
-    //    prb->setMaximumHeight(height() / 50);
-    //    inlyout->addWidget(prb);
-    //    lyout->addLayout(inlyout);
+    prb = new QProgressBar;
+    prb->setObjectName("prb2prb");
+    prb->setOrientation(Qt::Horizontal);
+    // prb->setMinimumWidth(50);
+    prb->setMaximumHeight(height() / 50);
+    inlyout->addWidget(prb);
+    lyout->addLayout(inlyout);
     w->setLayout(lyout);
     return w;
 }
@@ -415,7 +418,7 @@ void Coma::StartWork()
         QEventLoop loop;
         Cancelled = false;
         ConnectDialog *dlg = new ConnectDialog;
-        connect(dlg, &ConnectDialog::Accepted, [this](BaseInterface::ConnectStruct st) {
+        connect(dlg, &ConnectDialog::Accepted, [this](const ConnectStruct &st) {
             this->ConnectSettings = st;
             emit CloseConnectDialog();
         });
@@ -442,8 +445,6 @@ void Coma::StartWork()
 
     DisconnectAndClear();
 
-    Board::GetInstance().setTypeB(0);
-    Board::GetInstance().setTypeM(0);
     S2Config = new QVector<S2DataTypes::DataRec>;
     //    S2ConfigForTune = new QVector<S2::DataRec>;
     //    CurTabIndex = -1;
@@ -451,22 +452,22 @@ void Coma::StartWork()
     if (MainTW == nullptr)
     {
         // qCritical(logCritical(), ("MainTW is empty"));
-        ERMSG("No MainTW in widgets list");
+        qCritical("No MainTW in widgets list");
         return;
     }
-    connect(MainTW, &ETabWidget::tabClicked, this, &Coma::MainTWTabClicked);
+    connect(MainTW, &ETabWidget::currentChanged, this, &Coma::MainTWTabChanged);
 
     Connect();
     QElapsedTimer tmr;
     tmr.start();
-    while ((board.typeM() == 0) && (tmr.elapsed() < INTERVAL::WAIT) && !Cancelled)
+    while ((board.type() == 0) && (tmr.elapsed() < INTERVAL::WAIT) && !Cancelled)
         QCoreApplication::processEvents();
     m_BSITimer->stop();
-    if (board.typeM() == 0)
+    if (board.type() == 0)
     {
         QMessageBox::critical(this, "Ошибка", "Не удалось соединиться с прибором", QMessageBox::Ok);
         DisconnectAndClear();
-        ERMSG("Не получили BSI, нет соединения");
+        qCritical("Не получили BSI, нет соединения");
         //            Disconnect();
         return;
     }
@@ -474,7 +475,7 @@ void Coma::StartWork()
     //        AlarmStateAllDialog->UpdateHealth(ModuleBSI::ModuleBsi.Hth);
     Board::GetInstance().setConnectionState(Board::ConnectionState::Connected);
     quint16 serialNumber = Board::GetInstance().type();
-    QString deviceName = QVariant::fromValue(Board::DeviceModel(serialNumber)).toString();
+    QString deviceName = QVariant::fromValue(Modules::Model(serialNumber)).toString();
     QMessageBox::information(this, "Связь установлена", "Удалось установить связь с " + deviceName, QMessageBox::Ok);
     Reconnect = true;
 
@@ -486,11 +487,11 @@ void Coma::StartWork()
     //        MainTW->addTab(jourDialog, "Журналы");
 
     //    if (ModuleBSI::Health() & HTH_CONFIG) // нет конфигурации
-    if (ModuleBSI::noConfig()) // нет конфигурации
-        qCritical() << QVariant::fromValue(Error::Msg::NoConfError).toString();
+    if (board.noConfig()) // нет конфигурации
+        qCritical() << Error::Msg::NoConfError;
     //    if (ModuleBSI::Health() & HTH_REGPARS) // нет коэффициентов
-    if (ModuleBSI::noRegPars()) // нет коэффициентов
-        qCritical() << QVariant::fromValue(Error::Msg::NoTuneError).toString();
+    if (board.noRegPars()) // нет коэффициентов
+        qCritical() << Error::Msg::NoTuneError;
     //    if (board.interfaceType() == Board::InterfaceType::USB)
     //    {
     //        fwUpDialog = new fwupdialog;
@@ -501,7 +502,7 @@ void Coma::StartWork()
     //    infoDialog->FillBsi();
 
     QList<UDialog *> dlgs = m_Module->dialogs();
-    foreach (UDialog *d, dlgs)
+    for (auto *d : dlgs)
         MainTW->addTab(d, d->getCaption());
     MainTW->repaint();
     MainTW->show();
@@ -509,8 +510,8 @@ void Coma::StartWork()
     INFOMSG("MainTW created");
     if (board.interfaceType() == Board::InterfaceType::USB)
         BdaTimer->start();
-    auto *msgSerialNumber = statusBar()->findChild<QLabel *>("SerialNumber");
-    msgSerialNumber->setText(QString::number(ModuleBSI::SerialNum(BT_NONE), 16));
+    //    auto *msgSerialNumber = statusBar()->findChild<QLabel *>("SerialNumber");
+    // msgSerialNumber->setText(QString::number(ModuleBSI::serialNumber(BT_NONE), 16));
 }
 
 /*void Coma::setupQConnections()
@@ -695,27 +696,27 @@ void Coma::CloseDialogs()
 
 void Coma::New104()
 {
-    Ch104 = new IEC104;
-    connect(this, &Coma::StopCommunications, Ch104, &IEC104::stop);
+    // Ch104 = new IEC104;
+    // connect(this, &Coma::StopCommunications, Ch104, &IEC104::stop);
     //    connect(Ch104, &IEC104::Finished, [this]() { ActiveThreads &= ~THREAD::P104; });
-    connect(Ch104, &IEC104::Finished, [this]() { ActiveThreads = false; });
+    // connect(Ch104, &IEC104::Finished, [this]() { ActiveThreads = false; });
     // connect(Ch104,SIGNAL(Sponsignalsready(IEC104Thread::SponSignals*)),this,SLOT(UpdatePredAlarmEvents(IEC104Thread::SponSignals*)));
     //    connect(Ch104, &IEC104::SetDataSize, this, &Coma::SetProgressBar1Size);
     //    connect(Ch104, &IEC104::SetDataCount, this, &Coma::SetProgressBar1);
-    connect(Ch104, &IEC104::ReconnectSignal, this, &Coma::ReConnect);
+    // connect(Ch104, &BaseInterface::reconnect, this, &Coma::ReConnect);
     //    connect(Ch104, &IEC104::Sponsignalsready, Alarm, &AlarmClass::UpdateAlarm104);
     //    connect(Ch104, &IEC104::Bs104signalsready, this, qOverload<IEC104Thread::BS104Signals *>(&Coma::FillBSI));
 }
 
 void Coma::NewModbus()
 {
-    ChModbus = new ModBus;
-    connect(this, &Coma::StopCommunications, ChModbus, &ModBus::stop);
+    // ChModbus = new ModBus;
+    // connect(this, &Coma::StopCommunications, ChModbus, &ModBus::stop);
     //    connect(ChModbus, &ModBus::Finished, [this]() { ActiveThreads &= ~THREAD::MODBUS; });
-    connect(ChModbus, &ModBus::Finished, [this]() { ActiveThreads = false; });
+    // connect(ChModbus, &ModBus::Finished, [this]() { ActiveThreads = false; });
     //  connect(ChModbus,SIGNAL(CoilSignalsReady(ModBus::Coils)), this,
     //  SLOT(ModBusUpdatePredAlarmEvents(ModBus::Coils)));
-    connect(ChModbus, &ModBus::ReconnectSignal, this, &Coma::ReConnect);
+    // connect(ChModbus, &BaseInterface::reconnect, this, &Coma::ReConnect);
     //    connect(ChModbus, &ModBus::CoilSignalsReady, Alarm, &AlarmClass::UpdateAlarmModBus);
 
     //    connect(ChModbus, &ModBus::BsiFromModbus, this,
@@ -740,7 +741,7 @@ void Coma::newTimers()
     //    TimeTimer->setInterval(1000);
     m_BSITimer = new QTimer;
     m_BSITimer->setInterval(1000);
-    connect(m_BSITimer, &QTimer::timeout, &ModuleBSI::update);
+    // connect(m_BSITimer, &QTimer::timeout, &ModuleBSI::update);
 
     BdaTimer = new QTimer;
     BdaTimer->setInterval(1000);
@@ -749,9 +750,9 @@ void Coma::newTimers()
     AlrmTimer->setInterval(5000);
     AlrmTimer->start();
 
-    ReceiveTimer = new QTimer;
-    ReceiveTimer->setInterval(2000);
-    connect(ReceiveTimer, &QTimer::timeout, this, &Coma::FileTimeOut);
+    //    ReceiveTimer = new QTimer;
+    //    ReceiveTimer->setInterval(2000);
+    //    connect(ReceiveTimer, &QTimer::timeout, this, &Coma::FileTimeOut);
 
     // BdaTimer = new QTimer(this);
     //    BdaTimer->setInterval(ANMEASINT);
@@ -785,6 +786,12 @@ void Coma::setupConnections()
     //        connect(AlrmTimer, &QTimer::timeout, AlarmStateAllDialog, &AlarmStateAll::CallUpdateHealth);
     //    connect(BdaTimer, &QTimer::timeout, this, &Coma::update);
     connect(&DataManager::GetInstance(), &DataManager::responseReceived, this, &Coma::update);
+    for (auto *d : m_Module->dialogs())
+    {
+        connect(d, &UWidget::setGeneralProgressBarCount, this, &Coma::setGeneralProgressBarCount);
+        connect(d, &UWidget::setGeneralProgressBarSize, this, &Coma::setGeneralProgressBarSize);
+    }
+
     //    connect(BdaTimer, &QTimer::timeout, Alarm, &AlarmClass::UpdateAlarmUSB);
     //    //   connect(BdaTimer, &QTimer::timeout, AlarmStateAllDialog, &AlarmStateAll::UpdateHealth);
 
@@ -847,7 +854,7 @@ void Coma::ReConnect()
 {
     if (Reconnect)
     {
-        INFOMSG("Reconnect()");
+        qInfo(__PRETTY_FUNCTION__);
         //        TimeTimer->stop();
         if (Board::GetInstance().connectionState() == Board::ConnectionState::Connected)
         {
@@ -882,20 +889,21 @@ void Coma::AttemptToRec()
     StartWork();
 }
 
-void Coma::ConnectMessage()
-{
-    QMessageBox msgBox;
+// void Coma::ConnectMessage()
+//{
+//    QMessageBox msgBox;
 
-    msgBox.setIcon(QMessageBox::Information);
-    // if (MainInterface == I_USB)
-    if (Board::GetInstance().interfaceType() == Board::InterfaceType::USB)
-        msgBox.setText("Связь с " + ModuleBSI::ModuleTypeString + " установлена");
-    else
-        msgBox.setText("Связь с " + ConnectSettings.name + " установлена");
-    msgBox.show();
-    StdFunc::Wait(INTERVAL::WAIT);
-    msgBox.close();
-}
+//    msgBox.setIcon(QMessageBox::Information);
+//    // FIXME Исправить карты модулей
+//    //    if (Board::GetInstance().interfaceType() == Board::InterfaceType::USB)
+//    //        // msgBox.setText("Связь с " + ModuleBSI::ModuleTypeString + " установлена");
+//    //        msgBox.setText("Связь установлена");
+//    //    else
+//    msgBox.setText("Связь с " + ConnectSettings.name + " установлена");
+//    msgBox.show();
+//    StdFunc::Wait(INTERVAL::WAIT);
+//    msgBox.close();
+//}
 
 void Coma::LoadSettings()
 {
@@ -915,7 +923,7 @@ void Coma::ClearTW()
     ETabWidget *MainTW = this->findChild<ETabWidget *>("maintw");
     if (MainTW == nullptr)
     {
-        ERMSG("Пустой MainTW");
+        DBGMSG("Пустой MainTW");
         return;
     }
 
@@ -1031,42 +1039,49 @@ void Coma::ClearTW()
 //    emit PasswordChecked();
 //}
 
-void Coma::SetProgressBar1Size(int size)
+// void Coma::SetProgressBar1Size(int size)
+//{
+//    //    fileSize = size;
+//    SetProgressBarSize(1, size);
+//}
+
+// void Coma::SetProgressBar1Count(int count)
+//{
+//    //    m_curFileCount = count;
+//    //    ReceiveTimer->stop();
+//    //    ReceiveTimer->setInterval(5000);
+//    SetProgressBarCount(1, count);
+//    //    ReceiveTimer->start();
+//}
+
+// void Coma::FileTimeOut()
+//{
+//    QString prbname = "prb1prb";
+//    QString lblname = "prb1lbl";
+//    QProgressBar *prb = this->findChild<QProgressBar *>(prbname);
+//    if (prb == nullptr)
+//    {
+//        // qCritical(logCritical(), ("Пустой prb"));
+//        qDebug("Пустой prb");
+//        return;
+//    }
+//    WDFunc::SetLBLText(this, lblname, StdFunc::PrbMessage() + QString::number(0), false);
+
+//    ReceiveTimer->stop();
+//    if (fileSize != curfileSize && Board::GetInstance().interfaceType() != Board::InterfaceType::USB)
+//        QMessageBox::information(this, "Ошибка", "Ошибка", QMessageBox::Ok);
+//}
+
+void Coma::setGeneralProgressBarSize(quint32 size)
 {
-    fileSize = size;
-    SetProgressBarSize(1, size);
+    SetProgressBarSize(2, size);
+    SetProgressBarCount(2, 0);
 }
 
-void Coma::SetProgressBar1(int cursize)
+void Coma::setGeneralProgressBarCount(quint32 count)
 {
-    curfileSize = cursize;
-    ReceiveTimer->stop();
-    ReceiveTimer->setInterval(5000);
-    SetProgressBar(1, cursize);
-    ReceiveTimer->start();
+    SetProgressBarCount(2, count);
 }
-
-void Coma::FileTimeOut()
-{
-    QString prbname = "prb1prb";
-    QString lblname = "prb1lbl";
-    QProgressBar *prb = this->findChild<QProgressBar *>(prbname);
-    if (prb == nullptr)
-    {
-        // qCritical(logCritical(), ("Пустой prb"));
-        qDebug("Пустой prb");
-        return;
-    }
-    WDFunc::SetLBLText(this, lblname, StdFunc::PrbMessage() + QString::number(0), false);
-
-    ReceiveTimer->stop();
-    if (fileSize != curfileSize && Board::GetInstance().interfaceType() != Board::InterfaceType::USB)
-        QMessageBox::information(this, "Ошибка", "Ошибка", QMessageBox::Ok);
-}
-
-// void Coma::SetProgressBar2Size(int size) { SetProgressBarSize(2, size); }
-
-// void Coma::SetProgressBar2(int cursize) { SetProgressBar(2, cursize); }
 
 void Coma::SetProgressBarSize(int prbnum, int size)
 {
@@ -1078,28 +1093,29 @@ void Coma::SetProgressBarSize(int prbnum, int size)
         qDebug("Пустой prb");
         return;
     }
-    WDFunc::SetLBLText(this, lblname, StdFunc::PrbMessage() + QString::number(size), false);
+    WDFunc::SetLBLText(this, lblname, QString::number(size), false);
     prb->setMinimum(0);
     prb->setMaximum(size);
 }
 
-void Coma::SetProgressBar(int prbnum, int cursize)
+void Coma::SetProgressBarCount(int prbnum, int count)
 {
     QString prbname = "prb" + QString::number(prbnum) + "prb";
     QString lblname = "prb" + QString::number(prbnum) + "lbl";
     QProgressBar *prb = this->findChild<QProgressBar *>(prbname);
     if (prb != nullptr)
     {
-        prb->setValue(cursize);
-        WDFunc::SetLBLText(
-            this, lblname, StdFunc::PrbMessage() + QString::number(cursize) + " из " + QString::number(prb->maximum()));
+        prb->setValue(count);
+        WDFunc::SetLBLText(this, lblname, QString::number(count) + " из " + QString::number(prb->maximum()));
     }
 }
 
 void Coma::GetAbout()
 {
+    QString caption(PROGNAME);
+    caption.append(" v. ").append(COMAVERSION);
     setWindowIcon(QPixmap("images/avm-energo.png"));
-    QMessageBox::about(this, PROGCAPTION,
+    QMessageBox::about(this, caption,
         "ООО \"АВМ-Энерго\" \n"
         "2015-2020 гг.\n"
         "info@avmenergo.ru");
@@ -1107,8 +1123,8 @@ void Coma::GetAbout()
 
 void Coma::Disconnect()
 {
-    INFOMSG("Disconnect()");
-    AlarmW->Clear();
+    qInfo(__PRETTY_FUNCTION__);
+    AlarmW->clear();
     if (!StdFunc::IsInEmulateMode())
     {
         if (Board::GetInstance().interfaceType() == Board::InterfaceType::USB)
@@ -1131,13 +1147,14 @@ void Coma::Connect()
 {
     m_BSITimer->start();
     auto const &board = Board::GetInstance();
+    connect(&DataManager::GetInstance(), &DataManager::bitStringReceived, &Board::GetInstance(), &Board::update);
     //    Error::Msg res;
     switch (board.interfaceType())
     {
     case Board::InterfaceType::USB:
     {
         //        m_iface = new USBWorker();
-        NewUSB();
+        m_iface = new Protocom;
         //        res = Commands::Connect();
         //        if (res != Error::Msg::NoError)
         //        {
@@ -1195,19 +1212,29 @@ void Coma::Connect()
     {
         QMessageBox::critical(this, "Ошибка", "Не удалось установить связь", QMessageBox::Ok);
         QApplication::restoreOverrideCursor();
-        ERMSG("cn: can't connect");
+        qCritical("Can't connect");
         return;
     }
     ActiveThreads = true;
+    //    m_iface->reqFloats(2420, 14);
+    //    m_iface->reqFloats(2400, 7);
+    //    m_iface->reqFloats(4501, 2);
+    //    m_iface->reqFloats(1000, 16);
+    //    m_iface->reqFloats(2420, 14);
+    //    m_iface->reqFloats(1100, 16);
+    //    m_iface->reqFloats(101, 2);
+    m_iface->reqBSI();
+    // m_iface->reqTime();
+    // m_iface->reqFile(4);
 }
 
 void Coma::DisconnectAndClear()
 {
-    INFOMSG("DisconnectAndClear()");
+    qInfo(__PRETTY_FUNCTION__);
     //    TimeTimer->stop();
     if (Board::GetInstance().connectionState() != Board::ConnectionState::Closed)
     {
-        AlarmW->Clear();
+        AlarmW->clear();
         Disconnect();
         CloseDialogs();
         //        emit ClearBsi();
@@ -1215,7 +1242,7 @@ void Coma::DisconnectAndClear()
         ETabWidget *MainTW = this->findChild<ETabWidget *>("maintw");
         if (MainTW == nullptr)
         {
-            ERMSG("Пустой MainTW");
+            DBGMSG("Пустой MainTW");
             return;
         }
         //        if (S2Config)
@@ -1252,13 +1279,13 @@ void Coma::keyPressEvent(QKeyEvent *e)
     if ((e->key() == Qt::Key_Enter) || (e->key() == Qt::Key_Return))
         emit Finished();
     if (e->key() == Qt::Key_Escape)
-        StdFunc::Cancel();
+        StdFunc::cancel();
     QMainWindow::keyPressEvent(e);
 }
 
-void Coma::MainTWTabClicked(int tabindex)
+void Coma::MainTWTabChanged(int tabindex)
 {
-    m_Module->parentTWTabClicked(tabindex);
+    m_Module->parentTWTabChanged(tabindex);
     //    if (tabindex == CurTabIndex) // to prevent double function invocation by doubleclicking on tab
     //        return;
     //    CurTabIndex = tabindex;
@@ -1324,15 +1351,17 @@ void Coma::MainTWTabClicked(int tabindex)
 //    QMessageBox::information(this, "Успешно", "Конфигурация по умолчанию", QMessageBox::Ok);
 //}
 
-void Coma::update(DataTypes::GeneralResponseStruct &rsp)
+void Coma::update(const DataTypes::GeneralResponseStruct &rsp)
 {
     //    DataTypes::GeneralResponseStruct rs;
     //    if (DataManager::getResponse(DataTypes::GeneralResponseTypes::DataCount, rs) != Error::Msg::ResEmpty)
     if (rsp.type == DataTypes::GeneralResponseTypes::DataCount)
-        SetProgressBar1(rsp.data);
+        SetProgressBarCount(1, rsp.data);
+    //        SetProgressBar1Count(rsp.data);
     //    if (DataManager::getResponse(DataTypes::GeneralResponseTypes::DataSize, rs) != Error::Msg::ResEmpty)
     if (rsp.type == DataTypes::GeneralResponseTypes::DataSize)
-        SetProgressBar1Size(rsp.data);
+        //        SetProgressBar1Size(rsp.data);
+        SetProgressBarSize(1, rsp.data);
     //    if (ModuleBSI::update())
     //    {
     //        if (AlarmStateAllDialog != nullptr)

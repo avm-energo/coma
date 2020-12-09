@@ -3,7 +3,6 @@
 
 #include <QLineEdit>
 #include <QPaintEvent>
-#include <QWidget>
 
 class LineEditField : public QLineEdit
 {

@@ -1,14 +1,19 @@
-#ifndef AVARALARMKTF_H
-#define AVARALARMKTF_H
+#pragma once
 
-#include "alarm.h"
+#include "modulealarm.h"
 
-class AlarmKTF : public Alarm
+class CritKTF : public ModuleAlarm
 {
     Q_OBJECT
 
 public:
-    explicit AlarmKTF(QWidget *parent = nullptr);
+    explicit CritKTF(QWidget *parent = nullptr);
 };
 
-#endif // AVARALARMKTF_H
+class WarnKTF : public ModuleAlarm
+{
+    Q_OBJECT
+
+public:
+    explicit WarnKTF(QWidget *parent = nullptr);
+};

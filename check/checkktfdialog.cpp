@@ -2,10 +2,8 @@
 
 #include "../config/config.h"
 #include "../gen/colors.h"
-#include "../gen/error.h"
-#include "../gen/modulebsi.h"
-//#include "../usb/commands.h"
 #include "../gen/datamanager.h"
+#include "../gen/error.h"
 #include "../widgets/wd_func.h"
 #include "../widgets/etabwidget.h"
 
@@ -40,31 +38,6 @@ CheckKTFDialog::CheckKTFDialog(QWidget *parent) : AbstractCheckDialog(parent)
 CheckKTFDialog::~CheckKTFDialog()
 {
 }
-
-//QWidget *CheckKTFDialog::BdUI(int bdnum)
-//{
-//    switch (bdnum)
-//    {
-
-//    case 0:
-//        //        return ChKTF->Bd1W(m_RCount,this);
-//        return ChKTF->Bd1W(this);
-
-//    case 1:
-//        return ChKTF->Bd2W(this);
-
-//    case 2:
-//        return ChKTF->Bd3W(this);
-
-//    case 3:
-//        return ChKTF->Bd4W(this);
-//    case 4:
-//        return ChKTF->Bd5W(this);
-
-//    default:
-//        return new QWidget;
-//    }
-//}
 
 void CheckKTFDialog::PrepareHeadersForFile(int row)
 {

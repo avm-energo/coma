@@ -3,9 +3,8 @@
 #include "../config/config.h"
 #include "../gen/board.h"
 #include "../gen/colors.h"
-#include "../gen/error.h"
-#include "../gen/modulebsi.h"
 #include "../gen/datamanager.h"
+#include "../gen/error.h"
 #include "../widgets/wd_func.h"
 
 #include <QCoreApplication>
@@ -36,8 +35,6 @@ CheckKDVVibrDialog::CheckKDVVibrDialog(QWidget *parent) : AbstractCheckDialog(pa
     Timer->setInterval(ANMEASINT);
 }
 
-
-
 void CheckKDVVibrDialog::PrepareHeadersForFile(int row)
 {
     Q_UNUSED(row)
@@ -48,6 +45,7 @@ void CheckKDVVibrDialog::WriteToFile(int row, int bdnum)
     Q_UNUSED(row)
     Q_UNUSED(bdnum)
 }
+
 
 UWidget *CheckKDVVibrDialog::Bd1W()
 {

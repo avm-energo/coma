@@ -3,8 +3,7 @@
 
 #include "../gen/report.h"
 #include "../gen/s2.h"
-#include "../gen/udialog.h"
-#include "../models/valuemodel.h"
+#include "../widgets/udialog.h"
 
 #include <QByteArray>
 #include <QCloseEvent>
@@ -23,99 +22,129 @@ class AbstractTuneDialog : public UDialog
 {
     Q_OBJECT
 public:
-    struct BlockStruct
+    //    struct BlockStruct
+    //    {
+    //        void *block;
+    //        int blocksize;
+    //    };
+    enum MsgTypes
     {
-        void *block;
-        int blocksize;
+        OkMsg,
+        ErMsg,
+        SkMsg,
+        NoMsg
     };
 
-    explicit AbstractTuneDialog(QWidget *parent = nullptr);
+    explicit AbstractTuneDialog(int tuneStep, QWidget *parent = nullptr);
     ~AbstractTuneDialog();
 
     bool IsNeededDefConf;
 
-    int m_ConfigCounter;
-    QMap<int, BlockStruct> m_TuneBlockMap;
-    QMap<int, BlockStruct> m_ConfigBlockMap;
+    //    int m_ConfigCounter;
+    //    QMap<int, BlockStruct> m_TuneBlockMap;
+    //    QMap<int, BlockStruct> m_ConfigBlockMap;
+    int m_blockCount;
 
-    QStringList lbls;
-    bool Skipped, MeasurementEnabled, ok, TuneFileSaved;
+    QStringList m_messages;
+    //    bool Skipped, MeasurementEnabled; //, ok; //, TuneFileSaved;
     //    bool Cancelled;
     QTimer *MeasurementTimer;
-    S2ConfigType *S2Config;
+    //    S2ConfigType *S2Config;
     quint32 SecondsToEnd15SecondsInterval;
-    QHash<QString, Error::Msg (AbstractTuneDialog::*)()> pf;
+    QHash<QString, Error::Msg (AbstractTuneDialog::*)()> m_tuneFunctions;
     quint8 bStep;
     int TuneVariant;       // вариант регулировочных параметров
     ReportModel *RepModel; // модель, в которую заносим данные для отчёта
     //    QString OrganizationString; // наименование организации, работающей с программой
-    ValueModel *m_VModel;
+    //    ValueModel *m_VModel;
     int m_tuneStep;
+    bool m_finished;
 
-    virtual void SetupUI() = 0;
+    void SetupUI();
     QWidget *TuneUI();
-    QWidget *BottomUI(int bacnum);
-    //    void addTuneBlock(void *block, int blocknum, int blocksize); // установка указателя на блок Bac
+    QWidget *BottomUI();
+    virtual QWidget *MainUI() = 0;
     //    int setConfigPtr(void *ptr, int size);
 
     void WaitNSeconds(int SecondsToWait, bool isAllowedToStop = false);
-    void ProcessTune();
-    Error::Msg CheckPassword();
-    virtual void SetLbls() = 0; // заполнить список сообщений
-    virtual void SetPf() = 0;   // заполнить список функций настройки
-                                //    bool IsWithinLimits(double number, double base, double threshold);
-    void MsgSetVisible(int msg, bool Visible = true);
-    void OkMsgSetVisible(int msg, bool Visible = true);
-    void ErMsgSetVisible(int msg, bool Visible = true);
-    void SkMsgSetVisible(int msg, bool Visible = true);
+    void Wait15Seconds();
+    void startWait();
+    void stopWait();
+
+    //    void ProcessTune();
+    bool CheckPassword();
+    virtual void setMessages() = 0;      // заполнить список сообщений
+    virtual void setTuneFunctions() = 0; // заполнить список функций настройки
+    //    void MsgSetVisible(int msg, bool Visible = true);
+    void MsgSetVisible(MsgTypes type, int msg, bool Visible = true);
+    //    void OkMsgSetVisible(int msg, bool Visible = true);
+    //    void ErMsgSetVisible(int msg, bool Visible = true);
+    //    void SkMsgSetVisible(int msg, bool Visible = true);
     void MsgClear();
     //    QByteArray *ChooseFileForOpen(QString mask);
-    bool WriteTuneCoefs(int bacnum);
-    Error::Msg SaveAllTuneCoefs();
-    void PrereadConf();
-    virtual void GetBdAndFill() = 0;
+    //    bool WriteTuneCoefs(int blocknum);
+    //    void SaveTuneBlocksToFiles();
+    //    void PrereadConf();
+    //    void GetBdAndFill();
+
+    void SetBac(void *block, int blocknum, int blocksize);
     virtual void FillBac(int bacnum) = 0;
     virtual void FillBackBac(int bacnum) = 0;
-    void SaveToFileEx(int bacnum);
+    //    void SaveToFileEx(int bacnum);
     //    void ShowTable();
-    void ReadTuneCoefsByBac(int bacnum);
     Error::Msg LoadTuneSequenceFile();
-    Error::Msg CheckCalibrStep();
-    void SaveTuneSequenceFile();
-    virtual Error::Msg SaveWorkConfig(int configblocknum = 0);
+    Error::Msg checkCalibrStep();
+    void saveTuneSequenceFile();
+    Error::Msg saveWorkConfig();
+    Error::Msg loadWorkConfig();
+    Error::Msg saveAllTuneCoefs();
+    Error::Msg loadAllTuneCoefs();
 
+private:
+    struct BlockStruct
+    {
+        void *BacBlock;
+        int BacBlockSize;
+        //        char BacBlockNum;
+    };
+
+    QMap<int, BlockStruct> AbsBac;
+    BlockStruct InitialBci;
+
+    void readTuneCoefsByBac(int bacnum);
+    Error::Msg writeTuneCoefsByBac(int bacnum);
 signals:
     //    void PasswordChecked();
-    void stopall();
-    void dataready(QByteArray);
+    //    void stopall();
+    //    void dataready(QByteArray);
     //    void SecondsRemaining(quint32);
     void Finished();
     void LoadDefConf();
-    void stopRead(int);
+    //    void stopRead(int);
 
 public slots:
     void CancelTune();
-    void ReadAllTuneCoefs();
-    void ReadTuneCoefs();
-    bool WriteTuneCoefsSlot();
-    void Good();
-    void NoGood();
+    //    void ReadAllTuneCoefs();
+    void readTuneCoefs();
+    bool writeTuneCoefs();
+    //    void Good();
+    //    void NoGood();
     Error::Msg StartMeasurement();
-    virtual void SetDefCoefs() = 0;
-    void TuneReadCoefs(int);
+    //    virtual void SetDefCoefs() = 0;
+    //    void TuneReadCoefs(int);
 
-    void SaveToFile();
+    //    void SaveToFile();
 
-private:
-    void SetMeasurementEnabled(bool enabled);
+    // private:
+    //    void SetMeasurementEnabled(bool enabled);
 
 private slots:
     void StartTune();
     //    void PasswordCheck(QString psw);
-    virtual int ReadAnalogMeasurements() = 0;
+    //    virtual int ReadAnalogMeasurements() = 0;
     //    void UpdateNSecondsWidget();
     void MeasTimerTimeout(); // по событию от таймера при активном режиме измерений обновить данные
-    void LoadFromFile();
+    //    void LoadTuneBlocksFromFile();
 
 protected:
     void closeEvent(QCloseEvent *e);

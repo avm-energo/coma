@@ -2,7 +2,6 @@
 #define TUNECLASS_H
 
 #include "../../gen/s2.h"
-#include "../models/valuemodel.h"
 
 #include <QWidget>
 
@@ -10,16 +9,13 @@ class TuneClass : public QObject
 {
     Q_OBJECT
 public:
-    TuneClass(int bacnum, S2ConfigType *S2Config, QObject *parent = nullptr);
+    TuneClass(int bacnum, S2DataTypes::S2ConfigType *S2Config, QObject *parent = nullptr);
     virtual QWidget *BacWidget() = 0;
-    void update();
-    void getFromWidget();
-    S2ConfigType *getS2Config();
+    S2DataTypes::S2ConfigType *getS2Config();
 
 private:
-    ValueModel *m_VModel;
     int m_BacNum;
-    S2ConfigType *S2Config;
+    S2DataTypes::S2ConfigType *S2Config;
 
 signals:
 

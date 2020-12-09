@@ -22,18 +22,21 @@ ConfKTFDialog::ConfKTFDialog(ConfigKTF *cktf, QWidget *parent) : AbstractConfDia
 {
     QString tmps = "QDialog {background-color: " + QString(Colors::ACONFCLR) + ";}";
     setStyleSheet(tmps);
-    S2Config = cktf->S2Config();
+    //    S2Config = cktf->S2Config();
     CKTF = cktf;
-    Conf = new ConfDialog(S2Config, Board::GetInstance().typeB(), Board::GetInstance().typeM());
-    ConfKxx = new ConfKxxDialog(S2Config);
+    //    Conf = new ConfDialog(S2Config, Board::GetInstance().typeB(), Board::GetInstance().typeM());
+    //    ConfKxx = new ConfKxxDialog(S2Config);
     setAttribute(Qt::WA_DeleteOnClose);
-    SetupUI();
-    PrereadConf();
 }
 
-ConfKTFDialog::~ConfKTFDialog() { }
+ConfKTFDialog::~ConfKTFDialog()
+{
+}
 
-int ConfKTFDialog::getRCount() { return CKTF->Bci_block.TdatNum; }
+int ConfKTFDialog::getRCount()
+{
+    return CKTF->Bci_block.TdatNum;
+}
 
 void ConfKTFDialog::SetupUI()
 {
@@ -277,8 +280,8 @@ void ConfKTFDialog::SetupUI()
     gb->setTitle("Настройки протокола МЭК-60870-5-104");
     gb->setFont(font);
 
-    gridlyout->addWidget(Conf->SetupMainBlk(this), 0, 0, 1, 1);
-    gridlyout->addWidget(ConfKxx->SetupComParam(this), 0, 1, 1, 1);
+    //    gridlyout->addWidget(Conf->SetupMainBlk(this), 0, 0, 1, 1);
+    //    gridlyout->addWidget(ConfKxx->SetupComParam(this), 0, 1, 1, 1);
 
     vlyout2->addLayout(gridlyout);
     gb->setLayout(vlyout2);
@@ -294,7 +297,7 @@ void ConfKTFDialog::SetupUI()
     vlyout2 = new QVBoxLayout;
     gb->setFont(font);
 
-    vlyout2->addWidget(Conf->SetupTime(this));
+    //    vlyout2->addWidget(Conf->SetupTime(this));
 
     gb->setLayout(vlyout2);
     vlyout1->addWidget(gb);
@@ -340,8 +343,8 @@ void ConfKTFDialog::SetupUI()
     ConfTW->addTab(alarm, "Сигнализация");
     ConfTW->addTab(ocsillogram, "Осциллографирование");
     ConfTW->addTab(LinkscrArea, "Связь");
-    ConfTW->addTab(ConfKxx->SetupModBus(this), "ModBus");
-    ConfTW->addTab(ConfKxx->SetupBl(this), "Общее");
+    //    ConfTW->addTab(ConfKxx->SetupModBus(this), "ModBus");
+    //    ConfTW->addTab(ConfKxx->SetupBl(this), "Общее");
     ConfTW->addTab(other, "Прочее");
     lyout->addWidget(ConfTW);
     QWidget *wdgt = ConfButtons();
@@ -352,7 +355,7 @@ void ConfKTFDialog::SetupUI()
 void ConfKTFDialog::Fill()
 {
 
-    Conf->Fill();
+    //    Conf->Fill();
 
     WDFunc::SetSPBData(this, "NFiltr_ID", CKTF->Bci_block.NFiltr);
     WDFunc::SetSPBData(this, "NHarmFilt_ID", CKTF->Bci_block.NHarmFilt);
@@ -403,12 +406,12 @@ void ConfKTFDialog::Fill()
     WDFunc::SetSPBData(this, "GOvc", CKTF->Bci_block.GOvc);
     WDFunc::SetSPBData(this, "TdatNum", CKTF->Bci_block.TdatNum);
 
-    ConfKxx->Fill();
+    //    ConfKxx->Fill();
 }
 
 void ConfKTFDialog::FillBack()
 {
-    Conf->FillBack();
+    //    Conf->FillBack();
 
     int cbidx;
 
@@ -463,16 +466,18 @@ void ConfKTFDialog::FillBack()
     WDFunc::SPBData(this, "GOvc", CKTF->Bci_block.GOvc);
     WDFunc::SPBData(this, "TdatNum", CKTF->Bci_block.TdatNum);
 
-    ConfKxx->FillBack();
+    //    ConfKxx->FillBack();
 }
 
-void ConfKTFDialog::CheckConf() { }
+void ConfKTFDialog::CheckConf()
+{
+}
 
 void ConfKTFDialog::SetDefConf()
 {
     CKTF->SetDefConf();
-    Conf->SetDefConf();
-    ConfKxx->SetDefConf();
+    //    Conf->SetDefConf();
+    //    ConfKxx->SetDefConf();
     Fill();
 }
 

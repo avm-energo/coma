@@ -30,31 +30,31 @@ public:
     void PrereadConf();
     // int GetChNumFromObjectName(QString ObjectName);
 
-    Error::Msg WriteCheckPassword();
+    bool WriteCheckPassword();
 
 public slots:
-    void WriteConfMessageOk(DataTypes::GeneralResponseStruct &rsp);
+    void WriteConfMessageOk(const DataTypes::GeneralResponseStruct &rsp);
     //    void update() override;
     // задать конфигурацию по умолчанию
     virtual void SetDefConf() = 0;
 
 protected:
     bool ok;
-    S2ConfigType *S2Config;
+    // S2DataTypes::S2ConfigType *S2Config;
     QStringList CheckConfErrors;
-    QStringList Sbaud { "1200", "2400", "4800", "9600", "19200", "38400", "57600", "115200" };
     QWidget *ConfButtons();
 
     virtual void SetupUI() = 0;
     bool PrepareConfToWrite();
+    void uponInterfaceSetting() override;
 
 private slots:
     void SaveConfToFile();
     void LoadConfFromFile();
     void ReadConf();
     void WriteConf();
-    //    void WritePasswordCheck(QString psw);
-    void confParameterReceived(DataTypes::ConfParametersListStruct &cfpl);
+    void confParametersListReceived(const DataTypes::ConfParametersListStruct &cfpl);
+    //    void confParameterReceived(const DataTypes::ConfParameterStruct &cfp);
 
     // public slots:
     //    void FillConf(S2ConfigType *);
@@ -70,4 +70,6 @@ private slots:
     //    void DefConfToBeLoaded();
     //    void StopRead(int);
     //    void WritePasswordChecked();
+
+    // UWidget interface
 };

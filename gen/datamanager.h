@@ -3,7 +3,6 @@
 
 #include "datatypes.h"
 #include "error.h"
-#include "s2.h"
 #include "singleton.h"
 
 #include <QMutex>
@@ -27,13 +26,13 @@ public:
     //    static Error::Msg getResponse(DataTypes::GeneralResponseTypes type, DataTypes::GeneralResponseStruct
     //    &response); static void setConfig(S2ConfigType *s2config);
     //    static void reqStartup();
-    static void checkTypeAndSendSignals(DataTypes::SignalsStruct &str);
+    void checkTypeAndSendSignals(DataTypes::SignalsStruct &str);
     template <typename T> static void addSignalToOutList(DataTypes::SignalTypes type, T signal)
     {
         DataTypes::SignalsStruct str;
         str.type = type;
         str.data.setValue(signal);
-        checkTypeAndSendSignals(str);
+        GetInstance().checkTypeAndSendSignals(str);
         //        s_outListMutex.lock();
         //        s_outputList.append(str);
         //        s_outListMutex.unlock();
@@ -64,19 +63,22 @@ public:
         return Error::Msg::ResEmpty;
     }
 
+private:
     static std::queue<QVariant> s_inputQueue;
     //    static QList<DataTypes::SignalsStruct> s_outputList;
     //    static QMutex s_outListMutex;
     static QMutex s_inQueueMutex;
 
 signals:
-    void dataReceived(DataTypes::SignalsStruct &);
-    void bitStringReceived(DataTypes::BitStringStruct &);
-    void singlePointReceived(DataTypes::SinglePointWithTimeStruct &);
-    void floatReceived(DataTypes::FloatStruct &);
-    void fileReceived(DataTypes::FileStruct &);
-    void confParametersReceived(DataTypes::ConfParametersListStruct &);
-    void responseReceived(DataTypes::GeneralResponseStruct &);
+    void dataReceived(const DataTypes::SignalsStruct &);
+    void bitStringReceived(const DataTypes::BitStringStruct &);
+    void singlePointReceived(const DataTypes::SinglePointWithTimeStruct &);
+    void floatReceived(const DataTypes::FloatStruct &);
+    void fileReceived(const DataTypes::FileStruct &);
+    void confParameterReceived(const DataTypes::ConfParameterStruct &);
+    void confParametersListReceived(const DataTypes::ConfParametersListStruct &);
+    void responseReceived(const DataTypes::GeneralResponseStruct &);
+    void blockReceived(const DataTypes::BlockStruct &);
 };
 
 #endif // DATAMANAGER_H

@@ -2,7 +2,6 @@
 
 #include "../config/config.h"
 #include "../gen/colors.h"
-#include "../gen/modulebsi.h"
 #include "../widgets/wd_func.h"
 
 #include <QGroupBox>
@@ -17,8 +16,7 @@ CheckHarmonicKDV::CheckHarmonicKDV()
     WidgetFormat = "QWidget {background-color: " + QString(Colors::UCONFCLR) + ";}";
 }
 
-
-//QWidget *CheckHarmonicKDV::BdIWidget(QWidget *parent, int value , int min, int max)
+//QWidget *CheckHarmonicKDV::BdIWidget(QWidget *parent, int value, int min, int max)
 //{
 //    int i;
 //    QWidget *w = new QWidget(parent);
@@ -69,7 +67,6 @@ CheckHarmonicKDV::CheckHarmonicKDV()
 //    w->setLayout(lyout);
 //    w->setStyleSheet(WidgetFormat);
 //    return w;
-
 //}
 
 //QWidget *CheckHarmonicKDV::BdUWidget(QWidget *parent, int value, int min, int max)
@@ -124,7 +121,6 @@ CheckHarmonicKDV::CheckHarmonicKDV()
 //    w->setLayout(lyout);
 //    w->setStyleSheet(WidgetFormat);
 //    return w;
-
 //}
 
 void CheckHarmonicKDV::FillBd5(QWidget *parent)
@@ -151,8 +147,7 @@ void CheckHarmonicKDV::FillBd7(QWidget *parent)
     }
 }
 
-//void CheckHarmonicKDV::FillBd(QWidget *parent, QString Name, QString Value)
-//{
-//    WDFunc::SetLBLText(parent, Name, Value);
-//}
-
+void CheckHarmonicKDV::FillBd(QWidget *parent, QString Name, QString Value)
+{
+    WDFunc::SetLBLText(parent, Name, Value);
+}

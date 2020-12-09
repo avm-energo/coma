@@ -3,6 +3,7 @@
 #include "../gen/board.h"
 #include "../gen/colors.h"
 #include "../gen/error.h"
+#include "../gen/s2.h"
 #include "../widgets/wd_func.h"
 
 #include <QGridLayout>
@@ -11,21 +12,17 @@
 #include <QScrollBar>
 #include <QTimer>
 #include <QVBoxLayout>
-#if _MSC_VER && !__INTEL_COMPILER
-#define __PRETTY_FUNCTION__ __FUNCSIG__
-#endif
+
 ConfKIVDialog::ConfKIVDialog(ConfigKIV *ckiv, QWidget *parent) : AbstractConfDialog(parent)
 {
     QString tmps = "QDialog {background-color: " + QString(Colors::ACONFCLR) + ";}";
     setStyleSheet(tmps);
-    //    this->S2Config = ckiv;
     CKIV = ckiv;
-    S2Config = ckiv->getS2Config();
-    Conf = new ConfDialog(S2Config, Board::GetInstance().typeB(), Board::GetInstance().typeM(), this);
-    ConfKxx = new ConfKxxDialog(S2Config, this);
+    // S2Config = S2Config;
+    //    CKIV = new ConfigKIV(ckiv);
+    //    Conf = new ConfDialog(ckiv->S2Config(), this);
+    //    ConfKxx = new ConfKxxDialog(ckiv->S2Config(), this);
     setAttribute(Qt::WA_DeleteOnClose);
-    SetupUI();
-    PrereadConf();
 }
 
 ConfKIVDialog::~ConfKIVDialog()
@@ -35,16 +32,17 @@ ConfKIVDialog::~ConfKIVDialog()
 
 void ConfKIVDialog::Fill()
 {
-    int i;
 
-    Conf->Fill();
-    ConfKxx->Fill();
+    CKIV->MainConfig()->Fill();
+    CKIV->KxxConfig()->Fill();
+    //    Conf->Fill();
+    //    ConfKxx->Fill();
 
     WDFunc::SetSPBData(this, "Unom", CKIV->Bci_block.Unom);
     WDFunc::SetSPBData(this, "Umin", CKIV->Bci_block.Umin);
     WDFunc::SetSPBData(this, "Imin", CKIV->Bci_block.Imin);
 
-    for (i = 0; i < 3; i++)
+    for (int i = 0; i < 3; i++)
     {
 
         WDFunc::SetSPBData(this, "Tg_pasp." + QString::number(i), CKIV->Bci_block.Tg_pasp[i]);
@@ -82,8 +80,10 @@ void ConfKIVDialog::FillBack()
 {
     int i;
 
-    Conf->FillBack();
-    ConfKxx->FillBack();
+    CKIV->MainConfig()->FillBack();
+    CKIV->KxxConfig()->FillBack();
+    //    Conf->FillBack();
+    //    ConfKxx->FillBack();
 
     WDFunc::SPBData(this, "Unom", CKIV->Bci_block.Unom);
     WDFunc::SPBData(this, "Umin", CKIV->Bci_block.Umin);
@@ -132,7 +132,7 @@ QWidget *ConfKIVDialog::analogWidget()
     QFont font;
     QVBoxLayout *lyout = new QVBoxLayout;
     QGridLayout *gridlyout = new QGridLayout;
-    QString phase[3] = { "Фаза A:", "Фаза B:", "Фаза C:" };
+    const QStringList phase { "Фаза A:", "Фаза B:", "Фаза C:" };
     //    QString paramcolor = Colors::MAINWINCLR;
     int row = 0;
     QGroupBox *gb = new QGroupBox("Аналоговые параметры");
@@ -148,9 +148,9 @@ QWidget *ConfKIVDialog::analogWidget()
     gridlyout->addWidget(WDFunc::NewSPB(this, "U2nom", 0, 10000, 1, Colors::MAINWINCLR), row, 2, 1, 3);
     row++;
 
-    for (int i = 0; i < 3; i++)
+    for (int i = 0; i < phase.size(); i++)
     {
-        gridlyout->addWidget(WDFunc::NewLBL(this, phase[i]), row, 2 + i, 1, 1, Qt::AlignTop);
+        gridlyout->addWidget(WDFunc::NewLBL(this, phase.at(i)), row, 2 + i, 1, 1, Qt::AlignTop);
     }
     row++;
 
@@ -368,8 +368,10 @@ QWidget *ConfKIVDialog::connectionWidget()
     gb->setTitle("Настройки протокола МЭК-60870-5-104");
     gb->setFont(font);
 
-    gridlyout->addWidget(Conf->SetupMainBlk(this), 0, 0, 1, 1);
-    gridlyout->addWidget(ConfKxx->SetupComParam(this), 0, 1, 1, 1);
+    //    gridlyout->addWidget(Conf->SetupMainBlk(this), 0, 0, 1, 1);
+    //    gridlyout->addWidget(ConfKxx->SetupComParam(this), 0, 1, 1, 1);
+    gridlyout->addWidget(CKIV->MainConfig()->MainWidget(this), 0, 0, 1, 1);
+    gridlyout->addWidget(CKIV->KxxConfig()->ComParam(this), 0, 1, 1, 1);
 
     //    vlyout2->addLayout(gridlyout);
     gb->setLayout(gridlyout);
@@ -379,7 +381,8 @@ QWidget *ConfKIVDialog::connectionWidget()
     //    vlyout2 = new QVBoxLayout;
     gb->setFont(font);
 
-    vlyout->addWidget(Conf->SetupTime(this));
+    //    vlyout->addWidget(Conf->SetupTime(this));
+    vlyout->addWidget(CKIV->MainConfig()->TimeWidget(this));
 
     gb->setLayout(vlyout);
     alyout->addWidget(gb);
@@ -448,8 +451,10 @@ void ConfKIVDialog::SetupUI()
     lyout->addWidget(ConfTW);
 
     ConfTW->addTab(connectionWidget(), "Связь");
-    ConfTW->addTab(ConfKxx->SetupModBus(this), "ModBusMaster");
-    ConfTW->addTab(ConfKxx->SetupBl(this), "Общее");
+    //    ConfTW->addTab(ConfKxx->SetupModBus(this), "ModBusMaster");
+    //    ConfTW->addTab(ConfKxx->SetupBl(this), "Общее");
+    ConfTW->addTab(CKIV->KxxConfig()->ModbusWidget(this), "ModBusMaster");
+    ConfTW->addTab(CKIV->KxxConfig()->VariousWidget(this), "Общее");
 
     //    QWidget *wdgt = ConfButtons();
     //    lyout->addWidget(wdgt);
@@ -464,11 +469,17 @@ void ConfKIVDialog::CheckConf()
 void ConfKIVDialog::SetDefConf()
 {
     CKIV->setDefConf();
-    Conf->SetDefConf();
-    ConfKxx->SetDefConf();
+    //    Conf->SetDefConf();
+    //    ConfKxx->SetDefConf();
     Fill();
 }
 
-// void ConfKIVDialog::Start_Timer() { timerRead->start(1000); }
+// void ConfKIVDialog::Start_Timer()
+//{
+//    timerRead->start(1000);
+//}
 
-// void ConfKIVDialog::Stop_Timer() { timerRead->stop(); }
+// void ConfKIVDialog::Stop_Timer()
+//{
+//    timerRead->stop();
+//}

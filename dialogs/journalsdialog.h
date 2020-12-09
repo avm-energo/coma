@@ -54,7 +54,7 @@ private:
     bool ok;
     Journals *JourFuncs;
     QSortFilterProxyModel *ProxyWorkModel, *ProxySysModel, *ProxyMeasModel;
-    Error::Msg WriteCheckPassword();
+    bool WriteCheckPassword();
     void StartReadJourFile();
 };
 

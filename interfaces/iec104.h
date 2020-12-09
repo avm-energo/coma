@@ -2,20 +2,29 @@
 #define IEC104_H
 #include "../gen/datamanager.h"
 #include "../gen/logclass.h"
-#include "../gen/s2.h"
 #include "baseinterface.h"
-#include "iec104thread.h"
+#include "iec104private.h"
 
 #include <QMutex>
 #include <QQueue>
 #include <QTimer>
 
-#define STARTUPGROUP 2
-#define BSIGROUP 1
-#define TIMEGROUP 15
-#define ALARMGROUP 3
-#define MAINFLOATGROUP 4
-#define MAINBITSTRINGGROUP 4
+namespace Commands104
+{
+using namespace Queries;
+// map to translate real commands like "erase memory block" into
+// iec104 commands: 45 or 50 or something else
+const QMap<Queries::Commands, CommandStruct> CommandsTranslateMap {
+    { QC_SetNewConfiguration, { CM104_COM45, SetNewConfigurationReg, 0, {} } },   //
+    { QC_ClearStartupValues, { CM104_COM45, ClearStartupValuesReg, 0, {} } },     //
+    { QC_WriteUserValues, { CM104_COM50, 0, 0, {} } },                            //
+    { QC_EraseJournals, { CM104_COM45, EraseJournalsReg, 0, {} } },               //
+    { QC_SetStartupValues, { CM104_COM45, SetStartupValuesReg, 0, {} } },         //
+    { QC_StartFirmwareUpgrade, { CM104_COM45, StartFirmwareUpgradeReg, 0, {} } }, //
+    { QC_StartWorkingChannel, { CM104_COM45, StartWorkingChannelReg, 0, {} } }    //
+
+};
+}
 
 class IEC104 : public BaseInterface
 {
@@ -119,14 +128,13 @@ public:
 public slots:
     void reqStartup(quint32 sigAdr = 0, quint32 sigCount = 0) override;
     void reqBSI() override;
-    void reqAlarms(quint32 sigAdr = 0, quint32 sigCount = 0);
+    // void reqAlarms(quint32 sigAdr = 0, quint32 sigCount = 0);
     void reqFile(quint32 filenum, bool isConfigFile) override;
     void writeFile(quint32 filenum, const QByteArray &file) override;
-    void writeConfigFile(S2ConfigType *s2config) override;
+    // void writeConfigFile(S2DataTypes::S2ConfigType *s2config) override;
     void reqTime() override;
     void writeTime(quint32 time) override;
-    void writeCommand(
-        Queries::Commands cmd, QList<DataTypes::SignalsStruct> list = QList<DataTypes::SignalsStruct>()) override;
+    void writeCommand(Queries::Commands cmd, QVariant item) override;
     void reqFloats(quint32 sigAdr = 0, quint32 sigCount = 0) override;
     //    void reqBitStrings(quint32 sigAdr = 0, quint32 sigCount = 0);
 
@@ -153,7 +161,7 @@ signals:
     //    void SetDataSize(int);
     //    void SetDataCount(int);
     //    void SendConfMessageOk();
-    void ReconnectSignal();
+    // void ReconnectSignal();
     void Finished();
 
 private:

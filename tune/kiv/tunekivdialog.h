@@ -5,10 +5,8 @@
 #include "../check/checkkiv.h"
 #include "../config/config.h"
 #include "../config/configkiv.h"
-#include "../gen/modulebsi.h"
-#include "../gen/udialog.h"
-#include "../iec104/iec104.h"
-#include "limereport/lrreportengine.h"
+#include "../widgets/udialog.h"
+//#include "../iec104/iec104.h"
 #include "tunekiv.h"
 
 #include <QHBoxLayout>
@@ -53,13 +51,13 @@ class TuneKIVDialog : public UDialog
 public:
     explicit TuneKIVDialog(ConfigKIV *ckiv, TuneKIV *tkiv, QWidget *parent = nullptr);
 
-signals:
-    void Send();
+    // signals:
+    //    void Send();
 
 public slots:
 
 private:
-    ConfigKIV::Bci m_Bci_block_work, m_Bci_block_temporary;
+    AVM_KIV::Bci m_Bci_block_work, m_Bci_block_temporary;
     TuneKIV *TKIV;
     ConfigKIV *CKIV;
 
@@ -84,13 +82,6 @@ private:
 
     void SetupUI();
 
-    struct Bd0
-    {
-        float Tmk;  // Температура кристалла микроконтроллера, °С
-        float Vbat; // Напряжение аккумуляторной батареи, В
-    };
-
-    Bd0 m_Bd_block20, m_Bd_block_minus20, m_Bd_block_plus60;
     int m_filterSteps;
 
     /*struct ReportHeaderStructure
@@ -157,12 +148,7 @@ private:
         int CheckTuneCoefs();
         // int CheckMip();
         void GetBdAndFill();
-        int Start7_2_1();
-        int Start_7_2_7();
-        int Start7_3_1();
         int Start7_3_1_1();
-        int Start7_3_2();
-        int Start7_3_4();
         int Start7_3_4_2();
         int Start7_3_4_6();
         int Start7_3_4_7();
@@ -177,17 +163,10 @@ private:
         int Start7_3_5();
         int ShowScheme();
         int SaveUeff();
-        int ShowRetomDialog(double U, double I, double Y);
         int SetNewTuneCoefs(); // заполнение Bac_newblock, чтобы не было пурги после настройки
         int LoadWorkConfig();
-        QWidget *Bd1W(QWidget *parent);
-        void FillBd1(QWidget *parent);
         void RefreshAnalogValues(int bdnum);
-        int Show80();
-        int Show120();
-        void CalcNewPt100Coefs();
         void CalcTempCorCoefs();
-        void EnterDataTune();
         int Show125mA();
         int AskTemp20();
         int AskTempMinus20();
@@ -198,8 +177,7 @@ private:
         int ReadAnalogTemp60();
         void Enter20Data();
         void Enterminus20Data();
-        void Enter60Data();
-        float ToFloat(QString text); */
+        void Enter60Data(); */
 
     QString ValuesFormat, WidgetFormat;
 
@@ -216,14 +194,11 @@ private:
 
 private slots:
 
-    /*    int TuneChannel();
-        void ReadN();
+    /*  void ReadN();
         int ReadAnalogMeasurements();
         void SetExtData();
         void CancelExtData();
         void CancelTune();
-        int TunePt100Channel();
-        int TuneTemp();
         int TuneTempCor();
         int CalcTuneCoefs();
         void SaveValuesTemp20();

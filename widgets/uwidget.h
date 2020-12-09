@@ -8,7 +8,6 @@
 #include "../interfaces/baseinterface.h"
 
 #include <QWidget>
-#include <list>
 
 class UWidget : public QWidget
 {
@@ -34,29 +33,39 @@ public:
     const QString getCaption();
     void setCaption(const QString &caption);
     void setUpdateTimerPeriod(quint32 period);
-    void setHighlightMap(QMap<int, QList<HighlightWarnAlarmStruct>> &map);
+    void setHighlightMap(const QMap<int, QList<HighlightWarnAlarmStruct>> &map);
     void setFloatBdQuery(const QList<BdQuery> &list);
     void setSpBdQuery(const QList<BdQuery> &list);
     void setInterface(BaseInterface *iface);
     BaseInterface *iface();
 
 signals:
+    // signals to set "ProgressBar2" in main Coma
+    void setGeneralProgressBarSize(quint32 size);
+    void setGeneralProgressBarCount(quint32 count);
+    void setGeneralProgressBarMessage(const QString &msg);
 
 public slots:
     virtual void reqUpdate();
-    void updateFloatData(DataTypes::FloatStruct &fl);
-    void updateSPData(DataTypes::SinglePointWithTimeStruct &sp);
+    virtual void updateFloatData(const DataTypes::FloatStruct &fl);
+    void updateSPData(const DataTypes::SinglePointWithTimeStruct &sp);
+
+protected:
+    bool m_updatesEnabled;
+    virtual void uponInterfaceSetting();
 
 private:
-    bool m_updatesEnabled;
     QString m_caption;
     quint32 m_timerCounter;
     quint32 m_timerMax;
     BaseInterface *m_iface;
+    int m_regLeast, m_regCount;
 
     QList<BdQuery> m_floatBdQueryList;
     QList<BdQuery> m_spBdQueryList;
     QMap<int, QList<HighlightWarnAlarmStruct>> m_highlightMap;
+
+private slots:
 };
 
 #endif // UWIDGET_H

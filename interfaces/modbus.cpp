@@ -2,14 +2,18 @@
 
 #include "../gen/board.h"
 #include "../gen/error.h"
-#include "../gen/modulebsi.h"
 #include "../gen/s2.h"
 #include "../gen/stdfunc.h"
 #include "../gen/timefunc.h"
+#include "../module/registers.h"
 #include "modbusthread.h"
+#include "serialport.h"
+#include "settingstypes.h"
 
+#include <QDebug>
 #include <QStandardPaths>
 #include <QThread>
+#include <QWaitCondition>
 #include <algorithm>
 
 QMutex RunMutex, InMutex, OutMutex, OutWaitMutex;
@@ -43,8 +47,12 @@ ModBus::~ModBus()
 
 bool ModBus::start(const ConnectStruct &st)
 {
-    INFOMSG("Modbus: connect");
-    Settings = st.serialst;
+    Q_ASSERT(std::holds_alternative<SerialPortSettings>(st.settings));
+    qInfo() << metaObject()->className() << "connect";
+    if (!std::holds_alternative<SerialPortSettings>(st.settings))
+        return false;
+
+    Settings = std::get<SerialPortSettings>(st.settings);
     SerialPort *port = new SerialPort();
     ModbusThread *cthr = new ModbusThread;
     //    cthr->Init(&InQueue, &OutList);
@@ -61,7 +69,7 @@ bool ModBus::start(const ConnectStruct &st)
     connect(port, &SerialPort::Read, cthr, &ModbusThread::ParseReply);
     connect(cthr, &ModbusThread::Write, port, &SerialPort::WriteBytes);
     connect(port, &SerialPort::Reconnect, this, &ModBus::SendReconnectSignal);
-    if (port->Init(Settings) != Error::Msg::NoError)
+    if (!port->Init(Settings))
         return false;
     thr->start();
     StdFunc::Wait(1000);
@@ -158,7 +166,7 @@ bool ModBus::start(const ConnectStruct &st)
 void ModBus::SendReconnectSignal()
 {
     if (!AboutToFinish)
-        emit ReconnectSignal();
+        emit reconnect();
 }
 
 void ModBus::stop()
@@ -305,75 +313,37 @@ void ModBus::writeTime(quint32 time)
     DataManager::addToInQueue(inp);
 }
 
-void ModBus::writeCommand(Queries::Commands cmd, QList<DataTypes::SignalsStruct> list)
+void ModBus::writeCommand(Queries::Commands cmd, QVariant item)
 {
-    QByteArray sigArray;
-    QMap<quint32, float> floatsMap;
-
     if (cmd == Queries::QC_WriteUserValues)
     {
-        // for each signal in list form the command and set it into the input queue
-        foreach (DataTypes::SignalsStruct str, list)
-        {
-            QVariant var = str.data;
-            if (var.canConvert<DataTypes::FloatStruct>())
-            {
-                DataTypes::FloatStruct flstr = var.value<DataTypes::FloatStruct>();
-                floatsMap[flstr.sigAdr] = flstr.sigVal;
-            }
-        }
-        QList<quint32> floatsMapKeys = floatsMap.keys();
-        std::sort(floatsMapKeys.begin(), floatsMapKeys.end());
-        quint16 sigAdr = floatsMapKeys.first();
-        quint16 startSigAdr = sigAdr;
-        // sorting and extracting values by continuous keys sequence
-        QList<float> newFloatsMap;
-        foreach (quint32 key, floatsMapKeys)
-        {
-            if (key == sigAdr++)
-                newFloatsMap.append(floatsMap[key]);
-        }
+        if (!item.canConvert<DataTypes::FloatStruct>())
+            return;
+        QByteArray sigArray;
+        DataTypes::FloatStruct flstr = item.value<DataTypes::FloatStruct>();
+
         // now write floats to the out sigArray
-        foreach (float value, newFloatsMap)
-        {
-            quint32 tmpi;
-            memcpy(&tmpi, &value, sizeof(float));
-            sigArray.append(static_cast<char>(tmpi >> 8));
-            sigArray.append(static_cast<char>(tmpi));
-            sigArray.append(static_cast<char>(tmpi >> 24));
-            sigArray.append(static_cast<char>(tmpi >> 16));
-        }
-        quint16 quantity = newFloatsMap.size() * 2;
-        CommandsMBS::CommandStruct inp { CommandsMBS::Commands::MBS_WRITEMULTIPLEREGISTERS, startSigAdr, quantity,
-            sigArray };
+
+        quint32 tmpi = static_cast<quint32>(flstr.sigVal);
+
+        sigArray.append(static_cast<char>(tmpi >> 8));
+        sigArray.append(static_cast<char>(tmpi));
+        sigArray.append(static_cast<char>(tmpi >> 24));
+        sigArray.append(static_cast<char>(tmpi >> 16));
+
+        CommandsMBS::CommandStruct inp { CommandsMBS::Commands::MBS_WRITEMULTIPLEREGISTERS,
+            static_cast<quint16>(flstr.sigAdr), 2, sigArray };
         DataManager::addToInQueue(inp);
     }
     else
     {
-        CommandsMBS::CommandStruct inp(CommandsMBS::CommandsTranslateMap().value(cmd));
-        if (cmd == Queries::QC_ReqAlarms)
-        {
-            // get sigAdr from the first var and sigCount - from the second one
-            if (list.size() < 2) // must be sigAdr & sigCount
-                return;
-            QVariant var = list.at(0).data;
-            if (var.canConvert<DataTypes::SignalsStruct>())
-            {
-                DataTypes::SignalsStruct bstr = var.value<DataTypes::SignalsStruct>();
-                inp.adr = bstr.data.toUInt();
-                QVariant var = list.at(1).data;
-                if (var.canConvert<DataTypes::SignalsStruct>())
-                {
-                    DataTypes::SignalsStruct bstr = var.value<DataTypes::SignalsStruct>();
-                    inp.quantity = bstr.data.toUInt();
-                    inp.cmd = CommandsMBS::Commands::MBS_READCOILS;
-                }
-                else
-                    return;
-            }
-            else
-                return;
-        }
+        if (cmd != Queries::QC_ReqAlarms)
+            return;
+        // get sigAdr from the first var and sigCount - from the second one
+        if (!item.canConvert<DataTypes::Signal>()) // must be sigAdr & sigCount
+            return;
+        auto signal = qvariant_cast<DataTypes::Signal>(item);
+        CommandsMBS::CommandStruct inp { CommandsMBS::Commands::MBS_READCOILS, signal.addr, signal.value, {} };
         DataManager::addToInQueue(inp);
     }
 }

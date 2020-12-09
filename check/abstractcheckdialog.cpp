@@ -20,8 +20,8 @@
 #include <QTabWidget>
 #include <QTime>
 #include <QVBoxLayout>
-#include <QtMath>
-#include <QtTest/QTest>
+//#include <QtMath>
+//#include <QtTest/QTest>
 
 AbstractCheckDialog::AbstractCheckDialog(QWidget *parent) : UDialog(parent)
 {
@@ -30,7 +30,7 @@ AbstractCheckDialog::AbstractCheckDialog(QWidget *parent) : UDialog(parent)
     m_readDataInProgress = false;
     xlsx = nullptr;
     WRow = 0;
-    m_oldTabIndex = m_currentTabIndex = 0;
+    // m_oldTabIndex = m_currentTabIndex = 0;
     Timer = new QTimer(this);
     Timer->setObjectName("checktimer");
     connect(Timer, &QTimer::timeout, this, &AbstractCheckDialog::TimerTimeout);
@@ -80,7 +80,7 @@ void AbstractCheckDialog::SetupUI()
     //        CheckTW->addTab(BdUI(i), "  " + tabnames.at(i) + "  ");
     //        IndexWd.append(i);
     //    }
-    foreach (BdUIStruct w, m_BdUIList)
+    for (auto &w : m_BdUIList)
     {
         w.widget->setInterface(iface());
         CheckTW->addTab(w.widget, " " + w.widgetCaption + " ");
@@ -93,7 +93,7 @@ void AbstractCheckDialog::SetupUI()
     lyout->addWidget(CheckTW);
     // lyout->addWidget(BottomUI());
     setLayout(lyout);
-    connect(CheckTW, &QTabWidget::tabBarClicked, this, &AbstractCheckDialog::TWTabClicked);
+    connect(CheckTW, &QTabWidget::currentChanged, this, &AbstractCheckDialog::TWTabChanged);
 }
 
 void AbstractCheckDialog::PrepareHeadersForFile(int row)
@@ -136,35 +136,35 @@ QWidget *AbstractCheckDialog::BottomUI()
     QRadioButton *rb = new QRadioButton;
     rb->setObjectName("1000");
     rb->setText("1");
-    connect(rb, SIGNAL(clicked()), this, SLOT(SetTimerPeriod()));
+    connect(rb, &QAbstractButton::clicked, this, &AbstractCheckDialog::SetTimerPeriod);
     hlyout->addWidget(rb);
     rb = new QRadioButton;
     rb->setObjectName("2000");
     rb->setText("2");
     rb->setChecked(true);
-    connect(rb, SIGNAL(clicked()), this, SLOT(SetTimerPeriod()));
+    connect(rb, &QAbstractButton::clicked, this, &AbstractCheckDialog::SetTimerPeriod);
     hlyout->addWidget(rb);
     rb = new QRadioButton;
     rb->setObjectName("10000");
     rb->setText("10");
-    connect(rb, SIGNAL(clicked()), this, SLOT(SetTimerPeriod()));
+    connect(rb, &QAbstractButton::clicked, this, &AbstractCheckDialog::SetTimerPeriod);
     hlyout->addWidget(rb);
     lyout->addLayout(hlyout);
 
     QPushButton *pb = new QPushButton("Запустить чтение аналоговых сигналов");
     pb->setObjectName("pbmeasurements");
-    connect(pb, SIGNAL(clicked()), this, SLOT(StartAnalogMeasurements()));
+    connect(pb, &QAbstractButton::clicked, this, &AbstractCheckDialog::StartAnalogMeasurements);
     if (StdFunc::IsInEmulateMode())
         pb->setEnabled(false);
     lyout->addWidget(pb);
     pb = new QPushButton("Запустить чтение аналоговых сигналов в файл");
     pb->setObjectName("pbfilemeasurements");
-    connect(pb, SIGNAL(clicked()), this, SLOT(StartAnalogMeasurementsToFile()));
+    connect(pb, &QAbstractButton::clicked, this, &AbstractCheckDialog::StartAnalogMeasurementsToFile);
     if (StdFunc::IsInEmulateMode())
         pb->setEnabled(false);
     lyout->addWidget(pb);
     pb = new QPushButton("Остановить чтение аналоговых сигналов");
-    connect(pb, SIGNAL(clicked()), this, SLOT(StopAnalogMeasurements()));
+    connect(pb, &QAbstractButton::clicked, this, &AbstractCheckDialog::StopAnalogMeasurements);
     if (StdFunc::IsInEmulateMode())
         pb->setEnabled(false);
     lyout->addWidget(pb);
@@ -195,9 +195,10 @@ void AbstractCheckDialog::StartAnalogMeasurementsToFile()
     XlsxWriting = true;
     xlsx = new QXlsx::Document(Filename);
     QString tmps = ((DEVICETYPE == DEVICETYPE_MODULE) ? "Модуль" : "Прибор");
-    xlsx->write(1, 1,
-        QVariant(tmps + ": " + ModuleBSI::GetModuleTypeString() + " сер. ном. "
-            + QString::number(ModuleBSI::SerialNum(BoardTypes::BT_MODULE), 10)));
+    // FIXME Исправить карты модулей
+    //    xlsx->write(1, 1,
+    //        QVariant(tmps + ": " + ModuleBSI::GetModuleTypeString() + " сер. ном. "
+    //            + QString::number(ModuleBSI::serialNumber(BoardTypes::BT_MODULE), 10)));
     xlsx->write(2, 1, QVariant("Дата начала записи: " + QDateTime::currentDateTime().toString("dd-MM-yyyy")));
     xlsx->write(3, 1, QVariant("Время начала записи: " + QDateTime::currentDateTime().toString("hh:mm:ss")));
     xlsx->write(5, 1, QVariant("Дата и время отсчёта"));
@@ -236,10 +237,10 @@ void AbstractCheckDialog::ReadAnalogMeasurementsAndWriteToFile()
             pb->setText("Идёт запись: " + TimeElapsed);
         }
     }
-    int bdkeyssize = Bd_blocks.keys().size();
+    int bdkeyssize = Bd_blocks.size();
     for (int bdnum = 0; bdnum < bdkeyssize; ++bdnum)
     {
-        if (XlsxWriting && (Bd_blocks[Bd_blocks.keys().at(bdnum)]->toxlsxwrite))
+        if (XlsxWriting && (Bd_blocks.value(bdnum)->toxlsxwrite))
         {
             if (XlsxWriting)
                 WriteToFile(WRow, bdnum);
@@ -248,6 +249,11 @@ void AbstractCheckDialog::ReadAnalogMeasurementsAndWriteToFile()
 
     WRow++;
     m_readDataInProgress = false;
+}
+
+void AbstractCheckDialog::uponInterfaceSetting()
+{
+    SetupUI();
 }
 
 // void AbstractCheckDialog::StartBdMeasurements() { BdTimer->start(); }
@@ -293,7 +299,7 @@ void AbstractCheckDialog::StopAnalogMeasurements()
 
 void AbstractCheckDialog::reqUpdate()
 {
-    foreach (BdUIStruct bd, m_BdUIList)
+    for (auto &bd : m_BdUIList)
     {
         bd.widget->reqUpdate();
     }
@@ -304,28 +310,19 @@ void AbstractCheckDialog::TimerTimeout()
     ReadAnalogMeasurementsAndWriteToFile();
 }
 
-void AbstractCheckDialog::TWTabClicked(int index)
+void AbstractCheckDialog::TWTabChanged(int index)
 {
-    if (index == m_currentTabIndex) // to prevent double function invocation by doubleclicking on tab
+    if (index == -1)
         return;
-    m_currentTabIndex = index;
+    for (auto &item : m_BdUIList)
+        item.widget->setUpdatesDisabled();
+    Q_ASSERT(m_BdUIList.size() >= index);
+    if (m_BdUIList.size() < index)
+        return;
+    UWidget *w = m_BdUIList.at(index).widget;
 
-    if (m_oldTabIndex >= m_BdUIList.size())
-    {
-        DBGMSG("BdUIList size");
-        return;
-    }
-    UWidget *w = m_BdUIList.at(m_oldTabIndex).widget;
-    w->setUpdatesDisabled();
-    if (m_currentTabIndex >= m_BdUIList.size())
-    {
-        DBGMSG("BdUIList size");
-        return;
-    }
-    w = m_BdUIList.at(m_currentTabIndex).widget;
     w->setUpdatesEnabled();
     w->reqUpdate();
-    m_oldTabIndex = m_currentTabIndex;
 }
 
 void AbstractCheckDialog::SetTimerPeriod()

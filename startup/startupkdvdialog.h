@@ -1,13 +1,7 @@
 #ifndef CORDIALOGKDV_H
 #define CORDIALOGKDV_H
 
-//#include "../iec104/iec104.h"
-//#include "../modbus/modbus.h"
-#include "../models/etablemodel.h"
 #include "abstractstartupdialog.h"
-
-#include <QByteArray>
-#include <QDialog>
 
 class StartupKDVDialog : public AbstractStartupDialog
 {

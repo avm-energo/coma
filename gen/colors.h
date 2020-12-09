@@ -1,5 +1,4 @@
-#ifndef COLORS_H
-#define COLORS_H
+#pragma once
 
 #include <QMap>
 
@@ -55,24 +54,22 @@ enum ColorsNumbers
     Red,
     Nft
 };
-const QMap<int, QString> ColorsMap()
-{
-    QMap<int, QString> map;
-    map[Tab] = TABCOLOR;
-    map[TabA1] = TABCOLORA1;
-    map[ErProt] = ERPROTCLR;
-    map[MainWin] = MAINWINCLR;
-    map[MainWinA1] = MAINWINCLRA1;
-    map[AConf] = ACONFCLR;
-    map[AConfW] = ACONFWCLR;
-    map[AConfG] = ACONFGCLR;
-    map[AConfO] = ACONFOCLR;
-    map[AConfY] = ACONFYCLR;
-    map[UConf] = UCONFCLR;
-    map[Red] = REDCOLOR;
-    map[Nft] = NFTCOLOR;
-    return map;
-}
-}
 
-#endif // COLORS_H
+const QMap<ColorsNumbers, QString> ColorsMap {
+
+    { Tab, TABCOLOR },           //
+    { TabA1, TABCOLORA1 },       //
+    { ErProt, ERPROTCLR },       //
+    { MainWin, MAINWINCLR },     //
+    { MainWinA1, MAINWINCLRA1 }, //
+    { AConf, ACONFCLR },         //
+    { AConfW, ACONFWCLR },       //
+    { AConfG, ACONFGCLR },       //
+    { AConfO, ACONFOCLR },       //
+    { AConfY, ACONFYCLR },       //
+    { UConf, UCONFCLR },         //
+    { Red, REDCOLOR },           //
+    { Nft, NFTCOLOR }            //
+
+};
+}

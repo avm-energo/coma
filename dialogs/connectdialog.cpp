@@ -3,7 +3,7 @@
 #include "../gen/board.h"
 #include "../gen/error.h"
 #include "../gen/stdfunc.h"
-#include "../interfaces/eprotocom.h"
+#include "../interfaces/usbhidportinfo.h"
 #include "../widgets/wd_func.h"
 
 #include <QDebug>
@@ -106,15 +106,19 @@ void ConnectDialog::SetInterface()
 
 void ConnectDialog::SetUsb(QModelIndex index)
 {
-    BaseInterface::ConnectStruct st; // temporary var
-    if (index.isValid())
-    {
-        //        QDialog *dlg = this->findChild<QDialog *>("connectdlg");
-        //        EProtocom::GetInstance().setDeviceName(WDFunc::TVData(dlg, "usbtv", 1).toString());
-        //        EProtocom::GetInstance().setDevicePosition(index.row());
-        st.usbDevicePosition = index.row();
-        emit Accepted(st);
-    }
+    if (!index.isValid())
+        return;
+    auto *mdl = index.model();
+    int row = index.row();
+
+    UsbHidSettings settings;
+
+    settings.vendor_id = mdl->data(mdl->index(row, 0)).toString().toUInt(nullptr, 16);
+    settings.product_id = mdl->data(mdl->index(row, 1)).toString().toUInt(nullptr, 16);
+    settings.serial = mdl->data(mdl->index(row, 2)).toString();
+    settings.path = mdl->data(mdl->index(row, 3)).toString();
+    ConnectStruct st { QString(), settings };
+    emit Accepted(st);
 }
 
 void ConnectDialog::AddEth()
@@ -190,7 +194,7 @@ void ConnectDialog::RsAccepted()
         sets->setValue("port", WDFunc::CBData(dlg, "portcb"));
         sets->setValue("speed", WDFunc::CBData(dlg, "speedcb"));
         sets->setValue("parity", WDFunc::CBData(dlg, "paritycb"));
-        sets->setValue("stop", WDFunc::CBData(dlg, "stopcb"));
+        sets->setValue("stop", WDFunc::CBData(dlg, "stopbitcb"));
         int spbdata;
         WDFunc::SPBData(dlg, "addressspb", spbdata);
         sets->setValue("address", QString::number(spbdata));
@@ -201,7 +205,10 @@ void ConnectDialog::RsAccepted()
     }
 }
 
-void ConnectDialog::SetCancelled() { emit Cancelled(); }
+void ConnectDialog::SetCancelled()
+{
+    emit Cancelled();
+}
 
 // void ConnectDialog::SetEth()
 //{
@@ -218,12 +225,13 @@ void ConnectDialog::SetCancelled() { emit Cancelled(); }
 
 void ConnectDialog::SetEth(QModelIndex index)
 {
-    BaseInterface::ConnectStruct st;
     auto *mdl = index.model();
     int row = index.row();
-    st.name = mdl->data(mdl->index(row, 0)).toString();
-    st.iec104st.ip = mdl->data(mdl->index(row, 1)).toString();
-    st.iec104st.baseadr = mdl->data(mdl->index(row, 2)).toUInt();
+    QString name = mdl->data(mdl->index(row, 0)).toString();
+    IEC104Settings settings;
+    settings.ip = mdl->data(mdl->index(row, 1)).toString();
+    settings.baseadr = mdl->data(mdl->index(row, 2)).toUInt();
+    ConnectStruct st { name, settings };
     emit Accepted(st);
 }
 
@@ -240,7 +248,10 @@ void ConnectDialog::handlePing()
     watcher->deleteLater();
 }
 
-void ConnectDialog::handlePingFinish() { createPortTask(); }
+void ConnectDialog::handlePingFinish()
+{
+    createPortTask();
+}
 
 void ConnectDialog::handlePortFinish()
 {
@@ -381,15 +392,18 @@ void ConnectDialog::AddRs()
 
 void ConnectDialog::SetRs(QModelIndex index)
 {
-    BaseInterface::ConnectStruct st;
+
     auto *mdl = index.model();
     int row = index.row();
-    st.name = mdl->data(mdl->index(row, 0)).toString();
-    st.serialst.Port = mdl->data(mdl->index(row, 1)).toString();
-    st.serialst.Baud = mdl->data(mdl->index(row, 2)).toUInt();
-    st.serialst.Parity = mdl->data(mdl->index(row, 3)).toString();
-    st.serialst.Stop = mdl->data(mdl->index(row, 4)).toString();
-    st.serialst.Address = mdl->data(mdl->index(row, 5)).toUInt();
+
+    QString name = mdl->data(mdl->index(row, 0)).toString();
+    SerialPortSettings settings;
+    settings.Port = mdl->data(mdl->index(row, 1)).toString();
+    settings.Baud = mdl->data(mdl->index(row, 2)).toUInt();
+    settings.Parity = mdl->data(mdl->index(row, 3)).toString();
+    settings.Stop = mdl->data(mdl->index(row, 4)).toString();
+    settings.Address = mdl->data(mdl->index(row, 5)).toUInt();
+    ConnectStruct st { name, settings };
     emit Accepted(st);
 }
 
@@ -457,25 +471,28 @@ bool ConnectDialog::UpdateModel()
     {
     case Board::InterfaceType::USB:
     {
-        QList<QStringList> USBsl = EProtocom::GetInstance().DevicesFound();
+        auto usbDevices = UsbHidPortInfo::devicesFound();
+
         QStringList sl { "VID", "PID", "Serial", "Path" };
         QStandardItemModel *mdl = new QStandardItemModel(dlg);
 
-        if (USBsl.isEmpty())
+        if (usbDevices.isEmpty())
         {
             QMessageBox::critical(this, "Ошибка", "Устройства не найдены");
-            qCritical() << QVariant::fromValue(Error::Msg::NoDeviceError).toString();
+            qCritical() << Error::Msg::NoDeviceError;
             return false;
         }
         mdl->setHorizontalHeaderLabels(sl);
-        for (const auto &row : USBsl)
+        for (const auto &row : usbDevices)
         {
-            QList<QStandardItem *> items;
-            for (const auto &column : row)
-            {
-                items.append(new QStandardItem(column));
-            }
-            mdl->appendRow(items);
+            QList<QStandardItem *> device {
+                new QStandardItem(QString::number(row.vendor_id, 16)),  //
+                new QStandardItem(QString::number(row.product_id, 16)), //
+                new QStandardItem(row.serial),                          //
+                new QStandardItem(row.path)                             //
+
+            };
+            mdl->appendRow(device);
         }
         WDFunc::SetQTVModel(dlg, "usbtv", mdl);
         break;

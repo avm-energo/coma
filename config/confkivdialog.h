@@ -1,9 +1,10 @@
 #ifndef CONFDIALOGKIV_H
 #define CONFDIALOGKIV_H
 
-#include "../config/confdialog.h"
+//#include "../config/confdialog.h"
 #include "../config/configkiv.h"
-#include "../config/confkxxdialog.h"
+#include "abstractconfdialog.h"
+//#include "../config/confkxxdialog.h"
 
 #include <QLabel>
 
@@ -16,8 +17,8 @@ public:
 
 private:
     ConfigKIV *CKIV;
-    ConfDialog *Conf;
-    ConfKxxDialog *ConfKxx;
+    //    ConfDialog *Conf;
+    //    ConfKxxDialog *ConfKxx;
     //    QLabel *SysTime;
     //    QTimer *timer;
     //    QTimer *timerRead;
@@ -36,10 +37,6 @@ private:
     QWidget *remainsWidget();
 
     QWidget *connectionWidget();
-
-signals:
-
-public slots:
 
 private slots:
     void SetDefConf() override;

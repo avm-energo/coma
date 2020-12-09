@@ -14,17 +14,13 @@
 #include <QMessageBox>
 #include <QTimer>
 #include <QVBoxLayout>
-#if _MSC_VER && !__INTEL_COMPILER
-#define __PRETTY_FUNCTION__ __FUNCSIG__
-#endif
 
 TimeDialog::TimeDialog(QWidget *parent) : UDialog(parent)
 {
     setAttribute(Qt::WA_DeleteOnClose);
     First = false;
     Timer = new QTimer(this);
-    connect(Timer, SIGNAL(timeout()), this, SLOT(updateSysTime()));
-    SetupUI();
+    connect(Timer, &QTimer::timeout, this, &TimeDialog::updateSysTime);
 }
 
 TimeDialog::~TimeDialog()
@@ -69,7 +65,7 @@ void TimeDialog::SetupUI()
     QPushButton *Button = new QPushButton("Записать дату и время ПК в модуль");
     Button->setStyleSheet(tmps);
     glyout->addWidget(Button, row++, 1, 1, 6, Qt::AlignTop);
-    connect(Button, SIGNAL(clicked()), this, SLOT(Write_PCDate()));
+    connect(Button, &QAbstractButton::clicked, this, &TimeDialog::Write_PCDate);
     glyout->addWidget(WDFunc::NewLBL(this, "Дата и время в модуле:"), row, 1, 1, 1);
     glyout->addWidget(WDFunc::NewLE(this, "systime2", "dd-MM-yyyy HH:mm:ss"), row++, 2, 1, 4);
     glyout->addWidget(WDFunc::NewLBL(this, "Дата и время для записи в модуль"), row, 1, 1, 1);
@@ -78,7 +74,7 @@ void TimeDialog::SetupUI()
     Button = new QPushButton("Записать заданное время в модуль");
     Button->setStyleSheet(tmps);
     glyout->addWidget(Button, row, 1, 1, 6, Qt::AlignTop);
-    connect(Button, SIGNAL(clicked()), this, SLOT(Write_Date()));
+    connect(Button, &QAbstractButton::clicked, this, &TimeDialog::Write_Date);
 
     for (int i = 0; i < 6; i++)
     {
@@ -175,36 +171,52 @@ void TimeDialog::Write_Date()
     WriteTime(myDateTime);
 }
 
-void TimeDialog::ETHUpdate()
+void TimeDialog::uponInterfaceSetting()
 {
-    // QString qStr;
-    // QDateTime myDateTime;
-    //    int startadr = 0;
-    //    memcpy(&startadr, &(Time->BS.SigAdr[0]), sizeof(Time->BS.SigAdr));
-
-    //    if (startadr == MBS_TIMEREG)
-    //    {
-    //        memcpy((quint32 *)(&unixtimestamp), ((quint32 *)(&Time->BS.SigVal)), sizeof(Time->BS.SigVal));
-    //        SetTime(unixtimestamp);
-    //    }
+    SetupUI();
+    connect(&DataManager::GetInstance(), &DataManager::bitStringReceived, this, &::TimeDialog::updateBitStringData);
 }
+
+void TimeDialog::updateBitStringData(const DataTypes::BitStringStruct &bs)
+{
+    // Time doesnt have address
+    // USB +
+    if (bs.sigAdr)
+        return;
+    SetTime(bs.sigVal);
+}
+
+// void TimeDialog::ETHUpdate()
+//{
+// QString qStr;
+// QDateTime myDateTime;
+//    int startadr = 0;
+//    memcpy(&startadr, &(Time->BS.SigAdr[0]), sizeof(Time->BS.SigAdr));
+
+//    if (startadr == MBS_TIMEREG)
+//    {
+//        memcpy((quint32 *)(&unixtimestamp), ((quint32 *)(&Time->BS.SigVal)), sizeof(Time->BS.SigVal));
+//        SetTime(unixtimestamp);
+//    }
+//}
 
 void TimeDialog::reqUpdate()
 {
     if (m_updatesEnabled)
     {
-        uint unixtimestamp = 0;
-        QList<DataTypes::SignalsStruct> list;
-        DataManager::getSignals(TIMEREG, TIMEREG, DataTypes::SignalTypes::BitString, list);
-        if (!list.isEmpty())
-        {
-            foreach (DataTypes::SignalsStruct signal, list)
-            {
-                DataTypes::BitStringStruct bs = qvariant_cast<DataTypes::BitStringStruct>(signal.data);
-                memcpy(&unixtimestamp, &bs.sigVal, sizeof(quint32));
-                SetTime(unixtimestamp);
-            }
-        }
+        iface()->reqTime();
+        //        uint unixtimestamp = 0;
+        //        QList<DataTypes::SignalsStruct> list;
+        //        // DataManager::getSignals(TIMEREG, TIMEREG, DataTypes::SignalTypes::BitString, list);
+        //        if (!list.isEmpty())
+        //        {
+        //            for (auto signal : list)
+        //            {
+        //                DataTypes::BitStringStruct bs = qvariant_cast<DataTypes::BitStringStruct>(signal.data);
+        //                memcpy(&unixtimestamp, &bs.sigVal, sizeof(quint32));
+        //                SetTime(unixtimestamp);
+        //            }
+        //        }
         //        // send command to get time
         //        switch (Board::GetInstance().interfaceType())
         //        {

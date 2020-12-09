@@ -5,13 +5,12 @@
 #include "../gen/datamanager.h"
 #include "../gen/error.h"
 #include "../gen/files.h"
-#include "../gen/modulebsi.h"
+#include "../gen/s2.h"
 #include "../gen/stdfunc.h"
 #include "../gen/timefunc.h"
-//#include "../iec104/iec104.h"
-//#include "../usb/commands.h"
 #include "../widgets/wd_func.h"
 
+#include <QDebug>
 #include <QGridLayout>
 #include <QGroupBox>
 #include <QMessageBox>
@@ -19,9 +18,10 @@
 
 AbstractConfDialog::AbstractConfDialog(QWidget *parent) : UDialog(parent)
 {
-    connect(&DataManager::GetInstance(), &DataManager::confParametersReceived, this,
-        &AbstractConfDialog::confParameterReceived);
-    connect(&DataManager::GetInstance(), &DataManager::responseReceived, this, &AbstractConfDialog::WriteConfMessageOk);
+    const auto &manager = DataManager::GetInstance();
+    connect(&manager, &DataManager::confParametersListReceived, this, &AbstractConfDialog::confParametersListReceived);
+    // connect(&manager, &DataManager::confParameterReceived, this, &AbstractConfDialog::confParameterReceived);
+    connect(&manager, &DataManager::responseReceived, this, &AbstractConfDialog::WriteConfMessageOk);
 }
 
 // void AbstractConfDialog::setConnections()
@@ -30,7 +30,7 @@ AbstractConfDialog::AbstractConfDialog(QWidget *parent) : UDialog(parent)
 
 void AbstractConfDialog::ReadConf()
 {
-    iface()->reqFile(Files::Config, true);
+    iface()->reqFile(DataTypes::Config, true);
     //    TimeFunc::Wait(100);
     //    switch (Board::GetInstance().interfaceType())
     //    {
@@ -51,7 +51,7 @@ void AbstractConfDialog::ReadConf()
     //    }
     //    case Board::InterfaceType::USB:
     //    {
-    //        Error::Msg res = ModuleBSI::PrereadConf(this, S2Config);
+    //        Error::Msg res = ModuleBSI::PrereadConf(this, S2::config);
     //        if (res == Error::Msg::ResEmpty)
     //            emit DefConfToBeLoaded();
     //        else if (res == Error::Msg::NoError)
@@ -63,56 +63,63 @@ void AbstractConfDialog::ReadConf()
     //    }
 }
 
-// void AbstractConfDialog::FillConf(S2ConfigType *DR)
+// void AbstractConfDialog::FillConf(S2::configType *DR)
 //{
-//    S2Config = DR;
+//    S2::config = DR;
 //    emit NewConfToBeLoaded();
 //}
 
 void AbstractConfDialog::WriteConf()
 {
-    Error::Msg res = WriteCheckPassword();
-    if (res == Error::Msg::NoError)
+
+    if (!WriteCheckPassword())
+        return;
+    if (!PrepareConfToWrite())
     {
-        if (!PrepareConfToWrite())
-        {
-            ERMSG("Ошибка чтения конфигурации");
-            return;
-        }
-        iface()->writeConfigFile(S2Config);
-        //        switch (Board::GetInstance().interfaceType())
-        //        {
-        //        case Board::InterfaceType::Ethernet:
-        //            //            emit writeConfFile(S2Config);
-        //            DataManager::setConfig(S2Config);
-        //            break;
-        //        case Board::InterfaceType::USB:
-        //        {
-        //            res = Commands::WriteFile(1, S2Config);
-        //            if (res == Error::Msg::NoError)
-        //            {
-        //                emit BsiIsNeedToBeAcquiredAndChecked();
-        //                QMessageBox::information(this, "Внимание", "Запись конфигурации и переход прошли успешно!");
-        //            }
-        //            else
-        //                QMessageBox::critical(
-        //                    this, "Ошибка", "Ошибка записи конфигурации" + QVariant::fromValue(res).toString());
-        //            break;
-        //        }
-        //        default:
-        //            break;
-        //        }
+        ERMSG("Ошибка чтения конфигурации");
+        return;
     }
+    iface()->writeConfigFile();
+    //        switch (Board::GetInstance().interfaceType())
+    //        {
+    //        case Board::InterfaceType::Ethernet:
+    //            //            emit writeConfFile(S2::config);
+    //            DataManager::setConfig(S2::config);
+    //            break;
+    //        case Board::InterfaceType::USB:
+    //        {
+    //            res = Commands::WriteFile(1, S2::config);
+    //            if (res == Error::Msg::NoError)
+    //            {
+    //                emit BsiIsNeedToBeAcquiredAndChecked();
+    //                QMessageBox::information(this, "Внимание", "Запись конфигурации и переход прошли успешно!");
+    //            }
+    //            else
+    //                QMessageBox::critical(
+    //                    this, "Ошибка", "Ошибка записи конфигурации" + QVariant::fromValue(res).toString());
+    //            break;
+    //        }
+    //        default:
+    //            break;
+    //        }
 }
 
-void AbstractConfDialog::confParameterReceived(DataTypes::ConfParametersListStruct &cfpl)
+void AbstractConfDialog::confParametersListReceived(const DataTypes::ConfParametersListStruct &cfpl)
 {
-    foreach (DataTypes::ConfParameterStruct cfp, cfpl.parlist)
-        S2::findElemAndWriteIt(S2Config, cfp);
+    auto &config = S2::config;
+    for (const auto &cfp : cfpl)
+    {
+        S2::findElemAndWriteIt(config, cfp);
+    }
     Fill();
 }
 
-Error::Msg AbstractConfDialog::WriteCheckPassword()
+// void AbstractConfDialog::confParameterReceived(const DataTypes::ConfParameterStruct &cfp)
+//{
+//    // S2::findElemAndWriteIt(S2::config, cfp);
+//}
+
+bool AbstractConfDialog::WriteCheckPassword()
 {
     KeyPressDialog dlg; // = new KeyPressDialog;
     return dlg.CheckPassword("121941");
@@ -152,15 +159,12 @@ void AbstractConfDialog::SaveConfToFile()
         ERMSG("Ошибка чтения конфигурации");
         return;
     }
-    ba.resize(MAXBYTEARRAY);
-    S2::StoreDataMem(&(ba.data()[0]), S2Config,
-        0x0001); // 0x0001 - номер файла конфигурации
-    quint32 BaLength = static_cast<quint8>(ba.data()[4]);
-    BaLength += static_cast<quint8>(ba.data()[5]) * 256;
-    BaLength += static_cast<quint8>(ba.data()[6]) * 65536;
-    BaLength += static_cast<quint8>(ba.data()[7]) * 16777216;
-    BaLength += sizeof(S2DataTypes::FileHeader); // FileHeader
-    Error::Msg res = Files::SaveToFile(Files::ChooseFileForSave(this, "Config files (*.cf)", "cf"), ba, BaLength);
+    S2::StoreDataMem(ba, S2::config, DataTypes::Config);
+    quint32 length = *reinterpret_cast<quint32 *>(&ba.data()[4]);
+    length += sizeof(S2DataTypes::FileHeader);
+    Q_ASSERT(length == quint32(ba.size()));
+
+    Error::Msg res = Files::SaveToFile(Files::ChooseFileForSave(this, "Config files (*.cf)", "cf"), ba);
     switch (res)
     {
     case Error::Msg::NoError:
@@ -186,12 +190,12 @@ void AbstractConfDialog::LoadConfFromFile()
     Error::Msg res = Files::LoadFromFile(Files::ChooseFileForOpen(this, "Config files (*.cf)"), ba);
     if (res != Error::Msg::NoError)
     {
-        WARNMSG("Ошибка при загрузке файла конфигурации");
+        qCritical("Ошибка при загрузке файла конфигурации");
         return;
     }
-    if (S2::RestoreDataMem(&(ba.data()[0]), ba.size(), S2Config) != Error::Msg::NoError)
+    if (S2::RestoreDataMem(&(ba.data()[0]), ba.size(), S2::config) != Error::Msg::NoError)
     {
-        WARNMSG("Ошибка при разборе файла конфигурации");
+        qCritical("Ошибка при разборе файла конфигурации");
         return;
     }
     //    emit NewConfToBeLoaded();
@@ -249,7 +253,7 @@ QWidget *AbstractConfDialog::ConfButtons()
 //    }
 //    case Board::InterfaceType::USB:
 //    {
-//        Error::Msg res = ModuleBSI::PrereadConf(this, S2Config);
+//        Error::Msg res = ModuleBSI::PrereadConf(this, S2::config);
 //        if (res == Error::Msg::ResEmpty)
 //            emit DefConfToBeLoaded();
 //        else if (res == Error::Msg::NoError)
@@ -263,7 +267,7 @@ void AbstractConfDialog::PrereadConf()
 {
     //    if ((ModuleBSI::Health() & HTH_CONFIG) || (StdFunc::IsInEmulateMode())) // если в модуле нет конфигурации,
     //    заполнить
-    if (ModuleBSI::noConfig()) // если в модуле нет конфигурации, заполнить поля по умолчанию
+    if (Board::GetInstance().noConfig()) // если в модуле нет конфигурации, заполнить поля по умолчанию
     {
         SetDefConf();
         QMessageBox::information(this, "Успешно", "Задана конфигурация по умолчанию", QMessageBox::Ok);
@@ -314,7 +318,13 @@ bool AbstractConfDialog::PrepareConfToWrite()
     return true;
 }
 
-void AbstractConfDialog::WriteConfMessageOk(DataTypes::GeneralResponseStruct &rsp)
+void AbstractConfDialog::uponInterfaceSetting()
+{
+    SetupUI();
+    PrereadConf();
+}
+
+void AbstractConfDialog::WriteConfMessageOk(const DataTypes::GeneralResponseStruct &rsp)
 {
     if (rsp.type == DataTypes::GeneralResponseTypes::Ok)
         QMessageBox::information(this, "Внимание", "Запись конфигурации и переход прошли успешно!");

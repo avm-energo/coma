@@ -2,10 +2,9 @@
 
 #include "../config/config.h"
 #include "../gen/colors.h"
-#include "../gen/error.h"
-#include "../gen/modulebsi.h"
-//#include "../usb/commands.h"
 #include "../gen/datamanager.h"
+#include "../gen/error.h"
+#include "../module/modules.h"
 #include "../widgets/wd_func.h"
 
 #include <QCoreApplication>
@@ -40,7 +39,40 @@ CheckKDVHarmonicDialog::CheckKDVHarmonicDialog(QWidget *parent) : AbstractCheckD
     Timer->setInterval(ANMEASINT);
 }
 
+// QWidget *CheckKDVHarmonicDialog::BdUI(int bdnum)
+//{
+//    switch (bdnum)
+//    {
 
+//    case 0:
+//        return ChHarmKDV->BdUWidget(this,1028,2,12 );
+//    case 1:
+//        return ChHarmKDV->BdUWidget(this,1038,12,22);
+//    case 2:
+//        return ChHarmKDV->BdUWidget(this,1048,22,32);
+//    case 3:
+//        return ChHarmKDV->BdUWidget(this,1058,32,42);
+//    case 4:
+//        return ChHarmKDV->BdUWidget(this,1068,42,52);
+//    case 5:
+//        return ChHarmKDV->BdUWidget(this,1078,52,63);
+//    case 6:
+//        return ChHarmKDV->BdIWidget(this,1428,2,12);
+//    case 7:
+//        return ChHarmKDV->BdIWidget(this,1438,12,22);
+//    case 8:
+//        return ChHarmKDV->BdIWidget(this,1448,22,32);
+//    case 9:
+//        return ChHarmKDV->BdIWidget(this,1458,32,42);
+//    case 10:
+//        return ChHarmKDV->BdIWidget(this,1468,42,52);
+//    case 11:
+//        return ChHarmKDV->BdIWidget(this,1478,52,63);
+
+//    default:
+//        return new QWidget;
+//    }
+//}
 void CheckKDVHarmonicDialog::PrepareHeadersForFile(int row)
 {
     Q_UNUSED(row)

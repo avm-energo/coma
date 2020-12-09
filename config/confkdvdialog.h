@@ -1,9 +1,8 @@
 #ifndef CONFDIALOGKDV_H
 #define CONFDIALOGKDV_H
 
-#include "../config/confdialog.h"
+//#include "../config/confdialog.h"
 #include "../config/configkdv.h"
-#include "../config/confkxxdialog.h"
 //#include "../interfaces/ethernet.h"
 //#include "../iec104/iec104.h"
 #include "abstractconfdialog.h"
@@ -14,12 +13,12 @@ class ConfKDVDialog : public AbstractConfDialog
 {
     Q_OBJECT
 public:
-    ConfKDVDialog(ConfigKDV *ckdv, QWidget *parent = nullptr);
+    explicit ConfKDVDialog(ConfigKDV *ckdv, QWidget *parent = nullptr);
 
 private:
     ConfigKDV *CKDV;
-    ConfDialog *Conf;
-    ConfKxxDialog *ConfKxx;
+    //    ConfDialog *Conf;
+    //    ConfKxxDialog *ConfKxx;
     //    Config *ConfigMain;
 
     bool Variable;
@@ -30,6 +29,8 @@ private:
     void SetupUI() override;
     void CheckConf() override;
     //    void setConnections() override;
+
+    QWidget *analogWidget();
 
 public slots:
     //    void Set104(double);

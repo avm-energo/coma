@@ -5,6 +5,11 @@
 #include <QMutex>
 
 #define LOG_MAX_SIZE 1048576
+namespace
+{
+constexpr char logStart[] = "=== Log started ===\n";
+constexpr char logExt[] = "log";
+}
 
 class LogClass : public QObject
 {

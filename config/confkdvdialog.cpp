@@ -23,19 +23,18 @@ ConfKDVDialog::ConfKDVDialog(ConfigKDV *ckdv, QWidget *parent) : AbstractConfDia
 {
     QString tmps = "QDialog {background-color: " + QString(Colors::ACONFCLR) + ";}";
     setStyleSheet(tmps);
-    S2Config = ckdv->S2Config();
+    // S2Config = ckdv->S2Config();
     CKDV = ckdv;
-    Conf = new ConfDialog(S2Config, Board::GetInstance().typeB(), Board::GetInstance().typeM());
-    ConfKxx = new ConfKxxDialog(S2Config);
+    //    Conf = new ConfDialog(S2Config, Board::GetInstance().typeB(), Board::GetInstance().typeM());
+    // ConfKxx = new ConfKxxDialog(S2Config);
     setAttribute(Qt::WA_DeleteOnClose);
-    SetupUI();
-    PrereadConf();
 }
 
 void ConfKDVDialog::SetupUI()
 {
     QVBoxLayout *vlyout1 = new QVBoxLayout;
     QVBoxLayout *vlyout2 = new QVBoxLayout;
+    ///
     QGridLayout *gridlyout = new QGridLayout;
     QScrollArea *Analog_area = new QScrollArea;
     QScrollArea *area2 = new QScrollArea;
@@ -181,7 +180,7 @@ void ConfKDVDialog::SetupUI()
     analog1->setLayout(vlyout1);
     Analog_area->setWidget(analog1);
     //.....................................................................
-
+    ///
     gb = new QGroupBox("Уставки сигнализации");
     gb->setFont(font);
     vlyout1 = new QVBoxLayout;
@@ -391,8 +390,8 @@ void ConfKDVDialog::SetupUI()
     gb->setTitle("Настройки протокола МЭК-60870-5-104");
     gb->setFont(font);
 
-    gridlyout->addWidget(Conf->SetupMainBlk(this), 0, 0, 1, 1);
-    gridlyout->addWidget(ConfKxx->SetupComParam(this), 0, 1, 1, 1);
+    //    gridlyout->addWidget(Conf->SetupMainBlk(this), 0, 0, 1, 1);
+    //    gridlyout->addWidget(ConfKxx->SetupComParam(this), 0, 1, 1, 1);
 
     vlyout2->addLayout(gridlyout);
     gb->setLayout(vlyout2);
@@ -402,7 +401,7 @@ void ConfKDVDialog::SetupUI()
     vlyout2 = new QVBoxLayout;
     gb->setFont(font);
 
-    vlyout2->addWidget(Conf->SetupTime(this));
+    //    vlyout2->addWidget(Conf->SetupTime(this));
 
     gb->setLayout(vlyout2);
     vlyout1->addWidget(gb);
@@ -422,8 +421,8 @@ void ConfKDVDialog::SetupUI()
     ConfTW->addTab(area2, "Уставки");
 
     ConfTW->addTab(scrArea, "Связь");
-    ConfTW->addTab(ConfKxx->SetupModBus(this), "ModBus");
-    ConfTW->addTab(ConfKxx->SetupBl(this), "Общее");
+    //    ConfTW->addTab(ConfKxx->SetupModBus(this), "ModBus");
+    //    ConfTW->addTab(ConfKxx->SetupBl(this), "Общее");
 
     ConfTW->addTab(Leftconf, "Остальное");
     lyout->addWidget(ConfTW);
@@ -435,7 +434,7 @@ void ConfKDVDialog::SetupUI()
 
 void ConfKDVDialog::Fill()
 {
-    Conf->Fill();
+    //    Conf->Fill();
 
     int cbidx;
 
@@ -502,12 +501,12 @@ void ConfKDVDialog::Fill()
     WDFunc::SetSPBData(this, "TdatNum", CKDV->Bci_block.TdatNum);
 
     //.........................................................
-    ConfKxx->Fill();
+    //    ConfKxx->Fill();
 }
 
 void ConfKDVDialog::FillBack()
 {
-    Conf->FillBack();
+    // Conf->FillBack();
 
     int cbidx;
     bool tmpb;
@@ -577,11 +576,139 @@ void ConfKDVDialog::FillBack()
     WDFunc::SPBData(this, "OscPoints", CKDV->Bci_block.OscPoints);
     WDFunc::SPBData(this, "TdatNum", CKDV->Bci_block.TdatNum);
     //.........................................................
-    ConfKxx->FillBack();
+    //    ConfKxx->FillBack();
 }
 
 void ConfKDVDialog::CheckConf()
 {
+}
+
+QWidget *ConfKDVDialog::analogWidget()
+{
+    QWidget *widget = new QWidget;
+    QVBoxLayout *lyout = new QVBoxLayout;
+    QGridLayout *gridlyout = new QGridLayout;
+    QScrollArea *scrollArea = new QScrollArea;
+
+    const QString tmps = "QWidget {background-color: " + QString(Colors::ACONFWCLR) + ";}";
+    widget->setStyleSheet(tmps);
+
+    scrollArea->setStyleSheet("QScrollArea {background-color: rgba(0,0,0,0);}");
+    scrollArea->setFrameShape(QFrame::NoFrame);
+    scrollArea->setWidgetResizable(true);
+
+    QString paramcolor = Colors::MAINWINCLR;
+    QFont font;
+
+    int row = 0;
+    QGroupBox *gb = new QGroupBox("Аналоговые параметры");
+    font.setFamily("Times");
+    font.setPointSize(11);
+    gb->setFont(font);
+
+    QLabel *lbl = new QLabel("Тип контролируемого оборудования:");
+    gridlyout->addWidget(lbl, row, 1, 1, 1, Qt::AlignLeft);
+    QStringList cbl = QStringList { "Асинхронный двигатель", "Трансформатор", "Реактор" };
+    EComboBox *cb = WDFunc::NewCB(this, "Eq_type", cbl, paramcolor);
+    cb->setMinimumHeight(20);
+    gridlyout->addWidget(cb, row, 2, 1, 3);
+    row++;
+
+    lbl = new QLabel("Вид охлаждения:");
+    gridlyout->addWidget(lbl, row, 1, 1, 1, Qt::AlignLeft);
+    cbl = QStringList { "Естественное", "Принудительное" };
+    cb = WDFunc::NewCB(this, "Cool_type", cbl, paramcolor);
+    cb->setMinimumHeight(20);
+    gridlyout->addWidget(cb, row, 2, 1, 3);
+    row++;
+
+    lbl = new QLabel("Материал обмотки:");
+    gridlyout->addWidget(lbl, row, 1, 1, 1, Qt::AlignLeft);
+    cbl = QStringList { "Медь", "Алюминий" };
+    cb = WDFunc::NewCB(this, "W_mat", cbl, paramcolor);
+    cb->setMinimumHeight(20);
+    gridlyout->addWidget(cb, row, 2, 1, 3);
+    row++;
+
+    gridlyout->addWidget(WDFunc::NewLBL(this, "Номинальное линейное первичное напряжение, кВ:"), row, 1, 1, 1);
+    gridlyout->addWidget(WDFunc::NewSPB(this, "Unom1", 0, 10000, 2, paramcolor), row, 2, 1, 3);
+    row++;
+
+    gridlyout->addWidget(WDFunc::NewLBL(this, "Номинальное вторичное напряжение первой тройки, В:"), row, 1, 1, 1);
+    gridlyout->addWidget(WDFunc::NewSPB(this, "U2nom", 0, 10000, 1, paramcolor), row, 2, 1, 3);
+    row++;
+
+    gridlyout->addWidget(WDFunc::NewLBL(this, "Номинальный первичный ток, кА:"), row, 1, 1, 1);
+    gridlyout->addWidget(WDFunc::NewSPB(this, "ITT1nom", 0, 10000, 0, paramcolor), row, 2, 1, 3);
+    row++;
+
+    gridlyout->addWidget(WDFunc::NewLBL(this, "Номинальный вторичный ток, А:"), row, 1, 1, 1);
+    gridlyout->addWidget(WDFunc::NewSPB(this, "ITT2nom", 0, 10000, 1, paramcolor), row, 2, 1, 3);
+    row++;
+
+    gridlyout->addWidget(WDFunc::NewLBL(this, "Номинальный ток контролируемой обмотки, À:"), row, 1, 1, 1);
+    gridlyout->addWidget(WDFunc::NewSPB(this, "Iwnom", 0, 10000, 1, paramcolor), row, 2, 1, 3);
+    row++;
+
+    gridlyout->addWidget(WDFunc::NewLBL(this, "Номинальная температура окружающей среды, °С:"), row, 1, 1, 1);
+    gridlyout->addWidget(WDFunc::NewSPB(this, "Tamb_nom", 0, 10000, 1, paramcolor), row, 2, 1, 3);
+    row++;
+
+    gridlyout->addWidget(
+        WDFunc::NewLBL(this, "Превышение температуры ННТ при номинальной нагрузке, °С:"), row, 1, 1, 1);
+    gridlyout->addWidget(WDFunc::NewSPB(this, "dTNNTnom", 0, 10000, 1, paramcolor), row, 2, 1, 3);
+    row++;
+
+    gridlyout->addWidget(WDFunc::NewLBL(this, "Коэффициент добавочных потерь:"), row, 1, 1, 1);
+    gridlyout->addWidget(WDFunc::NewSPB(this, "Kdob", 0, 10000, 1, paramcolor), row, 2, 1, 3);
+    row++;
+
+    gridlyout->addWidget(
+        WDFunc::NewLBL(this, "Постоянная времени нагрева обмотки в номинальном режиме, мин:"), row, 1, 1, 1);
+    gridlyout->addWidget(WDFunc::NewSPB(this, "TauWnom", 0, 10000, 1, paramcolor), row, 2, 1, 3);
+    row++;
+
+    gridlyout->addWidget(WDFunc::NewLBL(this,
+                             "Максимальное измеряемое фазное напряжение на входе "
+                             "прибора, В эфф (не более 305В):"),
+        row, 1, 1, 1);
+    gridlyout->addWidget(WDFunc::NewSPB(this, "Umax", 0, 10000, 1, paramcolor), row, 2, 1, 3);
+    row++;
+
+    gridlyout->addWidget(WDFunc::NewLBL(this,
+                             "Максимальный измеряемый ток на входе "
+                             "прибора, А эфф  (не более 33А):"),
+        row, 1, 1, 1);
+    gridlyout->addWidget(WDFunc::NewSPB(this, "Imax", 0, 10000, 1, paramcolor), row, 2, 1, 3);
+    row++;
+
+    gridlyout->addWidget(WDFunc::NewLBL(this,
+                             "Количество датчиков температуры обмоток, "
+                             "подключенных по Modbus Master:"),
+        row, 1, 1, 1);
+    gridlyout->addWidget(WDFunc::NewSPB(this, "TdatNum", 0, 10000, 0, paramcolor), row, 2, 1, 3);
+    row++;
+
+    gridlyout->addWidget(WDFunc::NewLBL(this, "Номинальная частота, Гц"), row, 1, 1, 1);
+    gridlyout->addWidget(WDFunc::NewSPB(this, "Fnom", 0, 1000, 1, paramcolor), row, 2, 1, 3);
+    row++;
+
+    gridlyout->addWidget(WDFunc::NewLBL(this, "Номинальное скольжение"), row, 1, 1, 1);
+    gridlyout->addWidget(WDFunc::NewSPB(this, "nom_slip", 0, 10000, 1, paramcolor), row, 2, 1, 3);
+    row++;
+
+    gridlyout->addWidget(
+        WDFunc::NewLBL(this, "Максимальная амплитуда сигналов вибраций (1,25, 2,5, 5,0В)"), row, 1, 1, 1);
+    gridlyout->addWidget(WDFunc::NewSPB(this, "UVmax", 0, 10000, 0, paramcolor), row, 2, 1, 3);
+    row++;
+
+    gb->setLayout(gridlyout);
+
+    scrollArea->setWidget(widget);
+    lyout->addWidget(gb);
+
+    widget->setLayout(lyout);
+    return widget;
 }
 
 // void ConfKDVDialog::setConnections()
@@ -592,8 +719,8 @@ void ConfKDVDialog::CheckConf()
 void ConfKDVDialog::SetDefConf()
 {
     CKDV->SetDefConf();
-    Conf->SetDefConf();
-    ConfKxx->SetDefConf();
+    //    Conf->SetDefConf();
+    //    ConfKxx->SetDefConf();
     Fill();
 }
 
