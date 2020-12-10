@@ -31,7 +31,7 @@ private:
     Error::Msg check();
 private slots:
     //    int ReadAnalogMeasurements() override;
-    //    void SetDefCoefs() override;
+    void setDefCoefs() override;
 };
 
 #endif // TUNEKIVCHECK_H

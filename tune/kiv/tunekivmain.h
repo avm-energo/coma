@@ -22,11 +22,11 @@ private:
     TuneKIV::Bda_in m_bdain;
     //    TuneKIV::Bac m_bac;
 
-    void setMessages();
-    void setTuneFunctions();
+    void setMessages() override;
+    void setTuneFunctions() override;
     //    void FillBac(int bacnum);
     //    void FillBackBac(int bacnum);
-    QWidget *MainUI();
+    QWidget *MainUI() override;
 
     Error::Msg showPreWarning();
     Error::Msg checkTuneCoefs();
@@ -57,6 +57,7 @@ private:
 
 private slots:
     void CalcTuneCoefs();
+    void setDefCoefs() override;
 };
 
 #endif // TUNEKIVMAIN_H

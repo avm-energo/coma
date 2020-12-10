@@ -8,7 +8,7 @@
 #include "tunekivcheck.h"
 #include "tunekivmain.h"
 #include "tunekivtemp60.h"
-#include "tunekivtemp_20.h"
+//#include "tunekivtemp_20.h"
 
 TuneKIVDialog::TuneKIVDialog(ConfigKIV *ckiv, TuneKIV *tkiv, QWidget *parent) : UDialog(parent)
 {
@@ -57,7 +57,7 @@ void TuneKIVDialog::SetupUI()
     setLayout(lyout);
 }
 
-    void TuneKIVDialog::GenerateReport()
+void TuneKIVDialog::GenerateReport()
 {
     /*    // данные в таблицу уже получены или из файла, или в процессе работы
         // отобразим таблицу

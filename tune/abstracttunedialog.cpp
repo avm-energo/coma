@@ -36,7 +36,6 @@ AbstractTuneDialog::AbstractTuneDialog(int tuneStep, QWidget *parent) : UDialog(
     m_blockCount = 0;
     m_tuneStep = tuneStep;
     m_finished = false;
-    SetupUI();
 }
 
 AbstractTuneDialog::~AbstractTuneDialog()
@@ -61,7 +60,6 @@ QWidget *AbstractTuneDialog::TuneUI()
 
     setMessages();
     setTuneFunctions();
-
     int i;
     // CP1 - НАСТРОЙКА ПРИБОРА/МОДУЛЯ
     QWidget *w = new QWidget;
@@ -101,7 +99,7 @@ QWidget *AbstractTuneDialog::TuneUI()
         WDFunc::SetVisible(this, "tunemsg" + QString::number(i), false);
         WDFunc::SetVisible(this, "tunemsgres" + QString::number(i), false);
     }
-    lyout->addWidget(WDFunc::NewPB2(this, "", "Прервать настройку", this, &AbstractTuneDialog::CancelTune));
+    lyout->addWidget(WDFunc::NewPB(this, "", "Прервать настройку", this, &AbstractTuneDialog::CancelTune));
     //    lyout->addStretch(1);
     w->setLayout(lyout);
     return w;
@@ -111,43 +109,66 @@ QWidget *AbstractTuneDialog::BottomUI()
 {
     QWidget *w = new QWidget;
     QVBoxLayout *lyout = new QVBoxLayout;
-    QPushButton *pb = new QPushButton("Установить настроечные коэффициенты по умолчанию");
-    //    pb->setObjectName(QString::number(bacnum));
-    connect(pb, SIGNAL(clicked()), this, SLOT(SetDefCoefs()));
-    lyout->addWidget(pb);
     QHBoxLayout *hlyout = new QHBoxLayout;
+    //    QPushButton *pb = new QPushButton;
+    //    pb->setToolTip("Установить настроечные коэффициенты по умолчанию");
+    //    //    pb->setMinimumSize(70, 70);
+    //    pb->setIcon(QIcon("images/reset.svg"));
+    //    pb->setIconSize(QSize(70, 70));
+    //    //        pb->setObjectName(QString::number(bacnum));
+    //    connect(pb, SIGNAL(clicked()), this, SLOT(setDefCoefs()));
+    //    hlyout->addWidget(pb);
+    hlyout->addWidget(WDFunc::NewPB(this, "resetpb", "", this, &AbstractTuneDialog::setDefCoefs, "images/reset.svg",
+        "Установить настроечные коэффициенты по умолчанию"));
+    WDFunc::setMinimumSize(this, "resetpb", 60, 60);
     QString tmps = "Прочитать настроечные коэффициенты из ";
     tmps += ((DEVICETYPE == DEVICETYPE_MODULE) ? "модуля" : "прибора");
-    pb = new QPushButton(tmps);
-    //    pb->setObjectName(QString::number(bacnum));
+    hlyout->addWidget(
+        WDFunc::NewPB(this, "readpb", "", this, &AbstractTuneDialog::readTuneCoefs, "images/read.svg", tmps));
 
-    connect(pb, SIGNAL(clicked()), this, SLOT(readTuneCoefs()));
+    //    pb = new QPushButton(tmps);
+    //    //    pb->setObjectName(QString::number(bacnum));
+
+    //    connect(pb, SIGNAL(clicked()), this, SLOT(readTuneCoefs()));
 
     if (StdFunc::IsInEmulateMode())
-        pb->setEnabled(false);
-    hlyout->addWidget(pb);
+        //        pb->setEnabled(false);
+        WDFunc::SetEnabled(this, "readpb", false);
+    //    hlyout->addWidget(pb);
+    WDFunc::setMinimumSize(this, "readpb", 50, 50);
     tmps = "Записать настроечные коэффициенты в ";
     tmps += ((DEVICETYPE == DEVICETYPE_MODULE) ? "модуль" : "прибор");
-    pb = new QPushButton(tmps);
-    //    pb->setObjectName(QString::number(bacnum));
+    hlyout->addWidget(
+        WDFunc::NewPB(this, "writepb", "", this, &AbstractTuneDialog::writeTuneCoefsSlot, "images/write.svg", tmps));
+    //    pb = new QPushButton(tmps);
+    //    //    pb->setObjectName(QString::number(bacnum));
 
-    connect(pb, SIGNAL(clicked()), this, SLOT(writeTuneCoefs()));
+    //    connect(pb, SIGNAL(clicked()), this, SLOT(writeTuneCoefs()));
 
     if (StdFunc::IsInEmulateMode())
-        pb->setEnabled(false);
-    hlyout->addWidget(pb);
-    lyout->addLayout(hlyout);
-    hlyout = new QHBoxLayout;
-    pb = new QPushButton("Прочитать настроечные коэффициенты из файла");
-    pb->setIcon(QIcon("../load.png"));
-    //    pb->setObjectName(QString::number(bacnum));
-    connect(pb, SIGNAL(clicked()), this, SLOT(LoadTuneBlocksFromFile()));
-    hlyout->addWidget(pb);
-    pb = new QPushButton("Записать настроечные коэффициенты в файл");
-    pb->setIcon(QIcon("../save.png"));
-    //    pb->setObjectName(QString::number(bacnum));
-    connect(pb, SIGNAL(clicked()), this, SLOT(SaveTuneBlocksToFiles()));
-    hlyout->addWidget(pb);
+        //        pb->setEnabled(false);
+        WDFunc::SetEnabled(this, "writepb", false);
+    WDFunc::setMinimumSize(this, "writepb", 50, 50);
+    //    hlyout->addWidget(pb);
+    //    lyout->addLayout(hlyout);
+    //    hlyout = new QHBoxLayout;
+    hlyout->addWidget(WDFunc::NewPB(this, "loadpb", "", this, &AbstractTuneDialog::loadTuneCoefsSlot, "images/load.svg",
+        "Прочитать настроечные коэффициенты из файла"));
+    //    pb = new QPushButton("Прочитать настроечные коэффициенты из файла");
+    //    pb->setIcon(QIcon("../load.png"));
+    //    //    pb->setObjectName(QString::number(bacnum));
+    //    connect(pb, SIGNAL(clicked()), this, SLOT(LoadTuneBlocksFromFile()));
+    //    hlyout->addWidget(pb);
+    //    pb = new QPushButton("Записать настроечные коэффициенты в файл");
+    WDFunc::setMinimumSize(this, "loadpb", 50, 50);
+    hlyout->addWidget(WDFunc::NewPB(this, "savepb", "", this, &AbstractTuneDialog::saveTuneCoefsSlot, "images/save.svg",
+        "Записать настроечные коэффициенты в файл"));
+    //    pb->setIcon(QIcon("../save.png"));
+    //    //    pb->setObjectName(QString::number(bacnum));
+    //    connect(pb, SIGNAL(clicked()), this, SLOT(SaveTuneBlocksToFiles()));
+    //    hlyout->addWidget(pb);
+    WDFunc::setMinimumSize(this, "savepb", 50, 50);
+    hlyout->addStretch(300);
     lyout->addLayout(hlyout);
     w->setLayout(lyout);
     return w;
@@ -281,18 +302,18 @@ void AbstractTuneDialog::MsgClear()
     MsgSetVisible(NoMsg, i, false);
 }
 
-Error::Msg AbstractTuneDialog::StartMeasurement()
-{
-    MeasurementTimer->start();
-    //    SetMeasurementEnabled(true);
-    //    while (MeasurementEnabled && !StdFunc::isCancelled())
-    while (!StdFunc::isCancelled())
-        TimeFunc::Wait();
-    MeasurementTimer->stop();
-    if (StdFunc::isCancelled())
-        return Error::Msg::GeneralError;
-    return Error::Msg::NoError;
-}
+// Error::Msg AbstractTuneDialog::StartMeasurement()
+//{
+//    MeasurementTimer->start();
+//    //    SetMeasurementEnabled(true);
+//    //    while (MeasurementEnabled && !StdFunc::isCancelled())
+//    while (!StdFunc::isCancelled())
+//        TimeFunc::Wait();
+//    MeasurementTimer->stop();
+//    if (StdFunc::isCancelled())
+//        return Error::Msg::GeneralError;
+//    return Error::Msg::NoError;
+//}
 
 void AbstractTuneDialog::StartTune()
 {
@@ -432,6 +453,21 @@ void AbstractTuneDialog::readTuneCoefs()
         readTuneCoefsByBac(it.key());
     }
     //    ReadBlocks(DataBlock::DataBlockTypes::BacBlock);
+}
+
+void AbstractTuneDialog::writeTuneCoefsSlot()
+{
+    writeTuneCoefs();
+}
+
+void AbstractTuneDialog::loadTuneCoefsSlot()
+{
+    readTuneCoefs();
+}
+
+void AbstractTuneDialog::saveTuneCoefsSlot()
+{
+    saveAllTuneCoefs();
 }
 
 // на будущее, если вдруг будем регулировать модуль по частям

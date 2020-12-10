@@ -73,7 +73,7 @@ private slots:
     void saveIntermediateResults();
     void acceptTuneCoefs();
     //    int ReadAnalogMeasurements();
-    //    void SetDefCoefs();
+    void setDefCoefs();
 };
 
 #endif // TUNEKIVTEMP60_H

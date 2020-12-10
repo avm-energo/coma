@@ -81,7 +81,8 @@ void AlarmStateAll::setupUI(const QStringList &events)
         vlayout->addLayout(hlyout);
     }
     lyout->addLayout(vlayout);
-    lyout->addWidget(WDFunc::NewPB(this, "", "Ok", this, SLOT(hide())), 0);
+    //    lyout->addWidget(WDFunc::NewPB(this, "", "Ok", this, SLOT(hide())), 0);
+    lyout->addWidget(WDFunc::NewPB(this, "", "Ok", static_cast<QWidget *>(this), &QWidget::hide), 0);
     this->setLayout(lyout);
     const auto &board = Board::GetInstance();
 

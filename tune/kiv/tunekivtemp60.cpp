@@ -114,8 +114,8 @@ Error::Msg TuneKIVTemp60::showTempDialog()
     QString tempstr = (m_tuneStep == TuneKIV::TS_60TUNING) ? "+60" : "-20";
     lyout->addWidget(
         WDFunc::NewLBL(this, "Поместите модуль в термокамеру, установите температуру " + tempstr + " ± 2 °С"));
-    lyout->addWidget(WDFunc::NewPB2(this, "", "Готово", [dlg] { dlg->close(); }));
-    lyout->addWidget(WDFunc::NewPB2(this, "cancelpb", "Отмена", [dlg] { dlg->close(); }));
+    lyout->addWidget(WDFunc::NewPB(this, "", "Готово", [dlg] { dlg->close(); }));
+    lyout->addWidget(WDFunc::NewPB(this, "cancelpb", "Отмена", [dlg] { dlg->close(); }));
     dlg->setLayout(lyout);
     WDFunc::PBConnect(dlg, "cancelpb", static_cast<AbstractTuneDialog *>(this), &AbstractTuneDialog::CancelTune);
     dlg->exec();
@@ -154,8 +154,8 @@ Error::Msg TuneKIVTemp60::showSignalsDialog()
         "3. Задайте на РЕТОМ-51 или имитаторе АВМ-КИВ трёхфазный режим токов и напряжений (Uabc, Iabc)"
         "Угол между токами и напряжениями: 89.9 град. (tg 2 % в имитаторе),\n"
         "Значения напряжений: 57.5 В, токов: 140 мА"));
-    lyout->addWidget(WDFunc::NewPB2(this, "", "Готово", [dlg] { dlg->close(); }));
-    lyout->addWidget(WDFunc::NewPB2(this, "cancelpb", "Отмена", [dlg] { dlg->close(); }));
+    lyout->addWidget(WDFunc::NewPB(this, "", "Готово", [dlg] { dlg->close(); }));
+    lyout->addWidget(WDFunc::NewPB(this, "cancelpb", "Отмена", [dlg] { dlg->close(); }));
     dlg->setLayout(lyout);
     WDFunc::PBConnect(dlg, "cancelpb", static_cast<AbstractTuneDialog *>(this), &AbstractTuneDialog::CancelTune);
     dlg->exec();
@@ -283,8 +283,8 @@ Error::Msg TuneKIVTemp60::showTuneCoefs()
     dlg->setAttribute(Qt::WA_DeleteOnClose);
     dlg->setObjectName("showtunedlg");
     lyout->addWidget(newbac->widget());
-    lyout->addWidget(WDFunc::NewPB2(this, "acceptpb", "Записать в модуль", this, &TuneKIVTemp60::acceptTuneCoefs));
-    lyout->addWidget(WDFunc::NewPB2(
+    lyout->addWidget(WDFunc::NewPB(this, "acceptpb", "Записать в модуль", this, &TuneKIVTemp60::acceptTuneCoefs));
+    lyout->addWidget(WDFunc::NewPB(
         this, "cancelpb", "Отменить", static_cast<AbstractTuneDialog *>(this), &AbstractTuneDialog::CancelTune));
     dlg->setLayout(lyout);
     memcpy(newbac->data(), TKIV->m_Bac->data(), sizeof(Bac::BlockData));
@@ -310,4 +310,10 @@ void TuneKIVTemp60::acceptTuneCoefs()
 {
     TKIV->m_Bac->updateFromWidget();
     TKIV->m_Bac->writeBlockToModule();
+}
+
+void TuneKIVTemp60::setDefCoefs()
+{
+    TKIV->m_Bac->setDefBlock();
+    TKIV->m_Bd0->setDefBlock();
 }

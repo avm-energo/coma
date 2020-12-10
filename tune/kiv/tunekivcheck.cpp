@@ -99,8 +99,8 @@ Error::Msg TuneKIVCheck::showScheme()
     lyout->addWidget(WDFunc::NewLBL(
         this, "6. Убедитесь, что частота мигания светодиода «Работа»  на лицевой панели увеличилась до 1 Гц;"));
     lyout->addWidget(WDFunc::NewLBL(this, "7. Установите на магазине сопротивлений сопротивление 100,0 Ом."));
-    lyout->addWidget(WDFunc::NewPB2(this, "", "Готово", [dlg] { dlg->close(); }));
-    lyout->addWidget(WDFunc::NewPB2(this, "cancelpb", "Отмена", [dlg] { dlg->close(); }));
+    lyout->addWidget(WDFunc::NewPB(this, "", "Готово", [dlg] { dlg->close(); }));
+    lyout->addWidget(WDFunc::NewPB(this, "cancelpb", "Отмена", [dlg] { dlg->close(); }));
     dlg->setLayout(lyout);
     WDFunc::PBConnect(dlg, "cancelpb", static_cast<AbstractTuneDialog *>(this), &AbstractTuneDialog::CancelTune);
     dlg->exec();
@@ -118,4 +118,8 @@ Error::Msg TuneKIVCheck::check()
     if (!StdFunc::floatIsWithinLimits(TKIV->m_Bda.Frequency, 51.0, 0.05))
         return Error::Msg::GeneralError;
     return Error::Msg::NoError;
+}
+
+void TuneKIVCheck::setDefCoefs()
+{
 }
