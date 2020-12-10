@@ -6,6 +6,7 @@
 #include "protocomprivate.h"
 #include "settingstypes.h"
 
+#include <QWaitCondition>
 namespace HID
 {
 // максимальная длина одного сегмента (0x40)
@@ -37,9 +38,11 @@ signals:
     void dataReceived(QByteArray ba);
     void finished();
     void started();
+    void clearQueries();
 
 public slots:
     void poll();
+    void deviceStateChanged(const UsbHidSettings &st, bool isConnected);
 
 private:
     void writeLog(QByteArray ba, Proto::Direction dir = Proto::NoDirection);
@@ -48,15 +51,18 @@ private:
         writeLog(QVariant::fromValue(msg).toByteArray(), dir);
     }
 
+    bool writeData(const QByteArray &ba);
     bool writeData(QByteArray &ba);
 
     void checkQueue();
     void finish();
+    void clear();
     bool m_waitForReply;
+    QWaitCondition _waiter;
     hid_device *m_hidDevice;
     bool m_isShouldBeStopped;
     LogClass *log;
-    QMutex mutex_;
+    QMutex _mutex;
     QList<QByteArray> m_writeQueue;
     UsbHidSettings m_deviceInfo;
 };

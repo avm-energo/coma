@@ -1,13 +1,15 @@
 #include "usbhidport.h"
 
 #include "../gen/board.h"
+#include "../gen/helper.h"
+#include "../gen/stdfunc.h"
 
 #include <QCoreApplication>
 #include <QDebug>
 #include <QElapsedTimer>
 #include <QMetaEnum>
+#include <QTimer>
 #include <array>
-
 #ifdef _WIN32
 // clang-format off
 #include <windows.h>
@@ -26,6 +28,7 @@ UsbHidPort::UsbHidPort(const UsbHidSettings &dev, LogClass *logh, QObject *paren
     log->Init(filename);
     log->WriteRaw(::logStart);
     m_hidDevice = nullptr;
+    connect(this, &UsbHidPort::clearQueries, &UsbHidPort::clear);
 }
 
 UsbHidPort::~UsbHidPort()
@@ -71,11 +74,19 @@ void UsbHidPort::poll()
     while (Board::GetInstance().connectionState() != Board::ConnectionState::Closed)
     {
         QCoreApplication::processEvents(QEventLoop::AllEvents);
-        if (isShouldBeStopped())
-            return;
+        //_mutex.lock();
+        //        if (isShouldBeStopped())
+        //        {
+        //_waiter.wait(&_mutex, 1000);
+        //            continue;
+        //        }
+        //_mutex.unlock();
         // check if there's any data in input buffer
         if (Board::GetInstance().connectionState() == Board::ConnectionState::AboutToFinish)
+        {
+            StdFunc::Wait(500);
             continue;
+        }
         if (!m_hidDevice)
             continue;
         std::array<byte, HID::MaxSegmenthLength + 1> array; // +1 to ID
@@ -95,13 +106,50 @@ void UsbHidPort::poll()
             emit dataReceived(ba);
             m_waitForReply = false;
         }
-        QCoreApplication::processEvents(QEventLoop::AllEvents);
+        // QCoreApplication::processEvents(QEventLoop::AllEvents);
         if (m_waitForReply)
             continue;
         // write data to port if there's something delayed in out queue
         checkQueue();
     }
     finish();
+}
+
+void UsbHidPort::deviceStateChanged(const UsbHidSettings &st, bool isConnected)
+{
+    if (!isConnected)
+    {
+        // Отключено другое устройство
+        if (st != deviceInfo())
+            return;
+        else
+        {
+            // Отключено наше устройство
+            shouldBeStopped();
+            Board::GetInstance().setConnectionState(Board::ConnectionState::AboutToFinish);
+            qInfo() << deviceInfo() << "disconnected";
+            //            QTimer disconnectTimer;
+            //            disconnectTimer.setSingleShot(true);
+            //            disconnectTimer.setInterval(10000);
+            //            connect(&disconnectTimer, &QTimer::timeout, [] {
+            //                if (Board::GetInstance().connectionState() == Board::ConnectionState::AboutToFinish)
+            //                    Board::GetInstance().setConnectionState(Board::ConnectionState::Closed);
+            //            });
+        }
+    }
+    else
+    {
+        // Подключено другое устройство
+        if (st != deviceInfo())
+            return;
+        // Устройство появляется не сразу после прихода события о его подключении
+        StdFunc::Wait(100);
+        emit clearQueries();
+        if (!setupConnection())
+            return;
+        qInfo() << deviceInfo() << "connected";
+        Board::GetInstance().setConnectionState(Board::ConnectionState::Connected);
+    }
 }
 
 UsbHidSettings UsbHidPort::deviceInfo() const
@@ -116,7 +164,7 @@ void UsbHidPort::setDeviceInfo(const UsbHidSettings &deviceInfo)
 
 void UsbHidPort::writeDataAttempt(const QByteArray &ba)
 {
-    QMutexLocker locker(&mutex_);
+    QMutexLocker locker(&_mutex);
     m_writeQueue.append(ba);
 }
 
@@ -125,7 +173,7 @@ void UsbHidPort::closeConnection()
     if (!m_hidDevice)
         return;
 
-    QMutexLocker locker(&mutex_);
+    QMutexLocker locker(&_mutex);
     m_writeQueue.clear();
     hid_close(m_hidDevice);
     m_hidDevice = nullptr;
@@ -134,8 +182,15 @@ void UsbHidPort::closeConnection()
 void UsbHidPort::finish()
 {
     closeConnection();
-    qInfo("UThread finished");
+    qInfo() << metaObject()->className() << "finished";
     emit finished();
+}
+
+void UsbHidPort::clear()
+{
+    // QMutexLocker locker(&_mutex);
+    m_waitForReply = false;
+    m_writeQueue.clear();
 }
 
 bool UsbHidPort::isShouldBeStopped() const
@@ -167,6 +222,48 @@ void UsbHidPort::writeLog(QByteArray ba, Direction dir)
     tmpba.append(ba).append("\n");
     log->WriteRaw(tmpba);
 #endif
+}
+
+bool UsbHidPort::writeData(const QByteArray &ba)
+{
+    QByteArray tba(ba);
+    if (!m_hidDevice)
+    {
+        writeLog(Error::Msg::NoDeviceError);
+        qCritical() << Error::Msg::NoDeviceError;
+        return false;
+    }
+
+    if (tba.size() > HID::MaxSegmenthLength)
+    {
+        writeLog(Error::Msg::SizeError);
+        qCritical() << Error::Msg::SizeError;
+        return false;
+    }
+
+    if (tba.isEmpty())
+    {
+        writeLog(Error::Msg::NullDataError);
+        qCritical() << Error::Msg::NullDataError;
+        return false;
+    }
+    // NOTE
+    writeLog(tba.toHex(), Proto::ToDevice);
+    if (tba.size() < HID::MaxSegmenthLength)
+        tba.append(HID::MaxSegmenthLength - tba.size(), static_cast<char>(0x00));
+
+    // inserting ID field for HID protocol
+    tba.prepend(static_cast<char>(0x00));
+
+    size_t tmpt = static_cast<size_t>(tba.size());
+
+    int errorCode = hid_write(m_hidDevice, reinterpret_cast<unsigned char *>(tba.data()), tmpt);
+    if (errorCode == -1)
+    {
+        qCritical() << Error::Msg::WriteError;
+        return false;
+    }
+    return true;
 }
 
 bool UsbHidPort::writeData(QByteArray &ba)
@@ -212,12 +309,16 @@ bool UsbHidPort::writeData(QByteArray &ba)
 
 void UsbHidPort::checkQueue()
 {
-    QMutexLocker locker(&mutex_);
+    // NOTE Реализовать
+    // Q_ASSERT(Board::GetInstance().connectionState() == Board::ConnectionState::Connected);
+    QMutexLocker locker(&_mutex);
     if (!m_writeQueue.isEmpty())
     {
         QByteArray ba = m_writeQueue.takeFirst();
-        writeData(ba);
-        m_waitForReply = true;
+        if (writeData(ba))
+            m_waitForReply = true;
+        else
+            emit clearQueries();
     }
 }
 

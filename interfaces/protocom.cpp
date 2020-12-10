@@ -35,6 +35,7 @@ void handleCommand(const Proto::WCommands cmd);
 
 Protocom::Protocom(QObject *parent) : BaseInterface(parent)
 {
+    qRegisterMetaType<UsbHidSettings>();
 }
 
 bool Protocom::start(const ConnectStruct &st)
@@ -60,19 +61,26 @@ bool Protocom::start(const UsbHidSettings &usbhid)
     parser->moveToThread(parseThread);
 
     // FIXME Разобраться с удалением и закрытием потоков
+    // Старт
     connect(portThread, &QThread::started, port, &UsbHidPort::poll);
     connect(parseThread, &QThread::started, parser, &ProtocomThread::parse);
-
-    connect(port, &UsbHidPort::finished, portThread, &QThread::quit);
-    // connect(this, &Protocom::requestInterrupt, portThread, &QThread::quit);
-    connect(this, &Protocom::requestInterrupt, port, &UsbHidPort::shouldBeStopped);
-    connect(port, &UsbHidPort::finished, portThread, &QThread::deleteLater);
-    connect(port, &UsbHidPort::finished, port, &UsbHidPort::deleteLater);
-
+    // Рабочий режим
     connect(this, &Protocom::wakeUpParser, parser, &ProtocomThread::wakeUp, Qt::DirectConnection);
     connect(port, &UsbHidPort::dataReceived, parser, &ProtocomThread::appendReadDataChunk, Qt::DirectConnection);
-
     connect(parser, &ProtocomThread::writeDataAttempt, port, &UsbHidPort::writeDataAttempt, Qt::DirectConnection);
+    // Прерывание
+    connect(this, &Protocom::deviceStateChanged, port, &UsbHidPort::deviceStateChanged);
+    connect(port, &UsbHidPort::clearQueries, parser, &ProtocomThread::clear, Qt::DirectConnection);
+    connect(this, &Protocom::requestInterrupt, port, &UsbHidPort::shouldBeStopped);
+    // Остановка
+    connect(port, &UsbHidPort::finished, parser, &ProtocomThread::wakeUp, Qt::DirectConnection);
+    connect(port, &UsbHidPort::finished, portThread, &QThread::quit);
+    connect(port, &UsbHidPort::finished, parseThread, &QThread::quit);
+    // connect(this, &Protocom::requestInterrupt, portThread, &QThread::quit);
+    connect(port, &UsbHidPort::finished, portThread, &QObject::deleteLater);
+    connect(port, &UsbHidPort::finished, parseThread, &QObject::deleteLater);
+    connect(port, &UsbHidPort::finished, port, &QObject::deleteLater);
+    connect(port, &UsbHidPort::finished, parser, &QObject::deleteLater);
 
     if (!port->setupConnection())
         return false;
@@ -107,7 +115,8 @@ void Protocom::nativeEvent(void *message)
         std::wstring wstr = &devint->dbcc_name[0];
 
         const auto st = UsbHidSettings::fromWString(wstr);
-
+        // emit deviceArrived(st);
+        emit deviceStateChanged(st, true);
         qDebug() << wstr << st << devint->dbcc_devicetype;
         break;
     }
@@ -115,15 +124,19 @@ void Protocom::nativeEvent(void *message)
     {
         if (devint->dbcc_devicetype != DBT_DEVTYP_DEVICEINTERFACE)
             return;
-        std::wstring str = &devint->dbcc_name[0];
-        qDebug() << str << devint->dbcc_devicetype;
+        std::wstring wstr = &devint->dbcc_name[0];
+
+        const auto st = UsbHidSettings::fromWString(wstr);
+        // emit deviceRemoved(st);
+        emit deviceStateChanged(st, false);
+        qDebug() << wstr << devint->dbcc_devicetype;
         break;
     }
     case DBT_DEVNODES_CHANGED:
     {
-        emit requestInterrupt();
-        pause();
-        Board::GetInstance().setConnectionState(Board::ConnectionState::AboutToFinish);
+        //        emit requestInterrupt();
+        //        pause();
+        //        Board::GetInstance().setConnectionState(Board::ConnectionState::AboutToFinish);
         break;
     }
     default:

@@ -478,7 +478,7 @@ void Coma::StartWork()
     }
     //    if (AlarmStateAllDialog != nullptr)
     //        AlarmStateAllDialog->UpdateHealth(ModuleBSI::ModuleBsi.Hth);
-    Board::GetInstance().setConnectionState(Board::ConnectionState::Connected);
+    // Board::GetInstance().setConnectionState(Board::ConnectionState::Connected);
     quint16 serialNumber = Board::GetInstance().type();
     QString deviceName = QVariant::fromValue(Modules::Model(serialNumber)).toString();
     QMessageBox::information(this, "Связь установлена", "Удалось установить связь с " + deviceName, QMessageBox::Ok);
@@ -1133,22 +1133,21 @@ void Coma::Disconnect()
 {
     qInfo(__PRETTY_FUNCTION__);
     AlarmW->clear();
-    if (!StdFunc::IsInEmulateMode())
+    if (StdFunc::IsInEmulateMode())
+        return;
+    if (Board::GetInstance().interfaceType() == Board::InterfaceType::USB)
     {
-        if (Board::GetInstance().interfaceType() == Board::InterfaceType::USB)
-        {
-            BdaTimer->stop();
-            //            if (Board::GetInstance().connectionState() != Board::ConnectionState::Closed)
-            //                EProtocom::GetInstance().Disconnect();
-        }
-        else
-        {
-            emit StopCommunications();
-            while (ActiveThreads) // wait for all threads to finish
-                QCoreApplication::processEvents();
-        }
-        Board::GetInstance().setConnectionState(Board::ConnectionState::Closed);
+        BdaTimer->stop();
+        //            if (Board::GetInstance().connectionState() != Board::ConnectionState::Closed)
+        //                EProtocom::GetInstance().Disconnect();
     }
+    else
+    {
+        emit StopCommunications();
+        while (ActiveThreads) // wait for all threads to finish
+            QCoreApplication::processEvents();
+    }
+    Board::GetInstance().setConnectionState(Board::ConnectionState::Closed);
 }
 
 void Coma::Connect()
@@ -1251,39 +1250,40 @@ void Coma::DisconnectAndClear()
 {
     qInfo(__PRETTY_FUNCTION__);
     //    TimeTimer->stop();
-    if (Board::GetInstance().connectionState() != Board::ConnectionState::Closed)
-    {
-        AlarmW->clear();
-        Disconnect();
-        CloseDialogs();
-        //        emit ClearBsi();
-        ClearTW();
-        ETabWidget *MainTW = this->findChild<ETabWidget *>("maintw");
-        if (MainTW == nullptr)
-        {
-            DBGMSG("Пустой MainTW");
-            return;
-        }
-        //        if (S2Config)
-        //        {
-        //            S2Config->clear();
-        //            ///вылетает при разрыве связи
-        //            delete S2Config;
-        //        }
-        //        if (S2ConfigForTune)
-        //        {
-        //            S2ConfigForTune->clear();
+    const auto &board = Board::GetInstance();
+    if (board.connectionState() == Board::ConnectionState::Closed)
+        return;
 
-        //            delete S2ConfigForTune;
-        //        }
-        // Проверить после отключения алармов
-        // if (Reconnect)
-        //    QMessageBox::information(this, "Разрыв связи", "Связь разорвана", QMessageBox::Ok, QMessageBox::Ok);
-        //        else
-        //            QMessageBox::information(this, "Разрыв связи", "Не удалось установить связь");
-        MainTW->hide();
-        StdFunc::SetEmulated(false);
+    AlarmW->clear();
+    Disconnect();
+    CloseDialogs();
+    //        emit ClearBsi();
+    ClearTW();
+    ETabWidget *MainTW = this->findChild<ETabWidget *>("maintw");
+    if (MainTW == nullptr)
+    {
+        qDebug() << Error::DescError << NAMEOF(MainTW);
+        return;
     }
+    //        if (S2Config)
+    //        {
+    //            S2Config->clear();
+    //            ///вылетает при разрыве связи
+    //            delete S2Config;
+    //        }
+    //        if (S2ConfigForTune)
+    //        {
+    //            S2ConfigForTune->clear();
+
+    //            delete S2ConfigForTune;
+    //        }
+    // Проверить после отключения алармов
+    // if (Reconnect)
+    //    QMessageBox::information(this, "Разрыв связи", "Связь разорвана", QMessageBox::Ok, QMessageBox::Ok);
+    //        else
+    //            QMessageBox::information(this, "Разрыв связи", "Не удалось установить связь");
+    MainTW->hide();
+    StdFunc::SetEmulated(false);
 
     Reconnect = false;
 }

@@ -34,6 +34,9 @@ signals:
     void wakeUpParser();
     void wakeUpPort();
     void requestInterrupt();
+    void deviceRemoved(const UsbHidSettings &);
+    void deviceArrived(const UsbHidSettings &);
+    void deviceStateChanged(const UsbHidSettings &st, bool isConnected);
 };
 
 namespace

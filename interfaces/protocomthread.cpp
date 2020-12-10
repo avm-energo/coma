@@ -1,5 +1,6 @@
 #include "protocomthread.h"
 
+#include "../gen/board.h"
 #include "../gen/datamanager.h"
 #include "../gen/files.h"
 #include "../gen/logclass.h"
@@ -61,7 +62,7 @@ ProtocomThread::ProtocomThread(QObject *parent) : QObject(parent), m_currentComm
 
 void ProtocomThread::setReadDataChunk(const QByteArray &readDataChunk)
 {
-    // QMutexLocker locker(&_mutex);
+    QMutexLocker locker(&_mutex);
     m_readData = readDataChunk;
     _waiter.wakeOne();
     emit readyRead();
@@ -69,7 +70,7 @@ void ProtocomThread::setReadDataChunk(const QByteArray &readDataChunk)
 
 void ProtocomThread::appendReadDataChunk(const QByteArray &readDataChunk)
 {
-    // QMutexLocker locker(&_mutex);
+    QMutexLocker locker(&_mutex);
     m_readData.append(readDataChunk);
     _waiter.wakeOne();
     emit readyRead();
@@ -82,7 +83,7 @@ void ProtocomThread::wakeUp()
 
 void ProtocomThread::parse()
 {
-    forever
+    while (Board::GetInstance().connectionState() != Board::ConnectionState::Closed)
     {
         _mutex.lock();
         if (!isCommandRequested)
@@ -97,6 +98,17 @@ void ProtocomThread::parse()
 
         _mutex.unlock();
     }
+}
+
+void ProtocomThread::clear()
+{
+    QMutexLocker locker(&_mutex);
+    isCommandRequested = false;
+    m_readData.clear();
+    progress = 0;
+    m_currentCommand = Proto::CommandStruct();
+    m_buffer.first = 0;
+    m_buffer.second.clear();
 }
 
 void ProtocomThread::finish(Error::Msg msg)
