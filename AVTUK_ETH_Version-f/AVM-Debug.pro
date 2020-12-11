@@ -108,7 +108,6 @@ SOURCES += \
     ../tune/kiv/tunekivdialog.cpp \
     ../tune/kiv/tunekivmain.cpp \
     ../tune/kiv/tunekivtemp60.cpp \
-    ../tune/kiv/tunekivtemp_20.cpp \
     ../tune/tuneclass.cpp \
     ../widgets/alarmwidget.cpp \
     ../widgets/alarmbutton.cpp \
@@ -213,7 +212,6 @@ HEADERS += \
     ../tune/kiv/tunekivdialog.h \
     ../tune/kiv/tunekivmain.h \
     ../tune/kiv/tunekivtemp60.h \
-    ../tune/kiv/tunekivtemp_20.h \
     ../tune/tuneclass.h \
     ../widgets/alarmbutton.h \
     ../widgets/alarmstateall.h \

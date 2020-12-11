@@ -92,7 +92,7 @@ public:
     static bool SetLBLImage(QWidget *w, const QString &lblname, QPixmap *pm);
     static bool SetLBLColor(QWidget *w, const QString &lblname, const QString &lblcolor);
     static bool SetLBLText(QWidget *w, const QString &lblname, const QString &lbltext = "", bool enabled = true);
-    static bool LBLText(QWidget *w, const QString &lblname, QString &text);
+    static QString LBLText(QWidget *w, const QString &lblname);
     static QRadioButton *NewRB(
         QWidget *parent, const QString &rbtext, const QString &rbname, const QString &rbcolor = "");
     static QString TVField(QWidget *w, const QString &tvname, int column, bool isid = false);
@@ -108,33 +108,35 @@ public:
     static QWidget *NewLBLAndLE(QWidget *parent, QString caption, QString lename, bool enabled = false);
     static void SetEnabled(QWidget *w, const QString &wname, bool enabled);
     static void SetVisible(QWidget *w, const QString &wname, bool visible);
+    static void setMinimumSize(QWidget *w, const QString &wname, int width, int height);
     static QString StringValueWithCheck(float value, int precision = 5, bool exp = false);
     static QVariant FloatValueWithCheck(float value);
     static QImage *TwoImages(const QString &first, const QString &second);
-    static QPushButton *NewPB(QWidget *parent, const QString &pbname, const QString &text, const QObject *receiver,
-        const char *method, const QString &icon = "", const QString &pbtooltip = "");
+    //    static QPushButton *NewPB(QWidget *parent, const QString &pbname, const QString &text, const QObject
+    //    *receiver,
+    //        const char *method, const QString &icon = "", const QString &pbtooltip = "");
 
     template <typename Func>
-    inline static QPushButton *NewPB2(QWidget *parent, const QString &pbname, const QString &text, const Func *receiver,
+    inline static QPushButton *NewPB(QWidget *parent, const QString &pbname, const QString &text, const Func *receiver,
         void (Func::*method)(), const QString &icon = "", const QString &pbtooltip = "")
     {
-        QPushButton *pb = NewPB2(parent, pbname, text, icon, pbtooltip);
+        QPushButton *pb = NewPBCommon(parent, pbname, text, icon, pbtooltip);
         QObject::connect(pb, &QPushButton::clicked, receiver, method);
         return pb;
     }
     template <typename Functor>
-    inline static QPushButton *NewPB2(QWidget *parent, const QString &pbname, const QString &text, Functor &&functor,
+    inline static QPushButton *NewPB(QWidget *parent, const QString &pbname, const QString &text, Functor &&functor,
         const QString &icon = "", const QString &pbtooltip = "")
     {
-        QPushButton *pb = NewPB2(parent, pbname, text, icon, pbtooltip);
+        QPushButton *pb = NewPBCommon(parent, pbname, text, icon, pbtooltip);
         QObject::connect(pb, &QPushButton::clicked, functor);
         return pb;
     }
     template <typename Functor>
-    inline static QPushButton *NewPB2(QWidget *parent, const QString &pbname, const QString &text, QObject *context,
+    inline static QPushButton *NewPB(QWidget *parent, const QString &pbname, const QString &text, QObject *context,
         Functor &&functor, const QString &icon = "", const QString &pbtooltip = "")
     {
-        QPushButton *pb = NewPB2(parent, pbname, text, icon, pbtooltip);
+        QPushButton *pb = NewPBCommon(parent, pbname, text, icon, pbtooltip);
         QObject::connect(pb, &QPushButton::clicked, context, functor);
         return pb;
     }
@@ -174,8 +176,8 @@ public:
     static QPixmap NewSVG(QString &str, QSize size);
 
 private:
-    static QPushButton *NewPB2(QWidget *parent, const QString &pbname, const QString &text, const QString &icon = "",
-        const QString &pbtooltip = "")
+    static QPushButton *NewPBCommon(QWidget *parent, const QString &pbname, const QString &text,
+        const QString &icon = "", const QString &pbtooltip = "")
     {
         QPushButton *pb = new QPushButton(parent);
         pb->setStyleSheet("QPushButton {background-color: rgba(0,0,0,0); border: 1px solid gray; "

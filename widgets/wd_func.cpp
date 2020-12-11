@@ -16,6 +16,7 @@
 #include <QRegExp>
 #include <QStringListModel>
 #include <QTextEdit>
+#include <QtDebug>
 #include <QtMath>
 
 #ifdef __GNUC__
@@ -322,13 +323,13 @@ bool WDFunc::SetLBLText(QWidget *w, const QString &lblname, const QString &lblte
     return true;
 }
 
-bool WDFunc::LBLText(QWidget *w, const QString &lblname, QString &text)
+QString WDFunc::LBLText(QWidget *w, const QString &lblname)
 {
     QLabel *lbl = w->findChild<QLabel *>(lblname);
     if (lbl == nullptr)
-        return false;
-    text = lbl->text();
-    return true;
+        return QString();
+    QString text = lbl->text();
+    return text;
 }
 
 QRadioButton *WDFunc::NewRB(QWidget *parent, const QString &rbtext, const QString &rbname, const QString &rbcolor)
@@ -688,6 +689,22 @@ void WDFunc::SetVisible(QWidget *w, const QString &wname, bool visible)
         else
             wdgt->hide();
     }
+    else
+        qDebug() << "No such widget to set it visible";
+}
+
+void WDFunc::setMinimumSize(QWidget *w, const QString &wname, int width, int height)
+{
+    QWidget *wdgt = w->findChild<QWidget *>(wname);
+    if (wdgt != nullptr)
+    {
+        wdgt->setMinimumSize(width, height);
+        QPushButton *pb = qobject_cast<QPushButton *>(wdgt);
+        if (pb != nullptr)
+            pb->setIconSize(QSize(width, height));
+    }
+    else
+        qDebug() << "No such widget to set size";
 }
 
 QString WDFunc::StringValueWithCheck(float value, int precision, bool exp)
@@ -735,23 +752,23 @@ QImage *WDFunc::TwoImages(const QString &first, const QString &second)
     return image;
 }
 
-QPushButton *WDFunc::NewPB(QWidget *parent, const QString &pbname, const QString &text, const QObject *receiver,
-    const char *method, const QString &icon, const QString &pbtooltip)
-{
-    QPushButton *pb = new QPushButton(parent);
-    pb->setStyleSheet("QPushButton {background-color: rgba(0,0,0,0); border: 1px solid gray; "
-                      "border-radius: 5px; border-style: outset; padding: 2px 5px;}"
-                      "QPushButton:pressed {border-style: inset;}"
-                      "QPushButton:disabled {border: none;}");
-    pb->setObjectName(pbname);
-    if (!icon.isEmpty())
-        pb->setIcon(QIcon(icon));
-    pb->setText(text);
-    pb->setToolTip(pbtooltip);
-    if (receiver != nullptr)
-        QObject::connect(pb, SIGNAL(clicked(bool)), receiver, method);
-    return pb;
-}
+// QPushButton *WDFunc::NewPB(QWidget *parent, const QString &pbname, const QString &text, const QObject *receiver,
+//    const char *method, const QString &icon, const QString &pbtooltip)
+//{
+//    QPushButton *pb = new QPushButton(parent);
+//    pb->setStyleSheet("QPushButton {background-color: rgba(0,0,0,0); border: 1px solid gray; "
+//                      "border-radius: 5px; border-style: outset; padding: 2px 5px;}"
+//                      "QPushButton:pressed {border-style: inset;}"
+//                      "QPushButton:disabled {border: none;}");
+//    pb->setObjectName(pbname);
+//    if (!icon.isEmpty())
+//        pb->setIcon(QIcon(icon));
+//    pb->setText(text);
+//    pb->setToolTip(pbtooltip);
+//    if (receiver != nullptr)
+//        QObject::connect(pb, SIGNAL(clicked(bool)), receiver, method);
+//    return pb;
+//}
 
 // QMetaObject::Connection WDFunc::PBConnect(
 //    QWidget *w, const QString &pbname, const QObject *receiver, const char *method)

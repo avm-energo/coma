@@ -175,7 +175,7 @@ QWidget *TuneKIV::BdaWidget()
         return m_BdaWidget;
     QString ValuesFormat = "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; color: black;"
                            "background-color: "
-        + QString(Colors::AConfO) + "; font: bold 10px;}";
+        + QString(Colors::ColorsMap[Colors::AConfO]) + "; font: bold 10px;}";
     m_BdaWidget = new QWidget;
     QVBoxLayout *lyout = new QVBoxLayout;
     //    QVBoxLayout *vlyout = new QVBoxLayout;
@@ -189,11 +189,10 @@ QWidget *TuneKIV::BdaWidget()
                               "Ueff_ADC" + IndexStr + ".Измеренные сигналы в кодах АЦП"),
             1, i, 1, 1);
     }
-
     glyout->addWidget(WDFunc::NewLBL(m_BdaWidget, "Frequency"), 2, 0, 1, 1);
     glyout->addWidget(WDFunc::NewLBLT(m_BdaWidget, "", "bdavalue6", ValuesFormat, "Частота"), 3, 0, 1, 1);
-    glyout->addWidget(WDFunc::NewLBL(m_BdaWidget, "Pt100"), 4, 0, 1, 1);
-    glyout->addWidget(WDFunc::NewLBLT(m_BdaWidget, "", "bdavalue7", ValuesFormat, "Температура"), 5, 0, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL(m_BdaWidget, "Pt100"), 2, 1, 1, 1);
+    glyout->addWidget(WDFunc::NewLBLT(m_BdaWidget, "", "bdavalue7", ValuesFormat, "Температура"), 3, 1, 1, 1);
     //    ETableView *tv = new ETableView;
     //    bdavalueDelegate *chdg = new bdavalueDelegate;
     //    tv->setItemDelegate(chdg);
@@ -213,6 +212,7 @@ QWidget *TuneKIV::BdaWidget()
     //    vlyout->addWidget(tv);
     gb->setLayout(glyout);
     lyout->addWidget(gb);
+    lyout->addStretch(100);
     m_BdaWidget->setLayout(lyout);
     m_BdaWidgetIsSet = true;
     return m_BdaWidget;
@@ -224,7 +224,7 @@ QWidget *TuneKIV::BdaInWidget()
         return m_Bda_inWidget;
     QString ValuesFormat = "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; color: black;"
                            "background-color: "
-        + QString(Colors::AConfO) + "; font: bold 10px;}";
+        + QString(Colors::ColorsMap[Colors::AConfO]) + "; font: bold 10px;}";
     m_Bda_inWidget = new QWidget;
     QVBoxLayout *lyout = new QVBoxLayout;
     //    QVBoxLayout *vlyout = new QVBoxLayout;
@@ -319,7 +319,7 @@ QWidget *TuneKIV::BdaTempWidget()
         return m_BdaTempWidget;
     QString ValuesFormat = "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; color: black;"
                            "background-color: "
-        + QString(Colors::AConfO) + "; font: bold 10px;}";
+        + QString(Colors::ColorsMap[Colors::AConfO]) + "; font: bold 10px;}";
     m_BdaTempWidget = new QWidget;
     QVBoxLayout *lyout = new QVBoxLayout;
     QHBoxLayout *hlyout = new QHBoxLayout;

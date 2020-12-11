@@ -15,16 +15,17 @@ QWidget *Bd0::widget()
 {
     QString ValuesFormat = "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; color: black;"
                            "background-color: "
-        + QString(Colors::AConfO) + "; font: bold 10px;}";
+        + QString(Colors::ColorsMap[Colors::AConfO]) + "; font: bold 10px;}";
     m_widget = new QWidget;
     QVBoxLayout *lyout = new QVBoxLayout;
     QHBoxLayout *hlyout = new QHBoxLayout;
-    hlyout->addWidget(WDFunc::NewLBL(m_widget, "Tmk0"));
-    hlyout->addWidget(WDFunc::NewLBLT(m_widget, "", "tmk0", ValuesFormat, "Температура процессора"));
+    hlyout->addWidget(WDFunc::NewLBL(m_widget, "Tmk0"), 0);
+    hlyout->addWidget(WDFunc::NewLBLT(m_widget, "", "tmk0", ValuesFormat, "Температура процессора"), 5);
     lyout->addLayout(hlyout);
-    hlyout->addWidget(WDFunc::NewLBL(m_widget, "VBat"));
-    hlyout->addWidget(WDFunc::NewLBLT(m_widget, "", "vbat", ValuesFormat, "Напряжение батарейки"));
+    hlyout->addWidget(WDFunc::NewLBL(m_widget, "VBat"), 0);
+    hlyout->addWidget(WDFunc::NewLBLT(m_widget, "", "vbat", ValuesFormat, "Напряжение батарейки"), 5);
     lyout->addLayout(hlyout);
+    lyout->addStretch(100);
     //    ETableView *tv = new ETableView;
     //    bdavalueDelegate *chdg = new bdavalueDelegate;
     //    tv->setItemDelegate(chdg);

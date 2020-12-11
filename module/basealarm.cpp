@@ -55,8 +55,8 @@ void BaseAlarm::setupUI(const QStringList &events)
     w->setLayout(vlayout);
 
     lyout->addWidget(w);
-    lyout->addWidget(WDFunc::NewPB(this, "", "Ok", this, SLOT(hide())), 0);
-    // lyout->addWidget(WDFunc::NewPB2(this, "", "Ok", this, &QWidget::hide), 0);
+    //    lyout->addWidget(WDFunc::NewPB(this, "", "Ok", this, SLOT(hide())), 0);
+    lyout->addWidget(WDFunc::NewPB(this, "", "Ok", static_cast<QWidget *>(this), &QWidget::hide), 0);
     setLayout(lyout);
 }
 

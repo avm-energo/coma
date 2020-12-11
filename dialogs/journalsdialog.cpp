@@ -160,13 +160,13 @@ QWidget *JournalDialog::JourTab(int jourtype)
         return w;
         break;
     }
-    QPushButton *getButton = WDFunc::NewPB2(
+    QPushButton *getButton = WDFunc::NewPB(
         this, "gj." + QString::number(jourtype), "Получить " + str, this, &JournalDialog::TryGetJourByUSB);
     hlyout->addWidget(getButton);
     QPushButton *eraseButton
-        = WDFunc::NewPB2(this, "ej." + QString::number(jourtype), "Стереть " + str, this, &JournalDialog::EraseJour);
+        = WDFunc::NewPB(this, "ej." + QString::number(jourtype), "Стереть " + str, this, &JournalDialog::EraseJour);
     hlyout->addWidget(eraseButton);
-    QPushButton *saveButton = WDFunc::NewPB2(
+    QPushButton *saveButton = WDFunc::NewPB(
         this, "sj." + QString::number(jourtype), "Сохранить журнал в файл", this, &JournalDialog::SaveJour);
     saveButton->setEnabled(false);
     connect(JourFuncs, &Journals::Done, [saveButton](const QString &str, const int &number) {

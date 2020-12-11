@@ -101,6 +101,7 @@ public:
     Error::Msg loadWorkConfig();
     Error::Msg saveAllTuneCoefs();
     Error::Msg loadAllTuneCoefs();
+    bool writeTuneCoefs();
 
 private:
     //    struct BlockStruct
@@ -116,6 +117,7 @@ private:
 
     void readTuneCoefsByBac(int bacnum);
     Error::Msg writeTuneCoefsByBac(int bacnum);
+
 signals:
     //    void PasswordChecked();
     //    void stopall();
@@ -129,11 +131,13 @@ public slots:
     void CancelTune();
     //    void ReadAllTuneCoefs();
     void readTuneCoefs();
-    bool writeTuneCoefs();
+    void writeTuneCoefsSlot();
+    void loadTuneCoefsSlot();
+    void saveTuneCoefsSlot();
     //    void Good();
     //    void NoGood();
-    Error::Msg StartMeasurement();
-    //    virtual void SetDefCoefs() = 0;
+    //    Error::Msg StartMeasurement();
+    virtual void setDefCoefs() = 0;
     //    void TuneReadCoefs(int);
 
     //    void SaveToFile();

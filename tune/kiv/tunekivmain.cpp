@@ -18,6 +18,7 @@ TuneKIVMain::TuneKIVMain(int tuneStep, ConfigKIV *ckiv, TuneKIV *kiv, QWidget *p
     SetBac(TKIV->m_Bac);
     //    SetupUI();
     m_isEnergoMonitorDialogCreated = false;
+    SetupUI();
 }
 
 void TuneKIVMain::setMessages()
@@ -147,8 +148,8 @@ Error::Msg TuneKIVMain::showPreWarning()
         "разместите модуль в термокамеру с диапазоном регулирования температуры "
         "от минус 20 до +60°С. Установите нормальное значение температуры "
         "в камере 20±5°С"));
-    lyout->addWidget(WDFunc::NewPB2(this, "", "Готово", [dlg] { dlg->close(); }));
-    lyout->addWidget(WDFunc::NewPB2(this, "cancelpb", "Отмена", [dlg] { dlg->close(); }));
+    lyout->addWidget(WDFunc::NewPB(this, "", "Готово", [dlg] { dlg->close(); }));
+    lyout->addWidget(WDFunc::NewPB(this, "cancelpb", "Отмена", [dlg] { dlg->close(); }));
     dlg->setLayout(lyout);
     WDFunc::PBConnect(dlg, "cancelpb", static_cast<AbstractTuneDialog *>(this), &AbstractTuneDialog::CancelTune);
     dlg->exec();
@@ -585,4 +586,9 @@ void TuneKIVMain::CalcTuneCoefs()
     QDialog *dlg = this->findChild<QDialog *>("energomonitordlg");
     if (dlg != nullptr)
         dlg->close();
+}
+
+void TuneKIVMain::setDefCoefs()
+{
+    TKIV->m_Bac->setDefBlock();
 }
