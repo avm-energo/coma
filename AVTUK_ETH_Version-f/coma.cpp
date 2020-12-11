@@ -460,63 +460,41 @@ void Coma::StartWork()
         qCritical("No MainTW in widgets list");
         return;
     }
+    QMetaObject::Connection *const connection = new QMetaObject::Connection;
+    *connection = connect(&board, &Board::readyRead, [=]() {
+        QObject::disconnect(*connection);
+        delete connection;
+        prepare();
+    });
     connect(MainTW, &ETabWidget::currentChanged, this, &Coma::MainTWTabChanged);
 
-    Connect();
-    QElapsedTimer tmr;
-    tmr.start();
-    while ((board.type() == 0) && (tmr.elapsed() < INTERVAL::WAIT) && !Cancelled)
-        QCoreApplication::processEvents();
-    m_BSITimer->stop();
-    if (board.type() == 0)
-    {
+    QTimer timer;
+    timer.setInterval(INTERVAL::WAIT);
+    timer.setSingleShot(true);
+    connect(&timer, &QTimer::timeout, [=] {
+        if (Cancelled)
+            return;
+        if (Board::GetInstance().type() != 0)
+            return;
         QMessageBox::critical(this, "Ошибка", "Не удалось соединиться с прибором", QMessageBox::Ok);
         DisconnectAndClear();
         qCritical("Не получили BSI, нет соединения");
         //            Disconnect();
-        return;
-    }
-    //    if (AlarmStateAllDialog != nullptr)
-    //        AlarmStateAllDialog->UpdateHealth(ModuleBSI::ModuleBsi.Hth);
-    // Board::GetInstance().setConnectionState(Board::ConnectionState::Connected);
-    quint16 serialNumber = Board::GetInstance().type();
-    QString deviceName = QVariant::fromValue(Modules::Model(serialNumber)).toString();
-    QMessageBox::information(this, "Связь установлена", "Удалось установить связь с " + deviceName, QMessageBox::Ok);
-    Reconnect = true;
-
-    PrepareDialogs();
-
-    //    setupDialogs(MainTW);
-
-    //    if (board.interfaceType() != Board::InterfaceType::RS485)
-    //        MainTW->addTab(jourDialog, "Журналы");
-
-    //    if (ModuleBSI::Health() & HTH_CONFIG) // нет конфигурации
-    if (board.noConfig()) // нет конфигурации
-        qCritical() << Error::Msg::NoConfError;
-    //    if (ModuleBSI::Health() & HTH_REGPARS) // нет коэффициентов
-    if (board.noRegPars()) // нет коэффициентов
-        qCritical() << Error::Msg::NoTuneError;
-    //    if (board.interfaceType() == Board::InterfaceType::USB)
+    });
+    Connect();
+    //    QElapsedTimer tmr;
+    //    tmr.start();
+    //    while ((board.type() == 0) && (tmr.elapsed() < INTERVAL::WAIT) && !Cancelled)
+    //        QCoreApplication::processEvents();
+    //    // m_BSITimer->stop();
+    //    if (board.type() == 0)
     //    {
-    //        fwUpDialog = new fwupdialog;
-    //        MainTW->addTab(fwUpDialog, "Загрузка ВПО");
+    //        QMessageBox::critical(this, "Ошибка", "Не удалось соединиться с прибором", QMessageBox::Ok);
+    //        DisconnectAndClear();
+    //        qCritical("Не получили BSI, нет соединения");
+    //        //            Disconnect();
+    //        return;
     //    }
-
-    //    MainTW->addTab(infoDialog, "О приборе");
-    //    infoDialog->FillBsi();
-
-    QList<UDialog *> dlgs = m_Module->dialogs();
-    for (auto *d : dlgs)
-        MainTW->addTab(d, d->getCaption());
-    MainTW->repaint();
-    MainTW->show();
-    AlrmTimer->start();
-    INFOMSG("MainTW created");
-    if (board.interfaceType() == Board::InterfaceType::USB)
-        BdaTimer->start();
-    //    auto *msgSerialNumber = statusBar()->findChild<QLabel *>("SerialNumber");
-    // msgSerialNumber->setText(QString::number(ModuleBSI::serialNumber(BT_NONE), 16));
 }
 
 /*void Coma::setupQConnections()
@@ -745,8 +723,8 @@ void Coma::newTimers()
 {
     //    TimeTimer = new QTimer(this);
     //    TimeTimer->setInterval(1000);
-    m_BSITimer = new QTimer;
-    m_BSITimer->setInterval(1000);
+    // m_BSITimer = new QTimer;
+    // m_BSITimer->setInterval(1000);
     // connect(m_BSITimer, &QTimer::timeout, &ModuleBSI::update);
 
     BdaTimer = new QTimer;
@@ -812,6 +790,41 @@ void Coma::setupConnections()
     //        });
 }
 
+void Coma::prepare()
+{
+    ETabWidget *MainTW = this->findChild<ETabWidget *>("maintw");
+    Q_ASSERT(MainTW != nullptr);
+    if (MainTW == nullptr)
+    {
+        qCritical("No MainTW in widgets list");
+        return;
+    }
+    auto const &board = Board::GetInstance();
+    quint16 deviceType = board.type();
+    QString deviceName = QVariant::fromValue(Modules::Model(deviceType)).toString();
+    QMessageBox::information(this, "Связь установлена", "Удалось установить связь с " + deviceName, QMessageBox::Ok);
+    Reconnect = true;
+
+    PrepareDialogs();
+    // нет конфигурации
+    if (board.noConfig())
+        qCritical() << Error::Msg::NoConfError;
+    // нет коэффициентов
+    if (board.noRegPars())
+        qCritical() << Error::Msg::NoTuneError;
+
+    QList<UDialog *> dlgs = m_Module->dialogs();
+    for (auto *d : dlgs)
+        MainTW->addTab(d, d->getCaption());
+    MainTW->show();
+    AlrmTimer->start();
+    qInfo() << NAMEOF(MainTW) << "created";
+    if (board.interfaceType() == Board::InterfaceType::USB)
+        BdaTimer->start();
+    auto *msgSerialNumber = statusBar()->findChild<QLabel *>("SerialNumber");
+    msgSerialNumber->setText(QString::number(board.serialNumber(Board::BaseMezzAdd), 16));
+}
+
 bool Coma::nativeEvent(const QByteArray &eventType, void *message, long *result)
 {
     Q_UNUSED(result)
@@ -831,7 +844,6 @@ bool Coma::nativeEvent(const QByteArray &eventType, void *message, long *result)
             BdaTimer->stop();
         if (AlrmTimer->isActive())
             AlrmTimer->stop();
-        //            EProtocom::GetInstance().usbStateChanged(message);
         if (Board::GetInstance().connectionState() == Board::ConnectionState::Connected
             && Board::GetInstance().interfaceType() == Board::InterfaceType::USB)
         {
@@ -1152,7 +1164,7 @@ void Coma::Disconnect()
 
 void Coma::Connect()
 {
-    m_BSITimer->start();
+    // m_BSITimer->start();
     auto const &board = Board::GetInstance();
     connect(&DataManager::GetInstance(), &DataManager::bitStringReceived, &Board::GetInstance(), &Board::update);
     //    Error::Msg res;

@@ -138,7 +138,7 @@ private:
     //    quint8 AlarmEvents[20];
 
     //    QTimer *ReceiveTimer;
-    QTimer *m_BSITimer;
+    // QTimer *m_BSITimer;
     //    QTimer *ReconnectTimer;
     QTimer *BdaTimer, *AlrmTimer; //, *HarmTimer, *VibrTimer;
 
@@ -160,6 +160,7 @@ private:
     void CloseDialogs();
     void PrepareDialogs();
     void setupConnections();
+    void prepare();
     //    void SetProgressBar1Size(int size);
     //    void SetProgressBar1Count(int count);
 

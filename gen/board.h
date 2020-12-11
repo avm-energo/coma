@@ -107,6 +107,7 @@ public:
     Modules::StartupInfoBlock baseSerialInfo() const;
 
 private:
+    static constexpr int StartupInfoBlockMembers = sizeof(Modules::StartupInfoBlock) / sizeof(quint32);
     InterfaceType m_interfaceType;
     DeviceType m_deviceType;
     Types m_boardType;
@@ -124,6 +125,7 @@ private:
     {
         return value || isSerialNumberSet(args...);
     }
+    int m_updateCounter = 0;
 
 signals:
     void interfaceTypeChanged(Board::InterfaceType);
@@ -131,6 +133,8 @@ signals:
     void boardTypeChanged(Board::Types);
     void typeChanged();
     void connectionStateChanged(Board::ConnectionState);
+    /// This signal is emitted when StartupInfoBlock::Hth
     void healthChanged(quint32);
+    /// This signal is emitted when all StartupInfoBlock members updated
     void readyRead();
 };

@@ -144,12 +144,17 @@ void Board::update(const DataTypes::BitStringStruct &bs)
     quint32 &item = *(reinterpret_cast<quint32 *>(&m_startupInfoBlock) + (bs.sigAdr - BSIREG));
     // std::copy_n(&bs.sigVal, sizeof(quint32), &item);
     item = bs.sigVal;
+    m_updateCounter++;
     // Last value updated
     if (&item == &m_startupInfoBlock.Hth)
     {
         emit healthChanged(m_startupInfoBlock.Hth);
     }
-    emit readyRead();
+    if (m_updateCounter == StartupInfoBlockMembers)
+    {
+        emit readyRead();
+        m_updateCounter = 0;
+    }
 }
 
 quint32 Board::health() const

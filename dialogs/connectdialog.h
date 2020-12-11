@@ -39,7 +39,7 @@ private slots:
     void RotateSettings(
         const QString &type, const QString &name); // in: name of registry dir without index, out - name with index
     bool IsKeyExist(const QString &type, const QString &chstr);
-    bool UpdateModel();
+    bool UpdateModel(QDialog *dlg);
 
 private:
     ConnectStruct Connect;

@@ -246,7 +246,7 @@ void Bac::updateFromWidget()
 
     for (int i = 0; i < 6; i++)
     {
-        m_blockData->DPsi[i] = StdFunc::toFloat(WDFunc::LBLText(m_widget, "tune" + QString::number(i + 30));
+        m_blockData->DPsi[i] = StdFunc::toFloat(WDFunc::LBLText(m_widget, "tune" + QString::number(i + 30)));
         m_blockData->TKUa[i] = StdFunc::toFloat(WDFunc::LBLText(m_widget, "tune" + QString::number(i + 36)));
         m_blockData->TKUb[i] = StdFunc::toFloat(WDFunc::LBLText(m_widget, "tune" + QString::number(i + 42)));
     }
