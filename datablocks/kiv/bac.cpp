@@ -250,8 +250,6 @@ void Bac::updateFromWidget()
         m_blockData->TKUa[i] = StdFunc::toFloat(WDFunc::LBLText(m_widget, "tune" + QString::number(i + 36)));
         m_blockData->TKUb[i] = StdFunc::toFloat(WDFunc::LBLText(m_widget, "tune" + QString::number(i + 42)));
     }
-
-    ;
     m_blockData->K_freq = StdFunc::toFloat(WDFunc::LBLText(m_widget, "tune48"));
     m_blockData->Art = StdFunc::toFloat(WDFunc::LBLText(m_widget, "tune49"));
     m_blockData->Brt = StdFunc::toFloat(WDFunc::LBLText(m_widget, "tune50"));

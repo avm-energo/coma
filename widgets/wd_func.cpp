@@ -701,7 +701,7 @@ void WDFunc::setMinimumSize(QWidget *w, const QString &wname, int width, int hei
         wdgt->setMinimumSize(width, height);
         QPushButton *pb = qobject_cast<QPushButton *>(wdgt);
         if (pb != nullptr)
-            pb->setIconSize(QSize(width, height));
+            pb->setIconSize(QSize(width - 10, height - 10));
     }
     else
         qDebug() << "No such widget to set size";
