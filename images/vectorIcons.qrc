@@ -1,20 +1,17 @@
 <RCC>
     <qresource prefix="/icons">
-        <file>cancel.svg</file>
-        <file>Check-02-wf.svg</file>
         <file>coma.svg</file>
         <file>ethernet.svg</file>
-        <file>frosya.svg</file>
-        <file>open.svg</file>
-        <file>play-wf.svg</file>
-        <file>repeat.svg</file>
         <file>rs485.svg</file>
-        <file>save.svg</file>
-        <file>settings.svg</file>
-        <file>stop.svg</file>
-        <file>Stop-media-01-wf.svg</file>
-        <file>Upload-01-wf.svg</file>
         <file>usb.svg</file>
-        <file>User-download-wf.svg</file>
+        <file>tnfrosya.svg</file>
+        <file>tnload.svg</file>
+        <file>tnread.svg</file>
+        <file>tnreset.svg</file>
+        <file>tnsave.svg</file>
+        <file>tnsettings.svg</file>
+        <file>tnstart.svg</file>
+        <file>tnstop.svg</file>
+        <file>tnwrite.svg</file>
     </qresource>
 </RCC>
