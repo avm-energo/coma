@@ -18,6 +18,8 @@ public:
     static void setIface(BaseInterface *iface);
 
     virtual bool start(const ConnectStruct &) = 0;
+    virtual void pause() = 0;
+    virtual void resume() = 0;
     virtual void reqStartup(quint32 sigAdr = 0, quint32 sigCount = 0) = 0;
     virtual void reqBSI() = 0;
     virtual void reqFile(quint32, bool isConfigFile = false) = 0;

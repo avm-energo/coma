@@ -137,11 +137,7 @@ public:
 
     Bd6 Bd_block6;
 
-    QWidget *Bd1W(QWidget *parent);
-    QWidget *Bd2W(QWidget *parent);
-    QWidget *Bd3W(QWidget *parent);
-    QWidget *Bd4W(QWidget *parent);
-    QWidget *Bd5W(QWidget *parent);
+ 
 
     void FillBd(QWidget *parent, QString Name, QString Value);
     void FillBd0(QWidget *parent);

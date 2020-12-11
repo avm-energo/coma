@@ -3,7 +3,7 @@
 #include "../gen/board.h"
 #include "../gen/datamanager.h"
 #include "../gen/files.h"
-#include "../gen/s2.h"
+//#include "../gen/s2.h"
 #include "../gen/stdfunc.h"
 #include "protocomthread.h"
 #include "settingstypes.h"
@@ -11,6 +11,7 @@
 
 #include <QDebug>
 #include <QThread>
+
 using Proto::CommandStruct;
 using Proto::Starters;
 
@@ -26,6 +27,7 @@ void handleCommand(const Proto::WCommands cmd);
 
 Protocom::Protocom(QObject *parent) : BaseInterface(parent)
 {
+    qRegisterMetaType<UsbHidSettings>();
 }
 
 bool Protocom::start(const ConnectStruct &st)
@@ -42,6 +44,9 @@ bool Protocom::start(const ConnectStruct &st)
 bool Protocom::start(const UsbHidSettings &usbhid)
 {
     UsbHidPort *port = new UsbHidPort(usbhid, Log);
+#ifdef QT_GUI_LIB
+    port->connectToGui(this);
+#endif
     ProtocomThread *parser = new ProtocomThread;
 
     QThread *portThread = new QThread;
@@ -51,17 +56,23 @@ bool Protocom::start(const UsbHidSettings &usbhid)
     parser->moveToThread(parseThread);
 
     // FIXME Разобраться с удалением и закрытием потоков
+    // Старт
     connect(portThread, &QThread::started, port, &UsbHidPort::poll);
     connect(parseThread, &QThread::started, parser, &ProtocomThread::parse);
-
-    connect(port, &UsbHidPort::finished, portThread, &QThread::quit);
-    connect(port, &UsbHidPort::finished, portThread, &QThread::deleteLater);
-    connect(port, &UsbHidPort::finished, port, &UsbHidPort::deleteLater);
-
+    // Рабочий режим
     connect(this, &Protocom::wakeUpParser, parser, &ProtocomThread::wakeUp, Qt::DirectConnection);
     connect(port, &UsbHidPort::dataReceived, parser, &ProtocomThread::appendReadDataChunk, Qt::DirectConnection);
-    qDebug() << QThread::currentThreadId();
     connect(parser, &ProtocomThread::writeDataAttempt, port, &UsbHidPort::writeDataAttempt, Qt::DirectConnection);
+    // Прерывание
+    connect(port, &UsbHidPort::clearQueries, parser, &ProtocomThread::clear, Qt::DirectConnection);
+    // Остановка
+    connect(port, &UsbHidPort::finished, parser, &ProtocomThread::wakeUp, Qt::DirectConnection);
+    connect(port, &UsbHidPort::finished, portThread, &QThread::quit);
+    connect(port, &UsbHidPort::finished, parseThread, &QThread::quit);
+    connect(port, &UsbHidPort::finished, portThread, &QObject::deleteLater);
+    connect(port, &UsbHidPort::finished, parseThread, &QObject::deleteLater);
+    connect(port, &UsbHidPort::finished, port, &QObject::deleteLater);
+    connect(port, &UsbHidPort::finished, parser, &QObject::deleteLater);
 
     if (!port->setupConnection())
         return false;

@@ -10,7 +10,6 @@
 #include <QMetaEnum>
 #include <QVBoxLayout>
 
-#define NAMEOF(variable) ((decltype(&variable)) nullptr, #variable)
 Config::Config()
 {
     // Q_ASSERT(sizeof(Bci::BciMain) / 4 == regs.size());

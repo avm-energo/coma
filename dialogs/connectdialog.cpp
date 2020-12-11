@@ -45,7 +45,6 @@ void ConnectDialog::SetInterface()
     auto comboBox = this->findChild<EComboBox *>();
     Board::GetInstance().setProperty("interface", comboBox->currentText());
     QDialog *dlg = new QDialog(this);
-    dlg->setMinimumWidth(150);
     dlg->setAttribute(Qt::WA_DeleteOnClose);
     dlg->setObjectName("connectdlg");
     dlg->setMinimumWidth(400);
@@ -100,7 +99,7 @@ void ConnectDialog::SetInterface()
     lyout->addStretch(20);
     dlg->setLayout(lyout);
 
-    UpdateModel();
+    UpdateModel(dlg);
     dlg->exec();
 }
 
@@ -170,7 +169,7 @@ void ConnectDialog::EthAccepted()
         sets->setValue("bs", QString::number(spbdata));
         QDialog *dlg2 = this->findChild<QDialog *>("connectdlg");
         if (dlg2 != nullptr)
-            UpdateModel();
+            UpdateModel(dlg2);
         dlg->close();
     }
 }
@@ -200,7 +199,7 @@ void ConnectDialog::RsAccepted()
         sets->setValue("address", QString::number(spbdata));
         QDialog *dlg2 = this->findChild<QDialog *>("connectdlg");
         if (dlg2 != nullptr)
-            UpdateModel();
+            UpdateModel(dlg2);
         dlg->close();
     }
 }
@@ -452,13 +451,13 @@ bool ConnectDialog::IsKeyExist(const QString &type, const QString &chstr)
     return false;
 }
 
-bool ConnectDialog::UpdateModel()
+bool ConnectDialog::UpdateModel(QDialog *dlg)
 {
     QStringList ethlist, rslist;
 
-    QDialog *dlg = this->findChild<QDialog *>("connectdlg");
-    if (!dlg)
-        return false;
+    //    QDialog *dlg = this->findChild<QDialog *>("connectdlg");
+    //    if (!dlg)
+    //        return false;
     for (int i = 0; i < MAXREGISTRYINTERFACECOUNT; ++i)
     {
         QScopedPointer<QSettings> sets = QScopedPointer<QSettings>(new QSettings(SOFTDEVELOPER, PROGNAME));

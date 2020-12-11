@@ -57,16 +57,21 @@
 // Header dbt must be the last header, thanx to microsoft
 #include <dbt.h>
 // clang-format on
-void registerForDeviceNotification(Coma *ptr)
+void registerForDeviceNotification(QWidget *ptr)
 {
     DEV_BROADCAST_DEVICEINTERFACE devInt;
     ZeroMemory(&devInt, sizeof(devInt));
+    // GUID _guid1 = { 0x25dbce51, 0x6c8f, 0x4a72, { 0x8a, 0x6d, 0xb5, 0x4c, 0x2b, 0x4f, 0xc8, 0x35 } };
+
+    GUID _guid = { 0xa5dcbf10, 0x6530, 0x11d2, { 0x90, 0x1f, 0x00, 0xc0, 0x4f, 0xb9, 0x51, 0xed } };
     devInt.dbcc_size = sizeof(DEV_BROADCAST_DEVICEINTERFACE);
     devInt.dbcc_devicetype = DBT_DEVTYP_DEVICEINTERFACE;
-    devInt.dbcc_classguid = { 0x25dbce51, 0x6c8f, 0x4a72, { 0x8a, 0x6d, 0xb5, 0x4c, 0x2b, 0x4f, 0xc8, 0x35 } };
+    devInt.dbcc_classguid = _guid;
 
     HDEVNOTIFY blub;
-    blub = RegisterDeviceNotification((HDEVNOTIFY)ptr->winId(), &devInt, DEVICE_NOTIFY_WINDOW_HANDLE);
+    // NOTE Проверить со всеми модулями
+    blub = RegisterDeviceNotification((HDEVNOTIFY)ptr->winId(), &devInt,
+        /*DEVICE_NOTIFY_ALL_INTERFACE_CLASSES*/ DBT_DEVTYP_OEM /*DEVICE_NOTIFY_WINDOW_HANDLE*/);
 }
 #endif
 
@@ -455,63 +460,41 @@ void Coma::StartWork()
         qCritical("No MainTW in widgets list");
         return;
     }
+    QMetaObject::Connection *const connection = new QMetaObject::Connection;
+    *connection = connect(&board, &Board::readyRead, [=]() {
+        QObject::disconnect(*connection);
+        delete connection;
+        prepare();
+    });
     connect(MainTW, &ETabWidget::currentChanged, this, &Coma::MainTWTabChanged);
 
-    Connect();
-    QElapsedTimer tmr;
-    tmr.start();
-    while ((board.type() == 0) && (tmr.elapsed() < INTERVAL::WAIT) && !Cancelled)
-        QCoreApplication::processEvents();
-    m_BSITimer->stop();
-    if (board.type() == 0)
-    {
+    QTimer timer;
+    timer.setInterval(INTERVAL::WAIT);
+    timer.setSingleShot(true);
+    connect(&timer, &QTimer::timeout, [=] {
+        if (Cancelled)
+            return;
+        if (Board::GetInstance().type() != 0)
+            return;
         QMessageBox::critical(this, "Ошибка", "Не удалось соединиться с прибором", QMessageBox::Ok);
         DisconnectAndClear();
         qCritical("Не получили BSI, нет соединения");
         //            Disconnect();
-        return;
-    }
-    //    if (AlarmStateAllDialog != nullptr)
-    //        AlarmStateAllDialog->UpdateHealth(ModuleBSI::ModuleBsi.Hth);
-    Board::GetInstance().setConnectionState(Board::ConnectionState::Connected);
-    quint16 serialNumber = Board::GetInstance().type();
-    QString deviceName = QVariant::fromValue(Modules::Model(serialNumber)).toString();
-    QMessageBox::information(this, "Связь установлена", "Удалось установить связь с " + deviceName, QMessageBox::Ok);
-    Reconnect = true;
-
-    PrepareDialogs();
-
-    //    setupDialogs(MainTW);
-
-    //    if (board.interfaceType() != Board::InterfaceType::RS485)
-    //        MainTW->addTab(jourDialog, "Журналы");
-
-    //    if (ModuleBSI::Health() & HTH_CONFIG) // нет конфигурации
-    if (board.noConfig()) // нет конфигурации
-        qCritical() << Error::Msg::NoConfError;
-    //    if (ModuleBSI::Health() & HTH_REGPARS) // нет коэффициентов
-    if (board.noRegPars()) // нет коэффициентов
-        qCritical() << Error::Msg::NoTuneError;
-    //    if (board.interfaceType() == Board::InterfaceType::USB)
+    });
+    Connect();
+    //    QElapsedTimer tmr;
+    //    tmr.start();
+    //    while ((board.type() == 0) && (tmr.elapsed() < INTERVAL::WAIT) && !Cancelled)
+    //        QCoreApplication::processEvents();
+    //    // m_BSITimer->stop();
+    //    if (board.type() == 0)
     //    {
-    //        fwUpDialog = new fwupdialog;
-    //        MainTW->addTab(fwUpDialog, "Загрузка ВПО");
+    //        QMessageBox::critical(this, "Ошибка", "Не удалось соединиться с прибором", QMessageBox::Ok);
+    //        DisconnectAndClear();
+    //        qCritical("Не получили BSI, нет соединения");
+    //        //            Disconnect();
+    //        return;
     //    }
-
-    //    MainTW->addTab(infoDialog, "О приборе");
-    //    infoDialog->FillBsi();
-
-    QList<UDialog *> dlgs = m_Module->dialogs();
-    for (auto *d : dlgs)
-        MainTW->addTab(d, d->getCaption());
-    MainTW->repaint();
-    MainTW->show();
-    AlrmTimer->start();
-    INFOMSG("MainTW created");
-    if (board.interfaceType() == Board::InterfaceType::USB)
-        BdaTimer->start();
-    //    auto *msgSerialNumber = statusBar()->findChild<QLabel *>("SerialNumber");
-    // msgSerialNumber->setText(QString::number(ModuleBSI::serialNumber(BT_NONE), 16));
 }
 
 /*void Coma::setupQConnections()
@@ -740,8 +723,8 @@ void Coma::newTimers()
 {
     //    TimeTimer = new QTimer(this);
     //    TimeTimer->setInterval(1000);
-    m_BSITimer = new QTimer;
-    m_BSITimer->setInterval(1000);
+    // m_BSITimer = new QTimer;
+    // m_BSITimer->setInterval(1000);
     // connect(m_BSITimer, &QTimer::timeout, &ModuleBSI::update);
 
     BdaTimer = new QTimer;
@@ -807,6 +790,41 @@ void Coma::setupConnections()
     //        });
 }
 
+void Coma::prepare()
+{
+    ETabWidget *MainTW = this->findChild<ETabWidget *>("maintw");
+    Q_ASSERT(MainTW != nullptr);
+    if (MainTW == nullptr)
+    {
+        qCritical("No MainTW in widgets list");
+        return;
+    }
+    auto const &board = Board::GetInstance();
+    quint16 deviceType = board.type();
+    QString deviceName = QVariant::fromValue(Modules::Model(deviceType)).toString();
+    QMessageBox::information(this, "Связь установлена", "Удалось установить связь с " + deviceName, QMessageBox::Ok);
+    Reconnect = true;
+
+    PrepareDialogs();
+    // нет конфигурации
+    if (board.noConfig())
+        qCritical() << Error::Msg::NoConfError;
+    // нет коэффициентов
+    if (board.noRegPars())
+        qCritical() << Error::Msg::NoTuneError;
+
+    QList<UDialog *> dlgs = m_Module->dialogs();
+    for (auto *d : dlgs)
+        MainTW->addTab(d, d->getCaption());
+    MainTW->show();
+    AlrmTimer->start();
+    qInfo() << NAMEOF(MainTW) << "created";
+    if (board.interfaceType() == Board::InterfaceType::USB)
+        BdaTimer->start();
+    auto *msgSerialNumber = statusBar()->findChild<QLabel *>("SerialNumber");
+    msgSerialNumber->setText(QString::number(board.serialNumber(Board::BaseMezzAdd), 16));
+}
+
 bool Coma::nativeEvent(const QByteArray &eventType, void *message, long *result)
 {
     Q_UNUSED(result)
@@ -818,22 +836,23 @@ bool Coma::nativeEvent(const QByteArray &eventType, void *message, long *result)
 #ifdef _WIN32
         MSG *msg = static_cast<MSG *>(message);
         int msgType = msg->message;
-        if (msgType == WM_DEVICECHANGE)
+        if (msgType != WM_DEVICECHANGE)
+            return false;
+        emit sendMessage(message);
+
+        if (BdaTimer->isActive())
+            BdaTimer->stop();
+        if (AlrmTimer->isActive())
+            AlrmTimer->stop();
+        if (Board::GetInstance().connectionState() == Board::ConnectionState::Connected
+            && Board::GetInstance().interfaceType() == Board::InterfaceType::USB)
         {
-            if (BdaTimer->isActive())
-                BdaTimer->stop();
-            if (AlrmTimer->isActive())
-                AlrmTimer->stop();
-            //            EProtocom::GetInstance().usbStateChanged(message);
-            if (Board::GetInstance().connectionState() == Board::ConnectionState::Connected
-                && Board::GetInstance().interfaceType() == Board::InterfaceType::USB)
-            {
-                BdaTimer->start();
-                AlrmTimer->start();
-            }
+            BdaTimer->start();
+            AlrmTimer->start();
         }
-#endif
     }
+#endif
+
     return false;
 }
 
@@ -1126,27 +1145,26 @@ void Coma::Disconnect()
 {
     qInfo(__PRETTY_FUNCTION__);
     AlarmW->clear();
-    if (!StdFunc::IsInEmulateMode())
+    if (StdFunc::IsInEmulateMode())
+        return;
+    if (Board::GetInstance().interfaceType() == Board::InterfaceType::USB)
     {
-        if (Board::GetInstance().interfaceType() == Board::InterfaceType::USB)
-        {
-            BdaTimer->stop();
-            //            if (Board::GetInstance().connectionState() != Board::ConnectionState::Closed)
-            //                EProtocom::GetInstance().Disconnect();
-        }
-        else
-        {
-            emit StopCommunications();
-            while (ActiveThreads) // wait for all threads to finish
-                QCoreApplication::processEvents();
-        }
-        Board::GetInstance().setConnectionState(Board::ConnectionState::Closed);
+        BdaTimer->stop();
+        //            if (Board::GetInstance().connectionState() != Board::ConnectionState::Closed)
+        //                EProtocom::GetInstance().Disconnect();
     }
+    else
+    {
+        emit StopCommunications();
+        while (ActiveThreads) // wait for all threads to finish
+            QCoreApplication::processEvents();
+    }
+    Board::GetInstance().setConnectionState(Board::ConnectionState::Closed);
 }
 
 void Coma::Connect()
 {
-    m_BSITimer->start();
+    // m_BSITimer->start();
     auto const &board = Board::GetInstance();
     connect(&DataManager::GetInstance(), &DataManager::bitStringReceived, &Board::GetInstance(), &Board::update);
     //    Error::Msg res;
@@ -1156,7 +1174,7 @@ void Coma::Connect()
     {
         //        m_iface = new USBWorker();
         //        m_iface = new Protocom;
-        BaseInterface::setIface(new Protocom);
+        BaseInterface::setIface(new Protocom(this));
         //        res = Commands::Connect();
         //        if (res != Error::Msg::NoError)
         //        {
@@ -1187,7 +1205,7 @@ void Coma::Connect()
     {
 #ifndef AVM_DEBUG
         //        m_iface = new IEC104;
-        BaseInterface::setIface(new IEC104);
+        BaseInterface::setIface(new IEC104(this));
         //        New104();
         //        if (!Ch104->isWorking())
         //            Ch104->Connect(ConnectSettings.iec104st);
@@ -1199,7 +1217,7 @@ void Coma::Connect()
     {
 #ifndef AVM_DEBUG
         //        m_iface = new ModBus;
-        BaseInterface::setIface(new ModBus);
+        BaseInterface::setIface(new ModBus(this));
         //        NewModbus();
         //        res = ChModbus->Connect(ConnectSettings.serialst);
         //        if (res != Error::Msg::NoError)
@@ -1226,6 +1244,7 @@ void Coma::Connect()
         return;
     }
     ActiveThreads = true;
+    // connect(this, &Coma::sendMessage, BaseInterface::iface(), &BaseInterface::sendMessage);
     //    m_iface->reqFloats(2420, 14);
     //    m_iface->reqFloats(2400, 7);
     //    m_iface->reqFloats(4501, 2);
@@ -1243,39 +1262,40 @@ void Coma::DisconnectAndClear()
 {
     qInfo(__PRETTY_FUNCTION__);
     //    TimeTimer->stop();
-    if (Board::GetInstance().connectionState() != Board::ConnectionState::Closed)
-    {
-        AlarmW->clear();
-        Disconnect();
-        CloseDialogs();
-        //        emit ClearBsi();
-        ClearTW();
-        ETabWidget *MainTW = this->findChild<ETabWidget *>("maintw");
-        if (MainTW == nullptr)
-        {
-            DBGMSG("Пустой MainTW");
-            return;
-        }
-        //        if (S2Config)
-        //        {
-        //            S2Config->clear();
-        //            ///вылетает при разрыве связи
-        //            delete S2Config;
-        //        }
-        //        if (S2ConfigForTune)
-        //        {
-        //            S2ConfigForTune->clear();
+    const auto &board = Board::GetInstance();
+    if (board.connectionState() == Board::ConnectionState::Closed)
+        return;
 
-        //            delete S2ConfigForTune;
-        //        }
-        // Проверить после отключения алармов
-        // if (Reconnect)
-        //    QMessageBox::information(this, "Разрыв связи", "Связь разорвана", QMessageBox::Ok, QMessageBox::Ok);
-        //        else
-        //            QMessageBox::information(this, "Разрыв связи", "Не удалось установить связь");
-        MainTW->hide();
-        StdFunc::SetEmulated(false);
+    AlarmW->clear();
+    Disconnect();
+    CloseDialogs();
+    //        emit ClearBsi();
+    ClearTW();
+    ETabWidget *MainTW = this->findChild<ETabWidget *>("maintw");
+    if (MainTW == nullptr)
+    {
+        qDebug() << Error::DescError << NAMEOF(MainTW);
+        return;
     }
+    //        if (S2Config)
+    //        {
+    //            S2Config->clear();
+    //            ///вылетает при разрыве связи
+    //            delete S2Config;
+    //        }
+    //        if (S2ConfigForTune)
+    //        {
+    //            S2ConfigForTune->clear();
+
+    //            delete S2ConfigForTune;
+    //        }
+    // Проверить после отключения алармов
+    // if (Reconnect)
+    //    QMessageBox::information(this, "Разрыв связи", "Связь разорвана", QMessageBox::Ok, QMessageBox::Ok);
+    //        else
+    //            QMessageBox::information(this, "Разрыв связи", "Не удалось установить связь");
+    MainTW->hide();
+    StdFunc::SetEmulated(false);
 
     Reconnect = false;
 }

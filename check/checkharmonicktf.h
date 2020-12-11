@@ -28,9 +28,6 @@ public:
 
      void BdWidget(QWidget *parent,QString Name, QString Value);
 
-     QWidget *BdUWidget(QWidget *parent, int value,int min, int max);
-     QWidget *BdIWidget(QWidget *parent, int value,int min, int max);
-
 
 private:
     QString ValuesFormat, WidgetFormat;

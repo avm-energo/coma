@@ -42,17 +42,22 @@ QWidget *AbstractStartupDialog::buttonWidget()
     QHBoxLayout *hlyout = new QHBoxLayout;
     QString tmps = ((DEVICETYPE == DEVICETYPE_MODULE) ? "модуля" : "прибора");
 
-    const QList<QPair<QString, std::function<void()>>> funcs {
-        { "Прочитать из " + tmps, [this]() { GetCorBdButton(); } },      //
-        { "Записать в модуль", [this]() { WriteCorBd(); } },             //
-        { "Сбросить начальные значения", [this]() { ResetCor(); } },     //
-        { "Задать начальные значения", [this]() { WriteCor(); } },       //
-        { "Прочитать значения из файла", [this]() { ReadFromFile(); } }, //
-        { "Сохранить значения в файл", [this]() { SaveToFile(); } }      //
+    const QList<QPair<QPair<QString, QIcon>, std::function<void()>>> funcs {
+        { { "Получить" /*из " + tmps*/, QIcon(":/icons/User-download-wf.svg") }, [this]() { GetCorBdButton(); } }, //
+        { { "Записать" /*в модуль"*/, QIcon(":/icons/Upload-01-wf.svg") }, [this]() { WriteCorBd(); } },           //
+        { { "Сбросить" /*начальные значения"*/, QIcon(":/icons/cancel.svg") }, [this]() { ResetCor(); } },         //
+        { { "Задать" /*начальные значения"*/, QIcon(":/icons/Check-02-wf.svg") }, [this]() { WriteCor(); } },      //
+        { { "Прочитать" /*значения из файла"*/, QIcon(":/icons/open.svg") }, [this]() { ReadFromFile(); } },       //
+        { { "Сохранить" /*значения в файл"*/, QIcon(":/icons/save.svg") }, [this]() { SaveToFile(); } }            //
     };
+
     for (auto &i : funcs)
     {
-        QPushButton *pb = new QPushButton(i.first);
+        const QIcon &icon = i.first.second;
+        QPushButton *pb = new QPushButton(icon, i.first.first);
+        pb->setMinimumHeight(40);
+        pb->setIconSize(QSize(pb->minimumHeight() / 2, pb->minimumHeight() / 2));
+
         connect(pb, &QAbstractButton::clicked, this, i.second);
         if (StdFunc::IsInEmulateMode())
             pb->setEnabled(false);

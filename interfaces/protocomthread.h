@@ -21,9 +21,11 @@ public:
 
     void parse();
 
+    void clear();
+
 private:
     // QByteArray InData, OutData;
-    QByteArray m_writeData, m_readData;
+    QByteArray /*m_writeData,*/ m_readData;
     bool isCommandRequested = false;
     quint64 progress = 0;
     void finish(Error::Msg msg);

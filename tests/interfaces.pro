@@ -72,6 +72,7 @@ HEADERS += \
     ../interfaces/settingstypes.h \
     ../interfaces/usbhidport.h \
     ../interfaces/usbhidportinfo.h \
+    ../module/modules.h \
     console.h
 
 INCLUDEPATH += $$PWD/../../includes

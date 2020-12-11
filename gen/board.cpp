@@ -72,6 +72,11 @@ quint16 Board::type(Board::Types type) const
     }
 }
 
+QString Board::moduleName() const
+{
+    return QVariant::fromValue(Modules::Model(type())).toString();
+}
+
 quint32 Board::serialNumber(Board::Types type) const
 {
     switch (type)
@@ -122,6 +127,7 @@ Board::ConnectionState Board::connectionState() const
 
 void Board::setConnectionState(ConnectionState connectionState)
 {
+    Q_ASSERT(connectionState != m_connectionState);
     if (m_connectionState == connectionState && m_connectionState == ConnectionState::Connected)
         Q_ASSERT("Try to connect while still connected");
     m_connectionState = connectionState;
@@ -138,12 +144,17 @@ void Board::update(const DataTypes::BitStringStruct &bs)
     quint32 &item = *(reinterpret_cast<quint32 *>(&m_startupInfoBlock) + (bs.sigAdr - BSIREG));
     // std::copy_n(&bs.sigVal, sizeof(quint32), &item);
     item = bs.sigVal;
+    m_updateCounter++;
     // Last value updated
     if (&item == &m_startupInfoBlock.Hth)
     {
         emit healthChanged(m_startupInfoBlock.Hth);
     }
-    emit readyRead();
+    if (m_updateCounter == StartupInfoBlockMembers)
+    {
+        emit readyRead();
+        m_updateCounter = 0;
+    }
 }
 
 quint32 Board::health() const

@@ -130,14 +130,14 @@ public:
     Bd18 Bd_block18;
 
     // Check_KDV();
-    QWidget *Bd1W(QWidget *parent);
-    QWidget *Bd2W(QWidget *parent);
-    QWidget *Bd3W(QWidget *parent);
-    QWidget *Bd4W(QWidget *parent);
-    QWidget *Bd5W(QWidget *parent);
-    QWidget *Bd6W(QWidget *parent);
-    QWidget *Bd7W(QWidget *parent);
-    QWidget *Bd8W(QWidget *parent);
+//    QWidget *Bd1W(QWidget *parent);
+//    QWidget *Bd2W(QWidget *parent);
+//    QWidget *Bd3W(QWidget *parent);
+//    QWidget *Bd4W(QWidget *parent);
+//    QWidget *Bd5W(QWidget *parent);
+//    QWidget *Bd6W(QWidget *parent);
+//    QWidget *Bd7W(QWidget *parent);
+//    QWidget *Bd8W(QWidget *parent);
     void FillBd(QWidget *parent, QString Name, QString Value);
     void FillBd0(QWidget *parent);
     void FillBd2(QWidget *parent);
@@ -153,8 +153,8 @@ public:
     void FillBd17(QWidget *parent);
     void FillBd18(QWidget *parent);
 
-    QWidget *BdUI(int bdnum);
-    QWidget *CustomTab();
+ //   QWidget *BdUI(int bdnum);
+   // QWidget *CustomTab();
 
     //    void RefreshAnalogValues(int bdnum);
     //    void PrepareHeadersForFile(int row);

@@ -6,6 +6,7 @@
 #include "protocomprivate.h"
 #include "settingstypes.h"
 
+#include <QWaitCondition>
 namespace HID
 {
 // максимальная длина одного сегмента (0x40)
@@ -21,19 +22,23 @@ class UsbHidPort : public QObject
 public:
     explicit UsbHidPort(const UsbHidSettings &dev, LogClass *logh, QObject *parent = 0);
     ~UsbHidPort();
-
+#ifdef QT_GUI_LIB
+    void connectToGui(QObject *object);
+#endif
     bool setupConnection();
     void closeConnection();
     void writeDataAttempt(const QByteArray &ba);
 
     UsbHidSettings deviceInfo() const;
     void setDeviceInfo(const UsbHidSettings &deviceInfo);
-    void usbStateChanged(void *message);
+
+    void nativeEvent(void *message);
 
 signals:
     void dataReceived(QByteArray ba);
     void finished();
     void started();
+    void clearQueries();
 
 public slots:
     void poll();
@@ -49,10 +54,15 @@ private:
 
     void checkQueue();
     void finish();
+    void clear();
+    void deviceConnected(const UsbHidSettings &st);
+    void deviceDisconnected(const UsbHidSettings &st);
     bool m_waitForReply;
+    // QWaitCondition _waiter;
     hid_device *m_hidDevice;
+    bool m_isShouldBeStopped;
     LogClass *log;
-    QMutex mutex_;
+    QMutex _mutex;
     QList<QByteArray> m_writeQueue;
     UsbHidSettings m_deviceInfo;
 };
