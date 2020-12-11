@@ -91,6 +91,7 @@ QWidget *AbstractTuneDialog::TuneUI()
     area->setWidgetResizable(true);
     QWidget *w2 = new QWidget;
     QVBoxLayout *w2lyout = new QVBoxLayout;
+    w2lyout->addWidget(WDFunc::NewLBL(this, "Для запуска регулировки нажмите кнопку \"Начать настройку\""));
     for (i = 0; i < m_messages.size(); ++i)
     {
         QHBoxLayout *hlyout = new QHBoxLayout;
@@ -381,7 +382,7 @@ void AbstractTuneDialog::startTune()
     WDFunc::SetEnabled(this, "starttune", true);
     WDFunc::SetEnabled(this, "stoptune", false);
     QMessageBox::information(this, "Готово", "Настройка завершена!");
-    saveTuneSequenceFile();
+    saveTuneSequenceFile(m_tuneStep + 1); // +1 to let the next stage run
 }
 
 Error::Msg AbstractTuneDialog::saveAllTuneCoefs()
@@ -577,7 +578,7 @@ Error::Msg AbstractTuneDialog::checkCalibrStep()
 {
     QString cpuserialnum = Board::GetInstance().UID();
     QSettings storedcalibrations(StdFunc::GetSystemHomeDir() + "calibr.ini", QSettings::IniFormat);
-    if (!storedcalibrations.contains(cpuserialnum))
+    if (!storedcalibrations.contains(cpuserialnum + "/step"))
     {
         QMessageBox::warning(this, "Внимание",
             "Не выполнены предыдущие шаги регулировки, пожалуйста,\n"
@@ -588,18 +589,19 @@ Error::Msg AbstractTuneDialog::checkCalibrStep()
     if (calibrstep < m_tuneStep)
     {
         QMessageBox::warning(this, "Внимание",
-            "Перед выполнением шага " + QString::number(m_tuneStep) + " необходимо\nвыполнить шаг " + calibrstep + "!");
+            "Перед выполнением шага " + QString::number(m_tuneStep) + " необходимо\nвыполнить шаг "
+                + QString::number(calibrstep) + "!");
 
         return Error::Msg::ResEmpty;
     }
     return Error::Msg::NoError;
 }
 
-void AbstractTuneDialog::saveTuneSequenceFile()
+void AbstractTuneDialog::saveTuneSequenceFile(int step)
 {
     QString cpuserialnum = Board::GetInstance().UID();
     QSettings storedcalibrations(StdFunc::GetSystemHomeDir() + "calibr.ini", QSettings::IniFormat);
-    storedcalibrations.setValue(cpuserialnum + "/step", m_tuneStep + 1); // +1 to let the next stage run
+    storedcalibrations.setValue(cpuserialnum + "/step", step);
 }
 
 Error::Msg AbstractTuneDialog::saveWorkConfig()

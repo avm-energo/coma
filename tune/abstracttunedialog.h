@@ -96,7 +96,7 @@ public:
     //    void ShowTable();
     Error::Msg LoadTuneSequenceFile();
     Error::Msg checkCalibrStep();
-    void saveTuneSequenceFile();
+    void saveTuneSequenceFile(int step);
     Error::Msg saveWorkConfig();
     Error::Msg loadWorkConfig();
     Error::Msg saveAllTuneCoefs();
