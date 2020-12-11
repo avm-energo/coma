@@ -52,7 +52,7 @@ void TimeDialog::SetupUI()
     glyout->addWidget(WDFunc::NewLBL(this, "Часовой пояс:"), row, 1, 1, 1);
     QStringList cbl = QStringList() << "Местное время"
                                     << "Время по Гринвичу";
-    EComboBox *cb = WDFunc::NewCB(this, "TimeZone", cbl, paramcolor);
+    auto *cb = WDFunc::NewCB(this, "TimeZone", cbl, paramcolor);
     // cb->setMinimumWidth(80);zzz
     cb->setMinimumHeight(20);
     glyout->addWidget(cb, row, 2, 1, 4);

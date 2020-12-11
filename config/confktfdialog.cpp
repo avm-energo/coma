@@ -153,7 +153,7 @@ void ConfKTFDialog::SetupUI()
     QLabel *lbl = new QLabel("Вид охлаждения: ");
     gridlyout->addWidget(lbl, row, 0, 1, 1, Qt::AlignLeft);
     QStringList cbl = QStringList { "естественное", "принудительное" };
-    EComboBox *cb = WDFunc::NewCB(this, "Cool_type", cbl, paramcolor);
+    auto *cb = WDFunc::NewCB(this, "Cool_type", cbl, paramcolor);
     //    connect(cb, SIGNAL(currentIndexChanged(int)), this, SLOT(SetCType(int)));
     gridlyout->addWidget(cb, row, 1, 1, 1);
     row++;

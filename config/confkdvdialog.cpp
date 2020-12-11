@@ -80,7 +80,7 @@ void ConfKDVDialog::SetupUI()
     QLabel *lbl = new QLabel("Тип контролируемого оборудования:");
     gridlyout->addWidget(lbl, row, 1, 1, 1, Qt::AlignLeft);
     QStringList cbl = QStringList { "Асинхронный двигатель", "Трансформатор", "Реактор" };
-    EComboBox *cb = WDFunc::NewCB(this, "Eq_type", cbl, paramcolor);
+    auto *cb = WDFunc::NewCB(this, "Eq_type", cbl, paramcolor);
     cb->setMinimumHeight(20);
     gridlyout->addWidget(cb, row, 2, 1, 3);
     row++;
@@ -609,7 +609,7 @@ QWidget *ConfKDVDialog::analogWidget()
     QLabel *lbl = new QLabel("Тип контролируемого оборудования:");
     gridlyout->addWidget(lbl, row, 1, 1, 1, Qt::AlignLeft);
     QStringList cbl = QStringList { "Асинхронный двигатель", "Трансформатор", "Реактор" };
-    EComboBox *cb = WDFunc::NewCB(this, "Eq_type", cbl, paramcolor);
+    auto *cb = WDFunc::NewCB(this, "Eq_type", cbl, paramcolor);
     cb->setMinimumHeight(20);
     gridlyout->addWidget(cb, row, 2, 1, 3);
     row++;

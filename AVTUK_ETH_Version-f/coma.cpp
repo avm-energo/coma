@@ -196,7 +196,7 @@ void Coma::SetupUI()
 
     hlyout->addWidget(createToolBar());
 
-    AlarmW = new AlarmWidget;
+    AlarmW = new AlarmWidget(this);
     //    connect(Alarm, &AlarmClass::setWarnsAndAlarms, AlarmW, &AlarmWidget::update);
     //    connect(Alarm, &AlarmClass::SetFirstButton, AlarmW, &AlarmWidget::UpdateFirstUSB);
     //    connect(Alarm, &AlarmClass::setWarnColor, AlarmW, &AlarmWidget::UpdateSecondUSB);

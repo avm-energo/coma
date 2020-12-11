@@ -497,7 +497,7 @@ QWidget *ConfigKxx::ModbusWidget(QWidget *parent)
     QVBoxLayout *vlyout2 = new QVBoxLayout;
     QGroupBox *gb = new QGroupBox;
     QGridLayout *glyout = new QGridLayout;
-    EComboBox *cb;
+
     QStringList cbl;
     QString Str;
     glyout->setColumnStretch(1, 20);
@@ -511,7 +511,7 @@ QWidget *ConfigKxx::ModbusWidget(QWidget *parent)
     QLabel *lbl = new QLabel("Modbus: ");
     glyout->addWidget(lbl, row, 0, 1, 1, Qt::AlignLeft);
     QStringList dopcbl = QStringList { "slave", "master" };
-    EComboBox *dopcb = WDFunc::NewCB(parent, "MBMaster", dopcbl, paramcolor);
+    auto *dopcb = WDFunc::NewCB(parent, "MBMaster", dopcbl, paramcolor);
     connect(dopcb, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &ConfigKxx::ChangeModbusGUI);
     glyout->addWidget(dopcb, row, 1, 1, 1);
     row++;
@@ -528,7 +528,7 @@ QWidget *ConfigKxx::ModbusWidget(QWidget *parent)
     row++;
     lbl = WDFunc::NewLBL(parent, "Скорость RS485 интерфейса:");
     glyout->addWidget(lbl, row, 0, 1, 1);
-    cb = WDFunc::NewCB(parent, "Baud_ID", m_baudList, paramcolor);
+    auto *cb = WDFunc::NewCB(parent, "Baud_ID", m_baudList, paramcolor);
     glyout->addWidget(cb, row, 1, 1, 1, Qt::AlignLeft);
 
     row++;
