@@ -128,7 +128,7 @@ Coma::~Coma()
 }
 void convertPixmap(size_t size, QAction *jourAct)
 {
-    const QIcon jourIcon("images/skull-and-bones.png");
+    const QIcon jourIcon("images/tnfrosya.svg");
     QPixmap pix = jourIcon.pixmap(QSize(40, 40), QIcon::Disabled);
     QPainter painter(&pix);
     painter.drawPixmap(QRect(20, 0, 20, 20), WDFunc::NewCircle(Qt::red, 20));
@@ -149,16 +149,16 @@ QToolBar *Coma::createToolBar()
     tb->setContextMenuPolicy(Qt::PreventContextMenu);
     tb->setStyleSheet("QToolBar {background: 0px; margin: 0px; spacing: 5px; padding: 0px;}");
     tb->setIconSize(QSize(40, 40));
-    tb->addAction(QIcon("images/play.png"), "Соединение", this, &Coma::StartWork);
-    tb->addAction(QIcon("images/stop.png"), "Разрыв соединения", this, &Coma::DisconnectAndClear);
+    tb->addAction(QIcon("images/tnstart.svg"), "Соединение", this, &Coma::StartWork);
+    tb->addAction(QIcon("images/tnstop.svg"), "Разрыв соединения", this, &Coma::DisconnectAndClear);
     tb->addSeparator();
-    tb->addAction(QIcon("images/settings.svg"), "Настройки", [this]() {
+    tb->addAction(QIcon("images/tnsettings.svg"), "Настройки", [this]() {
         SettingsDialog *dlg = new SettingsDialog;
         dlg->setAttribute(Qt::WA_DeleteOnClose);
         dlg->show();
         this->SaveSettings();
     });
-    const QIcon jourIcon("images/skull-and-bones.png");
+    const QIcon jourIcon("images/tnfrosya.svg");
 
     QAction *jourAct = new QAction(jourIcon, tr("&Журнал..."), this);
     jourAct->setShortcuts(QKeySequence::Open);
@@ -268,8 +268,8 @@ void Coma::SetupMenubar()
     menu->setTitle("Главное");
 
     menu->addAction("Выход", this, &Coma::close);
-    menu->addAction(QIcon("images/play.png"), "Соединение", this, &Coma::StartWork);
-    menu->addAction(QIcon("images/stop.png"), "Разрыв соединения", this, &Coma::DisconnectAndClear);
+    menu->addAction(QIcon("images/tnstart.svg"), "Соединение", this, &Coma::StartWork);
+    menu->addAction(QIcon("images/tnstop.svg"), "Разрыв соединения", this, &Coma::DisconnectAndClear);
 
     menubar->addMenu(menu);
 

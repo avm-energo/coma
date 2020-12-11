@@ -64,16 +64,27 @@ QWidget *AbstractTuneDialog::TuneUI()
     // CP1 - НАСТРОЙКА ПРИБОРА/МОДУЛЯ
     QWidget *w = new QWidget;
     QVBoxLayout *lyout = new QVBoxLayout;
-    QPushButton *pb = new QPushButton("Начать настройку");
-    pb->setObjectName("starttune");
+    QHBoxLayout *hlyout = new QHBoxLayout;
+    hlyout->addWidget(WDFunc::NewPB(
+        this, "starttune", "", this, &AbstractTuneDialog::startTune, "images/tnstart.svg", "Начать настройку"));
+    WDFunc::setMinimumSize(this, "starttune", 50, 50);
+    //    QPushButton *pb = new QPushButton("Начать настройку");
+    //    pb->setObjectName("starttune");
 
-    connect(pb, SIGNAL(clicked()), this, SLOT(StartTune()));
+    //    connect(pb, SIGNAL(clicked()), this, SLOT(startTune()));
 
     if (StdFunc::IsInEmulateMode())
-        pb->setEnabled(false);
-    else
-        pb->setEnabled(true);
-    lyout->addWidget(pb);
+        WDFunc::SetEnabled(this, "starttune", false);
+    //        pb->setEnabled(false);
+    //    else
+    //        pb->setEnabled(true);
+    //    lyout->addWidget(pb);
+    hlyout->addWidget(WDFunc::NewPB(
+        this, "stoptune", "", this, &AbstractTuneDialog::CancelTune, "images/tnstop.svg", "Прервать настройку"));
+    WDFunc::setMinimumSize(this, "stoptune", 50, 50);
+    WDFunc::SetEnabled(this, "stoptune", false);
+    hlyout->addStretch(100);
+    lyout->addLayout(hlyout);
     QScrollArea *area = new QScrollArea;
     area->setStyleSheet("QScrollArea {background-color: rgba(0,0,0,0);}");
     area->setFrameShape(QFrame::NoFrame);
@@ -99,7 +110,6 @@ QWidget *AbstractTuneDialog::TuneUI()
         WDFunc::SetVisible(this, "tunemsg" + QString::number(i), false);
         WDFunc::SetVisible(this, "tunemsgres" + QString::number(i), false);
     }
-    lyout->addWidget(WDFunc::NewPB(this, "", "Прервать настройку", this, &AbstractTuneDialog::CancelTune));
     //    lyout->addStretch(1);
     w->setLayout(lyout);
     return w;
@@ -118,13 +128,13 @@ QWidget *AbstractTuneDialog::BottomUI()
     //    //        pb->setObjectName(QString::number(bacnum));
     //    connect(pb, SIGNAL(clicked()), this, SLOT(setDefCoefs()));
     //    hlyout->addWidget(pb);
-    hlyout->addWidget(WDFunc::NewPB(this, "resetpb", "", this, &AbstractTuneDialog::setDefCoefs, "images/reset.svg",
+    hlyout->addWidget(WDFunc::NewPB(this, "resetpb", "", this, &AbstractTuneDialog::setDefCoefs, "images/tnreset.svg",
         "Установить настроечные коэффициенты по умолчанию"));
-    WDFunc::setMinimumSize(this, "resetpb", 60, 60);
+    WDFunc::setMinimumSize(this, "resetpb", 50, 50);
     QString tmps = "Прочитать настроечные коэффициенты из ";
     tmps += ((DEVICETYPE == DEVICETYPE_MODULE) ? "модуля" : "прибора");
     hlyout->addWidget(
-        WDFunc::NewPB(this, "readpb", "", this, &AbstractTuneDialog::readTuneCoefs, "images/read.svg", tmps));
+        WDFunc::NewPB(this, "readpb", "", this, &AbstractTuneDialog::readTuneCoefs, "images/tnread.svg", tmps));
 
     //    pb = new QPushButton(tmps);
     //    //    pb->setObjectName(QString::number(bacnum));
@@ -139,7 +149,7 @@ QWidget *AbstractTuneDialog::BottomUI()
     tmps = "Записать настроечные коэффициенты в ";
     tmps += ((DEVICETYPE == DEVICETYPE_MODULE) ? "модуль" : "прибор");
     hlyout->addWidget(
-        WDFunc::NewPB(this, "writepb", "", this, &AbstractTuneDialog::writeTuneCoefsSlot, "images/write.svg", tmps));
+        WDFunc::NewPB(this, "writepb", "", this, &AbstractTuneDialog::writeTuneCoefsSlot, "images/tnwrite.svg", tmps));
     //    pb = new QPushButton(tmps);
     //    //    pb->setObjectName(QString::number(bacnum));
 
@@ -152,8 +162,8 @@ QWidget *AbstractTuneDialog::BottomUI()
     //    hlyout->addWidget(pb);
     //    lyout->addLayout(hlyout);
     //    hlyout = new QHBoxLayout;
-    hlyout->addWidget(WDFunc::NewPB(this, "loadpb", "", this, &AbstractTuneDialog::loadTuneCoefsSlot, "images/load.svg",
-        "Прочитать настроечные коэффициенты из файла"));
+    hlyout->addWidget(WDFunc::NewPB(this, "loadpb", "", this, &AbstractTuneDialog::loadTuneCoefsSlot,
+        "images/tnload.svg", "Прочитать настроечные коэффициенты из файла"));
     //    pb = new QPushButton("Прочитать настроечные коэффициенты из файла");
     //    pb->setIcon(QIcon("../load.png"));
     //    //    pb->setObjectName(QString::number(bacnum));
@@ -161,8 +171,8 @@ QWidget *AbstractTuneDialog::BottomUI()
     //    hlyout->addWidget(pb);
     //    pb = new QPushButton("Записать настроечные коэффициенты в файл");
     WDFunc::setMinimumSize(this, "loadpb", 50, 50);
-    hlyout->addWidget(WDFunc::NewPB(this, "savepb", "", this, &AbstractTuneDialog::saveTuneCoefsSlot, "images/save.svg",
-        "Записать настроечные коэффициенты в файл"));
+    hlyout->addWidget(WDFunc::NewPB(this, "savepb", "", this, &AbstractTuneDialog::saveTuneCoefsSlot,
+        "images/tnsave.svg", "Записать настроечные коэффициенты в файл"));
     //    pb->setIcon(QIcon("../save.png"));
     //    //    pb->setObjectName(QString::number(bacnum));
     //    connect(pb, SIGNAL(clicked()), this, SLOT(SaveTuneBlocksToFiles()));
@@ -315,11 +325,12 @@ void AbstractTuneDialog::MsgClear()
 //    return Error::Msg::NoError;
 //}
 
-void AbstractTuneDialog::StartTune()
+void AbstractTuneDialog::startTune()
 {
     if (checkCalibrStep() != Error::Msg::NoError)
         return;
     WDFunc::SetEnabled(this, "starttune", false);
+    WDFunc::SetEnabled(this, "stoptune", true);
     if (m_messages.size() > m_tuneFunctions.size())
     {
         DBGMSG("lbls size > pf size");
@@ -365,6 +376,7 @@ void AbstractTuneDialog::StartTune()
     MsgSetVisible(NoMsg, bStep); // выдаём надпись "Настройка завершена!"
     //    MeasurementTimer->stop();
     WDFunc::SetEnabled(this, "starttune", true);
+    WDFunc::SetEnabled(this, "stoptune", false);
     QMessageBox::information(this, "Готово", "Настройка завершена!");
     saveTuneSequenceFile();
 }

@@ -146,7 +146,7 @@ public slots:
     //    void SetMeasurementEnabled(bool enabled);
 
 private slots:
-    void StartTune();
+    void startTune();
     //    void PasswordCheck(QString psw);
     //    virtual int ReadAnalogMeasurements() = 0;
     //    void UpdateNSecondsWidget();
