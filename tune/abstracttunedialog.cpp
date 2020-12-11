@@ -599,7 +599,7 @@ void AbstractTuneDialog::saveTuneSequenceFile()
 {
     QString cpuserialnum = Board::GetInstance().UID();
     QSettings storedcalibrations(StdFunc::GetSystemHomeDir() + "calibr.ini", QSettings::IniFormat);
-    storedcalibrations.setValue(cpuserialnum + "/step", m_tuneStep);
+    storedcalibrations.setValue(cpuserialnum + "/step", m_tuneStep + 1); // +1 to let the next stage run
 }
 
 Error::Msg AbstractTuneDialog::saveWorkConfig()
