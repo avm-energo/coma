@@ -35,7 +35,6 @@ public:
         for (const auto &item : list)
             writeCommand(cmd, item);
     }
-    virtual void nativeEvent(void *message) = 0;
 
     void reqAlarms(quint32 sigAdr = 0, quint32 sigCount = 0);
     virtual void reqFloats(quint32 sigAdr = 0, quint32 sigCount = 0) = 0;

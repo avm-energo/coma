@@ -3,8 +3,7 @@
 #include "../gen/board.h"
 #include "../gen/datamanager.h"
 #include "../gen/files.h"
-#include "../gen/helper.h"
-#include "../gen/s2.h"
+//#include "../gen/s2.h"
 #include "../gen/stdfunc.h"
 #include "protocomthread.h"
 #include "settingstypes.h"
@@ -13,13 +12,6 @@
 #include <QDebug>
 #include <QThread>
 
-#ifdef _WIN32
-// clang-format off
-#include <windows.h>
-// Header dbt must be the last header, thanx to microsoft
-#include <dbt.h>
-// clang-format on
-#endif
 using Proto::CommandStruct;
 using Proto::Starters;
 
@@ -52,6 +44,9 @@ bool Protocom::start(const ConnectStruct &st)
 bool Protocom::start(const UsbHidSettings &usbhid)
 {
     UsbHidPort *port = new UsbHidPort(usbhid, Log);
+#ifdef QT_GUI_LIB
+    port->connectToGui(this);
+#endif
     ProtocomThread *parser = new ProtocomThread;
 
     QThread *portThread = new QThread;
@@ -69,14 +64,11 @@ bool Protocom::start(const UsbHidSettings &usbhid)
     connect(port, &UsbHidPort::dataReceived, parser, &ProtocomThread::appendReadDataChunk, Qt::DirectConnection);
     connect(parser, &ProtocomThread::writeDataAttempt, port, &UsbHidPort::writeDataAttempt, Qt::DirectConnection);
     // Прерывание
-    connect(this, &Protocom::deviceStateChanged, port, &UsbHidPort::deviceStateChanged);
     connect(port, &UsbHidPort::clearQueries, parser, &ProtocomThread::clear, Qt::DirectConnection);
-    connect(this, &Protocom::requestInterrupt, port, &UsbHidPort::shouldBeStopped);
     // Остановка
     connect(port, &UsbHidPort::finished, parser, &ProtocomThread::wakeUp, Qt::DirectConnection);
     connect(port, &UsbHidPort::finished, portThread, &QThread::quit);
     connect(port, &UsbHidPort::finished, parseThread, &QThread::quit);
-    // connect(this, &Protocom::requestInterrupt, portThread, &QThread::quit);
     connect(port, &UsbHidPort::finished, portThread, &QObject::deleteLater);
     connect(port, &UsbHidPort::finished, parseThread, &QObject::deleteLater);
     connect(port, &UsbHidPort::finished, port, &QObject::deleteLater);
@@ -97,52 +89,6 @@ void Protocom::stop()
     // FIXME Реализовать
 }
 
-void Protocom::nativeEvent(void *message)
-{
-    MSG *msg = static_cast<MSG *>(message);
-    int msgType = msg->message;
-    Q_ASSERT(msgType == WM_DEVICECHANGE);
-
-    DEV_BROADCAST_DEVICEINTERFACE *devint = reinterpret_cast<DEV_BROADCAST_DEVICEINTERFACE *>(msg->lParam);
-
-    switch (msg->wParam)
-    {
-
-    case DBT_DEVICEARRIVAL:
-    {
-        if (devint->dbcc_devicetype != DBT_DEVTYP_DEVICEINTERFACE)
-            return;
-        std::wstring wstr = &devint->dbcc_name[0];
-
-        const auto st = UsbHidSettings::fromWString(wstr);
-        // emit deviceArrived(st);
-        emit deviceStateChanged(st, true);
-        qDebug() << wstr << st << devint->dbcc_devicetype;
-        break;
-    }
-    case DBT_DEVICEREMOVECOMPLETE:
-    {
-        if (devint->dbcc_devicetype != DBT_DEVTYP_DEVICEINTERFACE)
-            return;
-        std::wstring wstr = &devint->dbcc_name[0];
-
-        const auto st = UsbHidSettings::fromWString(wstr);
-        // emit deviceRemoved(st);
-        emit deviceStateChanged(st, false);
-        qDebug() << wstr << devint->dbcc_devicetype;
-        break;
-    }
-    case DBT_DEVNODES_CHANGED:
-    {
-        //        emit requestInterrupt();
-        //        pause();
-        //        Board::GetInstance().setConnectionState(Board::ConnectionState::AboutToFinish);
-        break;
-    }
-    default:
-        qInfo() << "Unhadled case" << QString::number(msg->wParam, 16);
-    }
-}
 void Protocom::reqTime()
 {
     CommandStruct inp { Proto::Commands::ReadTime, 0, 0, {} };

@@ -34,6 +34,7 @@ SOURCES += \
     ../datablocks/datablock.cpp \
     ../datablocks/kiv/bac.cpp \
     ../gen/errorqueue.cpp \
+    ../gen/helper.cpp \
     ../models/errorprotocolmodel.cpp \
     ../module/alarmkdv.cpp \
     ../module/journkdv.cpp \
@@ -133,6 +134,7 @@ HEADERS += \
     ../datablocks/datablock.h \
     ../datablocks/kiv/bac.h \
     ../gen/errorqueue.h \
+    ../gen/helper.h \
     ../models/errorprotocolmodel.h \
     ../module/alarmkdv.h \
     ../module/journkdv.h \

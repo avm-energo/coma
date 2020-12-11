@@ -1162,7 +1162,7 @@ void Coma::Connect()
     {
         //        m_iface = new USBWorker();
         //        m_iface = new Protocom;
-        BaseInterface::setIface(new Protocom);
+        BaseInterface::setIface(new Protocom(this));
         //        res = Commands::Connect();
         //        if (res != Error::Msg::NoError)
         //        {
@@ -1193,7 +1193,7 @@ void Coma::Connect()
     {
 #ifndef AVM_DEBUG
         //        m_iface = new IEC104;
-        BaseInterface::setIface(new IEC104);
+        BaseInterface::setIface(new IEC104(this));
         //        New104();
         //        if (!Ch104->isWorking())
         //            Ch104->Connect(ConnectSettings.iec104st);
@@ -1205,7 +1205,7 @@ void Coma::Connect()
     {
 #ifndef AVM_DEBUG
         //        m_iface = new ModBus;
-        BaseInterface::setIface(new ModBus);
+        BaseInterface::setIface(new ModBus(this));
         //        NewModbus();
         //        res = ChModbus->Connect(ConnectSettings.serialst);
         //        if (res != Error::Msg::NoError)
@@ -1232,7 +1232,7 @@ void Coma::Connect()
         return;
     }
     ActiveThreads = true;
-    connect(this, &Coma::sendMessage, BaseInterface::iface(), &BaseInterface::nativeEvent);
+    // connect(this, &Coma::sendMessage, BaseInterface::iface(), &BaseInterface::sendMessage);
     //    m_iface->reqFloats(2420, 14);
     //    m_iface->reqFloats(2400, 7);
     //    m_iface->reqFloats(4501, 2);

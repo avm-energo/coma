@@ -1,5 +1,9 @@
 #include "usbhidport.h"
 
+#ifdef QT_GUI_LIB
+#include "../AVTUK_ETH_Version-f/coma.h"
+#endif
+
 #include "../gen/board.h"
 #include "../gen/helper.h"
 #include "../gen/stdfunc.h"
@@ -34,7 +38,17 @@ UsbHidPort::UsbHidPort(const UsbHidSettings &dev, LogClass *logh, QObject *paren
 UsbHidPort::~UsbHidPort()
 {
 }
-
+#ifdef QT_GUI_LIB
+void UsbHidPort::connectToGui(QObject *object)
+{
+    Q_ASSERT(object != nullptr);
+    Q_ASSERT(object->parent() != nullptr);
+    qDebug() << object->metaObject()->className();
+    Coma *mainWindow = qobject_cast<Coma *>(object->parent());
+    if (mainWindow != nullptr)
+        connect(mainWindow, &Coma::sendMessage, this, &UsbHidPort::nativeEvent, Qt::DirectConnection);
+}
+#endif
 inline hid_device *openDevice(const UsbHidSettings &dev)
 {
     return hid_open(dev.vendor_id, dev.product_id, dev.serial.toStdWString().c_str());
@@ -115,41 +129,28 @@ void UsbHidPort::poll()
     finish();
 }
 
-void UsbHidPort::deviceStateChanged(const UsbHidSettings &st, bool isConnected)
+void UsbHidPort::deviceConnected(const UsbHidSettings &st)
 {
-    if (!isConnected)
-    {
-        // Отключено другое устройство
-        if (st != deviceInfo())
-            return;
-        else
-        {
-            // Отключено наше устройство
-            shouldBeStopped();
-            Board::GetInstance().setConnectionState(Board::ConnectionState::AboutToFinish);
-            qInfo() << deviceInfo() << "disconnected";
-            //            QTimer disconnectTimer;
-            //            disconnectTimer.setSingleShot(true);
-            //            disconnectTimer.setInterval(10000);
-            //            connect(&disconnectTimer, &QTimer::timeout, [] {
-            //                if (Board::GetInstance().connectionState() == Board::ConnectionState::AboutToFinish)
-            //                    Board::GetInstance().setConnectionState(Board::ConnectionState::Closed);
-            //            });
-        }
-    }
-    else
-    {
-        // Подключено другое устройство
-        if (st != deviceInfo())
-            return;
-        // Устройство появляется не сразу после прихода события о его подключении
-        StdFunc::Wait(100);
-        emit clearQueries();
-        if (!setupConnection())
-            return;
-        qInfo() << deviceInfo() << "connected";
-        Board::GetInstance().setConnectionState(Board::ConnectionState::Connected);
-    }
+    // Подключено другое устройство
+    if (st != deviceInfo())
+        return;
+    // Устройство появляется не сразу после прихода события о его подключении
+    StdFunc::Wait(100);
+    emit clearQueries();
+    if (!setupConnection())
+        return;
+    qInfo() << deviceInfo() << "connected";
+    Board::GetInstance().setConnectionState(Board::ConnectionState::Connected);
+}
+
+void UsbHidPort::deviceDisconnected(const UsbHidSettings &st)
+{
+    // Отключено другое устройство
+    if (st != deviceInfo())
+        return;
+    // Отключено наше устройство
+    Board::GetInstance().setConnectionState(Board::ConnectionState::AboutToFinish);
+    qInfo() << deviceInfo() << "disconnected";
 }
 
 UsbHidSettings UsbHidPort::deviceInfo() const
@@ -188,19 +189,58 @@ void UsbHidPort::finish()
 
 void UsbHidPort::clear()
 {
-    // QMutexLocker locker(&_mutex);
+    QMutexLocker locker(&_mutex);
     m_waitForReply = false;
     m_writeQueue.clear();
 }
 
-bool UsbHidPort::isShouldBeStopped() const
+void UsbHidPort::nativeEvent(void *message)
 {
-    return m_isShouldBeStopped;
-}
+#ifdef _WIN32
+    MSG *msg = static_cast<MSG *>(message);
+    int msgType = msg->message;
+    Q_ASSERT(msgType == WM_DEVICECHANGE);
 
-void UsbHidPort::shouldBeStopped()
-{
-    m_isShouldBeStopped = true;
+    DEV_BROADCAST_DEVICEINTERFACE *devint = reinterpret_cast<DEV_BROADCAST_DEVICEINTERFACE *>(msg->lParam);
+
+    switch (msg->wParam)
+    {
+
+    case DBT_DEVICEARRIVAL:
+    {
+        if (devint->dbcc_devicetype != DBT_DEVTYP_DEVICEINTERFACE)
+            return;
+        std::wstring wstr = &devint->dbcc_name[0];
+
+        const auto st = UsbHidSettings::fromWString(wstr);
+        deviceConnected(st);
+        qDebug() << /*wstr <<*/ st /*<< devint->dbcc_devicetype*/;
+        break;
+    }
+    case DBT_DEVICEREMOVECOMPLETE:
+    {
+        if (devint->dbcc_devicetype != DBT_DEVTYP_DEVICEINTERFACE)
+            return;
+        std::wstring wstr = &devint->dbcc_name[0];
+
+        const auto st = UsbHidSettings::fromWString(wstr);
+        deviceDisconnected(st);
+        qDebug() << /*wstr <<*/ st /*<< devint->dbcc_devicetype*/;
+        break;
+    }
+    case DBT_DEVNODES_CHANGED:
+    {
+        // NOTE Игнорируем события изменения состояния.
+        // Можно как-то обрабатывать.
+        // Приходят перед и после обрабатываемых событий.
+        // Внутри не содержат ничего, получаем только тип
+        // события.
+        break;
+    }
+    default:
+        qInfo() << "Unhadled case" << QString::number(msg->wParam, 16);
+    }
+#endif
 }
 
 void UsbHidPort::writeLog(QByteArray ba, Direction dir)
@@ -222,48 +262,6 @@ void UsbHidPort::writeLog(QByteArray ba, Direction dir)
     tmpba.append(ba).append("\n");
     log->WriteRaw(tmpba);
 #endif
-}
-
-bool UsbHidPort::writeData(const QByteArray &ba)
-{
-    QByteArray tba(ba);
-    if (!m_hidDevice)
-    {
-        writeLog(Error::Msg::NoDeviceError);
-        qCritical() << Error::Msg::NoDeviceError;
-        return false;
-    }
-
-    if (tba.size() > HID::MaxSegmenthLength)
-    {
-        writeLog(Error::Msg::SizeError);
-        qCritical() << Error::Msg::SizeError;
-        return false;
-    }
-
-    if (tba.isEmpty())
-    {
-        writeLog(Error::Msg::NullDataError);
-        qCritical() << Error::Msg::NullDataError;
-        return false;
-    }
-    // NOTE
-    writeLog(tba.toHex(), Proto::ToDevice);
-    if (tba.size() < HID::MaxSegmenthLength)
-        tba.append(HID::MaxSegmenthLength - tba.size(), static_cast<char>(0x00));
-
-    // inserting ID field for HID protocol
-    tba.prepend(static_cast<char>(0x00));
-
-    size_t tmpt = static_cast<size_t>(tba.size());
-
-    int errorCode = hid_write(m_hidDevice, reinterpret_cast<unsigned char *>(tba.data()), tmpt);
-    if (errorCode == -1)
-    {
-        qCritical() << Error::Msg::WriteError;
-        return false;
-    }
-    return true;
 }
 
 bool UsbHidPort::writeData(QByteArray &ba)
@@ -320,104 +318,4 @@ void UsbHidPort::checkQueue()
         else
             emit clearQueries();
     }
-}
-
-// FIXME Не реализовано
-void UsbHidPort::usbStateChanged(void *message)
-{
-#ifdef _WIN32
-    MSG *msg = static_cast<MSG *>(message);
-    int msgType = msg->message;
-    if (msgType != WM_DEVICECHANGE)
-        return;
-
-    switch (msg->wParam)
-    {
-    case DBT_CONFIGCHANGECANCELED:
-        qDebug("DBT_CONFIGCHANGECANCELED");
-        break;
-    case DBT_CONFIGCHANGED:
-        qDebug("DBT_CONFIGCHANGED");
-        break;
-    case DBT_CUSTOMEVENT:
-        qDebug("DBT_CUSTOMEVENT");
-        break;
-    case DBT_DEVICEARRIVAL:
-    {
-        // DevicesFound();
-        if (Board::GetInstance().connectionState() == Board::ConnectionState::AboutToFinish)
-        {
-            //                if (m_devices.contains(m_usbWorker->deviceInfo()))
-            //                {
-            //                    m_devicePosition = m_devices.indexOf(m_usbWorker->deviceInfo());
-            //                    m_usbWorker->setDeviceInfo(m_devices.at(m_devicePosition));
-            //                    qDebug("Device arrived again");
-            //                    if (!Reconnect())
-            //                    {
-            //                        qDebug("Reconnection failed");
-            //                        Disconnect();
-            //                    }
-            //                }
-        }
-        break;
-    }
-    case DBT_DEVICEQUERYREMOVE:
-        qDebug("DBT_DEVICEQUERYREMOVE");
-        break;
-    case DBT_DEVICEQUERYREMOVEFAILED:
-        qDebug("DBT_DEVICEQUERYREMOVEFAILED");
-        break;
-    case DBT_DEVICEREMOVEPENDING:
-        qDebug("DBT_DEVICEREMOVEPENDING");
-        break;
-    case DBT_DEVICEREMOVECOMPLETE:
-    {
-        qDebug("DBT_DEVICEREMOVECOMPLETE");
-        // qDebug() << DevicesFound();
-        if (Board::GetInstance().connectionState() != Board::ConnectionState::Closed)
-        {
-            //                if (!m_devices.contains(m_usbWorker->deviceInfo()))
-            //                {
-            //                    qDebug() << "Device " << m_usbWorker->deviceInfo().serial << " removed
-            //                    completely"; m_writeData.clear(); OutData.clear();
-            //                    Finish(Error::Msg::NullDataError);
-            //                    m_loop.exit();
-            //                    QMessageBox::critical(nullptr, "Ошибка", "Связь с прибором была разорвана",
-            //                    QMessageBox::Ok);
-            //                }
-        }
-        break;
-    }
-    case DBT_DEVICETYPESPECIFIC:
-        qDebug("DBT_DEVICETYPESPECIFIC");
-        break;
-    case DBT_QUERYCHANGECONFIG:
-        qDebug("DBT_QUERYCHANGECONFIG");
-        break;
-    case DBT_DEVNODES_CHANGED:
-    {
-        qDebug("DBT_DEVNODES_CHANGED");
-        // DevicesFound();
-
-        // Ивенты должны происходить только если отключен подключенный раннее
-        // прибор
-        if (Board::GetInstance().connectionState() == Board::ConnectionState::Connected)
-        {
-            //                if (!m_devices.contains(m_usbWorker->deviceInfo()))
-            //                {
-            //                    qDebug() << "Device " << m_usbWorker->deviceInfo().serial << " state changed";
-            //                    Board::GetInstance().setConnectionState(Board::ConnectionState::AboutToFinish);
-            //                }
-        }
-        break;
-    }
-    case DBT_USERDEFINED:
-        qDebug("DBT_USERDEFINED");
-        break;
-    default:
-        qDebug() << "Default";
-        break;
-    }
-
-#endif
 }

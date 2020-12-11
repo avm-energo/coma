@@ -143,7 +143,6 @@ public slots:
     void pause() override {};
     void resume() override {};
 
-    void nativeEvent(void *message) override {};
     //    static void Com45(quint32 com);
     //    static void Com50(quint32 adr, float param);
     //    void CorReadRequest();

@@ -8,9 +8,9 @@
 #include "../gen/stdfunc.h"
 
 #include <QDebug>
-#include <QMetaEnum>
+//#include <QMetaEnum>
 #include <QThread>
-#include <array>
+//#include <array>
 
 typedef QQueue<QByteArray> ByteQueue;
 using Proto::CommandStruct;

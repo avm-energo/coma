@@ -15,7 +15,6 @@ public:
     void pause() override {};
     void resume() override {};
     void stop() override;
-    void nativeEvent(void *message) override;
 
     void reqTime() override;
     void reqFile(quint32 filenum, bool isConfigFile = false) override;
@@ -33,10 +32,6 @@ private:
 signals:
     void wakeUpParser();
     void wakeUpPort();
-    void requestInterrupt();
-    void deviceRemoved(const UsbHidSettings &);
-    void deviceArrived(const UsbHidSettings &);
-    void deviceStateChanged(const UsbHidSettings &st, bool isConnected);
 };
 
 namespace

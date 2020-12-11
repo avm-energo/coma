@@ -83,7 +83,6 @@ public:
     void pause() override {};
     void resume() override {};
     //    void BSIrequest();
-    void nativeEvent(void *message) override {};
     void reqStartup(quint32 sigAdr, quint32 sigCount) override;
     void reqBSI() override;
     void reqFile(quint32 filenum, bool isConfigFile) override;

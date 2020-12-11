@@ -22,17 +22,17 @@ class UsbHidPort : public QObject
 public:
     explicit UsbHidPort(const UsbHidSettings &dev, LogClass *logh, QObject *parent = 0);
     ~UsbHidPort();
-
+#ifdef QT_GUI_LIB
+    void connectToGui(QObject *object);
+#endif
     bool setupConnection();
     void closeConnection();
     void writeDataAttempt(const QByteArray &ba);
 
     UsbHidSettings deviceInfo() const;
     void setDeviceInfo(const UsbHidSettings &deviceInfo);
-    void usbStateChanged(void *message);
 
-    bool isShouldBeStopped() const;
-    void shouldBeStopped();
+    void nativeEvent(void *message);
 
 signals:
     void dataReceived(QByteArray ba);
@@ -42,7 +42,6 @@ signals:
 
 public slots:
     void poll();
-    void deviceStateChanged(const UsbHidSettings &st, bool isConnected);
 
 private:
     void writeLog(QByteArray ba, Proto::Direction dir = Proto::NoDirection);
@@ -51,14 +50,15 @@ private:
         writeLog(QVariant::fromValue(msg).toByteArray(), dir);
     }
 
-    bool writeData(const QByteArray &ba);
     bool writeData(QByteArray &ba);
 
     void checkQueue();
     void finish();
     void clear();
+    void deviceConnected(const UsbHidSettings &st);
+    void deviceDisconnected(const UsbHidSettings &st);
     bool m_waitForReply;
-    QWaitCondition _waiter;
+    // QWaitCondition _waiter;
     hid_device *m_hidDevice;
     bool m_isShouldBeStopped;
     LogClass *log;
