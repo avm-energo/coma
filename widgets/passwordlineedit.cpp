@@ -19,7 +19,7 @@ PasswordLineEdit::PasswordLineEdit(QLineEdit::EchoMode echostyle, QWidget *paren
     hlyout->addWidget(le, 10);
     QPushButton *pb = new QPushButton(parent);
     pb->setIcon(QIcon("images/pswshow.png"));
-    QObject::connect(pb, SIGNAL(clicked(bool)), this, SLOT(PswLEToggleEchoMode()));
+    QObject::connect(pb, &QAbstractButton::clicked, this, &PasswordLineEdit::PswLEToggleEchoMode);
     hlyout->addWidget(pb, 0);
     setLayout(hlyout);
 }

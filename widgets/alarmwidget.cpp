@@ -27,10 +27,11 @@ AlarmWidget::AlarmWidget(QWidget *parent) : UWidget(parent)
 
     QHBoxLayout *hlyout2 = new QHBoxLayout;
     QDialogButtonBox *buttons = new QDialogButtonBox;
+    setMinimumWidth(parent->width() / 2);
     // buttons.addButton()
     QStringList ButtonList { "AlarmButtonPressed", "ModuleWarnButtonPressed", "ModuleAlarmButtonPressed" };
     // NOTE ничего не меняет
-    setStyleSheet("QComa {background-color: " + QString(Colors::MAINWINCLR) + ";}");
+    // setStyleSheet("QComa {background-color: " + QString(Colors::MAINWINCLR) + ";}");
 
     // setStyleSheet("background-color: " + QString(Colors::MAINWINCLR) + "");
     // setStyleSheet("background-color: rgba(0,0,0,0)");
@@ -244,7 +245,8 @@ void AlarmWidget::addAlarm(BaseAlarm *alarm)
     QDialogButtonBox *buttons = qobject_cast<QDialogButtonBox *>(buttonBoxLayout->itemAt(0)->widget());
     Q_ASSERT(buttons != nullptr);
     AlarmButton *pb = new AlarmButton;
-    pb->setMinimumSize(QSize(3 * geometry().width() / 10, 30));
+    // pb->setMinimumSize(QSize(3 * geometry().width() / 1, 30));
+    // pb->setSizeIncrement()
     pb->setPixmap(WDFunc::NewCircle(Qt::green, 15));
     connect(pb, &QPushButton::clicked, alarm, &QDialog::show);
     //    alarm->setInterface(iface());

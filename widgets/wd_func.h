@@ -50,7 +50,7 @@ public:
     static bool SetTEData(QWidget *w, const QString &tename, const QString &tetext);
     static bool TEData(QWidget *w, const QString &tename, QString &tevalue);
     static bool SetLBLTColor(QWidget *w, const QString &lblname, const QString &color);
-    static EComboBox *NewCB(
+    static QComboBox *NewCB(
         QWidget *parent, const QString &cbname, const QStringList &cbsl, const QString &cbcolor = "");
     static bool SetCBData(QWidget *w, const QString &cbname, const QString &cbvalue);
     static bool SetCBIndex(QObject *w, const QString &cbname, int index);
@@ -58,7 +58,7 @@ public:
     static QString CBData(QWidget *w, const QString &cbname);
     static int CBIndex(QObject *w, const QString &cbname)
     {
-        EComboBox *cb = w->findChild<EComboBox *>(cbname);
+        QComboBox *cb = w->findChild<QComboBox *>(cbname);
         if (cb == nullptr)
             return -1;
         return cb->currentIndex();
@@ -180,10 +180,10 @@ private:
         const QString &icon = "", const QString &pbtooltip = "")
     {
         QPushButton *pb = new QPushButton(parent);
-        pb->setStyleSheet("QPushButton {background-color: rgba(0,0,0,0); border: 1px solid gray; "
-                          "border-radius: 5px; border-style: outset; padding: 2px 5px;}"
-                          "QPushButton:pressed {border-style: inset;}"
-                          "QPushButton:disabled {border: none;}");
+        //        pb->setStyleSheet("QPushButton {background-color: rgba(0,0,0,0); border: 1px solid gray; "
+        //                          "border-radius: 5px; border-style: outset; padding: 2px 5px;}"
+        //                          "QPushButton:pressed {border-style: inset;}"
+        //                          "QPushButton:disabled {border: none;}");
         pb->setObjectName(pbname);
         if (!icon.isEmpty())
             pb->setIcon(QIcon(icon));

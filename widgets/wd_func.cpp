@@ -177,9 +177,9 @@ bool WDFunc::TEData(QWidget *w, const QString &tename, QString &tevalue)
     return true;
 }
 
-EComboBox *WDFunc::NewCB(QWidget *parent, const QString &cbname, const QStringList &cbsl, const QString &cbcolor)
+QComboBox *WDFunc::NewCB(QWidget *parent, const QString &cbname, const QStringList &cbsl, const QString &cbcolor)
 {
-    EComboBox *cb = new EComboBox(parent);
+    QComboBox *cb = new QComboBox(parent);
     cb->setObjectName(cbname);
     QStringListModel *cblm = new QStringListModel(cb);
     cblm->setStringList(cbsl);
@@ -194,7 +194,7 @@ EComboBox *WDFunc::NewCB(QWidget *parent, const QString &cbname, const QStringLi
 
 QString WDFunc::CBData(QWidget *w, const QString &cbname)
 {
-    EComboBox *cb = w->findChild<EComboBox *>(cbname);
+    QComboBox *cb = w->findChild<QComboBox *>(cbname);
     if (cb == nullptr)
         return QString();
     return cb->currentText();
@@ -220,7 +220,7 @@ QString WDFunc::CBData(QWidget *w, const QString &cbname)
 
 bool WDFunc::SetCBData(QWidget *w, const QString &cbname, const QString &cbvalue)
 {
-    EComboBox *cb = w->findChild<EComboBox *>(cbname);
+    QComboBox *cb = w->findChild<QComboBox *>(cbname);
     if (cb == nullptr)
         return false;
     cb->setCurrentText(cbvalue);
@@ -229,7 +229,7 @@ bool WDFunc::SetCBData(QWidget *w, const QString &cbname, const QString &cbvalue
 
 bool WDFunc::SetCBIndex(QObject *w, const QString &cbname, int index)
 {
-    EComboBox *cb = w->findChild<EComboBox *>(cbname);
+    QComboBox *cb = w->findChild<QComboBox *>(cbname);
     if (cb == nullptr)
         return false;
     if (index < cb->count())
@@ -242,7 +242,7 @@ bool WDFunc::SetCBIndex(QObject *w, const QString &cbname, int index)
 
 bool WDFunc::SetCBColor(QWidget *w, const QString &cbname, const QString &color)
 {
-    EComboBox *cb = w->findChild<EComboBox *>(cbname);
+    QComboBox *cb = w->findChild<QComboBox *>(cbname);
     if (cb == nullptr)
         return false;
     // http://forum.sources.ru/index.php?showtopic=313950
@@ -264,11 +264,11 @@ EDoubleSpinBox *WDFunc::NewSPB(
     dsb->setMinimum(min);
     dsb->setMaximum(max);
 
-    if (!spbcolor.isEmpty())
-    {
-        QString tmps = "QDoubleSpinBox {background-color: " + spbcolor + ";}";
-        dsb->setStyleSheet(tmps);
-    }
+    //    if (!spbcolor.isEmpty())
+    //    {
+    //        QString tmps = "QDoubleSpinBox {background-color: " + spbcolor + ";}";
+    //        dsb->setStyleSheet(tmps);
+    //    }
     return dsb;
 }
 
@@ -607,11 +607,11 @@ QCheckBox *WDFunc::NewChB(QWidget *parent, const QString &chbname, const QString
     QCheckBox *chb = new QCheckBox(parent);
     chb->setObjectName(chbname);
     chb->setText(chbtext);
-    if (!chbcolor.isEmpty())
-    {
-        QString tmps = "QCheckBox {background-color: " + chbcolor + ";}";
-        chb->setStyleSheet(tmps);
-    }
+    //    if (!chbcolor.isEmpty())
+    //    {
+    //        QString tmps = "QCheckBox {background-color: " + chbcolor + ";}";
+    //        chb->setStyleSheet(tmps);
+    //    }
     return chb;
 }
 
