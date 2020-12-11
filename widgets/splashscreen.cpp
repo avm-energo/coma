@@ -35,20 +35,23 @@ void SplashScreen::drawContents(QPainter *painter)
     painter->setFont(font);
     rect.setHeight(painter->font().pixelSize() * 1.2);
 
-    rect.moveBottom(rect.bottom() + 2 * painter->font().pixelSize());
+    rect.moveBottom(rect.bottom() + 1.7 * painter->font().pixelSize());
     painter->drawText(rect, Qt::AlignLeft, Prog::modules);
 
-    rect.moveBottom(rect.bottom() + 2 * painter->font().pixelSize());
+    rect.moveBottom(rect.bottom() + 1.7 * painter->font().pixelSize());
     painter->drawText(rect, Qt::AlignLeft, Prog::zlib);
 
-    rect.moveBottom(rect.bottom() + 2 * painter->font().pixelSize());
+    rect.moveBottom(rect.bottom() + 1.7 * painter->font().pixelSize());
     painter->drawText(rect, Qt::AlignLeft, Prog::hidapi);
 
-    rect.moveBottom(rect.bottom() + 2 * painter->font().pixelSize());
+    rect.moveBottom(rect.bottom() + 1.7 * painter->font().pixelSize());
     painter->drawText(rect, Qt::AlignLeft, Prog::qxlsx);
 
-    rect.moveBottom(rect.bottom() + 2 * painter->font().pixelSize());
+    rect.moveBottom(rect.bottom() + 1.7 * painter->font().pixelSize());
     painter->drawText(rect, Qt::AlignLeft, Prog::limereport);
+
+    rect.moveBottom(rect.bottom() + 1.7 * painter->font().pixelSize());
+    painter->drawText(rect, Qt::AlignLeft, Prog::icons);
 
     font.setPixelSize(20);
     painter->setFont(font);
