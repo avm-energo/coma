@@ -96,6 +96,8 @@ QWidget *AbstractTuneDialog::TuneUI()
         QHBoxLayout *hlyout = new QHBoxLayout;
         hlyout->addWidget(WDFunc::NewLBL(this, m_messages.at(i), "", "tunemsg" + QString::number(i)));
         hlyout->addWidget(WDFunc::NewLBL(this, "", "", "tunemsgres" + QString::number(i)));
+        WDFunc::SetVisible(this, "tunemsg" + QString::number(i), false);
+        WDFunc::SetVisible(this, "tunemsgres" + QString::number(i), false);
         hlyout->addStretch(1);
         w2lyout->addLayout(hlyout);
     }
@@ -105,11 +107,12 @@ QWidget *AbstractTuneDialog::TuneUI()
     lyout->addWidget(area);
     area->verticalScrollBar()->setValue(area->verticalScrollBar()->maximum());
     lyout->addWidget(WDFunc::NewLBL(this, "Настройка завершена!", "", "tunemsg" + QString::number(i)));
-    for (int i = 0; i < m_messages.size() + 1; ++i)
-    {
-        WDFunc::SetVisible(this, "tunemsg" + QString::number(i), false);
-        WDFunc::SetVisible(this, "tunemsgres" + QString::number(i), false);
-    }
+    WDFunc::SetVisible(this, "tunemsg" + QString::number(i), false);
+    //    for (int i = 0; i < m_messages.size() + 1; ++i)
+    //    {
+    //        WDFunc::SetVisible(this, "tunemsg" + QString::number(i), false);
+    //        WDFunc::SetVisible(this, "tunemsgres" + QString::number(i), false);
+    //    }
     //    lyout->addStretch(1);
     w->setLayout(lyout);
     return w;
