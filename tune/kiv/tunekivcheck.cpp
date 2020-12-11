@@ -17,6 +17,8 @@ TuneKIVCheck::TuneKIVCheck(int tuneStep, TuneKIV *kiv, QWidget *parent) : Abstra
     //    m_tuneStep = 1;
     //    SetupUI();
     //    addDataBlock()
+    saveTuneSequenceFile(); // save settings for the current MCU in INI file
+    SetupUI();
 }
 
 // void TuneKIVCheck::SetupUI()

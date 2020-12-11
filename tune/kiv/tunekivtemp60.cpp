@@ -21,6 +21,7 @@ TuneKIVTemp60::TuneKIVTemp60(int tuneStep, ConfigKIV *ckiv, TuneKIV *tkiv, QWidg
     //    SetBac(&TKIV->m_Bac, 1, sizeof(TKIV->m_Bac));
     SetBac(TKIV->m_Bac);
     //    AddBac(&m_Bac_block, M_BACBLOCKNUM, sizeof(m_Bac_block));
+    SetupUI();
 }
 
 void TuneKIVTemp60::setMessages()
