@@ -27,113 +27,71 @@ TimeDialog::~TimeDialog()
 
 void TimeDialog::SetupUI()
 {
-    QVBoxLayout *vlyout1 = new QVBoxLayout;
-    QVBoxLayout *vlyout2 = new QVBoxLayout;
-    QGridLayout *glyout = new QGridLayout;
-    //    QWidget *analog1 = new QWidget;
-    //    QWidget *analog2 = new QWidget;
-    //    QWidget *extraconf = new QWidget;
-    //    QWidget *MEKconf = new QWidget;
+    QVBoxLayout *mainLayout = new QVBoxLayout;
+
     QWidget *time = new QWidget;
-    // QString tmps = "QWidget {background-color: " + QString(Colors::ACONFWCLR) + ";}";
-    // analog1->setStyleSheet(tmps);
-    // analog2->setStyleSheet(tmps);
-    // extraconf->setStyleSheet(tmps);
-    // time->setStyleSheet(tmps);
-    // MEKconf->setStyleSheet(tmps);
-    int row = 0;
 
-    // QString paramcolor = Colors::MAINWINCLR;
-
-    QGroupBox *gb = new QGroupBox;
-
-    glyout->addWidget(WDFunc::NewLBL2(this, "Часовой пояс:"), row, 1, 1, 1);
+    auto *timeZoneLbl = WDFunc::NewLBL2(time, "Часовой пояс:");
     const QStringList cbl { "Местное время", "Время по Гринвичу" };
-    auto *cb = WDFunc::NewCB2(this, cbl /*, paramcolor*/);
+    auto *cb = WDFunc::NewCB2(time, cbl);
     connect(cb, qOverload<int>(&QComboBox::currentIndexChanged), this, &TimeDialog::setTimeZone);
-    // cb->setMinimumWidth(80);zzz
-    cb->setMinimumHeight(20);
-    glyout->addWidget(cb, row, 2, 1, 4);
-    row++;
+    auto *line = new QHBoxLayout;
+    line->addWidget(timeZoneLbl);
+    line->addWidget(cb);
+    mainLayout->addLayout(line);
 
-    glyout->addWidget(WDFunc::NewLBL2(this, "Дата и время ПК:"), row, 1, 1, 1, Qt::AlignTop);
-    auto *lbl = WDFunc::NewLBLT2(this, QDateTime::currentDateTimeUtc().toString("yyyy-MM-ddTHH:mm:ss"));
+    auto *sysTimeText = WDFunc::NewLBL2(time, "Дата и время ПК:");
+    auto *sysTimeVal = WDFunc::NewLBLT2(time, QDateTime::currentDateTimeUtc().toString("yyyy-MM-ddTHH:mm:ss"));
     connect(Timer, &QTimer::timeout, [=] {
         QString tmps;
         if (timeZone() == 0)
             tmps = QDateTime::currentDateTime().toString("dd-MM-yyyy HH:mm:ss");
         else
             tmps = QDateTime::currentDateTimeUtc().toString("dd-MM-yyyy HH:mm:ss");
-        lbl->setText(tmps);
+        sysTimeVal->setText(tmps);
     });
-    glyout->addWidget(lbl, row++, 2, 1, 4, Qt::AlignTop);
-    // tmps = "QWidget {background-color: " + QString(Colors::MAINWINCLR) + ";}";
+    line = new QHBoxLayout;
+    line->addWidget(sysTimeText);
+    line->addWidget(sysTimeVal);
+    mainLayout->addLayout(line);
+
     QPushButton *Button = new QPushButton("Записать дату и время ПК в модуль");
-    // Button->setStyleSheet(tmps);
-    glyout->addWidget(Button, row++, 1, 1, 6, Qt::AlignTop);
     connect(Button, &QAbstractButton::clicked, this, &TimeDialog::Write_PCDate);
-    glyout->addWidget(WDFunc::NewLBL2(this, "Дата и время в модуле:"), row, 1, 1, 1);
-    glyout->addWidget(WDFunc::NewLBL2(this, "dd-MM-yyyy HH:mm:ss", "moduleTime"), row++, 2, 1, 4);
-    glyout->addWidget(WDFunc::NewLBL2(this, "Дата и время для записи в модуль"), row, 1, 1, 1);
-    glyout->addWidget(WDFunc::NewLE2(this, "Date", "dd-MM-yyyy HH:mm:ss" /*, paramcolor*/), row++, 2, 1, 1);
-    glyout->addWidget(WDFunc::NewLBL2(this, "день-месяц-год часы:минуты:секунды"), row++, 2, 1, 1);
+    mainLayout->addWidget(Button);
+
+    auto *moduleTimeText = WDFunc::NewLBL2(time, "Дата и время в модуле:");
+    auto *moduleTimeVal = WDFunc::NewLBL2(time, "dd-MM-yyyy HH:mm:ss", "moduleTime");
+    line = new QHBoxLayout;
+    line->addWidget(moduleTimeText);
+    line->addWidget(moduleTimeVal);
+    mainLayout->addLayout(line);
+
+    auto *moduleWTimeText = WDFunc::NewLBL2(time, "Дата и время для записи в модуль");
+    auto *moduleWTimeVal = WDFunc::NewLE2(time, "Date", "dd-MM-yyyy HH:mm:ss" /*, paramcolor*/);
+    // Неожиданно QLineEdit имеют отличную от QLabel default size policy
+    moduleWTimeVal->setSizePolicy(moduleWTimeText->sizePolicy());
+    moduleWTimeVal->setToolTip("день-месяц-год часы:минуты:секунды");
+    line = new QHBoxLayout;
+    line->addWidget(moduleWTimeText);
+    line->addWidget(moduleWTimeVal);
+    mainLayout->addLayout(line);
+
     Button = new QPushButton("Записать заданное время в модуль");
-    // Button->setStyleSheet(tmps);
-    glyout->addWidget(Button, row, 1, 1, 6, Qt::AlignTop);
     connect(Button, &QAbstractButton::clicked, this, &TimeDialog::Write_Date);
+    mainLayout->addWidget(Button);
+    mainLayout->addSpacing(height() / 2);
 
-    for (int i = 0; i < 6; i++)
-    {
-        glyout->addWidget(WDFunc::NewLBL(this, ""), row, 0, 1, 1);
-        row++;
-    }
-    vlyout2->addLayout(glyout);
-    gb->setLayout(vlyout2);
-    vlyout1->addWidget(gb);
-
-    time->setLayout(vlyout1);
+    time->setLayout(mainLayout);
 
     QVBoxLayout *lyout = new QVBoxLayout;
     QTabWidget *ConfTW = new QTabWidget;
     ConfTW->setObjectName("conftw");
-    // QString ConfTWss = "QTabBar::tab:selected {background-color: " + QString(Colors::TABCOLOR) + ";}";
-    // ConfTW->tabBar()->setStyleSheet(ConfTWss);
+
     ConfTW->addTab(time, "Время");
     lyout->addWidget(ConfTW);
     setLayout(lyout);
     Timer->start(1000);
 }
-
-// void TimeDialog::updateSysTime()
-//{
-//    QString tmps;
-//    if (timeZone() == 0)
-//        tmps = QDateTime::currentDateTime().toString("dd-MM-yyyy HH:mm:ss");
-//    else
-//        tmps = QDateTime::currentDateTimeUtc().toString("dd-MM-yyyy HH:mm:ss");
-//    WDFunc::SetLBLText(this, "systime", tmps);
-//}
-
-// void TimeDialog::USBUpdate()
-//{
-
-//    switch (Board::GetInstance().interfaceType())
-//    {
-//    case Board::InterfaceType::USB:
-//    {
-//        uint unixtimestamp = 0;
-//        if (Commands::GetTimeMNK(unixtimestamp) == Error::Msg::NoError)
-//            SetTime(unixtimestamp);
-//        break;
-//    }
-//    case Board::InterfaceType::Ethernet:
-//        emit ethTimeRequest();
-//        break;
-//    case Board::InterfaceType::RS485:
-//        emit modBusTimeRequest();
-//        break;
-//    }
-//}
 
 void TimeDialog::Write_PCDate()
 {

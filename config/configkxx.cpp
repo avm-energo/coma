@@ -512,6 +512,7 @@ QWidget *ConfigKxx::ModbusWidget(QWidget *parent)
     glyout->addWidget(lbl, row, 0, 1, 1, Qt::AlignLeft);
     QStringList dopcbl = QStringList { "slave", "master" };
     auto *dopcb = WDFunc::NewCB2(parent, "MBMaster", dopcbl /*, paramcolor*/);
+
     connect(dopcb, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &ConfigKxx::ChangeModbusGUI);
     glyout->addWidget(dopcb, row, 1, 1, 1);
     row++;
@@ -529,6 +530,7 @@ QWidget *ConfigKxx::ModbusWidget(QWidget *parent)
     lbl = WDFunc::NewLBL2(parent, "Скорость RS485 интерфейса:");
     glyout->addWidget(lbl, row, 0, 1, 1);
     auto *cb = WDFunc::NewCB2(parent, "Baud_ID", m_baudList /*, paramcolor*/);
+
     glyout->addWidget(cb, row, 1, 1, 1, Qt::AlignLeft);
 
     row++;
@@ -627,7 +629,6 @@ QWidget *ConfigKxx::ModbusWidget(QWidget *parent)
     glyout->addWidget(line1, 1, 6, 1, 1);
     line1 = new QLabel(parent);
 
-    line1 = new QLabel(parent);
     line1->setText("функция");
     line1->setAlignment(Qt::AlignCenter);
     // line1->setStyleSheet("QLabel {border: 1px solid  darkgreen;}");
@@ -706,12 +707,12 @@ QWidget *ConfigKxx::ModbusWidget(QWidget *parent)
         glyout->addWidget(WDFunc::NewSPB(parent, QString(Str), 0, 10000, 0, paramcolor), ++i, 9, 1, 1);
     }
 
-    line1 = new QLabel(parent);
-    line1->setText("");
+    //    line1 = new QLabel(parent);
+    //    line1->setText("");
 
     glyout->addWidget(line1, 7, 0, 1, 1);
     glyout->addWidget(line1, 8, 0, 1, 1);
-    glyout->addWidget(line1, 9, 0, 1, 1);
+    // glyout->addWidget(line1, 9, 0, 1, 1);
 
     vlyout2->addLayout(glyout);
     gb->setLayout(vlyout2);

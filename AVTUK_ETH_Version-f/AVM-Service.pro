@@ -31,6 +31,7 @@ TEMPLATE = app
 SOURCES += \
     ../widgets/alarmbutton.cpp \
     ../widgets/alarmstateall.cpp \
+    ../widgets/styleloader.cpp \
     coma.cpp \
     main.cpp \
     ../check/abstractcheckdialog.cpp \
@@ -124,6 +125,7 @@ PRECOMPILED_HEADER = ../gen/pch.h
 HEADERS += \
     ../widgets/alarmbutton.h \
     ../widgets/alarmstateall.h \
+    ../widgets/styleloader.h \
     coma.h \
     ../check/check.h \
     ../check/abstractcheckdialog.h \
@@ -314,4 +316,5 @@ DISTFILES += \
     ../interfaces/interfaces.qmodel
 
 RESOURCES += \
-    ../images/vectorIcons.qrc
+    ../images/vectorIcons.qrc \
+    ../widgets/styles.qrc

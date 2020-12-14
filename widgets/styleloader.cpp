@@ -1,10 +1,11 @@
 #include "styleloader.h"
 
+#include "../gen/stdfunc.h"
+
 #include <QApplication>
 #include <QDebug>
 #include <QFile>
 #include <QKeyEvent>
-
 void StyleLoader::attach(const QString &filename, QKeySequence key)
 {
     StyleLoader *loader = new StyleLoader(qApp, filename, key);
@@ -39,7 +40,7 @@ void StyleLoader::setAppStyleSheet()
 
 QString StyleLoader::defaultStyleFile()
 {
-    return ":/style/style.qss";
+    return StdFunc::GetSystemHomeDir() + "style.qss";
     // QIcon(":/icons/tnread.svg")
     // return QApplication::applicationDirPath() + "/style.qss";
 }

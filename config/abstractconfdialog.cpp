@@ -302,23 +302,23 @@ bool AbstractConfDialog::PrepareConfToWrite()
     FillBack();
     CheckConfErrors.clear();
     CheckConf();
-    if (!CheckConfErrors.isEmpty())
-    {
-        QDialog *dlg = new QDialog;
-        QVBoxLayout *vlyout = new QVBoxLayout;
-        QLabel *lbl = new QLabel("В конфигурации есть ошибки, проверьте и исправьте");
-        vlyout->addWidget(lbl, 0, Qt::AlignLeft);
-        QTextEdit *te = new QTextEdit;
-        te->setPlainText(CheckConfErrors.join("\n"));
-        vlyout->addWidget(te, 0, Qt::AlignCenter);
-        QPushButton *pb = new QPushButton("Хорошо");
-        connect(pb, &QAbstractButton::clicked, dlg, &QWidget::close);
-        vlyout->addWidget(pb);
-        dlg->setLayout(vlyout);
-        dlg->show();
-        return false;
-    }
-    return true;
+    if (CheckConfErrors.isEmpty())
+        return true;
+
+    QDialog *dlg = new QDialog;
+    dlg->setAttribute(Qt::WA_DeleteOnClose);
+    QVBoxLayout *vlyout = new QVBoxLayout;
+    QLabel *lbl = new QLabel("В конфигурации есть ошибки, проверьте и исправьте");
+    vlyout->addWidget(lbl, 0, Qt::AlignLeft);
+    QTextEdit *te = new QTextEdit;
+    te->setPlainText(CheckConfErrors.join("\n"));
+    vlyout->addWidget(te, 0, Qt::AlignCenter);
+    QPushButton *pb = new QPushButton("Хорошо");
+    connect(pb, &QAbstractButton::clicked, dlg, &QWidget::close);
+    vlyout->addWidget(pb);
+    dlg->setLayout(vlyout);
+    dlg->show();
+    return false;
 }
 
 void AbstractConfDialog::uponInterfaceSetting()

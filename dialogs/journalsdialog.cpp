@@ -59,9 +59,9 @@ void JournalDialog::SetupUI()
     QVBoxLayout *lyout = new QVBoxLayout;
     /*    QVBoxLayout *vlyout = new QVBoxLayout;
         QHBoxLayout *hlyout = new QHBoxLayout; */
-    QString tmps = "QDialog {background-color: " + QString(Colors::ACONFCLR) + ";}";
-    setStyleSheet(tmps);
-    QString ConfTWss = "QTabBar::tab:selected {background-color: " + QString(Colors::TABCOLOR) + ";}";
+    // QString tmps = "QDialog {background-color: " + QString(Colors::ACONFCLR) + ";}";
+    // setStyleSheet(tmps);
+    // QString ConfTWss = "QTabBar::tab:selected {background-color: " + QString(Colors::TABCOLOR) + ";}";
 
     /*    QTabWidget *work = new QTabWidget;
         work->tabBar()->setStyleSheet(ConfTWss);
@@ -109,7 +109,7 @@ void JournalDialog::SetupUI()
     */
     QTabWidget *ConfTW = new QTabWidget;
     ConfTW->setObjectName("conftw4");
-    ConfTW->tabBar()->setStyleSheet(ConfTWss);
+    // ConfTW->tabBar()->setStyleSheet(ConfTWss);
     ConfTW->addTab(JourTab(DataTypes::JourWork), "Рабочий журнал");
     ConfTW->addTab(JourTab(DataTypes::JourSys), "Системный журнал");
     ConfTW->addTab(JourTab(DataTypes::JourMeas), "Журнал измерений");

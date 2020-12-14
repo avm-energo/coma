@@ -85,7 +85,7 @@ void ProtocomThread::parse()
 {
     while (Board::GetInstance().connectionState() != Board::ConnectionState::Closed)
     {
-        _mutex.lock();
+        QMutexLocker locker(&_mutex);
         if (!isCommandRequested)
             checkQueue();
         if (m_readData.isEmpty())
@@ -95,8 +95,6 @@ void ProtocomThread::parse()
             parseResponse(m_readData);
             m_readData.clear();
         }
-
-        _mutex.unlock();
     }
 }
 
