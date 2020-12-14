@@ -35,7 +35,7 @@ void BaseAlarm::setupUI(const QStringList &events)
     quint16 eventsCount = events.size();
     Q_ASSERT(flagsCount == eventsCount);
     QWidget *w = new QWidget;
-    w->setStyleSheet("QWidget {margin: 0; border-width: 0; padding: 0;};");
+    //  w->setStyleSheet("QWidget {margin: 0; border-width: 0; padding: 0;};");
 
     QVBoxLayout *lyout = new QVBoxLayout;
     QVBoxLayout *vlayout = new QVBoxLayout;

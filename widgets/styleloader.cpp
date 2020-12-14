@@ -40,7 +40,8 @@ void StyleLoader::setAppStyleSheet()
 
 QString StyleLoader::defaultStyleFile()
 {
-    return StdFunc::GetSystemHomeDir() + "style.qss";
+    return ":qdarkstyle/style.qss";
+    /*StdFunc::GetSystemHomeDir()*/
     // QIcon(":/icons/tnread.svg")
     // return QApplication::applicationDirPath() + "/style.qss";
 }

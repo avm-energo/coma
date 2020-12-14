@@ -51,8 +51,8 @@ StartupKIVDialog::~StartupKIVDialog()
 void StartupKIVDialog::SetupUI()
 {
     // QWidget *cp2 = new QWidget;
-    QString tmps = "QDialog {background-color: " + QString(Colors::ACONFCLR) + ";}";
-    setStyleSheet(tmps);
+    // QString tmps = "QDialog {background-color: " + QString(Colors::ACONFCLR) + ";}";
+    // setStyleSheet(tmps);
     QVBoxLayout *lyout = new QVBoxLayout;
     QGridLayout *glyout = new QGridLayout;
     ETableView *tv = new ETableView;

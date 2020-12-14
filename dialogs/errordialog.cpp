@@ -19,8 +19,8 @@ void ErrorDialog::SetupUI()
     QHBoxLayout *hlyout = new QHBoxLayout;
     ErrorWidget = new ErrorProtocolWidget;
     ErrorWidget->setObjectName("errorwidget");
-    QString ErrWss = "QWidget {background-color: " + QString(Colors::ERPROTCLR) + ";}";
-    ErrorWidget->setStyleSheet(ErrWss);
+    //  QString ErrWss = "QWidget {background-color: " + QString(Colors::ERPROTCLR) + ";}";
+    //  ErrorWidget->setStyleSheet(ErrWss);
     ErrorWidget->setAutoFillBackground(true);
     lyout->addWidget(ErrorWidget);
     QPushButton *pb = new QPushButton("Закрыть");

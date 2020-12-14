@@ -415,9 +415,9 @@ QWidget *ConfigKxx::ComParam(QWidget *parent)
     QVBoxLayout *vlyout2 = new QVBoxLayout;
     QGridLayout *glyout = new QGridLayout;
     QString Str;
-    QFont font;
-    font.setFamily("Times");
-    font.setPointSize(11);
+    //    QFont font;
+    //    font.setFamily("Times");
+    //    font.setPointSize(11);
     glyout->setColumnStretch(2, 50);
 
     int i = 0;
@@ -502,9 +502,9 @@ QWidget *ConfigKxx::ModbusWidget(QWidget *parent)
     QString Str;
     glyout->setColumnStretch(1, 20);
 
-    QFont font;
-    font.setFamily("Times");
-    font.setPointSize(11);
+    //    QFont font;
+    //    font.setFamily("Times");
+    //    font.setPointSize(11);
 
     int row = 0;
 
@@ -522,7 +522,7 @@ QWidget *ConfigKxx::ModbusWidget(QWidget *parent)
     vlyout1->addWidget(gb);
 
     gb = new QGroupBox("Настройки ModBus");
-    gb->setFont(font);
+    //    gb->setFont(font);
     vlyout2 = new QVBoxLayout;
     glyout = new QGridLayout;
 
@@ -555,7 +555,7 @@ QWidget *ConfigKxx::ModbusWidget(QWidget *parent)
     WidgetList.append(gb);
 
     gb = new QGroupBox("Настройки ModBus");
-    gb->setFont(font);
+    //    gb->setFont(font);
     vlyout2 = new QVBoxLayout;
     glyout = new QGridLayout;
     QLabel *line1 = new QLabel(parent);
