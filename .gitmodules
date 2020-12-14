@@ -12,3 +12,6 @@
 	path = QXlsx
 	url = https://github.com/QtExcel/QXlsx
 	branch = master
+[submodule "QDarkStyleSheet"]
+	path = QDarkStyleSheet
+	url = git@github.com:ColinDuquesnoy/QDarkStyleSheet.git
