@@ -78,7 +78,7 @@ void AbstractConfDialog::WriteConf()
         return;
     if (!PrepareConfToWrite())
     {
-        ERMSG("Ошибка чтения конфигурации");
+        qCritical("Ошибка чтения конфигурации");
         return;
     }
     //    iface()->writeConfigFile();
@@ -159,7 +159,7 @@ void AbstractConfDialog::SaveConfToFile()
     QByteArray ba;
     if (!PrepareConfToWrite())
     {
-        ERMSG("Ошибка чтения конфигурации");
+        qCritical("Ошибка чтения конфигурации");
         return;
     }
     S2::StoreDataMem(ba, S2::config, DataTypes::Config);
@@ -174,13 +174,13 @@ void AbstractConfDialog::SaveConfToFile()
         QMessageBox::information(this, "Внимание", "Записано успешно!");
         break;
     case Error::Msg::FileWriteError:
-        ERMSG("Ошибка при записи файла!");
+        qCritical("Ошибка при записи файла!");
         break;
     case Error::Msg::FileNameError:
-        ERMSG("Пустое имя файла!");
+        qCritical("Пустое имя файла!");
         break;
     case Error::Msg::FileOpenError:
-        ERMSG("Ошибка открытия файла!");
+        qCritical("Ошибка открытия файла!");
         break;
     default:
         break;
