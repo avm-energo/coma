@@ -1,5 +1,6 @@
 #include "uwidget.h"
 
+#include "../dialogs/keypressdialog.h"
 #include "../gen/colors.h"
 #include "../gen/datamanager.h"
 #include "../gen/stdfunc.h"
@@ -8,7 +9,6 @@
 #include <QCoreApplication>
 #include <QDebug>
 #include <QEventLoop>
-
 UWidget::UWidget(QWidget *parent) : QWidget(parent)
 {
     m_updatesEnabled = false;
@@ -101,6 +101,13 @@ void UWidget::reqUpdate()
 
 void UWidget::uponInterfaceSetting()
 {
+}
+
+bool UWidget::checkPassword()
+{
+    Q_ASSERT(!m_password.isEmpty());
+    KeyPressDialog dlg;
+    return dlg.CheckPassword(m_password);
 }
 
 // BaseInterface *UWidget::iface()
