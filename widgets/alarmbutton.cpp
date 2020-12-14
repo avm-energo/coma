@@ -18,7 +18,8 @@ QSize AlarmButton::sizeHint() const
 {
     const auto parentHint = QPushButton::sizeHint();
 
-    return QSize(parentHint.width() + m_pixmap.width(), std::max(parentHint.height(), m_pixmap.height()));
+    return QSize(parentHint.width() + 4 * m_pixmap.width(),
+        std::max(parentHint.height(), m_pixmap.height()) + m_pixmap.height());
 }
 
 void AlarmButton::paintEvent(QPaintEvent *e)

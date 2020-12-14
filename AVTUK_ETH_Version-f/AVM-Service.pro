@@ -105,7 +105,6 @@ SOURCES += \
     ../startup/startupkivdialog.cpp \
     ../startup/startupktfdialog.cpp \
     ../widgets/alarmwidget.cpp \
-    ../widgets/ecombobox.cpp \
     ../widgets/edoublespinbox.cpp \
     ../widgets/errorprotocolwidget.cpp \
     ../widgets/estackedwidget.cpp \
@@ -207,7 +206,6 @@ HEADERS += \
     ../startup/startupkivdialog.h \
     ../startup/startupktfdialog.h \
     ../widgets/alarmwidget.h \
-    ../widgets/ecombobox.h \
     ../widgets/edoublespinbox.h \
     ../widgets/errorprotocolwidget.h \
     ../widgets/estackedwidget.h \

@@ -42,7 +42,7 @@ ConnectDialog::ConnectDialog(QWidget *parent) : QDialog(parent)
 
 void ConnectDialog::SetInterface()
 {
-    auto comboBox = this->findChild<EComboBox *>();
+    auto comboBox = this->findChild<QComboBox *>();
     Board::GetInstance().setProperty("interface", comboBox->currentText());
     QDialog *dlg = new QDialog(this);
     dlg->setAttribute(Qt::WA_DeleteOnClose);
