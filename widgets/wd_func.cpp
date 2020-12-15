@@ -53,6 +53,13 @@ PasswordLineEdit *WDFunc::NewPswLE(
     return le;
 }
 
+PasswordLineEdit *WDFunc::NewPswLE2(QWidget *w, const QString &lename, QLineEdit::EchoMode echostyle)
+{
+    PasswordLineEdit *le = new PasswordLineEdit(echostyle, w);
+    le->setObjectName(lename);
+    return le;
+}
+
 QString WDFunc::LEData(QObject *w, const QString &lename)
 {
     QLineEdit *le = w->findChild<QLineEdit *>(lename);
@@ -309,17 +316,30 @@ EDoubleSpinBox *WDFunc::NewSPB(
     dsb->setMinimum(min);
     dsb->setMaximum(max);
 
-    //    if (!spbcolor.isEmpty())
-    //    {
-    //        QString tmps = "QDoubleSpinBox {background-color: " + spbcolor + ";}";
-    //        dsb->setStyleSheet(tmps);
-    //    }
+    if (!spbcolor.isEmpty())
+    {
+        QString tmps = "QDoubleSpinBox {background-color: " + spbcolor + ";}";
+        dsb->setStyleSheet(tmps);
+    }
+    return dsb;
+}
+
+EDoubleSpinBox *WDFunc::NewSPB2(QWidget *parent, const QString &spbname, double min, double max, int decimals)
+{
+    EDoubleSpinBox *dsb = new EDoubleSpinBox(parent);
+
+    double step = qPow(0.1f, decimals);
+    dsb->setObjectName(spbname);
+    dsb->setSingleStep(step);
+    dsb->setDecimals(decimals);
+    dsb->setMinimum(min);
+    dsb->setMaximum(max);
     return dsb;
 }
 
 bool WDFunc::SetSPBData(QObject *w, const QString &spbname, const double &spbvalue)
 {
-    QDoubleSpinBox *spb = w->findChild<QDoubleSpinBox *>(spbname);
+    EDoubleSpinBox *spb = w->findChild<EDoubleSpinBox *>(spbname);
     if (spb == nullptr)
         return false;
     spb->setValue(spbvalue);
@@ -387,6 +407,14 @@ QRadioButton *WDFunc::NewRB(QWidget *parent, const QString &rbtext, const QStrin
         QString tmps = "QRadioButton {background-color: " + rbcolor + ";}";
         rb->setStyleSheet(tmps);
     }
+    return rb;
+}
+
+QRadioButton *WDFunc::NewRB2(QWidget *parent, const QString &rbtext, const QString &rbname)
+{
+    QRadioButton *rb = new QRadioButton(parent);
+    rb->setObjectName(rbname);
+    rb->setText(rbtext);
     return rb;
 }
 
@@ -537,7 +565,6 @@ QStatusBar *WDFunc::NewSB(QWidget *w)
 
 QPixmap WDFunc::NewCircle(QColor color, int radius)
 {
-    // int intRadius = radius;
     QPixmap myPix(QSize(radius, radius));
     myPix.fill(Qt::transparent);
     QPainter painter(&myPix); // Create object of QPainter
@@ -652,11 +679,19 @@ QCheckBox *WDFunc::NewChB(QWidget *parent, const QString &chbname, const QString
     QCheckBox *chb = new QCheckBox(parent);
     chb->setObjectName(chbname);
     chb->setText(chbtext);
-    //    if (!chbcolor.isEmpty())
-    //    {
-    //        QString tmps = "QCheckBox {background-color: " + chbcolor + ";}";
-    //        chb->setStyleSheet(tmps);
-    //    }
+    if (!chbcolor.isEmpty())
+    {
+        QString tmps = "QCheckBox {background-color: " + chbcolor + ";}";
+        chb->setStyleSheet(tmps);
+    }
+    return chb;
+}
+
+QCheckBox *WDFunc::NewChB2(QWidget *parent, const QString &chbname, const QString &chbtext)
+{
+    QCheckBox *chb = new QCheckBox(parent);
+    chb->setObjectName(chbname);
+    chb->setText(chbtext);
     return chb;
 }
 

@@ -41,6 +41,7 @@ SOURCES += \
     ../module/journkiv.cpp \
     ../module/journktf.cpp \
     ../widgets/edoublespinbox.cpp \
+    ../widgets/styleloader.cpp \
     coma.cpp \
     main.cpp \
     ../check/abstractcheckdialog.cpp \
@@ -140,6 +141,7 @@ HEADERS += \
     ../module/journkiv.h \
     ../module/journktf.h \
     ../widgets/edoublespinbox.h \
+    ../widgets/styleloader.h \
     coma.h \
     ../check/abstractcheckdialog.h \
     ../check/check.h \
@@ -239,8 +241,9 @@ ERROR_FILES += \
     $$PWD/../errors
 
 RESOURCES += \
-    ../images/vectorIcons.qrc
-
+    ../QDarkStyleSheet/qdarkstyle/style.qrc \
+    ../images/vectorIcons.qrc \
+    ../widgets/styles.qrc
 
 INCLUDEPATH += $$PWD/../../includes
 

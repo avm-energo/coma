@@ -1,5 +1,4 @@
 #include "../gen/logger.h"
-#include "../widgets/styleloader.h"
 #include "coma.h"
 
 #include <QApplication>
@@ -11,7 +10,6 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
     Logging::writeStart();
     qInstallMessageHandler(Logging::messageHandler);
-    a.setStyle("cleanlooks");
     Coma w;
     w.SetMode(Coma::COMA_GENERALMODE);
     QString caption(PROGNAME);
@@ -45,7 +43,7 @@ int main(int argc, char *argv[])
             }
         }
     }
-    StyleLoader::attach();
+
     w.Go(Parameter);
 
     return a.exec();

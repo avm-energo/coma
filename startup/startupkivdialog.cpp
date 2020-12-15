@@ -8,7 +8,6 @@
 #include "../gen/files.h"
 #include "../gen/stdfunc.h"
 #include "../gen/timefunc.h"
-#include "../widgets/etableview.h"
 #include "../widgets/wd_func.h"
 
 #include <QDebug>
@@ -20,7 +19,7 @@ StartupKIVDialog::StartupKIVDialog(QWidget *parent) : AbstractStartupDialog(pare
     //    int i;
     // Default initialization
     // Do not need set null value
-    CorBlock = new CorData();
+    CorBlock = new CorData;
 
     m_regMap[4000] = &CorBlock->C_init[0];
     m_regMap[4001] = &CorBlock->C_init[1];
@@ -46,58 +45,55 @@ StartupKIVDialog::StartupKIVDialog(QWidget *parent) : AbstractStartupDialog(pare
 
 StartupKIVDialog::~StartupKIVDialog()
 {
+    delete CorBlock;
 }
 
 void StartupKIVDialog::SetupUI()
 {
-    // QWidget *cp2 = new QWidget;
-    // QString tmps = "QDialog {background-color: " + QString(Colors::ACONFCLR) + ";}";
-    // setStyleSheet(tmps);
     QVBoxLayout *lyout = new QVBoxLayout;
     QGridLayout *glyout = new QGridLayout;
-    ETableView *tv = new ETableView;
-    tv->setObjectName("cor");
+
     int row = 0;
     QString paramcolor = Colors::MAINWINCLR;
 
-    glyout->addWidget(WDFunc::NewLBL(this, "Начальные значения емкостей вводов, пФ:"), row, 1, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL2(this, "Начальные значения емкостей вводов, пФ:"), row, 1, 1, 1);
 
     for (int i = 0; i < 3; i++)
     {
-        glyout->addWidget(WDFunc::NewSPB(this, QString::number(4000 + i), 0, 10000, 1, paramcolor), row, 2 + i, 1, 1);
+        glyout->addWidget(WDFunc::NewSPB2(this, QString::number(4000 + i), 0, 10000, 1), row, 2 + i, 1, 1);
     }
 
     row++;
 
-    glyout->addWidget(WDFunc::NewLBL(this, "Начальные значения tg δ вводов, %:"), row, 1, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL2(this, "Начальные значения tg δ вводов, %:"), row, 1, 1, 1);
 
     for (int i = 0; i < 3; i++)
     {
-        glyout->addWidget(WDFunc::NewSPB(this, QString::number(4003 + i), -10, 10, 2, paramcolor), row, 2 + i, 1, 1);
+        glyout->addWidget(WDFunc::NewSPB2(this, QString::number(4003 + i), -10, 10, 2), row, 2 + i, 1, 1);
     }
 
     row++;
 
-    glyout->addWidget(WDFunc::NewLBL(this, "Коррекция  tg δ вводов,%:"), row, 1, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL2(this, "Коррекция  tg δ вводов,%:"), row, 1, 1, 1);
 
     for (int i = 0; i < 3; i++)
     {
-        glyout->addWidget(WDFunc::NewSPB(this, QString::number(4006 + i), -10, 10, 2, paramcolor), row, 2 + i, 1, 1);
+        glyout->addWidget(WDFunc::NewSPB2(this, QString::number(4006 + i), -10, 10, 2), row, 2 + i, 1, 1);
     }
     row++;
 
-    glyout->addWidget(WDFunc::NewLBL(this, "Начальное действ. значение тока небаланса, мА:"), row, 1, 1, 1);
-    glyout->addWidget(WDFunc::NewSPB(this, QString::number(4009), 0, 10000, 1, paramcolor), row, 2, 1, 3);
+    glyout->addWidget(WDFunc::NewLBL2(this, "Начальное действ. значение тока небаланса, мА:"), row, 1, 1, 1);
+    glyout->addWidget(WDFunc::NewSPB2(this, QString::number(4009), 0, 10000, 1), row, 2, 1, 3);
 
     row++;
-    glyout->addWidget(WDFunc::NewLBL(this, "Начальное значение угла тока небаланса, град.:"), row, 1, 1, 1);
-    glyout->addWidget(WDFunc::NewSPB(this, QString::number(4010), 0, 10000, 1, paramcolor), row, 2, 1, 3);
+    glyout->addWidget(WDFunc::NewLBL2(this, "Начальное значение угла тока небаланса, град.:"), row, 1, 1, 1);
+    glyout->addWidget(WDFunc::NewSPB2(this, QString::number(4010), 0, 10000, 1), row, 2, 1, 3);
 
     //    row++;
 
     lyout->addLayout(glyout, Qt::AlignTop);
     lyout->addWidget(buttonWidget());
-    lyout->addWidget(tv, 89);
+
     setLayout(lyout);
     setObjectName("corDialog");
     connect(&DataManager::GetInstance(), &DataManager::floatReceived, this, &UWidget::updateFloatData);

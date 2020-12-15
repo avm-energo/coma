@@ -2,7 +2,6 @@
 #include "config.h"
 
 #include "../gen/board.h"
-#include "../gen/colors.h"
 #include "../gen/s2.h"
 #include "../widgets/wd_func.h"
 
@@ -64,53 +63,45 @@ QWidget *Config::MainWidget(QWidget *parent)
 {
     ParentMainbl = parent;
     QWidget *w = new QWidget;
-    QString paramcolor = Colors::MAINWINCLR;
     QVBoxLayout *vlyout2 = new QVBoxLayout;
     QGridLayout *glyout = new QGridLayout;
 
     glyout->setColumnStretch(2, 50);
 
     glyout->addWidget(WDFunc::NewLBL2(parent, "Адрес базовой станции:"), 0, 0, 1, 1, Qt::AlignLeft);
-    glyout->addWidget(
-        WDFunc::NewSPB(parent, NAMEOF(MainBlk.Abs_104), 0, 65535, 0, paramcolor), 0, 1, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(WDFunc::NewSPB2(parent, NAMEOF(MainBlk.Abs_104), 0, 65535, 0), 0, 1, 1, 1, Qt::AlignLeft);
 
     glyout->addWidget(WDFunc::NewLBL2(parent, "Интервал циклического опроса, с:"), 1, 0, 1, 1, Qt::AlignLeft);
-    glyout->addWidget(
-        WDFunc::NewSPB(parent, NAMEOF(MainBlk.Cycle_104), 0, 255, 0, paramcolor), 1, 1, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(WDFunc::NewSPB2(parent, NAMEOF(MainBlk.Cycle_104), 0, 255, 0), 1, 1, 1, 1, Qt::AlignLeft);
 
     glyout->addWidget(WDFunc::NewLBL2(parent, "Тайм-аут t1, с:"), 2, 0, 1, 1, Qt::AlignLeft);
-    glyout->addWidget(WDFunc::NewSPB(parent, NAMEOF(MainBlk.T1_104), 0, 255, 0, paramcolor), 2, 1, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(WDFunc::NewSPB2(parent, NAMEOF(MainBlk.T1_104), 0, 255, 0), 2, 1, 1, 1, Qt::AlignLeft);
 
     glyout->addWidget(WDFunc::NewLBL2(parent, "Тайм-аут t2, с:"), 3, 0, 1, 1, Qt::AlignLeft);
-    glyout->addWidget(WDFunc::NewSPB(parent, NAMEOF(MainBlk.T2_104), 0, 255, 0, paramcolor), 3, 1, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(WDFunc::NewSPB2(parent, NAMEOF(MainBlk.T2_104), 0, 255, 0), 3, 1, 1, 1, Qt::AlignLeft);
 
     glyout->addWidget(WDFunc::NewLBL2(parent, "Тайм-аут t3, с:"), 4, 0, 1, 1, Qt::AlignLeft);
-    glyout->addWidget(WDFunc::NewSPB(parent, NAMEOF(MainBlk.T3_104), 0, 255, 0, paramcolor), 4, 1, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(WDFunc::NewSPB2(parent, NAMEOF(MainBlk.T3_104), 0, 255, 0), 4, 1, 1, 1, Qt::AlignLeft);
 
     glyout->addWidget(WDFunc::NewLBL2(parent, "Макс. число неподтв. APDU (k):"), 5, 0, 1, 1, Qt::AlignLeft);
-    glyout->addWidget(WDFunc::NewSPB(parent, NAMEOF(MainBlk.K_104), 0, 255, 0, paramcolor), 5, 1, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(WDFunc::NewSPB2(parent, NAMEOF(MainBlk.K_104), 0, 255, 0), 5, 1, 1, 1, Qt::AlignLeft);
 
     glyout->addWidget(WDFunc::NewLBL2(parent, "Макс. число посл. подтв. APDU (w):"), 6, 0, 1, 1, Qt::AlignLeft);
-    glyout->addWidget(WDFunc::NewSPB(parent, NAMEOF(MainBlk.W_104), 0, 255, 0, paramcolor), 6, 1, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(WDFunc::NewSPB2(parent, NAMEOF(MainBlk.W_104), 0, 255, 0), 6, 1, 1, 1, Qt::AlignLeft);
 
     vlyout2->addLayout(glyout);
 
     w->setLayout(vlyout2);
-    //  w->setStyleSheet("QWidget {background-color: " + QString(Colors::ACONFWCLR) + ";}");
+
     return w;
 }
 
 QWidget *Config::TimeWidget(QWidget *parent)
 {
     ParentCtype = parent;
-    QString paramcolor = Colors::MAINWINCLR;
     QWidget *w = new QWidget;
     QVBoxLayout *vlyout2 = new QVBoxLayout;
     QGridLayout *glyout = new QGridLayout;
-
-    QFont font;
-    font.setFamily("Times");
-    font.setPointSize(11);
 
     glyout->setColumnStretch(2, 50);
     int row = 0;
@@ -119,12 +110,12 @@ QWidget *Config::TimeWidget(QWidget *parent)
     glyout->addWidget(lbl, row, 0, 1, 1, Qt::AlignLeft);
 
     const QStringList cbl { "нет", "SNTP", "SNTP+PPS" };
-    glyout->addWidget(WDFunc::NewCB2(parent, NAMEOF(MainBlk.Ctype), cbl /*, paramcolor*/), row, 1, 1, 1);
+    glyout->addWidget(WDFunc::NewCB2(parent, NAMEOF(MainBlk.Ctype), cbl), row, 1, 1, 1);
 
     vlyout2->addLayout(glyout);
 
     w->setLayout(vlyout2);
-    //  w->setStyleSheet("QWidget {background-color: " + QString(Colors::ACONFWCLR) + ";}");
+
     return w;
 }
 

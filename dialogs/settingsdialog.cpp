@@ -18,26 +18,35 @@ SettingsDialog::SettingsDialog(QWidget *parent) : QDialog(parent)
 
 void SettingsDialog::SetupUI()
 {
+    using namespace Style;
     QVBoxLayout *vlyout = new QVBoxLayout;
     QHBoxLayout *hlyout = new QHBoxLayout;
-    hlyout->addWidget(WDFunc::NewChB(this, "writelogchb", "Запись обмена данными в файл"));
+    hlyout->addWidget(WDFunc::NewChB2(this, "writelogchb", "Запись обмена данными в файл"));
     vlyout->addLayout(hlyout);
     vlyout->addWidget(WDFunc::NewLBLAndLE(this, "Степень усреднения для регулировки", "reqcount", true));
-    QPushButton *pb = new QPushButton("Готово");
-    connect(pb, &QAbstractButton::clicked, this, &SettingsDialog::AcceptSettings);
-    vlyout->addWidget(pb);
-    auto themeEnum = QMetaEnum::fromType<Style>;
+
+    auto themeEnum = QMetaEnum::fromType<Name>;
     QStringList values;
     for (int i = 0; i < themeEnum().keyCount(); i++)
     {
         values.push_back(themeEnum().key(i));
     }
     auto *themeCB = WDFunc::NewCB2(this, values);
+    int position = StyleLoader::GetInstance().styleNumber();
+    themeCB->setCurrentIndex(position);
+    const QString style = StyleLoader::GetInstance().styleFile();
     vlyout->addWidget(themeCB);
     connect(themeCB, &QComboBox::currentTextChanged, [=](const QString &text) {
-        Style key = Style(themeEnum().keyToValue(text.toStdString().c_str()));
-        StyleLoader::setStyleFile(themes.value(key));
+        Name key = Name(themeEnum().keyToValue(text.toStdString().c_str()));
+        auto &styleLoader = StyleLoader::GetInstance();
+        styleLoader.setStyleFile(themes.value(key));
+        styleLoader.setAppStyleSheet();
+        styleLoader.save();
     });
+
+    QPushButton *pb = new QPushButton("Готово");
+    connect(pb, &QAbstractButton::clicked, this, &SettingsDialog::AcceptSettings);
+    vlyout->addWidget(pb);
     setLayout(vlyout);
 }
 

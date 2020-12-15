@@ -1,22 +1,18 @@
 #include "confkivdialog.h"
 
 #include "../gen/board.h"
-#include "../gen/colors.h"
 #include "../gen/error.h"
 #include "../gen/s2.h"
 #include "../widgets/wd_func.h"
 
 #include <QGridLayout>
 #include <QGroupBox>
-#include <QScrollArea>
-#include <QScrollBar>
 #include <QTimer>
 #include <QVBoxLayout>
 
 ConfKIVDialog::ConfKIVDialog(ConfigKIV *ckiv, QWidget *parent) : AbstractConfDialog(parent)
 {
-    // QString tmps = "QDialog {background-color: " + QString(Colors::ACONFCLR) + ";}";
-    // setStyleSheet(tmps);
+
     CKIV = ckiv;
     // S2Config = S2Config;
     //    CKIV = new ConfigKIV(ckiv);
@@ -127,8 +123,7 @@ void ConfKIVDialog::FillBack()
 QWidget *ConfKIVDialog::analogWidget()
 {
     QWidget *w = new QWidget;
-    //    w->setStyleSheet("QWidget {background-color: " + QString(Colors::ACONFWCLR) + ";}");
-    QFont font;
+
     QVBoxLayout *lyout = new QVBoxLayout;
     QGridLayout *gridlyout = new QGridLayout;
     gridlyout->setAlignment(Qt::AlignVCenter);
@@ -137,16 +132,13 @@ QWidget *ConfKIVDialog::analogWidget()
     //    QString paramcolor = Colors::MAINWINCLR;
     int row = 0;
     QGroupBox *gb = new QGroupBox("Аналоговые параметры");
-    font.setFamily("Times");
-    font.setPointSize(11);
-    gb->setFont(font);
 
     gridlyout->addWidget(WDFunc::NewLBL2(this, "Номинальное линейное первичное напряжение, кВ:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB(this, "Unom", 0, 10000, 0, Colors::MAINWINCLR), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, "Unom", 0, 10000, 0), row, 2, 1, 3);
     row++;
 
-    gridlyout->addWidget(WDFunc::NewLBL(this, "Номинальное вторичное напряжение первой тройки, В:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB(this, "U2nom", 0, 10000, 1, Colors::MAINWINCLR), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewLBL2(this, "Номинальное вторичное напряжение первой тройки, В:"), row, 1, 1, 1);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, "U2nom", 0, 10000, 1), row, 2, 1, 3);
     row++;
 
     for (int i = 0; i < phase.size(); i++)
@@ -159,8 +151,8 @@ QWidget *ConfKIVDialog::analogWidget()
     for (int i = 0; i < 3; i++)
     {
 
-        gridlyout->addWidget(WDFunc::NewSPB(this, "C_pasp." + QString::number(i), 0, 20000, 1, Colors::MAINWINCLR), row,
-            2 + i, 1, 1, Qt::AlignTop);
+        gridlyout->addWidget(
+            WDFunc::NewSPB2(this, "C_pasp." + QString::number(i), 0, 20000, 1), row, 2 + i, 1, 1, Qt::AlignTop);
     }
     row++;
 
@@ -168,8 +160,7 @@ QWidget *ConfKIVDialog::analogWidget()
 
     for (int i = 0; i < 3; i++)
     {
-        gridlyout->addWidget(
-            WDFunc::NewSPB(this, "Tg_pasp." + QString::number(i), 0, 10, 2, Colors::MAINWINCLR), row, 2 + i, 1, 1);
+        gridlyout->addWidget(WDFunc::NewSPB2(this, "Tg_pasp." + QString::number(i), 0, 10, 2), row, 2 + i, 1, 1);
     }
     row++;
 
@@ -191,79 +182,60 @@ QWidget *ConfKIVDialog::analogWidget()
 QWidget *ConfKIVDialog::thresholdsWidget()
 {
     QWidget *w = new QWidget;
-    // w->setStyleSheet("QWidget {background-color: " + QString(Colors::ACONFWCLR) + ";}");
-    //    QFont font;
-    //    font.setFamily("Times");
-    //    font.setPointSize(11);
-    QVBoxLayout *lyout = new QVBoxLayout;
-    QVBoxLayout *alyout = new QVBoxLayout;
-    QGridLayout *gridlyout = new QGridLayout;
-    QScrollArea *area = new QScrollArea;
-    //    area->setStyleSheet("QScrollArea {background-color: rgba(0,0,0,0);}");
-    //   area->setFrameShape(QFrame::NoFrame);
-    area->setWidgetResizable(true);
 
-    //    QString phase[3] = { "Фаза A:", "Фаза B:", "Фаза C:" };
-    //    QString paramcolor = Colors::MAINWINCLR;
+    QVBoxLayout *lyout = new QVBoxLayout;
+    QGridLayout *gridlyout = new QGridLayout;
+
     int row = 0;
     QGroupBox *gb = new QGroupBox("Уставки сигнализации");
-    //    gb->setFont(font);
-    //    vlyout1 = new QVBoxLayout;
-    //    vlyout2 = new QVBoxLayout;
-    //    gridlyout = new QGridLayout;
-    //    row = 0;
 
     gridlyout->addWidget(
-        WDFunc::NewLBL(this, "Уставка предупредительной сигнализации по изменению емкости, %:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB(this, "dС_pred", 0, 10000, 1, Colors::MAINWINCLR), row, 2, 1, 3);
+        WDFunc::NewLBL2(this, "Уставка предупредительной сигнализации по изменению емкости, %:"), row, 1, 1, 1);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, "dС_pred", 0, 10000, 1), row, 2, 1, 3);
 
     row++;
     gridlyout->addWidget(
         WDFunc::NewLBL2(this, "Уставка аварийной сигнализации по изменению емкости, %:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB(this, "dС_alarm", 0, 10000, 1, Colors::MAINWINCLR), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, "dС_alarm", 0, 10000, 1), row, 2, 1, 3);
 
     row++;
     gridlyout->addWidget(
-        WDFunc::NewLBL(this, "Уставка предупредительной сигнализации по изменению tg δ, %:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB(this, "dTg_pred", 0, 1000, 1, Colors::MAINWINCLR), row, 2, 1, 3);
+        WDFunc::NewLBL2(this, "Уставка предупредительной сигнализации по изменению tg δ, %:"), row, 1, 1, 1);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, "dTg_pred", 0, 1000, 1), row, 2, 1, 3);
 
     row++;
     gridlyout->addWidget(WDFunc::NewLBL2(this, "Уставка аварийной сигнализации по изменению tg δ, %:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB(this, "dTg_alarm", 0, 10000, 1, Colors::MAINWINCLR), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, "dTg_alarm", 0, 10000, 1), row, 2, 1, 3);
 
     row++;
     gridlyout->addWidget(WDFunc::NewLBL2(this,
                              "Уставка предупредительной сигнализации по "
                              "изменению небаланса токов, %:"),
         row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB(this, "dIunb_pred", 0, 10000, 1, Colors::MAINWINCLR), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, "dIunb_pred", 0, 10000, 1), row, 2, 1, 3);
 
     row++;
     gridlyout->addWidget(
-        WDFunc::NewLBL(this, "Уставка аварийной сигнализации по изменению небаланса токов, %:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB(this, "dIunb_alarm", 0, 10000, 1, Colors::MAINWINCLR), row, 2, 1, 3);
+        WDFunc::NewLBL2(this, "Уставка аварийной сигнализации по изменению небаланса токов, %:"), row, 1, 1, 1);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, "dIunb_alarm", 0, 10000, 1), row, 2, 1, 3);
 
     gb->setLayout(gridlyout);
-    alyout->addWidget(gb);
+    lyout->addWidget(gb);
 
     gb = new QGroupBox("Уставки контроля минимума тока и напряжения");
     gridlyout = new QGridLayout;
 
     row = 0;
     gridlyout->addWidget(
-        WDFunc::NewLBL(this, "Уставка контроля минимума напряжения (в % от номинального):"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB(this, "Umin", 0, 10000, 1, Colors::MAINWINCLR), row, 2, 1, 3);
+        WDFunc::NewLBL2(this, "Уставка контроля минимума напряжения (в % от номинального):"), row, 1, 1, 1);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, "Umin", 0, 10000, 1), row, 2, 1, 3);
 
     row++;
     gridlyout->addWidget(WDFunc::NewLBL2(this, "Уставка контроля минимума тока (в % от Imax):"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB(this, "Imin", 0, 10000, 1, Colors::MAINWINCLR), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, "Imin", 0, 10000, 1), row, 2, 1, 3);
 
     gb->setLayout(gridlyout);
-    alyout->addWidget(gb);
-    area->setLayout(alyout);
-    //    Ust->setLayout(vlyout1);
-    //    area2->setWidget(Ust);
-    lyout->addWidget(area);
+    lyout->addWidget(gb);
     w->setLayout(lyout);
     return w;
 }
@@ -278,46 +250,42 @@ QWidget *ConfKIVDialog::remainsWidget()
     int row = 0;
 
     gridlyout->addWidget(
-        WDFunc::NewLBL(this, "Гистерезис на отключение сигнализации по dC, % от уставки:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB(this, "GdС", 0, 10000, 1, Colors::MAINWINCLR), row, 2, 1, 3);
+        WDFunc::NewLBL2(this, "Гистерезис на отключение сигнализации по dC, % от уставки:"), row, 1, 1, 1);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, "GdС", 0, 10000, 1), row, 2, 1, 3);
 
     row++;
     gridlyout->addWidget(
-        WDFunc::NewLBL(this, "Гистерезис на отключение сигнализации по dTg, % от уставки:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB(this, "GdTg", 0, 10000, 3, Colors::MAINWINCLR), row, 2, 1, 3);
+        WDFunc::NewLBL2(this, "Гистерезис на отключение сигнализации по dTg, % от уставки:"), row, 1, 1, 1);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, "GdTg", 0, 10000, 3), row, 2, 1, 3);
 
     row++;
     gridlyout->addWidget(
-        WDFunc::NewLBL(this, "Гистерезис на отключение сигнализации по небалансу токов, %:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB(this, "GdIunb", 0, 10000, 1, Colors::MAINWINCLR), row, 2, 1, 3);
-
-    //    vlyout2->addLayout(gridlyout);
+        WDFunc::NewLBL2(this, "Гистерезис на отключение сигнализации по небалансу токов, %:"), row, 1, 1, 1);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, "GdIunb", 0, 10000, 1), row, 2, 1, 3);
     gb->setLayout(gridlyout);
     lyout->addWidget(gb);
 
     //............................................................
 
     gb = new QGroupBox("Сигнализации событий");
-    //    vlyout2 = new QVBoxLayout;
     gridlyout = new QGridLayout;
 
     row = 0;
     gridlyout->addWidget(WDFunc::NewLBL2(this, "Низкое напряжение для сигнализации:"), row, 0, 1, 1, Qt::AlignLeft);
-    gridlyout->addWidget(WDFunc::NewSPB(this, "Ulow", 0, 10000, 1, Colors::MAINWINCLR), row, 1, 1, 1);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, "Ulow", 0, 10000, 1), row, 1, 1, 1);
 
-    gridlyout->addWidget(WDFunc::NewChB(this, "IsU", "Сигнализация по наличию входного напряжения"), row, 2, 1, 1);
+    gridlyout->addWidget(WDFunc::NewChB2(this, "IsU", "Сигнализация по наличию входного напряжения"), row, 2, 1, 1);
 
     row++;
     gridlyout->addWidget(WDFunc::NewLBL2(this, "Задержка на формирование предупредительных событий:"), row, 0, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB(this, "Tevent_pred", 0, 10000, 1, Colors::MAINWINCLR), row, 1, 1, 1);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, "Tevent_pred", 0, 10000, 1), row, 1, 1, 1);
 
-    gridlyout->addWidget(WDFunc::NewChB(this, "IsIunb", "Сигнализация по небалансу токов"), row, 2, 1, 1);
+    gridlyout->addWidget(WDFunc::NewChB2(this, "IsIunb", "Сигнализация по небалансу токов"), row, 2, 1, 1);
 
     row++;
     gridlyout->addWidget(WDFunc::NewLBL2(this, "Задержка на формирование аварийных событий:"), row, 0, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB(this, "Tevent_alarm", 0, 10000, 1, Colors::MAINWINCLR), row, 1, 1, 1);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, "Tevent_alarm", 0, 10000, 1), row, 1, 1, 1);
 
-    //    vlyout2->addLayout(gridlyout);
     gb->setLayout(gridlyout);
     lyout->addWidget(gb);
 
@@ -326,12 +294,12 @@ QWidget *ConfKIVDialog::remainsWidget()
 
     row = 0;
     gridlyout->addWidget(
-        WDFunc::NewLBL(this, "Интервал усреднения данных  (в периодах основной частоты):"), row, 0, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB(this, "NFiltr", 0, 10000, 0, Colors::MAINWINCLR), row, 1, 1, 3);
+        WDFunc::NewLBL2(this, "Интервал усреднения данных  (в периодах основной частоты):"), row, 0, 1, 1);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, "NFiltr", 0, 10000, 0), row, 1, 1, 3);
 
     row++;
     gridlyout->addWidget(WDFunc::NewLBL2(this, "Интервал записи данных в ПЗУ (тренд), в секундах:"), row, 0, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB(this, "T_Data_Rec", 0, 10000, 0, Colors::MAINWINCLR), row, 1, 1, 3);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, "T_Data_Rec", 0, 10000, 0), row, 1, 1, 3);
 
     gb->setLayout(gridlyout);
     lyout->addWidget(gb);
@@ -344,13 +312,9 @@ QWidget *ConfKIVDialog::connectionWidget()
     QWidget *w = new QWidget;
 
     QVBoxLayout *lyout = new QVBoxLayout;
-    QVBoxLayout *alyout = new QVBoxLayout;
     QVBoxLayout *vlyout = new QVBoxLayout;
     QGroupBox *gb = new QGroupBox;
-    QScrollArea *area = new QScrollArea;
 
-    area->setFrameShape(QFrame::NoFrame);
-    area->setWidgetResizable(true);
     QGridLayout *gridlyout = new QGridLayout;
 
     gb->setTitle("Настройки протокола МЭК-60870-5-104");
@@ -360,9 +324,8 @@ QWidget *ConfKIVDialog::connectionWidget()
     gridlyout->addWidget(CKIV->MainConfig()->MainWidget(this), 0, 0, 1, 1);
     gridlyout->addWidget(CKIV->KxxConfig()->ComParam(this), 0, 1, 1, 1);
 
-    //    vlyout2->addLayout(gridlyout);
     gb->setLayout(gridlyout);
-    alyout->addWidget(gb);
+    lyout->addWidget(gb);
 
     gb = new QGroupBox("Настройка времени");
 
@@ -370,9 +333,8 @@ QWidget *ConfKIVDialog::connectionWidget()
     vlyout->addWidget(CKIV->MainConfig()->TimeWidget(this));
 
     gb->setLayout(vlyout);
-    alyout->addWidget(gb);
-    area->setLayout(alyout);
-    lyout->addWidget(area);
+    lyout->addWidget(gb);
+
     w->setLayout(lyout);
     return w;
 }
