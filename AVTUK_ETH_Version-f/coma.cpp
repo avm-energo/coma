@@ -228,6 +228,7 @@ QWidget *Coma::Least()
     MainTW->setTabPosition(QTabWidget::West);
     inlyout->addWidget(MainTW, 60);
     MainTW->hide();
+    connect(MainTW, &ETabWidget::currentChanged, this, &Coma::MainTWTabChanged);
 
     QFrame *line = new QFrame;
     line->setLineWidth(0);
@@ -236,8 +237,8 @@ QWidget *Coma::Least()
     lyout->addWidget(line);
 
     inlyout = new QHBoxLayout;
-    inlyout->addWidget(WDFunc::NewLBLT(this, "Обмен"));
-    inlyout->addWidget(WDFunc::NewLBLT(this, "", "prb1lbl"));
+    inlyout->addWidget(WDFunc::NewLBLT2(this, "Обмен"));
+    inlyout->addWidget(WDFunc::NewLBLT2(this, "", "prb1lbl"));
 
     QProgressBar *prb = new QProgressBar;
     prb->setObjectName("prb1prb");
@@ -248,8 +249,8 @@ QWidget *Coma::Least()
     lyout->addLayout(inlyout);
 
     inlyout = new QHBoxLayout;
-    inlyout->addWidget(WDFunc::NewLBLT(this, "Отсчёт"));
-    inlyout->addWidget(WDFunc::NewLBLT(this, "", "prb2lbl"));
+    inlyout->addWidget(WDFunc::NewLBLT2(this, "Отсчёт"));
+    inlyout->addWidget(WDFunc::NewLBLT2(this, "", "prb2lbl"));
 
     prb = new QProgressBar;
     prb->setObjectName("prb2prb");
@@ -437,9 +438,7 @@ void Coma::StartWork()
         loop.exec();
         if (Cancelled)
         {
-            // qCritical(logCritical(), ("Отмена подключения"));
-            // qCritical(("Отмена подключения"));
-            ERMSG("Отмена подключения");
+            qCritical("Отмена подключения");
             return;
         }
         // S2ConfigForTune->clear();
@@ -453,20 +452,12 @@ void Coma::StartWork()
     S2Config = new QVector<S2DataTypes::DataRec>;
     //    S2ConfigForTune = new QVector<S2::DataRec>;
     //    CurTabIndex = -1;
-    ETabWidget *MainTW = this->findChild<ETabWidget *>("maintw");
-    if (MainTW == nullptr)
-    {
-        // qCritical(logCritical(), ("MainTW is empty"));
-        qCritical("No MainTW in widgets list");
-        return;
-    }
     QMetaObject::Connection *const connection = new QMetaObject::Connection;
     *connection = connect(&board, &Board::readyRead, [=]() {
         QObject::disconnect(*connection);
         delete connection;
         prepare();
     });
-    connect(MainTW, &ETabWidget::currentChanged, this, &Coma::MainTWTabChanged);
 
     QTimer timer;
     timer.setInterval(INTERVAL::WAIT);

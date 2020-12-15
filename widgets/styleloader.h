@@ -10,10 +10,14 @@ public:
 
     bool eventFilter(QObject *obj, QEvent *event);
 
+    static QString styleFile();
+    static void setStyleFile(const QString &styleFile);
+
 private:
     StyleLoader(QObject *parent, const QString &filename, const QKeySequence &key);
     void setAppStyleSheet();
     static QString defaultStyleFile();
+    static QString m_styleFile;
     QString m_filename;
     QKeySequence m_key;
 };

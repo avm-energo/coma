@@ -15,3 +15,9 @@
 [submodule "QDarkStyleSheet"]
 	path = QDarkStyleSheet
 	url = git@github.com:ColinDuquesnoy/QDarkStyleSheet.git
+[submodule "widgets/qss-dracula"]
+	path = widgets/qss-dracula
+	url = https://github.com/Supremist/qss-dracula
+[submodule "widgets/QSS"]
+	path = widgets/QSS
+	url = https://github.com/GTRONICK/QSS

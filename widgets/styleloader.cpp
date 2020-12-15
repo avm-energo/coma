@@ -6,6 +6,9 @@
 #include <QDebug>
 #include <QFile>
 #include <QKeyEvent>
+
+QString StyleLoader::m_styleFile {};
+
 void StyleLoader::attach(const QString &filename, QKeySequence key)
 {
     StyleLoader *loader = new StyleLoader(qApp, filename, key);
@@ -28,6 +31,8 @@ bool StyleLoader::eventFilter(QObject *obj, QEvent *event)
 
 void StyleLoader::setAppStyleSheet()
 {
+    if (!styleFile().isEmpty())
+        m_filename = styleFile();
     QFile file(m_filename);
     if (!file.open(QIODevice::ReadOnly))
     {
@@ -44,6 +49,16 @@ QString StyleLoader::defaultStyleFile()
     /*StdFunc::GetSystemHomeDir()*/
     // QIcon(":/icons/tnread.svg")
     // return QApplication::applicationDirPath() + "/style.qss";
+}
+
+QString StyleLoader::styleFile()
+{
+    return m_styleFile;
+}
+
+void StyleLoader::setStyleFile(const QString &styleFile)
+{
+    m_styleFile = styleFile;
 }
 
 StyleLoader::StyleLoader(QObject *parent, const QString &filename, const QKeySequence &key)
