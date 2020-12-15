@@ -13,6 +13,7 @@ constexpr char hidapi[] = "HIDAPI library, version 0.9.0 (https://github.com/lib
 constexpr char qxlsx[] = "QXlsx library, version 1.3.56 (https://qtexcel.github.io/QXlsx/)";
 constexpr char limereport[] = "LimeReport, version 1.5.1 (http://limereport.ru/)";
 constexpr char icons[] = "Icons are based on the iconset by 0melapics / Freepik";
+constexpr char fonts[] = "Font used: FlorenceSans by ShyFoundry (http://www.shyfoundry.com)";
 constexpr char prepare[] = "Подготовка \nокружения\n...\n";
 }
 

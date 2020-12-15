@@ -169,7 +169,7 @@ Error::Msg BaseInterface::readFileSync(quint32 filenum, QByteArray &ba)
     timer->setInterval(MAINTIMEOUT);
     connect(timer, &QTimer::timeout, this, &BaseInterface::timeout);
     connect(&DataManager::GetInstance(), &DataManager::fileReceived, this, &BaseInterface::fileReceived);
-    reqFile(filenum, true);
+    reqFile(filenum, false);
     while (m_busy)
     {
         QCoreApplication::processEvents(QEventLoop::AllEvents);

@@ -2,6 +2,7 @@
 #define STDFUNC_H
 
 #include <QString>
+#include <QWidget>
 
 #define MAINSLEEP 20
 #define MAINTIMEOUT 2000 // 2 sec timeout for general operations
@@ -16,7 +17,7 @@ public:
 
     static void Init();
     static QString VerToStr(quint32);
-    static bool floatIsWithinLimits(double var, double value, double tolerance = 0.1);
+    static bool floatIsWithinLimits(QWidget *w, double var, double value, double tolerance = 0.1);
     static float toFloat(const QString &text);
     static void SetHomeDir(const QString &dir);
     static QString GetHomeDir();

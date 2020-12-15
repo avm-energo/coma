@@ -10,6 +10,7 @@
 #include <QElapsedTimer>
 #include <QFile>
 #include <QHostAddress>
+#include <QMessageBox>
 #include <QProcess>
 #include <QSettings>
 #include <QStandardPaths>
@@ -56,7 +57,7 @@ QString StdFunc::VerToStr(quint32 num)
     return tmpString;
 }
 
-bool StdFunc::floatIsWithinLimits(double var, double base, double tolerance)
+bool StdFunc::floatIsWithinLimits(QWidget *w, double var, double base, double tolerance)
 {
     float tmpf = fabs(var - base);
     if (tmpf < fabs(tolerance))
@@ -65,6 +66,9 @@ bool StdFunc::floatIsWithinLimits(double var, double base, double tolerance)
     {
         qCritical() << "Ошибочное значение: должно быть " << QString::number(base, 'f', 5) << "±"
                     << QString::number(tolerance, 'f', 5) << ", а получили: " << QString::number(var, 'f', 5);
+        QMessageBox::critical(w, "Ошибка",
+            "Ошибочное значение: должно быть " + QString::number(base, 'f', 5) + "±"
+                + QString::number(tolerance, 'f', 5) + ", а получили: " + QString::number(var, 'f', 5));
         return false;
     }
 }

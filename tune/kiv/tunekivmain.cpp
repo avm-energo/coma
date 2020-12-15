@@ -164,14 +164,14 @@ Error::Msg TuneKIVMain::checkTuneCoefs()
     for (int i = 0; i < 3; ++i)
     {
         foreach (float *coef, tcoefs)
-            if (!StdFunc::floatIsWithinLimits(*(coef + i), 1.0, 0.05))
+            if (!StdFunc::floatIsWithinLimits(this, *(coef + i), 1.0, 0.05))
                 return Error::Msg::GeneralError;
     }
-    if (!StdFunc::floatIsWithinLimits(TKIV->m_Bac->data()->K_freq, 1.0, 0.05))
+    if (!StdFunc::floatIsWithinLimits(this, TKIV->m_Bac->data()->K_freq, 1.0, 0.05))
         return Error::Msg::GeneralError;
     for (int i = 0; i < 6; ++i)
     {
-        if (!StdFunc::floatIsWithinLimits(TKIV->m_Bac->data()->DPsi[i], 0.0, 1.0))
+        if (!StdFunc::floatIsWithinLimits(this, TKIV->m_Bac->data()->DPsi[i], 0.0, 1.0))
             return Error::Msg::GeneralError;
     }
     return Error::Msg::NoError;
@@ -202,7 +202,7 @@ Error::Msg TuneKIVMain::processR120()
     double pt100_120 = processR();
     if (StdFunc::isCancelled())
         return Error::Msg::GeneralError;
-    if (StdFunc::floatIsWithinLimits(pt100_120, m_pt100))
+    if (StdFunc::floatIsWithinLimits(this, pt100_120, m_pt100))
     {
         WARNMSG("Ошибка в полученных данных, значения сопротивлений равны");
         StdFunc::cancel();
@@ -428,17 +428,17 @@ bool TuneKIVMain::checkBdaIn()
 {
     for (int i = 0; i < 3; ++i)
     {
-        if (StdFunc::floatIsWithinLimits(TKIV->m_Bda_in.IUefNat_filt[i], 57.75, 3.0))
+        if (StdFunc::floatIsWithinLimits(this, TKIV->m_Bda_in.IUefNat_filt[i], 57.75, 3.0))
         {
-            if (StdFunc::floatIsWithinLimits(TKIV->m_Bda_in.IUeff_filtered[i], 57.75, 3.0))
+            if (StdFunc::floatIsWithinLimits(this, TKIV->m_Bda_in.IUeff_filtered[i], 57.75, 3.0))
             {
-                if (StdFunc::floatIsWithinLimits(TKIV->m_Bda_in.IUefNat_filt[i + 3], 290, 10))
+                if (StdFunc::floatIsWithinLimits(this, TKIV->m_Bda_in.IUefNat_filt[i + 3], 290, 10))
                 {
-                    if (StdFunc::floatIsWithinLimits(TKIV->m_Bda_in.IUeff_filtered[i + 3], 290, 10))
+                    if (StdFunc::floatIsWithinLimits(this, TKIV->m_Bda_in.IUeff_filtered[i + 3], 290, 10))
                     {
-                        if (StdFunc::floatIsWithinLimits(TKIV->m_Bda_in.phi_next_f[i], 0, 1))
+                        if (StdFunc::floatIsWithinLimits(this, TKIV->m_Bda_in.phi_next_f[i], 0, 1))
                         {
-                            if (StdFunc::floatIsWithinLimits(TKIV->m_Bda_in.phi_next_f[i + 3], 90, 1))
+                            if (StdFunc::floatIsWithinLimits(this, TKIV->m_Bda_in.phi_next_f[i + 3], 90, 1))
                                 continue;
                         }
                     }
@@ -447,7 +447,7 @@ bool TuneKIVMain::checkBdaIn()
         }
         return false;
     }
-    if (StdFunc::floatIsWithinLimits(TKIV->m_Bda_in.Pt100_R, 100, 5))
+    if (StdFunc::floatIsWithinLimits(this, TKIV->m_Bda_in.Pt100_R, 100, 5))
         return true;
     return false;
 }

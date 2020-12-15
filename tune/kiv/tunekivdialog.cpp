@@ -35,6 +35,7 @@ void TuneKIVDialog::SetupUI()
 {
     QString tmps = "QDialog {background-color: " + QString(Colors::ACONFCLR) + ";}";
     setStyleSheet(tmps);
+    QHBoxLayout *hlyout = new QHBoxLayout;
     QVBoxLayout *lyout = new QVBoxLayout;
 
     lyout->addLayout(newTunePBLayout("1. Проверка правильности измерения входных сигналов", [this]() {
@@ -54,7 +55,10 @@ void TuneKIVDialog::SetupUI()
         tk_20->show();
     }));
     lyout->addLayout(newTunePBLayout("5. Генерация протокола регулировки", [this]() { close(); }));
-    setLayout(lyout);
+    lyout->addStretch(100);
+    hlyout->addLayout(lyout);
+
+    setLayout(hlyout);
 }
 
 void TuneKIVDialog::GenerateReport()

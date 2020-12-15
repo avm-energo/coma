@@ -6,6 +6,7 @@
 #include "../../widgets/wd_func.h"
 
 #include <QDialog>
+#include <QMessageBox>
 #include <QPushButton>
 #include <QVBoxLayout>
 
@@ -30,10 +31,10 @@ void TuneKIVCheck::setMessages()
     m_messages.append("1. Ввод пароля...");
     m_messages.append("2. Сохранение текущей конфигурации...");
     //    m_messages.append("3. Задание режима конфигурирования модуля...");
-    m_messages.append("3. Установка новой конфигурации...");
-    m_messages.append("4. Отображение схемы подключения...");
-    m_messages.append("5. Ожидание 15 с...");
-    m_messages.append("6. Проверка...");
+    //    m_messages.append("3. Установка новой конфигурации...");
+    m_messages.append("3. Отображение схемы подключения...");
+    m_messages.append("4. Ожидание 15 с...");
+    m_messages.append("5. Проверка...");
 }
 
 void TuneKIVCheck::setTuneFunctions()
@@ -113,11 +114,11 @@ Error::Msg TuneKIVCheck::check()
 {
     BaseInterface::iface()->reqBlockSync(1, DataTypes::DataBlockTypes::BdaBlock, &TKIV->m_Bda, sizeof(TKIV->m_Bda));
     for (int i = 0; i < 6; ++i)
-        if (!StdFunc::floatIsWithinLimits(TKIV->m_Bda.Ueff_ADC[i], 2150000.0, 150000.0))
+        if (!StdFunc::floatIsWithinLimits(this, TKIV->m_Bda.Ueff_ADC[i], 2150000.0, 150000.0))
             return Error::Msg::GeneralError;
-    if (!StdFunc::floatIsWithinLimits(TKIV->m_Bda.Pt100, 1175.0, 120.0))
+    if (!StdFunc::floatIsWithinLimits(this, TKIV->m_Bda.Pt100, 1175.0, 120.0))
         return Error::Msg::GeneralError;
-    if (!StdFunc::floatIsWithinLimits(TKIV->m_Bda.Frequency, 51.0, 0.05))
+    if (!StdFunc::floatIsWithinLimits(this, TKIV->m_Bda.Frequency, 51.0, 0.05))
         return Error::Msg::GeneralError;
     return Error::Msg::NoError;
 }
