@@ -14,7 +14,7 @@
 	branch = master
 [submodule "QDarkStyleSheet"]
 	path = QDarkStyleSheet
-	url = git@github.com:ColinDuquesnoy/QDarkStyleSheet.git
+	url = https://github.com/ColinDuquesnoy/QDarkStyleSheet
 [submodule "widgets/qss-dracula"]
 	path = widgets/qss-dracula
 	url = https://github.com/Supremist/qss-dracula
