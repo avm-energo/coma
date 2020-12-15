@@ -53,6 +53,9 @@ public slots:
 
 protected:
     bool m_updatesEnabled;
+    QString m_password;
+
+    bool checkPassword();
 
 private:
     QString m_caption;

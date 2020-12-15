@@ -161,7 +161,7 @@ Module *Module::createModule(QTimer *updateTimer, AlarmWidget *aw)
     else
         delete JOUR;
     //    if (Board::GetInstance().interfaceType() == Board::InterfaceType::USB)
-    if (board.interfaceType() != Board::InterfaceType::USB)
+    if (board.interfaceType() != Board::InterfaceType::RS485)
         m->addDialogToList(new FWUploadDialog, "Загрузка ВПО");
 
     m->addDialogToList(new InfoDialog, "О приборе", "info");

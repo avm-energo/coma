@@ -58,7 +58,7 @@ void AbstractCheckDialog::SetupUI()
 
     //    CheckTW->setObjectName("checktw" + QString::number(m_newTWIndex++));
     //    qDebug() << CheckTW->objectName();
-    QString ConfTWss = "QTabBar::tab:selected {background-color: " + QString(Colors::TABCOLORA1) + ";}";
+    // QString ConfTWss = "QTabBar::tab:selected {background-color: " + QString(Colors::TABCOLORA1) + ";}";
 
     //    QString ConfTWss = "QTabBar::tab {margin-right: 0px; margin-left: 0px; padding: 5px;}"
     //                       "QTabBar::tab:selected {background-color: "
@@ -73,7 +73,7 @@ void AbstractCheckDialog::SetupUI()
     //          "QTabBar::tab:last:selected {margin-right: 0;}"
     //          "QTabBar::tab:only-one {margin: 0;}";
 
-    CheckTW->tabBar()->setStyleSheet(ConfTWss);
+    // CheckTW->tabBar()->setStyleSheet(ConfTWss);
     //    CheckTW->addTab(AutoCheckUI(),"  Автоматическая проверка  ");
     //    for (int i = 0; i < BdUINum; ++i)
     //    {
@@ -300,6 +300,8 @@ void AbstractCheckDialog::StopAnalogMeasurements()
 
 void AbstractCheckDialog::reqUpdate()
 {
+    if (!m_updatesEnabled)
+        return;
     for (auto &bd : m_BdUIList)
     {
         bd.widget->reqUpdate();

@@ -50,7 +50,7 @@ public:
     //    int BdUINum;
     // тип платы
     //    QList<int> IndexWd;
-    bool m_timerCounter;
+    // bool m_timerCounter;
     /*!
        \brief QList для вкладок текущего виджета
 

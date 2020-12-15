@@ -54,19 +54,27 @@ bool Protocom::start(const UsbHidSettings &usbhid)
 
     port->moveToThread(portThread);
     parser->moveToThread(parseThread);
-
+    // NOTE После остановки потоков мы всё еще обращаемся
+    // к интерфейсу для обновления данных
+    QList<QMetaObject::Connection> connections;
     // FIXME Разобраться с удалением и закрытием потоков
     // Старт
     connect(portThread, &QThread::started, port, &UsbHidPort::poll);
     connect(parseThread, &QThread::started, parser, &ProtocomThread::parse);
     // Рабочий режим
-    connect(this, &Protocom::wakeUpParser, parser, &ProtocomThread::wakeUp, Qt::DirectConnection);
+    connections << connect(this, &Protocom::wakeUpParser, parser, &ProtocomThread::wakeUp, Qt::DirectConnection);
     connect(port, &UsbHidPort::dataReceived, parser, &ProtocomThread::appendReadDataChunk, Qt::DirectConnection);
     connect(parser, &ProtocomThread::writeDataAttempt, port, &UsbHidPort::writeDataAttempt, Qt::DirectConnection);
     // Прерывание
     connect(port, &UsbHidPort::clearQueries, parser, &ProtocomThread::clear, Qt::DirectConnection);
     // Остановка
     connect(port, &UsbHidPort::finished, parser, &ProtocomThread::wakeUp, Qt::DirectConnection);
+    connect(port, &UsbHidPort::finished, [=] {
+        for (auto var : connections)
+        {
+            QObject::disconnect(var);
+        }
+    });
     connect(port, &UsbHidPort::finished, portThread, &QThread::quit);
     connect(port, &UsbHidPort::finished, parseThread, &QThread::quit);
     connect(port, &UsbHidPort::finished, portThread, &QObject::deleteLater);
@@ -123,9 +131,9 @@ void Protocom::reqBSI()
 {
     CommandStruct inp {
         Proto::Commands::ReadBlkStartInfo, // Command
-        QVariant(),                        // Board type
+        QVariant(),                        // Board type(Null because only 1 board contains bsi)
         QVariant(),                        // Null arg
-        {}                                 // QByteArray(sizeof(ModuleBSI::Bsi), Qt::Uninitialized) // Buffer for bsi
+        {}                                 // Null
     };
     DataManager::addToInQueue(inp);
     emit wakeUpParser();
@@ -133,6 +141,7 @@ void Protocom::reqBSI()
 
 void Protocom::writeFile(quint32 filenum, const QByteArray &file)
 {
+    Q_UNUSED(filenum);
     CommandStruct inp {
         Proto::Commands::WriteFile,                    // Command
         QVariant(), /*DataTypes::FilesEnum(filenum),*/ // File number

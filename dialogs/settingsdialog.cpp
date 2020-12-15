@@ -1,12 +1,13 @@
 #include "settingsdialog.h"
 
+#include "../widgets/styleloader.h"
 #include "../widgets/wd_func.h"
 
 #include <QFileDialog>
+#include <QMetaEnum>
 #include <QSettings>
 #include <QVBoxLayout>
 #include <QtDebug>
-
 SettingsDialog::SettingsDialog(QWidget *parent) : QDialog(parent)
 {
     setAttribute(Qt::WA_DeleteOnClose);
@@ -23,8 +24,20 @@ void SettingsDialog::SetupUI()
     vlyout->addLayout(hlyout);
     vlyout->addWidget(WDFunc::NewLBLAndLE(this, "Степень усреднения для регулировки", "reqcount", true));
     QPushButton *pb = new QPushButton("Готово");
-    connect(pb, SIGNAL(clicked()), this, SLOT(AcceptSettings()));
+    connect(pb, &QAbstractButton::clicked, this, &SettingsDialog::AcceptSettings);
     vlyout->addWidget(pb);
+    auto themeEnum = QMetaEnum::fromType<Style>;
+    QStringList values;
+    for (int i = 0; i < themeEnum().keyCount(); i++)
+    {
+        values.push_back(themeEnum().key(i));
+    }
+    auto *themeCB = WDFunc::NewCB2(this, values);
+    vlyout->addWidget(themeCB);
+    connect(themeCB, &QComboBox::currentTextChanged, [=](const QString &text) {
+        Style key = Style(themeEnum().keyToValue(text.toStdString().c_str()));
+        StyleLoader::setStyleFile(themes.value(key));
+    });
     setLayout(vlyout);
 }
 

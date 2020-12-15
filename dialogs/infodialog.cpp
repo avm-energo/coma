@@ -20,8 +20,8 @@ InfoDialog::InfoDialog(QWidget *parent) : UDialog(parent)
 
 void InfoDialog::SetupUI()
 {
-    QString tmps = "QDialog {background-color: " + QString(Colors::MAINWINCLRA1) + ";}";
-    setStyleSheet(tmps);
+    // QString tmps = "QDialog {background-color: " + QString(Colors::MAINWINCLRA1) + ";}";
+    // setStyleSheet(tmps);
     setAttribute(Qt::WA_DeleteOnClose);
     QVBoxLayout *lyout = new QVBoxLayout;
     QGridLayout *slyout = new QGridLayout;

@@ -24,11 +24,12 @@ bool KeyPressDialog::CheckPassword(const QString &psw)
     connect(this, &KeyPressDialog::PasswordChecked, &PasswordLoop, &QEventLoop::quit);
     show();
     PasswordLoop.exec();
-    if (StdFunc::isCancelled())
+    if (StdFunc::isCancelled() || m_pswEntered.isEmpty() || m_pswEntered.isNull())
     {
         qCritical("Отмена ввода пароля");
         return false;
     }
+
     if (m_pswEntered != psw)
     {
         qCritical("Пароль введён неверно");

@@ -35,6 +35,14 @@ QLineEdit *WDFunc::NewLE(QWidget *w, const QString &lename, const QString &letex
     return le;
 }
 
+QLineEdit *WDFunc::NewLE2(QWidget *w, const QString &lename, const QString &letext)
+{
+    QLineEdit *le = new QLineEdit(w);
+    le->setObjectName(lename);
+    le->setText(letext);
+    return le;
+}
+
 PasswordLineEdit *WDFunc::NewPswLE(
     QWidget *w, const QString &lename, QLineEdit::EchoMode echostyle, const QString &lestyle)
 {
@@ -98,6 +106,16 @@ QLabel *WDFunc::NewLBL(QWidget *w, const QString &text, const QString &lblcolor,
     lbl->setToolTip(lbltip);
     return lbl;
 }
+
+QLabel *WDFunc::NewLBL2(QWidget *w, const QString &text, const QString &lblname, const QString &lbltip)
+{
+    QLabel *lbl = new QLabel(w);
+    lbl->setText(text);
+    if (!lblname.isEmpty())
+        lbl->setObjectName(lblname);
+    lbl->setToolTip(lbltip);
+    return lbl;
+}
 /*!
 Копирует содержимое из исходной области памяти в целевую область память
 \param w Родитель будущего виджета
@@ -116,6 +134,17 @@ QLabel *WDFunc::NewLBLT(
     lbl->setStyleSheet(lblstyle);
     lbl->setToolTip(lbltip);
     if (Fixed == true)
+        lbl->setFixedSize(120, 15);
+    return lbl;
+}
+
+QLabel *WDFunc::NewLBLT2(QWidget *w, const QString &text, const QString &lblname, const QString &lbltip, bool fixed)
+{
+    QLabel *lbl = new QLabel(w);
+    lbl->setText(text);
+    lbl->setObjectName(lblname);
+    lbl->setToolTip(lbltip);
+    if (fixed == true)
         lbl->setFixedSize(120, 15);
     return lbl;
 }
@@ -189,6 +218,22 @@ QComboBox *WDFunc::NewCB(QWidget *parent, const QString &cbname, const QStringLi
         QString tmps = "QComboBox {background-color: " + cbcolor + ";}";
         cb->setStyleSheet(tmps);
     }
+    return cb;
+}
+
+QComboBox *WDFunc::NewCB2(QWidget *parent, const QString &cbname, const QStringList &cbsl)
+{
+    QComboBox *cb = NewCB2(parent, cbsl);
+    cb->setObjectName(cbname);
+    return cb;
+}
+
+QComboBox *WDFunc::NewCB2(QWidget *parent, const QStringList &cbsl)
+{
+    QComboBox *cb = new QComboBox(parent);
+    QStringListModel *cblm = new QStringListModel(cb);
+    cblm->setStringList(cbsl);
+    cb->setModel(cblm);
     return cb;
 }
 

@@ -16,10 +16,15 @@ public:
     bool First;
     QTimer *Timer;
 
+    int timeZone() const;
+    void setTimeZone(int timeZone);
+
 private:
     void SetupUI();
     void SetTime(quint32 unixtimestamp);
     void WriteTime(QDateTime &myDateTime);
+
+    int m_timeZone;
 
 signals:
     //    void ethTimeRequest();
@@ -30,7 +35,7 @@ signals:
 public slots:
     void ErrorRead();
     void TimeWritten();
-    void updateSysTime();
+    // void updateSysTime();
     //    void USBUpdate();
     //    void MBSUpdate();
     //    void ETHUpdate();

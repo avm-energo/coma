@@ -415,9 +415,9 @@ QWidget *ConfigKxx::ComParam(QWidget *parent)
     QVBoxLayout *vlyout2 = new QVBoxLayout;
     QGridLayout *glyout = new QGridLayout;
     QString Str;
-    QFont font;
-    font.setFamily("Times");
-    font.setPointSize(11);
+    //    QFont font;
+    //    font.setFamily("Times");
+    //    font.setPointSize(11);
     glyout->setColumnStretch(2, 50);
 
     int i = 0;
@@ -431,8 +431,8 @@ QWidget *ConfigKxx::ComParam(QWidget *parent)
             Str.append(QString::number(Com_param.IP[i]) + ".");
     }
 
-    glyout->addWidget(WDFunc::NewLBL(parent, "IP адрес устройства:"), row, 0, 1, 1, Qt::AlignLeft);
-    glyout->addWidget(WDFunc::NewLE(parent, "IP_ID", Str, paramcolor), row, 1, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(WDFunc::NewLBL2(parent, "IP адрес устройства:"), row, 0, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(WDFunc::NewLE2(parent, "IP_ID", Str /*, paramcolor*/), row, 1, 1, 1, Qt::AlignLeft);
 
     row++;
     Str.clear();
@@ -444,8 +444,8 @@ QWidget *ConfigKxx::ComParam(QWidget *parent)
         else
             Str.append(QString::number(Com_param.Mask[i]) + ".");
     }
-    glyout->addWidget(WDFunc::NewLBL(parent, "Маска:"), row, 0, 1, 1, Qt::AlignLeft);
-    glyout->addWidget(WDFunc::NewLE(parent, "Mask_ID", Str, paramcolor), row, 1, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(WDFunc::NewLBL2(parent, "Маска:"), row, 0, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(WDFunc::NewLE2(parent, "Mask_ID", Str /*, paramcolor*/), row, 1, 1, 1, Qt::AlignLeft);
 
     row++;
     Str.clear();
@@ -457,11 +457,11 @@ QWidget *ConfigKxx::ComParam(QWidget *parent)
         else
             Str.append(QString::number(Com_param.GateWay[i]) + ".");
     }
-    glyout->addWidget(WDFunc::NewLBL(parent, "Шлюз:"), row, 0, 1, 1, Qt::AlignLeft);
-    glyout->addWidget(WDFunc::NewLE(parent, "GW_ID", Str, paramcolor), row, 1, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(WDFunc::NewLBL2(parent, "Шлюз:"), row, 0, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(WDFunc::NewLE2(parent, "GW_ID", Str /*, paramcolor*/), row, 1, 1, 1, Qt::AlignLeft);
 
     row++;
-    glyout->addWidget(WDFunc::NewLBL(parent, "Порт протокола 104:"), row, 0, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(WDFunc::NewLBL2(parent, "Порт протокола 104:"), row, 0, 1, 1, Qt::AlignLeft);
     glyout->addWidget(WDFunc::NewSPB(parent, "Port_ID", 0, 10000, 0, paramcolor), row, 1, 1, 1, Qt::AlignLeft);
 
     row++;
@@ -475,14 +475,14 @@ QWidget *ConfigKxx::ComParam(QWidget *parent)
             Str.append(QString(Com_param.SNTP[i]) + ".");
     }
 
-    glyout->addWidget(WDFunc::NewLBL(parent, "Адрес SNTP сервера:"), row, 0, 1, 1, Qt::AlignLeft);
-    glyout->addWidget(WDFunc::NewLE(parent, "SNTP_ID", Str, paramcolor), row, 1, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(WDFunc::NewLBL2(parent, "Адрес SNTP сервера:"), row, 0, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(WDFunc::NewLE2(parent, "SNTP_ID", Str /*, paramcolor*/), row, 1, 1, 1, Qt::AlignLeft);
 
     vlyout2->addLayout(glyout);
     vlyout1->addLayout(vlyout2);
 
     w->setLayout(vlyout1);
-    w->setStyleSheet("QWidget {background-color: " + QString(Colors::ACONFWCLR) + ";}");
+    // w->setStyleSheet("QWidget {background-color: " + QString(Colors::ACONFWCLR) + ";}");
     return w;
 }
 
@@ -502,16 +502,17 @@ QWidget *ConfigKxx::ModbusWidget(QWidget *parent)
     QString Str;
     glyout->setColumnStretch(1, 20);
 
-    QFont font;
-    font.setFamily("Times");
-    font.setPointSize(11);
+    //    QFont font;
+    //    font.setFamily("Times");
+    //    font.setPointSize(11);
 
     int row = 0;
 
     QLabel *lbl = new QLabel("Modbus: ");
     glyout->addWidget(lbl, row, 0, 1, 1, Qt::AlignLeft);
     QStringList dopcbl = QStringList { "slave", "master" };
-    auto *dopcb = WDFunc::NewCB(parent, "MBMaster", dopcbl, paramcolor);
+    auto *dopcb = WDFunc::NewCB2(parent, "MBMaster", dopcbl /*, paramcolor*/);
+
     connect(dopcb, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &ConfigKxx::ChangeModbusGUI);
     glyout->addWidget(dopcb, row, 1, 1, 1);
     row++;
@@ -521,30 +522,31 @@ QWidget *ConfigKxx::ModbusWidget(QWidget *parent)
     vlyout1->addWidget(gb);
 
     gb = new QGroupBox("Настройки ModBus");
-    gb->setFont(font);
+    //    gb->setFont(font);
     vlyout2 = new QVBoxLayout;
     glyout = new QGridLayout;
 
     row++;
-    lbl = WDFunc::NewLBL(parent, "Скорость RS485 интерфейса:");
+    lbl = WDFunc::NewLBL2(parent, "Скорость RS485 интерфейса:");
     glyout->addWidget(lbl, row, 0, 1, 1);
-    auto *cb = WDFunc::NewCB(parent, "Baud_ID", m_baudList, paramcolor);
+    auto *cb = WDFunc::NewCB2(parent, "Baud_ID", m_baudList /*, paramcolor*/);
+
     glyout->addWidget(cb, row, 1, 1, 1, Qt::AlignLeft);
 
     row++;
-    glyout->addWidget(WDFunc::NewLBL(parent, "Чётность:"), row, 0, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL2(parent, "Чётность:"), row, 0, 1, 1);
     cbl = QStringList { "NoParity", "EvenParity", "OddParity" };
-    cb = WDFunc::NewCB(parent, "Parity_ID", cbl, paramcolor);
+    cb = WDFunc::NewCB2(parent, "Parity_ID", cbl /*, paramcolor*/);
     glyout->addWidget(cb, row, 1, 1, 1, Qt::AlignLeft);
 
     row++;
-    glyout->addWidget(WDFunc::NewLBL(parent, "Количество стоповых битов:"), row, 0, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL2(parent, "Количество стоповых битов:"), row, 0, 1, 1);
     cbl = QStringList { "1", "2" };
-    cb = WDFunc::NewCB(parent, "Stopbit_ID", cbl, paramcolor);
+    cb = WDFunc::NewCB2(parent, "Stopbit_ID", cbl /*, paramcolor*/);
     glyout->addWidget(cb, row, 1, 1, 1, Qt::AlignLeft);
 
     row++;
-    glyout->addWidget(WDFunc::NewLBL(parent, "Адрес устройства для Modbus:"), row, 0, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL2(parent, "Адрес устройства для Modbus:"), row, 0, 1, 1);
     glyout->addWidget(WDFunc::NewSPB(parent, "adrMB_ID", 1, 254, 0, paramcolor), row, 1, 1, 1, Qt::AlignLeft);
 
     vlyout2->addLayout(glyout);
@@ -553,96 +555,95 @@ QWidget *ConfigKxx::ModbusWidget(QWidget *parent)
     WidgetList.append(gb);
 
     gb = new QGroupBox("Настройки ModBus");
-    gb->setFont(font);
+    //    gb->setFont(font);
     vlyout2 = new QVBoxLayout;
     glyout = new QGridLayout;
     QLabel *line1 = new QLabel(parent);
 
     line1->setText("тип датчика");
     line1->setAlignment(Qt::AlignCenter);
-    line1->setStyleSheet("QLabel {border: 1px solid  darkgreen;}");
+    // line1->setStyleSheet("QLabel {border: 1px solid  darkgreen;}");
     glyout->addWidget(line1, 1, 1, 1, 1);
 
     line1 = new QLabel(parent);
     line1->setText("");
-    line1->setStyleSheet("QLabel {border: 1px solid  darkgreen ;}");
+    // line1->setStyleSheet("QLabel {border: 1px solid  darkgreen ;}");
     glyout->addWidget(line1, 0, 1, 1, 1);
 
     line1 = new QLabel(parent);
     line1->setText("параметры связи");
     line1->setAlignment(Qt::AlignCenter);
-    line1->setStyleSheet("QLabel {border: 1px solid  darkgreen;}");
+    // line1->setStyleSheet("QLabel {border: 1px solid  darkgreen;}");
     glyout->addWidget(line1, 0, 2, 1, 3);
 
     line1 = new QLabel(parent);
     line1->setText("");
-    line1->setStyleSheet("QLabel {border: 1px solid darkgreen;}");
+    // line1->setStyleSheet("QLabel {border: 1px solid darkgreen;}");
     glyout->addWidget(line1, 0, 5, 1, 1);
 
     line1 = new QLabel(parent);
     line1->setText("");
-    line1->setStyleSheet("QLabel {border: 1px solid  darkgreen;}");
+    // line1->setStyleSheet("QLabel {border: 1px solid  darkgreen;}");
     glyout->addWidget(line1, 0, 6, 1, 1);
     line1 = new QLabel(parent);
     line1->setText("");
-    line1->setStyleSheet("QLabel {border: 1px solid  darkgreen ;}");
+    // line1->setStyleSheet("QLabel {border: 1px solid  darkgreen ;}");
     glyout->addWidget(line1, 0, 7, 1, 1);
     line1 = new QLabel(parent);
     line1->setText("");
-    line1->setStyleSheet("QLabel {border: 1px solid  darkgreen ;}");
+    // line1->setStyleSheet("QLabel {border: 1px solid  darkgreen ;}");
     glyout->addWidget(line1, 0, 8, 1, 1);
     line1 = new QLabel(parent);
     line1->setText("");
-    line1->setStyleSheet("QLabel {border: 1px solid  darkgreen ;}");
+    // line1->setStyleSheet("QLabel {border: 1px solid  darkgreen ;}");
     glyout->addWidget(line1, 0, 9, 1, 1);
 
     line1 = new QLabel(parent);
     line1->setText("скорость");
     line1->setAlignment(Qt::AlignCenter);
-    line1->setStyleSheet("QLabel {border: 1px solid darkgreen;}");
+    // line1->setStyleSheet("QLabel {border: 1px solid darkgreen;}");
     glyout->addWidget(line1, 1, 2, 1, 1);
 
     line1 = new QLabel(parent);
     line1->setText("чётность");
     line1->setAlignment(Qt::AlignCenter);
-    line1->setStyleSheet("QLabel {border: 1px solid  darkgreen;}");
+    // line1->setStyleSheet("QLabel {border: 1px solid  darkgreen;}");
     glyout->addWidget(line1, 1, 3, 1, 1);
 
     line1 = new QLabel(parent);
     line1->setText("стопБиты");
     line1->setAlignment(Qt::AlignCenter);
-    line1->setStyleSheet("QLabel {border: 1px solid  darkgreen;}");
+    // line1->setStyleSheet("QLabel {border: 1px solid  darkgreen;}");
     glyout->addWidget(line1, 1, 4, 1, 1);
 
     line1 = new QLabel(parent);
     line1->setText("период опроса");
     line1->setAlignment(Qt::AlignCenter);
-    line1->setStyleSheet("QLabel {border: 1px solid  darkgreen;}");
+    // line1->setStyleSheet("QLabel {border: 1px solid  darkgreen;}");
     glyout->addWidget(line1, 1, 5, 1, 1);
 
     line1 = new QLabel(parent);
     line1->setText("адрес абонента");
     line1->setAlignment(Qt::AlignCenter);
-    line1->setStyleSheet("QLabel {border: 1px solid  darkgreen;}");
+    // line1->setStyleSheet("QLabel {border: 1px solid  darkgreen;}");
     glyout->addWidget(line1, 1, 6, 1, 1);
     line1 = new QLabel(parent);
 
-    line1 = new QLabel(parent);
     line1->setText("функция");
     line1->setAlignment(Qt::AlignCenter);
-    line1->setStyleSheet("QLabel {border: 1px solid  darkgreen;}");
+    // line1->setStyleSheet("QLabel {border: 1px solid  darkgreen;}");
     glyout->addWidget(line1, 1, 7, 1, 1);
 
     line1 = new QLabel(parent);
     line1->setText("тип данных");
     line1->setAlignment(Qt::AlignCenter);
-    line1->setStyleSheet("QLabel {border: 1px solid  darkgreen;}");
+    // line1->setStyleSheet("QLabel {border: 1px solid  darkgreen;}");
     glyout->addWidget(line1, 1, 8, 1, 1);
 
     line1 = new QLabel(parent);
     line1->setText("адрес регистра");
     line1->setAlignment(Qt::AlignCenter);
-    line1->setStyleSheet("QLabel {border: 1px solid  darkgreen;}");
+    // line1->setStyleSheet("QLabel {border: 1px solid  darkgreen;}");
     glyout->addWidget(line1, 1, 9, 1, 1);
 
     int j = 1;
@@ -653,22 +654,22 @@ QWidget *ConfigKxx::ModbusWidget(QWidget *parent)
         line1 = new QLabel(parent);
         line1->setText("Датчик " + QString::number(i) + ":");
         line1->setAlignment(Qt::AlignCenter);
-        line1->setStyleSheet("QLabel {border: 1px solid  darkgreen;}");
+        // line1->setStyleSheet("QLabel {border: 1px solid  darkgreen;}");
         glyout->addWidget(line1, j, 0, 1, 1);
 
         cbl = QStringList { "нет", "тип 1", "тип 2", "тип 3" };
-        cb = WDFunc::NewCB(parent, "MBMab" + QString::number(i) + "[0]", cbl, paramcolor);
+        cb = WDFunc::NewCB2(parent, "MBMab" + QString::number(i) + "[0]", cbl /*, paramcolor*/);
         glyout->addWidget(cb, j, 1, 1, 1);
 
-        cb = WDFunc::NewCB(parent, "MBMab" + QString::number(i) + "sk[1]", m_baudList, paramcolor);
+        cb = WDFunc::NewCB2(parent, "MBMab" + QString::number(i) + "sk[1]", m_baudList /*, paramcolor*/);
         glyout->addWidget(cb, j, 2, 1, 1);
 
         cbl = QStringList { "нет", "even", "odd" };
-        cb = WDFunc::NewCB(parent, "MBMab" + QString::number(i) + "ch[1]", cbl, paramcolor);
+        cb = WDFunc::NewCB2(parent, "MBMab" + QString::number(i) + "ch[1]", cbl /*, paramcolor*/);
         glyout->addWidget(cb, j, 3, 1, 1);
 
         cbl = QStringList { "1", "2" };
-        cb = WDFunc::NewCB(parent, "MBMab" + QString::number(i) + "bt[1]", cbl, paramcolor);
+        cb = WDFunc::NewCB2(parent, "MBMab" + QString::number(i) + "bt[1]", cbl /*, paramcolor*/);
         glyout->addWidget(cb, j, 4, 1, 1);
     }
 
@@ -691,11 +692,11 @@ QWidget *ConfigKxx::ModbusWidget(QWidget *parent)
     {
         j++;
         cbl = QStringList { "Coils", "Holding", "Input" };
-        cb = WDFunc::NewCB(parent, "MBMab" + QString::number(i) + "func[4]", cbl, paramcolor);
+        cb = WDFunc::NewCB2(parent, "MBMab" + QString::number(i) + "func[4]", cbl /*, paramcolor*/);
         glyout->addWidget(cb, j, 7, 1, 1);
 
         cbl = QStringList { "Word", "Int", "float" };
-        cb = WDFunc::NewCB(parent, "MBMab" + QString::number(i) + "tdat[4]", cbl, paramcolor);
+        cb = WDFunc::NewCB2(parent, "MBMab" + QString::number(i) + "tdat[4]", cbl /*, paramcolor*/);
         glyout->addWidget(cb, j, 8, 1, 1);
     }
 
@@ -706,12 +707,12 @@ QWidget *ConfigKxx::ModbusWidget(QWidget *parent)
         glyout->addWidget(WDFunc::NewSPB(parent, QString(Str), 0, 10000, 0, paramcolor), ++i, 9, 1, 1);
     }
 
-    line1 = new QLabel(parent);
-    line1->setText("");
+    //    line1 = new QLabel(parent);
+    //    line1->setText("");
 
     glyout->addWidget(line1, 7, 0, 1, 1);
     glyout->addWidget(line1, 8, 0, 1, 1);
-    glyout->addWidget(line1, 9, 0, 1, 1);
+    // glyout->addWidget(line1, 9, 0, 1, 1);
 
     vlyout2->addLayout(glyout);
     gb->setLayout(vlyout2);
@@ -722,7 +723,7 @@ QWidget *ConfigKxx::ModbusWidget(QWidget *parent)
     vlyout1->addWidget(qswt);
 
     w->setLayout(vlyout1);
-    w->setStyleSheet("QWidget {background-color: " + QString(Colors::ACONFWCLR) + ";}");
+    //  w->setStyleSheet("QWidget {background-color: " + QString(Colors::ACONFWCLR) + ";}");
     return w;
 }
 
@@ -737,11 +738,11 @@ QWidget *ConfigKxx::VariousWidget(QWidget *parent)
     QVBoxLayout *vlyout1 = new QVBoxLayout;
     QVBoxLayout *vlyout2 = new QVBoxLayout;
 
-    glyout->addWidget(WDFunc::NewLBL(parent, "Номинальное сопротивление термометра при 0 град.С:"), row, 1, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL2(parent, "Номинальное сопротивление термометра при 0 град.С:"), row, 1, 1, 1);
     glyout->addWidget(WDFunc::NewSPB(parent, "RTerm", 0, 10000, 0, paramcolor), row, 2, 1, 3);
     row++;
 
-    glyout->addWidget(WDFunc::NewLBL(parent, "Температурный коэффициент термометра:"), row, 1, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL2(parent, "Температурный коэффициент термометра:"), row, 1, 1, 1);
     glyout->addWidget(WDFunc::NewSPB(parent, "W100", 0, 10000, 3, paramcolor), row, 2, 1, 3);
     row++;
 
@@ -750,14 +751,14 @@ QWidget *ConfigKxx::VariousWidget(QWidget *parent)
     glyout->addWidget(WDFunc::NewSPB(parent, "Trele_pred", 0, 10000, 0, paramcolor), row, 2, 1, 3);
     row++;
 
-    glyout->addWidget(WDFunc::NewLBL(parent, "Задержка срабатывания реле аварийной сигнализации:"), row, 1, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL2(parent, "Задержка срабатывания реле аварийной сигнализации:"), row, 1, 1, 1);
     glyout->addWidget(WDFunc::NewSPB(parent, "Trele_alarm", 0, 10000, 0, paramcolor), row, 2, 1, 3);
 
     vlyout2->addLayout(glyout);
     gb->setLayout(vlyout2);
     vlyout1->addWidget(gb);
     w->setLayout(vlyout1);
-    w->setStyleSheet("QWidget {background-color: " + QString(Colors::ACONFWCLR) + ";}");
+    //  w->setStyleSheet("QWidget {background-color: " + QString(Colors::ACONFWCLR) + ";}");
     return w;
 }
 

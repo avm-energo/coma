@@ -34,6 +34,7 @@ public:
     static QString CWData(QWidget *w, const QString &cwname);
     static bool SetCWColor(QWidget *w, const QString &cwname, const QColor &color);
     static QLineEdit *NewLE(QWidget *w, const QString &lename, const QString &letext = "", const QString &lestyle = "");
+    static QLineEdit *NewLE2(QWidget *w, const QString &lename, const QString &letext = "");
     static PasswordLineEdit *NewPswLE(QWidget *w, const QString &lename,
         QLineEdit::EchoMode echostyle = QLineEdit::Normal, const QString &lestyle = "");
     static bool SetLEData(QWidget *w, const QString &lename, const QString &levalue, const QString &restring = "");
@@ -52,6 +53,8 @@ public:
     static bool SetLBLTColor(QWidget *w, const QString &lblname, const QString &color);
     static QComboBox *NewCB(
         QWidget *parent, const QString &cbname, const QStringList &cbsl, const QString &cbcolor = "");
+    static QComboBox *NewCB2(QWidget *parent, const QString &cbname, const QStringList &cbsl);
+    static QComboBox *NewCB2(QWidget *parent, const QStringList &cbsl);
     static bool SetCBData(QWidget *w, const QString &cbname, const QString &cbvalue);
     static bool SetCBIndex(QObject *w, const QString &cbname, int index);
     static bool SetCBColor(QWidget *w, const QString &cbname, const QString &color);
@@ -84,8 +87,11 @@ public:
     static bool SetLEColor(QWidget *w, const QString &lename, const QColor &color);
     static QLabel *NewLBL(QWidget *w, const QString &text, const QString &lblcolor = "", const QString &lblname = "",
         const QPixmap *pm = Q_NULLPTR, const QString &lbltip = "");
+    static QLabel *NewLBL2(QWidget *w, const QString &text, const QString &lblname = "", const QString &lbltip = "");
     static QLabel *NewLBLT(QWidget *w, const QString &text, const QString &lblname = "", const QString &lblstyle = "",
         const QString &lbltip = "", bool Fixed = false);
+    static QLabel *NewLBLT2(
+        QWidget *w, const QString &text, const QString &lblname = "", const QString &lbltip = "", bool fixed = false);
     // static QLabel *NewLBLTT(QWidget *w, const QString &text, const QString
     // &lblname="", const QString &lblstyle="", const QString &lbltip="",bool
     // Fixed=false);

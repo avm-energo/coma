@@ -1,4 +1,5 @@
 #include "../gen/logger.h"
+#include "../widgets/styleloader.h"
 #include "coma.h"
 
 #include <QApplication>
@@ -44,6 +45,7 @@ int main(int argc, char *argv[])
             }
         }
     }
+    StyleLoader::attach();
     w.Go(Parameter);
 
     return a.exec();

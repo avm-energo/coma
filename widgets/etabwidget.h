@@ -7,7 +7,7 @@
 class ETabBar : public QTabBar
 {
 public:
-    explicit ETabBar(QWidget *parent = 0);
+    explicit ETabBar(QWidget *parent = nullptr);
 
 protected:
     QSize tabSizeHint(int index) const;
@@ -19,14 +19,6 @@ class ETabWidget : public QTabWidget
     Q_OBJECT
 public:
     explicit ETabWidget(QWidget *parent = nullptr);
-
-signals:
-    void tabClicked(int index);
-
-public slots:
-
-private slots:
-    void TabClicked();
 };
 
 #endif // ETABWIDGET_H

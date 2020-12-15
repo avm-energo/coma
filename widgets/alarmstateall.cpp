@@ -68,7 +68,7 @@ void AlarmStateAll::setupUI(const QStringList &events)
     QVBoxLayout *lyout = new QVBoxLayout;
     QVBoxLayout *vlayout = new QVBoxLayout;
     setObjectName("window");
-    setStyleSheet("QWidget {margin: 0; border-width: 0; padding: 0;};");
+    //   setStyleSheet("QWidget {margin: 0; border-width: 0; padding: 0;};");
 
     for (int i = 0; i < events.size(); ++i)
     {
@@ -77,7 +77,7 @@ void AlarmStateAll::setupUI(const QStringList &events)
         QPixmap circle = WDFunc::NewCircle(Qt::green, circleRadius);
         hlyout->addWidget(WDFunc::NewLBL(this, "", "", QString::number(i), &circle));
 
-        hlyout->addWidget(WDFunc::NewLBLT(this, events.at(i), "", "", ""), 1);
+        hlyout->addWidget(WDFunc::NewLBLT2(this, events.at(i)), 1);
         vlayout->addLayout(hlyout);
     }
     lyout->addLayout(vlayout);

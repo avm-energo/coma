@@ -8,10 +8,12 @@
 #include "../widgets/etableview.h"
 #include "../widgets/wd_func.h"
 
+#include <QButtonGroup>
 #include <QCheckBox>
 #include <QComboBox>
 #include <QCoreApplication>
 #include <QDebug>
+#include <QDialogButtonBox>
 #include <QDoubleSpinBox>
 #include <QFileDialog>
 #include <QGridLayout>
@@ -39,31 +41,47 @@ QWidget *AbstractStartupDialog::buttonWidget()
 {
     QWidget *w = new QWidget;
     QVBoxLayout *lyout = new QVBoxLayout;
+    QDialogButtonBox *group = new QDialogButtonBox;
     QHBoxLayout *hlyout = new QHBoxLayout;
     QString tmps = ((DEVICETYPE == DEVICETYPE_MODULE) ? "модуля" : "прибора");
 
     const QList<QPair<QPair<QString, QIcon>, std::function<void()>>> funcs {
-        { { "Получить" /*из " + tmps*/, QIcon(":/icons/User-download-wf.svg") }, [this]() { GetCorBdButton(); } }, //
-        { { "Записать" /*в модуль"*/, QIcon(":/icons/Upload-01-wf.svg") }, [this]() { WriteCorBd(); } },           //
-        { { "Сбросить" /*начальные значения"*/, QIcon(":/icons/cancel.svg") }, [this]() { ResetCor(); } },         //
-        { { "Задать" /*начальные значения"*/, QIcon(":/icons/Check-02-wf.svg") }, [this]() { WriteCor(); } },      //
-        { { "Прочитать" /*значения из файла"*/, QIcon(":/icons/open.svg") }, [this]() { ReadFromFile(); } },       //
-        { { "Сохранить" /*значения в файл"*/, QIcon(":/icons/save.svg") }, [this]() { SaveToFile(); } }            //
+        { { "Получить" /*из " + tmps*/, QIcon(":/icons/tnread.svg") }, [this]() { GetCorBdButton(); } },       //
+        { { "Записать" /*в модуль"*/, QIcon(":/icons/tnwrite.svg") }, [this]() { WriteCorBd(); } },            //
+        { { "Сбросить" /*начальные значения"*/, QIcon(":/icons/tnreset.svg") }, [this]() { ResetCor(); } },    //
+        { { "Задать" /*начальные значения"*/, QIcon(":/icons/Check-02-wf.svg") }, [this]() { WriteCor(); } },  //
+        { { "Прочитать" /*значения из файла"*/, QIcon(":/icons/tnload.svg") }, [this]() { ReadFromFile(); } }, //
+        { { "Сохранить" /*значения в файл"*/, QIcon(":/icons/tnsave.svg") }, [this]() { SaveToFile(); } }      //
     };
 
     for (auto &i : funcs)
     {
         const QIcon &icon = i.first.second;
-        QPushButton *pb = new QPushButton(icon, i.first.first);
-        pb->setMinimumHeight(40);
-        pb->setIconSize(QSize(pb->minimumHeight() / 2, pb->minimumHeight() / 2));
+        const QString &toolTip = i.first.first;
+        QPushButton *pb = new QPushButton();
+        pb->setObjectName("Hexagon");
+        pb->setIcon(icon);
+        pb->setAttribute(Qt::WA_Hover);
+        pb->setAttribute(Qt::WA_X11NetWmWindowTypeToolBar);
+        //        pb->setStyleSheet("background-color: rgba(255, 255, 255, 0);"
+        //                          "    border-style: groove;"
+        //                          "   border-color: #ADADAD;"
+        //                          "border-width: 1px;");
+        pb->setToolTip(toolTip);
+        pb->setMinimumSize(50, 50);
+        pb->setIconSize(QSize(50, 50));
+
+        // pb->setIconSize(QSize(pb->minimumHeight() / 2, pb->minimumHeight() / 2));
 
         connect(pb, &QAbstractButton::clicked, this, i.second);
         if (StdFunc::IsInEmulateMode())
             pb->setEnabled(false);
-        hlyout->addWidget(pb);
+        group->addButton(pb, QDialogButtonBox::ActionRole);
+        // hlyout->addWidget(pb);
     }
-    lyout->addLayout(hlyout);
+    group->setCenterButtons(true);
+    lyout->addWidget(group);
+    // lyout->addLayout(hlyout);
     w->setLayout(lyout);
     return w;
 }

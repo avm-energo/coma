@@ -9,10 +9,10 @@ ETableView::ETableView(QWidget *parent) : QTableView(parent)
 {
     setAttribute(Qt::WA_TranslucentBackground, true);
     setAttribute(Qt::WA_NoSystemBackground, true);
-    setStyleSheet("QTableView {background-color: rgba(0,0,0,0);}");
+    // setStyleSheet("QTableView {background-color: rgba(0,0,0,0);}");
     setFrameStyle(QFrame::NoFrame);
     setShowGrid(false);
-    connect(this, SIGNAL(datachanged()), this, SLOT(resizeColumnsToContents()));
+    connect(this, &ETableView::datachanged, this, &QTableView::resizeColumnsToContents);
 }
 
 /*void ETableView::setAData(QVariant dat)

@@ -152,7 +152,7 @@ QToolBar *Coma::createToolBar()
 {
     QToolBar *tb = new QToolBar(this);
     tb->setContextMenuPolicy(Qt::PreventContextMenu);
-    tb->setStyleSheet("QToolBar {background: 0px; margin: 0px; spacing: 5px; padding: 0px;}");
+    // tb->setStyleSheet("QToolBar {background: 0px; margin: 0px; spacing: 5px; padding: 0px;}");
     tb->setIconSize(QSize(40, 40));
     tb->addAction(QIcon("images/tnstart.svg"), "Соединение", this, &Coma::StartWork);
     tb->addAction(QIcon("images/tnstop.svg"), "Разрыв соединения", this, &Coma::DisconnectAndClear);
@@ -187,8 +187,8 @@ void Coma::SetupUI()
     QString caption(PROGNAME);
     caption.append(" v. ").append(COMAVERSION);
     setWindowTitle(caption);
-    QString tmps = "QMainWindow {background-color: " + QString(Colors::MAINWINCLR) + ";}";
-    setStyleSheet(tmps);
+    // QString tmps = "QMainWindow {background-color: " + QString(Colors::MAINWINCLR) + ";}";
+    // setStyleSheet(tmps);
     setMinimumSize(QSize(1050, 700));
     QWidget *wdgt = new QWidget(this);
     QVBoxLayout *lyout = new QVBoxLayout(wdgt);
@@ -228,6 +228,7 @@ QWidget *Coma::Least()
     MainTW->setTabPosition(QTabWidget::West);
     inlyout->addWidget(MainTW, 60);
     MainTW->hide();
+    connect(MainTW, &ETabWidget::currentChanged, this, &Coma::MainTWTabChanged);
 
     QFrame *line = new QFrame;
     line->setLineWidth(0);
@@ -236,8 +237,8 @@ QWidget *Coma::Least()
     lyout->addWidget(line);
 
     inlyout = new QHBoxLayout;
-    inlyout->addWidget(WDFunc::NewLBLT(this, "Обмен"));
-    inlyout->addWidget(WDFunc::NewLBLT(this, "", "prb1lbl"));
+    inlyout->addWidget(WDFunc::NewLBLT2(this, "Обмен"));
+    inlyout->addWidget(WDFunc::NewLBLT2(this, "", "prb1lbl"));
 
     QProgressBar *prb = new QProgressBar;
     prb->setObjectName("prb1prb");
@@ -248,8 +249,8 @@ QWidget *Coma::Least()
     lyout->addLayout(inlyout);
 
     inlyout = new QHBoxLayout;
-    inlyout->addWidget(WDFunc::NewLBLT(this, "Отсчёт"));
-    inlyout->addWidget(WDFunc::NewLBLT(this, "", "prb2lbl"));
+    inlyout->addWidget(WDFunc::NewLBLT2(this, "Отсчёт"));
+    inlyout->addWidget(WDFunc::NewLBLT2(this, "", "prb2lbl"));
 
     prb = new QProgressBar;
     prb->setObjectName("prb2prb");
@@ -264,11 +265,11 @@ QWidget *Coma::Least()
 void Coma::SetupMenubar()
 {
     QMenuBar *menubar = new QMenuBar(this);
-    QString tmps = "QMenuBar {background-color: " + QString(Colors::MAINWINCLRA1)
-        + ";}"
-          "QMenuBar::item {background-color: "
-        + QString(Colors::MAINWINCLRA1) + ";}";
-    menubar->setStyleSheet(tmps);
+    //    QString tmps = "QMenuBar {background-color: " + QString(Colors::MAINWINCLRA1)
+    //        + ";}"
+    //          "QMenuBar::item {background-color: "
+    //        + QString(Colors::MAINWINCLRA1) + ";}";
+    //    menubar->setStyleSheet(tmps);
     QMenu *menu = new QMenu(this);
     menu->setTitle("Главное");
 
@@ -437,9 +438,7 @@ void Coma::StartWork()
         loop.exec();
         if (Cancelled)
         {
-            // qCritical(logCritical(), ("Отмена подключения"));
-            // qCritical(("Отмена подключения"));
-            ERMSG("Отмена подключения");
+            qCritical("Отмена подключения");
             return;
         }
         // S2ConfigForTune->clear();
@@ -453,20 +452,12 @@ void Coma::StartWork()
     S2Config = new QVector<S2DataTypes::DataRec>;
     //    S2ConfigForTune = new QVector<S2::DataRec>;
     //    CurTabIndex = -1;
-    ETabWidget *MainTW = this->findChild<ETabWidget *>("maintw");
-    if (MainTW == nullptr)
-    {
-        // qCritical(logCritical(), ("MainTW is empty"));
-        qCritical("No MainTW in widgets list");
-        return;
-    }
     QMetaObject::Connection *const connection = new QMetaObject::Connection;
     *connection = connect(&board, &Board::readyRead, [=]() {
         QObject::disconnect(*connection);
         delete connection;
         prepare();
     });
-    connect(MainTW, &ETabWidget::currentChanged, this, &Coma::MainTWTabChanged);
 
     QTimer timer;
     timer.setInterval(INTERVAL::WAIT);
@@ -823,6 +814,8 @@ void Coma::prepare()
         BdaTimer->start();
     auto *msgSerialNumber = statusBar()->findChild<QLabel *>("SerialNumber");
     msgSerialNumber->setText(QString::number(board.serialNumber(Board::BaseMezzAdd), 16));
+    auto *msgModel = statusBar()->findChild<QLabel *>("Model");
+    msgModel->setText(board.moduleName());
 }
 
 bool Coma::nativeEvent(const QByteArray &eventType, void *message, long *result)

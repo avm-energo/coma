@@ -30,7 +30,7 @@ public:
     void PrereadConf();
     // int GetChNumFromObjectName(QString ObjectName);
 
-    bool WriteCheckPassword();
+    // bool WriteCheckPassword();
 
 public slots:
     void WriteConfMessageOk(const DataTypes::GeneralResponseStruct &rsp);
@@ -39,7 +39,7 @@ public slots:
     virtual void SetDefConf() = 0;
 
 protected:
-    bool ok;
+    // bool ok;
     // S2DataTypes::S2ConfigType *S2Config;
     QStringList CheckConfErrors;
     QWidget *ConfButtons();

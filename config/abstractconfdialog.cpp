@@ -18,6 +18,7 @@
 
 AbstractConfDialog::AbstractConfDialog(QWidget *parent) : UDialog(parent)
 {
+    m_password = "121941";
     const auto &manager = DataManager::GetInstance();
     connect(&manager, &DataManager::confParametersListReceived, this, &AbstractConfDialog::confParametersListReceived);
     // connect(&manager, &DataManager::confParameterReceived, this, &AbstractConfDialog::confParameterReceived);
@@ -73,11 +74,11 @@ void AbstractConfDialog::ReadConf()
 void AbstractConfDialog::WriteConf()
 {
 
-    if (!WriteCheckPassword())
+    if (!checkPassword())
         return;
     if (!PrepareConfToWrite())
     {
-        ERMSG("Ошибка чтения конфигурации");
+        qCritical("Ошибка чтения конфигурации");
         return;
     }
     //    iface()->writeConfigFile();
@@ -121,28 +122,28 @@ void AbstractConfDialog::confParametersListReceived(const DataTypes::ConfParamet
 //    // S2::findElemAndWriteIt(S2::config, cfp);
 //}
 
-bool AbstractConfDialog::WriteCheckPassword()
-{
-    KeyPressDialog dlg; // = new KeyPressDialog;
-    return dlg.CheckPassword("121941");
+// bool AbstractConfDialog::WriteCheckPassword()
+//{
+//    KeyPressDialog dlg; // = new KeyPressDialog;
+//    return dlg.CheckPassword("121941");
 
-    //    ok = false;
-    //    StdFunc::ClearCancel();
-    //    QEventLoop PasswordLoop;
-    //    KeyPressDialog *dlg = new KeyPressDialog("Введите пароль\nПодтверждение: клавиша Enter\nОтмена: клавиша Esc");
-    //    connect(dlg, &KeyPressDialog::Finished, this, &AbstractConfDialog::WritePasswordCheck);
-    //    connect(this, &AbstractConfDialog::WritePasswordChecked, &PasswordLoop, &QEventLoop::quit);
-    //    dlg->show();
-    //    PasswordLoop.exec();
-    //    if (StdFunc::IsCancelled())
-    //        return Error::Msg::GeneralError;
-    //    if (!ok)
-    //    {
-    //        QMessageBox::critical(this, "Неправильно", "Пароль введён неверно");
-    //        return Error::Msg::GeneralError;
-    //    }
-    //    return Error::Msg::NoError;
-}
+//    ok = false;
+//    StdFunc::ClearCancel();
+//    QEventLoop PasswordLoop;
+//    KeyPressDialog *dlg = new KeyPressDialog("Введите пароль\nПодтверждение: клавиша Enter\nОтмена: клавиша Esc");
+//    connect(dlg, &KeyPressDialog::Finished, this, &AbstractConfDialog::WritePasswordCheck);
+//    connect(this, &AbstractConfDialog::WritePasswordChecked, &PasswordLoop, &QEventLoop::quit);
+//    dlg->show();
+//    PasswordLoop.exec();
+//    if (StdFunc::IsCancelled())
+//        return Error::Msg::GeneralError;
+//    if (!ok)
+//    {
+//        QMessageBox::critical(this, "Неправильно", "Пароль введён неверно");
+//        return Error::Msg::GeneralError;
+//    }
+//    return Error::Msg::NoError;
+//}
 
 // void AbstractConfDialog::WritePasswordCheck(QString psw)
 //{
@@ -158,7 +159,7 @@ void AbstractConfDialog::SaveConfToFile()
     QByteArray ba;
     if (!PrepareConfToWrite())
     {
-        ERMSG("Ошибка чтения конфигурации");
+        qCritical("Ошибка чтения конфигурации");
         return;
     }
     S2::StoreDataMem(ba, S2::config, DataTypes::Config);
@@ -173,13 +174,13 @@ void AbstractConfDialog::SaveConfToFile()
         QMessageBox::information(this, "Внимание", "Записано успешно!");
         break;
     case Error::Msg::FileWriteError:
-        ERMSG("Ошибка при записи файла!");
+        qCritical("Ошибка при записи файла!");
         break;
     case Error::Msg::FileNameError:
-        ERMSG("Пустое имя файла!");
+        qCritical("Пустое имя файла!");
         break;
     case Error::Msg::FileOpenError:
-        ERMSG("Ошибка открытия файла!");
+        qCritical("Ошибка открытия файла!");
         break;
     default:
         break;
@@ -301,23 +302,23 @@ bool AbstractConfDialog::PrepareConfToWrite()
     FillBack();
     CheckConfErrors.clear();
     CheckConf();
-    if (!CheckConfErrors.isEmpty())
-    {
-        QDialog *dlg = new QDialog;
-        QVBoxLayout *vlyout = new QVBoxLayout;
-        QLabel *lbl = new QLabel("В конфигурации есть ошибки, проверьте и исправьте");
-        vlyout->addWidget(lbl, 0, Qt::AlignLeft);
-        QTextEdit *te = new QTextEdit;
-        te->setPlainText(CheckConfErrors.join("\n"));
-        vlyout->addWidget(te, 0, Qt::AlignCenter);
-        QPushButton *pb = new QPushButton("Хорошо");
-        connect(pb, &QAbstractButton::clicked, dlg, &QWidget::close);
-        vlyout->addWidget(pb);
-        dlg->setLayout(vlyout);
-        dlg->show();
-        return false;
-    }
-    return true;
+    if (CheckConfErrors.isEmpty())
+        return true;
+
+    QDialog *dlg = new QDialog;
+    dlg->setAttribute(Qt::WA_DeleteOnClose);
+    QVBoxLayout *vlyout = new QVBoxLayout;
+    QLabel *lbl = new QLabel("В конфигурации есть ошибки, проверьте и исправьте");
+    vlyout->addWidget(lbl, 0, Qt::AlignLeft);
+    QTextEdit *te = new QTextEdit;
+    te->setPlainText(CheckConfErrors.join("\n"));
+    vlyout->addWidget(te, 0, Qt::AlignCenter);
+    QPushButton *pb = new QPushButton("Хорошо");
+    connect(pb, &QAbstractButton::clicked, dlg, &QWidget::close);
+    vlyout->addWidget(pb);
+    dlg->setLayout(vlyout);
+    dlg->show();
+    return false;
 }
 
 void AbstractConfDialog::uponInterfaceSetting()

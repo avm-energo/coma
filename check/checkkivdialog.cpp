@@ -22,8 +22,8 @@
 CheckKIVDialog::CheckKIVDialog(QWidget *parent) : AbstractCheckDialog(parent)
 {
     //    EParent = parent;
-    QString tmps = "QDialog {background-color: " + QString(Colors::UCONFCLR) + ";}";
-    setStyleSheet(tmps);
+    // QString tmps = "QDialog {background-color: " + QString(Colors::UCONFCLR) + ";}";
+    // setStyleSheet(tmps);
     QStringList sl;
     //    BdNum = 6;
     //    ChKIV = new CheckKIV;
@@ -136,7 +136,7 @@ UWidget *CheckKIVDialog::Bd1W()
     lyout->addLayout(glyout);
     lyout->addStretch(100);
     w->setLayout(lyout);
-    w->setStyleSheet("QWidget {background-color: " + QString(Colors::UCONFCLR) + ";}");
+    //    w->setStyleSheet("QWidget {background-color: " + QString(Colors::UCONFCLR) + ";}");
     w->setFloatBdQuery({ { 101, 2 }, { 1000, 16 }, { 1100, 16 }, { 2400, 7 }, { 2420, 14 }, { 4501, 2 } });
     w->setSpBdQuery({ { 3011, 25 } });
 
@@ -242,7 +242,7 @@ UWidget *CheckKIVDialog::Bd2W()
     lyout->addLayout(vlyout1);
     lyout->addStretch(100);
     w->setLayout(lyout);
-    w->setStyleSheet("QWidget {background-color: " + QString(Colors::UCONFCLR) + ";}");
+    //   w->setStyleSheet("QWidget {background-color: " + QString(Colors::UCONFCLR) + ";}");
     w->setFloatBdQuery({ { 1000, 16 }, { 1100, 16 }, { 4501, 2 } });
     return w;
 }
