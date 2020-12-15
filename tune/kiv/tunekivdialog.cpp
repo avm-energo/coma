@@ -20,16 +20,16 @@ TuneKIVDialog::TuneKIVDialog(ConfigKIV *ckiv, TuneKIV *tkiv, QWidget *parent) : 
     SetupUI();
 }
 
-QHBoxLayout *TuneKIVDialog::newTunePBLayout(const QString &pbtext, const std::function<void()> fun)
-{
-    QHBoxLayout *hlyout = new QHBoxLayout;
-    hlyout->addStretch(100);
-    QPushButton *pb = new QPushButton(pbtext);
-    connect(pb, &QPushButton::clicked, fun);
-    hlyout->addWidget(pb);
-    hlyout->addStretch(100);
-    return hlyout;
-}
+// QHBoxLayout *TuneKIVDialog::newTunePBLayout(const QString &pbtext, const std::function<void()> fun)
+//{
+//    QHBoxLayout *hlyout = new QHBoxLayout;
+//    hlyout->addStretch(100);
+//    QPushButton *pb = new QPushButton(pbtext);
+//    connect(pb, &QPushButton::clicked, fun);
+//    hlyout->addWidget(pb);
+//    hlyout->addStretch(100);
+//    return hlyout;
+//}
 
 void TuneKIVDialog::SetupUI()
 {
@@ -38,26 +38,57 @@ void TuneKIVDialog::SetupUI()
     QHBoxLayout *hlyout = new QHBoxLayout;
     QVBoxLayout *lyout = new QVBoxLayout;
 
-    lyout->addLayout(newTunePBLayout("1. Проверка правильности измерения входных сигналов", [this]() {
-        TuneKIVCheck *check = new TuneKIVCheck(TuneKIV::TS_CHECKING, TKIV);
-        check->show();
-    }));
-    lyout->addLayout(newTunePBLayout("2. Основная регулировка", [this]() {
-        TuneKIVMain *tkmain = new TuneKIVMain(TuneKIV::TS_MAINTUNING, CKIV, TKIV);
-        tkmain->show();
-    }));
-    lyout->addLayout(newTunePBLayout("3. Настройка температурной коррекции +60 °С", [this]() {
-        TuneKIVTemp60 *tk60 = new TuneKIVTemp60(TuneKIV::TS_60TUNING, CKIV, TKIV);
-        tk60->show();
-    }));
-    lyout->addLayout(newTunePBLayout("4. Настройка температурной коррекции -20 °С", [this]() {
-        TuneKIVTemp60 *tk_20 = new TuneKIVTemp60(TuneKIV::TS_20TUNING, CKIV, TKIV);
-        tk_20->show();
-    }));
-    lyout->addLayout(newTunePBLayout("5. Генерация протокола регулировки", [this]() { close(); }));
+    lyout->addStretch(100);
+    lyout->addWidget(WDFunc::NewHexagonPB(
+        this, "",
+        [this]() {
+            TuneKIVCheck *check = new TuneKIVCheck(TuneKIV::TS_CHECKING, TKIV);
+            check->show();
+        },
+        "images/tn1.svg", "Проверка правильности измерения входных сигналов"));
+    lyout->addWidget(WDFunc::NewHexagonPB(
+        this, "",
+        [this]() {
+            TuneKIVMain *tkmain = new TuneKIVMain(TuneKIV::TS_MAINTUNING, CKIV, TKIV);
+            tkmain->show();
+        },
+        "images/tn2.svg", "Основная регулировка"));
+    lyout->addWidget(WDFunc::NewHexagonPB(
+        this, "",
+        [this]() {
+            TuneKIVTemp60 *tk60 = new TuneKIVTemp60(TuneKIV::TS_60TUNING, CKIV, TKIV);
+            tk60->show();
+        },
+        "images/tn3.svg", "Настройка температурной коррекции +60 °С"));
+    lyout->addWidget(WDFunc::NewHexagonPB(
+        this, "",
+        [this]() {
+            TuneKIVTemp60 *tk_20 = new TuneKIVTemp60(TuneKIV::TS_20TUNING, CKIV, TKIV);
+            tk_20->show();
+        },
+        "images/tn4.svg", "Настройка температурной коррекции -20 °С"));
+    lyout->addWidget(WDFunc::NewHexagonPB(
+        this, "", [this]() { close(); }, "images/tn5.svg", "Генерация протокола регулировки"));
+    //    addLayout(newTunePBLayout("1. Проверка правильности измерения входных сигналов", [this]() {
+    //        TuneKIVCheck *check = new TuneKIVCheck(TuneKIV::TS_CHECKING, TKIV);
+    //        check->show();
+    //    }));
+    //    lyout->addLayout(newTunePBLayout("2. Основная регулировка", [this]() {
+    //        TuneKIVMain *tkmain = new TuneKIVMain(TuneKIV::TS_MAINTUNING, CKIV, TKIV);
+    //        tkmain->show();
+    //    }));
+    //    lyout->addLayout(newTunePBLayout("3. Настройка температурной коррекции +60 °С", [this]() {
+    //        TuneKIVTemp60 *tk60 = new TuneKIVTemp60(TuneKIV::TS_60TUNING, CKIV, TKIV);
+    //        tk60->show();
+    //    }));
+    //    lyout->addLayout(newTunePBLayout("4. Настройка температурной коррекции -20 °С", [this]() {
+    //        TuneKIVTemp60 *tk_20 = new TuneKIVTemp60(TuneKIV::TS_20TUNING, CKIV, TKIV);
+    //        tk_20->show();
+    //    }));
+    //    lyout->addLayout(newTunePBLayout("5. Генерация протокола регулировки", [this]() { close(); }));
     lyout->addStretch(100);
     hlyout->addLayout(lyout);
-
+    hlyout->addWidget(TKIV->m_Bac->widget(), 100);
     setLayout(hlyout);
 }
 

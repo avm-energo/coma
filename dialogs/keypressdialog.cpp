@@ -13,7 +13,7 @@ KeyPressDialog::KeyPressDialog(QWidget *parent) : QDialog(parent)
     setAttribute(Qt::WA_DeleteOnClose);
 
     SetupUI();
-    SetPhrase("Введите пароль\nПодтверждение: клавиша Enter\nОтмена: клавиша Esc");
+    WDFunc::SetLEData(this, "pswlbl", "Введите пароль\nПодтверждение: клавиша Enter\nОтмена: клавиша Esc");
 }
 
 bool KeyPressDialog::CheckPassword(const QString &psw)
@@ -46,11 +46,6 @@ void KeyPressDialog::SetupUI()
         WDFunc::NewLBL(this, "Введите пароль\nПодтверждение: клавиша Enter\nОтмена: клавиша Esc", "", "pswlbl"));
     vlyout->addWidget(WDFunc::NewPswLE(this, "pswle", QLineEdit::Password));
     setLayout(vlyout);
-}
-
-void KeyPressDialog::SetPhrase(const QString &Phrase)
-{
-    WDFunc::LE_write_data(this, Phrase, "pswlbl");
 }
 
 void KeyPressDialog::keyPressEvent(QKeyEvent *e)

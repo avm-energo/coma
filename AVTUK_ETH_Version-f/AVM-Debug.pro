@@ -41,6 +41,7 @@ SOURCES += \
     ../module/journkiv.cpp \
     ../module/journktf.cpp \
     ../widgets/edoublespinbox.cpp \
+    ../widgets/styleloader.cpp \
     coma.cpp \
     main.cpp \
     ../check/abstractcheckdialog.cpp \
@@ -140,6 +141,7 @@ HEADERS += \
     ../module/journkiv.h \
     ../module/journktf.h \
     ../widgets/edoublespinbox.h \
+    ../widgets/styleloader.h \
     coma.h \
     ../check/abstractcheckdialog.h \
     ../check/check.h \

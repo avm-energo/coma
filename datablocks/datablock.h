@@ -29,6 +29,11 @@ public:
         QString filename;
     };
 
+    QMap<DataTypes::DataBlockTypes, QString> ExtMap
+        = { { DataTypes::DataBlockTypes::BacBlock, ".bac" }, { DataTypes::DataBlockTypes::BciBlock, ".cf" },
+              { DataTypes::DataBlockTypes::BdBlock, ".bd" }, { DataTypes::DataBlockTypes::BdaBlock, ".bda" } };
+    bool m_widgetIsSet;
+
     explicit DataBlock(QObject *parent = nullptr);
     void setBlock(const BlockStruct &bds);
     //    virtual void setupUI() = 0;                                     // frontend for block visualisation
@@ -41,7 +46,7 @@ public:
     virtual void updateFromWidget(); // semi-virtual function, need to be reimplemented in corresponding blocks
     static void getFileProperties(DataTypes::DataBlockTypes type, FilePropertiesStruct &st);
 
-    void readAndUpdate();
+    QWidget *bottomUI();
 
 signals:
 
@@ -62,8 +67,12 @@ private:
 public slots:
     //    void updateModel();
     //    void updateValues();
-    Error::Msg writeBlockToModule();
-    Error::Msg readBlockFromModule();
+    void setDefBlockAndUpdate();
+    void readAndUpdate();
+    void writeBlockToModule();
+    void readBlockFromModule();
+    void readFromFile();
+    void saveToFile();
 };
 
 #endif // DATABLOCK_H

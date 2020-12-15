@@ -37,7 +37,7 @@ public:
     static QLineEdit *NewLE2(QWidget *w, const QString &lename, const QString &letext = "");
     static PasswordLineEdit *NewPswLE(QWidget *w, const QString &lename,
         QLineEdit::EchoMode echostyle = QLineEdit::Normal, const QString &lestyle = "");
-    static bool SetLEData(QWidget *w, const QString &lename, const QString &levalue, const QString &restring = "");
+    static bool SetLEData(QObject *w, const QString &lename, const QString &levalue, const QString &restring = "");
     static QString LEData(QObject *w, const QString &lename);
     template <typename T> static bool LENumber(QWidget *w, const QString &lename, T &levalue)
     {
@@ -122,6 +122,21 @@ public:
     //    *receiver,
     //        const char *method, const QString &icon = "", const QString &pbtooltip = "");
 
+    template <typename Functor>
+    inline static QPushButton *NewHexagonPB(QWidget *parent, const QString &pbname, Functor &&functor,
+        const QString &icon = "", const QString &pbtooltip = "")
+    {
+        QPushButton *pb = new QPushButton(parent);
+        pb->setObjectName(pbname);
+        pb->setIcon(QIcon(icon));
+        pb->setAttribute(Qt::WA_Hover);
+        pb->setAttribute(Qt::WA_X11NetWmWindowTypeToolBar);
+        pb->setToolTip(pbtooltip);
+        pb->setMinimumSize(50, 50);
+        pb->setIconSize(QSize(50, 50));
+        QObject::connect(pb, &QPushButton::clicked, functor);
+        return pb;
+    }
     template <typename Func>
     inline static QPushButton *NewPB(QWidget *parent, const QString &pbname, const QString &text, const Func *receiver,
         void (Func::*method)(), const QString &icon = "", const QString &pbtooltip = "")
@@ -171,8 +186,6 @@ public:
     static QAbstractItemModel *TVModel(QWidget *w, const QString &tvname);
     //    static void TVConnect(
     //        QWidget *w, const QString &tvname, int signaltype, const QObject *receiver, const char *method);
-    static bool LE_read_data(QObject *w, const QString &lename, QString &levalue);
-    static bool LE_write_data(QObject *w, const QString &levalue, const QString &lename);
     static void SortTV(QWidget *w, const QString &tvname, int column, Qt::SortOrder sortorder);
     static QVariant TVData(QWidget *w, const QString &tvname, int column);
 

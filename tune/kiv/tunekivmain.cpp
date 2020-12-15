@@ -590,5 +590,5 @@ void TuneKIVMain::CalcTuneCoefs()
 
 void TuneKIVMain::setDefCoefs()
 {
-    TKIV->m_Bac->setDefBlock();
+    TKIV->m_Bac->setDefBlockAndUpdate();
 }

@@ -5,6 +5,8 @@
 #include "../gen/error.h"
 #include "../gen/logclass.h"
 
+#include <QTimer>
+
 struct ConnectStruct;
 class BaseInterface : public QObject
 {
@@ -64,6 +66,7 @@ private:
     QByteArray m_byteArrayResult;
     bool m_responseResult;
     static BaseInterface *m_iface;
+    QTimer *timeoutTimer;
 
 public slots:
     virtual void stop() = 0;

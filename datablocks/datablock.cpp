@@ -27,10 +27,12 @@
 
 #include "../gen/board.h"
 //#include "../models/valuedelegate.h"
+#include "../gen/files.h"
+#include "../gen/stdfunc.h"
 #include "../interfaces/baseinterface.h"
 #include "../widgets/wd_func.h"
-//#include "files.h"
 
+#include <QDialogButtonBox>
 #include <QGroupBox>
 #include <QVBoxLayout>
 
@@ -43,6 +45,7 @@ DataBlock::DataBlock(QObject *parent) : QObject(parent)
     //    m_blockName = blockname;
     //    m_VModel = new ValueModel;
     //    m_curModelColumn = m_curModelRow = 0;
+    m_widgetIsSet = false;
 }
 
 void DataBlock::setBlock(const DataBlock::BlockStruct &bds)
@@ -91,7 +94,7 @@ void DataBlock::updateFromWidget()
 //    m_VModel->updateFromModel();
 //}
 
-Error::Msg DataBlock::writeBlockToModule()
+void DataBlock::writeBlockToModule()
 {
     switch (m_block.blocktype)
     {
@@ -104,7 +107,8 @@ Error::Msg DataBlock::writeBlockToModule()
             != Error::Msg::NoError)
             //        if (Commands::WriteBac(m_block.blocknum, &m_block.block, m_block.blocksize) !=
             //        Error::Msg::NoError)
-            return Error::Msg::GeneralError;
+            //            return Error::Msg::GeneralError;
+            qCritical("Не удалось записать блок");
         break;
     }
     case DataTypes::DataBlockTypes::BdBlock:
@@ -120,10 +124,10 @@ Error::Msg DataBlock::writeBlockToModule()
     default:
         break;
     }
-    return Error::Msg::NoError;
+    //    return Error::Msg::NoError;
 }
 
-Error::Msg DataBlock::readBlockFromModule()
+void DataBlock::readBlockFromModule()
 {
     switch (m_block.blocktype)
     {
@@ -135,7 +139,8 @@ Error::Msg DataBlock::readBlockFromModule()
         if (BaseInterface::iface()->reqBlockSync(m_block.blocknum, m_block.blocktype, &m_block.block, m_block.blocksize)
             != Error::Msg::NoError)
 
-            return Error::Msg::GeneralError;
+            qCritical("Не удалось прочитать блок");
+        //            return Error::Msg::GeneralError;
         //        if (update)
         //            updateModel();
         break;
@@ -156,7 +161,8 @@ Error::Msg DataBlock::readBlockFromModule()
         //    }
     case DataTypes::DataBlockTypes::BciBlock:
     {
-        return BaseInterface::iface()->readS2FileSync(DataTypes::Config);
+        if (BaseInterface::iface()->readS2FileSync(DataTypes::Config) != Error::Msg::NoError)
+            qCritical("Не удалось прочитать блок");
         //        S2ConfigType *s2 = static_cast<S2ConfigType *>(m_block.block);
         //        return Commands::GetFileWithRestore(1, s2);
     }
@@ -165,7 +171,25 @@ Error::Msg DataBlock::readBlockFromModule()
     }
     //    emit m_VModel->dataChanged();
 
-    return Error::Msg::NoError;
+    //    return Error::Msg::NoError;
+}
+
+void DataBlock::readFromFile()
+{
+    QByteArray ba;
+    if (Files::LoadFromFile(StdFunc::GetSystemHomeDir() + Board::GetInstance().UID() + ExtMap[m_block.blocktype], ba)
+        != Error::Msg::NoError)
+    {
+        memcpy(m_block.block, &ba.data()[0], m_block.blocksize);
+        writeBlockToModule();
+    }
+}
+
+void DataBlock::saveToFile()
+{
+    readBlockFromModule();
+    QByteArray ba(static_cast<char *>(m_block.block), m_block.blocksize);
+    Files::SaveToFile(StdFunc::GetSystemHomeDir() + Board::GetInstance().UID() + ExtMap[m_block.blocktype], ba);
 }
 
 void DataBlock::getFileProperties(DataTypes::DataBlockTypes type, FilePropertiesStruct &st)
@@ -189,4 +213,59 @@ void DataBlock::readAndUpdate()
 {
     readBlockFromModule();
     updateWidget();
+}
+
+QWidget *DataBlock::bottomUI()
+{
+    QWidget *w = new QWidget;
+    QVBoxLayout *lyout = new QVBoxLayout;
+    QDialogButtonBox *group = new QDialogButtonBox;
+    //    QHBoxLayout *hlyout = new QHBoxLayout;
+
+    const QList<QPair<QPair<QString, QString>, std::function<void()>>> funcs { { { "Получить", ":/icons/tnread.svg" },
+                                                                                   [this]() { readAndUpdate(); } },
+        { { "Записать", ":/icons/tnwrite.svg" }, [this]() { writeBlockToModule(); } },
+        { { "Задать по умолчанию", "images/tnyes.svg" }, [this]() { setDefBlockAndUpdate(); } },
+        { { "Прочитать", ":/icons/tnload.svg" }, [this]() { readFromFile(); } },
+        { { "Сохранить", ":/icons/tnsave.svg" }, [this]() { saveToFile(); } } };
+
+    for (auto &i : funcs)
+    {
+        //        const QIcon &icon = i.first.second;
+        const QString &toolTip = i.first.first;
+        group->addButton(WDFunc::NewHexagonPB(w, "", i.second, i.first.second, toolTip), QDialogButtonBox::ActionRole);
+
+        //        QPushButton *pb = new QPushButton();
+        //        pb->setObjectName("Hexagon");
+        //        pb->setIcon(icon);
+        //        pb->setAttribute(Qt::WA_Hover);
+        //        pb->setAttribute(Qt::WA_X11NetWmWindowTypeToolBar);
+        //        //        pb->setStyleSheet("background-color: rgba(255, 255, 255, 0);"
+        //        //                          "    border-style: groove;"
+        //        //                          "   border-color: #ADADAD;"
+        //        //                          "border-width: 1px;");
+        //        pb->setToolTip(toolTip);
+        //        pb->setMinimumSize(50, 50);
+        //        pb->setIconSize(QSize(50, 50));
+
+        // pb->setIconSize(QSize(pb->minimumHeight() / 2, pb->minimumHeight() / 2));
+
+        //        connect(pb, &QAbstractButton::clicked, this, i.second);
+        //        if (StdFunc::IsInEmulateMode())
+        //            pb->setEnabled(false);
+        //        group->addButton(pb, QDialogButtonBox::ActionRole);
+        // hlyout->addWidget(pb);
+    }
+    group->setCenterButtons(true);
+    lyout->addWidget(group);
+    // lyout->addLayout(hlyout);
+    w->setLayout(lyout);
+    return w;
+}
+
+void DataBlock::setDefBlockAndUpdate()
+{
+    setDefBlock();
+    if (m_widgetIsSet)
+        updateWidget();
 }

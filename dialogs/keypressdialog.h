@@ -34,7 +34,6 @@ private:
     QString m_pswEntered;
 
     void SetupUI();
-    void SetPhrase(const QString &Phrase);
 
 protected:
     void keyPressEvent(QKeyEvent *e);
