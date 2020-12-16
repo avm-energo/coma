@@ -18,23 +18,16 @@ class KeyPressDialog : public QDialog
 {
     Q_OBJECT
 public:
-    explicit KeyPressDialog(QWidget *parent = nullptr); // PswPhrase - фраза, которую надо написать пользователю
-    bool CheckPassword(const QString &psw);
+    explicit KeyPressDialog(QWidget *parent = nullptr);
+    bool CheckPassword(const QString &password);
 
 signals:
-    //    void Finished(QString str);
-    void Cancelled();
-    void PasswordChecked();
-
-public slots:
-    //    void PasswordCheck(QString psw);
+    void finished();
 
 private:
-    //    bool m_pswValid;
-    QString m_pswEntered;
+    QString m_password;
 
     void SetupUI();
-    void SetPhrase(const QString &Phrase);
 
 protected:
     void keyPressEvent(QKeyEvent *e);
