@@ -18,7 +18,7 @@ void StyleLoader::attach(const QString &filename, QKeySequence key)
 {
     m_filename = filename;
     m_key = key;
-    qApp->installEventFilter(this);
+    //    qApp->installEventFilter(this);
     setAppStyleSheet();
 }
 
@@ -67,6 +67,7 @@ void StyleLoader::save()
     QSharedPointer<QSettings> sets = QSharedPointer<QSettings>(new QSettings("EvelSoft", PROGNAME));
 
     sets->setValue("Style", styleName());
+    setAppStyleSheet();
 }
 
 QString StyleLoader::styleFile()

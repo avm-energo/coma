@@ -33,7 +33,7 @@ void TuneKIVCheck::setMessages()
     //    m_messages.append("3. Задание режима конфигурирования модуля...");
     //    m_messages.append("3. Установка новой конфигурации...");
     m_messages.append("3. Отображение схемы подключения...");
-    m_messages.append("4. Ожидание 15 с...");
+    //    m_messages.append("4. Ожидание 15 с...");
     m_messages.append("5. Проверка...");
 }
 
@@ -51,8 +51,8 @@ void TuneKIVCheck::setTuneFunctions()
     //    m_tuneFunctions[m_messages.at(count++)] = func;
     func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVCheck::showScheme);
     m_tuneFunctions[m_messages.at(count++)] = func;
-    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&AbstractTuneDialog::Wait15Seconds);
-    m_tuneFunctions[m_messages.at(count++)] = func;
+    //    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&AbstractTuneDialog::Wait15Seconds);
+    //    m_tuneFunctions[m_messages.at(count++)] = func;
     func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVCheck::check);
     m_tuneFunctions[m_messages.at(count++)] = func;
 }
@@ -113,10 +113,13 @@ Error::Msg TuneKIVCheck::showScheme()
 Error::Msg TuneKIVCheck::check()
 {
     BaseInterface::iface()->reqBlockSync(1, DataTypes::DataBlockTypes::BdaBlock, &TKIV->m_Bda, sizeof(TKIV->m_Bda));
-    for (int i = 0; i < 6; ++i)
+    for (int i = 0; i < 3; ++i)
         if (!StdFunc::floatIsWithinLimits(this, TKIV->m_Bda.Ueff_ADC[i], 2150000.0, 150000.0))
             return Error::Msg::GeneralError;
-    if (!StdFunc::floatIsWithinLimits(this, TKIV->m_Bda.Pt100, 1175.0, 120.0))
+    for (int i = 3; i < 6; ++i)
+        if (!StdFunc::floatIsWithinLimits(this, TKIV->m_Bda.Ueff_ADC[i], 973000.0, 50000.0))
+            return Error::Msg::GeneralError;
+    if (!StdFunc::floatIsWithinLimits(this, TKIV->m_Bda.Pt100, 2123.0, 120.0))
         return Error::Msg::GeneralError;
     if (!StdFunc::floatIsWithinLimits(this, TKIV->m_Bda.Frequency, 51.0, 0.05))
         return Error::Msg::GeneralError;

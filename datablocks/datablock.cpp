@@ -103,7 +103,7 @@ void DataBlock::writeBlockToModule()
         //        if (update)
         //            updateValues();
         if (BaseInterface::iface()->writeBlockSync(
-                m_block.blocknum, DataTypes::DataBlockTypes::BacBlock, &m_block.block, m_block.blocksize)
+                m_block.blocknum, DataTypes::DataBlockTypes::BacBlock, m_block.block, m_block.blocksize)
             != Error::Msg::NoError)
             //        if (Commands::WriteBac(m_block.blocknum, &m_block.block, m_block.blocksize) !=
             //        Error::Msg::NoError)
@@ -136,7 +136,7 @@ void DataBlock::readBlockFromModule()
     case DataTypes::DataBlockTypes::BdaBlock:
     {
         //        if (Commands::GetBac(m_block.blocknum, &m_block.block, m_block.blocksize) != Error::Msg::NoError)
-        if (BaseInterface::iface()->reqBlockSync(m_block.blocknum, m_block.blocktype, &m_block.block, m_block.blocksize)
+        if (BaseInterface::iface()->reqBlockSync(m_block.blocknum, m_block.blocktype, m_block.block, m_block.blocksize)
             != Error::Msg::NoError)
 
             qCritical("Не удалось прочитать блок");
@@ -192,6 +192,15 @@ void DataBlock::saveToFile()
     Files::SaveToFile(StdFunc::GetSystemHomeDir() + Board::GetInstance().UID() + ExtMap[m_block.blocktype], ba);
 }
 
+void DataBlock::saveToFileUserChoose()
+{
+    readBlockFromModule();
+    QByteArray ba(static_cast<char *>(m_block.block), m_block.blocksize);
+    DataBlock::FilePropertiesStruct fst;
+    DataBlock::getFileProperties(m_block.blocktype, fst);
+    Files::SaveToFile(Files::ChooseFileForSave(nullptr, fst.mask, fst.extension), ba);
+}
+
 void DataBlock::getFileProperties(DataTypes::DataBlockTypes type, FilePropertiesStruct &st)
 {
     QString cpuid = Board::GetInstance().UID();
@@ -227,7 +236,7 @@ QWidget *DataBlock::bottomUI()
         { { "Записать", ":/icons/tnwrite.svg" }, [this]() { writeBlockToModule(); } },
         { { "Задать по умолчанию", "images/tnyes.svg" }, [this]() { setDefBlockAndUpdate(); } },
         { { "Прочитать", ":/icons/tnload.svg" }, [this]() { readFromFile(); } },
-        { { "Сохранить", ":/icons/tnsave.svg" }, [this]() { saveToFile(); } } };
+        { { "Сохранить", ":/icons/tnsave.svg" }, [this]() { saveToFileUserChoose(); } } };
 
     for (auto &i : funcs)
     {

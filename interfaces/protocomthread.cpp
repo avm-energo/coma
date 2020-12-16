@@ -100,7 +100,7 @@ void ProtocomThread::parse()
 
 void ProtocomThread::clear()
 {
-    QMutexLocker locker(&_mutex);
+    //    QMutexLocker locker(&_mutex);
     isCommandRequested = false;
     m_readData.clear();
     progress = 0;
@@ -163,10 +163,14 @@ void ProtocomThread::handle(const Proto::Commands cmd)
             if (progress > m_currentCommand.ba.size())
             {
                 progress = m_currentCommand.ba.size();
+                handleProgress(progress);
             }
-            handleProgress(progress);
-            // m_currentCommand.ba.chop(Proto::Limits::MaxSegmenthLength);
-            return;
+            else
+            {
+                handleProgress(progress);
+                return;
+            }
+            break;
         }
         //  GVar MS GMode MS
         if (!m_buffer.second.isEmpty())

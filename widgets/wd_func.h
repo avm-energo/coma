@@ -90,7 +90,8 @@ public:
     [[deprecated("Use instead second version with global style sheet")]] static QLabel *NewLBL(QWidget *w,
         const QString &text, const QString &lblcolor = "", const QString &lblname = "", const QPixmap *pm = Q_NULLPTR,
         const QString &lbltip = "");
-    static QLabel *NewLBL2(QWidget *w, const QString &text, const QString &lblname = "", const QString &lbltip = "");
+    static QLabel *NewLBL2(QWidget *w, const QString &text, const QString &lblname = "", const QPixmap *pm = Q_NULLPTR,
+        const QString &lbltip = "");
     [[deprecated("Use instead second version with global style sheet")]] static QLabel *NewLBLT(QWidget *w,
         const QString &text, const QString &lblname = "", const QString &lblstyle = "", const QString &lbltip = "",
         bool Fixed = false);

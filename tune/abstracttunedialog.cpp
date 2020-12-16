@@ -100,24 +100,24 @@ QWidget *AbstractTuneDialog::TuneUI()
         QHBoxLayout *hlyout = new QHBoxLayout;
         hlyout->addWidget(WDFunc::NewLBL(this, m_messages.at(i), "", "tunemsg" + QString::number(i)));
         hlyout->addWidget(WDFunc::NewLBL(this, "", "", "tunemsgres" + QString::number(i)));
-        WDFunc::SetVisible(this, "tunemsg" + QString::number(i), false);
-        WDFunc::SetVisible(this, "tunemsgres" + QString::number(i), false);
+        //        WDFunc::SetVisible(this, "tunemsg" + QString::number(i), false);
+        //        WDFunc::SetVisible(this, "tunemsgres" + QString::number(i), false);
         hlyout->addStretch(1);
         w2lyout->addLayout(hlyout);
     }
-    w2lyout->addStretch(10);
+    w2lyout->addSpacing(50);
     w2->setLayout(w2lyout);
     //    w2->setMinimumHeight(400); // !!! it has to be replaced
     area->setWidget(w2);
+    for (int i = 0; i < m_messages.size() + 1; ++i)
+    {
+        WDFunc::SetVisible(w2, "tunemsg" + QString::number(i), false);
+        WDFunc::SetVisible(w2, "tunemsgres" + QString::number(i), false);
+    }
     lyout->addWidget(area);
     //    area->verticalScrollBar()->setValue(area->verticalScrollBar()->maximum());
     lyout->addWidget(WDFunc::NewLBL(this, "Настройка завершена!", "", "tunemsg" + QString::number(i)));
     WDFunc::SetVisible(this, "tunemsg" + QString::number(i), false);
-    //    for (int i = 0; i < m_messages.size() + 1; ++i)
-    //    {
-    //        WDFunc::SetVisible(this, "tunemsg" + QString::number(i), false);
-    //        WDFunc::SetVisible(this, "tunemsgres" + QString::number(i), false);
-    //    }
     //    lyout->addStretch(1);
     w->setLayout(lyout);
     return w;
@@ -255,7 +255,7 @@ void AbstractTuneDialog::stopWait()
         ww->Stop();
 }
 
-bool AbstractTuneDialog::CheckPassword()
+Error::Msg AbstractTuneDialog::CheckPassword()
 {
     KeyPressDialog dlg; // = new KeyPressDialog;
     return (dlg.CheckPassword("121941")) ? Error::Msg::NoError : Error::Msg::GeneralError;
@@ -371,6 +371,7 @@ void AbstractTuneDialog::startTune()
         {
             MsgSetVisible(ErMsg, bStep);
             WDFunc::SetEnabled(this, "starttune", true);
+            WDFunc::SetEnabled(this, "stoptune", false);
             qWarning() << m_messages.at(bStep);
             //           MeasurementTimer->stop();
             loadAllTuneCoefs();

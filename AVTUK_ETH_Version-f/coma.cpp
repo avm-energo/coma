@@ -36,6 +36,7 @@
 #include "../interfaces/modbus.h"
 #include "../interfaces/protocom.h"
 #include "../interfaces/settingstypes.h"
+#include "../widgets/aboutwidget.h"
 #include "../widgets/etabwidget.h"
 #include "../widgets/splashscreen.h"
 #include "../widgets/styleloader.h"
@@ -1117,13 +1118,15 @@ void Coma::SetProgressBarCount(int prbnum, int count)
 
 void Coma::GetAbout()
 {
-    QString caption(PROGNAME);
-    caption.append(" v. ").append(COMAVERSION);
-    setWindowIcon(QPixmap("images/avm-energo.png"));
-    QMessageBox::about(this, caption,
-        "ООО \"АВМ-Энерго\" \n"
-        "2015-2020 гг.\n"
-        "info@avmenergo.ru");
+    AboutWidget *w = new AboutWidget;
+    //    w->show();
+    //    QString caption(PROGNAME);
+    //    caption.append(" v. ").append(COMAVERSION);
+    //    //    setWindowIcon(QPixmap("images/avm-energo.png"));
+    //    QMessageBox::about(this, caption,
+    //        "ООО \"АВМ-Энерго\" \n"
+    //        "2015-2020 гг.\n"
+    //        "info@avmenergo.ru");
 }
 
 void Coma::Disconnect()

@@ -40,6 +40,7 @@ SOURCES += \
     ../module/journkdv.cpp \
     ../module/journkiv.cpp \
     ../module/journktf.cpp \
+    ../widgets/aboutwidget.cpp \
     ../widgets/edoublespinbox.cpp \
     ../widgets/styleloader.cpp \
     coma.cpp \
@@ -140,6 +141,7 @@ HEADERS += \
     ../module/journkdv.h \
     ../module/journkiv.h \
     ../module/journktf.h \
+    ../widgets/aboutwidget.h \
     ../widgets/edoublespinbox.h \
     ../widgets/styleloader.h \
     coma.h \

@@ -73,7 +73,7 @@ public:
     void stopWait();
 
     //    void ProcessTune();
-    bool CheckPassword();
+    Error::Msg CheckPassword();
     virtual void setMessages() = 0;      // заполнить список сообщений
     virtual void setTuneFunctions() = 0; // заполнить список функций настройки
     //    void MsgSetVisible(int msg, bool Visible = true);

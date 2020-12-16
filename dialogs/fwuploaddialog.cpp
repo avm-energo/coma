@@ -67,6 +67,7 @@ void FWUploadDialog::LoadFW()
     auto firmwareS2 = S2::ParseHexToS2(ba);
     if (firmwareS2.isEmpty())
         qCritical() << Error::SizeError;
+    BaseInterface::iface()->writeS2File(DataTypes::Firmware, &firmwareS2);
     return;
 }
 

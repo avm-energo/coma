@@ -73,6 +73,7 @@ public slots:
     void readBlockFromModule();
     void readFromFile();
     void saveToFile();
+    void saveToFileUserChoose();
 };
 
 #endif // DATABLOCK_H
