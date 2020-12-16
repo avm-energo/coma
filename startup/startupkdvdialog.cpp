@@ -7,7 +7,6 @@
 #include "../gen/s2.h"
 #include "../gen/stdfunc.h"
 #include "../gen/timefunc.h"
-//#include "../usb/commands.h"
 #include "../widgets/etableview.h"
 #include "../widgets/wd_func.h"
 

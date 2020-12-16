@@ -38,6 +38,7 @@
 #include "../interfaces/settingstypes.h"
 #include "../widgets/etabwidget.h"
 #include "../widgets/splashscreen.h"
+#include "../widgets/styleloader.h"
 #include "../widgets/wd_func.h"
 
 #include <QApplication>
@@ -77,6 +78,8 @@ void registerForDeviceNotification(QWidget *ptr)
 
 Coma::Coma(QWidget *parent) : QMainWindow(parent)
 {
+    // Load settings before anything
+
     SplashScreen *splash = new SplashScreen(QPixmap("images/surgery.png"));
     splash->show();
     // http://stackoverflow.com/questions/2241808/checking-if-a-folder-exists-and-creating-folders-in-qt-c
@@ -97,20 +100,7 @@ Coma::Coma(QWidget *parent) : QMainWindow(parent)
 
     S2Config = new S2DataTypes::S2ConfigType;
     Reconnect = false;
-    //    timeDialog = nullptr;
-    //    mainConfDialog = nullptr;
-    //    confBDialog = confMDialog = nullptr;
-    //    checkBDialog = checkMDialog = nullptr;
-    //    AlarmStateAllDialog = nullptr;
-    //    AlarmKIVDialog = nullptr;
-    //    WarnKIVDialog = nullptr;
-    //    AlarmKTFDialog = nullptr;
-    //    WarnKTFDialog = nullptr;
-    //    HarmDialog = nullptr;
-    //    VibrDialog = nullptr;
-    //    corDialog = nullptr;
-    //    S2Config = nullptr;
-    //    S2ConfigForTune = nullptr;
+
     //    CurTabIndex = -1;
     //    for (int i = 0; i < 20; ++i)
     //    {
@@ -121,8 +111,9 @@ Coma::Coma(QWidget *parent) : QMainWindow(parent)
     //    Alarm = new AlarmClass(this);
 
     newTimers();
-    LoadSettings();
+
     splash->finish(this);
+    LoadSettings();
     splash->deleteLater();
     setStatusBar(WDFunc::NewSB(this));
 }
@@ -922,6 +913,7 @@ void Coma::LoadSettings()
 {
     QString HomeDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/" + PROGNAME + "/";
     QSharedPointer<QSettings> sets = QSharedPointer<QSettings>(new QSettings("EvelSoft", PROGNAME));
+    StyleLoader::GetInstance().attach();
     StdFunc::SetHomeDir(sets->value("Homedir", HomeDir).toString());
 }
 

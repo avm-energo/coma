@@ -42,16 +42,15 @@ QWidget *AbstractStartupDialog::buttonWidget()
     QWidget *w = new QWidget;
     QVBoxLayout *lyout = new QVBoxLayout;
     QDialogButtonBox *group = new QDialogButtonBox;
-    QHBoxLayout *hlyout = new QHBoxLayout;
     QString tmps = ((DEVICETYPE == DEVICETYPE_MODULE) ? "модуля" : "прибора");
 
     const QList<QPair<QPair<QString, QIcon>, std::function<void()>>> funcs {
-        { { "Получить" /*из " + tmps*/, QIcon(":/icons/tnread.svg") }, [this]() { GetCorBdButton(); } },       //
-        { { "Записать" /*в модуль"*/, QIcon(":/icons/tnwrite.svg") }, [this]() { WriteCorBd(); } },            //
-        { { "Сбросить" /*начальные значения"*/, QIcon(":/icons/tnreset.svg") }, [this]() { ResetCor(); } },    //
-        { { "Задать" /*начальные значения"*/, QIcon(":/icons/Check-02-wf.svg") }, [this]() { WriteCor(); } },  //
-        { { "Прочитать" /*значения из файла"*/, QIcon(":/icons/tnload.svg") }, [this]() { ReadFromFile(); } }, //
-        { { "Сохранить" /*значения в файл"*/, QIcon(":/icons/tnsave.svg") }, [this]() { SaveToFile(); } }      //
+        { { "Получить из" + tmps, QIcon(":/icons/tnread.svg") }, [this]() { GetCorBdButton(); } },        //
+        { { "Записать в модуль", QIcon(":/icons/tnwrite.svg") }, [this]() { WriteCorBd(); } },            //
+        { { "Сбросить начальные значения", QIcon(":/icons/tnreset.svg") }, [this]() { ResetCor(); } },    //
+        { { "Задать начальные значения", QIcon(":/icons/tnapprove.svg") }, [this]() { WriteCor(); } },    //
+        { { "Прочитать значения из файла", QIcon(":/icons/tnload.svg") }, [this]() { ReadFromFile(); } }, //
+        { { "Сохранить значения в файл", QIcon(":/icons/tnsave.svg") }, [this]() { SaveToFile(); } }      //
     };
 
     for (auto &i : funcs)
@@ -61,23 +60,18 @@ QWidget *AbstractStartupDialog::buttonWidget()
         QPushButton *pb = new QPushButton();
         pb->setObjectName("Hexagon");
         pb->setIcon(icon);
-        pb->setAttribute(Qt::WA_Hover);
-        pb->setAttribute(Qt::WA_X11NetWmWindowTypeToolBar);
-        //        pb->setStyleSheet("background-color: rgba(255, 255, 255, 0);"
-        //                          "    border-style: groove;"
-        //                          "   border-color: #ADADAD;"
-        //                          "border-width: 1px;");
+        // NOTE Does it work with global qss?
+        // pb->setAttribute(Qt::WA_Hover);
+        // pb->setAttribute(Qt::WA_X11NetWmWindowTypeToolBar);
+
         pb->setToolTip(toolTip);
         pb->setMinimumSize(50, 50);
         pb->setIconSize(QSize(50, 50));
-
-        // pb->setIconSize(QSize(pb->minimumHeight() / 2, pb->minimumHeight() / 2));
 
         connect(pb, &QAbstractButton::clicked, this, i.second);
         if (StdFunc::IsInEmulateMode())
             pb->setEnabled(false);
         group->addButton(pb, QDialogButtonBox::ActionRole);
-        // hlyout->addWidget(pb);
     }
     group->setCenterButtons(true);
     lyout->addWidget(group);
@@ -89,14 +83,6 @@ QWidget *AbstractStartupDialog::buttonWidget()
 void AbstractStartupDialog::GetCorBd()
 {
 }
-
-// void AbstractStartupDialog::ETHUpdate()
-//{
-//}
-
-// void AbstractStartupDialog::MBSUpdate()
-//{
-//}
 
 void AbstractStartupDialog::SetCor()
 {

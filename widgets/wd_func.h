@@ -14,9 +14,6 @@
 #include <QStatusBar>
 #include <QWidget>
 
-#ifndef __GNUC__
-#define MAXFLOAT 3.40282347E+38F
-#endif
 class WDFunc
 {
 public:
@@ -33,10 +30,13 @@ public:
     static bool SetCWData(QWidget *w, const QString &cwname, const QString &cwvalue);
     static QString CWData(QWidget *w, const QString &cwname);
     static bool SetCWColor(QWidget *w, const QString &cwname, const QColor &color);
-    static QLineEdit *NewLE(QWidget *w, const QString &lename, const QString &letext = "", const QString &lestyle = "");
+    [[deprecated("Use instead second version with global style sheet")]] static QLineEdit *NewLE(
+        QWidget *w, const QString &lename, const QString &letext = "", const QString &lestyle = "");
     static QLineEdit *NewLE2(QWidget *w, const QString &lename, const QString &letext = "");
-    static PasswordLineEdit *NewPswLE(QWidget *w, const QString &lename,
-        QLineEdit::EchoMode echostyle = QLineEdit::Normal, const QString &lestyle = "");
+    [[deprecated("Use instead second version with global style sheet")]] static PasswordLineEdit *NewPswLE(QWidget *w,
+        const QString &lename, QLineEdit::EchoMode echostyle = QLineEdit::Normal, const QString &lestyle = "");
+    static PasswordLineEdit *NewPswLE2(
+        QWidget *w, const QString &lename, QLineEdit::EchoMode echostyle = QLineEdit::Normal);
     static bool SetLEData(QObject *w, const QString &lename, const QString &levalue, const QString &restring = "");
     static QString LEData(QObject *w, const QString &lename);
     template <typename T> static bool LENumber(QWidget *w, const QString &lename, T &levalue)
@@ -51,7 +51,7 @@ public:
     static bool SetTEData(QWidget *w, const QString &tename, const QString &tetext);
     static bool TEData(QWidget *w, const QString &tename, QString &tevalue);
     static bool SetLBLTColor(QWidget *w, const QString &lblname, const QString &color);
-    static QComboBox *NewCB(
+    [[deprecated("Use instead second version with global style sheet")]] static QComboBox *NewCB(
         QWidget *parent, const QString &cbname, const QStringList &cbsl, const QString &cbcolor = "");
     static QComboBox *NewCB2(QWidget *parent, const QString &cbname, const QStringList &cbsl);
     static QComboBox *NewCB2(QWidget *parent, const QStringList &cbsl);
@@ -69,13 +69,15 @@ public:
     //    static QMetaObject::Connection CBConnect(
     //        QWidget *w, const QString &cbname, int cbconnecttype, const QObject *receiver, const char *method);
 
-    static EDoubleSpinBox *NewSPB(
+    [[deprecated("Use instead second version with global style sheet")]] static EDoubleSpinBox *NewSPB(
         QWidget *parent, const QString &spbname, double min, double max, int decimals, const QString &spbcolor = "");
+
+    static EDoubleSpinBox *NewSPB2(QWidget *parent, const QString &spbname, double min, double max, int decimals);
 
     static bool SetSPBData(QObject *w, const QString &spbname, const double &spbvalue);
     template <typename T> static bool SPBData(QObject *w, const QString &spbname, T &spbvalue)
     {
-        QDoubleSpinBox *spb = w->findChild<QDoubleSpinBox *>(spbname);
+        EDoubleSpinBox *spb = w->findChild<EDoubleSpinBox *>(spbname);
         if (spb == nullptr)
         {
             spbvalue = 0;
@@ -85,11 +87,13 @@ public:
         return true;
     }
     static bool SetLEColor(QWidget *w, const QString &lename, const QColor &color);
-    static QLabel *NewLBL(QWidget *w, const QString &text, const QString &lblcolor = "", const QString &lblname = "",
-        const QPixmap *pm = Q_NULLPTR, const QString &lbltip = "");
+    [[deprecated("Use instead second version with global style sheet")]] static QLabel *NewLBL(QWidget *w,
+        const QString &text, const QString &lblcolor = "", const QString &lblname = "", const QPixmap *pm = Q_NULLPTR,
+        const QString &lbltip = "");
     static QLabel *NewLBL2(QWidget *w, const QString &text, const QString &lblname = "", const QString &lbltip = "");
-    static QLabel *NewLBLT(QWidget *w, const QString &text, const QString &lblname = "", const QString &lblstyle = "",
-        const QString &lbltip = "", bool Fixed = false);
+    [[deprecated("Use instead second version with global style sheet")]] static QLabel *NewLBLT(QWidget *w,
+        const QString &text, const QString &lblname = "", const QString &lblstyle = "", const QString &lbltip = "",
+        bool Fixed = false);
     static QLabel *NewLBLT2(
         QWidget *w, const QString &text, const QString &lblname = "", const QString &lbltip = "", bool fixed = false);
     // static QLabel *NewLBLTT(QWidget *w, const QString &text, const QString
@@ -99,12 +103,14 @@ public:
     static bool SetLBLColor(QWidget *w, const QString &lblname, const QString &lblcolor);
     static bool SetLBLText(QWidget *w, const QString &lblname, const QString &lbltext = "", bool enabled = true);
     static QString LBLText(QWidget *w, const QString &lblname);
-    static QRadioButton *NewRB(
+    [[deprecated("Use instead second version with global style sheet")]] static QRadioButton *NewRB(
         QWidget *parent, const QString &rbtext, const QString &rbname, const QString &rbcolor = "");
+    static QRadioButton *NewRB2(QWidget *parent, const QString &rbtext, const QString &rbname);
     static QString TVField(QWidget *w, const QString &tvname, int column, bool isid = false);
     static void TVAutoResize(QWidget *w, const QString &tvname);
-    static QCheckBox *NewChB(
+    [[deprecated("Use instead second version with global style sheet")]] static QCheckBox *NewChB(
         QWidget *parent, const QString &chbname, const QString &chbtext, const QString &chbcolor = "");
+    static QCheckBox *NewChB2(QWidget *parent, const QString &chbname, const QString &chbtext);
     static bool ChBData(QWidget *w, const QString &chbname, bool &data);
     static bool SetChBData(QWidget *w, const QString &chbname, bool data);
     static bool RBData(QWidget *w, const QString &rbname, bool &data);
@@ -118,9 +124,6 @@ public:
     static QString StringValueWithCheck(float value, int precision = 5, bool exp = false);
     static QVariant FloatValueWithCheck(float value);
     static QImage *TwoImages(const QString &first, const QString &second);
-    //    static QPushButton *NewPB(QWidget *parent, const QString &pbname, const QString &text, const QObject
-    //    *receiver,
-    //        const char *method, const QString &icon = "", const QString &pbtooltip = "");
 
     template <typename Functor>
     inline static QPushButton *NewHexagonPB(QWidget *parent, const QString &pbname, Functor &&functor,
@@ -177,8 +180,6 @@ public:
             QObject::connect(pb, &QPushButton::clicked, receiver, method);
     }
 
-    //    static QMetaObject::Connection PBConnect(
-    //        QWidget *w, const QString &pbname, const QObject *receiver, const char *method);
     static void SetTVModel(QWidget *w, const QString &tvname, QAbstractItemModel *model, bool sortenable = false);
     static void SetQTVModel(QWidget *w, const QString &tvname, QAbstractItemModel *model, bool sortenable = false);
     static ETableView *NewTV(QWidget *w, const QString &tvname, QAbstractItemModel *model);
@@ -199,10 +200,6 @@ private:
         const QString &icon = "", const QString &pbtooltip = "")
     {
         QPushButton *pb = new QPushButton(parent);
-        //        pb->setStyleSheet("QPushButton {background-color: rgba(0,0,0,0); border: 1px solid gray; "
-        //                          "border-radius: 5px; border-style: outset; padding: 2px 5px;}"
-        //                          "QPushButton:pressed {border-style: inset;}"
-        //                          "QPushButton:disabled {border: none;}");
         pb->setObjectName(pbname);
         if (!icon.isEmpty())
             pb->setIcon(QIcon(icon));

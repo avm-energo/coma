@@ -1,23 +1,60 @@
 #pragma once
 
+#include "../gen/singleton.h"
+
 #include <QKeySequence>
+#include <QMap>
 #include <QObject>
-class StyleLoader : public QObject
+constexpr char defaultStyleFile[] = ":/qdarkstyle/style.qss";
+constexpr char defaultStyleKey[] = "F5";
+namespace Style
+{
+Q_NAMESPACE
+enum Name
+{
+    Dark,
+    Drakula,
+    Aqua,
+    Console,
+    ElegantDark,
+    ManjaroMix,
+    MaterialDark,
+    Ubuntu
+};
+Q_ENUM_NS(Name);
+const QMap<Name, QString> themes {
+    { Dark, ":/qdarkstyle/style.qss" },               //
+    { Drakula, ":/style/qss-dracula/dracula.css" },   //
+    { Aqua, ":/style/QSS/Aqua.qss" },                 //
+    { Console, ":/style/QSS/ConsoleStyle.qss" },      //
+    { ElegantDark, ":/style/QSS/ElegantDark.qss" },   //
+    { ManjaroMix, ":/style/QSS/ManjaroMix.qss" },     //
+    { MaterialDark, ":/style/QSS/MaterialDark.qss" }, //
+    { Ubuntu, ":/style/QSS/Ubuntu.qss" }              //
+};
+}
+
+class StyleLoader : public QObject, public Singleton<StyleLoader>
 {
     Q_OBJECT
 public:
-    static void attach(const QString &filename = defaultStyleFile(), QKeySequence key = QKeySequence("F5"));
+    StyleLoader(Singleton::token, QObject *parent);
+    explicit StyleLoader(token);
+    void attach(const QString &filename = GetInstance().load(), QKeySequence key = QKeySequence(defaultStyleKey));
 
     bool eventFilter(QObject *obj, QEvent *event);
 
-    static QString styleFile();
-    static void setStyleFile(const QString &styleFile);
+    QString styleFile();
+    Style::Name styleNumber();
+    QString styleName();
+
+    void setStyleFile(const QString &styleFile);
+    void setAppStyleSheet();
+
+    QString load();
+    void save();
 
 private:
-    StyleLoader(QObject *parent, const QString &filename, const QKeySequence &key);
-    void setAppStyleSheet();
-    static QString defaultStyleFile();
-    static QString m_styleFile;
     QString m_filename;
     QKeySequence m_key;
 };
