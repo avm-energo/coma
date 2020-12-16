@@ -14,13 +14,23 @@ Q_NAMESPACE
 
 enum Msg
 {
-    ResEmpty = -2, // WARNING ResEmpty hardcoded as -2
-    GeneralError,  // WARNING GeneralError hardcoded as -1
-    NoError,       // WARNING NoError hardcoded as 0
-    WrongCommandError,
-    SizeError,
+    ResEmpty = -2,     // WARNING ResEmpty hardcoded as -2
+    GeneralError = -1, // WARNING GeneralError hardcoded as -1
+    NoError = 0,       // WARNING NoError hardcoded as 0
+    Timeout = 0x01,    // Others hardcoded as Protocom
+    CrcError = 0x02,
+    FlashError = 0x03,
+    SizeError = 0x04,
+    WrongCommandError = 0x05,
+    WrongFormatError = 0x06,
+    UnknownBlock = 0x07,
+    UnknownFileReq = 0x08,
+    UnknownFileSent = 0x09,
+    NoMezzanine = 0x0a,
+    WrongType = 0x0b,
+    FileNameError = 0x0c,
+    WrongBlockAC = 0x0d,
     DescError,
-    CrcError,
     HeaderSizeError,
     NoIdError,
     NoConfError,
@@ -33,7 +43,8 @@ enum Msg
     WrongFileError,
     FileOpenError,
     FileWriteError,
-    FileNameError
+    UnknownError = 0xff
+
 };
 
 Q_ENUM_NS(Msg)
