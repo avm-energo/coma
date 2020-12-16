@@ -68,7 +68,7 @@ QString WDFunc::LEData(QObject *w, const QString &lename)
     return le->text();
 }
 
-bool WDFunc::SetLEData(QWidget *w, const QString &lename, const QString &levalue, const QString &restring)
+bool WDFunc::SetLEData(QObject *w, const QString &lename, const QString &levalue, const QString &restring)
 {
     QLineEdit *le = w->findChild<QLineEdit *>(lename);
     if (le == nullptr)
@@ -953,24 +953,4 @@ QAbstractItemModel *WDFunc::TVModel(QWidget *w, const QString &tvname)
     if (tv == nullptr)
         return nullptr;
     return tv->model();
-}
-
-bool WDFunc::LE_read_data(QObject *w, const QString &lename, QString &levalue)
-{
-    QLineEdit *le = w->findChild<QLineEdit *>(lename);
-    if (le == nullptr)
-        return false;
-    levalue = le->text();
-    return true;
-}
-
-bool WDFunc::LE_write_data(QObject *w, const QString &levalue, const QString &lename)
-{
-    QLineEdit *le = w->findChild<QLineEdit *>(lename);
-    if (le == nullptr)
-        return false;
-    le->text() = levalue;
-    le->setText(levalue);
-    // SetTEData(w, lename, levalue);
-    return true;
 }

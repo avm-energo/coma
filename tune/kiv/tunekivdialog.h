@@ -125,7 +125,7 @@ private:
     QStandardItemModel *ReportModel, *ViewModel; // модель, в которую заносим данные для отчёта
     int RowCount, ColumnCount; // количество рядов и столбцов в модели*/
 
-    QHBoxLayout *newTunePBLayout(const QString &pbtext, const std::function<void()> fun);
+    //    QHBoxLayout *newTunePBLayout(const QString &pbtext, const std::function<void()> fun);
 
 private slots:
 

@@ -94,7 +94,7 @@ public:
     //    virtual void FillBackBac(int bacnum) = 0;
     //    void SaveToFileEx(int bacnum);
     //    void ShowTable();
-    Error::Msg LoadTuneSequenceFile();
+    //    Error::Msg LoadTuneSequenceFile();
     Error::Msg checkCalibrStep();
     void saveTuneSequenceFile(int step);
     Error::Msg saveWorkConfig();
@@ -102,6 +102,8 @@ public:
     Error::Msg saveAllTuneCoefs();
     Error::Msg loadAllTuneCoefs();
     bool writeTuneCoefs();
+
+    //    void scrollArea();
 
 private:
     //    struct BlockStruct

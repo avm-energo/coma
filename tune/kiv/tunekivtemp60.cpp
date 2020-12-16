@@ -315,6 +315,6 @@ void TuneKIVTemp60::acceptTuneCoefs()
 
 void TuneKIVTemp60::setDefCoefs()
 {
-    TKIV->m_Bac->setDefBlock();
-    TKIV->m_Bd0->setDefBlock();
+    TKIV->m_Bac->setDefBlockAndUpdate();
+    TKIV->m_Bd0->setDefBlockAndUpdate();
 }

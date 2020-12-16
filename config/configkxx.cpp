@@ -209,10 +209,10 @@ void ConfigKxx::Fill()
 
     WDFunc::SetSPBData(ParentSetup, "Port_ID", Com_param.Port[0]);
 
-    WDFunc::LE_write_data(ParentSetup, StrIP, "IP_ID");
-    WDFunc::LE_write_data(ParentSetup, StrSNTP, "SNTP_ID");
-    WDFunc::LE_write_data(ParentSetup, StrGate, "GW_ID");
-    WDFunc::LE_write_data(ParentSetup, StrMask, "Mask_ID");
+    WDFunc::SetLEData(ParentSetup, "IP_ID", StrIP);
+    WDFunc::SetLEData(ParentSetup, "SNTP_ID", StrSNTP);
+    WDFunc::SetLEData(ParentSetup, "GW_ID", StrGate);
+    WDFunc::SetLEData(ParentSetup, "Mask_ID", StrMask);
 
     for (int i = 0; i < 8; i++)
     {

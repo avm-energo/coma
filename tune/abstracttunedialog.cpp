@@ -86,10 +86,13 @@ QWidget *AbstractTuneDialog::TuneUI()
     hlyout->addStretch(100);
     lyout->addLayout(hlyout);
     QScrollArea *area = new QScrollArea;
+    //    area->setObjectName("scrollarea");
     area->setStyleSheet("QScrollArea {background-color: rgba(0,0,0,0);}");
     area->setFrameShape(QFrame::NoFrame);
     area->setWidgetResizable(true);
+    area->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     QWidget *w2 = new QWidget;
+    //    w2->setObjectName("messagewidget");
     QVBoxLayout *w2lyout = new QVBoxLayout;
     w2lyout->addWidget(WDFunc::NewLBL(this, "Для запуска регулировки нажмите кнопку \"Начать настройку\""));
     for (i = 0; i < m_messages.size(); ++i)
@@ -104,9 +107,10 @@ QWidget *AbstractTuneDialog::TuneUI()
     }
     w2lyout->addStretch(10);
     w2->setLayout(w2lyout);
+    //    w2->setMinimumHeight(400); // !!! it has to be replaced
     area->setWidget(w2);
     lyout->addWidget(area);
-    area->verticalScrollBar()->setValue(area->verticalScrollBar()->maximum());
+    //    area->verticalScrollBar()->setValue(area->verticalScrollBar()->maximum());
     lyout->addWidget(WDFunc::NewLBL(this, "Настройка завершена!", "", "tunemsg" + QString::number(i)));
     WDFunc::SetVisible(this, "tunemsg" + QString::number(i), false);
     //    for (int i = 0; i < m_messages.size() + 1; ++i)
@@ -335,9 +339,9 @@ void AbstractTuneDialog::startTune()
         return;
     WDFunc::SetEnabled(this, "starttune", false);
     WDFunc::SetEnabled(this, "stoptune", true);
-    if (m_messages.size() > m_tuneFunctions.size())
+    if (m_messages.size() != m_tuneFunctions.size())
     {
-        DBGMSG("lbls size > pf size");
+        DBGMSG("lbls size != pf size");
         WDFunc::SetEnabled(this, "starttune", true);
         return;
     }
@@ -568,6 +572,13 @@ bool AbstractTuneDialog::writeTuneCoefs()
     QMessageBox::information(this, "Внимание", "Коэффициенты переданы в " + tmps + " успешно!");
     return true;
 }
+
+// void AbstractTuneDialog::scrollArea()
+//{
+//    QScrollArea *area = this->findChild<QScrollArea *>("scrollarea");
+//    if (area != nullptr)
+//        area->verticalScrollBar()->setValue(area->verticalScrollBar()->maximum());
+//}
 
 // Error::Msg AbstractTuneDialog::LoadTuneSequenceFile()
 //{

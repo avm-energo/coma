@@ -10,7 +10,7 @@
 Bac::Bac(QObject *parent) : DataBlock(parent)
 {
     m_blockData = new BlockData;
-    setBlock({ 0, "Настроечные параметры", DataTypes::DataBlockTypes::BdBlock, m_blockData, sizeof(BlockData) });
+    setBlock({ 2, "Настроечные параметры", DataTypes::DataBlockTypes::BacBlock, m_blockData, sizeof(BlockData) });
 }
 
 QWidget *Bac::widget()
@@ -160,8 +160,10 @@ QWidget *Bac::widget()
         WDFunc::NewLBLT(m_widget, "", "tune51", ValuesFormat, "Начальная температура МК для коррекции"), 17, 3, 1, 1);
     gb->setLayout(glyout);
     lyout->addWidget(gb);
+    lyout->addWidget(bottomUI());
     lyout->addStretch(100);
     m_widget->setLayout(lyout);
+    m_widgetIsSet = true;
     return m_widget;
 }
 
@@ -198,62 +200,77 @@ void Bac::setDefBlock()
 
 void Bac::updateWidget()
 {
-    for (int i = 0; i < 3; i++)
+    if (m_widgetIsSet)
     {
-        WDFunc::SetLBLText(m_widget, "tune" + QString::number(i), QString::number(m_blockData->N1_TT[i], 'g', 5));
-        WDFunc::SetLBLText(m_widget, "tune" + QString::number(i + 3), QString::number(m_blockData->KmU[i], 'f', 5));
-        WDFunc::SetLBLText(m_widget, "tune" + QString::number(i + 6), QString::number(m_blockData->KmI1[i], 'f', 5));
-        WDFunc::SetLBLText(m_widget, "tune" + QString::number(i + 9), QString::number(m_blockData->KmI2[i], 'f', 5));
-        WDFunc::SetLBLText(m_widget, "tune" + QString::number(i + 12), QString::number(m_blockData->KmI4[i], 'f', 5));
-        WDFunc::SetLBLText(m_widget, "tune" + QString::number(i + 15), QString::number(m_blockData->KmI8[i], 'f', 5));
-        WDFunc::SetLBLText(m_widget, "tune" + QString::number(i + 18), QString::number(m_blockData->KmI16[i], 'f', 5));
-        WDFunc::SetLBLText(m_widget, "tune" + QString::number(i + 21), QString::number(m_blockData->KmI32[i], 'f', 5));
-        WDFunc::SetLBLText(
-            m_widget, "tune" + QString::number(i + 24), QString::number(m_blockData->TKPsi_a[i], 'e', 5));
-        WDFunc::SetLBLText(
-            m_widget, "tune" + QString::number(i + 27), QString::number(m_blockData->TKPsi_b[i], 'e', 5));
-    }
+        for (int i = 0; i < 3; i++)
+        {
+            WDFunc::SetLBLText(m_widget, "tune" + QString::number(i), QString::number(m_blockData->N1_TT[i], 'g', 5));
+            WDFunc::SetLBLText(m_widget, "tune" + QString::number(i + 3), QString::number(m_blockData->KmU[i], 'f', 5));
+            WDFunc::SetLBLText(
+                m_widget, "tune" + QString::number(i + 6), QString::number(m_blockData->KmI1[i], 'f', 5));
+            WDFunc::SetLBLText(
+                m_widget, "tune" + QString::number(i + 9), QString::number(m_blockData->KmI2[i], 'f', 5));
+            WDFunc::SetLBLText(
+                m_widget, "tune" + QString::number(i + 12), QString::number(m_blockData->KmI4[i], 'f', 5));
+            WDFunc::SetLBLText(
+                m_widget, "tune" + QString::number(i + 15), QString::number(m_blockData->KmI8[i], 'f', 5));
+            WDFunc::SetLBLText(
+                m_widget, "tune" + QString::number(i + 18), QString::number(m_blockData->KmI16[i], 'f', 5));
+            WDFunc::SetLBLText(
+                m_widget, "tune" + QString::number(i + 21), QString::number(m_blockData->KmI32[i], 'f', 5));
+            WDFunc::SetLBLText(
+                m_widget, "tune" + QString::number(i + 24), QString::number(m_blockData->TKPsi_a[i], 'e', 5));
+            WDFunc::SetLBLText(
+                m_widget, "tune" + QString::number(i + 27), QString::number(m_blockData->TKPsi_b[i], 'e', 5));
+        }
 
-    for (int i = 0; i < 6; i++)
-    {
-        WDFunc::SetLBLText(m_widget, "tune" + QString::number(i + 30), QString::number(m_blockData->DPsi[i], 'f', 5));
-        WDFunc::SetLBLText(m_widget, "tune" + QString::number(i + 36), QString::number(m_blockData->TKUa[i], 'e', 5));
-        WDFunc::SetLBLText(m_widget, "tune" + QString::number(i + 42), QString::number(m_blockData->TKUb[i], 'e', 5));
-    }
+        for (int i = 0; i < 6; i++)
+        {
+            WDFunc::SetLBLText(
+                m_widget, "tune" + QString::number(i + 30), QString::number(m_blockData->DPsi[i], 'f', 5));
+            WDFunc::SetLBLText(
+                m_widget, "tune" + QString::number(i + 36), QString::number(m_blockData->TKUa[i], 'e', 5));
+            WDFunc::SetLBLText(
+                m_widget, "tune" + QString::number(i + 42), QString::number(m_blockData->TKUb[i], 'e', 5));
+        }
 
-    WDFunc::SetLBLText(m_widget, "tune48", QString::number(m_blockData->K_freq, 'f', 5));
-    WDFunc::SetLBLText(m_widget, "tune49", QString::number(m_blockData->Art, 'f', 5));
-    WDFunc::SetLBLText(m_widget, "tune50", QString::number(m_blockData->Brt, 'f', 5));
-    WDFunc::SetLBLText(m_widget, "tune51", QString::number(m_blockData->Tmk0, 'f', 5));
+        WDFunc::SetLBLText(m_widget, "tune48", QString::number(m_blockData->K_freq, 'f', 5));
+        WDFunc::SetLBLText(m_widget, "tune49", QString::number(m_blockData->Art, 'f', 5));
+        WDFunc::SetLBLText(m_widget, "tune50", QString::number(m_blockData->Brt, 'f', 5));
+        WDFunc::SetLBLText(m_widget, "tune51", QString::number(m_blockData->Tmk0, 'f', 5));
+    }
 }
 
 void Bac::updateFromWidget()
 {
-    QString tmps;
-    for (int i = 0; i < 3; i++)
+    if (m_widgetIsSet)
     {
-        m_blockData->N1_TT[i] = WDFunc::LBLText(m_widget, "tune" + QString::number(i)).toUInt();
-        m_blockData->KmU[i] = StdFunc::toFloat(WDFunc::LBLText(m_widget, "tune" + QString::number(i + 3)));
-        m_blockData->KmI1[i] = StdFunc::toFloat(WDFunc::LBLText(m_widget, "tune" + QString::number(i + 6)));
-        m_blockData->KmI2[i] = StdFunc::toFloat(WDFunc::LBLText(m_widget, "tune" + QString::number(i + 9)));
-        m_blockData->KmI4[i] = StdFunc::toFloat(WDFunc::LBLText(m_widget, "tune" + QString::number(i + 12)));
-        m_blockData->KmI8[i] = StdFunc::toFloat(WDFunc::LBLText(m_widget, "tune" + QString::number(i + 15)));
-        m_blockData->KmI16[i] = StdFunc::toFloat(WDFunc::LBLText(m_widget, "tune" + QString::number(i + 18)));
-        m_blockData->KmI32[i] = StdFunc::toFloat(WDFunc::LBLText(m_widget, "tune" + QString::number(i + 21)));
-        m_blockData->TKPsi_a[i] = StdFunc::toFloat(WDFunc::LBLText(m_widget, "tune" + QString::number(i + 24)));
-        m_blockData->TKPsi_b[i] = StdFunc::toFloat(WDFunc::LBLText(m_widget, "tune" + QString::number(i + 27)));
-    }
+        QString tmps;
+        for (int i = 0; i < 3; i++)
+        {
+            m_blockData->N1_TT[i] = WDFunc::LBLText(m_widget, "tune" + QString::number(i)).toUInt();
+            m_blockData->KmU[i] = StdFunc::toFloat(WDFunc::LBLText(m_widget, "tune" + QString::number(i + 3)));
+            m_blockData->KmI1[i] = StdFunc::toFloat(WDFunc::LBLText(m_widget, "tune" + QString::number(i + 6)));
+            m_blockData->KmI2[i] = StdFunc::toFloat(WDFunc::LBLText(m_widget, "tune" + QString::number(i + 9)));
+            m_blockData->KmI4[i] = StdFunc::toFloat(WDFunc::LBLText(m_widget, "tune" + QString::number(i + 12)));
+            m_blockData->KmI8[i] = StdFunc::toFloat(WDFunc::LBLText(m_widget, "tune" + QString::number(i + 15)));
+            m_blockData->KmI16[i] = StdFunc::toFloat(WDFunc::LBLText(m_widget, "tune" + QString::number(i + 18)));
+            m_blockData->KmI32[i] = StdFunc::toFloat(WDFunc::LBLText(m_widget, "tune" + QString::number(i + 21)));
+            m_blockData->TKPsi_a[i] = StdFunc::toFloat(WDFunc::LBLText(m_widget, "tune" + QString::number(i + 24)));
+            m_blockData->TKPsi_b[i] = StdFunc::toFloat(WDFunc::LBLText(m_widget, "tune" + QString::number(i + 27)));
+        }
 
-    for (int i = 0; i < 6; i++)
-    {
-        m_blockData->DPsi[i] = StdFunc::toFloat(WDFunc::LBLText(m_widget, "tune" + QString::number(i + 30)));
-        m_blockData->TKUa[i] = StdFunc::toFloat(WDFunc::LBLText(m_widget, "tune" + QString::number(i + 36)));
-        m_blockData->TKUb[i] = StdFunc::toFloat(WDFunc::LBLText(m_widget, "tune" + QString::number(i + 42)));
+        for (int i = 0; i < 6; i++)
+        {
+            m_blockData->DPsi[i] = StdFunc::toFloat(WDFunc::LBLText(m_widget, "tune" + QString::number(i + 30)));
+            m_blockData->TKUa[i] = StdFunc::toFloat(WDFunc::LBLText(m_widget, "tune" + QString::number(i + 36)));
+            m_blockData->TKUb[i] = StdFunc::toFloat(WDFunc::LBLText(m_widget, "tune" + QString::number(i + 42)));
+        }
+        m_blockData->K_freq = StdFunc::toFloat(WDFunc::LBLText(m_widget, "tune48"));
+        m_blockData->Art = StdFunc::toFloat(WDFunc::LBLText(m_widget, "tune49"));
+        m_blockData->Brt = StdFunc::toFloat(WDFunc::LBLText(m_widget, "tune50"));
+        m_blockData->Tmk0 = StdFunc::toFloat(WDFunc::LBLText(m_widget, "tune51"));
     }
-    m_blockData->K_freq = StdFunc::toFloat(WDFunc::LBLText(m_widget, "tune48"));
-    m_blockData->Art = StdFunc::toFloat(WDFunc::LBLText(m_widget, "tune49"));
-    m_blockData->Brt = StdFunc::toFloat(WDFunc::LBLText(m_widget, "tune50"));
-    m_blockData->Tmk0 = StdFunc::toFloat(WDFunc::LBLText(m_widget, "tune51"));
 }
 
 Bac::BlockData *Bac::data()

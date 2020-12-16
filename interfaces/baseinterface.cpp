@@ -5,12 +5,14 @@
 #include "../gen/stdfunc.h"
 
 #include <QCoreApplication>
-#include <QTimer>
 
 BaseInterface *BaseInterface::m_iface;
 
 BaseInterface::BaseInterface(QObject *parent) : QObject(parent), m_working(false), Log(new LogClass(this))
 {
+    timeoutTimer = new QTimer;
+    timeoutTimer->setInterval(MAINTIMEOUT);
+    connect(timeoutTimer, &QTimer::timeout, this, &BaseInterface::timeout);
 }
 
 BaseInterface *BaseInterface::iface()
@@ -52,9 +54,6 @@ Error::Msg BaseInterface::reqBlockSync(
 {
     m_busy = true;
     m_timeout = false;
-    QTimer *timer = new QTimer;
-    timer->setInterval(MAINTIMEOUT);
-    connect(timer, &QTimer::timeout, this, &BaseInterface::timeout);
     connect(&DataManager::GetInstance(), &DataManager::blockReceived, this, &BaseInterface::resultReady);
     QMap<DataTypes::DataBlockTypes, Queries::Commands> blockmap;
     blockmap[DataTypes::DataBlockTypes::BacBlock] = Queries::QUSB_ReqTuningCoef;
@@ -62,6 +61,7 @@ Error::Msg BaseInterface::reqBlockSync(
     //    blockmap[DataBlockTypes::BdBlock] = Queries::;
     //    blockmap[DataBlockTypes::BciBlock] = Queries::;
     writeCommand(blockmap[blocktype], blocknum);
+    timeoutTimer->start();
     while (m_busy)
     {
         QCoreApplication::processEvents(QEventLoop::AllEvents);
@@ -83,13 +83,11 @@ Error::Msg BaseInterface::writeBlockSync(
     memcpy(&bs.data.data()[0], block, blocksize);
     m_busy = true;
     m_timeout = false;
-    QTimer *timer = new QTimer;
-    timer->setInterval(MAINTIMEOUT);
-    connect(timer, &QTimer::timeout, this, &BaseInterface::timeout);
     connect(&DataManager::GetInstance(), &DataManager::responseReceived, this, &BaseInterface::responseReceived);
     if (blocktype == DataTypes::DataBlockTypes::BacBlock)
     {
         writeCommand(Queries::QUSB_WriteTuningCoef, QVariant::fromValue(bs));
+        timeoutTimer->start();
         while (m_busy)
         {
             QCoreApplication::processEvents(QEventLoop::AllEvents);
@@ -125,9 +123,6 @@ Error::Msg BaseInterface::writeFileSync(int filenum, QByteArray &ba)
 {
     m_busy = true;
     m_timeout = false;
-    QTimer *timer = new QTimer;
-    timer->setInterval(MAINTIMEOUT);
-    connect(timer, &QTimer::timeout, this, &BaseInterface::timeout);
     connect(&DataManager::GetInstance(), &DataManager::responseReceived, this, &BaseInterface::responseReceived);
     writeFile(filenum, ba);
     while (m_busy)
@@ -144,12 +139,10 @@ Error::Msg BaseInterface::readS2FileSync(quint32 filenum)
 {
     m_busy = true;
     m_timeout = false;
-    QTimer *timer = new QTimer;
-    timer->setInterval(MAINTIMEOUT);
-    connect(timer, &QTimer::timeout, this, &BaseInterface::timeout);
     connect(&DataManager::GetInstance(), &DataManager::confParametersListReceived, this,
         &BaseInterface::confParameterBlockReceived);
     reqFile(filenum, true);
+    timeoutTimer->start();
     while (m_busy)
     {
         QCoreApplication::processEvents(QEventLoop::AllEvents);
@@ -165,11 +158,12 @@ Error::Msg BaseInterface::readFileSync(quint32 filenum, QByteArray &ba)
 {
     m_busy = true;
     m_timeout = false;
-    QTimer *timer = new QTimer;
-    timer->setInterval(MAINTIMEOUT);
-    connect(timer, &QTimer::timeout, this, &BaseInterface::timeout);
+    //    QTimer *timer = new QTimer;
+    //    timer->setInterval(MAINTIMEOUT);
+    //    connect(timer, &QTimer::timeout, this, &BaseInterface::timeout);
     connect(&DataManager::GetInstance(), &DataManager::fileReceived, this, &BaseInterface::fileReceived);
-    reqFile(filenum, true);
+    reqFile(filenum, false);
+    timeoutTimer->start();
     while (m_busy)
     {
         QCoreApplication::processEvents(QEventLoop::AllEvents);
@@ -214,7 +208,7 @@ void BaseInterface::fileReceived(const DataTypes::FileStruct &file)
 void BaseInterface::timeout()
 {
     // FIXME Should be checked before cast
-    QTimer *tmr = qobject_cast<QTimer *>(sender());
-    tmr->deleteLater();
+    //    QTimer *tmr = qobject_cast<QTimer *>(sender());
+    //    tmr->deleteLater();
     m_busy = false;
 }

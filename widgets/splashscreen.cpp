@@ -53,6 +53,9 @@ void SplashScreen::drawContents(QPainter *painter)
     rect.moveBottom(rect.bottom() + 1.7 * painter->font().pixelSize());
     painter->drawText(rect, Qt::AlignLeft, Prog::icons);
 
+    rect.moveBottom(rect.bottom() + 1.7 * painter->font().pixelSize());
+    painter->drawText(rect, Qt::AlignLeft, Prog::fonts);
+
     font.setPixelSize(20);
     painter->setFont(font);
 
