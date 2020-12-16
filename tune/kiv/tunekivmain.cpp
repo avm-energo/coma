@@ -202,7 +202,7 @@ Error::Msg TuneKIVMain::processR120()
     double pt100_120 = processR();
     if (StdFunc::isCancelled())
         return Error::Msg::GeneralError;
-    if (StdFunc::floatIsWithinLimits(this, pt100_120, m_pt100))
+    if (StdFunc::floatIsWithinLimits(this, (pt100_120 - m_pt100), 40))
     {
         WARNMSG("Ошибка в полученных данных, значения сопротивлений равны");
         StdFunc::cancel();
