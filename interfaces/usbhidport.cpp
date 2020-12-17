@@ -69,7 +69,8 @@ bool UsbHidPort::setupConnection()
 #endif
     if (!m_hidDevice)
     {
-        qDebug() << QString::fromWCharArray(hid_error(m_hidDevice));
+        // NOTE Nice error
+        // qDebug() << QString::fromWCharArray(hid_error(m_hidDevice));
         qCritical() << Error::Msg::OpenError;
         finish();
         return false;
@@ -103,7 +104,7 @@ void UsbHidPort::poll()
         if (!m_hidDevice)
             continue;
         std::array<byte, HID::MaxSegmenthLength + 1> array; // +1 to ID
-        bytes = hid_read(m_hidDevice, array.data(), HID::MaxSegmenthLength + 1);
+        bytes = hid_read_timeout(m_hidDevice, array.data(), HID::MaxSegmenthLength + 1, 30);
         // Write
         if (bytes < 0)
         {
@@ -130,16 +131,22 @@ void UsbHidPort::poll()
 
 void UsbHidPort::deviceConnected(const UsbHidSettings &st)
 {
+    QElapsedTimer timer;
+    timer.start();
     // Подключено другое устройство
     if (st != deviceInfo())
         return;
+    qDebug() << timer.elapsed();
     // Устройство появляется не сразу после прихода события о его подключении
     StdFunc::Wait(100);
     emit clearQueries();
+    qDebug() << timer.elapsed();
     if (!setupConnection())
         return;
+    qDebug() << timer.elapsed();
     qInfo() << deviceInfo() << "connected";
     Board::GetInstance().setConnectionState(Board::ConnectionState::Connected);
+    qDebug() << timer.elapsed();
 }
 
 void UsbHidPort::deviceDisconnected(const UsbHidSettings &st)
@@ -173,10 +180,8 @@ void UsbHidPort::closeConnection()
     if (!m_hidDevice)
         return;
 
-    QMutexLocker locker(&_mutex);
-    m_writeQueue.clear();
     hid_close(m_hidDevice);
-    m_hidDevice = nullptr;
+    clear();
 }
 
 void UsbHidPort::finish()
@@ -191,6 +196,7 @@ void UsbHidPort::clear()
     QMutexLocker locker(&_mutex);
     m_waitForReply = false;
     m_writeQueue.clear();
+    m_hidDevice = nullptr;
 }
 
 void UsbHidPort::nativeEvent(void *message)
@@ -213,7 +219,7 @@ void UsbHidPort::nativeEvent(void *message)
 
         const auto st = UsbHidSettings::fromWString(wstr);
         deviceConnected(st);
-        qDebug() << /*wstr <<*/ st /*<< devint->dbcc_devicetype*/;
+        qDebug() << wstr << /*st*/ /*<<*/ devint->dbcc_devicetype;
         break;
     }
     case DBT_DEVICEREMOVECOMPLETE:
@@ -224,7 +230,7 @@ void UsbHidPort::nativeEvent(void *message)
 
         const auto st = UsbHidSettings::fromWString(wstr);
         deviceDisconnected(st);
-        qDebug() << /*wstr <<*/ st /*<< devint->dbcc_devicetype*/;
+        qDebug() << wstr << /*st <<*/ devint->dbcc_devicetype;
         break;
     }
     case DBT_DEVNODES_CHANGED:
@@ -309,12 +315,12 @@ void UsbHidPort::checkQueue()
     // NOTE Реализовать
     // Q_ASSERT(Board::GetInstance().connectionState() == Board::ConnectionState::Connected);
     QMutexLocker locker(&_mutex);
-    if (!m_writeQueue.isEmpty())
-    {
-        QByteArray ba = m_writeQueue.takeFirst();
-        if (writeData(ba))
-            m_waitForReply = true;
-        else
-            emit clearQueries();
-    }
+    if (m_writeQueue.isEmpty())
+        return;
+    QByteArray ba = m_writeQueue.takeFirst();
+    locker.unlock();
+    if (writeData(ba))
+        m_waitForReply = true;
+    else
+        emit clearQueries();
 }
