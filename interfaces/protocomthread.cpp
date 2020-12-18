@@ -216,6 +216,7 @@ void ProtocomThread::handle(const Proto::Commands cmd)
     case Commands::ReadBlkData:
 
         // Превосходный костыль для сигнализации
+        // FIXME Переделать
         if (addr != alarm_reg)
             handleFloatArray(m_buffer.second, addr, count);
         else

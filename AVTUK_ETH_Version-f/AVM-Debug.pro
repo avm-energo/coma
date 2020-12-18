@@ -35,6 +35,7 @@ SOURCES += \
     ../datablocks/kiv/bac.cpp \
     ../gen/errorqueue.cpp \
     ../gen/helper.cpp \
+    ../interfaces/usbhidsettings.cpp \
     ../models/errorprotocolmodel.cpp \
     ../module/alarmkdv.cpp \
     ../module/journkdv.cpp \
@@ -135,6 +136,7 @@ HEADERS += \
     ../datablocks/kiv/bac.h \
     ../gen/errorqueue.h \
     ../gen/helper.h \
+    ../interfaces/usbhidsettings.h \
     ../models/errorprotocolmodel.h \
     ../module/alarmkdv.h \
     ../module/journkdv.h \

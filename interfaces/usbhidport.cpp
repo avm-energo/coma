@@ -12,6 +12,7 @@
 #include <QDebug>
 #include <QElapsedTimer>
 #include <QMetaEnum>
+#include <QRegularExpression>
 #include <QTimer>
 #include <array>
 #ifdef _WIN32
@@ -32,6 +33,7 @@ UsbHidPort::UsbHidPort(const UsbHidSettings &dev, LogClass *logh, QObject *paren
     log->Init(filename);
     log->WriteRaw(::logStart);
     m_hidDevice = nullptr;
+    m_shouldBeStopped = false;
     connect(this, &UsbHidPort::clearQueries, &UsbHidPort::clear);
 }
 
@@ -84,7 +86,7 @@ void UsbHidPort::poll()
 {
     int bytes;
     m_waitForReply = false;
-    m_isShouldBeStopped = false;
+
     while (Board::GetInstance().connectionState() != Board::ConnectionState::Closed)
     {
         QCoreApplication::processEvents(QEventLoop::AllEvents);
@@ -159,6 +161,32 @@ void UsbHidPort::deviceDisconnected(const UsbHidSettings &st)
     qInfo() << deviceInfo() << "disconnected";
 }
 
+void UsbHidPort::deviceConnected()
+{
+    if (!setupConnection())
+        return;
+    qInfo() << deviceInfo() << "connected";
+    Board::GetInstance().setConnectionState(Board::ConnectionState::Connected);
+}
+
+void UsbHidPort::deviceDisconnected()
+{
+    // Отключено наше устройство
+    Board::GetInstance().setConnectionState(Board::ConnectionState::AboutToFinish);
+    qInfo() << deviceInfo() << "disconnected";
+    emit clearQueries();
+}
+
+bool UsbHidPort::shouldBeStopped() const
+{
+    return m_shouldBeStopped;
+}
+
+void UsbHidPort::shouldBeStopped(bool isShouldBeStopped)
+{
+    m_shouldBeStopped = isShouldBeStopped;
+}
+
 UsbHidSettings UsbHidPort::deviceInfo() const
 {
     return m_deviceInfo;
@@ -214,23 +242,59 @@ void UsbHidPort::nativeEvent(void *message)
     case DBT_DEVICEARRIVAL:
     {
         if (devint->dbcc_devicetype != DBT_DEVTYP_DEVICEINTERFACE)
-            return;
-        std::wstring wstr = &devint->dbcc_name[0];
+            break;
+        QString str = QString::fromStdWString(&devint->dbcc_name[0]);
+        QRegularExpression regex(HID::headerValidator);
+        QRegularExpressionMatch match = regex.match(str);
+        if (!match.hasMatch())
+            break;
+        if (match.captured(0) != "USB" && match.captured(0) != "HID")
+            break;
+        qDebug() << str << /*st*/ /*<<*/ devint->dbcc_devicetype;
+        if (deviceInfo().hasMatch(str))
+        {
+            if (!shouldBeStopped())
+                deviceConnected();
+            shouldBeStopped(false);
+            break;
+        }
+        if (deviceInfo().hasPartialMatch(str))
+        {
+            if (!shouldBeStopped())
+                deviceConnected();
+            shouldBeStopped(false);
+            break;
+        }
 
-        const auto st = UsbHidSettings::fromWString(wstr);
-        deviceConnected(st);
-        qDebug() << wstr << /*st*/ /*<<*/ devint->dbcc_devicetype;
         break;
     }
     case DBT_DEVICEREMOVECOMPLETE:
     {
         if (devint->dbcc_devicetype != DBT_DEVTYP_DEVICEINTERFACE)
             return;
-        std::wstring wstr = &devint->dbcc_name[0];
+        QString str = QString::fromStdWString(&devint->dbcc_name[0]);
+        QRegularExpression regex(HID::headerValidator);
+        QRegularExpressionMatch match = regex.match(str);
+        if (!match.hasMatch())
+            break;
+        if (match.captured(0) != "USB" && match.captured(0) != "HID")
+            break;
+        qDebug() << str << /*st*/ /*<<*/ devint->dbcc_devicetype;
+        if (deviceInfo().hasMatch(str))
+        {
+            if (shouldBeStopped())
+                deviceDisconnected();
+            shouldBeStopped(true);
+            break;
+        }
+        if (deviceInfo().hasPartialMatch(str))
+        {
+            if (shouldBeStopped())
+                deviceDisconnected();
+            shouldBeStopped(true);
+            break;
+        }
 
-        const auto st = UsbHidSettings::fromWString(wstr);
-        deviceDisconnected(st);
-        qDebug() << wstr << /*st <<*/ devint->dbcc_devicetype;
         break;
     }
     case DBT_DEVNODES_CHANGED:

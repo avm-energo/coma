@@ -72,7 +72,7 @@ void registerForDeviceNotification(QWidget *ptr)
     HDEVNOTIFY blub;
     // NOTE Проверить со всеми модулями
     blub = RegisterDeviceNotification((HDEVNOTIFY)ptr->winId(), &devInt,
-        /*DEVICE_NOTIFY_ALL_INTERFACE_CLASSES*/ DBT_DEVTYP_OEM /*DEVICE_NOTIFY_WINDOW_HANDLE*/);
+        DEVICE_NOTIFY_ALL_INTERFACE_CLASSES /*DBT_DEVTYP_OEM*/ /*DEVICE_NOTIFY_WINDOW_HANDLE*/);
 }
 #endif
 

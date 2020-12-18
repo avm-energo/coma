@@ -29,6 +29,7 @@ TEMPLATE = app
 
 
 SOURCES += \
+    ../interfaces/usbhidsettings.cpp \
     ../widgets/alarmbutton.cpp \
     ../widgets/alarmstateall.cpp \
     ../widgets/styleloader.cpp \
@@ -123,6 +124,7 @@ SOURCES += \
 PRECOMPILED_HEADER = ../gen/pch.h
 
 HEADERS += \
+    ../interfaces/usbhidsettings.h \
     ../widgets/alarmbutton.h \
     ../widgets/alarmstateall.h \
     ../widgets/styleloader.h \
