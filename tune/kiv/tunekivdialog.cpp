@@ -5,8 +5,9 @@
 #include "../gen/files.h"
 #include "../gen/stdfunc.h"
 #include "../widgets/wd_func.h"
+#include "tunekivadc.h"
 #include "tunekivcheck.h"
-#include "tunekivmain.h"
+#include "tunekivr.h"
 #include "tunekivtemp60.h"
 //#include "tunekivtemp_20.h"
 
@@ -49,26 +50,33 @@ void TuneKIVDialog::SetupUI()
     lyout->addWidget(WDFunc::NewHexagonPB(
         this, "",
         [this]() {
-            TuneKIVMain *tkmain = new TuneKIVMain(TuneKIV::TS_MAINTUNING, CKIV, TKIV);
-            tkmain->show();
+            TuneKIVR *tkr = new TuneKIVR(TuneKIV::TS_PT100, CKIV, TKIV);
+            tkr->show();
         },
-        "images/tn2.svg", "Основная регулировка"));
+        "images/tn2.svg", "Регулировка канала Pt100"));
+    lyout->addWidget(WDFunc::NewHexagonPB(
+        this, "",
+        [this]() {
+            TuneKIVADC *tkadc = new TuneKIVADC(TuneKIV::TS_ADC, CKIV, TKIV);
+            tkadc->show();
+        },
+        "images/tn3.svg", "Регулировка канала Pt100"));
     lyout->addWidget(WDFunc::NewHexagonPB(
         this, "",
         [this]() {
             TuneKIVTemp60 *tk60 = new TuneKIVTemp60(TuneKIV::TS_60TUNING, CKIV, TKIV);
             tk60->show();
         },
-        "images/tn3.svg", "Настройка температурной коррекции +60 °С"));
+        "images/tn4.svg", "Настройка температурной коррекции +60 °С"));
     lyout->addWidget(WDFunc::NewHexagonPB(
         this, "",
         [this]() {
             TuneKIVTemp60 *tk_20 = new TuneKIVTemp60(TuneKIV::TS_20TUNING, CKIV, TKIV);
             tk_20->show();
         },
-        "images/tn4.svg", "Настройка температурной коррекции -20 °С"));
+        "images/tn5.svg", "Настройка температурной коррекции -20 °С"));
     lyout->addWidget(WDFunc::NewHexagonPB(
-        this, "", [this]() { close(); }, "images/tn5.svg", "Генерация протокола регулировки"));
+        this, "", [this]() { close(); }, "images/tnprotocol.svg", "Генерация протокола регулировки"));
     //    addLayout(newTunePBLayout("1. Проверка правильности измерения входных сигналов", [this]() {
     //        TuneKIVCheck *check = new TuneKIVCheck(TuneKIV::TS_CHECKING, TKIV);
     //        check->show();

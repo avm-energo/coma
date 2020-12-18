@@ -17,7 +17,8 @@ public:
 
     static void Init();
     static QString VerToStr(quint32);
-    static bool floatIsWithinLimits(QWidget *w, double var, double value, double tolerance = 0.1);
+    static bool floatIsWithinLimits(
+        QWidget *w, double var, double value, double tolerance = 0.1, bool showMessage = true);
     static float toFloat(const QString &text);
     static void SetHomeDir(const QString &dir);
     static QString GetHomeDir();

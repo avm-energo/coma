@@ -1,4 +1,4 @@
-#include "tunekivmain.h"
+#include "tunekivadc.h"
 
 #include "../../gen/colors.h"
 #include "../../gen/stdfunc.h"
@@ -8,7 +8,7 @@
 #include <QMessageBox>
 #include <QVBoxLayout>
 
-TuneKIVMain::TuneKIVMain(int tuneStep, ConfigKIV *ckiv, TuneKIV *kiv, QWidget *parent)
+TuneKIVADC::TuneKIVADC(int tuneStep, ConfigKIV *ckiv, TuneKIV *kiv, QWidget *parent)
     : AbstractTuneDialog(tuneStep, parent)
 {
     CKIV = ckiv;
@@ -21,7 +21,7 @@ TuneKIVMain::TuneKIVMain(int tuneStep, ConfigKIV *ckiv, TuneKIV *kiv, QWidget *p
     SetupUI();
 }
 
-void TuneKIVMain::setMessages()
+void TuneKIVADC::setMessages()
 {
     m_messages.append("1. Ввод пароля...");
     m_messages.append("2. Отображение предупреждения...");
@@ -49,73 +49,73 @@ void TuneKIVMain::setMessages()
     m_messages.append("24. Проверка регулировки...");
 }
 
-void TuneKIVMain::setTuneFunctions()
+void TuneKIVADC::setTuneFunctions()
 {
     int count = 0;
     m_tuneFunctions[m_messages.at(count++)]
         = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&AbstractTuneDialog::CheckPassword);
     Error::Msg (AbstractTuneDialog::*func)()
-        = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVMain::showPreWarning);
+        = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVADC::showPreWarning);
     m_tuneFunctions[m_messages.at(count++)] = func;
     func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&AbstractTuneDialog::readTuneCoefs);
     m_tuneFunctions[m_messages.at(count++)] = func;
-    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVMain::checkTuneCoefs);
+    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVADC::checkTuneCoefs);
     m_tuneFunctions[m_messages.at(count++)] = func;
-    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVMain::setR80);
+    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVADC::setR80);
     m_tuneFunctions[m_messages.at(count++)] = func;
-    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVMain::processR80);
+    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVADC::processR80);
     m_tuneFunctions[m_messages.at(count++)] = func;
-    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVMain::setR120);
+    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVADC::setR120);
     m_tuneFunctions[m_messages.at(count++)] = func;
-    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVMain::processR120);
+    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVADC::processR120);
     m_tuneFunctions[m_messages.at(count++)] = func;
     func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&AbstractTuneDialog::saveWorkConfig);
     m_tuneFunctions[m_messages.at(count++)] = func;
-    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVMain::ADCCoef1);
+    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVADC::ADCCoef1);
     m_tuneFunctions[m_messages.at(count++)] = func;
-    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVMain::showEnergomonitorInputDialog);
+    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVADC::showEnergomonitorInputDialog);
     m_tuneFunctions[m_messages.at(count++)] = func;
-    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVMain::ADCCoef2);
+    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVADC::ADCCoef2);
     m_tuneFunctions[m_messages.at(count++)] = func;
-    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVMain::showEnergomonitorInputDialog);
+    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVADC::showEnergomonitorInputDialog);
     m_tuneFunctions[m_messages.at(count++)] = func;
-    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVMain::ADCCoef4);
+    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVADC::ADCCoef4);
     m_tuneFunctions[m_messages.at(count++)] = func;
-    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVMain::showEnergomonitorInputDialog);
+    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVADC::showEnergomonitorInputDialog);
     m_tuneFunctions[m_messages.at(count++)] = func;
-    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVMain::ADCCoef8);
+    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVADC::ADCCoef8);
     m_tuneFunctions[m_messages.at(count++)] = func;
-    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVMain::showEnergomonitorInputDialog);
+    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVADC::showEnergomonitorInputDialog);
     m_tuneFunctions[m_messages.at(count++)] = func;
-    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVMain::ADCCoef16);
+    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVADC::ADCCoef16);
     m_tuneFunctions[m_messages.at(count++)] = func;
-    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVMain::showEnergomonitorInputDialog);
+    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVADC::showEnergomonitorInputDialog);
     m_tuneFunctions[m_messages.at(count++)] = func;
-    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVMain::ADCCoef32);
+    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVADC::ADCCoef32);
     m_tuneFunctions[m_messages.at(count++)] = func;
-    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVMain::showEnergomonitorInputDialog);
+    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVADC::showEnergomonitorInputDialog);
     m_tuneFunctions[m_messages.at(count++)] = func;
-    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVMain::Tmk0);
+    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVADC::Tmk0);
     m_tuneFunctions[m_messages.at(count++)] = func;
-    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVMain::SendBac);
+    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVADC::SendBac);
     m_tuneFunctions[m_messages.at(count++)] = func;
-    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVMain::CheckTune);
+    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVADC::CheckTune);
     m_tuneFunctions[m_messages.at(count++)] = func;
 }
 
-// void TuneKIVMain::FillBac(int bacnum)
+// void TuneKIVADC::FillBac(int bacnum)
 //{
 //    TKIV->updateBacWidget();
 //    Q_UNUSED(bacnum)
 //}
 
-// void TuneKIVMain::FillBackBac(int bacnum)
+// void TuneKIVADC::FillBackBac(int bacnum)
 //{
 //    TKIV->updateFromBacWidget();
 //    Q_UNUSED(bacnum)
 //}
 
-QWidget *TuneKIVMain::MainUI()
+QWidget *TuneKIVADC::MainUI()
 {
     QWidget *w = new QWidget;
     QVBoxLayout *lyout = new QVBoxLayout;
@@ -131,7 +131,7 @@ QWidget *TuneKIVMain::MainUI()
     return w;
 }
 
-Error::Msg TuneKIVMain::showPreWarning()
+Error::Msg TuneKIVADC::showPreWarning()
 {
     QDialog *dlg = new QDialog;
     QVBoxLayout *lyout = new QVBoxLayout;
@@ -156,7 +156,7 @@ Error::Msg TuneKIVMain::showPreWarning()
     return Error::Msg::NoError;
 }
 
-Error::Msg TuneKIVMain::checkTuneCoefs()
+Error::Msg TuneKIVADC::checkTuneCoefs()
 {
     QVector<float *> tcoefs = { &TKIV->m_Bac->data()->KmU[0], &TKIV->m_Bac->data()->KmI1[0],
         &TKIV->m_Bac->data()->KmI2[0], &TKIV->m_Bac->data()->KmI4[0], &TKIV->m_Bac->data()->KmI8[0],
@@ -177,13 +177,13 @@ Error::Msg TuneKIVMain::checkTuneCoefs()
     return Error::Msg::NoError;
 }
 
-Error::Msg TuneKIVMain::setR80()
+Error::Msg TuneKIVADC::setR80()
 {
     setR(80);
     return Error::Msg::NoError;
 }
 
-Error::Msg TuneKIVMain::processR80()
+Error::Msg TuneKIVADC::processR80()
 {
     m_pt100 = processR();
     if (StdFunc::isCancelled())
@@ -191,18 +191,18 @@ Error::Msg TuneKIVMain::processR80()
     return Error::Msg::NoError;
 }
 
-Error::Msg TuneKIVMain::setR120()
+Error::Msg TuneKIVADC::setR120()
 {
     setR(120);
     return Error::Msg::NoError;
 }
 
-Error::Msg TuneKIVMain::processR120()
+Error::Msg TuneKIVADC::processR120()
 {
     double pt100_120 = processR();
     if (StdFunc::isCancelled())
         return Error::Msg::GeneralError;
-    if (StdFunc::floatIsWithinLimits(this, (pt100_120 - m_pt100), 40))
+    if (StdFunc::floatIsWithinLimits(this, pt100_120, m_pt100, 40, false))
     {
         WARNMSG("Ошибка в полученных данных, значения сопротивлений равны");
         StdFunc::cancel();
@@ -216,14 +216,14 @@ Error::Msg TuneKIVMain::processR120()
     return Error::Msg::NoError;
 }
 
-void TuneKIVMain::setR(int r)
+void TuneKIVADC::setR(int r)
 {
     if (QMessageBox::question(this, "Подтверждение", "Установите сопротивление " + QString::number(r, 'f', 1) + " Ом")
         == QMessageBox::No)
         CancelTune();
 }
 
-double TuneKIVMain::processR()
+double TuneKIVADC::processR()
 {
     //    startWait();
     emit setGeneralProgressBarSize(StdFunc::tuneRequestCount());
@@ -245,7 +245,7 @@ double TuneKIVMain::processR()
     return pt100;
 }
 
-Error::Msg TuneKIVMain::ADCCoef(int coef)
+Error::Msg TuneKIVADC::ADCCoef(int coef)
 {
     m_curTuneStep = coef;
     CKIV->Bci_block.Unom = 220;
@@ -290,37 +290,37 @@ Error::Msg TuneKIVMain::ADCCoef(int coef)
     //    stopWait();
 }
 
-Error::Msg TuneKIVMain::ADCCoef1()
+Error::Msg TuneKIVADC::ADCCoef1()
 {
     return ADCCoef(1);
 }
 
-Error::Msg TuneKIVMain::ADCCoef2()
+Error::Msg TuneKIVADC::ADCCoef2()
 {
     return ADCCoef(2);
 }
 
-Error::Msg TuneKIVMain::ADCCoef4()
+Error::Msg TuneKIVADC::ADCCoef4()
 {
     return ADCCoef(4);
 }
 
-Error::Msg TuneKIVMain::ADCCoef8()
+Error::Msg TuneKIVADC::ADCCoef8()
 {
     return ADCCoef(8);
 }
 
-Error::Msg TuneKIVMain::ADCCoef16()
+Error::Msg TuneKIVADC::ADCCoef16()
 {
     return ADCCoef(16);
 }
 
-Error::Msg TuneKIVMain::ADCCoef32()
+Error::Msg TuneKIVADC::ADCCoef32()
 {
     return ADCCoef(32);
 }
 
-Error::Msg TuneKIVMain::Tmk0()
+Error::Msg TuneKIVADC::Tmk0()
 {
     emit setGeneralProgressBarSize(5);
     //    startWait();
@@ -345,7 +345,7 @@ Error::Msg TuneKIVMain::Tmk0()
     return Error::Msg::NoError;
 }
 
-Error::Msg TuneKIVMain::SendBac()
+Error::Msg TuneKIVADC::SendBac()
 {
     if (!writeTuneCoefs())
         return Error::Msg::GeneralError;
@@ -354,7 +354,7 @@ Error::Msg TuneKIVMain::SendBac()
     return Error::Msg::NoError;
 }
 
-Error::Msg TuneKIVMain::CheckTune()
+Error::Msg TuneKIVADC::CheckTune()
 {
     QMessageBox::information(
         this, "Информация", "Для завершения настройки нажмите Enter\nДля отказа от настройки нажмите Esc");
@@ -371,7 +371,7 @@ Error::Msg TuneKIVMain::CheckTune()
     return Error::Msg::NoError;
 }
 
-Error::Msg TuneKIVMain::setADCCoef(int coef)
+Error::Msg TuneKIVADC::setADCCoef(int coef)
 {
     QMap<int, int> adcCoefMap = { { 1, 9000 }, { 2, 4500 }, { 4, 2250 }, { 8, 1124 }, { 16, 562 }, { 32, 281 } };
     CKIV->Bci_block.C_pasp[0] = CKIV->Bci_block.C_pasp[1] = CKIV->Bci_block.C_pasp[2] = adcCoefMap[coef];
@@ -379,7 +379,7 @@ Error::Msg TuneKIVMain::setADCCoef(int coef)
     return BaseInterface::iface()->writeConfFileSync();
 }
 
-Error::Msg TuneKIVMain::showRetomDialog(int coef)
+Error::Msg TuneKIVADC::showRetomDialog(int coef)
 {
     struct retomStruct
     {
@@ -417,14 +417,14 @@ Error::Msg TuneKIVMain::showRetomDialog(int coef)
     return Error::Msg::NoError;
 }
 
-void TuneKIVMain::showTWTab(int num)
+void TuneKIVADC::showTWTab(int num)
 {
     QTabWidget *tw = this->findChild<QTabWidget *>("tunetw");
     if (tw != nullptr)
         tw->setCurrentIndex(num);
 }
 
-bool TuneKIVMain::checkBdaIn()
+bool TuneKIVADC::checkBdaIn()
 {
     for (int i = 0; i < 3; ++i)
     {
@@ -452,7 +452,7 @@ bool TuneKIVMain::checkBdaIn()
     return false;
 }
 
-Error::Msg TuneKIVMain::showEnergomonitorInputDialog()
+Error::Msg TuneKIVADC::showEnergomonitorInputDialog()
 {
     if (!m_isEnergoMonitorDialogCreated)
     {
@@ -525,7 +525,7 @@ Error::Msg TuneKIVMain::showEnergomonitorInputDialog()
     return Error::Msg::NoError;
 }
 
-// void TuneKIVMain::saveIntermediateResults()
+// void TuneKIVADC::saveIntermediateResults()
 //{
 //    struct tunedescrstruct
 //    {
@@ -549,7 +549,7 @@ Error::Msg TuneKIVMain::showEnergomonitorInputDialog()
 //    loadWorkConfig();
 //}
 
-void TuneKIVMain::CalcTuneCoefs()
+void TuneKIVADC::CalcTuneCoefs()
 {
     QMap<int, float *> kmimap = { { 2, &TKIV->m_Bac->data()->KmI2[0] }, { 4, &TKIV->m_Bac->data()->KmI4[0] },
         { 8, &TKIV->m_Bac->data()->KmI8[0] }, { 16, &TKIV->m_Bac->data()->KmI16[0] },
@@ -588,7 +588,7 @@ void TuneKIVMain::CalcTuneCoefs()
         dlg->close();
 }
 
-void TuneKIVMain::setDefCoefs()
+void TuneKIVADC::setDefCoefs()
 {
     TKIV->m_Bac->setDefBlockAndUpdate();
 }

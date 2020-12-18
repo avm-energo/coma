@@ -160,7 +160,7 @@ QWidget *Bac::widget()
         WDFunc::NewLBLT(m_widget, "", "tune51", ValuesFormat, "Начальная температура МК для коррекции"), 17, 3, 1, 1);
     gb->setLayout(glyout);
     lyout->addWidget(gb);
-    lyout->addWidget(bottomUI());
+    lyout->addWidget(blockButtonsUI());
     lyout->addStretch(100);
     m_widget->setLayout(lyout);
     m_widgetIsSet = true;
