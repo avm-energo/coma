@@ -14,6 +14,7 @@ constexpr quint32 BSIALARMMASK = 0x000020AA;
 AlarmStateAll::AlarmStateAll(QWidget *parent) : BaseAlarm(parent)
 {
     m_alarmFlags = BSIALARMMASK;
+    setupUI(AVM::HthToolTip);
 }
 
 void AlarmStateAll::update(quint32 health)
@@ -65,21 +66,21 @@ void AlarmStateAll::setupUI(const QStringList &events)
 {
     QVBoxLayout *lyout = new QVBoxLayout;
     QVBoxLayout *vlayout = new QVBoxLayout;
-    setObjectName("window");
+    // setObjectName("window");
 
     for (int i = 0; i < events.size(); ++i)
     {
         QHBoxLayout *hlyout = new QHBoxLayout;
-        hlyout->setObjectName("hlyout" + QString::number(i));
-        QPixmap circle = WDFunc::NewCircle(Qt::green, circleRadius);
-        hlyout->addWidget(WDFunc::NewLBL(this, "", "", QString::number(i), &circle));
-
+        // hlyout->setObjectName("hlyout" + QString::number(i));
+        // QPixmap circle = WDFunc::NewCircle(Qt::green, circleRadius);
+        // hlyout->addWidget(WDFunc::NewLBL(this, "", "", QString::number(i), &circle));
+        hlyout->addWidget(WDFunc::NewLBL2(this, "", QString::number(i)));
         hlyout->addWidget(WDFunc::NewLBLT2(this, events.at(i)), 1);
         vlayout->addLayout(hlyout);
     }
     lyout->addLayout(vlayout);
     lyout->addWidget(WDFunc::NewPB(this, "", "Ok", static_cast<QWidget *>(this), &QWidget::hide), 0);
-    this->setLayout(lyout);
+    setLayout(lyout);
     const auto &board = Board::GetInstance();
 
     connect(&board, &Board::healthChanged, this, &AlarmStateAll::update);

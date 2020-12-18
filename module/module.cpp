@@ -54,7 +54,7 @@ Module *Module::createModule(QTimer *updateTimer, AlarmWidget *aw)
     //    aw->setInterface(iface);
     aw->uponInterfaceSetting();
     AlarmStateAll *alarmStateAll = new AlarmStateAll;
-    alarmStateAll->setupUI(AVM::HthToolTip);
+
     aw->addAlarm(alarmStateAll);
     if (BaseBoards.contains(typeb)) // there must be two-part module
     {

@@ -7,6 +7,11 @@ ModuleAlarm::ModuleAlarm(QWidget *parent) : BaseAlarm(parent)
     connect(&DataManager::GetInstance(), &DataManager::singlePointReceived, this, &ModuleAlarm::update);
 }
 
+void ModuleAlarm::reqUpdate()
+{
+    BaseInterface::iface()->reqAlarms(m_startAlarmAddress, m_alarmAllCounts);
+}
+
 // int Alarm::realAlarmSize()
 //{
 //    return m_realAlarmSize;
