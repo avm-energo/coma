@@ -56,8 +56,6 @@ void AlarmStateAll::update(quint32 health)
 
 void AlarmStateAll::reqUpdate()
 {
-    //    Q_ASSERT(iface() != nullptr);
-    //    iface()->reqBSI();
     Q_ASSERT(BaseInterface::iface() != nullptr);
     BaseInterface::iface()->reqBSI();
     // update(Board::GetInstance().health());
@@ -68,7 +66,6 @@ void AlarmStateAll::setupUI(const QStringList &events)
     QVBoxLayout *lyout = new QVBoxLayout;
     QVBoxLayout *vlayout = new QVBoxLayout;
     setObjectName("window");
-    //   setStyleSheet("QWidget {margin: 0; border-width: 0; padding: 0;};");
 
     for (int i = 0; i < events.size(); ++i)
     {
@@ -81,7 +78,6 @@ void AlarmStateAll::setupUI(const QStringList &events)
         vlayout->addLayout(hlyout);
     }
     lyout->addLayout(vlayout);
-    //    lyout->addWidget(WDFunc::NewPB(this, "", "Ok", this, SLOT(hide())), 0);
     lyout->addWidget(WDFunc::NewPB(this, "", "Ok", static_cast<QWidget *>(this), &QWidget::hide), 0);
     this->setLayout(lyout);
     const auto &board = Board::GetInstance();

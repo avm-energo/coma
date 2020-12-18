@@ -827,8 +827,8 @@ bool Coma::nativeEvent(const QByteArray &eventType, void *message, long *result)
             BdaTimer->start();
             AlrmTimer->start();
         }
-    }
 #endif
+    }
 
     return false;
 }

@@ -41,7 +41,7 @@ Module *Module::createModule(QTimer *updateTimer, AlarmWidget *aw)
 {
     using namespace Modules;
     const auto &board = Board::GetInstance();
-    Journals *JOUR;
+    Journals *JOUR = nullptr;
     Module *m = new Module;
     //    m->m_iface = iface;
     S2::config = new S2DataTypes::S2ConfigType;
@@ -156,6 +156,7 @@ Module *Module::createModule(QTimer *updateTimer, AlarmWidget *aw)
     //    if (Board::GetInstance().interfaceType() != Board::InterfaceType::RS485)
     if (board.interfaceType() != Board::InterfaceType::RS485)
     {
+        Q_ASSERT(JOUR != nullptr);
         m->addDialogToList(new JournalDialog(JOUR), "Журналы");
     }
     else

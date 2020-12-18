@@ -20,8 +20,7 @@ InfoDialog::InfoDialog(QWidget *parent) : UDialog(parent)
 
 void InfoDialog::SetupUI()
 {
-    // QString tmps = "QDialog {background-color: " + QString(Colors::MAINWINCLRA1) + ";}";
-    // setStyleSheet(tmps);
+
     setAttribute(Qt::WA_DeleteOnClose);
     QVBoxLayout *lyout = new QVBoxLayout;
     QGridLayout *slyout = new QGridLayout;
@@ -44,8 +43,8 @@ void InfoDialog::SetupUI()
     };
     for (int i = 0; i < dialogPage.size(); ++i)
     {
-        slyout->addWidget(WDFunc::NewLBL(this, dialogPage.at(i).second), i, 0, 1, 1, Qt::AlignRight);
-        slyout->addWidget(WDFunc::NewLBLT(this, "", dialogPage.at(i).first), i, 1, 1, 1);
+        slyout->addWidget(WDFunc::NewLBL2(this, dialogPage.at(i).second), i, 0, 1, 1, Qt::AlignRight);
+        slyout->addWidget(WDFunc::NewLBLT2(this, "", dialogPage.at(i).first), i, 1, 1, 1);
     }
 
     slyout->setColumnStretch(1, 1);

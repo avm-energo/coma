@@ -6,6 +6,8 @@
 
 #ifndef __GNUC__
 #define MAXFLOAT 3.40282347E+38F
+#else
+#include <cmath>
 #endif
 
 #include <QObject>

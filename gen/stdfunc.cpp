@@ -2,6 +2,7 @@
 
 #include "../gen/error.h"
 #include "../gen/s2.h"
+#include "pch.h"
 
 #include <QCoreApplication>
 #include <QDataStream>

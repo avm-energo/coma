@@ -158,7 +158,6 @@ QWidget *JournalDialog::JourTab(int jourtype)
     default:
         qDebug("Default case");
         return w;
-        break;
     }
     QPushButton *getButton = WDFunc::NewPB(
         this, "gj." + QString::number(jourtype), "Получить " + str, this, &JournalDialog::TryGetJourByUSB);
