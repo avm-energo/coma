@@ -114,7 +114,7 @@ Error::Msg TuneKIVTemp60::showTempDialog()
 
     QString tempstr = (m_tuneStep == TuneKIV::TS_60TUNING) ? "+60" : "-20";
     lyout->addWidget(
-        WDFunc::NewLBL(this, "Поместите модуль в термокамеру, установите температуру " + tempstr + " ± 2 °С"));
+        WDFunc::NewLBL2(this, "Поместите модуль в термокамеру, установите температуру " + tempstr + " ± 2 °С"));
     lyout->addWidget(WDFunc::NewPB(this, "", "Готово", [dlg] { dlg->close(); }));
     lyout->addWidget(WDFunc::NewPB(this, "cancelpb", "Отмена", [dlg] { dlg->close(); }));
     dlg->setLayout(lyout);
@@ -145,13 +145,13 @@ Error::Msg TuneKIVTemp60::showSignalsDialog()
     QDialog *dlg = new QDialog;
     QVBoxLayout *lyout = new QVBoxLayout;
 
-    lyout->addWidget(WDFunc::NewLBL(this, "", "", "", new QPixmap("images/tunekiv1.png")));
-    lyout->addWidget(WDFunc::NewLBL(this, "1. Соберите схему подключения по одной из вышеприведённых картинок;"));
-    lyout->addWidget(WDFunc::NewLBL(this,
+    lyout->addWidget(WDFunc::NewLBL2(this, "", "", new QPixmap("images/tunekiv1.png")));
+    lyout->addWidget(WDFunc::NewLBL2(this, "1. Соберите схему подключения по одной из вышеприведённых картинок;"));
+    lyout->addWidget(WDFunc::NewLBL2(this,
         "2. Включите питание Энергомонитор 3.1КМ и настройте его на режим измерения тока"
         "и напряжения в однофазной сети переменного тока, установите предел измерения"
         "по напряжению 60 В, по току - 2,5 А;"));
-    lyout->addWidget(WDFunc::NewLBL(this,
+    lyout->addWidget(WDFunc::NewLBL2(this,
         "3. Задайте на РЕТОМ-51 или имитаторе АВМ-КИВ трёхфазный режим токов и напряжений (Uabc, Iabc)"
         "Угол между токами и напряжениями: 89.9 град. (tg 2 % в имитаторе),\n"
         "Значения напряжений: 57.5 В, токов: 140 мА"));
@@ -165,7 +165,7 @@ Error::Msg TuneKIVTemp60::showSignalsDialog()
 
 Error::Msg TuneKIVTemp60::analogMeasurement()
 {
-    emit setGeneralProgressBarSize(StdFunc::tuneRequestCount());
+    emit setProgressSize(StdFunc::tuneRequestCount());
     //    startWait();
     int i = 0;
     for (int i = 0; i < 6; ++i)
@@ -193,7 +193,7 @@ Error::Msg TuneKIVTemp60::analogMeasurement()
         //        m_midTuneStruct.tmk += TKIV->m_Bd0.Tmk;
         m_midTuneStruct.tmk += TKIV->m_Bd0->data()->Tmk;
         ++i;
-        emit setGeneralProgressBarCount(i);
+        emit setProgressCount(i);
         StdFunc::Wait(500);
     }
     for (int i = 0; i < 6; ++i)
@@ -213,7 +213,7 @@ Error::Msg TuneKIVTemp60::inputEnergomonitorValues()
     QDialog *dlg = new QDialog(this);
     dlg->setObjectName("energomonitordlg");
     QVBoxLayout *vlyout = new QVBoxLayout;
-    vlyout->addWidget(WDFunc::NewLBL(this, "Ввод значений сигналов c Энергомонитора"));
+    vlyout->addWidget(WDFunc::NewLBL2(this, "Ввод значений сигналов c Энергомонитора"));
 
     vlyout->addWidget(WDFunc::NewLBLAndLE(this, "Uэт", "ValuetuneU", true));
     vlyout->addWidget(WDFunc::NewLBLAndLE(this, "Iэт", "ValuetuneI", true));

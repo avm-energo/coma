@@ -68,6 +68,7 @@ void StyleLoader::save()
     QSharedPointer<QSettings> sets = QSharedPointer<QSettings>(new QSettings("EvelSoft", PROGNAME));
 
     sets->setValue("Style", styleName());
+    setAppStyleSheet();
 }
 
 QString StyleLoader::styleFile()

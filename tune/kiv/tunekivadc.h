@@ -1,5 +1,5 @@
-#ifndef TUNEKIVMAIN_H
-#define TUNEKIVMAIN_H
+#ifndef TUNEKIVADC_H
+#define TUNEKIVADC_H
 
 #include "../../config/configkiv.h"
 #include "../abstracttunedialog.h"
@@ -7,11 +7,11 @@
 
 #include <QWidget>
 
-class TuneKIVMain : public AbstractTuneDialog
+class TuneKIVADC : public AbstractTuneDialog
 {
     Q_OBJECT
 public:
-    TuneKIVMain(int tuneStep, ConfigKIV *ckiv, TuneKIV *kiv, QWidget *parent = nullptr);
+    TuneKIVADC(int tuneStep, ConfigKIV *ckiv, TuneKIV *kiv, QWidget *parent = nullptr);
 
 private:
     TuneKIV *TKIV;
@@ -29,11 +29,6 @@ private:
     QWidget *MainUI() override;
 
     Error::Msg showPreWarning();
-    Error::Msg checkTuneCoefs();
-    Error::Msg setR80();
-    Error::Msg processR80();
-    Error::Msg setR120();
-    Error::Msg processR120();
     Error::Msg ADCCoef1();
     Error::Msg ADCCoef2();
     Error::Msg ADCCoef4();
@@ -44,8 +39,6 @@ private:
     Error::Msg SendBac();
     Error::Msg CheckTune();
 
-    void setR(int r);
-    double processR(); // get BDA.Pt100 several times and return back value
     Error::Msg ADCCoef(int coef);
     Error::Msg setADCCoef(int coef);
     Error::Msg showRetomDialog(int coef);
@@ -60,4 +53,4 @@ private slots:
     void setDefCoefs() override;
 };
 
-#endif // TUNEKIVMAIN_H
+#endif // TUNEKIVADC_H

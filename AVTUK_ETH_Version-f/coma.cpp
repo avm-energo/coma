@@ -36,6 +36,7 @@
 #include "../interfaces/modbus.h"
 #include "../interfaces/protocom.h"
 #include "../interfaces/settingstypes.h"
+#include "../widgets/aboutwidget.h"
 #include "../widgets/etabwidget.h"
 #include "../widgets/splashscreen.h"
 #include "../widgets/styleloader.h"
@@ -236,17 +237,17 @@ QWidget *Coma::Least()
     inlyout->addWidget(prb);
     lyout->addLayout(inlyout);
 
-    inlyout = new QHBoxLayout;
-    inlyout->addWidget(WDFunc::NewLBLT2(this, "Отсчёт"));
-    inlyout->addWidget(WDFunc::NewLBLT2(this, "", "prb2lbl"));
+    //    inlyout = new QHBoxLayout;
+    //    inlyout->addWidget(WDFunc::NewLBLT2(this, "Отсчёт"));
+    //    inlyout->addWidget(WDFunc::NewLBLT2(this, "", "prb2lbl"));
 
-    prb = new QProgressBar;
-    prb->setObjectName("prb2prb");
-    prb->setOrientation(Qt::Horizontal);
-    // prb->setMinimumWidth(50);
-    prb->setMaximumHeight(height() / 50);
-    inlyout->addWidget(prb);
-    lyout->addLayout(inlyout);
+    //    prb = new QProgressBar;
+    //    prb->setObjectName("prb2prb");
+    //    prb->setOrientation(Qt::Horizontal);
+    //    // prb->setMinimumWidth(50);
+    //    prb->setMaximumHeight(height() / 50);
+    //    inlyout->addWidget(prb);
+    //    lyout->addLayout(inlyout);
     w->setLayout(lyout);
     return w;
 }
@@ -745,11 +746,11 @@ void Coma::setupConnections()
     //        connect(AlrmTimer, &QTimer::timeout, AlarmStateAllDialog, &AlarmStateAll::CallUpdateHealth);
     //    connect(BdaTimer, &QTimer::timeout, this, &Coma::update);
     connect(&DataManager::GetInstance(), &DataManager::responseReceived, this, &Coma::update);
-    for (auto *d : m_Module->dialogs())
-    {
-        connect(d, &UWidget::setGeneralProgressBarCount, this, &Coma::setGeneralProgressBarCount);
-        connect(d, &UWidget::setGeneralProgressBarSize, this, &Coma::setGeneralProgressBarSize);
-    }
+    //    for (auto *d : m_Module->dialogs())
+    //    {
+    //        connect(d, &UWidget::setGeneralProgressBarCount, this, &Coma::setGeneralProgressBarCount);
+    //        connect(d, &UWidget::setGeneralProgressBarSize, this, &Coma::setGeneralProgressBarSize);
+    //    }
 
     //    connect(BdaTimer, &QTimer::timeout, Alarm, &AlarmClass::UpdateAlarmUSB);
     //    //   connect(BdaTimer, &QTimer::timeout, AlarmStateAllDialog, &AlarmStateAll::UpdateHealth);
@@ -1070,16 +1071,16 @@ void Coma::ClearTW()
 //        QMessageBox::information(this, "Ошибка", "Ошибка", QMessageBox::Ok);
 //}
 
-void Coma::setGeneralProgressBarSize(quint32 size)
-{
-    SetProgressBarSize(2, size);
-    SetProgressBarCount(2, 0);
-}
+// void Coma::setGeneralProgressBarSize(quint32 size)
+//{
+//    SetProgressBarSize(2, size);
+//    SetProgressBarCount(2, 0);
+//}
 
-void Coma::setGeneralProgressBarCount(quint32 count)
-{
-    SetProgressBarCount(2, count);
-}
+// void Coma::setGeneralProgressBarCount(quint32 count)
+//{
+//    SetProgressBarCount(2, count);
+//}
 
 void Coma::SetProgressBarSize(int prbnum, int size)
 {
@@ -1110,13 +1111,16 @@ void Coma::SetProgressBarCount(int prbnum, int count)
 
 void Coma::GetAbout()
 {
-    QString caption(PROGNAME);
-    caption.append(" v. ").append(COMAVERSION);
-    setWindowIcon(QPixmap("images/avm-energo.png"));
-    QMessageBox::about(this, caption,
-        "ООО \"АВМ-Энерго\" \n"
-        "2015-2020 гг.\n"
-        "info@avmenergo.ru");
+    AboutWidget *w = new AboutWidget;
+    Q_UNUSED(w)
+    //    w->show();
+    //    QString caption(PROGNAME);
+    //    caption.append(" v. ").append(COMAVERSION);
+    //    //    setWindowIcon(QPixmap("images/avm-energo.png"));
+    //    QMessageBox::about(this, caption,
+    //        "ООО \"АВМ-Энерго\" \n"
+    //        "2015-2020 гг.\n"
+    //        "info@avmenergo.ru");
 }
 
 void Coma::Disconnect()

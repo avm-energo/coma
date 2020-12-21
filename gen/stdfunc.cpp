@@ -58,20 +58,20 @@ QString StdFunc::VerToStr(quint32 num)
     return tmpString;
 }
 
-bool StdFunc::floatIsWithinLimits(QWidget *w, double var, double base, double tolerance)
+bool StdFunc::floatIsWithinLimits(QWidget *w, double var, double base, double tolerance, bool showMessage)
 {
     float tmpf = fabs(var - base);
     if (tmpf < fabs(tolerance))
         return true;
-    else
+    else if (showMessage)
     {
         qCritical() << "Ошибочное значение: должно быть " << QString::number(base, 'f', 5) << "±"
                     << QString::number(tolerance, 'f', 5) << ", а получили: " << QString::number(var, 'f', 5);
         QMessageBox::critical(w, "Ошибка",
             "Ошибочное значение: должно быть " + QString::number(base, 'f', 5) + "±"
                 + QString::number(tolerance, 'f', 5) + ", а получили: " + QString::number(var, 'f', 5));
-        return false;
     }
+    return false;
 }
 
 float StdFunc::toFloat(const QString &text)

@@ -25,7 +25,6 @@
 
 #include "datablock.h"
 
-#include "../gen/board.h"
 //#include "../models/valuedelegate.h"
 #include "../gen/files.h"
 #include "../gen/stdfunc.h"
@@ -103,7 +102,7 @@ void DataBlock::writeBlockToModule()
         //        if (update)
         //            updateValues();
         if (BaseInterface::iface()->writeBlockSync(
-                m_block.blocknum, DataTypes::DataBlockTypes::BacBlock, &m_block.block, m_block.blocksize)
+                m_block.blocknum, DataTypes::DataBlockTypes::BacBlock, m_block.block, m_block.blocksize)
             != Error::Msg::NoError)
             //        if (Commands::WriteBac(m_block.blocknum, &m_block.block, m_block.blocksize) !=
             //        Error::Msg::NoError)
@@ -136,7 +135,7 @@ void DataBlock::readBlockFromModule()
     case DataTypes::DataBlockTypes::BdaBlock:
     {
         //        if (Commands::GetBac(m_block.blocknum, &m_block.block, m_block.blocksize) != Error::Msg::NoError)
-        if (BaseInterface::iface()->reqBlockSync(m_block.blocknum, m_block.blocktype, &m_block.block, m_block.blocksize)
+        if (BaseInterface::iface()->reqBlockSync(m_block.blocknum, m_block.blocktype, m_block.block, m_block.blocksize)
             != Error::Msg::NoError)
 
             qCritical("Не удалось прочитать блок");
@@ -177,8 +176,10 @@ void DataBlock::readBlockFromModule()
 void DataBlock::readFromFile()
 {
     QByteArray ba;
-    if (Files::LoadFromFile(StdFunc::GetSystemHomeDir() + Board::GetInstance().UID() + ExtMap[m_block.blocktype], ba)
-        != Error::Msg::NoError)
+    //    QString filestr = StdFunc::GetSystemHomeDir() + Board::GetInstance().UID() + ExtMap[m_block.blocktype]
+    //        + QString::number(m_block.blocknum);
+    QString filestr = StdFunc::GetSystemHomeDir() + cpuIDFilenameStr();
+    if (Files::LoadFromFile(filestr, ba) != Error::Msg::NoError)
     {
         memcpy(m_block.block, &ba.data()[0], m_block.blocksize);
         writeBlockToModule();
@@ -189,25 +190,41 @@ void DataBlock::saveToFile()
 {
     readBlockFromModule();
     QByteArray ba(static_cast<char *>(m_block.block), m_block.blocksize);
-    Files::SaveToFile(StdFunc::GetSystemHomeDir() + Board::GetInstance().UID() + ExtMap[m_block.blocktype], ba);
+    //    QString filestr = StdFunc::GetSystemHomeDir() + Board::GetInstance().UID() + ExtMap[m_block.blocktype]
+    //        + QString::number(m_block.blocknum);
+    QString filestr = StdFunc::GetSystemHomeDir() + cpuIDFilenameStr();
+    Files::SaveToFile(filestr, ba);
 }
 
-void DataBlock::getFileProperties(DataTypes::DataBlockTypes type, FilePropertiesStruct &st)
+void DataBlock::saveToFileUserChoose()
 {
-    QString cpuid = Board::GetInstance().UID();
-    //    QString fileExt, fileName, fileMask;
-    if (type == DataTypes::DataBlockTypes::BacBlock)
-    {
-        st.extension = "tn";
-        st.mask = "Tune files (*.tn?)";
-    }
-    else if (type == DataTypes::DataBlockTypes::BciBlock)
-    {
-        st.extension = "cf";
-        st.mask = "Configuration files (*.cf?)";
-    }
-    st.filename = cpuid + "." + st.extension;
+    readBlockFromModule();
+    QByteArray ba(static_cast<char *>(m_block.block), m_block.blocksize);
+    //    DataBlock::FilePropertiesStruct fst;
+    //    DataBlock::getFileProperties(m_block.blocktype, fst);
+    //    QString filestr = StdFunc::GetSystemHomeDir() + Board::GetInstance().UID() + ExtMap[m_block.blocktype]
+    //        + QString::number(m_block.blocknum);
+    Files::SaveToFile(Files::ChooseFileForSave(nullptr, ExtMap[m_block.blocktype].mask,
+                          ExtMap[m_block.blocktype].extension, cpuIDFilenameStr()),
+        ba);
 }
+
+// void DataBlock::getFileProperties(DataTypes::DataBlockTypes type, FilePropertiesStruct &st)
+//{
+//    QString cpuid = Board::GetInstance().UID();
+//    //    QString fileExt, fileName, fileMask;
+//    if (type == DataTypes::DataBlockTypes::BacBlock)
+//    {
+//        st.extension = "tn";
+//        st.mask = "Tune files (*.tn?)";
+//    }
+//    else if (type == DataTypes::DataBlockTypes::BciBlock)
+//    {
+//        st.extension = "cf";
+//        st.mask = "Configuration files (*.cf?)";
+//    }
+//    st.filename = cpuid + "." + st.extension;
+//}
 
 void DataBlock::readAndUpdate()
 {
@@ -215,7 +232,7 @@ void DataBlock::readAndUpdate()
     updateWidget();
 }
 
-QWidget *DataBlock::bottomUI()
+QWidget *DataBlock::blockButtonsUI()
 {
     QWidget *w = new QWidget;
     QVBoxLayout *lyout = new QVBoxLayout;
@@ -227,7 +244,7 @@ QWidget *DataBlock::bottomUI()
         { { "Записать", ":/icons/tnwrite.svg" }, [this]() { writeBlockToModule(); } },
         { { "Задать по умолчанию", "images/tnyes.svg" }, [this]() { setDefBlockAndUpdate(); } },
         { { "Прочитать", ":/icons/tnload.svg" }, [this]() { readFromFile(); } },
-        { { "Сохранить", ":/icons/tnsave.svg" }, [this]() { saveToFile(); } } };
+        { { "Сохранить", ":/icons/tnsave.svg" }, [this]() { saveToFileUserChoose(); } } };
 
     for (auto &i : funcs)
     {

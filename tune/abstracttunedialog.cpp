@@ -17,6 +17,7 @@
 #include "limereport/lrreportengine.h"
 
 #include <QMessageBox>
+#include <QProgressBar>
 #include <QScrollArea>
 #include <QScrollBar>
 #include <QVBoxLayout>
@@ -100,24 +101,24 @@ QWidget *AbstractTuneDialog::TuneUI()
         QHBoxLayout *hlyout = new QHBoxLayout;
         hlyout->addWidget(WDFunc::NewLBL(this, m_messages.at(i), "", "tunemsg" + QString::number(i)));
         hlyout->addWidget(WDFunc::NewLBL(this, "", "", "tunemsgres" + QString::number(i)));
-        WDFunc::SetVisible(this, "tunemsg" + QString::number(i), false);
-        WDFunc::SetVisible(this, "tunemsgres" + QString::number(i), false);
+        //        WDFunc::SetVisible(this, "tunemsg" + QString::number(i), false);
+        //        WDFunc::SetVisible(this, "tunemsgres" + QString::number(i), false);
         hlyout->addStretch(1);
         w2lyout->addLayout(hlyout);
     }
-    w2lyout->addStretch(10);
+    w2lyout->addSpacing(50);
     w2->setLayout(w2lyout);
     //    w2->setMinimumHeight(400); // !!! it has to be replaced
     area->setWidget(w2);
+    for (int i = 0; i < m_messages.size() + 1; ++i)
+    {
+        WDFunc::SetVisible(w2, "tunemsg" + QString::number(i), false);
+        WDFunc::SetVisible(w2, "tunemsgres" + QString::number(i), false);
+    }
     lyout->addWidget(area);
     //    area->verticalScrollBar()->setValue(area->verticalScrollBar()->maximum());
     lyout->addWidget(WDFunc::NewLBL(this, "Настройка завершена!", "", "tunemsg" + QString::number(i)));
     WDFunc::SetVisible(this, "tunemsg" + QString::number(i), false);
-    //    for (int i = 0; i < m_messages.size() + 1; ++i)
-    //    {
-    //        WDFunc::SetVisible(this, "tunemsg" + QString::number(i), false);
-    //        WDFunc::SetVisible(this, "tunemsgres" + QString::number(i), false);
-    //    }
     //    lyout->addStretch(1);
     w->setLayout(lyout);
     return w;
@@ -128,6 +129,17 @@ QWidget *AbstractTuneDialog::BottomUI()
     QWidget *w = new QWidget;
     QVBoxLayout *lyout = new QVBoxLayout;
     QHBoxLayout *hlyout = new QHBoxLayout;
+    hlyout->addWidget(WDFunc::NewLBL2(this, "Регулировка"), 0);
+    QProgressBar *prb = new QProgressBar;
+    prb->setObjectName("prb");
+    prb->setOrientation(Qt::Horizontal);
+    // prb->setMinimumWidth(50);
+    prb->setMaximumHeight(height() / 50);
+    connect(this, &AbstractTuneDialog::setProgressSize, prb, &QProgressBar::setMaximum);
+    connect(this, &AbstractTuneDialog::setProgressCount, prb, &QProgressBar::setValue);
+    hlyout->addWidget(prb, 100);
+    lyout->addLayout(hlyout);
+    hlyout = new QHBoxLayout;
     //    QPushButton *pb = new QPushButton;
     //    pb->setToolTip("Установить настроечные коэффициенты по умолчанию");
     //    //    pb->setMinimumSize(70, 70);
@@ -255,7 +267,7 @@ void AbstractTuneDialog::stopWait()
         ww->Stop();
 }
 
-bool AbstractTuneDialog::CheckPassword()
+Error::Msg AbstractTuneDialog::CheckPassword()
 {
     KeyPressDialog dlg; // = new KeyPressDialog;
     return (dlg.CheckPassword("121941")) ? Error::Msg::NoError : Error::Msg::GeneralError;
@@ -371,6 +383,7 @@ void AbstractTuneDialog::startTune()
         {
             MsgSetVisible(ErMsg, bStep);
             WDFunc::SetEnabled(this, "starttune", true);
+            WDFunc::SetEnabled(this, "stoptune", false);
             qWarning() << m_messages.at(bStep);
             //           MeasurementTimer->stop();
             loadAllTuneCoefs();
@@ -500,20 +513,21 @@ void AbstractTuneDialog::readTuneCoefsByBac(int bacnum)
     //            FillBac(bacnum);
     //    }
     if (AbsBac.keys().contains(bacnum))
-    {
+        //    {
         //        BaseInterface::iface()->writeCommand(Queries::QUSB_ReqTuningCoef, bacnum);
         //        if (BaseInterface::iface()->reqBlockSync(
         //                bacnum, DataTypes::DataBlockTypes::BacBlock, AbsBac[bacnum].BacBlock,
         //                AbsBac[bacnum].BacBlockSize)
         //            == Error::Msg::NoError)
-        if (BaseInterface::iface()->reqBlockSync(bacnum, DataTypes::DataBlockTypes::BacBlock,
-                AbsBac[bacnum]->block().block, AbsBac[bacnum]->block().blocksize)
-            == Error::Msg::NoError)
-            //        int res = Commands::GetBac(bacnum, AbsBac[bacnum].BacBlock, AbsBac[bacnum].BacBlockSize);
-            //        if (res == Error::Msg::NoError)
-            //            FillBac(bacnum);
-            AbsBac[bacnum]->updateWidget();
-    }
+        AbsBac[bacnum]->readAndUpdate();
+    //        if (BaseInterface::iface()->reqBlockSync(bacnum, DataTypes::DataBlockTypes::BacBlock,
+    //                AbsBac[bacnum]->block().block, AbsBac[bacnum]->block().blocksize)
+    //            == Error::Msg::NoError)
+    //            //        int res = Commands::GetBac(bacnum, AbsBac[bacnum].BacBlock, AbsBac[bacnum].BacBlockSize);
+    //            //        if (res == Error::Msg::NoError)
+    //            //            FillBac(bacnum);
+    //            AbsBac[bacnum]->updateWidget();
+    //    }
 }
 
 Error::Msg AbstractTuneDialog::writeTuneCoefsByBac(int bacnum)
@@ -521,12 +535,14 @@ Error::Msg AbstractTuneDialog::writeTuneCoefsByBac(int bacnum)
     if (AbsBac.keys().contains(bacnum))
     {
         AbsBac[bacnum]->updateFromWidget();
+        AbsBac[bacnum]->writeBlockToModule();
+        return Error::Msg::NoError;
         //        FillBackBac(bacnum);
         //        return BaseInterface::iface()->writeBlockSync(
         //            bacnum, DataTypes::DataBlockTypes::BacBlock, AbsBac[bacnum].BacBlock,
         //            AbsBac[bacnum].BacBlockSize);
-        return BaseInterface::iface()->writeBlockSync(bacnum, DataTypes::DataBlockTypes::BacBlock,
-            AbsBac[bacnum]->block().block, AbsBac[bacnum]->block().blocksize);
+        //        return BaseInterface::iface()->writeBlockSync(bacnum, DataTypes::DataBlockTypes::BacBlock,
+        //            AbsBac[bacnum]->block().block, AbsBac[bacnum]->block().blocksize);
     }
     return Error::Msg::GeneralError;
 }
@@ -543,7 +559,7 @@ bool AbstractTuneDialog::writeTuneCoefs()
     //    for (QMap<int, BlockStruct>::Iterator it = AbsBac.begin(); it != AbsBac.end(); ++it)
     for (QMap<int, DataBlock *>::Iterator it = AbsBac.begin(); it != AbsBac.end(); ++it)
     {
-        it.value()->updateFromWidget();
+        //        it.value()->updateFromWidget();
         //        FillBackBac(it.key());
         if (writeTuneCoefsByBac(it.key()) != Error::Msg::NoError)
             return false;
@@ -568,8 +584,8 @@ bool AbstractTuneDialog::writeTuneCoefs()
     //        }
     //    }
     //    WriteBlocks(DataBlock::DataBlockTypes::BacBlock);
-    QString tmps = ((DEVICETYPE == DEVICETYPE_MODULE) ? "модуль" : "прибор");
-    QMessageBox::information(this, "Внимание", "Коэффициенты переданы в " + tmps + " успешно!");
+    //    QString tmps = ((DEVICETYPE == DEVICETYPE_MODULE) ? "модуль" : "прибор");
+    QMessageBox::information(this, "Внимание", "Коэффициенты записаны успешно!");
     return true;
 }
 

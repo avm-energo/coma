@@ -41,6 +41,9 @@ SOURCES += \
     ../module/journkdv.cpp \
     ../module/journkiv.cpp \
     ../module/journktf.cpp \
+    ../tune/kiv/tunekivadc.cpp \
+    ../tune/kiv/tunekivr.cpp \
+    ../widgets/aboutwidget.cpp \
     ../widgets/edoublespinbox.cpp \
     ../widgets/styleloader.cpp \
     coma.cpp \
@@ -108,7 +111,6 @@ SOURCES += \
     ../tune/kiv/tunekiv.cpp \
     ../tune/kiv/tunekivcheck.cpp \
     ../tune/kiv/tunekivdialog.cpp \
-    ../tune/kiv/tunekivmain.cpp \
     ../tune/kiv/tunekivtemp60.cpp \
     ../tune/tuneclass.cpp \
     ../widgets/alarmwidget.cpp \
@@ -142,6 +144,9 @@ HEADERS += \
     ../module/journkdv.h \
     ../module/journkiv.h \
     ../module/journktf.h \
+    ../tune/kiv/tunekivadc.h \
+    ../tune/kiv/tunekivr.h \
+    ../widgets/aboutwidget.h \
     ../widgets/edoublespinbox.h \
     ../widgets/styleloader.h \
     coma.h \
@@ -214,7 +219,6 @@ HEADERS += \
     ../tune/kiv/tunekivcheck.h \
     ../tune/kiv/tunekiv.h \
     ../tune/kiv/tunekivdialog.h \
-    ../tune/kiv/tunekivmain.h \
     ../tune/kiv/tunekivtemp60.h \
     ../tune/tuneclass.h \
     ../widgets/alarmbutton.h \

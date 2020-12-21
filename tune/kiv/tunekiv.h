@@ -18,9 +18,10 @@ public:
     enum TuneSteps
     {
         TS_CHECKING = 1,
-        TS_MAINTUNING = 2,
-        TS_60TUNING = 3,
-        TS_20TUNING = 4
+        TS_PT100 = 2,
+        TS_ADC = 3,
+        TS_60TUNING = 4,
+        TS_20TUNING = 5
     };
 
     //    struct Bac

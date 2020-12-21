@@ -1,6 +1,7 @@
 #ifndef DATABLOCK_H
 #define DATABLOCK_H
 
+#include "../gen/board.h"
 #include "../gen/datatypes.h"
 #include "../gen/error.h"
 #include "../interfaces/baseinterface.h"
@@ -26,14 +27,23 @@ public:
     {
         QString extension;
         QString mask;
-        QString filename;
+        //        QString filename;
     };
 
-    QMap<DataTypes::DataBlockTypes, QString> ExtMap
-        = { { DataTypes::DataBlockTypes::BacBlock, ".bac" }, { DataTypes::DataBlockTypes::BciBlock, ".cf" },
-              { DataTypes::DataBlockTypes::BdBlock, ".bd" }, { DataTypes::DataBlockTypes::BdaBlock, ".bda" } };
+    QMap<DataTypes::DataBlockTypes, FilePropertiesStruct> ExtMap
+        = { { DataTypes::DataBlockTypes::BacBlock, { ".tn", "Tune files (*.tn?)" } },
+              { DataTypes::DataBlockTypes::BciBlock, { ".cf", "Configuration files (*.cf?)" } },
+              { DataTypes::DataBlockTypes::BdBlock, { ".bd", "Data files (*.bd?)" } },
+              { DataTypes::DataBlockTypes::BdaBlock, { ".bda", "Simple data files (*.bda)" } } };
+
     bool m_widgetIsSet;
 
+    inline const QString cpuIDFilenameStr()
+    {
+        QString filenamestr
+            = Board::GetInstance().UID() + ExtMap[m_block.blocktype].extension + QString::number(m_block.blocknum);
+        return filenamestr;
+    }
     explicit DataBlock(QObject *parent = nullptr);
     void setBlock(const BlockStruct &bds);
     //    virtual void setupUI() = 0;                                     // frontend for block visualisation
@@ -44,9 +54,10 @@ public:
     virtual void setDefBlock() = 0;
     virtual void updateWidget() = 0;
     virtual void updateFromWidget(); // semi-virtual function, need to be reimplemented in corresponding blocks
-    static void getFileProperties(DataTypes::DataBlockTypes type, FilePropertiesStruct &st);
+    //    static void getFileProperties(DataTypes::DataBlockTypes type, FilePropertiesStruct &st);
+    void readBlockFromModule();
 
-    QWidget *bottomUI();
+    QWidget *blockButtonsUI();
 
 signals:
 
@@ -70,9 +81,9 @@ public slots:
     void setDefBlockAndUpdate();
     void readAndUpdate();
     void writeBlockToModule();
-    void readBlockFromModule();
     void readFromFile();
     void saveToFile();
+    void saveToFileUserChoose();
 };
 
 #endif // DATABLOCK_H

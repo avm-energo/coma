@@ -114,12 +114,15 @@ QLabel *WDFunc::NewLBL(QWidget *w, const QString &text, const QString &lblcolor,
     return lbl;
 }
 
-QLabel *WDFunc::NewLBL2(QWidget *w, const QString &text, const QString &lblname, const QString &lbltip)
+QLabel *WDFunc::NewLBL2(
+    QWidget *w, const QString &text, const QString &lblname, const QPixmap *pm, const QString &lbltip)
 {
     QLabel *lbl = new QLabel(w);
     lbl->setText(text);
     if (!lblname.isEmpty())
         lbl->setObjectName(lblname);
+    if (pm != Q_NULLPTR)
+        lbl->setPixmap(*pm);
     lbl->setToolTip(lbltip);
     return lbl;
 }

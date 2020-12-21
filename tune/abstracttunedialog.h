@@ -73,7 +73,7 @@ public:
     void stopWait();
 
     //    void ProcessTune();
-    bool CheckPassword();
+    Error::Msg CheckPassword();
     virtual void setMessages() = 0;      // заполнить список сообщений
     virtual void setTuneFunctions() = 0; // заполнить список функций настройки
     //    void MsgSetVisible(int msg, bool Visible = true);
@@ -102,6 +102,7 @@ public:
     Error::Msg saveAllTuneCoefs();
     Error::Msg loadAllTuneCoefs();
     bool writeTuneCoefs();
+    void readTuneCoefs();
 
     //    void scrollArea();
 
@@ -128,11 +129,12 @@ signals:
     void Finished();
     void LoadDefConf();
     //    void stopRead(int);
+    void setProgressSize(quint64 size);
+    void setProgressCount(quint64 count);
 
 public slots:
     void CancelTune();
     //    void ReadAllTuneCoefs();
-    void readTuneCoefs();
     void writeTuneCoefsSlot();
     void loadTuneCoefsSlot();
     void saveTuneCoefsSlot();
