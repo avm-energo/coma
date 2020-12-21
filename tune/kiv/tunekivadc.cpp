@@ -26,27 +26,21 @@ void TuneKIVADC::setMessages()
     m_messages.append("1. Ввод пароля...");
     m_messages.append("2. Отображение предупреждения...");
     m_messages.append("3. Запрос настроечных параметров...");
-    m_messages.append("4. Проверка настроечных параметров...");
-    m_messages.append("5. Настройка канала измерения температуры (КИТ): установка 80 Ом...");
-    m_messages.append("6. Настройка КИТ: обработка...");
-    m_messages.append("7. Настройка канала измерения температуры (КИТ): установка 120 Ом...");
-    m_messages.append("8. Настройка КИТ: обработка и запись коэффициентов...");
-    m_messages.append("9. Сохранение конфигурации...");
-    m_messages.append("10. Регулировка для Кацп = 1...");
+    m_messages.append("4. Регулировка для Кацп = 1...");
+    m_messages.append("5. Отображение диалога задания входных данных...");
+    m_messages.append("6. Регулировка для Кацп = 2...");
+    m_messages.append("7. Отображение диалога задания входных данных...");
+    m_messages.append("8. Регулировка для Кацп = 4...");
+    m_messages.append("9. Отображение диалога задания входных данных...");
+    m_messages.append("10. Регулировка для Кацп = 8...");
     m_messages.append("11. Отображение диалога задания входных данных...");
-    m_messages.append("12. Регулировка для Кацп = 2...");
+    m_messages.append("12. Регулировка для Кацп = 16...");
     m_messages.append("13. Отображение диалога задания входных данных...");
-    m_messages.append("14. Регулировка для Кацп = 4...");
+    m_messages.append("14. Регулировка для Кацп = 32...");
     m_messages.append("15. Отображение диалога задания входных данных...");
-    m_messages.append("16. Регулировка для Кацп = 8...");
-    m_messages.append("17. Отображение диалога задания входных данных...");
-    m_messages.append("18. Регулировка для Кацп = 16...");
-    m_messages.append("19. Отображение диалога задания входных данных...");
-    m_messages.append("20. Регулировка для Кацп = 32...");
-    m_messages.append("21. Отображение диалога задания входных данных...");
-    m_messages.append("22. Регулировка канала Tmk0...");
-    m_messages.append("23. Запись настроечных коэффициентов и восстановление конфигурации...");
-    m_messages.append("24. Проверка регулировки...");
+    m_messages.append("16. Регулировка канала Tmk0...");
+    m_messages.append("17. Запись настроечных коэффициентов и восстановление конфигурации...");
+    m_messages.append("18. Проверка регулировки...");
 }
 
 void TuneKIVADC::setTuneFunctions()
@@ -58,18 +52,6 @@ void TuneKIVADC::setTuneFunctions()
         = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVADC::showPreWarning);
     m_tuneFunctions[m_messages.at(count++)] = func;
     func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&AbstractTuneDialog::readTuneCoefs);
-    m_tuneFunctions[m_messages.at(count++)] = func;
-    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVADC::checkTuneCoefs);
-    m_tuneFunctions[m_messages.at(count++)] = func;
-    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVADC::setR80);
-    m_tuneFunctions[m_messages.at(count++)] = func;
-    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVADC::processR80);
-    m_tuneFunctions[m_messages.at(count++)] = func;
-    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVADC::setR120);
-    m_tuneFunctions[m_messages.at(count++)] = func;
-    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVADC::processR120);
-    m_tuneFunctions[m_messages.at(count++)] = func;
-    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&AbstractTuneDialog::saveWorkConfig);
     m_tuneFunctions[m_messages.at(count++)] = func;
     func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVADC::ADCCoef1);
     m_tuneFunctions[m_messages.at(count++)] = func;
@@ -136,13 +118,13 @@ Error::Msg TuneKIVADC::showPreWarning()
     QDialog *dlg = new QDialog;
     QVBoxLayout *lyout = new QVBoxLayout;
 
-    lyout->addWidget(WDFunc::NewLBL(this, "", "", "", new QPixmap("images/tunekiv1.png")));
-    lyout->addWidget(WDFunc::NewLBL(this, "1. Соберите схему подключения по одной из вышеприведённых картинок;"));
-    lyout->addWidget(WDFunc::NewLBL(this,
+    lyout->addWidget(WDFunc::NewLBL2(this, "", "", new QPixmap("images/tunekiv1.png")));
+    lyout->addWidget(WDFunc::NewLBL2(this, "1. Соберите схему подключения по одной из вышеприведённых картинок;"));
+    lyout->addWidget(WDFunc::NewLBL2(this,
         "2. Включите питание Энергомонитор 3.1КМ и настройте его на режим измерения тока"
         "и напряжения в однофазной сети переменного тока, установите предел измерения"
         "по напряжению 60 В, по току - 2,5 А;"));
-    lyout->addWidget(WDFunc::NewLBL(this,
+    lyout->addWidget(WDFunc::NewLBL2(this,
         "3. Данный этап регулировки должен выполняться при температуре"
         "окружающего воздуха +20±7 °С. Если температура окружающего воздуха отличается от указанной,"
         "разместите модуль в термокамеру с диапазоном регулирования температуры "
@@ -156,95 +138,6 @@ Error::Msg TuneKIVADC::showPreWarning()
     return Error::Msg::NoError;
 }
 
-Error::Msg TuneKIVADC::checkTuneCoefs()
-{
-    QVector<float *> tcoefs = { &TKIV->m_Bac->data()->KmU[0], &TKIV->m_Bac->data()->KmI1[0],
-        &TKIV->m_Bac->data()->KmI2[0], &TKIV->m_Bac->data()->KmI4[0], &TKIV->m_Bac->data()->KmI8[0],
-        &TKIV->m_Bac->data()->KmI16[0], &TKIV->m_Bac->data()->KmI32[0] };
-    for (int i = 0; i < 3; ++i)
-    {
-        foreach (float *coef, tcoefs)
-            if (!StdFunc::floatIsWithinLimits(this, *(coef + i), 1.0, 0.05))
-                return Error::Msg::GeneralError;
-    }
-    if (!StdFunc::floatIsWithinLimits(this, TKIV->m_Bac->data()->K_freq, 1.0, 0.05))
-        return Error::Msg::GeneralError;
-    for (int i = 0; i < 6; ++i)
-    {
-        if (!StdFunc::floatIsWithinLimits(this, TKIV->m_Bac->data()->DPsi[i], 0.0, 1.0))
-            return Error::Msg::GeneralError;
-    }
-    return Error::Msg::NoError;
-}
-
-Error::Msg TuneKIVADC::setR80()
-{
-    setR(80);
-    return Error::Msg::NoError;
-}
-
-Error::Msg TuneKIVADC::processR80()
-{
-    m_pt100 = processR();
-    if (StdFunc::isCancelled())
-        return Error::Msg::GeneralError;
-    return Error::Msg::NoError;
-}
-
-Error::Msg TuneKIVADC::setR120()
-{
-    setR(120);
-    return Error::Msg::NoError;
-}
-
-Error::Msg TuneKIVADC::processR120()
-{
-    double pt100_120 = processR();
-    if (StdFunc::isCancelled())
-        return Error::Msg::GeneralError;
-    if (StdFunc::floatIsWithinLimits(this, pt100_120, m_pt100, 40, false))
-    {
-        WARNMSG("Ошибка в полученных данных, значения сопротивлений равны");
-        StdFunc::cancel();
-        return Error::Msg::GeneralError;
-    }
-    TKIV->m_Bac->data()->Art = (pt100_120 - m_pt100) / 40;
-    TKIV->m_Bac->data()->Brt = pt100_120 * 2 - m_pt100 * 3;
-    TKIV->m_Bac->updateWidget();
-    //    TKIV->updateBacWidget();
-    saveAllTuneCoefs();
-    return Error::Msg::NoError;
-}
-
-void TuneKIVADC::setR(int r)
-{
-    if (QMessageBox::question(this, "Подтверждение", "Установите сопротивление " + QString::number(r, 'f', 1) + " Ом")
-        == QMessageBox::No)
-        CancelTune();
-}
-
-double TuneKIVADC::processR()
-{
-    //    startWait();
-    emit setGeneralProgressBarSize(StdFunc::tuneRequestCount());
-    int i = 0;
-    double pt100 = 0.0;
-    while ((!StdFunc::isCancelled()) && (i < StdFunc::tuneRequestCount()))
-    {
-        BaseInterface::iface()->reqBlockSync(1, DataTypes::DataBlockTypes::BdaBlock, &TKIV->m_Bda, sizeof(TKIV->m_Bda));
-        TKIV->updateBdaWidget();
-        pt100 += TKIV->m_Bda.Pt100;
-        ++i;
-        emit setGeneralProgressBarCount(i);
-        StdFunc::Wait(500);
-    }
-    if (StdFunc::isCancelled())
-        return 0;
-    //    stopWait();
-    pt100 /= i;
-    return pt100;
-}
-
 Error::Msg TuneKIVADC::ADCCoef(int coef)
 {
     m_curTuneStep = coef;
@@ -254,7 +147,7 @@ Error::Msg TuneKIVADC::ADCCoef(int coef)
     showRetomDialog(coef);
     if (StdFunc::isCancelled())
         return Error::Msg::GeneralError;
-    emit setGeneralProgressBarSize(StdFunc::tuneRequestCount());
+    emit setProgressSize(StdFunc::tuneRequestCount());
     //    startWait();
     int i = 0;
     for (int i = 0; i < 6; ++i)
@@ -276,7 +169,7 @@ Error::Msg TuneKIVADC::ADCCoef(int coef)
             }
         }
         ++i;
-        emit setGeneralProgressBarCount(i);
+        emit setProgressCount(i);
         StdFunc::Wait(500);
     }
     for (int i = 0; i < 6; ++i)
@@ -322,7 +215,7 @@ Error::Msg TuneKIVADC::ADCCoef32()
 
 Error::Msg TuneKIVADC::Tmk0()
 {
-    emit setGeneralProgressBarSize(5);
+    emit setProgressSize(5);
     //    startWait();
     int i = 0;
     double tmk0 = 0;
@@ -336,7 +229,7 @@ Error::Msg TuneKIVADC::Tmk0()
         //        TKIV->updateBd0Widget();
         tmk0 += TKIV->m_Bd0->data()->Tmk;
         ++i;
-        emit setGeneralProgressBarCount(i);
+        emit setProgressCount(i);
         StdFunc::Wait(500);
     }
     if (StdFunc::isCancelled())
@@ -393,12 +286,12 @@ Error::Msg TuneKIVADC::showRetomDialog(int coef)
               { 8, { 80, 0.5, "30:6" } }, { 16, { 40, 0.1, "1:1" } }, { 32, { 23, 0.05, "1:1" } } };
     QDialog *dlg = new QDialog;
     QVBoxLayout *lyout = new QVBoxLayout;
-    lyout->addWidget(WDFunc::NewLBL(this,
+    lyout->addWidget(WDFunc::NewLBL2(this,
         "Задайте на РЕТОМ-51 или имитаторе АВМ-КИВ трёхфазный режим токов и напряжений (Uabc, Iabc)"
         "Угол между токами и напряжениями: 89.9 град. (tg 2 % в имитаторе),\n"
         "Значения напряжений: 57.5 В, токов: "
             + QString::number(retomCoefMap[coef].i, 'f', 2) + " мА"));
-    lyout->addWidget(WDFunc::NewLBL(this,
+    lyout->addWidget(WDFunc::NewLBL2(this,
         "Значения тока и напряжения контролируются по показаниям прибора Энергомонитор.\n"
         "Предел измерения тока в Энергомониторе: "
             + QString::number(retomCoefMap[coef].range, 'f', 2)
@@ -461,7 +354,7 @@ Error::Msg TuneKIVADC::showEnergomonitorInputDialog()
         //        dlg->setAttribute(Qt::WA_DeleteOnClose);
         dlg->setObjectName("energomonitordlg");
         QVBoxLayout *vlyout = new QVBoxLayout;
-        vlyout->addWidget(WDFunc::NewLBL(this, "Ввод значений сигналов c Энергомонитора"));
+        vlyout->addWidget(WDFunc::NewLBL2(this, "Ввод значений сигналов c Энергомонитора"));
 
         vlyout->addWidget(WDFunc::NewLBLAndLE(this, "Uэт", "ValuetuneU", true));
         vlyout->addWidget(WDFunc::NewLBLAndLE(this, "Iэт", "ValuetuneI", true));

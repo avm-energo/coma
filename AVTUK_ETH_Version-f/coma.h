@@ -90,8 +90,8 @@ private slots:
     //    void FillBSI(QList<ModBus::BSISignalStruct> sig, unsigned int sigsize);
     // void PasswordCheck(QString psw);
     void MainTWTabChanged(int tabindex);
-    void setGeneralProgressBarSize(quint32 size);
-    void setGeneralProgressBarCount(quint32 count);
+    //    void setGeneralProgressBarSize(quint32 size);
+    //    void setGeneralProgressBarCount(quint32 count);
 
 private:
     // constexpr QVector<int> MTBs = { 0x21, 0x22, 0x31, 0x35, 0x80, 0x81, 0x84 };

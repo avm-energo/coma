@@ -16,7 +16,7 @@ TuneKIVR::TuneKIVR(int tuneStep, ConfigKIV *ckiv, TuneKIV *kiv, QWidget *parent)
     //    SetBac(TKIV->m_Bac, 1, sizeof(TKIV->m_Bac));
     SetBac(TKIV->m_Bac);
     //    SetupUI();
-    m_isEnergoMonitorDialogCreated = false;
+    //    m_isEnergoMonitorDialogCreated = false;
     SetupUI();
 }
 
@@ -86,13 +86,13 @@ Error::Msg TuneKIVR::showPreWarning()
     QDialog *dlg = new QDialog;
     QVBoxLayout *lyout = new QVBoxLayout;
 
-    lyout->addWidget(WDFunc::NewLBL(this, "", "", "", new QPixmap("images/tunekiv1.png")));
-    lyout->addWidget(WDFunc::NewLBL(this, "1. Соберите схему подключения по одной из вышеприведённых картинок;"));
-    lyout->addWidget(WDFunc::NewLBL(this,
+    lyout->addWidget(WDFunc::NewLBL2(this, "", "", new QPixmap("images/tunekiv1.png")));
+    lyout->addWidget(WDFunc::NewLBL2(this, "1. Соберите схему подключения по одной из вышеприведённых картинок;"));
+    lyout->addWidget(WDFunc::NewLBL2(this,
         "2. Включите питание Энергомонитор 3.1КМ и настройте его на режим измерения тока"
         "и напряжения в однофазной сети переменного тока, установите предел измерения"
         "по напряжению 60 В, по току - 2,5 А;"));
-    lyout->addWidget(WDFunc::NewLBL(this,
+    lyout->addWidget(WDFunc::NewLBL2(this,
         "3. Данный этап регулировки должен выполняться при температуре"
         "окружающего воздуха +20±7 °С. Если температура окружающего воздуха отличается от указанной,"
         "разместите модуль в термокамеру с диапазоном регулирования температуры "
@@ -177,7 +177,7 @@ void TuneKIVR::setR(int r)
 double TuneKIVR::processR()
 {
     //    startWait();
-    emit setGeneralProgressBarSize(StdFunc::tuneRequestCount());
+    emit setProgressSize(StdFunc::tuneRequestCount());
     int i = 0;
     double pt100 = 0.0;
     while ((!StdFunc::isCancelled()) && (i < StdFunc::tuneRequestCount()))
@@ -186,7 +186,7 @@ double TuneKIVR::processR()
         TKIV->updateBdaWidget();
         pt100 += TKIV->m_Bda.Pt100;
         ++i;
-        emit setGeneralProgressBarCount(i);
+        emit setProgressCount(i);
         StdFunc::Wait(500);
     }
     if (StdFunc::isCancelled())

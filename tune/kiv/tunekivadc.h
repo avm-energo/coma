@@ -29,7 +29,6 @@ private:
     QWidget *MainUI() override;
 
     Error::Msg showPreWarning();
-    Error::Msg checkTuneCoefs();
     Error::Msg ADCCoef1();
     Error::Msg ADCCoef2();
     Error::Msg ADCCoef4();

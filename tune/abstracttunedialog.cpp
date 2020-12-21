@@ -129,6 +129,17 @@ QWidget *AbstractTuneDialog::BottomUI()
     QWidget *w = new QWidget;
     QVBoxLayout *lyout = new QVBoxLayout;
     QHBoxLayout *hlyout = new QHBoxLayout;
+    hlyout->addWidget(WDFunc::NewLBL2(this, "Регулировка"), 0);
+    QProgressBar *prb = new QProgressBar;
+    prb->setObjectName("prb");
+    prb->setOrientation(Qt::Horizontal);
+    // prb->setMinimumWidth(50);
+    prb->setMaximumHeight(height() / 50);
+    connect(this, &AbstractTuneDialog::setProgressSize, prb, &QProgressBar::setMaximum);
+    connect(this, &AbstractTuneDialog::setProgressCount, prb, &QProgressBar::setValue);
+    hlyout->addWidget(prb, 100);
+    lyout->addLayout(hlyout);
+    hlyout = new QHBoxLayout;
     //    QPushButton *pb = new QPushButton;
     //    pb->setToolTip("Установить настроечные коэффициенты по умолчанию");
     //    //    pb->setMinimumSize(70, 70);
@@ -189,12 +200,6 @@ QWidget *AbstractTuneDialog::BottomUI()
     WDFunc::setMinimumSize(this, "savepb", 50, 50);
     hlyout->addStretch(300);
     lyout->addLayout(hlyout);
-    QProgressBar *prb = new QProgressBar;
-    prb->setObjectName("prb");
-    prb->setOrientation(Qt::Horizontal);
-    // prb->setMinimumWidth(50);
-    prb->setMaximumHeight(height() / 50);
-    inlyout->addWidget(prb);
     w->setLayout(lyout);
     return w;
 }
