@@ -103,7 +103,6 @@ public:
     Error::Msg loadAllTuneCoefs();
     bool writeTuneCoefs();
     void readTuneCoefs();
-
     //    void scrollArea();
 
 private:

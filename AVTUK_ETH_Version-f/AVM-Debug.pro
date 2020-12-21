@@ -12,7 +12,7 @@ CONFIG += c++17
 CONFIG -= console
 VERSION = 2.0
 
-QT       += core gui printsupport network qml serialport widgets testlib concurrent
+QT       += core gui printsupport network qml serialport widgets testlib concurrent xml svg
 QT.testlib.CONFIG -= console
 
 TARGET = AVM-Debug
@@ -41,6 +41,7 @@ SOURCES += \
     ../module/journkdv.cpp \
     ../module/journkiv.cpp \
     ../module/journktf.cpp \
+    ../tune/generaltunedialog.cpp \
     ../tune/kiv/tunekivadc.cpp \
     ../tune/kiv/tunekivr.cpp \
     ../widgets/aboutwidget.cpp \
@@ -144,6 +145,7 @@ HEADERS += \
     ../module/journkdv.h \
     ../module/journkiv.h \
     ../module/journktf.h \
+    ../tune/generaltunedialog.h \
     ../tune/kiv/tunekivadc.h \
     ../tune/kiv/tunekivr.h \
     ../widgets/aboutwidget.h \
