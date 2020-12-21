@@ -46,41 +46,23 @@ void ConfKDVDialog::SetupUI()
     QWidget *Leftconf = new QWidget;
     QWidget *time = new QWidget;
     QWidget *link = new QWidget;
-    QString tmps = "QWidget {background-color: " + QString(Colors::ACONFWCLR) + ";}";
-    analog1->setStyleSheet(tmps);
-    analog2->setStyleSheet(tmps);
-    extraconf->setStyleSheet(tmps);
-    time->setStyleSheet(tmps);
-    MEKconf->setStyleSheet(tmps);
-    Leftconf->setStyleSheet(tmps);
-    link->setStyleSheet(tmps);
 
-    area2->setStyleSheet("QScrollArea {background-color: rgba(0,0,0,0);}");
     area2->setFrameShape(QFrame::NoFrame);
     area2->setWidgetResizable(true);
 
-    Analog_area->setStyleSheet("QScrollArea {background-color: rgba(0,0,0,0);}");
     Analog_area->setFrameShape(QFrame::NoFrame);
     Analog_area->setWidgetResizable(true);
 
-    scrArea->setStyleSheet("QScrollArea {background-color: rgba(0,0,0,0);}");
     scrArea->setFrameShape(QFrame::NoFrame);
     scrArea->setWidgetResizable(true);
 
-    QString paramcolor = Colors::MAINWINCLR;
-    QFont font;
-
     int row = 0;
     QGroupBox *gb = new QGroupBox("Аналоговые параметры");
-    font.setFamily("Times");
-    font.setPointSize(11);
-    // setFont(font);
-    gb->setFont(font);
 
     QLabel *lbl = new QLabel("Тип контролируемого оборудования:");
     gridlyout->addWidget(lbl, row, 1, 1, 1, Qt::AlignLeft);
     QStringList cbl = QStringList { "Асинхронный двигатель", "Трансформатор", "Реактор" };
-    auto *cb = WDFunc::NewCB(this, "Eq_type", cbl, paramcolor);
+    auto *cb = WDFunc::NewCB2(this, "Eq_type", cbl);
     cb->setMinimumHeight(20);
     gridlyout->addWidget(cb, row, 2, 1, 3);
     row++;
@@ -88,7 +70,7 @@ void ConfKDVDialog::SetupUI()
     lbl = new QLabel("Вид охлаждения:");
     gridlyout->addWidget(lbl, row, 1, 1, 1, Qt::AlignLeft);
     cbl = QStringList { "Естественное", "Принудительное" };
-    cb = WDFunc::NewCB(this, "Cool_type", cbl, paramcolor);
+    cb = WDFunc::NewCB2(this, "Cool_type", cbl);
     cb->setMinimumHeight(20);
     gridlyout->addWidget(cb, row, 2, 1, 3);
     row++;
@@ -96,81 +78,81 @@ void ConfKDVDialog::SetupUI()
     lbl = new QLabel("Материал обмотки:");
     gridlyout->addWidget(lbl, row, 1, 1, 1, Qt::AlignLeft);
     cbl = QStringList { "Медь", "Алюминий" };
-    cb = WDFunc::NewCB(this, "W_mat", cbl, paramcolor);
+    cb = WDFunc::NewCB2(this, "W_mat", cbl);
     cb->setMinimumHeight(20);
     gridlyout->addWidget(cb, row, 2, 1, 3);
     row++;
 
-    gridlyout->addWidget(WDFunc::NewLBL(this, "Номинальное линейное первичное напряжение, кВ:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB(this, "Unom1", 0, 10000, 2, paramcolor), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewLBL2(this, "Номинальное линейное первичное напряжение, кВ:"), row, 1, 1, 1);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, "Unom1", 0, 10000, 2), row, 2, 1, 3);
     row++;
 
-    gridlyout->addWidget(WDFunc::NewLBL(this, "Номинальное вторичное напряжение первой тройки, В:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB(this, "U2nom", 0, 10000, 1, paramcolor), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewLBL2(this, "Номинальное вторичное напряжение первой тройки, В:"), row, 1, 1, 1);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, "U2nom", 0, 10000, 1), row, 2, 1, 3);
     row++;
 
-    gridlyout->addWidget(WDFunc::NewLBL(this, "Номинальный первичный ток, кА:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB(this, "ITT1nom", 0, 10000, 0, paramcolor), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewLBL2(this, "Номинальный первичный ток, кА:"), row, 1, 1, 1);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, "ITT1nom", 0, 10000, 0), row, 2, 1, 3);
     row++;
 
-    gridlyout->addWidget(WDFunc::NewLBL(this, "Номинальный вторичный ток, А:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB(this, "ITT2nom", 0, 10000, 1, paramcolor), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewLBL2(this, "Номинальный вторичный ток, А:"), row, 1, 1, 1);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, "ITT2nom", 0, 10000, 1), row, 2, 1, 3);
     row++;
 
-    gridlyout->addWidget(WDFunc::NewLBL(this, "Номинальный ток контролируемой обмотки, À:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB(this, "Iwnom", 0, 10000, 1, paramcolor), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewLBL2(this, "Номинальный ток контролируемой обмотки, À:"), row, 1, 1, 1);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, "Iwnom", 0, 10000, 1), row, 2, 1, 3);
     row++;
 
-    gridlyout->addWidget(WDFunc::NewLBL(this, "Номинальная температура окружающей среды, °С:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB(this, "Tamb_nom", 0, 10000, 1, paramcolor), row, 2, 1, 3);
-    row++;
-
-    gridlyout->addWidget(
-        WDFunc::NewLBL(this, "Превышение температуры ННТ при номинальной нагрузке, °С:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB(this, "dTNNTnom", 0, 10000, 1, paramcolor), row, 2, 1, 3);
-    row++;
-
-    gridlyout->addWidget(WDFunc::NewLBL(this, "Коэффициент добавочных потерь:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB(this, "Kdob", 0, 10000, 1, paramcolor), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewLBL2(this, "Номинальная температура окружающей среды, °С:"), row, 1, 1, 1);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, "Tamb_nom", 0, 10000, 1), row, 2, 1, 3);
     row++;
 
     gridlyout->addWidget(
-        WDFunc::NewLBL(this, "Постоянная времени нагрева обмотки в номинальном режиме, мин:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB(this, "TauWnom", 0, 10000, 1, paramcolor), row, 2, 1, 3);
+        WDFunc::NewLBL2(this, "Превышение температуры ННТ при номинальной нагрузке, °С:"), row, 1, 1, 1);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, "dTNNTnom", 0, 10000, 1), row, 2, 1, 3);
     row++;
 
-    gridlyout->addWidget(WDFunc::NewLBL(this,
+    gridlyout->addWidget(WDFunc::NewLBL2(this, "Коэффициент добавочных потерь:"), row, 1, 1, 1);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, "Kdob", 0, 10000, 1), row, 2, 1, 3);
+    row++;
+
+    gridlyout->addWidget(
+        WDFunc::NewLBL2(this, "Постоянная времени нагрева обмотки в номинальном режиме, мин:"), row, 1, 1, 1);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, "TauWnom", 0, 10000, 1), row, 2, 1, 3);
+    row++;
+
+    gridlyout->addWidget(WDFunc::NewLBL2(this,
                              "Максимальное измеряемое фазное напряжение на входе "
                              "прибора, В эфф (не более 305В):"),
         row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB(this, "Umax", 0, 10000, 1, paramcolor), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, "Umax", 0, 10000, 1), row, 2, 1, 3);
     row++;
 
-    gridlyout->addWidget(WDFunc::NewLBL(this,
+    gridlyout->addWidget(WDFunc::NewLBL2(this,
                              "Максимальный измеряемый ток на входе "
                              "прибора, А эфф  (не более 33А):"),
         row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB(this, "Imax", 0, 10000, 1, paramcolor), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, "Imax", 0, 10000, 1), row, 2, 1, 3);
     row++;
 
-    gridlyout->addWidget(WDFunc::NewLBL(this,
+    gridlyout->addWidget(WDFunc::NewLBL2(this,
                              "Количество датчиков температуры обмоток, "
                              "подключенных по Modbus Master:"),
         row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB(this, "TdatNum", 0, 10000, 0, paramcolor), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, "TdatNum", 0, 10000, 0), row, 2, 1, 3);
     row++;
 
-    gridlyout->addWidget(WDFunc::NewLBL(this, "Номинальная частота, Гц"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB(this, "Fnom", 0, 1000, 1, paramcolor), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewLBL2(this, "Номинальная частота, Гц"), row, 1, 1, 1);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, "Fnom", 0, 1000, 1), row, 2, 1, 3);
     row++;
 
-    gridlyout->addWidget(WDFunc::NewLBL(this, "Номинальное скольжение"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB(this, "nom_slip", 0, 10000, 1, paramcolor), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewLBL2(this, "Номинальное скольжение"), row, 1, 1, 1);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, "nom_slip", 0, 10000, 1), row, 2, 1, 3);
     row++;
 
     gridlyout->addWidget(
-        WDFunc::NewLBL(this, "Максимальная амплитуда сигналов вибраций (1,25, 2,5, 5,0В)"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB(this, "UVmax", 0, 10000, 0, paramcolor), row, 2, 1, 3);
+        WDFunc::NewLBL2(this, "Максимальная амплитуда сигналов вибраций (1,25, 2,5, 5,0В)"), row, 1, 1, 1);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, "UVmax", 0, 10000, 0), row, 2, 1, 3);
     row++;
 
     vlyout2->addLayout(gridlyout);
@@ -182,101 +164,103 @@ void ConfKDVDialog::SetupUI()
     //.....................................................................
     ///
     gb = new QGroupBox("Уставки сигнализации");
-    gb->setFont(font);
+
     vlyout1 = new QVBoxLayout;
     vlyout2 = new QVBoxLayout;
     gridlyout = new QGridLayout;
     row = 0;
 
-    gridlyout->addWidget(WDFunc::NewLBL(this,
+    gridlyout->addWidget(WDFunc::NewLBL2(this,
                              "Уставка скачка напряжения для запуска "
                              "осциллографирования - % от номинала:"),
         row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB(this, "DUosc", 0, 10000, 1, paramcolor), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, "DUosc", 0, 10000, 1), row, 2, 1, 3);
 
     row++;
     gridlyout->addWidget(
-        WDFunc::NewLBL(this, "Уставка скачка тока для запуска осциллографирования -  % от I2nom:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB(this, "DIosc", 0, 10000, 1, paramcolor), row, 2, 1, 3);
+        WDFunc::NewLBL2(this, "Уставка скачка тока для запуска осциллографирования -  % от I2nom:"), row, 1, 1, 1);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, "DIosc", 0, 10000, 1), row, 2, 1, 3);
 
     row++;
     gridlyout->addWidget(
-        WDFunc::NewLBL(this, "Уставка порога минимального напряжения - % от номинального уровня:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB(this, "DUImin", 0, 1000, 1, paramcolor), row, 2, 1, 3);
+        WDFunc::NewLBL2(this, "Уставка порога минимального напряжения - % от номинального уровня:"), row, 1, 1, 1);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, "DUImin", 0, 1000, 1), row, 2, 1, 3);
 
     row++;
     gridlyout->addWidget(
-        WDFunc::NewLBL(this, "Уставка порога минимального тока - % от номинального уровня:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB(this, "Imin", 0, 10000, 1, paramcolor), row, 2, 1, 3);
+        WDFunc::NewLBL2(this, "Уставка порога минимального тока - % от номинального уровня:"), row, 1, 1, 1);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, "Imin", 0, 10000, 1), row, 2, 1, 3);
 
     row++;
-    gridlyout->addWidget(WDFunc::NewLBL(this, "Предельно допустимая температура ННТ в°С:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB(this, "TNNTdop", 0, 10000, 1, paramcolor), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewLBL2(this, "Предельно допустимая температура ННТ в°С:"), row, 1, 1, 1);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, "TNNTdop", 0, 10000, 1), row, 2, 1, 3);
 
     row++;
     gridlyout->addWidget(
-        WDFunc::NewLBL(this, "Уставка предупредительной сигнализации по температуре ННТ в °С:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB(this, "TNNTpred", 0, 10000, 1, paramcolor), row, 2, 1, 3);
+        WDFunc::NewLBL2(this, "Уставка предупредительной сигнализации по температуре ННТ в °С:"), row, 1, 1, 1);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, "TNNTpred", 0, 10000, 1), row, 2, 1, 3);
 
     row++;
-    gridlyout->addWidget(WDFunc::NewLBL(this, "Предупредительная уставка по СКЗ виброускорения, м/с/с:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB(this, "VibrA_pred", 0, 1000, 1, paramcolor), row, 2, 1, 3);
+    gridlyout->addWidget(
+        WDFunc::NewLBL2(this, "Предупредительная уставка по СКЗ виброускорения, м/с/с:"), row, 1, 1, 1);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, "VibrA_pred", 0, 1000, 1), row, 2, 1, 3);
 
     row++;
-    gridlyout->addWidget(WDFunc::NewLBL(this, "Предупредительная уставка по СКЗ виброскорости, мм/с:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB(this, "VibrV_pred", 0, 10000, 1, paramcolor), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewLBL2(this, "Предупредительная уставка по СКЗ виброскорости, мм/с:"), row, 1, 1, 1);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, "VibrV_pred", 0, 10000, 1), row, 2, 1, 3);
 
     row++;
-    gridlyout->addWidget(WDFunc::NewLBL(this, "Предупредительная уставка по СКЗ виброперемещения, мкм:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB(this, "VibrD_pred", 0, 10000, 1, paramcolor), row, 2, 1, 3);
+    gridlyout->addWidget(
+        WDFunc::NewLBL2(this, "Предупредительная уставка по СКЗ виброперемещения, мкм:"), row, 1, 1, 1);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, "VibrD_pred", 0, 10000, 1), row, 2, 1, 3);
 
     row++;
-    gridlyout->addWidget(WDFunc::NewLBL(this, "Аварийная уставка по СКЗ виброускорения, м/с/с:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB(this, "VibrA_alarm", 0, 1000, 1, paramcolor), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewLBL2(this, "Аварийная уставка по СКЗ виброускорения, м/с/с:"), row, 1, 1, 1);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, "VibrA_alarm", 0, 1000, 1), row, 2, 1, 3);
 
     row++;
-    gridlyout->addWidget(WDFunc::NewLBL(this, "Аварийная уставка по СКЗ виброскорости, мм/с:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB(this, "VibrV_alarm", 0, 10000, 1, paramcolor), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewLBL2(this, "Аварийная уставка по СКЗ виброскорости, мм/с:"), row, 1, 1, 1);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, "VibrV_alarm", 0, 10000, 1), row, 2, 1, 3);
 
     row++;
-    gridlyout->addWidget(WDFunc::NewLBL(this, "Аварийная уставка по СКЗ виброперемещения, мкм:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB(this, "VibrD_alarm", 0, 10000, 1, paramcolor), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewLBL2(this, "Аварийная уставка по СКЗ виброперемещения, мкм:"), row, 1, 1, 1);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, "VibrD_alarm", 0, 10000, 1), row, 2, 1, 3);
 
     row++;
-    gridlyout->addWidget(WDFunc::NewLBL(this,
+    gridlyout->addWidget(WDFunc::NewLBL2(this,
                              "Предупредительная уставка по скорости роста СКЗ "
                              "виброускорения, м/с/с:"),
         row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB(this, "VVibrA_pred", 0, 1000, 1, paramcolor), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, "VVibrA_pred", 0, 1000, 1), row, 2, 1, 3);
 
     row++;
-    gridlyout->addWidget(WDFunc::NewLBL(this,
+    gridlyout->addWidget(WDFunc::NewLBL2(this,
                              "Предупредительная уставка по скорости роста СКЗ "
                              "виброскорости, мм/с:"),
         row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB(this, "VVibrV_pred", 0, 10000, 1, paramcolor), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, "VVibrV_pred", 0, 10000, 1), row, 2, 1, 3);
 
     row++;
-    gridlyout->addWidget(WDFunc::NewLBL(this,
+    gridlyout->addWidget(WDFunc::NewLBL2(this,
                              "Предупредительная уставка по скорости роста СКЗ "
                              "виброперемещения, мкм:"),
         row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB(this, "VVibrD_pred", 0, 10000, 1, paramcolor), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, "VVibrD_pred", 0, 10000, 1), row, 2, 1, 3);
 
     row++;
     gridlyout->addWidget(
-        WDFunc::NewLBL(this, "Аварийная уставка по скорости роста СКЗ виброускорения, м/с/с:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB(this, "VVibrA_alarm", 0, 1000, 1, paramcolor), row, 2, 1, 3);
+        WDFunc::NewLBL2(this, "Аварийная уставка по скорости роста СКЗ виброускорения, м/с/с:"), row, 1, 1, 1);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, "VVibrA_alarm", 0, 1000, 1), row, 2, 1, 3);
 
     row++;
     gridlyout->addWidget(
-        WDFunc::NewLBL(this, "Аварийная уставка по скорости роста СКЗ виброскорости, мм/с:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB(this, "VVibrV_alarm", 0, 10000, 1, paramcolor), row, 2, 1, 3);
+        WDFunc::NewLBL2(this, "Аварийная уставка по скорости роста СКЗ виброскорости, мм/с:"), row, 1, 1, 1);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, "VVibrV_alarm", 0, 10000, 1), row, 2, 1, 3);
 
     row++;
     gridlyout->addWidget(
-        WDFunc::NewLBL(this, "Аварийная уставка по скорости роста СКЗ виброперемещения, мкм:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB(this, "VVibrD_alarm", 0, 10000, 1, paramcolor), row, 2, 1, 3);
+        WDFunc::NewLBL2(this, "Аварийная уставка по скорости роста СКЗ виброперемещения, мкм:"), row, 1, 1, 1);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, "VVibrD_alarm", 0, 10000, 1), row, 2, 1, 3);
 
     vlyout2->addLayout(gridlyout);
     gb->setLayout(vlyout2);
@@ -284,17 +268,17 @@ void ConfKDVDialog::SetupUI()
 
     //.....................................................................
     gb = new QGroupBox("Гистерезис");
-    gb->setFont(font);
+
     vlyout2 = new QVBoxLayout;
     gridlyout = new QGridLayout;
 
-    gridlyout->addWidget(WDFunc::NewLBL(this, "Гистерезис сигнализации по температуре ННТ,  град.С:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB(this, "GTnnt", 0, 10000, 3, paramcolor), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewLBL2(this, "Гистерезис сигнализации по температуре ННТ,  град.С:"), row, 1, 1, 1);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, "GTnnt", 0, 10000, 3), row, 2, 1, 3);
 
     row++;
     gridlyout->addWidget(
-        WDFunc::NewLBL(this, "Гистерезис сигнализации по токовой перегрузке, % от Iwnom:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB(this, "GOvc", 0, 10000, 1, paramcolor), row, 2, 1, 3);
+        WDFunc::NewLBL2(this, "Гистерезис сигнализации по токовой перегрузке, % от Iwnom:"), row, 1, 1, 1);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, "GOvc", 0, 10000, 1), row, 2, 1, 3);
 
     vlyout2->addLayout(gridlyout);
     gb->setLayout(vlyout2);
@@ -306,7 +290,7 @@ void ConfKDVDialog::SetupUI()
     //.....................................................................
 
     gb = new QGroupBox("Параметры записи");
-    gb->setFont(font);
+
     vlyout2 = new QVBoxLayout;
     QHBoxLayout *hlyout = new QHBoxLayout;
     gridlyout = new QGridLayout;
@@ -314,65 +298,65 @@ void ConfKDVDialog::SetupUI()
 
     row = 0;
     gridlyout->addWidget(
-        WDFunc::NewLBL(this, "Интервал усреднения данных  (в периодах основной частоты):"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB(this, "NFiltr", 0, 10000, 0, paramcolor), row, 2, 1, 3);
+        WDFunc::NewLBL2(this, "Интервал усреднения данных  (в периодах основной частоты):"), row, 1, 1, 1);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, "NFiltr", 0, 10000, 0), row, 2, 1, 3);
 
     row++;
-    gridlyout->addWidget(WDFunc::NewLBL(this, "Интервал записи данных в ПЗУ (тренд), в секундах:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB(this, "T_Data_Rec", 0, 10000, 0, paramcolor), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewLBL2(this, "Интервал записи данных в ПЗУ (тренд), в секундах:"), row, 1, 1, 1);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, "T_Data_Rec", 0, 10000, 0), row, 2, 1, 3);
 
     row++;
-    gridlyout->addWidget(WDFunc::NewLBL(this, "Постоянная времени фильтрации гармоник:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB(this, "NHarmFilt", 0, 10000, 0, paramcolor), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewLBL2(this, "Постоянная времени фильтрации гармоник:"), row, 1, 1, 1);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, "NHarmFilt", 0, 10000, 0), row, 2, 1, 3);
 
     row++;
-    gridlyout->addWidget(WDFunc::NewLBL(this, "Запуск осциллограммы:"), row, 1, 1, 1);
-    hlyout->addWidget(WDFunc::NewChB(this, "oscchb.0", "по команде Ц", Colors::ACONFWCLR));
+    gridlyout->addWidget(WDFunc::NewLBL2(this, "Запуск осциллограммы:"), row, 1, 1, 1);
+    hlyout->addWidget(WDFunc::NewChB2(this, "oscchb.0", "по команде Ц"));
     //    hlyout->addWidget(WDFunc::NewChB(this, "oscchb.1", "по дискр. входу PD1", Colors::ACONFWCLR));
-    hlyout->addWidget(WDFunc::NewChB(this, "oscchb.2", "по резкому изменению", Colors::ACONFWCLR));
+    hlyout->addWidget(WDFunc::NewChB2(this, "oscchb.2", "по резкому изменению"));
     gridlyout->addLayout(hlyout, row, 2, 1, 3);
 
     row++;
     gridlyout->addWidget(
-        WDFunc::NewLBL(this, "Количество точек осциллограммы на период основной частоты:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB(this, "OscPoints", 0, 10000, 0, paramcolor), row, 2, 1, 3);
+        WDFunc::NewLBL2(this, "Количество точек осциллограммы на период основной частоты:"), row, 1, 1, 1);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, "OscPoints", 0, 10000, 0), row, 2, 1, 3);
 
     vlyout2->addLayout(gridlyout);
     gb->setLayout(vlyout2);
     vlyout1->addWidget(gb);
 
     gb = new QGroupBox("Параметры двигателя");
-    gb->setFont(font);
+
     vlyout2 = new QVBoxLayout;
     gridlyout = new QGridLayout;
 
     row = 0;
-    gridlyout->addWidget(WDFunc::NewLBL(this, "Коэффициент передачи датчиков вибрации:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB(this, "Kvibr", 0, 10000, 2, paramcolor), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewLBL2(this, "Коэффициент передачи датчиков вибрации:"), row, 1, 1, 1);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, "Kvibr", 0, 10000, 2), row, 2, 1, 3);
 
     row++;
-    gridlyout->addWidget(WDFunc::NewLBL(this, "Порядковый номер двигателя:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB(this, "NumA", 0, 10000, 0, paramcolor), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewLBL2(this, "Порядковый номер двигателя:"), row, 1, 1, 1);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, "NumA", 0, 10000, 0), row, 2, 1, 3);
 
     row++;
-    gridlyout->addWidget(WDFunc::NewLBL(this, "Число пар полюсов (от 1 до 10):"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB(this, "Poles", 0, 10000, 0, paramcolor), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewLBL2(this, "Число пар полюсов (от 1 до 10):"), row, 1, 1, 1);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, "Poles", 0, 10000, 0), row, 2, 1, 3);
 
     row++;
-    gridlyout->addWidget(WDFunc::NewLBL(this, "Число пазов на статоре:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB(this, "Stator_Slotes", 0, 10000, 0, paramcolor), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewLBL2(this, "Число пазов на статоре:"), row, 1, 1, 1);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, "Stator_Slotes", 0, 10000, 0), row, 2, 1, 3);
 
     row++;
-    gridlyout->addWidget(WDFunc::NewLBL(this, "Число стержней ротора:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB(this, "Rotor_bars", 0, 10000, 0, paramcolor), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewLBL2(this, "Число стержней ротора:"), row, 1, 1, 1);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, "Rotor_bars", 0, 10000, 0), row, 2, 1, 3);
 
     row++;
-    gridlyout->addWidget(WDFunc::NewLBL(this, "Тип вибродатчика:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB(this, "VibroType", 0, 10000, 0, paramcolor), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewLBL2(this, "Тип вибродатчика:"), row, 1, 1, 1);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, "VibroType", 0, 10000, 0), row, 2, 1, 3);
 
     row++;
-    gridlyout->addWidget(WDFunc::NewLBL(this, "Подключенные датчики вибрации:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB(this, "Sensors", 0, 10000, 0, paramcolor), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewLBL2(this, "Подключенные датчики вибрации:"), row, 1, 1, 1);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, "Sensors", 0, 10000, 0), row, 2, 1, 3);
 
     vlyout2->addLayout(gridlyout);
     gb->setLayout(vlyout2);
@@ -388,7 +372,6 @@ void ConfKDVDialog::SetupUI()
     vlyout2 = new QVBoxLayout;
 
     gb->setTitle("Настройки протокола МЭК-60870-5-104");
-    gb->setFont(font);
 
     //    gridlyout->addWidget(Conf->SetupMainBlk(this), 0, 0, 1, 1);
     //    gridlyout->addWidget(ConfKxx->SetupComParam(this), 0, 1, 1, 1);
@@ -399,7 +382,6 @@ void ConfKDVDialog::SetupUI()
 
     gb = new QGroupBox("Настройка времени");
     vlyout2 = new QVBoxLayout;
-    gb->setFont(font);
 
     //    vlyout2->addWidget(Conf->SetupTime(this));
 
@@ -414,8 +396,7 @@ void ConfKDVDialog::SetupUI()
     QVBoxLayout *lyout = new QVBoxLayout;
     QTabWidget *ConfTW = new QTabWidget;
     ConfTW->setObjectName("conftw");
-    QString ConfTWss = "QTabBar::tab:selected {background-color: " + QString(Colors::TABCOLOR) + ";}";
-    ConfTW->tabBar()->setStyleSheet(ConfTWss);
+
     ConfTW->addTab(Analog_area, "Аналоговые");
 
     ConfTW->addTab(area2, "Уставки");
@@ -590,26 +571,18 @@ QWidget *ConfKDVDialog::analogWidget()
     QGridLayout *gridlyout = new QGridLayout;
     QScrollArea *scrollArea = new QScrollArea;
 
-    const QString tmps = "QWidget {background-color: " + QString(Colors::ACONFWCLR) + ";}";
-    widget->setStyleSheet(tmps);
-
-    scrollArea->setStyleSheet("QScrollArea {background-color: rgba(0,0,0,0);}");
     scrollArea->setFrameShape(QFrame::NoFrame);
     scrollArea->setWidgetResizable(true);
 
-    QString paramcolor = Colors::MAINWINCLR;
     QFont font;
 
     int row = 0;
     QGroupBox *gb = new QGroupBox("Аналоговые параметры");
-    font.setFamily("Times");
-    font.setPointSize(11);
-    gb->setFont(font);
 
     QLabel *lbl = new QLabel("Тип контролируемого оборудования:");
     gridlyout->addWidget(lbl, row, 1, 1, 1, Qt::AlignLeft);
     QStringList cbl = QStringList { "Асинхронный двигатель", "Трансформатор", "Реактор" };
-    auto *cb = WDFunc::NewCB(this, "Eq_type", cbl, paramcolor);
+    auto *cb = WDFunc::NewCB2(this, "Eq_type", cbl);
     cb->setMinimumHeight(20);
     gridlyout->addWidget(cb, row, 2, 1, 3);
     row++;
@@ -617,7 +590,7 @@ QWidget *ConfKDVDialog::analogWidget()
     lbl = new QLabel("Вид охлаждения:");
     gridlyout->addWidget(lbl, row, 1, 1, 1, Qt::AlignLeft);
     cbl = QStringList { "Естественное", "Принудительное" };
-    cb = WDFunc::NewCB(this, "Cool_type", cbl, paramcolor);
+    cb = WDFunc::NewCB2(this, "Cool_type", cbl);
     cb->setMinimumHeight(20);
     gridlyout->addWidget(cb, row, 2, 1, 3);
     row++;
@@ -625,81 +598,81 @@ QWidget *ConfKDVDialog::analogWidget()
     lbl = new QLabel("Материал обмотки:");
     gridlyout->addWidget(lbl, row, 1, 1, 1, Qt::AlignLeft);
     cbl = QStringList { "Медь", "Алюминий" };
-    cb = WDFunc::NewCB(this, "W_mat", cbl, paramcolor);
+    cb = WDFunc::NewCB2(this, "W_mat", cbl);
     cb->setMinimumHeight(20);
     gridlyout->addWidget(cb, row, 2, 1, 3);
     row++;
 
-    gridlyout->addWidget(WDFunc::NewLBL(this, "Номинальное линейное первичное напряжение, кВ:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB(this, "Unom1", 0, 10000, 2, paramcolor), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewLBL2(this, "Номинальное линейное первичное напряжение, кВ:"), row, 1, 1, 1);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, "Unom1", 0, 10000, 2), row, 2, 1, 3);
     row++;
 
-    gridlyout->addWidget(WDFunc::NewLBL(this, "Номинальное вторичное напряжение первой тройки, В:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB(this, "U2nom", 0, 10000, 1, paramcolor), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewLBL2(this, "Номинальное вторичное напряжение первой тройки, В:"), row, 1, 1, 1);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, "U2nom", 0, 10000, 1), row, 2, 1, 3);
     row++;
 
-    gridlyout->addWidget(WDFunc::NewLBL(this, "Номинальный первичный ток, кА:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB(this, "ITT1nom", 0, 10000, 0, paramcolor), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewLBL2(this, "Номинальный первичный ток, кА:"), row, 1, 1, 1);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, "ITT1nom", 0, 10000, 0), row, 2, 1, 3);
     row++;
 
-    gridlyout->addWidget(WDFunc::NewLBL(this, "Номинальный вторичный ток, А:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB(this, "ITT2nom", 0, 10000, 1, paramcolor), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewLBL2(this, "Номинальный вторичный ток, А:"), row, 1, 1, 1);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, "ITT2nom", 0, 10000, 1), row, 2, 1, 3);
     row++;
 
-    gridlyout->addWidget(WDFunc::NewLBL(this, "Номинальный ток контролируемой обмотки, À:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB(this, "Iwnom", 0, 10000, 1, paramcolor), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewLBL2(this, "Номинальный ток контролируемой обмотки, À:"), row, 1, 1, 1);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, "Iwnom", 0, 10000, 1), row, 2, 1, 3);
     row++;
 
-    gridlyout->addWidget(WDFunc::NewLBL(this, "Номинальная температура окружающей среды, °С:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB(this, "Tamb_nom", 0, 10000, 1, paramcolor), row, 2, 1, 3);
-    row++;
-
-    gridlyout->addWidget(
-        WDFunc::NewLBL(this, "Превышение температуры ННТ при номинальной нагрузке, °С:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB(this, "dTNNTnom", 0, 10000, 1, paramcolor), row, 2, 1, 3);
-    row++;
-
-    gridlyout->addWidget(WDFunc::NewLBL(this, "Коэффициент добавочных потерь:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB(this, "Kdob", 0, 10000, 1, paramcolor), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewLBL2(this, "Номинальная температура окружающей среды, °С:"), row, 1, 1, 1);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, "Tamb_nom", 0, 10000, 1), row, 2, 1, 3);
     row++;
 
     gridlyout->addWidget(
-        WDFunc::NewLBL(this, "Постоянная времени нагрева обмотки в номинальном режиме, мин:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB(this, "TauWnom", 0, 10000, 1, paramcolor), row, 2, 1, 3);
+        WDFunc::NewLBL2(this, "Превышение температуры ННТ при номинальной нагрузке, °С:"), row, 1, 1, 1);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, "dTNNTnom", 0, 10000, 1), row, 2, 1, 3);
     row++;
 
-    gridlyout->addWidget(WDFunc::NewLBL(this,
+    gridlyout->addWidget(WDFunc::NewLBL2(this, "Коэффициент добавочных потерь:"), row, 1, 1, 1);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, "Kdob", 0, 10000, 1), row, 2, 1, 3);
+    row++;
+
+    gridlyout->addWidget(
+        WDFunc::NewLBL2(this, "Постоянная времени нагрева обмотки в номинальном режиме, мин:"), row, 1, 1, 1);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, "TauWnom", 0, 10000, 1), row, 2, 1, 3);
+    row++;
+
+    gridlyout->addWidget(WDFunc::NewLBL2(this,
                              "Максимальное измеряемое фазное напряжение на входе "
                              "прибора, В эфф (не более 305В):"),
         row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB(this, "Umax", 0, 10000, 1, paramcolor), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, "Umax", 0, 10000, 1), row, 2, 1, 3);
     row++;
 
-    gridlyout->addWidget(WDFunc::NewLBL(this,
+    gridlyout->addWidget(WDFunc::NewLBL2(this,
                              "Максимальный измеряемый ток на входе "
                              "прибора, А эфф  (не более 33А):"),
         row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB(this, "Imax", 0, 10000, 1, paramcolor), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, "Imax", 0, 10000, 1), row, 2, 1, 3);
     row++;
 
-    gridlyout->addWidget(WDFunc::NewLBL(this,
+    gridlyout->addWidget(WDFunc::NewLBL2(this,
                              "Количество датчиков температуры обмоток, "
                              "подключенных по Modbus Master:"),
         row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB(this, "TdatNum", 0, 10000, 0, paramcolor), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, "TdatNum", 0, 10000, 0), row, 2, 1, 3);
     row++;
 
-    gridlyout->addWidget(WDFunc::NewLBL(this, "Номинальная частота, Гц"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB(this, "Fnom", 0, 1000, 1, paramcolor), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewLBL2(this, "Номинальная частота, Гц"), row, 1, 1, 1);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, "Fnom", 0, 1000, 1), row, 2, 1, 3);
     row++;
 
-    gridlyout->addWidget(WDFunc::NewLBL(this, "Номинальное скольжение"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB(this, "nom_slip", 0, 10000, 1, paramcolor), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewLBL2(this, "Номинальное скольжение"), row, 1, 1, 1);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, "nom_slip", 0, 10000, 1), row, 2, 1, 3);
     row++;
 
     gridlyout->addWidget(
-        WDFunc::NewLBL(this, "Максимальная амплитуда сигналов вибраций (1,25, 2,5, 5,0В)"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB(this, "UVmax", 0, 10000, 0, paramcolor), row, 2, 1, 3);
+        WDFunc::NewLBL2(this, "Максимальная амплитуда сигналов вибраций (1,25, 2,5, 5,0В)"), row, 1, 1, 1);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, "UVmax", 0, 10000, 0), row, 2, 1, 3);
     row++;
 
     gb->setLayout(gridlyout);

@@ -27,8 +27,6 @@ void FWUploadDialog::SetupUI()
 {
     QVBoxLayout *lyout = new QVBoxLayout;
     QGridLayout *glyout = new QGridLayout;
-    ETableView *tv = new ETableView;
-    tv->setObjectName("fwp");
 
     QString tmps = ((DEVICETYPE == DEVICETYPE_MODULE) ? "модуля" : "прибора");
     QPushButton *pb = WDFunc::NewPB(this, "", "Записать ПО в память " + tmps, this, &FWUploadDialog::LoadFW);
@@ -36,7 +34,7 @@ void FWUploadDialog::SetupUI()
         pb->setEnabled(false);
 
     glyout->addWidget(pb, 1, 1, 1, 1);
-    ;
+
     pb = WDFunc::NewPB(this, "", "Перейти на новое ПО", this, &FWUploadDialog::RunSoft);
     if (StdFunc::IsInEmulateMode())
         pb->setEnabled(false);
@@ -44,7 +42,6 @@ void FWUploadDialog::SetupUI()
     glyout->addWidget(pb, 2, 1, 1, 1);
 
     lyout->addLayout(glyout, Qt::AlignTop);
-    lyout->addWidget(tv, 89);
     setLayout(lyout);
 }
 

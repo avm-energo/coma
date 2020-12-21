@@ -18,7 +18,8 @@ void StyleLoader::attach(const QString &filename, QKeySequence key)
 {
     m_filename = filename;
     m_key = key;
-    //    qApp->installEventFilter(this);
+    // BUG Остальные eventFilter перестают работать
+    // qApp->installEventFilter(this);
     setAppStyleSheet();
 }
 

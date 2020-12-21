@@ -34,8 +34,6 @@ void BaseAlarm::setupUI(const QStringList &events)
     quint16 flagsCount = m_alarmFlags.count();
     quint16 eventsCount = events.size();
     Q_ASSERT(flagsCount == eventsCount);
-    QWidget *w = new QWidget;
-    //  w->setStyleSheet("QWidget {margin: 0; border-width: 0; padding: 0;};");
 
     QVBoxLayout *lyout = new QVBoxLayout;
     QVBoxLayout *vlayout = new QVBoxLayout;
@@ -48,14 +46,12 @@ void BaseAlarm::setupUI(const QStringList &events)
             continue;
         QHBoxLayout *hlyout = new QHBoxLayout;
         int number = i;
-        hlyout->addWidget(WDFunc::NewLBL(w, "", "transparent", QString::number(number)));
-        hlyout->addWidget(WDFunc::NewLBLT(w, events.at(j++), "", "", ""), 1);
+        hlyout->addWidget(WDFunc::NewLBL2(this, "", QString::number(number)));
+        hlyout->addWidget(WDFunc::NewLBLT2(this, events.at(j++)), 1);
         vlayout->addLayout(hlyout);
     }
-    w->setLayout(vlayout);
+    lyout->addLayout(vlayout);
 
-    lyout->addWidget(w);
-    //    lyout->addWidget(WDFunc::NewPB(this, "", "Ok", this, SLOT(hide())), 0);
     lyout->addWidget(WDFunc::NewPB(this, "", "Ok", static_cast<QWidget *>(this), &QWidget::hide), 0);
     setLayout(lyout);
 }

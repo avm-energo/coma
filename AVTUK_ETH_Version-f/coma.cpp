@@ -73,7 +73,7 @@ void registerForDeviceNotification(QWidget *ptr)
     HDEVNOTIFY blub;
     // NOTE Проверить со всеми модулями
     blub = RegisterDeviceNotification((HDEVNOTIFY)ptr->winId(), &devInt,
-        /*DEVICE_NOTIFY_ALL_INTERFACE_CLASSES*/ DBT_DEVTYP_OEM /*DEVICE_NOTIFY_WINDOW_HANDLE*/);
+        DEVICE_NOTIFY_ALL_INTERFACE_CLASSES /*DBT_DEVTYP_OEM*/ /*DEVICE_NOTIFY_WINDOW_HANDLE*/);
 }
 #endif
 
@@ -144,7 +144,6 @@ QToolBar *Coma::createToolBar()
 {
     QToolBar *tb = new QToolBar(this);
     tb->setContextMenuPolicy(Qt::PreventContextMenu);
-    // tb->setStyleSheet("QToolBar {background: 0px; margin: 0px; spacing: 5px; padding: 0px;}");
     tb->setIconSize(QSize(40, 40));
     tb->addAction(QIcon("images/tnstart.svg"), "Соединение", this, &Coma::StartWork);
     tb->addAction(QIcon("images/tnstop.svg"), "Разрыв соединения", this, &Coma::DisconnectAndClear);
@@ -179,8 +178,6 @@ void Coma::SetupUI()
     QString caption(PROGNAME);
     caption.append(" v. ").append(COMAVERSION);
     setWindowTitle(caption);
-    // QString tmps = "QMainWindow {background-color: " + QString(Colors::MAINWINCLR) + ";}";
-    // setStyleSheet(tmps);
     setMinimumSize(QSize(1050, 700));
     QWidget *wdgt = new QWidget(this);
     QVBoxLayout *lyout = new QVBoxLayout(wdgt);
@@ -257,11 +254,7 @@ QWidget *Coma::Least()
 void Coma::SetupMenubar()
 {
     QMenuBar *menubar = new QMenuBar(this);
-    //    QString tmps = "QMenuBar {background-color: " + QString(Colors::MAINWINCLRA1)
-    //        + ";}"
-    //          "QMenuBar::item {background-color: "
-    //        + QString(Colors::MAINWINCLRA1) + ";}";
-    //    menubar->setStyleSheet(tmps);
+
     QMenu *menu = new QMenu(this);
     menu->setTitle("Главное");
 
@@ -835,8 +828,8 @@ bool Coma::nativeEvent(const QByteArray &eventType, void *message, long *result)
             BdaTimer->start();
             AlrmTimer->start();
         }
-    }
 #endif
+    }
 
     return false;
 }

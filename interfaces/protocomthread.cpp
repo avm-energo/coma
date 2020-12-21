@@ -100,7 +100,7 @@ void ProtocomThread::parse()
 
 void ProtocomThread::clear()
 {
-    //    QMutexLocker locker(&_mutex);
+    QMutexLocker locker(&_mutex);
     isCommandRequested = false;
     m_readData.clear();
     progress = 0;
@@ -151,17 +151,18 @@ void ProtocomThread::handle(const Proto::Commands cmd)
     {
     case Commands::ResultOk:
 
-        // Ignore replies to splitted packet
+        // Ignore good replies to splitted packet
         // Не прибавляем никаких 1 или 2, надо будет проверить
         if (isSplitted(m_currentCommand.ba.size()))
         {
             // For first segment
             if (progress == NULL)
                 handleMaxProgress(m_currentCommand.ba.size());
+
             progress += Proto::Limits::MaxSegmenthLength;
-            // For last segment
             if (progress > m_currentCommand.ba.size())
             {
+                // For last segment
                 progress = m_currentCommand.ba.size();
                 handleProgress(progress);
             }
@@ -170,6 +171,7 @@ void ProtocomThread::handle(const Proto::Commands cmd)
                 handleProgress(progress);
                 return;
             }
+
             break;
         }
         //  GVar MS GMode MS
@@ -180,10 +182,13 @@ void ProtocomThread::handle(const Proto::Commands cmd)
         break;
 
     case Commands::ResultError:
+    {
+        const quint8 errorCode = m_buffer.second.front();
 
-        handleBool(false, m_buffer.first, m_buffer.second.front());
+        handleBool(false, m_buffer.first, errorCode);
+        emit errorOccurred(static_cast<Error::Msg>(errorCode));
         break;
-
+    }
     case Commands::ReadTime:
 
         handleBitString(m_buffer.second, addr);
@@ -211,6 +216,7 @@ void ProtocomThread::handle(const Proto::Commands cmd)
     case Commands::ReadBlkData:
 
         // Превосходный костыль для сигнализации
+        // FIXME Переделать
         if (addr != alarm_reg)
             handleFloatArray(m_buffer.second, addr, count);
         else
@@ -331,6 +337,8 @@ void ProtocomThread::fileHelper(DataTypes::FilesEnum fileNum)
         return;
     }
     }
+    isCommandRequested = false;
+
     QStringList drives = Files::Drives();
     if (drives.isEmpty())
     {
@@ -357,7 +365,6 @@ void ProtocomThread::fileHelper(DataTypes::FilesEnum fileNum)
     }
     QByteArray ba = file.readAll();
     handleFile(ba, fileNum, false);
-    isCommandRequested = false;
 }
 
 void ProtocomThread::parseRequest(const CommandStruct &cmdStr)
@@ -462,7 +469,7 @@ void ProtocomThread::parseResponse(QByteArray ba)
 #ifdef PROTOCOM_DEBUG
     qDebug("Start parse response");
 #endif
-    using namespace Proto;
+    // using namespace Proto;
 
     // QByteArray tmps = "<-" + ba.toHex() + "\n";
     // log->WriteRaw(tmps);
@@ -483,7 +490,7 @@ void ProtocomThread::parseResponse(QByteArray ba)
     switch (ba.front())
     {
 
-    case Response:
+    case Proto::Response:
     {
         ba.remove(0, 4);
         // TODO Проверять размер
@@ -492,8 +499,8 @@ void ProtocomThread::parseResponse(QByteArray ba)
         m_buffer.first += size;
         m_buffer.second.append(ba);
         // Потому что на эту команду модуль не отдает пустой ответ
-        if (isOneSegment(size) || (cmd == ReadBlkStartInfo))
-            handle(Commands(cmd));
+        if (isOneSegment(size) || (cmd == Proto::ReadBlkStartInfo))
+            handle(Proto::Commands(cmd));
         else
         {
 
@@ -714,8 +721,6 @@ void handleFile(QByteArray &ba, DataTypes::FilesEnum addr, bool isShouldRestored
             return;
         }
         DataManager::addSignalToOutList(DataTypes::ConfParametersList, outlist);
-        //        for (const auto &param : outlist)
-        //            DataManager::addSignalToOutList(DataTypes::ConfParameter, param);
     }
     else
     {

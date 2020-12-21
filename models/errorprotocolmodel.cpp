@@ -203,9 +203,11 @@ void ErrorProtocolModel::appendRow(ErrorMsg msg)
 void ErrorProtocolModel::initModel()
 {
     auto &queue = ErrorQueue::GetInstance();
-    ErrorQueue::GetInstance().setLastErrorIndex(queue.errMsgPool()->size());
-    while (!queue.errMsgPool()->empty())
+
+    m_dataptr.clear();
+    for (const auto &error : *queue.errMsgPool())
     {
-        appendRow(queue.popError());
+        appendRow(error);
     }
+    queue.clearCounter();
 }

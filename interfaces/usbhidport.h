@@ -13,6 +13,7 @@ namespace HID
 constexpr int MaxSegmenthLength = 64;
 // 20 ms main loop sleep
 constexpr unsigned MainLoopDelay = 20;
+constexpr char headerValidator[] = "[a-zA-Z]{3}(?=#)";
 
 } // namespace HID
 
@@ -33,6 +34,9 @@ public:
     void setDeviceInfo(const UsbHidSettings &deviceInfo);
 
     void nativeEvent(void *message);
+
+    bool shouldBeStopped() const;
+    void shouldBeStopped(bool isShouldBeStopped);
 
 signals:
     void dataReceived(QByteArray ba);
@@ -57,10 +61,12 @@ private:
     void clear();
     void deviceConnected(const UsbHidSettings &st);
     void deviceDisconnected(const UsbHidSettings &st);
+    void deviceConnected();
+    void deviceDisconnected();
     bool m_waitForReply;
     // QWaitCondition _waiter;
     hid_device *m_hidDevice;
-    bool m_isShouldBeStopped;
+    bool m_shouldBeStopped;
     LogClass *log;
     QMutex _mutex;
     QList<QByteArray> m_writeQueue;

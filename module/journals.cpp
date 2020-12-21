@@ -265,6 +265,7 @@ void Journals::FillJour(const DataTypes::FileStruct &fs)
         break;
     case DataTypes::JourSys:
         FillEventsTable(fs.filedata);
+        break;
     case DataTypes::JourWork:
         FillEventsTable(fs.filedata);
         break;

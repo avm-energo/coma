@@ -27,8 +27,8 @@ ConnectDialog::ConnectDialog(QWidget *parent) : QDialog(parent)
     setAttribute(Qt::WA_DeleteOnClose);
     QVBoxLayout *lyout = new QVBoxLayout;
 
-    lyout->addWidget(WDFunc::NewLBL(this, "Выберите интерфейс связи"));
-    lyout->addWidget(WDFunc::NewCB(this, "intercb", intersl));
+    lyout->addWidget(WDFunc::NewLBL2(this, "Выберите интерфейс связи"));
+    lyout->addWidget(WDFunc::NewCB2(this, "intercb", intersl));
     QHBoxLayout *hlyout = new QHBoxLayout;
     QPushButton *pb = new QPushButton("Далее");
     connect(pb, &QPushButton::clicked, this, &ConnectDialog::SetInterface);
@@ -127,18 +127,18 @@ void ConnectDialog::AddEth()
     dlg->setAttribute(Qt::WA_DeleteOnClose);
     QGridLayout *lyout = new QGridLayout;
     int count = 0;
-    lyout->addWidget(WDFunc::NewLBL(dlg, "Имя:"), count, 0, 1, 1, Qt::AlignLeft);
-    lyout->addWidget(WDFunc::NewLE(dlg, "namele"), count++, 1, 1, 7);
-    lyout->addWidget(WDFunc::NewLBL(dlg, "IP:"), count, 0, 1, 1, Qt::AlignLeft);
+    lyout->addWidget(WDFunc::NewLBL2(dlg, "Имя:"), count, 0, 1, 1, Qt::AlignLeft);
+    lyout->addWidget(WDFunc::NewLE2(dlg, "namele"), count++, 1, 1, 7);
+    lyout->addWidget(WDFunc::NewLBL2(dlg, "IP:"), count, 0, 1, 1, Qt::AlignLeft);
     for (int i = 0; i < 4; ++i)
     {
-        lyout->addWidget(WDFunc::NewLE(dlg, "iple." + QString::number(i)), count, (i * 2 + 1), 1, 1);
+        lyout->addWidget(WDFunc::NewLE2(dlg, "iple." + QString::number(i)), count, (i * 2 + 1), 1, 1);
         if (i != 3)
-            lyout->addWidget(WDFunc::NewLBL(dlg, "."), count, (i * 2 + 2), 1, 1);
+            lyout->addWidget(WDFunc::NewLBL2(dlg, "."), count, (i * 2 + 2), 1, 1);
     }
     ++count;
-    lyout->addWidget(WDFunc::NewLBL(dlg, "Адрес БС:"), count, 0, 1, 1, Qt::AlignLeft);
-    lyout->addWidget(WDFunc::NewSPB(dlg, "bsadrspb", 1, 255, 0), count++, 1, 1, 7);
+    lyout->addWidget(WDFunc::NewLBL2(dlg, "Адрес БС:"), count, 0, 1, 1, Qt::AlignLeft);
+    lyout->addWidget(WDFunc::NewSPB2(dlg, "bsadrspb", 1, 255, 0), count++, 1, 1, 7);
     lyout->addWidget(WDFunc::NewPB(dlg, "acceptpb", "Сохранить", this, &ConnectDialog::EthAccepted), count, 0, 1, 4);
     lyout->addWidget(WDFunc::NewPB(dlg, "cancelpb", "Отмена", [dlg] { dlg->close(); }), count, 4, 1, 3);
     dlg->setLayout(lyout);
@@ -346,24 +346,24 @@ void ConnectDialog::AddRs()
     dlg->setAttribute(Qt::WA_DeleteOnClose);
     QGridLayout *lyout = new QGridLayout;
     int count = 0;
-    lyout->addWidget(WDFunc::NewLBL(dlg, "Имя:"), count, 0, 1, 1, Qt::AlignLeft);
-    lyout->addWidget(WDFunc::NewLE(dlg, "namele"), count++, 1, 1, 1);
-    lyout->addWidget(WDFunc::NewLBL(dlg, "Порт:"), count, 0, 1, 1, Qt::AlignLeft);
-    lyout->addWidget(WDFunc::NewCB(dlg, "portcb", ports), count++, 1, 1, 1);
+    lyout->addWidget(WDFunc::NewLBL2(dlg, "Имя:"), count, 0, 1, 1, Qt::AlignLeft);
+    lyout->addWidget(WDFunc::NewLE2(dlg, "namele"), count++, 1, 1, 1);
+    lyout->addWidget(WDFunc::NewLBL2(dlg, "Порт:"), count, 0, 1, 1, Qt::AlignLeft);
+    lyout->addWidget(WDFunc::NewCB2(dlg, "portcb", ports), count++, 1, 1, 1);
     QStringList sl { "1200", "2400", "4800", "9600", "19200", "38400", "57600", "115200" };
-    lyout->addWidget(WDFunc::NewLBL(dlg, "Скорость:"), count, 0, 1, 1, Qt::AlignLeft);
-    lyout->addWidget(WDFunc::NewCB(dlg, "speedcb", sl), count++, 1, 1, 1);
+    lyout->addWidget(WDFunc::NewLBL2(dlg, "Скорость:"), count, 0, 1, 1, Qt::AlignLeft);
+    lyout->addWidget(WDFunc::NewCB2(dlg, "speedcb", sl), count++, 1, 1, 1);
     sl = QStringList() << "Нет"
                        << "Нечет"
                        << "Чет";
-    lyout->addWidget(WDFunc::NewLBL(dlg, "Чётность:"), count, 0, 1, 1, Qt::AlignLeft);
-    lyout->addWidget(WDFunc::NewCB(dlg, "paritycb", sl), count++, 1, 1, 1);
-    lyout->addWidget(WDFunc::NewLBL(dlg, "Стоп бит:"), count, 0, 1, 1, Qt::AlignLeft);
+    lyout->addWidget(WDFunc::NewLBL2(dlg, "Чётность:"), count, 0, 1, 1, Qt::AlignLeft);
+    lyout->addWidget(WDFunc::NewCB2(dlg, "paritycb", sl), count++, 1, 1, 1);
+    lyout->addWidget(WDFunc::NewLBL2(dlg, "Стоп бит:"), count, 0, 1, 1, Qt::AlignLeft);
     sl = QStringList() << "1"
                        << "2";
-    lyout->addWidget(WDFunc::NewCB(dlg, "stopbitcb", sl), count++, 1, 1, 1);
-    lyout->addWidget(WDFunc::NewLBL(dlg, "Адрес:"), count, 0, 1, 1, Qt::AlignLeft);
-    lyout->addWidget(WDFunc::NewSPB(dlg, "addressspb", 1, 255, 0), count++, 1, 1, 1);
+    lyout->addWidget(WDFunc::NewCB2(dlg, "stopbitcb", sl), count++, 1, 1, 1);
+    lyout->addWidget(WDFunc::NewLBL2(dlg, "Адрес:"), count, 0, 1, 1, Qt::AlignLeft);
+    lyout->addWidget(WDFunc::NewSPB2(dlg, "addressspb", 1, 255, 0), count++, 1, 1, 1);
     QHBoxLayout *hlyout = new QHBoxLayout;
     hlyout->addWidget(WDFunc::NewPB(dlg, "acceptpb", "Сохранить", this, &ConnectDialog::RsAccepted));
     hlyout->addWidget(WDFunc::NewPB(dlg, "cancelpb", "Отмена", [dlg] { dlg->close(); }));

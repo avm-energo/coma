@@ -15,14 +15,7 @@
 
 AlarmWidget::AlarmWidget(QWidget *parent) : UWidget(parent)
 {
-    //    Alarm = alarm;
 
-    // QMenu *menu = new QMenu;
-    //    QString tmps = "QMenuBar {background-color: " + QString(Colors::MAINWINCLR)
-    //        + ";}"
-    //          "QMenuBar::item {background-color: "
-    //        + QString(Colors::MAINWINCLR) + ";}";
-    // menu->setStyleSheet(tmps);
     QVBoxLayout *vlyout = new QVBoxLayout;
 
     QHBoxLayout *hlyout2 = new QHBoxLayout;
@@ -30,11 +23,7 @@ AlarmWidget::AlarmWidget(QWidget *parent) : UWidget(parent)
     setMinimumWidth(parent->width() / 2);
     // buttons.addButton()
     QStringList ButtonList { "AlarmButtonPressed", "ModuleWarnButtonPressed", "ModuleAlarmButtonPressed" };
-    // NOTE ничего не меняет
-    // setStyleSheet("QComa {background-color: " + QString(Colors::MAINWINCLR) + ";}");
 
-    // setStyleSheet("background-color: " + QString(Colors::MAINWINCLR) + "");
-    // setStyleSheet("background-color: rgba(0,0,0,0)");
     // for (int i = 0; i != buttonDescription.size(); i++)
     // {
     //        const QString text = buttonDescription.at(i);
