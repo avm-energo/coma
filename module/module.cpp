@@ -236,7 +236,10 @@ void Module::parentTWTabChanged(int index)
     //    }
     // UDialog *udlg = m_dialogs.at(m_oldTabIndex);
     for (auto &dialog : m_dialogs)
+    {
         dialog->setUpdatesDisabled();
+        dialog->setEnabled(false);
+    }
     //    UDialog *udlg = qobject_cast<UDialog *>(dlg);
     //    if (udlg)
     // udlg->setUpdatesDisabled();
@@ -248,6 +251,7 @@ void Module::parentTWTabChanged(int index)
     UDialog *udlg = m_dialogs.at(index);
     //    udlg = qobject_cast<UDialog *>(dlg);
     //    if (udlg)
+    udlg->setEnabled(true);
     udlg->setUpdatesEnabled();
     udlg->reqUpdate();
     // m_oldTabIndex = m_currentTabIndex;

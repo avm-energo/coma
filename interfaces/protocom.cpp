@@ -99,7 +99,7 @@ void Protocom::stop()
 
 void Protocom::reqTime()
 {
-    CommandStruct inp { Proto::Commands::ReadTime, 0, 0, {} };
+    CommandStruct inp { Proto::Commands::ReadTime, QVariant(), QVariant(), {} };
     DataManager::addToInQueue(inp);
     emit wakeUpParser();
 }

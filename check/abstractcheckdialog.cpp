@@ -300,7 +300,7 @@ void AbstractCheckDialog::StopAnalogMeasurements()
 
 void AbstractCheckDialog::reqUpdate()
 {
-    if (!m_updatesEnabled)
+    if (!updatesEnabled())
         return;
     for (auto &bd : m_BdUIList)
     {

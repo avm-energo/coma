@@ -27,6 +27,7 @@
 AbstractStartupDialog::AbstractStartupDialog(QWidget *parent) : UDialog(parent)
 {
     m_updateState = ThereWasNoUpdatesRecently;
+    setSuccessMsg("Стартовые значения записаны успешно");
 }
 
 void AbstractStartupDialog::SetStartupBlock(int blocknum, void *block, quint32 blocksize, quint32 startAdr)
@@ -149,7 +150,7 @@ void AbstractStartupDialog::updateFloatData()
 
 void AbstractStartupDialog::updateFloatData(const DataTypes::FloatStruct &fl)
 {
-    if (!m_updatesEnabled)
+    if (!updatesEnabled())
         return;
     // Игнорируем 4011 т.к. он нам не важен и все чужие регистры тоже игнорируем
     if (fl.sigAdr >= m_regMap.firstKey() && fl.sigAdr < m_regMap.lastKey())
@@ -215,7 +216,7 @@ void AbstractStartupDialog::uponInterfaceSetting()
 
 void AbstractStartupDialog::reqUpdate()
 {
-    if (m_updatesEnabled)
+    if (updatesEnabled())
     {
         switch (m_updateState)
         {

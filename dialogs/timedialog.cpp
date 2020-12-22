@@ -174,7 +174,7 @@ void TimeDialog::updateBitStringData(const DataTypes::BitStringStruct &bs)
 
 void TimeDialog::reqUpdate()
 {
-    if (m_updatesEnabled)
+    if (updatesEnabled())
     {
         BaseInterface::iface()->reqTime();
         //        uint unixtimestamp = 0;

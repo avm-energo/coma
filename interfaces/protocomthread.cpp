@@ -172,7 +172,7 @@ void ProtocomThread::handle(const Proto::Commands cmd)
                 return;
             }
 
-            break;
+            // break;
         }
         //  GVar MS GMode MS
         if (!m_buffer.second.isEmpty())
@@ -744,7 +744,8 @@ void handleBool(const bool status, int errorSize, int errorCode)
     }
     else
     {
-        DataTypes::GeneralResponseStruct resp { DataTypes::GeneralResponseTypes::Error, 0 };
+        quint64 buffer = errorCode;
+        DataTypes::GeneralResponseStruct resp { DataTypes::GeneralResponseTypes::Error, buffer };
         DataManager::addSignalToOutList(DataTypes::SignalTypes::GeneralResponse, resp);
         // Module error code
         qCritical() << "Error size: " << errorSize << "Error code: " << QString::number(errorCode, 16);
