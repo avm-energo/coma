@@ -64,6 +64,7 @@ void FWUploadDialog::LoadFW()
     auto firmwareS2 = S2::ParseHexToS2(ba);
     if (firmwareS2.isEmpty())
         qCritical() << Error::SizeError;
+    setSuccessMsg("ПО записано успешно");
     BaseInterface::iface()->writeS2File(DataTypes::Firmware, &firmwareS2);
     return;
 }
@@ -73,6 +74,7 @@ void FWUploadDialog::RunSoft()
     if (!checkPassword())
         return;
     // FIXME After create usb
+    setSuccessMsg("Переход на новое ПО выполнен успешно");
     BaseInterface::iface()->writeCommand(Queries::QC_StartFirmwareUpgrade);
     //        if (Commands::RunVPO() != Error::Msg::NoError)
     //        {
