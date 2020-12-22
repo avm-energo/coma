@@ -24,14 +24,14 @@ private:
     //    void FillBackBac(int bacnum) override;
     //    void GetBdAndFill() override;
     //    Error::Msg saveWorkConfig(int configblocknum) override;
-    QWidget *MainUI() override;
+    //    QWidget *MainUI() override;
 
     //    Error::Msg setSMode2();
     Error::Msg showScheme();
     Error::Msg check();
 private slots:
     //    int ReadAnalogMeasurements() override;
-    void setDefCoefs() override;
+    //    void setDefCoefs() override;
 };
 
 #endif // TUNEKIVCHECK_H

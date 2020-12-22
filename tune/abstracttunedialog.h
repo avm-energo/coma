@@ -63,8 +63,9 @@ public:
 
     void SetupUI();
     QWidget *TuneUI();
+    QWidget *MainUI();
     QWidget *BottomUI();
-    virtual QWidget *MainUI() = 0;
+    //    virtual QWidget *MainUI() = 0;
     //    int setConfigPtr(void *ptr, int size);
 
     void WaitNSeconds(int SecondsToWait, bool isAllowedToStop = false);
@@ -76,6 +77,7 @@ public:
     Error::Msg CheckPassword();
     virtual void setMessages() = 0;      // заполнить список сообщений
     virtual void setTuneFunctions() = 0; // заполнить список функций настройки
+    int addWidgetToTabWidget(QWidget *w, const QString &caption);
     //    void MsgSetVisible(int msg, bool Visible = true);
     void MsgSetVisible(MsgTypes type, int msg, bool Visible = true);
     //    void OkMsgSetVisible(int msg, bool Visible = true);
@@ -115,6 +117,13 @@ private:
 
     //    QMap<int, BlockStruct> AbsBac;
     QMap<int, DataBlock *> AbsBac;
+    struct MainWidgetStruct
+    {
+        QWidget *widget;
+        QString caption;
+    };
+    QList<MainWidgetStruct> m_mainWidgetList;
+
     //    BlockStruct InitialBci;
 
     void readTuneCoefsByBac(int bacnum);
@@ -132,6 +141,7 @@ signals:
     void setProgressCount(quint64 count);
 
 public slots:
+    void showTWTab(int index);
     void CancelTune();
     //    void ReadAllTuneCoefs();
     void writeTuneCoefsSlot();
@@ -140,7 +150,7 @@ public slots:
     //    void Good();
     //    void NoGood();
     //    Error::Msg StartMeasurement();
-    virtual void setDefCoefs() = 0;
+    //    virtual void setDefCoefs() = 0;
     //    void TuneReadCoefs(int);
 
     //    void SaveToFile();
@@ -150,6 +160,7 @@ public slots:
 
 private slots:
     void startTune();
+    //    void closeThis();
     //    void PasswordCheck(QString psw);
     //    virtual int ReadAnalogMeasurements() = 0;
     //    void UpdateNSecondsWidget();

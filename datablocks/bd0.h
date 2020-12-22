@@ -15,7 +15,7 @@ public:
 
     Bd0(QObject *parent = nullptr);
 
-    QWidget *widget() override;
+    void createWidget() override;
     void setDefBlock() override;
     void updateWidget() override;
     BlockData *data();

@@ -9,21 +9,22 @@ Bd0::Bd0(QObject *parent) : DataBlock(parent)
 {
     m_blockData = new BlockData;
     setBlock({ 0, "Общие", DataTypes::DataBlockTypes::BdBlock, m_blockData, sizeof(BlockData) });
+    createWidget();
 }
 
-QWidget *Bd0::widget()
+void Bd0::createWidget()
 {
-    QString ValuesFormat = "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; color: black;"
-                           "background-color: "
-        + QString(Colors::ColorsMap[Colors::AConfO]) + "; font: bold 10px;}";
+    //    QString ValuesFormat = "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; color: black;"
+    //                           "background-color: "
+    //        + QString(Colors::ColorsMap[Colors::AConfO]) + "; font: bold 10px;}";
     m_widget = new QWidget;
     QVBoxLayout *lyout = new QVBoxLayout;
     QHBoxLayout *hlyout = new QHBoxLayout;
-    hlyout->addWidget(WDFunc::NewLBL(m_widget, "Tmk0"), 0);
-    hlyout->addWidget(WDFunc::NewLBLT(m_widget, "", "tmk0", ValuesFormat, "Температура процессора"), 5);
+    hlyout->addWidget(WDFunc::NewLBL2(m_widget, "Tmk0"), 0);
+    hlyout->addWidget(WDFunc::NewLBLT2(m_widget, "", "tmk0", "Температура процессора"), 5);
     lyout->addLayout(hlyout);
-    hlyout->addWidget(WDFunc::NewLBL(m_widget, "VBat"), 0);
-    hlyout->addWidget(WDFunc::NewLBLT(m_widget, "", "vbat", ValuesFormat, "Напряжение батарейки"), 5);
+    hlyout->addWidget(WDFunc::NewLBL2(m_widget, "VBat"), 0);
+    hlyout->addWidget(WDFunc::NewLBLT2(m_widget, "", "vbat", "Напряжение батарейки"), 5);
     lyout->addLayout(hlyout);
     lyout->addStretch(100);
     //    ETableView *tv = new ETableView;
@@ -44,7 +45,6 @@ QWidget *Bd0::widget()
     //    tv->setModel(m_VModel);
     //    vlyout->addWidget(tv);
     m_widget->setLayout(lyout);
-    return m_widget;
 }
 
 void Bd0::setDefBlock()

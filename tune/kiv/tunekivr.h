@@ -18,11 +18,12 @@ private:
     ConfigKIV *CKIV;
     double m_pt100;
     int m_curTuneStep;
-    TuneKIV::Bda_in m_bdain;
+    BdaIn m_bdain;
+    int m_BacWidgetIndex, m_BdaWidgetIndex;
 
     void setMessages() override;
     void setTuneFunctions() override;
-    QWidget *MainUI() override;
+    //    QWidget *MainUI() override;
 
     Error::Msg showPreWarning();
     Error::Msg checkTuneCoefs();
@@ -34,10 +35,10 @@ private:
     void setR(int r);
     double processR(); // get BDA.Pt100 several times and return back value
 
-    void showTWTab(int num);
+    //    void showTWTab(int num);
 
 private slots:
-    void setDefCoefs() override;
+    //    void setDefCoefs() override;
 };
 
 #endif // TUNEKIVMAIN_H

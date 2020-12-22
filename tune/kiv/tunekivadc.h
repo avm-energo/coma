@@ -19,14 +19,14 @@ private:
     double m_pt100;
     bool m_isEnergoMonitorDialogCreated;
     int m_curTuneStep;
-    TuneKIV::Bda_in m_bdain;
+    BdaIn::BlockData m_bdain;
     //    TuneKIV::Bac m_bac;
 
     void setMessages() override;
     void setTuneFunctions() override;
     //    void FillBac(int bacnum);
     //    void FillBackBac(int bacnum);
-    QWidget *MainUI() override;
+    //    QWidget *MainUI() override;
 
     Error::Msg showPreWarning();
     Error::Msg ADCCoef1();
@@ -42,7 +42,7 @@ private:
     Error::Msg ADCCoef(int coef);
     Error::Msg setADCCoef(int coef);
     Error::Msg showRetomDialog(int coef);
-    void showTWTab(int num);
+    //    void showTWTab(int num);
     QWidget *BdWidget();
     bool checkBdaIn();
     Error::Msg showEnergomonitorInputDialog();
@@ -50,7 +50,7 @@ private:
 
 private slots:
     void CalcTuneCoefs();
-    void setDefCoefs() override;
+    //    void setDefCoefs() override;
 };
 
 #endif // TUNEKIVADC_H

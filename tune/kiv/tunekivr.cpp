@@ -15,6 +15,8 @@ TuneKIVR::TuneKIVR(int tuneStep, ConfigKIV *ckiv, TuneKIV *kiv, QWidget *parent)
     //    m_tuneStep = 1;
     //    SetBac(TKIV->m_Bac, 1, sizeof(TKIV->m_Bac));
     SetBac(TKIV->m_Bac);
+    m_BacWidgetIndex = addWidgetToTabWidget(TKIV->m_Bac->widget(), "Настроечные параметры");
+    m_BdaWidgetIndex = addWidgetToTabWidget(TKIV->m_Bda->widget(), "Текущие данные");
     //    SetupUI();
     //    m_isEnergoMonitorDialogCreated = false;
     SetupUI();
@@ -66,23 +68,24 @@ void TuneKIVR::setTuneFunctions()
 //    Q_UNUSED(bacnum)
 //}
 
-QWidget *TuneKIVR::MainUI()
-{
-    QWidget *w = new QWidget;
-    QVBoxLayout *lyout = new QVBoxLayout;
-    QTabWidget *tw = new QTabWidget;
-    tw->setObjectName("tunetw");
-    QString ConfTWss = "QTabBar::tab:selected {background-color: " + QString(Colors::Tab) + ";}";
-    tw->tabBar()->setStyleSheet(ConfTWss);
-    tw->addTab(TKIV->m_Bac->widget(), "Настроечные параметры");
-    tw->addTab(TKIV->BdaWidget(), "Текущие данные");
-    lyout->addWidget(tw);
-    w->setLayout(lyout);
-    return w;
-}
+// QWidget *TuneKIVR::MainUI()
+//{
+//    QWidget *w = new QWidget;
+//    QVBoxLayout *lyout = new QVBoxLayout;
+//    QTabWidget *tw = new QTabWidget;
+//    tw->setObjectName("tunetw");
+// //    QString ConfTWss = "QTabBar::tab:selected {background-color: " + QString(Colors::Tab) + ";}";
+// //    tw->tabBar()->setStyleSheet(ConfTWss);
+//    tw->addTab(TKIV->m_Bac->widget(), "Настроечные параметры");
+//    tw->addTab(TKIV->BdaWidget(), "Текущие данные");
+//    lyout->addWidget(tw);
+//    w->setLayout(lyout);
+//    return w;
+//}
 
 Error::Msg TuneKIVR::showPreWarning()
 {
+    showTWTab(m_BacWidgetIndex);
     QDialog *dlg = new QDialog;
     QVBoxLayout *lyout = new QVBoxLayout;
 
@@ -161,6 +164,7 @@ Error::Msg TuneKIVR::processR120()
     TKIV->m_Bac->data()->Art = (pt100_120 - m_pt100) / 40;
     TKIV->m_Bac->data()->Brt = pt100_120 * 2 - m_pt100 * 3;
     TKIV->m_Bac->updateWidget();
+    showTWTab(m_BacWidgetIndex);
     //    TKIV->updateBacWidget();
     saveAllTuneCoefs();
     writeTuneCoefs();
@@ -177,14 +181,16 @@ void TuneKIVR::setR(int r)
 double TuneKIVR::processR()
 {
     //    startWait();
+    showTWTab(m_BdaWidgetIndex);
     emit setProgressSize(StdFunc::tuneRequestCount());
     int i = 0;
     double pt100 = 0.0;
     while ((!StdFunc::isCancelled()) && (i < StdFunc::tuneRequestCount()))
     {
-        BaseInterface::iface()->reqBlockSync(1, DataTypes::DataBlockTypes::BdaBlock, &TKIV->m_Bda, sizeof(TKIV->m_Bda));
-        TKIV->updateBdaWidget();
-        pt100 += TKIV->m_Bda.Pt100;
+        TKIV->m_Bda->readAndUpdate();
+        //        BaseInterface::iface()->reqBlockSync(1, DataTypes::DataBlockTypes::BdaBlock, &TKIV->m_Bda,
+        //        sizeof(TKIV->m_Bda)); TKIV->updateBdaWidget();
+        pt100 += TKIV->m_Bda->data()->Pt100;
         ++i;
         emit setProgressCount(i);
         StdFunc::Wait(500);
@@ -196,12 +202,12 @@ double TuneKIVR::processR()
     return pt100;
 }
 
-void TuneKIVR::showTWTab(int num)
-{
-    QTabWidget *tw = this->findChild<QTabWidget *>("tunetw");
-    if (tw != nullptr)
-        tw->setCurrentIndex(num);
-}
+// void TuneKIVR::showTWTab(int num)
+//{
+//    QTabWidget *tw = this->findChild<QTabWidget *>("tunetw");
+//    if (tw != nullptr)
+//        tw->setCurrentIndex(num);
+//}
 
 // void TuneKIVMain::saveIntermediateResults()
 //{
@@ -227,7 +233,7 @@ void TuneKIVR::showTWTab(int num)
 //    loadWorkConfig();
 //}
 
-void TuneKIVR::setDefCoefs()
-{
-    TKIV->m_Bac->setDefBlockAndUpdate();
-}
+// void TuneKIVR::setDefCoefs()
+//{
+//    TKIV->m_Bac->setDefBlockAndUpdate();
+//}

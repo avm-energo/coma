@@ -20,6 +20,9 @@ TuneKIVTemp60::TuneKIVTemp60(int tuneStep, ConfigKIV *ckiv, TuneKIV *tkiv, QWidg
     //        return;
     //    SetBac(&TKIV->m_Bac, 1, sizeof(TKIV->m_Bac));
     SetBac(TKIV->m_Bac);
+    addWidgetToTabWidget(TKIV->m_Bac->widget(), "Настроечные параметры");
+    addWidgetToTabWidget(TKIV->m_Bdain->widget(), "Текущие данные");
+    addWidgetToTabWidget(TKIV->m_Bd0->widget(), "Общие данные");
     //    AddBac(&m_Bac_block, M_BACBLOCKNUM, sizeof(m_Bac_block));
     SetupUI();
 }
@@ -73,21 +76,21 @@ void TuneKIVTemp60::setTuneFunctions()
 //    Q_UNUSED(bacnum);
 //}
 
-QWidget *TuneKIVTemp60::MainUI()
-{
-    QWidget *w = new QWidget;
-    QVBoxLayout *lyout = new QVBoxLayout;
-    QTabWidget *tw = new QTabWidget;
-    tw->setObjectName("tunetw");
-    QString ConfTWss = "QTabBar::tab:selected {background-color: " + QString(Colors::Tab) + ";}";
-    tw->tabBar()->setStyleSheet(ConfTWss);
-    tw->addTab(TKIV->m_Bac->widget(), "Настроечные параметры");
-    tw->addTab(TKIV->BdaWidget(), "Текущие данные");
-    tw->addTab(TKIV->m_Bd0->widget(), "Общие данные");
-    lyout->addWidget(tw);
-    w->setLayout(lyout);
-    return w;
-}
+// QWidget *TuneKIVTemp60::MainUI()
+//{
+//    QWidget *w = new QWidget;
+//    QVBoxLayout *lyout = new QVBoxLayout;
+//    QTabWidget *tw = new QTabWidget;
+//    tw->setObjectName("tunetw");
+//    QString ConfTWss = "QTabBar::tab:selected {background-color: " + QString(Colors::Tab) + ";}";
+//    tw->tabBar()->setStyleSheet(ConfTWss);
+//    tw->addTab(TKIV->m_Bac->widget(), "Настроечные параметры");
+//    tw->addTab(TKIV->BdaWidget(), "Текущие данные");
+//    tw->addTab(TKIV->m_Bd0->widget(), "Общие данные");
+//    lyout->addWidget(tw);
+//    w->setLayout(lyout);
+//    return w;
+//}
 
 Error::Msg TuneKIVTemp60::setNewConfAndTune()
 {
@@ -177,18 +180,20 @@ Error::Msg TuneKIVTemp60::analogMeasurement()
     m_midTuneStruct.tmk = 0.0;
     while ((!StdFunc::isCancelled()) && (i < StdFunc::tuneRequestCount()))
     {
-        BaseInterface::iface()->reqBlockSync(
-            1, DataTypes::DataBlockTypes::BdBlock, &TKIV->m_Bda_in, sizeof(TKIV->m_Bda_in));
-        BaseInterface::iface()->reqBlockSync(
-            0, DataTypes::DataBlockTypes::BdBlock, TKIV->m_Bd0->data(), sizeof(Bd0::BlockData));
-        TKIV->updateBdaInWidget();
-        //        TKIV->updateBd0Widget();
-        TKIV->m_Bd0->updateWidget();
+        //        BaseInterface::iface()->reqBlockSync(
+        //            1, DataTypes::DataBlockTypes::BdBlock, &TKIV->m_Bda_in, sizeof(TKIV->m_Bda_in));
+        //        BaseInterface::iface()->reqBlockSync(
+        //            0, DataTypes::DataBlockTypes::BdBlock, TKIV->m_Bd0->data(), sizeof(Bd0::BlockData));
+        //        TKIV->updateBdaInWidget();
+        //        //        TKIV->updateBd0Widget();
+        //        TKIV->m_Bd0->updateWidget();
+        TKIV->m_Bd0->readAndUpdate();
+        TKIV->m_Bdain->readAndUpdate();
         for (int j = 0; j < 6; ++j)
         {
-            m_midTuneStruct.u[j] += TKIV->m_Bda_in.IUefNat_filt[j];
+            m_midTuneStruct.u[j] += TKIV->m_Bdain->data()->IUefNat_filt[j];
             if (j < 3)
-                m_midTuneStruct.y[j] += TKIV->m_Bda_in.phi_next_f[j + 3];
+                m_midTuneStruct.y[j] += TKIV->m_Bdain->data()->phi_next_f[j + 3];
         }
         //        m_midTuneStruct.tmk += TKIV->m_Bd0.Tmk;
         m_midTuneStruct.tmk += TKIV->m_Bd0->data()->Tmk;
@@ -313,8 +318,8 @@ void TuneKIVTemp60::acceptTuneCoefs()
     TKIV->m_Bac->writeBlockToModule();
 }
 
-void TuneKIVTemp60::setDefCoefs()
-{
-    TKIV->m_Bac->setDefBlockAndUpdate();
-    TKIV->m_Bd0->setDefBlockAndUpdate();
-}
+// void TuneKIVTemp60::setDefCoefs()
+//{
+//    TKIV->m_Bac->setDefBlockAndUpdate();
+//    TKIV->m_Bd0->setDefBlockAndUpdate();
+//}

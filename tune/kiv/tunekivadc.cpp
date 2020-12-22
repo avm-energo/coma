@@ -16,6 +16,9 @@ TuneKIVADC::TuneKIVADC(int tuneStep, ConfigKIV *ckiv, TuneKIV *kiv, QWidget *par
     //    m_tuneStep = 1;
     //    SetBac(TKIV->m_Bac, 1, sizeof(TKIV->m_Bac));
     SetBac(TKIV->m_Bac);
+    addWidgetToTabWidget(TKIV->m_Bac->widget(), "Настроечные параметры");
+    addWidgetToTabWidget(TKIV->m_Bdain->widget(), "Текущие данные");
+    addWidgetToTabWidget(TKIV->m_Bd0->widget(), "Общие данные");
     //    SetupUI();
     m_isEnergoMonitorDialogCreated = false;
     SetupUI();
@@ -97,21 +100,21 @@ void TuneKIVADC::setTuneFunctions()
 //    Q_UNUSED(bacnum)
 //}
 
-QWidget *TuneKIVADC::MainUI()
-{
-    QWidget *w = new QWidget;
-    QVBoxLayout *lyout = new QVBoxLayout;
-    QTabWidget *tw = new QTabWidget;
-    tw->setObjectName("tunetw");
-    QString ConfTWss = "QTabBar::tab:selected {background-color: " + QString(Colors::Tab) + ";}";
-    tw->tabBar()->setStyleSheet(ConfTWss);
-    tw->addTab(TKIV->m_Bac->widget(), "Настроечные параметры");
-    tw->addTab(TKIV->BdaWidget(), "Текущие данные");
-    tw->addTab(TKIV->m_Bd0->widget(), "Общие данные");
-    lyout->addWidget(tw);
-    w->setLayout(lyout);
-    return w;
-}
+// QWidget *TuneKIVADC::MainUI()
+//{
+//    QWidget *w = new QWidget;
+//    QVBoxLayout *lyout = new QVBoxLayout;
+//    QTabWidget *tw = new QTabWidget;
+//    tw->setObjectName("tunetw");
+//    QString ConfTWss = "QTabBar::tab:selected {background-color: " + QString(Colors::Tab) + ";}";
+//    tw->tabBar()->setStyleSheet(ConfTWss);
+//    tw->addTab(TKIV->m_Bac->widget(), "Настроечные параметры");
+//    tw->addTab(TKIV->BdaWidget(), "Текущие данные");
+//    tw->addTab(TKIV->m_Bd0->widget(), "Общие данные");
+//    lyout->addWidget(tw);
+//    w->setLayout(lyout);
+//    return w;
+//}
 
 Error::Msg TuneKIVADC::showPreWarning()
 {
@@ -157,15 +160,16 @@ Error::Msg TuneKIVADC::ADCCoef(int coef)
     }
     while ((!StdFunc::isCancelled()) && (i < StdFunc::tuneRequestCount()))
     {
-        BaseInterface::iface()->reqBlockSync(
-            1, DataTypes::DataBlockTypes::BdBlock, &TKIV->m_Bda_in, sizeof(TKIV->m_Bda_in));
+        TKIV->m_Bdain->readAndUpdate();
+        //        BaseInterface::iface()->reqBlockSync(
+        //            1, DataTypes::DataBlockTypes::BdBlock, &TKIV->m_Bda_in, sizeof(TKIV->m_Bda_in));
         if (checkBdaIn())
         {
-            TKIV->updateBdaInWidget();
+            //            TKIV->updateBdaInWidget();
             for (int j = 0; j < 6; ++j)
             {
-                m_bdain.IUefNat_filt[j] += TKIV->m_Bda_in.IUefNat_filt[j];
-                m_bdain.phi_next_f[j] += TKIV->m_Bda_in.phi_next_f[j];
+                m_bdain.IUefNat_filt[j] += TKIV->m_Bdain->data()->IUefNat_filt[j];
+                m_bdain.phi_next_f[j] += TKIV->m_Bdain->data()->phi_next_f[j];
             }
         }
         ++i;
@@ -223,9 +227,10 @@ Error::Msg TuneKIVADC::Tmk0()
     {
         //        BaseInterface::iface()->reqBlockSync(0, DataTypes::DataBlockTypes::BdBlock, &TKIV->m_Bd0,
         //        sizeof(TKIV->m_Bd0));
-        BaseInterface::iface()->reqBlockSync(
-            0, DataTypes::DataBlockTypes::BdBlock, TKIV->m_Bd0->data(), sizeof(Bd0::BlockData));
-        TKIV->m_Bd0->updateWidget();
+        //        BaseInterface::iface()->reqBlockSync(
+        //            0, DataTypes::DataBlockTypes::BdBlock, TKIV->m_Bd0->data(), sizeof(Bd0::BlockData));
+        //        TKIV->m_Bd0->updateWidget();
+        TKIV->m_Bd0->readAndUpdate();
         //        TKIV->updateBd0Widget();
         tmk0 += TKIV->m_Bd0->data()->Tmk;
         ++i;
@@ -254,9 +259,10 @@ Error::Msg TuneKIVADC::CheckTune()
     m_finished = false;
     while ((!StdFunc::isCancelled()) && !m_finished)
     {
-        BaseInterface::iface()->reqBlockSync(
-            1, DataTypes::DataBlockTypes::BdBlock, &TKIV->m_Bda_in, sizeof(TKIV->m_Bda_in));
-        TKIV->updateBdaInWidget();
+        //        BaseInterface::iface()->reqBlockSync(
+        //            1, DataTypes::DataBlockTypes::BdBlock, &TKIV->m_Bda_in, sizeof(TKIV->m_Bda_in));
+        //        TKIV->updateBdaInWidget();
+        TKIV->m_Bdain->readAndUpdate();
         StdFunc::Wait(500);
     }
     if (StdFunc::isCancelled())
@@ -310,28 +316,28 @@ Error::Msg TuneKIVADC::showRetomDialog(int coef)
     return Error::Msg::NoError;
 }
 
-void TuneKIVADC::showTWTab(int num)
-{
-    QTabWidget *tw = this->findChild<QTabWidget *>("tunetw");
-    if (tw != nullptr)
-        tw->setCurrentIndex(num);
-}
+// void TuneKIVADC::showTWTab(int num)
+//{
+//    QTabWidget *tw = this->findChild<QTabWidget *>("tunetw");
+//    if (tw != nullptr)
+//        tw->setCurrentIndex(num);
+//}
 
 bool TuneKIVADC::checkBdaIn()
 {
     for (int i = 0; i < 3; ++i)
     {
-        if (StdFunc::floatIsWithinLimits(this, TKIV->m_Bda_in.IUefNat_filt[i], 57.75, 3.0))
+        if (StdFunc::floatIsWithinLimits(this, TKIV->m_Bdain->data()->IUefNat_filt[i], 57.75, 3.0))
         {
-            if (StdFunc::floatIsWithinLimits(this, TKIV->m_Bda_in.IUeff_filtered[i], 57.75, 3.0))
+            if (StdFunc::floatIsWithinLimits(this, TKIV->m_Bdain->data()->IUeff_filtered[i], 57.75, 3.0))
             {
-                if (StdFunc::floatIsWithinLimits(this, TKIV->m_Bda_in.IUefNat_filt[i + 3], 290, 10))
+                if (StdFunc::floatIsWithinLimits(this, TKIV->m_Bdain->data()->IUefNat_filt[i + 3], 290, 10))
                 {
-                    if (StdFunc::floatIsWithinLimits(this, TKIV->m_Bda_in.IUeff_filtered[i + 3], 290, 10))
+                    if (StdFunc::floatIsWithinLimits(this, TKIV->m_Bdain->data()->IUeff_filtered[i + 3], 290, 10))
                     {
-                        if (StdFunc::floatIsWithinLimits(this, TKIV->m_Bda_in.phi_next_f[i], 0, 1))
+                        if (StdFunc::floatIsWithinLimits(this, TKIV->m_Bdain->data()->phi_next_f[i], 0, 1))
                         {
-                            if (StdFunc::floatIsWithinLimits(this, TKIV->m_Bda_in.phi_next_f[i + 3], 90, 1))
+                            if (StdFunc::floatIsWithinLimits(this, TKIV->m_Bdain->data()->phi_next_f[i + 3], 90, 1))
                                 continue;
                         }
                     }
@@ -340,7 +346,7 @@ bool TuneKIVADC::checkBdaIn()
         }
         return false;
     }
-    if (StdFunc::floatIsWithinLimits(this, TKIV->m_Bda_in.Pt100_R, 100, 5))
+    if (StdFunc::floatIsWithinLimits(this, TKIV->m_Bdain->data()->Pt100_R, 100, 5))
         return true;
     return false;
 }
@@ -481,7 +487,7 @@ void TuneKIVADC::CalcTuneCoefs()
         dlg->close();
 }
 
-void TuneKIVADC::setDefCoefs()
-{
-    TKIV->m_Bac->setDefBlockAndUpdate();
-}
+// void TuneKIVADC::setDefCoefs()
+//{
+//    TKIV->m_Bac->setDefBlockAndUpdate();
+//}

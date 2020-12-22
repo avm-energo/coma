@@ -33,6 +33,8 @@ SOURCES += \
     ../datablocks/bd0.cpp \
     ../datablocks/datablock.cpp \
     ../datablocks/kiv/bac.cpp \
+    ../datablocks/kiv/bda.cpp \
+    ../datablocks/kiv/bdain.cpp \
     ../gen/errorqueue.cpp \
     ../gen/helper.cpp \
     ../interfaces/usbhidsettings.cpp \
@@ -113,7 +115,6 @@ SOURCES += \
     ../tune/kiv/tunekivcheck.cpp \
     ../tune/kiv/tunekivdialog.cpp \
     ../tune/kiv/tunekivtemp60.cpp \
-    ../tune/tuneclass.cpp \
     ../widgets/alarmwidget.cpp \
     ../widgets/alarmbutton.cpp \
     ../widgets/alarmstateall.cpp \
@@ -137,6 +138,8 @@ HEADERS += \
     ../datablocks/bd0.h \
     ../datablocks/datablock.h \
     ../datablocks/kiv/bac.h \
+    ../datablocks/kiv/bda.h \
+    ../datablocks/kiv/bdain.h \
     ../gen/errorqueue.h \
     ../gen/helper.h \
     ../interfaces/usbhidsettings.h \
@@ -222,7 +225,6 @@ HEADERS += \
     ../tune/kiv/tunekiv.h \
     ../tune/kiv/tunekivdialog.h \
     ../tune/kiv/tunekivtemp60.h \
-    ../tune/tuneclass.h \
     ../widgets/alarmbutton.h \
     ../widgets/alarmstateall.h \
     ../widgets/alarmwidget.h \

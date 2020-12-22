@@ -52,6 +52,13 @@ void DataBlock::setBlock(const DataBlock::BlockStruct &bds)
     m_block = bds;
 }
 
+QWidget *DataBlock::widget()
+{
+    if (!m_widgetIsSet)
+        createWidget();
+    return m_widget;
+}
+
 // void DataBlock::setModel(const QList<ValueItem *> &dd, int columnsnumber)
 //{
 //    m_VModel->setModel(dd, columnsnumber);
