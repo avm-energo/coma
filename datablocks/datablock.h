@@ -37,6 +37,7 @@ public:
               { DataTypes::DataBlockTypes::BdaBlock, { ".bda", "Simple data files (*.bda)" } } };
 
     bool m_widgetIsSet;
+    QWidget *m_widget;
 
     inline const QString cpuIDFilenameStr()
     {
@@ -45,11 +46,13 @@ public:
         return filenamestr;
     }
     explicit DataBlock(QObject *parent = nullptr);
+    ~DataBlock();
     void setBlock(const BlockStruct &bds);
     //    virtual void setupUI() = 0;                                     // frontend for block visualisation
     //    void setModel(const QList<ValueItem *> &dd, int columnsnumber); // default columnsnumber = 5
     //    QWidget *widget();
-    virtual QWidget *widget() = 0;
+    QWidget *widget();
+    virtual void createWidget() = 0;
     BlockStruct block();
     virtual void setDefBlock() = 0;
     virtual void updateWidget() = 0;

@@ -11,9 +11,10 @@ Bac::Bac(QObject *parent) : DataBlock(parent)
 {
     m_blockData = new BlockData;
     setBlock({ 2, "Настроечные параметры", DataTypes::DataBlockTypes::BacBlock, m_blockData, sizeof(BlockData) });
+    createWidget();
 }
 
-QWidget *Bac::widget()
+void Bac::createWidget()
 {
     QString ValuesFormat = "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; color: black;"
                            "background-color: "
@@ -164,13 +165,13 @@ QWidget *Bac::widget()
     lyout->addStretch(100);
     m_widget->setLayout(lyout);
     m_widgetIsSet = true;
-    return m_widget;
+    //    return m_widget;
 }
 
 void Bac::setDefBlock()
 {
-    m_blockData->Art = 44.65f;
-    m_blockData->Brt = 3345.75f;
+    m_blockData->Art = 81.5f;
+    m_blockData->Brt = 6033.0f;
     m_blockData->Tmk0 = 24;
     m_blockData->K_freq = 1;
 
@@ -188,14 +189,15 @@ void Bac::setDefBlock()
         m_blockData->KmI16[i] = 1;
         m_blockData->KmI2[i] = 1;
         m_blockData->KmI32[i] = 1;
+        m_blockData->KmI4[i] = 1;
         m_blockData->KmI8[i] = 1;
         m_blockData->N1_TT[i] = 10;
         m_blockData->TKPsi_a[i] = 0;
         m_blockData->TKPsi_b[i] = 0;
     }
-    m_blockData->KmI4[0] = 0.997060814f;
-    m_blockData->KmI4[1] = 0.993458061f;
-    m_blockData->KmI4[2] = 0.992731500f;
+    //    m_blockData->KmI4[0] = 0.997060814f;
+    //    m_blockData->KmI4[1] = 0.993458061f;
+    //    m_blockData->KmI4[2] = 0.992731500f;
 }
 
 void Bac::updateWidget()

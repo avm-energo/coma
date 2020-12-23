@@ -241,7 +241,7 @@ void AlarmWidget::addAlarm(BaseAlarm *alarm)
     //    alarm->setInterface(iface());
     if (!m_timer->isActive())
         m_timer->start();
-    connect(m_timer, &QTimer::timeout, alarm, &BaseAlarm::reqUpdate);
+    // temporarily disabled !!!    connect(m_timer, &QTimer::timeout, alarm, &BaseAlarm::reqUpdate);
     connect(alarm, &BaseAlarm::updateColor, pb, [=](QColor color) { pb->setPixmap(WDFunc::NewCircle(color, 15)); });
 
     QString alarmName = alarm->metaObject()->className();

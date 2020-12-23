@@ -57,10 +57,10 @@ void TuneKIVCheck::setTuneFunctions()
     m_tuneFunctions[m_messages.at(count++)] = func;
 }
 
-QWidget *TuneKIVCheck::MainUI()
-{
-    return nullptr;
-}
+// QWidget *TuneKIVCheck::MainUI()
+//{
+//    return nullptr;
+//}
 
 // void TuneKIVCheck::FillBac(int bacnum)
 //{
@@ -112,20 +112,22 @@ Error::Msg TuneKIVCheck::showScheme()
 
 Error::Msg TuneKIVCheck::check()
 {
-    BaseInterface::iface()->reqBlockSync(1, DataTypes::DataBlockTypes::BdaBlock, &TKIV->m_Bda, sizeof(TKIV->m_Bda));
+    TKIV->m_Bda->readAndUpdate();
+    //    BaseInterface::iface()->reqBlockSync(1, DataTypes::DataBlockTypes::BdaBlock, &TKIV->m_Bda,
+    //    sizeof(TKIV->m_Bda));
     for (int i = 0; i < 3; ++i)
-        if (!StdFunc::floatIsWithinLimits(this, TKIV->m_Bda.Ueff_ADC[i], 2150000.0, 150000.0))
+        if (!StdFunc::floatIsWithinLimits(this, TKIV->m_Bda->data()->Ueff_ADC[i], 2150000.0, 150000.0))
             return Error::Msg::GeneralError;
     for (int i = 3; i < 6; ++i)
-        if (!StdFunc::floatIsWithinLimits(this, TKIV->m_Bda.Ueff_ADC[i], 973000.0, 50000.0))
+        if (!StdFunc::floatIsWithinLimits(this, TKIV->m_Bda->data()->Ueff_ADC[i], 973000.0, 50000.0))
             return Error::Msg::GeneralError;
-    if (!StdFunc::floatIsWithinLimits(this, TKIV->m_Bda.Pt100, 2123.0, 120.0))
+    if (!StdFunc::floatIsWithinLimits(this, TKIV->m_Bda->data()->Pt100, 2123.0, 120.0))
         return Error::Msg::GeneralError;
-    if (!StdFunc::floatIsWithinLimits(this, TKIV->m_Bda.Frequency, 51.0, 0.05))
+    if (!StdFunc::floatIsWithinLimits(this, TKIV->m_Bda->data()->Frequency, 51.0, 0.05))
         return Error::Msg::GeneralError;
     return Error::Msg::NoError;
 }
 
-void TuneKIVCheck::setDefCoefs()
-{
-}
+// void TuneKIVCheck::setDefCoefs()
+//{
+//}

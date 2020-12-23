@@ -12,7 +12,7 @@ CONFIG += c++17
 CONFIG -= console
 VERSION = 2.0
 
-QT       += core gui printsupport network qml serialport widgets testlib concurrent
+QT       += core gui printsupport network qml serialport widgets testlib concurrent xml svg
 QT.testlib.CONFIG -= console
 
 TARGET = AVM-Debug
@@ -33,6 +33,8 @@ SOURCES += \
     ../datablocks/bd0.cpp \
     ../datablocks/datablock.cpp \
     ../datablocks/kiv/bac.cpp \
+    ../datablocks/kiv/bda.cpp \
+    ../datablocks/kiv/bdain.cpp \
     ../gen/errorqueue.cpp \
     ../gen/helper.cpp \
     ../interfaces/usbhidsettings.cpp \
@@ -41,6 +43,7 @@ SOURCES += \
     ../module/journkdv.cpp \
     ../module/journkiv.cpp \
     ../module/journktf.cpp \
+    ../tune/generaltunedialog.cpp \
     ../tune/kiv/tunekivadc.cpp \
     ../tune/kiv/tunekivr.cpp \
     ../widgets/aboutwidget.cpp \
@@ -112,7 +115,6 @@ SOURCES += \
     ../tune/kiv/tunekivcheck.cpp \
     ../tune/kiv/tunekivdialog.cpp \
     ../tune/kiv/tunekivtemp60.cpp \
-    ../tune/tuneclass.cpp \
     ../widgets/alarmwidget.cpp \
     ../widgets/alarmbutton.cpp \
     ../widgets/alarmstateall.cpp \
@@ -136,6 +138,8 @@ HEADERS += \
     ../datablocks/bd0.h \
     ../datablocks/datablock.h \
     ../datablocks/kiv/bac.h \
+    ../datablocks/kiv/bda.h \
+    ../datablocks/kiv/bdain.h \
     ../gen/errorqueue.h \
     ../gen/helper.h \
     ../interfaces/usbhidsettings.h \
@@ -144,6 +148,7 @@ HEADERS += \
     ../module/journkdv.h \
     ../module/journkiv.h \
     ../module/journktf.h \
+    ../tune/generaltunedialog.h \
     ../tune/kiv/tunekivadc.h \
     ../tune/kiv/tunekivr.h \
     ../widgets/aboutwidget.h \
@@ -220,7 +225,6 @@ HEADERS += \
     ../tune/kiv/tunekiv.h \
     ../tune/kiv/tunekivdialog.h \
     ../tune/kiv/tunekivtemp60.h \
-    ../tune/tuneclass.h \
     ../widgets/alarmbutton.h \
     ../widgets/alarmstateall.h \
     ../widgets/alarmwidget.h \

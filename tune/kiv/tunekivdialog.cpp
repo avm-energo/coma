@@ -11,8 +11,9 @@
 #include "tunekivtemp60.h"
 //#include "tunekivtemp_20.h"
 
-TuneKIVDialog::TuneKIVDialog(ConfigKIV *ckiv, TuneKIV *tkiv, QWidget *parent) : UDialog(parent)
+TuneKIVDialog::TuneKIVDialog(ConfigKIV *ckiv, TuneKIV *tkiv, QWidget *parent) : GeneralTuneDialog(parent)
 {
+    m_calibrSteps = 6;
     TKIV = tkiv;
     CKIV = ckiv;
     // ReportModel = new QStandardItemModel;
@@ -41,42 +42,43 @@ void TuneKIVDialog::SetupUI()
 
     lyout->addStretch(100);
     lyout->addWidget(WDFunc::NewHexagonPB(
-        this, "",
+        this, "tn1",
         [this]() {
             TuneKIVCheck *check = new TuneKIVCheck(TuneKIV::TS_CHECKING, TKIV);
             check->show();
         },
         "images/tn1.svg", "Проверка правильности измерения входных сигналов"));
     lyout->addWidget(WDFunc::NewHexagonPB(
-        this, "",
+        this, "tn2",
         [this]() {
             TuneKIVR *tkr = new TuneKIVR(TuneKIV::TS_PT100, CKIV, TKIV);
             tkr->show();
         },
         "images/tn2.svg", "Регулировка канала Pt100"));
     lyout->addWidget(WDFunc::NewHexagonPB(
-        this, "",
+        this, "tn3",
         [this]() {
             TuneKIVADC *tkadc = new TuneKIVADC(TuneKIV::TS_ADC, CKIV, TKIV);
             tkadc->show();
         },
         "images/tn3.svg", "Регулировка канала Pt100"));
     lyout->addWidget(WDFunc::NewHexagonPB(
-        this, "",
+        this, "tn4",
         [this]() {
             TuneKIVTemp60 *tk60 = new TuneKIVTemp60(TuneKIV::TS_60TUNING, CKIV, TKIV);
             tk60->show();
         },
         "images/tn4.svg", "Настройка температурной коррекции +60 °С"));
     lyout->addWidget(WDFunc::NewHexagonPB(
-        this, "",
+        this, "tn5",
         [this]() {
             TuneKIVTemp60 *tk_20 = new TuneKIVTemp60(TuneKIV::TS_20TUNING, CKIV, TKIV);
             tk_20->show();
         },
         "images/tn5.svg", "Настройка температурной коррекции -20 °С"));
     lyout->addWidget(WDFunc::NewHexagonPB(
-        this, "", [this]() { close(); }, "images/tnprotocol.svg", "Генерация протокола регулировки"));
+        this, "tnprotocol", [this]() { GenerateReport(); }, "images/tnprotocol.svg",
+        "Генерация протокола регулировки"));
     //    addLayout(newTunePBLayout("1. Проверка правильности измерения входных сигналов", [this]() {
     //        TuneKIVCheck *check = new TuneKIVCheck(TuneKIV::TS_CHECKING, TKIV);
     //        check->show();
@@ -98,6 +100,7 @@ void TuneKIVDialog::SetupUI()
     hlyout->addLayout(lyout);
     hlyout->addWidget(TKIV->m_Bac->widget(), 100);
     setLayout(hlyout);
+    setCalibrButtons();
 }
 
 void TuneKIVDialog::GenerateReport()

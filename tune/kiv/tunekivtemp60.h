@@ -51,7 +51,7 @@ private:
     void setTuneFunctions();
     //    void FillBac(int bacnum);
     //    void FillBackBac(int bacnum);
-    QWidget *MainUI();
+    //    QWidget *MainUI();
     //    void GetBdAndFill();
     //    Error::Msg LoadTuneSequenceFile();
 
@@ -73,7 +73,7 @@ private slots:
     void saveIntermediateResults();
     void acceptTuneCoefs();
     //    int ReadAnalogMeasurements();
-    void setDefCoefs();
+    //    void setDefCoefs();
 };
 
 #endif // TUNEKIVTEMP60_H
