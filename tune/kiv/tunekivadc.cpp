@@ -16,8 +16,8 @@ TuneKIVADC::TuneKIVADC(int tuneStep, ConfigKIV *ckiv, TuneKIV *kiv, QWidget *par
     //    m_tuneStep = 1;
     //    SetBac(TKIV->m_Bac, 1, sizeof(TKIV->m_Bac));
     SetBac(TKIV->m_Bac);
-    addWidgetToTabWidget(TKIV->m_Bac->widget(), "Настроечные параметры");
-    addWidgetToTabWidget(TKIV->m_Bdain->widget(), "Текущие данные");
+    m_BacWidgetIndex = addWidgetToTabWidget(TKIV->m_Bac->widget(), "Настроечные параметры");
+    m_BdainWidgetIndex = addWidgetToTabWidget(TKIV->m_Bdain->widget(), "Текущие данные");
     addWidgetToTabWidget(TKIV->m_Bd0->widget(), "Общие данные");
     //    SetupUI();
     m_isEnergoMonitorDialogCreated = false;
@@ -145,11 +145,13 @@ Error::Msg TuneKIVADC::ADCCoef(int coef)
 {
     m_curTuneStep = coef;
     CKIV->Bci_block.Unom = 220;
-    if (setADCCoef(coef) != Error::Msg::NoError)
-        return Error::Msg::GeneralError;
+    Error::Msg res = setADCCoef(coef);
+    if (res != Error::Msg::NoError)
+        return res;
     showRetomDialog(coef);
     if (StdFunc::isCancelled())
         return Error::Msg::GeneralError;
+    showTWTab(m_BdainWidgetIndex);
     emit setProgressSize(StdFunc::tuneRequestCount());
     //    startWait();
     int i = 0;
@@ -172,6 +174,8 @@ Error::Msg TuneKIVADC::ADCCoef(int coef)
                 m_bdain.phi_next_f[j] += TKIV->m_Bdain->data()->phi_next_f[j];
             }
         }
+        else
+            return Error::Msg::GeneralError;
         ++i;
         emit setProgressCount(i);
         StdFunc::Wait(500);

@@ -46,6 +46,7 @@ public:
         return filenamestr;
     }
     explicit DataBlock(QObject *parent = nullptr);
+    ~DataBlock();
     void setBlock(const BlockStruct &bds);
     //    virtual void setupUI() = 0;                                     // frontend for block visualisation
     //    void setModel(const QList<ValueItem *> &dd, int columnsnumber); // default columnsnumber = 5

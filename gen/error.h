@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QMap>
 #include <QObject>
 #include <QString>
 // Макросы для выдачи сообщений
@@ -46,6 +47,21 @@ enum Msg
     UnknownError = 0xff
 
 };
+
+const QMap<Msg, QString> MsgStr { { ResEmpty, "Пустой результат" }, { GeneralError, "Ошибка" }, { NoError, "Успешно" },
+    { Timeout, "Таймаут операции" }, { CrcError, "Ошибка контрольной суммы" },
+    { FlashError, "Ошибка записи во Flash-память" }, { SizeError, "Ошибка размера данных" },
+    { WrongCommandError, "Некорректная команда" }, { WrongFormatError, "Формат неверен" },
+    { UnknownBlock, "Неизвестный блок данных" }, { UnknownFileReq, "Запрошен неизвестный файл" },
+    { UnknownFileSent, "Отправлен неизвестный файл" }, { NoMezzanine, "Нет мезонина" },
+    { WrongType, "Неверный тип платы" }, { FileNameError, "Нет такого файла" }, { WrongBlockAC, "Ошибка блока Bac" },
+    { DescError, "Ошибка описания S2" }, { HeaderSizeError, "Неверный размер заголовка S2" },
+    { NoIdError, "Нет такого ИД S2" }, { NoConfError, "Нет конфигурации" },
+    { NoTuneError, "Нет настроечных параметров" }, { WriteError, "Ошибка записи" },
+    { NoDeviceError, "Нет такого устройства" }, { ReadError, "Ошибка чтения" }, { OpenError, "Ошибка открытия порта" },
+    { NullDataError, "Приняты нулевые данные" }, { FileNameError, "Ошибка номера файла" },
+    { FileOpenError, "Ошибка открытия файла" }, { FileWriteError, "Ошибка записи файла" },
+    { UnknownError, "Неизвестная ошибка" } };
 
 Q_ENUM_NS(Msg)
 

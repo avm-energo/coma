@@ -69,7 +69,7 @@ Error::Msg BaseInterface::reqBlockSync(
     }
     quint32 resultsize = m_byteArrayResult.size();
     if ((m_timeout) || (resultsize < blocksize))
-        return Error::Msg::GeneralError;
+        return Error::Msg::Timeout;
     memcpy(block, &m_byteArrayResult.data()[0], blocksize);
     return Error::Msg::NoError;
 }
@@ -94,7 +94,7 @@ Error::Msg BaseInterface::writeBlockSync(
             StdFunc::Wait();
         }
         if (m_timeout)
-            return Error::Msg::GeneralError;
+            return Error::Msg::Timeout;
         return (m_responseResult) ? Error::Msg::NoError : Error::Msg::GeneralError;
     }
     else
@@ -125,13 +125,14 @@ Error::Msg BaseInterface::writeFileSync(int filenum, QByteArray &ba)
     m_timeout = false;
     connect(&DataManager::GetInstance(), &DataManager::responseReceived, this, &BaseInterface::responseReceived);
     writeFile(filenum, ba);
+    timeoutTimer->start();
     while (m_busy)
     {
         QCoreApplication::processEvents(QEventLoop::AllEvents);
         StdFunc::Wait();
     }
     if (m_timeout)
-        return Error::Msg::GeneralError;
+        return Error::Msg::Timeout;
     return (m_responseResult) ? Error::Msg::NoError : Error::Msg::GeneralError;
 }
 
@@ -149,7 +150,7 @@ Error::Msg BaseInterface::readS2FileSync(quint32 filenum)
         StdFunc::Wait();
     }
     if (m_timeout)
-        return Error::Msg::GeneralError;
+        return Error::Msg::Timeout;
 
     return (m_responseResult) ? Error::Msg::NoError : Error::Msg::GeneralError;
 }
@@ -170,7 +171,7 @@ Error::Msg BaseInterface::readFileSync(quint32 filenum, QByteArray &ba)
         StdFunc::Wait();
     }
     if (m_timeout)
-        return Error::Msg::GeneralError;
+        return Error::Msg::Timeout;
     ba = m_byteArrayResult;
     return Error::Msg::NoError;
 }
@@ -184,6 +185,9 @@ void BaseInterface::resultReady(const DataTypes::BlockStruct &result)
 
 void BaseInterface::responseReceived(const DataTypes::GeneralResponseStruct &response)
 {
+    if ((response.type == DataTypes::GeneralResponseTypes::DataSize)
+        || (response.type == DataTypes::GeneralResponseTypes::DataCount))
+        return;
     disconnect(&DataManager::GetInstance(), &DataManager::responseReceived, this, &BaseInterface::responseReceived);
     m_responseResult = (response.type == DataTypes::GeneralResponseTypes::Ok);
     m_busy = false;

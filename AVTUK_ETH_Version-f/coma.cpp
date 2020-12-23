@@ -778,7 +778,7 @@ void Coma::prepare()
     auto const &board = Board::GetInstance();
     quint16 deviceType = board.type();
     QString deviceName = QVariant::fromValue(Modules::Model(deviceType)).toString();
-    QMessageBox::information(this, "Связь установлена", "Удалось установить связь с " + deviceName, QMessageBox::Ok);
+    QMessageBox::information(this, "Связь установлена", "Установлена связь с " + deviceName, QMessageBox::Ok);
     Reconnect = true;
 
     PrepareDialogs();

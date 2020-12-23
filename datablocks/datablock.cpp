@@ -47,6 +47,11 @@ DataBlock::DataBlock(QObject *parent) : QObject(parent)
     m_widgetIsSet = false;
 }
 
+DataBlock::~DataBlock()
+{
+    return;
+}
+
 void DataBlock::setBlock(const DataBlock::BlockStruct &bds)
 {
     m_block = bds;

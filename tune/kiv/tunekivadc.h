@@ -20,6 +20,7 @@ private:
     bool m_isEnergoMonitorDialogCreated;
     int m_curTuneStep;
     BdaIn::BlockData m_bdain;
+    int m_BacWidgetIndex, m_BdainWidgetIndex;
     //    TuneKIV::Bac m_bac;
 
     void setMessages() override;

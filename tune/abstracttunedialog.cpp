@@ -26,7 +26,7 @@
 AbstractTuneDialog::AbstractTuneDialog(int tuneStep, QWidget *parent) : UDialog(parent)
 {
     TuneVariant = 0;
-    setAttribute(Qt::WA_DeleteOnClose);
+    //    setAttribute(Qt::WA_DeleteOnClose);
     //    SetMeasurementEnabled(false);
     MeasurementTimer = new QTimer;
     MeasurementTimer->setInterval(MEASTIMERINT);
@@ -138,8 +138,10 @@ QWidget *AbstractTuneDialog::MainUI()
     QVBoxLayout *lyout = new QVBoxLayout;
     QTabWidget *tw = new QTabWidget;
     tw->setObjectName("tunetw");
-    for (auto str : m_mainWidgetList)
-        tw->addTab(str.widget, str.caption);
+    for (int i = 0; i < m_mainWidgetList.size(); ++i)
+        //    for (auto str : m_mainWidgetList)
+        //        tw->addTab(str.widget, str.caption);
+        tw->addTab(m_mainWidgetList.at(i).widget, m_mainWidgetList.at(i).caption);
     lyout->addWidget(tw);
     w->setLayout(lyout);
     return w;
@@ -411,7 +413,7 @@ void AbstractTuneDialog::startTune()
         //        WaitNSeconds(2);
         MsgSetVisible(NoMsg, bStep);
         Error::Msg res = (this->*m_tuneFunctions[m_messages.at(bStep)])();
-        if ((res == Error::Msg::GeneralError) || (StdFunc::isCancelled()))
+        if ((res != Error::Msg::NoError) || (StdFunc::isCancelled()))
         {
             MsgSetVisible(ErMsg, bStep);
             WDFunc::SetEnabled(this, "starttune", true);
@@ -420,6 +422,7 @@ void AbstractTuneDialog::startTune()
             qWarning() << m_messages.at(bStep);
             //           MeasurementTimer->stop();
             loadAllTuneCoefs();
+            QMessageBox::critical(this, "Ошибка", Error::MsgStr[res]);
             return;
         }
         else if (res == Error::Msg::ResEmpty)

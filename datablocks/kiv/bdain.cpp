@@ -64,25 +64,28 @@ void BdaIn::setDefBlock()
 
 void BdaIn::updateWidget()
 {
-    for (int i = 0; i < 6; i++)
+    if (m_widgetIsSet)
     {
-        WDFunc::SetLBLText(
-            m_widget, "bdainvalue" + QString::number(i), WDFunc::StringValueWithCheck(m_blockData->IUefNat_filt[i], 3));
-        WDFunc::SetLBLText(m_widget, "bdainvalue" + QString::number(i + 6),
-            WDFunc::StringValueWithCheck(m_blockData->IUeff_filtered[i], 3));
-        WDFunc::SetLBLText(m_widget, "bdainvalue" + QString::number(i + 12),
-            WDFunc::StringValueWithCheck(m_blockData->phi_next_f[i], 4));
-        if (i < 3)
+        for (int i = 0; i < 6; i++)
         {
-            WDFunc::SetLBLText(m_widget, "bdainvalue" + QString::number(i + 18),
-                WDFunc::StringValueWithCheck(m_blockData->Cbush[i], 1));
-            WDFunc::SetLBLText(m_widget, "bdainvalue" + QString::number(i + 21),
-                WDFunc::StringValueWithCheck(m_blockData->Tg_d[i], 4));
+            WDFunc::SetLBLText(m_widget, "bdainvalue" + QString::number(i),
+                WDFunc::StringValueWithCheck(m_blockData->IUefNat_filt[i], 3));
+            WDFunc::SetLBLText(m_widget, "bdainvalue" + QString::number(i + 6),
+                WDFunc::StringValueWithCheck(m_blockData->IUeff_filtered[i], 3));
+            WDFunc::SetLBLText(m_widget, "bdainvalue" + QString::number(i + 12),
+                WDFunc::StringValueWithCheck(m_blockData->phi_next_f[i], 4));
+            if (i < 3)
+            {
+                WDFunc::SetLBLText(m_widget, "bdainvalue" + QString::number(i + 18),
+                    WDFunc::StringValueWithCheck(m_blockData->Cbush[i], 1));
+                WDFunc::SetLBLText(m_widget, "bdainvalue" + QString::number(i + 21),
+                    WDFunc::StringValueWithCheck(m_blockData->Tg_d[i], 4));
+            }
         }
-    }
 
-    WDFunc::SetLBLText(m_widget, "bdavalue24", WDFunc::StringValueWithCheck(m_blockData->Frequency, 4));
-    WDFunc::SetLBLText(m_widget, "bdavalue25", WDFunc::StringValueWithCheck(m_blockData->Pt100_R, 3));
+        WDFunc::SetLBLText(m_widget, "bdainvalue24", WDFunc::StringValueWithCheck(m_blockData->Frequency, 4));
+        WDFunc::SetLBLText(m_widget, "bdainvalue25", WDFunc::StringValueWithCheck(m_blockData->Pt100_R, 3));
+    }
 }
 
 BdaIn::BlockData *BdaIn::data()

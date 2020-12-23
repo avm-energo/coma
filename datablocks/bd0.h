@@ -22,7 +22,7 @@ public:
 
 private:
     BlockData *m_blockData;
-    QWidget *m_widget;
+    //    QWidget *m_widget;
 };
 
 #endif // BD0_H

@@ -23,7 +23,7 @@ public:
 
 private:
     BlockData *m_blockData;
-    QWidget *m_widget;
+    //    QWidget *m_widget;
 };
 
 #endif // KIV_BDA_H
