@@ -5,11 +5,6 @@
 #include "../gen/files.h"
 #include "../gen/stdfunc.h"
 #include "../widgets/wd_func.h"
-#include "tunekivadc.h"
-#include "tunekivcheck.h"
-#include "tunekivr.h"
-#include "tunekivtemp60.h"
-//#include "tunekivtemp_20.h"
 
 TuneKIVDialog::TuneKIVDialog(ConfigKIV *ckiv, TuneKIV *tkiv, QWidget *parent) : GeneralTuneDialog(parent)
 {
@@ -19,6 +14,11 @@ TuneKIVDialog::TuneKIVDialog(ConfigKIV *ckiv, TuneKIV *tkiv, QWidget *parent) : 
     // ReportModel = new QStandardItemModel;
     // ViewModel = new QStandardItemModel;
     setAttribute(Qt::WA_DeleteOnClose);
+    TKIVADCDialog = new TuneKIVADC(TuneKIV::TS_ADC, CKIV, TKIV, this);
+    TKIV20Dialog = new TuneKIVTemp60(TuneKIV::TS_20TUNING, CKIV, TKIV);
+    TKIV60Dialog = new TuneKIVTemp60(TuneKIV::TS_60TUNING, CKIV, TKIV);
+    TKIVCheckDialog = new TuneKIVCheck(TuneKIV::TS_CHECKING, TKIV);
+    TKIVRDialog = new TuneKIVR(TuneKIV::TS_PT100, CKIV, TKIV);
     SetupUI();
 }
 
@@ -35,8 +35,8 @@ TuneKIVDialog::TuneKIVDialog(ConfigKIV *ckiv, TuneKIV *tkiv, QWidget *parent) : 
 
 void TuneKIVDialog::SetupUI()
 {
-    QString tmps = "QDialog {background-color: " + QString(Colors::ACONFCLR) + ";}";
-    setStyleSheet(tmps);
+    //    QString tmps = "QDialog {background-color: " + QString(Colors::ACONFCLR) + ";}";
+    //    setStyleSheet(tmps);
     QHBoxLayout *hlyout = new QHBoxLayout;
     QVBoxLayout *lyout = new QVBoxLayout;
 
@@ -44,36 +44,36 @@ void TuneKIVDialog::SetupUI()
     lyout->addWidget(WDFunc::NewHexagonPB(
         this, "tn1",
         [this]() {
-            TuneKIVCheck *check = new TuneKIVCheck(TuneKIV::TS_CHECKING, TKIV);
-            check->show();
+            //            TuneKIVCheck *check = new TuneKIVCheck(TuneKIV::TS_CHECKING, TKIV);
+            TKIVCheckDialog->show();
         },
         "images/tn1.svg", "Проверка правильности измерения входных сигналов"));
     lyout->addWidget(WDFunc::NewHexagonPB(
         this, "tn2",
         [this]() {
-            TuneKIVR *tkr = new TuneKIVR(TuneKIV::TS_PT100, CKIV, TKIV);
-            tkr->show();
+            //            TuneKIVR *tkr = new TuneKIVR(TuneKIV::TS_PT100, CKIV, TKIV);
+            TKIVRDialog->show();
         },
         "images/tn2.svg", "Регулировка канала Pt100"));
     lyout->addWidget(WDFunc::NewHexagonPB(
         this, "tn3",
         [this]() {
-            TuneKIVADC *tkadc = new TuneKIVADC(TuneKIV::TS_ADC, CKIV, TKIV);
-            tkadc->show();
+            //            TuneKIVADC *tkadc = new TuneKIVADC(TuneKIV::TS_ADC, CKIV, TKIV);
+            TKIVADCDialog->show();
         },
         "images/tn3.svg", "Регулировка канала Pt100"));
     lyout->addWidget(WDFunc::NewHexagonPB(
         this, "tn4",
         [this]() {
-            TuneKIVTemp60 *tk60 = new TuneKIVTemp60(TuneKIV::TS_60TUNING, CKIV, TKIV);
-            tk60->show();
+            //            TuneKIVTemp60 *tk60 = new TuneKIVTemp60(TuneKIV::TS_60TUNING, CKIV, TKIV);
+            TKIV60Dialog->show();
         },
         "images/tn4.svg", "Настройка температурной коррекции +60 °С"));
     lyout->addWidget(WDFunc::NewHexagonPB(
         this, "tn5",
         [this]() {
-            TuneKIVTemp60 *tk_20 = new TuneKIVTemp60(TuneKIV::TS_20TUNING, CKIV, TKIV);
-            tk_20->show();
+            //            TuneKIVTemp60 *tk_20 = new TuneKIVTemp60(TuneKIV::TS_20TUNING, CKIV, TKIV);
+            TKIV20Dialog->show();
         },
         "images/tn5.svg", "Настройка температурной коррекции -20 °С"));
     lyout->addWidget(WDFunc::NewHexagonPB(

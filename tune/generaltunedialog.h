@@ -13,7 +13,6 @@ public:
     int m_calibrSteps;
 
     GeneralTuneDialog(QWidget *parent = nullptr);
-    void setCalibrButtons();
 
 private:
     void setIconProcessed(const QString &name);
@@ -23,6 +22,9 @@ private:
     void replaceDomWithNewAttrRecursively(QDomElement &root, const QString &name, const QString &attrname,
         const QStringList &attrs, const QString &attrvalue, const QStringList &newvalues);
     QString getAttrValue(const QString &string, const QString &attrname);
+
+public slots:
+    void setCalibrButtons();
 };
 
 #endif // GENERALTUNEDIALOG_H

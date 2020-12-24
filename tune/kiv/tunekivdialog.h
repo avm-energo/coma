@@ -9,6 +9,10 @@
 #include "../widgets/udialog.h"
 //#include "../iec104/iec104.h"
 #include "tunekiv.h"
+#include "tunekivadc.h"
+#include "tunekivcheck.h"
+#include "tunekivr.h"
+#include "tunekivtemp60.h"
 
 #include <QHBoxLayout>
 #include <QLineEdit>
@@ -61,6 +65,10 @@ private:
     //    AVM_KIV::Bci m_Bci_block_work, m_Bci_block_temporary;
     TuneKIV *TKIV;
     ConfigKIV *CKIV;
+    TuneKIVCheck *TKIVCheckDialog;
+    TuneKIVADC *TKIVADCDialog;
+    TuneKIVR *TKIVRDialog;
+    TuneKIVTemp60 *TKIV60Dialog, *TKIV20Dialog;
 
     //    QDialog *ask;
     //    QLineEdit *ledit;
