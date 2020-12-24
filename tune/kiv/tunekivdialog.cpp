@@ -17,7 +17,7 @@ TuneKIVDialog::TuneKIVDialog(ConfigKIV *ckiv, TuneKIV *tkiv, QWidget *parent) : 
     TKIVADCDialog = new TuneKIVADC(TuneKIV::TS_ADC, CKIV, TKIV, this);
     TKIV20Dialog = new TuneKIVTemp60(TuneKIV::TS_20TUNING, CKIV, TKIV);
     TKIV60Dialog = new TuneKIVTemp60(TuneKIV::TS_60TUNING, CKIV, TKIV);
-    TKIVCheckDialog = new TuneKIVCheck(TuneKIV::TS_CHECKING, TKIV);
+    //    TKIVCheckDialog = new TuneKIVCheck(TuneKIV::TS_CHECKING, TKIV);
     TKIVRDialog = new TuneKIVR(TuneKIV::TS_PT100, CKIV, TKIV);
     SetupUI();
 }
@@ -44,8 +44,8 @@ void TuneKIVDialog::SetupUI()
     lyout->addWidget(WDFunc::NewHexagonPB(
         this, "tn1",
         [this]() {
-            //            TuneKIVCheck *check = new TuneKIVCheck(TuneKIV::TS_CHECKING, TKIV);
-            TKIVCheckDialog->show();
+            TuneKIVCheck *check = new TuneKIVCheck(TuneKIV::TS_CHECKING, TKIV, this);
+            check->show();
         },
         "images/tn1.svg", "Проверка правильности измерения входных сигналов"));
     lyout->addWidget(WDFunc::NewHexagonPB(
