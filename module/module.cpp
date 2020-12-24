@@ -94,8 +94,8 @@ Module *Module::createModule(QTimer *updateTimer, AlarmWidget *aw)
             CheckKIVDialog *cdkiv = new CheckKIVDialog;
             m->addDialogToList(cdkiv, "Проверка");
 #ifdef AVM_DEBUG
-            TuneKIV *TKIV = new TuneKIV;
-            m->addDialogToList(new TuneKIVDialog(CKIV, TKIV), "Регулировка");
+//            TuneKIV *TKIV = new TuneKIV;
+            m->addDialogToList(new TuneKIVDialog(CKIV), "Регулировка");
 #endif
             m->addDialogToList(new StartupKIVDialog, "Начальные значения");
             aw->addAlarm(new WarnKIV);

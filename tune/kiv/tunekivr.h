@@ -3,7 +3,10 @@
 
 #include "../../config/configkiv.h"
 #include "../abstracttunedialog.h"
-#include "tunekiv.h"
+#include "../../datablocks/kiv/bac.h"
+#include "../../datablocks/kiv/bdain.h"
+#include "../../datablocks/kiv/bda.h"
+//#include "tunekiv.h"
 
 #include <QWidget>
 
@@ -11,11 +14,13 @@ class TuneKIVR : public AbstractTuneDialog
 {
     Q_OBJECT
 public:
-    TuneKIVR(int tuneStep, ConfigKIV *ckiv, TuneKIV *kiv, QWidget *parent = nullptr);
+    TuneKIVR(int tuneStep, ConfigKIV *ckiv, QWidget *parent = nullptr);
 
 private:
-    TuneKIV *TKIV;
+//    TuneKIV *TKIV;
     ConfigKIV *CKIV;
+    Bac *m_bac;
+    Bda *m_bda;
     double m_pt100;
     int m_curTuneStep;
     BdaIn m_bdain;

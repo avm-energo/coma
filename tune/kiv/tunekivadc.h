@@ -3,7 +3,11 @@
 
 #include "../../config/configkiv.h"
 #include "../abstracttunedialog.h"
-#include "tunekiv.h"
+//#include "tunekiv.h"
+#include "../../datablocks/kiv/bac.h"
+#include "../../datablocks/kiv/bda.h"
+#include "../../datablocks/kiv/bdain.h"
+#include "../../datablocks/bd0.h"
 
 #include <QWidget>
 
@@ -11,15 +15,19 @@ class TuneKIVADC : public AbstractTuneDialog
 {
     Q_OBJECT
 public:
-    TuneKIVADC(int tuneStep, ConfigKIV *ckiv, TuneKIV *kiv, QWidget *parent = nullptr);
+    TuneKIVADC(int tuneStep, ConfigKIV *ckiv, QWidget *parent = nullptr);
 
 private:
-    TuneKIV *TKIV;
+//    TuneKIV *TKIV;
     ConfigKIV *CKIV;
+    Bac *m_bac;
+    Bda *m_bda;
+    BdaIn *m_bdain;
+    Bd0 *m_bd0;
     double m_pt100;
     bool m_isEnergoMonitorDialogCreated;
     int m_curTuneStep;
-    BdaIn::BlockData m_bdain;
+    BdaIn::BlockData m_bdainBlockData;
     int m_BacWidgetIndex, m_BdainWidgetIndex;
     //    TuneKIV::Bac m_bac;
 

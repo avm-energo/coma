@@ -3,7 +3,7 @@
 
 #include "../../config/configkiv.h"
 #include "../abstracttunedialog.h"
-#include "tunekiv.h"
+//#include "tunekiv.h"
 
 #include <QWidget>
 
@@ -11,10 +11,10 @@ class TuneKIVCheck : public AbstractTuneDialog
 {
     Q_OBJECT
 public:
-    TuneKIVCheck(int tuneStep, TuneKIV *kiv, QWidget *parent = nullptr);
+    TuneKIVCheck(int tuneStep, QWidget *parent = nullptr);
 
 private:
-    TuneKIV *TKIV;
+//    TuneKIV *TKIV;
     //    ConfigKIV *CKIV;
     //    ConfigKIV::Bci m_BciSaveBlock;
 

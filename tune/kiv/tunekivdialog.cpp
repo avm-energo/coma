@@ -5,20 +5,21 @@
 #include "../gen/files.h"
 #include "../gen/stdfunc.h"
 #include "../widgets/wd_func.h"
+#include "../tunesteps.h"
 
-TuneKIVDialog::TuneKIVDialog(ConfigKIV *ckiv, TuneKIV *tkiv, QWidget *parent) : GeneralTuneDialog(parent)
+TuneKIVDialog::TuneKIVDialog(ConfigKIV *ckiv, QWidget *parent) : GeneralTuneDialog(parent)
 {
     m_calibrSteps = 6;
-    TKIV = tkiv;
+//    TKIV = tkiv;
     CKIV = ckiv;
     // ReportModel = new QStandardItemModel;
     // ViewModel = new QStandardItemModel;
     setAttribute(Qt::WA_DeleteOnClose);
-    TKIVADCDialog = new TuneKIVADC(TuneKIV::TS_ADC, CKIV, TKIV, this);
-    TKIV20Dialog = new TuneKIVTemp60(TuneKIV::TS_20TUNING, CKIV, TKIV);
-    TKIV60Dialog = new TuneKIVTemp60(TuneKIV::TS_60TUNING, CKIV, TKIV);
-    //    TKIVCheckDialog = new TuneKIVCheck(TuneKIV::TS_CHECKING, TKIV);
-    TKIVRDialog = new TuneKIVR(TuneKIV::TS_PT100, CKIV, TKIV);
+    TKIVADCDialog = new TuneKIVADC(KIVTS_ADC, CKIV, this);
+    TKIV20Dialog = new TuneKIVTemp60(KIVTS_20TUNING, CKIV, this);
+    TKIV60Dialog = new TuneKIVTemp60(KIVTS_60TUNING, CKIV, this);
+    TKIVCheckDialog = new TuneKIVCheck(KIVTS_CHECKING, this);
+    TKIVRDialog = new TuneKIVR(KIVTS_PT100, CKIV, this);
     SetupUI();
 }
 
@@ -44,8 +45,8 @@ void TuneKIVDialog::SetupUI()
     lyout->addWidget(WDFunc::NewHexagonPB(
         this, "tn1",
         [this]() {
-            TuneKIVCheck *check = new TuneKIVCheck(TuneKIV::TS_CHECKING, TKIV, this);
-            check->show();
+//            TuneKIVCheck *check = new TuneKIVCheck(TuneKIV::TS_CHECKING, TKIV);
+            TKIVCheckDialog->show();
         },
         "images/tn1.svg", "Проверка правильности измерения входных сигналов"));
     lyout->addWidget(WDFunc::NewHexagonPB(
@@ -98,7 +99,8 @@ void TuneKIVDialog::SetupUI()
     //    lyout->addLayout(newTunePBLayout("5. Генерация протокола регулировки", [this]() { close(); }));
     lyout->addStretch(100);
     hlyout->addLayout(lyout);
-    hlyout->addWidget(TKIV->m_Bac->widget(), 100);
+    Bac *bac = new Bac;
+    hlyout->addWidget(bac->widget(), 100);
     setLayout(hlyout);
     setCalibrButtons();
 }

@@ -24,7 +24,7 @@
 #include <QVBoxLayout>
 #include <QtDebug>
 
-AbstractTuneDialog::AbstractTuneDialog(int tuneStep, QWidget *parent) : UDialog(parent)
+AbstractTuneDialog::AbstractTuneDialog(int tuneStep, QWidget *parent) : QDialog(parent)
 {
     TuneVariant = 0;
     //    setAttribute(Qt::WA_DeleteOnClose);
@@ -54,7 +54,8 @@ void AbstractTuneDialog::SetupUI()
     QHBoxLayout *hlyout = new QHBoxLayout;
     QVBoxLayout *vlyout = new QVBoxLayout;
     hlyout->addWidget(TuneUI());
-    hlyout->addWidget(MainUI());
+    if (!m_mainWidgetList.isEmpty())
+        hlyout->addWidget(MainUI());
     vlyout->addLayout(hlyout);
     vlyout->addWidget(BottomUI());
     setLayout(vlyout);
@@ -938,5 +939,5 @@ void AbstractTuneDialog::keyPressEvent(QKeyEvent *e)
     }
     if (e->key() == Qt::Key_Escape)
         StdFunc::cancel();
-    UDialog::keyPressEvent(e);
+    QDialog::keyPressEvent(e);
 }

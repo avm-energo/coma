@@ -8,7 +8,7 @@
 #include "../generaltunedialog.h"
 #include "../widgets/udialog.h"
 //#include "../iec104/iec104.h"
-#include "tunekiv.h"
+//#include "tunekiv.h"
 #include "tunekivadc.h"
 #include "tunekivcheck.h"
 #include "tunekivr.h"
@@ -54,7 +54,7 @@ class TuneKIVDialog : public GeneralTuneDialog
 {
     Q_OBJECT
 public:
-    explicit TuneKIVDialog(ConfigKIV *ckiv, TuneKIV *tkiv, QWidget *parent = nullptr);
+    explicit TuneKIVDialog(ConfigKIV *ckiv, QWidget *parent = nullptr);
 
     // signals:
     //    void Send();
@@ -63,7 +63,7 @@ public slots:
 
 private:
     //    AVM_KIV::Bci m_Bci_block_work, m_Bci_block_temporary;
-    TuneKIV *TKIV;
+//    TuneKIV *TKIV;
     ConfigKIV *CKIV;
     TuneKIVCheck *TKIVCheckDialog;
     TuneKIVADC *TKIVADCDialog;
