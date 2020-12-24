@@ -40,6 +40,7 @@ SOURCES += \
     ../interfaces/serialport.cpp \
     ../interfaces/usbhidport.cpp \
     ../interfaces/usbhidportinfo.cpp \
+    ../interfaces/usbhidsettings.cpp \
     console.cpp \
     interfaces.cpp
 
@@ -72,6 +73,7 @@ HEADERS += \
     ../interfaces/settingstypes.h \
     ../interfaces/usbhidport.h \
     ../interfaces/usbhidportinfo.h \
+    ../interfaces/usbhidsettings.h \
     ../module/modules.h \
     console.h
 

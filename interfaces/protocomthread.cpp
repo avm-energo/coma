@@ -215,8 +215,14 @@ void ProtocomThread::handle(const Proto::Commands cmd)
 
     case Commands::ReadBlkData:
 
-        // Превосходный костыль для сигнализации
+        // Превосходный костыль для сигнализации теперь и для просто блоков
         // FIXME Переделать
+        // Нет регистров
+        if (count == 0)
+        {
+            handleRawBlock(m_buffer.second, addr);
+            break;
+        }
         if (addr != alarm_reg)
             handleFloatArray(m_buffer.second, addr, count);
         else

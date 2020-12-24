@@ -11,7 +11,9 @@
 #include <QElapsedTimer>
 #include <QFile>
 #include <QHostAddress>
+#ifdef QT_GUI_LIB
 #include <QMessageBox>
+#endif
 #include <QProcess>
 #include <QSettings>
 #include <QStandardPaths>
@@ -57,7 +59,7 @@ QString StdFunc::VerToStr(quint32 num)
         = QString::number(mv, 10) + "." + QString::number(lv, 10) + "-" + QString("%1").arg(sv, 4, 10, QChar('0'));
     return tmpString;
 }
-
+#ifdef QT_GUI_LIB
 bool StdFunc::floatIsWithinLimits(QWidget *w, double var, double base, double tolerance, bool showMessage)
 {
     float tmpf = fabs(var - base);
@@ -73,7 +75,7 @@ bool StdFunc::floatIsWithinLimits(QWidget *w, double var, double base, double to
     }
     return false;
 }
-
+#endif
 float StdFunc::toFloat(const QString &text)
 {
     bool ok;
