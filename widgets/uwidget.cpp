@@ -11,32 +11,38 @@
 #include <QEventLoop>
 UWidget::UWidget(QWidget *parent) : QWidget(parent)
 {
-    m_updatesEnabled = false;
+    // m_updatesEnabled = false;
     m_timerCounter = 0;
     m_timerMax = 2; // 2 seconds by default
-    m_floatBdQueryList.clear();
-    m_spBdQueryList.clear();
-    m_highlightMap.clear();
+                    // m_floatBdQueryList.clear();
+    // m_spBdQueryList.clear();
+    // m_highlightMap.clear();
+    // Отключим обновление виджета по умолчанию
+    QWidget::setUpdatesEnabled(false);
 }
 
 void UWidget::setUpdatesEnabled()
 {
-    m_updatesEnabled = true;
+    QWidget::setUpdatesEnabled(true);
+    // m_updatesEnabled = true;
 }
 
 void UWidget::setUpdatesDisabled()
 {
-    m_updatesEnabled = false;
+    QWidget::setUpdatesEnabled(false);
+    // m_updatesEnabled = false;
 }
 
 const QString UWidget::getCaption()
 {
-    return m_caption;
+    return QWidget::windowTitle();
+    // return m_caption;
 }
 
 void UWidget::setCaption(const QString &caption)
 {
-    m_caption = caption;
+    QWidget::setWindowTitle(caption);
+    // m_caption = caption;
 }
 
 void UWidget::setUpdateTimerPeriod(quint32 period)
@@ -62,7 +68,7 @@ void UWidget::setSpBdQuery(const QList<UWidget::BdQuery> &list)
 void UWidget::updateFloatData(const DataTypes::FloatStruct &fl)
 {
     ++m_timerCounter;
-    if ((m_updatesEnabled) /*&& (m_timerCounter >= m_timerMax)*/) // every second tick of the timer
+    if ((updatesEnabled()) /*&& (m_timerCounter >= m_timerMax)*/) // every second tick of the timer
     {
         bool result = WDFunc::SetLBLText(this, QString::number(fl.sigAdr), WDFunc::StringValueWithCheck(fl.sigVal, 3));
 #ifdef UWIDGET_DEBUG
@@ -82,10 +88,15 @@ void UWidget::updateSPData(const DataTypes::SinglePointWithTimeStruct &sp)
         WDFunc::SetLBLTColor(this, QString::number(hst.fieldnum), (sp.sigVal == 1) ? Colors::TABCOLORA1 : hst.color);
 }
 
+bool UWidget::updatesEnabled()
+{
+    return QWidget::updatesEnabled();
+}
+
 void UWidget::reqUpdate()
 {
     // NOTE: POS (Piece Of Shit)
-    if (!m_updatesEnabled)
+    if (!updatesEnabled())
         return;
     for (const auto &query : m_floatBdQueryList)
         BaseInterface::iface()->reqFloats(query.sigAdr, query.sigQuantity);

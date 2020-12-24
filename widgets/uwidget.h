@@ -29,6 +29,7 @@ public:
 
     void setUpdatesEnabled();
     void setUpdatesDisabled();
+    bool updatesEnabled();
     //    virtual void setConnections() = 0;
     const QString getCaption();
     void setCaption(const QString &caption);
@@ -52,13 +53,13 @@ public slots:
     void updateSPData(const DataTypes::SinglePointWithTimeStruct &sp);
 
 protected:
-    bool m_updatesEnabled;
     QString m_password;
 
     bool checkPassword();
 
 private:
-    QString m_caption;
+    bool m_updatesEnabled;
+    // QString m_caption;
     quint32 m_timerCounter;
     quint32 m_timerMax;
     BaseInterface *m_iface;

@@ -104,7 +104,7 @@ void InfoDialog::ClearBsi()
 
 void InfoDialog::sync()
 {
-    if (m_updatesEnabled)
+    if (updatesEnabled())
     {
         if (!m_oneShotUpdateFlag)
         {
@@ -118,6 +118,6 @@ void InfoDialog::sync()
 
 void InfoDialog::reqUpdate()
 {
-    if (m_updatesEnabled)
+    if (updatesEnabled())
         BaseInterface::iface()->reqBSI();
 }

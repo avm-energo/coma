@@ -99,7 +99,7 @@ void Protocom::stop()
 
 void Protocom::reqTime()
 {
-    CommandStruct inp { Proto::Commands::ReadTime, 0, 0, {} };
+    CommandStruct inp { Proto::Commands::ReadTime, QVariant(), QVariant(), {} };
     DataManager::addToInQueue(inp);
     emit wakeUpParser();
 }
@@ -203,11 +203,12 @@ void Protocom::writeCommand(Queries::Commands cmd, QVariant item)
     {
     case Commands::ReadBlkData:
 
-        //  NOTE Эта команда выполняется иначе
-        // принимает адрес регистров и количество
-        // Можно сделать и параллельно блоки
-        Q_ASSERT(item.canConvert<Signal>());
-        handleBlk(protoCmd, item.value<Signal>());
+        //  NOTE Эта команда может принимать на вход регистры или блоки
+        Q_ASSERT(item.canConvert<Signal>() || item.canConvert<quint32>());
+        if (item.canConvert<Signal>())
+            handleBlk(protoCmd, item.value<Signal>());
+        else if (item.canConvert<quint32>())
+            handleBlk(protoCmd, item.toUInt());
         break;
 
     case Commands::ReadBlkAC:

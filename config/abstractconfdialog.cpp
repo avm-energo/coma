@@ -19,10 +19,12 @@
 AbstractConfDialog::AbstractConfDialog(QWidget *parent) : UDialog(parent)
 {
     m_password = "121941";
+    setSuccessMsg("Конфигурация записана успешно");
     const auto &manager = DataManager::GetInstance();
     connect(&manager, &DataManager::confParametersListReceived, this, &AbstractConfDialog::confParametersListReceived);
+
     // connect(&manager, &DataManager::confParameterReceived, this, &AbstractConfDialog::confParameterReceived);
-    connect(&manager, &DataManager::responseReceived, this, &AbstractConfDialog::WriteConfMessageOk);
+    // connect(&manager, &DataManager::responseReceived, this, &AbstractConfDialog::WriteConfMessageOk);
 }
 
 // void AbstractConfDialog::setConnections()

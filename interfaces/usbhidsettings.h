@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../gen/pch.h"
 struct UsbHidSettings
 {
     explicit UsbHidSettings() = default;
