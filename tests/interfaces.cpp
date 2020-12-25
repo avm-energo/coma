@@ -29,7 +29,7 @@ int main(int argc, char *argv[])
     usbdevice.writeCommand(Queries::QUSB_ReqBlkDataA, 1);
     usbdevice.writeCommand(Queries::QUSB_ReqBlkDataA, 1);
     usbdevice.writeCommand(Queries::QUSB_ReqBlkDataA, 1);
-       usbdevice.writeCommand(Queries::QUSB_ReqBlkData, 1);
+    usbdevice.writeCommand(Queries::QUSB_ReqBlkData, 1);
     usbdevice.writeCommand(Queries::QUSB_ReqBlkDataTech, 1);
     usbdevice.writeCommand(Queries::QUSB_ReqBlkDataTech, 2);
     usbdevice.writeCommand(Queries::QUSB_ReqBlkDataTech, 3);

@@ -118,6 +118,8 @@ enum Commands : byte
     EraseCnt = 0x47,
     // запись версии аппаратуры модуля/серийного номера/типа платы
     WriteHardware = 0x48,
+    /// Fake commands
+    FakeReadRegData,
     RawCommand = 0x01
 
 };

@@ -215,20 +215,26 @@ void ProtocomThread::handle(const Proto::Commands cmd)
 
     case Commands::ReadBlkData:
 
-        // Превосходный костыль для сигнализации теперь и для просто блоков
-        // FIXME Переделать
-        // Нет регистров
-        if (count == 0)
-        {
+        if (m_currentCommand.cmd != Commands::FakeReadRegData)
             handleRawBlock(m_buffer.second, addr);
-            break;
-        }
-        if (addr != alarm_reg)
-            handleFloatArray(m_buffer.second, addr, count);
         else
-            handleSinglePoint(m_buffer.second, addr);
-
+        {
+            if (addr != alarm_reg)
+                handleFloatArray(m_buffer.second, addr, count);
+            else
+                handleSinglePoint(m_buffer.second, addr);
+        }
         break;
+
+        //    case Commands::FakeReadRegData:
+
+        //        // Превосходный костыль для сигнализации
+        //        if (addr != alarm_reg)
+        //            handleFloatArray(m_buffer.second, addr, count);
+        //        else
+        //            handleSinglePoint(m_buffer.second, addr);
+
+        //        break;
 
     case Commands::ReadBlkTech:
 
@@ -386,9 +392,21 @@ void ProtocomThread::parseRequest(const CommandStruct &cmdStr)
     {
     case Commands::ReadBlkData:
     {
-        quint16 blk = Proto::getBlkByReg.value(m_currentCommand.arg1.value<quint16>()).first;
+        const quint16 blk = m_currentCommand.arg1.value<quint16>();
         m_currentCommand.ba = StdFunc::arrayFromNumber(quint8(blk));
         QByteArray ba = prepareBlock(m_currentCommand);
+        emit writeDataAttempt(ba);
+        break;
+    }
+    case Commands::FakeReadRegData:
+    {
+
+        const quint16 number = m_currentCommand.arg1.value<quint16>();
+        Q_ASSERT(Proto::getBlkByReg.contains(number));
+        const quint16 blk = Proto::getBlkByReg.value(number).first;
+
+        m_currentCommand.ba = StdFunc::arrayFromNumber(quint8(blk));
+        QByteArray ba = prepareBlock(Commands::ReadBlkData, m_currentCommand.ba);
         emit writeDataAttempt(ba);
         break;
     }
@@ -610,15 +628,17 @@ QByteArray prepareError()
 
 QByteArray prepareBlock(CommandStruct &cmdStr, Proto::Starters startByte)
 {
-    QByteArray ba;
-    ba.append(startByte);
-    ba.append(cmdStr.cmd);
-    appendInt16(ba, cmdStr.ba.size());
+
+    /* QByteArray ba;
+     ba.append(startByte);
+     ba.append(cmdStr.cmd);
+     appendInt16(ba, cmdStr.ba.size());*/
     //    if (!cmdStr.arg1.isNull())
     //        ba.append(cmdStr.arg1.toUInt());
-    if (!cmdStr.ba.isEmpty())
-        ba.append(cmdStr.ba);
-    return ba;
+    /* if (!cmdStr.ba.isEmpty())
+         ba.append(cmdStr.ba);*/
+    return /*ba*/ prepareBlock(cmdStr.cmd, cmdStr.ba, startByte);
+    ;
 }
 
 QByteArray prepareBlock(Proto::Commands cmd, QByteArray &data, Proto::Starters startByte)

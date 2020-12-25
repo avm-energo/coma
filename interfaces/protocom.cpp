@@ -122,7 +122,7 @@ void Protocom::reqStartup(quint32 sigAdr, quint32 sigCount)
 {
     Q_ASSERT(Proto::getBlkByReg.contains(sigAdr));
     Q_ASSERT(Proto::getBlkByReg.value(sigAdr).second == sigCount);
-    CommandStruct inp { Proto::Commands::ReadBlkData, sigAdr, sigCount, {} };
+    CommandStruct inp { Proto::Commands::FakeReadRegData, sigAdr, sigCount, {} };
     DataManager::addToInQueue(inp);
     emit wakeUpParser();
 }
@@ -170,7 +170,7 @@ void Protocom::reqFloats(quint32 sigAdr, quint32 sigCount)
 {
     Q_ASSERT(Proto::getBlkByReg.contains(sigAdr));
     Q_ASSERT(Proto::getBlkByReg.value(sigAdr).second == sigCount);
-    CommandStruct inp { Proto::Commands::ReadBlkData, sigAdr, sigCount, {} };
+    CommandStruct inp { Proto::Commands::FakeReadRegData, sigAdr, sigCount, {} };
     DataManager::addToInQueue(inp);
     emit wakeUpParser();
 }
@@ -203,12 +203,16 @@ void Protocom::writeCommand(Queries::Commands cmd, QVariant item)
     {
     case Commands::ReadBlkData:
 
-        //  NOTE Эта команда может принимать на вход регистры или блоки
-        Q_ASSERT(item.canConvert<Signal>() || item.canConvert<quint32>());
+        Q_ASSERT(item.canConvert<quint32>());
+        if (item.canConvert<quint32>())
+            handleBlk(protoCmd, item.toUInt());
+        break;
+
+    case Commands::FakeReadRegData:
+
+        Q_ASSERT(item.canConvert<Signal>());
         if (item.canConvert<Signal>())
             handleBlk(protoCmd, item.value<Signal>());
-        else if (item.canConvert<quint32>())
-            handleBlk(protoCmd, item.toUInt());
         break;
 
     case Commands::ReadBlkAC:
