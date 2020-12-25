@@ -17,6 +17,7 @@ public:
 private:
     void setIconProcessed(const QString &name);
     void setIconRestricted(const QString &name);
+    void setIconNormal(const QString &name);
     void setHexIcon(const QString &name, const QStringList &hexattrs, const QStringList &hexvalues,
         const QStringList &mainattrs, const QStringList &mainvalues);
     void replaceDomWithNewAttrRecursively(QDomElement &root, const QString &name, const QString &attrname,

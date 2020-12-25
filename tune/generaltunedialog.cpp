@@ -21,6 +21,7 @@ void GeneralTuneDialog::setCalibrButtons()
     int calibrstep = storedcalibrations.value(cpuserialnum + "/step", "1").toInt();
     for (int i = 1; i < calibrstep; ++i)
         setIconProcessed("tn" + QString::number(i));
+    setIconNormal("tn" + QString::number(calibrstep));
     for (int i = (calibrstep + 1); i < m_calibrSteps; ++i)
         setIconRestricted("tn" + QString::number(i));
     if (calibrstep < m_calibrSteps)
@@ -37,6 +38,12 @@ void GeneralTuneDialog::setIconRestricted(const QString &name)
 {
     setHexIcon(
         name, { "fill", "stroke-width" }, { "#FF0000", "0.1" }, { "stroke", "stroke-width" }, { "#FF0000", "0.3" });
+}
+
+void GeneralTuneDialog::setIconNormal(const QString &name)
+{
+    setHexIcon(name, { "fill", "stroke-width" }, { "#8cc800", "0.15" },
+        { "stroke", "stroke-width", "fill", "fill-opacity" }, { "#8cc800", "1", "none", "1" });
 }
 
 void GeneralTuneDialog::setHexIcon(const QString &name, const QStringList &hexattrs, const QStringList &hexvalues,

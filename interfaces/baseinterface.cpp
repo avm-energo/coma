@@ -58,7 +58,7 @@ Error::Msg BaseInterface::reqBlockSync(
     QMap<DataTypes::DataBlockTypes, Queries::Commands> blockmap;
     blockmap[DataTypes::DataBlockTypes::BacBlock] = Queries::QUSB_ReqTuningCoef;
     blockmap[DataTypes::DataBlockTypes::BdaBlock] = Queries::QUSB_ReqBlkDataA;
-    //    blockmap[DataBlockTypes::BdBlock] = Queries::;
+    blockmap[DataTypes::DataBlockTypes::BdBlock] = Queries::QUSB_ReqBlkData;
     //    blockmap[DataBlockTypes::BciBlock] = Queries::;
     writeCommand(blockmap[blocktype], blocknum);
     timeoutTimer->start();

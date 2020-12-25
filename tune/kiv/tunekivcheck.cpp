@@ -1,10 +1,10 @@
 #include "tunekivcheck.h"
 
+#include "../../datablocks/kiv/bda.h"
 #include "../../gen/files.h"
 #include "../../gen/stdfunc.h"
 #include "../../interfaces/protocom.h"
 #include "../../widgets/wd_func.h"
-#include "../../datablocks/kiv/bda.h"
 
 #include <QDialog>
 #include <QMessageBox>
@@ -13,13 +13,12 @@
 
 TuneKIVCheck::TuneKIVCheck(int tuneStep, QWidget *parent) : AbstractTuneDialog(tuneStep, parent)
 {
-//    TKIV = kiv;
+    //    TKIV = kiv;
     //    CKIV = ckiv;
     //    S2Config = TKIV->getS2Config();
     //    m_tuneStep = 1;
     //    SetupUI();
     //    addDataBlock()
-    saveTuneSequenceFile(1); // save settings for the current MCU in INI file
     SetupUI();
 }
 
@@ -128,6 +127,12 @@ Error::Msg TuneKIVCheck::check()
     if (!StdFunc::floatIsWithinLimits(this, bda->data()->Frequency, 51.0, 0.05))
         return Error::Msg::GeneralError;
     return Error::Msg::NoError;
+}
+
+void TuneKIVCheck::showEvent(QShowEvent *e)
+{
+    saveTuneSequenceFile(1); // save settings for the current MCU in INI file
+    e->accept();
 }
 
 // void TuneKIVCheck::setDefCoefs()

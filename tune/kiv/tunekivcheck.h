@@ -5,6 +5,7 @@
 #include "../abstracttunedialog.h"
 //#include "tunekiv.h"
 
+#include <QShowEvent>
 #include <QWidget>
 
 class TuneKIVCheck : public AbstractTuneDialog
@@ -14,7 +15,7 @@ public:
     TuneKIVCheck(int tuneStep, QWidget *parent = nullptr);
 
 private:
-//    TuneKIV *TKIV;
+    //    TuneKIV *TKIV;
     //    ConfigKIV *CKIV;
     //    ConfigKIV::Bci m_BciSaveBlock;
 
@@ -32,6 +33,9 @@ private:
 private slots:
     //    int ReadAnalogMeasurements() override;
     //    void setDefCoefs() override;
+
+protected:
+    void showEvent(QShowEvent *e) override;
 };
 
 #endif // TUNEKIVCHECK_H
