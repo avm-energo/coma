@@ -13,7 +13,7 @@
 #include <QMenu>
 #include <QtCore>
 
-AlarmWidget::AlarmWidget(QWidget *parent) : UWidget(parent)
+AlarmWidget::AlarmWidget(QWidget *parent) : QWidget(parent)
 {
 
     QVBoxLayout *vlyout = new QVBoxLayout;
@@ -222,9 +222,9 @@ void AlarmWidget::clear()
     buttons->clear();
 }
 
-void AlarmWidget::uponInterfaceSetting()
-{
-}
+// void AlarmWidget::uponInterfaceSetting()
+//{
+//}
 
 void AlarmWidget::addAlarm(BaseAlarm *alarm)
 {

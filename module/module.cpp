@@ -52,7 +52,7 @@ Module *Module::createModule(QTimer *updateTimer, AlarmWidget *aw)
     //    quint16 typeb = Board::GetInstance().typeB();
     quint16 typeb = board.typeB();
     //    aw->setInterface(iface);
-    aw->uponInterfaceSetting();
+    // aw->uponInterfaceSetting();
     AlarmStateAll *alarmStateAll = new AlarmStateAll;
 
     aw->addAlarm(alarmStateAll);

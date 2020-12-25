@@ -6,13 +6,13 @@
 //#define BSIWARNMASK 0x00005F55
 //#define BSIALARMMASK 0x000020AA
 
-class AlarmWidget : public UWidget
+class AlarmWidget : public QWidget
 {
     Q_OBJECT
 public:
     explicit AlarmWidget(QWidget *parent = nullptr);
     void clear();
-    void uponInterfaceSetting();
+    // void uponInterfaceSetting();
 
     void addAlarm(BaseAlarm *alarm);
 
