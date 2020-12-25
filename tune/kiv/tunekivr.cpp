@@ -8,15 +8,18 @@
 #include <QMessageBox>
 #include <QVBoxLayout>
 
-TuneKIVR::TuneKIVR(int tuneStep, ConfigKIV *ckiv, TuneKIV *kiv, QWidget *parent) : AbstractTuneDialog(tuneStep, parent)
+TuneKIVR::TuneKIVR(int tuneStep, ConfigKIV *ckiv, QWidget *parent) : AbstractTuneDialog(tuneStep, parent)
 {
     CKIV = ckiv;
-    TKIV = kiv;
+//    TKIV = kiv;
     //    m_tuneStep = 1;
     //    SetBac(TKIV->m_Bac, 1, sizeof(TKIV->m_Bac));
-    SetBac(TKIV->m_Bac);
-    m_BacWidgetIndex = addWidgetToTabWidget(TKIV->m_Bac->widget(), "Настроечные параметры");
-    m_BdaWidgetIndex = addWidgetToTabWidget(TKIV->m_Bda->widget(), "Текущие данные");
+    m_bac = new Bac;
+    m_bda = new Bda;
+    SetBac(m_bac);
+//    SetBac(TKIV->m_Bac);
+    m_BacWidgetIndex = addWidgetToTabWidget(m_bac->widget(), "Настроечные параметры");
+    m_BdaWidgetIndex = addWidgetToTabWidget(m_bda->widget(), "Текущие данные");
     //    SetupUI();
     //    m_isEnergoMonitorDialogCreated = false;
     SetupUI();
@@ -111,20 +114,20 @@ Error::Msg TuneKIVR::showPreWarning()
 
 Error::Msg TuneKIVR::checkTuneCoefs()
 {
-    QVector<float *> tcoefs = { &TKIV->m_Bac->data()->KmU[0], &TKIV->m_Bac->data()->KmI1[0],
-        &TKIV->m_Bac->data()->KmI2[0], &TKIV->m_Bac->data()->KmI4[0], &TKIV->m_Bac->data()->KmI8[0],
-        &TKIV->m_Bac->data()->KmI16[0], &TKIV->m_Bac->data()->KmI32[0] };
+    QVector<float *> tcoefs = { &m_bac->data()->KmU[0], &m_bac->data()->KmI1[0],
+        &m_bac->data()->KmI2[0], &m_bac->data()->KmI4[0], &m_bac->data()->KmI8[0],
+        &m_bac->data()->KmI16[0], &m_bac->data()->KmI32[0] };
     for (int i = 0; i < 3; ++i)
     {
         foreach (float *coef, tcoefs)
             if (!StdFunc::floatIsWithinLimits(this, *(coef + i), 1.0, 0.05))
                 return Error::Msg::GeneralError;
     }
-    if (!StdFunc::floatIsWithinLimits(this, TKIV->m_Bac->data()->K_freq, 1.0, 0.05))
+    if (!StdFunc::floatIsWithinLimits(this, m_bac->data()->K_freq, 1.0, 0.05))
         return Error::Msg::GeneralError;
     for (int i = 0; i < 6; ++i)
     {
-        if (!StdFunc::floatIsWithinLimits(this, TKIV->m_Bac->data()->DPsi[i], 0.0, 1.0))
+        if (!StdFunc::floatIsWithinLimits(this, m_bac->data()->DPsi[i], 0.0, 1.0))
             return Error::Msg::GeneralError;
     }
     return Error::Msg::NoError;
@@ -161,9 +164,9 @@ Error::Msg TuneKIVR::processR120()
         StdFunc::cancel();
         return Error::Msg::GeneralError;
     }
-    TKIV->m_Bac->data()->Art = (pt100_120 - m_pt100) / 40;
-    TKIV->m_Bac->data()->Brt = pt100_120 * 2 - m_pt100 * 3;
-    TKIV->m_Bac->updateWidget();
+    m_bac->data()->Art = (pt100_120 - m_pt100) / 40;
+    m_bac->data()->Brt = pt100_120 * 2 - m_pt100 * 3;
+    m_bac->updateWidget();
     showTWTab(m_BacWidgetIndex);
     //    TKIV->updateBacWidget();
     saveAllTuneCoefs();
@@ -187,10 +190,10 @@ double TuneKIVR::processR()
     double pt100 = 0.0;
     while ((!StdFunc::isCancelled()) && (i < StdFunc::tuneRequestCount()))
     {
-        TKIV->m_Bda->readAndUpdate();
-        //        BaseInterface::iface()->reqBlockSync(1, DataTypes::DataBlockTypes::BdaBlock, &TKIV->m_Bda,
-        //        sizeof(TKIV->m_Bda)); TKIV->updateBdaWidget();
-        pt100 += TKIV->m_Bda->data()->Pt100;
+        m_bda->readAndUpdate();
+        //        BaseInterface::iface()->reqBlockSync(1, DataTypes::DataBlockTypes::BdaBlock, &m_bda,
+        //        sizeof(m_bda)); TKIV->updateBdaWidget();
+        pt100 += m_bda->data()->Pt100;
         ++i;
         emit setProgressCount(i);
         StdFunc::Wait(500);

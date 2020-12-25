@@ -8,17 +8,21 @@
 #include <QMessageBox>
 #include <QVBoxLayout>
 
-TuneKIVADC::TuneKIVADC(int tuneStep, ConfigKIV *ckiv, TuneKIV *kiv, QWidget *parent)
+TuneKIVADC::TuneKIVADC(int tuneStep, ConfigKIV *ckiv, QWidget *parent)
     : AbstractTuneDialog(tuneStep, parent)
 {
     CKIV = ckiv;
-    TKIV = kiv;
+//    TKIV = kiv;
     //    m_tuneStep = 1;
-    //    SetBac(TKIV->m_Bac, 1, sizeof(TKIV->m_Bac));
-    SetBac(TKIV->m_Bac);
-    m_BacWidgetIndex = addWidgetToTabWidget(TKIV->m_Bac->widget(), "Настроечные параметры");
-    m_BdainWidgetIndex = addWidgetToTabWidget(TKIV->m_Bdain->widget(), "Текущие данные");
-    addWidgetToTabWidget(TKIV->m_Bd0->widget(), "Общие данные");
+    //    SetBac(m_bac, 1, sizeof(m_bac));
+    m_bac = new Bac;
+    m_bda = new Bda;
+    m_bdain = new BdaIn;
+    m_bd0 = new Bd0;
+    SetBac(m_bac);
+    m_BacWidgetIndex = addWidgetToTabWidget(m_bac->widget(), "Настроечные параметры");
+    m_BdainWidgetIndex = addWidgetToTabWidget(m_bdain->widget(), "Текущие данные");
+    addWidgetToTabWidget(m_bd0->widget(), "Общие данные");
     //    SetupUI();
     m_isEnergoMonitorDialogCreated = false;
     SetupUI();
@@ -108,9 +112,9 @@ void TuneKIVADC::setTuneFunctions()
 //    tw->setObjectName("tunetw");
 //    QString ConfTWss = "QTabBar::tab:selected {background-color: " + QString(Colors::Tab) + ";}";
 //    tw->tabBar()->setStyleSheet(ConfTWss);
-//    tw->addTab(TKIV->m_Bac->widget(), "Настроечные параметры");
+//    tw->addTab(m_bac->widget(), "Настроечные параметры");
 //    tw->addTab(TKIV->BdaWidget(), "Текущие данные");
-//    tw->addTab(TKIV->m_Bd0->widget(), "Общие данные");
+//    tw->addTab(m_bd0->widget(), "Общие данные");
 //    lyout->addWidget(tw);
 //    w->setLayout(lyout);
 //    return w;
@@ -157,12 +161,12 @@ Error::Msg TuneKIVADC::ADCCoef(int coef)
     int i = 0;
     for (int i = 0; i < 6; ++i)
     {
-        m_bdain.IUefNat_filt[i] = 0.0;
-        m_bdain.phi_next_f[i] = 0.0;
+        m_bdainBlockData.IUefNat_filt[i] = 0.0;
+        m_bdainBlockData.phi_next_f[i] = 0.0;
     }
     while ((!StdFunc::isCancelled()) && (i < StdFunc::tuneRequestCount()))
     {
-        TKIV->m_Bdain->readAndUpdate();
+        m_bdain->readAndUpdate();
         //        BaseInterface::iface()->reqBlockSync(
         //            1, DataTypes::DataBlockTypes::BdBlock, &TKIV->m_Bda_in, sizeof(TKIV->m_Bda_in));
         if (checkBdaIn())
@@ -170,8 +174,8 @@ Error::Msg TuneKIVADC::ADCCoef(int coef)
             //            TKIV->updateBdaInWidget();
             for (int j = 0; j < 6; ++j)
             {
-                m_bdain.IUefNat_filt[j] += TKIV->m_Bdain->data()->IUefNat_filt[j];
-                m_bdain.phi_next_f[j] += TKIV->m_Bdain->data()->phi_next_f[j];
+                m_bdainBlockData.IUefNat_filt[j] += m_bdain->data()->IUefNat_filt[j];
+                m_bdainBlockData.phi_next_f[j] += m_bdain->data()->phi_next_f[j];
             }
         }
         else
@@ -182,8 +186,8 @@ Error::Msg TuneKIVADC::ADCCoef(int coef)
     }
     for (int i = 0; i < 6; ++i)
     {
-        m_bdain.IUefNat_filt[i] /= StdFunc::tuneRequestCount();
-        m_bdain.phi_next_f[i] /= StdFunc::tuneRequestCount();
+        m_bdainBlockData.IUefNat_filt[i] /= StdFunc::tuneRequestCount();
+        m_bdainBlockData.phi_next_f[i] /= StdFunc::tuneRequestCount();
     }
     if (StdFunc::isCancelled())
         return Error::Msg::GeneralError;
@@ -229,21 +233,21 @@ Error::Msg TuneKIVADC::Tmk0()
     double tmk0 = 0;
     while ((!StdFunc::isCancelled()) && (i < 5))
     {
-        //        BaseInterface::iface()->reqBlockSync(0, DataTypes::DataBlockTypes::BdBlock, &TKIV->m_Bd0,
-        //        sizeof(TKIV->m_Bd0));
+        //        BaseInterface::iface()->reqBlockSync(0, DataTypes::DataBlockTypes::BdBlock, &m_bd0,
+        //        sizeof(m_bd0));
         //        BaseInterface::iface()->reqBlockSync(
-        //            0, DataTypes::DataBlockTypes::BdBlock, TKIV->m_Bd0->data(), sizeof(Bd0::BlockData));
-        //        TKIV->m_Bd0->updateWidget();
-        TKIV->m_Bd0->readAndUpdate();
+        //            0, DataTypes::DataBlockTypes::BdBlock, m_bd0->data(), sizeof(Bd0::BlockData));
+        //        m_bd0->updateWidget();
+        m_bd0->readAndUpdate();
         //        TKIV->updateBd0Widget();
-        tmk0 += TKIV->m_Bd0->data()->Tmk;
+        tmk0 += m_bd0->data()->Tmk;
         ++i;
         emit setProgressCount(i);
         StdFunc::Wait(500);
     }
     if (StdFunc::isCancelled())
         return Error::Msg::GeneralError;
-    TKIV->m_Bac->data()->Tmk0 = tmk0 / 5;
+    m_bac->data()->Tmk0 = tmk0 / 5;
     return Error::Msg::NoError;
 }
 
@@ -266,7 +270,7 @@ Error::Msg TuneKIVADC::CheckTune()
         //        BaseInterface::iface()->reqBlockSync(
         //            1, DataTypes::DataBlockTypes::BdBlock, &TKIV->m_Bda_in, sizeof(TKIV->m_Bda_in));
         //        TKIV->updateBdaInWidget();
-        TKIV->m_Bdain->readAndUpdate();
+        m_bdain->readAndUpdate();
         StdFunc::Wait(500);
     }
     if (StdFunc::isCancelled())
@@ -331,17 +335,17 @@ bool TuneKIVADC::checkBdaIn()
 {
     for (int i = 0; i < 3; ++i)
     {
-        if (StdFunc::floatIsWithinLimits(this, TKIV->m_Bdain->data()->IUefNat_filt[i], 57.75, 3.0))
+        if (StdFunc::floatIsWithinLimits(this, m_bdain->data()->IUefNat_filt[i], 57.75, 3.0))
         {
-            if (StdFunc::floatIsWithinLimits(this, TKIV->m_Bdain->data()->IUeff_filtered[i], 57.75, 3.0))
+            if (StdFunc::floatIsWithinLimits(this, m_bdain->data()->IUeff_filtered[i], 57.75, 3.0))
             {
-                if (StdFunc::floatIsWithinLimits(this, TKIV->m_Bdain->data()->IUefNat_filt[i + 3], 290, 10))
+                if (StdFunc::floatIsWithinLimits(this, m_bdain->data()->IUefNat_filt[i + 3], 290, 10))
                 {
-                    if (StdFunc::floatIsWithinLimits(this, TKIV->m_Bdain->data()->IUeff_filtered[i + 3], 290, 10))
+                    if (StdFunc::floatIsWithinLimits(this, m_bdain->data()->IUeff_filtered[i + 3], 290, 10))
                     {
-                        if (StdFunc::floatIsWithinLimits(this, TKIV->m_Bdain->data()->phi_next_f[i], 0, 1))
+                        if (StdFunc::floatIsWithinLimits(this, m_bdain->data()->phi_next_f[i], 0, 1))
                         {
-                            if (StdFunc::floatIsWithinLimits(this, TKIV->m_Bdain->data()->phi_next_f[i + 3], 90, 1))
+                            if (StdFunc::floatIsWithinLimits(this, m_bdain->data()->phi_next_f[i + 3], 90, 1))
                                 continue;
                         }
                     }
@@ -350,7 +354,7 @@ bool TuneKIVADC::checkBdaIn()
         }
         return false;
     }
-    if (StdFunc::floatIsWithinLimits(this, TKIV->m_Bdain->data()->Pt100_R, 100, 5))
+    if (StdFunc::floatIsWithinLimits(this, m_bdain->data()->Pt100_R, 100, 5))
         return true;
     return false;
 }
@@ -454,9 +458,9 @@ Error::Msg TuneKIVADC::showEnergomonitorInputDialog()
 
 void TuneKIVADC::CalcTuneCoefs()
 {
-    QMap<int, float *> kmimap = { { 2, &TKIV->m_Bac->data()->KmI2[0] }, { 4, &TKIV->m_Bac->data()->KmI4[0] },
-        { 8, &TKIV->m_Bac->data()->KmI8[0] }, { 16, &TKIV->m_Bac->data()->KmI16[0] },
-        { 32, &TKIV->m_Bac->data()->KmI32[0] } };
+    QMap<int, float *> kmimap = { { 2, &m_bac->data()->KmI2[0] }, { 4, &m_bac->data()->KmI4[0] },
+        { 8, &m_bac->data()->KmI8[0] }, { 16, &m_bac->data()->KmI16[0] },
+        { 32, &m_bac->data()->KmI32[0] } };
     float uet, iet, yet, fet;
     uet = StdFunc::toFloat(WDFunc::LEData(this, "ValuetuneU"));
     iet = StdFunc::toFloat(WDFunc::LEData(this, "ValuetuneI"));
@@ -468,21 +472,21 @@ void TuneKIVADC::CalcTuneCoefs()
     {
         for (int i = 0; i < 3; ++i)
         {
-            TKIV->m_Bac->data()->KmU[i] = TKIV->m_Bac->data()->KmU[i] * uet / m_bdain.IUefNat_filt[i];
-            TKIV->m_Bac->data()->KmI1[i] = TKIV->m_Bac->data()->KmI1[i] * iet / m_bdain.IUefNat_filt[i + 3];
+            m_bac->data()->KmU[i] = m_bac->data()->KmU[i] * uet / m_bdainBlockData.IUefNat_filt[i];
+            m_bac->data()->KmI1[i] = m_bac->data()->KmI1[i] * iet / m_bdainBlockData.IUefNat_filt[i + 3];
         }
-        TKIV->m_Bac->data()->K_freq = TKIV->m_Bac->data()->K_freq * fet / m_bdain.Frequency;
+        m_bac->data()->K_freq = m_bac->data()->K_freq * fet / m_bdainBlockData.Frequency;
         for (int i = 1; i < 3; ++i)
-            TKIV->m_Bac->data()->DPsi[i] = TKIV->m_Bac->data()->DPsi[i] - m_bdain.phi_next_f[i];
+            m_bac->data()->DPsi[i] = m_bac->data()->DPsi[i] - m_bdainBlockData.phi_next_f[i];
         for (int i = 3; i < 6; ++i)
-            TKIV->m_Bac->data()->DPsi[i] = TKIV->m_Bac->data()->DPsi[i] + yet - m_bdain.phi_next_f[i];
+            m_bac->data()->DPsi[i] = m_bac->data()->DPsi[i] + yet - m_bdainBlockData.phi_next_f[i];
         break;
     }
     default:
     {
         assert(kmimap.contains(m_curTuneStep));
         for (int i = 0; i < 3; ++i)
-            *kmimap.value(m_curTuneStep) = *kmimap.value(m_curTuneStep) * iet / m_bdain.IUefNat_filt[i + 3];
+            *kmimap.value(m_curTuneStep) = *kmimap.value(m_curTuneStep) * iet / m_bdainBlockData.IUefNat_filt[i + 3];
         break;
     }
     }
@@ -493,5 +497,5 @@ void TuneKIVADC::CalcTuneCoefs()
 
 // void TuneKIVADC::setDefCoefs()
 //{
-//    TKIV->m_Bac->setDefBlockAndUpdate();
+//    m_bac->setDefBlockAndUpdate();
 //}

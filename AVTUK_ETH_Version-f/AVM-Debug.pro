@@ -151,6 +151,7 @@ HEADERS += \
     ../tune/generaltunedialog.h \
     ../tune/kiv/tunekivadc.h \
     ../tune/kiv/tunekivr.h \
+    ../tune/tunesteps.h \
     ../widgets/aboutwidget.h \
     ../widgets/edoublespinbox.h \
     ../widgets/styleloader.h \

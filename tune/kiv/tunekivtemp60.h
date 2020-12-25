@@ -3,7 +3,10 @@
 
 #include "../../config/configkiv.h"
 #include "../abstracttunedialog.h"
-#include "tunekiv.h"
+//#include "tunekiv.h"
+#include "../../datablocks/kiv/bac.h"
+#include "../../datablocks/kiv/bdain.h"
+#include "../../datablocks/bd0.h"
 
 #include <QWidget>
 
@@ -11,7 +14,7 @@ class TuneKIVTemp60 : public AbstractTuneDialog
 {
     Q_OBJECT
 public:
-    TuneKIVTemp60(int tuneStep, ConfigKIV *ckiv, TuneKIV *tkiv, QWidget *parent = nullptr);
+    TuneKIVTemp60(int tuneStep, ConfigKIV *ckiv, QWidget *parent = nullptr);
 
 private:
     struct MidTuneStruct
@@ -30,8 +33,11 @@ private:
         float *parameter;
     };
 
-    TuneKIV *TKIV;
+//    TuneKIV *TKIV;
     ConfigKIV *CKIV;
+    Bac *m_bac;
+    BdaIn *m_bdain;
+    Bd0 *m_bd0;
     MidTuneStruct m_midTuneStruct;
     QVector<TuneDescrStruct> m_tuneDescrVector()
     {

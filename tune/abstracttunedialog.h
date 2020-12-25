@@ -4,7 +4,7 @@
 #include "../datablocks/datablock.h"
 #include "../gen/report.h"
 #include "../gen/s2.h"
-#include "../widgets/udialog.h"
+//#include "../widgets/udialog.h"
 
 #include <QByteArray>
 #include <QCloseEvent>
@@ -19,7 +19,7 @@
 #define TUNE_POINTSPER 500 // столько миллисекунд должно усредняться при регулировке
 #define WAITFORCONST 1 // seconds to let voltages be constant
 
-class AbstractTuneDialog : public UDialog
+class AbstractTuneDialog : public QDialog
 {
     Q_OBJECT
 public:

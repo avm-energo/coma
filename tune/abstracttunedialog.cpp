@@ -5,6 +5,7 @@
 #include "../gen/datatypes.h"
 #include "../gen/error.h"
 #include "../gen/files.h"
+#include "generaltunedialog.h"
 //#include "../gen/modulebsi.h"
 #include "../config/configkiv.h"
 #include "../gen/stdfunc.h"
@@ -23,7 +24,7 @@
 #include <QVBoxLayout>
 #include <QtDebug>
 
-AbstractTuneDialog::AbstractTuneDialog(int tuneStep, QWidget *parent) : UDialog(parent)
+AbstractTuneDialog::AbstractTuneDialog(int tuneStep, QWidget *parent) : QDialog(parent)
 {
     TuneVariant = 0;
     //    setAttribute(Qt::WA_DeleteOnClose);
@@ -37,6 +38,11 @@ AbstractTuneDialog::AbstractTuneDialog(int tuneStep, QWidget *parent) : UDialog(
     m_blockCount = 0;
     m_tuneStep = tuneStep;
     m_finished = false;
+    GeneralTuneDialog *dlg = qobject_cast<GeneralTuneDialog *>(parent);
+    if (dlg)
+    {
+        connect(this, &AbstractTuneDialog::Finished, dlg, &GeneralTuneDialog::setCalibrButtons);
+    }
 }
 
 AbstractTuneDialog::~AbstractTuneDialog()
@@ -48,7 +54,8 @@ void AbstractTuneDialog::SetupUI()
     QHBoxLayout *hlyout = new QHBoxLayout;
     QVBoxLayout *vlyout = new QVBoxLayout;
     hlyout->addWidget(TuneUI());
-    hlyout->addWidget(MainUI());
+    if (!m_mainWidgetList.isEmpty())
+        hlyout->addWidget(MainUI());
     vlyout->addLayout(hlyout);
     vlyout->addWidget(BottomUI());
     setLayout(vlyout);
@@ -123,7 +130,12 @@ QWidget *AbstractTuneDialog::TuneUI()
     hlyout = new QHBoxLayout;
     hlyout->addStretch(300);
     hlyout->addWidget(WDFunc::NewHexagonPB(
-        this, "finishpb", [this]() { this->close(); }, "images/tnyes.svg", "Готово"));
+        this, "finishpb",
+        [this]() {
+            emit Finished();
+            this->hide();
+        },
+        "images/tnyes.svg", "Готово"));
     hlyout->addStretch(300);
     lyout->addLayout(hlyout);
     //    lyout->addStretch(1);
@@ -902,7 +914,7 @@ Error::Msg AbstractTuneDialog::loadWorkConfig()
 void AbstractTuneDialog::CancelTune()
 {
     StdFunc::cancel();
-    emit Finished();
+    //    emit Finished();
 }
 
 // void AbstractTuneDialog::MeasTimerTimeout()
@@ -914,7 +926,7 @@ void AbstractTuneDialog::CancelTune()
 
 void AbstractTuneDialog::closeEvent(QCloseEvent *e)
 {
-    //    emit stopall();
+    emit Finished();
     e->accept();
 }
 
@@ -923,9 +935,9 @@ void AbstractTuneDialog::keyPressEvent(QKeyEvent *e)
     if ((e->key() == Qt::Key_Enter) || (e->key() == Qt::Key_Return))
     {
         m_finished = true;
-        emit Finished();
+        //        emit Finished();
     }
     if (e->key() == Qt::Key_Escape)
         StdFunc::cancel();
-    UDialog::keyPressEvent(e);
+    QDialog::keyPressEvent(e);
 }
