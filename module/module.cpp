@@ -32,7 +32,7 @@
 #include "modules.h"
 Module::Module(QObject *parent) : QObject(parent)
 {
-    m_dialogs.clear();
+    // m_dialogs.clear();
     // m_oldTabIndex = m_currentTabIndex = 0;
 }
 
@@ -94,7 +94,7 @@ Module *Module::createModule(QTimer *updateTimer, AlarmWidget *aw)
             CheckKIVDialog *cdkiv = new CheckKIVDialog;
             m->addDialogToList(cdkiv, "Проверка");
 #ifdef AVM_DEBUG
-//            TuneKIV *TKIV = new TuneKIV;
+            //            TuneKIV *TKIV = new TuneKIV;
             m->addDialogToList(new TuneKIVDialog(CKIV), "Регулировка");
 #endif
             m->addDialogToList(new StartupKIVDialog, "Начальные значения");
@@ -171,7 +171,7 @@ Module *Module::createModule(QTimer *updateTimer, AlarmWidget *aw)
     for (auto *d : dlgs)
     {
         connect(updateTimer, &QTimer::timeout, d, &UDialog::reqUpdate);
-        d->setUpdatesDisabled();
+        // d->setUpdatesDisabled();
         d->uponInterfaceSetting();
         //        d->setInterface(m->m_iface);
     }
@@ -237,8 +237,9 @@ void Module::parentTWTabChanged(int index)
     // UDialog *udlg = m_dialogs.at(m_oldTabIndex);
     for (auto &dialog : m_dialogs)
     {
-        dialog->setUpdatesDisabled();
-        dialog->setEnabled(false);
+        if (dialog->updatesEnabled())
+            dialog->setUpdatesDisabled();
+        // dialog->setEnabled(false);
     }
     //    UDialog *udlg = qobject_cast<UDialog *>(dlg);
     //    if (udlg)
@@ -271,6 +272,8 @@ void Module::parentTWTabChanged(int index)
 
 void Module::closeDialogs()
 {
-    for (auto &i : m_dialogs)
-        i->close();
+    if (!m_dialogs.isEmpty())
+        for (auto &i : m_dialogs)
+            i->close();
+    delete S2::config;
 }

@@ -133,7 +133,7 @@ private:
 
     //    QVector<S2::DataRec> *S2ConfigForTune;
     //    QVector<S2::DataRec> *S2Config;
-    S2DataTypes::S2ConfigType *S2Config;
+    // S2DataTypes::S2ConfigType *S2Config;
 
     //    quint8 PredAlarmEvents[20];
     //    quint8 AlarmEvents[20];
@@ -153,10 +153,13 @@ private:
     void SaveSettings();
     void SetProgressBarSize(int prbnum, int size);
     void SetProgressBarCount(int prbnum, int count);
+    // Unused
     void New104();
+    // Unused
     void NewModbus();
     void newTimers();
     void SetupUI();
+    // Unused
     void CloseDialogs();
     void PrepareDialogs();
     void setupConnections();
@@ -179,6 +182,7 @@ protected:
     void resizeEvent(QResizeEvent *e) override;
 signals:
     void sendMessage(void *);
+    void closeModule();
 };
 
 #endif // COMA_H

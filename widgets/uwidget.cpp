@@ -23,12 +23,14 @@ UWidget::UWidget(QWidget *parent) : QWidget(parent)
 
 void UWidget::setUpdatesEnabled()
 {
+    Q_ASSERT(!updatesEnabled());
     QWidget::setUpdatesEnabled(true);
     // m_updatesEnabled = true;
 }
 
 void UWidget::setUpdatesDisabled()
 {
+    Q_ASSERT(updatesEnabled());
     QWidget::setUpdatesEnabled(false);
     // m_updatesEnabled = false;
 }

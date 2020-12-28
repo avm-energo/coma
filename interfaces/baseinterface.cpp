@@ -5,14 +5,23 @@
 #include "../gen/stdfunc.h"
 
 #include <QCoreApplication>
+#include <memory>
 
 BaseInterface *BaseInterface::m_iface;
 
 BaseInterface::BaseInterface(QObject *parent) : QObject(parent), m_working(false), Log(new LogClass(this))
 {
-    timeoutTimer = new QTimer;
+
+    auto ptr = std::make_shared<QTimer>();
+    timeoutTimer = ptr.get();
+    // timeoutTimer = new QTimer;
     timeoutTimer->setInterval(MAINTIMEOUT);
     connect(timeoutTimer, &QTimer::timeout, this, &BaseInterface::timeout);
+}
+
+BaseInterface::~BaseInterface()
+{
+    delete Log;
 }
 
 BaseInterface *BaseInterface::iface()

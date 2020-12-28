@@ -9,6 +9,7 @@ class ConfigKIV
 {
 public:
     explicit ConfigKIV();
+    ~ConfigKIV();
 
     AVM_KIV::Bci Bci_block;
 

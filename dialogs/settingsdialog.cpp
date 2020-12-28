@@ -8,6 +8,7 @@
 #include <QSettings>
 #include <QVBoxLayout>
 #include <QtDebug>
+#include <memory>
 SettingsDialog::SettingsDialog(QWidget *parent) : QDialog(parent)
 {
     setAttribute(Qt::WA_DeleteOnClose);
@@ -52,7 +53,7 @@ void SettingsDialog::SetupUI()
 
 void SettingsDialog::Fill()
 {
-    QSettings *sets = new QSettings("EvelSoft", PROGNAME);
+    auto sets = std::make_unique<QSettings>("EvelSoft", PROGNAME);
     bool writeUSBLog = sets->value("WriteLog", "0").toBool();
     WDFunc::SetChBData(this, "writelogchb", writeUSBLog);
     int N = sets->value("TuneRequestCount", "20").toInt();
@@ -62,7 +63,7 @@ void SettingsDialog::Fill()
 void SettingsDialog::AcceptSettings()
 {
     bool tmpb;
-    QSettings *sets = new QSettings("EvelSoft", PROGNAME);
+    auto sets = std::make_unique<QSettings>("EvelSoft", PROGNAME);
 
     WDFunc::ChBData(this, "writelogchb", tmpb);
     sets->setValue("WriteLog", (tmpb) ? "1" : "0");
@@ -73,5 +74,5 @@ void SettingsDialog::AcceptSettings()
         qWarning() << "Неверное число степени усреднения, установлено по умолчанию 20";
     }
     sets->setValue("TuneRequestCount", N);
-    this->close();
+    close();
 }

@@ -361,8 +361,12 @@ bool WDFunc::SetSPBData(QObject *w, const QString &spbname, const double &spbval
 bool WDFunc::SetLBLImage(QWidget *w, const QString &lblname, QPixmap *pm)
 {
     QLabel *lbl = w->findChild<QLabel *>(lblname);
+    Q_ASSERT(lbl != nullptr);
     if (lbl == nullptr)
+    {
+        qDebug() << Error::DescError << lblname;
         return false;
+    }
     lbl->setPixmap(*pm);
     return true;
 }

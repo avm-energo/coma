@@ -318,7 +318,10 @@ void AbstractCheckDialog::TWTabChanged(int index)
     if (index == -1)
         return;
     for (auto &item : m_BdUIList)
-        item.widget->setUpdatesDisabled();
+    {
+        if (item.widget->updatesEnabled())
+            item.widget->setUpdatesDisabled();
+    }
     Q_ASSERT(m_BdUIList.size() >= index);
     if (m_BdUIList.size() < index)
         return;

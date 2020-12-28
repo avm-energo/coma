@@ -16,6 +16,7 @@ public:
     LogClass *Log;
 
     explicit BaseInterface(QObject *parent = nullptr);
+    ~BaseInterface();
     static BaseInterface *iface();
     static void setIface(BaseInterface *iface);
 

@@ -61,6 +61,12 @@ ConfigKIV::ConfigKIV()
     //    };
 }
 
+ConfigKIV::~ConfigKIV()
+{
+    delete m_mainConfig;
+    delete m_KxxConfig;
+}
+
 void ConfigKIV::setDefConf()
 {
     m_mainConfig->SetDefConf();

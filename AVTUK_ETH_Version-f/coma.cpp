@@ -101,7 +101,7 @@ Coma::Coma(QWidget *parent) : QMainWindow(parent)
 
 #endif
 
-    S2Config = new S2DataTypes::S2ConfigType;
+    // S2Config = new S2DataTypes::S2ConfigType;
     Reconnect = false;
 
     //    CurTabIndex = -1;
@@ -428,7 +428,7 @@ void Coma::startWork(const ConnectStruct st)
     auto const &board = Board::GetInstance();
     ConnectSettings = st;
     SaveSettings();
-    S2Config = new QVector<S2DataTypes::DataRec>;
+    // S2Config = new QVector<S2DataTypes::DataRec>;
     QApplication::setOverrideCursor(Qt::WaitCursor);
     //    S2ConfigForTune = new QVector<S2::DataRec>;
     QMetaObject::Connection *const connection = new QMetaObject::Connection;
@@ -604,12 +604,13 @@ void Coma::startWork(const ConnectStruct st)
 void Coma::PrepareDialogs()
 {
     m_Module = Module::createModule(BdaTimer, AlarmW);
-    setupConnections();
+    connect(this, &Coma::closeModule, m_Module, &Module::closeDialogs);
 }
 
 void Coma::CloseDialogs()
 {
-    m_Module->closeDialogs();
+    //    Q_ASSERT(m_Module != nullptr);
+    //    m_Module->closeDialogs();
     //    if (AlarmStateAllDialog != nullptr)
     //    {
     //        AlrmTimer->stop();
@@ -745,6 +746,7 @@ void Coma::prepare()
     Reconnect = true;
 
     PrepareDialogs();
+    setupConnections();
     // нет конфигурации
     if (board.noConfig())
         qCritical() << Error::Msg::NoConfError;
@@ -752,6 +754,7 @@ void Coma::prepare()
     if (board.noRegPars())
         qCritical() << Error::Msg::NoTuneError;
 
+    Q_ASSERT(m_Module != nullptr);
     QList<UDialog *> dlgs = m_Module->dialogs();
     for (auto *d : dlgs)
         MainTW->addTab(d, d->getCaption());
@@ -827,7 +830,7 @@ void Coma::ReConnect()
         ETabWidget *MainTW = this->findChild<ETabWidget *>("maintw");
         if (MainTW == nullptr)
         {
-            ERMSG("Ошибка открытия файла");
+            qCritical() << Error::DescError << NAMEOF(MainTW);
             return;
         }
         MainTW->hide();
@@ -1202,7 +1205,9 @@ void Coma::DisconnectAndClear()
 
     AlarmW->clear();
     Disconnect();
-    CloseDialogs();
+    emit closeModule();
+    m_Module->deleteLater();
+    // CloseDialogs();
 
     ClearTW();
     ETabWidget *MainTW = this->findChild<ETabWidget *>("maintw");
@@ -1251,6 +1256,7 @@ void Coma::keyPressEvent(QKeyEvent *e)
 
 void Coma::MainTWTabChanged(int tabindex)
 {
+    Q_ASSERT(m_Module != nullptr);
     m_Module->parentTWTabChanged(tabindex);
     //    if (tabindex == CurTabIndex) // to prevent double function invocation by doubleclicking on tab
     //        return;
