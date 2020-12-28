@@ -77,3 +77,4 @@ struct ErrorMsg
 };
 
 QStringList &operator<<(QStringList &l, const ErrorMsg &obj);
+QDebug operator<<(QDebug debug, const ErrorMsg &error);
