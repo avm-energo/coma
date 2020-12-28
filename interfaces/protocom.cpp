@@ -94,6 +94,7 @@ bool Protocom::start(const UsbHidSettings &usbhid)
 
 void Protocom::stop()
 {
+    // emit finish();
     // FIXME Реализовать
 }
 
@@ -260,13 +261,13 @@ void Protocom::writeCommand(Queries::Commands cmd, QVariant item)
     case Commands::WriteMode:
 
         Q_ASSERT(item.canConvert<quint8>());
-        handleInt(protoCmd, item.toByteArray());
+        handleInt(protoCmd, StdFunc::arrayFromNumber(quint8(item.value<quint8>())));
         break;
 
     case Commands::WriteVariant:
 
-        Q_ASSERT(item.canConvert<quint32>());
-        handleInt(protoCmd, QByteArray::number(item.toUInt()));
+        Q_ASSERT(item.canConvert<quint8>());
+        handleInt(protoCmd, StdFunc::arrayFromNumber(quint8(item.value<quint8>())));
         break;
 
     default:
@@ -296,9 +297,16 @@ inline void handleBlk(const Proto::Commands cmd, const quint32 addr, const quint
     handleBlk(cmd, blkPair.first);
 }
 
-inline void handleInt(const Proto::Commands cmd, const QByteArray data)
+void handleInt(const Proto::Commands cmd, const QByteArray data)
 {
-    handleBlk(cmd, 0, data);
+    CommandStruct inp {
+        cmd,        // Command
+        QVariant(), // Block number or empty for some cmds or regAddr
+        QVariant(), // Null arg or regCount
+        data        // QByteArray data, maybe empty
+    };
+    DataManager::addToInQueue(inp);
+    // handleBlk(cmd, 0, data);
 }
 
 inline void handleBlk(const Proto::Commands cmd, const DataTypes::Signal &signal)

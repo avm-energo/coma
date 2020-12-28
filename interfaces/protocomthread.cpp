@@ -277,49 +277,6 @@ void ProtocomThread::checkQueue()
     }
 }
 
-// void JournalDialog::TryGetJourByUSB()
-//{
-//    QString filetofind;
-//    int jourtype = GetJourNum(sender()->objectName());
-//    switch (jourtype)
-//    {
-//    case Files::JourSys:
-//        filetofind = "system.dat";
-//        break;
-//    case Files::JourWork:
-//        filetofind = "workj.dat";
-//        break;
-//    case Files::JourMeas:
-//        filetofind = "measj.dat";
-//        break;
-//    default:
-//        ERMSG("Incorrect jour type");
-//        return;
-//        break;
-//    }
-
-//    JourType = jourtype;
-//    JourFuncs->SetJourType(jourtype);
-//    // QByteArray ba;
-//    QStringList drives = Files::Drives();
-//    if (!drives.isEmpty())
-//    {
-//        QStringList files = Files::SearchForFile(drives, filetofind);
-//        if (!files.isEmpty())
-//        {
-//            JourFile = Files::GetFirstDriveWithLabel(files, "AVM");
-//            JourFuncs->SetJourFile(JourFile);
-//            if (JourFile.isEmpty())
-//                GetJour();
-//            else
-//                StartReadJourFile();
-//        }
-//        else
-//            GetJour();
-//    }
-//    else
-//        GetJour();
-//}
 void ProtocomThread::fileHelper(DataTypes::FilesEnum fileNum)
 {
     QString fileToFind;

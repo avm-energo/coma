@@ -73,6 +73,11 @@ int main(int argc, char *argv[])
     //    QByteArray::fromHex("3e323c000100ffffc6020000b8dc427a21b7c85feb0300000400000064000000ee030000040000000000"
     //                                  "5c43f4030000040000000000003ff503000004000000");
     //    usbdevice.writeRaw(ba);
+    usbdevice.writeCommand(Queries::QUSB_SetMode, quint8(0x02));
+    usbdevice.writeCommand(Queries::QUSB_SetMode, quint8(0x02));
+    usbdevice.writeCommand(Queries::QUSB_ReqBlkData, 1);
+    usbdevice.writeCommand(Queries::QUSB_ReqBlkData, 1);
+    usbdevice.writeCommand(Queries::QUSB_ReqBlkData, 1);
     qDebug() << "Hello world";
     return a.exec();
 }
