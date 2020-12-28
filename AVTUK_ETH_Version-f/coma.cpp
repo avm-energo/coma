@@ -67,7 +67,9 @@ void registerForDeviceNotification(QWidget *ptr)
 
     GUID _guid = { 0xa5dcbf10, 0x6530, 0x11d2, { 0x90, 0x1f, 0x00, 0xc0, 0x4f, 0xb9, 0x51, 0xed } };
     devInt.dbcc_size = sizeof(DEV_BROADCAST_DEVICEINTERFACE);
+
     devInt.dbcc_devicetype = DBT_DEVTYP_DEVICEINTERFACE;
+    // With DEVICE_NOTIFY_ALL_INTERFACE_CLASSES this property ignores
     devInt.dbcc_classguid = _guid;
 
     HDEVNOTIFY blub;
@@ -145,7 +147,7 @@ QToolBar *Coma::createToolBar()
     QToolBar *tb = new QToolBar(this);
     tb->setContextMenuPolicy(Qt::PreventContextMenu);
     tb->setIconSize(QSize(40, 40));
-    tb->addAction(QIcon("images/tnstart.svg"), "Соединение", this, &Coma::StartWork);
+    tb->addAction(QIcon("images/tnstart.svg"), "Соединение", this, &Coma::prepareConnectDlg);
     tb->addAction(QIcon("images/tnstop.svg"), "Разрыв соединения", this, &Coma::DisconnectAndClear);
     tb->addSeparator();
     tb->addAction(QIcon("images/tnsettings.svg"), "Настройки", [this]() {
@@ -259,7 +261,7 @@ void Coma::SetupMenubar()
     menu->setTitle("Главное");
 
     menu->addAction("Выход", this, &Coma::close);
-    menu->addAction(QIcon("images/tnstart.svg"), "Соединение", this, &Coma::StartWork);
+    menu->addAction(QIcon("images/tnstart.svg"), "Соединение", this, &Coma::prepareConnectDlg);
     menu->addAction(QIcon("images/tnstop.svg"), "Разрыв соединения", this, &Coma::DisconnectAndClear);
 
     menubar->addMenu(menu);
@@ -398,7 +400,7 @@ void Coma::SetupMenubar()
     }
 } */
 
-void Coma::StartWork()
+void Coma::prepareConnectDlg()
 {
     auto const &board = Board::GetInstance();
     if (board.connectionState() != Board::ConnectionState::Closed)
@@ -407,40 +409,33 @@ void Coma::StartWork()
     if (!Reconnect)
     {
         QEventLoop loop;
-        Cancelled = false;
         ConnectDialog *dlg = new ConnectDialog;
-        connect(dlg, &ConnectDialog::Accepted, [this](const ConnectStruct &st) {
-            this->ConnectSettings = st;
-            emit CloseConnectDialog();
+        connect(dlg, &ConnectDialog::Accepted, this, [=](const ConnectStruct st) {
+            dlg->close();
+            startWork(st);
         });
-        connect(dlg, &ConnectDialog::Cancelled, [this]() {
-            this->Cancelled = true;
-            emit CloseConnectDialog();
-        });
-        connect(this, &Coma::CloseConnectDialog, dlg, &ConnectDialog::close);
-        connect(this, &Coma::CloseConnectDialog, &loop, &QEventLoop::quit);
         dlg->show();
-        loop.exec();
-        if (Cancelled)
-        {
-            qCritical("Отмена подключения");
-            return;
-        }
         // S2ConfigForTune->clear();
-        SaveSettings();
     }
 
     // Stage3
 
     DisconnectAndClear();
+}
 
+void Coma::startWork(const ConnectStruct st)
+{
+    auto const &board = Board::GetInstance();
+    ConnectSettings = st;
+    SaveSettings();
     S2Config = new QVector<S2DataTypes::DataRec>;
+    QApplication::setOverrideCursor(Qt::WaitCursor);
     //    S2ConfigForTune = new QVector<S2::DataRec>;
-    //    CurTabIndex = -1;
     QMetaObject::Connection *const connection = new QMetaObject::Connection;
     *connection = connect(&board, &Board::readyRead, [=]() {
         QObject::disconnect(*connection);
         delete connection;
+        QApplication::restoreOverrideCursor();
         prepare();
     });
 
@@ -448,29 +443,15 @@ void Coma::StartWork()
     timer.setInterval(INTERVAL::WAIT);
     timer.setSingleShot(true);
     connect(&timer, &QTimer::timeout, [=] {
-        if (Cancelled)
-            return;
         if (Board::GetInstance().type() != 0)
             return;
         QMessageBox::critical(this, "Ошибка", "Не удалось соединиться с прибором", QMessageBox::Ok);
         DisconnectAndClear();
         qCritical("Не получили BSI, нет соединения");
+        QApplication::restoreOverrideCursor();
         //            Disconnect();
     });
     Connect();
-    //    QElapsedTimer tmr;
-    //    tmr.start();
-    //    while ((board.type() == 0) && (tmr.elapsed() < INTERVAL::WAIT) && !Cancelled)
-    //        QCoreApplication::processEvents();
-    //    // m_BSITimer->stop();
-    //    if (board.type() == 0)
-    //    {
-    //        QMessageBox::critical(this, "Ошибка", "Не удалось соединиться с прибором", QMessageBox::Ok);
-    //        DisconnectAndClear();
-    //        qCritical("Не получили BSI, нет соединения");
-    //        //            Disconnect();
-    //        return;
-    //    }
 }
 
 /*void Coma::setupQConnections()
@@ -622,13 +603,7 @@ void Coma::StartWork()
 
 void Coma::PrepareDialogs()
 {
-    //    infoDialog = new InfoDialog(this);
-    //    jourDialog = new JournalDialog(Ch104);
-    //    timeDialog = new MNKTime(this);
-    //    m_Module = Module::createModule(BdaTimer, m_iface, AlarmW);
     m_Module = Module::createModule(BdaTimer, AlarmW);
-    //    Alarm->setModule(m_Module);
-    //    AlarmStateAllDialog = new AlarmStateAll;
     setupConnections();
 }
 
@@ -681,18 +656,6 @@ void Coma::NewModbus()
 
     //    connect(ChModbus, &ModBus::BsiFromModbus, this,
     //        qOverload<QList<ModBus::BSISignalStruct>, unsigned int>(&Coma::FillBSI));
-}
-
-void Coma::NewUSB()
-{
-    //    connect(this, &Coma::StopCommunications, &EProtocom::GetInstance(), &EProtocom::Disconnect);
-    //    connect(EProtocom::GetInstance().workerThread(), &QThread::finished, [=]() { ActiveThreads &= ~THREAD::USB;
-    //    });
-    //    connect(EProtocom::GetInstance().workerThread(), &QThread::finished, [=]() { ActiveThreads = false; });
-    //    connect(&EProtocom::GetInstance(), &EProtocom::SetDataSize, this, &Coma::SetProgressBar1Size);
-    //    connect(&EProtocom::GetInstance(), &EProtocom::SetDataCount, this, &Coma::SetProgressBar1);
-    //    connect(&EProtocom::GetInstance(), &EProtocom::ShowError,
-    //        [this](const QString &msg) { QMessageBox::critical(this, "Ошибка", msg, QMessageBox::Ok); });
 }
 
 void Coma::newTimers()
@@ -850,33 +813,33 @@ void Coma::Go(const QString &parameter)
 
 void Coma::ReConnect()
 {
-    if (Reconnect)
-    {
-        qInfo(__PRETTY_FUNCTION__);
-        //        TimeTimer->stop();
-        if (Board::GetInstance().connectionState() == Board::ConnectionState::Connected)
-        {
-            qDebug() << "call Disconnect";
-            Disconnect();
-            //            emit ClearBsi();
-            ClearTW();
-            ETabWidget *MainTW = this->findChild<ETabWidget *>("maintw");
-            if (MainTW == nullptr)
-            {
-                ERMSG("Ошибка открытия файла");
-                return;
-            }
-            MainTW->hide();
-            StdFunc::SetEmulated(false);
-        }
+    qInfo(__PRETTY_FUNCTION__);
+    if (!Reconnect)
+        return;
 
-        QMessageBox msgBox;
-        msgBox.setText("Связь разорвана.\nПопытка переподключения");
-        msgBox.setIcon(QMessageBox::Warning);
-        msgBox.show();
-        msgBox.button(QMessageBox::Ok)->animateClick(3000);
-        AttemptToRec();
+    //        TimeTimer->stop();
+    if (Board::GetInstance().connectionState() == Board::ConnectionState::Connected)
+    {
+        qDebug() << "call Disconnect";
+        Disconnect();
+        //            emit ClearBsi();
+        ClearTW();
+        ETabWidget *MainTW = this->findChild<ETabWidget *>("maintw");
+        if (MainTW == nullptr)
+        {
+            ERMSG("Ошибка открытия файла");
+            return;
+        }
+        MainTW->hide();
+        StdFunc::SetEmulated(false);
     }
+
+    QMessageBox msgBox;
+    msgBox.setText("Связь разорвана.\nПопытка переподключения");
+    msgBox.setIcon(QMessageBox::Warning);
+    msgBox.show();
+    msgBox.button(QMessageBox::Ok)->animateClick(3000);
+    AttemptToRec();
 }
 
 void Coma::AttemptToRec()
@@ -884,7 +847,7 @@ void Coma::AttemptToRec()
     QApplication::setOverrideCursor(Qt::WaitCursor);
     SaveSettings();
     QApplication::restoreOverrideCursor();
-    StartWork();
+    prepareConnectDlg();
 }
 
 // void Coma::ConnectMessage()
@@ -1112,7 +1075,8 @@ void Coma::SetProgressBarCount(int prbnum, int count)
 void Coma::GetAbout()
 {
     AboutWidget *w = new AboutWidget;
-    Q_UNUSED(w)
+    w->show();
+    // Q_UNUSED(w)
     //    w->show();
     //    QString caption(PROGNAME);
     //    caption.append(" v. ").append(COMAVERSION);
@@ -1217,8 +1181,6 @@ void Coma::Connect()
     }
     //    if (!m_iface->start(ConnectSettings))
     if (!BaseInterface::iface()->start(ConnectSettings))
-
-    //    if (res != Error::Msg::NoError)
     {
         QMessageBox::critical(this, "Ошибка", "Не удалось установить связь", QMessageBox::Ok);
         QApplication::restoreOverrideCursor();
@@ -1226,18 +1188,8 @@ void Coma::Connect()
         return;
     }
     ActiveThreads = true;
-    // connect(this, &Coma::sendMessage, BaseInterface::iface(), &BaseInterface::sendMessage);
-    //    m_iface->reqFloats(2420, 14);
-    //    m_iface->reqFloats(2400, 7);
-    //    m_iface->reqFloats(4501, 2);
-    //    m_iface->reqFloats(1000, 16);
-    //    m_iface->reqFloats(2420, 14);
-    //    m_iface->reqFloats(1100, 16);
-    //    m_iface->reqFloats(101, 2);
-    //    m_iface->reqBSI();
+
     BaseInterface::iface()->reqBSI();
-    // m_iface->reqTime();
-    // m_iface->reqFile(4);
 }
 
 void Coma::DisconnectAndClear()
@@ -1251,7 +1203,7 @@ void Coma::DisconnectAndClear()
     AlarmW->clear();
     Disconnect();
     CloseDialogs();
-    //        emit ClearBsi();
+
     ClearTW();
     ETabWidget *MainTW = this->findChild<ETabWidget *>("maintw");
     if (MainTW == nullptr)
@@ -1259,6 +1211,7 @@ void Coma::DisconnectAndClear()
         qDebug() << Error::DescError << NAMEOF(MainTW);
         return;
     }
+    MainTW->hide();
     //        if (S2Config)
     //        {
     //            S2Config->clear();
@@ -1276,7 +1229,7 @@ void Coma::DisconnectAndClear()
     //    QMessageBox::information(this, "Разрыв связи", "Связь разорвана", QMessageBox::Ok, QMessageBox::Ok);
     //        else
     //            QMessageBox::information(this, "Разрыв связи", "Не удалось установить связь");
-    MainTW->hide();
+
     StdFunc::SetEmulated(false);
 
     Reconnect = false;

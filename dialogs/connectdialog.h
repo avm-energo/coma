@@ -27,7 +27,7 @@ private slots:
     void AddEth();
     void EthAccepted();
     void RsAccepted();
-    void SetCancelled();
+    // void SetCancelled();
     //    void SetEth();
     void SetEth(QModelIndex index);
     void ScanEth();

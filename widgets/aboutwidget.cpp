@@ -8,6 +8,8 @@
 
 AboutWidget::AboutWidget(QWidget *parent) : QWidget(parent)
 {
+    setAttribute(Qt::WA_DeleteOnClose);
+
     QHBoxLayout *hlyout = new QHBoxLayout;
     QVBoxLayout *lyout = new QVBoxLayout;
 
@@ -32,7 +34,6 @@ AboutWidget::AboutWidget(QWidget *parent) : QWidget(parent)
     hlyout->addStretch(100);
     lyout->addLayout(hlyout);
     setLayout(lyout);
-    show();
 }
 
 // void AboutWidget::paintEvent(QPaintEvent *e)

@@ -78,7 +78,8 @@ public slots:
     // void ConnectMessage();
 
 private slots:
-    void StartWork();
+    void prepareConnectDlg();
+    void startWork(const ConnectStruct st);
     void GetAbout();
     void closeEvent(QCloseEvent *event) override;
     //    void SetDefConf();
@@ -118,7 +119,7 @@ private:
 
     //    bool PasswordValid;
     bool TimeThrFinished;
-    bool Cancelled;
+
     bool Reconnect;
     int Mode; // режим запуска программы
               //    int fileSize, m_curFileCount;
@@ -154,7 +155,6 @@ private:
     void SetProgressBarCount(int prbnum, int count);
     void New104();
     void NewModbus();
-    void NewUSB();
     void newTimers();
     void SetupUI();
     void CloseDialogs();

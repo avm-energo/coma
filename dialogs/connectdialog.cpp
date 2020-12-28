@@ -34,7 +34,8 @@ ConnectDialog::ConnectDialog(QWidget *parent) : QDialog(parent)
     connect(pb, &QPushButton::clicked, this, &ConnectDialog::SetInterface);
     hlyout->addWidget(pb);
     pb = new QPushButton("Отмена");
-    connect(pb, &QPushButton::clicked, this, &ConnectDialog::Cancelled);
+    connect(pb, &QAbstractButton::clicked, this, &QDialog::close);
+    // connect(pb, &QPushButton::clicked, this, &ConnectDialog::Cancelled);
     hlyout->addWidget(pb);
     lyout->addLayout(hlyout);
     setLayout(lyout);
@@ -93,14 +94,17 @@ void ConnectDialog::SetInterface()
     }
     }
     QPushButton *pb = new QPushButton("Отмена");
-    connect(pb, &QAbstractButton::clicked, this, &ConnectDialog::SetCancelled);
+    connect(pb, &QAbstractButton::clicked, this, &QDialog::close);
+    // connect(pb, &QAbstractButton::clicked, this, &ConnectDialog::SetCancelled);
     lyout->addStretch(20);
     lyout->addWidget(pb);
     lyout->addStretch(20);
     dlg->setLayout(lyout);
 
-    UpdateModel(dlg);
-    dlg->exec();
+    if (UpdateModel(dlg))
+        dlg->exec();
+    else
+        dlg->deleteLater();
 }
 
 void ConnectDialog::SetUsb(QModelIndex index)
@@ -140,7 +144,7 @@ void ConnectDialog::AddEth()
     lyout->addWidget(WDFunc::NewLBL2(dlg, "Адрес БС:"), count, 0, 1, 1, Qt::AlignLeft);
     lyout->addWidget(WDFunc::NewSPB2(dlg, "bsadrspb", 1, 255, 0), count++, 1, 1, 7);
     lyout->addWidget(WDFunc::NewPB(dlg, "acceptpb", "Сохранить", this, &ConnectDialog::EthAccepted), count, 0, 1, 4);
-    lyout->addWidget(WDFunc::NewPB(dlg, "cancelpb", "Отмена", [dlg] { dlg->close(); }), count, 4, 1, 3);
+    lyout->addWidget(WDFunc::NewPB(dlg, "cancelpb", "Отмена", [=] { dlg->close(); }), count, 4, 1, 3);
     dlg->setLayout(lyout);
     dlg->exec();
 }
@@ -148,30 +152,31 @@ void ConnectDialog::AddEth()
 void ConnectDialog::EthAccepted()
 {
     QDialog *dlg = this->findChild<QDialog *>("ethdlg");
-    if (dlg != nullptr)
+    if (dlg == nullptr)
+        return;
+    QString name = WDFunc::LEData(dlg, "namele");
+    // check if there's such name in registry
+    if (IsKeyExist("Ethernet-", name))
     {
-        QString name = WDFunc::LEData(dlg, "namele");
-        // check if there's such name in registry
-        if (IsKeyExist("Ethernet-", name))
-        {
-            QMessageBox::critical(this, "Ошибка", "Такое имя уже имеется");
-            return;
-        }
-        QString ipstr = WDFunc::LEData(dlg, "iple.0") + "." + WDFunc::LEData(dlg, "iple.1") + "."
-            + WDFunc::LEData(dlg, "iple.2") + "." + WDFunc::LEData(dlg, "iple.3");
-        RotateSettings("Ethernet-", name);
-        QString key = PROGNAME;
-        key += "\\" + name;
-        QSettings *sets = new QSettings(SOFTDEVELOPER, key);
-        sets->setValue("ip", ipstr);
-        int spbdata;
-        WDFunc::SPBData(dlg, "bsadrspb", spbdata);
-        sets->setValue("bs", QString::number(spbdata));
-        QDialog *dlg2 = this->findChild<QDialog *>("connectdlg");
-        if (dlg2 != nullptr)
-            UpdateModel(dlg2);
-        dlg->close();
+        QMessageBox::critical(this, "Ошибка", "Такое имя уже имеется");
+        return;
     }
+    QString ipstr = WDFunc::LEData(dlg, "iple.0") + "." + WDFunc::LEData(dlg, "iple.1") + "."
+        + WDFunc::LEData(dlg, "iple.2") + "." + WDFunc::LEData(dlg, "iple.3");
+    RotateSettings("Ethernet-", name);
+    QString key = PROGNAME;
+    key += "\\" + name;
+    QSettings *sets = new QSettings(SOFTDEVELOPER, key);
+    sets->setValue("ip", ipstr);
+    int spbdata;
+    WDFunc::SPBData(dlg, "bsadrspb", spbdata);
+    sets->setValue("bs", QString::number(spbdata));
+    QDialog *dlg2 = this->findChild<QDialog *>("connectdlg");
+    if (dlg2 == nullptr)
+        return;
+    if (UpdateModel(dlg2))
+        qCritical() << Error::GeneralError;
+    dlg->close();
 }
 
 void ConnectDialog::RsAccepted()
@@ -198,16 +203,18 @@ void ConnectDialog::RsAccepted()
         WDFunc::SPBData(dlg, "addressspb", spbdata);
         sets->setValue("address", QString::number(spbdata));
         QDialog *dlg2 = this->findChild<QDialog *>("connectdlg");
-        if (dlg2 != nullptr)
-            UpdateModel(dlg2);
+        if (dlg2 == nullptr)
+            return;
+        if (!UpdateModel(dlg2))
+            qCritical() << Error::GeneralError;
         dlg->close();
     }
 }
 
-void ConnectDialog::SetCancelled()
-{
-    emit Cancelled();
-}
+// void ConnectDialog::SetCancelled()
+//{
+//  emit Cancelled();
+//}
 
 // void ConnectDialog::SetEth()
 //{
@@ -339,7 +346,7 @@ void ConnectDialog::AddRs()
 {
     QStringList ports;
     QList<QSerialPortInfo> portlist = QSerialPortInfo::availablePorts();
-    foreach (QSerialPortInfo info, portlist)
+    for (const QSerialPortInfo &info : portlist)
         ports << info.portName();
     QDialog *dlg = new QDialog(this);
     dlg->setObjectName("rsdlg");
@@ -471,16 +478,15 @@ bool ConnectDialog::UpdateModel(QDialog *dlg)
     case Board::InterfaceType::USB:
     {
         auto usbDevices = UsbHidPortInfo::devicesFound();
-
-        QStringList sl { "VID", "PID", "Serial", "Path" };
-        QStandardItemModel *mdl = new QStandardItemModel(dlg);
-
         if (usbDevices.isEmpty())
         {
             QMessageBox::critical(this, "Ошибка", "Устройства не найдены");
             qCritical() << Error::Msg::NoDeviceError;
             return false;
         }
+        QStringList sl { "VID", "PID", "Serial", "Path" };
+        QStandardItemModel *mdl = new QStandardItemModel(dlg);
+
         mdl->setHorizontalHeaderLabels(sl);
         for (const auto &row : usbDevices)
         {
