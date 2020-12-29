@@ -9,6 +9,7 @@
 #include <QCheckBox>
 #include <QLabel>
 #include <QLineEdit>
+#include <QMainWindow>
 #include <QPushButton>
 #include <QRadioButton>
 #include <QStatusBar>
@@ -195,6 +196,8 @@ public:
     static QPixmap NewCircle(QColor color, int radius);
     static QPixmap NewLedIndicator(QColor color, float height);
     static QPixmap NewSVG(QString &str, QSize size);
+    static QMainWindow *getMainWindow();
+    static QMainWindow *getComaWindow();
 
 private:
     static QPushButton *NewPBCommon(QWidget *parent, const QString &pbname, const QString &text,

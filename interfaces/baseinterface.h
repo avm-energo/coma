@@ -6,11 +6,27 @@
 #include "../gen/logclass.h"
 
 #include <QTimer>
+#include <memory>
 
 struct ConnectStruct;
 class BaseInterface : public QObject
 {
     Q_OBJECT
+private:
+    struct deleteLaterDeletor
+    {
+        void operator()(QObject *object) const
+        {
+            if (object)
+            {
+                object->deleteLater();
+            }
+        }
+    };
+
+public:
+    using InterfacePointer = std::unique_ptr<BaseInterface, deleteLaterDeletor>;
+
 public:
     bool m_working;
     LogClass *Log;
@@ -18,7 +34,7 @@ public:
     explicit BaseInterface(QObject *parent = nullptr);
     ~BaseInterface();
     static BaseInterface *iface();
-    static void setIface(BaseInterface *iface);
+    static void setIface(/*dBaseInterface **/ InterfacePointer iface);
 
     virtual bool start(const ConnectStruct &) = 0;
     virtual void pause() = 0;
@@ -61,14 +77,14 @@ public:
 
 signals:
     void reconnect();
+    void finish();
 
 private:
     bool m_busy, m_timeout;
     QByteArray m_byteArrayResult;
     bool m_responseResult;
-    static BaseInterface *m_iface;
+    static InterfacePointer m_iface;
     QTimer *timeoutTimer;
-
 public slots:
     virtual void stop() = 0;
 

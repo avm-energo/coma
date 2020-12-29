@@ -15,6 +15,7 @@ public:
     // void uponInterfaceSetting();
 
     void addAlarm(BaseAlarm *alarm);
+    int count() const;
 
 signals:
     //    void SetWarnAlarmColor(QList<bool>);
@@ -49,6 +50,7 @@ private:
         "Предупредительная сигнализация", //
         "Аварийная сигнализация"          //
     };
+    int m_counter = 0;
     //    AlarmClass *Alarm;
 };
 

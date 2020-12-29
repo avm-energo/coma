@@ -1,5 +1,6 @@
 #include "wd_func.h"
 
+//#include "../AVTUK_ETH_Version-f/coma.h"
 #include "../gen/board.h"
 #include "../gen/colors.h"
 #include "../gen/error.h"
@@ -8,6 +9,7 @@
 #include "edoublespinbox.h"
 #include "etableview.h"
 
+#include <QApplication>
 #include <QHBoxLayout>
 #include <QHeaderView>
 #include <QPainter>
@@ -680,6 +682,16 @@ QPixmap WDFunc::NewLedIndicator(QColor color, float height)
 
     return myPix;
 }
+
+QMainWindow *WDFunc::getMainWindow()
+{
+    for (QWidget *w : qApp->topLevelWidgets())
+        if (QMainWindow *mainWin = qobject_cast<QMainWindow *>(w))
+            return mainWin;
+    return nullptr;
+}
+
+// QMainWindow *WDFunc::getComaWindow() { Coma }
 
 QCheckBox *WDFunc::NewChB(QWidget *parent, const QString &chbname, const QString &chbtext, const QString &chbcolor)
 {

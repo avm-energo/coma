@@ -7,7 +7,8 @@
 #include <QCoreApplication>
 #include <memory>
 
-BaseInterface *BaseInterface::m_iface;
+BaseInterface::InterfacePointer BaseInterface::m_iface;
+// BaseInterface *BaseInterface::m_iface;
 
 BaseInterface::BaseInterface(QObject *parent) : QObject(parent), m_working(false), Log(new LogClass(this))
 {
@@ -26,12 +27,12 @@ BaseInterface::~BaseInterface()
 
 BaseInterface *BaseInterface::iface()
 {
-    return m_iface;
+    return m_iface.get();
 }
 
-void BaseInterface::setIface(BaseInterface *iface)
+void BaseInterface::setIface(InterfacePointer /*dBaseInterface **/ iface)
 {
-    m_iface = iface;
+    m_iface = std::move(iface) /*std::make_unique<BaseInterface>(iface)*/;
 }
 
 void BaseInterface::writeS2File(DataTypes::FilesEnum number, S2DataTypes::S2ConfigType *file)
