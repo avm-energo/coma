@@ -187,21 +187,21 @@ UWidget *CheckKIVDialog::Bd2W()
 
     glyout->addWidget(WDFunc::NewLBL(this, "U0, кВ"), 0, 0, 1, 1);
     glyout->addWidget(
-        WDFunc::NewLBLT(this, "", "1020", ValuesFormat, "Напряжение нулевой последовательности, кВ"), 1, 0, 1, 1);
+        WDFunc::NewLBLT(this, "", "1011", ValuesFormat, "Напряжение нулевой последовательности, кВ"), 1, 0, 1, 1);
     glyout->addWidget(WDFunc::NewLBL(this, "U1, кВ"), 0, 1, 1, 1);
     glyout->addWidget(
-        WDFunc::NewLBLT(this, "", "1021", ValuesFormat, "Напряжение прямой последовательности, кВ"), 1, 1, 1, 1);
+        WDFunc::NewLBLT(this, "", "1012", ValuesFormat, "Напряжение прямой последовательности, кВ"), 1, 1, 1, 1);
     glyout->addWidget(WDFunc::NewLBL(this, "U2, кВ"), 0, 2, 1, 1);
     glyout->addWidget(
-        WDFunc::NewLBLT(this, "", "1022", ValuesFormat, "Напряжение обратной последовательности, кВ"), 1, 2, 1, 1);
+        WDFunc::NewLBLT(this, "", "1013", ValuesFormat, "Напряжение обратной последовательности, кВ"), 1, 2, 1, 1);
     glyout->addWidget(WDFunc::NewLBL(this, "I0, мА"), 2, 0, 1, 1);
     glyout->addWidget(
-        WDFunc::NewLBLT(this, "", "1120", ValuesFormat, "Ток нулевой последовательности, мА"), 3, 0, 1, 1);
+        WDFunc::NewLBLT(this, "", "1111", ValuesFormat, "Ток нулевой последовательности, мА"), 3, 0, 1, 1);
     glyout->addWidget(WDFunc::NewLBL(this, "I1, мА"), 2, 1, 1, 1);
-    glyout->addWidget(WDFunc::NewLBLT(this, "", "1121", ValuesFormat, "Ток прямой последовательности, мА"), 3, 1, 1, 1);
+    glyout->addWidget(WDFunc::NewLBLT(this, "", "1112", ValuesFormat, "Ток прямой последовательности, мА"), 3, 1, 1, 1);
     glyout->addWidget(WDFunc::NewLBL(this, "I2, мА"), 2, 2, 1, 1);
     glyout->addWidget(
-        WDFunc::NewLBLT(this, "", "1122", ValuesFormat, "Ток обратной последовательности, мА"), 3, 2, 1, 1);
+        WDFunc::NewLBLT(this, "", "1113", ValuesFormat, "Ток обратной последовательности, мА"), 3, 2, 1, 1);
     vlyout2->addLayout(glyout);
     gb->setLayout(vlyout2);
     vlyout1->addWidget(gb);
@@ -243,7 +243,7 @@ UWidget *CheckKIVDialog::Bd2W()
     lyout->addStretch(100);
     w->setLayout(lyout);
     //   w->setStyleSheet("QWidget {background-color: " + QString(Colors::UCONFCLR) + ";}");
-    w->setFloatBdQuery({ { 1000, 16 }, { 1100, 16 }, { 4501, 2 } });
+    w->setFloatBdQuery({ { 1000, 16 }, { 1100, 16 }, { 2400, 7 }, { 4501, 2 } });
     return w;
 }
 

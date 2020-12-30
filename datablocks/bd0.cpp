@@ -21,10 +21,10 @@ void Bd0::createWidget()
     QVBoxLayout *lyout = new QVBoxLayout;
     QHBoxLayout *hlyout = new QHBoxLayout;
     hlyout->addWidget(WDFunc::NewLBL2(m_widget, "Tmk0"), 0);
-    hlyout->addWidget(WDFunc::NewLBLT2(m_widget, "", "tmk0", "Температура процессора"), 5);
+    hlyout->addWidget(WDFunc::NewLBLT2(m_widget, "", "101", "Температура процессора"), 5);
     lyout->addLayout(hlyout);
     hlyout->addWidget(WDFunc::NewLBL2(m_widget, "VBat"), 0);
-    hlyout->addWidget(WDFunc::NewLBLT2(m_widget, "", "vbat", "Напряжение батарейки"), 5);
+    hlyout->addWidget(WDFunc::NewLBLT2(m_widget, "", "102", "Напряжение батарейки"), 5);
     lyout->addLayout(hlyout);
     lyout->addStretch(100);
     //    ETableView *tv = new ETableView;
@@ -55,8 +55,8 @@ void Bd0::setDefBlock()
 
 void Bd0::updateWidget()
 {
-    WDFunc::SetLBLText(m_widget, "tmk0", WDFunc::StringValueWithCheck(m_blockData->Tmk, 3));
-    WDFunc::SetLBLText(m_widget, "vbat", WDFunc::StringValueWithCheck(m_blockData->Vbat, 3));
+    WDFunc::SetLBLText(m_widget, "101", WDFunc::StringValueWithCheck(m_blockData->Tmk, 3));
+    WDFunc::SetLBLText(m_widget, "102", WDFunc::StringValueWithCheck(m_blockData->Vbat, 3));
 }
 
 Bd0::BlockData *Bd0::data()

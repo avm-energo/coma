@@ -4,10 +4,10 @@
 #include "../../config/configkiv.h"
 #include "../abstracttunedialog.h"
 //#include "tunekiv.h"
+#include "../../datablocks/bd0.h"
 #include "../../datablocks/kiv/bac.h"
 #include "../../datablocks/kiv/bda.h"
 #include "../../datablocks/kiv/bdain.h"
-#include "../../datablocks/bd0.h"
 
 #include <QWidget>
 
@@ -18,7 +18,7 @@ public:
     TuneKIVADC(int tuneStep, ConfigKIV *ckiv, QWidget *parent = nullptr);
 
 private:
-//    TuneKIV *TKIV;
+    //    TuneKIV *TKIV;
     ConfigKIV *CKIV;
     Bac *m_bac;
     Bda *m_bda;
@@ -38,6 +38,7 @@ private:
     //    QWidget *MainUI() override;
 
     Error::Msg showPreWarning();
+    Error::Msg setSMode2();
     Error::Msg ADCCoef1();
     Error::Msg ADCCoef2();
     Error::Msg ADCCoef4();
@@ -53,7 +54,7 @@ private:
     Error::Msg showRetomDialog(int coef);
     //    void showTWTab(int num);
     QWidget *BdWidget();
-    bool checkBdaIn();
+    bool checkBdaIn(int current);
     Error::Msg showEnergomonitorInputDialog();
     //    void saveIntermediateResults();
 

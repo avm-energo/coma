@@ -531,7 +531,7 @@ Error::Msg AbstractTuneDialog::loadAllTuneCoefs()
 //    // }
 //}
 
-void AbstractTuneDialog::readTuneCoefs()
+Error::Msg AbstractTuneDialog::readTuneCoefs()
 {
     //    int bacnum = sender()->objectName().toInt();
     //    for (QMap<int, BlockStruct>::Iterator it = AbsBac.begin(); it != AbsBac.end(); ++it)
@@ -540,6 +540,7 @@ void AbstractTuneDialog::readTuneCoefs()
         readTuneCoefsByBac(it.key());
     }
     //    ReadBlocks(DataBlock::DataBlockTypes::BacBlock);
+    return Error::Msg::NoError;
 }
 
 void AbstractTuneDialog::writeTuneCoefsSlot()

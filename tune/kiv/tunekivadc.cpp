@@ -8,11 +8,10 @@
 #include <QMessageBox>
 #include <QVBoxLayout>
 
-TuneKIVADC::TuneKIVADC(int tuneStep, ConfigKIV *ckiv, QWidget *parent)
-    : AbstractTuneDialog(tuneStep, parent)
+TuneKIVADC::TuneKIVADC(int tuneStep, ConfigKIV *ckiv, QWidget *parent) : AbstractTuneDialog(tuneStep, parent)
 {
     CKIV = ckiv;
-//    TKIV = kiv;
+    //    TKIV = kiv;
     //    m_tuneStep = 1;
     //    SetBac(m_bac, 1, sizeof(m_bac));
     m_bac = new Bac;
@@ -33,21 +32,22 @@ void TuneKIVADC::setMessages()
     m_messages.append("1. Ввод пароля...");
     m_messages.append("2. Отображение предупреждения...");
     m_messages.append("3. Запрос настроечных параметров...");
-    m_messages.append("4. Регулировка для Кацп = 1...");
-    m_messages.append("5. Отображение диалога задания входных данных...");
-    m_messages.append("6. Регулировка для Кацп = 2...");
-    m_messages.append("7. Отображение диалога задания входных данных...");
-    m_messages.append("8. Регулировка для Кацп = 4...");
-    m_messages.append("9. Отображение диалога задания входных данных...");
-    m_messages.append("10. Регулировка для Кацп = 8...");
-    m_messages.append("11. Отображение диалога задания входных данных...");
-    m_messages.append("12. Регулировка для Кацп = 16...");
-    m_messages.append("13. Отображение диалога задания входных данных...");
-    m_messages.append("14. Регулировка для Кацп = 32...");
-    m_messages.append("15. Отображение диалога задания входных данных...");
-    m_messages.append("16. Регулировка канала Tmk0...");
-    m_messages.append("17. Запись настроечных коэффициентов и восстановление конфигурации...");
-    m_messages.append("18. Проверка регулировки...");
+    m_messages.append("4. Задание режима конфигурирования модуля...");
+    m_messages.append("5. Регулировка для Кацп = 1...");
+    m_messages.append("6. Отображение диалога задания входных данных...");
+    m_messages.append("7. Регулировка для Кацп = 2...");
+    m_messages.append("8. Отображение диалога задания входных данных...");
+    m_messages.append("9. Регулировка для Кацп = 4...");
+    m_messages.append("10. Отображение диалога задания входных данных...");
+    m_messages.append("11. Регулировка для Кацп = 8...");
+    m_messages.append("12. Отображение диалога задания входных данных...");
+    m_messages.append("13. Регулировка для Кацп = 16...");
+    m_messages.append("14. Отображение диалога задания входных данных...");
+    m_messages.append("15. Регулировка для Кацп = 32...");
+    m_messages.append("16. Отображение диалога задания входных данных...");
+    m_messages.append("17. Регулировка канала Tmk0...");
+    m_messages.append("18. Запись настроечных коэффициентов и восстановление конфигурации...");
+    m_messages.append("19. Проверка регулировки...");
 }
 
 void TuneKIVADC::setTuneFunctions()
@@ -59,6 +59,8 @@ void TuneKIVADC::setTuneFunctions()
         = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVADC::showPreWarning);
     m_tuneFunctions[m_messages.at(count++)] = func;
     func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&AbstractTuneDialog::readTuneCoefs);
+    m_tuneFunctions[m_messages.at(count++)] = func;
+    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVADC::setSMode2);
     m_tuneFunctions[m_messages.at(count++)] = func;
     func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVADC::ADCCoef1);
     m_tuneFunctions[m_messages.at(count++)] = func;
@@ -145,8 +147,15 @@ Error::Msg TuneKIVADC::showPreWarning()
     return Error::Msg::NoError;
 }
 
+Error::Msg TuneKIVADC::setSMode2()
+{
+    BaseInterface::iface()->writeCommand(Queries::QUSB_SetMode, 0x02);
+    return Error::Msg::NoError;
+}
+
 Error::Msg TuneKIVADC::ADCCoef(int coef)
 {
+    QMap<int, int> currentMap = { { 1, 290 }, { 2, 250 }, { 4, 140 }, { 8, 80 }, { 16, 40 }, { 32, 23 } };
     m_curTuneStep = coef;
     CKIV->Bci_block.Unom = 220;
     Error::Msg res = setADCCoef(coef);
@@ -169,7 +178,7 @@ Error::Msg TuneKIVADC::ADCCoef(int coef)
         m_bdain->readAndUpdate();
         //        BaseInterface::iface()->reqBlockSync(
         //            1, DataTypes::DataBlockTypes::BdBlock, &TKIV->m_Bda_in, sizeof(TKIV->m_Bda_in));
-        if (checkBdaIn())
+        if (checkBdaIn(currentMap[coef]))
         {
             //            TKIV->updateBdaInWidget();
             for (int j = 0; j < 6; ++j)
@@ -331,21 +340,21 @@ Error::Msg TuneKIVADC::showRetomDialog(int coef)
 //        tw->setCurrentIndex(num);
 //}
 
-bool TuneKIVADC::checkBdaIn()
+bool TuneKIVADC::checkBdaIn(int current)
 {
     for (int i = 0; i < 3; ++i)
     {
-        if (StdFunc::floatIsWithinLimits(this, m_bdain->data()->IUefNat_filt[i], 57.75, 3.0))
+        if (StdFunc::floatIsWithinLimits(this, m_bdain->data()->IUefNat_filt[i], 60.0, 3.0))
         {
-            if (StdFunc::floatIsWithinLimits(this, m_bdain->data()->IUeff_filtered[i], 57.75, 3.0))
+            if (StdFunc::floatIsWithinLimits(this, m_bdain->data()->IUeff_filtered[i], 60.0, 3.0))
             {
-                if (StdFunc::floatIsWithinLimits(this, m_bdain->data()->IUefNat_filt[i + 3], 290, 10))
+                if (StdFunc::floatIsWithinLimits(this, m_bdain->data()->IUefNat_filt[i + 3], current, 10))
                 {
-                    if (StdFunc::floatIsWithinLimits(this, m_bdain->data()->IUeff_filtered[i + 3], 290, 10))
+                    if (StdFunc::floatIsWithinLimits(this, m_bdain->data()->IUeff_filtered[i + 3], current, 10))
                     {
                         if (StdFunc::floatIsWithinLimits(this, m_bdain->data()->phi_next_f[i], 0, 1))
                         {
-                            if (StdFunc::floatIsWithinLimits(this, m_bdain->data()->phi_next_f[i + 3], 90, 1))
+                            if (StdFunc::floatIsWithinLimits(this, m_bdain->data()->phi_next_f[i + 3], 89, 1))
                                 continue;
                         }
                     }
@@ -459,8 +468,7 @@ Error::Msg TuneKIVADC::showEnergomonitorInputDialog()
 void TuneKIVADC::CalcTuneCoefs()
 {
     QMap<int, float *> kmimap = { { 2, &m_bac->data()->KmI2[0] }, { 4, &m_bac->data()->KmI4[0] },
-        { 8, &m_bac->data()->KmI8[0] }, { 16, &m_bac->data()->KmI16[0] },
-        { 32, &m_bac->data()->KmI32[0] } };
+        { 8, &m_bac->data()->KmI8[0] }, { 16, &m_bac->data()->KmI16[0] }, { 32, &m_bac->data()->KmI32[0] } };
     float uet, iet, yet, fet;
     uet = StdFunc::toFloat(WDFunc::LEData(this, "ValuetuneU"));
     iet = StdFunc::toFloat(WDFunc::LEData(this, "ValuetuneI"));
