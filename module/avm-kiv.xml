@@ -1,108 +1,203 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <modules>
-<module mtypea="a2" mtypeb="84">
-  <name>AVM-KIV</name>
-  <version>1.1.08</version>
-  <resources>
-    <string-array name="criticalEvents">
-      <item>Авария по приращению тангенса дельта ввода фазы А</item>
-      <item>Авария по приращению тангенса дельта ввода фазы B</item>
-      <item>Авария по приращению тангенса дельта ввода фазы C</item>
-      <item>Авария по приращению C ввода фазы А </item>
-      <item>Авария по приращению C ввода фазы B</item>
-      <item>Авария по приращению C ввода фазы C</item>
-      <item>Авария по недопустимому небалансу токов</item>
-    </string-array>
-    <quint32 name="criticalFlags">0x9CE000</quint32>
-    <string-array name="warningEvents">
-      <item>Отсутствует сигнал напряжения фазы A</item>
-      <item>Отсутствует сигнал напряжения фазы B</item>
-      <item>Отсутствует сигнал напряжения фазы С</item>
-      <item>Ток утечки ввода фазы A меньше 0,3 номинального</item>
-      <item>Ток утечки ввода фазы B меньше 0,3 номинального</item>
-      <item>Ток утечки ввода фазы C меньше 0,3 номинального</item>
-      <item>Не заданы начальные значения</item>
-      <item>Низкое напряжение фазы A</item>
-      <item>Низкое напряжение фазы B</item>
-      <item>Низкое напряжение фазы C</item>
-      <item>Сигнализация по приращению тангенса дельта ввода фазы А</item>
-      <item>Сигнализация по приращению тангенса дельта ввода фазы B</item>
-      <item>Сигнализация по приращению тангенса дельта ввода фазы C</item>
-      <item>Сигнализация по приращению C ввода фазы А</item>
-      <item>Сигнализация по приращению C ввода фазы B</item>
-      <item>Сигнализация по приращению C ввода фазы C</item>
-      <item>Не заданы паспортные значения</item>
-      <item>Сигнализация по повышенному небалансу токов</item>
-    </string-array>
-    <quint32 name="warningFlags">0xC71FFF</quint32>
-    <quint32 name="workJourId">3010</quint32>
-    <string-array name="workJourDescription">
-      <item>Отсутствует сигнал напряжения фазы A</item>
-      <item>Отсутствует сигнал напряжения фазы B</item>
-      <item>Отсутствует сигнал напряжения фазы С</item>
-      <item>Нет реактивного тока канала А (ток меньше 2мА)</item>
-      <item>Нет реактивного тока канала B (ток меньше 2мА)</item>
-      <item>Нет реактивного тока канала C (ток меньше 2мА)</item>
-      <item>Не заданы начальные значения</item>
-      <item>Низкое напряжение фазы A</item>
-      <item>Низкое напряжение фазы B</item>
-      <item>Низкое напряжение фазы C</item>
-      <item>Сигнализация по приращению тангенса дельта ввода фазы А</item>
-      <item>Сигнализация по приращению тангенса дельта ввода фазы B</item>
-      <item>Сигнализация по приращению тангенса дельта ввода фазы C</item>
-      <item>Авария по приращению тангенса дельта ввода фазы А</item>
-      <item>Авария по приращению тангенса дельта ввода фазы B</item>
-      <item>Авария по приращению тангенса дельта ввода фазы C</item>
-      <item>Сигнализация по приращению C ввода фазы А</item>
-      <item>Сигнализация по приращению C ввода фазы B</item>
-      <item>Сигнализация по приращению C ввода фазы C</item>
-      <item>Авария по приращению C ввода фазы А</item>
-      <item>Авария по приращению C ввода фазы B</item>
-      <item>Авария по приращению C ввода фазы C</item>
-      <item>Не заданы паспортные значения</item>
-      <item>Сигнализация по изменению небаланса тока</item>
-      <item>Авария по изменению небаланса тока</item>
-    </string-array>
-    <string-array name="measJourHeaders">
-      <item> № </item>
-      <item>Дата/Время UTC</item>
-      <item>Ueff фA</item>
-      <item>Ueff фB</item>
-      <item>Ueff фC</item>
-      <item>Ieff фA</item>
-      <item>Ieff фB</item>
-      <item>Ieff фC</item>
-      <item>Freq</item>
-      <item>U0</item>
-      <item>U1</item>
-      <item>U2</item>
-      <item>I0</item>
-      <item>I1</item>
-      <item>I2</item>
-      <item>Cbush фA</item>
-      <item>Cbush фB</item>
-      <item>Cbush фC</item>
-      <item>Tg_d фA</item>
-      <item>Tg_d фB</item>
-      <item>Tg_d фC</item>
-      <item>dCbush фA</item>
-      <item>dCbush фB</item>
-      <item>dCbush фC</item>
-      <item>dTg_d фA</item>
-      <item>dTg_d фB</item>
-      <item>dTg_d фC</item>
-      <item>Iunb</item>
-      <item>Phy_unb</item>
-      <item>Tmk, °С</item>
-      <item>Tamb, °С</item>
-      <item></item>
-      <item></item>
-      <item></item>
-      <item></item>
-      <item></item>
-      <item></item>
-      <item></item>
-    </string-array>
-  </resources>
-</module>
+  <module mtypea="a2" mtypeb="84">
+    <name>AVM-KIV</name>
+    <version>1.1.08</version>
+    <resources>
+      <string-array name="criticalEvents">
+        <item>Авария по приращению тангенса дельта ввода фазы А</item>
+        <item>Авария по приращению тангенса дельта ввода фазы B</item>
+        <item>Авария по приращению тангенса дельта ввода фазы C</item>
+        <item>Авария по приращению C ввода фазы А </item>
+        <item>Авария по приращению C ввода фазы B</item>
+        <item>Авария по приращению C ввода фазы C</item>
+        <item>Авария по недопустимому небалансу токов</item>
+      </string-array>
+      <quint32 name="criticalFlags">0x9CE000</quint32>
+      <string-array name="warningEvents">
+        <item>Отсутствует сигнал напряжения фазы A</item>
+        <item>Отсутствует сигнал напряжения фазы B</item>
+        <item>Отсутствует сигнал напряжения фазы С</item>
+        <item>Ток утечки ввода фазы A меньше 0,3 номинального</item>
+        <item>Ток утечки ввода фазы B меньше 0,3 номинального</item>
+        <item>Ток утечки ввода фазы C меньше 0,3 номинального</item>
+        <item>Не заданы начальные значения</item>
+        <item>Низкое напряжение фазы A</item>
+        <item>Низкое напряжение фазы B</item>
+        <item>Низкое напряжение фазы C</item>
+        <item>Сигнализация по приращению тангенса дельта ввода фазы А</item>
+        <item>Сигнализация по приращению тангенса дельта ввода фазы B</item>
+        <item>Сигнализация по приращению тангенса дельта ввода фазы C</item>
+        <item>Сигнализация по приращению C ввода фазы А</item>
+        <item>Сигнализация по приращению C ввода фазы B</item>
+        <item>Сигнализация по приращению C ввода фазы C</item>
+        <item>Не заданы паспортные значения</item>
+        <item>Сигнализация по повышенному небалансу токов</item>
+      </string-array>
+      <quint32 name="warningFlags">0xC71FFF</quint32>
+      <quint32 name="workJourId">3010</quint32>
+      <string-array name="workJourDescription">
+        <item>Отсутствует сигнал напряжения фазы A</item>
+        <item>Отсутствует сигнал напряжения фазы B</item>
+        <item>Отсутствует сигнал напряжения фазы С</item>
+        <item>Нет реактивного тока канала А (ток меньше 2мА)</item>
+        <item>Нет реактивного тока канала B (ток меньше 2мА)</item>
+        <item>Нет реактивного тока канала C (ток меньше 2мА)</item>
+        <item>Не заданы начальные значения</item>
+        <item>Низкое напряжение фазы A</item>
+        <item>Низкое напряжение фазы B</item>
+        <item>Низкое напряжение фазы C</item>
+        <item>Сигнализация по приращению тангенса дельта ввода фазы А</item>
+        <item>Сигнализация по приращению тангенса дельта ввода фазы B</item>
+        <item>Сигнализация по приращению тангенса дельта ввода фазы C</item>
+        <item>Авария по приращению тангенса дельта ввода фазы А</item>
+        <item>Авария по приращению тангенса дельта ввода фазы B</item>
+        <item>Авария по приращению тангенса дельта ввода фазы C</item>
+        <item>Сигнализация по приращению C ввода фазы А</item>
+        <item>Сигнализация по приращению C ввода фазы B</item>
+        <item>Сигнализация по приращению C ввода фазы C</item>
+        <item>Авария по приращению C ввода фазы А</item>
+        <item>Авария по приращению C ввода фазы B</item>
+        <item>Авария по приращению C ввода фазы C</item>
+        <item>Не заданы паспортные значения</item>
+        <item>Сигнализация по изменению небаланса тока</item>
+        <item>Авария по изменению небаланса тока</item>
+      </string-array>
+      <string-array name="measJourHeaders">
+        <item> № </item>
+        <item>Дата/Время UTC</item>
+        <item>Ueff фA</item>
+        <item>Ueff фB</item>
+        <item>Ueff фC</item>
+        <item>Ieff фA</item>
+        <item>Ieff фB</item>
+        <item>Ieff фC</item>
+        <item>Freq</item>
+        <item>U0</item>
+        <item>U1</item>
+        <item>U2</item>
+        <item>I0</item>
+        <item>I1</item>
+        <item>I2</item>
+        <item>Cbush фA</item>
+        <item>Cbush фB</item>
+        <item>Cbush фC</item>
+        <item>Tg_d фA</item>
+        <item>Tg_d фB</item>
+        <item>Tg_d фC</item>
+        <item>dCbush фA</item>
+        <item>dCbush фB</item>
+        <item>dCbush фC</item>
+        <item>dTg_d фA</item>
+        <item>dTg_d фB</item>
+        <item>dTg_d фC</item>
+        <item>Iunb</item>
+        <item>Phy_unb</item>
+        <item>Tmk, °С</item>
+        <item>Tamb, °С</item>
+      </string-array>
+      <modbus>
+        <group id="baseSerialInfo">
+          <function>04</function>
+          <type>quint32</type>
+          <start-addr>1</start-addr>
+          <count>30</count>
+        </group>
+        <group id="tempHardware">
+            <function>04</function>
+            <type>float</type>
+            <start-addr>101</start-addr>
+            <count>4</count>
+        </group>
+        <group id="voltage">
+          <function>04</function>
+          <type>float</type>
+          <start-addr>1000</start-addr>
+          <count>32</count>
+        </group>
+        <group id="amperage">
+          <function>04</function>
+          <type>float</type>
+          <start-addr>1100</start-addr>
+          <count>32</count>
+        </group>
+        <group id="angle">
+          <function>04</function>
+          <type>float</type>
+          <start-addr>2400</start-addr>
+          <count>14</count>
+        </group>
+        <group id="capacity">
+          <function>04</function>
+          <type>float</type>
+          <start-addr>2420</start-addr>
+          <count>28</count>
+        </group>
+        <group id="tempExtern">
+          <function>04</function>
+          <type>float</type>
+          <start-addr>4501</start-addr>
+          <count>4</count>
+        </group>
+        <group id="status">
+          <function>04</function>
+          <type>quint32</type>
+          <start-addr>4520</start-addr>
+          <count>4</count>
+        </group>
+        <group id="alarmValue">
+          <function>04</function>
+          <type>quint32</type>
+          <start-addr>7000</start-addr>
+          <count>12</count>
+        </group>
+        <group id="alarmHardware">
+          <function>01</function>
+          <type>bool</type>
+          <start-addr>201</start-addr>
+          <count>3</count>
+        </group>
+        <group id="alarmModule">
+          <function>01</function>
+          <type>bool</type>
+          <start-addr>3011</start-addr>
+          <count>25</count>
+        </group>
+        <group id="rstartValue">
+          <function>04</function>
+          <type>float</type>
+          <start-addr>4000</start-addr>
+          <count>22</count>
+        </group>
+        <register id="Sbg">
+          <function>10</function>
+          <type>float</type>
+          <addr>900</addr>
+        </register>
+        <register id="Clbg">
+          <function>10</function>
+          <type>float</type>
+          <addr>905</addr>
+        </register>
+        <group id="wstartValue">
+          <function>10</function>
+          <type>float</type>
+          <start-addr>910</start-addr>
+          <count>22</count>
+        </group>
+        <group id="rtime">
+          <function>03</function>
+          <type>quint32</type>
+          <start-addr>4600</start-addr>
+          <count>22</count>
+        </group>
+        <group id="wtime">
+          <function>10</function>
+          <type>quint32</type>
+          <start-addr>4600</start-addr>
+          <count>22</count>
+        </group>
+      </modbus>
+    </resources>
+  </module>
 </modules>

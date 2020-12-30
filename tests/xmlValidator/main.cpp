@@ -21,6 +21,11 @@ void parseStringList(QDomElement domElement)
         qDebug() << nodes.item(i++).toElement().text();
 }
 
+void parseModbus(QDomElement domElement)
+{
+    qDebug() << domElement.text();
+}
+
 bool parseModule(const QString &typea, const QString &typeb)
 {
     qDebug() << typea << typeb;
@@ -62,6 +67,15 @@ void traverseNode(const QDomNode &node)
                     }
 
                     // qDebug() << "Attr: " << domElement.attribute("mtypea", "") << domElement.attribute("mtypeb", "");
+                }
+                if (domElement.tagName() == "modbus")
+                {
+
+                    parseModbus(domElement);
+
+                    domNode = domNode.nextSibling();
+                    continue;
+                    // domNode = domNode.nextSibling();
                 }
                 //                else
                 //                {
