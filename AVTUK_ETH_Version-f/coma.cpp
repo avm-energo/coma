@@ -675,7 +675,7 @@ void Coma::newTimers()
     // m_BSITimer->setInterval(1000);
     // connect(m_BSITimer, &QTimer::timeout, &ModuleBSI::update);
 
-    BdaTimer = new QTimer;
+    BdaTimer = new QTimer(this);
     BdaTimer->setInterval(1000);
 
     AlrmTimer = new QTimer(this);
