@@ -25,6 +25,9 @@ private:
     };
 
 public:
+    /// BaseInterface has our own memory manager
+    /// because it can be created and deleted
+    /// multiple times in runtime
     using InterfacePointer = std::unique_ptr<BaseInterface, deleteLaterDeletor>;
     // using TimerPointer=std::unique_ptr<BaseInterface, deleteLaterDeletor>
 
@@ -34,7 +37,9 @@ public:
 
     explicit BaseInterface(QObject *parent = nullptr);
     ~BaseInterface();
+    /// Pointer to current interface
     static BaseInterface *iface();
+    /// Creator for interface
     static void setIface(InterfacePointer iface);
 
     virtual bool start(const ConnectStruct &) = 0;
