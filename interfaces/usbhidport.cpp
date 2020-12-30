@@ -2,12 +2,14 @@
 
 #ifdef QT_GUI_LIB
 #include "../AVTUK_ETH_Version-f/coma.h"
+#include "../widgets/wd_func.h"
 #endif
 
 #include "../gen/board.h"
 #include "../gen/helper.h"
 #include "../gen/stdfunc.h"
 
+#include <QApplication>
 #include <QCoreApplication>
 #include <QDebug>
 #include <QElapsedTimer>
@@ -39,13 +41,16 @@ UsbHidPort::UsbHidPort(const UsbHidSettings &dev, LogClass *logh, QObject *paren
 
 UsbHidPort::~UsbHidPort()
 {
+    qDebug() << "UsbHidPort deleted";
 }
 #ifdef QT_GUI_LIB
 void UsbHidPort::connectToGui(QObject *object)
 {
-    Q_ASSERT(object != nullptr);
-    Q_ASSERT(object->parent() != nullptr);
-    Coma *mainWindow = qobject_cast<Coma *>(object->parent());
+    // Q_ASSERT(object != nullptr);
+    // Q_ASSERT(object->parent() != nullptr);
+    Coma *mainWindow = qobject_cast<Coma *>(WDFunc::getMainWindow());
+    //  Coma *mainWindow = qobject_cast<Coma *>(object->parent());
+    Q_ASSERT(mainWindow != nullptr);
     if (mainWindow != nullptr)
         connect(mainWindow, &Coma::sendMessage, this, &UsbHidPort::nativeEvent, Qt::DirectConnection);
 }
@@ -205,10 +210,10 @@ void UsbHidPort::writeDataAttempt(const QByteArray &ba)
 
 void UsbHidPort::closeConnection()
 {
-    if (!m_hidDevice)
-        return;
+    if (m_hidDevice)
+        hid_close(m_hidDevice);
+    // return;
 
-    hid_close(m_hidDevice);
     clear();
 }
 
@@ -217,6 +222,7 @@ void UsbHidPort::finish()
     closeConnection();
     qInfo() << metaObject()->className() << "finished";
     emit finished();
+    QApplication::processEvents();
 }
 
 void UsbHidPort::clear()

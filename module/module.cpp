@@ -54,7 +54,7 @@ Module *Module::createModule(QTimer *updateTimer, AlarmWidget *aw)
     //    aw->setInterface(iface);
     // aw->uponInterfaceSetting();
     AlarmStateAll *alarmStateAll = new AlarmStateAll;
-
+    Q_ASSERT(aw->count() == 0);
     aw->addAlarm(alarmStateAll);
     if (BaseBoards.contains(typeb)) // there must be two-part module
     {
@@ -97,7 +97,7 @@ Module *Module::createModule(QTimer *updateTimer, AlarmWidget *aw)
             //            TuneKIV *TKIV = new TuneKIV;
             m->addDialogToList(new TuneKIVDialog(CKIV), "Регулировка");
 #endif
-            m->addDialogToList(new StartupKIVDialog, "Начальные значения");
+            m->addDialogToList(new StartupKIVDialog, "Начальные\nзначения");
             aw->addAlarm(new WarnKIV);
             aw->addAlarm(new CritKIV);
             //            connect(m->m_warn, &Warn::updateWarn, cdkiv, &AbstractCheckDialog::SetWarnColor);
@@ -115,7 +115,7 @@ Module *Module::createModule(QTimer *updateTimer, AlarmWidget *aw)
             //            TuneKTF *TKTF = new TuneKTF(0, s2Config);
 //                        m->addDialogToList(new TuneKTFDialog(CKTF, TKTF));
 #endif
-            m->addDialogToList(new StartupKTFDialog, "Старение изоляции");
+            m->addDialogToList(new StartupKTFDialog, "Старение\nизоляции");
             m->addDialogToList(new CheckKTFHarmonicDialog, "Гармоники");
             aw->addAlarm(new WarnKTF);
             aw->addAlarm(new CritKTF);
@@ -134,7 +134,7 @@ Module *Module::createModule(QTimer *updateTimer, AlarmWidget *aw)
 //            TuneKDV *TKDV = new TuneKDV;
 //            m->addDialogToList(new TuneKDVDialog(CKDV, TKDV));
 #endif
-            m->addDialogToList(new StartupKDVDialog, "Старение изоляции");
+            m->addDialogToList(new StartupKDVDialog, "Старение\nизоляции");
             m->addDialogToList(new CheckKDVHarmonicDialog, "Гармоники");
             m->addDialogToList(new CheckKDVVibrDialog, "Вибрации");
             //            VibrDialog = new CheckDialogVibrKDV(BoardTypes::BT_BASE);

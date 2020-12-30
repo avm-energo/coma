@@ -4,8 +4,9 @@
 #include "../interfaces/settingstypes.h"
 #include "../module/module.h"
 
+#include <QListWidget>
 #include <QMainWindow>
-
+#include <QStackedWidget>
 enum INTERVAL
 {
     RECONNECT = 3000,
@@ -51,7 +52,7 @@ public:
     ~Coma();
     void SetMode(int mode);
     void Go(const QString &parameter = "");
-    void ClearTW();
+    void clearWidgets();
     void SetupMenubar();
     //    QWidget *MainInfoWidget();
 
@@ -96,7 +97,8 @@ private slots:
 
 private:
     // constexpr QVector<int> MTBs = { 0x21, 0x22, 0x31, 0x35, 0x80, 0x81, 0x84 };
-
+    QStackedWidget *MainTW;
+    QListWidget *MainLW;
     Module *m_Module;
     AlarmWidget *AlarmW;
     //    WarnKIV *WarnKIVDialog;

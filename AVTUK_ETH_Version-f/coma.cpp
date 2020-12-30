@@ -52,6 +52,7 @@
 #include <QToolBar>
 #include <QtGlobal>
 #include <functional>
+#include <memory>
 
 #ifdef _WIN32
 // clang-format off
@@ -214,17 +215,23 @@ QWidget *Coma::Least()
     QHBoxLayout *inlyout = new QHBoxLayout;
     lyout->addLayout(inlyout);
 
-    ETabWidget *MainTW = new ETabWidget;
-    MainTW->setObjectName("maintw");
-    MainTW->setTabPosition(QTabWidget::West);
-    inlyout->addWidget(MainTW, 60);
+    MainTW = new QStackedWidget(this);
+    MainLW = new QListWidget(this);
+    // MainLW->setMinimumWidth(this->width() / 6);
+    //  Main
+    // MainTW->setObjectName("maintw");
+    // MainTW->setTabPosition(QTabWidget::West);
+    inlyout->addWidget(MainLW, 0, Qt::AlignLeft);
+    inlyout->addWidget(MainTW, 0, Qt::AlignRight);
+
     MainTW->hide();
-    connect(MainTW, &ETabWidget::currentChanged, this, &Coma::MainTWTabChanged);
+    MainLW->hide();
+    connect(MainTW, &QStackedWidget::currentChanged, this, &Coma::MainTWTabChanged);
 
     QFrame *line = new QFrame;
-    line->setLineWidth(0);
-    line->setMidLineWidth(1);
-    line->setFrameStyle(QFrame::Sunken | QFrame::HLine);
+    // line->setLineWidth(0);
+    // line->setMidLineWidth(1);
+    // line->setFrameStyle(QFrame::Sunken | QFrame::HLine);
     lyout->addWidget(line);
 
     inlyout = new QHBoxLayout;
@@ -604,6 +611,7 @@ void Coma::startWork(const ConnectStruct st)
 void Coma::PrepareDialogs()
 {
     m_Module = Module::createModule(BdaTimer, AlarmW);
+
     connect(this, &Coma::closeModule, m_Module, &Module::closeDialogs);
 }
 
@@ -667,7 +675,7 @@ void Coma::newTimers()
     // m_BSITimer->setInterval(1000);
     // connect(m_BSITimer, &QTimer::timeout, &ModuleBSI::update);
 
-    BdaTimer = new QTimer;
+    BdaTimer = new QTimer(this);
     BdaTimer->setInterval(1000);
 
     AlrmTimer = new QTimer(this);
@@ -732,13 +740,13 @@ void Coma::setupConnections()
 
 void Coma::prepare()
 {
-    ETabWidget *MainTW = this->findChild<ETabWidget *>("maintw");
-    Q_ASSERT(MainTW != nullptr);
-    if (MainTW == nullptr)
-    {
-        qCritical("No MainTW in widgets list");
-        return;
-    }
+    //    ETabWidget *MainTW = this->findChild<ETabWidget *>("maintw");
+    //    Q_ASSERT(MainTW != nullptr);
+    //    if (MainTW == nullptr)
+    //    {
+    //        qCritical("No MainTW in widgets list");
+    //        return;
+    //    }
     auto const &board = Board::GetInstance();
     quint16 deviceType = board.type();
     QString deviceName = QVariant::fromValue(Modules::Model(deviceType)).toString();
@@ -756,9 +764,22 @@ void Coma::prepare()
 
     Q_ASSERT(m_Module != nullptr);
     QList<UDialog *> dlgs = m_Module->dialogs();
+    Q_ASSERT(MainTW->count() == 0);
     for (auto *d : dlgs)
-        MainTW->addTab(d, d->getCaption());
+    {
+        auto *item = new QListWidgetItem(d->getCaption(), MainLW);
+        item->setSizeHint(QSize(0, height() / 20));
+        item->setTextAlignment(Qt::AlignCenter);
+        MainLW->addItem(item);
+        MainTW->addWidget(d);
+    }
+
+    connect(MainLW, &QListWidget::currentRowChanged, MainTW, &QStackedWidget::setCurrentIndex);
+
     MainTW->show();
+    MainLW->show();
+    qDebug() << MainTW->width() << width();
+    MainLW->setMinimumWidth(MainTW->width() / 5);
     AlrmTimer->start();
     qInfo() << NAMEOF(MainTW) << "created";
     if (board.interfaceType() == Board::InterfaceType::USB)
@@ -826,13 +847,13 @@ void Coma::ReConnect()
         qDebug() << "call Disconnect";
         Disconnect();
         //            emit ClearBsi();
-        ClearTW();
-        ETabWidget *MainTW = this->findChild<ETabWidget *>("maintw");
-        if (MainTW == nullptr)
-        {
-            qCritical() << Error::DescError << NAMEOF(MainTW);
-            return;
-        }
+        clearWidgets();
+        //        ETabWidget *MainTW = this->findChild<ETabWidget *>("maintw");
+        //        if (MainTW == nullptr)
+        //        {
+        //            qCritical() << Error::DescError << NAMEOF(MainTW);
+        //            return;
+        //        }
         MainTW->hide();
         StdFunc::SetEmulated(false);
     }
@@ -883,21 +904,17 @@ void Coma::SaveSettings()
     sets->setValue("Homedir", StdFunc::GetHomeDir());
 }
 
-void Coma::ClearTW()
+void Coma::clearWidgets()
 {
-    ETabWidget *MainTW = this->findChild<ETabWidget *>("maintw");
-    if (MainTW == nullptr)
-    {
-        DBGMSG("Пустой MainTW");
-        return;
-    }
-
     while (MainTW->count())
     {
         QWidget *wdgt = MainTW->widget(0);
-        MainTW->removeTab(0);
+        MainTW->removeWidget(wdgt);
         wdgt->deleteLater();
     }
+    MainLW->clear();
+    MainTW->hide();
+    MainLW->hide();
 }
 
 // Error::Msg Coma::CheckPassword()
@@ -1123,7 +1140,8 @@ void Coma::Connect()
     {
         //        m_iface = new USBWorker();
         //        m_iface = new Protocom;
-        BaseInterface::setIface(new Protocom(this));
+        BaseInterface::InterfacePointer device(new Protocom());
+        BaseInterface::setIface(std::move(device));
         //        res = Commands::Connect();
         //        if (res != Error::Msg::NoError)
         //        {
@@ -1154,7 +1172,9 @@ void Coma::Connect()
     {
 #ifndef AVM_DEBUG
         //        m_iface = new IEC104;
-        BaseInterface::setIface(new IEC104(this));
+        BaseInterface::InterfacePointer device(new IEC104());
+        BaseInterface::setIface(std::move(device));
+        //  BaseInterface::setIface(new IEC104(this));
         //        New104();
         //        if (!Ch104->isWorking())
         //            Ch104->Connect(ConnectSettings.iec104st);
@@ -1166,7 +1186,9 @@ void Coma::Connect()
     {
 #ifndef AVM_DEBUG
         //        m_iface = new ModBus;
-        BaseInterface::setIface(new ModBus(this));
+        BaseInterface::InterfacePointer device(new ModBus());
+        BaseInterface::setIface(std::move(device));
+        //     BaseInterface::setIface(new ModBus(this));
         //        NewModbus();
         //        res = ChModbus->Connect(ConnectSettings.serialst);
         //        if (res != Error::Msg::NoError)
@@ -1209,14 +1231,8 @@ void Coma::DisconnectAndClear()
     m_Module->deleteLater();
     // CloseDialogs();
 
-    ClearTW();
-    ETabWidget *MainTW = this->findChild<ETabWidget *>("maintw");
-    if (MainTW == nullptr)
-    {
-        qDebug() << Error::DescError << NAMEOF(MainTW);
-        return;
-    }
-    MainTW->hide();
+    clearWidgets();
+
     //        if (S2Config)
     //        {
     //            S2Config->clear();

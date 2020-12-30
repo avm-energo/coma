@@ -7,31 +7,31 @@
 #include <QCoreApplication>
 #include <memory>
 
-BaseInterface *BaseInterface::m_iface;
+BaseInterface::InterfacePointer BaseInterface::m_iface;
+// BaseInterface *BaseInterface::m_iface;
 
 BaseInterface::BaseInterface(QObject *parent) : QObject(parent), m_working(false), Log(new LogClass(this))
 {
-    //    auto ptr = std::make_shared<QTimer>();
-    //    timeoutTimer = ptr.get();
-    timeoutTimer = new QTimer;
+
+    // auto ptr = std::make_shared<QTimer>();
+    timeoutTimer = new QTimer(this);
     timeoutTimer->setInterval(MAINTIMEOUT);
     connect(timeoutTimer, &QTimer::timeout, this, &BaseInterface::timeout);
 }
 
 BaseInterface::~BaseInterface()
 {
-    delete Log;
-    delete timeoutTimer;
+    // delete Log;
 }
 
 BaseInterface *BaseInterface::iface()
 {
-    return m_iface;
+    return m_iface.get();
 }
 
-void BaseInterface::setIface(BaseInterface *iface)
+void BaseInterface::setIface(InterfacePointer iface)
 {
-    m_iface = iface;
+    m_iface = std::move(iface);
 }
 
 void BaseInterface::writeS2File(DataTypes::FilesEnum number, S2DataTypes::S2ConfigType *file)

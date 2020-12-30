@@ -220,6 +220,9 @@ void AlarmWidget::clear()
     QDialogButtonBox *buttons = qobject_cast<QDialogButtonBox *>(buttonBoxLayout->itemAt(0)->widget());
     Q_ASSERT(buttons != nullptr);
     buttons->clear();
+    qDeleteAll(m_alarms.begin(), m_alarms.end());
+    m_alarms.clear();
+    m_counter = 0;
 }
 
 // void AlarmWidget::uponInterfaceSetting()
@@ -258,6 +261,13 @@ void AlarmWidget::addAlarm(BaseAlarm *alarm)
         pb->setText(buttonDescription.at(0));
     }
     Q_ASSERT(!pb->text().isEmpty() && "Couldn't find description");
+    m_alarms.append(alarm);
     buttons->addButton(pb, QDialogButtonBox::ActionRole);
     alarm->reqUpdate();
+    ++m_counter;
+}
+
+int AlarmWidget::count() const
+{
+    return m_counter;
 }

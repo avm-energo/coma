@@ -52,8 +52,6 @@ bool Protocom::start(const UsbHidSettings &usbhid)
     QThread *portThread = new QThread;
     QThread *parseThread = new QThread;
 
-    port->moveToThread(portThread);
-    parser->moveToThread(parseThread);
     // NOTE После остановки потоков мы всё еще обращаемся
     // к интерфейсу для обновления данных
     QList<QMetaObject::Connection> connections;
@@ -77,18 +75,31 @@ bool Protocom::start(const UsbHidSettings &usbhid)
     });
     connect(port, &UsbHidPort::finished, portThread, &QThread::quit);
     connect(port, &UsbHidPort::finished, parseThread, &QThread::quit);
-    connect(port, &UsbHidPort::finished, portThread, &QObject::deleteLater);
-    connect(port, &UsbHidPort::finished, parseThread, &QObject::deleteLater);
-    connect(port, &UsbHidPort::finished, port, &QObject::deleteLater);
-    connect(port, &UsbHidPort::finished, parser, &QObject::deleteLater);
+    // connect(port, &UsbHidPort::finished, portThread, &QObject::deleteLater);
+    // connect(port, &UsbHidPort::finished, parseThread, &QObject::deleteLater);
+    //  connect(port, &UsbHidPort::finished, port, &QObject::deleteLater);
+    //  connect(port, &UsbHidPort::finished, parser, &QObject::deleteLater);
+    connect(portThread, &QThread::finished, port, &QObject::deleteLater);
+    connect(parseThread, &QThread::finished, parser, &QObject::deleteLater);
+    connect(portThread, &QThread::finished, &QObject::deleteLater);
+    connect(parseThread, &QThread::finished, &QObject::deleteLater);
 
     if (!port->setupConnection())
+    {
+        port->deleteLater();
+        parser->deleteLater();
+        parseThread->deleteLater();
+        portThread->deleteLater();
         return false;
+    }
 
     Board::GetInstance().setConnectionState(Board::ConnectionState::Connected);
+
+    qInfo() << metaObject()->className() << "connected";
+    port->moveToThread(portThread);
+    parser->moveToThread(parseThread);
     portThread->start();
     parseThread->start();
-    qInfo() << metaObject()->className() << "connected";
     return true;
 }
 

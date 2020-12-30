@@ -12,36 +12,16 @@ class AlarmWidget : public QWidget
 public:
     explicit AlarmWidget(QWidget *parent = nullptr);
     void clear();
-    // void uponInterfaceSetting();
 
     void addAlarm(BaseAlarm *alarm);
-
-signals:
-    //    void SetWarnAlarmColor(QList<bool>);
-    //    void SetAlarmColor(QList<bool>);
-    //    void AlarmButtonPressed();
-    //    void ModuleWarnButtonPressed();
-    //    void ModuleAlarmButtonPressed();
+    int count() const;
 
 public slots:
 
-    //    void UpdateFirstUSB();
-    //    void UpdateSecondUSB(QList<bool>);
-    //    void UpdateThirdUSB(QList<bool>);
-    //    void UpdateSecondUSB(bool);
-    //    void UpdateThirdUSB(bool);
     void UpdateIndicator(bool);
-    //    void update(bool w, bool a);
-    //    void updateWarn(bool isset);
-    //    void updateAlarm(bool isset);
-    //    void updateMain(bool isset);
-    //    void updateMain(QColor color);
-    //    void updateWarn(QColor color);
-    //    void updateAlarm(QColor color);
-    //    void buttonClicked(QWidget *button);
 
 private:
-    // QList<BaseAlarm *> m_alarms;
+    QList<BaseAlarm *> m_alarms;
     // QDialogButtonBox *buttons;
     QTimer *m_timer;
     const QStringList buttonDescription {
@@ -49,6 +29,7 @@ private:
         "Предупредительная сигнализация", //
         "Аварийная сигнализация"          //
     };
+    int m_counter = 0;
     //    AlarmClass *Alarm;
 };
 
