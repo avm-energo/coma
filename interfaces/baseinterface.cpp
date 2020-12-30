@@ -13,8 +13,8 @@ BaseInterface::InterfacePointer BaseInterface::m_iface;
 BaseInterface::BaseInterface(QObject *parent) : QObject(parent), m_working(false), Log(new LogClass(this))
 {
 
-    auto ptr = std::make_shared<QTimer>();
-    timeoutTimer = ptr.get();
+    // auto ptr = std::make_shared<QTimer>();
+    timeoutTimer = new QTimer(this);
     // timeoutTimer = new QTimer;
     timeoutTimer->setInterval(MAINTIMEOUT);
     connect(timeoutTimer, &QTimer::timeout, this, &BaseInterface::timeout);
@@ -22,7 +22,7 @@ BaseInterface::BaseInterface(QObject *parent) : QObject(parent), m_working(false
 
 BaseInterface::~BaseInterface()
 {
-    delete Log;
+    // delete Log;
 }
 
 BaseInterface *BaseInterface::iface()
@@ -30,9 +30,9 @@ BaseInterface *BaseInterface::iface()
     return m_iface.get();
 }
 
-void BaseInterface::setIface(InterfacePointer /*dBaseInterface **/ iface)
+void BaseInterface::setIface(InterfacePointer iface)
 {
-    m_iface = std::move(iface) /*std::make_unique<BaseInterface>(iface)*/;
+    m_iface = std::move(iface);
 }
 
 void BaseInterface::writeS2File(DataTypes::FilesEnum number, S2DataTypes::S2ConfigType *file)

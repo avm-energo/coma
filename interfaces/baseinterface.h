@@ -26,6 +26,7 @@ private:
 
 public:
     using InterfacePointer = std::unique_ptr<BaseInterface, deleteLaterDeletor>;
+    // using TimerPointer=std::unique_ptr<BaseInterface, deleteLaterDeletor>
 
 public:
     bool m_working;
@@ -34,7 +35,7 @@ public:
     explicit BaseInterface(QObject *parent = nullptr);
     ~BaseInterface();
     static BaseInterface *iface();
-    static void setIface(/*dBaseInterface **/ InterfacePointer iface);
+    static void setIface(InterfacePointer iface);
 
     virtual bool start(const ConnectStruct &) = 0;
     virtual void pause() = 0;
