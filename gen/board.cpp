@@ -150,6 +150,17 @@ void Board::update(const DataTypes::BitStringStruct &bs)
     {
         emit healthChanged(m_startupInfoBlock.Hth);
     }
+    else if (&item == &m_startupInfoBlock.MTypeB || &item == &m_startupInfoBlock.MTypeM)
+    {
+        if (!m_updateType)
+            m_updateType = true;
+        else
+        {
+            m_updateType = false;
+            emit typeChanged(type());
+        }
+    }
+
     if (m_updateCounter == StartupInfoBlockMembers)
     {
         emit readyRead();

@@ -126,12 +126,14 @@ private:
         return value || isSerialNumberSet(args...);
     }
     int m_updateCounter = 0;
+    bool m_updateType = false;
 
 signals:
     void interfaceTypeChanged(Board::InterfaceType);
     void deviceTypeChanged(Board::DeviceType);
     void boardTypeChanged(Board::Types);
     void typeChanged();
+    void typeChanged(quint16);
     void connectionStateChanged(Board::ConnectionState);
     /// This signal is emitted when StartupInfoBlock::Hth
     void healthChanged(quint32);
