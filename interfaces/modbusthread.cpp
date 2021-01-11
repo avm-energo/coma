@@ -1,5 +1,7 @@
 #include "modbusthread.h"
+
 #include "../gen/datamanager.h"
+
 #include <QCoreApplication>
 #include <QElapsedTimer>
 
@@ -11,9 +13,14 @@ ModbusThread::ModbusThread(QObject *parent) : QObject(parent)
     AboutToFinish = false;
 }
 
-ModbusThread::~ModbusThread() { }
+ModbusThread::~ModbusThread()
+{
+}
 
-void ModbusThread::setDeviceAddress(quint8 adr) { deviceAddress = adr; }
+void ModbusThread::setDeviceAddress(quint8 adr)
+{
+    deviceAddress = adr;
+}
 
 // void ModbusThread::Init(QQueue<ModBus::InOutStruct> *inq, QList<ModBus::InOutStruct> *outl)
 //{
@@ -333,7 +340,10 @@ void ModbusThread::getSinglePointSignals(QByteArray &bain)
     }
 }
 
-void ModbusThread::FinishThread() { AboutToFinish = true; }
+void ModbusThread::FinishThread()
+{
+    AboutToFinish = true;
+}
 
 quint16 ModbusThread::CalcCRC(QByteArray &ba)
 {
@@ -363,6 +373,7 @@ void ModbusThread::readRegisters(CommandsMBS::CommandStruct &cms)
         ba.append(cms.data);
     Log->info("Send bytes: " + ba.toHex());
     m_bytesToReceive = cms.quantity * 2 + 5; // address, function code, bytes count, crc (2)
+    send(ba);
 }
 
 void ModbusThread::writeMultipleRegisters(CommandsMBS::CommandStruct &cms)
@@ -374,13 +385,14 @@ void ModbusThread::writeMultipleRegisters(CommandsMBS::CommandStruct &cms)
         ba.append(cms.data);
     Log->info("Send bytes: " + ba.toHex());
     m_bytesToReceive = 8; // address, function code, address (2), quantity (2), crc (2)
+    send(ba);
 }
 
 void ModbusThread::setQueryStartBytes(CommandsMBS::CommandStruct &cms, QByteArray &ba)
 {
     m_commandSent = cms;
     ba.append(deviceAddress); // адрес устройства
-    ba.append(cms.cmd); //аналоговый выход
+    ba.append(cms.cmd);       //аналоговый выход
     ba.append(static_cast<char>((cms.adr & 0xFF00) >> 8));
     ba.append(static_cast<char>(cms.adr & 0x00FF));
     ba.append(static_cast<char>((cms.quantity & 0xFF00) >> 8));

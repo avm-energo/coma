@@ -4,10 +4,6 @@
 #define SIGNALGROUPSNUM 7
 #define MAINSLEEPCYCLETIME 50
 
-#define READHOLDINGREGISTERS 0x03
-#define READINPUTREGISTER 0x04
-#define WRITEMULTIPLEREGISTERS 0x10
-
 namespace CommandsMBS
 {
 enum CommandRegisters
@@ -16,12 +12,12 @@ enum CommandRegisters
     ClearStartupValuesReg = 905
 };
 
-enum Commands
+enum Commands : quint8
 {
-    MBS_READHOLDINGREGISTERS,
-    MBS_READINPUTREGISTER,
-    MBS_WRITEMULTIPLEREGISTERS,
-    MBS_READCOILS
+    MBS_READHOLDINGREGISTERS = 0x03,
+    MBS_READINPUTREGISTER = 0x04,
+    MBS_WRITEMULTIPLEREGISTERS = 0x10,
+    MBS_READCOILS = 0x01
 };
 
 struct CommandStruct
