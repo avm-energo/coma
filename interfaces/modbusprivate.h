@@ -1,5 +1,5 @@
 #pragma once
-
+#include <QObject>
 #define POLLINGINTERVAL 300 // polling cycle time
 #define SIGNALGROUPSNUM 7
 #define MAINSLEEPCYCLETIME 50

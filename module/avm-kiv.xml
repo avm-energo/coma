@@ -99,7 +99,7 @@
       <modbus>
         <group id="baseSerialInfo">
           <function>04</function>
-          <type>quint32</type>
+          <type>uint32</type>
           <start-addr>1</start-addr>
           <count>30</count>
         </group>
@@ -141,13 +141,13 @@
         </group>
         <group id="status">
           <function>04</function>
-          <type>quint32</type>
+          <type>uint32</type>
           <start-addr>4520</start-addr>
           <count>4</count>
         </group>
         <group id="alarmValue">
           <function>04</function>
-          <type>quint32</type>
+          <type>uint32</type>
           <start-addr>7000</start-addr>
           <count>12</count>
         </group>
@@ -187,13 +187,13 @@
         </group>
         <group id="rtime">
           <function>03</function>
-          <type>quint32</type>
+          <type>uint32</type>
           <start-addr>4600</start-addr>
           <count>22</count>
         </group>
         <group id="wtime">
           <function>10</function>
-          <type>quint32</type>
+          <type>uint32</type>
           <start-addr>4600</start-addr>
           <count>22</count>
         </group>

@@ -12,7 +12,7 @@ CONFIG += c++17
 CONFIG -= console
 VERSION = 1.1.2
 
-QT       += core gui printsupport network serialport widgets concurrent testlib
+QT       += core gui printsupport network serialport widgets concurrent testlib xml
 QT.testlib.CONFIG -= console
 TARGET = AVM-Service
 DEFINES += PROGNAME='\\"AVM-Service\\"'
@@ -29,6 +29,7 @@ TEMPLATE = app
 
 
 SOURCES += \
+    ../interfaces/modbussettings.cpp \
     ../interfaces/usbhidsettings.cpp \
     ../widgets/aboutwidget.cpp \
     ../widgets/alarmbutton.cpp \
@@ -125,6 +126,7 @@ SOURCES += \
 PRECOMPILED_HEADER = ../gen/pch.h
 
 HEADERS += \
+    ../interfaces/modbussettings.h \
     ../interfaces/usbhidsettings.h \
     ../widgets/aboutwidget.h \
     ../widgets/alarmbutton.h \
