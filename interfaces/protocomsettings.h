@@ -1,33 +1,33 @@
 #pragma once
 #include "interfacesettings.h"
-#include "modbusprivate.h"
+#include "protocomprivate.h"
 
 #include <QMap>
 #include <QtXml/QDomElement>
-namespace CommandsMBS
+namespace Proto
 {
-// Q_NAMESPACE
-
-// struct ModbusGroup
+// struct ProtocomGroup
 //{
-//    using FuncCode = CommandsMBS::Commands;
-//    ModbusGroup(QDomElement domElement);
+//    using FuncCode = Proto::Commands;
+//    ProtocomGroup(QDomElement domElement);
 //    QString id;
 //    FuncCode function;
 //    TypeId dataType;
 //    quint32 startAddr;
 //    quint32 count;
+//    quint16 block;
 //};
-struct ModbusGroup : BaseGroup<CommandsMBS::Commands, CommandsMBS::TypeId>
+struct ProtocomGroup : BaseGroup<Proto::Commands, Proto::TypeId>
 {
-    ModbusGroup(QDomElement domElement);
+    ProtocomGroup(QDomElement domElement);
+    quint16 block;
 };
 }
-// class ModbusSettings
+// class ProtocomSettings
 //{
 // public:
-//    using Group = CommandsMBS::ModbusGroup;
-//    ModbusSettings();
+//    using Group = Proto::ProtocomGroup;
+//    ProtocomSettings();
 
 //    void addGroup(const Group &gr);
 //    void clearGroups();

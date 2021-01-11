@@ -2,73 +2,35 @@
 
 #include <QDebug>
 #include <QMetaEnum>
-ModbusSettings::ModbusSettings()
-{
-}
+// ModbusSettings::ModbusSettings()
+//{
+//}
 
-void ModbusSettings::addGroup(const ModbusSettings::Group &gr)
-{
-    m_groups.append(gr);
-}
+// void ModbusSettings::addGroup(const ModbusSettings::Group &gr)
+//{
+//    m_groups.append(gr);
 
-void ModbusSettings::clearGroups()
-{
-    m_groups.clear();
-}
+//    m_dictionary.insert(gr.startAddr, gr);
+//}
 
-QList<ModbusSettings::Group> ModbusSettings::groups() const
-{
-    return m_groups;
-}
+// void ModbusSettings::clearGroups()
+//{
+//    m_groups.clear();
+
+//    m_dictionary.clear();
+//}
+
+// QList<ModbusSettings::Group> ModbusSettings::groups() const
+//{
+//    return m_groups;
+//}
+
+// QMap<quint32, ModbusSettings::Group> ModbusSettings::dictionary() const
+//{
+//    return m_dictionary;
+//}
 
 CommandsMBS::ModbusGroup::ModbusGroup(QDomElement domElement)
+    : BaseGroup<CommandsMBS::Commands, CommandsMBS::TypeId>(domElement)
 {
-    qDebug() << domElement.attribute("id", "") << domElement.text();
-    id = domElement.attribute("id", "");
-    Q_ASSERT(!id.isEmpty());
-    domElement = domElement.firstChildElement();
-    while (!domElement.isNull())
-    {
-        if (domElement.tagName() == "function")
-        {
-            bool ok;
-            qDebug() << domElement.text().toUInt(&ok, 16);
-            Q_ASSERT(ok);
-            function = static_cast<FuncCode>(domElement.text().toUInt(&ok, 16));
-            qDebug() << function;
-            domElement = domElement.nextSiblingElement();
-            continue;
-        }
-        if (domElement.tagName() == "type")
-        {
-            QString buffer = domElement.text();
-            Q_ASSERT(!buffer.isEmpty());
-            qDebug() << buffer;
-
-            auto types = QMetaEnum::fromType<CommandsMBS::TypeId>;
-            Q_ASSERT(types().isValid());
-            buffer[0] = buffer[0].toUpper();
-            int typeId = types().keyToValue(buffer.toStdString().c_str());
-            Q_ASSERT(typeId != -1);
-            dataType = static_cast<CommandsMBS::TypeId>(typeId);
-
-            domElement = domElement.nextSiblingElement();
-            continue;
-        }
-        if (domElement.tagName() == "start-addr")
-        {
-            qDebug() << domElement.text().toUInt();
-            startAddr = domElement.text().toUInt();
-            domElement = domElement.nextSiblingElement();
-            continue;
-        }
-        if (domElement.tagName() == "count")
-        {
-            qDebug() << domElement.text().toUInt();
-            count = domElement.text().toUInt();
-            domElement = domElement.nextSiblingElement();
-            continue;
-        }
-        domElement = domElement.nextSiblingElement();
-    }
 }

@@ -31,7 +31,8 @@ void parseModbus(QDomElement domElement)
     const auto &nodes = domElement.childNodes();
     Q_ASSERT(!nodes.isEmpty());
     int i = 0;
-    ModbusSettings settings;
+    // ModbusSettings settings;
+    InterfaceInfo<CommandsMBS::ModbusGroup> settings;
     while (i != nodes.count())
     {
         const auto &group = nodes.item(i++).toElement();

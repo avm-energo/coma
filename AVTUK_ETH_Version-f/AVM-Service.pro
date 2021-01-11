@@ -30,6 +30,7 @@ TEMPLATE = app
 
 SOURCES += \
     ../interfaces/modbussettings.cpp \
+    ../interfaces/protocomsettings.cpp \
     ../interfaces/usbhidsettings.cpp \
     ../widgets/aboutwidget.cpp \
     ../widgets/alarmbutton.cpp \
@@ -126,7 +127,9 @@ SOURCES += \
 PRECOMPILED_HEADER = ../gen/pch.h
 
 HEADERS += \
+    ../interfaces/interfacesettings.h \
     ../interfaces/modbussettings.h \
+    ../interfaces/protocomsettings.h \
     ../interfaces/usbhidsettings.h \
     ../widgets/aboutwidget.h \
     ../widgets/alarmbutton.h \

@@ -21,6 +21,7 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 HEADERS += \
     ../../gen/helper.h \
     ../../interfaces/iec104private.h \
+    ../../interfaces/interfacesettings.h \
     ../../interfaces/modbusprivate.h \
     ../../interfaces/modbussettings.h \
     ../../interfaces/protocomprivate.h \

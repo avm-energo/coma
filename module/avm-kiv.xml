@@ -198,6 +198,48 @@
           <count>22</count>
         </group>
       </modbus>
+      <protocom>
+        <group>
+          <start-addr>2420</start-addr>
+          <count>14</count>
+          <block>4</block>
+        </group>
+        <group>
+          <start-addr>2400</start-addr>
+          <count>7</count>
+          <block>5</block>
+        </group>
+        <group>
+          <start-addr>4501</start-addr>
+          <count>2</count>
+          <block>8</block>
+        </group>
+        <group>
+          <start-addr>1000</start-addr>
+          <count>16</count>
+          <block>2</block>
+        </group>
+        <group>
+          <start-addr>1100</start-addr>
+          <count>16</count>
+          <block>3</block>
+        </group>
+        <group>
+          <start-addr>101</start-addr>
+          <count>2</count>
+          <block>0</block>
+        </group>
+        <group id="startValue">
+          <start-addr>4000</start-addr>
+          <count>12</count>
+          <block>7</block>
+        </group>
+        <group id="alarmModule">
+          <start-addr>3011</start-addr>
+          <count>25</count>
+          <block>100</block>
+        </group>      
+      </protocom>
     </resources>
   </module>
 </modules>

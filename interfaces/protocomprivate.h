@@ -155,6 +155,18 @@ struct CommandStruct
     QVariant arg2;
     QByteArray ba;
 };
+
+enum TypeId : int
+{
+    Bool,
+    Uint32,
+    Float,
+    File,
+    ByteArray
+    // Smth else
+};
+Q_ENUM_NS(TypeId)
+
 // GBsi,ErPg - bitstring,
 // GBac, GBda, GBd,GBt - float,
 // GF - file
