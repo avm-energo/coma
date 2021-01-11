@@ -31,7 +31,11 @@ CommandsMBS::ModbusGroup::ModbusGroup(QDomElement domElement)
     {
         if (domElement.tagName() == "function")
         {
-            qDebug() << domElement.text().toUInt();
+            bool ok;
+            qDebug() << domElement.text().toUInt(&ok, 16);
+            Q_ASSERT(ok);
+            function = static_cast<FuncCode>(domElement.text().toUInt(&ok, 16));
+            qDebug() << function;
             domElement = domElement.nextSiblingElement();
             continue;
         }
@@ -43,9 +47,7 @@ CommandsMBS::ModbusGroup::ModbusGroup(QDomElement domElement)
 
             auto types = QMetaEnum::fromType<CommandsMBS::TypeId>;
             Q_ASSERT(types().isValid());
-            // buffer.toUpper();
             buffer[0] = buffer[0].toUpper();
-            // buffer.data()->toUpper();
             int typeId = types().keyToValue(buffer.toStdString().c_str());
             Q_ASSERT(typeId != -1);
             dataType = static_cast<CommandsMBS::TypeId>(typeId);
@@ -56,13 +58,14 @@ CommandsMBS::ModbusGroup::ModbusGroup(QDomElement domElement)
         if (domElement.tagName() == "start-addr")
         {
             qDebug() << domElement.text().toUInt();
-
+            startAddr = domElement.text().toUInt();
             domElement = domElement.nextSiblingElement();
             continue;
         }
         if (domElement.tagName() == "count")
         {
             qDebug() << domElement.text().toUInt();
+            count = domElement.text().toUInt();
             domElement = domElement.nextSiblingElement();
             continue;
         }

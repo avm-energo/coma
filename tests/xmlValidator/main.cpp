@@ -25,17 +25,22 @@ void parseStringList(QDomElement domElement)
 
 void parseModbus(QDomElement domElement)
 {
+
     qDebug() << domElement.text();
     qDebug() << "TagName: " << domElement.tagName();
     const auto &nodes = domElement.childNodes();
     Q_ASSERT(!nodes.isEmpty());
     int i = 0;
+    ModbusSettings settings;
     while (i != nodes.count())
     {
         const auto &group = nodes.item(i++).toElement();
         auto test = CommandsMBS::ModbusGroup(group);
+        settings.addGroup(test);
+        //    qDebug() << test;
         qDebug() << group.attribute("id", "") << group.text();
     }
+    qDebug() << settings.groups().count();
 }
 
 bool parseModule(const QString &typea, const QString &typeb)

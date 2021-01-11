@@ -4,19 +4,7 @@
 #include <QtXml/QDomElement>
 namespace CommandsMBS
 {
-Q_NAMESPACE
-enum TypeId : int
-/// 1 register is int16
-{
-    /// 1 register contains 1 bit
-    Bool,
-    /// 2 registers contain uint32 (bitstring)
-    Uint32,
-    /// 2 registers contain float
-    Float,
-    // Smth else
-};
-Q_ENUM_NS(TypeId)
+// Q_NAMESPACE
 
 struct ModbusGroup
 {

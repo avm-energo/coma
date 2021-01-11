@@ -77,3 +77,11 @@ QDebug operator<<(QDebug debug, const UsbHidSettings &settings)
                     << settings.serial << ":" << settings.path;
     return debug.maybeSpace();
 }
+
+QDebug operator<<(QDebug debug, const CommandsMBS::ModbusGroup &settings)
+{
+    debug.nospace() << settings.id << ":" << settings.function << ":"
+                    << QVariant::fromValue(settings.dataType).toString() << ":" << settings.startAddr << ":"
+                    << settings.count;
+    return debug.maybeSpace();
+}
