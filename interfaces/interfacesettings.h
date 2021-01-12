@@ -1,11 +1,17 @@
 #pragma once
+#include "iec104private.h"
+#include "modbusprivate.h"
+#include "protocomprivate.h"
+
 #include <QDebug>
+#include <QMap>
 #include <QMetaEnum>
 #include <QtXml/QDomElement>
 #include <functional>
 #include <type_traits>
 #include <utility>
 #include <variant>
+
 // Thanx to https://stackoverflow.com/questions/34672441
 template <template <typename...> class base, typename derived> struct is_base_of_template_impl
 {
@@ -23,7 +29,7 @@ template <typename FuncCode, typename TypeId> struct BaseGroup
     {
         qDebug() << domElement.attribute("id", "") << domElement.text();
         id = domElement.attribute("id", "");
-        Q_ASSERT(!id.isEmpty());
+        //   Q_ASSERT(!id.isEmpty());
         domElement = domElement.firstChildElement();
         while (!domElement.isNull())
         {
@@ -76,13 +82,14 @@ template <typename FuncCode, typename TypeId> struct BaseGroup
     quint32 startAddr;
     quint32 count;
 };
+
 // Class have to derived from BaseGroup due to dependent types
 template <typename Group, typename = typename std::enable_if<is_base_of_template<BaseGroup, Group>::value>::type>
 struct InterfaceInfo
 {
-    InterfaceInfo()
-    {
-    }
+    //    InterfaceInfo()
+    //    {
+    //    }
 
     void addGroup(const Group &gr)
     {
@@ -102,7 +109,7 @@ struct InterfaceInfo
         return m_groups;
     }
 
-    QMap<quint32, Group> dictionary() const
+    QMultiMap<quint32, Group> dictionary() const
     {
         return m_dictionary;
     }
@@ -110,12 +117,60 @@ struct InterfaceInfo
 private:
     // Realized two versions, only one will be stayed
     QList<Group> m_groups;
-    QMap<quint32, Group> m_dictionary;
+    QMultiMap<quint32, Group> m_dictionary;
 };
+
+namespace CommandsMBS
+{
+struct ModbusGroup : BaseGroup<Commands, TypeId>
+{
+    ModbusGroup(QDomElement domElement) : BaseGroup<Commands, TypeId>(domElement)
+    {
+    }
+    // NOTE Need more fileds?
+};
+}
+
+namespace Proto
+{
+struct ProtocomGroup : BaseGroup<Commands, TypeId>
+{
+    ProtocomGroup(QDomElement domElement) : BaseGroup<Commands, TypeId>(domElement)
+    {
+        domElement = domElement.firstChildElement();
+        while (!domElement.isNull())
+        {
+            if (domElement.tagName() == "block")
+            {
+                qDebug() << domElement.text().toUInt();
+                block = domElement.text().toUInt();
+            }
+            domElement = domElement.nextSiblingElement();
+        }
+    }
+    quint16 block;
+    // NOTE Need more fileds?
+};
+}
+
+namespace Commands104
+{
+struct Iec104Group : BaseGroup<Commands, TypeId>
+{
+    Iec104Group(QDomElement domElement) : BaseGroup<Commands, TypeId>(domElement)
+    {
+    }
+    // NOTE Need more fileds?
+};
+}
 
 // For template not in header
 //#include "interfacesettings.cpp"
-// struct InterfaceSettings
-//{
-//    std::variant<ModbusSettings, ProtocomSettings> settings;
-//};
+struct InterfaceSettings
+{
+    std::variant<InterfaceInfo<CommandsMBS::ModbusGroup>, //
+        InterfaceInfo<Proto::ProtocomGroup>,              //
+        InterfaceInfo<Commands104::Iec104Group>           //
+        >
+        settings;
+};

@@ -13,16 +13,11 @@
 #include "../dialogs/infodialog.h"
 #include "../dialogs/journalsdialog.h"
 #include "../dialogs/timedialog.h"
+#include "../gen/s2.h"
 #include "../startup/startupkdvdialog.h"
 #include "../startup/startupkivdialog.h"
 #include "../startup/startupktfdialog.h"
 #include "../widgets/udialog.h"
-#ifdef AVM_DEBUG
-//#include "../tune/kiv/tunekdvdialog.h"
-#include "../tune/kiv/tunekivdialog.h"
-//#include "../tune/kiv/tunektfdialog.h"
-#endif
-#include "../gen/s2.h"
 #include "alarmkdv.h"
 #include "alarmkiv.h"
 #include "alarmktf.h"
@@ -30,6 +25,15 @@
 #include "journkiv.h"
 #include "journktf.h"
 #include "modules.h"
+
+#include <QDir>
+#include <QtXml>
+#ifdef AVM_DEBUG
+//#include "../tune/kiv/tunekdvdialog.h"
+#include "../tune/kiv/tunekivdialog.h"
+//#include "../tune/kiv/tunektfdialog.h"
+#endif
+
 Module::Module(QObject *parent) : QObject(parent)
 {
     // m_dialogs.clear();
@@ -51,6 +55,7 @@ Module *Module::createModule(QTimer *updateTimer, AlarmWidget *aw)
     // m->m_alarmStateAllDialog->UpdateHealth(board.health());
     //    quint16 typeb = Board::GetInstance().typeB();
     quint16 typeb = board.typeB();
+    m->loadSettings();
     //    aw->setInterface(iface);
     // aw->uponInterfaceSetting();
     AlarmStateAll *alarmStateAll = new AlarmStateAll;
@@ -98,8 +103,8 @@ Module *Module::createModule(QTimer *updateTimer, AlarmWidget *aw)
             m->addDialogToList(new TuneKIVDialog(CKIV), "Регулировка");
 #endif
             m->addDialogToList(new StartupKIVDialog, "Начальные\nзначения");
-            aw->addAlarm(new WarnKIV);
-            aw->addAlarm(new CritKIV);
+            aw->addAlarm(new WarnKIV(m->settings()->alarms.value(AlarmType::Warning)));
+            aw->addAlarm(new CritKIV(m->settings()->alarms.value(AlarmType::Critical)));
             //            connect(m->m_warn, &Warn::updateWarn, cdkiv, &AbstractCheckDialog::SetWarnColor);
             //            connect(m->m_alarm, &Alarm::updateAlarm, cdkiv, &AbstractCheckDialog::SetAlarmColor);
             break;
@@ -276,4 +281,282 @@ void Module::closeDialogs()
         for (auto &i : m_dialogs)
             i->close();
     delete S2::config;
+}
+
+ModuleSettings *Module::settings() const
+{
+    return m_settings.get();
+}
+
+quint32 Module::parseInt32(QDomElement domElement) const
+{
+
+    qDebug() << domElement.attribute("name", "") << domElement.text();
+    if (domElement.text().isEmpty())
+        return 0;
+    bool ok;
+    const quint32 number = domElement.text().toUInt(&ok);
+    Q_ASSERT(ok);
+    return number;
+}
+
+quint32 Module::parseHexInt32(QDomElement domElement) const
+{
+    auto str = domElement.text();
+    qDebug() << domElement.attribute("name", "") << domElement.text();
+    if (domElement.text().isEmpty())
+        return 0;
+    Q_ASSERT(str.startsWith("0x"));
+    str.remove(0, 2);
+    bool ok;
+    const quint32 number = domElement.text().toUInt(&ok, 16);
+    Q_ASSERT(ok);
+    return number;
+}
+
+QStringList Module::parseStringList(QDomElement domElement) const
+{
+    const auto &nodes = domElement.childNodes();
+    QStringList description;
+    Q_ASSERT(!nodes.isEmpty());
+    int i = 0;
+    qDebug() << "TagName: " << domElement.tagName() << domElement.attribute("name", "");
+    while (i != nodes.count())
+    {
+        description.push_back(nodes.item(i++).toElement().text());
+    }
+    return description;
+}
+
+InterfaceInfo<CommandsMBS::ModbusGroup> Module::parseModbus(QDomElement domElement)
+{
+    qDebug() << domElement.text();
+    qDebug() << "TagName: " << domElement.tagName();
+    const auto &nodes = domElement.childNodes();
+    Q_ASSERT(!nodes.isEmpty());
+    int i = 0;
+    // ModbusSettings settings;
+    InterfaceInfo<CommandsMBS::ModbusGroup> settings;
+    while (i != nodes.count())
+    {
+        const auto &group = nodes.item(i++).toElement();
+        auto test = CommandsMBS::ModbusGroup(group);
+        settings.addGroup(test);
+        qDebug() << group.attribute("id", "") << group.text();
+    }
+
+    qDebug() << settings.groups().count();
+    return settings;
+}
+
+InterfaceInfo<Proto::ProtocomGroup> Module::parseProtocom(QDomElement domElement)
+{
+    qDebug() << domElement.text();
+    qDebug() << "TagName: " << domElement.tagName();
+    const auto &nodes = domElement.childNodes();
+    Q_ASSERT(!nodes.isEmpty());
+    int i = 0;
+    InterfaceInfo<Proto::ProtocomGroup> settings;
+    while (i != nodes.count())
+    {
+        const auto &group = nodes.item(i++).toElement();
+        Proto::ProtocomGroup test(group);
+        settings.addGroup(test);
+        qDebug() << group.attribute("id", "") << group.text();
+    }
+
+    qDebug() << settings.groups().count();
+    return settings;
+}
+
+InterfaceInfo<Commands104::Iec104Group> Module::parseIec104(QDomElement domElement)
+{
+    InterfaceInfo<Commands104::Iec104Group> settings;
+    return settings;
+}
+
+DataTypes::Alarm Module::parseAlarm(QDomElement domElement)
+{
+    DataTypes::Alarm alarm;
+    qDebug() << "TagName: " << domElement.tagName() << domElement.attribute("name", "");
+    alarm.name = domElement.attribute("name", "");
+    auto element = domElement.firstChildElement("string-array");
+    alarm.desc = parseStringList(element);
+    element = domElement.firstChildElement("quint32");
+    alarm.flags = parseHexInt32(element);
+    return alarm;
+}
+
+DataTypes::Journal Module::parseJournal(QDomElement domElement)
+{
+    DataTypes::Journal journal;
+    qDebug() << "TagName: " << domElement.tagName() << domElement.attribute("name", "");
+    journal.name = domElement.attribute("name", "");
+    journal.id = parseInt32(domElement.firstChildElement("quint32"));
+    domElement = domElement.firstChildElement("string-array");
+    while (!domElement.isNull())
+    {
+        const auto name = domElement.attribute("name", "");
+        if (name.contains("description"), Qt::CaseInsensitive)
+            journal.desc = parseStringList(domElement);
+        if (name.contains("header"), Qt::CaseInsensitive)
+            journal.header = parseStringList(domElement);
+        domElement = domElement.nextSiblingElement("string-array");
+    }
+    return journal;
+}
+
+bool isCorrectModule(const QString &typem, const QString &typeb)
+{
+    const auto &board = Board::GetInstance();
+    quint16 mtypem = typem.toUInt(nullptr, 16);
+    quint16 mtypeb = typeb.toUInt(nullptr, 16);
+    qDebug() << typem << mtypem;
+    qDebug() << typem << mtypeb;
+    if (board.typeB() != mtypeb)
+        return false;
+    if (board.typeM() != mtypem)
+        return false;
+    return true;
+}
+
+void Module::traverseNode(const QDomNode &node)
+{
+    QDomNode domNode = node.firstChild();
+    while (!domNode.isNull())
+    {
+        if (domNode.isElement())
+        {
+            QDomElement domElement = domNode.toElement();
+            if (!domElement.isNull())
+            {
+                if (domElement.tagName() == "quint32")
+                {
+                    //      qDebug() << "Attr: " << domElement.attribute("name", "")
+                    //               << "\tValue: " << /*qPrintable*/ (domElement.text());
+                    parseInt32(domElement);
+                    // domNode = domNode.nextSibling();
+                    // break;
+                }
+                if (domElement.tagName() == "string-array")
+                {
+
+                    qDebug() << "Attr: " << domElement.attribute("name", "");
+                    parseStringList(domElement);
+                    domNode = domNode.nextSibling();
+                    continue;
+                    // domNode = domNode.nextSibling();
+                }
+                if (domElement.tagName() == "alarm")
+                {
+
+                    qDebug() << "Attr: " << domElement.attribute("name", "");
+                    const auto alarm = parseAlarm(domElement);
+                    if (alarm.name.contains("critical", Qt::CaseInsensitive))
+                        m_settings->alarms.insert(AlarmType::Critical, alarm);
+                    else if (alarm.name.contains("warning", Qt::CaseInsensitive))
+                        m_settings->alarms.insert(AlarmType::Warning, alarm);
+                    else
+                        m_settings->alarms.insert(AlarmType::All, alarm);
+                    //  m_settings->alarms.push_back(parseAlarm(domElement));
+
+                    domNode = domNode.nextSibling();
+                    continue;
+                    // domNode = domNode.nextSibling();
+                }
+                if (domElement.tagName() == "journal")
+                {
+
+                    qDebug() << "Attr: " << domElement.attribute("name", "");
+
+                    const auto journal = parseJournal(domElement);
+                    if (journal.name.contains("work", Qt::CaseInsensitive))
+                        m_settings->journals.insert(JournalType::Work, journal);
+                    else if (journal.name.contains("meas", Qt::CaseInsensitive))
+                        m_settings->journals.insert(JournalType::Meas, journal);
+                    else if (journal.name.contains("sys", Qt::CaseInsensitive))
+                        m_settings->journals.insert(JournalType::System, journal);
+                    //    m_settings->journals.push_back(parseJournal(domElement));
+
+                    domNode = domNode.nextSibling();
+                    continue;
+                    // domNode = domNode.nextSibling();
+                }
+                if (domElement.tagName() == "module")
+                {
+                    if (!isCorrectModule(domElement.attribute("mtypem", ""), domElement.attribute("mtypeb", "")))
+                    {
+                        domNode = domNode.nextSibling();
+                        continue;
+                    }
+
+                    // qDebug() << "Attr: " << domElement.attribute("mtypea", "") << domElement.attribute("mtypeb", "");
+                }
+                if (domElement.tagName() == "modbus")
+                {
+                    if (Board::GetInstance().interfaceType() == Board::RS485)
+                        m_settings->ifaceSettings.settings = parseModbus(domElement);
+
+                    domNode = domNode.nextSibling();
+                    continue;
+                }
+                if (domElement.tagName() == "protocom")
+                {
+                    if (Board::GetInstance().interfaceType() == Board::USB)
+                        m_settings->ifaceSettings.settings = parseProtocom(domElement);
+
+                    domNode = domNode.nextSibling();
+                    continue;
+                }
+                if (domElement.tagName() == "iec60870")
+                {
+                    if (Board::GetInstance().interfaceType() == Board::Ethernet)
+                        m_settings->ifaceSettings.settings = parseIec104(domElement);
+
+                    domNode = domNode.nextSibling();
+                    continue;
+                }
+                //                else
+                //                {
+                //                    qDebug() << "TagName: " << domElement.tagName() << "\tText: " << /*qPrintable*/
+                //                    (domElement.text());
+                //                }
+            }
+        }
+        traverseNode(domNode);
+        domNode = domNode.nextSibling();
+    }
+}
+
+void Module::loadSettings()
+{
+    const auto moduleName = Board::GetInstance().moduleName();
+    auto directory = QDir::current();
+    directory.cdUp();
+    // directory.cdUp();
+    directory.cd("settings");
+    qDebug() << directory;
+    auto allFiles = directory.entryList(QDir::Files);
+    auto xmlFiles = allFiles.filter(".xml");
+    // xmlFiles.contains()
+    qDebug() << xmlFiles;
+    QDomDocument domDoc;
+    QFile file;
+    for (const auto &xmlFile : xmlFiles)
+    {
+        if (xmlFile.contains(moduleName, Qt::CaseInsensitive))
+            file.setFileName(directory.filePath(xmlFile));
+    }
+    if (file.open(QIODevice::ReadOnly))
+    {
+        if (domDoc.setContent(&file))
+        {
+            m_settings = std::unique_ptr<ModuleSettings>(new ModuleSettings);
+            QDomElement domElement = domDoc.documentElement();
+            traverseNode(domElement);
+        }
+        file.close();
+    }
+    else
+        qDebug() << Error::FileOpenError << file.fileName();
 }

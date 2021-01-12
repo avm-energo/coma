@@ -1,4 +1,6 @@
-#include "../../interfaces/modbussettings.h"
+//#include "../../interfaces/modbussettings.h"
+//#include "../../interfaces/protocomsettings.h"
+#include "../../interfaces/interfacesettings.h"
 
 #include <QCoreApplication>
 #include <QDebug>
@@ -41,12 +43,36 @@ void parseModbus(QDomElement domElement)
         //    qDebug() << test;
         qDebug() << group.attribute("id", "") << group.text();
     }
+
     qDebug() << settings.groups().count();
 }
 
-bool parseModule(const QString &typea, const QString &typeb)
+void parseProtocom(QDomElement domElement)
 {
-    qDebug() << typea << typeb;
+    qDebug() << domElement.text();
+    qDebug() << "TagName: " << domElement.tagName();
+    const auto &nodes = domElement.childNodes();
+    Q_ASSERT(!nodes.isEmpty());
+    int i = 0;
+    InterfaceInfo<Proto::ProtocomGroup> settings;
+    while (i != nodes.count())
+    {
+        const auto &group = nodes.item(i++).toElement();
+        Proto::ProtocomGroup test(group);
+        settings.addGroup(test);
+        //    qDebug() << test;
+        qDebug() << group.attribute("id", "") << group.text();
+    }
+
+    qDebug() << settings.groups().count();
+}
+
+bool isCorrectModule(const QString &typea, const QString &typeb)
+{
+    quint16 mtypea = typea.toUInt(nullptr, 16);
+    quint16 mtypeb = typeb.toUInt(nullptr, 16);
+    qDebug() << typea << mtypea;
+    qDebug() << typea << mtypeb;
     return true;
 }
 void traverseNode(const QDomNode &node)
@@ -78,7 +104,7 @@ void traverseNode(const QDomNode &node)
                 }
                 if (domElement.tagName() == "module")
                 {
-                    if (!parseModule(domElement.attribute("mtypea", ""), domElement.attribute("mtypeb", "")))
+                    if (!isCorrectModule(domElement.attribute("mtypea", ""), domElement.attribute("mtypeb", "")))
                     {
                         domNode = domNode.nextSibling();
                         continue;
@@ -89,7 +115,16 @@ void traverseNode(const QDomNode &node)
                 if (domElement.tagName() == "modbus")
                 {
 
-                    parseModbus(domElement);
+                    // parseModbus(domElement);
+
+                    domNode = domNode.nextSibling();
+                    continue;
+                    // domNode = domNode.nextSibling();
+                }
+                if (domElement.tagName() == "protocom")
+                {
+
+                    parseProtocom(domElement);
 
                     domNode = domNode.nextSibling();
                     continue;

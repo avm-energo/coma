@@ -1,5 +1,5 @@
 #pragma once
-
+#include <QObject>
 #define STARTUPGROUP 2
 #define BSIGROUP 1
 #define TIMEGROUP 15
@@ -29,6 +29,15 @@
 #define I104_RCVSMSIZE 0x01
 #define I104_RCVWRONG 0x02
 
+#define SECTIONSIZE 2048
+#define SEGMENTSIZE 230
+#define OFFSET 13
+#define FHSIZE 16
+#define SYSTEM_JOUR_SIZE 65568
+
+namespace Commands104
+{
+Q_NAMESPACE
 // определения типа данных
 // TYPE IDENTIFICATION
 /**
@@ -198,7 +207,7 @@ enum TypeId : quint8
     F_DR_TA_1 = 126,
     F_SC_NB_1 = 127
 };
-
+Q_ENUM_NS(Commands104::TypeId)
 // CAUSE OF TRANSMISSION: define causes
 
 //#define COT_PERIODIC 1
@@ -216,14 +225,6 @@ enum TypeId : quint8
 //#define COT_FILETRANSFER 13
 //#define COT_INTERROGATION 20
 
-#define SECTIONSIZE 2048
-#define SEGMENTSIZE 230
-#define OFFSET 13
-#define FHSIZE 16
-#define SYSTEM_JOUR_SIZE 65568
-
-namespace Commands104
-{
 enum CommandRegisters
 {
     SetNewConfigurationReg = 801,

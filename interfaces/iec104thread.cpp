@@ -10,6 +10,8 @@
 QMutex IEC104Thread::s_ParseReadMutex;
 QMutex IEC104Thread::s_ParseWriteMutex;
 
+using namespace Commands104;
+
 IEC104Thread::IEC104Thread(LogClass *log, QObject *parent) : QObject(parent)
 {
     m_isFirstParse = true;

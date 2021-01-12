@@ -9,7 +9,6 @@ CONFIG -= app_bundle
 
 SOURCES += \
         ../../gen/helper.cpp \
-        ../../interfaces/modbussettings.cpp \
         ../../interfaces/usbhidsettings.cpp \
         main.cpp
 
@@ -23,7 +22,6 @@ HEADERS += \
     ../../interfaces/iec104private.h \
     ../../interfaces/interfacesettings.h \
     ../../interfaces/modbusprivate.h \
-    ../../interfaces/modbussettings.h \
     ../../interfaces/protocomprivate.h \
     ../../interfaces/usbhidportinfo.h \
     ../../interfaces/usbhidsettings.h
