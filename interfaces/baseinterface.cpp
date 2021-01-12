@@ -1,5 +1,6 @@
 #include "baseinterface.h"
 
+#include "../gen/board.h"
 #include "../gen/datamanager.h"
 #include "../gen/s2.h"
 #include "../gen/stdfunc.h"
@@ -18,6 +19,16 @@ BaseInterface::BaseInterface(QObject *parent) : QObject(parent), m_working(false
     // timeoutTimer = new QTimer;
     timeoutTimer->setInterval(MAINTIMEOUT);
     connect(timeoutTimer, &QTimer::timeout, this, &BaseInterface::timeout);
+
+    //    QMetaObject::Connection *const connection = new QMetaObject::Connection;
+    //    *connection = connect(
+    //        &Board::GetInstance(), qOverload<>(&Board::typeChanged), this,
+    //        [=]() {
+    //            QObject::disconnect(*connection);
+    //            delete connection;
+    //            loadSettings();
+    //        },
+    //        Qt::DirectConnection);
 }
 
 BaseInterface::~BaseInterface()
@@ -184,6 +195,16 @@ Error::Msg BaseInterface::readFileSync(quint32 filenum, QByteArray &ba)
         return Error::Msg::Timeout;
     ba = m_byteArrayResult;
     return Error::Msg::NoError;
+}
+
+InterfaceSettings BaseInterface::settings() const
+{
+    return m_settings;
+}
+
+void BaseInterface::setSettings(const InterfaceSettings &settings)
+{
+    m_settings = settings;
 }
 
 void BaseInterface::resultReady(const DataTypes::BlockStruct &result)

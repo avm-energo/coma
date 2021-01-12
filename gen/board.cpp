@@ -158,6 +158,7 @@ void Board::update(const DataTypes::BitStringStruct &bs)
         {
             m_updateType = false;
             emit typeChanged(type());
+            emit typeChanged();
         }
     }
 

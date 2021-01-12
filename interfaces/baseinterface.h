@@ -1,9 +1,9 @@
 #ifndef BASEINTERFACE_H
 #define BASEINTERFACE_H
-
 #include "../gen/datatypes.h"
 #include "../gen/error.h"
 #include "../gen/logclass.h"
+#include "interfacesettings.h"
 
 #include <QTimer>
 #include <memory>
@@ -81,6 +81,18 @@ public:
     Error::Msg readS2FileSync(quint32 filenum);
     Error::Msg readFileSync(quint32 filenum, QByteArray &ba);
 
+    InterfaceSettings settings() const;
+    template <class T> T setings() const
+    {
+        Q_ASSERT(std::holds_alternative<T>(m_settings.settings));
+        return std::get<T>(m_settings.settings);
+    }
+    void setSettings(const InterfaceSettings &settings);
+    template <class T> void setSettings(const T &settings)
+    {
+        m_settings.settings = settings;
+    }
+
 signals:
     void reconnect();
     void finish();
@@ -91,6 +103,8 @@ private:
     bool m_responseResult;
     static InterfacePointer m_iface;
     QTimer *timeoutTimer;
+
+    InterfaceSettings m_settings;
 public slots:
     virtual void stop() = 0;
 
