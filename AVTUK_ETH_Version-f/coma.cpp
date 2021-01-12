@@ -235,8 +235,8 @@ QWidget *Coma::Least()
     lyout->addWidget(line);
 
     inlyout = new QHBoxLayout;
-    inlyout->addWidget(WDFunc::NewLBLT2(this, "Обмен"));
-    inlyout->addWidget(WDFunc::NewLBLT2(this, "", "prb1lbl"));
+    inlyout->addWidget(WDFunc::NewLBL2(this, "Обмен"));
+    inlyout->addWidget(WDFunc::NewLBL2(this, "", "prb1lbl"));
 
     QProgressBar *prb = new QProgressBar;
     prb->setObjectName("prb1prb");

@@ -42,7 +42,7 @@ void TimeDialog::SetupUI()
     mainLayout->addLayout(line);
 
     auto *sysTimeText = WDFunc::NewLBL2(time, "Дата и время ПК:");
-    auto *sysTimeVal = WDFunc::NewLBLT2(time, QDateTime::currentDateTimeUtc().toString("yyyy-MM-ddTHH:mm:ss"));
+    auto *sysTimeVal = WDFunc::NewLBL2(time, QDateTime::currentDateTimeUtc().toString("yyyy-MM-ddTHH:mm:ss"));
     connect(Timer, &QTimer::timeout, [=] {
         QString tmps;
         if (timeZone() == 0)

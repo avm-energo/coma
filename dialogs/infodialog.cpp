@@ -44,7 +44,7 @@ void InfoDialog::SetupUI()
     for (int i = 0; i < dialogPage.size(); ++i)
     {
         slyout->addWidget(WDFunc::NewLBL2(this, dialogPage.at(i).second), i, 0, 1, 1, Qt::AlignRight);
-        slyout->addWidget(WDFunc::NewLBLT2(this, "", dialogPage.at(i).first), i, 1, 1, 1);
+        slyout->addWidget(WDFunc::NewLBL2(this, "", dialogPage.at(i).first), i, 1, 1, 1);
     }
 
     slyout->setColumnStretch(1, 1);

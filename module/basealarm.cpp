@@ -48,7 +48,7 @@ void BaseAlarm::setupUI(const QStringList &events)
         QHBoxLayout *hlyout = new QHBoxLayout;
         int number = i;
         hlyout->addWidget(WDFunc::NewLBL2(this, "", QString::number(number)));
-        hlyout->addWidget(WDFunc::NewLBLT2(this, events.at(j++)), 1);
+        hlyout->addWidget(WDFunc::NewLBL2(this, events.at(j++)), 1);
         vlayout->addLayout(hlyout);
     }
     lyout->addLayout(vlayout);
