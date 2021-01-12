@@ -4,13 +4,13 @@
 #include "../gen/error.h"
 #include "../gen/files.h"
 #include "../gen/stdfunc.h"
-#include "../widgets/wd_func.h"
 #include "../tunesteps.h"
+#include "../widgets/wd_func.h"
 
 TuneKIVDialog::TuneKIVDialog(ConfigKIV *ckiv, QWidget *parent) : GeneralTuneDialog(parent)
 {
     m_calibrSteps = 6;
-//    TKIV = tkiv;
+    //    TKIV = tkiv;
     CKIV = ckiv;
     // ReportModel = new QStandardItemModel;
     // ViewModel = new QStandardItemModel;
@@ -45,7 +45,7 @@ void TuneKIVDialog::SetupUI()
     lyout->addWidget(WDFunc::NewHexagonPB(
         this, "tn1",
         [this]() {
-//            TuneKIVCheck *check = new TuneKIVCheck(TuneKIV::TS_CHECKING, TKIV);
+            //            TuneKIVCheck *check = new TuneKIVCheck(TuneKIV::TS_CHECKING, TKIV);
             TKIVCheckDialog->show();
         },
         "images/tn1.svg", "Проверка правильности измерения входных сигналов"));
@@ -62,7 +62,7 @@ void TuneKIVDialog::SetupUI()
             //            TuneKIVADC *tkadc = new TuneKIVADC(TuneKIV::TS_ADC, CKIV, TKIV);
             TKIVADCDialog->show();
         },
-        "images/tn3.svg", "Регулировка канала Pt100"));
+        "images/tn3.svg", "Регулировка каналов тока и напряжения"));
     lyout->addWidget(WDFunc::NewHexagonPB(
         this, "tn4",
         [this]() {
@@ -80,23 +80,6 @@ void TuneKIVDialog::SetupUI()
     lyout->addWidget(WDFunc::NewHexagonPB(
         this, "tnprotocol", [this]() { GenerateReport(); }, "images/tnprotocol.svg",
         "Генерация протокола регулировки"));
-    //    addLayout(newTunePBLayout("1. Проверка правильности измерения входных сигналов", [this]() {
-    //        TuneKIVCheck *check = new TuneKIVCheck(TuneKIV::TS_CHECKING, TKIV);
-    //        check->show();
-    //    }));
-    //    lyout->addLayout(newTunePBLayout("2. Основная регулировка", [this]() {
-    //        TuneKIVMain *tkmain = new TuneKIVMain(TuneKIV::TS_MAINTUNING, CKIV, TKIV);
-    //        tkmain->show();
-    //    }));
-    //    lyout->addLayout(newTunePBLayout("3. Настройка температурной коррекции +60 °С", [this]() {
-    //        TuneKIVTemp60 *tk60 = new TuneKIVTemp60(TuneKIV::TS_60TUNING, CKIV, TKIV);
-    //        tk60->show();
-    //    }));
-    //    lyout->addLayout(newTunePBLayout("4. Настройка температурной коррекции -20 °С", [this]() {
-    //        TuneKIVTemp60 *tk_20 = new TuneKIVTemp60(TuneKIV::TS_20TUNING, CKIV, TKIV);
-    //        tk_20->show();
-    //    }));
-    //    lyout->addLayout(newTunePBLayout("5. Генерация протокола регулировки", [this]() { close(); }));
     lyout->addStretch(100);
     hlyout->addLayout(lyout);
     Bac *bac = new Bac;

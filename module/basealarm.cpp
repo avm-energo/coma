@@ -32,14 +32,14 @@ BaseAlarm::BaseAlarm(QWidget *parent) : QWidget(parent), m_actualAlarmFlags(0x00
 void BaseAlarm::setupUI(const QStringList &events)
 {
     // m_realAlarmSize = events.size();
-    quint16 flagsCount = m_alarmFlags.count();
-    quint16 eventsCount = events.size();
+    qint64 flagsCount = m_alarmFlags.count();
+    qint64 eventsCount = events.size();
     Q_ASSERT(flagsCount == eventsCount);
 
     QVBoxLayout *lyout = new QVBoxLayout;
     QVBoxLayout *vlayout = new QVBoxLayout;
 
-    int i, j;
+    unsigned int i, j;
     for (i = 0, j = 0; i < m_alarmFlags.size(); ++i)
     {
         const bool flag = m_alarmFlags.test(i);
@@ -48,7 +48,7 @@ void BaseAlarm::setupUI(const QStringList &events)
         QHBoxLayout *hlyout = new QHBoxLayout;
         int number = i;
         hlyout->addWidget(WDFunc::NewLBL2(this, "", QString::number(number)));
-        hlyout->addWidget(WDFunc::NewLBLT2(this, events.at(j++)), 1);
+        hlyout->addWidget(WDFunc::NewLBL2(this, events.at(j++)), 1);
         vlayout->addLayout(hlyout);
     }
     lyout->addLayout(vlayout);

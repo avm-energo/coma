@@ -11,9 +11,6 @@
 TuneKIVADC::TuneKIVADC(int tuneStep, ConfigKIV *ckiv, QWidget *parent) : AbstractTuneDialog(tuneStep, parent)
 {
     CKIV = ckiv;
-    //    TKIV = kiv;
-    //    m_tuneStep = 1;
-    //    SetBac(m_bac, 1, sizeof(m_bac));
     m_bac = new Bac;
     m_bda = new Bda;
     m_bdain = new BdaIn;
@@ -21,8 +18,7 @@ TuneKIVADC::TuneKIVADC(int tuneStep, ConfigKIV *ckiv, QWidget *parent) : Abstrac
     SetBac(m_bac);
     m_BacWidgetIndex = addWidgetToTabWidget(m_bac->widget(), "Настроечные параметры");
     m_BdainWidgetIndex = addWidgetToTabWidget(m_bdain->widget(), "Текущие данные");
-    addWidgetToTabWidget(m_bd0->widget(), "Общие данные");
-    //    SetupUI();
+    m_Bd0WidgetIndex = addWidgetToTabWidget(m_bd0->widget(), "Общие данные");
     m_isEnergoMonitorDialogCreated = false;
     SetupUI();
 }
@@ -30,24 +26,25 @@ TuneKIVADC::TuneKIVADC(int tuneStep, ConfigKIV *ckiv, QWidget *parent) : Abstrac
 void TuneKIVADC::setMessages()
 {
     m_messages.append("1. Ввод пароля...");
-    m_messages.append("2. Отображение предупреждения...");
-    m_messages.append("3. Запрос настроечных параметров...");
-    m_messages.append("4. Задание режима конфигурирования модуля...");
-    m_messages.append("5. Регулировка для Кацп = 1...");
-    m_messages.append("6. Отображение диалога задания входных данных...");
-    m_messages.append("7. Регулировка для Кацп = 2...");
-    m_messages.append("8. Отображение диалога задания входных данных...");
-    m_messages.append("9. Регулировка для Кацп = 4...");
-    m_messages.append("10. Отображение диалога задания входных данных...");
-    m_messages.append("11. Регулировка для Кацп = 8...");
-    m_messages.append("12. Отображение диалога задания входных данных...");
-    m_messages.append("13. Регулировка для Кацп = 16...");
-    m_messages.append("14. Отображение диалога задания входных данных...");
-    m_messages.append("15. Регулировка для Кацп = 32...");
-    m_messages.append("16. Отображение диалога задания входных данных...");
-    m_messages.append("17. Регулировка канала Tmk0...");
-    m_messages.append("18. Запись настроечных коэффициентов и восстановление конфигурации...");
-    m_messages.append("19. Проверка регулировки...");
+    m_messages.append("2. Сохранение текущей конфигурации...");
+    m_messages.append("3. Отображение предупреждения...");
+    m_messages.append("4. Запрос настроечных параметров...");
+    m_messages.append("5. Задание режима конфигурирования модуля...");
+    m_messages.append("6. Регулировка для Кацп = 1...");
+    m_messages.append("7. Отображение диалога задания входных данных...");
+    m_messages.append("8. Регулировка для Кацп = 2...");
+    m_messages.append("9. Отображение диалога задания входных данных...");
+    m_messages.append("10. Регулировка для Кацп = 4...");
+    m_messages.append("11. Отображение диалога задания входных данных...");
+    m_messages.append("12. Регулировка для Кацп = 8...");
+    m_messages.append("13. Отображение диалога задания входных данных...");
+    m_messages.append("14. Регулировка для Кацп = 16...");
+    m_messages.append("15. Отображение диалога задания входных данных...");
+    m_messages.append("16. Регулировка для Кацп = 32...");
+    m_messages.append("17. Отображение диалога задания входных данных...");
+    m_messages.append("18. Регулировка канала Tmk0...");
+    m_messages.append("19. Запись настроечных коэффициентов и восстановление конфигурации...");
+    m_messages.append("20. Проверка регулировки...");
 }
 
 void TuneKIVADC::setTuneFunctions()
@@ -55,6 +52,8 @@ void TuneKIVADC::setTuneFunctions()
     int count = 0;
     m_tuneFunctions[m_messages.at(count++)]
         = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&AbstractTuneDialog::CheckPassword);
+    m_tuneFunctions[m_messages.at(count++)]
+        = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&AbstractTuneDialog::saveWorkConfig);
     Error::Msg (AbstractTuneDialog::*func)()
         = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVADC::showPreWarning);
     m_tuneFunctions[m_messages.at(count++)] = func;
@@ -93,34 +92,6 @@ void TuneKIVADC::setTuneFunctions()
     func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVADC::CheckTune);
     m_tuneFunctions[m_messages.at(count++)] = func;
 }
-
-// void TuneKIVADC::FillBac(int bacnum)
-//{
-//    TKIV->updateBacWidget();
-//    Q_UNUSED(bacnum)
-//}
-
-// void TuneKIVADC::FillBackBac(int bacnum)
-//{
-//    TKIV->updateFromBacWidget();
-//    Q_UNUSED(bacnum)
-//}
-
-// QWidget *TuneKIVADC::MainUI()
-//{
-//    QWidget *w = new QWidget;
-//    QVBoxLayout *lyout = new QVBoxLayout;
-//    QTabWidget *tw = new QTabWidget;
-//    tw->setObjectName("tunetw");
-//    QString ConfTWss = "QTabBar::tab:selected {background-color: " + QString(Colors::Tab) + ";}";
-//    tw->tabBar()->setStyleSheet(ConfTWss);
-//    tw->addTab(m_bac->widget(), "Настроечные параметры");
-//    tw->addTab(TKIV->BdaWidget(), "Текущие данные");
-//    tw->addTab(m_bd0->widget(), "Общие данные");
-//    lyout->addWidget(tw);
-//    w->setLayout(lyout);
-//    return w;
-//}
 
 Error::Msg TuneKIVADC::showPreWarning()
 {
@@ -166,31 +137,29 @@ Error::Msg TuneKIVADC::ADCCoef(int coef)
         return Error::Msg::GeneralError;
     showTWTab(m_BdainWidgetIndex);
     emit setProgressSize(StdFunc::tuneRequestCount());
-    //    startWait();
-    int i = 0;
     for (int i = 0; i < 6; ++i)
     {
         m_bdainBlockData.IUefNat_filt[i] = 0.0;
         m_bdainBlockData.phi_next_f[i] = 0.0;
     }
-    while ((!StdFunc::isCancelled()) && (i < StdFunc::tuneRequestCount()))
+    m_bdainBlockData.Frequency = 0.0;
+    int count = 0;
+    while ((!StdFunc::isCancelled()) && (count < StdFunc::tuneRequestCount()))
     {
         m_bdain->readAndUpdate();
-        //        BaseInterface::iface()->reqBlockSync(
-        //            1, DataTypes::DataBlockTypes::BdBlock, &TKIV->m_Bda_in, sizeof(TKIV->m_Bda_in));
         if (checkBdaIn(currentMap[coef]))
         {
-            //            TKIV->updateBdaInWidget();
             for (int j = 0; j < 6; ++j)
             {
                 m_bdainBlockData.IUefNat_filt[j] += m_bdain->data()->IUefNat_filt[j];
                 m_bdainBlockData.phi_next_f[j] += m_bdain->data()->phi_next_f[j];
             }
+            m_bdainBlockData.Frequency += m_bdain->data()->Frequency;
         }
         else
             return Error::Msg::GeneralError;
-        ++i;
-        emit setProgressCount(i);
+        ++count;
+        emit setProgressCount(count);
         StdFunc::Wait(500);
     }
     for (int i = 0; i < 6; ++i)
@@ -198,10 +167,10 @@ Error::Msg TuneKIVADC::ADCCoef(int coef)
         m_bdainBlockData.IUefNat_filt[i] /= StdFunc::tuneRequestCount();
         m_bdainBlockData.phi_next_f[i] /= StdFunc::tuneRequestCount();
     }
+    m_bdainBlockData.Frequency /= StdFunc::tuneRequestCount();
     if (StdFunc::isCancelled())
         return Error::Msg::GeneralError;
     return Error::Msg::NoError;
-    //    stopWait();
 }
 
 Error::Msg TuneKIVADC::ADCCoef1()
@@ -237,18 +206,12 @@ Error::Msg TuneKIVADC::ADCCoef32()
 Error::Msg TuneKIVADC::Tmk0()
 {
     emit setProgressSize(5);
-    //    startWait();
     int i = 0;
     double tmk0 = 0;
+    showTWTab(m_Bd0WidgetIndex);
     while ((!StdFunc::isCancelled()) && (i < 5))
     {
-        //        BaseInterface::iface()->reqBlockSync(0, DataTypes::DataBlockTypes::BdBlock, &m_bd0,
-        //        sizeof(m_bd0));
-        //        BaseInterface::iface()->reqBlockSync(
-        //            0, DataTypes::DataBlockTypes::BdBlock, m_bd0->data(), sizeof(Bd0::BlockData));
-        //        m_bd0->updateWidget();
         m_bd0->readAndUpdate();
-        //        TKIV->updateBd0Widget();
         tmk0 += m_bd0->data()->Tmk;
         ++i;
         emit setProgressCount(i);
@@ -262,6 +225,7 @@ Error::Msg TuneKIVADC::Tmk0()
 
 Error::Msg TuneKIVADC::SendBac()
 {
+    m_bac->updateWidget();
     if (!writeTuneCoefs())
         return Error::Msg::GeneralError;
     if (!loadWorkConfig())
@@ -271,14 +235,11 @@ Error::Msg TuneKIVADC::SendBac()
 
 Error::Msg TuneKIVADC::CheckTune()
 {
-    QMessageBox::information(
-        this, "Информация", "Для завершения настройки нажмите Enter\nДля отказа от настройки нажмите Esc");
+    QMessageBox::information(this, "Информация",
+        "После закрытия данного сообщения для завершения настройки нажмите Enter\nДля отказа от настройки нажмите Esc");
     m_finished = false;
     while ((!StdFunc::isCancelled()) && !m_finished)
     {
-        //        BaseInterface::iface()->reqBlockSync(
-        //            1, DataTypes::DataBlockTypes::BdBlock, &TKIV->m_Bda_in, sizeof(TKIV->m_Bda_in));
-        //        TKIV->updateBdaInWidget();
         m_bdain->readAndUpdate();
         StdFunc::Wait(500);
     }
@@ -312,7 +273,7 @@ Error::Msg TuneKIVADC::showRetomDialog(int coef)
     lyout->addWidget(WDFunc::NewLBL2(this,
         "Задайте на РЕТОМ-51 или имитаторе АВМ-КИВ трёхфазный режим токов и напряжений (Uabc, Iabc)"
         "Угол между токами и напряжениями: 89.9 град. (tg 2 % в имитаторе),\n"
-        "Значения напряжений: 57.5 В, токов: "
+        "Значения напряжений: 57.75 В, токов: "
             + QString::number(retomCoefMap[coef].i, 'f', 2) + " мА"));
     lyout->addWidget(WDFunc::NewLBL2(this,
         "Значения тока и напряжения контролируются по показаниям прибора Энергомонитор.\n"
@@ -320,7 +281,7 @@ Error::Msg TuneKIVADC::showRetomDialog(int coef)
             + QString::number(retomCoefMap[coef].range, 'f', 2)
             + " А.\n"
               "Коэффициент передачи РЕТ-10 для режима с имитатором: "
-            + retomCoefMap[coef].ret10c + "(для РЕТОМ-51 коэффициент 30:3)."));
+            + retomCoefMap[coef].ret10c + " (для РЕТОМ-51 коэффициент 30:3)."));
     QPushButton *pb = new QPushButton("Готово");
     connect(pb, SIGNAL(clicked()), dlg, SLOT(close()));
     lyout->addWidget(pb);
@@ -333,28 +294,21 @@ Error::Msg TuneKIVADC::showRetomDialog(int coef)
     return Error::Msg::NoError;
 }
 
-// void TuneKIVADC::showTWTab(int num)
-//{
-//    QTabWidget *tw = this->findChild<QTabWidget *>("tunetw");
-//    if (tw != nullptr)
-//        tw->setCurrentIndex(num);
-//}
-
 bool TuneKIVADC::checkBdaIn(int current)
 {
     for (int i = 0; i < 3; ++i)
     {
-        if (StdFunc::floatIsWithinLimits(this, m_bdain->data()->IUefNat_filt[i], 60.0, 3.0))
+        if (StdFunc::floatIsWithinLimits(this, m_bdain->data()->IUefNat_filt[i], 57.75, 3.0))
         {
-            if (StdFunc::floatIsWithinLimits(this, m_bdain->data()->IUeff_filtered[i], 60.0, 3.0))
+            if (StdFunc::floatIsWithinLimits(this, m_bdain->data()->IUeff_filtered[i], 57.75, 3.0))
             {
-                if (StdFunc::floatIsWithinLimits(this, m_bdain->data()->IUefNat_filt[i + 3], current, 10))
+                if (StdFunc::floatIsWithinLimits(this, m_bdain->data()->IUefNat_filt[i + 3], current, 50))
                 {
-                    if (StdFunc::floatIsWithinLimits(this, m_bdain->data()->IUeff_filtered[i + 3], current, 10))
+                    if (StdFunc::floatIsWithinLimits(this, m_bdain->data()->IUeff_filtered[i + 3], current, 50))
                     {
                         if (StdFunc::floatIsWithinLimits(this, m_bdain->data()->phi_next_f[i], 0, 1))
                         {
-                            if (StdFunc::floatIsWithinLimits(this, m_bdain->data()->phi_next_f[i + 3], 89, 1))
+                            if (StdFunc::floatIsWithinLimits(this, m_bdain->data()->phi_next_f[i + 3], 89, 3))
                                 continue;
                         }
                     }
@@ -370,100 +324,39 @@ bool TuneKIVADC::checkBdaIn(int current)
 
 Error::Msg TuneKIVADC::showEnergomonitorInputDialog()
 {
+    bool enabled = (m_curTuneStep > 1) ? false : true;
     if (!m_isEnergoMonitorDialogCreated)
     {
         QDialog *dlg = new QDialog(this);
-        // QVBoxLayout *lyout = new QVBoxLayout;
-        //        dlg->setAttribute(Qt::WA_DeleteOnClose);
         dlg->setObjectName("energomonitordlg");
         QVBoxLayout *vlyout = new QVBoxLayout;
         vlyout->addWidget(WDFunc::NewLBL2(this, "Ввод значений сигналов c Энергомонитора"));
+        vlyout->addWidget(WDFunc::NewLBLAndLE(this, "Uэт, В", "ValuetuneU", enabled));
+        vlyout->addWidget(WDFunc::NewLBLAndLE(this, "Iэт, мА", "ValuetuneI", true));
+        vlyout->addWidget(WDFunc::NewLBLAndLE(this, "Yэт, град", "ValuetuneY", enabled));
+        vlyout->addWidget(WDFunc::NewLBLAndLE(this, "fэт, Гц:", "ValuetuneF", enabled));
 
-        vlyout->addWidget(WDFunc::NewLBLAndLE(this, "Uэт", "ValuetuneU", true));
-        vlyout->addWidget(WDFunc::NewLBLAndLE(this, "Iэт", "ValuetuneI", true));
-        vlyout->addWidget(WDFunc::NewLBLAndLE(this, "Yэт", "ValuetuneY", true));
-
-        //        for (i = 0; i < 3; i++)
-        //        {
-        //            lbl = new QLabel("Iэт[" + QString::number(i) + "]:");
-        //            glyout->addWidget(lbl, 3, i, 1, 1);
-        //            ledit = new QLineEdit();
-        //            ledit->setObjectName("ValuetuneI" + QString::number(i));
-        //            glyout->addWidget(ledit, 4, i, 1, 1);
-        //        }
-
-        //        for (i = 0; i < 6; i++)
-        //        {
-        //            lbl = new QLabel("φэт[" + QString::number(i) + "]:");
-        //            glyout->addWidget(lbl, 5, i, 1, 1);
-        //            ledit = new QLineEdit();
-        //            ledit->setObjectName("ValuetunePhi" + QString::number(i));
-        //            glyout->addWidget(ledit, 6, i, 1, 1);
-        //        }
-
-        vlyout->addWidget(WDFunc::NewLBLAndLE(this, "fэт:", "ValuetuneF", true));
-        //        glyout->addWidget(WDFunc::NewLE(this, "ValuetuneU" + QString::number(i)), 2, i, 1, 1);
-        //        lbl = new QLabel("fэт:");
-        //        glyout->addWidget(lbl, 7, 0, 1, 1);
-        //        ledit = new QLineEdit();
-        //        ledit->setObjectName("ValuetuneF");
-        //        glyout->addWidget(ledit, 8, 0, 1, 1);
-
-        QPushButton *pb = new QPushButton("Настроить");
+        QPushButton *pb = new QPushButton("Продолжить");
         connect(pb, SIGNAL(clicked()), this, SLOT(CalcTuneCoefs()));
         vlyout->addWidget(pb);
-        //     pb = new QPushButton("Отмена");
-        //     connect(pb,SIGNAL(clicked()),this,SLOT(CancelTune()));
-        //     connect(pb,SIGNAL(clicked()),this,SLOT(close()));
-        //     connect(pb,SIGNAL(clicked()),this,SLOT(CloseAsk()));
-        //     glyout->addWidget(pb,9,3,1,3);
 
         dlg->setLayout(vlyout);
         m_isEnergoMonitorDialogCreated = true;
         dlg->exec();
-
-        //    lyout->addWidget(pb);
-        //    dlg->setLayout(lyout);
-        //    dlg->exec();
     }
     else
     {
         QDialog *dlg = this->findChild<QDialog *>("energomonitordlg");
         if (dlg != nullptr)
+        {
+            WDFunc::SetEnabled(this, "ValuetuneU", false);
+            WDFunc::SetEnabled(this, "ValuetuneI", false);
+            WDFunc::SetEnabled(this, "ValuetuneY", false);
             dlg->exec();
-    }
-    bool enabled = (m_curTuneStep > 1) ? false : true;
-    for (int i = 0; i < 3; ++i)
-    {
-        WDFunc::SetVisible(this, "ValuetuneU" + QString::number(i), enabled);
-        WDFunc::SetVisible(this, "ValuetuneY" + QString::number(i), enabled);
+        }
     }
     return Error::Msg::NoError;
 }
-
-// void TuneKIVADC::saveIntermediateResults()
-//{
-//    struct tunedescrstruct
-//    {
-//        QString parametername;
-//        float *parameter;
-//    };
-
-//    QVector<tunedescrstruct> tuneDescrVector;
-//    for (int i = 0; i < 6; ++i)
-//        tuneDescrVector.append({ "u_p" + QString::number(i), &m_bdain.IUefNat_filt[i] });
-//    for (int i = 0; i < 3; ++i)
-//        tuneDescrVector.append({ "y_p" + QString::number(i), &m_bdain.phi_next_f[i] });
-//    tuneDescrVector.append({ "tmk_p", &m_midTuneStruct.tmk });
-//    tuneDescrVector.append({ "uet_p", &m_midTuneStruct.uet });
-//    tuneDescrVector.append({ "iet_p", &m_midTuneStruct.iet });
-//    tuneDescrVector.append({ "yet_p", &m_midTuneStruct.yet });
-//    QString cpuserialnum = Board::GetInstance().UID();
-//    QSettings storedcalibrations(StdFunc::GetSystemHomeDir() + "calibr.ini", QSettings::IniFormat);
-//    foreach (tunedescrstruct item, tuneDescrVector)
-//        storedcalibrations.setValue(cpuserialnum + "/" + item.parametername, *item.parameter);
-//    loadWorkConfig();
-//}
 
 void TuneKIVADC::CalcTuneCoefs()
 {
@@ -494,7 +387,8 @@ void TuneKIVADC::CalcTuneCoefs()
     {
         assert(kmimap.contains(m_curTuneStep));
         for (int i = 0; i < 3; ++i)
-            *kmimap.value(m_curTuneStep) = *kmimap.value(m_curTuneStep) * iet / m_bdainBlockData.IUefNat_filt[i + 3];
+            *(kmimap.value(m_curTuneStep) + i)
+                = *(kmimap.value(m_curTuneStep) + i) * iet / m_bdainBlockData.IUefNat_filt[i + 3];
         break;
     }
     }
@@ -502,8 +396,3 @@ void TuneKIVADC::CalcTuneCoefs()
     if (dlg != nullptr)
         dlg->close();
 }
-
-// void TuneKIVADC::setDefCoefs()
-//{
-//    m_bac->setDefBlockAndUpdate();
-//}

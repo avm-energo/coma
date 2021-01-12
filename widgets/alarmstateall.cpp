@@ -75,7 +75,7 @@ void AlarmStateAll::setupUI(const QStringList &events)
         // QPixmap circle = WDFunc::NewCircle(Qt::green, circleRadius);
         // hlyout->addWidget(WDFunc::NewLBL(this, "", "", QString::number(i), &circle));
         hlyout->addWidget(WDFunc::NewLBL2(this, "", QString::number(i)));
-        hlyout->addWidget(WDFunc::NewLBLT2(this, events.at(i)), 1);
+        hlyout->addWidget(WDFunc::NewLBL2(this, events.at(i)), 1);
         vlayout->addLayout(hlyout);
     }
     //  lyout->addLayout(vlayout);

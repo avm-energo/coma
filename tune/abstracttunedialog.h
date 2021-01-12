@@ -135,10 +135,11 @@ signals:
     //    void dataready(QByteArray);
     //    void SecondsRemaining(quint32);
     void Finished();
+    void generalEventReceived();
     void LoadDefConf();
     //    void stopRead(int);
-    void setProgressSize(quint64 size);
-    void setProgressCount(quint64 count);
+    void setProgressSize(int size);
+    void setProgressCount(int count);
 
 public slots:
     void showTWTab(int index);
@@ -160,6 +161,8 @@ public slots:
 
 private slots:
     void startTune();
+    void setProgressSizeSlot(int size);
+    void setProgressCountSlot(int count);
     //    void closeThis();
     //    void PasswordCheck(QString psw);
     //    virtual int ReadAnalogMeasurements() = 0;

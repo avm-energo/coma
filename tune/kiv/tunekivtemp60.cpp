@@ -3,19 +3,18 @@
 #include "../gen/board.h"
 #include "../gen/colors.h"
 #include "../gen/stdfunc.h"
+#include "../tunesteps.h"
 #include "../widgets/waitwidget.h"
 #include "../widgets/wd_func.h"
-#include "../tunesteps.h"
 
 #include <QEventLoop>
 #include <QMessageBox>
 #include <QVBoxLayout>
 
-TuneKIVTemp60::TuneKIVTemp60(int tuneStep, ConfigKIV *ckiv, QWidget *parent)
-    : AbstractTuneDialog(tuneStep, parent)
+TuneKIVTemp60::TuneKIVTemp60(int tuneStep, ConfigKIV *ckiv, QWidget *parent) : AbstractTuneDialog(tuneStep, parent)
 {
     //    m_tuneStep = 2;
-//    TKIV = tkiv;
+    //    TKIV = tkiv;
     CKIV = ckiv;
     m_bac = new Bac;
     m_bdain = new BdaIn;
@@ -271,8 +270,8 @@ Error::Msg TuneKIVTemp60::calcTuneCoefsAndWrite()
     m_bac->updateWidget();
     if (showTuneCoefs() != Error::Msg::NoError)
         return Error::Msg::GeneralError;
-    m_bac->writeBlockToModule();
-    return Error::Msg::NoError;
+    return m_bac->writeBlockToModule();
+    //    return Error::Msg::NoError;
 }
 
 void TuneKIVTemp60::loadIntermediateResults()
