@@ -162,6 +162,21 @@ struct GeneralResponseStruct
     GeneralResponseTypes type;
     quint64 data;
 };
+
+struct Alarm
+{
+    quint32 flags;
+    QStringList desc;
+    QString name;
+};
+struct Journal
+{
+    quint32 id;
+    QStringList header;
+    QStringList desc;
+    QString name;
+};
+
 }
 
 namespace Queries
