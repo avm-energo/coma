@@ -220,6 +220,21 @@ void Protocom::writeCommand(Queries::Commands cmd, QVariant item)
             d->handleBlk(protoCmd, item.value<Signal>());
         break;
 
+    case Commands::FakeReadAlarms:
+
+        Q_ASSERT(item.canConvert<Signal>());
+        if (item.canConvert<Signal>())
+        {
+            const auto signal = item.value<Signal>();
+            if (isValidRegs(signal.addr, signal.value))
+            {
+                const auto dict = settings<InterfaceInfo<ProtocomGroup>>().dictionary();
+                quint8 block = dict.value(signal.addr).block;
+                d->handleBlk(protoCmd, signal.addr, StdFunc::arrayFromNumber(quint8(block)), signal.value);
+            }
+        }
+        break;
+
     case Commands::ReadBlkAC:
 
         Q_ASSERT(item.canConvert<quint32>());

@@ -216,30 +216,19 @@ void ProtocomThread::handle(const Proto::Commands cmd)
 
     case Commands::ReadBlkData:
 
-        if (m_currentCommand.cmd != Commands::FakeReadRegData)
-            handleRawBlock(m_buffer.second, addr);
-        else
+        switch (m_currentCommand.cmd)
         {
-            const auto *ptr = static_cast<const Protocom *>(BaseInterface::iface());
-            const auto dict = ptr->settings<InterfaceInfo<ProtocomGroup>>().dictionary();
-
-            // if (addr != alarm_reg)
-            if (!dict.value(addr).id.contains("alarm"))
-                handleFloatArray(m_buffer.second, addr, count);
-            else
-                handleSinglePoint(m_buffer.second, addr);
+        case Commands::FakeReadRegData:
+            handleFloatArray(m_buffer.second, addr, count);
+            break;
+        case Commands::FakeReadAlarms:
+            handleSinglePoint(m_buffer.second, addr);
+            break;
+        default:
+            handleRawBlock(m_buffer.second, addr);
+            break;
         }
         break;
-
-        //    case Commands::FakeReadRegData:
-
-        //        // Превосходный костыль для сигнализации
-        //        if (addr != alarm_reg)
-        //            handleFloatArray(m_buffer.second, addr, count);
-        //        else
-        //            handleSinglePoint(m_buffer.second, addr);
-
-        //        break;
 
     case Commands::ReadBlkTech:
 
@@ -372,6 +361,13 @@ void ProtocomThread::parseRequest(const CommandStruct &cmdStr)
         const quint16 blk = dict.value(number).block;
 
         m_currentCommand.ba = StdFunc::arrayFromNumber(quint8(blk));
+        QByteArray ba = prepareBlock(Commands::ReadBlkData, m_currentCommand.ba);
+        emit writeDataAttempt(ba);
+        break;
+    }
+
+    case Commands::FakeReadAlarms:
+    {
         QByteArray ba = prepareBlock(Commands::ReadBlkData, m_currentCommand.ba);
         emit writeDataAttempt(ba);
         break;

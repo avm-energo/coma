@@ -120,6 +120,7 @@ enum Commands : byte
     WriteHardware = 0x48,
     /// Fake commands
     FakeReadRegData,
+    FakeReadAlarms,
     RawCommand = 0x01
 
 };
