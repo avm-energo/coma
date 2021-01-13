@@ -230,7 +230,7 @@ enum CommandRegisters
     SetNewConfigurationReg = 801,
     StartFirmwareUpgradeReg = 802,
     StartWorkingChannelReg = 803,
-    EraseJournalsReg = 806,
+    // Моветон EraseJournalsReg = 806,
     SetStartupValuesReg = 900,
     ClearStartupValuesReg = 905,
 };

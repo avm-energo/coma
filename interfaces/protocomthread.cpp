@@ -6,6 +6,7 @@
 #include "../gen/logclass.h"
 #include "../gen/s2.h"
 #include "../gen/stdfunc.h"
+#include "protocom.h"
 
 #include <QDebug>
 //#include <QMetaEnum>
@@ -219,7 +220,11 @@ void ProtocomThread::handle(const Proto::Commands cmd)
             handleRawBlock(m_buffer.second, addr);
         else
         {
-            if (addr != alarm_reg)
+            const auto *ptr = static_cast<const Protocom *>(BaseInterface::iface());
+            const auto dict = ptr->settings<InterfaceInfo<ProtocomGroup>>().dictionary();
+
+            // if (addr != alarm_reg)
+            if (!dict.value(addr).id.contains("alarm"))
                 handleFloatArray(m_buffer.second, addr, count);
             else
                 handleSinglePoint(m_buffer.second, addr);
@@ -359,8 +364,12 @@ void ProtocomThread::parseRequest(const CommandStruct &cmdStr)
     {
 
         const quint16 number = m_currentCommand.arg1.value<quint16>();
-        Q_ASSERT(Proto::getBlkByReg.contains(number));
-        const quint16 blk = Proto::getBlkByReg.value(number).first;
+
+        const auto *ptr = static_cast<const Protocom *>(BaseInterface::iface());
+        const auto dict = ptr->settings<InterfaceInfo<ProtocomGroup>>().dictionary();
+
+        Q_ASSERT(dict.contains(number));
+        const quint16 blk = dict.value(number).block;
 
         m_currentCommand.ba = StdFunc::arrayFromNumber(quint8(blk));
         QByteArray ba = prepareBlock(Commands::ReadBlkData, m_currentCommand.ba);

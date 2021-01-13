@@ -9,6 +9,7 @@
 #include <memory>
 
 struct ConnectStruct;
+struct InterfaceSettings;
 class BaseInterface : public QObject
 {
     Q_OBJECT
@@ -82,7 +83,7 @@ public:
     Error::Msg readFileSync(quint32 filenum, QByteArray &ba);
 
     InterfaceSettings settings() const;
-    template <class T> T setings() const
+    template <class T> T settings() const
     {
         Q_ASSERT(std::holds_alternative<T>(m_settings.settings));
         return std::get<T>(m_settings.settings);

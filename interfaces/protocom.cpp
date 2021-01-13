@@ -3,8 +3,8 @@
 #include "../gen/board.h"
 #include "../gen/datamanager.h"
 #include "../gen/files.h"
-//#include "../gen/s2.h"
 #include "../gen/stdfunc.h"
+#include "protocom_p.h"
 #include "protocomthread.h"
 #include "settingstypes.h"
 #include "usbhidport.h"
@@ -15,18 +15,10 @@
 using Proto::CommandStruct;
 using Proto::Starters;
 
-void handleBlk(const Proto::Commands cmd, const quint32 blk, QByteArray data = {}, const quint32 count = 0);
-inline void handleBlk(const Proto::Commands cmd, const quint32 addr, const quint32 count);
-inline void handleInt(const Proto::Commands cmd, const QByteArray data);
-inline void handleBlk(const Proto::Commands cmd, const DataTypes::Signal &signal);
-inline void handleBlk(const Proto::Commands cmd, const DataTypes::ConfParameterStruct &str);
-inline void handleBlk(const Proto::Commands cmd, const DataTypes::BlockStruct &str);
-
-void handleCommand(const Proto::Commands cmd);
-void handleCommand(const Proto::WCommands cmd);
-
-Protocom::Protocom(QObject *parent) : BaseInterface(parent)
+Protocom::Protocom(QObject *parent) : BaseInterface(parent), d_ptr(new ProtocomPrivate())
 {
+    Q_D(Protocom);
+    d->q_ptr = this;
     qRegisterMetaType<UsbHidSettings>();
 }
 
@@ -132,8 +124,8 @@ void Protocom::reqFile(quint32 filenum, bool isConfigFile)
 
 void Protocom::reqStartup(quint32 sigAdr, quint32 sigCount)
 {
-    Q_ASSERT(Proto::getBlkByReg.contains(sigAdr));
-    Q_ASSERT(Proto::getBlkByReg.value(sigAdr).second == sigCount);
+    if (!isValidRegs(sigAdr, sigCount))
+        return;
     CommandStruct inp { Proto::Commands::FakeReadRegData, sigAdr, sigCount, {} };
     DataManager::addToInQueue(inp);
     emit wakeUpParser();
@@ -180,8 +172,8 @@ void Protocom::writeTime(quint32 time)
 
 void Protocom::reqFloats(quint32 sigAdr, quint32 sigCount)
 {
-    Q_ASSERT(Proto::getBlkByReg.contains(sigAdr));
-    Q_ASSERT(Proto::getBlkByReg.value(sigAdr).second == sigCount);
+    if (!isValidRegs(sigAdr, sigCount))
+        return;
     CommandStruct inp { Proto::Commands::FakeReadRegData, sigAdr, sigCount, {} };
     DataManager::addToInQueue(inp);
     emit wakeUpParser();
@@ -196,6 +188,7 @@ void Protocom::writeRaw(const QByteArray &ba)
 
 void Protocom::writeCommand(Queries::Commands cmd, QVariant item)
 {
+    Q_D(Protocom);
     using namespace Proto;
     using DataTypes::Signal;
 
@@ -209,7 +202,7 @@ void Protocom::writeCommand(Queries::Commands cmd, QVariant item)
             qCritical() << Error::WrongCommandError;
             return;
         }
-        handleCommand(wCmd);
+        d->handleCommand(wCmd);
     }
     switch (protoCmd)
     {
@@ -217,132 +210,83 @@ void Protocom::writeCommand(Queries::Commands cmd, QVariant item)
 
         Q_ASSERT(item.canConvert<quint32>());
         if (item.canConvert<quint32>())
-            handleBlk(protoCmd, item.toUInt());
+            d->handleBlk(protoCmd, item.toUInt());
         break;
 
     case Commands::FakeReadRegData:
 
         Q_ASSERT(item.canConvert<Signal>());
         if (item.canConvert<Signal>())
-            handleBlk(protoCmd, item.value<Signal>());
+            d->handleBlk(protoCmd, item.value<Signal>());
         break;
 
     case Commands::ReadBlkAC:
 
         Q_ASSERT(item.canConvert<quint32>());
-        handleBlk(protoCmd, item.toUInt());
+        d->handleBlk(protoCmd, item.toUInt());
         break;
 
     case Commands::ReadBlkDataA:
 
         Q_ASSERT(item.canConvert<quint32>());
-        handleBlk(protoCmd, item.toUInt());
+        d->handleBlk(protoCmd, item.toUInt());
         break;
 
     case Commands::ReadBlkTech:
 
         Q_ASSERT(item.canConvert<quint32>());
-        handleBlk(protoCmd, item.toUInt());
+        d->handleBlk(protoCmd, item.toUInt());
         break;
 
     case Commands::WriteBlkAC:
 
         Q_ASSERT(item.canConvert<DataTypes::BlockStruct>());
-        handleBlk(protoCmd, item.value<DataTypes::BlockStruct>());
+        d->handleBlk(protoCmd, item.value<DataTypes::BlockStruct>());
         break;
 
     case Commands::WriteBlkTech:
 
         Q_ASSERT(item.canConvert<DataTypes::BlockStruct>());
-        handleBlk(protoCmd, item.value<DataTypes::BlockStruct>());
+        d->handleBlk(protoCmd, item.value<DataTypes::BlockStruct>());
         break;
 
     case Commands::WriteBlkCmd:
 
         Q_ASSERT(item.canConvert<quint32>());
-        handleBlk(protoCmd, item.toUInt());
+        d->handleBlk(protoCmd, item.toUInt());
         break;
 
     case Commands::WriteBlkData:
 
         Q_ASSERT(item.canConvert<DataTypes::BlockStruct>());
-        handleBlk(protoCmd, item.value<DataTypes::BlockStruct>());
+        d->handleBlk(protoCmd, item.value<DataTypes::BlockStruct>());
         break;
 
     case Commands::WriteMode:
 
         Q_ASSERT(item.canConvert<quint8>());
-        handleInt(protoCmd, StdFunc::arrayFromNumber(quint8(item.value<quint8>())));
+        d->handleInt(protoCmd, StdFunc::arrayFromNumber(quint8(item.value<quint8>())));
         break;
 
     case Commands::WriteVariant:
 
         Q_ASSERT(item.canConvert<quint8>());
-        handleInt(protoCmd, StdFunc::arrayFromNumber(quint8(item.value<quint8>())));
+        d->handleInt(protoCmd, StdFunc::arrayFromNumber(quint8(item.value<quint8>())));
         break;
 
     default:
     {
-        handleCommand(protoCmd);
+        d->handleCommand(protoCmd);
     }
     }
     emit wakeUpParser();
 }
 
-void handleBlk(const Proto::Commands cmd, const quint32 blk, QByteArray data, const quint32 count)
+bool Protocom::isValidRegs(const quint32 sigAdr, const quint32 sigCount)
 {
-    CommandStruct inp {
-        cmd,   // Command
-        blk,   // Block number or empty for some cmds or regAddr
-        count, // Null arg or regCount
-        data   // QByteArray data, maybe empty
-    };
-    DataManager::addToInQueue(inp);
-}
-
-inline void handleBlk(const Proto::Commands cmd, const quint32 addr, const quint32 count)
-{
-    Q_ASSERT(Proto::getBlkByReg.contains(addr));
-    auto blkPair = Proto::getBlkByReg.value(addr);
-    Q_ASSERT(blkPair.second == count);
-    handleBlk(cmd, blkPair.first);
-}
-
-void handleInt(const Proto::Commands cmd, const QByteArray data)
-{
-    CommandStruct inp {
-        cmd,        // Command
-        QVariant(), // Block number or empty for some cmds or regAddr
-        QVariant(), // Null arg or regCount
-        data        // QByteArray data, maybe empty
-    };
-    DataManager::addToInQueue(inp);
-    // handleBlk(cmd, 0, data);
-}
-
-inline void handleBlk(const Proto::Commands cmd, const DataTypes::Signal &signal)
-{
-    handleBlk(cmd, signal.addr, QByteArray(), signal.value);
-}
-
-inline void handleBlk(const Proto::Commands cmd, const DataTypes::ConfParameterStruct &str)
-{
-    handleBlk(cmd, str.ID, str.data);
-}
-
-inline void handleBlk(const Proto::Commands cmd, const DataTypes::BlockStruct &str)
-{
-    handleBlk(cmd, str.ID, str.data);
-}
-
-void handleCommand(const Proto::Commands cmd)
-{
-    CommandStruct inp { cmd, QVariant(), QVariant(), QByteArray {} };
-    DataManager::addToInQueue(inp);
-}
-
-void handleCommand(const Proto::WCommands cmd)
-{
-    CommandStruct inp { Proto::WriteBlkCmd, cmd, QVariant(), QByteArray {} };
-    DataManager::addToInQueue(inp);
+    const auto &st = settings<InterfaceInfo<Proto::ProtocomGroup>>();
+    Q_ASSERT(st.dictionary().contains(sigAdr));
+    const auto val = st.dictionary().value(sigAdr);
+    Q_ASSERT(val.count == sigCount);
+    return val.count == sigCount;
 }

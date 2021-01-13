@@ -29,6 +29,7 @@ TEMPLATE = app
 
 
 SOURCES += \
+    ../interfaces/protocom_p.cpp \
     ../interfaces/usbhidsettings.cpp \
     ../widgets/aboutwidget.cpp \
     ../widgets/alarmbutton.cpp \
@@ -122,6 +123,7 @@ SOURCES += \
 PRECOMPILED_HEADER = ../gen/pch.h
 
 HEADERS += \
+    ../interfaces/protocom_p.h \
     ../interfaces/protocomsettings.h \
     ../interfaces/usbhidsettings.h \
     ../widgets/aboutwidget.h \

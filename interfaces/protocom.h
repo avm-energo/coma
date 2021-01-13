@@ -1,12 +1,15 @@
 ﻿#pragma once
 
 #include "baseinterface.h"
-#include "protocomprivate.h"
+//#include "protocomprivate.h"
 
 struct UsbHidSettings;
+class ProtocomPrivate;
 class Protocom : public BaseInterface
 {
     Q_OBJECT
+    Q_DECLARE_PRIVATE(Protocom);
+
 public:
     explicit Protocom(QObject *parent = nullptr);
 
@@ -28,7 +31,12 @@ public:
     void reqFloats(quint32 sigAdr, quint32 sigCount) override;
     void writeRaw(const QByteArray &ba) override;
 
+protected:
+    ProtocomPrivate *const d_ptr;
+    Protocom(ProtocomPrivate &dd, QObject *parent);
+
 private:
+    bool isValidRegs(const quint32 sigAdr, const quint32 sigCount);
 signals:
     void wakeUpParser();
     void wakeUpPort();

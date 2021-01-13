@@ -25,6 +25,7 @@ using is_base_of_template = typename is_base_of_template_impl<base, derived>::ty
 
 template <typename FuncCode, typename TypeId> struct BaseGroup
 {
+    BaseGroup()=default;
     BaseGroup(QDomElement domElement)
     {
         qDebug() << domElement.attribute("id", "") << domElement.text();
@@ -124,6 +125,7 @@ namespace CommandsMBS
 {
 struct ModbusGroup : BaseGroup<Commands, TypeId>
 {
+    ModbusGroup()=default;
     ModbusGroup(QDomElement domElement) : BaseGroup<Commands, TypeId>(domElement)
     {
     }
@@ -135,6 +137,7 @@ namespace Proto
 {
 struct ProtocomGroup : BaseGroup<Commands, TypeId>
 {
+    ProtocomGroup()=default;
     ProtocomGroup(QDomElement domElement) : BaseGroup<Commands, TypeId>(domElement)
     {
         domElement = domElement.firstChildElement();
@@ -157,6 +160,7 @@ namespace Commands104
 {
 struct Iec104Group : BaseGroup<Commands, TypeId>
 {
+    Iec104Group()=default;
     Iec104Group(QDomElement domElement) : BaseGroup<Commands, TypeId>(domElement)
     {
     }
