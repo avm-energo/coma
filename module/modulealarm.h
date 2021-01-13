@@ -8,13 +8,15 @@ class ModuleAlarm : public BaseAlarm
 {
     Q_OBJECT
 public:
+    explicit ModuleAlarm(QWidget *parent = nullptr);
+    ModuleAlarm(const DataTypes::Alarm &desc, const int count, QWidget *parent = nullptr);
+    void reqUpdate() override;
+
+protected:
     /// Стартовый адрес регистров сигнализации
     int m_startAlarmAddress;
     /// Общее количество регистров сигнализации
     int m_alarmAllCounts;
-    explicit ModuleAlarm(QWidget *parent = nullptr);
-    void reqUpdate() override;
-
 public slots:
     //    void Update(std::bitset<32> &states);
     void update(const DataTypes::SinglePointWithTimeStruct &sp);

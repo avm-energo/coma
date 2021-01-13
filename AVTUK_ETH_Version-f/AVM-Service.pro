@@ -95,9 +95,6 @@ SOURCES += \
     ../models/etablemodel.cpp \
     ../module/basealarm.cpp \
     ../module/modulealarm.cpp \
-    ../module/alarmkdv.cpp \
-    ../module/alarmkiv.cpp \
-    ../module/alarmktf.cpp \
     ../module/journals.cpp \
     ../module/journkdv.cpp \
     ../module/journkiv.cpp \
@@ -196,9 +193,6 @@ HEADERS += \
     ../models/etablemodel.h \
     ../module/modulealarm.h \
     ../module/basealarm.h \
-    ../module/alarmkdv.h \
-    ../module/alarmkiv.h \
-    ../module/alarmktf.h \
     ../module/journals.h \
     ../module/journkdv.h \
     ../module/journkiv.h \

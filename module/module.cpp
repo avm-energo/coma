@@ -55,7 +55,8 @@ Module *Module::createModule(QTimer *updateTimer, AlarmWidget *aw)
     // m->m_alarmStateAllDialog->UpdateHealth(board.health());
     //    quint16 typeb = Board::GetInstance().typeB();
     quint16 typeb = board.typeB();
-    m->loadSettings();
+    if (!m->loadSettings())
+        return m;
     //    aw->setInterface(iface);
     // aw->uponInterfaceSetting();
     AlarmStateAll *alarmStateAll = new AlarmStateAll;
@@ -103,8 +104,6 @@ Module *Module::createModule(QTimer *updateTimer, AlarmWidget *aw)
             m->addDialogToList(new TuneKIVDialog(CKIV), "Регулировка");
 #endif
             m->addDialogToList(new StartupKIVDialog, "Начальные\nзначения");
-            aw->addAlarm(new WarnKIV(m->settings()->alarms.value(AlarmType::Warning)));
-            aw->addAlarm(new CritKIV(m->settings()->alarms.value(AlarmType::Critical)));
             //            connect(m->m_warn, &Warn::updateWarn, cdkiv, &AbstractCheckDialog::SetWarnColor);
             //            connect(m->m_alarm, &Alarm::updateAlarm, cdkiv, &AbstractCheckDialog::SetAlarmColor);
             break;
@@ -122,8 +121,8 @@ Module *Module::createModule(QTimer *updateTimer, AlarmWidget *aw)
 #endif
             m->addDialogToList(new StartupKTFDialog, "Старение\nизоляции");
             m->addDialogToList(new CheckKTFHarmonicDialog, "Гармоники");
-            aw->addAlarm(new WarnKTF);
-            aw->addAlarm(new CritKTF);
+            // aw->addAlarm(new WarnKTF);
+            // aw->addAlarm(new CritKTF);
             //            connect(m->m_warn, &Warn::updateWarn, cdktf, &AbstractCheckDialog::SetWarnColor);
             //            connect(m->m_alarm, &Alarm::updateAlarm, cdktf, &AbstractCheckDialog::SetAlarmColor);
             break;
@@ -144,8 +143,8 @@ Module *Module::createModule(QTimer *updateTimer, AlarmWidget *aw)
             m->addDialogToList(new CheckKDVVibrDialog, "Вибрации");
             //            VibrDialog = new CheckDialogVibrKDV(BoardTypes::BT_BASE);
             //            connect(BdaTimer, &QTimer::timeout, VibrDialog, &AbstractCheckDialog::USBUpdate);
-            aw->addAlarm(new WarnKDV);
-            aw->addAlarm(new CritKDV);
+            // aw->addAlarm(new WarnKDV);
+            // aw->addAlarm(new CritKDV);
             //            connect(m->m_warn, &Warn::updateWarn, cdkdv, &AbstractCheckDialog::SetWarnColor);
             //            connect(m->m_alarm, &Alarm::updateAlarm, cdkdv, &AbstractCheckDialog::SetAlarmColor);
             break;
@@ -154,7 +153,10 @@ Module *Module::createModule(QTimer *updateTimer, AlarmWidget *aw)
             assert(false);
         }
     }
-
+    auto *warnAlarm = new ModuleAlarm(m->settings()->alarms.value(AlarmType::Warning), m->settings()->alarmCount());
+    aw->addAlarm(warnAlarm, tr("Предупредительная сигнализация"));
+    auto *critAlarm = new ModuleAlarm(m->settings()->alarms.value(AlarmType::Critical), m->settings()->alarmCount());
+    aw->addAlarm(critAlarm, tr("Аварийная сигнализация"));
     TimeDialog *tdlg = new TimeDialog;
     m->addDialogToList(tdlg, "Время", "time");
 
@@ -382,8 +384,19 @@ DataTypes::Alarm Module::parseAlarm(QDomElement domElement)
     alarm.name = domElement.attribute("name", "");
     auto element = domElement.firstChildElement("string-array");
     alarm.desc = parseStringList(element);
+    element = domElement.firstChildElement("color");
+    alarm.color = element.isNull() ? "" : element.text();
     element = domElement.firstChildElement("quint32");
-    alarm.flags = parseHexInt32(element);
+    while (!element.isNull())
+    {
+        const auto name = element.attribute("name", "");
+        if (name.contains("flags", Qt::CaseInsensitive))
+            alarm.flags = parseHexInt32(element);
+        if (name.contains("addr", Qt::CaseInsensitive))
+            alarm.startAddr = parseInt32(element);
+        element = element.nextSiblingElement("quint32");
+    }
+
     return alarm;
 }
 
@@ -528,7 +541,7 @@ void Module::traverseNode(const QDomNode &node)
     }
 }
 
-void Module::loadSettings()
+bool Module::loadSettings()
 {
     const auto moduleName = Board::GetInstance().moduleName();
     auto directory = QDir::current();
@@ -554,9 +567,16 @@ void Module::loadSettings()
             m_settings = std::unique_ptr<ModuleSettings>(new ModuleSettings);
             QDomElement domElement = domDoc.documentElement();
             traverseNode(domElement);
+            file.close();
+            return true;
         }
         file.close();
+        qInfo() << Error::WrongFileError << file.fileName();
+        return false;
     }
     else
-        qDebug() << Error::FileOpenError << file.fileName();
+    {
+        return false;
+        qCritical() << Error::FileOpenError << file.fileName();
+    }
 }

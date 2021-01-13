@@ -22,7 +22,7 @@ AlarmWidget::AlarmWidget(QWidget *parent) : QWidget(parent)
     QDialogButtonBox *buttons = new QDialogButtonBox;
     setMinimumWidth(parent->width() / 2);
     // buttons.addButton()
-    QStringList ButtonList { "AlarmButtonPressed", "ModuleWarnButtonPressed", "ModuleAlarmButtonPressed" };
+    // QStringList ButtonList { "AlarmButtonPressed", "ModuleWarnButtonPressed", "ModuleAlarmButtonPressed" };
 
     // for (int i = 0; i != buttonDescription.size(); i++)
     // {
@@ -231,6 +231,48 @@ void AlarmWidget::clear()
 
 void AlarmWidget::addAlarm(BaseAlarm *alarm)
 {
+    //    // Имеются ли виджеты на слое
+    //    Q_ASSERT(!layout()->children().isEmpty() && "Layout doesn't have children");
+    //    QLayout *buttonBoxLayout = qobject_cast<QLayout *>(layout()->children().first());
+    //    QDialogButtonBox *buttons = qobject_cast<QDialogButtonBox *>(buttonBoxLayout->itemAt(0)->widget());
+    //    Q_ASSERT(buttons != nullptr);
+    //    AlarmButton *pb = new AlarmButton;
+    //    // pb->setMinimumSize(QSize(3 * geometry().width() / 1, 30));
+    //    // pb->setSizeIncrement()
+    //    pb->setPixmap(WDFunc::NewCircle(Qt::green, 15));
+    //    connect(pb, &QPushButton::clicked, alarm, &QDialog::show);
+    //    //    alarm->setInterface(iface());
+    //    if (!m_timer->isActive())
+    //        m_timer->start();
+    //    // temporarily disabled !!!    connect(m_timer, &QTimer::timeout, alarm, &BaseAlarm::reqUpdate);
+    //    connect(alarm, &BaseAlarm::updateColor, pb, [=](QColor color) { pb->setPixmap(WDFunc::NewCircle(color, 15));
+    //    });
+
+    QString alarmName = alarm->metaObject()->className();
+    if (alarmName.contains("warn", Qt::CaseInsensitive))
+    {
+        addAlarm(alarm, buttonDescription.at(1));
+        //   pb->setText(buttonDescription.at(1));
+    }
+    if (alarmName.contains("crit", Qt::CaseInsensitive))
+    {
+        addAlarm(alarm, buttonDescription.at(2));
+        //  pb->setText(buttonDescription.at(2));
+    }
+    if (alarmName.contains("stateall", Qt::CaseInsensitive))
+    {
+        addAlarm(alarm, buttonDescription.at(0));
+        //  pb->setText(buttonDescription.at(0));
+    }
+    //    Q_ASSERT(!pb->text().isEmpty() && "Couldn't find description");
+    //    m_alarms.append(alarm);
+    //    buttons->addButton(pb, QDialogButtonBox::ActionRole);
+    //    alarm->reqUpdate();
+    //    ++m_counter;
+}
+
+void AlarmWidget::addAlarm(BaseAlarm *alarm, const QString caption)
+{
     // Имеются ли виджеты на слое
     Q_ASSERT(!layout()->children().isEmpty() && "Layout doesn't have children");
     QLayout *buttonBoxLayout = qobject_cast<QLayout *>(layout()->children().first());
@@ -244,22 +286,12 @@ void AlarmWidget::addAlarm(BaseAlarm *alarm)
     //    alarm->setInterface(iface());
     if (!m_timer->isActive())
         m_timer->start();
-    // temporarily disabled !!!    connect(m_timer, &QTimer::timeout, alarm, &BaseAlarm::reqUpdate);
+    // NOTE temporarily disabled !!!
+    connect(m_timer, &QTimer::timeout, alarm, &BaseAlarm::reqUpdate);
     connect(alarm, &BaseAlarm::updateColor, pb, [=](QColor color) { pb->setPixmap(WDFunc::NewCircle(color, 15)); });
 
-    QString alarmName = alarm->metaObject()->className();
-    if (alarmName.contains("warn", Qt::CaseInsensitive))
-    {
-        pb->setText(buttonDescription.at(1));
-    }
-    if (alarmName.contains("crit", Qt::CaseInsensitive))
-    {
-        pb->setText(buttonDescription.at(2));
-    }
-    if (alarmName.contains("stateall", Qt::CaseInsensitive))
-    {
-        pb->setText(buttonDescription.at(0));
-    }
+    pb->setText(caption);
+
     Q_ASSERT(!pb->text().isEmpty() && "Couldn't find description");
     m_alarms.append(alarm);
     buttons->addButton(pb, QDialogButtonBox::ActionRole);

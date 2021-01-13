@@ -7,6 +7,16 @@ ModuleAlarm::ModuleAlarm(QWidget *parent) : BaseAlarm(parent)
     connect(&DataManager::GetInstance(), &DataManager::singlePointReceived, this, &ModuleAlarm::update);
 }
 
+ModuleAlarm::ModuleAlarm(const DataTypes::Alarm &desc, const int count, QWidget *parent) : ModuleAlarm(parent)
+{
+    m_startAlarmAddress = desc.startAddr;
+    m_alarmFlags = std::bitset<sizeof(desc.flags) * 8>(desc.flags);
+    Q_ASSERT(QColor::isValidColor(desc.color));
+    m_alarmColor = desc.color;
+    m_alarmAllCounts = count;
+    setupUI(desc.desc);
+}
+
 void ModuleAlarm::reqUpdate()
 {
     BaseInterface::iface()->reqAlarms(m_startAlarmAddress, m_alarmAllCounts);

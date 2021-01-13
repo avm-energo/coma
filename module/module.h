@@ -21,6 +21,13 @@ enum JournalType
 };
 struct ModuleSettings
 {
+    int alarmCount() const
+    {
+        int counter = 0;
+        for (const auto &alarm : alarms)
+            counter += alarm.desc.size();
+        return counter;
+    }
     // QList<DataTypes::Alarm> alarms;
     QMap<AlarmType, DataTypes::Alarm> alarms;
     // QList<DataTypes::Journal> journals;
@@ -65,7 +72,7 @@ private:
     //    ModuleAlarm *m_warnAlarm;
     //    int m_currentTabIndex, m_oldTabIndex;
     //    BaseInterface *m_iface;
-    void loadSettings();
+    bool loadSettings();
     std::unique_ptr<ModuleSettings> m_settings;
     void traverseNode(const QDomNode &node);
 

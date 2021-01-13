@@ -4,7 +4,7 @@
     <name>AVM-KIV</name>
     <version>1.1.08</version>
     <resources>
-      <alarm id="critical">        
+      <alarm name="critical">        
         <string-array name="criticalEvents">
           <item>Авария по приращению тангенса дельта ввода фазы А</item>
           <item>Авария по приращению тангенса дельта ввода фазы B</item>
@@ -15,8 +15,10 @@
           <item>Авария по недопустимому небалансу токов</item>
         </string-array>
         <quint32 name="criticalFlags">0x9CE000</quint32>
+		    <quint32 name="startAddr">3011</quint32>
+		    <color>#ff0000</color>
       </alarm>
-      <alarm id="warning">
+      <alarm name="warning">
         <string-array name="warningEvents">
           <item>Отсутствует сигнал напряжения фазы A</item>
           <item>Отсутствует сигнал напряжения фазы B</item>
@@ -38,6 +40,8 @@
           <item>Сигнализация по повышенному небалансу токов</item>
         </string-array>
         <quint32 name="warningFlags">0xC71FFF</quint32>
+		    <quint32 name="startAddr">3011</quint32>
+		    <color>#ffff00</color>
       </alarm>
       <journal name="work">
         <quint32 name="workJourId">3010</quint32>

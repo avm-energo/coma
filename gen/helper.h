@@ -1,6 +1,7 @@
 #pragma once
 #include "../gen/datatypes.h"
-#include "../interfaces/modbussettings.h"
+#include "../interfaces/interfacesettings.h"
+//#include "../interfaces/modbussettings.h"
 #include "../interfaces/usbhidportinfo.h"
 
 #include <QDebug>
