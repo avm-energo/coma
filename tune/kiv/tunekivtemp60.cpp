@@ -285,22 +285,26 @@ void TuneKIVTemp60::loadIntermediateResults()
 
 Error::Msg TuneKIVTemp60::showTuneCoefs()
 {
+    QEventLoop loop;
     Bac *newbac = new Bac;
-    QDialog *dlg = new QDialog;
+    QDialog *dlg = new QDialog(this);
     QVBoxLayout *lyout = new QVBoxLayout;
     dlg->setWindowTitle("Проверка коэффициентов");
-    dlg->setAttribute(Qt::WA_DeleteOnClose);
+    //    dlg->setAttribute(Qt::WA_DeleteOnClose);
     dlg->setObjectName("showtunedlg");
     lyout->addWidget(newbac->widget());
-    lyout->addWidget(WDFunc::NewPB(this, "acceptpb", "Записать в модуль", this, &TuneKIVTemp60::acceptTuneCoefs));
-    lyout->addWidget(WDFunc::NewPB(
-        this, "cancelpb", "Отменить", static_cast<AbstractTuneDialog *>(this), &AbstractTuneDialog::CancelTune));
+    //    lyout->addWidget(WDFunc::NewPB(this, "acceptpb", "Записать в модуль", this, &TuneKIVTemp60::acceptTuneCoefs));
+    lyout->addWidget(WDFunc::NewPB(this, "acceptpb", "Записать в модуль", &loop, &QEventLoop::quit));
+    lyout->addWidget(WDFunc::NewPB(this, "cancelpb", "Отменить", [&]() {
+        CancelTune();
+        loop.quit();
+    }));
     dlg->setLayout(lyout);
     memcpy(newbac->data(), m_bac->data(), sizeof(Bac::BlockData));
     newbac->updateWidget();
     dlg->show();
-    QEventLoop loop;
-    connect(this, &TuneKIVTemp60::closeShowTuneDialog, &loop, &QEventLoop::quit);
+    //    QEventLoop loop;
+    //    connect(this, &TuneKIVTemp60::closeShowTuneDialog, &loop, &QEventLoop::quit);
     loop.exec();
     dlg->close();
     return (StdFunc::isCancelled()) ? Error::Msg::GeneralError : Error::Msg::NoError;
@@ -315,11 +319,11 @@ void TuneKIVTemp60::saveIntermediateResults()
     loadWorkConfig();
 }
 
-void TuneKIVTemp60::acceptTuneCoefs()
-{
-    m_bac->updateFromWidget();
-    m_bac->writeBlockToModule();
-}
+// void TuneKIVTemp60::acceptTuneCoefs()
+//{
+//    m_bac->updateFromWidget();
+//    m_bac->writeBlockToModule();
+//}
 
 // void TuneKIVTemp60::setDefCoefs()
 //{

@@ -4,9 +4,9 @@
 #include "../../config/configkiv.h"
 #include "../abstracttunedialog.h"
 //#include "tunekiv.h"
+#include "../../datablocks/bd0.h"
 #include "../../datablocks/kiv/bac.h"
 #include "../../datablocks/kiv/bdain.h"
-#include "../../datablocks/bd0.h"
 
 #include <QWidget>
 
@@ -33,7 +33,7 @@ private:
         float *parameter;
     };
 
-//    TuneKIV *TKIV;
+    //    TuneKIV *TKIV;
     ConfigKIV *CKIV;
     Bac *m_bac;
     BdaIn *m_bdain;
@@ -77,7 +77,7 @@ signals:
 
 private slots:
     void saveIntermediateResults();
-    void acceptTuneCoefs();
+    //    void acceptTuneCoefs();
     //    int ReadAnalogMeasurements();
     //    void setDefCoefs();
 };
