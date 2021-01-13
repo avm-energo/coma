@@ -123,6 +123,7 @@ SOURCES += \
 PRECOMPILED_HEADER = ../gen/pch.h
 
 HEADERS += \
+    ../interfaces/interfacesettings.h \
     ../interfaces/protocom_p.h \
     ../interfaces/protocomsettings.h \
     ../interfaces/usbhidsettings.h \

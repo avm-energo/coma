@@ -151,7 +151,8 @@ struct ProtocomGroup : BaseGroup<Commands, TypeId>
             domElement = domElement.nextSiblingElement();
         }
     }
-    quint16 block;
+    // maybe quint16 or quint8 is enough?
+    quint8 block;
     // NOTE Need more fileds?
 };
 }

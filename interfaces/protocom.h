@@ -1,7 +1,6 @@
 ﻿#pragma once
 
 #include "baseinterface.h"
-//#include "protocomprivate.h"
 
 struct UsbHidSettings;
 class ProtocomPrivate;

@@ -124,9 +124,15 @@ void Protocom::reqFile(quint32 filenum, bool isConfigFile)
 
 void Protocom::reqStartup(quint32 sigAdr, quint32 sigCount)
 {
+    Q_D(Protocom);
     if (!isValidRegs(sigAdr, sigCount))
         return;
-    CommandStruct inp { Proto::Commands::FakeReadRegData, sigAdr, sigCount, {} };
+    CommandStruct inp {
+        Proto::Commands::FakeReadRegData,               // Fake command
+        sigAdr,                                         // Signal addr
+        sigCount,                                       // Count signals
+        StdFunc::arrayFromNumber(d->blockByReg(sigAdr)) // Protocom block
+    };
     DataManager::addToInQueue(inp);
     emit wakeUpParser();
 }
@@ -172,9 +178,15 @@ void Protocom::writeTime(quint32 time)
 
 void Protocom::reqFloats(quint32 sigAdr, quint32 sigCount)
 {
+    Q_D(Protocom);
     if (!isValidRegs(sigAdr, sigCount))
         return;
-    CommandStruct inp { Proto::Commands::FakeReadRegData, sigAdr, sigCount, {} };
+    CommandStruct inp {
+        Proto::Commands::FakeReadRegData,               // Fake command
+        sigAdr,                                         // Signal addr
+        sigCount,                                       // Count signals
+        StdFunc::arrayFromNumber(d->blockByReg(sigAdr)) // Protocom block
+    };
     DataManager::addToInQueue(inp);
     emit wakeUpParser();
 }
@@ -217,7 +229,11 @@ void Protocom::writeCommand(Queries::Commands cmd, QVariant item)
 
         Q_ASSERT(item.canConvert<Signal>());
         if (item.canConvert<Signal>())
-            d->handleBlk(protoCmd, item.value<Signal>());
+        {
+            const auto signal = item.value<Signal>();
+            if (isValidRegs(signal.addr, signal.value))
+                d->handleBlk(protoCmd, item.value<Signal>());
+        }
         break;
 
     case Commands::FakeReadAlarms:
@@ -225,12 +241,10 @@ void Protocom::writeCommand(Queries::Commands cmd, QVariant item)
         Q_ASSERT(item.canConvert<Signal>());
         if (item.canConvert<Signal>())
         {
-            const auto signal = item.value<Signal>();
-            if (isValidRegs(signal.addr, signal.value))
             {
-                const auto dict = settings<InterfaceInfo<ProtocomGroup>>().dictionary();
-                quint8 block = dict.value(signal.addr).block;
-                d->handleBlk(protoCmd, signal.addr, StdFunc::arrayFromNumber(quint8(block)), signal.value);
+                const auto signal = item.value<Signal>();
+                if (isValidRegs(signal.addr, signal.value))
+                    d->handleBlk(protoCmd, item.value<Signal>());
             }
         }
         break;

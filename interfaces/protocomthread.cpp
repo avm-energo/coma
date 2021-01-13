@@ -6,7 +6,6 @@
 #include "../gen/logclass.h"
 #include "../gen/s2.h"
 #include "../gen/stdfunc.h"
-#include "protocom.h"
 
 #include <QDebug>
 //#include <QMetaEnum>
@@ -352,15 +351,6 @@ void ProtocomThread::parseRequest(const CommandStruct &cmdStr)
     case Commands::FakeReadRegData:
     {
 
-        const quint16 number = m_currentCommand.arg1.value<quint16>();
-
-        const auto *ptr = static_cast<const Protocom *>(BaseInterface::iface());
-        const auto dict = ptr->settings<InterfaceInfo<ProtocomGroup>>().dictionary();
-
-        Q_ASSERT(dict.contains(number));
-        const quint16 blk = dict.value(number).block;
-
-        m_currentCommand.ba = StdFunc::arrayFromNumber(quint8(blk));
         QByteArray ba = prepareBlock(Commands::ReadBlkData, m_currentCommand.ba);
         emit writeDataAttempt(ba);
         break;
