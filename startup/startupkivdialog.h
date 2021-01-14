@@ -13,7 +13,7 @@ public:
     explicit StartupKIVDialog(QWidget *parent = nullptr);
     ~StartupKIVDialog();
 
-    void GetCorBd() override;
+    // void GetCorBd() override;
 
 private:
     bool WriteCheckPassword();
@@ -24,7 +24,7 @@ private:
         float corTg[3];     // коррекция  tg δ вводов
         float Iunb_init;    // Начальное действ. значение тока небаланса
         float Phy_unb_init; // Начальное значение угла тока небаланса
-        quint32 stat;
+                            //   quint32 stat;       // Reserved trash bin
     };
 
     CorData *CorBlock;

@@ -15,6 +15,8 @@ private:
 
 private slots:
     void AcceptSettings();
+signals:
+    void disableAlarmUpdate();
 };
 
 #endif // SETTINGSDIALOG_H

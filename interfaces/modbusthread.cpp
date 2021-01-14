@@ -212,29 +212,45 @@ void ModbusThread::send(QByteArray &ba)
 
 void ModbusThread::parseAndSetToOutList(QByteArray &ba)
 {
-    switch (m_commandSent.cmd)
+    //    switch (m_commandSent.cmd)
+    //    {
+    //    case CommandsMBS::MBS_READINPUTREGISTER:
+    //    {
+    //        getFloatSignals(ba);
+    //        break;
+    //    }
+    //    case CommandsMBS::MBS_READHOLDINGREGISTERS:
+    //    {
+    //        getIntegerSignals(ba);
+    //        break;
+    //    }
+    //    case CommandsMBS::MBS_WRITEMULTIPLEREGISTERS:
+    //    {
+    //        getCommandResponse(ba);
+    //        break;
+    //    }
+    //    case CommandsMBS::MBS_READCOILS:
+    //    {
+    //        getSinglePointSignals(ba);
+    //        break;
+    //    }
+    //    default:
+    //        break;
+    //    }
+    using namespace CommandsMBS;
+    switch (m_commandSent.type)
     {
-    case CommandsMBS::MBS_READINPUTREGISTER:
-    {
+    case TypeId::Float:
         getFloatSignals(ba);
         break;
-    }
-    case CommandsMBS::MBS_READHOLDINGREGISTERS:
-    {
+    case TypeId::Uint32:
         getIntegerSignals(ba);
         break;
-    }
-    case CommandsMBS::MBS_WRITEMULTIPLEREGISTERS:
-    {
-        getCommandResponse(ba);
-        break;
-    }
-    case CommandsMBS::MBS_READCOILS:
-    {
+    case TypeId::Bool:
         getSinglePointSignals(ba);
         break;
-    }
     default:
+        getCommandResponse(ba);
         break;
     }
 }
@@ -300,11 +316,12 @@ void ModbusThread::getCommandResponse(QByteArray &bain)
         Log->error("Wrong inbuf size");
         return;
     }
-    int byteSize = bain.data()[2];
+    // ?
+    int byteSize = bain.at(2);
     QByteArray ba = bain.mid(3);
     if (byteSize > ba.size())
     {
-        ERMSG("Wrong byte size in response");
+        qCritical("Wrong byte size in response");
         return;
     }
     DataTypes::GeneralResponseStruct grs;

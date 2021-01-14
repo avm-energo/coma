@@ -303,3 +303,10 @@ int AlarmWidget::count() const
 {
     return m_counter;
 }
+
+void AlarmWidget::disableAlarm()
+{
+    for (const auto &alarm : m_alarms)
+        disconnect(m_timer, &QTimer::timeout, alarm, &BaseAlarm::reqUpdate);
+    //   alarm->disable();
+}

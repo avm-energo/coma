@@ -28,13 +28,13 @@ public:
 
     QWidget *buttonWidget();
     bool WriteCheckPassword();
-    virtual void GetCorBd();
 
 protected:
     virtual void WriteCorBd() = 0;
-    virtual void WriteCor() = 0;
+    virtual void WriteCor();
     void SetCor();
-    virtual void ResetCor() = 0;
+    virtual void ResetCor();
+    virtual void GetCorBd();
     void updateFloatData();
     void updateFloatData(const DataTypes::FloatStruct &fl) override;
     void updateStatus();
@@ -58,7 +58,7 @@ private:
     void FillBd(QWidget *parent, QString Name, float Value);
 
 public slots:
-    void GetCorBdButton();
+    // void GetCorBdButton();
     void reqUpdate() override;
 };
 

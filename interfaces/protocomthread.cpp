@@ -668,10 +668,11 @@ void handleFloatArray(const QByteArray &ba, quint32 sigAddr, quint32 sigCount)
 {
     if (!sigCount)
         handleFloat(ba, sigAddr);
-    Q_ASSERT(ba.size() == int(sigCount * 4));
+    // NOTE Проблема со стартовыми регистрами, получим на один регистр больше чем по другим протоколам
+    // Q_ASSERT(ba.size() == int(sigCount * 4));
     for (quint32 i = 0; i != sigCount; i++)
     {
-        QByteArray temp = ba.mid(sizeof(qint32) * i, sizeof(qint32));
+        QByteArray temp = ba.mid(sizeof(float) * i, sizeof(float));
         handleFloat(temp, sigAddr + i);
     }
 }

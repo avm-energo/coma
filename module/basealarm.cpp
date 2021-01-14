@@ -19,6 +19,11 @@ BaseAlarm::BaseAlarm(QWidget *parent) : QWidget(parent), m_actualAlarmFlags(0x00
     m_alarmColor = Qt::red;
 }
 
+void BaseAlarm::disable()
+{
+    disconnect(this);
+}
+
 // void BaseAlarm::setInterface(BaseInterface *interface) noexcept
 //{
 //    m_iface = interface;

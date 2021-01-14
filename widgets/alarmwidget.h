@@ -16,6 +16,7 @@ public:
     void addAlarm(BaseAlarm *alarm);
     void addAlarm(BaseAlarm *alarm, const QString caption);
     int count() const;
+    void disableAlarm();
 
 public slots:
 

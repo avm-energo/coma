@@ -142,7 +142,9 @@ private:
     //    Error::Msg GetSignalsFromByteArray(
     //        QByteArray &bain, int startadr, QList<BSISignalStruct> &BSIsig, unsigned int &size);
     //    Error::Msg GetFloatSignalsFromByteArray(QByteArray &bain, int startadr, QList<SignalStruct> &Sig, int &size);
-
+    bool isValidRegs(const CommandsMBS::CommandStruct &cmd) const;
+    CommandsMBS::TypeId type(const quint32 addr, const quint32 count) const;
+    CommandsMBS::TypeId type(const quint32 addr, const quint32 count, const CommandsMBS::Commands cmd) const;
 private slots:
     //    void Polling();
     void SendReconnectSignal();

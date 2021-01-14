@@ -22,15 +22,6 @@ enum Commands : quint8
 };
 Q_ENUM_NS(Commands)
 
-struct CommandStruct
-{
-    Commands cmd;
-    quint16 adr;
-    quint16 quantity;
-    //    quint8 sizebytes;
-    QByteArray data;
-};
-
 enum ModbusGroupsEnum
 {
     SIGNALTYPE = 0,
@@ -49,9 +40,21 @@ enum TypeId : int
     Uint32,
     /// 2 registers contain float
     Float,
+    None,
+
     // Smth else
 };
 Q_ENUM_NS(TypeId)
+
+struct CommandStruct
+{
+    Commands cmd;
+    quint16 adr;
+    quint16 quantity;
+    //    quint8 sizebytes;
+    QByteArray data;
+    TypeId type;
+};
 
 }
 Q_DECLARE_METATYPE(CommandsMBS::CommandStruct)

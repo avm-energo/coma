@@ -21,9 +21,14 @@ void SettingsDialog::SetupUI()
 {
     using namespace Style;
     QVBoxLayout *vlyout = new QVBoxLayout;
-    QHBoxLayout *hlyout = new QHBoxLayout;
-    hlyout->addWidget(WDFunc::NewChB2(this, "writelogchb", "Запись обмена данными в файл"));
-    vlyout->addLayout(hlyout);
+    // QHBoxLayout *hlyout = new QHBoxLayout;
+    vlyout->addWidget(WDFunc::NewChB2(this, "writelogchb", "Запись обмена данными в файл"));
+    // auto cb = WDFunc::NewChB2(this, "updatealarm", "Обновление сигнализации");
+    auto pb = new QPushButton("Выключить обновление сигнализации");
+    connect(pb, &QCheckBox::clicked, this, &SettingsDialog::disableAlarmUpdate);
+    vlyout->addWidget(pb);
+    //  vlyout->addLayout(hlyout);
+    //  hlyout=new QHBoxLayout;
     vlyout->addWidget(WDFunc::NewLBLAndLE(this, "Степень усреднения для регулировки", "reqcount", true));
 
     auto themeEnum = QMetaEnum::fromType<Name>;
@@ -45,7 +50,7 @@ void SettingsDialog::SetupUI()
         styleLoader.save();
     });
 
-    QPushButton *pb = new QPushButton("Готово");
+    pb = new QPushButton("Готово");
     connect(pb, &QAbstractButton::clicked, this, &SettingsDialog::AcceptSettings);
     vlyout->addWidget(pb);
     setLayout(vlyout);

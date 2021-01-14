@@ -96,8 +96,11 @@ Module *Module::createModule(QTimer *updateTimer, AlarmWidget *aw)
         case Model::KIV:
         {
             JOUR = new JournKIV(m);
-            ConfigKIV *CKIV = new ConfigKIV;
-            m->addDialogToList(new ConfKIVDialog(CKIV), "Конфигурирование", "conf1");
+            if (board.interfaceType() != Board::InterfaceType::RS485)
+            {
+                ConfigKIV *CKIV = new ConfigKIV;
+                m->addDialogToList(new ConfKIVDialog(CKIV), "Конфигурирование", "conf1");
+            }
             CheckKIVDialog *cdkiv = new CheckKIVDialog;
             m->addDialogToList(cdkiv, "Проверка");
 #ifdef AVM_DEBUG
@@ -112,8 +115,11 @@ Module *Module::createModule(QTimer *updateTimer, AlarmWidget *aw)
         case Model::KTF:
         {
             JOUR = new JournKTF(m);
-            ConfigKTF *CKTF = new ConfigKTF;
-            m->addDialogToList(new ConfKTFDialog(CKTF), "Конфигурирование", "conf1");
+            if (board.interfaceType() != Board::InterfaceType::RS485)
+            {
+                ConfigKTF *CKTF = new ConfigKTF;
+                m->addDialogToList(new ConfKTFDialog(CKTF), "Конфигурирование", "conf1");
+            }
             CheckKTFDialog *cdktf = new CheckKTFDialog;
             m->addDialogToList(cdktf);
 #ifdef AVM_DEBUG
@@ -131,8 +137,11 @@ Module *Module::createModule(QTimer *updateTimer, AlarmWidget *aw)
         case Model::KDV:
         {
             JOUR = new JournKDV(m);
-            ConfigKDV *CKDV = new ConfigKDV;
-            m->addDialogToList(new ConfKDVDialog(CKDV), "Конфигурирование", "conf1");
+            if (board.interfaceType() != Board::InterfaceType::RS485)
+            {
+                ConfigKDV *CKDV = new ConfigKDV;
+                m->addDialogToList(new ConfKDVDialog(CKDV), "Конфигурирование", "conf1");
+            }
             CheckKDVDialog *cdkdv = new CheckKDVDialog;
             m->addDialogToList(cdkdv);
 #ifdef AVM_DEBUG

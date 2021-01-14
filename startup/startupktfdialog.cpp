@@ -48,7 +48,8 @@ void StartupKTFDialog::SetupUI()
     row++;
 
     QPushButton *pb = new QPushButton("Прочитать из модуля");
-    connect(pb, &QAbstractButton::clicked, this, &AbstractStartupDialog::GetCorBdButton);
+    // NOTE Use button widget instead
+    //   connect(pb, &QAbstractButton::clicked, this, &AbstractStartupDialog::GetCorBd);
     if (StdFunc::IsInEmulateMode())
         pb->setEnabled(false);
 

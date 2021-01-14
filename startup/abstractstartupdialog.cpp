@@ -46,7 +46,7 @@ QWidget *AbstractStartupDialog::buttonWidget()
     QString tmps = ((DEVICETYPE == DEVICETYPE_MODULE) ? "модуля" : "прибора");
 
     const QList<QPair<QPair<QString, QIcon>, std::function<void()>>> funcs {
-        { { "Получить из" + tmps, QIcon(":/icons/tnread.svg") }, [this]() { GetCorBdButton(); } },        //
+        { { "Получить из" + tmps, QIcon(":/icons/tnread.svg") }, [this]() { GetCorBd(); } },              //
         { { "Записать в модуль", QIcon(":/icons/tnwrite.svg") }, [this]() { WriteCorBd(); } },            //
         { { "Сбросить начальные значения", QIcon(":/icons/tnreset.svg") }, [this]() { ResetCor(); } },    //
         { { "Задать начальные значения", QIcon(":/icons/tnapprove.svg") }, [this]() { WriteCor(); } },    //
@@ -83,6 +83,8 @@ QWidget *AbstractStartupDialog::buttonWidget()
 
 void AbstractStartupDialog::GetCorBd()
 {
+    BaseInterface::iface()->reqStartup(m_startupBlockDescription.initStartRegAdr,
+        m_startupBlockDescription.size / sizeof(float)); // /4 => float by default
 }
 
 void AbstractStartupDialog::SetCor()
@@ -101,6 +103,13 @@ void AbstractStartupDialog::SetCor()
     //        else
     //            QMessageBox::information(this, "INFO", "Ошибка");
     //    }
+}
+
+void AbstractStartupDialog::ResetCor()
+{
+    if (WriteCheckPassword() != Error::Msg::NoError)
+        return;
+    BaseInterface::iface()->writeCommand(Queries::QC_ClearStartupValues);
 }
 
 float AbstractStartupDialog::ToFloat(QString text)
@@ -190,16 +199,23 @@ void AbstractStartupDialog::FillBd(QWidget *parent, QString Name, float Value)
     }
 }
 
-void AbstractStartupDialog::GetCorBdButton()
-{
-    BaseInterface::iface()->reqStartup(m_startupBlockDescription.initStartRegAdr,
-        m_startupBlockDescription.size / sizeof(float)); // /4 => float by default
-}
+// void AbstractStartupDialog::GetCorBdButton()
+//{
+//    BaseInterface::iface()->reqStartup(m_startupBlockDescription.initStartRegAdr,
+//        m_startupBlockDescription.size / sizeof(float)); // /4 => float by default
+//}
 
 bool AbstractStartupDialog::WriteCheckPassword()
 {
     KeyPressDialog dlg; // = new KeyPressDialog;
     return dlg.CheckPassword("121941");
+}
+
+void AbstractStartupDialog::WriteCor()
+{
+    if (WriteCheckPassword() != Error::Msg::NoError)
+        return;
+    BaseInterface::iface()->writeCommand(Queries::QC_SetStartupValues);
 }
 
 // void AbstractStartupDialog::TimerTimeout() { MessageTimer->stop(); }

@@ -12,9 +12,12 @@ class BaseAlarm : public QWidget
 public:
     explicit BaseAlarm(QWidget *parent = nullptr);
     //    explicit BaseAlarm(QWidget *parent = nullptr);
-    virtual void reqUpdate() = 0;
+
     //    void setInterface(BaseInterface *interface) noexcept;
     //    BaseInterface *iface() const noexcept;
+    void disable();
+public slots:
+    virtual void reqUpdate() = 0;
 
 protected:
     std::bitset<32> m_alarmFlags;       // '1' equals alarm
