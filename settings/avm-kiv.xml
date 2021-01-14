@@ -201,13 +201,13 @@
           <function>03</function>
           <type>uint32</type>
           <start-addr>4600</start-addr>
-          <count>22</count>
+          <count>2</count>
         </group>
         <group id="wtime">
           <function>10</function>
           <type>uint32</type>
           <start-addr>4600</start-addr>
-          <count>22</count>
+          <count>2</count>
         </group>
       </modbus>
       <protocom>
@@ -243,7 +243,7 @@
         </group>
         <group id="startValue">
           <start-addr>4000</start-addr>
-          <count>12</count>
+          <count>11</count>
           <block>7</block>
         </group>
         <group id="alarmModule">
