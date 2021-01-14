@@ -217,22 +217,17 @@ QWidget *Coma::Least()
     lyout->addLayout(inlyout);
 
     MainTW = new QStackedWidget(this);
+    MainTW->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     MainLW = new QListWidget(this);
-    // MainLW->setMinimumWidth(this->width() / 6);
-    //  Main
-    // MainTW->setObjectName("maintw");
-    // MainTW->setTabPosition(QTabWidget::West);
-    inlyout->addWidget(MainLW, 0, Qt::AlignLeft);
-    inlyout->addWidget(MainTW, 0, Qt::AlignRight);
+
+    inlyout->addWidget(MainLW);
+    inlyout->addWidget(MainTW);
 
     MainTW->hide();
     MainLW->hide();
     connect(MainTW, &QStackedWidget::currentChanged, this, &Coma::MainTWTabChanged);
 
     QFrame *line = new QFrame;
-    // line->setLineWidth(0);
-    // line->setMidLineWidth(1);
-    // line->setFrameStyle(QFrame::Sunken | QFrame::HLine);
     lyout->addWidget(line);
 
     inlyout = new QHBoxLayout;
@@ -780,7 +775,8 @@ void Coma::prepare()
     MainTW->show();
     MainLW->show();
     qDebug() << MainTW->width() << width();
-    MainLW->setMinimumWidth(MainTW->width() / 5);
+    MainLW->setMinimumWidth(width() / 6);
+    MainLW->setMaximumWidth(width() / 5);
     AlrmTimer->start();
     qInfo() << NAMEOF(MainTW) << "created";
     if (board.interfaceType() == Board::InterfaceType::USB)
