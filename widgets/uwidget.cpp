@@ -5,7 +5,7 @@
 #include "../gen/datamanager.h"
 #include "../gen/stdfunc.h"
 #include "wd_func.h"
-
+//#define UWIDGET_DEBUG
 #include <QCoreApplication>
 #include <QDebug>
 #include <QEventLoop>

@@ -152,9 +152,9 @@ void TimeDialog::uponInterfaceSetting()
 
 void TimeDialog::updateBitStringData(const DataTypes::BitStringStruct &bs)
 {
-    // Time doesnt have address
-    // USB +
-    if (bs.sigAdr)
+    if (bs.sigAdr              // USB doesnt know address so is empty
+        && (bs.sigAdr != 4600) // other interfaces know address
+    )
         return;
     SetTime(bs.sigVal);
 }

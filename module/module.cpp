@@ -18,13 +18,11 @@
 #include "../startup/startupkivdialog.h"
 #include "../startup/startupktfdialog.h"
 #include "../widgets/udialog.h"
-#include "alarmkdv.h"
-#include "alarmkiv.h"
-#include "alarmktf.h"
 #include "journkdv.h"
 #include "journkiv.h"
 #include "journktf.h"
 #include "modules.h"
+//#define XML_DEBUG
 
 #include <QDir>
 #include <QtXml>
@@ -302,8 +300,9 @@ ModuleSettings *Module::settings() const
 
 quint32 Module::parseInt32(QDomElement domElement) const
 {
-
+#ifdef XML_DEBUG
     qDebug() << domElement.attribute("name", "") << domElement.text();
+#endif
     if (domElement.text().isEmpty())
         return 0;
     bool ok;
@@ -315,7 +314,9 @@ quint32 Module::parseInt32(QDomElement domElement) const
 quint32 Module::parseHexInt32(QDomElement domElement) const
 {
     auto str = domElement.text();
+#ifdef XML_DEBUG
     qDebug() << domElement.attribute("name", "") << domElement.text();
+#endif
     if (domElement.text().isEmpty())
         return 0;
     Q_ASSERT(str.startsWith("0x"));
@@ -332,7 +333,9 @@ QStringList Module::parseStringList(QDomElement domElement) const
     QStringList description;
     Q_ASSERT(!nodes.isEmpty());
     int i = 0;
+#ifdef XML_DEBUG
     qDebug() << "TagName: " << domElement.tagName() << domElement.attribute("name", "");
+#endif
     while (i != nodes.count())
     {
         description.push_back(nodes.item(i++).toElement().text());
@@ -342,8 +345,10 @@ QStringList Module::parseStringList(QDomElement domElement) const
 
 InterfaceInfo<CommandsMBS::ModbusGroup> Module::parseModbus(QDomElement domElement)
 {
+#ifdef XML_DEBUG
     qDebug() << domElement.text();
     qDebug() << "TagName: " << domElement.tagName();
+#endif
     const auto &nodes = domElement.childNodes();
     Q_ASSERT(!nodes.isEmpty());
     int i = 0;
@@ -356,15 +361,18 @@ InterfaceInfo<CommandsMBS::ModbusGroup> Module::parseModbus(QDomElement domEleme
         settings.addGroup(test);
         qDebug() << group.attribute("id", "") << group.text();
     }
-
+#ifdef XML_DEBUG
     qDebug() << settings.groups().count();
+#endif
     return settings;
 }
 
 InterfaceInfo<Proto::ProtocomGroup> Module::parseProtocom(QDomElement domElement)
 {
+#ifdef XML_DEBUG
     qDebug() << domElement.text();
     qDebug() << "TagName: " << domElement.tagName();
+#endif
     const auto &nodes = domElement.childNodes();
     Q_ASSERT(!nodes.isEmpty());
     int i = 0;
@@ -374,10 +382,13 @@ InterfaceInfo<Proto::ProtocomGroup> Module::parseProtocom(QDomElement domElement
         const auto &group = nodes.item(i++).toElement();
         Proto::ProtocomGroup test(group);
         settings.addGroup(test);
+#ifdef XML_DEBUG
         qDebug() << group.attribute("id", "") << group.text();
+#endif
     }
-
+#ifdef XML_DEBUG
     qDebug() << settings.groups().count();
+#endif
     return settings;
 }
 
@@ -390,7 +401,9 @@ InterfaceInfo<Commands104::Iec104Group> Module::parseIec104(QDomElement domEleme
 DataTypes::Alarm Module::parseAlarm(QDomElement domElement)
 {
     DataTypes::Alarm alarm;
+#ifdef XML_DEBUG
     qDebug() << "TagName: " << domElement.tagName() << domElement.attribute("name", "");
+#endif
     alarm.name = domElement.attribute("name", "");
     auto element = domElement.firstChildElement("string-array");
     alarm.desc = parseStringList(element);
@@ -413,7 +426,9 @@ DataTypes::Alarm Module::parseAlarm(QDomElement domElement)
 DataTypes::Journal Module::parseJournal(QDomElement domElement)
 {
     DataTypes::Journal journal;
+#ifdef XML_DEBUG
     qDebug() << "TagName: " << domElement.tagName() << domElement.attribute("name", "");
+#endif
     journal.name = domElement.attribute("name", "");
     journal.id = parseInt32(domElement.firstChildElement("quint32"));
     domElement = domElement.firstChildElement("string-array");
@@ -434,8 +449,10 @@ bool isCorrectModule(const QString &typem, const QString &typeb)
     const auto &board = Board::GetInstance();
     quint16 mtypem = typem.toUInt(nullptr, 16);
     quint16 mtypeb = typeb.toUInt(nullptr, 16);
+#ifdef XML_DEBUG
     qDebug() << typem << mtypem;
     qDebug() << typem << mtypeb;
+#endif
     if (board.typeB() != mtypeb)
         return false;
     if (board.typeM() != mtypem)
@@ -463,8 +480,9 @@ void Module::traverseNode(const QDomNode &node)
                 }
                 if (domElement.tagName() == "string-array")
                 {
-
+#ifdef XML_DEBUG
                     qDebug() << "Attr: " << domElement.attribute("name", "");
+#endif
                     parseStringList(domElement);
                     domNode = domNode.nextSibling();
                     continue;
@@ -489,9 +507,9 @@ void Module::traverseNode(const QDomNode &node)
                 }
                 if (domElement.tagName() == "journal")
                 {
-
+#ifdef XML_DEBUG
                     qDebug() << "Attr: " << domElement.attribute("name", "");
-
+#endif
                     const auto journal = parseJournal(domElement);
                     if (journal.name.contains("work", Qt::CaseInsensitive))
                         m_settings->journals.insert(JournalType::Work, journal);

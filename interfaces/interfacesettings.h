@@ -23,12 +23,16 @@ template <template <typename...> class base, typename derived> struct is_base_of
 template <template <typename...> class base, typename derived>
 using is_base_of_template = typename is_base_of_template_impl<base, derived>::type;
 
+//#define XML_DEBUG
+
 template <typename FuncCode, typename TypeId> struct BaseGroup
 {
-    BaseGroup()=default;
+    BaseGroup() = default;
     BaseGroup(QDomElement domElement)
     {
+#ifdef XML_DEBUG
         qDebug() << domElement.attribute("id", "") << domElement.text();
+#endif
         id = domElement.attribute("id", "");
         //   Q_ASSERT(!id.isEmpty());
         domElement = domElement.firstChildElement();
@@ -37,10 +41,14 @@ template <typename FuncCode, typename TypeId> struct BaseGroup
             if (domElement.tagName() == "function")
             {
                 bool ok;
+#ifdef XML_DEBUG
                 qDebug() << domElement.text().toUInt(&ok, 16);
-                Q_ASSERT(ok);
+#endif
                 function = static_cast<FuncCode>(domElement.text().toUInt(&ok, 16));
+                Q_ASSERT(ok);
+#ifdef XML_DEBUG
                 qDebug() << function;
+#endif
                 domElement = domElement.nextSiblingElement();
                 continue;
             }
@@ -48,8 +56,9 @@ template <typename FuncCode, typename TypeId> struct BaseGroup
             {
                 QString buffer = domElement.text();
                 Q_ASSERT(!buffer.isEmpty());
+#ifdef XML_DEBUG
                 qDebug() << buffer;
-
+#endif
                 auto types = QMetaEnum::fromType<TypeId>;
                 Q_ASSERT(types().isValid());
                 buffer[0] = buffer[0].toUpper();
@@ -62,14 +71,18 @@ template <typename FuncCode, typename TypeId> struct BaseGroup
             }
             if (domElement.tagName() == "start-addr")
             {
+#ifdef XML_DEBUG
                 qDebug() << domElement.text().toUInt();
+#endif
                 startAddr = domElement.text().toUInt();
                 domElement = domElement.nextSiblingElement();
                 continue;
             }
             if (domElement.tagName() == "count")
             {
+#ifdef XML_DEBUG
                 qDebug() << domElement.text().toUInt();
+#endif
                 count = domElement.text().toUInt();
                 domElement = domElement.nextSiblingElement();
                 continue;
@@ -125,7 +138,7 @@ namespace CommandsMBS
 {
 struct ModbusGroup : BaseGroup<Commands, TypeId>
 {
-    ModbusGroup()=default;
+    ModbusGroup() = default;
     ModbusGroup(QDomElement domElement) : BaseGroup<Commands, TypeId>(domElement)
     {
     }
@@ -137,7 +150,7 @@ namespace Proto
 {
 struct ProtocomGroup : BaseGroup<Commands, TypeId>
 {
-    ProtocomGroup()=default;
+    ProtocomGroup() = default;
     ProtocomGroup(QDomElement domElement) : BaseGroup<Commands, TypeId>(domElement)
     {
         domElement = domElement.firstChildElement();
@@ -145,7 +158,9 @@ struct ProtocomGroup : BaseGroup<Commands, TypeId>
         {
             if (domElement.tagName() == "block")
             {
+#ifdef XML_DEBUG
                 qDebug() << domElement.text().toUInt();
+#endif
                 block = domElement.text().toUInt();
             }
             domElement = domElement.nextSiblingElement();
@@ -161,7 +176,7 @@ namespace Commands104
 {
 struct Iec104Group : BaseGroup<Commands, TypeId>
 {
-    Iec104Group()=default;
+    Iec104Group() = default;
     Iec104Group(QDomElement domElement) : BaseGroup<Commands, TypeId>(domElement)
     {
     }
