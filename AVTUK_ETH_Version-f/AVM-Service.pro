@@ -320,4 +320,5 @@ DISTFILES += \
 RESOURCES += \
     ../QDarkStyleSheet/qdarkstyle/style.qrc \
     ../images/vectorIcons.qrc \
+    ../settings/settings.qrc \
     ../widgets/styles.qrc

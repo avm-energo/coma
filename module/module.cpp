@@ -14,6 +14,7 @@
 #include "../dialogs/journalsdialog.h"
 #include "../dialogs/timedialog.h"
 #include "../gen/s2.h"
+#include "../gen/stdfunc.h"
 #include "../startup/startupkdvdialog.h"
 #include "../startup/startupkivdialog.h"
 #include "../startup/startupktfdialog.h"
@@ -574,14 +575,10 @@ void Module::traverseNode(const QDomNode &node)
 bool Module::loadSettings()
 {
     const auto moduleName = Board::GetInstance().moduleName();
-    auto directory = QDir::current();
-    directory.cdUp();
-    // directory.cdUp();
-    directory.cd("settings");
+    QDir directory(StdFunc::GetSystemHomeDir());
     qDebug() << directory;
     auto allFiles = directory.entryList(QDir::Files);
     auto xmlFiles = allFiles.filter(".xml");
-    // xmlFiles.contains()
     qDebug() << xmlFiles;
     QDomDocument domDoc;
     QFile file;
@@ -589,6 +586,25 @@ bool Module::loadSettings()
     {
         if (xmlFile.contains(moduleName, Qt::CaseInsensitive))
             file.setFileName(directory.filePath(xmlFile));
+    }
+    if (file.fileName().isEmpty())
+    {
+        directory = QDir(":/module");
+        allFiles = directory.entryList(QDir::Files);
+        xmlFiles = allFiles.filter(".xml");
+        qDebug() << xmlFiles;
+        for (const auto &xmlFile : xmlFiles)
+        {
+            if (!xmlFile.contains(moduleName, Qt::CaseInsensitive))
+                continue;
+            if (!QFile::copy(directory.filePath(xmlFile), StdFunc::GetSystemHomeDir() + xmlFile))
+            {
+                qCritical() << Error::DescError;
+                qInfo() << directory.filePath(xmlFile) << StdFunc::GetSystemHomeDir() + xmlFile;
+            }
+
+            return loadSettings();
+        }
     }
     if (file.open(QIODevice::ReadOnly))
     {
