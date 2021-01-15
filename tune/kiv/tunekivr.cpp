@@ -11,13 +11,13 @@
 TuneKIVR::TuneKIVR(int tuneStep, ConfigKIV *ckiv, QWidget *parent) : AbstractTuneDialog(tuneStep, parent)
 {
     CKIV = ckiv;
-//    TKIV = kiv;
+    //    TKIV = kiv;
     //    m_tuneStep = 1;
     //    SetBac(TKIV->m_Bac, 1, sizeof(TKIV->m_Bac));
     m_bac = new Bac;
     m_bda = new Bda;
     SetBac(m_bac);
-//    SetBac(TKIV->m_Bac);
+    //    SetBac(TKIV->m_Bac);
     m_BacWidgetIndex = addWidgetToTabWidget(m_bac->widget(), "Настроечные параметры");
     m_BdaWidgetIndex = addWidgetToTabWidget(m_bda->widget(), "Текущие данные");
     //    SetupUI();
@@ -114,9 +114,8 @@ Error::Msg TuneKIVR::showPreWarning()
 
 Error::Msg TuneKIVR::checkTuneCoefs()
 {
-    QVector<float *> tcoefs = { &m_bac->data()->KmU[0], &m_bac->data()->KmI1[0],
-        &m_bac->data()->KmI2[0], &m_bac->data()->KmI4[0], &m_bac->data()->KmI8[0],
-        &m_bac->data()->KmI16[0], &m_bac->data()->KmI32[0] };
+    QVector<float *> tcoefs = { &m_bac->data()->KmU[0], &m_bac->data()->KmI1[0], &m_bac->data()->KmI2[0],
+        &m_bac->data()->KmI4[0], &m_bac->data()->KmI8[0], &m_bac->data()->KmI16[0], &m_bac->data()->KmI32[0] };
     for (int i = 0; i < 3; ++i)
     {
         foreach (float *coef, tcoefs)
@@ -170,8 +169,8 @@ Error::Msg TuneKIVR::processR120()
     showTWTab(m_BacWidgetIndex);
     //    TKIV->updateBacWidget();
     saveAllTuneCoefs();
-    writeTuneCoefs();
-    return Error::Msg::NoError;
+    return writeTuneCoefs();
+    //    return Error::Msg::NoError;
 }
 
 void TuneKIVR::setR(int r)

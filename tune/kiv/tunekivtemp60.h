@@ -68,9 +68,8 @@ private:
     Error::Msg analogMeasurement();
     Error::Msg inputEnergomonitorValues();
 
-    Error::Msg calcTuneCoefsAndWrite();
+    Error::Msg calcTuneCoefs();
     void loadIntermediateResults();
-    Error::Msg showTuneCoefs();
 
 signals:
     void closeShowTuneDialog();

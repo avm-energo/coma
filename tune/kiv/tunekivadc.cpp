@@ -226,7 +226,7 @@ Error::Msg TuneKIVADC::Tmk0()
 Error::Msg TuneKIVADC::SendBac()
 {
     m_bac->updateWidget();
-    if (!writeTuneCoefs())
+    if (writeTuneCoefs() != Error::Msg::NoError)
         return Error::Msg::GeneralError;
     if (!loadWorkConfig())
         return Error::Msg::GeneralError;

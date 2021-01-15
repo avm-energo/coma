@@ -42,7 +42,10 @@ void TuneKIVTemp60::setMessages()
     if (m_tuneStep == 3)
         m_messages.append("8. Ввод данных энергомонитора и сохранение промежуточных данных...");
     else
-        m_messages.append("8. Ввод данных энергомонитора и запись коэффициентов в модуль...");
+    {
+        m_messages.append("8. Ввод данных энергомонитора...");
+        m_messages.append("9. Запись коэффициентов в модуль...");
+    }
 }
 
 void TuneKIVTemp60::setTuneFunctions()
@@ -65,35 +68,9 @@ void TuneKIVTemp60::setTuneFunctions()
     m_tuneFunctions[m_messages.at(count++)] = func;
     func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVTemp60::inputEnergomonitorValues);
     m_tuneFunctions[m_messages.at(count++)] = func;
+    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVTemp60::writeTuneCoefs);
+    m_tuneFunctions[m_messages.at(count++)] = func;
 }
-
-// void TuneKIVTemp60::FillBac(int bacnum)
-//{
-//    Q_UNUSED(bacnum);
-//    TKIV->updateBacWidget();
-//}
-
-// void TuneKIVTemp60::FillBackBac(int bacnum)
-//{
-//    TKIV->updateFromBacWidget();
-//    Q_UNUSED(bacnum);
-//}
-
-// QWidget *TuneKIVTemp60::MainUI()
-//{
-//    QWidget *w = new QWidget;
-//    QVBoxLayout *lyout = new QVBoxLayout;
-//    QTabWidget *tw = new QTabWidget;
-//    tw->setObjectName("tunetw");
-//    QString ConfTWss = "QTabBar::tab:selected {background-color: " + QString(Colors::Tab) + ";}";
-//    tw->tabBar()->setStyleSheet(ConfTWss);
-//    tw->addTab(m_bac->widget(), "Настроечные параметры");
-//    tw->addTab(TKIV->BdaWidget(), "Текущие данные");
-//    tw->addTab(m_bd0->widget(), "Общие данные");
-//    lyout->addWidget(tw);
-//    w->setLayout(lyout);
-//    return w;
-//}
 
 Error::Msg TuneKIVTemp60::setNewConfAndTune()
 {
@@ -108,7 +85,7 @@ Error::Msg TuneKIVTemp60::setNewConfAndTune()
     }
     m_bac->data()->TKPsi_a[0] = m_bac->data()->TKPsi_a[1] = m_bac->data()->TKPsi_a[2] = 0;
     m_bac->data()->TKPsi_b[0] = m_bac->data()->TKPsi_b[1] = m_bac->data()->TKPsi_a[2] = 0;
-    if (!writeTuneCoefs())
+    if (writeTuneCoefs(false) != Error::Msg::NoError)
         return Error::Msg::GeneralError;
     return Error::Msg::NoError;
 }
@@ -121,8 +98,8 @@ Error::Msg TuneKIVTemp60::showTempDialog()
     QString tempstr = (m_tuneStep == KIVTS_60TUNING) ? "+60" : "-20";
     lyout->addWidget(
         WDFunc::NewLBL2(this, "Поместите модуль в термокамеру, установите температуру " + tempstr + " ± 2 °С"));
-    lyout->addWidget(WDFunc::NewPB(this, "", "Готово", [dlg] { dlg->close(); }));
-    lyout->addWidget(WDFunc::NewPB(this, "cancelpb", "Отмена", [dlg] { dlg->close(); }));
+    lyout->addWidget(WDFunc::NewPB(this, "", "Готово", [&dlg] { dlg->close(); }));
+    lyout->addWidget(WDFunc::NewPB(this, "cancelpb", "Отмена", [&dlg] { dlg->close(); }));
     dlg->setLayout(lyout);
     WDFunc::PBConnect(dlg, "cancelpb", static_cast<AbstractTuneDialog *>(this), &AbstractTuneDialog::CancelTune);
     dlg->exec();
@@ -141,8 +118,8 @@ Error::Msg TuneKIVTemp60::waitForTempToRise()
     connect(ww, &WaitWidget::finished, &loop, &QEventLoop::quit);
     ww->Start();
     loop.exec();
-    if (StdFunc::isCancelled())
-        return Error::Msg::ResEmpty;
+    //    if (StdFunc::isCancelled())
+    //        return Error::Msg::ResEmpty;
     return Error::Msg::NoError;
 }
 
@@ -160,9 +137,9 @@ Error::Msg TuneKIVTemp60::showSignalsDialog()
     lyout->addWidget(WDFunc::NewLBL2(this,
         "3. Задайте на РЕТОМ-51 или имитаторе АВМ-КИВ трёхфазный режим токов и напряжений (Uabc, Iabc)"
         "Угол между токами и напряжениями: 89.9 град. (tg 2 % в имитаторе),\n"
-        "Значения напряжений: 57.5 В, токов: 140 мА"));
-    lyout->addWidget(WDFunc::NewPB(this, "", "Готово", [dlg] { dlg->close(); }));
-    lyout->addWidget(WDFunc::NewPB(this, "cancelpb", "Отмена", [dlg] { dlg->close(); }));
+        "Значения напряжений: 57.75 В, токов: 140 мА"));
+    lyout->addWidget(WDFunc::NewPB(this, "", "Готово", [&dlg] { dlg->close(); }));
+    lyout->addWidget(WDFunc::NewPB(this, "cancelpb", "Отмена", [&dlg] { dlg->close(); }));
     dlg->setLayout(lyout);
     WDFunc::PBConnect(dlg, "cancelpb", static_cast<AbstractTuneDialog *>(this), &AbstractTuneDialog::CancelTune);
     dlg->exec();
@@ -183,13 +160,6 @@ Error::Msg TuneKIVTemp60::analogMeasurement()
     m_midTuneStruct.tmk = 0.0;
     while ((!StdFunc::isCancelled()) && (i < StdFunc::tuneRequestCount()))
     {
-        //        BaseInterface::iface()->reqBlockSync(
-        //            1, DataTypes::DataBlockTypes::BdBlock, &TKIV->m_Bda_in, sizeof(TKIV->m_Bda_in));
-        //        BaseInterface::iface()->reqBlockSync(
-        //            0, DataTypes::DataBlockTypes::BdBlock, m_bd0->data(), sizeof(Bd0::BlockData));
-        //        TKIV->updateBdaInWidget();
-        //        //        TKIV->updateBd0Widget();
-        //        m_bd0->updateWidget();
         m_bd0->readAndUpdate();
         m_bdain->readAndUpdate();
         for (int j = 0; j < 6; ++j)
@@ -198,7 +168,6 @@ Error::Msg TuneKIVTemp60::analogMeasurement()
             if (j < 3)
                 m_midTuneStruct.y[j] += m_bdain->data()->phi_next_f[j + 3];
         }
-        //        m_midTuneStruct.tmk += m_bd0.Tmk;
         m_midTuneStruct.tmk += m_bd0->data()->Tmk;
         ++i;
         emit setProgressCount(i);
@@ -223,23 +192,31 @@ Error::Msg TuneKIVTemp60::inputEnergomonitorValues()
     QVBoxLayout *vlyout = new QVBoxLayout;
     vlyout->addWidget(WDFunc::NewLBL2(this, "Ввод значений сигналов c Энергомонитора"));
 
-    vlyout->addWidget(WDFunc::NewLBLAndLE(this, "Uэт", "ValuetuneU", true));
-    vlyout->addWidget(WDFunc::NewLBLAndLE(this, "Iэт", "ValuetuneI", true));
-    vlyout->addWidget(WDFunc::NewLBLAndLE(this, "Yэт", "ValuetuneY", true));
-    vlyout->addWidget(WDFunc::NewLBLAndLE(this, "fэт:", "ValuetuneF", true));
-    QPushButton *pb = new QPushButton("Настроить");
+    vlyout->addWidget(WDFunc::NewLBLAndLE(this, "Uэт, В", "ValuetuneU", true));
+    vlyout->addWidget(WDFunc::NewLBLAndLE(this, "Iэт, мА", "ValuetuneI", true));
+    vlyout->addWidget(WDFunc::NewLBLAndLE(this, "Yэт, град", "ValuetuneY", true));
+    QPushButton *pb = new QPushButton("Продолжить");
     if (m_tuneStep == KIVTS_60TUNING)
-        connect(pb, &QPushButton::clicked, this, &TuneKIVTemp60::saveIntermediateResults);
+        connect(pb, &QPushButton::clicked, [&dlg, this]() {
+            saveIntermediateResults();
+            dlg->close();
+        });
     else
-        connect(pb, &QPushButton::clicked, this, &TuneKIVTemp60::calcTuneCoefsAndWrite);
+        connect(pb, &QPushButton::clicked, [&dlg, this]() {
+            calcTuneCoefs();
+            dlg->close();
+        });
     vlyout->addWidget(pb);
     dlg->setLayout(vlyout);
     dlg->exec();
     return Error::Msg::NoError;
 }
 
-Error::Msg TuneKIVTemp60::calcTuneCoefsAndWrite()
+Error::Msg TuneKIVTemp60::calcTuneCoefs()
 {
+    m_midTuneStruct.uet = StdFunc::toFloat(WDFunc::LEData(this, "ValuetuneU"));
+    m_midTuneStruct.iet = StdFunc::toFloat(WDFunc::LEData(this, "ValuetuneI"));
+    m_midTuneStruct.yet = StdFunc::toFloat(WDFunc::LEData(this, "ValuetuneY"));
     MidTuneStruct tunenegative = m_midTuneStruct;
 
     loadWorkConfig();
@@ -266,12 +243,11 @@ Error::Msg TuneKIVTemp60::calcTuneCoefsAndWrite()
         m_bac->data()->TKPsi_a[i] = ((dYm * dTp * dTp) - (dYp * dTm * dTm)) / (dTp * dTm * (dTp - dTm));
         m_bac->data()->TKPsi_b[i] = ((dYp * dTm) - (dYm * dTp)) / (dTp * dTm * (dTp - dTm));
     }
-    //    TKIV->updateBacWidget();
     m_bac->updateWidget();
-    if (showTuneCoefs() != Error::Msg::NoError)
-        return Error::Msg::GeneralError;
-    return m_bac->writeBlockToModule();
-    //    return Error::Msg::NoError;
+    return Error::Msg::NoError;
+    //    if (showTuneCoefs() != Error::Msg::NoError)
+    //        return Error::Msg::GeneralError;
+    //    return m_bac->writeBlockToModule();
 }
 
 void TuneKIVTemp60::loadIntermediateResults()
@@ -279,39 +255,15 @@ void TuneKIVTemp60::loadIntermediateResults()
     QString cpuserialnum = Board::GetInstance().UID();
     QSettings storedcalibrations(StdFunc::GetSystemHomeDir() + "calibr.ini", QSettings::IniFormat);
     foreach (TuneDescrStruct item, m_tuneDescrVector())
-        *item.parameter
-            = StdFunc::toFloat(storedcalibrations.value(cpuserialnum + "/" + item.parametername).toString());
-}
-
-Error::Msg TuneKIVTemp60::showTuneCoefs()
-{
-    QEventLoop loop;
-    Bac *newbac = new Bac;
-    QDialog *dlg = new QDialog(this);
-    QVBoxLayout *lyout = new QVBoxLayout;
-    dlg->setWindowTitle("Проверка коэффициентов");
-    //    dlg->setAttribute(Qt::WA_DeleteOnClose);
-    dlg->setObjectName("showtunedlg");
-    lyout->addWidget(newbac->widget());
-    //    lyout->addWidget(WDFunc::NewPB(this, "acceptpb", "Записать в модуль", this, &TuneKIVTemp60::acceptTuneCoefs));
-    lyout->addWidget(WDFunc::NewPB(this, "acceptpb", "Записать в модуль", &loop, &QEventLoop::quit));
-    lyout->addWidget(WDFunc::NewPB(this, "cancelpb", "Отменить", [&]() {
-        CancelTune();
-        loop.quit();
-    }));
-    dlg->setLayout(lyout);
-    memcpy(newbac->data(), m_bac->data(), sizeof(Bac::BlockData));
-    newbac->updateWidget();
-    dlg->show();
-    //    QEventLoop loop;
-    //    connect(this, &TuneKIVTemp60::closeShowTuneDialog, &loop, &QEventLoop::quit);
-    loop.exec();
-    dlg->close();
-    return (StdFunc::isCancelled()) ? Error::Msg::GeneralError : Error::Msg::NoError;
+        *item.parameter = StdFunc::toFloat(
+            storedcalibrations.value(cpuserialnum + "/" + item.parametername, 0xcdcdcdcd).toString());
 }
 
 void TuneKIVTemp60::saveIntermediateResults()
 {
+    m_midTuneStruct.uet = StdFunc::toFloat(WDFunc::LEData(this, "ValuetuneU"));
+    m_midTuneStruct.iet = StdFunc::toFloat(WDFunc::LEData(this, "ValuetuneI"));
+    m_midTuneStruct.yet = StdFunc::toFloat(WDFunc::LEData(this, "ValuetuneY"));
     QString cpuserialnum = Board::GetInstance().UID();
     QSettings storedcalibrations(StdFunc::GetSystemHomeDir() + "calibr.ini", QSettings::IniFormat);
     foreach (TuneDescrStruct item, m_tuneDescrVector())

@@ -1,7 +1,7 @@
 #include "usbhidport.h"
 
 #ifdef QT_GUI_LIB
-#include "../AVTUK_ETH_Version-f/coma.h"
+#include "../pro/coma.h"
 #include "../widgets/wd_func.h"
 #endif
 
