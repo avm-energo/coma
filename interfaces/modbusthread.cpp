@@ -3,6 +3,7 @@
 #include "../gen/datamanager.h"
 #include "../gen/helper.h"
 #include "../gen/stdfunc.h"
+#include "baseinterface.h"
 
 #include <QCoreApplication>
 #include <QDebug>
@@ -17,7 +18,7 @@ ModbusThread::ModbusThread(QObject *parent) : QObject(parent)
     Log = new LogClass;
     Log->Init("modbus.log");
     Log->info("=== Log started ===");
-    AboutToFinish = false;
+    // AboutToFinish = false;
 }
 
 ModbusThread::~ModbusThread()
@@ -32,9 +33,11 @@ void ModbusThread::setDeviceAddress(quint8 adr)
 void ModbusThread::Run()
 {
     QByteArray ba;
-    while (!AboutToFinish)
+    const auto &iface = BaseInterface::iface();
+    using State = BaseInterface::State;
+    while (iface->state() != State::Stop)
+    //  while (!AboutToFinish)
     {
-        //        if ()
         CommandsMBS::CommandStruct inp;
         if (DataManager::deQueue(inp) == Error::Msg::NoError)
         {
@@ -409,7 +412,8 @@ void ModbusThread::getSinglePointSignals(QByteArray &bain)
 
 void ModbusThread::FinishThread()
 {
-    AboutToFinish = true;
+    qDebug() << __PRETTY_FUNCTION__;
+    // AboutToFinish = true;
 }
 
 quint16 ModbusThread::CalcCRC(QByteArray &ba) const

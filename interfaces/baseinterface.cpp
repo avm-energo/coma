@@ -1,11 +1,12 @@
 #include "baseinterface.h"
 
-#include "../gen/board.h"
+//#include "../gen/board.h"
 #include "../gen/datamanager.h"
 #include "../gen/s2.h"
 #include "../gen/stdfunc.h"
 
 #include <QCoreApplication>
+#include <QMutexLocker>
 #include <memory>
 
 BaseInterface::InterfacePointer BaseInterface::m_iface;
@@ -19,7 +20,7 @@ BaseInterface::BaseInterface(QObject *parent) : QObject(parent), m_working(false
     // timeoutTimer = new QTimer;
     timeoutTimer->setInterval(MAINTIMEOUT);
     connect(timeoutTimer, &QTimer::timeout, this, &BaseInterface::timeout);
-
+    m_state = State::None;
     //    QMetaObject::Connection *const connection = new QMetaObject::Connection;
     //    *connection = connect(
     //        &Board::GetInstance(), qOverload<>(&Board::typeChanged), this,
@@ -44,6 +45,18 @@ BaseInterface *BaseInterface::iface()
 void BaseInterface::setIface(InterfacePointer iface)
 {
     m_iface = std::move(iface);
+}
+
+void BaseInterface::pause()
+{
+    setState(State::Wait);
+}
+
+void BaseInterface::resume()
+{
+    // Only for case Wait to Run
+    Q_ASSERT(state() == State::Wait);
+    setState(State::Run);
 }
 
 void BaseInterface::writeS2File(DataTypes::FilesEnum number, S2DataTypes::S2ConfigType *file)
@@ -205,6 +218,25 @@ InterfaceSettings BaseInterface::settings() const
 void BaseInterface::setSettings(const InterfaceSettings &settings)
 {
     m_settings = settings;
+}
+
+BaseInterface::State BaseInterface::state()
+{
+    QMutexLocker locker(&_stateMutex);
+    return m_state;
+}
+
+void BaseInterface::setState(const State &state)
+{
+    QMutexLocker locker(&_stateMutex);
+    m_state = state;
+    emit stateChanged(m_state);
+}
+
+void BaseInterface::stop()
+{
+    Log->info("Stop()");
+    setState(BaseInterface::State::Stop);
 }
 
 void BaseInterface::resultReady(const DataTypes::BlockStruct &result)

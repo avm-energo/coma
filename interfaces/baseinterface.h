@@ -13,6 +13,7 @@ struct InterfaceSettings;
 class BaseInterface : public QObject
 {
     Q_OBJECT
+
 private:
     struct deleteLaterDeletor
     {
@@ -31,6 +32,13 @@ public:
     /// multiple times in runtime
     using InterfacePointer = std::unique_ptr<BaseInterface, deleteLaterDeletor>;
     // using TimerPointer=std::unique_ptr<BaseInterface, deleteLaterDeletor>
+    enum State
+    {
+        Run,
+        Stop,
+        Wait,
+        None
+    };
 
 public:
     bool m_working;
@@ -44,8 +52,9 @@ public:
     static void setIface(InterfacePointer iface);
 
     virtual bool start(const ConnectStruct &) = 0;
-    virtual void pause() = 0;
-    virtual void resume() = 0;
+    virtual void pause();
+    virtual void resume();
+    virtual void stop();
     virtual void reqStartup(quint32 sigAdr = 0, quint32 sigCount = 0) = 0;
     virtual void reqBSI() = 0;
     virtual void reqFile(quint32, bool isConfigFile = false) = 0;
@@ -94,9 +103,14 @@ public:
         m_settings.settings = settings;
     }
 
+    State state();
+    void setState(const State &state);
+
 signals:
     void reconnect();
     void finish();
+
+    void stateChanged(State m_state);
 
 private:
     bool m_busy, m_timeout;
@@ -104,10 +118,12 @@ private:
     bool m_responseResult;
     static InterfacePointer m_iface;
     QTimer *timeoutTimer;
-
+    State m_state;
     InterfaceSettings m_settings;
-public slots:
-    virtual void stop() = 0;
+
+    Q_PROPERTY(State state READ state WRITE setState NOTIFY stateChanged)
+
+    QMutex _stateMutex;
 
 private slots:
     void resultReady(const DataTypes::BlockStruct &result);

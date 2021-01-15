@@ -1,6 +1,5 @@
 #include "modbus.h"
 
-#include "../gen/board.h"
 #include "../gen/error.h"
 #include "../gen/s2.h"
 #include "../gen/stdfunc.h"
@@ -28,7 +27,7 @@ ModBus::ModBus(QObject *parent) : BaseInterface(parent)
     //    CycleGroup = 0;
     //    MainPollEnabled = true;
     //    TimePollEnabled = false;
-    AboutToFinish = false;
+    // AboutToFinish = false;
     //    PollingTimer = new QTimer;
     //    PollingTimer->setInterval(POLLINGINTERVAL);
     //    connect(PollingTimer, &QTimer::timeout, this, &ModBus::Polling);
@@ -57,7 +56,6 @@ bool ModBus::start(const ConnectStruct &st)
     Settings = std::get<SerialPortSettings>(st.settings);
     SerialPort *port = new SerialPort();
     ModbusThread *cthr = new ModbusThread;
-    //    cthr->Init(&InQueue, &OutList);
     cthr->setDeviceAddress(Settings.Address);
     QThread *thr = new QThread;
     cthr->moveToThread(thr);
@@ -66,17 +64,21 @@ bool ModBus::start(const ConnectStruct &st)
     connect(thr, &QThread::finished, thr, &QObject::deleteLater);
     connect(cthr, &ModbusThread::Finished, cthr, &QObject::deleteLater);
     connect(cthr, &ModbusThread::Finished, this, &ModBus::Finished);
-    connect(this, &ModBus::FinishModbusThread, cthr, &ModbusThread::FinishThread);
+    //  connect(this, &ModBus::FinishModbusThread, cthr, &ModbusThread::FinishThread, Qt::BlockingQueuedConnection);
     connect(this, &ModBus::FinishModbusThread, port, &SerialPort::Disconnect);
     connect(port, &SerialPort::Read, cthr, &ModbusThread::ParseReply);
     connect(cthr, &ModbusThread::Write, port, &SerialPort::WriteBytes);
     connect(port, &SerialPort::Reconnect, this, &ModBus::SendReconnectSignal);
     if (!port->Init(Settings))
+    {
+        setState(State::Stop);
         return false;
+    }
+    setState(State::Run);
     thr->start();
     StdFunc::Wait(1000);
     //    StartPolling();
-    AboutToFinish = false;
+    // AboutToFinish = false;
     //    Log->info("Polling started, thread initiated");
     return true;
 }
@@ -167,17 +169,18 @@ bool ModBus::start(const ConnectStruct &st)
 
 void ModBus::SendReconnectSignal()
 {
-    if (!AboutToFinish)
+    setState(BaseInterface::State::Wait);
+    if (state() != State::Stop)
         emit reconnect();
 }
 
-void ModBus::stop()
-{
-    Log->info("Stop()");
-    AboutToFinish = true;
-    //    StopPolling();
-    emit FinishModbusThread();
-}
+// void ModBus::stop()
+//{
+//   Log->info("Stop()");
+//   setState(BaseInterface::State::Stop);
+// AboutToFinish = true;
+// emit FinishModbusThread();
+//}
 
 bool ModBus::isValidRegs(const CommandsMBS::CommandStruct &cmd) const
 {

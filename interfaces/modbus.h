@@ -107,7 +107,7 @@ public slots:
     //    void Tabs(int);
     //    void StartPolling();
     //    void StopPolling();
-    void stop() override;
+    // void stop() override;
 
 signals:
     //    void SignalsReceived(QList<ModBus::SignalStruct> Signal);
@@ -130,7 +130,7 @@ private:
     //    int CycleGroup;
     //    QTimer *PollingTimer;
     //    bool TimePollEnabled, MainPollEnabled;
-    bool AboutToFinish;
+    // bool AboutToFinish;
     //    QByteArray SignalGroups[SIGNALGROUPSNUM];
     //    int _taskCounter;
     //    QQueue<InOutStruct> InQueue;

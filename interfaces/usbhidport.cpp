@@ -5,9 +5,9 @@
 #include "../widgets/wd_func.h"
 #endif
 
-#include "../gen/board.h"
 #include "../gen/helper.h"
 #include "../gen/stdfunc.h"
+#include "baseinterface.h"
 
 #include <QApplication>
 #include <QCoreApplication>
@@ -41,7 +41,7 @@ UsbHidPort::UsbHidPort(const UsbHidSettings &dev, LogClass *logh, QObject *paren
 
 UsbHidPort::~UsbHidPort()
 {
-    qDebug() << "UsbHidPort deleted";
+    // qDebug() << "UsbHidPort deleted";
 }
 #ifdef QT_GUI_LIB
 void UsbHidPort::connectToGui(QObject *object)
@@ -91,8 +91,9 @@ void UsbHidPort::poll()
 {
     int bytes;
     m_waitForReply = false;
-
-    while (Board::GetInstance().connectionState() != Board::ConnectionState::Closed)
+    const auto &iface = BaseInterface::iface();
+    while (iface->state() != BaseInterface::State::Stop)
+    // while (Board::GetInstance().connectionState() != Board::ConnectionState::Closed)
     {
         QCoreApplication::processEvents(QEventLoop::AllEvents);
         //_mutex.lock();
@@ -103,7 +104,8 @@ void UsbHidPort::poll()
         //        }
         //_mutex.unlock();
         // check if there's any data in input buffer
-        if (Board::GetInstance().connectionState() == Board::ConnectionState::AboutToFinish)
+        if (iface->state() == BaseInterface::State::Wait)
+        // if (Board::GetInstance().connectionState() == Board::ConnectionState::AboutToFinish)
         {
             StdFunc::Wait(500);
             continue;
@@ -152,7 +154,8 @@ void UsbHidPort::deviceConnected(const UsbHidSettings &st)
         return;
     qDebug() << timer.elapsed();
     qInfo() << deviceInfo() << "connected";
-    Board::GetInstance().setConnectionState(Board::ConnectionState::Connected);
+    BaseInterface::iface()->setState(BaseInterface::State::Run);
+    // Board::GetInstance().setConnectionState(Board::ConnectionState::Connected);
     qDebug() << timer.elapsed();
 }
 
@@ -162,7 +165,8 @@ void UsbHidPort::deviceDisconnected(const UsbHidSettings &st)
     if (st != deviceInfo())
         return;
     // Отключено наше устройство
-    Board::GetInstance().setConnectionState(Board::ConnectionState::AboutToFinish);
+    BaseInterface::iface()->setState(BaseInterface::State::Wait);
+    // Board::GetInstance().setConnectionState(Board::ConnectionState::AboutToFinish);
     qInfo() << deviceInfo() << "disconnected";
 }
 
@@ -171,13 +175,15 @@ void UsbHidPort::deviceConnected()
     if (!setupConnection())
         return;
     qInfo() << deviceInfo() << "connected";
-    Board::GetInstance().setConnectionState(Board::ConnectionState::Connected);
+    BaseInterface::iface()->setState(BaseInterface::State::Run);
+    // Board::GetInstance().setConnectionState(Board::ConnectionState::Connected);
 }
 
 void UsbHidPort::deviceDisconnected()
 {
     // Отключено наше устройство
-    Board::GetInstance().setConnectionState(Board::ConnectionState::AboutToFinish);
+    BaseInterface::iface()->setState(BaseInterface::State::Wait);
+    // Board::GetInstance().setConnectionState(Board::ConnectionState::AboutToFinish);
     qInfo() << deviceInfo() << "disconnected";
     emit clearQueries();
 }

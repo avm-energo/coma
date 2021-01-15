@@ -1,6 +1,5 @@
 #include "protocom.h"
 
-#include "../gen/board.h"
 #include "../gen/datamanager.h"
 #include "../gen/files.h"
 #include "../gen/stdfunc.h"
@@ -24,7 +23,7 @@ Protocom::Protocom(QObject *parent) : BaseInterface(parent), d_ptr(new ProtocomP
 
 bool Protocom::start(const ConnectStruct &st)
 {
-    Q_ASSERT(Board::GetInstance().interfaceType() == Board::InterfaceType::USB);
+    // Q_ASSERT(Board::GetInstance().interfaceType() == Board::InterfaceType::USB);
     Q_ASSERT(std::holds_alternative<UsbHidSettings>(st.settings));
 
     if (!std::holds_alternative<UsbHidSettings>(st.settings))
@@ -85,21 +84,20 @@ bool Protocom::start(const UsbHidSettings &usbhid)
         return false;
     }
 
-    Board::GetInstance().setConnectionState(Board::ConnectionState::Connected);
-
     qInfo() << metaObject()->className() << "connected";
     port->moveToThread(portThread);
     parser->moveToThread(parseThread);
+    setState(Run);
     portThread->start();
     parseThread->start();
     return true;
 }
 
-void Protocom::stop()
-{
-    // emit finish();
-    // FIXME Реализовать
-}
+// void Protocom::stop()
+//{
+// emit finish();
+// FIXME Реализовать
+//}
 
 void Protocom::reqTime()
 {

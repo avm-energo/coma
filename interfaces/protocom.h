@@ -14,9 +14,9 @@ public:
 
     bool start(const ConnectStruct &st) override;
     bool start(const UsbHidSettings &usbhid);
-    void pause() override {};
-    void resume() override {};
-    void stop() override;
+    // void pause() override {};
+    // void resume() override {};
+    // void stop() override;
 
     void reqTime() override;
     void reqFile(quint32 filenum, bool isConfigFile = false) override;

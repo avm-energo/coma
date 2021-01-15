@@ -1,6 +1,6 @@
 #include "serialport.h"
 
-#include "../gen/board.h"
+#include "baseinterface.h"
 
 #include <QCoreApplication>
 #include <QDebug>
@@ -19,8 +19,6 @@ SerialPort::~SerialPort()
 
 bool SerialPort::Init(SerialPortSettings settings)
 {
-    Q_ASSERT(Board::GetInstance().interfaceType() == Board::InterfaceType::RS485);
-
     Port = new QSerialPort(settings.Port);
     Port->setBaudRate(settings.Baud);
     Port->setDataBits(QSerialPort::Data8);
@@ -37,7 +35,7 @@ bool SerialPort::Init(SerialPortSettings settings)
     connect(Port, &QIODevice::readyRead, this, &SerialPort::ReadBytes);
     if (!Port->open(QIODevice::ReadWrite))
         return false;
-    Board::GetInstance().setConnectionState(Board::ConnectionState::Connected);
+    // Board::GetInstance().setConnectionState(Board::ConnectionState::Connected);
     //    else
     //    {
     //        Board::GetInstance().setConnectionState(Board::ConnectionState::Closed);
@@ -68,7 +66,7 @@ void SerialPort::ErrorOccurred(QSerialPort::SerialPortError err)
     if (!err)
         return;
     qCritical() << QVariant::fromValue(err).toString();
-    Board::GetInstance().setConnectionState(Board::ConnectionState::Closed);
+    // Board::GetInstance().setConnectionState(Board::ConnectionState::Closed);
     emit Reconnect();
 }
 

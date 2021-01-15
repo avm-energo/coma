@@ -128,7 +128,7 @@ private:
     //    int CheckIndex, TimeIndex, ConfIndex, CheckHarmIndex, CheckVibrIndex, CurTabIndex;
     quint8 HaveAlreadyRed = 0;
     //    quint8 ActiveThreads;
-    bool ActiveThreads;
+    // bool ActiveThreads;
     quint32 Mes;
 
     QString SavePort;

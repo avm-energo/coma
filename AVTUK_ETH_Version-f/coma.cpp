@@ -111,7 +111,7 @@ Coma::Coma(QWidget *parent) : QMainWindow(parent)
     //        PredAlarmEvents[i] = 0;
     //        AlarmEvents[i] = 0;
     //    }
-    ActiveThreads = false;
+    // ActiveThreads = false;
     //    Alarm = new AlarmClass(this);
 
     newTimers();
@@ -1112,19 +1112,20 @@ void Coma::Disconnect()
     AlarmW->clear();
     if (StdFunc::IsInEmulateMode())
         return;
-    if (Board::GetInstance().interfaceType() == Board::InterfaceType::USB)
-    {
-        BdaTimer->stop();
-        //            if (Board::GetInstance().connectionState() != Board::ConnectionState::Closed)
-        //                EProtocom::GetInstance().Disconnect();
-    }
-    else
-    {
-        emit StopCommunications();
-        while (ActiveThreads) // wait for all threads to finish
-            QCoreApplication::processEvents();
-    }
-    Board::GetInstance().setConnectionState(Board::ConnectionState::Closed);
+    // if (Board::GetInstance().interfaceType() == Board::InterfaceType::USB)
+    //  {
+    BdaTimer->stop();
+    BaseInterface::iface()->stop();
+    //            if (Board::GetInstance().connectionState() != Board::ConnectionState::Closed)
+    //                EProtocom::GetInstance().Disconnect();
+    //  }
+    // else
+    // {
+    //     emit StopCommunications();
+    // while (ActiveThreads) // wait for all threads to finish
+    //    QCoreApplication::processEvents();
+    //  }
+    // Board::GetInstance().setConnectionState(Board::ConnectionState::Closed);
 }
 
 void Coma::Connect()
@@ -1203,6 +1204,23 @@ void Coma::Connect()
     default:
         qFatal("Connection type error");
     }
+    connect(BaseInterface::iface(), &BaseInterface::stateChanged, [](const BaseInterface::State state) {
+        using State = BaseInterface::State;
+        switch (state)
+        {
+        case State::Run:
+            Board::GetInstance().setConnectionState(Board::ConnectionState::Connected);
+            break;
+        case State::Stop:
+            Board::GetInstance().setConnectionState(Board::ConnectionState::Closed);
+            break;
+        case State::Wait:
+            Board::GetInstance().setConnectionState(Board::ConnectionState::AboutToFinish);
+            break;
+        default:
+            break;
+        }
+    });
     //    if (!m_iface->start(ConnectSettings))
     if (!BaseInterface::iface()->start(ConnectSettings))
     {
@@ -1211,7 +1229,8 @@ void Coma::Connect()
         qCritical("Can't connect");
         return;
     }
-    ActiveThreads = true;
+    //  Board::GetInstance().setConnectionState(Board::ConnectionState::Connected);
+    // ActiveThreads = true;
 
     BaseInterface::iface()->reqBSI();
 }

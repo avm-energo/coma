@@ -1,11 +1,12 @@
 #include "protocomthread.h"
 
-#include "../gen/board.h"
+//#include "../gen/board.h"
 #include "../gen/datamanager.h"
 #include "../gen/files.h"
 #include "../gen/logclass.h"
 #include "../gen/s2.h"
 #include "../gen/stdfunc.h"
+#include "baseinterface.h"
 
 #include <QDebug>
 //#include <QMetaEnum>
@@ -83,7 +84,8 @@ void ProtocomThread::wakeUp()
 
 void ProtocomThread::parse()
 {
-    while (Board::GetInstance().connectionState() != Board::ConnectionState::Closed)
+    while (BaseInterface::iface()->state() != BaseInterface::State::Stop)
+    // while (Board::GetInstance().connectionState() != Board::ConnectionState::Closed)
     {
         QMutexLocker locker(&_mutex);
         if (!isCommandRequested)
@@ -669,7 +671,7 @@ void handleFloatArray(const QByteArray &ba, quint32 sigAddr, quint32 sigCount)
     if (!sigCount)
         handleFloat(ba, sigAddr);
     // NOTE Проблема со стартовыми регистрами, получим на один регистр больше чем по другим протоколам
-    // Q_ASSERT(ba.size() == int(sigCount * 4));
+    Q_ASSERT(ba.size() >= int(sigCount * 4));
     for (quint32 i = 0; i != sigCount; i++)
     {
         QByteArray temp = ba.mid(sizeof(float) * i, sizeof(float));
