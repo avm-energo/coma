@@ -5,7 +5,7 @@
 #include "../gen/logclass.h"
 #include "modbusprivate.h"
 
-#define RECONNECTTIME 5000
+#define RECONNECTTIME 1000
 
 class ModbusThread : public QObject
 {
@@ -42,10 +42,14 @@ private:
     int m_bytesToReceive;
 
     void readRegisters(CommandsMBS::CommandStruct &cms);
+    void readCoils(CommandsMBS::CommandStruct &cms);
     //    void readHoldingRegisters(CommandsMBS::CommandStruct &cms);
     void writeMultipleRegisters(CommandsMBS::CommandStruct &cms);
     void setQueryStartBytes(CommandsMBS::CommandStruct &cms, QByteArray &ba);
+    QByteArray createReadPDU(const CommandsMBS::CommandStruct &cms) const;
+    QByteArray createADU(const QByteArray &pdu) const;
     void send(QByteArray &ba);
+    void sendWithoutCrc(const QByteArray &ba);
     void parseAndSetToOutList(QByteArray &ba);
     void getFloatSignals(QByteArray &bain);
     void getIntegerSignals(QByteArray &bain);
@@ -55,7 +59,7 @@ private:
 
     //    void SendAndGetResult(ModBus::InOutStruct &inp);
     void Send();
-    quint16 CalcCRC(QByteArray &Dat);
+    quint16 CalcCRC(QByteArray &Dat) const;
     //    void AddToOutQueue(ModBus::InOutStruct &outp);
 
 signals:

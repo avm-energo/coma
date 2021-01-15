@@ -359,7 +359,9 @@ InterfaceInfo<CommandsMBS::ModbusGroup> Module::parseModbus(QDomElement domEleme
         const auto &group = nodes.item(i++).toElement();
         auto test = CommandsMBS::ModbusGroup(group);
         settings.addGroup(test);
+#ifdef XML_DEBUG
         qDebug() << group.attribute("id", "") << group.text();
+#endif
     }
 #ifdef XML_DEBUG
     qDebug() << settings.groups().count();

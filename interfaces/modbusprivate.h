@@ -54,6 +54,13 @@ struct CommandStruct
     //    quint8 sizebytes;
     QByteArray data;
     TypeId type;
+    QString sender;
+};
+
+struct Coils
+{
+    int countBytes;
+    QByteArray Bytes;
 };
 
 }

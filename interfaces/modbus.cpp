@@ -308,7 +308,8 @@ void ModBus::reqStartup(quint32 sigAdr, quint32 sigCount)
         addr,                                         //
         count,                                        //
         {},                                           //
-        type(addr, count)                             //
+        type(addr, count),                            //
+        __PRETTY_FUNCTION__                           //
     };
     Q_ASSERT(isValidRegs(inp));
     DataManager::addToInQueue(inp);
@@ -316,8 +317,14 @@ void ModBus::reqStartup(quint32 sigAdr, quint32 sigCount)
 
 void ModBus::reqBSI()
 {
-    CommandsMBS::CommandStruct inp { CommandsMBS::Commands::MBS_READINPUTREGISTER, BSIREG,
-        static_cast<quint8>(BSIENDREG * 2), {}, TypeId::Uint32 };
+    CommandsMBS::CommandStruct inp {
+        CommandsMBS::Commands::MBS_READINPUTREGISTER, //
+        BSIREG,                                       //
+        static_cast<quint8>(BSIENDREG * 2),           //
+        {},                                           //
+        TypeId::Uint32,                               //
+        __PRETTY_FUNCTION__                           //
+    };
     DataManager::addToInQueue(inp);
 }
 
@@ -346,7 +353,8 @@ void ModBus::reqTime()
         TIMEREG,                                         //
         2,                                               //
         {},                                              //
-        type(TIMEREG, 2)                                 //
+        type(TIMEREG, 2),                                //
+        __PRETTY_FUNCTION__                              //
     };
     Q_ASSERT(isValidRegs(inp));
     DataManager::addToInQueue(inp);
@@ -364,7 +372,8 @@ void ModBus::writeTime(quint32 time)
         TIMEREG,                                           //
         2,                                                 //
         timeArray,                                         //
-        TypeId::None                                       //
+        TypeId::None,                                      //
+        __PRETTY_FUNCTION__                                //
     };
     Q_ASSERT(isValidRegs(inp));
     DataManager::addToInQueue(inp);
@@ -372,8 +381,11 @@ void ModBus::writeTime(quint32 time)
 
 void ModBus::writeCommand(Queries::Commands cmd, QVariant item)
 {
-    if (cmd == Queries::QC_WriteUserValues)
+    switch (cmd)
     {
+    case Queries::QC_WriteUserValues:
+    {
+        Q_ASSERT(item.canConvert<DataTypes::FloatStruct>());
         if (!item.canConvert<DataTypes::FloatStruct>())
             return;
         QByteArray sigArray;
@@ -388,15 +400,21 @@ void ModBus::writeCommand(Queries::Commands cmd, QVariant item)
         sigArray.append(static_cast<char>(tmpi >> 24));
         sigArray.append(static_cast<char>(tmpi >> 16));
 
-        CommandsMBS::CommandStruct inp { CommandsMBS::Commands::MBS_WRITEMULTIPLEREGISTERS,
-            static_cast<quint16>(flstr.sigAdr), 2, sigArray, TypeId::None };
+        CommandsMBS::CommandStruct inp {
+            CommandsMBS::Commands::MBS_WRITEMULTIPLEREGISTERS, //
+            static_cast<quint16>(flstr.sigAdr),                //
+            2,                                                 //
+            sigArray,                                          //
+            TypeId::None,                                      //
+            __PRETTY_FUNCTION__                                //
+        };
         Q_ASSERT(isValidRegs(inp));
         DataManager::addToInQueue(inp);
+        break;
     }
-    else
+    case Queries::QC_ReqAlarms:
     {
-        if (cmd != Queries::QC_ReqAlarms)
-            return;
+        Q_ASSERT(item.canConvert<DataTypes::Signal>());
         // get sigAdr from the first var and sigCount - from the second one
         if (!item.canConvert<DataTypes::Signal>()) // must be sigAdr & sigCount
             return;
@@ -406,10 +424,16 @@ void ModBus::writeCommand(Queries::Commands cmd, QVariant item)
             signal.addr,                          //
             static_cast<quint16>(signal.value),   //
             {},                                   //
-            type(signal.addr, signal.value)       //
+            type(signal.addr, signal.value),      //
+            __PRETTY_FUNCTION__                   //
         };
-        Q_ASSERT(isValidRegs(inp));
+        // Q_ASSERT(isValidRegs(inp));
         DataManager::addToInQueue(inp);
+        break;
+    }
+    default:
+        Q_ASSERT(false && "Unsupported in Modbus");
+        break;
     }
 }
 
@@ -420,7 +444,8 @@ void ModBus::reqFloats(quint32 sigAdr, quint32 sigCount)
         static_cast<quint16>(sigAdr),                 //
         static_cast<quint8>(sigCount * 2),            //
         {},                                           //
-        type(sigAdr, sigCount * 2)                    //
+        type(sigAdr, sigCount * 2),                   //
+        __PRETTY_FUNCTION__                           //
     };
     Q_ASSERT(isValidRegs(inp));
     DataManager::addToInQueue(inp);

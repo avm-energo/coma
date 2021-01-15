@@ -1,10 +1,15 @@
 #include "modbusthread.h"
 
 #include "../gen/datamanager.h"
+#include "../gen/helper.h"
+#include "../gen/stdfunc.h"
 
 #include <QCoreApplication>
+#include <QDebug>
 #include <QElapsedTimer>
-
+#include <QTimer>
+#include <QtEndian>
+#include <algorithm>
 ModbusThread::ModbusThread(QObject *parent) : QObject(parent)
 {
     Log = new LogClass;
@@ -59,6 +64,10 @@ void ModbusThread::Run()
                 break;
             case CommandsMBS::MBS_WRITEMULTIPLEREGISTERS:
                 writeMultipleRegisters(inp);
+                break;
+            case CommandsMBS::MBS_READCOILS:
+                readCoils(inp);
+                // readRegisters(inp);
                 break;
             default:
                 break;
@@ -116,6 +125,7 @@ void ModbusThread::Run()
 
 void ModbusThread::ParseReply(QByteArray ba)
 {
+
     m_readData.append(ba);
     if (m_readData.size() >= 2)
     {
@@ -123,7 +133,7 @@ void ModbusThread::ParseReply(QByteArray ba)
         if ((receivedCommand & 0x80) || (receivedCommand != m_commandSent.cmd))
         {
             Log->error("Modbus error response: " + m_readData.toHex());
-            ERMSG("Modbus error response");
+            qCritical() << Error::ReadError << metaObject()->className();
             m_readData.clear();
             Busy = false;
             return;
@@ -142,13 +152,19 @@ void ModbusThread::ParseReply(QByteArray ba)
         if (MYKSS != crcfinal)
         {
             Log->error("Crc error");
-            ERMSG("Modbus crc error");
+            qCritical() << Error::CrcError << metaObject()->className();
             m_readData.clear();
         }
         // add to out list
         parseAndSetToOutList(m_readData);
         Busy = false;
+        return;
     }
+    qDebug() << Error::SizeError << "Wait for:" << m_bytesToReceive << "Received: " << ba.size();
+    qDebug() << m_commandSent /* << ba*/;
+    QDebug deb = qDebug();
+    for (const quint8 byte : ba)
+        deb << QString::number(byte, 16);
     //    Outp.Ba.append(ba);
     //    //    Log->info("<- " + Outp.Ba.toHex());
     //    if ((!Inp.Checked) && (Outp.Ba.size() >= 2))
@@ -194,11 +210,27 @@ void ModbusThread::send(QByteArray &ba)
     quint16 KSS = CalcCRC(ba);
     ba.append(static_cast<char>(KSS >> 8));
     ba.append(static_cast<char>(KSS));
+    sendWithoutCrc(ba);
+}
+
+void ModbusThread::sendWithoutCrc(const QByteArray &ba)
+{
     m_readData.clear();
     Busy = true;
     Log->info("-> " + ba.toHex());
     emit Write(ba);
     QElapsedTimer tme;
+    //    QTimer timer;
+    //    timer.setSingleShot(true);
+
+    //    connect(&timer, &QTimer::timeout, [=]() {
+    //        if (Busy)
+    //        {
+    //            Busy = false;
+    //            Log->error("Timeout");
+    //        }
+    //    });
+    //    timer.start(RECONNECTTIME);
     tme.start();
     while ((Busy) && (tme.elapsed() < RECONNECTTIME)) // ждём, пока либо сервер не отработает,
         // либо не наступит таймаут
@@ -262,13 +294,15 @@ void ModbusThread::getFloatSignals(QByteArray &bain)
     if (bain.size() < 3)
     {
         Log->error("Wrong inbuf size");
+        qCritical() << Error::SizeError << metaObject()->className();
         return;
     }
     int byteSize = bain.data()[2];
     QByteArray ba = bain.mid(3);
     if (byteSize > ba.size())
     {
-        ERMSG("Wrong byte size in response");
+        //  ERMSG("Wrong byte size in response");
+        qCritical() << Error::SizeError << metaObject()->className();
         return;
     }
     int signalsSize = byteSize / 4; // количество байт float или u32
@@ -289,23 +323,35 @@ void ModbusThread::getIntegerSignals(QByteArray &bain)
     if (bain.size() < 3)
     {
         Log->error("Wrong inbuf size");
+        qCritical() << Error::SizeError << metaObject()->className();
         return;
     }
     int byteSize = bain.data()[2];
     QByteArray ba = bain.mid(3);
     if (byteSize > ba.size())
     {
-        ERMSG("Wrong byte size in response");
+        // ERMSG("Wrong byte size in response");
+        qCritical() << Error::SizeError << metaObject()->className();
         return;
     }
     int signalsSize = byteSize / 4; // количество байт float или u32
+    QList<quint32> oldList, newList;
     for (int i = 0; i < signalsSize; ++i)
     {
         quint32 ival = ((ba.data()[2 + 4 * i] << 24) & 0xFF000000) + ((ba.data()[3 + 4 * i] << 16) & 0x00FF0000)
             + ((ba.data()[4 * i] << 8) & 0x0000FF00) + ((ba.data()[1 + 4 * i] & 0x000000FF));
+        oldList.append(ival);
         memcpy(&signal.sigVal, &ival, sizeof(quint32));
         signal.sigAdr = m_commandSent.adr + i;
         DataManager::addSignalToOutList(DataTypes::SignalTypes::BitString, signal);
+    }
+    for (int i = 0; i < ba.size(); i += sizeof(quint32))
+    {
+        const auto regSize = sizeof(quint16);
+        quint16 leftVal = qFromBigEndian(*reinterpret_cast<const quint16 *>(ba.mid(i, regSize).data()));
+        quint16 rightVal = qFromBigEndian(*reinterpret_cast<const quint16 *>(ba.mid(i + regSize, regSize).data()));
+        const quint32 ival = qFromBigEndian(leftVal | rightVal);
+        newList.append(ival);
     }
 }
 
@@ -313,7 +359,8 @@ void ModbusThread::getCommandResponse(QByteArray &bain)
 {
     if (bain.size() < 3)
     {
-        Log->error("Wrong inbuf size");
+        qCritical() << Error::SizeError << metaObject()->className();
+        // Log->error("Wrong inbuf size");
         return;
     }
     // ?
@@ -321,7 +368,8 @@ void ModbusThread::getCommandResponse(QByteArray &bain)
     QByteArray ba = bain.mid(3);
     if (byteSize > ba.size())
     {
-        qCritical("Wrong byte size in response");
+        qCritical() << Error::SizeError << metaObject()->className();
+        // qCritical("Wrong byte size in response");
         return;
     }
     DataTypes::GeneralResponseStruct grs;
@@ -335,14 +383,16 @@ void ModbusThread::getSinglePointSignals(QByteArray &bain)
 
     if (bain.size() < 3)
     {
-        Log->error("Wrong inbuf size");
+        qCritical() << Error::SizeError << metaObject()->className();
+        //  Log->error("Wrong inbuf size");
         return;
     }
     int byteSize = bain.data()[2];
     QByteArray ba = bain.mid(3);
     if (byteSize > ba.size())
     {
-        ERMSG("Wrong byte size in response");
+        qCritical() << Error::SizeError << metaObject()->className();
+        // ERMSG("Wrong byte size in response");
         return;
     }
     for (int i = 0; i < byteSize; ++i)
@@ -362,7 +412,7 @@ void ModbusThread::FinishThread()
     AboutToFinish = true;
 }
 
-quint16 ModbusThread::CalcCRC(QByteArray &ba)
+quint16 ModbusThread::CalcCRC(QByteArray &ba) const
 {
     quint8 CRChi = 0xFF;
     quint8 CRClo = 0xFF;
@@ -383,14 +433,27 @@ quint16 ModbusThread::CalcCRC(QByteArray &ba)
 
 void ModbusThread::readRegisters(CommandsMBS::CommandStruct &cms)
 {
-    QByteArray ba;
 
-    setQueryStartBytes(cms, ba);
+    m_commandSent = cms;
+    QByteArray ba(createReadPDU(cms));
+    ba = createADU(ba);
     if (cms.data.size())
         ba.append(cms.data);
     Log->info("Send bytes: " + ba.toHex());
     m_bytesToReceive = cms.quantity * 2 + 5; // address, function code, bytes count, crc (2)
-    send(ba);
+    sendWithoutCrc(ba);
+}
+
+void ModbusThread::readCoils(CommandsMBS::CommandStruct &cms)
+{
+    m_commandSent = cms;
+    QByteArray ba(createReadPDU(cms));
+    ba = createADU(ba);
+    Log->info("Send bytes: " + ba.toHex());
+    auto temp = cms.quantity / 2 + cms.quantity % 2;
+    temp = temp / 8 + temp % 8;  // try to count bytes for coils
+    m_bytesToReceive = temp + 3; // address, function code, bytes count, crc (2)
+    sendWithoutCrc(ba);
 }
 
 void ModbusThread::writeMultipleRegisters(CommandsMBS::CommandStruct &cms)
@@ -410,10 +473,35 @@ void ModbusThread::setQueryStartBytes(CommandsMBS::CommandStruct &cms, QByteArra
     m_commandSent = cms;
     ba.append(deviceAddress); // адрес устройства
     ba.append(cms.cmd);       //аналоговый выход
-    ba.append(static_cast<char>((cms.adr & 0xFF00) >> 8));
-    ba.append(static_cast<char>(cms.adr & 0x00FF));
-    ba.append(static_cast<char>((cms.quantity & 0xFF00) >> 8));
-    ba.append(static_cast<char>(cms.quantity & 0x00FF));
+    QByteArray bigEndArray;
+    bigEndArray = StdFunc::arrayFromNumber(qToBigEndian(cms.adr));
+    ba.append(bigEndArray);
+    //  ba.append(static_cast<char>((cms.adr & 0xFF00) >> 8));
+    //  ba.append(static_cast<char>(cms.adr & 0x00FF));
+    bigEndArray = StdFunc::arrayFromNumber(qToBigEndian(cms.quantity));
+    ba.append(bigEndArray);
+    //  ba.append(static_cast<char>((cms.quantity & 0xFF00) >> 8));
+    //   ba.append(static_cast<char>(cms.quantity & 0x00FF));
+}
+
+QByteArray ModbusThread::createReadPDU(const CommandsMBS::CommandStruct &cms) const
+{
+    QByteArray ba;
+    ba.append(cms.cmd);
+    ba.append(StdFunc::arrayFromNumber(qToBigEndian(cms.adr)));
+    ba.append(StdFunc::arrayFromNumber(qToBigEndian(cms.quantity)));
+    return ba;
+}
+
+QByteArray ModbusThread::createADU(const QByteArray &pdu) const
+{
+    QByteArray ba;
+    ba.append(deviceAddress);
+    ba.append(pdu);
+    quint16 KSS = CalcCRC(ba);
+    ba.append(static_cast<char>(KSS >> 8));
+    ba.append(static_cast<char>(KSS));
+    return ba;
 }
 
 // void ModbusThread::readHoldingRegisters(CommandsMBS::CommandStruct &cms)
