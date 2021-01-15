@@ -779,8 +779,10 @@ void Coma::prepare()
     MainLW->setMaximumWidth(width() / 5);
     AlrmTimer->start();
     qInfo() << NAMEOF(MainTW) << "created";
-    if (board.interfaceType() == Board::InterfaceType::USB)
-        BdaTimer->start();
+    // NOTE Необходим ли таймер по 104?
+    Q_ASSERT(board.interfaceType() != Board::InterfaceType::Ethernet);
+    // if (board.interfaceType() != Board::InterfaceType::Ethernet)
+    BdaTimer->start();
     auto *msgSerialNumber = statusBar()->findChild<QLabel *>("SerialNumber");
     msgSerialNumber->setText(QString::number(board.serialNumber(Board::BaseMezzAdd), 16));
     auto *msgModel = statusBar()->findChild<QLabel *>("Model");

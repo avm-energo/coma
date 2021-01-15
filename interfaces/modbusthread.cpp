@@ -10,6 +10,8 @@
 #include <QTimer>
 #include <QtEndian>
 #include <algorithm>
+
+//#define MODBUS_DEBUG
 ModbusThread::ModbusThread(QObject *parent) : QObject(parent)
 {
     Log = new LogClass;
@@ -27,12 +29,6 @@ void ModbusThread::setDeviceAddress(quint8 adr)
     deviceAddress = adr;
 }
 
-// void ModbusThread::Init(QQueue<ModBus::InOutStruct> *inq, QList<ModBus::InOutStruct> *outl)
-//{
-//    InQueue = inq;
-//    OutList = outl;
-//}
-
 void ModbusThread::Run()
 {
     QByteArray ba;
@@ -42,6 +38,9 @@ void ModbusThread::Run()
         CommandsMBS::CommandStruct inp;
         if (DataManager::deQueue(inp) == Error::Msg::NoError)
         {
+#ifdef MODBUS_DEBUG
+            qDebug() << inp.cmd << inp.adr << inp.quantity;
+#endif
             switch (inp.cmd)
             {
             case CommandsMBS::MBS_READINPUTREGISTER:
@@ -67,7 +66,6 @@ void ModbusThread::Run()
                 break;
             case CommandsMBS::MBS_READCOILS:
                 readCoils(inp);
-                // readRegisters(inp);
                 break;
             default:
                 break;
@@ -160,11 +158,13 @@ void ModbusThread::ParseReply(QByteArray ba)
         Busy = false;
         return;
     }
+#ifdef MODBUS_DEBUG
     qDebug() << Error::SizeError << "Wait for:" << m_bytesToReceive << "Received: " << ba.size();
     qDebug() << m_commandSent /* << ba*/;
     QDebug deb = qDebug();
     for (const quint8 byte : ba)
         deb << QString::number(byte, 16);
+#endif
     //    Outp.Ba.append(ba);
     //    //    Log->info("<- " + Outp.Ba.toHex());
     //    if ((!Inp.Checked) && (Outp.Ba.size() >= 2))
@@ -503,11 +503,3 @@ QByteArray ModbusThread::createADU(const QByteArray &pdu) const
     ba.append(static_cast<char>(KSS));
     return ba;
 }
-
-// void ModbusThread::readHoldingRegisters(CommandsMBS::CommandStruct &cms)
-//{
-//    QByteArray ba;
-
-//    setQueryStartBytes(cms, ba);
-
-//}
