@@ -124,7 +124,7 @@ public:
     bool start(const ConnectStruct &st) override;
     //    static void getSignalsFrom104(quint32 firstSignalAdr, quint32 signalCount, DataManager::SignalTypes type,
     //        QList<DataManager::SignalsStruct> &outlist);
-    InterfaceSettings parseSettings(QDomElement domElement) const override;
+    inline InterfaceSettings parseSettings(QDomElement domElement) const override;
 public slots:
     void reqStartup(quint32 sigAdr = 0, quint32 sigCount = 0) override;
     void reqBSI() override;
@@ -140,8 +140,6 @@ public slots:
 
     //    static void SelectFile(char);
     void stop() override;
-    void pause() override {};
-    void resume() override {};
 
     //    static void Com45(quint32 com);
     //    static void Com50(quint32 adr, float param);

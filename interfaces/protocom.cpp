@@ -180,27 +180,7 @@ void Protocom::writeRaw(const QByteArray &ba)
 
 InterfaceSettings Protocom::parseSettings(QDomElement domElement) const
 {
-#ifdef XML_DEBUG
-    qDebug() << domElement.text();
-    qDebug() << "TagName: " << domElement.tagName();
-#endif
-    const auto &nodes = domElement.childNodes();
-    Q_ASSERT(!nodes.isEmpty());
-    int i = 0;
-    InterfaceInfo<Proto::ProtocomGroup> settings;
-    while (i != nodes.count())
-    {
-        const auto &group = nodes.item(i++).toElement();
-        Proto::ProtocomGroup test(group);
-        settings.addGroup(test);
-#ifdef XML_DEBUG
-        qDebug() << group.attribute("id", "") << group.text();
-#endif
-    }
-#ifdef XML_DEBUG
-    qDebug() << settings.groups().count();
-#endif
-    return InterfaceSettings { QVariant::fromValue(settings) };
+    return BaseInterface::parseSettings<Proto::ProtocomGroup>(domElement);
 }
 
 void Protocom::writeCommand(Queries::Commands cmd, QVariant item)

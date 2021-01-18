@@ -32,8 +32,10 @@
 #include "../gen/errorqueue.h"
 #include "../gen/logger.h"
 #include "../gen/stdfunc.h"
+#ifndef AVM_DEBUG
 #include "../interfaces/iec104.h"
 #include "../interfaces/modbus.h"
+#endif
 #include "../interfaces/protocom.h"
 #include "../interfaces/settingstypes.h"
 #include "../widgets/aboutwidget.h"
@@ -780,7 +782,7 @@ void Coma::prepare()
     AlrmTimer->start();
     qInfo() << NAMEOF(MainTW) << "created";
     // NOTE Необходим ли таймер по 104?
-    Q_ASSERT(board.interfaceType() != Board::InterfaceType::Ethernet);
+    // Q_ASSERT(board.interfaceType() != Board::InterfaceType::Ethernet);
     // if (board.interfaceType() != Board::InterfaceType::Ethernet)
     BdaTimer->start();
     auto *msgSerialNumber = statusBar()->findChild<QLabel *>("SerialNumber");

@@ -29,7 +29,7 @@ public:
     void writeCommand(Queries::Commands cmd, QVariant item = 0) override;
     void reqFloats(quint32 sigAdr, quint32 sigCount) override;
     void writeRaw(const QByteArray &ba) override;
-    InterfaceSettings parseSettings(QDomElement domElement) const override;
+    inline InterfaceSettings parseSettings(QDomElement domElement) const override;
 
 protected:
     ProtocomPrivate *const d_ptr;

@@ -19,6 +19,7 @@ IEC104::IEC104(QObject *parent) : BaseInterface(parent)
     Log = new LogClass;
     Log->Init("iec104.log");
     Log->info("=== Log started ===");
+    qRegisterMetaType<DataTypes::FloatStruct>();
 }
 
 IEC104::~IEC104()
@@ -90,8 +91,7 @@ bool IEC104::start(const ConnectStruct &st)
 
 InterfaceSettings IEC104::parseSettings(QDomElement domElement) const
 {
-    InterfaceInfo<Commands104::Iec104Group> settings;
-    return InterfaceSettings { QVariant::fromValue(settings) };
+    return BaseInterface::parseSettings<Commands104::Iec104Group>(domElement);
 }
 
 void IEC104::reqStartup(quint32 sigAdr, quint32 sigCount)
@@ -159,6 +159,7 @@ void IEC104::writeCommand(Queries::Commands cmd, QVariant item)
     {
     case Queries::QC_WriteUserValues:
     {
+        Q_ASSERT(item.canConvert<DataTypes::FloatStruct>());
         if (!item.canConvert<DataTypes::FloatStruct>())
             return;
 

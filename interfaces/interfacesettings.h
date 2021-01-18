@@ -24,11 +24,10 @@ template <template <typename...> class base, typename derived>
 using is_base_of_template = typename is_base_of_template_impl<base, derived>::type;
 
 //#define XML_DEBUG
-
-template <typename FuncCode, typename TypeId> struct BaseGroup
+template <typename FuncCode, typename TypeId> struct BaseRegister
 {
-    BaseGroup() = default;
-    BaseGroup(QDomElement domElement)
+    BaseRegister() = default;
+    BaseRegister(QDomElement domElement)
     {
 #ifdef XML_DEBUG
         qDebug() << domElement.attribute("id", "") << domElement.text();
@@ -78,6 +77,28 @@ template <typename FuncCode, typename TypeId> struct BaseGroup
                 domElement = domElement.nextSiblingElement();
                 continue;
             }
+            domElement = domElement.nextSiblingElement();
+        }
+    }
+
+    QString id;
+    FuncCode function;
+    TypeId dataType;
+    quint32 startAddr;
+};
+
+template <typename FuncCode, typename TypeId> struct BaseGroup : BaseRegister<FuncCode, TypeId>
+{
+    typedef BaseRegister<FuncCode, TypeId> base;
+    BaseGroup() = default;
+    BaseGroup(QDomElement domElement) : BaseRegister<FuncCode, TypeId>(domElement)
+    {
+#ifdef XML_DEBUG
+        qDebug() << domElement.attribute("id", "") << domElement.text();
+#endif
+        domElement = domElement.firstChildElement();
+        while (!domElement.isNull())
+        {
             if (domElement.tagName() == "count")
             {
 #ifdef XML_DEBUG
@@ -90,32 +111,33 @@ template <typename FuncCode, typename TypeId> struct BaseGroup
             domElement = domElement.nextSiblingElement();
         }
     }
-    QString id;
-    FuncCode function;
-    TypeId dataType;
-    quint32 startAddr;
     quint32 count;
 };
 
 // Class have to derived from BaseGroup due to dependent types
 template <typename Group, typename = typename std::enable_if<is_base_of_template<BaseGroup, Group>::value>::type>
-struct InterfaceInfo
+class InterfaceInfo
 {
-    //    InterfaceInfo()
-    //    {
-    //    }
-
+public:
+    using Register = typename Group::base;
     void addGroup(const Group &gr)
     {
         m_groups.append(gr);
 
         m_dictionary.insert(gr.startAddr, gr);
     }
-    void clearGroups()
+    void addReg(const Register &reg)
+    {
+        m_regs.append(reg);
+
+        m_dictionaryRegs.insert(reg.startAddr, reg);
+    }
+    void clear()
     {
         m_groups.clear();
-
+        m_regs.clear();
         m_dictionary.clear();
+        m_dictionaryRegs.clear();
     }
 
     QList<Group> groups() const
@@ -132,6 +154,9 @@ private:
     // Realized two versions, only one will be stayed
     QList<Group> m_groups;
     QMultiMap<quint32, Group> m_dictionary;
+    //
+    QList<Register> m_regs;
+    QMultiMap<quint32, Register> m_dictionaryRegs;
 };
 
 // For template not in header

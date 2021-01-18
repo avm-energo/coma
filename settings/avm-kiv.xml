@@ -184,12 +184,12 @@
         <register id="Sbg">
           <function>10</function>
           <type>float</type>
-          <addr>900</addr>
+          <start-addr>900</start-addr>
         </register>
         <register id="Clbg">
           <function>10</function>
           <type>float</type>
-          <addr>905</addr>
+          <start-addr>905</start-addr>
         </register>
         <group id="wstartValue">
           <function>10</function>
