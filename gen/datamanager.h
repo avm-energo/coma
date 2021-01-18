@@ -41,27 +41,21 @@ public:
     {
         QVariant var;
         var.setValue(data);
-        s_inQueueMutex.lock();
+        QMutexLocker locker(&s_inQueueMutex);
         s_inputQueue.push(var);
-        s_inQueueMutex.unlock();
     }
     template <typename T> static Error::Msg deQueue(T &cmd)
     {
+        QMutexLocker locker(&s_inQueueMutex);
         if (!s_inputQueue.empty())
         {
-            s_inQueueMutex.lock();
-            if (s_inputQueue.size() > 0)
+            QVariant inp = s_inputQueue.front();
+            if (inp.canConvert<T>())
             {
-                QVariant inp = s_inputQueue.front();
-                if (inp.canConvert<T>())
-                {
-                    s_inputQueue.pop();
-                    s_inQueueMutex.unlock();
-                    cmd = qvariant_cast<T>(inp);
-                    return Error::Msg::NoError;
-                }
+                s_inputQueue.pop();
+                cmd = qvariant_cast<T>(inp);
+                return Error::Msg::NoError;
             }
-            s_inQueueMutex.unlock();
         }
         return Error::Msg::ResEmpty;
     }
