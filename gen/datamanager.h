@@ -50,13 +50,16 @@ public:
         if (!s_inputQueue.empty())
         {
             s_inQueueMutex.lock();
-            QVariant inp = s_inputQueue.front();
-            if (inp.canConvert<T>())
+            if (s_inputQueue.size() > 0)
             {
-                s_inputQueue.pop();
-                s_inQueueMutex.unlock();
-                cmd = qvariant_cast<T>(inp);
-                return Error::Msg::NoError;
+                QVariant inp = s_inputQueue.front();
+                if (inp.canConvert<T>())
+                {
+                    s_inputQueue.pop();
+                    s_inQueueMutex.unlock();
+                    cmd = qvariant_cast<T>(inp);
+                    return Error::Msg::NoError;
+                }
             }
             s_inQueueMutex.unlock();
         }

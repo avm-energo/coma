@@ -17,7 +17,6 @@ BaseInterface::BaseInterface(QObject *parent) : QObject(parent), m_working(false
 
     // auto ptr = std::make_shared<QTimer>();
     timeoutTimer = new QTimer(this);
-    // timeoutTimer = new QTimer;
     timeoutTimer->setInterval(MAINTIMEOUT);
     connect(timeoutTimer, &QTimer::timeout, this, &BaseInterface::timeout);
     m_state = State::None;

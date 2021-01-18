@@ -16,9 +16,9 @@ Bac::Bac(QObject *parent) : DataBlock(parent)
 
 void Bac::createWidget()
 {
-    QString ValuesFormat = "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; color: black;"
-                           "background-color: "
-        + QString(Colors::ColorsMap[Colors::AConfO]) + "; font: bold 10px;}";
+    //    QString ValuesFormat = "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; color: black;"
+    //                           "background-color: "
+    //        + QString(Colors::ColorsMap[Colors::AConfO]) + "; font: bold 10px;}";
     //    QString ValuesLEFormat = QString(Colors::ColorsMap[Colors::AConfO]);
     m_widget = new QWidget;
     QVBoxLayout *lyout = new QVBoxLayout;
@@ -93,74 +93,71 @@ void Bac::createWidget()
     //    vlyout->addWidget(tv);
     for (int i = 0; i < 3; i++)
     {
-        glyout->addWidget(WDFunc::NewLBL(m_widget, "N1_TT[" + QString::number(i) + "]"), 0, i, 1, 1);
+        glyout->addWidget(WDFunc::NewLBL2(m_widget, "N1_TT[" + QString::number(i) + "]"), 0, i, 1, 1);
         glyout->addWidget(
-            WDFunc::NewLBLT(m_widget, "", "tune" + QString::number(i), ValuesFormat, "Число витков первичной обмотки"),
-            1, i, 1, 1);
-        glyout->addWidget(WDFunc::NewLBL(m_widget, "KmU[" + QString::number(i) + "]"), 0, i + 3, 1, 1);
-        glyout->addWidget(
-            WDFunc::NewLBLT(m_widget, "", "tune" + QString::number(i + 3), ValuesFormat, "Коэффициенты по напряжению"),
+            WDFunc::NewLBLT2(m_widget, "", "tune" + QString::number(i), "Число витков первичной обмотки"), 1, i, 1, 1);
+        glyout->addWidget(WDFunc::NewLBL2(m_widget, "KmU[" + QString::number(i) + "]"), 0, i + 3, 1, 1);
+        glyout->addWidget(WDFunc::NewLBLT2(m_widget, "", "tune" + QString::number(i + 3), "Коэффициенты по напряжению"),
             1, i + 3, 1, 1);
-        glyout->addWidget(WDFunc::NewLBL(m_widget, "KmI1[" + QString::number(i) + "]"), 2, i, 1, 1);
-        glyout->addWidget(WDFunc::NewLBLT(m_widget, "", "tune" + QString::number(i + 6), ValuesFormat,
-                              "Коэффициенты по току для Кацп=1"),
-            3, i, 1, 1);
-        glyout->addWidget(WDFunc::NewLBL(m_widget, "KmI2[" + QString::number(i) + "]"), 2, i + 3, 1, 1);
-        glyout->addWidget(WDFunc::NewLBLT(m_widget, "", "tune" + QString::number(i + 9), ValuesFormat,
-                              "Коэффициенты по току для Кацп=2"),
-            3, i + 3, 1, 1);
-        glyout->addWidget(WDFunc::NewLBL(m_widget, "KmI4[" + QString::number(i) + "]"), 4, i, 1, 1);
-        glyout->addWidget(WDFunc::NewLBLT(m_widget, "", "tune" + QString::number(i + 12), ValuesFormat,
-                              "Коэффициенты по току для Кацп=4"),
-            5, i, 1, 1);
-        glyout->addWidget(WDFunc::NewLBL(m_widget, "KmI8[" + QString::number(i) + "]"), 4, i + 3, 1, 1);
-        glyout->addWidget(WDFunc::NewLBLT(m_widget, "", "tune" + QString::number(i + 15), ValuesFormat,
-                              "Коэффициенты по току для Кацп=8"),
-            5, i + 3, 1, 1);
-        glyout->addWidget(WDFunc::NewLBL(m_widget, "KmI16[" + QString::number(i) + "]"), 6, i, 1, 1);
-        glyout->addWidget(WDFunc::NewLBLT(m_widget, "", "tune" + QString::number(i + 18), ValuesFormat,
-                              "Коэффициенты по току для Кацп=16"),
-            7, i, 1, 1);
-        glyout->addWidget(WDFunc::NewLBL(m_widget, "KmI32[" + QString::number(i) + "]"), 6, i + 3, 1, 1);
-        glyout->addWidget(WDFunc::NewLBLT(m_widget, "", "tune" + QString::number(i + 21), ValuesFormat,
-                              "Коэффициенты по току для Кацп=32"),
-            7, i + 3, 1, 1);
-        glyout->addWidget(WDFunc::NewLBL(m_widget, "TKPsi_a[" + QString::number(i) + "]"), 8, i, 1, 1);
-        glyout->addWidget(WDFunc::NewLBLT(m_widget, "", "tune" + QString::number(i + 24), ValuesFormat,
+        glyout->addWidget(WDFunc::NewLBL2(m_widget, "KmI1[" + QString::number(i) + "]"), 2, i, 1, 1);
+        glyout->addWidget(
+            WDFunc::NewLBLT2(m_widget, "", "tune" + QString::number(i + 6), "Коэффициенты по току для Кацп=1"), 3, i, 1,
+            1);
+        glyout->addWidget(WDFunc::NewLBL2(m_widget, "KmI2[" + QString::number(i) + "]"), 2, i + 3, 1, 1);
+        glyout->addWidget(
+            WDFunc::NewLBLT2(m_widget, "", "tune" + QString::number(i + 9), "Коэффициенты по току для Кацп=2"), 3,
+            i + 3, 1, 1);
+        glyout->addWidget(WDFunc::NewLBL2(m_widget, "KmI4[" + QString::number(i) + "]"), 4, i, 1, 1);
+        glyout->addWidget(
+            WDFunc::NewLBLT2(m_widget, "", "tune" + QString::number(i + 12), "Коэффициенты по току для Кацп=4"), 5, i,
+            1, 1);
+        glyout->addWidget(WDFunc::NewLBL2(m_widget, "KmI8[" + QString::number(i) + "]"), 4, i + 3, 1, 1);
+        glyout->addWidget(
+            WDFunc::NewLBLT2(m_widget, "", "tune" + QString::number(i + 15), "Коэффициенты по току для Кацп=8"), 5,
+            i + 3, 1, 1);
+        glyout->addWidget(WDFunc::NewLBL2(m_widget, "KmI16[" + QString::number(i) + "]"), 6, i, 1, 1);
+        glyout->addWidget(
+            WDFunc::NewLBLT2(m_widget, "", "tune" + QString::number(i + 18), "Коэффициенты по току для Кацп=16"), 7, i,
+            1, 1);
+        glyout->addWidget(WDFunc::NewLBL2(m_widget, "KmI32[" + QString::number(i) + "]"), 6, i + 3, 1, 1);
+        glyout->addWidget(
+            WDFunc::NewLBLT2(m_widget, "", "tune" + QString::number(i + 21), "Коэффициенты по току для Кацп=32"), 7,
+            i + 3, 1, 1);
+        glyout->addWidget(WDFunc::NewLBL2(m_widget, "TKPsi_a[" + QString::number(i) + "]"), 8, i, 1, 1);
+        glyout->addWidget(WDFunc::NewLBLT2(m_widget, "", "tune" + QString::number(i + 24),
                               "Коэффициенты линейной коррекции по tg delta"),
             9, i, 1, 1);
-        glyout->addWidget(WDFunc::NewLBL(m_widget, "TKPsi_b[" + QString::number(i) + "]"), 8, i + 3, 1, 1);
-        glyout->addWidget(WDFunc::NewLBLT(m_widget, "", "tune" + QString::number(i + 27), ValuesFormat,
+        glyout->addWidget(WDFunc::NewLBL2(m_widget, "TKPsi_b[" + QString::number(i) + "]"), 8, i + 3, 1, 1);
+        glyout->addWidget(WDFunc::NewLBLT2(m_widget, "", "tune" + QString::number(i + 27),
                               "Коэффициенты квадратичной коррекции по tg delta"),
             9, i + 3, 1, 1);
     }
     for (int i = 0; i < 6; i++)
     {
-        glyout->addWidget(WDFunc::NewLBL(m_widget, "DPsi[" + QString::number(i) + "]"), 10, i, 1, 1);
+        glyout->addWidget(WDFunc::NewLBL2(m_widget, "DPsi[" + QString::number(i) + "]"), 10, i, 1, 1);
         glyout->addWidget(
-            WDFunc::NewLBLT(m_widget, "", "tune" + QString::number(i + 30), ValuesFormat, "Коррекция фазы в градусах"),
-            11, i, 1, 1);
-        glyout->addWidget(WDFunc::NewLBL(m_widget, "TKUa[" + QString::number(i) + "]"), 12, i, 1, 1);
-        glyout->addWidget(WDFunc::NewLBLT(m_widget, "", "tune" + QString::number(i + 36), ValuesFormat,
+            WDFunc::NewLBLT2(m_widget, "", "tune" + QString::number(i + 30), "Коррекция фазы в градусах"), 11, i, 1, 1);
+        glyout->addWidget(WDFunc::NewLBL2(m_widget, "TKUa[" + QString::number(i) + "]"), 12, i, 1, 1);
+        glyout->addWidget(WDFunc::NewLBLT2(m_widget, "", "tune" + QString::number(i + 36),
                               "Коэффициенты линейной коррекции по U и I"),
             13, i, 1, 1);
-        glyout->addWidget(WDFunc::NewLBL(m_widget, "TKUb[" + QString::number(i) + "]"), 14, i, 1, 1);
-        glyout->addWidget(WDFunc::NewLBLT(m_widget, "", "tune" + QString::number(i + 42), ValuesFormat,
+        glyout->addWidget(WDFunc::NewLBL2(m_widget, "TKUb[" + QString::number(i) + "]"), 14, i, 1, 1);
+        glyout->addWidget(WDFunc::NewLBLT2(m_widget, "", "tune" + QString::number(i + 42),
                               "Коэффициенты квадратичной коррекции по U и I"),
             15, i, 1, 1);
     }
 
-    glyout->addWidget(WDFunc::NewLBL(m_widget, "K_freq"), 16, 0, 1, 1);
-    glyout->addWidget(WDFunc::NewLBLT(m_widget, "", "tune48", ValuesFormat, "Коррекция частоты"), 17, 0, 1, 1);
-    glyout->addWidget(WDFunc::NewLBL(m_widget, "Art"), 16, 1, 1, 1);
-    glyout->addWidget(WDFunc::NewLBLT(m_widget, "", "tune49", ValuesFormat, "Коэффициент в канале Pt100"), 17, 1, 1, 1);
-    glyout->addWidget(WDFunc::NewLBL(m_widget, "Brt"), 16, 2, 1, 1);
-    glyout->addWidget(WDFunc::NewLBLT(m_widget, "", "tune50", ValuesFormat, "Смещение в канале Pt100"), 17, 2, 1, 1);
-    glyout->addWidget(WDFunc::NewLBL(m_widget, "Tmk0"), 16, 3, 1, 1);
-    glyout->addWidget(
-        WDFunc::NewLBLT(m_widget, "", "tune51", ValuesFormat, "Начальная температура МК для коррекции"), 17, 3, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL2(m_widget, "K_freq"), 16, 0, 1, 1);
+    glyout->addWidget(WDFunc::NewLBLT2(m_widget, "", "tune48", "Коррекция частоты"), 17, 0, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL2(m_widget, "Art"), 16, 1, 1, 1);
+    glyout->addWidget(WDFunc::NewLBLT2(m_widget, "", "tune49", "Коэффициент в канале Pt100"), 17, 1, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL2(m_widget, "Brt"), 16, 2, 1, 1);
+    glyout->addWidget(WDFunc::NewLBLT2(m_widget, "", "tune50", "Смещение в канале Pt100"), 17, 2, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL2(m_widget, "Tmk0"), 16, 3, 1, 1);
+    glyout->addWidget(WDFunc::NewLBLT2(m_widget, "", "tune51", "Начальная температура МК для коррекции"), 17, 3, 1, 1);
     gb->setLayout(glyout);
     lyout->addWidget(gb);
+
     lyout->addWidget(blockButtonsUI());
     lyout->addStretch(100);
     m_widget->setLayout(lyout);

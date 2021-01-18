@@ -37,14 +37,14 @@ void BaseAlarm::disable()
 void BaseAlarm::setupUI(const QStringList &events)
 {
     // m_realAlarmSize = events.size();
-    quint16 flagsCount = m_alarmFlags.count();
-    quint16 eventsCount = events.size();
+    qint64 flagsCount = m_alarmFlags.count();
+    qint64 eventsCount = events.size();
     Q_ASSERT(flagsCount == eventsCount);
 
     QVBoxLayout *lyout = new QVBoxLayout;
     QVBoxLayout *vlayout = new QVBoxLayout;
 
-    int i, j;
+    unsigned int i, j;
     for (i = 0, j = 0; i < m_alarmFlags.size(); ++i)
     {
         const bool flag = m_alarmFlags.test(i);

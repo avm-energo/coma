@@ -156,6 +156,7 @@ QLabel *WDFunc::NewLBLT2(QWidget *w, const QString &text, const QString &lblname
     lbl->setText(text);
     lbl->setObjectName(lblname);
     lbl->setToolTip(lbltip);
+    lbl->setStyleSheet("QLabel {background-color: " + QString(Colors::ColorsMap[Colors::AConfO]) + ";}");
     if (fixed == true)
         lbl->setFixedSize(120, 15);
     return lbl;

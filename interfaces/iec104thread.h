@@ -90,6 +90,7 @@ private:
     quint8 m_KSF;
     QByteArray m_cutPckt;
     bool m_isFirstParse;
+    bool m_writingToPortBlocked;
 
     void ParseIFormat(QByteArray &ba);
     Error::Msg isIncomeDataValid(QByteArray);

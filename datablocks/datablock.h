@@ -51,7 +51,7 @@ public:
     //    virtual void setupUI() = 0;                                     // frontend for block visualisation
     //    void setModel(const QList<ValueItem *> &dd, int columnsnumber); // default columnsnumber = 5
     //    QWidget *widget();
-    QWidget *widget();
+    QWidget *widget(bool showButtons = true);
     virtual void createWidget() = 0;
     BlockStruct block();
     virtual void setDefBlock() = 0;
@@ -59,6 +59,7 @@ public:
     virtual void updateFromWidget(); // semi-virtual function, need to be reimplemented in corresponding blocks
     //    static void getFileProperties(DataTypes::DataBlockTypes type, FilePropertiesStruct &st);
     void readBlockFromModule();
+    Error::Msg writeBlockToModule();
 
     QWidget *blockButtonsUI();
 
@@ -68,6 +69,8 @@ private:
     //    QList<DataDescription> m_dataList;
     //    ValueModel *m_VModel;
     BlockStruct m_block;
+    bool m_isBottomButtonsWidgetCreated;
+    QWidget *m_bottomButtonsWidget;
     //    BaseInterface *m_iface;
 
     //    int m_blockNum;
@@ -78,12 +81,13 @@ private:
     //    int m_curModelRow;
     //    int m_curModelColumn;
 
+    void createBottomButtonsWidget();
+
 public slots:
     //    void updateModel();
     //    void updateValues();
     void setDefBlockAndUpdate();
     void readAndUpdate();
-    void writeBlockToModule();
     void readFromFile();
     void saveToFile();
     void saveToFileUserChoose();

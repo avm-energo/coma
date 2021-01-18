@@ -52,11 +52,11 @@ void WaitWidget::Start()
     show();
     QTimer *tmr = new QTimer;
     tmr->setInterval(10);
-    connect(tmr, SIGNAL(timeout()), this, SLOT(Rotate()));
+    connect(tmr, &QTimer::timeout, this, &WaitWidget::Rotate);
     tmr->start();
     QTimer *tmrs = new QTimer;
     tmrs->setInterval(1000);
-    connect(tmrs, SIGNAL(timeout()), this, SLOT(UpdateSeconds()));
+    connect(tmrs, &QTimer::timeout, this, &WaitWidget::UpdateSeconds);
     tmrs->start();
 }
 
@@ -150,7 +150,7 @@ void WaitWidget::keyPressEvent(QKeyEvent *e)
 {
     if ((e->key() == Qt::Key_Escape) && IsAllowedToStop)
     {
-        StdFunc::cancel();
+        //        StdFunc::cancel();
         Stop();
         //        emit CountZero();
     }

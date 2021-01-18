@@ -45,6 +45,7 @@ DataBlock::DataBlock(QObject *parent) : QObject(parent)
     //    m_VModel = new ValueModel;
     //    m_curModelColumn = m_curModelRow = 0;
     m_widgetIsSet = false;
+    m_isBottomButtonsWidgetCreated = false;
 }
 
 DataBlock::~DataBlock()
@@ -57,10 +58,12 @@ void DataBlock::setBlock(const DataBlock::BlockStruct &bds)
     m_block = bds;
 }
 
-QWidget *DataBlock::widget()
+QWidget *DataBlock::widget(bool showButtons)
 {
     if (!m_widgetIsSet)
         createWidget();
+    if (m_isBottomButtonsWidgetCreated)
+        m_bottomButtonsWidget->setVisible(showButtons);
     return m_widget;
 }
 
@@ -105,7 +108,7 @@ void DataBlock::updateFromWidget()
 //    m_VModel->updateFromModel();
 //}
 
-void DataBlock::writeBlockToModule()
+Error::Msg DataBlock::writeBlockToModule()
 {
     switch (m_block.blocktype)
     {
@@ -116,10 +119,13 @@ void DataBlock::writeBlockToModule()
         if (BaseInterface::iface()->writeBlockSync(
                 m_block.blocknum, DataTypes::DataBlockTypes::BacBlock, m_block.block, m_block.blocksize)
             != Error::Msg::NoError)
+        {
             //        if (Commands::WriteBac(m_block.blocknum, &m_block.block, m_block.blocksize) !=
             //        Error::Msg::NoError)
             //            return Error::Msg::GeneralError;
             qCritical("Не удалось записать блок");
+            return Error::Msg::GeneralError;
+        }
         break;
     }
     case DataTypes::DataBlockTypes::BdBlock:
@@ -135,7 +141,7 @@ void DataBlock::writeBlockToModule()
     default:
         break;
     }
-    //    return Error::Msg::NoError;
+    return Error::Msg::NoError;
 }
 
 void DataBlock::readBlockFromModule()
@@ -194,7 +200,8 @@ void DataBlock::readFromFile()
     if (Files::LoadFromFile(filestr, ba) != Error::Msg::NoError)
     {
         memcpy(m_block.block, &ba.data()[0], m_block.blocksize);
-        writeBlockToModule();
+        if (writeBlockToModule() != Error::Msg::NoError)
+            qCritical("Не удалось записать блок");
     }
 }
 
@@ -246,7 +253,17 @@ void DataBlock::readAndUpdate()
 
 QWidget *DataBlock::blockButtonsUI()
 {
-    QWidget *w = new QWidget;
+    if (!m_isBottomButtonsWidgetCreated)
+    {
+        createBottomButtonsWidget();
+        m_isBottomButtonsWidgetCreated = true;
+    }
+    return m_bottomButtonsWidget;
+}
+
+void DataBlock::createBottomButtonsWidget()
+{
+    m_bottomButtonsWidget = new QWidget;
     QVBoxLayout *lyout = new QVBoxLayout;
     QDialogButtonBox *group = new QDialogButtonBox;
     //    QHBoxLayout *hlyout = new QHBoxLayout;
@@ -262,7 +279,8 @@ QWidget *DataBlock::blockButtonsUI()
     {
         //        const QIcon &icon = i.first.second;
         const QString &toolTip = i.first.first;
-        group->addButton(WDFunc::NewHexagonPB(w, "", i.second, i.first.second, toolTip), QDialogButtonBox::ActionRole);
+        group->addButton(WDFunc::NewHexagonPB(m_bottomButtonsWidget, "", i.second, i.first.second, toolTip),
+            QDialogButtonBox::ActionRole);
 
         //        QPushButton *pb = new QPushButton();
         //        pb->setObjectName("Hexagon");
@@ -288,8 +306,7 @@ QWidget *DataBlock::blockButtonsUI()
     group->setCenterButtons(true);
     lyout->addWidget(group);
     // lyout->addLayout(hlyout);
-    w->setLayout(lyout);
-    return w;
+    m_bottomButtonsWidget->setLayout(lyout);
 }
 
 void DataBlock::setDefBlockAndUpdate()
