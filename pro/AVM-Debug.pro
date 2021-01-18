@@ -37,6 +37,8 @@ SOURCES += \
     ../datablocks/kiv/bdain.cpp \
     ../gen/errorqueue.cpp \
     ../gen/helper.cpp \
+    ../interfaces/interfacesettings.cpp \
+    ../interfaces/protocom_p.cpp \
     ../interfaces/usbhidsettings.cpp \
     ../models/errorprotocolmodel.cpp \
     ../module/alarmkdv.cpp \
@@ -142,6 +144,8 @@ HEADERS += \
     ../datablocks/kiv/bdain.h \
     ../gen/errorqueue.h \
     ../gen/helper.h \
+    ../interfaces/interfacesettings.h \
+    ../interfaces/protocom_p.h \
     ../interfaces/usbhidsettings.h \
     ../models/errorprotocolmodel.h \
     ../module/alarmkdv.h \

@@ -11,7 +11,6 @@
 #include <QDebug>
 //#include <QMetaEnum>
 #include <QThread>
-//#include <array>
 
 typedef QQueue<QByteArray> ByteQueue;
 using Proto::CommandStruct;

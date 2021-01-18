@@ -218,7 +218,6 @@ void UsbHidPort::closeConnection()
 {
     if (m_hidDevice)
         hid_close(m_hidDevice);
-    // return;
 
     clear();
 }
@@ -388,8 +387,6 @@ bool UsbHidPort::writeData(QByteArray &ba)
 
 void UsbHidPort::checkQueue()
 {
-    // NOTE Реализовать
-    // Q_ASSERT(Board::GetInstance().connectionState() == Board::ConnectionState::Connected);
     QMutexLocker locker(&_mutex);
     if (m_writeQueue.isEmpty())
         return;

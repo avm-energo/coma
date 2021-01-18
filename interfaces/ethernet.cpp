@@ -27,7 +27,7 @@ void Ethernet::Run()
     EthConnected = false;
     StdFunc::SetDeviceIP(IP);
     sock = new QTcpSocket(this);
-    connect(sock, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(seterr(QAbstractSocket::SocketError)));
+    connect(sock, &QAbstractSocket::errorOccurred, this, &Ethernet::seterr);
     connect(sock, &QAbstractSocket::stateChanged, this, &Ethernet::EthStateChanged);
     connect(sock, &QAbstractSocket::connected, this, &Ethernet::Connected);
     connect(sock, &QAbstractSocket::connected, this, &Ethernet::EthSetConnected);
@@ -37,8 +37,8 @@ void Ethernet::Run()
     connect(sock, &QIODevice::readyRead, this, &Ethernet::CheckForData);
     sock->connectToHost(StdFunc::ForDeviceIP(), PORT104, QIODevice::ReadWrite, QAbstractSocket::IPv4Protocol);
     QEventLoop loop;
-    loop.connect(sock, SIGNAL(connected()), SLOT(quit()));
-    loop.connect(sock, SIGNAL(error(QAbstractSocket::SocketError)), SLOT(quit()));
+    connect(sock, &QAbstractSocket::connected, &loop, &QEventLoop::quit);
+    connect(sock, &QAbstractSocket::errorOccurred, &loop, &QEventLoop::quit);
     loop.exec();
     //    TimeFunc::WaitFor(EthConnected, TIMEOUT_BIG);
     while (!ClosePortAndFinishThread)
@@ -75,7 +75,7 @@ void Ethernet::SendData()
 {
     if (!sock->isOpen())
     {
-        ERMSG("Ethernet write data to closed port");
+        qCritical("Ethernet write data to closed port");
         return;
     }
     Log->info("PC -> " + OutDataBuf.toHex());
@@ -83,8 +83,8 @@ void Ethernet::SendData()
     Log->info(QString::number(res) + " bytes written");
     if (res == -1)
     {
-        ERMSG("Ethernet write error");
-        emit error(QAbstractSocket::SocketError::NetworkError); // ошибка
+        qCritical("Ethernet write error");
+        // emit error(QAbstractSocket::SocketError::NetworkError); // ошибка
     }
     OutDataBuf.clear();
 }

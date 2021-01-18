@@ -99,16 +99,18 @@ Module *Module::createModule(QTimer *updateTimer, AlarmWidget *aw)
             {
                 ConfigKIV *CKIV = new ConfigKIV;
                 m->addDialogToList(new ConfKIVDialog(CKIV), "Конфигурирование", "conf1");
+                if (board.interfaceType() == Board::InterfaceType::USB)
+                {
+#ifdef AVM_DEBUG
+                    m->addDialogToList(new TuneKIVDialog(CKIV), "Регулировка");
+#endif
+                }
             }
             CheckKIVDialog *cdkiv = new CheckKIVDialog;
             m->addDialogToList(cdkiv, "Проверка");
-#ifdef AVM_DEBUG
-            //            TuneKIV *TKIV = new TuneKIV;
-            m->addDialogToList(new TuneKIVDialog(CKIV), "Регулировка");
-#endif
+
             m->addDialogToList(new StartupKIVDialog, "Начальные\nзначения");
-            //            connect(m->m_warn, &Warn::updateWarn, cdkiv, &AbstractCheckDialog::SetWarnColor);
-            //            connect(m->m_alarm, &Alarm::updateAlarm, cdkiv, &AbstractCheckDialog::SetAlarmColor);
+
             break;
         }
         case Model::KTF:

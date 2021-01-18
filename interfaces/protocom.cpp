@@ -46,7 +46,6 @@ bool Protocom::start(const UsbHidSettings &usbhid)
     // NOTE После остановки потоков мы всё еще обращаемся
     // к интерфейсу для обновления данных
     QList<QMetaObject::Connection> connections;
-    // FIXME Разобраться с удалением и закрытием потоков
     // Старт
     connect(portThread, &QThread::started, port, &UsbHidPort::poll);
     connect(parseThread, &QThread::started, parser, &ProtocomThread::parse);
@@ -66,10 +65,6 @@ bool Protocom::start(const UsbHidSettings &usbhid)
     });
     connect(port, &UsbHidPort::finished, portThread, &QThread::quit);
     connect(port, &UsbHidPort::finished, parseThread, &QThread::quit);
-    // connect(port, &UsbHidPort::finished, portThread, &QObject::deleteLater);
-    // connect(port, &UsbHidPort::finished, parseThread, &QObject::deleteLater);
-    //  connect(port, &UsbHidPort::finished, port, &QObject::deleteLater);
-    //  connect(port, &UsbHidPort::finished, parser, &QObject::deleteLater);
     connect(portThread, &QThread::finished, port, &QObject::deleteLater);
     connect(parseThread, &QThread::finished, parser, &QObject::deleteLater);
     connect(portThread, &QThread::finished, &QObject::deleteLater);
@@ -92,12 +87,6 @@ bool Protocom::start(const UsbHidSettings &usbhid)
     parseThread->start();
     return true;
 }
-
-// void Protocom::stop()
-//{
-// emit finish();
-// FIXME Реализовать
-//}
 
 void Protocom::reqTime()
 {
@@ -160,13 +149,6 @@ void Protocom::writeFile(quint32 filenum, const QByteArray &file)
     emit wakeUpParser();
 }
 
-// void Protocom::writeConfigFile()
-//{
-//    QByteArray ba;
-//    S2::StoreDataMem(&ba.data()[0], S2::config, Files::Config);
-//    writeFile(Files::Config, ba);
-//}
-
 void Protocom::writeTime(quint32 time)
 {
     CommandStruct inp { Proto::Commands::WriteTime, time, QVariant(), {} };
@@ -203,7 +185,6 @@ void Protocom::writeCommand(Queries::Commands cmd, QVariant item)
     using DataTypes::Signal;
 
     auto protoCmd = getProtoCommand.value(cmd);
-    // Q_ASSERT(protoCmd != ReadBlkData && "This command couldn't be used directly");
     if (!protoCmd)
     {
         auto wCmd = getWCommand.value(cmd);
@@ -239,11 +220,9 @@ void Protocom::writeCommand(Queries::Commands cmd, QVariant item)
         Q_ASSERT(item.canConvert<Signal>());
         if (item.canConvert<Signal>())
         {
-            {
-                const auto signal = item.value<Signal>();
-                if (isValidRegs(signal.addr, signal.value))
-                    d->handleBlk(protoCmd, item.value<Signal>());
-            }
+            const auto signal = item.value<Signal>();
+            if (isValidRegs(signal.addr, signal.value))
+                d->handleBlk(protoCmd, item.value<Signal>());
         }
         break;
 

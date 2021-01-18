@@ -1,6 +1,5 @@
 #include "baseinterface.h"
 
-//#include "../gen/board.h"
 #include "../gen/datamanager.h"
 #include "../gen/s2.h"
 #include "../gen/stdfunc.h"
@@ -10,12 +9,9 @@
 #include <memory>
 
 BaseInterface::InterfacePointer BaseInterface::m_iface;
-// BaseInterface *BaseInterface::m_iface;
 
 BaseInterface::BaseInterface(QObject *parent) : QObject(parent), m_working(false), Log(new LogClass(this))
 {
-
-    // auto ptr = std::make_shared<QTimer>();
     timeoutTimer = new QTimer(this);
     timeoutTimer->setInterval(MAINTIMEOUT);
     connect(timeoutTimer, &QTimer::timeout, this, &BaseInterface::timeout);
@@ -33,7 +29,6 @@ BaseInterface::BaseInterface(QObject *parent) : QObject(parent), m_working(false
 
 BaseInterface::~BaseInterface()
 {
-    // delete Log;
 }
 
 BaseInterface *BaseInterface::iface()
@@ -273,8 +268,5 @@ void BaseInterface::fileReceived(const DataTypes::FileStruct &file)
 
 void BaseInterface::timeout()
 {
-    // FIXME Should be checked before cast
-    //    QTimer *tmr = qobject_cast<QTimer *>(sender());
-    //    tmr->deleteLater();
     m_busy = false;
 }

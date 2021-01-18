@@ -29,12 +29,6 @@ TEMPLATE = app
 
 
 SOURCES += \
-    ../interfaces/protocom_p.cpp \
-    ../interfaces/usbhidsettings.cpp \
-    ../widgets/aboutwidget.cpp \
-    ../widgets/alarmbutton.cpp \
-    ../widgets/alarmstateall.cpp \
-    ../widgets/styleloader.cpp \
     coma.cpp \
     main.cpp \
     ../check/abstractcheckdialog.cpp \
@@ -91,6 +85,8 @@ SOURCES += \
     ../interfaces/protocom.cpp \
     ../interfaces/protocomthread.cpp \
     ../interfaces/usbhidportinfo.cpp \
+    ../interfaces/protocom_p.cpp \
+    ../interfaces/usbhidsettings.cpp \
     ../models/errorprotocolmodel.cpp \
     ../models/etableitem.cpp \
     ../models/etablemodel.cpp \
@@ -118,19 +114,15 @@ SOURCES += \
     ../widgets/udialog.cpp \
     ../widgets/uwidget.cpp \
     ../widgets/waitwidget.cpp \
+    ../widgets/aboutwidget.cpp \
+    ../widgets/alarmbutton.cpp \
+    ../widgets/alarmstateall.cpp \
+    ../widgets/styleloader.cpp \
     ../widgets/wd_func.cpp
 
 PRECOMPILED_HEADER = ../gen/pch.h
 
 HEADERS += \
-    ../interfaces/interfacesettings.h \
-    ../interfaces/protocom_p.h \
-    ../interfaces/protocomsettings.h \
-    ../interfaces/usbhidsettings.h \
-    ../widgets/aboutwidget.h \
-    ../widgets/alarmbutton.h \
-    ../widgets/alarmstateall.h \
-    ../widgets/styleloader.h \
     coma.h \
     ../check/check.h \
     ../check/abstractcheckdialog.h \
@@ -191,6 +183,9 @@ HEADERS += \
     ../interfaces/modbusprivate.h \
     ../interfaces/usbhidportinfo.h \
     ../interfaces/protocomprivate.h \
+    ../interfaces/interfacesettings.h \
+    ../interfaces/protocom_p.h \
+    ../interfaces/usbhidsettings.h \
     ../models/errorprotocolmodel.h \
     ../models/etableitem.h \
     ../models/etablemodel.h \
@@ -223,6 +218,10 @@ HEADERS += \
     ../widgets/udialog.h \
     ../widgets/uwidget.h \
     ../widgets/waitwidget.h \
+    ../widgets/aboutwidget.h \
+    ../widgets/alarmbutton.h \
+    ../widgets/alarmstateall.h \
+    ../widgets/styleloader.h \
     ../widgets/wd_func.h
 
 
