@@ -13,9 +13,8 @@
 #include <algorithm>
 
 //#define MODBUS_DEBUG
-ModbusThread::ModbusThread(QObject *parent) : QObject(parent)
+ModbusThread::ModbusThread(QObject *parent) : QObject(parent), Log(new LogClass(this))
 {
-    Log = new LogClass;
     Log->Init("modbus.log");
     Log->info("=== Log started ===");
     // AboutToFinish = false;

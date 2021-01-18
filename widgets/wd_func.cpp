@@ -541,7 +541,7 @@ QStatusBar *WDFunc::NewSB(QWidget *w)
     }
 
     QObject::connect(
-        &Board::GetInstance(), &Board::typeChanged, msgModel,
+        &Board::GetInstance(), qOverload<>(&Board::typeChanged), msgModel,
         [=]() {
             quint16 mtype = Board::GetInstance().type();
             QString deviceName = QVariant::fromValue(Modules::Model(mtype)).toString();

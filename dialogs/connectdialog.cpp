@@ -182,33 +182,32 @@ void ConnectDialog::EthAccepted()
 void ConnectDialog::RsAccepted()
 {
     QDialog *dlg = this->findChild<QDialog *>("rsdlg");
-    if (dlg != nullptr)
+    if (dlg == nullptr)
+        return;
+    QString name = WDFunc::LEData(dlg, "namele");
+    // check if there's such name in registry
+    if (IsKeyExist("RS485-", name))
     {
-        QString name = WDFunc::LEData(dlg, "namele");
-        // check if there's such name in registry
-        if (IsKeyExist("RS485-", name))
-        {
-            QMessageBox::critical(this, "Ошибка", "Такое имя уже имеется");
-            return;
-        }
-        RotateSettings("RS485-", name);
-        QString key = PROGNAME;
-        key += "\\" + name;
-        QSettings *sets = new QSettings(SOFTDEVELOPER, key);
-        sets->setValue("port", WDFunc::CBData(dlg, "portcb"));
-        sets->setValue("speed", WDFunc::CBData(dlg, "speedcb"));
-        sets->setValue("parity", WDFunc::CBData(dlg, "paritycb"));
-        sets->setValue("stop", WDFunc::CBData(dlg, "stopbitcb"));
-        int spbdata;
-        WDFunc::SPBData(dlg, "addressspb", spbdata);
-        sets->setValue("address", QString::number(spbdata));
-        QDialog *dlg2 = this->findChild<QDialog *>("connectdlg");
-        if (dlg2 == nullptr)
-            return;
-        if (!UpdateModel(dlg2))
-            qCritical() << Error::GeneralError;
-        dlg->close();
+        QMessageBox::critical(this, "Ошибка", "Такое имя уже имеется");
+        return;
     }
+    RotateSettings("RS485-", name);
+    QString key = PROGNAME;
+    key += "\\" + name;
+    std::unique_ptr<QSettings> settings = std::unique_ptr<QSettings>(new QSettings(SOFTDEVELOPER, key));
+    settings->setValue("port", WDFunc::CBData(dlg, "portcb"));
+    settings->setValue("speed", WDFunc::CBData(dlg, "speedcb"));
+    settings->setValue("parity", WDFunc::CBData(dlg, "paritycb"));
+    settings->setValue("stop", WDFunc::CBData(dlg, "stopbitcb"));
+    int spbdata;
+    WDFunc::SPBData(dlg, "addressspb", spbdata);
+    settings->setValue("address", QString::number(spbdata));
+    QDialog *dlg2 = this->findChild<QDialog *>("connectdlg");
+    if (dlg2 == nullptr)
+        return;
+    if (!UpdateModel(dlg2))
+        qCritical() << Error::GeneralError;
+    dlg->close();
 }
 
 // void ConnectDialog::SetCancelled()
@@ -415,14 +414,15 @@ void ConnectDialog::SetRs(QModelIndex index)
 
 void ConnectDialog::RotateSettings(const QString &type, const QString &name)
 {
-    QSettings *sets = new QSettings(SOFTDEVELOPER, PROGNAME);
+    std::unique_ptr<QSettings> settings = std::unique_ptr<QSettings>(new QSettings(SOFTDEVELOPER, PROGNAME));
     QStringList sl;
     QString namename, oldnamename;
     // 1. get all type+'i' from registry (count)
     for (int i = 0; i < MAXREGISTRYINTERFACECOUNT; ++i)
     {
         namename = type + QString::number(i);
-        QString value = sets->value(namename, "").toString();
+        QString value = settings->value(namename, "").toString();
+        // QString value = sets->value(namename, "").toString();
         if (!value.isEmpty())
             sl << value;
     }
@@ -433,26 +433,26 @@ void ConnectDialog::RotateSettings(const QString &type, const QString &name)
     {
         // 3. else delete group "type + sl.size()-1"
         namename = type + QString::number(sl.size() - 1);
-        sets->remove(sets->value(namename, "").toString());
+        settings->remove(settings->value(namename, "").toString());
     }
     // and rotate it (1->0, 2->1 etc)
     for (int i = (sl.size() - 1); i > 0; --i)
     {
         oldnamename = type + QString::number(i);
         namename = type + QString::number(i - 1);
-        sets->setValue(oldnamename, sets->value(namename, ""));
+        settings->setValue(oldnamename, settings->value(namename, ""));
     }
     namename = type + "0";
-    sets->setValue(namename, name);
+    settings->setValue(namename, name);
 }
 
 bool ConnectDialog::IsKeyExist(const QString &type, const QString &chstr)
 {
-    QSettings *sets = new QSettings(SOFTDEVELOPER, PROGNAME);
+    std::unique_ptr<QSettings> settings = std::unique_ptr<QSettings>(new QSettings(SOFTDEVELOPER, PROGNAME));
     for (int i = 0; i < MAXREGISTRYINTERFACECOUNT; ++i)
     {
         QString key = type + QString::number(i);
-        if (sets->value(key, "").toString() == chstr)
+        if (settings->value(key, "").toString() == chstr)
             return true;
     }
     return false;
@@ -467,7 +467,7 @@ bool ConnectDialog::UpdateModel(QDialog *dlg)
     //        return false;
     for (int i = 0; i < MAXREGISTRYINTERFACECOUNT; ++i)
     {
-        QScopedPointer<QSettings> sets = QScopedPointer<QSettings>(new QSettings(SOFTDEVELOPER, PROGNAME));
+        std::unique_ptr<QSettings> sets = std::unique_ptr<QSettings>(new QSettings(SOFTDEVELOPER, PROGNAME));
         QString rsname = "RS485-" + QString::number(i);
         QString ethname = "Ethernet-" + QString::number(i);
         ethlist << sets->value(ethname, "").toString();
@@ -511,7 +511,7 @@ bool ConnectDialog::UpdateModel(QDialog *dlg)
         {
             QString key = PROGNAME;
             key += "\\" + item;
-            QScopedPointer<QSettings> sets = QScopedPointer<QSettings>(new QSettings(SOFTDEVELOPER, key));
+            std::unique_ptr<QSettings> sets = std::unique_ptr<QSettings>(new QSettings(SOFTDEVELOPER, key));
             QList<QStandardItem *> items { new QStandardItem(item), new QStandardItem(sets->value("ip", "").toString()),
                 new QStandardItem(sets->value("bs", "").toString()) };
             mdl->appendRow(items);
@@ -528,7 +528,7 @@ bool ConnectDialog::UpdateModel(QDialog *dlg)
         {
             QString key = PROGNAME;
             key += "\\" + item;
-            QScopedPointer<QSettings> sets = QScopedPointer<QSettings>(new QSettings(SOFTDEVELOPER, key));
+            std::unique_ptr<QSettings> sets = std::unique_ptr<QSettings>(new QSettings(SOFTDEVELOPER, key));
             QList<QStandardItem *> items { new QStandardItem(item),
                 new QStandardItem(sets->value("port", "").toString()),
                 new QStandardItem(sets->value("speed", "").toString()),
