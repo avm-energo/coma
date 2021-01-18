@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 #include "baseinterface.h"
-
+#include "protocomprivate.h"
 struct UsbHidSettings;
 class ProtocomPrivate;
 class Protocom : public BaseInterface
@@ -29,6 +29,7 @@ public:
     void writeCommand(Queries::Commands cmd, QVariant item = 0) override;
     void reqFloats(quint32 sigAdr, quint32 sigCount) override;
     void writeRaw(const QByteArray &ba) override;
+    InterfaceSettings parseSettings(QDomElement domElement) const override;
 
 protected:
     ProtocomPrivate *const d_ptr;

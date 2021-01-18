@@ -1,4 +1,6 @@
 #pragma once
+#include "interfacesettings.h"
+
 #include <QObject>
 #define POLLINGINTERVAL 300 // polling cycle time
 #define SIGNALGROUPSNUM 7
@@ -63,8 +65,20 @@ struct Coils
     QByteArray Bytes;
 };
 
+struct ModbusGroup : BaseGroup<Commands, TypeId>
+{
+    ModbusGroup() = default;
+    ModbusGroup(QDomElement domElement) : BaseGroup<Commands, TypeId>(domElement)
+    {
+    }
+    // NOTE Need more fileds?
+};
+QDebug operator<<(QDebug debug, const CommandsMBS::CommandStruct &cmd);
+QDebug operator<<(QDebug debug, const CommandsMBS::ModbusGroup &settings);
 }
+Q_DECLARE_METATYPE(InterfaceInfo<CommandsMBS::ModbusGroup>)
 Q_DECLARE_METATYPE(CommandsMBS::CommandStruct)
+// Q_DECLARE_METATYPE(CommandsMBS::ModbusGroup)
 
 constexpr unsigned char TabCRChi[256] = { 0x00, 0xC1, 0x81, 0x40, 0x01, 0xC0, 0x80, 0x41, 0x01, 0xC0, 0x80, 0x41, 0x00,
     0xC1, 0x81, 0x40, 0x01, 0xC0, 0x80, 0x41, 0x00, 0xC1, 0x81, 0x40, 0x00, 0xC1, 0x81, 0x40, 0x01, 0xC0, 0x80, 0x41,

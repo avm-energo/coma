@@ -124,7 +124,7 @@ public:
     bool start(const ConnectStruct &st) override;
     //    static void getSignalsFrom104(quint32 firstSignalAdr, quint32 signalCount, DataManager::SignalTypes type,
     //        QList<DataManager::SignalsStruct> &outlist);
-
+    InterfaceSettings parseSettings(QDomElement domElement) const override;
 public slots:
     void reqStartup(quint32 sigAdr = 0, quint32 sigCount = 0) override;
     void reqBSI() override;

@@ -81,9 +81,9 @@ private:
     quint32 parseInt32(QDomElement domElement) const;
     quint32 parseHexInt32(QDomElement domElement) const;
     QStringList parseStringList(QDomElement domElement) const;
-    InterfaceInfo<CommandsMBS::ModbusGroup> parseModbus(QDomElement domElement);
-    InterfaceInfo<Proto::ProtocomGroup> parseProtocom(QDomElement domElement);
-    InterfaceInfo<Commands104::Iec104Group> parseIec104(QDomElement domElement);
+    // InterfaceInfo<CommandsMBS::ModbusGroup> parseModbus(QDomElement domElement);
+    // InterfaceInfo<Proto::ProtocomGroup> parseProtocom(QDomElement domElement);
+    // InterfaceInfo<Commands104::Iec104Group> parseIec104(QDomElement domElement);
 };
 
 #endif // MODULEFABRIC_H

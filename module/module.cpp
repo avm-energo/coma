@@ -346,62 +346,62 @@ QStringList Module::parseStringList(QDomElement domElement) const
     return description;
 }
 
-InterfaceInfo<CommandsMBS::ModbusGroup> Module::parseModbus(QDomElement domElement)
-{
-#ifdef XML_DEBUG
-    qDebug() << domElement.text();
-    qDebug() << "TagName: " << domElement.tagName();
-#endif
-    const auto &nodes = domElement.childNodes();
-    Q_ASSERT(!nodes.isEmpty());
-    int i = 0;
-    // ModbusSettings settings;
-    InterfaceInfo<CommandsMBS::ModbusGroup> settings;
-    while (i != nodes.count())
-    {
-        const auto &group = nodes.item(i++).toElement();
-        auto test = CommandsMBS::ModbusGroup(group);
-        settings.addGroup(test);
-#ifdef XML_DEBUG
-        qDebug() << group.attribute("id", "") << group.text();
-#endif
-    }
-#ifdef XML_DEBUG
-    qDebug() << settings.groups().count();
-#endif
-    return settings;
-}
+// InterfaceInfo<CommandsMBS::ModbusGroup> Module::parseModbus(QDomElement domElement)
+//{
+//#ifdef XML_DEBUG
+//    qDebug() << domElement.text();
+//    qDebug() << "TagName: " << domElement.tagName();
+//#endif
+//    const auto &nodes = domElement.childNodes();
+//    Q_ASSERT(!nodes.isEmpty());
+//    int i = 0;
+//    // ModbusSettings settings;
+//    InterfaceInfo<CommandsMBS::ModbusGroup> settings;
+//    while (i != nodes.count())
+//    {
+//        const auto &group = nodes.item(i++).toElement();
+//        auto test = CommandsMBS::ModbusGroup(group);
+//        settings.addGroup(test);
+//#ifdef XML_DEBUG
+//        qDebug() << group.attribute("id", "") << group.text();
+//#endif
+//    }
+//#ifdef XML_DEBUG
+//    qDebug() << settings.groups().count();
+//#endif
+//    return settings;
+//}
 
-InterfaceInfo<Proto::ProtocomGroup> Module::parseProtocom(QDomElement domElement)
-{
-#ifdef XML_DEBUG
-    qDebug() << domElement.text();
-    qDebug() << "TagName: " << domElement.tagName();
-#endif
-    const auto &nodes = domElement.childNodes();
-    Q_ASSERT(!nodes.isEmpty());
-    int i = 0;
-    InterfaceInfo<Proto::ProtocomGroup> settings;
-    while (i != nodes.count())
-    {
-        const auto &group = nodes.item(i++).toElement();
-        Proto::ProtocomGroup test(group);
-        settings.addGroup(test);
-#ifdef XML_DEBUG
-        qDebug() << group.attribute("id", "") << group.text();
-#endif
-    }
-#ifdef XML_DEBUG
-    qDebug() << settings.groups().count();
-#endif
-    return settings;
-}
+// InterfaceInfo<Proto::ProtocomGroup> Module::parseProtocom(QDomElement domElement)
+//{
+//#ifdef XML_DEBUG
+//    qDebug() << domElement.text();
+//    qDebug() << "TagName: " << domElement.tagName();
+//#endif
+//    const auto &nodes = domElement.childNodes();
+//    Q_ASSERT(!nodes.isEmpty());
+//    int i = 0;
+//    InterfaceInfo<Proto::ProtocomGroup> settings;
+//    while (i != nodes.count())
+//    {
+//        const auto &group = nodes.item(i++).toElement();
+//        Proto::ProtocomGroup test(group);
+//        settings.addGroup(test);
+//#ifdef XML_DEBUG
+//        qDebug() << group.attribute("id", "") << group.text();
+//#endif
+//    }
+//#ifdef XML_DEBUG
+//    qDebug() << settings.groups().count();
+//#endif
+//    return settings;
+//}
 
-InterfaceInfo<Commands104::Iec104Group> Module::parseIec104(QDomElement domElement)
-{
-    InterfaceInfo<Commands104::Iec104Group> settings;
-    return settings;
-}
+// InterfaceInfo<Commands104::Iec104Group> Module::parseIec104(QDomElement domElement)
+//{
+//    InterfaceInfo<Commands104::Iec104Group> settings;
+//    return settings;
+//}
 
 DataTypes::Alarm Module::parseAlarm(QDomElement domElement)
 {
@@ -538,10 +538,12 @@ void Module::traverseNode(const QDomNode &node)
 
                     // qDebug() << "Attr: " << domElement.attribute("mtypea", "") << domElement.attribute("mtypeb", "");
                 }
+
                 if (domElement.tagName() == "modbus")
                 {
                     if (Board::GetInstance().interfaceType() == Board::RS485)
-                        m_settings->ifaceSettings.settings = parseModbus(domElement);
+                        m_settings->ifaceSettings /*.settings*/
+                            = /*QVariant::fromValue*/ (BaseInterface::iface()->parseSettings(domElement));
 
                     domNode = domNode.nextSibling();
                     continue;
@@ -549,7 +551,8 @@ void Module::traverseNode(const QDomNode &node)
                 if (domElement.tagName() == "protocom")
                 {
                     if (Board::GetInstance().interfaceType() == Board::USB)
-                        m_settings->ifaceSettings.settings = parseProtocom(domElement);
+                        m_settings->ifaceSettings /*.settings*/
+                            = /*QVariant::fromValue*/ (BaseInterface::iface()->parseSettings(domElement));
 
                     domNode = domNode.nextSibling();
                     continue;
@@ -557,7 +560,8 @@ void Module::traverseNode(const QDomNode &node)
                 if (domElement.tagName() == "iec60870")
                 {
                     if (Board::GetInstance().interfaceType() == Board::Ethernet)
-                        m_settings->ifaceSettings.settings = parseIec104(domElement);
+                        m_settings->ifaceSettings /*.settings*/
+                            = /*QVariant::fromValue*/ (BaseInterface::iface()->parseSettings(domElement));
 
                     domNode = domNode.nextSibling();
                     continue;

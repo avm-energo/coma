@@ -258,6 +258,7 @@ ERROR_FILES += \
 RESOURCES += \
     ../QDarkStyleSheet/qdarkstyle/style.qrc \
     ../images/vectorIcons.qrc \
+    ../settings/settings.qrc \
     ../widgets/styles.qrc
 
 INCLUDEPATH += $$PWD/../../includes

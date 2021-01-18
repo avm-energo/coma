@@ -7,6 +7,7 @@
 
 #include <QTimer>
 #include <memory>
+#include <typeinfo>
 
 struct ConnectStruct;
 struct InterfaceSettings;
@@ -94,8 +95,12 @@ public:
     InterfaceSettings settings() const;
     template <class T> T settings() const
     {
-        Q_ASSERT(std::holds_alternative<T>(m_settings.settings));
-        return std::get<T>(m_settings.settings);
+        Q_ASSERT(m_settings.settings.canConvert<T>());
+        // qDebug() << m_settings.settings.type().name() << "<->" << typeid(T).name();
+        //  Q_ASSERT(m_settings.settings.type() == typeid(T));
+        //    Q_ASSERT(std::holds_alternative<T>(m_settings.settings));
+        //   return std::get<T>(m_settings.settings);
+        return m_settings.settings.value<T>();
     }
     void setSettings(const InterfaceSettings &settings);
     template <class T> void setSettings(const T &settings)
@@ -105,6 +110,8 @@ public:
 
     State state();
     void setState(const State &state);
+
+    virtual InterfaceSettings parseSettings(QDomElement domElement) const = 0;
 
 signals:
     void reconnect();

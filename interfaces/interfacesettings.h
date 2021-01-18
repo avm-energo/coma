@@ -1,17 +1,17 @@
 #pragma once
-#include "iec104private.h"
-#include "modbusprivate.h"
-#include "protocomprivate.h"
+//#include "iec104private.h"
+//#include "modbusprivate.h"
+//#include "protocomprivate.h"
 
 #include <QDebug>
 #include <QMap>
 #include <QMetaEnum>
 #include <QtXml/QDomElement>
+#include <any>
 #include <functional>
 #include <type_traits>
 #include <utility>
 #include <variant>
-
 // Thanx to https://stackoverflow.com/questions/34672441
 template <template <typename...> class base, typename derived> struct is_base_of_template_impl
 {
@@ -134,63 +134,13 @@ private:
     QMultiMap<quint32, Group> m_dictionary;
 };
 
-namespace CommandsMBS
-{
-struct ModbusGroup : BaseGroup<Commands, TypeId>
-{
-    ModbusGroup() = default;
-    ModbusGroup(QDomElement domElement) : BaseGroup<Commands, TypeId>(domElement)
-    {
-    }
-    // NOTE Need more fileds?
-};
-}
-
-namespace Proto
-{
-struct ProtocomGroup : BaseGroup<Commands, TypeId>
-{
-    ProtocomGroup() = default;
-    ProtocomGroup(QDomElement domElement) : BaseGroup<Commands, TypeId>(domElement)
-    {
-        domElement = domElement.firstChildElement();
-        while (!domElement.isNull())
-        {
-            if (domElement.tagName() == "block")
-            {
-#ifdef XML_DEBUG
-                qDebug() << domElement.text().toUInt();
-#endif
-                block = domElement.text().toUInt();
-            }
-            domElement = domElement.nextSiblingElement();
-        }
-    }
-    // maybe quint16 or quint8 is enough?
-    quint8 block;
-    // NOTE Need more fileds?
-};
-}
-
-namespace Commands104
-{
-struct Iec104Group : BaseGroup<Commands, TypeId>
-{
-    Iec104Group() = default;
-    Iec104Group(QDomElement domElement) : BaseGroup<Commands, TypeId>(domElement)
-    {
-    }
-    // NOTE Need more fileds?
-};
-}
-
 // For template not in header
 //#include "interfacesettings.cpp"
 struct InterfaceSettings
 {
-    std::variant<InterfaceInfo<CommandsMBS::ModbusGroup>, //
-        InterfaceInfo<Proto::ProtocomGroup>,              //
-        InterfaceInfo<Commands104::Iec104Group>           //
-        >
-        settings;
+    // std::variant<InterfaceInfo<CommandsMBS::ModbusGroup>, //
+    //    InterfaceInfo<Proto::ProtocomGroup>,              //
+    //    InterfaceInfo<Commands104::Iec104Group>           //
+    //    >
+    QVariant settings;
 };

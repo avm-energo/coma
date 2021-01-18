@@ -19,8 +19,6 @@ QDebug operator<<(QDebug debug, const DataTypes::SignalsStruct &st);
 QDebug operator<<(QDebug debug, const DataTypes::Signal &st);
 QDebug operator<<(QDebug debug, const DataTypes::GeneralResponseStruct &st);
 QDebug operator<<(QDebug debug, const UsbHidSettings &settings);
-QDebug operator<<(QDebug debug, const CommandsMBS::ModbusGroup &settings);
-QDebug operator<<(QDebug debug, const CommandsMBS::CommandStruct &cmd);
 
 template <std::size_t N> QDebug operator<<(QDebug debug, const std::bitset<N> &bitset)
 {

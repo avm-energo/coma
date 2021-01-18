@@ -97,7 +97,7 @@ public:
     //    void reqBitStrings(quint32 sigAdr, quint32 sigCount);
 
     //    int CheckIndex, CheckHarmIndex, CheckVibrIndex, CorIndex, TimeIndex;
-
+    InterfaceSettings parseSettings(QDomElement domElement) const override;
 public slots:
     //    Error::Msg SendAndGetResult(Queries::CommandMBS &request, ModBus::InOutStruct &outp);
     //    void ModWriteCor(ModBus::Information info, float *); //, int*);

@@ -454,6 +454,32 @@ void ModBus::reqFloats(quint32 sigAdr, quint32 sigCount)
     DataManager::addToInQueue(inp);
 }
 
+InterfaceSettings ModBus::parseSettings(QDomElement domElement) const
+{
+#ifdef XML_DEBUG
+    qDebug() << domElement.text();
+    qDebug() << "TagName: " << domElement.tagName();
+#endif
+    const auto &nodes = domElement.childNodes();
+    Q_ASSERT(!nodes.isEmpty());
+    int i = 0;
+    // ModbusSettings settings;
+    InterfaceInfo<CommandsMBS::ModbusGroup> settings;
+    while (i != nodes.count())
+    {
+        const auto &group = nodes.item(i++).toElement();
+        auto test = CommandsMBS::ModbusGroup(group);
+        settings.addGroup(test);
+#ifdef XML_DEBUG
+        qDebug() << group.attribute("id", "") << group.text();
+#endif
+    }
+#ifdef XML_DEBUG
+    qDebug() << settings.groups().count();
+#endif
+    return InterfaceSettings { QVariant::fromValue(settings) };
+}
+
 // void ModBus::ModWriteCor(ModBus::Information info, float *data) //, int* size)
 //{
 //    Queries::CommandMBS request {

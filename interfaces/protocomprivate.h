@@ -1,4 +1,6 @@
 #pragma once
+#include "interfacesettings.h"
+
 #include <QVariant>
 // Обмен с модулями
 // Канал связи с модулем
@@ -188,9 +190,33 @@ const QList<quint16> bsiReg { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 
 //    { 3011, { 100, 25 } } //
 //};
 
+struct ProtocomGroup : BaseGroup<Commands, TypeId>
+{
+    ProtocomGroup() = default;
+    ProtocomGroup(QDomElement domElement) : BaseGroup<Commands, TypeId>(domElement)
+    {
+        domElement = domElement.firstChildElement();
+        while (!domElement.isNull())
+        {
+            if (domElement.tagName() == "block")
+            {
+#ifdef XML_DEBUG
+                qDebug() << domElement.text().toUInt();
+#endif
+                block = domElement.text().toUInt();
+            }
+            domElement = domElement.nextSiblingElement();
+        }
+    }
+    // maybe quint16 or quint8 is enough?
+    quint8 block;
+    // NOTE Need more fileds?
+};
+
 }
 Q_DECLARE_METATYPE(Proto::CommandStruct)
-
+Q_DECLARE_METATYPE(InterfaceInfo<Proto::ProtocomGroup>)
+// Q_DECLARE_METATYPE(Proto::ProtocomGroup)
 //#define WORK_MODE 0
 //#define TUNE_MODE_1000 1
 //#define TUNE_MODE_100 2

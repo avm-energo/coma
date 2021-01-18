@@ -88,6 +88,12 @@ bool IEC104::start(const ConnectStruct &st)
     return ethconnected;
 }
 
+InterfaceSettings IEC104::parseSettings(QDomElement domElement) const
+{
+    InterfaceInfo<Commands104::Iec104Group> settings;
+    return InterfaceSettings { QVariant::fromValue(settings) };
+}
+
 void IEC104::reqStartup(quint32 sigAdr, quint32 sigCount)
 {
     // adr & count are used in modbus only, 104 has special group STARTUPGROUP for these parameters
