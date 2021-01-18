@@ -12,6 +12,7 @@ QMutex IEC104Thread::s_ParseWriteMutex;
 
 IEC104Thread::IEC104Thread(LogClass *log, QObject *parent) : QObject(parent)
 {
+    m_writingToPortBlocked = true;
     m_isFirstParse = true;
     m_log = log;
     m_threadMustBeFinished = false;
@@ -66,7 +67,7 @@ void IEC104Thread::Run()
                 }
             }
         }
-        if (!m_isFileSending)
+        if (!m_isFileSending && !m_writingToPortBlocked)
         {
             Commands104::CommandStruct inp;
             if (DataManager::deQueue(inp) == Error::Msg::NoError)
@@ -210,6 +211,7 @@ Error::Msg IEC104Thread::isIncomeDataValid(QByteArray ba)
                 m_timer104->stop();
                 m_command = I104_STARTDT_CON;
                 SendGI();
+                m_writingToPortBlocked = false;
             }
             if ((baat2 == I104_STOPDT_CON)
                 && (m_command == I104_STOPDT_ACT)) // если пришло подтверждение стопа и перед этим мы стоп запрашивали
@@ -326,7 +328,7 @@ void IEC104Thread::ParseIFormat(QByteArray &ba) // основной разбор
                 //                memcpy(&quality, &(ba.data()[index]), 1);
                 signal.sigQuality = ba.at(index++);
                 // memcpy(&signal.sigQuality, &(ba.data()[index]), 1);
-                index++;
+                //                index++;
                 //                signal.SigQuality = quality;
                 DataManager::addSignalToOutList(DataTypes::SignalTypes::FloatWithTime, signal);
                 //                cntfl++;
@@ -645,6 +647,8 @@ void IEC104Thread::Send(int inc, APCI apci, ASDU asdu)
 
 void IEC104Thread::Stop()
 {
+    m_writingToPortBlocked = true;
+    StopDT();
     m_threadMustBeFinished = true;
     m_timer104->stop();
 }

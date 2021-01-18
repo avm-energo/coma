@@ -66,34 +66,26 @@ bool IEC104::start(const ConnectStruct &st)
     connect(eth, &Ethernet::NewDataArrived, m_thread104, &IEC104Thread::GetSomeData);
     connect(m_thread104, &IEC104Thread::ReconnectSignal, this, &IEC104::EmitReconnectSignal);
 
-    //    connect(m_thread104, &IEC104Thread::Bs104signalsreceived, this, &IEC104::Bs104signalsready,
-    //        Qt::BlockingQueuedConnection);
-    //    connect(m_thread104, &IEC104Thread::Floatsignalsreceived, this, &IEC104::Floatsignalsready,
-    //        Qt::BlockingQueuedConnection);
-    //    connect(
-    //        m_thread104, &IEC104Thread::Sponsignalsreceived, this, &IEC104::Sponsignalsready,
-    //        Qt::BlockingQueuedConnection);
-    //    connect(m_thread104, &IEC104Thread::SendS2fromParse, this, &IEC104::SendS2fromiec104);
-    //    connect(m_thread104, &IEC104Thread::SendJourSysfromParse, this, &IEC104::SendJourSysfromiec104);
-    //    connect(m_thread104, &IEC104Thread::SendJourWorkfromParse, this, &IEC104::SendJourWorkfromiec104);
-    //    connect(m_thread104, &IEC104Thread::SendJourMeasfromParse, this, &IEC104::SendJourMeasfromiec104);
-
-    //    connect(m_thread104, &IEC104Thread::SendMessageOk, this, &IEC104::SendMessageOk);
-
-    //    connect(m_thread104, &IEC104Thread::SetDataSize, this, &IEC104::SetDataSize);
-    //    connect(m_thread104, &IEC104Thread::SetDataCount, this, &IEC104::SetDataCount);
-    //    connect(m_thread104, &IEC104Thread::SendMessagefromParse, this, &IEC104::SendConfMessageOk);
-
     auto settings = std::get<IEC104Settings>(st.settings);
     eth->IP = settings.ip;
     m_thread104->SetBaseAdr(settings.baseadr);
 
-    //    m_thread104->incLS = 0;
-    //    m_thread104->count = 0;
-
     thr->start();
     thr2->start();
-    return true;
+    QEventLoop ethloop;
+    bool ethconnected = false;
+    QTimer *ethtimeouttimer = new QTimer;
+    ethtimeouttimer->setInterval(10000);
+    connect(ethtimeouttimer, &QTimer::timeout, [&]() {
+        ethconnected = false;
+        ethloop.quit();
+    });
+    connect(eth, &Ethernet::Connected, [&]() {
+        ethconnected = true;
+        ethloop.quit();
+    });
+    ethloop.exec();
+    return ethconnected;
 }
 
 void IEC104::reqStartup(quint32 sigAdr, quint32 sigCount)
