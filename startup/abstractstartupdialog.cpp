@@ -4,6 +4,7 @@
 #include "../gen/board.h"
 #include "../gen/colors.h"
 #include "../gen/datamanager.h"
+#include "../gen/helper.h"
 #include "../gen/stdfunc.h"
 #include "../widgets/etableview.h"
 #include "../widgets/wd_func.h"
@@ -27,6 +28,7 @@
 AbstractStartupDialog::AbstractStartupDialog(QWidget *parent) : UDialog(parent)
 {
     m_updateState = ThereWasNoUpdatesRecently;
+    m_password = "121941";
     setSuccessMsg("Стартовые значения записаны успешно");
 }
 
@@ -46,10 +48,10 @@ QWidget *AbstractStartupDialog::buttonWidget()
     QString tmps = ((DEVICETYPE == DEVICETYPE_MODULE) ? "модуля" : "прибора");
 
     const QList<QPair<QPair<QString, QIcon>, std::function<void()>>> funcs {
-        { { "Получить из" + tmps, QIcon(":/icons/tnread.svg") }, [this]() { GetCorBd(); } },              //
-        { { "Записать в модуль", QIcon(":/icons/tnwrite.svg") }, [this]() { WriteCorBd(); } },            //
+        { { "Получить из " + tmps, QIcon(":/icons/tnread.svg") }, [this]() { GetCorBd(); } },             //
+        { { "Записать в модуль", QIcon(":/icons/tnwrite.svg") }, [this]() { WriteCor(); } },              //
         { { "Сбросить начальные значения", QIcon(":/icons/tnreset.svg") }, [this]() { ResetCor(); } },    //
-        { { "Задать начальные значения", QIcon(":/icons/tnapprove.svg") }, [this]() { WriteCor(); } },    //
+        { { "Задать начальные значения", QIcon(":/icons/tnapprove.svg") }, [this]() { SetupCor(); } },    //
         { { "Прочитать значения из файла", QIcon(":/icons/tnload.svg") }, [this]() { ReadFromFile(); } }, //
         { { "Сохранить значения в файл", QIcon(":/icons/tnsave.svg") }, [this]() { SaveToFile(); } }      //
     };
@@ -81,33 +83,47 @@ QWidget *AbstractStartupDialog::buttonWidget()
     return w;
 }
 
+void AbstractStartupDialog::WriteCor()
+{
+    if (!checkPassword())
+        return;
+    FillBackCor();
+    QVariantList values;
+    for (decltype(m_regMap)::const_iterator it = m_regMap.cbegin(); it != m_regMap.cend(); ++it)
+    {
+        DataTypes::FloatStruct value { it.key(), *it.value() };
+        values.push_back(QVariant::fromValue(value));
+    }
+    BaseInterface::iface()->writeCommand(Queries::QC_WriteUserValues, /*StdFunc::toVariantList*/ (values));
+}
+
 void AbstractStartupDialog::GetCorBd()
 {
     BaseInterface::iface()->reqStartup(m_startupBlockDescription.initStartRegAdr,
         m_startupBlockDescription.size / sizeof(float)); // /4 => float by default
 }
 
-void AbstractStartupDialog::SetCor()
-{
-    BaseInterface::iface()->writeCommand(Queries::QC_SetStartupValues);
-    // if (MainInterface == I_ETHERNET)
-    //{
-    //    if (Board::GetInstance().interfaceType() == Board::InterfaceType::Ethernet)
-    //        emit SendCom45(903);
-    //}
-    // else if (MainInterface == I_USB)
-    //    else if (Board::GetInstance().interfaceType() == Board::InterfaceType::USB)
-    //    {
-    //        if (Commands::WriteCom(Commands::WriteStartupValues) == Error::Msg::NoError)
-    //            QMessageBox::information(this, "INFO", "Записано успешно");
-    //        else
-    //            QMessageBox::information(this, "INFO", "Ошибка");
-    //    }
-}
+// void AbstractStartupDialog::SetCor()
+//{
+//    BaseInterface::iface()->writeCommand(Queries::QC_SetStartupValues);
+// if (MainInterface == I_ETHERNET)
+//{
+//    if (Board::GetInstance().interfaceType() == Board::InterfaceType::Ethernet)
+//        emit SendCom45(903);
+//}
+// else if (MainInterface == I_USB)
+//    else if (Board::GetInstance().interfaceType() == Board::InterfaceType::USB)
+//    {
+//        if (Commands::WriteCom(Commands::WriteStartupValues) == Error::Msg::NoError)
+//            QMessageBox::information(this, "INFO", "Записано успешно");
+//        else
+//            QMessageBox::information(this, "INFO", "Ошибка");
+//    }
+//}
 
 void AbstractStartupDialog::ResetCor()
 {
-    if (WriteCheckPassword() != Error::Msg::NoError)
+    if (checkPassword() != Error::Msg::NoError)
         return;
     BaseInterface::iface()->writeCommand(Queries::QC_ClearStartupValues);
 }
@@ -130,39 +146,39 @@ float AbstractStartupDialog::ToFloat(QString text)
 //    QMessageBox::information(this, "INFO", "Записано успешно");
 //}
 
-void AbstractStartupDialog::updateFloatData()
-{
-    QList<DataTypes::SignalsStruct> list;
-    //    DataManager::getSignals(m_startupBlockDescription.initStartRegAdr, m_startupBlockDescription.size / 4,
-    //        DataTypes::SignalTypes::FloatWithTime, list); // /4 => float data by default
-    if (list.isEmpty())
-        return;
-    for (const auto &signal : list)
-    {
-        DataTypes::FloatWithTimeStruct fwt = qvariant_cast<DataTypes::FloatWithTimeStruct>(signal.data);
+// void AbstractStartupDialog::updateFloatData()
+//{
+//    QList<DataTypes::SignalsStruct> list;
+//    DataManager::getSignals(m_startupBlockDescription.initStartRegAdr, m_startupBlockDescription.size / 4,
+//        DataTypes::SignalTypes::FloatWithTime, list); // /4 => float data by default
+//    if (list.isEmpty())
+//        return;
+//    for (const auto &signal : list)
+//    {
+//        DataTypes::FloatStruct fwt = qvariant_cast<DataTypes::FloatStruct>(signal.data);
 
-        //    if (((Signal)->fl.SigAdr >= MBS_INITREG) && ((Signal)->fl.SigAdr <= 4010))
-        //    {
-        //        for (int i = 0; i < Signal->SigNumber; i++)
-        //        {
-        // FillBd(
-        //    this, QString::number((Signal + i)->fl.SigAdr), WDFunc::StringValueWithCheck((Signal +
-        //    i)->fl.SigVal));
-        FillBd(this, QString::number(fwt.sigAdr), fwt.sigVal);
-    }
+//    if (((Signal)->fl.SigAdr >= MBS_INITREG) && ((Signal)->fl.SigAdr <= 4010))
+//    {
+//        for (int i = 0; i < Signal->SigNumber; i++)
+//        {
+// FillBd(
+//    this, QString::number((Signal + i)->fl.SigAdr), WDFunc::StringValueWithCheck((Signal +
+//    i)->fl.SigVal));
+//        FillBd(this, QString::number(fwt.sigAdr), fwt.sigVal);
+//    }
 
-    //        if (first)
-    QMessageBox::information(this, "INFO", "Прочитано успешно");
-    //        else
-    //            first = 1;
-}
+//        if (first)
+//  QMessageBox::information(this, "INFO", "Прочитано успешно");
+//        else
+//            first = 1;
+//}
 
 void AbstractStartupDialog::updateFloatData(const DataTypes::FloatStruct &fl)
 {
     if (!updatesEnabled())
         return;
     // Игнорируем 4011 т.к. он нам не важен и все чужие регистры тоже игнорируем
-    if (fl.sigAdr >= m_regMap.firstKey() && fl.sigAdr < m_regMap.lastKey())
+    if (fl.sigAdr >= m_regMap.firstKey() && fl.sigAdr <= m_regMap.lastKey())
         FillBd(this, QString::number(fl.sigAdr), fl.sigVal);
 }
 
@@ -199,26 +215,12 @@ void AbstractStartupDialog::FillBd(QWidget *parent, QString Name, float Value)
     }
 }
 
-// void AbstractStartupDialog::GetCorBdButton()
-//{
-//    BaseInterface::iface()->reqStartup(m_startupBlockDescription.initStartRegAdr,
-//        m_startupBlockDescription.size / sizeof(float)); // /4 => float by default
-//}
-
-bool AbstractStartupDialog::WriteCheckPassword()
+void AbstractStartupDialog::SetupCor()
 {
-    KeyPressDialog dlg; // = new KeyPressDialog;
-    return dlg.CheckPassword("121941");
-}
-
-void AbstractStartupDialog::WriteCor()
-{
-    if (WriteCheckPassword() != Error::Msg::NoError)
+    if (checkPassword() != Error::Msg::NoError)
         return;
     BaseInterface::iface()->writeCommand(Queries::QC_SetStartupValues);
 }
-
-// void AbstractStartupDialog::TimerTimeout() { MessageTimer->stop(); }
 
 void AbstractStartupDialog::ErrorRead()
 {
@@ -228,6 +230,29 @@ void AbstractStartupDialog::ErrorRead()
 void AbstractStartupDialog::uponInterfaceSetting()
 {
     SetupUI();
+}
+
+bool AbstractStartupDialog::addReg(quint16 reg, float *ptr)
+{
+    Q_ASSERT(!m_regMap.key(ptr) && "Pointer already exist");
+    if (m_regMap.key(ptr))
+        return false;
+    m_regMap.insert(reg, ptr);
+    return true;
+}
+
+void AbstractStartupDialog::FillCor()
+{
+    for (decltype(m_regMap)::const_iterator it = m_regMap.cbegin(); it != m_regMap.cend(); ++it)
+        if (!WDFunc::SetSPBData(this, QString::number(it.key()), *it.value()))
+            qDebug() << "Not found";
+}
+
+void AbstractStartupDialog::FillBackCor()
+{
+    for (decltype(m_regMap)::iterator it = m_regMap.begin(); it != m_regMap.end(); ++it)
+        if (!WDFunc::SPBData(this, QString::number(it.key()), *it.value()))
+            qDebug() << "Not found";
 }
 
 void AbstractStartupDialog::reqUpdate()

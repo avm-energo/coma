@@ -58,8 +58,8 @@ signals:
 
 public slots:
     //    void GetCorBdButton() override;
-    void WriteCorBd() override;
     void WriteCor() override;
+    void SetupCor() override;
     void ResetCor() override;
     void SaveToFile() override;
     void ReadFromFile() override;

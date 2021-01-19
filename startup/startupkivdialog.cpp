@@ -16,31 +16,23 @@
 
 StartupKIVDialog::StartupKIVDialog(QWidget *parent) : AbstractStartupDialog(parent)
 {
-    //    int i;
     // Default initialization
     // Do not need set null value
     CorBlock = new CorData;
-
-    m_regMap[4000] = &CorBlock->C_init[0];
-    m_regMap[4001] = &CorBlock->C_init[1];
-    m_regMap[4002] = &CorBlock->C_init[2];
-    m_regMap[4003] = &CorBlock->Tg_init[0];
-    m_regMap[4004] = &CorBlock->C_init[1];
-    m_regMap[4005] = &CorBlock->C_init[2];
-    m_regMap[4006] = &CorBlock->corTg[0];
-    m_regMap[4007] = &CorBlock->corTg[1];
-    m_regMap[4008] = &CorBlock->corTg[2];
-    m_regMap[4009] = &CorBlock->Iunb_init;
-    m_regMap[4010] = &CorBlock->Phy_unb_init;
-    // m_regMap[4011] = reinterpret_cast<float *>(&CorBlock->stat);
-
-    /*MessageTimer = new QTimer;
-    MessageTimer->setInterval(5000);
-    connect(MessageTimer,SIGNAL(timeout()),this,SLOT(TimerTimeout()));*/
+    addReg(4000, &CorBlock->C_init[0]);
+    addReg(4001, &CorBlock->C_init[1]);
+    addReg(4002, &CorBlock->C_init[2]);
+    addReg(4003, &CorBlock->Tg_init[0]);
+    addReg(4004, &CorBlock->Tg_init[1]);
+    addReg(4005, &CorBlock->Tg_init[2]);
+    addReg(4006, &CorBlock->corTg[0]);
+    addReg(4007, &CorBlock->corTg[1]);
+    addReg(4008, &CorBlock->corTg[2]);
+    addReg(4009, &CorBlock->Iunb_init);
+    addReg(4010, &CorBlock->Phy_unb_init);
 
     setAttribute(Qt::WA_DeleteOnClose);
     SetStartupBlock(7, &CorBlock, sizeof(CorData), KIVSTARTUPINITREG);
-    // MessageTimer->start();
 }
 
 StartupKIVDialog::~StartupKIVDialog()
@@ -99,25 +91,27 @@ void StartupKIVDialog::SetupUI()
     connect(&DataManager::GetInstance(), &DataManager::floatReceived, this, &UWidget::updateFloatData);
 }
 
-void StartupKIVDialog::FillBackCor()
-{
-    auto i = m_regMap.constBegin();
-    while (i != m_regMap.constEnd())
-    {
-        WDFunc::SPBData(this, QString::number(i.key()), *i.value());
-        ++i;
-    }
-}
+// void StartupKIVDialog::FillBackCor()
+//{
+//    auto i = m_regMap.begin();
+//    while (i != m_regMap.end())
+//    {
+//        if (!WDFunc::SPBData(this, QString::number(i.key()), *i.value()))
+//            qDebug() << "Not found";
+//        ++i;
+//    }
+//}
 
-void StartupKIVDialog::FillCor()
-{
-    auto i = m_regMap.begin();
-    while (i != m_regMap.end())
-    {
-        WDFunc::SetSPBData(this, QString::number(i.key()), *i.value());
-        ++i;
-    }
-}
+// void StartupKIVDialog::FillCor()
+//{
+//    auto i = m_regMap.begin();
+//    while (i != m_regMap.end())
+//    {
+//        if (!WDFunc::SetSPBData(this, QString::number(i.key()), *i.value()))
+//            qDebug() << "Not found";
+//        ++i;
+//    }
+//}
 
 // void StartupKIVDialog::GetCorBd()
 //{
@@ -153,53 +147,53 @@ void StartupKIVDialog::FillCor()
 //    }
 //}
 
-void StartupKIVDialog::WriteCorBd()
+// void StartupKIVDialog::WriteCor()
+//{
+//    int i;
+//    quint32 adr[11] = { 910, 911, 912, 913, 914, 915, 916, 917, 918, 919, 920 };
+
+//    FillBackCor();
+
+//    if (WriteCheckPassword() != Error::Msg::NoError)
+//        return;
+//    switch (Board::GetInstance().interfaceType())
+//    {
+//    case Board::InterfaceType::Ethernet:
+//    {
+//        for (i = 0; i < 11; i++)
+//        {
+//            float corblocki = *(reinterpret_cast<float *>(CorBlock) + i);
+//            // memcpy(&corblocki, reinterpret_cast<float *>(CorBlock) + i, sizeof(float));
+//            // emit SendCom50(adr[i], corblocki);
+//            TimeFunc::Wait(300);
+//        }
+//        break;
+//    }
+//    case Board::InterfaceType::RS485:
+//    {
+//        //            ModBus::Information info;
+//        //            info.size = (sizeof(CorData) / 4);
+//        //            info.adr = adr[0];
+//        //            emit RS485WriteCorBd(info, (float *)CorBlock);
+//        break;
+//    }
+//    case Board::InterfaceType::USB:
+//    {
+//        //            if (Commands::WriteBd(7, CorBlock, sizeof(CorData)) == Error::Msg::NoError)
+//        //                QMessageBox::information(this, "INFO", "Записано успешно");
+//        //            else
+//        //                QMessageBox::information(this, "INFO", "Ошибка");
+
+//        //            if (Commands::GetBd(7, CorBlock, sizeof(CorData)) == Error::Msg::NoError)
+//        //                FillCor();
+//        break;
+//    }
+//    }
+//}
+
+void StartupKIVDialog::SetupCor()
 {
-    int i;
-    quint32 adr[11] = { 910, 911, 912, 913, 914, 915, 916, 917, 918, 919, 920 };
-
-    FillBackCor();
-
-    if (WriteCheckPassword() != Error::Msg::NoError)
-        return;
-    switch (Board::GetInstance().interfaceType())
-    {
-    case Board::InterfaceType::Ethernet:
-    {
-        for (i = 0; i < 11; i++)
-        {
-            float corblocki = *(reinterpret_cast<float *>(CorBlock) + i);
-            // memcpy(&corblocki, reinterpret_cast<float *>(CorBlock) + i, sizeof(float));
-            // emit SendCom50(adr[i], corblocki);
-            TimeFunc::Wait(300);
-        }
-        break;
-    }
-    case Board::InterfaceType::RS485:
-    {
-        //            ModBus::Information info;
-        //            info.size = (sizeof(CorData) / 4);
-        //            info.adr = adr[0];
-        //            emit RS485WriteCorBd(info, (float *)CorBlock);
-        break;
-    }
-    case Board::InterfaceType::USB:
-    {
-        //            if (Commands::WriteBd(7, CorBlock, sizeof(CorData)) == Error::Msg::NoError)
-        //                QMessageBox::information(this, "INFO", "Записано успешно");
-        //            else
-        //                QMessageBox::information(this, "INFO", "Ошибка");
-
-        //            if (Commands::GetBd(7, CorBlock, sizeof(CorData)) == Error::Msg::NoError)
-        //                FillCor();
-        break;
-    }
-    }
-}
-
-void StartupKIVDialog::WriteCor()
-{
-    AbstractStartupDialog::WriteCor();
+    AbstractStartupDialog::SetupCor();
     //  if (WriteCheckPassword() != Error::Msg::NoError)
     //    return;
     // switch (Board::GetInstance().interfaceType())

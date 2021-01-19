@@ -14,9 +14,9 @@ public:
 
 protected:
     /// Стартовый адрес регистров сигнализации
-    int m_startAlarmAddress;
+    quint32 m_startAlarmAddress;
     /// Общее количество регистров сигнализации
-    int m_alarmAllCounts;
+    quint32 m_alarmAllCounts;
 public slots:
     //    void Update(std::bitset<32> &states);
     void update(const DataTypes::SinglePointWithTimeStruct &sp);

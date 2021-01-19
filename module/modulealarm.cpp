@@ -37,8 +37,8 @@ void ModuleAlarm::reqUpdate()
 
 void ModuleAlarm::update(const DataTypes::SinglePointWithTimeStruct &sp)
 {
-    quint32 minAddress = m_startAlarmAddress;
-    quint32 maxAddress = m_startAlarmAddress + m_alarmFlags.size();
+    const auto minAddress = m_startAlarmAddress;
+    const auto maxAddress = m_startAlarmAddress + m_alarmFlags.size();
     if (!((sp.sigAdr >= minAddress) && (sp.sigAdr <= maxAddress)))
         return;
     // bool alarmFlag = false; // warning flag

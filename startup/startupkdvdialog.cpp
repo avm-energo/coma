@@ -72,7 +72,7 @@ void StartupKDVDialog::SetupUI()
     glyout->addWidget(pb, row, 1, 1, 2);
 
     pb = new QPushButton("Записать в модуль");
-    connect(pb, &QAbstractButton::clicked, this, &StartupKDVDialog::WriteCorBd);
+    connect(pb, &QAbstractButton::clicked, this, &StartupKDVDialog::WriteCor);
     if (StdFunc::IsInEmulateMode())
         pb->setEnabled(false);
 
@@ -171,7 +171,7 @@ void StartupKDVDialog::GetCorBd()
 //    }
 //}
 
-void StartupKDVDialog::WriteCorBd()
+void StartupKDVDialog::WriteCor()
 {
     int i;
     quint32 adr7bl = 907;
@@ -180,7 +180,7 @@ void StartupKDVDialog::WriteCorBd()
     FillBackCor();
     FillBackWBd8();
 
-    if (WriteCheckPassword() == Error::Msg::NoError)
+    if (checkPassword() == Error::Msg::NoError)
     {
         switch (Board::GetInstance().interfaceType())
         {
@@ -235,7 +235,7 @@ void StartupKDVDialog::WriteCorBd()
     }
 }
 
-void StartupKDVDialog::WriteCor()
+void StartupKDVDialog::SetupCor()
 {
 }
 

@@ -293,6 +293,33 @@ void Protocom::writeCommand(Queries::Commands cmd, QVariant item)
     emit wakeUpParser();
 }
 
+void Protocom::writeCommand(Queries::Commands cmd, const QVariantList &list)
+{
+    Q_D(Protocom);
+    using namespace Proto;
+    switch (cmd)
+    {
+    case Queries::QC_WriteUserValues:
+    {
+        Q_ASSERT(list.first().canConvert<DataTypes::FloatStruct>());
+        const quint16 start_addr = list.first().value<DataTypes::FloatStruct>().sigAdr;
+        Q_ASSERT(isValidRegs(start_addr, list.size()));
+        const auto blockNum = d->blockByReg(start_addr);
+        DataTypes::BlockStruct block { blockNum, {} };
+        for (const auto &i : list)
+        {
+            const float value = i.value<DataTypes::FloatStruct>().sigVal;
+            block.data.append(StdFunc::arrayFromNumber(value));
+        }
+        writeCommand(cmd, QVariant::fromValue(block));
+        break;
+    }
+    default:
+        Q_ASSERT(false && "Not realized");
+        break;
+    }
+}
+
 bool Protocom::isValidRegs(const quint32 sigAdr, const quint32 sigCount)
 {
     const auto &st = settings<InterfaceInfo<Proto::ProtocomGroup>>();

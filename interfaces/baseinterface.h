@@ -65,7 +65,7 @@ public:
     virtual void reqTime() = 0;
     virtual void writeTime(quint32) = 0;
     virtual void writeCommand(Queries::Commands, QVariant = 0) = 0;
-    void writeCommand(Queries::Commands cmd, const QList<QVariant> &list)
+    virtual void writeCommand(Queries::Commands cmd, const QVariantList &list)
     {
         // for each signal in list form the command and set it into the input queue
         for (const auto &item : list)

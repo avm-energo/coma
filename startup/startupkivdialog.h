@@ -29,8 +29,8 @@ private:
 
     CorData *CorBlock;
 
-    void FillCor() override;
-    void FillBackCor() override;
+    // void FillCor() override;
+    // void FillBackCor() override;
     //    float ToFloat(QString text);
     void SetupUI() override;
     // void FillBd(QWidget *parent, QString Name, QString Value);
@@ -39,8 +39,8 @@ signals:
 
 public slots:
     //    void GetCorBdButton() override;
-    void WriteCorBd() override;
-    void WriteCor() override;
+    // void WriteCor() override;
+    void SetupCor() override;
     void MessageOk();
     void SetCor();
     void ResetCor() override;

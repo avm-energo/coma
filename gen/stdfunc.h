@@ -63,6 +63,21 @@ public:
         return ba;
     }
 
+    template <typename T> static QVariantList toVariantList(const QList<T> &list)
+    {
+        QVariantList newList;
+        for (const T &item : list)
+            newList.push_back(item);
+        return newList;
+    }
+    template <typename T> static QList<T> toValuesList(const QList<T *> &list)
+    {
+        QList<T> newList;
+        newList.reserve(list.size());
+        std::transform(std::begin(list), std::end(list), std::back_inserter(newList), [](T *item) { return *item; });
+        return newList;
+    }
+
 private:
     static QString HomeDir;       // рабочий каталог программы
     static QString SystemHomeDir; // системный каталог программы

@@ -27,6 +27,7 @@ public:
     // void writeConfigFile() override;
     void writeTime(quint32 time) override;
     void writeCommand(Queries::Commands cmd, QVariant item = 0) override;
+    void writeCommand(Queries::Commands cmd, const QVariantList &list) override;
     void reqFloats(quint32 sigAdr, quint32 sigCount) override;
     void writeRaw(const QByteArray &ba) override;
     inline InterfaceSettings parseSettings(QDomElement domElement) const override;

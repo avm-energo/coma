@@ -27,29 +27,30 @@ public:
     void SetStartupBlock(int blocknum, void *block, quint32 blocksize, quint32 startAdr);
 
     QWidget *buttonWidget();
-    bool WriteCheckPassword();
+    //  bool WriteCheckPassword();
 
 protected:
-    virtual void WriteCorBd() = 0;
     virtual void WriteCor();
-    void SetCor();
+    virtual void SetupCor();
+    // void SetCor();
     virtual void ResetCor();
     virtual void GetCorBd();
-    void updateFloatData();
+    // void updateFloatData();
     void updateFloatData(const DataTypes::FloatStruct &fl) override;
     void updateStatus();
     virtual void SaveToFile() = 0;
     virtual void ReadFromFile() = 0;
     void ErrorRead();
     void uponInterfaceSetting() override;
-    QMap<quint16, float *> m_regMap;
+    bool addReg(quint16 reg, float *ptr);
+    virtual void FillCor();
+    virtual void FillBackCor();
 
 private:
     UpdateStates m_updateState;
     StartupBlockStruct m_startupBlockDescription;
+    QMap<quint16, float *> m_regMap;
 
-    virtual void FillCor() = 0;
-    virtual void FillBackCor() = 0;
     //    virtual void FillWb7() = 0;
     //    virtual void FillBackBd9() = 0;
     float ToFloat(QString text);

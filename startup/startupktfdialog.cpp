@@ -56,7 +56,7 @@ void StartupKTFDialog::SetupUI()
     glyout->addWidget(pb, row, 1, 1, 2);
 
     pb = new QPushButton("Записать в модуль");
-    connect(pb, &QAbstractButton::clicked, this, &StartupKTFDialog::WriteCorBd);
+    connect(pb, &QAbstractButton::clicked, this, &StartupKTFDialog::WriteCor);
     if (StdFunc::IsInEmulateMode())
         pb->setEnabled(false);
 
@@ -152,14 +152,14 @@ void StartupKTFDialog::GetCorBd()
 //    }
 //}
 
-void StartupKTFDialog::WriteCorBd()
+void StartupKTFDialog::WriteCor()
 {
     // int i;
     quint32 adr = 907;
 
     FillBackCor();
 
-    if (WriteCheckPassword() != Error::Msg::NoError)
+    if (checkPassword() != Error::Msg::NoError)
         return;
     switch (Board::GetInstance().interfaceType())
     {
@@ -199,7 +199,7 @@ void StartupKTFDialog::WriteCorBd()
     }
 }
 
-void StartupKTFDialog::WriteCor()
+void StartupKTFDialog::SetupCor()
 {
 }
 
