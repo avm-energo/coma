@@ -60,6 +60,16 @@ private:
     //    void SendAndGetResult(ModBus::InOutStruct &inp);
     void Send();
     quint16 CalcCRC(QByteArray &Dat) const;
+
+    template <typename T> T unpackReg(QByteArray ba) const
+    {
+        assert(sizeof(T) == ba.size());
+        for (auto i = 0; i < ba.size(); i = i + 2)
+            std::swap(ba.data()[i], ba.data()[i + 1]);
+
+        return *reinterpret_cast<T *>(ba.data());
+    }
+
     //    void AddToOutQueue(ModBus::InOutStruct &outp);
 
 signals:

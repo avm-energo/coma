@@ -71,6 +71,14 @@ struct ModbusGroup : BaseGroup<Commands, TypeId>
     ModbusGroup(QDomElement domElement) : BaseGroup<Commands, TypeId>(domElement)
     {
     }
+    bool operator==(const ModbusGroup &rhs) const
+    {
+        return (BaseGroup<Commands, TypeId>::operator==(rhs));
+    }
+    bool operator!=(const ModbusGroup &rhs) const
+    {
+        return !(*this == rhs);
+    }
     // NOTE Need more fileds?
 };
 QDebug operator<<(QDebug debug, const CommandsMBS::CommandStruct &cmd);

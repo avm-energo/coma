@@ -80,7 +80,15 @@ template <typename FuncCode, typename TypeId> struct BaseRegister
             domElement = domElement.nextSiblingElement();
         }
     }
-
+    bool operator==(const BaseRegister &rhs) const
+    {
+        return (
+            (id == rhs.id) && (function == rhs.function) && (dataType == rhs.dataType) && (startAddr == rhs.startAddr));
+    }
+    bool operator!=(const BaseRegister &rhs) const
+    {
+        return !(*this == rhs);
+    }
     QString id;
     FuncCode function;
     TypeId dataType;
@@ -110,6 +118,14 @@ template <typename FuncCode, typename TypeId> struct BaseGroup : BaseRegister<Fu
             }
             domElement = domElement.nextSiblingElement();
         }
+    }
+    bool operator==(const BaseGroup &rhs) const
+    {
+        return (BaseRegister<FuncCode, TypeId>::operator==(rhs) && (count == rhs.count));
+    }
+    bool operator!=(const BaseGroup &rhs) const
+    {
+        return !(*this == rhs);
     }
     quint32 count;
 };

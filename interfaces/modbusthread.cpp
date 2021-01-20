@@ -291,8 +291,6 @@ void ModbusThread::parseAndSetToOutList(QByteArray &ba)
 
 void ModbusThread::getFloatSignals(QByteArray &bain)
 {
-    DataTypes::FloatStruct signal;
-
     if (bain.size() < 3)
     {
         Log->error("Wrong inbuf size");
@@ -303,25 +301,20 @@ void ModbusThread::getFloatSignals(QByteArray &bain)
     QByteArray ba = bain.mid(3);
     if (byteSize > ba.size())
     {
-        //  ERMSG("Wrong byte size in response");
         qCritical() << Error::SizeError << metaObject()->className();
         return;
     }
-    int signalsSize = byteSize / 4; // количество байт float или u32
-    for (int i = 0; i < signalsSize; ++i)
+    for (auto i = 0; i < ba.size(); i += sizeof(float))
     {
-        quint32 ival = ((ba.data()[2 + 4 * i] << 24) & 0xFF000000) + ((ba.data()[3 + 4 * i] << 16) & 0x00FF0000)
-            + ((ba.data()[4 * i] << 8) & 0x0000FF00) + ((ba.data()[1 + 4 * i] & 0x000000FF));
-        memcpy(&signal.sigVal, &ival, sizeof(float));
-        signal.sigAdr = m_commandSent.adr + i;
+        DataTypes::FloatStruct signal;
+        signal.sigVal = unpackReg<float>(ba.mid(i, sizeof(float)));
+        signal.sigAdr = m_commandSent.adr + i / sizeof(float);
         DataManager::addSignalToOutList(DataTypes::SignalTypes::Float, signal);
     }
 }
 
 void ModbusThread::getIntegerSignals(QByteArray &bain)
 {
-    DataTypes::BitStringStruct signal;
-
     if (bain.size() < 3)
     {
         Log->error("Wrong inbuf size");
@@ -332,28 +325,15 @@ void ModbusThread::getIntegerSignals(QByteArray &bain)
     QByteArray ba = bain.mid(3);
     if (byteSize > ba.size())
     {
-        // ERMSG("Wrong byte size in response");
         qCritical() << Error::SizeError << metaObject()->className();
         return;
     }
-    int signalsSize = byteSize / 4; // количество байт float или u32
-    QList<quint32> oldList, newList;
-    for (int i = 0; i < signalsSize; ++i)
+    for (auto i = 0; i < ba.size(); i += sizeof(quint32))
     {
-        quint32 ival = ((ba.data()[2 + 4 * i] << 24) & 0xFF000000) + ((ba.data()[3 + 4 * i] << 16) & 0x00FF0000)
-            + ((ba.data()[4 * i] << 8) & 0x0000FF00) + ((ba.data()[1 + 4 * i] & 0x000000FF));
-        oldList.append(ival);
-        memcpy(&signal.sigVal, &ival, sizeof(quint32));
-        signal.sigAdr = m_commandSent.adr + i;
+        DataTypes::BitStringStruct signal;
+        signal.sigVal = unpackReg<quint32>(ba.mid(i, sizeof(quint32)));
+        signal.sigAdr = m_commandSent.adr + i / sizeof(quint32);
         DataManager::addSignalToOutList(DataTypes::SignalTypes::BitString, signal);
-    }
-    for (int i = 0; i < ba.size(); i += sizeof(quint32))
-    {
-        const auto regSize = sizeof(quint16);
-        quint16 leftVal = qFromBigEndian(*reinterpret_cast<const quint16 *>(ba.mid(i, regSize).data()));
-        quint16 rightVal = qFromBigEndian(*reinterpret_cast<const quint16 *>(ba.mid(i + regSize, regSize).data()));
-        const quint32 ival = qFromBigEndian(leftVal | rightVal);
-        newList.append(ival);
     }
 }
 
