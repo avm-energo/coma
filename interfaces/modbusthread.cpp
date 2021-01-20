@@ -75,7 +75,7 @@ void ModbusThread::Run()
         }
         QCoreApplication::processEvents();
     }
-    emit Finished();
+    // emit Finished();
 }
 // void ModbusThread::SendAndGetResult(ModBus::InOutStruct &inp)
 //{

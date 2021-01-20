@@ -97,7 +97,7 @@ public:
     //    void reqBitStrings(quint32 sigAdr, quint32 sigCount);
 
     //    int CheckIndex, CheckHarmIndex, CheckVibrIndex, CorIndex, TimeIndex;
-    inline InterfaceSettings parseSettings(QDomElement domElement) const override;
+    InterfaceSettings parseSettings(QDomElement domElement) const override;
 public slots:
     //    Error::Msg SendAndGetResult(Queries::CommandMBS &request, ModBus::InOutStruct &outp);
     //    void ModWriteCor(ModBus::Information info, float *); //, int*);
@@ -119,8 +119,8 @@ signals:
     //    // void ModbusState(ConnectionStates);
     //    void ErrorRead();
     //    void ErrorCrc();
-    void Finished();
-    void FinishModbusThread();
+    // void Finished();
+    // void FinishModbusThread();
     //    void CoilSignalsReady(ModBus::Coils);
     //    void TimeReadError();
     // void ReconnectSignal();

@@ -100,9 +100,9 @@ void UWidget::reqUpdate()
     // NOTE: POS (Piece Of Shit)
     if (!updatesEnabled())
         return;
-    for (const auto &query : m_floatBdQueryList)
+    for (const auto &query : qAsConst(m_floatBdQueryList))
         BaseInterface::iface()->reqFloats(query.sigAdr, query.sigQuantity);
-    for (const auto &query : m_spBdQueryList)
+    for (const auto &query : qAsConst(m_spBdQueryList))
         BaseInterface::iface()->reqAlarms(query.sigAdr, query.sigQuantity);
 }
 

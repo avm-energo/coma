@@ -29,13 +29,13 @@ CheckKDVHarmonicDialog::CheckKDVHarmonicDialog(QWidget *parent) : AbstractCheckD
     setStyleSheet(tmps);
     QStringList sl;
 
-    setAttribute(Qt::WA_DeleteOnClose);
-
-        m_BdUIList = { { "Гармоники U 2-11", BdUWidget(1028,2,12) }, { "Гармоники U 12-21", BdUWidget(1038,12,22) }, { "Гармоники U 22-31", BdUWidget(1048,22,32) } ,
-                       { "Гармоники U 32-41", BdUWidget(1058,32,42) }, {  "Гармоники U 42-51", BdUWidget(1068,42,52) }, { "Гармоники U 52-62", BdUWidget(1078,52,63) },
-                       { "Гармоники I 2-11", BdIWidget(1428,2,12) }, { "Гармоники I 12-21", BdIWidget(1038,12,22) }, { "Гармоники I 22-31", BdIWidget(1448,22,32) },
-                       { "Гармоники I 32-41", BdIWidget(1458,32,42) }, {"Гармоники I 42-51", BdIWidget(1068,42,52) }, { "Гармоники I 52-62", BdIWidget(1078,52,63) }};
-        SetupUI();
+    m_BdUIList = { { "Гармоники U 2-11", BdUWidget(1028, 2, 12) }, { "Гармоники U 12-21", BdUWidget(1038, 12, 22) },
+        { "Гармоники U 22-31", BdUWidget(1048, 22, 32) }, { "Гармоники U 32-41", BdUWidget(1058, 32, 42) },
+        { "Гармоники U 42-51", BdUWidget(1068, 42, 52) }, { "Гармоники U 52-62", BdUWidget(1078, 52, 63) },
+        { "Гармоники I 2-11", BdIWidget(1428, 2, 12) }, { "Гармоники I 12-21", BdIWidget(1038, 12, 22) },
+        { "Гармоники I 22-31", BdIWidget(1448, 22, 32) }, { "Гармоники I 32-41", BdIWidget(1458, 32, 42) },
+        { "Гармоники I 42-51", BdIWidget(1068, 42, 52) }, { "Гармоники I 52-62", BdIWidget(1078, 52, 63) } };
+    SetupUI();
     Timer->setInterval(ANMEASINT);
 }
 
@@ -84,8 +84,7 @@ void CheckKDVHarmonicDialog::WriteToFile(int row, int bdnum)
     Q_UNUSED(bdnum)
 }
 
-
-UWidget *CheckKDVHarmonicDialog::BdIWidget(unsigned int value , int min, int max)
+UWidget *CheckKDVHarmonicDialog::BdIWidget(unsigned int value, int min, int max)
 {
     int i;
     UWidget *w = new UWidget;
@@ -125,7 +124,7 @@ UWidget *CheckKDVHarmonicDialog::BdIWidget(unsigned int value , int min, int max
         }
     }
 
-    quint32 val= max-min;
+    quint32 val = max - min;
 
     vlyout->addLayout(glyout);
     gb->setLayout(vlyout);
@@ -136,9 +135,8 @@ UWidget *CheckKDVHarmonicDialog::BdIWidget(unsigned int value , int min, int max
     lyout->addLayout(glyout);
     lyout->addStretch(100);
     w->setLayout(lyout);
-    w->setFloatBdQuery({ {value, val } });
+    w->setFloatBdQuery({ { value, val } });
     return w;
-
 }
 
 UWidget *CheckKDVHarmonicDialog::BdUWidget(unsigned int value, int min, int max)
@@ -175,14 +173,15 @@ UWidget *CheckKDVHarmonicDialog::BdUWidget(unsigned int value, int min, int max)
                 s = s + 2;
             k = s + 1;
             glyout->addWidget(WDFunc::NewLBL(this, phase[i] + "Гм. " + QString::number(h)), s, i, 1, 1);
-            glyout->addWidget(WDFunc::NewLBLT(this, "", QString::number((value + j) + i * 61), ValuesFormat,
-                                  QString::number(h) + "-я гармоника напряжения в фазе" + phase[i] + "в % от 1-й", true),
+            glyout->addWidget(
+                WDFunc::NewLBLT(this, "", QString::number((value + j) + i * 61), ValuesFormat,
+                    QString::number(h) + "-я гармоника напряжения в фазе" + phase[i] + "в % от 1-й", true),
                 k, i, 1, 1);
             j++;
         }
     }
 
-    quint32 val = max- min;
+    quint32 val = max - min;
 
     vlyout->addLayout(glyout);
     gb->setLayout(vlyout);
@@ -193,9 +192,8 @@ UWidget *CheckKDVHarmonicDialog::BdUWidget(unsigned int value, int min, int max)
     lyout->addLayout(glyout);
     lyout->addStretch(100);
     w->setLayout(lyout);
-    w->setFloatBdQuery({ {value, val } });
+    w->setFloatBdQuery({ { value, val } });
     return w;
-
 }
 // void CheckKDVHarmonicDialog::ChooseValuesToWrite() { }
 // void CheckKDVHarmonicDialog::SetDefaultValuesToWrite() { }

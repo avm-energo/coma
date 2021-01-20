@@ -9,7 +9,6 @@
 
 CheckVibrKDV::CheckVibrKDV()
 {
-    // setAttribute(Qt::WA_DeleteOnClose);
     ValuesFormat = "QLabel {border: 1px solid green; border-radius: 4px; "
                    "padding: 1px; color: black;"
                    "background-color: "
@@ -17,7 +16,7 @@ CheckVibrKDV::CheckVibrKDV()
     WidgetFormat = "QWidget {background-color: " + QString(Colors::UCONFCLR) + ";}";
 }
 
-//QWidget *CheckVibrKDV::Bd1W(QWidget *parent)
+// QWidget *CheckVibrKDV::Bd1W(QWidget *parent)
 //{
 //    int i;
 //    int row, column;
@@ -46,7 +45,8 @@ CheckVibrKDV::CheckVibrKDV()
 //        glyout->addWidget(WDFunc::NewLBL(parent, "Датчик №" + QString::number(1 + i)), row, column, 1, 1);
 //        row++;
 //        glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(60 + i), ValuesFormat,
-//                              "Среднеквадратичное значение виброускорения по каналу " + QString::number(i) + ", м/с2"),
+//                              "Среднеквадратичное значение виброускорения по каналу " + QString::number(i) + ",
+//                              м/с2"),
 //            row, column, 1, 1);
 //        column++;
 //    }
@@ -59,7 +59,8 @@ CheckVibrKDV::CheckVibrKDV()
 //        glyout->addWidget(WDFunc::NewLBL(parent, "Датчик №" + QString::number(4 + i)), row, column, 1, 1);
 //        row++;
 //        glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(63 + i), ValuesFormat,
-//                              "Среднеквадратичное значение виброускорения по каналу " + QString::number(i) + ", м/с2"),
+//                              "Среднеквадратичное значение виброускорения по каналу " + QString::number(i) + ",
+//                              м/с2"),
 //            row, column, 1, 1);
 //        column++;
 //    }
@@ -77,7 +78,7 @@ CheckVibrKDV::CheckVibrKDV()
 //    return w;
 //}
 
-//QWidget *CheckVibrKDV::Bd2W(QWidget *parent)
+// QWidget *CheckVibrKDV::Bd2W(QWidget *parent)
 //{
 //    int i;
 //    int row, column;
@@ -106,7 +107,8 @@ CheckVibrKDV::CheckVibrKDV()
 //        glyout->addWidget(WDFunc::NewLBL(parent, "Датчик №" + QString::number(1 + i)), row, column, 1, 1);
 //        row++;
 //        glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(6040 + i), ValuesFormat,
-//                              "Среднеквадратичное значение виброускорения по каналу " + QString::number(i) + ", м/с2"),
+//                              "Среднеквадратичное значение виброускорения по каналу " + QString::number(i) + ",
+//                              м/с2"),
 //            row, column, 1, 1);
 //        column++;
 //    }
@@ -119,7 +121,8 @@ CheckVibrKDV::CheckVibrKDV()
 //        glyout->addWidget(WDFunc::NewLBL(parent, "Датчик №" + QString::number(4 + i)), row, column, 1, 1);
 //        row++;
 //        glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(6043 + i), ValuesFormat,
-//                              "Среднеквадратичное значение виброускорения по каналу " + QString::number(i) + ", м/с2"),
+//                              "Среднеквадратичное значение виброускорения по каналу " + QString::number(i) + ",
+//                              м/с2"),
 //            row, column, 1, 1);
 //        column++;
 //    }
@@ -215,7 +218,7 @@ CheckVibrKDV::CheckVibrKDV()
 //    return w;
 //}
 
-//QWidget *CheckVibrKDV::Bd3W(QWidget *parent)
+// QWidget *CheckVibrKDV::Bd3W(QWidget *parent)
 //{
 //    int i;
 //    int row, column;
@@ -381,7 +384,7 @@ void CheckVibrKDV::FillBd20(QWidget *parent)
     }
 }
 
-//void CheckVibrKDV::FillBd(QWidget *parent, QString Name, QString Value)
+// void CheckVibrKDV::FillBd(QWidget *parent, QString Name, QString Value)
 //{
 //    WDFunc::SetLBLText(parent, Name, Value);
 //}

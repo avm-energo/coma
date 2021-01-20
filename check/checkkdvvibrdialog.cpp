@@ -27,10 +27,8 @@ CheckKDVVibrDialog::CheckKDVVibrDialog(QWidget *parent) : AbstractCheckDialog(pa
     setStyleSheet(tmps);
     QStringList sl;
 
-    setAttribute(Qt::WA_DeleteOnClose);
-
-        m_BdUIList = { { "Вибрации", Bd1W() }, { "Вибрации", Bd2W() } , { "Вибрации", Bd3W() }};
-        SetupUI();
+    m_BdUIList = { { "Вибрации", Bd1W() }, { "Вибрации", Bd2W() }, { "Вибрации", Bd3W() } };
+    SetupUI();
 
     Timer->setInterval(ANMEASINT);
 }
@@ -45,7 +43,6 @@ void CheckKDVVibrDialog::WriteToFile(int row, int bdnum)
     Q_UNUSED(row)
     Q_UNUSED(bdnum)
 }
-
 
 UWidget *CheckKDVVibrDialog::Bd1W()
 {
@@ -103,7 +100,7 @@ UWidget *CheckKDVVibrDialog::Bd1W()
     lyout->addLayout(glyout);
     lyout->addStretch(100);
     w->setLayout(lyout);
-    w->setFloatBdQuery({  { 60, 6 }});
+    w->setFloatBdQuery({ { 60, 6 } });
     return w;
 }
 
@@ -241,7 +238,7 @@ UWidget *CheckKDVVibrDialog::Bd2W()
     lyout->addLayout(glyout);
     lyout->addStretch(100);
     w->setLayout(lyout);
-    w->setFloatBdQuery({ { 6040, 18 }});
+    w->setFloatBdQuery({ { 6040, 18 } });
     return w;
 }
 
@@ -380,7 +377,7 @@ UWidget *CheckKDVVibrDialog::Bd3W()
     lyout->addLayout(glyout);
     lyout->addStretch(100);
     w->setLayout(lyout);
-    w->setFloatBdQuery({ { 6060, 18 }});
+    w->setFloatBdQuery({ { 6060, 18 } });
     return w;
 }
 

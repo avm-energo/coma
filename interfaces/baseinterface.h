@@ -152,7 +152,7 @@ signals:
     void reconnect();
     void finish();
 
-    void stateChanged(State m_state);
+    void stateChanged(BaseInterface::State m_state);
 
 private:
     bool m_busy, m_timeout;

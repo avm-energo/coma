@@ -43,7 +43,7 @@ QString UDialog::successMsg() const
     return m_successMsg;
 }
 
-void UDialog::setSuccessMsg(const QString &successMsg)
+void UDialog::setSuccessMsg(const QString successMsg)
 {
     m_successMsg = successMsg;
 }
@@ -53,7 +53,7 @@ QString UDialog::errorMsg() const
     return m_errorMsg;
 }
 
-void UDialog::setErrorMsg(const QString &errorMsg)
+void UDialog::setErrorMsg(const QString errorMsg)
 {
     m_errorMsg = errorMsg;
 }

@@ -25,14 +25,14 @@ public slots:
 
 signals:
     // void ModbusState(ConnectionStates);
-    void Finished();
+    // void Finished();
     void Write(QByteArray);
 
 private:
     //    QQueue<ModBus::InOutStruct> *InQueue;
     //    QList<ModBus::InOutStruct> *OutList;
     bool Busy; // port is busy with write/read operation
-    bool AboutToFinish;
+               //  bool AboutToFinish;
     quint8 deviceAddress;
     //    ModBus::InOutStruct Inp, Outp;
     // ConnectionStates _state;

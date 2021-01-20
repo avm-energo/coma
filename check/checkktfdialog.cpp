@@ -4,8 +4,8 @@
 #include "../gen/colors.h"
 #include "../gen/datamanager.h"
 #include "../gen/error.h"
-#include "../widgets/wd_func.h"
 #include "../widgets/etabwidget.h"
+#include "../widgets/wd_func.h"
 
 #include <QCoreApplication>
 #include <QDebug>
@@ -27,9 +27,9 @@ CheckKTFDialog::CheckKTFDialog(QWidget *parent) : AbstractCheckDialog(parent)
     QString tmps = "QDialog {background-color: " + QString(Colors::UCONFCLR) + ";}";
     setStyleSheet(tmps);
     QStringList sl;
-    
-    setAttribute(Qt::WA_DeleteOnClose);
-    m_BdUIList = { { "Основные", Bd1W() }, { "Модель", Bd2W() }, { "Ресурс", Bd3W() }, { "1-я гармоника", Bd4W() }, { "Несимметрия", Bd5W() } };
+
+    m_BdUIList = { { "Основные", Bd1W() }, { "Модель", Bd2W() }, { "Ресурс", Bd3W() }, { "1-я гармоника", Bd4W() },
+        { "Несимметрия", Bd5W() } };
     SetupUI();
 
     Timer->setInterval(ANMEASINT);
@@ -71,22 +71,20 @@ UWidget *CheckKTFDialog::Bd1W()
 
     glyout->addWidget(WDFunc::NewLBL(this, "Температура ННТ, °С"), 0, 0, 1, 1);
     glyout->addWidget(
-        WDFunc::NewLBLT(this, "", QString::number(4500), ValuesFormat, "Температура ННТ обмотки (расчетная), °С"), 1,
-        0, 1, 1);
+        WDFunc::NewLBLT(this, "", QString::number(4500), ValuesFormat, "Температура ННТ обмотки (расчетная), °С"), 1, 0,
+        1, 1);
     glyout->addWidget(WDFunc::NewLBL(this, "Tamb, °С"), 0, 1, 1, 1);
     glyout->addWidget(
-        WDFunc::NewLBLT(this, "", QString::number(4501), ValuesFormat, "Температура окружающей среды, °С"), 1, 1, 1,
-        1);
+        WDFunc::NewLBLT(this, "", QString::number(4501), ValuesFormat, "Температура окружающей среды, °С"), 1, 1, 1, 1);
     glyout->addWidget(WDFunc::NewLBL(this, "Cопротивление термометра, Ом"), 0, 2, 1, 1);
-    glyout->addWidget(WDFunc::NewLBLT(this, "", QString::number(4502), ValuesFormat,
-                          "сопротивление термометра окружающей среды, Ом"),
+    glyout->addWidget(
+        WDFunc::NewLBLT(this, "", QString::number(4502), ValuesFormat, "сопротивление термометра окружающей среды, Ом"),
         1, 2, 1, 1);
     glyout->addWidget(WDFunc::NewLBL(this, "Частота, Гц"), 0, 3, 1, 1);
     glyout->addWidget(WDFunc::NewLBLT(this, "", QString::number(2400), ValuesFormat, "Частота, Гц"), 1, 3, 1, 1);
     glyout->addWidget(WDFunc::NewLBL(this, "Температура микроконтроллера, °С"), 0, 4, 1, 1);
     glyout->addWidget(
-        WDFunc::NewLBLT(this, "", QString::number(101), ValuesFormat, "Температура микроконтроллера, °С"), 1, 4, 1,
-        1);
+        WDFunc::NewLBLT(this, "", QString::number(101), ValuesFormat, "Температура микроконтроллера, °С"), 1, 4, 1, 1);
 
     vlyout->addLayout(glyout);
     gb->setLayout(vlyout);
@@ -180,9 +178,9 @@ UWidget *CheckKTFDialog::Bd1W()
     lyout->addStretch(100);
     w->setLayout(lyout);
     w->setStyleSheet("QWidget {background-color: " + QString(Colors::UCONFCLR) + ";}");
-    w->setFloatBdQuery({ { 101, 2 }, { 1000, 4 }, { 1400, 4 },{ 1220, 4 }, { 2400, 1 }, { 2420, 16 }, { 4500, 7 } });
- //   w->setSpBdQuery({ { 3011, 25 } });
-    
+    w->setFloatBdQuery({ { 101, 2 }, { 1000, 4 }, { 1400, 4 }, { 1220, 4 }, { 2400, 1 }, { 2420, 16 }, { 4500, 7 } });
+    //   w->setSpBdQuery({ { 3011, 25 } });
+
     return w;
 }
 
@@ -315,7 +313,7 @@ UWidget *CheckKTFDialog::Bd2W()
     lyout->addLayout(glyout);
     lyout->addStretch(100);
     w->setLayout(lyout);
-    w->setFloatBdQuery({{ 4010, 22 } });
+    w->setFloatBdQuery({ { 4010, 22 } });
 
     return w;
 }
@@ -341,12 +339,11 @@ UWidget *CheckKTFDialog::Bd3W()
         0, 1, 1);
     glyout->addWidget(WDFunc::NewLBL(this, "Интегральное старение изоляции, час"), 2, 0, 1, 1);
     glyout->addWidget(
-        WDFunc::NewLBLT(this, "", QString::number(4001), ValuesFormat, "Интегральное старение изоляции, час"), 3, 0,
-        1, 1);
+        WDFunc::NewLBLT(this, "", QString::number(4001), ValuesFormat, "Интегральное старение изоляции, час"), 3, 0, 1,
+        1);
     glyout->addWidget(WDFunc::NewLBL(this, "Остаточный ресурс изоляции, час"), 4, 0, 1, 1);
     glyout->addWidget(
-        WDFunc::NewLBLT(this, "", QString::number(4002), ValuesFormat, "Остаточный ресурс изоляции, час"), 5, 0, 1,
-        1);
+        WDFunc::NewLBLT(this, "", QString::number(4002), ValuesFormat, "Остаточный ресурс изоляции, час"), 5, 0, 1, 1);
 
     vlyout->addLayout(glyout);
     gb->setLayout(vlyout);
@@ -426,8 +423,8 @@ UWidget *CheckKTFDialog::Bd4W()
                               "Реактивня мощность по 1-й гармонике, кВАр"),
             7, i, 1, 1);
         glyout->addWidget(WDFunc::NewLBL(this, "S " + pphase[i] + ", кВА"), 8, i, 1, 1);
-        glyout->addWidget(WDFunc::NewLBLT(this, "", QString::number(2458 + i), ValuesFormat,
-                              "Полная мощность по 1-й гармонике, кВА"),
+        glyout->addWidget(
+            WDFunc::NewLBLT(this, "", QString::number(2458 + i), ValuesFormat, "Полная мощность по 1-й гармонике, кВА"),
             9, i, 1, 1);
         glyout->addWidget(WDFunc::NewLBL(this, "CosPhi " + phase[i] + ""), 10, i, 1, 1);
         glyout->addWidget(WDFunc::NewLBLT(this, "", QString::number(2462 + i), ValuesFormat,
@@ -449,7 +446,7 @@ UWidget *CheckKTFDialog::Bd4W()
     lyout->addLayout(glyout);
     lyout->addStretch(100);
     w->setLayout(lyout);
-    w->setFloatBdQuery({{ 1004, 4 }, { 1404, 4 }, { 2450, 16 }, { 1224, 4 } });
+    w->setFloatBdQuery({ { 1004, 4 }, { 1404, 4 }, { 2450, 16 }, { 1224, 4 } });
 
     return w;
 }
@@ -482,8 +479,7 @@ UWidget *CheckKTFDialog::Bd5W()
         1, 0, 1, 1);
     glyout->addWidget(WDFunc::NewLBL(this, "U1, кВ"), 0, 1, 1, 1);
     glyout->addWidget(
-        WDFunc::NewLBLT(this, "", QString::number(1021), ValuesFormat, "Температура окружающей среды, °С"), 1, 1, 1,
-        1);
+        WDFunc::NewLBLT(this, "", QString::number(1021), ValuesFormat, "Температура окружающей среды, °С"), 1, 1, 1, 1);
     glyout->addWidget(WDFunc::NewLBL(this, "U2, кВ"), 0, 2, 1, 1);
     glyout->addWidget(WDFunc::NewLBLT(this, "", QString::number(1022), ValuesFormat, "Частота, Гц"), 1, 2, 1, 1);
     glyout->addWidget(WDFunc::NewLBL(this, "KunsimU0"), 2, 0, 1, 1);
@@ -527,16 +523,16 @@ UWidget *CheckKTFDialog::Bd5W()
 
     glyout->addWidget(WDFunc::NewLBL(this, "I0, кВ"), 6, 0, 1, 1);
     glyout->addWidget(
-        WDFunc::NewLBLT(this, "", QString::number(1420), ValuesFormat, "Ток нулевой последовательности гр.1, A"), 7,
-        0, 1, 1);
+        WDFunc::NewLBLT(this, "", QString::number(1420), ValuesFormat, "Ток нулевой последовательности гр.1, A"), 7, 0,
+        1, 1);
     glyout->addWidget(WDFunc::NewLBL(this, "I1, кВ"), 6, 1, 1, 1);
     glyout->addWidget(
         WDFunc::NewLBLT(this, "", QString::number(1421), ValuesFormat, "Ток прямой последовательности гр.1, А"), 7, 1,
         1, 1);
     glyout->addWidget(WDFunc::NewLBL(this, "I2, А"), 6, 2, 1, 1);
     glyout->addWidget(
-        WDFunc::NewLBLT(this, "", QString::number(1422), ValuesFormat, "Ток обратной последовательности гр.1, А"), 7,
-        2, 1, 1);
+        WDFunc::NewLBLT(this, "", QString::number(1422), ValuesFormat, "Ток обратной последовательности гр.1, А"), 7, 2,
+        1, 1);
     glyout->addWidget(WDFunc::NewLBL(this, "KunsimI0"), 8, 0, 1, 1);
     glyout->addWidget(WDFunc::NewLBLT(this, "", QString::number(1423), ValuesFormat,
                           "Коэффициент несимметрии тока по обратной последовательности гр.1,%"),
@@ -572,7 +568,7 @@ UWidget *CheckKTFDialog::Bd5W()
     lyout->addLayout(glyout);
     lyout->addStretch(100);
     w->setLayout(lyout);
-    w->setFloatBdQuery({ { 1020, 8 }, { 1008, 3 }, { 1420, 8 }, { 1408, 3 }});
+    w->setFloatBdQuery({ { 1020, 8 }, { 1008, 3 }, { 1420, 8 }, { 1408, 3 } });
     return w;
 }
 // void CheckKTFDialog::ChooseValuesToWrite() { }

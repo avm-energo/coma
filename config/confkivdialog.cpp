@@ -18,7 +18,6 @@ ConfKIVDialog::ConfKIVDialog(ConfigKIV *ckiv, QWidget *parent) : AbstractConfDia
     //    CKIV = new ConfigKIV(ckiv);
     //    Conf = new ConfDialog(ckiv->S2Config(), this);
     //    ConfKxx = new ConfKxxDialog(ckiv->S2Config(), this);
-    setAttribute(Qt::WA_DeleteOnClose);
 }
 
 ConfKIVDialog::~ConfKIVDialog()

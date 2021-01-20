@@ -23,7 +23,6 @@ StartupKTFDialog::StartupKTFDialog(QWidget *parent) : AbstractStartupDialog(pare
 
     //  first = 0;
 
-    setAttribute(Qt::WA_DeleteOnClose);
     // SetupUI();
 }
 

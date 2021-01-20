@@ -23,7 +23,6 @@ ConfKTFDialog::ConfKTFDialog(ConfigKTF *cktf, QWidget *parent) : AbstractConfDia
     CKTF = cktf;
     //    Conf = new ConfDialog(S2Config, Board::GetInstance().typeB(), Board::GetInstance().typeM());
     //    ConfKxx = new ConfKxxDialog(S2Config);
-    setAttribute(Qt::WA_DeleteOnClose);
 }
 
 ConfKTFDialog::~ConfKTFDialog()

@@ -235,7 +235,8 @@ void ConfigKxx::Fill()
 
 void ConfigKxx::FillBack()
 {
-    int i, cbidx;
+    int i;
+    int cbidx;
     quint16 tmp16;
     quint8 tmp = 0;
     //.......................................................................
@@ -247,44 +248,62 @@ void ConfigKxx::FillBack()
 
     //..................................................................
     cbidx = WDFunc::CBIndex(ParentMB, "MBMaster");
+    Q_ASSERT(cbidx != -1);
     StrModBus.MBMaster = cbidx;
 
     cbidx = WDFunc::CBIndex(ParentMB, "MBMab1[0]");
+    Q_ASSERT(cbidx != -1);
     StrModBus.MBMab1[0] = cbidx;
     cbidx = WDFunc::CBIndex(ParentMB, "MBMab2[0]");
+    Q_ASSERT(cbidx != -1);
     StrModBus.MBMab2[0] = cbidx;
     cbidx = WDFunc::CBIndex(ParentMB, "MBMab3[0]");
+    Q_ASSERT(cbidx != -1);
     StrModBus.MBMab3[0] = cbidx;
     cbidx = WDFunc::CBIndex(ParentMB, "MBMab4[0]");
+    Q_ASSERT(cbidx != -1);
     StrModBus.MBMab4[0] = cbidx;
 
     cbidx = WDFunc::CBIndex(ParentMB, "MBMab1sk[1]");
+    Q_ASSERT(cbidx != -1);
     StrModBus.MBMab1[1] = cbidx;
     cbidx = WDFunc::CBIndex(ParentMB, "MBMab1ch[1]");
-    StrModBus.MBMab1[1] = StrModBus.MBMab1[1] | (cbidx << 5);
+    Q_ASSERT(cbidx != -1);
+    StrModBus.MBMab1[1] = StrModBus.MBMab1[1] | uint(cbidx << 5);
     cbidx = WDFunc::CBIndex(ParentMB, "MBMab1bt[1]");
-    StrModBus.MBMab1[1] = StrModBus.MBMab1[1] | (cbidx << 7);
+    Q_ASSERT(cbidx != -1);
+    StrModBus.MBMab1[1] = StrModBus.MBMab1[1] | uint(cbidx << 7);
 
     cbidx = WDFunc::CBIndex(ParentMB, "MBMab2sk[1]");
+    Q_ASSERT(cbidx != -1);
     StrModBus.MBMab2[1] = cbidx;
     cbidx = WDFunc::CBIndex(ParentMB, "MBMab2ch[1]");
-    StrModBus.MBMab2[1] = StrModBus.MBMab2[1] | (cbidx << 5);
+    Q_ASSERT(cbidx != -1);
+    StrModBus.MBMab2[1] = StrModBus.MBMab2[1] | uint(cbidx << 5);
     cbidx = WDFunc::CBIndex(ParentMB, "MBMab2bt[1]");
-    StrModBus.MBMab2[1] = StrModBus.MBMab2[1] | (cbidx << 7);
+    Q_ASSERT(cbidx != -1);
+    StrModBus.MBMab2[1] = StrModBus.MBMab2[1] | uint(cbidx << 7);
 
     cbidx = WDFunc::CBIndex(ParentMB, "MBMab3sk[1]");
+    Q_ASSERT(cbidx != -1);
     StrModBus.MBMab3[1] = cbidx;
     cbidx = WDFunc::CBIndex(ParentMB, "MBMab3ch[1]");
-    StrModBus.MBMab3[1] = StrModBus.MBMab3[1] | (cbidx << 5);
+    Q_ASSERT(cbidx != -1);
+    StrModBus.MBMab3[1] = StrModBus.MBMab3[1] | uint(cbidx << 5);
     cbidx = WDFunc::CBIndex(ParentMB, "MBMab3bt[1]");
-    StrModBus.MBMab3[1] = StrModBus.MBMab3[1] | (cbidx << 7);
+    Q_ASSERT(cbidx != -1);
+    StrModBus.MBMab3[1] = StrModBus.MBMab3[1] | uint(cbidx << 7);
 
     cbidx = WDFunc::CBIndex(ParentMB, "MBMab4sk[1]");
+    Q_ASSERT(cbidx != -1);
     StrModBus.MBMab4[1] = cbidx;
+
     cbidx = WDFunc::CBIndex(ParentMB, "MBMab4ch[1]");
-    StrModBus.MBMab4[1] = StrModBus.MBMab4[1] | (cbidx << 5);
+    Q_ASSERT(cbidx != -1);
+    StrModBus.MBMab4[1] = StrModBus.MBMab4[1] | uint(cbidx << 5);
     cbidx = WDFunc::CBIndex(ParentMB, "MBMab4bt[1]");
-    StrModBus.MBMab4[1] = StrModBus.MBMab4[1] | (cbidx << 7);
+    Q_ASSERT(cbidx != -1);
+    StrModBus.MBMab4[1] = StrModBus.MBMab4[1] | uint(cbidx << 7);
 
     WDFunc::SPBData(ParentMB, "MBMab1per[2]", StrModBus.MBMab1[2]);
     WDFunc::SPBData(ParentMB, "MBMab2per[2]", StrModBus.MBMab2[2]);
@@ -299,7 +318,7 @@ void ConfigKxx::FillBack()
     for (i = 1; i < 5; i++)
     {
         cbidx = WDFunc::CBIndex(ParentMB, "MBMab" + QString::number(i) + "func[4]");
-
+        Q_ASSERT(cbidx != -1);
         switch (cbidx)
         {
         case 0:
@@ -328,7 +347,7 @@ void ConfigKxx::FillBack()
     for (i = 1; i < 5; i++)
     {
         cbidx = WDFunc::CBIndex(ParentMB, "MBMab" + QString::number(i) + "tdat[4]");
-
+        Q_ASSERT(cbidx != -1);
         switch (cbidx)
         {
         case 0:

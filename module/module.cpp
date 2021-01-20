@@ -209,7 +209,7 @@ QList<UDialog *> Module::dialogs()
 QList<UDialog *> Module::confDialogs()
 {
     QList<UDialog *> list;
-    for (UDialog *dlg : m_dialogs)
+    for (UDialog *dlg : qAsConst(m_dialogs))
     {
         if (dlg->objectName().contains("conf"))
             list.append(dlg);
@@ -599,7 +599,7 @@ bool Module::loadSettings()
         allFiles = directory.entryList(QDir::Files);
         xmlFiles = allFiles.filter(".xml");
         qDebug() << xmlFiles;
-        for (const auto &xmlFile : xmlFiles)
+        for (const auto &xmlFile : qAsConst(xmlFiles))
         {
             if (!xmlFile.contains(moduleName, Qt::CaseInsensitive))
                 continue;

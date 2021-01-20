@@ -46,7 +46,6 @@ JournalDialog::JournalDialog(Journals *jour, QWidget *parent) : UDialog(parent)
     //    connect(this, &JournalDialog::StartGetJour, JourFuncs, &Journals::StartGetJour);
     //    connect(this, &JournalDialog::StartSaveJour, JourFuncs, &Journals::StartSaveJour);
     //    connect(this, &JournalDialog::StartReadFile, JourFuncs, &Journals::ReadJourFileAndProcessIt);
-    setAttribute(Qt::WA_DeleteOnClose);
     SetupUI();
 }
 

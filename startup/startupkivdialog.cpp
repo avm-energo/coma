@@ -31,7 +31,6 @@ StartupKIVDialog::StartupKIVDialog(QWidget *parent) : AbstractStartupDialog(pare
     addReg(4009, &CorBlock->Iunb_init);
     addReg(4010, &CorBlock->Phy_unb_init);
 
-    setAttribute(Qt::WA_DeleteOnClose);
     SetStartupBlock(7, &CorBlock, sizeof(CorData), KIVSTARTUPINITREG);
 }
 

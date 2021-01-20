@@ -34,7 +34,6 @@ StartupKDVDialog::StartupKDVDialog(QWidget *parent) : AbstractStartupDialog(pare
     WBd7Block = new WBd7;
     WBd8Block = new WBd8;
 
-    setAttribute(Qt::WA_DeleteOnClose);
     // SetupUI();
 }
 

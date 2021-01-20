@@ -9,7 +9,6 @@
 
 CheckKIV::CheckKIV()
 {
-    // setAttribute(Qt::WA_DeleteOnClose);
     ValuesFormat = "QLabel {border: 1px solid green; border-radius: 4px; "
                    "padding: 1px; color: black;"
                    "background-color: "

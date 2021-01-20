@@ -55,19 +55,16 @@ bool ModBus::start(const ConnectStruct &st)
 
     Settings = std::get<SerialPortSettings>(st.settings);
     SerialPort *port = new SerialPort();
-    ModbusThread *cthr = new ModbusThread;
-    cthr->setDeviceAddress(Settings.Address);
+    ModbusThread *parser = new ModbusThread;
+    parser->setDeviceAddress(Settings.Address);
     QThread *thr = new QThread;
-    cthr->moveToThread(thr);
-    connect(thr, &QThread::started, cthr, &ModbusThread::Run);
-    connect(cthr, &ModbusThread::Finished, thr, &QThread::quit);
+
+    connect(thr, &QThread::started, parser, &ModbusThread::Run);
+    connect(thr, &QThread::finished, port, &SerialPort::Disconnect);
     connect(thr, &QThread::finished, thr, &QObject::deleteLater);
-    connect(cthr, &ModbusThread::Finished, cthr, &QObject::deleteLater);
-    connect(cthr, &ModbusThread::Finished, this, &ModBus::Finished);
-    //  connect(this, &ModBus::FinishModbusThread, cthr, &ModbusThread::FinishThread, Qt::BlockingQueuedConnection);
-    connect(this, &ModBus::FinishModbusThread, port, &SerialPort::Disconnect);
-    connect(port, &SerialPort::Read, cthr, &ModbusThread::ParseReply);
-    connect(cthr, &ModbusThread::Write, port, &SerialPort::WriteBytes);
+    connect(thr, &QThread::finished, parser, &QObject::deleteLater);
+    connect(port, &SerialPort::Read, parser, &ModbusThread::ParseReply);
+    connect(parser, &ModbusThread::Write, port, &SerialPort::WriteBytes);
     connect(port, &SerialPort::Reconnect, this, &ModBus::SendReconnectSignal);
     if (!port->Init(Settings))
     {
@@ -75,11 +72,9 @@ bool ModBus::start(const ConnectStruct &st)
         return false;
     }
     setState(State::Run);
+    parser->moveToThread(thr);
     thr->start();
     StdFunc::Wait(1000);
-    //    StartPolling();
-    // AboutToFinish = false;
-    //    Log->info("Polling started, thread initiated");
     return true;
 }
 

@@ -500,10 +500,10 @@ QStatusBar *WDFunc::NewSB(QWidget *w)
     // clang-format off
     QMap<Board::InterfaceType, QString> images
     {
-        { Board::InterfaceType::USB, "images/usb.svg" },
-        { Board::InterfaceType::RS485, "images/rs485.svg" },
-        { Board::InterfaceType::Ethernet, "images/ethernet.svg" },
-        { Board::InterfaceType::Unknown, "images/stop.svg" }
+        { Board::InterfaceType::USB, ":/icons/usb.svg" },
+        { Board::InterfaceType::RS485, ":/icons/rs485.svg" },
+        { Board::InterfaceType::Ethernet, ":/icons/ethernet.svg" },
+        { Board::InterfaceType::Unknown, ":/icons/stop.svg" }
     };
     // clang-format on
     QStatusBar *bar = new QStatusBar(w);

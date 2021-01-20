@@ -10,7 +10,6 @@
 
 CheckHarmonicKTF::CheckHarmonicKTF()
 {
-    // setAttribute(Qt::WA_DeleteOnClose);
     ValuesFormat = "QLabel {border: 1px solid green; border-radius: 4px; "
                    "padding: 1px; color: black;"
                    "background-color: "
@@ -18,7 +17,7 @@ CheckHarmonicKTF::CheckHarmonicKTF()
     WidgetFormat = "QWidget {background-color: " + QString(Colors::UCONFCLR) + ";}";
 }
 
-//QWidget *CheckHarmonicKTF::BdIWidget(QWidget *parent, int value, int min, int max)
+// QWidget *CheckHarmonicKTF::BdIWidget(QWidget *parent, int value, int min, int max)
 //{
 //    int i;
 //    QWidget *w = new QWidget(parent);
@@ -71,7 +70,7 @@ CheckHarmonicKTF::CheckHarmonicKTF()
 //    return w;
 //}
 
-//QWidget *CheckHarmonicKTF::BdUWidget(QWidget *parent, int value, int min, int max)
+// QWidget *CheckHarmonicKTF::BdUWidget(QWidget *parent, int value, int min, int max)
 //{
 //    int i;
 //    QWidget *w = new QWidget(parent);
@@ -149,7 +148,7 @@ void CheckHarmonicKTF::FillBd7(QWidget *parent)
     }
 }
 
-//void CheckHarmonicKTF::FillBd(QWidget *parent, QString Name, QString Value)
+// void CheckHarmonicKTF::FillBd(QWidget *parent, QString Name, QString Value)
 //{
 //    WDFunc::SetLBLText(parent, Name, Value);
 //}

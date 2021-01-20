@@ -19,7 +19,6 @@
 FWUploadDialog::FWUploadDialog(QWidget *parent) : UDialog(parent)
 {
     m_password = "admin";
-    setAttribute(Qt::WA_DeleteOnClose);
     SetupUI();
 }
 

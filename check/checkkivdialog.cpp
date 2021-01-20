@@ -30,7 +30,6 @@ CheckKIVDialog::CheckKIVDialog(QWidget *parent) : AbstractCheckDialog(parent)
     //    Ch = new Check;
     //    m_stColor.resize(7);
     //    BdNum = 11;
-    setAttribute(Qt::WA_DeleteOnClose);
 
     m_BdUIList = { { "Основные", Bd1W() }, { "Дополнительные", Bd2W() } };
     m_BdUIList.first().widget->setUpdatesEnabled();

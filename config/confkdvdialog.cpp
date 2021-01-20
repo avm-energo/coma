@@ -27,7 +27,6 @@ ConfKDVDialog::ConfKDVDialog(ConfigKDV *ckdv, QWidget *parent) : AbstractConfDia
     CKDV = ckdv;
     //    Conf = new ConfDialog(S2Config, Board::GetInstance().typeB(), Board::GetInstance().typeM());
     // ConfKxx = new ConfKxxDialog(S2Config);
-    setAttribute(Qt::WA_DeleteOnClose);
 }
 
 void ConfKDVDialog::SetupUI()

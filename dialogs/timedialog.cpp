@@ -16,7 +16,6 @@
 
 TimeDialog::TimeDialog(QWidget *parent) : UDialog(parent)
 {
-    setAttribute(Qt::WA_DeleteOnClose);
     setTimeZone(0);
     First = false;
     Timer = new QTimer(this);

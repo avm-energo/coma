@@ -17,10 +17,10 @@ public slots:
 
 protected:
     QString successMsg() const;
-    void setSuccessMsg(const QString &successMsg);
+    void setSuccessMsg(const QString successMsg);
 
     QString errorMsg() const;
-    void setErrorMsg(const QString &errorMsg);
+    void setErrorMsg(const QString errorMsg);
 
 private:
     QString m_successMsg;

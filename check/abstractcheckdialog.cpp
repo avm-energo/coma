@@ -35,7 +35,6 @@ AbstractCheckDialog::AbstractCheckDialog(QWidget *parent) : UDialog(parent)
     Timer->setObjectName("checktimer");
     connect(Timer, &QTimer::timeout, this, &AbstractCheckDialog::TimerTimeout);
     Timer->setInterval(1000);
-    setAttribute(Qt::WA_DeleteOnClose);
 }
 
 AbstractCheckDialog::~AbstractCheckDialog()

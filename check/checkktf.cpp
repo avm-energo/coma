@@ -4,13 +4,12 @@
 #include "../gen/colors.h"
 #include "../widgets/wd_func.h"
 
+#include <QDateTime>
 #include <QGroupBox>
 #include <QLayout>
-#include <QDateTime>
 
 CheckKTF::CheckKTF()
 {
-    // setAttribute(Qt::WA_DeleteOnClose);
     ValuesFormat = "QLabel {border: 1px solid green; border-radius: 4px; "
                    "padding: 1px; color: black;"
                    "background-color: "
@@ -22,7 +21,7 @@ CheckKTF::~CheckKTF()
 {
 }
 
-//QWidget *CheckKTF::Bd1W(QWidget *parent)
+// QWidget *CheckKTF::Bd1W(QWidget *parent)
 //{
 //    int i;
 //    QWidget *w = new QWidget(parent);
@@ -43,8 +42,8 @@ CheckKTF::~CheckKTF()
 
 //    glyout->addWidget(WDFunc::NewLBL(parent, "Температура ННТ, °С"), 0, 0, 1, 1);
 //    glyout->addWidget(
-//        WDFunc::NewLBLT(parent, "", QString::number(4500), ValuesFormat, "Температура ННТ обмотки (расчетная), °С"), 1,
-//        0, 1, 1);
+//        WDFunc::NewLBLT(parent, "", QString::number(4500), ValuesFormat, "Температура ННТ обмотки (расчетная), °С"),
+//        1, 0, 1, 1);
 //    glyout->addWidget(WDFunc::NewLBL(parent, "Tamb, °С"), 0, 1, 1, 1);
 //    glyout->addWidget(
 //        WDFunc::NewLBLT(parent, "", QString::number(4501), ValuesFormat, "Температура окружающей среды, °С"), 1, 1, 1,
@@ -155,7 +154,7 @@ CheckKTF::~CheckKTF()
 //    return w;
 //}
 
-//QWidget *CheckKTF::Bd2W(QWidget *parent)
+// QWidget *CheckKTF::Bd2W(QWidget *parent)
 //{
 
 //    QWidget *w = new QWidget(parent);
@@ -289,7 +288,7 @@ CheckKTF::~CheckKTF()
 //    return w;
 //}
 
-//QWidget *CheckKTF::Bd3W(QWidget *parent)
+// QWidget *CheckKTF::Bd3W(QWidget *parent)
 //{
 //    QWidget *w = new QWidget(parent);
 //    QVBoxLayout *lyout = new QVBoxLayout;
@@ -306,8 +305,8 @@ CheckKTF::~CheckKTF()
 
 //    glyout->addWidget(WDFunc::NewLBL(parent, "Относительная скорость старения изоляции"), 0, 0, 1, 1);
 //    glyout->addWidget(
-//        WDFunc::NewLBLT(parent, "", QString::number(4000), ValuesFormat, "Относительная скорость старения изоляции"), 1,
-//        0, 1, 1);
+//        WDFunc::NewLBLT(parent, "", QString::number(4000), ValuesFormat, "Относительная скорость старения изоляции"),
+//        1, 0, 1, 1);
 //    glyout->addWidget(WDFunc::NewLBL(parent, "Интегральное старение изоляции, час"), 2, 0, 1, 1);
 //    glyout->addWidget(
 //        WDFunc::NewLBLT(parent, "", QString::number(4001), ValuesFormat, "Интегральное старение изоляции, час"), 3, 0,
@@ -349,7 +348,7 @@ CheckKTF::~CheckKTF()
 //    return w;
 //}
 
-//QWidget *CheckKTF::Bd4W(QWidget *parent)
+// QWidget *CheckKTF::Bd4W(QWidget *parent)
 //{
 //    int i;
 //    QWidget *w = new QWidget(parent);
@@ -421,7 +420,7 @@ CheckKTF::~CheckKTF()
 //    return w;
 //}
 
-//QWidget *CheckKTF::Bd5W(QWidget *parent)
+// QWidget *CheckKTF::Bd5W(QWidget *parent)
 //{
 //    int i;
 //    QWidget *w = new QWidget(parent);
@@ -498,12 +497,12 @@ CheckKTF::~CheckKTF()
 //        0, 1, 1);
 //    glyout->addWidget(WDFunc::NewLBL(parent, "I1, кВ"), 6, 1, 1, 1);
 //    glyout->addWidget(
-//        WDFunc::NewLBLT(parent, "", QString::number(1421), ValuesFormat, "Ток прямой последовательности гр.1, А"), 7, 1,
-//        1, 1);
+//        WDFunc::NewLBLT(parent, "", QString::number(1421), ValuesFormat, "Ток прямой последовательности гр.1, А"), 7,
+//        1, 1, 1);
 //    glyout->addWidget(WDFunc::NewLBL(parent, "I2, А"), 6, 2, 1, 1);
 //    glyout->addWidget(
-//        WDFunc::NewLBLT(parent, "", QString::number(1422), ValuesFormat, "Ток обратной последовательности гр.1, А"), 7,
-//        2, 1, 1);
+//        WDFunc::NewLBLT(parent, "", QString::number(1422), ValuesFormat, "Ток обратной последовательности гр.1, А"),
+//        7, 2, 1, 1);
 //    glyout->addWidget(WDFunc::NewLBL(parent, "KunsimI0"), 8, 0, 1, 1);
 //    glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1423), ValuesFormat,
 //                          "Коэффициент несимметрии тока по обратной последовательности гр.1,%"),
@@ -543,12 +542,12 @@ CheckKTF::~CheckKTF()
 //    return w;
 //}
 
-//void CheckKTF::FillBd(QWidget *parent, QString Name, QString Value)
+// void CheckKTF::FillBd(QWidget *parent, QString Name, QString Value)
 //{
 //    WDFunc::SetLBLText(parent, Name, Value);
 //}
 
-//QWidget *CheckKTF::BdUI(int bdnum)
+// QWidget *CheckKTF::BdUI(int bdnum)
 //{
 //    Q_UNUSED(bdnum);
 //    return nullptr;
@@ -582,7 +581,7 @@ CheckKTF::~CheckKTF()
 //    Q_UNUSED(bdnum);
 //}
 
-//QWidget *CheckKTF::CustomTab()
+// QWidget *CheckKTF::CustomTab()
 //{
 //    QWidget *w = new QWidget;
 
