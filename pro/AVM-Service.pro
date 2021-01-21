@@ -29,6 +29,7 @@ TEMPLATE = app
 
 
 SOURCES += \
+    ../interfaces/modbusprivate.cpp \
     coma.cpp \
     main.cpp \
     ../check/abstractcheckdialog.cpp \

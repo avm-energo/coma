@@ -15,14 +15,13 @@
 #include <QWaitCondition>
 #include <algorithm>
 
-QMutex RunMutex, InMutex, OutMutex, OutWaitMutex;
-QWaitCondition RunWC, OutWC;
+// QMutex RunMutex, InMutex, OutMutex, OutWaitMutex;
+// QWaitCondition RunWC, OutWC;
 
 using namespace CommandsMBS;
 
 ModBus::ModBus(QObject *parent) : BaseInterface(parent)
 {
-    Log = new LogClass;
     Log->Init("modbus.log");
     //    CycleGroup = 0;
     //    MainPollEnabled = true;
@@ -54,7 +53,6 @@ bool ModBus::start(const ConnectStruct &st)
         return false;
 
     Settings = std::get<SerialPortSettings>(st.settings);
-    SerialPort *port = new SerialPort();
     SerialPort *port = new SerialPort;
     ModbusThread *parser = new ModbusThread;
     parser->setDeviceAddress(Settings.Address);
@@ -173,14 +171,6 @@ void ModBus::SendReconnectSignal()
         emit reconnect();
 }
 
-// void ModBus::stop()
-//{
-//   Log->info("Stop()");
-//   setState(BaseInterface::State::Stop);
-// AboutToFinish = true;
-// emit FinishModbusThread();
-//}
-
 bool ModBus::isValidRegs(const CommandsMBS::CommandStruct &cmd) const
 {
     const auto &st = settings<InterfaceInfo<CommandsMBS::ModbusGroup>>();
@@ -189,6 +179,19 @@ bool ModBus::isValidRegs(const CommandsMBS::CommandStruct &cmd) const
     for (const auto &val : values)
     {
         if ((val.count == cmd.quantity) && (val.function == cmd.cmd))
+            return true;
+    }
+    return false;
+}
+
+bool ModBus::isValidRegs(const quint32 sigAdr, const quint32 sigCount) const
+{
+    const auto &st = settings<InterfaceInfo<CommandsMBS::ModbusGroup>>();
+    Q_ASSERT(st.dictionary().contains(sigAdr));
+    const auto values = st.dictionary().values(sigAdr);
+    for (const auto &val : values)
+    {
+        if ((val.count == sigCount) && (val.startAddr == sigAdr))
             return true;
     }
     return false;
@@ -381,6 +384,31 @@ void ModBus::writeTime(quint32 time)
     DataManager::addToInQueue(inp);
 }
 
+void ModBus::writeFloat(const DataTypes::FloatStruct &flstr)
+{
+    Q_ASSERT(false && "Dont use this before test");
+    QByteArray sigArray;
+
+    // now write floats to the out sigArray
+
+    quint32 tmpi = static_cast<quint32>(flstr.sigVal);
+    sigArray.append(static_cast<char>(tmpi >> 8));
+    sigArray.append(static_cast<char>(tmpi));
+    sigArray.append(static_cast<char>(tmpi >> 24));
+    sigArray.append(static_cast<char>(tmpi >> 16));
+
+    CommandsMBS::CommandStruct inp {
+        CommandsMBS::Commands::MBS_WRITEMULTIPLEREGISTERS, //
+        static_cast<quint16>(flstr.sigAdr),                //
+        static_cast<quint16>(sigArray.size() / 2),         //
+        sigArray,                                          //
+        TypeId::None,                                      //
+        __PRETTY_FUNCTION__                                //
+    };
+    // Q_ASSERT(isValidRegs(inp));
+    DataManager::addToInQueue(inp);
+}
+
 void ModBus::writeCommand(Queries::Commands cmd, QVariant item)
 {
     switch (cmd)
@@ -390,28 +418,7 @@ void ModBus::writeCommand(Queries::Commands cmd, QVariant item)
         Q_ASSERT(item.canConvert<DataTypes::FloatStruct>());
         if (!item.canConvert<DataTypes::FloatStruct>())
             return;
-        QByteArray sigArray;
-        DataTypes::FloatStruct flstr = item.value<DataTypes::FloatStruct>();
-
-        // now write floats to the out sigArray
-
-        quint32 tmpi = static_cast<quint32>(flstr.sigVal);
-
-        sigArray.append(static_cast<char>(tmpi >> 8));
-        sigArray.append(static_cast<char>(tmpi));
-        sigArray.append(static_cast<char>(tmpi >> 24));
-        sigArray.append(static_cast<char>(tmpi >> 16));
-
-        CommandsMBS::CommandStruct inp {
-            CommandsMBS::Commands::MBS_WRITEMULTIPLEREGISTERS, //
-            static_cast<quint16>(flstr.sigAdr),                //
-            2,                                                 //
-            sigArray,                                          //
-            TypeId::None,                                      //
-            __PRETTY_FUNCTION__                                //
-        };
-        Q_ASSERT(isValidRegs(inp));
-        DataManager::addToInQueue(inp);
+        writeFloat(item.value<DataTypes::FloatStruct>());
         break;
     }
     case Queries::QC_ReqAlarms:
@@ -435,6 +442,58 @@ void ModBus::writeCommand(Queries::Commands cmd, QVariant item)
     }
     default:
         Q_ASSERT(false && "Unsupported in Modbus");
+        break;
+    }
+}
+
+void ModBus::writeCommand(Queries::Commands cmd, const QVariantList &list)
+{
+    switch (cmd)
+    {
+    case Queries::QC_WriteUserValues:
+    {
+        Q_ASSERT(list.first().canConvert<DataTypes::FloatStruct>());
+        const quint16 start_addr = list.first().value<DataTypes::FloatStruct>().sigAdr;
+        const auto &st = settings<InterfaceInfo<CommandsMBS::ModbusGroup>>();
+        Q_ASSERT(isValidRegs(start_addr, list.size() * 2));
+        auto group = st.dictionary().value(start_addr);
+        bool found = false;
+        auto it = st.dictionary().cbegin();
+        while (it != st.dictionary().cend() && !found)
+        {
+            if (it.value().id.contains(group.id.remove(0, 1)))
+                if (it.value() != group)
+                {
+                    group = it.value();
+                    found = true;
+                }
+            ++it;
+        }
+        Q_ASSERT(found);
+        QByteArray sigArray;
+        for (auto &i : list)
+        {
+            auto flstr = i.value<DataTypes::FloatStruct>();
+            // now write floats to the out sigArray
+
+            sigArray.push_back(packReg(flstr.sigVal));
+        }
+
+        CommandsMBS::CommandStruct inp {
+            CommandsMBS::Commands::MBS_WRITEMULTIPLEREGISTERS, //
+            static_cast<quint16>(group.startAddr),             //
+            static_cast<quint16>(sigArray.size() / 2),         //
+            sigArray,                                          //
+            TypeId::None,                                      //
+            __PRETTY_FUNCTION__                                //
+        };
+        qDebug() << inp;
+        Q_ASSERT(isValidRegs(inp));
+        DataManager::addToInQueue(inp);
+        break;
+    }
+    default:
+        Q_ASSERT(false && "Not realized");
         break;
     }
 }
