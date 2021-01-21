@@ -3,6 +3,7 @@
 #include "../gen/datatypes.h"
 #include "../gen/error.h"
 #include "../gen/logclass.h"
+#include "../gen/stdfunc.h"
 #include "interfacesettings.h"
 
 #include <QTimer>
@@ -15,23 +16,11 @@ class BaseInterface : public QObject
 {
     Q_OBJECT
 
-private:
-    struct deleteLaterDeletor
-    {
-        void operator()(QObject *object) const
-        {
-            if (object)
-            {
-                object->deleteLater();
-            }
-        }
-    };
-
 public:
     /// BaseInterface has our own memory manager
     /// because it can be created and deleted
     /// multiple times in runtime
-    using InterfacePointer = std::unique_ptr<BaseInterface, deleteLaterDeletor>;
+    using InterfacePointer = UniquePointer<BaseInterface>;
     // using TimerPointer=std::unique_ptr<BaseInterface, deleteLaterDeletor>
     enum State
     {

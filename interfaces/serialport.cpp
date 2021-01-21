@@ -63,7 +63,7 @@ void SerialPort::Disconnect()
 
 void SerialPort::ErrorOccurred(QSerialPort::SerialPortError err)
 {
-    if (!err)
+    if (!err || err == QSerialPort::DeviceNotFoundError)
         return;
     qCritical() << QVariant::fromValue(err).toString();
     // Board::GetInstance().setConnectionState(Board::ConnectionState::Closed);

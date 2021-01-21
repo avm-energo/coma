@@ -55,11 +55,13 @@ bool ModBus::start(const ConnectStruct &st)
 
     Settings = std::get<SerialPortSettings>(st.settings);
     SerialPort *port = new SerialPort();
+    SerialPort *port = new SerialPort;
     ModbusThread *parser = new ModbusThread;
     parser->setDeviceAddress(Settings.Address);
     QThread *thr = new QThread;
 
     connect(thr, &QThread::started, parser, &ModbusThread::Run);
+    connect(parser, &ModbusThread::finished, thr, &QThread::quit);
     connect(thr, &QThread::finished, port, &SerialPort::Disconnect);
     connect(thr, &QThread::finished, thr, &QObject::deleteLater);
     connect(thr, &QThread::finished, parser, &QObject::deleteLater);
@@ -68,7 +70,9 @@ bool ModBus::start(const ConnectStruct &st)
     connect(port, &SerialPort::Reconnect, this, &ModBus::SendReconnectSignal);
     if (!port->Init(Settings))
     {
-        setState(State::Stop);
+        port->deleteLater();
+        parser->deleteLater();
+        thr->deleteLater();
         return false;
     }
     setState(State::Run);

@@ -27,7 +27,11 @@ void Ethernet::Run()
     EthConnected = false;
     StdFunc::SetDeviceIP(IP);
     sock = new QTcpSocket(this);
+#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
+    connect(sock, qOverload<QAbstractSocket::SocketError>(&QAbstractSocket::error), this, &Ethernet::seterr);
+#else
     connect(sock, &QAbstractSocket::errorOccurred, this, &Ethernet::seterr);
+#endif
     connect(sock, &QAbstractSocket::stateChanged, this, &Ethernet::EthStateChanged);
     connect(sock, &QAbstractSocket::connected, this, &Ethernet::Connected);
     connect(sock, &QAbstractSocket::connected, this, &Ethernet::EthSetConnected);
@@ -38,7 +42,11 @@ void Ethernet::Run()
     sock->connectToHost(StdFunc::ForDeviceIP(), PORT104, QIODevice::ReadWrite, QAbstractSocket::IPv4Protocol);
     QEventLoop loop;
     connect(sock, &QAbstractSocket::connected, &loop, &QEventLoop::quit);
+#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
+    connect(sock, qOverload<QAbstractSocket::SocketError>(&QAbstractSocket::error), &loop, &QEventLoop::quit);
+#else
     connect(sock, &QAbstractSocket::errorOccurred, &loop, &QEventLoop::quit);
+#endif
     loop.exec();
     //    TimeFunc::WaitFor(EthConnected, TIMEOUT_BIG);
     while (!ClosePortAndFinishThread)

@@ -59,6 +59,15 @@ public:
         }
         return Error::Msg::ResEmpty;
     }
+    static size_t queueSize()
+    {
+        return s_inputQueue.size();
+    }
+    static void clearQueue()
+    {
+        decltype(s_inputQueue) empty;
+        std::swap(s_inputQueue, empty);
+    }
 
 private:
     static std::queue<QVariant> s_inputQueue;

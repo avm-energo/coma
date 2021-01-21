@@ -8,6 +8,24 @@
 #define MAINSLEEP 20
 #define MAINTIMEOUT 2000 // 2 sec timeout for general operations
 
+namespace Qt
+{
+struct deleteLaterDeletor
+{
+    void operator()(QObject *object) const
+    {
+        if (object)
+        {
+            object->deleteLater();
+        }
+    }
+};
+}
+
+template <typename T> using SharedPointer = std::shared_ptr<T>;
+
+template <typename T> using UniquePointer = std::unique_ptr<T, Qt::deleteLaterDeletor>;
+
 class StdFunc
 {
 public:

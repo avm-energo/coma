@@ -32,6 +32,8 @@
 #include "../gen/errorqueue.h"
 #include "../gen/logger.h"
 #include "../gen/stdfunc.h"
+
+#include <memory>
 #ifndef AVM_DEBUG
 #include "../interfaces/iec104.h"
 #include "../interfaces/modbus.h"
@@ -104,17 +106,7 @@ Coma::Coma(QWidget *parent) : QMainWindow(parent)
 
 #endif
 
-    // S2Config = new S2DataTypes::S2ConfigType;
     Reconnect = false;
-
-    //    CurTabIndex = -1;
-    //    for (int i = 0; i < 20; ++i)
-    //    {
-    //        PredAlarmEvents[i] = 0;
-    //        AlarmEvents[i] = 0;
-    //    }
-    // ActiveThreads = false;
-    //    Alarm = new AlarmClass(this);
 
     newTimers();
 
@@ -126,7 +118,6 @@ Coma::Coma(QWidget *parent) : QMainWindow(parent)
 
 Coma::~Coma()
 {
-    //    Disconnect();
 }
 void convertPixmap(size_t size, QAction *jourAct)
 {
@@ -192,11 +183,6 @@ void Coma::SetupUI()
     hlyout->addWidget(createToolBar());
 
     AlarmW = new AlarmWidget(this);
-    //    connect(Alarm, &AlarmClass::setWarnsAndAlarms, AlarmW, &AlarmWidget::update);
-    //    connect(Alarm, &AlarmClass::SetFirstButton, AlarmW, &AlarmWidget::UpdateFirstUSB);
-    //    connect(Alarm, &AlarmClass::setWarnColor, AlarmW, &AlarmWidget::UpdateSecondUSB);
-    //    connect(Alarm, &AlarmClass::setAlarmColor, AlarmW, &AlarmWidget::UpdateThirdUSB);
-    //    connect(Alarm, &AlarmClass::SetIndicator, AlarmW, &AlarmWidget::UpdateIndicator);
 
     // AlarmW->setMaximumWidth(780);
     hlyout->addWidget(AlarmW, Qt::AlignCenter);
@@ -410,7 +396,6 @@ void Coma::prepareConnectDlg()
     auto const &board = Board::GetInstance();
     if (board.connectionState() != Board::ConnectionState::Closed)
         return;
-    //    AlarmStateAllDialog = new AlarmStateAll(this);
     if (!Reconnect)
     {
         QEventLoop loop;
@@ -420,7 +405,6 @@ void Coma::prepareConnectDlg()
             startWork(st);
         });
         dlg->show();
-        // S2ConfigForTune->clear();
     }
 
     // Stage3
@@ -433,29 +417,8 @@ void Coma::startWork(const ConnectStruct st)
     auto const &board = Board::GetInstance();
     ConnectSettings = st;
     SaveSettings();
-    // S2Config = new QVector<S2DataTypes::DataRec>;
     QApplication::setOverrideCursor(Qt::WaitCursor);
-    //    S2ConfigForTune = new QVector<S2::DataRec>;
-    QMetaObject::Connection *const connection = new QMetaObject::Connection;
-    *connection = connect(&board, &Board::readyRead, [=]() {
-        QObject::disconnect(*connection);
-        delete connection;
-        QApplication::restoreOverrideCursor();
-        prepare();
-    });
 
-    QTimer timer;
-    timer.setInterval(INTERVAL::WAIT);
-    timer.setSingleShot(true);
-    connect(&timer, &QTimer::timeout, [=] {
-        if (Board::GetInstance().type() != 0)
-            return;
-        QMessageBox::critical(this, "Ошибка", "Не удалось соединиться с прибором", QMessageBox::Ok);
-        DisconnectAndClear();
-        qCritical("Не получили BSI, нет соединения");
-        QApplication::restoreOverrideCursor();
-        //            Disconnect();
-    });
     Connect();
 }
 
@@ -608,9 +571,7 @@ void Coma::startWork(const ConnectStruct st)
 
 void Coma::PrepareDialogs()
 {
-    m_Module = Module::createModule(BdaTimer, AlarmW);
-
-    connect(this, &Coma::closeModule, m_Module, &Module::closeDialogs);
+    m_Module = ModulePointer(Module::createModule(BdaTimer, AlarmW));
 }
 
 void Coma::CloseDialogs()
@@ -667,38 +628,12 @@ void Coma::NewModbus()
 
 void Coma::newTimers()
 {
-    //    TimeTimer = new QTimer(this);
-    //    TimeTimer->setInterval(1000);
-    // m_BSITimer = new QTimer;
-    // m_BSITimer->setInterval(1000);
-    // connect(m_BSITimer, &QTimer::timeout, &ModuleBSI::update);
-
     BdaTimer = new QTimer(this);
     BdaTimer->setInterval(1000);
 
     AlrmTimer = new QTimer(this);
     AlrmTimer->setInterval(5000);
     AlrmTimer->start();
-
-    //    ReceiveTimer = new QTimer;
-    //    ReceiveTimer->setInterval(2000);
-    //    connect(ReceiveTimer, &QTimer::timeout, this, &Coma::FileTimeOut);
-
-    // BdaTimer = new QTimer(this);
-    //    BdaTimer->setInterval(ANMEASINT);
-
-    //    HarmTimer = new QTimer;
-    //    HarmTimer->setInterval(ANMEASINT);
-
-    //    VibrTimer = new QTimer;
-    //    VibrTimer->setInterval(ANMEASINT);
-
-    //    AlrmTimer = new QTimer;
-    //    AlrmTimer->setInterval(10000);
-
-    //    ReceiveTimer = new QTimer(this);
-    //    ReceiveTimer->setInterval(ANMEASINT);
-    //    connect(ReceiveTimer, &QTimer::timeout, this, &Coma::FileTimeOut);
 
     //    ReconnectTimer = new QTimer(this);
     //    ReconnectTimer->setInterval(INTERVAL::RECONNECT);
@@ -708,32 +643,13 @@ void Coma::newTimers()
 
 void Coma::setupConnections()
 {
-    //    connect(AlarmW, &AlarmWidget::AlarmButtonPressed, m_Module->getAlarmStateAll(), &QDialog::show);
-    //    connect(AlarmW, &AlarmWidget::ModuleWarnButtonPressed, m_Module->getWarn(), &QDialog::show);
-    //    connect(AlarmW, &AlarmWidget::ModuleAlarmButtonPressed, m_Module->getAlarm(), &QDialog::show);
-    //    connect(AlrmTimer, &QTimer::timeout, Alarm, &AlarmClass::update);
-    //    if (AlarmStateAllDialog != nullptr)
-    //        connect(AlrmTimer, &QTimer::timeout, AlarmStateAllDialog, &AlarmStateAll::CallUpdateHealth);
-    //    connect(BdaTimer, &QTimer::timeout, this, &Coma::update);
+
     connect(&DataManager::GetInstance(), &DataManager::responseReceived, this, &Coma::update);
     //    for (auto *d : m_Module->dialogs())
     //    {
     //        connect(d, &UWidget::setGeneralProgressBarCount, this, &Coma::setGeneralProgressBarCount);
     //        connect(d, &UWidget::setGeneralProgressBarSize, this, &Coma::setGeneralProgressBarSize);
     //    }
-
-    //    connect(BdaTimer, &QTimer::timeout, Alarm, &AlarmClass::UpdateAlarmUSB);
-    //    //   connect(BdaTimer, &QTimer::timeout, AlarmStateAllDialog, &AlarmStateAll::UpdateHealth);
-
-    //    auto checkDialogs = this->findChildren<EAbstractCheckDialog *>();
-    //    for (const auto &dialog : checkDialogs)
-    //    {
-    //        qDebug() << dialog;
-    //        connect(BdaTimer, &QTimer::timeout, dialog, &EAbstractCheckDialog::USBUpdate);
-    //    }
-    //    if (AlarmStateAllDialog != nullptr)
-    //        connect(AlrmTimer, &QTimer::timeout, [&]() { AlarmStateAllDialog->UpdateHealth(ModuleBSI::ModuleBsi.Hth);
-    //        });
 }
 
 void Coma::prepare()
@@ -760,7 +676,6 @@ void Coma::prepare()
     if (board.noRegPars())
         qCritical() << Error::Msg::NoTuneError;
 
-    Q_ASSERT(m_Module != nullptr);
     QList<UDialog *> dlgs = m_Module->dialogs();
     Q_ASSERT(MainTW->count() == 0);
     for (auto *d : dlgs)
@@ -781,9 +696,7 @@ void Coma::prepare()
     MainLW->setMaximumWidth(width() / 5);
     AlrmTimer->start();
     qInfo() << NAMEOF(MainTW) << "created";
-    // NOTE Необходим ли таймер по 104?
-    // Q_ASSERT(board.interfaceType() != Board::InterfaceType::Ethernet);
-    // if (board.interfaceType() != Board::InterfaceType::Ethernet)
+
     BdaTimer->start();
     auto *msgSerialNumber = statusBar()->findChild<QLabel *>("SerialNumber");
     msgSerialNumber->setText(QString::number(board.serialNumber(Board::BaseMezzAdd), 16));
@@ -810,8 +723,7 @@ bool Coma::nativeEvent(const QByteArray &eventType, void *message, long *result)
             BdaTimer->stop();
         if (AlrmTimer->isActive())
             AlrmTimer->stop();
-        if (Board::GetInstance().connectionState() == Board::ConnectionState::Connected
-            && Board::GetInstance().interfaceType() == Board::InterfaceType::USB)
+        if (Board::GetInstance().connectionState() == Board::ConnectionState::Connected)
         {
             BdaTimer->start();
             AlrmTimer->start();
@@ -842,19 +754,11 @@ void Coma::ReConnect()
     if (!Reconnect)
         return;
 
-    //        TimeTimer->stop();
     if (Board::GetInstance().connectionState() == Board::ConnectionState::Connected)
     {
         qDebug() << "call Disconnect";
         Disconnect();
-        //            emit ClearBsi();
         clearWidgets();
-        //        ETabWidget *MainTW = this->findChild<ETabWidget *>("maintw");
-        //        if (MainTW == nullptr)
-        //        {
-        //            qCritical() << Error::DescError << NAMEOF(MainTW);
-        //            return;
-        //        }
         MainTW->hide();
         StdFunc::SetEmulated(false);
     }
@@ -874,22 +778,6 @@ void Coma::AttemptToRec()
     QApplication::restoreOverrideCursor();
     prepareConnectDlg();
 }
-
-// void Coma::ConnectMessage()
-//{
-//    QMessageBox msgBox;
-
-//    msgBox.setIcon(QMessageBox::Information);
-//    // FIXME Исправить карты модулей
-//    //    if (Board::GetInstance().interfaceType() == Board::InterfaceType::USB)
-//    //        // msgBox.setText("Связь с " + ModuleBSI::ModuleTypeString + " установлена");
-//    //        msgBox.setText("Связь установлена");
-//    //    else
-//    msgBox.setText("Связь с " + ConnectSettings.name + " установлена");
-//    msgBox.show();
-//    StdFunc::Wait(INTERVAL::WAIT);
-//    msgBox.close();
-//}
 
 void Coma::LoadSettings()
 {
@@ -917,31 +805,6 @@ void Coma::clearWidgets()
     MainTW->hide();
     MainLW->hide();
 }
-
-// Error::Msg Coma::CheckPassword()
-//{
-//    PasswordValid = false;
-//    StdFunc::ClearCancel();
-//    QEventLoop PasswordLoop;
-//    KeyPressDialog *dlg = new KeyPressDialog("Введите пароль\nПодтверждение: клавиша Enter\nОтмена: клавиша Esc");
-//    connect(dlg, &KeyPressDialog::Finished, this, &Coma::PasswordCheck);
-//    connect(this, &Coma::PasswordChecked, &PasswordLoop, &QEventLoop::quit);
-//    dlg->show();
-//    PasswordLoop.exec();
-//    if (StdFunc::IsCancelled())
-//    {
-//        ERMSG("Отмена ввода пароля");
-//        return Error::Msg::GeneralError;
-//    }
-
-//    if (!PasswordValid)
-//    {
-//        ERMSG("Пароль введён неверно");
-//        QMessageBox::critical(this, "Неправильно", "Пароль введён неверно", QMessageBox::Ok);
-//        return Error::Msg::GeneralError;
-//    }
-//    return Error::Msg::NoError;
-//}
 
 // void Coma::setConf(unsigned char typeConf)
 //{
@@ -1097,32 +960,18 @@ void Coma::GetAbout()
 {
     AboutWidget *w = new AboutWidget;
     w->show();
-    // Q_UNUSED(w)
-    //    w->show();
-    //    QString caption(PROGNAME);
-    //    caption.append(" v. ").append(COMAVERSION);
-    //    //    setWindowIcon(QPixmap("images/avm-energo.png"));
-    //    QMessageBox::about(this, caption,
-    //        "ООО \"АВМ-Энерго\" \n"
-    //        "2015-2020 гг.\n"
-    //        "info@avmenergo.ru");
 }
 
 void Coma::Disconnect()
 {
     qInfo(__PRETTY_FUNCTION__);
+    BdaTimer->stop();
     AlarmW->clear();
     if (StdFunc::IsInEmulateMode())
         return;
-    // if (Board::GetInstance().interfaceType() == Board::InterfaceType::USB)
-    //  {
-    BdaTimer->stop();
+
     BaseInterface::iface()->stop();
-    //            if (Board::GetInstance().connectionState() != Board::ConnectionState::Closed)
-    //                EProtocom::GetInstance().Disconnect();
-    //  }
-    // else
-    // {
+
     //     emit StopCommunications();
     // while (ActiveThreads) // wait for all threads to finish
     //    QCoreApplication::processEvents();
@@ -1132,80 +981,35 @@ void Coma::Disconnect()
 
 void Coma::Connect()
 {
-    // m_BSITimer->start();
     auto const &board = Board::GetInstance();
     connect(&DataManager::GetInstance(), &DataManager::bitStringReceived, &Board::GetInstance(), &Board::update);
-    //    Error::Msg res;
+    BaseInterface::InterfacePointer device;
     switch (board.interfaceType())
     {
     case Board::InterfaceType::USB:
     {
-        //        m_iface = new USBWorker();
-        //        m_iface = new Protocom;
-        BaseInterface::InterfacePointer device(new Protocom());
-        BaseInterface::setIface(std::move(device));
-        //        res = Commands::Connect();
-        //        if (res != Error::Msg::NoError)
-        //        {
-        //            QMessageBox::critical(this, "Ошибка", "Не удалось установить связь", QMessageBox::Ok);
-        //            QApplication::restoreOverrideCursor();
-        //            ERMSG("cn: can't connect");
-        //            return;
-        //        }
-        //        res = ModuleBSI::USBUpdate();
-        //        if (res != Error::Msg::NoError)
-        //        {
-        //            if (res == Error::Msg::ResEmpty)
-        //            {
-        //                QMessageBox::critical(this, "Ошибка", "Неизвестный тип модуля", QMessageBox::Ok);
-        //                ERMSG("Unknown module type");
-        //                return;
-        //            }
-        //            QMessageBox::critical(this, "Ошибка", "Не удалось установить связь", QMessageBox::Ok);
-        //            ERMSG("BSI read error");
-        //            return;
-        //        }
-        //        ActiveThreads |= THREAD::USB;
-        //        Board::GetInstance().setTypeB(ModuleBSI::GetMType(BoardTypes::BT_BASE));
-        //        Board::GetInstance().setTypeM(ModuleBSI::GetMType(BoardTypes::BT_MEZONIN));
+        device = BaseInterface::InterfacePointer(new Protocom());
         break;
     }
     case Board::InterfaceType::Ethernet:
     {
 #ifndef AVM_DEBUG
-        //        m_iface = new IEC104;
-        BaseInterface::InterfacePointer device(new IEC104());
-        BaseInterface::setIface(std::move(device));
-        //  BaseInterface::setIface(new IEC104(this));
-        //        New104();
-        //        if (!Ch104->isWorking())
-        //            Ch104->Connect(ConnectSettings.iec104st);
-        //        ActiveThreads |= THREAD::P104;
+        device = BaseInterface::InterfacePointer(new IEC104());
 #endif
         break;
     }
     case Board::InterfaceType::RS485:
     {
 #ifndef AVM_DEBUG
-        //        m_iface = new ModBus;
-        BaseInterface::InterfacePointer device(new ModBus());
-        BaseInterface::setIface(std::move(device));
-        //     BaseInterface::setIface(new ModBus(this));
-        //        NewModbus();
-        //        res = ChModbus->Connect(ConnectSettings.serialst);
-        //        if (res != Error::Msg::NoError)
-        //        {
-        //            ERMSG("Modbus not connected");
-        //            return;
-        //        }
-        //        ChModbus->BSIrequest();
-        //        ActiveThreads |= THREAD::MODBUS;
+        device = BaseInterface::InterfacePointer(new ModBus());
 #endif
         break;
     }
     default:
         qFatal("Connection type error");
     }
+    BaseInterface::setIface(std::move(device));
+
     connect(BaseInterface::iface(), &BaseInterface::stateChanged, [](const BaseInterface::State state) {
         using State = BaseInterface::State;
         switch (state)
@@ -1223,53 +1027,55 @@ void Coma::Connect()
             break;
         }
     });
-    //    if (!m_iface->start(ConnectSettings))
+
+    auto connection = std::shared_ptr<QMetaObject::Connection>(new QMetaObject::Connection);
+    *connection = connect(&board, &Board::readyRead, [=]() {
+        QObject::disconnect(*connection);
+        QApplication::restoreOverrideCursor();
+        prepare();
+    });
     if (!BaseInterface::iface()->start(ConnectSettings))
     {
+        QObject::disconnect(*connection);
         QMessageBox::critical(this, "Ошибка", "Не удалось установить связь", QMessageBox::Ok);
         QApplication::restoreOverrideCursor();
-        qCritical("Can't connect");
+        qCritical() << "Cannot connect" << Error::GeneralError;
+
         return;
     }
-    //  Board::GetInstance().setConnectionState(Board::ConnectionState::Connected);
-    // ActiveThreads = true;
-
+    QTimer timer;
+    timer.setSingleShot(true);
+    timer.start(INTERVAL::WAIT);
+    connect(&timer, &QTimer::timeout, [=] {
+        if (Board::GetInstance().type() != 0)
+            return;
+        QObject::disconnect(*connection);
+        QMessageBox::critical(this, "Ошибка", "Не удалось соединиться с прибором", QMessageBox::Ok);
+        DisconnectAndClear();
+        qCritical() << "Cannot connect" << Error::Timeout;
+        QApplication::restoreOverrideCursor();
+    });
+    DataManager::clearQueue();
     BaseInterface::iface()->reqBSI();
 }
 
 void Coma::DisconnectAndClear()
 {
     qInfo(__PRETTY_FUNCTION__);
-    //    TimeTimer->stop();
     const auto &board = Board::GetInstance();
     if (board.connectionState() == Board::ConnectionState::Closed)
         return;
 
     AlarmW->clear();
     Disconnect();
-    emit closeModule();
-    m_Module->deleteLater();
-    // CloseDialogs();
+    m_Module->closeDialogs();
 
     clearWidgets();
 
-    //        if (S2Config)
-    //        {
-    //            S2Config->clear();
-    //            ///вылетает при разрыве связи
-    //            delete S2Config;
-    //        }
-    //        if (S2ConfigForTune)
-    //        {
-    //            S2ConfigForTune->clear();
-
-    //            delete S2ConfigForTune;
-    //        }
-    // Проверить после отключения алармов
-    // if (Reconnect)
-    //    QMessageBox::information(this, "Разрыв связи", "Связь разорвана", QMessageBox::Ok, QMessageBox::Ok);
-    //        else
-    //            QMessageBox::information(this, "Разрыв связи", "Не удалось установить связь");
+    if (Reconnect)
+        QMessageBox::information(this, "Разрыв связи", "Связь разорвана", QMessageBox::Ok, QMessageBox::Ok);
+    else
+        QMessageBox::information(this, "Разрыв связи", "Не удалось установить связь");
 
     StdFunc::SetEmulated(false);
 
@@ -1292,7 +1098,7 @@ void Coma::keyPressEvent(QKeyEvent *e)
 
 void Coma::MainTWTabChanged(int tabindex)
 {
-    Q_ASSERT(m_Module != nullptr);
+    // Q_ASSERT(m_Module != nullptr);
     m_Module->parentTWTabChanged(tabindex);
     //    if (tabindex == CurTabIndex) // to prevent double function invocation by doubleclicking on tab
     //        return;

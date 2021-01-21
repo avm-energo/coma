@@ -16,7 +16,7 @@ QDebug operator<<(QDebug debug, const DataTypes::FloatWithTimeStruct &st)
 
 QDebug operator<<(QDebug debug, const DataTypes::FloatStruct &st)
 {
-    debug.nospace() << QString::number(st.sigAdr, 16) << ":" << QString::number(st.sigVal);
+    debug.nospace() << QString::number(st.sigAdr) << ":" << QString::number(st.sigVal);
     return debug.maybeSpace();
 }
 

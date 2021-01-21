@@ -25,6 +25,7 @@ class Coma : public QMainWindow
     Q_OBJECT
 
 public:
+    using ModulePointer = UniquePointer<Module>;
     enum Modes
     {
         COMA_GENERALMODE, // обычный режим
@@ -99,7 +100,7 @@ private:
     // constexpr QVector<int> MTBs = { 0x21, 0x22, 0x31, 0x35, 0x80, 0x81, 0x84 };
     QStackedWidget *MainTW;
     QListWidget *MainLW;
-    Module *m_Module;
+    ModulePointer m_Module;
     AlarmWidget *AlarmW;
     //    WarnKIV *WarnKIVDialog;
     //    AlarmKIV *AlarmKIVDialog;
@@ -184,7 +185,7 @@ protected:
     void resizeEvent(QResizeEvent *e) override;
 signals:
     void sendMessage(void *);
-    void closeModule();
+    //    void closeModule();
 };
 
 #endif // COMA_H

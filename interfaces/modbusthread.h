@@ -25,7 +25,7 @@ public slots:
 
 signals:
     // void ModbusState(ConnectionStates);
-    // void Finished();
+    void finished();
     void Write(QByteArray);
 
 private:
