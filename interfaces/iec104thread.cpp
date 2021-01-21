@@ -96,6 +96,7 @@ void IEC104Thread::Run()
                     SelectFile(inp.uintarg);
                     break;
                 case Commands104::CM104_REQFILE:
+                    m_fileIsConfigFile = false;
                     SelectFile(inp.uintarg);
                     break;
                 case Commands104::CM104_COM51:
@@ -459,19 +460,23 @@ void IEC104Thread::ParseIFormat(QByteArray &ba) // основной разбор
                     m_log->info("FileSending clear");
 
                     int filetype = ba.at(9);
-                    if (m_fileIsConfigFile)
+
+                    DataTypes::ConfParametersListStruct outlist;
+                    if (S2::RestoreData(m_readData, outlist) == Error::Msg::NoError)
                     {
-                        DataTypes::ConfParametersListStruct outlist;
-                        if (S2::RestoreData(m_readData, outlist) == Error::Msg::NoError)
+                        if (m_fileIsConfigFile)
                             DataManager::addSignalToOutList(DataTypes::ConfParametersList, outlist);
                         else
-                            m_log->error("Error while income file S2 parsing");
+                        {
+                            Q_ASSERT(outlist.size() == 1 && "Only one file supported");
+                            DataTypes::FileStruct df { static_cast<DataTypes::FilesEnum>(filetype),
+                                outlist.first().data };
+                            DataManager::addSignalToOutList(DataTypes::SignalTypes::File, df);
+                        }
                     }
                     else
-                    {
-                        DataTypes::FileStruct df { static_cast<DataTypes::FilesEnum>(filetype), m_readData };
-                        DataManager::addSignalToOutList(DataTypes::SignalTypes::File, df);
-                    }
+                        m_log->error("Error while income file S2 parsing");
+
                     //                    if (filetype == 0x01) // если файл конфигурации
                     //                    {
                     //                        Error::Msg res = S2::RestoreDataMem(ReadData.data(), RDLength, DR);
