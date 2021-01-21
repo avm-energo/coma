@@ -9,6 +9,7 @@
 
 #include <QMutex>
 #include <QTimer>
+#include <array>
 
 namespace CommandsMBS
 {
