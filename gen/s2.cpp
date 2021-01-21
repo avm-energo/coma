@@ -173,6 +173,7 @@ Error::Msg S2::RestoreDataMem(void *mem, quint32 memsize, QVector<S2DataTypes::D
 
 Error::Msg S2::RestoreData(QByteArray &bain, QList<DataTypes::ConfParameterStruct> &outlist)
 {
+    Q_ASSERT(bain.size() >= sizeof(S2DataTypes::FileHeader));
     //    unsigned char *m = static_cast<unsigned char *>(mem);
     S2DataTypes::DataRec DR;
     //    DataRec *r;

@@ -461,15 +461,9 @@ void IEC104Thread::ParseIFormat(QByteArray &ba) // основной разбор
                     int filetype = ba.at(9);
                     if (m_fileIsConfigFile)
                     {
-                        QList<DataTypes::ConfParameterStruct> outlist;
-                        if (S2::RestoreData(ba, outlist) == Error::Msg::NoError)
-                            //                        {
-                            DataManager::addSignalToOutList(DataTypes::ConfParameter, outlist);
-                        //                            // check for needed IDs and move not mentioned into s_outputList
-                        //                            foreach (DataTypes::ConfParameterStruct cfp, outlist)
-                        //                                DataManager::addSignalToOutList(DataTypes::ConfParametersList,
-                        //                                cfp);
-                        //                        }
+                        DataTypes::ConfParametersListStruct outlist;
+                        if (S2::RestoreData(m_readData, outlist) == Error::Msg::NoError)
+                            DataManager::addSignalToOutList(DataTypes::ConfParametersList, outlist);
                         else
                             m_log->error("Error while income file S2 parsing");
                     }

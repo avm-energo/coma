@@ -186,6 +186,7 @@ void DataManager::checkTypeAndSendSignals(DataTypes::SignalsStruct &str)
     {
     case BitString:
     {
+        Q_ASSERT(str.data.canConvert<BitStringStruct>());
         if (str.data.canConvert<BitStringStruct>())
         {
             BitStringStruct bs = str.data.value<BitStringStruct>();
@@ -195,6 +196,7 @@ void DataManager::checkTypeAndSendSignals(DataTypes::SignalsStruct &str)
     }
     case SinglePointWithTime:
     {
+        Q_ASSERT(str.data.canConvert<SinglePointWithTimeStruct>());
         if (str.data.canConvert<SinglePointWithTimeStruct>())
         {
             SinglePointWithTimeStruct sp = qvariant_cast<SinglePointWithTimeStruct>(str.data);
@@ -203,8 +205,18 @@ void DataManager::checkTypeAndSendSignals(DataTypes::SignalsStruct &str)
         break;
     }
     case Float:
+    {
+        Q_ASSERT(str.data.canConvert<FloatStruct>());
+        if (str.data.canConvert<FloatStruct>())
+        {
+            FloatStruct fl = qvariant_cast<FloatStruct>(str.data);
+            emit floatReceived(fl);
+        }
+        break;
+    }
     case FloatWithTime:
     {
+        Q_ASSERT(str.data.canConvert<FloatWithTimeStruct>());
         if (str.data.canConvert<FloatWithTimeStruct>())
         {
             FloatWithTimeStruct flt = qvariant_cast<FloatWithTimeStruct>(str.data);
@@ -213,15 +225,11 @@ void DataManager::checkTypeAndSendSignals(DataTypes::SignalsStruct &str)
             fl.sigVal = flt.sigVal;
             emit floatReceived(fl);
         }
-        else if (str.data.canConvert<FloatStruct>())
-        {
-            FloatStruct fl = qvariant_cast<FloatStruct>(str.data);
-            emit floatReceived(fl);
-        }
         break;
     }
     case File:
     {
+        Q_ASSERT(str.data.canConvert<FileStruct>());
         if (str.data.canConvert<FileStruct>())
         {
             FileStruct fl = qvariant_cast<FileStruct>(str.data);
@@ -231,6 +239,7 @@ void DataManager::checkTypeAndSendSignals(DataTypes::SignalsStruct &str)
     }
     case ConfParameter:
     {
+        Q_ASSERT(str.data.canConvert<ConfParameterStruct>());
         if (str.data.canConvert<ConfParameterStruct>())
         {
             ConfParameterStruct cp = qvariant_cast<ConfParameterStruct>(str.data);
@@ -240,6 +249,7 @@ void DataManager::checkTypeAndSendSignals(DataTypes::SignalsStruct &str)
     }
     case ConfParametersList:
     {
+        Q_ASSERT(str.data.canConvert<ConfParametersListStruct>());
         if (str.data.canConvert<ConfParametersListStruct>())
         {
             ConfParametersListStruct cp = qvariant_cast<ConfParametersListStruct>(str.data);
@@ -249,6 +259,7 @@ void DataManager::checkTypeAndSendSignals(DataTypes::SignalsStruct &str)
     }
     case Block:
     {
+        Q_ASSERT(str.data.canConvert<BlockStruct>());
         if (str.data.canConvert<BlockStruct>())
         {
             BlockStruct bs = qvariant_cast<BlockStruct>(str.data);
@@ -258,6 +269,7 @@ void DataManager::checkTypeAndSendSignals(DataTypes::SignalsStruct &str)
     }
     case GeneralResponse:
     {
+        Q_ASSERT(str.data.canConvert<GeneralResponseStruct>());
         if (str.data.canConvert<GeneralResponseStruct>())
         {
             GeneralResponseStruct gr = qvariant_cast<GeneralResponseStruct>(str.data);
