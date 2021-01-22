@@ -10,13 +10,10 @@
 #include <QCoreApplication>
 #include <QThread>
 
-IEC104::IEC104(QObject *parent) : BaseInterface(parent)
+IEC104::IEC104(QObject *parent) : BaseInterface(parent), EthThreadWorking(false), ParseThreadWorking(false)
 {
-    m_working = false;
-    EthThreadWorking = false;
-    ParseThreadWorking = false;
-    AboutToFinish = false;
-    Log = new LogClass;
+
+    // Log = new LogClass;
     Log->Init("iec104.log");
     Log->info("=== Log started ===");
     qRegisterMetaType<DataTypes::FloatStruct>();
@@ -34,55 +31,63 @@ bool IEC104::start(const ConnectStruct &st)
     qInfo() << metaObject()->className() << "connect";
     if (!std::holds_alternative<IEC104Settings>(st.settings))
         return false;
+    auto settings = std::get<IEC104Settings>(st.settings);
 
-    m_working = false;
     EthThreadWorking = false;
     ParseThreadWorking = false;
-    AboutToFinish = false;
-    QThread *thr = new QThread;
-    Ethernet *eth = new Ethernet;
-    eth->moveToThread(thr);
+    QThread *portThread = new QThread;
+    portThread->setObjectName("portThread");
+    Ethernet *port = new Ethernet;
 
-    connect(eth, &Ethernet::Finished, thr, &QThread::quit);
-    connect(eth, &Ethernet::Finished, eth, &QObject::deleteLater);
-    connect(thr, &QThread::started, eth, &Ethernet::Run);
-    connect(thr, &QThread::finished, thr, &QObject::deleteLater);
-    connect(this, &IEC104::StopAll, eth, &Ethernet::Stop);
-    connect(eth, &Ethernet::Connected, this, &IEC104::EthThreadStarted);
-    connect(eth, &Ethernet::Disconnected, this, &IEC104::EthThreadFinished);
+    connect(portThread, &QThread::started, [&] { EthThreadWorking = true; });
 
-    IEC104Thread *m_thread104 = new IEC104Thread(Log);
-    QThread *thr2 = new QThread;
-    m_thread104->moveToThread(thr2);
-    connect(this, &IEC104::StopAll, m_thread104, &IEC104Thread::Stop);
-    connect(m_thread104, &IEC104Thread::Finished, m_thread104, &QObject::deleteLater);
-    connect(m_thread104, &IEC104Thread::Finished, thr2, &QThread::quit);
-    connect(m_thread104, &IEC104Thread::Finished, this, &IEC104::ParseThreadFinished);
-    connect(thr2, &QThread::finished, thr2, &QObject::deleteLater);
-    connect(thr2, &QThread::started, m_thread104, &IEC104Thread::Run);
-    connect(m_thread104, &IEC104Thread::Started, this, &IEC104::ParseThreadStarted);
-    connect(eth, &Ethernet::Connected, m_thread104, &IEC104Thread::StartDT);
-    connect(eth, &Ethernet::Finished, this, &IEC104::EmitReconnectSignal);
-    connect(m_thread104, &IEC104Thread::WriteData, eth, &Ethernet::InitiateWriteDataToPort);
-    connect(eth, &Ethernet::NewDataArrived, m_thread104, &IEC104Thread::GetSomeData);
-    connect(m_thread104, &IEC104Thread::ReconnectSignal, this, &IEC104::EmitReconnectSignal);
+    connect(port, &Ethernet::finished, portThread, &QThread::quit);
+    connect(portThread, &QThread::finished, [] { qDebug() << "Port thread finished"; });
+    connect(portThread, &QThread::finished, port, &QObject::deleteLater);
+    connect(portThread, &QThread::started, port, &Ethernet::Run);
+    connect(portThread, &QThread::finished, portThread, &QObject::deleteLater);
+    connect(this, &IEC104::StopAll, port, &Ethernet::Stop);
+    connect(port, &Ethernet::Disconnected, this, &IEC104::EthThreadFinished);
 
-    auto settings = std::get<IEC104Settings>(st.settings);
-    eth->IP = settings.ip;
-    m_thread104->SetBaseAdr(settings.baseadr);
+    IEC104Thread *parser = new IEC104Thread(Log);
+    QThread *parserThread = new QThread;
+    parserThread->setObjectName("parserThread");
 
-    thr->start();
-    thr2->start();
+    connect(parserThread, &QThread::started, [&] { ParseThreadWorking = true; });
+    connect(this, &IEC104::StopAll, parser, &IEC104Thread::Stop);
+
+    connect(parserThread, &QThread::finished, parser, &QObject::deleteLater);
+    connect(parserThread, &QThread::finished, parserThread, &QObject::deleteLater);
+    connect(parser, &IEC104Thread::finished, parserThread, &QThread::quit);
+    connect(parserThread, &QThread::finished, this, &IEC104::ParseThreadFinished);
+
+    connect(parserThread, &QThread::started, parser, &IEC104Thread::Run);
+    connect(port, &Ethernet::Connected, parser, &IEC104Thread::StartDT);
+
+    connect(portThread, &QThread::finished, this, &IEC104::EmitReconnectSignal);
+
+    connect(parser, &IEC104Thread::WriteData, port, &Ethernet::InitiateWriteDataToPort);
+    connect(port, &Ethernet::NewDataArrived, parser, &IEC104Thread::GetSomeData);
+    connect(parser, &IEC104Thread::ReconnectSignal, this, &IEC104::EmitReconnectSignal);
+
+    port->IP = settings.ip;
+    parser->SetBaseAdr(settings.baseadr);
+
+    port->moveToThread(portThread);
+    parser->moveToThread(parserThread);
+    portThread->start();
+    parserThread->start();
     QEventLoop ethloop;
     bool ethconnected = false;
-    QTimer *ethtimeouttimer = new QTimer;
+    QTimer *ethtimeouttimer = new QTimer(this);
     ethtimeouttimer->setInterval(10000);
     connect(ethtimeouttimer, &QTimer::timeout, [&]() {
         ethconnected = false;
         ethloop.quit();
     });
-    connect(eth, &Ethernet::Connected, [&]() {
+    connect(port, &Ethernet::Connected, [&]() {
         ethconnected = true;
+        setState(State::Run);
         ethloop.quit();
     });
     ethloop.exec();
@@ -283,24 +288,19 @@ void IEC104::reqFloats(quint32 sigAdr, quint32 sigCount)
 //    //    IEC104Thread::s_ParseWriteMutex.unlock();
 //}
 
-void IEC104::EthThreadStarted()
-{
-    m_working = EthThreadWorking = true;
-}
+// void IEC104::EthThreadStarted()
+//{
+//    EthThreadWorking = true;
+//}
 
 void IEC104::EthThreadFinished()
 {
     EthThreadWorking = false;
     if (!ParseThreadWorking)
     {
-        m_working = false;
+        setState(State::Stop);
         emit Finished();
     }
-}
-
-void IEC104::ParseThreadStarted()
-{
-    m_working = ParseThreadWorking = true;
 }
 
 void IEC104::ParseThreadFinished()
@@ -308,19 +308,20 @@ void IEC104::ParseThreadFinished()
     ParseThreadWorking = false;
     if (!EthThreadWorking)
     {
-        m_working = false;
+        setState(State::Stop);
         emit Finished();
     }
 }
 
 void IEC104::EmitReconnectSignal()
 {
-    if (!AboutToFinish)
+    qDebug() << __PRETTY_FUNCTION__;
+    if (state() != State::Wait)
         emit reconnect();
 }
 
 void IEC104::stop()
 {
-    AboutToFinish = true;
+    setState(BaseInterface::State::Wait);
     emit StopAll();
 }

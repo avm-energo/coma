@@ -43,7 +43,7 @@ public slots:
 
 signals:
     void Started();
-    void Finished();
+    void finished();
     void WriteData(QByteArray);
     void ReconnectSignal();
     //    void Floatsignalsreceived(IEC104Thread::FlSignals104 *);

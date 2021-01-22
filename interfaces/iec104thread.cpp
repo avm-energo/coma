@@ -117,7 +117,7 @@ void IEC104Thread::Run()
         }
         QCoreApplication::processEvents();
     }
-    emit Finished();
+    emit finished();
 }
 
 void IEC104Thread::GetSomeData(QByteArray ba)
@@ -747,7 +747,7 @@ void IEC104Thread::SendTestAct()
     if (m_noAnswer)
     {
         emit ReconnectSignal();
-        ERMSG("No answer");
+        qCritical("No answer");
         return;
     }
     else

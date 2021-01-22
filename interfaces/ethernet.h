@@ -26,7 +26,7 @@ signals:
     void error(QAbstractSocket::SocketError);
     void Connected();
     void Disconnected();
-    void Finished();
+    void finished();
     void NewDataArrived(QByteArray);
 
 public slots:

@@ -64,6 +64,7 @@ void Ethernet::Run()
         sock->deleteLater();
     }
     // emit Finished();
+    emit finished();
 }
 
 void Ethernet::Stop()

@@ -175,9 +175,9 @@ private:
 private slots:
     // void SelectFile(char);
 
-    void EthThreadStarted();
+    //  void EthThreadStarted();
     void EthThreadFinished();
-    void ParseThreadStarted();
+    // void ParseThreadStarted();
     void ParseThreadFinished();
     void EmitReconnectSignal();
 };
