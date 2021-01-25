@@ -11,7 +11,7 @@
 
 Ethernet::Ethernet(QObject *parent) : QObject(parent)
 {
-    Log = new LogClass;
+    Log = new LogClass(this);
     Log->Init("ethernet.log");
     Log->info("=== Log started ===");
     OutDataBuf.clear();

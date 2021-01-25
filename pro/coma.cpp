@@ -1029,7 +1029,7 @@ void Coma::Connect()
     });
 
     auto connection = std::shared_ptr<QMetaObject::Connection>(new QMetaObject::Connection);
-    *connection = connect(&board, &Board::readyRead, [=]() {
+    *connection = connect(&board, &Board::readyRead, this, [=]() {
         QObject::disconnect(*connection);
         QApplication::restoreOverrideCursor();
         prepare();
@@ -1046,7 +1046,7 @@ void Coma::Connect()
     QTimer timer;
     timer.setSingleShot(true);
     timer.start(INTERVAL::WAIT);
-    connect(&timer, &QTimer::timeout, [=] {
+    connect(&timer, &QTimer::timeout, this, [=] {
         if (Board::GetInstance().type() != 0)
             return;
         QObject::disconnect(*connection);

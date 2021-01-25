@@ -166,11 +166,11 @@ void ConnectDialog::EthAccepted()
     RotateSettings("Ethernet-", name);
     QString key = PROGNAME;
     key += "\\" + name;
-    QSettings *sets = new QSettings(SOFTDEVELOPER, key);
-    sets->setValue("ip", ipstr);
+    auto settings = UniquePointer<QSettings>(new QSettings(SOFTDEVELOPER, PROGNAME));
+    settings->setValue("ip", ipstr);
     int spbdata;
     WDFunc::SPBData(dlg, "bsadrspb", spbdata);
-    sets->setValue("bs", QString::number(spbdata));
+    settings->setValue("bs", QString::number(spbdata));
     QDialog *dlg2 = this->findChild<QDialog *>("connectdlg");
     if (dlg2 == nullptr)
         return;
@@ -414,7 +414,7 @@ void ConnectDialog::SetRs(QModelIndex index)
 
 void ConnectDialog::RotateSettings(const QString &type, const QString &name)
 {
-    std::unique_ptr<QSettings> settings = std::unique_ptr<QSettings>(new QSettings(SOFTDEVELOPER, PROGNAME));
+    auto settings = UniquePointer<QSettings>(new QSettings(SOFTDEVELOPER, PROGNAME));
     QStringList sl;
     QString namename, oldnamename;
     // 1. get all type+'i' from registry (count)
