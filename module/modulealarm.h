@@ -20,6 +20,7 @@ protected:
 public slots:
     //    void Update(std::bitset<32> &states);
     void update(const DataTypes::SinglePointWithTimeStruct &sp);
+    void update();
 };
 
 #endif // ALARM_H

@@ -52,7 +52,11 @@ void BaseAlarm::setupUI(const QStringList &events)
             continue;
         QHBoxLayout *hlyout = new QHBoxLayout;
         int number = i;
-        hlyout->addWidget(WDFunc::NewLBL2(this, "", QString::number(number)));
+        auto *label = WDFunc::NewLBL2(this, "", QString::number(number));
+        auto pixmap = WDFunc::NewCircle(m_normalColor, circleRadius);
+        label->setPixmap(pixmap);
+        hlyout->addWidget(label);
+
         hlyout->addWidget(WDFunc::NewLBL2(this, events.at(j++)), 1);
         vlayout->addLayout(hlyout);
     }

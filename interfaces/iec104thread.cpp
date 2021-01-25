@@ -358,6 +358,7 @@ void IEC104Thread::ParseIFormat(QByteArray &ba) // основной разбор
 
             case TypeId::M_SP_TB_1:
             {
+                qDebug() << "TypeId::M_SP_TB_1";
                 //                if (cntspon > 255)
                 //                {
                 //                    ERMSG("out of array sponsignals");
@@ -750,7 +751,6 @@ void IEC104Thread::SendTestAct()
     }
     else
         m_noAnswer = 1;
-    qDebug("ConTimer->stop()");
     m_sendTestTimer->stop();
     APCI GI;
     GI.append(I104_START);

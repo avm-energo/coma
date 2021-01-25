@@ -1,6 +1,6 @@
 #include "waitwidget.h"
 
-#include "../gen/stdfunc.h"
+//#include "../gen/stdfunc.h"
 
 #include <QApplication>
 #include <QBitmap>

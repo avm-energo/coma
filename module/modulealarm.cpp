@@ -4,7 +4,8 @@
 
 ModuleAlarm::ModuleAlarm(QWidget *parent) : BaseAlarm(parent)
 {
-    connect(&DataManager::GetInstance(), &DataManager::singlePointReceived, this, &ModuleAlarm::update);
+    // connect(&DataManager::GetInstance(), &DataManager::singlePointReceived, this,
+    //   qOverload<const DataTypes::SinglePointWithTimeStruct &>(&ModuleAlarm::update));
 }
 
 ModuleAlarm::ModuleAlarm(const DataTypes::Alarm &desc, const int count, QWidget *parent) : ModuleAlarm(parent)
@@ -20,6 +21,7 @@ ModuleAlarm::ModuleAlarm(const DataTypes::Alarm &desc, const int count, QWidget 
 void ModuleAlarm::reqUpdate()
 {
     BaseInterface::iface()->reqAlarms(m_startAlarmAddress, m_alarmAllCounts);
+    update();
 }
 
 // int Alarm::realAlarmSize()
@@ -55,5 +57,31 @@ void ModuleAlarm::update(const DataTypes::SinglePointWithTimeStruct &sp)
         //    qDebug() << index << bool(sigval);
         // alarmFlag = true;
         updatePixmap(sigval & 0x00000001, index);
+    }
+}
+
+void ModuleAlarm::update()
+{
+    using ValueType = DataTypes::SinglePointWithTimeStruct;
+    const auto minAddress = m_startAlarmAddress;
+    const auto maxAddress = m_startAlarmAddress + m_alarmFlags.size();
+    auto &manager = DataManager::GetInstance();
+    for (auto i = minAddress; i != maxAddress; ++i)
+    {
+        if (!manager.containsRegister<ValueType>(i))
+            continue;
+        const auto sp = manager.getRegister<ValueType>(i);
+        const int index = (sp.sigAdr - minAddress);
+        const quint8 sigval = sp.sigVal;
+        if (sigval & 0x80)
+            return;
+
+        if (m_alarmFlags.test(index))
+        {
+            //    qDebug() << m_alarmFlags;
+            //    qDebug() << index << bool(sigval);
+            // alarmFlag = true;
+            updatePixmap(sigval & 0x00000001, index);
+        }
     }
 }

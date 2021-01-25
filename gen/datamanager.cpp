@@ -1,5 +1,6 @@
 #include "datamanager.h"
 
+#include "helper.h"
 // QList<DataTypes::SignalsStruct> DataManager::s_outputList;
 // QMutex DataManager::s_outListMutex;
 QMutex DataManager::s_inQueueMutex;
@@ -190,6 +191,7 @@ void DataManager::checkTypeAndSendSignals(DataTypes::SignalsStruct &str)
         if (str.data.canConvert<BitStringStruct>())
         {
             BitStringStruct bs = str.data.value<BitStringStruct>();
+            insertRegister(bs.sigAdr, bs);
             emit bitStringReceived(bs);
         }
         break;
@@ -199,8 +201,10 @@ void DataManager::checkTypeAndSendSignals(DataTypes::SignalsStruct &str)
         Q_ASSERT(str.data.canConvert<SinglePointWithTimeStruct>());
         if (str.data.canConvert<SinglePointWithTimeStruct>())
         {
-            SinglePointWithTimeStruct sp = qvariant_cast<SinglePointWithTimeStruct>(str.data);
+            SinglePointWithTimeStruct sp = str.data.value<SinglePointWithTimeStruct>();
+            insertRegister(sp.sigAdr, sp);
             emit singlePointReceived(sp);
+            qDebug() << sp;
         }
         break;
     }
@@ -209,7 +213,8 @@ void DataManager::checkTypeAndSendSignals(DataTypes::SignalsStruct &str)
         Q_ASSERT(str.data.canConvert<FloatStruct>());
         if (str.data.canConvert<FloatStruct>())
         {
-            FloatStruct fl = qvariant_cast<FloatStruct>(str.data);
+            FloatStruct fl = str.data.value<FloatStruct>();
+            insertRegister(fl.sigAdr, fl);
             emit floatReceived(fl);
         }
         break;
@@ -219,10 +224,11 @@ void DataManager::checkTypeAndSendSignals(DataTypes::SignalsStruct &str)
         Q_ASSERT(str.data.canConvert<FloatWithTimeStruct>());
         if (str.data.canConvert<FloatWithTimeStruct>())
         {
-            FloatWithTimeStruct flt = qvariant_cast<FloatWithTimeStruct>(str.data);
+            FloatWithTimeStruct flt = str.data.value<FloatWithTimeStruct>();
             FloatStruct fl;
             fl.sigAdr = flt.sigAdr;
             fl.sigVal = flt.sigVal;
+            insertRegister(fl.sigAdr, fl);
             emit floatReceived(fl);
         }
         break;
@@ -232,7 +238,7 @@ void DataManager::checkTypeAndSendSignals(DataTypes::SignalsStruct &str)
         Q_ASSERT(str.data.canConvert<FileStruct>());
         if (str.data.canConvert<FileStruct>())
         {
-            FileStruct fl = qvariant_cast<FileStruct>(str.data);
+            FileStruct fl = str.data.value<FileStruct>();
             emit fileReceived(fl);
         }
         break;
@@ -242,7 +248,7 @@ void DataManager::checkTypeAndSendSignals(DataTypes::SignalsStruct &str)
         Q_ASSERT(str.data.canConvert<ConfParameterStruct>());
         if (str.data.canConvert<ConfParameterStruct>())
         {
-            ConfParameterStruct cp = qvariant_cast<ConfParameterStruct>(str.data);
+            ConfParameterStruct cp = str.data.value<ConfParameterStruct>();
             emit confParameterReceived(cp);
         }
         break;
@@ -252,7 +258,7 @@ void DataManager::checkTypeAndSendSignals(DataTypes::SignalsStruct &str)
         Q_ASSERT(str.data.canConvert<ConfParametersListStruct>());
         if (str.data.canConvert<ConfParametersListStruct>())
         {
-            ConfParametersListStruct cp = qvariant_cast<ConfParametersListStruct>(str.data);
+            ConfParametersListStruct cp = str.data.value<ConfParametersListStruct>();
             emit confParametersListReceived(cp);
         }
         break;
@@ -262,7 +268,7 @@ void DataManager::checkTypeAndSendSignals(DataTypes::SignalsStruct &str)
         Q_ASSERT(str.data.canConvert<BlockStruct>());
         if (str.data.canConvert<BlockStruct>())
         {
-            BlockStruct bs = qvariant_cast<BlockStruct>(str.data);
+            BlockStruct bs = str.data.value<BlockStruct>();
             emit blockReceived(bs);
         }
         break;
@@ -272,7 +278,7 @@ void DataManager::checkTypeAndSendSignals(DataTypes::SignalsStruct &str)
         Q_ASSERT(str.data.canConvert<GeneralResponseStruct>());
         if (str.data.canConvert<GeneralResponseStruct>())
         {
-            GeneralResponseStruct gr = qvariant_cast<GeneralResponseStruct>(str.data);
+            GeneralResponseStruct gr = str.data.value<GeneralResponseStruct>();
             emit responseReceived(gr);
         }
         break;

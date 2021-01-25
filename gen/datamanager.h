@@ -13,10 +13,15 @@
 
 #define INQUEUEMAXSIZE 100
 
+template <class> inline constexpr bool always_false_v = false;
+
 class DataManager : public QObject, public Singleton<DataManager>
 {
     Q_OBJECT
 public:
+    using RegisterType = std::variant<DataTypes::BitStringStruct, //
+        DataTypes::SinglePointWithTimeStruct,                     //
+        DataTypes::FloatStruct>;
     explicit DataManager(token, QObject *parent = nullptr);
 
     //    static Error::Msg getSignals(quint32 firstSignalAdr, quint32 lastSignalAdr, DataTypes::SignalTypes type,
@@ -67,6 +72,28 @@ public:
     {
         decltype(s_inputQueue) empty;
         std::swap(s_inputQueue, empty);
+        GetInstance().m_registers.clear();
+    }
+    bool containsRegister(quint32 addr) const
+    {
+        QMutexLocker locker(&s_inQueueMutex);
+        return m_registers.contains(addr);
+    }
+    template <typename T> bool containsRegister(quint32 addr) const
+    {
+        if (containsRegister(addr))
+        {
+            QMutexLocker locker(&s_inQueueMutex);
+            return std::holds_alternative<T>(m_registers.value(addr));
+        }
+        return false;
+    }
+
+    template <typename T> T getRegister(quint32 addr) const
+    {
+        Q_ASSERT(containsRegister<T>(addr));
+        QMutexLocker locker(&s_inQueueMutex);
+        return std::get<T>(m_registers.value(addr));
     }
 
 private:
@@ -74,6 +101,21 @@ private:
     //    static QList<DataTypes::SignalsStruct> s_outputList;
     //    static QMutex s_outListMutex;
     static QMutex s_inQueueMutex;
+
+    QMap<quint32, RegisterType> m_registers;
+
+    template <typename T> void insertRegister(quint32 addr, T value)
+    {
+        QMutexLocker locker(&s_inQueueMutex);
+        if constexpr ((std::is_same_v<T, DataTypes::BitStringStruct>)    //
+            || (std::is_same_v<T, DataTypes::SinglePointWithTimeStruct>) //
+            || (std::is_same_v<T, DataTypes::FloatStruct>))              //
+        {
+            m_registers.insert(addr, value);
+        }
+        else
+            static_assert(always_false_v<T>, "unsupported type!");
+    }
 
 signals:
     void dataReceived(const DataTypes::SignalsStruct &);
