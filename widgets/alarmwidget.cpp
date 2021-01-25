@@ -1,8 +1,5 @@
 #include "alarmwidget.h"
 
-#include "../gen/board.h"
-#include "../gen/colors.h"
-#include "../gen/datamanager.h"
 #include "alarmbutton.h"
 #include "wd_func.h"
 
@@ -286,7 +283,6 @@ void AlarmWidget::addAlarm(BaseAlarm *alarm, const QString caption)
     //    alarm->setInterface(iface());
     if (!m_timer->isActive())
         m_timer->start();
-    // NOTE temporarily disabled !!!
     connect(m_timer, &QTimer::timeout, alarm, &BaseAlarm::reqUpdate);
     connect(alarm, &BaseAlarm::updateColor, pb, [=](QColor color) { pb->setPixmap(WDFunc::NewCircle(color, 15)); });
 

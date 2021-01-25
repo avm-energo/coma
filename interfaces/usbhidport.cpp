@@ -366,7 +366,6 @@ bool UsbHidPort::writeData(QByteArray &ba)
         qCritical() << Error::Msg::NullDataError;
         return false;
     }
-    // NOTE
     writeLog(ba.toHex(), Proto::ToDevice);
     if (ba.size() < HID::MaxSegmenthLength)
         ba.append(HID::MaxSegmenthLength - ba.size(), static_cast<char>(0x00));

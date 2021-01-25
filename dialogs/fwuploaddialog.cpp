@@ -72,18 +72,8 @@ void FWUploadDialog::RunSoft()
 {
     if (!checkPassword())
         return;
-    // FIXME After create usb
     setSuccessMsg("Переход на новое ПО выполнен успешно");
     BaseInterface::iface()->writeCommand(Queries::QC_StartFirmwareUpgrade);
-    //        if (Commands::RunVPO() != Error::Msg::NoError)
-    //        {
-    //            WARNMSG("Ошибка перехода на новое ПО");
-    //            QMessageBox::information(this, "Ошибка", "Ошибка");
-    //        }
-    //        else
-    //        {
-    //            QMessageBox::information(this, "Успешно", "Переход на новое ПО выполнен успешно");
-    //        }
 }
 
 // bool FWUploadDialog::WriteCheckPassword()

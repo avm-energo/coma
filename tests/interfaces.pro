@@ -1,5 +1,5 @@
 QT -= gui
-QT += network serialport concurrent
+QT += network serialport concurrent xml
 CONFIG += c++17 console
 CONFIG -= app_bundle
 
@@ -19,14 +19,11 @@ VERSION = $$GIT_VERSION
 DEFINES += BUILD_DATE='"\\\"$(shell date)\\\""'
 
 SOURCES += \
-    ../gen/board.cpp \
     ../gen/datamanager.cpp \
     ../gen/error.cpp \
     ../gen/files.cpp \
     ../gen/helper.cpp \
     ../gen/logclass.cpp \
-    ../gen/logger.cpp \
-    ../gen/pch.cpp \
     ../gen/s2.cpp \
     ../gen/stdfunc.cpp \
     ../interfaces/baseinterface.cpp \
@@ -34,8 +31,10 @@ SOURCES += \
     ../interfaces/iec104.cpp \
     ../interfaces/iec104thread.cpp \
     ../interfaces/modbus.cpp \
+    ../interfaces/modbusprivate.cpp \
     ../interfaces/modbusthread.cpp \
     ../interfaces/protocom.cpp \
+    ../interfaces/protocom_p.cpp \
     ../interfaces/protocomthread.cpp \
     ../interfaces/serialport.cpp \
     ../interfaces/usbhidport.cpp \
@@ -43,18 +42,13 @@ SOURCES += \
     ../interfaces/usbhidsettings.cpp \
     console.cpp \
     interfaces.cpp
-
-PRECOMPILED_HEADER = ../gen/pch.h
-
 HEADERS += \
-    ../gen/board.h \
     ../gen/datamanager.h \
     ../gen/datatypes.h \
     ../gen/error.h \
     ../gen/files.h \
     ../gen/helper.h \
     ../gen/logclass.h \
-    ../gen/logger.h \
     ../gen/s2.h \
     ../gen/singleton.h \
     ../gen/stdfunc.h \
@@ -67,6 +61,7 @@ HEADERS += \
     ../interfaces/modbusprivate.h \
     ../interfaces/modbusthread.h \
     ../interfaces/protocom.h \
+    ../interfaces/protocom_p.h \
     ../interfaces/protocomprivate.h \
     ../interfaces/protocomthread.h \
     ../interfaces/serialport.h \
@@ -74,7 +69,6 @@ HEADERS += \
     ../interfaces/usbhidport.h \
     ../interfaces/usbhidportinfo.h \
     ../interfaces/usbhidsettings.h \
-    ../module/modules.h \
     console.h
 
 INCLUDEPATH += $$PWD/../../includes

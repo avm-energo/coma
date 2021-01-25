@@ -312,8 +312,8 @@ void Journals::StartSaveJour(int jtype, QAbstractItemModel *amdl, QString filena
 
     workSheet->writeString(cellModuleType, "Модуль: ");
     cellModuleType.setColumn(2);
-    // FIXME Сделать карту модулей
-    // workSheet->writeString(cellModuleType, ModuleBSI::GetModuleTypeString());
+
+    workSheet->writeString(cellModuleType, Board::GetInstance().moduleName());
     cellModuleType.setColumn(3);
     workSheet->writeString(cellModuleType, "сер. ном. ");
     cellModuleType.setColumn(4);
