@@ -12,26 +12,16 @@ QMutex IEC104Thread::s_ParseWriteMutex;
 
 using namespace Commands104;
 
-IEC104Thread::IEC104Thread(LogClass *log, QObject *parent) : QObject(parent)
+IEC104Thread::IEC104Thread(LogClass *log, QObject *parent) : QObject(parent), m_log(log)
 {
     m_writingToPortBlocked = true;
     m_isFirstParse = true;
-    m_log = log;
     m_threadMustBeFinished = false;
     m_signalCounter = 0;
     m_V_S = m_V_R = 0;
     m_ackVR = I104_W;
     m_APDUFormat = I104_WRONG;
     m_isFileSending = false;
-    m_timer104 = new QTimer;
-    m_timer104->setInterval(15000);
-    m_sendTestTimer = new QTimer;
-    m_sendTestTimer->setInterval(5000);
-#ifndef DEBUG
-    connect(m_timer104, &QTimer::timeout, this, &IEC104Thread::Stop);
-    connect(m_sendTestTimer, &QTimer::timeout, this, &IEC104Thread::SendTestAct);
-    m_sendTestTimer->start();
-#endif
     m_noAnswer = 0;
 }
 
@@ -47,7 +37,15 @@ void IEC104Thread::SetBaseAdr(quint16 adr)
 
 void IEC104Thread::Run()
 {
-    emit Started();
+    m_timer104 = new QTimer(this);
+    m_timer104->setInterval(15000);
+    m_sendTestTimer = new QTimer(this);
+    m_sendTestTimer->setInterval(5000);
+#ifndef DEBUG
+    connect(m_timer104, &QTimer::timeout, this, &IEC104Thread::Stop);
+    connect(m_sendTestTimer, &QTimer::timeout, this, &IEC104Thread::SendTestAct);
+    m_sendTestTimer->start();
+#endif
     while (!m_threadMustBeFinished)
     {
         if (!m_parseData.isEmpty())

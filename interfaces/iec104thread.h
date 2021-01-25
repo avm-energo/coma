@@ -42,7 +42,7 @@ public slots:
     void GetSomeData(QByteArray);
 
 signals:
-    void Started();
+    //  void Started();
     void finished();
     void WriteData(QByteArray);
     void ReconnectSignal();
