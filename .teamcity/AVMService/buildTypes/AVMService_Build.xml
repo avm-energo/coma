@@ -151,7 +151,7 @@ xcopy LimeReport\bin\%env.qtver%\%env.winarch%\release\lib\include include\limer
       </runner>
       <runner id="RUNNER_14" name="qmake AVM-Debug" type="simpleRunner">
         <parameters>
-          <param name="script.content"><![CDATA[cd build\%env.winarch%
+          <param name="script.content"><![CDATA[cd bin\AVM-Debug\%env.winarch%
 call "%env.vcvarsall%" %env.arch%
 call "%env.vcvars%"
 %env.qtdir%\%env.qtarch%\bin\qmake.exe ..\..\pro\AVM-Debug.pro]]></param>
