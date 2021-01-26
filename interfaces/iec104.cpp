@@ -57,7 +57,27 @@ bool IEC104::start(const ConnectStruct &st)
 
     connect(parserThread, &QThread::started, [&] { ParseThreadWorking = true; });
     connect(this, &IEC104::StopAll, parser, &IEC104Thread::Stop);
-
+    connect(this, &IEC104::StopAll, [=] {
+        if (sock->isOpen())
+        {
+            sock->close();
+            sock->disconnect();
+            sock->deleteLater();
+        }
+    });
+#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
+    connect(sock, qOverload<QAbstractSocket::SocketError>(&QAbstractSocket::error), this,
+        [=](QAbstractSocket::SocketError error) {
+            Log->info("Error: " + QVariant::fromValue(error).toString());
+            sock->disconnectFromHost();
+        });
+#else
+    connect(sock, &QAbstractSocket::errorOccurred, this, [=](QAbstractSocket::SocketError error) {
+        Log->info("Error: " + QVariant::fromValue(error).toString());
+        sock->disconnectFromHost();
+    });
+#endif
+    connect(sock, &QAbstractSocket::stateChanged, this, &IEC104::EthStateChanged);
     connect(parserThread, &QThread::finished, parser, &QObject::deleteLater);
     connect(parserThread, &QThread::finished, parserThread, &QObject::deleteLater);
     connect(parser, &IEC104Thread::finished, parserThread, &QThread::quit);
@@ -72,10 +92,11 @@ bool IEC104::start(const ConnectStruct &st)
         qint64 res = sock->write(ba);
         Log->info(QString::number(res) + " bytes written");
     });
+    connect(sock, &QAbstractSocket::disconnected, this, &IEC104::EthThreadFinished);
     //  connect(parser, &IEC104Thread::WriteData, port, &Ethernet::InitiateWriteDataToPort, Qt::DirectConnection);
     // connect(port, &Ethernet::NewDataArrived, parser, &IEC104Thread::GetSomeData);
     connect(
-        sock, &QIODevice::readyRead, this,
+        sock, &QIODevice::readyRead, parser,
         [=] {
             qDebug() << __PRETTY_FUNCTION__ << QThread::currentThreadId();
             QByteArray ba = sock->readAll();
@@ -351,6 +372,37 @@ void IEC104::EmitReconnectSignal()
     qDebug() << __PRETTY_FUNCTION__;
     if (state() != State::Wait)
         emit reconnect();
+}
+
+void IEC104::EthStateChanged(QAbstractSocket::SocketState state)
+{
+    switch (state)
+    {
+    case QAbstractSocket::UnconnectedState:
+        Log->info("Socket unconnected");
+        break;
+    case QAbstractSocket::HostLookupState:
+        Log->info("Socket enters host lookup state");
+        break;
+    case QAbstractSocket::ConnectingState:
+        Log->info("Socket enters connecting state");
+        break;
+    case QAbstractSocket::ConnectedState:
+        Log->info("Socket connected!");
+        break;
+    case QAbstractSocket::BoundState:
+        Log->info("Socket is bound to address and port");
+        break;
+    case QAbstractSocket::ClosingState:
+        Log->info("Socket is in closing state");
+        break;
+    case QAbstractSocket::ListeningState:
+        Log->info("Socket is in listening state");
+        break;
+    default:
+        Log->info("Unprocessed state");
+        break;
+    }
 }
 
 void IEC104::stop()

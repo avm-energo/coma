@@ -181,6 +181,7 @@ private slots:
     // void ParseThreadStarted();
     void ParseThreadFinished();
     void EmitReconnectSignal();
+    void EthStateChanged(QAbstractSocket::SocketState state);
 };
 
 #endif // IEC104_H
