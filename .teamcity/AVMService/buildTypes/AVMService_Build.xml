@@ -86,7 +86,7 @@ xcopy hidapi\hidapi\hidapi.h include\hidapi\hidapi.h* /Y]]></param>
       </runner>
       <runner id="RUNNER_40" name="qmake AVM-Service" type="simpleRunner">
         <parameters>
-          <param name="script.content"><![CDATA[cd build\%env.winarch%
+          <param name="script.content"><![CDATA[cd bin\AVM-Service\%env.winarch%
 call "%env.vcvarsall%" %env.arch%
 call "%env.vcvars%"
 %env.qtdir%\%env.qtarch%\bin\qmake.exe ..\..\pro\AVM-Service.pro]]></param>
