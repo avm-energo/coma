@@ -93,6 +93,16 @@ call "%env.vcvars%"
           <param name="use.custom.script" value="true" />
         </parameters>
       </runner>
+      <runner id="RUNNER_14" name="qmake AVM-Service (1)" type="simpleRunner">
+        <parameters>
+          <param name="script.content"><![CDATA[cd build\%env.winarch%
+call "%env.vcvarsall%" %env.arch%
+call "%env.vcvars%"
+%env.qtdir%\%env.qtarch%\bin\qmake.exe ..\..\pro\AVM-Service.pro]]></param>
+          <param name="teamcity.step.mode" value="default" />
+          <param name="use.custom.script" value="true" />
+        </parameters>
+      </runner>
       <runner id="RUNNER_41" name="nmake AVM-Service" type="simpleRunner">
         <parameters>
           <param name="script.content"><![CDATA[cd build\%env.winarch%
