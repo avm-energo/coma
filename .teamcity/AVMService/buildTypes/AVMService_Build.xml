@@ -113,7 +113,7 @@ nmake]]></param>
       </runner>
       <runner id="RUNNER_7" name="Make directory LimeReport" type="simpleRunner">
         <parameters>
-          <param name="script.content" value="if not exist LimeReport\build\%env.winarch% mkdir LimeReport\build\%env.winarch%" />
+          <param name="script.content" value="if not exist LimeReport\bin\%env.winarch% mkdir LimeReport\bin\%env.winarch%" />
           <param name="teamcity.step.mode" value="default" />
           <param name="use.custom.script" value="true" />
         </parameters>
