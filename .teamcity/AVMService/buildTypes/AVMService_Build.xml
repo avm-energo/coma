@@ -142,9 +142,9 @@ call nmake sub-3rdparty sub-limereport]]></param>
       </runner>
       <runner id="RUNNER_8" name="Copy LimeReport" type="simpleRunner">
         <parameters>
-          <param name="script.content"><![CDATA[xcopy LimeReport\build\%env.qtver%\%env.winarch%\release\lib\limereport.* ..\libs\%env.winarch%\release /H /Y /C /R /S /I
-xcopy LimeReport\build\%env.qtver%\%env.winarch%\release\lib\QtZint.* ..\libs\%env.winarch%\release /H /Y /C /R /S /I
-xcopy LimeReport\build\%env.qtver%\%env.winarch%\release\lib\include ..\includes\limereport /I /Y /S]]></param>
+          <param name="script.content"><![CDATA[xcopy LimeReport\bin\%env.qtver%\%env.winarch%\release\lib\limereport.* lib\%env.winarch%\release /H /Y /C /R /S /I
+xcopy LimeReport\bin\%env.qtver%\%env.winarch%\release\lib\QtZint.* lib\%env.winarch%\release /H /Y /C /R /S /I
+xcopy LimeReport\bin\%env.qtver%\%env.winarch%\release\lib\include include\limereport /I /Y /S]]></param>
           <param name="teamcity.step.mode" value="default" />
           <param name="use.custom.script" value="true" />
         </parameters>
