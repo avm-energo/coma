@@ -93,27 +93,7 @@ call "%env.vcvars%"
           <param name="use.custom.script" value="true" />
         </parameters>
       </runner>
-      <runner id="RUNNER_14" name="qmake AVM-Debug" type="simpleRunner">
-        <parameters>
-          <param name="script.content"><![CDATA[cd build\%env.winarch%
-call "%env.vcvarsall%" %env.arch%
-call "%env.vcvars%"
-%env.qtdir%\%env.qtarch%\bin\qmake.exe ..\..\pro\AVM-Debug.pro]]></param>
-          <param name="teamcity.step.mode" value="default" />
-          <param name="use.custom.script" value="true" />
-        </parameters>
-      </runner>
       <runner id="RUNNER_41" name="nmake AVM-Service" type="simpleRunner">
-        <parameters>
-          <param name="script.content"><![CDATA[cd build\%env.winarch%
-call "%env.vcvarsall%" %env.arch%
-call "%env.vcvars%"
-nmake]]></param>
-          <param name="teamcity.step.mode" value="default" />
-          <param name="use.custom.script" value="true" />
-        </parameters>
-      </runner>
-      <runner id="RUNNER_15" name="nmake AVM-Debug" type="simpleRunner">
         <parameters>
           <param name="script.content"><![CDATA[cd build\%env.winarch%
 call "%env.vcvarsall%" %env.arch%
@@ -164,6 +144,26 @@ call nmake sub-3rdparty sub-limereport]]></param>
           <param name="script.content"><![CDATA[xcopy LimeReport\build\%env.qtver%\%env.winarch%\release\lib\limereport.* ..\libs\%env.winarch%\release /H /Y /C /R /S /I
 xcopy LimeReport\build\%env.qtver%\%env.winarch%\release\lib\QtZint.* ..\libs\%env.winarch%\release /H /Y /C /R /S /I
 xcopy LimeReport\build\%env.qtver%\%env.winarch%\release\lib\include ..\includes\limereport /I /Y /S]]></param>
+          <param name="teamcity.step.mode" value="default" />
+          <param name="use.custom.script" value="true" />
+        </parameters>
+      </runner>
+      <runner id="RUNNER_14" name="qmake AVM-Debug" type="simpleRunner">
+        <parameters>
+          <param name="script.content"><![CDATA[cd build\%env.winarch%
+call "%env.vcvarsall%" %env.arch%
+call "%env.vcvars%"
+%env.qtdir%\%env.qtarch%\bin\qmake.exe ..\..\pro\AVM-Debug.pro]]></param>
+          <param name="teamcity.step.mode" value="default" />
+          <param name="use.custom.script" value="true" />
+        </parameters>
+      </runner>
+      <runner id="RUNNER_15" name="nmake AVM-Debug" type="simpleRunner">
+        <parameters>
+          <param name="script.content"><![CDATA[cd build\%env.winarch%
+call "%env.vcvarsall%" %env.arch%
+call "%env.vcvars%"
+nmake]]></param>
           <param name="teamcity.step.mode" value="default" />
           <param name="use.custom.script" value="true" />
         </parameters>
