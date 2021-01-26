@@ -13,9 +13,9 @@
 #define QT_DIR "C:\Qt\5.14.2\msvc2017_64\bin"
 ;#define Redist_DIR "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Redist\MSVC\v142"
 #define Redist_DIR "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Redist\MSVC\14.16.27012"
-#define LIB_DIR "..\..\libs"
-#define Build_DIR  "..\..\build"
-#define ApplicationVersion GetFileVersion('..\..\build\win64\release\AVM-Service.exe')
+#define LIB_DIR "..\lib"
+#define Build_DIR  "..\bin"
+#define ApplicationVersion GetFileVersion('..\..\bin\AVM-Service\win64\release\AVM-Service.exe')
 
 
 
@@ -65,12 +65,12 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked; OnlyBelowVersion: 6.1; Check: not IsAdminInstallMode
 
 [Files]
-Source: "{#Build_DIR}\{#ARCH}\release\{#ExeName}"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#Build_DIR}\{#EngName}\{#ARCH}\release\{#ExeName}"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#QT_DIR}\..\plugins\platforms\qwindows.dll"; DestDir: "{app}\platforms"; 
 Source: "{#QT_DIR}\..\plugins\styles\qwindowsvistastyle.dll"; DestDir: "{app}\styles"; 
-Source: "{#Build_DIR}\{#ARCH}\release\errors\*"; DestDir: "{userappdata}\{#EngName}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "{#Build_DIR}\{#EngName}\{#ARCH}\release\errors\*"; DestDir: "{userappdata}\{#EngName}"; Flags: ignoreversion recursesubdirs createallsubdirs
 ;Source: "{#Build_DIR}\{#ARCH}\release\reports\*"; DestDir: "{userappdata}\{#EngName}"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "{#Build_DIR}\{#ARCH}\release\images\*"; DestDir: "{app}\images"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "{#Build_DIR}\{#EngName}\{#ARCH}\release\images\*"; DestDir: "{app}\images"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "{#QT_DIR}\Qt5Core.dll"; DestDir: "{app}"; 
 Source: "{#QT_DIR}\Qt5Gui.dll"; DestDir: "{app}"; 
 Source: "{#QT_DIR}\Qt5Network.dll"; DestDir: "{app}"; 
