@@ -145,7 +145,7 @@ nmake]]></param>
           <param name="use.custom.script" value="true" />
         </parameters>
       </runner>
-      <runner id="RUNNER_42" name="Pack AppBundle" type="simpleRunner">
+      <runner id="RUNNER_42" name="Pack AppBundle Service" type="simpleRunner">
         <parameters>
           <param name="command.executable" value="C:\Program Files (x86)\Inno Setup 6\ISCC.exe" />
           <param name="command.parameters" value="iss\avm-service-%env.arch%.iss" />
