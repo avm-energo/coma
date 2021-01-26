@@ -18,10 +18,16 @@ Ethernet::Ethernet(QObject *parent) : QObject(parent)
     ClosePortAndFinishThread = false;
     sock = new QTcpSocket(this);
 #if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
-    connect(sock, qOverload<QAbstractSocket::SocketError>(&QAbstractSocket::error), this, &Ethernet::seterr,
-        Qt::DirectConnection);
+    connect(sock, qOverload<QAbstractSocket::SocketError>(&QAbstractSocket::error), this,
+        [=](QAbstractSocket::SocketError error) {
+            Log->info("Error: " + QVariant::fromValue(error).toString());
+            sock->disconnectFromHost();
+        });
 #else
-    connect(sock, &QAbstractSocket::errorOccurred, this, &Ethernet::seterr);
+    connect(sock, &QAbstractSocket::errorOccurred, this, [=](QAbstractSocket::SocketError error) {
+        Log->info("Error: " + QVariant::fromValue(error).toString());
+        sock->disconnectFromHost();
+    });
 #endif
     connect(sock, &QAbstractSocket::stateChanged, this, &Ethernet::EthStateChanged, Qt::DirectConnection);
     connect(sock, &QAbstractSocket::connected, this, &Ethernet::Connected, Qt::DirectConnection);
