@@ -255,7 +255,7 @@ win32 {
        LIBS += -L$$PWD/../lib/win64/release/ -lhidapi
        DESTDIR = $${PWD}/../bin/$${TARGET}/win64/release
        LIBS_FILES += \
-       $$PWD/../../libs/win64/release/hidapi.dll
+       $$PWD/../lib/win64/release/hidapi.dll
        }
     } else {
         message("Windows x86 build")
