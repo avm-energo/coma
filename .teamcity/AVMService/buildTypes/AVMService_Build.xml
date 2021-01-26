@@ -152,6 +152,13 @@ nmake]]></param>
           <param name="teamcity.step.mode" value="default" />
         </parameters>
       </runner>
+      <runner id="RUNNER_12" name="Pack AppBundle Service (1)" type="simpleRunner">
+        <parameters>
+          <param name="command.executable" value="C:\Program Files (x86)\Inno Setup 6\ISCC.exe" />
+          <param name="command.parameters" value="iss\avm-service-%env.arch%.iss" />
+          <param name="teamcity.step.mode" value="default" />
+        </parameters>
+      </runner>
       <runner id="RUNNER_43" name="SMB Upload" type="smb-deploy-runner">
         <parameters>
           <param name="jetbrains.buildServer.deployer.sourcePath" value="output/*%env.arch%*" />
