@@ -96,7 +96,7 @@ call "%env.vcvars%"
       </runner>
       <runner id="RUNNER_41" name="nmake AVM-Service" type="simpleRunner">
         <parameters>
-          <param name="script.content"><![CDATA[cd build\%env.winarch%
+          <param name="script.content"><![CDATA[cd bin\AVM-Service\%env.winarch%
 call "%env.vcvarsall%" %env.arch%
 call "%env.vcvars%"
 nmake]]></param>
