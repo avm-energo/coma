@@ -6,7 +6,7 @@
 #include <QByteArray>
 #include <QMutex>
 #include <QTcpSocket>
-
+#include <QWaitCondition>
 #define PORT104 2404 // порт связи по протоколу МЭК 60870-5-104
 
 class Ethernet : public QObject
@@ -16,13 +16,11 @@ class Ethernet : public QObject
 public:
     Ethernet(QObject *parent = nullptr);
     ~Ethernet();
-    quint16 ASDU;
     bool ClosePortAndFinishThread;
     QString IP;
     LogClass *Log;
 
 signals:
-    void ethNoconnection();
     void error(QAbstractSocket::SocketError);
     void Connected();
     void Disconnected();
@@ -46,7 +44,7 @@ private:
     QByteArray *DataToSend;
     QByteArray OutDataBuf;
     bool EthConnected;
-
+    QWaitCondition _waiter;
     void SendData();
 
 protected:

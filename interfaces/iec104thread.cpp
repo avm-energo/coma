@@ -4,9 +4,9 @@
 #include "iec104private.h"
 
 #include <QCoreApplication>
+#include <QDateTime>
 #include <QThread>
 #include <QTimer>
-
 QMutex IEC104Thread::s_ParseReadMutex;
 QMutex IEC104Thread::s_ParseWriteMutex;
 
@@ -61,6 +61,7 @@ void IEC104Thread::Run()
                 {
                     if (m_APDUFormat == I104_I)
                     {
+                        Q_ASSERT(tmpba.size() > 6);
                         tmpba = tmpba.mid(6);
                         ParseIFormat(tmpba); // без APCI
                     }
@@ -120,6 +121,7 @@ void IEC104Thread::Run()
 
 void IEC104Thread::GetSomeData(QByteArray ba)
 {
+
     if (m_isFirstParse)
         m_log->info("<-- " + ba.toHex());
     m_isFirstParse = false;
@@ -133,9 +135,11 @@ void IEC104Thread::GetSomeData(QByteArray ba)
         if (missing_num > basize)
         {
             m_cutPckt.append(ba);
+            m_isFirstParse = true;
             return; // если так и не достигли конца пакета, надо брать следующий пакет
                     // в cutpckt
         }
+        Q_ASSERT(ba.size() >= missing_num);
         m_cutPckt.append(ba.left(missing_num)); // взяли из текущего пакета сами байты
         ba.remove(0, missing_num);
         s_ParseReadMutex.lock();
@@ -145,16 +149,22 @@ void IEC104Thread::GetSomeData(QByteArray ba)
         basize = static_cast<quint32>(ba.size());
     }
     if (basize < 2) // ba is empty or there's not enough symbols to parse in it
+    {
+        m_isFirstParse = true;
         return;
+    }
 
     m_cutPckt = ba.left(2);
     ba = ba.mid(2);
     GetSomeData(ba);
+    qDebug() << __PRETTY_FUNCTION__;
     m_isFirstParse = true;
 }
 
 Error::Msg IEC104Thread::isIncomeDataValid(QByteArray ba)
 {
+    if (ba.size() < 3)
+        return Error::SizeError;
     try
     {
         if (ba.at(0) != 0x68)
@@ -164,6 +174,8 @@ Error::Msg IEC104Thread::isIncomeDataValid(QByteArray ba)
         if ((m_APDULength < 4) || (m_APDULength > 253))
             // return I104_RCVWRONG;
             return Error::Msg::GeneralError;
+        if (ba.size() < 3)
+            return Error::SizeError;
         if (!(ba.at(2) & 0x01)) // I
             m_APDUFormat = I104_I;
         else
@@ -186,6 +198,8 @@ Error::Msg IEC104Thread::isIncomeDataValid(QByteArray ba)
                 return Error::Msg::GeneralError;
             }
             m_V_R++;
+            if (ba.size() < 6)
+                return Error::SizeError;
             quint16 V_Srcv = static_cast<quint8>(ba.at(5)) * 256 + static_cast<quint8>(ba.at(4) & 0xFE);
             V_Srcv >>= 1;
             if (V_Srcv != m_V_S)
@@ -195,6 +209,8 @@ Error::Msg IEC104Thread::isIncomeDataValid(QByteArray ba)
         }
         case I104_S:
         {
+            if (ba.size() < 6)
+                return Error::SizeError;
             quint16 V_Srcv = static_cast<quint8>(ba.at(5)) * 256 + static_cast<quint8>(ba.at(4) & 0xFE);
             V_Srcv >>= 1;
             if (V_Srcv != m_V_S)
@@ -247,7 +263,12 @@ void IEC104Thread::ParseIFormat(QByteArray &ba) // основной разбор
     DataUnitIdentifier DUI;
     try
     {
-        DUI.typeIdent = TypeId(ba.at(0));
+        if (ba.size() < 6)
+        {
+            qDebug() << Error::SizeError;
+            return;
+        }
+        DUI.typeIdent = static_cast<TypeId>(ba.at(0));
         DUI.qualifier.Number = ba.at(1) & 0x7f;
         DUI.qualifier.SQ = ba.at(1) >> 7;
         DUI.cause.cause = ba.at(2) & 0x3F;
@@ -338,6 +359,7 @@ void IEC104Thread::ParseIFormat(QByteArray &ba) // основной разбор
 
             case TypeId::M_SP_NA_1:
             {
+                qDebug() << "TypeId::M_SP_NA_1";
                 //                if (cntspon > 255)
                 //                {
                 //                    ERMSG("out of array sponsignals");
@@ -569,7 +591,7 @@ void IEC104Thread::ParseIFormat(QByteArray &ba) // основной разбор
             }
 
             default:
-                break;
+                qDebug() << DUI.typeIdent;
             }
         }
 
@@ -611,6 +633,7 @@ void IEC104Thread::ParseIFormat(QByteArray &ba) // основной разбор
 
 void IEC104Thread::StartDT()
 {
+    qDebug() << QDateTime::currentMSecsSinceEpoch() << __PRETTY_FUNCTION__;
     m_log->info("Start()");
     APCI StartDT;
     StartDT.append(I104_START);
@@ -696,7 +719,7 @@ QByteArray IEC104Thread::ASDU6Prefix(unsigned char cmd, quint32 adr)
 void IEC104Thread::SendGI()
 {
     ASDU GInter = ASDU6Prefix(C_IC_NA_1, 0x00);
-    GInter.append('\x14');
+    GInter.append(0x14);
     APCI GI = CreateGI(0x0e);
     Send(1, GI, GInter); // ASDU = QByteArray()
     m_ackVR = m_V_R;

@@ -14,8 +14,29 @@ Ethernet::Ethernet(QObject *parent) : QObject(parent)
     Log = new LogClass(this);
     Log->Init("ethernet.log");
     Log->info("=== Log started ===");
-    OutDataBuf.clear();
+    // OutDataBuf.clear();
     ClosePortAndFinishThread = false;
+    sock = new QTcpSocket(this);
+#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
+    connect(sock, qOverload<QAbstractSocket::SocketError>(&QAbstractSocket::error), this, &Ethernet::seterr,
+        Qt::DirectConnection);
+#else
+    connect(sock, &QAbstractSocket::errorOccurred, this, &Ethernet::seterr);
+#endif
+    connect(sock, &QAbstractSocket::stateChanged, this, &Ethernet::EthStateChanged, Qt::DirectConnection);
+    connect(sock, &QAbstractSocket::connected, this, &Ethernet::Connected, Qt::DirectConnection);
+    connect(sock, &QAbstractSocket::connected, this, &Ethernet::EthSetConnected, Qt::DirectConnection);
+    connect(sock, &QAbstractSocket::disconnected, this, &Ethernet::Disconnected, Qt::DirectConnection);
+    sock->setProxy(QNetworkProxy::NoProxy);
+    connect(
+        sock, &QIODevice::readyRead, this,
+        [=] {
+            qDebug() << __PRETTY_FUNCTION__;
+            QByteArray ba = sock->readAll();
+            Log->info("PC <- " + ba.toHex());
+            emit NewDataArrived(ba);
+        },
+        Qt::QueuedConnection);
 }
 
 Ethernet::~Ethernet()
@@ -26,19 +47,9 @@ void Ethernet::Run()
 {
     EthConnected = false;
     StdFunc::SetDeviceIP(IP);
-    sock = new QTcpSocket(this);
-#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
-    connect(sock, qOverload<QAbstractSocket::SocketError>(&QAbstractSocket::error), this, &Ethernet::seterr);
-#else
-    connect(sock, &QAbstractSocket::errorOccurred, this, &Ethernet::seterr);
-#endif
-    connect(sock, &QAbstractSocket::stateChanged, this, &Ethernet::EthStateChanged);
-    connect(sock, &QAbstractSocket::connected, this, &Ethernet::Connected);
-    connect(sock, &QAbstractSocket::connected, this, &Ethernet::EthSetConnected);
-    connect(sock, &QAbstractSocket::disconnected, this, &Ethernet::Disconnected);
+
     Log->info("Connecting to host: " + StdFunc::ForDeviceIP() + ", port: " + QString::number(PORT104));
-    sock->setProxy(QNetworkProxy::NoProxy);
-    connect(sock, &QIODevice::readyRead, this, &Ethernet::CheckForData);
+
     sock->connectToHost(StdFunc::ForDeviceIP(), PORT104, QIODevice::ReadWrite, QAbstractSocket::IPv4Protocol);
     QEventLoop loop;
     connect(sock, &QAbstractSocket::connected, &loop, &QEventLoop::quit);
@@ -49,13 +60,24 @@ void Ethernet::Run()
 #endif
     loop.exec();
     //    TimeFunc::WaitFor(EthConnected, TIMEOUT_BIG);
+    //    while (!ClosePortAndFinishThread)
+    //    {
+    //        OutDataBufMtx.lock();
+    //        if (!OutDataBuf.isEmpty()) // что-то пришло в выходной буфер для записи
+    //            SendData();
+    //        OutDataBufMtx.unlock();
+    //  TimeFunc::Wait(10);
+    //    }
     while (!ClosePortAndFinishThread)
+    // while (Board::GetInstance().connectionState() != Board::ConnectionState::Closed)
     {
-        OutDataBufMtx.lock();
-        if (!OutDataBuf.isEmpty()) // что-то пришло в выходной буфер для записи
+        qDebug() << __PRETTY_FUNCTION__;
+        QMutexLocker locker(&OutDataBufMtx);
+        if (!OutDataBuf.isEmpty())
             SendData();
-        OutDataBufMtx.unlock();
-        TimeFunc::Wait(10);
+        else
+            _waiter.wait(&OutDataBufMtx /*, 1000*/);
+        // QCoreApplication::processEvents();
     }
     if (sock->isOpen())
     {
@@ -63,7 +85,6 @@ void Ethernet::Run()
         sock->disconnect();
         sock->deleteLater();
     }
-    // emit Finished();
     emit finished();
 }
 
@@ -82,6 +103,7 @@ void Ethernet::seterr(QAbstractSocket::SocketError error)
 
 void Ethernet::SendData()
 {
+    qDebug() << __PRETTY_FUNCTION__;
     if (!sock->isOpen())
     {
         qCritical("Ethernet write data to closed port");
@@ -100,9 +122,11 @@ void Ethernet::SendData()
 
 void Ethernet::InitiateWriteDataToPort(QByteArray ba)
 {
+    // qDebug() << __PRETTY_FUNCTION__;
     OutDataBufMtx.lock();
     OutDataBuf = ba;
     OutDataBufMtx.unlock();
+    _waiter.wakeOne();
 }
 
 void Ethernet::EthStateChanged(QAbstractSocket::SocketState state)
@@ -138,6 +162,7 @@ void Ethernet::EthStateChanged(QAbstractSocket::SocketState state)
 
 void Ethernet::CheckForData()
 {
+    qDebug() << __PRETTY_FUNCTION__;
     QByteArray ba = sock->readAll();
     Log->info("PC <- " + ba.toHex());
     emit NewDataArrived(ba);

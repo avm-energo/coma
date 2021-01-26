@@ -7,8 +7,8 @@
 
 #include <QMutex>
 #include <QQueue>
+#include <QTcpSocket>
 #include <QTimer>
-
 namespace Commands104
 {
 using namespace Queries;
@@ -167,6 +167,7 @@ signals:
 
 private:
     bool EthThreadWorking, ParseThreadWorking, AboutToFinish;
+    QTcpSocket *sock;
     //    LogClass *Log;
     //    QQueue<IEC104Thread::InputStruct> m_inputQueue;
     //    QList<IEC104Thread::SignalsStruct> m_outputList;

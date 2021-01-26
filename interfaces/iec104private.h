@@ -45,7 +45,7 @@ Q_NAMESPACE
 /**
  * \brief Message type IDs
  */
-enum TypeId : quint8
+enum TypeId : char
 {
     /// Single-point information
     M_SP_NA_1 = 1,
