@@ -1034,6 +1034,8 @@ void Coma::Connect()
         QApplication::restoreOverrideCursor();
         prepare();
     });
+    if (DataManager::queueSize() != 0)
+        DataManager::clearQueue();
     if (!BaseInterface::iface()->start(ConnectSettings))
     {
         QObject::disconnect(*connection);
@@ -1055,7 +1057,7 @@ void Coma::Connect()
         qCritical() << "Cannot connect" << Error::Timeout;
         QApplication::restoreOverrideCursor();
     });
-    DataManager::clearQueue();
+
     BaseInterface::iface()->reqBSI();
 }
 
