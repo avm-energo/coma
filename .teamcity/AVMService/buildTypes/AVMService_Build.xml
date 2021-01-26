@@ -122,7 +122,7 @@ nmake]]></param>
         <parameters>
           <param name="script.content"><![CDATA[call "%env.vcvarsall%" %env.arch%
 call "%env.vcvars%"
-cd build\%env.winarch%
+cd bin\%env.winarch%
 %env.qtdir%\%env.qtarch%\bin\qmake.exe -recursive ..\..]]></param>
           <param name="teamcity.build.workingDir" value="LimeReport" />
           <param name="teamcity.step.mode" value="default" />
