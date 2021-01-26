@@ -131,7 +131,7 @@ cd bin\%env.winarch%
       </runner>
       <runner id="RUNNER_37" name="nmake LimeReport" type="simpleRunner">
         <parameters>
-          <param name="script.content"><![CDATA[cd build\%env.winarch%
+          <param name="script.content"><![CDATA[cd bin\%env.winarch%
 call "%env.vcvarsall%" %env.arch%
 call "%env.vcvars%"
 call nmake sub-3rdparty sub-limereport]]></param>
