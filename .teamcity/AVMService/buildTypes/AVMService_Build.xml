@@ -35,7 +35,7 @@
           <param name="args"><![CDATA[/property:Configuration=Release
 /property:Platform=%env.arch%
 /property:PlatformToolset=v141
-/property:OutDir=%teamcity.build.checkoutDir%\..\libs\%env.winarch%\release\]]></param>
+/property:OutDir=%teamcity.build.checkoutDir%\lib\%env.winarch%\release\]]></param>
           <param name="command" value="msbuild" />
           <param name="dotNetCoverage.dotCover.home.path" value="%teamcity.tool.JetBrains.dotCover.CommandLineTools.DEFAULT%" />
           <param name="msbuild.version" value="MSBuild_15_Windows" />
