@@ -113,7 +113,7 @@ nmake]]></param>
           <param name="use.custom.script" value="true" />
         </parameters>
       </runner>
-      <runner id="RUNNER_15" name="nmake AVM-Service (1)" type="simpleRunner">
+      <runner id="RUNNER_15" name="nmake AVM-Debug" type="simpleRunner">
         <parameters>
           <param name="script.content"><![CDATA[cd build\%env.winarch%
 call "%env.vcvarsall%" %env.arch%
