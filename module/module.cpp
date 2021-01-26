@@ -44,7 +44,8 @@ Module *Module::createModule(QTimer *updateTimer, AlarmWidget *aw)
 {
     using namespace Modules;
     const auto &board = Board::GetInstance();
-    Journals *JOUR = nullptr;
+    UniquePointer<Journals> jour;
+    // Journals *JOUR = nullptr;
     Module *m = new Module;
     //    m->m_iface = iface;
     S2::config = new S2DataTypes::S2ConfigType;
@@ -94,7 +95,7 @@ Module *Module::createModule(QTimer *updateTimer, AlarmWidget *aw)
         {
         case Model::KIV:
         {
-            JOUR = new JournKIV(m);
+            jour = UniquePointer<JournKIV>(new JournKIV);
             if (board.interfaceType() != Board::InterfaceType::RS485)
             {
                 ConfigKIV *CKIV = new ConfigKIV;
@@ -115,7 +116,7 @@ Module *Module::createModule(QTimer *updateTimer, AlarmWidget *aw)
         }
         case Model::KTF:
         {
-            JOUR = new JournKTF(m);
+            jour = UniquePointer<JournKTF>(new JournKTF);
             if (board.interfaceType() != Board::InterfaceType::RS485)
             {
                 ConfigKTF *CKTF = new ConfigKTF;
@@ -137,7 +138,7 @@ Module *Module::createModule(QTimer *updateTimer, AlarmWidget *aw)
         }
         case Model::KDV:
         {
-            JOUR = new JournKDV(m);
+            jour = UniquePointer<JournKDV>(new JournKDV);
             if (board.interfaceType() != Board::InterfaceType::RS485)
             {
                 ConfigKDV *CKDV = new ConfigKDV;
@@ -174,11 +175,9 @@ Module *Module::createModule(QTimer *updateTimer, AlarmWidget *aw)
     //    if (Board::GetInstance().interfaceType() != Board::InterfaceType::RS485)
     if (board.interfaceType() != Board::InterfaceType::RS485)
     {
-        Q_ASSERT(JOUR != nullptr);
-        m->addDialogToList(new JournalDialog(JOUR), "Журналы");
+        m->addDialogToList(new JournalDialog(std::move(jour)), "Журналы");
     }
-    else
-        delete JOUR;
+
     //    if (Board::GetInstance().interfaceType() == Board::InterfaceType::USB)
     if (board.interfaceType() != Board::InterfaceType::RS485)
         m->addDialogToList(new FWUploadDialog, "Загрузка ВПО");

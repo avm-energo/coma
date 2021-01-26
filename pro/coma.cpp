@@ -1009,23 +1009,26 @@ void Coma::Connect()
     }
     BaseInterface::setIface(std::move(device));
 
-    connect(BaseInterface::iface(), &BaseInterface::stateChanged, [](const BaseInterface::State state) {
-        using State = BaseInterface::State;
-        switch (state)
-        {
-        case State::Run:
-            Board::GetInstance().setConnectionState(Board::ConnectionState::Connected);
-            break;
-        case State::Stop:
-            Board::GetInstance().setConnectionState(Board::ConnectionState::Closed);
-            break;
-        case State::Wait:
-            Board::GetInstance().setConnectionState(Board::ConnectionState::AboutToFinish);
-            break;
-        default:
-            break;
-        }
-    });
+    connect(
+        BaseInterface::iface(), &BaseInterface::stateChanged, this,
+        [](const BaseInterface::State state) {
+            using State = BaseInterface::State;
+            switch (state)
+            {
+            case State::Run:
+                Board::GetInstance().setConnectionState(Board::ConnectionState::Connected);
+                break;
+            case State::Stop:
+                Board::GetInstance().setConnectionState(Board::ConnectionState::Closed);
+                break;
+            case State::Wait:
+                Board::GetInstance().setConnectionState(Board::ConnectionState::AboutToFinish);
+                break;
+            default:
+                break;
+            }
+        },
+        Qt::DirectConnection);
 
     auto connection = std::shared_ptr<QMetaObject::Connection>(new QMetaObject::Connection);
     *connection = connect(&board, &Board::readyRead, this, [=]() {

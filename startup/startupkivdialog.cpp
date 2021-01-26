@@ -87,7 +87,8 @@ void StartupKIVDialog::SetupUI()
 
     setLayout(lyout);
     setObjectName("corDialog");
-    connect(&DataManager::GetInstance(), &DataManager::floatReceived, this, &UWidget::updateFloatData);
+    connect(&DataManager::GetInstance(), &DataManager::floatReceived, this, &UWidget::updateFloatData,
+        Qt::QueuedConnection);
 }
 
 // void StartupKIVDialog::FillBackCor()

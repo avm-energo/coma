@@ -4,8 +4,8 @@
 
 ModuleAlarm::ModuleAlarm(QWidget *parent) : BaseAlarm(parent)
 {
-    // connect(&DataManager::GetInstance(), &DataManager::singlePointReceived, this,
-    //   qOverload<const DataTypes::SinglePointWithTimeStruct &>(&ModuleAlarm::update));
+    connect(&DataManager::GetInstance(), &DataManager::singlePointReceived, this,
+        qOverload<const DataTypes::SinglePointWithTimeStruct &>(&ModuleAlarm::update));
 }
 
 ModuleAlarm::ModuleAlarm(const DataTypes::Alarm &desc, const int count, QWidget *parent) : ModuleAlarm(parent)

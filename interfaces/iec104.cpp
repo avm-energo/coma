@@ -18,14 +18,12 @@ IEC104::IEC104(QObject *parent)
     // Log = new LogClass;
     Log->Init("iec104.log");
     Log->info("=== Log started ===");
-    qRegisterMetaType<DataTypes::FloatStruct>();
+    //  qRegisterMetaType<DataTypes::FloatStruct>();
 }
 
 IEC104::~IEC104()
 {
 }
-
-// bool IEC104::Working() { return (EthThreadWorking | ParseThreadWorking); }
 
 bool IEC104::start(const ConnectStruct &st)
 {
@@ -37,19 +35,6 @@ bool IEC104::start(const ConnectStruct &st)
 
     EthThreadWorking = false;
     ParseThreadWorking = false;
-    //  QThread *portThread = new QThread;
-    //  portThread->setObjectName("portThread");
-    // Ethernet *port = new Ethernet;
-
-    // connect(portThread, &QThread::started, [&] { EthThreadWorking = true; });
-
-    // connect(port, &Ethernet::finished, portThread, &QThread::quit);
-    // connect(portThread, &QThread::finished, [] { qDebug() << "Port thread finished"; });
-    // connect(portThread, &QThread::finished, port, &QObject::deleteLater);
-    // connect(portThread, &QThread::started, port, &Ethernet::Run);
-    // connect(portThread, &QThread::finished, portThread, &QObject::deleteLater);
-    // connect(this, &IEC104::StopAll, port, &Ethernet::Stop);
-    // connect(port, &Ethernet::Disconnected, this, &IEC104::EthThreadFinished);
 
     IEC104Thread *parser = new IEC104Thread(Log);
     QThread *parserThread = new QThread;
@@ -85,40 +70,25 @@ bool IEC104::start(const ConnectStruct &st)
 
     connect(parserThread, &QThread::started, parser, &IEC104Thread::Run);
 
-    //  connect(port, &Ethernet::Connected, parser, &IEC104Thread::StartDT);
-
-    // connect(portThread, &QThread::finished, this, &IEC104::EmitReconnectSignal);
     connect(parser, &IEC104Thread::WriteData, sock, [=](const QByteArray ba) {
         qint64 res = sock->write(ba);
         Log->info(QString::number(res) + " bytes written");
     });
     connect(sock, &QAbstractSocket::disconnected, this, &IEC104::EthThreadFinished);
-    //  connect(parser, &IEC104Thread::WriteData, port, &Ethernet::InitiateWriteDataToPort, Qt::DirectConnection);
-    // connect(port, &Ethernet::NewDataArrived, parser, &IEC104Thread::GetSomeData);
+
     connect(
         sock, &QIODevice::readyRead, parser,
         [=] {
-            qDebug() << __PRETTY_FUNCTION__ << QThread::currentThreadId();
             QByteArray ba = sock->readAll();
-            QMetaObject::invokeMethod(
-                parser,
-                [=] {
-                    qDebug() << QThread::currentThreadId();
-                    parser->GetSomeData(ba);
-                }/*,
-                Qt::BlockingQueuedConnection*/);
-            // parser->GetSomeData(ba);
+            QMetaObject::invokeMethod(parser, [=] { parser->GetSomeData(ba); });
         },
         Qt::QueuedConnection);
     connect(parser, &IEC104Thread::ReconnectSignal, this, &IEC104::EmitReconnectSignal);
 
-    // port->IP = settings.ip;
     StdFunc::SetDeviceIP(settings.ip);
     parser->SetBaseAdr(settings.baseadr);
 
-    // port->moveToThread(portThread);
     parser->moveToThread(parserThread);
-    // portThread->start();
     parserThread->start();
     sock->connectToHost(StdFunc::ForDeviceIP(), PORT104, QIODevice::ReadWrite, QAbstractSocket::IPv4Protocol);
     QEventLoop ethloop;
@@ -130,20 +100,12 @@ bool IEC104::start(const ConnectStruct &st)
         ethloop.quit();
     });
     connect(sock, &QAbstractSocket::connected, parser, [&] {
-        qDebug() << QDateTime::currentMSecsSinceEpoch() << __PRETTY_FUNCTION__;
         ethconnected = true;
         EthThreadWorking = true;
-        setState(State::Run);
         ethloop.quit();
         QMetaObject::invokeMethod(parser, &IEC104Thread::StartDT);
     });
-    //    connect(port, &Ethernet::Connected, [&]() {
-    //        qDebug() << QDateTime::currentMSecsSinceEpoch() << __PRETTY_FUNCTION__;
-    //        ethconnected = true;
-    //        setState(State::Run);
-    //        ethloop.quit();
-    //        QMetaObject::invokeMethod(parser, &IEC104Thread::StartDT, Qt::BlockingQueuedConnection);
-    //    });
+    connect(sock, &QAbstractSocket::connected, this, [=] { setState(State::Run); });
     ethloop.exec();
     return ethconnected;
 }

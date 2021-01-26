@@ -204,7 +204,6 @@ void DataManager::checkTypeAndSendSignals(DataTypes::SignalsStruct &str)
             SinglePointWithTimeStruct sp = str.data.value<SinglePointWithTimeStruct>();
             insertRegister(sp.sigAdr, sp);
             emit singlePointReceived(sp);
-            qDebug() << sp;
         }
         break;
     }

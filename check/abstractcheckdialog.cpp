@@ -84,7 +84,8 @@ void AbstractCheckDialog::SetupUI()
         //        w.widget->setInterface(iface());
         w.widget->uponInterfaceSetting();
         CheckTW->addTab(w.widget, " " + w.widgetCaption + " ");
-        connect(&DataManager::GetInstance(), &DataManager::floatReceived, w.widget, &UWidget::updateFloatData);
+        connect(&DataManager::GetInstance(), &DataManager::floatReceived, w.widget, &UWidget::updateFloatData,
+            Qt::QueuedConnection);
         connect(&DataManager::GetInstance(), &DataManager::singlePointReceived, w.widget, &UWidget::updateSPData);
     }
     //    QWidget *w = CustomTab();

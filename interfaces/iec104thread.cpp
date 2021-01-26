@@ -157,7 +157,6 @@ void IEC104Thread::GetSomeData(QByteArray ba)
     m_cutPckt = ba.left(2);
     ba = ba.mid(2);
     GetSomeData(ba);
-    qDebug() << __PRETTY_FUNCTION__;
     m_isFirstParse = true;
 }
 
@@ -359,7 +358,6 @@ void IEC104Thread::ParseIFormat(QByteArray &ba) // основной разбор
 
             case TypeId::M_SP_NA_1:
             {
-                qDebug() << "TypeId::M_SP_NA_1";
                 //                if (cntspon > 255)
                 //                {
                 //                    ERMSG("out of array sponsignals");

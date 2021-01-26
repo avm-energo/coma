@@ -541,14 +541,11 @@ QStatusBar *WDFunc::NewSB(QWidget *w)
         layout->itemAt(i)->widget()->setFixedHeight(height);
     }
 
-    QObject::connect(
-        &Board::GetInstance(), qOverload<>(&Board::typeChanged), msgModel,
-        [=]() {
-            quint16 mtype = Board::GetInstance().type();
-            QString deviceName = QVariant::fromValue(Modules::Model(mtype)).toString();
-            msgModel->setText(deviceName);
-        },
-        Qt::QueuedConnection);
+    QObject::connect(&Board::GetInstance(), qOverload<>(&Board::typeChanged), msgModel, [=]() {
+        quint16 mtype = Board::GetInstance().type();
+        QString deviceName = QVariant::fromValue(Modules::Model(mtype)).toString();
+        msgModel->setText(deviceName);
+    });
 
     QObject::connect(
         &Board::GetInstance(), &Board::connectionStateChanged, msgConnectionState,
@@ -558,18 +555,20 @@ QStatusBar *WDFunc::NewSB(QWidget *w)
             msgConnectionState->setForegroundRole(QPalette::Highlight);
             msgConnectionState->setBackgroundRole(QPalette::HighlightedText);
         },
-        Qt::QueuedConnection);
-    QObject::connect(
-        &Board::GetInstance(), &Board::interfaceTypeChanged, bar,
+        Qt::DirectConnection);
+    QObject::connect(&Board::GetInstance(), &Board::interfaceTypeChanged, msgConnectionType,
         [=](const Board::InterfaceType &interfaceType) {
             QString connName = QVariant::fromValue(Board::InterfaceType(interfaceType)).toString();
             msgConnectionType->setText(connName);
+        });
+    QObject::connect(&Board::GetInstance(), &Board::interfaceTypeChanged, msgConnectionImage,
+        [=](const Board::InterfaceType &interfaceType) {
             QPixmap pixmap = QIcon(QString(images.value(interfaceType))).pixmap(QSize(height, height));
             msgConnectionImage->setPixmap(pixmap);
-        },
-        Qt::QueuedConnection);
+        });
     widget->setLayout(layout);
-    bar->insertPermanentWidget(0, widget);
+    bar->addPermanentWidget(widget);
+    //    bar->insertPermanentWidget(0, widget);
     return bar;
 }
 
