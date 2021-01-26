@@ -22,8 +22,9 @@ DEFINES += COMAVERSION='\\"$$VERSION\\"'
 DEFINES += DEVICETYPE=1 # 1 - module, 2 - pribor, for diagnostic messages
 DEFINES += SOFTDEVELOPER='\\"$$QMAKE_TARGET_COMPANY\\"'
 DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000
-DEFINES += GIT_VERSION='$(shell git describe --always)'
-DEFINES += BUILD_DATE='"\\\"$(shell date)\\\""'
+#// NOTE Реализовать
+#DEFINES += GIT_VERSION='$(shell git describe --always)'
+#DEFINES += BUILD_DATE='"\\\"$(shell date)\\\""'
 
 DEFINES += AVM_DEBUG
 TEMPLATE = app
