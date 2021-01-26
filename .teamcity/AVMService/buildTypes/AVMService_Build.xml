@@ -9,12 +9,8 @@
     <disabled-settings>
       <setting-ref ref="BUILD_EXT_3" />
       <setting-ref ref="RUNNER_24" />
-      <setting-ref ref="RUNNER_35" />
       <setting-ref ref="RUNNER_36" />
-      <setting-ref ref="RUNNER_37" />
       <setting-ref ref="RUNNER_38" />
-      <setting-ref ref="RUNNER_7" />
-      <setting-ref ref="RUNNER_8" />
     </disabled-settings>
     <parameters>
       <param name="env.arch" value="x64" />
@@ -26,7 +22,7 @@
         <parameters>
           <param name="args"><![CDATA[/property:Configuration=Release
 /property:Platform=%env.arch%
-/property:OutDir=..\..\..\..\libs\%env.winarch%\release]]></param>
+/property:OutDir=%teamcity.build.checkoutDir%\lib\%env.winarch%\release\]]></param>
           <param name="command" value="msbuild" />
           <param name="dotNetCoverage.dotCover.home.path" value="%teamcity.tool.JetBrains.dotCover.CommandLineTools.DEFAULT%" />
           <param name="msbuild.version" value="MSBuild_16_Windows" />
@@ -39,7 +35,7 @@
           <param name="args"><![CDATA[/property:Configuration=Release
 /property:Platform=%env.arch%
 /property:PlatformToolset=v141
-/property:OutDir=%teamcity.build.checkoutDir%\..\libs\%env.winarch%\release\]]></param>
+/property:OutDir=%teamcity.build.checkoutDir%\lib\%env.winarch%\release\]]></param>
           <param name="command" value="msbuild" />
           <param name="dotNetCoverage.dotCover.home.path" value="%teamcity.tool.JetBrains.dotCover.CommandLineTools.DEFAULT%" />
           <param name="msbuild.version" value="MSBuild_15_Windows" />
@@ -50,25 +46,8 @@
       </runner>
       <runner id="RUNNER_34" name="Make directory" type="simpleRunner">
         <parameters>
-          <param name="script.content" value="if not exist build\%env.winarch% mkdir build\%env.winarch%" />
-          <param name="teamcity.step.mode" value="default" />
-          <param name="use.custom.script" value="true" />
-        </parameters>
-      </runner>
-      <runner id="RUNNER_7" name="Make directory LimeReport" type="simpleRunner">
-        <parameters>
-          <param name="script.content" value="if not exist LimeReport\build\%env.winarch% mkdir LimeReport\build\%env.winarch%" />
-          <param name="teamcity.step.mode" value="default" />
-          <param name="use.custom.script" value="true" />
-        </parameters>
-      </runner>
-      <runner id="RUNNER_35" name="qmake LimeReport" type="simpleRunner">
-        <parameters>
-          <param name="script.content"><![CDATA[call "%env.vcvarsall%" %env.arch%
-call "%env.vcvars%"
-cd build\%env.winarch%
-%env.qtdir%\%env.qtarch%\bin\qmake.exe -recursive ..\..]]></param>
-          <param name="teamcity.build.workingDir" value="LimeReport" />
+          <param name="script.content"><![CDATA[if not exist bin\AVM-Service\%env.winarch% mkdir bin\AVM-Service\%env.winarch%
+if not exist bin\AVM-Debug\%env.winarch% mkdir bin\AVM-Debug\%env.winarch%]]></param>
           <param name="teamcity.step.mode" value="default" />
           <param name="use.custom.script" value="true" />
         </parameters>
@@ -81,17 +60,6 @@ cd build\%env.winarch%
 %env.qtdir%\%env.qtarch%\bin\qmake.exe -recursive ..\..>nul
 %env.qtdir%\%env.qtarch%\bin\qmake.exe -recursive ..\..]]></param>
           <param name="teamcity.build.workingDir" value="QtXlsxWriter" />
-          <param name="teamcity.step.mode" value="default" />
-          <param name="use.custom.script" value="true" />
-        </parameters>
-      </runner>
-      <runner id="RUNNER_37" name="nmake LimeReport" type="simpleRunner">
-        <parameters>
-          <param name="script.content"><![CDATA[cd build\%env.winarch%
-call "%env.vcvarsall%" %env.arch%
-call "%env.vcvars%"
-call nmake sub-3rdparty sub-limereport]]></param>
-          <param name="teamcity.build.workingDir" value="LimeReport" />
           <param name="teamcity.step.mode" value="default" />
           <param name="use.custom.script" value="true" />
         </parameters>
@@ -109,25 +77,16 @@ call nmake sub-src]]></param>
       </runner>
       <runner id="RUNNER_39" name="Copy" type="simpleRunner">
         <parameters>
-          <param name="script.content"><![CDATA[xcopy xz-utilz\src\liblzma\api\lzma ..\includes\lzma /I /Y /S
-xcopy xz-utilz\src\liblzma\api\lzma.h ..\includes\lzma\lzma.h* /Y
-xcopy hidapi\hidapi\hidapi.h ..\includes\hidapi\hidapi.h* /Y]]></param>
-          <param name="teamcity.step.mode" value="default" />
-          <param name="use.custom.script" value="true" />
-        </parameters>
-      </runner>
-      <runner id="RUNNER_8" name="Copy LimeReport" type="simpleRunner">
-        <parameters>
-          <param name="script.content"><![CDATA[xcopy LimeReport\build\%env.qtver%\%env.winarch%\release\lib\limereport.* ..\libs\%env.winarch%\release /H /Y /C /R /S /I
-xcopy LimeReport\build\%env.qtver%\%env.winarch%\release\lib\QtZint.* ..\libs\%env.winarch%\release /H /Y /C /R /S /I
-xcopy LimeReport\build\%env.qtver%\%env.winarch%\release\lib\include ..\includes\limereport /I /Y /S]]></param>
+          <param name="script.content"><![CDATA[xcopy xz-utilz\src\liblzma\api\lzma include\lzma /I /Y /S
+xcopy xz-utilz\src\liblzma\api\lzma.h include\lzma\lzma.h* /Y
+xcopy hidapi\hidapi\hidapi.h include\hidapi\hidapi.h* /Y]]></param>
           <param name="teamcity.step.mode" value="default" />
           <param name="use.custom.script" value="true" />
         </parameters>
       </runner>
       <runner id="RUNNER_40" name="qmake AVM-Service" type="simpleRunner">
         <parameters>
-          <param name="script.content"><![CDATA[cd build\%env.winarch%
+          <param name="script.content"><![CDATA[cd bin\AVM-Service\%env.winarch%
 call "%env.vcvarsall%" %env.arch%
 call "%env.vcvars%"
 %env.qtdir%\%env.qtarch%\bin\qmake.exe ..\..\pro\AVM-Service.pro]]></param>
@@ -137,7 +96,7 @@ call "%env.vcvars%"
       </runner>
       <runner id="RUNNER_41" name="nmake AVM-Service" type="simpleRunner">
         <parameters>
-          <param name="script.content"><![CDATA[cd build\%env.winarch%
+          <param name="script.content"><![CDATA[cd bin\AVM-Service\%env.winarch%
 call "%env.vcvarsall%" %env.arch%
 call "%env.vcvars%"
 nmake]]></param>
@@ -145,10 +104,75 @@ nmake]]></param>
           <param name="use.custom.script" value="true" />
         </parameters>
       </runner>
-      <runner id="RUNNER_42" name="Pack AppBundle" type="simpleRunner">
+      <runner id="RUNNER_42" name="Pack AppBundle Service" type="simpleRunner">
         <parameters>
           <param name="command.executable" value="C:\Program Files (x86)\Inno Setup 6\ISCC.exe" />
           <param name="command.parameters" value="iss\avm-service-%env.arch%.iss" />
+          <param name="teamcity.step.mode" value="default" />
+        </parameters>
+      </runner>
+      <runner id="RUNNER_7" name="Make directory LimeReport" type="simpleRunner">
+        <parameters>
+          <param name="script.content" value="if not exist LimeReport\bin\%env.winarch% mkdir LimeReport\bin\%env.winarch%" />
+          <param name="teamcity.step.mode" value="default" />
+          <param name="use.custom.script" value="true" />
+        </parameters>
+      </runner>
+      <runner id="RUNNER_35" name="qmake LimeReport" type="simpleRunner">
+        <parameters>
+          <param name="script.content"><![CDATA[call "%env.vcvarsall%" %env.arch%
+call "%env.vcvars%"
+cd bin\%env.winarch%
+%env.qtdir%\%env.qtarch%\bin\qmake.exe -recursive ..\..]]></param>
+          <param name="teamcity.build.workingDir" value="LimeReport" />
+          <param name="teamcity.step.mode" value="default" />
+          <param name="use.custom.script" value="true" />
+        </parameters>
+      </runner>
+      <runner id="RUNNER_37" name="nmake LimeReport" type="simpleRunner">
+        <parameters>
+          <param name="script.content"><![CDATA[cd bin\%env.winarch%
+call "%env.vcvarsall%" %env.arch%
+call "%env.vcvars%"
+call nmake sub-3rdparty sub-limereport]]></param>
+          <param name="teamcity.build.workingDir" value="LimeReport" />
+          <param name="teamcity.step.mode" value="default" />
+          <param name="use.custom.script" value="true" />
+        </parameters>
+      </runner>
+      <runner id="RUNNER_8" name="Copy LimeReport" type="simpleRunner">
+        <parameters>
+          <param name="script.content"><![CDATA[xcopy LimeReport\bin\%env.qtver%\%env.winarch%\release\lib\limereport.* lib\%env.winarch%\release /H /Y /C /R /S /I
+xcopy LimeReport\bin\%env.qtver%\%env.winarch%\release\lib\QtZint.* lib\%env.winarch%\release /H /Y /C /R /S /I
+xcopy LimeReport\bin\%env.qtver%\%env.winarch%\release\lib\include include\limereport /I /Y /S]]></param>
+          <param name="teamcity.step.mode" value="default" />
+          <param name="use.custom.script" value="true" />
+        </parameters>
+      </runner>
+      <runner id="RUNNER_14" name="qmake AVM-Debug" type="simpleRunner">
+        <parameters>
+          <param name="script.content"><![CDATA[cd bin\AVM-Debug\%env.winarch%
+call "%env.vcvarsall%" %env.arch%
+call "%env.vcvars%"
+%env.qtdir%\%env.qtarch%\bin\qmake.exe ..\..\pro\AVM-Debug.pro]]></param>
+          <param name="teamcity.step.mode" value="default" />
+          <param name="use.custom.script" value="true" />
+        </parameters>
+      </runner>
+      <runner id="RUNNER_15" name="nmake AVM-Debug" type="simpleRunner">
+        <parameters>
+          <param name="script.content"><![CDATA[cd bin\AVM-Debug\%env.winarch%
+call "%env.vcvarsall%" %env.arch%
+call "%env.vcvars%"
+nmake]]></param>
+          <param name="teamcity.step.mode" value="default" />
+          <param name="use.custom.script" value="true" />
+        </parameters>
+      </runner>
+      <runner id="RUNNER_12" name="Pack AppBundle Debug" type="simpleRunner">
+        <parameters>
+          <param name="command.executable" value="C:\Program Files (x86)\Inno Setup 6\ISCC.exe" />
+          <param name="command.parameters" value="iss\avm-debug-%env.arch%.iss" />
           <param name="teamcity.step.mode" value="default" />
         </parameters>
       </runner>
