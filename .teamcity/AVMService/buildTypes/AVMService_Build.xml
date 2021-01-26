@@ -113,7 +113,7 @@ nmake]]></param>
       </runner>
       <runner id="RUNNER_7" name="Make directory LimeReport" type="simpleRunner">
         <parameters>
-          <param name="script.content" value="if not exist LimeReport\bin\%env.winarch% mkdir LimeReport\bin\%env.winarch%" />
+          <param name="script.content" value="if not exist LimeReport\build\%env.winarch% mkdir LimeReport\build\%env.winarch%" />
           <param name="teamcity.step.mode" value="default" />
           <param name="use.custom.script" value="true" />
         </parameters>
@@ -142,9 +142,9 @@ call nmake sub-3rdparty sub-limereport]]></param>
       </runner>
       <runner id="RUNNER_8" name="Copy LimeReport" type="simpleRunner">
         <parameters>
-          <param name="script.content"><![CDATA[xcopy LimeReport\bin\%env.qtver%\%env.winarch%\release\lib\limereport.* lib\%env.winarch%\release /H /Y /C /R /S /I
-xcopy LimeReport\bin\%env.qtver%\%env.winarch%\release\lib\QtZint.* lib\%env.winarch%\release /H /Y /C /R /S /I
-xcopy LimeReport\bin\%env.qtver%\%env.winarch%\release\lib\include include\limereport /I /Y /S]]></param>
+          <param name="script.content"><![CDATA[xcopy LimeReport\build\%env.qtver%\%env.winarch%\release\lib\limereport.* lib\%env.winarch%\release /H /Y /C /R /S /I
+xcopy LimeReport\build\%env.qtver%\%env.winarch%\release\lib\QtZint.* lib\%env.winarch%\release /H /Y /C /R /S /I
+xcopy LimeReport\build\%env.qtver%\%env.winarch%\release\lib\include include\limereport /I /Y /S]]></param>
           <param name="teamcity.step.mode" value="default" />
           <param name="use.custom.script" value="true" />
         </parameters>
