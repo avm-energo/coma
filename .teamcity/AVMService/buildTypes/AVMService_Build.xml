@@ -154,7 +154,7 @@ xcopy LimeReport\bin\%env.qtver%\%env.winarch%\release\lib\include include\limer
           <param name="script.content"><![CDATA[cd bin\AVM-Debug\%env.winarch%
 call "%env.vcvarsall%" %env.arch%
 call "%env.vcvars%"
-%env.qtdir%\%env.qtarch%\bin\qmake.exe ..\..\pro\AVM-Debug.pro]]></param>
+%env.qtdir%\%env.qtarch%\bin\qmake.exe ..\..\..\pro\AVM-Debug.pro]]></param>
           <param name="teamcity.step.mode" value="default" />
           <param name="use.custom.script" value="true" />
         </parameters>
