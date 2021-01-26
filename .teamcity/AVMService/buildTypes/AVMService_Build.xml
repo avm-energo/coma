@@ -152,10 +152,10 @@ nmake]]></param>
           <param name="teamcity.step.mode" value="default" />
         </parameters>
       </runner>
-      <runner id="RUNNER_12" name="Pack AppBundle Service (1)" type="simpleRunner">
+      <runner id="RUNNER_12" name="Pack AppBundle Debug" type="simpleRunner">
         <parameters>
           <param name="command.executable" value="C:\Program Files (x86)\Inno Setup 6\ISCC.exe" />
-          <param name="command.parameters" value="iss\avm-service-%env.arch%.iss" />
+          <param name="command.parameters" value="iss\avm-debug-%env.arch%.iss" />
           <param name="teamcity.step.mode" value="default" />
         </parameters>
       </runner>
