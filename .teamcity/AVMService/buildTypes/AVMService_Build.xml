@@ -77,9 +77,9 @@ call nmake sub-src]]></param>
       </runner>
       <runner id="RUNNER_39" name="Copy" type="simpleRunner">
         <parameters>
-          <param name="script.content"><![CDATA[xcopy xz-utilz\src\liblzma\api\lzma ..\includes\lzma /I /Y /S
-xcopy xz-utilz\src\liblzma\api\lzma.h ..\includes\lzma\lzma.h* /Y
-xcopy hidapi\hidapi\hidapi.h ..\includes\hidapi\hidapi.h* /Y]]></param>
+          <param name="script.content"><![CDATA[xcopy xz-utilz\src\liblzma\api\lzma include\lzma /I /Y /S
+xcopy xz-utilz\src\liblzma\api\lzma.h include\lzma\lzma.h* /Y
+xcopy hidapi\hidapi\hidapi.h include\hidapi\hidapi.h* /Y]]></param>
           <param name="teamcity.step.mode" value="default" />
           <param name="use.custom.script" value="true" />
         </parameters>
