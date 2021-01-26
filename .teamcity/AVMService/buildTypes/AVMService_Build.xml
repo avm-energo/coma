@@ -46,7 +46,8 @@
       </runner>
       <runner id="RUNNER_34" name="Make directory" type="simpleRunner">
         <parameters>
-          <param name="script.content" value="if not exist build\%env.winarch% mkdir build\%env.winarch%" />
+          <param name="script.content"><![CDATA[if not exist bin\AVM-Service\%env.winarch% mkdir bin\AVM-Service\%env.winarch%
+if not exist bin\AVM-Debug\%env.winarch% mkdir bin\AVM-Debug\%env.winarch%]]></param>
           <param name="teamcity.step.mode" value="default" />
           <param name="use.custom.script" value="true" />
         </parameters>
