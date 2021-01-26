@@ -261,7 +261,7 @@ RESOURCES += \
     ../settings/settings.qrc \
     ../widgets/styles.qrc
 
-INCLUDEPATH += $$PWD/../../includes
+INCLUDEPATH += $$PWD/../include
 
 # QXlsx code for Application Qt project
 QXLSX_PARENTPATH=./../QXlsx/QXlsx         # current QXlsx path is . (. means curret directory)
@@ -275,34 +275,34 @@ win32 {
         message("x64 build")
        ## Windows x64 (64bit) specific build here
        CONFIG(debug, debug|release) {
-       LIBS += -L$$PWD/../../libs/win64/debug/ -llimereportd -lhidapi
-       DESTDIR = $${PWD}/../../build/win64/debug
+       LIBS += -L$$PWD/../lib/win64/debug/ -llimereportd -lhidapi
+       DESTDIR = $${PWD}/../bin/$${TARGET}/win64/debug
        } else {
-       LIBS += -L$$PWD/../../libs/win64/release/ -llimereport -lhidapi
-       DESTDIR = $${PWD}/../../build/win64/release
+       LIBS += -L$$PWD/../lib/win64/release/ -llimereport -lhidapi
+       DESTDIR = $${PWD}/../bin/$${TARGET}/win64/release
        LIBS_FILES += \
-       $$PWD/../../libs/win64/release/hidapi.dll \
-       $$PWD/../../libs/win64/release/limereport.dll \
-       $$PWD/../../libs/win64/release/QtZint.dll
+       $$PWD/../lib/win64/release/hidapi.dll \
+       $$PWD/../lib/win64/release/limereport.dll \
+       $$PWD/../lib/win64/release/QtZint.dll
        }
     } else {
         message("x86 build")
         ## Windows x86 (32bit) specific build here
         CONFIG(debug, debug|release) {
-        LIBS += -L$$PWD/../../libs/win32/debug/ -llimereportd -lhidapi
-        DESTDIR = $${PWD}/../../build/win32/debug
+        LIBS += -L$$PWD/../lib/win32/debug/ -llimereportd -lhidapi
+        DESTDIR = $${PWD}/../bin/$${TARGET}/win32/debug
         } else {
-        LIBS += -L$$PWD/../../libs/win32/release/ -llimereport -lhidapi
-        DESTDIR = $${PWD}/../../build/win32/release
+        LIBS += -L$$PWD/../lib/win32/release/ -llimereport -lhidapi
+        DESTDIR = $${PWD}/../bin/$${TARGET}/win32/release
         LIBS_FILES += \
-        $$PWD/../../libs/win32/release/hidapi.dll \
-        $$PWD/../../libs/win32/release/limereport.dll \
-        $$PWD/../../libs/win32/release/QtZint.dll
+        $$PWD/../lib/win32/release/hidapi.dll \
+        $$PWD/../lib/win32/release/limereport.dll \
+        $$PWD/../lib/win32/release/QtZint.dll
         }
     }
 }
 
-unix: LIBS += -L$$PWD/libs/win32/debug/ -llimereportd
+unix: LIBS += -llimereport
 
 
 # copies the given files to the destination directory

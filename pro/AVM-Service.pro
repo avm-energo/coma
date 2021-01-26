@@ -234,7 +234,7 @@ ERROR_FILES += \
 
 
 
-INCLUDEPATH += $$PWD/../../includes
+INCLUDEPATH += $$PWD/../include
 
 # QXlsx code for Application Qt project
 QXLSX_PARENTPATH=./../QXlsx/QXlsx         # current QXlsx path is . (. means curret directory)
@@ -249,11 +249,11 @@ win32 {
        message("Windows x64 build")
        ## Windows x64 (64bit) specific build here
        CONFIG(debug, debug|release) {
-       LIBS += -L$$PWD/../../libs/win64/debug/ -lhidapi
-       DESTDIR = $${PWD}/../../build/win64/debug
+       LIBS += -L$$PWD/../lib/win64/debug/ -lhidapi
+       DESTDIR = $${PWD}/../bin/$${TARGET}/win64/debug
        } else {
-       LIBS += -L$$PWD/../../libs/win64/release/ -lhidapi
-       DESTDIR = $${PWD}/../../build/win64/release
+       LIBS += -L$$PWD/../lib/win64/release/ -lhidapi
+       DESTDIR = $${PWD}/../bin/$${TARGET}/win64/release
        LIBS_FILES += \
        $$PWD/../../libs/win64/release/hidapi.dll
        }
@@ -261,13 +261,13 @@ win32 {
         message("Windows x86 build")
         ## Windows x86 (32bit) specific build here
         CONFIG(debug, debug|release) {
-        LIBS += -L$$PWD/../../libs/win32/debug/ -lhidapi
-        DESTDIR = $${PWD}/../../build/win32/debug
+        LIBS += -L$$PWD/../lib/win32/debug/ -lhidapi
+        DESTDIR = $${PWD}/../bin/$${TARGET}/win32/debug
         } else {
-        LIBS += -L$$PWD/../../libs/win32/release/ -lhidapi
-        DESTDIR = $${PWD}/../../build/win32/release
+        LIBS += -L$$PWD/../lib/win32/release/ -lhidapi
+        DESTDIR = $${PWD}/../bin/$${TARGET}/win32/release
         LIBS_FILES += \
-        $$PWD/../../libs/win32/release/hidapi.dll
+        $$PWD/../lib/win32/release/hidapi.dll
         }
     }
 }
@@ -278,17 +278,17 @@ contains(QT_ARCH, x86_64) {
         message("Unix x64 build")
         ## Unix x64 (64bit) specific build here
         CONFIG(debug, debug|release) {
-        DESTDIR = $${PWD}/../../build/linux64/debug
+        DESTDIR = $${PWD}/../bin/$${TARGET}/linux64/debug
         } else {
-        DESTDIR = $${PWD}/../../build/linux64/release
+        DESTDIR = $${PWD}/../bin/$${TARGET}/linux64/release
         }
     } else {
         message("Unix x86 build")
         ## Unix x86 (32bit) specific build here
         CONFIG(debug, debug|release) {
-        DESTDIR = $${PWD}/../../build/linux32/debug
+        DESTDIR = $${PWD}/../bin/$${TARGET}/linux32/debug
         } else {
-        DESTDIR = $${PWD}/../../build/linux32/release
+        DESTDIR = $${PWD}/../bin/$${TARGET}/linux32/release
         }
     }
 }

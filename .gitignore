@@ -28,7 +28,9 @@ ui_*.h
 *.obj
 Makefile*
 *build-*
-
+*bin*
+*lib*
+*include*
 # QtCreator
 
 *.autosave
