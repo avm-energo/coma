@@ -89,7 +89,7 @@ xcopy hidapi\hidapi\hidapi.h include\hidapi\hidapi.h* /Y]]></param>
           <param name="script.content"><![CDATA[cd bin\AVM-Service\%env.winarch%
 call "%env.vcvarsall%" %env.arch%
 call "%env.vcvars%"
-%env.qtdir%\%env.qtarch%\bin\qmake.exe ..\..\pro\AVM-Service.pro]]></param>
+%env.qtdir%\%env.qtarch%\bin\qmake.exe ..\..\..\pro\AVM-Service.pro]]></param>
           <param name="teamcity.step.mode" value="default" />
           <param name="use.custom.script" value="true" />
         </parameters>
