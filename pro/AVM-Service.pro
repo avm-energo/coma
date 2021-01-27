@@ -10,7 +10,7 @@ QMAKE_TARGET_PRODUCT = AVTUK-S
 RC_ICONS = ../coma.ico
 CONFIG += c++17
 CONFIG -= console
-VERSION = 1.1.2
+VERSION = 2.0.0
 
 QT       += core gui printsupport network serialport widgets concurrent testlib xml
 QT.testlib.CONFIG -= console
