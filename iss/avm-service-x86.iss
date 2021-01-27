@@ -15,7 +15,7 @@
 #define Redist_DIR "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Redist\MSVC\14.16.27012"
 #define LIB_DIR "..\lib"
 #define Build_DIR  "..\bin"
-#define ApplicationVersion GetFileVersion('..\..\bin\AVM-Service\win32\release\AVM-Service.exe')
+#define ApplicationVersion GetFileVersion('..\bin\AVM-Service\win32\release\AVM-Service.exe')
 
 
 
