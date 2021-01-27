@@ -3,6 +3,7 @@
 
 #include "datatypes.h"
 #include "error.h"
+#include "stdfunc.h"
 
 #include <QVector>
 #define MAXSIZE 200000
@@ -32,7 +33,7 @@ public:
     static quint32 updateCRC32(unsigned char ch, quint32 crc);
     static quint32 crc32buf(const QByteArray &data);
 
-    static S2DataTypes::S2ConfigType *config;
+    static S2DataTypes::S2ConfigType config;
 
 private:
     //    const unsigned long dwPolynomial = 0xEDB88320;
