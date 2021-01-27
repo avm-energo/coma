@@ -11,6 +11,9 @@ class ETableModel : public QAbstractTableModel
 {
     Q_OBJECT
 public:
+    QList<ETableItem *> maindata;
+    QStringList hdr;
+
     explicit ETableModel(QObject *parent = 0);
     ~ETableModel();
 
@@ -30,7 +33,7 @@ public:
         int role = Qt::DisplayRole) const; // получение индекса элемента в заголовке, который содержит текст hdrtext
     void addColumn(
         const QString hdrtext); // добавление новой колонки с текстом в заголовке hdrtext для варианта двух столбцов
-    void addRow();              // добавление строки
+    void addRow(); // добавление строки
     void setRowAttr(int fcset = 0, int icon = -1);
     void clearModel();
     void fillModel(QVector<QVector<QVariant>> &);
@@ -51,9 +54,7 @@ signals:
 protected slots:
 
 private:
-    QList<ETableItem *> maindata;
     QList<int> ColFormat;
-    QStringList hdr;
 };
 
 #endif // ETABLEMODEL_H

@@ -1,0 +1,20 @@
+<RCC>
+    <qresource prefix="/icons">
+        <file>coma.svg</file>
+        <file>ethernet.svg</file>
+        <file>rs485.svg</file>
+        <file>usb.svg</file>
+        <file>tnfrosya.svg</file>
+        <file>tnload.svg</file>
+        <file>tnread.svg</file>
+        <file>tnreset.svg</file>
+        <file>tnsave.svg</file>
+        <file>tnsettings.svg</file>
+        <file>tnstart.svg</file>
+        <file>tnstop.svg</file>
+        <file>tnwrite.svg</file>
+        <file>tnapprove.svg</file>
+        <file>tnno.svg</file>
+        <file>tnyes.svg</file>
+    </qresource>
+</RCC>

@@ -3,6 +3,7 @@
 #include "../gen/errorqueue.h"
 #include "../gen/logger.h"
 
+#include <../gen/error.h>
 #include <QColor>
 #include <QDateTime>
 #include <QDebug>
@@ -161,7 +162,6 @@ bool ErrorProtocolModel::setData(const QModelIndex &index, const QVariant &value
 {
     if (index.isValid() && value.isValid())
     {
-        qDebug() << QVariant::fromValue(Qt::ItemDataRole(role));
         switch (role)
         {
         case Qt::EditRole:
@@ -192,7 +192,7 @@ bool ErrorProtocolModel::setData(const QModelIndex &index, const QVariant &value
     return false;
 }
 
-void ErrorProtocolModel::appendRow(Error::ErMsg msg)
+void ErrorProtocolModel::appendRow(ErrorMsg msg)
 {
     QStringList tmpsl;
     tmpsl << msg;
@@ -203,9 +203,11 @@ void ErrorProtocolModel::appendRow(Error::ErMsg msg)
 void ErrorProtocolModel::initModel()
 {
     auto &queue = ErrorQueue::GetInstance();
-    ErrorQueue::GetInstance().setLastErrorIndex(queue.errMsgPool()->size());
-    while (!queue.errMsgPool()->empty())
+
+    m_dataptr.clear();
+    for (const auto &error : *queue.errMsgPool())
     {
-        appendRow(queue.popError());
+        appendRow(error);
     }
+    queue.clearCounter();
 }

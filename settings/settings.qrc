@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/module">
+        <file>avm-kiv.xml</file>
+    </qresource>
+</RCC>

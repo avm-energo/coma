@@ -1,6 +1,7 @@
 #include "errorprotocolwidget.h"
 
 #include "../gen/colors.h"
+#include "../gen/error.h"
 #include "../models/errorprotocolmodel.h"
 #ifdef MODELDEBUG
 #include <QAbstractItemModelTester>
@@ -14,8 +15,6 @@ ErrorProtocolWidget::ErrorProtocolWidget(QWidget *parent) : QWidget(parent)
 {
     QVBoxLayout *lyout = new QVBoxLayout;
     QWidget *w = new QWidget;
-    QString ErrWss = "QWidget {background-color: " + QString(Colors::ERPROTCLR) + ";}";
-    w->setStyleSheet(ErrWss);
     QTableView *tv = new QTableView(this);
     Model = new ErrorProtocolModel(this);
     Model->initModel();
@@ -29,9 +28,7 @@ ErrorProtocolWidget::ErrorProtocolWidget(QWidget *parent) : QWidget(parent)
     Model->setHeaderData(2, Qt::Horizontal, "Тип сообщения", Qt::EditRole);
     Model->setHeaderData(3, Qt::Horizontal, "Сообщение", Qt::EditRole);
     tv->setModel(Model);
-    QString Tvss = "QHeaderView::section {background-color: " + QString(Colors::ERPROTCLR) + ";}";
-    tv->horizontalHeader()->setStyleSheet(Tvss);
-    tv->verticalHeader()->setStyleSheet(Tvss);
+
     tv->resizeColumnsToContents();
     connect(Model, &QAbstractItemModel::dataChanged, tv, &QTableView::resizeColumnsToContents);
     tv->horizontalHeader()->setStretchLastSection(true);
@@ -65,7 +62,7 @@ ErrorProtocolWidget::~ErrorProtocolWidget()
 {
 }
 
-void ErrorProtocolWidget::AddRowToProt(Error::ErMsg ermsg)
+void ErrorProtocolWidget::AddRowToProt(ErrorMsg ermsg)
 {
     Model->appendRow(ermsg);
 }

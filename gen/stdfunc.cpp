@@ -1,15 +1,19 @@
 #include "stdfunc.h"
 
+#include "../gen/error.h"
 #include "../gen/s2.h"
-#include "board.h"
+#include "pch.h"
 
 #include <QCoreApplication>
+#include <QDataStream>
 #include <QDateTime>
 #include <QDir>
 #include <QElapsedTimer>
 #include <QFile>
-#include <QFileDialog>
 #include <QHostAddress>
+#ifdef QT_GUI_LIB
+#include <QMessageBox>
+#endif
 #include <QProcess>
 #include <QSettings>
 #include <QStandardPaths>
@@ -23,9 +27,10 @@ QString StdFunc::HomeDir = "";       // рабочий каталог прогр
 QString StdFunc::SystemHomeDir = ""; // системный каталог программы
 bool StdFunc::Emul = false;
 bool StdFunc::Cancelled = false;
-QString StdFunc::PrbMsg = "";
+// QString StdFunc::PrbMsg = "";
 QString StdFunc::DeviceIP = "";
 QString StdFunc::s_OrganizationString = "";
+int StdFunc::m_tuneRequestCount = 0;
 
 StdFunc::StdFunc()
 {
@@ -42,6 +47,7 @@ void StdFunc::Init()
     QScopedPointer<QSettings> sets = QScopedPointer<QSettings>(new QSettings("EvelSoft", PROGNAME));
     SetOrganizationString(sets->value("OrganizationString", "Р&К").toString());
     SetDeviceIP(sets->value("DeviceIP", "172.16.11.12").toString());
+    setTuneRequestCount(sets->value("TuneRequestCount", "20").toInt());
 }
 
 QString StdFunc::VerToStr(quint32 num)
@@ -53,13 +59,34 @@ QString StdFunc::VerToStr(quint32 num)
         = QString::number(mv, 10) + "." + QString::number(lv, 10) + "-" + QString("%1").arg(sv, 4, 10, QChar('0'));
     return tmpString;
 }
-
-bool StdFunc::FloatInRange(float var, float value, float tolerance)
+#ifdef QT_GUI_LIB
+bool StdFunc::floatIsWithinLimits(QWidget *w, double var, double base, double tolerance, bool showMessage)
 {
-    if ((var >= (value - tolerance)) && (var <= (value + tolerance)))
+    float tmpf = fabs(var - base);
+    if (tmpf < fabs(tolerance))
         return true;
-    else
-        return false;
+    else if (showMessage)
+    {
+        qCritical() << "Ошибочное значение: должно быть " << QString::number(base, 'f', 5) << "±"
+                    << QString::number(tolerance, 'f', 5) << ", а получили: " << QString::number(var, 'f', 5);
+        QMessageBox::critical(w, "Ошибка",
+            "Ошибочное значение: должно быть " + QString::number(base, 'f', 5) + "±"
+                + QString::number(tolerance, 'f', 5) + ", а получили: " + QString::number(var, 'f', 5));
+    }
+    return false;
+}
+#endif
+float StdFunc::toFloat(const QString &text)
+{
+    bool ok;
+    float tmpf;
+    tmpf = text.toFloat(&ok);
+    if (!ok)
+    {
+        qCritical() << "Значение " << text << " не может быть переведено во float";
+        return 0;
+    }
+    return tmpf;
 }
 
 void StdFunc::SetHomeDir(const QString &dir)
@@ -101,17 +128,27 @@ QString StdFunc::OrganizationString()
     return s_OrganizationString;
 }
 
-void StdFunc::Cancel()
+void StdFunc::setTuneRequestCount(int n)
+{
+    m_tuneRequestCount = n;
+}
+
+int StdFunc::tuneRequestCount()
+{
+    return m_tuneRequestCount;
+}
+
+void StdFunc::cancel()
 {
     Cancelled = true;
 }
 
-void StdFunc::ClearCancel()
+void StdFunc::clearCancel()
 {
     Cancelled = false;
 }
 
-bool StdFunc::IsCancelled()
+bool StdFunc::isCancelled()
 {
     return Cancelled;
 }
@@ -142,15 +179,15 @@ quint32 StdFunc::BitByIndex(int idx)
     return (0x00000001 << (idx - 1));
 }
 
-QString StdFunc::PrbMessage()
-{
-    return PrbMsg;
-}
+// QString StdFunc::PrbMessage()
+//{
+//    return PrbMsg;
+//}
 
-void StdFunc::SetPrbMessage(const QString &msg)
-{
-    PrbMsg = msg;
-}
+// void StdFunc::SetPrbMessage(const QString &msg)
+//{
+//    PrbMsg = msg;
+//}
 
 void StdFunc::Wait(int ms)
 {

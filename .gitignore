@@ -27,8 +27,10 @@ qrc_*.cpp
 ui_*.h
 *.obj
 Makefile*
-*-build-*
-
+*build-*
+*bin*
+*lib*
+*include*
 # QtCreator
 
 *.autosave
@@ -40,3 +42,4 @@ Makefile*
 /AVTUK_ETH_Version-f/AVM-Service.user
 
 /AVTUK_ETH_Version-f/msvc_make.bat
+msvc_make.bat

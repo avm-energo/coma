@@ -1,6 +1,6 @@
 #include "waitwidget.h"
 
-#include "../gen/stdfunc.h"
+//#include "../gen/stdfunc.h"
 
 #include <QApplication>
 #include <QBitmap>
@@ -24,7 +24,7 @@ WaitWidget::WaitWidget(QWidget *parent) : QWidget(parent)
     Message = "";
     resize(310, 380);
     setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
-    qsrand(QDateTime::currentDateTime().toSecsSinceEpoch());
+    srand(QDateTime::currentDateTime().toSecsSinceEpoch());
     vel1 = 0.5;
     IsAllowedToStop = false;
     IsIncrement = true;
@@ -52,11 +52,11 @@ void WaitWidget::Start()
     show();
     QTimer *tmr = new QTimer;
     tmr->setInterval(10);
-    connect(tmr, SIGNAL(timeout()), this, SLOT(Rotate()));
+    connect(tmr, &QTimer::timeout, this, &WaitWidget::Rotate);
     tmr->start();
     QTimer *tmrs = new QTimer;
     tmrs->setInterval(1000);
-    connect(tmrs, SIGNAL(timeout()), this, SLOT(UpdateSeconds()));
+    connect(tmrs, &QTimer::timeout, this, &WaitWidget::UpdateSeconds);
     tmrs->start();
 }
 
@@ -150,7 +150,7 @@ void WaitWidget::keyPressEvent(QKeyEvent *e)
 {
     if ((e->key() == Qt::Key_Escape) && IsAllowedToStop)
     {
-        StdFunc::Cancel();
+        //        StdFunc::cancel();
         Stop();
         //        emit CountZero();
     }

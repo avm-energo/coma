@@ -24,6 +24,7 @@ LogClass::~LogClass()
         fp->close();
         delete fp;
     }
+    delete mtx;
 }
 
 void LogClass::Init(const QString &Filename)

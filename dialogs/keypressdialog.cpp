@@ -1,30 +1,49 @@
 #include "keypressdialog.h"
 
 #include "../gen/error.h"
-#include "../gen/stdfunc.h"
 #include "../widgets/wd_func.h"
 
+#include <QDebug>
+#include <QEventLoop>
+#include <QMessageBox>
 #include <QVBoxLayout>
-
-KeyPressDialog::KeyPressDialog(const QString &PswPhrase, QWidget *parent) : QDialog(parent)
+KeyPressDialog::KeyPressDialog(QWidget *parent) : QDialog(parent)
 {
     setAttribute(Qt::WA_DeleteOnClose);
+
     SetupUI();
-    SetPhrase(PswPhrase);
+}
+
+bool KeyPressDialog::CheckPassword(const QString &password)
+{
+    QEventLoop PasswordLoop;
+    connect(this, &KeyPressDialog::finished, &PasswordLoop, &QEventLoop::quit);
+    show();
+    PasswordLoop.exec();
+    close();
+    if (m_password.isEmpty() || m_password.isNull())
+    {
+        qCritical("Отмена ввода пароля");
+        return false;
+    }
+
+    if (m_password != password)
+    {
+        qCritical("Пароль введён неверно");
+        QMessageBox::critical(this, "Неправильно", "Пароль введён неверно", QMessageBox::Ok);
+        return false;
+    }
+
+    return true;
 }
 
 void KeyPressDialog::SetupUI()
 {
     QVBoxLayout *vlyout = new QVBoxLayout;
     vlyout->addWidget(
-        WDFunc::NewLBL(this, "Введите пароль\nПодтверждение: клавиша Enter\nОтмена: клавиша Esc", "", "pswlbl"));
-    vlyout->addWidget(WDFunc::NewPswLE(this, "pswle", QLineEdit::Password));
+        WDFunc::NewLBL2(this, "Введите пароль\nПодтверждение: клавиша Enter\nОтмена: клавиша Esc", "pswlbl"));
+    vlyout->addWidget(WDFunc::NewPswLE2(this, "pswle", QLineEdit::Password));
     setLayout(vlyout);
-}
-
-void KeyPressDialog::SetPhrase(const QString &Phrase)
-{
-    WDFunc::LE_write_data(this, Phrase, "pswlbl");
 }
 
 void KeyPressDialog::keyPressEvent(QKeyEvent *e)
@@ -32,30 +51,26 @@ void KeyPressDialog::keyPressEvent(QKeyEvent *e)
     QString str;
     if ((e->modifiers() == Qt::AltModifier) || (e->modifiers() == Qt::ControlModifier))
     {
-        ERMSG("Ошибка при обработке пароля");
+        qCritical("Ошибка при обработке пароля");
         return;
     }
+
     if ((e->key() == Qt::Key_Enter) || (e->key() == Qt::Key_Return))
     {
-        if (WDFunc::LE_read_data(this, "pswle", str))
-            emit Finished(str);
-        this->close();
+        const QString password = WDFunc::LEData(this, "pswle");
+        if (!password.isEmpty())
+            m_password = password;
+        emit finished();
     }
     if (e->key() == Qt::Key_Escape)
     {
-        emit Finished(QString());
-        StdFunc::Cancel();
-        this->close();
+        emit finished();
     }
     QDialog::keyPressEvent(e);
 }
 
 void KeyPressDialog::closeEvent(QCloseEvent *e)
 {
-    QString str;
-    if (WDFunc::LE_read_data(this, "pswle", str))
-        emit Finished(str);
-    else
-        emit Finished(QString());
+    emit finished();
     e->accept();
 }

@@ -2,16 +2,12 @@
 #define SETTINGSDIALOG_H
 
 #include <QDialog>
-
+#include <QMap>
 class SettingsDialog : public QDialog
 {
     Q_OBJECT
 public:
     explicit SettingsDialog(QWidget *parent = 0);
-
-signals:
-
-public slots:
 
 private:
     void SetupUI();
@@ -19,6 +15,8 @@ private:
 
 private slots:
     void AcceptSettings();
+signals:
+    void disableAlarmUpdate();
 };
 
 #endif // SETTINGSDIALOG_H

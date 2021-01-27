@@ -107,13 +107,12 @@
 #define DEF_VVIBRD_ALARM 6.0
 #define DEF_NUMA 1
 
-#include "../gen/modulebsi.h"
 #include "config.h"
 
 class ConfigKDV
 {
 public:
-    explicit ConfigKDV(QVector<S2::DataRec> *config);
+    explicit ConfigKDV();
 
     typedef struct
     {
@@ -195,7 +194,11 @@ public:
 
     Bci Bci_block;
 
+    //    S2DataTypes::S2ConfigType *S2Config();
     void SetDefConf();
+
+private:
+    //    S2DataTypes::S2ConfigType *m_S2Config;
 };
 
 #endif // CONFIGKDV_H

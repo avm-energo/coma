@@ -1,7 +1,6 @@
 #ifndef ESTACKEDWIDGET_H
 #define ESTACKEDWIDGET_H
 
-#include <QObject>
 #include <QStackedWidget>
 
 class EStackedWidget : public QStackedWidget

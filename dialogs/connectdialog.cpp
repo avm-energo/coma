@@ -3,7 +3,7 @@
 #include "../gen/board.h"
 #include "../gen/error.h"
 #include "../gen/stdfunc.h"
-#include "../usb/eprotocom.h"
+#include "../interfaces/usbhidportinfo.h"
 #include "../widgets/wd_func.h"
 
 #include <QDebug>
@@ -20,21 +20,22 @@
 #include <QtConcurrent/QtConcurrentMap>
 #include <QtNetwork/QHostAddress>
 
-ConnectDialog::ConnectDialog()
+ConnectDialog::ConnectDialog(QWidget *parent) : QDialog(parent)
 {
     QStringList intersl { "USB", "Ethernet", "RS485" };
     setMinimumWidth(150);
     setAttribute(Qt::WA_DeleteOnClose);
     QVBoxLayout *lyout = new QVBoxLayout;
 
-    lyout->addWidget(WDFunc::NewLBL(this, "Выберите интерфейс связи"));
-    lyout->addWidget(WDFunc::NewCB(this, "intercb", intersl));
+    lyout->addWidget(WDFunc::NewLBL2(this, "Выберите интерфейс связи"));
+    lyout->addWidget(WDFunc::NewCB2(this, "intercb", intersl));
     QHBoxLayout *hlyout = new QHBoxLayout;
     QPushButton *pb = new QPushButton("Далее");
     connect(pb, &QPushButton::clicked, this, &ConnectDialog::SetInterface);
     hlyout->addWidget(pb);
     pb = new QPushButton("Отмена");
-    connect(pb, &QPushButton::clicked, this, &ConnectDialog::Cancelled);
+    connect(pb, &QAbstractButton::clicked, this, &QDialog::close);
+    // connect(pb, &QPushButton::clicked, this, &ConnectDialog::Cancelled);
     hlyout->addWidget(pb);
     lyout->addLayout(hlyout);
     setLayout(lyout);
@@ -42,10 +43,9 @@ ConnectDialog::ConnectDialog()
 
 void ConnectDialog::SetInterface()
 {
-    auto comboBox = this->findChild<EComboBox *>();
+    auto comboBox = this->findChild<QComboBox *>();
     Board::GetInstance().setProperty("interface", comboBox->currentText());
     QDialog *dlg = new QDialog(this);
-    dlg->setMinimumWidth(150);
     dlg->setAttribute(Qt::WA_DeleteOnClose);
     dlg->setObjectName("connectdlg");
     dlg->setMinimumWidth(400);
@@ -66,8 +66,8 @@ void ConnectDialog::SetInterface()
         lyout->addWidget(table);
         QHBoxLayout *hlyout = new QHBoxLayout;
         hlyout->addStretch(10);
-        hlyout->addWidget(WDFunc::NewPB2(dlg, "newethpb", "Добавить", this, &ConnectDialog::AddEth));
-        hlyout->addWidget(WDFunc::NewPB2(dlg, "scanethpb", "Сканировать", this, &ConnectDialog::ScanEth));
+        hlyout->addWidget(WDFunc::NewPB(dlg, "newethpb", "Добавить", this, &ConnectDialog::AddEth));
+        hlyout->addWidget(WDFunc::NewPB(dlg, "scanethpb", "Сканировать", this, &ConnectDialog::ScanEth));
         hlyout->addStretch(10);
         lyout->addLayout(hlyout);
         connect(table, &QTableView::doubleClicked, this, qOverload<QModelIndex>(&ConnectDialog::SetEth));
@@ -79,8 +79,9 @@ void ConnectDialog::SetInterface()
         lyout->addWidget(table);
         QHBoxLayout *hlyout = new QHBoxLayout;
         hlyout->addStretch(10);
-        hlyout->addWidget(WDFunc::NewPB(dlg, "newrspb", "Добавить", this, SLOT(AddRs())));
-        hlyout->addWidget(WDFunc::NewPB(dlg, "scanrspb", "Сканировать", this, SLOT(ScanRs())));
+        // hlyout->addWidget(WDFunc::NewPB(dlg, "newrspb", "Добавить", this, SLOT(AddRs())));
+        hlyout->addWidget(WDFunc::NewPB(dlg, "newrspb", "Добавить", this, &ConnectDialog::AddRs));
+        // hlyout->addWidget(WDFunc::NewPB(dlg, "scanrspb", "Сканировать", this, SLOT(ScanRs())));
         hlyout->addStretch(10);
         lyout->addLayout(hlyout);
         connect(table, &QTableView::doubleClicked, this, qOverload<QModelIndex>(&ConnectDialog::SetRs));
@@ -93,26 +94,34 @@ void ConnectDialog::SetInterface()
     }
     }
     QPushButton *pb = new QPushButton("Отмена");
-    connect(pb, &QAbstractButton::clicked, this, &ConnectDialog::SetCancelled);
+    connect(pb, &QAbstractButton::clicked, this, &QDialog::close);
+    // connect(pb, &QAbstractButton::clicked, this, &ConnectDialog::SetCancelled);
     lyout->addStretch(20);
     lyout->addWidget(pb);
     lyout->addStretch(20);
     dlg->setLayout(lyout);
 
-    UpdateModel();
-    dlg->exec();
+    if (UpdateModel(dlg))
+        dlg->exec();
+    else
+        dlg->deleteLater();
 }
 
 void ConnectDialog::SetUsb(QModelIndex index)
 {
-    ConnectStruct st; // temporary var
-    if (index.isValid())
-    {
-        QDialog *dlg = this->findChild<QDialog *>("connectdlg");
-        EProtocom::GetInstance().setDeviceName(WDFunc::TVData(dlg, "usbtv", 1).toString());
-        EProtocom::GetInstance().setDevicePosition(index.row());
-    }
-    emit Accepted(&st);
+    if (!index.isValid())
+        return;
+    auto *mdl = index.model();
+    int row = index.row();
+
+    UsbHidSettings settings;
+
+    settings.vendor_id = mdl->data(mdl->index(row, 0)).toString().toUInt(nullptr, 16);
+    settings.product_id = mdl->data(mdl->index(row, 1)).toString().toUInt(nullptr, 16);
+    settings.serial = mdl->data(mdl->index(row, 2)).toString();
+    settings.path = mdl->data(mdl->index(row, 3)).toString();
+    ConnectStruct st { QString(), settings };
+    emit Accepted(st);
 }
 
 void ConnectDialog::AddEth()
@@ -122,20 +131,20 @@ void ConnectDialog::AddEth()
     dlg->setAttribute(Qt::WA_DeleteOnClose);
     QGridLayout *lyout = new QGridLayout;
     int count = 0;
-    lyout->addWidget(WDFunc::NewLBL(dlg, "Имя:"), count, 0, 1, 1, Qt::AlignLeft);
-    lyout->addWidget(WDFunc::NewLE(dlg, "namele"), count++, 1, 1, 7);
-    lyout->addWidget(WDFunc::NewLBL(dlg, "IP:"), count, 0, 1, 1, Qt::AlignLeft);
+    lyout->addWidget(WDFunc::NewLBL2(dlg, "Имя:"), count, 0, 1, 1, Qt::AlignLeft);
+    lyout->addWidget(WDFunc::NewLE2(dlg, "namele"), count++, 1, 1, 7);
+    lyout->addWidget(WDFunc::NewLBL2(dlg, "IP:"), count, 0, 1, 1, Qt::AlignLeft);
     for (int i = 0; i < 4; ++i)
     {
-        lyout->addWidget(WDFunc::NewLE(dlg, "iple." + QString::number(i)), count, (i * 2 + 1), 1, 1);
+        lyout->addWidget(WDFunc::NewLE2(dlg, "iple." + QString::number(i)), count, (i * 2 + 1), 1, 1);
         if (i != 3)
-            lyout->addWidget(WDFunc::NewLBL(dlg, "."), count, (i * 2 + 2), 1, 1);
+            lyout->addWidget(WDFunc::NewLBL2(dlg, "."), count, (i * 2 + 2), 1, 1);
     }
     ++count;
-    lyout->addWidget(WDFunc::NewLBL(dlg, "Адрес БС:"), count, 0, 1, 1, Qt::AlignLeft);
-    lyout->addWidget(WDFunc::NewSPB(dlg, "bsadrspb", 1, 255, 0), count++, 1, 1, 7);
-    lyout->addWidget(WDFunc::NewPB2(dlg, "acceptpb", "Сохранить", this, &ConnectDialog::EthAccepted), count, 0, 1, 4);
-    lyout->addWidget(WDFunc::NewPB(dlg, "cancelpb", "Отмена", dlg, SLOT(close())), count, 4, 1, 3);
+    lyout->addWidget(WDFunc::NewLBL2(dlg, "Адрес БС:"), count, 0, 1, 1, Qt::AlignLeft);
+    lyout->addWidget(WDFunc::NewSPB2(dlg, "bsadrspb", 1, 255, 0), count++, 1, 1, 7);
+    lyout->addWidget(WDFunc::NewPB(dlg, "acceptpb", "Сохранить", this, &ConnectDialog::EthAccepted), count, 0, 1, 4);
+    lyout->addWidget(WDFunc::NewPB(dlg, "cancelpb", "Отмена", [=] { dlg->close(); }), count, 4, 1, 3);
     dlg->setLayout(lyout);
     dlg->exec();
 }
@@ -143,89 +152,92 @@ void ConnectDialog::AddEth()
 void ConnectDialog::EthAccepted()
 {
     QDialog *dlg = this->findChild<QDialog *>("ethdlg");
-    if (dlg != nullptr)
+    if (dlg == nullptr)
+        return;
+    QString name = WDFunc::LEData(dlg, "namele");
+    // check if there's such name in registry
+    if (IsKeyExist("Ethernet-", name))
     {
-        QString name = WDFunc::LEData(dlg, "namele");
-        // check if there's such name in registry
-        if (IsKeyExist("Ethernet-", name))
-        {
-            QMessageBox::critical(this, "Ошибка", "Такое имя уже имеется");
-            return;
-        }
-        QString ipstr = WDFunc::LEData(dlg, "iple.0") + "." + WDFunc::LEData(dlg, "iple.1") + "."
-            + WDFunc::LEData(dlg, "iple.2") + "." + WDFunc::LEData(dlg, "iple.3");
-        RotateSettings("Ethernet-", name);
-        QString key = PROGNAME;
-        key += "\\" + name;
-        QSettings *sets = new QSettings(SOFTDEVELOPER, key);
-        sets->setValue("ip", ipstr);
-        int spbdata;
-        WDFunc::SPBData(dlg, "bsadrspb", spbdata);
-        sets->setValue("bs", QString::number(spbdata));
-        QDialog *dlg2 = this->findChild<QDialog *>("connectdlg");
-        if (dlg2 != nullptr)
-            UpdateModel();
-        dlg->close();
+        QMessageBox::critical(this, "Ошибка", "Такое имя уже имеется");
+        return;
     }
+    QString ipstr = WDFunc::LEData(dlg, "iple.0") + "." + WDFunc::LEData(dlg, "iple.1") + "."
+        + WDFunc::LEData(dlg, "iple.2") + "." + WDFunc::LEData(dlg, "iple.3");
+    RotateSettings("Ethernet-", name);
+    QString key = PROGNAME;
+    key += "\\" + name;
+    auto settings = UniquePointer<QSettings>(new QSettings(SOFTDEVELOPER, PROGNAME));
+    settings->setValue("ip", ipstr);
+    int spbdata;
+    WDFunc::SPBData(dlg, "bsadrspb", spbdata);
+    settings->setValue("bs", QString::number(spbdata));
+    QDialog *dlg2 = this->findChild<QDialog *>("connectdlg");
+    if (dlg2 == nullptr)
+        return;
+    if (UpdateModel(dlg2))
+        qCritical() << Error::GeneralError;
+    dlg->close();
 }
 
 void ConnectDialog::RsAccepted()
 {
     QDialog *dlg = this->findChild<QDialog *>("rsdlg");
-    if (dlg != nullptr)
+    if (dlg == nullptr)
+        return;
+    QString name = WDFunc::LEData(dlg, "namele");
+    // check if there's such name in registry
+    if (IsKeyExist("RS485-", name))
     {
-        QString name = WDFunc::LEData(dlg, "namele");
-        // check if there's such name in registry
-        if (IsKeyExist("RS485-", name))
-        {
-            QMessageBox::critical(this, "Ошибка", "Такое имя уже имеется");
-            return;
-        }
-        RotateSettings("RS485-", name);
-        QString key = PROGNAME;
-        key += "\\" + name;
-        QSettings *sets = new QSettings(SOFTDEVELOPER, key);
-        sets->setValue("port", WDFunc::CBData(dlg, "portcb"));
-        sets->setValue("speed", WDFunc::CBData(dlg, "speedcb"));
-        sets->setValue("parity", WDFunc::CBData(dlg, "paritycb"));
-        sets->setValue("stop", WDFunc::CBData(dlg, "stopbitcb"));
-        int spbdata;
-        WDFunc::SPBData(dlg, "addressspb", spbdata);
-        sets->setValue("address", QString::number(spbdata));
-        QDialog *dlg2 = this->findChild<QDialog *>("connectdlg");
-        if (dlg2 != nullptr)
-            UpdateModel();
-        dlg->close();
+        QMessageBox::critical(this, "Ошибка", "Такое имя уже имеется");
+        return;
     }
+    RotateSettings("RS485-", name);
+    QString key = PROGNAME;
+    key += "\\" + name;
+    std::unique_ptr<QSettings> settings = std::unique_ptr<QSettings>(new QSettings(SOFTDEVELOPER, key));
+    settings->setValue("port", WDFunc::CBData(dlg, "portcb"));
+    settings->setValue("speed", WDFunc::CBData(dlg, "speedcb"));
+    settings->setValue("parity", WDFunc::CBData(dlg, "paritycb"));
+    settings->setValue("stop", WDFunc::CBData(dlg, "stopbitcb"));
+    int spbdata;
+    WDFunc::SPBData(dlg, "addressspb", spbdata);
+    settings->setValue("address", QString::number(spbdata));
+    QDialog *dlg2 = this->findChild<QDialog *>("connectdlg");
+    if (dlg2 == nullptr)
+        return;
+    if (!UpdateModel(dlg2))
+        qCritical() << Error::GeneralError;
+    dlg->close();
 }
 
-void ConnectDialog::SetCancelled()
-{
-    emit Cancelled();
-}
+// void ConnectDialog::SetCancelled()
+//{
+//  emit Cancelled();
+//}
 
-void ConnectDialog::SetEth()
-{
-    ConnectStruct st;
-    QDialog *dlg = this->findChild<QDialog *>("connectdlg");
-    if (dlg != nullptr)
-    {
-        st.name = WDFunc::TVData(dlg, "ethtv", 1).toString();
-        st.iec104st.ip = WDFunc::TVData(dlg, "ethtv", 2).toString();
-        st.iec104st.baseadr = WDFunc::TVData(dlg, "ethtv", 3).toUInt();
-    }
-    emit Accepted(&st);
-}
+// void ConnectDialog::SetEth()
+//{
+//    BaseInterface::ConnectStruct st;
+//    QDialog *dlg = this->findChild<QDialog *>("connectdlg");
+//    if (dlg != nullptr)
+//    {
+//        st.name = WDFunc::TVData(dlg, "ethtv", 1).toString();
+//        st.iec104st.ip = WDFunc::TVData(dlg, "ethtv", 2).toString();
+//        st.iec104st.baseadr = WDFunc::TVData(dlg, "ethtv", 3).toUInt();
+//    }
+//    emit Accepted(st);
+//}
 
 void ConnectDialog::SetEth(QModelIndex index)
 {
-    ConnectStruct st;
     auto *mdl = index.model();
     int row = index.row();
-    st.name = mdl->data(mdl->index(row, 0)).toString();
-    st.iec104st.ip = mdl->data(mdl->index(row, 1)).toString();
-    st.iec104st.baseadr = mdl->data(mdl->index(row, 2)).toUInt();
-    emit Accepted(&st);
+    QString name = mdl->data(mdl->index(row, 0)).toString();
+    IEC104Settings settings;
+    settings.ip = mdl->data(mdl->index(row, 1)).toString();
+    settings.baseadr = mdl->data(mdl->index(row, 2)).toUInt();
+    ConnectStruct st { name, settings };
+    emit Accepted(st);
 }
 
 void ConnectDialog::handlePing()
@@ -333,79 +345,84 @@ void ConnectDialog::AddRs()
 {
     QStringList ports;
     QList<QSerialPortInfo> portlist = QSerialPortInfo::availablePorts();
-    foreach (QSerialPortInfo info, portlist)
+    for (const QSerialPortInfo &info : portlist)
         ports << info.portName();
     QDialog *dlg = new QDialog(this);
     dlg->setObjectName("rsdlg");
     dlg->setAttribute(Qt::WA_DeleteOnClose);
     QGridLayout *lyout = new QGridLayout;
     int count = 0;
-    lyout->addWidget(WDFunc::NewLBL(dlg, "Имя:"), count, 0, 1, 1, Qt::AlignLeft);
-    lyout->addWidget(WDFunc::NewLE(dlg, "namele"), count++, 1, 1, 1);
-    lyout->addWidget(WDFunc::NewLBL(dlg, "Порт:"), count, 0, 1, 1, Qt::AlignLeft);
-    lyout->addWidget(WDFunc::NewCB(dlg, "portcb", ports), count++, 1, 1, 1);
+    lyout->addWidget(WDFunc::NewLBL2(dlg, "Имя:"), count, 0, 1, 1, Qt::AlignLeft);
+    lyout->addWidget(WDFunc::NewLE2(dlg, "namele"), count++, 1, 1, 1);
+    lyout->addWidget(WDFunc::NewLBL2(dlg, "Порт:"), count, 0, 1, 1, Qt::AlignLeft);
+    lyout->addWidget(WDFunc::NewCB2(dlg, "portcb", ports), count++, 1, 1, 1);
     QStringList sl { "1200", "2400", "4800", "9600", "19200", "38400", "57600", "115200" };
-    lyout->addWidget(WDFunc::NewLBL(dlg, "Скорость:"), count, 0, 1, 1, Qt::AlignLeft);
-    lyout->addWidget(WDFunc::NewCB(dlg, "speedcb", sl), count++, 1, 1, 1);
+    lyout->addWidget(WDFunc::NewLBL2(dlg, "Скорость:"), count, 0, 1, 1, Qt::AlignLeft);
+    lyout->addWidget(WDFunc::NewCB2(dlg, "speedcb", sl), count++, 1, 1, 1);
     sl = QStringList() << "Нет"
                        << "Нечет"
                        << "Чет";
-    lyout->addWidget(WDFunc::NewLBL(dlg, "Чётность:"), count, 0, 1, 1, Qt::AlignLeft);
-    lyout->addWidget(WDFunc::NewCB(dlg, "paritycb", sl), count++, 1, 1, 1);
-    lyout->addWidget(WDFunc::NewLBL(dlg, "Стоп бит:"), count, 0, 1, 1, Qt::AlignLeft);
+    lyout->addWidget(WDFunc::NewLBL2(dlg, "Чётность:"), count, 0, 1, 1, Qt::AlignLeft);
+    lyout->addWidget(WDFunc::NewCB2(dlg, "paritycb", sl), count++, 1, 1, 1);
+    lyout->addWidget(WDFunc::NewLBL2(dlg, "Стоп бит:"), count, 0, 1, 1, Qt::AlignLeft);
     sl = QStringList() << "1"
                        << "2";
-    lyout->addWidget(WDFunc::NewCB(dlg, "stopbitcb", sl), count++, 1, 1, 1);
-    lyout->addWidget(WDFunc::NewLBL(dlg, "Адрес:"), count, 0, 1, 1, Qt::AlignLeft);
-    lyout->addWidget(WDFunc::NewSPB(dlg, "addressspb", 1, 255, 0), count++, 1, 1, 1);
+    lyout->addWidget(WDFunc::NewCB2(dlg, "stopbitcb", sl), count++, 1, 1, 1);
+    lyout->addWidget(WDFunc::NewLBL2(dlg, "Адрес:"), count, 0, 1, 1, Qt::AlignLeft);
+    lyout->addWidget(WDFunc::NewSPB2(dlg, "addressspb", 1, 255, 0), count++, 1, 1, 1);
     QHBoxLayout *hlyout = new QHBoxLayout;
-    hlyout->addWidget(WDFunc::NewPB(dlg, "acceptpb", "Сохранить", this, SLOT(RsAccepted())));
-    hlyout->addWidget(WDFunc::NewPB(dlg, "cancelpb", "Отмена", dlg, SLOT(close())));
+    hlyout->addWidget(WDFunc::NewPB(dlg, "acceptpb", "Сохранить", this, &ConnectDialog::RsAccepted));
+    hlyout->addWidget(WDFunc::NewPB(dlg, "cancelpb", "Отмена", [dlg] { dlg->close(); }));
+
     lyout->addLayout(hlyout, count, 0, 1, 2, Qt::AlignCenter);
     dlg->setLayout(lyout);
     dlg->exec();
 }
 
-void ConnectDialog::SetRs()
-{
-    ConnectStruct st;
-    QDialog *dlg = this->findChild<QDialog *>("connectdlg");
-    if (dlg != nullptr)
-    {
-        st.name = WDFunc::TVData(dlg, "rstv", 1).toString();
-        st.serialst.Port = WDFunc::TVData(dlg, "rstv", 2).toString();
-        st.serialst.Baud = WDFunc::TVData(dlg, "rstv", 3).toUInt();
-        st.serialst.Parity = WDFunc::TVData(dlg, "rstv", 4).toString();
-        st.serialst.Stop = WDFunc::TVData(dlg, "rstv", 5).toString();
-        st.serialst.Address = WDFunc::TVData(dlg, "rstv", 6).toUInt();
-    }
-    emit Accepted(&st);
-}
+// void ConnectDialog::SetRs()
+//{
+//    BaseInterface::ConnectStruct st;
+//    QDialog *dlg = this->findChild<QDialog *>("connectdlg");
+//    if (dlg != nullptr)
+//    {
+//        st.name = WDFunc::TVData(dlg, "rstv", 1).toString();
+//        st.serialst.Port = WDFunc::TVData(dlg, "rstv", 2).toString();
+//        st.serialst.Baud = WDFunc::TVData(dlg, "rstv", 3).toUInt();
+//        st.serialst.Parity = WDFunc::TVData(dlg, "rstv", 4).toString();
+//        st.serialst.Stop = WDFunc::TVData(dlg, "rstv", 5).toString();
+//        st.serialst.Address = WDFunc::TVData(dlg, "rstv", 6).toUInt();
+//    }
+//    emit Accepted(st);
+//}
 
 void ConnectDialog::SetRs(QModelIndex index)
 {
-    ConnectStruct st;
+
     auto *mdl = index.model();
     int row = index.row();
-    st.name = mdl->data(mdl->index(row, 0)).toString();
-    st.serialst.Port = mdl->data(mdl->index(row, 1)).toString();
-    st.serialst.Baud = mdl->data(mdl->index(row, 2)).toUInt();
-    st.serialst.Parity = mdl->data(mdl->index(row, 3)).toString();
-    st.serialst.Stop = mdl->data(mdl->index(row, 4)).toString();
-    st.serialst.Address = mdl->data(mdl->index(row, 5)).toUInt();
-    emit Accepted(&st);
+
+    QString name = mdl->data(mdl->index(row, 0)).toString();
+    SerialPortSettings settings;
+    settings.Port = mdl->data(mdl->index(row, 1)).toString();
+    settings.Baud = mdl->data(mdl->index(row, 2)).toUInt();
+    settings.Parity = mdl->data(mdl->index(row, 3)).toString();
+    settings.Stop = mdl->data(mdl->index(row, 4)).toString();
+    settings.Address = mdl->data(mdl->index(row, 5)).toUInt();
+    ConnectStruct st { name, settings };
+    emit Accepted(st);
 }
 
 void ConnectDialog::RotateSettings(const QString &type, const QString &name)
 {
-    QSettings *sets = new QSettings(SOFTDEVELOPER, PROGNAME);
+    auto settings = UniquePointer<QSettings>(new QSettings(SOFTDEVELOPER, PROGNAME));
     QStringList sl;
     QString namename, oldnamename;
     // 1. get all type+'i' from registry (count)
     for (int i = 0; i < MAXREGISTRYINTERFACECOUNT; ++i)
     {
         namename = type + QString::number(i);
-        QString value = sets->value(namename, "").toString();
+        QString value = settings->value(namename, "").toString();
+        // QString value = sets->value(namename, "").toString();
         if (!value.isEmpty())
             sl << value;
     }
@@ -416,41 +433,41 @@ void ConnectDialog::RotateSettings(const QString &type, const QString &name)
     {
         // 3. else delete group "type + sl.size()-1"
         namename = type + QString::number(sl.size() - 1);
-        sets->remove(sets->value(namename, "").toString());
+        settings->remove(settings->value(namename, "").toString());
     }
     // and rotate it (1->0, 2->1 etc)
     for (int i = (sl.size() - 1); i > 0; --i)
     {
         oldnamename = type + QString::number(i);
         namename = type + QString::number(i - 1);
-        sets->setValue(oldnamename, sets->value(namename, ""));
+        settings->setValue(oldnamename, settings->value(namename, ""));
     }
     namename = type + "0";
-    sets->setValue(namename, name);
+    settings->setValue(namename, name);
 }
 
 bool ConnectDialog::IsKeyExist(const QString &type, const QString &chstr)
 {
-    QSettings *sets = new QSettings(SOFTDEVELOPER, PROGNAME);
+    std::unique_ptr<QSettings> settings = std::unique_ptr<QSettings>(new QSettings(SOFTDEVELOPER, PROGNAME));
     for (int i = 0; i < MAXREGISTRYINTERFACECOUNT; ++i)
     {
         QString key = type + QString::number(i);
-        if (sets->value(key, "").toString() == chstr)
+        if (settings->value(key, "").toString() == chstr)
             return true;
     }
     return false;
 }
 
-bool ConnectDialog::UpdateModel()
+bool ConnectDialog::UpdateModel(QDialog *dlg)
 {
     QStringList ethlist, rslist;
 
-    QDialog *dlg = this->findChild<QDialog *>("connectdlg");
-    if (!dlg)
-        return false;
+    //    QDialog *dlg = this->findChild<QDialog *>("connectdlg");
+    //    if (!dlg)
+    //        return false;
     for (int i = 0; i < MAXREGISTRYINTERFACECOUNT; ++i)
     {
-        QScopedPointer<QSettings> sets = QScopedPointer<QSettings>(new QSettings(SOFTDEVELOPER, PROGNAME));
+        std::unique_ptr<QSettings> sets = std::unique_ptr<QSettings>(new QSettings(SOFTDEVELOPER, PROGNAME));
         QString rsname = "RS485-" + QString::number(i);
         QString ethname = "Ethernet-" + QString::number(i);
         ethlist << sets->value(ethname, "").toString();
@@ -460,25 +477,27 @@ bool ConnectDialog::UpdateModel()
     {
     case Board::InterfaceType::USB:
     {
-        QList<QStringList> USBsl = EProtocom::GetInstance().DevicesFound();
+        auto usbDevices = UsbHidPortInfo::devicesFound();
+        if (usbDevices.isEmpty())
+        {
+            QMessageBox::critical(this, "Ошибка", "Устройства не найдены");
+            qCritical() << Error::Msg::NoDeviceError;
+            return false;
+        }
         QStringList sl { "VID", "PID", "Serial", "Path" };
         QStandardItemModel *mdl = new QStandardItemModel(dlg);
 
-        if (USBsl.isEmpty())
-        {
-            QMessageBox::critical(this, "Ошибка", "Устройства не найдены");
-            qCritical() << QVariant::fromValue(Error::Msg::CN_NOPORTSERROR).toString();
-            return false;
-        }
         mdl->setHorizontalHeaderLabels(sl);
-        for (const auto &row : USBsl)
+        for (const auto &row : usbDevices)
         {
-            QList<QStandardItem *> items;
-            for (const auto &column : row)
-            {
-                items.append(new QStandardItem(column));
-            }
-            mdl->appendRow(items);
+            QList<QStandardItem *> device {
+                new QStandardItem(QString::number(row.vendor_id, 16)),  //
+                new QStandardItem(QString::number(row.product_id, 16)), //
+                new QStandardItem(row.serial),                          //
+                new QStandardItem(row.path)                             //
+
+            };
+            mdl->appendRow(device);
         }
         WDFunc::SetQTVModel(dlg, "usbtv", mdl);
         break;
@@ -492,7 +511,7 @@ bool ConnectDialog::UpdateModel()
         {
             QString key = PROGNAME;
             key += "\\" + item;
-            QScopedPointer<QSettings> sets = QScopedPointer<QSettings>(new QSettings(SOFTDEVELOPER, key));
+            std::unique_ptr<QSettings> sets = std::unique_ptr<QSettings>(new QSettings(SOFTDEVELOPER, key));
             QList<QStandardItem *> items { new QStandardItem(item), new QStandardItem(sets->value("ip", "").toString()),
                 new QStandardItem(sets->value("bs", "").toString()) };
             mdl->appendRow(items);
@@ -509,7 +528,7 @@ bool ConnectDialog::UpdateModel()
         {
             QString key = PROGNAME;
             key += "\\" + item;
-            QScopedPointer<QSettings> sets = QScopedPointer<QSettings>(new QSettings(SOFTDEVELOPER, key));
+            std::unique_ptr<QSettings> sets = std::unique_ptr<QSettings>(new QSettings(SOFTDEVELOPER, key));
             QList<QStandardItem *> items { new QStandardItem(item),
                 new QStandardItem(sets->value("port", "").toString()),
                 new QStandardItem(sets->value("speed", "").toString()),

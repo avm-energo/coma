@@ -1,20 +1,19 @@
 #ifndef JOURNALDIALOG_H
 #define JOURNALDIALOG_H
 
-#include "../gen/journals.h"
-#include "../iec104/iec104.h"
+#include "../module/journals.h"
+#include "../widgets/udialog.h"
 
-#include <QDialog>
 #include <QMessageBox>
 #include <QProgressDialog>
 
 #define MAXSWJNUM 262144
 
-class JournalDialog : public QDialog
+class JournalDialog : public UDialog
 {
     Q_OBJECT
 public:
-    JournalDialog(IEC104 *iec, QWidget *parent = nullptr);
+    JournalDialog(UniquePointer<Journals> jour, QWidget *parent = nullptr);
     ~JournalDialog();
 
     quint8 start;
@@ -27,20 +26,17 @@ private:
     void SetupUI();
     QWidget *JourTab(int jourtype);
     int GetJourNum(const QString &objname);
+    //    void setConnections() override;
 
 signals:
-    void WritePasswordChecked();
-    void StartGetJour(); // start fet journal thread
+    void StartGetJour();
     void StartReadFile();
     void StartSaveJour(int, QAbstractItemModel *, QString);
 
 private slots:
-    void TryGetJourByUSB();
-    void GetJour();
     void JourFileChoosed(QString &file);
     void EraseJour();
-    void SaveJour();
-    void WritePasswordCheck(QString psw);
+    void SaveJour(int jourType);
     void Done(QString msg, int);
     void Error(QString msg);
 
@@ -50,9 +46,8 @@ private:
     QString JourFile;
     int JourType;
     bool ok;
-    Journals *JourFuncs;
+    UniquePointer<Journals> m_jour;
     QSortFilterProxyModel *ProxyWorkModel, *ProxySysModel, *ProxyMeasModel;
-    Error::Msg WriteCheckPassword();
     void StartReadJourFile();
 };
 

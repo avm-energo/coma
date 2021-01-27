@@ -1,33 +1,31 @@
 #include "etabwidget.h"
 
+#include "../gen/colors.h"
+
+#include <QStyleOptionTab>
+#include <QStylePainter>
+
 ETabWidget::ETabWidget(QWidget *parent) : QTabWidget(parent)
 {
     setTabBar(new ETabBar);
     setTabPosition(QTabWidget::West);
-    connect(this, SIGNAL(tabBarClicked(int)), this, SIGNAL(tabClicked(int)));
-}
-
-void ETabWidget::TabClicked()
-{
-    int res = 0;
-    Q_UNUSED(res)
 }
 
 ETabBar::ETabBar(QWidget *parent) : QTabBar(parent)
 {
     setIconSize(QSize(18, 18));
-    QString tbss = "QTabBar::tab {background-color: " + QString(Colors::ACONFGCLR)
-        + " border: 0px solid;"
-          " color: #000000;}"
-          " QTabBar::tab::selected {background-color: "
-        + QString(Colors::NFTCOLOR) + ";}";
-    this->setStyleSheet(tbss);
+    //    QString tbss = "QTabBar::tab {background-color: " + QString(Colors::ACONFGCLR)
+    //        + " border: 0px solid;"
+    //          " color: #000000;}"
+    //          " QTabBar::tab::selected {background-color: "
+    //        + QString(Colors::NFTCOLOR) + ";}";
+    //    this->setStyleSheet(tbss);
 }
 
 QSize ETabBar::tabSizeHint(int index) const
 {
     Q_UNUSED(index)
-    return QSize(150, 40);
+    return QSize(200, 40);
     //        QSize s = QTabBar::tabSizeHint(index);
     //        s.transpose();
     //        return s;

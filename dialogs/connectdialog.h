@@ -1,8 +1,7 @@
 #ifndef CONNECTDIALOG_H
 #define CONNECTDIALOG_H
 
-#include "../iec104/iec104.h"
-#include "../modbus/serialport.h"
+#include "../interfaces/settingstypes.h"
 
 #include <QDialog>
 #include <QModelIndex>
@@ -14,17 +13,10 @@ class ConnectDialog : public QDialog
 {
     Q_OBJECT
 public:
-    struct ConnectStruct
-    {
-        QString name;
-        IEC104::Settings iec104st; // IEC104 settings
-        SerialPort::Settings serialst;
-    };
-
-    explicit ConnectDialog();
+    explicit ConnectDialog(QWidget *parent = nullptr);
 
 signals:
-    void Accepted(ConnectDialog::ConnectStruct *);
+    void Accepted(ConnectStruct);
     void Cancelled();
     void PingFinished();
     void ModelUpdated();
@@ -35,19 +27,19 @@ private slots:
     void AddEth();
     void EthAccepted();
     void RsAccepted();
-    void SetCancelled();
-    void SetEth();
+    // void SetCancelled();
+    //    void SetEth();
     void SetEth(QModelIndex index);
     void ScanEth();
     void AddRs();
-    void SetRs();
+    //    void SetRs();
     void SetRs(QModelIndex index);
 
     //    void ScanRs();
     void RotateSettings(
         const QString &type, const QString &name); // in: name of registry dir without index, out - name with index
     bool IsKeyExist(const QString &type, const QString &chstr);
-    bool UpdateModel();
+    bool UpdateModel(QDialog *dlg);
 
 private:
     ConnectStruct Connect;

@@ -1,18 +1,21 @@
 #include "files.h"
 
+#include "board.h"
 #include "error.h"
-#include "modulebsi.h"
 #include "stdfunc.h"
 
 #include <QDirIterator>
 #include <QFile>
+#ifdef QT_GUI_LIB
+
 #include <QFileDialog>
+#endif
 #include <QStorageInfo>
 
 Files::Files()
 {
 }
-
+#ifdef QT_GUI_LIB
 QString Files::ChooseFileForOpen(QWidget *parent, QString mask)
 {
     QFileDialog *dlg = new QFileDialog;
@@ -26,37 +29,17 @@ QString Files::ChooseFileForOpen(QWidget *parent, QString mask)
     return filename;
 }
 
-Error::Msg Files::LoadFromFile(const QString &filename, QByteArray &ba)
-{
-    if (filename.isEmpty())
-    {
-        ERMSG("Пустое имя файла");
-        return Error::Msg::FILE_NAMEEMP; // Пустое имя файла
-    }
-    QFile *file = new QFile;
-    file->setFileName(filename);
-    if (!file->open(QIODevice::ReadOnly))
-    {
-        ERMSG("Ошибка открытия файла");
-        return Error::Msg::FILE_OPEN; // Ошибка открытия файла
-    }
-    ba = file->readAll();
-    file->close();
-    return Error::Msg::NoError;
-}
-
 // Input: QString mask: описание файлов, например: "Файлы журналов (*.swj)";
 // QString ext - расширение по умолчанию Output: QString filename
 
 QString Files::ChooseFileForSave(QWidget *parent, const QString &mask, const QString &ext, const QString &filenamestr)
 {
-    QString MTypeM = (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) == 0)
-        ? "00"
-        : QString::number(ModuleBSI::GetMType(BoardTypes::BT_MEZONIN), 16);
+    const auto &board = Board::GetInstance();
+    QString MTypeM = (board.typeM() == 0) ? "00" : QString::number(board.typeM(), 16);
     QString tmps;
     if (filenamestr.isEmpty())
-        tmps = StdFunc::GetHomeDir() + "/" + QString::number(ModuleBSI::GetMType(BoardTypes::BT_BASE), 16) + MTypeM
-            + "-" + QString("%1").arg(ModuleBSI::SerialNum(BoardTypes::BT_MODULE), 8, 10, QChar('0')) + "." + ext;
+        tmps = StdFunc::GetHomeDir() + "/" + QString::number(board.typeB(), 16) + MTypeM + "-"
+            + QString("%1").arg(board.serialNumber(Board::BaseMezz), 8, 10, QChar('0')) + "." + ext;
     else
         tmps = filenamestr;
     QFileDialog *dlg = new QFileDialog;
@@ -69,16 +52,36 @@ QString Files::ChooseFileForSave(QWidget *parent, const QString &mask, const QSt
     dlg->close();
     return filename;
 }
+#endif
 
-Error::Msg Files::SaveToFile(const QString &filename, QByteArray &src, unsigned int numbytes)
+Error::Msg Files::LoadFromFile(const QString &filename, QByteArray &ba)
+{
+    if (filename.isEmpty())
+    {
+        ERMSG("Пустое имя файла");
+        return Error::Msg::FileNameError; // Пустое имя файла
+    }
+    QFile *file = new QFile;
+    file->setFileName(filename);
+    if (!file->open(QIODevice::ReadOnly))
+    {
+        ERMSG("Ошибка открытия файла");
+        return Error::Msg::FileOpenError; // Ошибка открытия файла
+    }
+    ba = file->readAll();
+    file->close();
+    return Error::Msg::NoError;
+}
+
+Error::Msg Files::SaveToFile(const QString &filename, QByteArray &src)
 {
     if (filename.isEmpty())
         return Error::Msg::NoError; // Пустое имя файла
     QFile *file = new QFile;
     file->setFileName(filename);
     if (!file->open(QIODevice::WriteOnly))
-        return Error::Msg::FILE_OPEN; // Ошибка открытия файла
-    if (file->write(src, numbytes) != -1)
+        return Error::Msg::FileOpenError; // Ошибка открытия файла
+    if (file->write(src, src.size()) != -1)
     {
         // нет ошибок
         file->close();
@@ -90,7 +93,7 @@ Error::Msg Files::SaveToFile(const QString &filename, QByteArray &src, unsigned 
         // ошибка записи
         file->close();
         delete file;
-        return Error::Msg::FILE_WRITE;
+        return Error::Msg::FileWriteError;
     }
 }
 

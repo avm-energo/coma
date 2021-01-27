@@ -3,36 +3,30 @@
 
 ErrorQueue::ErrorQueue(Singleton::token)
 {
-    m_lastErrorIndex = 0;
     m_errMsgPool = {};
+    m_newErrors = 0;
 }
 
-const std::queue<Error::ErMsg> *ErrorQueue::errMsgPool()
+const std::vector<ErrorMsg> *ErrorQueue::errMsgPool()
 {
     return &m_errMsgPool;
 }
 
-Error::ErMsg ErrorQueue::popError()
+ErrorMsg ErrorQueue::popError()
 {
-    Error::ErMsg error = m_errMsgPool.front();
-    m_errMsgPool.pop();
+    ErrorMsg error = m_errMsgPool.front();
     return error;
 }
 
-void ErrorQueue::pushError(const Error::ErMsg &msg)
+void ErrorQueue::pushError(const ErrorMsg &msg)
 {
     if (m_errMsgPool.size() > LOG_BUFFER_SIZE)
-        popError();
-    m_errMsgPool.push(msg);
-    emit errCounts(m_errMsgPool.size());
+        m_errMsgPool.erase(m_errMsgPool.begin());
+    m_errMsgPool.push_back(msg);
+    emit errCounts(++m_newErrors);
 }
 
-size_t ErrorQueue::lastErrorIndex()
+void ErrorQueue::clearCounter()
 {
-    return m_lastErrorIndex;
-}
-
-void ErrorQueue::setLastErrorIndex(size_t lastErrorIndex)
-{
-    m_lastErrorIndex = lastErrorIndex;
+    m_newErrors = 0;
 }

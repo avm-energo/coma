@@ -52,14 +52,16 @@ void Logging::messageHandler(QtMsgType type, const QMessageLogContext &context, 
     {
     case QtInfoMsg:
     {
-        Error::ErMsg tmpm {
+        ErrorMsg tmpm {
             QDateTime::currentDateTime().toString("dd-MM-yyyy hh:mm:ss"), // DateTime
             type,                                                         // Msg type
             sourceFile,                                                   // File
             context.line,                                                 // Line
             msg                                                           // Message
         };
+#ifdef QT_GUI_LIB
         ErrorQueue::GetInstance().pushError(tmpm);
+#endif
         break;
     }
     case QtDebugMsg:
@@ -76,14 +78,16 @@ void Logging::messageHandler(QtMsgType type, const QMessageLogContext &context, 
         return;
     case QtCriticalMsg:
     {
-        Error::ErMsg tmpm {
+        ErrorMsg tmpm {
             QDateTime::currentDateTime().toString("dd-MM-yyyy hh:mm:ss"), // DateTime
             type,                                                         // Msg type
             sourceFile,                                                   // File
             context.line,                                                 // Line
             msg                                                           // Message
         };
+#ifdef QT_GUI_LIB
         ErrorQueue::GetInstance().pushError(tmpm);
+#endif
         break;
     }
     case QtFatalMsg:
@@ -92,15 +96,36 @@ void Logging::messageHandler(QtMsgType type, const QMessageLogContext &context, 
     logFile.setFileName(fileName);
     out.setDevice(&logFile);
     logFile.open(QFile::Append | QFile::Text);
-    out << QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss.zzz ") // Log datetime
-        << context.category << space                                         // Msg category
-        << msg                                                               // Message
+    out << QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss.zzz "); // Log datetime
+    out << msgTypes.value(type) << space;                                     // Msg category
+#ifdef _DEBUG
+    out << context.file << space << context.line << space;
+#endif
+    // NOTE Если будем использовать категории
+    // << context.category << space // Msg category
+    out << msg // Message
         << Qt::endl;
 
     out.flush(); // Flush buffer
     logFile.close();
     checkNGzip(fileName);
 }
+
+void Logging::writeStart()
+{
+    QString fileName(StdFunc::GetSystemHomeDir() + LOGFILE);
+    QFile logFile(fileName);
+    QTextStream out;
+    out.setDevice(&logFile);
+    logFile.open(QFile::Append | QFile::Text);
+    out << "=====================================\nLog file started at "
+        << QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss.zzz") + "\n"
+        << PROGNAME << " v." << COMAVERSION;
+    out.flush();
+    logFile.close();
+    checkNGzip(fileName);
+}
+
 /// Категории мы сейчас не используем, задел на будущее
 Q_LOGGING_CATEGORY(logDebug, "Debug")
 Q_LOGGING_CATEGORY(logInfo, "Info")

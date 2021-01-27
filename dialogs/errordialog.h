@@ -1,9 +1,8 @@
 #ifndef ERRORDIALOG_H
 #define ERRORDIALOG_H
 
-#include "../gen/error.h"
-
 #include <QDialog>
+struct ErrorMsg;
 class ErrorProtocolWidget;
 class ErrorDialog : public QDialog
 {
@@ -11,19 +10,12 @@ class ErrorDialog : public QDialog
 public:
     explicit ErrorDialog(QWidget *parent = 0);
 
-    void InitDialog(); // initiate dialog with contents from pc.ErMsgPool
-
-signals:
-
-public slots:
-    void AddErrMsg(Error::ErMsg msg);
+    void AddErrMsg(ErrorMsg);
 
 private:
     ErrorProtocolWidget *ErrorWidget;
 
     void SetupUI();
-
-private slots:
 };
 
 #endif // ERRORDIALOG_H
