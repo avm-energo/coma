@@ -14,35 +14,35 @@ ConfigKIV::ConfigKIV()
 
     if (StartInIndex != 0)
     {
-        S2::config->append({ 1003, sizeof(Bci_block.NFiltr), &Bci_block.NFiltr });
-        S2::config->append({ 1006, sizeof(Bci_block.Unom), &Bci_block.Unom });
-        S2::config->append({ StartInIndex, sizeof(Bci_block.Umin), &Bci_block.Umin });
-        S2::config->append({ StartInIndex + 1, sizeof(Bci_block.Imin), &Bci_block.Imin });
-        S2::config->append({ StartInIndex + 3, sizeof(Bci_block.C_init), &Bci_block.C_init });
-        S2::config->append({ StartInIndex + 4, sizeof(Bci_block.Tg_init), &Bci_block.Tg_init });
-        S2::config->append({ StartInIndex + 5, sizeof(Bci_block.corTg), &Bci_block.corTg });
-        S2::config->append({ StartInIndex + 6, sizeof(Bci_block.dC_pred), &Bci_block.dC_pred });
-        S2::config->append({ StartInIndex + 7, sizeof(Bci_block.dC_alarm), &Bci_block.dC_alarm });
-        S2::config->append({ StartInIndex + 8, sizeof(Bci_block.dTg_pred), &Bci_block.dTg_pred });
-        S2::config->append({ StartInIndex + 9, sizeof(Bci_block.dTg_alarm), &Bci_block.dTg_alarm });
-        S2::config->append({ StartInIndex + 10, sizeof(Bci_block.dIunb_pred), &Bci_block.dIunb_pred });
-        S2::config->append({ StartInIndex + 11, sizeof(Bci_block.dIunb_alarm), &Bci_block.dIunb_alarm });
-        S2::config->append({ StartInIndex + 12, sizeof(Bci_block.GdC), &Bci_block.GdC });
-        S2::config->append({ StartInIndex + 13, sizeof(Bci_block.GdTg), &Bci_block.GdTg });
-        S2::config->append({ StartInIndex + 14, sizeof(Bci_block.GdIunb), &Bci_block.GdIunb });
-        S2::config->append({ StartInIndex + 17, sizeof(Bci_block.Iunb_init), &Bci_block.Iunb_init });
-        S2::config->append({ StartInIndex + 18, sizeof(Bci_block.Phy_unb_init), &Bci_block.Phy_unb_init });
-        S2::config->append({ StartInIndex + 19, sizeof(Bci_block.T_Data_Rec), &Bci_block.T_Data_Rec });
-        S2::config->append({ StartInIndex + 20, sizeof(Bci_block.LowU), &Bci_block.LowU });
-        S2::config->append({ StartInIndex + 21, sizeof(Bci_block.IsU), &Bci_block.IsU });
-        S2::config->append({ StartInIndex + 22, sizeof(Bci_block.IsIunb), &Bci_block.IsIunb });
-        S2::config->append({ StartInIndex + 23, sizeof(Bci_block.Tevent_pred), &Bci_block.Tevent_pred });
-        S2::config->append({ StartInIndex + 24, sizeof(Bci_block.Tevent_alarm), &Bci_block.Tevent_alarm });
-        S2::config->append({ StartInIndex + 27, sizeof(Bci_block.Tg_pasp), &Bci_block.Tg_pasp });
-        S2::config->append({ StartInIndex + 28, sizeof(Bci_block.C_pasp), &Bci_block.C_pasp });
-        S2::config->append({ 1050, sizeof(Bci_block.Unom_1), &Bci_block.Unom_1 });
+        S2::config.append({ 1003, sizeof(Bci_block.NFiltr), &Bci_block.NFiltr });
+        S2::config.append({ 1006, sizeof(Bci_block.Unom), &Bci_block.Unom });
+        S2::config.append({ StartInIndex, sizeof(Bci_block.Umin), &Bci_block.Umin });
+        S2::config.append({ StartInIndex + 1, sizeof(Bci_block.Imin), &Bci_block.Imin });
+        S2::config.append({ StartInIndex + 3, sizeof(Bci_block.C_init), &Bci_block.C_init });
+        S2::config.append({ StartInIndex + 4, sizeof(Bci_block.Tg_init), &Bci_block.Tg_init });
+        S2::config.append({ StartInIndex + 5, sizeof(Bci_block.corTg), &Bci_block.corTg });
+        S2::config.append({ StartInIndex + 6, sizeof(Bci_block.dC_pred), &Bci_block.dC_pred });
+        S2::config.append({ StartInIndex + 7, sizeof(Bci_block.dC_alarm), &Bci_block.dC_alarm });
+        S2::config.append({ StartInIndex + 8, sizeof(Bci_block.dTg_pred), &Bci_block.dTg_pred });
+        S2::config.append({ StartInIndex + 9, sizeof(Bci_block.dTg_alarm), &Bci_block.dTg_alarm });
+        S2::config.append({ StartInIndex + 10, sizeof(Bci_block.dIunb_pred), &Bci_block.dIunb_pred });
+        S2::config.append({ StartInIndex + 11, sizeof(Bci_block.dIunb_alarm), &Bci_block.dIunb_alarm });
+        S2::config.append({ StartInIndex + 12, sizeof(Bci_block.GdC), &Bci_block.GdC });
+        S2::config.append({ StartInIndex + 13, sizeof(Bci_block.GdTg), &Bci_block.GdTg });
+        S2::config.append({ StartInIndex + 14, sizeof(Bci_block.GdIunb), &Bci_block.GdIunb });
+        S2::config.append({ StartInIndex + 17, sizeof(Bci_block.Iunb_init), &Bci_block.Iunb_init });
+        S2::config.append({ StartInIndex + 18, sizeof(Bci_block.Phy_unb_init), &Bci_block.Phy_unb_init });
+        S2::config.append({ StartInIndex + 19, sizeof(Bci_block.T_Data_Rec), &Bci_block.T_Data_Rec });
+        S2::config.append({ StartInIndex + 20, sizeof(Bci_block.LowU), &Bci_block.LowU });
+        S2::config.append({ StartInIndex + 21, sizeof(Bci_block.IsU), &Bci_block.IsU });
+        S2::config.append({ StartInIndex + 22, sizeof(Bci_block.IsIunb), &Bci_block.IsIunb });
+        S2::config.append({ StartInIndex + 23, sizeof(Bci_block.Tevent_pred), &Bci_block.Tevent_pred });
+        S2::config.append({ StartInIndex + 24, sizeof(Bci_block.Tevent_alarm), &Bci_block.Tevent_alarm });
+        S2::config.append({ StartInIndex + 27, sizeof(Bci_block.Tg_pasp), &Bci_block.Tg_pasp });
+        S2::config.append({ StartInIndex + 28, sizeof(Bci_block.C_pasp), &Bci_block.C_pasp });
+        S2::config.append({ 1050, sizeof(Bci_block.Unom_1), &Bci_block.Unom_1 });
     }
-    S2::config->append({ 0xFFFFFFFF, 0, nullptr });
+    S2::config.append({ 0xFFFFFFFF, 0, nullptr });
     //    DataBlock::BlockStruct dbs {
     //        1,
     //        "Конфигурация",

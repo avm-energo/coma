@@ -48,7 +48,7 @@ Module *Module::createModule(QTimer *updateTimer, AlarmWidget *aw)
     // Journals *JOUR = nullptr;
     Module *m = new Module;
     //    m->m_iface = iface;
-    S2::config = new S2DataTypes::S2ConfigType;
+    // S2::config = UniquePointer<S2DataTypes::S2ConfigType>(new S2DataTypes::S2ConfigType);
     // ModuleAlarm *criticalAlarm;
 
     // ModuleAlarm *warningAlarm;
@@ -240,39 +240,21 @@ void Module::addDialogToList(UDialog *dlg, const QString &caption, const QString
 
 void Module::parentTWTabChanged(int index)
 {
-    if (index == -1)
+    if (index == -1 || m_dialogs.isEmpty())
         return;
-    //    if (index == m_currentTabIndex) // to prevent double function invocation by doubleclicking on tab
-    //        return;
-    //    m_currentTabIndex = index;
 
-    //    if (m_oldTabIndex >= m_dialogs.size())
-    //    {
-    //        DBGMSG("BdUIList size");
-    //        return;
-    //    }
-    // UDialog *udlg = m_dialogs.at(m_oldTabIndex);
     for (auto &dialog : m_dialogs)
     {
         if (dialog->updatesEnabled())
             dialog->setUpdatesDisabled();
         // dialog->setEnabled(false);
     }
-    //    UDialog *udlg = qobject_cast<UDialog *>(dlg);
-    //    if (udlg)
-    // udlg->setUpdatesDisabled();
-    //    if (m_currentTabIndex >= m_dialogs.size())
-    //    {
-    //        DBGMSG("BdUIList size");
-    //        return;
-    //    }
+
     UDialog *udlg = m_dialogs.at(index);
-    //    udlg = qobject_cast<UDialog *>(dlg);
-    //    if (udlg)
+
     udlg->setEnabled(true);
     udlg->setUpdatesEnabled();
     udlg->reqUpdate();
-    // m_oldTabIndex = m_currentTabIndex;
 }
 
 // void Module::setDefConf()
@@ -289,10 +271,10 @@ void Module::parentTWTabChanged(int index)
 
 void Module::closeDialogs()
 {
-    if (!m_dialogs.isEmpty())
-        for (auto &i : m_dialogs)
-            i->close();
-    delete S2::config;
+    while (!m_dialogs.isEmpty())
+        m_dialogs.takeFirst()->close();
+
+    S2::config.clear();
 }
 
 ModuleSettings *Module::settings() const

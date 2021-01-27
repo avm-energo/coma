@@ -17,8 +17,8 @@ public:
 
 signals:
     void Read(QByteArray);
-
-    void Reconnect();
+    void connected();
+    void errorOccurred();
 
 private:
     QPointer<QSerialPort> Port;
@@ -26,6 +26,7 @@ private:
 public slots:
     void WriteBytes(QByteArray ba);
     void Disconnect();
+    void reconnect();
 
 private slots:
     void ReadBytes();

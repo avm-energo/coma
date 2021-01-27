@@ -76,7 +76,6 @@ SOURCES += \
     ../gen/timefunc.cpp \
     ../gen/pch.cpp \
     ../interfaces/baseinterface.cpp \
-    ../interfaces/ethernet.cpp \
     ../interfaces/iec104.cpp \
     ../interfaces/iec104thread.cpp \
     ../interfaces/modbus.cpp \
@@ -170,7 +169,6 @@ HEADERS += \
     ../gen/stdfunc.h \
     ../gen/timefunc.h \
     ../interfaces/baseinterface.h \
-    ../interfaces/ethernet.h \
     ../interfaces/iec104.h \
     ../interfaces/iec104thread.h \
     ../interfaces/modbus.h \

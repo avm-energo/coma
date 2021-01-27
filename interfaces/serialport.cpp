@@ -19,7 +19,7 @@ SerialPort::~SerialPort()
 
 bool SerialPort::Init(SerialPortSettings settings)
 {
-    Port = new QSerialPort(settings.Port);
+    Port = new QSerialPort(settings.Port, this);
     Port->setBaudRate(settings.Baud);
     Port->setDataBits(QSerialPort::Data8);
     if (settings.Parity == "Нет")
@@ -35,23 +35,22 @@ bool SerialPort::Init(SerialPortSettings settings)
     connect(Port, &QIODevice::readyRead, this, &SerialPort::ReadBytes);
     if (!Port->open(QIODevice::ReadWrite))
         return false;
-    // Board::GetInstance().setConnectionState(Board::ConnectionState::Connected);
-    //    else
-    //    {
-    //        Board::GetInstance().setConnectionState(Board::ConnectionState::Closed);
-    //        ERMSG("Error opening COM-port");
 
-    //    }
     QTimer *connectionTimer = new QTimer(this);
     connectionTimer->setInterval(TIMEOUT);
     connect(Port, &QIODevice::bytesWritten, [connectionTimer] { connectionTimer->start(); });
     connect(Port, &QIODevice::readyRead, connectionTimer, &QTimer::stop);
-    connect(connectionTimer, &QTimer::timeout, [] { qCritical("RS485 Timeout Error"); });
+    connect(connectionTimer, &QTimer::timeout, [=] {
+        qInfo() << this->metaObject()->className() << Error::Timeout;
+        reconnect();
+    });
     return true;
 }
 
 void SerialPort::WriteBytes(QByteArray ba)
 {
+    if (!Port->isOpen())
+        return;
     Port->write(ba.data(), ba.size());
     QCoreApplication::processEvents();
 }
@@ -61,13 +60,29 @@ void SerialPort::Disconnect()
     Port->close();
 }
 
+void SerialPort::reconnect()
+{
+    if (!Port->open(QIODevice::ReadWrite))
+    {
+        qCritical() << Port->metaObject()->className() << Port->portName() << Error::OpenError;
+    }
+    else
+        emit connected();
+}
+
 void SerialPort::ErrorOccurred(QSerialPort::SerialPortError err)
 {
-    if (!err || err == QSerialPort::DeviceNotFoundError)
+    if (!err)
         return;
-    qCritical() << QVariant::fromValue(err).toString();
-    // Board::GetInstance().setConnectionState(Board::ConnectionState::Closed);
-    emit Reconnect();
+    if (Port->isOpen())
+        Port->close();
+    if (err == QSerialPort::NotOpenError || err == QSerialPort::ResourceError || err == QSerialPort::TimeoutError)
+    {
+        qCritical() << QVariant::fromValue(err).toString();
+        emit errorOccurred();
+    }
+    else
+        qDebug() << QVariant::fromValue(err).toString();
 }
 
 void SerialPort::ReadBytes()

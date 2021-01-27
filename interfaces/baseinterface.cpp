@@ -67,7 +67,7 @@ void BaseInterface::writeS2File(DataTypes::FilesEnum number, S2DataTypes::S2Conf
 
 void BaseInterface::writeConfigFile()
 {
-    writeS2File(DataTypes::Config, S2::config);
+    writeS2File(DataTypes::Config, &S2::config);
 }
 
 void BaseInterface::reqAlarms(quint32 sigAdr, quint32 sigCount)
@@ -136,7 +136,7 @@ Error::Msg BaseInterface::writeConfFileSync()
 {
     QByteArray ba;
     ba.resize(30000);
-    S2::StoreDataMem(&ba.data()[0], S2::config, DataTypes::Config);
+    S2::StoreDataMem(&ba.data()[0], &S2::config, DataTypes::Config);
     // считываем длину файла из полученной в StoreDataMem и вычисляем количество сегментов
     quint32 wrlength = static_cast<quint8>(ba.at(7)) * 16777216; // с 4 байта начинается FileHeader.size
     wrlength += static_cast<quint8>(ba.at(6)) * 65536;

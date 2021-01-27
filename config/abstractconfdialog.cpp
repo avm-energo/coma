@@ -111,7 +111,7 @@ void AbstractConfDialog::WriteConf()
 
 void AbstractConfDialog::confParametersListReceived(const DataTypes::ConfParametersListStruct &cfpl)
 {
-    auto &config = S2::config;
+    const auto &config = &S2::config;
     for (const auto &cfp : cfpl)
     {
         S2::findElemAndWriteIt(config, cfp);
@@ -164,7 +164,7 @@ void AbstractConfDialog::SaveConfToFile()
         qCritical("Ошибка чтения конфигурации");
         return;
     }
-    S2::StoreDataMem(ba, S2::config, DataTypes::Config);
+    S2::StoreDataMem(ba, &S2::config, DataTypes::Config);
     quint32 length = *reinterpret_cast<quint32 *>(&ba.data()[4]);
     length += sizeof(S2DataTypes::FileHeader);
     Q_ASSERT(length == quint32(ba.size()));
@@ -198,7 +198,7 @@ void AbstractConfDialog::LoadConfFromFile()
         qCritical("Ошибка при загрузке файла конфигурации");
         return;
     }
-    if (S2::RestoreDataMem(&(ba.data()[0]), ba.size(), S2::config) != Error::Msg::NoError)
+    if (S2::RestoreDataMem(&(ba.data()[0]), ba.size(), &S2::config) != Error::Msg::NoError)
     {
         qCritical("Ошибка при разборе файла конфигурации");
         return;
