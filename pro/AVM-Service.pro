@@ -240,6 +240,7 @@ QXLSX_HEADERPATH=./../QXlsx/QXlsx/header/  # current QXlsx header path is ./head
 QXLSX_SOURCEPATH=./../QXlsx/QXlsx/source/  # current QXlsx source path is ./source/
 include(./../QXlsx/QXlsx/QXlsx.pri)
 
+BUILDDIR  = build-$${TARGET}-$${QT_VERSION}-$${QMAKE_COMPILER}
 
 win32 {
     LIBS += -luser32
@@ -268,6 +269,16 @@ win32 {
         $$PWD/../lib/win32/release/hidapi.dll
         }
     }
+    win32-msvc* {
+    BUILDDIR =$${BUILDDIR}-$${MSVC_VER}-$${QMAKE_TARGET.arch}
+    }
+    message($${BUILDDIR})
+}
+
+gcc | clang {
+    COMPILER_VERSION = $$system($$QMAKE_CXX " -dumpversion")
+    COMPILER_MAJOR_VERSION = $$str_member($$COMPILER_VERSION)
+    BUILDDIR =$${BUILDDIR}-$${COMPILER_MAJOR_VERSION}-$${QMAKE_TARGET.arch}
 }
 
 unix {
@@ -290,6 +301,11 @@ contains(QT_ARCH, x86_64) {
         }
     }
 }
+
+OBJECTS_DIR = $${BUILDDIR}/.obj
+MOC_DIR = $${BUILDDIR}/.moc
+RCC_DIR = $${BUILDDIR}/.rcc
+UI_DIR = $${BUILDDIR}/.ui
 
 # copies the given files to the destination directory
 defineTest(copyToDestDir) {
