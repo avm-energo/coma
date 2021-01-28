@@ -14,3 +14,6 @@
 [submodule "widgets/QSS"]
 	path = widgets/QSS
 	url = https://github.com/GTRONICK/QSS
+[submodule "widgets/QDarkStyleSheet"]
+	path = widgets/QDarkStyleSheet
+	url = https://github.com/ColinDuquesnoy/QDarkStyleSheet

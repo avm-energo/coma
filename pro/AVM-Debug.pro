@@ -258,7 +258,7 @@ ERROR_FILES += \
     $$PWD/../errors
 
 RESOURCES += \
-    ../QDarkStyleSheet/qdarkstyle/style.qrc \
+    ../widgets/QDarkStyleSheet/qdarkstyle/style.qrc \
     ../images/vectorIcons.qrc \
     ../settings/settings.qrc \
     ../widgets/styles.qrc

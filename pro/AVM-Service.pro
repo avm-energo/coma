@@ -304,7 +304,7 @@ DISTFILES += \
     ../interfaces/interfaces.qmodel
 
 RESOURCES += \
-    ../QDarkStyleSheet/qdarkstyle/style.qrc \
+    ../widgets/QDarkStyleSheet/qdarkstyle/style.qrc \
     ../images/vectorIcons.qrc \
     ../settings/settings.qrc \
     ../widgets/styles.qrc
