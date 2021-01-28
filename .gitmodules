@@ -1,10 +1,6 @@
 [submodule "LimeReport"]
 	path = LimeReport
 	url = https://github.com/fralx/LimeReport
-[submodule "xz-utilz"]
-	path = xz-utilz
-	url = https://github.com/xz-mirror/xz
-	branch = v5.2
 [submodule "hidapi"]
 	path = hidapi
 	url = https://github.com/libusb/hidapi
@@ -18,7 +14,3 @@
 [submodule "widgets/QSS"]
 	path = widgets/QSS
 	url = https://github.com/GTRONICK/QSS
-[submodule "QDarkStyleSheet"]
-	path = QDarkStyleSheet
-	url = https://github.com/ColinDuquesnoy/QDarkStyleSheet
-	branch = master
