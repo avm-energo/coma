@@ -631,7 +631,7 @@ void IEC104Thread::ParseIFormat(QByteArray &ba) // основной разбор
 
 void IEC104Thread::StartDT()
 {
-    qDebug() << QDateTime::currentMSecsSinceEpoch() << __PRETTY_FUNCTION__;
+    // qDebug() << QDateTime::currentMSecsSinceEpoch() << __PRETTY_FUNCTION__;
     m_log->info("Start()");
     APCI StartDT;
     StartDT.append(I104_START);

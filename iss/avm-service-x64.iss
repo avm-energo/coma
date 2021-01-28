@@ -27,7 +27,7 @@
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
 AppId={{4C4A32F2-8733-4C05-AF66-3996C08A228A}
 AppName={#GroupName}
-AppVerName={#ExeName} {#ApplicationVersion}
+AppVerName={#EngName} {#ApplicationVersion}
 ;AppVersion={#AppVersion}
 ;VersionInfoVersion={#AppVersion}
 ;AppVersion= {#GetStringFileInfo("{#Build_DIR}\{#ARCH}\release\{#ExeName}", "FileVersion")}
@@ -65,19 +65,7 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked; OnlyBelowVersion: 6.1; Check: not IsAdminInstallMode
 
 [Files]
-Source: "{#Build_DIR}\{#EngName}\{#ARCH}\release\{#ExeName}"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#QT_DIR}\..\plugins\platforms\qwindows.dll"; DestDir: "{app}\platforms"; 
-Source: "{#QT_DIR}\..\plugins\styles\qwindowsvistastyle.dll"; DestDir: "{app}\styles"; 
-Source: "{#Build_DIR}\{#EngName}\{#ARCH}\release\errors\*"; DestDir: "{userappdata}\{#EngName}"; Flags: ignoreversion recursesubdirs createallsubdirs
-;Source: "{#Build_DIR}\{#ARCH}\release\reports\*"; DestDir: "{userappdata}\{#EngName}"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "{#Build_DIR}\{#EngName}\{#ARCH}\release\images\*"; DestDir: "{app}\images"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "{#QT_DIR}\Qt5Core.dll"; DestDir: "{app}"; 
-Source: "{#QT_DIR}\Qt5Gui.dll"; DestDir: "{app}"; 
-Source: "{#QT_DIR}\Qt5Network.dll"; DestDir: "{app}"; 
-Source: "{#QT_DIR}\Qt5SerialPort.dll"; DestDir: "{app}";
-Source: "{#QT_DIR}\Qt5Svg.dll"; DestDir: "{app}"; 
-Source: "{#QT_DIR}\Qt5Widgets.dll"; DestDir: "{app}";
-Source: "{#QT_DIR}\Qt5Concurrent.dll"; DestDir: "{app}";  
+Source: "{#Build_DIR}\{#EngName}\{#ARCH}\release\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs 
 Source: "{#LIB_DIR}\{#ARCH}\release\*.dll"; DestDir: "{app}"; 
 Source: "{#Redist_DIR}\vc_redist.x64.exe"; DestDir: "{tmp}"; Flags: deleteafterinstall
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
@@ -87,15 +75,6 @@ Source: "{#Redist_DIR}\vc_redist.x64.exe"; DestDir: "{tmp}"; Flags: deleteafteri
 Name: "{group}\{#Name}"; Filename: "{app}\{#ExeName}"
 ;Name: "{group}\Руководство пользователя КОМА"; Filename: "{app}\КОМА Руководство пользователя.pdf"
 Name: "{group}\Удалить программу {#Name}"; Filename: "{uninstallexe}"
-
-
-
-[InstallDelete]
-Type: files; Name: "{app}\*.dll"
-Type: filesandordirs; Name: "{app}\platforms"
-Type: files; Name: "{app}\{#ExeName}"
-; Type: files; Name: "{app}\КОМА Руководство пользователя.pdf"
-
 
 [Run]
 Filename: "{tmp}\vc_redist.x64.exe"; Parameters: "/install /quiet /norestart"; StatusMsg: Устанавливается пакет MSVC2017 Redistributable...
