@@ -240,7 +240,8 @@ QXLSX_HEADERPATH=./../QXlsx/QXlsx/header/  # current QXlsx header path is ./head
 QXLSX_SOURCEPATH=./../QXlsx/QXlsx/source/  # current QXlsx source path is ./source/
 include(./../QXlsx/QXlsx/QXlsx.pri)
 
-BUILDDIR  = build-$${TARGET}-$${QT_VERSION}-$${QMAKE_COMPILER}
+
+CONFIG(release, debug|release):BUILDDIR  = build-$${TARGET}-$${QT_VERSION}
 
 win32 {
     LIBS += -luser32
@@ -270,17 +271,35 @@ win32 {
         }
     }
     win32-msvc* {
-    BUILDDIR =$${BUILDDIR}-$${MSVC_VER}-$${QMAKE_TARGET.arch}
+    CONFIG(release, debug|release):BUILDDIR =$${BUILDDIR}-$${QMAKE_COMPILER}-$${MSVC_VER}-$${QMAKE_TARGET.arch}
     }
-    message($${BUILDDIR})
 }
 
-gcc | clang {
+# QMAKE_COMPILER  = gcc clang llvm   # clang pretends to be gcc
+clang {
     COMPILER_VERSION = $$system($$QMAKE_CXX " -dumpversion")
-    COMPILER_MAJOR_VERSION = $$str_member($$COMPILER_VERSION)
-    BUILDDIR =$${BUILDDIR}-$${COMPILER_MAJOR_VERSION}-$${QMAKE_TARGET.arch}
+    SPLITTED_COMPILER_VERSION=$$split(COMPILER_VERSION, .)
+    COMPILER_MAJOR_VERSION = $$first(SPLITTED_COMPILER_VERSION)
+    CONFIG(release, debug|release):BUILDDIR =$${BUILDDIR}-clang-$${COMPILER_MAJOR_VERSION}-$${QT_ARCH}
 }
-
+else {
+    # QMAKE_COMPILER = gcc llvm
+    llvm {
+        COMPILER_VERSION = $$system($$QMAKE_CXX " -dumpversion")
+        SPLITTED_COMPILER_VERSION=$$split(COMPILER_VERSION, .)
+        COMPILER_MAJOR_VERSION = $$first(SPLITTED_COMPILER_VERSION)
+        CONFIG(release, debug|release):BUILDDIR =$${BUILDDIR}-llvm-$${COMPILER_MAJOR_VERSION}-$${QT_ARCH}
+    }
+    else {
+    # QMAKE_COMPILER = gcc
+        gcc {
+            COMPILER_VERSION = $$system($$QMAKE_CXX " -dumpversion")
+            SPLITTED_COMPILER_VERSION=$$split(COMPILER_VERSION, .)
+            COMPILER_MAJOR_VERSION = $$first(SPLITTED_COMPILER_VERSION)
+            CONFIG(release, debug|release):BUILDDIR =$${BUILDDIR}-gcc-$${COMPILER_MAJOR_VERSION}-$${QT_ARCH}
+        }
+    }
+}
 unix {
 LIBS += -lhidapi-hidraw
 contains(QT_ARCH, x86_64) {
@@ -302,10 +321,11 @@ contains(QT_ARCH, x86_64) {
     }
 }
 
-OBJECTS_DIR = $${BUILDDIR}/.obj
-MOC_DIR = $${BUILDDIR}/.moc
-RCC_DIR = $${BUILDDIR}/.rcc
-UI_DIR = $${BUILDDIR}/.ui
+CONFIG(release, debug|release):message($${BUILDDIR})
+CONFIG(release, debug|release):OBJECTS_DIR = $${BUILDDIR}/.obj
+CONFIG(release, debug|release):MOC_DIR = $${BUILDDIR}/.moc
+CONFIG(release, debug|release):RCC_DIR = $${BUILDDIR}/.rcc
+CONFIG(release, debug|release):UI_DIR = $${BUILDDIR}/.ui
 
 # copies the given files to the destination directory
 defineTest(copyToDestDir) {
