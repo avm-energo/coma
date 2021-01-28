@@ -65,19 +65,19 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked; OnlyBelowVersion: 6.1; Check: not IsAdminInstallMode
 
 [Files]
-Source: "{#Build_DIR}\{#EngName}\{#ARCH}\release\{#ExeName}"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#QT_DIR}\..\plugins\platforms\qwindows.dll"; DestDir: "{app}\platforms"; 
-Source: "{#QT_DIR}\..\plugins\styles\qwindowsvistastyle.dll"; DestDir: "{app}\styles"; 
-Source: "{#Build_DIR}\{#EngName}\{#ARCH}\release\errors\*"; DestDir: "{userappdata}\{#EngName}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "{#Build_DIR}\{#EngName}\{#ARCH}\release\*"; DestDir: "{app}"; Flags: ignoreversion
+;Source: "{#QT_DIR}\..\plugins\platforms\qwindows.dll"; DestDir: "{app}\platforms"; 
+;Source: "{#QT_DIR}\..\plugins\styles\qwindowsvistastyle.dll"; DestDir: "{app}\styles"; 
+;Source: "{#Build_DIR}\{#EngName}\{#ARCH}\release\errors\*"; DestDir: "{userappdata}\{#EngName}"; Flags: ignoreversion recursesubdirs createallsubdirs
 ;Source: "{#Build_DIR}\{#ARCH}\release\reports\*"; DestDir: "{userappdata}\{#EngName}"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "{#Build_DIR}\{#EngName}\{#ARCH}\release\images\*"; DestDir: "{app}\images"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "{#QT_DIR}\Qt5Core.dll"; DestDir: "{app}"; 
-Source: "{#QT_DIR}\Qt5Gui.dll"; DestDir: "{app}"; 
-Source: "{#QT_DIR}\Qt5Network.dll"; DestDir: "{app}"; 
-Source: "{#QT_DIR}\Qt5SerialPort.dll"; DestDir: "{app}";
-Source: "{#QT_DIR}\Qt5Svg.dll"; DestDir: "{app}"; 
-Source: "{#QT_DIR}\Qt5Widgets.dll"; DestDir: "{app}";
-Source: "{#QT_DIR}\Qt5Concurrent.dll"; DestDir: "{app}";  
+;Source: "{#Build_DIR}\{#EngName}\{#ARCH}\release\images\*"; DestDir: "{app}\images"; Flags: ignoreversion recursesubdirs createallsubdirs
+;Source: "{#QT_DIR}\Qt5Core.dll"; DestDir: "{app}"; 
+;Source: "{#QT_DIR}\Qt5Gui.dll"; DestDir: "{app}"; 
+;Source: "{#QT_DIR}\Qt5Network.dll"; DestDir: "{app}"; 
+;Source: "{#QT_DIR}\Qt5SerialPort.dll"; DestDir: "{app}";
+;Source: "{#QT_DIR}\Qt5Svg.dll"; DestDir: "{app}"; 
+;Source: "{#QT_DIR}\Qt5Widgets.dll"; DestDir: "{app}";
+;Source: "{#QT_DIR}\Qt5Concurrent.dll"; DestDir: "{app}";  
 Source: "{#LIB_DIR}\{#ARCH}\release\*.dll"; DestDir: "{app}"; 
 Source: "{#Redist_DIR}\vc_redist.x64.exe"; DestDir: "{tmp}"; Flags: deleteafterinstall
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
