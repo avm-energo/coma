@@ -1,0 +1,5 @@
+#pragma once
+
+#define PROGNAME '"$$TARGET"'
+#define COMAVERSION '"$$VERSION"'
+
