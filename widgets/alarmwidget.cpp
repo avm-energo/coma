@@ -287,7 +287,7 @@ void AlarmWidget::addAlarm(BaseAlarm *alarm, const QString caption)
     if (!m_timer->isActive())
         m_timer->start();
     // NOTE temporarily disabled !!!
-    connect(m_timer, &QTimer::timeout, alarm, &BaseAlarm::reqUpdate);
+    // connect(m_timer, &QTimer::timeout, alarm, &BaseAlarm::reqUpdate);
     connect(alarm, &BaseAlarm::updateColor, pb, [=](QColor color) { pb->setPixmap(WDFunc::NewCircle(color, 15)); });
 
     pb->setText(caption);
@@ -295,7 +295,7 @@ void AlarmWidget::addAlarm(BaseAlarm *alarm, const QString caption)
     Q_ASSERT(!pb->text().isEmpty() && "Couldn't find description");
     m_alarms.append(alarm);
     buttons->addButton(pb, QDialogButtonBox::ActionRole);
-    alarm->reqUpdate();
+    // alarm->reqUpdate();
     ++m_counter;
 }
 
