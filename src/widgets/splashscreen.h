@@ -6,7 +6,7 @@
 namespace Prog
 {
 constexpr char name_ru[] = "АВМ-Сервис";
-constexpr char department[] = "ООО \"АВМ-Энерго\", 2016-2020";
+constexpr char department[] = "ООО \"АВМ-Энерго\", 2016-2021";
 constexpr char modules[] = "Modules used:";
 constexpr char zlib[] = "Data Compression Library (zlib), version 1.2.11 (http://zlib.net/)";
 constexpr char hidapi[] = "HIDAPI library, version 0.9.0 (https://github.com/libusb/hidapi)";

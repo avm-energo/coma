@@ -1,6 +1,6 @@
 #include "logger.h"
 
-#include "../config.h"
+//#include "../config.h"
 #include "errorqueue.h"
 #include "stdfunc.h"
 
@@ -121,7 +121,7 @@ void Logging::writeStart()
     logFile.open(QFile::Append | QFile::Text);
     out << "=====================================\nLog file started at "
         << QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss.zzz") + "\n"
-        << PROGNAME << " v." << COMAVERSION;
+        << QCoreApplication::applicationName() << " v." << QCoreApplication::applicationVersion();
     out.flush();
     logFile.close();
     checkNGzip(fileName);

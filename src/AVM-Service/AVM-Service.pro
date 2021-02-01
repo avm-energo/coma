@@ -9,12 +9,19 @@ TEMPLATE = app
 
 QMAKE_SUBSTITUTES += ../config.h.in
 
+QXLSX_PARENTPATH=./../../include/QXlsx/QXlsx         # current QXlsx path is . (. means curret directory)
+QXLSX_HEADERPATH=./../../include/QXlsx/QXlsx/header/  # current QXlsx header path is ./header/
+QXLSX_SOURCEPATH=./../../include/QXlsx/QXlsx/source/  # current QXlsx source path is ./source/
+include(./../../include/QXlsx/QXlsx/QXlsx.pri)
+
 SOURCES += \
     coma.cpp \
-    main.cpp 
+    main.cpp \
+    servicemodule.cpp
 	
 HEADERS += \
-    coma.h 	
+    coma.h \
+    servicemodule.h
 
 win32 {
     LIBS += -luser32
@@ -46,7 +53,6 @@ win32 {
 }
 
 LIBS +=  \
-    -luser32 \
     -lCheck$${LIB_SUFFIX} \
     -lConfig$${LIB_SUFFIX} \
     -lDatablock$${LIB_SUFFIX} \

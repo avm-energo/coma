@@ -1,6 +1,6 @@
 #include "settingsdialog.h"
 
-#include "../config.h"
+//#include "../config.h"
 #include "../widgets/styleloader.h"
 #include "../widgets/wd_func.h"
 
@@ -59,7 +59,7 @@ void SettingsDialog::SetupUI()
 
 void SettingsDialog::Fill()
 {
-    auto sets = std::make_unique<QSettings>("EvelSoft", PROGNAME);
+    auto sets = std::make_unique<QSettings>();
     bool writeUSBLog = sets->value("WriteLog", "0").toBool();
     WDFunc::SetChBData(this, "writelogchb", writeUSBLog);
     int N = sets->value("TuneRequestCount", "20").toInt();
@@ -69,7 +69,7 @@ void SettingsDialog::Fill()
 void SettingsDialog::AcceptSettings()
 {
     bool tmpb;
-    auto sets = std::make_unique<QSettings>("EvelSoft", PROGNAME);
+    auto sets = std::make_unique<QSettings>();
 
     WDFunc::ChBData(this, "writelogchb", tmpb);
     sets->setValue("WriteLog", (tmpb) ? "1" : "0");

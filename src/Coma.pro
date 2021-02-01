@@ -15,8 +15,11 @@ SUBDIRS = \
             startup \
             widgets \
             gen \
-            app
+            tune \
+            AVM-Service \
+            AVM-Debug
 
-app.target = apptarget
+AVM-Service.target = servicetarget
+AVM-Debug.target = debugtarget
 
-QMAKE_EXTRA_TARGETS += apptarget
+QMAKE_EXTRA_TARGETS += servicetarget debugtarget

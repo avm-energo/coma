@@ -1,7 +1,5 @@
 #include "styleloader.h"
 
-#include "../config.h"
-
 #include <QApplication>
 #include <QDebug>
 #include <QFile>
@@ -55,7 +53,7 @@ void StyleLoader::setAppStyleSheet()
 QString StyleLoader::load()
 {
     using namespace Style;
-    QSharedPointer<QSettings> sets = QSharedPointer<QSettings>(new QSettings("EvelSoft", PROGNAME));
+    auto sets = std::unique_ptr<QSettings>(new QSettings);
     auto themeEnum = QMetaEnum::fromType<Name>;
     const QString styleName = sets->value("Style").toString();
     if (styleName.isEmpty())
@@ -67,7 +65,7 @@ QString StyleLoader::load()
 void StyleLoader::save()
 {
     using namespace Style;
-    QSharedPointer<QSettings> sets = QSharedPointer<QSettings>(new QSettings("EvelSoft", PROGNAME));
+    auto sets = std::unique_ptr<QSettings>(new QSettings);
 
     sets->setValue("Style", styleName());
     setAppStyleSheet();

@@ -6,6 +6,7 @@
 #include "../widgets/alarmwidget.h"
 #include "../widgets/udialog.h"
 #include "modulealarm.h"
+#include "modules.h"
 
 enum AlarmType
 {
@@ -28,9 +29,7 @@ struct ModuleSettings
             counter += alarm.desc.size();
         return counter;
     }
-    // QList<DataTypes::Alarm> alarms;
     QMap<AlarmType, DataTypes::Alarm> alarms;
-    // QList<DataTypes::Journal> journals;
     QMap<JournalType, DataTypes::Journal> journals;
     InterfaceSettings ifaceSettings;
 };
@@ -46,18 +45,16 @@ public:
     };
 
     explicit Module(QObject *parent = nullptr);
+    Module(QTimer *updateTimer, AlarmWidget *aw, QObject *parent = nullptr);
 
-    static Module *createModule(QTimer *updateTimer, AlarmWidget *aw);
     QList<UDialog *> dialogs();
     QList<UDialog *> confDialogs();
     void addDialogToList(UDialog *dlg, const QString &caption = "", const QString &name = "");
-    //    ModuleAlarm *getAlarm();
-    //    ModuleAlarm *getWarn();
-    //    AlarmStateAll *getAlarmStateAll();
+    void insertDialogToList(UDialog *dlg, int pos = 0, const QString &caption = "", const QString &name = "");
+
     void startTimeTimer();
     void stopTimeTimer();
     void parentTWTabChanged(int index);
-    //    void setDefConf();
     void closeDialogs();
     ModuleSettings *settings() const;
 
@@ -65,14 +62,14 @@ signals:
 
 public slots:
 
+protected:
+    bool loadSettings();
+
+    virtual void create(Modules::Model model);
+
 private:
     QList<UDialog *> m_dialogs;
-    //    ModuleAlarm *m_accAlarm;
-    //    AlarmStateAll *m_alarmStateAllDialog;
-    //    ModuleAlarm *m_warnAlarm;
-    //    int m_currentTabIndex, m_oldTabIndex;
-    //    BaseInterface *m_iface;
-    bool loadSettings();
+
     std::unique_ptr<ModuleSettings> m_settings;
     void traverseNode(const QDomNode &node);
 
@@ -81,9 +78,6 @@ private:
     quint32 parseInt32(QDomElement domElement) const;
     quint32 parseHexInt32(QDomElement domElement) const;
     QStringList parseStringList(QDomElement domElement) const;
-    // InterfaceInfo<CommandsMBS::ModbusGroup> parseModbus(QDomElement domElement);
-    // InterfaceInfo<Proto::ProtocomGroup> parseProtocom(QDomElement domElement);
-    // InterfaceInfo<Commands104::Iec104Group> parseIec104(QDomElement domElement);
 };
 
 #endif // MODULEFABRIC_H

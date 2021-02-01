@@ -1,7 +1,6 @@
 #include "splashscreen.h"
 
-#include "../config.h"
-
+#include <QCoreApplication>
 #include <QIcon>
 #include <QPainter>
 #include <QString>
@@ -27,7 +26,11 @@ void SplashScreen::drawContents(QPainter *painter)
 
     QRect rect(margin, margin, painter->window().width() - 2 * margin, painter->font().pixelSize() * 1.2);
     QString name;
-    name.append(Prog::name_ru).append(" (").append(PROGNAME).append(") ").append(COMAVERSION);
+    name.append(Prog::name_ru)
+        .append(" (")
+        .append(QCoreApplication::applicationName())
+        .append(") ")
+        .append(QCoreApplication::applicationVersion());
 
     painter->drawText(rect, Qt::AlignRight | Qt::AlignVCenter, name);
     rect.moveBottom(rect.bottom() + 2 * painter->font().pixelSize());

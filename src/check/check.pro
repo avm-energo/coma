@@ -10,8 +10,8 @@ DEFINES += CHECK_LIBRARY
 # QXlsx code for Application Qt project
 QXLSX_PARENTPATH=./../../include/QXlsx/QXlsx         # current QXlsx path is . (. means curret directory)
 QXLSX_HEADERPATH=./../../include/QXlsx/QXlsx/header/  # current QXlsx header path is ./header/
-QXLSX_SOURCEPATH=./../../include/QXlsx/QXlsx/source/  # current QXlsx source path is ./source/
-include(./../../include/QXlsx/QXlsx/QXlsx.pri)
+INCLUDEPATH += $${QXLSX_PARENTPATH}
+INCLUDEPATH += $${QXLSX_HEADERPATH}
 
 SOURCES += \
     check.cpp \

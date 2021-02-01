@@ -1,6 +1,5 @@
 #include "stdfunc.h"
 
-#include "../config.h"
 #include "../gen/error.h"
 #include "../gen/s2.h"
 #include "pch.h"
@@ -41,11 +40,12 @@ void StdFunc::Init()
 {
     Emul = false;
 
-    SystemHomeDir = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + "/" + PROGNAME + "/";
+    SystemHomeDir = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + "/"
+        + QCoreApplication::applicationName() + "/";
     QDir dir(SystemHomeDir);
     if (!dir.exists())
         dir.mkdir(SystemHomeDir);
-    QScopedPointer<QSettings> sets = QScopedPointer<QSettings>(new QSettings("EvelSoft", PROGNAME));
+    auto sets = std::unique_ptr<QSettings>(new QSettings);
     SetOrganizationString(sets->value("OrganizationString", "Р&К").toString());
     SetDeviceIP(sets->value("DeviceIP", "172.16.11.12").toString());
     setTuneRequestCount(sets->value("TuneRequestCount", "20").toInt());
@@ -108,7 +108,7 @@ QString StdFunc::GetSystemHomeDir()
 void StdFunc::SetDeviceIP(const QString &ip)
 {
     DeviceIP = ip;
-    QScopedPointer<QSettings> sets = QScopedPointer<QSettings>(new QSettings("EvelSoft", PROGNAME));
+    auto sets = std::unique_ptr<QSettings>(new QSettings);
     sets->setValue("DeviceIP", ip);
 }
 
@@ -120,7 +120,7 @@ QString StdFunc::ForDeviceIP()
 void StdFunc::SetOrganizationString(const QString &str)
 {
     s_OrganizationString = str;
-    QScopedPointer<QSettings> sets = QScopedPointer<QSettings>(new QSettings("EvelSoft", PROGNAME));
+    auto sets = std::unique_ptr<QSettings>(new QSettings);
     sets->setValue("OrganizationString", str);
 }
 

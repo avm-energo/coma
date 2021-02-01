@@ -18,54 +18,43 @@
 #include "../startup/startupkdvdialog.h"
 #include "../startup/startupkivdialog.h"
 #include "../startup/startupktfdialog.h"
+#include "../tune/kiv/tunekivdialog.h"
 #include "../widgets/udialog.h"
 #include "journkdv.h"
 #include "journkiv.h"
 #include "journktf.h"
-#include "modules.h"
 //#define XML_DEBUG
 
 #include <QDir>
 #include <QtXml>
-#ifdef AVM_DEBUG
-//#include "../tune/kiv/tunekdvdialog.h"
-#include "../tune/kiv/tunekivdialog.h"
-//#include "../tune/kiv/tunektfdialog.h"
-#endif
 
 Module::Module(QObject *parent) : QObject(parent)
 {
-    // m_dialogs.clear();
-    // m_oldTabIndex = m_currentTabIndex = 0;
 }
 
-// Module *Module::createModule(QTimer *updateTimer, BaseInterface *iface, AlarmWidget *aw)
-Module *Module::createModule(QTimer *updateTimer, AlarmWidget *aw)
+Module::Module(QTimer *updateTimer, AlarmWidget *aw, QObject *parent) : QObject(parent)
 {
     using namespace Modules;
     const auto &board = Board::GetInstance();
     UniquePointer<Journals> jour;
     // Journals *JOUR = nullptr;
-    Module *m = new Module;
-    //    m->m_iface = iface;
-    // S2::config = UniquePointer<S2DataTypes::S2ConfigType>(new S2DataTypes::S2ConfigType);
-    // ModuleAlarm *criticalAlarm;
 
-    // ModuleAlarm *warningAlarm;
-    // m->m_alarmStateAllDialog->UpdateHealth(board.health());
-    //    quint16 typeb = Board::GetInstance().typeB();
+    // S2::config = UniquePointer<S2DataTypes::S2ConfigType>(new S2DataTypes::S2ConfigType);
+
     quint16 typeb = board.typeB();
-    if (!m->loadSettings())
-        return m;
-    BaseInterface::iface()->setSettings(m->settings()->ifaceSettings);
-    //    aw->setInterface(iface);
-    // aw->uponInterfaceSetting();
+    if (!loadSettings())
+    {
+        qCritical() << "No conf .xml file for this module";
+        return;
+    }
+
+    BaseInterface::iface()->setSettings(settings()->ifaceSettings);
+
     AlarmStateAll *alarmStateAll = new AlarmStateAll;
     Q_ASSERT(aw->count() == 0);
     aw->addAlarm(alarmStateAll);
     if (BaseBoards.contains(typeb)) // there must be two-part module
     {
-        //        quint16 typem = Board::GetInstance().typeM();
         quint16 typem = board.typeM();
         Q_UNUSED(typem)
         switch (typeb)
@@ -89,114 +78,32 @@ Module *Module::createModule(QTimer *updateTimer, AlarmWidget *aw)
     }
     else
     {
-        //        quint16 mtype = Board::GetInstance().type();
         quint16 mtype = board.type();
-        switch (mtype)
-        {
-        case Model::KIV:
-        {
-            jour = UniquePointer<JournKIV>(new JournKIV);
-            if (board.interfaceType() != Board::InterfaceType::RS485)
-            {
-                ConfigKIV *CKIV = new ConfigKIV;
-                m->addDialogToList(new ConfKIVDialog(CKIV), "Конфигурирование", "conf1");
-                if (board.interfaceType() == Board::InterfaceType::USB)
-                {
-#ifdef AVM_DEBUG
-                    m->addDialogToList(new TuneKIVDialog(CKIV), "Регулировка");
-#endif
-                }
-            }
-            CheckKIVDialog *cdkiv = new CheckKIVDialog;
-            m->addDialogToList(cdkiv, "Проверка");
-
-            m->addDialogToList(new StartupKIVDialog, "Начальные\nзначения");
-
-            break;
-        }
-        case Model::KTF:
-        {
-            jour = UniquePointer<JournKTF>(new JournKTF);
-            if (board.interfaceType() != Board::InterfaceType::RS485)
-            {
-                ConfigKTF *CKTF = new ConfigKTF;
-                m->addDialogToList(new ConfKTFDialog(CKTF), "Конфигурирование", "conf1");
-            }
-            CheckKTFDialog *cdktf = new CheckKTFDialog;
-            m->addDialogToList(cdktf);
-#ifdef AVM_DEBUG
-            //            TuneKTF *TKTF = new TuneKTF(0, s2Config);
-//                        m->addDialogToList(new TuneKTFDialog(CKTF, TKTF));
-#endif
-            m->addDialogToList(new StartupKTFDialog, "Старение\nизоляции");
-            m->addDialogToList(new CheckKTFHarmonicDialog, "Гармоники");
-            // aw->addAlarm(new WarnKTF);
-            // aw->addAlarm(new CritKTF);
-            //            connect(m->m_warn, &Warn::updateWarn, cdktf, &AbstractCheckDialog::SetWarnColor);
-            //            connect(m->m_alarm, &Alarm::updateAlarm, cdktf, &AbstractCheckDialog::SetAlarmColor);
-            break;
-        }
-        case Model::KDV:
-        {
-            jour = UniquePointer<JournKDV>(new JournKDV);
-            if (board.interfaceType() != Board::InterfaceType::RS485)
-            {
-                ConfigKDV *CKDV = new ConfigKDV;
-                m->addDialogToList(new ConfKDVDialog(CKDV), "Конфигурирование", "conf1");
-            }
-            CheckKDVDialog *cdkdv = new CheckKDVDialog;
-            m->addDialogToList(cdkdv);
-#ifdef AVM_DEBUG
-//            TuneKDV *TKDV = new TuneKDV;
-//            m->addDialogToList(new TuneKDVDialog(CKDV, TKDV));
-#endif
-            m->addDialogToList(new StartupKDVDialog, "Старение\nизоляции");
-            m->addDialogToList(new CheckKDVHarmonicDialog, "Гармоники");
-            m->addDialogToList(new CheckKDVVibrDialog, "Вибрации");
-            //            VibrDialog = new CheckDialogVibrKDV(BoardTypes::BT_BASE);
-            //            connect(BdaTimer, &QTimer::timeout, VibrDialog, &AbstractCheckDialog::USBUpdate);
-            // aw->addAlarm(new WarnKDV);
-            // aw->addAlarm(new CritKDV);
-            //            connect(m->m_warn, &Warn::updateWarn, cdkdv, &AbstractCheckDialog::SetWarnColor);
-            //            connect(m->m_alarm, &Alarm::updateAlarm, cdkdv, &AbstractCheckDialog::SetAlarmColor);
-            break;
-        }
-        default:
-            assert(false);
-        }
+        create(Modules::Model(mtype));
     }
-    auto *warnAlarm = new ModuleAlarm(m->settings()->alarms.value(AlarmType::Warning), m->settings()->alarmCount());
+    auto *warnAlarm = new ModuleAlarm(settings()->alarms.value(AlarmType::Warning), settings()->alarmCount());
     aw->addAlarm(warnAlarm, tr("Предупредительная сигнализация"));
-    auto *critAlarm = new ModuleAlarm(m->settings()->alarms.value(AlarmType::Critical), m->settings()->alarmCount());
+    auto *critAlarm = new ModuleAlarm(settings()->alarms.value(AlarmType::Critical), settings()->alarmCount());
     aw->addAlarm(critAlarm, tr("Аварийная сигнализация"));
     TimeDialog *tdlg = new TimeDialog;
-    m->addDialogToList(tdlg, "Время", "time");
+    addDialogToList(tdlg, "Время", "time");
 
-    //    if (Board::GetInstance().interfaceType() != Board::InterfaceType::RS485)
     if (board.interfaceType() != Board::InterfaceType::RS485)
     {
         m->addDialogToList(new JournalDialog(std::move(jour)), "Журналы");
     }
 
-    //    if (Board::GetInstance().interfaceType() == Board::InterfaceType::USB)
     if (board.interfaceType() != Board::InterfaceType::RS485)
-        m->addDialogToList(new FWUploadDialog, "Загрузка ВПО");
+        addDialogToList(new FWUploadDialog, "Загрузка ВПО");
 
-    m->addDialogToList(new InfoDialog, "О приборе", "info");
+    addDialogToList(new InfoDialog, "О приборе", "info");
 
-    QList<UDialog *> dlgs = m->dialogs();
+    QList<UDialog *> dlgs = dialogs();
     for (auto *d : dlgs)
     {
         connect(updateTimer, &QTimer::timeout, d, &UDialog::reqUpdate);
-        // d->setUpdatesDisabled();
         d->uponInterfaceSetting();
-        //        d->setInterface(m->m_iface);
     }
-
-    //    aw->addAlarm(warningAlarm);
-    //    aw->addAlarm(criticalAlarm);
-
-    return m;
 }
 
 QList<UDialog *> Module::dialogs()
@@ -223,20 +130,12 @@ void Module::addDialogToList(UDialog *dlg, const QString &caption, const QString
     m_dialogs.append(dlg);
 }
 
-// ModuleAlarm *Module::getAlarm()
-//{
-//    return m_accAlarm;
-//}
-
-// ModuleAlarm *Module::getWarn()
-//{
-//    return m_warnAlarm;
-//}
-
-// AlarmStateAll *Module::getAlarmStateAll()
-//{
-//    return m_alarmStateAllDialog;
-//}
+void Module::insertDialogToList(UDialog *dlg, int pos, const QString &caption, const QString &name)
+{
+    dlg->setObjectName(name);
+    dlg->setCaption(caption);
+    m_dialogs.insert(pos, dlg);
+}
 
 void Module::parentTWTabChanged(int index)
 {
@@ -247,7 +146,6 @@ void Module::parentTWTabChanged(int index)
     {
         if (dialog->updatesEnabled())
             dialog->setUpdatesDisabled();
-        // dialog->setEnabled(false);
     }
 
     UDialog *udlg = m_dialogs.at(index);
@@ -256,18 +154,6 @@ void Module::parentTWTabChanged(int index)
     udlg->setUpdatesEnabled();
     udlg->reqUpdate();
 }
-
-// void Module::setDefConf()
-//{
-//    foreach (QDialog *dlg, m_dialogs)
-//    {
-//        if (dlg->objectName().contains("conf"))
-//        {
-//            static_cast<AbstractConfDialog *>(dlg)->SetDefConf();
-//            static_cast<AbstractConfDialog *>(dlg)->Fill();
-//        }
-//    }
-//}
 
 void Module::closeDialogs()
 {
@@ -326,63 +212,6 @@ QStringList Module::parseStringList(QDomElement domElement) const
     }
     return description;
 }
-
-// InterfaceInfo<CommandsMBS::ModbusGroup> Module::parseModbus(QDomElement domElement)
-//{
-//#ifdef XML_DEBUG
-//    qDebug() << domElement.text();
-//    qDebug() << "TagName: " << domElement.tagName();
-//#endif
-//    const auto &nodes = domElement.childNodes();
-//    Q_ASSERT(!nodes.isEmpty());
-//    int i = 0;
-//    // ModbusSettings settings;
-//    InterfaceInfo<CommandsMBS::ModbusGroup> settings;
-//    while (i != nodes.count())
-//    {
-//        const auto &group = nodes.item(i++).toElement();
-//        auto test = CommandsMBS::ModbusGroup(group);
-//        settings.addGroup(test);
-//#ifdef XML_DEBUG
-//        qDebug() << group.attribute("id", "") << group.text();
-//#endif
-//    }
-//#ifdef XML_DEBUG
-//    qDebug() << settings.groups().count();
-//#endif
-//    return settings;
-//}
-
-// InterfaceInfo<Proto::ProtocomGroup> Module::parseProtocom(QDomElement domElement)
-//{
-//#ifdef XML_DEBUG
-//    qDebug() << domElement.text();
-//    qDebug() << "TagName: " << domElement.tagName();
-//#endif
-//    const auto &nodes = domElement.childNodes();
-//    Q_ASSERT(!nodes.isEmpty());
-//    int i = 0;
-//    InterfaceInfo<Proto::ProtocomGroup> settings;
-//    while (i != nodes.count())
-//    {
-//        const auto &group = nodes.item(i++).toElement();
-//        Proto::ProtocomGroup test(group);
-//        settings.addGroup(test);
-//#ifdef XML_DEBUG
-//        qDebug() << group.attribute("id", "") << group.text();
-//#endif
-//    }
-//#ifdef XML_DEBUG
-//    qDebug() << settings.groups().count();
-//#endif
-//    return settings;
-//}
-
-// InterfaceInfo<Commands104::Iec104Group> Module::parseIec104(QDomElement domElement)
-//{
-//    InterfaceInfo<Commands104::Iec104Group> settings;
-//    return settings;
-//}
 
 DataTypes::Alarm Module::parseAlarm(QDomElement domElement)
 {
@@ -611,5 +440,76 @@ bool Module::loadSettings()
     {
         return false;
         qCritical() << Error::FileOpenError << file.fileName();
+    }
+}
+
+void Module::create(Modules::Model model)
+{
+    using namespace Modules;
+    Journals *JOUR = nullptr;
+    const auto &board = Board::GetInstance();
+    switch (model)
+    {
+    case Model::KIV:
+    {
+        JOUR = new JournKIV(this);
+        if (board.interfaceType() != Board::InterfaceType::RS485)
+        {
+            ConfigKIV *CKIV = new ConfigKIV;
+            addDialogToList(new ConfKIVDialog(CKIV), "Конфигурирование", "conf1");
+            //            if (board.interfaceType() == Board::InterfaceType::USB)
+            //            {
+            //                if (appType == Debug)
+            //                    addDialogToList(new TuneKIVDialog(CKIV), "Регулировка");
+            //            }
+        }
+        CheckKIVDialog *cdkiv = new CheckKIVDialog;
+        addDialogToList(cdkiv, "Проверка");
+
+        addDialogToList(new StartupKIVDialog, "Начальные\nзначения");
+
+        break;
+    }
+    case Model::KTF:
+    {
+        JOUR = new JournKTF(this);
+        if (board.interfaceType() != Board::InterfaceType::RS485)
+        {
+            ConfigKTF *CKTF = new ConfigKTF;
+            addDialogToList(new ConfKTFDialog(CKTF), "Конфигурирование", "conf1");
+        }
+        CheckKTFDialog *cdktf = new CheckKTFDialog;
+        addDialogToList(cdktf);
+        // if (appType == Debug)
+        // TuneKTF *TKTF = new TuneKTF(0, s2Config);
+        //                        m->addDialogToList(new TuneKTFDialog(CKTF, TKTF));
+
+        addDialogToList(new StartupKTFDialog, "Старение\nизоляции");
+        addDialogToList(new CheckKTFHarmonicDialog, "Гармоники");
+        break;
+    }
+    case Model::KDV:
+    {
+        JOUR = new JournKDV(this);
+        if (board.interfaceType() != Board::InterfaceType::RS485)
+        {
+            ConfigKDV *CKDV = new ConfigKDV;
+            addDialogToList(new ConfKDVDialog(CKDV), "Конфигурирование", "conf1");
+        }
+        CheckKDVDialog *cdkdv = new CheckKDVDialog;
+        addDialogToList(cdkdv);
+        // if (appType == Debug)
+        //            TuneKDV *TKDV = new TuneKDV;
+        //            m->addDialogToList(new TuneKDVDialog(CKDV, TKDV));
+
+        addDialogToList(new StartupKDVDialog, "Старение\nизоляции");
+        addDialogToList(new CheckKDVHarmonicDialog, "Гармоники");
+        addDialogToList(new CheckKDVVibrDialog, "Вибрации");
+        //            VibrDialog = new CheckDialogVibrKDV(BoardTypes::BT_BASE);
+        //            connect(BdaTimer, &QTimer::timeout, VibrDialog, &AbstractCheckDialog::USBUpdate);
+        break;
+    }
+    default:
+        assert(false);
     }
 }

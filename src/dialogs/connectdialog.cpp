@@ -1,6 +1,5 @@
 #include "connectdialog.h"
 
-#include "../config.h"
 #include "../gen/board.h"
 #include "../gen/error.h"
 #include "../gen/stdfunc.h"
@@ -165,10 +164,10 @@ void ConnectDialog::EthAccepted()
     QString ipstr = WDFunc::LEData(dlg, "iple.0") + "." + WDFunc::LEData(dlg, "iple.1") + "."
         + WDFunc::LEData(dlg, "iple.2") + "." + WDFunc::LEData(dlg, "iple.3");
     RotateSettings("Ethernet-", name);
-    QString key = PROGNAME;
+    QString key = QCoreApplication::applicationName();
     key += "\\" + name;
-    auto settings = UniquePointer<QSettings>(new QSettings(SOFTDEVELOPER, PROGNAME));
-    settings->setValue("ip", ipstr);
+    auto sets = std::unique_ptr<QSettings>(new QSettings(QCoreApplication::organizationName(), key));
+    sets->setValue("ip", ipstr);
     int spbdata;
     WDFunc::SPBData(dlg, "bsadrspb", spbdata);
     settings->setValue("bs", QString::number(spbdata));
@@ -193,9 +192,9 @@ void ConnectDialog::RsAccepted()
         return;
     }
     RotateSettings("RS485-", name);
-    QString key = PROGNAME;
+    QString key = QCoreApplication::applicationName();
     key += "\\" + name;
-    std::unique_ptr<QSettings> settings = std::unique_ptr<QSettings>(new QSettings(SOFTDEVELOPER, key));
+    auto settings = std::unique_ptr<QSettings>(new QSettings(QCoreApplication::organizationName(), key));
     settings->setValue("port", WDFunc::CBData(dlg, "portcb"));
     settings->setValue("speed", WDFunc::CBData(dlg, "speedcb"));
     settings->setValue("parity", WDFunc::CBData(dlg, "paritycb"));
@@ -415,7 +414,7 @@ void ConnectDialog::SetRs(QModelIndex index)
 
 void ConnectDialog::RotateSettings(const QString &type, const QString &name)
 {
-    auto settings = UniquePointer<QSettings>(new QSettings(SOFTDEVELOPER, PROGNAME));
+    auto settings = std::unique_ptr<QSettings>(new QSettings);
     QStringList sl;
     QString namename, oldnamename;
     // 1. get all type+'i' from registry (count)
@@ -449,7 +448,7 @@ void ConnectDialog::RotateSettings(const QString &type, const QString &name)
 
 bool ConnectDialog::IsKeyExist(const QString &type, const QString &chstr)
 {
-    std::unique_ptr<QSettings> settings = std::unique_ptr<QSettings>(new QSettings(SOFTDEVELOPER, PROGNAME));
+    auto settings = std::unique_ptr<QSettings>(new QSettings);
     for (int i = 0; i < MAXREGISTRYINTERFACECOUNT; ++i)
     {
         QString key = type + QString::number(i);
@@ -463,12 +462,9 @@ bool ConnectDialog::UpdateModel(QDialog *dlg)
 {
     QStringList ethlist, rslist;
 
-    //    QDialog *dlg = this->findChild<QDialog *>("connectdlg");
-    //    if (!dlg)
-    //        return false;
     for (int i = 0; i < MAXREGISTRYINTERFACECOUNT; ++i)
     {
-        std::unique_ptr<QSettings> sets = std::unique_ptr<QSettings>(new QSettings(SOFTDEVELOPER, PROGNAME));
+        auto sets = std::unique_ptr<QSettings>(new QSettings);
         QString rsname = "RS485-" + QString::number(i);
         QString ethname = "Ethernet-" + QString::number(i);
         ethlist << sets->value(ethname, "").toString();
@@ -510,9 +506,9 @@ bool ConnectDialog::UpdateModel(QDialog *dlg)
         mdl->setHorizontalHeaderLabels(sl);
         for (const auto &item : qAsConst(ethlist))
         {
-            QString key = PROGNAME;
+            QString key = QCoreApplication::applicationName();
             key += "\\" + item;
-            std::unique_ptr<QSettings> sets = std::unique_ptr<QSettings>(new QSettings(SOFTDEVELOPER, key));
+            auto sets = std::unique_ptr<QSettings>(new QSettings(QCoreApplication::organizationName(), key));
             QList<QStandardItem *> items { new QStandardItem(item), new QStandardItem(sets->value("ip", "").toString()),
                 new QStandardItem(sets->value("bs", "").toString()) };
             mdl->appendRow(items);
@@ -527,9 +523,9 @@ bool ConnectDialog::UpdateModel(QDialog *dlg)
         mdl->setHorizontalHeaderLabels(sl);
         for (const auto &item : qAsConst(rslist))
         {
-            QString key = PROGNAME;
+            QString key = QCoreApplication::applicationName();
             key += "\\" + item;
-            std::unique_ptr<QSettings> sets = std::unique_ptr<QSettings>(new QSettings(SOFTDEVELOPER, key));
+            auto sets = std::unique_ptr<QSettings>(new QSettings(QCoreApplication::organizationName(), key));
             QList<QStandardItem *> items { new QStandardItem(item),
                 new QStandardItem(sets->value("port", "").toString()),
                 new QStandardItem(sets->value("speed", "").toString()),

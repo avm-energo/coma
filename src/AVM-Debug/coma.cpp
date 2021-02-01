@@ -22,24 +22,15 @@
 
 #include "coma.h"
 
-#include "../config.h"
 #include "../dialogs/connectdialog.h"
 #include "../dialogs/errordialog.h"
 #include "../dialogs/keypressdialog.h"
 #include "../dialogs/settingsdialog.h"
 #include "../gen/board.h"
-//#include "../gen/colors.h"
 #include "../gen/datamanager.h"
 #include "../gen/errorqueue.h"
 #include "../gen/logger.h"
 #include "../gen/stdfunc.h"
-
-#include <QToolBar>
-#include <memory>
-#ifndef AVM_DEBUG
-#include "../interfaces/iec104.h"
-#include "../interfaces/modbus.h"
-#endif
 #include "../interfaces/protocom.h"
 #include "../interfaces/settingstypes.h"
 #include "../widgets/aboutwidget.h"
@@ -174,8 +165,8 @@ QToolBar *Coma::createToolBar()
 
 void Coma::SetupUI()
 {
-    QString caption(PROGNAME);
-    caption.append(" v. ").append(COMAVERSION);
+    QString caption(QCoreApplication::applicationName());
+    caption.append(" v. ").append(QCoreApplication::applicationVersion());
     setWindowTitle(caption);
     setMinimumSize(QSize(1050, 700));
     QWidget *wdgt = new QWidget(this);
@@ -783,15 +774,16 @@ void Coma::AttemptToRec()
 
 void Coma::LoadSettings()
 {
-    QString HomeDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/" + PROGNAME + "/";
-    QSharedPointer<QSettings> sets = QSharedPointer<QSettings>(new QSettings("EvelSoft", PROGNAME));
+    QString HomeDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/"
+        + QCoreApplication::applicationName() + "/";
+    auto sets = std::unique_ptr<QSettings>(new QSettings);
     StyleLoader::GetInstance().attach();
     StdFunc::SetHomeDir(sets->value("Homedir", HomeDir).toString());
 }
 
 void Coma::SaveSettings()
 {
-    QSharedPointer<QSettings> sets = QSharedPointer<QSettings>(new QSettings("EvelSoft", PROGNAME));
+    auto sets = std::unique_ptr<QSettings>(new QSettings);
     sets->setValue("Homedir", StdFunc::GetHomeDir());
 }
 
@@ -995,17 +987,9 @@ void Coma::Connect()
     }
     case Board::InterfaceType::Ethernet:
     {
-#ifndef AVM_DEBUG
-        device = BaseInterface::InterfacePointer(new IEC104());
-#endif
-        break;
     }
     case Board::InterfaceType::RS485:
     {
-#ifndef AVM_DEBUG
-        device = BaseInterface::InterfacePointer(new ModBus());
-#endif
-        break;
     }
     default:
         qFatal("Connection type error");

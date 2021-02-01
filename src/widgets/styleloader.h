@@ -7,6 +7,7 @@
 #include <QObject>
 constexpr char defaultStyleFile[] = ":/qdarkstyle/style.qss";
 constexpr char defaultStyleKey[] = "F5";
+
 namespace Style
 {
 Q_NAMESPACE
@@ -37,6 +38,7 @@ const QMap<Name, QString> themes {
 class StyleLoader : public QObject, public Singleton<StyleLoader>
 {
     Q_OBJECT
+
 public:
     StyleLoader(Singleton::token, QObject *parent);
     explicit StyleLoader(token);
