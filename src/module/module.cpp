@@ -61,11 +61,6 @@ Module::Module(AlarmWidget *aw, QObject *parent) : QObject(parent)
     addDialogToList(tdlg, "Время", "time");
 
     if (board.interfaceType() != Board::InterfaceType::RS485)
-    {
-        m->addDialogToList(new JournalDialog(std::move(jour)), "Журналы");
-    }
-
-    if (board.interfaceType() != Board::InterfaceType::RS485)
         addDialogToList(new FWUploadDialog, "Загрузка ВПО");
 
     addDialogToList(new InfoDialog, "О приборе", "info");
@@ -408,13 +403,11 @@ bool Module::loadSettings()
     }
 }
 
-void Module::create(Journals *jour)
+void Module::create(UniquePointer<Journals> jour)
 {
     if (Board::GetInstance().interfaceType() != Board::InterfaceType::RS485)
     {
         Q_ASSERT(jour != nullptr);
-        addDialogToList(new JournalDialog(jour), "Журналы");
+        addDialogToList(new JournalDialog(std::move(jour)), "Журналы");
     }
-    else
-        delete jour;
 }

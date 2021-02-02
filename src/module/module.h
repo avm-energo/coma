@@ -65,7 +65,7 @@ public slots:
 protected:
     bool loadSettings();
 
-    void create(Journals *jour);
+    void create(UniquePointer<Journals> jour);
     virtual void create(Modules::Model model) = 0;
 
 private:

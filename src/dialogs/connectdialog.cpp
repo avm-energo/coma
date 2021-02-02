@@ -166,8 +166,8 @@ void ConnectDialog::EthAccepted()
     RotateSettings("Ethernet-", name);
     QString key = QCoreApplication::applicationName();
     key += "\\" + name;
-    auto sets = std::unique_ptr<QSettings>(new QSettings(QCoreApplication::organizationName(), key));
-    sets->setValue("ip", ipstr);
+    auto settings = std::unique_ptr<QSettings>(new QSettings(QCoreApplication::organizationName(), key));
+    settings->setValue("ip", ipstr);
     int spbdata;
     WDFunc::SPBData(dlg, "bsadrspb", spbdata);
     settings->setValue("bs", QString::number(spbdata));

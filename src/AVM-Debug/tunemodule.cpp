@@ -28,13 +28,13 @@ TuneModule::TuneModule(AlarmWidget *aw, QObject *parent) : Module(aw, parent)
 void TuneModule::create(Modules::Model model)
 {
     using namespace Modules;
-    Journals *JOUR = nullptr;
+    UniquePointer<Journals> JOUR;
     const auto &board = Board::GetInstance();
     switch (model)
     {
     case Model::KIV:
     {
-        JOUR = new JournKIV(this);
+        JOUR = UniquePointer<Journals>(new JournKIV(this));
         if (board.interfaceType() != Board::InterfaceType::RS485)
         {
             ConfigKIV *CKIV = new ConfigKIV;
@@ -54,7 +54,7 @@ void TuneModule::create(Modules::Model model)
     }
     case Model::KTF:
     {
-        JOUR = new JournKTF(this);
+        JOUR = UniquePointer<Journals>(new JournKTF(this));
         if (board.interfaceType() != Board::InterfaceType::RS485)
         {
             ConfigKTF *CKTF = new ConfigKTF;
@@ -71,7 +71,7 @@ void TuneModule::create(Modules::Model model)
     }
     case Model::KDV:
     {
-        JOUR = new JournKDV(this);
+        JOUR = UniquePointer<Journals>(new JournKDV(this));
         if (board.interfaceType() != Board::InterfaceType::RS485)
         {
             ConfigKDV *CKDV = new ConfigKDV;
@@ -91,7 +91,7 @@ void TuneModule::create(Modules::Model model)
     default:
         assert(false);
     }
-    Module::create(JOUR);
+    Module::create(std::move(JOUR));
 }
 
 void TuneModule::create(QTimer *updateTimer)
