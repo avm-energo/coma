@@ -30,3 +30,8 @@ INCLUDEPATH += ../$${IMPORT_PATH}/
 
 DEFINES += DEVICETYPE=1 # 1 - module, 2 - pribor, for diagnostic messages
 DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000
+
+QXLSX_PARENTPATH=./../include/QXlsx/QXlsx         # current QXlsx path is . (. means curret directory)
+QXLSX_HEADERPATH=./../include/QXlsx/QXlsx/header/  # current QXlsx header path is ./header/
+QXLSX_SOURCEPATH=./../include/QXlsx/QXlsx/source/  # current QXlsx source path is ./source/
+LIME_HEADERPATH=./../include/LimeReport

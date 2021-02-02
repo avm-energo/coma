@@ -1,6 +1,6 @@
 include( ../common.pri )
 
-QT       += core gui printsupport network serialport widgets concurrent testlib xml
+QT       += core gui printsupport network serialport widgets concurrent testlib xml qml svg
 QT.testlib.CONFIG -= console
 TARGET = AVM-Debug
 VERSION = 2.0.0
@@ -8,6 +8,11 @@ VERSION = 2.0.0
 TEMPLATE = app
 
 QMAKE_SUBSTITUTES += ../config.h.in
+
+INCLUDEPATH += ../$${QXLSX_PARENTPATH}
+INCLUDEPATH += ../$${QXLSX_HEADERPATH}
+INCLUDEPATH += ../$${QXLSX_SOURCEPATH}
+INCLUDEPATH += ../$${LIME_HEADERPATH}
 
 SOURCES += \
     coma.cpp \
@@ -52,6 +57,7 @@ win32 {
 }
 
 LIBS +=  \
+    -lTune$${LIB_SUFFIX} \
     -lCheck$${LIB_SUFFIX} \
     -lConfig$${LIB_SUFFIX} \
     -lDatablock$${LIB_SUFFIX} \
@@ -61,5 +67,5 @@ LIBS +=  \
     -lModule$${LIB_SUFFIX} \
     -lStartup$${LIB_SUFFIX} \
     -lWidgets$${LIB_SUFFIX} \
-    -lGeneral$${LIB_SUFFIX} \
-    -lTune$${LIB_SUFFIX} \
+    -lGeneral$${LIB_SUFFIX}
+

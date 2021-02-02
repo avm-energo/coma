@@ -7,11 +7,10 @@ TEMPLATE = lib
 
 DEFINES += CHECK_LIBRARY
 
-# QXlsx code for Application Qt project
-QXLSX_PARENTPATH=./../../include/QXlsx/QXlsx         # current QXlsx path is . (. means curret directory)
-QXLSX_HEADERPATH=./../../include/QXlsx/QXlsx/header/  # current QXlsx header path is ./header/
-INCLUDEPATH += $${QXLSX_PARENTPATH}
-INCLUDEPATH += $${QXLSX_HEADERPATH}
+
+INCLUDEPATH += ../$${QXLSX_PARENTPATH}
+INCLUDEPATH += ../$${QXLSX_HEADERPATH}
+INCLUDEPATH += ../$${QXLSX_SOURCEPATH}
 
 SOURCES += \
     check.cpp \

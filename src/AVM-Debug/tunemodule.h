@@ -13,4 +13,8 @@ public:
     }
 
 signals:
+
+    // Module interface
+protected:
+    void create(Modules::Model model) override;
 };

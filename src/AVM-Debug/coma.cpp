@@ -38,6 +38,7 @@
 #include "../widgets/splashscreen.h"
 #include "../widgets/styleloader.h"
 #include "../widgets/wd_func.h"
+#include "tunemodule.h"
 
 #include <QApplication>
 #include <QDir>
@@ -564,7 +565,7 @@ void Coma::startWork(const ConnectStruct st)
 
 void Coma::PrepareDialogs()
 {
-    m_Module = ModulePointer(Module::createModule(BdaTimer, AlarmW));
+    m_Module = ModulePointer(new TuneModule(BdaTimer, AlarmW));
 }
 
 void Coma::CloseDialogs()

@@ -8,7 +8,10 @@ TEMPLATE = lib
 
 DEFINES += TUNE_LIBRARY
 
-INCLUDEPATH += ./../../include/LimeReport
+INCLUDEPATH += ../$${QXLSX_PARENTPATH}
+INCLUDEPATH += ../$${QXLSX_HEADERPATH}
+INCLUDEPATH += ../$${QXLSX_SOURCEPATH}
+INCLUDEPATH += ../$${LIME_HEADERPATH}
 
 SOURCES += \
     abstracttunedialog.cpp \
@@ -21,4 +24,4 @@ HEADERS += \
     generaltunedialog.h \
     tunesteps.h
 
-
+include(tunekiv.pri)

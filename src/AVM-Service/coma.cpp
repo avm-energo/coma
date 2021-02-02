@@ -40,6 +40,7 @@
 #include "../widgets/splashscreen.h"
 #include "../widgets/styleloader.h"
 #include "../widgets/wd_func.h"
+#include "servicemodule.h"
 
 #include <QApplication>
 #include <QDir>
@@ -566,7 +567,7 @@ void Coma::startWork(const ConnectStruct st)
 
 void Coma::PrepareDialogs()
 {
-    m_Module = ModulePointer(new Module(BdaTimer, AlarmW));
+    m_Module = ModulePointer(new ServiceModule(BdaTimer, AlarmW));
 }
 
 void Coma::CloseDialogs()

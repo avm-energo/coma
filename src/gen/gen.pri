@@ -11,6 +11,7 @@ SOURCES += \
     logger.cpp \
     pch.cpp \
     stdfunc.cpp \
+    report.cpp \
     timefunc.cpp
 
 HEADERS += \
@@ -28,6 +29,7 @@ HEADERS += \
     s2.h \
     singleton.h \
     stdfunc.h \
+    report.h \
     timefunc.h
 
 
