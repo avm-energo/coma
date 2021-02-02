@@ -8,12 +8,13 @@
 	path = QXlsx
 	url = https://github.com/QtExcel/QXlsx
 	branch = master
-[submodule "widgets/qss-dracula"]
-	path = widgets/qss-dracula
+
+[submodule "src/widgets/styles/qss-dracula"]
+	path = src/widgets/styles/qss-dracula
 	url = https://github.com/Supremist/qss-dracula
-[submodule "widgets/QSS"]
-	path = widgets/QSS
+[submodule "src/widgets/styles/QSS"]
+	path = src/widgets/styles/QSS
 	url = https://github.com/GTRONICK/QSS
-[submodule "widgets/QDarkStyleSheet"]
-	path = widgets/QDarkStyleSheet
+[submodule "src/widgets/styles/QDarkStyleSheet"]
+	path = src/widgets/styles/QDarkStyleSheet
 	url = https://github.com/ColinDuquesnoy/QDarkStyleSheet
