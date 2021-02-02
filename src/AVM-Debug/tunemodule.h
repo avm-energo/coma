@@ -8,10 +8,8 @@ class TuneModule : public Module
     Q_OBJECT
 public:
     explicit TuneModule(QObject *parent = nullptr);
-    TuneModule(QTimer *updateTimer, AlarmWidget *aw, QObject *parent = nullptr) : Module(updateTimer, aw, parent)
-    {
-    }
-
+    TuneModule(AlarmWidget *aw, QObject *parent = nullptr);
+    void create(QTimer *updateTimer) override;
 signals:
 
     // Module interface

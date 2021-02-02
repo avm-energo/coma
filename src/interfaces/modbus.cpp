@@ -271,8 +271,9 @@ void ModBus::writeCommand(Queries::Commands cmd, const QVariantList &list)
         Q_ASSERT(isValidRegs(start_addr, list.size() * 2));
         auto group = st.dictionary().value(start_addr);
         bool found = false;
-        auto it = st.dictionary().cbegin();
-        while (it != st.dictionary().cend() && !found)
+        auto dictionary = st.dictionary();
+        auto it = dictionary.cbegin();
+        while (it != dictionary.cend() && !found)
         {
             if (it.value().id.contains(group.id.remove(0, 1)))
                 if (it.value() != group)

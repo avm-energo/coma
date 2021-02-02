@@ -32,7 +32,7 @@ Module::Module(QObject *parent) : QObject(parent)
 {
 }
 
-Module::Module(QTimer *updateTimer, AlarmWidget *aw, QObject *parent) : QObject(parent)
+Module::Module(AlarmWidget *aw, QObject *parent) : QObject(parent)
 {
     using namespace Modules;
     const auto &board = Board::GetInstance();
@@ -41,7 +41,6 @@ Module::Module(QTimer *updateTimer, AlarmWidget *aw, QObject *parent) : QObject(
 
     // S2::config = UniquePointer<S2DataTypes::S2ConfigType>(new S2DataTypes::S2ConfigType);
 
-    quint16 typeb = board.typeB();
     if (!loadSettings())
     {
         qCritical() << "No conf .xml file for this module";
@@ -53,34 +52,7 @@ Module::Module(QTimer *updateTimer, AlarmWidget *aw, QObject *parent) : QObject(
     AlarmStateAll *alarmStateAll = new AlarmStateAll;
     Q_ASSERT(aw->count() == 0);
     aw->addAlarm(alarmStateAll);
-    if (BaseBoards.contains(typeb)) // there must be two-part module
-    {
-        quint16 typem = board.typeM();
-        Q_UNUSED(typem)
-        switch (typeb)
-        {
-        case BaseBoards::MTB_00:
-            /*
-                str = (checkMDialog == nullptr) ? "Текущие параметры" : "Текущие параметры\nБазовая";
-                if (checkBDialog != nullptr)
-                {
-                    checkBDialog->setMinimumHeight(500);
-                    MainTW->addTab(checkBDialog, str);
-                    CheckIndex = MainTW->indexOf(checkBDialog);
-                }
-                str = (checkBDialog == nullptr) ? "Текущие параметры" : "Текущие параметры\nМезонин";
-                if (checkMDialog != nullptr)
-                    MainTW->addTab(checkMDialog, str);
-            */
-        default:
-            break;
-        }
-    }
-    else
-    {
-        quint16 mtype = board.type();
-        create(Modules::Model(mtype));
-    }
+
     auto *warnAlarm = new ModuleAlarm(settings()->alarms.value(AlarmType::Warning), settings()->alarmCount());
     aw->addAlarm(warnAlarm, tr("Предупредительная сигнализация"));
     auto *critAlarm = new ModuleAlarm(settings()->alarms.value(AlarmType::Critical), settings()->alarmCount());
@@ -97,13 +69,6 @@ Module::Module(QTimer *updateTimer, AlarmWidget *aw, QObject *parent) : QObject(
         addDialogToList(new FWUploadDialog, "Загрузка ВПО");
 
     addDialogToList(new InfoDialog, "О приборе", "info");
-
-    QList<UDialog *> dlgs = dialogs();
-    for (auto *d : dlgs)
-    {
-        connect(updateTimer, &QTimer::timeout, d, &UDialog::reqUpdate);
-        d->uponInterfaceSetting();
-    }
 }
 
 QList<UDialog *> Module::dialogs()
@@ -443,73 +408,13 @@ bool Module::loadSettings()
     }
 }
 
-void Module::create(Modules::Model model)
+void Module::create(Journals *jour)
 {
-    using namespace Modules;
-    Journals *JOUR = nullptr;
-    const auto &board = Board::GetInstance();
-    switch (model)
+    if (Board::GetInstance().interfaceType() != Board::InterfaceType::RS485)
     {
-    case Model::KIV:
-    {
-        JOUR = new JournKIV(this);
-        if (board.interfaceType() != Board::InterfaceType::RS485)
-        {
-            ConfigKIV *CKIV = new ConfigKIV;
-            addDialogToList(new ConfKIVDialog(CKIV), "Конфигурирование", "conf1");
-            //            if (board.interfaceType() == Board::InterfaceType::USB)
-            //            {
-            //                if (appType == Debug)
-            //                    addDialogToList(new TuneKIVDialog(CKIV), "Регулировка");
-            //            }
-        }
-        CheckKIVDialog *cdkiv = new CheckKIVDialog;
-        addDialogToList(cdkiv, "Проверка");
-
-        addDialogToList(new StartupKIVDialog, "Начальные\nзначения");
-
-        break;
+        Q_ASSERT(jour != nullptr);
+        addDialogToList(new JournalDialog(jour), "Журналы");
     }
-    case Model::KTF:
-    {
-        JOUR = new JournKTF(this);
-        if (board.interfaceType() != Board::InterfaceType::RS485)
-        {
-            ConfigKTF *CKTF = new ConfigKTF;
-            addDialogToList(new ConfKTFDialog(CKTF), "Конфигурирование", "conf1");
-        }
-        CheckKTFDialog *cdktf = new CheckKTFDialog;
-        addDialogToList(cdktf);
-        // if (appType == Debug)
-        // TuneKTF *TKTF = new TuneKTF(0, s2Config);
-        //                        m->addDialogToList(new TuneKTFDialog(CKTF, TKTF));
-
-        addDialogToList(new StartupKTFDialog, "Старение\nизоляции");
-        addDialogToList(new CheckKTFHarmonicDialog, "Гармоники");
-        break;
-    }
-    case Model::KDV:
-    {
-        JOUR = new JournKDV(this);
-        if (board.interfaceType() != Board::InterfaceType::RS485)
-        {
-            ConfigKDV *CKDV = new ConfigKDV;
-            addDialogToList(new ConfKDVDialog(CKDV), "Конфигурирование", "conf1");
-        }
-        CheckKDVDialog *cdkdv = new CheckKDVDialog;
-        addDialogToList(cdkdv);
-        // if (appType == Debug)
-        //            TuneKDV *TKDV = new TuneKDV;
-        //            m->addDialogToList(new TuneKDVDialog(CKDV, TKDV));
-
-        addDialogToList(new StartupKDVDialog, "Старение\nизоляции");
-        addDialogToList(new CheckKDVHarmonicDialog, "Гармоники");
-        addDialogToList(new CheckKDVVibrDialog, "Вибрации");
-        //            VibrDialog = new CheckDialogVibrKDV(BoardTypes::BT_BASE);
-        //            connect(BdaTimer, &QTimer::timeout, VibrDialog, &AbstractCheckDialog::USBUpdate);
-        break;
-    }
-    default:
-        assert(false);
-    }
+    else
+        delete jour;
 }

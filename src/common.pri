@@ -13,7 +13,14 @@ CONFIG(debug, debug|release) {
     BUILD_FLAG = release
 }
 
-LIBS_PATH = $${PROJECT_ROOT_PATH}/lib/
+win32 {
+    LIBFORMAT = .lib
+} else {
+    LIBPREFIX = lib
+    LIBFORMAT = .a
+}
+
+LIBS_PATH = $${PROJECT_ROOT_PATH}/lib/$${BUILD_FLAG}/
 INC_PATH = $${PROJECT_ROOT_PATH}/include/
 IMPORT_PATH = $${PROJECT_ROOT_PATH}/
 BIN_PATH = $${PROJECT_ROOT_PATH}/bin/$${BUILD_FLAG}/

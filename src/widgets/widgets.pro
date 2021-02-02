@@ -3,7 +3,7 @@ include( ../lib.pri )
 
 QT += core gui widgets concurrent
 
-TARGET = Widgets$${LIB_SUFFIX}
+TARGET = widgets$${LIB_SUFFIX}
 TEMPLATE = lib
 
 DEFINES += WIDGETS_LIBRARY
@@ -12,6 +12,7 @@ SOURCES += \
     aboutwidget.cpp  \
     alarmbutton.cpp  \
     alarmwidget.cpp  \
+    coma.cpp \
     ecombobox.cpp  \
     edoublespinbox.cpp  \
     errorprotocolwidget.cpp \
@@ -34,6 +35,7 @@ HEADERS += \
     aboutwidget.h \
     alarmbutton.h \
     alarmwidget.h \
+    coma.h \
     ecombobox.h \
     edoublespinbox.h \
     errorprotocolwidget.h \

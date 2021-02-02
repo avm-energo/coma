@@ -3,7 +3,7 @@ include( ../lib.pri )
 
 QT += core gui widgets serialport concurrent
 
-TARGET = Dialogs$${LIB_SUFFIX}
+TARGET = dialogs$${LIB_SUFFIX}
 TEMPLATE = lib
 
 DEFINES += DIALOGS_LIBRARY

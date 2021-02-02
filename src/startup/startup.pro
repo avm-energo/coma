@@ -3,7 +3,7 @@ include( ../lib.pri )
 
 QT += core gui widgets concurrent
 
-TARGET = Startup$${LIB_SUFFIX}
+TARGET = startup$${LIB_SUFFIX}
 TEMPLATE = lib
 
 DEFINES += STARTUP_LIBRARY

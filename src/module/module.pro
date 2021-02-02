@@ -3,7 +3,7 @@ include( ../lib.pri )
 
 QT += core gui widgets xml printsupport qml
 
-TARGET = Module$${LIB_SUFFIX}
+TARGET = module$${LIB_SUFFIX}
 TEMPLATE = lib
 
 DEFINES += MODULE_LIBRARY

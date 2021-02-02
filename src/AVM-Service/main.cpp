@@ -9,16 +9,17 @@ int main(int argc, char *argv[])
 {
     QString Parameter;
     QApplication a(argc, argv);
+    QCoreApplication::setApplicationName(PROGNAME);
+    QCoreApplication::setOrganizationName(SOFTDEVELOPER);
+    QCoreApplication::setApplicationVersion(COMAVERSION);
     Q_INIT_RESOURCE(style);
     Q_INIT_RESOURCE(styles);
     Q_INIT_RESOURCE(vectorIcons);
     Logging::writeStart();
     qInstallMessageHandler(Logging::messageHandler);
-    Coma w;
+    ServiceComa w;
     w.SetMode(Coma::COMA_GENERALMODE);
-    QCoreApplication::setApplicationName(PROGNAME);
-    QCoreApplication::setOrganizationName(SOFTDEVELOPER);
-    QCoreApplication::setApplicationVersion(COMAVERSION);
+
     if (argc > 1) // есть аргументы запуска
     {
         QCommandLineParser parser;

@@ -3,7 +3,7 @@ include( ../lib.pri )
 
 QT += core gui widgets serialport network concurrent printsupport qml
 
-TARGET = General$${LIB_SUFFIX}
+TARGET = general$${LIB_SUFFIX}
 TEMPLATE = lib
 
 DEFINES += GENERAL_LIBRARY

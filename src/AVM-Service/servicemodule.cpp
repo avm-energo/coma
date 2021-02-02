@@ -9,14 +9,61 @@
 #include "../config/confkdvdialog.h"
 #include "../config/confkivdialog.h"
 #include "../config/confktfdialog.h"
+#include "../dialogs/journalsdialog.h"
 #include "../module/journkdv.h"
 #include "../module/journkiv.h"
 #include "../module/journktf.h"
+#include "../module/modules.h"
 #include "../startup/startupkdvdialog.h"
 #include "../startup/startupkivdialog.h"
 #include "../startup/startupktfdialog.h"
 ServiceModule::ServiceModule(QObject *parent) : Module(parent)
 {
+}
+
+ServiceModule::ServiceModule(AlarmWidget *aw, QObject *parent) : Module(aw, parent)
+{
+}
+
+void ServiceModule::create(QTimer *updateTimer)
+{
+    using namespace Modules;
+    const auto &board = Board::GetInstance();
+    quint16 typeb = board.typeB();
+    if (BaseBoards.contains(typeb)) // there must be two-part module
+    {
+        quint16 typem = board.typeM();
+        Q_UNUSED(typem)
+        switch (typeb)
+        {
+        case BaseBoards::MTB_00:
+            /*
+                str = (checkMDialog == nullptr) ? "Текущие параметры" : "Текущие параметры\nБазовая";
+                if (checkBDialog != nullptr)
+                {
+                    checkBDialog->setMinimumHeight(500);
+                    MainTW->addTab(checkBDialog, str);
+                    CheckIndex = MainTW->indexOf(checkBDialog);
+                }
+                str = (checkBDialog == nullptr) ? "Текущие параметры" : "Текущие параметры\nМезонин";
+                if (checkMDialog != nullptr)
+                    MainTW->addTab(checkMDialog, str);
+            */
+        default:
+            break;
+        }
+    }
+    else
+    {
+        quint16 mtype = board.type();
+        create(Modules::Model(mtype));
+    }
+    QList<UDialog *> dlgs = dialogs();
+    for (auto *d : dlgs)
+    {
+        connect(updateTimer, &QTimer::timeout, d, &UDialog::reqUpdate);
+        d->uponInterfaceSetting();
+    }
 }
 
 void ServiceModule::create(Modules::Model model)
@@ -77,4 +124,5 @@ void ServiceModule::create(Modules::Model model)
     default:
         assert(false);
     }
+    Module::create(JOUR);
 }

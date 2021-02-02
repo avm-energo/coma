@@ -2,7 +2,7 @@ include( ../common.pri )
 include( ../lib.pri )
 QT += core gui widgets
 
-TARGET = Check$${LIB_SUFFIX}
+TARGET = check$${LIB_SUFFIX}
 TEMPLATE = lib
 
 DEFINES += CHECK_LIBRARY

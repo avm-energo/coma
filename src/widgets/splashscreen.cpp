@@ -14,7 +14,7 @@ SplashScreen::SplashScreen(const QPixmap &pixmap, Qt::WindowFlags f) : QSplashSc
 
 void SplashScreen::drawContents(QPainter *painter)
 {
-    const QIcon jourIcon("images/coma.svg");
+    const QIcon jourIcon(":/icons/coma.svg");
     const int margin = 20;
     QPixmap pix = jourIcon.pixmap(QSize(200, 200));
 

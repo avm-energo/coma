@@ -4,7 +4,7 @@ include( ../lib.pri )
 QT += core concurrent serialport network
 QT -= gui widgets
 
-TARGET = Interfaces$${LIB_SUFFIX}
+TARGET = interfaces$${LIB_SUFFIX}
 TEMPLATE = lib
 
 DEFINES += INTERFACES_LIBRARY

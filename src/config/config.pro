@@ -3,7 +3,7 @@ include( ../lib.pri )
 
 QT += core gui widgets concurrent
 
-TARGET = Config$${LIB_SUFFIX}
+TARGET = config$${LIB_SUFFIX}
 TEMPLATE = lib
 
 DEFINES += CONFIG_LIBRARY

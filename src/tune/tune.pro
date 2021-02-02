@@ -3,7 +3,7 @@ include( ../lib.pri )
 
 QT += core concurrent gui widgets xml svg printsupport qml
 
-TARGET = Tune$${LIB_SUFFIX}
+TARGET = tune$${LIB_SUFFIX}
 TEMPLATE = lib
 
 DEFINES += TUNE_LIBRARY

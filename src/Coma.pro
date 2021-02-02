@@ -1,9 +1,5 @@
 TEMPLATE = subdirs
 
-#include(gen\gen.pri)
-
-CONFIG += ordered
-
 SUBDIRS = \
             check \   # relative paths
             config \
@@ -19,7 +15,5 @@ SUBDIRS = \
             AVM-Service \
             AVM-Debug
 
-AVM-Service.target = servicetarget
-AVM-Debug.target = debugtarget
-
-QMAKE_EXTRA_TARGETS += servicetarget debugtarget
+AVM-Service.depends = check config datablocks dialogs interfaces models module startup widgets gen
+AVM-Debug.depends = check config datablocks dialogs interfaces models module startup widgets gen tune

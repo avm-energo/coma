@@ -5,9 +5,9 @@
 #include "../module/alarmstateall.h"
 #include "../widgets/alarmwidget.h"
 #include "../widgets/udialog.h"
+#include "journals.h"
 #include "modulealarm.h"
 #include "modules.h"
-
 enum AlarmType
 {
     Warning,
@@ -45,8 +45,8 @@ public:
     };
 
     explicit Module(QObject *parent = nullptr);
-    Module(QTimer *updateTimer, AlarmWidget *aw, QObject *parent = nullptr);
-
+    Module(AlarmWidget *aw, QObject *parent = nullptr);
+    virtual void create(QTimer *updateTimer) = 0;
     QList<UDialog *> dialogs();
     QList<UDialog *> confDialogs();
     void addDialogToList(UDialog *dlg, const QString &caption = "", const QString &name = "");
@@ -65,7 +65,8 @@ public slots:
 protected:
     bool loadSettings();
 
-    virtual void create(Modules::Model model);
+    void create(Journals *jour);
+    virtual void create(Modules::Model model) = 0;
 
 private:
     QList<UDialog *> m_dialogs;

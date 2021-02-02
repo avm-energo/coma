@@ -19,7 +19,7 @@ SOURCES += \
     servicemodule.cpp
 	
 HEADERS += \
-    coma.h \
+   coma.h \
     servicemodule.h
 
 win32 {
@@ -51,14 +51,15 @@ win32 {
     }
 }
 
-LIBS +=  \
-    -lCheck$${LIB_SUFFIX} \
-    -lConfig$${LIB_SUFFIX} \
-    -lDatablock$${LIB_SUFFIX} \
-    -lDialogs$${LIB_SUFFIX} \
-    -lInterfaces$${LIB_SUFFIX} \
-    -lModels$${LIB_SUFFIX} \
-    -lModule$${LIB_SUFFIX} \
-    -lStartup$${LIB_SUFFIX} \
-    -lWidgets$${LIB_SUFFIX} \
-    -lGeneral$${LIB_SUFFIX}
+LIBRARIES += check \
+    config \
+    datablock \
+    dialogs \
+    interfaces \
+    models \
+    module \
+    startup \
+    widgets \
+    general
+
+include(../deps.pri)
