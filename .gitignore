@@ -30,7 +30,6 @@ Makefile*
 *build-*
 *bin*
 *lib*
-*include*
 # QtCreator
 
 *.autosave

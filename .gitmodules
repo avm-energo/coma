@@ -7,3 +7,6 @@
 [submodule "src/widgets/styles/QDarkStyleSheet"]
 	path = src/widgets/styles/QDarkStyleSheet
 	url = https://github.com/ColinDuquesnoy/QDarkStyleSheet
+[submodule "include/LimeReport"]
+	path = include/LimeReport
+	url = https://github.com/fralx/LimeReport
