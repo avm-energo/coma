@@ -23,6 +23,7 @@ HEADERS += \
    coma.h \
     tunemodule.h
 
+DESTDIR = $${BIN_PATH}/$${TARGET}
 win32 {
     LIBS += -luser32
     contains(QMAKE_TARGET.arch, x86_64) {
@@ -30,10 +31,8 @@ win32 {
        ## Windows x64 (64bit) specific build here
        CONFIG(debug, debug|release) {
        LIBS += -L$$PWD/../../lib/win64/debug/ -llimereportd -lhidapi
-       DESTDIR = $${PWD}/../../bin/$${TARGET}/win64/debug
        } else {
        LIBS += -L$$PWD/../../lib/win64/release/ -llimereport -lhidapi
-       DESTDIR = $${PWD}/../../bin/$${TARGET}/win64/release
        LIBS_FILES += \
        $$PWD/../../lib/win64/release/hidapi.dll \
        $$PWD/../../lib/win64/release/limereport.dll \
@@ -44,10 +43,8 @@ win32 {
         ## Windows x86 (32bit) specific build here
         CONFIG(debug, debug|release) {
         LIBS += -L$$PWD/../../lib/win32/debug/ -llimereportd -lhidapi
-        DESTDIR = $${PWD}/../../bin/$${TARGET}/win32/debug
         } else {
         LIBS += -L$$PWD/../../lib/win32/release/ -llimereport -lhidapi
-        DESTDIR = $${PWD}/../../bin/$${TARGET}/win32/release
         LIBS_FILES += \
         $$PWD/../../lib/win32/release/hidapi.dll \
         $$PWD/../../lib/win32/release/limereport.dll \
@@ -69,3 +66,8 @@ LIBRARIES += check \
     tune
 
 include(../deps.pri)
+
+#copyToDestDir($$IMAGE_FILE, $$DESTDIR/images/)
+#copyToDestDir($$ERROR_FILES, $$DESTDIR/errors/)
+copyToDestDir($$LIBS_FILES, $$DESTDIR/)
+

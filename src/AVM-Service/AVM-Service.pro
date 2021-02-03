@@ -22,6 +22,7 @@ HEADERS += \
    coma.h \
     servicemodule.h
 
+DESTDIR = $${BIN_PATH}/$${TARGET}
 win32 {
     LIBS += -luser32
     contains(QMAKE_TARGET.arch, x86_64) {
@@ -29,10 +30,8 @@ win32 {
        ## Windows x64 (64bit) specific build here
        CONFIG(debug, debug|release) {
        LIBS += -L$$PWD/../../lib/win64/debug/ -lhidapi
-       DESTDIR = $${PWD}/../../bin/$${TARGET}/win64/debug
        } else {
        LIBS += -L$$PWD/../../lib/win64/release/ -lhidapi
-       DESTDIR = $${PWD}/../../bin/$${TARGET}/win64/release
        LIBS_FILES += \
        $$PWD/../../lib/win64/release/hidapi.dll
        }
@@ -41,10 +40,8 @@ win32 {
         ## Windows x86 (32bit) specific build here
         CONFIG(debug, debug|release) {
         LIBS += -L$$PWD/../../lib/win32/debug/ -lhidapi
-        DESTDIR = $${PWD}/../../bin/$${TARGET}/win32/debug
         } else {
         LIBS += -L$$PWD/../../lib/win32/release/ -lhidapi
-        DESTDIR = $${PWD}/../../bin/$${TARGET}/win32/release
         LIBS_FILES += \
         $$PWD/../../lib/win32/release/hidapi.dll
         }
@@ -63,3 +60,5 @@ LIBRARIES += check \
     general
 
 include(../deps.pri)
+
+copyToDestDir($$LIBS_FILES, $$DESTDIR/)
