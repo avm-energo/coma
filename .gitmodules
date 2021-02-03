@@ -1,14 +1,3 @@
-[submodule "LimeReport"]
-	path = LimeReport
-	url = https://github.com/fralx/LimeReport
-[submodule "hidapi"]
-	path = hidapi
-	url = https://github.com/libusb/hidapi
-[submodule "QXlsx"]
-	path = QXlsx
-	url = https://github.com/QtExcel/QXlsx
-	branch = master
-
 [submodule "src/widgets/styles/qss-dracula"]
 	path = src/widgets/styles/qss-dracula
 	url = https://github.com/Supremist/qss-dracula
