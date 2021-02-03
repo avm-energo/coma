@@ -1,10 +1,10 @@
 #include "etablemodel.h"
 
-#include <QApplication>
+#include <QCoreApplication>
 #include <QDebug>
 #include <QEventLoop>
 #include <QMutex>
-#include <QProgressDialog>
+//#include <QProgressDialog>
 // ######################################## Переопределение методов QAbstractTableModel
 // ####################################
 

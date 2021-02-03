@@ -1,7 +1,7 @@
 #include "usbhidport.h"
 
 #ifdef QT_GUI_LIB
-#include "../pro/coma.h"
+#include "../widgets/coma.h"
 #include "../widgets/wd_func.h"
 #endif
 
@@ -9,9 +9,9 @@
 #include "../gen/stdfunc.h"
 #include "baseinterface.h"
 
-#ifdef QT_GUI_LIB
-#include <QApplication>
-#endif
+//#ifdef QT_GUI_LIB
+//#include <QApplication>
+//#endif
 #include <QCoreApplication>
 #include <QDebug>
 #include <QElapsedTimer>

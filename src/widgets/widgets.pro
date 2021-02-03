@@ -1,7 +1,7 @@
 include( ../common.pri )
 include( ../lib.pri )
 
-QT += core gui widgets concurrent
+QT += core gui widgets
 
 TARGET = widgets$${LIB_SUFFIX}
 TEMPLATE = lib
