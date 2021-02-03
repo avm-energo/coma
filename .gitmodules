@@ -13,3 +13,6 @@
 [submodule "include/QXlsx"]
 	path = include/QXlsx
 	url = https://github.com/QtExcel/QXlsx
+[submodule "include/hidapi"]
+	path = include/hidapi
+	url = https://github.com/libusb/hidapi
