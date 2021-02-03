@@ -30,7 +30,7 @@ Makefile*
 *build-*
 *bin*
 *.lib
-lib*
+lib
 # QtCreator
 
 *.autosave
