@@ -10,3 +10,6 @@
 [submodule "include/LimeReport"]
 	path = include/LimeReport
 	url = https://github.com/fralx/LimeReport
+[submodule "include/QXlsx"]
+	path = include/QXlsx
+	url = https://github.com/QtExcel/QXlsx
