@@ -1,0 +1,330 @@
+<?xml version="1.0" encoding="utf-8"?>
+<modules>
+  <!--Здесь мы описаваем текущий модуль, обязательно указать mtypeb и mtypem-->
+  <module mtypeb="a2" mtypem="87">
+    <!--Здесь укаазно название модуля-->
+    <name>AVM-KTF</name>
+    <!--Минимальная версия прошивки модуля, для которой описаны настройки-->
+    <version>1.1.08</version>
+    <!--Дальше идет всё, что несредственно относится к модулю-->
+    <resources>
+      <!--Описываем сигнализацию, имя обязательно-->
+      <alarm name="critical">
+        <!--Массив событий сигнализации, имя обязательно-->
+        <string-array name="criticalEvents">
+          <item>Аварийное сообщение по недопустимому превышению температуры обмотки</item>
+          <item>Аварийное сообщение по недопустимому уровню пускового тока</item>
+        </string-array>
+        <!--Флаги сигнализации-->
+        <quint32 name="criticalFlags">0x00000005</quint32>
+        <!--Стартовый адрес сигнализации-->
+		    <quint32 name="startAddr">5011</quint32>
+        <!--Цвет сигнализации если событие произошло-->
+		    <color>#ff0000</color>
+      </alarm>
+      <alarm name="warning">
+        <string-array name="warningEvents">
+          <item>Отсутствует сигнал напряжения фазы A</item>
+          <item>Отсутствует сигнал напряжения фазы B</item>
+          <item>Отсутствует сигнал напряжения фазы С</item>
+          <item>Отсутствует сигнал тока фазы A</item>
+          <item>Отсутствует сигнал тока фазы B</item>
+          <item>Отсутствует сигнал тока фазы С</item>
+          <item>Перегрузка по току фазы A</item>
+          <item>Перегрузка по току фазы В</item>
+          <item>Перегрузка по току фазы С</item>
+          <item>Машина включена</item>
+          <item>Сигнализация по опасному превышению температуры обмотки</item>
+          <item>Неисправны все датчики температуры обмотки</item>
+          <item>Сигнализация по опасному уровню пусково-го тока</item>
+        </string-array>
+        <quint32 name="warningFlags">0xfffa</quint32>
+		    <quint32 name="startAddr">5011</quint32>
+		    <color>#ffff00</color>
+      </alarm>
+      <!--Описываем журнал, имя обязательно-->
+      <journal name="work">
+        <!--Номер журнала, имя обязательно-->
+        <quint32 name="workJourId">5011</quint32>
+        <!--Массив событий журнала, имя обязательно-->
+        <string-array name="workJourDescription">
+          <item>Отсутствует сигнал напряжения фазы A</item>
+          <item>Отсутствует сигнал напряжения фазы B</item>
+          <item>Отсутствует сигнал напряжения фазы С</item>
+          <item>Отсутствует сигнал тока фазы A</item>
+          <item>Отсутствует сигнал тока фазы B</item>
+          <item>Отсутствует сигнал тока фазы С</item>
+          <item>Перегрузка по току фазы A</item>
+          <item>Перегрузка по току фазы В</item>
+          <item>Перегрузка по току фазы С</item>
+          <item>Машина включена</item>
+          <item>Сигнализация по опасному превышению температуры обмотки</item>
+          <item>Неисправны все датчики температуры обмотки</item>
+          <item>Аварийное сообщение по недопустимому превышению температуры обмотки</item>
+          <item>Сигнализация по опасному уровню пусково-го тока</item>
+          <item>Аварийное сообщение по недопустимому уровню пускового тока</item>
+        </string-array>
+      </journal>
+      <journal name="meas">
+        <string-array name="measJourHeaders">
+          <item> № </item>
+          <item>Дата/Время UTC</item>
+          <item>Ueff фA</item>
+          <item>Ueff фB</item>
+          <item>Ueff фC</item>
+          <item>Ieff фA</item>
+          <item>Ieff фB</item>
+          <item>Ieff фC</item>
+          <item>Frequency</item>
+          <item>U0</item>
+          <item>U1</item>
+          <item>U2</item>
+          <item>I0</item>
+          <item>I1</item>
+          <item>I2</item>
+          <item>Pf фA</item>
+          <item>Pf фB</item>
+          <item>Pf фC</item>
+          <item>Pf сумм.</item>
+          <item>Qf фA</item>
+          <item>Qf фB</item>
+          <item>Qf фC</item>
+          <item>Qf сумм.</item>
+          <item>Sf фA</item>
+          <item>Sf фB</item>
+          <item>Sf фC</item>
+          <item>Sf сумм.</item>
+          <item>CosPhi</item>
+          <item>Tmk,°С</item>
+          <item>Tamb,°С</item>
+          <item>Twin,°С</item>
+        </string-array>
+      </journal>
+      
+      <!--Описываем протокол Modbus-->
+      <modbus>
+        <group id="baseSerialInfo">
+          <function>04</function>
+          <type>uint32</type>
+          <start-addr>1</start-addr>
+          <count>32</count>
+        </group>       
+        <group id="tempHardware">
+            <function>04</function>
+            <type>float</type>
+            <start-addr>101</start-addr>
+            <count>4</count>
+        </group>
+        <group id="voltage">
+          <function>04</function>
+          <type>float</type>
+          <start-addr>1000</start-addr>
+          <count>38</count>
+        </group>
+        <group id="lineVoltage">
+          <function>04</function>
+          <type>float</type>
+          <start-addr>1220</start-addr>
+          <count>16</count>
+        </group>
+        <group id="amperage">
+          <function>04</function>
+          <type>float</type>
+          <start-addr>1400</start-addr>
+          <count>38</count>
+        </group>
+        <group id="shearAngle">
+          <function>04</function>
+          <type>float</type>
+          <start-addr>2400</start-addr>
+          <count>14</count>
+        </group>
+        <group id="capacity">
+          <function>04</function>
+          <type>float</type>
+          <start-addr>2420</start-addr>
+          <count>64</count>
+        </group>
+        <group id="harmonicUA">
+          <function>04</function>
+          <type>float</type>
+          <start-addr>3020</start-addr>
+          <count>122</count>
+        </group>
+        <group id="harmonicUB">
+          <function>04</function>
+          <type>float</type>
+          <start-addr>3146</start-addr>
+          <count>122</count>
+        </group>
+        <group id="harmonicUC">
+          <function>01</function>
+          <type>bool</type>
+          <start-addr>3270</start-addr>
+          <count>3</count>
+        </group>
+        <group id="harmonicIA">
+          <function>04</function>
+          <type>float</type>
+          <start-addr>3420</start-addr>
+          <count>122</count>
+        </group>
+        <group id="harmonicIB">
+          <function>04</function>
+          <type>float</type>
+          <start-addr>3546</start-addr>
+          <count>122</count>
+        </group>
+        <group id="harmonicIC">
+          <function>04</function>
+          <type>float</type>
+          <start-addr>3670</start-addr>
+          <count>3</count>
+        </group>
+        <group id="insulation">
+          <function>04</function>
+          <type>float</type>
+          <start-addr>4000</start-addr>
+          <count>6</count>
+        </group>
+        <group id="load">
+          <function>04</function>
+          <type>float</type>
+          <start-addr>4010</start-addr>
+          <count>44</count>
+        </group>
+        <group id="tempExtern">
+          <function>04</function>
+          <type>float</type>
+          <start-addr>4500</start-addr>
+          <count>14</count>
+        </group>
+        <group id="status">
+          <function>04</function>
+          <type>uint32</type>
+          <start-addr>4520</start-addr>
+          <count>4</count>
+        </group>
+        <group id="amplitude">
+          <function>04</function>
+          <type>float</type>
+          <start-addr>5200</start-addr>
+          <count>2</count>
+        </group>
+        <group id="IsTime">
+          <function>04</function>
+          <type>uint32</type>
+          <start-addr>5202</start-addr>
+          <count>2</count>
+        </group>
+        <group id="alarmModule">
+          <function>01</function>
+          <type>bool</type>
+          <start-addr>5011</start-addr>
+          <count>15</count>
+        </group>
+        <group id="rtime">
+          <function>03</function>
+          <type>uint32</type>
+          <start-addr>4600</start-addr>
+          <count>2</count>
+        </group>
+        <group id="wtime">
+          <function>10</function>
+          <type>uint32</type>
+          <start-addr>4600</start-addr>
+          <count>2</count>
+        </group>
+        <group id="rage">
+          <function>03</function>
+          <type>float</type>
+          <start-addr>4600</start-addr>
+          <count>2</count>
+        </group>
+        <group id="wage">
+          <function>10</function>
+          <type>float</type>
+          <start-addr>4600</start-addr>
+          <count>2</count>
+        </group>
+      </modbus>
+
+      <!--Описываем протокол Protocom-->
+       <protocom>
+         
+       <group>
+          <start-addr>101</start-addr>
+          <count>2</count>
+          <block>0</block>
+       </group>
+       <group>
+          <start-addr>1000</start-addr>
+          <count>11</count>
+          <block>2</block>
+       </group>
+       <group>
+          <start-addr>1400</start-addr>
+          <count>11</count>
+          <block>3</block>
+       </group>
+       <group>
+          <start-addr>1020</start-addr>
+          <count>8</count>
+          <block>4</block>
+       </group> 
+       <group>
+          <start-addr>1028</start-addr>
+          <count>183</count>
+          <block>5</block>
+       </group>
+       <group>
+          <start-addr>1420</start-addr>
+          <count>8</count>
+          <block>6</block>
+       </group>
+       <group>
+          <start-addr>1428</start-addr>
+          <count>183</count>
+          <block>7</block>
+       </group>
+       <group>
+          <start-addr>4000</start-addr>
+          <count>4</count>
+          <block>9</block>
+       </group> 
+      <group>
+          <start-addr>2420</start-addr>
+          <count>32</count>
+          <block>10</block>
+       </group>
+       <group>
+          <start-addr>4010</start-addr>
+          <count>20</count>
+          <block>11</block>
+       </group>
+       <group>
+          <start-addr>4500</start-addr>
+          <count>7</count>
+          <block>13</block>
+       </group> 
+       <group>
+          <start-addr>2400</start-addr>
+          <count>7</count>
+          <block>17</block>
+       </group>
+       <group>
+          <start-addr>5200</start-addr>
+          <count>1</count>
+          <block>18</block>
+       </group>  
+       <group id="alarmModule">
+          <start-addr>5011</start-addr>
+          <count>14</count>
+          <block>100</block>
+        </group>         
+      </protocom>
+      <iec60870>     
+      </iec60870>
+    </resources>
+  </module>
+</modules>
