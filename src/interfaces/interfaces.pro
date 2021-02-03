@@ -13,7 +13,6 @@ INCLUDEPATH += ./../../include/hidapi
 
 SOURCES += \
     baseinterface.cpp \
-    ethernet.cpp \
     iec104.cpp \
     iec104thread.cpp \
     interfacesettings.cpp \
@@ -30,7 +29,6 @@ SOURCES += \
 
 HEADERS += \
     baseinterface.h \
-    ethernet.h \
     iec104.h \
     iec104private.h \
     iec104thread.h \
