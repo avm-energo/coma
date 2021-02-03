@@ -10,14 +10,12 @@ DEFINES += CHECK_LIBRARY
 
 INCLUDEPATH += ../$${QXLSX_PARENTPATH}
 INCLUDEPATH += ../$${QXLSX_HEADERPATH}
-INCLUDEPATH += ../$${QXLSX_SOURCEPATH}
 
 SOURCES += \
     check.cpp \
     abstractcheckdialog.cpp \
     checkkivdialog.cpp \
     checkkdv.cpp \
-    check.cpp \
     checkktf.cpp \
     checkkdvdialog.cpp \
     checkktfdialog.cpp \
