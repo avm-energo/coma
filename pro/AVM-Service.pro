@@ -301,7 +301,7 @@ copyToDestDir($$ERROR_FILES, $$DESTDIR/errors/)
 copyToDestDir($$LIBS_FILES, $$DESTDIR/)
 
 DISTFILES += \
-    ../interfaces/interfaces.qmodel
+    ../interfaces/interfaces.qmodel \
 
 RESOURCES += \
     ../widgets/QDarkStyleSheet/qdarkstyle/style.qrc \

@@ -178,7 +178,8 @@ UWidget *CheckKTFDialog::Bd1W()
     lyout->addStretch(100);
     w->setLayout(lyout);
     w->setStyleSheet("QWidget {background-color: " + QString(Colors::UCONFCLR) + ";}");
-    w->setFloatBdQuery({ { 101, 2 }, { 1000, 4 }, { 1400, 4 }, { 1220, 4 }, { 2400, 1 }, { 2420, 16 }, { 4500, 7 } });
+    w->setFloatBdQuery(
+        { { 101, 4 }, { 1000, 38 }, { 1400, 38 }, { 1220, 16 }, { 2400, 14 }, { 2420, 64 }, { 4500, 14 } });
     //   w->setSpBdQuery({ { 3011, 25 } });
 
     return w;
@@ -313,7 +314,7 @@ UWidget *CheckKTFDialog::Bd2W()
     lyout->addLayout(glyout);
     lyout->addStretch(100);
     w->setLayout(lyout);
-    w->setFloatBdQuery({ { 4010, 22 } });
+    w->setFloatBdQuery({ { 4010, 44 } });
 
     return w;
 }
@@ -373,7 +374,7 @@ UWidget *CheckKTFDialog::Bd3W()
     lyout->addLayout(glyout);
     lyout->addStretch(100);
     w->setLayout(lyout);
-    w->setFloatBdQuery({ { 5200, 1 }, { 4000, 3 } });
+    w->setFloatBdQuery({ { 5200, 2 }, { 4000, 6 } });
 
     return w;
 }
@@ -414,6 +415,7 @@ UWidget *CheckKTFDialog::Bd4W()
                               "Действующие значения сигналов трех фаз "
                               "по 1-й гармонике и их среднее, А"),
             3, i, 1, 1);
+        // проверять
         glyout->addWidget(WDFunc::NewLBL(this, "P " + pphase[i] + ", кВт"), 4, i, 1, 1);
         glyout->addWidget(WDFunc::NewLBLT(this, "", QString::number(2450 + i), ValuesFormat,
                               "Активная мощность по 1-й гармонике, по фазам и суммарная, кВт"),
@@ -446,7 +448,8 @@ UWidget *CheckKTFDialog::Bd4W()
     lyout->addLayout(glyout);
     lyout->addStretch(100);
     w->setLayout(lyout);
-    w->setFloatBdQuery({ { 1004, 4 }, { 1404, 4 }, { 2450, 16 }, { 1224, 4 } });
+    // 2450 посмотреть на документацию, которая в разработке на 2420
+    w->setFloatBdQuery({ { 1000, 38 }, { 1400, 38 }, { 2450, 16 }, { 1220, 16 } });
 
     return w;
 }
