@@ -14,7 +14,7 @@
 
 BaseAlarm::BaseAlarm(QWidget *parent) : QWidget(parent), m_actualAlarmFlags(0x0000)
 {
-    setAttribute(Qt::WA_DeleteOnClose);
+    // setAttribute(Qt::WA_DeleteOnClose);
     m_normalColor = Qt::green;
     m_alarmColor = Qt::red;
 }
