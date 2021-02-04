@@ -25,27 +25,12 @@ HEADERS += \
 DESTDIR = $${BIN_PATH}/$${TARGET}
 win32 {
     LIBS += -luser32
-    contains(QMAKE_TARGET.arch, x86_64) {
-       message("Windows x64 build")
-       ## Windows x64 (64bit) specific build here
-       CONFIG(debug, debug|release) {
-       LIBS += -L$$PWD/../../lib/win64/debug/ -lhidapi
-       } else {
-       LIBS += -L$$PWD/../../lib/win64/release/ -lhidapi
-       LIBS_FILES += \
-       $$PWD/../../lib/win64/release/hidapi.dll
-       }
-    } else {
-        message("Windows x86 build")
-        ## Windows x86 (32bit) specific build here
-        CONFIG(debug, debug|release) {
-        LIBS += -L$$PWD/../../lib/win32/debug/ -lhidapi
-        } else {
-        LIBS += -L$$PWD/../../lib/win32/release/ -lhidapi
+    LIBS += -L$$PWD/../../lib/$${QT_ARCH}/$${BUILD_FLAG}/ -lhidapi
+    CONFIG(release, debug|release) {
         LIBS_FILES += \
-        $$PWD/../../lib/win32/release/hidapi.dll
-        }
+        $$PWD/../../lib/$${QT_ARCH}/$${BUILD_FLAG}/hidapi.dll \
     }
+    message("Windows "$${QT_ARCH}" build "$${TARGET})
 }
 
 LIBRARIES += check \
