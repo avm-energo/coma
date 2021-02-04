@@ -275,7 +275,7 @@ void AlarmWidget::addAlarm(BaseAlarm *alarm, const QString caption)
     QLayout *buttonBoxLayout = qobject_cast<QLayout *>(layout()->children().first());
     QDialogButtonBox *buttons = qobject_cast<QDialogButtonBox *>(buttonBoxLayout->itemAt(0)->widget());
     Q_ASSERT(buttons != nullptr);
-    AlarmButton *pb = new AlarmButton;
+    AlarmButton *pb = new AlarmButton(alarm);
     // pb->setMinimumSize(QSize(3 * geometry().width() / 1, 30));
     // pb->setSizeIncrement()
     pb->setPixmap(WDFunc::NewCircle(Qt::green, 15));
