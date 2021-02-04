@@ -14,7 +14,7 @@
 
 BaseAlarm::BaseAlarm(QWidget *parent) : QWidget(parent), m_actualAlarmFlags(0x0000)
 {
-    setAttribute(Qt::WA_DeleteOnClose);
+    // setAttribute(Qt::WA_DeleteOnClose);
     m_normalColor = Qt::green;
     m_alarmColor = Qt::red;
 }
@@ -45,8 +45,9 @@ void BaseAlarm::setupUI(const QStringList &events)
     QVBoxLayout *vlayout = new QVBoxLayout;
 
     unsigned int i, j;
-    for (i = 0, j = 0; i < m_alarmFlags.size(); ++i)
+    for (i = 0, j = 0; (i < m_alarmFlags.size()) && (i < events.size()); ++i)
     {
+
         const bool flag = m_alarmFlags.test(i);
         if (!flag)
             continue;

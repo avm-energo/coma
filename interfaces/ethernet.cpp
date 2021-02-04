@@ -1,6 +1,7 @@
 #include "ethernet.h"
 
 #include "../gen/error.h"
+#include "../gen/pch.h"
 #include "../gen/stdfunc.h"
 #include "../gen/timefunc.h"
 

@@ -135,7 +135,7 @@ SOURCES += \
     ../widgets/waitwidget.cpp \
     ../widgets/wd_func.cpp
 
-PRECOMPILED_HEADER = ../gen/pch.h
+#PRECOMPILED_HEADER = ../gen/pch.h
 
 HEADERS += \
     ../datablocks/bd0.h \
@@ -193,6 +193,7 @@ HEADERS += \
     ../dialogs/settingsdialog.h \
     ../dialogs/timedialog.h \
     ../gen/board.h \
+	../gen/pch.h \
     ../gen/colors.h \
     ../gen/datatypes.h \
     ../gen/datamanager.h \
@@ -257,7 +258,7 @@ ERROR_FILES += \
     $$PWD/../errors
 
 RESOURCES += \
-    ../QDarkStyleSheet/qdarkstyle/style.qrc \
+    ../widgets/QDarkStyleSheet/qdarkstyle/style.qrc \
     ../images/vectorIcons.qrc \
     ../settings/settings.qrc \
     ../widgets/styles.qrc
@@ -269,6 +270,8 @@ QXLSX_PARENTPATH=./../QXlsx/QXlsx         # current QXlsx path is . (. means cur
 QXLSX_HEADERPATH=./../QXlsx/QXlsx/header/  # current QXlsx header path is ./header/
 QXLSX_SOURCEPATH=./../QXlsx/QXlsx/source/  # current QXlsx source path is ./source/
 include(./../QXlsx/QXlsx/QXlsx.pri)
+
+include(common.pri)
 
 win32 {
     LIBS += -luser32
@@ -304,24 +307,6 @@ win32 {
 }
 
 unix: LIBS += -llimereport
-
-
-# copies the given files to the destination directory
-defineTest(copyToDestDir) {
-    files = $$1
-    dir = $$2
-    # replace slashes in destination path for Windows
-    win32:dir ~= s,/,\\,g
-
-    for(file, files) {
-        # replace slashes in source path for Windows
-        win32:file ~= s,/,\\,g
-
-        QMAKE_POST_LINK += $$QMAKE_COPY_DIR $$shell_quote($$file) $$shell_quote($$dir) $$escape_expand(\\n\\t)
-    }
-
-    export(QMAKE_POST_LINK)
-}
 
 copyToDestDir($$IMAGE_FILE, $$DESTDIR/images/)
 copyToDestDir($$ERROR_FILES, $$DESTDIR/errors/)

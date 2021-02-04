@@ -9,7 +9,6 @@
 #include "../gen/stdfunc.h"
 #include "baseinterface.h"
 
-#include <QApplication>
 #include <QCoreApplication>
 #include <QDebug>
 #include <QElapsedTimer>
@@ -227,7 +226,7 @@ void UsbHidPort::finish()
     closeConnection();
     qInfo() << metaObject()->className() << "finished";
     emit finished();
-    QApplication::processEvents();
+    QCoreApplication::processEvents();
 }
 
 void UsbHidPort::clear()
