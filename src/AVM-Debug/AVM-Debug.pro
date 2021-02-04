@@ -67,7 +67,15 @@ LIBRARIES += check \
 
 include(../deps.pri)
 
-#copyToDestDir($$IMAGE_FILE, $$DESTDIR/images/)
-#copyToDestDir($$ERROR_FILES, $$DESTDIR/errors/)
+IMAGE_FILE += \
+    $$PWD/../../images
+
+ERROR_FILES += \
+    $$PWD/../../errors
+
+
+
+copyToDestDir($$IMAGE_FILE, $$DESTDIR/images/)
+copyToDestDir($$ERROR_FILES, $$DESTDIR/errors/)
 copyToDestDir($$LIBS_FILES, $$DESTDIR/)
 

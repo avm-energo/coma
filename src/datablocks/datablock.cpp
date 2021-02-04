@@ -271,7 +271,7 @@ void DataBlock::createBottomButtonsWidget()
     const QList<QPair<QPair<QString, QString>, std::function<void()>>> funcs { { { "Получить", ":/icons/tnread.svg" },
                                                                                    [this]() { readAndUpdate(); } },
         { { "Записать", ":/icons/tnwrite.svg" }, [this]() { writeBlockToModule(); } },
-        { { "Задать по умолчанию", "images/tnyes.svg" }, [this]() { setDefBlockAndUpdate(); } },
+        { { "Задать по умолчанию", ":/icons/tnyes.svg" }, [this]() { setDefBlockAndUpdate(); } },
         { { "Прочитать", ":/icons/tnload.svg" }, [this]() { readFromFile(); } },
         { { "Сохранить", ":/icons/tnsave.svg" }, [this]() { saveToFileUserChoose(); } } };
 

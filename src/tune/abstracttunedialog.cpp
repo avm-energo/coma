@@ -68,12 +68,12 @@ QWidget *AbstractTuneDialog::TuneUI()
     QVBoxLayout *lyout = new QVBoxLayout;
     QHBoxLayout *hlyout = new QHBoxLayout;
     hlyout->addWidget(WDFunc::NewPB(
-        this, "starttune", "", this, &AbstractTuneDialog::startTune, "images/tnstart.svg", "Начать настройку"));
+        this, "starttune", "", this, &AbstractTuneDialog::startTune, ":/icons/tnstart.svg", "Начать настройку"));
     WDFunc::setMinimumSize(this, "starttune", 50, 50);
     if (StdFunc::IsInEmulateMode())
         WDFunc::SetEnabled(this, "starttune", false);
     hlyout->addWidget(WDFunc::NewPB(
-        this, "stoptune", "", this, &AbstractTuneDialog::CancelTune, "images/tnstop.svg", "Прервать настройку"));
+        this, "stoptune", "", this, &AbstractTuneDialog::CancelTune, ":/icons/tnstop.svg", "Прервать настройку"));
     WDFunc::setMinimumSize(this, "stoptune", 50, 50);
     WDFunc::SetEnabled(this, "stoptune", false);
     hlyout->addStretch(100);
@@ -113,7 +113,7 @@ QWidget *AbstractTuneDialog::TuneUI()
             emit Finished();
             this->hide();
         },
-        "images/tnyes.svg", "Готово"));
+        ":/icons/tnyes.svg", "Готово"));
     hlyout->addStretch(300);
     lyout->addLayout(hlyout);
     //    lyout->addStretch(1);

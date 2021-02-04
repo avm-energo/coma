@@ -26,9 +26,7 @@ signals:
     void Done(QString, int);
     void resendResult(int);
     void resendMaxResult(int);
-    // void Fill(QVector<QVector<QVariant>>);
     void Error(QString);
-    // void ModelReady(ETableModel *);
     void ReadJour(char);
 
 protected:
@@ -38,8 +36,6 @@ protected:
     virtual void setMeasJourHeaders() = 0;
 
 private:
-    // QMutex _mutex;
-
     ETableModel *m_sysModel, *m_workModel, *_measModel;
     QSortFilterProxyModel *_proxySysModel, *_proxyWorkModel, *_proxyMeasModel;
 

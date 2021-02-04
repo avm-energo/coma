@@ -226,11 +226,11 @@ QWidget *AbstractConfDialog::ConfButtons()
         pb->setEnabled(false);
     wdgtlyout->addWidget(pb, 0, 1, 1, 1);
     pb = new QPushButton("Прочитать из файла");
-    pb->setIcon(QIcon("images/load.png"));
+    pb->setIcon(QIcon(":/icons/tnload.svg"));
     connect(pb, &QAbstractButton::clicked, this, &AbstractConfDialog::LoadConfFromFile);
     wdgtlyout->addWidget(pb, 1, 0, 1, 1);
     pb = new QPushButton("Записать в файл");
-    pb->setIcon(QIcon("images/save.png"));
+    pb->setIcon(QIcon(":/icons/tnsave.svg"));
     connect(pb, &QAbstractButton::clicked, this, &AbstractConfDialog::SaveConfToFile);
     wdgtlyout->addWidget(pb, 1, 1, 1, 1);
     pb = new QPushButton("Взять конфигурацию по умолчанию");

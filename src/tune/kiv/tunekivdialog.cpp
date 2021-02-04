@@ -48,37 +48,37 @@ void TuneKIVDialog::SetupUI()
             //            TuneKIVCheck *check = new TuneKIVCheck(TuneKIV::TS_CHECKING, TKIV);
             TKIVCheckDialog->show();
         },
-        "images/tn1.svg", "Проверка правильности измерения входных сигналов"));
+        ":/icons/tn1.svg", "Проверка правильности измерения входных сигналов"));
     lyout->addWidget(WDFunc::NewHexagonPB(
         this, "tn2",
         [this]() {
             //            TuneKIVR *tkr = new TuneKIVR(TuneKIV::TS_PT100, CKIV, TKIV);
             TKIVRDialog->show();
         },
-        "images/tn2.svg", "Регулировка канала Pt100"));
+        ":/icons/tn2.svg", "Регулировка канала Pt100"));
     lyout->addWidget(WDFunc::NewHexagonPB(
         this, "tn3",
         [this]() {
             //            TuneKIVADC *tkadc = new TuneKIVADC(TuneKIV::TS_ADC, CKIV, TKIV);
             TKIVADCDialog->show();
         },
-        "images/tn3.svg", "Регулировка каналов тока и напряжения"));
+        ":/icons/tn3.svg", "Регулировка каналов тока и напряжения"));
     lyout->addWidget(WDFunc::NewHexagonPB(
         this, "tn4",
         [this]() {
             //            TuneKIVTemp60 *tk60 = new TuneKIVTemp60(TuneKIV::TS_60TUNING, CKIV, TKIV);
             TKIV60Dialog->show();
         },
-        "images/tn4.svg", "Настройка температурной коррекции +60 °С"));
+        ":/icons/tn4.svg", "Настройка температурной коррекции +60 °С"));
     lyout->addWidget(WDFunc::NewHexagonPB(
         this, "tn5",
         [this]() {
             //            TuneKIVTemp60 *tk_20 = new TuneKIVTemp60(TuneKIV::TS_20TUNING, CKIV, TKIV);
             TKIV20Dialog->show();
         },
-        "images/tn5.svg", "Настройка температурной коррекции -20 °С"));
+        ":/icons/tn5.svg", "Настройка температурной коррекции -20 °С"));
     lyout->addWidget(WDFunc::NewHexagonPB(
-        this, "tnprotocol", [this]() { GenerateReport(); }, "images/tnprotocol.svg",
+        this, "tnprotocol", [this]() { GenerateReport(); }, ":/icons/tnprotocol.svg",
         "Генерация протокола регулировки"));
     lyout->addStretch(100);
     hlyout->addLayout(lyout);

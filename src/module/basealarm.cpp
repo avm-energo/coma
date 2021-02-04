@@ -45,7 +45,7 @@ void BaseAlarm::setupUI(const QStringList &events)
     QVBoxLayout *vlayout = new QVBoxLayout;
 
     unsigned int i, j;
-    for (i = 0, j = 0; (i < m_alarmFlags.size()) && (i < events.size()); ++i)
+    for (i = 0, j = 0; (i < m_alarmFlags.size()) /*&& (i < events.size())*/; ++i)
     {
 
         const bool flag = m_alarmFlags.test(i);
