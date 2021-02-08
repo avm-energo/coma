@@ -7,7 +7,7 @@ VERSION = 2.0.0
 
 TEMPLATE = app
 
-QMAKE_SUBSTITUTES += ../config.h.in
+QMAKE_SUBSTITUTES += config.h.in
 
 INCLUDEPATH += ../$${QXLSX_PARENTPATH}
 INCLUDEPATH += ../$${QXLSX_HEADERPATH}
@@ -26,6 +26,7 @@ HEADERS += \
 DESTDIR = $${BIN_PATH}/$${TARGET}
 win32 {
     LIBS += -luser32
+
     LIBS += -L$$PWD/../../lib/$${QT_ARCH}/$${BUILD_FLAG}/ -llimereport$${LIB_SUFFIX} -lhidapi
     CONFIG(release, debug|release) {
         LIBS_FILES += \
