@@ -10,12 +10,12 @@ DEFINES += MODELS_LIBRARY
 
 SOURCES += \
     errorprotocolmodel.cpp \
-    etableitem.cpp \
     etablemodel.cpp \
+    etablerow.cpp \
     getoscpbdelegate.cpp
 
 HEADERS += \
     errorprotocolmodel.h \
-    etableitem.h \
     etablemodel.h \
+    etablerow.h \
     getoscpbdelegate.h

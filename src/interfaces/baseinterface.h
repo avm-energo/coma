@@ -21,7 +21,6 @@ public:
     /// because it can be created and deleted
     /// multiple times in runtime
     using InterfacePointer = UniquePointer<BaseInterface>;
-    // using TimerPointer=std::unique_ptr<BaseInterface, deleteLaterDeletor>
     enum State
     {
         Run,
@@ -31,7 +30,6 @@ public:
     };
 
 public:
-    //  bool m_working;
     LogClass *Log;
 
     explicit BaseInterface(QObject *parent = nullptr);

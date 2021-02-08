@@ -30,12 +30,12 @@ void Journals::SetProxyModels(
     _proxyWorkModel = workmdl;
     _proxySysModel = sysmdl;
     _proxyMeasModel = measmdl;
-    connect(m_sysModel, &ETableModel::pushProgress, this, &Journals::resendResult);
-    connect(m_workModel, &ETableModel::pushProgress, this, &Journals::resendResult);
-    connect(_measModel, &ETableModel::pushProgress, this, &Journals::resendResult);
-    connect(m_sysModel, &ETableModel::pushMaxProgress, this, &Journals::resendMaxResult);
-    connect(m_workModel, &ETableModel::pushMaxProgress, this, &Journals::resendMaxResult);
-    connect(_measModel, &ETableModel::pushMaxProgress, this, &Journals::resendMaxResult);
+    //    connect(m_sysModel, &ETableModel::pushProgress, this, &Journals::resendResult);
+    //    connect(m_workModel, &ETableModel::pushProgress, this, &Journals::resendResult);
+    //    connect(_measModel, &ETableModel::pushProgress, this, &Journals::resendResult);
+    //    connect(m_sysModel, &ETableModel::pushMaxProgress, this, &Journals::resendMaxResult);
+    //    connect(m_workModel, &ETableModel::pushMaxProgress, this, &Journals::resendMaxResult);
+    //    connect(_measModel, &ETableModel::pushMaxProgress, this, &Journals::resendMaxResult);
     // auto tester = new QAbstractItemModelTester(_workModel, QAbstractItemModelTester::FailureReportingMode::Fatal,
     // this);
 }
@@ -53,37 +53,6 @@ void Journals::SetJourFile(const QString &jourfile)
 {
     m_jourFile = jourfile;
 }
-/*
-void Journals::SetParentWidget(QWidget *w)
-{
-    _parent = w;
-} */
-
-// void Journals::ReadJourFileAndProcessIt()
-//{
-//    QFile file(m_jourFile);
-//    if (!file.open(QIODevice::ReadOnly))
-//    {
-//        emit Error("Ошибка чтения файла");
-//        return;
-//    }
-//    QByteArray ba = file.readAll();
-//    switch (m_jourType)
-//    {
-//    case DataTypes::JourSys:
-//        FillEventsTable(ba);
-//        break;
-//    case DataTypes::JourWork:
-//        FillEventsTable(ba);
-//        break;
-//    case DataTypes::JourMeas:
-//        FillMeasTable(ba);
-//        break;
-//    default:
-//        ERMSG("Incorrect jour type");
-//        return;
-//    }
-//}
 
 QVector<QVariant> prepareRow(AVM::EventStruct &event, int eventID, int eventNumber, QStringList &eventDesc)
 {
@@ -145,8 +114,9 @@ void Journals::FillEventsTable(const QByteArray &ba)
         ValueLists.append(vl);
     }
     if (!model->isEmpty())
-        model->clearModel();
-    model->setHeaders(AVM::eventJourHeaders);
+        model->clear();
+    model->setHorizontalHeaderLabels(AVM::eventJourHeaders);
+
     model->fillModel(ValueLists);
     ResultReady();
 }
@@ -158,7 +128,7 @@ void Journals::FillMeasTable(const QByteArray &ba)
         qWarning() << "Meas Byte Array is empty";
         return;
     }
-    ETableModel *model = _measModel;
+    auto model = _measModel;
     QVector<QVector<QVariant>> ValueLists;
 
     const auto basize = ba.size();
@@ -175,15 +145,16 @@ void Journals::FillMeasTable(const QByteArray &ba)
     }
 
     if (!model->isEmpty())
-        model->clearModel();
+        model->clear();
     setMeasJourHeaders();
     Q_ASSERT(!m_measJourHeaders.isEmpty());
-    model->setHeaders(m_measJourHeaders);
+    model->setHorizontalHeaderLabels(m_measJourHeaders);
     if (model->columnCount() < 3)
     {
-        ERMSG("Column count error");
+        qCritical("Column count error");
         return;
     }
+
     for (int i = 2; i < model->columnCount(); ++i)
         model->setColumnFormat(i, 4); // set 4 diits precision for all cells starting 2
     model->fillModel(ValueLists);
@@ -225,34 +196,6 @@ void Journals::ResultReady()
     pmdl->sort(dateidx, order);
     emit Done("Прочитано успешно", m_jourType);
 }
-
-// void Journals::prepareJour(QByteArray &ba, int JourType)
-//{
-//    S2DataTypes::FileHeader header;
-//    quint32 basize = ba.size();
-//    if (basize < 17)
-//    {
-//        ERMSG("basize");
-//    }
-//#ifdef __STDC_LIB_EXT1__
-//    memcpy_s(&header, sizeof(S2::FileHeader), ba.data(), sizeof(S2::FileHeader));
-//#endif
-//    memcpy(&header, ba.data(), sizeof(S2DataTypes::FileHeader));
-//    if (!S2::CheckCRC32(&(ba.data())[16], (basize - 16), header.crc32))
-//    {
-//        ERMSG("CRC error");
-//    }
-//    if (header.fname != JourType)
-//    {
-//        ERMSG("Wrong filename");
-//    }
-//    int fhsize = sizeof(S2DataTypes::FileHeader);
-//    ba.remove(0, fhsize);
-//    int drsize = sizeof(S2DataTypes::DataRec) - sizeof(void *);
-//    S2DataTypes::DataRec *record = reinterpret_cast<S2DataTypes::DataRec *>(ba.data());
-//    ba.truncate(record->num_byte);
-//    ba.remove(0, drsize);
-//}
 
 void Journals::FillJour(const DataTypes::FileStruct &fs)
 {

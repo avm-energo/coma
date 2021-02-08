@@ -1,19 +1,19 @@
 #ifndef ETABLEMODEL_H
 #define ETABLEMODEL_H
 
-#include "etableitem.h"
+#include "etablerow.h"
 
 #include <QAbstractTableModel>
-
-#define NOCOLFORMAT 11 // 11 is the number more than 10 i.e. no format for column
+namespace
+{
+// 11 is the number more than 10 i.e. no format for column
+constexpr int noColFormat = 11;
+}
 
 class ETableModel : public QAbstractTableModel
 {
     Q_OBJECT
 public:
-    QList<ETableItem *> maindata;
-    QStringList hdr;
-
     explicit ETableModel(QObject *parent = 0);
     ~ETableModel();
 
@@ -29,21 +29,26 @@ public:
     bool removeColumns(int position, int columns, const QModelIndex &index = QModelIndex()) override;
     bool insertRows(int row, int count, const QModelIndex &index = QModelIndex()) override;
     bool removeRows(int position, int rows, const QModelIndex &index = QModelIndex()) override;
-    int headerPosition(QVariant hdrtext, Qt::Orientation orientation = Qt::Horizontal,
-        int role = Qt::DisplayRole) const; // получение индекса элемента в заголовке, который содержит текст hdrtext
-    void addColumn(
-        const QString hdrtext); // добавление новой колонки с текстом в заголовке hdrtext для варианта двух столбцов
-    void addRow(); // добавление строки
+    // получение индекса элемента в заголовке, который содержит текст hdrtext
+    int headerPosition(
+        QVariant hdrtext, Qt::Orientation orientation = Qt::Horizontal, int role = Qt::DisplayRole) const;
+    // добавление новой колонки с текстом в заголовке hdrtext для варианта двух столбцов
+    void addColumn(const QString hdrtext);
+    // добавление строки
+    void addRow();
     void setRowAttr(int fcset = 0, int icon = -1);
     void clearModel();
     void fillModel(QVector<QVector<QVariant>> &);
-    QStringList cvalues(int column) const; // выдать значения по столбцу column в выходной QStringList
-    QStringList rvalues(int row) const; // выдать значения по строке row в выходной QStringList
+    // выдать значения по столбцу column в выходной QStringList
+    QStringList takeColumn(int column) const;
+    // выдать значения по строке row в выходной QStringList
+    QStringList takeRow(int row) const;
     void setRowTextAlignment(int row, int alignment);
     bool isEmpty() const;
-    void setColumnFormat(
-        int column, int format); // format is precision of the double, set num above 10 to set no format
-    void setHeaders(QStringList hdrl);
+    // format is precision of the double, set num above 10 to set no format
+    void setColumnFormat(int column, int format);
+    void setHorizontalHeaderLabels(const QStringList hdrl);
+    void setHeaders(const QStringList hdrl);
     void addRowWithData(const QVector<QVariant> &vl);
 
 signals:
@@ -54,6 +59,8 @@ signals:
 protected slots:
 
 private:
+    QList<ETableRow *> maindata;
+    QStringList hdr;
     QList<int> ColFormat;
 };
 

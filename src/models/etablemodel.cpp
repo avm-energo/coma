@@ -61,7 +61,7 @@ QVariant ETableModel::data(const QModelIndex &index, int role) const
                 {
                     if (ColFormat.at(column) < 10)
                     {
-                        QString cellvalue = maindata.at(row)->data(column);
+                        QVariant cellvalue = maindata.at(row)->data(column, role);
                         bool ok;
                         double celldblvalue = cellvalue.toDouble(&ok);
                         if (ok)
@@ -71,16 +71,18 @@ QVariant ETableModel::data(const QModelIndex &index, int role) const
                         }
                     }
                 }
-                return maindata.at(row)->data(column);
+                //    return maindata.at(row)->data(column);
             }
-            case Qt::FontRole:
-                return QVariant::fromValue(QFont(maindata.at(row)->font(column)));
-            case Qt::ForegroundRole:
-                return QVariant::fromValue(QColor(maindata.at(row)->color(column)));
-            case Qt::DecorationRole:
-                return QVariant::fromValue(QIcon(maindata.at(row)->icon(column)));
-            case Qt::TextAlignmentRole:
-                return maindata.at(row)->TextAlignment(column);
+            default:
+                return maindata.at(row)->data(column, role);
+                //            case Qt::FontRole:
+                //                return QVariant::fromValue(QFont(maindata.at(row)->font(column)));
+                //            case Qt::ForegroundRole:
+                //                return QVariant::fromValue(QColor(maindata.at(row)->color(column)));
+                //            case Qt::DecorationRole:
+                //                return QVariant::fromValue(QIcon(maindata.at(row)->icon(column)));
+                //            case Qt::TextAlignmentRole:
+                //                return maindata.at(row)->TextAlignment(column);
             }
         }
     }
@@ -100,31 +102,33 @@ bool ETableModel::setData(const QModelIndex &index, const QVariant &value, int r
 {
     if (index.isValid() && value.isValid())
     {
-        if (role != Qt::EditRole)
-            qDebug() << "Role" << role;
-        switch (role)
-        {
-        case Qt::EditRole:
-            if (index.column() < hdr.size())
-            {
-                maindata.last()->setData(index.column(), value.toString());
-                // maindata.at(index.row())->setData(index.column(), value.toString()); // пишем само значение
-                return true;
-            }
-            break;
-        case Qt::ForegroundRole:
-            maindata.last()->setColor(index.column(), value.value<QColor>());
-            return true;
-        case Qt::FontRole:
-            maindata.last()->setFont(index.column(), value.value<QFont>());
-            return true;
-        case Qt::DecorationRole:
-            maindata.last()->setIcon(index.column(), value.value<QIcon>());
-            return true;
-        case Qt::TextAlignmentRole:
-            maindata.last()->setTextAlignment(index.column(), value.toInt());
-            return true;
-        }
+        maindata.last()->setData(index.column(), value, role);
+        //        if (role != Qt::EditRole)
+        //            qDebug() << "Role" << role;
+        //        switch (role)
+        //        {
+        //        case Qt::DisplayRole:
+        //        case Qt::EditRole:
+        //            if (index.column() < hdr.size())
+        //            {
+        //                maindata.last()->setData(index.column(), value.toString());
+        //                // maindata.at(index.row())->setData(index.column(), value.toString()); // пишем само значение
+        //                return true;
+        //            }
+        //            break;
+        //        case Qt::ForegroundRole:
+        //            maindata.last()->setColor(index.column(), value.value<QColor>());
+        //            return true;
+        //        case Qt::FontRole:
+        //            maindata.last()->setFont(index.column(), value.value<QFont>());
+        //            return true;
+        //        case Qt::DecorationRole:
+        //            maindata.last()->setIcon(index.column(), value.value<QIcon>());
+        //            return true;
+        //        case Qt::TextAlignmentRole:
+        //            maindata.last()->setTextAlignment(index.column(), value.toInt());
+        //            return true;
+        //        }
     }
     return false;
 }
@@ -162,7 +166,7 @@ bool ETableModel::insertColumns(int position, int columns, const QModelIndex &in
         for (int i = 0; i < columns; i++)
         {
             hdr.insert(position, "");
-            ColFormat.insert(position, NOCOLFORMAT);
+            ColFormat.insert(position, noColFormat);
         }
         endInsertColumns();
     }
@@ -191,7 +195,7 @@ bool ETableModel::insertRows(int row, int count, const QModelIndex &index)
     beginInsertRows(QModelIndex(), row, row + count - 1);
     for (int i = 0; i < count; i++)
     {
-        ETableItem *item = new ETableItem();
+        ETableRow *item = new ETableRow();
         //        for (int j = 0; j < hdr.size(); j++)
         //            item->setData(j, "");
         if (i >= rowCount() && i <= rowCount())
@@ -213,7 +217,7 @@ bool ETableModel::removeRows(int position, int rows, const QModelIndex &index)
         return false;
     for (int i = 0; i < rows; i++)
     {
-        ETableItem *item = maindata.at(position);
+        ETableRow *item = maindata.at(position);
         maindata.removeAt(position);
         delete item;
     }
@@ -249,7 +253,7 @@ void ETableModel::addColumn(const QString hdrtext)
     // hdr.append(hdrtext);
     //  hdr.reserve(lastEntry);
     hdr.insert(lastEntry, hdrtext);
-    ColFormat.append(NOCOLFORMAT);
+    ColFormat.append(noColFormat);
 }
 
 void ETableModel::addRow()
@@ -272,7 +276,7 @@ void ETableModel::fillModel(QVector<QVector<QVariant>> &lsl)
 
 // выдать значения по столбцу column в выходной QStringList
 
-QStringList ETableModel::cvalues(int column) const
+QStringList ETableModel::takeColumn(int column) const
 {
     if (column > columnCount())
         return QStringList();
@@ -284,7 +288,7 @@ QStringList ETableModel::cvalues(int column) const
 
 // выдать значения по строке row в выходной QStringList
 
-QStringList ETableModel::rvalues(int row) const
+QStringList ETableModel::takeRow(int row) const
 {
     if (row > rowCount())
         return QStringList();
@@ -310,11 +314,19 @@ bool ETableModel::isEmpty() const
 void ETableModel::setColumnFormat(int column, int format)
 {
     while (column >= ColFormat.size())
-        ColFormat.append(NOCOLFORMAT);
+        ColFormat.append(noColFormat);
     ColFormat.replace(column, format);
 }
 
-void ETableModel::setHeaders(QStringList hdrl)
+void ETableModel::setHorizontalHeaderLabels(const QStringList hdrl)
+{
+    for (int var = 0; var < hdrl.size(); ++var)
+    {
+        setHeaderData(var, Qt::Horizontal, hdrl.at(var), Qt::DisplayRole);
+    }
+}
+
+void ETableModel::setHeaders(const QStringList hdrl)
 {
     for (int var = 0; var < hdrl.size(); ++var)
     {

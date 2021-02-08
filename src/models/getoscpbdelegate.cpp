@@ -1,6 +1,6 @@
 #include "getoscpbdelegate.h"
 
-#include "etableitem.h"
+#include "etablerow.h"
 #include "etablemodel.h"
 
 #include <QApplication>
