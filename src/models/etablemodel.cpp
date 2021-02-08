@@ -264,14 +264,36 @@ void ETableModel::addRow()
 
 void ETableModel::fillModel(QVector<QVector<QVariant>> &lsl)
 {
-    emit pushMaxProgress(lsl.size());
+    beginInsertRows(index(0, 0, QModelIndex()), 0, lsl.size());
     for (int i = 0; i < lsl.size(); ++i)
     {
-        emit pushProgress(i);
-        QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
-        addRowWithData(lsl.at(i));
+        const auto rowVector = lsl.at(i);
+        int currow = rowCount();
+        // addRow();
+        int lastEntry = maindata.size();
+        int count = 1;
+        int row = lastEntry;
+        // insertRows(lastEntry, 1, QModelIndex());
+        // beginInsertRows(index(currow, count, QModelIndex()), row, row + count - 1);
+        // for (int i = 0; i < count; i++)
+        // {
+        ETableRow *item = new ETableRow();
+        for (int i = 0; i < rowVector.size(); ++i)
+            item->setData(i, rowVector.at(i), Qt::EditRole);
+        //        for (int j = 0; j < hdr.size(); j++)
+        //            item->setData(j, "");
+        if (count >= rowCount() && count <= rowCount())
+        {
+            maindata.append(item);
+            // qDebug("Row has been appended");
+        }
+        else
+            maindata.insert(row, item);
+        //  }
+
+        // addRowWithData(rowVector);
     }
-    emit pushProgress(lsl.size());
+    endInsertRows();
 }
 
 // выдать значения по столбцу column в выходной QStringList
@@ -337,15 +359,36 @@ void ETableModel::setHeaders(const QStringList hdrl)
 void ETableModel::addRowWithData(const QVector<QVariant> &vl)
 {
     int currow = rowCount();
-    addRow();
-    hdr.reserve(vl.size());
-    if (vl.size() > hdr.size()) // в переданном списке больше колонок, чем в модели
+    // addRow();
+    int lastEntry = maindata.size();
+    int count = 1;
+    int row = lastEntry;
+    // insertRows(lastEntry, 1, QModelIndex());
+    beginInsertRows(index(currow, count, QModelIndex()), row, row + count - 1);
+    // for (int i = 0; i < count; i++)
+    // {
+    ETableRow *item = new ETableRow();
+    for (int i = 0; i < vl.size(); ++i)
+        item->setData(i, vl.at(i), Qt::EditRole);
+    //        for (int j = 0; j < hdr.size(); j++)
+    //            item->setData(j, "");
+    if (count >= rowCount() && count <= rowCount())
     {
-        for (int i = hdr.size(); i < vl.size(); ++i)
-            addColumn("");
+        maindata.append(item);
+        // qDebug("Row has been appended");
     }
-    for (int i = 0; i < vl.size(); ++i) // цикл по строкам
-        setData(index(currow, i, QModelIndex()), vl.at(i), Qt::EditRole);
+    else
+        maindata.insert(row, item);
+    //  }
+    endInsertRows();
+    //  hdr.reserve(vl.size());
+    // Q_ASSERT((vl.size() <= hdr.size())); // в переданном списке больше колонок, чем в модели
+    //    {
+    //        for (int i = hdr.size(); i < vl.size(); ++i)
+    //            addColumn("");
+    //    }
+    //   for (int i = 0; i < vl.size(); ++i) // цикл по строкам
+    //    setData(index(currow, i, QModelIndex()), vl.at(i), Qt::EditRole);
 }
 
 void ETableModel::clearModel()

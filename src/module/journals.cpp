@@ -95,6 +95,8 @@ void Journals::FillEventsTable(const QByteArray &ba)
     }
     if (mineventid == -1)
         return;
+    if (!model->isEmpty())
+        model->clearModel();
     const auto basize = ba.size();
     const char *file = ba.constData();
     const auto recordsize = sizeof(AVM::EventStruct);
@@ -113,12 +115,11 @@ void Journals::FillEventsTable(const QByteArray &ba)
         QVector<QVariant> vl(prepareRow(event, mineventid, counter, sl));
         ValueLists.append(vl);
     }
-    if (!model->isEmpty())
-        model->clear();
+
     model->setHorizontalHeaderLabels(AVM::eventJourHeaders);
 
     model->fillModel(ValueLists);
-    ResultReady();
+    resultReady(model);
 }
 
 void Journals::FillMeasTable(const QByteArray &ba)
@@ -129,6 +130,8 @@ void Journals::FillMeasTable(const QByteArray &ba)
         return;
     }
     auto model = _measModel;
+    if (!model->isEmpty())
+        model->clearModel();
     QVector<QVector<QVariant>> ValueLists;
 
     const auto basize = ba.size();
@@ -144,8 +147,6 @@ void Journals::FillMeasTable(const QByteArray &ba)
             ValueLists.append(vl);
     }
 
-    if (!model->isEmpty())
-        model->clear();
     setMeasJourHeaders();
     Q_ASSERT(!m_measJourHeaders.isEmpty());
     model->setHorizontalHeaderLabels(m_measJourHeaders);
@@ -158,29 +159,25 @@ void Journals::FillMeasTable(const QByteArray &ba)
     for (int i = 2; i < model->columnCount(); ++i)
         model->setColumnFormat(i, 4); // set 4 diits precision for all cells starting 2
     model->fillModel(ValueLists);
-    ResultReady();
+    resultReady(model);
 }
 
-void Journals::ResultReady()
+void Journals::resultReady(ETableModel *model)
 {
-    ETableModel *mdl;
     QSortFilterProxyModel *pmdl;
     Qt::SortOrder order;
 
     switch (m_jourType)
     {
     case DataTypes::JourWork:
-        mdl = m_workModel;
         pmdl = _proxyWorkModel;
         order = Qt::DescendingOrder;
         break;
     case DataTypes::JourSys:
-        mdl = m_sysModel;
         pmdl = _proxySysModel;
         order = Qt::DescendingOrder;
         break;
     case DataTypes::JourMeas:
-        mdl = _measModel;
         pmdl = _proxyMeasModel;
         order = Qt::AscendingOrder;
         break;
@@ -189,10 +186,10 @@ void Journals::ResultReady()
         return;
     }
 
-    int dateidx = mdl->headerPosition("Дата/Время UTC");
+    int dateidx = model->headerPosition("Дата/Время UTC");
     pmdl->invalidate();
     pmdl->setDynamicSortFilter(false);
-    pmdl->setSourceModel(mdl);
+    pmdl->setSourceModel(model);
     pmdl->sort(dateidx, order);
     emit Done("Прочитано успешно", m_jourType);
 }

@@ -5,7 +5,8 @@
 #include "../models/etablemodel.h"
 
 #include <QSortFilterProxyModel>
-
+//#include <QStandardItemModel>
+#include "../models/estandarditemmodel.h"
 class Journals : public QObject
 {
     Q_OBJECT
@@ -44,7 +45,7 @@ private:
 
     void FillEventsTable(const QByteArray &ba);
     void FillMeasTable(const QByteArray &ba);
-    void ResultReady();
+    void resultReady(ETableModel *model);
 
     // void prepareJour(QByteArray &ba, int JourType);
 
