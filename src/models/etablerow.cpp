@@ -23,7 +23,7 @@ void ETableRow::setData(int column, const QVariant &value, int role)
 {
     role = (role == Qt::EditRole) ? Qt::DisplayRole : role;
     while (column >= values.size())
-        values.append(ETableItem());
+        values.push_back(ETableItem());
 
     ETableItem::iterator it = values[column].begin();
     while (it != values.at(column).end())
@@ -35,5 +35,5 @@ void ETableRow::setData(int column, const QVariant &value, int role)
         }
         ++it;
     }
-    values[column].append(ETableItemData(role, value));
+    values[column].push_back(ETableItemData(role, value));
 }

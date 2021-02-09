@@ -16,8 +16,8 @@ public:
     //    QSize minimumSizeHint() const;
     //    mutable bool datachangedintable;
 
-signals:
-    void datachanged();
+    // signals:
+    //    void datachanged();
 
 public slots:
     void dataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight, const QVector<int> &roles);

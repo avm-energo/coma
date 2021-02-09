@@ -12,7 +12,7 @@ ETableView::ETableView(QWidget *parent) : QTableView(parent)
     // setStyleSheet("QTableView {background-color: rgba(0,0,0,0);}");
     setFrameStyle(QFrame::NoFrame);
     setShowGrid(false);
-    connect(this, &ETableView::datachanged, this, &QTableView::resizeColumnsToContents);
+    // connect(this, &ETableView::datachanged, this, &QTableView::resizeColumnsToContents);
 }
 
 /*void ETableView::setAData(QVariant dat)
@@ -31,7 +31,7 @@ void ETableView::dataChanged(const QModelIndex &topLeft, const QModelIndex &bott
     Q_UNUSED(bottomRight);
     Q_UNUSED(roles);
     resizeColumnsToContents();
-    emit datachanged();
+    // emit datachanged();
 }
 
 void ETableView::resizeEvent(QResizeEvent *e)

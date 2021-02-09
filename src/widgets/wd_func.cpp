@@ -886,6 +886,7 @@ ETableView *WDFunc::NewTV(QWidget *w, const QString &tvname, QAbstractItemModel 
     tv->verticalHeader()->setVisible(false);
     if (model != nullptr)
         tv->setModel(model);
+    tv->setSelectionBehavior(QAbstractItemView::SelectRows);
     tv->setSelectionMode(QAbstractItemView::NoSelection);
     return tv;
 }
@@ -896,6 +897,12 @@ QTableView *WDFunc::NewQTV(QWidget *w, const QString &tvname, QAbstractItemModel
     if (model != nullptr)
         tv->setModel(model);
     tv->setObjectName(tvname);
+    // tv->horizontalHeader()->setVisible(true);
+    // tv->verticalHeader()->setVisible(false);
+    //  tv->setAttribute(Qt::WA_TranslucentBackground, true);
+    //  tv->setAttribute(Qt::WA_NoSystemBackground, true);
+    // tv->setFrameStyle(QFrame::NoFrame);
+    //  tv->setShowGrid(false);
     tv->setSelectionBehavior(QAbstractItemView::SelectRows);
     tv->setSelectionMode(QAbstractItemView::SingleSelection);
     return tv;

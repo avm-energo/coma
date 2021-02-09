@@ -10,6 +10,8 @@ namespace
 constexpr int noColFormat = 11;
 }
 
+using Matrix = QVarLengthArray<ETableRow *>;
+
 class ETableModel : public QAbstractTableModel
 {
     Q_OBJECT
@@ -59,7 +61,7 @@ signals:
 protected slots:
 
 private:
-    QList<ETableRow *> maindata;
+    Matrix maindata;
     QStringList hdr;
     QList<int> ColFormat;
 };

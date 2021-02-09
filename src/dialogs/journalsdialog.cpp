@@ -44,56 +44,6 @@ JournalDialog::~JournalDialog()
 void JournalDialog::SetupUI()
 {
     QVBoxLayout *lyout = new QVBoxLayout;
-    /*    QVBoxLayout *vlyout = new QVBoxLayout;
-        QHBoxLayout *hlyout = new QHBoxLayout; */
-    // QString tmps = "QDialog {background-color: " + QString(Colors::ACONFCLR) + ";}";
-    // setStyleSheet(tmps);
-    // QString ConfTWss = "QTabBar::tab:selected {background-color: " + QString(Colors::TABCOLOR) + ";}";
-
-    /*    QTabWidget *work = new QTabWidget;
-        work->tabBar()->setStyleSheet(ConfTWss);
-        hlyout->addWidget(WDFunc::NewPB(this, "gj." +
-       QString::number(Files::JourWork), "Получить рабочий журнал", this,
-       SLOT(TryGetJourByUSB()))); hlyout->addWidget(WDFunc::NewPB(this, "ej." +
-       QString::number(Files::JourWork), "Стереть рабочий журнал", this,
-       SLOT(EraseJour()))); hlyout->addWidget(WDFunc::NewPB(this, "sj." +
-       QString::number(Files::JourWork), "Сохранить журнал в файл", this,
-       SLOT(SaveJour()))); vlyout->addLayout(hlyout);
-        vlyout->addWidget(WDFunc::NewTV(this, "work", nullptr), 89);
-        work->setLayout(vlyout);
-        work->setStyleSheet(ConfTWss);
-
-        QTabWidget *system = new QTabWidget;
-        system->tabBar()->setStyleSheet(ConfTWss);
-
-        hlyout = new QHBoxLayout;
-        vlyout = new QVBoxLayout;
-        hlyout->addWidget(WDFunc::NewPB(this, "gj." +
-       QString::number(Files::JourSys), "Получить системный журнал", this,
-       SLOT(TryGetJourByUSB()))); hlyout->addWidget(WDFunc::NewPB(this, "ej." +
-       QString::number(Files::JourSys), "Стереть системный журнал", this,
-       SLOT(EraseJour()))); hlyout->addWidget(WDFunc::NewPB(this, "sj." +
-       QString::number(Files::JourSys), "Сохранить журнал в файл", this,
-       SLOT(SaveJour()))); vlyout->addLayout(hlyout);
-        vlyout->addWidget(WDFunc::NewTV(this, "system", nullptr), 89);
-        system->setLayout(vlyout);
-        system->setStyleSheet(ConfTWss);
-
-        QTabWidget *measure = new QTabWidget;
-        measure->tabBar()->setStyleSheet(ConfTWss);
-        hlyout = new QHBoxLayout;
-        vlyout = new QVBoxLayout;
-        hlyout->addWidget(WDFunc::NewPB(this, "gj." +
-       QString::number(Files::JourMeas), "Получить журнал измерений", this,
-       SLOT(TryGetJourByUSB()))); hlyout->addWidget(WDFunc::NewPB(this, "ej." +
-       QString::number(Files::JourMeas), "Стереть журнал измерений", this,
-       SLOT(EraseJour()))); hlyout->addWidget(WDFunc::NewPB(this, "sj." +
-       QString::number(Files::JourMeas), "Сохранить журнал в файл", this,
-       SLOT(SaveJour()))); vlyout->addLayout(hlyout);
-        vlyout->addWidget(WDFunc::NewTV(this, "meas", nullptr), 89);
-        measure->setLayout(vlyout);
-        measure->setStyleSheet(ConfTWss);
-    */
     QTabWidget *ConfTW = new QTabWidget;
     ConfTW->setObjectName("conftw4");
     ConfTW->addTab(JourTab(DataTypes::JourWork), "Рабочий журнал");
@@ -162,62 +112,11 @@ QWidget *JournalDialog::JourTab(int jourtype)
     hlyout->addWidget(saveButton);
     vlyout->addLayout(hlyout);
     auto *modelView = WDFunc::NewTV(this, tvname, mdl);
+    views.insert(DataTypes::FilesEnum(jourtype), modelView);
     vlyout->addWidget(modelView, 89);
     w->setLayout(vlyout);
     return w;
 }
-
-// void JournalDialog::TryGetJourByUSB()
-//{
-//    QString filetofind;
-//    int jourtype = GetJourNum(sender()->objectName());
-//    BaseInterface::iface()->reqFile(DataTypes::FilesEnum(jourtype));
-//    switch (jourtype)
-//    {
-//    case DataTypes::JourSys:
-//        filetofind = "system.dat";
-//        break;
-//    case DataTypes::JourWork:
-//        filetofind = "workj.dat";
-//        break;
-//    case DataTypes::JourMeas:
-//        filetofind = "measj.dat";
-//        break;
-//    default:
-//        ERMSG("Incorrect jour type");
-//        return;
-//        break;
-//    }
-
-//    JourType = jourtype;
-//    JourFuncs->SetJourType(DataTypes::FilesEnum(jourtype));
-//    // QByteArray ba;
-//    QStringList drives = Files::Drives();
-//    if (!drives.isEmpty())
-//    {
-//        QStringList files = Files::SearchForFile(drives, filetofind);
-//        if (!files.isEmpty())
-//        {
-//            JourFile = Files::GetFirstDriveWithLabel(files, "AVM");
-//            JourFuncs->SetJourFile(JourFile);
-//            if (JourFile.isEmpty())
-//                GetJour();
-//            else
-//                StartReadJourFile();
-//        }
-//        else
-//            GetJour();
-//    }
-//    else
-//        GetJour();
-//}
-
-// void JournalDialog::GetJour()
-//{
-//    QByteArray ba;
-//    BaseInterface::iface()->reqFile(JourType);
-//    emit StartGetJour();
-//}
 
 void JournalDialog::JourFileChoosed(QString &file)
 {
@@ -226,27 +125,8 @@ void JournalDialog::JourFileChoosed(QString &file)
 
 void JournalDialog::EraseJour()
 {
-    //    if (Board::GetInstance().interfaceType() == Board::InterfaceType::USB)
     if (checkPassword() == Error::Msg::NoError)
-        //        {
         BaseInterface::iface()->writeCommand(Queries::QC_EraseJournals);
-    //            int jourtype = GetJourNum(sender()->objectName());
-    //            if (jourtype == INT_MAX)
-    //            {
-    //                ERMSG("Ошибочный тип журнала");
-    //                return;
-    //            }
-    //            char num = jourtype;
-
-    //            if (Commands::EraseTechBlock(num) == Error::Msg::NoError)
-    //            {
-    //                QMessageBox::information(this, "Успешно", "Стирание прошло успешно");
-    //            }
-    //            else
-    //            {
-    //                QMessageBox::information(this, "Ошибка", "Ошибка");
-    //            }
-    //        }
 }
 
 void JournalDialog::SaveJour(int jourType)
@@ -325,14 +205,13 @@ void JournalDialog::StartReadJourFile()
     emit StartReadFile();
 }
 
-void JournalDialog::Done(QString msg, int)
+void JournalDialog::Done(QString msg, DataTypes::FilesEnum jourType)
 {
-    Q_UNUSED(msg)
+    // Q_UNUSED(msg)
     // new QAbstractItemModelTester(ProxyWorkModel, QAbstractItemModelTester::FailureReportingMode::Warning, this);
-
     disconnect(m_jour.get(), &Journals::resendMaxResult, this->progress, &QProgressDialog::setMaximum);
     disconnect(m_jour.get(), &Journals::resendResult, this->progress, &QProgressDialog::setValue);
-    // QMessageBox::information(this, "Успешно", msg);
+    QMessageBox::information(this, "Успешно", msg);
 }
 
 void JournalDialog::Error(QString msg)
@@ -342,28 +221,3 @@ void JournalDialog::Error(QString msg)
     qCritical() << msg;
     QMessageBox::critical(this, "Ошибка", msg);
 }
-
-// void JournalDialog::SetModel(ETableModel *mdl)
-//{
-//    // WW->SetMessage("Сортировка...");
-//    MsgBox->setText("Сортировка...");
-//    QSortFilterProxyModel *pmdl = new QSortFilterProxyModel;
-//    pmdl->setSourceModel(mdl);
-//    int dateidx = mdl->headerPosition("Дата/Время UTC");
-//    switch (JourType)
-//    {
-//    case Files::JourWork:
-//        WDFunc::SetTVModel(this, "work", pmdl, true);
-//        WDFunc::SortTV(this, "work", dateidx, Qt::DescendingOrder);
-//        break;
-//    case Files::JourSys:
-//        WDFunc::SetTVModel(this, "system", pmdl, true);
-//        WDFunc::SortTV(this, "system", dateidx, Qt::DescendingOrder);
-//        break;
-//    case Files::JourMeas:
-//        WDFunc::SetTVModel(this, "meas", pmdl, true);
-//        WDFunc::SortTV(this, "meas", dateidx, Qt::AscendingOrder);
-//        break;
-//    }
-//    // Done("Прочитано успешно");
-//}

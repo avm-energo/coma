@@ -6,6 +6,7 @@
 
 #include <QMessageBox>
 #include <QProgressDialog>
+#include <QTableView>
 
 #define MAXSWJNUM 262144
 
@@ -37,7 +38,7 @@ private slots:
     void JourFileChoosed(QString &file);
     void EraseJour();
     void SaveJour(int jourType);
-    void Done(QString msg, int);
+    void Done(QString msg, DataTypes::FilesEnum jourType);
     void Error(QString msg);
 
 public slots:
@@ -49,6 +50,7 @@ private:
     UniquePointer<Journals> m_jour;
     QSortFilterProxyModel *ProxyWorkModel, *ProxySysModel, *ProxyMeasModel;
     void StartReadJourFile();
+    QMap<DataTypes::FilesEnum, QTableView *> views;
 };
 
 #endif // JOURNALDIALOG_H

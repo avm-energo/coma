@@ -4,8 +4,8 @@
 #include <QFont>
 #include <QIcon>
 #include <QStringList>
+#include <QVarLengthArray>
 #include <QVariant>
-
 class ETableItemData
 {
 public:
@@ -33,7 +33,8 @@ public:
     ETableItemData &operator=(ETableItemData &&) = default;
 };
 
-using ETableItem = QList<ETableItemData>;
+using ETableItem = std::vector<ETableItemData>;
+using ETableItemCollection = std::vector<ETableItem>;
 
 class ETableRow : public QObject
 {
@@ -56,7 +57,7 @@ public:
     int textAlignment(int column) const;
 
 private:
-    QList<ETableItem> values;
+    ETableItemCollection values;
 };
 
 inline void ETableRow::setColor(int column, const QColor &value)

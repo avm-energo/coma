@@ -71,18 +71,9 @@ QVariant ETableModel::data(const QModelIndex &index, int role) const
                         }
                     }
                 }
-                //    return maindata.at(row)->data(column);
             }
             default:
                 return maindata.at(row)->data(column, role);
-                //            case Qt::FontRole:
-                //                return QVariant::fromValue(QFont(maindata.at(row)->font(column)));
-                //            case Qt::ForegroundRole:
-                //                return QVariant::fromValue(QColor(maindata.at(row)->color(column)));
-                //            case Qt::DecorationRole:
-                //                return QVariant::fromValue(QIcon(maindata.at(row)->icon(column)));
-                //            case Qt::TextAlignmentRole:
-                //                return maindata.at(row)->TextAlignment(column);
             }
         }
     }
@@ -102,33 +93,7 @@ bool ETableModel::setData(const QModelIndex &index, const QVariant &value, int r
 {
     if (index.isValid() && value.isValid())
     {
-        maindata.last()->setData(index.column(), value, role);
-        //        if (role != Qt::EditRole)
-        //            qDebug() << "Role" << role;
-        //        switch (role)
-        //        {
-        //        case Qt::DisplayRole:
-        //        case Qt::EditRole:
-        //            if (index.column() < hdr.size())
-        //            {
-        //                maindata.last()->setData(index.column(), value.toString());
-        //                // maindata.at(index.row())->setData(index.column(), value.toString()); // пишем само значение
-        //                return true;
-        //            }
-        //            break;
-        //        case Qt::ForegroundRole:
-        //            maindata.last()->setColor(index.column(), value.value<QColor>());
-        //            return true;
-        //        case Qt::FontRole:
-        //            maindata.last()->setFont(index.column(), value.value<QFont>());
-        //            return true;
-        //        case Qt::DecorationRole:
-        //            maindata.last()->setIcon(index.column(), value.value<QIcon>());
-        //            return true;
-        //        case Qt::TextAlignmentRole:
-        //            maindata.last()->setTextAlignment(index.column(), value.toInt());
-        //            return true;
-        //        }
+        maindata.back()->setData(index.column(), value, role);
     }
     return false;
 }
@@ -152,9 +117,8 @@ bool ETableModel::insertColumns(int position, int columns, const QModelIndex &in
     if (columns > 0)
     {
         beginInsertColumns(QModelIndex(), position, position + columns - 1);
-
-        if (!maindata.isEmpty()) // если в модели есть какие-то данные, то уже нельзя менять размерность таблицы по
-                                 // столбцам
+        // если в модели есть какие-то данные, то уже нельзя менять размерность таблицы по столбцам
+        if (!isEmpty())
             return false;
         hdr.reserve(position + 1);
         ColFormat.reserve(position + 1);
@@ -178,7 +142,7 @@ bool ETableModel::removeColumns(int position, int columns, const QModelIndex &in
     if (columns > 0)
     {
         beginRemoveColumns(index, position, position + columns - 1);
-        if (!maindata.isEmpty())
+        if (!isEmpty())
             return false;
         if ((position + columns) > hdr.size())
             return false;
@@ -200,11 +164,10 @@ bool ETableModel::insertRows(int row, int count, const QModelIndex &index)
         //            item->setData(j, "");
         if (i >= rowCount() && i <= rowCount())
         {
-            maindata.append(item);
-            // qDebug("Row has been appended");
+            maindata.push_back(item);
         }
         else
-            maindata.insert(row, item);
+            maindata.insert(maindata.begin() + row, item);
     }
     endInsertRows();
     return true;
@@ -218,7 +181,8 @@ bool ETableModel::removeRows(int position, int rows, const QModelIndex &index)
     for (int i = 0; i < rows; i++)
     {
         ETableRow *item = maindata.at(position);
-        maindata.removeAt(position);
+        maindata.erase(maindata.begin() + position);
+        // maindata.removeAt(position);
         delete item;
     }
     endRemoveRows();
@@ -234,7 +198,8 @@ int ETableModel::columnCount(const QModelIndex &index) const
 int ETableModel::rowCount(const QModelIndex &index) const
 {
     Q_UNUSED(index)
-    return maindata.size();
+
+    return int(maindata.size());
 }
 
 // ###################################### Свои методы ############################################
@@ -262,36 +227,25 @@ void ETableModel::addRow()
     insertRows(lastEntry, 1, QModelIndex());
 }
 
+/// Fill all model directly
 void ETableModel::fillModel(QVector<QVector<QVariant>> &lsl)
 {
     beginInsertRows(index(0, 0, QModelIndex()), 0, lsl.size());
     for (int i = 0; i < lsl.size(); ++i)
     {
         const auto rowVector = lsl.at(i);
-        int currow = rowCount();
-        // addRow();
         int lastEntry = maindata.size();
         int count = 1;
         int row = lastEntry;
-        // insertRows(lastEntry, 1, QModelIndex());
-        // beginInsertRows(index(currow, count, QModelIndex()), row, row + count - 1);
-        // for (int i = 0; i < count; i++)
-        // {
         ETableRow *item = new ETableRow();
         for (int i = 0; i < rowVector.size(); ++i)
             item->setData(i, rowVector.at(i), Qt::EditRole);
-        //        for (int j = 0; j < hdr.size(); j++)
-        //            item->setData(j, "");
         if (count >= rowCount() && count <= rowCount())
         {
-            maindata.append(item);
-            // qDebug("Row has been appended");
+            maindata.push_back(item);
         }
         else
-            maindata.insert(row, item);
-        //  }
-
-        // addRowWithData(rowVector);
+            maindata.insert(maindata.begin() + row, item);
     }
     endInsertRows();
 }
@@ -330,7 +284,7 @@ void ETableModel::setRowTextAlignment(int row, int alignment)
 
 bool ETableModel::isEmpty() const
 {
-    return maindata.isEmpty();
+    return maindata.empty();
 }
 
 void ETableModel::setColumnFormat(int column, int format)
@@ -359,43 +313,22 @@ void ETableModel::setHeaders(const QStringList hdrl)
 void ETableModel::addRowWithData(const QVector<QVariant> &vl)
 {
     int currow = rowCount();
-    // addRow();
-    int lastEntry = maindata.size();
-    int count = 1;
-    int row = lastEntry;
-    // insertRows(lastEntry, 1, QModelIndex());
-    beginInsertRows(index(currow, count, QModelIndex()), row, row + count - 1);
-    // for (int i = 0; i < count; i++)
-    // {
-    ETableRow *item = new ETableRow();
-    for (int i = 0; i < vl.size(); ++i)
-        item->setData(i, vl.at(i), Qt::EditRole);
-    //        for (int j = 0; j < hdr.size(); j++)
-    //            item->setData(j, "");
-    if (count >= rowCount() && count <= rowCount())
+    addRow();
+    hdr.reserve(vl.size());
+    if (vl.size() > hdr.size()) // в переданном списке больше колонок, чем в модели
     {
-        maindata.append(item);
-        // qDebug("Row has been appended");
+        for (int i = hdr.size(); i < vl.size(); ++i)
+            addColumn("");
     }
-    else
-        maindata.insert(row, item);
-    //  }
-    endInsertRows();
-    //  hdr.reserve(vl.size());
-    // Q_ASSERT((vl.size() <= hdr.size())); // в переданном списке больше колонок, чем в модели
-    //    {
-    //        for (int i = hdr.size(); i < vl.size(); ++i)
-    //            addColumn("");
-    //    }
-    //   for (int i = 0; i < vl.size(); ++i) // цикл по строкам
-    //    setData(index(currow, i, QModelIndex()), vl.at(i), Qt::EditRole);
+    for (int i = 0; i < vl.size(); ++i) // цикл по строкам
+        setData(index(currow, i, QModelIndex()), vl.at(i), Qt::EditRole);
 }
 
 void ETableModel::clearModel()
 {
 
     beginResetModel();
-    if (!maindata.isEmpty())
+    if (!maindata.empty())
         qDeleteAll(maindata);
     hdr.clear();
     maindata.clear();
