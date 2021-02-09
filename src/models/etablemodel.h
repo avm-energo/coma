@@ -10,7 +10,7 @@ namespace
 constexpr int noColFormat = 11;
 }
 
-using Matrix = QVarLengthArray<ETableRow *>;
+using Matrix = std::vector<ETableRow *>;
 
 class ETableModel : public QAbstractTableModel
 {

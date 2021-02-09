@@ -6,7 +6,7 @@
 
 #include <QSortFilterProxyModel>
 //#include <QStandardItemModel>
-#include "../models/estandarditemmodel.h"
+//#include "../models/estandarditemmodel.h"
 class Journals : public QObject
 {
     Q_OBJECT
@@ -24,7 +24,7 @@ public:
     virtual int workJournalID() = 0;
 
 signals:
-    void Done(QString, int);
+    void Done(QString, DataTypes::FilesEnum);
     void resendResult(int);
     void resendMaxResult(int);
     void Error(QString);
