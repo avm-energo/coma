@@ -74,6 +74,9 @@ QDebug operator<<(QDebug debug, const DataTypes::GeneralResponseStruct &st)
 QDebug operator<<(QDebug debug, const UsbHidSettings &settings)
 {
     debug.nospace() << QString::number(settings.vendor_id, 16) << ":" << QString::number(settings.product_id, 16) << ":"
-                    << settings.serial << ":" << settings.path;
+                    << settings.serial;
+#if _DEBUG
+    debug.nospace() << ":" << settings.path;
+#endif
     return debug.maybeSpace();
 }

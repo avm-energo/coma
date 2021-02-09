@@ -5,7 +5,12 @@ struct UsbHidSettings
 {
     explicit UsbHidSettings() = default;
     explicit UsbHidSettings(unsigned short dev, unsigned short pid, const QString &arr, const QString &str)
-        : vendor_id(dev), product_id(pid), serial(arr), path(str)
+        : vendor_id(dev)
+        , product_id(pid)
+        , serial(arr)
+#if _DEBUG
+        , path(str)
+#endif
     {
     }
     // Не сравниваем path т.к. если переподключить устройство то path может сменится но остальные параметры - нет
@@ -21,8 +26,9 @@ struct UsbHidSettings
     unsigned short vendor_id;
     unsigned short product_id;
     QString serial;
-    [[deprecated("App should not depends on path, because it changes")]] QString path;
-
+#if _DEBUG
+    QString path;
+#endif
     /// From Windows message string
     bool hasMatch(const QString &str);
     bool hasPartialMatch(const QString &str);
