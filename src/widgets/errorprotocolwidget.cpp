@@ -3,6 +3,7 @@
 #include "../gen/colors.h"
 #include "../gen/error.h"
 #include "../models/errorprotocolmodel.h"
+
 #ifdef MODELDEBUG
 #include <QAbstractItemModelTester>
 #endif
@@ -16,8 +17,9 @@ ErrorProtocolWidget::ErrorProtocolWidget(QWidget *parent) : QWidget(parent)
     QVBoxLayout *lyout = new QVBoxLayout;
     QWidget *w = new QWidget;
     QTableView *tv = new QTableView(this);
-    Model = new ErrorProtocolModel(this);
+    auto Model = new ErrorProtocolModel(this);
     Model->initModel();
+
 #ifdef MODELDEBUG
     // Test the model
     new QAbstractItemModelTester(Model, QAbstractItemModelTester::FailureReportingMode::Warning, this);
@@ -60,9 +62,4 @@ ErrorProtocolWidget::ErrorProtocolWidget(QWidget *parent) : QWidget(parent)
 
 ErrorProtocolWidget::~ErrorProtocolWidget()
 {
-}
-
-void ErrorProtocolWidget::AddRowToProt(ErrorMsg ermsg)
-{
-    Model->appendRow(ermsg);
 }

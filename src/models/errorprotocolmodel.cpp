@@ -1,16 +1,17 @@
 #include "errorprotocolmodel.h"
 
 #include "../gen/errorqueue.h"
+#include "../gen/helper.h"
 #include "../gen/logger.h"
 
 #include <../gen/error.h>
+#include <QBrush>
 #include <QColor>
 #include <QDateTime>
 #include <QDebug>
 #include <QIcon>
 #include <QString>
 #include <QStringList>
-
 ErrorProtocolModel::ErrorProtocolModel(QObject *parent) : QAbstractTableModel(parent)
 {
 }
@@ -42,73 +43,14 @@ bool ErrorProtocolModel::setHeaderData(int section, Qt::Orientation orientation,
 QVariant ErrorProtocolModel::data(const QModelIndex &index, int role) const
 {
     if (index.isValid() && (index.row() < m_dataptr.size()))
-    {
-
-        const ErrorPair *item = m_dataptr.at(index.row());
-        switch (role)
-        {
-        case Qt::ForegroundRole:
-        {
-            switch (item->second)
-            {
-            case QtCriticalMsg:
-                return QVariant::fromValue(QColor(255, 0, 0));
-            case QtWarningMsg:
-                return QVariant::fromValue(QColor(255, 0, 255));
-            case QtInfoMsg:
-                return QVariant::fromValue(QColor(0, 150, 67));
-            case QtDebugMsg:
-                return QVariant::fromValue(QColor(0, 0, 255));
-            default:
-                return QVariant();
-            }
-        }
-        case Qt::BackgroundRole:
-        {
-            switch (item->second)
-            {
-            case QtCriticalMsg:
-                return QVariant::fromValue(QColor(255, 233, 255)); // red
-            case QtWarningMsg:
-                return QVariant::fromValue(QColor(255, 190, 255)); // magenta
-            case QtInfoMsg:
-                return QVariant::fromValue(QColor(204, 253, 243)); // green
-            case QtDebugMsg:
-                return QVariant::fromValue(QColor(190, 255, 255)); // blue
-            default:
-                return QVariant();
-            }
-        }
-        case Qt::DecorationRole:
-        {
-            if (index.column() == 3)
-                switch (item->second)
-                {
-                case QtCriticalMsg:
-                    return QVariant::fromValue(QIcon("images/er_msg.png"));
-                case QtWarningMsg:
-                    return QVariant::fromValue(QIcon("images/warn_msg.png"));
-                case QtInfoMsg:
-                    return QVariant::fromValue(QIcon("images/info_msg.png"));
-                case QtDebugMsg:
-                    return QVariant::fromValue(QIcon("images/dbg_msg.png"));
-                default:
-                    return QVariant();
-                }
-        }
-
-        case Qt::DisplayRole:
-            if (!item->first.isEmpty() && index.column() < item->first.size())
-                return item->first.at(index.column());
-        }
-    }
+        return m_dataptr.at(index.row())->data(index.column(), role);
     return QVariant();
 }
 
 Qt::ItemFlags ErrorProtocolModel::flags(const QModelIndex &index) const
 {
     Q_UNUSED(index);
-    return Qt::ItemIsSelectable | Qt::ItemIsEnabled;
+    return Qt::ItemIsSelectable | Qt::ItemIsEnabled | QAbstractTableModel::flags(index);
 }
 
 int ErrorProtocolModel::rowCount(const QModelIndex &index) const
@@ -130,7 +72,7 @@ bool ErrorProtocolModel::insertRows(int row, int count, const QModelIndex &paren
     beginInsertRows(parent, row, row + count - 1);
     for (int i = 0; i < count; i++)
     {
-        ErrorPair *item = new ErrorPair();
+        ErrorProtocolItem *item = new ErrorProtocolItem();
         if (i >= rowCount() && i <= rowCount())
             m_dataptr.append(item);
         else
@@ -140,7 +82,7 @@ bool ErrorProtocolModel::insertRows(int row, int count, const QModelIndex &paren
     return true;
 }
 
-bool ErrorProtocolModel::insertRow(int row, ErrorPair *item)
+bool ErrorProtocolModel::insertRow(int row, ErrorProtocolItem *item)
 {
     beginInsertRows(QModelIndex(), row, row);
     m_dataptr.insert(row, item);
@@ -148,89 +90,54 @@ bool ErrorProtocolModel::insertRow(int row, ErrorPair *item)
     return true;
 }
 
-bool ErrorProtocolModel::appendRows(const ErrorList &list)
-{
-    for (ErrorPair item : list)
-    {
-        if (!appendRow(&item))
-            return false;
-    }
-    return true;
-}
-
 bool ErrorProtocolModel::setData(const QModelIndex &index, const QVariant &value, int role)
 {
     if (index.isValid() && value.isValid())
     {
-        switch (role)
-        {
-        case Qt::EditRole:
-            if (index.column() < m_hdr.size())
-            {
-                m_dataptr.at(index.row())->first.insert(index.column(), value.toString());
-                emit dataChanged(index, index);
-                return true;
-            }
-            break;
-        case Qt::ForegroundRole:
-
-            return true;
-        case Qt::FontRole:
-
-            return true;
-        case Qt::DecorationRole:
-
-            return true;
-        case Qt::TextAlignmentRole:
-
-            return true;
-        case Qt::UserRole:
-
-            return true;
-        }
+        if (m_dataptr.size() <= index.row())
+            m_dataptr.push_back(new ErrorProtocolItem);
+        auto &item = m_dataptr[(index.row())];
+        item->setData(index.column(), value, role);
     }
     return false;
 }
 
-void ErrorProtocolModel::appendRow(ErrorMsg msg)
+void ErrorProtocolModel::appendRows(const std::vector<ErrorMsg> &msgs, int newItems)
 {
-    QStringList tmpsl;
-    tmpsl << msg;
-    ErrorPair *item = new ErrorPair(tmpsl, msg.type);
-    appendRow(item);
-}
-
-void ErrorProtocolModel::appendRows(const std::vector<ErrorMsg> &msgs)
-{
-    auto rootIndex = index(rowCount(), columnCount());
+    const int colorFactor = 190;
     for (auto i = 0; i < msgs.size(); ++i)
     {
         QStringList tmpsl;
         tmpsl << msgs.at(i);
-        // ErrorPair *item = new ErrorPair(tmpsl, msgs.type);
-        auto newIndex = index(i, 0, rootIndex);
+        auto newIndex = createIndex(i, 0);
         setData(newIndex, tmpsl, Qt::DisplayRole);
         switch (msgs.at(i).type)
         {
 
         case QtDebugMsg:
-            setData(newIndex, QColor(Qt::blue), Qt::ForegroundRole);
-            setData(newIndex, QColor(Qt::blue).lighter(), Qt::BackgroundRole);
+            setData(newIndex, QBrush(QColor(Qt::blue).darker(colorFactor)), Qt::ForegroundRole);
+            setData(newIndex, QBrush(QColor(Qt::blue).lighter(colorFactor)), Qt::BackgroundRole);
             break;
         case QtWarningMsg:
-            setData(newIndex, QColor(Qt::magenta), Qt::ForegroundRole);
-            setData(newIndex, QColor(Qt::magenta).lighter(), Qt::BackgroundRole);
+            setData(newIndex, QBrush(QColor(Qt::magenta).darker(colorFactor)), Qt::ForegroundRole);
+            setData(newIndex, QBrush(QColor(Qt::magenta).lighter(colorFactor)), Qt::BackgroundRole);
             break;
         case QtCriticalMsg:
-            setData(newIndex, QColor(Qt::red), Qt::ForegroundRole);
-            setData(newIndex, QColor(Qt::magenta).lighter(), Qt::BackgroundRole);
+            setData(newIndex, QBrush(QColor(Qt::red).darker(colorFactor)), Qt::ForegroundRole);
+            setData(newIndex, QBrush(QColor(Qt::red).lighter(colorFactor)), Qt::BackgroundRole);
             break;
         case QtFatalMsg:
             break;
         case QtInfoMsg:
-            setData(newIndex, QColor(Qt::green), Qt::ForegroundRole);
-            setData(newIndex, QColor(Qt::green).lighter(), Qt::BackgroundRole);
+            setData(newIndex, QBrush(QColor(Qt::green).darker(colorFactor)), Qt::ForegroundRole);
+            setData(newIndex, QBrush(QColor(Qt::green).lighter(colorFactor)), Qt::BackgroundRole);
 
+            if ((msgs.size() - i) <= newItems)
+            {
+                QFont font;
+                font.setBold(true);
+                setData(newIndex, font, Qt::FontRole);
+            }
             break;
         default:
             assert(false);
@@ -243,9 +150,6 @@ void ErrorProtocolModel::initModel()
     auto &queue = ErrorQueue::GetInstance();
 
     m_dataptr.clear();
-    for (const auto &error : *queue.errMsgPool())
-    {
-        appendRow(error);
-    }
+    appendRows(*queue.errMsgPool(), queue.counter());
     queue.clearCounter();
 }

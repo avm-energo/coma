@@ -2,8 +2,6 @@
 #include "errorprotocolitem.h"
 
 #include <QAbstractItemModel>
-typedef QPair<QStringList, QtMsgType> ErrorPair;
-typedef QList<ErrorPair> ErrorList;
 
 struct ErrorMsg;
 class ErrorProtocolModel : public QAbstractTableModel
@@ -18,19 +16,17 @@ public:
     int rowCount(const QModelIndex &index = QModelIndex()) const override;
     int columnCount(const QModelIndex &index = QModelIndex()) const override;
 
-    bool insertRow(int row, ErrorPair *item);
+    bool insertRow(int row, ErrorProtocolItem *item);
     inline bool insertRow(int row, const QModelIndex &parent = QModelIndex())
     {
         return insertRows(row, 1, parent);
     }
-    bool appendRows(const ErrorList &list);
-    inline bool appendRow(ErrorPair *pair)
+    inline bool appendRow(ErrorProtocolItem *pair)
     {
         return insertRow(rowCount(), pair);
     }
 
-    void appendRow(ErrorMsg ermsg);
-    void appendRows(const std::vector<ErrorMsg> &msgs);
+    void appendRows(const std::vector<ErrorMsg> &msgs, int newItems);
     void initModel();
 
 protected:
@@ -40,6 +36,6 @@ protected:
     Qt::ItemFlags flags(const QModelIndex &index) const override;
 
 private:
-    QList<ErrorPair *> m_dataptr;
+    QList<ErrorProtocolItem *> m_dataptr;
     QStringList m_hdr;
 };

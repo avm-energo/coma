@@ -13,36 +13,18 @@ public:
     }
 
     virtual void setData(int column, const QVariant &value, int role) = 0;
-    //    {
-    //        role = (role == Qt::EditRole) ? Qt::DisplayRole : role;
-    //        while (column >= values.size())
-    //            values.push_back(ETableItem());
 
-    //        auto it = values[column].begin();
-    //        while (it != values.at(column).end())
-    //        {
-    //            if ((*it).role == role)
-    //            {
-    //                (*it).value = value;
-    //                return;
-    //            }
-    //            ++it;
-    //        }
-    //        values[column].push_back(ETableItemData(role, value));
-    //    }
     virtual QVariant data(int column, int role) const = 0;
-    //    {
-    //        role = (role == Qt::EditRole) ? Qt::DisplayRole : role;
-    //        auto it = values.at(column).cbegin();
-    //        while (it != values.at(column).cend())
-    //        {
-    //            if ((*it).role == role)
-    //                return (*it).value;
-    //            ++it;
-    //        }
-    //        return QVariant();
-    //    }
 
+    auto size() const
+    {
+        return values.size();
+    }
+
+    const C *constData() const
+    {
+        return &values;
+    }
     void setColor(int column, const QColor &value)
     {
         setData(column, value, Qt::DecorationRole);

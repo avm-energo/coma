@@ -14,6 +14,10 @@ public:
     void pushError(const ErrorMsg &msg);
 
     void clearCounter();
+    auto counter() const
+    {
+        return m_newErrors;
+    }
 signals:
     void errCounts(size_t size);
 

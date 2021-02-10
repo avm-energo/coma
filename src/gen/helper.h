@@ -3,6 +3,7 @@
 #include "../interfaces/interfacesettings.h"
 //#include "../interfaces/modbussettings.h"
 #include "../interfaces/usbhidportinfo.h"
+#include "../models/errorprotocolitem.h"
 
 #include <QDebug>
 #include <bitset>
@@ -28,3 +29,6 @@ template <std::size_t N> QDebug operator<<(QDebug debug, const std::bitset<N> &b
 
     return debug.maybeSpace();
 }
+
+QDebug operator<<(QDebug debug, const ErrorProtocolItem &item);
+QDebug operator<<(QDebug debug, const ETableItemData &item);

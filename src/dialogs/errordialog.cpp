@@ -17,7 +17,7 @@ void ErrorDialog::SetupUI()
 {
     QVBoxLayout *lyout = new QVBoxLayout;
     QHBoxLayout *hlyout = new QHBoxLayout;
-    ErrorWidget = new ErrorProtocolWidget;
+    auto ErrorWidget = new ErrorProtocolWidget;
     ErrorWidget->setObjectName("errorwidget");
 
     ErrorWidget->setAutoFillBackground(true);
@@ -30,9 +30,4 @@ void ErrorDialog::SetupUI()
     lyout->addLayout(hlyout);
     setLayout(lyout);
     setAttribute(Qt::WA_DeleteOnClose);
-}
-
-void ErrorDialog::AddErrMsg(ErrorMsg msg)
-{
-    ErrorWidget->AddRowToProt(msg);
 }

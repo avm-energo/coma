@@ -80,3 +80,17 @@ QDebug operator<<(QDebug debug, const UsbHidSettings &settings)
 #endif
     return debug.maybeSpace();
 }
+
+QDebug operator<<(QDebug debug, const ErrorProtocolItem &item)
+{
+    const auto &values = item.constData();
+    for (const auto i : *values)
+        debug.nospace() << *i << ":";
+    return debug.maybeSpace();
+}
+
+QDebug operator<<(QDebug debug, const ETableItemData &item)
+{
+    debug.nospace() << item.value << ":" << item.role;
+    return debug.maybeSpace();
+}
