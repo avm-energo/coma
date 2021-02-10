@@ -1,4 +1,5 @@
 #pragma once
+#include "errorprotocolitem.h"
 
 #include <QAbstractItemModel>
 typedef QPair<QStringList, QtMsgType> ErrorPair;
@@ -29,6 +30,7 @@ public:
     }
 
     void appendRow(ErrorMsg ermsg);
+    void appendRows(const std::vector<ErrorMsg> &msgs);
     void initModel();
 
 protected:

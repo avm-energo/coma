@@ -1,5 +1,7 @@
 #pragma once
 
+#include "AbstractTableRow.h"
+
 #include <QColor>
 #include <QFont>
 #include <QIcon>
@@ -35,67 +37,76 @@ public:
 
 using ETableItem = std::vector<ETableItemData>;
 using ETableItemCollection = std::vector<ETableItem>;
+// using ETableRow = AbstractTableRow<ETableItemCollection>;
 
-class ETableRow : public QObject
+class ETableRow : public AbstractTableRow<ETableItemCollection>
 {
 public:
     explicit ETableRow(QObject *parent = 0);
-
-    void setData(int column, const QVariant &value, int role);
-    QVariant data(int column, int role) const;
-
-    void setColor(int column, const QColor &value);
-    QColor color(int column) const;
-
-    void setFont(int column, QFont font);
-    QFont font(int column) const;
-
-    void setIcon(int column, QIcon icon);
-    QIcon icon(int column) const;
-
-    void setTextAlignment(int column, int alignment = Qt::AlignLeft | Qt::AlignVCenter);
-    int textAlignment(int column) const;
-
-private:
-    ETableItemCollection values;
+    void setData(int column, const QVariant &value, int role) override;
+    QVariant data(int column, int role) const override;
 };
 
-inline void ETableRow::setColor(int column, const QColor &value)
-{
-    setData(column, value, Qt::DecorationRole);
-}
+// class ETableRow : public QObject
+//{
+// public:
+//    explicit ETableRow(QObject *parent = 0);
 
-inline void ETableRow::setFont(int column, QFont font)
-{
-    setData(column, font, Qt::FontRole);
-}
+//    void setData(int column, const QVariant &value, int role);
+//    QVariant data(int column, int role) const;
 
-inline void ETableRow::setIcon(int column, QIcon icon)
-{
-    setData(column, icon, Qt::DecorationRole);
-}
+//    void setColor(int column, const QColor &value);
+//    QColor color(int column) const;
 
-inline void ETableRow::setTextAlignment(int column, int alignment)
-{
-    setData(column, alignment, Qt::TextAlignmentRole);
-}
+//    void setFont(int column, QFont font);
+//    QFont font(int column) const;
 
-inline QColor ETableRow::color(int column) const
-{
-    return qvariant_cast<QColor>(data(column, Qt::DecorationRole));
-}
+//    void setIcon(int column, QIcon icon);
+//    QIcon icon(int column) const;
 
-inline QFont ETableRow::font(int column) const
-{
-    return qvariant_cast<QFont>(data(column, Qt::FontRole));
-}
+//    void setTextAlignment(int column, int alignment = Qt::AlignLeft | Qt::AlignVCenter);
+//    int textAlignment(int column) const;
 
-inline QIcon ETableRow::icon(int column) const
-{
-    return qvariant_cast<QIcon>(data(column, Qt::DecorationRole));
-}
+// private:
+//    ETableItemCollection values;
+//};
 
-inline int ETableRow::textAlignment(int column) const
-{
-    return qvariant_cast<int>(data(column, Qt::TextAlignmentRole));
-}
+// inline void ETableRow::setColor(int column, const QColor &value)
+//{
+//    setData(column, value, Qt::DecorationRole);
+//}
+
+// inline void ETableRow::setFont(int column, QFont font)
+//{
+//    setData(column, font, Qt::FontRole);
+//}
+
+// inline void ETableRow::setIcon(int column, QIcon icon)
+//{
+//    setData(column, icon, Qt::DecorationRole);
+//}
+
+// inline void ETableRow::setTextAlignment(int column, int alignment)
+//{
+//    setData(column, alignment, Qt::TextAlignmentRole);
+//}
+
+// inline QColor ETableRow::color(int column) const
+//{
+//    return qvariant_cast<QColor>(data(column, Qt::DecorationRole));
+//}
+
+// inline QFont ETableRow::font(int column) const
+//{
+//    return qvariant_cast<QFont>(data(column, Qt::FontRole));
+//}
+
+// inline QIcon ETableRow::icon(int column) const
+//{
+//    return qvariant_cast<QIcon>(data(column, Qt::DecorationRole));
+//}
+
+// inline int ETableRow::textAlignment(int column) const
+//{
+//    return qvariant_cast<int>(data(column, Qt::TextAlignmentRole));
+//}

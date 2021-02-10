@@ -200,6 +200,44 @@ void ErrorProtocolModel::appendRow(ErrorMsg msg)
     appendRow(item);
 }
 
+void ErrorProtocolModel::appendRows(const std::vector<ErrorMsg> &msgs)
+{
+    auto rootIndex = index(rowCount(), columnCount());
+    for (auto i = 0; i < msgs.size(); ++i)
+    {
+        QStringList tmpsl;
+        tmpsl << msgs.at(i);
+        // ErrorPair *item = new ErrorPair(tmpsl, msgs.type);
+        auto newIndex = index(i, 0, rootIndex);
+        setData(newIndex, tmpsl, Qt::DisplayRole);
+        switch (msgs.at(i).type)
+        {
+
+        case QtDebugMsg:
+            setData(newIndex, QColor(Qt::blue), Qt::ForegroundRole);
+            setData(newIndex, QColor(Qt::blue).lighter(), Qt::BackgroundRole);
+            break;
+        case QtWarningMsg:
+            setData(newIndex, QColor(Qt::magenta), Qt::ForegroundRole);
+            setData(newIndex, QColor(Qt::magenta).lighter(), Qt::BackgroundRole);
+            break;
+        case QtCriticalMsg:
+            setData(newIndex, QColor(Qt::red), Qt::ForegroundRole);
+            setData(newIndex, QColor(Qt::magenta).lighter(), Qt::BackgroundRole);
+            break;
+        case QtFatalMsg:
+            break;
+        case QtInfoMsg:
+            setData(newIndex, QColor(Qt::green), Qt::ForegroundRole);
+            setData(newIndex, QColor(Qt::green).lighter(), Qt::BackgroundRole);
+
+            break;
+        default:
+            assert(false);
+        }
+    }
+}
+
 void ErrorProtocolModel::initModel()
 {
     auto &queue = ErrorQueue::GetInstance();
