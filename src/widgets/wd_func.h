@@ -40,6 +40,13 @@ public:
         QWidget *w, const QString &lename, QLineEdit::EchoMode echostyle = QLineEdit::Normal);
     static bool SetLEData(QObject *w, const QString &lename, const QString &levalue, const QString &restring = "");
     static QString LEData(QObject *w, const QString &lename);
+    template <typename T> static void LEData(QObject *w, const QString &lename, T &value)
+    {
+        QLineEdit *le = w->findChild<QLineEdit *>(lename);
+        if (le == nullptr)
+            value = T();
+        value = qvariant_cast<T>(le->text());
+    }
     template <typename T> static bool LENumber(QWidget *w, const QString &lename, T &levalue)
     {
         QLineEdit *le = w->findChild<QLineEdit *>(lename);

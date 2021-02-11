@@ -249,6 +249,7 @@ void Coma::SetupMenubar()
 void Coma::prepareConnectDlg()
 {
     QAction *action = qobject_cast<QAction *>(sender());
+    Q_ASSERT(action);
     action->setDisabled(true);
     // qDebug() << sender()->metaObject()->className();
     auto const &board = Board::GetInstance();
@@ -261,7 +262,7 @@ void Coma::prepareConnectDlg()
     {
 
         QEventLoop loop;
-        ConnectDialog *dlg = new ConnectDialog;
+        ConnectDialog *dlg = new ConnectDialog(this);
         connect(dlg, &ConnectDialog::accepted, this, [=](const ConnectStruct st) {
             dlg->close();
             startWork(st);

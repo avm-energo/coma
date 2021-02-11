@@ -11,6 +11,11 @@ class AbstractInterfaceDialog : public QDialog
 public:
     explicit AbstractInterfaceDialog(QWidget *parent = nullptr);
     virtual void setupUI();
+
+    virtual bool updateModel() = 0;
+
+protected:
+    virtual void acceptedInterface() {};
     virtual void setInterface(QModelIndex index) = 0;
     virtual void addInterface()
     {
@@ -18,18 +23,12 @@ public:
     virtual void scanInterface()
     {
     }
-    virtual bool updateModel(QDialog *dlg) = 0;
-
-protected:
-    virtual void acceptedInterface() {
-
-    };
 
     void rotateSettings(const QString &type, const QString &name);
     bool isKeyExist(const QString &type, const QString &chstr);
+    void removeDevice(const QString &name);
+
+    QTableView *tableView;
 signals:
     void accepted(ConnectStruct);
-
-protected:
-    QTableView *tableView;
 };

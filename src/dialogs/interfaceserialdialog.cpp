@@ -20,11 +20,15 @@ void InterfaceSerialDialog::setupUI()
     QVBoxLayout *lyout = new QVBoxLayout;
     tableView = WDFunc::NewQTV(this, "", nullptr);
     lyout->addWidget(tableView);
+    tableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
     QHBoxLayout *hlyout = new QHBoxLayout;
     hlyout->addStretch(10);
-    // hlyout->addWidget(WDFunc::NewPB(dlg, "newrspb", "Добавить", this, SLOT(AddRs())));
     hlyout->addWidget(WDFunc::NewPB(this, "newrspb", "Добавить", this, &InterfaceSerialDialog::addInterface));
-    // hlyout->addWidget(WDFunc::NewPB(dlg, "scanrspb", "Сканировать", this, SLOT(ScanRs())));
+    hlyout->addWidget(WDFunc::NewPB(this, "", tr("Удалить"), this, [this] {
+        auto name = tableView->currentIndex().siblingAtColumn(0).data().toString();
+        removeDevice(name);
+        updateModel();
+    }));
     hlyout->addStretch(10);
     lyout->addLayout(hlyout);
     setLayout(lyout);
@@ -34,7 +38,6 @@ void InterfaceSerialDialog::setupUI()
 
 void InterfaceSerialDialog::setInterface(QModelIndex index)
 {
-    qDebug() << "Hello from : " << __PRETTY_FUNCTION__;
     auto *mdl = index.model();
     int row = index.row();
 
@@ -45,6 +48,8 @@ void InterfaceSerialDialog::setInterface(QModelIndex index)
     settings.Parity = mdl->data(mdl->index(row, 3)).toString();
     settings.Stop = mdl->data(mdl->index(row, 4)).toString();
     settings.Address = mdl->data(mdl->index(row, 5)).toUInt();
+    if (!settings.isValid())
+        return;
     ConnectStruct st { name, settings };
     emit accepted(st);
 }
@@ -67,14 +72,11 @@ void InterfaceSerialDialog::addInterface()
     QStringList sl { "1200", "2400", "4800", "9600", "19200", "38400", "57600", "115200" };
     lyout->addWidget(WDFunc::NewLBL2(dlg, "Скорость:"), count, 0, 1, 1, Qt::AlignLeft);
     lyout->addWidget(WDFunc::NewCB2(dlg, "speedcb", sl), count++, 1, 1, 1);
-    sl = QStringList() << "Нет"
-                       << "Нечет"
-                       << "Чет";
+    sl = QStringList({ "Нет", "Нечет", "Чет" });
     lyout->addWidget(WDFunc::NewLBL2(dlg, "Чётность:"), count, 0, 1, 1, Qt::AlignLeft);
     lyout->addWidget(WDFunc::NewCB2(dlg, "paritycb", sl), count++, 1, 1, 1);
     lyout->addWidget(WDFunc::NewLBL2(dlg, "Стоп бит:"), count, 0, 1, 1, Qt::AlignLeft);
-    sl = QStringList() << "1"
-                       << "2";
+    sl = QStringList({ "1", "2" });
     lyout->addWidget(WDFunc::NewCB2(dlg, "stopbitcb", sl), count++, 1, 1, 1);
     lyout->addWidget(WDFunc::NewLBL2(dlg, "Адрес:"), count, 0, 1, 1, Qt::AlignLeft);
     lyout->addWidget(WDFunc::NewSPB2(dlg, "addressspb", 1, 255, 0), count++, 1, 1, 1);
@@ -87,7 +89,7 @@ void InterfaceSerialDialog::addInterface()
     dlg->exec();
 }
 
-bool InterfaceSerialDialog::updateModel(QDialog *dlg)
+bool InterfaceSerialDialog::updateModel()
 {
     QStringList rslist;
     for (int i = 0; i < MAXREGISTRYINTERFACECOUNT; ++i)
@@ -97,7 +99,11 @@ bool InterfaceSerialDialog::updateModel(QDialog *dlg)
         rslist << sets->value(rsname, "").toString();
     }
     QStringList sl { "Имя", "Порт", "Скорость", "Четность", "Стоп бит", "Адрес" };
-    QStandardItemModel *mdl = new QStandardItemModel(dlg);
+    QStandardItemModel *mdl = static_cast<QStandardItemModel *>(tableView->model());
+    if (mdl == nullptr)
+        mdl = new QStandardItemModel(this);
+    else
+        mdl->clear();
     mdl->setHorizontalHeaderLabels(sl);
     for (const auto &item : qAsConst(rslist))
     {
@@ -142,7 +148,7 @@ void InterfaceSerialDialog::acceptedInterface()
     int spbdata;
     WDFunc::SPBData(dlg, "addressspb", spbdata);
     settings->setValue("address", QString::number(spbdata));
-    if (!updateModel(this))
+    if (!updateModel())
         qCritical() << Error::GeneralError;
     dlg->close();
 }

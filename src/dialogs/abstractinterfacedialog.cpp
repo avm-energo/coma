@@ -64,3 +64,13 @@ bool AbstractInterfaceDialog::isKeyExist(const QString &type, const QString &chs
     }
     return false;
 }
+
+void AbstractInterfaceDialog::removeDevice(const QString &name)
+{
+    auto settings = std::unique_ptr<QSettings>(new QSettings);
+    settings->remove(name);
+    const auto keys = settings->allKeys();
+    for (const auto &key : keys)
+        if (settings->value(key).toString() == name)
+            settings->remove(key);
+}

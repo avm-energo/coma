@@ -8,8 +8,11 @@ public:
     explicit InterfaceSerialDialog(QWidget *parent = nullptr);
 
     void setupUI() override;
+    bool updateModel() override;
+
+private:
     void setInterface(QModelIndex index) override;
     void addInterface() override;
-    bool updateModel(QDialog *dlg) override;
+
     void acceptedInterface() override;
 };

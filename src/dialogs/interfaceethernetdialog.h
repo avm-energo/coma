@@ -11,12 +11,12 @@ public:
     void setupUI() override;
     void setInterface(QModelIndex index) override;
 
+private:
     void addInterface() override;
     void scanInterface() override;
     void acceptedInterface() override;
-    bool updateModel(QDialog *dlg) override;
+    bool updateModel() override;
 
-private:
     QList<quint32> m_hosts;
 
     /// Кандидаты для отдельного класса

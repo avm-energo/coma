@@ -24,19 +24,16 @@ void InterfaceEthernetDialog::setupUI()
 {
     QVBoxLayout *lyout = new QVBoxLayout;
     tableView = WDFunc::NewQTV(this, "", nullptr);
+    tableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
     lyout->addWidget(tableView);
     QHBoxLayout *hlyout = new QHBoxLayout;
     hlyout->addStretch(10);
     hlyout->addWidget(WDFunc::NewPB(this, "", tr("Добавить"), this, &InterfaceEthernetDialog::addInterface));
     hlyout->addWidget(WDFunc::NewPB(this, "", tr("Сканировать"), this, &InterfaceEthernetDialog::scanInterface));
     hlyout->addWidget(WDFunc::NewPB(this, "", tr("Удалить"), this, [this] {
-        qDebug() << tableView->currentIndex() /*.row()*/;
-        auto name = tableView->currentIndex().data().toString();
-        qDebug() << name;
-        QString key = QCoreApplication::applicationName();
-        key += "\\" + name;
-        auto settings = std::unique_ptr<QSettings>(new QSettings(QCoreApplication::organizationName(), key));
-        settings->clear();
+        auto name = tableView->currentIndex().siblingAtColumn(0).data().toString();
+        removeDevice(name);
+        updateModel();
     }));
     hlyout->addStretch(10);
     lyout->addLayout(hlyout);
@@ -47,13 +44,14 @@ void InterfaceEthernetDialog::setupUI()
 
 void InterfaceEthernetDialog::setInterface(QModelIndex index)
 {
-    qDebug() << "Hello from : " << __PRETTY_FUNCTION__;
     auto *mdl = index.model();
     int row = index.row();
     QString name = mdl->data(mdl->index(row, 0)).toString();
     IEC104Settings settings;
     settings.ip = mdl->data(mdl->index(row, 1)).toString();
     settings.baseadr = mdl->data(mdl->index(row, 2)).toUInt();
+    if (!settings.isValid())
+        return;
     ConnectStruct st { name, settings };
     emit accepted(st);
 }
@@ -61,26 +59,46 @@ void InterfaceEthernetDialog::setInterface(QModelIndex index)
 void InterfaceEthernetDialog::addInterface()
 {
     QDialog *dlg = new QDialog(this);
+    QVBoxLayout *mainLayout = new QVBoxLayout;
     dlg->setObjectName("ethdlg");
     dlg->setAttribute(Qt::WA_DeleteOnClose);
-    QGridLayout *lyout = new QGridLayout;
-    int count = 0;
-    lyout->addWidget(WDFunc::NewLBL2(dlg, tr("Имя:")), count, 0, 1, 1, Qt::AlignLeft);
-    lyout->addWidget(WDFunc::NewLE2(dlg, "namele"), count++, 1, 1, 7);
-    lyout->addWidget(WDFunc::NewLBL2(dlg, "IP:"), count, 0, 1, 1, Qt::AlignLeft);
+    QHBoxLayout *hlayout = new QHBoxLayout;
+    QLabel *lbl = new QLabel(tr("Имя:"), this);
+    hlayout->addWidget(lbl);
+    QLineEdit *le = new QLineEdit(this);
+    le->setObjectName("namele");
+    hlayout->addWidget(le);
+    mainLayout->addLayout(hlayout);
+    hlayout = new QHBoxLayout;
+    lbl = new QLabel("IP:", this);
+    hlayout->addWidget(lbl);
+    QIntValidator *validator = new QIntValidator(0, 255, this);
     for (int i = 0; i < 4; ++i)
     {
-        lyout->addWidget(WDFunc::NewLE2(dlg, "iple." + QString::number(i)), count, (i * 2 + 1), 1, 1);
+        le = new QLineEdit(this);
+        le->setValidator(validator);
+        le->setMaximumWidth(this->width() / 10);
+        le->setObjectName("iple." + QString::number(i));
+        hlayout->addWidget(le);
         if (i != 3)
-            lyout->addWidget(WDFunc::NewLBL2(dlg, "."), count, (i * 2 + 2), 1, 1);
+        {
+            lbl = new QLabel(".", this);
+            hlayout->addWidget(lbl);
+        }
     }
-    ++count;
-    lyout->addWidget(WDFunc::NewLBL2(dlg, tr("Адрес БС:")), count, 0, 1, 1, Qt::AlignLeft);
-    lyout->addWidget(WDFunc::NewSPB2(dlg, "bsadrspb", 1, 255, 0), count++, 1, 1, 7);
-    lyout->addWidget(WDFunc::NewPB(dlg, "acceptpb", tr("Сохранить"), this, &InterfaceEthernetDialog::acceptedInterface),
-        count, 0, 1, 4);
-    lyout->addWidget(WDFunc::NewPB(dlg, "cancelpb", "Отмена", [=] { dlg->close(); }), count, 4, 1, 3);
-    dlg->setLayout(lyout);
+    mainLayout->addLayout(hlayout);
+    hlayout = new QHBoxLayout;
+    lbl = new QLabel(tr("Адрес БС:"), this);
+    hlayout->addWidget(lbl);
+    le = new QLineEdit(QString::number(205), this);
+    le->setObjectName("bsadrspb");
+    hlayout->addWidget(le);
+    mainLayout->addLayout(hlayout);
+    hlayout = new QHBoxLayout;
+    hlayout->addWidget(WDFunc::NewPB(dlg, "", tr("Сохранить"), this, &InterfaceEthernetDialog::acceptedInterface));
+    hlayout->addWidget(WDFunc::NewPB(dlg, "", tr("Отмена"), [=] { dlg->close(); }));
+    mainLayout->addLayout(hlayout);
+    dlg->setLayout(mainLayout);
     dlg->exec();
 }
 
@@ -134,10 +152,11 @@ void InterfaceEthernetDialog::acceptedInterface()
     auto settings = std::unique_ptr<QSettings>(new QSettings(QCoreApplication::organizationName(), key));
     settings->setValue("ip", ipstr);
     int spbdata;
-    WDFunc::SPBData(dlg, "bsadrspb", spbdata);
+    WDFunc::LEData(dlg, "bsadrspb", spbdata);
+    Q_ASSERT(spbdata != 0);
     settings->setValue("bs", QString::number(spbdata));
 
-    if (updateModel(this))
+    if (updateModel())
         qCritical() << Error::GeneralError;
     dlg->close();
 }
@@ -212,17 +231,22 @@ void InterfaceEthernetDialog::createPortTask()
     handlePortFinish();
 }
 
-bool InterfaceEthernetDialog::updateModel(QDialog *dlg)
+bool InterfaceEthernetDialog::updateModel()
 {
     QStringList ethlist;
     for (int i = 0; i < MAXREGISTRYINTERFACECOUNT; ++i)
     {
         auto sets = std::unique_ptr<QSettings>(new QSettings);
         QString ethname = "Ethernet-" + QString::number(i);
-        ethlist << sets->value(ethname, "").toString();
+        if (sets->contains(ethname))
+            ethlist << sets->value(ethname, "").toString();
     }
     QStringList sl { "Имя", "IP", "Адрес БС" };
-    QStandardItemModel *mdl = new QStandardItemModel(dlg);
+    QStandardItemModel *mdl = static_cast<QStandardItemModel *>(tableView->model());
+    if (mdl == nullptr)
+        mdl = new QStandardItemModel(this);
+    else
+        mdl->clear();
     mdl->setHorizontalHeaderLabels(sl);
     for (const auto &item : qAsConst(ethlist))
     {

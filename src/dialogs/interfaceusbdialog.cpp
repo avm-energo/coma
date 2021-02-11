@@ -42,7 +42,7 @@ void InterfaceUSBDialog::setInterface(QModelIndex index)
     emit accepted(st);
 }
 
-bool InterfaceUSBDialog::updateModel(QDialog *dlg)
+bool InterfaceUSBDialog::updateModel()
 {
     auto usbDevices = UsbHidPortInfo::devicesFound();
     if (usbDevices.isEmpty())
@@ -55,7 +55,7 @@ bool InterfaceUSBDialog::updateModel(QDialog *dlg)
 #if _DEBUG
     sl.push_back("Path");
 #endif
-    QStandardItemModel *mdl = new QStandardItemModel(dlg);
+    QStandardItemModel *mdl = new QStandardItemModel(this);
 
     mdl->setHorizontalHeaderLabels(sl);
     for (const auto &row : usbDevices)
