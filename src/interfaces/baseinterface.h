@@ -10,6 +10,12 @@
 #include <memory>
 #include <typeinfo>
 
+enum INTERVAL
+{
+    RECONNECT = 3000,
+    WAIT = 15000
+};
+
 struct ConnectStruct;
 struct InterfaceSettings;
 class BaseInterface : public QObject

@@ -260,15 +260,15 @@ void ProtocomThread::checkQueue()
     CommandStruct inp;
     if (DataManager::deQueue(inp) != Error::Msg::NoError)
         return;
-    switch (inp.cmd)
-    {
-    default:
-        isCommandRequested = true;
-        progress = 0;
-        m_currentCommand = inp;
-        parseRequest(inp);
-        break;
-    }
+    //    switch (inp.cmd)
+    //    {
+    //    default:
+    isCommandRequested = true;
+    progress = 0;
+    m_currentCommand = inp;
+    parseRequest(inp);
+    //       break;
+    //    }
 }
 
 void ProtocomThread::fileHelper(DataTypes::FilesEnum fileNum)
@@ -495,7 +495,7 @@ void ProtocomThread::parseResponse(QByteArray ba)
 
 void ProtocomThread::writeLog(QByteArray ba, Direction dir)
 {
-#ifdef PROTOCOM_DEBUG
+#if PROTOCOM_DEBUG
     QByteArray tmpba = QByteArray(metaObject()->className());
     switch (dir)
     {
@@ -511,6 +511,9 @@ void ProtocomThread::writeLog(QByteArray ba, Direction dir)
     }
     tmpba.append(ba).append("\n");
     // log->WriteRaw(tmpba);
+#else
+    Q_UNUSED(ba);
+    Q_UNUSED(dir);
 #endif
 }
 

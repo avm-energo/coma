@@ -7,11 +7,6 @@
 #include <QListWidget>
 #include <QMainWindow>
 #include <QStackedWidget>
-enum INTERVAL
-{
-    RECONNECT = 3000,
-    WAIT = 30000
-};
 
 enum THREAD
 {

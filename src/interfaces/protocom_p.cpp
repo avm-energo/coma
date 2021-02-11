@@ -6,7 +6,6 @@
 #include "protocomprivate.h"
 ProtocomPrivate::ProtocomPrivate()
 {
-    Q_Q(Protocom);
 }
 
 void ProtocomPrivate::handleBlk(const Proto::Commands cmd, const quint32 blk, QByteArray data, const quint32 count)

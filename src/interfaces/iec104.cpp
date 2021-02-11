@@ -14,11 +14,8 @@
 IEC104::IEC104(QObject *parent)
     : BaseInterface(parent), EthThreadWorking(false), ParseThreadWorking(false), sock(new QTcpSocket(this))
 {
-
-    // Log = new LogClass;
     Log->Init("iec104.log");
     Log->info("=== Log started ===");
-    //  qRegisterMetaType<DataTypes::FloatStruct>();
 }
 
 IEC104::~IEC104()
@@ -90,22 +87,27 @@ bool IEC104::start(const ConnectStruct &st)
 
     parser->moveToThread(parserThread);
     parserThread->start();
-    sock->connectToHost(StdFunc::ForDeviceIP(), PORT104, QIODevice::ReadWrite, QAbstractSocket::IPv4Protocol);
+
     QEventLoop ethloop;
     bool ethconnected = false;
     QTimer *ethtimeouttimer = new QTimer(this);
-    ethtimeouttimer->setInterval(10000);
+    ethtimeouttimer->setSingleShot(true);
     connect(ethtimeouttimer, &QTimer::timeout, [&]() {
+        qDebug() << Error::Timeout;
         ethconnected = false;
         ethloop.quit();
     });
     connect(sock, &QAbstractSocket::connected, parser, [&] {
+        qDebug() << "Connected";
         ethconnected = true;
         EthThreadWorking = true;
         ethloop.quit();
         QMetaObject::invokeMethod(parser, &IEC104Thread::StartDT);
     });
     connect(sock, &QAbstractSocket::connected, this, [=] { setState(State::Run); });
+    ethtimeouttimer->start(INTERVAL::WAIT);
+
+    sock->connectToHost(StdFunc::ForDeviceIP(), PORT104, QIODevice::ReadWrite, QAbstractSocket::IPv4Protocol);
     ethloop.exec();
     return ethconnected;
 }

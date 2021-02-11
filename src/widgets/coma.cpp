@@ -39,6 +39,7 @@
 #include "../widgets/styleloader.h"
 #include "../widgets/wd_func.h"
 //#include "tunemodule.h"
+#include "waitwidget.h"
 
 #include <QApplication>
 #include <QDir>
@@ -528,15 +529,27 @@ void Coma::setupConnection()
             break;
         }
     });
-
+    WaitWidget *ww = new WaitWidget;
     auto connection = std::shared_ptr<QMetaObject::Connection>(new QMetaObject::Connection);
     *connection = connect(&board, &Board::readyRead, this, [=]() {
+        ww->Stop();
         QObject::disconnect(*connection);
         QApplication::restoreOverrideCursor();
         prepare();
     });
+
+    ww->setObjectName("ww");
+    WaitWidget::ww_struct wws = { true, false, WaitWidget::WW_TIME,
+        15 }; // isallowedtostop = true, isIncrement = false, format: mm:ss, 30 minutes
+    ww->Init(wws);
+    ww->SetMessage("Пожалуйста, подождите");
+    // QEventLoop loop;
+    //  connect(ww, &WaitWidget::finished, &loop, &QEventLoop::quit);
+    ww->Start();
+    // loop.exec();
     if (!BaseInterface::iface()->start(ConnectSettings))
     {
+        ww->Stop();
         QObject::disconnect(*connection);
         QMessageBox::critical(this, "Ошибка", "Не удалось установить связь", QMessageBox::Ok);
         QApplication::restoreOverrideCursor();
@@ -544,18 +557,18 @@ void Coma::setupConnection()
 
         return;
     }
-    QTimer timer;
-    timer.setSingleShot(true);
-    timer.start(INTERVAL::WAIT);
-    connect(&timer, &QTimer::timeout, this, [=] {
-        if (Board::GetInstance().type() != 0)
-            return;
-        QObject::disconnect(*connection);
-        QMessageBox::critical(this, "Ошибка", "Не удалось соединиться с прибором", QMessageBox::Ok);
-        DisconnectAndClear();
-        qCritical() << "Cannot connect" << Error::Timeout;
-        QApplication::restoreOverrideCursor();
-    });
+    //    QTimer timer;
+    //    timer.setSingleShot(true);
+    //    timer.start(INTERVAL::WAIT);
+    //    connect(&timer, &QTimer::timeout, this, [=] {
+    //        if (Board::GetInstance().type() != 0)
+    //            return;
+    //        QObject::disconnect(*connection);
+    //        QMessageBox::critical(this, "Ошибка", "Не удалось соединиться с прибором", QMessageBox::Ok);
+    //        DisconnectAndClear();
+    //        qCritical() << "Cannot connect" << Error::Timeout;
+    //        QApplication::restoreOverrideCursor();
+    //    });
     DataManager::clearQueue();
     BaseInterface::iface()->reqBSI();
 }
