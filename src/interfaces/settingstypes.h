@@ -23,3 +23,6 @@ struct ConnectStruct
     QString name;
     std::variant<IEC104Settings, SerialPortSettings, UsbHidSettings> settings;
 };
+
+// how much entries can we have for interfaces of each type in registry
+constexpr int MAXREGISTRYINTERFACECOUNT = 5;

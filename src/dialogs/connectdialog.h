@@ -2,13 +2,11 @@
 #define CONNECTDIALOG_H
 
 #include "../interfaces/settingstypes.h"
+#include "abstractinterfacedialog.h"
 
 #include <QDialog>
 #include <QModelIndex>
 #include <QProgressDialog>
-
-#define MAXREGISTRYINTERFACECOUNT 5 // how much entries can we have for interfaces of each type in registry
-
 class ConnectDialog : public QDialog
 {
     Q_OBJECT
@@ -16,32 +14,32 @@ public:
     explicit ConnectDialog(QWidget *parent = nullptr);
 
 signals:
-    void Accepted(ConnectStruct);
-    void Cancelled();
-    void PingFinished();
-    void ModelUpdated();
+    void accepted(ConnectStruct);
+    void cancelled();
+    void pingFinished();
+    void modelUpdated();
 
 private slots:
-    void SetInterface();
-    void SetUsb(QModelIndex index);
-    void AddEth();
-    void EthAccepted();
-    void RsAccepted();
-    // void SetCancelled();
-    //    void SetEth();
-    void SetEth(QModelIndex index);
-    void ScanEth();
-    void AddRs();
-    //    void SetRs();
-    void SetRs(QModelIndex index);
+    void setInterface();
+    void addEth();
+    void ethAccepted();
+    void rsAccepted();
 
-    //    void ScanRs();
-    void RotateSettings(
-        const QString &type, const QString &name); // in: name of registry dir without index, out - name with index
-    bool IsKeyExist(const QString &type, const QString &chstr);
-    bool UpdateModel(QDialog *dlg);
+    void setEth(QModelIndex index);
+    void scanEth();
+    void addRs();
+    void setRs(QModelIndex index);
+
+    // in: name of registry dir without index, out - name with index
+    void rotateSettings(const QString &type, const QString &name);
+    bool isKeyExist(const QString &type, const QString &chstr);
+    bool updateModel(QDialog *dlg);
 
 private:
+    AbstractInterfaceDialog *m_idialog;
+    bool updateUModel(QDialog *dlg);
+    bool updateRModel(QDialog *dlg);
+    bool updateEModel(QDialog *dlg);
     ConnectStruct Connect;
 
     QList<quint32> m_hosts;

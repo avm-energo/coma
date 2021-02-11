@@ -10,4 +10,6 @@ public:
     ServiceComa(QWidget *parent = nullptr);
     ~ServiceComa();
     void PrepareDialogs() override;
+
+    void setupConnection() override;
 };

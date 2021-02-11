@@ -90,7 +90,6 @@ Coma::Coma(QWidget *parent) : QMainWindow(parent)
         dir.mkpath(".");
     StdFunc::Init();
     qInfo("=== Log started ===\n");
-
 #ifdef __linux__
     // linux code goes here
 #elif _WIN32
@@ -249,19 +248,29 @@ void Coma::SetupMenubar()
 
 void Coma::prepareConnectDlg()
 {
+    QAction *action = qobject_cast<QAction *>(sender());
+    action->setDisabled(true);
+    // qDebug() << sender()->metaObject()->className();
     auto const &board = Board::GetInstance();
     if (board.connectionState() != Board::ConnectionState::Closed)
+    {
+        action->setEnabled(true);
         return;
+    }
     if (!Reconnect)
     {
+
         QEventLoop loop;
         ConnectDialog *dlg = new ConnectDialog;
-        connect(dlg, &ConnectDialog::Accepted, this, [=](const ConnectStruct st) {
+        connect(dlg, &ConnectDialog::accepted, this, [=](const ConnectStruct st) {
             dlg->close();
             startWork(st);
         });
         dlg->show();
+        connect(dlg, &QDialog::destroyed, this, [=] { action->setEnabled(true); });
     }
+    else
+        action->setEnabled(true);
 
     // Stage3
 
@@ -274,7 +283,7 @@ void Coma::startWork(const ConnectStruct st)
     SaveSettings();
     QApplication::setOverrideCursor(Qt::WaitCursor);
 
-    Connect();
+    setupConnection();
 }
 
 void Coma::newTimers()
@@ -497,28 +506,9 @@ void Coma::Disconnect()
     // Board::GetInstance().setConnectionState(Board::ConnectionState::Closed);
 }
 
-void Coma::Connect()
+void Coma::setupConnection()
 {
     auto const &board = Board::GetInstance();
-    connect(&DataManager::GetInstance(), &DataManager::bitStringReceived, &Board::GetInstance(), &Board::update);
-    BaseInterface::InterfacePointer device;
-    switch (board.interfaceType())
-    {
-    case Board::InterfaceType::USB:
-    {
-        device = BaseInterface::InterfacePointer(new Protocom());
-        break;
-    }
-    case Board::InterfaceType::Ethernet:
-    {
-    }
-    case Board::InterfaceType::RS485:
-    {
-    }
-    default:
-        qFatal("Connection type error");
-    }
-    BaseInterface::setIface(std::move(device));
 
     connect(BaseInterface::iface(), &BaseInterface::stateChanged, [](const BaseInterface::State state) {
         using State = BaseInterface::State;

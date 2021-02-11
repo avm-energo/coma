@@ -45,7 +45,7 @@ public:
     QWidget *Least();
 
     void Disconnect();
-    void Connect();
+    virtual void setupConnection();
 
 signals:
     void CloseConnectDialog();
