@@ -350,7 +350,7 @@ Error::Msg TuneKIVADC::showEnergomonitorInputDialog()
         if (dlg != nullptr)
         {
             WDFunc::SetEnabled(this, "ValuetuneU", false);
-            WDFunc::SetEnabled(this, "ValuetuneI", false);
+            WDFunc::SetEnabled(this, "ValuetuneF", false);
             WDFunc::SetEnabled(this, "ValuetuneY", false);
             dlg->exec();
         }
