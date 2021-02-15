@@ -15,7 +15,7 @@
 #define Redist_DIR "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Redist\MSVC\14.16.27012"
 #define LIB_DIR "..\lib"
 #define Build_DIR  "..\bin"
-#define ApplicationVersion GetFileVersion('..\bin\AVM-Service\win64\release\AVM-Service.exe')
+#define ApplicationVersion GetFileVersion('..\bin\win64\release\AVM-Service\AVM-Service.exe')
 
 
 
@@ -65,7 +65,7 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked; OnlyBelowVersion: 6.1; Check: not IsAdminInstallMode
 
 [Files]
-Source: "{#Build_DIR}\{#EngName}\{#ARCH}\release\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs 
+Source: "{#Build_DIR}\{#ARCH}\release\{#EngName}\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs 
 Source: "{#LIB_DIR}\{#ARCH}\release\*.dll"; DestDir: "{app}"; 
 Source: "{#Redist_DIR}\vc_redist.x64.exe"; DestDir: "{tmp}"; Flags: deleteafterinstall
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
