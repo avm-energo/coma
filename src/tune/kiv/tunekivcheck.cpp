@@ -120,7 +120,7 @@ Error::Msg TuneKIVCheck::check()
         if (!StdFunc::floatIsWithinLimits(this, bda->data()->Ueff_ADC[i], 2150000.0, 150000.0))
             return Error::Msg::GeneralError;
     for (int i = 3; i < 6; ++i)
-        if (!StdFunc::floatIsWithinLimits(this, bda->data()->Ueff_ADC[i], 973000.0, 50000.0))
+        if (!StdFunc::floatIsWithinLimits(this, bda->data()->Ueff_ADC[i], 1220000.0, 60000.0))
             return Error::Msg::GeneralError;
     if (!StdFunc::floatIsWithinLimits(this, bda->data()->Pt100, 2123.0, 120.0))
         return Error::Msg::GeneralError;
