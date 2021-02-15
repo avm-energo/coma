@@ -132,7 +132,6 @@ UWidget *CheckKIVDialog::Bd1W()
     gb->setLayout(vlyout);
     lyout->addWidget(gb);
 
-    lyout->addLayout(glyout);
     lyout->addStretch(100);
     w->setLayout(lyout);
     //    w->setStyleSheet("QWidget {background-color: " + QString(Colors::UCONFCLR) + ";}");
