@@ -20,16 +20,40 @@ win32 {
     LIBFORMAT = .a
 }
 
-LIBS_PATH = $${PROJECT_ROOT_PATH}/lib/$${QT_ARCH}/$${BUILD_FLAG}/
+win32 {
+    contains(QMAKE_TARGET.arch, x86_64) {
+       # message("Windows x64 build")
+       ## Windows x64 (64bit) specific build here
+       COMA_ARCH = win64
+    } else {
+        # message("Windows x86 build")
+        ## Windows x86 (32bit) specific build here
+        COMA_ARCH = win32
+    }
+}
+
+unix {
+    contains(QMAKE_TARGET.arch, x86_64) {
+       # message("Unix x64 build")
+       ## Windows x64 (64bit) specific build here
+       COMA_ARCH = unix64
+    } else {
+        # message("Unix x86 build")
+        ## Windows x86 (32bit) specific build here
+        COMA_ARCH = unix32
+    }
+}
+
+LIBS_PATH = $${PROJECT_ROOT_PATH}/lib/$${COMA_ARCH}/$${BUILD_FLAG}/
 INC_PATH = $${PROJECT_ROOT_PATH}/include/
 IMPORT_PATH = $${PROJECT_ROOT_PATH}/
-BIN_PATH = $${PROJECT_ROOT_PATH}/../bin/$${QT_ARCH}/$${BUILD_FLAG}/
+BIN_PATH = $${PROJECT_ROOT_PATH}/../bin/$${QMAKE_PLATFORM}/$${COMA_ARCH}/$${BUILD_FLAG}/
 
 BUILDDIR  = build-$${QT_VERSION}
 BINDIR =
 win32 {
     win32-msvc* {
-    BUILDDIR =$${BUILDDIR}-$${QMAKE_COMPILER}-$${MSVC_VER}-$${QMAKE_TARGET.arch}
+    BUILDDIR =$${BUILDDIR}-$${QMAKE_COMPILER}-$${MSVC_VER}-$${COMA_ARCH}
     }
 }
 
@@ -38,7 +62,7 @@ clang {
     COMPILER_VERSION = $$system($$QMAKE_CXX " -dumpversion")
     SPLITTED_COMPILER_VERSION=$$split(COMPILER_VERSION, .)
     COMPILER_MAJOR_VERSION = $$first(SPLITTED_COMPILER_VERSION)
-    BUILDDIR =$${BUILDDIR}-clang-$${COMPILER_MAJOR_VERSION}-$${QT_ARCH}
+    BUILDDIR =$${BUILDDIR}-clang-$${COMPILER_MAJOR_VERSION}-$${COMA_ARCH}
 }
 else {
     # QMAKE_COMPILER = gcc llvm
@@ -46,7 +70,7 @@ else {
         COMPILER_VERSION = $$system($$QMAKE_CXX " -dumpversion")
         SPLITTED_COMPILER_VERSION=$$split(COMPILER_VERSION, .)
         COMPILER_MAJOR_VERSION = $$first(SPLITTED_COMPILER_VERSION)
-        BUILDDIR =$${BUILDDIR}-llvm-$${COMPILER_MAJOR_VERSION}-$${QT_ARCH}
+        BUILDDIR =$${BUILDDIR}-llvm-$${COMPILER_MAJOR_VERSION}-$${COMA_ARCH}
     }
     else {
     # QMAKE_COMPILER = gcc
@@ -54,12 +78,12 @@ else {
             COMPILER_VERSION = $$system($$QMAKE_CXX " -dumpversion")
             SPLITTED_COMPILER_VERSION=$$split(COMPILER_VERSION, .)
             COMPILER_MAJOR_VERSION = $$first(SPLITTED_COMPILER_VERSION)
-            BUILDDIR =$${BUILDDIR}-gcc-$${COMPILER_MAJOR_VERSION}-$${QT_ARCH}
+            BUILDDIR =$${BUILDDIR}-gcc-$${COMPILER_MAJOR_VERSION}-$${COMA_ARCH}
         }
     }
 }
 
-BUILD_PATH = $${PROJECT_ROOT_PATH}/build/$${BUILD_FLAG}/$${TARGET}/
+BUILD_PATH = $${PROJECT_ROOT_PATH}/build/$${COMA_ARCH}/$${BUILD_FLAG}/$${TARGET}/
 RCC_DIR = $${BUILD_PATH}/.rcc/
 UI_DIR = $${BUILD_PATH}/.ui/
 MOC_DIR = $${BUILD_PATH}/.moc/

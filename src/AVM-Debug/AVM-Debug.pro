@@ -26,15 +26,31 @@ HEADERS += \
 DESTDIR = $${BIN_PATH}/$${TARGET}
 win32 {
     LIBS += -luser32
-
-    LIBS += -L$$PWD/../../lib/$${QT_ARCH}/$${BUILD_FLAG}/ -llimereport$${LIB_SUFFIX} -lhidapi
-    CONFIG(release, debug|release) {
+    contains(QMAKE_TARGET.arch, x86_64) {
+       message("Windows x64 build")
+       ## Windows x64 (64bit) specific build here
+       CONFIG(debug, debug|release) {
+       LIBS += -L$$PWD/../../lib/win64/debug/ -llimereport$${LIB_SUFFIX} -lhidapi
+       } else {
+       LIBS += -L$$PWD/../../lib/win64/$${BUILD_FLAG}/ -llimereport$${LIB_SUFFIX} -lhidapi
+       LIBS_FILES += \
+       $$PWD/../../lib/win64/$${BUILD_FLAG}/hidapi.dll \
+       $$PWD/../../lib/win64/$${BUILD_FLAG}/limereport.dll \
+       $$PWD/../../lib/win64/$${BUILD_FLAG}/QtZint.dll
+       }
+    } else {
+        message("Windows x86 build")
+        ## Windows x86 (32bit) specific build here
+        CONFIG(debug, debug|release) {
+        LIBS += -L$$PWD/../../lib/win32/$${BUILD_FLAG}/ -llimereport$${LIB_SUFFIX} -lhidapi
+        } else {
+        LIBS += -L$$PWD/../../lib/win32/$${BUILD_FLAG}/ -llimereport$${LIB_SUFFIX} -lhidapi
         LIBS_FILES += \
-        $$PWD/../../lib/$${QT_ARCH}/$${BUILD_FLAG}/hidapi.dll \
-        $$PWD/../../lib/$${QT_ARCH}/$${BUILD_FLAG}/limereport.dll \
-        $$PWD/../../lib/$${QT_ARCH}/$${BUILD_FLAG}/QtZint.dll
+        $$PWD/../../lib/win32/$${BUILD_FLAG}/hidapi.dll \
+        $$PWD/../../lib/win32/$${BUILD_FLAG}/limereport.dll \
+        $$PWD/../../lib/win32/$${BUILD_FLAG}/QtZint.dll
+        }
     }
-    message("Windows "$${QT_ARCH}" build "$${TARGET})
 }
 
 LIBRARIES += check \
