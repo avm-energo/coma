@@ -72,11 +72,23 @@ void Logging::messageHandler(QtMsgType type, const QMessageLogContext &context, 
 #endif
         return;
     case QtWarningMsg:
+    {
 #ifdef QT_DEBUG
         std::cout << sourceFile.toStdString() << colon << context.line << space << colon << space << msg.toStdString()
                   << std::endl;
 #endif
+#ifdef QT_GUI_LIB
+        ErrorMsg tmpm {
+            QDateTime::currentDateTime().toString("dd-MM-yyyy hh:mm:ss"), // DateTime
+            type,                                                         // Msg type
+            sourceFile,                                                   // File
+            context.line,                                                 // Line
+            msg                                                           // Message
+        };
+        ErrorQueue::GetInstance().pushError(tmpm);
+#endif
         return;
+    }
     case QtCriticalMsg:
     {
         ErrorMsg tmpm {

@@ -93,12 +93,13 @@ bool IEC104::start(const ConnectStruct &st)
     QTimer *ethtimeouttimer = new QTimer(this);
     ethtimeouttimer->setSingleShot(true);
     connect(ethtimeouttimer, &QTimer::timeout, [&]() {
-        qDebug() << Error::Timeout;
+        qCritical() << Error::Timeout;
         ethconnected = false;
         ethloop.quit();
     });
     connect(sock, &QAbstractSocket::connected, parser, [&] {
-        qDebug() << "Connected";
+        ethtimeouttimer->stop();
+        qInfo() << "Connected";
         ethconnected = true;
         EthThreadWorking = true;
         ethloop.quit();

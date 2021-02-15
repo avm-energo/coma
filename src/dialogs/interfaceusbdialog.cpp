@@ -24,7 +24,6 @@ void InterfaceUSBDialog::setupUI()
 
 void InterfaceUSBDialog::setInterface(QModelIndex index)
 {
-    qDebug() << "Hello from : " << __PRETTY_FUNCTION__;
     if (!index.isValid())
         return;
     auto *mdl = index.model();

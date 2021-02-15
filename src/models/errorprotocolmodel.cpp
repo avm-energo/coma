@@ -131,16 +131,15 @@ void ErrorProtocolModel::appendRows(const std::vector<ErrorMsg> &msgs, int newIt
         case QtInfoMsg:
             setData(newIndex, QBrush(QColor(Qt::green).darker(colorFactor)), Qt::ForegroundRole);
             setData(newIndex, QBrush(QColor(Qt::green).lighter(colorFactor)), Qt::BackgroundRole);
-
-            if ((msgs.size() - i) <= newItems)
-            {
-                QFont font;
-                font.setBold(true);
-                setData(newIndex, font, Qt::FontRole);
-            }
             break;
         default:
             assert(false);
+        }
+        if ((msgs.size() - i) <= newItems)
+        {
+            QFont font;
+            font.setBold(true);
+            setData(newIndex, font, Qt::FontRole);
         }
     }
 }

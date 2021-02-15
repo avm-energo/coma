@@ -11,11 +11,14 @@ QList<UsbHidSettings> UsbHidPortInfo::devicesFound(quint16 vid)
     QList<UsbHidSettings> sl;
     while (cur_dev)
     {
-        UsbHidSettings buffer {
-            cur_dev->vendor_id,                              // Vendor ID
-            cur_dev->product_id,                             // Product ID
-            QString::fromWCharArray(cur_dev->serial_number), // Serial number
-            QString(cur_dev->path)                           // Path
+        UsbHidSettings buffer
+        {
+            cur_dev->vendor_id,                                  // Vendor ID
+                cur_dev->product_id,                             // Product ID
+                QString::fromWCharArray(cur_dev->serial_number), // Serial number
+#if _DEBUG
+                QString(cur_dev->path) // Path
+#endif
         };
 
         sl.push_back(buffer);

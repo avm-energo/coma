@@ -4,12 +4,12 @@
 struct UsbHidSettings
 {
     explicit UsbHidSettings() = default;
-    explicit UsbHidSettings(unsigned short dev, unsigned short pid, const QString &arr, const QString &str)
-        : vendor_id(dev)
-        , product_id(pid)
-        , serial(arr)
 #if _DEBUG
-        , path(str)
+    explicit UsbHidSettings(unsigned short dev, unsigned short pid, const QString &arr, const QString &str)
+        : vendor_id(dev), product_id(pid), serial(arr), path(str)
+#else
+    explicit UsbHidSettings(unsigned short dev, unsigned short pid, const QString &arr)
+        : vendor_id(dev), product_id(pid), serial(arr)
 #endif
     {
     }
