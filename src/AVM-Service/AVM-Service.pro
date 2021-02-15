@@ -7,6 +7,8 @@ VERSION = 2.0.0
 
 TEMPLATE = app
 
+RC_ICONS = ../../coma.ico
+
 QMAKE_SUBSTITUTES += config.h.in
 
 INCLUDEPATH += ../$${QXLSX_PARENTPATH}
