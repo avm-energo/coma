@@ -144,7 +144,6 @@ void ModBus::reqStartup(quint32 sigAdr, quint32 sigCount)
 
 void ModBus::reqBSI()
 {
-    qDebug() << __PRETTY_FUNCTION__;
     CommandsMBS::CommandStruct inp {
         CommandsMBS::Commands::MBS_READINPUTREGISTER, //
         BSIREG,                                       //

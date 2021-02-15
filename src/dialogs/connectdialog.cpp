@@ -30,7 +30,6 @@ ConnectDialog::ConnectDialog(QWidget *parent) : QDialog(parent)
     hlyout->addWidget(pb);
     pb = new QPushButton("Отмена");
     connect(pb, &QAbstractButton::clicked, this, &QDialog::close);
-    // connect(pb, &QPushButton::clicked, this, &ConnectDialog::Cancelled);
     hlyout->addWidget(pb);
     lyout->addLayout(hlyout);
     setLayout(lyout);
@@ -64,10 +63,13 @@ void ConnectDialog::setInterface()
     }
     }
     connect(m_idialog, &AbstractInterfaceDialog::accepted, this, &ConnectDialog::accepted);
-    //      connect(m_idialog, &AbstractInterfaceDialog::accepted, this, &QDialog::close);
+
     m_idialog->setupUI();
     if (m_idialog->updateModel())
+    {
+        m_idialog->adjustSize();
         m_idialog->exec();
+    }
     else
         m_idialog->deleteLater();
 }

@@ -219,7 +219,7 @@ QWidget *Coma::Least()
     QProgressBar *prb = new QProgressBar;
     prb->setObjectName("prb1prb");
     prb->setOrientation(Qt::Horizontal);
-    // prb->setMinimumWidth(50);
+
     prb->setMaximumHeight(height() / 50);
     inlyout->addWidget(prb);
     lyout->addLayout(inlyout);
@@ -268,6 +268,7 @@ void Coma::prepareConnectDlg()
             dlg->close();
             startWork(st);
         });
+        dlg->adjustSize();
         dlg->show();
         connect(dlg, &QDialog::destroyed, this, [=] { action->setEnabled(true); });
     }

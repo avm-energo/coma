@@ -99,6 +99,7 @@ void InterfaceEthernetDialog::addInterface()
     hlayout->addWidget(WDFunc::NewPB(dlg, "", tr("Отмена"), [=] { dlg->close(); }));
     mainLayout->addLayout(hlayout);
     dlg->setLayout(mainLayout);
+    dlg->adjustSize();
     dlg->exec();
 }
 
@@ -145,15 +146,21 @@ void InterfaceEthernetDialog::acceptedInterface()
     }
     QString ipstr = WDFunc::LEData(dlg, "iple.0") + "." + WDFunc::LEData(dlg, "iple.1") + "."
         + WDFunc::LEData(dlg, "iple.2") + "." + WDFunc::LEData(dlg, "iple.3");
-    qDebug() << name;
-    rotateSettings("Ethernet-", name);
+
     QString key = QCoreApplication::applicationName();
     key += "\\" + name;
     auto settings = std::unique_ptr<QSettings>(new QSettings(QCoreApplication::organizationName(), key));
-    settings->setValue("ip", ipstr);
+
     int spbdata;
     WDFunc::LEData(dlg, "bsadrspb", spbdata);
-    Q_ASSERT(spbdata != 0);
+    if (spbdata == 0)
+    {
+        QMessageBox::critical(
+            this, tr("Ошибка"), tr("Адрес базовой станции не может быть ") + QString::number(spbdata));
+        return;
+    }
+    rotateSettings("Ethernet-", name);
+    settings->setValue("ip", ipstr);
     settings->setValue("bs", QString::number(spbdata));
 
     if (updateModel())

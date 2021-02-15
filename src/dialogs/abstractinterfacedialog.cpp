@@ -5,7 +5,6 @@
 #include <QSettings>
 AbstractInterfaceDialog::AbstractInterfaceDialog(QWidget *parent) : QDialog(parent)
 {
-    setMinimumWidth(400);
     setAttribute(Qt::WA_DeleteOnClose);
 }
 
@@ -29,7 +28,6 @@ void AbstractInterfaceDialog::rotateSettings(const QString &type, const QString 
     {
         namename = type + QString::number(i);
         QString value = settings->value(namename, "").toString();
-        // QString value = sets->value(namename, "").toString();
         if (!value.isEmpty())
             sl << value;
     }

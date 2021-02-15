@@ -86,6 +86,7 @@ void InterfaceSerialDialog::addInterface()
 
     lyout->addLayout(hlyout, count, 0, 1, 2, Qt::AlignCenter);
     dlg->setLayout(lyout);
+    dlg->adjustSize();
     dlg->exec();
 }
 

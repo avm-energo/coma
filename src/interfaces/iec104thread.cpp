@@ -295,7 +295,7 @@ void IEC104Thread::ParseIFormat(QByteArray &ba) // основной разбор
             }
             else
                 objectAdr++;
-            qDebug() << DUI.typeIdent;
+            // qDebug() << DUI.typeIdent;
             switch (DUI.typeIdent)
             {
 
@@ -380,7 +380,7 @@ void IEC104Thread::ParseIFormat(QByteArray &ba) // основной разбор
 
             case TypeId::M_SP_TB_1:
             {
-                qDebug() << "TypeId::M_SP_TB_1";
+                // qDebug() << "TypeId::M_SP_TB_1";
                 //                if (cntspon > 255)
                 //                {
                 //                    ERMSG("out of array sponsignals");
@@ -667,7 +667,6 @@ void IEC104Thread::Send(int inc, APCI apci, ASDU asdu)
 
     if (inc)
         m_V_S++;
-    qDebug() << ba << m_V_S;
 }
 
 void IEC104Thread::Stop()
