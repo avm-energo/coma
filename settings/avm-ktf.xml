@@ -179,7 +179,7 @@
           <function>04</function>
           <type>float</type>
           <start-addr>3670</start-addr>
-          <count>3</count>
+          <count>122</count>
         </group>
         <group id="insulation">
           <function>04</function>
@@ -199,59 +199,30 @@
           <start-addr>4500</start-addr>
           <count>14</count>
         </group>
-        <group id="status">
-          <function>04</function>
-          <type>uint32</type>
-          <start-addr>4520</start-addr>
-          <count>4</count>
-        </group>
-        <group id="amplitude">
-          <function>04</function>
-          <type>float</type>
-          <start-addr>5200</start-addr>
-          <count>2</count>
-        </group>
-        <group id="IsTime">
-          <function>04</function>
-          <type>uint32</type>
-          <start-addr>5202</start-addr>
-          <count>2</count>
-        </group>
+        <!--5200-5203 еще в процессе(не понятно что длать с типом time)-->
         <group id="alarmModule">
           <function>01</function>
           <type>bool</type>
           <start-addr>5011</start-addr>
           <count>15</count>
         </group>
-        <group id="rtime">
-          <function>03</function>
-          <type>uint32</type>
-          <start-addr>4600</start-addr>
-          <count>2</count>
-        </group>
-        <group id="wtime">
-          <function>10</function>
-          <type>uint32</type>
-          <start-addr>4600</start-addr>
-          <count>2</count>
-        </group>
+        <!--4600,4601 rtime;wtime еще в процессе(не понятно что длать с типом time)-->
         <group id="rage">
           <function>03</function>
           <type>float</type>
-          <start-addr>4600</start-addr>
+          <start-addr>5300</start-addr>
           <count>2</count>
         </group>
         <group id="wage">
           <function>10</function>
           <type>float</type>
-          <start-addr>4600</start-addr>
+          <start-addr>5300</start-addr>
           <count>2</count>
         </group>
       </modbus>
 
       <!--Описываем протокол Protocom-->
-       <protocom>
-         
+       <protocom>    
        <group>
           <start-addr>101</start-addr>
           <count>2</count>
@@ -268,24 +239,49 @@
           <block>3</block>
        </group>
        <group>
-          <start-addr>1020</start-addr>
+          <start-addr>1011</start-addr>
           <count>8</count>
           <block>4</block>
        </group> 
        <group>
-          <start-addr>1028</start-addr>
-          <count>183</count>
+          <start-addr>3020</start-addr>
+          <count>61</count>
           <block>5</block>
        </group>
        <group>
-          <start-addr>1420</start-addr>
+          <start-addr>3146</start-addr>
+          <count>61</count>
+          <block>25</block>
+       </group>
+         <group>
+           <start-addr>3331</start-addr>
+           <count>61</count>
+           <block>35</block>
+         </group>         
+       <group>
+          <start-addr>1411</start-addr>
           <count>8</count>
           <block>6</block>
        </group>
        <group>
-          <start-addr>1428</start-addr>
-          <count>183</count>
+          <start-addr>3420</start-addr>
+          <count>61</count>
           <block>7</block>
+       </group>
+      <group>
+          <start-addr>3546</start-addr>
+          <count>61</count>
+          <block>27</block>
+       </group>   
+       <group>
+          <start-addr>3670</start-addr>
+          <count>61</count>
+          <block>37</block>
+       </group>
+       <group>
+          <start-addr>1220</start-addr>
+          <count>8</count>
+          <block>8</block>
        </group>
        <group>
           <start-addr>4000</start-addr>
@@ -299,7 +295,7 @@
        </group>
        <group>
           <start-addr>4010</start-addr>
-          <count>20</count>
+          <count>21</count>
           <block>11</block>
        </group>
        <group>
@@ -312,14 +308,10 @@
           <count>7</count>
           <block>17</block>
        </group>
-       <group>
-          <start-addr>5200</start-addr>
-          <count>1</count>
-          <block>18</block>
-       </group>  
+         <!--блок 18 еще в процессе(не понятно что длать с типом time)-->   
        <group id="alarmModule">
           <start-addr>5011</start-addr>
-          <count>14</count>
+          <count>15</count>
           <block>100</block>
         </group>         
       </protocom>

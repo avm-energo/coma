@@ -49,7 +49,7 @@ void CheckKTFHarmonicDialog::WriteToFile(int row, int bdnum)
     Q_UNUSED(bdnum);
 }
 
-UWidget *CheckKTFHarmonicDialog::BdIWidget(unsigned int value, int min, int max)
+UWidget *CheckKTFHarmonicDialog::BdIWidget(int valueA, int valueB, int valueC, int min, int max)
 {
     int i;
     UWidget *w = new UWidget;
@@ -76,6 +76,7 @@ UWidget *CheckKTFHarmonicDialog::BdIWidget(unsigned int value, int min, int max)
         j = 0;
         s = 0;
         k = 0;
+
         for (int h = min; h < max; h++)
         {
             if (k > 0)
@@ -89,8 +90,6 @@ UWidget *CheckKTFHarmonicDialog::BdIWidget(unsigned int value, int min, int max)
         }
     }
 
-    quint32 val = max - min;
-
     vlyout->addLayout(glyout);
     gb->setLayout(vlyout);
     lyout->addWidget(gb);
@@ -100,7 +99,7 @@ UWidget *CheckKTFHarmonicDialog::BdIWidget(unsigned int value, int min, int max)
     lyout->addLayout(glyout);
     lyout->addStretch(100);
     w->setLayout(lyout);
-    w->setFloatBdQuery({ { value, val } });
+    w->setFloatBdQuery({ { 3020, 122 }, { 3146, 122 }, { 3420, 122 } });
     return w;
 }
 
@@ -145,8 +144,6 @@ UWidget *CheckKTFHarmonicDialog::BdUWidget(unsigned int value, int min, int max)
         }
     }
 
-    quint32 val = max - min;
-
     vlyout->addLayout(glyout);
     gb->setLayout(vlyout);
     lyout->addWidget(gb);
@@ -156,7 +153,7 @@ UWidget *CheckKTFHarmonicDialog::BdUWidget(unsigned int value, int min, int max)
     lyout->addLayout(glyout);
     lyout->addStretch(100);
     w->setLayout(lyout);
-    w->setFloatBdQuery({ { value, val } });
+    w->setFloatBdQuery({ { value, 122 } });
     return w;
 }
 
