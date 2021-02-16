@@ -29,8 +29,8 @@ ui_*.h
 Makefile*
 *build-*
 *bin*
-*lib*
-*include*
+*.lib
+lib
 # QtCreator
 
 *.autosave
@@ -39,7 +39,8 @@ Makefile*
 *.qmlproject.user
 *.qmlproject.user.*
 
-/AVTUK_ETH_Version-f/AVM-Service.user
+#MSVS
+*.vcxproj.filters
+*.vcxproj.user
 
-/AVTUK_ETH_Version-f/msvc_make.bat
-msvc_make.bat
+*msvc_make.bat
