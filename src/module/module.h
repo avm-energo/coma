@@ -45,8 +45,10 @@ public:
     };
 
     explicit Module(QObject *parent = nullptr);
-    Module(AlarmWidget *aw, QObject *parent = nullptr);
+    virtual void create(AlarmWidget *aw);
     virtual void create(QTimer *updateTimer) = 0;
+    void create(UniquePointer<Journals> jour);
+    virtual void create(Modules::Model model) = 0;
     QList<UDialog *> dialogs();
     QList<UDialog *> confDialogs();
     void addDialogToList(UDialog *dlg, const QString &caption = "", const QString &name = "");
@@ -57,16 +59,7 @@ public:
     void parentTWTabChanged(int index);
     void closeDialogs();
     ModuleSettings *settings() const;
-
-signals:
-
-public slots:
-
-protected:
     bool loadSettings();
-
-    void create(UniquePointer<Journals> jour);
-    virtual void create(Modules::Model model) = 0;
 
 private:
     QList<UDialog *> m_dialogs;

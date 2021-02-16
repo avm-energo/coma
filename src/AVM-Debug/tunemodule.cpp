@@ -21,10 +21,6 @@ TuneModule::TuneModule(QObject *parent) : Module(parent)
 {
 }
 
-TuneModule::TuneModule(AlarmWidget *aw, QObject *parent) : Module(aw, parent)
-{
-}
-
 void TuneModule::create(Modules::Model model)
 {
     using namespace Modules;

@@ -63,9 +63,6 @@ QWidget *AbstractStartupDialog::buttonWidget()
         QPushButton *pb = new QPushButton();
         pb->setObjectName("Hexagon");
         pb->setIcon(icon);
-        // NOTE Does it work with global qss?
-        // pb->setAttribute(Qt::WA_Hover);
-        // pb->setAttribute(Qt::WA_X11NetWmWindowTypeToolBar);
 
         pb->setToolTip(toolTip);
         pb->setMinimumSize(50, 50);

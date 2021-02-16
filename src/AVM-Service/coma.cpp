@@ -16,7 +16,13 @@ ServiceComa::~ServiceComa()
 
 void ServiceComa::PrepareDialogs()
 {
-    m_Module = ModulePointer(new ServiceModule(AlarmW));
+    m_Module = ModulePointer(new ServiceModule);
+    if (!m_Module->loadSettings())
+    {
+        qCritical() << "No conf .xml file for this module";
+        return;
+    }
+    m_Module->create(AlarmW);
     m_Module->create(BdaTimer);
 }
 

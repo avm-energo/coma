@@ -21,10 +21,6 @@ ServiceModule::ServiceModule(QObject *parent) : Module(parent)
 {
 }
 
-ServiceModule::ServiceModule(AlarmWidget *aw, QObject *parent) : Module(aw, parent)
-{
-}
-
 void ServiceModule::create(QTimer *updateTimer)
 {
     using namespace Modules;

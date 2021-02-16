@@ -8,7 +8,6 @@ class ServiceModule : public Module
     Q_OBJECT
 public:
     explicit ServiceModule(QObject *parent = nullptr);
-    ServiceModule(AlarmWidget *aw, QObject *parent = nullptr);
     void create(QTimer *updateTimer) override;
 signals:
 

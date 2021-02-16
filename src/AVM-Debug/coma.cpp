@@ -15,7 +15,13 @@ DebugComa::~DebugComa()
 
 void DebugComa::PrepareDialogs()
 {
-    m_Module = ModulePointer(new TuneModule(AlarmW));
+    m_Module = ModulePointer(new TuneModule);
+    if (!m_Module->loadSettings())
+    {
+        qCritical() << "No conf .xml file for this module";
+        return;
+    }
+    m_Module->create(AlarmW);
     m_Module->create(BdaTimer);
 }
 
