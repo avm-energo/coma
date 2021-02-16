@@ -78,8 +78,6 @@ bool UsbHidPort::setupConnection()
 #endif
     if (!m_hidDevice)
     {
-        // NOTE Nice error
-        // qDebug() << QString::fromWCharArray(hid_error(m_hidDevice));
         qCritical() << Error::Msg::OpenError;
         finish();
         return false;

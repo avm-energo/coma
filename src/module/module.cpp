@@ -31,21 +31,9 @@
 Module::Module(QObject *parent) : QObject(parent)
 {
 }
-
-Module::Module(AlarmWidget *aw, QObject *parent) : QObject(parent)
+void Module::create(AlarmWidget *aw)
 {
     using namespace Modules;
-    const auto &board = Board::GetInstance();
-    UniquePointer<Journals> jour;
-    // Journals *JOUR = nullptr;
-
-    // S2::config = UniquePointer<S2DataTypes::S2ConfigType>(new S2DataTypes::S2ConfigType);
-
-    if (!loadSettings())
-    {
-        qCritical() << "No conf .xml file for this module";
-        return;
-    }
 
     BaseInterface::iface()->setSettings(settings()->ifaceSettings);
 
@@ -57,13 +45,6 @@ Module::Module(AlarmWidget *aw, QObject *parent) : QObject(parent)
     aw->addAlarm(warnAlarm, tr("Предупредительная сигнализация"));
     auto *critAlarm = new ModuleAlarm(settings()->alarms.value(AlarmType::Critical), settings()->alarmCount());
     aw->addAlarm(critAlarm, tr("Аварийная сигнализация"));
-    TimeDialog *tdlg = new TimeDialog;
-    addDialogToList(tdlg, "Время", "time");
-
-    if (board.interfaceType() != Board::InterfaceType::RS485)
-        addDialogToList(new FWUploadDialog, "Загрузка ВПО");
-
-    addDialogToList(new InfoDialog, "О приборе", "info");
 }
 
 QList<UDialog *> Module::dialogs()
@@ -351,6 +332,8 @@ void Module::traverseNode(const QDomNode &node)
 bool Module::loadSettings()
 {
     const auto moduleName = Board::GetInstance().moduleName();
+    if (moduleName.isEmpty())
+        return false;
     QDir directory(StdFunc::GetSystemHomeDir());
     qDebug() << directory;
     auto allFiles = directory.entryList(QDir::Files);
@@ -405,9 +388,17 @@ bool Module::loadSettings()
 
 void Module::create(UniquePointer<Journals> jour)
 {
+    const auto &board = Board::GetInstance();
     if (Board::GetInstance().interfaceType() != Board::InterfaceType::RS485)
     {
         Q_ASSERT(jour != nullptr);
         addDialogToList(new JournalDialog(std::move(jour)), "Журналы");
     }
+    TimeDialog *tdlg = new TimeDialog;
+    addDialogToList(tdlg, "Время", "time");
+
+    if (board.interfaceType() != Board::InterfaceType::RS485)
+        addDialogToList(new FWUploadDialog, "Загрузка ВПО");
+
+    addDialogToList(new InfoDialog, "О приборе", "info");
 }

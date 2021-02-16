@@ -19,8 +19,6 @@ AlarmStateAll::AlarmStateAll(QWidget *parent) : BaseAlarm(parent)
 
 void AlarmStateAll::update(quint32 health)
 {
-    // NOTE hardcoded value for test
-    // health = 0xDEADBEEF;
     const std::bitset<32> healthSet = health;
 
     for (int i = 0; i < AVM::HthToolTip.size(); ++i)

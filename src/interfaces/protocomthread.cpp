@@ -610,7 +610,6 @@ QByteArray prepareBlock(Proto::Commands cmd, QByteArray &data, Proto::Starters s
     return ba;
 }
 
-// NOTE Не проверено
 ByteQueue prepareLongBlk(CommandStruct &cmdStr)
 {
     ByteQueue bq;

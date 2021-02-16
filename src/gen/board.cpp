@@ -136,9 +136,6 @@ void Board::setConnectionState(ConnectionState connectionState)
 
 void Board::update(const DataTypes::BitStringStruct &bs)
 {
-    //  qDebug() << __PRETTY_FUNCTION__;
-    // NOTE Необходимо сделать проверку: пришел ли это сигнал с
-    // нужным нам адресом(наш сигнал) или нет - чужие данные
     // Only bsi block
     if (bs.sigAdr < 1 || bs.sigAdr > 15)
         return;
