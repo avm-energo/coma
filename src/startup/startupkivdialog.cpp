@@ -191,103 +191,103 @@ void StartupKIVDialog::SetupUI()
 //    }
 //}
 
-void StartupKIVDialog::SetupCor()
-{
-    AbstractStartupDialog::SetupCor();
-    //  if (WriteCheckPassword() != Error::Msg::NoError)
-    //    return;
-    // switch (Board::GetInstance().interfaceType())
-    // {
-    // case Board::InterfaceType::Ethernet:
-    // {
-    //            emit SendCom45(SETINITREG);
-    //            QMessageBox::information(this, "INFO", "Задано успешно");
-    //            emit CorReadRequest();
-    //     break;
-    // }
-    //  case Board::InterfaceType::RS485:
-    // {
-    //            ModBus::Information info;
-    //            info.size = 1;
-    //            info.adr = SETINITREG;
-    //            emit RS485WriteCorBd(info, nullptr);
-    //            QMessageBox::information(this, "INFO", "Задано успешно");
-    //            info.size = (sizeof(CorData) / 4);
-    //            info.adr = 4000;
-    //            emit RS485ReadCorBd(info);
-    //   break;
-    // }
-    // case Board::InterfaceType::USB:
-    // {
-    //            if (Commands::WriteCom(Commands::WriteInitValues) == Error::Msg::NoError) // задание общей
-    //            коррекции
-    //                                                                                      //{
-    //                if (Commands::GetBd(7, CorBlock, sizeof(CorData)) == Error::Msg::NoError)
-    //                {
-    //                    FillCor();
-    //                    QMessageBox::information(this, "INFO", "Задано и прочитано успешно");
-    //                }
-    //                // }
-    //                else
-    //                    QMessageBox::information(this, "INFO", "Ошибка");
-    // break;
-    // }
-    // }
-}
+// void StartupKIVDialog::SetupCor()
+//{
+//    AbstractStartupDialog::SetupCor();
+//  if (WriteCheckPassword() != Error::Msg::NoError)
+//    return;
+// switch (Board::GetInstance().interfaceType())
+// {
+// case Board::InterfaceType::Ethernet:
+// {
+//            emit SendCom45(SETINITREG);
+//            QMessageBox::information(this, "INFO", "Задано успешно");
+//            emit CorReadRequest();
+//     break;
+// }
+//  case Board::InterfaceType::RS485:
+// {
+//            ModBus::Information info;
+//            info.size = 1;
+//            info.adr = SETINITREG;
+//            emit RS485WriteCorBd(info, nullptr);
+//            QMessageBox::information(this, "INFO", "Задано успешно");
+//            info.size = (sizeof(CorData) / 4);
+//            info.adr = 4000;
+//            emit RS485ReadCorBd(info);
+//   break;
+// }
+// case Board::InterfaceType::USB:
+// {
+//            if (Commands::WriteCom(Commands::WriteInitValues) == Error::Msg::NoError) // задание общей
+//            коррекции
+//                                                                                      //{
+//                if (Commands::GetBd(7, CorBlock, sizeof(CorData)) == Error::Msg::NoError)
+//                {
+//                    FillCor();
+//                    QMessageBox::information(this, "INFO", "Задано и прочитано успешно");
+//                }
+//                // }
+//                else
+//                    QMessageBox::information(this, "INFO", "Ошибка");
+// break;
+// }
+// }
+//}
 
-void StartupKIVDialog::SetCor()
-{
-    switch (Board::GetInstance().interfaceType())
-    {
-    case Board::InterfaceType::Ethernet:
-    {
-        // emit SendCom45(903);
-        break;
-    }
-    case Board::InterfaceType::USB:
-    {
-        //        if (Commands::WriteCom(Commands::WriteStartupValues) == Error::Msg::NoError)
-        //            QMessageBox::information(this, "INFO", "Записано успешно");
-        //        else
-        //            QMessageBox::information(this, "INFO", "Ошибка");
-        break;
-    }
-    }
-}
+// void StartupKIVDialog::SetCor()
+//{
+//    switch (Board::GetInstance().interfaceType())
+//    {
+//    case Board::InterfaceType::Ethernet:
+//    {
+// emit SendCom45(903);
+//        break;
+//    }
+//    case Board::InterfaceType::USB:
+//    {
+//        if (Commands::WriteCom(Commands::WriteStartupValues) == Error::Msg::NoError)
+//            QMessageBox::information(this, "INFO", "Записано успешно");
+//        else
+//            QMessageBox::information(this, "INFO", "Ошибка");
+//        break;
+//    }
+//    }
+//}
 
-void StartupKIVDialog::ResetCor()
-{
-    // if (WriteCheckPassword() != Error::Msg::NoError)
-    //    return;
-    AbstractStartupDialog::ResetCor();
-    //        switch (Board::GetInstance().interfaceType())
-    //        {
-    //        case Board::InterfaceType::Ethernet:
-    //        {
-    //            emit SendCom45(CLEARREG);
-    //            break;
-    //        }
-    //        case Board::InterfaceType::RS485:
-    //        {
-    //            ModBus::Information info;
-    //            info.size = 1;
-    //            info.adr = CLEARREG;
-    //            emit RS485WriteCorBd(info, nullptr);
-    //            break;
-    //        }
-    //        case Board::InterfaceType::USB:
-    //        {
-    //            if (Commands::WriteCom(Commands::ClearStartupValues) == Error::Msg::NoError)
-    //                QMessageBox::information(this, "INFO", "Сброшено успешно");
-    //            else
-    //                QMessageBox::information(this, "INFO", "Ошибка");
+// void StartupKIVDialog::ResetCor()
+//{
+// if (WriteCheckPassword() != Error::Msg::NoError)
+//    return;
+// AbstractStartupDialog::ResetCor();
+//        switch (Board::GetInstance().interfaceType())
+//        {
+//        case Board::InterfaceType::Ethernet:
+//        {
+//            emit SendCom45(CLEARREG);
+//            break;
+//        }
+//        case Board::InterfaceType::RS485:
+//        {
+//            ModBus::Information info;
+//            info.size = 1;
+//            info.adr = CLEARREG;
+//            emit RS485WriteCorBd(info, nullptr);
+//            break;
+//        }
+//        case Board::InterfaceType::USB:
+//        {
+//            if (Commands::WriteCom(Commands::ClearStartupValues) == Error::Msg::NoError)
+//                QMessageBox::information(this, "INFO", "Сброшено успешно");
+//            else
+//                QMessageBox::information(this, "INFO", "Ошибка");
 
-    //            if (Commands::GetBd(7, CorBlock, sizeof(CorBlock)) == Error::Msg::NoError)
-    //                FillCor();
-    //            break;
-    //        }
-    //        }
-}
+//            if (Commands::GetBd(7, CorBlock, sizeof(CorBlock)) == Error::Msg::NoError)
+//                FillCor();
+//            break;
+//        }
+//        }
+//}
 
 // float StartupKIVDialog::ToFloat(QString text)
 //{
@@ -393,11 +393,11 @@ void StartupKIVDialog::ReadFromFile()
     QMessageBox::information(this, "Внимание", "Загрузка прошла успешно!");
 }
 
-bool StartupKIVDialog::WriteCheckPassword()
-{
-    KeyPressDialog dlg; // = new KeyPressDialog;
-    return dlg.CheckPassword("121941");
-}
+// bool StartupKIVDialog::WriteCheckPassword()
+//{
+//    KeyPressDialog dlg; // = new KeyPressDialog;
+//    return dlg.CheckPassword("121941");
+//}
 
 // void StartupKIVDialog::WritePasswordCheck(QString psw)
 //{
