@@ -91,8 +91,8 @@ public slots:
     void showTWTab(int index);
     void CancelTune();
     void writeTuneCoefsSlot();
-    void loadTuneCoefsSlot();
-    void saveTuneCoefsSlot();
+    //    void loadTuneCoefsSlot();
+    //    void saveTuneCoefsSlot();
 
 private slots:
     void startTune();

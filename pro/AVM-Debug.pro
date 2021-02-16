@@ -263,7 +263,7 @@ RESOURCES += \
     ../settings/settings.qrc \
     ../widgets/styles.qrc
 
-INCLUDEPATH += $$PWD/../include
+INCLUDEPATH += $$PWD/../../include
 
 # QXlsx code for Application Qt project
 QXLSX_PARENTPATH=./../QXlsx/QXlsx         # current QXlsx path is . (. means curret directory)
@@ -279,15 +279,15 @@ win32 {
         message("x64 build")
        ## Windows x64 (64bit) specific build here
        CONFIG(debug, debug|release) {
-       LIBS += -L$$PWD/../lib/win64/debug/ -llimereportd -lhidapi
+       LIBS += -L$$PWD/../../lib/win64/debug/ -llimereportd -lhidapi
        DESTDIR = $${PWD}/../bin/$${TARGET}/win64/debug
        } else {
-       LIBS += -L$$PWD/../lib/win64/release/ -llimereport -lhidapi
+       LIBS += -L$$PWD/../../lib/win64/release/ -llimereport -lhidapi
        DESTDIR = $${PWD}/../bin/$${TARGET}/win64/release
        LIBS_FILES += \
-       $$PWD/../lib/win64/release/hidapi.dll \
-       $$PWD/../lib/win64/release/limereport.dll \
-       $$PWD/../lib/win64/release/QtZint.dll
+       $$PWD/../../lib/win64/release/hidapi.dll \
+       $$PWD/../../lib/win64/release/limereport.dll \
+       $$PWD/../../lib/win64/release/QtZint.dll
        }
     } else {
         message("x86 build")

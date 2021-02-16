@@ -76,16 +76,18 @@ bool StdFunc::floatIsWithinLimits(QWidget *w, double var, double base, double to
     return false;
 }
 #endif
-float StdFunc::toFloat(const QString &text)
+float StdFunc::toFloat(const QString &text, bool *ok)
 {
-    bool ok;
+    bool floatok;
     float tmpf;
-    tmpf = text.toFloat(&ok);
-    if (!ok)
+    tmpf = text.toFloat(&floatok);
+    if (!floatok)
     {
         qCritical() << "Значение " << text << " не может быть переведено во float";
+        *ok = false;
         return 0;
     }
+    *ok = true;
     return tmpf;
 }
 

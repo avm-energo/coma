@@ -88,8 +88,10 @@ public slots:
     //    void updateValues();
     void setDefBlockAndUpdate();
     void readAndUpdate();
-    void readFromFile();
-    void saveToFile();
+    Error::Msg readFromFile();
+    void readFromFileUserChoose();
+    Error::Msg loadFromFileAndWriteToModule(const QString &filename);
+    Error::Msg saveToFile();
     void saveToFileUserChoose();
 };
 

@@ -40,7 +40,7 @@ public:
     static bool floatIsWithinLimits(
         QWidget *w, double var, double value, double tolerance = 0.1, bool showMessage = true);
 #endif
-    static float toFloat(const QString &text);
+    static float toFloat(const QString &text, bool *ok = nullptr);
     static void SetHomeDir(const QString &dir);
     static QString GetHomeDir();
     static QString GetSystemHomeDir();
