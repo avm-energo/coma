@@ -65,8 +65,9 @@ private:
     QList<UDialog *> m_dialogs;
 
     std::unique_ptr<ModuleSettings> m_settings;
-    void traverseNode(const QDomNode &node);
 
+    /// TODO Кандидаты в отдельный класс
+    void traverseNode(const QDomNode &node);
     DataTypes::Alarm parseAlarm(QDomElement domElement);
     DataTypes::Journal parseJournal(QDomElement domElement);
     quint32 parseInt32(QDomElement domElement) const;

@@ -12,6 +12,7 @@ SUBDIRS = \
             widgets \
             gen \
             tune \
+            qcustomplot \
             AVM-Service \
             AVM-Debug
 
