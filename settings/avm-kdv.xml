@@ -107,7 +107,7 @@
           <function>04</function>
           <type>uint32</type>
           <start-addr>1</start-addr>
-          <count>32</count>
+          <count>38</count>
         </group>       
         <group id="tempHardware">
             <function>04</function>
@@ -204,21 +204,9 @@
           <function>01</function>
           <type>bool</type>
           <start-addr>5011</start-addr>
-          <count>15</count>
+          <count>33</count>
         </group>
         <!--4600,4601 rtime;wtime еще в процессе(не понятно что длать с типом time)-->
-        <group id="rage">
-          <function>03</function>
-          <type>float</type>
-          <start-addr>5300</start-addr>
-          <count>2</count>
-        </group>
-        <group id="wage">
-          <function>10</function>
-          <type>float</type>
-          <start-addr>5300</start-addr>
-          <count>2</count>
-        </group>
       </modbus>
 
       <!--Описываем протокол Protocom-->
