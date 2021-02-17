@@ -191,28 +191,39 @@ void DataBlock::readBlockFromModule()
     //    return Error::Msg::NoError;
 }
 
-void DataBlock::readFromFile()
+void DataBlock::readFromFileUserChoose()
+{
+    loadFromFileAndWriteToModule(Files::ChooseFileForOpen(nullptr, ExtMap[m_block.blocktype].mask));
+}
+
+Error::Msg DataBlock::loadFromFileAndWriteToModule(const QString &filename)
 {
     QByteArray ba;
     //    QString filestr = StdFunc::GetSystemHomeDir() + Board::GetInstance().UID() + ExtMap[m_block.blocktype]
     //        + QString::number(m_block.blocknum);
-    QString filestr = StdFunc::GetSystemHomeDir() + cpuIDFilenameStr();
-    if (Files::LoadFromFile(filestr, ba) != Error::Msg::NoError)
+    if (Files::LoadFromFile(filename, ba) == Error::Msg::NoError)
     {
         memcpy(m_block.block, &ba.data()[0], m_block.blocksize);
-        if (writeBlockToModule() != Error::Msg::NoError)
-            qCritical("Не удалось записать блок");
+        if (writeBlockToModule() == Error::Msg::NoError)
+            return Error::Msg::NoError;
     }
+    qCritical("Не удалось записать блок");
+    return Error::Msg::GeneralError;
 }
 
-void DataBlock::saveToFile()
+Error::Msg DataBlock::readFromFile()
+{
+    return loadFromFileAndWriteToModule(StdFunc::GetSystemHomeDir() + cpuIDFilenameStr());
+}
+
+Error::Msg DataBlock::saveToFile()
 {
     readBlockFromModule();
     QByteArray ba(static_cast<char *>(m_block.block), m_block.blocksize);
     //    QString filestr = StdFunc::GetSystemHomeDir() + Board::GetInstance().UID() + ExtMap[m_block.blocktype]
     //        + QString::number(m_block.blocknum);
     QString filestr = StdFunc::GetSystemHomeDir() + cpuIDFilenameStr();
-    Files::SaveToFile(filestr, ba);
+    return Files::SaveToFile(filestr, ba);
 }
 
 void DataBlock::saveToFileUserChoose()
@@ -268,12 +279,14 @@ void DataBlock::createBottomButtonsWidget()
     QDialogButtonBox *group = new QDialogButtonBox;
     //    QHBoxLayout *hlyout = new QHBoxLayout;
 
-    const QList<QPair<QPair<QString, QString>, std::function<void()>>> funcs { { { "Получить", ":/icons/tnread.svg" },
-                                                                                   [this]() { readAndUpdate(); } },
+    const QList<QPair<QPair<QString, QString>, std::function<void()>>> funcs {
+        { { "Получить", ":/icons/tnread.svg" }, [this]() { readAndUpdate(); } },
         { { "Записать", ":/icons/tnwrite.svg" }, [this]() { writeBlockToModule(); } },
         { { "Задать по умолчанию", ":/icons/tnyes.svg" }, [this]() { setDefBlockAndUpdate(); } },
-        { { "Прочитать", ":/icons/tnload.svg" }, [this]() { readFromFile(); } },
-        { { "Сохранить", ":/icons/tnsave.svg" }, [this]() { saveToFileUserChoose(); } } };
+        { { "Прочитать из файла и записать в устройство", ":/icons/tnload.svg" },
+            [this]() { readFromFileUserChoose(); } },
+        { { "Прочитать из устройства и сохранить в файл", ":/icons/tnsave.svg" }, [this]() { saveToFileUserChoose(); } }
+    };
 
     for (auto &i : funcs)
     {

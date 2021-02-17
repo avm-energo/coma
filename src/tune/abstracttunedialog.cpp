@@ -325,7 +325,9 @@ Error::Msg AbstractTuneDialog::saveAllTuneCoefs()
         QByteArray ba;
         ba.resize(it.value()->block().blocksize);
         memcpy(&(ba.data()[0]), it.value()->block().block, it.value()->block().blocksize);
-        if (Files::SaveToFile(StdFunc::GetSystemHomeDir() + "temptune.tn" + tunenum, ba) != Error::Msg::NoError)
+        if (it.value()->saveToFile() != Error::Msg::NoError)
+            //        if (Files::SaveToFile(StdFunc::GetSystemHomeDir() + "temptune.tn" + tunenum, ba) !=
+            //        Error::Msg::NoError)
             return Error::Msg::GeneralError;
     }
     return Error::Msg::NoError;
@@ -338,7 +340,9 @@ Error::Msg AbstractTuneDialog::loadAllTuneCoefs()
     {
         tunenum = QString::number(it.key(), 16); // key is the number of Bac block
         QByteArray ba;
-        if (Files::LoadFromFile(StdFunc::GetSystemHomeDir() + "temptune.tn" + tunenum, ba) == Error::Msg::NoError)
+        if (it.value()->readFromFile() == Error::Msg::NoError)
+            //        if (Files::LoadFromFile(StdFunc::GetSystemHomeDir() + "temptune.tn" + tunenum, ba) ==
+            //        Error::Msg::NoError)
             memcpy(it.value()->block().block, &(ba.data()[0]), it.value()->block().blocksize);
     }
     return Error::Msg::NoError;
@@ -351,15 +355,15 @@ Error::Msg AbstractTuneDialog::readTuneCoefs()
     return Error::Msg::NoError;
 }
 
-void AbstractTuneDialog::loadTuneCoefsSlot()
-{
-    readTuneCoefs();
-}
+// void AbstractTuneDialog::loadTuneCoefsSlot()
+//{
+//    readTuneCoefs();
+//}
 
-void AbstractTuneDialog::saveTuneCoefsSlot()
-{
-    saveAllTuneCoefs();
-}
+// void AbstractTuneDialog::saveTuneCoefsSlot()
+//{
+//    saveAllTuneCoefs();
+//}
 
 // на будущее, если вдруг будем регулировать модуль по частям
 void AbstractTuneDialog::readTuneCoefsByBac(int bacnum)
