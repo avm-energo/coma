@@ -58,14 +58,14 @@ Error::Msg Files::LoadFromFile(const QString &filename, QByteArray &ba)
 {
     if (filename.isEmpty())
     {
-        ERMSG("Пустое имя файла");
+        qCritical("Пустое имя файла");
         return Error::Msg::FileNameError; // Пустое имя файла
     }
     QFile *file = new QFile;
     file->setFileName(filename);
     if (!file->open(QIODevice::ReadOnly))
     {
-        ERMSG("Ошибка открытия файла");
+        qCritical("Ошибка открытия файла");
         return Error::Msg::FileOpenError; // Ошибка открытия файла
     }
     ba = file->readAll();

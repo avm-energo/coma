@@ -18,7 +18,7 @@ int main(int argc, char *argv[])
     Logging::writeStart();
     qInstallMessageHandler(Logging::messageHandler);
     DebugComa w;
-    w.SetMode(Coma::COMA_GENERALMODE);
+    w.setMode(Coma::COMA_GENERALMODE);
 
     if (argc > 1) // есть аргументы запуска
     {
@@ -35,20 +35,20 @@ int main(int argc, char *argv[])
             Parameter = files.at(0);
             QString filestail = Parameter.right(3);
             if (filestail == "osc")
-                w.SetMode(Coma::COMA_AUTON_OSCMODE);
+                w.setMode(Coma::COMA_AUTON_OSCMODE);
             else if (filestail == "swj")
-                w.SetMode(Coma::COMA_AUTON_SWJMODE);
+                w.setMode(Coma::COMA_AUTON_SWJMODE);
             else if (filestail == "vrf")
-                w.SetMode(Coma::COMA_AUTON_PROTMODE);
+                w.setMode(Coma::COMA_AUTON_PROTMODE);
             else
             {
-                w.SetMode(Coma::COMA_AUTON_MODE);
+                w.setMode(Coma::COMA_AUTON_MODE);
                 Parameter.clear();
             }
         }
     }
 
-    w.Go(Parameter);
+    w.go(Parameter);
 
     return a.exec();
 }

@@ -65,7 +65,9 @@ LIBRARIES += check \
     startup \
     widgets \
     general \
-    tune
+    tune \
+    avtuk \
+    qcustomplot
 
 include(../deps.pri)
 

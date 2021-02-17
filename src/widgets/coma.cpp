@@ -22,6 +22,8 @@
 
 #include "coma.h"
 
+#include "../avtuk/parseid9050.h"
+#include "../avtuk/trendviewdialog.h"
 #include "../dialogs/connectdialog.h"
 #include "../dialogs/errordialog.h"
 #include "../dialogs/keypressdialog.h"
@@ -29,6 +31,7 @@
 #include "../gen/board.h"
 #include "../gen/datamanager.h"
 #include "../gen/errorqueue.h"
+#include "../gen/files.h"
 #include "../gen/logger.h"
 #include "../gen/stdfunc.h"
 #include "../interfaces/protocom.h"
@@ -38,7 +41,6 @@
 #include "../widgets/splashscreen.h"
 #include "../widgets/styleloader.h"
 #include "../widgets/wd_func.h"
-//#include "tunemodule.h"
 #include "waitwidget.h"
 
 #include <QApplication>
@@ -52,7 +54,6 @@
 #include <QtGlobal>
 #include <functional>
 #include <memory>
-
 #ifdef _WIN32
 // clang-format off
 #include <windows.h>
@@ -182,13 +183,13 @@ void Coma::SetupUI()
     hlyout->addWidget(AlarmW, Qt::AlignCenter);
 
     lyout->addLayout(hlyout);
-    lyout->addWidget(Least());
+    lyout->addWidget(least());
     wdgt->setLayout(lyout);
     setCentralWidget(wdgt);
-    SetupMenubar();
+    setupMenubar();
 }
 
-QWidget *Coma::Least()
+QWidget *Coma::least()
 {
     QWidget *w = new QWidget;
 
@@ -207,7 +208,7 @@ QWidget *Coma::Least()
 
     MainTW->hide();
     MainLW->hide();
-    connect(MainTW, &QStackedWidget::currentChanged, this, &Coma::MainTWTabChanged);
+    connect(MainTW, &QStackedWidget::currentChanged, this, &Coma::mainTWTabChanged);
 
     QFrame *line = new QFrame;
     lyout->addWidget(line);
@@ -227,11 +228,11 @@ QWidget *Coma::Least()
     w->setLayout(lyout);
     return w;
 }
-void Coma::SetupMenubar()
+void Coma::setupMenubar()
 {
     QMenuBar *menubar = new QMenuBar(this);
 
-    QMenu *menu = new QMenu(this);
+    QMenu *menu = new QMenu(menubar);
     menu->setTitle("Главное");
 
     menu->addAction("Выход", this, &Coma::close);
@@ -240,10 +241,14 @@ void Coma::SetupMenubar()
 
     menubar->addMenu(menu);
 
-    menubar->addAction("О программе", this, &Coma::GetAbout);
+    menubar->addAction("О программе", this, &Coma::getAbout);
 
     menubar->addSeparator();
-
+    menu = new QMenu(menubar);
+    menu->setTitle("Автономная работа");
+    menu->addAction("Загрузка осциллограммы", this, &Coma::loadOsc);
+    menu->addAction("Загрузка журнала переключений", this, &Coma::loadSwj);
+    menubar->addMenu(menu);
     setMenuBar(menubar);
 }
 
@@ -287,6 +292,98 @@ void Coma::startWork(const ConnectStruct st)
     QApplication::setOverrideCursor(Qt::WaitCursor);
 
     setupConnection();
+}
+
+void Coma::loadOsc()
+{
+    QString filename = Files::ChooseFileForOpen(this, "Oscillogram files (*.osc)");
+    LoadOscFromFile(filename);
+}
+
+void Coma::LoadOscFromFile(const QString &filename)
+{
+    EOscillogram *OscFunc = new EOscillogram();
+    quint32 len = 0;
+
+    if (Files::LoadFromFile(filename, OscFunc->BA) == Error::NoError)
+    {
+        TrendViewDialog *dlg = new TrendViewDialog(OscFunc->BA);
+        OscFunc->setParent(dlg);
+        TrendViewModel *mdl = new TrendViewModel(QStringList(), QStringList(), len);
+        OscFunc->ProcessOsc(mdl);
+        mdl->xmax = (static_cast<float>(mdl->Len / 2));
+        mdl->xmin = -mdl->xmax;
+        dlg->TrendModel = mdl;
+
+        switch (mdl->idOsc)
+        {
+        case MT_ID85:
+        {
+
+            dlg->SetAnalogNames(mdl->tmpav_85);
+            dlg->SetDigitalNames(mdl->tmpdv_85);
+            dlg->SetDigitalColors(mdl->dcolors_85);
+            dlg->SetAnalogColors(mdl->acolors_85);
+            dlg->SetDiscreteDescriptions(mdl->ddescr_85);
+            dlg->SetAnalogDescriptions(mdl->adescr_85);
+            dlg->SetRanges(mdl->xmin, mdl->xmax, -200, 200);
+            break;
+        }
+        case MT_ID80:
+        {
+            mdl->tmpdv_80.clear();
+            dlg->SetAnalogNames(mdl->tmpav_80);
+            dlg->SetDigitalNames(mdl->tmpdv_80);
+            dlg->SetDigitalColors(mdl->dcolors_80);
+            dlg->SetAnalogColors(mdl->acolors_80);
+            dlg->SetRanges(mdl->xmin, mdl->xmax, -200, 200);
+            break;
+        }
+
+        case MT_ID21:
+        {
+            // период отсчётов - 20 мс, длительность записи осциллограммы 10 сек, итого 500 точек по 4 байта на каждую
+            mdl->tmpav_21 << QString::number(mdl->idOsc); // пока сделано для одного канала в осциллограмме
+            // TrendViewModel *TModel = new TrendViewModel(QStringList(), tmpav, *len);
+            // dlg->SetModel(TModel);
+            dlg->SetAnalogNames(mdl->tmpav_21);
+            dlg->SetRanges(0, 10000, -20,
+                20); // 10000 мс, 20 мА (сделать автонастройку в зависимости от конфигурации по данному каналу)
+
+            break;
+        }
+
+        case ID_OSC_CH0:
+        case ID_OSC_CH0 + 1:
+        case ID_OSC_CH0 + 2:
+        case ID_OSC_CH0 + 3:
+        case ID_OSC_CH0 + 4:
+        case ID_OSC_CH0 + 5:
+        case ID_OSC_CH0 + 6:
+        case ID_OSC_CH0 + 7:
+        {
+
+            dlg->SetAnalogNames(mdl->tmpav_85);
+            dlg->SetDigitalNames(mdl->tmpdv_85);
+            dlg->SetDigitalColors(mdl->dcolors_85);
+            dlg->SetAnalogColors(mdl->acolors_85);
+            dlg->SetRanges(mdl->xmin, mdl->xmax, -200, 200);
+            break;
+        }
+        }
+
+        dlg->SetupPlots();
+        dlg->SetupUI();
+        dlg->setModal(false);
+    }
+    else
+        delete OscFunc;
+}
+
+void Coma::loadSwj()
+{
+    QString filename = Files::ChooseFileForOpen(this, "Switch journal files (*.swj)");
+    //  LoadSwjFromFile(filename);
 }
 
 void Coma::newTimers()
@@ -386,12 +483,12 @@ bool Coma::nativeEvent(const QByteArray &eventType, void *message, long *result)
     return false;
 }
 
-void Coma::SetMode(int mode)
+void Coma::setMode(int mode)
 {
     Mode = mode;
 }
 
-void Coma::Go(const QString &parameter)
+void Coma::go(const QString &parameter)
 {
     Q_UNUSED(parameter)
     if (Mode != COMA_GENERALMODE)
@@ -400,7 +497,7 @@ void Coma::Go(const QString &parameter)
     show();
 }
 
-void Coma::ReConnect()
+void Coma::reconnect()
 {
     qInfo(__PRETTY_FUNCTION__);
     if (!Reconnect)
@@ -409,7 +506,7 @@ void Coma::ReConnect()
     if (Board::GetInstance().connectionState() == Board::ConnectionState::Connected)
     {
         qDebug() << "call Disconnect";
-        Disconnect();
+        disconnect();
         clearWidgets();
         MainTW->hide();
         StdFunc::SetEmulated(false);
@@ -420,10 +517,10 @@ void Coma::ReConnect()
     msgBox.setIcon(QMessageBox::Warning);
     msgBox.show();
     msgBox.button(QMessageBox::Ok)->animateClick(3000);
-    AttemptToRec();
+    attemptToRec();
 }
 
-void Coma::AttemptToRec()
+void Coma::attemptToRec()
 {
     QApplication::setOverrideCursor(Qt::WaitCursor);
     SaveSettings();
@@ -486,13 +583,13 @@ void Coma::SetProgressBarCount(int prbnum, int count)
     }
 }
 
-void Coma::GetAbout()
+void Coma::getAbout()
 {
     AboutWidget *w = new AboutWidget;
     w->show();
 }
 
-void Coma::Disconnect()
+void Coma::disconnect()
 {
     qInfo(__PRETTY_FUNCTION__);
     BdaTimer->stop();
@@ -582,7 +679,7 @@ void Coma::DisconnectAndClear()
         return;
 
     AlarmW->clear();
-    Disconnect();
+    disconnect();
     m_Module->closeDialogs();
 
     clearWidgets();
@@ -605,14 +702,12 @@ void Coma::resizeEvent(QResizeEvent *e)
 
 void Coma::keyPressEvent(QKeyEvent *e)
 {
-    if ((e->key() == Qt::Key_Enter) || (e->key() == Qt::Key_Return))
-        emit Finished();
     if (e->key() == Qt::Key_Escape)
         StdFunc::cancel();
     QMainWindow::keyPressEvent(e);
 }
 
-void Coma::MainTWTabChanged(int tabindex)
+void Coma::mainTWTabChanged(int tabindex)
 {
     // Q_ASSERT(m_Module != nullptr);
     m_Module->parentTWTabChanged(tabindex);
