@@ -58,6 +58,7 @@ private slots:
     void loadOsc();
     void LoadOscFromFile(const QString &filename);
     void loadSwj();
+    void loadSwjFromFile(const QString &filename);
 
     void getAbout();
     void closeEvent(QCloseEvent *event) override;

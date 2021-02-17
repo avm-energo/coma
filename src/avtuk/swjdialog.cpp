@@ -22,27 +22,25 @@ SWJDialog::SWJDialog(EOscillogram *osc, int mode, QWidget *parent) : QDialog(par
     SWJOscFunc = osc;
 }
 
-void SWJDialog::Init(SWJDialog::SWJINFStruct swj)
+void SWJDialog::Init(S2DataTypes::SWJINFStruct swj)
 {
     SWJInf = swj;
     QVBoxLayout *vlyout = new QVBoxLayout;
     QGridLayout *glyout = new QGridLayout;
 
-    QStringList phase = { "фазы А, В, С", "фаза А", "фаза В", "фаза С" };
+    QStringList phase { "фазы А, В, С", "фаза А", "фаза В", "фаза С" };
     float value;
     QString str, tmps;
 
     GetSwjOscData();
 
-    glyout->addWidget(WDFunc::NewLBL(this, "Номер"), 0, 0, 1, 1);
-    glyout->addWidget(WDFunc::NewLBL(this, "Дата, время"), 0, 1, 1, 1);
-    glyout->addWidget(WDFunc::NewLBL(this, "Аппарат"), 0, 2, 1, 2);
-    glyout->addWidget(WDFunc::NewLBL(this, "Переключение"), 0, 4, 1, 2);
-    glyout->addWidget(WDFunc::NewLBLT(this, QString::number(SWJOscFunc->SWJRecord.Num)), 1, 0, 1, 1);
-    glyout->addWidget(WDFunc::NewLBLT(this, TimeFunc::UnixTime64ToString(SWJOscFunc->SWJRecord.Time)), 1, 1, 1, 1);
-    QStringList tmpsl = QStringList() << "CB"
-                                      << "G"
-                                      << "D";
+    glyout->addWidget(WDFunc::NewLBL2(this, "Номер"), 0, 0, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL2(this, "Дата, время"), 0, 1, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL2(this, "Аппарат"), 0, 2, 1, 2);
+    glyout->addWidget(WDFunc::NewLBL2(this, "Переключение"), 0, 4, 1, 2);
+    glyout->addWidget(WDFunc::NewLBLT2(this, QString::number(SWJOscFunc->SWJRecord.Num)), 1, 0, 1, 1);
+    glyout->addWidget(WDFunc::NewLBLT2(this, TimeFunc::UnixTime64ToString(SWJOscFunc->SWJRecord.Time)), 1, 1, 1, 1);
+    const QStringList tmpsl { "CB", "G", "D" };
     if (SWJOscFunc->SWJRecord.TypeA == 1)
         tmps = tmpsl.at(0); //: "N/A";
     else if (SWJOscFunc->SWJRecord.TypeA == 2)
@@ -51,11 +49,11 @@ void SWJDialog::Init(SWJDialog::SWJINFStruct swj)
         tmps = tmpsl.at(2);
     else
         tmps = "N/A";
-    glyout->addWidget(WDFunc::NewLBLT(this, tmps), 1, 2, 1, 1);
-    glyout->addWidget(WDFunc::NewLBLT(this, QString::number(SWJOscFunc->SWJRecord.NumA)), 1, 3, 1, 1);
+    glyout->addWidget(WDFunc::NewLBLT2(this, tmps), 1, 2, 1, 1);
+    glyout->addWidget(WDFunc::NewLBLT2(this, QString::number(SWJOscFunc->SWJRecord.NumA)), 1, 3, 1, 1);
     tmps = (SWJOscFunc->SWJRecord.Options & 0x00000001) ? "ВКЛЮЧЕНИЕ" : "ОТКЛЮЧЕНИЕ";
-    glyout->addWidget(WDFunc::NewLBLT(this, tmps), 1, 4, 1, 2);
-    glyout->addWidget(WDFunc::NewLBL(this, "Тип коммутации:"), 3, 0, 1, 4);
+    glyout->addWidget(WDFunc::NewLBLT2(this, tmps), 1, 4, 1, 2);
+    glyout->addWidget(WDFunc::NewLBL2(this, "Тип коммутации:"), 3, 0, 1, 4);
     if ((SWJOscFunc->SWJRecord.Options >> 1))
     {
         if (((SWJOscFunc->SWJRecord.Options >> 1) & 0x00000001))
@@ -68,13 +66,13 @@ void SWJDialog::Init(SWJDialog::SWJINFStruct swj)
     {
         tmps = "Несинхронная от внешнего устройства";
     }
-    glyout->addWidget(WDFunc::NewLBLT(this, tmps), 3, 4, 1, 1);
+    glyout->addWidget(WDFunc::NewLBLT2(this, tmps), 3, 4, 1, 1);
 
-    glyout->addWidget(WDFunc::NewLBL(this, "Результат переключения:"), 4, 0, 1, 4);
+    glyout->addWidget(WDFunc::NewLBL2(this, "Результат переключения:"), 4, 0, 1, 4);
     tmps = (SWJOscFunc->SWJRecord.OpResult) ? "НЕУСПЕШНО" : "УСПЕШНО";
-    glyout->addWidget(WDFunc::NewLBLT(this, tmps), 4, 4, 1, 1);
+    glyout->addWidget(WDFunc::NewLBLT2(this, tmps), 4, 4, 1, 1);
 
-    glyout->addWidget(WDFunc::NewLBL(this, "Коммутируемые фазы:"), 5, 0, 1, 4);
+    glyout->addWidget(WDFunc::NewLBL2(this, "Коммутируемые фазы:"), 5, 0, 1, 4);
     for (int i = 0; i < 4; i++)
     {
         if (((SWJOscFunc->SWJRecord.Options >> 3) == i))
@@ -82,24 +80,24 @@ void SWJDialog::Init(SWJDialog::SWJINFStruct swj)
             tmps = phase.at(i);
         }
     }
-    glyout->addWidget(WDFunc::NewLBLT(this, tmps), 5, 4, 1, 1);
-    glyout->addWidget(WDFunc::NewLBL(this, "Напряжение питания цепей соленоидов, В:"), 6, 0, 1, 4);
+    glyout->addWidget(WDFunc::NewLBLT2(this, tmps), 5, 4, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL2(this, "Напряжение питания цепей соленоидов, В:"), 6, 0, 1, 4);
 
     if (SWJOscFunc->SWJRecord.SupplyVoltage == std::numeric_limits<float>::max())
-        glyout->addWidget(WDFunc::NewLBLT(this, "-"), 6, 4, 1, 1);
+        glyout->addWidget(WDFunc::NewLBLT2(this, "-"), 6, 4, 1, 1);
     else
-        glyout->addWidget(WDFunc::NewLBLT(this, QString::number(SWJOscFunc->SWJRecord.SupplyVoltage)), 6, 4, 1, 1);
+        glyout->addWidget(WDFunc::NewLBLT2(this, QString::number(SWJOscFunc->SWJRecord.SupplyVoltage)), 6, 4, 1, 1);
 
-    glyout->addWidget(WDFunc::NewLBL(this, "Температура окружающей среды, Град:"), 7, 0, 1, 4);
+    glyout->addWidget(WDFunc::NewLBL2(this, "Температура окружающей среды, Град:"), 7, 0, 1, 4);
 
     if (SWJOscFunc->SWJRecord.Tokr == std::numeric_limits<float>::max())
-        glyout->addWidget(WDFunc::NewLBLT(this, "-"), 7, 4, 1, 1);
+        glyout->addWidget(WDFunc::NewLBLT2(this, "-"), 7, 4, 1, 1);
     else
-        glyout->addWidget(WDFunc::NewLBLT(this, QString::number(SWJOscFunc->SWJRecord.Tokr)), 7, 4, 1, 1);
+        glyout->addWidget(WDFunc::NewLBLT2(this, QString::number(SWJOscFunc->SWJRecord.Tokr)), 7, 4, 1, 1);
 
     if (SWJInf.FileLength)
     {
-        glyout->addWidget(WDFunc::NewLBL(this, "Осциллограмма:"), 8, 0, 1, 4);
+        glyout->addWidget(WDFunc::NewLBL2(this, "Осциллограмма:"), 8, 0, 1, 4);
         QPushButton *pb = new QPushButton("Открыть осциллограмму");
         // pb->setIcon(QIcon("images/osc.png"));
         connect(pb, SIGNAL(clicked()), this, SLOT(ShowOsc()));
@@ -113,96 +111,100 @@ void SWJDialog::Init(SWJDialog::SWJINFStruct swj)
     vlyout->addLayout(glyout);
     vlyout->addStretch(10);
     glyout = new QGridLayout;
-    QStringList sl = QStringList() << "Действующее значение тока в момент коммутации, А"
-                                   << "Действующее значение напряжения в момент коммутации, кВ"
-                                   << "Собственное время коммутации, мс"
-                                   << "Полное время коммутации, мс"
-                                   << "Время перемещения главного контакта, мс"
-                                   << "Время горения дуги, мс"
-                                   << "Время безоперационного простоя к моменту коммутации, ч"
-                                   << "Погрешность синхронной коммутации, мс"
-                                   << "Температура внутри привода, Град"
-                                   << "Давление в гидросистеме привода, Па";
-    glyout->addWidget(WDFunc::NewLBL(this, "Измеренное значение"), 0, 0, 1, 1);
-    glyout->addWidget(WDFunc::NewLBL(this, "A"), 0, 1, 1, 1);
-    glyout->addWidget(WDFunc::NewLBL(this, "B"), 0, 2, 1, 1);
-    glyout->addWidget(WDFunc::NewLBL(this, "C"), 0, 3, 1, 1);
+    const QStringList sl {
+        "Действующее значение тока в момент коммутации, А",        //
+        "Действующее значение напряжения в момент коммутации, кВ", //
+        "Собственное время коммутации, мс",                        //
+        "Полное время коммутации, мс",                             //
+        "Время перемещения главного контакта, мс",                 //
+        "Время горения дуги, мс",                                  //
+        "Время безоперационного простоя к моменту коммутации, ч",  //
+        "Погрешность синхронной коммутации, мс",                   //
+        "Температура внутри привода, Град",                        //
+        "Давление в гидросистеме привода, Па"                      //
+    };
+    glyout->addWidget(WDFunc::NewLBL2(this, "Измеренное значение"), 0, 0, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL2(this, "A"), 0, 1, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL2(this, "B"), 0, 2, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL2(this, "C"), 0, 3, 1, 1);
     glyout->setColumnStretch(0, 10);
     int row = 1;
-    glyout->addWidget(WDFunc::NewLBL(this, sl.at(row - 1)), row, 0, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL2(this, sl.at(row - 1)), row, 0, 1, 1);
     for (int i = 0; i < 3; ++i)
-        glyout->addWidget(WDFunc::NewLBLT(this, QString::number(SWJOscFunc->SWJRecord.I[i], 'f', 1)), row, i + 1, 1, 1);
+        glyout->addWidget(
+            WDFunc::NewLBLT2(this, QString::number(SWJOscFunc->SWJRecord.I[i], 'f', 1)), row, i + 1, 1, 1);
     ++row;
-    glyout->addWidget(WDFunc::NewLBL(this, sl.at(row - 1)), row, 0, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL2(this, sl.at(row - 1)), row, 0, 1, 1);
     for (int i = 0; i < 3; ++i)
-        glyout->addWidget(WDFunc::NewLBLT(this, QString::number(SWJOscFunc->SWJRecord.U[i], 'f', 1)), row, i + 1, 1, 1);
+        glyout->addWidget(
+            WDFunc::NewLBLT2(this, QString::number(SWJOscFunc->SWJRecord.U[i], 'f', 1)), row, i + 1, 1, 1);
     ++row;
-    glyout->addWidget(WDFunc::NewLBL(this, sl.at(row - 1)), row, 0, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL2(this, sl.at(row - 1)), row, 0, 1, 1);
     for (int i = 0; i < 3; ++i)
     {
         value = static_cast<float>(SWJOscFunc->SWJRecord.OwnTime[i]);
         value = value / 100;
-        glyout->addWidget(WDFunc::NewLBLT(this, str.setNum(value, 'f', 2)), row, i + 1, 1, 1);
+        glyout->addWidget(WDFunc::NewLBLT2(this, str.setNum(value, 'f', 2)), row, i + 1, 1, 1);
     }
     ++row;
-    glyout->addWidget(WDFunc::NewLBL(this, sl.at(row - 1)), row, 0, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL2(this, sl.at(row - 1)), row, 0, 1, 1);
     for (int i = 0; i < 3; ++i)
     {
         value = static_cast<float>(SWJOscFunc->SWJRecord.FullTime[i]);
         value = value / 100;
-        glyout->addWidget(WDFunc::NewLBLT(this, str.setNum(value, 'f', 2)), row, i + 1, 1, 1);
+        glyout->addWidget(WDFunc::NewLBLT2(this, str.setNum(value, 'f', 2)), row, i + 1, 1, 1);
     }
     ++row;
-    glyout->addWidget(WDFunc::NewLBL(this, sl.at(row - 1)), row, 0, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL2(this, sl.at(row - 1)), row, 0, 1, 1);
     for (int i = 0; i < 3; ++i)
     {
         value = static_cast<float>(SWJOscFunc->SWJRecord.MovTime[i]);
         value = value / 100;
-        glyout->addWidget(WDFunc::NewLBLT(this, str.setNum(value, 'f', 2)), row, i + 1, 1, 1);
+        glyout->addWidget(WDFunc::NewLBLT2(this, str.setNum(value, 'f', 2)), row, i + 1, 1, 1);
     }
     ++row;
-    glyout->addWidget(WDFunc::NewLBL(this, sl.at(row - 1)), row, 0, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL2(this, sl.at(row - 1)), row, 0, 1, 1);
     for (int i = 0; i < 3; ++i)
     {
         value = static_cast<float>(SWJOscFunc->SWJRecord.ArchTime[i]);
         value = value / 100;
-        glyout->addWidget(WDFunc::NewLBLT(this, str.setNum(value, 'f', 2)), row, i + 1, 1, 1);
+        glyout->addWidget(WDFunc::NewLBLT2(this, str.setNum(value, 'f', 2)), row, i + 1, 1, 1);
     }
     ++row;
-    glyout->addWidget(WDFunc::NewLBL(this, sl.at(row - 1)), row, 0, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL2(this, sl.at(row - 1)), row, 0, 1, 1);
     for (int i = 0; i < 3; ++i)
     {
         value = static_cast<float>(SWJOscFunc->SWJRecord.IdleTime[i]);
         value = value / 100;
-        glyout->addWidget(WDFunc::NewLBLT(this, str.setNum(value, 'f', 2)), row, i + 1, 1, 1);
+        glyout->addWidget(WDFunc::NewLBLT2(this, str.setNum(value, 'f', 2)), row, i + 1, 1, 1);
     }
     ++row;
-    glyout->addWidget(WDFunc::NewLBL(this, sl.at(row - 1)), row, 0, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL2(this, sl.at(row - 1)), row, 0, 1, 1);
     for (int i = 0; i < 3; ++i)
     {
         value = static_cast<float>(SWJOscFunc->SWJRecord.Inaccuracy[i]);
         value = value / 100;
-        glyout->addWidget(WDFunc::NewLBLT(this, str.setNum(value, 'f', 2)), row, i + 1, 1, 1);
+        glyout->addWidget(WDFunc::NewLBLT2(this, str.setNum(value, 'f', 2)), row, i + 1, 1, 1);
     }
     ++row;
-    glyout->addWidget(WDFunc::NewLBL(this, sl.at(row - 1)), row, 0, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL2(this, sl.at(row - 1)), row, 0, 1, 1);
     for (int i = 0; i < 3; ++i)
     {
         value = SWJOscFunc->SWJRecord.Tins[i];
         if (value == std::numeric_limits<float>::max())
-            glyout->addWidget(WDFunc::NewLBLT(this, "-"), row, i + 1, 1, 1);
+            glyout->addWidget(WDFunc::NewLBLT2(this, "-"), row, i + 1, 1, 1);
         else
-            glyout->addWidget(WDFunc::NewLBLT(this, str.setNum(value, 'f', 2)), row, i + 1, 1, 1);
+            glyout->addWidget(WDFunc::NewLBLT2(this, str.setNum(value, 'f', 2)), row, i + 1, 1, 1);
     }
     ++row;
-    glyout->addWidget(WDFunc::NewLBL(this, sl.at(row - 1)), row, 0, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL2(this, sl.at(row - 1)), row, 0, 1, 1);
     for (int i = 0; i < 3; ++i)
     {
         value = SWJOscFunc->SWJRecord.Phyd[i];
         if (value == std::numeric_limits<float>::max())
-            glyout->addWidget(WDFunc::NewLBLT(this, "-"), row, i + 1, 1, 1);
+            glyout->addWidget(WDFunc::NewLBLT2(this, "-"), row, i + 1, 1, 1);
         else
-            glyout->addWidget(WDFunc::NewLBLT(this, str.setNum(value, 'f', 2)), row, i + 1, 1, 1);
+            glyout->addWidget(WDFunc::NewLBLT2(this, str.setNum(value, 'f', 2)), row, i + 1, 1, 1);
     }
     /*++row;
     glyout->addWidget(WDFunc::NewLBL(this, sl.at(row-1)),row,0,1,1);

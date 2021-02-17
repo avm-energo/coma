@@ -295,7 +295,6 @@ struct DataRecF
     QByteArray Data;
 };
 
-#pragma pack(push, 1)
 struct File_struct
 {
     FileHeader File_xxx_header;
@@ -304,8 +303,74 @@ struct File_struct
     // заголовок пустой записи
     DataRecHeader void_recHeader;
 };
-#pragma pack(pop)
 typedef QVector<S2DataTypes::DataRec> S2ConfigType;
+
+#pragma pack(push) /* push current alignment to stack */
+#pragma pack(1)    /* set alignment to 1 byte boundary */
+struct GBoStruct
+{
+    quint32 FileNum;    // номер файла осциллограмм
+    quint32 FileLength; // длина файла за исключением FileHeader (16 байт)
+    quint32 ID; // Тип файла - осциллограмма и количество осциллограмм в файле (10000, 10001 ...)
+    quint64 UnixTime; // Время начала записи осциллограммы
+    quint32 IDo1; // ID первой осциллограммы в файле (определяет структуру точки и номер канала)
+};
+#pragma pack(pop)
+
+#pragma pack(push) /* push current alignment to stack */
+#pragma pack(1)    /* set alignment to 1 byte boundary */
+struct SWJINFStruct
+{
+    quint16 FileNum;    // Номер файла
+    quint32 FileLength; // Размер файла
+    quint32 Num;        // Порядковый номер переключения
+    quint8 NumA;        // Порядковый номер аппарата
+    quint8 TypeA;       // Тип аппарата
+    quint64 Time;       // Время, когда произведено переключение
+    quint32 Options; // Направление переключения, тип коммутации и коммутируемые фазы
+};
+
+#pragma pack(pop) /* restore original alignment from stack */
+
+struct SWJournalRecordStruct
+{
+    quint32 Num;      // Порядковый номер переключения
+    quint8 NumA;      // Порядковый номер аппарата
+    quint8 TypeA;     // Тип аппарата
+    quint16 OpResult; // Результат операции: успешно / с неисправностью
+    quint64 Time;     // Время, когда произведено переключение
+    quint32 Options; // Направление переключения, тип коммутации и коммутируемые фазы
+    float I[3];          // Значение тока в момент выдачи команды
+    float U[3];          // Значение напряжения в момент выдачи команды
+    quint16 OwnTime[3];  // Собственное время коммутации
+    quint16 FullTime[3]; // Полное время коммутации (только для отключения, для включения будут нули)
+    quint16 MovTime[3];  // Время перемещения главного контакта
+    quint16 ArchTime[3]; // Время горения дуги
+    quint16 IdleTime[3]; // Время безоперационного простоя
+    quint16 Inaccuracy[3]; // Погрешность синхронной коммутации (только для соответствующего типа коммутации, для
+                           // остальных типов нули
+    float SupplyVoltage;   // Напряжение питания цепей соленоидов
+    float Tokr;            // Температура окружающей среды
+    float Tins[3];         // Температура внутри привода
+    float Phyd[3];         // Давление в гидросистеме привода
+    quint64 OscTime;       // Время старта осциллограммы
+    quint8 Rezerv[4];      // Резерв
+    quint32 timeF;         // Время записи в журнал
+};
+
+struct DataRecSwj
+{
+    DataRecHeader header;
+    SWJournalRecordStruct SWJRec;
+};
+
+struct OscHeader_Data
+{
+    quint64 unixtime; // время первой точки в Unix-формате
+    float step;       // шаг по времени в мс
+    quint32 len;      // длина осциллограммы в количестве точек по времени
+};
+
 }
 
 Q_DECLARE_METATYPE(DataTypes::BitStringStruct)

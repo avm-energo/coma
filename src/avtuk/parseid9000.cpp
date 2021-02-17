@@ -17,15 +17,15 @@ ParseID9000::ParseID9000(QByteArray &BA) : ParseModule(BA)
 
 bool ParseID9000::Parse(int &count)
 {
-    OscHeader_Data OHD;
+    S2DataTypes::OscHeader_Data OHD;
     if (!PosPlusPlus(&OHD, count, sizeof(OHD)))
         return false;
 
-    DataRecHeader DR;
+    S2DataTypes::DataRecHeader DR;
     if (!PosPlusPlus(&DR, count, sizeof(DR)))
         return false;
 
-    TrendViewModel::SaveID(DR.id); // для выбора
+    //  TrendViewModel::SaveID(DR.id); // для выбора
     // составляем имя файла осциллограммы
     QString tmps = TimeFunc::UnixTime64ToString(OHD.unixtime);
     tmps.replace("/", "-");
@@ -34,7 +34,13 @@ bool ParseID9000::Parse(int &count)
     tmps.insert(0, QString::number(DR.id));
 
     QStringList tmpav, tmpdv;
-    TrendViewDialog *dlg = new TrendViewDialog(BArray);
+    //  TrendViewDialog *dlg = new TrendViewDialog(BArray);
+    TModel = new TrendViewModel(tmpdv, tmpav, OHD.len);
+    TModel->SaveID(DR.id);
+
+    TModel->Len = OHD.len;
+    TModel->xmax = (static_cast<float>(TModel->Len / 2));
+    TModel->xmin = -TModel->xmax;
 
     switch (DR.id)
     {
@@ -54,7 +60,7 @@ bool ParseID9000::Parse(int &count)
     case 10014:
     case 10015:
     case MT_ID21E:
-        if (!ParseID21(DR.id, OHD, tmps, dlg, count))
+        if (!ParseID21(DR.id, OHD, tmps, count))
             return false;
         break;
 
@@ -71,11 +77,13 @@ bool ParseID9000::Parse(int &count)
     return true;
 }
 
-bool ParseID9000::ParseID21(quint32 id, OscHeader_Data &OHD, const QString &fn, TrendViewDialog *dlg, int &count)
+bool ParseID9000::ParseID21(quint32 id, S2DataTypes::OscHeader_Data &OHD, const QString &fn, int &count)
 {
     Q_UNUSED(id);
     if (!TModel->SetPointsAxis(0, OHD.step))
         return false;
+
+    TModel->tmpav_21 << QString::number(TModel->idOsc);
     for (quint32 i = 0; i < OHD.len; ++i) // цикл по точкам
     {
         Point21 point;
@@ -84,13 +92,14 @@ bool ParseID9000::ParseID21(quint32 id, OscHeader_Data &OHD, const QString &fn, 
         TModel->AddAnalogPoint(TModel->tmpav_21.at(0), point.An);
     }
     TModel->SetFilename(fn);
-    dlg->setModal(false);
+    /*dlg->setModal(false);
     dlg->PlotShow();
-    dlg->show();
+    dlg->show();*/
     return true;
 }
 
-bool ParseID9000::ParseID8x(quint32 id, OscHeader_Data &OHD, const QString &fn, TrendViewDialog *dlg, int &count)
+bool ParseID9000::ParseID8x(
+    quint32 id, S2DataTypes::OscHeader_Data &OHD, const QString &fn, TrendViewDialog *dlg, int &count)
 {
     Q_UNUSED(id);
     // tmpav << "UA" << "UB" << "UC" << "IA" << "IB" << "IC";
@@ -117,7 +126,8 @@ bool ParseID9000::ParseID8x(quint32 id, OscHeader_Data &OHD, const QString &fn, 
     return true;
 }
 
-bool ParseID9000::ParseID85(quint32 id, OscHeader_Data &OHD, const QString &fn, TrendViewDialog *dlg, int &count)
+bool ParseID9000::ParseID85(
+    quint32 id, S2DataTypes::OscHeader_Data &OHD, const QString &fn, TrendViewDialog *dlg, int &count)
 {
     Q_UNUSED(id);
     Q_UNUSED(count);

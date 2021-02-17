@@ -25,11 +25,11 @@ bool ParseID10031::Parse(int &count)
 
     // ParseID10031::SWJournalRecordStruct SWJ;
     // PosPlusPlus(&SWJ, count, sizeof(SWJ));
-    DataRecHeader DR;
+    S2DataTypes::DataRecHeader DR;
     if (!PosPlusPlus(&DR, count, sizeof(DR)))
         return false;
 
-    OscHeader_Data OHD;
+    S2DataTypes::OscHeader_Data OHD;
     if (!PosPlusPlus(&OHD, count, sizeof(OHD)))
         return false;
     //    ParseID10031::len2 = OHD.len;
@@ -37,7 +37,7 @@ bool ParseID10031::Parse(int &count)
     if (!PosPlusPlus(&DR, count, sizeof(DR)))
         return false;
 
-    TrendViewModel::SaveID(DR.id); // для выбора
+    // TrendViewModel::SaveID(DR.id); // для выбора
     // составляем имя файла осциллограммы
     QString tmps = TimeFunc::UnixTime64ToString(OHD.unixtime);
     tmps.replace("/", "-");
@@ -46,7 +46,7 @@ bool ParseID10031::Parse(int &count)
     tmps.insert(0, QString::number(DR.id));
 
     TModel = new TrendViewModel(tmpdv, tmpav, OHD.len);
-
+    TModel->SaveID(DR.id);
     TModel->Len = OHD.len;
     TModel->tmpdv_85 = tmpdv;
     TModel->tmpav_85 = tmpav;
@@ -61,7 +61,7 @@ bool ParseID10031::Parse(int &count)
     return true;
 }
 
-bool ParseID10031::ParseID85(OscHeader_Data &OHD, const QString &fn, int &count)
+bool ParseID10031::ParseID85(S2DataTypes::OscHeader_Data &OHD, const QString &fn, int &count)
 {
 
     float xmin = -10; //-(static_cast<float>(OHD.len/2));

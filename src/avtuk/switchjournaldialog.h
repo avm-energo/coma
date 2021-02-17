@@ -1,15 +1,15 @@
 #ifndef SWITCHJOURNALDIALOG_H
 #define SWITCHJOURNALDIALOG_H
 
-#include <QDialog>
-#include <QModelIndex>
-//#include "../gen/maindef.h"
 #include "../models/etablemodel.h"
 #include "../widgets/etableview.h"
 #include "eoscillogram.h"
 #include "swjdialog.h"
 
-#define MAXSWJNUM 262144
+#include <QDialog>
+#include <QModelIndex>
+
+constexpr int MAXSWJNUM = 262144;
 
 class SwitchJournalDialog : public QDialog
 {
@@ -20,8 +20,8 @@ public:
 private:
     ETableModel *TableModel;
     ETableView *SwjTableView;
-    QMap<quint64, EOscillogram::GBoStruct> OscMap;
-    QMap<int, SWJDialog::SWJINFStruct> SWJMap;
+    QMap<quint64, S2DataTypes::GBoStruct> OscMap;
+    QMap<int, S2DataTypes::SWJINFStruct> SWJMap;
     EOscillogram *SWJDOscFunc;
 
     void SetupUI();

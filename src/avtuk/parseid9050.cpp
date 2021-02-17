@@ -34,15 +34,15 @@ ParseID9050::ParseID9050(QByteArray &BA) : ParseModule(BA)
 bool ParseID9050::Parse(int &count)
 {
     // Разбор осциллограммы
-    OscHeader_Data OHD;
+    S2DataTypes::OscHeader_Data OHD;
     if (!PosPlusPlus(&OHD, count, sizeof(OHD)))
         return false;
 
-    DataRecHeader DR;
+    S2DataTypes::DataRecHeader DR;
     if (!PosPlusPlus(&DR, count, sizeof(DR)))
         return false;
 
-    TrendViewModel::SaveID(DR.id); // для выбора
+    //  TrendViewModel::SaveID(DR.id); // для выбора
     // составляем имя файла осциллограммы
     QString tmps = TimeFunc::UnixTime64ToString(OHD.unixtime);
     tmps.replace("/", "-");
@@ -54,7 +54,7 @@ bool ParseID9050::Parse(int &count)
 
     QStringList tmpav;
     TrendViewDialog *dlg = new TrendViewDialog(BArray);
-
+    TModel->SaveID(DR.id);
     if (!ParseOsc(DR.id, OHD, tmps, tmpav, dlg, count))
         return false;
 
@@ -74,7 +74,7 @@ bool ParseID9050::Parse(int &count)
     return true;
 }
 
-bool ParseID9050::ParseOsc(quint32 id, ParseID9050::OscHeader_Data &OHD, const QString &fn, QStringList tmpav,
+bool ParseID9050::ParseOsc(quint32 id, S2DataTypes::OscHeader_Data &OHD, const QString &fn, QStringList tmpav,
     TrendViewDialog *dlg, int &count)
 {
     tmpav << Channel.key(id);

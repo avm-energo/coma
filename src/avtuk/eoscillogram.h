@@ -1,12 +1,12 @@
 #ifndef EOSCILLOGRAM_H
 #define EOSCILLOGRAM_H
 
+#include "../gen/datatypes.h"
 #include "trendviewmodel.h"
 
 #include <QByteArray>
 #include <QObject>
 #include <QVector>
-//#include "../dialogs/swjdialog.h"
 constexpr int MT_HEAD_ID = 9000; // ID осциллограммы
 constexpr int MT_HEAD87 = 9050;  // ID осциллограммы и спектрограммы модуля 87
 constexpr int SWJ_ID85 = 10031;  // ID осциллограммы c журналом по модулю 8085
@@ -20,73 +20,10 @@ public:
     EOscillogram(QObject *parent = nullptr);
     ~EOscillogram();
 
-#pragma pack(push) /* push current alignment to stack */
-#pragma pack(1)    /* set alignment to 1 byte boundary */
-    struct GBoStruct
-    {
-        quint32 FileNum;    // номер файла осциллограмм
-        quint32 FileLength; // длина файла за исключением FileHeader (16 байт)
-        quint32 ID; // Тип файла - осциллограмма и количество осциллограмм в файле (10000, 10001 ...)
-        quint64 UnixTime; // Время начала записи осциллограммы
-        quint32 IDo1; // ID первой осциллограммы в файле (определяет структуру точки и номер канала)
-    };
-
-    struct SWJournalRecordStruct
-    {
-        quint32 Num;      // Порядковый номер переключения
-        quint8 NumA;      // Порядковый номер аппарата
-        quint8 TypeA;     // Тип аппарата
-        quint16 OpResult; // Результат операции: успешно / с неисправностью
-        quint64 Time;     // Время, когда произведено переключение
-        quint32 Options; // Направление переключения, тип коммутации и коммутируемые фазы
-        float I[3];          // Значение тока в момент выдачи команды
-        float U[3];          // Значение напряжения в момент выдачи команды
-        quint16 OwnTime[3];  // Собственное время коммутации
-        quint16 FullTime[3]; // Полное время коммутации (только для отключения, для включения будут нули)
-        quint16 MovTime[3];  // Время перемещения главного контакта
-        quint16 ArchTime[3]; // Время горения дуги
-        quint16 IdleTime[3]; // Время безоперационного простоя
-        quint16 Inaccuracy[3]; // Погрешность синхронной коммутации (только для соответствующего типа коммутации, для
-                               // остальных типов нули
-        float SupplyVoltage;   // Напряжение питания цепей соленоидов
-        float Tokr;            // Температура окружающей среды
-        float Tins[3];         // Температура внутри привода
-        float Phyd[3];         // Давление в гидросистеме привода
-        quint64 OscTime;       // Время старта осциллограммы
-        quint8 Rezerv[4];      // Резерв
-        quint32 timeF;         // Время записи в журнал
-    };
-
-    struct DataRecSwj
-    {
-        quint32 id; // 10031 – тип записи– переключения// 10031 – тип записи– переключения
-        quint32 numbytes; // количество байт в записи переключения
-        SWJournalRecordStruct SWJRec;
-    };
-
-    struct DataRecHeader
-    {
-        quint32 id;       // ID
-        quint32 numbytes; // количество байт
-    };
-
-    /* struct OscHeader_Data
-     {
-         quint64 unixtime; // время первой точки в Unix-формате
-         float step; // шаг по времени в мс
-         quint32 len; // длина осциллограммы в количестве точек по времени
-     };
-
-     struct OscDataRec
-     {
-         quint32 id;
-         quint32 numbytes;
-     };*/
-
     // OscHeader_Data OscHeader;
     int BASize, BSize, Pos;
     QByteArray BA;
-    SWJournalRecordStruct SWJRecord;
+    S2DataTypes::SWJournalRecordStruct SWJRecord;
     // TrendViewModel mdl;
     /* struct Point85
      {
@@ -117,7 +54,7 @@ public:
          float An[6];
      };*/
 
-#pragma pack(pop) /* restore original alignment from stack */
+    //#pragma pack(pop) /* restore original alignment from stack */
 
     /*    void AddAnalogPoint(int GraphNum, float PointValue);
         void AddDigitalPoint(int GraphNum, int PointValue);

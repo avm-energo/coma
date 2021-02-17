@@ -10,7 +10,8 @@ class TrendViewModel
 {
 public:
     TrendViewModel(const QStringList &dlist, const QStringList &alist, int pointsnum);
-    ~TrendViewModel();
+    TrendViewModel() = default;
+    ~TrendViewModel() = default;
 
     QMap<QString, QVector<double>> AnalogMainData, DigitalMainData;
     QVector<double> MainPoints;
@@ -23,8 +24,8 @@ public:
     void SetFilename(const QString &fn);
     int DContains(const QString &key);
     int AContains(const QString &key);
-    static void SaveID(quint32 id);
-    static quint32 idOsc;
+    void SaveID(quint32 id);
+    quint32 idOsc;
     float xmax, xmin;
     quint32 Len;
 
@@ -109,7 +110,10 @@ public:
     QStringList tmpdv_80 = QStringList();
     QStringList tmpav_80 { "USA", "USB", "USC", "IA", "IB", "IC", "ULA", "ULB", "ULC" };
 
-    QStringList tmpav_21 { "UA", "UB", "UC", "IA", "IB", "IC" };
+    // QStringList tmpav_21 { "UA", "UB", "UC", "IA", "IB", "IC" };
+    QStringList acolors_21 { Colors::YLWCOLOR };
+    QStringList tmpav_21; // = QStringList() << "UA";
+    QStringList adescr_21 { "Сигнал в инженерных единицах" };
 
 private:
     int PointsNum;

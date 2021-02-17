@@ -250,7 +250,7 @@ bool EOscillogram::PosPlusPlus(void *dst, int size)
     BSize = size;
     if (Pos > (BASize - BSize))
     {
-        ERMSG("pos > ba.size");
+        qCritical("pos > ba.size");
         return false;
     }
     memcpy(dst, &(BA.data()[Pos]), BSize);
@@ -273,7 +273,7 @@ bool EOscillogram::ProcessOsc(TrendViewModel *mdl)
     memcpy(&FH, &(BA.data()[0]), sizeof(FH));
 
     Pos += sizeof(FH);
-    DataRecHeader DR;
+    S2DataTypes::DataRecHeader DR;
     if (Pos > BASize)
         return false;
     memcpy(&DR, &(BA.data()[Pos]), sizeof(DR));
@@ -296,10 +296,10 @@ bool EOscillogram::ProcessOsc(TrendViewModel *mdl)
 
             case SWJ_ID85:
             {
-                memcpy(&SWJRecord, &(BA.data()[Pos]), sizeof(SWJournalRecordStruct));
-                if (DR.numbytes == sizeof(SWJournalRecordStruct))
+                memcpy(&SWJRecord, &(BA.data()[Pos]), sizeof(S2DataTypes::SWJournalRecordStruct));
+                if (DR.NumByte == sizeof(S2DataTypes::SWJournalRecordStruct))
                 {
-                    Pos += sizeof(SWJournalRecordStruct);
+                    Pos += sizeof(S2DataTypes::SWJournalRecordStruct);
                     PM = new ParseID10031(BA);
                 }
                 else

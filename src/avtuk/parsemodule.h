@@ -18,12 +18,6 @@ public:
     TrendViewDialog *dlg;
     quint32 id;
 
-    struct DataRecHeader
-    {
-        quint32 id;       // ID
-        quint32 numbytes; // количество байт
-    };
-
     bool PosPlusPlus(void *dst, int &count, int size);
     virtual bool Parse(int &count) = 0;
     //    virtual void Save(quint32 *len) = 0;

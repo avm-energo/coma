@@ -9,10 +9,6 @@
 #include "../gen/stdfunc.h"
 #include "../widgets/wd_func.h"
 #include "trendviewmodel.h"
-//#include "../gen/modulebsi.h"
-//#include "../gen/eoscillogram.h"
-
-quint32 TrendViewModel::idOsc;
 
 TrendViewModel::TrendViewModel(const QStringList &dlist, const QStringList &alist, int pointsnum)
 
@@ -26,18 +22,14 @@ TrendViewModel::TrendViewModel(const QStringList &dlist, const QStringList &alis
         AnalogMainData[alist.at(i)] = QVector<double>();
 }
 
-TrendViewModel::~TrendViewModel()
-{
-}
-
 void TrendViewModel::AddAnalogPoint(const QString &GraphNum, float PointValue)
 {
-    if (AnalogMainData.contains(GraphNum))
-    {
-        QVector<double> tmpv = AnalogMainData[GraphNum];
-        tmpv.append(PointValue);
-        AnalogMainData[GraphNum] = tmpv;
-    }
+    // if (AnalogMainData.contains(GraphNum))
+    // {
+    QVector<double> tmpv = AnalogMainData[GraphNum];
+    tmpv.append(PointValue);
+    AnalogMainData[GraphNum] = tmpv;
+    // }
 }
 
 void TrendViewModel::AddDigitalPoint(const QString &GraphNum, int PointValue)

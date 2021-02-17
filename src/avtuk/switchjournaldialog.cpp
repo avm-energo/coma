@@ -48,8 +48,8 @@ void SwitchJournalDialog::SetupUI()
 
 void SwitchJournalDialog::ProcessSWJournal(QByteArray &ba)
 {
-    SWJDialog::SWJINFStruct tmpswj;
-    int SWJRecordSize = sizeof(SWJDialog::SWJINFStruct);
+    S2DataTypes::SWJINFStruct tmpswj;
+    int SWJRecordSize = sizeof(S2DataTypes::SWJINFStruct);
     int BaSize = ba.size();
     int BaPos = 0;
     int CurRow = 1;

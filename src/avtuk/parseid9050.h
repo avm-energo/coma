@@ -34,13 +34,6 @@ public:
 
     QMultiMap<QString, int> Channel;
 
-    struct OscHeader_Data
-    {
-        quint64 unixtime; // время первой точки в Unix-формате
-        float step;       // шаг по времени в мс
-        quint32 len; // длина осциллограммы в количестве точек по времени
-    };
-
     struct SpectHeader_Data
     {
         quint64 t1; // Время начала события
@@ -59,8 +52,8 @@ public:
 
     bool Parse(int &count);
     //    void Save(quint32 *len);
-    bool ParseOsc(
-        quint32 id, OscHeader_Data &OHD, const QString &fn, QStringList tmpav, TrendViewDialog *dlg, int &count);
+    bool ParseOsc(quint32 id, S2DataTypes::OscHeader_Data &OHD, const QString &fn, QStringList tmpav,
+        TrendViewDialog *dlg, int &count);
     bool ParseSpectr(
         quint32 id, SpectHeader_Data &SHD, const QString &fn, QStringList tmpav, TrendViewDialog *dlg, int &count);
 };

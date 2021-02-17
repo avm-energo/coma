@@ -14,13 +14,6 @@ class ParseID9000 : public ParseModule
 public:
     ParseID9000(QByteArray &BA);
 
-    struct OscHeader_Data
-    {
-        quint64 unixtime; // время первой точки в Unix-формате
-        float step;       // шаг по времени в мс
-        quint32 len; // длина осциллограммы в количестве точек по времени
-    };
-
     struct Point85
     {
         float An[9]; // Ua,Ub,Uc (напряжение источника), Ia, Ib, Ic (ток ВВ), Ua,Ub,Uc (напряжение нагрузки)
@@ -52,9 +45,9 @@ public:
 
     bool Parse(int &count);
     //    void Save(quint32 *len);
-    bool ParseID21(quint32 id, OscHeader_Data &OHD, const QString &fn, TrendViewDialog *dlg, int &count);
-    bool ParseID8x(quint32 id, OscHeader_Data &OHD, const QString &fn, TrendViewDialog *dlg, int &count);
-    bool ParseID85(quint32 id, OscHeader_Data &OHD, const QString &fn, TrendViewDialog *dlg, int &count);
+    bool ParseID21(quint32 id, S2DataTypes::OscHeader_Data &OHD, const QString &fn, int &count);
+    bool ParseID8x(quint32 id, S2DataTypes::OscHeader_Data &OHD, const QString &fn, TrendViewDialog *dlg, int &count);
+    bool ParseID85(quint32 id, S2DataTypes::OscHeader_Data &OHD, const QString &fn, TrendViewDialog *dlg, int &count);
 };
 
 #endif // PARSEID9000_H
