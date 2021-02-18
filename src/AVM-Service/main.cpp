@@ -1,6 +1,6 @@
 #include "../gen/logger.h"
-#include "coma.h"
 #include "config.h"
+#include "servicecoma.h"
 
 #include <QApplication>
 #include <QCommandLineParser>

@@ -1,4 +1,4 @@
-#include "coma.h"
+#include "servicecoma.h"
 
 #include "../gen/board.h"
 #include "../gen/datamanager.h"

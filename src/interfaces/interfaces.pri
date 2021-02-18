@@ -1,16 +1,5 @@
-
-CONFIG += c++17
-CONFIG -= console
-
-QT += core concurrent gui widgets serialport
-
-TEMPLATE = SUBDIRS
-
-
-
 SOURCES += \
     baseinterface.cpp \
-    ethernet.cpp \
     iec104.cpp \
     iec104thread.cpp \
     interfacesettings.cpp \
@@ -27,7 +16,6 @@ SOURCES += \
 
 HEADERS += \
     baseinterface.h \
-    ethernet.h \
     iec104.h \
     iec104private.h \
     iec104thread.h \

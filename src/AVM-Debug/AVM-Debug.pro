@@ -16,14 +16,7 @@ INCLUDEPATH += ../$${QXLSX_HEADERPATH}
 INCLUDEPATH += ../$${QXLSX_SOURCEPATH}
 INCLUDEPATH += ../$${LIME_HEADERPATH}
 
-SOURCES += \
-    coma.cpp \
-    main.cpp \
-    tunemodule.cpp
-
-HEADERS += \
-   coma.h \
-    tunemodule.h
+include(AVM-Debug.pri)
 
 DESTDIR = $${BIN_PATH}/$${TARGET}
 win32 {

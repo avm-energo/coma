@@ -12,15 +12,4 @@ INCLUDEPATH += ../$${QXLSX_PARENTPATH}
 INCLUDEPATH += ../$${QXLSX_HEADERPATH}
 INCLUDEPATH += ../$${LIME_HEADERPATH}
 
-SOURCES += \
-    abstracttunedialog.cpp \
-    generaltunedialog.cpp \
-
-
-
-HEADERS += \
-    abstracttunedialog.h \
-    generaltunedialog.h \
-    tunesteps.h
-
-include(tunekiv.pri)
+include(tune.pri)

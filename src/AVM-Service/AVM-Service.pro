@@ -15,14 +15,7 @@ INCLUDEPATH += ../$${QXLSX_PARENTPATH}
 INCLUDEPATH += ../$${QXLSX_HEADERPATH}
 INCLUDEPATH += ../$${QXLSX_SOURCEPATH}
 
-SOURCES += \
-    coma.cpp \
-    main.cpp \
-    servicemodule.cpp
-	
-HEADERS += \
-   coma.h \
-    servicemodule.h
+include(AVM-Service.pri)
 
 DESTDIR = $${BIN_PATH}/$${TARGET}
 win32 {
