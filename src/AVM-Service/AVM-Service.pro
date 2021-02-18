@@ -43,6 +43,24 @@ win32 {
     }
 }
 
+unix {
+LIBS += -lhidapi-hidraw
+contains(QT_ARCH, x86_64) {
+        message("Unix x64 build")
+        ## Unix x64 (64bit) specific build here
+        CONFIG(debug, debug|release) {
+
+        }
+    } else {
+        message("Unix x86 build")
+        ## Unix x86 (32bit) specific build here
+        CONFIG(debug, debug|release) {
+
+        }
+    }
+}
+
+
 LIBRARIES += check \
     config \
     datablock \

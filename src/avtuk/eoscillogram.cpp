@@ -322,7 +322,7 @@ bool EOscillogram::ProcessOsc(TrendViewModel *mdl)
         }
         memcpy(&DR, &(BA.data()[Pos]), sizeof(DR));
         Pos += sizeof(DR);
-        *mdl = *(parseModule->TModel);
+        *mdl = *(parseModule->m_trendViewModel);
     }
     /*
     Pos = 0;

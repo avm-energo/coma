@@ -35,12 +35,12 @@ bool ParseID9000::Parse(int &count)
 
     QStringList tmpav, tmpdv;
     //  TrendViewDialog *dlg = new TrendViewDialog(BArray);
-    TModel = new TrendViewModel(tmpdv, tmpav, OHD.len);
-    TModel->SaveID(DR.id);
+    m_trendViewModel = new TrendViewModel(tmpdv, tmpav, OHD.len);
+    m_trendViewModel->SaveID(DR.id);
 
-    TModel->Len = OHD.len;
-    TModel->xmax = (static_cast<float>(TModel->Len / 2));
-    TModel->xmin = -TModel->xmax;
+    m_trendViewModel->Len = OHD.len;
+    m_trendViewModel->xmax = (static_cast<float>(m_trendViewModel->Len / 2));
+    m_trendViewModel->xmin = -m_trendViewModel->xmax;
 
     switch (DR.id)
     {
@@ -65,7 +65,7 @@ bool ParseID9000::Parse(int &count)
         break;
 
     case MT_ID80:
-        if (!ParseID8x(DR.id, OHD, tmps, dlg, count))
+        if (!ParseID8x(DR.id, OHD, tmps, m_trendViewDialog, count))
             return false;
         break;
 
@@ -80,18 +80,18 @@ bool ParseID9000::Parse(int &count)
 bool ParseID9000::ParseID21(quint32 id, S2DataTypes::OscHeader &OHD, const QString &fn, int &count)
 {
     Q_UNUSED(id);
-    if (!TModel->SetPointsAxis(0, OHD.step))
+    if (!m_trendViewModel->SetPointsAxis(0, OHD.step))
         return false;
 
-    TModel->tmpav_21 << QString::number(TModel->idOsc);
+    m_trendViewModel->tmpav_21 << QString::number(m_trendViewModel->idOsc);
     for (quint32 i = 0; i < OHD.len; ++i) // цикл по точкам
     {
         Point21 point;
         if (!PosPlusPlus(&point, count, sizeof(Point21)))
             return false;
-        TModel->AddAnalogPoint(TModel->tmpav_21.at(0), point.An);
+        m_trendViewModel->AddAnalogPoint(m_trendViewModel->tmpav_21.at(0), point.An);
     }
-    TModel->SetFilename(fn);
+    m_trendViewModel->SetFilename(fn);
     /*dlg->setModal(false);
     dlg->PlotShow();
     dlg->show();*/
@@ -109,7 +109,7 @@ bool ParseID9000::ParseID8x(
     float xmin = -xmax;
     xmin = -(OHD.step * 512);
 
-    if (!TModel->SetPointsAxis(xmin, OHD.step))
+    if (!m_trendViewModel->SetPointsAxis(xmin, OHD.step))
         return false;
     for (quint32 i = 0; i < OHD.len; ++i) // цикл по точкам
     {
@@ -117,9 +117,9 @@ bool ParseID9000::ParseID8x(
         if (!PosPlusPlus(&point, count, sizeof(Point8x)))
             return false;
         for (int i = 0; i < 6; ++i)
-            TModel->AddAnalogPoint(TModel->tmpav_80.at(i), point.An[i]);
+            m_trendViewModel->AddAnalogPoint(m_trendViewModel->tmpav_80.at(i), point.An[i]);
     }
-    TModel->SetFilename(fn);
+    m_trendViewModel->SetFilename(fn);
     dlg->setModal(false);
     dlg->showPlot();
     dlg->show();

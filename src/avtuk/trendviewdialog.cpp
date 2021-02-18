@@ -190,7 +190,7 @@ void TrendViewDialog::graphClicked(QCPAbstractPlottable *plot, int dataIndex)
 
 void TrendViewDialog::signalChoosed(QString signame)
 {
-    if (signalOscPropertiesMap.keys().contains(signame))
+    if (signalOscPropertiesMap.contains(signame))
     {
         QCPGraph *graph = (signalOscPropertiesMap.value(signame).graph);
         if (graph == nullptr)
@@ -201,7 +201,7 @@ void TrendViewDialog::signalChoosed(QString signame)
 
 void TrendViewDialog::signalToggled(QString signame, bool isChecked)
 {
-    if (signalOscPropertiesMap.keys().contains(signame))
+    if (signalOscPropertiesMap.contains(signame))
     {
         if (!isChecked) // signal to be deleted from plot
         {
@@ -439,9 +439,9 @@ void TrendViewDialog::showPlot()
 {
     if (!noAnalog)
     {
-        for (int i = 0; i < signalOscPropertiesMap.keys().size(); ++i)
+        for (auto it = signalOscPropertiesMap.begin(); it != signalOscPropertiesMap.end(); it++)
         {
-            QString tmps = signalOscPropertiesMap.keys().at(i);
+            QString tmps = it.key();
             if (signalOscPropertiesMap[tmps].isVisible)
             {
                 QCPGraph *graph = signalOscPropertiesMap[tmps].graph;
@@ -485,7 +485,8 @@ void TrendViewDialog::showPlot()
         break;
     }
     default:
-        break;
+        delete group;
+        return;
     }
     mainPlot->replot();
     this->showMaximized();
@@ -744,7 +745,6 @@ void TrendViewDialog::digitalAxis(int &MainPlotLayoutRow)
 void TrendViewDialog::setupPlots()
 {
     noDiscrete = noAnalog = false;
-    QPen pen;
 
     mainPlot = std::unique_ptr<QCustomPlot>(new QCustomPlot);
     mainPlot->plotLayout()->clear();

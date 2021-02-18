@@ -70,12 +70,12 @@ bool UsbHidPort::setupConnection()
         finish();
         return false;
     }
-#ifdef __linux__
-    m_hidDevice = hid_open_path(deviceInfo().path.toStdString().c_str());
-#endif
-#ifdef _WIN32
+    //#ifdef __linux__
+    //   m_hidDevice = hid_open_path(deviceInfo().path.toStdString().c_str());
+    //#endif
+    //#ifdef _WIN32
     m_hidDevice = openDevice(m_deviceInfo);
-#endif
+    //#endif
     if (!m_hidDevice)
     {
         qCritical() << Error::Msg::OpenError;

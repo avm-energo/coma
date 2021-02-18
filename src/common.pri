@@ -33,7 +33,7 @@ win32 {
 }
 
 unix {
-    contains(QMAKE_TARGET.arch, x86_64) {
+    contains(QT_ARCH, x86_64) {
        # message("Unix x64 build")
        ## Windows x64 (64bit) specific build here
        COMA_ARCH = unix64

@@ -59,7 +59,7 @@ void SwitchJournalDialog::ProcessSWJournal(QByteArray &ba)
         size_t tmpt = static_cast<size_t>(SWJRecordSize);
         memcpy(&tmpswj, &(ba.data()[BaPos]), tmpt);
         int tmpi = static_cast<int>(tmpswj.num);
-        if ((tmpswj.num != 0) && (!SWJMap.keys().contains(tmpi))) // пропуск пустых записей
+        if ((tmpswj.num != 0) && (!SWJMap.contains(tmpi))) // пропуск пустых записей
         {
             SWJMap[tmpi] = tmpswj;
             TableModel->addRow();
@@ -73,7 +73,7 @@ void SwitchJournalDialog::ProcessSWJournal(QByteArray &ba)
             TableModel->setData(TableModel->index(CurRow, 3, QModelIndex()), QVariant(tmps), Qt::EditRole);
             tmps = (tmpswj.options & 0x00000001) ? "ВКЛ" : "ОТКЛ";
             TableModel->setData(TableModel->index(CurRow, 4, QModelIndex()), QVariant(tmps), Qt::EditRole);
-            if (SWJMap.keys().contains(tmpswj.time))
+            if (SWJMap.contains(tmpswj.time))
                 tmps = ":/icons/osc.svg";
             else
                 tmps = "images/hr.png";

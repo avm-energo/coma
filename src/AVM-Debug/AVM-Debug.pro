@@ -48,6 +48,27 @@ win32 {
     }
 }
 
+unix {
+LIBS += -lhidapi-hidraw
+contains(QT_ARCH, x86_64) {
+
+        message("Unix x64 build")
+        LIBS += -L$$PWD/../../lib/unix64/$${BUILD_FLAG} -llimereport$${LIB_SUFFIX} -lQtZint$${LIB_SUFFIX}
+        ## Unix x64 (64bit) specific build here
+        CONFIG(debug, debug|release) {
+
+        }
+    } else {
+        message("Unix x86 build")
+        LIBS += -L$$PWD/../../lib/unix32/$${BUILD_FLAG} -llimereport$${LIB_SUFFIX} -lQtZint$${LIB_SUFFIX}
+        ## Unix x86 (32bit) specific build here
+        CONFIG(debug, debug|release) {
+
+        }
+    }
+}
+
+
 LIBRARIES += check \
     config \
     datablock \

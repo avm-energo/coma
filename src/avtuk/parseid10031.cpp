@@ -45,11 +45,11 @@ bool ParseID10031::Parse(int &count)
     tmps.insert(0, "_");
     tmps.insert(0, QString::number(DR.id));
 
-    TModel = new TrendViewModel(tmpdv, tmpav, OHD.len);
-    TModel->SaveID(DR.id);
-    TModel->Len = OHD.len;
-    TModel->tmpdv_85 = tmpdv;
-    TModel->tmpav_85 = tmpav;
+    m_trendViewModel = new TrendViewModel(tmpdv, tmpav, OHD.len);
+    m_trendViewModel->SaveID(DR.id);
+    m_trendViewModel->Len = OHD.len;
+    m_trendViewModel->tmpdv_85 = tmpdv;
+    m_trendViewModel->tmpav_85 = tmpav;
 
     switch (DR.id)
     {
@@ -66,7 +66,7 @@ bool ParseID10031::ParseID85(S2DataTypes::OscHeader &OHD, const QString &fn, int
 
     float xmin = -10; //-(static_cast<float>(OHD.len/2));
 
-    if (!TModel->SetPointsAxis(xmin, OHD.step))
+    if (!m_trendViewModel->SetPointsAxis(xmin, OHD.step))
         return false;
     for (quint32 i = 0; i < OHD.len; ++i) // цикл по точкам
     {
@@ -75,18 +75,18 @@ bool ParseID10031::ParseID85(S2DataTypes::OscHeader &OHD, const QString &fn, int
             return false;
         //                quint32 DisPoint = point.Dis & 0x000FFFFF; // оставляем только младшие 20 бит
         quint32 DisPoint = point.Dis;
-        for (int i = 0; i < TModel->tmpdv_85.size(); ++i)
+        for (int i = 0; i < m_trendViewModel->tmpdv_85.size(); ++i)
         {
             if (DisPoint & 0x00000001)
-                TModel->AddDigitalPoint(TModel->tmpdv_85.at(i), 1);
+                m_trendViewModel->AddDigitalPoint(m_trendViewModel->tmpdv_85.at(i), 1);
             else
-                TModel->AddDigitalPoint(TModel->tmpdv_85.at(i), 0);
+                m_trendViewModel->AddDigitalPoint(m_trendViewModel->tmpdv_85.at(i), 0);
             DisPoint >>= 1;
         }
-        for (int i = 0; i < TModel->tmpav_85.size(); ++i)
-            TModel->AddAnalogPoint(TModel->tmpav_85.at(i), point.An[i]);
+        for (int i = 0; i < m_trendViewModel->tmpav_85.size(); ++i)
+            m_trendViewModel->AddAnalogPoint(m_trendViewModel->tmpav_85.at(i), point.An[i]);
     }
-    TModel->SetFilename(fn);
+    m_trendViewModel->SetFilename(fn);
     return true;
 }
 

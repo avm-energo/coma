@@ -99,12 +99,12 @@ void TrendViewModel::SetFilename(const QString &fn)
 
 int TrendViewModel::DContains(const QString &key)
 {
-    return DigitalMainData.keys().contains(key);
+    return DigitalMainData.contains(key);
 }
 
 int TrendViewModel::AContains(const QString &key)
 {
-    return AnalogMainData.keys().contains(key);
+    return AnalogMainData.contains(key);
 }
 
 // void TrendViewModel::WriteToFile(int row, QXlsx::Document *xls)

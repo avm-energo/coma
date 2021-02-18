@@ -54,7 +54,7 @@ bool ParseID9050::Parse(int &count)
 
     QStringList tmpav;
     TrendViewDialog *dlg = new TrendViewDialog(BArray);
-    TModel->SaveID(DR.id);
+    m_trendViewModel->SaveID(DR.id);
     if (!ParseOsc(DR.id, OHD, tmps, tmpav, dlg, count))
         return false;
 
