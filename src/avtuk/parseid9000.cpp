@@ -17,7 +17,7 @@ ParseID9000::ParseID9000(QByteArray &BA) : ParseModule(BA)
 
 bool ParseID9000::Parse(int &count)
 {
-    S2DataTypes::OscHeader_Data OHD;
+    S2DataTypes::OscHeader OHD;
     if (!PosPlusPlus(&OHD, count, sizeof(OHD)))
         return false;
 
@@ -27,7 +27,7 @@ bool ParseID9000::Parse(int &count)
 
     //  TrendViewModel::SaveID(DR.id); // для выбора
     // составляем имя файла осциллограммы
-    QString tmps = TimeFunc::UnixTime64ToString(OHD.unixtime);
+    QString tmps = TimeFunc::UnixTime64ToString(OHD.time);
     tmps.replace("/", "-");
     tmps.replace(":", "_");
     tmps.insert(0, "_");
@@ -77,7 +77,7 @@ bool ParseID9000::Parse(int &count)
     return true;
 }
 
-bool ParseID9000::ParseID21(quint32 id, S2DataTypes::OscHeader_Data &OHD, const QString &fn, int &count)
+bool ParseID9000::ParseID21(quint32 id, S2DataTypes::OscHeader &OHD, const QString &fn, int &count)
 {
     Q_UNUSED(id);
     if (!TModel->SetPointsAxis(0, OHD.step))
@@ -99,7 +99,7 @@ bool ParseID9000::ParseID21(quint32 id, S2DataTypes::OscHeader_Data &OHD, const 
 }
 
 bool ParseID9000::ParseID8x(
-    quint32 id, S2DataTypes::OscHeader_Data &OHD, const QString &fn, TrendViewDialog *dlg, int &count)
+    quint32 id, S2DataTypes::OscHeader &OHD, const QString &fn, TrendViewDialog *dlg, int &count)
 {
     Q_UNUSED(id);
     // tmpav << "UA" << "UB" << "UC" << "IA" << "IB" << "IC";
@@ -121,13 +121,13 @@ bool ParseID9000::ParseID8x(
     }
     TModel->SetFilename(fn);
     dlg->setModal(false);
-    dlg->PlotShow();
+    dlg->showPlot();
     dlg->show();
     return true;
 }
 
 bool ParseID9000::ParseID85(
-    quint32 id, S2DataTypes::OscHeader_Data &OHD, const QString &fn, TrendViewDialog *dlg, int &count)
+    quint32 id, S2DataTypes::OscHeader &OHD, const QString &fn, TrendViewDialog *dlg, int &count)
 {
     Q_UNUSED(id);
     Q_UNUSED(count);

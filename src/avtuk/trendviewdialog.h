@@ -19,37 +19,6 @@ class TrendViewDialog : public QDialog
 {
     Q_OBJECT
 public:
-    TrendViewDialog(QByteArray &ba, QWidget *parent = nullptr);
-    ~TrendViewDialog();
-
-    // инициализация графиков
-    // имена графиков контактных/аналоговых сигналов, количество точек, диапазон по оси Y для аналоговых
-    void PlotShow();
-    void SetModel(TrendViewModel *model);
-    void SetRanges(float XRangeMin, float XRangeMax, float YRangeMin, float YRangeMax);
-    void SetDigitalNames(QStringList &names);
-    void SetAnalogNames(QStringList &names);
-    void SetDigitalColors(QStringList &colors);
-    void SetAnalogColors(QStringList &colors);
-    void SetupPlots();
-    void SetupUI();
-    // void WriteToFile(int row, QXlsx::Document *xls); // row - номер строки для записи в файл xlsx, bdnum - номер
-    // блока данных
-    void SetAnalogDescriptions(QStringList &descr);
-    void SetDiscreteDescriptions(QStringList &descr);
-    int WRow;
-    //    quint32 id;
-
-    struct Point85
-    {
-        float An[9]; // Ua,Ub,Uc (напряжение источника), Ia, Ib, Ic (ток ВВ), Ua,Ub,Uc (напряжение нагрузки)
-        quint32 Dis;
-    };
-
-    Point85 point;
-    TrendViewModel *TrendModel;
-
-private:
     enum SignalTypes
     {
         ST_ANALOG,
@@ -58,36 +27,72 @@ private:
 
     struct DescriptionStruct
     {
-        QStringList Names;
-        QStringList Descriptions;
-        QMap<QString, QString> Colors;
+        QStringList names;
+        QStringList descriptions;
+        QMap<QString, QString> colors;
     };
 
     struct SignalOscPropertiesStruct
     {
-        SignalTypes Type;
-        int LeftAxisIndex;
-        QCPGraph *Graph;
-        bool Visible;
+        SignalTypes type;
+        int leftAxisIndex;
+        QCPGraph *graph;
+        bool isVisible;
     };
+    TrendViewDialog(QByteArray &ba, QWidget *parent = nullptr);
+    TrendViewDialog(QWidget *parent = nullptr);
+    ~TrendViewDialog();
 
-    QMap<QString, SignalOscPropertiesStruct> SignalOscPropertiesMap;
-    QPointer<QCustomPlot> MainPlot;
-    QCPLegend *AnalogLegend, *DiscreteLegend;
+    // инициализация графиков
+    // имена графиков контактных/аналоговых сигналов, количество точек, диапазон по оси Y для аналоговых
+    void showPlot();
+    void setModel(std::unique_ptr<TrendViewModel> model);
+    void setRange(float XRangeMin, float XRangeMax, float YRangeMin, float YRangeMax);
+    void setDigitalNames(QStringList &names);
+    void setAnalogNames(QStringList &names);
+    void setDigitalColors(QStringList &colors);
+    void setAnalogColors(QStringList &colors);
+    void setupPlots();
+    void setupUI();
+    // void WriteToFile(int row, QXlsx::Document *xls); // row - номер строки для записи в файл xlsx, bdnum - номер
+    // блока данных
+    void setAnalogDescriptions(QStringList &descr);
+    void setDiscreteDescriptions(QStringList &descr);
+    // int WRow;
+    //    quint32 id;
+
+    //    struct Point85
+    //    {
+    //        float An[9]; // Ua,Ub,Uc (напряжение источника), Ia, Ib, Ic (ток ВВ), Ua,Ub,Uc (напряжение нагрузки)
+    //        quint32 Dis;
+    //    };
+
+    //    Point85 point;
+    void setTrendModel(std::unique_ptr<TrendViewModel> mdl);
+
+    QByteArray arrayToSave() const;
+    void setArrayToSave(const QByteArray &arrayToSave);
+
+private:
+    std::unique_ptr<TrendViewModel> m_trendModel;
+    QMap<QString, SignalOscPropertiesStruct> signalOscPropertiesMap;
+    std::unique_ptr<QCustomPlot> mainPlot;
+    QCPLegend *analogLegend, *discreteLegend;
     //    QMap<QString, QCPGraph *> AnalogGraphs, DigitalGraphs;
-    DescriptionStruct AnalogDescription, DigitalDescription;
-    float XMin, XMax, YMin, YMax;
-    bool NoDiscrete, NoAnalog;
-    bool RangeChangeInProgress, Starting;
-    bool RangeAxisInProgress, StartingAx;
-    bool DigitalRescaleActivated, AnalogRescaleActivated; // should we rescale upper and lower ranges automatically
-                                                          // to let the zero not moving
-    QByteArray BAToSave;
+    DescriptionStruct analogDescription, digitalDescription;
+    float xMin, xMax, yMin, yMax;
+    bool noDiscrete, noAnalog;
+    bool rangeChangeInProgress, starting;
+    bool rangeAxisInProgress, startingAx;
+    // should we rescale upper and lower ranges automatically to let the zero not moving
+    bool digitalRescaleActivated, analogRescaleActivated;
 
-    QToolBar *PlotToolBar(SignalTypes type);
-    void ChangeRange(QCPRange range);
-    QCPLegend *SetLegend(int rectindex);
-    int VisibleSignalOscDescriptionSize(SignalTypes type); // get current visible signals of type type
+    QByteArray m_arrayToSave;
+
+    QToolBar *createToolBar(SignalTypes type);
+    void changeRange(QCPRange range);
+    QCPLegend *createLegend(int rectindex);
+    int visibleSignalOscDescriptionSize(SignalTypes type); // get current visible signals of type type
 
     void analogAxis(int &MainPlotLayoutRow);
 
@@ -95,17 +100,17 @@ private:
 
 private slots:
     void graphClicked(QCPAbstractPlottable *plot, int dataIndex);
-    void SignalChoosed(QString signame);
-    void SignalToggled(QString signame, bool isChecked);
-    void DigitalRangeChanged(QCPRange range);
-    void AnalogRangeChanged(QCPRange range);
-    void MouseWheel();
-    void MousePress();
-    void SaveToExcel();
-    void SaveToComtrade();
-    void SaveToOsc();
-    void SetRescale(bool isChecked);
-    void AutoResizeRange(QCPAxisRect *rect, int index);
+    void signalChoosed(QString signame);
+    void signalToggled(QString signame, bool isChecked);
+    void digitalRangeChanged(QCPRange range);
+    void analogRangeChanged(QCPRange range);
+    void mouseWheel();
+    void mousePress();
+    void saveToExcel();
+    void saveToComtrade();
+    void saveToOsc();
+    void setRescale(bool isChecked);
+    void autoResizeRange(QCPAxisRect *rect, int index);
 };
 
 #endif // TRENDVIEWDIALOG_H

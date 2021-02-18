@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" x="0px" y="0px" viewBox="0 0 100 100" enable-background="new 0 0 100 100" xml:space="preserve">
+<!-- Oscilloscope by Aleksandrs from the Noun Project -->
+<g>
+<path fill="none" stroke="#000000" stroke-width="2" stroke-miterlimit="10" d="M87.8,82c0,3.5-2.8,6.3-6.3,6.3H18.9   c-3.5,0-6.3-2.8-6.3-6.3V19.5c0-3.5,2.8-6.3,6.3-6.3h62.5c3.5,0,6.3,2.8,6.3,6.3V82z"/>
+</g>
+<g>
+<circle stroke="#000000" stroke-miterlimit="10" cx="27.3" cy="64.6" r="2.5"/>
+<circle stroke="#000000" stroke-miterlimit="10" cx="73.1" cy="64.6" r="2.5"/>
+<circle stroke="#000000" stroke-miterlimit="10" cx="42.6" cy="64.6" r="2.5"/>
+<circle stroke="#000000" stroke-miterlimit="10" cx="57.8" cy="64.6" r="2.5"/>
+<rect x="23" y="69.7" stroke="#000000" stroke-miterlimit="10" width="6.8" height="2.8"/>
+<rect x="35.1" y="69.7" stroke="#000000" stroke-miterlimit="10" width="6.8" height="2.8"/>
+<rect x="47.2" y="69.7" stroke="#000000" stroke-miterlimit="10" width="6.8" height="2.8"/>
+<rect x="71.4" y="69.7" stroke="#000000" stroke-miterlimit="10" width="6.8" height="2.8"/>
+<rect x="59.3" y="69.7" stroke="#000000" stroke-miterlimit="10" width="6.8" height="2.8"/>
+<rect x="23" y="74.1" stroke="#000000" stroke-miterlimit="10" width="6.8" height="2.8"/>
+<rect x="35.1" y="74.1" stroke="#000000" stroke-miterlimit="10" width="6.8" height="2.8"/>
+<rect x="47.2" y="74.1" stroke="#000000" stroke-miterlimit="10" width="6.8" height="2.8"/>
+<rect x="71.4" y="74.1" stroke="#000000" stroke-miterlimit="10" width="6.8" height="2.8"/>
+<rect x="59.3" y="74.1" stroke="#000000" stroke-miterlimit="10" width="6.8" height="2.8"/>
+<rect x="23" y="78.5" stroke="#000000" stroke-miterlimit="10" width="6.8" height="2.8"/>
+<rect x="35.1" y="78.5" stroke="#000000" stroke-miterlimit="10" width="6.8" height="2.8"/>
+<rect x="47.2" y="78.5" stroke="#000000" stroke-miterlimit="10" width="6.8" height="2.8"/>
+<rect x="71.4" y="78.5" stroke="#000000" stroke-miterlimit="10" width="6.8" height="2.8"/>
+<rect x="59.3" y="78.5" stroke="#000000" stroke-miterlimit="10" width="6.8" height="2.8"/>
+</g>
+<g>
+<line fill="none" stroke="#000000" stroke-width="0.25" stroke-miterlimit="10" x1="24.8" y1="21.6" x2="24.8" y2="56.7"/>
+<line fill="none" stroke="#000000" stroke-width="0.25" stroke-miterlimit="10" x1="29" y1="21.6" x2="29" y2="56.7"/>
+<line fill="none" stroke="#000000" stroke-width="0.25" stroke-miterlimit="10" x1="33.2" y1="21.6" x2="33.2" y2="56.7"/>
+<line fill="none" stroke="#000000" stroke-width="0.25" stroke-miterlimit="10" x1="37.4" y1="21.6" x2="37.4" y2="56.7"/>
+<line fill="none" stroke="#000000" stroke-width="0.25" stroke-miterlimit="10" x1="41.6" y1="21.6" x2="41.6" y2="56.7"/>
+<line fill="none" stroke="#000000" stroke-width="0.25" stroke-miterlimit="10" x1="45.9" y1="21.6" x2="45.9" y2="56.7"/>
+<line fill="none" stroke="#000000" stroke-width="0.25" stroke-miterlimit="10" x1="50.3" y1="21.6" x2="50.3" y2="58.2"/>
+<line fill="none" stroke="#000000" stroke-width="0.25" stroke-miterlimit="10" x1="54.8" y1="21.6" x2="54.8" y2="58.2"/>
+<line fill="none" stroke="#000000" stroke-width="0.25" stroke-miterlimit="10" x1="59.2" y1="21.6" x2="59.2" y2="58.2"/>
+<line fill="none" stroke="#000000" stroke-width="0.25" stroke-miterlimit="10" x1="63.7" y1="21.6" x2="63.7" y2="58.2"/>
+<line fill="none" stroke="#000000" stroke-width="0.25" stroke-miterlimit="10" x1="68.1" y1="21.6" x2="68.1" y2="58.2"/>
+<line fill="none" stroke="#000000" stroke-width="0.25" stroke-miterlimit="10" x1="72.6" y1="21.6" x2="72.6" y2="58.2"/>
+<line fill="none" stroke="#000000" stroke-width="0.25" stroke-miterlimit="10" x1="20.5" y1="24.3" x2="80" y2="24.3"/>
+<line fill="none" stroke="#000000" stroke-width="0.25" stroke-miterlimit="10" x1="20.5" y1="28.8" x2="80" y2="28.8"/>
+<line fill="none" stroke="#000000" stroke-width="0.25" stroke-miterlimit="10" x1="20.5" y1="33.4" x2="80" y2="33.4"/>
+<line fill="none" stroke="#000000" stroke-width="0.25" stroke-miterlimit="10" x1="20.5" y1="37.9" x2="80" y2="37.9"/>
+<line fill="none" stroke="#000000" stroke-width="0.25" stroke-miterlimit="10" x1="20.5" y1="42.5" x2="80" y2="42.5"/>
+<line fill="none" stroke="#000000" stroke-width="0.25" stroke-miterlimit="10" x1="20.5" y1="47.1" x2="80" y2="47.1"/>
+<line fill="none" stroke="#000000" stroke-width="0.25" stroke-miterlimit="10" x1="20.5" y1="51.6" x2="80" y2="51.6"/>
+<line fill="none" stroke="#000000" stroke-width="0.25" stroke-miterlimit="10" x1="20.5" y1="56.2" x2="80" y2="56.2"/>
+<line fill="none" stroke="#000000" stroke-width="0.25" stroke-miterlimit="10" x1="77" y1="21.6" x2="77" y2="58.2"/>
+</g>
+<g>
+<g>
+<path fill="none" stroke="#000000" stroke-miterlimit="10" d="M19.3,28.5c6.1,0,1.8,12.3,10.6,12.6"/>
+<path fill="none" stroke="#000000" stroke-miterlimit="10" d="M40.4,28.5c-6.1,0-1.8,12.3-10.6,12.6"/>
+<path fill="none" stroke="#000000" stroke-miterlimit="10" d="M40.4,28.5c6.1,0,1.8,12.3,10.6,12.6"/>
+<path fill="none" stroke="#000000" stroke-miterlimit="10" d="M19.3,39.9c6.1,0,1.8,12.3,10.6,12.6"/>
+<path fill="none" stroke="#000000" stroke-miterlimit="10" d="M40.4,39.9c-6.1,0-1.8,12.3-10.6,12.6"/>
+<path fill="none" stroke="#000000" stroke-miterlimit="10" d="M40.4,39.9c6.1,0,1.8,12.3,10.6,12.6"/>
+</g>
+<g>
+<path fill="none" stroke="#000000" stroke-miterlimit="10" d="M80.7,28.5c-5.9,0-1.7,12.3-10.3,12.6"/>
+<path fill="none" stroke="#000000" stroke-miterlimit="10" d="M60.3,28.5c5.9,0,1.7,12.3,10.3,12.6"/>
+<path fill="none" stroke="#000000" stroke-miterlimit="10" d="M60.3,28.5c-5.9,0-1.7,12.3-10.3,12.6"/>
+<path fill="none" stroke="#000000" stroke-miterlimit="10" d="M80.7,39.8c-5.9,0-1.7,12.3-10.3,12.6"/>
+<path fill="none" stroke="#000000" stroke-miterlimit="10" d="M60.3,39.8c5.9,0,1.7,12.3,10.3,12.6"/>
+<path fill="none" stroke="#000000" stroke-miterlimit="10" d="M60.3,39.8c-5.9,0-1.7,12.3-10.3,12.6"/>
+</g>
+</g>
+<g>
+<path fill="none" stroke="#000000" stroke-width="2" stroke-miterlimit="10" d="M80.1,55.1c0,1.7-2.3,3.2-5,3.2H25.3   c-2.8,0-5-1.4-5-3.2V23.9c0-1.7,2.3-3.2,5-3.2H75c2.8,0,5,1.4,5,3.2V55.1z"/>
+</g>
+<text x="0" y="115" fill="#000000" font-size="5px" font-weight="bold" font-family="'Helvetica Neue', Helvetica, Arial-Unicode, Arial, Sans-serif">Created by Aleksandrs</text>
+<text x="0" y="120" fill="#000000" font-size="5px" font-weight="bold" font-family="'Helvetica Neue', Helvetica, Arial-Unicode, Arial, Sans-serif">from the Noun Project</text>
+</svg>

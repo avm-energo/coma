@@ -18,7 +18,6 @@
 //#include "../widgets/etablemodel.h"
 #include "../gen/error.h"
 #include "../gen/files.h"
-//#include "../gen/maindef.h"
 #include "../gen/stdfunc.h"
 #include "../gen/timefunc.h"
 #include "../widgets/wd_func.h"

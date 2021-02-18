@@ -48,8 +48,8 @@ void SwitchJournalDialog::SetupUI()
 
 void SwitchJournalDialog::ProcessSWJournal(QByteArray &ba)
 {
-    S2DataTypes::SWJINFStruct tmpswj;
-    int SWJRecordSize = sizeof(S2DataTypes::SWJINFStruct);
+    S2DataTypes::SwitchJourInfo tmpswj;
+    int SWJRecordSize = sizeof(S2DataTypes::SwitchJourInfo);
     int BaSize = ba.size();
     int BaPos = 0;
     int CurRow = 1;
@@ -58,25 +58,23 @@ void SwitchJournalDialog::ProcessSWJournal(QByteArray &ba)
     {
         size_t tmpt = static_cast<size_t>(SWJRecordSize);
         memcpy(&tmpswj, &(ba.data()[BaPos]), tmpt);
-        int tmpi = static_cast<int>(tmpswj.Num);
-        if ((tmpswj.Num != 0) && (!SWJMap.keys().contains(tmpi))) // пропуск пустых записей
+        int tmpi = static_cast<int>(tmpswj.num);
+        if ((tmpswj.num != 0) && (!SWJMap.keys().contains(tmpi))) // пропуск пустых записей
         {
             SWJMap[tmpi] = tmpswj;
             TableModel->addRow();
-            TableModel->setData(TableModel->index(CurRow, 0, QModelIndex()), QVariant(tmpswj.FileNum), Qt::EditRole);
-            TableModel->setData(TableModel->index(CurRow, 1, QModelIndex()), QVariant(tmpswj.Num), Qt::EditRole);
+            TableModel->setData(TableModel->index(CurRow, 0, QModelIndex()), QVariant(tmpswj.fileNum), Qt::EditRole);
+            TableModel->setData(TableModel->index(CurRow, 1, QModelIndex()), QVariant(tmpswj.num), Qt::EditRole);
             TableModel->setData(TableModel->index(CurRow, 2, QModelIndex()),
-                QVariant(TimeFunc::UnixTime64ToString(tmpswj.Time)), Qt::EditRole);
-            QStringList tmpsl = QStringList() << "D"
-                                              << "G"
-                                              << "CB";
-            QString tmps = (tmpswj.TypeA < tmpsl.size()) ? tmpsl.at(tmpswj.TypeA) : "N/A";
-            tmps += QString::number(tmpswj.NumA);
+                QVariant(TimeFunc::UnixTime64ToString(tmpswj.time)), Qt::EditRole);
+            QStringList tmpsl { "D", "G", "CB" };
+            QString tmps = (tmpswj.typeA < tmpsl.size()) ? tmpsl.at(tmpswj.typeA) : "N/A";
+            tmps += QString::number(tmpswj.numA);
             TableModel->setData(TableModel->index(CurRow, 3, QModelIndex()), QVariant(tmps), Qt::EditRole);
-            tmps = (tmpswj.Options & 0x00000001) ? "ВКЛ" : "ОТКЛ";
+            tmps = (tmpswj.options & 0x00000001) ? "ВКЛ" : "ОТКЛ";
             TableModel->setData(TableModel->index(CurRow, 4, QModelIndex()), QVariant(tmps), Qt::EditRole);
-            if (SWJMap.keys().contains(tmpswj.Time))
-                tmps = "images/osc.png";
+            if (SWJMap.keys().contains(tmpswj.time))
+                tmps = ":/icons/osc.svg";
             else
                 tmps = "images/hr.png";
             TableModel->setData(TableModel->index(CurRow, 5, QModelIndex()), QVariant(QIcon(tmps)), Qt::DecorationRole);

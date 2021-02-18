@@ -27,5 +27,7 @@
         <file>tn9.svg</file>
         <file>tnemul.svg</file>
         <file>tnprotocol.svg</file>
+        <file>osc.svg</file>
+        <file>resize.svg</file>
     </qresource>
 </RCC>

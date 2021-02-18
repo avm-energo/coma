@@ -268,7 +268,7 @@ struct FileHeader
 struct DataRec
 {
     quint32 id;
-    quint32 num_byte;
+    quint32 numByte;
     void *thedata;
 };
 struct DataRecHeader
@@ -276,30 +276,30 @@ struct DataRecHeader
     // id
     quint32 id;
     // количество байт в TypeTheData
-    quint32 NumByte;
+    quint32 numByte;
 };
 
 /// Тип группы плат
 struct DataRecT
 {
     // заголовок записи
-    DataRecHeader TypeHeader;
-    quint8 TypeTheData[4];
-    quint8 VerPO[4];
+    DataRecHeader typeHeader;
+    quint8 typeTheData[4];
+    quint8 versionSoftware[4];
 };
 /// Файл ВПО в формате BIN
 struct DataRecF
 {
     /// заголовок записи
-    DataRecHeader FileDatHeader;
-    QByteArray Data;
+    DataRecHeader fileDataHeader;
+    QByteArray data;
 };
 
-struct File_struct
+struct FileStruct
 {
-    FileHeader File_xxx_header;
-    DataRecT Type;
-    DataRecF File;
+    FileHeader fileHeader;
+    DataRecT type;
+    DataRecF file;
     // заголовок пустой записи
     DataRecHeader void_recHeader;
 };
@@ -309,66 +309,66 @@ typedef QVector<S2DataTypes::DataRec> S2ConfigType;
 #pragma pack(1)    /* set alignment to 1 byte boundary */
 struct GBoStruct
 {
-    quint32 FileNum;    // номер файла осциллограмм
-    quint32 FileLength; // длина файла за исключением FileHeader (16 байт)
-    quint32 ID; // Тип файла - осциллограмма и количество осциллограмм в файле (10000, 10001 ...)
-    quint64 UnixTime; // Время начала записи осциллограммы
-    quint32 IDo1; // ID первой осциллограммы в файле (определяет структуру точки и номер канала)
+    quint32 fileNum;    // номер файла осциллограмм
+    quint32 fileLength; // длина файла за исключением FileHeader (16 байт)
+    quint32 id; // Тип файла - осциллограмма и количество осциллограмм в файле (10000, 10001 ...)
+    quint64 unixtime; // Время начала записи осциллограммы
+    quint32 id0; // ID первой осциллограммы в файле (определяет структуру точки и номер канала)
 };
 #pragma pack(pop)
 
 #pragma pack(push) /* push current alignment to stack */
 #pragma pack(1)    /* set alignment to 1 byte boundary */
-struct SWJINFStruct
+struct SwitchJourInfo
 {
-    quint16 FileNum;    // Номер файла
-    quint32 FileLength; // Размер файла
-    quint32 Num;        // Порядковый номер переключения
-    quint8 NumA;        // Порядковый номер аппарата
-    quint8 TypeA;       // Тип аппарата
-    quint64 Time;       // Время, когда произведено переключение
-    quint32 Options; // Направление переключения, тип коммутации и коммутируемые фазы
+    quint16 fileNum;    // Номер файла
+    quint32 fileLength; // Размер файла
+    quint32 num;        // Порядковый номер переключения
+    quint8 numA;        // Порядковый номер аппарата
+    quint8 typeA;       // Тип аппарата
+    quint64 time;       // Время, когда произведено переключение
+    quint32 options; // Направление переключения, тип коммутации и коммутируемые фазы
 };
 
 #pragma pack(pop) /* restore original alignment from stack */
 
-struct SWJournalRecordStruct
+struct SwitchJourRecord
 {
-    quint32 Num;      // Порядковый номер переключения
-    quint8 NumA;      // Порядковый номер аппарата
-    quint8 TypeA;     // Тип аппарата
-    quint16 OpResult; // Результат операции: успешно / с неисправностью
-    quint64 Time;     // Время, когда произведено переключение
-    quint32 Options; // Направление переключения, тип коммутации и коммутируемые фазы
-    float I[3];          // Значение тока в момент выдачи команды
-    float U[3];          // Значение напряжения в момент выдачи команды
-    quint16 OwnTime[3];  // Собственное время коммутации
-    quint16 FullTime[3]; // Полное время коммутации (только для отключения, для включения будут нули)
-    quint16 MovTime[3];  // Время перемещения главного контакта
-    quint16 ArchTime[3]; // Время горения дуги
-    quint16 IdleTime[3]; // Время безоперационного простоя
-    quint16 Inaccuracy[3]; // Погрешность синхронной коммутации (только для соответствующего типа коммутации, для
+    quint32 num;    // Порядковый номер переключения
+    quint8 numA;    // Порядковый номер аппарата
+    quint8 typeA;   // Тип аппарата
+    quint16 result; // Результат операции: успешно / с неисправностью
+    quint64 time;   // Время, когда произведено переключение
+    quint32 options; // Направление переключения, тип коммутации и коммутируемые фазы
+    float amperage[3];   // Значение тока в момент выдачи команды
+    float voltage[3];    // Значение напряжения в момент выдачи команды
+    quint16 ownTime[3];  // Собственное время коммутации
+    quint16 fullTime[3]; // Полное время коммутации (только для отключения, для включения будут нули)
+    quint16 movTime[3];  // Время перемещения главного контакта
+    quint16 archTime[3]; // Время горения дуги
+    quint16 idleTime[3]; // Время безоперационного простоя
+    quint16 inaccuracy[3]; // Погрешность синхронной коммутации (только для соответствующего типа коммутации, для
                            // остальных типов нули
-    float SupplyVoltage;   // Напряжение питания цепей соленоидов
-    float Tokr;            // Температура окружающей среды
-    float Tins[3];         // Температура внутри привода
-    float Phyd[3];         // Давление в гидросистеме привода
-    quint64 OscTime;       // Время старта осциллограммы
-    quint8 Rezerv[4];      // Резерв
+    float supplyVoltage;   // Напряжение питания цепей соленоидов
+    float tOutside;        // Температура окружающей среды
+    float tInside[3];      // Температура внутри привода
+    float phyd[3];         // Давление в гидросистеме привода
+    quint64 oscTime;       // Время старта осциллограммы
+    quint8 Reserve[4];     // Резерв
     quint32 timeF;         // Время записи в журнал
 };
 
-struct DataRecSwj
+struct DataRecSwitchJour
 {
     DataRecHeader header;
-    SWJournalRecordStruct SWJRec;
+    SwitchJourRecord swjRecord;
 };
 
-struct OscHeader_Data
+struct OscHeader
 {
-    quint64 unixtime; // время первой точки в Unix-формате
-    float step;       // шаг по времени в мс
-    quint32 len;      // длина осциллограммы в количестве точек по времени
+    quint64 time; // время первой точки в Unix-формате
+    float step;   // шаг по времени в мс
+    quint32 len;  // длина осциллограммы в количестве точек по времени
 };
 
 }

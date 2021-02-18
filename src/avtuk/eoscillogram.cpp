@@ -260,7 +260,6 @@ bool EOscillogram::PosPlusPlus(void *dst, int size)
 
 bool EOscillogram::ProcessOsc(TrendViewModel *mdl)
 {
-    //*len=20;
     Pos = 0;
     // разбираем осциллограмму
     S2DataTypes::FileHeader FH;
@@ -280,48 +279,50 @@ bool EOscillogram::ProcessOsc(TrendViewModel *mdl)
 
     while (DR.id != 0xFFFFFFFF)
     {
-        if (Pos < BASize)
+        if (Pos >= BASize)
+            break;
+
+        std::unique_ptr<ParseModule> parseModule;
+        Pos += sizeof(DR);
+        switch (DR.id)
         {
-            ParseModule *PM = nullptr;
-            Pos += sizeof(DR);
-            switch (DR.id)
-            {
-            case MT_HEAD_ID:
-                PM = new ParseID9000(BA);
-                break;
-
-            case MT_HEAD87:
-                PM = new ParseID9050(BA);
-                break;
-
-            case SWJ_ID85:
-            {
-                memcpy(&SWJRecord, &(BA.data()[Pos]), sizeof(S2DataTypes::SWJournalRecordStruct));
-                if (DR.NumByte == sizeof(S2DataTypes::SWJournalRecordStruct))
-                {
-                    Pos += sizeof(S2DataTypes::SWJournalRecordStruct);
-                    PM = new ParseID10031(BA);
-                }
-                else
-                    return false;
-            }
+        case MT_HEAD_ID:
+            parseModule = std::unique_ptr<ParseModule>(new ParseID9000(BA));
+            // PM = new ParseID9000(BA);
             break;
-            }
-            if (PM == nullptr)
-                return false;
-            if (!PM->Parse(Pos))
-                return false;
 
-            if (Pos > BASize)
+        case MT_HEAD87:
+            parseModule = std::unique_ptr<ParseModule>(new ParseID9050(BA));
+            // PM = new ParseID9050(BA);
+            break;
+
+        case SWJ_ID85:
+        {
+            memcpy(&SWJRecord, &(BA.data()[Pos]), sizeof(S2DataTypes::SwitchJourRecord));
+            if (DR.numByte == sizeof(S2DataTypes::SwitchJourRecord))
+            {
+                Pos += sizeof(S2DataTypes::SwitchJourRecord);
+                parseModule = std::unique_ptr<ParseModule>(new ParseID10031(BA));
+                // PM = new ParseID10031(BA);
+            }
+            else
                 return false;
-            memcpy(&DR, &(BA.data()[Pos]), sizeof(DR));
-            Pos += sizeof(DR);
-            *mdl = *(PM->TModel);
-            //            PM->Save(len);
-            // len = PM->len;
+            break;
         }
-        else
-            break;
+        default:
+            return false;
+        }
+        if (!parseModule->Parse(Pos))
+            return false;
+
+        if (Pos > BASize)
+        {
+            qWarning() << Error::SizeError;
+            return false;
+        }
+        memcpy(&DR, &(BA.data()[Pos]), sizeof(DR));
+        Pos += sizeof(DR);
+        *mdl = *(parseModule->TModel);
     }
     /*
     Pos = 0;

@@ -16,25 +16,27 @@ public:
         SWJ_MODE_ONLINE
     };
 
-    S2DataTypes::SWJINFStruct SWJInf;
-    // EOscillogram::GBoStruct GBOs;
-    S2DataTypes::DataRecSwj SwRec;
-    EOscillogram *SWJOscFunc;
-    bool Mode;
-    TrendViewDialog *dlg;
-    TrendViewModel *mdl;
-
     SWJDialog(EOscillogram *osc, int mode = SWJ_MODE_ONLINE, QWidget *parent = nullptr);
-    void Init(S2DataTypes::SWJINFStruct swj);
+    void Init(S2DataTypes::SwitchJourInfo swj);
     void LoadOsc(QByteArray &ba); // для оффлайн режима
 
     void GetSwjOscData();
+
+    TrendViewDialog *trendViewDialog() const;
 
 public slots:
 #if PROGSIZE != PROGSIZE_EMUL
     void SaveSWJ();
     void ShowOsc();
 #endif
+private:
+    S2DataTypes::SwitchJourInfo SWJInf;
+    // EOscillogram::GBoStruct GBOs;
+    S2DataTypes::DataRecSwitchJour SwRec;
+    EOscillogram *SWJOscFunc;
+    bool Mode;
+    TrendViewDialog *m_trendViewDialog;
+    // TrendViewModel *mdl;
 };
 
 #endif // SWJDIALOG_H

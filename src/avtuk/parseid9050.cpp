@@ -34,7 +34,7 @@ ParseID9050::ParseID9050(QByteArray &BA) : ParseModule(BA)
 bool ParseID9050::Parse(int &count)
 {
     // Разбор осциллограммы
-    S2DataTypes::OscHeader_Data OHD;
+    S2DataTypes::OscHeader OHD;
     if (!PosPlusPlus(&OHD, count, sizeof(OHD)))
         return false;
 
@@ -44,7 +44,7 @@ bool ParseID9050::Parse(int &count)
 
     //  TrendViewModel::SaveID(DR.id); // для выбора
     // составляем имя файла осциллограммы
-    QString tmps = TimeFunc::UnixTime64ToString(OHD.unixtime);
+    QString tmps = TimeFunc::UnixTime64ToString(OHD.time);
     tmps.replace("/", "-");
     tmps.replace(":", "_");
     tmps.insert(0, "_");
@@ -74,17 +74,11 @@ bool ParseID9050::Parse(int &count)
     return true;
 }
 
-bool ParseID9050::ParseOsc(quint32 id, S2DataTypes::OscHeader_Data &OHD, const QString &fn, QStringList tmpav,
-    TrendViewDialog *dlg, int &count)
+bool ParseID9050::ParseOsc(
+    quint32 id, S2DataTypes::OscHeader &OHD, const QString &fn, QStringList tmpav, TrendViewDialog *dlg, int &count)
 {
     tmpav << Channel.key(id);
-    TrendViewModel *TModel = new TrendViewModel(QStringList(), tmpav, OHD.len);
-    dlg->SetModel(TModel);
-    dlg->SetAnalogNames(tmpav);
-    dlg->SetRanges(0, 10000, -1250,
-        1250); // 10000 мкс, 1250 мВ (сделать автонастройку в зависимости от конфигурации по данному каналу)
-    dlg->SetupPlots();
-    dlg->SetupUI();
+    auto TModel = std::unique_ptr<TrendViewModel>(new TrendViewModel(QStringList(), tmpav, OHD.len));
     if (!TModel->SetPointsAxis(0, OHD.step))
         return false;
     for (quint32 i = 0; i < OHD.len; ++i) // цикл по точкам
@@ -95,8 +89,15 @@ bool ParseID9050::ParseOsc(quint32 id, S2DataTypes::OscHeader_Data &OHD, const Q
         TModel->AddAnalogPoint(tmpav.at(0), point.An);
     }
     TModel->SetFilename(fn);
+    dlg->setModel(std::move(TModel));
+    dlg->setAnalogNames(tmpav);
+    // 10000 мкс, 1250 мВ (сделать автонастройку в зависимости от конфигурации по данному каналу)
+    dlg->setRange(0, 10000, -1250, 1250);
+    dlg->setupPlots();
+    dlg->setupUI();
+
     dlg->setModal(false);
-    dlg->PlotShow();
+    dlg->showPlot();
     dlg->show();
 
     return true;
@@ -106,13 +107,7 @@ bool ParseID9050::ParseSpectr(quint32 id, ParseID9050::SpectHeader_Data &SHD, co
     TrendViewDialog *dlg, int &count)
 {
     tmpav << Channel.key(id);
-    TrendViewModel *TModel = new TrendViewModel(QStringList(), tmpav, SHD.len);
-    dlg->SetModel(TModel);
-    dlg->SetAnalogNames(tmpav);
-    dlg->SetRanges(
-        0, 1000000, 0, 2); // 1000000 Гц, 2 о.е. (сделать автонастройку в зависимости от конфигурации по данному каналу)
-    dlg->SetupPlots();
-    dlg->SetupUI();
+    auto TModel = std::unique_ptr<TrendViewModel>(new TrendViewModel(QStringList(), tmpav, SHD.len));
     if (!TModel->SetPointsAxis(0, SHD.step))
         return false;
     for (quint32 i = 0; i < SHD.len; ++i) // цикл по точкам
@@ -123,8 +118,15 @@ bool ParseID9050::ParseSpectr(quint32 id, ParseID9050::SpectHeader_Data &SHD, co
         TModel->AddAnalogPoint(tmpav.at(0), point.An);
     }
     TModel->SetFilename(fn);
+    dlg->setModel(std::move(TModel));
+    dlg->setAnalogNames(tmpav);
+    dlg->setRange(
+        0, 1000000, 0, 2); // 1000000 Гц, 2 о.е. (сделать автонастройку в зависимости от конфигурации по данному каналу)
+    dlg->setupPlots();
+    dlg->setupUI();
+
     dlg->setModal(false);
-    dlg->PlotShow();
+    dlg->showPlot();
     dlg->show();
 
     return true;

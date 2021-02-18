@@ -24,7 +24,7 @@ public:
     bool Parse(int &count);
     //    void Save(quint32 *len);
 
-    bool ParseID85(S2DataTypes::OscHeader_Data &OHD, const QString &fn, int &count);
+    bool ParseID85(S2DataTypes::OscHeader &OHD, const QString &fn, int &count);
 
 private:
     //     quint32 Len;

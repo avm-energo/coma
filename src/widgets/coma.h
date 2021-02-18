@@ -1,6 +1,7 @@
 #ifndef COMA_H
 #define COMA_H
 
+#include "../avtuk/oscmanager.h"
 #include "../interfaces/settingstypes.h"
 #include "../module/module.h"
 
@@ -56,9 +57,7 @@ private slots:
     void prepareConnectDlg();
     void startWork(const ConnectStruct st);
     void loadOsc();
-    void LoadOscFromFile(const QString &filename);
     void loadSwj();
-    void loadSwjFromFile(const QString &filename);
 
     void getAbout();
     void closeEvent(QCloseEvent *event) override;
@@ -70,6 +69,7 @@ private slots:
 private:
     QStackedWidget *MainTW;
     QListWidget *MainLW;
+    OscManager *oscManager;
 
     bool TimeThrFinished;
 

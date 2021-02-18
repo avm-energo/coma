@@ -12,6 +12,7 @@ SOURCES += \
     eoscillogram.cpp \
     getoscpbdelegate.cpp \
     oscdialog.cpp \
+    oscmanager.cpp \
     parseid10031.cpp \
     parseid9000.cpp \
     parseid9050.cpp \
@@ -25,6 +26,7 @@ HEADERS += \
     eoscillogram.h \
     getoscpbdelegate.h \
     oscdialog.h \
+    oscmanager.h \
     parseid10031.h \
     parseid9000.h \
     parseid9050.h \

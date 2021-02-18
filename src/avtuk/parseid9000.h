@@ -45,9 +45,9 @@ public:
 
     bool Parse(int &count);
     //    void Save(quint32 *len);
-    bool ParseID21(quint32 id, S2DataTypes::OscHeader_Data &OHD, const QString &fn, int &count);
-    bool ParseID8x(quint32 id, S2DataTypes::OscHeader_Data &OHD, const QString &fn, TrendViewDialog *dlg, int &count);
-    bool ParseID85(quint32 id, S2DataTypes::OscHeader_Data &OHD, const QString &fn, TrendViewDialog *dlg, int &count);
+    bool ParseID21(quint32 id, S2DataTypes::OscHeader &OHD, const QString &fn, int &count);
+    bool ParseID8x(quint32 id, S2DataTypes::OscHeader &OHD, const QString &fn, TrendViewDialog *dlg, int &count);
+    bool ParseID85(quint32 id, S2DataTypes::OscHeader &OHD, const QString &fn, TrendViewDialog *dlg, int &count);
 };
 
 #endif // PARSEID9000_H

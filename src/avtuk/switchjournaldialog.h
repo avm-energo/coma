@@ -21,7 +21,7 @@ private:
     ETableModel *TableModel;
     ETableView *SwjTableView;
     QMap<quint64, S2DataTypes::GBoStruct> OscMap;
-    QMap<int, S2DataTypes::SWJINFStruct> SWJMap;
+    QMap<int, S2DataTypes::SwitchJourInfo> SWJMap;
     EOscillogram *SWJDOscFunc;
 
     void SetupUI();

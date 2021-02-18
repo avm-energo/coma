@@ -29,7 +29,7 @@ bool ParseID10031::Parse(int &count)
     if (!PosPlusPlus(&DR, count, sizeof(DR)))
         return false;
 
-    S2DataTypes::OscHeader_Data OHD;
+    S2DataTypes::OscHeader OHD;
     if (!PosPlusPlus(&OHD, count, sizeof(OHD)))
         return false;
     //    ParseID10031::len2 = OHD.len;
@@ -39,7 +39,7 @@ bool ParseID10031::Parse(int &count)
 
     // TrendViewModel::SaveID(DR.id); // для выбора
     // составляем имя файла осциллограммы
-    QString tmps = TimeFunc::UnixTime64ToString(OHD.unixtime);
+    QString tmps = TimeFunc::UnixTime64ToString(OHD.time);
     tmps.replace("/", "-");
     tmps.replace(":", "_");
     tmps.insert(0, "_");
@@ -61,7 +61,7 @@ bool ParseID10031::Parse(int &count)
     return true;
 }
 
-bool ParseID10031::ParseID85(S2DataTypes::OscHeader_Data &OHD, const QString &fn, int &count)
+bool ParseID10031::ParseID85(S2DataTypes::OscHeader &OHD, const QString &fn, int &count)
 {
 
     float xmin = -10; //-(static_cast<float>(OHD.len/2));

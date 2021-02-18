@@ -23,7 +23,7 @@ public:
     // OscHeader_Data OscHeader;
     int BASize, BSize, Pos;
     QByteArray BA;
-    S2DataTypes::SWJournalRecordStruct SWJRecord;
+    S2DataTypes::SwitchJourRecord SWJRecord;
     // TrendViewModel mdl;
     /* struct Point85
      {

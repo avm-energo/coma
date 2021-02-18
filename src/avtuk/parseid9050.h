@@ -52,8 +52,8 @@ public:
 
     bool Parse(int &count);
     //    void Save(quint32 *len);
-    bool ParseOsc(quint32 id, S2DataTypes::OscHeader_Data &OHD, const QString &fn, QStringList tmpav,
-        TrendViewDialog *dlg, int &count);
+    bool ParseOsc(quint32 id, S2DataTypes::OscHeader &OHD, const QString &fn, QStringList tmpav, TrendViewDialog *dlg,
+        int &count);
     bool ParseSpectr(
         quint32 id, SpectHeader_Data &SHD, const QString &fn, QStringList tmpav, TrendViewDialog *dlg, int &count);
 };

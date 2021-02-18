@@ -33,7 +33,7 @@ void S2::StoreDataMem(void *mem, QVector<S2DataTypes::DataRec> *dr, int fname)
         m += tmpi;
         if (R.thedata)
         {
-            tmpi = R.num_byte;
+            tmpi = R.numByte;
             for (i = 0; i < tmpi; i++)
                 updCRC32((static_cast<char *>(R.thedata))[i], &crc);
             header.size += tmpi;
@@ -69,7 +69,7 @@ void S2::StoreDataMem(QByteArray &mem, QVector<S2DataTypes::DataRec> *dr, int fn
             break;
         if (record.thedata)
         {
-            tmpi = record.num_byte;
+            tmpi = record.numByte;
             header.size += tmpi;
             char *data = static_cast<char *>(record.thedata);
             for (i = 0; i < tmpi; i++)
@@ -130,7 +130,7 @@ Error::Msg S2::RestoreDataMem(void *mem, quint32 memsize, QVector<S2DataTypes::D
             r = FindElem(dr, R.id);
             if (r == nullptr) // элемент не найден в описании, пропускаем
             {
-                tmpi = R.num_byte;
+                tmpi = R.numByte;
                 pos += tmpi;
                 if (pos > memsize)
                 {
@@ -141,13 +141,13 @@ Error::Msg S2::RestoreDataMem(void *mem, quint32 memsize, QVector<S2DataTypes::D
                 continue;
             }
             noIDs = false;
-            if (r->num_byte != R.num_byte) //несовпадения описания прочитанного элемента с ожидаемым
+            if (r->numByte != R.numByte) //несовпадения описания прочитанного элемента с ожидаемым
             {
                 ERMSG("S2: block description mismatch"); // несовпадение описаний одного
                                                          // и того же блока
                 return Error::Msg::DescError;
             }
-            tmpi = r->num_byte;
+            tmpi = r->numByte;
             pos += tmpi;
             if (pos > memsize)
             {
@@ -219,7 +219,7 @@ Error::Msg S2::RestoreData(QByteArray &bain, QList<DataTypes::ConfParameterStruc
         {
             DataTypes::ConfParameterStruct cfp;
             cfp.ID = DR.id;
-            size = DR.num_byte;
+            size = DR.numByte;
             if (size > bain.size())
             {
                 ERMSG("S2: out of memory"); // выход за границу принятых байт
@@ -297,11 +297,11 @@ Error::Msg S2::findElemAndWriteIt(S2DataTypes::DataRec *record, const DataTypes:
     if (record->id != cfp.ID)
         return Error::DescError;
 
-    if (record->num_byte != static_cast<quint32>(cfp.data.size()))
+    if (record->numByte != static_cast<quint32>(cfp.data.size()))
     {
         qCritical("S2: Wrong element size in ConfParameter");
         qDebug() << "Wait for element" << record->id    //
-                 << "with size:" << record->num_byte    //
+                 << "with size:" << record->numByte     //
                  << "but get size:" << cfp.data.size(); //
         return Error::Msg::HeaderSizeError;
     }
@@ -312,7 +312,7 @@ Error::Msg S2::findElemAndWriteIt(S2DataTypes::DataRec *record, const DataTypes:
 S2DataTypes::S2ConfigType S2::ParseHexToS2(QByteArray &ba)
 {
     using namespace S2DataTypes;
-    File_struct *PV_file = new File_struct;
+    FileStruct *PV_file = new FileStruct;
 
     // quint32 crc=0xFFFFFFFF;
     // quint32 tmpi = 0;
@@ -496,32 +496,32 @@ S2DataTypes::S2ConfigType S2::ParseHexToS2(QByteArray &ba)
 
     BaForSend->resize(MainSize);
 
-    PV_file->File.Data.clear();
-    PV_file->File.Data.resize(MainSize - 8);
+    PV_file->file.data.clear();
+    PV_file->file.data.resize(MainSize - 8);
 
-    PV_file->Type.TypeHeader.id = 8000;
-    PV_file->Type.TypeHeader.NumByte = 8;
-    memcpy(&PV_file->Type.TypeTheData, &BaForSend->data()[0], 4);
-    memcpy(&PV_file->Type.VerPO, &BaForSend->data()[4], 4);
+    PV_file->type.typeHeader.id = 8000;
+    PV_file->type.typeHeader.numByte = 8;
+    memcpy(&PV_file->type.typeTheData, &BaForSend->data()[0], 4);
+    memcpy(&PV_file->type.versionSoftware, &BaForSend->data()[4], 4);
 
     st.clear();
     st.append("Ver");
     for (i = 3; i >= 0; i--)
-        st.append("." + QString::number(PV_file->Type.VerPO[i]));
+        st.append("." + QString::number(PV_file->type.versionSoftware[i]));
 
-    PV_file->File.FileDatHeader.id = 8001;
+    PV_file->file.fileDataHeader.id = 8001;
     usize = (MainSize - 8);
-    PV_file->File.FileDatHeader.NumByte = usize;
+    PV_file->file.fileDataHeader.numByte = usize;
     // PV_file->File.Data = &BaForSend->data()[8];
-    memcpy(&PV_file->File.Data.data()[0], &BaForSend->data()[8], usize);
+    memcpy(&PV_file->file.data.data()[0], &BaForSend->data()[8], usize);
 
     PV_file->void_recHeader.id = 0xFFFFFFFF;
-    PV_file->void_recHeader.NumByte = 0;
+    PV_file->void_recHeader.numByte = 0;
 
-    S2DR.append({ PV_file->Type.TypeHeader.id, PV_file->Type.TypeHeader.NumByte, &PV_file->Type.TypeTheData });
-    S2DR.append({ PV_file->File.FileDatHeader.id, PV_file->File.FileDatHeader.NumByte,
-        &PV_file->File.Data.data()[0] }); // BaForSend->data_ptr()
-    S2DR.append({ PV_file->void_recHeader.id, PV_file->void_recHeader.NumByte, nullptr });
+    S2DR.append({ PV_file->type.typeHeader.id, PV_file->type.typeHeader.numByte, &PV_file->type.typeTheData });
+    S2DR.append({ PV_file->file.fileDataHeader.id, PV_file->file.fileDataHeader.numByte,
+        &PV_file->file.data.data()[0] }); // BaForSend->data_ptr()
+    S2DR.append({ PV_file->void_recHeader.id, PV_file->void_recHeader.numByte, nullptr });
 
     /*ForProcess->clear();
     ForProcess->resize(MAXSIZE);

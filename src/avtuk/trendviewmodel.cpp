@@ -17,9 +17,9 @@ TrendViewModel::TrendViewModel(const QStringList &dlist, const QStringList &alis
     DigitalNames = dlist;
     AnalogNames = alist;
     for (int i = 0; i < dlist.size(); ++i)
-        DigitalMainData[dlist.at(i)] = QVector<double>();
+        DigitalMainData.insert(dlist.at(i), QVector<double>());
     for (int i = 0; i < alist.size(); ++i)
-        AnalogMainData[alist.at(i)] = QVector<double>();
+        AnalogMainData.insert(alist.at(i), QVector<double>());
 }
 
 void TrendViewModel::AddAnalogPoint(const QString &GraphNum, float PointValue)

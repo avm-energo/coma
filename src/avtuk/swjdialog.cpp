@@ -22,7 +22,7 @@ SWJDialog::SWJDialog(EOscillogram *osc, int mode, QWidget *parent) : QDialog(par
     SWJOscFunc = osc;
 }
 
-void SWJDialog::Init(S2DataTypes::SWJINFStruct swj)
+void SWJDialog::Init(S2DataTypes::SwitchJourInfo swj)
 {
     SWJInf = swj;
     QVBoxLayout *vlyout = new QVBoxLayout;
@@ -38,28 +38,28 @@ void SWJDialog::Init(S2DataTypes::SWJINFStruct swj)
     glyout->addWidget(WDFunc::NewLBL2(this, "Дата, время"), 0, 1, 1, 1);
     glyout->addWidget(WDFunc::NewLBL2(this, "Аппарат"), 0, 2, 1, 2);
     glyout->addWidget(WDFunc::NewLBL2(this, "Переключение"), 0, 4, 1, 2);
-    glyout->addWidget(WDFunc::NewLBLT2(this, QString::number(SWJOscFunc->SWJRecord.Num)), 1, 0, 1, 1);
-    glyout->addWidget(WDFunc::NewLBLT2(this, TimeFunc::UnixTime64ToString(SWJOscFunc->SWJRecord.Time)), 1, 1, 1, 1);
+    glyout->addWidget(WDFunc::NewLBLT2(this, QString::number(SWJOscFunc->SWJRecord.num)), 1, 0, 1, 1);
+    glyout->addWidget(WDFunc::NewLBLT2(this, TimeFunc::UnixTime64ToString(SWJOscFunc->SWJRecord.time)), 1, 1, 1, 1);
     const QStringList tmpsl { "CB", "G", "D" };
-    if (SWJOscFunc->SWJRecord.TypeA == 1)
+    if (SWJOscFunc->SWJRecord.typeA == 1)
         tmps = tmpsl.at(0); //: "N/A";
-    else if (SWJOscFunc->SWJRecord.TypeA == 2)
+    else if (SWJOscFunc->SWJRecord.typeA == 2)
         tmps = tmpsl.at(1);
-    else if (SWJOscFunc->SWJRecord.TypeA == 4)
+    else if (SWJOscFunc->SWJRecord.typeA == 4)
         tmps = tmpsl.at(2);
     else
         tmps = "N/A";
     glyout->addWidget(WDFunc::NewLBLT2(this, tmps), 1, 2, 1, 1);
-    glyout->addWidget(WDFunc::NewLBLT2(this, QString::number(SWJOscFunc->SWJRecord.NumA)), 1, 3, 1, 1);
-    tmps = (SWJOscFunc->SWJRecord.Options & 0x00000001) ? "ВКЛЮЧЕНИЕ" : "ОТКЛЮЧЕНИЕ";
+    glyout->addWidget(WDFunc::NewLBLT2(this, QString::number(SWJOscFunc->SWJRecord.numA)), 1, 3, 1, 1);
+    tmps = (SWJOscFunc->SWJRecord.options & 0x00000001) ? "ВКЛЮЧЕНИЕ" : "ОТКЛЮЧЕНИЕ";
     glyout->addWidget(WDFunc::NewLBLT2(this, tmps), 1, 4, 1, 2);
     glyout->addWidget(WDFunc::NewLBL2(this, "Тип коммутации:"), 3, 0, 1, 4);
-    if ((SWJOscFunc->SWJRecord.Options >> 1))
+    if ((SWJOscFunc->SWJRecord.options >> 1))
     {
-        if (((SWJOscFunc->SWJRecord.Options >> 1) & 0x00000001))
+        if (((SWJOscFunc->SWJRecord.options >> 1) & 0x00000001))
             tmps = "Несинхронная от АВМ-СК";
 
-        if (((SWJOscFunc->SWJRecord.Options >> 1) & 0x00000011) == 3)
+        if (((SWJOscFunc->SWJRecord.options >> 1) & 0x00000011) == 3)
             tmps = "Синхронная от АВМ-СК";
     }
     else
@@ -69,13 +69,13 @@ void SWJDialog::Init(S2DataTypes::SWJINFStruct swj)
     glyout->addWidget(WDFunc::NewLBLT2(this, tmps), 3, 4, 1, 1);
 
     glyout->addWidget(WDFunc::NewLBL2(this, "Результат переключения:"), 4, 0, 1, 4);
-    tmps = (SWJOscFunc->SWJRecord.OpResult) ? "НЕУСПЕШНО" : "УСПЕШНО";
+    tmps = (SWJOscFunc->SWJRecord.result) ? "НЕУСПЕШНО" : "УСПЕШНО";
     glyout->addWidget(WDFunc::NewLBLT2(this, tmps), 4, 4, 1, 1);
 
     glyout->addWidget(WDFunc::NewLBL2(this, "Коммутируемые фазы:"), 5, 0, 1, 4);
     for (int i = 0; i < 4; i++)
     {
-        if (((SWJOscFunc->SWJRecord.Options >> 3) == i))
+        if (((SWJOscFunc->SWJRecord.options >> 3) == i))
         {
             tmps = phase.at(i);
         }
@@ -83,23 +83,23 @@ void SWJDialog::Init(S2DataTypes::SWJINFStruct swj)
     glyout->addWidget(WDFunc::NewLBLT2(this, tmps), 5, 4, 1, 1);
     glyout->addWidget(WDFunc::NewLBL2(this, "Напряжение питания цепей соленоидов, В:"), 6, 0, 1, 4);
 
-    if (SWJOscFunc->SWJRecord.SupplyVoltage == std::numeric_limits<float>::max())
+    if (SWJOscFunc->SWJRecord.supplyVoltage == std::numeric_limits<float>::max())
         glyout->addWidget(WDFunc::NewLBLT2(this, "-"), 6, 4, 1, 1);
     else
-        glyout->addWidget(WDFunc::NewLBLT2(this, QString::number(SWJOscFunc->SWJRecord.SupplyVoltage)), 6, 4, 1, 1);
+        glyout->addWidget(WDFunc::NewLBLT2(this, QString::number(SWJOscFunc->SWJRecord.supplyVoltage)), 6, 4, 1, 1);
 
     glyout->addWidget(WDFunc::NewLBL2(this, "Температура окружающей среды, Град:"), 7, 0, 1, 4);
 
-    if (SWJOscFunc->SWJRecord.Tokr == std::numeric_limits<float>::max())
+    if (SWJOscFunc->SWJRecord.tOutside == std::numeric_limits<float>::max())
         glyout->addWidget(WDFunc::NewLBLT2(this, "-"), 7, 4, 1, 1);
     else
-        glyout->addWidget(WDFunc::NewLBLT2(this, QString::number(SWJOscFunc->SWJRecord.Tokr)), 7, 4, 1, 1);
+        glyout->addWidget(WDFunc::NewLBLT2(this, QString::number(SWJOscFunc->SWJRecord.tOutside)), 7, 4, 1, 1);
 
-    if (SWJInf.FileLength)
+    if (SWJInf.fileLength)
     {
         glyout->addWidget(WDFunc::NewLBL2(this, "Осциллограмма:"), 8, 0, 1, 4);
         QPushButton *pb = new QPushButton("Открыть осциллограмму");
-        // pb->setIcon(QIcon("images/osc.png"));
+        pb->setIcon(QIcon(":/icons/osc.svg"));
         connect(pb, SIGNAL(clicked()), this, SLOT(ShowOsc()));
         glyout->addWidget(pb, 8, 4, 1, 1);
     }
@@ -132,17 +132,17 @@ void SWJDialog::Init(S2DataTypes::SWJINFStruct swj)
     glyout->addWidget(WDFunc::NewLBL2(this, sl.at(row - 1)), row, 0, 1, 1);
     for (int i = 0; i < 3; ++i)
         glyout->addWidget(
-            WDFunc::NewLBLT2(this, QString::number(SWJOscFunc->SWJRecord.I[i], 'f', 1)), row, i + 1, 1, 1);
+            WDFunc::NewLBLT2(this, QString::number(SWJOscFunc->SWJRecord.amperage[i], 'f', 1)), row, i + 1, 1, 1);
     ++row;
     glyout->addWidget(WDFunc::NewLBL2(this, sl.at(row - 1)), row, 0, 1, 1);
     for (int i = 0; i < 3; ++i)
         glyout->addWidget(
-            WDFunc::NewLBLT2(this, QString::number(SWJOscFunc->SWJRecord.U[i], 'f', 1)), row, i + 1, 1, 1);
+            WDFunc::NewLBLT2(this, QString::number(SWJOscFunc->SWJRecord.voltage[i], 'f', 1)), row, i + 1, 1, 1);
     ++row;
     glyout->addWidget(WDFunc::NewLBL2(this, sl.at(row - 1)), row, 0, 1, 1);
     for (int i = 0; i < 3; ++i)
     {
-        value = static_cast<float>(SWJOscFunc->SWJRecord.OwnTime[i]);
+        value = static_cast<float>(SWJOscFunc->SWJRecord.ownTime[i]);
         value = value / 100;
         glyout->addWidget(WDFunc::NewLBLT2(this, str.setNum(value, 'f', 2)), row, i + 1, 1, 1);
     }
@@ -150,7 +150,7 @@ void SWJDialog::Init(S2DataTypes::SWJINFStruct swj)
     glyout->addWidget(WDFunc::NewLBL2(this, sl.at(row - 1)), row, 0, 1, 1);
     for (int i = 0; i < 3; ++i)
     {
-        value = static_cast<float>(SWJOscFunc->SWJRecord.FullTime[i]);
+        value = static_cast<float>(SWJOscFunc->SWJRecord.fullTime[i]);
         value = value / 100;
         glyout->addWidget(WDFunc::NewLBLT2(this, str.setNum(value, 'f', 2)), row, i + 1, 1, 1);
     }
@@ -158,7 +158,7 @@ void SWJDialog::Init(S2DataTypes::SWJINFStruct swj)
     glyout->addWidget(WDFunc::NewLBL2(this, sl.at(row - 1)), row, 0, 1, 1);
     for (int i = 0; i < 3; ++i)
     {
-        value = static_cast<float>(SWJOscFunc->SWJRecord.MovTime[i]);
+        value = static_cast<float>(SWJOscFunc->SWJRecord.movTime[i]);
         value = value / 100;
         glyout->addWidget(WDFunc::NewLBLT2(this, str.setNum(value, 'f', 2)), row, i + 1, 1, 1);
     }
@@ -166,7 +166,7 @@ void SWJDialog::Init(S2DataTypes::SWJINFStruct swj)
     glyout->addWidget(WDFunc::NewLBL2(this, sl.at(row - 1)), row, 0, 1, 1);
     for (int i = 0; i < 3; ++i)
     {
-        value = static_cast<float>(SWJOscFunc->SWJRecord.ArchTime[i]);
+        value = static_cast<float>(SWJOscFunc->SWJRecord.archTime[i]);
         value = value / 100;
         glyout->addWidget(WDFunc::NewLBLT2(this, str.setNum(value, 'f', 2)), row, i + 1, 1, 1);
     }
@@ -174,7 +174,7 @@ void SWJDialog::Init(S2DataTypes::SWJINFStruct swj)
     glyout->addWidget(WDFunc::NewLBL2(this, sl.at(row - 1)), row, 0, 1, 1);
     for (int i = 0; i < 3; ++i)
     {
-        value = static_cast<float>(SWJOscFunc->SWJRecord.IdleTime[i]);
+        value = static_cast<float>(SWJOscFunc->SWJRecord.idleTime[i]);
         value = value / 100;
         glyout->addWidget(WDFunc::NewLBLT2(this, str.setNum(value, 'f', 2)), row, i + 1, 1, 1);
     }
@@ -182,7 +182,7 @@ void SWJDialog::Init(S2DataTypes::SWJINFStruct swj)
     glyout->addWidget(WDFunc::NewLBL2(this, sl.at(row - 1)), row, 0, 1, 1);
     for (int i = 0; i < 3; ++i)
     {
-        value = static_cast<float>(SWJOscFunc->SWJRecord.Inaccuracy[i]);
+        value = static_cast<float>(SWJOscFunc->SWJRecord.inaccuracy[i]);
         value = value / 100;
         glyout->addWidget(WDFunc::NewLBLT2(this, str.setNum(value, 'f', 2)), row, i + 1, 1, 1);
     }
@@ -190,7 +190,7 @@ void SWJDialog::Init(S2DataTypes::SWJINFStruct swj)
     glyout->addWidget(WDFunc::NewLBL2(this, sl.at(row - 1)), row, 0, 1, 1);
     for (int i = 0; i < 3; ++i)
     {
-        value = SWJOscFunc->SWJRecord.Tins[i];
+        value = SWJOscFunc->SWJRecord.tInside[i];
         if (value == std::numeric_limits<float>::max())
             glyout->addWidget(WDFunc::NewLBLT2(this, "-"), row, i + 1, 1, 1);
         else
@@ -200,7 +200,7 @@ void SWJDialog::Init(S2DataTypes::SWJINFStruct swj)
     glyout->addWidget(WDFunc::NewLBL2(this, sl.at(row - 1)), row, 0, 1, 1);
     for (int i = 0; i < 3; ++i)
     {
-        value = SWJOscFunc->SWJRecord.Phyd[i];
+        value = SWJOscFunc->SWJRecord.phyd[i];
         if (value == std::numeric_limits<float>::max())
             glyout->addWidget(WDFunc::NewLBLT2(this, "-"), row, i + 1, 1, 1);
         else
@@ -269,35 +269,35 @@ void SWJDialog::GetSwjOscData()
         Files::SaveToFile(tmps, SWJOscFunc->BA, SWJInf.FileLength);
     }
 #endif
-    dlg = new TrendViewDialog(SWJOscFunc->BA);
-    mdl = new TrendViewModel(QStringList(), QStringList(), len);
-    SWJOscFunc->ProcessOsc(mdl);
+    m_trendViewDialog = new TrendViewDialog(SWJOscFunc->BA);
+    std::unique_ptr<TrendViewModel> mdl
+        = std::unique_ptr<TrendViewModel>(new TrendViewModel(QStringList(), QStringList(), len));
+    SWJOscFunc->ProcessOsc(mdl.get());
     mdl->xmax = (static_cast<float>((mdl->Len) - 10));
     mdl->xmin = -10;
-    dlg->TrendModel = mdl;
 
     switch (mdl->idOsc)
     {
     case MT_ID85:
     {
 
-        dlg->SetAnalogNames(mdl->tmpav_85);
-        dlg->SetDigitalNames(mdl->tmpdv_85);
-        dlg->SetDigitalColors(mdl->dcolors_85);
-        dlg->SetAnalogColors(mdl->acolors_85);
-        dlg->SetDiscreteDescriptions(mdl->ddescr_85);
-        dlg->SetAnalogDescriptions(mdl->adescr_85);
-        dlg->SetRanges(mdl->xmin, mdl->xmax, -200, 200);
+        m_trendViewDialog->setAnalogNames(mdl->tmpav_85);
+        m_trendViewDialog->setDigitalNames(mdl->tmpdv_85);
+        m_trendViewDialog->setDigitalColors(mdl->dcolors_85);
+        m_trendViewDialog->setAnalogColors(mdl->acolors_85);
+        m_trendViewDialog->setDiscreteDescriptions(mdl->ddescr_85);
+        m_trendViewDialog->setAnalogDescriptions(mdl->adescr_85);
+        m_trendViewDialog->setRange(mdl->xmin, mdl->xmax, -200, 200);
         break;
     }
     case MT_ID80:
     {
         mdl->tmpdv_80.clear();
-        dlg->SetAnalogNames(mdl->tmpav_80);
-        dlg->SetDigitalNames(mdl->tmpdv_80);
-        dlg->SetDigitalColors(mdl->dcolors_80);
-        dlg->SetAnalogColors(mdl->acolors_80);
-        dlg->SetRanges(mdl->xmin, mdl->xmax, -200, 200);
+        m_trendViewDialog->setAnalogNames(mdl->tmpav_80);
+        m_trendViewDialog->setDigitalNames(mdl->tmpdv_80);
+        m_trendViewDialog->setDigitalColors(mdl->dcolors_80);
+        m_trendViewDialog->setAnalogColors(mdl->acolors_80);
+        m_trendViewDialog->setRange(mdl->xmin, mdl->xmax, -200, 200);
         break;
     }
 
@@ -307,9 +307,9 @@ void SWJDialog::GetSwjOscData()
         mdl->tmpav_21 << QString::number(mdl->idOsc); // пока сделано для одного канала в осциллограмме
         // TrendViewModel *TModel = new TrendViewModel(QStringList(), tmpav, *len);
         // dlg->SetModel(TModel);
-        dlg->SetAnalogNames(mdl->tmpav_21);
-        dlg->SetRanges(0, 10000, -20,
-            20); // 10000 мс, 20 мА (сделать автонастройку в зависимости от конфигурации по данному каналу)
+        m_trendViewDialog->setAnalogNames(mdl->tmpav_21);
+        // 10000 мс, 20 мА (сделать автонастройку в зависимости от конфигурации по данному каналу)
+        m_trendViewDialog->setRange(0, 10000, -20, 20);
 
         break;
     }
@@ -324,16 +324,21 @@ void SWJDialog::GetSwjOscData()
     case ID_OSC_CH0 + 7:
     {
 
-        dlg->SetAnalogNames(mdl->tmpav_85);
-        dlg->SetDigitalNames(mdl->tmpdv_85);
-        dlg->SetDigitalColors(mdl->dcolors_85);
-        dlg->SetAnalogColors(mdl->acolors_85);
-        dlg->SetRanges(mdl->xmin, mdl->xmax, -200, 200);
+        m_trendViewDialog->setAnalogNames(mdl->tmpav_85);
+        m_trendViewDialog->setDigitalNames(mdl->tmpdv_85);
+        m_trendViewDialog->setDigitalColors(mdl->dcolors_85);
+        m_trendViewDialog->setAnalogColors(mdl->acolors_85);
+        m_trendViewDialog->setRange(mdl->xmin, mdl->xmax, -200, 200);
         break;
     }
     }
+    m_trendViewDialog->setTrendModel(std::move(mdl));
+    m_trendViewDialog->setupPlots();
+    m_trendViewDialog->setupUI();
+    m_trendViewDialog->setModal(false);
+}
 
-    dlg->SetupPlots();
-    dlg->SetupUI();
-    dlg->setModal(false);
+TrendViewDialog *SWJDialog::trendViewDialog() const
+{
+    return m_trendViewDialog;
 }
