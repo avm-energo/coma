@@ -483,6 +483,8 @@ void TrendViewDialog::showPlot()
         rect = mainPlot->axisRect(1);
         if (rect != nullptr)
             rect->setMarginGroup(QCP::msLeft, group);
+        else
+            delete group;
         break;
     }
     default:

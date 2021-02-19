@@ -105,8 +105,8 @@ bool ParseID9000::ParseID8x(
     // tmpav << "UA" << "UB" << "UC" << "IA" << "IB" << "IC";
     // tmpdv.clear();
     //            int np = C80
-    float xmax = (static_cast<float>(OHD.len / 2));
-    float xmin = -xmax;
+    // float xmax = (static_cast<float>(OHD.len / 2));
+    float xmin /*= -xmax*/;
     xmin = -(OHD.step * 512);
 
     if (!m_trendViewModel->SetPointsAxis(xmin, OHD.step))
