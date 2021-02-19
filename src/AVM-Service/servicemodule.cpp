@@ -32,7 +32,7 @@ void ServiceModule::create(QTimer *updateTimer)
         Q_UNUSED(typem)
         switch (typeb)
         {
-        case BaseBoards::MTB_00:
+        case BaseBoard::MTB_00:
             /*
                 str = (checkMDialog == nullptr) ? "Текущие параметры" : "Текущие параметры\nБазовая";
                 if (checkBDialog != nullptr)
@@ -121,4 +121,11 @@ void ServiceModule::create(Modules::Model model)
         assert(false);
     }
     Module::create(std::move(JOUR));
+}
+
+void ServiceModule::create(Modules::BaseBoard typeB, Modules::MezzanineBoard typeM)
+{
+    Q_UNUSED(typeB);
+    Q_UNUSED(typeM);
+    qCritical() << tr("Неизвестный модуль");
 }

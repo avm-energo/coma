@@ -90,6 +90,16 @@ void TuneModule::create(Modules::Model model)
     Module::create(std::move(JOUR));
 }
 
+void TuneModule::create(Modules::BaseBoard typeB, Modules::MezzanineBoard typeM)
+{
+    using namespace Modules;
+    if ((typeB == BaseBoard::MTB_80) && (typeM == MezzanineBoard::MTM_84))
+    {
+        qDebug("Here is KIV");
+        create(Modules::Model::KIV);
+    }
+}
+
 void TuneModule::create(QTimer *updateTimer)
 {
     using namespace Modules;
@@ -101,7 +111,7 @@ void TuneModule::create(QTimer *updateTimer)
         Q_UNUSED(typem)
         switch (typeb)
         {
-        case BaseBoards::MTB_00:
+        case BaseBoard::MTB_00:
             /*
                 str = (checkMDialog == nullptr) ? "Текущие параметры" : "Текущие параметры\nБазовая";
                 if (checkBDialog != nullptr)
@@ -115,6 +125,7 @@ void TuneModule::create(QTimer *updateTimer)
                     MainTW->addTab(checkMDialog, str);
             */
         default:
+            create(static_cast<BaseBoard>(typeb), static_cast<MezzanineBoard>(typem));
             break;
         }
     }

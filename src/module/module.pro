@@ -17,3 +17,6 @@ include(./../../include/QXlsx/QXlsx/QXlsx.pri)
 INCLUDEPATH += ./../../include/LimeReport
 
 include(module.pri)
+
+RESOURCES += \
+    ../../settings/settings.qrc

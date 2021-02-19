@@ -12,7 +12,6 @@ SOURCES += \
 HEADERS += \
     abstractconfdialog.h \
     config.h \
-    config85.h \
     configkdv.h \
     configkiv.h \
     configktf.h \

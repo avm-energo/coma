@@ -49,6 +49,7 @@ public:
     virtual void create(QTimer *updateTimer) = 0;
     void create(UniquePointer<Journals> jour);
     virtual void create(Modules::Model model) = 0;
+    virtual void create(Modules::BaseBoard typeB, Modules::MezzanineBoard typeM) = 0;
     QList<UDialog *> dialogs();
     QList<UDialog *> confDialogs();
     void addDialogToList(UDialog *dlg, const QString &caption = "", const QString &name = "");

@@ -1,14 +1,16 @@
-#include <QAction>
-#include <QFileDialog>
-#include <QPen>
-#include <QVector>
-//#include "QtXlsx/xlsxdocument.h"
+#include "trendviewmodel.h"
+
 #include "../config/config.h"
 #include "../gen/error.h"
 #include "../gen/files.h"
 #include "../gen/stdfunc.h"
 #include "../widgets/wd_func.h"
-#include "trendviewmodel.h"
+#include "xlsxdocument.h"
+
+#include <QAction>
+#include <QFileDialog>
+#include <QPen>
+#include <QVector>
 
 TrendViewModel::TrendViewModel(const QStringList &dlist, const QStringList &alist, int pointsnum)
 

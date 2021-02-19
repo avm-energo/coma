@@ -1,5 +1,3 @@
-//#include "../gen/maindef.h"
-
 #include <QHeaderView>
 #include <QMessageBox>
 #include <QPushButton>

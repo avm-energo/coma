@@ -9,9 +9,10 @@ class ServiceModule : public Module
 public:
     explicit ServiceModule(QObject *parent = nullptr);
     void create(QTimer *updateTimer) override;
-signals:
 
-    // Module interface
 protected:
     void create(Modules::Model model) override;
+
+private:
+    void create(Modules::BaseBoard typeB, Modules::MezzanineBoard typeM) override;
 };

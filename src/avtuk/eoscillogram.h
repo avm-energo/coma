@@ -74,8 +74,8 @@ private:
 public slots:
 
 private slots:
-    /*    void SaveToExcel();
-        void SaveToComtrade(); */
+    void SaveToExcel();
+    void SaveToComtrade();
 };
 
 #endif // EOSCILLOGRAM_H

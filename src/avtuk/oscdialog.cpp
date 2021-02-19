@@ -1,15 +1,17 @@
+#include "oscdialog.h"
+
+//#include "QXlsx/xlsxdocument.h"
+#include "xlsxdocument.h"
+
 #include <QApplication>
 #include <QDateTime>
+#include <QFileDialog>
 #include <QLabel>
+#include <QMessageBox>
 #include <QProgressBar>
 #include <QPushButton>
 #include <QVBoxLayout>
 #include <QWidget>
-//#include "QtXlsx/xlsxdocument.h"
-#include "oscdialog.h"
-
-#include <QFileDialog>
-#include <QMessageBox>
 #if PROGSIZE != PROGSIZE_EMUL
 #include "../gen/commands.h"
 #endif

@@ -17,7 +17,7 @@ enum Model
 };
 
 Q_ENUM_NS(Model);
-enum BaseBoards
+enum BaseBoard : quint16
 {
     MTB_00 = 0x00,
     MTB_12 = 0x12,
@@ -37,7 +37,7 @@ enum BaseBoards
     MTB_A2 = 0xA2
 };
 
-enum MezzanineBoards
+enum MezzanineBoard : quint16
 {
     MTM_00 = 0x00,
     MTM_21 = 0x21,

@@ -316,9 +316,13 @@ void Module::traverseNode(const QDomNode &node)
 
 bool Module::loadSettings()
 {
-    const auto moduleName = Board::GetInstance().moduleName();
+    auto moduleName = Board::GetInstance().moduleName();
     if (moduleName.isEmpty())
         return false;
+    if (moduleName.contains("-"))
+    {
+        moduleName = moduleName.split("-").last();
+    }
     QDir directory(StdFunc::GetSystemHomeDir());
     qDebug() << directory;
     auto allFiles = directory.entryList(QDir::Files);
