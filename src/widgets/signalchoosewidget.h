@@ -11,16 +11,13 @@ public:
     explicit SignalChooseWidget(QStringList &snames, QStringList &discr, QWidget *parent = nullptr);
 
 signals:
-    void SignalChoosed(QString signame); // при выборе сигнала - требуется выделить тренд
-                                         // при включении или отключении вставить или убрать из осциллограммы
-    void SignalToggled(QString signame, bool isChecked);
+    // при выборе сигнала - требуется выделить тренд при включении или отключении вставить или убрать из осциллограммы
+    void signalChoosed(QString signame);
+    //
+    void signalToggled(QString signame, bool isChecked);
 
 public slots:
-    void SetChecked(QString signame, bool checked);
-
-private slots:
-    void SignalClicked();
-    void SignalChecked(bool isChecked);
+    void setChecked(QString signame, bool checked);
 };
 
 class MarkSignalWidget : public QLabel
@@ -30,7 +27,7 @@ public:
     explicit MarkSignalWidget(const QString &text, QWidget *parent = nullptr);
 
 signals:
-    void Clicked();
+    void clicked();
 
 protected:
     void mouseMoveEvent(QMouseEvent *e);

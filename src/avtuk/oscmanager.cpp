@@ -16,14 +16,14 @@ OscManager::OscManager(QObject *parent) : QObject(parent)
 void OscManager::LoadOscFromFile(const QString &filename)
 {
 
-    QByteArray buffer;
+    QByteArray buffer = 0;
     if (Files::LoadFromFile(filename, buffer) != Error::NoError)
         return;
 
-    TrendViewDialog *trendDlg = new TrendViewDialog();
-
-    trendDlg->setArrayToSave(buffer);
-    EOscillogram *OscFunc = new EOscillogram(trendDlg);
+    // TrendViewDialog *trendDlg = new TrendViewDialog();
+    trendDialog = UniquePointer<TrendViewDialog>(new TrendViewDialog);
+    trendDialog->setArrayToSave(buffer);
+    EOscillogram *OscFunc = new EOscillogram(trendDialog.get());
     OscFunc->BA = buffer;
     std::unique_ptr<TrendViewModel> mdl = std::unique_ptr<TrendViewModel>(new TrendViewModel);
     OscFunc->ProcessOsc(mdl.get());
@@ -35,23 +35,23 @@ void OscManager::LoadOscFromFile(const QString &filename)
     case MT_ID85:
     {
 
-        trendDlg->setAnalogNames(mdl->tmpav_85);
-        trendDlg->setDigitalNames(mdl->tmpdv_85);
-        trendDlg->setDigitalColors(mdl->dcolors_85);
-        trendDlg->setAnalogColors(mdl->acolors_85);
-        trendDlg->setDiscreteDescriptions(mdl->ddescr_85);
-        trendDlg->setAnalogDescriptions(mdl->adescr_85);
-        trendDlg->setRange(mdl->xmin, mdl->xmax, -200, 200);
+        trendDialog->setAnalogNames(mdl->tmpav_85);
+        trendDialog->setDigitalNames(mdl->tmpdv_85);
+        trendDialog->setDigitalColors(mdl->dcolors_85);
+        trendDialog->setAnalogColors(mdl->acolors_85);
+        trendDialog->setDiscreteDescriptions(mdl->ddescr_85);
+        trendDialog->setAnalogDescriptions(mdl->adescr_85);
+        trendDialog->setRange(mdl->xmin, mdl->xmax, -200, 200);
         break;
     }
     case MT_ID80:
     {
         mdl->tmpdv_80.clear();
-        trendDlg->setAnalogNames(mdl->tmpav_80);
-        trendDlg->setDigitalNames(mdl->tmpdv_80);
-        trendDlg->setDigitalColors(mdl->dcolors_80);
-        trendDlg->setAnalogColors(mdl->acolors_80);
-        trendDlg->setRange(mdl->xmin, mdl->xmax, -200, 200);
+        trendDialog->setAnalogNames(mdl->tmpav_80);
+        trendDialog->setDigitalNames(mdl->tmpdv_80);
+        trendDialog->setDigitalColors(mdl->dcolors_80);
+        trendDialog->setAnalogColors(mdl->acolors_80);
+        trendDialog->setRange(mdl->xmin, mdl->xmax, -200, 200);
         break;
     }
 
@@ -61,11 +61,11 @@ void OscManager::LoadOscFromFile(const QString &filename)
         // mdl->tmpav_21 << QString::number(mdl->idOsc); // пока сделано для одного канала в осциллограмме
         // TrendViewModel *TModel = new TrendViewModel(QStringList(), tmpav, *len);
         // dlg->SetModel(TModel);
-        trendDlg->setAnalogColors(mdl->acolors_21);
-        trendDlg->setAnalogNames(mdl->tmpav_21);
-        trendDlg->setAnalogDescriptions(mdl->adescr_21);
+        trendDialog->setAnalogColors(mdl->acolors_21);
+        trendDialog->setAnalogNames(mdl->tmpav_21);
+        trendDialog->setAnalogDescriptions(mdl->adescr_21);
         // 10000 мс, 20 мА (сделать автонастройку в зависимости от конфигурации по данному каналу)
-        trendDlg->setRange(0, 10000, -20, 20);
+        trendDialog->setRange(0, 10000, -20, 20);
 
         break;
     }
@@ -80,19 +80,19 @@ void OscManager::LoadOscFromFile(const QString &filename)
     case ID_OSC_CH0 + 7:
     {
 
-        trendDlg->setAnalogNames(mdl->tmpav_85);
-        trendDlg->setDigitalNames(mdl->tmpdv_85);
-        trendDlg->setDigitalColors(mdl->dcolors_85);
-        trendDlg->setAnalogColors(mdl->acolors_85);
-        trendDlg->setRange(mdl->xmin, mdl->xmax, -200, 200);
+        trendDialog->setAnalogNames(mdl->tmpav_85);
+        trendDialog->setDigitalNames(mdl->tmpdv_85);
+        trendDialog->setDigitalColors(mdl->dcolors_85);
+        trendDialog->setAnalogColors(mdl->acolors_85);
+        trendDialog->setRange(mdl->xmin, mdl->xmax, -200, 200);
         break;
     }
     }
-    trendDlg->setTrendModel(std::move(mdl));
-    trendDlg->setupPlots();
-    trendDlg->setupUI();
-    trendDlg->showPlot();
-    trendDlg->show();
+    trendDialog->setTrendModel(std::move(mdl));
+    trendDialog->setupPlots();
+    trendDialog->setupUI();
+    trendDialog->showPlot();
+    trendDialog->show();
 }
 
 void OscManager::loadSwjFromFile(const QString &filename)
@@ -103,7 +103,7 @@ void OscManager::loadSwjFromFile(const QString &filename)
     // return;
     // int GBOSize = sizeof(EOscillogram::GBoStruct);
 
-    QByteArray buffer;
+    QByteArray buffer = 0;
 
     if (Files::LoadFromFile(filename, buffer) != Error::NoError)
         return;

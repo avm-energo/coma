@@ -16,9 +16,11 @@ public:
     bool PosPlusPlus(void *dst, int &count, int size);
     virtual bool Parse(int &count) = 0;
     //    virtual void Save(quint32 *len) = 0;
+    TrendViewModel *trendViewModel() const;
+
 protected:
     QByteArray BArray;
-    TrendViewModel *m_trendViewModel;
+    std::unique_ptr<TrendViewModel> m_trendViewModel;
     TrendViewDialog *m_trendViewDialog;
     quint32 id;
 };

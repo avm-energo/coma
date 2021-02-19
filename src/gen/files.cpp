@@ -61,7 +61,7 @@ Error::Msg Files::LoadFromFile(const QString &filename, QByteArray &ba)
         qCritical("Пустое имя файла");
         return Error::Msg::FileNameError; // Пустое имя файла
     }
-    QFile *file = new QFile;
+    std::unique_ptr<QFile> file = std::unique_ptr<QFile>(new QFile);
     file->setFileName(filename);
     if (!file->open(QIODevice::ReadOnly))
     {
@@ -77,7 +77,7 @@ Error::Msg Files::SaveToFile(const QString &filename, QByteArray &src)
 {
     if (filename.isEmpty())
         return Error::Msg::NoError; // Пустое имя файла
-    QFile *file = new QFile;
+    std::unique_ptr<QFile> file = std::unique_ptr<QFile>(new QFile);
     file->setFileName(filename);
     if (!file->open(QIODevice::WriteOnly))
         return Error::Msg::FileOpenError; // Ошибка открытия файла
@@ -85,14 +85,12 @@ Error::Msg Files::SaveToFile(const QString &filename, QByteArray &src)
     {
         // нет ошибок
         file->close();
-        delete file;
         return Error::Msg::NoError;
     }
     else
     {
         // ошибка записи
         file->close();
-        delete file;
         return Error::Msg::FileWriteError;
     }
 }
@@ -101,7 +99,7 @@ QStringList Files::Drives()
 {
     QStringList sl;
     QFileInfoList list = QDir::drives();
-    foreach (QFileInfo fi, list)
+    for (QFileInfo fi : list)
         sl << fi.path();
     return sl;
 }
@@ -109,7 +107,7 @@ QStringList Files::Drives()
 QStringList Files::SearchForFile(QStringList &filepaths, const QString &filename, bool subdirs)
 {
     QStringList files;
-    foreach (QString filepath, filepaths)
+    for (QString filepath : filepaths)
     {
         QStringList sl = QStringList() << filename;
         QDirIterator it(filepath, sl, QDir::AllEntries | QDir::NoSymLinks | QDir::NoDotAndDotDot,

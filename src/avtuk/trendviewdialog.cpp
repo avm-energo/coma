@@ -77,20 +77,21 @@ void TrendViewDialog::setupUI()
     if (!noDiscrete)
     {
         vlyout->addWidget(createToolBar(ST_DIGITAL));
-        SignalChooseWidget *scw = new SignalChooseWidget(digitalDescription.names, digitalDescription.descriptions);
+        SignalChooseWidget *scw
+            = new SignalChooseWidget(digitalDescription.names, digitalDescription.descriptions, this);
         scw->setObjectName("digital");
         // scw->setAccessibleDescription("Descr");
-        connect(scw, &SignalChooseWidget::SignalChoosed, this, &TrendViewDialog::signalChoosed);
-        connect(scw, &SignalChooseWidget::SignalToggled, this, &TrendViewDialog::signalToggled);
+        connect(scw, &SignalChooseWidget::signalChoosed, this, &TrendViewDialog::signalChoosed);
+        connect(scw, &SignalChooseWidget::signalToggled, this, &TrendViewDialog::signalToggled);
         vlyout->addWidget(scw);
     }
     if (!noAnalog)
     {
         vlyout->addWidget(createToolBar(ST_ANALOG));
-        SignalChooseWidget *scw = new SignalChooseWidget(analogDescription.names, analogDescription.descriptions);
+        SignalChooseWidget *scw = new SignalChooseWidget(analogDescription.names, analogDescription.descriptions, this);
         scw->setObjectName("analog");
-        connect(scw, &SignalChooseWidget::SignalChoosed, this, &TrendViewDialog::signalChoosed);
-        connect(scw, &SignalChooseWidget::SignalToggled, this, &TrendViewDialog::signalToggled);
+        connect(scw, &SignalChooseWidget::signalChoosed, this, &TrendViewDialog::signalChoosed);
+        connect(scw, &SignalChooseWidget::signalToggled, this, &TrendViewDialog::signalToggled);
         vlyout->addWidget(scw);
     }
     hlyout->addLayout(vlyout);
@@ -233,7 +234,7 @@ void TrendViewDialog::signalToggled(QString signame, bool isChecked)
                 || ((signalOscPropertiesMap[signame].type == ST_ANALOG) && (analogcount < MAXGRAPHSPERPLOT)))
             {
                 if (scw != nullptr)
-                    scw->SetChecked(signame, true);
+                    scw->setChecked(signame, true);
                 QCPGraph *graph = signalOscPropertiesMap[signame].graph;
                 if (graph == nullptr)
                 {
@@ -288,7 +289,7 @@ void TrendViewDialog::signalToggled(QString signame, bool isChecked)
                 }
             }
             else
-                scw->SetChecked(signame, false);
+                scw->setChecked(signame, false);
         }
         mainPlot->replot();
     }
@@ -455,7 +456,7 @@ void TrendViewDialog::showPlot()
                     graph->rescaleKeyAxis();
                     SignalChooseWidget *scw = this->findChild<SignalChooseWidget *>("analog");
                     if (scw != nullptr)
-                        scw->SetChecked(tmps, true);
+                        scw->setChecked(tmps, true);
                 }
                 if (m_trendModel->DContains(tmps))
                 {
@@ -464,7 +465,7 @@ void TrendViewDialog::showPlot()
                     graph->rescaleKeyAxis();
                     SignalChooseWidget *scw = this->findChild<SignalChooseWidget *>("digital");
                     if (scw != nullptr)
-                        scw->SetChecked(tmps, true);
+                        scw->setChecked(tmps, true);
                 }
             }
         }

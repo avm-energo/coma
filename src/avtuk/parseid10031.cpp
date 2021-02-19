@@ -45,7 +45,7 @@ bool ParseID10031::Parse(int &count)
     tmps.insert(0, "_");
     tmps.insert(0, QString::number(DR.id));
 
-    m_trendViewModel = new TrendViewModel(tmpdv, tmpav, OHD.len);
+    m_trendViewModel = std::unique_ptr<TrendViewModel>(new TrendViewModel(tmpdv, tmpav, OHD.len));
     m_trendViewModel->SaveID(DR.id);
     m_trendViewModel->Len = OHD.len;
     m_trendViewModel->tmpdv_85 = tmpdv;

@@ -1,4 +1,6 @@
 #pragma once
+#include "../gen/stdfunc.h"
+#include "trendviewdialog.h"
 
 #include <QObject>
 class OscManager : public QObject
@@ -9,4 +11,5 @@ public:
     void loadSwjFromFile(const QString &filename);
 
 private:
+    UniquePointer<TrendViewDialog> trendDialog;
 };

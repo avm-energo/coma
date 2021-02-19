@@ -14,3 +14,8 @@ bool ParseModule::PosPlusPlus(void *dst, int &count, int size)
 
     return true;
 }
+
+TrendViewModel *ParseModule::trendViewModel() const
+{
+    return m_trendViewModel.get();
+}

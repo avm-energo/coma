@@ -35,7 +35,7 @@ bool ParseID9000::Parse(int &count)
 
     QStringList tmpav, tmpdv;
     //  TrendViewDialog *dlg = new TrendViewDialog(BArray);
-    m_trendViewModel = new TrendViewModel(tmpdv, tmpav, OHD.len);
+    m_trendViewModel = std::unique_ptr<TrendViewModel>(new TrendViewModel(tmpdv, tmpav, OHD.len));
     m_trendViewModel->SaveID(DR.id);
 
     m_trendViewModel->Len = OHD.len;
