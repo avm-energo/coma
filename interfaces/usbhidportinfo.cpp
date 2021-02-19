@@ -1,6 +1,7 @@
 #include "usbhidportinfo.h"
 
-#include "hidapi/hidapi.h"
+//#include "hidapi/hidapi.h"
+#include "hidapi/hidapi/hidapi.h"
 
 QList<UsbHidSettings> UsbHidPortInfo::devicesFound(quint16 vid)
 {

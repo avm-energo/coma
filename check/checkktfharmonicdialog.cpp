@@ -102,7 +102,7 @@ UWidget *CheckKTFHarmonicDialog::BdIWidget(int value, int min, int max)
     return w;
 }
 
-UWidget *CheckKTFHarmonicDialog::BdUWidget(unsigned int value, int min, int max)
+UWidget *CheckKTFHarmonicDialog::BdUWidget(int value, int min, int max)
 {
     int i;
     UWidget *w = new UWidget;
