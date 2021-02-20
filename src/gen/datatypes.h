@@ -85,8 +85,11 @@ enum FilesEnum : quint16
     JourSw = 17,
     /// events journal (12->62)
     JourEv = 18,
-    /// oscilloscope info
-    FileOsc = 1000
+    /// oscillogramm id min
+    FileOscMin = 1000,
+    /// oscillogram id max
+    FileOscMax = 2999
+
 };
 
 struct FileStruct

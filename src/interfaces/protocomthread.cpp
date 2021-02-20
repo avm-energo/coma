@@ -696,7 +696,6 @@ void handleSinglePoint(const QByteArray &ba, const quint16 addr)
 
 void handleFile(QByteArray &ba, DataTypes::FilesEnum addr, bool isShouldRestored)
 {
-
     if (isShouldRestored)
     {
         DataTypes::ConfParametersListStruct outlist;
@@ -772,17 +771,23 @@ void handleTechBlock(const QByteArray &ba, quint32 blkNum)
         //  Блок текущих событий Be
     case 0x02:
     {
+        qDebug("Блок текущих событий Be");
         break;
     }
         // Блок технологических событий BTe
     case 0x03:
     {
+        qDebug("Блок технологических событий BTe");
         break;
     }
         // Блок рабочего архива (Bra)
     case 0x05:
-
+    {
+        qDebug("Блок рабочего архива (Bra)");
+        break;
+    }
     default:
+        qDebug() << ba;
         break;
     }
 }

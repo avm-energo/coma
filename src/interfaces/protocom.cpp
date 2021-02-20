@@ -97,6 +97,8 @@ void Protocom::reqTime()
 
 void Protocom::reqFile(quint32 filenum, bool isConfigFile)
 {
+    // Q_ASSERT(filenum >= std::numeric_limits<DataTypes::FilesEnum>::max());
+    Q_ASSERT(filenum > DataTypes::FilesEnum::FileOscMax);
     QByteArray ba = StdFunc::arrayFromNumber(quint16(filenum));
 
     CommandStruct inp {

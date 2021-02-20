@@ -175,25 +175,12 @@ Error::Msg S2::RestoreData(QByteArray &bain, QList<DataTypes::ConfParameterStruc
 {
     Q_ASSERT(bain.size() >= sizeof(S2DataTypes::FileHeader));
     qInfo() << "S2 File size:" << bain.size();
-    //    unsigned char *m = static_cast<unsigned char *>(mem);
     S2DataTypes::DataRec DR;
-    //    DataRec *r;
-    //    FileHeader header;
-    //    quint32 tmpi, pos;
-    //    bool noIDs = true; // признак того, что не встретился ни один из ID в dr
 
     // копируем FileHeader
     S2DataTypes::FileHeader fh;
     memcpy(&fh, &bain.data()[0], sizeof(S2DataTypes::FileHeader));
     bain.remove(0, sizeof(S2DataTypes::FileHeader));
-    //    quint32 fhsize = sizeof(FileHeader);
-    //    if (fhsize > memsize)
-    //    {
-    //        ERMSG("S2: out of memory"); // выход за границу принятых байт
-    //        return Error::Msg::S2_SIZEERROR;
-    //    }
-    //    memcpy(&header, m, fhsize);
-    //    m += fhsize;
 
     // проверка контрольной суммы
     if (!CheckCRC32(&bain.data()[0], bain.size(), fh.crc32))
@@ -204,7 +191,6 @@ Error::Msg S2::RestoreData(QByteArray &bain, QList<DataTypes::ConfParameterStruc
     //    pos = fhsize;
     DR.id = 0;
     while ((DR.id != 0xFFFFFFFF) && (!bain.isEmpty()))
-    //    while ((R.id != 0xFFFFFFFF) && (pos < memsize))
     {
         int size = sizeof(S2DataTypes::DataRec) - sizeof(void *);
         //        pos += tmpi;
@@ -215,6 +201,7 @@ Error::Msg S2::RestoreData(QByteArray &bain, QList<DataTypes::ConfParameterStruc
         }
         memcpy(&DR, &bain.data()[0], size);
         bain.remove(0, size);
+        //  Q_ASSERT(!bain.isEmpty());
         if (DR.id != 0xFFFFFFFF)
         {
             DataTypes::ConfParameterStruct cfp;
@@ -228,47 +215,9 @@ Error::Msg S2::RestoreData(QByteArray &bain, QList<DataTypes::ConfParameterStruc
             cfp.data = bain.left(size);
             bain.remove(0, size);
             outlist.append(cfp);
-            //            r = FindElem(dr, R.id);
-            //            if (r == nullptr) // элемент не найден в описании, пропускаем
-            //            {
-            //                tmpi = R.num_byte;
-            //                pos += tmpi;
-            //                if (pos > memsize)
-            //                {
-            //                    ERMSG("S2: out of memory"); // выход за границу принятых байт
-            //                    return Error::Msg::S2_SIZEERROR;
-            //                }
-            //                m += tmpi;
-            //                continue;
-            //            }
-            //            noIDs = false;
-            //            if (r->num_byte != R.num_byte) //несовпадения описания прочитанного элемента с ожидаемым
-            //            {
-            //                ERMSG("S2: block description mismatch"); // несовпадение описаний одного
-            //                                                         // и того же блока
-            //                return Error::Msg::S2_DESCERROR;
-            //            }
-            //            tmpi = r->num_byte;
-            //            pos += tmpi;
-            //            if (pos > memsize)
-            //            {
-            //                ERMSG("S2: out of memory"); // выход за границу принятых байт
-            //                return Error::Msg::S2_SIZEERROR;
-            //            }
-            //            memcpy(r->thedata, m, tmpi);
-            //            m += tmpi;
         }
     }
-    //    if (header.size != (pos - fhsize))
-    //    {
-    //        ERMSG("S2: length error"); // ошибка длины
-    //        return Error::Msg::S2_DHSZERROR;
-    //    }
-    //    if (noIDs)
-    //    {
-    //        ERMSG("S2: there's no such ID"); // не найдено ни одного ИД
-    //        return Error::Msg::S2_NOIDS;
-    //    }
+
     return Error::Msg::NoError;
 }
 
