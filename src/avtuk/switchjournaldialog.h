@@ -20,7 +20,7 @@ public:
 private:
     ETableModel *TableModel;
     ETableView *SwjTableView;
-    QMap<quint64, S2DataTypes::GBoStruct> OscMap;
+    QMap<quint64, DataTypes::OscInfo> OscMap;
     QMap<int, S2DataTypes::SwitchJourInfo> SWJMap;
     EOscillogram *SWJDOscFunc;
 

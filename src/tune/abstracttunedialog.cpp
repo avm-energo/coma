@@ -26,11 +26,11 @@
 AbstractTuneDialog::AbstractTuneDialog(int tuneStep, QWidget *parent) : QDialog(parent)
 {
     TuneVariant = 0;
-    MeasurementTimer = new QTimer;
-    MeasurementTimer->setInterval(MEASTIMERINT);
+    // MeasurementTimer = new QTimer;
+    //  MeasurementTimer->setInterval(MEASTIMERINT);
     IsNeededDefConf = false;
-    connect(MeasurementTimer, SIGNAL(timeout()), this, SLOT(MeasTimerTimeout()));
-    RepModel = new ReportModel;
+    // connect(MeasurementTimer, SIGNAL(timeout()), this, SLOT(MeasTimerTimeout()));
+    // RepModel = new ReportModel;
     m_blockCount = 0;
     m_tuneStep = tuneStep;
     m_finished = false;
@@ -168,7 +168,7 @@ void AbstractTuneDialog::WaitNSeconds(int Seconds, bool isAllowedToStop)
     ww.initialseconds = Seconds;
     w->Init(ww);
     QEventLoop el;
-    connect(w, SIGNAL(CountZero()), &el, SLOT(quit()));
+    connect(w, &WaitWidget::CountZero, &el, &QEventLoop::quit);
     w->Start();
     el.exec();
 }

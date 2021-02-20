@@ -1,12 +1,13 @@
 #pragma once
 #include "../gen/datatypes.h"
-#include "../interfaces/interfacesettings.h"
-//#include "../interfaces/modbussettings.h"
-#include "../interfaces/usbhidportinfo.h"
-#include "../models/errorprotocolitem.h"
+///#include "../interfaces/interfacesettings.h"
 
 #include <QDebug>
 #include <bitset>
+
+class ErrorProtocolItem;
+class ETableItemData;
+struct UsbHidSettings;
 
 QDebug operator<<(QDebug debug, const DataTypes::BitStringStruct &st);
 QDebug operator<<(QDebug debug, const DataTypes::FloatWithTimeStruct &st);
@@ -19,6 +20,7 @@ QDebug operator<<(QDebug debug, const DataTypes::ConfParametersListStruct &list)
 QDebug operator<<(QDebug debug, const DataTypes::SignalsStruct &st);
 QDebug operator<<(QDebug debug, const DataTypes::Signal &st);
 QDebug operator<<(QDebug debug, const DataTypes::GeneralResponseStruct &st);
+QDebug operator<<(QDebug debug, const DataTypes::OscInfo &st);
 QDebug operator<<(QDebug debug, const UsbHidSettings &settings);
 
 template <std::size_t N> QDebug operator<<(QDebug debug, const std::bitset<N> &bitset)

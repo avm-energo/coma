@@ -24,6 +24,7 @@ enum SignalTypes
     ConfParameter,
     ConfParametersList,
     Block,
+    OscillogramInfo,
     GeneralResponse
 };
 
@@ -210,6 +211,17 @@ struct Journal
     QString name;
 };
 
+#pragma pack(push) /* push current alignment to stack */
+#pragma pack(1)    /* set alignment to 1 byte boundary */
+struct OscInfo
+{
+    quint32 fileNum;    // номер файла осциллограмм
+    quint32 fileLength; // длина файла за исключением FileHeader (16 байт)
+    quint32 id; // Тип файла - осциллограмма и количество осциллограмм в файле (10000, 10001 ...)
+    quint64 unixtime; // Время начала записи осциллограммы
+    quint32 id0; // ID первой осциллограммы в файле (определяет структуру точки и номер канала)
+};
+#pragma pack(pop)
 }
 
 namespace Queries
@@ -237,6 +249,7 @@ enum Commands
     QUSB_ReqBlkDataA,
     QUSB_ReqBlkDataTech,
     QUSB_WriteBlkDataTech,
+    QUSB_ReqOscInfo,
     QUSB_SetMode, // SMode (0x43) - not tested yet
     QUSB_GetMode  // GMode (0x28) - not tested yet
 };
@@ -248,6 +261,7 @@ struct Command
     float flarg;
     QByteArray ba;
 };
+
 }
 
 namespace S2DataTypes
@@ -304,18 +318,6 @@ struct FileStruct
     DataRecHeader void_recHeader;
 };
 typedef QVector<S2DataTypes::DataRec> S2ConfigType;
-
-#pragma pack(push) /* push current alignment to stack */
-#pragma pack(1)    /* set alignment to 1 byte boundary */
-struct GBoStruct
-{
-    quint32 fileNum;    // номер файла осциллограмм
-    quint32 fileLength; // длина файла за исключением FileHeader (16 байт)
-    quint32 id; // Тип файла - осциллограмма и количество осциллограмм в файле (10000, 10001 ...)
-    quint64 unixtime; // Время начала записи осциллограммы
-    quint32 id0; // ID первой осциллограммы в файле (определяет структуру точки и номер канала)
-};
-#pragma pack(pop)
 
 #pragma pack(push) /* push current alignment to stack */
 #pragma pack(1)    /* set alignment to 1 byte boundary */
@@ -385,5 +387,6 @@ Q_DECLARE_METATYPE(DataTypes::ConfParametersListStruct)
 Q_DECLARE_METATYPE(DataTypes::SignalsStruct)
 Q_DECLARE_METATYPE(DataTypes::Signal)
 Q_DECLARE_METATYPE(DataTypes::GeneralResponseStruct)
+Q_DECLARE_METATYPE(DataTypes::OscInfo)
 Q_DECLARE_METATYPE(Queries::Command)
 #endif // DATATYPES_H

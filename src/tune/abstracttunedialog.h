@@ -36,12 +36,12 @@ public:
     bool IsNeededDefConf;
     int m_blockCount;
     QStringList m_messages;
-    QTimer *MeasurementTimer;
+    //  QTimer *MeasurementTimer;
     quint32 SecondsToEnd15SecondsInterval;
     QHash<QString, Error::Msg (AbstractTuneDialog::*)()> m_tuneFunctions;
     quint8 bStep;
-    int TuneVariant;       // вариант регулировочных параметров
-    ReportModel *RepModel; // модель, в которую заносим данные для отчёта
+    int TuneVariant; // вариант регулировочных параметров
+    // ReportModel *RepModel; // модель, в которую заносим данные для отчёта
     int m_tuneStep;
     bool m_finished;
 

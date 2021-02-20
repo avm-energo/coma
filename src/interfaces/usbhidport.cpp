@@ -48,11 +48,9 @@ UsbHidPort::~UsbHidPort()
 #ifdef QT_GUI_LIB
 void UsbHidPort::connectToGui(QObject *object)
 {
-    // Q_ASSERT(object != nullptr);
-    // Q_ASSERT(object->parent() != nullptr);
     Coma *mainWindow = qobject_cast<Coma *>(WDFunc::getMainWindow());
-    //  Coma *mainWindow = qobject_cast<Coma *>(object->parent());
-    Q_ASSERT(mainWindow != nullptr);
+    /// TODO Может быть полезно
+    // Q_ASSERT(mainWindow != nullptr);
     if (mainWindow != nullptr)
         connect(mainWindow, &Coma::sendMessage, this, &UsbHidPort::nativeEvent, Qt::DirectConnection);
 }

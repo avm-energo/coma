@@ -1,7 +1,8 @@
 #pragma once
 
-#include "../gen/helper.h"
+#include "../../gen/helper.h"
 
+#include <QDebug>
 #include <QObject>
 class Console : public QObject
 {
@@ -50,6 +51,10 @@ public:
         qDebug() << st;
     }
     void print(const DataTypes::GeneralResponseStruct &st)
+    {
+        qDebug() << st;
+    }
+    void print(const DataTypes::OscInfo &st)
     {
         qDebug() << st;
     }
