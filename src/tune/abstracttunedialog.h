@@ -7,6 +7,7 @@
 
 #include <QByteArray>
 #include <QCloseEvent>
+#include <QDialog>
 
 #define MAXTUNESIZE 1024 // максимальный размер файла с данными настройки
 

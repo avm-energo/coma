@@ -1,8 +1,8 @@
 #include "tunekiv.h"
 
+#include "../../gen/colors.h"
+#include "../../gen/stdfunc.h"
 #include "../../widgets/wd_func.h"
-#include "../gen/colors.h"
-#include "../gen/stdfunc.h"
 
 #include <QGroupBox>
 #include <QVBoxLayout>

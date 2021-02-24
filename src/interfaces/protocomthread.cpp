@@ -771,7 +771,7 @@ void handleTechBlock(const QByteArray &ba, quint32 blkNum)
             QByteArray buffer = ba.mid(i, sizeof(DataTypes::OscInfo));
 
             DataTypes::OscInfo oscInfo;
-            std::memcpy(&oscInfo, buffer.constData(), sizeof(DataTypes::OscInfo));
+            memcpy(&oscInfo, buffer.constData(), sizeof(DataTypes::OscInfo));
             DataManager::addSignalToOutList(DataTypes::SignalTypes::OscillogramInfo, oscInfo);
         }
 

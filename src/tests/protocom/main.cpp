@@ -23,7 +23,6 @@ int main(int argc, char *argv[])
     auto devices = UsbHidPortInfo::devicesFound();
     for (const auto &device : devices)
         qDebug() << device;
-    // UniquePointer<BaseInterface> usbdevice = UniquePointer<BaseInterface>(new Protocom);
     BaseInterface::InterfacePointer device;
 
     device = BaseInterface::InterfacePointer(new Protocom());
@@ -35,17 +34,20 @@ int main(int argc, char *argv[])
     //    usbdevice.reqBSI();
     usbdevice->writeCommand(Queries::QUSB_GetMode);
     usbdevice->reqBSI();
-    //  for (int i = 0; i != 100; i++)
-    //     usbdevice->writeCommand(Queries::QUSB_ReqBlkDataA, i);
+
+    // for (int i = 0; i != 100; i++)
+    //   usbdevice->writeCommand(Queries::QUSB_ReqBlkData, i);
+    //   usbdevice->writeCommand(Queries::QUSB_ReqBlkDataA, i);
     //    usbdevice->writeCommand(Queries::QUSB_ReqBlkDataA, 1);
     //    usbdevice->writeCommand(Queries::QUSB_ReqBlkDataA, 1);
     //    usbdevice->writeCommand(Queries::QUSB_ReqBlkDataA, 1);
     //    usbdevice->writeCommand(Queries::QUSB_ReqBlkData, 1);
     usbdevice->writeCommand(Queries::QUSB_ReqOscInfo, 1);
-    //    usbdevice->writeCommand(Queries::QUSB_ReqBlkDataTech, 2);
-    //    usbdevice->writeCommand(Queries::QUSB_ReqBlkDataTech, 3);
-    //    usbdevice->writeCommand(Queries::QUSB_ReqBlkDataTech, 4);
-    //    usbdevice->writeCommand(Queries::QUSB_ReqBlkDataTech, 5);
+    // usbdevice->reqFile(1012, true);
+    //  usbdevice->writeCommand(Queries::QUSB_ReqBlkDataTech, 2);
+    // usbdevice->writeCommand(Queries::QUSB_ReqBlkDataTech, 3);
+    //  usbdevice->writeCommand(Queries::QUSB_ReqBlkDataTech, 4);
+    // usbdevice->writeCommand(Queries::QUSB_ReqBlkDataTech, 5);
     //  for (int i = 0; i != 10000; ++i)
     //  {
     //      usbdevice->writeCommand(Queries::QUSB_ReqBlkDataTech, i);

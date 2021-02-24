@@ -13,7 +13,7 @@ SOURCES += \
 HEADERS += \
     $$PWD/console.h
 
-message($${LIBS})
+
 
 DESTDIR = $${BIN_PATH}/$${TARGET}
 win32 {
@@ -73,16 +73,6 @@ LIBRARIES += check \
 
 include(../../deps.pri)
 
-message($${LIBS})
-!isEmpty(LIBRARIES) {
-    for(libpath, LIBRARIES) {
-        out_libpath = $${LIBS_PATH}
-        libbase = $$basename(libpath)
-        LIBS += -l$$libbase$${LIB_SUFFIX}
-        PRE_TARGETDEPS+=$${out_libpath}/$${LIBDIR}/$${LIBPREFIX}$${libbase}$${LIB_SUFFIX}$${LIBFORMAT}
-    }
-}
-message($${LIBS})
 
 
 # Default rules for deployment.
