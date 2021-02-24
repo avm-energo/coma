@@ -1,5 +1,7 @@
 #include "tunemodule.h"
 
+#include "../avtuk/oscdialog.h"
+#include "../avtuk/switchjournaldialog.h"
 #include "../check/checkkdvdialog.h"
 #include "../check/checkkdvharmonicdialog.h"
 #include "../check/checkkdvvibrdialog.h"
@@ -93,6 +95,13 @@ void TuneModule::create(Modules::BaseBoard typeB, Modules::MezzanineBoard typeM)
     {
         qDebug("Here is KIV");
         createModule(Modules::Model::KIV);
+    }
+    if ((typeB == BaseBoard::MTB_80) && (typeM == MezzanineBoard::MTM_82))
+    {
+        qDebug("Here is AVTUK-8082");
+        addDialogToList(new SwitchJournalDialog, "Журнал переключений");
+        addDialogToList(new OscDialog, "Осциллограммы");
+        //   createModule(Modules::Model::KIV);
     }
 }
 

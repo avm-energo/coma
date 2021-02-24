@@ -479,12 +479,21 @@ void ProtocomThread::parseResponse(QByteArray ba)
         // Q_ASSERT(size == ba.size());
         m_buffer.first += size;
         m_buffer.second.append(ba);
+
         // Потому что на эту команду модуль не отдает пустой ответ
         if (isOneSegment(size) || (cmd == Proto::ReadBlkStartInfo))
+        {
             handle(Proto::Commands(cmd));
+            if (progress != NULL)
+            {
+                handleMaxProgress(progress = +Proto::Limits::MaxSegmenthLength);
+                progress = NULL;
+            }
+        }
         else
         {
-
+            progress += Proto::Limits::MaxSegmenthLength;
+            handleProgress(progress);
             auto tba = prepareOk(false, cmd);
             Q_ASSERT(tba.size() == 4);
             emit writeDataAttempt(tba);

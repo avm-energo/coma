@@ -1,6 +1,6 @@
 SOURCES += \
+    $$PWD/pushbuttondelegate.cpp \
     eoscillogram.cpp \
-    getoscpbdelegate.cpp \
     oscdialog.cpp \
     oscmanager.cpp \
     parseid10031.cpp \
@@ -13,8 +13,8 @@ SOURCES += \
     trendviewmodel.cpp
 
 HEADERS += \
+    $$PWD/pushbuttondelegate.h \
     eoscillogram.h \
-    getoscpbdelegate.h \
     oscdialog.h \
     oscmanager.h \
     parseid10031.h \
