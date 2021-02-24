@@ -2,41 +2,35 @@
 #define OSCDIALOG_H
 
 #include "../models/etablemodel.h"
+#include "../widgets/udialog.h"
 #include "eoscillogram.h"
 
 #include <QByteArray>
 #include <QDialog>
 
-constexpr int MT_FT_XLSX = 0x01;
-constexpr int MT_FT_COMTRADE = 0x02;
-constexpr int MT_FT_NONE = 0x04;
-
-class OscDialog : public QDialog
+class OscDialog : public UDialog
 {
     Q_OBJECT
 
 public:
-    explicit OscDialog(EOscillogram *osc, QWidget *parent = nullptr);
+    explicit OscDialog(QWidget *parent = nullptr);
     ~OscDialog();
 
 private:
     void SetupUI();
-    void UpdateModel();
 
     ETableModel *tm;
-    EOscillogram *OscFunc;
+    int counter = 0;
 
 signals:
     void StopCheckTimer();
 
 public slots:
-
+    void fillOscInfo(DataTypes::OscInfo info);
 private slots:
-#if PROGSIZE != PROGSIZE_EMUL
-    void GetAndProcessOscInfo();
+
     void GetOsc(QModelIndex);
     void EraseOsc();
-#endif
 };
 
 #endif // OSCDIALOG_H

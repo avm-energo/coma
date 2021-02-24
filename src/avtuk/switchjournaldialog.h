@@ -10,13 +10,12 @@
 #include <QDialog>
 #include <QModelIndex>
 
-constexpr int MAXSWJNUM = 262144;
-
 class SwitchJournalDialog : public UDialog
 {
     Q_OBJECT
 public:
     SwitchJournalDialog(EOscillogram *osc, QWidget *parent = nullptr);
+    explicit SwitchJournalDialog(QWidget *parent = nullptr);
 
 private:
     ETableModel *TableModel;
@@ -26,15 +25,17 @@ private:
     EOscillogram *SWJDOscFunc;
 
     void SetupUI();
-    void ProcessSWJournal(QByteArray &ba);
-#if PROGSIZE != PROGSIZE_EMUL
-    void ProcessOscillograms();
+    void processSWJournal(QByteArray &ba);
+
+    void processOscillograms();
+
+public slots:
+    void FillJour(const DataTypes::FileStruct &fs);
 
 private slots:
-    void LoadJournals();
-    void ShowJournal(QModelIndex idx);
-    void EraseJournals();
-#endif
+    void loadJournals();
+    void showJournal(QModelIndex idx);
+    void eraseJournals();
 };
 
 #endif // SWITCHJOURNALDIALOG_H

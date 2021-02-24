@@ -99,9 +99,13 @@ void TuneModule::create(Modules::BaseBoard typeB, Modules::MezzanineBoard typeM)
     if ((typeB == BaseBoard::MTB_80) && (typeM == MezzanineBoard::MTM_82))
     {
         qDebug("Here is AVTUK-8082");
+        addDialogToList(new OscDialog, "Осциллограммы");
+    }
+    if ((typeB == BaseBoard::MTB_80) && (typeM == MezzanineBoard::MTM_85))
+    {
+        qDebug("Here is AVTUK-8085");
         addDialogToList(new SwitchJournalDialog, "Журнал переключений");
         addDialogToList(new OscDialog, "Осциллограммы");
-        //   createModule(Modules::Model::KIV);
     }
 }
 

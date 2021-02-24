@@ -1,33 +1,30 @@
 #include "oscdialog.h"
 
-//#include "QXlsx/xlsxdocument.h"
-#include "xlsxdocument.h"
+#include "../gen/datamanager.h"
+#include "../gen/error.h"
+#include "../gen/files.h"
+#include "../gen/stdfunc.h"
+#include "../gen/timefunc.h"
+#include "../widgets/etableview.h"
+#include "../widgets/wd_func.h"
+#include "QMessageBox"
+#include "pushbuttondelegate.h"
 
 #include <QApplication>
 #include <QDateTime>
 #include <QFileDialog>
 #include <QLabel>
 #include <QMessageBox>
-#include <QProgressBar>
 #include <QPushButton>
 #include <QVBoxLayout>
 #include <QWidget>
-#if PROGSIZE != PROGSIZE_EMUL
-#include "../gen/commands.h"
-#endif
-#include "../config/config.h"
-#include "../widgets/etableview.h"
-//#include "../widgets/etablemodel.h"
-#include "../gen/error.h"
-#include "../gen/files.h"
-#include "../gen/stdfunc.h"
-#include "../gen/timefunc.h"
-#include "../widgets/wd_func.h"
-#include "QMessageBox"
-#include "getoscpbdelegate.h"
+constexpr int MT_FT_XLSX = 0x01;
+constexpr int MT_FT_COMTRADE = 0x02;
+constexpr int MT_FT_NONE = 0x04;
 
-OscDialog::OscDialog(EOscillogram *osc, QWidget *parent) : QDialog(parent), OscFunc(osc)
+OscDialog::OscDialog(QWidget *parent) : UDialog(parent)
 {
+    connect(&DataManager::GetInstance(), &DataManager::oscInfoReceived, this, &OscDialog::fillOscInfo);
     SetupUI();
 }
 
@@ -40,131 +37,66 @@ void OscDialog::SetupUI()
     QVBoxLayout *lyout = new QVBoxLayout;
     QHBoxLayout *hlyout = new QHBoxLayout;
     ETableView *tv = new ETableView;
-    tv->setObjectName("osctv");
-    tm = new ETableModel;
-    QString tmps = /*((DEVICETYPE == DEVICETYPE_MODULE) ? "модуля" :*/ "прибора" /*)*/;
-    QPushButton *pb = new QPushButton("Получить данные по осциллограммам в памяти " + tmps);
-#if PROGSIZE != PROGSIZE_EMUL
-    connect(pb, SIGNAL(clicked()), this, SLOT(GetAndProcessOscInfo()));
-#endif
-    if (StdFunc::IsInEmulateMode())
-        pb->setEnabled(false);
-    hlyout->addWidget(pb);
-    pb = new QPushButton("Стереть все осциллограммы в памяти " + tmps);
-#if PROGSIZE != PROGSIZE_EMUL
-    connect(pb, SIGNAL(clicked()), this, SLOT(EraseOsc()));
-#endif
-    if (StdFunc::IsInEmulateMode())
-        pb->setEnabled(false);
-    hlyout->addWidget(pb);
-    lyout->addLayout(hlyout);
-    lyout->addWidget(tv, 89);
-    setLayout(lyout);
-}
 
-void OscDialog::UpdateModel()
-{
-    ETableView *tv = this->findChild<ETableView *>("osctv");
-    if (tv == nullptr)
-    {
-        qDebug("Nullptr");
-        return; // !!! системная проблема
-    }
-    QItemSelectionModel *m = tv->selectionModel();
+    tm = new ETableModel(this);
+    tm->setHorizontalHeaderLabels({ "#", "Дата/Время", "ИД", "Длина", "Скачать" });
+
     tv->setModel(tm);
-    delete m;
-    GetOscPBDelegate *dg = new GetOscPBDelegate;
-    connect(dg, SIGNAL(clicked(QModelIndex)), this, SLOT(GetOsc(QModelIndex)));
+    tv->setSelectionMode(QAbstractItemView::SingleSelection);
+    tv->setMouseTracking(true);
+    PushButtonDelegate *dg = new PushButtonDelegate(tv);
+    connect(dg, &PushButtonDelegate::clicked, this, &OscDialog::GetOsc);
     tv->setItemDelegateForColumn(4, dg); // устанавливаем делегата (кнопки "Скачать") для соотв. столбца
-    tv->resizeRowsToContents();
-    tv->resizeColumnsToContents();
-}
 
-#if PROGSIZE != PROGSIZE_EMUL
-void OscDialog::GetAndProcessOscInfo()
-{
-    emit StopCheckTimer();
-    QVector<QVector<QVariant>> lsl;
-    QByteArray OscInfo;
-    int OscInfoSize; // размер считанного буфера с информацией об осциллограммах
-    int RecordSize = sizeof(EOscillogram::GBoStruct); // GBo struct size
-    OscInfoSize = MAXOSCBUFSIZE;
-    OscInfo.resize(OscInfoSize);
-    if ((Commands::GetBt(TECH_Bo, &(OscInfo.data()[0]), OscInfoSize)) == Error::ER_NOERROR)
-    {
-        tm->ClearModel();
-        tm->addColumn("#");
-        tm->addColumn("ИД");
-        tm->addColumn("Дата/Время");
-        tm->addColumn("Длина");
-        tm->addColumn("Скачать");
-        if (OscInfoSize < RecordSize)
-        {
-            EMessageBox::information(this, "Информация", "В памяти модуля нет осциллограмм");
-            UpdateModel();
-            return;
-        }
-        QApplication::setOverrideCursor(Qt::WaitCursor);
-        QVector<QVariant> Num, IDs, Tim, Lngth, Dwld;
-        int counter = 0;
-        for (int i = 0; i < OscInfoSize; i += RecordSize)
-        {
-            EOscillogram::GBoStruct gbos;
-            size_t tmpt = static_cast<size_t>(RecordSize);
-            memcpy(&gbos, &(OscInfo.data()[i]), tmpt);
-            Num << QString::number(gbos.FileNum);
-            Tim << TimeFunc::UnixTime64ToString(gbos.UnixTime);
-            IDs << gbos.ID;
-            Lngth << gbos.FileLength;
-            ++counter;
-        }
-        Dwld.fill("Скачать", counter);
-        lsl.append(Num);
-        lsl.append(IDs);
-        lsl.append(Tim);
-        lsl.append(Lngth);
-        lsl.append(Dwld);
-        tm->fillModel(lsl);
-        UpdateModel();
-        QApplication::restoreOverrideCursor();
-    }
+    auto *getButton = WDFunc::NewPB(this, "", "Получить данные по осциллограммам ", this, [=] {
+        counter = 0;
+        BaseInterface::iface()->writeCommand(Queries::QUSB_ReqOscInfo, 1);
+    });
+
+    if (StdFunc::IsInEmulateMode())
+        getButton->setEnabled(false);
+    hlyout->addWidget(getButton);
+    auto *eraseButton = WDFunc::NewPB(this, "", "Стереть все осциллограммы в памяти", this, &OscDialog::EraseOsc);
+    hlyout->addWidget(eraseButton);
+
+    if (StdFunc::IsInEmulateMode())
+        eraseButton->setEnabled(false);
+    hlyout->addWidget(eraseButton);
+    lyout->addLayout(hlyout);
+    lyout->addWidget(tv);
+    setLayout(lyout);
 }
 
 void OscDialog::GetOsc(QModelIndex idx)
 {
     emit StopCheckTimer();
     bool ok;
-    StdFunc::SetPrbMessage("Загружено, байт: ");
-    int oscnum = tm->data(idx.sibling(idx.row(), 0), Qt::DisplayRole).toInt(&ok); // номер осциллограммы
+    int oscnum = idx.model()->data(idx.sibling(idx.row(), 0), Qt::DisplayRole).toInt(&ok); // номер осциллограммы
     if (!ok)
     {
-        WARNMSG("");
+        qWarning("Cannot convert");
         return;
     }
-    int basize = tm->data(idx.sibling(idx.row(), 3), Qt::DisplayRole).toInt(&ok);
-    if (!ok)
-    {
-        WARNMSG("");
-        return;
-    }
-    basize += sizeof(S2::FileHeader);
-    OscFunc->BA.resize(basize);
-    if (Commands::GetOsc(oscnum, &(OscFunc->BA.data()[0])) == Error::ER_NOERROR)
-    {
-        QString tmps = StdFunc::GetHomeDir() + "/temporary.osc";
-        Files::SaveToFile(tmps, OscFunc->BA, basize);
-        // OscFunc->ProcessOsc();
-    }
-    else
-        WARNMSG("Номер файла не соответствует диапазону, принятому для осциллограмм: " + QString::number(oscnum));
+
+    BaseInterface::iface()->reqFile(oscnum, true);
 }
 
 void OscDialog::EraseOsc()
 {
-    StdFunc::SetPrbMessage("Стёрто записей: ");
-    if (Commands::EraseTechBlock(TECH_Bo) == Error::ER_NOERROR)
-        EMessageBox::information(this, "Внимание", "Стёрто успешно");
-    else
-        EMessageBox::information(this, "Внимание", "Ошибка при стирании");
+    if (checkPassword())
+        BaseInterface::iface()->writeCommand(Queries::QC_EraseTechBlock, 1);
 }
-#endif
+
+void OscDialog::fillOscInfo(DataTypes::OscInfo info)
+{
+    counter++;
+    QVector<QVariant> lsl {
+        QString::number(info.fileNum),               //
+        TimeFunc::UnixTime64ToString(info.unixtime), //
+        info.id,                                     //
+        info.fileLength,                             //
+        "Скачать",
+    };
+
+    tm->addRowWithData(lsl);
+}
