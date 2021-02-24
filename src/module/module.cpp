@@ -16,7 +16,7 @@
 Module::Module(QObject *parent) : QObject(parent)
 {
 }
-void Module::create(AlarmWidget *aw)
+void Module::createAlarm(AlarmWidget *aw)
 {
     using namespace Modules;
 
@@ -25,11 +25,16 @@ void Module::create(AlarmWidget *aw)
     AlarmStateAll *alarmStateAll = new AlarmStateAll;
     Q_ASSERT(aw->count() == 0);
     aw->addAlarm(alarmStateAll);
-
-    auto *warnAlarm = new ModuleAlarm(settings()->alarms.value(AlarmType::Warning), settings()->alarmCount());
-    aw->addAlarm(warnAlarm, tr("Предупредительная сигнализация"));
-    auto *critAlarm = new ModuleAlarm(settings()->alarms.value(AlarmType::Critical), settings()->alarmCount());
-    aw->addAlarm(critAlarm, tr("Аварийная сигнализация"));
+    if (settings()->alarms.contains((AlarmType::Warning)))
+    {
+        auto *warnAlarm = new ModuleAlarm(settings()->alarms.value(AlarmType::Warning), settings()->alarmCount());
+        aw->addAlarm(warnAlarm, tr("Предупредительная сигнализация"));
+    }
+    if (settings()->alarms.contains((AlarmType::Critical)))
+    {
+        auto *critAlarm = new ModuleAlarm(settings()->alarms.value(AlarmType::Critical), settings()->alarmCount());
+        aw->addAlarm(critAlarm, tr("Аварийная сигнализация"));
+    }
 }
 
 QList<UDialog *> Module::dialogs()
@@ -321,7 +326,12 @@ bool Module::loadSettings()
         return false;
     if (moduleName.contains("-"))
     {
-        moduleName = moduleName.split("-").last();
+        QRegularExpression regex("(?<=[-])\\d+");
+        QRegularExpressionMatch match = regex.match(moduleName);
+        if (!match.hasMatch())
+            return false;
+
+        moduleName = /*moduleName.split("-").last();*/ match.captured(0);
     }
     QDir directory(StdFunc::GetSystemHomeDir());
     qDebug() << directory;
@@ -377,12 +387,16 @@ bool Module::loadSettings()
 
 void Module::create(UniquePointer<Journals> jour)
 {
-    const auto &board = Board::GetInstance();
     if (Board::GetInstance().interfaceType() != Board::InterfaceType::RS485)
     {
         Q_ASSERT(jour != nullptr);
         addDialogToList(new JournalDialog(std::move(jour)), "Журналы");
     }
+}
+
+void Module::createCommon()
+{
+    const auto &board = Board::GetInstance();
     TimeDialog *tdlg = new TimeDialog;
     addDialogToList(tdlg, "Время", "time");
 

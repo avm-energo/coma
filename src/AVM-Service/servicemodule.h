@@ -11,7 +11,7 @@ public:
     void create(QTimer *updateTimer) override;
 
 protected:
-    void create(Modules::Model model) override;
+    void createModule(Modules::Model model) override;
 
 private:
     void create(Modules::BaseBoard typeB, Modules::MezzanineBoard typeM) override;

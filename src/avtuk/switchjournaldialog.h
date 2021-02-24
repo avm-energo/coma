@@ -3,6 +3,7 @@
 
 #include "../models/etablemodel.h"
 #include "../widgets/etableview.h"
+#include "../widgets/udialog.h"
 #include "eoscillogram.h"
 #include "swjdialog.h"
 
@@ -11,7 +12,7 @@
 
 constexpr int MAXSWJNUM = 262144;
 
-class SwitchJournalDialog : public QDialog
+class SwitchJournalDialog : public UDialog
 {
     Q_OBJECT
 public:

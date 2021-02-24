@@ -22,7 +22,7 @@ void ServiceComa::PrepareDialogs()
         qCritical() << "No conf .xml file for this module";
         return;
     }
-    m_Module->create(AlarmW);
+    m_Module->createAlarm(AlarmW);
     m_Module->create(BdaTimer);
 }
 

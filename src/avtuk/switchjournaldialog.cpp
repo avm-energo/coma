@@ -13,7 +13,7 @@
 #include "switchjournaldialog.h"
 #include "trendviewdialog.h"
 
-SwitchJournalDialog::SwitchJournalDialog(EOscillogram *osc, QWidget *parent) : QDialog(parent)
+SwitchJournalDialog::SwitchJournalDialog(EOscillogram *osc, QWidget *parent) : UDialog(parent)
 {
     setAttribute(Qt::WA_DeleteOnClose);
     SetupUI();
