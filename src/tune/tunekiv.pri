@@ -1,17 +1,17 @@
 
 SOURCES += \
-        kiv/tunekiv.cpp \
-        kiv/tunekivadc.cpp \
-        kiv/tunekivcheck.cpp \
-        kiv/tunekivdialog.cpp \
-        kiv/tunekivr.cpp \
-        kiv/tunekivtemp60.cpp
+        $$PWD/kiv/tunekiv.cpp \
+        $$PWD/kiv/tunekivadc.cpp \
+        $$PWD/kiv/tunekivcheck.cpp \
+        $$PWD/kiv/tunekivdialog.cpp \
+        $$PWD/kiv/tunekivr.cpp \
+        $$PWD/kiv/tunekivtemp60.cpp
 
 
 HEADERS += \
-        kiv/tunekiv.h \
-        kiv/tunekivadc.h \
-        kiv/tunekivcheck.h \
-        kiv/tunekivdialog.h \
-        kiv/tunekivr.h \
-        kiv/tunekivtemp60.h
+        $$PWD/kiv/tunekiv.h \
+        $$PWD/kiv/tunekivadc.h \
+        $$PWD/kiv/tunekivcheck.h \
+        $$PWD/kiv/tunekivdialog.h \
+        $$PWD/kiv/tunekivr.h \
+        $$PWD/kiv/tunekivtemp60.h

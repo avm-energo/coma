@@ -1,5 +1,5 @@
 SOURCES += \
-    qcustomplot.cpp 
+    $$PWD/qcustomplot.cpp
 
 HEADERS += \
-    qcustomplot.h 
+    $$PWD/qcustomplot.h

@@ -1,21 +1,21 @@
 SOURCES += \
-    abstractconfdialog.cpp \
-    config.cpp \
-    configkdv.cpp \
-    configkiv.cpp \
-    configktf.cpp \
-    configkxx.cpp \
-    confkdvdialog.cpp \
-    confkivdialog.cpp \
-    confktfdialog.cpp
+    $$PWD/abstractconfdialog.cpp \
+    $$PWD/config.cpp \
+    $$PWD/configkdv.cpp \
+    $$PWD/configkiv.cpp \
+    $$PWD/configktf.cpp \
+    $$PWD/configkxx.cpp \
+    $$PWD/confkdvdialog.cpp \
+    $$PWD/confkivdialog.cpp \
+    $$PWD/confktfdialog.cpp
 
 HEADERS += \
-    abstractconfdialog.h \
-    config.h \
-    configkdv.h \
-    configkiv.h \
-    configktf.h \
-    configkxx.h \
-    confkdvdialog.h \
-    confkivdialog.h \
-    confktfdialog.h
+    $$PWD/abstractconfdialog.h \
+    $$PWD/config.h \
+    $$PWD/configkdv.h \
+    $$PWD/configkiv.h \
+    $$PWD/configktf.h \
+    $$PWD/configkxx.h \
+    $$PWD/confkdvdialog.h \
+    $$PWD/confkivdialog.h \
+    $$PWD/confktfdialog.h

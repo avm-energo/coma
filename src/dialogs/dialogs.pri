@@ -1,27 +1,27 @@
 SOURCES += \
-    abstractinterfacedialog.cpp \
-    connectdialog.cpp \
-    errordialog.cpp \
-    fwuploaddialog.cpp \
-    infodialog.cpp \
-    interfaceethernetdialog.cpp \
-    interfaceserialdialog.cpp \
-    interfaceusbdialog.cpp \
-    journalsdialog.cpp \
-    keypressdialog.cpp \
-    settingsdialog.cpp \
-    timedialog.cpp
+    $$PWD/abstractinterfacedialog.cpp \
+    $$PWD/connectdialog.cpp \
+    $$PWD/errordialog.cpp \
+    $$PWD/fwuploaddialog.cpp \
+    $$PWD/infodialog.cpp \
+    $$PWD/interfaceethernetdialog.cpp \
+    $$PWD/interfaceserialdialog.cpp \
+    $$PWD/interfaceusbdialog.cpp \
+    $$PWD/journalsdialog.cpp \
+    $$PWD/keypressdialog.cpp \
+    $$PWD/settingsdialog.cpp \
+    $$PWD/timedialog.cpp
 
 HEADERS += \
-    abstractinterfacedialog.h \
-    connectdialog.h \
-    errordialog.h \
-    fwuploaddialog.h \
-    infodialog.h \
-    interfaceethernetdialog.h \
-    interfaceserialdialog.h \
-    interfaceusbdialog.h \
-    journalsdialog.h \
-    keypressdialog.h \
-    settingsdialog.h \
-    timedialog.h
+    $$PWD/abstractinterfacedialog.h \
+    $$PWD/connectdialog.h \
+    $$PWD/errordialog.h \
+    $$PWD/fwuploaddialog.h \
+    $$PWD/infodialog.h \
+    $$PWD/interfaceethernetdialog.h \
+    $$PWD/interfaceserialdialog.h \
+    $$PWD/interfaceusbdialog.h \
+    $$PWD/journalsdialog.h \
+    $$PWD/keypressdialog.h \
+    $$PWD/settingsdialog.h \
+    $$PWD/timedialog.h

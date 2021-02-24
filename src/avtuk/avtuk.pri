@@ -1,27 +1,27 @@
 SOURCES += \
     $$PWD/pushbuttondelegate.cpp \
-    eoscillogram.cpp \
-    oscdialog.cpp \
-    oscmanager.cpp \
-    parseid10031.cpp \
-    parseid9000.cpp \
-    parseid9050.cpp \
-    parsemodule.cpp \
-    switchjournaldialog.cpp \
-    swjdialog.cpp \
-    trendviewdialog.cpp \
-    trendviewmodel.cpp
+    $$PWD/eoscillogram.cpp \
+    $$PWD/oscdialog.cpp \
+    $$PWD/oscmanager.cpp \
+    $$PWD/parseid10031.cpp \
+    $$PWD/parseid9000.cpp \
+    $$PWD/parseid9050.cpp \
+    $$PWD/parsemodule.cpp \
+    $$PWD/switchjournaldialog.cpp \
+    $$PWD/swjdialog.cpp \
+    $$PWD/trendviewdialog.cpp \
+    $$PWD/trendviewmodel.cpp
 
 HEADERS += \
     $$PWD/pushbuttondelegate.h \
-    eoscillogram.h \
-    oscdialog.h \
-    oscmanager.h \
-    parseid10031.h \
-    parseid9000.h \
-    parseid9050.h \
-    parsemodule.h \
-    switchjournaldialog.h \
-    swjdialog.h \
-    trendviewdialog.h \
-    trendviewmodel.h
+    $$PWD/eoscillogram.h \
+    $$PWD/oscdialog.h \
+    $$PWD/oscmanager.h \
+    $$PWD/parseid10031.h \
+    $$PWD/parseid9000.h \
+    $$PWD/parseid9050.h \
+    $$PWD/parsemodule.h \
+    $$PWD/switchjournaldialog.h \
+    $$PWD/swjdialog.h \
+    $$PWD/trendviewdialog.h \
+    $$PWD/trendviewmodel.h

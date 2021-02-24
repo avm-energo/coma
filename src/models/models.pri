@@ -1,12 +1,12 @@
 SOURCES += \
-    errorprotocolitem.cpp \
-    errorprotocolmodel.cpp \
-    etablemodel.cpp \
-    etablerow.cpp
+    $$PWD/errorprotocolitem.cpp \
+    $$PWD/errorprotocolmodel.cpp \
+    $$PWD/etablemodel.cpp \
+    $$PWD/etablerow.cpp
 
 HEADERS += \
-    abstracttablerow.h \
-    errorprotocolitem.h \
-    errorprotocolmodel.h \
-    etablemodel.h \
-    etablerow.h
+    $$PWD/abstracttablerow.h \
+    $$PWD/errorprotocolitem.h \
+    $$PWD/errorprotocolmodel.h \
+    $$PWD/etablemodel.h \
+    $$PWD/etablerow.h

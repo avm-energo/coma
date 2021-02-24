@@ -1,37 +1,37 @@
 SOURCES += \
-    baseinterface.cpp \
-    iec104.cpp \
-    iec104thread.cpp \
-    interfacesettings.cpp \
-    modbus.cpp \
-    modbusprivate.cpp \
-    modbusthread.cpp \
-    protocom.cpp \
-    protocom_p.cpp \
-    protocomthread.cpp \
-    serialport.cpp \
-    usbhidport.cpp \
-    usbhidportinfo.cpp \
-    usbhidsettings.cpp
+    $$PWD/baseinterface.cpp \
+    $$PWD/iec104.cpp \
+    $$PWD/iec104thread.cpp \
+    $$PWD/interfacesettings.cpp \
+    $$PWD/modbus.cpp \
+    $$PWD/modbusprivate.cpp \
+    $$PWD/modbusthread.cpp \
+    $$PWD/protocom.cpp \
+    $$PWD/protocom_p.cpp \
+    $$PWD/protocomthread.cpp \
+    $$PWD/serialport.cpp \
+    $$PWD/usbhidport.cpp \
+    $$PWD/usbhidportinfo.cpp \
+    $$PWD/usbhidsettings.cpp
 
 HEADERS += \
-    baseinterface.h \
-    iec104.h \
-    iec104private.h \
-    iec104thread.h \
-    interfacesettings.h \
-    modbus.h \
-    modbusprivate.h \
-    modbusthread.h \
-    protocom.h \
-    protocom_p.h \
-    protocomprivate.h \
-    protocomthread.h \
-    serialport.h \
-    settingstypes.h \
-    usbhidport.h \
-    usbhidportinfo.h \
-    usbhidsettings.h
+    $$PWD/baseinterface.h \
+    $$PWD/iec104.h \
+    $$PWD/iec104private.h \
+    $$PWD/iec104thread.h \
+    $$PWD/interfacesettings.h \
+    $$PWD/modbus.h \
+    $$PWD/modbusprivate.h \
+    $$PWD/modbusthread.h \
+    $$PWD/protocom.h \
+    $$PWD/protocom_p.h \
+    $$PWD/protocomprivate.h \
+    $$PWD/protocomthread.h \
+    $$PWD/serialport.h \
+    $$PWD/settingstypes.h \
+    $$PWD/usbhidport.h \
+    $$PWD/usbhidportinfo.h \
+    $$PWD/usbhidsettings.h
 
 
 

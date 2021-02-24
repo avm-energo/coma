@@ -8,10 +8,10 @@ TARGET = Interface
 TEMPLATE = app
 
 SOURCES += \
-    console.cpp \
-    main.cpp
+    $$PWD/console.cpp \
+    $$PWD/main.cpp
 HEADERS += \
-    console.h
+    $$PWD/console.h
 
 message($${LIBS})
 

@@ -1,12 +1,12 @@
 SOURCES += \
-    abstracttunedialog.cpp \
-    generaltunedialog.cpp \
+    $$PWD/abstracttunedialog.cpp \
+    $$PWD/generaltunedialog.cpp \
 
 
 
 HEADERS += \
-    abstracttunedialog.h \
-    generaltunedialog.h \
-    tunesteps.h
+    $$PWD/abstracttunedialog.h \
+    $$PWD/generaltunedialog.h \
+    $$PWD/tunesteps.h
 	
 include(tunekiv.pri)	
