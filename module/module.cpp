@@ -123,13 +123,14 @@ Module *Module::createModule(QTimer *updateTimer, AlarmWidget *aw)
                 m->addDialogToList(new ConfKTFDialog(CKTF), "Конфигурирование", "conf1");
             }
             CheckKTFDialog *cdktf = new CheckKTFDialog;
-            m->addDialogToList(cdktf);
+            m->addDialogToList(cdktf, "Проверка");
 #ifdef AVM_DEBUG
             //            TuneKTF *TKTF = new TuneKTF(0, s2Config);
 //                        m->addDialogToList(new TuneKTFDialog(CKTF, TKTF));
 #endif
             m->addDialogToList(new StartupKTFDialog, "Старение\nизоляции");
-            m->addDialogToList(new CheckKTFHarmonicDialog, "Гармоники");
+            // m->addDialogToList(new CheckKTFHarmonicDialog, "Гармоники");
+
             // aw->addAlarm(new WarnKTF);
             // aw->addAlarm(new CritKTF);
             //            connect(m->m_warn, &Warn::updateWarn, cdktf, &AbstractCheckDialog::SetWarnColor);

@@ -38,7 +38,7 @@
           <item>Неисправны все датчики температуры обмотки</item>
           <item>Сигнализация по опасному уровню пусково-го тока</item>
         </string-array>
-        <quint32 name="warningFlags">0xfffa</quint32>
+        <quint32 name="warningFlags">0xfff2</quint32>
 		    <quint32 name="startAddr">5011</quint32>
 		    <color>#ffff00</color>
       </alarm>
@@ -285,7 +285,7 @@
        </group>
        <group>
           <start-addr>4000</start-addr>
-          <count>4</count>
+          <count>3</count>
           <block>9</block>
        </group> 
       <group>
@@ -295,7 +295,7 @@
        </group>
        <group>
           <start-addr>4010</start-addr>
-          <count>21</count>
+          <count>22</count>
           <block>11</block>
        </group>
        <group>

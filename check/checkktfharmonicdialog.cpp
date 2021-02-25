@@ -98,7 +98,7 @@ UWidget *CheckKTFHarmonicDialog::BdIWidget(int value, int min, int max)
     lyout->addLayout(glyout);
     lyout->addStretch(100);
     w->setLayout(lyout);
-    w->setFloatBdQuery({ { 3020, 122 }, { 3146, 122 }, { 3270, 122 } });
+    w->setFloatBdQuery({ { 3020, 61 }, { 3146, 61 }, { 3270, 61 } });
     return w;
 }
 
@@ -152,7 +152,7 @@ UWidget *CheckKTFHarmonicDialog::BdUWidget(int value, int min, int max)
     lyout->addLayout(glyout);
     lyout->addStretch(100);
     w->setLayout(lyout);
-    w->setFloatBdQuery({ { 3420, 122 }, { 3546, 122 }, { 3672, 122 } });
+    w->setFloatBdQuery({ { 3420, 61 }, { 3546, 61 }, { 3672, 61 } });
     return w;
 }
 

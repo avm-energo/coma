@@ -24,13 +24,14 @@
 
 CheckKTFDialog::CheckKTFDialog(QWidget *parent) : AbstractCheckDialog(parent)
 {
-    QString tmps = "QDialog {background-color: " + QString(Colors::UCONFCLR) + ";}";
-    setStyleSheet(tmps);
-    QStringList sl;
+    //    QString tmps = "QDialog {background-color: " + QString(Colors::UCONFCLR) + ";}";
+    //    setStyleSheet(tmps);
+    // QStringList sl;
 
     m_BdUIList = { { "Основные", Bd1W() }, { "Модель", Bd2W() }, { "Ресурс", Bd3W() }, { "1-я гармоника", Bd4W() },
         { "Несимметрия", Bd5W() } };
-    SetupUI();
+    m_BdUIList.first().widget->setUpdatesEnabled();
+    // SetupUI();
 
     Timer->setInterval(ANMEASINT);
 }
@@ -152,7 +153,7 @@ UWidget *CheckKTFDialog::Bd1W()
         row++;
         glyout->addWidget(WDFunc::NewLBL(this, "S " + pphase[i] + ", кВА"), row, str, 1, 1, Qt::AlignRight);
         glyout->addWidget(WDFunc::NewLBLT(this, "", QString::number(2428 + i), ValuesFormat,
-                              "Кажущаяся полная мощность по эфф. токам и нпарямжениям, кВА"),
+                              "Полная (кажущаяся) мощность по эфф. токам и напряжениям, кВА"),
             row, str2, 1, 1);
         row++;
         glyout->addWidget(WDFunc::NewLBL(this, "CosPhi " + phase[i] + ""), row, str, 1, 1, Qt::AlignRight);
@@ -178,8 +179,8 @@ UWidget *CheckKTFDialog::Bd1W()
     lyout->addStretch(100);
     w->setLayout(lyout);
     w->setStyleSheet("QWidget {background-color: " + QString(Colors::UCONFCLR) + ";}");
-    w->setFloatBdQuery(
-        { { 101, 4 }, { 1000, 38 }, { 1400, 38 }, { 1220, 16 }, { 2400, 14 }, { 2420, 64 }, { 4500, 14 } });
+    w->setFloatBdQuery({ { 101, 2 }, { 1000, 11 }, { 1011, 8 }, { 1400, 11 }, { 1411, 8 }, { 1220, 8 }, { 2400, 7 },
+        { 2420, 32 }, { 4500, 7 } });
     //   w->setSpBdQuery({ { 3011, 25 } });
 
     return w;
@@ -314,7 +315,7 @@ UWidget *CheckKTFDialog::Bd2W()
     lyout->addLayout(glyout);
     lyout->addStretch(100);
     w->setLayout(lyout);
-    w->setFloatBdQuery({ { 4010, 44 } });
+    w->setFloatBdQuery({ { 4010, 22 } });
 
     return w;
 }
@@ -375,7 +376,7 @@ UWidget *CheckKTFDialog::Bd3W()
     lyout->addStretch(100);
     w->setLayout(lyout);
     // тип time  в процессе решения
-    w->setFloatBdQuery({ { 4000, 6 } });
+    w->setFloatBdQuery({ { 4000, 3 } });
 
     return w;
 }
@@ -418,19 +419,19 @@ UWidget *CheckKTFDialog::Bd4W()
             3, i, 1, 1);
         // проверять
         glyout->addWidget(WDFunc::NewLBL(this, "P " + pphase[i] + ", кВт"), 4, i, 1, 1);
-        glyout->addWidget(WDFunc::NewLBLT(this, "", QString::number(2450 + i), ValuesFormat,
+        glyout->addWidget(WDFunc::NewLBLT(this, "", QString::number(2436 + i), ValuesFormat,
                               "Активная мощность по 1-й гармонике, по фазам и суммарная, кВт"),
             5, i, 1, 1);
         glyout->addWidget(WDFunc::NewLBL(this, "Q " + pphase[i] + ", кВАр"), 6, i, 1, 1);
-        glyout->addWidget(WDFunc::NewLBLT(this, "", QString::number(2454 + i), ValuesFormat,
-                              "Реактивня мощность по 1-й гармонике, кВАр"),
+        glyout->addWidget(WDFunc::NewLBLT(this, "", QString::number(2440 + i), ValuesFormat,
+                              "Реактивня мощность по 1-й гармонике, по фазам и суммарная, кВАр"),
             7, i, 1, 1);
         glyout->addWidget(WDFunc::NewLBL(this, "S " + pphase[i] + ", кВА"), 8, i, 1, 1);
-        glyout->addWidget(
-            WDFunc::NewLBLT(this, "", QString::number(2458 + i), ValuesFormat, "Полная мощность по 1-й гармонике, кВА"),
+        glyout->addWidget(WDFunc::NewLBLT(this, "", QString::number(2444 + i), ValuesFormat,
+                              "Полная мощность по 1-й гармонике, по фазам и суммарная, кВА"),
             9, i, 1, 1);
         glyout->addWidget(WDFunc::NewLBL(this, "CosPhi " + phase[i] + ""), 10, i, 1, 1);
-        glyout->addWidget(WDFunc::NewLBLT(this, "", QString::number(2462 + i), ValuesFormat,
+        glyout->addWidget(WDFunc::NewLBLT(this, "", QString::number(2448 + i), ValuesFormat,
                               "Косинус phi по 1-й гармонике,по фазам и средний "),
             11, i, 1, 1);
         glyout->addWidget(WDFunc::NewLBL(this, "Uлин " + ppphase[i] + ", кВ"), 12, i, 1, 1);
@@ -450,7 +451,7 @@ UWidget *CheckKTFDialog::Bd4W()
     lyout->addStretch(100);
     w->setLayout(lyout);
     // 2450 посмотреть на документацию, которая в разработке на 2420
-    w->setFloatBdQuery({ { 1000, 38 }, { 1400, 38 }, { 2420, 64 }, { 1220, 16 } });
+    w->setFloatBdQuery({ { 1000, 11 }, { 1011, 8 }, { 1400, 11 }, { 1411, 8 }, { 2420, 32 }, { 1220, 8 } });
 
     return w;
 }
@@ -478,29 +479,32 @@ UWidget *CheckKTFDialog::Bd5W()
     gb->setFont(ffont);
 
     glyout->addWidget(WDFunc::NewLBL(this, "U0, кВ"), 0, 0, 1, 1);
-    glyout->addWidget(WDFunc::NewLBLT(this, "", QString::number(1020), ValuesFormat,
+    glyout->addWidget(WDFunc::NewLBLT(this, "", QString::number(1011), ValuesFormat,
                           "Напряжение нулевой последовательности гр.1, кВ"),
         1, 0, 1, 1);
     glyout->addWidget(WDFunc::NewLBL(this, "U1, кВ"), 0, 1, 1, 1);
     glyout->addWidget(
-        WDFunc::NewLBLT(this, "", QString::number(1021), ValuesFormat, "Температура окружающей среды, °С"), 1, 1, 1, 1);
+        WDFunc::NewLBLT(this, "", QString::number(1012), ValuesFormat, "Напряжение прямой последовательности гр.1"), 1,
+        1, 1, 1);
     glyout->addWidget(WDFunc::NewLBL(this, "U2, кВ"), 0, 2, 1, 1);
-    glyout->addWidget(WDFunc::NewLBLT(this, "", QString::number(1022), ValuesFormat, "Частота, Гц"), 1, 2, 1, 1);
+    glyout->addWidget(
+        WDFunc::NewLBLT(this, "", QString::number(1013), ValuesFormat, "Напряжение обратной последовательности гр.1"),
+        1, 2, 1, 1);
     glyout->addWidget(WDFunc::NewLBL(this, "KunsimU0"), 2, 0, 1, 1);
-    glyout->addWidget(WDFunc::NewLBLT(this, "", QString::number(1023), ValuesFormat,
-                          "Коэффициент несимметрии напряжения по "
-                          "обратной последовательности гр.1, %"),
-        3, 0, 1, 1);
-    glyout->addWidget(WDFunc::NewLBL(this, "KunsimU2"), 2, 1, 1, 1);
-    glyout->addWidget(WDFunc::NewLBLT(this, "", QString::number(1024), ValuesFormat,
+    glyout->addWidget(WDFunc::NewLBLT(this, "", QString::number(1014), ValuesFormat,
                           "Коэффициент несимметрии напряжения по "
                           "нулевой последовательности гр.1, %"),
+        3, 0, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL(this, "KunsimU2"), 2, 1, 1, 1);
+    glyout->addWidget(WDFunc::NewLBLT(this, "", QString::number(1015), ValuesFormat,
+                          "Коэффициент несимметрии напряжения по "
+                          "обратной последовательности гр.1, %"),
         3, 1, 1, 1);
     for (i = 0; i < 3; ++i)
     {
 
         glyout->addWidget(WDFunc::NewLBL(this, "THD" + phase[i] + ""), 4, i, 1, 1);
-        glyout->addWidget(WDFunc::NewLBLT(this, "", QString::number(1025 + i), ValuesFormat,
+        glyout->addWidget(WDFunc::NewLBLT(this, "", QString::number(1016 + i), ValuesFormat,
                               "Общий коэффициент гарм. искажений напряжения фазы " + phase[i] + " гр.1"),
             5, i, 1, 1);
     }
@@ -527,29 +531,29 @@ UWidget *CheckKTFDialog::Bd5W()
 
     glyout->addWidget(WDFunc::NewLBL(this, "I0, кВ"), 6, 0, 1, 1);
     glyout->addWidget(
-        WDFunc::NewLBLT(this, "", QString::number(1420), ValuesFormat, "Ток нулевой последовательности гр.1, A"), 7, 0,
+        WDFunc::NewLBLT(this, "", QString::number(1411), ValuesFormat, "Ток нулевой последовательности гр.1, A"), 7, 0,
         1, 1);
     glyout->addWidget(WDFunc::NewLBL(this, "I1, кВ"), 6, 1, 1, 1);
     glyout->addWidget(
-        WDFunc::NewLBLT(this, "", QString::number(1421), ValuesFormat, "Ток прямой последовательности гр.1, А"), 7, 1,
+        WDFunc::NewLBLT(this, "", QString::number(1412), ValuesFormat, "Ток прямой последовательности гр.1, А"), 7, 1,
         1, 1);
     glyout->addWidget(WDFunc::NewLBL(this, "I2, А"), 6, 2, 1, 1);
     glyout->addWidget(
-        WDFunc::NewLBLT(this, "", QString::number(1422), ValuesFormat, "Ток обратной последовательности гр.1, А"), 7, 2,
+        WDFunc::NewLBLT(this, "", QString::number(1413), ValuesFormat, "Ток обратной последовательности гр.1, А"), 7, 2,
         1, 1);
     glyout->addWidget(WDFunc::NewLBL(this, "KunsimI0"), 8, 0, 1, 1);
-    glyout->addWidget(WDFunc::NewLBLT(this, "", QString::number(1423), ValuesFormat,
-                          "Коэффициент несимметрии тока по обратной последовательности гр.1,%"),
+    glyout->addWidget(WDFunc::NewLBLT(this, "", QString::number(1414), ValuesFormat,
+                          "Коэффициент несимметрии тока по нулевой последовательности гр.1,%"),
         9, 0, 1, 1);
     glyout->addWidget(WDFunc::NewLBL(this, "KunsimI2"), 8, 1, 1, 1);
-    glyout->addWidget(WDFunc::NewLBLT(this, "", QString::number(1424), ValuesFormat,
-                          "Коэффициент несимметрии тока по нулевой последовательности гр.1,%"),
+    glyout->addWidget(WDFunc::NewLBLT(this, "", QString::number(1415), ValuesFormat,
+                          "Коэффициент несимметрии тока по обратной последовательности гр.1,%"),
         9, 1, 1, 1);
     for (i = 0; i < 3; ++i)
     {
 
         glyout->addWidget(WDFunc::NewLBL(this, "THD" + phase[i] + ""), 10, i, 1, 1);
-        glyout->addWidget(WDFunc::NewLBLT(this, "", QString::number(1425 + i), ValuesFormat,
+        glyout->addWidget(WDFunc::NewLBLT(this, "", QString::number(1416 + i), ValuesFormat,
                               "Общий коэффициент гарм. искажений тока фазы " + phase[i] + " гр.1"),
             11, i, 1, 1);
     }
@@ -572,152 +576,6 @@ UWidget *CheckKTFDialog::Bd5W()
     lyout->addLayout(glyout);
     lyout->addStretch(100);
     w->setLayout(lyout);
-    w->setFloatBdQuery({ { 1020, 16 }, { 1000, 38 }, { 1400, 38 } });
+    w->setFloatBdQuery({ { 1000, 11 }, { 1011, 8 }, { 1400, 11 }, { 1411, 8 } });
     return w;
 }
-// void CheckKTFDialog::ChooseValuesToWrite() { }
-// void CheckKTFDialog::SetDefaultValuesToWrite() { }
-// void CheckKTFDialog::PrepareAnalogMeasurements() { }
-
-// void CheckKTFDialog::USBUpdate()
-//{
-//    QTabWidget *CheckTW = this->findChild<QTabWidget *>("checktw1");
-//    if (CheckTW == nullptr)
-//    {
-//        qDebug() << "CheckTW is null";
-//        return;
-//    }
-
-//    if (CheckTW->currentIndex() == IndexWd.at(0))
-//    {
-//        if (Commands::GetBd(13, &ChKTF->Bd_block13, sizeof(CheckKTF::Bd13)) == Error::Msg::NoError)
-//            ChKTF->FillBd13(this);
-//    }
-
-//    if (CheckTW->currentIndex() == IndexWd.at(0))
-//    {
-//        if (Commands::GetBd(0, &ChKTF->Bd_block0, sizeof(CheckKTF::Bd0)) == Error::Msg::NoError)
-//            ChKTF->FillBd0(this);
-//    }
-
-//    if (CheckTW->currentIndex() == IndexWd.at(0))
-//    {
-//        if (Commands::GetBd(17, &ChKTF->Bd_block17, sizeof(CheckKTF::Bd17)) == Error::Msg::NoError)
-//            ChKTF->FillBd17(this);
-//    }
-
-//    if (CheckTW->currentIndex() == IndexWd.at(0) || CheckTW->currentIndex() == IndexWd.at(3))
-//    {
-//        if (Commands::GetBd(10, &ChKTF->Bd_block10, sizeof(CheckKTF::Bd10)) == Error::Msg::NoError)
-//            ChKTF->FillBd10(this);
-//    }
-
-//    if (CheckTW->currentIndex() == IndexWd.at(0) || CheckTW->currentIndex() == IndexWd.at(3)
-//        || CheckTW->currentIndex() == IndexWd.at(4))
-//    {
-//        if (Commands::GetBd(2, &ChKTF->Bd_block2, sizeof(CheckKTF::Bd2)) == Error::Msg::NoError)
-//            ChKTF->FillBd2(this);
-//    }
-
-//    if (CheckTW->currentIndex() == IndexWd.at(0) || CheckTW->currentIndex() == IndexWd.at(3)
-//        || CheckTW->currentIndex() == IndexWd.at(4))
-//    {
-//        if (Commands::GetBd(3, &ChKTF->Bd_block3, sizeof(CheckKTF::Bd3)) == Error::Msg::NoError)
-//            ChKTF->FillBd3(this);
-//    }
-
-//    if (CheckTW->currentIndex() == IndexWd.at(0) || CheckTW->currentIndex() == IndexWd.at(3))
-//    {
-//        if (Commands::GetBd(8, &ChKTF->Bd_block8, sizeof(CheckKTF::Bd8)) == Error::Msg::NoError)
-//            ChKTF->FillBd8(this);
-//    }
-
-//    if (CheckTW->currentIndex() == IndexWd.at(1))
-//    {
-//        if (Commands::GetBd(11, &ChKTF->Bd_block11, sizeof(CheckKTF::Bd11)) == Error::Msg::NoError)
-//            ChKTF->FillBd11(this);
-//    }
-
-//    if (CheckTW->currentIndex() == IndexWd.at(2))
-//    {
-//        if (Commands::GetBd(9, &ChKTF->Bd_block9, sizeof(CheckKTF::Bd9)) == Error::Msg::NoError)
-//            ChKTF->FillBd9(this);
-//    }
-
-//    if (CheckTW->currentIndex() == IndexWd.at(2))
-//    {
-//        if (Commands::GetBd(18, &ChKTF->Bd_block18, sizeof(CheckKTF::Bd18)) == Error::Msg::NoError)
-//            ChKTF->FillBd18(this);
-//    }
-
-//    if (CheckTW->currentIndex() == IndexWd.at(4))
-//    {
-//        if (Commands::GetBd(4, &ChKTF->Bd_block4, sizeof(CheckKTF::Bd4)) == Error::Msg::NoError)
-//            ChKTF->FillBd4(this);
-//    }
-
-//    if (CheckTW->currentIndex() == IndexWd.at(4))
-//    {
-//        if (Commands::GetBd(6, &ChKTF->Bd_block6, sizeof(CheckKTF::Bd6)) == Error::Msg::NoError)
-//            ChKTF->FillBd6(this);
-//    }
-//}
-
-// void CheckKTFDialog::ETHUpdate()
-//{
-//    updateFloatData();
-//}
-
-// void CheckKTFDialog::MBSUpdate()
-//{
-//}
-
-// void CheckKTFDialog::updateFloatData()
-//{
-//    QList<DataTypes::SignalsStruct> list;
-//    DataManager::getSignals(0, 99999, DataTypes::SignalTypes::FloatWithTime, list);
-//    if (!list.isEmpty())
-//    {
-//        foreach (DataTypes::SignalsStruct signal, list)
-//        {
-//            DataTypes::FloatWithTimeStruct fwt = qvariant_cast<DataTypes::FloatWithTimeStruct>(signal.data);
-//            ChKTF->FillBd(this, QString::number(fwt.sigAdr), WDFunc::StringValueWithCheck(fwt.sigVal, 3));
-//        }
-//    }
-//}
-
-// void CheckKTFDialog::UpdateModBusData(QList<ModBus::SignalStruct> Signal)
-//{
-
-//    // ModBusSignal sig = *new ModBusSignal;
-//    int i = 0;
-//    for (i = 0; i < Signal.size(); ++i)
-//    {
-//        // sig = *(Signal+i);
-//        if ((((Signal.at(i).SigAdr >= 1011) && (Signal.at(i).SigAdr <= 1015)))
-//            || ((Signal.at(i).SigAdr >= 1111) && (Signal.at(i).SigAdr <= 1115)))
-//            ChKTF->FillBd(
-//                this, QString::number((Signal.at(i).SigAdr) + 9), WDFunc::StringValueWithCheck(Signal.at(i).flVal,
-//                3));
-//        else
-//            ChKTF->FillBd(
-//                this, QString::number(Signal.at(i).SigAdr), WDFunc::StringValueWithCheck(Signal.at(i).flVal, 3));
-//    }
-//}
-
-// void CheckKTFDialog::SetWarnColor(int position, bool value)
-//{
-//    Q_UNUSED(position)
-//    Q_UNUSED(value)
-//}
-
-// void CheckKTFDialog::reqUpdate()
-//{
-//    updateFloatData();
-//}
-
-// void CheckKTFDialog::SetAlarmColor(int position, bool value)
-//{
-//    Q_UNUSED(position)
-//    Q_UNUSED(value)
-//}
