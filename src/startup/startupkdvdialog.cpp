@@ -179,7 +179,7 @@ void StartupKDVDialog::WriteCor()
     FillBackCor();
     FillBackWBd8();
 
-    if (checkPassword() == Error::Msg::NoError)
+    if (checkPassword())
     {
         switch (Board::GetInstance().interfaceType())
         {

@@ -335,6 +335,7 @@ void ProtocomThread::parseRequest(const CommandStruct &cmdStr)
 #ifdef PROTOCOM_DEBUG
     qDebug("Start parse request");
 #endif
+    Q_ASSERT(cmdStr.cmd != 0x00);
     // Предполагается не хранить текущую команду
     Q_UNUSED(cmdStr)
     using namespace Proto;

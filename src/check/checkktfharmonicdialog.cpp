@@ -28,12 +28,12 @@ CheckKTFHarmonicDialog::CheckKTFHarmonicDialog(QWidget *parent) : AbstractCheckD
     setStyleSheet(tmps);
     QStringList sl;
 
-    m_BdUIList = { { "Гармоники U 2-11", BdUWidget(1028, 2, 12) }, { "Гармоники U 12-21", BdUWidget(1038, 12, 22) },
-        { "Гармоники U 22-31", BdUWidget(1048, 22, 32) }, { "Гармоники U 32-41", BdUWidget(1058, 32, 42) },
-        { "Гармоники U 42-51", BdUWidget(1068, 42, 52) }, { "Гармоники U 52-62", BdUWidget(1078, 52, 63) },
-        { "Гармоники I 2-11", BdIWidget(1428, 2, 12) }, { "Гармоники I 12-21", BdIWidget(1038, 12, 22) },
-        { "Гармоники I 22-31", BdIWidget(1448, 22, 32) }, { "Гармоники I 32-41", BdIWidget(1458, 32, 42) },
-        { "Гармоники I 42-51", BdIWidget(1068, 42, 52) }, { "Гармоники I 52-62", BdIWidget(1078, 52, 63) } };
+    m_BdUIList = { { "Гармоники U 2-11", BdUWidget(3020, 2, 12) }, { "Гармоники U 12-21", BdUWidget(3030, 12, 22) },
+        { "Гармоники U 22-31", BdUWidget(3040, 22, 32) }, { "Гармоники U 32-41", BdUWidget(3050, 32, 42) },
+        { "Гармоники U 42-51", BdUWidget(3060, 42, 52) }, { "Гармоники U 52-62", BdUWidget(3070, 52, 63) },
+        { "Гармоники I 2-11", BdIWidget(3420, 2, 12) }, { "Гармоники I 12-21", BdIWidget(3430, 12, 22) },
+        { "Гармоники I 22-31", BdIWidget(3440, 22, 32) }, { "Гармоники I 32-41", BdIWidget(3450, 32, 42) },
+        { "Гармоники I 42-51", BdIWidget(3460, 42, 52) }, { "Гармоники I 52-62", BdIWidget(3470, 52, 63) } };
     SetupUI();
     Timer->setInterval(ANMEASINT);
 }
@@ -49,7 +49,7 @@ void CheckKTFHarmonicDialog::WriteToFile(int row, int bdnum)
     Q_UNUSED(bdnum);
 }
 
-UWidget *CheckKTFHarmonicDialog::BdIWidget(unsigned int value, int min, int max)
+UWidget *CheckKTFHarmonicDialog::BdIWidget(int value, int min, int max)
 {
     int i;
     UWidget *w = new UWidget;
@@ -82,14 +82,12 @@ UWidget *CheckKTFHarmonicDialog::BdIWidget(unsigned int value, int min, int max)
                 s = s + 2;
             k = s + 1;
             glyout->addWidget(WDFunc::NewLBL(this, phase[i] + "Гм. " + QString::number(h)), s, i, 1, 1);
-            glyout->addWidget(WDFunc::NewLBLT(this, "", QString::number((value + j) + i * 61), ValuesFormat,
+            glyout->addWidget(WDFunc::NewLBLT(this, "", QString::number((value + j) + i * 126), ValuesFormat,
                                   h + "-я гармоника тока в фазе" + phase[i] + "в % от 1-й", true),
                 k, i, 1, 1);
             j++;
         }
     }
-
-    quint32 val = max - min;
 
     vlyout->addLayout(glyout);
     gb->setLayout(vlyout);
@@ -100,11 +98,11 @@ UWidget *CheckKTFHarmonicDialog::BdIWidget(unsigned int value, int min, int max)
     lyout->addLayout(glyout);
     lyout->addStretch(100);
     w->setLayout(lyout);
-    w->setFloatBdQuery({ { value, val } });
+    w->setFloatBdQuery({ { 3020, 122 }, { 3146, 122 }, { 3270, 122 } });
     return w;
 }
 
-UWidget *CheckKTFHarmonicDialog::BdUWidget(unsigned int value, int min, int max)
+UWidget *CheckKTFHarmonicDialog::BdUWidget(int value, int min, int max)
 {
     int i;
     UWidget *w = new UWidget;
@@ -138,14 +136,12 @@ UWidget *CheckKTFHarmonicDialog::BdUWidget(unsigned int value, int min, int max)
                 s = s + 2;
             k = s + 1;
             glyout->addWidget(WDFunc::NewLBL(this, phase[i] + "Гм. " + QString::number(h)), s, i, 1, 1);
-            glyout->addWidget(WDFunc::NewLBLT(this, "", QString::number((value + j) + i * 61), ValuesFormat,
+            glyout->addWidget(WDFunc::NewLBLT(this, "", QString::number((value + j) + i * 126), ValuesFormat,
                                   h + "-я гармоника напряжения в фазе" + phase[i] + "в % от 1-й", true),
                 k, i, 1, 1);
             j++;
         }
     }
-
-    quint32 val = max - min;
 
     vlyout->addLayout(glyout);
     gb->setLayout(vlyout);
@@ -156,7 +152,7 @@ UWidget *CheckKTFHarmonicDialog::BdUWidget(unsigned int value, int min, int max)
     lyout->addLayout(glyout);
     lyout->addStretch(100);
     w->setLayout(lyout);
-    w->setFloatBdQuery({ { value, val } });
+    w->setFloatBdQuery({ { 3420, 122 }, { 3546, 122 }, { 3672, 122 } });
     return w;
 }
 

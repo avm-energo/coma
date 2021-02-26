@@ -158,7 +158,7 @@ void StartupKTFDialog::WriteCor()
 
     FillBackCor();
 
-    if (checkPassword() != Error::Msg::NoError)
+    if (!checkPassword())
         return;
     switch (Board::GetInstance().interfaceType())
     {

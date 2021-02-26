@@ -55,7 +55,7 @@ void ConfKIVDialog::Fill()
     WDFunc::SetSPBData(this, "GdIunb", CKIV->Bci_block.GdIunb);
     WDFunc::SetSPBData(this, "NFiltr", CKIV->Bci_block.NFiltr);
     WDFunc::SetSPBData(this, "T_Data_Rec", CKIV->Bci_block.T_Data_Rec);
-    WDFunc::SetSPBData(this, "U2nom", CKIV->Bci_block.Unom_1);
+    WDFunc::SetSPBData(this, "U2nom", CKIV->Bci_block.U2nom);
     WDFunc::SetSPBData(this, "Ulow", CKIV->Bci_block.LowU);
     WDFunc::SetSPBData(this, "Tevent_pred", CKIV->Bci_block.Tevent_pred);
     WDFunc::SetSPBData(this, "Tevent_alarm", CKIV->Bci_block.Tevent_alarm);
@@ -101,7 +101,7 @@ void ConfKIVDialog::FillBack()
     WDFunc::SPBData(this, "GdIunb", CKIV->Bci_block.GdIunb);
     WDFunc::SPBData(this, "NFiltr", CKIV->Bci_block.NFiltr);
     WDFunc::SPBData(this, "T_Data_Rec", CKIV->Bci_block.T_Data_Rec);
-    WDFunc::SPBData(this, "U2nom", CKIV->Bci_block.Unom_1);
+    WDFunc::SPBData(this, "U2nom", CKIV->Bci_block.U2nom);
     WDFunc::SPBData(this, "Ulow", CKIV->Bci_block.LowU);
     WDFunc::SPBData(this, "Tevent_pred", CKIV->Bci_block.Tevent_pred);
     WDFunc::SPBData(this, "Tevent_alarm", CKIV->Bci_block.Tevent_alarm);

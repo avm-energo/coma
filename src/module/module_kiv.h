@@ -172,7 +172,7 @@ struct Bci
     quint8 IsIunb;
     quint32 Tevent_pred;
     quint32 Tevent_alarm;
-    float Unom_1;
+    float U2nom;
     float Tg_pasp[3];
     float C_pasp[3];
 };
