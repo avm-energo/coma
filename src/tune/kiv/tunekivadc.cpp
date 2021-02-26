@@ -29,22 +29,23 @@ void TuneKIVADC::setMessages()
     m_messages.append("2. Сохранение текущей конфигурации...");
     m_messages.append("3. Отображение предупреждения...");
     m_messages.append("4. Запрос настроечных параметров...");
-    m_messages.append("5. Задание режима конфигурирования модуля...");
-    m_messages.append("6. Регулировка для Кацп = 1...");
-    m_messages.append("7. Отображение диалога задания входных данных...");
-    m_messages.append("8. Регулировка для Кацп = 2...");
-    m_messages.append("9. Отображение диалога задания входных данных...");
-    m_messages.append("10. Регулировка для Кацп = 4...");
-    m_messages.append("11. Отображение диалога задания входных данных...");
-    m_messages.append("12. Регулировка для Кацп = 8...");
-    m_messages.append("13. Отображение диалога задания входных данных...");
-    m_messages.append("14. Регулировка для Кацп = 16...");
-    m_messages.append("15. Отображение диалога задания входных данных...");
-    m_messages.append("16. Регулировка для Кацп = 32...");
-    m_messages.append("17. Отображение диалога задания входных данных...");
-    m_messages.append("18. Регулировка канала Tmk0...");
-    m_messages.append("19. Запись настроечных коэффициентов и восстановление конфигурации...");
-    m_messages.append("20. Проверка регулировки...");
+    m_messages.append("5. Проверка настроечных параметров...");
+    m_messages.append("6. Задание режима конфигурирования модуля...");
+    m_messages.append("7. Регулировка для Кацп = 1...");
+    m_messages.append("8. Отображение диалога задания входных данных...");
+    m_messages.append("9. Регулировка для Кацп = 2...");
+    m_messages.append("10. Отображение диалога задания входных данных...");
+    m_messages.append("11. Регулировка для Кацп = 4...");
+    m_messages.append("12. Отображение диалога задания входных данных...");
+    m_messages.append("13. Регулировка для Кацп = 8...");
+    m_messages.append("14. Отображение диалога задания входных данных...");
+    m_messages.append("15. Регулировка для Кацп = 16...");
+    m_messages.append("16. Отображение диалога задания входных данных...");
+    m_messages.append("17. Регулировка для Кацп = 32...");
+    m_messages.append("18. Отображение диалога задания входных данных...");
+    m_messages.append("19. Регулировка канала Tmk0...");
+    m_messages.append("20. Запись настроечных коэффициентов и восстановление конфигурации...");
+    m_messages.append("21. Проверка регулировки...");
 }
 
 void TuneKIVADC::setTuneFunctions()
@@ -58,6 +59,8 @@ void TuneKIVADC::setTuneFunctions()
         = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVADC::showPreWarning);
     m_tuneFunctions[m_messages.at(count++)] = func;
     func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&AbstractTuneDialog::readTuneCoefs);
+    m_tuneFunctions[m_messages.at(count++)] = func;
+    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVADC::checkTuneCoefs);
     m_tuneFunctions[m_messages.at(count++)] = func;
     func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVADC::setSMode2);
     m_tuneFunctions[m_messages.at(count++)] = func;
@@ -115,6 +118,26 @@ Error::Msg TuneKIVADC::showPreWarning()
     dlg->setLayout(lyout);
     WDFunc::PBConnect(dlg, "cancelpb", static_cast<AbstractTuneDialog *>(this), &AbstractTuneDialog::CancelTune);
     dlg->exec();
+    return Error::Msg::NoError;
+}
+
+Error::Msg TuneKIVADC::checkTuneCoefs()
+{
+    QVector<float *> tcoefs = { &m_bac->data()->KmU[0], &m_bac->data()->KmI1[0], &m_bac->data()->KmI2[0],
+        &m_bac->data()->KmI4[0], &m_bac->data()->KmI8[0], &m_bac->data()->KmI16[0], &m_bac->data()->KmI32[0] };
+    for (int i = 0; i < 3; ++i)
+    {
+        foreach (float *coef, tcoefs)
+            if (!StdFunc::floatIsWithinLimits(this, *(coef + i), 1.0, 0.05))
+                return Error::Msg::GeneralError;
+    }
+    if (!StdFunc::floatIsWithinLimits(this, m_bac->data()->K_freq, 1.0, 0.05))
+        return Error::Msg::GeneralError;
+    for (int i = 0; i < 6; ++i)
+    {
+        if (!StdFunc::floatIsWithinLimits(this, m_bac->data()->DPsi[i], 0.0, 1.0))
+            return Error::Msg::GeneralError;
+    }
     return Error::Msg::NoError;
 }
 
@@ -349,9 +372,12 @@ Error::Msg TuneKIVADC::showEnergomonitorInputDialog()
         QDialog *dlg = this->findChild<QDialog *>("energomonitordlg");
         if (dlg != nullptr)
         {
-            WDFunc::SetEnabled(this, "ValuetuneU", enabled);
-            WDFunc::SetEnabled(this, "ValuetuneF", enabled);
-            WDFunc::SetEnabled(this, "ValuetuneY", enabled);
+            foreach (QString str, QStringList({ "U", "I", "Y", "F" }))
+                WDFunc::SetLEData(this, "Valuetune" + str, "");
+            foreach (QString str, QStringList({ "U", "Y", "F" }))
+                WDFunc::SetEnabled(this, "Valuetune" + str, enabled);
+            //            WDFunc::SetEnabled(this, "ValuetuneF", enabled);
+            //            WDFunc::SetEnabled(this, "ValuetuneY", enabled);
             dlg->exec();
         }
     }

@@ -2,10 +2,10 @@
 #define TUNEKIVMAIN_H
 
 #include "../../config/configkiv.h"
-#include "../abstracttunedialog.h"
 #include "../../datablocks/kiv/bac.h"
-#include "../../datablocks/kiv/bdain.h"
 #include "../../datablocks/kiv/bda.h"
+#include "../../datablocks/kiv/bdain.h"
+#include "../abstracttunedialog.h"
 //#include "tunekiv.h"
 
 #include <QWidget>
@@ -17,7 +17,7 @@ public:
     TuneKIVR(int tuneStep, ConfigKIV *ckiv, QWidget *parent = nullptr);
 
 private:
-//    TuneKIV *TKIV;
+    //    TuneKIV *TKIV;
     ConfigKIV *CKIV;
     Bac *m_bac;
     Bda *m_bda;
@@ -31,7 +31,7 @@ private:
     //    QWidget *MainUI() override;
 
     Error::Msg showPreWarning();
-    Error::Msg checkTuneCoefs();
+    //    Error::Msg checkTuneCoefs();
     Error::Msg setR80();
     Error::Msg processR80();
     Error::Msg setR120();

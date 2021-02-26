@@ -30,11 +30,10 @@ void TuneKIVR::setMessages()
     m_messages.append("1. Ввод пароля...");
     m_messages.append("2. Отображение предупреждения...");
     m_messages.append("3. Запрос настроечных параметров...");
-    m_messages.append("4. Проверка настроечных параметров...");
-    m_messages.append("5. Настройка канала измерения температуры (КИТ): установка 80 Ом...");
-    m_messages.append("6. Настройка КИТ: обработка...");
-    m_messages.append("7. Настройка канала измерения температуры (КИТ): установка 120 Ом...");
-    m_messages.append("8. Настройка КИТ: обработка и запись коэффициентов...");
+    m_messages.append("4. Настройка канала измерения температуры (КИТ): установка 80 Ом...");
+    m_messages.append("5. Настройка КИТ: обработка...");
+    m_messages.append("6. Настройка канала измерения температуры (КИТ): установка 120 Ом...");
+    m_messages.append("7. Настройка КИТ: обработка и запись коэффициентов...");
 }
 
 void TuneKIVR::setTuneFunctions()
@@ -47,8 +46,8 @@ void TuneKIVR::setTuneFunctions()
     m_tuneFunctions[m_messages.at(count++)] = func;
     func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&AbstractTuneDialog::readTuneCoefs);
     m_tuneFunctions[m_messages.at(count++)] = func;
-    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVR::checkTuneCoefs);
-    m_tuneFunctions[m_messages.at(count++)] = func;
+    //    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVR::checkTuneCoefs);
+    //    m_tuneFunctions[m_messages.at(count++)] = func;
     func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVR::setR80);
     m_tuneFunctions[m_messages.at(count++)] = func;
     func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVR::processR80);
@@ -112,25 +111,25 @@ Error::Msg TuneKIVR::showPreWarning()
     return Error::Msg::NoError;
 }
 
-Error::Msg TuneKIVR::checkTuneCoefs()
-{
-    QVector<float *> tcoefs = { &m_bac->data()->KmU[0], &m_bac->data()->KmI1[0], &m_bac->data()->KmI2[0],
-        &m_bac->data()->KmI4[0], &m_bac->data()->KmI8[0], &m_bac->data()->KmI16[0], &m_bac->data()->KmI32[0] };
-    for (int i = 0; i < 3; ++i)
-    {
-        foreach (float *coef, tcoefs)
-            if (!StdFunc::floatIsWithinLimits(this, *(coef + i), 1.0, 0.05))
-                return Error::Msg::GeneralError;
-    }
-    if (!StdFunc::floatIsWithinLimits(this, m_bac->data()->K_freq, 1.0, 0.05))
-        return Error::Msg::GeneralError;
-    for (int i = 0; i < 6; ++i)
-    {
-        if (!StdFunc::floatIsWithinLimits(this, m_bac->data()->DPsi[i], 0.0, 1.0))
-            return Error::Msg::GeneralError;
-    }
-    return Error::Msg::NoError;
-}
+// Error::Msg TuneKIVR::checkTuneCoefs()
+//{
+//    QVector<float *> tcoefs = { &m_bac->data()->KmU[0], &m_bac->data()->KmI1[0], &m_bac->data()->KmI2[0],
+//        &m_bac->data()->KmI4[0], &m_bac->data()->KmI8[0], &m_bac->data()->KmI16[0], &m_bac->data()->KmI32[0] };
+//    for (int i = 0; i < 3; ++i)
+//    {
+//        foreach (float *coef, tcoefs)
+//            if (!StdFunc::floatIsWithinLimits(this, *(coef + i), 1.0, 0.05))
+//                return Error::Msg::GeneralError;
+//    }
+//    // !!!   if (!StdFunc::floatIsWithinLimits(this, m_bac->data()->K_freq, 1.0, 0.05))
+//    //        return Error::Msg::GeneralError;
+//    for (int i = 0; i < 6; ++i)
+//    {
+//        if (!StdFunc::floatIsWithinLimits(this, m_bac->data()->DPsi[i], 0.0, 1.0))
+//            return Error::Msg::GeneralError;
+//    }
+//    return Error::Msg::NoError;
+//}
 
 Error::Msg TuneKIVR::setR80()
 {
