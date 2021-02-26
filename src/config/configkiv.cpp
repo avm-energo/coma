@@ -40,7 +40,7 @@ ConfigKIV::ConfigKIV()
         S2::config.append({ StartInIndex + 24, sizeof(Bci_block.Tevent_alarm), &Bci_block.Tevent_alarm });
         S2::config.append({ StartInIndex + 27, sizeof(Bci_block.Tg_pasp), &Bci_block.Tg_pasp });
         S2::config.append({ StartInIndex + 28, sizeof(Bci_block.C_pasp), &Bci_block.C_pasp });
-        S2::config.append({ 1050, sizeof(Bci_block.Unom_1), &Bci_block.Unom_1 });
+        S2::config.append({ 1050, sizeof(Bci_block.U2nom), &Bci_block.U2nom });
     }
     S2::config.append({ 0xFFFFFFFF, 0, nullptr });
     //    DataBlock::BlockStruct dbs {
@@ -72,7 +72,7 @@ void ConfigKIV::setDefConf()
     m_mainConfig->SetDefConf();
     m_KxxConfig->SetDefConf();
     Bci_block.Unom = 220;
-    Bci_block.Unom_1 = 100;
+    Bci_block.U2nom = 100;
     Bci_block.Umin = 0.5;
     Bci_block.Imin = 0.5;
     Bci_block.dC_pred = 0.5;
