@@ -99,7 +99,7 @@ QStringList Files::Drives()
 {
     QStringList sl;
     QFileInfoList list = QDir::drives();
-    for (QFileInfo fi : list)
+    for (const QFileInfo &fi : list)
         sl << fi.path();
     return sl;
 }
@@ -107,7 +107,7 @@ QStringList Files::Drives()
 QStringList Files::SearchForFile(QStringList &filepaths, const QString &filename, bool subdirs)
 {
     QStringList files;
-    for (QString filepath : filepaths)
+    for (const QString &filepath : filepaths)
     {
         QStringList sl = QStringList() << filename;
         QDirIterator it(filepath, sl, QDir::AllEntries | QDir::NoSymLinks | QDir::NoDotAndDotDot,

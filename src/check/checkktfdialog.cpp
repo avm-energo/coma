@@ -374,7 +374,8 @@ UWidget *CheckKTFDialog::Bd3W()
     lyout->addLayout(glyout);
     lyout->addStretch(100);
     w->setLayout(lyout);
-    w->setFloatBdQuery({ { 5200, 2 }, { 4000, 6 } });
+    // тип time  в процессе решения
+    w->setFloatBdQuery({ { 4000, 6 } });
 
     return w;
 }
@@ -449,7 +450,7 @@ UWidget *CheckKTFDialog::Bd4W()
     lyout->addStretch(100);
     w->setLayout(lyout);
     // 2450 посмотреть на документацию, которая в разработке на 2420
-    w->setFloatBdQuery({ { 1000, 38 }, { 1400, 38 }, { 2450, 16 }, { 1220, 16 } });
+    w->setFloatBdQuery({ { 1000, 38 }, { 1400, 38 }, { 2420, 64 }, { 1220, 16 } });
 
     return w;
 }
@@ -571,7 +572,7 @@ UWidget *CheckKTFDialog::Bd5W()
     lyout->addLayout(glyout);
     lyout->addStretch(100);
     w->setLayout(lyout);
-    w->setFloatBdQuery({ { 1020, 8 }, { 1008, 3 }, { 1420, 8 }, { 1408, 3 } });
+    w->setFloatBdQuery({ { 1020, 16 }, { 1000, 38 }, { 1400, 38 } });
     return w;
 }
 // void CheckKTFDialog::ChooseValuesToWrite() { }

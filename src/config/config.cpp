@@ -169,7 +169,7 @@ void Config::FillBack()
     WDFunc::SPBData(ParentMainbl, NAMEOF(MainBlk.K_104), MainBlk.K_104);
     WDFunc::SPBData(ParentMainbl, NAMEOF(MainBlk.W_104), MainBlk.W_104);
 
-    int cbidx = WDFunc::CBIndex(ParentCtype, "Ctype");
+    int cbidx = WDFunc::CBIndex(ParentCtype, NAMEOF(MainBlk.Ctype));
     switch (cbidx)
     {
     case 0:
