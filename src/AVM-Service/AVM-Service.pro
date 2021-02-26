@@ -3,7 +3,7 @@ include( ../common.pri )
 QT       += core gui printsupport network serialport widgets concurrent testlib xml
 QT.testlib.CONFIG -= console
 TARGET = AVM-Service
-VERSION = 2.1
+VERSION = 2.1.1
 
 TEMPLATE = app
 
