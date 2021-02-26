@@ -125,7 +125,7 @@ void JournalDialog::JourFileChoosed(QString &file)
 
 void JournalDialog::EraseJour()
 {
-    if (checkPassword() == Error::Msg::NoError)
+    if (checkPassword())
         BaseInterface::iface()->writeCommand(Queries::QC_EraseJournals);
 }
 

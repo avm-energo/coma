@@ -100,29 +100,10 @@ void AbstractStartupDialog::GetCorBd()
         m_startupBlockDescription.size / sizeof(float)); // /4 => float by default
 }
 
-// void AbstractStartupDialog::SetCor()
-//{
-//    BaseInterface::iface()->writeCommand(Queries::QC_SetStartupValues);
-// if (MainInterface == I_ETHERNET)
-//{
-//    if (Board::GetInstance().interfaceType() == Board::InterfaceType::Ethernet)
-//        emit SendCom45(903);
-//}
-// else if (MainInterface == I_USB)
-//    else if (Board::GetInstance().interfaceType() == Board::InterfaceType::USB)
-//    {
-//        if (Commands::WriteCom(Commands::WriteStartupValues) == Error::Msg::NoError)
-//            QMessageBox::information(this, "INFO", "Записано успешно");
-//        else
-//            QMessageBox::information(this, "INFO", "Ошибка");
-//    }
-//}
-
 void AbstractStartupDialog::ResetCor()
 {
-    if (checkPassword() != Error::Msg::NoError)
-        return;
-    BaseInterface::iface()->writeCommand(Queries::QC_ClearStartupValues);
+    if (checkPassword())
+        BaseInterface::iface()->writeCommand(Queries::QC_ClearStartupValues);
 }
 
 float AbstractStartupDialog::ToFloat(QString text)
@@ -214,9 +195,8 @@ void AbstractStartupDialog::FillBd(QWidget *parent, QString Name, float Value)
 
 void AbstractStartupDialog::SetupCor()
 {
-    if (checkPassword() != Error::Msg::NoError)
-        return;
-    BaseInterface::iface()->writeCommand(Queries::QC_SetStartupValues);
+    if (checkPassword())
+        BaseInterface::iface()->writeCommand(Queries::QC_SetStartupValues);
 }
 
 void AbstractStartupDialog::ErrorRead()

@@ -39,3 +39,6 @@ HEADERS += \
     modulealarm.h \
     modules.h \
     registers.h \
+
+RESOURCES += \
+    ../../settings/settings.qrc

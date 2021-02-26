@@ -16,7 +16,7 @@ public:
     // void GetCorBd() override;
 
 private:
-    bool WriteCheckPassword();
+    //  bool WriteCheckPassword();
     struct CorData
     {
         float C_init[3];    //Начальные значени емкостей вводов
@@ -38,18 +38,12 @@ private:
 signals:
 
 public slots:
-    //    void GetCorBdButton() override;
-    // void WriteCor() override;
-    void SetupCor() override;
+
     void MessageOk();
-    void SetCor();
-    void ResetCor() override;
-    // void UpdateFlCorData(IEC104Thread::FlSignals104 *Signal);
-    // void ModBusUpdateCorData(QList<ModBus::SignalStruct> Signal);
+
     void SaveToFile() override;
     void ReadFromFile() override;
-    //    void WritePasswordCheck(QString psw);
-    //    void TimerTimeout();
+
     void ErrorRead();
 
 private slots:

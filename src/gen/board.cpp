@@ -2,6 +2,7 @@
 
 #include "../module/modules.h"
 #include "../module/registers.h"
+#include "error.h"
 #include "stdfunc.h"
 
 #include <QDebug>
@@ -74,7 +75,12 @@ quint16 Board::type(Board::Types type) const
 
 QString Board::moduleName() const
 {
-    return QVariant::fromValue(Modules::Model(type())).toString();
+    QString name = QVariant::fromValue(Modules::Model(type())).toString();
+    if (name.isEmpty())
+        name = Modules::BaseBoards.value(typeB()) + Modules::MezzanineBoards.value(typeM());
+    //  qDebug() << name << Modules::BaseBoards.value(typeB()) << Modules::MezzanineBoards.value(typeM())
+    //         << QString::number(typeB(), 16) << QString::number(typeM(), 16);
+    return name;
 }
 
 quint32 Board::serialNumber(Board::Types type) const

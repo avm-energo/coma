@@ -190,16 +190,7 @@ void Protocom::writeCommand(Queries::Commands cmd, QVariant item)
     using DataTypes::Signal;
 
     auto protoCmd = getProtoCommand.value(cmd);
-    if (!protoCmd)
-    {
-        auto wCmd = getWCommand.value(cmd);
-        if (!wCmd)
-        {
-            qCritical() << Error::WrongCommandError;
-            return;
-        }
-        d->handleCommand(wCmd);
-    }
+
     switch (protoCmd)
     {
     case Commands::ReadBlkData:
@@ -284,10 +275,16 @@ void Protocom::writeCommand(Queries::Commands cmd, QVariant item)
         Q_ASSERT(item.canConvert<quint8>());
         d->handleInt(protoCmd, StdFunc::arrayFromNumber(quint8(item.value<quint8>())));
         break;
-
+    // default case as case for Proto WCommand
     default:
     {
-        d->handleCommand(protoCmd);
+        auto wCmd = getWCommand.value(cmd);
+        if (!wCmd)
+        {
+            qCritical() << Error::WrongCommandError;
+            return;
+        }
+        d->handleCommand(wCmd);
     }
     }
     emit wakeUpParser();

@@ -27,15 +27,14 @@ public:
     void SetStartupBlock(int blocknum, void *block, quint32 blocksize, quint32 startAdr);
 
     QWidget *buttonWidget();
-    //  bool WriteCheckPassword();
 
 protected:
     virtual void WriteCor();
     virtual void SetupCor();
-    // void SetCor();
+
     virtual void ResetCor();
     virtual void GetCorBd();
-    // void updateFloatData();
+
     void updateFloatData(const DataTypes::FloatStruct &fl) override;
     void updateStatus();
     virtual void SaveToFile() = 0;
