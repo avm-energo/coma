@@ -32,6 +32,7 @@ private:
     void setTuneFunctions() override;
 
     Error::Msg showPreWarning();
+    Error::Msg checkTuneCoefs();
     Error::Msg setSMode2();
     Error::Msg ADCCoef1();
     Error::Msg ADCCoef2();

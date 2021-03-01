@@ -273,16 +273,18 @@ QWidget *ConfKIVDialog::remainsWidget()
     gridlyout->addWidget(WDFunc::NewLBL2(this, "Низкое напряжение для сигнализации:"), row, 0, 1, 1, Qt::AlignLeft);
     gridlyout->addWidget(WDFunc::NewSPB2(this, "Ulow", 0, 10000, 1), row, 1, 1, 1);
 
-    gridlyout->addWidget(WDFunc::NewChB2(this, "IsU", "Сигнализация по наличию входного напряжения"), row, 2, 1, 1);
+    gridlyout->addWidget(
+        WDFunc::NewChB2(this, "IsU", "Сигнализация по наличию входного напряжения, % от ном."), row, 2, 1, 1);
 
     row++;
-    gridlyout->addWidget(WDFunc::NewLBL2(this, "Задержка на формирование предупредительных событий:"), row, 0, 1, 1);
+    gridlyout->addWidget(
+        WDFunc::NewLBL2(this, "Задержка на формирование предупредительных событий, сек:"), row, 0, 1, 1);
     gridlyout->addWidget(WDFunc::NewSPB2(this, "Tevent_pred", 0, 10000, 1), row, 1, 1, 1);
 
     gridlyout->addWidget(WDFunc::NewChB2(this, "IsIunb", "Сигнализация по небалансу токов"), row, 2, 1, 1);
 
     row++;
-    gridlyout->addWidget(WDFunc::NewLBL2(this, "Задержка на формирование аварийных событий:"), row, 0, 1, 1);
+    gridlyout->addWidget(WDFunc::NewLBL2(this, "Задержка на формирование аварийных событий, сек:"), row, 0, 1, 1);
     gridlyout->addWidget(WDFunc::NewSPB2(this, "Tevent_alarm", 0, 10000, 1), row, 1, 1, 1);
 
     gb->setLayout(gridlyout);

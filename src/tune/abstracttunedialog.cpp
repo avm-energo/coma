@@ -26,11 +26,7 @@
 AbstractTuneDialog::AbstractTuneDialog(int tuneStep, QWidget *parent) : QDialog(parent)
 {
     TuneVariant = 0;
-    // MeasurementTimer = new QTimer;
-    //  MeasurementTimer->setInterval(MEASTIMERINT);
     IsNeededDefConf = false;
-    // connect(MeasurementTimer, SIGNAL(timeout()), this, SLOT(MeasTimerTimeout()));
-    // RepModel = new ReportModel;
     m_blockCount = 0;
     m_tuneStep = tuneStep;
     m_finished = false;
@@ -449,7 +445,9 @@ void AbstractTuneDialog::saveTuneSequenceFile(int step)
 {
     QString cpuserialnum = Board::GetInstance().UID();
     QSettings storedcalibrations(StdFunc::GetSystemHomeDir() + "calibr.ini", QSettings::IniFormat);
-    storedcalibrations.setValue(cpuserialnum + "/step", step);
+    int calibrstep = storedcalibrations.value(cpuserialnum + "/step", "1").toInt();
+    if (step > calibrstep)
+        storedcalibrations.setValue(cpuserialnum + "/step", step);
 }
 
 Error::Msg AbstractTuneDialog::saveWorkConfig()

@@ -85,10 +85,12 @@ float StdFunc::toFloat(const QString &text, bool *ok)
     if (!floatok)
     {
         qCritical() << "Значение " << text << " не может быть переведено во float";
-        *ok = false;
+        if (ok != 0)
+            *ok = false;
         return 0;
     }
-    *ok = true;
+    if (ok != 0)
+        *ok = true;
     return tmpf;
 }
 
