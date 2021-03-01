@@ -1,6 +1,6 @@
 #ifndef S2_H
 #define S2_H
-
+#include "datarecv.h"
 #include "datatypes.h"
 #include "error.h"
 #include "stdfunc.h"
@@ -34,6 +34,16 @@ public:
     static quint32 crc32buf(const QByteArray &data);
 
     static S2DataTypes::S2ConfigType config;
+    static std::vector<S2DataTypes::DataRecV> configV;
+    static S2DataTypes::DataRecV getRecord(unsigned int id)
+    {
+        auto result = std::find_if(
+            std::cbegin(configV), std::cend(configV), [id](const auto &record) { return (id == record.id); });
+        if (result != std::cend(configV))
+            return *result;
+        else
+            return S2DataTypes::DataRecV();
+    }
 
 private:
     //    const unsigned long dwPolynomial = 0xEDB88320;

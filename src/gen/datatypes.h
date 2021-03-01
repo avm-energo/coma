@@ -265,12 +265,21 @@ struct FileHeader
 
 // S2: Определение типа записи
 
-struct DataRec
-{
-    quint32 id;
-    quint32 num_byte;
-    void *thedata;
-};
+struct DataRec;
+// struct DataRec
+//{
+//    quint32 id;
+//    quint32 num_byte;
+//    void *thedata;
+//};
+// inline bool is_same(const S2DataTypes::DataRec &lhs, const S2DataTypes::DataRec &rhs)
+//{
+//    if ((lhs.id == rhs.id) && (lhs.num_byte == rhs.num_byte))
+//        return !memcmp(lhs.thedata, rhs.thedata, lhs.num_byte);
+//    else
+//        return false;
+//}
+
 struct DataRecHeader
 {
     // id

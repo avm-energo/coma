@@ -1,12 +1,16 @@
 #ifndef COMA_H
 #define COMA_H
 
+#include "../gen/datatypes.h"
+#include "../gen/stdfunc.h"
 #include "../interfaces/settingstypes.h"
-#include "../module/module.h"
 
 #include <QListWidget>
 #include <QMainWindow>
 #include <QStackedWidget>
+
+class Module;
+class AlarmWidget;
 
 enum THREAD
 {

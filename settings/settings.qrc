@@ -2,5 +2,6 @@
     <qresource prefix="/module">
         <file>avm-kiv.xml</file>
         <file>avm-ktf.xml</file>
+        <file>s2files.xml</file>
     </qresource>
 </RCC>
