@@ -1,0 +1,13 @@
+<RCC>
+    <qresource prefix="/style">
+        <file>qss-dracula/dracula.css</file>
+        <file>QSS/AMOLED.qss</file>
+        <file>QSS/Aqua.qss</file>
+        <file>QSS/ConsoleStyle.qss</file>
+        <file>QSS/ElegantDark.qss</file>
+        <file>QSS/ManjaroMix.qss</file>
+        <file>QSS/MaterialDark.qss</file>
+        <file>QSS/NeonButtons.qss</file>
+        <file>QSS/Ubuntu.qss</file>
+    </qresource>
+</RCC>

@@ -1,19 +1,18 @@
-[submodule "LimeReport"]
-	path = LimeReport
-	url = https://github.com/fralx/LimeReport
-[submodule "hidapi"]
-	path = hidapi
-	url = https://github.com/libusb/hidapi
-[submodule "QXlsx"]
-	path = QXlsx
-	url = https://github.com/QtExcel/QXlsx
-	branch = master
-[submodule "widgets/qss-dracula"]
-	path = widgets/qss-dracula
+[submodule "src/widgets/styles/qss-dracula"]
+	path = src/widgets/styles/qss-dracula
 	url = https://github.com/Supremist/qss-dracula
-[submodule "widgets/QSS"]
-	path = widgets/QSS
+[submodule "src/widgets/styles/QSS"]
+	path = src/widgets/styles/QSS
 	url = https://github.com/GTRONICK/QSS
-[submodule "widgets/QDarkStyleSheet"]
-	path = widgets/QDarkStyleSheet
+[submodule "src/widgets/styles/QDarkStyleSheet"]
+	path = src/widgets/styles/QDarkStyleSheet
 	url = https://github.com/ColinDuquesnoy/QDarkStyleSheet
+[submodule "include/LimeReport"]
+	path = include/LimeReport
+	url = https://github.com/fralx/LimeReport
+[submodule "include/QXlsx"]
+	path = include/QXlsx
+	url = https://github.com/QtExcel/QXlsx
+[submodule "include/hidapi"]
+	path = include/hidapi
+	url = https://github.com/libusb/hidapi

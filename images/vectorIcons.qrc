@@ -16,5 +16,16 @@
         <file>tnapprove.svg</file>
         <file>tnno.svg</file>
         <file>tnyes.svg</file>
+        <file>tn1.svg</file>
+        <file>tn2.svg</file>
+        <file>tn3.svg</file>
+        <file>tn4.svg</file>
+        <file>tn5.svg</file>
+        <file>tn6.svg</file>
+        <file>tn7.svg</file>
+        <file>tn8.svg</file>
+        <file>tn9.svg</file>
+        <file>tnemul.svg</file>
+        <file>tnprotocol.svg</file>
     </qresource>
 </RCC>
