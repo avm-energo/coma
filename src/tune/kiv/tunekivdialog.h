@@ -1,7 +1,7 @@
 #ifndef TUNEKIVDIALOG_H
 #define TUNEKIVDIALOG_H
 
-#include "../check/checkkiv.h"
+//#include "../check/checkkiv.h"
 #include "../config/config.h"
 #include "../config/configkiv.h"
 #include "../gen/report.h"
@@ -63,7 +63,7 @@ public slots:
 
 private:
     //    AVM_KIV::Bci m_Bci_block_work, m_Bci_block_temporary;
-//    TuneKIV *TKIV;
+    //    TuneKIV *TKIV;
     ConfigKIV *CKIV;
     TuneKIVCheck *TKIVCheckDialog;
     TuneKIVADC *TKIVADCDialog;

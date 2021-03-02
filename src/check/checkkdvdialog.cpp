@@ -24,18 +24,19 @@
 
 CheckKDVDialog::CheckKDVDialog(QWidget *parent) : AbstractCheckDialog(parent)
 {
-    EParent = parent;
-    QString tmps = "QDialog {background-color: " + QString(Colors::UCONFCLR) + ";}";
-    setStyleSheet(tmps);
-    QStringList sl;
-    // BdNum = 6;
-    ChKDV = new CheckKDV;
-    Ch = new Check;
+    //    EParent = parent;
+    //    QString tmps = "QDialog {background-color: " + QString(Colors::UCONFCLR) + ";}";
+    //    setStyleSheet(tmps);
+    //    QStringList sl;
+    //    // BdNum = 6;
+    //    //ChKDV = new CheckKDV;
+    //    Ch = new Check;
     //    BdNum = 11;
 
     m_BdUIList = { { "Основные", Bd1W() }, { "Модель", Bd2W() }, { "Ресурс", Bd3W() }, { "1-я гармоника", Bd4W() },
         { "Несимметрия", Bd5W() } };
-    SetupUI();
+    //    SetupUI();
+    m_BdUIList.first().widget->setUpdatesEnabled();
 
     Timer->setInterval(ANMEASINT);
 }

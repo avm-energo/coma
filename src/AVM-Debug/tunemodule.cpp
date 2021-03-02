@@ -57,7 +57,7 @@ void TuneModule::create(Modules::Model model)
             addDialogToList(new ConfKTFDialog(CKTF), "Конфигурирование", "conf1");
         }
         CheckKTFDialog *cdktf = new CheckKTFDialog;
-        addDialogToList(cdktf);
+        addDialogToList(cdktf, "Проверка");
         // TuneKTF *TKTF = new TuneKTF(0, s2Config);
         //                        m->addDialogToList(new TuneKTFDialog(CKTF, TKTF));
 

@@ -2,7 +2,7 @@
 #define CHECKDIALOGKDV_H
 
 #include "abstractcheckdialog.h"
-#include "checkkdv.h"
+//#include "checkkdv.h"
 
 class CheckKDVDialog : public AbstractCheckDialog
 {
@@ -20,7 +20,7 @@ public slots:
     //    void MBSUpdate() override;
 
 private:
-    CheckKDV *ChKDV;
+    // CheckKDV *ChKDV;
     //    QWidget *AutoCheckUI();            // UI для автоматической проверки модуля
     //    QWidget *BdUI(int bdnum) override; // визуализация наборов текущих данных от модуля
     void PrepareHeadersForFile(int row) override;  // row - строка для записи заголовков

@@ -2,7 +2,7 @@
 #define CHECKKTFDIALOG_H
 
 #include "abstractcheckdialog.h"
-#include "checkktf.h"
+//#include "checkktf.h"
 
 class CheckKTFDialog : public AbstractCheckDialog
 {
