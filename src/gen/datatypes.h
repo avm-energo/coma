@@ -1,5 +1,6 @@
 #ifndef DATATYPES_H
 #define DATATYPES_H
+#include "datarecv.h"
 
 #include <QDataStream>
 #include <QVariant>
@@ -329,5 +330,6 @@ Q_DECLARE_METATYPE(DataTypes::ConfParametersListStruct)
 Q_DECLARE_METATYPE(DataTypes::SignalsStruct)
 Q_DECLARE_METATYPE(DataTypes::Signal)
 Q_DECLARE_METATYPE(DataTypes::GeneralResponseStruct)
+Q_DECLARE_METATYPE(DataTypes::DataRecV)
 Q_DECLARE_METATYPE(Queries::Command)
 #endif // DATATYPES_H

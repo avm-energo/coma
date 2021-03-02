@@ -60,19 +60,14 @@ public:
     void closeDialogs();
     ModuleSettings *settings() const;
     bool loadSettings();
+    bool loadS2Settings();
 
 private:
     QList<UDialog *> m_dialogs;
 
     std::unique_ptr<ModuleSettings> m_settings;
 
-    /// TODO Кандидаты в отдельный класс
-    void traverseNode(const QDomNode &node);
-    DataTypes::Alarm parseAlarm(QDomElement domElement);
-    DataTypes::Journal parseJournal(QDomElement domElement);
-    quint32 parseInt32(QDomElement domElement) const;
-    quint32 parseHexInt32(QDomElement domElement) const;
-    QStringList parseStringList(QDomElement domElement) const;
+    // void traverseNode(const QDomNode &node);
 };
 
 #endif // MODULEFABRIC_H

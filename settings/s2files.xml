@@ -574,19 +574,19 @@
 	</record>
 	<record>
 		<id>1061</id>
-		<type>BYTE[4]</type>
+		<type>BYTE[8]</type>
 	</record>
 	<record>
 		<id>1062</id>
-		<type>BYTE[4]</type>
+		<type>BYTE[8]</type>
 	</record>
 	<record>
 		<id>1063</id>
-		<type>BYTE[4]</type>
+		<type>BYTE[8]</type>
 	</record>
 	<record>
 		<id>1064</id>
-		<type>BYTE[4]</type>
+		<type>BYTE[8]</type>
 	</record>
 	<record>
 		<id>1070</id>

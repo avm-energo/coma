@@ -3,7 +3,7 @@
 #include <array>
 #include <iostream>
 #include <variant>
-namespace S2DataTypes
+namespace DataTypes
 {
 using BYTE = unsigned char;
 using WORD = unsigned short;

@@ -697,12 +697,15 @@ void handleFile(QByteArray &ba, DataTypes::FilesEnum addr, bool isShouldRestored
     if (isShouldRestored)
     {
         DataTypes::ConfParametersListStruct outlist;
+        QList<DataTypes::DataRecV> outlistV;
         Error::Msg error_code = S2::RestoreData(ba, outlist);
         if (error_code != Error::Msg::NoError)
         {
             qCritical() << error_code;
             return;
         }
+        if (!S2::RestoreData(ba, outlistV))
+            return;
         DataManager::addSignalToOutList(DataTypes::ConfParametersList, outlist);
     }
     else

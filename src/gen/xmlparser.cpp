@@ -129,7 +129,7 @@ QStringList XmlParser::parseStringList(QDomElement domElement)
 // ctti::unnamed_type_id<WORD>().hash()
 ctti::unnamed_type_id_t XmlParser::parseType(QDomElement domElement)
 {
-    using namespace S2DataTypes;
+    using namespace DataTypes;
     auto name = domElement.text();
     name.replace(" ", "");
     const auto arrSize = name.count('[');

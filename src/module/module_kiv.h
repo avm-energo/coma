@@ -1,5 +1,4 @@
 #pragma once
-#define ID8084_START 1012
 #define ID8084_COM 20
 #include "../gen/pch.h"
 namespace AVM_KIV
@@ -126,17 +125,17 @@ const QStringList measJourHeaders {
 struct Bci
 {
     ///Номинальное линейное первичное напряжение в кВ
-    float Unom;
+    float Unom1;
     ///Уставка контроля минимума напряжения(в % от номинального)
     float Umin;
     ///Уставка контроля минимума тока (в % от Imax)
     float Imin;
-    ///Начальные значени емкостей вводов
-    float C_init[3];
-    ///Начальные значения tgδ вводов
-    float Tg_init[3];
-    /// коррекция  tg δ вводов
-    float corTg[3];
+    //    ///Начальные значени емкостей вводов
+    //    float C_init[3];
+    //    ///Начальные значения tgδ вводов
+    //    float Tg_init[3];
+    //    /// коррекция  tg δ вводов
+    //    float corTg[3];
     /// уставка предупредительной сигнализации по изменению емкости
     float dC_pred;
     /// уставка аварийной сигнализации по изменению емкости

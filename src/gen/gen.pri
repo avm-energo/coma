@@ -1,5 +1,6 @@
 
 SOURCES += \
+    $$PWD/datarecv.cpp \
     board.cpp \
     s2.cpp \
     datamanager.cpp \
@@ -12,9 +13,12 @@ SOURCES += \
     pch.cpp \
     stdfunc.cpp \
     report.cpp \
-    timefunc.cpp
+    timefunc.cpp \
+    xmlparser.cpp
 
 HEADERS += \
+    $$PWD/datarecv.h \
+    $$PWD/s2helper.h \
     board.h \
     colors.h \
     datamanager.h \
@@ -30,7 +34,8 @@ HEADERS += \
     singleton.h \
     stdfunc.h \
     report.h \
-    timefunc.h
+    timefunc.h \
+    xmlparser.h
 
 
 

@@ -1,6 +1,5 @@
 #ifndef S2_H
 #define S2_H
-#include "datarecv.h"
 #include "datatypes.h"
 #include "error.h"
 #include "stdfunc.h"
@@ -20,7 +19,8 @@ public:
     // 0 - успешно, иначе код ошибки S2: Поиск элемента в массиве описаний
     static Error::Msg RestoreDataMem(void *mem, quint32 memsize, QVector<S2DataTypes::DataRec> *dr);
     // restore IDs and contents in ConfParameters list
-    static Error::Msg RestoreData(QByteArray &bain, QList<DataTypes::ConfParameterStruct> &outlist);
+    static Error::Msg RestoreData(QByteArray bain, QList<DataTypes::ConfParameterStruct> &outlist);
+    static bool RestoreData(QByteArray bain, QList<DataTypes::DataRecV> &outlist);
     static S2DataTypes::DataRec *FindElem(QVector<S2DataTypes::DataRec> *, quint32);
     static void findElemAndWriteIt(QVector<S2DataTypes::DataRec> *s2config, const DataTypes::ConfParameterStruct &cfp);
     static Error::Msg findElemAndWriteIt(S2DataTypes::DataRec *record, const DataTypes::ConfParameterStruct &cfp);
@@ -34,16 +34,9 @@ public:
     static quint32 crc32buf(const QByteArray &data);
 
     static S2DataTypes::S2ConfigType config;
-    static std::vector<S2DataTypes::DataRecV> configV;
-    static S2DataTypes::DataRecV getRecord(unsigned int id)
-    {
-        auto result = std::find_if(
-            std::cbegin(configV), std::cend(configV), [id](const auto &record) { return (id == record.id); });
-        if (result != std::cend(configV))
-            return *result;
-        else
-            return S2DataTypes::DataRecV();
-    }
+    static std::vector<DataTypes::DataRecV> configV;
+    static DataTypes::DataRecV getRecord(unsigned int id);
+    static void setRecordValue(const DataTypes::DataRecV &record);
 
 private:
     //    const unsigned long dwPolynomial = 0xEDB88320;

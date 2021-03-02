@@ -1,5 +1,4 @@
 #pragma once
-#include "datarecv.h"
 #include "datatypes.h"
 
 #include <QDomElement>

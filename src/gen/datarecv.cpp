@@ -2,12 +2,9 @@
 
 #include "datatypes.h"
 
-std::map<int, ctti::unnamed_type_id_t> S2DataTypes::DataRecV::map;
-S2DataTypes::DataRecV::DataRecV()
-{
-}
+std::map<int, ctti::unnamed_type_id_t> DataTypes::DataRecV::map;
 
-S2DataTypes::DataRecV S2DataTypes::DataRecV::deserialize(const S2DataTypes::DataRec &record)
+DataTypes::DataRecV DataTypes::DataRecV::deserialize(const S2DataTypes::DataRec &record)
 {
     using namespace detail;
     DataRecV newRec;
@@ -38,6 +35,16 @@ S2DataTypes::DataRecV S2DataTypes::DataRecV::deserialize(const S2DataTypes::Data
     case ctti::unnamed_type_id<WORD_4t>().hash():
     {
         newRec.data = *reinterpret_cast<WORD_4t *>(record.thedata);
+        break;
+    }
+    case ctti::unnamed_type_id<BYTE_8t>().hash():
+    {
+        newRec.data = *reinterpret_cast<BYTE_8t *>(record.thedata);
+        break;
+    }
+    case ctti::unnamed_type_id<WORD_8t>().hash():
+    {
+        newRec.data = *reinterpret_cast<WORD_8t *>(record.thedata);
         break;
     }
     case ctti::unnamed_type_id<BYTE_16t>().hash():
@@ -86,7 +93,7 @@ S2DataTypes::DataRecV S2DataTypes::DataRecV::deserialize(const S2DataTypes::Data
     return newRec;
 }
 
-void S2DataTypes::DataRecV::printer() const
+void DataTypes::DataRecV::printer() const
 {
     std::cout << id << std::endl;
     valueType w = data;
@@ -100,18 +107,18 @@ void S2DataTypes::DataRecV::printer() const
 //    };
 //};
 
-S2DataTypes::DataRec S2DataTypes::DataRecV::serialize() const
+S2DataTypes::DataRec DataTypes::DataRecV::serialize() const
 {
     return std::visit(
-        [=](auto &arg) -> DataRec {
-            std::cout << data.index() << std::endl;
-            DataRec record { id, sizeof(arg), (void *)(&arg) };
+        [=](auto &arg) -> S2DataTypes::DataRec {
+            //  std::cout << data.index() << std::endl;
+            S2DataTypes::DataRec record { id, sizeof(arg), (void *)(&arg) };
             return record;
         },
         data);
 }
 
-S2DataTypes::DataRecV::DataRecV(const S2DataTypes::DataRec &record) : id(record.id)
+DataTypes::DataRecV::DataRecV(const S2DataTypes::DataRec &record) : id(record.id)
 {
     using namespace detail;
 
@@ -142,7 +149,7 @@ S2DataTypes::DataRecV::DataRecV(const S2DataTypes::DataRec &record) : id(record.
     }
     case ctti::unnamed_type_id<BYTE_4t>().hash():
     {
-        //   assert(sizeof(BYTE_4t) == record.num_byte);
+        assert(sizeof(BYTE_4t) == record.num_byte);
         data = *reinterpret_cast<BYTE_4t *>(record.thedata);
         break;
     }
@@ -150,6 +157,18 @@ S2DataTypes::DataRecV::DataRecV(const S2DataTypes::DataRec &record) : id(record.
     {
         assert(sizeof(WORD_4t) == record.num_byte);
         data = *reinterpret_cast<WORD_4t *>(record.thedata);
+        break;
+    }
+    case ctti::unnamed_type_id<BYTE_8t>().hash():
+    {
+        assert(sizeof(BYTE_8t) == record.num_byte);
+        data = *reinterpret_cast<BYTE_8t *>(record.thedata);
+        break;
+    }
+    case ctti::unnamed_type_id<WORD_8t>().hash():
+    {
+        assert(sizeof(WORD_8t) == record.num_byte);
+        data = *reinterpret_cast<WORD_8t *>(record.thedata);
         break;
     }
     case ctti::unnamed_type_id<BYTE_16t>().hash():
@@ -205,13 +224,13 @@ S2DataTypes::DataRecV::DataRecV(const S2DataTypes::DataRec &record) : id(record.
     }
 }
 
-bool S2DataTypes::operator==(const S2DataTypes::DataRecV &lhs, const S2DataTypes::DataRecV &rhs)
+bool DataTypes::operator==(const DataTypes::DataRecV &lhs, const DataTypes::DataRecV &rhs)
 {
     using namespace S2DataTypes;
     return (lhs.id == rhs.id) && (lhs.data == rhs.data);
 }
 
-bool S2DataTypes::operator!=(const S2DataTypes::DataRecV &lhs, const S2DataTypes::DataRecV &rhs)
+bool DataTypes::operator!=(const DataTypes::DataRecV &lhs, const DataTypes::DataRecV &rhs)
 {
     using namespace S2DataTypes;
     return !(lhs == rhs);

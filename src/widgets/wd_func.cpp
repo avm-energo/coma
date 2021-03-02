@@ -723,6 +723,17 @@ bool WDFunc::ChBData(QWidget *w, const QString &chbname, bool &data)
     return true;
 }
 
+bool WDFunc::ChBData(QWidget *w, const QString &chbname)
+{
+    QCheckBox *chb = w->findChild<QCheckBox *>(chbname);
+    if (chb == nullptr)
+    {
+        qDebug() << Error::NullDataError;
+        return false;
+    }
+    return chb->isChecked();
+}
+
 bool WDFunc::SetChBData(QWidget *w, const QString &chbname, bool data)
 {
     QCheckBox *chb = w->findChild<QCheckBox *>(chbname);

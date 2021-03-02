@@ -1,12 +1,14 @@
 #ifndef WD_FUNC
 #define WD_FUNC
 
+#include "../gen/error.h"
 #include "ecombobox.h"
 #include "edoublespinbox.h"
 #include "etableview.h"
 #include "passwordlineedit.h"
 
 #include <QCheckBox>
+#include <QDebug>
 #include <QLabel>
 #include <QLineEdit>
 #include <QMainWindow>
@@ -81,6 +83,10 @@ public:
         QWidget *parent, const QString &spbname, double min, double max, int decimals, const QString &spbcolor = "");
 
     static EDoubleSpinBox *NewSPB2(QWidget *parent, const QString &spbname, double min, double max, int decimals);
+    //    static EDoubleSpinBox *NewSPB2(QWidget *parent, const unsigned value, double min, double max, int decimals)
+    //    {
+    //        return NewSPB2(parent, parent->metaObject()->className() + QString::number(value), min, max, decimals);
+    //    }
 
     static bool SetSPBData(QObject *w, const QString &spbname, const double &spbvalue);
     template <typename T> static bool SPBData(QObject *w, const QString &spbname, T &spbvalue)
@@ -93,6 +99,16 @@ public:
         }
         spbvalue = spb->value();
         return true;
+    }
+    template <typename T> static T SPBData(QObject *w, const QString &spbname)
+    {
+        QDoubleSpinBox *spb = w->findChild<QDoubleSpinBox *>(spbname);
+        if (spb == nullptr)
+        {
+            qDebug() << Error::DescError;
+            return 0;
+        }
+        return T(spb->value());
     }
     static bool SetLEColor(QWidget *w, const QString &lename, const QColor &color);
     [[deprecated("Use instead second version with global style sheet")]] static QLabel *NewLBL(QWidget *w,
@@ -121,6 +137,7 @@ public:
         QWidget *parent, const QString &chbname, const QString &chbtext, const QString &chbcolor = "");
     static QCheckBox *NewChB2(QWidget *parent, const QString &chbname, const QString &chbtext);
     static bool ChBData(QWidget *w, const QString &chbname, bool &data);
+    static bool ChBData(QWidget *w, const QString &chbname);
     static bool SetChBData(QWidget *w, const QString &chbname, bool data);
     static bool RBData(QWidget *w, const QString &rbname, bool &data);
     static bool SetRBData(QWidget *w, const QString &rbname, bool data);
