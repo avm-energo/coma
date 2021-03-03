@@ -1,5 +1,6 @@
 SOURCES += \
     $$PWD/abstractconfdialog.cpp \
+    $$PWD/conf8084dialog.cpp \
     $$PWD/config.cpp \
     $$PWD/configkdv.cpp \
     $$PWD/configkiv.cpp \
@@ -11,6 +12,7 @@ SOURCES += \
 
 HEADERS += \
     $$PWD/abstractconfdialog.h \
+    $$PWD/conf8084dialog.h \
     $$PWD/config.h \
     $$PWD/configkdv.h \
     $$PWD/configkiv.h \

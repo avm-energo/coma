@@ -8,6 +8,7 @@
 #include "../check/checkkivdialog.h"
 #include "../check/checkktfdialog.h"
 #include "../check/checkktfharmonicdialog.h"
+#include "../config/conf8084dialog.h"
 #include "../config/confkdvdialog.h"
 #include "../config/confkivdialog.h"
 #include "../config/confktfdialog.h"
@@ -99,8 +100,8 @@ void TuneModule::create(Modules::BaseBoard typeB, Modules::MezzanineBoard typeM)
         qDebug("Here is KIV");
         if (board.interfaceType() != Board::InterfaceType::RS485)
         {
-            !!!ConfigKIV * CKIV = new ConfigKIV;
-            addDialogToList(new ConfKIVDialog(CKIV), "Конфигурирование", "conf1");
+            ConfigKIV *CKIV = new ConfigKIV;
+            addDialogToList(new Conf8084Dialog(CKIV), "Конфигурирование", "conf1");
             if (board.interfaceType() == Board::InterfaceType::USB)
             {
                 addDialogToList(new Tune84Dialog(CKIV), "Регулировка");
