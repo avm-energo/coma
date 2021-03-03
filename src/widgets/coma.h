@@ -1,6 +1,7 @@
 #ifndef COMA_H
 #define COMA_H
 
+#include "../avtuk/oscmanager.h"
 #include "../interfaces/settingstypes.h"
 #include "../module/module.h"
 
@@ -32,27 +33,21 @@ public:
 
     Coma(QWidget *parent = nullptr);
     ~Coma();
-    void SetMode(int mode);
-    void Go(const QString &parameter = "");
+    void setMode(int mode);
+    void go(const QString &parameter = "");
     void clearWidgets();
-    void SetupMenubar();
+    void setupMenubar();
 
-    QWidget *Least();
+    QWidget *least();
 
-    void Disconnect();
+    void disconnect();
     virtual void setupConnection();
-
-signals:
-    void CloseConnectDialog();
-
-    void Finished();
-    void StopCommunications();
 
 public slots:
     void DisconnectAndClear();
 
-    void ReConnect();
-    void AttemptToRec();
+    void reconnect();
+    void attemptToRec();
 
 protected:
     ModulePointer m_Module;
@@ -61,16 +56,20 @@ protected:
 private slots:
     void prepareConnectDlg();
     void startWork(const ConnectStruct st);
-    void GetAbout();
+    void loadOsc();
+    void loadSwj();
+
+    void getAbout();
     void closeEvent(QCloseEvent *event) override;
 
     void update(const DataTypes::GeneralResponseStruct &rsp);
 
-    void MainTWTabChanged(int tabindex);
+    void mainTWTabChanged(int tabindex);
 
 private:
     QStackedWidget *MainTW;
     QListWidget *MainLW;
+    OscManager *oscManager;
 
     bool TimeThrFinished;
 

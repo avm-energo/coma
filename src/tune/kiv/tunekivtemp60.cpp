@@ -1,11 +1,11 @@
 #include "tunekivtemp60.h"
 
-#include "../gen/board.h"
-#include "../gen/colors.h"
-#include "../gen/stdfunc.h"
+#include "../../gen/board.h"
+#include "../../gen/colors.h"
+#include "../../gen/stdfunc.h"
+#include "../../widgets/waitwidget.h"
+#include "../../widgets/wd_func.h"
 #include "../tunesteps.h"
-#include "../widgets/waitwidget.h"
-#include "../widgets/wd_func.h"
 
 #include <QEventLoop>
 #include <QMessageBox>
@@ -75,7 +75,7 @@ void TuneKIVTemp60::setTuneFunctions()
 Error::Msg TuneKIVTemp60::setNewConfAndTune()
 {
     CKIV->Bci_block.C_pasp[0] = CKIV->Bci_block.C_pasp[1] = CKIV->Bci_block.C_pasp[2] = 2250;
-    CKIV->Bci_block.Unom = 220;
+    CKIV->Bci_block.Unom1 = 220;
     if (BaseInterface::iface()->writeConfFileSync() != Error::Msg::NoError)
         return Error::Msg::GeneralError;
     for (int i = 0; i < 6; ++i)

@@ -97,6 +97,8 @@ void Protocom::reqTime()
 
 void Protocom::reqFile(quint32 filenum, bool isConfigFile)
 {
+    // Q_ASSERT(filenum >= std::numeric_limits<DataTypes::FilesEnum>::max());
+    // Q_ASSERT(filenum < DataTypes::FilesEnum::FileOscMax);
     QByteArray ba = StdFunc::arrayFromNumber(quint16(filenum));
 
     CommandStruct inp {
@@ -278,13 +280,18 @@ void Protocom::writeCommand(Queries::Commands cmd, QVariant item)
     // default case as case for Proto WCommand
     default:
     {
-        auto wCmd = getWCommand.value(cmd);
-        if (!wCmd)
+        if (!protoCmd)
         {
-            qCritical() << Error::WrongCommandError;
-            return;
+            auto wCmd = getWCommand.value(cmd);
+            if (!wCmd)
+            {
+                qCritical() << Error::WrongCommandError;
+                return;
+            }
+            d->handleCommand(wCmd);
         }
-        d->handleCommand(wCmd);
+        else
+            d->handleCommand(protoCmd);
     }
     }
     emit wakeUpParser();

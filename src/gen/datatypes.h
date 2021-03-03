@@ -24,6 +24,7 @@ enum SignalTypes
     ConfParameter,
     ConfParametersList,
     Block,
+    OscillogramInfo,
     GeneralResponse
 };
 
@@ -84,8 +85,11 @@ enum FilesEnum : quint16
     JourSw = 17,
     /// events journal (12->62)
     JourEv = 18,
-    /// oscilloscope info
-    FileOsc = 1000
+    /// oscillogramm id min
+    FileOscMin = 1000,
+    /// oscillogram id max
+    FileOscMax = 2999
+
 };
 
 struct FileStruct
@@ -210,6 +214,17 @@ struct Journal
     QString name;
 };
 
+#pragma pack(push) /* push current alignment to stack */
+#pragma pack(1)    /* set alignment to 1 byte boundary */
+struct OscInfo
+{
+    quint32 fileNum;    // номер файла осциллограмм
+    quint32 fileLength; // длина файла за исключением FileHeader (16 байт)
+    quint32 id; // Тип файла - осциллограмма и количество осциллограмм в файле (10000, 10001 ...)
+    quint64 unixtime; // Время начала записи осциллограммы
+    quint32 id0; // ID первой осциллограммы в файле (определяет структуру точки и номер канала)
+};
+#pragma pack(pop)
 }
 
 namespace Queries
@@ -237,6 +252,7 @@ enum Commands
     QUSB_ReqBlkDataA,
     QUSB_ReqBlkDataTech,
     QUSB_WriteBlkDataTech,
+    QUSB_ReqOscInfo,
     QUSB_SetMode, // SMode (0x43) - not tested yet
     QUSB_GetMode  // GMode (0x28) - not tested yet
 };
@@ -248,6 +264,7 @@ struct Command
     float flarg;
     QByteArray ba;
 };
+
 }
 
 namespace S2DataTypes
@@ -268,7 +285,7 @@ struct FileHeader
 struct DataRec
 {
     quint32 id;
-    quint32 num_byte;
+    quint32 numByte;
     void *thedata;
 };
 struct DataRecHeader
@@ -276,36 +293,89 @@ struct DataRecHeader
     // id
     quint32 id;
     // количество байт в TypeTheData
-    quint32 NumByte;
+    quint32 numByte;
 };
 
 /// Тип группы плат
 struct DataRecT
 {
     // заголовок записи
-    DataRecHeader TypeHeader;
-    quint8 TypeTheData[4];
-    quint8 VerPO[4];
+    DataRecHeader typeHeader;
+    quint8 typeTheData[4];
+    quint8 versionSoftware[4];
 };
 /// Файл ВПО в формате BIN
 struct DataRecF
 {
     /// заголовок записи
-    DataRecHeader FileDatHeader;
-    QByteArray Data;
+    DataRecHeader fileDataHeader;
+    QByteArray data;
 };
 
-#pragma pack(push, 1)
-struct File_struct
+struct FileStruct
 {
-    FileHeader File_xxx_header;
-    DataRecT Type;
-    DataRecF File;
+    FileHeader fileHeader;
+    DataRecT type;
+    DataRecF file;
     // заголовок пустой записи
     DataRecHeader void_recHeader;
 };
-#pragma pack(pop)
 typedef QVector<S2DataTypes::DataRec> S2ConfigType;
+
+#pragma pack(push) /* push current alignment to stack */
+#pragma pack(1)    /* set alignment to 1 byte boundary */
+struct SwitchJourInfo
+{
+    quint16 fileNum;    // Номер файла
+    quint32 fileLength; // Размер файла
+    quint32 num;        // Порядковый номер переключения
+    quint8 numA;        // Порядковый номер аппарата
+    quint8 typeA;       // Тип аппарата
+    quint64 time;       // Время, когда произведено переключение
+    quint32 options; // Направление переключения, тип коммутации и коммутируемые фазы
+};
+
+#pragma pack(pop) /* restore original alignment from stack */
+
+struct SwitchJourRecord
+{
+    quint32 num;    // Порядковый номер переключения
+    quint8 numA;    // Порядковый номер аппарата
+    quint8 typeA;   // Тип аппарата
+    quint16 result; // Результат операции: успешно / с неисправностью
+    quint64 time;   // Время, когда произведено переключение
+    quint32 options; // Направление переключения, тип коммутации и коммутируемые фазы
+    float amperage[3];   // Значение тока в момент выдачи команды
+    float voltage[3];    // Значение напряжения в момент выдачи команды
+    quint16 ownTime[3];  // Собственное время коммутации
+    quint16 fullTime[3]; // Полное время коммутации (только для отключения, для включения будут нули)
+    quint16 movTime[3];  // Время перемещения главного контакта
+    quint16 archTime[3]; // Время горения дуги
+    quint16 idleTime[3]; // Время безоперационного простоя
+    quint16 inaccuracy[3]; // Погрешность синхронной коммутации (только для соответствующего типа коммутации, для
+                           // остальных типов нули
+    float supplyVoltage;   // Напряжение питания цепей соленоидов
+    float tOutside;        // Температура окружающей среды
+    float tInside[3];      // Температура внутри привода
+    float phyd[3];         // Давление в гидросистеме привода
+    quint64 oscTime;       // Время старта осциллограммы
+    quint8 Reserve[4];     // Резерв
+    quint32 timeF;         // Время записи в журнал
+};
+
+struct DataRecSwitchJour
+{
+    DataRecHeader header;
+    SwitchJourRecord swjRecord;
+};
+
+struct OscHeader
+{
+    quint64 time; // время первой точки в Unix-формате
+    float step;   // шаг по времени в мс
+    quint32 len;  // длина осциллограммы в количестве точек по времени
+};
+
 }
 
 Q_DECLARE_METATYPE(DataTypes::BitStringStruct)
@@ -320,5 +390,6 @@ Q_DECLARE_METATYPE(DataTypes::ConfParametersListStruct)
 Q_DECLARE_METATYPE(DataTypes::SignalsStruct)
 Q_DECLARE_METATYPE(DataTypes::Signal)
 Q_DECLARE_METATYPE(DataTypes::GeneralResponseStruct)
+Q_DECLARE_METATYPE(DataTypes::OscInfo)
 Q_DECLARE_METATYPE(Queries::Command)
 #endif // DATATYPES_H

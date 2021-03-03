@@ -2,5 +2,7 @@
     <qresource prefix="/module">
         <file>avm-kiv.xml</file>
         <file>avm-ktf.xml</file>
+        <file>avtuk-8084.xml</file>
+        <file>avtuk-8082.xml</file>
     </qresource>
 </RCC>
