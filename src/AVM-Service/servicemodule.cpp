@@ -32,7 +32,7 @@ void ServiceModule::create(QTimer *updateTimer)
         Q_UNUSED(typem)
         switch (typeb)
         {
-        case BaseBoards::MTB_00:
+        case BaseBoard::MTB_00:
             /*
                 str = (checkMDialog == nullptr) ? "Текущие параметры" : "Текущие параметры\nБазовая";
                 if (checkBDialog != nullptr)
@@ -52,8 +52,9 @@ void ServiceModule::create(QTimer *updateTimer)
     else
     {
         quint16 mtype = board.type();
-        create(Modules::Model(mtype));
+        createModule(Modules::Model(mtype));
     }
+    createCommon();
     QList<UDialog *> dlgs = dialogs();
     for (auto *d : dlgs)
     {
@@ -62,16 +63,15 @@ void ServiceModule::create(QTimer *updateTimer)
     }
 }
 
-void ServiceModule::create(Modules::Model model)
+void ServiceModule::createModule(Modules::Model model)
 {
     using namespace Modules;
-    UniquePointer<Journals> JOUR;
     const auto &board = Board::GetInstance();
     switch (model)
     {
     case Model::KIV:
     {
-        JOUR = UniquePointer<Journals>(new JournKIV(this));
+        auto JOUR = UniquePointer<Journals>(new JournKIV(this));
         if (board.interfaceType() != Board::InterfaceType::RS485)
         {
             ConfigKIV *CKIV = new ConfigKIV;
@@ -81,12 +81,12 @@ void ServiceModule::create(Modules::Model model)
         addDialogToList(cdkiv, "Проверка");
 
         addDialogToList(new StartupKIVDialog, "Начальные\nзначения");
-
+        Module::create(std::move(JOUR));
         break;
     }
     case Model::KTF:
     {
-        JOUR = UniquePointer<Journals>(new JournKTF(this));
+        auto JOUR = UniquePointer<Journals>(new JournKTF(this));
         if (board.interfaceType() != Board::InterfaceType::RS485)
         {
             ConfigKTF *CKTF = new ConfigKTF;
@@ -97,11 +97,12 @@ void ServiceModule::create(Modules::Model model)
 
         addDialogToList(new StartupKTFDialog, "Старение\nизоляции");
         addDialogToList(new CheckKTFHarmonicDialog, "Гармоники");
+        Module::create(std::move(JOUR));
         break;
     }
     case Model::KDV:
     {
-        JOUR = UniquePointer<Journals>(new JournKDV(this));
+        auto JOUR = UniquePointer<Journals>(new JournKDV(this));
         if (board.interfaceType() != Board::InterfaceType::RS485)
         {
             ConfigKDV *CKDV = new ConfigKDV;
@@ -113,12 +114,17 @@ void ServiceModule::create(Modules::Model model)
         addDialogToList(new StartupKDVDialog, "Старение\nизоляции");
         addDialogToList(new CheckKDVHarmonicDialog, "Гармоники");
         addDialogToList(new CheckKDVVibrDialog, "Вибрации");
-        //            VibrDialog = new CheckDialogVibrKDV(BoardTypes::BT_BASE);
-        //            connect(BdaTimer, &QTimer::timeout, VibrDialog, &AbstractCheckDialog::USBUpdate);
+        Module::create(std::move(JOUR));
         break;
     }
     default:
         assert(false);
     }
-    Module::create(std::move(JOUR));
+}
+
+void ServiceModule::create(Modules::BaseBoard typeB, Modules::MezzanineBoard typeM)
+{
+    Q_UNUSED(typeB);
+    Q_UNUSED(typeM);
+    qCritical() << tr("Неизвестный модуль");
 }

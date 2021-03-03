@@ -1,21 +1,22 @@
-#include "coma.h"
+#include "servicecoma.h"
 
 #include "../gen/board.h"
 #include "../gen/datamanager.h"
+#include "../interfaces/iec104.h"
+#include "../interfaces/modbus.h"
 #include "../interfaces/protocom.h"
-#include "tunemodule.h"
-
-DebugComa::DebugComa(QWidget *parent) : Coma(parent)
+#include "servicemodule.h"
+ServiceComa::ServiceComa(QWidget *parent) : Coma(parent)
 {
 }
 
-DebugComa::~DebugComa()
+ServiceComa::~ServiceComa()
 {
 }
 
-void DebugComa::PrepareDialogs()
+void ServiceComa::PrepareDialogs()
 {
-    m_Module = ModulePointer(new TuneModule);
+    m_Module = ModulePointer(new ServiceModule);
     Q_INIT_RESOURCE(settings);
     if (!m_Module->loadSettings())
     {
@@ -23,11 +24,11 @@ void DebugComa::PrepareDialogs()
         return;
     }
     Q_CLEANUP_RESOURCE(settings);
-    m_Module->create(AlarmW);
+    m_Module->createAlarm(AlarmW);
     m_Module->create(BdaTimer);
 }
 
-void DebugComa::setupConnection()
+void ServiceComa::setupConnection()
 {
     auto const &board = Board::GetInstance();
     connect(&DataManager::GetInstance(), &DataManager::bitStringReceived, &Board::GetInstance(), &Board::update);
@@ -37,6 +38,16 @@ void DebugComa::setupConnection()
     case Board::InterfaceType::USB:
     {
         device = BaseInterface::InterfacePointer(new Protocom());
+        break;
+    }
+    case Board::InterfaceType::Ethernet:
+    {
+        device = BaseInterface::InterfacePointer(new IEC104());
+        break;
+    }
+    case Board::InterfaceType::RS485:
+    {
+        device = BaseInterface::InterfacePointer(new ModBus());
         break;
     }
     default:

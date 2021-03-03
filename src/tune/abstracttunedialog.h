@@ -7,6 +7,7 @@
 
 #include <QByteArray>
 #include <QCloseEvent>
+#include <QDialog>
 
 #define MAXTUNESIZE 1024 // максимальный размер файла с данными настройки
 
@@ -39,8 +40,8 @@ public:
     quint32 SecondsToEnd15SecondsInterval;
     QHash<QString, Error::Msg (AbstractTuneDialog::*)()> m_tuneFunctions;
     quint8 bStep;
-    int TuneVariant;       // вариант регулировочных параметров
-    ReportModel *RepModel; // модель, в которую заносим данные для отчёта
+    int TuneVariant; // вариант регулировочных параметров
+    // ReportModel *RepModel; // модель, в которую заносим данные для отчёта
     int m_tuneStep;
     bool m_finished;
 

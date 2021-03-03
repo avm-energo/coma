@@ -33,7 +33,7 @@ win32 {
 }
 
 unix {
-    contains(QMAKE_TARGET.arch, x86_64) {
+    contains(QT_ARCH, x86_64) {
        # message("Unix x64 build")
        ## Windows x64 (64bit) specific build here
        COMA_ARCH = unix64
@@ -92,6 +92,7 @@ OBJECTS_DIR = $${BUILD_PATH}/.obj/
 LIBS += -L$${LIBS_PATH}/
 INCLUDEPATH += $${INC_PATH}/
 INCLUDEPATH += ../$${IMPORT_PATH}/
+INCLUDEPATH += $${PROJECT_ROOT_PATH}
 
 DEFINES += DEVICETYPE=1 # 1 - module, 2 - pribor, for diagnostic messages
 DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000

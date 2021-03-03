@@ -12,7 +12,6 @@
 
 ConfKIVDialog::ConfKIVDialog(ConfigKIV *ckiv, QWidget *parent) : AbstractConfDialog(parent)
 {
-
     CKIV = ckiv;
 }
 
@@ -85,6 +84,7 @@ void ConfKIVDialog::Fill()
     WDFunc::SetChBData(this, NAMEOF(CKIV->Bci_block.IsIunb), bool(S2::getRecord(BciNumber::IsIuIunb).value<BYTE>()));
     //   WDFunc::SetChBData(this, NAMEOF(CKIV->Bci_block.IsU), bool(CKIV->Bci_block.IsU));
     //  WDFunc::SetChBData(this, NAMEOF(CKIV->Bci_block.IsIunb), bool(CKIV->Bci_block.IsIunb));
+    FillKiv();
 }
 
 void ConfKIVDialog::FillBack()
@@ -158,6 +158,7 @@ void ConfKIVDialog::FillBack()
     //        CKIV->Bci_block.IsIunb = 1;
     //    else
     //        CKIV->Bci_block.IsIunb = 0;
+    FillBackKiv();
 }
 
 QWidget *ConfKIVDialog::analogWidget()
@@ -169,6 +170,7 @@ QWidget *ConfKIVDialog::analogWidget()
     gridlyout->setAlignment(Qt::AlignVCenter);
 
     const QStringList phase { "Фаза A:", "Фаза B:", "Фаза C:" };
+
     int row = 0;
     QGroupBox *gb = new QGroupBox("Аналоговые параметры");
 
@@ -370,6 +372,72 @@ QWidget *ConfKIVDialog::connectionWidget()
 
     w->setLayout(lyout);
     return w;
+}
+
+void ConfKIVDialog::FillKiv()
+{
+    WDFunc::SetSPBData(this, "Unom", CKIV->Bci_block.Unom1);
+    WDFunc::SetSPBData(this, "Umin", CKIV->Bci_block.Umin);
+    WDFunc::SetSPBData(this, "Imin", CKIV->Bci_block.Imin);
+
+    for (int i = 0; i < 3; i++)
+    {
+
+        WDFunc::SetSPBData(this, "Tg_pasp." + QString::number(i), CKIV->Bci_block.Tg_pasp[i]);
+        WDFunc::SetSPBData(this, "C_pasp." + QString::number(i), CKIV->Bci_block.C_pasp[i]);
+    }
+
+    WDFunc::SetSPBData(this, "dС_pred", CKIV->Bci_block.dC_pred);
+    WDFunc::SetSPBData(this, "dС_alarm", CKIV->Bci_block.dC_alarm);
+    WDFunc::SetSPBData(this, "dTg_pred", CKIV->Bci_block.dTg_pred);
+    WDFunc::SetSPBData(this, "dTg_alarm", CKIV->Bci_block.dTg_alarm);
+    WDFunc::SetSPBData(this, "dIunb_pred", CKIV->Bci_block.dIunb_pred);
+    WDFunc::SetSPBData(this, "dIunb_alarm", CKIV->Bci_block.dIunb_alarm);
+    WDFunc::SetSPBData(this, "GdС", CKIV->Bci_block.GdC);
+    WDFunc::SetSPBData(this, "GdTg", CKIV->Bci_block.GdTg);
+    WDFunc::SetSPBData(this, "GdIunb", CKIV->Bci_block.GdIunb);
+    WDFunc::SetSPBData(this, "NFiltr", CKIV->Bci_block.NFiltr);
+    WDFunc::SetSPBData(this, "T_Data_Rec", CKIV->Bci_block.T_Data_Rec);
+    WDFunc::SetSPBData(this, "U2nom", CKIV->Bci_block.U2nom);
+    WDFunc::SetSPBData(this, "Ulow", CKIV->Bci_block.LowU);
+    WDFunc::SetSPBData(this, "Tevent_pred", CKIV->Bci_block.Tevent_pred);
+    WDFunc::SetSPBData(this, "Tevent_alarm", CKIV->Bci_block.Tevent_alarm);
+
+    WDFunc::SetSPBData(this, "IsU", bool(CKIV->Bci_block.IsU));
+    WDFunc::SetSPBData(this, "IsIunb", bool(CKIV->Bci_block.IsIunb));
+}
+
+void ConfKIVDialog::FillBackKiv()
+{
+    WDFunc::SPBData(this, "Unom", CKIV->Bci_block.Unom1);
+    WDFunc::SPBData(this, "Umin", CKIV->Bci_block.Umin);
+    WDFunc::SPBData(this, "Imin", CKIV->Bci_block.Imin);
+
+    for (int i = 0; i < 3; i++)
+    {
+
+        WDFunc::SPBData(this, "Tg_pasp." + QString::number(i), CKIV->Bci_block.Tg_pasp[i]);
+        WDFunc::SPBData(this, "C_pasp." + QString::number(i), CKIV->Bci_block.C_pasp[i]);
+    }
+
+    WDFunc::SPBData(this, "dС_pred", CKIV->Bci_block.dC_pred);
+    WDFunc::SPBData(this, "dС_alarm", CKIV->Bci_block.dC_alarm);
+    WDFunc::SPBData(this, "dTg_pred", CKIV->Bci_block.dTg_pred);
+    WDFunc::SPBData(this, "dTg_alarm", CKIV->Bci_block.dTg_alarm);
+    WDFunc::SPBData(this, "dIunb_pred", CKIV->Bci_block.dIunb_pred);
+    WDFunc::SPBData(this, "dIunb_alarm", CKIV->Bci_block.dIunb_alarm);
+    WDFunc::SPBData(this, "GdС", CKIV->Bci_block.GdC);
+    WDFunc::SPBData(this, "GdTg", CKIV->Bci_block.GdTg);
+    WDFunc::SPBData(this, "GdIunb", CKIV->Bci_block.GdIunb);
+    WDFunc::SPBData(this, "NFiltr", CKIV->Bci_block.NFiltr);
+    WDFunc::SPBData(this, "T_Data_Rec", CKIV->Bci_block.T_Data_Rec);
+    WDFunc::SPBData(this, "U2nom", CKIV->Bci_block.U2nom);
+    WDFunc::SPBData(this, "Ulow", CKIV->Bci_block.LowU);
+    WDFunc::SPBData(this, "Tevent_pred", CKIV->Bci_block.Tevent_pred);
+    WDFunc::SPBData(this, "Tevent_alarm", CKIV->Bci_block.Tevent_alarm);
+
+    WDFunc::ChBData(this, "IsU", CKIV->Bci_block.IsU);
+    WDFunc::ChBData(this, "IsU", CKIV->Bci_block.IsIunb);
 }
 
 void ConfKIVDialog::SetupUI()

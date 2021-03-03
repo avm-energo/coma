@@ -1,5 +1,8 @@
 #include "helper.h"
 
+#include "../interfaces/usbhidportinfo.h"
+#include "../models/errorprotocolitem.h"
+#include "timefunc.h"
 QDebug operator<<(QDebug debug, const DataTypes::BitStringStruct &st)
 {
     debug.nospace() << QString::number(st.sigAdr) << ":" << QString::number(st.sigVal, 16) << ":"
@@ -68,6 +71,14 @@ QDebug operator<<(QDebug debug, const DataTypes::Signal &st)
 QDebug operator<<(QDebug debug, const DataTypes::GeneralResponseStruct &st)
 {
     debug.nospace() << st.type << ":" << QString::number(st.data, 16);
+    return debug.maybeSpace();
+}
+
+QDebug operator<<(QDebug debug, const DataTypes::OscInfo &st)
+{
+
+    debug.nospace() << st.fileNum << ":" << st.fileLength << ":" << st.id << ":"
+                    << TimeFunc::UnixTime64ToString(st.unixtime) << ":" << st.id0;
     return debug.maybeSpace();
 }
 

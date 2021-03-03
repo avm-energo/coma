@@ -3,9 +3,11 @@
 #include "../gen/s2.h"
 ConfigKIV::ConfigKIV()
 {
+
     m_mainConfig = new Config;
     m_KxxConfig = new ConfigKxx;
     // параметры входных сигналов
+
     Config::removeFotter();
 
     S2::config.append({ BciNumber::NFiltr_ID, sizeof(Bci_block.NFiltr), &Bci_block.NFiltr });
@@ -32,7 +34,6 @@ ConfigKIV::ConfigKIV()
     S2::config.append({ BciNumber::Tg_Pasp_ID, sizeof(Bci_block.Tg_pasp), &Bci_block.Tg_pasp });
     S2::config.append({ BciNumber::C_Pasp_ID, sizeof(Bci_block.C_pasp), &Bci_block.C_pasp });
     S2::config.append({ BciNumber::U2nom, sizeof(Bci_block.U2nom), &Bci_block.U2nom });
-
     S2::config.append({ 0xFFFFFFFF, 0, nullptr });
 }
 

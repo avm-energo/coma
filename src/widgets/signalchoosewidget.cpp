@@ -1,6 +1,5 @@
 #include "signalchoosewidget.h"
 
-#include "../gen/colors.h"
 #include "../widgets/wd_func.h"
 
 #include <QVBoxLayout>
@@ -8,40 +7,27 @@
 SignalChooseWidget::SignalChooseWidget(QStringList &snames, QStringList &discr, QWidget *parent) : QWidget(parent)
 {
     QVBoxLayout *lyout = new QVBoxLayout;
-    // QString tmps = "QDialog {background-color: " + QString(Colors::MAINWINCLRA1) + ";}";
-    // setStyleSheet(tmps);
     for (int i = 0; i < snames.size(); ++i)
     {
         int idx = snames.size() - i - 1; // инверсия индекса
+        QString name = snames.at(idx);
         QHBoxLayout *hlyout = new QHBoxLayout;
-        QCheckBox *chb = WDFunc::NewChB(this, snames.at(idx), "");
-        connect(chb, SIGNAL(toggled(bool)), this, SLOT(SignalChecked(bool)));
-        hlyout->addWidget(chb, 0);
-        MarkSignalWidget *w = new MarkSignalWidget(snames.at(idx));
+        QCheckBox *chb = WDFunc::NewChB2(this, name, "");
+        connect(chb, &QAbstractButton::toggled, this, [=](bool isChecked) { emit signalToggled(name, isChecked); });
+        hlyout->addWidget(chb);
+        MarkSignalWidget *w = new MarkSignalWidget(name, this);
         w->setToolTip(discr.at(idx));
-        w->setObjectName(snames.at(idx));
-        connect(w, SIGNAL(Clicked()), this, SLOT(SignalClicked()));
+        // w->setObjectName(name);
+        connect(w, &MarkSignalWidget::clicked, this, [=] { emit signalChoosed(name); });
         hlyout->addWidget(w);
         lyout->addLayout(hlyout);
     }
     setLayout(lyout);
 }
 
-void SignalChooseWidget::SetChecked(QString signame, bool checked)
+void SignalChooseWidget::setChecked(QString signame, bool checked)
 {
     WDFunc::SetChBData(this, signame, checked);
-}
-
-void SignalChooseWidget::SignalClicked()
-{
-    QString name = sender()->objectName();
-    emit SignalChoosed(name);
-}
-
-void SignalChooseWidget::SignalChecked(bool isChecked)
-{
-    QString name = sender()->objectName();
-    emit SignalToggled(name, isChecked);
 }
 
 MarkSignalWidget::MarkSignalWidget(const QString &text, QWidget *parent) : QLabel(parent)
@@ -69,6 +55,6 @@ void MarkSignalWidget::mouseMoveEvent(QMouseEvent *e)
 
 void MarkSignalWidget::mousePressEvent(QMouseEvent *e)
 {
-    emit Clicked();
+    emit clicked();
     e->accept();
 }

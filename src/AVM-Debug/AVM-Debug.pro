@@ -16,14 +16,7 @@ INCLUDEPATH += ../$${QXLSX_HEADERPATH}
 INCLUDEPATH += ../$${QXLSX_SOURCEPATH}
 INCLUDEPATH += ../$${LIME_HEADERPATH}
 
-SOURCES += \
-    coma.cpp \
-    main.cpp \
-    tunemodule.cpp
-
-HEADERS += \
-   coma.h \
-    tunemodule.h
+include(AVM-Debug.pri)
 
 DESTDIR = $${BIN_PATH}/$${TARGET}
 win32 {
@@ -55,6 +48,27 @@ win32 {
     }
 }
 
+unix {
+LIBS += -lhidapi-hidraw
+contains(QT_ARCH, x86_64) {
+
+        message("Unix x64 build")
+        LIBS += -L$$PWD/../../lib/unix64/$${BUILD_FLAG} -llimereport$${LIB_SUFFIX} -lQtZint$${LIB_SUFFIX}
+        ## Unix x64 (64bit) specific build here
+        CONFIG(debug, debug|release) {
+
+        }
+    } else {
+        message("Unix x86 build")
+        LIBS += -L$$PWD/../../lib/unix32/$${BUILD_FLAG} -llimereport$${LIB_SUFFIX} -lQtZint$${LIB_SUFFIX}
+        ## Unix x86 (32bit) specific build here
+        CONFIG(debug, debug|release) {
+
+        }
+    }
+}
+
+
 LIBRARIES += check \
     config \
     datablock \
@@ -65,7 +79,9 @@ LIBRARIES += check \
     startup \
     widgets \
     general \
-    tune
+    tune \
+    avtuk \
+    qcustomplot
 
 include(../deps.pri)
 

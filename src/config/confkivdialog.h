@@ -1,10 +1,8 @@
 #ifndef CONFDIALOGKIV_H
 #define CONFDIALOGKIV_H
 
-//#include "../config/confdialog.h"
 #include "../config/configkiv.h"
 #include "abstractconfdialog.h"
-//#include "../config/confkxxdialog.h"
 
 #include <QLabel>
 
@@ -16,32 +14,24 @@ public:
     ~ConfKIVDialog();
 
 private:
-    ConfigKIV *CKIV;
-    //    ConfDialog *Conf;
-    //    ConfKxxDialog *ConfKxx;
-    //    QLabel *SysTime;
-    //    QTimer *timer;
-    //    QTimer *timerRead;
-
-    bool Variable;
-
     void Fill() override;
     void FillBack() override;
     void SetupUI() override;
     void CheckConf() override;
 
+protected:
     QWidget *analogWidget();
-
     QWidget *thresholdsWidget();
-
     QWidget *remainsWidget();
+    virtual QWidget *connectionWidget();
 
-    QWidget *connectionWidget();
+    void FillKiv();
+    void FillBackKiv();
+
+    ConfigKIV *CKIV;
 
 private slots:
     void SetDefConf() override;
-    //    void Start_Timer();
-    //    void Stop_Timer();
 };
 
 #endif // CONFDIALOG84_H

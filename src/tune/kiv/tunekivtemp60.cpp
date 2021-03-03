@@ -1,11 +1,11 @@
 #include "tunekivtemp60.h"
 
-#include "../gen/board.h"
-#include "../gen/colors.h"
-#include "../gen/stdfunc.h"
+#include "../../gen/board.h"
+#include "../../gen/colors.h"
+#include "../../gen/stdfunc.h"
+#include "../../widgets/waitwidget.h"
+#include "../../widgets/wd_func.h"
 #include "../tunesteps.h"
-#include "../widgets/waitwidget.h"
-#include "../widgets/wd_func.h"
 
 #include <QEventLoop>
 #include <QMessageBox>

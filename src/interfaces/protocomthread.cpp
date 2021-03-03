@@ -3,6 +3,7 @@
 //#include "../gen/board.h"
 #include "../gen/datamanager.h"
 #include "../gen/files.h"
+#include "../gen/helper.h"
 #include "../gen/logclass.h"
 #include "../gen/s2.h"
 #include "../gen/stdfunc.h"
@@ -51,6 +52,7 @@ void handleMaxProgress(const quint64 progress)
 }
 void handleRawBlock(const QByteArray &ba, quint32 blkNum);
 inline void handleCommand(const QByteArray &ba);
+void handleTechBlock(const QByteArray &ba, quint32 blkNum);
 
 ProtocomThread::ProtocomThread(QObject *parent) : QObject(parent), m_currentCommand({})
 {
@@ -232,7 +234,8 @@ void ProtocomThread::handle(const Proto::Commands cmd)
 
     case Commands::ReadBlkTech:
 
-        handleFloatArray(m_buffer.second, addr, count);
+        // handleFloatArray(m_buffer.second, addr, count);
+        handleTechBlock(m_buffer.second, addr);
         break;
 
     case Commands::ReadProgress:
@@ -476,6 +479,7 @@ void ProtocomThread::parseResponse(QByteArray ba)
         // Q_ASSERT(size == ba.size());
         m_buffer.first += size;
         m_buffer.second.append(ba);
+
         // Потому что на эту команду модуль не отдает пустой ответ
         if (isOneSegment(size) || (cmd == Proto::ReadBlkStartInfo))
             handle(Proto::Commands(cmd));
@@ -693,7 +697,6 @@ void handleSinglePoint(const QByteArray &ba, const quint16 addr)
 
 void handleFile(QByteArray &ba, DataTypes::FilesEnum addr, bool isShouldRestored)
 {
-
     if (isShouldRestored)
     {
         DataTypes::ConfParametersListStruct outlist;
@@ -748,4 +751,47 @@ void handleCommand(const QByteArray &ba)
 {
     qCritical("We should be here, something went wrong");
     qDebug() << ba.toHex();
+}
+
+void handleTechBlock(const QByteArray &ba, quint32 blkNum)
+{
+    switch (blkNum)
+    {
+        //  Блок наличия осциллограмм Bo
+    case 0x01:
+    {
+        Q_ASSERT(ba.size() % sizeof(DataTypes::OscInfo) == 0);
+        for (int i = 0; i != ba.size(); i += sizeof(DataTypes::OscInfo))
+        {
+            QByteArray buffer = ba.mid(i, sizeof(DataTypes::OscInfo));
+
+            DataTypes::OscInfo oscInfo;
+            memcpy(&oscInfo, buffer.constData(), sizeof(DataTypes::OscInfo));
+            DataManager::addSignalToOutList(DataTypes::SignalTypes::OscillogramInfo, oscInfo);
+        }
+
+        break;
+    }
+        //  Блок текущих событий Be
+    case 0x02:
+    {
+        qDebug("Блок текущих событий Be");
+        break;
+    }
+        // Блок технологических событий BTe
+    case 0x03:
+    {
+        qDebug("Блок технологических событий BTe");
+        break;
+    }
+        // Блок рабочего архива (Bra)
+    case 0x05:
+    {
+        qDebug("Блок рабочего архива (Bra)");
+        break;
+    }
+    default:
+        qDebug() << ba;
+        break;
+    }
 }

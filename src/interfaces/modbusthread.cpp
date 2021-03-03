@@ -2,6 +2,7 @@
 
 #include "../gen/datamanager.h"
 #include "../gen/helper.h"
+#include "../gen/pch.h"
 #include "../gen/stdfunc.h"
 #include "baseinterface.h"
 
@@ -11,7 +12,6 @@
 #include <QTimer>
 #include <QtEndian>
 #include <algorithm>
-
 //#define MODBUS_DEBUG
 ModbusThread::ModbusThread(QObject *parent) : QObject(parent), Log(new LogClass(this))
 {

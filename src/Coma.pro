@@ -14,8 +14,11 @@ SUBDIRS = \
             tune \
             ctti \
             qcustomplot \
+            avtuk \
+            tests \
             AVM-Service \
             AVM-Debug
 
-AVM-Service.depends = check config datablocks dialogs interfaces models module startup widgets gen
-AVM-Debug.depends = check config datablocks dialogs interfaces models module startup widgets gen tune
+AVM-Service.depends = check config datablocks dialogs interfaces models module startup widgets gen avtuk qcustomplot
+AVM-Debug.depends = check config datablocks dialogs interfaces models module startup widgets gen tune avtuk qcustomplot
+tests.depends = check config datablocks dialogs interfaces models module startup widgets gen tune avtuk

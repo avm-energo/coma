@@ -138,6 +138,14 @@ public:
     static QCheckBox *NewChB2(QWidget *parent, const QString &chbname, const QString &chbtext);
     static bool ChBData(QWidget *w, const QString &chbname, bool &data);
     static bool ChBData(QWidget *w, const QString &chbname);
+    template <typename T> static bool ChBData(QWidget *w, const QString &chbname, T &data)
+    {
+        QCheckBox *chb = w->findChild<QCheckBox *>(chbname);
+        if (chb == nullptr)
+            return false;
+        data = chb->isChecked();
+        return true;
+    }
     static bool SetChBData(QWidget *w, const QString &chbname, bool data);
     static bool RBData(QWidget *w, const QString &rbname, bool &data);
     static bool SetRBData(QWidget *w, const QString &rbname, bool data);

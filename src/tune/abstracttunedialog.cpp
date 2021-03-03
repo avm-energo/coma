@@ -27,7 +27,6 @@ AbstractTuneDialog::AbstractTuneDialog(int tuneStep, QWidget *parent) : QDialog(
 {
     TuneVariant = 0;
     IsNeededDefConf = false;
-    RepModel = new ReportModel;
     m_blockCount = 0;
     m_tuneStep = tuneStep;
     m_finished = false;
@@ -165,7 +164,7 @@ void AbstractTuneDialog::WaitNSeconds(int Seconds, bool isAllowedToStop)
     ww.initialseconds = Seconds;
     w->Init(ww);
     QEventLoop el;
-    connect(w, SIGNAL(CountZero()), &el, SLOT(quit()));
+    connect(w, &WaitWidget::CountZero, &el, &QEventLoop::quit);
     w->Start();
     el.exec();
 }

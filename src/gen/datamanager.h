@@ -126,6 +126,7 @@ signals:
     void confParameterReceived(const DataTypes::ConfParameterStruct &);
     void confParametersListReceived(const DataTypes::ConfParametersListStruct &);
     void responseReceived(const DataTypes::GeneralResponseStruct &);
+    void oscInfoReceived(const DataTypes::OscInfo &);
     void blockReceived(const DataTypes::BlockStruct &);
 };
 

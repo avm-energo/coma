@@ -128,6 +128,7 @@ QLabel *WDFunc::NewLBL2(
     lbl->setToolTip(lbltip);
     return lbl;
 }
+
 /*!
 Копирует содержимое из исходной области памяти в целевую область память
 \param w Родитель будущего виджета
@@ -497,15 +498,13 @@ QVariant WDFunc::TVData(QWidget *w, const QString &tvname, int column)
 
 QStatusBar *WDFunc::NewSB(QWidget *w)
 {
-    // clang-format off
-    QMap<Board::InterfaceType, QString> images
-    {
-        { Board::InterfaceType::USB, ":/icons/usb.svg" },
-        { Board::InterfaceType::RS485, ":/icons/rs485.svg" },
-        { Board::InterfaceType::Ethernet, ":/icons/ethernet.svg" },
-        { Board::InterfaceType::Unknown, ":/icons/stop.svg" }
+    const QMap<Board::InterfaceType, QString> images {
+        { Board::InterfaceType::USB, ":/icons/usb.svg" },           //
+        { Board::InterfaceType::RS485, ":/icons/rs485.svg" },       //
+        { Board::InterfaceType::Ethernet, ":/icons/ethernet.svg" }, //
+        { Board::InterfaceType::Unknown, ":/icons/stop.svg" }       //
     };
-    // clang-format on
+
     QStatusBar *bar = new QStatusBar(w);
     bar->setMaximumHeight(w->height() / 20);
 
@@ -540,15 +539,12 @@ QStatusBar *WDFunc::NewSB(QWidget *w)
     {
         layout->itemAt(i)->widget()->setFixedHeight(height);
     }
-
-    QObject::connect(&Board::GetInstance(), qOverload<>(&Board::typeChanged), msgModel, [=]() {
-        quint16 mtype = Board::GetInstance().type();
-        QString deviceName = QVariant::fromValue(Modules::Model(mtype)).toString();
-        msgModel->setText(deviceName);
-    });
+    auto board = &Board::GetInstance();
+    QObject::connect(
+        board, qOverload<>(&Board::typeChanged), msgModel, [=]() { msgModel->setText(board->moduleName()); });
 
     QObject::connect(
-        &Board::GetInstance(), &Board::connectionStateChanged, msgConnectionState,
+        board, &Board::connectionStateChanged, msgConnectionState,
         [=](Board::ConnectionState state) {
             QString connState = QVariant::fromValue(Board::ConnectionState(state)).toString();
             msgConnectionState->setText(connState);
@@ -556,19 +552,18 @@ QStatusBar *WDFunc::NewSB(QWidget *w)
             msgConnectionState->setBackgroundRole(QPalette::HighlightedText);
         },
         Qt::DirectConnection);
-    QObject::connect(&Board::GetInstance(), &Board::interfaceTypeChanged, msgConnectionType,
-        [=](const Board::InterfaceType &interfaceType) {
+    QObject::connect(
+        board, &Board::interfaceTypeChanged, msgConnectionType, [=](const Board::InterfaceType &interfaceType) {
             QString connName = QVariant::fromValue(Board::InterfaceType(interfaceType)).toString();
             msgConnectionType->setText(connName);
         });
-    QObject::connect(&Board::GetInstance(), &Board::interfaceTypeChanged, msgConnectionImage,
-        [=](const Board::InterfaceType &interfaceType) {
+    QObject::connect(
+        board, &Board::interfaceTypeChanged, msgConnectionImage, [=](const Board::InterfaceType &interfaceType) {
             QPixmap pixmap = QIcon(QString(images.value(interfaceType))).pixmap(QSize(height, height));
             msgConnectionImage->setPixmap(pixmap);
         });
     widget->setLayout(layout);
     bar->addPermanentWidget(widget);
-    //    bar->insertPermanentWidget(0, widget);
     return bar;
 }
 

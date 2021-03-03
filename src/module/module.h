@@ -45,10 +45,12 @@ public:
     };
 
     explicit Module(QObject *parent = nullptr);
-    virtual void create(AlarmWidget *aw);
+    virtual void createAlarm(AlarmWidget *aw);
     virtual void create(QTimer *updateTimer) = 0;
     void create(UniquePointer<Journals> jour);
-    virtual void create(Modules::Model model) = 0;
+    void createCommon();
+    virtual void createModule(Modules::Model model) = 0;
+    virtual void create(Modules::BaseBoard typeB, Modules::MezzanineBoard typeM) = 0;
     QList<UDialog *> dialogs();
     QList<UDialog *> confDialogs();
     void addDialogToList(UDialog *dlg, const QString &caption = "", const QString &name = "");
