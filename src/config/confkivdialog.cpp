@@ -12,12 +12,7 @@
 
 ConfKIVDialog::ConfKIVDialog(ConfigKIV *ckiv, QWidget *parent) : AbstractConfDialog(parent)
 {
-
     CKIV = ckiv;
-    // S2Config = S2Config;
-    //    CKIV = new ConfigKIV(ckiv);
-    //    Conf = new ConfDialog(ckiv->S2Config(), this);
-    //    ConfKxx = new ConfKxxDialog(ckiv->S2Config(), this);
 }
 
 ConfKIVDialog::~ConfKIVDialog()
@@ -30,10 +25,8 @@ void ConfKIVDialog::Fill()
 
     CKIV->MainConfig()->Fill();
     CKIV->KxxConfig()->Fill();
-    //    Conf->Fill();
-    //    ConfKxx->Fill();
 
-    WDFunc::SetSPBData(this, "Unom", CKIV->Bci_block.Unom);
+    WDFunc::SetSPBData(this, "Unom", CKIV->Bci_block.Unom1);
     WDFunc::SetSPBData(this, "Umin", CKIV->Bci_block.Umin);
     WDFunc::SetSPBData(this, "Imin", CKIV->Bci_block.Imin);
 
@@ -76,10 +69,8 @@ void ConfKIVDialog::FillBack()
 
     CKIV->MainConfig()->FillBack();
     CKIV->KxxConfig()->FillBack();
-    //    Conf->FillBack();
-    //    ConfKxx->FillBack();
 
-    WDFunc::SPBData(this, "Unom", CKIV->Bci_block.Unom);
+    WDFunc::SPBData(this, "Unom", CKIV->Bci_block.Unom1);
     WDFunc::SPBData(this, "Umin", CKIV->Bci_block.Umin);
     WDFunc::SPBData(this, "Imin", CKIV->Bci_block.Imin);
 
@@ -163,14 +154,6 @@ QWidget *ConfKIVDialog::analogWidget()
     }
     row++;
 
-    //    for (int i = 0; i < 10; i++)
-    //    {
-    //        gridlyout->addWidget(WDFunc::NewLBL2(this, ""), row, 1, 1, 1);
-    //        row++;
-    //    }
-
-    //    vlyout2->addLayout(gridlyout);
-    //    gb->setLayout(vlyout2);
     gb->setLayout(gridlyout);
     lyout->addWidget(gb);
 
@@ -320,8 +303,6 @@ QWidget *ConfKIVDialog::connectionWidget()
 
     gb->setTitle("Настройки протокола МЭК-60870-5-104");
 
-    //    gridlyout->addWidget(Conf->SetupMainBlk(this), 0, 0, 1, 1);
-    //    gridlyout->addWidget(ConfKxx->SetupComParam(this), 0, 1, 1, 1);
     gridlyout->addWidget(CKIV->MainConfig()->MainWidget(this), 0, 0, 1, 1);
     gridlyout->addWidget(CKIV->KxxConfig()->ComParam(this), 0, 1, 1, 1);
 
@@ -330,7 +311,6 @@ QWidget *ConfKIVDialog::connectionWidget()
 
     gb = new QGroupBox("Настройка времени");
 
-    //    vlyout->addWidget(Conf->SetupTime(this));
     vlyout->addWidget(CKIV->MainConfig()->TimeWidget(this));
 
     gb->setLayout(vlyout);
@@ -342,55 +322,11 @@ QWidget *ConfKIVDialog::connectionWidget()
 
 void ConfKIVDialog::SetupUI()
 {
-    //    QString phase[3] = { "Фаза A:", "Фаза B:", "Фаза C:" };
-    // QString S;
-    //    QVBoxLayout *vlyout1 = new QVBoxLayout;
-    //    QVBoxLayout *vlyout2 = new QVBoxLayout;
-    //    QGridLayout *gridlyout = new QGridLayout;
-    // Закомментировал т.к. не используется
-    //    QScrollArea *area = new QScrollArea;
-    //    QScrollArea *area2 = new QScrollArea;
-    //    QScrollArea *scrArea = new QScrollArea;
-    //    QWidget *analog1 = new QWidget;
-    //    QWidget *analog2 = new QWidget;
-    //    QWidget *extraconf = new QWidget;
-    //    QWidget *MEKconf = new QWidget;
-    //    QWidget *Leftconf = new QWidget;
-    //    QWidget *link = new QWidget;
-    //    QWidget *Ust = new QWidget;
-    //    QWidget *time = new QWidget;
-    //    QString tmps = "QWidget {background-color: " + QString(Colors::ACONFWCLR) + ";}";
-    //    analog1->setStyleSheet(tmps);
-    //    analog2->setStyleSheet(tmps);
-    //    extraconf->setStyleSheet(tmps);
-    //    time->setStyleSheet(tmps);
-    //    MEKconf->setStyleSheet(tmps);
-    //    Leftconf->setStyleSheet(tmps);
-    //    link->setStyleSheet(tmps);
-    //    Ust->setStyleSheet(tmps);
-
-    //    area->setStyleSheet("QScrollArea {background-color: rgba(0,0,0,0);}");
-    //    area->setFrameShape(QFrame::NoFrame);
-    //    area->setWidgetResizable(true);
-
-    //    area2->setStyleSheet("QScrollArea {background-color: rgba(0,0,0,0);}");
-    //    area2->setFrameShape(QFrame::NoFrame);
-    //    area2->setWidgetResizable(true);
-
-    //    scrArea->setStyleSheet("QScrollArea {background-color: rgba(0,0,0,0);}");
-    //    scrArea->setFrameShape(QFrame::NoFrame);
-    //    scrArea->setWidgetResizable(true);
-
-    //    QString paramcolor = Colors::MAINWINCLR;
-    //    QFont font;
-
-    //............................................................
 
     QVBoxLayout *lyout = new QVBoxLayout;
     QTabWidget *ConfTW = new QTabWidget;
     ConfTW->setObjectName("conftw");
-    //  QString ConfTWss = "QTabBar::tab:selected {background-color: " + QString(Colors::TABCOLOR) + ";}";
-    //   ConfTW->tabBar()->setStyleSheet(ConfTWss);
+
     ConfTW->addTab(analogWidget(), "Аналоговые");
 
     ConfTW->addTab(thresholdsWidget(), "Уставки");
@@ -398,13 +334,9 @@ void ConfKIVDialog::SetupUI()
     ConfTW->addTab(remainsWidget(), "Остальное");
 
     ConfTW->addTab(connectionWidget(), "Связь");
-    //    ConfTW->addTab(ConfKxx->SetupModBus(this), "ModBusMaster");
-    //    ConfTW->addTab(ConfKxx->SetupBl(this), "Общее");
+
     ConfTW->addTab(CKIV->KxxConfig()->ModbusWidget(this), "ModBusMaster");
     ConfTW->addTab(CKIV->KxxConfig()->VariousWidget(this), "Общее");
-
-    //    QWidget *wdgt = ConfButtons();
-    //    lyout->addWidget(wdgt);
 
     lyout->addWidget(ConfTW);
     lyout->addWidget(ConfButtons());
@@ -418,17 +350,6 @@ void ConfKIVDialog::CheckConf()
 void ConfKIVDialog::SetDefConf()
 {
     CKIV->setDefConf();
-    //    Conf->SetDefConf();
-    //    ConfKxx->SetDefConf();
+
     Fill();
 }
-
-// void ConfKIVDialog::Start_Timer()
-//{
-//    timerRead->start(1000);
-//}
-
-// void ConfKIVDialog::Stop_Timer()
-//{
-//    timerRead->stop();
-//}

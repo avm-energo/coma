@@ -47,29 +47,41 @@ struct StructTrele
     quint32 Trele_pred;
     quint32 Trele_alarm;
 };
+
+struct INICOM
+{
+    quint8 baud : 4;
+    quint8 bits : 1;
+    quint8 parity : 2;
+    quint8 stop : 1;
+};
+
+struct TypeR
+{
+    quint8 reg : 4;
+    quint8 dat : 4;
+};
+
+#pragma pack(push, 1)
+struct ABMAST
+{
+    quint8 typedat;
+    INICOM parport;
+    quint8 per;
+    quint8 adr;
+    TypeR type;
+    quint16 reg;
+    quint8 cnt;
+};
+#pragma pack(pop)
+
 struct StructModBus
 {
-    template <typename T> using Matrix = std::vector<std::vector<T>>;
     quint8 MBMaster;
     std::array<quint8, 8> MBMab1;
     std::array<quint8, 8> MBMab2;
     std::array<quint8, 8> MBMab3;
     std::array<quint8, 8> MBMab4;
-    Matrix<quint8 *> toMatrix()
-    {
-        Matrix<quint8 *> matrix;
-        std::vector<quint8 *> v1, v2, v3, v4;
-        std::for_each(std::begin(MBMab1), std::end(MBMab1), [&](quint8 &value) mutable { v1.push_back(&value); });
-        matrix.push_back(v1);
-        std::for_each(std::begin(MBMab2), std::end(MBMab2), [&](quint8 &value) mutable { v2.push_back(&value); });
-        matrix.push_back(v2);
-        std::for_each(std::begin(MBMab3), std::end(MBMab3), [&](quint8 &value) mutable { v3.push_back(&value); });
-        matrix.push_back(v3);
-        std::for_each(std::begin(MBMab4), std::end(MBMab4), [&](quint8 &value) mutable { v4.push_back(&value); });
-        matrix.push_back(v4);
-        //  qDebug() << matrix.size() << v1.size() << v2.size() << v3.size() << v4.size() << MBMab1.size();
-        return matrix;
-    }
 };
 struct Com
 {
@@ -114,27 +126,6 @@ struct Com
     quint8 Parity;
     quint8 Stopbit;
     quint8 adrMB;
-};
-enum BciKxxEnum : quint16
-{
-    IP = 20,
-    MASK = 21,
-    GW = 22,
-    PORT = 23,
-    SNTP = 24,
-    BAUD = 25,
-    PARITY = 26,
-    STOPBIT = 27,
-    ADRMB = 28,
-    RTERM = 1027,
-    W100 = 1028,
-    TRELE_PRED = 1037,
-    TRELE_ALARM = 1038,
-    MBMASTER = 1060,
-    MBMAB1 = 1061,
-    MBMAB2 = 1062,
-    MBMAB3 = 1063,
-    MBMAB4 = 1064
 };
 }
 #endif // MODULE_KXX_H
