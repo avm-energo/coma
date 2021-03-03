@@ -9,4 +9,4 @@ HEADERS += \
     $$PWD/generaltunedialog.h \
     $$PWD/tunesteps.h
 	
-include(tunekiv.pri)	
+include(tune84.pri)

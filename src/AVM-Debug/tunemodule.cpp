@@ -18,7 +18,9 @@
 #include "../startup/startupkdvdialog.h"
 #include "../startup/startupkivdialog.h"
 #include "../startup/startupktfdialog.h"
+#include "../tune/84/tune84dialog.h"
 #include "../tune/kiv/tunekivdialog.h"
+
 TuneModule::TuneModule(QObject *parent) : Module(parent)
 {
 }
@@ -91,10 +93,24 @@ void TuneModule::createModule(Modules::Model model)
 void TuneModule::create(Modules::BaseBoard typeB, Modules::MezzanineBoard typeM)
 {
     using namespace Modules;
+    const auto &board = Board::GetInstance();
     if ((typeB == BaseBoard::MTB_80) && (typeM == MezzanineBoard::MTM_84))
     {
         qDebug("Here is KIV");
-        createModule(Modules::Model::KIV);
+        if (board.interfaceType() != Board::InterfaceType::RS485)
+        {
+            !!!ConfigKIV * CKIV = new ConfigKIV;
+            addDialogToList(new ConfKIVDialog(CKIV), "Конфигурирование", "conf1");
+            if (board.interfaceType() == Board::InterfaceType::USB)
+            {
+                addDialogToList(new Tune84Dialog(CKIV), "Регулировка");
+            }
+        }
+        CheckKIVDialog *cdkiv = new CheckKIVDialog;
+        addDialogToList(cdkiv, "Проверка");
+
+        addDialogToList(new StartupKIVDialog, "Начальные\nзначения");
+        //        createModule(Modules::Model::KIV);
     }
     if ((typeB == BaseBoard::MTB_80) && (typeM == MezzanineBoard::MTM_82))
     {
