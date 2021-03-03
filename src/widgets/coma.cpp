@@ -38,6 +38,7 @@
 #include "../gen/timefunc.h"
 #include "../interfaces/protocom.h"
 #include "../interfaces/settingstypes.h"
+#include "../module/module.h"
 #include "../widgets/aboutwidget.h"
 #include "../widgets/etabwidget.h"
 #include "../widgets/splashscreen.h"

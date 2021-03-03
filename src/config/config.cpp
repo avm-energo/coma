@@ -35,17 +35,17 @@ void Config::setConfig()
     //        ++iter;
     //    }
     // общая часть
-    // qDebug() << NAMEOF(MainBlk.MTypeB);
-    config.append({ BCI_MTYPEB, sizeof(MainBlk.MTypeB), &MainBlk.MTypeB });
-    config.append({ BCI_MTYPEM, sizeof(MainBlk.MTypeM), &MainBlk.MTypeM });
-    config.append({ BCI_CTYPE, sizeof(MainBlk.Ctype), &MainBlk.Ctype });
-    config.append({ BCI_ABS_104, sizeof(MainBlk.Abs_104), &MainBlk.Abs_104 });
-    config.append({ BCI_CYCLE_104, sizeof(MainBlk.Cycle_104), &MainBlk.Cycle_104 });
-    config.append({ BCI_T1_104, sizeof(MainBlk.T1_104), &MainBlk.T1_104 });
-    config.append({ BCI_T2_104, sizeof(MainBlk.T2_104), &MainBlk.T2_104 });
-    config.append({ BCI_T3_104, sizeof(MainBlk.T3_104), &MainBlk.T3_104 });
-    config.append({ BCI_K_104, sizeof(MainBlk.K_104), &MainBlk.K_104 });
-    config.append({ BCI_W_104, sizeof(MainBlk.W_104), &MainBlk.W_104 });
+
+    config.append({ BciNumber::MTypeB_ID, sizeof(MainBlk.MTypeB), &MainBlk.MTypeB });
+    config.append({ BciNumber::MTypeE_ID, sizeof(MainBlk.MTypeM), &MainBlk.MTypeM });
+    config.append({ BciNumber::CType, sizeof(MainBlk.Ctype), &MainBlk.Ctype });
+    config.append({ BciNumber::Abs_104, sizeof(MainBlk.Abs_104), &MainBlk.Abs_104 });
+    config.append({ BciNumber::Cycle_104, sizeof(MainBlk.Cycle_104), &MainBlk.Cycle_104 });
+    config.append({ BciNumber::T1_104, sizeof(MainBlk.T1_104), &MainBlk.T1_104 });
+    config.append({ BciNumber::T2_104, sizeof(MainBlk.T2_104), &MainBlk.T2_104 });
+    config.append({ BciNumber::T3_104, sizeof(MainBlk.T3_104), &MainBlk.T3_104 });
+    config.append({ BciNumber::k_104, sizeof(MainBlk.K_104), &MainBlk.K_104 });
+    config.append({ BciNumber::w_104, sizeof(MainBlk.W_104), &MainBlk.W_104 });
     config.append({ 0xFFFFFFFF, 0, nullptr });
 }
 
