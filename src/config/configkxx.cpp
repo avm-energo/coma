@@ -9,7 +9,6 @@
 #include <QGroupBox>
 #include <QStackedWidget>
 #include <QVBoxLayout>
-
 ConfigKxx::ConfigKxx(QObject *parent) : QObject(parent)
 {
     setConfig();
@@ -20,27 +19,27 @@ void ConfigKxx::setConfig()
 
     Config::removeFotter();
 
-    S2::config.append({ Bci::RTERM, sizeof(TempConf.RTerm), &TempConf.RTerm });
-    S2::config.append({ Bci::W100, sizeof(TempConf.W100), &TempConf.W100 });
+    S2::config.append({ BciNumber::RTerm, sizeof(TempConf.RTerm), &TempConf.RTerm });
+    S2::config.append({ BciNumber::W100, sizeof(TempConf.W100), &TempConf.W100 });
 
-    S2::config.append({ Bci::TRELE_PRED, sizeof(StrTrele.Trele_pred), &StrTrele.Trele_pred });
-    S2::config.append({ Bci::TRELE_ALARM, sizeof(StrTrele.Trele_alarm), &StrTrele.Trele_alarm });
+    S2::config.append({ BciNumber::Trele_pred, sizeof(StrTrele.Trele_pred), &StrTrele.Trele_pred });
+    S2::config.append({ BciNumber::Trele_alarm, sizeof(StrTrele.Trele_alarm), &StrTrele.Trele_alarm });
 
-    S2::config.append({ Bci::MBMASTER, sizeof(StrModBus.MBMaster), &StrModBus.MBMaster });
-    S2::config.append({ Bci::MBMAB1, sizeof(StrModBus.MBMab1), &StrModBus.MBMab1 });
-    S2::config.append({ Bci::MBMAB2, sizeof(StrModBus.MBMab2), &StrModBus.MBMab2 });
-    S2::config.append({ Bci::MBMAB3, sizeof(StrModBus.MBMab3), &StrModBus.MBMab3 });
-    S2::config.append({ Bci::MBMAB4, sizeof(StrModBus.MBMab4), &StrModBus.MBMab4 });
+    S2::config.append({ BciNumber::MBMaster, sizeof(StrModBus.MBMaster), &StrModBus.MBMaster });
+    S2::config.append({ BciNumber::MBMab1, sizeof(StrModBus.MBMab1), &StrModBus.MBMab1 });
+    S2::config.append({ BciNumber::MBMab2, sizeof(StrModBus.MBMab2), &StrModBus.MBMab2 });
+    S2::config.append({ BciNumber::MBMab3, sizeof(StrModBus.MBMab3), &StrModBus.MBMab3 });
+    S2::config.append({ BciNumber::MBMab4, sizeof(StrModBus.MBMab4), &StrModBus.MBMab4 });
 
-    S2::config.append({ Bci::IP, sizeof(Com_param.IP), &Com_param.IP });
-    S2::config.append({ Bci::MASK, sizeof(Com_param.Mask), &Com_param.Mask });
-    S2::config.append({ Bci::GW, sizeof(Com_param.GateWay), &Com_param.GateWay });
-    S2::config.append({ Bci::PORT, sizeof(Com_param.Port), &Com_param.Port });
-    S2::config.append({ Bci::SNTP, sizeof(Com_param.SNTP), &Com_param.SNTP });
-    S2::config.append({ Bci::BAUD, sizeof(Com_param.Baud), &Com_param.Baud });
-    S2::config.append({ Bci::PARITY, sizeof(Com_param.Parity), &Com_param.Parity });
-    S2::config.append({ Bci::STOPBIT, sizeof(Com_param.Stopbit), &Com_param.Stopbit });
-    S2::config.append({ Bci::ADRMB, sizeof(Com_param.adrMB), &Com_param.adrMB });
+    S2::config.append({ BciNumber::IP_ID, sizeof(Com_param.IP), &Com_param.IP });
+    S2::config.append({ BciNumber::Mask_ID, sizeof(Com_param.Mask), &Com_param.Mask });
+    S2::config.append({ BciNumber::GW_ID, sizeof(Com_param.GateWay), &Com_param.GateWay });
+    S2::config.append({ BciNumber::Port_ID, sizeof(Com_param.Port), &Com_param.Port });
+    S2::config.append({ BciNumber::SNTP_ID, sizeof(Com_param.SNTP), &Com_param.SNTP });
+    S2::config.append({ BciNumber::Baud_ID, sizeof(Com_param.Baud), &Com_param.Baud });
+    S2::config.append({ BciNumber::Parity_ID, sizeof(Com_param.Parity), &Com_param.Parity });
+    S2::config.append({ BciNumber::stopbit_ID, sizeof(Com_param.Stopbit), &Com_param.Stopbit });
+    S2::config.append({ BciNumber::adrMB_ID, sizeof(Com_param.adrMB), &Com_param.adrMB });
 
     S2::config.append({ 0xFFFFFFFF, 0, nullptr });
 }
@@ -59,16 +58,24 @@ void ConfigKxx::Fill()
     quint16 tmp16;
     //    quint8 tmp;
     //....................................................
-    WDFunc::SetSPBData(ParentSetupBl, "RTerm", TempConf.RTerm);
-    WDFunc::SetSPBData(ParentSetupBl, "W100", TempConf.W100);
-    WDFunc::SetSPBData(ParentSetupBl, "Trele_pred", StrTrele.Trele_pred);
-    WDFunc::SetSPBData(ParentSetupBl, "Trele_alarm", StrTrele.Trele_alarm);
+    WDFunc::SetSPBData(ParentSetupBl, NAMEOF(TempConf.RTerm), TempConf.RTerm);
+    WDFunc::SetSPBData(ParentSetupBl, NAMEOF(TempConf.W100), TempConf.W100);
+    WDFunc::SetSPBData(ParentSetupBl, NAMEOF(StrTrele.Trele_pred), StrTrele.Trele_pred);
+    WDFunc::SetSPBData(ParentSetupBl, NAMEOF(StrTrele.Trele_alarm), StrTrele.Trele_alarm);
 
     //.................................................................
 
     cbidx = ((StrModBus.MBMaster & 0x01) ? 1 : 0);
-    WDFunc::SetCBIndex(ParentMB, "MBMaster", cbidx);
+    WDFunc::SetCBIndex(ParentMB, NAMEOF(StrModBus.MBMaster), cbidx);
 
+    Bci::ABMAST master1, master2, master3, master4;
+    if constexpr (sizeof(master1) == sizeof(StrModBus.MBMab1))
+    {
+        memcpy(&master1, &StrModBus.MBMab1[0], sizeof(Bci::ABMAST));
+        memcpy(&master2, &StrModBus.MBMab2[0], sizeof(Bci::ABMAST));
+        memcpy(&master3, &StrModBus.MBMab3[0], sizeof(Bci::ABMAST));
+        memcpy(&master4, &StrModBus.MBMab4[0], sizeof(Bci::ABMAST));
+    }
     if (StrModBus.MBMab1[0] > 4)
         StrModBus.MBMab1[0] = 0;
     if (StrModBus.MBMab2[0] > 4)
@@ -241,13 +248,13 @@ void ConfigKxx::FillBack()
     quint8 tmp = 0;
     //.......................................................................
 
-    WDFunc::SPBData(ParentSetupBl, "RTerm", TempConf.RTerm);
-    WDFunc::SPBData(ParentSetupBl, "W100", TempConf.W100);
-    WDFunc::SPBData(ParentSetupBl, "Trele_pred", StrTrele.Trele_pred);
-    WDFunc::SPBData(ParentSetupBl, "Trele_alarm", StrTrele.Trele_alarm);
+    WDFunc::SPBData(ParentSetupBl, NAMEOF(TempConf.RTerm), TempConf.RTerm);
+    WDFunc::SPBData(ParentSetupBl, NAMEOF(TempConf.W100), TempConf.W100);
+    WDFunc::SPBData(ParentSetupBl, NAMEOF(StrTrele.Trele_pred), StrTrele.Trele_pred);
+    WDFunc::SPBData(ParentSetupBl, NAMEOF(StrTrele.Trele_alarm), StrTrele.Trele_alarm);
 
     //..................................................................
-    cbidx = WDFunc::CBIndex(ParentMB, "MBMaster");
+    cbidx = WDFunc::CBIndex(ParentMB, NAMEOF(StrModBus.MBMaster));
     Q_ASSERT(cbidx != -1);
     StrModBus.MBMaster = cbidx;
 
@@ -269,30 +276,30 @@ void ConfigKxx::FillBack()
     StrModBus.MBMab1[1] = cbidx;
     cbidx = WDFunc::CBIndex(ParentMB, "MBMab1ch[1]");
     Q_ASSERT(cbidx != -1);
-    StrModBus.MBMab1[1] = StrModBus.MBMab1[1] | uint(cbidx << 5);
+    StrModBus.MBMab1[1] = StrModBus.MBMab1[1] | (uint(cbidx) << 5);
     cbidx = WDFunc::CBIndex(ParentMB, "MBMab1bt[1]");
     Q_ASSERT(cbidx != -1);
-    StrModBus.MBMab1[1] = StrModBus.MBMab1[1] | uint(cbidx << 7);
+    StrModBus.MBMab1[1] = StrModBus.MBMab1[1] | (uint(cbidx) << 7);
 
     cbidx = WDFunc::CBIndex(ParentMB, "MBMab2sk[1]");
     Q_ASSERT(cbidx != -1);
     StrModBus.MBMab2[1] = cbidx;
     cbidx = WDFunc::CBIndex(ParentMB, "MBMab2ch[1]");
     Q_ASSERT(cbidx != -1);
-    StrModBus.MBMab2[1] = StrModBus.MBMab2[1] | uint(cbidx << 5);
+    StrModBus.MBMab2[1] = StrModBus.MBMab2[1] | (uint(cbidx) << 5);
     cbidx = WDFunc::CBIndex(ParentMB, "MBMab2bt[1]");
     Q_ASSERT(cbidx != -1);
-    StrModBus.MBMab2[1] = StrModBus.MBMab2[1] | uint(cbidx << 7);
+    StrModBus.MBMab2[1] = StrModBus.MBMab2[1] | (uint(cbidx) << 7);
 
     cbidx = WDFunc::CBIndex(ParentMB, "MBMab3sk[1]");
     Q_ASSERT(cbidx != -1);
     StrModBus.MBMab3[1] = cbidx;
     cbidx = WDFunc::CBIndex(ParentMB, "MBMab3ch[1]");
     Q_ASSERT(cbidx != -1);
-    StrModBus.MBMab3[1] = StrModBus.MBMab3[1] | uint(cbidx << 5);
+    StrModBus.MBMab3[1] = StrModBus.MBMab3[1] | (uint(cbidx) << 5);
     cbidx = WDFunc::CBIndex(ParentMB, "MBMab3bt[1]");
     Q_ASSERT(cbidx != -1);
-    StrModBus.MBMab3[1] = StrModBus.MBMab3[1] | uint(cbidx << 7);
+    StrModBus.MBMab3[1] = StrModBus.MBMab3[1] | (uint(cbidx) << 7);
 
     cbidx = WDFunc::CBIndex(ParentMB, "MBMab4sk[1]");
     Q_ASSERT(cbidx != -1);
@@ -300,10 +307,10 @@ void ConfigKxx::FillBack()
 
     cbidx = WDFunc::CBIndex(ParentMB, "MBMab4ch[1]");
     Q_ASSERT(cbidx != -1);
-    StrModBus.MBMab4[1] = StrModBus.MBMab4[1] | uint(cbidx << 5);
+    StrModBus.MBMab4[1] = StrModBus.MBMab4[1] | (uint(cbidx) << 5);
     cbidx = WDFunc::CBIndex(ParentMB, "MBMab4bt[1]");
     Q_ASSERT(cbidx != -1);
-    StrModBus.MBMab4[1] = StrModBus.MBMab4[1] | uint(cbidx << 7);
+    StrModBus.MBMab4[1] = StrModBus.MBMab4[1] | (uint(cbidx) << 7);
 
     WDFunc::SPBData(ParentMB, "MBMab1per[2]", StrModBus.MBMab1[2]);
     WDFunc::SPBData(ParentMB, "MBMab2per[2]", StrModBus.MBMab2[2]);
@@ -390,10 +397,6 @@ void ConfigKxx::FillBack()
     QString NameIP = "IP_ID", NameMask = "Mask_ID", NameSNTP = "SNTP_ID", NameGate = "GW_ID";
     QStringList inIP, inMask, inSNTP, inGate;
 
-    //    WDFunc::LE_read_data(ParentSetup, NameIP, StrIP);
-    //    WDFunc::LE_read_data(ParentSetup, NameSNTP, StrSNTP);
-    //    WDFunc::LE_read_data(ParentSetup, NameGate, StrGate);
-    //    WDFunc::LE_read_data(ParentSetup, NameMask, StrMask);
     StrIP = WDFunc::LEData(ParentSetup, NameIP);
     StrSNTP = WDFunc::LEData(ParentSetup, NameSNTP);
     StrGate = WDFunc::LEData(ParentSetup, NameGate);
@@ -521,7 +524,7 @@ QWidget *ConfigKxx::ModbusWidget(QWidget *parent)
     QLabel *lbl = new QLabel("Modbus: ");
     glyout->addWidget(lbl, row, 0, 1, 1, Qt::AlignLeft);
     QStringList dopcbl = QStringList { "slave", "master" };
-    auto *dopcb = WDFunc::NewCB2(parent, "MBMaster", dopcbl /*, paramcolor*/);
+    auto *dopcb = WDFunc::NewCB2(parent, NAMEOF(StrModBus.MBMaster), dopcbl);
 
     connect(dopcb, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &ConfigKxx::ChangeModbusGUI);
     glyout->addWidget(dopcb, row, 1, 1, 1);
@@ -539,20 +542,20 @@ QWidget *ConfigKxx::ModbusWidget(QWidget *parent)
     row++;
     lbl = WDFunc::NewLBL2(parent, "Скорость RS485 интерфейса:");
     glyout->addWidget(lbl, row, 0, 1, 1);
-    auto *cb = WDFunc::NewCB2(parent, "Baud_ID", m_baudList /*, paramcolor*/);
+    auto *cb = WDFunc::NewCB2(parent, "Baud_ID", m_baudList);
 
     glyout->addWidget(cb, row, 1, 1, 1, Qt::AlignLeft);
 
     row++;
     glyout->addWidget(WDFunc::NewLBL2(parent, "Чётность:"), row, 0, 1, 1);
     cbl = QStringList { "NoParity", "EvenParity", "OddParity" };
-    cb = WDFunc::NewCB2(parent, "Parity_ID", cbl /*, paramcolor*/);
+    cb = WDFunc::NewCB2(parent, "Parity_ID", cbl);
     glyout->addWidget(cb, row, 1, 1, 1, Qt::AlignLeft);
 
     row++;
     glyout->addWidget(WDFunc::NewLBL2(parent, "Количество стоповых битов:"), row, 0, 1, 1);
     cbl = QStringList { "1", "2" };
-    cb = WDFunc::NewCB2(parent, "Stopbit_ID", cbl /*, paramcolor*/);
+    cb = WDFunc::NewCB2(parent, "Stopbit_ID", cbl);
     glyout->addWidget(cb, row, 1, 1, 1, Qt::AlignLeft);
 
     row++;
@@ -650,94 +653,46 @@ QWidget *ConfigKxx::ModbusWidget(QWidget *parent)
     glyout->addWidget(line1, 1, 9, 1, 1);
 
     int j = 1;
-    auto matrix = StrModBus.toMatrix();
     QStringList type { "нет", "тип 1", "тип 2", "тип 3" };
     QStringList parity { "нет", "even", "odd" };
     QStringList stopBits { "1", "2" };
-    for (size_t row = 0; row < matrix.size(); ++row)
+
+    for (int i = 1; i < 5; i++)
     {
         j++;
-        // for (size_t column = 0; column < matrix.at(row).size(); ++column)
-        // {
         line1 = new QLabel(parent);
-        line1->setText("Датчик " + QString::number(row) + ":");
+        line1->setText("Датчик " + QString::number(i) + ":");
         line1->setAlignment(Qt::AlignCenter);
 
         glyout->addWidget(line1, j, 0, 1, 1);
-        cb = WDFunc::NewCB2(parent, type);
 
-        connect(cb, qOverload<int>(&QComboBox::currentIndexChanged),
-            [=](int value) mutable { *matrix.at(row).at(j) = value; });
+        cb = WDFunc::NewCB2(parent, "MBMab" + QString::number(i) + "[0]", type);
+
         glyout->addWidget(cb, j, 1, 1, 1);
 
-        cb = WDFunc::NewCB2(parent, m_baudList);
-        connect(cb, qOverload<int>(&QComboBox::currentIndexChanged),
-            [=](int value) mutable { *matrix.at(row).at(j) = value; });
-        // cb = WDFunc::NewCB2(parent, "MBMab" + QString::number(i) + "sk[1]", m_baudList /*, paramcolor*/);
+        cb = WDFunc::NewCB2(parent, "MBMab" + QString::number(i) + "sk[1]", m_baudList);
         glyout->addWidget(cb, j, 2, 1, 1);
 
-        //  cbl = QStringList { "нет", "even", "odd" };
-        cb = WDFunc::NewCB2(parent, parity);
-        connect(cb, qOverload<int>(&QComboBox::currentIndexChanged),
-            [=](int value) mutable { *matrix.at(row).at(j) = value; });
-        // cb = WDFunc::NewCB2(parent, "MBMab" + QString::number(i) + "ch[1]", cbl /*, paramcolor*/);
+        cb = WDFunc::NewCB2(parent, "MBMab" + QString::number(i) + "ch[1]", parity);
         glyout->addWidget(cb, j, 3, 1, 1);
 
-        //   cbl = QStringList { "1", "2" };
-        cb = WDFunc::NewCB2(parent, stopBits);
-        connect(cb, qOverload<int>(&QComboBox::currentIndexChanged),
-            [=](int value) mutable { *matrix.at(row).at(j) = value; });
-        // cb = WDFunc::NewCB2(parent, "MBMab" + QString::number(i) + "bt[1]", cbl /*, paramcolor*/);
+        cb = WDFunc::NewCB2(parent, "MBMab" + QString::number(i) + "bt[1]", stopBits);
         glyout->addWidget(cb, j, 4, 1, 1);
-        // }
-        // row = 5;
-
-        glyout->addWidget(WDFunc::NewSPB2(parent, "", 0, 10000, 0), j, 5, 1, 1);
-
-        glyout->addWidget(WDFunc::NewSPB2(parent, "", 0, 10000, 0), j, 6, 1, 1);
     }
 
-    //    for (int i = 1; i < 5; i++)
-    //    {
+    for (int i = 1; i < 5;)
+    {
+        Str = "MBMab" + QString::number(i);
+        Str = Str + "per[2]";
+        glyout->addWidget(WDFunc::NewSPB2(parent, QString(Str), 0, 10000, 0), ++i, 5, 1, 1);
+    }
 
-    //        j++;
-    //        line1 = new QLabel(parent);
-    //        line1->setText("Датчик " + QString::number(i) + ":");
-    //        line1->setAlignment(Qt::AlignCenter);
-
-    //        glyout->addWidget(line1, j, 0, 1, 1);
-
-    //        cbl = QStringList { "нет", "тип 1", "тип 2", "тип 3" };
-    //        cb = WDFunc::NewCB2(parent, "MBMab" + QString::number(i) + "[0]", cbl /*, paramcolor*/);
-
-    //        // connect(cb, &QComboBox::currentIndexChanged, [this](int value) { StrModBus. })
-    //        glyout->addWidget(cb, j, 1, 1, 1);
-
-    //        cb = WDFunc::NewCB2(parent, "MBMab" + QString::number(i) + "sk[1]", m_baudList /*, paramcolor*/);
-    //        glyout->addWidget(cb, j, 2, 1, 1);
-
-    //        cbl = QStringList { "нет", "even", "odd" };
-    //        cb = WDFunc::NewCB2(parent, "MBMab" + QString::number(i) + "ch[1]", cbl /*, paramcolor*/);
-    //        glyout->addWidget(cb, j, 3, 1, 1);
-
-    //        cbl = QStringList { "1", "2" };
-    //        cb = WDFunc::NewCB2(parent, "MBMab" + QString::number(i) + "bt[1]", cbl /*, paramcolor*/);
-    //        glyout->addWidget(cb, j, 4, 1, 1);
-    //    }
-
-    //    for (int i = 1; i < 5;)
-    //    {
-    //        Str = "MBMab" + QString::number(i);
-    //        Str = Str + "per[2]";
-    //        glyout->addWidget(WDFunc::NewSPB2(parent, QString(Str), 0, 10000, 0), ++i, 5, 1, 1);
-    //    }
-
-    //    for (int i = 1; i < 5;)
-    //    {
-    //        Str = "MBMab" + QString::number(i);
-    //        Str = Str + "adr[3]";
-    //        glyout->addWidget(WDFunc::NewSPB2(parent, QString(Str), 0, 10000, 0), ++i, 6, 1, 1);
-    //    }
+    for (int i = 1; i < 5;)
+    {
+        Str = "MBMab" + QString::number(i);
+        Str = Str + "adr[3]";
+        glyout->addWidget(WDFunc::NewSPB2(parent, QString(Str), 0, 10000, 0), ++i, 6, 1, 1);
+    }
 
     j = 1;
     for (int i = 1; i < 5; i++)
@@ -786,20 +741,20 @@ QWidget *ConfigKxx::VariousWidget(QWidget *parent)
     QVBoxLayout *vlyout2 = new QVBoxLayout;
 
     glyout->addWidget(WDFunc::NewLBL2(parent, "Номинальное сопротивление термометра при 0 град.С:"), row, 1, 1, 1);
-    glyout->addWidget(WDFunc::NewSPB2(parent, "RTerm", 0, 10000, 0), row, 2, 1, 3);
+    glyout->addWidget(WDFunc::NewSPB2(parent, NAMEOF(TempConf.RTerm), 0, 10000, 0), row, 2, 1, 3);
     row++;
 
     glyout->addWidget(WDFunc::NewLBL2(parent, "Температурный коэффициент термометра:"), row, 1, 1, 1);
-    glyout->addWidget(WDFunc::NewSPB2(parent, "W100", 0, 10000, 3), row, 2, 1, 3);
+    glyout->addWidget(WDFunc::NewSPB2(parent, NAMEOF(TempConf.W100), 0, 10000, 3), row, 2, 1, 3);
     row++;
 
     glyout->addWidget(
         WDFunc::NewLBL2(parent, "Задержка срабатывания реле предупредительной сигнализации:"), row, 1, 1, 1);
-    glyout->addWidget(WDFunc::NewSPB2(parent, "Trele_pred", 0, 10000, 0), row, 2, 1, 3);
+    glyout->addWidget(WDFunc::NewSPB2(parent, NAMEOF(StrTrele.Trele_pred), 0, 10000, 0), row, 2, 1, 3);
     row++;
 
     glyout->addWidget(WDFunc::NewLBL2(parent, "Задержка срабатывания реле аварийной сигнализации:"), row, 1, 1, 1);
-    glyout->addWidget(WDFunc::NewSPB2(parent, "Trele_alarm", 0, 10000, 0), row, 2, 1, 3);
+    glyout->addWidget(WDFunc::NewSPB2(parent, NAMEOF(StrTrele.Trele_alarm), 0, 10000, 0), row, 2, 1, 3);
 
     vlyout2->addLayout(glyout);
     gb->setLayout(vlyout2);

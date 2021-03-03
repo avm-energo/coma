@@ -36,16 +36,16 @@ void Config::setConfig()
     //    }
     // общая часть
     // qDebug() << NAMEOF(MainBlk.MTypeB);
-    config.append({ BCI_MTYPEB, sizeof(MainBlk.MTypeB), &MainBlk.MTypeB });
-    config.append({ BCI_MTYPEM, sizeof(MainBlk.MTypeM), &MainBlk.MTypeM });
-    config.append({ BCI_CTYPE, sizeof(MainBlk.Ctype), &MainBlk.Ctype });
-    config.append({ BCI_ABS_104, sizeof(MainBlk.Abs_104), &MainBlk.Abs_104 });
-    config.append({ BCI_CYCLE_104, sizeof(MainBlk.Cycle_104), &MainBlk.Cycle_104 });
-    config.append({ BCI_T1_104, sizeof(MainBlk.T1_104), &MainBlk.T1_104 });
-    config.append({ BCI_T2_104, sizeof(MainBlk.T2_104), &MainBlk.T2_104 });
-    config.append({ BCI_T3_104, sizeof(MainBlk.T3_104), &MainBlk.T3_104 });
-    config.append({ BCI_K_104, sizeof(MainBlk.K_104), &MainBlk.K_104 });
-    config.append({ BCI_W_104, sizeof(MainBlk.W_104), &MainBlk.W_104 });
+    config.append({ BciNumber::MTypeB_ID, sizeof(MainBlk.MTypeB), &MainBlk.MTypeB });
+    config.append({ BciNumber::MTypeE_ID, sizeof(MainBlk.MTypeM), &MainBlk.MTypeM });
+    config.append({ BciNumber::CType, sizeof(MainBlk.Ctype), &MainBlk.Ctype });
+    config.append({ BciNumber::Abs_104, sizeof(MainBlk.Abs_104), &MainBlk.Abs_104 });
+    config.append({ BciNumber::Cycle_104, sizeof(MainBlk.Cycle_104), &MainBlk.Cycle_104 });
+    config.append({ BciNumber::T1_104, sizeof(MainBlk.T1_104), &MainBlk.T1_104 });
+    config.append({ BciNumber::T2_104, sizeof(MainBlk.T2_104), &MainBlk.T2_104 });
+    config.append({ BciNumber::T3_104, sizeof(MainBlk.T3_104), &MainBlk.T3_104 });
+    config.append({ BciNumber::k_104, sizeof(MainBlk.K_104), &MainBlk.K_104 });
+    config.append({ BciNumber::w_104, sizeof(MainBlk.W_104), &MainBlk.W_104 });
     config.append({ 0xFFFFFFFF, 0, nullptr });
 }
 
@@ -121,37 +121,24 @@ QWidget *Config::TimeWidget(QWidget *parent)
 
 void Config::Fill()
 {
+    using namespace DataTypes;
+    WDFunc::SetSPBData(ParentMainbl, NAMEOF(MainBlk.Abs_104), S2::getRecord(BciNumber::Abs_104).value<DWORD>());
+    WDFunc::SetSPBData(ParentMainbl, NAMEOF(MainBlk.Cycle_104), S2::getRecord(BciNumber::Cycle_104).value<DWORD>());
+    // WDFunc::SetSPBData(ParentMainbl, NAMEOF(MainBlk.Cycle_104), MainBlk.Cycle_104);
+    WDFunc::SetSPBData(ParentMainbl, NAMEOF(MainBlk.T1_104), S2::getRecord(BciNumber::T1_104).value<DWORD>());
+    // WDFunc::SetSPBData(ParentMainbl, NAMEOF(MainBlk.T1_104), MainBlk.T1_104);
+    WDFunc::SetSPBData(ParentMainbl, NAMEOF(MainBlk.T2_104), S2::getRecord(BciNumber::T2_104).value<DWORD>());
+    //  WDFunc::SetSPBData(ParentMainbl, NAMEOF(MainBlk.T2_104), MainBlk.T2_104);
+    WDFunc::SetSPBData(ParentMainbl, NAMEOF(MainBlk.T3_104), S2::getRecord(BciNumber::T3_104).value<DWORD>());
+    // WDFunc::SetSPBData(ParentMainbl, NAMEOF(MainBlk.T3_104), MainBlk.T3_104);
+    WDFunc::SetSPBData(ParentMainbl, NAMEOF(MainBlk.K_104), S2::getRecord(BciNumber::k_104).value<DWORD>());
+    // WDFunc::SetSPBData(ParentMainbl, NAMEOF(MainBlk.K_104), MainBlk.K_104);
+    WDFunc::SetSPBData(ParentMainbl, NAMEOF(MainBlk.W_104), S2::getRecord(BciNumber::w_104).value<DWORD>());
+    //  WDFunc::SetSPBData(ParentMainbl, NAMEOF(MainBlk.W_104), MainBlk.W_104);
 
-    WDFunc::SetSPBData(ParentMainbl, NAMEOF(MainBlk.Abs_104), MainBlk.Abs_104);
-    WDFunc::SetSPBData(ParentMainbl, NAMEOF(MainBlk.Cycle_104), MainBlk.Cycle_104);
-    WDFunc::SetSPBData(ParentMainbl, NAMEOF(MainBlk.T1_104), MainBlk.T1_104);
-    WDFunc::SetSPBData(ParentMainbl, NAMEOF(MainBlk.T2_104), MainBlk.T2_104);
-    WDFunc::SetSPBData(ParentMainbl, NAMEOF(MainBlk.T3_104), MainBlk.T3_104);
-    WDFunc::SetSPBData(ParentMainbl, NAMEOF(MainBlk.K_104), MainBlk.K_104);
-    WDFunc::SetSPBData(ParentMainbl, NAMEOF(MainBlk.W_104), MainBlk.W_104);
-    // Miss first 3 value
-    //    int i = 3;
-    //    auto defValues = QMetaEnum::fromType<Bci::BciDefMainValues>();
-    //    std::for_each(regs.begin() + 3, regs.end(), [&](quint32 *value) {
-    //        if (!WDFunc::SetSPBData(ParentMainbl, defValues.key(i++), *value))
-    //            qDebug() << "Failed to find" << defValues.key(i);
-    //    });
-    int cbidx;
-    switch (MainBlk.Ctype)
-    {
-    case 0:
-        cbidx = 0;
-        break;
-    case 8:
-        cbidx = 1;
-        break;
-    case 10:
-        cbidx = 2;
-        break;
-    default:
-        return;
-    }
-    WDFunc::SetCBIndex(ParentCtype, NAMEOF(MainBlk.Ctype), cbidx);
+    //    WDFunc::SetCBIndex(ParentCtype, NAMEOF(MainBlk.Ctype), StdFunc::countSetBits(MainBlk.Ctype & 0x0a));
+    WDFunc::SetCBIndex(ParentCtype, NAMEOF(MainBlk.Ctype),
+        StdFunc::countSetBits(S2::getRecord(BciNumber::CType).value<DWORD>() & 0x0a));
 }
 
 void Config::FillBack()
