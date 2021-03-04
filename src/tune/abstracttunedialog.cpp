@@ -84,8 +84,8 @@ QWidget *AbstractTuneDialog::TuneUI()
     for (i = 0; i < m_messages.size(); ++i)
     {
         QHBoxLayout *hlyout = new QHBoxLayout;
-        hlyout->addWidget(WDFunc::NewLBL2(this, m_messages.at(i), "tunemsg" + QString::number(i)));
-        hlyout->addWidget(WDFunc::NewLBL2(this, "", "tunemsgres" + QString::number(i)));
+        hlyout->addWidget(WDFunc::NewLBL2(w2, m_messages.at(i), "tunemsg" + QString::number(i)));
+        hlyout->addWidget(WDFunc::NewLBL2(w2, "", "tunemsgres" + QString::number(i)));
         hlyout->addStretch(1);
         w2lyout->addLayout(hlyout);
     }
@@ -94,13 +94,13 @@ QWidget *AbstractTuneDialog::TuneUI()
     area->setWidgetResizable(true);
     area->setWidget(w2);
     lyout->addWidget(area);
-    lyout->addWidget(WDFunc::NewLBL2(this, "Настройка завершена!", "tunemsg" + QString::number(i)));
-    WDFunc::SetVisible(this, "tunemsg" + QString::number(i), false);
-    for (int i = 0; i < m_messages.size() + 1; ++i)
+    lyout->addWidget(WDFunc::NewLBL2(w2, "Настройка завершена!", "tunemsg" + QString::number(i)));
+    for (int i = 0; i < m_messages.size(); ++i)
     {
         WDFunc::SetVisible(w2, "tunemsg" + QString::number(i), false);
         WDFunc::SetVisible(w2, "tunemsgres" + QString::number(i), false);
     }
+    WDFunc::SetVisible(w2, "tunemsg" + QString::number(i), false);
     hlyout = new QHBoxLayout;
     hlyout->addStretch(300);
     hlyout->addWidget(WDFunc::NewHexagonPB(
