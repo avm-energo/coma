@@ -93,14 +93,14 @@ QWidget *AbstractTuneDialog::TuneUI()
     w2->setLayout(w2lyout);
     area->setWidgetResizable(true);
     area->setWidget(w2);
+    lyout->addWidget(area);
+    lyout->addWidget(WDFunc::NewLBL2(this, "Настройка завершена!", "tunemsg" + QString::number(i)));
+    WDFunc::SetVisible(this, "tunemsg" + QString::number(i), false);
     for (int i = 0; i < m_messages.size() + 1; ++i)
     {
         WDFunc::SetVisible(w2, "tunemsg" + QString::number(i), false);
         WDFunc::SetVisible(w2, "tunemsgres" + QString::number(i), false);
     }
-    lyout->addWidget(area);
-    lyout->addWidget(WDFunc::NewLBL2(this, "Настройка завершена!", "tunemsg" + QString::number(i)));
-    WDFunc::SetVisible(this, "tunemsg" + QString::number(i), false);
     hlyout = new QHBoxLayout;
     hlyout->addStretch(300);
     hlyout->addWidget(WDFunc::NewHexagonPB(
