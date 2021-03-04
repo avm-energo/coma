@@ -131,91 +131,91 @@ DataTypes::DataRecV::DataRecV(const S2DataTypes::DataRec &record) : id(record.id
     {
     case ctti::unnamed_type_id<BYTE>().hash():
     {
-        assert(sizeof(BYTE) == record.num_byte);
+        assert(sizeof(BYTE) == record.numByte);
         data = *reinterpret_cast<BYTE *>(record.thedata);
         break;
     }
     case ctti::unnamed_type_id<WORD>().hash():
     {
-        assert(sizeof(WORD) == record.num_byte);
+        assert(sizeof(WORD) == record.numByte);
         data = *reinterpret_cast<WORD *>(record.thedata);
         break;
     }
     case ctti::unnamed_type_id<DWORD>().hash():
     {
-        assert(sizeof(DWORD) == record.num_byte);
+        assert(sizeof(DWORD) == record.numByte);
         data = *reinterpret_cast<DWORD *>(record.thedata);
         break;
     }
     case ctti::unnamed_type_id<BYTE_4t>().hash():
     {
-        assert(sizeof(BYTE_4t) == record.num_byte);
+        assert(sizeof(BYTE_4t) == record.numByte);
         data = *reinterpret_cast<BYTE_4t *>(record.thedata);
         break;
     }
     case ctti::unnamed_type_id<WORD_4t>().hash():
     {
-        assert(sizeof(WORD_4t) == record.num_byte);
+        assert(sizeof(WORD_4t) == record.numByte);
         data = *reinterpret_cast<WORD_4t *>(record.thedata);
         break;
     }
     case ctti::unnamed_type_id<BYTE_8t>().hash():
     {
-        assert(sizeof(BYTE_8t) == record.num_byte);
+        assert(sizeof(BYTE_8t) == record.numByte);
         data = *reinterpret_cast<BYTE_8t *>(record.thedata);
         break;
     }
     case ctti::unnamed_type_id<WORD_8t>().hash():
     {
-        assert(sizeof(WORD_8t) == record.num_byte);
+        assert(sizeof(WORD_8t) == record.numByte);
         data = *reinterpret_cast<WORD_8t *>(record.thedata);
         break;
     }
     case ctti::unnamed_type_id<BYTE_16t>().hash():
     {
-        assert(sizeof(BYTE_16t) == record.num_byte);
+        assert(sizeof(BYTE_16t) == record.numByte);
         data = *reinterpret_cast<BYTE_16t *>(record.thedata);
         break;
     }
     case ctti::unnamed_type_id<WORD_16t>().hash():
     {
-        assert(sizeof(WORD_16t) == record.num_byte);
+        assert(sizeof(WORD_16t) == record.numByte);
         data = *reinterpret_cast<WORD_16t *>(record.thedata);
         break;
     }
     case ctti::unnamed_type_id<float>().hash():
     {
-        assert(sizeof(float) == record.num_byte);
+        assert(sizeof(float) == record.numByte);
         data = *reinterpret_cast<float *>(record.thedata);
         break;
     }
     case ctti::unnamed_type_id<FLOAT_2t>().hash():
     {
-        assert(sizeof(FLOAT_2t) == record.num_byte);
+        assert(sizeof(FLOAT_2t) == record.numByte);
         data = *reinterpret_cast<FLOAT_2t *>(record.thedata);
         break;
     }
     case ctti::unnamed_type_id<FLOAT_2t_2t>().hash():
     {
-        assert(sizeof(FLOAT_2t_2t) == record.num_byte);
+        assert(sizeof(FLOAT_2t_2t) == record.numByte);
         data = *reinterpret_cast<FLOAT_2t_2t *>(record.thedata);
         break;
     }
     case ctti::unnamed_type_id<FLOAT_3t>().hash():
     {
-        assert(sizeof(FLOAT_3t) == record.num_byte);
+        assert(sizeof(FLOAT_3t) == record.numByte);
         data = *reinterpret_cast<FLOAT_3t *>(record.thedata);
         break;
     }
     case ctti::unnamed_type_id<FLOAT_6t>().hash():
     {
-        assert(sizeof(FLOAT_6t) == record.num_byte);
+        assert(sizeof(FLOAT_6t) == record.numByte);
         data = *reinterpret_cast<FLOAT_6t *>(record.thedata);
         break;
     }
     case ctti::unnamed_type_id<FLOAT_8t>().hash():
     {
-        assert(sizeof(FLOAT_8t) == record.num_byte);
+        assert(sizeof(FLOAT_8t) == record.numByte);
         data = *reinterpret_cast<FLOAT_8t *>(record.thedata);
         break;
     }
@@ -238,8 +238,8 @@ bool DataTypes::operator!=(const DataTypes::DataRecV &lhs, const DataTypes::Data
 
 bool S2DataTypes::is_same(const S2DataTypes::DataRec &lhs, const S2DataTypes::DataRec &rhs)
 {
-    if ((lhs.id == rhs.id) && (lhs.num_byte == rhs.num_byte))
-        return !memcmp(lhs.thedata, rhs.thedata, lhs.num_byte);
+    if ((lhs.id == rhs.id) && (lhs.numByte == rhs.numByte))
+        return !memcmp(lhs.thedata, rhs.thedata, lhs.numByte);
     else
         return false;
 }

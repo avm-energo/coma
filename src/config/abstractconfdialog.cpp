@@ -66,7 +66,7 @@ void AbstractConfDialog::confParametersListReceived(const DataTypes::ConfParamet
         const auto oldRec = config->at(i);
         const auto newRec = configV->at(i).serialize();
         if (!S2DataTypes::is_same(oldRec, newRec))
-            qDebug() << oldRec.id << oldRec.num_byte;
+            qDebug() << oldRec.id << oldRec.numByte;
     }
 }
 

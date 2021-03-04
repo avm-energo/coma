@@ -103,9 +103,18 @@ ModuleSettings *Module::settings() const
 
 bool Module::loadSettings()
 {
-    const auto moduleName = Board::GetInstance().moduleName();
+    auto moduleName = Board::GetInstance().moduleName();
     if (moduleName.isEmpty())
         return false;
+    if (moduleName.contains("-"))
+    {
+        QRegularExpression regex("(?<=[-])\\d+");
+        QRegularExpressionMatch match = regex.match(moduleName);
+        if (!match.hasMatch())
+            return false;
+
+        moduleName = /*moduleName.split("-").last();*/ match.captured(0);
+    }
     QDir directory(StdFunc::GetSystemHomeDir());
     qDebug() << directory;
     auto allFiles = directory.entryList(QDir::Files);
@@ -163,15 +172,6 @@ bool Module::loadS2Settings()
 {
     const auto name = "s2files";
 
-    if (moduleName.contains("-"))
-    {
-        QRegularExpression regex("(?<=[-])\\d+");
-        QRegularExpressionMatch match = regex.match(moduleName);
-        if (!match.hasMatch())
-            return false;
-
-        moduleName = /*moduleName.split("-").last();*/ match.captured(0);
-    }
     QDir directory(StdFunc::GetSystemHomeDir());
     qDebug() << directory;
     auto allFiles = directory.entryList(QDir::Files);

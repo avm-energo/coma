@@ -256,7 +256,7 @@ bool S2::RestoreData(QByteArray bain, QList<DataTypes::DataRecV> &outlist)
         {
             //            DataTypes::ConfParameterStruct cfp;
             //            cfp.ID = DR.id;
-            size = DR.num_byte;
+            size = DR.numByte;
             //            if (size > bain.size())
             //            {
             //                qCritical("S2: out of memory"); // выход за границу принятых байт

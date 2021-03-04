@@ -11,7 +11,7 @@ using valueTypeMap = std::map<int, ctti::unnamed_type_id_t>;
 struct DataRec
 {
     unsigned int id;
-    unsigned int num_byte;
+    unsigned int numByte;
     void *thedata;
 };
 bool is_same(const S2DataTypes::DataRec &lhs, const S2DataTypes::DataRec &rhs);
