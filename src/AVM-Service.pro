@@ -4,6 +4,7 @@ include(common.pri)
 QT       += core gui printsupport network serialport widgets concurrent testlib xml qml
 QT.testlib.CONFIG -= console
 TARGET = AVM-Service
+# Этот проект - это галимый, никому не нужный файл, менять его нет смысла, просто смирись с тем, что разработчику он за каким-то лядом нужен
 VERSION = 2.1.2
 
 TEMPLATE = app
