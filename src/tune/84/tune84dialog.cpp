@@ -15,10 +15,10 @@ Tune84Dialog::Tune84Dialog(ConfigKIV *ckiv, QWidget *parent) : GeneralTuneDialog
     // ReportModel = new QStandardItemModel;
     // ViewModel = new QStandardItemModel;
     setAttribute(Qt::WA_DeleteOnClose);
-    TKIVADCDialog = new TuneKIVADC(KIVTS_ADC, CKIV, this);
-    TKIV20Dialog = new TuneKIVTemp60(KIVTS_20TUNING, CKIV, this);
-    TKIV60Dialog = new TuneKIVTemp60(KIVTS_60TUNING, CKIV, this);
-    TKIVCheckDialog = new TuneKIVCheck(KIVTS_CHECKING, this);
+    T84ADCDialog = new TuneKIVADC(TS84_ADC, CKIV, this);
+    T8420Dialog = new TuneKIVTemp60(TS84_20TUNING, CKIV, this);
+    T8460Dialog = new TuneKIVTemp60(TS84_60TUNING, CKIV, this);
+    T84CheckDialog = new TuneKIVCheck(TS84_CHECKING, this);
     SetupUI();
 }
 
@@ -31,16 +31,14 @@ void Tune84Dialog::SetupUI()
 
     lyout->addStretch(100);
     lyout->addWidget(WDFunc::NewHexagonPB(
-        this, "tn1", [this]() { TKIVCheckDialog->show(); }, ":/icons/tn1.svg",
+        this, "tn1", [this]() { T84CheckDialog->show(); }, ":/icons/tn1.svg",
         "Проверка правильности измерения входных сигналов"));
     lyout->addWidget(WDFunc::NewHexagonPB(
-        this, "tn2", [this]() { TKIVADCDialog->show(); }, ":/icons/tn2.svg", "Регулировка каналов тока и напряжения"));
+        this, "tn2", [this]() { T84ADCDialog->show(); }, ":/icons/tn2.svg", "Регулировка каналов тока и напряжения"));
     lyout->addWidget(WDFunc::NewHexagonPB(
-        this, "tn3", [this]() { TKIV60Dialog->show(); }, ":/icons/tn3.svg",
-        "Настройка температурной коррекции +60 °С"));
+        this, "tn3", [this]() { T8460Dialog->show(); }, ":/icons/tn3.svg", "Настройка температурной коррекции +60 °С"));
     lyout->addWidget(WDFunc::NewHexagonPB(
-        this, "tn4", [this]() { TKIV20Dialog->show(); }, ":/icons/tn4.svg",
-        "Настройка температурной коррекции -20 °С"));
+        this, "tn4", [this]() { T8420Dialog->show(); }, ":/icons/tn4.svg", "Настройка температурной коррекции -20 °С"));
     lyout->addWidget(WDFunc::NewHexagonPB(
         this, "tnprotocol", [this]() { GenerateReport(); }, ":/icons/tnprotocol.svg",
         "Генерация протокола регулировки"));

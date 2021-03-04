@@ -26,9 +26,9 @@ public slots:
 
 private:
     ConfigKIV *CKIV;
-    TuneKIVCheck *TKIVCheckDialog;
-    TuneKIVADC *TKIVADCDialog;
-    TuneKIVTemp60 *TKIV60Dialog, *TKIV20Dialog;
+    TuneKIVCheck *T84CheckDialog;
+    TuneKIVADC *T84ADCDialog;
+    TuneKIVTemp60 *T8460Dialog, *T8420Dialog;
 
     LimeReport::ReportEngine *m_Report;
 

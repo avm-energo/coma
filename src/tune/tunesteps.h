@@ -10,4 +10,12 @@ enum KIVTuneSteps
     KIVTS_20TUNING = 5
 };
 
+enum TuneSteps84
+{
+    TS84_CHECKING = 1,
+    TS84_ADC = 2,
+    TS84_60TUNING = 3,
+    TS84_20TUNING = 4
+};
+
 #endif // TUNESTEPS_H
