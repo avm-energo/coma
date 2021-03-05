@@ -1,5 +1,6 @@
 
 SOURCES += \
+        $$PWD/84/tune84adc.cpp \
         $$PWD/84/tune84check.cpp \
         $$PWD/84/tune84dialog.cpp \
         $$PWD/84/tune84temp60.cpp \
@@ -12,6 +13,7 @@ SOURCES += \
 
 
 HEADERS += \
+        $$PWD/84/tune84adc.h \
         $$PWD/84/tune84check.h \
         $$PWD/84/tune84dialog.h \
         $$PWD/84/tune84temp60.h \
