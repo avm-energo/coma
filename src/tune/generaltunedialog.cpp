@@ -2,6 +2,7 @@
 
 #include "../gen/board.h"
 #include "../gen/stdfunc.h"
+#include "tunesequencefile.h"
 
 #include <QIcon>
 #include <QPainter>
@@ -11,14 +12,16 @@
 
 GeneralTuneDialog::GeneralTuneDialog(QWidget *parent) : UDialog(parent)
 {
+    TuneSequenceFile::init();
     m_calibrSteps = 0;
 }
 
 void GeneralTuneDialog::setCalibrButtons()
 {
-    QString cpuserialnum = Board::GetInstance().UID();
-    QSettings storedcalibrations(StdFunc::GetSystemHomeDir() + "calibr.ini", QSettings::IniFormat);
-    int calibrstep = storedcalibrations.value(cpuserialnum + "/step", "1").toInt();
+    //    QString cpuserialnum = Board::GetInstance().UID();
+    //    QSettings storedcalibrations(StdFunc::GetSystemHomeDir() + "calibr.ini", QSettings::IniFormat);
+    //    int calibrstep = storedcalibrations.value(cpuserialnum + "/step", "1").toInt();
+    int calibrstep = TuneSequenceFile::value("step", "1").toInt();
     for (int i = 1; i < calibrstep; ++i)
         setIconProcessed("tn" + QString::number(i));
     setIconNormal("tn" + QString::number(calibrstep));

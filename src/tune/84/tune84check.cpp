@@ -1,4 +1,4 @@
-#include "tunekivcheck.h"
+#include "tune84check.h"
 
 #include "../../datablocks/kiv/bda.h"
 #include "../../gen/files.h"
@@ -11,12 +11,12 @@
 #include <QPushButton>
 #include <QVBoxLayout>
 
-TuneKIVCheck::TuneKIVCheck(int tuneStep, QWidget *parent) : AbstractTuneDialog(tuneStep, parent)
+Tune84Check::Tune84Check(int tuneStep, QWidget *parent) : AbstractTuneDialog(tuneStep, parent)
 {
     SetupUI();
 }
 
-void TuneKIVCheck::setMessages()
+void Tune84Check::setMessages()
 {
     m_messages.append("1. Ввод пароля...");
     m_messages.append("2. Сохранение текущей конфигурации...");
@@ -24,7 +24,7 @@ void TuneKIVCheck::setMessages()
     m_messages.append("4. Проверка...");
 }
 
-void TuneKIVCheck::setTuneFunctions()
+void Tune84Check::setTuneFunctions()
 {
     int count = 0;
     m_tuneFunctions[m_messages.at(count++)]
@@ -32,13 +32,13 @@ void TuneKIVCheck::setTuneFunctions()
     Error::Msg (AbstractTuneDialog::*func)()
         = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&AbstractTuneDialog::saveWorkConfig);
     m_tuneFunctions[m_messages.at(count++)] = func;
-    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVCheck::showScheme);
+    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&Tune84Check::showScheme);
     m_tuneFunctions[m_messages.at(count++)] = func;
-    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVCheck::check);
+    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&Tune84Check::check);
     m_tuneFunctions[m_messages.at(count++)] = func;
 }
 
-Error::Msg TuneKIVCheck::showScheme()
+Error::Msg Tune84Check::showScheme()
 {
     QDialog *dlg = new QDialog;
     QVBoxLayout *lyout = new QVBoxLayout;
@@ -60,7 +60,6 @@ Error::Msg TuneKIVCheck::showScheme()
         "составляет 60 ± 0,25 В, ток – 0,500 ± 25 мА, частота – 51,0 ± 0,05 Гц;"));
     lyout->addWidget(WDFunc::NewLBL(
         this, "6. Убедитесь, что частота мигания светодиода «Работа»  на лицевой панели увеличилась до 1 Гц;"));
-    lyout->addWidget(WDFunc::NewLBL(this, "7. Установите на магазине сопротивлений сопротивление 100,0 Ом."));
     lyout->addWidget(WDFunc::NewPB(this, "", "Готово", [dlg] { dlg->close(); }));
     lyout->addWidget(WDFunc::NewPB(this, "cancelpb", "Отмена", [dlg] { dlg->close(); }));
     dlg->setLayout(lyout);
@@ -69,7 +68,7 @@ Error::Msg TuneKIVCheck::showScheme()
     return Error::Msg::NoError;
 }
 
-Error::Msg TuneKIVCheck::check()
+Error::Msg Tune84Check::check()
 {
     Bda *bda = new Bda;
     bda->readAndUpdate();
@@ -79,14 +78,12 @@ Error::Msg TuneKIVCheck::check()
     for (int i = 3; i < 6; ++i)
         if (!StdFunc::floatIsWithinLimits(this, bda->data()->Ueff_ADC[i], 1220000.0, 60000.0))
             return Error::Msg::GeneralError;
-    if (!StdFunc::floatIsWithinLimits(this, bda->data()->Pt100, 2123.0, 120.0))
-        return Error::Msg::GeneralError;
     if (!StdFunc::floatIsWithinLimits(this, bda->data()->Frequency, 51.0, 0.05))
         return Error::Msg::GeneralError;
     return Error::Msg::NoError;
 }
 
-void TuneKIVCheck::showEvent(QShowEvent *e)
+void Tune84Check::showEvent(QShowEvent *e)
 {
     e->accept();
 }

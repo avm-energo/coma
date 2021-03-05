@@ -1,4 +1,4 @@
-#include "tunekivtemp60.h"
+#include "tune84temp60.h"
 
 #include "../../gen/board.h"
 #include "../../gen/colors.h"
@@ -12,7 +12,7 @@
 #include <QMessageBox>
 #include <QVBoxLayout>
 
-TuneKIVTemp60::TuneKIVTemp60(int tuneStep, ConfigKIV *ckiv, QWidget *parent) : AbstractTuneDialog(tuneStep, parent)
+Tune84Temp60::Tune84Temp60(int tuneStep, ConfigKIV *ckiv, QWidget *parent) : AbstractTuneDialog(tuneStep, parent)
 {
     //    m_tuneStep = 2;
     //    TKIV = tkiv;
@@ -31,7 +31,7 @@ TuneKIVTemp60::TuneKIVTemp60(int tuneStep, ConfigKIV *ckiv, QWidget *parent) : A
     SetupUI();
 }
 
-void TuneKIVTemp60::setMessages()
+void Tune84Temp60::setMessages()
 {
     m_messages.append("1. Ввод пароля...");
     m_messages.append("2. Сохранение конфигурации...");
@@ -40,7 +40,7 @@ void TuneKIVTemp60::setMessages()
     m_messages.append("5. Ожидание установления температурного режима...");
     m_messages.append("6. Диалог об установлении входных сигналов...");
     m_messages.append("7. Измерения...");
-    if (m_tuneStep == KIVTS_60TUNING)
+    if (m_tuneStep == TS84_60TUNING)
         m_messages.append("8. Ввод данных энергомонитора и сохранение промежуточных данных...");
     else
     {
@@ -49,7 +49,7 @@ void TuneKIVTemp60::setMessages()
     }
 }
 
-void TuneKIVTemp60::setTuneFunctions()
+void Tune84Temp60::setTuneFunctions()
 {
     int count = 0;
     m_tuneFunctions[m_messages.at(count++)]
@@ -57,26 +57,26 @@ void TuneKIVTemp60::setTuneFunctions()
     Error::Msg (AbstractTuneDialog::*func)()
         = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&AbstractTuneDialog::saveWorkConfig);
     m_tuneFunctions[m_messages.at(count++)] = func;
-    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVTemp60::setNewConfAndTune);
+    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&Tune84Temp60::setNewConfAndTune);
     m_tuneFunctions[m_messages.at(count++)] = func;
-    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVTemp60::showTempDialog);
+    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&Tune84Temp60::showTempDialog);
     m_tuneFunctions[m_messages.at(count++)] = func;
-    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVTemp60::waitForTempToRise);
+    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&Tune84Temp60::waitForTempToRise);
     m_tuneFunctions[m_messages.at(count++)] = func;
-    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVTemp60::showSignalsDialog);
+    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&Tune84Temp60::showSignalsDialog);
     m_tuneFunctions[m_messages.at(count++)] = func;
-    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVTemp60::analogMeasurement);
+    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&Tune84Temp60::analogMeasurement);
     m_tuneFunctions[m_messages.at(count++)] = func;
-    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVTemp60::inputEnergomonitorValues);
+    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&Tune84Temp60::inputEnergomonitorValues);
     m_tuneFunctions[m_messages.at(count++)] = func;
-    if (m_tuneStep == KIVTS_20TUNING)
+    if (m_tuneStep == TS84_20TUNING)
     {
-        func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVTemp60::writeTuneCoefs);
+        func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&Tune84Temp60::writeTuneCoefs);
         m_tuneFunctions[m_messages.at(count++)] = func;
     }
 }
 
-Error::Msg TuneKIVTemp60::setNewConfAndTune()
+Error::Msg Tune84Temp60::setNewConfAndTune()
 {
     CKIV->Bci_block.C_pasp[0] = CKIV->Bci_block.C_pasp[1] = CKIV->Bci_block.C_pasp[2] = 2250;
     CKIV->Bci_block.Unom1 = 220;
@@ -94,7 +94,7 @@ Error::Msg TuneKIVTemp60::setNewConfAndTune()
     return Error::Msg::NoError;
 }
 
-Error::Msg TuneKIVTemp60::showTempDialog()
+Error::Msg Tune84Temp60::showTempDialog()
 {
     QDialog *dlg = new QDialog;
     QVBoxLayout *lyout = new QVBoxLayout;
@@ -110,7 +110,7 @@ Error::Msg TuneKIVTemp60::showTempDialog()
     return Error::Msg::NoError;
 }
 
-Error::Msg TuneKIVTemp60::waitForTempToRise()
+Error::Msg Tune84Temp60::waitForTempToRise()
 {
     WaitWidget *ww = new WaitWidget;
     ww->setObjectName("ww");
@@ -127,7 +127,7 @@ Error::Msg TuneKIVTemp60::waitForTempToRise()
     return Error::Msg::NoError;
 }
 
-Error::Msg TuneKIVTemp60::showSignalsDialog()
+Error::Msg Tune84Temp60::showSignalsDialog()
 {
     QDialog *dlg = new QDialog;
     QVBoxLayout *lyout = new QVBoxLayout;
@@ -150,7 +150,7 @@ Error::Msg TuneKIVTemp60::showSignalsDialog()
     return Error::Msg::NoError;
 }
 
-Error::Msg TuneKIVTemp60::analogMeasurement()
+Error::Msg Tune84Temp60::analogMeasurement()
 {
     emit setProgressSize(StdFunc::tuneRequestCount());
     //    startWait();
@@ -189,7 +189,7 @@ Error::Msg TuneKIVTemp60::analogMeasurement()
     return Error::Msg::NoError;
 }
 
-Error::Msg TuneKIVTemp60::inputEnergomonitorValues()
+Error::Msg Tune84Temp60::inputEnergomonitorValues()
 {
     QDialog *dlg = new QDialog(this);
     dlg->setObjectName("energomonitordlg");
@@ -200,7 +200,7 @@ Error::Msg TuneKIVTemp60::inputEnergomonitorValues()
     vlyout->addWidget(WDFunc::NewLBLAndLE(this, "Iэт, мА", "ValuetuneI", true));
     vlyout->addWidget(WDFunc::NewLBLAndLE(this, "Yэт, град", "ValuetuneY", true));
     QPushButton *pb = new QPushButton("Продолжить");
-    if (m_tuneStep == KIVTS_60TUNING)
+    if (m_tuneStep == TS84_60TUNING)
         connect(pb, &QPushButton::clicked, [&dlg, this]() {
             saveIntermediateResults();
             dlg->close();
@@ -216,7 +216,7 @@ Error::Msg TuneKIVTemp60::inputEnergomonitorValues()
     return Error::Msg::NoError;
 }
 
-Error::Msg TuneKIVTemp60::calcTuneCoefs()
+Error::Msg Tune84Temp60::calcTuneCoefs()
 {
     m_midTuneStruct.uet = StdFunc::toFloat(WDFunc::LEData(this, "ValuetuneU"));
     m_midTuneStruct.iet = StdFunc::toFloat(WDFunc::LEData(this, "ValuetuneI"));
@@ -254,7 +254,7 @@ Error::Msg TuneKIVTemp60::calcTuneCoefs()
     //    return m_bac->writeBlockToModule();
 }
 
-void TuneKIVTemp60::loadIntermediateResults()
+void Tune84Temp60::loadIntermediateResults()
 {
     //    QString cpuserialnum = Board::GetInstance().UID();
     //    QSettings storedcalibrations(StdFunc::GetSystemHomeDir() + "calibr.ini", QSettings::IniFormat);
@@ -264,26 +264,26 @@ void TuneKIVTemp60::loadIntermediateResults()
     //            storedcalibrations.value(cpuserialnum + "/" + item.parametername, 0xcdcdcdcd).toString());
 }
 
-void TuneKIVTemp60::saveIntermediateResults()
+void Tune84Temp60::saveIntermediateResults()
 {
     m_midTuneStruct.uet = StdFunc::toFloat(WDFunc::LEData(this, "ValuetuneU"));
     m_midTuneStruct.iet = StdFunc::toFloat(WDFunc::LEData(this, "ValuetuneI"));
     m_midTuneStruct.yet = StdFunc::toFloat(WDFunc::LEData(this, "ValuetuneY"));
-    QString cpuserialnum = Board::GetInstance().UID();
-    QSettings storedcalibrations(StdFunc::GetSystemHomeDir() + "calibr.ini", QSettings::IniFormat);
+    //    QString cpuserialnum = Board::GetInstance().UID();
+    //    QSettings storedcalibrations(StdFunc::GetSystemHomeDir() + "calibr.ini", QSettings::IniFormat);
     foreach (TuneDescrStruct item, m_tuneDescrVector())
         TuneSequenceFile::setValue(item.parametername, *item.parameter);
     //        storedcalibrations.setValue(cpuserialnum + "/" + item.parametername, *item.parameter);
     loadWorkConfig();
 }
 
-// void TuneKIVTemp60::acceptTuneCoefs()
+// void Tune84Temp60::acceptTuneCoefs()
 //{
 //    m_bac->updateFromWidget();
 //    m_bac->writeBlockToModule();
 //}
 
-// void TuneKIVTemp60::setDefCoefs()
+// void Tune84Temp60::setDefCoefs()
 //{
 //    m_bac->setDefBlockAndUpdate();
 //    m_bd0->setDefBlockAndUpdate();

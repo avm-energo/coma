@@ -23,6 +23,7 @@ void Bd0::createWidget()
     hlyout->addWidget(WDFunc::NewLBL2(m_widget, "Tmk0"), 0);
     hlyout->addWidget(WDFunc::NewLBLT2(m_widget, "", "101", "Температура процессора"), 5);
     lyout->addLayout(hlyout);
+    hlyout = new QHBoxLayout;
     hlyout->addWidget(WDFunc::NewLBL2(m_widget, "VBat"), 0);
     hlyout->addWidget(WDFunc::NewLBLT2(m_widget, "", "102", "Напряжение батарейки"), 5);
     lyout->addLayout(hlyout);

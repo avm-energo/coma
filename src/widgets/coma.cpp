@@ -179,7 +179,7 @@ void Coma::SetupUI()
     QVBoxLayout *lyout = new QVBoxLayout(wdgt);
     QHBoxLayout *hlyout = new QHBoxLayout;
 
-    hlyout->addWidget(createToolBar());
+    hlyout->addWidget(createToolBar() /*, Qt::AlignTop | Qt::AlignLeft*/);
 
     AlarmW = new AlarmWidget(this);
 
@@ -198,18 +198,23 @@ QWidget *Coma::least()
     QWidget *w = new QWidget;
 
     QVBoxLayout *lyout = new QVBoxLayout;
-    lyout->addStretch(500);
 
     QHBoxLayout *inlyout = new QHBoxLayout;
     lyout->addLayout(inlyout);
 
     MainTW = new QStackedWidget(this);
-    MainTW->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    MainLW = new QListWidget(this);
+    auto sizePolizy = MainTW->sizePolicy();
+    sizePolizy.setRetainSizeWhenHidden(true);
+    MainTW->setSizePolicy(sizePolizy);
 
+    MainLW = new QListWidget(this);
+    sizePolizy = MainLW->sizePolicy();
+    sizePolizy.setRetainSizeWhenHidden(true);
+    MainLW->setSizePolicy(sizePolizy);
     inlyout->addWidget(MainLW);
     inlyout->addWidget(MainTW);
-
+    MainLW->setMinimumWidth(width() / 6);
+    MainLW->setMaximumWidth(width() / 5);
     MainTW->hide();
     MainLW->hide();
     connect(MainTW, &QStackedWidget::currentChanged, this, &Coma::mainTWTabChanged);
@@ -261,7 +266,6 @@ void Coma::prepareConnectDlg()
     QAction *action = qobject_cast<QAction *>(sender());
     Q_ASSERT(action);
     action->setDisabled(true);
-    // qDebug() << sender()->metaObject()->className();
     auto const &board = Board::GetInstance();
     if (board.connectionState() != Board::ConnectionState::Closed)
     {
@@ -363,8 +367,7 @@ void Coma::prepare()
     MainTW->show();
     MainLW->show();
     qDebug() << MainTW->width() << width();
-    MainLW->setMinimumWidth(width() / 6);
-    MainLW->setMaximumWidth(width() / 5);
+
     AlrmTimer->start();
     qInfo() << NAMEOF(MainTW) << "created";
 

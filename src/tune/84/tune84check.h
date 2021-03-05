@@ -1,5 +1,5 @@
-#ifndef TUNEKIVCHECK_H
-#define TUNEKIVCHECK_H
+#ifndef TUNE84CHECK_H
+#define TUNE84CHECK_H
 
 #include "../../config/configkiv.h"
 #include "../abstracttunedialog.h"
@@ -7,11 +7,11 @@
 #include <QShowEvent>
 #include <QWidget>
 
-class TuneKIVCheck : public AbstractTuneDialog
+class Tune84Check : public AbstractTuneDialog
 {
     Q_OBJECT
 public:
-    TuneKIVCheck(int tuneStep, QWidget *parent = nullptr);
+    Tune84Check(int tuneStep, QWidget *parent = nullptr);
 
 private:
     void setMessages() override;
@@ -24,4 +24,4 @@ protected:
     void showEvent(QShowEvent *e) override;
 };
 
-#endif // TUNEKIVCHECK_H
+#endif // TUNE84CHECK_H
