@@ -4,6 +4,9 @@
 
 #include <cassert>
 #include <map>
+
+class ConfigBlock;
+
 namespace S2DataTypes
 {
 using valueTypeMap = std::map<int, ctti::unnamed_type_id_t>;
@@ -23,6 +26,8 @@ namespace DataTypes
 
 class DataRecV
 {
+    friend ConfigBlock;
+
 public:
     friend bool operator==(const DataRecV &lhs, const DataRecV &rhs);
     friend bool operator!=(const DataRecV &lhs, const DataRecV &rhs);
@@ -38,12 +43,17 @@ public:
     void printer() const;
     S2DataTypes::DataRec serialize() const;
     static std::map<int, ctti::unnamed_type_id_t> map;
-    template <typename T> static void addValue(int id)
+
+    template <typename T> struct true_type
+    {
+        static constexpr bool value = std::is_variant_alternative<T, valueType>();
+    };
+    template <typename T, std::enable_if_t<true_type<T>::value, bool> = true> static void addValue(int id)
     {
         map.insert({ id, ctti::unnamed_type_id<T>() });
     }
 
-    template <typename T> T value() const
+    template <typename T, std::enable_if_t<true_type<T>::value, bool> = true> T value() const
     {
         assert(std::holds_alternative<T>(data) && "Requested wrong type");
         if (std::holds_alternative<T>(data))
@@ -62,9 +72,11 @@ public:
         else
             data = value;
     }
-    unsigned int id;
+
+    unsigned int getId() const;
 
 private:
+    unsigned int id;
     valueType data;
 };
 

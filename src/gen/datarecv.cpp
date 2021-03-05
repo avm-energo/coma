@@ -4,7 +4,10 @@
 
 std::map<int, ctti::unnamed_type_id_t> DataTypes::DataRecV::map;
 
-DataTypes::DataRecV DataTypes::DataRecV::deserialize(const S2DataTypes::DataRec &record)
+namespace DataTypes
+{
+
+DataRecV DataTypes::DataRecV::deserialize(const S2DataTypes::DataRec &record)
 {
     using namespace detail;
     DataRecV newRec;
@@ -93,7 +96,7 @@ DataTypes::DataRecV DataTypes::DataRecV::deserialize(const S2DataTypes::DataRec 
     return newRec;
 }
 
-void DataTypes::DataRecV::printer() const
+void DataRecV::printer() const
 {
     std::cout << id << std::endl;
     valueType w = data;
@@ -101,13 +104,7 @@ void DataTypes::DataRecV::printer() const
     std::cout << std::endl;
 }
 
-// struct helper{
-//    S2DataTypes::DataRec operator()(auto &arg){
-
-//    };
-//};
-
-S2DataTypes::DataRec DataTypes::DataRecV::serialize() const
+S2DataTypes::DataRec DataRecV::serialize() const
 {
     return std::visit(
         [=](auto &arg) -> S2DataTypes::DataRec {
@@ -118,7 +115,7 @@ S2DataTypes::DataRec DataTypes::DataRecV::serialize() const
         data);
 }
 
-DataTypes::DataRecV::DataRecV(const S2DataTypes::DataRec &record) : id(record.id)
+DataRecV::DataRecV(const S2DataTypes::DataRec &record) : id(record.id)
 {
     using namespace detail;
 
@@ -224,18 +221,23 @@ DataTypes::DataRecV::DataRecV(const S2DataTypes::DataRec &record) : id(record.id
     }
 }
 
-bool DataTypes::operator==(const DataTypes::DataRecV &lhs, const DataTypes::DataRecV &rhs)
+bool operator==(const DataTypes::DataRecV &lhs, const DataTypes::DataRecV &rhs)
 {
     using namespace S2DataTypes;
     return (lhs.id == rhs.id) && (lhs.data == rhs.data);
 }
 
-bool DataTypes::operator!=(const DataTypes::DataRecV &lhs, const DataTypes::DataRecV &rhs)
+bool operator!=(const DataTypes::DataRecV &lhs, const DataTypes::DataRecV &rhs)
 {
     using namespace S2DataTypes;
     return !(lhs == rhs);
 }
 
+unsigned int DataRecV::getId() const
+{
+    return id;
+}
+}
 bool S2DataTypes::is_same(const S2DataTypes::DataRec &lhs, const S2DataTypes::DataRec &rhs)
 {
     if ((lhs.id == rhs.id) && (lhs.numByte == rhs.numByte))

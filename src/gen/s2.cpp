@@ -200,7 +200,7 @@ Error::Msg S2::RestoreData(QByteArray bain, QList<DataTypes::ConfParameterStruct
         memcpy(&DR, &bain.data()[0], size);
         DataTypes::DataRecV DRV(DR);
         if (!S2DataTypes::is_same(DR, DRV.serialize()))
-            qDebug() << DRV.id;
+            qDebug() << DRV.getId();
         bain.remove(0, size);
         //  Q_ASSERT(!bain.isEmpty());
         if (DR.id != 0xFFFFFFFF)
@@ -579,7 +579,7 @@ quint32 S2::crc32buf(const QByteArray &data)
 DataTypes::DataRecV S2::getRecord(unsigned int id)
 {
     auto result = std::find_if(
-        std::cbegin(configV), std::cend(configV), [id](const auto &record) { return (id == record.id); });
+        std::cbegin(configV), std::cend(configV), [id](const auto &record) { return (id == record.getId()); });
     if (result != std::cend(configV))
         return *result;
     else
@@ -593,7 +593,7 @@ void S2::setRecordValue(const DataTypes::DataRecV &record)
 {
 
     auto result = std::find_if(
-        std::begin(configV), std::end(configV), [record](const auto &lhs) { return (lhs.id == record.id); });
+        std::begin(configV), std::end(configV), [record](const auto &lhs) { return (lhs.getId() == record.getId()); });
     if (result != std::end(configV))
         *result = record;
     else
