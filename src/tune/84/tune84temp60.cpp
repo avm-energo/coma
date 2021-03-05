@@ -5,6 +5,7 @@
 #include "../../gen/stdfunc.h"
 #include "../../widgets/waitwidget.h"
 #include "../../widgets/wd_func.h"
+#include "../tunesequencefile.h"
 #include "../tunesteps.h"
 
 #include <QEventLoop>
@@ -255,11 +256,12 @@ Error::Msg Tune84Temp60::calcTuneCoefs()
 
 void Tune84Temp60::loadIntermediateResults()
 {
-    QString cpuserialnum = Board::GetInstance().UID();
-    QSettings storedcalibrations(StdFunc::GetSystemHomeDir() + "calibr.ini", QSettings::IniFormat);
+    //    QString cpuserialnum = Board::GetInstance().UID();
+    //    QSettings storedcalibrations(StdFunc::GetSystemHomeDir() + "calibr.ini", QSettings::IniFormat);
     foreach (TuneDescrStruct item, m_tuneDescrVector())
-        *item.parameter = StdFunc::toFloat(
-            storedcalibrations.value(cpuserialnum + "/" + item.parametername, 0xcdcdcdcd).toString());
+        *item.parameter = StdFunc::toFloat(TuneSequenceFile::value(item.parametername).toString());
+    //        *item.parameter = StdFunc::toFloat(
+    //            storedcalibrations.value(cpuserialnum + "/" + item.parametername, 0xcdcdcdcd).toString());
 }
 
 void Tune84Temp60::saveIntermediateResults()
@@ -267,10 +269,11 @@ void Tune84Temp60::saveIntermediateResults()
     m_midTuneStruct.uet = StdFunc::toFloat(WDFunc::LEData(this, "ValuetuneU"));
     m_midTuneStruct.iet = StdFunc::toFloat(WDFunc::LEData(this, "ValuetuneI"));
     m_midTuneStruct.yet = StdFunc::toFloat(WDFunc::LEData(this, "ValuetuneY"));
-    QString cpuserialnum = Board::GetInstance().UID();
-    QSettings storedcalibrations(StdFunc::GetSystemHomeDir() + "calibr.ini", QSettings::IniFormat);
+    //    QString cpuserialnum = Board::GetInstance().UID();
+    //    QSettings storedcalibrations(StdFunc::GetSystemHomeDir() + "calibr.ini", QSettings::IniFormat);
     foreach (TuneDescrStruct item, m_tuneDescrVector())
-        storedcalibrations.setValue(cpuserialnum + "/" + item.parametername, *item.parameter);
+        TuneSequenceFile::setValue(item.parametername, *item.parameter);
+    //        storedcalibrations.setValue(cpuserialnum + "/" + item.parametername, *item.parameter);
     loadWorkConfig();
 }
 

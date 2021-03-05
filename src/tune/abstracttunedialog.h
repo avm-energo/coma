@@ -61,7 +61,7 @@ public:
     void MsgClear();
     void SetBac(DataBlock *block);
     Error::Msg checkCalibrStep();
-    void saveTuneSequenceFile(int step);
+    //    void saveTuneSequenceFile(int step);
     Error::Msg saveWorkConfig();
     Error::Msg loadWorkConfig();
     Error::Msg saveAllTuneCoefs();

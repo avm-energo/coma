@@ -13,28 +13,15 @@
 
 TuneKIVCheck::TuneKIVCheck(int tuneStep, QWidget *parent) : AbstractTuneDialog(tuneStep, parent)
 {
-    //    TKIV = kiv;
-    //    CKIV = ckiv;
-    //    S2Config = TKIV->getS2Config();
-    //    m_tuneStep = 1;
-    //    SetupUI();
-    //    addDataBlock()
     SetupUI();
 }
-
-// void TuneKIVCheck::SetupUI()
-//{
-//}
 
 void TuneKIVCheck::setMessages()
 {
     m_messages.append("1. Ввод пароля...");
     m_messages.append("2. Сохранение текущей конфигурации...");
-    //    m_messages.append("3. Задание режима конфигурирования модуля...");
-    //    m_messages.append("3. Установка новой конфигурации...");
     m_messages.append("3. Отображение схемы подключения...");
-    //    m_messages.append("4. Ожидание 15 с...");
-    m_messages.append("5. Проверка...");
+    m_messages.append("4. Проверка...");
 }
 
 void TuneKIVCheck::setTuneFunctions()
@@ -45,39 +32,11 @@ void TuneKIVCheck::setTuneFunctions()
     Error::Msg (AbstractTuneDialog::*func)()
         = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&AbstractTuneDialog::saveWorkConfig);
     m_tuneFunctions[m_messages.at(count++)] = func;
-    //    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVCheck::setSMode2);
-    //    m_tuneFunctions[m_messages.at(count++)] = func;
-    //    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVCheck::setNewConfig);
-    //    m_tuneFunctions[m_messages.at(count++)] = func;
     func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVCheck::showScheme);
     m_tuneFunctions[m_messages.at(count++)] = func;
-    //    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&AbstractTuneDialog::Wait15Seconds);
-    //    m_tuneFunctions[m_messages.at(count++)] = func;
     func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVCheck::check);
     m_tuneFunctions[m_messages.at(count++)] = func;
 }
-
-// QWidget *TuneKIVCheck::MainUI()
-//{
-//    return nullptr;
-//}
-
-// void TuneKIVCheck::FillBac(int bacnum)
-//{
-//    Q_UNUSED(bacnum)
-//}
-
-// void TuneKIVCheck::FillBackBac(int bacnum)
-//{
-//    Q_UNUSED(bacnum)
-//}
-
-// Error::Msg TuneKIVCheck::setSMode2()
-//{
-//    iface()->writeCommand(Queries::QUSB_SetMode, 0x02);
-//    //    return Commands::SetMode(0x02);
-//    return Error::Msg::NoError;
-//}
 
 Error::Msg TuneKIVCheck::showScheme()
 {
@@ -114,8 +73,6 @@ Error::Msg TuneKIVCheck::check()
 {
     Bda *bda = new Bda;
     bda->readAndUpdate();
-    //    BaseInterface::iface()->reqBlockSync(1, DataTypes::DataBlockTypes::BdaBlock, &bda,
-    //    sizeof(bda));
     for (int i = 0; i < 3; ++i)
         if (!StdFunc::floatIsWithinLimits(this, bda->data()->Ueff_ADC[i], 2150000.0, 150000.0))
             return Error::Msg::GeneralError;
@@ -131,10 +88,5 @@ Error::Msg TuneKIVCheck::check()
 
 void TuneKIVCheck::showEvent(QShowEvent *e)
 {
-    saveTuneSequenceFile(1); // save settings for the current MCU in INI file
     e->accept();
 }
-
-// void TuneKIVCheck::setDefCoefs()
-//{
-//}

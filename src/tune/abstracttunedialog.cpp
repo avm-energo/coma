@@ -15,6 +15,7 @@
 #include "../widgets/wd_func.h"
 #include "generaltunedialog.h"
 #include "limereport/lrreportengine.h"
+#include "tunesequencefile.h"
 
 #include <QMessageBox>
 #include <QProgressBar>
@@ -290,7 +291,7 @@ void AbstractTuneDialog::startTune()
     WDFunc::SetEnabled(this, "stoptune", false);
     WDFunc::SetEnabled(this, "finishpb", true);
     QMessageBox::information(this, "Готово", "Настройка завершена!");
-    saveTuneSequenceFile(m_tuneStep + 1); // +1 to let the next stage run
+    TuneSequenceFile::saveTuneSequenceFile(m_tuneStep + 1); // +1 to let the next stage run
 }
 
 void AbstractTuneDialog::setProgressSizeSlot(int size)
@@ -420,16 +421,18 @@ void AbstractTuneDialog::writeTuneCoefsSlot()
 
 Error::Msg AbstractTuneDialog::checkCalibrStep()
 {
-    QString cpuserialnum = Board::GetInstance().UID();
-    QSettings storedcalibrations(StdFunc::GetSystemHomeDir() + "calibr.ini", QSettings::IniFormat);
-    if (!storedcalibrations.contains(cpuserialnum + "/step"))
+    //    QString cpuserialnum = Board::GetInstance().UID();
+    //    QSettings storedcalibrations(StdFunc::GetSystemHomeDir() + "calibr.ini", QSettings::IniFormat);
+    //    if (!storedcalibrations.contains(cpuserialnum + "/step"))
+    if (!TuneSequenceFile::contains("step"))
     {
         QMessageBox::warning(this, "Внимание",
             "Не выполнены предыдущие шаги регулировки, пожалуйста,\n"
             "начните заново с шага 1");
         return Error::Msg::ResEmpty;
     }
-    int calibrstep = storedcalibrations.value(cpuserialnum + "/step", "1").toInt();
+    //    int calibrstep = storedcalibrations.value(cpuserialnum + "/step", "1").toInt();
+    int calibrstep = TuneSequenceFile::value("step").toInt();
     if (calibrstep < m_tuneStep)
     {
         QMessageBox::warning(this, "Внимание",
@@ -441,14 +444,14 @@ Error::Msg AbstractTuneDialog::checkCalibrStep()
     return Error::Msg::NoError;
 }
 
-void AbstractTuneDialog::saveTuneSequenceFile(int step)
-{
-    QString cpuserialnum = Board::GetInstance().UID();
-    QSettings storedcalibrations(StdFunc::GetSystemHomeDir() + "calibr.ini", QSettings::IniFormat);
-    int calibrstep = storedcalibrations.value(cpuserialnum + "/step", "1").toInt();
-    if (step > calibrstep)
-        storedcalibrations.setValue(cpuserialnum + "/step", step);
-}
+// void AbstractTuneDialog::saveTuneSequenceFile(int step)
+//{
+//    QString cpuserialnum = Board::GetInstance().UID();
+//    QSettings storedcalibrations(StdFunc::GetSystemHomeDir() + "calibr.ini", QSettings::IniFormat);
+//    int calibrstep = storedcalibrations.value(cpuserialnum + "/step", "1").toInt();
+//    if (step > calibrstep)
+//        storedcalibrations.setValue(cpuserialnum + "/step", step);
+//}
 
 Error::Msg AbstractTuneDialog::saveWorkConfig()
 {

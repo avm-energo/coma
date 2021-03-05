@@ -11,17 +11,11 @@
 TuneKIVR::TuneKIVR(int tuneStep, ConfigKIV *ckiv, QWidget *parent) : AbstractTuneDialog(tuneStep, parent)
 {
     CKIV = ckiv;
-    //    TKIV = kiv;
-    //    m_tuneStep = 1;
-    //    SetBac(TKIV->m_Bac, 1, sizeof(TKIV->m_Bac));
     m_bac = new Bac;
     m_bda = new Bda;
     SetBac(m_bac);
-    //    SetBac(TKIV->m_Bac);
     m_BacWidgetIndex = addWidgetToTabWidget(m_bac->widget(), "Настроечные параметры");
     m_BdaWidgetIndex = addWidgetToTabWidget(m_bda->widget(), "Текущие данные");
-    //    SetupUI();
-    //    m_isEnergoMonitorDialogCreated = false;
     SetupUI();
 }
 
@@ -46,8 +40,6 @@ void TuneKIVR::setTuneFunctions()
     m_tuneFunctions[m_messages.at(count++)] = func;
     func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&AbstractTuneDialog::readTuneCoefs);
     m_tuneFunctions[m_messages.at(count++)] = func;
-    //    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVR::checkTuneCoefs);
-    //    m_tuneFunctions[m_messages.at(count++)] = func;
     func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVR::setR80);
     m_tuneFunctions[m_messages.at(count++)] = func;
     func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVR::processR80);
@@ -57,33 +49,6 @@ void TuneKIVR::setTuneFunctions()
     func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVR::processR120);
     m_tuneFunctions[m_messages.at(count++)] = func;
 }
-
-// void TuneKIVMain::FillBac(int bacnum)
-//{
-//    TKIV->updateBacWidget();
-//    Q_UNUSED(bacnum)
-//}
-
-// void TuneKIVMain::FillBackBac(int bacnum)
-//{
-//    TKIV->updateFromBacWidget();
-//    Q_UNUSED(bacnum)
-//}
-
-// QWidget *TuneKIVR::MainUI()
-//{
-//    QWidget *w = new QWidget;
-//    QVBoxLayout *lyout = new QVBoxLayout;
-//    QTabWidget *tw = new QTabWidget;
-//    tw->setObjectName("tunetw");
-// //    QString ConfTWss = "QTabBar::tab:selected {background-color: " + QString(Colors::Tab) + ";}";
-// //    tw->tabBar()->setStyleSheet(ConfTWss);
-//    tw->addTab(TKIV->m_Bac->widget(), "Настроечные параметры");
-//    tw->addTab(TKIV->BdaWidget(), "Текущие данные");
-//    lyout->addWidget(tw);
-//    w->setLayout(lyout);
-//    return w;
-//}
 
 Error::Msg TuneKIVR::showPreWarning()
 {
@@ -110,26 +75,6 @@ Error::Msg TuneKIVR::showPreWarning()
     dlg->exec();
     return Error::Msg::NoError;
 }
-
-// Error::Msg TuneKIVR::checkTuneCoefs()
-//{
-//    QVector<float *> tcoefs = { &m_bac->data()->KmU[0], &m_bac->data()->KmI1[0], &m_bac->data()->KmI2[0],
-//        &m_bac->data()->KmI4[0], &m_bac->data()->KmI8[0], &m_bac->data()->KmI16[0], &m_bac->data()->KmI32[0] };
-//    for (int i = 0; i < 3; ++i)
-//    {
-//        foreach (float *coef, tcoefs)
-//            if (!StdFunc::floatIsWithinLimits(this, *(coef + i), 1.0, 0.05))
-//                return Error::Msg::GeneralError;
-//    }
-//    // !!!   if (!StdFunc::floatIsWithinLimits(this, m_bac->data()->K_freq, 1.0, 0.05))
-//    //        return Error::Msg::GeneralError;
-//    for (int i = 0; i < 6; ++i)
-//    {
-//        if (!StdFunc::floatIsWithinLimits(this, m_bac->data()->DPsi[i], 0.0, 1.0))
-//            return Error::Msg::GeneralError;
-//    }
-//    return Error::Msg::NoError;
-//}
 
 Error::Msg TuneKIVR::setR80()
 {
@@ -166,10 +111,8 @@ Error::Msg TuneKIVR::processR120()
     m_bac->data()->Brt = pt100_120 * 2 - m_pt100 * 3;
     m_bac->updateWidget();
     showTWTab(m_BacWidgetIndex);
-    //    TKIV->updateBacWidget();
     saveAllTuneCoefs();
     return writeTuneCoefs();
-    //    return Error::Msg::NoError;
 }
 
 void TuneKIVR::setR(int r)
@@ -181,7 +124,6 @@ void TuneKIVR::setR(int r)
 
 double TuneKIVR::processR()
 {
-    //    startWait();
     showTWTab(m_BdaWidgetIndex);
     emit setProgressSize(StdFunc::tuneRequestCount());
     int i = 0;
@@ -189,8 +131,6 @@ double TuneKIVR::processR()
     while ((!StdFunc::isCancelled()) && (i < StdFunc::tuneRequestCount()))
     {
         m_bda->readAndUpdate();
-        //        BaseInterface::iface()->reqBlockSync(1, DataTypes::DataBlockTypes::BdaBlock, &m_bda,
-        //        sizeof(m_bda)); TKIV->updateBdaWidget();
         pt100 += m_bda->data()->Pt100;
         ++i;
         emit setProgressCount(i);
@@ -198,43 +138,6 @@ double TuneKIVR::processR()
     }
     if (StdFunc::isCancelled())
         return 0;
-    //    stopWait();
     pt100 /= i;
     return pt100;
 }
-
-// void TuneKIVR::showTWTab(int num)
-//{
-//    QTabWidget *tw = this->findChild<QTabWidget *>("tunetw");
-//    if (tw != nullptr)
-//        tw->setCurrentIndex(num);
-//}
-
-// void TuneKIVMain::saveIntermediateResults()
-//{
-//    struct tunedescrstruct
-//    {
-//        QString parametername;
-//        float *parameter;
-//    };
-
-//    QVector<tunedescrstruct> tuneDescrVector;
-//    for (int i = 0; i < 6; ++i)
-//        tuneDescrVector.append({ "u_p" + QString::number(i), &m_bdain.IUefNat_filt[i] });
-//    for (int i = 0; i < 3; ++i)
-//        tuneDescrVector.append({ "y_p" + QString::number(i), &m_bdain.phi_next_f[i] });
-//    tuneDescrVector.append({ "tmk_p", &m_midTuneStruct.tmk });
-//    tuneDescrVector.append({ "uet_p", &m_midTuneStruct.uet });
-//    tuneDescrVector.append({ "iet_p", &m_midTuneStruct.iet });
-//    tuneDescrVector.append({ "yet_p", &m_midTuneStruct.yet });
-//    QString cpuserialnum = Board::GetInstance().UID();
-//    QSettings storedcalibrations(StdFunc::GetSystemHomeDir() + "calibr.ini", QSettings::IniFormat);
-//    foreach (tunedescrstruct item, tuneDescrVector)
-//        storedcalibrations.setValue(cpuserialnum + "/" + item.parametername, *item.parameter);
-//    loadWorkConfig();
-//}
-
-// void TuneKIVR::setDefCoefs()
-//{
-//    TKIV->m_Bac->setDefBlockAndUpdate();
-//}

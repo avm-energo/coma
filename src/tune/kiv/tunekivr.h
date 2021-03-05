@@ -6,7 +6,6 @@
 #include "../../datablocks/kiv/bda.h"
 #include "../../datablocks/kiv/bdain.h"
 #include "../abstracttunedialog.h"
-//#include "tunekiv.h"
 
 #include <QWidget>
 
@@ -17,7 +16,6 @@ public:
     TuneKIVR(int tuneStep, ConfigKIV *ckiv, QWidget *parent = nullptr);
 
 private:
-    //    TuneKIV *TKIV;
     ConfigKIV *CKIV;
     Bac *m_bac;
     Bda *m_bda;
@@ -28,10 +26,8 @@ private:
 
     void setMessages() override;
     void setTuneFunctions() override;
-    //    QWidget *MainUI() override;
 
     Error::Msg showPreWarning();
-    //    Error::Msg checkTuneCoefs();
     Error::Msg setR80();
     Error::Msg processR80();
     Error::Msg setR120();
@@ -40,10 +36,7 @@ private:
     void setR(int r);
     double processR(); // get BDA.Pt100 several times and return back value
 
-    //    void showTWTab(int num);
-
 private slots:
-    //    void setDefCoefs() override;
 };
 
 #endif // TUNEKIVMAIN_H

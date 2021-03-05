@@ -5,6 +5,7 @@
 #include "../../gen/stdfunc.h"
 #include "../../widgets/waitwidget.h"
 #include "../../widgets/wd_func.h"
+#include "../tunesequencefile.h"
 #include "../tunesteps.h"
 
 #include <QEventLoop>
@@ -255,11 +256,12 @@ Error::Msg TuneKIVTemp60::calcTuneCoefs()
 
 void TuneKIVTemp60::loadIntermediateResults()
 {
-    QString cpuserialnum = Board::GetInstance().UID();
-    QSettings storedcalibrations(StdFunc::GetSystemHomeDir() + "calibr.ini", QSettings::IniFormat);
+    //    QString cpuserialnum = Board::GetInstance().UID();
+    //    QSettings storedcalibrations(StdFunc::GetSystemHomeDir() + "calibr.ini", QSettings::IniFormat);
     foreach (TuneDescrStruct item, m_tuneDescrVector())
-        *item.parameter = StdFunc::toFloat(
-            storedcalibrations.value(cpuserialnum + "/" + item.parametername, 0xcdcdcdcd).toString());
+        *item.parameter = StdFunc::toFloat(TuneSequenceFile::value(item.parametername).toString());
+    //        *item.parameter = StdFunc::toFloat(
+    //            storedcalibrations.value(cpuserialnum + "/" + item.parametername, 0xcdcdcdcd).toString());
 }
 
 void TuneKIVTemp60::saveIntermediateResults()
@@ -270,7 +272,8 @@ void TuneKIVTemp60::saveIntermediateResults()
     QString cpuserialnum = Board::GetInstance().UID();
     QSettings storedcalibrations(StdFunc::GetSystemHomeDir() + "calibr.ini", QSettings::IniFormat);
     foreach (TuneDescrStruct item, m_tuneDescrVector())
-        storedcalibrations.setValue(cpuserialnum + "/" + item.parametername, *item.parameter);
+        TuneSequenceFile::setValue(item.parametername, *item.parameter);
+    //        storedcalibrations.setValue(cpuserialnum + "/" + item.parametername, *item.parameter);
     loadWorkConfig();
 }
 
