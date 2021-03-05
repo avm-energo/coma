@@ -8,8 +8,8 @@
 #include "../../widgets/udialog.h"
 #include "../generaltunedialog.h"
 #include "../kiv/tunekivadc.h"
-#include "../kiv/tunekivcheck.h"
 #include "../kiv/tunekivtemp60.h"
+#include "tune84check.h"
 
 #include <QHBoxLayout>
 #include <QLineEdit>
@@ -26,7 +26,7 @@ public slots:
 
 private:
     ConfigKIV *CKIV;
-    TuneKIVCheck *T84CheckDialog;
+    Tune84Check *T84CheckDialog;
     TuneKIVADC *T84ADCDialog;
     TuneKIVTemp60 *T8460Dialog, *T8420Dialog;
 
