@@ -628,6 +628,39 @@ const QStringList measJourHeaders {
     "Tamb,°С",        //
     "Twin,°С"         //
 };
+
+typedef struct
+{
+    quint32 NFiltr;
+    quint32 NHarmFilt;
+    quint32 DDosc;
+    float Unom1;
+    float DUosc;
+    float DIosc;
+    float DUImin;
+    float Imin;
+    quint32 T_Data_Rec;
+    float U2nom;
+    float ITT1nom;
+    float ITT2nom;
+    quint32 Cool_type;
+    quint32 W_mat;
+    float TNNTdop;
+    float TNNTpred;
+    float Tamb_nom;
+    float dTNNTnom;
+    float Kdob;
+    float TauWnom;
+    float Umax;
+    float Imax;
+    float Iwnom;
+    quint32 OscPoints;
+    float GTnnt;
+    float GOvc;
+    quint32 TdatNum;
+
+} Bci;
+
 }
 
 namespace AVM_KDV

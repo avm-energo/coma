@@ -98,9 +98,15 @@ void ServiceModule::createModule(Modules::Model model)
         addDialogToList(cdktf, "Проверка");
 
         addDialogToList(new StartupKTFDialog, "Старение\nизоляции");
+<<<<<<< HEAD
 
+        CheckKTFHarmonicDialog *charmktf = new CheckKTFHarmonicDialog;
+        addDialogToList(charmktf, "Гармоники");
+
+=======
         addDialogToList(new CheckKTFHarmonicDialog, "Гармоники");
         Module::create(std::move(JOUR));
+>>>>>>> origin/master
         break;
     }
     case Model::KDV:
