@@ -1,4 +1,4 @@
-#include "coma.h"
+#include "servicecoma.h"
 
 #include "../gen/board.h"
 #include "../gen/datamanager.h"
@@ -17,12 +17,14 @@ ServiceComa::~ServiceComa()
 void ServiceComa::PrepareDialogs()
 {
     m_Module = ModulePointer(new ServiceModule);
+    Q_INIT_RESOURCE(settings);
     if (!m_Module->loadSettings())
     {
         qCritical() << "No conf .xml file for this module";
         return;
     }
-    m_Module->create(AlarmW);
+    Q_CLEANUP_RESOURCE(settings);
+    m_Module->createAlarm(AlarmW);
     m_Module->create(BdaTimer);
 }
 

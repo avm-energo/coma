@@ -1,36 +1,36 @@
 
 SOURCES += \
-    board.cpp \
-    s2.cpp \
-    datamanager.cpp \
-    error.cpp \
-    errorqueue.cpp \
-    files.cpp \
-    helper.cpp \
-    logclass.cpp \
-    logger.cpp \
-    pch.cpp \
-    stdfunc.cpp \
-    report.cpp \
-    timefunc.cpp
+    $$PWD/board.cpp \
+    $$PWD/s2.cpp \
+    $$PWD/datamanager.cpp \
+    $$PWD/error.cpp \
+    $$PWD/errorqueue.cpp \
+    $$PWD/files.cpp \
+    $$PWD/helper.cpp \
+    $$PWD/logclass.cpp \
+    $$PWD/logger.cpp \
+    $$PWD/pch.cpp \
+    $$PWD/stdfunc.cpp \
+    $$PWD/report.cpp \
+    $$PWD/timefunc.cpp
 
 HEADERS += \
-    board.h \
-    colors.h \
-    datamanager.h \
-    datatypes.h \
-    error.h \
-    errorqueue.h \
-    files.h \
-    helper.h \
-    logclass.h \
-    logger.h \
-    pch.h \
-    s2.h \
-    singleton.h \
-    stdfunc.h \
-    report.h \
-    timefunc.h
+    $$PWD/board.h \
+    $$PWD/colors.h \
+    $$PWD/datamanager.h \
+    $$PWD/datatypes.h \
+    $$PWD/error.h \
+    $$PWD/errorqueue.h \
+    $$PWD/files.h \
+    $$PWD/helper.h \
+    $$PWD/logclass.h \
+    $$PWD/logger.h \
+    $$PWD/pch.h \
+    $$PWD/s2.h \
+    $$PWD/singleton.h \
+    $$PWD/stdfunc.h \
+    $$PWD/report.h \
+    $$PWD/timefunc.h
 
 
 

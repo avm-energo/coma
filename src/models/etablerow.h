@@ -1,6 +1,6 @@
 #pragma once
 
-#include "AbstractTableRow.h"
+#include "abstracttablerow.h"
 
 #include <QColor>
 #include <QFont>

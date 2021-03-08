@@ -1,15 +1,15 @@
-#ifndef GETOSCPBDELEGATE_H
-#define GETOSCPBDELEGATE_H
+#ifndef PUSHBUTTONDELEGATE_H
+#define PUSHBUTTONDELEGATE_H
 
 #include <QObject>
 #include <QStyledItemDelegate>
 
-class GetOscPBDelegate : public QStyledItemDelegate
+class PushButtonDelegate : public QStyledItemDelegate
 {
     Q_OBJECT
 
 public:
-    GetOscPBDelegate(QObject *parent = 0);
+    PushButtonDelegate(QObject *parent = 0);
     void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const;
     bool editorEvent(
         QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index);
@@ -23,4 +23,4 @@ private:
 private slots:
 };
 
-#endif // GETOSCPBDELEGATE_H
+#endif // PUSHBUTTONDELEGATE_H

@@ -27,17 +27,17 @@ constexpr char UCONFCLR[] = "#FFFFD0";
 // constexpr char UCONFWCLR[] = "#FFFFC0";
 // constexpr char ERRCLR[] = "#FF0000";
 constexpr char REDCOLOR[] = "#FF2222";
-// constexpr char RDLCOLOR[] = "#FF4444";
-// constexpr char RDDCOLOR[] = "#FF0000";
-// constexpr char GRNCOLOR[] = "#22FF22";
+constexpr char RDLCOLOR[] = "#FF4444";
+constexpr char RDDCOLOR[] = "#FF0000";
+constexpr char GRNCOLOR[] = "#22FF22";
 constexpr char NFTCOLOR[] = "#9FC79F";
-// constexpr char GRLCOLOR[] = "#44FF44";
-// constexpr char GRDCOLOR[] = "#00FF00";
-// constexpr char YLWCOLOR[] = "#CCCC22";
-// constexpr char YLLCOLOR[] = "#CCCC44";
-// constexpr char YLDCOLOR[] = "#CCCC00";
-// constexpr char BLDCOLOR[] = "#0000FF";
-// constexpr char BLUCOLOR[] = "#2222FF";
+constexpr char GRLCOLOR[] = "#44FF44";
+constexpr char GRDCOLOR[] = "#00FF00";
+constexpr char YLWCOLOR[] = "#CCCC22";
+constexpr char YLLCOLOR[] = "#CCCC44";
+constexpr char YLDCOLOR[] = "#CCCC00";
+constexpr char BLDCOLOR[] = "#0000FF";
+constexpr char BLUCOLOR[] = "#2222FF";
 enum ColorsNumbers
 {
     Tab,

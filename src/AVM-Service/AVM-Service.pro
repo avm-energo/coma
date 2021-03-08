@@ -3,7 +3,7 @@ include( ../common.pri )
 QT       += core gui printsupport network serialport widgets concurrent testlib xml
 QT.testlib.CONFIG -= console
 TARGET = AVM-Service
-VERSION = 2.1.1
+VERSION = 2.1.2
 
 TEMPLATE = app
 
@@ -15,14 +15,7 @@ INCLUDEPATH += ../$${QXLSX_PARENTPATH}
 INCLUDEPATH += ../$${QXLSX_HEADERPATH}
 INCLUDEPATH += ../$${QXLSX_SOURCEPATH}
 
-SOURCES += \
-    coma.cpp \
-    main.cpp \
-    servicemodule.cpp
-	
-HEADERS += \
-   coma.h \
-    servicemodule.h
+include(AVM-Service.pri)
 
 DESTDIR = $${BIN_PATH}/$${TARGET}
 win32 {
@@ -50,6 +43,24 @@ win32 {
     }
 }
 
+unix {
+LIBS += -lhidapi-hidraw
+contains(QT_ARCH, x86_64) {
+        message("Unix x64 build")
+        ## Unix x64 (64bit) specific build here
+        CONFIG(debug, debug|release) {
+
+        }
+    } else {
+        message("Unix x86 build")
+        ## Unix x86 (32bit) specific build here
+        CONFIG(debug, debug|release) {
+
+        }
+    }
+}
+
+
 LIBRARIES += check \
     config \
     datablock \
@@ -59,7 +70,9 @@ LIBRARIES += check \
     module \
     startup \
     widgets \
-    general
+    general \
+    avtuk \
+    qcustomplot
 
 include(../deps.pri)
 

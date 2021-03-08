@@ -9,9 +9,11 @@ class TuneModule : public Module
 public:
     explicit TuneModule(QObject *parent = nullptr);
     void create(QTimer *updateTimer) override;
-signals:
+    using Module::create;
 
-    // Module interface
 protected:
-    void create(Modules::Model model) override;
+    void createModule(Modules::Model model) override;
+
+private:
+    void create(Modules::BaseBoard typeB, Modules::MezzanineBoard typeM) override;
 };

@@ -282,6 +282,16 @@ void DataManager::checkTypeAndSendSignals(DataTypes::SignalsStruct &str)
         }
         break;
     }
+    case OscillogramInfo:
+    {
+        Q_ASSERT(str.data.canConvert<OscInfo>());
+        if (str.data.canConvert<OscInfo>())
+        {
+            OscInfo oscInfo = str.data.value<OscInfo>();
+            emit oscInfoReceived(oscInfo);
+        }
+        break;
+    }
     default:
         break;
     }

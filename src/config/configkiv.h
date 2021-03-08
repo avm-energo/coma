@@ -13,14 +13,7 @@ public:
 
     AVM_KIV::Bci Bci_block;
 
-    //    QStack<Bci> m_BciStack;
-
     void setDefConf();
-    //    Error::Msg getAndPushConfig();
-    //    Bci popConfig();
-    //    Error::Msg popAndWriteConfig();
-    //    S2DataTypes::S2ConfigType *S2Config();
-    //    void setS2Config(S2DataTypes::S2ConfigType *s2config);
     Config *MainConfig();
     ConfigKxx *KxxConfig();
 

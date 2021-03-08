@@ -1,12 +1,12 @@
 #ifndef TUNEKIVDIALOG_H
 #define TUNEKIVDIALOG_H
 
-//#include "../check/checkkiv.h"
-#include "../config/config.h"
-#include "../config/configkiv.h"
-#include "../gen/report.h"
+#include "../../check/checkkiv.h"
+#include "../../config/config.h"
+#include "../../config/configkiv.h"
+#include "../../gen/report.h"
+#include "../../widgets/udialog.h"
 #include "../generaltunedialog.h"
-#include "../widgets/udialog.h"
 //#include "../iec104/iec104.h"
 //#include "tunekiv.h"
 #include "tunekivadc.h"
