@@ -5,6 +5,8 @@
 #include "../interfaces/iec104.h"
 #include "../interfaces/modbus.h"
 #include "../interfaces/protocom.h"
+#include "../widgets/aboutwidget.h"
+#include "config.h"
 #include "servicemodule.h"
 ServiceComa::ServiceComa(QWidget *parent) : Coma(parent)
 {
@@ -26,6 +28,14 @@ void ServiceComa::PrepareDialogs()
     Q_CLEANUP_RESOURCE(settings);
     m_Module->createAlarm(AlarmW);
     m_Module->create(BdaTimer);
+}
+
+void ServiceComa::getAbout()
+{
+    AboutWidget *w = new AboutWidget;
+    w->prependLine(QString(PROGNAME) + " version " + QString(COMAVERSION) + "-" + QString(COMAHASH));
+    w->setupUI();
+    w->show();
 }
 
 void ServiceComa::setupConnection()

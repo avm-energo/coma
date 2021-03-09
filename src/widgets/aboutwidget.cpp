@@ -10,20 +10,40 @@ AboutWidget::AboutWidget(QWidget *parent) : QWidget(parent)
 {
     setAttribute(Qt::WA_DeleteOnClose);
 
+    //    QHBoxLayout *hlyout = new QHBoxLayout;
+    //    QVBoxLayout *lyout = new QVBoxLayout;
+
+    //    hlyout->addWidget(WDFunc::NewLBL2(this, "", "", new QPixmap("images/avm-energo.png")), 0);
+    //    lyout->addWidget(WDFunc::NewLBL2(this, AboutText::name_ru));
+    //    lyout->addWidget(WDFunc::NewLBL2(this, AboutText::department));
+    //    lyout->addSpacing(30);
+    //    lyout->addWidget(WDFunc::NewLBL2(this, AboutText::modules));
+    //    lyout->addWidget(WDFunc::NewLBL2(this, AboutText::zlib));
+    //    lyout->addWidget(WDFunc::NewLBL2(this, AboutText::hidapi));
+    //    lyout->addWidget(WDFunc::NewLBL2(this, AboutText::qxlsx));
+    //    lyout->addWidget(WDFunc::NewLBL2(this, AboutText::limereport));
+    //    lyout->addWidget(WDFunc::NewLBL2(this, AboutText::icons));
+    //    lyout->addWidget(WDFunc::NewLBL2(this, AboutText::fonts));
+    //    hlyout->addLayout(lyout, 100);
+    //    lyout = new QVBoxLayout;
+    //    lyout->addLayout(hlyout);
+    //    hlyout = new QHBoxLayout;
+    //    hlyout->addStretch(100);
+    //    hlyout->addWidget(WDFunc::NewHexagonPB(
+    //        this, "", [this]() { this->close(); }, ":/icons/tnyes.svg", "Закрыть"));
+    //    hlyout->addStretch(100);
+    //    lyout->addLayout(hlyout);
+    //    setLayout(lyout);
+}
+
+void AboutWidget::setupUI()
+{
     QHBoxLayout *hlyout = new QHBoxLayout;
     QVBoxLayout *lyout = new QVBoxLayout;
 
     hlyout->addWidget(WDFunc::NewLBL2(this, "", "", new QPixmap("images/avm-energo.png")), 0);
-    lyout->addWidget(WDFunc::NewLBL2(this, AboutText::name_ru));
-    lyout->addWidget(WDFunc::NewLBL2(this, AboutText::department));
-    lyout->addSpacing(30);
-    lyout->addWidget(WDFunc::NewLBL2(this, AboutText::modules));
-    lyout->addWidget(WDFunc::NewLBL2(this, AboutText::zlib));
-    lyout->addWidget(WDFunc::NewLBL2(this, AboutText::hidapi));
-    lyout->addWidget(WDFunc::NewLBL2(this, AboutText::qxlsx));
-    lyout->addWidget(WDFunc::NewLBL2(this, AboutText::limereport));
-    lyout->addWidget(WDFunc::NewLBL2(this, AboutText::icons));
-    lyout->addWidget(WDFunc::NewLBL2(this, AboutText::fonts));
+    for (const auto &str : m_lines)
+        lyout->addWidget(WDFunc::NewLBL2(this, str));
     hlyout->addLayout(lyout, 100);
     lyout = new QVBoxLayout;
     lyout->addLayout(hlyout);

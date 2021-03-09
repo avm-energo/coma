@@ -10,6 +10,6 @@ public:
     DebugComa(QWidget *parent = nullptr);
     ~DebugComa();
     void PrepareDialogs() override;
-
+    void getAbout() override;
     void setupConnection() override;
 };

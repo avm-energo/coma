@@ -508,11 +508,12 @@ void Coma::SetProgressBarCount(int prbnum, int count)
     }
 }
 
-void Coma::getAbout()
-{
-    AboutWidget *w = new AboutWidget;
-    w->show();
-}
+// void Coma::getAbout()
+//{
+//    AboutWidget *w = new AboutWidget;
+//    w->setupUI();
+//    w->show();
+//}
 
 void Coma::disconnect()
 {

@@ -7,7 +7,7 @@
 namespace AboutText
 {
 constexpr char name_ru[] = "АВМ-Сервис";
-constexpr char department[] = "ООО \"АВМ-Энерго\", 2016-2020";
+constexpr char department[] = "ООО \"АВМ-Энерго\", 2016-2021";
 constexpr char modules[] = "Modules used:";
 constexpr char zlib[] = "Data Compression Library (zlib), version 1.2.11 (http://zlib.net/)";
 constexpr char hidapi[] = "HIDAPI library, version 0.9.0 (https://github.com/libusb/hidapi)";
@@ -22,11 +22,21 @@ class AboutWidget : public QWidget
     Q_OBJECT
 public:
     explicit AboutWidget(QWidget *parent = nullptr);
-
+    void setupUI();
+    void prependLine(const QString &str)
+    {
+        m_lines.prepend(str);
+    }
+    void appendLine(const QString &str)
+    {
+        m_lines.append(str);
+    }
 signals:
 
 protected:
-    //    void paintEvent(QPaintEvent *e);
+private:
+    QStringList m_lines { AboutText::department, AboutText::modules, AboutText::zlib, AboutText::hidapi,
+        AboutText::qxlsx, AboutText::limereport, AboutText::icons, AboutText::fonts };
 };
 
 #endif // ABOUTWIDGET_H
