@@ -439,4 +439,5 @@ void TuneKIVADC::CalcTuneCoefs()
         return;
     }
     QMessageBox::critical(this, "Ошибка!", "Не задано одно из значений!");
+    StdFunc::cancel();
 }

@@ -437,4 +437,5 @@ void Tune84ADC::CalcTuneCoefs()
         return;
     }
     QMessageBox::critical(this, "Ошибка!", "Не задано одно из значений!");
+    StdFunc::cancel();
 }
