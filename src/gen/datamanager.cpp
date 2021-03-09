@@ -262,6 +262,16 @@ void DataManager::checkTypeAndSendSignals(DataTypes::SignalsStruct &str)
         }
         break;
     }
+    case DataRecVList:
+    {
+        Q_ASSERT(str.data.canConvert<QList<DataRecV>>());
+        if (str.data.canConvert<QList<DataRecV>>())
+        {
+            const auto list = str.data.value<QList<DataRecV>>();
+            emit dataRecVListReceived(list);
+        }
+        break;
+    }
     case Block:
     {
         Q_ASSERT(str.data.canConvert<BlockStruct>());

@@ -32,6 +32,7 @@ public:
     friend bool operator==(const DataRecV &lhs, const DataRecV &rhs);
     friend bool operator!=(const DataRecV &lhs, const DataRecV &rhs);
     DataRecV(const S2DataTypes::DataRec &record);
+    DataRecV(const S2DataTypes::DataRec &record, const char *rawdata);
     template <typename T> DataRecV(T *, unsigned _id, T _data) : id(_id), data(_data)
     {
     }

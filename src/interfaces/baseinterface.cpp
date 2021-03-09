@@ -135,15 +135,12 @@ Error::Msg BaseInterface::writeBlockSync(
 Error::Msg BaseInterface::writeConfFileSync()
 {
     QByteArray ba;
-    ba.resize(30000);
-    S2::StoreDataMem(&ba.data()[0], &S2::config, DataTypes::Config);
-    // считываем длину файла из полученной в StoreDataMem и вычисляем количество сегментов
-    quint32 wrlength = static_cast<quint8>(ba.at(7)) * 16777216; // с 4 байта начинается FileHeader.size
-    wrlength += static_cast<quint8>(ba.at(6)) * 65536;
-    wrlength += static_cast<quint8>(ba.at(5)) * 256;
-    wrlength += static_cast<quint8>(ba.at(4));
-    wrlength += sizeof(S2DataTypes::FileHeader); // sizeof(FileHeader)
-    ba.resize(wrlength);
+    S2::StoreDataMem(ba, &S2::config, DataTypes::Config);
+
+    // с 4 байта начинается FileHeader.size
+    quint32 length = *reinterpret_cast<quint32 *>(&ba.data()[4]);
+    length += sizeof(S2DataTypes::FileHeader);
+    Q_ASSERT(length == quint32(ba.size()));
     return writeFileSync(DataTypes::Config, ba);
 }
 

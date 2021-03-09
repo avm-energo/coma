@@ -33,4 +33,23 @@ private slots:
     void ChangeModbusGUI(int num);
 };
 
+namespace detail
+{
+
+template <typename T> QString splitArray(const T &array, const char symbol)
+{
+    QString str;
+    for (auto it = array.cbegin(); it != array.cend(); it++)
+    {
+        if (*it != (array.back()))
+        {
+            str.push_back(QString::number(*it, 10));
+            str.push_back(symbol);
+        }
+        else
+            str.push_back(QString::number(*it, 10));
+    }
+    return str;
+}
+}
 #endif // CONFIGKXX_H

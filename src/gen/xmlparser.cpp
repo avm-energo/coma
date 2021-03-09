@@ -75,7 +75,7 @@ quint32 XmlParser::parseInt32(QDomElement domElement)
 #endif
     if (domElement.text().isEmpty())
         return 0;
-    bool ok;
+    bool ok = false;
     const quint32 number = domElement.text().toUInt(&ok);
     Q_ASSERT(ok);
     return number;
@@ -91,7 +91,8 @@ quint32 XmlParser::parseHexInt32(QDomElement domElement)
         return 0;
     Q_ASSERT(str.startsWith("0x"));
     str.remove(0, 2);
-    bool ok;
+    bool ok = false;
+    ;
     const quint32 number = domElement.text().toUInt(&ok, 16);
     Q_ASSERT(ok);
     return number;

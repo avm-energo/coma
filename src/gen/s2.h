@@ -1,29 +1,26 @@
 #ifndef S2_H
 #define S2_H
 #include "datatypes.h"
-#include "error.h"
-#include "stdfunc.h"
 
 #include <QVector>
-#define MAXSIZE 200000
+constexpr int MAXSIZE = 200000;
 class S2
 {
 public:
     S2();
     // S2: Сборщик в память:
     // 0 - успешно, иначе код ошибки S2: получение размера:
-    static void StoreDataMem(void *, QVector<S2DataTypes::DataRec> *, int fname);
-    static void StoreDataMem(QByteArray &, QVector<S2DataTypes::DataRec> *, int fname);
-    //>0 - успешно, иначе код ошибки  S2: Разборщик из памяти
-    static int StoreDataSize(S2DataTypes::FileHeader *, S2DataTypes::DataRec *);
-    // 0 - успешно, иначе код ошибки S2: Поиск элемента в массиве описаний
-    static Error::Msg RestoreDataMem(void *mem, quint32 memsize, QVector<S2DataTypes::DataRec> *dr);
+    static void StoreDataMem(QByteArray &mem, QVector<S2DataTypes::DataRec> *dr, int fname);
+    static QByteArray StoreDataMem(QVector<S2DataTypes::DataRec> *dr, int fname);
+
+    // S2: Поиск элемента в массиве описаний
+    static bool RestoreDataMem(void *mem, quint32 memsize, QVector<S2DataTypes::DataRec> *dr);
     // restore IDs and contents in ConfParameters list
-    static Error::Msg RestoreData(QByteArray bain, QList<DataTypes::ConfParameterStruct> &outlist);
+    static bool RestoreData(QByteArray bain, QList<DataTypes::ConfParameterStruct> &outlist);
     static bool RestoreData(QByteArray bain, QList<DataTypes::DataRecV> &outlist);
-    static S2DataTypes::DataRec *FindElem(QVector<S2DataTypes::DataRec> *, quint32);
+    static const S2DataTypes::DataRec *FindElem(QVector<S2DataTypes::DataRec> *, quint32);
     static void findElemAndWriteIt(QVector<S2DataTypes::DataRec> *s2config, const DataTypes::ConfParameterStruct &cfp);
-    static Error::Msg findElemAndWriteIt(S2DataTypes::DataRec *record, const DataTypes::ConfParameterStruct &cfp);
+    static bool findElemAndWriteIt(S2DataTypes::DataRec *record, const DataTypes::ConfParameterStruct &cfp);
     static S2DataTypes::S2ConfigType ParseHexToS2(QByteArray &ba);
     static quint32 getTime32();
     static quint32 GetCRC32(char *, quint32);
@@ -34,7 +31,7 @@ public:
     static quint32 crc32buf(const QByteArray &data);
 
     static S2DataTypes::S2ConfigType config;
-    static std::vector<DataTypes::DataRecV> configV;
+    static QList<DataTypes::DataRecV> configV;
     static DataTypes::DataRecV getRecord(unsigned int id);
     static void setRecordValue(const DataTypes::DataRecV &record);
 
@@ -44,7 +41,7 @@ private:
 
 // typedef QVector<S2DataTypes::DataRec> S2ConfigType;
 
-constexpr const unsigned long _crc32_t[256] = { 0x00000000, 0x77073096, 0xEE0E612C, 0x990951BA, 0x076DC419, 0x706AF48F,
+constexpr const unsigned _crc32_t[256] = { 0x00000000, 0x77073096, 0xEE0E612C, 0x990951BA, 0x076DC419, 0x706AF48F,
     0xE963A535, 0x9E6495A3, 0x0EDB8832, 0x79DCB8A4, 0xE0D5E91E, 0x97D2D988, 0x09B64C2B, 0x7EB17CBD, 0xE7B82D07,
     0x90BF1D91, 0x1DB71064, 0x6AB020F2, 0xF3B97148, 0x84BE41DE, 0x1ADAD47D, 0x6DDDE4EB, 0xF4D4B551, 0x83D385C7,
     0x136C9856, 0x646BA8C0, 0xFD62F97A, 0x8A65C9EC, 0x14015C4F, 0x63066CD9, 0xFA0F3D63, 0x8D080DF5, 0x3B6E20C8,

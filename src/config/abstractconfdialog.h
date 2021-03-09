@@ -53,6 +53,7 @@ private slots:
     void LoadConfFromFile();
     void ReadConf();
     void WriteConf();
+    void confReceived(const QList<DataTypes::DataRecV> &list);
     void confParametersListReceived(const DataTypes::ConfParametersListStruct &cfpl);
     //    void confParameterReceived(const DataTypes::ConfParameterStruct &cfp);
 

@@ -24,6 +24,7 @@ enum SignalTypes
     File,
     ConfParameter,
     ConfParametersList,
+    DataRecVList,
     Block,
     OscillogramInfo,
     GeneralResponse
@@ -216,7 +217,7 @@ struct Journal
 };
 
 #pragma pack(push) /* push current alignment to stack */
-#pragma pack(1)    /* set alignment to 1 byte boundary */
+#pragma pack(1) /* set alignment to 1 byte boundary */
 struct OscInfo
 {
     quint32 fileNum;    // номер файла осциллограмм
@@ -270,6 +271,7 @@ struct Command
 
 namespace S2DataTypes
 {
+constexpr quint32 dummyElement = 0xffffffff;
 // S2: Определение типа заголовка
 /// Заголовок файла (Прил. 1)
 struct FileHeader
@@ -333,7 +335,7 @@ struct FileStruct
 typedef QVector<S2DataTypes::DataRec> S2ConfigType;
 
 #pragma pack(push) /* push current alignment to stack */
-#pragma pack(1)    /* set alignment to 1 byte boundary */
+#pragma pack(1) /* set alignment to 1 byte boundary */
 struct SwitchJourInfo
 {
     quint16 fileNum;    // Номер файла

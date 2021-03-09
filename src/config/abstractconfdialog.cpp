@@ -21,7 +21,9 @@ AbstractConfDialog::AbstractConfDialog(QWidget *parent) : UDialog(parent)
     m_password = "121941";
     setSuccessMsg("Конфигурация записана успешно");
     const auto &manager = DataManager::GetInstance();
-    connect(&manager, &DataManager::confParametersListReceived, this, &AbstractConfDialog::confParametersListReceived);
+    // connect(&manager, &DataManager::confParametersListReceived, this,
+    // &AbstractConfDialog::confParametersListReceived);
+    connect(&manager, &DataManager::dataRecVListReceived, this, &AbstractConfDialog::confReceived);
 }
 
 void AbstractConfDialog::ReadConf()
@@ -41,9 +43,20 @@ void AbstractConfDialog::WriteConf()
     BaseInterface::iface()->writeConfigFile();
 }
 
+void AbstractConfDialog::confReceived(const QList<DataTypes::DataRecV> &list)
+{
+    //  S2::configV.clear();
+    //   const auto &configV = &S2::configV;
+    S2::configV = list;
+    Fill();
+    // std::swap(list,configV);
+    // std::swap(S2::configV,list);
+}
+
 void AbstractConfDialog::confParametersListReceived(const DataTypes::ConfParametersListStruct &cfpl)
 {
     const auto &config = &S2::config;
+    S2::configV.clear();
     const auto &configV = &S2::configV;
     for (const auto &cfp : cfpl)
     {
@@ -112,7 +125,7 @@ void AbstractConfDialog::LoadConfFromFile()
         qCritical("Ошибка при загрузке файла конфигурации");
         return;
     }
-    if (S2::RestoreDataMem(&(ba.data()[0]), ba.size(), &S2::config) != Error::Msg::NoError)
+    if (!S2::RestoreDataMem(&(ba.data()[0]), ba.size(), &S2::config))
     {
         qCritical("Ошибка при разборе файла конфигурации");
         return;

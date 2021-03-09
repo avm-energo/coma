@@ -5,48 +5,9 @@
 #include <QDateTime>
 #include <QDebug>
 S2DataTypes::S2ConfigType S2::config;
-std::vector<DataTypes::DataRecV> S2::configV;
+QList<DataTypes::DataRecV> S2::configV;
 S2::S2()
 {
-}
-
-void S2::StoreDataMem(void *mem, QVector<S2DataTypes::DataRec> *dr, int fname)
-{
-    quint32 crc = 0xFFFFFFFF;
-    S2DataTypes::FileHeader header;
-    S2DataTypes::DataRec R;
-    quint32 i;
-    char *m = static_cast<char *>(mem);
-    m += sizeof(S2DataTypes::FileHeader);
-    header.size = 0;
-    for (QVector<S2DataTypes::DataRec>::iterator it = dr->begin(); it != dr->end(); ++it)
-    {
-        R = *it;
-        void *Rptr = static_cast<void *>(it);
-        quint32 tmpi = sizeof(S2DataTypes::DataRec) - sizeof(void *);
-        memcpy(m, &R, tmpi);
-        header.size += tmpi;
-        for (i = 0; i < tmpi; i++)
-            updCRC32((static_cast<char *>(Rptr))[i], &crc);
-        if (R.id == 0xFFFFFFFF)
-            break;
-        m += tmpi;
-        if (R.thedata)
-        {
-            tmpi = R.numByte;
-            for (i = 0; i < tmpi; i++)
-                updCRC32((static_cast<char *>(R.thedata))[i], &crc);
-            header.size += tmpi;
-            memcpy(m, R.thedata, tmpi);
-            m += tmpi;
-        }
-    }
-    header.crc32 = crc;
-    header.thetime = getTime32();
-    header.service = 0xFFFF;
-    header.fname = static_cast<quint16>(fname);
-    memcpy(mem, &header, sizeof(header));
-    return;
 }
 
 void S2::StoreDataMem(QByteArray &mem, QVector<S2DataTypes::DataRec> *dr, int fname)
@@ -54,7 +15,7 @@ void S2::StoreDataMem(QByteArray &mem, QVector<S2DataTypes::DataRec> *dr, int fn
     quint32 crc = 0xFFFFFFFF;
     S2DataTypes::FileHeader header;
     QByteArray ba;
-    quint32 i;
+    quint32 i = 0;
     header.size = 0;
     for (S2DataTypes::DataRec &record : *dr)
     {
@@ -65,7 +26,7 @@ void S2::StoreDataMem(QByteArray &mem, QVector<S2DataTypes::DataRec> *dr, int fn
         header.size += tmpi;
         for (i = 0; i < tmpi; i++)
             updCRC32((Rptr)[i], &crc);
-        if (record.id == 0xFFFFFFFF)
+        if (record.id == S2DataTypes::dummyElement)
             break;
         if (record.thedata)
         {
@@ -87,21 +48,60 @@ void S2::StoreDataMem(QByteArray &mem, QVector<S2DataTypes::DataRec> *dr, int fn
     return;
 }
 
-Error::Msg S2::RestoreDataMem(void *mem, quint32 memsize, QVector<S2DataTypes::DataRec> *dr)
+QByteArray S2::StoreDataMem(QVector<S2DataTypes::DataRec> *dr, int fname)
+{
+    quint32 crc = 0xFFFFFFFF;
+    S2DataTypes::FileHeader header;
+    QByteArray ba, s2buffer;
+    quint32 i = 0;
+    header.size = 0;
+    for (S2DataTypes::DataRec &record : *dr)
+    {
+        char *Rptr = reinterpret_cast<char *>(&record);
+        quint32 tmpi = sizeof(S2DataTypes::DataRec) - sizeof(void *);
+        ba = QByteArray::fromRawData(reinterpret_cast<char *>(&record), tmpi);
+        s2buffer.append(ba);
+        header.size += tmpi;
+        for (i = 0; i < tmpi; i++)
+            updCRC32((Rptr)[i], &crc);
+        if (record.id == S2DataTypes::dummyElement)
+            break;
+        if (record.thedata)
+        {
+            tmpi = record.numByte;
+            header.size += tmpi;
+            char *data = static_cast<char *>(record.thedata);
+            for (i = 0; i < tmpi; i++)
+                updCRC32(data[i], &crc);
+            ba = QByteArray::fromRawData(data, tmpi);
+            s2buffer.append(ba);
+        }
+    }
+    header.crc32 = crc;
+    header.thetime = getTime32();
+    header.service = 0xFFFF;
+    header.fname = static_cast<quint16>(fname);
+    ba = QByteArray::fromRawData(reinterpret_cast<char *>(&header), sizeof(header));
+    s2buffer.prepend(ba);
+    return s2buffer;
+}
+
+bool S2::RestoreDataMem(void *mem, quint32 memsize, QVector<S2DataTypes::DataRec> *dr)
 {
     unsigned char *m = static_cast<unsigned char *>(mem);
     S2DataTypes::DataRec R;
-    S2DataTypes::DataRec *r;
+
     S2DataTypes::FileHeader header;
-    quint32 tmpi, pos;
+    quint32 tmpi = 0, pos = 0;
     bool noIDs = true; // признак того, что не встретился ни один из ID в dr
 
     // копируем FileHeader
     quint32 fhsize = sizeof(S2DataTypes::FileHeader);
     if (fhsize > memsize)
     {
-        ERMSG("S2: out of memory"); // выход за границу принятых байт
-        return Error::Msg::SizeError;
+        // выход за границу принятых байт
+        qCritical() << "S2" << Error::Msg::SizeError;
+        return false;
     }
     memcpy(&header, m, fhsize);
     m += fhsize;
@@ -109,33 +109,35 @@ Error::Msg S2::RestoreDataMem(void *mem, quint32 memsize, QVector<S2DataTypes::D
     // проверка контрольной суммы
     if (!CheckCRC32(m, memsize - fhsize, header.crc32))
     {
-        ERMSG("S2: CRC error"); // выход за границу принятых байт
-        return Error::Msg::CrcError;
+        qCritical() << "S2: CRC error" << Error::CrcError;
+        return false;
     }
     pos = fhsize;
     R.id = 0;
-    while ((R.id != 0xFFFFFFFF) && (pos < memsize))
+    while ((R.id != S2DataTypes::dummyElement) && (pos < memsize))
     {
         tmpi = sizeof(S2DataTypes::DataRec) - sizeof(void *);
         pos += tmpi;
         if (pos > memsize)
         {
-            ERMSG("S2: out of memory"); // выход за границу принятых байт
-            return Error::Msg::SizeError;
+            // выход за границу принятых байт
+            qCritical() << "S2" << Error::Msg::SizeError;
+            return false;
         }
         memcpy(&R, m, tmpi);
         m += tmpi;
-        if (R.id != 0xFFFFFFFF)
+        if (R.id != S2DataTypes::dummyElement)
         {
-            r = FindElem(dr, R.id);
+            const S2DataTypes::DataRec *r = FindElem(dr, R.id);
             if (r == nullptr) // элемент не найден в описании, пропускаем
             {
                 tmpi = R.numByte;
                 pos += tmpi;
                 if (pos > memsize)
                 {
-                    ERMSG("S2: out of memory"); // выход за границу принятых байт
-                    return Error::Msg::SizeError;
+                    // выход за границу принятых байт
+                    qCritical() << "S2" << Error::Msg::SizeError;
+                    return false;
                 }
                 m += tmpi;
                 continue;
@@ -143,16 +145,17 @@ Error::Msg S2::RestoreDataMem(void *mem, quint32 memsize, QVector<S2DataTypes::D
             noIDs = false;
             if (r->numByte != R.numByte) //несовпадения описания прочитанного элемента с ожидаемым
             {
-                ERMSG("S2: block description mismatch"); // несовпадение описаний одного
-                                                         // и того же блока
-                return Error::Msg::DescError;
+                qCritical() << "S2: block description mismatch" << Error::Msg::DescError; // несовпадение описаний
+                                                                                          // одного и того же блока
+                return false;
             }
             tmpi = r->numByte;
             pos += tmpi;
             if (pos > memsize)
             {
-                ERMSG("S2: out of memory"); // выход за границу принятых байт
-                return Error::Msg::SizeError;
+                // выход за границу принятых байт
+                qCritical() << "S2" << Error::Msg::SizeError;
+                return false;
             }
             memcpy(r->thedata, m, tmpi);
             m += tmpi;
@@ -160,18 +163,18 @@ Error::Msg S2::RestoreDataMem(void *mem, quint32 memsize, QVector<S2DataTypes::D
     }
     if (header.size != (pos - fhsize))
     {
-        ERMSG("S2: length error"); // ошибка длины
-        return Error::Msg::HeaderSizeError;
+        qCritical() << "S2: length error" << Error::Msg::HeaderSizeError; // ошибка длины
+        return false;
     }
     if (noIDs)
     {
-        ERMSG("S2: there's no such ID"); // не найдено ни одного ИД
-        return Error::Msg::NoIdError;
+        qCritical() << "S2: there's no such ID" << Error::Msg::NoIdError; // не найдено ни одного ИД
+        return false;
     }
-    return Error::Msg::NoError;
+    return true;
 }
 
-Error::Msg S2::RestoreData(QByteArray bain, QList<DataTypes::ConfParameterStruct> &outlist)
+bool S2::RestoreData(QByteArray bain, QList<DataTypes::ConfParameterStruct> &outlist)
 {
     Q_ASSERT(bain.size() >= sizeof(S2DataTypes::FileHeader));
     qInfo() << "S2 File size:" << bain.size();
@@ -185,17 +188,17 @@ Error::Msg S2::RestoreData(QByteArray bain, QList<DataTypes::ConfParameterStruct
     // проверка контрольной суммы
     if (!CheckCRC32(&bain.data()[0], bain.size(), fh.crc32))
     {
-        qCritical("S2: CRC error"); // выход за границу принятых байт
-        return Error::Msg::CrcError;
+        qCritical() << "S2" << Error::Msg::CrcError; // выход за границу принятых байт
+        return false;
     }
     DR.id = 0;
-    while ((DR.id != 0xFFFFFFFF) && (!bain.isEmpty()))
+    while ((DR.id != S2DataTypes::dummyElement) && (!bain.isEmpty()))
     {
-        int size = sizeof(S2DataTypes::DataRec) - sizeof(void *);
+        auto size = sizeof(S2DataTypes::DataRec) - sizeof(void *);
         if (size > bain.size())
         {
-            qCritical("S2: out of memory"); // выход за границу принятых байт
-            return Error::Msg::SizeError;
+            qCritical() << "S2" << Error::Msg::SizeError; // выход за границу принятых байт
+            return false;
         }
         memcpy(&DR, &bain.data()[0], size);
         DataTypes::DataRecV DRV(DR);
@@ -203,22 +206,22 @@ Error::Msg S2::RestoreData(QByteArray bain, QList<DataTypes::ConfParameterStruct
             qDebug() << DRV.getId();
         bain.remove(0, size);
         //  Q_ASSERT(!bain.isEmpty());
-        if (DR.id != 0xFFFFFFFF)
+        if (DR.id != S2DataTypes::dummyElement)
         {
             DataTypes::ConfParameterStruct cfp;
             cfp.ID = DR.id;
             size = DR.numByte;
             if (size > bain.size())
             {
-                qCritical("S2: out of memory"); // выход за границу принятых байт
-                return Error::Msg::SizeError;
+                qCritical() << "S2" << Error::Msg::SizeError; // выход за границу принятых байт
+                return false;
             }
             cfp.data = bain.left(size);
             bain.remove(0, size);
             outlist.append(cfp);
         }
     }
-    return Error::Msg::NoError;
+    return true;
 }
 
 bool S2::RestoreData(QByteArray bain, QList<DataTypes::DataRecV> &outlist)
@@ -239,20 +242,20 @@ bool S2::RestoreData(QByteArray bain, QList<DataTypes::DataRecV> &outlist)
         return false;
     }
     DR.id = 0;
-    while ((DR.id != 0xFFFFFFFF) && (!bain.isEmpty()))
+    while ((DR.id != S2DataTypes::dummyElement) && (!bain.isEmpty()))
     {
-        int size = sizeof(S2DataTypes::DataRec) - sizeof(void *);
+        auto size = sizeof(S2DataTypes::DataRec) - sizeof(void *);
         if (size > bain.size())
         {
             qCritical() << Error::Msg::SizeError << "S2: out of memory"; // выход за границу принятых байт
             return false;
         }
         memcpy(&DR, &bain.data()[0], size);
-        DataTypes::DataRecV DRV(DR);
+
         // if (!S2DataTypes::is_same(DR, DRV.serialize()))
         //     qDebug() << DRV.id;
         bain.remove(0, size);
-        if (DR.id != 0xFFFFFFFF)
+        if (DR.id != S2DataTypes::dummyElement)
         {
             //            DataTypes::ConfParameterStruct cfp;
             //            cfp.ID = DR.id;
@@ -263,21 +266,23 @@ bool S2::RestoreData(QByteArray bain, QList<DataTypes::DataRecV> &outlist)
             //                return Error::Msg::SizeError;
             //            }
             //            cfp.data = bain.left(size);
+            DataTypes::DataRecV DRV(DR, bain.left(size));
             bain.remove(0, size);
+
             outlist.append(DRV);
         }
     }
     return true;
 }
 
-S2DataTypes::DataRec *S2::FindElem(QVector<S2DataTypes::DataRec> *dr, quint32 id)
+const S2DataTypes::DataRec *S2::FindElem(QVector<S2DataTypes::DataRec> *dr, quint32 id)
 {
-    for (QVector<S2DataTypes::DataRec>::iterator it = dr->begin(); it != dr->end(); ++it)
+    for (auto it = dr->cbegin(); it != dr->cend(); ++it)
     {
         S2DataTypes::DataRec R = *it;
         if (R.id == id)
             return it;
-        if (R.id == static_cast<quint32>(0xFFFF))
+        if (R.id == S2DataTypes::dummyElement)
             return nullptr;
     }
     return nullptr;
@@ -290,21 +295,23 @@ void S2::findElemAndWriteIt(QVector<S2DataTypes::DataRec> *s2config, const DataT
     });
 }
 
-Error::Msg S2::findElemAndWriteIt(S2DataTypes::DataRec *record, const DataTypes::ConfParameterStruct &cfp)
+bool S2::findElemAndWriteIt(S2DataTypes::DataRec *record, const DataTypes::ConfParameterStruct &cfp)
 {
     if (record->id != cfp.ID)
-        return Error::DescError;
+    {
+        return false;
+    }
 
     if (record->numByte != static_cast<quint32>(cfp.data.size()))
     {
-        qCritical("S2: Wrong element size in ConfParameter");
+        qCritical() << "S2: Wrong element size in ConfParameter" << Error::Msg::HeaderSizeError;
         qDebug() << "Wait for element" << record->id    //
                  << "with size:" << record->numByte     //
                  << "but get size:" << cfp.data.size(); //
-        return Error::Msg::HeaderSizeError;
+        return false;
     }
     memcpy(record->thedata, cfp.data, cfp.data.size());
-    return Error::Msg::NoError;
+    return true;
 }
 
 S2DataTypes::S2ConfigType S2::ParseHexToS2(QByteArray &ba)
@@ -317,8 +324,8 @@ S2DataTypes::S2ConfigType S2::ParseHexToS2(QByteArray &ba)
     // void *Rptr = static_cast<void *>(&PV_file.Type);
     // tmpi = sizeof(PV_file.Type)+sizeof(PV_file.File.FileDatHeader);
     S2ConfigType S2DR;
-    uint usize;
-    int i, j = 0, k, h, p, size, copysize, iVal;
+    uint usize = 0;
+    int i = 0, j = 0, k = 0, h = 0, p = 0, size = 0, copysize = 0, iVal = 0;
     QString str, st;
     QStringList sl;
     bool ok = false;
@@ -542,11 +549,10 @@ void inline S2::updCRC32(const char byte, quint32 *dwCRC32)
 
 bool S2::CheckCRC32(void *m, const quint32 length, const quint32 crctocheck)
 {
-    quint32 i;
     quint32 crc = 0xFFFFFFFF;
-    unsigned char *mem = static_cast<unsigned char *>(m);
+    auto *mem = static_cast<char *>(m);
 
-    for (i = 0; i < length; ++i)
+    for (quint32 i = 0; i < length; ++i)
     {
         updCRC32(*mem, &crc);
         ++mem;

@@ -1,6 +1,7 @@
 #ifndef IEC104THREAD_H
 #define IEC104THREAD_H
 
+#include "../gen/error.h"
 #include "../gen/logclass.h"
 #include "../gen/s2.h"
 
