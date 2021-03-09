@@ -59,7 +59,7 @@ private slots:
     void loadOsc();
     void loadSwj();
 
-    void getAbout();
+    virtual void getAbout() = 0;
     void closeEvent(QCloseEvent *event) override;
 
     void update(const DataTypes::GeneralResponseStruct &rsp);

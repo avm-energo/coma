@@ -3,6 +3,8 @@
 #include "../gen/board.h"
 #include "../gen/datamanager.h"
 #include "../interfaces/protocom.h"
+#include "../widgets/aboutwidget.h"
+#include "config.h"
 #include "tunemodule.h"
 
 DebugComa::DebugComa(QWidget *parent) : Coma(parent)
@@ -25,6 +27,15 @@ void DebugComa::PrepareDialogs()
     Q_CLEANUP_RESOURCE(settings);
     m_Module->createAlarm(AlarmW);
     m_Module->create(BdaTimer);
+}
+
+void DebugComa::getAbout()
+{
+
+    AboutWidget *w = new AboutWidget;
+    w->prependLine(QString(PROGNAME) + " version " + QString(COMAVERSION) + "-" + QString(COMAHASH));
+    w->setupUI();
+    w->show();
 }
 
 void DebugComa::setupConnection()
