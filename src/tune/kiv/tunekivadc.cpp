@@ -363,6 +363,8 @@ Error::Msg TuneKIVADC::showEnergomonitorInputDialog()
         connect(pb, SIGNAL(clicked()), this, SLOT(CalcTuneCoefs()));
         vlyout->addWidget(pb);
 
+        foreach (QString str, QStringList({ "U", "Y", "F" }))
+            WDFunc::SetVisible(this, "Valuetune" + str, enabled);
         dlg->setLayout(vlyout);
         m_isEnergoMonitorDialogCreated = true;
         dlg->exec();
@@ -375,7 +377,7 @@ Error::Msg TuneKIVADC::showEnergomonitorInputDialog()
             foreach (QString str, QStringList({ "U", "I", "Y", "F" }))
                 WDFunc::SetLEData(this, "Valuetune" + str, "");
             foreach (QString str, QStringList({ "U", "Y", "F" }))
-                WDFunc::SetEnabled(this, "Valuetune" + str, enabled);
+                WDFunc::SetVisible(this, "Valuetune" + str, enabled);
             //            WDFunc::SetEnabled(this, "ValuetuneF", enabled);
             //            WDFunc::SetEnabled(this, "ValuetuneY", enabled);
             dlg->exec();
@@ -390,17 +392,19 @@ void TuneKIVADC::CalcTuneCoefs()
         { 8, &m_bac->data()->KmI8[0] }, { 16, &m_bac->data()->KmI16[0] }, { 32, &m_bac->data()->KmI32[0] } };
     float uet, iet, yet, fet;
     bool ok;
+    bool checkuyf = (m_curTuneStep > 1) ? false : true;
+
     uet = StdFunc::toFloat(WDFunc::LEData(this, "ValuetuneU"), &ok);
-    if (ok)
+    if ((ok) || !checkuyf)
     {
         iet = StdFunc::toFloat(WDFunc::LEData(this, "ValuetuneI"), &ok);
         if (ok)
         {
             yet = StdFunc::toFloat(WDFunc::LEData(this, "ValuetuneY"), &ok);
-            if (ok)
+            if ((ok) || !checkuyf)
             {
                 fet = StdFunc::toFloat(WDFunc::LEData(this, "ValuetuneF"), &ok);
-                if (ok)
+                if ((ok) || !checkuyf)
                 {
                     switch (m_curTuneStep)
                     {
@@ -431,6 +435,7 @@ void TuneKIVADC::CalcTuneCoefs()
                     QDialog *dlg = this->findChild<QDialog *>("energomonitordlg");
                     if (dlg != nullptr)
                         dlg->close();
+                    return;
                 }
             }
         }
