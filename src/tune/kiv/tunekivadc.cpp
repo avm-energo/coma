@@ -394,21 +394,19 @@ void TuneKIVADC::CalcTuneCoefs()
     bool ok;
     bool checkuyf = (m_curTuneStep > 1) ? false : true;
 
-    uet = StdFunc::toFloat(WDFunc::LEData(this, "ValuetuneU"), &ok);
-    if ((ok) || !checkuyf)
+    iet = StdFunc::toFloat(WDFunc::LEData(this, "ValuetuneI"), &ok);
+    if (ok)
     {
-        iet = StdFunc::toFloat(WDFunc::LEData(this, "ValuetuneI"), &ok);
-        if (ok)
+        if (checkuyf)
         {
-            yet = StdFunc::toFloat(WDFunc::LEData(this, "ValuetuneY"), &ok);
-            if ((ok) || !checkuyf)
+            uet = StdFunc::toFloat(WDFunc::LEData(this, "ValuetuneU"), &ok);
+            if (ok)
             {
-                fet = StdFunc::toFloat(WDFunc::LEData(this, "ValuetuneF"), &ok);
-                if ((ok) || !checkuyf)
+                yet = StdFunc::toFloat(WDFunc::LEData(this, "ValuetuneY"), &ok);
+                if (ok)
                 {
-                    switch (m_curTuneStep)
-                    {
-                    case 1:
+                    fet = StdFunc::toFloat(WDFunc::LEData(this, "ValuetuneF"), &ok);
+                    if (ok)
                     {
                         for (int i = 0; i < 3; ++i)
                         {
@@ -421,24 +419,24 @@ void TuneKIVADC::CalcTuneCoefs()
                             m_bac->data()->DPsi[i] = m_bac->data()->DPsi[i] - m_bdainBlockData.phi_next_f[i];
                         for (int i = 3; i < 6; ++i)
                             m_bac->data()->DPsi[i] = m_bac->data()->DPsi[i] + yet - m_bdainBlockData.phi_next_f[i];
-                        break;
+                        QDialog *dlg = this->findChild<QDialog *>("energomonitordlg");
+                        if (dlg != nullptr)
+                            dlg->close();
+                        return;
                     }
-                    default:
-                    {
-                        assert(kmimap.contains(m_curTuneStep));
-                        for (int i = 0; i < 3; ++i)
-                            *(kmimap.value(m_curTuneStep) + i)
-                                = *(kmimap.value(m_curTuneStep) + i) * iet / m_bdainBlockData.IUefNat_filt[i + 3];
-                        break;
-                    }
-                    }
-                    QDialog *dlg = this->findChild<QDialog *>("energomonitordlg");
-                    if (dlg != nullptr)
-                        dlg->close();
-                    return;
                 }
             }
+            QMessageBox::critical(this, "Ошибка!", "Не задано одно из значений!");
+            return;
         }
+        assert(kmimap.contains(m_curTuneStep));
+        for (int i = 0; i < 3; ++i)
+            *(kmimap.value(m_curTuneStep) + i)
+                = *(kmimap.value(m_curTuneStep) + i) * iet / m_bdainBlockData.IUefNat_filt[i + 3];
+        QDialog *dlg = this->findChild<QDialog *>("energomonitordlg");
+        if (dlg != nullptr)
+            dlg->close();
+        return;
     }
     QMessageBox::critical(this, "Ошибка!", "Не задано одно из значений!");
 }
