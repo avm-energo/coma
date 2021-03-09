@@ -7,8 +7,8 @@
 #include "../../gen/report.h"
 #include "../../widgets/udialog.h"
 #include "../generaltunedialog.h"
-#include "../kiv/tunekivadc.h"
 #include "../kiv/tunekivtemp60.h"
+#include "tune84adc.h"
 #include "tune84check.h"
 
 #include <QHBoxLayout>
@@ -27,7 +27,7 @@ public slots:
 private:
     ConfigKIV *CKIV;
     Tune84Check *T84CheckDialog;
-    TuneKIVADC *T84ADCDialog;
+    Tune84ADC *T84ADCDialog;
     TuneKIVTemp60 *T8460Dialog, *T8420Dialog;
 
     LimeReport::ReportEngine *m_Report;

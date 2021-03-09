@@ -3,7 +3,7 @@ include( ../common.pri )
 QT       += core gui printsupport network serialport widgets concurrent testlib xml qml svg
 QT.testlib.CONFIG -= console
 TARGET = AVM-Debug
-VERSION = 2.1.1
+VERSION = 2.1.3
 GIT_HASH = $$system(git rev-parse --short=8 HEAD)
 TEMPLATE = app
 

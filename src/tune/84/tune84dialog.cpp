@@ -15,7 +15,7 @@ Tune84Dialog::Tune84Dialog(ConfigKIV *ckiv, QWidget *parent) : GeneralTuneDialog
     // ReportModel = new QStandardItemModel;
     // ViewModel = new QStandardItemModel;
     setAttribute(Qt::WA_DeleteOnClose);
-    T84ADCDialog = new TuneKIVADC(TS84_ADC, CKIV, this);
+    T84ADCDialog = new Tune84ADC(TS84_ADC, CKIV, this);
     T8420Dialog = new TuneKIVTemp60(TS84_20TUNING, CKIV, this);
     T8460Dialog = new TuneKIVTemp60(TS84_60TUNING, CKIV, this);
     T84CheckDialog = new Tune84Check(TS84_CHECKING, this);
