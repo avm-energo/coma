@@ -601,7 +601,10 @@ void S2::setRecordValue(const DataTypes::DataRecV &record)
     auto result = std::find_if(
         std::begin(configV), std::end(configV), [record](const auto &lhs) { return (lhs.getId() == record.getId()); });
     if (result != std::end(configV))
+    {
+        Q_ASSERT(result->getIndex() == record.getIndex());
         *result = record;
+    }
     else
         configV.push_back(record);
 }

@@ -13,11 +13,8 @@
 Config::Config()
 {
     using namespace DataTypes;
-    // Q_ASSERT(sizeof(Bci::BciMain) / 4 == regs.size());
 
-    // MainBlk.MTypeB = Board::GetInstance().typeB();
-    // MainBlk.MTypeM = Board::GetInstance().typeM();
-    setConfig();
+    // setConfig();
 }
 
 void Config::setConfig()

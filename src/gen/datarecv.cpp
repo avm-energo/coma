@@ -98,7 +98,7 @@ DataRecV DataTypes::DataRecV::deserialize(const S2DataTypes::DataRec &record)
 
 void DataRecV::printer() const
 {
-    std::cout << id << std::endl;
+    std::cout << id << " : ";
     valueType w = data;
     std::visit([](auto arg) { detail::print(arg); }, w);
     std::cout << std::endl;

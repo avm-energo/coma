@@ -67,10 +67,21 @@ namespace detail
     template <typename T> void print(const T &value)
     {
         if constexpr (std::is_unsigned<T>())
-            std::cout << std::hex << +value;
+            std::cout << std::hex << +value << std::dec;
         else if constexpr (std::is_container<T>())
+        {
+            std::cout << "[ ";
+            int counter = 0;
             for (const auto i : value)
+            {
                 print(i);
+                if (++counter < value.size())
+                {
+                    std::cout << ",";
+                }
+            }
+            std::cout << " ]";
+        }
         else
             std::cout << value;
     }

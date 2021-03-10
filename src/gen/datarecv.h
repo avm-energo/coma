@@ -75,6 +75,10 @@ public:
     }
 
     unsigned int getId() const;
+    auto getIndex() const
+    {
+        return data.index();
+    }
 
 private:
     unsigned int id;

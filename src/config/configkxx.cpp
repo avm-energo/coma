@@ -12,7 +12,7 @@
 #include <QVBoxLayout>
 ConfigKxx::ConfigKxx(QObject *parent) : QObject(parent)
 {
-    setConfig();
+    // setConfig();
 }
 
 void ConfigKxx::setConfig()
@@ -116,9 +116,9 @@ void ConfigKxx::Fill()
         WDFunc::SetCBIndex(ParentSetup, "Baud_ID", cbidx);
 
     const auto parity = S2::getRecord(BciNumber::Parity_ID).value<BYTE>();
-
     WDFunc::SetCBIndex(ParentSetup, "Parity_ID", parity > 2 ? 0 : parity);
-    WDFunc::SetCBIndex(ParentSetup, "Stopbit_ID", S2::getRecord(BciNumber::stopbit_ID).value<BYTE>());
+    const auto stopbit = S2::getRecord(BciNumber::stopbit_ID).value<BYTE>();
+    WDFunc::SetCBIndex(ParentSetup, "Stopbit_ID", stopbit);
     WDFunc::SetSPBData(ParentSetup, "adrMB_ID", S2::getRecord(BciNumber::adrMB_ID).value<BYTE>());
 }
 
@@ -175,7 +175,7 @@ void ConfigKxx::FillBack()
         Q_ASSERT(cbidx != -1);
         master.reg = (cbidx == -1 ? 0 : cbidx);
 
-        WORD_8t masterBuffer = *reinterpret_cast<WORD_8t *>(&master);
+        BYTE_8t masterBuffer = *reinterpret_cast<BYTE_8t *>(&master);
         S2::setRecordValue({ BciNumber::MBMab1 + j, masterBuffer });
         ++j;
     }
@@ -212,15 +212,14 @@ void ConfigKxx::FillBack()
     S2::setRecordValue({ BciNumber::Port_ID, portArray });
 
     cbidx = WDFunc::CBIndex(ParentSetup, "Baud_ID");
-    S2::setRecordValue({ BciNumber::Baud_ID, BYTE(m_baudList.at(cbidx).toInt()) });
+    S2::setRecordValue({ BciNumber::Baud_ID, DWORD(m_baudList.at(cbidx).toInt()) });
 
     cbidx = WDFunc::CBIndex(ParentSetup, "Parity_ID");
     S2::setRecordValue({ BciNumber::Parity_ID, BYTE(CommandsMBS::Parity(cbidx)) });
 
     cbidx = WDFunc::CBIndex(ParentSetup, "Stopbit_ID");
     S2::setRecordValue({ BciNumber::stopbit_ID, BYTE(CommandsMBS::StopBits(cbidx)) });
-
-    S2::setRecordValue({ BciNumber::stopbit_ID, WDFunc::SPBData<BYTE>(ParentSetup, "adrMB_ID") });
+    S2::setRecordValue({ BciNumber::adrMB_ID, WDFunc::SPBData<BYTE>(ParentSetup, "adrMB_ID") });
 }
 
 QWidget *ConfigKxx::ComParam(QWidget *parent)

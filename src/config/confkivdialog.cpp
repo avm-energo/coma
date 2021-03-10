@@ -318,8 +318,8 @@ void ConfKIVDialog::FillBackKiv()
     S2::setRecordValue({ BciNumber::Tevent_pred, WDFunc::SPBData<DWORD>(this, NAMEOF(CKIV->Bci_block.Tevent_pred)) });
     S2::setRecordValue({ BciNumber::Tevent_alarm, WDFunc::SPBData<DWORD>(this, NAMEOF(CKIV->Bci_block.Tevent_alarm)) });
 
-    S2::setRecordValue({ BciNumber::IsU, WORD(WDFunc::ChBData(this, NAMEOF(CKIV->Bci_block.IsU))) });
-    S2::setRecordValue({ BciNumber::IsIuIunb, WORD(WDFunc::ChBData(this, NAMEOF(CKIV->Bci_block.IsIunb))) });
+    S2::setRecordValue({ BciNumber::IsU, BYTE(WDFunc::ChBData(this, NAMEOF(CKIV->Bci_block.IsU))) });
+    S2::setRecordValue({ BciNumber::IsIuIunb, BYTE(WDFunc::ChBData(this, NAMEOF(CKIV->Bci_block.IsIunb))) });
 }
 
 void ConfKIVDialog::SetupUI()
@@ -353,5 +353,5 @@ void ConfKIVDialog::SetDefConf()
 {
     CKIV->setDefConf();
 
-    Fill();
+    // Fill();
 }
