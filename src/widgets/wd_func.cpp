@@ -1,6 +1,5 @@
 #include "wd_func.h"
 
-//#include "../AVTUK_ETH_Version-f/coma.h"
 #include "../gen/board.h"
 #include "../gen/colors.h"
 #include "../gen/error.h"
@@ -8,14 +7,18 @@
 #include "../module/modules.h"
 #include "edoublespinbox.h"
 #include "etableview.h"
+#include "ipctrl.h"
+#include "passwordlineedit.h"
 
 #include <QApplication>
 #include <QHBoxLayout>
 #include <QHeaderView>
+#include <QMainWindow>
 #include <QPainter>
 #include <QPalette>
 #include <QPen>
 #include <QRegExp>
+#include <QStatusBar>
 #include <QStringListModel>
 #include <QTextEdit>
 #include <QtDebug>
@@ -311,7 +314,7 @@ bool WDFunc::SetCBColor(QWidget *w, const QString &cbname, const QString &color)
     return true;
 }
 
-EDoubleSpinBox *WDFunc::NewSPB(
+QDoubleSpinBox *WDFunc::NewSPB(
     QWidget *parent, const QString &spbname, double min, double max, int decimals, const QString &spbcolor)
 {
     EDoubleSpinBox *dsb = new EDoubleSpinBox(parent);
@@ -331,7 +334,7 @@ EDoubleSpinBox *WDFunc::NewSPB(
     return dsb;
 }
 
-EDoubleSpinBox *WDFunc::NewSPB2(QWidget *parent, const QString &spbname, double min, double max, int decimals)
+QDoubleSpinBox *WDFunc::NewSPB2(QWidget *parent, const QString &spbname, double min, double max, int decimals)
 {
     EDoubleSpinBox *dsb = new EDoubleSpinBox(parent);
 
@@ -445,6 +448,23 @@ bool WDFunc::SetRBData(QWidget *w, const QString &rbname, bool data)
         return false;
     rb->setChecked(data);
     return true;
+}
+
+bool WDFunc::SetIPCtrlData(const QObject *w, const QString &name, const std::array<quint8, 4> &value)
+{
+    auto *ipControl = w->findChild<IPCtrl *>(name);
+    if (ipControl == nullptr)
+        return false;
+    ipControl->setIP(value);
+    return true;
+}
+
+std::array<quint8, 4> WDFunc::IPCtrlData(const QObject *w, const QString &name)
+{
+    auto *ipControl = w->findChild<IPCtrl *>(name);
+    if (ipControl == nullptr)
+        return { 0, 0, 0, 0 };
+    return ipControl->getIP();
 }
 
 QString WDFunc::TVField(QWidget *w, const QString &tvname, int column, bool isid)
@@ -684,6 +704,18 @@ QMainWindow *WDFunc::getMainWindow()
         if (QMainWindow *mainWin = qobject_cast<QMainWindow *>(w))
             return mainWin;
     return nullptr;
+}
+
+QPushButton *WDFunc::NewPBCommon(
+    QWidget *parent, const QString &pbname, const QString &text, const QString &icon, const QString &pbtooltip)
+{
+    QPushButton *pb = new QPushButton(parent);
+    pb->setObjectName(pbname);
+    if (!icon.isEmpty())
+        pb->setIcon(QIcon(icon));
+    pb->setText(text);
+    pb->setToolTip(pbtooltip);
+    return pb;
 }
 
 // QMainWindow *WDFunc::getComaWindow() { Coma }

@@ -2,6 +2,7 @@
 
 #include "../gen/s2.h"
 #include "../module/module_kxx.h"
+#include "../widgets/ipctrl.h"
 #include "../widgets/wd_func.h"
 #include "config.h"
 
@@ -98,17 +99,13 @@ void ConfigKxx::Fill()
     const auto StrPort = S2::getRecord(BciNumber::Port_ID).value<WORD_4t>();
     WDFunc::SetLEData(ParentSetup, "Port_ID", QString::number(StrPort.front()));
 
-    const QString StrIP = ::detail::splitArray(S2::getRecord(BciNumber::IP_ID).value<BYTE_4t>(), '.');
-    WDFunc::SetLEData(ParentSetup, "IP_ID", StrIP);
+    WDFunc::SetIPCtrlData(ParentSetup, "IP_ID", S2::getRecord(BciNumber::IP_ID).value<BYTE_4t>());
 
-    const QString StrSNTP = ::detail::splitArray(S2::getRecord(BciNumber::SNTP_ID).value<BYTE_4t>(), '.');
-    WDFunc::SetLEData(ParentSetup, "SNTP_ID", StrSNTP);
+    WDFunc::SetIPCtrlData(ParentSetup, "SNTP_ID", S2::getRecord(BciNumber::SNTP_ID).value<BYTE_4t>());
 
-    const QString StrGate = ::detail::splitArray(S2::getRecord(BciNumber::GW_ID).value<BYTE_4t>(), '.');
-    WDFunc::SetLEData(ParentSetup, "GW_ID", StrGate);
+    WDFunc::SetIPCtrlData(ParentSetup, "GW_ID", S2::getRecord(BciNumber::GW_ID).value<BYTE_4t>());
 
-    const QString StrMask = ::detail::splitArray(S2::getRecord(BciNumber::Mask_ID).value<BYTE_4t>(), '.');
-    WDFunc::SetLEData(ParentSetup, "Mask_ID", StrMask);
+    WDFunc::SetIPCtrlData(ParentSetup, "Mask_ID", S2::getRecord(BciNumber::Mask_ID).value<BYTE_4t>());
 
     const auto StrBaud = S2::getRecord(BciNumber::Baud_ID).value<DWORD>();
     cbidx = m_baudList.indexOf(QString::number(StrBaud));
@@ -182,28 +179,13 @@ void ConfigKxx::FillBack()
 
     //................................................................
 
-    QStringList inIP(WDFunc::LEData(ParentSetup, "IP_ID").split("."));
-    BYTE_4t ipArray;
-    std::transform(inIP.begin(), inIP.end(), ipArray.begin(), [](const QString &str) -> int { return str.toInt(); });
-    S2::setRecordValue({ BciNumber::IP_ID, ipArray });
+    S2::setRecordValue({ BciNumber::IP_ID, WDFunc::IPCtrlData(ParentSetup, "IP_ID") });
 
-    QStringList inSNTP(WDFunc::LEData(ParentSetup, "SNTP_ID").split("."));
-    BYTE_4t sntpArray;
-    std::transform(
-        inSNTP.begin(), inSNTP.end(), sntpArray.begin(), [](const QString &str) -> int { return str.toInt(); });
-    S2::setRecordValue({ BciNumber::SNTP_ID, sntpArray });
+    S2::setRecordValue({ BciNumber::SNTP_ID, WDFunc::IPCtrlData(ParentSetup, "SNTP_ID") });
 
-    QStringList inGate(WDFunc::LEData(ParentSetup, "GW_ID").split("."));
-    BYTE_4t gatewayArray;
-    std::transform(
-        inGate.begin(), inGate.end(), gatewayArray.begin(), [](const QString &str) -> int { return str.toInt(); });
-    S2::setRecordValue({ BciNumber::GW_ID, gatewayArray });
+    S2::setRecordValue({ BciNumber::GW_ID, WDFunc::IPCtrlData(ParentSetup, "GW_ID") });
 
-    QStringList inMask(WDFunc::LEData(ParentSetup, "Mask_ID").split("."));
-    BYTE_4t maskArray;
-    std::transform(
-        inMask.begin(), inMask.end(), maskArray.begin(), [](const QString &str) -> int { return str.toInt(); });
-    S2::setRecordValue({ BciNumber::Mask_ID, maskArray });
+    S2::setRecordValue({ BciNumber::Mask_ID, WDFunc::IPCtrlData(ParentSetup, "Mask_ID") });
 
     QString StrPort {};
     WDFunc::LEData(ParentSetup, "Port_ID", StrPort);
@@ -235,29 +217,36 @@ QWidget *ConfigKxx::ComParam(QWidget *parent)
 
     int row = 7;
 
-    QString Str {};
     glyout->addWidget(WDFunc::NewLBL2(parent, "IP адрес устройства:"), row, 0, 1, 1, Qt::AlignLeft);
-    glyout->addWidget(WDFunc::NewLE2(parent, "IP_ID", Str), row, 1, 1, 1, Qt::AlignLeft);
+    auto ipControl = new IPCtrl;
+    ipControl->setObjectName("IP_ID");
+    glyout->addWidget(ipControl, row, 1, 1, 1, Qt::AlignLeft);
 
     row++;
 
     glyout->addWidget(WDFunc::NewLBL2(parent, "Маска:"), row, 0, 1, 1, Qt::AlignLeft);
-    glyout->addWidget(WDFunc::NewLE2(parent, "Mask_ID", Str), row, 1, 1, 1, Qt::AlignLeft);
+    ipControl = new IPCtrl;
+    ipControl->setObjectName("Mask_ID");
+    glyout->addWidget(ipControl, row, 1, 1, 1, Qt::AlignLeft);
 
     row++;
 
     glyout->addWidget(WDFunc::NewLBL2(parent, "Шлюз:"), row, 0, 1, 1, Qt::AlignLeft);
-    glyout->addWidget(WDFunc::NewLE2(parent, "GW_ID", Str), row, 1, 1, 1, Qt::AlignLeft);
+    ipControl = new IPCtrl;
+    ipControl->setObjectName("GW_ID");
+    glyout->addWidget(ipControl, row, 1, 1, 1, Qt::AlignLeft);
 
     row++;
 
     glyout->addWidget(WDFunc::NewLBL2(parent, "Порт протокола 104:"), row, 0, 1, 1, Qt::AlignLeft);
-    glyout->addWidget(WDFunc::NewLE2(parent, "Port_ID", Str), row, 1, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(WDFunc::NewLE2(parent, "Port_ID", {}), row, 1, 1, 1, Qt::AlignLeft);
 
     row++;
 
     glyout->addWidget(WDFunc::NewLBL2(parent, "Адрес SNTP сервера:"), row, 0, 1, 1, Qt::AlignLeft);
-    glyout->addWidget(WDFunc::NewLE2(parent, "SNTP_ID", Str), row, 1, 1, 1, Qt::AlignLeft);
+    ipControl = new IPCtrl;
+    ipControl->setObjectName("SNTP_ID");
+    glyout->addWidget(ipControl, row, 1, 1, 1, Qt::AlignLeft);
 
     vlyout2->addLayout(glyout);
     vlyout1->addLayout(vlyout2);
