@@ -31,7 +31,6 @@ void ModbusThread::setDeviceAddress(quint8 adr)
 
 void ModbusThread::Run()
 {
-    QByteArray ba;
     const auto &iface = BaseInterface::iface();
     using State = BaseInterface::State;
     while (iface->state() != State::Stop)

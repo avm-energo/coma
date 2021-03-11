@@ -108,7 +108,7 @@ void InterfaceEthernetDialog::scanInterface()
     auto *button = qobject_cast<QPushButton *>(sender());
     Q_ASSERT(button);
     connect(this, &InterfaceEthernetDialog::modelUpdated, button, &QPushButton::show);
-    bool ok;
+    bool ok = false;
     QString text = QInputDialog::getText(
         this, tr("Scanner"), tr("Ip address and mask:"), QLineEdit::Normal, "172.16.29.0/24", &ok);
     QPair<QHostAddress, int> subnet = QHostAddress::parseSubnet(text);
@@ -118,7 +118,7 @@ void InterfaceEthernetDialog::scanInterface()
     m_hosts.clear();
 
     qDebug() << subnet.first << subnet.second;
-    quint32 addr_count = std::pow(2, 32 - subnet.second);
+    int addr_count = std::pow(2, 32 - subnet.second);
 
     m_progress = new QProgressDialog(this);
     m_progress->setLabelText(tr("Scanning ping"));

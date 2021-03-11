@@ -59,7 +59,7 @@ private:
 
     //    void SendAndGetResult(ModBus::InOutStruct &inp);
     void Send();
-    quint16 CalcCRC(QByteArray &Dat) const;
+    quint16 CalcCRC(QByteArray &ba) const;
 
     template <typename T> T unpackReg(QByteArray ba) const
     {

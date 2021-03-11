@@ -21,16 +21,7 @@
 
 CheckKIVDialog::CheckKIVDialog(QWidget *parent) : AbstractCheckDialog(parent)
 {
-    //    EParent = parent;
-    // QString tmps = "QDialog {background-color: " + QString(Colors::UCONFCLR) + ";}";
-    // setStyleSheet(tmps);
     QStringList sl;
-    //    BdNum = 6;
-    //    ChKIV = new CheckKIV;
-    //    Ch = new Check;
-    //    m_stColor.resize(7);
-    //    BdNum = 11;
-
     m_BdUIList = { { "Основные", Bd1W() }, { "Дополнительные", Bd2W() } };
     m_BdUIList.first().widget->setUpdatesEnabled();
 
@@ -59,22 +50,16 @@ UWidget *CheckKIVDialog::Bd1W()
     QVBoxLayout *lyout = new QVBoxLayout;
     QVBoxLayout *vlyout = new QVBoxLayout;
     QGridLayout *glyout = new QGridLayout;
-    // QHBoxLayout *hlyout = new QHBoxLayout;
+
     QString phase { "ABC" };
-    // hlyout->addWidget(WDFunc::NewLBL(this, "Номер:"), 0);
-    // hlyout->addWidget(WDFunc::NewLBLT(this, "", "value0", ValuesFormat,
-    // "Номер"), 0);
-    QFont font;
+
     QGroupBox *gb = new QGroupBox("Общие");
-    font.setFamily("Times");
-    font.setPointSize(11);
-    // setFont(font);
-    gb->setFont(font);
-    glyout->addWidget(WDFunc::NewLBL(this, "Температура микроконтроллера, °С"), 0, 0, 1, 1);
+
+    glyout->addWidget(WDFunc::NewLBL2(this, "Температура микроконтроллера, °С"), 0, 0, 1, 1);
     glyout->addWidget(WDFunc::NewLBLT(this, "", "101", ValuesFormat, "Температура микроконтроллера, °С"), 1, 0, 1, 1);
-    glyout->addWidget(WDFunc::NewLBL(this, "Tamb, °С"), 0, 1, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL2(this, "Tamb, °С"), 0, 1, 1, 1);
     glyout->addWidget(WDFunc::NewLBLT(this, "", "4501", ValuesFormat, "Температура окружающей среды, °С"), 1, 1, 1, 1);
-    glyout->addWidget(WDFunc::NewLBL(this, "Частота, Гц"), 0, 2, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL2(this, "Частота, Гц"), 0, 2, 1, 1);
     glyout->addWidget(WDFunc::NewLBLT(this, "", "2400", ValuesFormat, "Частота, Гц"), 1, 2, 1, 1);
 
     vlyout->addLayout(glyout);
@@ -82,31 +67,30 @@ UWidget *CheckKIVDialog::Bd1W()
     lyout->addWidget(gb);
 
     gb = new QGroupBox("Параметры вводов");
-    gb->setFont(font);
     vlyout = new QVBoxLayout;
     glyout = new QGridLayout;
     for (i = 0; i < 3; ++i)
     {
-        glyout->addWidget(WDFunc::NewLBL(this, "Ueff ф." + phase[i] + ", кВ"), 2, i, 1, 1);
+        glyout->addWidget(WDFunc::NewLBL2(this, "Ueff ф." + phase[i] + ", кВ"), 2, i, 1, 1);
         glyout->addWidget(WDFunc::NewLBLT(this, "", QString::number(1000 + i), ValuesFormat,
                               "Действующие значения напряжений по 1-й гармонике, кВ"),
             3, i, 1, 1);
-        glyout->addWidget(WDFunc::NewLBL(this, "Ieff ф." + phase[i] + ", мА"), 4, i, 1, 1);
+        glyout->addWidget(WDFunc::NewLBL2(this, "Ieff ф." + phase[i] + ", мА"), 4, i, 1, 1);
         glyout->addWidget(WDFunc::NewLBLT(this, "", QString::number(1100 + i), ValuesFormat,
                               "Действующие значения токов по 1-й гармонике, мА"),
             5, i, 1, 1);
-        glyout->addWidget(WDFunc::NewLBL(this, "Cbush ф." + phase[i] + ", пФ"), 6, i, 1, 1);
+        glyout->addWidget(WDFunc::NewLBL2(this, "Cbush ф." + phase[i] + ", пФ"), 6, i, 1, 1);
         glyout->addWidget(
             WDFunc::NewLBLT(this, "", QString::number(2420 + i), ValuesFormat, "Ёмкости вводов, пФ"), 7, i, 1, 1);
-        glyout->addWidget(WDFunc::NewLBL(this, "Tg_d ф." + phase[i] + ", %"), 8, i, 1, 1);
+        glyout->addWidget(WDFunc::NewLBL2(this, "Tg_d ф." + phase[i] + ", %"), 8, i, 1, 1);
         glyout->addWidget(
             WDFunc::NewLBLT(this, "", QString::number(2423 + i), ValuesFormat, "Тангенсы дельта вводов, %"), 9, i, 1,
             1);
-        glyout->addWidget(WDFunc::NewLBL(this, "dCbush ф." + QString(phase.at(i)) + ", %"), 10, i, 1, 1);
+        glyout->addWidget(WDFunc::NewLBL2(this, "dCbush ф." + QString(phase.at(i)) + ", %"), 10, i, 1, 1);
         glyout->addWidget(
             WDFunc::NewLBLT(this, "", QString::number(2426 + i), ValuesFormat, "Изменение емкостей вводов, пФ"), 11, i,
             1, 1);
-        glyout->addWidget(WDFunc::NewLBL(this, "dTg_d ф." + phase[i] + ", %"), 12, i, 1, 1);
+        glyout->addWidget(WDFunc::NewLBL2(this, "dTg_d ф." + phase[i] + ", %"), 12, i, 1, 1);
         glyout->addWidget(
             WDFunc::NewLBLT(this, "", QString::number(2429 + i), ValuesFormat, "Изменение тангенсов дельта вводов, %"),
             13, i, 1, 1);
@@ -117,13 +101,12 @@ UWidget *CheckKIVDialog::Bd1W()
     lyout->addWidget(gb);
 
     gb = new QGroupBox("Параметры небаланса токов");
-    gb->setFont(font);
     vlyout = new QVBoxLayout;
     glyout = new QGridLayout;
-    glyout->addWidget(WDFunc::NewLBL(this, "Iunb, мА"), 14, 0, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL2(this, "Iunb, мА"), 14, 0, 1, 1);
     glyout->addWidget(
         WDFunc::NewLBLT(this, "", "2432", ValuesFormat, "Действующее значение тока небаланса, %"), 15, 0, 1, 1);
-    glyout->addWidget(WDFunc::NewLBL(this, "Phy_unb, град."), 14, 1, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL2(this, "Phy_unb, град."), 14, 1, 1, 1);
     glyout->addWidget(
         WDFunc::NewLBLT(this, "", "2433", ValuesFormat, "Угол тока небаланса относительно тока ф.А, град."), 15, 1, 1,
         1);
@@ -134,7 +117,6 @@ UWidget *CheckKIVDialog::Bd1W()
 
     lyout->addStretch(100);
     w->setLayout(lyout);
-    //    w->setStyleSheet("QWidget {background-color: " + QString(Colors::UCONFCLR) + ";}");
     w->setFloatBdQuery({ { 101, 2 }, { 1000, 16 }, { 1100, 16 }, { 2400, 7 }, { 2420, 14 }, { 4501, 2 } });
     w->setSpBdQuery({ { 3011, 25 } });
 
@@ -173,31 +155,27 @@ UWidget *CheckKIVDialog::Bd2W()
     QVBoxLayout *lyout = new QVBoxLayout;
     QGridLayout *glyout = new QGridLayout;
     QString phase { "ABC" };
-    QFont font;
 
     QGroupBox *gb = new QGroupBox("Симметричные составляющие");
-    font.setFamily("Times");
-    font.setPointSize(11);
-    gb->setFont(font);
-    // gb->setTitle(title);
+
     QVBoxLayout *vlyout2 = new QVBoxLayout;
     QVBoxLayout *vlyout1 = new QVBoxLayout;
 
-    glyout->addWidget(WDFunc::NewLBL(this, "U0, кВ"), 0, 0, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL2(this, "U0, кВ"), 0, 0, 1, 1);
     glyout->addWidget(
         WDFunc::NewLBLT(this, "", "1011", ValuesFormat, "Напряжение нулевой последовательности, кВ"), 1, 0, 1, 1);
-    glyout->addWidget(WDFunc::NewLBL(this, "U1, кВ"), 0, 1, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL2(this, "U1, кВ"), 0, 1, 1, 1);
     glyout->addWidget(
         WDFunc::NewLBLT(this, "", "1012", ValuesFormat, "Напряжение прямой последовательности, кВ"), 1, 1, 1, 1);
-    glyout->addWidget(WDFunc::NewLBL(this, "U2, кВ"), 0, 2, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL2(this, "U2, кВ"), 0, 2, 1, 1);
     glyout->addWidget(
         WDFunc::NewLBLT(this, "", "1013", ValuesFormat, "Напряжение обратной последовательности, кВ"), 1, 2, 1, 1);
-    glyout->addWidget(WDFunc::NewLBL(this, "I0, мА"), 2, 0, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL2(this, "I0, мА"), 2, 0, 1, 1);
     glyout->addWidget(
         WDFunc::NewLBLT(this, "", "1111", ValuesFormat, "Ток нулевой последовательности, мА"), 3, 0, 1, 1);
-    glyout->addWidget(WDFunc::NewLBL(this, "I1, мА"), 2, 1, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL2(this, "I1, мА"), 2, 1, 1, 1);
     glyout->addWidget(WDFunc::NewLBLT(this, "", "1112", ValuesFormat, "Ток прямой последовательности, мА"), 3, 1, 1, 1);
-    glyout->addWidget(WDFunc::NewLBL(this, "I2, мА"), 2, 2, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL2(this, "I2, мА"), 2, 2, 1, 1);
     glyout->addWidget(
         WDFunc::NewLBLT(this, "", "1113", ValuesFormat, "Ток обратной последовательности, мА"), 3, 2, 1, 1);
     vlyout2->addLayout(glyout);
@@ -207,16 +185,15 @@ UWidget *CheckKIVDialog::Bd2W()
     gb = new QGroupBox("Угловые значения");
     vlyout2 = new QVBoxLayout;
     glyout = new QGridLayout;
-    gb->setFont(font);
 
     int i;
     for (i = 0; i < 3; ++i)
     {
-        glyout->addWidget(WDFunc::NewLBL(this, "Phy_U ф." + phase[i] + ", град."), 4, i, 1, 1);
+        glyout->addWidget(WDFunc::NewLBL2(this, "Phy_U ф." + phase[i] + ", град."), 4, i, 1, 1);
         glyout->addWidget(WDFunc::NewLBLT(this, "", QString::number(2401 + i), ValuesFormat,
                               "Угол по напряжению ф." + phase[i] + ", град."),
             5, i, 1, 1);
-        glyout->addWidget(WDFunc::NewLBL(this, "Phy_I ф." + phase[i] + ", град."), 6, i, 1, 1);
+        glyout->addWidget(WDFunc::NewLBL2(this, "Phy_I ф." + phase[i] + ", град."), 6, i, 1, 1);
         glyout->addWidget(WDFunc::NewLBLT(this, "", QString::number(2404 + i), ValuesFormat,
                               "Угол по току ф." + phase[i] + ", град."),
             7, i, 1, 1);
@@ -227,11 +204,10 @@ UWidget *CheckKIVDialog::Bd2W()
     vlyout1->addWidget(gb);
 
     gb = new QGroupBox("Температура");
-    gb->setFont(font);
     vlyout2 = new QVBoxLayout;
     glyout = new QGridLayout;
 
-    glyout->addWidget(WDFunc::NewLBL(this, "Ramb, Ом"), 8, 0, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL2(this, "Ramb, Ом"), 8, 0, 1, 1);
     glyout->addWidget(WDFunc::NewLBLT(this, "", "4502", ValuesFormat, "Сопротивление датчика, Ом"), 9, 0, 1, 1);
     vlyout2->addLayout(glyout);
     gb->setLayout(vlyout2);
@@ -240,7 +216,6 @@ UWidget *CheckKIVDialog::Bd2W()
     lyout->addLayout(vlyout1);
     lyout->addStretch(100);
     w->setLayout(lyout);
-    //   w->setStyleSheet("QWidget {background-color: " + QString(Colors::UCONFCLR) + ";}");
     w->setFloatBdQuery({ { 1000, 16 }, { 1100, 16 }, { 2400, 7 }, { 4501, 2 } });
     return w;
 }

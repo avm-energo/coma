@@ -11,8 +11,7 @@ CheckKIV::CheckKIV()
 {
     ValuesFormat = "QLabel {border: 1px solid green; border-radius: 4px; "
                    "padding: 1px; color: black;"
-                   "background-color: "
-        + QString(Colors::ACONFOCLR) + "; font: bold 10px;}";
+                   " font: bold 10px;}";
     WidgetFormat = "QWidget {background-color: " + QString(Colors::UCONFCLR) + ";}";
 }
 

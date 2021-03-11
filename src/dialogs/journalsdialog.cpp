@@ -175,7 +175,7 @@ void JournalDialog::SaveJour(int jourType)
 
 int JournalDialog::GetJourNum(const QString &objname)
 {
-    bool ok;
+    bool ok = false;
     QStringList sl = objname.split(".");
 
     if (sl.size() < 2)
@@ -184,7 +184,7 @@ int JournalDialog::GetJourNum(const QString &objname)
         return INT_MAX;
     }
     int jourtype = sl.at(1).toInt(&ok);
-    QString jourprefix = sl.at(0);
+    const QString jourprefix = sl.at(0);
     if (((jourprefix != "gj") && (jourprefix != "ej") && (jourprefix != "sj") && (jourprefix != "mj")) || !ok)
     {
         qDebug("Bad jourprefix");

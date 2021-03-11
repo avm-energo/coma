@@ -70,7 +70,7 @@ void OscDialog::SetupUI()
 void OscDialog::GetOsc(QModelIndex idx)
 {
     emit StopCheckTimer();
-    bool ok;
+    bool ok = false;
     int oscnum = idx.model()->data(idx.sibling(idx.row(), 0), Qt::DisplayRole).toInt(&ok); // номер осциллограммы
     if (!ok)
     {

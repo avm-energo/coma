@@ -162,17 +162,19 @@ void OscManager::loadSwjFromFile(const QString &filename)
     glyout->addWidget(new QLabel("Тип коммутации:", swjDialog), 3, 0, 1, 4);
 
     quint32 tmpi32 = (OscFunc->SWJRecord.options >> 1) & 0x03;
-    if (tmpi32)
+    switch (tmpi32)
     {
-        if (tmpi32 == 2)
-            tmps = "Несинхронная от АВМ-СК";
-        else if (tmpi32 == 3)
-            tmps = "Синхронная от АВМ-СК";
-    }
-    else
-    {
+    case 2:
+        tmps = "Несинхронная от АВМ-СК";
+        break;
+    case 3:
+        tmps = "Синхронная от АВМ-СК";
+        break;
+    default:
         tmps = "Несинхронная от внешнего устройства";
+        break;
     }
+
     glyout->addWidget(new QLabel(tmps, swjDialog), 3, 4, 1, 1);
 
     glyout->addWidget(new QLabel("Результат переключения:", swjDialog), 4, 0, 1, 4);
@@ -253,8 +255,7 @@ void OscManager::loadSwjFromFile(const QString &filename)
     glyout->addWidget(new QLabel(sl.at(row - 1), swjDialog), row, 0, 1, 1);
     for (int i = 0; i < 3; ++i)
     {
-        float value;
-        value = static_cast<float>(OscFunc->SWJRecord.ownTime[i]);
+        float value = static_cast<float>(OscFunc->SWJRecord.ownTime[i]);
         value = value / 100;
         glyout->addWidget(new QLabel(str.setNum(value, 'f', 2), swjDialog), row, i + 1, 1, 1);
     }
@@ -262,8 +263,7 @@ void OscManager::loadSwjFromFile(const QString &filename)
     glyout->addWidget(new QLabel(sl.at(row - 1), swjDialog), row, 0, 1, 1);
     for (int i = 0; i < 3; ++i)
     {
-        float value;
-        value = static_cast<float>(OscFunc->SWJRecord.fullTime[i]);
+        float value = static_cast<float>(OscFunc->SWJRecord.fullTime[i]);
         value = value / 100;
         glyout->addWidget(new QLabel(str.setNum(value, 'f', 2), swjDialog), row, i + 1, 1, 1);
     }
@@ -271,8 +271,7 @@ void OscManager::loadSwjFromFile(const QString &filename)
     glyout->addWidget(new QLabel(sl.at(row - 1), swjDialog), row, 0, 1, 1);
     for (int i = 0; i < 3; ++i)
     {
-        float value;
-        value = static_cast<float>(OscFunc->SWJRecord.movTime[i]);
+        float value = static_cast<float>(OscFunc->SWJRecord.movTime[i]);
         value = value / 100;
         glyout->addWidget(new QLabel(str.setNum(value, 'f', 2), swjDialog), row, i + 1, 1, 1);
     }
@@ -280,8 +279,7 @@ void OscManager::loadSwjFromFile(const QString &filename)
     glyout->addWidget(new QLabel(sl.at(row - 1), swjDialog), row, 0, 1, 1);
     for (int i = 0; i < 3; ++i)
     {
-        float value;
-        value = static_cast<float>(OscFunc->SWJRecord.archTime[i]);
+        float value = static_cast<float>(OscFunc->SWJRecord.archTime[i]);
         value = value / 100;
         glyout->addWidget(new QLabel(str.setNum(value, 'f', 2), swjDialog), row, i + 1, 1, 1);
     }
@@ -289,8 +287,7 @@ void OscManager::loadSwjFromFile(const QString &filename)
     glyout->addWidget(new QLabel(sl.at(row - 1), swjDialog), row, 0, 1, 1);
     for (int i = 0; i < 3; ++i)
     {
-        float value;
-        value = static_cast<float>(OscFunc->SWJRecord.idleTime[i]);
+        float value = static_cast<float>(OscFunc->SWJRecord.idleTime[i]);
         value = value / 100;
         glyout->addWidget(new QLabel(str.setNum(value, 'f', 2), swjDialog), row, i + 1, 1, 1);
     }
@@ -298,8 +295,7 @@ void OscManager::loadSwjFromFile(const QString &filename)
     glyout->addWidget(new QLabel(sl.at(row - 1), swjDialog), row, 0, 1, 1);
     for (int i = 0; i < 3; ++i)
     {
-        float value;
-        value = static_cast<float>(OscFunc->SWJRecord.inaccuracy[i]);
+        float value = static_cast<float>(OscFunc->SWJRecord.inaccuracy[i]);
         value = value / 100;
         glyout->addWidget(new QLabel(str.setNum(value, 'f', 2), swjDialog), row, i + 1, 1, 1);
     }
@@ -307,8 +303,7 @@ void OscManager::loadSwjFromFile(const QString &filename)
     glyout->addWidget(new QLabel(sl.at(row - 1), swjDialog), row, 0, 1, 1);
     for (int i = 0; i < 3; ++i)
     {
-        float value;
-        value = OscFunc->SWJRecord.tInside[i];
+        float value = OscFunc->SWJRecord.tInside[i];
         if (value == std::numeric_limits<float>::max())
             glyout->addWidget(new QLabel("-", swjDialog), row, i + 1, 1, 1);
         else

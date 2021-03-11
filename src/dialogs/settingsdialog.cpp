@@ -68,7 +68,7 @@ void SettingsDialog::Fill()
 
 void SettingsDialog::AcceptSettings()
 {
-    bool tmpb;
+    bool tmpb = false;
     auto sets = std::make_unique<QSettings>();
 
     WDFunc::ChBData(this, "writelogchb", tmpb);
