@@ -40,6 +40,7 @@ lib
 *.qmlproject.user.*
 
 #MSVS
+**/.vs
 *.vcxproj.filters
 *.vcxproj.user
 
