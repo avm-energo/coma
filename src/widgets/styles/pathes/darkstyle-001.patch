@@ -1,0 +1,13 @@
+diff --git a/qdarkstyle/style.qss b/qdarkstyle/style.qss
+index be645c9..ed09ca2 100644
+--- a/qdarkstyle/style.qss
++++ b/qdarkstyle/style.qss
+@@ -1204,7 +1204,7 @@ QComboBox {
+   border-radius: 4px;
+   selection-background-color: #1464A0;
+   padding-left: 4px;
+-  padding-right: 36px;
++  padding-right: 4px;
+   /* 4 + 16*2 See scrollbar size */
+   /* Fixes #103, #111 */
+   min-height: 1.5em;
