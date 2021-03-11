@@ -1,5 +1,6 @@
 #include "ipctrl.h"
 
+#include <QDebug>
 #include <QHBoxLayout>
 #include <QIntValidator>
 #include <QKeyEvent>
@@ -26,6 +27,10 @@ IPCtrl::IPCtrl(QWidget *parent) : QFrame(parent)
 
         m_pLineEdit.at(i) = new QLineEdit(this);
         QLineEdit *pEdit = m_pLineEdit.at(i);
+
+        int pixelsWide = pEdit->fontMetrics().horizontalAdvance(QString::number(255));
+        // Here is костыль
+        pEdit->setMaximumWidth(pixelsWide * 2);
         pEdit->installEventFilter(this);
 
         pLayout->addWidget(pEdit);
@@ -44,7 +49,7 @@ IPCtrl::IPCtrl(QWidget *parent) : QFrame(parent)
         pEdit->setValidator(validator);
     }
 
-    setMaximumWidth(30 * QTUTL_IP_SIZE);
+    //  setMaximumWidth(30 * QTUTL_IP_SIZE);
 
     connect(this, &IPCtrl::signalTextChanged, this, &IPCtrl::slotTextChanged, Qt::QueuedConnection);
 }

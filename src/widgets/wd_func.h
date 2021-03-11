@@ -127,13 +127,11 @@ public:
     static bool SetLBLColor(QWidget *w, const QString &lblname, const QString &lblcolor);
     static bool SetLBLText(QWidget *w, const QString &lblname, const QString &lbltext = "", bool enabled = true);
     static QString LBLText(QWidget *w, const QString &lblname);
-    [[deprecated("Use instead second version with global style sheet")]] static QRadioButton *NewRB(
-        QWidget *parent, const QString &rbtext, const QString &rbname, const QString &rbcolor = "");
+
     static QRadioButton *NewRB2(QWidget *parent, const QString &rbtext, const QString &rbname);
     static QString TVField(QWidget *w, const QString &tvname, int column, bool isid = false);
     static void TVAutoResize(QWidget *w, const QString &tvname);
-    [[deprecated("Use instead second version with global style sheet")]] static QCheckBox *NewChB(
-        QWidget *parent, const QString &chbname, const QString &chbtext, const QString &chbcolor = "");
+
     static QCheckBox *NewChB2(QWidget *parent, const QString &chbname, const QString &chbtext);
     static bool ChBData(QWidget *w, const QString &chbname, bool &data);
     static bool ChBData(QWidget *w, const QString &chbname);

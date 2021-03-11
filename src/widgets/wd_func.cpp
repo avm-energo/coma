@@ -411,19 +411,6 @@ QString WDFunc::LBLText(QWidget *w, const QString &lblname)
     return text;
 }
 
-QRadioButton *WDFunc::NewRB(QWidget *parent, const QString &rbtext, const QString &rbname, const QString &rbcolor)
-{
-    QRadioButton *rb = new QRadioButton(parent);
-    rb->setObjectName(rbname);
-    rb->setText(rbtext);
-    if (!rbcolor.isEmpty())
-    {
-        QString tmps = "QRadioButton {background-color: " + rbcolor + ";}";
-        rb->setStyleSheet(tmps);
-    }
-    return rb;
-}
-
 QRadioButton *WDFunc::NewRB2(QWidget *parent, const QString &rbtext, const QString &rbname)
 {
     QRadioButton *rb = new QRadioButton(parent);
@@ -720,19 +707,6 @@ QPushButton *WDFunc::NewPBCommon(
 
 // QMainWindow *WDFunc::getComaWindow() { Coma }
 
-QCheckBox *WDFunc::NewChB(QWidget *parent, const QString &chbname, const QString &chbtext, const QString &chbcolor)
-{
-    QCheckBox *chb = new QCheckBox(parent);
-    chb->setObjectName(chbname);
-    chb->setText(chbtext);
-    if (!chbcolor.isEmpty())
-    {
-        QString tmps = "QCheckBox {background-color: " + chbcolor + ";}";
-        chb->setStyleSheet(tmps);
-    }
-    return chb;
-}
-
 QCheckBox *WDFunc::NewChB2(QWidget *parent, const QString &chbname, const QString &chbtext)
 {
     QCheckBox *chb = new QCheckBox(parent);
@@ -951,7 +925,7 @@ void WDFunc::SetTVModel(QWidget *w, const QString &tvname, QAbstractItemModel *m
     ETableView *tv = w->findChild<ETableView *>(tvname);
     if (tv == nullptr)
     {
-        DBGMSG("Пустой tv");
+        qDebug("Empty tv");
         return;
     }
     QItemSelectionModel *m = tv->selectionModel();
