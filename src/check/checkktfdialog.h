@@ -1,15 +1,15 @@
-#ifndef CHEKDIALOGKTF_H
-#define CHEKDIALOGKTF_H
+#ifndef CHECKKTFDIALOG_H
+#define CHECKKTFDIALOG_H
 
 #include "abstractcheckdialog.h"
-#include "checkktf.h"
+//#include "checkktf.h"
 
 class CheckKTFDialog : public AbstractCheckDialog
 {
     Q_OBJECT
 
 public:
-    CheckKTFDialog(QWidget *parent = nullptr);
+    explicit CheckKTFDialog(QWidget *parent = nullptr);
     ~CheckKTFDialog();
 
 public slots:
@@ -21,7 +21,7 @@ public slots:
     //    void reqUpdate() override;
 
 private:
-    CheckKTF *ChKTF;
+    //  CheckKTF *ChKTF;
 
     //    QWidget *AutoCheckUI();            // UI для автоматической проверки модуля
     //    QWidget *BdUI(int bdnum) override; // визуализация наборов текущих данных от модуля
@@ -42,4 +42,4 @@ private slots:
     //    void UpdateModBusData(QList<ModBus::SignalStruct> Signal) override;
 };
 
-#endif // CHEKDIALOGKTF_H
+#endif // CHECKKTFDIALOG_H

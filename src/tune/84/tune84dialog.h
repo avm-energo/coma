@@ -1,7 +1,7 @@
 #ifndef TUNE84DIALOG_H
 #define TUNE84DIALOG_H
 
-#include "../../check/checkkiv.h"
+//#include "../../check/checkkiv.h"
 #include "../../config/config.h"
 #include "../../config/configkiv.h"
 #include "../../gen/report.h"

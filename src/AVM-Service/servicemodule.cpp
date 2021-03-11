@@ -10,6 +10,7 @@
 #include "../config/confkivdialog.h"
 #include "../config/confktfdialog.h"
 #include "../dialogs/journalsdialog.h"
+#include "../gen/board.h"
 #include "../module/journkdv.h"
 #include "../module/journkiv.h"
 #include "../module/journktf.h"
@@ -17,6 +18,7 @@
 #include "../startup/startupkdvdialog.h"
 #include "../startup/startupkivdialog.h"
 #include "../startup/startupktfdialog.h"
+
 ServiceModule::ServiceModule(QObject *parent) : Module(parent)
 {
 }
@@ -93,9 +95,10 @@ void ServiceModule::createModule(Modules::Model model)
             addDialogToList(new ConfKTFDialog(CKTF), "Конфигурирование", "conf1");
         }
         CheckKTFDialog *cdktf = new CheckKTFDialog;
-        addDialogToList(cdktf);
+        addDialogToList(cdktf, "Проверка");
 
         addDialogToList(new StartupKTFDialog, "Старение\nизоляции");
+
         addDialogToList(new CheckKTFHarmonicDialog, "Гармоники");
         Module::create(std::move(JOUR));
         break;

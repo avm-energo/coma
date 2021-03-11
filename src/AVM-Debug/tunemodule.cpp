@@ -62,7 +62,7 @@ void TuneModule::createModule(Modules::Model model)
             addDialogToList(new ConfKTFDialog(CKTF), "Конфигурирование", "conf1");
         }
         CheckKTFDialog *cdktf = new CheckKTFDialog;
-        addDialogToList(cdktf);
+        addDialogToList(cdktf, "Проверка");
 
         addDialogToList(new StartupKTFDialog, "Старение\nизоляции");
         addDialogToList(new CheckKTFHarmonicDialog, "Гармоники");

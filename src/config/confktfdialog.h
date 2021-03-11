@@ -15,13 +15,12 @@ public:
     explicit ConfKTFDialog(ConfigKTF *cktf, QWidget *parent = nullptr);
     ~ConfKTFDialog();
 
-    int getRCount();
+    //    int getRCount();
 
 private:
-    ConfigKTF *CKTF;
     //    ConfDialog *Conf;
     //    ConfKxxDialog *ConfKxx;
-    QLabel *SysTime;
+    // QLabel *SysTime;
     //    QTimer *timer;
     //    QTimer *timerRead;
 
@@ -30,16 +29,25 @@ private:
     bool DDosc;
     bool Mb;
     bool IsNtp;
-    QList<QWidget *> WidgetList;
+    //    QList<QWidget *> WidgetList;
 
     void Fill() override;
     void FillBack() override;
     void SetupUI() override;
     void CheckConf() override;
 
-signals:
+protected:
+    QWidget *analogWidget();
+    QWidget *transformerWidget();
+    QWidget *alarmWidget();
+    QWidget *ocsillogramWidget();
+    virtual QWidget *connectionWidget();
+    QWidget *otherWidget();
 
-public slots:
+    void FillKtf();
+    void FillBackKtf();
+
+    ConfigKTF *ConfKTF;
 
 private slots:
     void SetDefConf() override;

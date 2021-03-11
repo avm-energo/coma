@@ -3,7 +3,7 @@
 
 //#include "../iec104/iec104.h"
 #include "abstractcheckdialog.h"
-#include "checkharmonickdv.h"
+//#include "checkharmonickdv.h"
 
 class CheckKDVHarmonicDialog : public AbstractCheckDialog
 {
@@ -20,7 +20,7 @@ public slots:
     //    void reqUpdate() override;
 
 private:
-    CheckHarmonicKDV *ChHarmKDV;
+    // CheckHarmonicKDV *ChHarmKDV;
 
     //    QWidget *AutoCheckUI();            // UI для автоматической проверки модуля
     //    QWidget *BdUI(int bdnum) override; // визуализация наборов текущих данных от модуля
@@ -28,8 +28,8 @@ private:
     void PrepareHeadersForFile(int row) override;  // row - строка для записи заголовков
     void WriteToFile(int row, int bdnum) override; // row - номер строки для записи в файл
 
-    UWidget *BdUWidget(unsigned int value,int min, int max);
-    UWidget *BdIWidget(unsigned int value,int min, int max);
+    UWidget *BdUWidget(unsigned int value, int min, int max);
+    UWidget *BdIWidget(unsigned int value, int min, int max);
 
     //    void ChooseValuesToWrite() override;
     //    void SetDefaultValuesToWrite() override;

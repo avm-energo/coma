@@ -3,7 +3,7 @@
 
 //#include "../iec104/iec104.h"
 #include "abstractcheckdialog.h"
-#include "checkvibrkdv.h"
+//#include "checkvibrkdv.h"
 
 class CheckKDVVibrDialog : public AbstractCheckDialog
 {
@@ -21,7 +21,7 @@ public slots:
     //    void reqUpdate() override;
 
 private:
-    CheckVibrKDV *ChVibrKDV;
+    // CheckVibrKDV *ChVibrKDV;
     //    QWidget *AutoCheckUI();            // UI для автоматической проверки модуля
     //    QWidget *BdUI(int bdnum) override; // визуализация наборов текущих данных от модуля
 
