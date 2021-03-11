@@ -22,6 +22,8 @@ public:
 private:
     QObject *ParentMB, *ParentSetup, *ParentSetupBl;
     const QStringList m_baudList { "1200", "2400", "4800", "9600", "19200", "38400", "57600", "115200" };
+    QStringList m_header { "датчик", "скорость", "чётность", "стопБиты", "период опроса", "абонент", "функция",
+        "данные", "регистр" };
     QList<QWidget *> WidgetList;
 
     Bci::TempConfStruct TempConf;

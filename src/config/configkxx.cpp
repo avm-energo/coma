@@ -1,6 +1,7 @@
 #include "configkxx.h"
 
 #include "../gen/s2.h"
+#include "../models/comboboxdelegate.h"
 #include "../module/module_kxx.h"
 #include "../widgets/ipctrl.h"
 #include "../widgets/wd_func.h"
@@ -8,8 +9,10 @@
 
 #include <QComboBox>
 #include <QGroupBox>
+#include <QHeaderView>
 #include <QMetaEnum>
 #include <QStackedWidget>
+#include <QStandardItemModel>
 #include <QVBoxLayout>
 ConfigKxx::ConfigKxx(QObject *parent) : QObject(parent)
 {
@@ -77,23 +80,95 @@ void ConfigKxx::Fill()
 
     const QList arrays { master1, master2, master3, master4 };
 
-    int i = 1;
+    // int i = 1;
+    QTableView *tv = ParentMB->findChild<QTableView *>("ModbusMaster");
+    if (tv == nullptr)
+    {
+        qDebug("Пустой tv");
+        return;
+    }
+    QStandardItemModel *model = qobject_cast<QStandardItemModel *>(tv->model());
+    model->removeRows(0, model->rowCount());
+    // model->setHorizontalHeaderLabels(m_header);
+    //    for (const auto array : arrays)
+    //    {
+    //        const auto *master = reinterpret_cast<const Bci::ABMAST *>(&array);
+    //        qDebug() << i;
+    //        WDFunc::SetCBIndex(ParentMB, "MBMab" + QString::number(i) + "[0]", master->typedat);
+    //        WDFunc::SetCBIndex(ParentMB, "MBMab" + QString::number(i) + "sk[1]", master->parport.baud);
+    //        WDFunc::SetCBIndex(ParentMB, "MBMab" + QString::number(i) + "ch[1]", master->parport.parity);
+    //        WDFunc::SetCBIndex(ParentMB, "MBMab" + QString::number(i) + "bt[1]", master->parport.stop);
+    //        WDFunc::SetSPBData(ParentMB, "MBMab" + QString::number(i) + "per[2]", master->per);
+    //        WDFunc::SetSPBData(ParentMB, "MBMab" + QString::number(i) + "adr[3]", master->adr);
+    //        // -1 т.к. функции идут с 1, а возможные значения QComboBox идут с 0
+    //        WDFunc::SetCBIndex(ParentMB, "MBMab" + QString::number(i) + "func[4]", master->type.reg - 1);
+    //        WDFunc::SetCBIndex(ParentMB, "MBMab" + QString::number(i) + "tdat[4]", master->type.dat);
+    //        WDFunc::SetSPBData(ParentMB, "MBMab" + QString::number(i) + "reg[5]", master->reg);
+    //        ++i;
+    //    }
     for (const auto array : arrays)
     {
         const auto *master = reinterpret_cast<const Bci::ABMAST *>(&array);
-        qDebug() << i;
-        WDFunc::SetCBIndex(ParentMB, "MBMab" + QString::number(i) + "[0]", master->typedat);
-        WDFunc::SetCBIndex(ParentMB, "MBMab" + QString::number(i) + "sk[1]", master->parport.baud);
-        WDFunc::SetCBIndex(ParentMB, "MBMab" + QString::number(i) + "ch[1]", master->parport.parity);
-        WDFunc::SetCBIndex(ParentMB, "MBMab" + QString::number(i) + "bt[1]", master->parport.stop);
-        WDFunc::SetSPBData(ParentMB, "MBMab" + QString::number(i) + "per[2]", master->per);
-        WDFunc::SetSPBData(ParentMB, "MBMab" + QString::number(i) + "adr[3]", master->adr);
+        //  qDebug() << i;
+        QList<QStandardItem *> row;
+        row.append(new QStandardItem(QString::number(master->typedat)));
+        row.append(new QStandardItem(QString::number(master->parport.baud)));
+        row.append(new QStandardItem(QString::number(master->parport.parity)));
+        row.append(new QStandardItem(QString::number(master->parport.stop)));
+        row.append(new QStandardItem(QString::number(master->per)));
+        row.append(new QStandardItem(QString::number(master->adr)));
+        row.append(new QStandardItem(QString::number(master->type.reg)));
+        row.append(new QStandardItem(QString::number(master->type.dat)));
+        row.append(new QStandardItem(QString::number(master->reg)));
+        // WDFunc::SetCBIndex(ParentMB, "MBMab" + QString::number(i) + "[0]", master->typedat);
+        // WDFunc::SetCBIndex(ParentMB, "MBMab" + QString::number(i) + "sk[1]", master->parport.baud);
+        // WDFunc::SetCBIndex(ParentMB, "MBMab" + QString::number(i) + "ch[1]", master->parport.parity);
+        //  WDFunc::SetCBIndex(ParentMB, "MBMab" + QString::number(i) + "bt[1]", master->parport.stop);
+        // WDFunc::SetSPBData(ParentMB, "MBMab" + QString::number(i) + "per[2]", master->per);
+        // WDFunc::SetSPBData(ParentMB, "MBMab" + QString::number(i) + "adr[3]", master->adr);
         // -1 т.к. функции идут с 1, а возможные значения QComboBox идут с 0
-        WDFunc::SetCBIndex(ParentMB, "MBMab" + QString::number(i) + "func[4]", master->type.reg - 1);
-        WDFunc::SetCBIndex(ParentMB, "MBMab" + QString::number(i) + "tdat[4]", master->type.dat);
-        WDFunc::SetSPBData(ParentMB, "MBMab" + QString::number(i) + "reg[5]", master->reg);
-        ++i;
+        // WDFunc::SetCBIndex(ParentMB, "MBMab" + QString::number(i) + "func[4]", master->type.reg - 1);
+        // WDFunc::SetCBIndex(ParentMB, "MBMab" + QString::number(i) + "tdat[4]", master->type.dat);
+        // WDFunc::SetSPBData(ParentMB, "MBMab" + QString::number(i) + "reg[5]", master->reg);
+        model->appendRow(row);
+        // ++i;
     }
+    // qDebug() << ParentMB->findChildren<QTableView *>();
+    // QTableView *tv = ParentMB->findChild<QTableView *>("ModbusMaster");
+    // if (tv != nullptr)
+    //  {
+
+    //  QItemSelectionModel *m = tv->selectionModel();
+    // tv->setModel(model);
+    //        tv->resizeColumnsToContents();
+
+    //        int width = (tv->model()->columnCount() - 1) + tv->verticalHeader()->width();
+    //        for (int column = 0; column < tv->model()->columnCount(); column++)
+    //            width = width + tv->columnWidth(column);
+    //        tv->setMinimumWidth(width);
+
+    // tv->resizeColumnsToContents();
+
+    //        for (int column = 0; column < tv->model()->columnCount(); column++)
+    //        {
+
+    //            int width = tv->horizontalHeader()->fontMetrics().horizontalAdvance(header.at(column)) * 1.5;
+
+    //            qDebug() << tv->width() << width;
+    //            tv->setColumnWidth(column, width);
+    //        }
+    // tv->horizontalHeader()->setStretchLastSection(true);
+    //   int width = tv->width() / (model->columnCount() - 1);
+    //   qDebug() << tv->width() << width;
+    //  tv->setMaximumWidth(width);
+    //  for (int column = 0; column < tv->model()->columnCount(); column++)
+    //     tv->setColumnWidth(column, width);
+    //   delete m;
+    //  }
+    // else
+    //     qDebug("Пустой tv");
+
+    //   WDFunc::SetQTVModel(qobject_cast<QWidget *>(ParentMB), "ModbusMaster", model);
     //.................................................
 
     const auto StrPort = S2::getRecord(BciNumber::Port_ID).value<WORD_4t>();
@@ -263,12 +338,11 @@ QWidget *ConfigKxx::ModbusWidget(QWidget *parent)
     QStackedWidget *qswt = new QStackedWidget;
     qswt->setObjectName("qswt");
     QVBoxLayout *vlyout1 = new QVBoxLayout;
-    QVBoxLayout *vlyout2 = new QVBoxLayout;
+
     QGroupBox *gb = new QGroupBox;
     QGridLayout *glyout = new QGridLayout;
 
     QStringList cbl;
-    QString Str;
     glyout->setColumnStretch(1, 20);
 
     int row = 0;
@@ -282,6 +356,7 @@ QWidget *ConfigKxx::ModbusWidget(QWidget *parent)
     glyout->addWidget(dopcb, row, 1, 1, 1);
     row++;
 
+    QVBoxLayout *vlyout2 = new QVBoxLayout;
     vlyout2->addLayout(glyout);
     gb->setLayout(vlyout2);
     vlyout1->addWidget(gb);
@@ -322,154 +397,56 @@ QWidget *ConfigKxx::ModbusWidget(QWidget *parent)
     gb = new QGroupBox("Настройки ModBus");
 
     vlyout2 = new QVBoxLayout;
-    glyout = new QGridLayout;
-    QLabel *line1 = new QLabel(parent);
 
-    line1->setText("тип датчика");
-    line1->setAlignment(Qt::AlignCenter);
-    glyout->addWidget(line1, 1, 1, 1, 1);
+    QTableView *tableView = new QTableView(parent);
+    tableView->setStyleSheet("QTableView {background-color: transparent;}");
+    tableView->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
+    tableView->setObjectName("ModbusMaster");
 
-    line1 = new QLabel(parent);
-    line1->setText("");
-    glyout->addWidget(line1, 0, 1, 1, 1);
+    ComboBoxDelegate *comboBoxdelegate = new ComboBoxDelegate({ "нет", "тип 1", "тип 2", "тип 3" }, tableView);
+    tableView->setItemDelegateForColumn(0, comboBoxdelegate);
 
-    line1 = new QLabel(parent);
-    line1->setText("параметры связи");
-    line1->setAlignment(Qt::AlignCenter);
-    glyout->addWidget(line1, 0, 2, 1, 3);
+    comboBoxdelegate = new ComboBoxDelegate(m_baudList, tableView);
+    tableView->setItemDelegateForColumn(1, comboBoxdelegate);
 
-    line1 = new QLabel(parent);
-    line1->setText("");
-    glyout->addWidget(line1, 0, 5, 1, 1);
+    comboBoxdelegate = new ComboBoxDelegate({ "нет", "even", "odd" }, tableView);
+    tableView->setItemDelegateForColumn(2, comboBoxdelegate);
 
-    line1 = new QLabel(parent);
-    line1->setText("");
-    glyout->addWidget(line1, 0, 6, 1, 1);
+    comboBoxdelegate = new ComboBoxDelegate({ "1", "2" }, tableView);
+    tableView->setItemDelegateForColumn(3, comboBoxdelegate);
 
-    line1 = new QLabel(parent);
-    line1->setText("");
-    glyout->addWidget(line1, 0, 7, 1, 1);
+    SpinBoxDelegate *spinBoxDelegate = new SpinBoxDelegate(0, 10000, tableView);
+    tableView->setItemDelegateForColumn(4, spinBoxDelegate);
 
-    line1 = new QLabel(parent);
-    line1->setText("");
-    glyout->addWidget(line1, 0, 8, 1, 1);
+    spinBoxDelegate = new SpinBoxDelegate(0, 10000, tableView);
+    tableView->setItemDelegateForColumn(5, spinBoxDelegate);
 
-    line1 = new QLabel(parent);
-    line1->setText("");
-    glyout->addWidget(line1, 0, 9, 1, 1);
-
-    line1 = new QLabel(parent);
-    line1->setText("скорость");
-    line1->setAlignment(Qt::AlignCenter);
-    glyout->addWidget(line1, 1, 2, 1, 1);
-
-    line1 = new QLabel(parent);
-    line1->setText("чётность");
-    line1->setAlignment(Qt::AlignCenter);
-    glyout->addWidget(line1, 1, 3, 1, 1);
-
-    line1 = new QLabel(parent);
-    line1->setText("стопБиты");
-    line1->setAlignment(Qt::AlignCenter);
-
-    glyout->addWidget(line1, 1, 4, 1, 1);
-
-    line1 = new QLabel(parent);
-    line1->setText("период опроса");
-    line1->setAlignment(Qt::AlignCenter);
-
-    glyout->addWidget(line1, 1, 5, 1, 1);
-
-    line1 = new QLabel(parent);
-    line1->setText("адрес абонента");
-    line1->setAlignment(Qt::AlignCenter);
-
-    glyout->addWidget(line1, 1, 6, 1, 1);
-    line1 = new QLabel(parent);
-
-    line1->setText("функция");
-    line1->setAlignment(Qt::AlignCenter);
-
-    glyout->addWidget(line1, 1, 7, 1, 1);
-
-    line1 = new QLabel(parent);
-    line1->setText("тип данных");
-    line1->setAlignment(Qt::AlignCenter);
-
-    glyout->addWidget(line1, 1, 8, 1, 1);
-
-    line1 = new QLabel(parent);
-    line1->setText("адрес регистра");
-    line1->setAlignment(Qt::AlignCenter);
-
-    glyout->addWidget(line1, 1, 9, 1, 1);
-
-    int j = 1;
-    QStringList type { "нет", "тип 1", "тип 2", "тип 3" };
-    QStringList parity { "нет", "even", "odd" };
-    QStringList stopBits { "1", "2" };
-
-    for (int i = 1; i < 5; i++)
-    {
-        j++;
-        line1 = new QLabel(parent);
-        line1->setText("Датчик " + QString::number(i) + ":");
-        line1->setAlignment(Qt::AlignCenter);
-
-        glyout->addWidget(line1, j, 0, 1, 1);
-
-        cb = WDFunc::NewCB2(parent, "MBMab" + QString::number(i) + "[0]", type);
-
-        glyout->addWidget(cb, j, 1, 1, 1);
-
-        cb = WDFunc::NewCB2(parent, "MBMab" + QString::number(i) + "sk[1]", m_baudList);
-        glyout->addWidget(cb, j, 2, 1, 1);
-
-        cb = WDFunc::NewCB2(parent, "MBMab" + QString::number(i) + "ch[1]", parity);
-        glyout->addWidget(cb, j, 3, 1, 1);
-
-        cb = WDFunc::NewCB2(parent, "MBMab" + QString::number(i) + "bt[1]", stopBits);
-        glyout->addWidget(cb, j, 4, 1, 1);
-    }
-
-    for (int i = 1; i < 5;)
-    {
-        Str = "MBMab" + QString::number(i);
-        Str = Str + "per[2]";
-        glyout->addWidget(WDFunc::NewSPB2(parent, QString(Str), 0, 10000, 0), ++i, 5, 1, 1);
-    }
-
-    for (int i = 1; i < 5;)
-    {
-        Str = "MBMab" + QString::number(i);
-        Str = Str + "adr[3]";
-        glyout->addWidget(WDFunc::NewSPB2(parent, QString(Str), 0, 10000, 0), ++i, 6, 1, 1);
-    }
-
-    j = 1;
     const QStringList funcs { "Coils", "Status", "Holding", "Input" };
+    comboBoxdelegate = new ComboBoxDelegate(funcs, tableView);
+    tableView->setItemDelegateForColumn(6, comboBoxdelegate);
+
     const QStringList types { "Uint16", "Int16", "Bool", "Uint32", "Float" };
-    for (int i = 1; i < 5; i++)
-    {
-        j++;
-        cb = WDFunc::NewCB2(parent, "MBMab" + QString::number(i) + "func[4]", funcs);
-        glyout->addWidget(cb, j, 7, 1, 1);
+    comboBoxdelegate = new ComboBoxDelegate(types, tableView);
+    tableView->setItemDelegateForColumn(7, comboBoxdelegate);
 
-        cb = WDFunc::NewCB2(parent, "MBMab" + QString::number(i) + "tdat[4]", types);
-        glyout->addWidget(cb, j, 8, 1, 1);
+    spinBoxDelegate = new SpinBoxDelegate(0, 10000, tableView);
+    tableView->setItemDelegateForColumn(8, spinBoxDelegate);
+
+    QStandardItemModel *model = new QStandardItemModel(tableView);
+    model->setHorizontalHeaderLabels(m_header);
+    tableView->setModel(model);
+
+    for (int column = 0; column < model->columnCount(); column++)
+    {
+        // NOTE Ужасный костыль
+        int width = tableView->horizontalHeader()->fontMetrics().horizontalAdvance(m_header.at(column)) * 1.5;
+
+        qDebug() << tableView->width() << width;
+        tableView->setColumnWidth(column, width);
     }
 
-    for (int i = 1; i < 5;)
-    {
-        Str = "MBMab" + QString::number(i);
-        Str = Str + "reg[5]";
-        glyout->addWidget(WDFunc::NewSPB2(parent, QString(Str), 0, 10000, 0), ++i, 9, 1, 1);
-    }
+    vlyout2->addWidget(tableView);
 
-    glyout->addWidget(line1, 7, 0, 1, 1);
-    glyout->addWidget(line1, 8, 0, 1, 1);
-
-    vlyout2->addLayout(glyout);
     gb->setLayout(vlyout2);
     qswt->addWidget(gb);
 
