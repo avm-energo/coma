@@ -80,8 +80,7 @@ void ConfigKxx::Fill()
 
     const QList arrays { master1, master2, master3, master4 };
 
-    // int i = 1;
-    QTableView *tv = ParentMB->findChild<QTableView *>("ModbusMaster");
+    QTableView *tv = ParentMB->findChild<QTableView *>();
     if (tv == nullptr)
     {
         qDebug("Пустой tv");
@@ -89,86 +88,22 @@ void ConfigKxx::Fill()
     }
     QStandardItemModel *model = qobject_cast<QStandardItemModel *>(tv->model());
     model->removeRows(0, model->rowCount());
-    // model->setHorizontalHeaderLabels(m_header);
-    //    for (const auto array : arrays)
-    //    {
-    //        const auto *master = reinterpret_cast<const Bci::ABMAST *>(&array);
-    //        qDebug() << i;
-    //        WDFunc::SetCBIndex(ParentMB, "MBMab" + QString::number(i) + "[0]", master->typedat);
-    //        WDFunc::SetCBIndex(ParentMB, "MBMab" + QString::number(i) + "sk[1]", master->parport.baud);
-    //        WDFunc::SetCBIndex(ParentMB, "MBMab" + QString::number(i) + "ch[1]", master->parport.parity);
-    //        WDFunc::SetCBIndex(ParentMB, "MBMab" + QString::number(i) + "bt[1]", master->parport.stop);
-    //        WDFunc::SetSPBData(ParentMB, "MBMab" + QString::number(i) + "per[2]", master->per);
-    //        WDFunc::SetSPBData(ParentMB, "MBMab" + QString::number(i) + "adr[3]", master->adr);
-    //        // -1 т.к. функции идут с 1, а возможные значения QComboBox идут с 0
-    //        WDFunc::SetCBIndex(ParentMB, "MBMab" + QString::number(i) + "func[4]", master->type.reg - 1);
-    //        WDFunc::SetCBIndex(ParentMB, "MBMab" + QString::number(i) + "tdat[4]", master->type.dat);
-    //        WDFunc::SetSPBData(ParentMB, "MBMab" + QString::number(i) + "reg[5]", master->reg);
-    //        ++i;
-    //    }
     for (const auto array : arrays)
     {
         const auto *master = reinterpret_cast<const Bci::ABMAST *>(&array);
-        //  qDebug() << i;
-        QList<QStandardItem *> row;
-        row.append(new QStandardItem(QString::number(master->typedat)));
-        row.append(new QStandardItem(QString::number(master->parport.baud)));
-        row.append(new QStandardItem(QString::number(master->parport.parity)));
-        row.append(new QStandardItem(QString::number(master->parport.stop)));
-        row.append(new QStandardItem(QString::number(master->per)));
-        row.append(new QStandardItem(QString::number(master->adr)));
-        row.append(new QStandardItem(QString::number(master->type.reg)));
-        row.append(new QStandardItem(QString::number(master->type.dat)));
-        row.append(new QStandardItem(QString::number(master->reg)));
-        // WDFunc::SetCBIndex(ParentMB, "MBMab" + QString::number(i) + "[0]", master->typedat);
-        // WDFunc::SetCBIndex(ParentMB, "MBMab" + QString::number(i) + "sk[1]", master->parport.baud);
-        // WDFunc::SetCBIndex(ParentMB, "MBMab" + QString::number(i) + "ch[1]", master->parport.parity);
-        //  WDFunc::SetCBIndex(ParentMB, "MBMab" + QString::number(i) + "bt[1]", master->parport.stop);
-        // WDFunc::SetSPBData(ParentMB, "MBMab" + QString::number(i) + "per[2]", master->per);
-        // WDFunc::SetSPBData(ParentMB, "MBMab" + QString::number(i) + "adr[3]", master->adr);
-        // -1 т.к. функции идут с 1, а возможные значения QComboBox идут с 0
-        // WDFunc::SetCBIndex(ParentMB, "MBMab" + QString::number(i) + "func[4]", master->type.reg - 1);
-        // WDFunc::SetCBIndex(ParentMB, "MBMab" + QString::number(i) + "tdat[4]", master->type.dat);
-        // WDFunc::SetSPBData(ParentMB, "MBMab" + QString::number(i) + "reg[5]", master->reg);
+        QList<QStandardItem *> row {
+            (new QStandardItem(QString::number(master->typedat))),        //
+            (new QStandardItem(QString::number(master->parport.baud))),   //
+            (new QStandardItem(QString::number(master->parport.parity))), //
+            (new QStandardItem(QString::number(master->parport.stop))),   //
+            (new QStandardItem(QString::number(master->per))),            //
+            (new QStandardItem(QString::number(master->adr))),            //
+            (new QStandardItem(QString::number(master->type.reg))),       //
+            (new QStandardItem(QString::number(master->type.dat))),       //
+            (new QStandardItem(QString::number(master->reg)))             //
+        };
         model->appendRow(row);
-        // ++i;
     }
-    // qDebug() << ParentMB->findChildren<QTableView *>();
-    // QTableView *tv = ParentMB->findChild<QTableView *>("ModbusMaster");
-    // if (tv != nullptr)
-    //  {
-
-    //  QItemSelectionModel *m = tv->selectionModel();
-    // tv->setModel(model);
-    //        tv->resizeColumnsToContents();
-
-    //        int width = (tv->model()->columnCount() - 1) + tv->verticalHeader()->width();
-    //        for (int column = 0; column < tv->model()->columnCount(); column++)
-    //            width = width + tv->columnWidth(column);
-    //        tv->setMinimumWidth(width);
-
-    // tv->resizeColumnsToContents();
-
-    //        for (int column = 0; column < tv->model()->columnCount(); column++)
-    //        {
-
-    //            int width = tv->horizontalHeader()->fontMetrics().horizontalAdvance(header.at(column)) * 1.5;
-
-    //            qDebug() << tv->width() << width;
-    //            tv->setColumnWidth(column, width);
-    //        }
-    // tv->horizontalHeader()->setStretchLastSection(true);
-    //   int width = tv->width() / (model->columnCount() - 1);
-    //   qDebug() << tv->width() << width;
-    //  tv->setMaximumWidth(width);
-    //  for (int column = 0; column < tv->model()->columnCount(); column++)
-    //     tv->setColumnWidth(column, width);
-    //   delete m;
-    //  }
-    // else
-    //     qDebug("Пустой tv");
-
-    //   WDFunc::SetQTVModel(qobject_cast<QWidget *>(ParentMB), "ModbusMaster", model);
     //.................................................
 
     const auto StrPort = S2::getRecord(BciNumber::Port_ID).value<WORD_4t>();
@@ -184,8 +119,7 @@ void ConfigKxx::Fill()
 
     const auto StrBaud = S2::getRecord(BciNumber::Baud_ID).value<DWORD>();
     cbidx = m_baudList.indexOf(QString::number(StrBaud));
-    if (cbidx != -1)
-        WDFunc::SetCBIndex(ParentSetup, "Baud_ID", cbidx);
+    WDFunc::SetCBIndex(ParentSetup, "Baud_ID", cbidx != -1 ? cbidx : 0);
 
     const auto parity = S2::getRecord(BciNumber::Parity_ID).value<BYTE>();
     WDFunc::SetCBIndex(ParentSetup, "Parity_ID", parity > 2 ? 0 : parity);
@@ -209,47 +143,80 @@ void ConfigKxx::FillBack()
     Q_ASSERT(cbidx != -1);
     S2::setRecordValue({ BciNumber::MBMaster, BYTE(cbidx) });
 
-    const QVector<Bci::ABMAST> masters { 4, Bci::ABMAST() };
-    int i = 1;
-    int j = 0;
-    for (auto master : masters)
+    std::vector<Bci::ABMAST> masters { 4, Bci::ABMAST() };
+
+    QTableView *tv = ParentMB->findChild<QTableView *>();
+    if (tv == nullptr)
     {
-        cbidx = WDFunc::CBIndex(ParentMB, "MBMab" + QString::number(i) + "[0]");
-        Q_ASSERT(cbidx != -1);
-        master.typedat = Bci::SensorType(cbidx == -1 ? 0 : cbidx);
+        qDebug("Пустой tv");
+        return;
+    }
+    QStandardItemModel *model = qobject_cast<QStandardItemModel *>(tv->model());
+    for (int r = 0; r < model->rowCount(); ++r)
+    {
+        Bci::ABMAST master;
 
-        cbidx = WDFunc::CBIndex(ParentMB, "MBMab" + QString::number(i) + "sk[1]");
-        Q_ASSERT(cbidx != -1);
-        master.parport.baud = CommandsMBS::BaudRate(cbidx == -1 ? 0 : cbidx);
+        for (int c = 0; c < model->columnCount(); ++c)
+        {
 
-        cbidx = WDFunc::CBIndex(ParentMB, "MBMab" + QString::number(i) + "ch[1]");
-        Q_ASSERT(cbidx != -1);
-        master.parport.parity = CommandsMBS::Parity(cbidx == -1 ? 0 : cbidx);
+            QModelIndex index = model->index(r, c);
+            QVariant value = model->data(index);
 
-        cbidx = WDFunc::CBIndex(ParentMB, "MBMab" + QString::number(i) + "bt[1]");
-        Q_ASSERT(cbidx != -1);
-        master.parport.stop = CommandsMBS::StopBits(cbidx == -1 ? 0 : cbidx);
-
-        WDFunc::SPBData(ParentMB, "MBMab" + QString::number(i) + "per[2]", master.per);
-
-        WDFunc::SPBData(ParentMB, "MBMab" + QString::number(i) + "adr[3]", master.adr);
-
-        cbidx = WDFunc::CBIndex(ParentMB, "MBMab" + QString::number(i) + "func[4]");
-        Q_ASSERT(cbidx != -1);
-        // +1 т.к. функции идут с 1, а возможные значения QComboBox идут с 0
-        master.type.reg = CommandsMBS::Commands(cbidx == -1 ? 0 : cbidx + 1);
-
-        cbidx = WDFunc::CBIndex(ParentMB, "MBMab" + QString::number(i) + "tdat[4]");
-        Q_ASSERT(cbidx != -1);
-        master.type.dat = CommandsMBS::TypeId(cbidx == -1 ? 0 : cbidx);
-
-        cbidx = WDFunc::SPBData<quint16>(ParentMB, "MBMab" + QString::number(i) + "reg[5]");
-        Q_ASSERT(cbidx != -1);
-        master.reg = (cbidx == -1 ? 0 : cbidx);
-
+            bool status = false;
+            auto data = value.toUInt(&status);
+            switch (c)
+            {
+            case ModbusColumns::SensorType:
+            {
+                master.typedat = Bci::SensorType(status ? data : 0);
+                break;
+            }
+            case ModbusColumns::BaudRate:
+            {
+                master.parport.baud = CommandsMBS::BaudRate(status ? data : 0);
+                break;
+            }
+            case ModbusColumns::Parity:
+            {
+                master.parport.parity = CommandsMBS::Parity(status ? data : 0);
+                break;
+            }
+            case ModbusColumns::StopBits:
+            {
+                master.parport.stop = CommandsMBS::StopBits(status ? data : 0);
+                break;
+            }
+            case ModbusColumns::Timeout:
+            {
+                master.per = status ? data : 0;
+                break;
+            }
+            case ModbusColumns::Address:
+            {
+                master.adr = status ? data : 0;
+                break;
+            }
+            case ModbusColumns::FuncCode:
+            {
+                master.type.reg = CommandsMBS::Commands(status ? data : 0);
+                break;
+            }
+            case ModbusColumns::DataType:
+            {
+                master.type.dat = CommandsMBS::TypeId(status ? data : 0);
+                break;
+            }
+            case ModbusColumns::Register:
+            {
+                master.reg = (status ? data : 0);
+                break;
+            }
+            default:
+                break;
+            }
+        }
         BYTE_8t masterBuffer = *reinterpret_cast<BYTE_8t *>(&master);
-        S2::setRecordValue({ BciNumber::MBMab1 + j, masterBuffer });
-        ++j;
+        S2::setRecordValue({ BciNumber::MBMab1 + r, masterBuffer });
     }
 
     //................................................................
@@ -262,8 +229,7 @@ void ConfigKxx::FillBack()
 
     S2::setRecordValue({ BciNumber::Mask_ID, WDFunc::IPCtrlData(ParentSetup, "Mask_ID") });
 
-    QString StrPort {};
-    WDFunc::LEData(ParentSetup, "Port_ID", StrPort);
+    QString StrPort = WDFunc::LEData(ParentSetup, "Port_ID");
     WORD_4t portArray {};
     portArray.at(0) = StrPort.toInt();
     S2::setRecordValue({ BciNumber::Port_ID, portArray });
@@ -399,9 +365,11 @@ QWidget *ConfigKxx::ModbusWidget(QWidget *parent)
     vlyout2 = new QVBoxLayout;
 
     QTableView *tableView = new QTableView(parent);
+    tableView->setSelectionMode(QAbstractItemView::NoSelection);
+    tableView->setSelectionBehavior(QAbstractItemView::SelectItems);
+    tableView->setShowGrid(false);
     tableView->setStyleSheet("QTableView {background-color: transparent;}");
     tableView->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
-    tableView->setObjectName("ModbusMaster");
 
     ComboBoxDelegate *comboBoxdelegate = new ComboBoxDelegate({ "нет", "тип 1", "тип 2", "тип 3" }, tableView);
     tableView->setItemDelegateForColumn(0, comboBoxdelegate);
@@ -415,21 +383,23 @@ QWidget *ConfigKxx::ModbusWidget(QWidget *parent)
     comboBoxdelegate = new ComboBoxDelegate({ "1", "2" }, tableView);
     tableView->setItemDelegateForColumn(3, comboBoxdelegate);
 
-    SpinBoxDelegate *spinBoxDelegate = new SpinBoxDelegate(0, 10000, tableView);
+    SpinBoxDelegate *spinBoxDelegate
+        = new SpinBoxDelegate(0, std::numeric_limits<decltype(Bci::ABMAST::per)>::max(), tableView);
     tableView->setItemDelegateForColumn(4, spinBoxDelegate);
 
-    spinBoxDelegate = new SpinBoxDelegate(0, 10000, tableView);
+    spinBoxDelegate = new SpinBoxDelegate(0, std::numeric_limits<decltype(Bci::ABMAST::adr)>::max(), tableView);
     tableView->setItemDelegateForColumn(5, spinBoxDelegate);
 
     const QStringList funcs { "Coils", "Status", "Holding", "Input" };
     comboBoxdelegate = new ComboBoxDelegate(funcs, tableView);
+    comboBoxdelegate->setOffset(1);
     tableView->setItemDelegateForColumn(6, comboBoxdelegate);
 
     const QStringList types { "Uint16", "Int16", "Bool", "Uint32", "Float" };
     comboBoxdelegate = new ComboBoxDelegate(types, tableView);
     tableView->setItemDelegateForColumn(7, comboBoxdelegate);
 
-    spinBoxDelegate = new SpinBoxDelegate(0, 10000, tableView);
+    spinBoxDelegate = new SpinBoxDelegate(0, std::numeric_limits<decltype(Bci::ABMAST::reg)>::max(), tableView);
     tableView->setItemDelegateForColumn(8, spinBoxDelegate);
 
     QStandardItemModel *model = new QStandardItemModel(tableView);
@@ -440,8 +410,6 @@ QWidget *ConfigKxx::ModbusWidget(QWidget *parent)
     {
         // NOTE Ужасный костыль
         int width = tableView->horizontalHeader()->fontMetrics().horizontalAdvance(m_header.at(column)) * 1.5;
-
-        qDebug() << tableView->width() << width;
         tableView->setColumnWidth(column, width);
     }
 
