@@ -51,11 +51,37 @@ void ConfigKxx::setConfig()
 
 void ConfigKxx::SetDefConf()
 {
-    // NOTE Not yet realized
-    //   TempConf = Bci::TempConfStruct();
-    //  StrTrele = Bci::StructTrele();
-    // StrModBus = Bci::StructModBus();
-    //  Com_param = Bci::Com();
+    using namespace DataTypes;
+    S2::setRecordValue({ BciNumber::RTerm, float(Bci::DEF_RTERM) });
+    S2::setRecordValue({ BciNumber::W100, (Bci::DEF_W100) });
+    S2::setRecordValue({ BciNumber::Trele_pred, DWORD(0) });
+    S2::setRecordValue({ BciNumber::Trele_alarm, DWORD(0) });
+
+    //..................................................................
+
+    S2::setRecordValue({ BciNumber::MBMaster, BYTE(0) });
+
+    S2::setRecordValue({ BciNumber::MBMab1, BYTE_8t {} });
+    S2::setRecordValue({ BciNumber::MBMab2, BYTE_8t {} });
+    S2::setRecordValue({ BciNumber::MBMab3, BYTE_8t {} });
+    S2::setRecordValue({ BciNumber::MBMab4, BYTE_8t {} });
+    //................................................................
+    S2::setRecordValue({ BciNumber::IP_ID, BYTE_4t { 172, 16, 29, 12 } });
+
+    S2::setRecordValue({ BciNumber::SNTP_ID, BYTE_4t { 172, 16, 29, 12 } });
+
+    S2::setRecordValue({ BciNumber::GW_ID, BYTE_4t { 172, 16, 29, 1 } });
+
+    S2::setRecordValue({ BciNumber::Mask_ID, BYTE_4t { 255, 255, 252, 0 } });
+
+    S2::setRecordValue({ BciNumber::Port_ID, WORD_4t { 2404, 2405, 502, 502 } });
+
+    S2::setRecordValue({ BciNumber::Baud_ID, DWORD(Bci::DEF_BAUD) });
+
+    S2::setRecordValue({ BciNumber::Parity_ID, BYTE(CommandsMBS::Parity::NoParity) });
+
+    S2::setRecordValue({ BciNumber::stopbit_ID, BYTE(CommandsMBS::StopBits::OneStop) });
+    S2::setRecordValue({ BciNumber::adrMB_ID, BYTE(Bci::DEF_ADRMB) });
 }
 
 void ConfigKxx::Fill()

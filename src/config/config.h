@@ -13,7 +13,7 @@ public:
 
     Bci::BciMain MainBlk {};
 
-    void setConfig();
+    //  void setConfig();
     void SetDefConf();
     QWidget *MainWidget(QWidget *parent);
     QWidget *TimeWidget(QWidget *parent);

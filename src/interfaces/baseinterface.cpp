@@ -134,14 +134,23 @@ Error::Msg BaseInterface::writeBlockSync(
 
 Error::Msg BaseInterface::writeConfFileSync()
 {
-    QByteArray ba;
-    S2::StoreDataMem(ba, &S2::config, DataTypes::Config);
+    //    QByteArray ba;
+    //    S2::StoreDataMem(ba, &S2::config, DataTypes::Config);
 
-    // с 4 байта начинается FileHeader.size
-    quint32 length = *reinterpret_cast<quint32 *>(&ba.data()[4]);
-    length += sizeof(S2DataTypes::FileHeader);
-    Q_ASSERT(length == quint32(ba.size()));
-    return writeFileSync(DataTypes::Config, ba);
+    //    // с 4 байта начинается FileHeader.size
+    //    quint32 length = *reinterpret_cast<quint32 *>(&ba.data()[4]);
+    //    length += sizeof(S2DataTypes::FileHeader);
+    //    Q_ASSERT(length == quint32(ba.size()));
+    //    return writeFileSync(DataTypes::Config, ba);
+    S2DataTypes::S2ConfigType buffer;
+    const auto &confList = S2::configV;
+
+    std::transform(confList.begin(), confList.end(), std::back_inserter(buffer),
+        [](const auto &record) -> S2DataTypes::DataRec { return record.serialize(); });
+    S2::tester(buffer);
+
+    buffer.push_back({ S2DataTypes::dummyElement, 0, nullptr });
+    return writeS2FileSync(DataTypes::Config, &buffer);
 }
 
 Error::Msg BaseInterface::writeFileSync(int filenum, QByteArray &ba)
@@ -159,6 +168,18 @@ Error::Msg BaseInterface::writeFileSync(int filenum, QByteArray &ba)
     if (m_timeout)
         return Error::Msg::Timeout;
     return (m_responseResult) ? Error::Msg::NoError : Error::Msg::GeneralError;
+}
+
+Error::Msg BaseInterface::writeS2FileSync(DataTypes::FilesEnum number, S2DataTypes::S2ConfigType *file)
+{
+    QByteArray ba;
+    S2::StoreDataMem(ba, file, number);
+
+    // с 4 байта начинается FileHeader.size
+    quint32 length = *reinterpret_cast<quint32 *>(&ba.data()[4]);
+    length += sizeof(S2DataTypes::FileHeader);
+    Q_ASSERT(length == quint32(ba.size()));
+    return writeFileSync(DataTypes::Config, ba);
 }
 
 Error::Msg BaseInterface::readS2FileSync(quint32 filenum)

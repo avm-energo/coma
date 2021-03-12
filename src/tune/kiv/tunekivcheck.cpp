@@ -73,6 +73,7 @@ Error::Msg TuneKIVCheck::check()
 {
     Bda *bda = new Bda;
     bda->readAndUpdate();
+#ifndef NO_LIMITS
     for (int i = 0; i < 3; ++i)
         if (!StdFunc::floatIsWithinLimits(this, bda->data()->Ueff_ADC[i], 2150000.0, 150000.0))
             return Error::Msg::GeneralError;
@@ -83,6 +84,7 @@ Error::Msg TuneKIVCheck::check()
         return Error::Msg::GeneralError;
     if (!StdFunc::floatIsWithinLimits(this, bda->data()->Frequency, 51.0, 0.05))
         return Error::Msg::GeneralError;
+#endif
     return Error::Msg::NoError;
 }
 

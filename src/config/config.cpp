@@ -17,33 +17,38 @@ Config::Config()
     // setConfig();
 }
 
-void Config::setConfig()
-{
-    removeFotter();
+// void Config::setConfig()
+//{
+//    removeFotter();
 
-    auto &config = S2::config;
+//    auto &config = S2::config;
 
-    config.append({ BciNumber::MTypeB_ID, sizeof(MainBlk.MTypeB), &MainBlk.MTypeB });
-    config.append({ BciNumber::MTypeE_ID, sizeof(MainBlk.MTypeM), &MainBlk.MTypeM });
-    config.append({ BciNumber::CType, sizeof(MainBlk.Ctype), &MainBlk.Ctype });
-    config.append({ BciNumber::Abs_104, sizeof(MainBlk.Abs_104), &MainBlk.Abs_104 });
-    config.append({ BciNumber::Cycle_104, sizeof(MainBlk.Cycle_104), &MainBlk.Cycle_104 });
-    config.append({ BciNumber::T1_104, sizeof(MainBlk.T1_104), &MainBlk.T1_104 });
-    config.append({ BciNumber::T2_104, sizeof(MainBlk.T2_104), &MainBlk.T2_104 });
-    config.append({ BciNumber::T3_104, sizeof(MainBlk.T3_104), &MainBlk.T3_104 });
-    config.append({ BciNumber::k_104, sizeof(MainBlk.K_104), &MainBlk.K_104 });
-    config.append({ BciNumber::w_104, sizeof(MainBlk.W_104), &MainBlk.W_104 });
-    config.append({ 0xFFFFFFFF, 0, nullptr });
-}
+//    config.append({ BciNumber::MTypeB_ID, sizeof(MainBlk.MTypeB), &MainBlk.MTypeB });
+//    config.append({ BciNumber::MTypeE_ID, sizeof(MainBlk.MTypeM), &MainBlk.MTypeM });
+//    config.append({ BciNumber::CType, sizeof(MainBlk.Ctype), &MainBlk.Ctype });
+//    config.append({ BciNumber::Abs_104, sizeof(MainBlk.Abs_104), &MainBlk.Abs_104 });
+//    config.append({ BciNumber::Cycle_104, sizeof(MainBlk.Cycle_104), &MainBlk.Cycle_104 });
+//    config.append({ BciNumber::T1_104, sizeof(MainBlk.T1_104), &MainBlk.T1_104 });
+//    config.append({ BciNumber::T2_104, sizeof(MainBlk.T2_104), &MainBlk.T2_104 });
+//    config.append({ BciNumber::T3_104, sizeof(MainBlk.T3_104), &MainBlk.T3_104 });
+//    config.append({ BciNumber::k_104, sizeof(MainBlk.K_104), &MainBlk.K_104 });
+//    config.append({ BciNumber::w_104, sizeof(MainBlk.W_104), &MainBlk.W_104 });
+//    config.append({ 0xFFFFFFFF, 0, nullptr });
+//}
 
 void Config::SetDefConf()
 {
-    //  MainBlk = Bci::BciMain();
-    // Не нужно, всё описано в конструкторе
-    //    auto defValues = QMetaEnum::fromType<Bci::BciDefMainValues>();
-    //    int i = 0;
-
-    //    std::for_each(regs.begin(), regs.end(), [&](quint32 *value) { *value = defValues.value(i++); });
+    using namespace DataTypes;
+    S2::setRecordValue({ BciNumber::MTypeB_ID, DWORD(Board::GetInstance().typeB()) });
+    S2::setRecordValue({ BciNumber::MTypeE_ID, DWORD(Board::GetInstance().typeM()) });
+    S2::setRecordValue({ BciNumber::Abs_104, DWORD(Bci::DEF_ABS_104) });
+    S2::setRecordValue({ BciNumber::Cycle_104, DWORD(Bci::DEF_CYCLE_104) });
+    S2::setRecordValue({ BciNumber::T1_104, DWORD(Bci::DEF_T1_104) });
+    S2::setRecordValue({ BciNumber::T2_104, DWORD(Bci::DEF_T2_104) });
+    S2::setRecordValue({ BciNumber::T3_104, DWORD(Bci::DEF_T3_104) });
+    S2::setRecordValue({ BciNumber::k_104, DWORD(Bci::DEF_K_104) });
+    S2::setRecordValue({ BciNumber::w_104, DWORD(Bci::DEF_W_104) });
+    S2::setRecordValue({ BciNumber::CType, DWORD(Bci::DEF_CTYPE) });
 }
 
 QWidget *Config::MainWidget(QWidget *parent)

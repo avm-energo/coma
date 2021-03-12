@@ -18,7 +18,7 @@ public:
     ConfigKxx *KxxConfig();
 
 private:
-    void setConfig();
+    // void setConfig();
     Config *m_mainConfig;
     ConfigKxx *m_KxxConfig;
 

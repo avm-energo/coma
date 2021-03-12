@@ -1,6 +1,7 @@
 #include "tunekivadc.h"
 
 #include "../../gen/colors.h"
+#include "../../gen/s2.h"
 #include "../../gen/stdfunc.h"
 #include "../../widgets/waitwidget.h"
 #include "../../widgets/wd_func.h"
@@ -8,9 +9,9 @@
 #include <QMessageBox>
 #include <QVBoxLayout>
 
-TuneKIVADC::TuneKIVADC(int tuneStep, ConfigKIV *ckiv, QWidget *parent) : AbstractTuneDialog(tuneStep, parent)
+TuneKIVADC::TuneKIVADC(int tuneStep, QWidget *parent) : AbstractTuneDialog(tuneStep, parent)
 {
-    CKIV = ckiv;
+    // CKIV = ckiv;
     m_bac = new Bac;
     m_bda = new Bda;
     m_bdain = new BdaIn;
@@ -125,9 +126,10 @@ Error::Msg TuneKIVADC::checkTuneCoefs()
 {
     QVector<float *> tcoefs = { &m_bac->data()->KmU[0], &m_bac->data()->KmI1[0], &m_bac->data()->KmI2[0],
         &m_bac->data()->KmI4[0], &m_bac->data()->KmI8[0], &m_bac->data()->KmI16[0], &m_bac->data()->KmI32[0] };
+#ifndef NO_LIMITS
     for (int i = 0; i < 3; ++i)
     {
-        foreach (float *coef, tcoefs)
+        for (float *coef : tcoefs)
             if (!StdFunc::floatIsWithinLimits(this, *(coef + i), 1.0, 0.05))
                 return Error::Msg::GeneralError;
     }
@@ -138,6 +140,7 @@ Error::Msg TuneKIVADC::checkTuneCoefs()
         if (!StdFunc::floatIsWithinLimits(this, m_bac->data()->DPsi[i], 0.0, 1.0))
             return Error::Msg::GeneralError;
     }
+#endif
     return Error::Msg::NoError;
 }
 
@@ -151,7 +154,9 @@ Error::Msg TuneKIVADC::ADCCoef(int coef)
 {
     QMap<int, int> currentMap = { { 1, 290 }, { 2, 250 }, { 4, 140 }, { 8, 80 }, { 16, 40 }, { 32, 23 } };
     m_curTuneStep = coef;
-    CKIV->Bci_block.Unom1 = 220;
+    //  CKIV->Bci_block.Unom1 = 220;
+    S2::setRecordValue({ BciNumber::Unom1, float(220) });
+
     Error::Msg res = setADCCoef(coef);
     if (res != Error::Msg::NoError)
         return res;
@@ -271,10 +276,12 @@ Error::Msg TuneKIVADC::CheckTune()
     return Error::Msg::NoError;
 }
 
-Error::Msg TuneKIVADC::setADCCoef(int coef)
+Error::Msg TuneKIVADC::setADCCoef(const int coef)
 {
-    QMap<int, int> adcCoefMap = { { 1, 9000 }, { 2, 4500 }, { 4, 2250 }, { 8, 1124 }, { 16, 562 }, { 32, 281 } };
-    CKIV->Bci_block.C_pasp[0] = CKIV->Bci_block.C_pasp[1] = CKIV->Bci_block.C_pasp[2] = adcCoefMap[coef];
+    const QMap<int, float> adcCoefMap { { 1, 9000 }, { 2, 4500 }, { 4, 2250 }, { 8, 1124 }, { 16, 562 }, { 32, 281 } };
+    S2::setRecordValue({ BciNumber::C_Pasp_ID,
+        DataTypes::FLOAT_3t({ adcCoefMap.value(coef), adcCoefMap.value(coef), adcCoefMap.value(coef) }) });
+    // CKIV->Bci_block.C_pasp[0] = CKIV->Bci_block.C_pasp[1] = CKIV->Bci_block.C_pasp[2] = adcCoefMap[coef];
 
     return BaseInterface::iface()->writeConfFileSync();
 }
@@ -306,11 +313,11 @@ Error::Msg TuneKIVADC::showRetomDialog(int coef)
               "Коэффициент передачи РЕТ-10 для режима с имитатором: "
             + retomCoefMap[coef].ret10c + " (для РЕТОМ-51 коэффициент 30:3)."));
     QPushButton *pb = new QPushButton("Готово");
-    connect(pb, SIGNAL(clicked()), dlg, SLOT(close()));
+    connect(pb, &QAbstractButton::clicked, dlg, &QWidget::close);
     lyout->addWidget(pb);
     pb = new QPushButton("Отмена");
-    connect(pb, SIGNAL(clicked()), this, SLOT(CancelTune()));
-    connect(pb, SIGNAL(clicked()), dlg, SLOT(close()));
+    connect(pb, &QAbstractButton::clicked, this, &AbstractTuneDialog::CancelTune);
+    connect(pb, &QAbstractButton::clicked, dlg, &QWidget::close);
     lyout->addWidget(pb);
     dlg->setLayout(lyout);
     dlg->exec();
@@ -319,6 +326,9 @@ Error::Msg TuneKIVADC::showRetomDialog(int coef)
 
 bool TuneKIVADC::checkBdaIn(int current)
 {
+#ifdef NO_LIMITS
+    return true;
+#endif
     for (int i = 0; i < 3; ++i)
     {
         if (StdFunc::floatIsWithinLimits(this, m_bdain->data()->IUefNat_filt[i], 57.75, 3.0))
@@ -338,6 +348,7 @@ bool TuneKIVADC::checkBdaIn(int current)
                 }
             }
         }
+
         return false;
     }
     if (StdFunc::floatIsWithinLimits(this, m_bdain->data()->Pt100_R, 100, 5))
@@ -360,7 +371,7 @@ Error::Msg TuneKIVADC::showEnergomonitorInputDialog()
         vlyout->addWidget(WDFunc::NewLBLAndLE(this, "fэт, Гц:", "ValuetuneF", enabled));
 
         QPushButton *pb = new QPushButton("Продолжить");
-        connect(pb, SIGNAL(clicked()), this, SLOT(CalcTuneCoefs()));
+        connect(pb, &QAbstractButton::clicked, this, &TuneKIVADC::CalcTuneCoefs);
         vlyout->addWidget(pb);
 
         dlg->setLayout(vlyout);
@@ -372,9 +383,9 @@ Error::Msg TuneKIVADC::showEnergomonitorInputDialog()
         QDialog *dlg = this->findChild<QDialog *>("energomonitordlg");
         if (dlg != nullptr)
         {
-            foreach (QString str, QStringList({ "U", "I", "Y", "F" }))
+            for (const QString &str : QStringList({ "U", "I", "Y", "F" }))
                 WDFunc::SetLEData(this, "Valuetune" + str, "");
-            foreach (QString str, QStringList({ "U", "Y", "F" }))
+            for (const QString &str : QStringList({ "U", "Y", "F" }))
                 WDFunc::SetEnabled(this, "Valuetune" + str, enabled);
             //            WDFunc::SetEnabled(this, "ValuetuneF", enabled);
             //            WDFunc::SetEnabled(this, "ValuetuneY", enabled);

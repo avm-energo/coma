@@ -34,6 +34,7 @@ public:
     static QList<DataTypes::DataRecV> configV;
     static DataTypes::DataRecV getRecord(unsigned int id);
     static void setRecordValue(const DataTypes::DataRecV &record);
+    static void tester(S2DataTypes::S2ConfigType &buffer);
 
 private:
     //    const unsigned long dwPolynomial = 0xEDB88320;

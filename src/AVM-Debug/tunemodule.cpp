@@ -104,7 +104,7 @@ void TuneModule::create(Modules::BaseBoard typeB, Modules::MezzanineBoard typeM)
             addDialogToList(new Conf8084Dialog(CKIV), "Конфигурирование", "conf1");
             if (board.interfaceType() == Board::InterfaceType::USB)
             {
-                addDialogToList(new Tune84Dialog(CKIV), "Регулировка");
+                addDialogToList(new Tune84Dialog /*(CKIV)*/, "Регулировка");
             }
         }
         CheckKIVDialog *cdkiv = new CheckKIVDialog;

@@ -101,12 +101,14 @@ Error::Msg TuneKIVR::processR120()
     double pt100_120 = processR();
     if (StdFunc::isCancelled())
         return Error::Msg::GeneralError;
+#ifndef NO_LIMITS
     if (StdFunc::floatIsWithinLimits(this, pt100_120, m_pt100, 40, false))
     {
         WARNMSG("Ошибка в полученных данных, значения сопротивлений равны");
         StdFunc::cancel();
         return Error::Msg::GeneralError;
     }
+#endif
     m_bac->data()->Art = (pt100_120 - m_pt100) / 40;
     m_bac->data()->Brt = pt100_120 * 2 - m_pt100 * 3;
     m_bac->updateWidget();

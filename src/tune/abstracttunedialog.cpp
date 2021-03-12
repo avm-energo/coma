@@ -17,12 +17,12 @@
 #include "limereport/lrreportengine.h"
 #include "tunesequencefile.h"
 
+#include <QDebug>
 #include <QMessageBox>
 #include <QProgressBar>
 #include <QScrollArea>
 #include <QScrollBar>
 #include <QVBoxLayout>
-#include <QtDebug>
 
 AbstractTuneDialog::AbstractTuneDialog(int tuneStep, QWidget *parent) : QDialog(parent)
 {
@@ -365,7 +365,7 @@ Error::Msg AbstractTuneDialog::readTuneCoefs()
 // на будущее, если вдруг будем регулировать модуль по частям
 void AbstractTuneDialog::readTuneCoefsByBac(int bacnum)
 {
-    if (AbsBac.keys().contains(bacnum))
+    if (AbsBac.contains(bacnum))
         AbsBac[bacnum]->readAndUpdate();
 }
 

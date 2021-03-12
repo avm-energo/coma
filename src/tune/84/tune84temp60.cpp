@@ -258,7 +258,7 @@ void Tune84Temp60::loadIntermediateResults()
 {
     //    QString cpuserialnum = Board::GetInstance().UID();
     //    QSettings storedcalibrations(StdFunc::GetSystemHomeDir() + "calibr.ini", QSettings::IniFormat);
-    foreach (TuneDescrStruct item, m_tuneDescrVector())
+    for (const TuneDescrStruct &item : m_tuneDescrVector())
         *item.parameter = StdFunc::toFloat(TuneSequenceFile::value(item.parametername).toString());
     //        *item.parameter = StdFunc::toFloat(
     //            storedcalibrations.value(cpuserialnum + "/" + item.parametername, 0xcdcdcdcd).toString());

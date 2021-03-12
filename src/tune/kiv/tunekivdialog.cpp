@@ -15,9 +15,9 @@ TuneKIVDialog::TuneKIVDialog(ConfigKIV *ckiv, QWidget *parent) : GeneralTuneDial
     // ReportModel = new QStandardItemModel;
     // ViewModel = new QStandardItemModel;
     setAttribute(Qt::WA_DeleteOnClose);
-    TKIVADCDialog = new TuneKIVADC(KIVTS_ADC, CKIV, this);
-    TKIV20Dialog = new TuneKIVTemp60(KIVTS_20TUNING, CKIV, this);
-    TKIV60Dialog = new TuneKIVTemp60(KIVTS_60TUNING, CKIV, this);
+    TKIVADCDialog = new TuneKIVADC(KIVTS_ADC, /*CKIV,*/ this);
+    TKIV20Dialog = new TuneKIVTemp60(KIVTS_20TUNING, /*CKIV,*/ this);
+    TKIV60Dialog = new TuneKIVTemp60(KIVTS_60TUNING, /*CKIV, */ this);
     TKIVCheckDialog = new TuneKIVCheck(KIVTS_CHECKING, this);
     TKIVRDialog = new TuneKIVR(KIVTS_PT100, CKIV, this);
     SetupUI();

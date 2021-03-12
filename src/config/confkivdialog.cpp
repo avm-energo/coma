@@ -353,5 +353,5 @@ void ConfKIVDialog::SetDefConf()
 {
     CKIV->setDefConf();
 
-    // Fill();
+    Fill();
 }

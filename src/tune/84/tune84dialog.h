@@ -20,12 +20,12 @@ class Tune84Dialog : public GeneralTuneDialog
 {
     Q_OBJECT
 public:
-    explicit Tune84Dialog(ConfigKIV *ckiv, QWidget *parent = nullptr);
+    explicit Tune84Dialog(/*ConfigKIV *ckiv,*/ QWidget *parent = nullptr);
 
 public slots:
 
 private:
-    ConfigKIV *CKIV;
+    //  ConfigKIV *CKIV;
     Tune84Check *T84CheckDialog;
     TuneKIVADC *T84ADCDialog;
     TuneKIVTemp60 *T8460Dialog, *T8420Dialog;

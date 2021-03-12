@@ -45,24 +45,7 @@ void AbstractConfDialog::WriteConf()
 
     std::transform(confList.begin(), confList.end(), std::back_inserter(buffer),
         [](const auto &record) -> S2DataTypes::DataRec { return record.serialize(); });
-
-    // here is test functions
-    QList<DataTypes::DataRecV> bufferV;
-    std::transform(buffer.begin(), buffer.end(), std::back_inserter(bufferV),
-        [](const auto &oldRec) -> DataTypes::DataRecV { return DataTypes::DataRecV(oldRec); });
-    Q_ASSERT(std::equal(buffer.cbegin(), buffer.cend(), bufferV.cbegin(), bufferV.cend(),
-                 [](const S2DataTypes::DataRec &oldRec, const DataTypes::DataRecV &newRec) {
-                     return S2DataTypes::is_same(oldRec, newRec.serialize());
-                 })
-        && "Broken DataRecV S2 conf");
-    for (auto i = 0; i != bufferV.size() && i != buffer.size(); ++i)
-    {
-        const auto oldRec = buffer.at(i);
-        const auto newRec = bufferV.at(i).serialize();
-        if (!S2DataTypes::is_same(oldRec, newRec))
-            qDebug() << oldRec.id << oldRec.numByte;
-    }
-    // test funcs end
+    S2::tester(buffer);
 
     buffer.push_back({ S2DataTypes::dummyElement, 0, nullptr });
     BaseInterface::iface()->writeS2File(DataTypes::Config, &buffer);
