@@ -14,10 +14,10 @@ class Tune84ADC : public AbstractTuneDialog
 {
     Q_OBJECT
 public:
-    Tune84ADC(int tuneStep, ConfigKIV *ckiv, QWidget *parent = nullptr);
+    Tune84ADC(int tuneStep, /*ConfigKIV *ckiv,*/ QWidget *parent = nullptr);
 
 private:
-    ConfigKIV *CKIV;
+    //   ConfigKIV *CKIV;
     Bac *m_bac;
     Bda *m_bda;
     BdaIn *m_bdain;
