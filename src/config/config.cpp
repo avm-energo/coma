@@ -13,28 +13,7 @@
 Config::Config()
 {
     using namespace DataTypes;
-
-    // setConfig();
 }
-
-// void Config::setConfig()
-//{
-//    removeFotter();
-
-//    auto &config = S2::config;
-
-//    config.append({ BciNumber::MTypeB_ID, sizeof(MainBlk.MTypeB), &MainBlk.MTypeB });
-//    config.append({ BciNumber::MTypeE_ID, sizeof(MainBlk.MTypeM), &MainBlk.MTypeM });
-//    config.append({ BciNumber::CType, sizeof(MainBlk.Ctype), &MainBlk.Ctype });
-//    config.append({ BciNumber::Abs_104, sizeof(MainBlk.Abs_104), &MainBlk.Abs_104 });
-//    config.append({ BciNumber::Cycle_104, sizeof(MainBlk.Cycle_104), &MainBlk.Cycle_104 });
-//    config.append({ BciNumber::T1_104, sizeof(MainBlk.T1_104), &MainBlk.T1_104 });
-//    config.append({ BciNumber::T2_104, sizeof(MainBlk.T2_104), &MainBlk.T2_104 });
-//    config.append({ BciNumber::T3_104, sizeof(MainBlk.T3_104), &MainBlk.T3_104 });
-//    config.append({ BciNumber::k_104, sizeof(MainBlk.K_104), &MainBlk.K_104 });
-//    config.append({ BciNumber::w_104, sizeof(MainBlk.W_104), &MainBlk.W_104 });
-//    config.append({ 0xFFFFFFFF, 0, nullptr });
-//}
 
 void Config::SetDefConf()
 {

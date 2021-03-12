@@ -262,9 +262,3 @@ void AbstractConfDialog::uponInterfaceSetting()
     SetupUI();
     PrereadConf();
 }
-
-void AbstractConfDialog::WriteConfMessageOk(const DataTypes::GeneralResponseStruct &rsp)
-{
-    if (rsp.type == DataTypes::GeneralResponseTypes::Ok)
-        QMessageBox::information(this, "Внимание", "Запись конфигурации и переход прошли успешно!");
-}
