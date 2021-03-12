@@ -18,15 +18,7 @@ DebugComa::~DebugComa()
 void DebugComa::PrepareDialogs()
 {
     m_Module = ModulePointer(new TuneModule);
-    Q_INIT_RESOURCE(settings);
-    if (!m_Module->loadSettings())
-    {
-        qCritical() << "No conf .xml file for this module";
-        return;
-    }
-    Q_CLEANUP_RESOURCE(settings);
-    m_Module->createAlarm(AlarmW);
-    m_Module->create(BdaTimer);
+    Coma::PrepareDialogs();
 }
 
 void DebugComa::getAbout()

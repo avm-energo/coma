@@ -20,20 +20,24 @@ void Module::createAlarm(AlarmWidget *aw)
 {
     using namespace Modules;
 
-    BaseInterface::iface()->setSettings(settings()->ifaceSettings);
+    if (m_settings)
+        BaseInterface::iface()->setSettings(settings()->ifaceSettings);
 
     AlarmStateAll *alarmStateAll = new AlarmStateAll;
     Q_ASSERT(aw->count() == 0);
     aw->addAlarm(alarmStateAll);
-    if (settings()->alarms.contains((AlarmType::Warning)))
+    if (m_settings)
     {
-        auto *warnAlarm = new ModuleAlarm(settings()->alarms.value(AlarmType::Warning), settings()->alarmCount());
-        aw->addAlarm(warnAlarm, tr("Предупредительная сигнализация"));
-    }
-    if (settings()->alarms.contains((AlarmType::Critical)))
-    {
-        auto *critAlarm = new ModuleAlarm(settings()->alarms.value(AlarmType::Critical), settings()->alarmCount());
-        aw->addAlarm(critAlarm, tr("Аварийная сигнализация"));
+        if (settings()->alarms.contains((AlarmType::Warning)))
+        {
+            auto *warnAlarm = new ModuleAlarm(settings()->alarms.value(AlarmType::Warning), settings()->alarmCount());
+            aw->addAlarm(warnAlarm, tr("Предупредительная сигнализация"));
+        }
+        if (settings()->alarms.contains((AlarmType::Critical)))
+        {
+            auto *critAlarm = new ModuleAlarm(settings()->alarms.value(AlarmType::Critical), settings()->alarmCount());
+            aw->addAlarm(critAlarm, tr("Аварийная сигнализация"));
+        }
     }
 }
 

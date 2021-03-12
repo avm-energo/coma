@@ -193,6 +193,19 @@ void Coma::SetupUI()
     setupMenubar();
 }
 
+void Coma::PrepareDialogs()
+{
+    Q_INIT_RESOURCE(settings);
+    if (!m_Module->loadSettings())
+    {
+        qCritical() << "No conf .xml file for this module";
+    }
+
+    Q_CLEANUP_RESOURCE(settings);
+    m_Module->createAlarm(AlarmW);
+    m_Module->create(BdaTimer);
+}
+
 QWidget *Coma::least()
 {
     QWidget *w = new QWidget;

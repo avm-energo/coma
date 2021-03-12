@@ -91,7 +91,7 @@ private:
     void newTimers();
     void SetupUI();
     // void CloseDialogs();
-    virtual void PrepareDialogs() = 0;
+
     void setupConnections();
     void prepare();
 
@@ -102,6 +102,7 @@ private:
 protected:
     void keyPressEvent(QKeyEvent *e) override;
     void resizeEvent(QResizeEvent *e) override;
+    virtual void PrepareDialogs();
 signals:
     void sendMessage(void *);
 };

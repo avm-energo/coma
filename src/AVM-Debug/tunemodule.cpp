@@ -87,7 +87,8 @@ void TuneModule::createModule(Modules::Model model)
         break;
     }
     default:
-        assert(false);
+        break;
+        //  assert(false);
     }
 }
 
