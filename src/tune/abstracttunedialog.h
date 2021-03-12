@@ -3,7 +3,6 @@
 
 #include "../datablocks/datablock.h"
 #include "../gen/report.h"
-#include "../gen/s2.h"
 
 #include <QByteArray>
 #include <QCloseEvent>

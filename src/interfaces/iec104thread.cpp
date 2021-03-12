@@ -2,6 +2,7 @@
 
 #include "../gen/datamanager.h"
 #include "../gen/pch.h"
+#include "../gen/s2.h"
 #include "iec104private.h"
 
 #include <QCoreApplication>

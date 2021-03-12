@@ -17,12 +17,12 @@
 #include "limereport/lrreportengine.h"
 #include "tunesequencefile.h"
 
+#include <QDebug>
 #include <QMessageBox>
 #include <QProgressBar>
 #include <QScrollArea>
 #include <QScrollBar>
 #include <QVBoxLayout>
-#include <QtDebug>
 
 AbstractTuneDialog::AbstractTuneDialog(int tuneStep, QWidget *parent) : QDialog(parent)
 {

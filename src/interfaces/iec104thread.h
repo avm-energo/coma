@@ -1,8 +1,9 @@
 #ifndef IEC104THREAD_H
 #define IEC104THREAD_H
 
+#include "../gen/datatypes.h"
+#include "../gen/error.h"
 #include "../gen/logclass.h"
-#include "../gen/s2.h"
 
 #include <QQueue>
 #include <QTimer>
