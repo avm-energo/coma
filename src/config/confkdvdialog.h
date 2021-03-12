@@ -1,13 +1,8 @@
 #ifndef CONFDIALOGKDV_H
 #define CONFDIALOGKDV_H
 
-//#include "../config/confdialog.h"
 #include "../config/configkdv.h"
-//#include "../interfaces/ethernet.h"
-//#include "../iec104/iec104.h"
 #include "abstractconfdialog.h"
-
-#include <QVBoxLayout>
 
 class ConfKDVDialog : public AbstractConfDialog
 {

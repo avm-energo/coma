@@ -4,7 +4,6 @@
 #include "../gen/colors.h"
 #include "../gen/datamanager.h"
 #include "../gen/error.h"
-#include "../widgets/ecombobox.h"
 #include "../widgets/wd_func.h"
 
 #include <QGridLayout>
@@ -21,12 +20,8 @@
 
 ConfKDVDialog::ConfKDVDialog(ConfigKDV *ckdv, QWidget *parent) : AbstractConfDialog(parent)
 {
-    QString tmps = "QDialog {background-color: " + QString(Colors::ACONFCLR) + ";}";
-    setStyleSheet(tmps);
-    // S2Config = ckdv->S2Config();
+
     CKDV = ckdv;
-    //    Conf = new ConfDialog(S2Config, Board::GetInstance().typeB(), Board::GetInstance().typeM());
-    // ConfKxx = new ConfKxxDialog(S2Config);
 }
 
 void ConfKDVDialog::SetupUI()
@@ -40,10 +35,8 @@ void ConfKDVDialog::SetupUI()
     QScrollArea *scrArea = new QScrollArea;
     QWidget *analog1 = new QWidget;
     QWidget *analog2 = new QWidget;
-    QWidget *extraconf = new QWidget;
-    QWidget *MEKconf = new QWidget;
+
     QWidget *Leftconf = new QWidget;
-    QWidget *time = new QWidget;
     QWidget *link = new QWidget;
 
     area2->setFrameShape(QFrame::NoFrame);
@@ -572,8 +565,6 @@ QWidget *ConfKDVDialog::analogWidget()
 
     scrollArea->setFrameShape(QFrame::NoFrame);
     scrollArea->setWidgetResizable(true);
-
-    QFont font;
 
     int row = 0;
     QGroupBox *gb = new QGroupBox("Аналоговые параметры");

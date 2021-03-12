@@ -85,6 +85,5 @@ private:
     //    QWidget *CustomTab() override;
 
 private slots:
-    //    void UpdateModBusData(QList<ModBus::SignalStruct> Signal) override;
 };
 #endif // CHECKDIALOG84_H

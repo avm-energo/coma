@@ -1,10 +1,9 @@
 #include "check.h"
 
+#include "../gen/colors.h"
 #include "../widgets/wd_func.h"
 
 #include <QGridLayout>
-//#include "../gen/publicclass.h"
-#include "../gen/colors.h"
 
 Check::Check()
 {
@@ -19,10 +18,10 @@ QWidget *Check::Bd0W(QWidget *parent)
         + QString(Colors::ACONFOCLR) + "; font: bold 10px;}";
     QWidget *w = new QWidget(parent);
     QGridLayout *glyout = new QGridLayout;
-    glyout->addWidget(WDFunc::NewLBL(parent, "1. Tmk, °С:"), 0, 0);
+    glyout->addWidget(WDFunc::NewLBL2(parent, "1. Tmk, °С:"), 0, 0);
     glyout->addWidget(
         WDFunc::NewLBLT(parent, "", "101", ValuesFormat, "Температура кристалла микроконтроллера, °С"), 0, 1);
-    glyout->addWidget(WDFunc::NewLBL(parent, "2. VBAT, В:"), 0, 2);
+    glyout->addWidget(WDFunc::NewLBL2(parent, "2. VBAT, В:"), 0, 2);
     glyout->addWidget(WDFunc::NewLBLT(parent, "", "102", ValuesFormat, "Напряжение аккумуляторной батареи, В"), 0, 3);
     glyout->setColumnStretch(1, 10);
     glyout->setColumnStretch(3, 10);

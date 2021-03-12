@@ -35,9 +35,9 @@ private:
     UWidget *Bd3W();
     UWidget *Bd4W();
     UWidget *Bd5W();
-    UWidget *Bd6W();
-    UWidget *Bd7W();
-    UWidget *Bd8W();
+    //    UWidget *Bd6W();
+    //    UWidget *Bd7W();
+    //    UWidget *Bd8W();
 
     //    QWidget *CustomTab() override;
     //    void setConnections() override;

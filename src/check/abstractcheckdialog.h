@@ -118,7 +118,6 @@ protected:
     //    int BdNum;
     bool XlsxWriting;
     const QString ValuesFormat = "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; font: bold; }";
-    //       "color: blue; font: bold 10px;}";
     void uponInterfaceSetting() override;
 
 private slots:
