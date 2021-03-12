@@ -4,5 +4,6 @@
         <file>avm-ktf.xml</file>
         <file>avtuk-8084.xml</file>
         <file>avtuk-8082.xml</file>
+        <file>s2files.xml</file>
     </qresource>
 </RCC>

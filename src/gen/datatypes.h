@@ -1,5 +1,6 @@
 #ifndef DATATYPES_H
 #define DATATYPES_H
+#include "datarecv.h"
 
 #include <QDataStream>
 #include <QVariant>
@@ -23,6 +24,7 @@ enum SignalTypes
     File,
     ConfParameter,
     ConfParametersList,
+    DataRecVList,
     Block,
     OscillogramInfo,
     GeneralResponse
@@ -215,7 +217,7 @@ struct Journal
 };
 
 #pragma pack(push) /* push current alignment to stack */
-#pragma pack(1)    /* set alignment to 1 byte boundary */
+#pragma pack(1) /* set alignment to 1 byte boundary */
 struct OscInfo
 {
     quint32 fileNum;    // номер файла осциллограмм
@@ -269,6 +271,7 @@ struct Command
 
 namespace S2DataTypes
 {
+constexpr quint32 dummyElement = 0xffffffff;
 // S2: Определение типа заголовка
 /// Заголовок файла (Прил. 1)
 struct FileHeader
@@ -282,12 +285,21 @@ struct FileHeader
 
 // S2: Определение типа записи
 
-struct DataRec
-{
-    quint32 id;
-    quint32 numByte;
-    void *thedata;
-};
+struct DataRec;
+// struct DataRec
+//{
+//    quint32 id;
+//    quint32 num_byte;
+//    void *thedata;
+//};
+// inline bool is_same(const S2DataTypes::DataRec &lhs, const S2DataTypes::DataRec &rhs)
+//{
+//    if ((lhs.id == rhs.id) && (lhs.num_byte == rhs.num_byte))
+//        return !memcmp(lhs.thedata, rhs.thedata, lhs.num_byte);
+//    else
+//        return false;
+//}
+
 struct DataRecHeader
 {
     // id
@@ -323,7 +335,7 @@ struct FileStruct
 typedef QVector<S2DataTypes::DataRec> S2ConfigType;
 
 #pragma pack(push) /* push current alignment to stack */
-#pragma pack(1)    /* set alignment to 1 byte boundary */
+#pragma pack(1) /* set alignment to 1 byte boundary */
 struct SwitchJourInfo
 {
     quint16 fileNum;    // Номер файла
@@ -390,6 +402,7 @@ Q_DECLARE_METATYPE(DataTypes::ConfParametersListStruct)
 Q_DECLARE_METATYPE(DataTypes::SignalsStruct)
 Q_DECLARE_METATYPE(DataTypes::Signal)
 Q_DECLARE_METATYPE(DataTypes::GeneralResponseStruct)
+Q_DECLARE_METATYPE(DataTypes::DataRecV)
 Q_DECLARE_METATYPE(DataTypes::OscInfo)
 Q_DECLARE_METATYPE(Queries::Command)
 #endif // DATATYPES_H

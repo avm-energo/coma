@@ -3,7 +3,7 @@
 #include "../gen/board.h"
 #include "../gen/stdfunc.h"
 
-#include <QtDebug>
+#include <QDebug>
 
 std::unique_ptr<QSettings> TuneSequenceFile::s_tsSettings;
 QString TuneSequenceFile::s_cpuSerialNum;

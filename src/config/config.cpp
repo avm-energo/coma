@@ -3,6 +3,7 @@
 
 #include "../gen/board.h"
 #include "../gen/s2.h"
+#include "../gen/stdfunc.h"
 #include "../widgets/wd_func.h"
 
 #include <QDebug>
@@ -11,52 +12,22 @@
 
 Config::Config()
 {
-    // Q_ASSERT(sizeof(Bci::BciMain) / 4 == regs.size());
-    MainBlk.MTypeB = Board::GetInstance().typeB();
-    MainBlk.MTypeM = Board::GetInstance().typeM();
-    setConfig();
-}
-
-void Config::setConfig()
-{
-    removeFotter();
-
-    // общая часть
-    //    for (const auto &item:regs)
-    //    {
-
-    //        config->append({item})
-    //    }
-    auto &config = S2::config;
-    //    auto iter = regs.cbegin();
-    //    while (iter != regs.end())
-    //    {
-    //        config->append({ quint32(iter.key()), sizeof(quint32), iter.value() });
-    //        ++iter;
-    //    }
-    // общая часть
-
-    config.append({ BciNumber::MTypeB_ID, sizeof(MainBlk.MTypeB), &MainBlk.MTypeB });
-    config.append({ BciNumber::MTypeE_ID, sizeof(MainBlk.MTypeM), &MainBlk.MTypeM });
-    config.append({ BciNumber::CType, sizeof(MainBlk.Ctype), &MainBlk.Ctype });
-    config.append({ BciNumber::Abs_104, sizeof(MainBlk.Abs_104), &MainBlk.Abs_104 });
-    config.append({ BciNumber::Cycle_104, sizeof(MainBlk.Cycle_104), &MainBlk.Cycle_104 });
-    config.append({ BciNumber::T1_104, sizeof(MainBlk.T1_104), &MainBlk.T1_104 });
-    config.append({ BciNumber::T2_104, sizeof(MainBlk.T2_104), &MainBlk.T2_104 });
-    config.append({ BciNumber::T3_104, sizeof(MainBlk.T3_104), &MainBlk.T3_104 });
-    config.append({ BciNumber::k_104, sizeof(MainBlk.K_104), &MainBlk.K_104 });
-    config.append({ BciNumber::w_104, sizeof(MainBlk.W_104), &MainBlk.W_104 });
-    config.append({ 0xFFFFFFFF, 0, nullptr });
+    using namespace DataTypes;
 }
 
 void Config::SetDefConf()
 {
-    MainBlk = Bci::BciMain();
-    // Не нужно, всё описано в конструкторе
-    //    auto defValues = QMetaEnum::fromType<Bci::BciDefMainValues>();
-    //    int i = 0;
-
-    //    std::for_each(regs.begin(), regs.end(), [&](quint32 *value) { *value = defValues.value(i++); });
+    using namespace DataTypes;
+    S2::setRecordValue({ BciNumber::MTypeB_ID, DWORD(Board::GetInstance().typeB()) });
+    S2::setRecordValue({ BciNumber::MTypeE_ID, DWORD(Board::GetInstance().typeM()) });
+    S2::setRecordValue({ BciNumber::Abs_104, DWORD(Bci::DEF_ABS_104) });
+    S2::setRecordValue({ BciNumber::Cycle_104, DWORD(Bci::DEF_CYCLE_104) });
+    S2::setRecordValue({ BciNumber::T1_104, DWORD(Bci::DEF_T1_104) });
+    S2::setRecordValue({ BciNumber::T2_104, DWORD(Bci::DEF_T2_104) });
+    S2::setRecordValue({ BciNumber::T3_104, DWORD(Bci::DEF_T3_104) });
+    S2::setRecordValue({ BciNumber::k_104, DWORD(Bci::DEF_K_104) });
+    S2::setRecordValue({ BciNumber::w_104, DWORD(Bci::DEF_W_104) });
+    S2::setRecordValue({ BciNumber::CType, DWORD(Bci::DEF_CTYPE) });
 }
 
 QWidget *Config::MainWidget(QWidget *parent)
@@ -121,67 +92,53 @@ QWidget *Config::TimeWidget(QWidget *parent)
 
 void Config::Fill()
 {
+    using namespace DataTypes;
+    const auto s2typeB = S2::getRecord(BciNumber::MTypeB_ID).value<DWORD>();
+    if (s2typeB != Board::GetInstance().typeB())
+        qCritical() << "Conflict typeB, module: " << QString::number(Board::GetInstance().typeB(), 16)
+                    << " config: " << QString::number(s2typeB, 16);
+    const auto s2typeM = S2::getRecord(BciNumber::MTypeE_ID).value<DWORD>();
+    if (s2typeM != Board::GetInstance().typeM())
+        qCritical() << "Conflict typeB, module: " << QString::number(Board::GetInstance().typeM(), 16)
+                    << " config: " << QString::number(s2typeM, 16);
+    WDFunc::SetSPBData(ParentMainbl, NAMEOF(MainBlk.Abs_104), S2::getRecord(BciNumber::Abs_104).value<DWORD>());
+    WDFunc::SetSPBData(ParentMainbl, NAMEOF(MainBlk.Cycle_104), S2::getRecord(BciNumber::Cycle_104).value<DWORD>());
+    WDFunc::SetSPBData(ParentMainbl, NAMEOF(MainBlk.T1_104), S2::getRecord(BciNumber::T1_104).value<DWORD>());
+    WDFunc::SetSPBData(ParentMainbl, NAMEOF(MainBlk.T2_104), S2::getRecord(BciNumber::T2_104).value<DWORD>());
+    WDFunc::SetSPBData(ParentMainbl, NAMEOF(MainBlk.T3_104), S2::getRecord(BciNumber::T3_104).value<DWORD>());
+    WDFunc::SetSPBData(ParentMainbl, NAMEOF(MainBlk.K_104), S2::getRecord(BciNumber::k_104).value<DWORD>());
+    WDFunc::SetSPBData(ParentMainbl, NAMEOF(MainBlk.W_104), S2::getRecord(BciNumber::w_104).value<DWORD>());
 
-    WDFunc::SetSPBData(ParentMainbl, NAMEOF(MainBlk.Abs_104), MainBlk.Abs_104);
-    WDFunc::SetSPBData(ParentMainbl, NAMEOF(MainBlk.Cycle_104), MainBlk.Cycle_104);
-    WDFunc::SetSPBData(ParentMainbl, NAMEOF(MainBlk.T1_104), MainBlk.T1_104);
-    WDFunc::SetSPBData(ParentMainbl, NAMEOF(MainBlk.T2_104), MainBlk.T2_104);
-    WDFunc::SetSPBData(ParentMainbl, NAMEOF(MainBlk.T3_104), MainBlk.T3_104);
-    WDFunc::SetSPBData(ParentMainbl, NAMEOF(MainBlk.K_104), MainBlk.K_104);
-    WDFunc::SetSPBData(ParentMainbl, NAMEOF(MainBlk.W_104), MainBlk.W_104);
-    // Miss first 3 value
-    //    int i = 3;
-    //    auto defValues = QMetaEnum::fromType<Bci::BciDefMainValues>();
-    //    std::for_each(regs.begin() + 3, regs.end(), [&](quint32 *value) {
-    //        if (!WDFunc::SetSPBData(ParentMainbl, defValues.key(i++), *value))
-    //            qDebug() << "Failed to find" << defValues.key(i);
-    //    });
-    int cbidx;
-    switch (MainBlk.Ctype)
-    {
-    case 0:
-        cbidx = 0;
-        break;
-    case 8:
-        cbidx = 1;
-        break;
-    case 10:
-        cbidx = 2;
-        break;
-    default:
-        return;
-    }
-    WDFunc::SetCBIndex(ParentCtype, NAMEOF(MainBlk.Ctype), cbidx);
+    WDFunc::SetCBIndex(ParentCtype, NAMEOF(MainBlk.Ctype),
+        StdFunc::countSetBits(S2::getRecord(BciNumber::CType).value<DWORD>() & 0x0a));
 }
 
 void Config::FillBack()
 {
-    //    int i = 3;
-    //    auto defValues = QMetaEnum::fromType<Bci::BciDefMainValues>();
-    //    std::for_each(regs.begin() + 3, regs.end(),
-    //        [&](quint32 *value) { WDFunc::SPBData(ParentMainbl, defValues.key(i++), *value); });
+    using namespace DataTypes;
 
-    WDFunc::SPBData(ParentMainbl, NAMEOF(MainBlk.Abs_104), MainBlk.Abs_104);
-    WDFunc::SPBData(ParentMainbl, NAMEOF(MainBlk.Cycle_104), MainBlk.Cycle_104);
-    WDFunc::SPBData(ParentMainbl, NAMEOF(MainBlk.T1_104), MainBlk.T1_104);
-    WDFunc::SPBData(ParentMainbl, NAMEOF(MainBlk.T2_104), MainBlk.T2_104);
-    WDFunc::SPBData(ParentMainbl, NAMEOF(MainBlk.T3_104), MainBlk.T3_104);
-    WDFunc::SPBData(ParentMainbl, NAMEOF(MainBlk.K_104), MainBlk.K_104);
-    WDFunc::SPBData(ParentMainbl, NAMEOF(MainBlk.W_104), MainBlk.W_104);
+    S2::setRecordValue({ BciNumber::Abs_104, WDFunc::SPBData<DWORD>(ParentMainbl, NAMEOF(MainBlk.Abs_104)) });
+    S2::setRecordValue({ BciNumber::Cycle_104, WDFunc::SPBData<DWORD>(ParentMainbl, NAMEOF(MainBlk.Cycle_104)) });
+    S2::setRecordValue({ BciNumber::T1_104, WDFunc::SPBData<DWORD>(ParentMainbl, NAMEOF(MainBlk.T1_104)) });
+    S2::setRecordValue({ BciNumber::T2_104, WDFunc::SPBData<DWORD>(ParentMainbl, NAMEOF(MainBlk.T2_104)) });
+    S2::setRecordValue({ BciNumber::T3_104, WDFunc::SPBData<DWORD>(ParentMainbl, NAMEOF(MainBlk.T3_104)) });
+    S2::setRecordValue({ BciNumber::k_104, WDFunc::SPBData<DWORD>(ParentMainbl, NAMEOF(MainBlk.K_104)) });
+    S2::setRecordValue({ BciNumber::w_104, WDFunc::SPBData<DWORD>(ParentMainbl, NAMEOF(MainBlk.W_104)) });
 
     int cbidx = WDFunc::CBIndex(ParentCtype, NAMEOF(MainBlk.Ctype));
     switch (cbidx)
     {
-    case 0:
-        MainBlk.Ctype = 0;
-        break;
     case 1:
-        MainBlk.Ctype = 8;
+        cbidx = 8;
         break;
     case 2:
-        MainBlk.Ctype = 10;
+        cbidx = 10;
+        break;
+    default:
+        cbidx = 0;
         break;
     }
+    S2::setRecordValue({ BciNumber::CType, DWORD(cbidx) });
 }
 
 void Config::removeFotter()

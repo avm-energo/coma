@@ -549,17 +549,13 @@ bool isOneSegment(unsigned len)
 {
     using Proto::Limits::MaxSegmenthLength;
     Q_ASSERT(len <= MaxSegmenthLength);
-    if (len != MaxSegmenthLength)
-        return true;
-    return false;
+    return (len != MaxSegmenthLength);
 }
 
 bool isSplitted(unsigned len)
 {
     using Proto::Limits::MaxSegmenthLength;
-    if (len < MaxSegmenthLength)
-        return false;
-    return true;
+    return !(len < MaxSegmenthLength);
 }
 
 QByteArray prepareOk(bool isStart, byte cmd)
@@ -699,14 +695,11 @@ void handleFile(QByteArray &ba, DataTypes::FilesEnum addr, bool isShouldRestored
 {
     if (isShouldRestored)
     {
-        DataTypes::ConfParametersListStruct outlist;
-        Error::Msg error_code = S2::RestoreData(ba, outlist);
-        if (error_code != Error::Msg::NoError)
-        {
-            qCritical() << error_code;
+        QList<DataTypes::DataRecV> outlistV;
+
+        if (!S2::RestoreData(ba, outlistV))
             return;
-        }
-        DataManager::addSignalToOutList(DataTypes::ConfParametersList, outlist);
+        DataManager::addSignalToOutList(DataTypes::DataRecVList, outlistV);
     }
     else
     {

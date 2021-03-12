@@ -2,6 +2,7 @@
 
 #include "../gen/datamanager.h"
 #include "../gen/pch.h"
+#include "../gen/s2.h"
 #include "iec104private.h"
 
 #include <QCoreApplication>
@@ -483,7 +484,7 @@ void IEC104Thread::ParseIFormat(QByteArray &ba) // основной разбор
                     int filetype = ba.at(9);
 
                     DataTypes::ConfParametersListStruct outlist;
-                    if (S2::RestoreData(m_readData, outlist) == Error::Msg::NoError)
+                    if (S2::RestoreData(m_readData, outlist))
                     {
                         if (m_fileIsConfigFile)
                             DataManager::addSignalToOutList(DataTypes::ConfParametersList, outlist);

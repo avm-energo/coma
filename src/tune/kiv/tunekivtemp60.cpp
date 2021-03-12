@@ -2,6 +2,7 @@
 
 #include "../../gen/board.h"
 #include "../../gen/colors.h"
+#include "../../gen/s2.h"
 #include "../../gen/stdfunc.h"
 #include "../../widgets/waitwidget.h"
 #include "../../widgets/wd_func.h"
@@ -12,11 +13,11 @@
 #include <QMessageBox>
 #include <QVBoxLayout>
 
-TuneKIVTemp60::TuneKIVTemp60(int tuneStep, ConfigKIV *ckiv, QWidget *parent) : AbstractTuneDialog(tuneStep, parent)
+TuneKIVTemp60::TuneKIVTemp60(int tuneStep, /*ConfigKIV *ckiv, */ QWidget *parent) : AbstractTuneDialog(tuneStep, parent)
 {
     //    m_tuneStep = 2;
     //    TKIV = tkiv;
-    CKIV = ckiv;
+    // CKIV = ckiv;
     m_bac = new Bac;
     m_bdain = new BdaIn;
     m_bd0 = new Bd0;
@@ -78,8 +79,12 @@ void TuneKIVTemp60::setTuneFunctions()
 
 Error::Msg TuneKIVTemp60::setNewConfAndTune()
 {
-    CKIV->Bci_block.C_pasp[0] = CKIV->Bci_block.C_pasp[1] = CKIV->Bci_block.C_pasp[2] = 2250;
-    CKIV->Bci_block.Unom1 = 220;
+    // CKIV->Bci_block.C_pasp[0] = CKIV->Bci_block.C_pasp[1] = CKIV->Bci_block.C_pasp[2] = 2250;
+    // CKIV->Bci_block.Unom1 = 220;
+
+    S2::setRecordValue({ BciNumber::C_Pasp_ID, DataTypes::FLOAT_3t({ 2250, 2250, 2250 }) });
+    S2::setRecordValue({ BciNumber::Unom1, float(220) });
+
     if (BaseInterface::iface()->writeConfFileSync() != Error::Msg::NoError)
         return Error::Msg::GeneralError;
     for (int i = 0; i < 6; ++i)
@@ -114,8 +119,13 @@ Error::Msg TuneKIVTemp60::waitForTempToRise()
 {
     WaitWidget *ww = new WaitWidget;
     ww->setObjectName("ww");
+#ifndef NO_LIMITS
+    const int time = 1800;
+#else
+    const int time = 15;
+#endif
     WaitWidget::ww_struct wws = { true, false, WaitWidget::WW_TIME,
-        1800 }; // isallowedtostop = true, isIncrement = false, format: mm:ss, 30 minutes
+        time }; // isallowedtostop = true, isIncrement = false, format: mm:ss, 30 minutes
     ww->Init(wws);
     ww->SetMessage("Пожалуйста, подождите");
     QEventLoop loop;
@@ -258,8 +268,8 @@ void TuneKIVTemp60::loadIntermediateResults()
 {
     //    QString cpuserialnum = Board::GetInstance().UID();
     //    QSettings storedcalibrations(StdFunc::GetSystemHomeDir() + "calibr.ini", QSettings::IniFormat);
-    foreach (TuneDescrStruct item, m_tuneDescrVector())
-        *item.parameter = StdFunc::toFloat(TuneSequenceFile::value(item.parametername).toString());
+    for (TuneDescrStruct item : m_tuneDescrVector())
+        *item.parameter = StdFunc::toFloat(TuneSequenceFile::value(item.parametername, 0.0).toString());
     //        *item.parameter = StdFunc::toFloat(
     //            storedcalibrations.value(cpuserialnum + "/" + item.parametername, 0xcdcdcdcd).toString());
 }
@@ -271,7 +281,7 @@ void TuneKIVTemp60::saveIntermediateResults()
     m_midTuneStruct.yet = StdFunc::toFloat(WDFunc::LEData(this, "ValuetuneY"));
     QString cpuserialnum = Board::GetInstance().UID();
     QSettings storedcalibrations(StdFunc::GetSystemHomeDir() + "calibr.ini", QSettings::IniFormat);
-    foreach (TuneDescrStruct item, m_tuneDescrVector())
+    for (const TuneDescrStruct &item : m_tuneDescrVector())
         TuneSequenceFile::setValue(item.parametername, *item.parameter);
     //        storedcalibrations.setValue(cpuserialnum + "/" + item.parametername, *item.parameter);
     loadWorkConfig();

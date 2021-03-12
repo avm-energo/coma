@@ -21,61 +21,18 @@ AbstractConfDialog::AbstractConfDialog(QWidget *parent) : UDialog(parent)
     m_password = "121941";
     setSuccessMsg("Конфигурация записана успешно");
     const auto &manager = DataManager::GetInstance();
-    connect(&manager, &DataManager::confParametersListReceived, this, &AbstractConfDialog::confParametersListReceived);
-
-    // connect(&manager, &DataManager::confParameterReceived, this, &AbstractConfDialog::confParameterReceived);
-    // connect(&manager, &DataManager::responseReceived, this, &AbstractConfDialog::WriteConfMessageOk);
+    // connect(&manager, &DataManager::confParametersListReceived, this,
+    // &AbstractConfDialog::confParametersListReceived);
+    connect(&manager, &DataManager::dataRecVListReceived, this, &AbstractConfDialog::confReceived);
 }
-
-// void AbstractConfDialog::setConnections()
-//{
-//}
 
 void AbstractConfDialog::ReadConf()
 {
-    //    iface()->reqFile(DataTypes::Config, true);
     BaseInterface::iface()->reqFile(DataTypes::Config, true);
-    //    TimeFunc::Wait(100);
-    //    switch (Board::GetInstance().interfaceType())
-    //    {
-    //    case Board::InterfaceType::Ethernet:
-    //    {
-    //        //        if ((ModuleBSI::Health() & HTH_CONFIG) || (StdFunc::IsInEmulateMode())) // если в модуле нет
-    //        //        конфигурации,
-    //        if (ModuleBSI::noConfig()) // если в модуле нет конфигурации,
-    //                                   // заполнить поля по умолчанию
-    //        {
-    //            emit DefConfToBeLoaded();
-    //        }
-    //        else // иначе заполнить значениями из модуля
-    //        {
-    //            emit ReadConfig(1);
-    //        }
-    //        break;
-    //    }
-    //    case Board::InterfaceType::USB:
-    //    {
-    //        Error::Msg res = ModuleBSI::PrereadConf(this, S2::config);
-    //        if (res == Error::Msg::ResEmpty)
-    //            emit DefConfToBeLoaded();
-    //        else if (res == Error::Msg::NoError)
-    //            emit NewConfToBeLoaded();
-    //        break;
-    //    }
-    //    default:
-    //        break;
-    //    }
 }
-
-// void AbstractConfDialog::FillConf(S2::configType *DR)
-//{
-//    S2::config = DR;
-//    emit NewConfToBeLoaded();
-//}
 
 void AbstractConfDialog::WriteConf()
 {
-
     if (!checkPassword())
         return;
     if (!PrepareConfToWrite())
@@ -83,78 +40,56 @@ void AbstractConfDialog::WriteConf()
         qCritical("Ошибка чтения конфигурации");
         return;
     }
-    //    iface()->writeConfigFile();
-    BaseInterface::iface()->writeConfigFile();
-    //        switch (Board::GetInstance().interfaceType())
-    //        {
-    //        case Board::InterfaceType::Ethernet:
-    //            //            emit writeConfFile(S2::config);
-    //            DataManager::setConfig(S2::config);
-    //            break;
-    //        case Board::InterfaceType::USB:
-    //        {
-    //            res = Commands::WriteFile(1, S2::config);
-    //            if (res == Error::Msg::NoError)
-    //            {
-    //                emit BsiIsNeedToBeAcquiredAndChecked();
-    //                QMessageBox::information(this, "Внимание", "Запись конфигурации и переход прошли успешно!");
-    //            }
-    //            else
-    //                QMessageBox::critical(
-    //                    this, "Ошибка", "Ошибка записи конфигурации" + QVariant::fromValue(res).toString());
-    //            break;
-    //        }
-    //        default:
-    //            break;
-    //        }
+    S2DataTypes::S2ConfigType buffer;
+    const auto &confList = S2::configV;
+
+    std::transform(confList.begin(), confList.end(), std::back_inserter(buffer),
+        [](const auto &record) -> S2DataTypes::DataRec { return record.serialize(); });
+    S2::tester(buffer);
+
+    buffer.push_back({ S2DataTypes::dummyElement, 0, nullptr });
+    BaseInterface::iface()->writeS2File(DataTypes::Config, &buffer);
+}
+
+void AbstractConfDialog::confReceived(const QList<DataTypes::DataRecV> &list)
+{
+    //  S2::configV.clear();
+    //   const auto &configV = &S2::configV;
+    S2::configV = list;
+    Fill();
+    // std::swap(list,configV);
+    // std::swap(S2::configV,list);
 }
 
 void AbstractConfDialog::confParametersListReceived(const DataTypes::ConfParametersListStruct &cfpl)
 {
     const auto &config = &S2::config;
+    S2::configV.clear();
+    const auto &configV = &S2::configV;
     for (const auto &cfp : cfpl)
     {
         S2::findElemAndWriteIt(config, cfp);
     }
+    std::transform(config->begin(), config->end(), std::back_inserter(S2::configV),
+        [](const auto &oldRec) -> DataTypes::DataRecV { return DataTypes::DataRecV(oldRec); });
+    // std::for_each(configV->cbegin(), configV->cend(), [](auto &value) { value.printer(); });
     Fill();
+    //    qDebug() << std::equal(config->cbegin(), config->cend(), configV->cbegin(), configV->cend(),
+    //        [](const S2DataTypes::DataRec &oldRec, const S2DataTypes::DataRecV &newRec) {
+    //            bool status = true;
+    //            status = S2DataTypes::is_same(oldRec, newRec.serialize());
+    //            if (!status)
+    //                qDebug() << status;
+    //            return status;
+    //        });
+    for (auto i = 0; i != configV->size() && i != config->size(); ++i)
+    {
+        const auto oldRec = config->at(i);
+        const auto newRec = configV->at(i).serialize();
+        if (!S2DataTypes::is_same(oldRec, newRec))
+            qDebug() << oldRec.id << oldRec.numByte;
+    }
 }
-
-// void AbstractConfDialog::confParameterReceived(const DataTypes::ConfParameterStruct &cfp)
-//{
-//    // S2::findElemAndWriteIt(S2::config, cfp);
-//}
-
-// bool AbstractConfDialog::WriteCheckPassword()
-//{
-//    KeyPressDialog dlg; // = new KeyPressDialog;
-//    return dlg.CheckPassword("121941");
-
-//    ok = false;
-//    StdFunc::ClearCancel();
-//    QEventLoop PasswordLoop;
-//    KeyPressDialog *dlg = new KeyPressDialog("Введите пароль\nПодтверждение: клавиша Enter\nОтмена: клавиша Esc");
-//    connect(dlg, &KeyPressDialog::Finished, this, &AbstractConfDialog::WritePasswordCheck);
-//    connect(this, &AbstractConfDialog::WritePasswordChecked, &PasswordLoop, &QEventLoop::quit);
-//    dlg->show();
-//    PasswordLoop.exec();
-//    if (StdFunc::IsCancelled())
-//        return Error::Msg::GeneralError;
-//    if (!ok)
-//    {
-//        QMessageBox::critical(this, "Неправильно", "Пароль введён неверно");
-//        return Error::Msg::GeneralError;
-//    }
-//    return Error::Msg::NoError;
-//}
-
-// void AbstractConfDialog::WritePasswordCheck(QString psw)
-//{
-//    if (psw == "121941")
-//        ok = true;
-//    else
-//        ok = false;
-//    emit WritePasswordChecked();
-//}
 
 void AbstractConfDialog::SaveConfToFile()
 {
@@ -198,12 +133,11 @@ void AbstractConfDialog::LoadConfFromFile()
         qCritical("Ошибка при загрузке файла конфигурации");
         return;
     }
-    if (S2::RestoreDataMem(&(ba.data()[0]), ba.size(), &S2::config) != Error::Msg::NoError)
+    if (!S2::RestoreDataMem(&(ba.data()[0]), ba.size(), &S2::config))
     {
         qCritical("Ошибка при разборе файла конфигурации");
         return;
     }
-    //    emit NewConfToBeLoaded();
     Fill();
     QMessageBox::information(this, "Успешно", "Загрузка прошла успешно!");
 }
@@ -328,30 +262,3 @@ void AbstractConfDialog::uponInterfaceSetting()
     SetupUI();
     PrereadConf();
 }
-
-void AbstractConfDialog::WriteConfMessageOk(const DataTypes::GeneralResponseStruct &rsp)
-{
-    if (rsp.type == DataTypes::GeneralResponseTypes::Ok)
-        QMessageBox::information(this, "Внимание", "Запись конфигурации и переход прошли успешно!");
-}
-
-// void AbstractConfDialog::update()
-//{
-//    if (m_updatesEnabled)
-//    {
-//        switch (Board::GetInstance().interfaceType())
-//        {
-//        case Board::InterfaceType::USB:
-//            USBUpdate();
-//            break;
-//        case Board::InterfaceType::Ethernet:
-//            ETHUpdate();
-//            break;
-//        case Board::InterfaceType::RS485:
-//            MBSUpdate();
-//            break;
-//        default:
-//            break;
-//        }
-//    }
-//}

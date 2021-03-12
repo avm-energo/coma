@@ -12,6 +12,7 @@ SUBDIRS = \
             widgets \
             gen \
             tune \
+            ctti \
             qcustomplot \
             avtuk \
             tests \

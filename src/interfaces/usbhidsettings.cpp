@@ -36,7 +36,7 @@ bool UsbHidSettings::hasPartialMatch(const QString &str)
         QRegularExpressionMatch match = i.next();
         buffer = match.captured(0);
         const auto pair = buffer.split('_');
-        bool ok;
+        bool ok = false;
         if (pair.first() == "PID")
         {
             quint16 pid = pair.at(1).toUShort(&ok, 16);

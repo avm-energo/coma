@@ -53,7 +53,7 @@ public:
     virtual void reqBSI() = 0;
     virtual void reqFile(quint32, bool isConfigFile = false) = 0;
     virtual void writeFile(quint32, const QByteArray &) = 0;
-    void writeS2File(DataTypes::FilesEnum, S2DataTypes::S2ConfigType *);
+    void writeS2File(DataTypes::FilesEnum number, S2DataTypes::S2ConfigType *file);
     void writeConfigFile();
     virtual void reqTime() = 0;
     virtual void writeTime(quint32) = 0;
@@ -82,6 +82,7 @@ public:
     Error::Msg writeBlockSync(quint32 blocknum, DataTypes::DataBlockTypes blocktype, void *block, quint32 blocksize);
     Error::Msg writeConfFileSync();
     Error::Msg writeFileSync(int filenum, QByteArray &ba);
+    Error::Msg writeS2FileSync(DataTypes::FilesEnum number, S2DataTypes::S2ConfigType *file);
     Error::Msg readS2FileSync(quint32 filenum);
     Error::Msg readFileSync(quint32 filenum, QByteArray &ba);
 

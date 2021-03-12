@@ -7,8 +7,6 @@
 #include "../../gen/report.h"
 #include "../../widgets/udialog.h"
 #include "../generaltunedialog.h"
-//#include "../iec104/iec104.h"
-//#include "tunekiv.h"
 #include "tunekivadc.h"
 #include "tunekivcheck.h"
 #include "tunekivr.h"
