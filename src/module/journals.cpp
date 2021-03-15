@@ -1,6 +1,6 @@
 #include "journals.h"
 
-#include "../config/config.h"
+//#include "../config/config.h"
 #include "../gen/board.h"
 #include "../gen/error.h"
 #include "../gen/files.h"

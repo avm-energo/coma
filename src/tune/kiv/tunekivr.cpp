@@ -8,9 +8,9 @@
 #include <QMessageBox>
 #include <QVBoxLayout>
 
-TuneKIVR::TuneKIVR(int tuneStep, ConfigKIV *ckiv, QWidget *parent) : AbstractTuneDialog(tuneStep, parent)
+TuneKIVR::TuneKIVR(int tuneStep, QWidget *parent) : AbstractTuneDialog(tuneStep, parent)
 {
-    CKIV = ckiv;
+    // CKIV = ckiv;
     m_bac = new Bac;
     m_bda = new Bda;
     SetBac(m_bac);

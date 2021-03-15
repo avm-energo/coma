@@ -2,6 +2,7 @@
 
 #include "../../gen/board.h"
 #include "../../gen/colors.h"
+#include "../../gen/s2.h"
 #include "../../gen/stdfunc.h"
 #include "../../widgets/waitwidget.h"
 #include "../../widgets/wd_func.h"
@@ -12,11 +13,11 @@
 #include <QMessageBox>
 #include <QVBoxLayout>
 
-Tune84Temp60::Tune84Temp60(int tuneStep, ConfigKIV *ckiv, QWidget *parent) : AbstractTuneDialog(tuneStep, parent)
+Tune84Temp60::Tune84Temp60(int tuneStep, /*ConfigKIV *ckiv,*/ QWidget *parent) : AbstractTuneDialog(tuneStep, parent)
 {
     //    m_tuneStep = 2;
     //    TKIV = tkiv;
-    CKIV = ckiv;
+    // CKIV = ckiv;
     m_bac = new Bac;
     m_bdain = new BdaIn;
     m_bd0 = new Bd0;
@@ -78,8 +79,9 @@ void Tune84Temp60::setTuneFunctions()
 
 Error::Msg Tune84Temp60::setNewConfAndTune()
 {
-    CKIV->Bci_block.C_pasp[0] = CKIV->Bci_block.C_pasp[1] = CKIV->Bci_block.C_pasp[2] = 2250;
-    CKIV->Bci_block.Unom1 = 220;
+    S2::setRecordValue({ BciNumber::C_Pasp_ID, DataTypes::FLOAT_3t({ 2250, 2250, 2250 }) });
+    S2::setRecordValue({ BciNumber::Unom1, float(220) });
+
     if (BaseInterface::iface()->writeConfFileSync() != Error::Msg::NoError)
         return Error::Msg::GeneralError;
     for (int i = 0; i < 6; ++i)

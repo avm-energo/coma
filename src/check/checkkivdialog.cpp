@@ -1,6 +1,6 @@
 #include "checkkivdialog.h"
 
-#include "../config/config.h"
+//#include "../config/config.h"
 #include "../gen/datamanager.h"
 #include "../gen/error.h"
 #include "../widgets/etabwidget.h"

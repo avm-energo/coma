@@ -1,7 +1,6 @@
 #ifndef TUNEKIVTEMP60_H
 #define TUNEKIVTEMP60_H
 
-#include "../../config/configkiv.h"
 #include "../../datablocks/bd0.h"
 #include "../../datablocks/kiv/bac.h"
 #include "../../datablocks/kiv/bdain.h"
@@ -32,8 +31,6 @@ private:
         float *parameter;
     };
 
-    //    TuneKIV *TKIV;
-    // ConfigKIV *CKIV;
     Bac *m_bac;
     BdaIn *m_bdain;
     Bd0 *m_bd0;

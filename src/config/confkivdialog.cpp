@@ -1,5 +1,6 @@
 #include "confkivdialog.h"
 
+#include "../config/configkiv.h"
 #include "../gen/board.h"
 #include "../gen/error.h"
 #include "../gen/s2.h"

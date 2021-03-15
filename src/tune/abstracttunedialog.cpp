@@ -1,6 +1,5 @@
 #include "abstracttunedialog.h"
 
-#include "../config/configkiv.h"
 #include "../dialogs/keypressdialog.h"
 #include "../gen/board.h"
 #include "../gen/datatypes.h"

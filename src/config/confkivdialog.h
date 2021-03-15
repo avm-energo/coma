@@ -1,11 +1,11 @@
 #ifndef CONFDIALOGKIV_H
 #define CONFDIALOGKIV_H
 
-#include "../config/configkiv.h"
 #include "abstractconfdialog.h"
 
 #include <QLabel>
 
+class ConfigKIV;
 class ConfKIVDialog : public AbstractConfDialog
 {
     Q_OBJECT

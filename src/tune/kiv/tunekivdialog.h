@@ -1,9 +1,6 @@
 #ifndef TUNEKIVDIALOG_H
 #define TUNEKIVDIALOG_H
 
-//#include "../../check/checkkiv.h"
-#include "../../config/config.h"
-#include "../../config/configkiv.h"
 #include "../../gen/report.h"
 #include "../../widgets/udialog.h"
 #include "../generaltunedialog.h"
@@ -52,7 +49,7 @@ class TuneKIVDialog : public GeneralTuneDialog
 {
     Q_OBJECT
 public:
-    explicit TuneKIVDialog(ConfigKIV *ckiv, QWidget *parent = nullptr);
+    explicit TuneKIVDialog(QWidget *parent = nullptr);
 
     // signals:
     //    void Send();
@@ -60,9 +57,6 @@ public:
 public slots:
 
 private:
-    //    AVM_KIV::Bci m_Bci_block_work, m_Bci_block_temporary;
-    //    TuneKIV *TKIV;
-    ConfigKIV *CKIV;
     TuneKIVCheck *TKIVCheckDialog;
     TuneKIVADC *TKIVADCDialog;
     TuneKIVR *TKIVRDialog;
