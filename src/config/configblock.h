@@ -96,7 +96,12 @@ protected:
     /// Update ConfigBlock or its children
     /// Config block internally select appropriate
     ///  widget by key and set its value to value;
-    template <typename T, std::enable_if_t<DataTypes::DataRecV::true_type<T>::value, bool> = true>
+    template <typename T
+#if (_MSC_VER > 1924)
+        ,
+        std::enable_if_t<DataTypes::DataRecV::true_type<T>::value, bool> = true
+#endif
+        >
     void update(const unsigned key, const T &value)
     {
         if constexpr (std::is_container<T>())
@@ -109,7 +114,12 @@ protected:
             selfUpdate(key, value);
     }
     /// Self update current ConfigBlock
-    template <typename T, std::enable_if_t<DataTypes::DataRecV::true_type<T>::value, bool> = true>
+    template <typename T
+#if (_MSC_VER > 1924)
+        ,
+        std::enable_if_t<DataTypes::DataRecV::true_type<T>::value, bool> = true
+#endif
+        >
     void selfUpdate(const unsigned key, const T &value)
     {
         auto label = findChild<QLabel *>(QString::number(key), Qt::FindDirectChildrenOnly);

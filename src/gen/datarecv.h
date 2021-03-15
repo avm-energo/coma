@@ -49,12 +49,24 @@ public:
     {
         static constexpr bool value = std::is_variant_alternative<T, valueType>();
     };
-    template <typename T, std::enable_if_t<true_type<T>::value, bool> = true> static void addValue(int id)
+    template <typename T
+#if (_MSC_VER > 1924)
+        ,
+        std::enable_if_t<true_type<T>::value, bool> = true
+#endif
+        >
+    static void addValue(int id)
     {
         map.insert({ id, ctti::unnamed_type_id<T>() });
     }
 
-    template <typename T, std::enable_if_t<true_type<T>::value, bool> = true> T value() const
+    template <typename T
+#if (_MSC_VER > 1924)
+        ,
+        std::enable_if_t<true_type<T>::value, bool> = true
+#endif
+        >
+    T value() const
     {
         assert(std::holds_alternative<T>(data) && "Requested wrong type");
         if (std::holds_alternative<T>(data))
