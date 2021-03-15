@@ -4,7 +4,7 @@ QT       += core gui printsupport network serialport widgets concurrent testlib 
 QT.testlib.CONFIG -= console
 TARGET = AVM-Service
 VERSION = 2.1.2
-GIT_HASH = $$system(git rev-parse --short=8 HEAD)
+
 TEMPLATE = app
 
 RC_ICONS = ../../coma.ico
@@ -63,6 +63,7 @@ contains(QT_ARCH, x86_64) {
 
 LIBRARIES += check \
     config \
+    comaversion \
     datablock \
     dialogs \
     interfaces \

@@ -31,9 +31,12 @@ void DebugComa::PrepareDialogs()
 
 void DebugComa::getAbout()
 {
-
     AboutWidget *w = new AboutWidget;
-    w->prependLine(QString(PROGNAME) + " version " + QString(COMAVERSION) + "-" + QString(COMAHASH));
+    QFile fileHelper(":/git/version.txt");
+    QString gitCommit {};
+    if (fileHelper.open(QIODevice::ReadOnly))
+        gitCommit = fileHelper.readAll();
+    w->prependLine(QString(PROGNAME) + " version " + QString(COMAVERSION) + "-" + QString(gitCommit));
     w->setupUI();
     w->show();
 }
