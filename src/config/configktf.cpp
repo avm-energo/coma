@@ -21,8 +21,8 @@ ConfigKTF::ConfigKTF()
     S2::config.append({ BciNumber::Imin, sizeof(Bci_block.Imin), &Bci_block.Imin });
     S2::config.append({ BciNumber::T_Data_Rec, sizeof(Bci_block.T_Data_Rec), &Bci_block.T_Data_Rec });
     S2::config.append({ BciNumber::U2nom, sizeof(Bci_block.U2nom), &Bci_block.U2nom });
-    S2::config.append({ BciNumber::ITT1nom_KTF, sizeof(Bci_block.ITT1nom), &Bci_block.ITT1nom });
-    S2::config.append({ BciNumber::ITT2nom_KTF, sizeof(Bci_block.ITT2nom), &Bci_block.ITT2nom });
+    S2::config.append({ BciNumber::ITT1nom_KTF_KDV, sizeof(Bci_block.ITT1nom), &Bci_block.ITT1nom });
+    S2::config.append({ BciNumber::ITT2nom_KTF_KDV, sizeof(Bci_block.ITT2nom), &Bci_block.ITT2nom });
     S2::config.append({ BciNumber::Cool_type, sizeof(Bci_block.Cool_type), &Bci_block.Cool_type });
     S2::config.append({ BciNumber::W_mat, sizeof(Bci_block.W_mat), &Bci_block.W_mat });
     S2::config.append({ BciNumber::TNNTdop, sizeof(Bci_block.TNNTdop), &Bci_block.TNNTdop });

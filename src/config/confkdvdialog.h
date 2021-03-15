@@ -11,34 +11,31 @@ class ConfKDVDialog : public AbstractConfDialog
     Q_OBJECT
 public:
     explicit ConfKDVDialog(ConfigKDV *ckdv, QWidget *parent = nullptr);
+    ~ConfKDVDialog();
 
 private:
-    ConfigKDV *CKDV;
-    //    ConfDialog *Conf;
-    //    ConfKxxDialog *ConfKxx;
-    //    Config *ConfigMain;
-
     bool Variable;
-    //    QTimer *timerRead;
 
     void Fill() override;
     void FillBack() override;
     void SetupUI() override;
     void CheckConf() override;
-    //    void setConnections() override;
 
+protected:
     QWidget *analogWidget();
+    QWidget *setWidget();
+    QWidget *alarmWidget();
+    QWidget *otherWidget();
+    virtual QWidget *connectionWidget();
 
-public slots:
-    //    void Set104(double);
-    //    void SetCType(int);
+    void FillKdv();
+    void FillBackKdv();
+
+    ConfigKDV *ConfKDV;
 
 private slots:
+
     void SetDefConf() override;
-    //    void Start_Timer();
-    //    void Stop_Timer();
-    //    void Write_PCDate();
-    //    void Write_Date();
 };
 
 #endif // CONFIGDIALOGKDV_H

@@ -129,6 +129,8 @@ QWidget *ConfKTFDialog::transformerWidget()
     gridlyout->setColumnStretch(2, 50);
     int row = 0;
     QGroupBox *gb = new QGroupBox();
+    font.setFamily("Times");
+    font.setPointSize(11);
     gb->setFont(font);
 
     QLabel *lbl = new QLabel("Вид охлаждения: ");
@@ -171,6 +173,8 @@ QWidget *ConfKTFDialog::alarmWidget()
     gridlyout->setColumnStretch(2, 50);
     int row = 0;
     QGroupBox *gb = new QGroupBox();
+    font.setFamily("Times");
+    font.setPointSize(11);
     gb->setFont(font);
 
     gridlyout->addWidget(WDFunc::NewLBL2(this, "Предельно допустимая температура ННТ в°С:"), row, 1, 1, 1);
@@ -215,6 +219,8 @@ QWidget *ConfKTFDialog::ocsillogramWidget()
     gridlyout->setColumnStretch(2, 50);
     int row = 0;
     QGroupBox *gb = new QGroupBox();
+    font.setFamily("Times");
+    font.setPointSize(11);
     gb->setFont(font);
 
     gridlyout->addWidget(WDFunc::NewLBL2(this, "Разрешение запуска осциллограммы:"), row, 0, 1, 1);
