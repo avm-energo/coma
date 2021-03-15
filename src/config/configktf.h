@@ -1,38 +1,41 @@
 #ifndef CONFIGKTF_H
 #define CONFIGKTF_H
 
-#define DEF_NFILTR 100
-#define DEF_NHARMFILT 3
-#define DEF_DDOCS 7
-#define DEF_UNOM1KTF 35
-#define DEF_DUOSC 2
-#define DEF_DIOSC 2
-#define DEF_DUIMIN 0.5
-#define DEF_IMIN 0.2
-#define DEF_T_DATA_RECKTF 300
-#define DEF_U2NOM 100
-#define DEF_ITT1NOM 600
-#define DEF_ITT2NOM 5
-#define DEF_COOL_TYPE 0
-#define DEF_W_MAT 0
-#define DEF_TNNTDOP 105
-#define DEF_TNNTPRED 100
-#define DEF_TAMB_NOM 25
-#define DEF_DTNNT_NOM 70
-#define DEF_KDOB 0.1
-#define DEF_TAUWNOM 10
-#define DEF_UMAX 120
-#define DEF_IMAX 33
-#define DEF_IWNOM 300
-#define DEF_OSCPOINTS 32
-#define DEF_GTNNT 2
-#define DEF_GOVC 2
-#define DEF_TDATNUM 0
-
 #include "../gen/datatypes.h"
 #include "../module/modules.h"
 #include "config.h"
 #include "configkxx.h"
+
+namespace AVM_KTF
+{
+constexpr unsigned DEF_NFILTR = 100;
+constexpr unsigned DEF_NHARMFILT = 3;
+constexpr unsigned DEF_DDOCS = 7;
+constexpr unsigned DEF_UNOM1KTF = 35;
+constexpr unsigned DEF_DUOSC = 2;
+constexpr unsigned DEF_DIOSC = 2;
+constexpr float DEF_DUIMIN = 0.5;
+constexpr float DEF_IMIN = 0.2f;
+constexpr unsigned DEF_T_DATA_RECKTF = 300;
+constexpr unsigned DEF_U2NOM = 100;
+constexpr unsigned DEF_ITT1NOM = 600;
+constexpr unsigned DEF_ITT2NOM = 5;
+constexpr unsigned DEF_COOL_TYPE = 0;
+constexpr unsigned DEF_W_MAT = 0;
+constexpr unsigned DEF_TNNTDOP = 105;
+constexpr unsigned DEF_TNNTPRED = 100;
+constexpr unsigned DEF_TAMB_NOM = 25;
+constexpr unsigned DEF_DTNNT_NOM = 70;
+constexpr float DEF_KDOB = 0.1f;
+constexpr unsigned DEF_TAUWNOM = 10;
+constexpr unsigned DEF_UMAX = 120;
+constexpr unsigned DEF_IMAX = 33;
+constexpr unsigned DEF_IWNOM = 300;
+constexpr unsigned DEF_OSCPOINTS = 32;
+constexpr unsigned DEF_GTNNT = 2;
+constexpr unsigned DEF_GOVC = 2;
+constexpr unsigned DEF_TDATNUM = 0;
+}
 
 class ConfigKTF
 {

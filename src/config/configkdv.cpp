@@ -68,14 +68,14 @@ ConfigKDV::ConfigKDV()
 
 void ConfigKDV::SetDefConf()
 {
-
+    using namespace AVM_KDV;
     Bci_block.Eq_type = DEF_EQ_TYPE;
     Bci_block.Cool_type = DEF_COOL_TYPE;
     Bci_block.W_mat = DEF_W_MAT;
     Bci_block.NFiltr = DEF_NFILTR;
     Bci_block.NHarmFilt = DEF_NHARMFILT;
     Bci_block.DDosc = DEF_DDOCS;
-    Bci_block.Unom1 = static_cast<float>(DEF_UNOM1);
+    Bci_block.Unom1 = DEF_UNOM1;
     Bci_block.U2nom = DEF_U2NOM;
     Bci_block.ITT1nom = DEF_ITT1NOM;
     Bci_block.ITT2nom = DEF_ITT2NOM;
@@ -83,31 +83,31 @@ void ConfigKDV::SetDefConf()
     Bci_block.DUosc = DEF_DUOSC;
     Bci_block.DIosc = DEF_DIOSC;
     Bci_block.DUImin = DEF_DUIMIN;
-    Bci_block.Imin = static_cast<float>(DEF_IMIN);
+    Bci_block.Imin = DEF_IMIN;
     Bci_block.TNNTdop = DEF_TNNTDOP;
     Bci_block.TNNTpred = DEF_TNNTPRED;
     Bci_block.Tamb_nom = DEF_TAMB_NOM;
     Bci_block.dTNNTnom = DEF_DTNNT_NOM;
-    Bci_block.Kdob = static_cast<float>(DEF_KDOB);
+    Bci_block.Kdob = DEF_KDOB;
     Bci_block.TauWnom = DEF_TAUWNOM;
     Bci_block.Umax = DEF_UMAX;
     Bci_block.Imax = DEF_IMAX;
     Bci_block.GTnnt = DEF_GTNNT;
     Bci_block.GOvc = DEF_GOVC;
     Bci_block.Fnom = DEF_FNOM;
-    Bci_block.nom_slip = static_cast<float>(DEF_NOM_SLIP);
+    Bci_block.nom_slip = DEF_NOM_SLIP;
     Bci_block.UVmax = DEF_UVMAX;
-    Bci_block.Kvibr = static_cast<float>(DEF_KVIBR);
+    Bci_block.Kvibr = DEF_KVIBR;
     Bci_block.VibrA_pred = DEF_VIBRA_PRED;
     Bci_block.VibrV_pred = DEF_VIBRV_PRED;
     Bci_block.VibrD_pred = DEF_VIBRD_PRED;
-    Bci_block.VibrA_alarm = static_cast<float>(DEF_VIBRA_ALARM);
-    Bci_block.VibrV_alarm = static_cast<float>(DEF_VIBRV_ALARM);
+    Bci_block.VibrA_alarm = DEF_VIBRA_ALARM;
+    Bci_block.VibrV_alarm = DEF_VIBRV_ALARM;
     Bci_block.VibrD_alarm = DEF_VIBRD_ALARM;
-    Bci_block.VVibrA_pred = static_cast<float>(DEF_VVIBRA_PRED);
+    Bci_block.VVibrA_pred = DEF_VVIBRA_PRED;
     Bci_block.VVibrV_pred = DEF_VVIBRV_PRED;
     Bci_block.VVibrD_pred = DEF_VVIBRD_PRED;
-    Bci_block.VVibrA_alarm = static_cast<float>(DEF_VVIBRA_ALARM);
+    Bci_block.VVibrA_alarm = DEF_VVIBRA_ALARM;
     Bci_block.VVibrV_alarm = DEF_VVIBRV_ALARM;
     Bci_block.VVibrD_alarm = DEF_VVIBRD_ALARM;
     Bci_block.NumA = DEF_NUMA;
