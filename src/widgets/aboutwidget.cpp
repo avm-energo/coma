@@ -42,8 +42,12 @@ void AboutWidget::setupUI()
     QVBoxLayout *lyout = new QVBoxLayout;
 
     hlyout->addWidget(WDFunc::NewLBL2(this, "", "", new QPixmap("images/avm-energo.png")), 0);
-    for (const auto &str : m_lines)
-        lyout->addWidget(WDFunc::NewLBL2(this, str));
+    for (const auto &str : qAsConst(m_lines))
+    {
+        auto *label = WDFunc::NewLBL2(this, str);
+        label->setTextInteractionFlags(Qt::TextSelectableByMouse);
+        lyout->addWidget(label);
+    }
     hlyout->addLayout(lyout, 100);
     lyout = new QVBoxLayout;
     lyout->addLayout(hlyout);
