@@ -58,11 +58,11 @@ QWidget *ConfKDVDialog::analogWidget()
     QWidget *w = new QWidget;
     QVBoxLayout *lyout = new QVBoxLayout;
     QGridLayout *gridlyout = new QGridLayout;
-    QScrollArea *Analog_area = new QScrollArea;
+    QScrollArea *scrollArea = new QScrollArea;
     gridlyout->setAlignment(Qt::AlignVCenter);
 
-    Analog_area->setFrameShape(QFrame::NoFrame);
-    Analog_area->setWidgetResizable(true);
+    scrollArea->setFrameShape(QFrame::NoFrame);
+    scrollArea->setWidgetResizable(true);
 
     int row = 0;
     QGroupBox *gb = new QGroupBox("Аналоговые параметры");
@@ -166,9 +166,9 @@ QWidget *ConfKDVDialog::analogWidget()
     gb->setLayout(gridlyout);
     lyout->addWidget(gb);
     w->setLayout(lyout);
-    Analog_area->setWidget(w);
+    scrollArea->setWidget(w);
 
-    return Analog_area;
+    return scrollArea;
 }
 
 QWidget *ConfKDVDialog::setWidget()
@@ -277,8 +277,7 @@ QWidget *ConfKDVDialog::setWidget()
         WDFunc::NewLBL2(this, "Аварийная уставка по скорости роста СКЗ виброперемещения, мкм:"), row, 1, 1, 1);
     gridlyout->addWidget(WDFunc::NewSPB2(this, "VVibrD_alarm", 0, 10000, 1), row, 2, 1, 3);
 
-    lyout->addLayout(gridlyout);
-    gb->setLayout(lyout);
+    gb->setLayout(gridlyout);
     lyout->addWidget(gb);
 
     //.....................................................................
@@ -295,10 +294,11 @@ QWidget *ConfKDVDialog::setWidget()
     gridlyout->addWidget(WDFunc::NewSPB2(this, "GOvc", 0, 10000, 1), row, 2, 1, 3);
 
     gb->setLayout(gridlyout);
-    scrollArea->setWidget(w);
     lyout->addWidget(gb);
     w->setLayout(lyout);
-    return w;
+    scrollArea->setWidget(w);
+
+    return scrollArea;
 }
 
 QWidget *ConfKDVDialog::otherWidget()
@@ -450,16 +450,12 @@ void ConfKDVDialog::FillKdv()
     WDFunc::SetCBIndex(this, "W_mat", bool(S2::getRecord(BciNumber::W_mat).value<DWORD>()));
 
     WDFunc::SetChBData(this, "oscchb.0", S2::getRecord(BciNumber::DDOsc_ID).value<DWORD>() & 0x0001);
-    //  WDFunc::SetChBData(this, "oscchb.0", (ConfKDV->Bci_block.DDosc & 0x0001));
-    //    WDFunc::SetChBData(this, "oscchb.1", (KDV->Bci_block.DDosc & 0x0002));
+
     WDFunc::SetChBData(this, "oscchb.2", S2::getRecord(BciNumber::DDOsc_ID).value<DWORD>() & 0x0004);
-    // WDFunc::SetChBData(this, "oscchb.2", (ConfKDV->Bci_block.DDosc & 0x0004));
+
     WDFunc::SetSPBData(this, "NFiltr", S2::getRecord(BciNumber::NFiltr_ID).value<DWORD>());
     WDFunc::SetSPBData(this, "NHarmFilt", S2::getRecord(BciNumber::NHarmFilt_ID).value<DWORD>());
-    // WDFunc::SetSPBData(this, "NFiltr", ConfKDV->Bci_block.NFiltr);
-    // WDFunc::SetSPBData(this, "NHarmFilt", ConfKDV->Bci_block.NHarmFilt);
 
-    // WDFunc::SetSPBData(this, "DDOsc", CKDV->Bci_block.DDOsc);
     WDFunc::SetSPBData(this, "Unom1", S2::getRecord(BciNumber::Unom1).value<float>());
     WDFunc::SetSPBData(this, "U2nom", S2::getRecord(BciNumber::U2nom).value<float>());
     WDFunc::SetSPBData(this, "ITT1nom", S2::getRecord(BciNumber::ITT1nom_KTF_KDV).value<float>());
@@ -467,14 +463,6 @@ void ConfKDVDialog::FillKdv()
     WDFunc::SetSPBData(this, "Iwnom", S2::getRecord(BciNumber::Iwnom).value<float>());
     WDFunc::SetSPBData(this, "DUosc", S2::getRecord(BciNumber::DUosc).value<float>());
     WDFunc::SetSPBData(this, "DIosc", S2::getRecord(BciNumber::DIosc_ID).value<float>());
-
-    //    WDFunc::SetSPBData(this, "Unom1", ConfKDV->Bci_block.Unom1);
-    //    WDFunc::SetSPBData(this, "U2nom", ConfKDV->Bci_block.U2nom);
-    //    WDFunc::SetSPBData(this, "ITT1nom", ConfKDV->Bci_block.ITT1nom);
-    //    WDFunc::SetSPBData(this, "ITT2nom", ConfKDV->Bci_block.ITT2nom);
-    //    WDFunc::SetSPBData(this, "Iwnom", ConfKDV->Bci_block.Iwnom);
-    //    WDFunc::SetSPBData(this, "DUosc", ConfKDV->Bci_block.DUosc);
-    //    WDFunc::SetSPBData(this, "DIosc", ConfKDV->Bci_block.DIosc);
 
     WDFunc::SetSPBData(this, "DUImin", S2::getRecord(BciNumber::DUImin_ID).value<float>());
     WDFunc::SetSPBData(this, "Imin", S2::getRecord(BciNumber::Imin).value<float>());
@@ -486,16 +474,6 @@ void ConfKDVDialog::FillKdv()
     WDFunc::SetSPBData(this, "TauWnom", S2::getRecord(BciNumber::TauWnom).value<float>());
     WDFunc::SetSPBData(this, "Umax", S2::getRecord(BciNumber::Umaxm).value<float>());
 
-    //    WDFunc::SetSPBData(this, "DUImin", ConfKDV->Bci_block.DUImin);
-    //    WDFunc::SetSPBData(this, "Imin", ConfKDV->Bci_block.Imin);
-    //    WDFunc::SetSPBData(this, "TNNTdop", ConfKDV->Bci_block.TNNTdop);
-    //    WDFunc::SetSPBData(this, "TNNTpred", ConfKDV->Bci_block.TNNTpred);
-    //    WDFunc::SetSPBData(this, "Tamb_nom", ConfKDV->Bci_block.Tamb_nom);
-    //    WDFunc::SetSPBData(this, "dTNNTnom", ConfKDV->Bci_block.dTNNTnom);
-    //    WDFunc::SetSPBData(this, "Kdob", ConfKDV->Bci_block.Kdob);
-    //    WDFunc::SetSPBData(this, "TauWnom", ConfKDV->Bci_block.TauWnom);
-    //    WDFunc::SetSPBData(this, "Umax", ConfKDV->Bci_block.Umax);
-
     WDFunc::SetSPBData(this, "Imax", S2::getRecord(BciNumber::Imaxm).value<float>());
     WDFunc::SetSPBData(this, "GTnnt", S2::getRecord(BciNumber::GTnnt).value<float>());
     WDFunc::SetSPBData(this, "GOvc", S2::getRecord(BciNumber::GOvc).value<float>());
@@ -505,16 +483,6 @@ void ConfKDVDialog::FillKdv()
     WDFunc::SetSPBData(this, "Kvibr", S2::getRecord(BciNumber::Kvibr).value<float>());
     WDFunc::SetSPBData(this, "VibrA_pred", S2::getRecord(BciNumber::VibrA_pred).value<float>());
     WDFunc::SetSPBData(this, "VibrV_pred", S2::getRecord(BciNumber::VibrV_pred).value<float>());
-
-    //    WDFunc::SetSPBData(this, "Imax", ConfKDV->Bci_block.Imax);
-    //    WDFunc::SetSPBData(this, "GTnnt", ConfKDV->Bci_block.GTnnt);
-    //    WDFunc::SetSPBData(this, "GOvc", ConfKDV->Bci_block.GOvc);
-    //    WDFunc::SetSPBData(this, "Fnom", ConfKDV->Bci_block.Fnom);
-    //    WDFunc::SetSPBData(this, "nom_slip", ConfKDV->Bci_block.nom_slip);
-    //    WDFunc::SetSPBData(this, "UVmax", ConfKDV->Bci_block.UVmax);
-    //    WDFunc::SetSPBData(this, "Kvibr", ConfKDV->Bci_block.Kvibr);
-    //    WDFunc::SetSPBData(this, "VibrA_pred", ConfKDV->Bci_block.VibrA_pred);
-    //    WDFunc::SetSPBData(this, "VibrV_pred", ConfKDV->Bci_block.VibrV_pred);
 
     WDFunc::SetSPBData(this, "VibrD_pred", S2::getRecord(BciNumber::VibrD_pred).value<float>());
     WDFunc::SetSPBData(this, "VibrA_alarm", S2::getRecord(BciNumber::VibrA_alarm).value<float>());
@@ -527,17 +495,6 @@ void ConfKDVDialog::FillKdv()
     WDFunc::SetSPBData(this, "VVibrV_alarm", S2::getRecord(BciNumber::VVibrA_alarm).value<float>());
     WDFunc::SetSPBData(this, "VVibrD_alarm", S2::getRecord(BciNumber::VVibrD_alarm).value<float>());
 
-    //    WDFunc::SetSPBData(this, "VibrD_pred", ConfKDV->Bci_block.VibrD_pred);
-    //    WDFunc::SetSPBData(this, "VibrA_alarm", ConfKDV->Bci_block.VibrA_alarm);
-    //    WDFunc::SetSPBData(this, "VibrV_alarm", ConfKDV->Bci_block.VibrV_alarm);
-    //    WDFunc::SetSPBData(this, "VibrD_alarm", ConfKDV->Bci_block.VibrD_alarm);
-    //    WDFunc::SetSPBData(this, "VVibrA_pred", ConfKDV->Bci_block.VVibrA_pred);
-    //    WDFunc::SetSPBData(this, "VVibrV_pred", ConfKDV->Bci_block.VVibrV_pred);
-    //    WDFunc::SetSPBData(this, "VVibrD_pred", ConfKDV->Bci_block.VVibrD_pred);
-    //    WDFunc::SetSPBData(this, "VVibrA_alarm", ConfKDV->Bci_block.VVibrA_alarm);
-    //    WDFunc::SetSPBData(this, "VVibrV_alarm", ConfKDV->Bci_block.VVibrV_alarm);
-    //    WDFunc::SetSPBData(this, "VVibrD_alarm", ConfKDV->Bci_block.VVibrD_alarm);
-
     WDFunc::SetSPBData(this, "NumA", S2::getRecord(BciNumber::NumA_KDV).value<DWORD>());
     WDFunc::SetSPBData(this, "Poles", S2::getRecord(BciNumber::Poles).value<DWORD>());
     WDFunc::SetSPBData(this, "Stator_Slotes", S2::getRecord(BciNumber::Stator_Slotes).value<DWORD>());
@@ -547,16 +504,6 @@ void ConfKDVDialog::FillKdv()
     WDFunc::SetSPBData(this, "T_Data_Rec", S2::getRecord(BciNumber::T_Data_Rec).value<DWORD>());
     WDFunc::SetSPBData(this, "OscPoints", S2::getRecord(BciNumber::OscPoints).value<DWORD>());
     WDFunc::SetSPBData(this, "TdatNum", S2::getRecord(BciNumber::TdatNum).value<DWORD>());
-
-    //    WDFunc::SetSPBData(this, "NumA", ConfKDV->Bci_block.NumA);
-    //    WDFunc::SetSPBData(this, "Poles", ConfKDV->Bci_block.Poles);
-    //    WDFunc::SetSPBData(this, "Stator_Slotes", ConfKDV->Bci_block.Stator_Slotes);
-    //    WDFunc::SetSPBData(this, "Rotor_bars", ConfKDV->Bci_block.Rotor_bars);
-    //    WDFunc::SetSPBData(this, "VibroType", ConfKDV->Bci_block.VibroType);
-    //    WDFunc::SetSPBData(this, "Sensors", ConfKDV->Bci_block.Sensors);
-    //    WDFunc::SetSPBData(this, "T_Data_Rec", ConfKDV->Bci_block.T_Data_Rec);
-    //    WDFunc::SetSPBData(this, "OscPoints", ConfKDV->Bci_block.OscPoints);
-    //    WDFunc::SetSPBData(this, "TdatNum", ConfKDV->Bci_block.TdatNum);
 
     //.........................................................
     //    ConfKxx->Fill();
