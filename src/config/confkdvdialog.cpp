@@ -307,12 +307,13 @@ QWidget *ConfKDVDialog::otherWidget()
     QVBoxLayout *lyout = new QVBoxLayout;
     QGridLayout *gridlyout = new QGridLayout;
     QHBoxLayout *hlyout = new QHBoxLayout;
+    QScrollArea *scrollArea = new QScrollArea;
+    scrollArea->setFrameShape(QFrame::NoFrame);
+    scrollArea->setWidgetResizable(true);
     gridlyout->setAlignment(Qt::AlignVCenter);
 
     gridlyout->setColumnStretch(2, 50);
     int row = 0;
-
-    QGroupBox *gb = new QGroupBox("Параметры записи");
 
     row = 0;
     gridlyout->addWidget(
@@ -338,14 +339,12 @@ QWidget *ConfKDVDialog::otherWidget()
     gridlyout->addWidget(
         WDFunc::NewLBL2(this, "Количество точек осциллограммы на период основной частоты:"), row, 1, 1, 1);
     gridlyout->addWidget(WDFunc::NewSPB2(this, "OscPoints", 0, 10000, 0), row, 2, 1, 3);
-
-    lyout->addLayout(gridlyout);
-    gb->setLayout(lyout);
+    QGroupBox *gb = new QGroupBox("Параметры записи");
+    gb->setLayout(gridlyout);
     lyout->addWidget(gb);
 
     gb = new QGroupBox("Параметры двигателя");
 
-    lyout = new QVBoxLayout;
     gridlyout = new QGridLayout;
 
     row = 0;
@@ -379,7 +378,8 @@ QWidget *ConfKDVDialog::otherWidget()
     gb->setLayout(gridlyout);
     lyout->addWidget(gb);
     w->setLayout(lyout);
-    return w;
+    scrollArea->setWidget(w);
+    return scrollArea;
 }
 
 QWidget *ConfKDVDialog::connectionWidget()
@@ -429,24 +429,14 @@ void ConfKDVDialog::FillBack()
 
 void ConfKDVDialog::FillKdv()
 {
-    //    Conf->Fill();
 
-    int cbidx;
-    int cbidx1;
     using namespace DataTypes;
 
-    //.........................................................
-    cbidx = (ConfKDV->Bci_block.Eq_type & 0x02) ? 2 : ((ConfKDV->Bci_block.Eq_type & 0x01) ? 1 : 0);
-    std::bitset<sizeof(ConfKDV->Bci_block.Eq_type) * 8> test(ConfKDV->Bci_block.Eq_type);
-    cbidx1 = test.count();
-    //  WDFunc::SetCBIndex(this, "Eq_type", cbidx);
     WDFunc::SetCBIndex(this, nameByValue(BciNumber::Eq_type), S2::getRecord(BciNumber::Eq_type).value<DWORD>());
-    cbidx = bool(ConfKDV->Bci_block.Cool_type);
-    //  WDFunc::SetCBIndex(this, "Cool_type", cbidx);
+
     WDFunc::SetCBIndex(
         this, nameByValue(BciNumber::Cool_type), bool(S2::getRecord(BciNumber::Cool_type).value<DWORD>()));
-    cbidx = bool(ConfKDV->Bci_block.W_mat);
-    //  WDFunc::SetCBIndex(this, "W_mat", cbidx);
+
     WDFunc::SetCBIndex(this, "W_mat", bool(S2::getRecord(BciNumber::W_mat).value<DWORD>()));
 
     WDFunc::SetChBData(this, "oscchb.0", S2::getRecord(BciNumber::DDOsc_ID).value<DWORD>() & 0x0001);
