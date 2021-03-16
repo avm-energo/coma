@@ -1,7 +1,6 @@
 #ifndef TUNE84ADC_H
 #define TUNE84ADC_H
 
-#include "../../config/configkiv.h"
 #include "../../datablocks/bd0.h"
 #include "../../datablocks/kiv/bac.h"
 #include "../../datablocks/kiv/bda.h"
@@ -14,10 +13,9 @@ class Tune84ADC : public AbstractTuneDialog
 {
     Q_OBJECT
 public:
-    Tune84ADC(int tuneStep, ConfigKIV *ckiv, QWidget *parent = nullptr);
+    Tune84ADC(int tuneStep, QWidget *parent = nullptr);
 
 private:
-    ConfigKIV *CKIV;
     Bac *m_bac;
     Bda *m_bda;
     BdaIn *m_bdain;

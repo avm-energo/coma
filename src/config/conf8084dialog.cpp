@@ -1,5 +1,7 @@
 #include "conf8084dialog.h"
 
+#include "configkiv.h"
+
 #include <QGroupBox>
 #include <QTabWidget>
 #include <QVBoxLayout>

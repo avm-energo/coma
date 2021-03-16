@@ -1,7 +1,6 @@
 #ifndef TUNEKIVMAIN_H
 #define TUNEKIVMAIN_H
 
-#include "../../config/configkiv.h"
 #include "../../datablocks/kiv/bac.h"
 #include "../../datablocks/kiv/bda.h"
 #include "../../datablocks/kiv/bdain.h"
@@ -13,10 +12,9 @@ class TuneKIVR : public AbstractTuneDialog
 {
     Q_OBJECT
 public:
-    TuneKIVR(int tuneStep, ConfigKIV *ckiv, QWidget *parent = nullptr);
+    TuneKIVR(int tuneStep, QWidget *parent = nullptr);
 
 private:
-    ConfigKIV *CKIV;
     Bac *m_bac;
     Bda *m_bda;
     double m_pt100;

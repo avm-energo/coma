@@ -2,19 +2,20 @@
 #define WD_FUNC
 
 #include "ecombobox.h"
-#include "edoublespinbox.h"
 #include "etableview.h"
-#include "passwordlineedit.h"
+//#include "passwordlineedit.h"
 
 #include <QCheckBox>
+#include <QDebug>
+#include <QDoubleSpinBox>
 #include <QLabel>
 #include <QLineEdit>
-#include <QMainWindow>
 #include <QPushButton>
 #include <QRadioButton>
-#include <QStatusBar>
-#include <QWidget>
-
+class PasswordLineEdit;
+class QMainWindow;
+class QStatusBar;
+class QWidget;
 class WDFunc
 {
 public:
@@ -77,15 +78,19 @@ public:
     //    static QMetaObject::Connection CBConnect(
     //        QWidget *w, const QString &cbname, int cbconnecttype, const QObject *receiver, const char *method);
 
-    [[deprecated("Use instead second version with global style sheet")]] static EDoubleSpinBox *NewSPB(
+    [[deprecated("Use instead second version with global style sheet")]] static QDoubleSpinBox *NewSPB(
         QWidget *parent, const QString &spbname, double min, double max, int decimals, const QString &spbcolor = "");
 
-    static EDoubleSpinBox *NewSPB2(QWidget *parent, const QString &spbname, double min, double max, int decimals);
+    static QDoubleSpinBox *NewSPB2(QWidget *parent, const QString &spbname, double min, double max, int decimals);
+    //    static EDoubleSpinBox *NewSPB2(QWidget *parent, const unsigned value, double min, double max, int decimals)
+    //    {
+    //        return NewSPB2(parent, parent->metaObject()->className() + QString::number(value), min, max, decimals);
+    //    }
 
     static bool SetSPBData(QObject *w, const QString &spbname, const double &spbvalue);
     template <typename T> static bool SPBData(QObject *w, const QString &spbname, T &spbvalue)
     {
-        EDoubleSpinBox *spb = w->findChild<EDoubleSpinBox *>(spbname);
+        QDoubleSpinBox *spb = w->findChild<QDoubleSpinBox *>(spbname);
         if (spb == nullptr)
         {
             spbvalue = 0;
@@ -93,6 +98,16 @@ public:
         }
         spbvalue = spb->value();
         return true;
+    }
+    template <typename T> static T SPBData(QObject *w, const QString &spbname)
+    {
+        QDoubleSpinBox *spb = w->findChild<QDoubleSpinBox *>(spbname);
+        if (spb == nullptr)
+        {
+            qDebug() << "No spinbox " << spbname;
+            return 0;
+        }
+        return T(spb->value());
     }
     static bool SetLEColor(QWidget *w, const QString &lename, const QColor &color);
     [[deprecated("Use instead second version with global style sheet")]] static QLabel *NewLBL(QWidget *w,
@@ -112,15 +127,14 @@ public:
     static bool SetLBLColor(QWidget *w, const QString &lblname, const QString &lblcolor);
     static bool SetLBLText(QWidget *w, const QString &lblname, const QString &lbltext = "", bool enabled = true);
     static QString LBLText(QWidget *w, const QString &lblname);
-    [[deprecated("Use instead second version with global style sheet")]] static QRadioButton *NewRB(
-        QWidget *parent, const QString &rbtext, const QString &rbname, const QString &rbcolor = "");
+
     static QRadioButton *NewRB2(QWidget *parent, const QString &rbtext, const QString &rbname);
     static QString TVField(QWidget *w, const QString &tvname, int column, bool isid = false);
     static void TVAutoResize(QWidget *w, const QString &tvname);
-    [[deprecated("Use instead second version with global style sheet")]] static QCheckBox *NewChB(
-        QWidget *parent, const QString &chbname, const QString &chbtext, const QString &chbcolor = "");
+
     static QCheckBox *NewChB2(QWidget *parent, const QString &chbname, const QString &chbtext);
     static bool ChBData(QWidget *w, const QString &chbname, bool &data);
+    static bool ChBData(QWidget *w, const QString &chbname);
     template <typename T> static bool ChBData(QWidget *w, const QString &chbname, T &data)
     {
         QCheckBox *chb = w->findChild<QCheckBox *>(chbname);
@@ -132,6 +146,9 @@ public:
     static bool SetChBData(QWidget *w, const QString &chbname, bool data);
     static bool RBData(QWidget *w, const QString &rbname, bool &data);
     static bool SetRBData(QWidget *w, const QString &rbname, bool data);
+    static bool SetIPCtrlData(const QObject *w, const QString &name, const std::array<quint8, 4> &value);
+    static std::array<quint8, 4> IPCtrlData(const QObject *w, const QString &name);
+
     static void AddLabelAndLineedit(QLayout *lyout, QString caption, QString lename, bool enabled = false);
     static void AddLabelAndLineeditH(QLayout *lyout, QString caption, QString lename, bool enabled = false);
     static QWidget *NewLBLAndLE(QWidget *parent, QString caption, QString lename, bool enabled = false);
@@ -216,16 +233,7 @@ public:
 
 private:
     static QPushButton *NewPBCommon(QWidget *parent, const QString &pbname, const QString &text,
-        const QString &icon = "", const QString &pbtooltip = "")
-    {
-        QPushButton *pb = new QPushButton(parent);
-        pb->setObjectName(pbname);
-        if (!icon.isEmpty())
-            pb->setIcon(QIcon(icon));
-        pb->setText(text);
-        pb->setToolTip(pbtooltip);
-        return pb;
-    }
+        const QString &icon = "", const QString &pbtooltip = "");
 };
 
 #endif // WD_FUNC

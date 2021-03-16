@@ -98,6 +98,18 @@ public:
         return newList;
     }
 
+    // recursive function to count set bits
+    template <typename T> static int countSetBits(T N)
+    {
+        int count = 0;
+        for (int i = 0; i < sizeof(T) * 8; i++)
+        {
+            if (N & (1 << i))
+                count++;
+        }
+        return count;
+    }
+
 private:
     static QString HomeDir;       // рабочий каталог программы
     static QString SystemHomeDir; // системный каталог программы

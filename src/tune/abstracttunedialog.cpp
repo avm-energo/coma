@@ -1,6 +1,5 @@
 #include "abstracttunedialog.h"
 
-#include "../config/configkiv.h"
 #include "../dialogs/keypressdialog.h"
 #include "../gen/board.h"
 #include "../gen/datatypes.h"
@@ -365,7 +364,7 @@ Error::Msg AbstractTuneDialog::readTuneCoefs()
 // на будущее, если вдруг будем регулировать модуль по частям
 void AbstractTuneDialog::readTuneCoefsByBac(int bacnum)
 {
-    if (AbsBac.keys().contains(bacnum))
+    if (AbsBac.contains(bacnum))
         AbsBac[bacnum]->readAndUpdate();
 }
 

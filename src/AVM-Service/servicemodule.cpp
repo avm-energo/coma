@@ -6,6 +6,7 @@
 #include "../check/checkkivdialog.h"
 #include "../check/checkktfdialog.h"
 #include "../check/checkktfharmonicdialog.h"
+#include "../config/configkiv.h"
 #include "../config/confkdvdialog.h"
 #include "../config/confkivdialog.h"
 #include "../config/confktfdialog.h"

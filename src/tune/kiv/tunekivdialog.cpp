@@ -7,19 +7,19 @@
 #include "../../widgets/wd_func.h"
 #include "../tunesteps.h"
 
-TuneKIVDialog::TuneKIVDialog(ConfigKIV *ckiv, QWidget *parent) : GeneralTuneDialog(parent)
+TuneKIVDialog::TuneKIVDialog(QWidget *parent) : GeneralTuneDialog(parent)
 {
     m_calibrSteps = 6;
     //    TKIV = tkiv;
-    CKIV = ckiv;
+    // CKIV = ckiv;
     // ReportModel = new QStandardItemModel;
     // ViewModel = new QStandardItemModel;
     setAttribute(Qt::WA_DeleteOnClose);
-    TKIVADCDialog = new TuneKIVADC(KIVTS_ADC, CKIV, this);
-    TKIV20Dialog = new TuneKIVTemp60(KIVTS_20TUNING, CKIV, this);
-    TKIV60Dialog = new TuneKIVTemp60(KIVTS_60TUNING, CKIV, this);
+    TKIVADCDialog = new TuneKIVADC(KIVTS_ADC, /*CKIV,*/ this);
+    TKIV20Dialog = new TuneKIVTemp60(KIVTS_20TUNING, /*CKIV,*/ this);
+    TKIV60Dialog = new TuneKIVTemp60(KIVTS_60TUNING, /*CKIV, */ this);
     TKIVCheckDialog = new TuneKIVCheck(KIVTS_CHECKING, this);
-    TKIVRDialog = new TuneKIVR(KIVTS_PT100, CKIV, this);
+    TKIVRDialog = new TuneKIVR(KIVTS_PT100, /*CKIV,*/ this);
     SetupUI();
 }
 

@@ -9,6 +9,7 @@
 #include "../check/checkktfdialog.h"
 #include "../check/checkktfharmonicdialog.h"
 #include "../config/conf8084dialog.h"
+#include "../config/configkiv.h"
 #include "../config/confkdvdialog.h"
 #include "../config/confkivdialog.h"
 #include "../config/confktfdialog.h"
@@ -42,7 +43,7 @@ void TuneModule::createModule(Modules::Model model)
             if (board.interfaceType() == Board::InterfaceType::USB)
             {
 
-                addDialogToList(new TuneKIVDialog(CKIV), "Регулировка");
+                addDialogToList(new TuneKIVDialog /*(CKIV)*/, "Регулировка");
             }
         }
         CheckKIVDialog *cdkiv = new CheckKIVDialog;
@@ -105,7 +106,7 @@ void TuneModule::create(Modules::BaseBoard typeB, Modules::MezzanineBoard typeM)
             addDialogToList(new Conf8084Dialog(CKIV), "Конфигурирование", "conf1");
             if (board.interfaceType() == Board::InterfaceType::USB)
             {
-                addDialogToList(new Tune84Dialog(CKIV), "Регулировка");
+                addDialogToList(new Tune84Dialog /*(CKIV)*/, "Регулировка");
             }
         }
         CheckKIVDialog *cdkiv = new CheckKIVDialog;

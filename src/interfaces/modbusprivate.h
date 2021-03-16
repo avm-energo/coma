@@ -2,9 +2,9 @@
 #include "interfacesettings.h"
 
 #include <QObject>
-#define POLLINGINTERVAL 300 // polling cycle time
-#define SIGNALGROUPSNUM 7
-#define MAINSLEEPCYCLETIME 50
+//#define POLLINGINTERVAL 300 // polling cycle time
+//#define SIGNALGROUPSNUM 7
+//#define MAINSLEEPCYCLETIME 50
 
 namespace CommandsMBS
 {
@@ -17,10 +17,11 @@ enum CommandRegisters
 
 enum Commands : quint8
 {
+    MBS_READCOILS = 0x01,
+    MBS_INPUTSTATUS = 0x02,
     MBS_READHOLDINGREGISTERS = 0x03,
     MBS_READINPUTREGISTER = 0x04,
-    MBS_WRITEMULTIPLEREGISTERS = 0x10,
-    MBS_READCOILS = 0x01
+    MBS_WRITEMULTIPLEREGISTERS = 0x10
 };
 Q_ENUM_NS(Commands)
 
@@ -33,20 +34,50 @@ enum ModbusGroupsEnum
     SECONDBYTEQ = 4
 };
 
-enum TypeId : int
+enum TypeId : quint8
 /// 1 register is int16
 {
+    /// 1 register contains 16 bit uint (WORD)
+    Uint16 = 0,
+    /// 1 register contains 16 bit int
+    Int16 = 1,
     /// 1 register contains 1 bit
     Bool,
     /// 2 registers contain uint32 (bitstring)
     Uint32,
-    /// 2 registers contain float
-    Float,
+    /// 4 registers contain float
+    Float = 4,
     None,
 
     // Smth else
 };
 Q_ENUM_NS(TypeId)
+
+enum BaudRate : quint8
+{
+    Baud1200 = 0,
+    Baud2400 = 1,
+    Baud4800 = 2,
+    Baud9600 = 3,
+    Baud19200 = 4,
+    Baud38400 = 5,
+    Baud57600 = 6,
+    Baud115200 = 7
+};
+Q_ENUM_NS(BaudRate)
+
+enum Parity : quint8
+{
+    NoParity = 0,
+    EvenParity = 1,
+    OddParity = 2
+};
+
+enum StopBits : quint8
+{
+    OneStop = 0,
+    TwoStop = 1
+};
 
 struct CommandStruct
 {

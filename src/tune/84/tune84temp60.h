@@ -1,12 +1,10 @@
 #ifndef TUNE84TEMP60_H
 #define TUNE84TEMP60_H
 
-#include "../../config/configkiv.h"
-#include "../abstracttunedialog.h"
-//#include "tunekiv.h"
 #include "../../datablocks/bd0.h"
 #include "../../datablocks/kiv/bac.h"
 #include "../../datablocks/kiv/bdain.h"
+#include "../abstracttunedialog.h"
 
 #include <QWidget>
 
@@ -14,7 +12,7 @@ class Tune84Temp60 : public AbstractTuneDialog
 {
     Q_OBJECT
 public:
-    Tune84Temp60(int tuneStep, ConfigKIV *ckiv, QWidget *parent = nullptr);
+    Tune84Temp60(int tuneStep, QWidget *parent = nullptr);
 
 private:
     struct MidTuneStruct
@@ -33,8 +31,6 @@ private:
         float *parameter;
     };
 
-    //    TuneKIV *TKIV;
-    ConfigKIV *CKIV;
     Bac *m_bac;
     BdaIn *m_bdain;
     Bd0 *m_bd0;

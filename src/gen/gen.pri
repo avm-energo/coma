@@ -12,6 +12,8 @@ SOURCES += \
     $$PWD/pch.cpp \
     $$PWD/stdfunc.cpp \
     $$PWD/report.cpp \
+    $$PWD/datarecv.cpp \
+    $$PWD/xmlparser.cpp \
     $$PWD/timefunc.cpp
 
 HEADERS += \
@@ -30,7 +32,11 @@ HEADERS += \
     $$PWD/singleton.h \
     $$PWD/stdfunc.h \
     $$PWD/report.h \
+    $$PWD/datarecv.h \
+    $$PWD/s2helper.h \
+    $$PWD/xmlparser.h \
     $$PWD/timefunc.h
+
 
 
 

@@ -16,6 +16,7 @@ int main(int argc, char *argv[])
     Q_INIT_RESOURCE(styles);
     Q_INIT_RESOURCE(vectorIcons);
     Q_INIT_RESOURCE(settings);
+    Q_INIT_RESOURCE(helper);
     Logging::writeStart();
     qInstallMessageHandler(Logging::messageHandler);
     DebugComa w;

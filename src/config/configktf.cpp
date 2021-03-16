@@ -21,8 +21,8 @@ ConfigKTF::ConfigKTF()
     S2::config.append({ BciNumber::Imin, sizeof(Bci_block.Imin), &Bci_block.Imin });
     S2::config.append({ BciNumber::T_Data_Rec, sizeof(Bci_block.T_Data_Rec), &Bci_block.T_Data_Rec });
     S2::config.append({ BciNumber::U2nom, sizeof(Bci_block.U2nom), &Bci_block.U2nom });
-    S2::config.append({ BciNumber::ITT1nom_KTF, sizeof(Bci_block.ITT1nom), &Bci_block.ITT1nom });
-    S2::config.append({ BciNumber::ITT2nom_KTF, sizeof(Bci_block.ITT2nom), &Bci_block.ITT2nom });
+    S2::config.append({ BciNumber::ITT1nom_KTF_KDV, sizeof(Bci_block.ITT1nom), &Bci_block.ITT1nom });
+    S2::config.append({ BciNumber::ITT2nom_KTF_KDV, sizeof(Bci_block.ITT2nom), &Bci_block.ITT2nom });
     S2::config.append({ BciNumber::Cool_type, sizeof(Bci_block.Cool_type), &Bci_block.Cool_type });
     S2::config.append({ BciNumber::W_mat, sizeof(Bci_block.W_mat), &Bci_block.W_mat });
     S2::config.append({ BciNumber::TNNTdop, sizeof(Bci_block.TNNTdop), &Bci_block.TNNTdop });
@@ -55,7 +55,7 @@ ConfigKTF::~ConfigKTF()
 
 void ConfigKTF::SetDefConf()
 {
-
+    using namespace AVM_KTF;
     m_mainConfig->SetDefConf();
     m_KxxConfig->SetDefConf();
     Bci_block.NFiltr = DEF_NFILTR;
@@ -65,7 +65,7 @@ void ConfigKTF::SetDefConf()
     Bci_block.DUosc = DEF_DUOSC;
     Bci_block.DIosc = DEF_DIOSC;
     Bci_block.DUImin = DEF_DUIMIN;
-    Bci_block.Imin = static_cast<float>(DEF_IMIN);
+    Bci_block.Imin = DEF_IMIN;
     Bci_block.T_Data_Rec = DEF_T_DATA_RECKTF;
     Bci_block.U2nom = DEF_U2NOM;
     Bci_block.ITT1nom = DEF_ITT1NOM;
@@ -76,7 +76,7 @@ void ConfigKTF::SetDefConf()
     Bci_block.TNNTpred = DEF_TNNTPRED;
     Bci_block.Tamb_nom = DEF_TAMB_NOM;
     Bci_block.dTNNTnom = DEF_DTNNT_NOM;
-    Bci_block.Kdob = static_cast<float>(DEF_KDOB);
+    Bci_block.Kdob = DEF_KDOB;
     Bci_block.TauWnom = DEF_TAUWNOM;
     Bci_block.Umax = DEF_UMAX;
     Bci_block.Imax = DEF_IMAX;

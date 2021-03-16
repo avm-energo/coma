@@ -17,6 +17,7 @@ SOURCES += \
     $$PWD/udialog.cpp \
     $$PWD/uwidget.cpp \
     $$PWD/waitwidget.cpp \
+    $$PWD/ipctrl.cpp \
     $$PWD/wd_func.cpp
 
 
@@ -41,4 +42,5 @@ HEADERS += \
     $$PWD/udialog.h \
     $$PWD/uwidget.h \
     $$PWD/waitwidget.h \
+    $$PWD/ipctrl.h \
     $$PWD/wd_func.h

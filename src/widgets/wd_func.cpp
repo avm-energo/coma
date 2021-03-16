@@ -1,6 +1,5 @@
 #include "wd_func.h"
 
-//#include "../AVTUK_ETH_Version-f/coma.h"
 #include "../gen/board.h"
 #include "../gen/colors.h"
 #include "../gen/error.h"
@@ -8,14 +7,18 @@
 #include "../module/modules.h"
 #include "edoublespinbox.h"
 #include "etableview.h"
+#include "ipctrl.h"
+#include "passwordlineedit.h"
 
 #include <QApplication>
 #include <QHBoxLayout>
 #include <QHeaderView>
+#include <QMainWindow>
 #include <QPainter>
 #include <QPalette>
 #include <QPen>
 #include <QRegExp>
+#include <QStatusBar>
 #include <QStringListModel>
 #include <QTextEdit>
 #include <QtDebug>
@@ -311,7 +314,7 @@ bool WDFunc::SetCBColor(QWidget *w, const QString &cbname, const QString &color)
     return true;
 }
 
-EDoubleSpinBox *WDFunc::NewSPB(
+QDoubleSpinBox *WDFunc::NewSPB(
     QWidget *parent, const QString &spbname, double min, double max, int decimals, const QString &spbcolor)
 {
     EDoubleSpinBox *dsb = new EDoubleSpinBox(parent);
@@ -331,7 +334,7 @@ EDoubleSpinBox *WDFunc::NewSPB(
     return dsb;
 }
 
-EDoubleSpinBox *WDFunc::NewSPB2(QWidget *parent, const QString &spbname, double min, double max, int decimals)
+QDoubleSpinBox *WDFunc::NewSPB2(QWidget *parent, const QString &spbname, double min, double max, int decimals)
 {
     EDoubleSpinBox *dsb = new EDoubleSpinBox(parent);
 
@@ -408,19 +411,6 @@ QString WDFunc::LBLText(QWidget *w, const QString &lblname)
     return text;
 }
 
-QRadioButton *WDFunc::NewRB(QWidget *parent, const QString &rbtext, const QString &rbname, const QString &rbcolor)
-{
-    QRadioButton *rb = new QRadioButton(parent);
-    rb->setObjectName(rbname);
-    rb->setText(rbtext);
-    if (!rbcolor.isEmpty())
-    {
-        QString tmps = "QRadioButton {background-color: " + rbcolor + ";}";
-        rb->setStyleSheet(tmps);
-    }
-    return rb;
-}
-
 QRadioButton *WDFunc::NewRB2(QWidget *parent, const QString &rbtext, const QString &rbname)
 {
     QRadioButton *rb = new QRadioButton(parent);
@@ -445,6 +435,23 @@ bool WDFunc::SetRBData(QWidget *w, const QString &rbname, bool data)
         return false;
     rb->setChecked(data);
     return true;
+}
+
+bool WDFunc::SetIPCtrlData(const QObject *w, const QString &name, const std::array<quint8, 4> &value)
+{
+    auto *ipControl = w->findChild<IPCtrl *>(name);
+    if (ipControl == nullptr)
+        return false;
+    ipControl->setIP(value);
+    return true;
+}
+
+std::array<quint8, 4> WDFunc::IPCtrlData(const QObject *w, const QString &name)
+{
+    auto *ipControl = w->findChild<IPCtrl *>(name);
+    if (ipControl == nullptr)
+        return { 0, 0, 0, 0 };
+    return ipControl->getIP();
 }
 
 QString WDFunc::TVField(QWidget *w, const QString &tvname, int column, bool isid)
@@ -686,20 +693,19 @@ QMainWindow *WDFunc::getMainWindow()
     return nullptr;
 }
 
-// QMainWindow *WDFunc::getComaWindow() { Coma }
-
-QCheckBox *WDFunc::NewChB(QWidget *parent, const QString &chbname, const QString &chbtext, const QString &chbcolor)
+QPushButton *WDFunc::NewPBCommon(
+    QWidget *parent, const QString &pbname, const QString &text, const QString &icon, const QString &pbtooltip)
 {
-    QCheckBox *chb = new QCheckBox(parent);
-    chb->setObjectName(chbname);
-    chb->setText(chbtext);
-    if (!chbcolor.isEmpty())
-    {
-        QString tmps = "QCheckBox {background-color: " + chbcolor + ";}";
-        chb->setStyleSheet(tmps);
-    }
-    return chb;
+    QPushButton *pb = new QPushButton(parent);
+    pb->setObjectName(pbname);
+    if (!icon.isEmpty())
+        pb->setIcon(QIcon(icon));
+    pb->setText(text);
+    pb->setToolTip(pbtooltip);
+    return pb;
 }
+
+// QMainWindow *WDFunc::getComaWindow() { Coma }
 
 QCheckBox *WDFunc::NewChB2(QWidget *parent, const QString &chbname, const QString &chbtext)
 {
@@ -716,6 +722,17 @@ bool WDFunc::ChBData(QWidget *w, const QString &chbname, bool &data)
         return false;
     data = chb->isChecked();
     return true;
+}
+
+bool WDFunc::ChBData(QWidget *w, const QString &chbname)
+{
+    QCheckBox *chb = w->findChild<QCheckBox *>(chbname);
+    if (chb == nullptr)
+    {
+        qDebug() << Error::NullDataError;
+        return false;
+    }
+    return chb->isChecked();
 }
 
 bool WDFunc::SetChBData(QWidget *w, const QString &chbname, bool data)
@@ -908,7 +925,7 @@ void WDFunc::SetTVModel(QWidget *w, const QString &tvname, QAbstractItemModel *m
     ETableView *tv = w->findChild<ETableView *>(tvname);
     if (tv == nullptr)
     {
-        DBGMSG("Пустой tv");
+        qDebug("Empty tv");
         return;
     }
     QItemSelectionModel *m = tv->selectionModel();

@@ -1,9 +1,9 @@
 #ifndef CONFDIALOGKIV_H
 #define CONFDIALOGKIV_H
 
-#include "../config/configkiv.h"
 #include "abstractconfdialog.h"
 
+class ConfigKIV;
 class ConfKIVDialog : public AbstractConfDialog
 {
     Q_OBJECT

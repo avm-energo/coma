@@ -1,7 +1,6 @@
 #include "udialog.h"
 
 #include "../gen/datamanager.h"
-#include "QMetaEnum"
 
 #include <QMessageBox>
 UDialog::UDialog(QWidget *parent) : UWidget(parent)
@@ -25,10 +24,8 @@ void UDialog::updateGeneralResponse(const DataTypes::GeneralResponseStruct &resp
     }
     case DataTypes::Error:
     {
-        auto errors = QMetaEnum::fromType<Error::Msg>;
-        QString msg = errors().key(response.data);
-
-        QMessageBox::warning(this, "Ошибка", errorMsg() + msg);
+        QString msg = QVariant::fromValue(Error::Msg(response.data)).toString();
+        QMessageBox::warning(this, "Ошибка", errorMsg() + " : " + msg);
         break;
     }
     default:

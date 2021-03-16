@@ -1,6 +1,7 @@
 #ifndef MODULE_KXX_H
 #define MODULE_KXX_H
 #include "../gen/pch.h"
+#include "../interfaces/modbusprivate.h"
 
 #include <QDebug>
 #include <array>
@@ -48,32 +49,88 @@ struct StructTrele
     quint32 Trele_alarm;
 };
 
+enum DataType : quint8
+{
+    Data_Uint = 0,
+    Data_Int = 1,
+    Data_Float = 4
+};
+
 struct INICOM
 {
-    quint8 baud : 4;
+    // Скорость порта
+    CommandsMBS::BaudRate baud : 4;
+    // Биты данных
     quint8 bits : 1;
-    quint8 parity : 2;
-    quint8 stop : 1;
+    // Четность
+    CommandsMBS::Parity parity : 2;
+    // Стоп биты
+    CommandsMBS::StopBits stop : 1;
+    friend bool operator==(const INICOM &lhs, const INICOM &rhs);
+    friend bool operator!=(const INICOM &lhs, const INICOM &rhs);
 };
+bool inline operator==(const INICOM &lhs, const INICOM &rhs)
+{
+    return (lhs.baud == rhs.baud) && (lhs.bits && rhs.bits) && (lhs.parity == rhs.parity) && (lhs.stop == rhs.stop);
+}
+bool inline operator!=(const INICOM &lhs, const INICOM &rhs)
+{
+    return !(lhs == rhs);
+}
 
 struct TypeR
 {
-    quint8 reg : 4;
-    quint8 dat : 4;
+    // Функция
+    CommandsMBS::Commands reg : 4;
+    // Тип данных
+    CommandsMBS::TypeId dat : 4;
+    friend bool operator==(const TypeR &lhs, const TypeR &rhs);
+    friend bool operator!=(const TypeR &lhs, const TypeR &rhs);
+};
+bool inline operator==(const TypeR &lhs, const TypeR &rhs)
+{
+    return (lhs.reg == rhs.reg) && (lhs.dat == rhs.dat);
+}
+bool inline operator!=(const TypeR &lhs, const TypeR &rhs)
+{
+    return !(lhs == rhs);
+}
+
+enum SensorType : quint8
+{
+    SEN_None,
+    SEN_Universal
 };
 
 #pragma pack(push, 1)
 struct ABMAST
 {
-    quint8 typedat;
+    // Тип датчика
+    SensorType typedat;
+    // Параметры порта
     INICOM parport;
+    // Период опроса
     quint8 per;
+    // Адрес
     quint8 adr;
     TypeR type;
+    // Начальный адрес регистра
     quint16 reg;
+    // Количество регистров
     quint8 cnt;
+    friend bool operator==(const ABMAST &lhs, const ABMAST &rhs);
+    friend bool operator!=(const ABMAST &lhs, const ABMAST &rhs);
 };
 #pragma pack(pop)
+bool inline operator==(const ABMAST &lhs, const ABMAST &rhs)
+{
+    return (lhs.typedat == rhs.typedat) && (lhs.parport == rhs.parport) && (lhs.per == rhs.per) && (lhs.adr == rhs.adr)
+        && (lhs.type == rhs.type) && (lhs.reg == rhs.reg) && (lhs.cnt == rhs.cnt);
+}
+bool inline operator!=(const ABMAST &lhs, const ABMAST &rhs)
+{
+    return !(lhs == rhs);
+}
 
 struct StructModBus
 {
@@ -113,18 +170,18 @@ struct Com
         SNTP[3] = 220;
 
         Baud = DEF_BAUD;
-        Parity = DEF_PARITY;
-        Stopbit = DEF_STOPBIT;
+        Parity = CommandsMBS::Parity::NoParity;
+        Stopbit = CommandsMBS::StopBits::OneStop;
         adrMB = DEF_ADRMB;
     }
-    quint8 IP[4];
-    quint8 Mask[4];
-    quint8 GateWay[4];
-    quint16 Port[4];
-    quint8 SNTP[4];
+    std::array<quint8, 4> IP;
+    std::array<quint8, 4> Mask;
+    std::array<quint8, 4> GateWay;
+    std::array<quint16, 4> Port;
+    std::array<quint8, 4> SNTP;
     quint32 Baud;
-    quint8 Parity;
-    quint8 Stopbit;
+    CommandsMBS::Parity Parity;
+    CommandsMBS::StopBits Stopbit;
     quint8 adrMB;
 };
 }

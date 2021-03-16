@@ -1,7 +1,6 @@
 #ifndef TUNE84CHECK_H
 #define TUNE84CHECK_H
 
-#include "../../config/configkiv.h"
 #include "../abstracttunedialog.h"
 
 #include <QShowEvent>

@@ -1,6 +1,7 @@
 #include "keypressdialog.h"
 
 #include "../gen/error.h"
+#include "../widgets/passwordlineedit.h"
 #include "../widgets/wd_func.h"
 
 #include <QDebug>
@@ -48,7 +49,6 @@ void KeyPressDialog::SetupUI()
 
 void KeyPressDialog::keyPressEvent(QKeyEvent *e)
 {
-    QString str;
     if ((e->modifiers() == Qt::AltModifier) || (e->modifiers() == Qt::ControlModifier))
     {
         qCritical("Ошибка при обработке пароля");
