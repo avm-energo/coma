@@ -87,9 +87,9 @@ UWidget *CheckKDVVibrDialog::Bd2W()
 {
     int i;
     int row, column;
-    UWidget *w = new UWidget();
+    UWidget *w = new UWidget;
     QVBoxLayout *lyout = new QVBoxLayout;
-    QVBoxLayout *vlyout = new QVBoxLayout;
+
     QGridLayout *glyout = new QGridLayout;
 
     //...................................
@@ -122,15 +122,13 @@ UWidget *CheckKDVVibrDialog::Bd2W()
         column++;
     }
 
-    vlyout->addLayout(glyout);
-    gb->setLayout(vlyout);
+    gb->setLayout(glyout);
     lyout->addWidget(gb);
 
     // ......................................
 
     gb = new QGroupBox("Среднеквадратичные значения виброскоростей, мм/с");
 
-    vlyout = new QVBoxLayout;
     glyout = new QGridLayout;
 
     column = 0;
@@ -161,15 +159,13 @@ UWidget *CheckKDVVibrDialog::Bd2W()
         column++;
     }
 
-    vlyout->addLayout(glyout);
-    gb->setLayout(vlyout);
+    gb->setLayout(glyout);
     lyout->addWidget(gb);
 
     // ......................................
 
     gb = new QGroupBox("Среднеквадратичные значения виброперемещений, мкм");
 
-    vlyout = new QVBoxLayout;
     glyout = new QGridLayout;
 
     column = 0;
@@ -200,8 +196,7 @@ UWidget *CheckKDVVibrDialog::Bd2W()
         column++;
     }
 
-    vlyout->addLayout(glyout);
-    gb->setLayout(vlyout);
+    gb->setLayout(glyout);
     lyout->addWidget(gb);
 
     // ......................................
@@ -219,7 +214,7 @@ UWidget *CheckKDVVibrDialog::Bd3W()
     int row, column;
     UWidget *w = new UWidget;
     QVBoxLayout *lyout = new QVBoxLayout;
-    QVBoxLayout *vlyout = new QVBoxLayout;
+
     QGridLayout *glyout = new QGridLayout;
 
     //...................................
@@ -254,15 +249,13 @@ UWidget *CheckKDVVibrDialog::Bd3W()
         column++;
     }
 
-    vlyout->addLayout(glyout);
-    gb->setLayout(vlyout);
+    gb->setLayout(glyout);
     lyout->addWidget(gb);
 
     // ......................................
 
     gb = new QGroupBox("Скорость изменения среднеквадратичного значения виброскорости, мм/с/час");
 
-    vlyout = new QVBoxLayout;
     glyout = new QGridLayout;
 
     column = 0;
@@ -293,15 +286,13 @@ UWidget *CheckKDVVibrDialog::Bd3W()
         column++;
     }
 
-    vlyout->addLayout(glyout);
-    gb->setLayout(vlyout);
+    gb->setLayout(glyout);
     lyout->addWidget(gb);
 
     // ......................................
 
     gb = new QGroupBox("Скорость изменения среднеквадратичного значения виброперемещения, мкм/час");
 
-    vlyout = new QVBoxLayout;
     glyout = new QGridLayout;
 
     column = 0;
@@ -332,8 +323,7 @@ UWidget *CheckKDVVibrDialog::Bd3W()
         column++;
     }
 
-    vlyout->addLayout(glyout);
-    gb->setLayout(vlyout);
+    gb->setLayout(glyout);
     lyout->addWidget(gb);
 
     // ......................................

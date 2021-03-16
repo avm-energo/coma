@@ -117,6 +117,9 @@ void Config::FillBack()
 {
     using namespace DataTypes;
 
+    S2::setRecordValue({ BciNumber::MTypeB_ID, DWORD(Board::GetInstance().typeB()) });
+    S2::setRecordValue({ BciNumber::MTypeE_ID, DWORD(Board::GetInstance().typeM()) });
+
     S2::setRecordValue({ BciNumber::Abs_104, WDFunc::SPBData<DWORD>(ParentMainbl, NAMEOF(MainBlk.Abs_104)) });
     S2::setRecordValue({ BciNumber::Cycle_104, WDFunc::SPBData<DWORD>(ParentMainbl, NAMEOF(MainBlk.Cycle_104)) });
     S2::setRecordValue({ BciNumber::T1_104, WDFunc::SPBData<DWORD>(ParentMainbl, NAMEOF(MainBlk.T1_104)) });
