@@ -20,8 +20,8 @@ public slots:
     virtual void reqUpdate() = 0;
 
 protected:
-    std::bitset<32> m_alarmFlags;       // '1' equals alarm
-    std::bitset<32> m_actualAlarmFlags; // '1' equals alarm
+    std::bitset<64> m_alarmFlags;       // '1' equals alarm
+    std::bitset<64> m_actualAlarmFlags; // '1' equals alarm
 
     QColor m_normalColor;
     QColor m_alarmColor;

@@ -202,7 +202,7 @@ struct GeneralResponseStruct
 
 struct Alarm
 {
-    quint32 flags;
+    quint64 flags;
     quint32 startAddr;
     QStringList desc;
     QString name;
