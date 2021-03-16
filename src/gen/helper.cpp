@@ -45,7 +45,7 @@ QDebug operator<<(QDebug debug, const DataTypes::ConfParameterStruct &st)
 
 QDebug operator<<(QDebug debug, const DataTypes::BlockStruct &st)
 {
-    debug.nospace() << QString::number(st.ID, 16) << ":" << st.data.toHex();
+    debug.nospace() << QString::number(st.ID) << ":" << st.data.toHex();
     return debug.maybeSpace();
 }
 

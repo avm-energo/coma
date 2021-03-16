@@ -1,14 +1,11 @@
 #include "checkkdvvibrdialog.h"
 
-#include "../gen/colors.h"
 #include "../gen/datamanager.h"
-#include "../gen/error.h"
 #include "../widgets/wd_func.h"
 
 #include <QGroupBox>
 #include <QHBoxLayout>
 #include <QLabel>
-#include <QMessageBox>
 #include <QPushButton>
 
 CheckKDVVibrDialog::CheckKDVVibrDialog(QWidget *parent) : AbstractCheckDialog(parent)
@@ -16,8 +13,8 @@ CheckKDVVibrDialog::CheckKDVVibrDialog(QWidget *parent) : AbstractCheckDialog(pa
 
     QStringList sl;
 
-    m_BdUIList = { { "Вибрации", Bd1W() }, { "Вибрации", Bd2W() }, { "Вибрации", Bd3W() } };
-    SetupUI();
+    m_BdUIList = { /*{ "Вибрации", Bd1W() },*/ { "Вибрации", Bd2W() }, { "Вибрации", Bd3W() } };
+    m_BdUIList.first().widget->setUpdatesEnabled();
 
     Timer->setInterval(ANMEASINT);
 }
@@ -33,6 +30,7 @@ void CheckKDVVibrDialog::WriteToFile(int row, int bdnum)
     Q_UNUSED(bdnum)
 }
 
+// Bd1W shouldnt be here, only for AVM/AVTUK-Debug
 UWidget *CheckKDVVibrDialog::Bd1W()
 {
     int i;
@@ -41,7 +39,6 @@ UWidget *CheckKDVVibrDialog::Bd1W()
     QVBoxLayout *lyout = new QVBoxLayout;
     QVBoxLayout *vlyout = new QVBoxLayout;
     QGridLayout *glyout = new QGridLayout;
-    //    QString phase[3] = { "ф.A ", "ф.B ", "ф.C " };
 
     //...................................
 
@@ -94,13 +91,10 @@ UWidget *CheckKDVVibrDialog::Bd2W()
     QVBoxLayout *lyout = new QVBoxLayout;
     QVBoxLayout *vlyout = new QVBoxLayout;
     QGridLayout *glyout = new QGridLayout;
-    //    QString phase[3] = { "ф.A ", "ф.B ", "ф.C " };
 
     //...................................
 
-    QGroupBox *gb = new QGroupBox();
-
-    gb = new QGroupBox("Среднеквадратичные значения виброускорений, м/с2");
+    QGroupBox *gb = new QGroupBox("Среднеквадратичные значения виброускорений, м/с2");
 
     column = 0;
     for (i = 0; i < 3; i++)
@@ -215,7 +209,7 @@ UWidget *CheckKDVVibrDialog::Bd2W()
     lyout->addLayout(glyout);
     lyout->addStretch(100);
     w->setLayout(lyout);
-    w->setFloatBdQuery({ { 6040, 18 } });
+    w->setFloatBdQuery({ { 6040, 36 } });
     return w;
 }
 
@@ -223,7 +217,7 @@ UWidget *CheckKDVVibrDialog::Bd3W()
 {
     int i;
     int row, column;
-    UWidget *w = new UWidget();
+    UWidget *w = new UWidget;
     QVBoxLayout *lyout = new QVBoxLayout;
     QVBoxLayout *vlyout = new QVBoxLayout;
     QGridLayout *glyout = new QGridLayout;
@@ -347,6 +341,6 @@ UWidget *CheckKDVVibrDialog::Bd3W()
     lyout->addLayout(glyout);
     lyout->addStretch(100);
     w->setLayout(lyout);
-    w->setFloatBdQuery({ { 6060, 18 } });
+    w->setFloatBdQuery({ { 6040, 36 } });
     return w;
 }

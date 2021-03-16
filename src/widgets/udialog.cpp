@@ -1,5 +1,6 @@
 #include "udialog.h"
 
+#include "../gen/board.h"
 #include "../gen/datamanager.h"
 
 #include <QMessageBox>
@@ -24,7 +25,23 @@ void UDialog::updateGeneralResponse(const DataTypes::GeneralResponseStruct &resp
     }
     case DataTypes::Error:
     {
-        QString msg = QVariant::fromValue(Error::Msg(response.data)).toString();
+        auto code = Error::Msg(response.data);
+        QString msg {};
+        ;
+        switch (code)
+        {
+        case Error::FlashError:
+        {
+            if (!Board::GetInstance().isCrcValid())
+            {
+                msg = tr("Запрошенный файл отсутствует");
+                break;
+            }
+        }
+        default:
+            msg = QVariant::fromValue(Error::Msg(response.data)).toString();
+            break;
+        }
         QMessageBox::warning(this, "Ошибка", errorMsg() + " : " + msg);
         break;
     }

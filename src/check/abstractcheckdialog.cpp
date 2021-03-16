@@ -43,42 +43,12 @@ AbstractCheckDialog::~AbstractCheckDialog()
     Bd_blocks.clear();
 }
 
-// void AbstractCheckDialog::SetupUI(QStringList &tabnames)
 void AbstractCheckDialog::SetupUI()
 {
-    //    IndexWd.clear();
-    //    if (tabnames.size() < BdUINum)
-    //    {
-    //        ERMSG("Wrong BdTab size");
-    //        return;
-    //    }
+
     QVBoxLayout *lyout = new QVBoxLayout;
     QTabWidget *CheckTW = new QTabWidget;
 
-    //    CheckTW->setObjectName("checktw" + QString::number(m_newTWIndex++));
-    //    qDebug() << CheckTW->objectName();
-    // QString ConfTWss = "QTabBar::tab:selected {background-color: " + QString(Colors::TABCOLORA1) + ";}";
-
-    //    QString ConfTWss = "QTabBar::tab {margin-right: 0px; margin-left: 0px; padding: 5px;}"
-    //                       "QTabBar::tab:selected {background-color: "
-    //        + QString(Colors::TABCOLORA1)
-    //        + ";"
-    //          "border: 1px solid #000000;"
-    //          "border-top-left-radius: 4px;"
-    //          "border-top-right-radius: 4px;"
-    //          "padding: 2px;"
-    //          "margin-left: -4px; margin-right: -4px;}"
-    //          "QTabBar::tab:first:selected {margin-left: 0;}"
-    //          "QTabBar::tab:last:selected {margin-right: 0;}"
-    //          "QTabBar::tab:only-one {margin: 0;}";
-
-    // CheckTW->tabBar()->setStyleSheet(ConfTWss);
-    //    CheckTW->addTab(AutoCheckUI(),"  Автоматическая проверка  ");
-    //    for (int i = 0; i < BdUINum; ++i)
-    //    {
-    //        CheckTW->addTab(BdUI(i), "  " + tabnames.at(i) + "  ");
-    //        IndexWd.append(i);
-    //    }
     for (auto &w : m_BdUIList)
     {
         //        w.widget->setInterface(iface());
@@ -88,11 +58,9 @@ void AbstractCheckDialog::SetupUI()
             Qt::QueuedConnection);
         connect(&DataManager::GetInstance(), &DataManager::singlePointReceived, w.widget, &UWidget::updateSPData);
     }
-    //    QWidget *w = CustomTab();
-    //    if (w != nullptr)
-    //        CheckTW->addTab(w, "  Прочее  ");
+
     lyout->addWidget(CheckTW);
-    // lyout->addWidget(BottomUI());
+
     setLayout(lyout);
     connect(CheckTW, &QTabWidget::currentChanged, this, &AbstractCheckDialog::TWTabChanged);
 }

@@ -113,7 +113,13 @@ void TuneModule::create(Modules::BaseBoard typeB, Modules::MezzanineBoard typeM)
         addDialogToList(cdkiv, "Проверка");
 
         addDialogToList(new StartupKIVDialog, "Начальные\nзначения");
-        //        createModule(Modules::Model::KIV);
+    }
+    if ((typeB == BaseBoard::MTB_86) && (typeM == MezzanineBoard::MTM_00))
+    {
+        qDebug("Here is AVTUK-8600");
+        ConfigKDV *CKDV = new ConfigKDV;
+        addDialogToList(new ConfKDVDialog(CKDV), "Конфигурирование", "conf1");
+        addDialogToList(new CheckKDVVibrDialog, "Вибрации");
     }
     if ((typeB == BaseBoard::MTB_80) && (typeM == MezzanineBoard::MTM_82))
     {
