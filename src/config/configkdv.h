@@ -66,7 +66,7 @@ public:
     explicit ConfigKDV();
 
     AVM_KDV::Bci Bci_block;
-
+    void setConfig();
     void SetDefConf();
     Config *MainConfig();
     ConfigKxx *KxxConfig();

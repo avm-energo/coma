@@ -4,7 +4,13 @@
 
 ConfigKDV::ConfigKDV()
 {
-    //    m_S2::config = config;
+    m_mainConfig = new Config;
+    m_KxxConfig = new ConfigKxx;
+    setConfig();
+}
+
+void ConfigKDV::setConfig()
+{
     Config::removeFotter();
 
     S2::config.append({ BciNumber::Eq_type_ID, sizeof(Bci_block.Eq_type), &Bci_block.Eq_type });

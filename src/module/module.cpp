@@ -107,6 +107,8 @@ ModuleSettings *Module::settings() const
 
 bool Module::loadSettings()
 {
+    if (!loadS2Settings())
+        return false;
     auto moduleName = Board::GetInstance().moduleName();
     if (moduleName.isEmpty())
         return false;
@@ -159,11 +161,14 @@ bool Module::loadSettings()
             QDomElement domElement = domDoc.documentElement();
             XmlParser::traverseNode(domElement, m_settings.get());
             file.close();
-            return loadS2Settings();
+            return true;
         }
-        file.close();
-        qInfo() << Error::WrongFileError << file.fileName();
-        return false;
+        else
+        {
+            file.close();
+            qInfo() << Error::WrongFileError << file.fileName();
+            return false;
+        }
     }
     else
     {

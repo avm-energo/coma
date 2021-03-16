@@ -11,12 +11,11 @@
 #include <QLineEdit>
 #include <QPushButton>
 #include <QScrollArea>
-#include <QScrollBar>
-#include <QStackedWidget>
 #include <QTabWidget>
 #include <QTime>
 #include <QTimer>
 #include <QVBoxLayout>
+#include <bitset>
 
 ConfKDVDialog::ConfKDVDialog(ConfigKDV *ckdv, QWidget *parent) : AbstractConfDialog(parent)
 {
@@ -49,6 +48,11 @@ void ConfKDVDialog::SetupUI()
     setLayout(lyout);
 }
 
+QString inline nameByValue(BciNumber number)
+{
+    return QString::number(number);
+}
+
 QWidget *ConfKDVDialog::analogWidget()
 {
     QWidget *w = new QWidget;
@@ -56,21 +60,17 @@ QWidget *ConfKDVDialog::analogWidget()
     QGridLayout *gridlyout = new QGridLayout;
     QScrollArea *Analog_area = new QScrollArea;
     gridlyout->setAlignment(Qt::AlignVCenter);
-    QFont font;
 
     Analog_area->setFrameShape(QFrame::NoFrame);
     Analog_area->setWidgetResizable(true);
 
     int row = 0;
     QGroupBox *gb = new QGroupBox("Аналоговые параметры");
-    font.setFamily("Times");
-    font.setPointSize(11);
-    gb->setFont(font);
 
     QLabel *lbl = new QLabel("Тип контролируемого оборудования:");
     gridlyout->addWidget(lbl, row, 1, 1, 1, Qt::AlignLeft);
     QStringList cbl = QStringList { "Асинхронный двигатель", "Трансформатор", "Реактор" };
-    auto *cb = WDFunc::NewCB2(this, "Eq_type", cbl);
+    auto *cb = WDFunc::NewCB2(this, nameByValue(BciNumber::Eq_type), cbl);
     cb->setMinimumHeight(20);
     gridlyout->addWidget(cb, row, 2, 1, 3);
     row++;
@@ -78,7 +78,7 @@ QWidget *ConfKDVDialog::analogWidget()
     lbl = new QLabel("Вид охлаждения:");
     gridlyout->addWidget(lbl, row, 1, 1, 1, Qt::AlignLeft);
     cbl = QStringList { "Естественное", "Принудительное" };
-    cb = WDFunc::NewCB2(this, "Cool_type", cbl);
+    cb = WDFunc::NewCB2(this, nameByValue(BciNumber::Cool_type), cbl);
     cb->setMinimumHeight(20);
     gridlyout->addWidget(cb, row, 2, 1, 3);
     row++;
@@ -180,14 +180,10 @@ QWidget *ConfKDVDialog::setWidget()
     QScrollArea *scrollArea = new QScrollArea;
     scrollArea->setFrameShape(QFrame::NoFrame);
     scrollArea->setWidgetResizable(true);
-    ;
-    QFont font;
+
     int row = 0;
 
     QGroupBox *gb = new QGroupBox("Уставки сигнализации");
-    font.setFamily("Times");
-    font.setPointSize(11);
-    gb->setFont(font);
 
     gridlyout->addWidget(WDFunc::NewLBL2(this,
                              "Уставка скачка напряжения для запуска "
@@ -288,7 +284,6 @@ QWidget *ConfKDVDialog::setWidget()
     //.....................................................................
     gb = new QGroupBox("Гистерезис");
 
-    // vlyout2 = new QVBoxLayout;
     gridlyout = new QGridLayout;
 
     gridlyout->addWidget(WDFunc::NewLBL2(this, "Гистерезис сигнализации по температуре ННТ,  град.С:"), row, 1, 1, 1);
@@ -298,13 +293,6 @@ QWidget *ConfKDVDialog::setWidget()
     gridlyout->addWidget(
         WDFunc::NewLBL2(this, "Гистерезис сигнализации по токовой перегрузке, % от Iwnom:"), row, 1, 1, 1);
     gridlyout->addWidget(WDFunc::NewSPB2(this, "GOvc", 0, 10000, 1), row, 2, 1, 3);
-
-    //    gb->setLayout(gridlyout);
-    //    lyout->addWidget(gb);
-    //    w->setLayout(lyout);
-    //    scrollArea->setWidget(w);
-
-    //    return scrollArea;
 
     gb->setLayout(gridlyout);
     scrollArea->setWidget(w);
@@ -320,14 +308,11 @@ QWidget *ConfKDVDialog::otherWidget()
     QGridLayout *gridlyout = new QGridLayout;
     QHBoxLayout *hlyout = new QHBoxLayout;
     gridlyout->setAlignment(Qt::AlignVCenter);
-    QFont font;
+
     gridlyout->setColumnStretch(2, 50);
     int row = 0;
 
     QGroupBox *gb = new QGroupBox("Параметры записи");
-    font.setFamily("Times");
-    font.setPointSize(11);
-    gb->setFont(font);
 
     row = 0;
     gridlyout->addWidget(
@@ -426,389 +411,6 @@ QWidget *ConfKDVDialog::connectionWidget()
     return w;
 }
 
-// void ConfKDVDialog::SetupUI()
-//{
-//    QVBoxLayout *vlyout1 = new QVBoxLayout;
-//    QVBoxLayout *vlyout2 = new QVBoxLayout;
-//    ///
-//    QGridLayout *gridlyout = new QGridLayout;
-//    QScrollArea *Analog_area = new QScrollArea;
-//    QScrollArea *area2 = new QScrollArea;
-//    QScrollArea *scrArea = new QScrollArea;
-//    QWidget *analog1 = new QWidget;
-//    QWidget *analog2 = new QWidget;
-//    QWidget *extraconf = new QWidget;
-//    QWidget *MEKconf = new QWidget;
-//    QWidget *Leftconf = new QWidget;
-//    QWidget *time = new QWidget;
-//    QWidget *link = new QWidget;
-
-//    area2->setFrameShape(QFrame::NoFrame);
-//    area2->setWidgetResizable(true);
-
-//    Analog_area->setFrameShape(QFrame::NoFrame);
-//    Analog_area->setWidgetResizable(true);
-
-//    scrArea->setFrameShape(QFrame::NoFrame);
-//    scrArea->setWidgetResizable(true);
-
-//    int row = 0;
-//    QGroupBox *gb = new QGroupBox("Аналоговые параметры");
-
-//    QLabel *lbl = new QLabel("Тип контролируемого оборудования:");
-//    gridlyout->addWidget(lbl, row, 1, 1, 1, Qt::AlignLeft);
-//    QStringList cbl = QStringList { "Асинхронный двигатель", "Трансформатор", "Реактор" };
-//    auto *cb = WDFunc::NewCB2(this, "Eq_type", cbl);
-//    cb->setMinimumHeight(20);
-//    gridlyout->addWidget(cb, row, 2, 1, 3);
-//    row++;
-
-//    lbl = new QLabel("Вид охлаждения:");
-//    gridlyout->addWidget(lbl, row, 1, 1, 1, Qt::AlignLeft);
-//    cbl = QStringList { "Естественное", "Принудительное" };
-//    cb = WDFunc::NewCB2(this, "Cool_type", cbl);
-//    cb->setMinimumHeight(20);
-//    gridlyout->addWidget(cb, row, 2, 1, 3);
-//    row++;
-
-//    lbl = new QLabel("Материал обмотки:");
-//    gridlyout->addWidget(lbl, row, 1, 1, 1, Qt::AlignLeft);
-//    cbl = QStringList { "Медь", "Алюминий" };
-//    cb = WDFunc::NewCB2(this, "W_mat", cbl);
-//    cb->setMinimumHeight(20);
-//    gridlyout->addWidget(cb, row, 2, 1, 3);
-//    row++;
-
-//    gridlyout->addWidget(WDFunc::NewLBL2(this, "Номинальное линейное первичное напряжение, кВ:"), row, 1, 1, 1);
-//    gridlyout->addWidget(WDFunc::NewSPB2(this, "Unom1", 0, 10000, 2), row, 2, 1, 3);
-//    row++;
-
-//    gridlyout->addWidget(WDFunc::NewLBL2(this, "Номинальное вторичное напряжение первой тройки, В:"), row, 1, 1, 1);
-//    gridlyout->addWidget(WDFunc::NewSPB2(this, "U2nom", 0, 10000, 1), row, 2, 1, 3);
-//    row++;
-
-//    gridlyout->addWidget(WDFunc::NewLBL2(this, "Номинальный первичный ток, кА:"), row, 1, 1, 1);
-//    gridlyout->addWidget(WDFunc::NewSPB2(this, "ITT1nom", 0, 10000, 0), row, 2, 1, 3);
-//    row++;
-
-//    gridlyout->addWidget(WDFunc::NewLBL2(this, "Номинальный вторичный ток, А:"), row, 1, 1, 1);
-//    gridlyout->addWidget(WDFunc::NewSPB2(this, "ITT2nom", 0, 10000, 1), row, 2, 1, 3);
-//    row++;
-
-//    gridlyout->addWidget(WDFunc::NewLBL2(this, "Номинальный ток контролируемой обмотки, À:"), row, 1, 1, 1);
-//    gridlyout->addWidget(WDFunc::NewSPB2(this, "Iwnom", 0, 10000, 1), row, 2, 1, 3);
-//    row++;
-
-//    gridlyout->addWidget(WDFunc::NewLBL2(this, "Номинальная температура окружающей среды, °С:"), row, 1, 1, 1);
-//    gridlyout->addWidget(WDFunc::NewSPB2(this, "Tamb_nom", 0, 10000, 1), row, 2, 1, 3);
-//    row++;
-
-//    gridlyout->addWidget(
-//        WDFunc::NewLBL2(this, "Превышение температуры ННТ при номинальной нагрузке, °С:"), row, 1, 1, 1);
-//    gridlyout->addWidget(WDFunc::NewSPB2(this, "dTNNTnom", 0, 10000, 1), row, 2, 1, 3);
-//    row++;
-
-//    gridlyout->addWidget(WDFunc::NewLBL2(this, "Коэффициент добавочных потерь:"), row, 1, 1, 1);
-//    gridlyout->addWidget(WDFunc::NewSPB2(this, "Kdob", 0, 10000, 1), row, 2, 1, 3);
-//    row++;
-
-//    gridlyout->addWidget(
-//        WDFunc::NewLBL2(this, "Постоянная времени нагрева обмотки в номинальном режиме, мин:"), row, 1, 1, 1);
-//    gridlyout->addWidget(WDFunc::NewSPB2(this, "TauWnom", 0, 10000, 1), row, 2, 1, 3);
-//    row++;
-
-//    gridlyout->addWidget(WDFunc::NewLBL2(this,
-//                             "Максимальное измеряемое фазное напряжение на входе "
-//                             "прибора, В эфф (не более 305В):"),
-//        row, 1, 1, 1);
-//    gridlyout->addWidget(WDFunc::NewSPB2(this, "Umax", 0, 10000, 1), row, 2, 1, 3);
-//    row++;
-
-//    gridlyout->addWidget(WDFunc::NewLBL2(this,
-//                             "Максимальный измеряемый ток на входе "
-//                             "прибора, А эфф  (не более 33А):"),
-//        row, 1, 1, 1);
-//    gridlyout->addWidget(WDFunc::NewSPB2(this, "Imax", 0, 10000, 1), row, 2, 1, 3);
-//    row++;
-
-//    gridlyout->addWidget(WDFunc::NewLBL2(this,
-//                             "Количество датчиков температуры обмоток, "
-//                             "подключенных по Modbus Master:"),
-//        row, 1, 1, 1);
-//    gridlyout->addWidget(WDFunc::NewSPB2(this, "TdatNum", 0, 10000, 0), row, 2, 1, 3);
-//    row++;
-
-//    gridlyout->addWidget(WDFunc::NewLBL2(this, "Номинальная частота, Гц"), row, 1, 1, 1);
-//    gridlyout->addWidget(WDFunc::NewSPB2(this, "Fnom", 0, 1000, 1), row, 2, 1, 3);
-//    row++;
-
-//    gridlyout->addWidget(WDFunc::NewLBL2(this, "Номинальное скольжение"), row, 1, 1, 1);
-//    gridlyout->addWidget(WDFunc::NewSPB2(this, "nom_slip", 0, 10000, 1), row, 2, 1, 3);
-//    row++;
-
-//    gridlyout->addWidget(
-//        WDFunc::NewLBL2(this, "Максимальная амплитуда сигналов вибраций (1,25, 2,5, 5,0В)"), row, 1, 1, 1);
-//    gridlyout->addWidget(WDFunc::NewSPB2(this, "UVmax", 0, 10000, 0), row, 2, 1, 3);
-//    row++;
-
-//    vlyout2->addLayout(gridlyout);
-//    gb->setLayout(vlyout2);
-//    vlyout1->addWidget(gb);
-
-//    analog1->setLayout(vlyout1);
-//    Analog_area->setWidget(analog1);
-//    //.....................................................................
-///
-//    gb = new QGroupBox("Уставки сигнализации");
-
-//    vlyout1 = new QVBoxLayout;
-//    vlyout2 = new QVBoxLayout;
-//    gridlyout = new QGridLayout;
-//    row = 0;
-
-//    gridlyout->addWidget(WDFunc::NewLBL2(this,
-//                             "Уставка скачка напряжения для запуска "
-//                             "осциллографирования - % от номинала:"),
-//        row, 1, 1, 1);
-//    gridlyout->addWidget(WDFunc::NewSPB2(this, "DUosc", 0, 10000, 1), row, 2, 1, 3);
-
-//    row++;
-//    gridlyout->addWidget(
-//        WDFunc::NewLBL2(this, "Уставка скачка тока для запуска осциллографирования -  % от I2nom:"), row, 1, 1, 1);
-//    gridlyout->addWidget(WDFunc::NewSPB2(this, "DIosc", 0, 10000, 1), row, 2, 1, 3);
-
-//    row++;
-//    gridlyout->addWidget(
-//        WDFunc::NewLBL2(this, "Уставка порога минимального напряжения - % от номинального уровня:"), row, 1, 1, 1);
-//    gridlyout->addWidget(WDFunc::NewSPB2(this, "DUImin", 0, 1000, 1), row, 2, 1, 3);
-
-//    row++;
-//    gridlyout->addWidget(
-//        WDFunc::NewLBL2(this, "Уставка порога минимального тока - % от номинального уровня:"), row, 1, 1, 1);
-//    gridlyout->addWidget(WDFunc::NewSPB2(this, "Imin", 0, 10000, 1), row, 2, 1, 3);
-
-//    row++;
-//    gridlyout->addWidget(WDFunc::NewLBL2(this, "Предельно допустимая температура ННТ в°С:"), row, 1, 1, 1);
-//    gridlyout->addWidget(WDFunc::NewSPB2(this, "TNNTdop", 0, 10000, 1), row, 2, 1, 3);
-
-//    row++;
-//    gridlyout->addWidget(
-//        WDFunc::NewLBL2(this, "Уставка предупредительной сигнализации по температуре ННТ в °С:"), row, 1, 1, 1);
-//    gridlyout->addWidget(WDFunc::NewSPB2(this, "TNNTpred", 0, 10000, 1), row, 2, 1, 3);
-
-//    row++;
-//    gridlyout->addWidget(
-//        WDFunc::NewLBL2(this, "Предупредительная уставка по СКЗ виброускорения, м/с/с:"), row, 1, 1, 1);
-//    gridlyout->addWidget(WDFunc::NewSPB2(this, "VibrA_pred", 0, 1000, 1), row, 2, 1, 3);
-
-//    row++;
-//    gridlyout->addWidget(WDFunc::NewLBL2(this, "Предупредительная уставка по СКЗ виброскорости, мм/с:"), row, 1, 1,
-//    1); gridlyout->addWidget(WDFunc::NewSPB2(this, "VibrV_pred", 0, 10000, 1), row, 2, 1, 3);
-
-//    row++;
-//    gridlyout->addWidget(
-//        WDFunc::NewLBL2(this, "Предупредительная уставка по СКЗ виброперемещения, мкм:"), row, 1, 1, 1);
-//    gridlyout->addWidget(WDFunc::NewSPB2(this, "VibrD_pred", 0, 10000, 1), row, 2, 1, 3);
-
-//    row++;
-//    gridlyout->addWidget(WDFunc::NewLBL2(this, "Аварийная уставка по СКЗ виброускорения, м/с/с:"), row, 1, 1, 1);
-//    gridlyout->addWidget(WDFunc::NewSPB2(this, "VibrA_alarm", 0, 1000, 1), row, 2, 1, 3);
-
-//    row++;
-//    gridlyout->addWidget(WDFunc::NewLBL2(this, "Аварийная уставка по СКЗ виброскорости, мм/с:"), row, 1, 1, 1);
-//    gridlyout->addWidget(WDFunc::NewSPB2(this, "VibrV_alarm", 0, 10000, 1), row, 2, 1, 3);
-
-//    row++;
-//    gridlyout->addWidget(WDFunc::NewLBL2(this, "Аварийная уставка по СКЗ виброперемещения, мкм:"), row, 1, 1, 1);
-//    gridlyout->addWidget(WDFunc::NewSPB2(this, "VibrD_alarm", 0, 10000, 1), row, 2, 1, 3);
-
-//    row++;
-//    gridlyout->addWidget(WDFunc::NewLBL2(this,
-//                             "Предупредительная уставка по скорости роста СКЗ "
-//                             "виброускорения, м/с/с:"),
-//        row, 1, 1, 1);
-//    gridlyout->addWidget(WDFunc::NewSPB2(this, "VVibrA_pred", 0, 1000, 1), row, 2, 1, 3);
-
-//    row++;
-//    gridlyout->addWidget(WDFunc::NewLBL2(this,
-//                             "Предупредительная уставка по скорости роста СКЗ "
-//                             "виброскорости, мм/с:"),
-//        row, 1, 1, 1);
-//    gridlyout->addWidget(WDFunc::NewSPB2(this, "VVibrV_pred", 0, 10000, 1), row, 2, 1, 3);
-
-//    row++;
-//    gridlyout->addWidget(WDFunc::NewLBL2(this,
-//                             "Предупредительная уставка по скорости роста СКЗ "
-//                             "виброперемещения, мкм:"),
-//        row, 1, 1, 1);
-//    gridlyout->addWidget(WDFunc::NewSPB2(this, "VVibrD_pred", 0, 10000, 1), row, 2, 1, 3);
-
-//    row++;
-//    gridlyout->addWidget(
-//        WDFunc::NewLBL2(this, "Аварийная уставка по скорости роста СКЗ виброускорения, м/с/с:"), row, 1, 1, 1);
-//    gridlyout->addWidget(WDFunc::NewSPB2(this, "VVibrA_alarm", 0, 1000, 1), row, 2, 1, 3);
-
-//    row++;
-//    gridlyout->addWidget(
-//        WDFunc::NewLBL2(this, "Аварийная уставка по скорости роста СКЗ виброскорости, мм/с:"), row, 1, 1, 1);
-//    gridlyout->addWidget(WDFunc::NewSPB2(this, "VVibrV_alarm", 0, 10000, 1), row, 2, 1, 3);
-
-//    row++;
-//    gridlyout->addWidget(
-//        WDFunc::NewLBL2(this, "Аварийная уставка по скорости роста СКЗ виброперемещения, мкм:"), row, 1, 1, 1);
-//    gridlyout->addWidget(WDFunc::NewSPB2(this, "VVibrD_alarm", 0, 10000, 1), row, 2, 1, 3);
-
-//    vlyout2->addLayout(gridlyout);
-//    gb->setLayout(vlyout2);
-//    vlyout1->addWidget(gb);
-
-//    //.....................................................................
-//    gb = new QGroupBox("Гистерезис");
-
-//    vlyout2 = new QVBoxLayout;
-//    gridlyout = new QGridLayout;
-
-//    gridlyout->addWidget(WDFunc::NewLBL2(this, "Гистерезис сигнализации по температуре ННТ,  град.С:"), row, 1, 1, 1);
-//    gridlyout->addWidget(WDFunc::NewSPB2(this, "GTnnt", 0, 10000, 3), row, 2, 1, 3);
-
-//    row++;
-//    gridlyout->addWidget(
-//        WDFunc::NewLBL2(this, "Гистерезис сигнализации по токовой перегрузке, % от Iwnom:"), row, 1, 1, 1);
-//    gridlyout->addWidget(WDFunc::NewSPB2(this, "GOvc", 0, 10000, 1), row, 2, 1, 3);
-
-//    vlyout2->addLayout(gridlyout);
-//    gb->setLayout(vlyout2);
-//    vlyout1->addWidget(gb);
-
-//    analog2->setLayout(vlyout1);
-//    area2->setWidget(analog2);
-
-//.....................................................................
-
-//    gb = new QGroupBox("Параметры записи");
-
-//    vlyout2 = new QVBoxLayout;
-//    QHBoxLayout *hlyout = new QHBoxLayout;
-//    gridlyout = new QGridLayout;
-//    vlyout1 = new QVBoxLayout;
-
-//    row = 0;
-//    gridlyout->addWidget(
-//        WDFunc::NewLBL2(this, "Интервал усреднения данных  (в периодах основной частоты):"), row, 1, 1, 1);
-//    gridlyout->addWidget(WDFunc::NewSPB2(this, "NFiltr", 0, 10000, 0), row, 2, 1, 3);
-
-//    row++;
-//    gridlyout->addWidget(WDFunc::NewLBL2(this, "Интервал записи данных в ПЗУ (тренд), в секундах:"), row, 1, 1, 1);
-//    gridlyout->addWidget(WDFunc::NewSPB2(this, "T_Data_Rec", 0, 10000, 0), row, 2, 1, 3);
-
-//    row++;
-//    gridlyout->addWidget(WDFunc::NewLBL2(this, "Постоянная времени фильтрации гармоник:"), row, 1, 1, 1);
-//    gridlyout->addWidget(WDFunc::NewSPB2(this, "NHarmFilt", 0, 10000, 0), row, 2, 1, 3);
-
-//    row++;
-//    gridlyout->addWidget(WDFunc::NewLBL2(this, "Запуск осциллограммы:"), row, 1, 1, 1);
-//    hlyout->addWidget(WDFunc::NewChB2(this, "oscchb.0", "по команде Ц"));
-//    //    hlyout->addWidget(WDFunc::NewChB(this, "oscchb.1", "по дискр. входу PD1", Colors::ACONFWCLR));
-//    hlyout->addWidget(WDFunc::NewChB2(this, "oscchb.2", "по резкому изменению"));
-//    gridlyout->addLayout(hlyout, row, 2, 1, 3);
-
-//    row++;
-//    gridlyout->addWidget(
-//        WDFunc::NewLBL2(this, "Количество точек осциллограммы на период основной частоты:"), row, 1, 1, 1);
-//    gridlyout->addWidget(WDFunc::NewSPB2(this, "OscPoints", 0, 10000, 0), row, 2, 1, 3);
-
-//    vlyout2->addLayout(gridlyout);
-//    gb->setLayout(vlyout2);
-//    vlyout1->addWidget(gb);
-
-//    gb = new QGroupBox("Параметры двигателя");
-
-//    vlyout2 = new QVBoxLayout;
-//    gridlyout = new QGridLayout;
-
-//    row = 0;
-//    gridlyout->addWidget(WDFunc::NewLBL2(this, "Коэффициент передачи датчиков вибрации:"), row, 1, 1, 1);
-//    gridlyout->addWidget(WDFunc::NewSPB2(this, "Kvibr", 0, 10000, 2), row, 2, 1, 3);
-
-//    row++;
-//    gridlyout->addWidget(WDFunc::NewLBL2(this, "Порядковый номер двигателя:"), row, 1, 1, 1);
-//    gridlyout->addWidget(WDFunc::NewSPB2(this, "NumA", 0, 10000, 0), row, 2, 1, 3);
-
-//    row++;
-//    gridlyout->addWidget(WDFunc::NewLBL2(this, "Число пар полюсов (от 1 до 10):"), row, 1, 1, 1);
-//    gridlyout->addWidget(WDFunc::NewSPB2(this, "Poles", 0, 10000, 0), row, 2, 1, 3);
-
-//    row++;
-//    gridlyout->addWidget(WDFunc::NewLBL2(this, "Число пазов на статоре:"), row, 1, 1, 1);
-//    gridlyout->addWidget(WDFunc::NewSPB2(this, "Stator_Slotes", 0, 10000, 0), row, 2, 1, 3);
-
-//    row++;
-//    gridlyout->addWidget(WDFunc::NewLBL2(this, "Число стержней ротора:"), row, 1, 1, 1);
-//    gridlyout->addWidget(WDFunc::NewSPB2(this, "Rotor_bars", 0, 10000, 0), row, 2, 1, 3);
-
-//    row++;
-//    gridlyout->addWidget(WDFunc::NewLBL2(this, "Тип вибродатчика:"), row, 1, 1, 1);
-//    gridlyout->addWidget(WDFunc::NewSPB2(this, "VibroType", 0, 10000, 0), row, 2, 1, 3);
-
-//    row++;
-//    gridlyout->addWidget(WDFunc::NewLBL2(this, "Подключенные датчики вибрации:"), row, 1, 1, 1);
-//    gridlyout->addWidget(WDFunc::NewSPB2(this, "Sensors", 0, 10000, 0), row, 2, 1, 3);
-
-//    vlyout2->addLayout(gridlyout);
-//    gb->setLayout(vlyout2);
-//    vlyout1->addWidget(gb);
-
-//    Leftconf->setLayout(vlyout1);
-//.....................................................................
-
-//    row = 0;
-//    vlyout1 = new QVBoxLayout;
-//    gb = new QGroupBox;
-//    gridlyout = new QGridLayout;
-//    vlyout2 = new QVBoxLayout;
-
-//    gb->setTitle("Настройки протокола МЭК-60870-5-104");
-
-//    //    gridlyout->addWidget(Conf->SetupMainBlk(this), 0, 0, 1, 1);
-//    //    gridlyout->addWidget(ConfKxx->SetupComParam(this), 0, 1, 1, 1);
-
-//    vlyout2->addLayout(gridlyout);
-//    gb->setLayout(vlyout2);
-//    vlyout1->addWidget(gb);
-
-//    gb = new QGroupBox("Настройка времени");
-//    vlyout2 = new QVBoxLayout;
-
-//    //    vlyout2->addWidget(Conf->SetupTime(this));
-
-//    gb->setLayout(vlyout2);
-//    vlyout1->addWidget(gb);
-
-//    link->setLayout(vlyout1);
-//    scrArea->setWidget(link);
-
-//    //....................................................................
-
-//    QVBoxLayout *lyout = new QVBoxLayout;
-//    QTabWidget *ConfTW = new QTabWidget;
-//    ConfTW->setObjectName("conftw");
-
-//    ConfTW->addTab(Analog_area, "Аналоговые");
-
-//    ConfTW->addTab(area2, "Уставки");
-
-//    ConfTW->addTab(scrArea, "Связь");
-//    //    ConfTW->addTab(ConfKxx->SetupModBus(this), "ModBus");
-//    //    ConfTW->addTab(ConfKxx->SetupBl(this), "Общее");
-
-//    ConfTW->addTab(Leftconf, "Остальное");
-//    lyout->addWidget(ConfTW);
-
-//    QWidget *wdgt = ConfButtons();
-//    lyout->addWidget(wdgt);
-//    setLayout(lyout);
-//}
-
 void ConfKDVDialog::Fill()
 {
 
@@ -830,68 +432,131 @@ void ConfKDVDialog::FillKdv()
     //    Conf->Fill();
 
     int cbidx;
+    int cbidx1;
+    using namespace DataTypes;
 
     //.........................................................
     cbidx = (ConfKDV->Bci_block.Eq_type & 0x02) ? 2 : ((ConfKDV->Bci_block.Eq_type & 0x01) ? 1 : 0);
-    WDFunc::SetCBIndex(this, "Eq_type", cbidx);
-    cbidx = ((ConfKDV->Bci_block.Cool_type & 0x01) ? 1 : 0);
-    WDFunc::SetCBIndex(this, "Cool_type", cbidx);
-    cbidx = ((ConfKDV->Bci_block.W_mat & 0x01) ? 1 : 0);
-    WDFunc::SetCBIndex(this, "W_mat", cbidx);
+    std::bitset<sizeof(ConfKDV->Bci_block.Eq_type) * 8> test(ConfKDV->Bci_block.Eq_type);
+    cbidx1 = test.count();
+    //  WDFunc::SetCBIndex(this, "Eq_type", cbidx);
+    WDFunc::SetCBIndex(this, nameByValue(BciNumber::Eq_type), S2::getRecord(BciNumber::Eq_type).value<DWORD>());
+    cbidx = bool(ConfKDV->Bci_block.Cool_type);
+    //  WDFunc::SetCBIndex(this, "Cool_type", cbidx);
+    WDFunc::SetCBIndex(
+        this, nameByValue(BciNumber::Cool_type), bool(S2::getRecord(BciNumber::Cool_type).value<DWORD>()));
+    cbidx = bool(ConfKDV->Bci_block.W_mat);
+    //  WDFunc::SetCBIndex(this, "W_mat", cbidx);
+    WDFunc::SetCBIndex(this, "W_mat", bool(S2::getRecord(BciNumber::W_mat).value<DWORD>()));
 
-    WDFunc::SetChBData(this, "oscchb.0", (ConfKDV->Bci_block.DDosc & 0x0001));
+    WDFunc::SetChBData(this, "oscchb.0", S2::getRecord(BciNumber::DDOsc_ID).value<DWORD>() & 0x0001);
+    //  WDFunc::SetChBData(this, "oscchb.0", (ConfKDV->Bci_block.DDosc & 0x0001));
     //    WDFunc::SetChBData(this, "oscchb.1", (KDV->Bci_block.DDosc & 0x0002));
-    WDFunc::SetChBData(this, "oscchb.2", (ConfKDV->Bci_block.DDosc & 0x0004));
-    WDFunc::SetSPBData(this, "NFiltr", ConfKDV->Bci_block.NFiltr);
-    WDFunc::SetSPBData(this, "NHarmFilt", ConfKDV->Bci_block.NHarmFilt);
+    WDFunc::SetChBData(this, "oscchb.2", S2::getRecord(BciNumber::DDOsc_ID).value<DWORD>() & 0x0004);
+    // WDFunc::SetChBData(this, "oscchb.2", (ConfKDV->Bci_block.DDosc & 0x0004));
+    WDFunc::SetSPBData(this, "NFiltr", S2::getRecord(BciNumber::NFiltr_ID).value<DWORD>());
+    WDFunc::SetSPBData(this, "NHarmFilt", S2::getRecord(BciNumber::NHarmFilt_ID).value<DWORD>());
+    // WDFunc::SetSPBData(this, "NFiltr", ConfKDV->Bci_block.NFiltr);
+    // WDFunc::SetSPBData(this, "NHarmFilt", ConfKDV->Bci_block.NHarmFilt);
 
     // WDFunc::SetSPBData(this, "DDOsc", CKDV->Bci_block.DDOsc);
-    WDFunc::SetSPBData(this, "Unom1", ConfKDV->Bci_block.Unom1);
-    WDFunc::SetSPBData(this, "U2nom", ConfKDV->Bci_block.U2nom);
-    WDFunc::SetSPBData(this, "ITT1nom", ConfKDV->Bci_block.ITT1nom);
-    WDFunc::SetSPBData(this, "ITT2nom", ConfKDV->Bci_block.ITT2nom);
-    WDFunc::SetSPBData(this, "Iwnom", ConfKDV->Bci_block.Iwnom);
-    WDFunc::SetSPBData(this, "DUosc", ConfKDV->Bci_block.DUosc);
-    WDFunc::SetSPBData(this, "DIosc", ConfKDV->Bci_block.DIosc);
-    WDFunc::SetSPBData(this, "DUImin", ConfKDV->Bci_block.DUImin);
-    WDFunc::SetSPBData(this, "Imin", ConfKDV->Bci_block.Imin);
-    WDFunc::SetSPBData(this, "TNNTdop", ConfKDV->Bci_block.TNNTdop);
-    WDFunc::SetSPBData(this, "TNNTpred", ConfKDV->Bci_block.TNNTpred);
-    WDFunc::SetSPBData(this, "Tamb_nom", ConfKDV->Bci_block.Tamb_nom);
-    WDFunc::SetSPBData(this, "dTNNTnom", ConfKDV->Bci_block.dTNNTnom);
-    WDFunc::SetSPBData(this, "Kdob", ConfKDV->Bci_block.Kdob);
-    WDFunc::SetSPBData(this, "TauWnom", ConfKDV->Bci_block.TauWnom);
-    WDFunc::SetSPBData(this, "Umax", ConfKDV->Bci_block.Umax);
-    WDFunc::SetSPBData(this, "Imax", ConfKDV->Bci_block.Imax);
-    WDFunc::SetSPBData(this, "GTnnt", ConfKDV->Bci_block.GTnnt);
-    WDFunc::SetSPBData(this, "GOvc", ConfKDV->Bci_block.GOvc);
+    WDFunc::SetSPBData(this, "Unom1", S2::getRecord(BciNumber::Unom1).value<float>());
+    WDFunc::SetSPBData(this, "U2nom", S2::getRecord(BciNumber::U2nom).value<float>());
+    WDFunc::SetSPBData(this, "ITT1nom", S2::getRecord(BciNumber::ITT1nom_KTF_KDV).value<float>());
+    WDFunc::SetSPBData(this, "ITT2nom", S2::getRecord(BciNumber::ITT2nom_KTF_KDV).value<float>());
+    WDFunc::SetSPBData(this, "Iwnom", S2::getRecord(BciNumber::Iwnom).value<float>());
+    WDFunc::SetSPBData(this, "DUosc", S2::getRecord(BciNumber::DUosc).value<float>());
+    WDFunc::SetSPBData(this, "DIosc", S2::getRecord(BciNumber::DIosc_ID).value<float>());
 
-    WDFunc::SetSPBData(this, "Fnom", ConfKDV->Bci_block.Fnom);
-    WDFunc::SetSPBData(this, "nom_slip", ConfKDV->Bci_block.nom_slip);
-    WDFunc::SetSPBData(this, "UVmax", ConfKDV->Bci_block.UVmax);
-    WDFunc::SetSPBData(this, "Kvibr", ConfKDV->Bci_block.Kvibr);
-    WDFunc::SetSPBData(this, "VibrA_pred", ConfKDV->Bci_block.VibrA_pred);
-    WDFunc::SetSPBData(this, "VibrV_pred", ConfKDV->Bci_block.VibrV_pred);
-    WDFunc::SetSPBData(this, "VibrD_pred", ConfKDV->Bci_block.VibrD_pred);
-    WDFunc::SetSPBData(this, "VibrA_alarm", ConfKDV->Bci_block.VibrA_alarm);
-    WDFunc::SetSPBData(this, "VibrV_alarm", ConfKDV->Bci_block.VibrV_alarm);
-    WDFunc::SetSPBData(this, "VibrD_alarm", ConfKDV->Bci_block.VibrD_alarm);
-    WDFunc::SetSPBData(this, "VVibrA_pred", ConfKDV->Bci_block.VVibrA_pred);
-    WDFunc::SetSPBData(this, "VVibrV_pred", ConfKDV->Bci_block.VVibrV_pred);
-    WDFunc::SetSPBData(this, "VVibrD_pred", ConfKDV->Bci_block.VVibrD_pred);
-    WDFunc::SetSPBData(this, "VVibrA_alarm", ConfKDV->Bci_block.VVibrA_alarm);
-    WDFunc::SetSPBData(this, "VVibrV_alarm", ConfKDV->Bci_block.VVibrV_alarm);
-    WDFunc::SetSPBData(this, "VVibrD_alarm", ConfKDV->Bci_block.VVibrD_alarm);
-    WDFunc::SetSPBData(this, "NumA", ConfKDV->Bci_block.NumA);
-    WDFunc::SetSPBData(this, "Poles", ConfKDV->Bci_block.Poles);
-    WDFunc::SetSPBData(this, "Stator_Slotes", ConfKDV->Bci_block.Stator_Slotes);
-    WDFunc::SetSPBData(this, "Rotor_bars", ConfKDV->Bci_block.Rotor_bars);
-    WDFunc::SetSPBData(this, "VibroType", ConfKDV->Bci_block.VibroType);
-    WDFunc::SetSPBData(this, "Sensors", ConfKDV->Bci_block.Sensors);
+    //    WDFunc::SetSPBData(this, "Unom1", ConfKDV->Bci_block.Unom1);
+    //    WDFunc::SetSPBData(this, "U2nom", ConfKDV->Bci_block.U2nom);
+    //    WDFunc::SetSPBData(this, "ITT1nom", ConfKDV->Bci_block.ITT1nom);
+    //    WDFunc::SetSPBData(this, "ITT2nom", ConfKDV->Bci_block.ITT2nom);
+    //    WDFunc::SetSPBData(this, "Iwnom", ConfKDV->Bci_block.Iwnom);
+    //    WDFunc::SetSPBData(this, "DUosc", ConfKDV->Bci_block.DUosc);
+    //    WDFunc::SetSPBData(this, "DIosc", ConfKDV->Bci_block.DIosc);
 
-    WDFunc::SetSPBData(this, "T_Data_Rec", ConfKDV->Bci_block.T_Data_Rec);
-    WDFunc::SetSPBData(this, "OscPoints", ConfKDV->Bci_block.OscPoints);
-    WDFunc::SetSPBData(this, "TdatNum", ConfKDV->Bci_block.TdatNum);
+    WDFunc::SetSPBData(this, "DUImin", S2::getRecord(BciNumber::DUImin_ID).value<float>());
+    WDFunc::SetSPBData(this, "Imin", S2::getRecord(BciNumber::Imin).value<float>());
+    WDFunc::SetSPBData(this, "TNNTdop", S2::getRecord(BciNumber::TNNTdop).value<float>());
+    WDFunc::SetSPBData(this, "TNNTpred", S2::getRecord(BciNumber::TNNTpred).value<float>());
+    WDFunc::SetSPBData(this, "Tamb_nom", S2::getRecord(BciNumber::Tamb_nom).value<float>());
+    WDFunc::SetSPBData(this, "dTNNTnom", S2::getRecord(BciNumber::dTNNTnom).value<float>());
+    WDFunc::SetSPBData(this, "Kdob", S2::getRecord(BciNumber::Kdob).value<float>());
+    WDFunc::SetSPBData(this, "TauWnom", S2::getRecord(BciNumber::TauWnom).value<float>());
+    WDFunc::SetSPBData(this, "Umax", S2::getRecord(BciNumber::Umaxm).value<float>());
+
+    //    WDFunc::SetSPBData(this, "DUImin", ConfKDV->Bci_block.DUImin);
+    //    WDFunc::SetSPBData(this, "Imin", ConfKDV->Bci_block.Imin);
+    //    WDFunc::SetSPBData(this, "TNNTdop", ConfKDV->Bci_block.TNNTdop);
+    //    WDFunc::SetSPBData(this, "TNNTpred", ConfKDV->Bci_block.TNNTpred);
+    //    WDFunc::SetSPBData(this, "Tamb_nom", ConfKDV->Bci_block.Tamb_nom);
+    //    WDFunc::SetSPBData(this, "dTNNTnom", ConfKDV->Bci_block.dTNNTnom);
+    //    WDFunc::SetSPBData(this, "Kdob", ConfKDV->Bci_block.Kdob);
+    //    WDFunc::SetSPBData(this, "TauWnom", ConfKDV->Bci_block.TauWnom);
+    //    WDFunc::SetSPBData(this, "Umax", ConfKDV->Bci_block.Umax);
+
+    WDFunc::SetSPBData(this, "Imax", S2::getRecord(BciNumber::Imaxm).value<float>());
+    WDFunc::SetSPBData(this, "GTnnt", S2::getRecord(BciNumber::GTnnt).value<float>());
+    WDFunc::SetSPBData(this, "GOvc", S2::getRecord(BciNumber::GOvc).value<float>());
+    WDFunc::SetSPBData(this, "Fnom", S2::getRecord(BciNumber::Fnom).value<float>());
+    WDFunc::SetSPBData(this, "nom_slip", S2::getRecord(BciNumber::nom_slip).value<float>());
+    WDFunc::SetSPBData(this, "UVmax", S2::getRecord(BciNumber::UVmax).value<float>());
+    WDFunc::SetSPBData(this, "Kvibr", S2::getRecord(BciNumber::Kvibr).value<float>());
+    WDFunc::SetSPBData(this, "VibrA_pred", S2::getRecord(BciNumber::VibrA_pred).value<float>());
+    WDFunc::SetSPBData(this, "VibrV_pred", S2::getRecord(BciNumber::VibrV_pred).value<float>());
+
+    //    WDFunc::SetSPBData(this, "Imax", ConfKDV->Bci_block.Imax);
+    //    WDFunc::SetSPBData(this, "GTnnt", ConfKDV->Bci_block.GTnnt);
+    //    WDFunc::SetSPBData(this, "GOvc", ConfKDV->Bci_block.GOvc);
+    //    WDFunc::SetSPBData(this, "Fnom", ConfKDV->Bci_block.Fnom);
+    //    WDFunc::SetSPBData(this, "nom_slip", ConfKDV->Bci_block.nom_slip);
+    //    WDFunc::SetSPBData(this, "UVmax", ConfKDV->Bci_block.UVmax);
+    //    WDFunc::SetSPBData(this, "Kvibr", ConfKDV->Bci_block.Kvibr);
+    //    WDFunc::SetSPBData(this, "VibrA_pred", ConfKDV->Bci_block.VibrA_pred);
+    //    WDFunc::SetSPBData(this, "VibrV_pred", ConfKDV->Bci_block.VibrV_pred);
+
+    WDFunc::SetSPBData(this, "VibrD_pred", S2::getRecord(BciNumber::VibrD_pred).value<float>());
+    WDFunc::SetSPBData(this, "VibrA_alarm", S2::getRecord(BciNumber::VibrA_alarm).value<float>());
+    WDFunc::SetSPBData(this, "VibrV_alarm", S2::getRecord(BciNumber::VibrV_alarm).value<float>());
+    WDFunc::SetSPBData(this, "VibrD_alarm", S2::getRecord(BciNumber::VibrD_alarm).value<float>());
+    WDFunc::SetSPBData(this, "VVibrA_pred", S2::getRecord(BciNumber::VVibrA_pred).value<float>());
+    WDFunc::SetSPBData(this, "VVibrV_pred", S2::getRecord(BciNumber::VVibrV_pred).value<float>());
+    WDFunc::SetSPBData(this, "VVibrD_pred", S2::getRecord(BciNumber::VVibrD_pred).value<float>());
+    WDFunc::SetSPBData(this, "VVibrA_alarm", S2::getRecord(BciNumber::VVibrA_alarm).value<float>());
+    WDFunc::SetSPBData(this, "VVibrV_alarm", S2::getRecord(BciNumber::VVibrA_alarm).value<float>());
+    WDFunc::SetSPBData(this, "VVibrD_alarm", S2::getRecord(BciNumber::VVibrD_alarm).value<float>());
+
+    //    WDFunc::SetSPBData(this, "VibrD_pred", ConfKDV->Bci_block.VibrD_pred);
+    //    WDFunc::SetSPBData(this, "VibrA_alarm", ConfKDV->Bci_block.VibrA_alarm);
+    //    WDFunc::SetSPBData(this, "VibrV_alarm", ConfKDV->Bci_block.VibrV_alarm);
+    //    WDFunc::SetSPBData(this, "VibrD_alarm", ConfKDV->Bci_block.VibrD_alarm);
+    //    WDFunc::SetSPBData(this, "VVibrA_pred", ConfKDV->Bci_block.VVibrA_pred);
+    //    WDFunc::SetSPBData(this, "VVibrV_pred", ConfKDV->Bci_block.VVibrV_pred);
+    //    WDFunc::SetSPBData(this, "VVibrD_pred", ConfKDV->Bci_block.VVibrD_pred);
+    //    WDFunc::SetSPBData(this, "VVibrA_alarm", ConfKDV->Bci_block.VVibrA_alarm);
+    //    WDFunc::SetSPBData(this, "VVibrV_alarm", ConfKDV->Bci_block.VVibrV_alarm);
+    //    WDFunc::SetSPBData(this, "VVibrD_alarm", ConfKDV->Bci_block.VVibrD_alarm);
+
+    WDFunc::SetSPBData(this, "NumA", S2::getRecord(BciNumber::NumA_KDV).value<DWORD>());
+    WDFunc::SetSPBData(this, "Poles", S2::getRecord(BciNumber::Poles).value<DWORD>());
+    WDFunc::SetSPBData(this, "Stator_Slotes", S2::getRecord(BciNumber::Stator_Slotes).value<DWORD>());
+    WDFunc::SetSPBData(this, "Rotor_bars", S2::getRecord(BciNumber::Rotor_bars).value<DWORD>());
+    WDFunc::SetSPBData(this, "VibroType", S2::getRecord(BciNumber::VibroType).value<DWORD>());
+    WDFunc::SetSPBData(this, "Sensors", S2::getRecord(BciNumber::Sensors).value<DWORD>());
+    WDFunc::SetSPBData(this, "T_Data_Rec", S2::getRecord(BciNumber::T_Data_Rec).value<DWORD>());
+    WDFunc::SetSPBData(this, "OscPoints", S2::getRecord(BciNumber::OscPoints).value<DWORD>());
+    WDFunc::SetSPBData(this, "TdatNum", S2::getRecord(BciNumber::TdatNum).value<DWORD>());
+
+    //    WDFunc::SetSPBData(this, "NumA", ConfKDV->Bci_block.NumA);
+    //    WDFunc::SetSPBData(this, "Poles", ConfKDV->Bci_block.Poles);
+    //    WDFunc::SetSPBData(this, "Stator_Slotes", ConfKDV->Bci_block.Stator_Slotes);
+    //    WDFunc::SetSPBData(this, "Rotor_bars", ConfKDV->Bci_block.Rotor_bars);
+    //    WDFunc::SetSPBData(this, "VibroType", ConfKDV->Bci_block.VibroType);
+    //    WDFunc::SetSPBData(this, "Sensors", ConfKDV->Bci_block.Sensors);
+    //    WDFunc::SetSPBData(this, "T_Data_Rec", ConfKDV->Bci_block.T_Data_Rec);
+    //    WDFunc::SetSPBData(this, "OscPoints", ConfKDV->Bci_block.OscPoints);
+    //    WDFunc::SetSPBData(this, "TdatNum", ConfKDV->Bci_block.TdatNum);
 
     //.........................................................
     //    ConfKxx->Fill();
@@ -906,9 +571,9 @@ void ConfKDVDialog::FillBackKdv()
 
     //.........................................................
 
-    cbidx = WDFunc::CBIndex(this, "Eq_type");
+    cbidx = WDFunc::CBIndex(this, nameByValue(BciNumber::Eq_type));
     ConfKDV->Bci_block.Eq_type = cbidx;
-    cbidx = WDFunc::CBIndex(this, "Cool_type");
+    cbidx = WDFunc::CBIndex(this, nameByValue(BciNumber::Cool_type));
     ConfKDV->Bci_block.Cool_type = cbidx;
     cbidx = WDFunc::CBIndex(this, "W_mat");
     ConfKDV->Bci_block.W_mat = cbidx;
@@ -976,131 +641,8 @@ void ConfKDVDialog::CheckConf()
 {
 }
 
-// QWidget *ConfKDVDialog::analogWidget()
-//{
-//    QWidget *widget = new QWidget;
-//    QVBoxLayout *lyout = new QVBoxLayout;
-//    QGridLayout *gridlyout = new QGridLayout;
-//    QScrollArea *scrollArea = new QScrollArea;
-
-//    scrollArea->setFrameShape(QFrame::NoFrame);
-//    scrollArea->setWidgetResizable(true);
-
-//    int row = 0;
-//    QGroupBox *gb = new QGroupBox("Аналоговые параметры");
-
-//    QLabel *lbl = new QLabel("Тип контролируемого оборудования:");
-//    gridlyout->addWidget(lbl, row, 1, 1, 1, Qt::AlignLeft);
-//    QStringList cbl = QStringList { "Асинхронный двигатель", "Трансформатор", "Реактор" };
-//    auto *cb = WDFunc::NewCB2(this, "Eq_type", cbl);
-//    cb->setMinimumHeight(20);
-//    gridlyout->addWidget(cb, row, 2, 1, 3);
-//    row++;
-
-//    lbl = new QLabel("Вид охлаждения:");
-//    gridlyout->addWidget(lbl, row, 1, 1, 1, Qt::AlignLeft);
-//    cbl = QStringList { "Естественное", "Принудительное" };
-//    cb = WDFunc::NewCB2(this, "Cool_type", cbl);
-//    cb->setMinimumHeight(20);
-//    gridlyout->addWidget(cb, row, 2, 1, 3);
-//    row++;
-
-//    lbl = new QLabel("Материал обмотки:");
-//    gridlyout->addWidget(lbl, row, 1, 1, 1, Qt::AlignLeft);
-//    cbl = QStringList { "Медь", "Алюминий" };
-//    cb = WDFunc::NewCB2(this, "W_mat", cbl);
-//    cb->setMinimumHeight(20);
-//    gridlyout->addWidget(cb, row, 2, 1, 3);
-//    row++;
-
-//    gridlyout->addWidget(WDFunc::NewLBL2(this, "Номинальное линейное первичное напряжение, кВ:"), row, 1, 1, 1);
-//    gridlyout->addWidget(WDFunc::NewSPB2(this, "Unom1", 0, 10000, 2), row, 2, 1, 3);
-//    row++;
-
-//    gridlyout->addWidget(WDFunc::NewLBL2(this, "Номинальное вторичное напряжение первой тройки, В:"), row, 1, 1, 1);
-//    gridlyout->addWidget(WDFunc::NewSPB2(this, "U2nom", 0, 10000, 1), row, 2, 1, 3);
-//    row++;
-
-//    gridlyout->addWidget(WDFunc::NewLBL2(this, "Номинальный первичный ток, кА:"), row, 1, 1, 1);
-//    gridlyout->addWidget(WDFunc::NewSPB2(this, "ITT1nom", 0, 10000, 0), row, 2, 1, 3);
-//    row++;
-
-//    gridlyout->addWidget(WDFunc::NewLBL2(this, "Номинальный вторичный ток, А:"), row, 1, 1, 1);
-//    gridlyout->addWidget(WDFunc::NewSPB2(this, "ITT2nom", 0, 10000, 1), row, 2, 1, 3);
-//    row++;
-
-//    gridlyout->addWidget(WDFunc::NewLBL2(this, "Номинальный ток контролируемой обмотки, À:"), row, 1, 1, 1);
-//    gridlyout->addWidget(WDFunc::NewSPB2(this, "Iwnom", 0, 10000, 1), row, 2, 1, 3);
-//    row++;
-
-//    gridlyout->addWidget(WDFunc::NewLBL2(this, "Номинальная температура окружающей среды, °С:"), row, 1, 1, 1);
-//    gridlyout->addWidget(WDFunc::NewSPB2(this, "Tamb_nom", 0, 10000, 1), row, 2, 1, 3);
-//    row++;
-
-//    gridlyout->addWidget(
-//        WDFunc::NewLBL2(this, "Превышение температуры ННТ при номинальной нагрузке, °С:"), row, 1, 1, 1);
-//    gridlyout->addWidget(WDFunc::NewSPB2(this, "dTNNTnom", 0, 10000, 1), row, 2, 1, 3);
-//    row++;
-
-//    gridlyout->addWidget(WDFunc::NewLBL2(this, "Коэффициент добавочных потерь:"), row, 1, 1, 1);
-//    gridlyout->addWidget(WDFunc::NewSPB2(this, "Kdob", 0, 10000, 1), row, 2, 1, 3);
-//    row++;
-
-//    gridlyout->addWidget(
-//        WDFunc::NewLBL2(this, "Постоянная времени нагрева обмотки в номинальном режиме, мин:"), row, 1, 1, 1);
-//    gridlyout->addWidget(WDFunc::NewSPB2(this, "TauWnom", 0, 10000, 1), row, 2, 1, 3);
-//    row++;
-
-//    gridlyout->addWidget(WDFunc::NewLBL2(this,
-//                             "Максимальное измеряемое фазное напряжение на входе "
-//                             "прибора, В эфф (не более 305В):"),
-//        row, 1, 1, 1);
-//    gridlyout->addWidget(WDFunc::NewSPB2(this, "Umax", 0, 10000, 1), row, 2, 1, 3);
-//    row++;
-
-//    gridlyout->addWidget(WDFunc::NewLBL2(this,
-//                             "Максимальный измеряемый ток на входе "
-//                             "прибора, А эфф  (не более 33А):"),
-//        row, 1, 1, 1);
-//    gridlyout->addWidget(WDFunc::NewSPB2(this, "Imax", 0, 10000, 1), row, 2, 1, 3);
-//    row++;
-
-//    gridlyout->addWidget(WDFunc::NewLBL2(this,
-//                             "Количество датчиков температуры обмоток, "
-//                             "подключенных по Modbus Master:"),
-//        row, 1, 1, 1);
-//    gridlyout->addWidget(WDFunc::NewSPB2(this, "TdatNum", 0, 10000, 0), row, 2, 1, 3);
-//    row++;
-
-//    gridlyout->addWidget(WDFunc::NewLBL2(this, "Номинальная частота, Гц"), row, 1, 1, 1);
-//    gridlyout->addWidget(WDFunc::NewSPB2(this, "Fnom", 0, 1000, 1), row, 2, 1, 3);
-//    row++;
-
-//    gridlyout->addWidget(WDFunc::NewLBL2(this, "Номинальное скольжение"), row, 1, 1, 1);
-//    gridlyout->addWidget(WDFunc::NewSPB2(this, "nom_slip", 0, 10000, 1), row, 2, 1, 3);
-//    row++;
-
-//    gridlyout->addWidget(
-//        WDFunc::NewLBL2(this, "Максимальная амплитуда сигналов вибраций (1,25, 2,5, 5,0В)"), row, 1, 1, 1);
-//    gridlyout->addWidget(WDFunc::NewSPB2(this, "UVmax", 0, 10000, 0), row, 2, 1, 3);
-//    row++;
-
-//    gb->setLayout(gridlyout);
-
-//    scrollArea->setWidget(widget);
-//    lyout->addWidget(gb);
-
-//    widget->setLayout(lyout);
-//    return widget;
-//}
-
-// void ConfKDVDialog::setConnections()
-//{
-//    //    connect(&DataManager, &DataManager::floatReceived)
-//}
-
 void ConfKDVDialog::SetDefConf()
 {
-    ConfKDV->SetDefConf();
-    Fill();
+    // ConfKDV->SetDefConf();
+    // Fill();
 }
