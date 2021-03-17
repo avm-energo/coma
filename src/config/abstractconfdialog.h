@@ -46,6 +46,10 @@ protected:
     {
         WDFunc::SetSPBData(parent, nameByValue(number), S2::getRecord(number).value<T>());
     }
+    template <typename T> void SPBData(QObject *parent, unsigned number)
+    {
+        S2::setRecordValue({ number, WDFunc::SPBData<T>(parent, nameByValue(number)) });
+    }
 
 private slots:
     void SaveConfToFile();

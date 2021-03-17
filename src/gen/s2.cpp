@@ -590,7 +590,7 @@ DataTypes::DataRecV S2::getRecord(unsigned int id)
         return *result;
     else
     {
-        qDebug() << Error::NullDataError;
+        qDebug() << Error::NullDataError << id;
         return DataTypes::DataRecV();
     }
 }
@@ -602,6 +602,8 @@ void S2::setRecordValue(const DataTypes::DataRecV &record)
         std::begin(configV), std::end(configV), [record](const auto &lhs) { return (lhs.getId() == record.getId()); });
     if (result != std::end(configV))
     {
+        qDebug() << record.getId();
+
         Q_ASSERT(result->getIndex() == record.getIndex());
         *result = record;
     }
