@@ -1,6 +1,8 @@
 #pragma once
-
+#include "../gen/s2.h"
+#include "../module/modules.h"
 #include "../widgets/udialog.h"
+#include "../widgets/wd_func.h"
 //#define MAXBYTEARRAY 65535
 //#define MAXCONFSIZE 4096 // максимальный размер файла конфигурации
 
@@ -32,6 +34,18 @@ protected:
     virtual void SetupUI() = 0;
     bool PrepareConfToWrite();
     void uponInterfaceSetting() override;
+    QString nameByValue(quint32 number)
+    {
+        return QString::number(number);
+    }
+    template <typename T> void SetCBIndex(QObject *parent, unsigned number)
+    {
+        WDFunc::SetCBIndex(parent, nameByValue(number), S2::getRecord(number).value<T>());
+    }
+    template <typename T> void SetSPBData(QObject *parent, unsigned number)
+    {
+        WDFunc::SetSPBData(parent, nameByValue(number), S2::getRecord(number).value<T>());
+    }
 
 private slots:
     void SaveConfToFile();
