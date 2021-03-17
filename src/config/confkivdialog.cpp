@@ -4,6 +4,7 @@
 #include "../gen/board.h"
 #include "../gen/error.h"
 #include "../gen/s2.h"
+#include "../widgets/basespinboxgroup.h"
 #include "../widgets/wd_func.h"
 
 #include <QGridLayout>
@@ -43,41 +44,39 @@ QWidget *ConfKIVDialog::analogWidget()
     QGridLayout *gridlyout = new QGridLayout;
     gridlyout->setAlignment(Qt::AlignVCenter);
 
-    const QStringList phase { "Фаза A:", "Фаза B:", "Фаза C:" };
+    const QStringList phases { "Фаза A:", "Фаза B:", "Фаза C:" };
 
     int row = 0;
     QGroupBox *gb = new QGroupBox("Аналоговые параметры");
 
     gridlyout->addWidget(WDFunc::NewLBL2(this, "Номинальное линейное первичное напряжение, кВ:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB2(this, NAMEOF(CKIV->Bci_block.Unom1), 0, 10000, 0), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::Unom1), 0, 10000, 0), row, 2, 1, 3);
     row++;
 
     gridlyout->addWidget(WDFunc::NewLBL2(this, "Номинальное вторичное напряжение первой тройки, В:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB2(this, NAMEOF(CKIV->Bci_block.U2nom), 0, 10000, 1), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::U2nom), 0, 10000, 1), row, 2, 1, 3);
     row++;
 
-    for (int i = 0; i < phase.size(); i++)
+    QHBoxLayout *hlyout = new QHBoxLayout;
+
+    for (const auto &phase : phases)
     {
-        gridlyout->addWidget(WDFunc::NewLBL2(this, phase.at(i)), row, 2 + i, 1, 1, Qt::AlignTop);
+        hlyout->addWidget(new QLabel(phase, this));
     }
+    gridlyout->addLayout(hlyout, row, 2, 1, 1, Qt::AlignTop);
+
     row++;
 
     gridlyout->addWidget(WDFunc::NewLBL2(this, "Паспортные значения ёмкости вводов, пФ:"), row, 1, 1, 1, Qt::AlignTop);
-    for (int i = 0; i < 3; i++)
-    {
 
-        gridlyout->addWidget(WDFunc::NewSPB2(this, NAMEOF(CKIV->Bci_block.C_pasp) + QString::number(i), 0, 20000, 1),
-            row, 2 + i, 1, 1, Qt::AlignTop);
-    }
+    gridlyout->addWidget(
+        WDFunc::NewSPBG<3>(this, nameByValue(BciNumber::C_Pasp_ID), 0, 20000, 1), row, 2, 1, 1, Qt::AlignTop);
     row++;
 
     gridlyout->addWidget(WDFunc::NewLBL2(this, "Паспортные значения tg вводов, %:"), row, 1, 1, 1);
 
-    for (int i = 0; i < 3; i++)
-    {
-        gridlyout->addWidget(
-            WDFunc::NewSPB2(this, NAMEOF(CKIV->Bci_block.Tg_pasp) + QString::number(i), 0, 10, 2), row, 2 + i, 1, 1);
-    }
+    gridlyout->addWidget(WDFunc::NewSPBG<3>(this, nameByValue(BciNumber::Tg_Pasp_ID), 0, 10, 2), row, 2, 1, 1);
+
     row++;
 
     gb->setLayout(gridlyout);
@@ -99,33 +98,33 @@ QWidget *ConfKIVDialog::thresholdsWidget()
 
     gridlyout->addWidget(
         WDFunc::NewLBL2(this, "Уставка предупредительной сигнализации по изменению емкости, %:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB2(this, NAMEOF(CKIV->Bci_block.dC_pred), 0, 10000, 1), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::dC_pred), 0, 10000, 1), row, 2, 1, 3);
 
     row++;
     gridlyout->addWidget(
         WDFunc::NewLBL2(this, "Уставка аварийной сигнализации по изменению емкости, %:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB2(this, NAMEOF(CKIV->Bci_block.dC_alarm), 0, 10000, 1), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::dC_alarm), 0, 10000, 1), row, 2, 1, 3);
 
     row++;
     gridlyout->addWidget(
         WDFunc::NewLBL2(this, "Уставка предупредительной сигнализации по изменению tg δ, %:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB2(this, NAMEOF(CKIV->Bci_block.dTg_pred), 0, 1000, 1), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::dTg_pred), 0, 1000, 1), row, 2, 1, 3);
 
     row++;
     gridlyout->addWidget(WDFunc::NewLBL2(this, "Уставка аварийной сигнализации по изменению tg δ, %:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB2(this, NAMEOF(CKIV->Bci_block.dTg_alarm), 0, 10000, 1), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::dTg_alarm), 0, 10000, 1), row, 2, 1, 3);
 
     row++;
     gridlyout->addWidget(WDFunc::NewLBL2(this,
                              "Уставка предупредительной сигнализации по "
                              "изменению небаланса токов, %:"),
         row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB2(this, NAMEOF(CKIV->Bci_block.dIunb_pred), 0, 10000, 1), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::dIunb_pred), 0, 10000, 1), row, 2, 1, 3);
 
     row++;
     gridlyout->addWidget(
         WDFunc::NewLBL2(this, "Уставка аварийной сигнализации по изменению небаланса токов, %:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB2(this, NAMEOF(CKIV->Bci_block.dIunb_alarm), 0, 10000, 1), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::dIunb_alarm), 0, 10000, 1), row, 2, 1, 3);
 
     gb->setLayout(gridlyout);
     lyout->addWidget(gb);
@@ -136,11 +135,11 @@ QWidget *ConfKIVDialog::thresholdsWidget()
     row = 0;
     gridlyout->addWidget(
         WDFunc::NewLBL2(this, "Уставка контроля минимума напряжения (в % от номинального):"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB2(this, NAMEOF(CKIV->Bci_block.Umin), 0, 10000, 1), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::DUImin_ID), 0, 10000, 1), row, 2, 1, 3);
 
     row++;
     gridlyout->addWidget(WDFunc::NewLBL2(this, "Уставка контроля минимума тока (в % от Imax):"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB2(this, NAMEOF(CKIV->Bci_block.Imin), 0, 10000, 1), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::Imin), 0, 10000, 1), row, 2, 1, 3);
 
     gb->setLayout(gridlyout);
     lyout->addWidget(gb);
@@ -159,17 +158,17 @@ QWidget *ConfKIVDialog::remainsWidget()
 
     gridlyout->addWidget(
         WDFunc::NewLBL2(this, "Гистерезис на отключение сигнализации по dC, % от уставки:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB2(this, NAMEOF(CKIV->Bci_block.GdC), 0, 10000, 1), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::GdC), 0, 10000, 1), row, 2, 1, 3);
 
     row++;
     gridlyout->addWidget(
         WDFunc::NewLBL2(this, "Гистерезис на отключение сигнализации по dTg, % от уставки:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB2(this, NAMEOF(CKIV->Bci_block.GdTg), 0, 10000, 3), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::GdTg), 0, 10000, 3), row, 2, 1, 3);
 
     row++;
     gridlyout->addWidget(
         WDFunc::NewLBL2(this, "Гистерезис на отключение сигнализации по небалансу токов, %:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB2(this, NAMEOF(CKIV->Bci_block.GdIunb), 0, 10000, 1), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::GdIunb), 0, 10000, 1), row, 2, 1, 3);
     gb->setLayout(gridlyout);
     lyout->addWidget(gb);
 
@@ -180,23 +179,23 @@ QWidget *ConfKIVDialog::remainsWidget()
 
     row = 0;
     gridlyout->addWidget(WDFunc::NewLBL2(this, "Низкое напряжение для сигнализации:"), row, 0, 1, 1, Qt::AlignLeft);
-    gridlyout->addWidget(WDFunc::NewSPB2(this, NAMEOF(CKIV->Bci_block.LowU), 0, 10000, 1), row, 1, 1, 1);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::LowU), 0, 10000, 1), row, 1, 1, 1);
 
     gridlyout->addWidget(
-        WDFunc::NewChB2(this, NAMEOF(CKIV->Bci_block.IsU), "Сигнализация по наличию входного напряжения, % от ном."),
+        WDFunc::NewChB2(this, nameByValue(BciNumber::IsU), "Сигнализация по наличию входного напряжения, % от ном."),
         row, 2, 1, 1);
 
     row++;
     gridlyout->addWidget(
         WDFunc::NewLBL2(this, "Задержка на формирование предупредительных событий, сек:"), row, 0, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB2(this, NAMEOF(CKIV->Bci_block.Tevent_pred), 0, 10000, 1), row, 1, 1, 1);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::Tevent_pred), 0, 10000, 1), row, 1, 1, 1);
 
     gridlyout->addWidget(
-        WDFunc::NewChB2(this, NAMEOF(CKIV->Bci_block.IsIunb), "Сигнализация по небалансу токов"), row, 2, 1, 1);
+        WDFunc::NewChB2(this, nameByValue(BciNumber::IsIuIunb), "Сигнализация по небалансу токов"), row, 2, 1, 1);
 
     row++;
     gridlyout->addWidget(WDFunc::NewLBL2(this, "Задержка на формирование аварийных событий, сек:"), row, 0, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB2(this, NAMEOF(CKIV->Bci_block.Tevent_alarm), 0, 10000, 1), row, 1, 1, 1);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::Tevent_alarm), 0, 10000, 1), row, 1, 1, 1);
 
     gb->setLayout(gridlyout);
     lyout->addWidget(gb);
@@ -207,11 +206,11 @@ QWidget *ConfKIVDialog::remainsWidget()
     row = 0;
     gridlyout->addWidget(
         WDFunc::NewLBL2(this, "Интервал усреднения данных  (в периодах основной частоты):"), row, 0, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB2(this, NAMEOF(CKIV->Bci_block.NFiltr), 0, 10000, 0), row, 1, 1, 3);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::NFiltr_ID), 0, 10000, 0), row, 1, 1, 3);
 
     row++;
     gridlyout->addWidget(WDFunc::NewLBL2(this, "Интервал записи данных в ПЗУ (тренд), в секундах:"), row, 0, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB2(this, NAMEOF(CKIV->Bci_block.T_Data_Rec), 0, 10000, 0), row, 1, 1, 3);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::T_Data_Rec), 0, 10000, 0), row, 1, 1, 3);
 
     gb->setLayout(gridlyout);
     lyout->addWidget(gb);
@@ -251,76 +250,75 @@ QWidget *ConfKIVDialog::connectionWidget()
 void ConfKIVDialog::FillKiv()
 {
     using namespace DataTypes;
-    WDFunc::SetSPBData(this, NAMEOF(CKIV->Bci_block.Unom1), S2::getRecord(BciNumber::Unom1).value<float>());
-    WDFunc::SetSPBData(this, NAMEOF(CKIV->Bci_block.Umin), S2::getRecord(BciNumber::DUImin_ID).value<float>());
-    WDFunc::SetSPBData(this, NAMEOF(CKIV->Bci_block.Imin), S2::getRecord(BciNumber::Imin).value<float>());
+    SetSPBData<float>(this, BciNumber::Unom1);
+    SetSPBData<float>(this, BciNumber::DUImin_ID);
+    SetSPBData<float>(this, BciNumber::Imin);
 
     const auto tg_pasp = S2::getRecord(BciNumber::Tg_Pasp_ID).value<FLOAT_3t>();
-    for (auto i = 0; i != tg_pasp.size(); ++i)
-        WDFunc::SetSPBData(this, NAMEOF(CKIV->Bci_block.Tg_pasp) + QString::number(i), tg_pasp.at(i));
+    WDFunc::SetSPBGData(this, nameByValue(BciNumber::Tg_Pasp_ID), tg_pasp);
+
     const auto c_pasp = S2::getRecord(BciNumber::C_Pasp_ID).value<FLOAT_3t>();
-    for (auto i = 0; i != c_pasp.size(); ++i)
-        WDFunc::SetSPBData(this, NAMEOF(CKIV->Bci_block.C_pasp) + QString::number(i), c_pasp.at(i));
+    WDFunc::SetSPBGData(this, nameByValue(BciNumber::C_Pasp_ID), c_pasp);
 
-    WDFunc::SetSPBData(this, NAMEOF(CKIV->Bci_block.dC_pred), S2::getRecord(BciNumber::dC_pred).value<float>());
-    WDFunc::SetSPBData(this, NAMEOF(CKIV->Bci_block.dC_alarm), S2::getRecord(BciNumber::dC_alarm).value<float>());
-    WDFunc::SetSPBData(this, NAMEOF(CKIV->Bci_block.dTg_pred), S2::getRecord(BciNumber::dTg_pred).value<float>());
-    WDFunc::SetSPBData(this, NAMEOF(CKIV->Bci_block.dTg_alarm), S2::getRecord(BciNumber::dTg_alarm).value<float>());
-    WDFunc::SetSPBData(this, NAMEOF(CKIV->Bci_block.dIunb_pred), S2::getRecord(BciNumber::dIunb_pred).value<float>());
-    WDFunc::SetSPBData(this, NAMEOF(CKIV->Bci_block.dIunb_alarm), S2::getRecord(BciNumber::dIunb_alarm).value<float>());
-    WDFunc::SetSPBData(this, NAMEOF(CKIV->Bci_block.GdC), S2::getRecord(BciNumber::GdC).value<float>());
-    WDFunc::SetSPBData(this, NAMEOF(CKIV->Bci_block.GdTg), S2::getRecord(BciNumber::GdTg).value<float>());
-    WDFunc::SetSPBData(this, NAMEOF(CKIV->Bci_block.GdIunb), S2::getRecord(BciNumber::GdIunb).value<float>());
+    SetSPBData<float>(this, BciNumber::dC_pred);
+    SetSPBData<float>(this, BciNumber::dC_alarm);
+    SetSPBData<float>(this, BciNumber::dTg_pred);
+    SetSPBData<float>(this, BciNumber::dTg_alarm);
+    SetSPBData<float>(this, BciNumber::dIunb_pred);
+    SetSPBData<float>(this, BciNumber::dIunb_alarm);
 
-    WDFunc::SetSPBData(this, NAMEOF(CKIV->Bci_block.NFiltr), S2::getRecord(BciNumber::NFiltr_ID).value<DWORD>());
-    WDFunc::SetSPBData(this, NAMEOF(CKIV->Bci_block.T_Data_Rec), S2::getRecord(BciNumber::T_Data_Rec).value<DWORD>());
+    //// Значения не записываются
+    SetSPBData<float>(this, BciNumber::GdC);
+    SetSPBData<float>(this, BciNumber::GdTg);
+    SetSPBData<float>(this, BciNumber::GdIunb);
+    ////
 
-    WDFunc::SetSPBData(this, NAMEOF(CKIV->Bci_block.U2nom), S2::getRecord(BciNumber::U2nom).value<float>());
-    WDFunc::SetSPBData(this, NAMEOF(CKIV->Bci_block.LowU), S2::getRecord(BciNumber::LowU).value<float>());
+    SetSPBData<DWORD>(this, BciNumber::NFiltr_ID);
+    SetSPBData<DWORD>(this, BciNumber::T_Data_Rec);
 
-    WDFunc::SetSPBData(this, NAMEOF(CKIV->Bci_block.Tevent_pred), S2::getRecord(BciNumber::Tevent_pred).value<DWORD>());
-    WDFunc::SetSPBData(
-        this, NAMEOF(CKIV->Bci_block.Tevent_alarm), S2::getRecord(BciNumber::Tevent_alarm).value<DWORD>());
+    SetSPBData<float>(this, BciNumber::U2nom);
+    SetSPBData<float>(this, BciNumber::LowU);
 
-    WDFunc::SetChBData(this, NAMEOF(CKIV->Bci_block.IsU), bool(S2::getRecord(BciNumber::IsU).value<BYTE>()));
-    WDFunc::SetChBData(this, NAMEOF(CKIV->Bci_block.IsIunb), bool(S2::getRecord(BciNumber::IsIuIunb).value<BYTE>()));
+    SetSPBData<DWORD>(this, BciNumber::Tevent_pred);
+    SetSPBData<DWORD>(this, BciNumber::Tevent_alarm);
+
+    WDFunc::SetChBData(this, nameByValue(BciNumber::IsU), bool(S2::getRecord(BciNumber::IsU).value<BYTE>()));
+    WDFunc::SetChBData(this, nameByValue(BciNumber::IsIuIunb), bool(S2::getRecord(BciNumber::IsIuIunb).value<BYTE>()));
 }
 
 void ConfKIVDialog::FillBackKiv()
 {
     using namespace DataTypes;
-    S2::setRecordValue({ BciNumber::Unom1, WDFunc::SPBData<float>(this, NAMEOF(CKIV->Bci_block.Unom1)) });
-    S2::setRecordValue({ BciNumber::DUImin_ID, WDFunc::SPBData<float>(this, NAMEOF(CKIV->Bci_block.Umin)) });
-    S2::setRecordValue({ BciNumber::Imin, WDFunc::SPBData<float>(this, NAMEOF(CKIV->Bci_block.Imin)) });
+    SPBDataS2<float>(this, BciNumber::Unom1);
+    SPBDataS2<float>(this, BciNumber::DUImin_ID);
+    SPBDataS2<float>(this, BciNumber::Imin);
 
     FLOAT_3t tg_pasp;
-    for (auto i = 0; i != tg_pasp.size(); ++i)
-        tg_pasp.at(i) = WDFunc::SPBData<float>(this, NAMEOF(CKIV->Bci_block.Tg_pasp) + QString::number(i));
+    WDFunc::SPBGData(this, nameByValue(BciNumber::Tg_Pasp_ID), tg_pasp);
     S2::setRecordValue({ BciNumber::Tg_Pasp_ID, tg_pasp });
 
     FLOAT_3t c_pasp;
-    for (auto i = 0; i != c_pasp.size(); ++i)
-        c_pasp.at(i) = WDFunc::SPBData<float>(this, NAMEOF(CKIV->Bci_block.C_pasp) + QString::number(i));
+    WDFunc::SPBGData(this, nameByValue(BciNumber::C_Pasp_ID), c_pasp);
     S2::setRecordValue({ BciNumber::C_Pasp_ID, c_pasp });
 
-    S2::setRecordValue({ BciNumber::dC_pred, WDFunc::SPBData<float>(this, NAMEOF(CKIV->Bci_block.dC_pred)) });
-    S2::setRecordValue({ BciNumber::dC_alarm, WDFunc::SPBData<float>(this, NAMEOF(CKIV->Bci_block.dC_alarm)) });
-    S2::setRecordValue({ BciNumber::dTg_pred, WDFunc::SPBData<float>(this, NAMEOF(CKIV->Bci_block.dTg_pred)) });
-    S2::setRecordValue({ BciNumber::dTg_alarm, WDFunc::SPBData<float>(this, NAMEOF(CKIV->Bci_block.dTg_alarm)) });
-    S2::setRecordValue({ BciNumber::dIunb_pred, WDFunc::SPBData<float>(this, NAMEOF(CKIV->Bci_block.dIunb_pred)) });
-    S2::setRecordValue({ BciNumber::dIunb_alarm, WDFunc::SPBData<float>(this, NAMEOF(CKIV->Bci_block.dIunb_alarm)) });
+    SPBDataS2<float>(this, BciNumber::dC_pred);
+    SPBDataS2<float>(this, BciNumber::dC_alarm);
+    SPBDataS2<float>(this, BciNumber::dTg_pred);
+    SPBDataS2<float>(this, BciNumber::dTg_alarm);
+    SPBDataS2<float>(this, BciNumber::dIunb_pred);
+    SPBDataS2<float>(this, BciNumber::dIunb_alarm);
 
-    S2::setRecordValue({ BciNumber::NFiltr_ID, WDFunc::SPBData<DWORD>(this, NAMEOF(CKIV->Bci_block.NFiltr)) });
-    S2::setRecordValue({ BciNumber::T_Data_Rec, WDFunc::SPBData<DWORD>(this, NAMEOF(CKIV->Bci_block.T_Data_Rec)) });
+    SPBDataS2<DWORD>(this, BciNumber::NFiltr_ID);
+    SPBDataS2<DWORD>(this, BciNumber::T_Data_Rec);
 
-    S2::setRecordValue({ BciNumber::U2nom, WDFunc::SPBData<float>(this, NAMEOF(CKIV->Bci_block.U2nom)) });
-    S2::setRecordValue({ BciNumber::LowU, WDFunc::SPBData<float>(this, NAMEOF(CKIV->Bci_block.LowU)) });
+    SPBDataS2<float>(this, BciNumber::U2nom);
+    SPBDataS2<float>(this, BciNumber::LowU);
 
-    S2::setRecordValue({ BciNumber::Tevent_pred, WDFunc::SPBData<DWORD>(this, NAMEOF(CKIV->Bci_block.Tevent_pred)) });
-    S2::setRecordValue({ BciNumber::Tevent_alarm, WDFunc::SPBData<DWORD>(this, NAMEOF(CKIV->Bci_block.Tevent_alarm)) });
+    SPBDataS2<DWORD>(this, BciNumber::Tevent_pred);
+    SPBDataS2<DWORD>(this, BciNumber::Tevent_alarm);
 
-    S2::setRecordValue({ BciNumber::IsU, BYTE(WDFunc::ChBData(this, NAMEOF(CKIV->Bci_block.IsU))) });
-    S2::setRecordValue({ BciNumber::IsIuIunb, BYTE(WDFunc::ChBData(this, NAMEOF(CKIV->Bci_block.IsIunb))) });
+    S2::setRecordValue({ BciNumber::IsU, BYTE(WDFunc::ChBData(this, nameByValue(BciNumber::IsU))) });
+    S2::setRecordValue({ BciNumber::IsIuIunb, BYTE(WDFunc::ChBData(this, nameByValue(BciNumber::IsIuIunb))) });
 }
 
 void ConfKIVDialog::SetupUI()

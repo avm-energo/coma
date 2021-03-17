@@ -1,5 +1,6 @@
 SOURCES += \
     $$PWD/abstractconfdialog.cpp \
+    $$PWD/baseconfig.cpp \
     $$PWD/conf8084dialog.cpp \
     $$PWD/config.cpp \
     $$PWD/configblock.cpp \
@@ -13,6 +14,7 @@ SOURCES += \
 
 HEADERS += \
     $$PWD/abstractconfdialog.h \
+    $$PWD/baseconfig.h \
     $$PWD/conf8084dialog.h \
     $$PWD/config.h \
     $$PWD/configblock.h \

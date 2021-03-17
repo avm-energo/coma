@@ -2,6 +2,7 @@ SOURCES += \
     $$PWD/aboutwidget.cpp  \
     $$PWD/alarmbutton.cpp  \
     $$PWD/alarmwidget.cpp  \
+    $$PWD/basespinboxgroup.cpp \
     $$PWD/coma.cpp \
     $$PWD/ecombobox.cpp  \
     $$PWD/edoublespinbox.cpp  \
@@ -26,6 +27,7 @@ HEADERS += \
     $$PWD/aboutwidget.h \
     $$PWD/alarmbutton.h \
     $$PWD/alarmwidget.h \
+    $$PWD/basespinboxgroup.h \
     $$PWD/coma.h \
     $$PWD/ecombobox.h \
     $$PWD/edoublespinbox.h \

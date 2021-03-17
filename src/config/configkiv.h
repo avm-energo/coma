@@ -11,7 +11,7 @@ public:
     explicit ConfigKIV();
     ~ConfigKIV();
 
-    AVM_KIV::Bci Bci_block;
+    // AVM_KIV::Bci Bci_block;
 
     void setDefConf();
     Config *MainConfig();

@@ -5,6 +5,8 @@
 #include "etableview.h"
 //#include "passwordlineedit.h"
 
+#include "basespinboxgroup.h"
+
 #include <QCheckBox>
 #include <QDebug>
 #include <QDoubleSpinBox>
@@ -82,12 +84,29 @@ public:
         QWidget *parent, const QString &spbname, double min, double max, int decimals, const QString &spbcolor = "");
 
     static QDoubleSpinBox *NewSPB2(QWidget *parent, const QString &spbname, double min, double max, int decimals);
-    //    static EDoubleSpinBox *NewSPB2(QWidget *parent, const unsigned value, double min, double max, int decimals)
-    //    {
-    //        return NewSPB2(parent, parent->metaObject()->className() + QString::number(value), min, max, decimals);
-    //    }
+    template <size_t N>
+    static DoubleSpinBoxGroup<N> *NewSPBG(QWidget *parent, const QString &spbname, double min, double max, int decimals)
+    {
+        auto spinBoxGroup = new DoubleSpinBoxGroup<N>(parent);
+        spinBoxGroup->setObjectName(spbname);
+        double step = std::pow(0.1f, decimals);
+        spinBoxGroup->setSingleStep(step);
+        spinBoxGroup->setDecimals(decimals);
+        spinBoxGroup->setMinimum(min);
+        spinBoxGroup->setMaximum(max);
+        return spinBoxGroup;
+    }
 
     static bool SetSPBData(QObject *w, const QString &spbname, const double &spbvalue);
+    template <size_t N, typename T>
+    static bool SetSPBGData(QWidget *w, const QString &spbname, const std::array<T, N> spbvalue)
+    {
+        auto *spbg = static_cast<DoubleSpinBoxGroup<N> *>(w->findChild<QWidget *>(spbname));
+        if (spbg == nullptr)
+            return false;
+        spbg->setValue(spbvalue);
+        return true;
+    }
     template <typename T> static bool SPBData(QObject *w, const QString &spbname, T &spbvalue)
     {
         QDoubleSpinBox *spb = w->findChild<QDoubleSpinBox *>(spbname);
@@ -108,6 +127,17 @@ public:
             return 0;
         }
         return T(spb->value());
+    }
+    template <size_t N, typename T> static bool SPBGData(QWidget *w, const QString &spbname, std::array<T, N> &spbvalue)
+    {
+        auto *spbg = static_cast<DoubleSpinBoxGroup<N> *>(w->findChild<QWidget *>(spbname));
+        if (spbg == nullptr)
+        {
+            spbvalue = {};
+            return false;
+        }
+        spbvalue = spbg->value();
+        return true;
     }
     static bool SetLEColor(QWidget *w, const QString &lename, const QColor &color);
     [[deprecated("Use instead second version with global style sheet")]] static QLabel *NewLBL(QWidget *w,

@@ -40,25 +40,25 @@ QWidget *Config::MainWidget(QWidget *parent)
     glyout->setColumnStretch(2, 50);
 
     glyout->addWidget(WDFunc::NewLBL2(parent, "Адрес базовой станции:"), 0, 0, 1, 1, Qt::AlignLeft);
-    glyout->addWidget(WDFunc::NewSPB2(parent, NAMEOF(MainBlk.Abs_104), 0, 65535, 0), 0, 1, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(WDFunc::NewSPB2(parent, nameByValue(BciNumber::Abs_104), 0, 65535, 0), 0, 1, 1, 1, Qt::AlignLeft);
 
     glyout->addWidget(WDFunc::NewLBL2(parent, "Интервал циклического опроса, с:"), 1, 0, 1, 1, Qt::AlignLeft);
-    glyout->addWidget(WDFunc::NewSPB2(parent, NAMEOF(MainBlk.Cycle_104), 0, 255, 0), 1, 1, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(WDFunc::NewSPB2(parent, nameByValue(BciNumber::Cycle_104), 0, 255, 0), 1, 1, 1, 1, Qt::AlignLeft);
 
     glyout->addWidget(WDFunc::NewLBL2(parent, "Тайм-аут t1, с:"), 2, 0, 1, 1, Qt::AlignLeft);
-    glyout->addWidget(WDFunc::NewSPB2(parent, NAMEOF(MainBlk.T1_104), 0, 255, 0), 2, 1, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(WDFunc::NewSPB2(parent, nameByValue(BciNumber::T1_104), 0, 255, 0), 2, 1, 1, 1, Qt::AlignLeft);
 
     glyout->addWidget(WDFunc::NewLBL2(parent, "Тайм-аут t2, с:"), 3, 0, 1, 1, Qt::AlignLeft);
-    glyout->addWidget(WDFunc::NewSPB2(parent, NAMEOF(MainBlk.T2_104), 0, 255, 0), 3, 1, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(WDFunc::NewSPB2(parent, nameByValue(BciNumber::T2_104), 0, 255, 0), 3, 1, 1, 1, Qt::AlignLeft);
 
     glyout->addWidget(WDFunc::NewLBL2(parent, "Тайм-аут t3, с:"), 4, 0, 1, 1, Qt::AlignLeft);
-    glyout->addWidget(WDFunc::NewSPB2(parent, NAMEOF(MainBlk.T3_104), 0, 255, 0), 4, 1, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(WDFunc::NewSPB2(parent, nameByValue(BciNumber::T3_104), 0, 255, 0), 4, 1, 1, 1, Qt::AlignLeft);
 
     glyout->addWidget(WDFunc::NewLBL2(parent, "Макс. число неподтв. APDU (k):"), 5, 0, 1, 1, Qt::AlignLeft);
-    glyout->addWidget(WDFunc::NewSPB2(parent, NAMEOF(MainBlk.K_104), 0, 255, 0), 5, 1, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(WDFunc::NewSPB2(parent, nameByValue(BciNumber::k_104), 0, 255, 0), 5, 1, 1, 1, Qt::AlignLeft);
 
     glyout->addWidget(WDFunc::NewLBL2(parent, "Макс. число посл. подтв. APDU (w):"), 6, 0, 1, 1, Qt::AlignLeft);
-    glyout->addWidget(WDFunc::NewSPB2(parent, NAMEOF(MainBlk.W_104), 0, 255, 0), 6, 1, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(WDFunc::NewSPB2(parent, nameByValue(BciNumber::w_104), 0, 255, 0), 6, 1, 1, 1, Qt::AlignLeft);
 
     vlyout2->addLayout(glyout);
 
@@ -81,7 +81,7 @@ QWidget *Config::TimeWidget(QWidget *parent)
     glyout->addWidget(lbl, row, 0, 1, 1, Qt::AlignLeft);
 
     const QStringList cbl { "нет", "SNTP", "SNTP+PPS" };
-    glyout->addWidget(WDFunc::NewCB2(parent, NAMEOF(MainBlk.Ctype), cbl), row, 1, 1, 1);
+    glyout->addWidget(WDFunc::NewCB2(parent, nameByValue(BciNumber::CType), cbl), row, 1, 1, 1);
 
     vlyout2->addLayout(glyout);
 
@@ -101,15 +101,15 @@ void Config::Fill()
     if (s2typeM != Board::GetInstance().typeM())
         qCritical() << "Conflict typeB, module: " << QString::number(Board::GetInstance().typeM(), 16)
                     << " config: " << QString::number(s2typeM, 16);
-    WDFunc::SetSPBData(ParentMainbl, NAMEOF(MainBlk.Abs_104), S2::getRecord(BciNumber::Abs_104).value<DWORD>());
-    WDFunc::SetSPBData(ParentMainbl, NAMEOF(MainBlk.Cycle_104), S2::getRecord(BciNumber::Cycle_104).value<DWORD>());
-    WDFunc::SetSPBData(ParentMainbl, NAMEOF(MainBlk.T1_104), S2::getRecord(BciNumber::T1_104).value<DWORD>());
-    WDFunc::SetSPBData(ParentMainbl, NAMEOF(MainBlk.T2_104), S2::getRecord(BciNumber::T2_104).value<DWORD>());
-    WDFunc::SetSPBData(ParentMainbl, NAMEOF(MainBlk.T3_104), S2::getRecord(BciNumber::T3_104).value<DWORD>());
-    WDFunc::SetSPBData(ParentMainbl, NAMEOF(MainBlk.K_104), S2::getRecord(BciNumber::k_104).value<DWORD>());
-    WDFunc::SetSPBData(ParentMainbl, NAMEOF(MainBlk.W_104), S2::getRecord(BciNumber::w_104).value<DWORD>());
+    SetSPBData<DWORD>(ParentMainbl, BciNumber::Abs_104);
+    SetSPBData<DWORD>(ParentMainbl, BciNumber::Cycle_104);
+    SetSPBData<DWORD>(ParentMainbl, BciNumber::T1_104);
+    SetSPBData<DWORD>(ParentMainbl, BciNumber::T2_104);
+    SetSPBData<DWORD>(ParentMainbl, BciNumber::T3_104);
+    SetSPBData<DWORD>(ParentMainbl, BciNumber::k_104);
+    SetSPBData<DWORD>(ParentMainbl, BciNumber::w_104);
 
-    WDFunc::SetCBIndex(ParentCtype, NAMEOF(MainBlk.Ctype),
+    WDFunc::SetCBIndex(ParentCtype, nameByValue(BciNumber::CType),
         StdFunc::countSetBits(S2::getRecord(BciNumber::CType).value<DWORD>() & 0x0a));
 }
 
@@ -120,15 +120,15 @@ void Config::FillBack()
     S2::setRecordValue({ BciNumber::MTypeB_ID, DWORD(Board::GetInstance().typeB()) });
     S2::setRecordValue({ BciNumber::MTypeE_ID, DWORD(Board::GetInstance().typeM()) });
 
-    S2::setRecordValue({ BciNumber::Abs_104, WDFunc::SPBData<DWORD>(ParentMainbl, NAMEOF(MainBlk.Abs_104)) });
-    S2::setRecordValue({ BciNumber::Cycle_104, WDFunc::SPBData<DWORD>(ParentMainbl, NAMEOF(MainBlk.Cycle_104)) });
-    S2::setRecordValue({ BciNumber::T1_104, WDFunc::SPBData<DWORD>(ParentMainbl, NAMEOF(MainBlk.T1_104)) });
-    S2::setRecordValue({ BciNumber::T2_104, WDFunc::SPBData<DWORD>(ParentMainbl, NAMEOF(MainBlk.T2_104)) });
-    S2::setRecordValue({ BciNumber::T3_104, WDFunc::SPBData<DWORD>(ParentMainbl, NAMEOF(MainBlk.T3_104)) });
-    S2::setRecordValue({ BciNumber::k_104, WDFunc::SPBData<DWORD>(ParentMainbl, NAMEOF(MainBlk.K_104)) });
-    S2::setRecordValue({ BciNumber::w_104, WDFunc::SPBData<DWORD>(ParentMainbl, NAMEOF(MainBlk.W_104)) });
+    SPBDataS2<DWORD>(ParentMainbl, BciNumber::Abs_104);
+    SPBDataS2<DWORD>(ParentMainbl, BciNumber::Cycle_104);
+    SPBDataS2<DWORD>(ParentMainbl, BciNumber::T1_104);
+    SPBDataS2<DWORD>(ParentMainbl, BciNumber::T2_104);
+    SPBDataS2<DWORD>(ParentMainbl, BciNumber::T3_104);
+    SPBDataS2<DWORD>(ParentMainbl, BciNumber::k_104);
+    SPBDataS2<DWORD>(ParentMainbl, BciNumber::w_104);
 
-    int cbidx = WDFunc::CBIndex(ParentCtype, NAMEOF(MainBlk.Ctype));
+    int cbidx = WDFunc::CBIndex(ParentCtype, nameByValue(BciNumber::CType));
     switch (cbidx)
     {
     case 1:

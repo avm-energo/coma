@@ -3,22 +3,21 @@
 
 #include "../gen/datatypes.h"
 #include "../module/modules.h"
+#include "baseconfig.h"
 
 #include <QMap>
 
-class Config
+class Config : BaseConfig
 {
 public:
     explicit Config();
+    ~Config() {};
 
-    Bci::BciMain MainBlk {};
-
-    //  void setConfig();
-    void SetDefConf();
+    void SetDefConf() override;
     QWidget *MainWidget(QWidget *parent);
     QWidget *TimeWidget(QWidget *parent);
-    void Fill();
-    void FillBack();
+    void Fill() override;
+    void FillBack() override;
 
     static void removeFotter();
 

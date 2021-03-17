@@ -168,7 +168,7 @@ QWidget *AbstractConfDialog::ConfButtons()
     connect(pb, &QAbstractButton::clicked, this, &AbstractConfDialog::SaveConfToFile);
     wdgtlyout->addWidget(pb, 1, 1, 1, 1);
     pb = new QPushButton("Взять конфигурацию по умолчанию");
-    connect(pb, &QAbstractButton::clicked, this, &AbstractConfDialog::SetDefConf);
+    connect(pb, &QAbstractButton::clicked, this, [this] { SetDefConf(); });
     wdgtlyout->addWidget(pb, 2, 0, 1, 2);
     wdgt->setLayout(wdgtlyout);
     return wdgt;

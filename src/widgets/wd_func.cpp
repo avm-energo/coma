@@ -349,7 +349,7 @@ QDoubleSpinBox *WDFunc::NewSPB2(QWidget *parent, const QString &spbname, double 
 
 bool WDFunc::SetSPBData(QObject *w, const QString &spbname, const double &spbvalue)
 {
-    EDoubleSpinBox *spb = w->findChild<EDoubleSpinBox *>(spbname);
+    QDoubleSpinBox *spb = w->findChild<QDoubleSpinBox *>(spbname);
     if (spb == nullptr)
         return false;
     spb->setValue(spbvalue);
