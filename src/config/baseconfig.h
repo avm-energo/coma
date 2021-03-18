@@ -16,19 +16,19 @@ public:
     // реализовать или отказаться
     virtual void CheckConf() {};
 
-    QString nameByValue(quint32 number)
+    inline QString nameByValue(quint32 number)
     {
         return QString::number(number);
     }
-    template <typename T> bool SetCBIndex(QObject *parent, unsigned number)
+    template <typename T> inline bool SetCBIndex(QObject *parent, unsigned number)
     {
         return WDFunc::SetCBIndex(parent, nameByValue(number), S2::getRecord(number).value<T>());
     }
-    template <typename T> bool SetSPBData(QObject *parent, unsigned number)
+    template <typename T> inline bool SetSPBData(QObject *parent, unsigned number)
     {
         return WDFunc::SetSPBData(parent, nameByValue(number), S2::getRecord(number).value<T>());
     }
-    template <typename T> void SPBDataS2(QObject *parent, unsigned number)
+    template <typename T> inline void SPBDataS2(QObject *parent, unsigned number)
     {
         S2::setRecordValue({ number, WDFunc::SPBData<T>(parent, nameByValue(number)) });
     }

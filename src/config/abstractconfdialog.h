@@ -21,10 +21,6 @@ protected:
     virtual void SetupUI() = 0;
     bool PrepareConfToWrite();
     void uponInterfaceSetting() override;
-    template <typename T> void SPBData(QObject *parent, unsigned number)
-    {
-        S2::setRecordValue({ number, WDFunc::SPBData<T>(parent, nameByValue(number)) });
-    }
 
 private slots:
     void SaveConfToFile();

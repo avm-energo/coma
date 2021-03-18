@@ -602,9 +602,9 @@ void S2::setRecordValue(const DataTypes::DataRecV &record)
         std::begin(configV), std::end(configV), [record](const auto &lhs) { return (lhs.getId() == record.getId()); });
     if (result != std::end(configV))
     {
-        qDebug() << record.getId();
-
-        Q_ASSERT(result->getIndex() == record.getIndex());
+        // buffer is here for debug purposes
+        [[maybe_unused]] DataTypes::DataRecV &buffer = *result;
+        Q_ASSERT(result->typeIndex() == record.typeIndex());
         *result = record;
     }
     else

@@ -12,8 +12,6 @@ public:
     ~ConfKDVDialog();
 
 private:
-    bool Variable;
-
     void Fill() override;
     void FillBack() override;
     void SetupUI() override;

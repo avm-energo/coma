@@ -87,7 +87,7 @@ public:
     }
 
     unsigned int getId() const;
-    auto getIndex() const
+    size_t typeIndex() const
     {
         return data.index();
     }

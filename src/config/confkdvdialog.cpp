@@ -492,48 +492,48 @@ void ConfKDVDialog::FillKdv()
 
 void ConfKDVDialog::FillBackKdv()
 {
-    bool tmpb;
+    //  bool tmpb;
     using namespace DataTypes;
 
-    SPBData<DWORD>(this, BciNumber::NFiltr_ID);
-    SPBData<DWORD>(this, BciNumber::NHarmFilt_ID);
-    SPBData<float>(this, BciNumber::Unom1);
-    SPBData<float>(this, BciNumber::U2nom);
-    SPBData<float>(this, BciNumber::ITT1nom_KTF_KDV);
-    SPBData<float>(this, BciNumber::ITT2nom_KTF_KDV);
-    SPBData<float>(this, BciNumber::Iwnom);
-    SPBData<float>(this, BciNumber::DUosc);
-    SPBData<float>(this, BciNumber::DIosc_ID);
-    SPBData<float>(this, BciNumber::DUImin_ID);
-    SPBData<float>(this, BciNumber::Imin);
-    SPBData<float>(this, BciNumber::TNNTdop);
-    SPBData<float>(this, BciNumber::TNNTpred);
-    SPBData<float>(this, BciNumber::Tamb_nom);
-    SPBData<float>(this, BciNumber::dTNNTnom);
-    SPBData<float>(this, BciNumber::Kdob);
-    SPBData<float>(this, BciNumber::TauWnom);
-    SPBData<float>(this, BciNumber::Umaxm);
+    SPBDataS2<DWORD>(this, BciNumber::NFiltr_ID);
+    SPBDataS2<DWORD>(this, BciNumber::NHarmFilt_ID);
+    SPBDataS2<float>(this, BciNumber::Unom1);
+    SPBDataS2<float>(this, BciNumber::U2nom);
+    SPBDataS2<float>(this, BciNumber::ITT1nom_KTF_KDV);
+    SPBDataS2<float>(this, BciNumber::ITT2nom_KTF_KDV);
+    SPBDataS2<float>(this, BciNumber::Iwnom);
+    SPBDataS2<float>(this, BciNumber::DUosc);
+    SPBDataS2<float>(this, BciNumber::DIosc_ID);
+    SPBDataS2<float>(this, BciNumber::DUImin_ID);
+    SPBDataS2<float>(this, BciNumber::Imin);
+    SPBDataS2<float>(this, BciNumber::TNNTdop);
+    SPBDataS2<float>(this, BciNumber::TNNTpred);
+    SPBDataS2<float>(this, BciNumber::Tamb_nom);
+    SPBDataS2<float>(this, BciNumber::dTNNTnom);
+    SPBDataS2<float>(this, BciNumber::Kdob);
+    SPBDataS2<float>(this, BciNumber::TauWnom);
+    SPBDataS2<float>(this, BciNumber::Umaxm);
 
-    SPBData<float>(this, BciNumber::Imaxm); //проверить конец
-    SPBData<float>(this, BciNumber::GTnnt);
-    SPBData<float>(this, BciNumber::GOvc);
-    SPBData<float>(this, BciNumber::Fnom);
-    SPBData<float>(this, BciNumber::nom_slip);
-    SPBData<float>(this, BciNumber::UVmax);
-    SPBData<float>(this, BciNumber::Kvibr);
+    SPBDataS2<float>(this, BciNumber::Imaxm); //проверить конец
+    SPBDataS2<float>(this, BciNumber::GTnnt);
+    SPBDataS2<float>(this, BciNumber::GOvc);
+    SPBDataS2<float>(this, BciNumber::Fnom);
+    SPBDataS2<float>(this, BciNumber::nom_slip);
+    SPBDataS2<float>(this, BciNumber::UVmax);
+    SPBDataS2<float>(this, BciNumber::Kvibr);
 
-    SPBData<float>(this, BciNumber::VibrA_pred);
-    SPBData<float>(this, BciNumber::VibrV_pred);
-    SPBData<float>(this, BciNumber::VibrD_pred);
-    SPBData<float>(this, BciNumber::VibrA_alarm);
-    SPBData<float>(this, BciNumber::VibrV_alarm);
-    SPBData<float>(this, BciNumber::VibrD_alarm);
-    SPBData<float>(this, BciNumber::VVibrA_pred);
-    SPBData<float>(this, BciNumber::VVibrV_pred);
-    SPBData<float>(this, BciNumber::VVibrD_pred);
-    SPBData<float>(this, BciNumber::VVibrA_alarm);
-    SPBData<float>(this, BciNumber::VVibrV_alarm);
-    SPBData<float>(this, BciNumber::VVibrD_alarm);
+    SPBDataS2<float>(this, BciNumber::VibrA_pred);
+    SPBDataS2<float>(this, BciNumber::VibrV_pred);
+    SPBDataS2<float>(this, BciNumber::VibrD_pred);
+    SPBDataS2<float>(this, BciNumber::VibrA_alarm);
+    SPBDataS2<float>(this, BciNumber::VibrV_alarm);
+    SPBDataS2<float>(this, BciNumber::VibrD_alarm);
+    SPBDataS2<float>(this, BciNumber::VVibrA_pred);
+    SPBDataS2<float>(this, BciNumber::VVibrV_pred);
+    SPBDataS2<float>(this, BciNumber::VVibrD_pred);
+    SPBDataS2<float>(this, BciNumber::VVibrA_alarm);
+    SPBDataS2<float>(this, BciNumber::VVibrV_alarm);
+    SPBDataS2<float>(this, BciNumber::VVibrD_alarm);
 
     SetSPBData<DWORD>(this, BciNumber::NumA_KDV);
     SetSPBData<DWORD>(this, BciNumber::Poles);
@@ -621,6 +621,6 @@ void ConfKDVDialog::CheckConf()
 
 void ConfKDVDialog::SetDefConf()
 {
-    // ConfKDV->SetDefConf();
-    // Fill();
+    ConfKDV->SetDefConf();
+    Fill();
 }

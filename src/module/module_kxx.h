@@ -3,9 +3,7 @@
 #include "../gen/pch.h"
 #include "../interfaces/modbusprivate.h"
 
-#include <QDebug>
 #include <array>
-#include <vector>
 namespace AVM_KXX
 {
 
