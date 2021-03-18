@@ -35,7 +35,7 @@ void ConfKDVDialog::SetupUI()
 
     ConfTW->setObjectName("conftw");
     ConfTW->addTab(analogWidget(), "Аналоговые");
-    ConfTW->addTab(setWidget(), "Уставки");
+    ConfTW->addTab(settingWidget(), "Уставки");
 
     ConfTW->addTab(connectionWidget(), "Связь");
     ConfTW->addTab(ConfKDV->KxxConfig()->ModbusWidget(this), "ModBusMaster");
@@ -166,20 +166,41 @@ QWidget *ConfKDVDialog::analogWidget()
     return scrollArea;
 }
 
-QWidget *ConfKDVDialog::setWidget()
+QWidget *ConfKDVDialog::settingWidget()
 {
     QWidget *w = new QWidget;
     QVBoxLayout *lyout = new QVBoxLayout;
-    QGridLayout *gridlyout = new QGridLayout;
-    gridlyout->setAlignment(Qt::AlignVCenter);
     QScrollArea *scrollArea = new QScrollArea;
     scrollArea->setFrameShape(QFrame::NoFrame);
     scrollArea->setWidgetResizable(true);
 
+    lyout->addWidget(alarmWidget());
+    lyout->addWidget(hystWidget());
+    w->setLayout(lyout);
+    scrollArea->setWidget(w);
+
+    return scrollArea;
+}
+
+QWidget *ConfKDVDialog::alarmWidget()
+{
+    auto *vlyout = new QVBoxLayout;
+    QGroupBox *gb = new QGroupBox("Уставки сигнализации", this);
+
+    vlyout->addWidget(commonAlarmWidget());
+
+    vlyout->addWidget(vibrAlarmWidget());
+
+    gb->setLayout(vlyout);
+    return gb;
+}
+
+QWidget *ConfKDVDialog::commonAlarmWidget()
+{
     int row = 0;
-
-    QGroupBox *gb = new QGroupBox("Уставки сигнализации");
-
+    QGridLayout *gridlyout = new QGridLayout;
+    gridlyout->setAlignment(Qt::AlignVCenter);
+    QGroupBox *gb = new QGroupBox("Общие", this);
     gridlyout->addWidget(WDFunc::NewLBL2(this,
                              "Уставка скачка напряжения для запуска "
                              "осциллографирования - % от номинала:"),
@@ -201,84 +222,78 @@ QWidget *ConfKDVDialog::setWidget()
         WDFunc::NewLBL2(this, "Уставка порога минимального тока - % от номинального уровня:"), row, 1, 1, 1);
     gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::Imin), 0, 10000, 1), row, 2, 1, 3);
 
-    row++;
-    gridlyout->addWidget(WDFunc::NewLBL2(this, "Предельно допустимая температура ННТ в°С:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::TNNTdop), 0, 10000, 1), row, 2, 1, 3);
-
-    row++;
-    gridlyout->addWidget(
-        WDFunc::NewLBL2(this, "Уставка предупредительной сигнализации по температуре ННТ в °С:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::TNNTpred), 0, 10000, 1), row, 2, 1, 3);
-
-    row++;
-    gridlyout->addWidget(
-        WDFunc::NewLBL2(this, "Предупредительная уставка по СКЗ виброускорения, м/с/с:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::VibrA_pred), 0, 1000, 1), row, 2, 1, 3);
-
-    row++;
-    gridlyout->addWidget(WDFunc::NewLBL2(this, "Предупредительная уставка по СКЗ виброскорости, мм/с:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::VibrV_pred), 0, 10000, 1), row, 2, 1, 3);
-
-    row++;
-    gridlyout->addWidget(
-        WDFunc::NewLBL2(this, "Предупредительная уставка по СКЗ виброперемещения, мкм:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::VibrD_pred), 0, 10000, 1), row, 2, 1, 3);
-
-    row++;
-    gridlyout->addWidget(WDFunc::NewLBL2(this, "Аварийная уставка по СКЗ виброускорения, м/с/с:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::VibrA_alarm), 0, 1000, 1), row, 2, 1, 3);
-
-    row++;
-    gridlyout->addWidget(WDFunc::NewLBL2(this, "Аварийная уставка по СКЗ виброскорости, мм/с:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::VibrV_alarm), 0, 10000, 1), row, 2, 1, 3);
-
-    row++;
-    gridlyout->addWidget(WDFunc::NewLBL2(this, "Аварийная уставка по СКЗ виброперемещения, мкм:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::VibrD_alarm), 0, 10000, 1), row, 2, 1, 3);
-
-    row++;
-    gridlyout->addWidget(WDFunc::NewLBL2(this,
-                             "Предупредительная уставка по скорости роста СКЗ "
-                             "виброускорения, м/с/с:"),
-        row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::VVibrA_pred), 0, 1000, 1), row, 2, 1, 3);
-
-    row++;
-    gridlyout->addWidget(WDFunc::NewLBL2(this,
-                             "Предупредительная уставка по скорости роста СКЗ "
-                             "виброскорости, мм/с:"),
-        row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::VVibrV_pred), 0, 10000, 1), row, 2, 1, 3);
-
-    row++;
-    gridlyout->addWidget(WDFunc::NewLBL2(this,
-                             "Предупредительная уставка по скорости роста СКЗ "
-                             "виброперемещения, мкм:"),
-        row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::VVibrD_pred), 0, 10000, 1), row, 2, 1, 3);
-
-    row++;
-    gridlyout->addWidget(
-        WDFunc::NewLBL2(this, "Аварийная уставка по скорости роста СКЗ виброускорения, м/с/с:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::VVibrA_alarm), 0, 1000, 1), row, 2, 1, 3);
-
-    row++;
-    gridlyout->addWidget(
-        WDFunc::NewLBL2(this, "Аварийная уставка по скорости роста СКЗ виброскорости, мм/с:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::VVibrV_alarm), 0, 10000, 1), row, 2, 1, 3);
-
-    row++;
-    gridlyout->addWidget(
-        WDFunc::NewLBL2(this, "Аварийная уставка по скорости роста СКЗ виброперемещения, мкм:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::VVibrD_alarm), 0, 10000, 1), row, 2, 1, 3);
-
     gb->setLayout(gridlyout);
-    lyout->addWidget(gb);
+    return gb;
+}
 
-    //.....................................................................
-    gb = new QGroupBox("Гистерезис");
+QWidget *ConfKDVDialog::vibrAlarmWidget()
+{
+    int row = 0;
+    QGridLayout *gridlyout = new QGridLayout;
+    gridlyout->setAlignment(Qt::AlignVCenter);
+    QGroupBox *gb = new QGroupBox(this);
 
-    gridlyout = new QGridLayout;
+    constexpr int textColumn = 0;
+    constexpr int warnColumn = 1;
+    constexpr int accColumn = 2;
+
+    gridlyout->addWidget(new QLabel("Предупредительные", this), row, warnColumn);
+    gridlyout->addWidget(new QLabel("Аварийные", this), row, accColumn);
+    row++;
+
+    gridlyout->addWidget(WDFunc::NewLBL2(this, "Уставка сигнализации по температуре ННТ в °С:"), row, textColumn);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::TNNTpred), 0, 10000, 1), row, warnColumn);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::TNNTdop), 0, 10000, 1), row, accColumn);
+    row++;
+
+    gridlyout->addWidget(WDFunc::NewLBL2(this, "Уставка по СКЗ виброускорения, м/с/с:"), row, textColumn);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::VibrA_pred), 0, 1000, 1), row, warnColumn);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::VibrA_alarm), 0, 1000, 1), row, accColumn);
+
+    row++;
+    gridlyout->addWidget(WDFunc::NewLBL2(this, "Уставка по СКЗ виброскорости, мм/с:"), row, textColumn);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::VibrV_pred), 0, 10000, 1), row, warnColumn);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::VibrV_alarm), 0, 10000, 1), row, accColumn);
+
+    row++;
+    gridlyout->addWidget(WDFunc::NewLBL2(this, "Уставка по СКЗ виброперемещения, мкм:"), row, textColumn);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::VibrD_pred), 0, 10000, 1), row, warnColumn);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::VibrD_alarm), 0, 10000, 1), row, accColumn);
+
+    row++;
+    gridlyout->addWidget(WDFunc::NewLBL2(this,
+                             "Уставка по скорости роста СКЗ "
+                             "виброускорения, м/с/с:"),
+        row, textColumn);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::VVibrA_pred), 0, 1000, 1), row, warnColumn);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::VVibrA_alarm), 0, 1000, 1), row, accColumn);
+
+    row++;
+    gridlyout->addWidget(WDFunc::NewLBL2(this,
+                             "Уставка по скорости роста СКЗ "
+                             "виброскорости, мм/с:"),
+        row, textColumn);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::VVibrV_pred), 0, 10000, 1), row, warnColumn);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::VVibrV_alarm), 0, 10000, 1), row, accColumn);
+
+    row++;
+    gridlyout->addWidget(WDFunc::NewLBL2(this,
+                             "Уставка по скорости роста СКЗ "
+                             "виброперемещения, мкм:"),
+        row, textColumn);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::VVibrD_pred), 0, 10000, 1), row, warnColumn);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::VVibrD_alarm), 0, 10000, 1), row, accColumn);
+    gb->setLayout(gridlyout);
+    return gb;
+}
+
+QWidget *ConfKDVDialog::hystWidget()
+{
+    QGridLayout *gridlyout = new QGridLayout;
+    gridlyout->setAlignment(Qt::AlignVCenter);
+    QGroupBox *gb = new QGroupBox("Гистерезис");
+
+    int row = 0;
 
     gridlyout->addWidget(WDFunc::NewLBL2(this, "Гистерезис сигнализации по температуре ННТ,  град.С:"), row, 1, 1, 1);
     gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::GTnnt), 0, 10000, 3), row, 2, 1, 3);
@@ -289,22 +304,27 @@ QWidget *ConfKDVDialog::setWidget()
     gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::GOvc), 0, 10000, 1), row, 2, 1, 3);
 
     gb->setLayout(gridlyout);
-    lyout->addWidget(gb);
-    w->setLayout(lyout);
-    scrollArea->setWidget(w);
-
-    return scrollArea;
+    return gb;
 }
 
 QWidget *ConfKDVDialog::otherWidget()
 {
-    QWidget *w = new QWidget;
+    QWidget *w = new QWidget(this);
     QVBoxLayout *lyout = new QVBoxLayout;
-    QGridLayout *gridlyout = new QGridLayout;
-    QHBoxLayout *hlyout = new QHBoxLayout;
     QScrollArea *scrollArea = new QScrollArea;
     scrollArea->setFrameShape(QFrame::NoFrame);
     scrollArea->setWidgetResizable(true);
+
+    lyout->addWidget(recordWidget());
+    lyout->addWidget(motorWidget());
+    w->setLayout(lyout);
+    scrollArea->setWidget(w);
+    return scrollArea;
+}
+
+QWidget *ConfKDVDialog::recordWidget()
+{
+    QGridLayout *gridlyout = new QGridLayout;
     gridlyout->setAlignment(Qt::AlignVCenter);
 
     gridlyout->setColumnStretch(2, 50);
@@ -325,6 +345,7 @@ QWidget *ConfKDVDialog::otherWidget()
 
     row++;
     gridlyout->addWidget(WDFunc::NewLBL2(this, "Запуск осциллограммы:"), row, 1, 1, 1);
+    QHBoxLayout *hlyout = new QHBoxLayout;
     hlyout->addWidget(WDFunc::NewChB2(this, "oscchb.0", "по команде Ц"));
     //    hlyout->addWidget(WDFunc::NewChB(this, "oscchb.1", "по дискр. входу PD1", Colors::ACONFWCLR));
     hlyout->addWidget(WDFunc::NewChB2(this, "oscchb.2", "по резкому изменению"));
@@ -336,12 +357,15 @@ QWidget *ConfKDVDialog::otherWidget()
     gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::OscPoints), 0, 10000, 0), row, 2, 1, 3);
     QGroupBox *gb = new QGroupBox("Параметры записи");
     gb->setLayout(gridlyout);
-    lyout->addWidget(gb);
+    return gb;
+}
 
-    gb = new QGroupBox("Параметры двигателя");
-    gridlyout = new QGridLayout;
+QWidget *ConfKDVDialog::motorWidget()
+{
+    QGroupBox *gb = new QGroupBox("Параметры двигателя");
+    QGridLayout *gridlyout = new QGridLayout;
 
-    row = 0;
+    int row = 0;
     gridlyout->addWidget(WDFunc::NewLBL2(this, "Коэффициент передачи датчиков вибрации:"), row, 1, 1, 1);
     gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::Kvibr), 0, 10000, 2), row, 2, 1, 3);
 
@@ -370,10 +394,7 @@ QWidget *ConfKDVDialog::otherWidget()
     gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::Sensors), 0, 10000, 0), row, 2, 1, 3);
 
     gb->setLayout(gridlyout);
-    lyout->addWidget(gb);
-    w->setLayout(lyout);
-    scrollArea->setWidget(w);
-    return scrollArea;
+    return gb;
 }
 
 QWidget *ConfKDVDialog::connectionWidget()
@@ -485,14 +506,11 @@ void ConfKDVDialog::FillKdv()
     SetSPBData<DWORD>(this, BciNumber::T_Data_Rec);
     SetSPBData<DWORD>(this, BciNumber::OscPoints);
     SetSPBData<DWORD>(this, BciNumber::TdatNum);
-
-    //.........................................................
-    //    ConfKxx->Fill();
 }
 
 void ConfKDVDialog::FillBackKdv()
 {
-    //  bool tmpb;
+
     using namespace DataTypes;
 
     SPBDataS2<DWORD>(this, BciNumber::NFiltr_ID);
@@ -544,75 +562,6 @@ void ConfKDVDialog::FillBackKdv()
     SetSPBData<DWORD>(this, BciNumber::T_Data_Rec);
     SetSPBData<DWORD>(this, BciNumber::OscPoints);
     SetSPBData<DWORD>(this, BciNumber::TdatNum);
-
-    //    int cbidx;
-
-    //.........................................................
-
-    //    cbidx = WDFunc::CBIndex(this, nameByValue(BciNumber::Eq_type));
-    //    ConfKDV->Bci_block.Eq_type = cbidx;
-    //    cbidx = WDFunc::CBIndex(this, nameByValue(BciNumber::Cool_type));
-    //    ConfKDV->Bci_block.Cool_type = cbidx;
-    //    cbidx = WDFunc::CBIndex(this, nameByValue(BciNumber::W_mat));
-    //    ConfKDV->Bci_block.W_mat = cbidx;
-    // WDFunc::SPBData(this, nameByValue(BciNumber::NFiltr_ID), ConfKDV->Bci_block.NFiltr);
-    // WDFunc::SPBData(this, nameByValue(BciNumber::NHarmFilt_ID), ConfKDV->Bci_block.NHarmFilt);
-    // WDFunc::SPBData(this, "DDOsc", CKDV->Bci_block.DDOsc);
-
-    //        WDFunc::ChBData(this, "oscchb.0", tmpb);
-    //        ConfKDV->Bci_block.DDosc = 0;
-    //        ConfKDV->Bci_block.DDosc |= (tmpb) ? 0x0001 : 0x0000;
-    //        //    WDFunc::ChBData(this, "oscchb.1", tmpb);
-    //        //    KDV->Bci_block.DDosc |= (tmpb) ? 0x0002 : 0x0000;
-    //        WDFunc::ChBData(this, "oscchb.2", tmpb);
-    //        ConfKDV->Bci_block.DDosc |= (tmpb) ? 0x0004 : 0x0000;
-
-    //    WDFunc::SPBData(this, nameByValue(BciNumber::Unom1), ConfKDV->Bci_block.Unom1);
-    //    WDFunc::SPBData(this, nameByValue(BciNumber::U2nom), ConfKDV->Bci_block.U2nom);
-    //    WDFunc::SPBData(this, nameByValue(BciNumber::ITT1nom_KTF_KDV), ConfKDV->Bci_block.ITT1nom);
-    //    WDFunc::SPBData(this, nameByValue(BciNumber::ITT2nom_KTF_KDV), ConfKDV->Bci_block.ITT2nom);
-    //    WDFunc::SPBData(this, nameByValue(BciNumber::Iwnom), ConfKDV->Bci_block.Iwnom);
-    //    WDFunc::SPBData(this, nameByValue(BciNumber::DUosc), ConfKDV->Bci_block.DUosc);
-    //    WDFunc::SPBData(this, nameByValue(BciNumber::DIosc_ID), ConfKDV->Bci_block.DIosc);
-    //    WDFunc::SPBData(this, nameByValue(BciNumber::DUImin_ID), ConfKDV->Bci_block.DUImin);
-    //    WDFunc::SPBData(this, nameByValue(BciNumber::Imin), ConfKDV->Bci_block.Imin);
-    //    WDFunc::SPBData(this, nameByValue(BciNumber::TNNTdop), ConfKDV->Bci_block.TNNTdop);
-    //    WDFunc::SPBData(this, nameByValue(BciNumber::TNNTpred), ConfKDV->Bci_block.TNNTpred);
-    //    WDFunc::SPBData(this, nameByValue(BciNumber::Tamb_nom), ConfKDV->Bci_block.Tamb_nom);
-    //    WDFunc::SPBData(this, nameByValue(BciNumber::dTNNTnom), ConfKDV->Bci_block.dTNNTnom);
-    //    WDFunc::SPBData(this, nameByValue(BciNumber::Kdob), ConfKDV->Bci_block.Kdob);
-    //    WDFunc::SPBData(this, nameByValue(BciNumber::TauWnom), ConfKDV->Bci_block.TauWnom);
-    //    WDFunc::SPBData(this, nameByValue(BciNumber::Umaxm), ConfKDV->Bci_block.Umax);
-    //    WDFunc::SPBData(this, "Imax", ConfKDV->Bci_block.Imax);
-    //    WDFunc::SPBData(this, "GTnnt", ConfKDV->Bci_block.GTnnt);
-    //    WDFunc::SPBData(this, "GOvc", ConfKDV->Bci_block.GOvc);
-    //    WDFunc::SPBData(this, "Fnom", ConfKDV->Bci_block.Fnom);
-    //    WDFunc::SPBData(this, "nom_slip", ConfKDV->Bci_block.nom_slip);
-    //    WDFunc::SPBData(this, "UVmax", ConfKDV->Bci_block.UVmax);
-    //    WDFunc::SPBData(this, "Kvibr", ConfKDV->Bci_block.Kvibr);
-    //    WDFunc::SPBData(this, "VibrA_pred", ConfKDV->Bci_block.VibrA_pred);
-    //    WDFunc::SPBData(this, "VibrV_pred", ConfKDV->Bci_block.VibrV_pred);
-    //    WDFunc::SPBData(this, "VibrD_pred", ConfKDV->Bci_block.VibrD_pred);
-    //    WDFunc::SPBData(this, "VibrA_alarm", ConfKDV->Bci_block.VibrA_alarm);
-    //    WDFunc::SPBData(this, "VibrV_alarm", ConfKDV->Bci_block.VibrV_alarm);
-    //    WDFunc::SPBData(this, "VibrD_alarm", ConfKDV->Bci_block.VibrD_alarm);
-    //    WDFunc::SPBData(this, "VVibrA_pred", ConfKDV->Bci_block.VVibrA_pred);
-    //    WDFunc::SPBData(this, "VVibrV_pred", ConfKDV->Bci_block.VVibrV_pred);
-    //    WDFunc::SPBData(this, "VVibrD_pred", ConfKDV->Bci_block.VVibrD_pred);
-    //    WDFunc::SPBData(this, "VVibrA_alarm", ConfKDV->Bci_block.VVibrA_alarm);
-    //    WDFunc::SPBData(this, "VVibrV_alarm", ConfKDV->Bci_block.VVibrV_alarm);
-    //    WDFunc::SPBData(this, "VVibrD_alarm", ConfKDV->Bci_block.VVibrD_alarm);
-    //    WDFunc::SPBData(this, "NumA", ConfKDV->Bci_block.NumA);
-    //    WDFunc::SPBData(this, "Poles", ConfKDV->Bci_block.Poles);
-    //    WDFunc::SPBData(this, "Stator_Slotes", ConfKDV->Bci_block.Stator_Slotes);
-    //    WDFunc::SPBData(this, "Rotor_bars", ConfKDV->Bci_block.Rotor_bars);
-    //    WDFunc::SPBData(this, "VibroType", ConfKDV->Bci_block.VibroType);
-    //    WDFunc::SPBData(this, "Sensors", ConfKDV->Bci_block.Sensors);
-    //    WDFunc::SPBData(this, "T_Data_Rec", ConfKDV->Bci_block.T_Data_Rec);
-    //    WDFunc::SPBData(this, "OscPoints", ConfKDV->Bci_block.OscPoints);
-    //    WDFunc::SPBData(this, "TdatNum", ConfKDV->Bci_block.TdatNum);
-    //    //.........................................................
-    //    ConfKxx->FillBack();
 }
 
 void ConfKDVDialog::CheckConf()

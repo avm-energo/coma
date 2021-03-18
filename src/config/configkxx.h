@@ -3,18 +3,15 @@
 
 #include "../gen/datatypes.h"
 #include "../module/module_kxx.h"
-
-class ConfigKxx : public QObject
+#include "baseconfig.h"
+class ConfigKxx : public BaseConfig
 {
-    Q_OBJECT
 public:
-    ConfigKxx(QObject *parent = nullptr);
+    ConfigKxx();
 
-    void setConfig(S2DataTypes::S2ConfigType *config);
-    void setConfig();
-    void SetDefConf();
-    void Fill();
-    void FillBack();
+    void SetDefConf() override;
+    void Fill() override;
+    void FillBack() override;
     QWidget *ComParam(QWidget *parent);
     QWidget *ModbusWidget(QWidget *parent);
     QWidget *VariousWidget(QWidget *parent);
@@ -38,12 +35,6 @@ private:
         "данные", "регистр" };
     QList<QWidget *> WidgetList;
 
-    Bci::TempConfStruct TempConf;
-    Bci::StructTrele StrTrele;
-    Bci::StructModBus StrModBus {};
-    Bci::Com Com_param;
-
-private slots:
     void ChangeModbusGUI(int num);
 };
 

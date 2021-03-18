@@ -23,7 +23,7 @@ constexpr int DEF_ADRMB = 0;
 // constexpr int DEF_ISNTP 0
 // constexpr int DEF_ISPPS 0
 
-constexpr int DEF_RTERM = 100;
+constexpr float DEF_RTERM = 100.0f;
 constexpr float DEF_W100 = 1.385f;
 
 // constexpr int DEF_TRELE_PRED = 0;

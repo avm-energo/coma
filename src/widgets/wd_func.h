@@ -83,9 +83,11 @@ public:
     [[deprecated("Use instead second version with global style sheet")]] static QDoubleSpinBox *NewSPB(
         QWidget *parent, const QString &spbname, double min, double max, int decimals, const QString &spbcolor = "");
 
-    static QDoubleSpinBox *NewSPB2(QWidget *parent, const QString &spbname, double min, double max, int decimals);
+    static QDoubleSpinBox *NewSPB2(
+        QWidget *parent, const QString &spbname, const double min, const double max, const int decimals);
     template <size_t N>
-    static DoubleSpinBoxGroup<N> *NewSPBG(QWidget *parent, const QString &spbname, double min, double max, int decimals)
+    static DoubleSpinBoxGroup<N> *NewSPBG(
+        QWidget *parent, const QString &spbname, const double min, const double max, const int decimals)
     {
         auto spinBoxGroup = new DoubleSpinBoxGroup<N>(parent);
         spinBoxGroup->setObjectName(spbname);

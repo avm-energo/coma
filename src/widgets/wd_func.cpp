@@ -334,7 +334,8 @@ QDoubleSpinBox *WDFunc::NewSPB(
     return dsb;
 }
 
-QDoubleSpinBox *WDFunc::NewSPB2(QWidget *parent, const QString &spbname, double min, double max, int decimals)
+QDoubleSpinBox *WDFunc::NewSPB2(
+    QWidget *parent, const QString &spbname, const double min, const double max, const int decimals)
 {
     EDoubleSpinBox *dsb = new EDoubleSpinBox(parent);
 

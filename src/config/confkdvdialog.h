@@ -19,9 +19,14 @@ private:
 
 protected:
     QWidget *analogWidget();
-    QWidget *setWidget();
+    QWidget *settingWidget();
     QWidget *alarmWidget();
+    QWidget *commonAlarmWidget();
+    QWidget *vibrAlarmWidget();
+    QWidget *hystWidget();
     QWidget *otherWidget();
+    QWidget *recordWidget();
+    QWidget *motorWidget();
     virtual QWidget *connectionWidget();
 
     void FillKdv();
