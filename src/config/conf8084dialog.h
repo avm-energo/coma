@@ -11,7 +11,7 @@ public:
 private:
     void SetupUI() override;
     void Fill() override;
-    void FillBack() override;
+    void FillBack() const override;
 
     virtual QWidget *connectionWidget() override;
 signals:

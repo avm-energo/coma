@@ -1,9 +1,8 @@
 #ifndef CONFDIALOGKDV_H
 #define CONFDIALOGKDV_H
 
-#include "../config/configkdv.h"
 #include "abstractconfdialog.h"
-
+class ConfigKDV;
 class ConfKDVDialog : public AbstractConfDialog
 {
     Q_OBJECT
@@ -13,9 +12,9 @@ public:
 
 private:
     void Fill() override;
-    void FillBack() override;
+    void FillBack() const override;
     void SetupUI() override;
-    void CheckConf() override;
+    void CheckConf() const override;
 
 protected:
     QWidget *analogWidget();
@@ -30,7 +29,7 @@ protected:
     virtual QWidget *connectionWidget();
 
     void FillKdv();
-    void FillBackKdv();
+    void FillBackKdv() const;
 
     ConfigKDV *ConfKDV;
 

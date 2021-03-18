@@ -1,5 +1,6 @@
 #include "confkdvdialog.h"
 
+#include "../config/configkdv.h"
 #include "../gen/board.h"
 #include "../gen/error.h"
 #include "../gen/s2.h"
@@ -16,6 +17,10 @@
 #include <QTimer>
 #include <QVBoxLayout>
 #include <bitset>
+
+constexpr int textColumn = 0;
+constexpr int warnColumn = 1;
+constexpr int accColumn = 2;
 
 ConfKDVDialog::ConfKDVDialog(ConfigKDV *ckdv, QWidget *parent) : AbstractConfDialog(parent)
 {
@@ -197,6 +202,7 @@ QWidget *ConfKDVDialog::alarmWidget()
 
 QWidget *ConfKDVDialog::commonAlarmWidget()
 {
+
     int row = 0;
     QGridLayout *gridlyout = new QGridLayout;
     gridlyout->setAlignment(Qt::AlignVCenter);
@@ -204,24 +210,34 @@ QWidget *ConfKDVDialog::commonAlarmWidget()
     gridlyout->addWidget(WDFunc::NewLBL2(this,
                              "Уставка скачка напряжения для запуска "
                              "осциллографирования - % от номинала:"),
-        row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::DUosc), 0, 10000, 1), row, 2, 1, 3);
+        row, textColumn);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::DUosc), 0, 10000, 1), row, warnColumn);
 
     row++;
     gridlyout->addWidget(
-        WDFunc::NewLBL2(this, "Уставка скачка тока для запуска осциллографирования -  % от I2nom:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::DIosc_ID), 0, 10000, 1), row, 2, 1, 3);
+        WDFunc::NewLBL2(this, "Уставка скачка тока для запуска осциллографирования -  % от I2nom:"), row, textColumn);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::DIosc_ID), 0, 10000, 1), row, warnColumn);
 
     row++;
     gridlyout->addWidget(
-        WDFunc::NewLBL2(this, "Уставка порога минимального напряжения - % от номинального уровня:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::DUImin_ID), 0, 1000, 1), row, 2, 1, 3);
+        WDFunc::NewLBL2(this, "Уставка порога минимального напряжения - % от номинального уровня:"), row, textColumn);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::DUImin_ID), 0, 1000, 1), row, warnColumn);
 
     row++;
     gridlyout->addWidget(
-        WDFunc::NewLBL2(this, "Уставка порога минимального тока - % от номинального уровня:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::Imin), 0, 10000, 1), row, 2, 1, 3);
+        WDFunc::NewLBL2(this, "Уставка порога минимального тока - % от номинального уровня:"), row, textColumn);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::Imin), 0, 10000, 1), row, warnColumn);
+    row++;
 
+    gridlyout->addWidget(
+        WDFunc::NewLBL2(this, "Предупредительная уставка сигнализации по температуре ННТ в °С:"), row, textColumn);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::TNNTpred), 0, 10000, 1), row, warnColumn);
+    row++;
+
+    gridlyout->addWidget(
+        WDFunc::NewLBL2(this, "Аварийная уставка сигнализации по температуре ННТ в °С:"), row, textColumn);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::TNNTdop), 0, 10000, 1), row, warnColumn);
+    row++;
     gb->setLayout(gridlyout);
     return gb;
 }
@@ -233,17 +249,8 @@ QWidget *ConfKDVDialog::vibrAlarmWidget()
     gridlyout->setAlignment(Qt::AlignVCenter);
     QGroupBox *gb = new QGroupBox(this);
 
-    constexpr int textColumn = 0;
-    constexpr int warnColumn = 1;
-    constexpr int accColumn = 2;
-
     gridlyout->addWidget(new QLabel("Предупредительные", this), row, warnColumn);
     gridlyout->addWidget(new QLabel("Аварийные", this), row, accColumn);
-    row++;
-
-    gridlyout->addWidget(WDFunc::NewLBL2(this, "Уставка сигнализации по температуре ННТ в °С:"), row, textColumn);
-    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::TNNTpred), 0, 10000, 1), row, warnColumn);
-    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::TNNTdop), 0, 10000, 1), row, accColumn);
     row++;
 
     gridlyout->addWidget(WDFunc::NewLBL2(this, "Уставка по СКЗ виброускорения, м/с/с:"), row, textColumn);
@@ -434,7 +441,7 @@ void ConfKDVDialog::Fill()
     FillKdv();
 }
 
-void ConfKDVDialog::FillBack()
+void ConfKDVDialog::FillBack() const
 {
 
     ConfKDV->MainConfig()->FillBack();
@@ -508,7 +515,7 @@ void ConfKDVDialog::FillKdv()
     SetSPBData<DWORD>(this, BciNumber::TdatNum);
 }
 
-void ConfKDVDialog::FillBackKdv()
+void ConfKDVDialog::FillBackKdv() const
 {
 
     using namespace DataTypes;
@@ -553,18 +560,18 @@ void ConfKDVDialog::FillBackKdv()
     SPBDataS2<float>(this, BciNumber::VVibrV_alarm);
     SPBDataS2<float>(this, BciNumber::VVibrD_alarm);
 
-    SetSPBData<DWORD>(this, BciNumber::NumA_KDV);
-    SetSPBData<DWORD>(this, BciNumber::Poles);
-    SetSPBData<DWORD>(this, BciNumber::Stator_Slotes);
-    SetSPBData<DWORD>(this, BciNumber::Rotor_bars);
-    SetSPBData<DWORD>(this, BciNumber::VibroType);
-    SetSPBData<DWORD>(this, BciNumber::Sensors);
-    SetSPBData<DWORD>(this, BciNumber::T_Data_Rec);
-    SetSPBData<DWORD>(this, BciNumber::OscPoints);
-    SetSPBData<DWORD>(this, BciNumber::TdatNum);
+    SPBDataS2<DWORD>(this, BciNumber::NumA_KDV);
+    SPBDataS2<DWORD>(this, BciNumber::Poles);
+    SPBDataS2<DWORD>(this, BciNumber::Stator_Slotes);
+    SPBDataS2<DWORD>(this, BciNumber::Rotor_bars);
+    SPBDataS2<DWORD>(this, BciNumber::VibroType);
+    SPBDataS2<DWORD>(this, BciNumber::Sensors);
+    SPBDataS2<DWORD>(this, BciNumber::T_Data_Rec);
+    SPBDataS2<DWORD>(this, BciNumber::OscPoints);
+    SPBDataS2<DWORD>(this, BciNumber::TdatNum);
 }
 
-void ConfKDVDialog::CheckConf()
+void ConfKDVDialog::CheckConf() const
 {
 }
 

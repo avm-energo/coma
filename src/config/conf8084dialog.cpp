@@ -34,7 +34,7 @@ void Conf8084Dialog::Fill()
     FillKiv();
 }
 
-void Conf8084Dialog::FillBack()
+void Conf8084Dialog::FillBack() const
 {
     CKIV->MainConfig()->FillBack();
     FillBackKiv();

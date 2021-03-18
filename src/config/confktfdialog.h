@@ -19,9 +19,9 @@ private:
     bool IsNtp;
 
     void Fill() override;
-    void FillBack() override;
+    void FillBack() const override;
     void SetupUI() override;
-    void CheckConf() override;
+    void CheckConf() const override;
 
 protected:
     QWidget *analogWidget();
@@ -32,7 +32,7 @@ protected:
     QWidget *otherWidget();
 
     void FillKtf();
-    void FillBackKtf();
+    void FillBackKtf() const;
 
     ConfigKTF *ConfKTF;
 

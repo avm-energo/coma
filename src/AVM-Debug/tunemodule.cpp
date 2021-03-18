@@ -9,6 +9,7 @@
 #include "../check/checkktfdialog.h"
 #include "../check/checkktfharmonicdialog.h"
 #include "../config/conf8084dialog.h"
+#include "../config/configkdv.h"
 #include "../config/configkiv.h"
 #include "../config/confkdvdialog.h"
 #include "../config/confkivdialog.h"

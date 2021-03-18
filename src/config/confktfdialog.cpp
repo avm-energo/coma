@@ -330,7 +330,7 @@ void ConfKTFDialog::Fill()
     FillKtf();
 }
 
-void ConfKTFDialog::FillBack()
+void ConfKTFDialog::FillBack() const
 {
 
     ConfKTF->MainConfig()->FillBack();
@@ -395,67 +395,67 @@ void ConfKTFDialog::FillKtf()
     //    ConfKxx->Fill();
 }
 
-void ConfKTFDialog::FillBackKtf()
+void ConfKTFDialog::FillBackKtf() const
 {
-    //    Conf->FillBack();
 
     int cbidx;
 
-    WDFunc::SPBData(this, "NFiltr_ID", ConfKTF->Bci_block.NFiltr);
-    WDFunc::SPBData(this, "NHarmFilt_ID", ConfKTF->Bci_block.NHarmFilt);
+    //
+    //  NOTE Need to reworked as others
+    //
 
-    WDFunc::ChBData(this, "DDosc_ID1", DDosc);
-    if (DDosc)
-    {
-        ConfKTF->Bci_block.DDosc = 0x04;
-    }
+    //  WDFunc::SPBData(this, "NFiltr_ID", ConfKTF->Bci_block.NFiltr);
+    //  WDFunc::SPBData(this, "NHarmFilt_ID", ConfKTF->Bci_block.NHarmFilt);
 
-    else
-        ConfKTF->Bci_block.DDosc = 0;
+    //    WDFunc::ChBData(this, "DDosc_ID1", DDosc);
+    //    if (DDosc)
+    //    {
+    //        ConfKTF->Bci_block.DDosc = 0x04;
+    //    }
 
-    WDFunc::ChBData(this, "DDosc_ID2", DDosc);
-    if (DDosc)
-    {
-        ConfKTF->Bci_block.DDosc = ConfKTF->Bci_block.DDosc | 0x01;
-    }
+    // else ConfKTF->Bci_block.DDosc = 0;
 
-    WDFunc::SPBData(this, "Unom1", ConfKTF->Bci_block.Unom1);
-    WDFunc::SPBData(this, "DUosc", ConfKTF->Bci_block.DUosc);
-    WDFunc::SPBData(this, "DIosc_ID", ConfKTF->Bci_block.DIosc);
-    WDFunc::SPBData(this, "DUImin_ID", ConfKTF->Bci_block.DUImin);
-    WDFunc::SPBData(this, "Imin", ConfKTF->Bci_block.Imin);
-    WDFunc::SPBData(this, "T_Data_Rec", ConfKTF->Bci_block.T_Data_Rec);
-    WDFunc::SPBData(this, "U2nom", ConfKTF->Bci_block.U2nom);
-    WDFunc::SPBData(this, "ITT1nom", ConfKTF->Bci_block.ITT1nom);
-    WDFunc::SPBData(this, "ITT2nom", ConfKTF->Bci_block.ITT2nom);
+    //    WDFunc::ChBData(this, "DDosc_ID2", DDosc);
+    //    if (DDosc)
+    //    {
+    //        ConfKTF->Bci_block.DDosc = ConfKTF->Bci_block.DDosc | 0x01;
+    //    }
 
-    cbidx = WDFunc::CBIndex(this, "Cool_type");
-    ConfKTF->Bci_block.Cool_type = cbidx;
+    //    WDFunc::SPBData(this, "Unom1", ConfKTF->Bci_block.Unom1);
+    //    WDFunc::SPBData(this, "DUosc", ConfKTF->Bci_block.DUosc);
+    //    WDFunc::SPBData(this, "DIosc_ID", ConfKTF->Bci_block.DIosc);
+    //    WDFunc::SPBData(this, "DUImin_ID", ConfKTF->Bci_block.DUImin);
+    //    WDFunc::SPBData(this, "Imin", ConfKTF->Bci_block.Imin);
+    //    WDFunc::SPBData(this, "T_Data_Rec", ConfKTF->Bci_block.T_Data_Rec);
+    //    WDFunc::SPBData(this, "U2nom", ConfKTF->Bci_block.U2nom);
+    //    WDFunc::SPBData(this, "ITT1nom", ConfKTF->Bci_block.ITT1nom);
+    //    WDFunc::SPBData(this, "ITT2nom", ConfKTF->Bci_block.ITT2nom);
 
-    cbidx = WDFunc::CBIndex(this, "W_mat");
-    ConfKTF->Bci_block.W_mat = cbidx;
+    //    cbidx = WDFunc::CBIndex(this, "Cool_type");
+    //    ConfKTF->Bci_block.Cool_type = cbidx;
 
-    WDFunc::SPBData(this, "TNNTdop", ConfKTF->Bci_block.TNNTdop);
-    WDFunc::SPBData(this, "TNNTpred", ConfKTF->Bci_block.TNNTpred);
-    WDFunc::SPBData(this, "Tamb_nom", ConfKTF->Bci_block.Tamb_nom);
-    WDFunc::SPBData(this, "dTNNTnom", ConfKTF->Bci_block.dTNNTnom);
-    WDFunc::SPBData(this, "Kdob", ConfKTF->Bci_block.Kdob);
-    WDFunc::SPBData(this, "TauWnom", ConfKTF->Bci_block.TauWnom);
-    WDFunc::SPBData(this, "Umaxm", ConfKTF->Bci_block.Umax);
-    WDFunc::SPBData(this, "Imaxm", ConfKTF->Bci_block.Imax);
-    WDFunc::SPBData(this, "Iwnom", ConfKTF->Bci_block.Iwnom);
+    //    cbidx = WDFunc::CBIndex(this, "W_mat");
+    //    ConfKTF->Bci_block.W_mat = cbidx;
 
-    cbidx = WDFunc::CBIndex(this, "OscPoints");
-    ConfKTF->Bci_block.OscPoints = (Rates.at(cbidx).toInt());
+    //    WDFunc::SPBData(this, "TNNTdop", ConfKTF->Bci_block.TNNTdop);
+    //    WDFunc::SPBData(this, "TNNTpred", ConfKTF->Bci_block.TNNTpred);
+    //    WDFunc::SPBData(this, "Tamb_nom", ConfKTF->Bci_block.Tamb_nom);
+    //    WDFunc::SPBData(this, "dTNNTnom", ConfKTF->Bci_block.dTNNTnom);
+    //    WDFunc::SPBData(this, "Kdob", ConfKTF->Bci_block.Kdob);
+    //    WDFunc::SPBData(this, "TauWnom", ConfKTF->Bci_block.TauWnom);
+    //    WDFunc::SPBData(this, "Umaxm", ConfKTF->Bci_block.Umax);
+    //    WDFunc::SPBData(this, "Imaxm", ConfKTF->Bci_block.Imax);
+    //    WDFunc::SPBData(this, "Iwnom", ConfKTF->Bci_block.Iwnom);
 
-    WDFunc::SPBData(this, "GTnnt", ConfKTF->Bci_block.GTnnt);
-    WDFunc::SPBData(this, "GOvc", ConfKTF->Bci_block.GOvc);
-    WDFunc::SPBData(this, "TdatNum", ConfKTF->Bci_block.TdatNum);
+    //    cbidx = WDFunc::CBIndex(this, "OscPoints");
+    //    ConfKTF->Bci_block.OscPoints = (Rates.at(cbidx).toInt());
 
-    //    ConfKxx->FillBack();
+    //    WDFunc::SPBData(this, "GTnnt", ConfKTF->Bci_block.GTnnt);
+    //    WDFunc::SPBData(this, "GOvc", ConfKTF->Bci_block.GOvc);
+    //    WDFunc::SPBData(this, "TdatNum", ConfKTF->Bci_block.TdatNum);
 }
 
-void ConfKTFDialog::CheckConf()
+void ConfKTFDialog::CheckConf() const
 {
 }
 

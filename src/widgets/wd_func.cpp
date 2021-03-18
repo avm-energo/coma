@@ -716,7 +716,7 @@ QCheckBox *WDFunc::NewChB2(QWidget *parent, const QString &chbname, const QStrin
     return chb;
 }
 
-bool WDFunc::ChBData(QWidget *w, const QString &chbname, bool &data)
+bool WDFunc::ChBData(const QWidget *w, const QString &chbname, bool &data)
 {
     QCheckBox *chb = w->findChild<QCheckBox *>(chbname);
     if (chb == nullptr)
@@ -725,7 +725,7 @@ bool WDFunc::ChBData(QWidget *w, const QString &chbname, bool &data)
     return true;
 }
 
-bool WDFunc::ChBData(QWidget *w, const QString &chbname)
+bool WDFunc::ChBData(const QWidget *w, const QString &chbname)
 {
     QCheckBox *chb = w->findChild<QCheckBox *>(chbname);
     if (chb == nullptr)

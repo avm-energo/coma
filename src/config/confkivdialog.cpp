@@ -14,6 +14,7 @@
 
 ConfKIVDialog::ConfKIVDialog(ConfigKIV *ckiv, QWidget *parent) : AbstractConfDialog(parent)
 {
+
     CKIV = ckiv;
 }
 
@@ -29,7 +30,7 @@ void ConfKIVDialog::Fill()
     FillKiv();
 }
 
-void ConfKIVDialog::FillBack()
+void ConfKIVDialog::FillBack() const
 {
     CKIV->MainConfig()->FillBack();
     CKIV->KxxConfig()->FillBack();
@@ -286,7 +287,7 @@ void ConfKIVDialog::FillKiv()
     WDFunc::SetChBData(this, nameByValue(BciNumber::IsIuIunb), bool(S2::getRecord(BciNumber::IsIuIunb).value<BYTE>()));
 }
 
-void ConfKIVDialog::FillBackKiv()
+void ConfKIVDialog::FillBackKiv() const
 {
     using namespace DataTypes;
     SPBDataS2<float>(this, BciNumber::Unom1);
@@ -344,7 +345,7 @@ void ConfKIVDialog::SetupUI()
     setLayout(lyout);
 }
 
-void ConfKIVDialog::CheckConf()
+void ConfKIVDialog::CheckConf() const
 {
 }
 

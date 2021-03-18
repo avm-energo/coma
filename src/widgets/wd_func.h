@@ -70,7 +70,7 @@ public:
     static bool SetCBIndex(QObject *w, const QString &cbname, int index);
     static bool SetCBColor(QWidget *w, const QString &cbname, const QString &color);
     static QString CBData(QWidget *w, const QString &cbname);
-    static int CBIndex(QObject *w, const QString &cbname)
+    static int CBIndex(const QObject *w, const QString &cbname)
     {
         QComboBox *cb = w->findChild<QComboBox *>(cbname);
         if (cb == nullptr)
@@ -109,7 +109,7 @@ public:
         spbg->setValue(spbvalue);
         return true;
     }
-    template <typename T> static bool SPBData(QObject *w, const QString &spbname, T &spbvalue)
+    template <typename T> static bool SPBData(const QObject *w, const QString &spbname, T &spbvalue)
     {
         QDoubleSpinBox *spb = w->findChild<QDoubleSpinBox *>(spbname);
         if (spb == nullptr)
@@ -120,7 +120,7 @@ public:
         spbvalue = spb->value();
         return true;
     }
-    template <typename T> static T SPBData(QObject *w, const QString &spbname)
+    template <typename T> static T SPBData(const QObject *w, const QString &spbname)
     {
         QDoubleSpinBox *spb = w->findChild<QDoubleSpinBox *>(spbname);
         if (spb == nullptr)
@@ -130,7 +130,8 @@ public:
         }
         return T(spb->value());
     }
-    template <size_t N, typename T> static bool SPBGData(QWidget *w, const QString &spbname, std::array<T, N> &spbvalue)
+    template <size_t N, typename T>
+    static bool SPBGData(const QWidget *w, const QString &spbname, std::array<T, N> &spbvalue)
     {
         auto *spbg = static_cast<DoubleSpinBoxGroup<N> *>(w->findChild<QWidget *>(spbname));
         if (spbg == nullptr)
@@ -165,9 +166,9 @@ public:
     static void TVAutoResize(QWidget *w, const QString &tvname);
 
     static QCheckBox *NewChB2(QWidget *parent, const QString &chbname, const QString &chbtext);
-    static bool ChBData(QWidget *w, const QString &chbname, bool &data);
-    static bool ChBData(QWidget *w, const QString &chbname);
-    template <typename T> static bool ChBData(QWidget *w, const QString &chbname, T &data)
+    static bool ChBData(const QWidget *w, const QString &chbname, bool &data);
+    static bool ChBData(const QWidget *w, const QString &chbname);
+    template <typename T> static bool ChBData(const QWidget *w, const QString &chbname, T &data)
     {
         QCheckBox *chb = w->findChild<QCheckBox *>(chbname);
         if (chb == nullptr)

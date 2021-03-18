@@ -113,7 +113,7 @@ void Config::Fill()
         StdFunc::countSetBits(S2::getRecord(BciNumber::CType).value<DWORD>() & 0x0a));
 }
 
-void Config::FillBack()
+void Config::FillBack() const
 {
     using namespace DataTypes;
 

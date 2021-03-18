@@ -124,7 +124,7 @@ void ConfigKxx::Fill()
     WDFunc::SetSPBData(ParentSetup, nameByValue(BciNumber::adrMB_ID), S2::getRecord(BciNumber::adrMB_ID).value<BYTE>());
 }
 
-void ConfigKxx::FillBack()
+void ConfigKxx::FillBack() const
 {
     //.......................................................................
     using namespace DataTypes;

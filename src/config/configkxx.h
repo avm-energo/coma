@@ -11,7 +11,7 @@ public:
 
     void SetDefConf() override;
     void Fill() override;
-    void FillBack() override;
+    void FillBack() const override;
     QWidget *ComParam(QWidget *parent);
     QWidget *ModbusWidget(QWidget *parent);
     QWidget *VariousWidget(QWidget *parent);

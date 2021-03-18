@@ -13,9 +13,9 @@ public:
 
 private:
     void Fill() override;
-    void FillBack() override;
+    void FillBack() const override;
     void SetupUI() override;
-    void CheckConf() override;
+    void CheckConf() const override;
 
 protected:
     QWidget *analogWidget();
@@ -24,7 +24,7 @@ protected:
     virtual QWidget *connectionWidget();
 
     void FillKiv();
-    void FillBackKiv();
+    void FillBackKiv() const;
 
     ConfigKIV *CKIV;
 

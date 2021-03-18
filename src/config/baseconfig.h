@@ -11,24 +11,24 @@ public:
     // заполнить значения полей вывода из структуры конфигурации
     virtual void Fill() = 0;
     // ввести информацию из полей вывода в конфигурацию
-    virtual void FillBack() = 0;
+    virtual void FillBack() const = 0;
     // проверить конфигурацию на корректность, признаком наличия некорректностей является непустой список
     // реализовать или отказаться
-    virtual void CheckConf() {};
+    virtual void CheckConf() const {};
 
-    inline QString nameByValue(quint32 number)
+    inline QString nameByValue(quint32 number) const
     {
         return QString::number(number);
     }
-    template <typename T> inline bool SetCBIndex(QObject *parent, unsigned number)
+    template <typename T> inline bool SetCBIndex(const QObject *parent, const unsigned number) const
     {
         return WDFunc::SetCBIndex(parent, nameByValue(number), S2::getRecord(number).value<T>());
     }
-    template <typename T> inline bool SetSPBData(QObject *parent, unsigned number)
+    template <typename T> inline bool SetSPBData(QObject *parent, const unsigned number)
     {
         return WDFunc::SetSPBData(parent, nameByValue(number), S2::getRecord(number).value<T>());
     }
-    template <typename T> inline void SPBDataS2(QObject *parent, unsigned number)
+    template <typename T> inline void SPBDataS2(const QObject *parent, const unsigned number) const
     {
         S2::setRecordValue({ number, WDFunc::SPBData<T>(parent, nameByValue(number)) });
     }
