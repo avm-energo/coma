@@ -62,29 +62,29 @@ QWidget *ConfKDVDialog::analogWidget()
     int row = 0;
     QGroupBox *gb = new QGroupBox("Аналоговые параметры");
 
-    QLabel *lbl = new QLabel("Тип контролируемого оборудования:");
-    gridlyout->addWidget(lbl, row, 1, 1, 1, Qt::AlignLeft);
-    QStringList cbl = QStringList { "Асинхронный двигатель", "Трансформатор", "Реактор" };
-    auto *cb = WDFunc::NewCB2(this, nameByValue(BciNumber::Eq_type), cbl);
-    cb->setMinimumHeight(20);
-    gridlyout->addWidget(cb, row, 2, 1, 3);
-    row++;
+    //    QLabel *lbl = new QLabel("Тип контролируемого оборудования:");
+    //    gridlyout->addWidget(lbl, row, 1, 1, 1, Qt::AlignLeft);
+    //    QStringList cbl = QStringList { "Асинхронный двигатель", "Трансформатор", "Реактор" };
+    //    auto *cb = WDFunc::NewCB2(this, nameByValue(BciNumber::Eq_type), cbl);
+    //    cb->setMinimumHeight(20);
+    //    gridlyout->addWidget(cb, row, 2, 1, 3);
+    //    row++;
 
-    lbl = new QLabel("Вид охлаждения:");
-    gridlyout->addWidget(lbl, row, 1, 1, 1, Qt::AlignLeft);
-    cbl = QStringList { "Естественное", "Принудительное" };
-    cb = WDFunc::NewCB2(this, nameByValue(BciNumber::Cool_type), cbl);
-    cb->setMinimumHeight(20);
-    gridlyout->addWidget(cb, row, 2, 1, 3);
-    row++;
+    //    lbl = new QLabel("Вид охлаждения:");
+    //    gridlyout->addWidget(lbl, row, 1, 1, 1, Qt::AlignLeft);
+    //    cbl = QStringList { "Естественное", "Принудительное" };
+    //    cb = WDFunc::NewCB2(this, nameByValue(BciNumber::Cool_type), cbl);
+    //    cb->setMinimumHeight(20);
+    //    gridlyout->addWidget(cb, row, 2, 1, 3);
+    //    row++;
 
-    lbl = new QLabel("Материал обмотки:");
-    gridlyout->addWidget(lbl, row, 1, 1, 1, Qt::AlignLeft);
-    cbl = QStringList { "Медь", "Алюминий" };
-    cb = WDFunc::NewCB2(this, nameByValue(BciNumber::W_mat), cbl);
-    cb->setMinimumHeight(20);
-    gridlyout->addWidget(cb, row, 2, 1, 3);
-    row++;
+    //    lbl = new QLabel("Материал обмотки:");
+    //    gridlyout->addWidget(lbl, row, 1, 1, 1, Qt::AlignLeft);
+    //    cbl = QStringList { "Медь", "Алюминий" };
+    //    cb = WDFunc::NewCB2(this, nameByValue(BciNumber::W_mat), cbl);
+    //    cb->setMinimumHeight(20);
+    //    gridlyout->addWidget(cb, row, 2, 1, 3);
+    //    row++;
 
     gridlyout->addWidget(WDFunc::NewLBL2(this, "Номинальное линейное первичное напряжение, кВ:"), row, 1, 1, 1);
     gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::Unom1), 0, 10000, 2), row, 2, 1, 3);
@@ -135,27 +135,27 @@ QWidget *ConfKDVDialog::analogWidget()
                              "Максимальный измеряемый ток на входе "
                              "прибора, А эфф  (не более 33А):"),
         row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB2(this, "Imax", 0, 10000, 1), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::Imax), 0, 10000, 1), row, 2, 1, 3);
     row++;
 
     gridlyout->addWidget(WDFunc::NewLBL2(this,
                              "Количество датчиков температуры обмоток, "
                              "подключенных по Modbus Master:"),
         row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB2(this, "TdatNum", 0, 10000, 0), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::TdatNum), 0, 10000, 0), row, 2, 1, 3);
     row++;
 
     gridlyout->addWidget(WDFunc::NewLBL2(this, "Номинальная частота, Гц"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB2(this, "Fnom", 0, 1000, 1), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::Fnom), 0, 1000, 1), row, 2, 1, 3);
     row++;
 
     gridlyout->addWidget(WDFunc::NewLBL2(this, "Номинальное скольжение"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB2(this, "nom_slip", 0, 10000, 1), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::nom_slip), 0, 10000, 1), row, 2, 1, 3);
     row++;
 
     gridlyout->addWidget(
         WDFunc::NewLBL2(this, "Максимальная амплитуда сигналов вибраций (1,25, 2,5, 5,0В)"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB2(this, "UVmax", 0, 10000, 0), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::UVmax), 0, 10000, 0), row, 2, 1, 3);
     row++;
 
     gb->setLayout(gridlyout);
@@ -213,64 +213,64 @@ QWidget *ConfKDVDialog::setWidget()
     row++;
     gridlyout->addWidget(
         WDFunc::NewLBL2(this, "Предупредительная уставка по СКЗ виброускорения, м/с/с:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB2(this, "VibrA_pred", 0, 1000, 1), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::VibrA_pred), 0, 1000, 1), row, 2, 1, 3);
 
     row++;
     gridlyout->addWidget(WDFunc::NewLBL2(this, "Предупредительная уставка по СКЗ виброскорости, мм/с:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB2(this, "VibrV_pred", 0, 10000, 1), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::VibrV_pred), 0, 10000, 1), row, 2, 1, 3);
 
     row++;
     gridlyout->addWidget(
         WDFunc::NewLBL2(this, "Предупредительная уставка по СКЗ виброперемещения, мкм:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB2(this, "VibrD_pred", 0, 10000, 1), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::VibrD_pred), 0, 10000, 1), row, 2, 1, 3);
 
     row++;
     gridlyout->addWidget(WDFunc::NewLBL2(this, "Аварийная уставка по СКЗ виброускорения, м/с/с:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB2(this, "VibrA_alarm", 0, 1000, 1), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::VibrA_alarm), 0, 1000, 1), row, 2, 1, 3);
 
     row++;
     gridlyout->addWidget(WDFunc::NewLBL2(this, "Аварийная уставка по СКЗ виброскорости, мм/с:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB2(this, "VibrV_alarm", 0, 10000, 1), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::VibrV_alarm), 0, 10000, 1), row, 2, 1, 3);
 
     row++;
     gridlyout->addWidget(WDFunc::NewLBL2(this, "Аварийная уставка по СКЗ виброперемещения, мкм:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB2(this, "VibrD_alarm", 0, 10000, 1), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::VibrD_alarm), 0, 10000, 1), row, 2, 1, 3);
 
     row++;
     gridlyout->addWidget(WDFunc::NewLBL2(this,
                              "Предупредительная уставка по скорости роста СКЗ "
                              "виброускорения, м/с/с:"),
         row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB2(this, "VVibrA_pred", 0, 1000, 1), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::VVibrA_pred), 0, 1000, 1), row, 2, 1, 3);
 
     row++;
     gridlyout->addWidget(WDFunc::NewLBL2(this,
                              "Предупредительная уставка по скорости роста СКЗ "
                              "виброскорости, мм/с:"),
         row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB2(this, "VVibrV_pred", 0, 10000, 1), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::VVibrV_pred), 0, 10000, 1), row, 2, 1, 3);
 
     row++;
     gridlyout->addWidget(WDFunc::NewLBL2(this,
                              "Предупредительная уставка по скорости роста СКЗ "
                              "виброперемещения, мкм:"),
         row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB2(this, "VVibrD_pred", 0, 10000, 1), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::VVibrD_pred), 0, 10000, 1), row, 2, 1, 3);
 
     row++;
     gridlyout->addWidget(
         WDFunc::NewLBL2(this, "Аварийная уставка по скорости роста СКЗ виброускорения, м/с/с:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB2(this, "VVibrA_alarm", 0, 1000, 1), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::VVibrA_alarm), 0, 1000, 1), row, 2, 1, 3);
 
     row++;
     gridlyout->addWidget(
         WDFunc::NewLBL2(this, "Аварийная уставка по скорости роста СКЗ виброскорости, мм/с:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB2(this, "VVibrV_alarm", 0, 10000, 1), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::VVibrV_alarm), 0, 10000, 1), row, 2, 1, 3);
 
     row++;
     gridlyout->addWidget(
         WDFunc::NewLBL2(this, "Аварийная уставка по скорости роста СКЗ виброперемещения, мкм:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB2(this, "VVibrD_alarm", 0, 10000, 1), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::VVibrD_alarm), 0, 10000, 1), row, 2, 1, 3);
 
     gb->setLayout(gridlyout);
     lyout->addWidget(gb);
@@ -281,12 +281,12 @@ QWidget *ConfKDVDialog::setWidget()
     gridlyout = new QGridLayout;
 
     gridlyout->addWidget(WDFunc::NewLBL2(this, "Гистерезис сигнализации по температуре ННТ,  град.С:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB2(this, "GTnnt", 0, 10000, 3), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::GTnnt), 0, 10000, 3), row, 2, 1, 3);
 
     row++;
     gridlyout->addWidget(
         WDFunc::NewLBL2(this, "Гистерезис сигнализации по токовой перегрузке, % от Iwnom:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB2(this, "GOvc", 0, 10000, 1), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::GOvc), 0, 10000, 1), row, 2, 1, 3);
 
     gb->setLayout(gridlyout);
     lyout->addWidget(gb);
@@ -317,7 +317,7 @@ QWidget *ConfKDVDialog::otherWidget()
 
     row++;
     gridlyout->addWidget(WDFunc::NewLBL2(this, "Интервал записи данных в ПЗУ (тренд), в секундах:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB2(this, "T_Data_Rec", 0, 10000, 0), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::T_Data_Rec), 0, 10000, 0), row, 2, 1, 3);
 
     row++;
     gridlyout->addWidget(WDFunc::NewLBL2(this, "Постоянная времени фильтрации гармоник:"), row, 1, 1, 1);
@@ -333,42 +333,41 @@ QWidget *ConfKDVDialog::otherWidget()
     row++;
     gridlyout->addWidget(
         WDFunc::NewLBL2(this, "Количество точек осциллограммы на период основной частоты:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB2(this, "OscPoints", 0, 10000, 0), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::OscPoints), 0, 10000, 0), row, 2, 1, 3);
     QGroupBox *gb = new QGroupBox("Параметры записи");
     gb->setLayout(gridlyout);
     lyout->addWidget(gb);
 
     gb = new QGroupBox("Параметры двигателя");
-
     gridlyout = new QGridLayout;
 
     row = 0;
     gridlyout->addWidget(WDFunc::NewLBL2(this, "Коэффициент передачи датчиков вибрации:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB2(this, "Kvibr", 0, 10000, 2), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::Kvibr), 0, 10000, 2), row, 2, 1, 3);
 
     row++;
     gridlyout->addWidget(WDFunc::NewLBL2(this, "Порядковый номер двигателя:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB2(this, "NumA", 0, 10000, 0), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::NumA_KDV), 0, 10000, 0), row, 2, 1, 3);
 
     row++;
     gridlyout->addWidget(WDFunc::NewLBL2(this, "Число пар полюсов (от 1 до 10):"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB2(this, "Poles", 0, 10000, 0), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::Poles), 0, 10000, 0), row, 2, 1, 3);
 
     row++;
     gridlyout->addWidget(WDFunc::NewLBL2(this, "Число пазов на статоре:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB2(this, "Stator_Slotes", 0, 10000, 0), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::Stator_Slotes), 0, 10000, 0), row, 2, 1, 3);
 
     row++;
     gridlyout->addWidget(WDFunc::NewLBL2(this, "Число стержней ротора:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB2(this, "Rotor_bars", 0, 10000, 0), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::Rotor_bars), 0, 10000, 0), row, 2, 1, 3);
 
     row++;
     gridlyout->addWidget(WDFunc::NewLBL2(this, "Тип вибродатчика:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB2(this, "VibroType", 0, 10000, 0), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::VibroType), 0, 10000, 0), row, 2, 1, 3);
 
     row++;
     gridlyout->addWidget(WDFunc::NewLBL2(this, "Подключенные датчики вибрации:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB2(this, "Sensors", 0, 10000, 0), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::Sensors), 0, 10000, 0), row, 2, 1, 3);
 
     gb->setLayout(gridlyout);
     lyout->addWidget(gb);
@@ -427,9 +426,9 @@ void ConfKDVDialog::FillKdv()
 
     using namespace DataTypes;
 
-    SetCBIndex<DWORD>(this, BciNumber::Eq_type);
-    SetCBIndex<DWORD>(this, BciNumber::Cool_type);
-    SetCBIndex<DWORD>(this, BciNumber::W_mat);
+    // SetCBIndex<DWORD>(this, BciNumber::Eq_type);
+    //    SetCBIndex<DWORD>(this, BciNumber::Cool_type);
+    //    SetCBIndex<DWORD>(this, BciNumber::W_mat);
 
     WDFunc::SetChBData(this, "oscchb.0", S2::getRecord(BciNumber::DDOsc_ID).value<DWORD>() & 0x0001);
 
@@ -454,38 +453,38 @@ void ConfKDVDialog::FillKdv()
     SetSPBData<float>(this, BciNumber::dTNNTnom);
     SetSPBData<float>(this, BciNumber::Kdob);
     SetSPBData<float>(this, BciNumber::TauWnom);
-    SetSPBData<float>(this, BciNumber::Umaxm);
+    SetSPBData<float>(this, BciNumber::Umaxm); //проверить конец
 
-    WDFunc::SetSPBData(this, "Imax", S2::getRecord(BciNumber::Imaxm).value<float>());
-    WDFunc::SetSPBData(this, "GTnnt", S2::getRecord(BciNumber::GTnnt).value<float>());
-    WDFunc::SetSPBData(this, "GOvc", S2::getRecord(BciNumber::GOvc).value<float>());
-    WDFunc::SetSPBData(this, "Fnom", S2::getRecord(BciNumber::Fnom).value<float>());
-    WDFunc::SetSPBData(this, "nom_slip", S2::getRecord(BciNumber::nom_slip).value<float>());
-    WDFunc::SetSPBData(this, "UVmax", S2::getRecord(BciNumber::UVmax).value<float>());
-    WDFunc::SetSPBData(this, "Kvibr", S2::getRecord(BciNumber::Kvibr).value<float>());
-    WDFunc::SetSPBData(this, "VibrA_pred", S2::getRecord(BciNumber::VibrA_pred).value<float>());
-    WDFunc::SetSPBData(this, "VibrV_pred", S2::getRecord(BciNumber::VibrV_pred).value<float>());
+    SetSPBData<float>(this, BciNumber::Imaxm); //проверить конец
+    SetSPBData<float>(this, BciNumber::GTnnt);
+    SetSPBData<float>(this, BciNumber::GOvc);
+    SetSPBData<float>(this, BciNumber::Fnom);
+    SetSPBData<float>(this, BciNumber::nom_slip);
+    SetSPBData<float>(this, BciNumber::UVmax);
+    SetSPBData<float>(this, BciNumber::Kvibr);
 
-    WDFunc::SetSPBData(this, "VibrD_pred", S2::getRecord(BciNumber::VibrD_pred).value<float>());
-    WDFunc::SetSPBData(this, "VibrA_alarm", S2::getRecord(BciNumber::VibrA_alarm).value<float>());
-    WDFunc::SetSPBData(this, "VibrV_alarm", S2::getRecord(BciNumber::VibrV_alarm).value<float>());
-    WDFunc::SetSPBData(this, "VibrD_alarm", S2::getRecord(BciNumber::VibrD_alarm).value<float>());
-    WDFunc::SetSPBData(this, "VVibrA_pred", S2::getRecord(BciNumber::VVibrA_pred).value<float>());
-    WDFunc::SetSPBData(this, "VVibrV_pred", S2::getRecord(BciNumber::VVibrV_pred).value<float>());
-    WDFunc::SetSPBData(this, "VVibrD_pred", S2::getRecord(BciNumber::VVibrD_pred).value<float>());
-    WDFunc::SetSPBData(this, "VVibrA_alarm", S2::getRecord(BciNumber::VVibrA_alarm).value<float>());
-    WDFunc::SetSPBData(this, "VVibrV_alarm", S2::getRecord(BciNumber::VVibrA_alarm).value<float>());
-    WDFunc::SetSPBData(this, "VVibrD_alarm", S2::getRecord(BciNumber::VVibrD_alarm).value<float>());
+    SetSPBData<float>(this, BciNumber::VibrA_pred);
+    SetSPBData<float>(this, BciNumber::VibrV_pred);
+    SetSPBData<float>(this, BciNumber::VibrD_pred);
+    SetSPBData<float>(this, BciNumber::VibrA_alarm);
+    SetSPBData<float>(this, BciNumber::VibrV_alarm);
+    SetSPBData<float>(this, BciNumber::VibrD_alarm);
+    SetSPBData<float>(this, BciNumber::VVibrA_pred);
+    SetSPBData<float>(this, BciNumber::VVibrV_pred);
+    SetSPBData<float>(this, BciNumber::VVibrD_pred);
+    SetSPBData<float>(this, BciNumber::VVibrA_alarm);
+    SetSPBData<float>(this, BciNumber::VVibrV_alarm);
+    SetSPBData<float>(this, BciNumber::VVibrD_alarm);
 
-    WDFunc::SetSPBData(this, "NumA", S2::getRecord(BciNumber::NumA_KDV).value<DWORD>());
-    WDFunc::SetSPBData(this, "Poles", S2::getRecord(BciNumber::Poles).value<DWORD>());
-    WDFunc::SetSPBData(this, "Stator_Slotes", S2::getRecord(BciNumber::Stator_Slotes).value<DWORD>());
-    WDFunc::SetSPBData(this, "Rotor_bars", S2::getRecord(BciNumber::Rotor_bars).value<DWORD>());
-    WDFunc::SetSPBData(this, "VibroType", S2::getRecord(BciNumber::VibroType).value<DWORD>());
-    WDFunc::SetSPBData(this, "Sensors", S2::getRecord(BciNumber::Sensors).value<DWORD>());
-    WDFunc::SetSPBData(this, "T_Data_Rec", S2::getRecord(BciNumber::T_Data_Rec).value<DWORD>());
-    WDFunc::SetSPBData(this, "OscPoints", S2::getRecord(BciNumber::OscPoints).value<DWORD>());
-    WDFunc::SetSPBData(this, "TdatNum", S2::getRecord(BciNumber::TdatNum).value<DWORD>());
+    SetSPBData<DWORD>(this, BciNumber::NumA_KDV);
+    SetSPBData<DWORD>(this, BciNumber::Poles);
+    SetSPBData<DWORD>(this, BciNumber::Stator_Slotes);
+    SetSPBData<DWORD>(this, BciNumber::Rotor_bars);
+    SetSPBData<DWORD>(this, BciNumber::VibroType);
+    SetSPBData<DWORD>(this, BciNumber::Sensors);
+    SetSPBData<DWORD>(this, BciNumber::T_Data_Rec);
+    SetSPBData<DWORD>(this, BciNumber::OscPoints);
+    SetSPBData<DWORD>(this, BciNumber::TdatNum);
 
     //.........................................................
     //    ConfKxx->Fill();
@@ -493,76 +492,126 @@ void ConfKDVDialog::FillKdv()
 
 void ConfKDVDialog::FillBackKdv()
 {
-    // Conf->FillBack();
-
-    int cbidx;
     bool tmpb;
+    using namespace DataTypes;
+
+    SPBData<DWORD>(this, BciNumber::NFiltr_ID);
+    SPBData<DWORD>(this, BciNumber::NHarmFilt_ID);
+    SPBData<float>(this, BciNumber::Unom1);
+    SPBData<float>(this, BciNumber::U2nom);
+    SPBData<float>(this, BciNumber::ITT1nom_KTF_KDV);
+    SPBData<float>(this, BciNumber::ITT2nom_KTF_KDV);
+    SPBData<float>(this, BciNumber::Iwnom);
+    SPBData<float>(this, BciNumber::DUosc);
+    SPBData<float>(this, BciNumber::DIosc_ID);
+    SPBData<float>(this, BciNumber::DUImin_ID);
+    SPBData<float>(this, BciNumber::Imin);
+    SPBData<float>(this, BciNumber::TNNTdop);
+    SPBData<float>(this, BciNumber::TNNTpred);
+    SPBData<float>(this, BciNumber::Tamb_nom);
+    SPBData<float>(this, BciNumber::dTNNTnom);
+    SPBData<float>(this, BciNumber::Kdob);
+    SPBData<float>(this, BciNumber::TauWnom);
+    SPBData<float>(this, BciNumber::Umaxm);
+
+    SPBData<float>(this, BciNumber::Imaxm); //проверить конец
+    SPBData<float>(this, BciNumber::GTnnt);
+    SPBData<float>(this, BciNumber::GOvc);
+    SPBData<float>(this, BciNumber::Fnom);
+    SPBData<float>(this, BciNumber::nom_slip);
+    SPBData<float>(this, BciNumber::UVmax);
+    SPBData<float>(this, BciNumber::Kvibr);
+
+    SPBData<float>(this, BciNumber::VibrA_pred);
+    SPBData<float>(this, BciNumber::VibrV_pred);
+    SPBData<float>(this, BciNumber::VibrD_pred);
+    SPBData<float>(this, BciNumber::VibrA_alarm);
+    SPBData<float>(this, BciNumber::VibrV_alarm);
+    SPBData<float>(this, BciNumber::VibrD_alarm);
+    SPBData<float>(this, BciNumber::VVibrA_pred);
+    SPBData<float>(this, BciNumber::VVibrV_pred);
+    SPBData<float>(this, BciNumber::VVibrD_pred);
+    SPBData<float>(this, BciNumber::VVibrA_alarm);
+    SPBData<float>(this, BciNumber::VVibrV_alarm);
+    SPBData<float>(this, BciNumber::VVibrD_alarm);
+
+    SetSPBData<DWORD>(this, BciNumber::NumA_KDV);
+    SetSPBData<DWORD>(this, BciNumber::Poles);
+    SetSPBData<DWORD>(this, BciNumber::Stator_Slotes);
+    SetSPBData<DWORD>(this, BciNumber::Rotor_bars);
+    SetSPBData<DWORD>(this, BciNumber::VibroType);
+    SetSPBData<DWORD>(this, BciNumber::Sensors);
+    SetSPBData<DWORD>(this, BciNumber::T_Data_Rec);
+    SetSPBData<DWORD>(this, BciNumber::OscPoints);
+    SetSPBData<DWORD>(this, BciNumber::TdatNum);
+
+    //    int cbidx;
 
     //.........................................................
 
-    cbidx = WDFunc::CBIndex(this, nameByValue(BciNumber::Eq_type));
-    ConfKDV->Bci_block.Eq_type = cbidx;
-    cbidx = WDFunc::CBIndex(this, nameByValue(BciNumber::Cool_type));
-    ConfKDV->Bci_block.Cool_type = cbidx;
-    cbidx = WDFunc::CBIndex(this, nameByValue(BciNumber::W_mat));
-    ConfKDV->Bci_block.W_mat = cbidx;
-    WDFunc::SPBData(this, nameByValue(BciNumber::NFiltr_ID), ConfKDV->Bci_block.NFiltr);
-    WDFunc::SPBData(this, nameByValue(BciNumber::NHarmFilt_ID), ConfKDV->Bci_block.NHarmFilt);
+    //    cbidx = WDFunc::CBIndex(this, nameByValue(BciNumber::Eq_type));
+    //    ConfKDV->Bci_block.Eq_type = cbidx;
+    //    cbidx = WDFunc::CBIndex(this, nameByValue(BciNumber::Cool_type));
+    //    ConfKDV->Bci_block.Cool_type = cbidx;
+    //    cbidx = WDFunc::CBIndex(this, nameByValue(BciNumber::W_mat));
+    //    ConfKDV->Bci_block.W_mat = cbidx;
+    // WDFunc::SPBData(this, nameByValue(BciNumber::NFiltr_ID), ConfKDV->Bci_block.NFiltr);
+    // WDFunc::SPBData(this, nameByValue(BciNumber::NHarmFilt_ID), ConfKDV->Bci_block.NHarmFilt);
     // WDFunc::SPBData(this, "DDOsc", CKDV->Bci_block.DDOsc);
 
-    WDFunc::ChBData(this, "oscchb.0", tmpb);
-    ConfKDV->Bci_block.DDosc = 0;
-    ConfKDV->Bci_block.DDosc |= (tmpb) ? 0x0001 : 0x0000;
-    //    WDFunc::ChBData(this, "oscchb.1", tmpb);
-    //    KDV->Bci_block.DDosc |= (tmpb) ? 0x0002 : 0x0000;
-    WDFunc::ChBData(this, "oscchb.2", tmpb);
-    ConfKDV->Bci_block.DDosc |= (tmpb) ? 0x0004 : 0x0000;
+    //        WDFunc::ChBData(this, "oscchb.0", tmpb);
+    //        ConfKDV->Bci_block.DDosc = 0;
+    //        ConfKDV->Bci_block.DDosc |= (tmpb) ? 0x0001 : 0x0000;
+    //        //    WDFunc::ChBData(this, "oscchb.1", tmpb);
+    //        //    KDV->Bci_block.DDosc |= (tmpb) ? 0x0002 : 0x0000;
+    //        WDFunc::ChBData(this, "oscchb.2", tmpb);
+    //        ConfKDV->Bci_block.DDosc |= (tmpb) ? 0x0004 : 0x0000;
 
-    WDFunc::SPBData(this, nameByValue(BciNumber::Unom1), ConfKDV->Bci_block.Unom1);
-    WDFunc::SPBData(this, nameByValue(BciNumber::U2nom), ConfKDV->Bci_block.U2nom);
-    WDFunc::SPBData(this, nameByValue(BciNumber::ITT1nom_KTF_KDV), ConfKDV->Bci_block.ITT1nom);
-    WDFunc::SPBData(this, nameByValue(BciNumber::ITT2nom_KTF_KDV), ConfKDV->Bci_block.ITT2nom);
-    WDFunc::SPBData(this, nameByValue(BciNumber::Iwnom), ConfKDV->Bci_block.Iwnom);
-    WDFunc::SPBData(this, nameByValue(BciNumber::DUosc), ConfKDV->Bci_block.DUosc);
-    WDFunc::SPBData(this, nameByValue(BciNumber::DIosc_ID), ConfKDV->Bci_block.DIosc);
-    WDFunc::SPBData(this, nameByValue(BciNumber::DUImin_ID), ConfKDV->Bci_block.DUImin);
-    WDFunc::SPBData(this, nameByValue(BciNumber::Imin), ConfKDV->Bci_block.Imin);
-    WDFunc::SPBData(this, nameByValue(BciNumber::TNNTdop), ConfKDV->Bci_block.TNNTdop);
-    WDFunc::SPBData(this, nameByValue(BciNumber::TNNTpred), ConfKDV->Bci_block.TNNTpred);
-    WDFunc::SPBData(this, nameByValue(BciNumber::Tamb_nom), ConfKDV->Bci_block.Tamb_nom);
-    WDFunc::SPBData(this, nameByValue(BciNumber::dTNNTnom), ConfKDV->Bci_block.dTNNTnom);
-    WDFunc::SPBData(this, nameByValue(BciNumber::Kdob), ConfKDV->Bci_block.Kdob);
-    WDFunc::SPBData(this, nameByValue(BciNumber::TauWnom), ConfKDV->Bci_block.TauWnom);
-    WDFunc::SPBData(this, nameByValue(BciNumber::Umaxm), ConfKDV->Bci_block.Umax);
-    WDFunc::SPBData(this, "Imax", ConfKDV->Bci_block.Imax);
-    WDFunc::SPBData(this, "GTnnt", ConfKDV->Bci_block.GTnnt);
-    WDFunc::SPBData(this, "GOvc", ConfKDV->Bci_block.GOvc);
-    WDFunc::SPBData(this, "Fnom", ConfKDV->Bci_block.Fnom);
-    WDFunc::SPBData(this, "nom_slip", ConfKDV->Bci_block.nom_slip);
-    WDFunc::SPBData(this, "UVmax", ConfKDV->Bci_block.UVmax);
-    WDFunc::SPBData(this, "Kvibr", ConfKDV->Bci_block.Kvibr);
-    WDFunc::SPBData(this, "VibrA_pred", ConfKDV->Bci_block.VibrA_pred);
-    WDFunc::SPBData(this, "VibrV_pred", ConfKDV->Bci_block.VibrV_pred);
-    WDFunc::SPBData(this, "VibrD_pred", ConfKDV->Bci_block.VibrD_pred);
-    WDFunc::SPBData(this, "VibrA_alarm", ConfKDV->Bci_block.VibrA_alarm);
-    WDFunc::SPBData(this, "VibrV_alarm", ConfKDV->Bci_block.VibrV_alarm);
-    WDFunc::SPBData(this, "VibrD_alarm", ConfKDV->Bci_block.VibrD_alarm);
-    WDFunc::SPBData(this, "VVibrA_pred", ConfKDV->Bci_block.VVibrA_pred);
-    WDFunc::SPBData(this, "VVibrV_pred", ConfKDV->Bci_block.VVibrV_pred);
-    WDFunc::SPBData(this, "VVibrD_pred", ConfKDV->Bci_block.VVibrD_pred);
-    WDFunc::SPBData(this, "VVibrA_alarm", ConfKDV->Bci_block.VVibrA_alarm);
-    WDFunc::SPBData(this, "VVibrV_alarm", ConfKDV->Bci_block.VVibrV_alarm);
-    WDFunc::SPBData(this, "VVibrD_alarm", ConfKDV->Bci_block.VVibrD_alarm);
-    WDFunc::SPBData(this, "NumA", ConfKDV->Bci_block.NumA);
-    WDFunc::SPBData(this, "Poles", ConfKDV->Bci_block.Poles);
-    WDFunc::SPBData(this, "Stator_Slotes", ConfKDV->Bci_block.Stator_Slotes);
-    WDFunc::SPBData(this, "Rotor_bars", ConfKDV->Bci_block.Rotor_bars);
-    WDFunc::SPBData(this, "VibroType", ConfKDV->Bci_block.VibroType);
-    WDFunc::SPBData(this, "Sensors", ConfKDV->Bci_block.Sensors);
-    WDFunc::SPBData(this, "T_Data_Rec", ConfKDV->Bci_block.T_Data_Rec);
-    WDFunc::SPBData(this, "OscPoints", ConfKDV->Bci_block.OscPoints);
-    WDFunc::SPBData(this, "TdatNum", ConfKDV->Bci_block.TdatNum);
-    //.........................................................
+    //    WDFunc::SPBData(this, nameByValue(BciNumber::Unom1), ConfKDV->Bci_block.Unom1);
+    //    WDFunc::SPBData(this, nameByValue(BciNumber::U2nom), ConfKDV->Bci_block.U2nom);
+    //    WDFunc::SPBData(this, nameByValue(BciNumber::ITT1nom_KTF_KDV), ConfKDV->Bci_block.ITT1nom);
+    //    WDFunc::SPBData(this, nameByValue(BciNumber::ITT2nom_KTF_KDV), ConfKDV->Bci_block.ITT2nom);
+    //    WDFunc::SPBData(this, nameByValue(BciNumber::Iwnom), ConfKDV->Bci_block.Iwnom);
+    //    WDFunc::SPBData(this, nameByValue(BciNumber::DUosc), ConfKDV->Bci_block.DUosc);
+    //    WDFunc::SPBData(this, nameByValue(BciNumber::DIosc_ID), ConfKDV->Bci_block.DIosc);
+    //    WDFunc::SPBData(this, nameByValue(BciNumber::DUImin_ID), ConfKDV->Bci_block.DUImin);
+    //    WDFunc::SPBData(this, nameByValue(BciNumber::Imin), ConfKDV->Bci_block.Imin);
+    //    WDFunc::SPBData(this, nameByValue(BciNumber::TNNTdop), ConfKDV->Bci_block.TNNTdop);
+    //    WDFunc::SPBData(this, nameByValue(BciNumber::TNNTpred), ConfKDV->Bci_block.TNNTpred);
+    //    WDFunc::SPBData(this, nameByValue(BciNumber::Tamb_nom), ConfKDV->Bci_block.Tamb_nom);
+    //    WDFunc::SPBData(this, nameByValue(BciNumber::dTNNTnom), ConfKDV->Bci_block.dTNNTnom);
+    //    WDFunc::SPBData(this, nameByValue(BciNumber::Kdob), ConfKDV->Bci_block.Kdob);
+    //    WDFunc::SPBData(this, nameByValue(BciNumber::TauWnom), ConfKDV->Bci_block.TauWnom);
+    //    WDFunc::SPBData(this, nameByValue(BciNumber::Umaxm), ConfKDV->Bci_block.Umax);
+    //    WDFunc::SPBData(this, "Imax", ConfKDV->Bci_block.Imax);
+    //    WDFunc::SPBData(this, "GTnnt", ConfKDV->Bci_block.GTnnt);
+    //    WDFunc::SPBData(this, "GOvc", ConfKDV->Bci_block.GOvc);
+    //    WDFunc::SPBData(this, "Fnom", ConfKDV->Bci_block.Fnom);
+    //    WDFunc::SPBData(this, "nom_slip", ConfKDV->Bci_block.nom_slip);
+    //    WDFunc::SPBData(this, "UVmax", ConfKDV->Bci_block.UVmax);
+    //    WDFunc::SPBData(this, "Kvibr", ConfKDV->Bci_block.Kvibr);
+    //    WDFunc::SPBData(this, "VibrA_pred", ConfKDV->Bci_block.VibrA_pred);
+    //    WDFunc::SPBData(this, "VibrV_pred", ConfKDV->Bci_block.VibrV_pred);
+    //    WDFunc::SPBData(this, "VibrD_pred", ConfKDV->Bci_block.VibrD_pred);
+    //    WDFunc::SPBData(this, "VibrA_alarm", ConfKDV->Bci_block.VibrA_alarm);
+    //    WDFunc::SPBData(this, "VibrV_alarm", ConfKDV->Bci_block.VibrV_alarm);
+    //    WDFunc::SPBData(this, "VibrD_alarm", ConfKDV->Bci_block.VibrD_alarm);
+    //    WDFunc::SPBData(this, "VVibrA_pred", ConfKDV->Bci_block.VVibrA_pred);
+    //    WDFunc::SPBData(this, "VVibrV_pred", ConfKDV->Bci_block.VVibrV_pred);
+    //    WDFunc::SPBData(this, "VVibrD_pred", ConfKDV->Bci_block.VVibrD_pred);
+    //    WDFunc::SPBData(this, "VVibrA_alarm", ConfKDV->Bci_block.VVibrA_alarm);
+    //    WDFunc::SPBData(this, "VVibrV_alarm", ConfKDV->Bci_block.VVibrV_alarm);
+    //    WDFunc::SPBData(this, "VVibrD_alarm", ConfKDV->Bci_block.VVibrD_alarm);
+    //    WDFunc::SPBData(this, "NumA", ConfKDV->Bci_block.NumA);
+    //    WDFunc::SPBData(this, "Poles", ConfKDV->Bci_block.Poles);
+    //    WDFunc::SPBData(this, "Stator_Slotes", ConfKDV->Bci_block.Stator_Slotes);
+    //    WDFunc::SPBData(this, "Rotor_bars", ConfKDV->Bci_block.Rotor_bars);
+    //    WDFunc::SPBData(this, "VibroType", ConfKDV->Bci_block.VibroType);
+    //    WDFunc::SPBData(this, "Sensors", ConfKDV->Bci_block.Sensors);
+    //    WDFunc::SPBData(this, "T_Data_Rec", ConfKDV->Bci_block.T_Data_Rec);
+    //    WDFunc::SPBData(this, "OscPoints", ConfKDV->Bci_block.OscPoints);
+    //    WDFunc::SPBData(this, "TdatNum", ConfKDV->Bci_block.TdatNum);
+    //    //.........................................................
     //    ConfKxx->FillBack();
 }
 

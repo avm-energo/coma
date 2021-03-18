@@ -13,9 +13,9 @@ void ConfigKDV::setConfig()
 {
     Config::removeFotter();
 
-    S2::config.append({ BciNumber::Eq_type_ID, sizeof(Bci_block.Eq_type), &Bci_block.Eq_type });
-    S2::config.append({ BciNumber::Cool_type, sizeof(Bci_block.Cool_type), &Bci_block.Cool_type });
-    S2::config.append({ BciNumber::W_mat, sizeof(Bci_block.W_mat), &Bci_block.W_mat });
+    // S2::config.append({ BciNumber::Eq_type_ID, sizeof(Bci_block.Eq_type), &Bci_block.Eq_type });
+    // S2::config.append({ BciNumber::Cool_type, sizeof(Bci_block.Cool_type), &Bci_block.Cool_type });
+    //  S2::config.append({ BciNumber::W_mat, sizeof(Bci_block.W_mat), &Bci_block.W_mat });
     S2::config.append({ BciNumber::NFiltr_ID, sizeof(Bci_block.NFiltr), &Bci_block.NFiltr });
     S2::config.append({ BciNumber::NHarmFilt_ID, sizeof(Bci_block.NHarmFilt), &Bci_block.NHarmFilt });
     S2::config.append({ BciNumber::DDOsc_ID, sizeof(Bci_block.DDosc), &Bci_block.DDosc });
@@ -75,9 +75,9 @@ void ConfigKDV::setConfig()
 void ConfigKDV::SetDefConf()
 {
     using namespace AVM_KDV;
-    Bci_block.Eq_type = DEF_EQ_TYPE;
-    Bci_block.Cool_type = DEF_COOL_TYPE;
-    Bci_block.W_mat = DEF_W_MAT;
+    // Bci_block.Eq_type = DEF_EQ_TYPE;
+    // Bci_block.Cool_type = DEF_COOL_TYPE;
+    // Bci_block.W_mat = DEF_W_MAT;
     Bci_block.NFiltr = DEF_NFILTR;
     Bci_block.NHarmFilt = DEF_NHARMFILT;
     Bci_block.DDosc = DEF_DDOCS;
