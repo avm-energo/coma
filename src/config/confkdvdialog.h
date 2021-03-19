@@ -5,7 +5,6 @@
 class ConfigKDV;
 class ConfKDVDialog : public AbstractConfDialog
 {
-    Q_OBJECT
 public:
     explicit ConfKDVDialog(ConfigKDV *ckdv, QWidget *parent = nullptr);
     ~ConfKDVDialog();
@@ -33,8 +32,7 @@ protected:
 
     ConfigKDV *ConfKDV;
 
-private slots:
-
+private:
     void SetDefConf() override;
 };
 

@@ -10,10 +10,8 @@
 
 CheckKDVVibrDialog::CheckKDVVibrDialog(QWidget *parent) : AbstractCheckDialog(parent)
 {
-
-    QStringList sl;
-
-    m_BdUIList = { /*{ "Вибрации", Bd1W() },*/ { "Вибрации", Bd2W() }, { "Вибрации", Bd3W() } };
+    m_BdUIList
+        = { /*{ "Вибрации", Bd1W() },*/ { "Среднеквадратичные значения", Bd2W() }, { "Скорости изменения", Bd3W() } };
     m_BdUIList.first().widget->setUpdatesEnabled();
 
     Timer->setInterval(ANMEASINT);

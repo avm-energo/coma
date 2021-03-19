@@ -25,12 +25,12 @@
 #include <QTimer>
 
 // default timer interval to check analog values
-#define ANMEASINT 2000
+constexpr int ANMEASINT = 2000;
 
 // блоки Bd для базовой платы нумеруются с 0 (0-й блок - общий для всех)
-#define BT_STARTBD_BASE 0
+constexpr int BT_STARTBD_BASE = 0;
 // блоки Bd для мезонинной платы нумеруются с 101 (100 base + 1st block)
-#define BT_STARTBD_MEZ 100
+constexpr int BT_STARTBD_MEZ = 100;
 
 class AbstractCheckDialog : public UDialog
 {

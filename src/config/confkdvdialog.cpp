@@ -302,13 +302,14 @@ QWidget *ConfKDVDialog::hystWidget()
 
     int row = 0;
 
-    gridlyout->addWidget(WDFunc::NewLBL2(this, "Гистерезис сигнализации по температуре ННТ,  град.С:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::GTnnt), 0, 10000, 3), row, 2, 1, 3);
+    gridlyout->addWidget(
+        WDFunc::NewLBL2(this, "Гистерезис сигнализации по температуре ННТ,  град.С:"), row, textColumn);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::GTnnt), 0, 10000, 3), row, warnColumn);
 
     row++;
     gridlyout->addWidget(
-        WDFunc::NewLBL2(this, "Гистерезис сигнализации по токовой перегрузке, % от Iwnom:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::GOvc), 0, 10000, 1), row, 2, 1, 3);
+        WDFunc::NewLBL2(this, "Гистерезис сигнализации по токовой перегрузке, % от Iwnom:"), row, textColumn);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::GOvc), 0, 10000, 1), row, warnColumn);
 
     gb->setLayout(gridlyout);
     return gb;
@@ -339,29 +340,29 @@ QWidget *ConfKDVDialog::recordWidget()
 
     row = 0;
     gridlyout->addWidget(
-        WDFunc::NewLBL2(this, "Интервал усреднения данных  (в периодах основной частоты):"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::NFiltr_ID), 0, 10000, 0), row, 2, 1, 3);
+        WDFunc::NewLBL2(this, "Интервал усреднения данных  (в периодах основной частоты):"), row, textColumn);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::NFiltr_ID), 0, 10000, 0), row, warnColumn);
 
     row++;
-    gridlyout->addWidget(WDFunc::NewLBL2(this, "Интервал записи данных в ПЗУ (тренд), в секундах:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::T_Data_Rec), 0, 10000, 0), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewLBL2(this, "Интервал записи данных в ПЗУ (тренд), в секундах:"), row, textColumn);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::T_Data_Rec), 0, 10000, 0), row, warnColumn);
 
     row++;
-    gridlyout->addWidget(WDFunc::NewLBL2(this, "Постоянная времени фильтрации гармоник:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::NHarmFilt_ID), 0, 10000, 0), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewLBL2(this, "Постоянная времени фильтрации гармоник:"), row, textColumn);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::NHarmFilt_ID), 0, 10000, 0), row, warnColumn);
 
     row++;
-    gridlyout->addWidget(WDFunc::NewLBL2(this, "Запуск осциллограммы:"), row, 1, 1, 1);
+    gridlyout->addWidget(WDFunc::NewLBL2(this, "Запуск осциллограммы:"), row, textColumn);
     QHBoxLayout *hlyout = new QHBoxLayout;
     hlyout->addWidget(WDFunc::NewChB2(this, "oscchb.0", "по команде Ц"));
     //    hlyout->addWidget(WDFunc::NewChB(this, "oscchb.1", "по дискр. входу PD1", Colors::ACONFWCLR));
     hlyout->addWidget(WDFunc::NewChB2(this, "oscchb.2", "по резкому изменению"));
-    gridlyout->addLayout(hlyout, row, 2, 1, 3);
+    gridlyout->addLayout(hlyout, row, warnColumn);
 
     row++;
     gridlyout->addWidget(
-        WDFunc::NewLBL2(this, "Количество точек осциллограммы на период основной частоты:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::OscPoints), 0, 10000, 0), row, 2, 1, 3);
+        WDFunc::NewLBL2(this, "Количество точек осциллограммы на период основной частоты:"), row, textColumn);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::OscPoints), 0, 10000, 0), row, warnColumn);
     QGroupBox *gb = new QGroupBox("Параметры записи");
     gb->setLayout(gridlyout);
     return gb;
@@ -373,32 +374,32 @@ QWidget *ConfKDVDialog::motorWidget()
     QGridLayout *gridlyout = new QGridLayout;
 
     int row = 0;
-    gridlyout->addWidget(WDFunc::NewLBL2(this, "Коэффициент передачи датчиков вибрации:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::Kvibr), 0, 10000, 2), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewLBL2(this, "Коэффициент передачи датчиков вибрации:"), row, textColumn);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::Kvibr), 0, 10000, 2), row, warnColumn);
 
     row++;
-    gridlyout->addWidget(WDFunc::NewLBL2(this, "Порядковый номер двигателя:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::NumA_KDV), 0, 10000, 0), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewLBL2(this, "Порядковый номер двигателя:"), row, textColumn);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::NumA_KDV), 0, 10000, 0), row, warnColumn);
 
     row++;
-    gridlyout->addWidget(WDFunc::NewLBL2(this, "Число пар полюсов (от 1 до 10):"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::Poles), 0, 10000, 0), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewLBL2(this, "Число пар полюсов (от 1 до 10):"), row, textColumn);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::Poles), 0, 10000, 0), row, warnColumn);
 
     row++;
-    gridlyout->addWidget(WDFunc::NewLBL2(this, "Число пазов на статоре:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::Stator_Slotes), 0, 10000, 0), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewLBL2(this, "Число пазов на статоре:"), row, textColumn);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::Stator_Slotes), 0, 10000, 0), row, warnColumn);
 
     row++;
-    gridlyout->addWidget(WDFunc::NewLBL2(this, "Число стержней ротора:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::Rotor_bars), 0, 10000, 0), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewLBL2(this, "Число стержней ротора:"), row, textColumn);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::Rotor_bars), 0, 10000, 0), row, warnColumn);
 
     row++;
-    gridlyout->addWidget(WDFunc::NewLBL2(this, "Тип вибродатчика:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::VibroType), 0, 10000, 0), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewLBL2(this, "Тип вибродатчика:"), row, textColumn);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::VibroType), 0, 10000, 0), row, warnColumn);
 
     row++;
-    gridlyout->addWidget(WDFunc::NewLBL2(this, "Подключенные датчики вибрации:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::Sensors), 0, 10000, 0), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewLBL2(this, "Подключенные датчики вибрации:"), row, textColumn);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::Sensors), 0, 10000, 0), row, warnColumn);
 
     gb->setLayout(gridlyout);
     return gb;
@@ -412,14 +413,13 @@ QWidget *ConfKDVDialog::connectionWidget()
     QVBoxLayout *vlyout = new QVBoxLayout;
     QGroupBox *gb = new QGroupBox;
 
-    QGridLayout *gridlyout = new QGridLayout;
-
+    QHBoxLayout *hlyout = new QHBoxLayout;
     gb->setTitle("Настройки протокола МЭК-60870-5-104");
 
-    gridlyout->addWidget(ConfKDV->MainConfig()->MainWidget(this), 0, 0, 1, 1);
-    gridlyout->addWidget(ConfKDV->KxxConfig()->ComParam(this), 0, 1, 1, 1);
+    hlyout->addWidget(ConfKDV->MainConfig()->MainWidget(this));
+    hlyout->addWidget(ConfKDV->KxxConfig()->ComParam(this));
 
-    gb->setLayout(gridlyout);
+    gb->setLayout(hlyout);
     lyout->addWidget(gb);
 
     gb = new QGroupBox("Настройка времени");

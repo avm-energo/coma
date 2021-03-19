@@ -31,21 +31,21 @@ constexpr float DEF_W100 = 1.385f;
 
 constexpr int DEF_MBMASTER = 0;
 
-struct TempConfStruct
-{
-    TempConfStruct()
-    {
-        RTerm = DEF_RTERM;
-        W100 = DEF_W100;
-    }
-    float RTerm;
-    float W100;
-};
-struct StructTrele
-{
-    quint32 Trele_pred;
-    quint32 Trele_alarm;
-};
+// struct TempConfStruct
+//{
+//    TempConfStruct()
+//    {
+//        RTerm = DEF_RTERM;
+//        W100 = DEF_W100;
+//    }
+//    float RTerm;
+//    float W100;
+//};
+// struct StructTrele
+//{
+//    quint32 Trele_pred;
+//    quint32 Trele_alarm;
+//};
 
 enum DataType : quint8
 {
@@ -130,14 +130,14 @@ bool inline operator!=(const ABMAST &lhs, const ABMAST &rhs)
     return !(lhs == rhs);
 }
 
-struct StructModBus
-{
-    quint8 MBMaster;
-    std::array<quint8, 8> MBMab1;
-    std::array<quint8, 8> MBMab2;
-    std::array<quint8, 8> MBMab3;
-    std::array<quint8, 8> MBMab4;
-};
+// struct StructModBus
+//{
+//    quint8 MBMaster;
+//    std::array<quint8, 8> MBMab1;
+//    std::array<quint8, 8> MBMab2;
+//    std::array<quint8, 8> MBMab3;
+//    std::array<quint8, 8> MBMab4;
+//};
 struct Com
 {
     Com()

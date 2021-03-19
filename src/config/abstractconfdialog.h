@@ -8,7 +8,6 @@
 
 class AbstractConfDialog : public UDialog, protected BaseConfig
 {
-    Q_OBJECT
 public:
     explicit AbstractConfDialog(QWidget *parent = nullptr);
 
@@ -22,7 +21,7 @@ protected:
     bool PrepareConfToWrite();
     void uponInterfaceSetting() override;
 
-private slots:
+private:
     void SaveConfToFile();
     void LoadConfFromFile();
     void ReadConf();

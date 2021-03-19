@@ -21,8 +21,6 @@ AbstractConfDialog::AbstractConfDialog(QWidget *parent) : UDialog(parent)
     m_password = "121941";
     setSuccessMsg("Конфигурация записана успешно");
     const auto &manager = DataManager::GetInstance();
-    // connect(&manager, &DataManager::confParametersListReceived, this,
-    // &AbstractConfDialog::confParametersListReceived);
     connect(&manager, &DataManager::dataRecVListReceived, this, &AbstractConfDialog::confReceived);
 }
 
@@ -53,12 +51,8 @@ void AbstractConfDialog::WriteConf()
 
 void AbstractConfDialog::confReceived(const QList<DataTypes::DataRecV> &list)
 {
-    //  S2::configV.clear();
-    //   const auto &configV = &S2::configV;
     S2::configV = list;
     Fill();
-    // std::swap(list,configV);
-    // std::swap(S2::configV,list);
 }
 
 void AbstractConfDialog::confParametersListReceived(const DataTypes::ConfParametersListStruct &cfpl)
@@ -174,64 +168,16 @@ QWidget *AbstractConfDialog::ConfButtons()
     return wdgt;
 }
 
-// void AbstractConfDialog::ButtonReadConf()
-//{
-//    ReadConf();
-//    switch (Board::GetInstance().interfaceType())
-//    {
-//    case Board::InterfaceType::Ethernet:
-//    {
-//        //        if ((ModuleBSI::Health() & HTH_CONFIG) || (StdFunc::IsInEmulateMode())) // если в модуле нет
-//        //        конфигурации,
-//        if ((ModuleBSI::noConfig()) || (StdFunc::IsInEmulateMode())) // если в модуле нет конфигурации,
-//                                                                     // заполнить поля по умолчанию
-//            emit DefConfToBeLoaded();
-//        else // иначе заполнить значениями из модуля
-//            emit ReadConfig(1);
-//        break;
-//    }
-//    case Board::InterfaceType::USB:
-//    {
-//        Error::Msg res = ModuleBSI::PrereadConf(this, S2::config);
-//        if (res == Error::Msg::ResEmpty)
-//            emit DefConfToBeLoaded();
-//        else if (res == Error::Msg::NoError)
-//            emit NewConfToBeLoaded();
-//        break;
-//    }
-//    }
-//}
-
 void AbstractConfDialog::PrereadConf()
 {
-    //    if ((ModuleBSI::Health() & HTH_CONFIG) || (StdFunc::IsInEmulateMode())) // если в модуле нет конфигурации,
-    //    заполнить
     if (Board::GetInstance().noConfig()) // если в модуле нет конфигурации, заполнить поля по умолчанию
     {
         SetDefConf();
         QMessageBox::information(this, "Успешно", "Задана конфигурация по умолчанию", QMessageBox::Ok);
     }
-    //        IsNeededDefConf = true; // emit LoadDefConf();
-    else // иначе заполнить значениями из модуля
-         //        ReadConf(confIndex);
+    else
         ReadConf();
 }
-
-// по имени виджета взять его номер
-
-// int AbstractConfDialog::GetChNumFromObjectName(QString ObjectName)
-//{
-//    QStringList ObjectNameSl = ObjectName.split(".");
-//    int ChNum;
-//    bool ok;
-//    if (ObjectNameSl.size() > 1)
-//        ChNum = ObjectNameSl.at(1).toInt(&ok);
-//    else
-//        return Error::Msg::GeneralError;
-//    if (!ok)
-//        return Error::Msg::GeneralError;
-//    return ChNum;
-//}
 
 bool AbstractConfDialog::PrepareConfToWrite()
 {

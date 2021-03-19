@@ -6,7 +6,7 @@
 
 class ConfKTFDialog : public AbstractConfDialog
 {
-    Q_OBJECT
+
 public:
     explicit ConfKTFDialog(ConfigKTF *cktf, QWidget *parent = nullptr);
     ~ConfKTFDialog();
@@ -36,7 +36,7 @@ protected:
 
     ConfigKTF *ConfKTF;
 
-private slots:
+private:
     void SetDefConf() override;
 };
 

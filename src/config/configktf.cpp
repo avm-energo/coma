@@ -42,11 +42,6 @@ ConfigKTF::ConfigKTF()
     S2::config.append({ 0xFFFFFFFF, 0, nullptr });
 }
 
-// S2DataTypes::S2ConfigType *ConfigKTF::S2Config()
-//{
-//    return m_S2Config;
-//}
-
 ConfigKTF::~ConfigKTF()
 {
     delete m_mainConfig;
