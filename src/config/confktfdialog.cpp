@@ -271,14 +271,14 @@ QWidget *ConfKTFDialog::connectionWidget()
     QVBoxLayout *vlyout = new QVBoxLayout;
     QGroupBox *gb = new QGroupBox;
 
-    QGridLayout *gridlyout = new QGridLayout;
+    QHBoxLayout *hlyout = new QHBoxLayout;
 
     gb->setTitle("Настройки протокола МЭК-60870-5-104");
 
-    gridlyout->addWidget(ConfKTF->MainConfig()->MainWidget(this), 0, 0, 1, 1);
-    gridlyout->addWidget(ConfKTF->KxxConfig()->ComParam(this), 0, 1, 1, 1);
+    hlyout->addWidget(ConfKTF->MainConfig()->MainWidget(this));
+    hlyout->addWidget(ConfKTF->KxxConfig()->ComParam(this));
 
-    gb->setLayout(gridlyout);
+    gb->setLayout(hlyout);
     lyout->addWidget(gb);
 
     gb = new QGroupBox("Настройка времени");

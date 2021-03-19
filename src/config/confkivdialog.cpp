@@ -227,14 +227,13 @@ QWidget *ConfKIVDialog::connectionWidget()
     QVBoxLayout *vlyout = new QVBoxLayout;
     QGroupBox *gb = new QGroupBox;
 
-    QGridLayout *gridlyout = new QGridLayout;
-
     gb->setTitle("Настройки протокола МЭК-60870-5-104");
 
-    gridlyout->addWidget(CKIV->MainConfig()->MainWidget(this), 0, 0, 1, 1);
-    gridlyout->addWidget(CKIV->KxxConfig()->ComParam(this), 0, 1, 1, 1);
+    QHBoxLayout *hlyout = new QHBoxLayout;
+    hlyout->addWidget(CKIV->MainConfig()->MainWidget(this));
+    hlyout->addWidget(CKIV->KxxConfig()->ComParam(this));
 
-    gb->setLayout(gridlyout);
+    gb->setLayout(hlyout);
     lyout->addWidget(gb);
 
     gb = new QGroupBox("Настройка времени");

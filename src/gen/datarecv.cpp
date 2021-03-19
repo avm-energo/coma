@@ -119,8 +119,8 @@ DataRecV::DataRecV(const S2DataTypes::DataRec &record) : id(record.id)
 {
     using namespace detail;
 
-    auto search2 = map.find(id);
-    if (search2 == map.end())
+    auto search = map.find(id);
+    if (search == map.end())
         return;
 
     auto value = map.at(record.id);
@@ -225,8 +225,8 @@ DataRecV::DataRecV(const S2DataTypes::DataRec &record, const char *rawdata) : id
 {
     using namespace detail;
 
-    auto search2 = map.find(id);
-    assert(search2 != map.end());
+    auto search = map.find(id);
+    assert(search != map.end());
     // return;
     // Exception inside ctor https://www.stroustrup.com/bs_faq2.html#ctor-exceptions
     auto value = map.at(record.id);
@@ -348,6 +348,6 @@ bool S2DataTypes::is_same(const S2DataTypes::DataRec &lhs, const S2DataTypes::Da
 {
     if ((lhs.id == rhs.id) && (lhs.numByte == rhs.numByte))
         return !memcmp(lhs.thedata, rhs.thedata, lhs.numByte);
-    else
-        return false;
+
+    return false;
 }

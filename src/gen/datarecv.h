@@ -97,11 +97,6 @@ private:
     valueType data;
 };
 
-template <typename T> T *UseType()
-{
-    static_cast<T *>(nullptr);
-}
-
 bool operator==(const DataTypes::DataRecV &lhs, const DataTypes::DataRecV &rhs);
 bool operator!=(const DataTypes::DataRecV &lhs, const DataTypes::DataRecV &rhs);
 }
