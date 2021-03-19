@@ -65,10 +65,10 @@ void BaseInterface::writeS2File(DataTypes::FilesEnum number, S2DataTypes::S2Conf
     writeFile(number, ba);
 }
 
-void BaseInterface::writeConfigFile()
-{
-    writeS2File(DataTypes::Config, &S2::config);
-}
+// void BaseInterface::writeConfigFile()
+//{
+//    writeS2File(DataTypes::Config, &S2::config);
+//}
 
 void BaseInterface::reqAlarms(quint32 sigAdr, quint32 sigCount)
 {
@@ -186,8 +186,11 @@ Error::Msg BaseInterface::readS2FileSync(quint32 filenum)
 {
     m_busy = true;
     m_timeout = false;
-    connect(&DataManager::GetInstance(), &DataManager::confParametersListReceived, this,
-        &BaseInterface::confParameterBlockReceived);
+    auto connection = std::shared_ptr<QMetaObject::Connection>(new QMetaObject::Connection);
+    *connection = connect(&DataManager::GetInstance(), &DataManager::dataRecVListReceived, this, [=] {
+        QObject::disconnect(*connection);
+        m_busy = false;
+    });
     reqFile(filenum, true);
     timeoutTimer->start();
     while (m_busy)
@@ -265,15 +268,6 @@ void BaseInterface::responseReceived(const DataTypes::GeneralResponseStruct &res
         return;
     disconnect(&DataManager::GetInstance(), &DataManager::responseReceived, this, &BaseInterface::responseReceived);
     m_responseResult = (response.type == DataTypes::GeneralResponseTypes::Ok);
-    m_busy = false;
-}
-
-void BaseInterface::confParameterBlockReceived(const DataTypes::ConfParametersListStruct &cfpl)
-{
-    Q_UNUSED(cfpl)
-    disconnect(&DataManager::GetInstance(), &DataManager::confParametersListReceived, this,
-        &BaseInterface::confParameterBlockReceived);
-    // m_responseResult = (response.type == DataTypes::GeneralResponseTypes::Ok);
     m_busy = false;
 }
 

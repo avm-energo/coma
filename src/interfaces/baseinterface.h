@@ -54,7 +54,7 @@ public:
     virtual void reqFile(quint32, bool isConfigFile = false) = 0;
     virtual void writeFile(quint32, const QByteArray &) = 0;
     void writeS2File(DataTypes::FilesEnum number, S2DataTypes::S2ConfigType *file);
-    void writeConfigFile();
+    // void writeConfigFile();
     virtual void reqTime() = 0;
     virtual void writeTime(quint32) = 0;
     virtual void writeCommand(Queries::Commands, QVariant = 0) = 0;
@@ -164,7 +164,6 @@ private:
 private slots:
     void resultReady(const DataTypes::BlockStruct &result);
     void responseReceived(const DataTypes::GeneralResponseStruct &response);
-    void confParameterBlockReceived(const DataTypes::ConfParametersListStruct &cfpl);
     void fileReceived(const DataTypes::FileStruct &file);
     void timeout();
 };
