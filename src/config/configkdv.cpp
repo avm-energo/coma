@@ -8,6 +8,12 @@ ConfigKDV::ConfigKDV()
     m_KxxConfig = new ConfigKxx;
 }
 
+ConfigKDV::~ConfigKDV()
+{
+    delete m_mainConfig;
+    delete m_KxxConfig;
+}
+
 void ConfigKDV::SetDefConf()
 {
     m_mainConfig->SetDefConf();

@@ -24,7 +24,6 @@ constexpr int accColumn = 2;
 
 ConfKDVDialog::ConfKDVDialog(ConfigKDV *ckdv, QWidget *parent) : AbstractConfDialog(parent)
 {
-
     ConfKDV = ckdv;
 }
 
