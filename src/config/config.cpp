@@ -8,7 +8,6 @@
 #include "../widgets/wd_func.h"
 
 #include <QDebug>
-#include <QMetaEnum>
 #include <QVBoxLayout>
 
 Config::Config()
@@ -36,28 +35,30 @@ QWidget *Config::MainWidget(QWidget *parent)
     ParentMainbl = parent;
     QWidget *w = new QWidget;
 
+    const auto quint16_max = std::numeric_limits<quint16>::max();
+    const auto quint8_max = std::numeric_limits<quint8>::max();
     QGridLayout *glyout = new QGridLayout;
 
-    glyout->addWidget(WDFunc::NewLBL2(parent, "Адрес базовой станции:"), 0, 0);
-    glyout->addWidget(WDFunc::NewSPB2(parent, nameByValue(BciNumber::Abs_104), 0, 65535, 0), 0, 1);
+    glyout->addWidget(WDFunc::NewLBL2(parent, "Адрес базовой станции:"), 0, textColumn);
+    glyout->addWidget(WDFunc::NewSPB2(parent, nameByValue(BciNumber::Abs_104), 0, quint16_max, 0), 0, valueColumn);
 
-    glyout->addWidget(WDFunc::NewLBL2(parent, "Интервал циклического опроса, с:"), 1, 0);
-    glyout->addWidget(WDFunc::NewSPB2(parent, nameByValue(BciNumber::Cycle_104), 0, 255, 0), 1, 1);
+    glyout->addWidget(WDFunc::NewLBL2(parent, "Интервал циклического опроса, с:"), 1, textColumn);
+    glyout->addWidget(WDFunc::NewSPB2(parent, nameByValue(BciNumber::Cycle_104), 0, quint8_max, 0), 1, valueColumn);
 
-    glyout->addWidget(WDFunc::NewLBL2(parent, "Тайм-аут t1, с:"), 2, 0);
-    glyout->addWidget(WDFunc::NewSPB2(parent, nameByValue(BciNumber::T1_104), 0, 255, 0), 2, 1);
+    glyout->addWidget(WDFunc::NewLBL2(parent, "Тайм-аут t1, с:"), 2, textColumn);
+    glyout->addWidget(WDFunc::NewSPB2(parent, nameByValue(BciNumber::T1_104), 0, quint8_max, 0), 2, valueColumn);
 
-    glyout->addWidget(WDFunc::NewLBL2(parent, "Тайм-аут t2, с:"), 3, 0);
-    glyout->addWidget(WDFunc::NewSPB2(parent, nameByValue(BciNumber::T2_104), 0, 255, 0), 3, 1);
+    glyout->addWidget(WDFunc::NewLBL2(parent, "Тайм-аут t2, с:"), 3, textColumn);
+    glyout->addWidget(WDFunc::NewSPB2(parent, nameByValue(BciNumber::T2_104), 0, quint8_max, 0), 3, valueColumn);
 
-    glyout->addWidget(WDFunc::NewLBL2(parent, "Тайм-аут t3, с:"), 4, 0);
-    glyout->addWidget(WDFunc::NewSPB2(parent, nameByValue(BciNumber::T3_104), 0, 255, 0), 4, 1);
+    glyout->addWidget(WDFunc::NewLBL2(parent, "Тайм-аут t3, с:"), 4, textColumn);
+    glyout->addWidget(WDFunc::NewSPB2(parent, nameByValue(BciNumber::T3_104), 0, quint8_max, 0), 4, valueColumn);
 
-    glyout->addWidget(WDFunc::NewLBL2(parent, "Макс. число неподтв. APDU (k):"), 5, 0);
-    glyout->addWidget(WDFunc::NewSPB2(parent, nameByValue(BciNumber::k_104), 0, 255, 0), 5, 1);
+    glyout->addWidget(WDFunc::NewLBL2(parent, "Макс. число неподтв. APDU (k):"), 5, textColumn);
+    glyout->addWidget(WDFunc::NewSPB2(parent, nameByValue(BciNumber::k_104), 0, quint8_max, 0), 5, valueColumn);
 
-    glyout->addWidget(WDFunc::NewLBL2(parent, "Макс. число посл. подтв. APDU (w):"), 6, 0);
-    glyout->addWidget(WDFunc::NewSPB2(parent, nameByValue(BciNumber::w_104), 0, 255, 0), 6, 1);
+    glyout->addWidget(WDFunc::NewLBL2(parent, "Макс. число посл. подтв. APDU (w):"), 6, textColumn);
+    glyout->addWidget(WDFunc::NewSPB2(parent, nameByValue(BciNumber::w_104), 0, quint8_max, 0), 6, valueColumn);
 
     w->setLayout(glyout);
 

@@ -16,6 +16,8 @@ IPCtrl::IPCtrl(QWidget *parent) : QFrame(parent)
     pLayout->setContentsMargins(0, 0, 1, 0);
     pLayout->setSpacing(0);
 
+    QLineEdit *pEdit = nullptr;
+
     for (int i = 0; i != QTUTL_IP_SIZE; ++i)
     {
         if (i != 0)
@@ -26,12 +28,7 @@ IPCtrl::IPCtrl(QWidget *parent) : QFrame(parent)
         }
 
         m_pLineEdit.at(i) = new QLineEdit(this);
-        QLineEdit *pEdit = m_pLineEdit.at(i);
-
-        int pixelsWide = pEdit->fontMetrics().horizontalAdvance(QString::number(255));
-        // Here is костыль
-        pEdit->setMaximumWidth(pixelsWide * 2);
-        pEdit->installEventFilter(this);
+        pEdit = m_pLineEdit.at(i);
 
         pLayout->addWidget(pEdit);
         pLayout->setStretch(pLayout->count(), 1);
@@ -44,12 +41,17 @@ IPCtrl::IPCtrl(QWidget *parent) : QFrame(parent)
         font.setFixedPitch(true);
         pEdit->setFont(font);
 
+        int pixelsWide = pEdit->fontMetrics().horizontalAdvance(QString::number(255));
+        // Here is костыль
+        pEdit->setMaximumWidth(pixelsWide * 2);
+        pEdit->installEventFilter(this);
+
         QRegExp rx("^(0|[1-9]|[1-9][0-9]|1[0-9][0-9]|2([0-4][0-9]|5[0-5]))$");
         QValidator *validator = new QRegExpValidator(rx, pEdit);
         pEdit->setValidator(validator);
     }
 
-    //  setMaximumWidth(30 * QTUTL_IP_SIZE);
+    setMaximumHeight(2 * pEdit->fontMetrics().height());
 
     connect(this, &IPCtrl::signalTextChanged, this, &IPCtrl::slotTextChanged, Qt::QueuedConnection);
 }

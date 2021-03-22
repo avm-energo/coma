@@ -1,6 +1,11 @@
 #pragma once
 #include "../gen/s2.h"
 #include "../widgets/wd_func.h"
+
+constexpr int textColumn = 0;
+constexpr int valueColumn = 1;
+constexpr int extraColumn = 2;
+
 class BaseConfig
 {
 public:

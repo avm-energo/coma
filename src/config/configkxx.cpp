@@ -252,36 +252,37 @@ QWidget *ConfigKxx::ComParam(QWidget *parent)
 
     int row = 7;
 
-    glyout->addWidget(WDFunc::NewLBL2(parent, "IP адрес устройства:"), row, 0, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(WDFunc::NewLBL2(parent, "IP адрес устройства:"), row, textColumn, 1, 1, Qt::AlignLeft);
     auto ipControl = new IPCtrl;
     ipControl->setObjectName(nameByValue(BciNumber::IP_ID));
-    glyout->addWidget(ipControl, row, 1, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(ipControl, row, valueColumn, 1, 1, Qt::AlignLeft);
 
     row++;
 
-    glyout->addWidget(WDFunc::NewLBL2(parent, "Маска:"), row, 0, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(WDFunc::NewLBL2(parent, "Маска:"), row, textColumn, 1, 1, Qt::AlignLeft);
     ipControl = new IPCtrl;
     ipControl->setObjectName(nameByValue(BciNumber::Mask_ID));
-    glyout->addWidget(ipControl, row, 1, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(ipControl, row, valueColumn, 1, 1, Qt::AlignLeft);
 
     row++;
 
-    glyout->addWidget(WDFunc::NewLBL2(parent, "Шлюз:"), row, 0, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(WDFunc::NewLBL2(parent, "Шлюз:"), row, textColumn, 1, 1, Qt::AlignLeft);
     ipControl = new IPCtrl;
     ipControl->setObjectName(nameByValue(BciNumber::GW_ID));
-    glyout->addWidget(ipControl, row, 1, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(ipControl, row, valueColumn, 1, 1, Qt::AlignLeft);
 
     row++;
 
-    glyout->addWidget(WDFunc::NewLBL2(parent, "Порт протокола 104:"), row, 0, 1, 1, Qt::AlignLeft);
-    glyout->addWidget(WDFunc::NewLE2(parent, nameByValue(BciNumber::Port_ID), {}), row, 1, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(WDFunc::NewLBL2(parent, "Порт протокола 104:"), row, textColumn, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(
+        WDFunc::NewLE2(parent, nameByValue(BciNumber::Port_ID), {}), row, valueColumn, 1, 1, Qt::AlignLeft);
 
     row++;
 
-    glyout->addWidget(WDFunc::NewLBL2(parent, "Адрес SNTP сервера:"), row, 0, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(WDFunc::NewLBL2(parent, "Адрес SNTP сервера:"), row, textColumn, 1, 1, Qt::AlignLeft);
     ipControl = new IPCtrl;
     ipControl->setObjectName(nameByValue(BciNumber::SNTP_ID));
-    glyout->addWidget(ipControl, row, 1, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(ipControl, row, valueColumn, 1, 1, Qt::AlignLeft);
 
     vlyout2->addLayout(glyout);
     vlyout1->addLayout(vlyout2);
@@ -308,13 +309,13 @@ QWidget *ConfigKxx::ModbusWidget(QWidget *parent)
     int row = 0;
 
     QLabel *lbl = new QLabel("Modbus: ");
-    glyout->addWidget(lbl, row, 0, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(lbl, row, textColumn, 1, 1, Qt::AlignLeft);
     QStringList dopcbl = QStringList { "slave", "master" };
     auto *dopcb = WDFunc::NewCB2(parent, nameByValue(BciNumber::MBMaster), dopcbl);
 
     QObject::connect(
         dopcb, QOverload<int>::of(&QComboBox::currentIndexChanged), [this](int index) { ChangeModbusGUI(index); });
-    glyout->addWidget(dopcb, row, 1, 1, 1);
+    glyout->addWidget(dopcb, row, valueColumn, 1, 1);
     row++;
 
     QVBoxLayout *vlyout2 = new QVBoxLayout;
@@ -329,27 +330,27 @@ QWidget *ConfigKxx::ModbusWidget(QWidget *parent)
 
     row++;
     lbl = WDFunc::NewLBL2(parent, "Скорость RS485 интерфейса:");
-    glyout->addWidget(lbl, row, 0, 1, 1);
+    glyout->addWidget(lbl, row, textColumn, 1, 1);
     auto *cb = WDFunc::NewCB2(parent, nameByValue(BciNumber::Baud_ID), m_baudList);
 
-    glyout->addWidget(cb, row, 1, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(cb, row, valueColumn, 1, 1, Qt::AlignLeft);
 
     row++;
-    glyout->addWidget(WDFunc::NewLBL2(parent, "Чётность:"), row, 0, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL2(parent, "Чётность:"), row, textColumn, 1, 1);
     cbl = QStringList { "NoParity", "EvenParity", "OddParity" };
     cb = WDFunc::NewCB2(parent, nameByValue(BciNumber::Parity_ID), cbl);
-    glyout->addWidget(cb, row, 1, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(cb, row, valueColumn, 1, 1, Qt::AlignLeft);
 
     row++;
-    glyout->addWidget(WDFunc::NewLBL2(parent, "Количество стоповых битов:"), row, 0, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL2(parent, "Количество стоповых битов:"), row, textColumn /*, 1, 1*/);
     cbl = QStringList { "1", "2" };
     cb = WDFunc::NewCB2(parent, nameByValue(BciNumber::stopbit_ID), cbl);
-    glyout->addWidget(cb, row, 1, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(cb, row, valueColumn, 1, 1, Qt::AlignLeft);
 
     row++;
-    glyout->addWidget(WDFunc::NewLBL2(parent, "Адрес устройства для Modbus:"), row, 0, 1, 1);
-    glyout->addWidget(
-        WDFunc::NewSPB2(parent, nameByValue(BciNumber::adrMB_ID), 1, 254, 0), row, 1, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(WDFunc::NewLBL2(parent, "Адрес устройства для Modbus:"), row, textColumn /*, 1, 1*/);
+    glyout->addWidget(WDFunc::NewSPB2(parent, nameByValue(BciNumber::adrMB_ID), 1, 254, 0), row,
+        valueColumn /*, 1, 1, Qt::AlignLeft*/);
 
     vlyout2->addLayout(glyout);
     gb->setLayout(vlyout2);
@@ -389,6 +390,7 @@ QWidget *ConfigKxx::ModbusWidget(QWidget *parent)
 
     const QStringList funcs { "Coils", "Status", "Holding", "Input" };
     comboBoxdelegate = new ComboBoxDelegate(funcs, tableView);
+    // Modbus функции начинаются с 1
     comboBoxdelegate->setOffset(1);
     tableView->setItemDelegateForColumn(6, comboBoxdelegate);
 

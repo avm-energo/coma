@@ -3,8 +3,8 @@ SOURCES += \
     $$PWD/alarmbutton.cpp  \
     $$PWD/alarmwidget.cpp  \
     $$PWD/basespinboxgroup.cpp \
+    $$PWD/checkboxgroup.cpp \
     $$PWD/coma.cpp \
-    $$PWD/comboboxgroup.cpp \
   #  $$PWD/doublespinboxgroup.cpp \
     $$PWD/ecombobox.cpp  \
     $$PWD/edoublespinbox.cpp  \
@@ -31,8 +31,8 @@ HEADERS += \
     $$PWD/alarmbutton.h \
     $$PWD/alarmwidget.h \
     $$PWD/basespinboxgroup.h \
+    $$PWD/checkboxgroup.h \
     $$PWD/coma.h \
-    $$PWD/comboboxgroup.h \
     #$$PWD/doublespinboxgroup.h \
     $$PWD/ecombobox.h \
     $$PWD/edoublespinbox.h \
