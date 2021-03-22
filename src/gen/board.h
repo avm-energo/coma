@@ -14,8 +14,8 @@ class Board : public QObject, public Singleton<Board>
 public:
     enum DeviceType
     {
-        Module,
-        Device
+        Controller,
+        Module
     };
 
     enum Range

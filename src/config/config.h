@@ -9,6 +9,14 @@
 
 class Config : BaseConfig
 {
+    enum CtypeBits
+    {
+        SNTP_Addr1 = 0,
+        PPS = 1,
+        SNTP_Addr2 = 2,
+        SNTP_Default = 3
+    };
+
 public:
     explicit Config();
     ~Config() {};

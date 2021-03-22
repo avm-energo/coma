@@ -28,10 +28,11 @@ ServiceModule::ServiceModule(QObject *parent) : Module(parent)
 void ServiceModule::create(QTimer *updateTimer)
 {
     using namespace Modules;
-    const auto &board = Board::GetInstance();
+    auto &board = Board::GetInstance();
     quint16 typeb = board.typeB();
     if (BaseBoards.contains(typeb)) // there must be two-part module
     {
+        board.setDeviceType(Board::Controller);
         quint16 typem = board.typeM();
         Q_UNUSED(typem)
         switch (typeb)
@@ -55,6 +56,7 @@ void ServiceModule::create(QTimer *updateTimer)
     }
     else
     {
+        board.setDeviceType(Board::Module);
         quint16 mtype = board.type();
         createModule(Modules::Model(mtype));
     }

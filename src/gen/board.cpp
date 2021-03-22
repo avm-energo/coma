@@ -25,7 +25,7 @@ Board::Board(Singleton::token)
     m_interfaceType = Unknown;
     m_connectionState = ConnectionState::Closed;
     m_boardType = Types::None;
-    m_deviceType = DeviceType::Module;
+    // m_deviceType = DeviceType::Module;
     //    Q_UNUSED(parent)
 }
 

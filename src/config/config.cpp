@@ -4,7 +4,7 @@
 #include "../gen/board.h"
 #include "../gen/s2.h"
 #include "../gen/stdfunc.h"
-#include "../widgets/comboboxgroup.h"
+#include "../widgets/checkboxgroup.h"
 #include "../widgets/wd_func.h"
 
 #include <QDebug>
@@ -74,10 +74,25 @@ QWidget *Config::TimeWidget(QWidget *parent)
     glyout->setColumnStretch(2, 50);
 
     vlyout2->addLayout(glyout);
-    const QStringList ctypes { "SNTP  IP:172.16.28.1", "синхронизация по входу 1PPS", "SNTP  IP:172.16.28.2",
+
+    const QStringList ctypes { "SNTP  IP:172.16.28.2", "синхронизация по входу 1PPS", "SNTP  IP:172.16.28.1",
         "адрес SNTP   берется из конфигурации" };
-    auto *checkBoxGroup = new CheckBoxGroup<DataTypes::DWORD>(ctypes, w);
+    auto deviceType = Board::GetInstance().deviceType();
+    QList<int> hidePositions;
+    switch (deviceType)
+    {
+    case Board::Controller:
+        hidePositions = { PPS, SNTP_Default };
+        break;
+    case Board::Module:
+        hidePositions = { SNTP_Addr1, SNTP_Addr2 };
+        break;
+    default:
+        hidePositions = {};
+    }
+    auto *checkBoxGroup = new CheckBoxGroup<DataTypes::DWORD>(ctypes, hidePositions, w);
     checkBoxGroup->setObjectName("ctype");
+
     vlyout2->addWidget(checkBoxGroup);
 
     w->setLayout(vlyout2);
