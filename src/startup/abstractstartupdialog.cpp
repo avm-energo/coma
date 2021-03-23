@@ -48,10 +48,10 @@ QWidget *AbstractStartupDialog::buttonWidget()
     QString tmps = ((DEVICETYPE == DEVICETYPE_MODULE) ? "модуля" : "прибора");
 
     const QList<QPair<QPair<QString, QIcon>, std::function<void()>>> funcs {
+        { { "Задать начальные значения", QIcon(":/icons/tnapprove.svg") }, [this]() { SetupCor(); } },    //
+        { { "Сбросить начальные значения", QIcon(":/icons/tnreset.svg") }, [this]() { ResetCor(); } },    //
         { { "Получить из " + tmps, QIcon(":/icons/tnread.svg") }, [this]() { GetCorBd(); } },             //
         { { "Записать в модуль", QIcon(":/icons/tnwrite.svg") }, [this]() { WriteCor(); } },              //
-        { { "Сбросить начальные значения", QIcon(":/icons/tnreset.svg") }, [this]() { ResetCor(); } },    //
-        { { "Задать начальные значения", QIcon(":/icons/tnapprove.svg") }, [this]() { SetupCor(); } },    //
         { { "Прочитать значения из файла", QIcon(":/icons/tnload.svg") }, [this]() { ReadFromFile(); } }, //
         { { "Сохранить значения в файл", QIcon(":/icons/tnsave.svg") }, [this]() { SaveToFile(); } }      //
     };

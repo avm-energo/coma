@@ -14,20 +14,14 @@
 
 TuneKIVTemp60::TuneKIVTemp60(int tuneStep, ConfigKIV *ckiv, QWidget *parent) : AbstractTuneDialog(tuneStep, parent)
 {
-    //    m_tuneStep = 2;
-    //    TKIV = tkiv;
     CKIV = ckiv;
     m_bac = new Bac;
     m_bdain = new BdaIn;
     m_bd0 = new Bd0;
-    //    if (LoadTuneSequenceFile() != Error::Msg::NoError)
-    //        return;
-    //    SetBac(&m_bac, 1, sizeof(m_bac));
     SetBac(m_bac);
     addWidgetToTabWidget(m_bac->widget(), "Настроечные параметры");
     addWidgetToTabWidget(m_bdain->widget(), "Текущие данные");
     addWidgetToTabWidget(m_bd0->widget(), "Общие данные");
-    //    AddBac(&m_Bac_block, M_BACBLOCKNUM, sizeof(m_Bac_block));
     SetupUI();
 }
 
@@ -118,12 +112,12 @@ Error::Msg TuneKIVTemp60::waitForTempToRise()
         1800 }; // isallowedtostop = true, isIncrement = false, format: mm:ss, 30 minutes
     ww->Init(wws);
     ww->SetMessage("Пожалуйста, подождите");
+    StdFunc::setCancelDisabled(); // to prevent cancellation of the main algorythm while breaking waiting
     QEventLoop loop;
     connect(ww, &WaitWidget::finished, &loop, &QEventLoop::quit);
     ww->Start();
     loop.exec();
-    //    if (StdFunc::isCancelled())
-    //        return Error::Msg::ResEmpty;
+    StdFunc::setCancelEnabled();
     return Error::Msg::NoError;
 }
 
@@ -153,7 +147,6 @@ Error::Msg TuneKIVTemp60::showSignalsDialog()
 Error::Msg TuneKIVTemp60::analogMeasurement()
 {
     emit setProgressSize(StdFunc::tuneRequestCount());
-    //    startWait();
     int i = 0;
     for (int i = 0; i < 6; ++i)
     {
@@ -249,19 +242,12 @@ Error::Msg TuneKIVTemp60::calcTuneCoefs()
     }
     m_bac->updateWidget();
     return Error::Msg::NoError;
-    //    if (showTuneCoefs() != Error::Msg::NoError)
-    //        return Error::Msg::GeneralError;
-    //    return m_bac->writeBlockToModule();
 }
 
 void TuneKIVTemp60::loadIntermediateResults()
 {
-    //    QString cpuserialnum = Board::GetInstance().UID();
-    //    QSettings storedcalibrations(StdFunc::GetSystemHomeDir() + "calibr.ini", QSettings::IniFormat);
     foreach (TuneDescrStruct item, m_tuneDescrVector())
         *item.parameter = StdFunc::toFloat(TuneSequenceFile::value(item.parametername).toString());
-    //        *item.parameter = StdFunc::toFloat(
-    //            storedcalibrations.value(cpuserialnum + "/" + item.parametername, 0xcdcdcdcd).toString());
 }
 
 void TuneKIVTemp60::saveIntermediateResults()
@@ -273,18 +259,5 @@ void TuneKIVTemp60::saveIntermediateResults()
     QSettings storedcalibrations(StdFunc::GetSystemHomeDir() + "calibr.ini", QSettings::IniFormat);
     foreach (TuneDescrStruct item, m_tuneDescrVector())
         TuneSequenceFile::setValue(item.parametername, *item.parameter);
-    //        storedcalibrations.setValue(cpuserialnum + "/" + item.parametername, *item.parameter);
     loadWorkConfig();
 }
-
-// void TuneKIVTemp60::acceptTuneCoefs()
-//{
-//    m_bac->updateFromWidget();
-//    m_bac->writeBlockToModule();
-//}
-
-// void TuneKIVTemp60::setDefCoefs()
-//{
-//    m_bac->setDefBlockAndUpdate();
-//    m_bd0->setDefBlockAndUpdate();
-//}

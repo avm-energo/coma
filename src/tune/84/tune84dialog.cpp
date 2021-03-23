@@ -15,7 +15,8 @@ Tune84Dialog::Tune84Dialog(ConfigKIV *ckiv, QWidget *parent) : GeneralTuneDialog
     // ReportModel = new QStandardItemModel;
     // ViewModel = new QStandardItemModel;
     setAttribute(Qt::WA_DeleteOnClose);
-    T84ADCDialog = new Tune84ADC(TS84_ADC, CKIV, this);
+    T84ADCUDialog = new Tune84ADC(TS84_ADCU, CKIV, this);
+    T84ADCIDialog = new Tune84ADC(TS84_ADCI, CKIV, this);
     T8420Dialog = new TuneKIVTemp60(TS84_20TUNING, CKIV, this);
     T8460Dialog = new TuneKIVTemp60(TS84_60TUNING, CKIV, this);
     T84CheckDialog = new Tune84Check(TS84_CHECKING, this);
@@ -34,11 +35,13 @@ void Tune84Dialog::SetupUI()
         this, "tn1", [this]() { T84CheckDialog->show(); }, ":/icons/tn1.svg",
         "Проверка правильности измерения входных сигналов"));
     lyout->addWidget(WDFunc::NewHexagonPB(
-        this, "tn2", [this]() { T84ADCDialog->show(); }, ":/icons/tn2.svg", "Регулировка каналов тока и напряжения"));
+        this, "tn2", [this]() { T84ADCUDialog->show(); }, ":/icons/tn2.svg", "Регулировка каналов напряжения"));
     lyout->addWidget(WDFunc::NewHexagonPB(
-        this, "tn3", [this]() { T8460Dialog->show(); }, ":/icons/tn3.svg", "Настройка температурной коррекции +60 °С"));
+        this, "tn3", [this]() { T84ADCUDialog->show(); }, ":/icons/tn3.svg", "Регулировка каналов тока"));
     lyout->addWidget(WDFunc::NewHexagonPB(
-        this, "tn4", [this]() { T8420Dialog->show(); }, ":/icons/tn4.svg", "Настройка температурной коррекции -20 °С"));
+        this, "tn4", [this]() { T8460Dialog->show(); }, ":/icons/tn4.svg", "Настройка температурной коррекции +60 °С"));
+    lyout->addWidget(WDFunc::NewHexagonPB(
+        this, "tn5", [this]() { T8420Dialog->show(); }, ":/icons/tn5.svg", "Настройка температурной коррекции -20 °С"));
     lyout->addWidget(WDFunc::NewHexagonPB(
         this, "tnprotocol", [this]() { GenerateReport(); }, ":/icons/tnprotocol.svg",
         "Генерация протокола регулировки"));

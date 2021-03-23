@@ -31,7 +31,6 @@ void DebugComa::PrepareDialogs()
 
 void DebugComa::getAbout()
 {
-
     AboutWidget *w = new AboutWidget;
     w->prependLine(QString(PROGNAME) + " version " + QString(COMAVERSION) + "-" + QString(COMAHASH));
     w->setupUI();
