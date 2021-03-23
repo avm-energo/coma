@@ -91,7 +91,7 @@ QWidget *Config::TimeWidget(QWidget *parent)
     default:
         hidePositions = {};
     }
-    auto *checkBoxGroup = new CheckBoxGroup<DataTypes::DWORD>(ctypes, hidePositions, w);
+    auto *checkBoxGroup = new CheckBoxGroup /*<DataTypes::DWORD>*/ (ctypes, hidePositions, w);
     checkBoxGroup->setObjectName("ctype");
 
     vlyout2->addWidget(checkBoxGroup);
@@ -120,10 +120,10 @@ void Config::Fill()
     SetSPBData<DWORD>(ParentMainbl, BciNumber::k_104);
     SetSPBData<DWORD>(ParentMainbl, BciNumber::w_104);
 
-    CheckBoxGroup<DataTypes::DWORD> *checkBoxGroup
-        = dynamic_cast<CheckBoxGroup<DataTypes::DWORD> *>(ParentMainbl->findChild<QWidget *>("ctype"));
+    CheckBoxGroup *checkBoxGroup = dynamic_cast<CheckBoxGroup *>(ParentMainbl->findChild<QWidget *>("ctype"));
     if (checkBoxGroup)
         checkBoxGroup->setBits(S2::getRecord(BciNumber::CType).value<DWORD>());
+    qDebug() << checkBoxGroup->metaObject()->className();
 }
 
 void Config::FillBack() const
@@ -141,10 +141,9 @@ void Config::FillBack() const
     SPBDataS2<DWORD>(ParentMainbl, BciNumber::k_104);
     SPBDataS2<DWORD>(ParentMainbl, BciNumber::w_104);
 
-    CheckBoxGroup<DataTypes::DWORD> *checkBoxGroup
-        = dynamic_cast<CheckBoxGroup<DataTypes::DWORD> *>(ParentMainbl->findChild<QWidget *>("ctype"));
+    CheckBoxGroup *checkBoxGroup = dynamic_cast<CheckBoxGroup *>(ParentMainbl->findChild<QWidget *>("ctype"));
     if (checkBoxGroup)
-        S2::setRecordValue({ BciNumber::CType, checkBoxGroup->bits() });
+        S2::setRecordValue({ BciNumber::CType, checkBoxGroup->bits<DWORD>() });
 }
 
 void Config::removeFotter()

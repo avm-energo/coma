@@ -1,18 +1,29 @@
 #pragma once
-#include <QDebug>
-#include <QMultiMap>
-#include <QWidget>
-#include <bitset>
-template <typename T, std::size_t N = sizeof(T) * 8> class CheckBoxGroup : public QWidget
+#include <QCheckBox>
+#include <boost/dynamic_bitset.hpp>
+class CheckBoxGroup : public QWidget
 {
-
+    Q_OBJECT
 public:
     CheckBoxGroup(const QStringList &desc, const QList<int> &ignorePos, QWidget *parent = nullptr);
     CheckBoxGroup(const QStringList &desc, QWidget *parent = nullptr);
-    void setBits(const T value);
-    T bits() const
+    template <typename T> void setBits(const T value)
     {
-        const T value = (T)m_bits.to_ullong();
+        m_bitset = boost::dynamic_bitset(sizeof(T), value);
+        [[maybe_unused]] const T test = (T)m_bitset.to_ulong();
+        QList<QCheckBox *> checkBoxes = findChildren<QCheckBox *>();
+        for (QCheckBox *checkBox : checkBoxes)
+        {
+            bool status = false;
+            auto number = checkBox->objectName().toUInt(&status);
+            if (!status)
+                continue;
+            checkBox->setChecked(m_bitset.test(number));
+        }
+    }
+    template <typename T> T bits() const
+    {
+        const T value = m_bitset.to_ulong();
         return value;
     }
 
@@ -23,7 +34,6 @@ public:
 
 private:
     QList<int> m_hiddenPositions;
-    std::bitset<N> m_bits;
+    boost::dynamic_bitset<> m_bitset;
     QStringList m_description;
-    QMultiMap<typename decltype(m_bits)::reference, int> map;
 };
