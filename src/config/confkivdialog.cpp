@@ -71,12 +71,12 @@ QWidget *ConfKIVDialog::analogWidget()
     gridlyout->addWidget(WDFunc::NewLBL2(this, "Паспортные значения ёмкости вводов, пФ:"), row, 1, 1, 1, Qt::AlignTop);
 
     gridlyout->addWidget(
-        WDFunc::NewSPBG<3>(this, nameByValue(BciNumber::C_Pasp_ID), 0, 20000, 1), row, 2, 1, 1, Qt::AlignTop);
+        WDFunc::NewSPBG(this, nameByValue(BciNumber::C_Pasp_ID), 3, 0, 20000, 1), row, 2, 1, 1, Qt::AlignTop);
     row++;
 
     gridlyout->addWidget(WDFunc::NewLBL2(this, "Паспортные значения tg вводов, %:"), row, 1, 1, 1);
 
-    gridlyout->addWidget(WDFunc::NewSPBG<3>(this, nameByValue(BciNumber::Tg_Pasp_ID), 0, 10, 2), row, 2, 1, 1);
+    gridlyout->addWidget(WDFunc::NewSPBG(this, nameByValue(BciNumber::Tg_Pasp_ID), 3, 0, 10, 2), row, 2, 1, 1);
 
     row++;
 

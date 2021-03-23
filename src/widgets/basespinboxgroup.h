@@ -5,15 +5,15 @@
 #include <QHBoxLayout>
 #include <QSpinBox>
 #include <QWidget>
-template <size_t N, typename T, class S, std::enable_if_t<std::is_base_of<QAbstractSpinBox, S>::value, bool> = true>
+template <typename T, class S, std::enable_if_t<std::is_base_of<QAbstractSpinBox, S>::value, bool> = true>
 class BaseSpinBoxGroup : public QWidget
 {
 public:
-    explicit BaseSpinBoxGroup(QWidget *parent = nullptr) : QWidget(parent)
+    explicit BaseSpinBoxGroup(int count, QWidget *parent = nullptr) : QWidget(parent), m_count(count)
     {
         QHBoxLayout *layout = new QHBoxLayout;
 
-        for (auto i = 0; i != N; ++i)
+        for (auto i = 0; i != m_count; ++i)
         {
             layout->addWidget(new S(this));
         }
@@ -54,30 +54,30 @@ public:
         for (auto *spinBox : spinBoxes)
             spinBox->setSingleStep(m_singleStep);
     }
-    template <std::enable_if_t<!std::is_same<float, T>::value, bool> = true> std::array<T, N> value() const
+    template <std::enable_if_t<!std::is_same<float, T>::value, bool> = true> auto value() const
     {
         auto spinBoxes = findChildren<S *>();
-        std::array<T, N> array;
+        std::array<T, m_count> array;
         std::transform(
             spinBoxes.cbegin(), spinBoxes.cend(), array.begin(), [](const auto *spinBox) { return spinBox->value(); });
         return array;
     }
-    std::array<float, N> value() const
+    auto value() const
     {
         auto spinBoxes = findChildren<S *>();
-        std::array<float, N> array;
-        std::transform(
-            spinBoxes.cbegin(), spinBoxes.cend(), array.begin(), [](const auto *spinBox) { return spinBox->value(); });
-        return array;
+        std::vector<float> vector;
+        std::transform(spinBoxes.cbegin(), spinBoxes.cend(), std::back_inserter(vector),
+            [](const auto *spinBox) { return spinBox->value(); });
+        return vector;
     }
-    void setValue(const std::array<T, N> &array)
+    void setValue(const std::vector<T> &array)
     {
 
         auto spinBoxes = findChildren<S *>();
         std::transform(spinBoxes.begin(), spinBoxes.end(), array.cbegin(), spinBoxes.begin(),
             [](auto *spinBox, const T value) { spinBox->setValue(value); });
     }
-    void setValue(const std::array<float, N> &array)
+    void setValue(const std::vector<float> &array)
     {
         auto spinBoxes = findChildren<S *>();
         int i = 0;
@@ -101,11 +101,12 @@ public:
 
 signals:
 private:
+    int m_count;
     T m_minimum;
     T m_maximum;
     T m_singleStep;
     int m_decimals;
 };
 
-template <size_t N> using DoubleSpinBoxGroup = BaseSpinBoxGroup<N, double, QDoubleSpinBox>;
-template <size_t N> using SpinBoxGroup = BaseSpinBoxGroup<N, int, QSpinBox>;
+using DoubleSpinBoxGroup = BaseSpinBoxGroup<double, QDoubleSpinBox>;
+using SpinBoxGroup = BaseSpinBoxGroup<int, QSpinBox>;

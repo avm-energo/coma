@@ -85,11 +85,11 @@ public:
 
     static QDoubleSpinBox *NewSPB2(
         QWidget *parent, const QString &spbname, const double min, const double max, const int decimals);
-    template <size_t N>
-    static DoubleSpinBoxGroup<N> *NewSPBG(
-        QWidget *parent, const QString &spbname, const double min, const double max, const int decimals)
+
+    static DoubleSpinBoxGroup *NewSPBG(
+        QWidget *parent, const QString &spbname, int count, const double min, const double max, const int decimals)
     {
-        auto spinBoxGroup = new DoubleSpinBoxGroup<N>(parent);
+        auto spinBoxGroup = new DoubleSpinBoxGroup(count, parent);
         spinBoxGroup->setObjectName(spbname);
         double step = std::pow(0.1f, decimals);
         spinBoxGroup->setSingleStep(step);
@@ -103,10 +103,10 @@ public:
     template <size_t N, typename T>
     static bool SetSPBGData(QWidget *w, const QString &spbname, const std::array<T, N> spbvalue)
     {
-        auto *spbg = static_cast<DoubleSpinBoxGroup<N> *>(w->findChild<QWidget *>(spbname));
+        auto *spbg = static_cast<DoubleSpinBoxGroup *>(w->findChild<QWidget *>(spbname));
         if (spbg == nullptr)
             return false;
-        spbg->setValue(spbvalue);
+        spbg->setValue(std::vector<T>(spbvalue.cbegin(), spbvalue.cend()));
         return true;
     }
     template <typename T> static bool SPBData(const QObject *w, const QString &spbname, T &spbvalue)
@@ -133,13 +133,14 @@ public:
     template <size_t N, typename T>
     static bool SPBGData(const QWidget *w, const QString &spbname, std::array<T, N> &spbvalue)
     {
-        auto *spbg = static_cast<DoubleSpinBoxGroup<N> *>(w->findChild<QWidget *>(spbname));
+        auto *spbg = static_cast<DoubleSpinBoxGroup *>(w->findChild<QWidget *>(spbname));
         if (spbg == nullptr)
         {
             spbvalue = {};
             return false;
         }
-        spbvalue = spbg->value();
+        std::copy_n(spbg->value().begin(), N, spbvalue.begin());
+        // spbvalue = spbg->value();
         return true;
     }
     static bool SetLEColor(QWidget *w, const QString &lename, const QColor &color);
