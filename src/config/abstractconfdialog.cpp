@@ -16,6 +16,8 @@
 #include <QMessageBox>
 #include <QTextEdit>
 
+::widgetMap AbstractConfDialog::m_widgetMap;
+
 AbstractConfDialog::AbstractConfDialog(QWidget *parent) : UDialog(parent)
 {
     m_password = "121941";

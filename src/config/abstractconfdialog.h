@@ -13,6 +13,15 @@ public:
 
     void PrereadConf();
 
+    static widgetMap widgetMap()
+    {
+        return m_widgetMap;
+    }
+    static void setWidgetMap(const ::widgetMap &widgetMap)
+    {
+        m_widgetMap = widgetMap;
+    }
+
 protected:
     QStringList CheckConfErrors;
     QWidget *ConfButtons();
@@ -28,4 +37,6 @@ private:
     void WriteConf();
     void confReceived(const QList<DataTypes::DataRecV> &list);
     void confParametersListReceived(const DataTypes::ConfParametersListStruct &cfpl);
+
+    static ::widgetMap m_widgetMap;
 };

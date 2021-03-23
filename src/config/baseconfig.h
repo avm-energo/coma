@@ -6,6 +6,86 @@ constexpr int textColumn = 0;
 constexpr int valueColumn = 1;
 constexpr int extraColumn = 2;
 
+namespace Delegate
+{
+enum class widgetType : int
+{
+    QDoubleSpinBox,
+    DoubleSpinBoxGroup,
+    IpControl,
+    QCheckBox,
+    CheckBoxGroup,
+    QComboBox,
+    QLineEdit
+};
+
+struct Widget
+{
+    widgetType type;
+};
+struct DoubleSpinBoxWidget : Widget
+{
+    double min;
+    double max;
+    int decimals;
+};
+struct Group
+{
+    int count;
+};
+struct DoubleSpinBoxGroup : DoubleSpinBoxWidget, Group
+{
+};
+struct CheckBoxGroup : Widget, Group
+{
+};
+
+using widgetVariant = std::variant<Widget, DoubleSpinBoxGroup, DoubleSpinBoxWidget, CheckBoxGroup>;
+}
+using widgetMap = QMap<quint32, Delegate::widgetVariant>;
+
+// helper type for the visitor #4
+template <class... Ts> struct overloaded : Ts...
+{
+    using Ts::operator()...;
+};
+// explicit deduction guide (not needed as of C++20)
+template <class... Ts> overloaded(Ts...) -> overloaded<Ts...>;
+
+class WidgetFactory
+{
+    WidgetFactory()
+    {
+    }
+
+public:
+    static QWidget *createWidget(quint32 key, QWidget *parent = nullptr)
+    {
+        QWidget *widget = nullptr;
+        if (!m_widgetMap.contains(key))
+            return widget;
+        const auto var = m_widgetMap.value(key);
+        std::visit(overloaded {
+                       [&](auto arg) { qDebug("DefaultWidget"); },
+                       [&](Delegate::DoubleSpinBoxGroup arg) {
+                           qDebug("DoubleSpinBoxGroupWidget");
+                           widget = WDFunc::NewSPBG(
+                               parent, QString::number(key), arg.count, arg.min, arg.max, arg.decimals);
+                       },
+                       [&](Delegate::DoubleSpinBoxWidget arg) {
+                           qDebug("DoubleSpinBoxWidget");
+                           widget = WDFunc::NewSPB2(parent, QString::number(key), arg.min, arg.max, arg.decimals);
+                       },
+                       [&](Delegate::CheckBoxGroup arg) { qDebug("CheckBoxGroupWidget"); },
+                   },
+            var);
+        return widget;
+    }
+
+private:
+    static widgetMap m_widgetMap;
+};
+
 class BaseConfig
 {
 public:
