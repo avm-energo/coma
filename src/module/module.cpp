@@ -218,7 +218,8 @@ bool Module::loadS2Settings()
         if (domDoc.setContent(&file))
         {
             QDomElement domElement = domDoc.documentElement();
-            XmlParser::traverseNode(domElement, &DataTypes::DataRecV::map);
+            GlobalSettings settings { &DataTypes::DataRecV::map, &WidgetFactory::widgetMap };
+            XmlParser::traverseNode(domElement, settings);
             file.close();
             return true;
         }

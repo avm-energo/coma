@@ -114,20 +114,6 @@ QStringList XmlParser::parseStringList(QDomElement domElement)
     return description;
 }
 
-// using BYTE = unsigned char;
-// using WORD = unsigned short;
-// using DWORD = unsigned int;
-// using BYTE_4t = std::array<BYTE, 4>;
-// using WORD_4t = std::array<WORD, 4>;
-// using BYTE_16t = std::array<BYTE, 16>;
-// using WORD_16t = std::array<WORD, 16>;
-// using FLOAT_2t = std::array<float, 2>;
-// using FLOAT_2t_2t = std::array<FLOAT_2t, 2>;
-// using FLOAT_3t = std::array<float, 3>;
-// using FLOAT_6t = std::array<float, 6>;
-// using FLOAT_8t = std::array<float, 8>;
-
-// ctti::unnamed_type_id<WORD>().hash()
 ctti::unnamed_type_id_t XmlParser::parseType(QDomElement domElement)
 {
     using namespace DataTypes;
@@ -177,6 +163,67 @@ ctti::unnamed_type_id_t XmlParser::parseType(QDomElement domElement)
         assert(false && "Unknown type");
     }
     return 0;
+}
+
+delegate::widgetVariant XmlParser::parseWidget(QDomElement domElement)
+{
+
+    auto name = domElement.text();
+    qDebug() << name;
+    QString className = domElement.attribute("class");
+    if (className.isEmpty())
+        return delegate::widgetVariant();
+    auto classes = QMetaEnum::fromType<delegate::widgetType>();
+    bool status = false;
+    auto type = static_cast<delegate::widgetType>(classes.keyToValue(className.toStdString().c_str(), &status));
+    if (!status)
+        return delegate::widgetVariant();
+
+    switch (type)
+    {
+    case delegate::widgetType::QDoubleSpinBox:
+    {
+        bool status = false;
+        delegate::DoubleSpinBoxWidget widget;
+        QDomElement childElement = domElement.firstChildElement("min");
+        widget.min = childElement.text().toDouble(&status);
+        childElement = domElement.firstChildElement("max");
+        widget.max = childElement.text().toDouble(&status);
+        childElement = domElement.firstChildElement("decimals");
+        widget.decimals = childElement.text().toUInt(&status);
+        if (!status)
+            qWarning() << name << className;
+        return widget;
+    }
+    case delegate::widgetType::DoubleSpinBoxGroup:
+    {
+        bool status = false;
+        delegate::DoubleSpinBoxGroup widget;
+        QDomElement childElement = domElement.firstChildElement("min");
+        widget.min = childElement.text().toDouble(&status);
+        childElement = domElement.firstChildElement("max");
+        widget.max = childElement.text().toDouble(&status);
+        childElement = domElement.firstChildElement("decimals");
+        widget.decimals = childElement.text().toUInt(&status);
+        childElement = domElement.firstChildElement("count");
+        widget.count = childElement.text().toUInt(&status);
+        if (!status)
+            qWarning() << name << className;
+        return widget;
+    }
+    case delegate::widgetType::CheckBoxGroup:
+    {
+        bool status = false;
+        delegate::CheckBoxGroup widget;
+        QDomElement childElement = domElement.firstChildElement("count");
+        widget.count = childElement.text().toUInt(&status);
+        if (!status)
+            qWarning() << name << className;
+        return widget;
+    }
+    default:
+        return delegate::Widget { type };
+    }
 }
 
 void XmlParser::traverseNode(const QDomNode &node, ModuleSettings *const settings)
@@ -282,7 +329,7 @@ void XmlParser::traverseNode(const QDomNode &node, ModuleSettings *const setting
     }
 }
 
-void XmlParser::traverseNode(const QDomNode &node, S2DataTypes::valueTypeMap *const settings)
+void XmlParser::traverseNode(const QDomNode &node, GlobalSettings &settings)
 {
     QDomNode domNode = node.firstChild();
     while (!domNode.isNull())
@@ -294,15 +341,16 @@ void XmlParser::traverseNode(const QDomNode &node, S2DataTypes::valueTypeMap *co
             {
                 if (domElement.tagName() == "record")
                 {
-
+                    //#ifdef XML_DEBUG
+                    qDebug() << domElement.text();
+                    //#endif
                     domElement = domElement.firstChild().toElement();
-                    const auto id = XmlParser::parseInt32(domElement);
+                    BciNumber id = static_cast<BciNumber>(XmlParser::parseInt32(domElement));
                     domElement = domElement.nextSibling().toElement();
-                    settings->insert({ id, parseType(domElement) });
-#ifdef XML_DEBUG
-                    const auto type = domElement.text();
-                    qDebug() << id << type;
-#endif
+                    settings.s2filesMap->insert({ id, parseType(domElement) });
+                    domElement = domElement.nextSibling().toElement();
+                    settings.s2widgetMap->insert({ id, parseWidget(domElement) });
+
                     domNode = domNode.nextSibling();
                     continue;
                 }

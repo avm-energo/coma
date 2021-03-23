@@ -1,11 +1,12 @@
 #pragma once
+#include "../config/baseconfig.h"
 #include "datatypes.h"
 
 #include <QDomElement>
 #include <QObject>
 
 struct ModuleSettings;
-
+struct GlobalSettings;
 class XmlParser
 {
 public:
@@ -16,6 +17,7 @@ public:
     static quint64 parseHexInt32(QDomElement domElement);
     static QStringList parseStringList(QDomElement domElement);
     static ctti::unnamed_type_id_t parseType(QDomElement domElement);
+    static delegate::widgetVariant parseWidget(QDomElement domElement);
     static void traverseNode(const QDomNode &node, ModuleSettings *const settings);
-    static void traverseNode(const QDomNode &node, S2DataTypes::valueTypeMap *const settings);
+    static void traverseNode(const QDomNode &node, GlobalSettings &settings);
 };

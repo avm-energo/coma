@@ -247,6 +247,20 @@ QWidget *ConfKIVDialog::connectionWidget()
     return w;
 }
 
+QWidget *ConfKIVDialog::testWidget()
+{
+    QGroupBox *groupBox = new QGroupBox(this);
+    QVBoxLayout *vlyout = new QVBoxLayout;
+    for (quint32 i = 0; i != 10; ++i)
+    {
+        QWidget *widget = WidgetFactory::createWidget(static_cast<BciNumber>(i), this);
+        if (widget)
+            vlyout->addWidget(widget);
+    }
+    groupBox->setLayout(vlyout);
+    return groupBox;
+}
+
 void ConfKIVDialog::FillKiv()
 {
     using namespace DataTypes;
@@ -338,6 +352,8 @@ void ConfKIVDialog::SetupUI()
 
     ConfTW->addTab(CKIV->KxxConfig()->ModbusWidget(this), "ModBusMaster");
     ConfTW->addTab(CKIV->KxxConfig()->VariousWidget(this), "Общее");
+
+    ConfTW->addTab(testWidget(), "Work in progress");
 
     lyout->addWidget(ConfTW);
     lyout->addWidget(ConfButtons());

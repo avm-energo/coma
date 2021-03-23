@@ -22,6 +22,7 @@ protected:
     QWidget *thresholdsWidget();
     QWidget *remainsWidget();
     virtual QWidget *connectionWidget();
+    QWidget *testWidget();
 
     void FillKiv();
     void FillBackKiv() const;

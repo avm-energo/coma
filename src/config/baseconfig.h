@@ -1,15 +1,17 @@
 #pragma once
 #include "../gen/s2.h"
+#include "../module/modules.h"
 #include "../widgets/wd_func.h"
-
 constexpr int textColumn = 0;
 constexpr int valueColumn = 1;
 constexpr int extraColumn = 2;
 
-namespace Delegate
+namespace delegate
 {
+Q_NAMESPACE
 enum class widgetType : int
 {
+    QLabel = 0,
     QDoubleSpinBox,
     DoubleSpinBoxGroup,
     IpControl,
@@ -18,10 +20,11 @@ enum class widgetType : int
     QComboBox,
     QLineEdit
 };
-
+Q_ENUM_NS(widgetType)
 struct Widget
 {
     widgetType type;
+    QString desc;
 };
 struct DoubleSpinBoxWidget : Widget
 {
@@ -42,9 +45,9 @@ struct CheckBoxGroup : Widget, Group
 
 using widgetVariant = std::variant<Widget, DoubleSpinBoxGroup, DoubleSpinBoxWidget, CheckBoxGroup>;
 }
-using widgetMap = QMap<quint32, Delegate::widgetVariant>;
+using widgetMap = std::map<BciNumber, delegate::widgetVariant>;
 
-// helper type for the visitor #4
+// helper type for the visitor
 template <class... Ts> struct overloaded : Ts...
 {
     using Ts::operator()...;
@@ -52,38 +55,19 @@ template <class... Ts> struct overloaded : Ts...
 // explicit deduction guide (not needed as of C++20)
 template <class... Ts> overloaded(Ts...) -> overloaded<Ts...>;
 
+class Module;
 class WidgetFactory
 {
+    friend class Module;
     WidgetFactory()
     {
     }
 
 public:
-    static QWidget *createWidget(quint32 key, QWidget *parent = nullptr)
-    {
-        QWidget *widget = nullptr;
-        if (!m_widgetMap.contains(key))
-            return widget;
-        const auto var = m_widgetMap.value(key);
-        std::visit(overloaded {
-                       [&](auto arg) { qDebug("DefaultWidget"); },
-                       [&](Delegate::DoubleSpinBoxGroup arg) {
-                           qDebug("DoubleSpinBoxGroupWidget");
-                           widget = WDFunc::NewSPBG(
-                               parent, QString::number(key), arg.count, arg.min, arg.max, arg.decimals);
-                       },
-                       [&](Delegate::DoubleSpinBoxWidget arg) {
-                           qDebug("DoubleSpinBoxWidget");
-                           widget = WDFunc::NewSPB2(parent, QString::number(key), arg.min, arg.max, arg.decimals);
-                       },
-                       [&](Delegate::CheckBoxGroup arg) { qDebug("CheckBoxGroupWidget"); },
-                   },
-            var);
-        return widget;
-    }
+    static QWidget *createWidget(BciNumber key, QWidget *parent = nullptr);
 
 private:
-    static widgetMap m_widgetMap;
+    static widgetMap widgetMap;
 };
 
 class BaseConfig
