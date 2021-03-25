@@ -167,7 +167,6 @@ ctti::unnamed_type_id_t XmlParser::parseType(QDomElement domElement)
 
 delegate::itemVariant XmlParser::parseWidget(QDomElement domElement)
 {
-
     auto name = domElement.text();
     qDebug() << name;
     QString className = domElement.attribute("class");
@@ -177,7 +176,7 @@ delegate::itemVariant XmlParser::parseWidget(QDomElement domElement)
     bool status = false;
     auto type = static_cast<delegate::widgetType>(classes.keyToValue(className.toStdString().c_str(), &status));
     if (!status)
-        return delegate::itemVariant();
+        return parseItem(domElement);
 
     QStringList items {};
     if (type > delegate::widgetType::Group)
@@ -202,7 +201,7 @@ delegate::itemVariant XmlParser::parseWidget(QDomElement domElement)
         widget.decimals = childElement.text().toUInt(&status);
         if (!status)
             qWarning() << name << className;
-        //   childElement = domElement.firstChildElement("string");
+
         widget.desc = description;
         return widget;
     }
@@ -221,7 +220,7 @@ delegate::itemVariant XmlParser::parseWidget(QDomElement domElement)
         widget.count = childElement.text().toUInt(&status);
         if (!status)
             qWarning() << name << className;
-        //  childElement = domElement.firstChildElement("string");
+
         widget.desc = description;
         widget.items = items;
         return widget;
@@ -235,9 +234,8 @@ delegate::itemVariant XmlParser::parseWidget(QDomElement domElement)
         widget.count = childElement.text().toUInt(&status);
         if (!status)
             qWarning() << name << className;
-        //   childElement = domElement.firstChildElement("string-array");
 
-        widget.desc = description; // parseStringList(childElement).join(',');
+        widget.desc = description;
         widget.items = items;
         return widget;
     }
@@ -249,7 +247,29 @@ delegate::itemVariant XmlParser::parseWidget(QDomElement domElement)
         widget.items = items;
         return widget;
     }
-    case delegate::widgetType::ModbusItem:
+
+    default:
+    {
+    }
+    }
+    return delegate::Widget { type, description };
+}
+
+delegate::Item XmlParser::parseItem(QDomElement domElement)
+{
+    auto name = domElement.text();
+    qDebug() << name;
+    QString className = domElement.attribute("class");
+    if (className.isEmpty())
+        return {};
+    auto classes = QMetaEnum::fromType<delegate::itemType>();
+    bool status = false;
+    auto type = static_cast<delegate::itemType>(classes.keyToValue(className.toStdString().c_str(), &status));
+    if (!status)
+        return {};
+    switch (type)
+    {
+    case delegate::itemType::ModbusItem:
     {
         delegate::Item item;
         item.type = type;
@@ -261,18 +281,7 @@ delegate::itemVariant XmlParser::parseWidget(QDomElement domElement)
         return item;
     }
     default:
-    {
-        //        QDomElement childElement = domElement.firstChildElement("string");
-        //        if (childElement.isElement())
-        //            return delegate::Widget { type, childElement.text() };
-        //        childElement = domElement.firstChildElement("string-array");
-        //        if (childElement.isElement())
-        //        {
-        //            const auto stringList = parseStringList(childElement);
-        //            return delegate::Widget { type, stringList.join(',') };
-        //        }
-        return delegate::Widget { type, description };
-    }
+        return delegate::Item { type, BciNumber::dummyElement };
     }
 }
 

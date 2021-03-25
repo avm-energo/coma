@@ -289,10 +289,10 @@ QWidget *ConfKIVDialog::testWidget()
             subBox->setLayout(lyout);
             vlyout->addWidget(subBox, group, 0);
         }
-        else
-        {
-            WidgetFactory::createItem(i, this);
-        }
+        //        else
+        //        {
+        //            WidgetFactory::createItem(i, this);
+        //        }
     }
     //    for (quint32 i = 0; i != 10; ++i)
     //    {

@@ -18,6 +18,7 @@ public:
     static QStringList parseStringList(QDomElement domElement);
     static ctti::unnamed_type_id_t parseType(QDomElement domElement);
     static delegate::itemVariant parseWidget(QDomElement domElement);
+    static delegate::Item parseItem(QDomElement domElement);
     static void traverseNode(const QDomNode &node, ModuleSettings *const settings);
     static void traverseNode(const QDomNode &node, GlobalSettings &settings);
 };

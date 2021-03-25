@@ -14,6 +14,14 @@ constexpr int extraColumn = 2;
 namespace delegate
 {
 Q_NAMESPACE
+constexpr auto QLabelId = ctti::unnamed_type_id<QLabel>();
+constexpr auto QDoubleSpinBoxId = ctti::unnamed_type_id<QDoubleSpinBox>();
+constexpr auto IpControlId = ctti::unnamed_type_id<IPCtrl>();
+constexpr auto QCheckBoxId = ctti::unnamed_type_id<QCheckBox>();
+constexpr auto QLineEditId = ctti::unnamed_type_id<QLineEdit>();
+constexpr auto DoubleSpinBoxGroupId = ctti::unnamed_type_id<DoubleSpinBoxGroup>();
+constexpr auto QComboBoxId = ctti::unnamed_type_id<QComboBox>();
+// constexpr auto ModbusItemId = ctti::unnamed_type_id<AVM_KXX::ModbusItem>();
 enum class widgetType : int
 {
     dummyElement = 0,
@@ -28,16 +36,22 @@ enum class widgetType : int
     CheckBoxGroup,
     QComboBox,
     // Item like a separator
-    Item = 200,
-    ModbusItem
+    // Item = 200,
+    // ModbusItem
 
 };
+enum class itemType : int
+{
+    ModbusItem
+};
 Q_ENUM_NS(widgetType)
+Q_ENUM_NS(itemType)
 struct Widget
 {
     widgetType type;
     QString desc;
 };
+
 struct DoubleSpinBoxWidget : Widget
 {
     double min;
@@ -60,7 +74,7 @@ struct QComboBox : Widget, Group
 };
 struct Item
 {
-    widgetType type;
+    itemType type;
     BciNumber parent;
 };
 
@@ -95,10 +109,11 @@ class WidgetFactory
     //  template <typename T, std::enable_if_t<std::is_same<std::string, decltype(declval<T>().desc)>>, bool> = true >
     // std::enable_if_t<true_type<T>::value, bool> = true
     // template <typename T, std::enable_if_t<std::is_same<QString, decltype(T::desc)>::value, bool> = true>
-    template <typename T, std::enable_if_t<hasDescription<T>::value, bool> = true>
+    template <typename T, typename S = decltype(T::type),
+        std::enable_if_t<std::is_same<S, delegate::widgetType>::value, bool> = true>
     static QWidget *helper(const T &arg, QWidget *parent)
     {
-        QWidget *widget;
+        QWidget *widget = nullptr;
         switch (arg.type)
         {
         case delegate::widgetType::IpControl:
@@ -127,19 +142,20 @@ class WidgetFactory
 
         default:
             break;
-            //  Q_ASSERT(false && "False type");
+            Q_ASSERT(false && "False type");
         }
         return widget;
     }
-    template <typename T, std::enable_if_t<!hasDescription<T>::value, bool> = true>
-    static QWidget *helper([[maybe_unused]] const T &arg, [[maybe_unused]] QWidget *parent)
+    template <typename T, typename S = decltype(T::type),
+        std::enable_if_t<std::is_same<S, delegate::itemType>::value, bool> = true>
+    static QWidget *helper(const T &arg, QWidget *parent)
     {
         QWidget *widget = nullptr;
         switch (arg.type)
         {
-        case delegate::widgetType::ModbusItem:
+        case delegate::itemType::ModbusItem:
         {
-            auto type = static_cast<const std::underlying_type<delegate::widgetType>::type>(arg.type);
+            auto type = static_cast<const std::underlying_type<delegate::itemType>::type>(arg.type);
             const QString widgetName(QString::number(type) + QString::number(arg.parent));
             widget = parent->findChild<QTableView *>(widgetName);
             if (!widget)
