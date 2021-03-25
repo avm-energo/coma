@@ -23,15 +23,21 @@ IPCtrl::IPCtrl(QWidget *parent) : QFrame(parent)
         if (i != 0)
         {
             QLabel *pDot = new QLabel(".", this);
+            auto policy = pDot->sizePolicy();
+            policy.setHorizontalPolicy(QSizePolicy::Minimum);
+            pDot->setSizePolicy(policy);
             pLayout->addWidget(pDot);
-            pLayout->setStretch(pLayout->count(), 0);
+            // pLayout->setStretch(pLayout->count(), 0);
         }
 
         m_pLineEdit.at(i) = new QLineEdit(this);
         pEdit = m_pLineEdit.at(i);
+        auto policy = pEdit->sizePolicy();
+        policy.setHorizontalPolicy(QSizePolicy::Preferred);
+        pEdit->setSizePolicy(policy);
 
         pLayout->addWidget(pEdit);
-        pLayout->setStretch(pLayout->count(), 1);
+        // pLayout->setStretch(pLayout->count(), 1);
 
         pEdit->setFrame(false);
         pEdit->setAlignment(Qt::AlignCenter);
@@ -50,7 +56,7 @@ IPCtrl::IPCtrl(QWidget *parent) : QFrame(parent)
         QValidator *validator = new QRegExpValidator(rx, pEdit);
         pEdit->setValidator(validator);
     }
-
+    // setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Minimum);
     setMaximumHeight(2 * pEdit->fontMetrics().height());
 
     connect(this, &IPCtrl::signalTextChanged, this, &IPCtrl::slotTextChanged, Qt::QueuedConnection);
