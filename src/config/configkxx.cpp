@@ -10,6 +10,7 @@
 #include <QComboBox>
 #include <QGroupBox>
 #include <QHeaderView>
+#include <QScrollBar>
 #include <QStackedWidget>
 #include <QStandardItemModel>
 #include <QVBoxLayout>
@@ -84,7 +85,7 @@ void ConfigKxx::Fill()
     model->removeRows(0, model->rowCount());
     for (const auto array : arrays)
     {
-        const auto *master = reinterpret_cast<const Bci::ABMAST *>(&array);
+        const auto *master = reinterpret_cast<const Bci::ModbusItem *>(&array);
         QList<QStandardItem *> row {
             (new QStandardItem(QString::number(master->typedat))),        //
             (new QStandardItem(QString::number(master->parport.baud))),   //
@@ -97,6 +98,7 @@ void ConfigKxx::Fill()
             (new QStandardItem(QString::number(master->reg)))             //
         };
         model->appendRow(row);
+        tv->adjustSize();
     }
     //.................................................
 
@@ -148,7 +150,7 @@ void ConfigKxx::FillBack() const
     QStandardItemModel *model = qobject_cast<QStandardItemModel *>(tv->model());
     for (int r = 0; r < model->rowCount(); ++r)
     {
-        Bci::ABMAST master;
+        Bci::ModbusItem master;
 
         for (int c = 0; c < model->columnCount(); ++c)
         {
@@ -253,21 +255,21 @@ QWidget *ConfigKxx::ComParam(QWidget *parent)
     int row = 7;
 
     glyout->addWidget(WDFunc::NewLBL2(parent, "IP адрес устройства:"), row, textColumn, 1, 1, Qt::AlignLeft);
-    auto ipControl = new IPCtrl;
+    auto ipControl = new IPCtrl(parent);
     ipControl->setObjectName(nameByValue(BciNumber::IP_ID));
     glyout->addWidget(ipControl, row, valueColumn, 1, 1, Qt::AlignLeft);
 
     row++;
 
     glyout->addWidget(WDFunc::NewLBL2(parent, "Маска:"), row, textColumn, 1, 1, Qt::AlignLeft);
-    ipControl = new IPCtrl;
+    ipControl = new IPCtrl(parent);
     ipControl->setObjectName(nameByValue(BciNumber::Mask_ID));
     glyout->addWidget(ipControl, row, valueColumn, 1, 1, Qt::AlignLeft);
 
     row++;
 
     glyout->addWidget(WDFunc::NewLBL2(parent, "Шлюз:"), row, textColumn, 1, 1, Qt::AlignLeft);
-    ipControl = new IPCtrl;
+    ipControl = new IPCtrl(parent);
     ipControl->setObjectName(nameByValue(BciNumber::GW_ID));
     glyout->addWidget(ipControl, row, valueColumn, 1, 1, Qt::AlignLeft);
 
@@ -280,7 +282,7 @@ QWidget *ConfigKxx::ComParam(QWidget *parent)
     row++;
 
     glyout->addWidget(WDFunc::NewLBL2(parent, "Адрес SNTP сервера:"), row, textColumn, 1, 1, Qt::AlignLeft);
-    ipControl = new IPCtrl;
+    ipControl = new IPCtrl(parent);
     ipControl->setObjectName(nameByValue(BciNumber::SNTP_ID));
     glyout->addWidget(ipControl, row, valueColumn, 1, 1, Qt::AlignLeft);
 
@@ -290,6 +292,65 @@ QWidget *ConfigKxx::ComParam(QWidget *parent)
     w->setLayout(vlyout1);
 
     return w;
+}
+
+inline QWidget *createModbusView(QWidget *parent)
+{
+    QTableView *tableView = new QTableView(parent);
+    tableView->verticalScrollBar()->setDisabled(true);
+    tableView->setSelectionMode(QAbstractItemView::NoSelection);
+    tableView->setSelectionBehavior(QAbstractItemView::SelectItems);
+    tableView->setShowGrid(false);
+    tableView->setStyleSheet("QTableView {background-color: transparent;}");
+    tableView->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
+
+    ComboBoxDelegate *comboBoxdelegate = new ComboBoxDelegate({ "нет", "тип 1", "тип 2", "тип 3" }, tableView);
+    tableView->setItemDelegateForColumn(0, comboBoxdelegate);
+    const QStringList baudList { "1200", "2400", "4800", "9600", "19200", "38400", "57600", "115200" };
+
+    comboBoxdelegate = new ComboBoxDelegate(baudList, tableView);
+    tableView->setItemDelegateForColumn(1, comboBoxdelegate);
+
+    comboBoxdelegate = new ComboBoxDelegate({ "нет", "even", "odd" }, tableView);
+    tableView->setItemDelegateForColumn(2, comboBoxdelegate);
+
+    comboBoxdelegate = new ComboBoxDelegate({ "1", "2" }, tableView);
+    tableView->setItemDelegateForColumn(3, comboBoxdelegate);
+
+    SpinBoxDelegate *spinBoxDelegate
+        = new SpinBoxDelegate(0, std::numeric_limits<decltype(Bci::ModbusItem::per)>::max(), tableView);
+    tableView->setItemDelegateForColumn(4, spinBoxDelegate);
+
+    spinBoxDelegate = new SpinBoxDelegate(0, std::numeric_limits<decltype(Bci::ModbusItem::adr)>::max(), tableView);
+    tableView->setItemDelegateForColumn(5, spinBoxDelegate);
+
+    const QStringList funcs { "Coils", "Status", "Holding", "Input" };
+    comboBoxdelegate = new ComboBoxDelegate(funcs, tableView);
+    // Modbus функции начинаются с 1
+    comboBoxdelegate->setOffset(1);
+    tableView->setItemDelegateForColumn(6, comboBoxdelegate);
+
+    const QStringList types { "Uint16", "Int16", "Bool", "Uint32", "Float" };
+    comboBoxdelegate = new ComboBoxDelegate(types, tableView);
+    tableView->setItemDelegateForColumn(7, comboBoxdelegate);
+
+    spinBoxDelegate = new SpinBoxDelegate(0, std::numeric_limits<decltype(Bci::ModbusItem::reg)>::max(), tableView);
+    tableView->setItemDelegateForColumn(8, spinBoxDelegate);
+
+    QStandardItemModel *model = new QStandardItemModel(tableView);
+    const QStringList header { "датчик", "скорость", "чётность", "стопБиты", "период опроса", "абонент", "функция",
+        "данные", "регистр" };
+    model->setHorizontalHeaderLabels(header);
+    tableView->setModel(model);
+
+    for (int column = 0; column < model->columnCount(); column++)
+    {
+        // NOTE Ужасный костыль
+        int width = tableView->horizontalHeader()->fontMetrics().horizontalAdvance(header.at(column)) * 1.5;
+        tableView->setColumnWidth(column, width);
+    }
+
+    return tableView;
 }
 
 QWidget *ConfigKxx::ModbusWidget(QWidget *parent)
@@ -342,15 +403,14 @@ QWidget *ConfigKxx::ModbusWidget(QWidget *parent)
     glyout->addWidget(cb, row, valueColumn, 1, 1, Qt::AlignLeft);
 
     row++;
-    glyout->addWidget(WDFunc::NewLBL2(parent, "Количество стоповых битов:"), row, textColumn /*, 1, 1*/);
+    glyout->addWidget(WDFunc::NewLBL2(parent, "Количество стоповых битов:"), row, textColumn);
     cbl = QStringList { "1", "2" };
     cb = WDFunc::NewCB2(parent, nameByValue(BciNumber::stopbit_ID), cbl);
     glyout->addWidget(cb, row, valueColumn, 1, 1, Qt::AlignLeft);
 
     row++;
-    glyout->addWidget(WDFunc::NewLBL2(parent, "Адрес устройства для Modbus:"), row, textColumn /*, 1, 1*/);
-    glyout->addWidget(WDFunc::NewSPB2(parent, nameByValue(BciNumber::adrMB_ID), 1, 254, 0), row,
-        valueColumn /*, 1, 1, Qt::AlignLeft*/);
+    glyout->addWidget(WDFunc::NewLBL2(parent, "Адрес устройства для Modbus:"), row, textColumn);
+    glyout->addWidget(WDFunc::NewSPB2(parent, nameByValue(BciNumber::adrMB_ID), 1, 254, 0), row, valueColumn);
 
     vlyout2->addLayout(glyout);
     gb->setLayout(vlyout2);
@@ -361,58 +421,7 @@ QWidget *ConfigKxx::ModbusWidget(QWidget *parent)
 
     vlyout2 = new QVBoxLayout;
 
-    QTableView *tableView = new QTableView(parent);
-
-    tableView->setSelectionMode(QAbstractItemView::NoSelection);
-    tableView->setSelectionBehavior(QAbstractItemView::SelectItems);
-    tableView->setShowGrid(false);
-    tableView->setStyleSheet("QTableView {background-color: transparent;}");
-    tableView->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
-
-    ComboBoxDelegate *comboBoxdelegate = new ComboBoxDelegate({ "нет", "тип 1", "тип 2", "тип 3" }, tableView);
-    tableView->setItemDelegateForColumn(0, comboBoxdelegate);
-
-    comboBoxdelegate = new ComboBoxDelegate(m_baudList, tableView);
-    tableView->setItemDelegateForColumn(1, comboBoxdelegate);
-
-    comboBoxdelegate = new ComboBoxDelegate({ "нет", "even", "odd" }, tableView);
-    tableView->setItemDelegateForColumn(2, comboBoxdelegate);
-
-    comboBoxdelegate = new ComboBoxDelegate({ "1", "2" }, tableView);
-    tableView->setItemDelegateForColumn(3, comboBoxdelegate);
-
-    SpinBoxDelegate *spinBoxDelegate
-        = new SpinBoxDelegate(0, std::numeric_limits<decltype(Bci::ABMAST::per)>::max(), tableView);
-    tableView->setItemDelegateForColumn(4, spinBoxDelegate);
-
-    spinBoxDelegate = new SpinBoxDelegate(0, std::numeric_limits<decltype(Bci::ABMAST::adr)>::max(), tableView);
-    tableView->setItemDelegateForColumn(5, spinBoxDelegate);
-
-    const QStringList funcs { "Coils", "Status", "Holding", "Input" };
-    comboBoxdelegate = new ComboBoxDelegate(funcs, tableView);
-    // Modbus функции начинаются с 1
-    comboBoxdelegate->setOffset(1);
-    tableView->setItemDelegateForColumn(6, comboBoxdelegate);
-
-    const QStringList types { "Uint16", "Int16", "Bool", "Uint32", "Float" };
-    comboBoxdelegate = new ComboBoxDelegate(types, tableView);
-    tableView->setItemDelegateForColumn(7, comboBoxdelegate);
-
-    spinBoxDelegate = new SpinBoxDelegate(0, std::numeric_limits<decltype(Bci::ABMAST::reg)>::max(), tableView);
-    tableView->setItemDelegateForColumn(8, spinBoxDelegate);
-
-    QStandardItemModel *model = new QStandardItemModel(tableView);
-    model->setHorizontalHeaderLabels(m_header);
-    tableView->setModel(model);
-
-    for (int column = 0; column < model->columnCount(); column++)
-    {
-        // NOTE Ужасный костыль
-        int width = tableView->horizontalHeader()->fontMetrics().horizontalAdvance(m_header.at(column)) * 1.5;
-        tableView->setColumnWidth(column, width);
-    }
-
-    vlyout2->addWidget(tableView);
+    vlyout2->addWidget(createModbusView(parent));
 
     gb->setLayout(vlyout2);
     qswt->addWidget(gb);

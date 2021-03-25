@@ -11,112 +11,171 @@
 	<record>
 		<id>3</id>
 		<type>DWORD</type>
-    <widget class="CheckBoxGroup">
+		<widget class="CheckBoxGroup">
+			<string>Настройка времени</string>
+			<string-array>
+				<item>SNTP  IP:172.16.28.2</item>
+				<item>синхронизация по входу 1PPS</item>
+				<item>SNTP  IP:172.16.28.1</item>
+				<item>адрес SNTP   берется из конфигурации</item>
+			</string-array>
+			<count>4</count>
 		</widget>
 	</record>
 	<record>
 		<id>4</id>
 		<type>DWORD</type>
-    <widget class="QDoubleSpinBox">
-      <min>0</min>
-      <max>65535</max>
-      <decimals>0</decimals>
-    </widget>
+		<widget class="QDoubleSpinBox">
+			<string>Адрес базовой станции</string>
+			<min>0</min>
+			<max>65535</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>5</id>
 		<type>DWORD</type>
-    <widget class="QDoubleSpinBox">
-      <min>0</min>
-      <max>255</max>
-      <decimals>0</decimals>
-    </widget>
+		<widget class="QDoubleSpinBox">
+			<string>Интервал циклического опроса, с</string>
+			<min>0</min>
+			<max>255</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>6</id>
 		<type>DWORD</type>
-    <widget class="QDoubleSpinBox">
-      <min>0</min>
-      <max>255</max>
-      <decimals>0</decimals>
-    </widget>
+		<widget class="QDoubleSpinBox">
+			<string>Тайм-аут t1, с</string>
+			<min>0</min>
+			<max>255</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>7</id>
 		<type>DWORD</type>
-    <widget class="QDoubleSpinBox">
-      <min>0</min>
-      <max>255</max>
-      <decimals>0</decimals>
-    </widget>
+		<widget class="QDoubleSpinBox">
+			<string>Тайм-аут t2, с</string>
+			<min>0</min>
+			<max>255</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>8</id>
 		<type>DWORD</type>
-    <widget class="QDoubleSpinBox">
-      <min>0</min>
-      <max>255</max>
-      <decimals>0</decimals>
-    </widget>
+		<widget class="QDoubleSpinBox">
+			<string>Тайм-аут t3, с</string>
+			<min>0</min>
+			<max>255</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>9</id>
 		<type>DWORD</type>
-    <widget class="QDoubleSpinBox">
-      <min>0</min>
-      <max>255</max>
-      <decimals>0</decimals>
-    </widget>
+		<widget class="QDoubleSpinBox">
+			<string>Макс. число неподтв. APDU (k)</string>
+			<min>0</min>
+			<max>255</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>10</id>
 		<type>DWORD</type>
-    <widget class="QDoubleSpinBox">
-      <min>0</min>
-      <max>255</max>
-      <decimals>0</decimals>
-    </widget>
+		<widget class="QDoubleSpinBox">
+			<string>Макс. число посл. подтв. APDU (w)</string>
+			<min>0</min>
+			<max>255</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>20</id>
 		<type>BYTE[4]</type>
-    <widget class="IpControl"></widget>
+		<widget class="IpControl">
+			<string>IP адрес устройства</string>
+		</widget>
 	</record>
 	<record>
 		<id>21</id>
 		<type>BYTE[4]</type>
-    <widget class="IpControl"></widget>	
-  </record>
+		<widget class="IpControl">
+			<string>Маска</string>
+		</widget>	
+	</record>
 	<record>
 		<id>22</id>
 		<type>BYTE[4]</type>
-    <widget class="IpControl"></widget>	
-  </record>
+		<widget class="IpControl">
+			<string>Шлюз</string>
+		</widget>	
+	</record>
 	<record>
 		<id>23</id>
 		<type>WORD[4]</type>
-    <widget class="IpControl"></widget>	
-  </record>
+		<widget class="IpControl">
+			<string>Порт протокола 104</string>
+		</widget>	
+	</record>
 	<record>
 		<id>24</id>
 		<type>BYTE[4]</type>
-    <widget class="IpControl"></widget>
-  </record>
+		<widget class="IpControl"> 
+			<string>Адрес SNTP сервера</string>
+		</widget>
+	</record>
 	<record>
 		<id>25</id>
 		<type>DWORD</type>
+		<widget class="QComboBox">
+			<string>Скорость RS485 интерфейса</string>
+			<string-array>
+				<item>1200</item>
+				<item>2400</item>
+				<item>4800</item>
+				<item>9600</item>
+				<item>19200</item>
+				<item>38400</item>
+				<item>57600</item>
+				<item>115200</item>
+			</string-array>
+		</widget>
 	</record>
 	<record>
 		<id>26</id>
 		<type>BYTE</type>
+		<widget class="QComboBox">
+			<string>Чётность</string>
+			<string-array>
+				<item>NoParity</item>
+				<item>EvenParity</item>
+				<item>OddParity</item>
+			</string-array>
+		</widget>
 	</record>
 	<record>
 		<id>27</id>
 		<type>BYTE</type>
+		<widget class="QComboBox">
+			<string>Количество стоповых битов</string>
+			<string-array>
+				<item>1</item>
+				<item>2</item>
+			</string-array>
+		</widget>
 	</record>
 	<record>
 		<id>28</id>
 		<type>BYTE</type>
+		<widget class="QDoubleSpinBox">
+			<string>Адрес устройства для Modbus</string>
+			<min>1</min>
+			<max>254</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>29</id>
@@ -445,11 +504,12 @@
 	<record>
 		<id>1003</id>
 		<type>DWORD</type>
-    <widget class="QDoubleSpinBox">
-      <min>0</min>
-      <max>10000</max>
-      <decimals>0</decimals>
-    </widget>
+		<widget class="QDoubleSpinBox">
+			<string>Интервал усреднения данных  (в периодах основной частоты)</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1004</id>
@@ -462,11 +522,12 @@
 	<record>
 		<id>1006</id>
 		<type>FLOAT</type>
-    <widget class="QDoubleSpinBox">
-      <min>0</min>
-      <max>10000</max>
-      <decimals>2</decimals>
-    </widget>
+		<widget class="QDoubleSpinBox">
+			<string>Номинальное линейное первичное напряжение, кВ</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>2</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1007</id>
@@ -491,20 +552,22 @@
 	<record>
 		<id>1012</id>
 		<type>FLOAT</type>
-    <widget class="QDoubleSpinBox">
-      <min>0</min>
-      <max>10000</max>
-      <decimals>1</decimals>
-    </widget>
+		<widget class="QDoubleSpinBox">
+			<string>Уставка порога минимального напряжения - % от номинального уровня</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>1</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1013</id>
 		<type>FLOAT</type>
-    <widget class="QDoubleSpinBox">
-      <min>0</min>
-      <max>10000</max>
-      <decimals>1</decimals>
-    </widget>
+		<widget class="QDoubleSpinBox">
+			<string>Уставка порога минимального тока - % от номинального уровня</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>1</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1014</id>
@@ -525,101 +588,112 @@
 	<record>
 		<id>1018</id>
 		<type>FLOAT</type>
-    <widget class="QDoubleSpinBox">
-      <min>0</min>
-      <max>10000</max>
-      <decimals>1</decimals>
-    </widget>
+		<widget class="QDoubleSpinBox">
+			<string>Уставка предупредительной сигнализации по изменению емкости, %</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>1</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1019</id>
 		<type>FLOAT</type>
-    <widget class="QDoubleSpinBox">
-      <min>0</min>
-      <max>10000</max>
-      <decimals>1</decimals>
-    </widget>
+		<widget class="QDoubleSpinBox">
+			<string>Уставка аварийной сигнализации по изменению емкости, %</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>1</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1020</id>
 		<type>FLOAT</type>
-    <widget class="QDoubleSpinBox">
-      <min>0</min>
-      <max>10000</max>
-      <decimals>1</decimals>
-    </widget>
+		<widget class="QDoubleSpinBox">
+			<string>Уставка предупредительной сигнализации по изменению tg δ, %</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>1</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1021</id>
 		<type>FLOAT</type>
-    <widget class="QDoubleSpinBox">
-      <min>0</min>
-      <max>10000</max>
-      <decimals>1</decimals>
-    </widget>
+		<widget class="QDoubleSpinBox">
+			<string>Уставка аварийной сигнализации по изменению tg δ, %</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>1</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1022</id>
 		<type>FLOAT</type>
-    <widget class="QDoubleSpinBox">
-      <min>0</min>
-      <max>10000</max>
-      <decimals>1</decimals>
-    </widget>
+		<widget class="QDoubleSpinBox">
+			<string>Уставка предупредительной сигнализации по изменению небаланса токов, %</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>1</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1023</id>
 		<type>FLOAT</type>
-    <widget class="QDoubleSpinBox">
-      <min>0</min>
-      <max>10000</max>
-      <decimals>1</decimals>
-    </widget>
+		<widget class="QDoubleSpinBox">
+			<string>Уставка аварийной сигнализации по изменению небаланса токов, %</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>1</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1024</id>
 		<type>FLOAT</type>
-    <widget class="QDoubleSpinBox">
-      <min>0</min>
-      <max>10000</max>
-      <decimals>1</decimals>
-    </widget>
+		<widget class="QDoubleSpinBox">
+			<string>Гистерезис на отключение сигнализации по dC, % от уставки</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>1</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1025</id>
 		<type>FLOAT</type>
-    <widget class="QDoubleSpinBox">
-      <min>0</min>
-      <max>10000</max>
-      <decimals>1</decimals>
-    </widget>
+		<widget class="QDoubleSpinBox">
+			<string>Гистерезис на отключение сигнализации по dTg, % от уставки</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>1</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1026</id>
 		<type>FLOAT</type>
-    <widget class="QDoubleSpinBox">
-      <min>0</min>
-      <max>10000</max>
-      <decimals>1</decimals>
-    </widget>
+		<widget class="QDoubleSpinBox">
+			<string>Гистерезис на отключение сигнализации по небалансу токов, %</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>1</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1027</id>
 		<type>FLOAT</type>
-    <widget class="QDoubleSpinBox">
-      <min>0</min>
-      <max>10000</max>
-      <decimals>0</decimals>
-    </widget>
+		<widget class="QDoubleSpinBox">
+			<string>Номинальное сопротивление термометра при 0 град.С</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1028</id>
 		<type>FLOAT</type>
-    <widget class="QDoubleSpinBox">
-      <min>0</min>
-      <max>10000</max>
-      <decimals>3</decimals>
-    </widget>
+		<widget class="QDoubleSpinBox">
+			<string>Температурный коэффициент термометра</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>3</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1029</id>
@@ -632,93 +706,109 @@
 	<record>
 		<id>1031</id>
 		<type>DWORD</type>
-    <widget class="QDoubleSpinBox">
-      <min>0</min>
-      <max>10000</max>
-      <decimals>0</decimals>
-    </widget>
+		<widget class="QDoubleSpinBox">
+			<string>Интервал записи данных в ПЗУ (тренд), в секундах</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1032</id>
 		<type>FLOAT</type>
-    <widget class="QDoubleSpinBox">
-      <min>0</min>
-      <max>10000</max>
-      <decimals>1</decimals>
-    </widget>
+		<widget class="QDoubleSpinBox">
+			<string>Низкое напряжение для сигнализации</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>1</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1033</id>
 		<type>BYTE</type>
-    <widget class="QCheckBox"></widget>
+		<widget class="QCheckBox">
+			<string>Сигнализация по наличию входного напряжения, % от ном.</string>
+		</widget>
 	</record>
 	<record>
 		<id>1034</id>
 		<type>BYTE</type>
-    <widget class="QCheckBox"></widget>
+		<widget class="QCheckBox">
+			<string>Сигнализация по небалансу токов</string>
+		</widget>
 	</record>
 	<record>
 		<id>1035</id>
 		<type>DWORD</type>
-    <widget class="QDoubleSpinBox">
-      <min>0</min>
-      <max>10000</max>
-      <decimals>1</decimals>
-    </widget>
+		<widget class="QDoubleSpinBox">
+			<string>Задержка на формирование предупредительных событий, сек</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>1</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1036</id>
 		<type>DWORD</type>
-    <widget class="QDoubleSpinBox">
-      <min>0</min>
-      <max>10000</max>
-      <decimals>1</decimals>
-    </widget>
+		<widget class="QDoubleSpinBox">
+			<string>Задержка на формирование аварийных событий, сек</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>1</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1037</id>
 		<type>DWORD</type>
-    <widget class="QDoubleSpinBox">
-      <min>0</min>
-      <max>10000</max>
-      <decimals>0</decimals>
-    </widget>
+		<widget class="QDoubleSpinBox">
+			<string>Задержка срабатывания реле предупредительной сигнализации</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1038</id>
 		<type>DWORD</type>
-    <widget class="QDoubleSpinBox">
-      <min>0</min>
-      <max>10000</max>
-      <decimals>0</decimals>
-    </widget>
+		<widget class="QDoubleSpinBox">
+			<string>Задержка срабатывания реле аварийной сигнализации</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1039</id>
 		<type>FLOAT[3]</type>
-    <widget class="DoubleSpinBoxGroup">
-      <min>0</min>
-      <max>10</max>
-      <decimals>2</decimals>
-    </widget>
+		<widget class="DoubleSpinBoxGroup">
+			<string>Паспортные значения tg вводов, %</string>
+			<count>3</count>
+			<min>0</min>
+			<max>10</max>
+			<decimals>2</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1040</id>
 		<type>FLOAT[3]</type>
-    <widget class="DoubleSpinBoxGroup">
-      <min>0</min>
-      <max>20000</max>
-      <decimals>1</decimals>
-    </widget>
+		<widget class="DoubleSpinBoxGroup">
+			<string>Паспортные значения ёмкости вводов, пФ</string>
+			<count>3</count>
+			<min>0</min>
+			<max>20000</max>
+			<decimals>1</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1050</id>
 		<type>FLOAT</type>
-    <widget class="QDoubleSpinBox">
-      <min>0</min>
-      <max>10000</max>
-      <decimals>1</decimals>
-    </widget>
+		<widget class="QDoubleSpinBox">
+			<string>Номинальное вторичное напряжение первой тройки, В</string>
+			<count>3</count>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>1</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1051</id>
@@ -735,23 +825,41 @@
 	<record>
 		<id>1060</id>
 		<type>BYTE</type>
-    <widget class="QComboBox"></widget>
+		<widget class="QComboBox">
+			<string>Режим Modbus</string>
+			<string-array>
+				<item>slave</item>
+				<item>master</item>
+			</string-array>
+		</widget>
 	</record>
 	<record>
 		<id>1061</id>
 		<type>BYTE[8]</type>
+		<widget class="ModbusItem">
+			<parent>1060</parent>
+		</widget>
 	</record>
 	<record>
 		<id>1062</id>
 		<type>BYTE[8]</type>
+		<widget class="ModbusItem">
+			<parent>1060</parent>
+		</widget>
 	</record>
 	<record>
 		<id>1063</id>
 		<type>BYTE[8]</type>
+		<widget class="ModbusItem">
+			<parent>1060</parent>
+		</widget>
 	</record>
 	<record>
 		<id>1064</id>
 		<type>BYTE[8]</type>
+		<widget class="ModbusItem">
+			<parent>1060</parent>
+		</widget>
 	</record>
 	<record>
 		<id>1070</id>

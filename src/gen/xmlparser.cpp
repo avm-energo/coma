@@ -165,26 +165,35 @@ ctti::unnamed_type_id_t XmlParser::parseType(QDomElement domElement)
     return 0;
 }
 
-delegate::widgetVariant XmlParser::parseWidget(QDomElement domElement)
+delegate::itemVariant XmlParser::parseWidget(QDomElement domElement)
 {
 
     auto name = domElement.text();
     qDebug() << name;
     QString className = domElement.attribute("class");
     if (className.isEmpty())
-        return delegate::widgetVariant();
+        return delegate::itemVariant();
     auto classes = QMetaEnum::fromType<delegate::widgetType>();
     bool status = false;
     auto type = static_cast<delegate::widgetType>(classes.keyToValue(className.toStdString().c_str(), &status));
     if (!status)
-        return delegate::widgetVariant();
+        return delegate::itemVariant();
 
+    QStringList items {};
+    if (type > delegate::widgetType::Group)
+    {
+        QDomElement childElement = domElement.firstChildElement("string-array");
+        if (!childElement.isNull())
+            items = parseStringList(childElement);
+    }
+    const QString description = domElement.firstChildElement("string").text();
     switch (type)
     {
     case delegate::widgetType::QDoubleSpinBox:
     {
         bool status = false;
         delegate::DoubleSpinBoxWidget widget;
+        widget.type = type;
         QDomElement childElement = domElement.firstChildElement("min");
         widget.min = childElement.text().toDouble(&status);
         childElement = domElement.firstChildElement("max");
@@ -193,12 +202,15 @@ delegate::widgetVariant XmlParser::parseWidget(QDomElement domElement)
         widget.decimals = childElement.text().toUInt(&status);
         if (!status)
             qWarning() << name << className;
+        //   childElement = domElement.firstChildElement("string");
+        widget.desc = description;
         return widget;
     }
     case delegate::widgetType::DoubleSpinBoxGroup:
     {
         bool status = false;
         delegate::DoubleSpinBoxGroup widget;
+        widget.type = type;
         QDomElement childElement = domElement.firstChildElement("min");
         widget.min = childElement.text().toDouble(&status);
         childElement = domElement.firstChildElement("max");
@@ -209,20 +221,58 @@ delegate::widgetVariant XmlParser::parseWidget(QDomElement domElement)
         widget.count = childElement.text().toUInt(&status);
         if (!status)
             qWarning() << name << className;
+        //  childElement = domElement.firstChildElement("string");
+        widget.desc = description;
+        widget.items = items;
         return widget;
     }
     case delegate::widgetType::CheckBoxGroup:
     {
         bool status = false;
         delegate::CheckBoxGroup widget;
+        widget.type = type;
         QDomElement childElement = domElement.firstChildElement("count");
         widget.count = childElement.text().toUInt(&status);
         if (!status)
             qWarning() << name << className;
+        //   childElement = domElement.firstChildElement("string-array");
+
+        widget.desc = description; // parseStringList(childElement).join(',');
+        widget.items = items;
         return widget;
     }
+    case delegate::widgetType::QComboBox:
+    {
+        delegate::QComboBox widget;
+        widget.type = type;
+        widget.desc = description;
+        widget.items = items;
+        return widget;
+    }
+    case delegate::widgetType::ModbusItem:
+    {
+        delegate::Item item;
+        item.type = type;
+        QDomElement childElement = domElement.firstChildElement("parent");
+        bool status = false;
+        item.parent = static_cast<BciNumber>(childElement.text().toUInt(&status));
+        if (!status)
+            qWarning() << name << className;
+        return item;
+    }
     default:
-        return delegate::Widget { type };
+    {
+        //        QDomElement childElement = domElement.firstChildElement("string");
+        //        if (childElement.isElement())
+        //            return delegate::Widget { type, childElement.text() };
+        //        childElement = domElement.firstChildElement("string-array");
+        //        if (childElement.isElement())
+        //        {
+        //            const auto stringList = parseStringList(childElement);
+        //            return delegate::Widget { type, stringList.join(',') };
+        //        }
+        return delegate::Widget { type, description };
+    }
     }
 }
 

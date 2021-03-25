@@ -101,7 +101,7 @@ enum SensorType : quint8
 };
 
 #pragma pack(push, 1)
-struct ABMAST
+struct ModbusItem
 {
     // Тип датчика
     SensorType typedat;
@@ -116,16 +116,16 @@ struct ABMAST
     quint16 reg;
     // Количество регистров
     quint8 cnt;
-    friend bool operator==(const ABMAST &lhs, const ABMAST &rhs);
-    friend bool operator!=(const ABMAST &lhs, const ABMAST &rhs);
+    friend bool operator==(const ModbusItem &lhs, const ModbusItem &rhs);
+    friend bool operator!=(const ModbusItem &lhs, const ModbusItem &rhs);
 };
 #pragma pack(pop)
-bool inline operator==(const ABMAST &lhs, const ABMAST &rhs)
+bool inline operator==(const ModbusItem &lhs, const ModbusItem &rhs)
 {
     return (lhs.typedat == rhs.typedat) && (lhs.parport == rhs.parport) && (lhs.per == rhs.per) && (lhs.adr == rhs.adr)
         && (lhs.type == rhs.type) && (lhs.reg == rhs.reg) && (lhs.cnt == rhs.cnt);
 }
-bool inline operator!=(const ABMAST &lhs, const ABMAST &rhs)
+bool inline operator!=(const ModbusItem &lhs, const ModbusItem &rhs)
 {
     return !(lhs == rhs);
 }

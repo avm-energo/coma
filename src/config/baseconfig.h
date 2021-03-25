@@ -1,7 +1,12 @@
 #pragma once
+#include "../ctti/type_id.hpp"
 #include "../gen/s2.h"
 #include "../module/modules.h"
+#include "../widgets/ipctrl.h"
 #include "../widgets/wd_func.h"
+
+#include <cstdint>
+#include <type_traits>
 constexpr int textColumn = 0;
 constexpr int valueColumn = 1;
 constexpr int extraColumn = 2;
@@ -11,14 +16,21 @@ namespace delegate
 Q_NAMESPACE
 enum class widgetType : int
 {
-    QLabel = 0,
+    dummyElement = 0,
+    QLabel,
     QDoubleSpinBox,
-    DoubleSpinBoxGroup,
     IpControl,
     QCheckBox,
+    QLineEdit,
+    // Group like a separator
+    Group = 100,
+    DoubleSpinBoxGroup,
     CheckBoxGroup,
     QComboBox,
-    QLineEdit
+    // Item like a separator
+    Item = 200,
+    ModbusItem
+
 };
 Q_ENUM_NS(widgetType)
 struct Widget
@@ -35,6 +47,7 @@ struct DoubleSpinBoxWidget : Widget
 struct Group
 {
     int count;
+    QStringList items;
 };
 struct DoubleSpinBoxGroup : DoubleSpinBoxWidget, Group
 {
@@ -42,10 +55,18 @@ struct DoubleSpinBoxGroup : DoubleSpinBoxWidget, Group
 struct CheckBoxGroup : Widget, Group
 {
 };
+struct QComboBox : Widget, Group
+{
+};
+struct Item
+{
+    widgetType type;
+    BciNumber parent;
+};
 
-using widgetVariant = std::variant<Widget, DoubleSpinBoxGroup, DoubleSpinBoxWidget, CheckBoxGroup>;
+using itemVariant = std::variant<Widget, QComboBox, DoubleSpinBoxGroup, DoubleSpinBoxWidget, CheckBoxGroup, Item>;
 }
-using widgetMap = std::map<BciNumber, delegate::widgetVariant>;
+using widgetMap = std::map<BciNumber, delegate::itemVariant>;
 
 // helper type for the visitor
 template <class... Ts> struct overloaded : Ts...
@@ -55,18 +76,90 @@ template <class... Ts> struct overloaded : Ts...
 // explicit deduction guide (not needed as of C++20)
 template <class... Ts> overloaded(Ts...) -> overloaded<Ts...>;
 
+template <typename T, typename = int> struct hasDescription : std::false_type
+{
+};
+
+template <typename T> struct hasDescription<T, decltype((void)T::desc, 0)> : std::true_type
+{
+};
+
 class Module;
+class QStandardItem;
 class WidgetFactory
 {
     friend class Module;
     WidgetFactory()
     {
     }
+    //  template <typename T, std::enable_if_t<std::is_same<std::string, decltype(declval<T>().desc)>>, bool> = true >
+    // std::enable_if_t<true_type<T>::value, bool> = true
+    // template <typename T, std::enable_if_t<std::is_same<QString, decltype(T::desc)>::value, bool> = true>
+    template <typename T, std::enable_if_t<hasDescription<T>::value, bool> = true>
+    static QWidget *helper(const T &arg, QWidget *parent)
+    {
+        QWidget *widget;
+        switch (arg.type)
+        {
+        case delegate::widgetType::IpControl:
+        {
+            widget = new QWidget(parent);
+            QHBoxLayout *lyout = new QHBoxLayout;
+            lyout->addWidget(new QLabel(arg.desc, parent));
+            lyout->addWidget(new IPCtrl(parent));
+            widget->setLayout(lyout);
+            break;
+        }
+        case delegate::widgetType::QCheckBox:
+        {
+            widget = new QCheckBox(arg.desc, parent);
+            break;
+        }
+        case delegate::widgetType::QLineEdit:
+        {
+            widget = new QWidget(parent);
+            QHBoxLayout *lyout = new QHBoxLayout;
+            lyout->addWidget(new QLabel(arg.desc, parent));
+            lyout->addWidget(new QLineEdit(parent));
+            widget->setLayout(lyout);
+            break;
+        }
+
+        default:
+            break;
+            //  Q_ASSERT(false && "False type");
+        }
+        return widget;
+    }
+    template <typename T, std::enable_if_t<!hasDescription<T>::value, bool> = true>
+    static QWidget *helper([[maybe_unused]] const T &arg, [[maybe_unused]] QWidget *parent)
+    {
+        QWidget *widget = nullptr;
+        switch (arg.type)
+        {
+        case delegate::widgetType::ModbusItem:
+        {
+            auto type = static_cast<const std::underlying_type<delegate::widgetType>::type>(arg.type);
+            const QString widgetName(QString::number(type) + QString::number(arg.parent));
+            widget = parent->findChild<QTableView *>(widgetName);
+            if (!widget)
+            {
+                widget = createModbusView(parent);
+                widget->setObjectName(widgetName);
+            }
+            return widget;
+        }
+        }
+        return nullptr;
+    }
 
 public:
     static QWidget *createWidget(BciNumber key, QWidget *parent = nullptr);
+    static QStandardItem *createItem(BciNumber key, QWidget *parent = nullptr);
 
 private:
+private:
+    static QWidget *createModbusView(QWidget *parent);
     static widgetMap widgetMap;
 };
 

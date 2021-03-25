@@ -9,6 +9,7 @@
 
 #include <QGridLayout>
 #include <QGroupBox>
+#include <QScrollArea>
 #include <QTimer>
 #include <QVBoxLayout>
 
@@ -250,15 +251,61 @@ QWidget *ConfKIVDialog::connectionWidget()
 QWidget *ConfKIVDialog::testWidget()
 {
     QGroupBox *groupBox = new QGroupBox(this);
-    QVBoxLayout *vlyout = new QVBoxLayout;
-    for (quint32 i = 0; i != 10; ++i)
+    QGridLayout *vlyout = new QGridLayout;
+    //  QVBoxLayout *subvlyout = new QVBoxLayout;
+    for (const auto i : (list))
     {
-        QWidget *widget = WidgetFactory::createWidget(static_cast<BciNumber>(i), this);
+        QWidget *widget = WidgetFactory::createWidget(i, this);
+
+        int group = i / 10;
         if (widget)
-            vlyout->addWidget(widget);
+        {
+
+            //            for (const auto *i : widget->findChildren<QWidget *>())
+            //            {
+            //                qDebug() << i->metaObject()->className() << i->sizePolicy().horizontalPolicy();
+            //            }
+            QLayoutItem *child = vlyout->itemAtPosition(group, 0);
+            QGroupBox *subBox = nullptr;
+            if (!child)
+            {
+                subBox = new QGroupBox("Группа " + QString::number(group), this);
+                subBox->setLayout(new QVBoxLayout);
+            }
+            else
+            {
+                subBox = qobject_cast<QGroupBox *>(child->widget());
+                vlyout->removeWidget(subBox);
+            }
+            // if (!subBox)
+            // {
+            // sublyout = new QVBoxLayout;
+            //  subBox = new QGroupBox(this);
+
+            //  vlyout->addLayout(sublyout);
+            // }
+            QLayout *lyout = subBox->layout();
+            lyout->addWidget(widget);
+            subBox->setLayout(lyout);
+            vlyout->addWidget(subBox, group, 0);
+        }
+        else
+        {
+            WidgetFactory::createItem(i, this);
+        }
     }
+    //    for (quint32 i = 0; i != 10; ++i)
+    //    {
+    //        QWidget *widget = WidgetFactory::createWidget(static_cast<BciNumber>(i), this);
+    //        if (widget)
+    //            vlyout->addWidget(widget);
+    //    }
     groupBox->setLayout(vlyout);
-    return groupBox;
+    QScrollArea *scrollArea = new QScrollArea;
+    scrollArea->setFrameShape(QFrame::NoFrame);
+    scrollArea->setWidgetResizable(true);
+    scrollArea->setWidget(groupBox);
+    return scrollArea;
 }
 
 void ConfKIVDialog::FillKiv()

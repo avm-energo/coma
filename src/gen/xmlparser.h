@@ -17,7 +17,7 @@ public:
     static quint64 parseHexInt32(QDomElement domElement);
     static QStringList parseStringList(QDomElement domElement);
     static ctti::unnamed_type_id_t parseType(QDomElement domElement);
-    static delegate::widgetVariant parseWidget(QDomElement domElement);
+    static delegate::itemVariant parseWidget(QDomElement domElement);
     static void traverseNode(const QDomNode &node, ModuleSettings *const settings);
     static void traverseNode(const QDomNode &node, GlobalSettings &settings);
 };
