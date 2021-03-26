@@ -25,7 +25,7 @@
           <item>Вероятно сильное смещение вала</item>
         </string-array>
         <!--Флаги сигнализации-->
-        <quint64 name="criticalFlags">0x000155555</quint64>
+        <quint64 name="criticalFlags">0x155555000</quint64>
         <!--Стартовый адрес сигнализации-->
 		    <quint32 name="startAddr">5011</quint32>
         <!--Цвет сигнализации если событие произошло-->
@@ -56,7 +56,7 @@
           <item>Вероятно ухудшенное состояние подшипников</item>
           <item>Вероятно смещение вала</item>
         </string-array>
-        <quint64 name="warningFlags">0x1ffeaaaaa</quint64>
+        <quint64 name="warningFlags">0x00</quint64>
 		    <quint32 name="startAddr">5011</quint32>
 		    <color>#ffff00</color>
       </alarm>
@@ -94,7 +94,7 @@
           <item>Вероятно ухудшенное состояние статора</item>
           <item>Вероятно аварийное состояние статора</item>
           <item>Вероятно ухудшенное состояние ротора</item>
-          <item>Вероятно аварийное состояние ротора</item
+		  <item>Вероятно аварийное состояние ротора</item>
           <item>Вероятно ухудшенное состояние подшипников</item>
           <item>Вероятно аварийное состояние подшипников</item>
           <item>Вероятно смещение вала</item>
@@ -146,7 +146,7 @@
           <function>04</function>
           <type>uint32</type>
           <start-addr>1</start-addr>
-          <count>38</count>
+          <count>32</count>
         </group>       
         <group id="tempHardware">
             <function>04</function>
@@ -223,8 +223,8 @@
         <group id="insulation">
           <function>04</function>
           <type>float</type>
-          <start-addr>4000</start-addr>
-          <count>6</count>
+          <start-addr>4700</start-addr>
+          <count>12</count>
         </group>
         <group id="load">
           <function>04</function>
@@ -246,6 +246,12 @@
           <count>33</count>
         </group>
         <!--4600,4601 rtime;wtime еще в процессе(не понятно что длать с типом time)-->
+		<group id="vibrations">
+		  <function>04</function>
+		  <type>float</type>
+		  <start-addr>6040</start-addr>
+		  <count>72</count>
+	    </group> 
       </modbus>
 
       <!--Описываем протокол Protocom-->
@@ -311,8 +317,8 @@
           <block>8</block>
        </group>
        <group>
-          <start-addr>4000</start-addr>
-          <count>4</count>
+          <start-addr>4700</start-addr>
+          <count>6</count>
           <block>9</block>
        </group> 
       <group>
@@ -322,7 +328,7 @@
        </group>
        <group>
           <start-addr>4010</start-addr>
-          <count>21</count>
+          <count>22</count>
           <block>11</block>
        </group>
        <group>
@@ -335,10 +341,16 @@
           <count>7</count>
           <block>17</block>
        </group>
-         <!--блок 18 еще в процессе(не понятно что длать с типом time)-->   
+        <group>
+          <start-addr>6040</start-addr>
+          <count>36</count>
+          <block>20</block>
+       </group>
+		   
+		   <!--блок 18 еще в процессе(не понятно что длать с типом time)-->   
        <group id="alarmModule">
           <start-addr>5011</start-addr>
-          <count>15</count>
+          <count>32</count>
           <block>100</block>
         </group>         
       </protocom>
