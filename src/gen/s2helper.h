@@ -42,6 +42,15 @@ template <typename T, typename F> static constexpr bool is_variant_alternative()
     });
     return state;
 }
+
+template <class Variant> std::type_info const &variant_type(Variant const &v)
+{
+    return std::visit([](auto &&x) -> decltype(auto) { return typeid(x); }, v);
+}
+template <class T> struct remove_cvref
+{
+    typedef std::remove_cv_t<std::remove_reference_t<T>> type;
+};
 }
 
 namespace DataTypes

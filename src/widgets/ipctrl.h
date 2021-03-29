@@ -23,6 +23,7 @@ public:
     void setIP(const std::array<quint8, QTUTL_IP_SIZE> ipAddr);
 
     typedef quint8 value_type;
+    typedef std::array<quint8, QTUTL_IP_SIZE> container_type;
     static constexpr size_t size = QTUTL_IP_SIZE;
 
 signals:

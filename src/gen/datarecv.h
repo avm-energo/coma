@@ -94,6 +94,8 @@ public:
 
     valueType getData() const;
 
+    void setData(const valueType &value);
+
 private:
     unsigned int id;
     valueType data;
