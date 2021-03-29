@@ -1,6 +1,7 @@
 #ifndef WD_FUNC
 #define WD_FUNC
 
+#include "checkboxgroup.h"
 #include "ecombobox.h"
 #include "etableview.h"
 //#include "passwordlineedit.h"
@@ -106,7 +107,23 @@ public:
         auto *spbg = static_cast<DoubleSpinBoxGroup *>(w->findChild<QWidget *>(spbname));
         if (spbg == nullptr)
             return false;
-        spbg->setValue(std::vector<T>(spbvalue.cbegin(), spbvalue.cend()));
+        spbg->setValue(std::vector<float>(spbvalue.cbegin(), spbvalue.cend()));
+        return true;
+    }
+    template <typename T> static bool SetSPBGData(QWidget *w, const QString &spbname, const std::vector<T> &spbvalue)
+    {
+        auto *spbg = dynamic_cast<DoubleSpinBoxGroup *>(w->findChild<QWidget *>(spbname));
+        if (spbg == nullptr)
+            return false;
+        spbg->setValue(spbvalue);
+        return true;
+    }
+    template <typename T> static bool SetSPBGData(QWidget *w, const QString &spbname, const QList<T> &spbvalue)
+    {
+        auto *spbg = dynamic_cast<DoubleSpinBoxGroup *>(w->findChild<QWidget *>(spbname));
+        if (spbg == nullptr)
+            return false;
+        spbg->setValue(spbvalue.toVector().toStdVector());
         return true;
     }
     template <typename T> static bool SPBData(const QObject *w, const QString &spbname, T &spbvalue)
@@ -178,6 +195,13 @@ public:
         return true;
     }
     static bool SetChBData(QWidget *w, const QString &chbname, bool data);
+    template <typename T> static bool SetChBGData(QWidget *w, const QString &name, const T data)
+    {
+        CheckBoxGroup *checkBoxGroup = dynamic_cast<CheckBoxGroup *>(w->findChild<QWidget *>(name));
+        if (!checkBoxGroup)
+            return false;
+        checkBoxGroup->setBits(data);
+    }
     static bool RBData(QWidget *w, const QString &rbname, bool &data);
     static bool SetRBData(QWidget *w, const QString &rbname, bool data);
     static bool SetIPCtrlData(const QObject *w, const QString &name, const std::array<quint8, 4> &value);
