@@ -20,7 +20,10 @@ public:
     virtual bool eventFilter(QObject *obj, QEvent *event);
 
     std::array<quint8, QTUTL_IP_SIZE> getIP() const;
-    void setIP(std::array<quint8, QTUTL_IP_SIZE> ipAddr);
+    void setIP(const std::array<quint8, QTUTL_IP_SIZE> ipAddr);
+
+    typedef quint8 value_type;
+    static constexpr size_t size = QTUTL_IP_SIZE;
 
 signals:
     void signalTextChanged(QLineEdit *pEdit);

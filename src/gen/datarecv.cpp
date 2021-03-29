@@ -343,6 +343,11 @@ unsigned int DataRecV::getId() const
 {
     return id;
 }
+
+valueType DataRecV::getData() const
+{
+    return data;
+}
 }
 bool S2DataTypes::is_same(const S2DataTypes::DataRec &lhs, const S2DataTypes::DataRec &rhs)
 {

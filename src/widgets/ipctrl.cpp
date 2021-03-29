@@ -161,7 +161,7 @@ std::array<quint8, IPCtrl::QTUTL_IP_SIZE> IPCtrl::getIP() const
     return ipAddr;
 }
 
-void IPCtrl::setIP(std::array<quint8, IPCtrl::QTUTL_IP_SIZE> ipAddr)
+void IPCtrl::setIP(const std::array<quint8, IPCtrl::QTUTL_IP_SIZE> ipAddr)
 {
     for (auto i = 0; i != QTUTL_IP_SIZE; ++i)
     {

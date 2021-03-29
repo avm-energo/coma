@@ -92,6 +92,8 @@ public:
         return data.index();
     }
 
+    valueType getData() const;
+
 private:
     unsigned int id;
     valueType data;

@@ -99,6 +99,11 @@ public:
             spinBox->setDecimals(m_decimals);
     }
 
+    int count() const
+    {
+        return m_count;
+    }
+
 signals:
 private:
     int m_count;
