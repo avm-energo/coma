@@ -128,7 +128,7 @@
 		<id>23</id>
 		<type>WORD[4]</type>
 		<widget>
-			<type>IpControl</type>
+			<type>QLineEdit</type>
 			<string>Порт протокола 104</string>
 		</widget>	
 	</record>
