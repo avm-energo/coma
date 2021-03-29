@@ -1,6 +1,7 @@
 #include "xmlparser.h"
 
 #include "../module/module.h"
+#include "../widgets/checkboxgroup.h"
 #include "board.h"
 XmlParser::XmlParser()
 {
@@ -119,10 +120,13 @@ ctti::unnamed_type_id_t XmlParser::parseType(QDomElement domElement)
     using namespace DataTypes;
     auto name = domElement.text();
     name.replace(" ", "");
+    if (name.isEmpty())
+        return 0;
     const auto arrSize = name.count('[');
     switch (arrSize)
     {
     case 0:
+        // Primitive types
         if (name.contains("BYTE", Qt::CaseInsensitive))
             return ctti::unnamed_type_id<BYTE>().hash();
         if (name.contains("DWORD", Qt::CaseInsensitive))
@@ -131,6 +135,30 @@ ctti::unnamed_type_id_t XmlParser::parseType(QDomElement domElement)
             return ctti::unnamed_type_id<WORD>().hash();
         if (name.contains("float", Qt::CaseInsensitive))
             return ctti::unnamed_type_id<float>().hash();
+        // Widget classes
+        // Group should be checked before single widget
+        if (name.contains("Group", Qt::CaseInsensitive))
+        {
+            if (name.contains("DoubleSpinBoxGroup", Qt::CaseInsensitive))
+                return ctti::unnamed_type_id<DoubleSpinBoxGroup>().hash();
+            if (name.contains("CheckBoxGroup", Qt::CaseInsensitive))
+                return ctti::unnamed_type_id<CheckBoxGroup>().hash();
+        }
+        if (name.contains("Label", Qt::CaseInsensitive))
+            return ctti::unnamed_type_id<QLabel>().hash();
+        if (name.contains("DoubleSpinBox", Qt::CaseInsensitive))
+            return ctti::unnamed_type_id<QDoubleSpinBox>().hash();
+        if (name.contains("IpControl", Qt::CaseInsensitive))
+            return ctti::unnamed_type_id<IPCtrl>().hash();
+        if (name.contains("CheckBox", Qt::CaseInsensitive))
+            return ctti::unnamed_type_id<QCheckBox>().hash();
+        if (name.contains("ComboBox", Qt::CaseInsensitive))
+            return ctti::unnamed_type_id<QComboBox>().hash();
+        if (name.contains("LineEdit", Qt::CaseInsensitive))
+            return ctti::unnamed_type_id<QLineEdit>().hash();
+        // Another types
+        if (name.contains("TableView", Qt::CaseInsensitive))
+            return ctti::unnamed_type_id<QTableView>().hash();
 
     case 1:
 
@@ -170,29 +198,26 @@ delegate::itemVariant XmlParser::parseWidget(QDomElement domElement)
     auto name = domElement.text();
     qDebug() << name;
     QString className = domElement.attribute("class");
-    if (className.isEmpty())
-        return delegate::itemVariant();
-    auto classes = QMetaEnum::fromType<delegate::widgetType>();
-    bool status = false;
-    auto type = static_cast<delegate::widgetType>(classes.keyToValue(className.toStdString().c_str(), &status));
-    if (!status)
-        return parseItem(domElement);
+    auto type = parseType(domElement.firstChildElement("type"));
 
-    QStringList items {};
-    if (type > delegate::widgetType::Group)
+    if (!className.isEmpty())
     {
-        QDomElement childElement = domElement.firstChildElement("string-array");
-        if (!childElement.isNull())
-            items = parseStringList(childElement);
+        return parseItem(domElement, type);
     }
+    QStringList items;
+
+    QDomElement childElement = domElement.firstChildElement("string-array");
+    if (!childElement.isNull())
+        items = parseStringList(childElement);
+
     const QString description = domElement.firstChildElement("string").text();
-    switch (type)
+    switch (type.hash())
     {
-    case delegate::widgetType::QDoubleSpinBox:
+    case ctti::unnamed_type_id<QDoubleSpinBox>().hash():
     {
         bool status = false;
-        delegate::DoubleSpinBoxWidget widget;
-        widget.type = type;
+        delegate::DoubleSpinBoxWidget widget(type);
+
         QDomElement childElement = domElement.firstChildElement("min");
         widget.min = childElement.text().toDouble(&status);
         childElement = domElement.firstChildElement("max");
@@ -205,11 +230,11 @@ delegate::itemVariant XmlParser::parseWidget(QDomElement domElement)
         widget.desc = description;
         return widget;
     }
-    case delegate::widgetType::DoubleSpinBoxGroup:
+    case ctti::unnamed_type_id<DoubleSpinBoxGroup>().hash():
     {
         bool status = false;
-        delegate::DoubleSpinBoxGroup widget;
-        widget.type = type;
+        delegate::DoubleSpinBoxGroup widget(type);
+
         QDomElement childElement = domElement.firstChildElement("min");
         widget.min = childElement.text().toDouble(&status);
         childElement = domElement.firstChildElement("max");
@@ -225,11 +250,11 @@ delegate::itemVariant XmlParser::parseWidget(QDomElement domElement)
         widget.items = items;
         return widget;
     }
-    case delegate::widgetType::CheckBoxGroup:
+    case ctti::unnamed_type_id<CheckBoxGroup>().hash():
     {
         bool status = false;
-        delegate::CheckBoxGroup widget;
-        widget.type = type;
+        delegate::CheckBoxGroup widget(type);
+
         QDomElement childElement = domElement.firstChildElement("count");
         widget.count = childElement.text().toUInt(&status);
         if (!status)
@@ -239,10 +264,10 @@ delegate::itemVariant XmlParser::parseWidget(QDomElement domElement)
         widget.items = items;
         return widget;
     }
-    case delegate::widgetType::QComboBox:
+    case ctti::unnamed_type_id<QComboBox>().hash():
     {
-        delegate::QComboBox widget;
-        widget.type = type;
+        delegate::QComboBox widget(type);
+
         widget.desc = description;
         widget.items = items;
         return widget;
@@ -252,36 +277,36 @@ delegate::itemVariant XmlParser::parseWidget(QDomElement domElement)
     {
     }
     }
-    return delegate::Widget { type, description };
+    return delegate::Widget(type, description);
 }
 
-delegate::Item XmlParser::parseItem(QDomElement domElement)
+delegate::Item XmlParser::parseItem(QDomElement domElement, ctti::unnamed_type_id_t parentType)
 {
     auto name = domElement.text();
     qDebug() << name;
     QString className = domElement.attribute("class");
     if (className.isEmpty())
-        return {};
-    auto classes = QMetaEnum::fromType<delegate::itemType>();
+        return { 0 };
+    auto classes = QMetaEnum::fromType<delegate::ItemType>();
     bool status = false;
-    auto type = static_cast<delegate::itemType>(classes.keyToValue(className.toStdString().c_str(), &status));
+    auto itemType = static_cast<delegate::ItemType>(classes.keyToValue(className.toStdString().c_str(), &status));
     if (!status)
-        return {};
-    switch (type)
+        return { 0 };
+    switch (itemType)
     {
-    case delegate::itemType::ModbusItem:
+    case delegate::ItemType::ModbusItem:
     {
-        delegate::Item item;
-        item.type = type;
+
         QDomElement childElement = domElement.firstChildElement("parent");
         bool status = false;
-        item.parent = static_cast<BciNumber>(childElement.text().toUInt(&status));
+        auto parent = static_cast<BciNumber>(childElement.text().toUInt(&status));
         if (!status)
             qWarning() << name << className;
+        delegate::Item item(parentType, itemType, parent);
         return item;
     }
     default:
-        return delegate::Item { type, BciNumber::dummyElement };
+        return delegate::Item(parentType, itemType, BciNumber::dummyElement);
     }
 }
 
@@ -297,8 +322,6 @@ void XmlParser::traverseNode(const QDomNode &node, ModuleSettings *const setting
             {
                 if (domElement.tagName() == "quint32")
                 {
-                    //      qDebug() << "Attr: " << domElement.attribute("name", "")
-                    //               << "\tValue: " << /*qPrintable*/ (domElement.text());
                     XmlParser::parseInt32(domElement);
                 }
                 if (domElement.tagName() == "string-array")
@@ -348,8 +371,6 @@ void XmlParser::traverseNode(const QDomNode &node, ModuleSettings *const setting
                         domNode = domNode.nextSibling();
                         continue;
                     }
-
-                    // qDebug() << "Attr: " << domElement.attribute("mtypea", "") << domElement.attribute("mtypeb", "");
                 }
 
                 if (domElement.tagName() == "modbus")
@@ -376,11 +397,6 @@ void XmlParser::traverseNode(const QDomNode &node, ModuleSettings *const setting
                     domNode = domNode.nextSibling();
                     continue;
                 }
-                //                else
-                //                {
-                //                    qDebug() << "TagName: " << domElement.tagName() << "\tText: " << /*qPrintable*/
-                //                    (domElement.text());
-                //                }
             }
         }
         traverseNode(domNode, settings);

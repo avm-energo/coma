@@ -68,6 +68,7 @@ QWidget *WidgetFactory::createModbusView(QWidget *parent)
         int width = tableView->horizontalHeader()->fontMetrics().horizontalAdvance(header.at(column)) * 1.5;
         tableView->setColumnWidth(column, width);
     }
+    // tableView->setMinimumWidth(tableView->horizontalHeader()->height() * 5);
     return tableView;
 }
 
@@ -87,6 +88,10 @@ QWidget *WidgetFactory::createWidget(BciNumber key, QWidget *parent)
                        qDebug("DefaultWidget");
                        using namespace delegate;
                        widget = helper(arg, parent);
+                       //                       if (std::is_same_v<decltype(arg), delegate::Item>)
+                       //                           widget = helperItem(arg, parent);
+                       //                       else
+                       //                           widget = helperWidget(arg, parent);
                    },
                    [&](const delegate::DoubleSpinBoxGroup &arg) {
                        qDebug("DoubleSpinBoxGroupWidget");
@@ -147,5 +152,25 @@ QStandardItem *WidgetFactory::createItem(BciNumber key, QWidget *parent)
                    [&](const delegate::Item &arg) { qDebug("Item"); },
                },
         var);
+    return nullptr;
+}
+
+template <> QWidget *WidgetFactory::helper(const delegate::Item &arg, QWidget *parent)
+{
+    QWidget *widget = nullptr;
+    switch (arg.itemType)
+    {
+    case delegate::ItemType::ModbusItem:
+    {
+        const QString widgetName(QString::number(arg.type.hash()) + QString::number(arg.parent));
+        widget = parent->findChild<QTableView *>(widgetName);
+        if (!widget)
+        {
+            widget = createModbusView(parent);
+            widget->setObjectName(widgetName);
+        }
+        return widget;
+    }
+    }
     return nullptr;
 }

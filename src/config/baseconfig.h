@@ -40,20 +40,29 @@ enum class widgetType : int
     // ModbusItem
 
 };
-enum class itemType : int
+enum class ItemType : int
 {
     ModbusItem
 };
 Q_ENUM_NS(widgetType)
-Q_ENUM_NS(itemType)
+Q_ENUM_NS(ItemType)
 struct Widget
 {
-    widgetType type;
+    Widget(const ctti::unnamed_type_id_t type_) : type(type_)
+    {
+    }
+    Widget(const ctti::unnamed_type_id_t type_, const QString &desc_) : type(type_), desc(desc_)
+    {
+    }
+    ctti::unnamed_type_id_t type;
     QString desc;
 };
 
 struct DoubleSpinBoxWidget : Widget
 {
+    DoubleSpinBoxWidget(const ctti::unnamed_type_id_t type_) : Widget(type_)
+    {
+    }
     double min;
     double max;
     int decimals;
@@ -65,16 +74,35 @@ struct Group
 };
 struct DoubleSpinBoxGroup : DoubleSpinBoxWidget, Group
 {
+    DoubleSpinBoxGroup(const ctti::unnamed_type_id_t type_) : DoubleSpinBoxWidget(type_)
+    {
+    }
 };
 struct CheckBoxGroup : Widget, Group
 {
+    CheckBoxGroup(const ctti::unnamed_type_id_t type_) : Widget(type_)
+    {
+    }
 };
 struct QComboBox : Widget, Group
 {
+    QComboBox(const ctti::unnamed_type_id_t type_) : Widget(type_)
+    {
+    }
 };
-struct Item
+struct Item : Widget
 {
-    itemType type;
+    Item(const ctti::unnamed_type_id_t type_) : Widget(type_)
+    {
+    }
+    Item(const ctti::unnamed_type_id_t type_, const ItemType itype_) : Widget(type_), itemType(itype_)
+    {
+    }
+    Item(const ctti::unnamed_type_id_t type_, const ItemType itype_, const BciNumber parent_)
+        : Widget(type_), itemType(itype_), parent(parent_)
+    {
+    }
+    ItemType itemType;
     BciNumber parent;
 };
 
@@ -90,33 +118,18 @@ template <class... Ts> struct overloaded : Ts...
 // explicit deduction guide (not needed as of C++20)
 template <class... Ts> overloaded(Ts...) -> overloaded<Ts...>;
 
-template <typename T, typename = int> struct hasDescription : std::false_type
-{
-};
-
-template <typename T> struct hasDescription<T, decltype((void)T::desc, 0)> : std::true_type
-{
-};
-
 class Module;
 class QStandardItem;
 class WidgetFactory
 {
     friend class Module;
-    WidgetFactory()
-    {
-    }
-    //  template <typename T, std::enable_if_t<std::is_same<std::string, decltype(declval<T>().desc)>>, bool> = true >
-    // std::enable_if_t<true_type<T>::value, bool> = true
-    // template <typename T, std::enable_if_t<std::is_same<QString, decltype(T::desc)>::value, bool> = true>
-    template <typename T, typename S = decltype(T::type),
-        std::enable_if_t<std::is_same<S, delegate::widgetType>::value, bool> = true>
-    static QWidget *helper(const T &arg, QWidget *parent)
+
+    template <typename T> static QWidget *helper(const T &arg, QWidget *parent)
     {
         QWidget *widget = nullptr;
-        switch (arg.type)
+        switch (arg.type.hash())
         {
-        case delegate::widgetType::IpControl:
+        case ctti::unnamed_type_id<IPCtrl>().hash():
         {
             widget = new QWidget(parent);
             QHBoxLayout *lyout = new QHBoxLayout;
@@ -125,12 +138,12 @@ class WidgetFactory
             widget->setLayout(lyout);
             break;
         }
-        case delegate::widgetType::QCheckBox:
+        case ctti::unnamed_type_id<QCheckBox>().hash():
         {
             widget = new QCheckBox(arg.desc, parent);
             break;
         }
-        case delegate::widgetType::QLineEdit:
+        case ctti::unnamed_type_id<QLineEdit>().hash():
         {
             widget = new QWidget(parent);
             QHBoxLayout *lyout = new QHBoxLayout;
@@ -146,31 +159,92 @@ class WidgetFactory
         }
         return widget;
     }
-    template <typename T, typename S = decltype(T::type),
-        std::enable_if_t<std::is_same<S, delegate::itemType>::value, bool> = true>
-    static QWidget *helper(const T &arg, QWidget *parent)
-    {
-        QWidget *widget = nullptr;
-        switch (arg.type)
-        {
-        case delegate::itemType::ModbusItem:
-        {
-            auto type = static_cast<const std::underlying_type<delegate::itemType>::type>(arg.type);
-            const QString widgetName(QString::number(type) + QString::number(arg.parent));
-            widget = parent->findChild<QTableView *>(widgetName);
-            if (!widget)
-            {
-                widget = createModbusView(parent);
-                widget->setObjectName(widgetName);
-            }
-            return widget;
-        }
-        }
-        return nullptr;
-    }
 
 public:
-    static QWidget *createWidget(BciNumber key, QWidget *parent = nullptr);
+    WidgetFactory()
+    {
+    }
+    QWidget *createWidget(BciNumber key, QWidget *parent = nullptr);
+    template <typename T> bool fillWidget(QWidget *parent, BciNumber key, const T &value)
+    {
+        bool status = false;
+        auto search = widgetMap.find(key);
+        if (search == widgetMap.end())
+        {
+            qWarning() << "Not found" << key;
+            return status;
+        }
+
+        const auto var = search->second;
+        std::visit(overloaded {
+                       [&](const auto &arg) {
+                           qDebug("DefaultWidget");
+                           using namespace delegate;
+
+                           switch (arg.type.hash())
+                           {
+                           case ctti::unnamed_type_id<IPCtrl>().hash():
+                           {
+                               auto widget = parent->findChild<IPCtrl *>(QString::number(key));
+                               if (!widget)
+                                   return;
+                               if constexpr (std::is_container<T>())
+                                   if constexpr (std::is_same<decltype(value), IPCtrl::value_type>::value)
+                                       widget->setIP(value);
+                               status = true;
+                               break;
+                           }
+                           case ctti::unnamed_type_id<QCheckBox>().hash():
+                           {
+                               auto widget = parent->findChild<QCheckBox *>(QString::number(key));
+                               if (!widget)
+                                   return;
+                               if constexpr (!std::is_container<T>())
+                                   widget->setChecked(bool(value));
+                               status = true;
+                               break;
+                           }
+                           case ctti::unnamed_type_id<QLineEdit>().hash():
+                           {
+                               auto widget = parent->findChild<QLineEdit *>(QString::number(key));
+                               if (!widget)
+                                   return;
+                               if constexpr (!std::is_container<T>())
+                                   widget->setText(QString::number(value));
+                               status = true;
+                               break;
+                           }
+
+                           default:
+                               break;
+                               Q_ASSERT(false && "False type");
+                           }
+                       },
+                       [&](const delegate::DoubleSpinBoxGroup &arg) {
+                           qDebug("DoubleSpinBoxGroupWidget");
+                           if constexpr (std::is_container<T>())
+                               if constexpr (sizeof(T::value_type) != 1 && !std::is_container<typename T::value_type>())
+                                   status = WDFunc::SetSPBGData(parent, QString::number(key), value);
+                       },
+                       [&](const delegate::DoubleSpinBoxWidget &arg) {
+                           qDebug("DoubleSpinBoxWidget");
+                           if constexpr (!std::is_container<T>())
+                               status = WDFunc::SetSPBData(parent, QString::number(key), value);
+                       },
+                       [&](const delegate::CheckBoxGroup &arg) {
+                           qDebug("CheckBoxGroupWidget");
+                           if constexpr (std::is_same<T, quint32>::value || std::is_same<T, quint64>::value)
+                               status = WDFunc::SetChBGData(parent, QString::number(key), value);
+                       },
+                       [&](const delegate::QComboBox &arg) {
+                           qDebug("QComboBox");
+                           if constexpr (!std::is_container<T>())
+                               status = WDFunc::SetCBIndex(parent, QString::number(key), value);
+                       },
+                   },
+            var);
+        return status;
+    }
     static QStandardItem *createItem(BciNumber key, QWidget *parent = nullptr);
 
 private:
@@ -178,6 +252,8 @@ private:
     static QWidget *createModbusView(QWidget *parent);
     static widgetMap widgetMap;
 };
+
+template <> QWidget *WidgetFactory::helper(const delegate::Item &arg, QWidget *parent);
 
 class BaseConfig
 {

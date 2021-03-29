@@ -55,6 +55,17 @@ void AbstractConfDialog::confReceived(const QList<DataTypes::DataRecV> &list)
 {
     S2::configV = list;
     Fill();
+
+    for (const auto id : m_list)
+    {
+        const auto record = S2::getRecord(id);
+        std::visit(
+            [=](const auto &&value) {
+                WidgetFactory factory;
+                factory.fillWidget(this, static_cast<BciNumber>(record.getId()), value);
+            },
+            record.getData());
+    }
 }
 
 void AbstractConfDialog::confParametersListReceived(const DataTypes::ConfParametersListStruct &cfpl)
