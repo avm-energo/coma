@@ -196,7 +196,9 @@ ctti::unnamed_type_id_t XmlParser::parseType(QDomElement domElement)
 delegate::itemVariant XmlParser::parseWidget(QDomElement domElement)
 {
     auto name = domElement.text();
+#ifdef XML_DEBUG
     qDebug() << name;
+#endif
     QString className = domElement.attribute("class");
     auto type = parseType(domElement.firstChildElement("type"));
 
@@ -283,7 +285,9 @@ delegate::itemVariant XmlParser::parseWidget(QDomElement domElement)
 delegate::Item XmlParser::parseItem(QDomElement domElement, ctti::unnamed_type_id_t parentType)
 {
     auto name = domElement.text();
+#ifdef XML_DEBUG
     qDebug() << name;
+#endif
     QString className = domElement.attribute("class");
     if (className.isEmpty())
         return { 0 };
@@ -416,9 +420,9 @@ void XmlParser::traverseNode(const QDomNode &node, GlobalSettings &settings)
             {
                 if (domElement.tagName() == "record")
                 {
-                    //#ifdef XML_DEBUG
+#ifdef XML_DEBUG
                     qDebug() << domElement.text();
-                    //#endif
+#endif
                     domElement = domElement.firstChild().toElement();
                     BciNumber id = static_cast<BciNumber>(XmlParser::parseInt32(domElement));
                     domElement = domElement.nextSibling().toElement();
