@@ -168,6 +168,7 @@ struct BciMain
 
 enum BciNumber : unsigned
 {
+    dummyElement = 0,
     MTypeB_ID = 1,
     MTypeE_ID = 2,
     CType = 3,
