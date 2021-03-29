@@ -54,7 +54,7 @@ void AbstractConfDialog::WriteConf()
 void AbstractConfDialog::confReceived(const QList<DataTypes::DataRecV> &list)
 {
     S2::configV = list;
-    Fill();
+    // Fill();
 
     for (const auto id : m_list)
     {
@@ -66,6 +66,7 @@ void AbstractConfDialog::confReceived(const QList<DataTypes::DataRecV> &list)
             },
             record.getData());
     }
+    //  qDebug() << findChildren<IPCtrl *>() << findChildren<QWidget *>();
 }
 
 void AbstractConfDialog::confParametersListReceived(const DataTypes::ConfParametersListStruct &cfpl)

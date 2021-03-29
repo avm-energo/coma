@@ -87,7 +87,8 @@ QWidget *WidgetFactory::createWidget(BciNumber key, QWidget *parent)
                    [&](const auto &arg) {
                        qDebug("DefaultWidget");
                        using namespace delegate;
-                       widget = helper(arg, parent);
+                       widget = helper(arg, parent, key);
+
                        //                       if (std::is_same_v<decltype(arg), delegate::Item>)
                        //                           widget = helperItem(arg, parent);
                        //                       else
@@ -116,7 +117,9 @@ QWidget *WidgetFactory::createWidget(BciNumber key, QWidget *parent)
                        widget = new QWidget(parent);
                        QHBoxLayout *lyout = new QHBoxLayout;
                        lyout->addWidget(new QLabel(arg.desc, parent));
-                       lyout->addWidget(new CheckBoxGroup(arg.items, parent));
+                       auto group = new CheckBoxGroup(arg.items, parent);
+                       group->setObjectName(QString::number(key));
+                       lyout->addWidget(group);
                        widget->setLayout(lyout);
                    },
                    [&](const delegate::QComboBox &arg) {
@@ -133,15 +136,140 @@ QWidget *WidgetFactory::createWidget(BciNumber key, QWidget *parent)
     return widget;
 }
 
-QStandardItem *WidgetFactory::createItem(BciNumber key, QWidget *parent)
+bool WidgetFactory::fillBack(BciNumber key, QWidget *parent)
 {
-    QStandardItem *item = nullptr;
+    bool status = false;
     auto search = widgetMap.find(key);
     if (search == widgetMap.end())
     {
         qWarning() << "Not found" << key;
-        return item;
+        return status;
     }
+
+    const auto var = search->second;
+    std::visit(overloaded {
+                   [&](const auto &arg) {
+                       qDebug("DefaultWidget");
+                       using namespace delegate;
+
+                       switch (arg.type.hash())
+                       {
+                       case ctti::unnamed_type_id<IPCtrl>().hash():
+                       {
+                           auto widget = parent->findChild<IPCtrl *>(QString::number(key));
+                           if (!widget)
+                               return;
+                           S2::setRecordValue({ key, widget->getIP() });
+                           status = true;
+                           break;
+                       }
+                       case ctti::unnamed_type_id<QCheckBox>().hash():
+                       {
+
+                           auto widget = parent->findChild<QCheckBox *>(QString::number(key));
+                           if (!widget)
+                               return;
+                           bool state = widget->isChecked();
+                           auto record = S2::getRecord(key);
+                           std::visit(
+                               [&](auto &&arg) {
+                                   typedef std::remove_reference_t<decltype(arg)> internalType;
+                                   if constexpr (std::is_integral_v<internalType>)
+                                   {
+                                       internalType value = state;
+                                       record.setData(value);
+                                       status = true;
+                                   }
+                               },
+                               record.getData());
+
+                           break;
+                       }
+                       case ctti::unnamed_type_id<QLineEdit>().hash():
+                       {
+                           auto widget = parent->findChild<QLineEdit *>(QString::number(key));
+                           if (!widget)
+                               return;
+                           const QString text = widget->text();
+                           auto record = S2::getRecord(key);
+                           std::visit(
+                               [&](auto &&arg) {
+                                   typedef std::remove_reference_t<decltype(arg)> internalType;
+                                   if constexpr (!std::is_container<internalType>())
+                                   {
+                                       const auto value = QVariant(text).value<internalType>();
+                                       record.setData(value);
+                                       status = true;
+                                   }
+                                   if constexpr (std::is_container<internalType>())
+                                       if constexpr (!std::is_container<typename internalType::value_type>())
+                                       {
+                                           const auto value = QVariant(text).value<typename internalType::value_type>();
+                                           arg.at(0) = value;
+                                           record.setData(arg);
+                                           status = true;
+                                       }
+                               },
+                               record.getData());
+                           S2::setRecordValue(record);
+
+                           break;
+                       }
+
+                       default:
+                           break;
+                           Q_ASSERT(false && "False type");
+                       }
+                   },
+                   [&](const delegate::DoubleSpinBoxGroup &arg) {
+                       qDebug("DoubleSpinBoxGroupWidget");
+
+                       auto record = S2::getRecord(key);
+                       std::visit(
+                           [&](auto &&arg) {
+                               typedef std::remove_reference_t<decltype(arg)> internalType;
+                               if constexpr (std::is_container<internalType>())
+                                   if constexpr (sizeof(typename internalType::value_type) != 1
+                                       && !std::is_container<typename internalType::value_type>())
+                                   {
+                                       internalType buffer {};
+                                       status = WDFunc::SPBGData(parent, QString::number(key), buffer);
+                                       if (status)
+                                           S2::setRecordValue({ key, buffer });
+                                   }
+                           },
+                           record.getData());
+                   },
+                   [&](const delegate::DoubleSpinBoxWidget &arg) { qDebug("DoubleSpinBoxWidget"); },
+                   [&](const delegate::CheckBoxGroup &arg) { qDebug("CheckBoxGroupWidget"); },
+                   [&](const delegate::QComboBox &arg) { qDebug("QComboBox"); },
+                   [&](const delegate::Item &arg) {
+                       qDebug("Item");
+
+                       const QString widgetName(QString::number(arg.type.hash()) + QString::number(arg.parent));
+                       auto tableView = parent->findChild<QTableView *>(widgetName);
+                       if (!tableView)
+                           return;
+                       auto model = qobject_cast<QStandardItemModel *>(tableView->model());
+                       if (!model)
+                           return;
+                   },
+               },
+        var);
+    return status;
+}
+
+template <>
+QList<QStandardItem *> WidgetFactory::createItem(BciNumber key, const DataTypes::BYTE_8t &value, QWidget *parent)
+{
+    QList<QStandardItem *> items {};
+    auto search = widgetMap.find(key);
+    if (search == widgetMap.end())
+    {
+        qWarning() << "Not found" << key;
+        return items;
+    }
+
     const auto var = search->second;
     std::visit(overloaded {
                    [&](const auto &arg) {
@@ -149,13 +277,33 @@ QStandardItem *WidgetFactory::createItem(BciNumber key, QWidget *parent)
                        using namespace delegate;
                    },
 
-                   [&](const delegate::Item &arg) { qDebug("Item"); },
+                   [&](const delegate::Item &arg) {
+                       qDebug("Item");
+                       switch (arg.itemType)
+                       {
+                       case delegate::ItemType::ModbusItem:
+                       {
+                           const auto *master = reinterpret_cast<const Bci::ModbusItem *>(&value);
+                           items = {
+                               (new QStandardItem(QString::number(master->typedat))),        //
+                               (new QStandardItem(QString::number(master->parport.baud))),   //
+                               (new QStandardItem(QString::number(master->parport.parity))), //
+                               (new QStandardItem(QString::number(master->parport.stop))),   //
+                               (new QStandardItem(QString::number(master->per))),            //
+                               (new QStandardItem(QString::number(master->adr))),            //
+                               (new QStandardItem(QString::number(master->type.reg))),       //
+                               (new QStandardItem(QString::number(master->type.dat))),       //
+                               (new QStandardItem(QString::number(master->reg)))             //
+                           };
+                       }
+                       }
+                   },
                },
         var);
-    return nullptr;
+    return items;
 }
 
-template <> QWidget *WidgetFactory::helper(const delegate::Item &arg, QWidget *parent)
+template <> QWidget *WidgetFactory::helper(const delegate::Item &arg, QWidget *parent, BciNumber key)
 {
     QWidget *widget = nullptr;
     switch (arg.itemType)

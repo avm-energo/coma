@@ -5,6 +5,7 @@
 #include "../widgets/ipctrl.h"
 #include "../widgets/wd_func.h"
 
+#include <QStandardItemModel>
 #include <cstdint>
 #include <type_traits>
 constexpr int textColumn = 0;
@@ -124,7 +125,7 @@ class WidgetFactory
 {
     friend class Module;
 
-    template <typename T> static QWidget *helper(const T &arg, QWidget *parent)
+    template <typename T> static QWidget *helper(const T &arg, QWidget *parent, BciNumber key)
     {
         QWidget *widget = nullptr;
         switch (arg.type.hash())
@@ -134,13 +135,16 @@ class WidgetFactory
             widget = new QWidget(parent);
             QHBoxLayout *lyout = new QHBoxLayout;
             lyout->addWidget(new QLabel(arg.desc, parent));
-            lyout->addWidget(new IPCtrl(parent));
+            auto control = new IPCtrl(parent);
+            control->setObjectName(QString::number(key));
+            lyout->addWidget(control);
             widget->setLayout(lyout);
             break;
         }
         case ctti::unnamed_type_id<QCheckBox>().hash():
         {
             widget = new QCheckBox(arg.desc, parent);
+            widget->setObjectName(QString::number(key));
             break;
         }
         case ctti::unnamed_type_id<QLineEdit>().hash():
@@ -148,7 +152,9 @@ class WidgetFactory
             widget = new QWidget(parent);
             QHBoxLayout *lyout = new QHBoxLayout;
             lyout->addWidget(new QLabel(arg.desc, parent));
-            lyout->addWidget(new QLineEdit(parent));
+            auto lineEdit = new QLineEdit(parent);
+            lineEdit->setObjectName(QString::number(key));
+            lyout->addWidget(lineEdit);
             widget->setLayout(lyout);
             break;
         }
@@ -157,6 +163,7 @@ class WidgetFactory
             break;
             Q_ASSERT(false && "False type");
         }
+
         return widget;
     }
 
@@ -188,10 +195,12 @@ public:
                                auto widget = parent->findChild<IPCtrl *>(QString::number(key));
                                if (!widget)
                                    return;
-                               if constexpr (std::is_container<T>())
-                                   if constexpr (std::is_same<decltype(value), IPCtrl::value_type>::value)
-                                       widget->setIP(value);
-                               status = true;
+                               if constexpr (std::is_same<T, IPCtrl::container_type>::value)
+                               {
+                                   widget->setIP(value);
+                                   status = true;
+                               }
+
                                break;
                            }
                            case ctti::unnamed_type_id<QCheckBox>().hash():
@@ -200,8 +209,11 @@ public:
                                if (!widget)
                                    return;
                                if constexpr (!std::is_container<T>())
+                               {
                                    widget->setChecked(bool(value));
-                               status = true;
+                                   status = true;
+                               }
+
                                break;
                            }
                            case ctti::unnamed_type_id<QLineEdit>().hash():
@@ -210,8 +222,17 @@ public:
                                if (!widget)
                                    return;
                                if constexpr (!std::is_container<T>())
+                               {
                                    widget->setText(QString::number(value));
-                               status = true;
+                                   status = true;
+                               }
+                               if constexpr (std::is_container<T>())
+                                   if constexpr (std::is_integral<typename T::value_type>::value)
+                                   {
+                                       widget->setText(QString::number(value.front()));
+                                       status = true;
+                                   }
+
                                break;
                            }
 
@@ -224,36 +245,74 @@ public:
                            qDebug("DoubleSpinBoxGroupWidget");
                            if constexpr (std::is_container<T>())
                                if constexpr (sizeof(T::value_type) != 1 && !std::is_container<typename T::value_type>())
+                               {
                                    status = WDFunc::SetSPBGData(parent, QString::number(key), value);
+                                   status = true;
+                               }
                        },
                        [&](const delegate::DoubleSpinBoxWidget &arg) {
                            qDebug("DoubleSpinBoxWidget");
                            if constexpr (!std::is_container<T>())
+                           {
                                status = WDFunc::SetSPBData(parent, QString::number(key), value);
+                               status = true;
+                           }
                        },
                        [&](const delegate::CheckBoxGroup &arg) {
                            qDebug("CheckBoxGroupWidget");
-                           if constexpr (std::is_same<T, quint32>::value || std::is_same<T, quint64>::value)
+                           if constexpr (std::is_same<std::remove_const_t<T>, quint32>::value
+                               || std::is_same<std::remove_const_t<T>, quint64>::value)
+                           {
                                status = WDFunc::SetChBGData(parent, QString::number(key), value);
+                               status = true;
+                           }
                        },
                        [&](const delegate::QComboBox &arg) {
                            qDebug("QComboBox");
                            if constexpr (!std::is_container<T>())
+                           {
                                status = WDFunc::SetCBIndex(parent, QString::number(key), value);
+                               status = true;
+                           }
+                       },
+                       [&](const delegate::Item &arg) {
+                           qDebug("Item");
+
+                           const QString widgetName(QString::number(arg.type.hash()) + QString::number(arg.parent));
+                           auto tableView = parent->findChild<QTableView *>(widgetName);
+                           if (!tableView)
+                               return;
+                           auto model = qobject_cast<QStandardItemModel *>(tableView->model());
+                           if (!model)
+                               return;
+                           // Mountain bike or simple костыль
+                           // Excepts parent item key is N, when children start from N + 1
+                           int targetRow = key - arg.parent - 1;
+                           auto row = model->takeRow(targetRow);
+                           if (!row.isEmpty())
+                               qDeleteAll(row);
+                           row = createItem(key, value, parent);
+                           model->insertRow(targetRow, row);
+                           status = true;
                        },
                    },
             var);
         return status;
     }
-    static QStandardItem *createItem(BciNumber key, QWidget *parent = nullptr);
+    bool fillBack(BciNumber key, QWidget *parent);
 
 private:
-private:
+    template <typename T>
+    static QList<QStandardItem *> createItem(BciNumber key, const T &value, QWidget *parent = nullptr)
+    {
+        return {};
+    };
     static QWidget *createModbusView(QWidget *parent);
     static widgetMap widgetMap;
 };
-
-template <> QWidget *WidgetFactory::helper(const delegate::Item &arg, QWidget *parent);
+template <>
+QList<QStandardItem *> WidgetFactory::createItem(BciNumber key, const DataTypes::BYTE_8t &value, QWidget *parent);
+template <> QWidget *WidgetFactory::helper(const delegate::Item &arg, QWidget *parent, BciNumber key);
 
 class BaseConfig
 {
