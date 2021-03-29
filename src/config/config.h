@@ -29,8 +29,11 @@ public:
 
     static void removeFotter();
 
+    QObject *getParent() const;
+    void setParent(QObject *value);
+
 private:
-    QObject *ParentMainbl, *ParentCtype;
+    QObject *Parent /*, *Parent*/;
 };
 
 #endif // CONFIG

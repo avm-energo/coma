@@ -20,6 +20,8 @@ ConfKIVDialog::ConfKIVDialog(ConfigKIV *ckiv, QWidget *parent) : AbstractConfDia
         dTg_alarm, dIunb_pred, dIunb_alarm, GdC, GdTg, GdIunb, RTerm, W100, T_Data_Rec, LowU, IsU, IsIuIunb,
         Tevent_pred, Tevent_alarm, Tg_Pasp_ID, C_Pasp_ID, U2nom, MBMaster, MBMab1, MBMab2, MBMab3, MBMab4 };
     CKIV = ckiv;
+    CKIV->KxxConfig()->setParent(this);
+    CKIV->MainConfig()->setParent(this);
 }
 
 ConfKIVDialog::~ConfKIVDialog()
@@ -393,16 +395,16 @@ void ConfKIVDialog::SetupUI()
     QTabWidget *ConfTW = new QTabWidget;
     ConfTW->setObjectName("conftw");
 
-    ConfTW->addTab(analogWidget(), "Аналоговые");
+    // ConfTW->addTab(analogWidget(), "Аналоговые");
 
-    ConfTW->addTab(thresholdsWidget(), "Уставки");
+    //  ConfTW->addTab(thresholdsWidget(), "Уставки");
 
-    ConfTW->addTab(remainsWidget(), "Остальное");
+    //   ConfTW->addTab(remainsWidget(), "Остальное");
 
-    ConfTW->addTab(connectionWidget(), "Связь");
+    //  ConfTW->addTab(connectionWidget(), "Связь");
 
-    ConfTW->addTab(CKIV->KxxConfig()->ModbusWidget(this), "ModBusMaster");
-    ConfTW->addTab(CKIV->KxxConfig()->VariousWidget(this), "Общее");
+    //  ConfTW->addTab(CKIV->KxxConfig()->ModbusWidget(this), "ModBusMaster");
+    // ConfTW->addTab(CKIV->KxxConfig()->VariousWidget(this), "Общее");
 
     ConfTW->addTab(testWidget(), "Work in progress");
 

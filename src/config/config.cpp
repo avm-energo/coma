@@ -32,7 +32,7 @@ void Config::SetDefConf()
 
 QWidget *Config::MainWidget(QWidget *parent)
 {
-    ParentMainbl = parent;
+    Parent = parent;
     QWidget *w = new QWidget;
 
     const auto quint16_max = std::numeric_limits<quint16>::max();
@@ -67,7 +67,7 @@ QWidget *Config::MainWidget(QWidget *parent)
 
 QWidget *Config::TimeWidget(QWidget *parent)
 {
-    ParentCtype = parent;
+    Parent = parent;
     QWidget *w = new QWidget;
     QVBoxLayout *vlyout2 = new QVBoxLayout;
     QGridLayout *glyout = new QGridLayout;
@@ -112,18 +112,21 @@ void Config::Fill()
     if (s2typeM != Board::GetInstance().typeM())
         qCritical() << "Conflict typeB, module: " << QString::number(Board::GetInstance().typeM(), 16)
                     << " config: " << QString::number(s2typeM, 16);
-    SetSPBData<DWORD>(ParentMainbl, BciNumber::Abs_104);
-    SetSPBData<DWORD>(ParentMainbl, BciNumber::Cycle_104);
-    SetSPBData<DWORD>(ParentMainbl, BciNumber::T1_104);
-    SetSPBData<DWORD>(ParentMainbl, BciNumber::T2_104);
-    SetSPBData<DWORD>(ParentMainbl, BciNumber::T3_104);
-    SetSPBData<DWORD>(ParentMainbl, BciNumber::k_104);
-    SetSPBData<DWORD>(ParentMainbl, BciNumber::w_104);
+    SetSPBData<DWORD>(Parent, BciNumber::Abs_104);
+    SetSPBData<DWORD>(Parent, BciNumber::Cycle_104);
+    SetSPBData<DWORD>(Parent, BciNumber::T1_104);
+    SetSPBData<DWORD>(Parent, BciNumber::T2_104);
+    SetSPBData<DWORD>(Parent, BciNumber::T3_104);
+    SetSPBData<DWORD>(Parent, BciNumber::k_104);
+    SetSPBData<DWORD>(Parent, BciNumber::w_104);
 
-    CheckBoxGroup *checkBoxGroup = dynamic_cast<CheckBoxGroup *>(ParentMainbl->findChild<QWidget *>("ctype"));
+    CheckBoxGroup *checkBoxGroup
+        = dynamic_cast<CheckBoxGroup *>(Parent->findChild<QWidget *>(nameByValue(BciNumber::CType)));
     if (checkBoxGroup)
+    {
         checkBoxGroup->setBits(S2::getRecord(BciNumber::CType).value<DWORD>());
-    qDebug() << checkBoxGroup->metaObject()->className();
+        qDebug() << checkBoxGroup->metaObject()->className();
+    }
 }
 
 void Config::FillBack() const
@@ -133,15 +136,16 @@ void Config::FillBack() const
     S2::setRecordValue({ BciNumber::MTypeB_ID, DWORD(Board::GetInstance().typeB()) });
     S2::setRecordValue({ BciNumber::MTypeE_ID, DWORD(Board::GetInstance().typeM()) });
 
-    SPBDataS2<DWORD>(ParentMainbl, BciNumber::Abs_104);
-    SPBDataS2<DWORD>(ParentMainbl, BciNumber::Cycle_104);
-    SPBDataS2<DWORD>(ParentMainbl, BciNumber::T1_104);
-    SPBDataS2<DWORD>(ParentMainbl, BciNumber::T2_104);
-    SPBDataS2<DWORD>(ParentMainbl, BciNumber::T3_104);
-    SPBDataS2<DWORD>(ParentMainbl, BciNumber::k_104);
-    SPBDataS2<DWORD>(ParentMainbl, BciNumber::w_104);
+    SPBDataS2<DWORD>(Parent, BciNumber::Abs_104);
+    SPBDataS2<DWORD>(Parent, BciNumber::Cycle_104);
+    SPBDataS2<DWORD>(Parent, BciNumber::T1_104);
+    SPBDataS2<DWORD>(Parent, BciNumber::T2_104);
+    SPBDataS2<DWORD>(Parent, BciNumber::T3_104);
+    SPBDataS2<DWORD>(Parent, BciNumber::k_104);
+    SPBDataS2<DWORD>(Parent, BciNumber::w_104);
 
-    CheckBoxGroup *checkBoxGroup = dynamic_cast<CheckBoxGroup *>(ParentMainbl->findChild<QWidget *>("ctype"));
+    CheckBoxGroup *checkBoxGroup
+        = dynamic_cast<CheckBoxGroup *>(Parent->findChild<QWidget *>(nameByValue(BciNumber::CType)));
     if (checkBoxGroup)
         S2::setRecordValue({ BciNumber::CType, checkBoxGroup->bits<DWORD>() });
 }
@@ -157,4 +161,14 @@ void Config::removeFotter()
                          }),
         S2::config.end());
     Q_ASSERT(counter < 2);
+}
+
+QObject *Config::getParent() const
+{
+    return Parent;
+}
+
+void Config::setParent(QObject *value)
+{
+    Parent = value;
 }

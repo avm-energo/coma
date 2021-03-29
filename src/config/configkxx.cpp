@@ -58,15 +58,15 @@ void ConfigKxx::Fill()
     using namespace DataTypes;
     int cbidx = 0;
     //....................................................
-    SetSPBData<float>(ParentSetupBl, BciNumber::RTerm);
-    SetSPBData<float>(ParentSetupBl, BciNumber::W100);
-    SetSPBData<DWORD>(ParentSetupBl, BciNumber::Trele_pred);
-    SetSPBData<DWORD>(ParentSetupBl, BciNumber::Trele_alarm);
+    SetSPBData<float>(Parent, BciNumber::RTerm);
+    SetSPBData<float>(Parent, BciNumber::W100);
+    SetSPBData<DWORD>(Parent, BciNumber::Trele_pred);
+    SetSPBData<DWORD>(Parent, BciNumber::Trele_alarm);
 
     //.................................................................
 
     WDFunc::SetCBIndex(
-        ParentMB, nameByValue(BciNumber::MBMaster), bool(S2::getRecord(BciNumber::MBMaster).value<BYTE>()));
+        Parent, nameByValue(BciNumber::MBMaster), bool(S2::getRecord(BciNumber::MBMaster).value<BYTE>()));
 
     const auto master1 = S2::getRecord(BciNumber::MBMab1).value<BYTE_8t>();
     const auto master2 = S2::getRecord(BciNumber::MBMab2).value<BYTE_8t>();
@@ -75,7 +75,7 @@ void ConfigKxx::Fill()
 
     const QList arrays { master1, master2, master3, master4 };
 
-    QTableView *tv = ParentMB->findChild<QTableView *>();
+    QTableView *tv = Parent->findChild<QTableView *>();
     if (tv == nullptr)
     {
         qDebug("Пустой tv");
@@ -103,45 +103,43 @@ void ConfigKxx::Fill()
     //.................................................
 
     const auto StrPort = S2::getRecord(BciNumber::Port_ID).value<WORD_4t>();
-    WDFunc::SetLEData(ParentSetup, nameByValue(BciNumber::Port_ID), QString::number(StrPort.front()));
+    WDFunc::SetLEData(Parent, nameByValue(BciNumber::Port_ID), QString::number(StrPort.front()));
 
-    WDFunc::SetIPCtrlData(ParentSetup, nameByValue(BciNumber::IP_ID), S2::getRecord(BciNumber::IP_ID).value<BYTE_4t>());
+    WDFunc::SetIPCtrlData(Parent, nameByValue(BciNumber::IP_ID), S2::getRecord(BciNumber::IP_ID).value<BYTE_4t>());
 
-    WDFunc::SetIPCtrlData(
-        ParentSetup, nameByValue(BciNumber::SNTP_ID), S2::getRecord(BciNumber::SNTP_ID).value<BYTE_4t>());
+    WDFunc::SetIPCtrlData(Parent, nameByValue(BciNumber::SNTP_ID), S2::getRecord(BciNumber::SNTP_ID).value<BYTE_4t>());
 
-    WDFunc::SetIPCtrlData(ParentSetup, nameByValue(BciNumber::GW_ID), S2::getRecord(BciNumber::GW_ID).value<BYTE_4t>());
+    WDFunc::SetIPCtrlData(Parent, nameByValue(BciNumber::GW_ID), S2::getRecord(BciNumber::GW_ID).value<BYTE_4t>());
 
-    WDFunc::SetIPCtrlData(
-        ParentSetup, nameByValue(BciNumber::Mask_ID), S2::getRecord(BciNumber::Mask_ID).value<BYTE_4t>());
+    WDFunc::SetIPCtrlData(Parent, nameByValue(BciNumber::Mask_ID), S2::getRecord(BciNumber::Mask_ID).value<BYTE_4t>());
 
     const auto StrBaud = S2::getRecord(BciNumber::Baud_ID).value<DWORD>();
     cbidx = m_baudList.indexOf(QString::number(StrBaud));
-    WDFunc::SetCBIndex(ParentSetup, nameByValue(BciNumber::Baud_ID), cbidx != -1 ? cbidx : 0);
+    WDFunc::SetCBIndex(Parent, nameByValue(BciNumber::Baud_ID), cbidx != -1 ? cbidx : 0);
 
     const auto parity = S2::getRecord(BciNumber::Parity_ID).value<BYTE>();
-    WDFunc::SetCBIndex(ParentSetup, nameByValue(BciNumber::Parity_ID), parity > 2 ? 0 : parity);
+    WDFunc::SetCBIndex(Parent, nameByValue(BciNumber::Parity_ID), parity > 2 ? 0 : parity);
     const auto stopbit = S2::getRecord(BciNumber::stopbit_ID).value<BYTE>();
-    WDFunc::SetCBIndex(ParentSetup, nameByValue(BciNumber::stopbit_ID), stopbit);
-    WDFunc::SetSPBData(ParentSetup, nameByValue(BciNumber::adrMB_ID), S2::getRecord(BciNumber::adrMB_ID).value<BYTE>());
+    WDFunc::SetCBIndex(Parent, nameByValue(BciNumber::stopbit_ID), stopbit);
+    WDFunc::SetSPBData(Parent, nameByValue(BciNumber::adrMB_ID), S2::getRecord(BciNumber::adrMB_ID).value<BYTE>());
 }
 
 void ConfigKxx::FillBack() const
 {
     //.......................................................................
     using namespace DataTypes;
-    SPBDataS2<float>(ParentSetupBl, BciNumber::RTerm);
-    SPBDataS2<float>(ParentSetupBl, BciNumber::W100);
-    SPBDataS2<DWORD>(ParentSetupBl, BciNumber::Trele_pred);
-    SPBDataS2<DWORD>(ParentSetupBl, BciNumber::Trele_alarm);
+    SPBDataS2<float>(Parent, BciNumber::RTerm);
+    SPBDataS2<float>(Parent, BciNumber::W100);
+    SPBDataS2<DWORD>(Parent, BciNumber::Trele_pred);
+    SPBDataS2<DWORD>(Parent, BciNumber::Trele_alarm);
 
     //..................................................................
 
-    int cbidx = WDFunc::CBIndex(ParentMB, nameByValue(BciNumber::MBMaster));
+    int cbidx = WDFunc::CBIndex(Parent, nameByValue(BciNumber::MBMaster));
     Q_ASSERT(cbidx != -1);
     S2::setRecordValue({ BciNumber::MBMaster, BYTE(cbidx) });
 
-    QTableView *tv = ParentMB->findChild<QTableView *>();
+    QTableView *tv = Parent->findChild<QTableView *>();
     if (tv == nullptr)
     {
         qDebug("Пустой tv");
@@ -217,34 +215,34 @@ void ConfigKxx::FillBack() const
 
     //................................................................
 
-    S2::setRecordValue({ BciNumber::IP_ID, WDFunc::IPCtrlData(ParentSetup, nameByValue(BciNumber::IP_ID)) });
+    S2::setRecordValue({ BciNumber::IP_ID, WDFunc::IPCtrlData(Parent, nameByValue(BciNumber::IP_ID)) });
 
-    S2::setRecordValue({ BciNumber::SNTP_ID, WDFunc::IPCtrlData(ParentSetup, nameByValue(BciNumber::SNTP_ID)) });
+    S2::setRecordValue({ BciNumber::SNTP_ID, WDFunc::IPCtrlData(Parent, nameByValue(BciNumber::SNTP_ID)) });
 
-    S2::setRecordValue({ BciNumber::GW_ID, WDFunc::IPCtrlData(ParentSetup, nameByValue(BciNumber::GW_ID)) });
+    S2::setRecordValue({ BciNumber::GW_ID, WDFunc::IPCtrlData(Parent, nameByValue(BciNumber::GW_ID)) });
 
-    S2::setRecordValue({ BciNumber::Mask_ID, WDFunc::IPCtrlData(ParentSetup, nameByValue(BciNumber::Mask_ID)) });
+    S2::setRecordValue({ BciNumber::Mask_ID, WDFunc::IPCtrlData(Parent, nameByValue(BciNumber::Mask_ID)) });
 
-    QString StrPort = WDFunc::LEData(ParentSetup, nameByValue(BciNumber::Port_ID));
+    QString StrPort = WDFunc::LEData(Parent, nameByValue(BciNumber::Port_ID));
     WORD_4t portArray {};
     portArray.at(0) = StrPort.toInt();
     S2::setRecordValue({ BciNumber::Port_ID, portArray });
 
-    cbidx = WDFunc::CBIndex(ParentSetup, nameByValue(BciNumber::Baud_ID));
+    cbidx = WDFunc::CBIndex(Parent, nameByValue(BciNumber::Baud_ID));
     S2::setRecordValue({ BciNumber::Baud_ID, DWORD(m_baudList.at(cbidx).toInt()) });
 
-    cbidx = WDFunc::CBIndex(ParentSetup, nameByValue(BciNumber::Parity_ID));
+    cbidx = WDFunc::CBIndex(Parent, nameByValue(BciNumber::Parity_ID));
     S2::setRecordValue({ BciNumber::Parity_ID, BYTE(CommandsMBS::Parity(cbidx)) });
 
-    cbidx = WDFunc::CBIndex(ParentSetup, nameByValue(BciNumber::stopbit_ID));
+    cbidx = WDFunc::CBIndex(Parent, nameByValue(BciNumber::stopbit_ID));
     S2::setRecordValue({ BciNumber::stopbit_ID, BYTE(CommandsMBS::StopBits(cbidx)) });
-    S2::setRecordValue({ BciNumber::adrMB_ID, WDFunc::SPBData<BYTE>(ParentSetup, nameByValue(BciNumber::adrMB_ID)) });
+    S2::setRecordValue({ BciNumber::adrMB_ID, WDFunc::SPBData<BYTE>(Parent, nameByValue(BciNumber::adrMB_ID)) });
 }
 
 QWidget *ConfigKxx::ComParam(QWidget *parent)
 {
     using namespace DataTypes;
-    ParentSetup = parent;
+    Parent = parent;
     QWidget *w = new QWidget;
     QVBoxLayout *vlyout1 = new QVBoxLayout;
     QVBoxLayout *vlyout2 = new QVBoxLayout;
@@ -355,7 +353,7 @@ inline QWidget *createModbusView(QWidget *parent)
 
 QWidget *ConfigKxx::ModbusWidget(QWidget *parent)
 {
-    ParentMB = parent;
+    Parent = parent;
     QWidget *w = new QWidget;
     QStackedWidget *qswt = new QStackedWidget;
     qswt->setObjectName("qswt");
@@ -437,7 +435,7 @@ QWidget *ConfigKxx::ModbusWidget(QWidget *parent)
 
 QWidget *ConfigKxx::VariousWidget(QWidget *parent)
 {
-    ParentSetupBl = parent;
+    Parent = parent;
     QWidget *w = new QWidget;
     QGroupBox *gb = new QGroupBox();
     QVBoxLayout *vlyout1 = new QVBoxLayout;
@@ -470,11 +468,21 @@ QWidget *ConfigKxx::VariousWidget(QWidget *parent)
     return w;
 }
 
+QObject *ConfigKxx::getParent() const
+{
+    return Parent;
+}
+
+void ConfigKxx::setParent(QObject *value)
+{
+    Parent = value;
+}
+
 void ConfigKxx::ChangeModbusGUI(int num)
 {
     using namespace DataTypes;
     S2::setRecordValue({ BciNumber::MBMaster, BYTE(num) });
-    QStackedWidget *QSWT = ParentMB->findChild<QStackedWidget *>("qswt");
+    QStackedWidget *QSWT = Parent->findChild<QStackedWidget *>("qswt");
 
     if (QSWT != nullptr)
         QSWT->setCurrentWidget(WidgetList.at(num));
