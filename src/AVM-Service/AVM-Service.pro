@@ -1,6 +1,4 @@
 include( ../common.pri )
-CONFIG += conan_basic_setup
-include($${PWD}/../../conanbuildinfo.pri)
 
 QT       += core gui printsupport network serialport widgets concurrent testlib xml
 QT.testlib.CONFIG -= console

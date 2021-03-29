@@ -1,39 +1,26 @@
 #pragma once
 #include <QCheckBox>
-#include <boost/dynamic_bitset.hpp>
+
+class CheckBoxGroupPrivate;
 class CheckBoxGroup : public QWidget
 {
     Q_OBJECT
+    Q_DECLARE_PRIVATE(CheckBoxGroup);
+
 public:
     CheckBoxGroup(const QStringList &desc, const QList<int> &ignorePos, QWidget *parent = nullptr);
     CheckBoxGroup(const QStringList &desc, QWidget *parent = nullptr);
-    template <typename T> void setBits(const T value)
-    {
-        m_bitset = boost::dynamic_bitset(sizeof(T), value);
-        [[maybe_unused]] const T test = (T)m_bitset.to_ulong();
-        QList<QCheckBox *> checkBoxes = findChildren<QCheckBox *>();
-        for (QCheckBox *checkBox : checkBoxes)
-        {
-            bool status = false;
-            auto number = checkBox->objectName().toUInt(&status);
-            if (!status)
-                continue;
-            checkBox->setChecked(m_bitset.test(number));
-        }
-    }
-    template <typename T> T bits() const
-    {
-        const T value = m_bitset.to_ulong();
-        return value;
-    }
+    template <typename T> void setBits(const T value);
 
-    QList<int> ignorePositions() const
-    {
-        return m_hiddenPositions;
-    }
+    template <typename T> T bits();
+
+protected:
+    CheckBoxGroupPrivate *const d_ptr;
+    CheckBoxGroup(CheckBoxGroupPrivate &dd, QObject *parent);
 
 private:
-    QList<int> m_hiddenPositions;
-    boost::dynamic_bitset<> m_bitset;
-    QStringList m_description;
 };
+template <> void CheckBoxGroup::setBits(const quint64 value);
+template <> void CheckBoxGroup::setBits(const quint32 value);
+template <> quint32 CheckBoxGroup::bits();
+template <> quint64 CheckBoxGroup::bits();

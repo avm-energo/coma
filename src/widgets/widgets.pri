@@ -4,6 +4,7 @@ SOURCES += \
     $$PWD/alarmwidget.cpp  \
     $$PWD/basespinboxgroup.cpp \
     $$PWD/checkboxgroup.cpp \
+    $$PWD/checkboxgroup_p.cpp \
     $$PWD/coma.cpp \
   #  $$PWD/doublespinboxgroup.cpp \
     $$PWD/ecombobox.cpp  \
@@ -32,6 +33,7 @@ HEADERS += \
     $$PWD/alarmwidget.h \
     $$PWD/basespinboxgroup.h \
     $$PWD/checkboxgroup.h \
+    $$PWD/checkboxgroup_p.h \
     $$PWD/coma.h \
     #$$PWD/doublespinboxgroup.h \
     $$PWD/ecombobox.h \
