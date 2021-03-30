@@ -102,7 +102,7 @@ public:
 
     static bool SetSPBData(QObject *w, const QString &spbname, const double &spbvalue);
     template <size_t N, typename T>
-    static bool SetSPBGData(QWidget *w, const QString &spbname, const std::array<T, N> spbvalue)
+    static bool SetSPBGData(const QWidget *w, const QString &spbname, const std::array<T, N> spbvalue)
     {
         auto *spbg = static_cast<DoubleSpinBoxGroup *>(w->findChild<QWidget *>(spbname));
         if (spbg == nullptr)
@@ -110,7 +110,8 @@ public:
         spbg->setValue(std::vector<float>(spbvalue.cbegin(), spbvalue.cend()));
         return true;
     }
-    template <typename T> static bool SetSPBGData(QWidget *w, const QString &spbname, const std::vector<T> &spbvalue)
+    template <typename T>
+    static bool SetSPBGData(const QWidget *w, const QString &spbname, const std::vector<T> &spbvalue)
     {
         auto *spbg = dynamic_cast<DoubleSpinBoxGroup *>(w->findChild<QWidget *>(spbname));
         if (spbg == nullptr)
@@ -118,7 +119,7 @@ public:
         spbg->setValue(spbvalue);
         return true;
     }
-    template <typename T> static bool SetSPBGData(QWidget *w, const QString &spbname, const QList<T> &spbvalue)
+    template <typename T> static bool SetSPBGData(const QWidget *w, const QString &spbname, const QList<T> &spbvalue)
     {
         auto *spbg = dynamic_cast<DoubleSpinBoxGroup *>(w->findChild<QWidget *>(spbname));
         if (spbg == nullptr)
@@ -156,7 +157,7 @@ public:
             spbvalue = {};
             return false;
         }
-        std::copy_n(spbg->value().begin(), N, spbvalue.begin());
+        std::copy_n(spbg->value().cbegin(), N, spbvalue.begin());
         // spbvalue = spbg->value();
         return true;
     }
