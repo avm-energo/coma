@@ -68,7 +68,7 @@ public:
     static QComboBox *NewCB2(QWidget *parent, const QString &cbname, const QStringList &cbsl);
     static QComboBox *NewCB2(QWidget *parent, const QStringList &cbsl);
     static bool SetCBData(QWidget *w, const QString &cbname, const QString &cbvalue);
-    static bool SetCBIndex(QObject *w, const QString &cbname, int index);
+    static bool SetCBIndex(const QObject *w, const QString &cbname, int index);
     static bool SetCBColor(QWidget *w, const QString &cbname, const QString &color);
     static QString CBData(QWidget *w, const QString &cbname);
     static int CBIndex(const QObject *w, const QString &cbname)
@@ -100,7 +100,7 @@ public:
         return spinBoxGroup;
     }
 
-    static bool SetSPBData(QObject *w, const QString &spbname, const double &spbvalue);
+    static bool SetSPBData(const QObject *w, const QString &spbname, const double &spbvalue);
     template <size_t N, typename T>
     static bool SetSPBGData(const QWidget *w, const QString &spbname, const std::array<T, N> spbvalue)
     {
