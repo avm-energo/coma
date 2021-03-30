@@ -145,6 +145,7 @@
 		<type>DWORD</type>
 		<widget>
 			<type>QComboBox</type>
+			<field>data</field>
 			<string>Скорость RS485 интерфейса</string>
 			<string-array>
 				<item>1200</item>

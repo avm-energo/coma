@@ -254,7 +254,7 @@ QComboBox *WDFunc::NewCB2(QWidget *parent, const QStringList &cbsl)
     return cb;
 }
 
-QString WDFunc::CBData(QWidget *w, const QString &cbname)
+QString WDFunc::CBData(const QWidget *w, const QString &cbname)
 {
     QComboBox *cb = w->findChild<QComboBox *>(cbname);
     if (cb == nullptr)
@@ -280,7 +280,7 @@ QString WDFunc::CBData(QWidget *w, const QString &cbname)
 //    return QMetaObject::Connection();
 //}
 
-bool WDFunc::SetCBData(QWidget *w, const QString &cbname, const QString &cbvalue)
+bool WDFunc::SetCBData(const QWidget *w, const QString &cbname, const QString &cbvalue)
 {
     QComboBox *cb = w->findChild<QComboBox *>(cbname);
     if (cb == nullptr)
@@ -299,15 +299,15 @@ bool WDFunc::SetCBIndex(const QObject *w, const QString &cbname, int index)
         cb->setCurrentIndex(index);
         return true;
     }
-    else
-    {
-        int newIndex = cb->findText(QString::number(index));
-        if (newIndex != -1)
-        {
-            cb->setCurrentIndex(newIndex);
-            return true;
-        }
-    }
+    //    else
+    //    {
+    //        int newIndex = cb->findText(QString::number(index));
+    //        if (newIndex != -1)
+    //        {
+    //            cb->setCurrentIndex(newIndex);
+    //            return true;
+    //        }
+    //    }
     return false;
 }
 

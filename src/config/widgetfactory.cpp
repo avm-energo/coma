@@ -248,7 +248,7 @@ static bool fillBackChBG(BciNumber key, const QWidget *parent)
     return status;
 }
 
-static bool fillBackComboBox(BciNumber key, const QWidget *parent)
+static bool fillBackComboBox(BciNumber key, const QWidget *parent, delegate::QComboBox::PrimaryField field)
 {
     bool status = false;
     auto record = S2::getRecord(key);
@@ -258,11 +258,23 @@ static bool fillBackComboBox(BciNumber key, const QWidget *parent)
             qDebug() << typeid(arg).name();
             if constexpr (std::is_unsigned_v<internalType>)
             {
-                internalType buffer = 0;
-                int status_code = WDFunc::CBIndex(parent, QString::number(key));
-                if (status_code == -1)
-                    return;
-                // status = WDFunc::ChBData(parent, QString::number(key), buffer);
+                switch (field)
+                {
+                case delegate::QComboBox::data:
+                {
+                    auto buffer = WDFunc::CBData<internalType>(parent, QString::number(key));
+                    S2::setRecordValue({ key, buffer });
+                }
+                default:
+                {
+                    int status_code = WDFunc::CBIndex(parent, QString::number(key));
+                    if (status_code == -1)
+                        return;
+                    S2::setRecordValue({ key, static_cast<internalType>(status_code) });
+                }
+                }
+                status = true;
+                //
                 //   if (status)
                 //     S2::setRecordValue({ key, buffer });
             }
@@ -324,7 +336,7 @@ bool WidgetFactory::fillBack(BciNumber key, const QWidget *parent)
                    },
                    [&](const delegate::QComboBox &arg) {
                        qDebug("QComboBox");
-                       status = fillBackComboBox(key, parent);
+                       status = fillBackComboBox(key, parent, arg.primaryField);
                    },
                    [&](const delegate::Item &arg) {
                        qDebug("Item");

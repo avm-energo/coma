@@ -67,10 +67,15 @@ public:
         QWidget *parent, const QString &cbname, const QStringList &cbsl, const QString &cbcolor = "");
     static QComboBox *NewCB2(QWidget *parent, const QString &cbname, const QStringList &cbsl);
     static QComboBox *NewCB2(QWidget *parent, const QStringList &cbsl);
-    static bool SetCBData(QWidget *w, const QString &cbname, const QString &cbvalue);
+    static bool SetCBData(const QWidget *w, const QString &cbname, const QString &cbvalue);
     static bool SetCBIndex(const QObject *w, const QString &cbname, int index);
     static bool SetCBColor(QWidget *w, const QString &cbname, const QString &color);
-    static QString CBData(QWidget *w, const QString &cbname);
+    static QString CBData(const QWidget *w, const QString &cbname);
+    template <typename T> static T CBData(const QWidget *w, const QString &cbname)
+    {
+        auto buffer = CBData(w, cbname);
+        return QVariant(buffer).value<T>();
+    }
     static int CBIndex(const QObject *w, const QString &cbname)
     {
         QComboBox *cb = w->findChild<QComboBox *>(cbname);

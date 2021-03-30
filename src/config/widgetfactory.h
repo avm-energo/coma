@@ -55,11 +55,18 @@ struct CheckBoxGroup : Widget, Group
     {
     }
 };
+
 struct QComboBox : Widget, Group
 {
+    enum PrimaryField : bool
+    {
+        index = 0,
+        data = 1
+    };
     QComboBox(const ctti::unnamed_type_id_t type_) : Widget(type_)
     {
     }
+    PrimaryField primaryField = index;
 };
 struct Item : Widget
 {
@@ -248,7 +255,7 @@ public:
                                Q_ASSERT(false && "False type");
                            }
                        },
-                       [&](const delegate::DoubleSpinBoxGroup &arg) {
+                       [&]([[maybe_unused]] const delegate::DoubleSpinBoxGroup &arg) {
                            qDebug("DoubleSpinBoxGroupWidget");
                            if constexpr (std::is_container<T>())
                                if constexpr (sizeof(T::value_type) != 1 && !std::is_container<typename T::value_type>())
@@ -256,14 +263,14 @@ public:
                                    status = WDFunc::SetSPBGData(parent, QString::number(key), value);
                                }
                        },
-                       [&](const delegate::DoubleSpinBoxWidget &arg) {
+                       [&]([[maybe_unused]] const delegate::DoubleSpinBoxWidget &arg) {
                            qDebug("DoubleSpinBoxWidget");
                            if constexpr (!std::is_container<T>())
                            {
                                status = WDFunc::SetSPBData(parent, QString::number(key), value);
                            }
                        },
-                       [&](const delegate::CheckBoxGroup &arg) {
+                       [&]([[maybe_unused]] const delegate::CheckBoxGroup &arg) {
                            qDebug("CheckBoxGroupWidget");
                            if constexpr (std::is_same<std::remove_const_t<T>, quint32>::value
                                || std::is_same<std::remove_const_t<T>, quint64>::value)
@@ -275,7 +282,21 @@ public:
                            qDebug("QComboBox");
                            if constexpr (!std::is_container<T>())
                            {
-                               status = WDFunc::SetCBIndex(parent, QString::number(key), value);
+                               switch (arg.primaryField)
+                               {
+                               case delegate::QComboBox::data:
+                               {
+                                   auto index = arg.items.indexOf(QString::number(value));
+                                   if (index != -1)
+                                       status = WDFunc::SetCBIndex(parent, QString::number(key), index);
+                                   break;
+                               }
+                               default:
+                               {
+                                   status = WDFunc::SetCBIndex(parent, QString::number(key), value);
+                                   break;
+                               }
+                               }
                            }
                        },
                        [&](const delegate::Item &arg) {
@@ -289,8 +310,11 @@ public:
     bool fillBack(BciNumber key, const QWidget *parent);
 
 private:
+    // Default template like a dummy function for sfinae
+    // We will be here if specialisation doesn't exist for this T
     template <typename T>
-    QList<QStandardItem *> createItem(BciNumber key, const T &value, const QWidget *parent = nullptr)
+    QList<QStandardItem *> createItem([[maybe_unused]] BciNumber key, [[maybe_unused]] const T &value,
+        [[maybe_unused]] const QWidget *parent = nullptr)
     {
         return {};
     };

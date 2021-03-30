@@ -272,6 +272,10 @@ delegate::itemVariant XmlParser::parseWidget(QDomElement domElement)
 
         widget.desc = description;
         widget.items = items;
+        QDomElement childElement = domElement.firstChildElement("field");
+        // QComboBox depends on index by default
+        widget.primaryField
+            = childElement.text().contains("data") ? delegate::QComboBox::data : delegate::QComboBox::index;
         return widget;
     }
 
