@@ -351,6 +351,8 @@ valueType DataRecV::getData() const
 
 void DataRecV::setData(const valueType &value)
 {
+    // not true setter, only swapper for same internal types
+    assert(data.index() == value.index());
     data = value;
 }
 }
