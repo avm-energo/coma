@@ -10,7 +10,8 @@ SOURCES += \
     $$PWD/configkxx.cpp \
     $$PWD/confkdvdialog.cpp \
     $$PWD/confkivdialog.cpp \
-    $$PWD/confktfdialog.cpp
+    $$PWD/confktfdialog.cpp \
+    $$PWD/widgetfactory.cpp
 
 HEADERS += \
     $$PWD/abstractconfdialog.h \
@@ -24,4 +25,5 @@ HEADERS += \
     $$PWD/configkxx.h \
     $$PWD/confkdvdialog.h \
     $$PWD/confkivdialog.h \
-    $$PWD/confktfdialog.h
+    $$PWD/confktfdialog.h \
+    $$PWD/widgetfactory.h

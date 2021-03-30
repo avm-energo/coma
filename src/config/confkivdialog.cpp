@@ -38,9 +38,18 @@ void ConfKIVDialog::Fill()
 
 void ConfKIVDialog::FillBack() const
 {
-    CKIV->MainConfig()->FillBack();
-    CKIV->KxxConfig()->FillBack();
-    FillBackKiv();
+    WidgetFactory factory;
+    for (const auto id : m_list)
+    {
+        bool status = factory.fillBack(id, this);
+        if (!status)
+        {
+            qWarning() << "Couldnt fill back item from widget: " << id;
+        }
+    }
+    // CKIV->MainConfig()->FillBack();
+    //  CKIV->KxxConfig()->FillBack();
+    // FillBackKiv();
 }
 
 QWidget *ConfKIVDialog::analogWidget()
@@ -262,39 +271,43 @@ QWidget *ConfKIVDialog::testWidget()
     for (const auto i : (m_list))
     {
         QWidget *widget = factory.createWidget(i, this);
-
-        int group = i / 10;
-        if (widget)
+        if (!widget)
         {
-
-            //            for (const auto *i : widget->findChildren<QWidget *>())
-            //            {
-            //                qDebug() << i->metaObject()->className() << i->sizePolicy().horizontalPolicy();
-            //            }
-            QLayoutItem *child = vlyout->itemAtPosition(group, 0);
-            QGroupBox *subBox = nullptr;
-            if (!child)
-            {
-                subBox = new QGroupBox("Группа " + QString::number(group), this);
-                subBox->setLayout(new QVBoxLayout);
-            }
-            else
-            {
-                subBox = qobject_cast<QGroupBox *>(child->widget());
-                vlyout->removeWidget(subBox);
-            }
-            // if (!subBox)
-            // {
-            // sublyout = new QVBoxLayout;
-            //  subBox = new QGroupBox(this);
-
-            //  vlyout->addLayout(sublyout);
-            // }
-            QLayout *lyout = subBox->layout();
-            lyout->addWidget(widget);
-            subBox->setLayout(lyout);
-            vlyout->addWidget(subBox, group, 0);
+            qWarning() << "Bad config widget for item: " << QString::number(i);
+            continue;
         }
+        int group = i / 10;
+        // if (widget)
+        //  {
+
+        //            for (const auto *i : widget->findChildren<QWidget *>())
+        //            {
+        //                qDebug() << i->metaObject()->className() << i->sizePolicy().horizontalPolicy();
+        //            }
+        QLayoutItem *child = vlyout->itemAtPosition(group, 0);
+        QGroupBox *subBox = nullptr;
+        if (!child)
+        {
+            subBox = new QGroupBox("Группа " + QString::number(group), this);
+            subBox->setLayout(new QVBoxLayout);
+        }
+        else
+        {
+            subBox = qobject_cast<QGroupBox *>(child->widget());
+            vlyout->removeWidget(subBox);
+        }
+        // if (!subBox)
+        // {
+        // sublyout = new QVBoxLayout;
+        //  subBox = new QGroupBox(this);
+
+        //  vlyout->addLayout(sublyout);
+        // }
+        QLayout *lyout = subBox->layout();
+        lyout->addWidget(widget);
+        subBox->setLayout(lyout);
+        vlyout->addWidget(subBox, group, 0);
+        // }
         //        else
         //        {
         //            WidgetFactory::createItem(i, this);

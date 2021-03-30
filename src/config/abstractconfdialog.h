@@ -1,8 +1,8 @@
 #pragma once
-
 #include "../module/modules.h"
 #include "../widgets/udialog.h"
 #include "baseconfig.h"
+#include "widgetfactory.h"
 
 #include <set>
 //#define MAXBYTEARRAY 65535

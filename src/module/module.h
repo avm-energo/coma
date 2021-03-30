@@ -2,6 +2,7 @@
 #define MODULEFABRIC_H
 
 #include "../config/baseconfig.h"
+#include "../config/widgetfactory.h"
 #include "../gen/datatypes.h"
 #include "../module/alarmstateall.h"
 #include "../widgets/alarmwidget.h"

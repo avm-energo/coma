@@ -62,7 +62,11 @@ void AbstractConfDialog::confReceived(const QList<DataTypes::DataRecV> &list)
         std::visit(
             [=](const auto &&value) {
                 WidgetFactory factory;
-                factory.fillWidget(this, static_cast<BciNumber>(record.getId()), value);
+                bool status = factory.fillWidget(this, static_cast<BciNumber>(record.getId()), value);
+                if (!status)
+                {
+                    qWarning() << "Couldnt fill widget for item: " << record.getId();
+                }
             },
             record.getData());
     }
