@@ -81,12 +81,16 @@ QWidget *WidgetFactory::createWidget(BciNumber key, QWidget *parent)
     const auto var = search->second;
     std::visit(overloaded {
                    [&](const auto &arg) {
+#ifdef DEBUG_FACTORY
                        qDebug("DefaultWidget");
+#endif
                        using namespace delegate;
                        widget = helper(arg, parent, key);
                    },
                    [&](const delegate::DoubleSpinBoxGroup &arg) {
+#ifdef DEBUG_FACTORY
                        qDebug("DoubleSpinBoxGroupWidget");
+#endif
                        widget = new QWidget(parent);
                        QHBoxLayout *lyout = new QHBoxLayout;
                        lyout->addWidget(new QLabel(arg.desc, parent));
@@ -95,7 +99,9 @@ QWidget *WidgetFactory::createWidget(BciNumber key, QWidget *parent)
                        widget->setLayout(lyout);
                    },
                    [&](const delegate::DoubleSpinBoxWidget &arg) {
+#ifdef DEBUG_FACTORY
                        qDebug("DoubleSpinBoxWidget");
+#endif
                        widget = new QWidget(parent);
                        QHBoxLayout *lyout = new QHBoxLayout;
                        lyout->addWidget(new QLabel(arg.desc, parent));
@@ -103,7 +109,9 @@ QWidget *WidgetFactory::createWidget(BciNumber key, QWidget *parent)
                        widget->setLayout(lyout);
                    },
                    [&](const delegate::CheckBoxGroup &arg) {
+#ifdef DEBUG_FACTORY
                        qDebug("CheckBoxGroupWidget");
+#endif
                        // Q_ASSERT(desc.count() == arg.count);
                        widget = new QWidget(parent);
                        QHBoxLayout *lyout = new QHBoxLayout;
@@ -114,7 +122,9 @@ QWidget *WidgetFactory::createWidget(BciNumber key, QWidget *parent)
                        widget->setLayout(lyout);
                    },
                    [&](const delegate::QComboBox &arg) {
+#ifdef DEBUG_FACTORY
                        qDebug("QComboBox");
+#endif
                        // Q_ASSERT(desc.count() == arg.count);
                        widget = new QWidget(parent);
                        QHBoxLayout *lyout = new QHBoxLayout;
@@ -155,6 +165,7 @@ static bool fillBackCheckBox(BciNumber key, const QWidget *parent)
             }
         },
         record.getData());
+    S2::setRecordValue(record);
     return status;
 }
 
@@ -255,7 +266,6 @@ static bool fillBackComboBox(BciNumber key, const QWidget *parent, delegate::QCo
     std::visit(
         [&](auto &&arg) {
             typedef std::remove_reference_t<decltype(arg)> internalType;
-            qDebug() << typeid(arg).name();
             if constexpr (std::is_unsigned_v<internalType>)
             {
                 switch (field)
@@ -264,6 +274,7 @@ static bool fillBackComboBox(BciNumber key, const QWidget *parent, delegate::QCo
                 {
                     auto buffer = WDFunc::CBData<internalType>(parent, QString::number(key));
                     S2::setRecordValue({ key, buffer });
+                    break;
                 }
                 default:
                 {
@@ -271,6 +282,7 @@ static bool fillBackComboBox(BciNumber key, const QWidget *parent, delegate::QCo
                     if (status_code == -1)
                         return;
                     S2::setRecordValue({ key, static_cast<internalType>(status_code) });
+                    break;
                 }
                 }
                 status = true;
@@ -282,6 +294,11 @@ static bool fillBackComboBox(BciNumber key, const QWidget *parent, delegate::QCo
         record.getData());
     return status;
 }
+
+// template <typename T> bool fillBackItem(BciNumber key, const QWidget *parent, BciNumber parentKey)
+//{
+//    return true;
+//}
 
 bool WidgetFactory::fillBack(BciNumber key, const QWidget *parent)
 {
@@ -296,7 +313,9 @@ bool WidgetFactory::fillBack(BciNumber key, const QWidget *parent)
     const auto var = search->second;
     std::visit(overloaded {
                    [&](const auto &arg) {
+#ifdef DEBUG_FACTORY
                        qDebug("DefaultWidget");
+#endif
                        using namespace delegate;
 
                        switch (arg.type.hash())
@@ -323,31 +342,40 @@ bool WidgetFactory::fillBack(BciNumber key, const QWidget *parent)
                        }
                    },
                    [&](const delegate::DoubleSpinBoxGroup &arg) {
+#ifdef DEBUG_FACTORY
                        qDebug("DoubleSpinBoxGroupWidget");
+#endif
                        status = fillBackSPBG(key, parent);
                    },
                    [&](const delegate::DoubleSpinBoxWidget &arg) {
+#ifdef DEBUG_FACTORY
                        qDebug("DoubleSpinBoxWidget");
+#endif
                        status = fillBackSPB(key, parent);
                    },
                    [&](const delegate::CheckBoxGroup &arg) {
+#ifdef DEBUG_FACTORY
                        qDebug("CheckBoxGroupWidget");
+#endif
                        status = fillBackChBG(key, parent);
                    },
                    [&](const delegate::QComboBox &arg) {
+#ifdef DEBUG_FACTORY
                        qDebug("QComboBox");
+#endif
                        status = fillBackComboBox(key, parent, arg.primaryField);
                    },
                    [&](const delegate::Item &arg) {
+#ifdef DEBUG_FACTORY
                        qDebug("Item");
-
-                       const QString widgetName(QString::number(arg.type.hash()) + QString::number(arg.parent));
-                       auto tableView = parent->findChild<QTableView *>(widgetName);
-                       if (!tableView)
-                           return;
-                       auto model = qobject_cast<QStandardItemModel *>(tableView->model());
-                       if (!model)
-                           return;
+#endif
+                       auto record = S2::getRecord(key);
+                       std::visit(
+                           [&](auto &&type) {
+                               typedef std::remove_reference_t<decltype(type)> internalType;
+                               status = fillBackItem<internalType>(key, parent, arg.parent);
+                           },
+                           record.getData());
                    },
                },
         var);
@@ -368,12 +396,16 @@ QList<QStandardItem *> WidgetFactory::createItem(BciNumber key, const DataTypes:
     const auto var = search->second;
     std::visit(overloaded {
                    [&](const auto &arg) {
+#ifdef DEBUG_FACTORY
                        qDebug("DefaultWidget");
+#endif
                        using namespace delegate;
                    },
 
                    [&](const delegate::Item &arg) {
+#ifdef DEBUG_FACTORY
                        qDebug("Item");
+#endif
                        switch (arg.itemType)
                        {
                        case delegate::ItemType::ModbusItem:
@@ -405,15 +437,95 @@ template <> QWidget *WidgetFactory::helper(const delegate::Item &arg, QWidget *p
     {
     case delegate::ItemType::ModbusItem:
     {
-        const QString widgetName(QString::number(arg.type.hash()) + QString::number(arg.parent));
-        widget = parent->findChild<QTableView *>(widgetName);
+        widget = parent->findChild<QTableView *>(hashedName(arg.type, arg.parent));
         if (!widget)
         {
             widget = createModbusView(parent);
-            widget->setObjectName(widgetName);
+            widget->setObjectName(hashedName(arg.type, arg.parent));
         }
         return widget;
     }
     }
     return nullptr;
+}
+
+bool WidgetFactory::fillBackModbus(
+    BciNumber key, const QWidget *parent, ctti::unnamed_type_id_t type, BciNumber parentKey)
+{
+    auto tableView = parent->findChild<QTableView *>(hashedName(type, parentKey));
+    // QTableView *tv = parent->findChild<QTableView *>(hashedName(type, parentKey));
+    if (tableView == nullptr)
+    {
+        qDebug("Пустой tv");
+        return false;
+    }
+    QStandardItemModel *model = qobject_cast<QStandardItemModel *>(tableView->model());
+    // -1 hardcoded as diff between parent element and first child element
+    int row = key - parentKey - 1;
+
+    Bci::ModbusItem master;
+
+    for (int c = 0; c < model->columnCount(); ++c)
+    {
+
+        QModelIndex index = model->index(row, c);
+        QVariant value = model->data(index);
+
+        bool status = false;
+        auto data = value.toUInt(&status);
+        switch (c)
+        {
+        case delegate::Item::ModbusColumns::SensorType:
+        {
+            master.typedat = Bci::SensorType(status ? data : 0);
+            break;
+        }
+        case delegate::Item::ModbusColumns::BaudRate:
+        {
+            master.parport.baud = CommandsMBS::BaudRate(status ? data : 0);
+            break;
+        }
+        case delegate::Item::ModbusColumns::Parity:
+        {
+            master.parport.parity = CommandsMBS::Parity(status ? data : 0);
+            break;
+        }
+        case delegate::Item::ModbusColumns::StopBits:
+        {
+            master.parport.stop = CommandsMBS::StopBits(status ? data : 0);
+            break;
+        }
+        case delegate::Item::ModbusColumns::Timeout:
+        {
+            master.per = status ? data : 0;
+            break;
+        }
+        case delegate::Item::ModbusColumns::Address:
+        {
+            master.adr = status ? data : 0;
+            break;
+        }
+        case delegate::Item::ModbusColumns::FuncCode:
+        {
+            master.type.reg = CommandsMBS::Commands(status ? data : 0);
+            break;
+        }
+        case delegate::Item::ModbusColumns::DataType:
+        {
+            master.type.dat = CommandsMBS::TypeId(status ? data : 0);
+            break;
+        }
+        case delegate::Item::ModbusColumns::Register:
+        {
+            master.reg = (status ? data : 0);
+            break;
+        }
+        default:
+            break;
+        }
+
+        DataTypes::BYTE_8t masterBuffer = *reinterpret_cast<DataTypes::BYTE_8t *>(&master);
+        S2::setRecordValue({ key, masterBuffer });
+    }
+    return true;
 }

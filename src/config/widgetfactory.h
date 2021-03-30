@@ -7,6 +7,7 @@
 
 #include <QStandardItemModel>
 
+//#define DEBUG_FACTORY
 namespace delegate
 {
 Q_NAMESPACE
@@ -70,6 +71,18 @@ struct QComboBox : Widget, Group
 };
 struct Item : Widget
 {
+    enum ModbusColumns : int
+    {
+        SensorType = 0,
+        BaudRate,
+        Parity,
+        StopBits,
+        Timeout,
+        Address,
+        FuncCode,
+        DataType,
+        Register
+    };
     Item(const ctti::unnamed_type_id_t type_) : Widget(type_)
     {
     }
@@ -143,6 +156,12 @@ class WidgetFactory
 
         return widget;
     }
+
+    QString hashedName(ctti::unnamed_type_id_t type, BciNumber key)
+    {
+        return QString::number(type.hash()) + QString::number(key);
+    }
+
     template <typename T> bool fillIpCtrl(const QWidget *parent, BciNumber key, const T &value)
     {
         if constexpr (std::is_same<T, IPCtrl::container_type>::value)
@@ -192,8 +211,8 @@ class WidgetFactory
     bool fillTableView(
         const QWidget *parent, BciNumber key, BciNumber parentKey, ctti::unnamed_type_id_t type, const T &value)
     {
-        const QString widgetName(QString::number(type.hash()) + QString::number(parentKey));
-        auto tableView = parent->findChild<QTableView *>(widgetName);
+        //  const QString widgetName(QString::number(type.hash()) + QString::number(parentKey));
+        auto tableView = parent->findChild<QTableView *>(hashedName(type, parentKey));
         if (!tableView)
             return false;
         auto model = qobject_cast<QStandardItemModel *>(tableView->model());
@@ -229,7 +248,9 @@ public:
         const auto var = search->second;
         std::visit(overloaded {
                        [&](const auto &arg) {
+#ifdef DEBUG_FACTORY
                            qDebug("DefaultWidget");
+#endif
                            using namespace delegate;
 
                            switch (arg.type.hash())
@@ -256,7 +277,9 @@ public:
                            }
                        },
                        [&]([[maybe_unused]] const delegate::DoubleSpinBoxGroup &arg) {
+#ifdef DEBUG_FACTORY
                            qDebug("DoubleSpinBoxGroupWidget");
+#endif
                            if constexpr (std::is_container<T>())
                                if constexpr (sizeof(T::value_type) != 1 && !std::is_container<typename T::value_type>())
                                {
@@ -264,14 +287,18 @@ public:
                                }
                        },
                        [&]([[maybe_unused]] const delegate::DoubleSpinBoxWidget &arg) {
+#ifdef DEBUG_FACTORY
                            qDebug("DoubleSpinBoxWidget");
+#endif
                            if constexpr (!std::is_container<T>())
                            {
                                status = WDFunc::SetSPBData(parent, QString::number(key), value);
                            }
                        },
                        [&]([[maybe_unused]] const delegate::CheckBoxGroup &arg) {
+#ifdef DEBUG_FACTORY
                            qDebug("CheckBoxGroupWidget");
+#endif
                            if constexpr (std::is_same<std::remove_const_t<T>, quint32>::value
                                || std::is_same<std::remove_const_t<T>, quint64>::value)
                            {
@@ -279,7 +306,9 @@ public:
                            }
                        },
                        [&](const delegate::QComboBox &arg) {
+#ifdef DEBUG_FACTORY
                            qDebug("QComboBox");
+#endif
                            if constexpr (!std::is_container<T>())
                            {
                                switch (arg.primaryField)
@@ -300,7 +329,9 @@ public:
                            }
                        },
                        [&](const delegate::Item &arg) {
+#ifdef DEBUG_FACTORY
                            qDebug("Item");
+#endif
                            status = fillTableView(parent, key, arg.parent, arg.type, value);
                        },
                    },
@@ -319,6 +350,23 @@ private:
         return {};
     };
     QWidget *createModbusView(QWidget *parent);
+    bool fillBackModbus(BciNumber key, const QWidget *parent, ctti::unnamed_type_id_t type, BciNumber parentKey);
+    template <typename T> bool fillBackItem(BciNumber key, const QWidget *parent, BciNumber parentKey)
+    {
+        switch (parentKey)
+        {
+        case BciNumber::MBMaster:
+        {
+            return fillBackModbus(key, parent, ctti::unnamed_type_id<QTableView>(), parentKey);
+            break;
+        }
+        default:
+            Q_ASSERT(false && "Unsupported type");
+            return false;
+        }
+        return true;
+    };
+
     static widgetMap widgetMap;
 };
 template <>
