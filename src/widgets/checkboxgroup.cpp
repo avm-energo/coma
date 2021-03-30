@@ -52,38 +52,24 @@ CheckBoxGroup::CheckBoxGroup(const QStringList &desc, QWidget *parent)
     setLayout(gridlyout);
 }
 
-template <typename T> void CheckBoxGroup::setBits(const T value)
+template <typename T, std::enable_if_t<std::is_unsigned_v<T>, bool>> void CheckBoxGroup::setBits(const T value)
 {
     Q_D(CheckBoxGroup);
     d->setBits(value);
 }
 
-template <typename T> T CheckBoxGroup::bits()
+template <typename T, std::enable_if_t<std::is_unsigned_v<T>, bool>> T CheckBoxGroup::bits()
 {
     Q_D(CheckBoxGroup);
     return d->bits<T>();
 }
 
-template <> void CheckBoxGroup::setBits<quint64>(const quint64 value)
-{
-    Q_D(CheckBoxGroup);
-    d->setBits(value);
-}
+template void CheckBoxGroup::setBits(const quint64 value);
+template void CheckBoxGroup::setBits(const quint32 value);
+template void CheckBoxGroup::setBits(const quint16 value);
+template void CheckBoxGroup::setBits(const quint8 value);
 
-template <> void CheckBoxGroup::setBits<quint32>(const quint32 value)
-{
-    Q_D(CheckBoxGroup);
-    d->setBits(value);
-}
-
-template <> quint32 CheckBoxGroup::bits()
-{
-    Q_D(CheckBoxGroup);
-    return d->bits<quint32>();
-}
-
-template <> quint64 CheckBoxGroup::bits<quint64>()
-{
-    Q_D(CheckBoxGroup);
-    return d->bits<quint64>();
-}
+template quint64 CheckBoxGroup::bits();
+template quint32 CheckBoxGroup::bits();
+template quint16 CheckBoxGroup::bits();
+template quint8 CheckBoxGroup::bits();
