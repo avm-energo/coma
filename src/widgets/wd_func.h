@@ -194,13 +194,23 @@ public:
         data = chb->isChecked();
         return true;
     }
-    static bool SetChBData(QWidget *w, const QString &chbname, bool data);
-    template <typename T> static bool SetChBGData(QWidget *w, const QString &name, const T data)
+    template <typename T> static bool ChBGData(const QWidget *w, const QString &chbname, T &data)
     {
-        CheckBoxGroup *checkBoxGroup = dynamic_cast<CheckBoxGroup *>(w->findChild<QWidget *>(name));
+        CheckBoxGroup *checkBoxGroup = qobject_cast<CheckBoxGroup *>(w->findChild<QWidget *>(chbname));
+        if (!checkBoxGroup)
+            return false;
+        data = checkBoxGroup->bits<std::remove_reference_t<decltype(data)>>();
+        return true;
+    }
+    static bool SetChBData(QWidget *w, const QString &chbname, bool data);
+
+    template <typename T> static bool SetChBGData(const QWidget *w, const QString &name, const T data)
+    {
+        CheckBoxGroup *checkBoxGroup = qobject_cast<CheckBoxGroup *>(w->findChild<QWidget *>(name));
         if (!checkBoxGroup)
             return false;
         checkBoxGroup->setBits(data);
+        return true;
     }
     static bool RBData(QWidget *w, const QString &rbname, bool &data);
     static bool SetRBData(QWidget *w, const QString &rbname, bool data);
