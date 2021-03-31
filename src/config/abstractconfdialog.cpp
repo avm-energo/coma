@@ -14,6 +14,7 @@
 #include <QGridLayout>
 #include <QGroupBox>
 #include <QMessageBox>
+#include <QScrollArea>
 #include <QTextEdit>
 
 ::widgetMap AbstractConfDialog::m_widgetMap;
@@ -54,7 +55,16 @@ void AbstractConfDialog::WriteConf()
 void AbstractConfDialog::confReceived(const QList<DataTypes::DataRecV> &list)
 {
     S2::configV = list;
-    // Fill();
+
+    using namespace DataTypes;
+    const auto s2typeB = S2::getRecord(BciNumber::MTypeB_ID).value<DWORD>();
+    if (s2typeB != Board::GetInstance().typeB())
+        qCritical() << "Conflict typeB, module: " << QString::number(Board::GetInstance().typeB(), 16)
+                    << " config: " << QString::number(s2typeB, 16);
+    const auto s2typeM = S2::getRecord(BciNumber::MTypeE_ID).value<DWORD>();
+    if (s2typeM != Board::GetInstance().typeM())
+        qCritical() << "Conflict typeB, module: " << QString::number(Board::GetInstance().typeM(), 16)
+                    << " config: " << QString::number(s2typeM, 16);
 
     for (const auto id : m_list)
     {
@@ -70,7 +80,6 @@ void AbstractConfDialog::confReceived(const QList<DataTypes::DataRecV> &list)
             },
             record.getData());
     }
-    //  qDebug() << findChildren<IPCtrl *>() << findChildren<QWidget *>();
 }
 
 void AbstractConfDialog::confParametersListReceived(const DataTypes::ConfParametersListStruct &cfpl)
@@ -186,6 +195,71 @@ QWidget *AbstractConfDialog::ConfButtons()
     return wdgt;
 }
 
+QWidget *widgetAt(QTabWidget *tabWidget, int index)
+{
+    for (int i = 0; i != tabWidget->count(); ++i)
+        if (tabWidget->widget(i)->objectName().toInt() == index)
+            return tabWidget->widget(i);
+    return nullptr;
+}
+
+delegate::WidgetGroup groupForId(BciNumber id)
+{
+    const auto widgetMap = WidgetFactory::getWidgetMap();
+    auto search = widgetMap.find(id);
+    if (search == widgetMap.end())
+    {
+        qWarning() << "Not found" << id;
+        return delegate::WidgetGroup::EmptyGroup;
+    }
+    const auto var = search->second;
+
+    delegate::WidgetGroup group = delegate::WidgetGroup::EmptyGroup;
+    std::visit([&](const auto &arg) { group = arg.group; }, var);
+    return group;
+}
+
+void AbstractConfDialog::SetupUI()
+{
+
+    QVBoxLayout *lyout = new QVBoxLayout;
+    QTabWidget *ConfTW = new QTabWidget(this);
+
+    WidgetFactory factory;
+    for (const auto i : (m_list))
+    {
+        QWidget *widget = factory.createWidget(i, this);
+        if (!widget)
+        {
+            qWarning() << "Bad config widget for item: " << QString::number(i);
+            continue;
+        }
+
+        auto group = groupForId(i);
+        auto child = widgetAt(ConfTW, group);
+
+        QGroupBox *subBox = nullptr;
+        if (!child)
+        {
+            subBox = new QGroupBox("Группа " + QVariant::fromValue(group).toString(), this);
+            subBox->setObjectName(QString::number(group));
+            subBox->setLayout(new QVBoxLayout);
+            ConfTW->addTab(subBox, QVariant::fromValue(group).toString());
+        }
+        else
+        {
+            subBox = qobject_cast<QGroupBox *>(child);
+        }
+
+        QLayout *lyout = subBox->layout();
+        lyout->addWidget(widget);
+        subBox->setLayout(lyout);
+    }
+    lyout->addWidget(ConfTW);
+    lyout->addWidget(ConfButtons());
+    setLayout(lyout);
+}
+
 void AbstractConfDialog::PrereadConf()
 {
     if (Board::GetInstance().noConfig()) // если в модуле нет конфигурации, заполнить поля по умолчанию
@@ -195,6 +269,19 @@ void AbstractConfDialog::PrereadConf()
     }
     else
         ReadConf();
+}
+
+void AbstractConfDialog::FillBack() const
+{
+    WidgetFactory factory;
+    for (const auto id : m_list)
+    {
+        bool status = factory.fillBack(id, this);
+        if (!status)
+        {
+            qWarning() << "Couldnt fill back item from widget: " << id;
+        }
+    }
 }
 
 bool AbstractConfDialog::PrepareConfToWrite()

@@ -23,13 +23,14 @@ public:
     {
         m_widgetMap = widgetMap;
     }
+    void FillBack() const override;
 
 protected:
     std::set<BciNumber> m_list;
     QStringList CheckConfErrors;
     QWidget *ConfButtons();
 
-    virtual void SetupUI() = 0;
+    virtual void SetupUI();
     bool PrepareConfToWrite();
     void uponInterfaceSetting() override;
 

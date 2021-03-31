@@ -14,8 +14,8 @@ public:
 
 private:
     void Fill() override;
-    void FillBack() const override;
-    void SetupUI() override;
+
+    // void SetupUI() override;
     void CheckConf() const override;
 
 protected:

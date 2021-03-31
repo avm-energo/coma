@@ -36,22 +36,6 @@ void ConfKIVDialog::Fill()
     FillKiv();
 }
 
-void ConfKIVDialog::FillBack() const
-{
-    WidgetFactory factory;
-    for (const auto id : m_list)
-    {
-        bool status = factory.fillBack(id, this);
-        if (!status)
-        {
-            qWarning() << "Couldnt fill back item from widget: " << id;
-        }
-    }
-    // CKIV->MainConfig()->FillBack();
-    //  CKIV->KxxConfig()->FillBack();
-    // FillBackKiv();
-}
-
 QWidget *ConfKIVDialog::analogWidget()
 {
     QWidget *w = new QWidget;
@@ -266,7 +250,6 @@ QWidget *ConfKIVDialog::testWidget()
 {
     QGroupBox *groupBox = new QGroupBox(this);
     QGridLayout *vlyout = new QGridLayout;
-    //  QVBoxLayout *subvlyout = new QVBoxLayout;
     WidgetFactory factory;
     for (const auto i : (m_list))
     {
@@ -277,13 +260,7 @@ QWidget *ConfKIVDialog::testWidget()
             continue;
         }
         int group = i / 10;
-        // if (widget)
-        //  {
 
-        //            for (const auto *i : widget->findChildren<QWidget *>())
-        //            {
-        //                qDebug() << i->metaObject()->className() << i->sizePolicy().horizontalPolicy();
-        //            }
         QLayoutItem *child = vlyout->itemAtPosition(group, 0);
         QGroupBox *subBox = nullptr;
         if (!child)
@@ -296,29 +273,13 @@ QWidget *ConfKIVDialog::testWidget()
             subBox = qobject_cast<QGroupBox *>(child->widget());
             vlyout->removeWidget(subBox);
         }
-        // if (!subBox)
-        // {
-        // sublyout = new QVBoxLayout;
-        //  subBox = new QGroupBox(this);
 
-        //  vlyout->addLayout(sublyout);
-        // }
         QLayout *lyout = subBox->layout();
         lyout->addWidget(widget);
         subBox->setLayout(lyout);
         vlyout->addWidget(subBox, group, 0);
-        // }
-        //        else
-        //        {
-        //            WidgetFactory::createItem(i, this);
-        //        }
     }
-    //    for (quint32 i = 0; i != 10; ++i)
-    //    {
-    //        QWidget *widget = WidgetFactory::createWidget(static_cast<BciNumber>(i), this);
-    //        if (widget)
-    //            vlyout->addWidget(widget);
-    //    }
+
     groupBox->setLayout(vlyout);
     QScrollArea *scrollArea = new QScrollArea;
     scrollArea->setFrameShape(QFrame::NoFrame);
@@ -401,30 +362,19 @@ void ConfKIVDialog::FillBackKiv() const
     S2::setRecordValue({ BciNumber::IsIuIunb, BYTE(WDFunc::ChBData(this, nameByValue(BciNumber::IsIuIunb))) });
 }
 
-void ConfKIVDialog::SetupUI()
-{
+// void ConfKIVDialog::SetupUI()
+//{
 
-    QVBoxLayout *lyout = new QVBoxLayout;
-    QTabWidget *ConfTW = new QTabWidget;
-    ConfTW->setObjectName("conftw");
+//    QVBoxLayout *lyout = new QVBoxLayout;
+//    QTabWidget *ConfTW = new QTabWidget;
+//    ConfTW->setObjectName("conftw");
 
-    // ConfTW->addTab(analogWidget(), "Аналоговые");
+//    ConfTW->addTab(testWidget(), "Work in progress");
 
-    //  ConfTW->addTab(thresholdsWidget(), "Уставки");
-
-    //   ConfTW->addTab(remainsWidget(), "Остальное");
-
-    //  ConfTW->addTab(connectionWidget(), "Связь");
-
-    //  ConfTW->addTab(CKIV->KxxConfig()->ModbusWidget(this), "ModBusMaster");
-    // ConfTW->addTab(CKIV->KxxConfig()->VariousWidget(this), "Общее");
-
-    ConfTW->addTab(testWidget(), "Work in progress");
-
-    lyout->addWidget(ConfTW);
-    lyout->addWidget(ConfButtons());
-    setLayout(lyout);
-}
+//    lyout->addWidget(ConfTW);
+//    lyout->addWidget(ConfButtons());
+//    setLayout(lyout);
+//}
 
 void ConfKIVDialog::CheckConf() const
 {
