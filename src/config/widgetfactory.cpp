@@ -51,6 +51,9 @@ template <typename T> QWidget *helper(const T &arg, QWidget *parent, BciNumber k
         QHBoxLayout *lyout = new QHBoxLayout;
         lyout->addWidget(new QLabel(arg.desc, parent));
         auto lineEdit = new QLineEdit(parent);
+        auto sizePolicy = lineEdit->sizePolicy();
+        sizePolicy.setHorizontalPolicy(QSizePolicy::Preferred);
+        lineEdit->setSizePolicy(sizePolicy);
         lineEdit->setObjectName(QString::number(key));
         lyout->addWidget(lineEdit);
         widget->setLayout(lyout);

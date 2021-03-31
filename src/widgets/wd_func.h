@@ -162,7 +162,8 @@ public:
             spbvalue = {};
             return false;
         }
-        std::copy_n(spbg->value().cbegin(), N, spbvalue.begin());
+        auto vector = spbg->value();
+        std::copy_n(vector.cbegin(), N, spbvalue.begin());
         // spbvalue = spbg->value();
         return true;
     }
@@ -202,7 +203,7 @@ public:
     }
     template <typename T> static bool ChBGData(const QWidget *w, const QString &chbname, T &data)
     {
-        CheckBoxGroup *checkBoxGroup = qobject_cast<CheckBoxGroup *>(w->findChild<QWidget *>(chbname));
+        auto *checkBoxGroup = w->findChild<CheckBoxGroup *>(chbname);
         if (!checkBoxGroup)
             return false;
         data = checkBoxGroup->bits<std::remove_reference_t<decltype(data)>>();
@@ -212,9 +213,13 @@ public:
 
     template <typename T> static bool SetChBGData(const QWidget *w, const QString &name, const T data)
     {
-        CheckBoxGroup *checkBoxGroup = qobject_cast<CheckBoxGroup *>(w->findChild<QWidget *>(name));
+        auto checkBoxGroup = w->findChild<CheckBoxGroup *>(name);
         if (!checkBoxGroup)
+        {
+            qDebug() << name;
+            qDebug() << w->findChildren<QWidget *>();
             return false;
+        }
         checkBoxGroup->setBits(data);
         return true;
     }

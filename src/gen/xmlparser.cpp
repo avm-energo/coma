@@ -212,13 +212,16 @@ delegate::itemVariant XmlParser::parseWidget(QDomElement domElement)
     if (!childElement.isNull())
         items = parseStringList(childElement);
 
+    childElement = domElement.firstChildElement("group");
+    auto widgetGroup = static_cast<delegate::WidgetGroup>(childElement.text().toInt());
+
     const QString description = domElement.firstChildElement("string").text();
     switch (type.hash())
     {
     case ctti::unnamed_type_id<QDoubleSpinBox>().hash():
     {
         bool status = false;
-        delegate::DoubleSpinBoxWidget widget(type);
+        delegate::DoubleSpinBoxWidget widget(type, widgetGroup);
 
         QDomElement childElement = domElement.firstChildElement("min");
         widget.min = childElement.text().toDouble(&status);
@@ -235,7 +238,7 @@ delegate::itemVariant XmlParser::parseWidget(QDomElement domElement)
     case ctti::unnamed_type_id<DoubleSpinBoxGroup>().hash():
     {
         bool status = false;
-        delegate::DoubleSpinBoxGroup widget(type);
+        delegate::DoubleSpinBoxGroup widget(type, widgetGroup);
 
         QDomElement childElement = domElement.firstChildElement("min");
         widget.min = childElement.text().toDouble(&status);
@@ -255,7 +258,7 @@ delegate::itemVariant XmlParser::parseWidget(QDomElement domElement)
     case ctti::unnamed_type_id<CheckBoxGroup>().hash():
     {
         bool status = false;
-        delegate::CheckBoxGroup widget(type);
+        delegate::CheckBoxGroup widget(type, widgetGroup);
 
         QDomElement childElement = domElement.firstChildElement("count");
         widget.count = childElement.text().toUInt(&status);
@@ -268,7 +271,7 @@ delegate::itemVariant XmlParser::parseWidget(QDomElement domElement)
     }
     case ctti::unnamed_type_id<QComboBox>().hash():
     {
-        delegate::QComboBox widget(type);
+        delegate::QComboBox widget(type, widgetGroup);
 
         widget.desc = description;
         widget.items = items;
@@ -283,7 +286,7 @@ delegate::itemVariant XmlParser::parseWidget(QDomElement domElement)
     {
     }
     }
-    return delegate::Widget(type, description);
+    return delegate::Widget(type, description, widgetGroup);
 }
 
 delegate::Item XmlParser::parseItem(QDomElement domElement, ctti::unnamed_type_id_t parentType)
@@ -300,6 +303,9 @@ delegate::Item XmlParser::parseItem(QDomElement domElement, ctti::unnamed_type_i
     auto itemType = static_cast<delegate::ItemType>(classes.keyToValue(className.toStdString().c_str(), &status));
     if (!status)
         return { 0 };
+
+    QDomElement childElement = domElement.firstChildElement("group");
+    auto widgetGroup = static_cast<delegate::WidgetGroup>(childElement.text().toInt());
     switch (itemType)
     {
     case delegate::ItemType::ModbusItem:
@@ -310,11 +316,11 @@ delegate::Item XmlParser::parseItem(QDomElement domElement, ctti::unnamed_type_i
         auto parent = static_cast<BciNumber>(childElement.text().toUInt(&status));
         if (!status)
             qWarning() << name << className;
-        delegate::Item item(parentType, itemType, parent);
+        delegate::Item item(parentType, itemType, parent, widgetGroup);
         return item;
     }
     default:
-        return delegate::Item(parentType, itemType, BciNumber::dummyElement);
+        return delegate::Item(parentType, itemType, BciNumber::dummyElement, widgetGroup);
     }
 }
 

@@ -30,6 +30,10 @@ public:
     {
         return QString::number(type.hash()) + QString::number(key);
     }
+    static auto getWidgetMap()
+    {
+        return widgetMap;
+    }
 
 private:
     // Default template like a dummy function for sfinae
