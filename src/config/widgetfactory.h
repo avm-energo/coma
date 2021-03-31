@@ -41,9 +41,14 @@ private:
         return {};
     };
 
-    template <typename T> bool fillIpCtrl(const QWidget *parent, BciNumber key, const T &value);
-    template <typename T> bool fillCheckBox(const QWidget *parent, BciNumber key, const T &value);
-    template <typename T> bool fillLineEdit(const QWidget *parent, BciNumber key, const T &value);
+    template <typename T, std::enable_if_t<std::is_same<T, IPCtrl::container_type>::value, bool> = true>
+    bool fillIpCtrl(const QWidget *parent, BciNumber key, const T &value);
+    template <typename T, std::enable_if_t<!std::is_container<T>::value, bool> = true>
+    bool fillCheckBox(const QWidget *parent, BciNumber key, const T &value);
+    template <typename T, std::enable_if_t<!std::is_container<T>::value, bool> = true>
+    bool fillLineEdit(const QWidget *parent, BciNumber key, const T &value);
+    template <typename T, std::enable_if_t<std::is_container<T>::value, bool> = true>
+    bool fillLineEdit(const QWidget *parent, BciNumber key, const T &value);
     template <typename T>
     bool fillTableView(const QWidget *parent, BciNumber key, BciNumber parentKey, //
         ctti::unnamed_type_id_t type, const T &value);
@@ -58,53 +63,50 @@ QList<QStandardItem *> WidgetFactory::createItem(BciNumber key, const DataTypes:
 
 // Template definition
 
-template <typename T> bool WidgetFactory::fillIpCtrl(const QWidget *parent, BciNumber key, const T &value)
+template <typename T, std::enable_if_t<std::is_same<T, IPCtrl::container_type>::value, bool>>
+bool WidgetFactory::fillIpCtrl(const QWidget *parent, BciNumber key, const T &value)
 {
-    if constexpr (std::is_same<T, IPCtrl::container_type>::value)
-    {
-        auto widget = parent->findChild<IPCtrl *>(QString::number(key));
-        if (!widget)
-            return false;
-        widget->setIP(value);
-        return true;
-    }
-    return false;
+    auto widget = parent->findChild<IPCtrl *>(QString::number(key));
+    if (!widget)
+        return false;
+    widget->setIP(value);
+    return true;
 }
 
-template <typename T> bool WidgetFactory::fillCheckBox(const QWidget *parent, BciNumber key, const T &value)
+template <typename T, std::enable_if_t<!std::is_container<T>::value, bool>>
+bool WidgetFactory::fillCheckBox(const QWidget *parent, BciNumber key, const T &value)
 {
-    if constexpr (!std::is_container<T>())
-    {
-        auto widget = parent->findChild<QCheckBox *>(QString::number(key));
-        if (!widget)
-            return false;
-        widget->setChecked(bool(value));
-        return true;
-    }
-    return false;
+    auto widget = parent->findChild<QCheckBox *>(QString::number(key));
+    if (!widget)
+        return false;
+    widget->setChecked(bool(value));
+    return true;
 }
 
-template <typename T> bool WidgetFactory::fillLineEdit(const QWidget *parent, BciNumber key, const T &value)
+template <typename T, std::enable_if_t<!std::is_container<T>::value, bool>>
+bool WidgetFactory::fillLineEdit(const QWidget *parent, BciNumber key, const T &value)
 {
-    if constexpr (!std::is_container<T>())
+    auto widget = parent->findChild<QLineEdit *>(QString::number(key));
+    if (!widget)
+        return false;
+    widget->setText(QString::number(value));
+    return true;
+}
+
+template <typename T, std::enable_if_t<std::is_container<T>::value, bool>>
+bool WidgetFactory::fillLineEdit(const QWidget *parent, BciNumber key, const T &value)
+{
+    if constexpr (std::is_integral<typename T::value_type>::value)
     {
         auto widget = parent->findChild<QLineEdit *>(QString::number(key));
         if (!widget)
             return false;
-        widget->setText(QString::number(value));
+        widget->setText(QString::number(value.front()));
         return true;
     }
-    if constexpr (std::is_container<T>())
-        if constexpr (std::is_integral<typename T::value_type>::value)
-        {
-            auto widget = parent->findChild<QLineEdit *>(QString::number(key));
-            if (!widget)
-                return false;
-            widget->setText(QString::number(value.front()));
-            return true;
-        }
     return false;
 }
+
 template <typename T>
 bool WidgetFactory::fillTableView(
     const QWidget *parent, BciNumber key, BciNumber parentKey, ctti::unnamed_type_id_t type, const T &value)
@@ -126,11 +128,6 @@ bool WidgetFactory::fillTableView(
     return true;
 }
 
-template <typename T>
-bool fillDefault(const QWidget *parent, BciNumber key, const T &value, ctti::unnamed_type_id_t type)
-{
-}
-
 template <typename T> bool WidgetFactory::fillWidget(const QWidget *parent, BciNumber key, const T &value)
 {
     bool status = false;
@@ -148,28 +145,26 @@ template <typename T> bool WidgetFactory::fillWidget(const QWidget *parent, BciN
                        qDebug("DefaultWidget");
 #endif
                        using namespace delegate;
-
-                       switch (arg.type.hash())
+                       if constexpr (std::is_same<T, IPCtrl::container_type>::value)
                        {
-                       case ctti::unnamed_type_id<IPCtrl>().hash():
-                       {
-                           status = fillIpCtrl(parent, key, value);
-                           break;
+                           if (arg.type == ctti::unnamed_type_id<IPCtrl>())
+                           {
+                               status = fillIpCtrl(parent, key, value);
+                               return;
+                           }
                        }
-                       case ctti::unnamed_type_id<QCheckBox>().hash():
+                       if constexpr (!std::is_container<T>())
                        {
-                           status = fillCheckBox(parent, key, value);
-                           break;
+                           if (arg.type == ctti::unnamed_type_id<QCheckBox>())
+                           {
+                               status = fillCheckBox(parent, key, value);
+                               return;
+                           }
                        }
-                       case ctti::unnamed_type_id<QLineEdit>().hash():
+                       if (arg.type == ctti::unnamed_type_id<QLineEdit>())
                        {
                            status = fillLineEdit(parent, key, value);
-                           break;
-                       }
-
-                       default:
-                           break;
-                           Q_ASSERT(false && "False type");
+                           return;
                        }
                    },
                    [&]([[maybe_unused]] const delegate::DoubleSpinBoxGroup &arg) {
