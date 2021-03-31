@@ -1,5 +1,6 @@
 #include "widgetfactory.h"
 
+#include "../gen/s2.h"
 #include "../models/comboboxdelegate.h"
 #include "../module/module_kxx.h"
 #include "../widgets/checkboxgroup.h"
@@ -9,63 +10,98 @@
 #include <QStandardItem>
 widgetMap WidgetFactory::widgetMap;
 
-QWidget *WidgetFactory::createModbusView(QWidget *parent)
+// forward declarations
+// helpers for create widget
+static QWidget *createModbusView(QWidget *parent);
+// helpers for fill back from widget
+static bool fillBackModbus(BciNumber key, const QWidget *parent, ctti::unnamed_type_id_t type, BciNumber parentKey);
+static bool fillBackIpCtrl(BciNumber key, const QWidget *parent);
+static bool fillBackCheckBox(BciNumber key, const QWidget *parent);
+static bool fillBackLineEdit(BciNumber key, const QWidget *parent);
+static bool fillBackSPBG(BciNumber key, const QWidget *parent);
+static bool fillBackSPB(BciNumber key, const QWidget *parent);
+static bool fillBackChBG(BciNumber key, const QWidget *parent);
+static bool fillBackComboBox(BciNumber key, const QWidget *parent, delegate::QComboBox::PrimaryField field);
+
+template <typename T> QWidget *helper(const T &arg, QWidget *parent, BciNumber key)
 {
-    QTableView *tableView = new QTableView(parent);
-
-    tableView->setSelectionMode(QAbstractItemView::NoSelection);
-    tableView->setSelectionBehavior(QAbstractItemView::SelectItems);
-    tableView->setShowGrid(false);
-    tableView->setStyleSheet("QTableView {background-color: transparent;}");
-    tableView->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
-
-    ComboBoxDelegate *comboBoxdelegate = new ComboBoxDelegate({ "нет", "тип 1", "тип 2", "тип 3" }, tableView);
-    tableView->setItemDelegateForColumn(0, comboBoxdelegate);
-    const QStringList baudList { "1200", "2400", "4800", "9600", "19200", "38400", "57600", "115200" };
-
-    comboBoxdelegate = new ComboBoxDelegate(baudList, tableView);
-    tableView->setItemDelegateForColumn(1, comboBoxdelegate);
-
-    comboBoxdelegate = new ComboBoxDelegate({ "нет", "even", "odd" }, tableView);
-    tableView->setItemDelegateForColumn(2, comboBoxdelegate);
-
-    comboBoxdelegate = new ComboBoxDelegate({ "1", "2" }, tableView);
-    tableView->setItemDelegateForColumn(3, comboBoxdelegate);
-
-    SpinBoxDelegate *spinBoxDelegate
-        = new SpinBoxDelegate(0, std::numeric_limits<decltype(Bci::ModbusItem::per)>::max(), tableView);
-    tableView->setItemDelegateForColumn(4, spinBoxDelegate);
-
-    spinBoxDelegate = new SpinBoxDelegate(0, std::numeric_limits<decltype(Bci::ModbusItem::adr)>::max(), tableView);
-    tableView->setItemDelegateForColumn(5, spinBoxDelegate);
-
-    const QStringList funcs { "Coils", "Status", "Holding", "Input" };
-    comboBoxdelegate = new ComboBoxDelegate(funcs, tableView);
-    // Modbus функции начинаются с 1
-    comboBoxdelegate->setOffset(1);
-    tableView->setItemDelegateForColumn(6, comboBoxdelegate);
-
-    const QStringList types { "Uint16", "Int16", "Bool", "Uint32", "Float" };
-    comboBoxdelegate = new ComboBoxDelegate(types, tableView);
-    tableView->setItemDelegateForColumn(7, comboBoxdelegate);
-
-    spinBoxDelegate = new SpinBoxDelegate(0, std::numeric_limits<decltype(Bci::ModbusItem::reg)>::max(), tableView);
-    tableView->setItemDelegateForColumn(8, spinBoxDelegate);
-
-    QStandardItemModel *model = new QStandardItemModel(tableView);
-    const QStringList header { "датчик", "скорость", "чётность", "стопБиты", "период опроса", "абонент", "функция",
-        "данные", "регистр" };
-    model->setHorizontalHeaderLabels(header);
-    tableView->setModel(model);
-
-    for (int column = 0; column < model->columnCount(); column++)
+    QWidget *widget = nullptr;
+    switch (arg.type.hash())
     {
-        // NOTE Ужасный костыль
-        int width = tableView->horizontalHeader()->fontMetrics().horizontalAdvance(header.at(column)) * 1.5;
-        tableView->setColumnWidth(column, width);
+    case ctti::unnamed_type_id<IPCtrl>().hash():
+    {
+        widget = new QWidget(parent);
+        QHBoxLayout *lyout = new QHBoxLayout;
+        lyout->addWidget(new QLabel(arg.desc, parent));
+        auto control = new IPCtrl(parent);
+        control->setObjectName(QString::number(key));
+        lyout->addWidget(control);
+        widget->setLayout(lyout);
+        break;
     }
-    // tableView->setMinimumWidth(tableView->horizontalHeader()->height() * 5);
-    return tableView;
+    case ctti::unnamed_type_id<QCheckBox>().hash():
+    {
+        widget = new QCheckBox(arg.desc, parent);
+        widget->setObjectName(QString::number(key));
+        break;
+    }
+    case ctti::unnamed_type_id<QLineEdit>().hash():
+    {
+        widget = new QWidget(parent);
+        QHBoxLayout *lyout = new QHBoxLayout;
+        lyout->addWidget(new QLabel(arg.desc, parent));
+        auto lineEdit = new QLineEdit(parent);
+        lineEdit->setObjectName(QString::number(key));
+        lyout->addWidget(lineEdit);
+        widget->setLayout(lyout);
+        break;
+    }
+
+    default:
+        break;
+        Q_ASSERT(false && "False type");
+    }
+
+    return widget;
+}
+
+template <> QWidget *helper(const delegate::Item &arg, QWidget *parent, BciNumber key)
+{
+    QWidget *widget = nullptr;
+    switch (arg.itemType)
+    {
+    case delegate::ItemType::ModbusItem:
+    {
+        widget = parent->findChild<QTableView *>(WidgetFactory::hashedName(arg.type, arg.parent));
+        if (!widget)
+        {
+            widget = createModbusView(parent);
+            widget->setObjectName(WidgetFactory::hashedName(arg.type, arg.parent));
+        }
+        return widget;
+    }
+    }
+    return nullptr;
+}
+
+template <typename T> bool fillBackItem(BciNumber key, const QWidget *parent, BciNumber parentKey)
+{
+    switch (parentKey)
+    {
+    case BciNumber::MBMaster:
+    {
+        return fillBackModbus(key, parent, ctti::unnamed_type_id<QTableView>(), parentKey);
+        break;
+    }
+    default:
+        Q_ASSERT(false && "Unsupported type");
+        return false;
+    }
+    // return true;
+};
+
+WidgetFactory::WidgetFactory()
+{
 }
 
 QWidget *WidgetFactory::createWidget(BciNumber key, QWidget *parent)
@@ -135,6 +171,274 @@ QWidget *WidgetFactory::createWidget(BciNumber key, QWidget *parent)
                },
         var);
     return widget;
+}
+
+bool WidgetFactory::fillBack(BciNumber key, const QWidget *parent)
+{
+    bool status = false;
+    auto search = widgetMap.find(key);
+    if (search == widgetMap.end())
+    {
+        qWarning() << "Not found" << key;
+        return status;
+    }
+
+    const auto var = search->second;
+    std::visit(overloaded {
+                   [&](const auto &arg) {
+#ifdef DEBUG_FACTORY
+                       qDebug("DefaultWidget");
+#endif
+                       using namespace delegate;
+
+                       switch (arg.type.hash())
+                       {
+                       case ctti::unnamed_type_id<IPCtrl>().hash():
+                       {
+                           status = fillBackIpCtrl(key, parent);
+                           break;
+                       }
+                       case ctti::unnamed_type_id<QCheckBox>().hash():
+                       {
+                           status = fillBackCheckBox(key, parent);
+                           break;
+                       }
+                       case ctti::unnamed_type_id<QLineEdit>().hash():
+                       {
+                           status = fillBackLineEdit(key, parent);
+                           break;
+                       }
+
+                       default:
+                           break;
+                           Q_ASSERT(false && "False type");
+                       }
+                   },
+                   [&](const delegate::DoubleSpinBoxGroup &arg) {
+#ifdef DEBUG_FACTORY
+                       qDebug("DoubleSpinBoxGroupWidget");
+#endif
+                       status = fillBackSPBG(key, parent);
+                   },
+                   [&](const delegate::DoubleSpinBoxWidget &arg) {
+#ifdef DEBUG_FACTORY
+                       qDebug("DoubleSpinBoxWidget");
+#endif
+                       status = fillBackSPB(key, parent);
+                   },
+                   [&](const delegate::CheckBoxGroup &arg) {
+#ifdef DEBUG_FACTORY
+                       qDebug("CheckBoxGroupWidget");
+#endif
+                       status = fillBackChBG(key, parent);
+                   },
+                   [&](const delegate::QComboBox &arg) {
+#ifdef DEBUG_FACTORY
+                       qDebug("QComboBox");
+#endif
+                       status = fillBackComboBox(key, parent, arg.primaryField);
+                   },
+                   [&](const delegate::Item &arg) {
+#ifdef DEBUG_FACTORY
+                       qDebug("Item");
+#endif
+                       auto record = S2::getRecord(key);
+                       std::visit(
+                           [&](auto &&type) {
+                               typedef std::remove_reference_t<decltype(type)> internalType;
+                               status = fillBackItem<internalType>(key, parent, arg.parent);
+                           },
+                           record.getData());
+                   },
+               },
+        var);
+    return status;
+}
+
+template <>
+QList<QStandardItem *> WidgetFactory::createItem(BciNumber key, const DataTypes::BYTE_8t &value, const QWidget *parent)
+{
+    QList<QStandardItem *> items {};
+    auto search = widgetMap.find(key);
+    if (search == widgetMap.end())
+    {
+        qWarning() << "Not found" << key;
+        return items;
+    }
+
+    const auto var = search->second;
+    std::visit(overloaded {
+                   [&](const auto &arg) {
+#ifdef DEBUG_FACTORY
+                       qDebug("DefaultWidget");
+#endif
+                       using namespace delegate;
+                   },
+
+                   [&](const delegate::Item &arg) {
+#ifdef DEBUG_FACTORY
+                       qDebug("Item");
+#endif
+                       switch (arg.itemType)
+                       {
+                       case delegate::ItemType::ModbusItem:
+                       {
+                           const auto *master = reinterpret_cast<const Bci::ModbusItem *>(&value);
+                           items = {
+                               (new QStandardItem(QString::number(master->typedat))),        //
+                               (new QStandardItem(QString::number(master->parport.baud))),   //
+                               (new QStandardItem(QString::number(master->parport.parity))), //
+                               (new QStandardItem(QString::number(master->parport.stop))),   //
+                               (new QStandardItem(QString::number(master->per))),            //
+                               (new QStandardItem(QString::number(master->adr))),            //
+                               (new QStandardItem(QString::number(master->type.reg))),       //
+                               (new QStandardItem(QString::number(master->type.dat))),       //
+                               (new QStandardItem(QString::number(master->reg)))             //
+                           };
+                       }
+                       }
+                   },
+               },
+        var);
+    return items;
+}
+
+QWidget *createModbusView(QWidget *parent)
+{
+    QTableView *tableView = new QTableView(parent);
+
+    tableView->setSelectionMode(QAbstractItemView::NoSelection);
+    tableView->setSelectionBehavior(QAbstractItemView::SelectItems);
+    tableView->setShowGrid(false);
+    tableView->setStyleSheet("QTableView {background-color: transparent;}");
+    tableView->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
+
+    ComboBoxDelegate *comboBoxdelegate = new ComboBoxDelegate({ "нет", "тип 1", "тип 2", "тип 3" }, tableView);
+    tableView->setItemDelegateForColumn(0, comboBoxdelegate);
+    const QStringList baudList { "1200", "2400", "4800", "9600", "19200", "38400", "57600", "115200" };
+
+    comboBoxdelegate = new ComboBoxDelegate(baudList, tableView);
+    tableView->setItemDelegateForColumn(1, comboBoxdelegate);
+
+    comboBoxdelegate = new ComboBoxDelegate({ "нет", "even", "odd" }, tableView);
+    tableView->setItemDelegateForColumn(2, comboBoxdelegate);
+
+    comboBoxdelegate = new ComboBoxDelegate({ "1", "2" }, tableView);
+    tableView->setItemDelegateForColumn(3, comboBoxdelegate);
+
+    SpinBoxDelegate *spinBoxDelegate
+        = new SpinBoxDelegate(0, std::numeric_limits<decltype(Bci::ModbusItem::per)>::max(), tableView);
+    tableView->setItemDelegateForColumn(4, spinBoxDelegate);
+
+    spinBoxDelegate = new SpinBoxDelegate(0, std::numeric_limits<decltype(Bci::ModbusItem::adr)>::max(), tableView);
+    tableView->setItemDelegateForColumn(5, spinBoxDelegate);
+
+    const QStringList funcs { "Coils", "Status", "Holding", "Input" };
+    comboBoxdelegate = new ComboBoxDelegate(funcs, tableView);
+    // Modbus функции начинаются с 1
+    comboBoxdelegate->setOffset(1);
+    tableView->setItemDelegateForColumn(6, comboBoxdelegate);
+
+    const QStringList types { "Uint16", "Int16", "Bool", "Uint32", "Float" };
+    comboBoxdelegate = new ComboBoxDelegate(types, tableView);
+    tableView->setItemDelegateForColumn(7, comboBoxdelegate);
+
+    spinBoxDelegate = new SpinBoxDelegate(0, std::numeric_limits<decltype(Bci::ModbusItem::reg)>::max(), tableView);
+    tableView->setItemDelegateForColumn(8, spinBoxDelegate);
+
+    QStandardItemModel *model = new QStandardItemModel(tableView);
+    const QStringList header { "датчик", "скорость", "чётность", "стопБиты", "период опроса", "абонент", "функция",
+        "данные", "регистр" };
+    model->setHorizontalHeaderLabels(header);
+    tableView->setModel(model);
+
+    for (int column = 0; column < model->columnCount(); column++)
+    {
+        // NOTE Ужасный костыль
+        int width = tableView->horizontalHeader()->fontMetrics().horizontalAdvance(header.at(column)) * 1.5;
+        tableView->setColumnWidth(column, width);
+    }
+    // tableView->setMinimumWidth(tableView->horizontalHeader()->height() * 5);
+    return tableView;
+}
+bool fillBackModbus(BciNumber key, const QWidget *parent, ctti::unnamed_type_id_t type, BciNumber parentKey)
+{
+    auto tableView = parent->findChild<QTableView *>(WidgetFactory::hashedName(type, parentKey));
+    // QTableView *tv = parent->findChild<QTableView *>(hashedName(type, parentKey));
+    if (tableView == nullptr)
+    {
+        qDebug("Пустой tv");
+        return false;
+    }
+    QStandardItemModel *model = qobject_cast<QStandardItemModel *>(tableView->model());
+    // -1 hardcoded as diff between parent element and first child element
+    int row = key - parentKey - 1;
+
+    Bci::ModbusItem master;
+
+    for (int c = 0; c < model->columnCount(); ++c)
+    {
+
+        QModelIndex index = model->index(row, c);
+        QVariant value = model->data(index);
+
+        bool status = false;
+        auto data = value.toUInt(&status);
+        switch (c)
+        {
+        case delegate::Item::ModbusColumns::SensorType:
+        {
+            master.typedat = Bci::SensorType(status ? data : 0);
+            break;
+        }
+        case delegate::Item::ModbusColumns::BaudRate:
+        {
+            master.parport.baud = CommandsMBS::BaudRate(status ? data : 0);
+            break;
+        }
+        case delegate::Item::ModbusColumns::Parity:
+        {
+            master.parport.parity = CommandsMBS::Parity(status ? data : 0);
+            break;
+        }
+        case delegate::Item::ModbusColumns::StopBits:
+        {
+            master.parport.stop = CommandsMBS::StopBits(status ? data : 0);
+            break;
+        }
+        case delegate::Item::ModbusColumns::Timeout:
+        {
+            master.per = status ? data : 0;
+            break;
+        }
+        case delegate::Item::ModbusColumns::Address:
+        {
+            master.adr = status ? data : 0;
+            break;
+        }
+        case delegate::Item::ModbusColumns::FuncCode:
+        {
+            master.type.reg = CommandsMBS::Commands(status ? data : 0);
+            break;
+        }
+        case delegate::Item::ModbusColumns::DataType:
+        {
+            master.type.dat = CommandsMBS::TypeId(status ? data : 0);
+            break;
+        }
+        case delegate::Item::ModbusColumns::Register:
+        {
+            master.reg = (status ? data : 0);
+            break;
+        }
+        default:
+            break;
+        }
+
+        DataTypes::BYTE_8t masterBuffer = *reinterpret_cast<DataTypes::BYTE_8t *>(&master);
+        S2::setRecordValue({ key, masterBuffer });
+    }
+    return true;
 }
 
 static bool fillBackIpCtrl(BciNumber key, const QWidget *parent)
@@ -286,246 +590,8 @@ static bool fillBackComboBox(BciNumber key, const QWidget *parent, delegate::QCo
                 }
                 }
                 status = true;
-                //
-                //   if (status)
-                //     S2::setRecordValue({ key, buffer });
             }
         },
         record.getData());
     return status;
-}
-
-// template <typename T> bool fillBackItem(BciNumber key, const QWidget *parent, BciNumber parentKey)
-//{
-//    return true;
-//}
-
-bool WidgetFactory::fillBack(BciNumber key, const QWidget *parent)
-{
-    bool status = false;
-    auto search = widgetMap.find(key);
-    if (search == widgetMap.end())
-    {
-        qWarning() << "Not found" << key;
-        return status;
-    }
-
-    const auto var = search->second;
-    std::visit(overloaded {
-                   [&](const auto &arg) {
-#ifdef DEBUG_FACTORY
-                       qDebug("DefaultWidget");
-#endif
-                       using namespace delegate;
-
-                       switch (arg.type.hash())
-                       {
-                       case ctti::unnamed_type_id<IPCtrl>().hash():
-                       {
-                           status = fillBackIpCtrl(key, parent);
-                           break;
-                       }
-                       case ctti::unnamed_type_id<QCheckBox>().hash():
-                       {
-                           status = fillBackCheckBox(key, parent);
-                           break;
-                       }
-                       case ctti::unnamed_type_id<QLineEdit>().hash():
-                       {
-                           status = fillBackLineEdit(key, parent);
-                           break;
-                       }
-
-                       default:
-                           break;
-                           Q_ASSERT(false && "False type");
-                       }
-                   },
-                   [&](const delegate::DoubleSpinBoxGroup &arg) {
-#ifdef DEBUG_FACTORY
-                       qDebug("DoubleSpinBoxGroupWidget");
-#endif
-                       status = fillBackSPBG(key, parent);
-                   },
-                   [&](const delegate::DoubleSpinBoxWidget &arg) {
-#ifdef DEBUG_FACTORY
-                       qDebug("DoubleSpinBoxWidget");
-#endif
-                       status = fillBackSPB(key, parent);
-                   },
-                   [&](const delegate::CheckBoxGroup &arg) {
-#ifdef DEBUG_FACTORY
-                       qDebug("CheckBoxGroupWidget");
-#endif
-                       status = fillBackChBG(key, parent);
-                   },
-                   [&](const delegate::QComboBox &arg) {
-#ifdef DEBUG_FACTORY
-                       qDebug("QComboBox");
-#endif
-                       status = fillBackComboBox(key, parent, arg.primaryField);
-                   },
-                   [&](const delegate::Item &arg) {
-#ifdef DEBUG_FACTORY
-                       qDebug("Item");
-#endif
-                       auto record = S2::getRecord(key);
-                       std::visit(
-                           [&](auto &&type) {
-                               typedef std::remove_reference_t<decltype(type)> internalType;
-                               status = fillBackItem<internalType>(key, parent, arg.parent);
-                           },
-                           record.getData());
-                   },
-               },
-        var);
-    return status;
-}
-
-template <>
-QList<QStandardItem *> WidgetFactory::createItem(BciNumber key, const DataTypes::BYTE_8t &value, const QWidget *parent)
-{
-    QList<QStandardItem *> items {};
-    auto search = widgetMap.find(key);
-    if (search == widgetMap.end())
-    {
-        qWarning() << "Not found" << key;
-        return items;
-    }
-
-    const auto var = search->second;
-    std::visit(overloaded {
-                   [&](const auto &arg) {
-#ifdef DEBUG_FACTORY
-                       qDebug("DefaultWidget");
-#endif
-                       using namespace delegate;
-                   },
-
-                   [&](const delegate::Item &arg) {
-#ifdef DEBUG_FACTORY
-                       qDebug("Item");
-#endif
-                       switch (arg.itemType)
-                       {
-                       case delegate::ItemType::ModbusItem:
-                       {
-                           const auto *master = reinterpret_cast<const Bci::ModbusItem *>(&value);
-                           items = {
-                               (new QStandardItem(QString::number(master->typedat))),        //
-                               (new QStandardItem(QString::number(master->parport.baud))),   //
-                               (new QStandardItem(QString::number(master->parport.parity))), //
-                               (new QStandardItem(QString::number(master->parport.stop))),   //
-                               (new QStandardItem(QString::number(master->per))),            //
-                               (new QStandardItem(QString::number(master->adr))),            //
-                               (new QStandardItem(QString::number(master->type.reg))),       //
-                               (new QStandardItem(QString::number(master->type.dat))),       //
-                               (new QStandardItem(QString::number(master->reg)))             //
-                           };
-                       }
-                       }
-                   },
-               },
-        var);
-    return items;
-}
-
-template <> QWidget *WidgetFactory::helper(const delegate::Item &arg, QWidget *parent, BciNumber key)
-{
-    QWidget *widget = nullptr;
-    switch (arg.itemType)
-    {
-    case delegate::ItemType::ModbusItem:
-    {
-        widget = parent->findChild<QTableView *>(hashedName(arg.type, arg.parent));
-        if (!widget)
-        {
-            widget = createModbusView(parent);
-            widget->setObjectName(hashedName(arg.type, arg.parent));
-        }
-        return widget;
-    }
-    }
-    return nullptr;
-}
-
-bool WidgetFactory::fillBackModbus(
-    BciNumber key, const QWidget *parent, ctti::unnamed_type_id_t type, BciNumber parentKey)
-{
-    auto tableView = parent->findChild<QTableView *>(hashedName(type, parentKey));
-    // QTableView *tv = parent->findChild<QTableView *>(hashedName(type, parentKey));
-    if (tableView == nullptr)
-    {
-        qDebug("Пустой tv");
-        return false;
-    }
-    QStandardItemModel *model = qobject_cast<QStandardItemModel *>(tableView->model());
-    // -1 hardcoded as diff between parent element and first child element
-    int row = key - parentKey - 1;
-
-    Bci::ModbusItem master;
-
-    for (int c = 0; c < model->columnCount(); ++c)
-    {
-
-        QModelIndex index = model->index(row, c);
-        QVariant value = model->data(index);
-
-        bool status = false;
-        auto data = value.toUInt(&status);
-        switch (c)
-        {
-        case delegate::Item::ModbusColumns::SensorType:
-        {
-            master.typedat = Bci::SensorType(status ? data : 0);
-            break;
-        }
-        case delegate::Item::ModbusColumns::BaudRate:
-        {
-            master.parport.baud = CommandsMBS::BaudRate(status ? data : 0);
-            break;
-        }
-        case delegate::Item::ModbusColumns::Parity:
-        {
-            master.parport.parity = CommandsMBS::Parity(status ? data : 0);
-            break;
-        }
-        case delegate::Item::ModbusColumns::StopBits:
-        {
-            master.parport.stop = CommandsMBS::StopBits(status ? data : 0);
-            break;
-        }
-        case delegate::Item::ModbusColumns::Timeout:
-        {
-            master.per = status ? data : 0;
-            break;
-        }
-        case delegate::Item::ModbusColumns::Address:
-        {
-            master.adr = status ? data : 0;
-            break;
-        }
-        case delegate::Item::ModbusColumns::FuncCode:
-        {
-            master.type.reg = CommandsMBS::Commands(status ? data : 0);
-            break;
-        }
-        case delegate::Item::ModbusColumns::DataType:
-        {
-            master.type.dat = CommandsMBS::TypeId(status ? data : 0);
-            break;
-        }
-        case delegate::Item::ModbusColumns::Register:
-        {
-            master.reg = (status ? data : 0);
-            break;
-        }
-        default:
-            break;
-        }
-
-        DataTypes::BYTE_8t masterBuffer = *reinterpret_cast<DataTypes::BYTE_8t *>(&master);
-        S2::setRecordValue({ key, masterBuffer });
-    }
-    return true;
 }

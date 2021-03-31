@@ -26,4 +26,5 @@ HEADERS += \
     $$PWD/confkdvdialog.h \
     $$PWD/confkivdialog.h \
     $$PWD/confktfdialog.h \
+    $$PWD/delegate.h \
     $$PWD/widgetfactory.h
