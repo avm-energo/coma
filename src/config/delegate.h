@@ -24,6 +24,7 @@ enum WidgetGroup : int
     IntervalGroup,
     TempGroup = 7,
     ModbusGroup = 8,
+    Motorgroup = 9,
     //...to be continued
 };
 Q_ENUM_NS(WidgetGroup)
