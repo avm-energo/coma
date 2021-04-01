@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <?xml-stylesheet type="text/xsl" href="s2files.xsl"?>
-<s2files xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-				 xsi:noNamespaceSchemaLocation="s2files.xsd">
+<s2files xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="s2files.xsd">
 	<record>
 		<id>1</id>
 		<type>DWORD</type>
@@ -126,7 +125,7 @@
 			<type>IpControl</type>
 			<group>2</group>
 			<string>Маска</string>
-		</widget>	
+		</widget>
 	</record>
 	<record>
 		<id>22</id>
@@ -135,7 +134,7 @@
 			<type>IpControl</type>
 			<group>2</group>
 			<string>Шлюз</string>
-		</widget>	
+		</widget>
 	</record>
 	<record>
 		<id>23</id>
@@ -144,7 +143,7 @@
 			<type>QLineEdit</type>
 			<group>2</group>
 			<string>Порт протокола 104</string>
-		</widget>	
+		</widget>
 	</record>
 	<record>
 		<id>24</id>
