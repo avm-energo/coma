@@ -6,8 +6,12 @@
  <body>
 	<TABLE BORDER="1" CELLPADDING="5">
 		<THEAD>
-            <TH>Id</TH>
-            <TH>Type</TH>
+            <TH>ИД</TH>
+            <TH>Тип</TH>
+						<TH>Описание</TH>
+			<TH>Виджет</TH>
+			<TH>Группа</TH>
+
         </THEAD>
         <xsl:for-each select="s2files/record">
             <TR ALIGN="CENTER">
@@ -17,6 +21,16 @@
 			   <TD>
                   <xsl:value-of select="type"/>
                </TD>
+			   			   			   <TD>
+                  <xsl:value-of select="widget/string"/>
+               </TD>
+			   <TD>
+                  <xsl:value-of select="widget/type"/>
+               </TD>
+			   			   <TD>
+                  <xsl:value-of select="widget/group"/>
+               </TD>
+
             </TR>
          </xsl:for-each>
       </TABLE>
