@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<modules>
+<modules xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="device-schema.xsd">
   <!--Здесь мы описываем текущий модуль, обязательно указать mtypeb и mtypem-->
   <module mtypeb="a2" mtypem="84">
     <!--Здесь указано название модуля-->

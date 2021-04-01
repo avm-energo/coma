@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<modules>
+<modules xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="device-schema.xsd">
   <!--Здесь мы описаваем текущий модуль, обязательно указать mtypeb и mtypem-->
   <module mtypeb="a3" mtypem="87">
     <!--Здесь укаазно название модуля-->
@@ -94,7 +94,7 @@
           <item>Вероятно ухудшенное состояние статора</item>
           <item>Вероятно аварийное состояние статора</item>
           <item>Вероятно ухудшенное состояние ротора</item>
-          <item>Вероятно аварийное состояние ротора</item
+		  <item>Вероятно аварийное состояние ротора</item>
           <item>Вероятно ухудшенное состояние подшипников</item>
           <item>Вероятно аварийное состояние подшипников</item>
           <item>Вероятно смещение вала</item>
