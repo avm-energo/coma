@@ -15,14 +15,6 @@ public:
 
     void PrereadConf();
 
-    static widgetMap widgetMap()
-    {
-        return m_widgetMap;
-    }
-    static void setWidgetMap(const ::widgetMap &widgetMap)
-    {
-        m_widgetMap = widgetMap;
-    }
     void FillBack() const override;
 
 protected:
@@ -31,6 +23,7 @@ protected:
     QWidget *ConfButtons();
 
     virtual void SetupUI();
+    void Fill() override;
     bool PrepareConfToWrite();
     void uponInterfaceSetting() override;
 
@@ -39,8 +32,6 @@ private:
     void LoadConfFromFile();
     void ReadConf();
     void WriteConf();
+    void checkForDiff(const QList<DataTypes::DataRecV> &list) const;
     void confReceived(const QList<DataTypes::DataRecV> &list);
-    void confParametersListReceived(const DataTypes::ConfParametersListStruct &cfpl);
-
-    static ::widgetMap m_widgetMap;
 };

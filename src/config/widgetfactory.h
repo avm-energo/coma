@@ -146,7 +146,7 @@ template <typename T> bool WidgetFactory::fillWidget(const QWidget *parent, BciN
     std::visit(overloaded {
                    [&](const auto &arg) {
 #ifdef DEBUG_FACTORY
-                       qDebug("DefaultWidget");
+                       qDebug() << "DefaultWidget" << key;
 #endif
                        using namespace delegate;
                        if constexpr (std::is_same<T, IPCtrl::container_type>::value)
@@ -172,39 +172,39 @@ template <typename T> bool WidgetFactory::fillWidget(const QWidget *parent, BciN
                        }
                    },
                    [&]([[maybe_unused]] const delegate::DoubleSpinBoxGroup &arg) {
-#ifdef DEBUG_FACTORY
-                       qDebug("DoubleSpinBoxGroupWidget");
-#endif
                        if constexpr (std::is_container<T>())
                            if constexpr (sizeof(T::value_type) != 1 && !std::is_container<typename T::value_type>())
                            {
+#ifdef DEBUG_FACTORY
+                               qDebug() << "DoubleSpinBoxGroupWidget" << key;
+#endif
                                status = WDFunc::SetSPBGData(parent, QString::number(key), value);
                            }
                    },
                    [&]([[maybe_unused]] const delegate::DoubleSpinBoxWidget &arg) {
-#ifdef DEBUG_FACTORY
-                       qDebug("DoubleSpinBoxWidget");
-#endif
                        if constexpr (!std::is_container<T>())
                        {
+#ifdef DEBUG_FACTORY
+                           qDebug() << "DoubleSpinBoxWidget" << key;
+#endif
                            status = WDFunc::SetSPBData(parent, QString::number(key), value);
                        }
                    },
                    [&]([[maybe_unused]] const delegate::CheckBoxGroup &arg) {
-#ifdef DEBUG_FACTORY
-                       qDebug("CheckBoxGroupWidget");
-#endif
                        if constexpr (std::is_unsigned_v<T>)
                        {
+#ifdef DEBUG_FACTORY
+                           qDebug() << "CheckBoxGroupWidget" << key;
+#endif
                            status = WDFunc::SetChBGData(parent, QString::number(key), value);
                        }
                    },
                    [&](const delegate::QComboBox &arg) {
-#ifdef DEBUG_FACTORY
-                       qDebug("QComboBox");
-#endif
                        if constexpr (!std::is_container<T>())
                        {
+#ifdef DEBUG_FACTORY
+                           qDebug() << "QComboBox" << key;
+#endif
                            switch (arg.primaryField)
                            {
                            case delegate::QComboBox::data:
@@ -224,7 +224,7 @@ template <typename T> bool WidgetFactory::fillWidget(const QWidget *parent, BciN
                    },
                    [&](const delegate::Item &arg) {
 #ifdef DEBUG_FACTORY
-                       qDebug("Item");
+                       qDebug() << "Item" << key;
 #endif
                        status = fillTableView(parent, key, arg.parent, arg.type, value);
                    },

@@ -17,8 +17,6 @@
 #include <QScrollArea>
 #include <QTextEdit>
 
-::widgetMap AbstractConfDialog::m_widgetMap;
-
 AbstractConfDialog::AbstractConfDialog(QWidget *parent) : UDialog(parent)
 {
     m_password = "121941";
@@ -52,6 +50,29 @@ void AbstractConfDialog::WriteConf()
     BaseInterface::iface()->writeS2File(DataTypes::Config, &buffer);
 }
 
+// thanx to P0471R0
+template <class Container> auto sinserter(Container &c)
+{
+    using std::end;
+    return std::inserter(c, end(c));
+}
+
+void AbstractConfDialog::checkForDiff(const QList<DataTypes::DataRecV> &list) const
+{
+    std::set<BciNumber> receivedItems;
+    std::transform(list.cbegin(), list.cend(), sinserter(receivedItems),
+        [](const DataTypes::DataRecV &record) { return static_cast<BciNumber>(record.getId()); });
+
+    std::vector<BciNumber> diffItems;
+    std::set_difference(
+        receivedItems.cbegin(), receivedItems.cend(), m_list.cbegin(), m_list.cend(), std::back_inserter(diffItems));
+
+    if (!diffItems.empty())
+    {
+        qDebug() << diffItems;
+    }
+}
+
 void AbstractConfDialog::confReceived(const QList<DataTypes::DataRecV> &list)
 {
     S2::configV = list;
@@ -65,51 +86,8 @@ void AbstractConfDialog::confReceived(const QList<DataTypes::DataRecV> &list)
     if (s2typeM != Board::GetInstance().typeM())
         qCritical() << "Conflict typeB, module: " << QString::number(Board::GetInstance().typeM(), 16)
                     << " config: " << QString::number(s2typeM, 16);
-
-    for (const auto id : m_list)
-    {
-        const auto record = S2::getRecord(id);
-        std::visit(
-            [=](const auto &&value) {
-                WidgetFactory factory;
-                bool status = factory.fillWidget(this, static_cast<BciNumber>(record.getId()), value);
-                if (!status)
-                {
-                    qWarning() << "Couldnt fill widget for item: " << record.getId();
-                }
-            },
-            record.getData());
-    }
-}
-
-void AbstractConfDialog::confParametersListReceived(const DataTypes::ConfParametersListStruct &cfpl)
-{
-    const auto &config = &S2::config;
-    S2::configV.clear();
-    const auto &configV = &S2::configV;
-    for (const auto &cfp : cfpl)
-    {
-        S2::findElemAndWriteIt(config, cfp);
-    }
-    std::transform(config->begin(), config->end(), std::back_inserter(S2::configV),
-        [](const auto &oldRec) -> DataTypes::DataRecV { return DataTypes::DataRecV(oldRec); });
-    // std::for_each(configV->cbegin(), configV->cend(), [](auto &value) { value.printer(); });
+    checkForDiff(list);
     Fill();
-    //    qDebug() << std::equal(config->cbegin(), config->cend(), configV->cbegin(), configV->cend(),
-    //        [](const S2DataTypes::DataRec &oldRec, const S2DataTypes::DataRecV &newRec) {
-    //            bool status = true;
-    //            status = S2DataTypes::is_same(oldRec, newRec.serialize());
-    //            if (!status)
-    //                qDebug() << status;
-    //            return status;
-    //        });
-    for (auto i = 0; i != configV->size() && i != config->size(); ++i)
-    {
-        const auto oldRec = config->at(i);
-        const auto newRec = configV->at(i).serialize();
-        if (!S2DataTypes::is_same(oldRec, newRec))
-            qDebug() << oldRec.id << oldRec.numByte;
-    }
 }
 
 void AbstractConfDialog::SaveConfToFile()
@@ -222,7 +200,7 @@ delegate::WidgetGroup groupForId(BciNumber id)
 void AbstractConfDialog::SetupUI()
 {
 
-    QVBoxLayout *lyout = new QVBoxLayout;
+    QVBoxLayout *vlyout = new QVBoxLayout;
     QTabWidget *ConfTW = new QTabWidget(this);
 
     WidgetFactory factory;
@@ -242,22 +220,51 @@ void AbstractConfDialog::SetupUI()
         if (!child)
         {
             subBox = new QGroupBox("Группа " + QVariant::fromValue(group).toString(), this);
-            subBox->setObjectName(QString::number(group));
-            subBox->setLayout(new QVBoxLayout);
-            ConfTW->addTab(subBox, QVariant::fromValue(group).toString());
+            QVBoxLayout *subvlyout = new QVBoxLayout;
+            subvlyout->setAlignment(Qt::AlignTop);
+            subvlyout->setSpacing(0);
+
+            subvlyout->setContentsMargins(0, 0, 0, 0);
+
+            subBox->setLayout(subvlyout);
+
+            QScrollArea *scrollArea = new QScrollArea;
+            scrollArea->setObjectName(QString::number(group));
+            scrollArea->setFrameShape(QFrame::NoFrame);
+            scrollArea->setWidgetResizable(true);
+            scrollArea->setWidget(subBox);
+
+            ConfTW->addTab(scrollArea, QVariant::fromValue(group).toString());
         }
         else
         {
-            subBox = qobject_cast<QGroupBox *>(child);
+            subBox = qobject_cast<QGroupBox *>(child->findChild<QGroupBox *>());
         }
 
-        QLayout *lyout = subBox->layout();
+        auto *lyout = subBox->layout();
         lyout->addWidget(widget);
-        subBox->setLayout(lyout);
     }
-    lyout->addWidget(ConfTW);
-    lyout->addWidget(ConfButtons());
-    setLayout(lyout);
+    vlyout->addWidget(ConfTW);
+    vlyout->addWidget(ConfButtons());
+    setLayout(vlyout);
+}
+
+void AbstractConfDialog::Fill()
+{
+    for (const auto id : m_list)
+    {
+        const auto record = S2::getRecord(id);
+        std::visit(
+            [=](const auto &&value) {
+                WidgetFactory factory;
+                bool status = factory.fillWidget(this, static_cast<BciNumber>(record.getId()), value);
+                if (!status)
+                {
+                    qWarning() << "Couldnt fill widget for item: " << record.getId();
+                }
+            },
+            record.getData());
+    }
 }
 
 void AbstractConfDialog::PrereadConf()

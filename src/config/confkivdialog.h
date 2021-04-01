@@ -13,20 +13,20 @@ public:
     ~ConfKIVDialog();
 
 private:
-    void Fill() override;
+    // void Fill() override;
 
     // void SetupUI() override;
     void CheckConf() const override;
 
 protected:
-    QWidget *analogWidget();
-    QWidget *thresholdsWidget();
-    QWidget *remainsWidget();
-    virtual QWidget *connectionWidget();
-    QWidget *testWidget();
+    //    QWidget *analogWidget();
+    //    QWidget *thresholdsWidget();
+    //    QWidget *remainsWidget();
+    //    virtual QWidget *connectionWidget();
+    //    QWidget *testWidget();
 
-    void FillKiv();
-    void FillBackKiv() const;
+    //    void FillKiv();
+    //    void FillBackKiv() const;
 
     ConfigKIV *CKIV;
 

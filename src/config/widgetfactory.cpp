@@ -121,14 +121,14 @@ QWidget *WidgetFactory::createWidget(BciNumber key, QWidget *parent)
     std::visit(overloaded {
                    [&](const auto &arg) {
 #ifdef DEBUG_FACTORY
-                       qDebug("DefaultWidget");
+                       qDebug() << "DefaultWidget" << key;
 #endif
                        using namespace delegate;
                        widget = helper(arg, parent, key);
                    },
                    [&](const delegate::DoubleSpinBoxGroup &arg) {
 #ifdef DEBUG_FACTORY
-                       qDebug("DoubleSpinBoxGroupWidget");
+                       qDebug() << "DoubleSpinBoxGroupWidget" << key;
 #endif
                        widget = new QWidget(parent);
                        QHBoxLayout *lyout = new QHBoxLayout;
@@ -139,7 +139,7 @@ QWidget *WidgetFactory::createWidget(BciNumber key, QWidget *parent)
                    },
                    [&](const delegate::DoubleSpinBoxWidget &arg) {
 #ifdef DEBUG_FACTORY
-                       qDebug("DoubleSpinBoxWidget");
+                       qDebug() << "DoubleSpinBoxWidget" << key;
 #endif
                        widget = new QWidget(parent);
                        QHBoxLayout *lyout = new QHBoxLayout;
@@ -149,7 +149,7 @@ QWidget *WidgetFactory::createWidget(BciNumber key, QWidget *parent)
                    },
                    [&](const delegate::CheckBoxGroup &arg) {
 #ifdef DEBUG_FACTORY
-                       qDebug("CheckBoxGroupWidget");
+                       qDebug() << "CheckBoxGroupWidget" << key;
 #endif
                        // Q_ASSERT(desc.count() == arg.count);
                        widget = new QWidget(parent);
@@ -162,7 +162,7 @@ QWidget *WidgetFactory::createWidget(BciNumber key, QWidget *parent)
                    },
                    [&](const delegate::QComboBox &arg) {
 #ifdef DEBUG_FACTORY
-                       qDebug("QComboBox");
+                       qDebug() << "QComboBox" << key;
 #endif
                        // Q_ASSERT(desc.count() == arg.count);
                        widget = new QWidget(parent);

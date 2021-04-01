@@ -564,6 +564,17 @@
 	<record>
 		<id>1005</id>
 		<type>DWORD</type>
+		<widget>
+			<type>CheckBoxGroup</type>
+			<group>3</group>
+			<string>Разрешение запуска осциллограммы</string>
+			<string-array>
+				<item>По команде от модуля 12</item>
+				<item>По входному сигналу PD1</item>
+				<item>При резком изменении сигналов</item>
+			</string-array>
+			<count>3</count>
+		</widget>
 	</record>
 	<record>
 		<id>1006</id>
