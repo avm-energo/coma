@@ -115,6 +115,20 @@
 											</xs:complexType>
 										</xs:element>
 										<xs:element name="iec60870" type="xs:string" />
+										<xs:element name="s2files">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element maxOccurs="unbounded" name="record">
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element name="id" type="xs:unsignedShort" />
+																<xs:element name="defaultValue" type="xs:string" />
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
 									</xs:sequence>
 								</xs:complexType>
 							</xs:element>
