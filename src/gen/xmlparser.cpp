@@ -289,6 +289,22 @@ delegate::itemVariant XmlParser::parseWidget(QDomElement domElement)
     return delegate::Widget(type, description, widgetGroup);
 }
 
+DataTypes::DataRecV XmlParser::parseRecord(QDomElement domElement)
+{
+    QDomElement childElement = domElement.firstChildElement("id");
+    if (childElement.isNull())
+        return {};
+    bool status = false;
+    int id = childElement.text().toInt(&status);
+    if (!status)
+        return {};
+
+    childElement = domElement.firstChildElement("defaultValue");
+    if (childElement.isNull())
+        return {};
+    return DataTypes::DataRecV(id, childElement.text());
+}
+
 delegate::Item XmlParser::parseItem(QDomElement domElement, ctti::unnamed_type_id_t parentType)
 {
     auto name = domElement.text();
@@ -408,6 +424,12 @@ void XmlParser::traverseNode(const QDomNode &node, ModuleSettings *const setting
                     if (Board::GetInstance().interfaceType() == Board::Ethernet)
                         settings->ifaceSettings = (BaseInterface::iface()->parseSettings(domElement));
 
+                    domNode = domNode.nextSibling();
+                    continue;
+                }
+                if (domElement.tagName() == "record")
+                {
+                    settings->defaultConfig.push_back(parseRecord(domElement));
                     domNode = domNode.nextSibling();
                     continue;
                 }

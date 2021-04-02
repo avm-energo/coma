@@ -327,6 +327,146 @@ DataRecV::DataRecV(const S2DataTypes::DataRec &record, const char *rawdata) : id
     }
 }
 
+template <typename T, size_t N> std::array<T, N> operator<<(std::array<T, N> &array, const QStringList list)
+{
+    Q_ASSERT(size_t(list.size()) <= array.size());
+    std::transform(
+        list.cbegin(), list.cend(), array.begin(), [](const QString str) { return QVariant(str).value<T>(); });
+    return array;
+}
+
+template <typename T, size_t N1, size_t N2>
+auto operator<<(std::array<std::array<T, N2>, N1> &array, const QStringList list) -> decltype(array)
+{
+    Q_ASSERT(size_t(list.size()) <= (N1 * N2));
+    T *ptr = reinterpret_cast<T *>(array.data());
+    for (auto i = 0; i != (N1 * N2); ++i)
+    {
+        *ptr = QVariant(list.at(i)).value<T>();
+    }
+    return array;
+}
+
+template <typename T, size_t N> std::array<T, N> operator<<(std::array<T, N> &array, const QString str)
+{
+    const auto list = str.split(',');
+    return (array << list);
+}
+
+DataRecV::DataRecV(const int _id, const QString &str) : id(_id)
+{
+    using namespace detail;
+
+    auto search = map.find(_id);
+    assert(search != map.end());
+    // return;
+    // Exception inside ctor https://www.stroustrup.com/bs_faq2.html#ctor-exceptions
+
+    auto value = map.at(_id);
+    switch (value.hash())
+    {
+    case ctti::unnamed_type_id<BYTE>().hash():
+    {
+        data = QVariant(str).value<BYTE>();
+        break;
+    }
+    case ctti::unnamed_type_id<WORD>().hash():
+    {
+        data = QVariant(str).value<WORD>();
+        break;
+    }
+    case ctti::unnamed_type_id<DWORD>().hash():
+    {
+        data = QVariant(str).value<DWORD>();
+        break;
+    }
+    case ctti::unnamed_type_id<BYTE_4t>().hash():
+    {
+        BYTE_4t arr {};
+        arr << str;
+        data = arr;
+        break;
+    }
+    case ctti::unnamed_type_id<WORD_4t>().hash():
+    {
+        WORD_4t arr {};
+        arr << str;
+        data = arr;
+        break;
+    }
+    case ctti::unnamed_type_id<BYTE_8t>().hash():
+    {
+        BYTE_8t arr {};
+        arr << str;
+        data = arr;
+        break;
+    }
+    case ctti::unnamed_type_id<WORD_8t>().hash():
+    {
+        WORD_8t arr {};
+        arr << str;
+        data = arr;
+        break;
+    }
+    case ctti::unnamed_type_id<BYTE_16t>().hash():
+    {
+        BYTE_16t arr {};
+        arr << str;
+        data = arr;
+        break;
+    }
+    case ctti::unnamed_type_id<WORD_16t>().hash():
+    {
+        WORD_16t arr {};
+        arr << str;
+        data = arr;
+        break;
+    }
+    case ctti::unnamed_type_id<float>().hash():
+    {
+        data = QVariant(str).value<float>();
+        break;
+    }
+    case ctti::unnamed_type_id<FLOAT_2t>().hash():
+    {
+        FLOAT_2t arr {};
+        arr << str;
+        data = arr;
+        break;
+    }
+    case ctti::unnamed_type_id<FLOAT_2t_2t>().hash():
+    {
+        FLOAT_2t_2t arr {};
+        arr << str;
+        data = arr;
+        break;
+    }
+    case ctti::unnamed_type_id<FLOAT_3t>().hash():
+    {
+        FLOAT_3t arr {};
+        arr << str;
+        data = arr;
+        break;
+    }
+    case ctti::unnamed_type_id<FLOAT_6t>().hash():
+    {
+        FLOAT_6t arr {};
+        arr << str;
+        data = arr;
+        break;
+    }
+    case ctti::unnamed_type_id<FLOAT_8t>().hash():
+    {
+        FLOAT_8t arr {};
+        arr << str;
+        data = arr;
+        break;
+    }
+    default:
+        assert(false && "Unknown type id");
+    }
+}
+
 bool operator==(const DataTypes::DataRecV &lhs, const DataTypes::DataRecV &rhs)
 {
     using namespace S2DataTypes;

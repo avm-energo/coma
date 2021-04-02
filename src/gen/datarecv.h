@@ -6,7 +6,7 @@
 #include <map>
 
 class ConfigBlock;
-
+class QString;
 namespace S2DataTypes
 {
 using valueTypeMap = std::map<int, ctti::unnamed_type_id_t>;
@@ -33,6 +33,7 @@ public:
     friend bool operator!=(const DataRecV &lhs, const DataRecV &rhs);
     DataRecV(const S2DataTypes::DataRec &record);
     DataRecV(const S2DataTypes::DataRec &record, const char *rawdata);
+    DataRecV(const int _id, const QString &str);
     template <typename T> DataRecV(T *, unsigned _id, T _data) : id(_id), data(_data)
     {
     }
