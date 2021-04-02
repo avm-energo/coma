@@ -11,14 +11,15 @@
 class AbstractConfDialog : public UDialog, protected BaseConfig
 {
 public:
-    explicit AbstractConfDialog(QWidget *parent = nullptr);
+    explicit AbstractConfDialog(const QList<DataTypes::DataRecV> &defaultConfig, QWidget *parent = nullptr);
 
     void PrereadConf();
 
     void FillBack() const override;
+    void SetDefConf() override;
 
 protected:
-    std::set<BciNumber> m_list;
+    // std::set<BciNumber> m_list;
     QStringList CheckConfErrors;
     QWidget *ConfButtons();
 
@@ -32,6 +33,8 @@ private:
     void LoadConfFromFile();
     void ReadConf();
     void WriteConf();
-    void checkForDiff(const QList<DataTypes::DataRecV> &list) const;
+    void checkForDiff(const QList<DataTypes::DataRecV> &list);
     void confReceived(const QList<DataTypes::DataRecV> &list);
+
+    const QList<DataTypes::DataRecV> m_defaultValues;
 };

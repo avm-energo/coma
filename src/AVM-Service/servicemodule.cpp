@@ -6,11 +6,7 @@
 #include "../check/checkkivdialog.h"
 #include "../check/checkktfdialog.h"
 #include "../check/checkktfharmonicdialog.h"
-#include "../config/configkdv.h"
-#include "../config/configkiv.h"
-#include "../config/confkdvdialog.h"
-#include "../config/confkivdialog.h"
-#include "../config/confktfdialog.h"
+#include "../config/abstractconfdialog.h"
 #include "../dialogs/journalsdialog.h"
 #include "../gen/board.h"
 #include "../module/journkdv.h"
@@ -80,8 +76,8 @@ void ServiceModule::createModule(Modules::Model model)
         auto JOUR = UniquePointer<Journals>(new JournKIV(this));
         if (board.interfaceType() != Board::InterfaceType::RS485)
         {
-            ConfigKIV *CKIV = new ConfigKIV;
-            addDialogToList(new ConfKIVDialog(CKIV), "Конфигурирование", "conf1");
+            //   ConfigKIV *CKIV = new ConfigKIV;
+            addDialogToList(new AbstractConfDialog(settings()->defaultConfig), "Конфигурирование", "conf1");
         }
         CheckKIVDialog *cdkiv = new CheckKIVDialog;
         addDialogToList(cdkiv, "Проверка");
@@ -95,8 +91,8 @@ void ServiceModule::createModule(Modules::Model model)
         auto JOUR = UniquePointer<Journals>(new JournKTF(this));
         if (board.interfaceType() != Board::InterfaceType::RS485)
         {
-            ConfigKTF *CKTF = new ConfigKTF;
-            addDialogToList(new ConfKTFDialog(CKTF), "Конфигурирование", "conf1");
+            //  ConfigKTF *CKTF = new ConfigKTF;
+            addDialogToList(new AbstractConfDialog(settings()->defaultConfig), "Конфигурирование", "conf1");
         }
         CheckKTFDialog *cdktf = new CheckKTFDialog;
         addDialogToList(cdktf, "Проверка");
@@ -112,8 +108,8 @@ void ServiceModule::createModule(Modules::Model model)
         auto JOUR = UniquePointer<Journals>(new JournKDV(this));
         if (board.interfaceType() != Board::InterfaceType::RS485)
         {
-            ConfigKDV *CKDV = new ConfigKDV;
-            addDialogToList(new ConfKDVDialog(CKDV), "Конфигурирование", "conf1");
+            //  ConfigKDV *CKDV = new ConfigKDV;
+            addDialogToList(new AbstractConfDialog(settings()->defaultConfig), "Конфигурирование", "conf1");
         }
         CheckKDVDialog *cdkdv = new CheckKDVDialog;
         addDialogToList(cdkdv);

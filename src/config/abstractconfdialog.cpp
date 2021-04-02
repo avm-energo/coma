@@ -17,7 +17,8 @@
 #include <QScrollArea>
 #include <QTextEdit>
 
-AbstractConfDialog::AbstractConfDialog(QWidget *parent) : UDialog(parent)
+AbstractConfDialog::AbstractConfDialog(const QList<DataTypes::DataRecV> &defaultConfig, QWidget *parent)
+    : UDialog(parent), m_defaultValues(defaultConfig)
 {
     m_password = "121941";
     setSuccessMsg("Конфигурация записана успешно");
@@ -57,15 +58,25 @@ template <class Container> auto sinserter(Container &c)
     return std::inserter(c, end(c));
 }
 
-void AbstractConfDialog::checkForDiff(const QList<DataTypes::DataRecV> &list) const
+bool operator<(const BciNumber &number, const DataTypes::DataRecV &record)
+{
+    return number < static_cast<BciNumber>(record.getId());
+}
+
+bool operator<(const DataTypes::DataRecV &record, const BciNumber &number)
+{
+    return number < static_cast<BciNumber>(record.getId());
+}
+
+void AbstractConfDialog::checkForDiff(const QList<DataTypes::DataRecV> &list)
 {
     std::set<BciNumber> receivedItems;
     std::transform(list.cbegin(), list.cend(), sinserter(receivedItems),
         [](const DataTypes::DataRecV &record) { return static_cast<BciNumber>(record.getId()); });
 
     std::vector<BciNumber> diffItems;
-    std::set_difference(
-        receivedItems.cbegin(), receivedItems.cend(), m_list.cbegin(), m_list.cend(), std::back_inserter(diffItems));
+    std::set_difference(receivedItems.cbegin(), receivedItems.cend(), m_defaultValues.cbegin(), m_defaultValues.cend(),
+        std::back_inserter(diffItems));
 
     if (!diffItems.empty())
     {
@@ -204,16 +215,17 @@ void AbstractConfDialog::SetupUI()
     QTabWidget *ConfTW = new QTabWidget(this);
 
     WidgetFactory factory;
-    for (const auto i : (m_list))
+    for (const auto record : (m_defaultValues))
     {
-        QWidget *widget = factory.createWidget(i, this);
+        BciNumber id = static_cast<BciNumber>(record.getId());
+        QWidget *widget = factory.createWidget(id, this);
         if (!widget)
         {
-            qWarning() << "Bad config widget for item: " << QString::number(i);
+            qWarning() << "Bad config widget for item: " << QString::number(id);
             continue;
         }
 
-        auto group = groupForId(i);
+        auto group = groupForId(id);
         auto child = widgetAt(ConfTW, group);
 
         QGroupBox *subBox = nullptr;
@@ -251,8 +263,9 @@ void AbstractConfDialog::SetupUI()
 
 void AbstractConfDialog::Fill()
 {
-    for (const auto id : m_list)
+    for (const auto defRecord : m_defaultValues)
     {
+        BciNumber id = static_cast<BciNumber>(defRecord.getId());
         const auto record = S2::getRecord(id);
         std::visit(
             [=](const auto &&value) {
@@ -281,14 +294,22 @@ void AbstractConfDialog::PrereadConf()
 void AbstractConfDialog::FillBack() const
 {
     WidgetFactory factory;
-    for (const auto id : m_list)
+    for (const auto record : m_defaultValues)
     {
+        BciNumber id = static_cast<BciNumber>(record.getId());
         bool status = factory.fillBack(id, this);
         if (!status)
         {
             qWarning() << "Couldnt fill back item from widget: " << id;
         }
     }
+}
+
+void AbstractConfDialog::SetDefConf()
+{
+    for (const auto &record : m_defaultValues)
+        S2::setRecordValue(record);
+    Fill();
 }
 
 bool AbstractConfDialog::PrepareConfToWrite()
