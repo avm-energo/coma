@@ -1012,10 +1012,30 @@
 	<record>
 		<id>1070</id>
 		<type>DWORD</type>
+		<widget>
+			<type>QComboBox</type>
+			<group>4</group>
+			<field>data</field>
+			<string>Вид охлаждения</string>
+			<string-array>
+				<item>Естественное</item>
+				<item>Принудительное</item>
+			</string-array>
+		</widget>
 	</record>
 	<record>
 		<id>1071</id>
 		<type>DWORD</type>
+		<widget>
+			<type>QComboBox</type>
+			<group>4</group>
+			<field>data</field>
+			<string>Материал охлаждения</string>
+			<string-array>
+				<item>Медь</item>
+				<item>Алюминий</item>
+			</string-array>
+		</widget>
 	</record>
 	<record>
 		<id>1072</id>
