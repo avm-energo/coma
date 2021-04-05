@@ -341,3 +341,7 @@ void AbstractConfDialog::uponInterfaceSetting()
     SetupUI();
     PrereadConf();
 }
+
+void AbstractConfDialog::CheckConf()
+{
+}

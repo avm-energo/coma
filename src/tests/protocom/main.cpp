@@ -11,7 +11,6 @@ void bitStringReceived(const DataTypes::BitStringStruct &);
 void singlePointReceived(const DataTypes::SinglePointWithTimeStruct &);
 void floatReceived(const DataTypes::FloatStruct &);
 void fileReceived(const DataTypes::FileStruct &);
-void confParametersReceived(const DataTypes::ConfParametersListStruct &);
 void responseReceived(const DataTypes::GeneralResponseStruct &);
 void blockReceived(const DataTypes::BlockStruct &);
 

@@ -19,7 +19,6 @@ Console::Console(QObject *parent) : QObject(parent)
     connect(&manager, &DataManager::singlePointReceived, [this](const auto &st) { print(st); });
     connect(&manager, &DataManager::floatReceived, [this](const auto &st) { print(st); });
     connect(&manager, &DataManager::fileReceived, [this](const auto &st) { print(st); });
-    connect(&manager, &DataManager::confParametersListReceived, [this](const auto &st) { print(st); });
     connect(&manager, &DataManager::responseReceived, [this](const auto &st) { print(st); });
     connect(&manager, &DataManager::blockReceived, [this](const auto &st) { print(st); });
     connect(&manager, &DataManager::oscInfoReceived, [this](const auto &st) { print(st); });

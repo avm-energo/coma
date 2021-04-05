@@ -258,6 +258,27 @@ Error::Msg IEC104Thread::isIncomeDataValid(QByteArray ba)
     }
 }
 
+bool handleFile(QByteArray &ba, DataTypes::FilesEnum addr, bool isConfigFile)
+{
+    if (isConfigFile)
+    {
+        QList<DataTypes::DataRecV> outlistV;
+        if (!S2::RestoreData(ba, outlistV))
+            return false;
+        DataManager::addSignalToOutList(DataTypes::DataRecVList, outlistV);
+    }
+    else
+    {
+        DataTypes::ConfParametersListStruct outlist;
+        if (!S2::RestoreData(ba, outlist))
+            return false;
+        Q_ASSERT(outlist.size() == 1 && "Only one file supported");
+        DataTypes::FileStruct df { addr, outlist.first().data };
+        DataManager::addSignalToOutList(DataTypes::SignalTypes::File, df);
+    }
+    return true;
+}
+
 void IEC104Thread::ParseIFormat(QByteArray &ba) // основной разборщик
 {
     using namespace Commands104;
@@ -481,22 +502,8 @@ void IEC104Thread::ParseIFormat(QByteArray &ba) // основной разбор
                     m_isFileSending = false;
                     m_log->info("FileSending clear");
 
-                    int filetype = ba.at(9);
-
-                    DataTypes::ConfParametersListStruct outlist;
-                    if (S2::RestoreData(m_readData, outlist))
-                    {
-                        if (m_fileIsConfigFile)
-                            DataManager::addSignalToOutList(DataTypes::ConfParametersList, outlist);
-                        else
-                        {
-                            Q_ASSERT(outlist.size() == 1 && "Only one file supported");
-                            DataTypes::FileStruct df { static_cast<DataTypes::FilesEnum>(filetype),
-                                outlist.first().data };
-                            DataManager::addSignalToOutList(DataTypes::SignalTypes::File, df);
-                        }
-                    }
-                    else
+                    auto filetype = static_cast<DataTypes::FilesEnum>(ba.at(9));
+                    if (!handleFile(m_readData, filetype, m_fileIsConfigFile))
                         m_log->error("Error while income file S2 parsing");
 
                     //                    if (filetype == 0x01) // если файл конфигурации

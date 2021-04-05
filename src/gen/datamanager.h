@@ -123,8 +123,6 @@ signals:
     void singlePointReceived(const DataTypes::SinglePointWithTimeStruct &);
     void floatReceived(const DataTypes::FloatStruct &);
     void fileReceived(const DataTypes::FileStruct &);
-    void confParameterReceived(const DataTypes::ConfParameterStruct &);
-    void confParametersListReceived(const DataTypes::ConfParametersListStruct &);
     void dataRecVListReceived(const QList<DataTypes::DataRecV> &);
     void responseReceived(const DataTypes::GeneralResponseStruct &);
     void oscInfoReceived(const DataTypes::OscInfo &);
