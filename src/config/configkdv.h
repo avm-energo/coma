@@ -64,6 +64,7 @@ class ConfigKDV
 {
 public:
     explicit ConfigKDV();
+    ~ConfigKDV();
 
     void SetDefConf();
     Config *MainConfig();

@@ -20,7 +20,6 @@
 
 ConfKTFDialog::ConfKTFDialog(ConfigKTF *cktf, QWidget *parent) : AbstractConfDialog(parent)
 {
-
     ConfKTF = cktf;
 }
 
@@ -65,52 +64,52 @@ QWidget *ConfKTFDialog::analogWidget()
     gb->setFont(font);
 
     gridlyout->addWidget(WDFunc::NewLBL2(this, "Класс напряжения, кВ:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB2(this, "Unom1", 0, 10000, 0), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::Unom1), 0, 10000, 0), row, 2, 1, 3);
     row++;
 
     gridlyout->addWidget(WDFunc::NewLBL2(this, "Номинальное вторичное напряжение , В:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB2(this, "U2nom", 0, 10000, 0), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::U2nom), 0, 10000, 0), row, 2, 1, 3);
     row++;
 
     gridlyout->addWidget(WDFunc::NewLBL2(this, "Номинальный первичный ток, А:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB2(this, "ITT1nom", 0, 10000, 0), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::ITT1nom_KTF_KDV), 0, 10000, 0), row, 2, 1, 3);
     row++;
 
     gridlyout->addWidget(WDFunc::NewLBL2(this, "Номинальный вторичный ток , А:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB2(this, "ITT2nom", 0, 10000, 0), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::ITT2nom_KTF_KDV), 0, 10000, 0), row, 2, 1, 3);
     row++;
 
     gridlyout->addWidget(WDFunc::NewLBL2(this,
                              "Количество датчиков температуры обмоток, "
                              "подключенных по Modbus Master:"),
         row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB2(this, "TdatNum", 0, 10000, 0), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::TdatNum), 0, 10000, 0), row, 2, 1, 3);
     row++;
 
     gridlyout->addWidget(WDFunc::NewLBL2(this,
                              "Максимальное измеряемое фазное напряжение на входе "
                              "прибора, В эфф (не более 305В):"),
         row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB2(this, "Umaxm", 0, 10000, 0), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::Umaxm), 0, 10000, 0), row, 2, 1, 3);
     row++;
 
     gridlyout->addWidget(WDFunc::NewLBL2(this,
                              "Максимальное измеряемый ток на входе "
                              "прибора, А эфф (не более 33А) :"),
         row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB2(this, "Imaxm", 0, 10000, 0), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::Imaxm), 0, 10000, 0), row, 2, 1, 3);
     row++;
 
     gridlyout->addWidget(WDFunc::NewLBL2(this, "Номинальный ток контролирууемой обмотки, А:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB2(this, "Iwnom", 0, 10000, 0), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::Iwnom), 0, 10000, 0), row, 2, 1, 3);
     row++;
 
     gridlyout->addWidget(WDFunc::NewLBL2(this, "Уставка контроля минимума сигналов:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB2(this, "DUImin_ID", 0, 10000, 1), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::DUImin_ID), 0, 10000, 1), row, 2, 1, 3);
     row++;
 
     gridlyout->addWidget(WDFunc::NewLBL2(this, "Уставка контроля минимума токов:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB2(this, "Imin", 0, 10000, 1), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::Imin), 0, 10000, 1), row, 2, 1, 3);
     row++;
 
     gb->setLayout(gridlyout);
@@ -136,25 +135,25 @@ QWidget *ConfKTFDialog::transformerWidget()
     QLabel *lbl = new QLabel("Вид охлаждения: ");
     gridlyout->addWidget(lbl, row, 0, 1, 1, Qt::AlignLeft);
     QStringList cbl = QStringList { "естественное", "принудительное" };
-    auto *cb = WDFunc::NewCB2(this, "Cool_type", cbl);
+    auto *cb = WDFunc::NewCB2(this, nameByValue(BciNumber::Cool_type), cbl);
     //    connect(cb, SIGNAL(currentIndexChanged(int)), this, SLOT(SetCType(int)));
     gridlyout->addWidget(cb, row, 1, 1, 1);
     row++;
     lbl = new QLabel("Материал охлаждения: ");
     gridlyout->addWidget(lbl, row, 0, 1, 1, Qt::AlignLeft);
     cbl = QStringList { "медь", "алюминий" };
-    cb = WDFunc::NewCB2(this, "W_mat", cbl);
+    cb = WDFunc::NewCB2(this, nameByValue(BciNumber::W_mat), cbl);
     //    connect(cb, SIGNAL(currentIndexChanged(int)), this, SLOT(SetCType(int)));
     gridlyout->addWidget(cb, row, 1, 1, 1);
     row++;
 
     gridlyout->addWidget(WDFunc::NewLBL2(this, "Коэффициент добавочных потерь :"), row, 0, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB2(this, "Kdob", 0, 10000, 1), row, 1, 1, 1);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::Kdob), 0, 10000, 1), row, 1, 1, 1);
     row++;
 
     gridlyout->addWidget(
         WDFunc::NewLBL2(this, "Постоянная времени нагрева обмотки в номинальном режиме, мин:"), row, 0, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB2(this, "TauWnom", 0, 10000, 0), row, 1, 1, 1);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::TauWnom), 0, 10000, 0), row, 1, 1, 1);
     row++;
 
     gb->setLayout(gridlyout);
@@ -178,29 +177,29 @@ QWidget *ConfKTFDialog::alarmWidget()
     gb->setFont(font);
 
     gridlyout->addWidget(WDFunc::NewLBL2(this, "Предельно допустимая температура ННТ в°С:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB2(this, "TNNTdop", 0, 10000, 0), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::TNNTdop), 0, 10000, 0), row, 2, 1, 3);
     row++;
 
     gridlyout->addWidget(
         WDFunc::NewLBL2(this, "Уставка предупредительной сигнализации по температуре ННТ в °С:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB2(this, "TNNTpred", 0, 10000, 0), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::TNNTpred), 0, 10000, 0), row, 2, 1, 3);
     row++;
 
     gridlyout->addWidget(WDFunc::NewLBL2(this, "Номинальная температура окружающей среды, °С:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB2(this, "Tamb_nom", 0, 10000, 0), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::Tamb_nom), 0, 10000, 0), row, 2, 1, 3);
     row++;
 
     gridlyout->addWidget(
         WDFunc::NewLBL2(this, "Превышение температуры ННТ при номинальной нагрузке, °С:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB2(this, "dTNNTnom", 0, 10000, 0), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::dTNNTnom), 0, 10000, 0), row, 2, 1, 3);
     row++;
 
     gridlyout->addWidget(WDFunc::NewLBL2(this, "Гистерезис сигнализации по температуре ННТ,  град.С:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB2(this, "GTnnt", 0, 10000, 1), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::GTnnt), 0, 10000, 1), row, 2, 1, 3);
     row++;
 
     gridlyout->addWidget(WDFunc::NewLBL2(this, "Гистерезис сигнализации по токовой перегрузке, % от :"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB2(this, "GOvc", 0, 10000, 1), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::GOvc), 0, 10000, 1), row, 2, 1, 3);
     row++;
 
     gb->setLayout(gridlyout);
@@ -224,8 +223,8 @@ QWidget *ConfKTFDialog::ocsillogramWidget()
     gb->setFont(font);
 
     gridlyout->addWidget(WDFunc::NewLBL2(this, "Разрешение запуска осциллограммы:"), row, 0, 1, 1);
-    gridlyout->addWidget(WDFunc::NewChB2(this, "DDosc_ID1", "по команде 104"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewChB2(this, "DDosc_ID2", "по резкому изменению"), row, 2, 1, 1);
+    gridlyout->addWidget(WDFunc::NewChB2(this, nameByValue(BciNumber::DDOsc_ID), "по команде 104"), row, 1, 1, 1);
+    gridlyout->addWidget(WDFunc::NewChB2(this, nameByValue(BciNumber::DDOsc_ID), "по резкому изменению"), row, 2, 1, 1);
     row++;
 
     gb->setLayout(gridlyout);
@@ -241,18 +240,18 @@ QWidget *ConfKTFDialog::ocsillogramWidget()
                              "Уставка скачка напряжения для запуска "
                              "осциллографирования - % от номинала:"),
         row, 0, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB2(this, "DUosc", 0, 10000, 1), row, 1, 1, 1);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::DUosc), 0, 10000, 1), row, 1, 1, 1);
     row++;
 
     gridlyout->addWidget(
         WDFunc::NewLBL2(this, "Уставка скачка тока для запуска осциллографирования -  % от I2nom:"), row, 0, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB2(this, "DIosc_ID", 0, 10000, 1), row, 1, 1, 1);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::DIosc_ID), 0, 10000, 1), row, 1, 1, 1);
     row++;
 
     QLabel *lbl = new QLabel("Количество точек осциллограммы на период основной частоты: ");
     gridlyout->addWidget(lbl, row, 0, 1, 1, Qt::AlignLeft);
     QStringList cbl = QStringList { "256", "128", "64", "32", "16" };
-    auto *cb = WDFunc::NewCB2(this, "OscPoints", cbl);
+    auto *cb = WDFunc::NewCB2(this, nameByValue(BciNumber::OscPoints), cbl);
     //    connect(cb, SIGNAL(currentIndexChanged(int)), this, SLOT(SetCType(int)));
     gridlyout->addWidget(cb, row, 1, 1, 1);
     row++;
@@ -305,15 +304,15 @@ QWidget *ConfKTFDialog::otherWidget()
     gb->setFont(font);
 
     gridlyout->addWidget(WDFunc::NewLBL2(this, "Интервал усреднения данных, период:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB2(this, "NFiltr_ID", 0, 10000, 0), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::NFiltr_ID), 0, 10000, 0), row, 2, 1, 3);
     row++;
 
     gridlyout->addWidget(WDFunc::NewLBL2(this, "Постоянная времени фильтрации гармоник, цикл:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB2(this, "NHarmFilt_ID", 0, 10000, 0), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::NHarmFilt_ID), 0, 10000, 0), row, 2, 1, 3);
     row++;
 
     gridlyout->addWidget(WDFunc::NewLBL2(this, "Интервал записи данных в ПЗУ (тренд), с:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB2(this, "T_Data_Rec", 0, 10000, 0), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewSPB2(this, nameByValue(BciNumber::T_Data_Rec), 0, 10000, 0), row, 2, 1, 3);
     row++;
 
     gb->setLayout(gridlyout);
@@ -342,70 +341,89 @@ void ConfKTFDialog::FillKtf()
 {
 
     //    Conf->Fill();
+    using namespace DataTypes;
 
-    WDFunc::SetSPBData(this, "NFiltr_ID", ConfKTF->Bci_block.NFiltr);
-    WDFunc::SetSPBData(this, "NHarmFilt_ID", ConfKTF->Bci_block.NHarmFilt);
+    SetSPBData<float>(this, BciNumber::Unom1);
+    SetSPBData<float>(this, BciNumber::U2nom);
+    SetSPBData<float>(this, BciNumber::ITT1nom_KTF_KDV);
+    SetSPBData<float>(this, BciNumber::ITT2nom_KTF_KDV);
+    SetSPBData<DWORD>(this, BciNumber::TdatNum);
+    SetSPBData<float>(this, BciNumber::Umaxm);
+    SetSPBData<float>(this, BciNumber::Imaxm);
+    SetSPBData<float>(this, BciNumber::Iwnom);
+    SetSPBData<float>(this, BciNumber::DUImin_ID);
+    SetSPBData<float>(this, BciNumber::Imin);
+    // SetSPBData<DWORD>(this, BciNumber::Cool_type); потом
+    SetSPBData<DWORD>(this, BciNumber::W_mat);
+    SetSPBData<float>(this, BciNumber::Kdob);
+    SetSPBData<float>(this, BciNumber::TauWnom);
+    SetSPBData<float>(this, BciNumber::TNNTdop);
+    SetSPBData<float>(this, BciNumber::TNNTpred);
+    SetSPBData<float>(this, BciNumber::Tamb_nom);
+    SetSPBData<float>(this, BciNumber::dTNNTnom);
+    SetSPBData<float>(this, BciNumber::GTnnt);
+    SetSPBData<float>(this, BciNumber::GOvc);
+    // SetSPBData<DWORD>(this, BciNumber::DDOsc_ID); потом
+    SetSPBData<float>(this, BciNumber::DUosc);
+    SetSPBData<float>(this, BciNumber::DIosc_ID);
+    SetSPBData<DWORD>(this, BciNumber::NFiltr_ID);
+    SetSPBData<DWORD>(this, BciNumber::NHarmFilt_ID);
+    SetSPBData<DWORD>(this, BciNumber::T_Data_Rec);
+    //    SetSPBData<DWORD>(this, BciNumber::OscPoints); потом
 
-    if (ConfKTF->Bci_block.DDosc & 0x04)
-        WDFunc::SetChBData(this, "DDosc_ID1", true);
-    else
-        WDFunc::SetChBData(this, "DDosc_ID1", false);
+    //    if (ConfKTF->Bci_block.DDosc & 0x04)
+    //        WDFunc::SetChBData(this, "DDosc_ID1", true);
+    //    else
+    //        WDFunc::SetChBData(this, "DDosc_ID1", false);
 
-    if (ConfKTF->Bci_block.DDosc & 0x01)
-        WDFunc::SetChBData(this, "DDosc_ID2", true);
-    else
-        WDFunc::SetChBData(this, "DDosc_ID2", false);
+    //    if (ConfKTF->Bci_block.DDosc & 0x01)
+    //        WDFunc::SetChBData(this, "DDosc_ID2", true);
+    //    else
+    //        WDFunc::SetChBData(this, "DDosc_ID2", false);
 
-    WDFunc::SetSPBData(this, "Unom1", ConfKTF->Bci_block.Unom1);
-    WDFunc::SetSPBData(this, "DUosc", ConfKTF->Bci_block.DUosc);
-    WDFunc::SetSPBData(this, "DIosc_ID", ConfKTF->Bci_block.DIosc);
-    WDFunc::SetSPBData(this, "DUImin_ID", ConfKTF->Bci_block.DUImin);
-    WDFunc::SetSPBData(this, "Imin", ConfKTF->Bci_block.Imin);
-    WDFunc::SetSPBData(this, "T_Data_Rec", ConfKTF->Bci_block.T_Data_Rec);
-    WDFunc::SetSPBData(this, "U2nom", ConfKTF->Bci_block.U2nom);
-    WDFunc::SetSPBData(this, "ITT1nom", ConfKTF->Bci_block.ITT1nom);
-    WDFunc::SetSPBData(this, "ITT2nom", ConfKTF->Bci_block.ITT2nom);
+    //    int cbidx = ((ConfKTF->Bci_block.Cool_type & 0x01) ? 1 : 0);
+    //    WDFunc::SetCBIndex(this, "Cool_type", cbidx);
+    //    cbidx = ((ConfKTF->Bci_block.W_mat & 0x01) ? 1 : 0);
+    //    WDFunc::SetCBIndex(this, "W_mat", cbidx);
 
-    int cbidx = ((ConfKTF->Bci_block.Cool_type & 0x01) ? 1 : 0);
-    WDFunc::SetCBIndex(this, "Cool_type", cbidx);
-    cbidx = ((ConfKTF->Bci_block.W_mat & 0x01) ? 1 : 0);
-    WDFunc::SetCBIndex(this, "W_mat", cbidx);
-
-    WDFunc::SetSPBData(this, "TNNTdop", ConfKTF->Bci_block.TNNTdop);
-    WDFunc::SetSPBData(this, "TNNTpred", ConfKTF->Bci_block.TNNTpred);
-    WDFunc::SetSPBData(this, "Tamb_nom", ConfKTF->Bci_block.Tamb_nom);
-    WDFunc::SetSPBData(this, "dTNNTnom", ConfKTF->Bci_block.dTNNTnom);
-    WDFunc::SetSPBData(this, "Kdob", ConfKTF->Bci_block.Kdob);
-    WDFunc::SetSPBData(this, "TauWnom", ConfKTF->Bci_block.TauWnom);
-    WDFunc::SetSPBData(this, "Umaxm", ConfKTF->Bci_block.Umax);
-    WDFunc::SetSPBData(this, "Imaxm", ConfKTF->Bci_block.Imax);
-    WDFunc::SetSPBData(this, "Iwnom", ConfKTF->Bci_block.Iwnom);
-
-    for (int i = 0; i < 5; i++)
-    {
-        if (ConfKTF->Bci_block.OscPoints == Rates.at(i).toUInt())
-            cbidx = i;
-    }
-    WDFunc::SetCBIndex(this, "OscPoints", cbidx);
-
-    WDFunc::SetSPBData(this, "GTnnt", ConfKTF->Bci_block.GTnnt);
-    WDFunc::SetSPBData(this, "GOvc", ConfKTF->Bci_block.GOvc);
-    WDFunc::SetSPBData(this, "TdatNum", ConfKTF->Bci_block.TdatNum);
-
-    //    ConfKxx->Fill();
+    //    for (int i = 0; i < 5; i++)
+    //    {
+    //        if (ConfKTF->Bci_block.OscPoints == Rates.at(i).toUInt())
+    //            cbidx = i;
+    //    }
+    //    WDFunc::SetCBIndex(this, "OscPoints", cbidx);
 }
 
 void ConfKTFDialog::FillBackKtf() const
 {
+    using namespace DataTypes;
 
-    int cbidx;
+    SPBDataS2<float>(this, BciNumber::Unom1);
+    SPBDataS2<float>(this, BciNumber::U2nom);
+    SPBDataS2<float>(this, BciNumber::ITT1nom_KTF_KDV);
+    SPBDataS2<float>(this, BciNumber::ITT2nom_KTF_KDV);
+    SPBDataS2<DWORD>(this, BciNumber::TdatNum);
+    SPBDataS2<float>(this, BciNumber::Umaxm);
+    SPBDataS2<float>(this, BciNumber::Imaxm);
+    SPBDataS2<float>(this, BciNumber::Iwnom);
+    SPBDataS2<float>(this, BciNumber::DUImin_ID);
+    SPBDataS2<float>(this, BciNumber::Imin);
+    SPBDataS2<DWORD>(this, BciNumber::W_mat);
+    SPBDataS2<float>(this, BciNumber::Kdob);
+    SPBDataS2<float>(this, BciNumber::TauWnom);
+    SPBDataS2<float>(this, BciNumber::TNNTdop);
+    SPBDataS2<float>(this, BciNumber::TNNTpred);
+    SPBDataS2<float>(this, BciNumber::Tamb_nom);
+    SPBDataS2<float>(this, BciNumber::dTNNTnom);
+    SPBDataS2<float>(this, BciNumber::GTnnt);
+    SPBDataS2<float>(this, BciNumber::GOvc);
+    SPBDataS2<float>(this, BciNumber::DUosc);
+    SPBDataS2<float>(this, BciNumber::DIosc_ID);
+    SPBDataS2<DWORD>(this, BciNumber::NFiltr_ID);
+    SPBDataS2<DWORD>(this, BciNumber::NHarmFilt_ID);
+    SPBDataS2<DWORD>(this, BciNumber::T_Data_Rec);
 
-    //
-    //  NOTE Need to reworked as others
-    //
-
-    //  WDFunc::SPBData(this, "NFiltr_ID", ConfKTF->Bci_block.NFiltr);
-    //  WDFunc::SPBData(this, "NHarmFilt_ID", ConfKTF->Bci_block.NHarmFilt);
+    //    int cbidx;
 
     //    WDFunc::ChBData(this, "DDosc_ID1", DDosc);
     //    if (DDosc)
@@ -421,38 +439,14 @@ void ConfKTFDialog::FillBackKtf() const
     //        ConfKTF->Bci_block.DDosc = ConfKTF->Bci_block.DDosc | 0x01;
     //    }
 
-    //    WDFunc::SPBData(this, "Unom1", ConfKTF->Bci_block.Unom1);
-    //    WDFunc::SPBData(this, "DUosc", ConfKTF->Bci_block.DUosc);
-    //    WDFunc::SPBData(this, "DIosc_ID", ConfKTF->Bci_block.DIosc);
-    //    WDFunc::SPBData(this, "DUImin_ID", ConfKTF->Bci_block.DUImin);
-    //    WDFunc::SPBData(this, "Imin", ConfKTF->Bci_block.Imin);
-    //    WDFunc::SPBData(this, "T_Data_Rec", ConfKTF->Bci_block.T_Data_Rec);
-    //    WDFunc::SPBData(this, "U2nom", ConfKTF->Bci_block.U2nom);
-    //    WDFunc::SPBData(this, "ITT1nom", ConfKTF->Bci_block.ITT1nom);
-    //    WDFunc::SPBData(this, "ITT2nom", ConfKTF->Bci_block.ITT2nom);
-
     //    cbidx = WDFunc::CBIndex(this, "Cool_type");
     //    ConfKTF->Bci_block.Cool_type = cbidx;
 
     //    cbidx = WDFunc::CBIndex(this, "W_mat");
     //    ConfKTF->Bci_block.W_mat = cbidx;
 
-    //    WDFunc::SPBData(this, "TNNTdop", ConfKTF->Bci_block.TNNTdop);
-    //    WDFunc::SPBData(this, "TNNTpred", ConfKTF->Bci_block.TNNTpred);
-    //    WDFunc::SPBData(this, "Tamb_nom", ConfKTF->Bci_block.Tamb_nom);
-    //    WDFunc::SPBData(this, "dTNNTnom", ConfKTF->Bci_block.dTNNTnom);
-    //    WDFunc::SPBData(this, "Kdob", ConfKTF->Bci_block.Kdob);
-    //    WDFunc::SPBData(this, "TauWnom", ConfKTF->Bci_block.TauWnom);
-    //    WDFunc::SPBData(this, "Umaxm", ConfKTF->Bci_block.Umax);
-    //    WDFunc::SPBData(this, "Imaxm", ConfKTF->Bci_block.Imax);
-    //    WDFunc::SPBData(this, "Iwnom", ConfKTF->Bci_block.Iwnom);
-
     //    cbidx = WDFunc::CBIndex(this, "OscPoints");
     //    ConfKTF->Bci_block.OscPoints = (Rates.at(cbidx).toInt());
-
-    //    WDFunc::SPBData(this, "GTnnt", ConfKTF->Bci_block.GTnnt);
-    //    WDFunc::SPBData(this, "GOvc", ConfKTF->Bci_block.GOvc);
-    //    WDFunc::SPBData(this, "TdatNum", ConfKTF->Bci_block.TdatNum);
 }
 
 void ConfKTFDialog::CheckConf() const
