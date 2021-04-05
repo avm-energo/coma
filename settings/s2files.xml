@@ -1015,7 +1015,6 @@
 		<widget>
 			<type>QComboBox</type>
 			<group>4</group>
-			<field>data</field>
 			<string>Вид охлаждения</string>
 			<string-array>
 				<item>Естественное</item>
@@ -1029,7 +1028,6 @@
 		<widget>
 			<type>QComboBox</type>
 			<group>4</group>
-			<field>data</field>
 			<string>Материал охлаждения</string>
 			<string-array>
 				<item>Медь</item>
