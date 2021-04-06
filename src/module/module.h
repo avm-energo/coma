@@ -73,6 +73,10 @@ public:
     ModuleSettings *settings() const;
     bool loadSettings();
     bool loadS2Settings();
+    quint64 configVersion() const;
+    bool isConfigOutdated() const;
+    void eraseSettings() const;
+    void putConfigVersion() const;
 
 private:
     QList<UDialog *> m_dialogs;

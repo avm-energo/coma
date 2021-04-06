@@ -1,6 +1,6 @@
 #include "servicecoma.h"
 
-#include "../comaversion/version.h"
+#include "../comaversion/comaversion.h"
 #include "../gen/board.h"
 #include "../gen/datamanager.h"
 #include "../interfaces/iec104.h"
@@ -26,8 +26,9 @@ void ServiceComa::PrepareDialogs()
 void ServiceComa::getAbout()
 {
     AboutWidget *w = new AboutWidget;
-    w->appendLine("Config version: " + Version::getConfigVersion());
-    w->prependLine(QString(PROGNAME) + " version " + QString(COMAVERSION) + "-" + Version::getGitHash());
+    GitVersion version;
+    w->appendLine("Config version: " + version.getConfigVersion());
+    w->prependLine(QString(PROGNAME) + " version " + QString(COMAVERSION) + "-" + version.getGitHash());
     w->setupUI();
     w->show();
 }

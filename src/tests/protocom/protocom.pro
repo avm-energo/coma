@@ -58,7 +58,9 @@ contains(QT_ARCH, x86_64) {
     }
 }
 
-LIBRARIES += check \
+LIBRARIES += \
+    comaversion \
+    check \
     config \
     datablock \
     dialogs \

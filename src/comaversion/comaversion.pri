@@ -1,6 +1,6 @@
 
 HEADERS += \
-    $$PWD/version.h
+    $$PWD/comaversion.h
 
 SOURCES += \
-    $$PWD/version.cpp
+    $$PWD/comaversion.cpp

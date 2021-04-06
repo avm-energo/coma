@@ -25,6 +25,7 @@
 #include "../avtuk/parseid9050.h"
 #include "../avtuk/swjdialog.h"
 #include "../avtuk/trendviewdialog.h"
+#include "../comaversion/comaversion.h"
 #include "../dialogs/connectdialog.h"
 #include "../dialogs/errordialog.h"
 #include "../dialogs/keypressdialog.h"
@@ -196,6 +197,12 @@ void Coma::SetupUI()
 void Coma::PrepareDialogs()
 {
     Q_INIT_RESOURCE(settings);
+    if (m_Module->isConfigOutdated())
+    {
+        m_Module->eraseSettings();
+        m_Module->putConfigVersion();
+    }
+
     if (!m_Module->loadSettings())
     {
         qCritical() << "No conf .xml file for this module";

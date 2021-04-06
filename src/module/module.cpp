@@ -1,5 +1,6 @@
 #include "module.h"
 
+#include "../comaversion/comaversion.h"
 #include "../ctti/type_id.hpp"
 #include "../dialogs/fwuploaddialog.h"
 #include "../dialogs/infodialog.h"
@@ -14,6 +15,8 @@
 
 #include <QDir>
 #include <QtXml>
+
+constexpr char versionFile[] = "coma.ver";
 
 Module::Module(QObject *parent) : QObject(parent)
 {
@@ -231,7 +234,59 @@ bool Module::loadS2Settings()
     {
         return false;
         qCritical() << Error::FileOpenError << file.fileName();
+
+quint64 Module::configVersion() const
+{
+    QDir directory(StdFunc::GetSystemHomeDir());
+    QFile file;
+    file.setFileName(directory.filePath(versionFile));
+    if (!file.open(QIODevice::ReadOnly))
+        return 0;
+    bool status = false;
+    quint64 counter = file.readAll().toULongLong(&status);
+    if (!status)
+        return 0;
+    return counter;
+}
+
+bool Module::isConfigOutdated() const
+{
+    GitVersion version;
+
+    return configVersion() < version.getGitCounter();
+    return false;
+}
+
+void Module::eraseSettings() const
+{
+    QDir directory(StdFunc::GetSystemHomeDir());
+    auto files = directory.entryList(QDir::Files).filter(".xml");
+
+    files.push_back(versionFile);
+    // qDebug() << files;
+    for (const auto &filename : files)
+    {
+        QFile file(directory.filePath(filename));
+        file.setPermissions(QFile::ReadOther | QFile::WriteOther);
+        if (!file.remove())
+            qDebug() << file;
     }
+}
+
+void Module::putConfigVersion() const
+{
+    QDir directory(StdFunc::GetSystemHomeDir());
+    QFile file;
+    file.setFileName(directory.filePath(versionFile));
+    if (!file.open(QIODevice::WriteOnly))
+    {
+        qCritical() << Error::FileWriteError << versionFile;
+        return;
+    }
+    QTextStream out(&file);
+    GitVersion version;
+    out << version.getGitCounter();
+    file.close();
 }
 
 void Module::create(UniquePointer<Journals> jour)
