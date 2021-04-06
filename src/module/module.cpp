@@ -293,7 +293,7 @@ void Module::create(UniquePointer<Journals> jour)
 {
     if (Board::GetInstance().interfaceType() != Board::InterfaceType::RS485)
     {
-        addDialogToList(new AbstractConfDialog(settings()->defaultConfig), "Конфигурирование", "conf1");
+        //     addDialogToList(new AbstractConfDialog(settings()->defaultConfig), "Конфигурирование", "conf1");
         Q_ASSERT(jour != nullptr);
         addDialogToList(new JournalDialog(std::move(jour)), "Журналы");
     }
