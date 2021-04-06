@@ -1,9 +1,11 @@
 TEMPLATE = subdirs
 
+CONFIG =+ ordered
+
 SUBDIRS = \
+            comaversion \
             check \   # relative paths
             config \
-            comaversion \
             datablocks \
             dialogs \
             interfaces \
@@ -21,6 +23,6 @@ SUBDIRS = \
             AVM-Debug
 
 
-AVM-Service.depends = check config datablocks dialogs interfaces models module startup widgets gen avtuk qcustomplot comaversion
-AVM-Debug.depends = check config datablocks dialogs interfaces models module startup widgets gen tune avtuk qcustomplot comaversion
-tests.depends = check config datablocks dialogs interfaces models module startup widgets gen tune avtuk
+AVM-Service.depends = comaversion check config datablocks dialogs interfaces models module startup widgets gen avtuk qcustomplot
+AVM-Debug.depends = comaversion check config datablocks dialogs interfaces models module startup widgets gen tune avtuk qcustomplot
+tests.depends = comaversion check config datablocks dialogs interfaces models module startup widgets gen tune avtuk

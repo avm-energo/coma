@@ -361,7 +361,10 @@ bool WDFunc::SetSPBData(const QObject *w, const QString &spbname, const double &
 {
     QDoubleSpinBox *spb = w->findChild<QDoubleSpinBox *>(spbname);
     if (spb == nullptr)
+    {
+        qDebug() << Error::NullDataError << spbname;
         return false;
+    }
     spb->setValue(spbvalue);
     return true;
 }

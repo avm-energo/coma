@@ -1,6 +1,7 @@
 #include "module.h"
 
 #include "../comaversion/comaversion.h"
+#include "../config/abstractconfdialog.h"
 #include "../ctti/type_id.hpp"
 #include "../dialogs/fwuploaddialog.h"
 #include "../dialogs/infodialog.h"
@@ -156,27 +157,24 @@ bool Module::loadSettings()
             return loadSettings();
         }
     }
-    if (file.open(QIODevice::ReadOnly))
+    if (!file.open(QIODevice::ReadOnly))
     {
-        if (domDoc.setContent(&file))
-        {
-            m_settings = std::unique_ptr<ModuleSettings>(new ModuleSettings);
-            QDomElement domElement = domDoc.documentElement();
-            XmlParser::traverseNode(domElement, m_settings.get());
-            file.close();
-            return true;
-        }
-        else
-        {
-            file.close();
-            qInfo() << Error::WrongFileError << file.fileName();
-            return false;
-        }
+        qCritical() << Error::FileOpenError << file.fileName();
+        return false;
+    }
+    if (domDoc.setContent(&file))
+    {
+        m_settings = std::unique_ptr<ModuleSettings>(new ModuleSettings);
+        QDomElement domElement = domDoc.documentElement();
+        XmlParser::traverseNode(domElement, m_settings.get());
+        file.close();
+        return true;
     }
     else
     {
+        file.close();
+        qInfo() << Error::WrongFileError << file.fileName();
         return false;
-        qCritical() << Error::FileOpenError << file.fileName();
     }
 }
 
@@ -232,8 +230,10 @@ bool Module::loadS2Settings()
     }
     else
     {
-        return false;
         qCritical() << Error::FileOpenError << file.fileName();
+        return false;
+    }
+}
 
 quint64 Module::configVersion() const
 {
@@ -293,6 +293,7 @@ void Module::create(UniquePointer<Journals> jour)
 {
     if (Board::GetInstance().interfaceType() != Board::InterfaceType::RS485)
     {
+        addDialogToList(new AbstractConfDialog(settings()->defaultConfig), "Конфигурирование", "conf1");
         Q_ASSERT(jour != nullptr);
         addDialogToList(new JournalDialog(std::move(jour)), "Журналы");
     }

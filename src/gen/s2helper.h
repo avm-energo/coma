@@ -80,7 +80,7 @@ namespace detail
         else if constexpr (std::is_container<T>())
         {
             std::cout << "[ ";
-            int counter = 0;
+            size_t counter = 0;
             for (const auto i : value)
             {
                 print(i);

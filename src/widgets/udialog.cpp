@@ -27,7 +27,6 @@ void UDialog::updateGeneralResponse(const DataTypes::GeneralResponseStruct &resp
     {
         auto code = Error::Msg(response.data);
         QString msg {};
-        ;
         switch (code)
         {
         case Error::FlashError:
@@ -37,6 +36,7 @@ void UDialog::updateGeneralResponse(const DataTypes::GeneralResponseStruct &resp
                 msg = tr("Запрошенный файл отсутствует");
                 break;
             }
+            [[fallthrough]];
         }
         default:
             msg = QVariant::fromValue(Error::Msg(response.data)).toString();

@@ -61,14 +61,14 @@ template <typename T> QWidget *helper(const T &arg, QWidget *parent, BciNumber k
     }
 
     default:
-        break;
         Q_ASSERT(false && "False type");
+        break;
     }
 
     return widget;
 }
 
-template <> QWidget *helper(const delegate::Item &arg, QWidget *parent, BciNumber key)
+template <> QWidget *helper(const delegate::Item &arg, QWidget *parent, [[maybe_unused]] BciNumber key)
 {
     QWidget *widget = nullptr;
     switch (arg.itemType)
@@ -213,23 +213,23 @@ bool WidgetFactory::fillBack(BciNumber key, const QWidget *parent)
                        }
 
                        default:
-                           break;
                            Q_ASSERT(false && "False type");
+                           break;
                        }
                    },
-                   [&](const delegate::DoubleSpinBoxGroup &arg) {
+                   [&]([[maybe_unused]] const delegate::DoubleSpinBoxGroup &arg) {
 #ifdef DEBUG_FACTORY
                        qDebug("DoubleSpinBoxGroupWidget");
 #endif
                        status = fillBackSPBG(key, parent);
                    },
-                   [&](const delegate::DoubleSpinBoxWidget &arg) {
+                   [&]([[maybe_unused]] const delegate::DoubleSpinBoxWidget &arg) {
 #ifdef DEBUG_FACTORY
                        qDebug("DoubleSpinBoxWidget");
 #endif
                        status = fillBackSPB(key, parent);
                    },
-                   [&](const delegate::CheckBoxGroup &arg) {
+                   [&]([[maybe_unused]] const delegate::CheckBoxGroup &arg) {
 #ifdef DEBUG_FACTORY
                        qDebug("CheckBoxGroupWidget");
 #endif
@@ -259,7 +259,8 @@ bool WidgetFactory::fillBack(BciNumber key, const QWidget *parent)
 }
 
 template <>
-QList<QStandardItem *> WidgetFactory::createItem(BciNumber key, const DataTypes::BYTE_8t &value, const QWidget *parent)
+QList<QStandardItem *> WidgetFactory::createItem(
+    BciNumber key, const DataTypes::BYTE_8t &value, [[maybe_unused]] const QWidget *parent)
 {
     QList<QStandardItem *> items {};
     auto search = widgetMap.find(key);
@@ -271,7 +272,7 @@ QList<QStandardItem *> WidgetFactory::createItem(BciNumber key, const DataTypes:
 
     const auto var = search->second;
     std::visit(overloaded {
-                   [&](const auto &arg) {
+                   [&]([[maybe_unused]] const auto &arg) {
 #ifdef DEBUG_FACTORY
                        qDebug("DefaultWidget");
 #endif

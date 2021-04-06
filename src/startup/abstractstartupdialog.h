@@ -36,7 +36,6 @@ protected:
     virtual void GetCorBd();
 
     void updateFloatData(const DataTypes::FloatStruct &fl) override;
-    void updateStatus();
     virtual void SaveToFile() = 0;
     virtual void ReadFromFile() = 0;
     void ErrorRead();

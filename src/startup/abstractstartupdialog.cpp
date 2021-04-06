@@ -160,17 +160,6 @@ void AbstractStartupDialog::updateFloatData(const DataTypes::FloatStruct &fl)
         FillBd(this, QString::number(fl.sigAdr), fl.sigVal);
 }
 
-void AbstractStartupDialog::updateStatus()
-{
-    DataTypes::GeneralResponseStruct grs;
-    // while (DataManager::getResponse(DataTypes::GeneralResponseTypes::Ok, grs)
-    //        != Error::Msg::ResEmpty) // get all responses from outList
-    //        TimeFunc::Wait();
-    // FIXME grs uninit
-    if (grs.type == DataTypes::GeneralResponseTypes::Ok)
-        QMessageBox::information(this, "INFO", "Записано успешно");
-}
-
 void AbstractStartupDialog::FillBd(QWidget *parent, QString Name, QString Value)
 {
     bool ok;
