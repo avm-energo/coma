@@ -269,14 +269,21 @@ void Protocom::writeCommand(Queries::Commands cmd, QVariant item)
     case Commands::WriteMode:
 
         Q_ASSERT(item.canConvert<quint8>());
-        d->handleInt(protoCmd, StdFunc::arrayFromNumber(quint8(item.value<quint8>())));
+        d->handleInt(protoCmd, StdFunc::arrayFromNumber(item.value<quint8>()));
         break;
 
     case Commands::WriteVariant:
 
         Q_ASSERT(item.canConvert<quint8>());
-        d->handleInt(protoCmd, StdFunc::arrayFromNumber(quint8(item.value<quint8>())));
+        d->handleInt(protoCmd, StdFunc::arrayFromNumber(item.value<quint8>()));
         break;
+
+    case Commands::EraseTech:
+
+        Q_ASSERT(item.canConvert<quint8>());
+        d->handleInt(protoCmd, StdFunc::arrayFromNumber(item.value<quint8>()));
+        break;
+
     // default case as case for Proto WCommand
     default:
     {
