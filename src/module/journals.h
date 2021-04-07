@@ -34,6 +34,8 @@ signals:
 protected:
     QStringList m_workJourDescription, m_measJourHeaders;
     virtual QVector<QVariant> createMeasRecord(const char *file) = 0;
+    // virtual void setWorkJourDescription() = 0;
+    //  virtual void setMeasJourHeaders() = 0;
 
 private:
     ETableModel *m_sysModel, *m_workModel, *_measModel;
@@ -41,7 +43,6 @@ private:
 
     DataTypes::FilesEnum m_jourType;
     QString m_jourFile;
-
     const QMap<Modules::JournalType, DataTypes::JournalDesc> m_jourMap;
     void FillEventsTable(const QByteArray &ba);
     void FillMeasTable(const QByteArray &ba);

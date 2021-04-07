@@ -8,9 +8,6 @@
 #include "../widgets/alarmwidget.h"
 #include "../widgets/udialog.h"
 #include "journals.h"
-//#include "journkdv.h"
-//#include "journkiv.h"
-//#include "journktf.h"
 #include "modulealarm.h"
 #include "modules.h"
 
