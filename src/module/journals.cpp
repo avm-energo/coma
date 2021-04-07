@@ -18,8 +18,11 @@
 #include <QObject>
 #include <QVariant>
 
-Journals::Journals(QObject *parent) : QObject(parent)
+Journals::Journals(QMap<Modules::JournalType, DataTypes::JournalDesc> &jourMap, QObject *parent)
+    : QObject(parent), m_jourMap(jourMap)
 {
+    m_workJourDescription = jourMap.value(Modules::JournalType::Work).desc;
+    m_measJourHeaders = jourMap.value(Modules::JournalType::Meas).header;
     m_sysModel = new ETableModel(this);
     m_workModel = new ETableModel(this);
     _measModel = new ETableModel(this);
@@ -52,6 +55,11 @@ void Journals::SetJourType(DataTypes::FilesEnum jourtype)
 void Journals::SetJourFile(const QString &jourfile)
 {
     m_jourFile = jourfile;
+}
+
+int Journals::workJournalID()
+{
+    return m_jourMap.value(Modules::JournalType::Work).id;
 }
 
 QVector<QVariant> prepareRow(AVM::EventStruct &event, int eventID, int eventNumber, QStringList &eventDesc)
@@ -147,7 +155,6 @@ void Journals::FillMeasTable(const QByteArray &ba)
             ValueLists.append(vl);
     }
 
-    setMeasJourHeaders();
     Q_ASSERT(!m_measJourHeaders.isEmpty());
     model->setHorizontalHeaderLabels(m_measJourHeaders);
     if (model->columnCount() < 3)

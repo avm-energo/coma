@@ -187,7 +187,7 @@ struct Alarm
     QString name;
     QString color;
 };
-struct Journal
+struct JournalDesc
 {
     quint32 id;
     QStringList header;

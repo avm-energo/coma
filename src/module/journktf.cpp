@@ -2,18 +2,9 @@
 
 #include "../gen/timefunc.h"
 #include "modules.h"
-JournKTF::JournKTF(QObject *parent) : Journals(parent)
+JournKTF::JournKTF(QMap<Modules::JournalType, DataTypes::JournalDesc> &jourMap, QObject *parent)
+    : Journals(jourMap, parent)
 {
-}
-
-void JournKTF::setWorkJourDescription()
-{
-    m_workJourDescription = AVM_KTF::workJourDescription;
-}
-
-void JournKTF::setMeasJourHeaders()
-{
-    m_measJourHeaders = AVM_KTF::measJourHeaders;
 }
 
 QVector<QVariant> JournKTF::createMeasRecord(const char *file)
@@ -33,9 +24,4 @@ QVector<QVariant> JournKTF::createMeasRecord(const char *file)
 int JournKTF::measureSize()
 {
     return sizeof(AVM_KTF::MeasureStruct);
-}
-
-int JournKTF::workJournalID()
-{
-    return AVM_KTF::workJourId;
 }

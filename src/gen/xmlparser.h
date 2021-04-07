@@ -12,7 +12,7 @@ class XmlParser
 public:
     XmlParser();
     static DataTypes::Alarm parseAlarm(QDomElement domElement);
-    static DataTypes::Journal parseJournal(QDomElement domElement);
+    static DataTypes::JournalDesc parseJournal(QDomElement domElement);
     static quint32 parseInt32(QDomElement domElement);
     static quint64 parseHexInt32(QDomElement domElement);
     static QStringList parseStringList(QDomElement domElement);

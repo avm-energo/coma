@@ -18,9 +18,8 @@
 #include <QSortFilterProxyModel>
 #include <QVBoxLayout>
 
-JournalDialog::JournalDialog(UniquePointer<Journals> jour, QWidget *parent) : UDialog(parent)
+JournalDialog::JournalDialog(UniquePointer<Journals> jour, QWidget *parent) : UDialog(parent), m_jour(std::move(jour))
 {
-    m_jour = std::move(jour);
     connect(&DataManager::GetInstance(), &DataManager::fileReceived, m_jour.get(), &Journals::FillJour);
     ProxyWorkModel = new QSortFilterProxyModel(this);
     ProxySysModel = new QSortFilterProxyModel(this);

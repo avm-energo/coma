@@ -8,20 +8,12 @@
 #include "../widgets/alarmwidget.h"
 #include "../widgets/udialog.h"
 #include "journals.h"
+//#include "journkdv.h"
+//#include "journkiv.h"
+//#include "journktf.h"
 #include "modulealarm.h"
 #include "modules.h"
-enum AlarmType
-{
-    Warning,
-    Critical,
-    All
-};
-enum JournalType
-{
-    Work,
-    Meas,
-    System
-};
+
 struct ModuleSettings
 {
     int alarmCount() const
@@ -31,8 +23,8 @@ struct ModuleSettings
             counter += alarm.desc.size();
         return counter;
     }
-    QMap<AlarmType, DataTypes::Alarm> alarms;
-    QMap<JournalType, DataTypes::Journal> journals;
+    QMap<Modules::AlarmType, DataTypes::Alarm> alarms;
+    QMap<Modules::JournalType, DataTypes::JournalDesc> journals;
     InterfaceSettings ifaceSettings;
     QList<DataTypes::DataRecV> defaultConfig;
 };

@@ -3,6 +3,20 @@
 #include "../module/module.h"
 #include "../widgets/checkboxgroup.h"
 #include "board.h"
+
+namespace keys
+{
+constexpr char name[] = "name";
+constexpr char stringArray[] = "string-array";
+constexpr char string[] = "string";
+constexpr char color[] = "color";
+constexpr char unsigned32[] = "quint32";
+constexpr char className[] = "class";
+constexpr char group[] = "group";
+constexpr char type[] = "type";
+constexpr char desc[] = "description";
+}
+
 XmlParser::XmlParser()
 {
 }
@@ -29,42 +43,42 @@ DataTypes::Alarm XmlParser::parseAlarm(QDomElement domElement)
 #ifdef XML_DEBUG
     qDebug() << "TagName: " << domElement.tagName() << domElement.attribute("name", "");
 #endif
-    alarm.name = domElement.attribute("name", "");
-    auto element = domElement.firstChildElement("string-array");
+    alarm.name = domElement.attribute(keys::name, "");
+    auto element = domElement.firstChildElement(keys::stringArray);
     alarm.desc = parseStringList(element);
-    element = domElement.firstChildElement("color");
+    element = domElement.firstChildElement(keys::color);
     alarm.color = element.isNull() ? "" : element.text();
-    element = domElement.firstChildElement("quint32");
+    element = domElement.firstChildElement(keys::unsigned32);
     while (!element.isNull())
     {
-        const auto name = element.attribute("name", "");
+        const auto name = element.attribute(keys::name, "");
         if (name.contains("flags", Qt::CaseInsensitive))
             alarm.flags = parseHexInt32(element);
         if (name.contains("addr", Qt::CaseInsensitive))
             alarm.startAddr = parseInt32(element);
-        element = element.nextSiblingElement("quint32");
+        element = element.nextSiblingElement(keys::unsigned32);
     }
 
     return alarm;
 }
 
-DataTypes::Journal XmlParser::parseJournal(QDomElement domElement)
+DataTypes::JournalDesc XmlParser::parseJournal(QDomElement domElement)
 {
-    DataTypes::Journal journal;
+    DataTypes::JournalDesc journal;
 #ifdef XML_DEBUG
     qDebug() << "TagName: " << domElement.tagName() << domElement.attribute("name", "");
 #endif
-    journal.name = domElement.attribute("name", "");
-    journal.id = parseInt32(domElement.firstChildElement("quint32"));
-    domElement = domElement.firstChildElement("string-array");
+    journal.name = domElement.attribute(keys::name, "");
+    journal.id = parseInt32(domElement.firstChildElement(keys::unsigned32));
+    domElement = domElement.firstChildElement(keys::stringArray);
     while (!domElement.isNull())
     {
-        const auto name = domElement.attribute("name", "");
-        if (name.contains("description"), Qt::CaseInsensitive)
+        const auto name = domElement.attribute(keys::name, "");
+        if (name.contains((keys::desc), Qt::CaseInsensitive))
             journal.desc = parseStringList(domElement);
-        if (name.contains("header"), Qt::CaseInsensitive)
+        if (name.contains(("header"), Qt::CaseInsensitive))
             journal.header = parseStringList(domElement);
-        domElement = domElement.nextSiblingElement("string-array");
+        domElement = domElement.nextSiblingElement(keys::stringArray);
     }
     return journal;
 }
@@ -199,8 +213,8 @@ delegate::itemVariant XmlParser::parseWidget(QDomElement domElement)
 #ifdef XML_DEBUG
     qDebug() << name;
 #endif
-    QString className = domElement.attribute("class");
-    auto type = parseType(domElement.firstChildElement("type"));
+    QString className = domElement.attribute(keys::className);
+    auto type = parseType(domElement.firstChildElement(keys::type));
 
     if (!className.isEmpty())
     {
@@ -208,14 +222,14 @@ delegate::itemVariant XmlParser::parseWidget(QDomElement domElement)
     }
     QStringList items;
 
-    QDomElement childElement = domElement.firstChildElement("string-array");
+    QDomElement childElement = domElement.firstChildElement(keys::stringArray);
     if (!childElement.isNull())
         items = parseStringList(childElement);
 
-    childElement = domElement.firstChildElement("group");
+    childElement = domElement.firstChildElement(keys::group);
     auto widgetGroup = static_cast<delegate::WidgetGroup>(childElement.text().toInt());
 
-    const QString description = domElement.firstChildElement("string").text();
+    const QString description = domElement.firstChildElement(keys::string).text();
     switch (type.hash())
     {
     case ctti::unnamed_type_id<QDoubleSpinBox>().hash():
@@ -311,7 +325,7 @@ delegate::Item XmlParser::parseItem(QDomElement domElement, ctti::unnamed_type_i
 #ifdef XML_DEBUG
     qDebug() << name;
 #endif
-    QString className = domElement.attribute("class");
+    QString className = domElement.attribute(keys::className);
     if (className.isEmpty())
         return { 0 };
     auto classes = QMetaEnum::fromType<delegate::ItemType>();
@@ -320,7 +334,7 @@ delegate::Item XmlParser::parseItem(QDomElement domElement, ctti::unnamed_type_i
     if (!status)
         return { 0 };
 
-    QDomElement childElement = domElement.firstChildElement("group");
+    QDomElement childElement = domElement.firstChildElement(keys::group);
     auto widgetGroup = static_cast<delegate::WidgetGroup>(childElement.text().toInt());
     switch (itemType)
     {
@@ -350,11 +364,11 @@ void XmlParser::traverseNode(const QDomNode &node, ModuleSettings *const setting
             QDomElement domElement = domNode.toElement();
             if (!domElement.isNull())
             {
-                if (domElement.tagName() == "quint32")
+                if (domElement.tagName() == keys::unsigned32)
                 {
                     XmlParser::parseInt32(domElement);
                 }
-                if (domElement.tagName() == "string-array")
+                if (domElement.tagName() == keys::stringArray)
                 {
 #ifdef XML_DEBUG
                     qDebug() << "Attr: " << domElement.attribute("name", "");
@@ -365,8 +379,8 @@ void XmlParser::traverseNode(const QDomNode &node, ModuleSettings *const setting
                 }
                 if (domElement.tagName() == "alarm")
                 {
-
-                    qDebug() << "Attr: " << domElement.attribute("name", "");
+                    using namespace Modules;
+                    qDebug() << "Attr: " << domElement.attribute(keys::name, "");
                     const auto alarm = XmlParser::parseAlarm(domElement);
                     if (alarm.name.contains("critical", Qt::CaseInsensitive))
                         settings->alarms.insert(AlarmType::Critical, alarm);
@@ -383,6 +397,7 @@ void XmlParser::traverseNode(const QDomNode &node, ModuleSettings *const setting
 #ifdef XML_DEBUG
                     qDebug() << "Attr: " << domElement.attribute("name", "");
 #endif
+                    using namespace Modules;
                     const auto journal = XmlParser::parseJournal(domElement);
                     if (journal.name.contains("work", Qt::CaseInsensitive))
                         settings->journals.insert(JournalType::Work, journal);

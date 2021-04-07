@@ -84,6 +84,19 @@ const QMap<quint16, QString> MezzanineBoards {
     { MTM_85, "85 (УСК)" }    // 3U3I УСК (перегрузка по току 20х), комбинируется с 85
 };
 
+enum AlarmType
+{
+    Warning,
+    Critical,
+    All
+};
+enum JournalType
+{
+    Work,
+    Meas,
+    System
+};
+
 struct StartupInfoBlock
 {
     quint32 MTypeB;

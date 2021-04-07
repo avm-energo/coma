@@ -73,7 +73,7 @@ void ServiceModule::createModule(Modules::Model model)
     {
     case Model::KIV:
     {
-        auto JOUR = UniquePointer<Journals>(new JournKIV(this));
+        auto jour = UniquePointer<Journals>(new JournKIV(settings()->journals, this));
         if (board.interfaceType() != Board::InterfaceType::RS485)
         {
             //   ConfigKIV *CKIV = new ConfigKIV;
@@ -83,12 +83,12 @@ void ServiceModule::createModule(Modules::Model model)
         addDialogToList(cdkiv, "Проверка");
 
         addDialogToList(new StartupKIVDialog, "Начальные\nзначения");
-        Module::create(std::move(JOUR));
+        Module::create(std::move(jour));
         break;
     }
     case Model::KTF:
     {
-        auto JOUR = UniquePointer<Journals>(new JournKTF(this));
+        auto jour = UniquePointer<Journals>(new JournKTF(settings()->journals, this));
         if (board.interfaceType() != Board::InterfaceType::RS485)
         {
             //  ConfigKTF *CKTF = new ConfigKTF;
@@ -100,12 +100,12 @@ void ServiceModule::createModule(Modules::Model model)
         addDialogToList(new StartupKTFDialog, "Старение\nизоляции");
 
         addDialogToList(new CheckKTFHarmonicDialog, "Гармоники");
-        Module::create(std::move(JOUR));
+        Module::create(std::move(jour));
         break;
     }
     case Model::KDV:
     {
-        auto JOUR = UniquePointer<Journals>(new JournKDV(this));
+        auto jour = UniquePointer<Journals>(new JournKDV(settings()->journals, this));
         if (board.interfaceType() != Board::InterfaceType::RS485)
         {
             //  ConfigKDV *CKDV = new ConfigKDV;
@@ -117,7 +117,7 @@ void ServiceModule::createModule(Modules::Model model)
         addDialogToList(new StartupKDVDialog, "Старение\nизоляции");
         addDialogToList(new CheckKDVHarmonicDialog, "Гармоники");
         addDialogToList(new CheckKDVVibrDialog, "Вибрации");
-        Module::create(std::move(JOUR));
+        Module::create(std::move(jour));
         break;
     }
     default:
