@@ -145,7 +145,7 @@ QToolBar *Coma::createToolBar()
     tb->addAction(QIcon(":/icons/tnstop.svg"), "Разрыв соединения", this, &Coma::DisconnectAndClear);
     tb->addSeparator();
     tb->addAction(QIcon(":/icons/tnsettings.svg"), "Настройки", [this]() {
-        SettingsDialog *dlg = new SettingsDialog;
+        SettingsDialog *dlg = new SettingsDialog(this);
         connect(dlg, &SettingsDialog::disableAlarmUpdate, AlarmW, &AlarmWidget::disableAlarm);
         dlg->setAttribute(Qt::WA_DeleteOnClose);
         dlg->show();
@@ -157,8 +157,8 @@ QToolBar *Coma::createToolBar()
     jourAct->setShortcuts(QKeySequence::Open);
     jourAct->setStatusTip(tr("Открыть протокол работы"));
 
-    connect(jourAct, &QAction::triggered, this, []() {
-        ErrorDialog *dlg = new ErrorDialog;
+    connect(jourAct, &QAction::triggered, this, [this]() {
+        ErrorDialog *dlg = new ErrorDialog(this);
         dlg->setAttribute(Qt::WA_DeleteOnClose);
         dlg->show();
     });
