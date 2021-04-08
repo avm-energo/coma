@@ -10,7 +10,7 @@
 class AbstractConfDialog : public UDialog
 {
 public:
-    explicit AbstractConfDialog(const QList<DataTypes::DataRecV> &defaultConfig, QWidget *parent = nullptr);
+    explicit AbstractConfDialog(const QList<DataTypes::RecordPair> &defaultConfig, QWidget *parent = nullptr);
 
     void PrereadConf();
 
@@ -35,5 +35,5 @@ private:
     void checkForDiff(const QList<DataTypes::DataRecV> &list);
     void confReceived(const QList<DataTypes::DataRecV> &list);
 
-    const QList<DataTypes::DataRecV> m_defaultValues;
+    const QList<DataTypes::RecordPair> m_defaultValues;
 };

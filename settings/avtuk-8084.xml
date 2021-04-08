@@ -377,10 +377,12 @@
 				<record>
 					<id>1012</id>
 					<defaultValue>0.5</defaultValue>
+					<visibility>false</visibility>
 				</record>
 				<record>
 					<id>1013</id>
 					<defaultValue>0.5</defaultValue>
+					<visibility>false</visibility>
 				</record>
 				<record>
 					<id>1018</id>

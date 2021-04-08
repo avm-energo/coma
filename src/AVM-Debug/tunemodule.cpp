@@ -34,7 +34,7 @@ void TuneModule::createModule(Modules::Model model)
         auto jour = UniquePointer<Journals>(new JournKIV(settings()->journals));
         if (board.interfaceType() != Board::InterfaceType::RS485)
         {
-            addDialogToList(new AbstractConfDialog(settings()->defaultConfig), "Конфигурирование", "conf1");
+            addDialogToList(new AbstractConfDialog(settings()->configSettings), "Конфигурирование", "conf1");
             if (board.interfaceType() == Board::InterfaceType::USB)
             {
 
@@ -54,7 +54,7 @@ void TuneModule::createModule(Modules::Model model)
         auto jour = UniquePointer<Journals>(new JournKTF(settings()->journals, this));
         if (board.interfaceType() != Board::InterfaceType::RS485)
         {
-            addDialogToList(new AbstractConfDialog(settings()->defaultConfig), "Конфигурирование", "conf1");
+            addDialogToList(new AbstractConfDialog(settings()->configSettings), "Конфигурирование", "conf1");
         }
         CheckKTFDialog *cdktf = new CheckKTFDialog;
         addDialogToList(cdktf, "Проверка");
@@ -69,7 +69,7 @@ void TuneModule::createModule(Modules::Model model)
         auto jour = UniquePointer<Journals>(new JournKDV(settings()->journals, this));
         if (board.interfaceType() != Board::InterfaceType::RS485)
         {
-            addDialogToList(new AbstractConfDialog(settings()->defaultConfig), "Конфигурирование", "conf1");
+            addDialogToList(new AbstractConfDialog(settings()->configSettings), "Конфигурирование", "conf1");
         }
         CheckKDVDialog *cdkdv = new CheckKDVDialog;
         addDialogToList(cdkdv);
@@ -95,7 +95,7 @@ void TuneModule::create(Modules::BaseBoard typeB, Modules::MezzanineBoard typeM)
         qDebug("Here is KIV");
         if (board.interfaceType() != Board::InterfaceType::RS485)
         {
-            addDialogToList(new AbstractConfDialog(settings()->defaultConfig), "Конфигурирование", "conf1");
+            addDialogToList(new AbstractConfDialog(settings()->configSettings), "Конфигурирование", "conf1");
             if (board.interfaceType() == Board::InterfaceType::USB)
             {
                 addDialogToList(new Tune84Dialog, "Регулировка");
@@ -109,7 +109,7 @@ void TuneModule::create(Modules::BaseBoard typeB, Modules::MezzanineBoard typeM)
     if ((typeB == BaseBoard::MTB_86) && (typeM == MezzanineBoard::MTM_00))
     {
         qDebug("Here is AVTUK-8600");
-        addDialogToList(new AbstractConfDialog(settings()->defaultConfig), "Конфигурирование", "conf1");
+        addDialogToList(new AbstractConfDialog(settings()->configSettings), "Конфигурирование", "conf1");
         addDialogToList(new CheckKDVVibrDialog, "Вибрации");
     }
     if ((typeB == BaseBoard::MTB_80) && (typeM == MezzanineBoard::MTM_82))

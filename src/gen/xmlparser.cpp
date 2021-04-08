@@ -303,8 +303,9 @@ delegate::itemVariant XmlParser::parseWidget(QDomElement domElement)
     return delegate::Widget(type, description, widgetGroup);
 }
 
-DataTypes::DataRecV XmlParser::parseRecord(QDomElement domElement)
+DataTypes::RecordPair XmlParser::parseRecord(QDomElement domElement)
 {
+    using namespace DataTypes;
     QDomElement childElement = domElement.firstChildElement("id");
     if (childElement.isNull())
         return {};
@@ -316,7 +317,14 @@ DataTypes::DataRecV XmlParser::parseRecord(QDomElement domElement)
     childElement = domElement.firstChildElement("defaultValue");
     if (childElement.isNull())
         return {};
-    return DataTypes::DataRecV(id, childElement.text());
+    childElement = domElement.firstChildElement("visibility");
+    // visibility=true by default
+    if (childElement.isNull() || childElement.text() == "true")
+        return RecordPair { DataTypes::DataRecV(id, childElement.text()), true };
+    if (childElement.text() == "false")
+        return RecordPair { DataTypes::DataRecV(id, childElement.text()), false };
+    Q_ASSERT(false && "Wrong visible value: " && childElement.text().toStdString().c_str());
+    return RecordPair { DataTypes::DataRecV(id, childElement.text()), true };
 }
 
 delegate::Item XmlParser::parseItem(QDomElement domElement, ctti::unnamed_type_id_t parentType)
@@ -444,7 +452,8 @@ void XmlParser::traverseNode(const QDomNode &node, ModuleSettings *const setting
                 }
                 if (domElement.tagName() == "record")
                 {
-                    settings->defaultConfig.push_back(parseRecord(domElement));
+
+                    settings->configSettings.push_back(parseRecord(domElement));
                     domNode = domNode.nextSibling();
                     continue;
                 }

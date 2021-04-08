@@ -17,7 +17,7 @@
 #include <QScrollArea>
 #include <QTextEdit>
 
-AbstractConfDialog::AbstractConfDialog(const QList<DataTypes::DataRecV> &defaultConfig, QWidget *parent)
+AbstractConfDialog::AbstractConfDialog(const QList<DataTypes::RecordPair> &defaultConfig, QWidget *parent)
     : UDialog(parent), m_defaultValues(defaultConfig)
 {
     m_password = "121941";
@@ -58,14 +58,14 @@ template <class Container> auto sinserter(Container &c)
     return std::inserter(c, end(c));
 }
 
-bool operator<(const BciNumber &number, const DataTypes::DataRecV &record)
+bool operator<(const BciNumber &number, const DataTypes::RecordPair &record)
 {
-    return number < static_cast<BciNumber>(record.getId());
+    return number < static_cast<BciNumber>(record.record.getId());
 }
 
-bool operator<(const DataTypes::DataRecV &record, const BciNumber &number)
+bool operator<(const DataTypes::RecordPair &record, const BciNumber &number)
 {
-    return number < static_cast<BciNumber>(record.getId());
+    return number < static_cast<BciNumber>(record.record.getId());
 }
 
 void AbstractConfDialog::checkForDiff(const QList<DataTypes::DataRecV> &list)
@@ -217,7 +217,9 @@ void AbstractConfDialog::SetupUI()
     WidgetFactory factory;
     for (const auto record : (m_defaultValues))
     {
-        BciNumber id = static_cast<BciNumber>(record.getId());
+        if (!record.visibility)
+            continue;
+        BciNumber id = static_cast<BciNumber>(record.record.getId());
         QWidget *widget = factory.createWidget(id, this);
         if (!widget)
         {
@@ -265,7 +267,9 @@ void AbstractConfDialog::Fill()
 {
     for (const auto defRecord : m_defaultValues)
     {
-        BciNumber id = static_cast<BciNumber>(defRecord.getId());
+        if (!defRecord.visibility)
+            continue;
+        BciNumber id = static_cast<BciNumber>(defRecord.record.getId());
         const auto record = S2::getRecord(id);
         std::visit(
             [=](const auto &&value) {
@@ -296,7 +300,9 @@ void AbstractConfDialog::FillBack() const
     WidgetFactory factory;
     for (const auto record : m_defaultValues)
     {
-        BciNumber id = static_cast<BciNumber>(record.getId());
+        if (!record.visibility)
+            continue;
+        BciNumber id = static_cast<BciNumber>(record.record.getId());
         bool status = factory.fillBack(id, this);
         if (!status)
         {
@@ -308,7 +314,7 @@ void AbstractConfDialog::FillBack() const
 void AbstractConfDialog::SetDefConf()
 {
     for (const auto &record : m_defaultValues)
-        S2::setRecordValue(record);
+        S2::setRecordValue(record.record);
     Fill();
 }
 

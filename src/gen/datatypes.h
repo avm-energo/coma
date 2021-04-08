@@ -6,6 +6,13 @@
 #include <QVariant>
 namespace DataTypes
 {
+
+struct RecordPair
+{
+    DataRecV record;
+    bool visibility = true;
+};
+
 enum DataBlockTypes
 {
     BacBlock,

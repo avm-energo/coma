@@ -23,7 +23,7 @@ struct ModuleSettings
     QMap<Modules::AlarmType, DataTypes::Alarm> alarms;
     QMap<Modules::JournalType, DataTypes::JournalDesc> journals;
     InterfaceSettings ifaceSettings;
-    QList<DataTypes::DataRecV> defaultConfig;
+    QList<DataTypes::RecordPair> configSettings;
 };
 
 struct GlobalSettings
