@@ -18,7 +18,7 @@ struct DataRec
     void *thedata;
 };
 bool is_same(const S2DataTypes::DataRec &lhs, const S2DataTypes::DataRec &rhs);
-// struct DataRec;
+
 }
 
 namespace DataTypes
@@ -27,6 +27,10 @@ namespace DataTypes
 class DataRecV
 {
     friend ConfigBlock;
+    template <typename T> struct true_type
+    {
+        static constexpr bool value = std::is_variant_alternative<T, valueType>();
+    };
 
 public:
     friend bool operator==(const DataRecV &lhs, const DataRecV &rhs);
@@ -34,22 +38,20 @@ public:
     DataRecV(const S2DataTypes::DataRec &record);
     DataRecV(const S2DataTypes::DataRec &record, const char *rawdata);
     DataRecV(const int _id, const QString &str);
-    template <typename T> DataRecV(T *, unsigned _id, T _data) : id(_id), data(_data)
-    {
-    }
-    template <typename T> DataRecV(unsigned _id, T _data) : id(_id), data(_data)
+    template <typename T
+#if (_MSC_VER > 1924)
+        ,
+        std::enable_if_t<true_type<T>::value, bool> = true
+#endif
+        >
+    DataRecV(unsigned _id, T _data) : id(_id), data(_data)
     {
     }
     DataRecV() = default;
-    static DataTypes::DataRecV deserialize(const S2DataTypes::DataRec &record);
     void printer() const;
     S2DataTypes::DataRec serialize() const;
     static std::map<int, ctti::unnamed_type_id_t> map;
 
-    template <typename T> struct true_type
-    {
-        static constexpr bool value = std::is_variant_alternative<T, valueType>();
-    };
     template <typename T
 #if (_MSC_VER > 1924)
         ,
