@@ -26,11 +26,15 @@ ErrorProtocolWidget::ErrorProtocolWidget(QWidget *parent) : QWidget(parent)
     // Test the model
 #endif
     Model->setHeaderData(0, Qt::Horizontal, "Дата/время", Qt::EditRole);
-    Model->setHeaderData(1, Qt::Horizontal, "Номер сообщения", Qt::EditRole);
-    Model->setHeaderData(2, Qt::Horizontal, "Тип сообщения", Qt::EditRole);
+    Model->setHeaderData(1, Qt::Horizontal, "Файл", Qt::EditRole);
+    Model->setHeaderData(2, Qt::Horizontal, "Строка", Qt::EditRole);
     Model->setHeaderData(3, Qt::Horizontal, "Сообщение", Qt::EditRole);
     tv->setModel(Model);
 
+#ifndef _DEBUG
+    tv->setColumnHidden(1, true);
+    tv->setColumnHidden(2, true);
+#endif
     tv->resizeColumnsToContents();
     connect(Model, &QAbstractItemModel::dataChanged, tv, &QTableView::resizeColumnsToContents);
     tv->horizontalHeader()->setStretchLastSection(true);

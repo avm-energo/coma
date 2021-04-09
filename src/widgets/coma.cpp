@@ -146,6 +146,7 @@ QToolBar *Coma::createToolBar()
     tb->addSeparator();
     tb->addAction(QIcon(":/icons/tnsettings.svg"), "Настройки", [this]() {
         SettingsDialog *dlg = new SettingsDialog(this);
+        dlg->setMinimumSize(this->size() / 4);
         connect(dlg, &SettingsDialog::disableAlarmUpdate, AlarmW, &AlarmWidget::disableAlarm);
         dlg->setAttribute(Qt::WA_DeleteOnClose);
         dlg->show();
@@ -159,6 +160,7 @@ QToolBar *Coma::createToolBar()
 
     connect(jourAct, &QAction::triggered, this, [this]() {
         ErrorDialog *dlg = new ErrorDialog(this);
+        dlg->setMinimumWidth(this->width() / 2);
         dlg->setAttribute(Qt::WA_DeleteOnClose);
         dlg->show();
     });
@@ -574,10 +576,25 @@ void Coma::setupConnection()
         }
     });
     WaitWidget *ww = new WaitWidget;
-    auto connection = std::shared_ptr<QMetaObject::Connection>(new QMetaObject::Connection);
-    *connection = connect(&board, &Board::readyRead, this, [=]() {
+
+    auto connectionReady = std::shared_ptr<QMetaObject::Connection>(new QMetaObject::Connection);
+    auto connectionTimeout = std::shared_ptr<QMetaObject::Connection>(new QMetaObject::Connection);
+    *connectionTimeout = connect(ww, &WaitWidget::destroyed, this, [=] {
+        QObject::disconnect(*connectionReady);
+        QObject::disconnect(*connectionTimeout);
+        if (Board::GetInstance().type() != 0)
+            return;
+
+        QMessageBox::critical(this, "Ошибка", "Не удалось соединиться с прибором", QMessageBox::Ok);
+        DisconnectAndClear();
+        qCritical() << "Cannot connect" << Error::Timeout;
+        QApplication::restoreOverrideCursor();
+    });
+    *connectionReady = connect(&board, &Board::readyRead, this, [=]() {
+        QObject::disconnect(*connectionTimeout);
+        QObject::disconnect(*connectionReady);
         ww->Stop();
-        QObject::disconnect(*connection);
+
         QApplication::restoreOverrideCursor();
         prepare();
     });
@@ -593,26 +610,17 @@ void Coma::setupConnection()
     // loop.exec();
     if (!BaseInterface::iface()->start(ConnectSettings))
     {
+        QObject::disconnect(*connectionReady);
+        QObject::disconnect(*connectionTimeout);
         ww->Stop();
-        QObject::disconnect(*connection);
+
         QMessageBox::critical(this, "Ошибка", "Не удалось установить связь", QMessageBox::Ok);
         QApplication::restoreOverrideCursor();
         qCritical() << "Cannot connect" << Error::GeneralError;
 
         return;
     }
-    //    QTimer timer;
-    //    timer.setSingleShot(true);
-    //    timer.start(INTERVAL::WAIT);
-    //    connect(&timer, &QTimer::timeout, this, [=] {
-    //        if (Board::GetInstance().type() != 0)
-    //            return;
-    //        QObject::disconnect(*connection);
-    //        QMessageBox::critical(this, "Ошибка", "Не удалось соединиться с прибором", QMessageBox::Ok);
-    //        DisconnectAndClear();
-    //        qCritical() << "Cannot connect" << Error::Timeout;
-    //        QApplication::restoreOverrideCursor();
-    //    });
+
     DataManager::clearQueue();
     BaseInterface::iface()->reqBSI();
 }
@@ -629,7 +637,7 @@ void Coma::DisconnectAndClear()
     m_Module->closeDialogs();
 
     clearWidgets();
-
+    Board::GetInstance().reset();
     // BUG Segfault
     //    if (Reconnect)
     //        QMessageBox::information(this, "Разрыв связи", "Связь разорвана", QMessageBox::Ok, QMessageBox::Ok);

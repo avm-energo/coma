@@ -14,6 +14,7 @@ public:
     explicit SerialPort(QObject *parent = nullptr);
     ~SerialPort();
     bool Init(SerialPortSettings settings);
+    bool clear();
 
 signals:
     void Read(QByteArray);
@@ -26,7 +27,7 @@ private:
 public slots:
     void WriteBytes(QByteArray ba);
     void Disconnect();
-    void reconnect();
+    bool reconnect();
 
 private slots:
     void ReadBytes();

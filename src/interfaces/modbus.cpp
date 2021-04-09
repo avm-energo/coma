@@ -48,9 +48,15 @@ bool ModBus::start(const ConnectStruct &st)
     connect(thr, &QThread::finished, parser, &QObject::deleteLater);
     connect(port, &SerialPort::Read, parser, &ModbusThread::ParseReply);
     connect(parser, &ModbusThread::Write, port, &SerialPort::WriteBytes);
+    connect(parser, &ModbusThread::clearBuffer, port, &SerialPort::clear);
     connect(port, &SerialPort::errorOccurred, this, &ModBus::SendReconnectSignal);
     connect(this, &BaseInterface::reconnect, port, &SerialPort::reconnect);
-    connect(port, &SerialPort::connected, port, [=] { setState(BaseInterface::Run); });
+    connect(port, &SerialPort::connected, port, [=] {
+        setState(BaseInterface::Run);
+        parser->moveToThread(thr);
+        thr->start();
+        StdFunc::Wait(1000);
+    });
     if (!port->Init(Settings))
     {
         port->deleteLater();
@@ -58,10 +64,8 @@ bool ModBus::start(const ConnectStruct &st)
         thr->deleteLater();
         return false;
     }
-    setState(State::Run);
-    parser->moveToThread(thr);
-    thr->start();
-    StdFunc::Wait(1000);
+    //  setState(State::Run);
+
     return true;
 }
 

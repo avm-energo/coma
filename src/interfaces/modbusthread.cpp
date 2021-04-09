@@ -239,6 +239,8 @@ void ModbusThread::sendWithoutCrc(const QByteArray &ba)
     if (Busy)
     {
         Busy = false;
+        emit clearBuffer();
+        qWarning() << Error::Timeout;
         Log->error("Timeout");
     }
 }

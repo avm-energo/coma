@@ -173,6 +173,15 @@ void Board::update(const DataTypes::BitStringStruct &bs)
     }
 }
 
+void Board::reset()
+{
+    m_interfaceType = Unknown;
+    m_connectionState = ConnectionState::Closed;
+    m_boardType = Types::None;
+    m_startupInfoBlock = {};
+    m_startupInfoBlockExt = {};
+}
+
 quint32 Board::health() const
 {
     return m_startupInfoBlock.Hth;

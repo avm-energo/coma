@@ -33,18 +33,21 @@ bool SerialPort::Init(SerialPortSettings settings)
     Port->setReadBufferSize(1024);
     connect(Port.data(), &QSerialPort::errorOccurred, this, &SerialPort::ErrorOccurred);
     connect(Port, &QIODevice::readyRead, this, &SerialPort::ReadBytes);
-    if (!Port->open(QIODevice::ReadWrite))
-        return false;
 
     QTimer *connectionTimer = new QTimer(this);
     connectionTimer->setInterval(TIMEOUT);
-    connect(Port, &QIODevice::bytesWritten, [connectionTimer] { connectionTimer->start(); });
+    connect(Port, &QIODevice::bytesWritten, this, [connectionTimer] { connectionTimer->start(); });
     connect(Port, &QIODevice::readyRead, connectionTimer, &QTimer::stop);
     connect(connectionTimer, &QTimer::timeout, [=] {
         qInfo() << this->metaObject()->className() << Error::Timeout;
         reconnect();
     });
-    return true;
+    return reconnect();
+}
+
+bool SerialPort::clear()
+{
+    return Port->clear();
 }
 
 void SerialPort::WriteBytes(QByteArray ba)
@@ -60,14 +63,15 @@ void SerialPort::Disconnect()
     Port->close();
 }
 
-void SerialPort::reconnect()
+bool SerialPort::reconnect()
 {
     if (!Port->open(QIODevice::ReadWrite))
     {
         qCritical() << Port->metaObject()->className() << Port->portName() << Error::OpenError;
+        return false;
     }
-    else
-        emit connected();
+    emit connected();
+    return true;
 }
 
 void SerialPort::ErrorOccurred(QSerialPort::SerialPortError err)

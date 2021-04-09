@@ -112,6 +112,7 @@ public slots:
     // void stop() override;
 
 signals:
+    void clearBuffer();
     //    void SignalsReceived(QList<ModBus::SignalStruct> Signal);
     //    void CorSignalsReceived(QList<ModBus::SignalStruct> Signal);
     //    void CorSignalsWritten();
