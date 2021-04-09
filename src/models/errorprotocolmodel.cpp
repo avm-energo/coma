@@ -102,16 +102,19 @@ bool ErrorProtocolModel::setData(const QModelIndex &index, const QVariant &value
     return false;
 }
 
-void ErrorProtocolModel::appendRows(const std::vector<ErrorMsg> &msgs, int newItems)
+void ErrorProtocolModel::appendRows(const std::vector<ErrorMsg> &msgs, size_t newItems)
 {
-    const int colorFactor = 190;
-    for (auto i = 0; i < msgs.size(); ++i)
+    constexpr int colorFactor = 190;
+    size_t counter = 0;
+    for (auto it = msgs.crbegin(); it != msgs.crend(); ++it)
     {
         QStringList tmpsl;
-        tmpsl << msgs.at(i);
-        auto newIndex = createIndex(i, 0);
+        tmpsl << (*it);
+        auto newIndex = createIndex(int(counter), 0);
+        if (!newIndex.isValid())
+            continue;
         setData(newIndex, tmpsl, Qt::DisplayRole);
-        switch (msgs.at(i).type)
+        switch (it->type)
         {
 
         case QtDebugMsg:
@@ -135,12 +138,13 @@ void ErrorProtocolModel::appendRows(const std::vector<ErrorMsg> &msgs, int newIt
         default:
             assert(false);
         }
-        if ((msgs.size() - i) <= newItems)
+        if (counter < newItems)
         {
             QFont font;
             font.setBold(true);
             setData(newIndex, font, Qt::FontRole);
         }
+        ++counter;
     }
 }
 

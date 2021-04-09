@@ -26,7 +26,7 @@ public:
         return insertRow(rowCount(), pair);
     }
 
-    void appendRows(const std::vector<ErrorMsg> &msgs, int newItems);
+    void appendRows(const std::vector<ErrorMsg> &msgs, size_t newItems);
     void initModel();
 
 protected:
