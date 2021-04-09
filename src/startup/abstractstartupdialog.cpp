@@ -92,6 +92,7 @@ void AbstractStartupDialog::WriteCor()
         values.push_back(QVariant::fromValue(value));
     }
     BaseInterface::iface()->writeCommand(Queries::QC_WriteUserValues, /*StdFunc::toVariantList*/ (values));
+    GetCorBd();
 }
 
 void AbstractStartupDialog::GetCorBd()
@@ -103,7 +104,10 @@ void AbstractStartupDialog::GetCorBd()
 void AbstractStartupDialog::ResetCor()
 {
     if (checkPassword())
+    {
         BaseInterface::iface()->writeCommand(Queries::QC_ClearStartupValues);
+        GetCorBd();
+    }
 }
 
 float AbstractStartupDialog::ToFloat(QString text)
@@ -185,7 +189,10 @@ void AbstractStartupDialog::FillBd(QWidget *parent, QString Name, float Value)
 void AbstractStartupDialog::SetupCor()
 {
     if (checkPassword())
+    {
         BaseInterface::iface()->writeCommand(Queries::QC_SetStartupValues);
+        GetCorBd();
+    }
 }
 
 void AbstractStartupDialog::ErrorRead()
