@@ -201,7 +201,8 @@ public:
         data = chb->isChecked();
         return true;
     }
-    template <typename T> static bool ChBGData(const QWidget *w, const QString &chbname, T &data)
+    template <typename T, std::enable_if_t<std::is_unsigned_v<T>, bool> = true>
+    static bool ChBGData(const QWidget *w, const QString &chbname, T &data)
     {
         auto *checkBoxGroup = w->findChild<CheckBoxGroup *>(chbname);
         if (!checkBoxGroup)
@@ -211,7 +212,8 @@ public:
     }
     static bool SetChBData(QWidget *w, const QString &chbname, bool data);
 
-    template <typename T> static bool SetChBGData(const QWidget *w, const QString &name, const T data)
+    template <typename T, std::enable_if_t<std::is_unsigned_v<T>, bool> = true>
+    static bool SetChBGData(const QWidget *w, const QString &name, const T data)
     {
         auto checkBoxGroup = w->findChild<CheckBoxGroup *>(name);
         if (!checkBoxGroup)

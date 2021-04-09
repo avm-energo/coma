@@ -53,6 +53,8 @@ BUILDDIR  = build-$${QT_VERSION}
 BINDIR =
 win32 {
     win32-msvc* {
+  #  QMAKE_CXXFLAGS += -Wall -wd4946 -wd5045 -wd4866
+    QMAKE_CXXFLAGS += /Zc:referenceBinding /Zc:strictStrings /Zc:rvalueCast
     BUILDDIR =$${BUILDDIR}-$${QMAKE_COMPILER}-$${MSVC_VER}-$${COMA_ARCH}
     }
 }

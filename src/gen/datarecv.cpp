@@ -59,6 +59,12 @@ DataRecV::DataRecV(const S2DataTypes::DataRec &record, const char *rawdata) : id
         data = *reinterpret_cast<const DWORD *>(rawdata);
         break;
     }
+    case ctti::unnamed_type_id<INT32>().hash():
+    {
+        assert(sizeof(INT32) == record.numByte);
+        data = *reinterpret_cast<const INT32 *>(rawdata);
+        break;
+    }
     case ctti::unnamed_type_id<BYTE_4t>().hash():
     {
         assert(sizeof(BYTE_4t) == record.numByte);
@@ -187,6 +193,11 @@ DataRecV::DataRecV(const int _id, const QString &str) : id(_id)
     case ctti::unnamed_type_id<DWORD>().hash():
     {
         data = QVariant(str).value<DWORD>();
+        break;
+    }
+    case ctti::unnamed_type_id<INT32>().hash():
+    {
+        data = QVariant(str).value<INT32>();
         break;
     }
     case ctti::unnamed_type_id<BYTE_4t>().hash():

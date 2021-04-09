@@ -147,6 +147,8 @@ ctti::unnamed_type_id_t XmlParser::parseType(QDomElement domElement)
             return ctti::unnamed_type_id<DWORD>().hash();
         if (name.contains("WORD", Qt::CaseInsensitive))
             return ctti::unnamed_type_id<WORD>().hash();
+        if (name.contains("INT32", Qt::CaseInsensitive))
+            return ctti::unnamed_type_id<INT32>().hash();
         if (name.contains("float", Qt::CaseInsensitive))
             return ctti::unnamed_type_id<float>().hash();
         // Widget classes

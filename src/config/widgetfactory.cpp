@@ -555,7 +555,7 @@ static bool fillBackChBG(BciNumber key, const QWidget *parent)
         [&](auto &&arg) {
             typedef std::remove_reference_t<decltype(arg)> internalType;
             if constexpr (!std::is_container<internalType>())
-                if constexpr (std::is_integral_v<internalType>)
+                if constexpr (std::is_unsigned_v<internalType>)
                 {
                     internalType buffer = 0;
                     status = WDFunc::ChBGData(parent, QString::number(key), buffer);

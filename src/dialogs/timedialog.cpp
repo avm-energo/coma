@@ -11,9 +11,9 @@
 #include <QGridLayout>
 #include <QGroupBox>
 #include <QMessageBox>
+#include <QTimeZone>
 #include <QTimer>
 #include <QVBoxLayout>
-
 TimeDialog::TimeDialog(QWidget *parent) : UDialog(parent)
 {
     setTimeZone(0);
@@ -32,7 +32,7 @@ void TimeDialog::SetupUI()
     QWidget *time = new QWidget;
 
     auto *timeZoneLbl = WDFunc::NewLBL2(time, "Часовой пояс:");
-    const QStringList cbl { "Местное время", "Время по Гринвичу" };
+    const QStringList cbl { "Местное время " + QString(QTimeZone::systemTimeZoneId()), "Время по Гринвичу" };
     auto *cb = WDFunc::NewCB2(time, cbl);
     connect(cb, qOverload<int>(&QComboBox::currentIndexChanged), this, &TimeDialog::setTimeZone);
     auto *line = new QHBoxLayout;

@@ -23,7 +23,7 @@ void AlarmStateAll::update(quint32 health)
 
     for (int i = 0; i < AVM::HthToolTip.size(); ++i)
     {
-        QColor color(Qt::green);
+        QColor color(m_normalColor);
         bool state = healthSet.test(i);
         if (state)
         {
@@ -43,7 +43,7 @@ void AlarmStateAll::update(quint32 health)
     else if (health & BSIWARNMASK)
         color = Qt::yellow;
     else
-        color = Qt::green;
+        color = m_normalColor;
 
     emit updateColor(color);
 }

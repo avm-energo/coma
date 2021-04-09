@@ -138,6 +138,11 @@ template <typename T> bool WidgetFactory::fillWidget(const QWidget *parent, BciN
     auto search = widgetMap.find(key);
     if (search == widgetMap.end())
     {
+        if (key == BciNumber::dummyElement)
+        {
+            qWarning() << "No S2 item for this widget";
+            return status;
+        }
         qWarning() << "Not found" << key;
         return status;
     }
