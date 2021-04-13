@@ -9,6 +9,14 @@
 
 class Config : BaseConfig
 {
+    enum CtypeBits
+    {
+        SNTP_Addr1 = 0,
+        PPS = 1,
+        SNTP_Addr2 = 2,
+        SNTP_Default = 3
+    };
+
 public:
     explicit Config();
     ~Config() {};
@@ -21,8 +29,11 @@ public:
 
     static void removeFotter();
 
+    QObject *getParent() const;
+    void setParent(QObject *value);
+
 private:
-    QObject *ParentMainbl, *ParentCtype;
+    QObject *Parent /*, *Parent*/;
 };
 
 #endif // CONFIG

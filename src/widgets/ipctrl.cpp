@@ -16,25 +16,28 @@ IPCtrl::IPCtrl(QWidget *parent) : QFrame(parent)
     pLayout->setContentsMargins(0, 0, 1, 0);
     pLayout->setSpacing(0);
 
+    QLineEdit *pEdit = nullptr;
+
     for (int i = 0; i != QTUTL_IP_SIZE; ++i)
     {
         if (i != 0)
         {
             QLabel *pDot = new QLabel(".", this);
+            auto policy = pDot->sizePolicy();
+            policy.setHorizontalPolicy(QSizePolicy::Minimum);
+            pDot->setSizePolicy(policy);
             pLayout->addWidget(pDot);
-            pLayout->setStretch(pLayout->count(), 0);
+            // pLayout->setStretch(pLayout->count(), 0);
         }
 
         m_pLineEdit.at(i) = new QLineEdit(this);
-        QLineEdit *pEdit = m_pLineEdit.at(i);
-
-        int pixelsWide = pEdit->fontMetrics().horizontalAdvance(QString::number(255));
-        // Here is костыль
-        pEdit->setMaximumWidth(pixelsWide * 2);
-        pEdit->installEventFilter(this);
+        pEdit = m_pLineEdit.at(i);
+        auto policy = pEdit->sizePolicy();
+        policy.setHorizontalPolicy(QSizePolicy::Preferred);
+        pEdit->setSizePolicy(policy);
 
         pLayout->addWidget(pEdit);
-        pLayout->setStretch(pLayout->count(), 1);
+        // pLayout->setStretch(pLayout->count(), 1);
 
         pEdit->setFrame(false);
         pEdit->setAlignment(Qt::AlignCenter);
@@ -44,12 +47,17 @@ IPCtrl::IPCtrl(QWidget *parent) : QFrame(parent)
         font.setFixedPitch(true);
         pEdit->setFont(font);
 
+        int pixelsWide = pEdit->fontMetrics().horizontalAdvance(QString::number(255));
+        // Here is костыль
+        pEdit->setMaximumWidth(pixelsWide * 2);
+        pEdit->installEventFilter(this);
+
         QRegExp rx("^(0|[1-9]|[1-9][0-9]|1[0-9][0-9]|2([0-4][0-9]|5[0-5]))$");
         QValidator *validator = new QRegExpValidator(rx, pEdit);
         pEdit->setValidator(validator);
     }
-
-    //  setMaximumWidth(30 * QTUTL_IP_SIZE);
+    // setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Minimum);
+    setMaximumHeight(2 * pEdit->fontMetrics().height());
 
     connect(this, &IPCtrl::signalTextChanged, this, &IPCtrl::slotTextChanged, Qt::QueuedConnection);
 }
@@ -153,7 +161,7 @@ std::array<quint8, IPCtrl::QTUTL_IP_SIZE> IPCtrl::getIP() const
     return ipAddr;
 }
 
-void IPCtrl::setIP(std::array<quint8, IPCtrl::QTUTL_IP_SIZE> ipAddr)
+void IPCtrl::setIP(const std::array<quint8, IPCtrl::QTUTL_IP_SIZE> ipAddr)
 {
     for (auto i = 0; i != QTUTL_IP_SIZE; ++i)
     {

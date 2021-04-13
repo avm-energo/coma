@@ -6,6 +6,13 @@
 #include <QVariant>
 namespace DataTypes
 {
+
+struct RecordPair
+{
+    DataRecV record;
+    bool visibility = true;
+};
+
 enum DataBlockTypes
 {
     BacBlock,
@@ -22,8 +29,8 @@ enum SignalTypes
     SinglePointWithTime,
     ByteArray,
     File,
-    ConfParameter,
-    ConfParametersList,
+    // ConfParameter,
+    // ConfParametersList,
     DataRecVList,
     Block,
     OscillogramInfo,
@@ -149,25 +156,9 @@ inline QDataStream &operator>>(QDataStream &stream, FileStruct &str)
 
 struct ConfParameterStruct
 {
-    friend QDataStream &operator<<(QDataStream &stream, const ConfParameterStruct &str);
-    friend QDataStream &operator>>(QDataStream &stream, ConfParameterStruct &str);
     quint32 ID;
     QByteArray data;
 };
-
-inline QDataStream &operator<<(QDataStream &stream, const ConfParameterStruct &str) // сериализуем;
-{
-    stream << str.ID;
-    stream << str.data;
-    return stream;
-}
-
-inline QDataStream &operator>>(QDataStream &stream, ConfParameterStruct &str) // десериализуем;
-{
-    stream >> str.ID;
-    stream >> str.data;
-    return stream;
-}
 
 struct BlockStruct
 {
@@ -176,11 +167,6 @@ struct BlockStruct
 };
 
 typedef QList<ConfParameterStruct> ConfParametersListStruct;
-
-// struct ConfParametersListStruct
-//{
-//    QList<ConfParameterStruct> parlist;
-//};
 
 struct SignalsStruct
 {
@@ -208,7 +194,7 @@ struct Alarm
     QString name;
     QString color;
 };
-struct Journal
+struct JournalDesc
 {
     quint32 id;
     QStringList header;

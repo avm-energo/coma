@@ -3,6 +3,7 @@
 
 #include "../gen/datatypes.h"
 #include "../models/etablemodel.h"
+#include "../module/modules.h"
 
 #include <QSortFilterProxyModel>
 //#include <QStandardItemModel>
@@ -12,7 +13,7 @@ class Journals : public QObject
     Q_OBJECT
 
 public:
-    explicit Journals(QObject *parent = nullptr);
+    explicit Journals(QMap<Modules::JournalType, DataTypes::JournalDesc> &jourMap, QObject *parent = nullptr);
     ~Journals();
 
     void SetProxyModels(QSortFilterProxyModel *workmdl, QSortFilterProxyModel *sysmdl, QSortFilterProxyModel *measmdl);
@@ -21,7 +22,7 @@ public:
     //    void SetParentWidget(QWidget *w);
 
     virtual int measureSize() = 0;
-    virtual int workJournalID() = 0;
+    int workJournalID();
 
 signals:
     void Done(QString, DataTypes::FilesEnum);
@@ -33,8 +34,8 @@ signals:
 protected:
     QStringList m_workJourDescription, m_measJourHeaders;
     virtual QVector<QVariant> createMeasRecord(const char *file) = 0;
-    virtual void setWorkJourDescription() = 0;
-    virtual void setMeasJourHeaders() = 0;
+    // virtual void setWorkJourDescription() = 0;
+    //  virtual void setMeasJourHeaders() = 0;
 
 private:
     ETableModel *m_sysModel, *m_workModel, *_measModel;
@@ -42,7 +43,7 @@ private:
 
     DataTypes::FilesEnum m_jourType;
     QString m_jourFile;
-
+    const QMap<Modules::JournalType, DataTypes::JournalDesc> m_jourMap;
     void FillEventsTable(const QByteArray &ba);
     void FillMeasTable(const QByteArray &ba);
     void resultReady(ETableModel *model);

@@ -18,10 +18,6 @@ public:
     {
         qDebug() << st;
     }
-    void print(const DataTypes::ConfParametersListStruct &st)
-    {
-        qDebug() << st;
-    }
     void print(const DataTypes::FloatStruct &st)
     {
         qDebug() << st;
@@ -31,10 +27,6 @@ public:
         qDebug() << st;
     }
     void print(const DataTypes::FileStruct &st)
-    {
-        qDebug() << st;
-    }
-    void print(const DataTypes::ConfParameterStruct &st)
     {
         qDebug() << st;
     }

@@ -1,12 +1,12 @@
 #include "debugcoma.h"
 
+#include "../comaversion/comaversion.h"
 #include "../gen/board.h"
 #include "../gen/datamanager.h"
 #include "../interfaces/protocom.h"
 #include "../widgets/aboutwidget.h"
 #include "config.h"
 #include "tunemodule.h"
-
 DebugComa::DebugComa(QWidget *parent) : Coma(parent)
 {
 }
@@ -24,11 +24,9 @@ void DebugComa::PrepareDialogs()
 void DebugComa::getAbout()
 {
     AboutWidget *w = new AboutWidget;
-    QFile fileHelper(":/git/version.txt");
-    QString gitCommit {};
-    if (fileHelper.open(QIODevice::ReadOnly))
-        gitCommit = fileHelper.readAll();
-    w->prependLine(QString(PROGNAME) + " version " + QString(COMAVERSION) + "-" + QString(gitCommit));
+    GitVersion version;
+    w->appendLine("Config version: " + version.getConfigVersion());
+    w->prependLine(QString(PROGNAME) + " version " + QString(COMAVERSION) + "-" + version.getGitHash());
     w->setupUI();
     w->show();
 }

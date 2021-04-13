@@ -254,7 +254,7 @@ QComboBox *WDFunc::NewCB2(QWidget *parent, const QStringList &cbsl)
     return cb;
 }
 
-QString WDFunc::CBData(QWidget *w, const QString &cbname)
+QString WDFunc::CBData(const QWidget *w, const QString &cbname)
 {
     QComboBox *cb = w->findChild<QComboBox *>(cbname);
     if (cb == nullptr)
@@ -280,7 +280,7 @@ QString WDFunc::CBData(QWidget *w, const QString &cbname)
 //    return QMetaObject::Connection();
 //}
 
-bool WDFunc::SetCBData(QWidget *w, const QString &cbname, const QString &cbvalue)
+bool WDFunc::SetCBData(const QWidget *w, const QString &cbname, const QString &cbvalue)
 {
     QComboBox *cb = w->findChild<QComboBox *>(cbname);
     if (cb == nullptr)
@@ -289,7 +289,7 @@ bool WDFunc::SetCBData(QWidget *w, const QString &cbname, const QString &cbvalue
     return true;
 }
 
-bool WDFunc::SetCBIndex(QObject *w, const QString &cbname, int index)
+bool WDFunc::SetCBIndex(const QObject *w, const QString &cbname, int index)
 {
     QComboBox *cb = w->findChild<QComboBox *>(cbname);
     if (cb == nullptr)
@@ -299,6 +299,15 @@ bool WDFunc::SetCBIndex(QObject *w, const QString &cbname, int index)
         cb->setCurrentIndex(index);
         return true;
     }
+    //    else
+    //    {
+    //        int newIndex = cb->findText(QString::number(index));
+    //        if (newIndex != -1)
+    //        {
+    //            cb->setCurrentIndex(newIndex);
+    //            return true;
+    //        }
+    //    }
     return false;
 }
 
@@ -348,11 +357,14 @@ QDoubleSpinBox *WDFunc::NewSPB2(
     return dsb;
 }
 
-bool WDFunc::SetSPBData(QObject *w, const QString &spbname, const double &spbvalue)
+bool WDFunc::SetSPBData(const QObject *w, const QString &spbname, const double &spbvalue)
 {
     QDoubleSpinBox *spb = w->findChild<QDoubleSpinBox *>(spbname);
     if (spb == nullptr)
+    {
+        qDebug() << Error::NullDataError << spbname;
         return false;
+    }
     spb->setValue(spbvalue);
     return true;
 }

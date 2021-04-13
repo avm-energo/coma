@@ -16,7 +16,6 @@ HEADERS += \
     $$PWD/journkiv.h \
     $$PWD/journktf.h \
     $$PWD/module.h \
-    $$PWD/module_kiv.h \
     $$PWD/module_kxx.h \
     $$PWD/modulealarm.h \
     $$PWD/modules.h \

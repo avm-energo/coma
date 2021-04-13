@@ -4,15 +4,14 @@
 
 class Conf8084Dialog : public ConfKIVDialog
 {
-    Q_OBJECT
+
 public:
     explicit Conf8084Dialog(ConfigKIV *ckiv, QWidget *parent = nullptr);
 
 private:
-    void SetupUI() override;
-    void Fill() override;
-    void FillBack() const override;
+    // void SetupUI() override;
+    //  void Fill() override;
+    // void FillBack() const override;
 
-    virtual QWidget *connectionWidget() override;
-signals:
+    // virtual QWidget *connectionWidget() override;
 };

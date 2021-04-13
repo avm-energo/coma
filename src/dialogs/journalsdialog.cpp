@@ -18,9 +18,8 @@
 #include <QSortFilterProxyModel>
 #include <QVBoxLayout>
 
-JournalDialog::JournalDialog(UniquePointer<Journals> jour, QWidget *parent) : UDialog(parent)
+JournalDialog::JournalDialog(UniquePointer<Journals> jour, QWidget *parent) : UDialog(parent), m_jour(std::move(jour))
 {
-    m_jour = std::move(jour);
     connect(&DataManager::GetInstance(), &DataManager::fileReceived, m_jour.get(), &Journals::FillJour);
     ProxyWorkModel = new QSortFilterProxyModel(this);
     ProxySysModel = new QSortFilterProxyModel(this);
@@ -98,8 +97,10 @@ QWidget *JournalDialog::JourTab(int jourtype)
     QPushButton *getButton = WDFunc::NewPB(this, "gj." + QString::number(jourtype), "Получить " + str, this,
         [=] { BaseInterface::iface()->reqFile(DataTypes::FilesEnum(jourtype)); });
     hlyout->addWidget(getButton);
-    QPushButton *eraseButton
-        = WDFunc::NewPB(this, "ej." + QString::number(jourtype), "Стереть " + str, this, &JournalDialog::EraseJour);
+    QPushButton *eraseButton = WDFunc::NewPB(this, "ej." + QString::number(jourtype), "Стереть " + str, this, [=] {
+        if (checkPassword())
+            BaseInterface::iface()->writeCommand(Queries::QC_EraseJournals, quint8(jourtype));
+    });
     hlyout->addWidget(eraseButton);
     QPushButton *saveButton = WDFunc::NewPB(
         this, "sj." + QString::number(jourtype), "Сохранить журнал в файл", this, [=] { SaveJour(JourType); });

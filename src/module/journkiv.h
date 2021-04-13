@@ -7,12 +7,10 @@ class JournKIV : public Journals
 {
     Q_OBJECT
 public:
-    JournKIV(QObject *parent = nullptr);
-    void setWorkJourDescription() override;
-    void setMeasJourHeaders() override;
+    JournKIV(QMap<Modules::JournalType, DataTypes::JournalDesc> &jourMap, QObject *parent = nullptr);
+
     QVector<QVariant> createMeasRecord(const char *file) override;
     int measureSize() override;
-    int workJournalID() override;
 };
 
 #endif // JOURNKIV_H

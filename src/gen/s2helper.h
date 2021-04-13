@@ -42,13 +42,23 @@ template <typename T, typename F> static constexpr bool is_variant_alternative()
     });
     return state;
 }
+
+template <class Variant> std::type_info const &variant_type(Variant const &v)
+{
+    return std::visit([](auto &&x) -> decltype(auto) { return typeid(x); }, v);
+}
+template <class T> struct remove_cvref
+{
+    typedef std::remove_cv_t<std::remove_reference_t<T>> type;
+};
 }
 
 namespace DataTypes
 {
-using BYTE = unsigned char;
-using WORD = unsigned short;
-using DWORD = unsigned int;
+using BYTE = uint8_t;
+using WORD = uint16_t;
+using DWORD = uint32_t;
+using INT32 = int32_t;
 using BYTE_4t = std::array<BYTE, 4>;
 using WORD_4t = std::array<WORD, 4>;
 using BYTE_8t = std::array<BYTE, 8>;
@@ -71,7 +81,7 @@ namespace detail
         else if constexpr (std::is_container<T>())
         {
             std::cout << "[ ";
-            int counter = 0;
+            size_t counter = 0;
             for (const auto i : value)
             {
                 print(i);
@@ -87,7 +97,7 @@ namespace detail
     }
 
 }
-using valueType = std::variant<BYTE, WORD, DWORD, BYTE_4t, WORD_4t, BYTE_8t, WORD_8t, BYTE_16t, WORD_16t, float,
+using valueType = std::variant<BYTE, WORD, DWORD, INT32, BYTE_4t, WORD_4t, BYTE_8t, WORD_8t, BYTE_16t, WORD_16t, float,
     FLOAT_2t, FLOAT_2t_2t, FLOAT_3t, FLOAT_6t, FLOAT_8t>;
 
 }

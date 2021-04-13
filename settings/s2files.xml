@@ -1,5 +1,6 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<s2files xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<?xml version="1.0" encoding="UTF-8" ?>
+<?xml-stylesheet type="text/xsl" href="s2files.xsl"?>
+<s2files xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="s2files.xsd">
 	<record>
 		<id>1</id>
 		<type>DWORD</type>
@@ -11,70 +12,206 @@
 	<record>
 		<id>3</id>
 		<type>DWORD</type>
+		<widget>
+			<type>CheckBoxGroup</type>
+			<group>2</group>
+			<string>Настройка времени</string>
+			<string-array>
+				<item>SNTP  IP:172.16.28.2</item>
+				<item>синхронизация по входу 1PPS</item>
+				<item>SNTP  IP:172.16.28.1</item>
+				<item>адрес SNTP   берется из конфигурации</item>
+			</string-array>
+			<count>4</count>
+		</widget>
 	</record>
 	<record>
 		<id>4</id>
 		<type>DWORD</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>1</group>
+			<string>Адрес базовой станции</string>
+			<min>0</min>
+			<max>65535</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>5</id>
 		<type>DWORD</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>1</group>
+			<string>Интервал циклического опроса, с</string>
+			<min>0</min>
+			<max>255</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>6</id>
 		<type>DWORD</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>1</group>
+			<string>Тайм-аут t1, с</string>
+			<min>0</min>
+			<max>255</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>7</id>
 		<type>DWORD</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>1</group>
+			<string>Тайм-аут t2, с</string>
+			<min>0</min>
+			<max>255</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>8</id>
 		<type>DWORD</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>1</group>
+			<string>Тайм-аут t3, с</string>
+			<min>0</min>
+			<max>255</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>9</id>
 		<type>DWORD</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>1</group>
+			<string>Макс. число неподтв. APDU (k)</string>
+			<min>0</min>
+			<max>255</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>10</id>
 		<type>DWORD</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>1</group>
+			<string>Макс. число посл. подтв. APDU (w)</string>
+			<min>0</min>
+			<max>255</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>20</id>
 		<type>BYTE[4]</type>
+		<widget>
+			<type>IpControl</type>
+			<group>2</group>
+			<string>IP адрес устройства</string>
+		</widget>
 	</record>
 	<record>
 		<id>21</id>
 		<type>BYTE[4]</type>
+		<widget>
+			<type>IpControl</type>
+			<group>2</group>
+			<string>Маска</string>
+		</widget>
 	</record>
 	<record>
 		<id>22</id>
 		<type>BYTE[4]</type>
+		<widget>
+			<type>IpControl</type>
+			<group>2</group>
+			<string>Шлюз</string>
+		</widget>
 	</record>
 	<record>
 		<id>23</id>
 		<type>WORD[4]</type>
+		<widget>
+			<type>QLineEdit</type>
+			<group>2</group>
+			<string>Порт протокола 104</string>
+		</widget>
 	</record>
 	<record>
 		<id>24</id>
 		<type>BYTE[4]</type>
+		<widget>
+			<type>IpControl</type>
+			<group>2</group>
+			<string>Адрес SNTP сервера</string>
+		</widget>
 	</record>
 	<record>
 		<id>25</id>
 		<type>DWORD</type>
+		<widget>
+			<type>QComboBox</type>
+			<group>8</group>
+			<field>data</field>
+			<string>Скорость RS485 интерфейса</string>
+			<string-array>
+				<item>1200</item>
+				<item>2400</item>
+				<item>4800</item>
+				<item>9600</item>
+				<item>19200</item>
+				<item>38400</item>
+				<item>57600</item>
+				<item>115200</item>
+			</string-array>
+		</widget>
 	</record>
 	<record>
 		<id>26</id>
 		<type>BYTE</type>
+		<widget>
+			<type>QComboBox</type>
+			<group>8</group>
+			<string>Чётность</string>
+			<string-array>
+				<item>NoParity</item>
+				<item>EvenParity</item>
+				<item>OddParity</item>
+			</string-array>
+		</widget>
 	</record>
 	<record>
 		<id>27</id>
 		<type>BYTE</type>
+		<widget>
+			<type>QComboBox</type>
+			<group>8</group>
+			<string>Количество стоповых битов</string>
+			<string-array>
+				<item>1</item>
+				<item>2</item>
+			</string-array>
+		</widget>
 	</record>
 	<record>
 		<id>28</id>
 		<type>BYTE</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>8</group>
+			<string>Адрес устройства для Modbus</string>
+			<min>1</min>
+			<max>254</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>29</id>
@@ -403,18 +540,53 @@
 	<record>
 		<id>1003</id>
 		<type>DWORD</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>6</group>
+			<string>Интервал усреднения данных  (в периодах основной частоты)</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1004</id>
 		<type>DWORD</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>6</group>
+			<string>Постоянная времени фильтрации гармоник</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1005</id>
 		<type>DWORD</type>
+		<widget>
+			<type>CheckBoxGroup</type>
+			<group>3</group>
+			<string>Разрешение запуска осциллограммы</string>
+			<string-array>
+				<item>По команде от модуля 12</item>
+				<item>По входному сигналу PD1</item>
+				<item>При резком изменении сигналов</item>
+			</string-array>
+			<count>3</count>
+		</widget>
 	</record>
 	<record>
 		<id>1006</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>3</group>
+			<string>Номинальное линейное первичное напряжение, кВ</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>2</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1007</id>
@@ -431,18 +603,50 @@
 	<record>
 		<id>1010</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>4</group>
+			<string>Уставка скачка напряжения для запуска осциллографирования - % от номинала</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>1</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1011</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>4</group>
+			<string>Уставка скачка тока для запуска осциллографирования -  % от I2nom</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>1</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1012</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>4</group>
+			<string>Уставка порога минимального напряжения - % от номинального уровня</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>1</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1013</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>4</group>
+			<string>Уставка порога минимального тока - % от номинального уровня</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>1</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1014</id>
@@ -463,46 +667,134 @@
 	<record>
 		<id>1018</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>4</group>
+			<string>Уставка предупредительной сигнализации по изменению емкости, %</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>1</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1019</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>4</group>
+			<string>Уставка аварийной сигнализации по изменению емкости, %</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>1</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1020</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>4</group>
+			<string>Уставка предупредительной сигнализации по изменению tg δ, %</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>1</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1021</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>4</group>
+			<string>Уставка аварийной сигнализации по изменению tg δ, %</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>1</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1022</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>4</group>
+			<string>Уставка предупредительной сигнализации по изменению небаланса токов, %</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>1</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1023</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>4</group>
+			<string>Уставка аварийной сигнализации по изменению небаланса токов, %</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>1</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1024</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>5</group>
+			<string>Гистерезис на отключение сигнализации по dC, % от уставки</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>1</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1025</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>5</group>
+			<string>Гистерезис на отключение сигнализации по dTg, % от уставки</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>1</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1026</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>5</group>
+			<string>Гистерезис на отключение сигнализации по небалансу токов, %</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>1</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1027</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>7</group>
+			<string>Номинальное сопротивление термометра при 0 град.С</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1028</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>7</group>
+			<string>Температурный коэффициент термометра</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>3</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1029</id>
@@ -515,46 +807,130 @@
 	<record>
 		<id>1031</id>
 		<type>DWORD</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>6</group>
+			<string>Интервал записи данных в ПЗУ (тренд), в секундах</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1032</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>6</group>
+			<string>Низкое напряжение для сигнализации</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>1</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1033</id>
 		<type>BYTE</type>
+		<widget>
+			<type>QCheckBox</type>
+			<group>6</group>
+			<string>Сигнализация по наличию входного напряжения, % от ном.</string>
+		</widget>
 	</record>
 	<record>
 		<id>1034</id>
 		<type>BYTE</type>
+		<widget>
+			<type>QCheckBox</type>
+			<group>6</group>
+			<string>Сигнализация по небалансу токов</string>
+		</widget>
 	</record>
 	<record>
 		<id>1035</id>
 		<type>DWORD</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>6</group>
+			<string>Задержка на формирование предупредительных событий, сек</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>1</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1036</id>
 		<type>DWORD</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>6</group>
+			<string>Задержка на формирование аварийных событий, сек</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>1</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1037</id>
 		<type>DWORD</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>7</group>
+			<string>Задержка срабатывания реле предупредительной сигнализации</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1038</id>
 		<type>DWORD</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>7</group>
+			<string>Задержка срабатывания реле аварийной сигнализации</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1039</id>
 		<type>FLOAT[3]</type>
+		<widget>
+			<type>DoubleSpinBoxGroup</type>
+			<group>3</group>
+			<string>Паспортные значения tg вводов, %</string>
+			<count>3</count>
+			<min>0</min>
+			<max>10</max>
+			<decimals>2</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1040</id>
 		<type>FLOAT[3]</type>
+		<widget>
+			<type>DoubleSpinBoxGroup</type>
+			<group>3</group>
+			<string>Паспортные значения ёмкости вводов, пФ</string>
+			<count>3</count>
+			<min>0</min>
+			<max>20000</max>
+			<decimals>1</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1050</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>3</group>
+			<string>Номинальное вторичное напряжение первой тройки, В</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>1</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1051</id>
@@ -563,90 +939,257 @@
 	<record>
 		<id>1052</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>3</group>
+			<string>Номинальный первичный ток, кА</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1053</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>3</group>
+			<string>Номинальный вторичный ток, А</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>1</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1060</id>
 		<type>BYTE</type>
+		<widget>
+			<type>QComboBox</type>
+			<group>8</group>
+			<string>Режим Modbus</string>
+			<string-array>
+				<item>slave</item>
+				<item>master</item>
+			</string-array>
+		</widget>
 	</record>
 	<record>
 		<id>1061</id>
 		<type>BYTE[8]</type>
+		<widget class="ModbusItem">
+			<type>QTableView</type>
+			<group>8</group>
+			<parent>1060</parent>
+		</widget>
 	</record>
 	<record>
 		<id>1062</id>
 		<type>BYTE[8]</type>
+		<widget class="ModbusItem">
+			<type>QTableView</type>
+			<group>8</group>
+			<parent>1060</parent>
+		</widget>
 	</record>
 	<record>
 		<id>1063</id>
 		<type>BYTE[8]</type>
+		<widget class="ModbusItem">
+			<type>QTableView</type>
+			<group>8</group>
+			<parent>1060</parent>
+		</widget>
 	</record>
 	<record>
 		<id>1064</id>
 		<type>BYTE[8]</type>
+		<widget class="ModbusItem">
+			<type>QTableView</type>
+			<group>8</group>
+			<parent>1060</parent>
+		</widget>
 	</record>
 	<record>
 		<id>1070</id>
 		<type>DWORD</type>
+		<widget>
+			<type>QComboBox</type>
+			<group>4</group>
+			<string>Вид охлаждения</string>
+			<string-array>
+				<item>Естественное</item>
+				<item>Принудительное</item>
+			</string-array>
+		</widget>
 	</record>
 	<record>
 		<id>1071</id>
 		<type>DWORD</type>
+		<widget>
+			<type>QComboBox</type>
+			<group>4</group>
+			<string>Материал охлаждения</string>
+			<string-array>
+				<item>Медь</item>
+				<item>Алюминий</item>
+			</string-array>
+		</widget>
 	</record>
 	<record>
 		<id>1072</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>4</group>
+			<string>Аварийная уставка сигнализации по температуре ННТ в °С</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>1</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1073</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>4</group>
+			<string>Предупредительная уставка сигнализации по температуре ННТ в °С</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>1</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1074</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>3</group>
+			<string>Номинальная температура окружающей среды, °С</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>1</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1075</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>3</group>
+			<string>Превышение температуры ННТ при номинальной нагрузке, °С</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>1</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1076</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>3</group>
+			<string>Коэффициент добавочных потерь</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>1</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1077</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>3</group>
+			<string>Постоянная времени нагрева обмотки в номинальном режиме, мин</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>1</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1078</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>3</group>
+			<string>Максимальное измеряемое фазное напряжение на входе прибора, В эфф</string>
+			<min>0</min>
+			<max>305</max>
+			<decimals>1</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1079</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>3</group>
+			<string>Максимальный измеряемый ток на входе прибора, А эфф</string>
+			<min>0</min>
+			<max>33</max>
+			<decimals>1</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1080</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>3</group>
+			<string>Номинальный ток контролируемой обмотки, А</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>1</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1081</id>
 		<type>DWORD</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>6</group>
+			<string>Количество точек осциллограммы на период основной частоты</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1082</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>5</group>
+			<string>Гистерезис сигнализации по температуре ННТ,  град.С</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>3</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1083</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>5</group>
+			<string>Гистерезис сигнализации по токовой перегрузке, % от Iwnom</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>1</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1084</id>
 		<type>DWORD</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>3</group>
+			<string>Количество датчиков температуры обмоток, подключенных по Modbus Master</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1101</id>
@@ -983,90 +1526,266 @@
 	<record>
 		<id>1201</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>3</group>
+			<string>Номинальная частота, Гц</string>
+			<min>0</min>
+			<max>1000</max>
+			<decimals>1</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1202</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>3</group>
+			<string>Номинальное скольжение</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>1</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1203</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>3</group>
+			<string>Максимальная амплитуда сигналов вибраций (1,25, 2,5, 5,0В)</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1204</id>
 		<type>DWORD</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>9</group>
+			<string>Число пар полюсов</string>
+			<min>1</min>
+			<max>10</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1205</id>
 		<type>DWORD</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>9</group>
+			<string>Число пазов на статоре</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1206</id>
 		<type>DWORD</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>9</group>
+			<string>Число стержней ротора</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1207</id>
 		<type>DWORD</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>9</group>
+			<string>Тип вибродатчика</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1208</id>
 		<type>DWORD </type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>9</group>
+			<string>Подключенные датчики вибрации</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1209</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>9</group>
+			<string>Коэффициент передачи датчиков вибрации</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>2</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1210</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>4</group>
+			<string>Уставка предупредительная по СКЗ виброускорения, м/с/с</string>
+			<min>0</min>
+			<max>1000</max>
+			<decimals>1</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1211</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>4</group>
+			<string>Уставка предупредительная по СКЗ виброскорости, мм/с</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>1</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1212</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>4</group>
+			<string>Уставка предупредительная по СКЗ виброперемещения, мкм</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>1</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1213</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>4</group>
+			<string>Уставка аварийная по СКЗ виброускорения, м/с/с</string>
+			<min>0</min>
+			<max>1000</max>
+			<decimals>1</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1214</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>4</group>
+			<string>Уставка аварийная по СКЗ виброскорости, мм/с</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>1</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1215</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>4</group>
+			<string>Уставка аварийная по СКЗ виброперемещения, мкм</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>1</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1216</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>4</group>
+			<string>Уставка предупредительная по скорости роста СКЗ виброускорения, м/с/с</string>
+			<min>0</min>
+			<max>1000</max>
+			<decimals>1</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1217</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>4</group>
+			<string>Уставка предупредительная по скорости роста СКЗ виброскорости, мм/с</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>1</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1218</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>4</group>
+			<string>Уставка предупредительная по скорости роста СКЗ виброперемещения, мкм</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>1</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1219</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>4</group>
+			<string>Уставка аварийная по скорости роста СКЗ виброускорения, м/с/с</string>
+			<min>0</min>
+			<max>1000</max>
+			<decimals>1</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1220</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>4</group>
+			<string>Уставка аварийная по скорости роста СКЗ виброскорости, мм/с</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>1</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1221</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>4</group>
+			<string>Уставка аварийная по скорости роста СКЗ виброперемещения, мкм</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>1</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1222</id>
 		<type>DWORD</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>9</group>
+			<string>Порядковый номер двигателя</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1223</id>

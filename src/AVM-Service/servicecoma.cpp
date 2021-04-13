@@ -1,5 +1,6 @@
 #include "servicecoma.h"
 
+#include "../comaversion/comaversion.h"
 #include "../gen/board.h"
 #include "../gen/datamanager.h"
 #include "../interfaces/iec104.h"
@@ -25,11 +26,9 @@ void ServiceComa::PrepareDialogs()
 void ServiceComa::getAbout()
 {
     AboutWidget *w = new AboutWidget;
-    QFile fileHelper(":/git/version.txt");
-    QString gitCommit {};
-    if (fileHelper.open(QIODevice::ReadOnly))
-        gitCommit = fileHelper.readAll();
-    w->prependLine(QString(PROGNAME) + " version " + QString(COMAVERSION) + "-" + QString(gitCommit));
+    GitVersion version;
+    w->appendLine("Config version: " + version.getConfigVersion());
+    w->prependLine(QString(PROGNAME) + " version " + QString(COMAVERSION) + "-" + version.getGitHash());
     w->setupUI();
     w->show();
 }

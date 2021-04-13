@@ -7,10 +7,11 @@
 #else
 #include <QObject>
 #endif
+#include <functional>
 #define MAINSLEEP 20
 #define MAINTIMEOUT 2000 // 2 sec timeout for general operations
 
-namespace Qt
+namespace QtHelper
 {
 struct deleteLaterDeletor
 {
@@ -26,7 +27,18 @@ struct deleteLaterDeletor
 
 template <typename T> using SharedPointer = std::shared_ptr<T>;
 
-template <typename T> using UniquePointer = std::unique_ptr<T, Qt::deleteLaterDeletor>;
+template <typename T> using UniquePointer = std::unique_ptr<T, QtHelper::deleteLaterDeletor>;
+
+// Another variant of std::unique_ptr with deleteLater
+template <typename T, std::enable_if_t<std::is_base_of_v<QObject, T>, bool> = true>
+using UniquePointer2 = std::unique_ptr<T, decltype(std::mem_fn(&QObject::deleteLater))>;
+
+// like std::make_unique
+template <typename T, typename... Args, std::enable_if_t<std::is_base_of_v<QObject, T>, bool> = true>
+UniquePointer2<T> create_unique(Args... args)
+{
+    return UniquePointer2<T>(new T(args...), std::mem_fn(&QObject::deleteLater));
+}
 
 class StdFunc
 {

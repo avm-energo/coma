@@ -92,6 +92,7 @@ void AbstractStartupDialog::WriteCor()
         values.push_back(QVariant::fromValue(value));
     }
     BaseInterface::iface()->writeCommand(Queries::QC_WriteUserValues, /*StdFunc::toVariantList*/ (values));
+    GetCorBd();
 }
 
 void AbstractStartupDialog::GetCorBd()
@@ -103,7 +104,10 @@ void AbstractStartupDialog::GetCorBd()
 void AbstractStartupDialog::ResetCor()
 {
     if (checkPassword())
+    {
         BaseInterface::iface()->writeCommand(Queries::QC_ClearStartupValues);
+        GetCorBd();
+    }
 }
 
 float AbstractStartupDialog::ToFloat(QString text)
@@ -160,17 +164,6 @@ void AbstractStartupDialog::updateFloatData(const DataTypes::FloatStruct &fl)
         FillBd(this, QString::number(fl.sigAdr), fl.sigVal);
 }
 
-void AbstractStartupDialog::updateStatus()
-{
-    DataTypes::GeneralResponseStruct grs;
-    // while (DataManager::getResponse(DataTypes::GeneralResponseTypes::Ok, grs)
-    //        != Error::Msg::ResEmpty) // get all responses from outList
-    //        TimeFunc::Wait();
-    // FIXME grs uninit
-    if (grs.type == DataTypes::GeneralResponseTypes::Ok)
-        QMessageBox::information(this, "INFO", "Записано успешно");
-}
-
 void AbstractStartupDialog::FillBd(QWidget *parent, QString Name, QString Value)
 {
     bool ok;
@@ -196,7 +189,10 @@ void AbstractStartupDialog::FillBd(QWidget *parent, QString Name, float Value)
 void AbstractStartupDialog::SetupCor()
 {
     if (checkPassword())
+    {
         BaseInterface::iface()->writeCommand(Queries::QC_SetStartupValues);
+        GetCorBd();
+    }
 }
 
 void AbstractStartupDialog::ErrorRead()

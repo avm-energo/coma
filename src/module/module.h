@@ -1,6 +1,8 @@
 #ifndef MODULEFABRIC_H
 #define MODULEFABRIC_H
 
+#include "../config/baseconfig.h"
+#include "../config/widgetfactory.h"
 #include "../gen/datatypes.h"
 #include "../module/alarmstateall.h"
 #include "../widgets/alarmwidget.h"
@@ -8,18 +10,7 @@
 #include "journals.h"
 #include "modulealarm.h"
 #include "modules.h"
-enum AlarmType
-{
-    Warning,
-    Critical,
-    All
-};
-enum JournalType
-{
-    Work,
-    Meas,
-    System
-};
+
 struct ModuleSettings
 {
     int alarmCount() const
@@ -29,10 +20,18 @@ struct ModuleSettings
             counter += alarm.desc.size();
         return counter;
     }
-    QMap<AlarmType, DataTypes::Alarm> alarms;
-    QMap<JournalType, DataTypes::Journal> journals;
+    QMap<Modules::AlarmType, DataTypes::Alarm> alarms;
+    QMap<Modules::JournalType, DataTypes::JournalDesc> journals;
     InterfaceSettings ifaceSettings;
+    QList<DataTypes::RecordPair> configSettings;
 };
+
+struct GlobalSettings
+{
+    S2DataTypes::valueTypeMap *s2filesMap;
+    widgetMap *s2widgetMap;
+};
+
 class Module : public QObject
 {
     Q_OBJECT
@@ -63,6 +62,10 @@ public:
     ModuleSettings *settings() const;
     bool loadSettings();
     bool loadS2Settings();
+    quint64 configVersion() const;
+    bool isConfigOutdated() const;
+    void eraseSettings() const;
+    void putConfigVersion() const;
 
 private:
     QList<UDialog *> m_dialogs;

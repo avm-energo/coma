@@ -25,7 +25,7 @@ Board::Board(Singleton::token)
     m_interfaceType = Unknown;
     m_connectionState = ConnectionState::Closed;
     m_boardType = Types::None;
-    m_deviceType = DeviceType::Module;
+    // m_deviceType = DeviceType::Module;
     //    Q_UNUSED(parent)
 }
 
@@ -171,6 +171,15 @@ void Board::update(const DataTypes::BitStringStruct &bs)
         emit readyRead();
         m_updateCounter = 0;
     }
+}
+
+void Board::reset()
+{
+    m_interfaceType = Unknown;
+    m_connectionState = ConnectionState::Closed;
+    m_boardType = Types::None;
+    m_startupInfoBlock = {};
+    m_startupInfoBlockExt = {};
 }
 
 quint32 Board::health() const

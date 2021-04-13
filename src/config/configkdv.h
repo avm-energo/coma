@@ -66,7 +66,6 @@ public:
     explicit ConfigKDV();
     ~ConfigKDV();
 
-    // void setConfig();
     void SetDefConf();
     Config *MainConfig();
     ConfigKxx *KxxConfig();

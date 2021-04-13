@@ -14,8 +14,8 @@ class Board : public QObject, public Singleton<Board>
 public:
     enum DeviceType
     {
-        Module,
-        Device
+        Controller,
+        Module
     };
 
     enum Range
@@ -104,6 +104,7 @@ public:
     // QList<quint16> getBaseBoardsList() const;
 
     void update(const DataTypes::BitStringStruct &bs);
+    void reset();
 
     quint32 health() const;
     bool noConfig() const;

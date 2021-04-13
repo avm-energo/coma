@@ -6,11 +6,7 @@
 #include "../check/checkkivdialog.h"
 #include "../check/checkktfdialog.h"
 #include "../check/checkktfharmonicdialog.h"
-#include "../config/configkdv.h"
-#include "../config/configkiv.h"
-#include "../config/confkdvdialog.h"
-#include "../config/confkivdialog.h"
-#include "../config/confktfdialog.h"
+#include "../config/abstractconfdialog.h"
 #include "../dialogs/journalsdialog.h"
 #include "../gen/board.h"
 #include "../module/journkdv.h"
@@ -28,10 +24,11 @@ ServiceModule::ServiceModule(QObject *parent) : Module(parent)
 void ServiceModule::create(QTimer *updateTimer)
 {
     using namespace Modules;
-    const auto &board = Board::GetInstance();
+    auto &board = Board::GetInstance();
     quint16 typeb = board.typeB();
     if (BaseBoards.contains(typeb)) // there must be two-part module
     {
+        board.setDeviceType(Board::Controller);
         quint16 typem = board.typeM();
         Q_UNUSED(typem)
         switch (typeb)
@@ -55,6 +52,7 @@ void ServiceModule::create(QTimer *updateTimer)
     }
     else
     {
+        board.setDeviceType(Board::Module);
         quint16 mtype = board.type();
         createModule(Modules::Model(mtype));
     }
@@ -75,26 +73,26 @@ void ServiceModule::createModule(Modules::Model model)
     {
     case Model::KIV:
     {
-        auto JOUR = UniquePointer<Journals>(new JournKIV(this));
+        auto jour = UniquePointer<Journals>(new JournKIV(settings()->journals, this));
         if (board.interfaceType() != Board::InterfaceType::RS485)
         {
-            ConfigKIV *CKIV = new ConfigKIV;
-            addDialogToList(new ConfKIVDialog(CKIV), "Конфигурирование", "conf1");
+            //   ConfigKIV *CKIV = new ConfigKIV;
+            addDialogToList(new AbstractConfDialog(settings()->configSettings), "Конфигурирование", "conf1");
         }
         CheckKIVDialog *cdkiv = new CheckKIVDialog;
         addDialogToList(cdkiv, "Проверка");
 
         addDialogToList(new StartupKIVDialog, "Начальные\nзначения");
-        Module::create(std::move(JOUR));
+        Module::create(std::move(jour));
         break;
     }
     case Model::KTF:
     {
-        auto JOUR = UniquePointer<Journals>(new JournKTF(this));
+        auto jour = UniquePointer<Journals>(new JournKTF(settings()->journals, this));
         if (board.interfaceType() != Board::InterfaceType::RS485)
         {
-            ConfigKTF *CKTF = new ConfigKTF;
-            addDialogToList(new ConfKTFDialog(CKTF), "Конфигурирование", "conf1");
+            //  ConfigKTF *CKTF = new ConfigKTF;
+            addDialogToList(new AbstractConfDialog(settings()->configSettings), "Конфигурирование", "conf1");
         }
         CheckKTFDialog *cdktf = new CheckKTFDialog;
         addDialogToList(cdktf, "Проверка");
@@ -102,16 +100,16 @@ void ServiceModule::createModule(Modules::Model model)
         addDialogToList(new StartupKTFDialog, "Старение\nизоляции");
 
         addDialogToList(new CheckKTFHarmonicDialog, "Гармоники");
-        Module::create(std::move(JOUR));
+        Module::create(std::move(jour));
         break;
     }
     case Model::KDV:
     {
-        auto JOUR = UniquePointer<Journals>(new JournKDV(this));
+        auto jour = UniquePointer<Journals>(new JournKDV(settings()->journals, this));
         if (board.interfaceType() != Board::InterfaceType::RS485)
         {
-            ConfigKDV *CKDV = new ConfigKDV;
-            addDialogToList(new ConfKDVDialog(CKDV), "Конфигурирование", "conf1");
+            //  ConfigKDV *CKDV = new ConfigKDV;
+            addDialogToList(new AbstractConfDialog(settings()->configSettings), "Конфигурирование", "conf1");
         }
         CheckKDVDialog *cdkdv = new CheckKDVDialog;
         addDialogToList(cdkdv);
@@ -119,7 +117,7 @@ void ServiceModule::createModule(Modules::Model model)
         addDialogToList(new StartupKDVDialog, "Старение\nизоляции");
         addDialogToList(new CheckKDVHarmonicDialog, "Гармоники");
         addDialogToList(new CheckKDVVibrDialog, "Вибрации");
-        Module::create(std::move(JOUR));
+        Module::create(std::move(jour));
         break;
     }
     default:

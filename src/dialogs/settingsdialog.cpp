@@ -5,6 +5,7 @@
 #include "../widgets/wd_func.h"
 
 #include <QFileDialog>
+#include <QMessageBox>
 #include <QMetaEnum>
 #include <QSettings>
 #include <QVBoxLayout>
@@ -44,6 +45,10 @@ void SettingsDialog::SetupUI()
     const QString style = StyleLoader::GetInstance().styleFile();
     vlyout->addWidget(themeCB);
     connect(themeCB, &QComboBox::currentTextChanged, [=](const QString &text) {
+        auto answer = QMessageBox::question(
+            this, "Предупреждение", "Тема будет изменена\n Приложение может не отвечать некоторое время");
+        if (answer == QMessageBox::No)
+            return;
         Name key = Name(themeEnum().keyToValue(text.toStdString().c_str()));
         auto &styleLoader = StyleLoader::GetInstance();
         styleLoader.setStyleFile(themes.value(key));

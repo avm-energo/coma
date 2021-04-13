@@ -242,26 +242,6 @@ void DataManager::checkTypeAndSendSignals(DataTypes::SignalsStruct &str)
         }
         break;
     }
-    case ConfParameter:
-    {
-        Q_ASSERT(str.data.canConvert<ConfParameterStruct>());
-        if (str.data.canConvert<ConfParameterStruct>())
-        {
-            ConfParameterStruct cp = str.data.value<ConfParameterStruct>();
-            emit confParameterReceived(cp);
-        }
-        break;
-    }
-    case ConfParametersList:
-    {
-        Q_ASSERT(str.data.canConvert<ConfParametersListStruct>());
-        if (str.data.canConvert<ConfParametersListStruct>())
-        {
-            ConfParametersListStruct cp = str.data.value<ConfParametersListStruct>();
-            emit confParametersListReceived(cp);
-        }
-        break;
-    }
     case DataRecVList:
     {
         Q_ASSERT(str.data.canConvert<QList<DataRecV>>());

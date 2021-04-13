@@ -1,5 +1,7 @@
 #include "module.h"
 
+#include "../comaversion/comaversion.h"
+#include "../config/abstractconfdialog.h"
 #include "../ctti/type_id.hpp"
 #include "../dialogs/fwuploaddialog.h"
 #include "../dialogs/infodialog.h"
@@ -14,6 +16,8 @@
 
 #include <QDir>
 #include <QtXml>
+
+constexpr char versionFile[] = "coma.ver";
 
 Module::Module(QObject *parent) : QObject(parent)
 {
@@ -153,27 +157,24 @@ bool Module::loadSettings()
             return loadSettings();
         }
     }
-    if (file.open(QIODevice::ReadOnly))
+    if (!file.open(QIODevice::ReadOnly))
     {
-        if (domDoc.setContent(&file))
-        {
-            m_settings = std::unique_ptr<ModuleSettings>(new ModuleSettings);
-            QDomElement domElement = domDoc.documentElement();
-            XmlParser::traverseNode(domElement, m_settings.get());
-            file.close();
-            return true;
-        }
-        else
-        {
-            file.close();
-            qInfo() << Error::WrongFileError << file.fileName();
-            return false;
-        }
+        qCritical() << Error::FileOpenError << file.fileName();
+        return false;
+    }
+    if (domDoc.setContent(&file))
+    {
+        m_settings = std::unique_ptr<ModuleSettings>(new ModuleSettings);
+        QDomElement domElement = domDoc.documentElement();
+        XmlParser::traverseNode(domElement, m_settings.get());
+        file.close();
+        return true;
     }
     else
     {
+        file.close();
+        qInfo() << Error::WrongFileError << file.fileName();
         return false;
-        qCritical() << Error::FileOpenError << file.fileName();
     }
 }
 
@@ -218,7 +219,8 @@ bool Module::loadS2Settings()
         if (domDoc.setContent(&file))
         {
             QDomElement domElement = domDoc.documentElement();
-            XmlParser::traverseNode(domElement, &DataTypes::DataRecV::map);
+            GlobalSettings settings { &DataTypes::DataRecV::map, &WidgetFactory::widgetMap };
+            XmlParser::traverseNode(domElement, settings);
             file.close();
             return true;
         }
@@ -228,15 +230,70 @@ bool Module::loadS2Settings()
     }
     else
     {
-        return false;
         qCritical() << Error::FileOpenError << file.fileName();
+        return false;
     }
+}
+
+quint64 Module::configVersion() const
+{
+    QDir directory(StdFunc::GetSystemHomeDir());
+    QFile file;
+    file.setFileName(directory.filePath(versionFile));
+    if (!file.open(QIODevice::ReadOnly))
+        return 0;
+    bool status = false;
+    quint64 counter = file.readAll().toULongLong(&status);
+    if (!status)
+        return 0;
+    return counter;
+}
+
+bool Module::isConfigOutdated() const
+{
+    GitVersion version;
+
+    return configVersion() < version.getGitCounter();
+    return false;
+}
+
+void Module::eraseSettings() const
+{
+    QDir directory(StdFunc::GetSystemHomeDir());
+    auto files = directory.entryList(QDir::Files).filter(".xml");
+
+    files.push_back(versionFile);
+    // qDebug() << files;
+    for (const auto &filename : files)
+    {
+        QFile file(directory.filePath(filename));
+        file.setPermissions(QFile::ReadOther | QFile::WriteOther);
+        if (!file.remove())
+            qDebug() << file;
+    }
+}
+
+void Module::putConfigVersion() const
+{
+    QDir directory(StdFunc::GetSystemHomeDir());
+    QFile file;
+    file.setFileName(directory.filePath(versionFile));
+    if (!file.open(QIODevice::WriteOnly))
+    {
+        qCritical() << Error::FileWriteError << versionFile;
+        return;
+    }
+    QTextStream out(&file);
+    GitVersion version;
+    out << version.getGitCounter();
+    file.close();
 }
 
 void Module::create(UniquePointer<Journals> jour)
 {
     if (Board::GetInstance().interfaceType() != Board::InterfaceType::RS485)
     {
+        //     addDialogToList(new AbstractConfDialog(settings()->defaultConfig), "Конфигурирование", "conf1");
         Q_ASSERT(jour != nullptr);
         addDialogToList(new JournalDialog(std::move(jour)), "Журналы");
     }

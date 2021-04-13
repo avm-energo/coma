@@ -16,6 +16,9 @@ public:
     QWidget *ModbusWidget(QWidget *parent);
     QWidget *VariousWidget(QWidget *parent);
 
+    QObject *getParent() const;
+    void setParent(QObject *value);
+
 private:
     enum ModbusColumns : int
     {
@@ -29,7 +32,7 @@ private:
         DataType,
         Register
     };
-    QObject *ParentMB, *ParentSetup, *ParentSetupBl;
+    QObject *Parent /*, *Parent, *Parent*/;
     const QStringList m_baudList { "1200", "2400", "4800", "9600", "19200", "38400", "57600", "115200" };
     QStringList m_header { "датчик", "скорость", "чётность", "стопБиты", "период опроса", "абонент", "функция",
         "данные", "регистр" };

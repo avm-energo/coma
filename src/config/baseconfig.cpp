@@ -2,5 +2,4 @@
 
 BaseConfig::BaseConfig()
 {
-
 }

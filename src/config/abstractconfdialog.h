@@ -1,32 +1,39 @@
 #pragma once
-
 #include "../module/modules.h"
 #include "../widgets/udialog.h"
-#include "baseconfig.h"
+#include "widgetfactory.h"
+
+#include <set>
 //#define MAXBYTEARRAY 65535
 //#define MAXCONFSIZE 4096 // максимальный размер файла конфигурации
 
-class AbstractConfDialog : public UDialog, protected BaseConfig
+class AbstractConfDialog : public UDialog
 {
-    Q_OBJECT
 public:
-    explicit AbstractConfDialog(QWidget *parent = nullptr);
+    explicit AbstractConfDialog(const QList<DataTypes::RecordPair> &defaultConfig, QWidget *parent = nullptr);
 
     void PrereadConf();
+
+    void FillBack() const;
+    void SetDefConf();
 
 protected:
     QStringList CheckConfErrors;
     QWidget *ConfButtons();
 
-    virtual void SetupUI() = 0;
+    virtual void SetupUI();
+    void Fill();
     bool PrepareConfToWrite();
     void uponInterfaceSetting() override;
 
-private slots:
+private:
+    void CheckConf();
     void SaveConfToFile();
     void LoadConfFromFile();
     void ReadConf();
     void WriteConf();
+    void checkForDiff(const QList<DataTypes::DataRecV> &list);
     void confReceived(const QList<DataTypes::DataRecV> &list);
-    void confParametersListReceived(const DataTypes::ConfParametersListStruct &cfpl);
+
+    const QList<DataTypes::RecordPair> m_defaultValues;
 };

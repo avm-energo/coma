@@ -3,32 +3,34 @@
 
 #include "abstractconfdialog.h"
 
+#include <set>
 class ConfigKIV;
 class ConfKIVDialog : public AbstractConfDialog
 {
-    Q_OBJECT
+
 public:
     explicit ConfKIVDialog(ConfigKIV *ckiv, QWidget *parent = nullptr);
     ~ConfKIVDialog();
 
 private:
-    void Fill() override;
-    void FillBack() const override;
-    void SetupUI() override;
+    // void Fill() override;
+
+    // void SetupUI() override;
     void CheckConf() const override;
 
 protected:
-    QWidget *analogWidget();
-    QWidget *thresholdsWidget();
-    QWidget *remainsWidget();
-    virtual QWidget *connectionWidget();
+    //    QWidget *analogWidget();
+    //    QWidget *thresholdsWidget();
+    //    QWidget *remainsWidget();
+    //    virtual QWidget *connectionWidget();
+    //    QWidget *testWidget();
 
-    void FillKiv();
-    void FillBackKiv() const;
+    //    void FillKiv();
+    //    void FillBackKiv() const;
 
     ConfigKIV *CKIV;
 
-private slots:
+private:
     void SetDefConf() override;
 };
 

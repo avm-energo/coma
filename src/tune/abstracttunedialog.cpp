@@ -8,7 +8,6 @@
 #include "../gen/stdfunc.h"
 #include "../gen/timefunc.h"
 #include "../interfaces/protocom.h"
-#include "../module/module_kiv.h"
 #include "../module/modules.h"
 #include "../widgets/waitwidget.h"
 #include "../widgets/wd_func.h"

@@ -4,10 +4,10 @@
 #include "../gen/board.h"
 #include "../gen/s2.h"
 #include "../gen/stdfunc.h"
+#include "../widgets/checkboxgroup.h"
 #include "../widgets/wd_func.h"
 
 #include <QDebug>
-#include <QMetaEnum>
 #include <QVBoxLayout>
 
 Config::Config()
@@ -32,58 +32,69 @@ void Config::SetDefConf()
 
 QWidget *Config::MainWidget(QWidget *parent)
 {
-    ParentMainbl = parent;
+    Parent = parent;
     QWidget *w = new QWidget;
-    QVBoxLayout *vlyout2 = new QVBoxLayout;
+
+    const auto quint16_max = std::numeric_limits<quint16>::max();
+    const auto quint8_max = std::numeric_limits<quint8>::max();
     QGridLayout *glyout = new QGridLayout;
 
-    glyout->setColumnStretch(2, 50);
+    glyout->addWidget(WDFunc::NewLBL2(parent, "Адрес базовой станции:"), 0, textColumn);
+    glyout->addWidget(WDFunc::NewSPB2(parent, nameByValue(BciNumber::Abs_104), 0, quint16_max, 0), 0, valueColumn);
 
-    glyout->addWidget(WDFunc::NewLBL2(parent, "Адрес базовой станции:"), 0, 0, 1, 1, Qt::AlignLeft);
-    glyout->addWidget(WDFunc::NewSPB2(parent, nameByValue(BciNumber::Abs_104), 0, 65535, 0), 0, 1, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(WDFunc::NewLBL2(parent, "Интервал циклического опроса, с:"), 1, textColumn);
+    glyout->addWidget(WDFunc::NewSPB2(parent, nameByValue(BciNumber::Cycle_104), 0, quint8_max, 0), 1, valueColumn);
 
-    glyout->addWidget(WDFunc::NewLBL2(parent, "Интервал циклического опроса, с:"), 1, 0, 1, 1, Qt::AlignLeft);
-    glyout->addWidget(WDFunc::NewSPB2(parent, nameByValue(BciNumber::Cycle_104), 0, 255, 0), 1, 1, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(WDFunc::NewLBL2(parent, "Тайм-аут t1, с:"), 2, textColumn);
+    glyout->addWidget(WDFunc::NewSPB2(parent, nameByValue(BciNumber::T1_104), 0, quint8_max, 0), 2, valueColumn);
 
-    glyout->addWidget(WDFunc::NewLBL2(parent, "Тайм-аут t1, с:"), 2, 0, 1, 1, Qt::AlignLeft);
-    glyout->addWidget(WDFunc::NewSPB2(parent, nameByValue(BciNumber::T1_104), 0, 255, 0), 2, 1, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(WDFunc::NewLBL2(parent, "Тайм-аут t2, с:"), 3, textColumn);
+    glyout->addWidget(WDFunc::NewSPB2(parent, nameByValue(BciNumber::T2_104), 0, quint8_max, 0), 3, valueColumn);
 
-    glyout->addWidget(WDFunc::NewLBL2(parent, "Тайм-аут t2, с:"), 3, 0, 1, 1, Qt::AlignLeft);
-    glyout->addWidget(WDFunc::NewSPB2(parent, nameByValue(BciNumber::T2_104), 0, 255, 0), 3, 1, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(WDFunc::NewLBL2(parent, "Тайм-аут t3, с:"), 4, textColumn);
+    glyout->addWidget(WDFunc::NewSPB2(parent, nameByValue(BciNumber::T3_104), 0, quint8_max, 0), 4, valueColumn);
 
-    glyout->addWidget(WDFunc::NewLBL2(parent, "Тайм-аут t3, с:"), 4, 0, 1, 1, Qt::AlignLeft);
-    glyout->addWidget(WDFunc::NewSPB2(parent, nameByValue(BciNumber::T3_104), 0, 255, 0), 4, 1, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(WDFunc::NewLBL2(parent, "Макс. число неподтв. APDU (k):"), 5, textColumn);
+    glyout->addWidget(WDFunc::NewSPB2(parent, nameByValue(BciNumber::k_104), 0, quint8_max, 0), 5, valueColumn);
 
-    glyout->addWidget(WDFunc::NewLBL2(parent, "Макс. число неподтв. APDU (k):"), 5, 0, 1, 1, Qt::AlignLeft);
-    glyout->addWidget(WDFunc::NewSPB2(parent, nameByValue(BciNumber::k_104), 0, 255, 0), 5, 1, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(WDFunc::NewLBL2(parent, "Макс. число посл. подтв. APDU (w):"), 6, textColumn);
+    glyout->addWidget(WDFunc::NewSPB2(parent, nameByValue(BciNumber::w_104), 0, quint8_max, 0), 6, valueColumn);
 
-    glyout->addWidget(WDFunc::NewLBL2(parent, "Макс. число посл. подтв. APDU (w):"), 6, 0, 1, 1, Qt::AlignLeft);
-    glyout->addWidget(WDFunc::NewSPB2(parent, nameByValue(BciNumber::w_104), 0, 255, 0), 6, 1, 1, 1, Qt::AlignLeft);
-
-    vlyout2->addLayout(glyout);
-
-    w->setLayout(vlyout2);
+    w->setLayout(glyout);
 
     return w;
 }
 
 QWidget *Config::TimeWidget(QWidget *parent)
 {
-    ParentCtype = parent;
+    Parent = parent;
     QWidget *w = new QWidget;
     QVBoxLayout *vlyout2 = new QVBoxLayout;
     QGridLayout *glyout = new QGridLayout;
 
     glyout->setColumnStretch(2, 50);
-    int row = 0;
-    QLabel *lbl = new QLabel("Тип синхронизации времени:");
-
-    glyout->addWidget(lbl, row, 0, 1, 1, Qt::AlignLeft);
-
-    const QStringList cbl { "нет", "SNTP", "SNTP+PPS" };
-    glyout->addWidget(WDFunc::NewCB2(parent, nameByValue(BciNumber::CType), cbl), row, 1, 1, 1);
 
     vlyout2->addLayout(glyout);
+
+    const QStringList ctypes { "SNTP  IP:172.16.28.2", "синхронизация по входу 1PPS", "SNTP  IP:172.16.28.1",
+        "адрес SNTP   берется из конфигурации" };
+    auto deviceType = Board::GetInstance().deviceType();
+    QList<int> hidePositions;
+    switch (deviceType)
+    {
+    case Board::Controller:
+        hidePositions = { PPS, SNTP_Default };
+        break;
+    case Board::Module:
+        hidePositions = { SNTP_Addr1, SNTP_Addr2 };
+        break;
+    default:
+        hidePositions = {};
+    }
+    auto *checkBoxGroup = new CheckBoxGroup /*<DataTypes::DWORD>*/ (ctypes, hidePositions, w);
+    checkBoxGroup->setObjectName("ctype");
+
+    vlyout2->addWidget(checkBoxGroup);
 
     w->setLayout(vlyout2);
 
@@ -101,16 +112,21 @@ void Config::Fill()
     if (s2typeM != Board::GetInstance().typeM())
         qCritical() << "Conflict typeB, module: " << QString::number(Board::GetInstance().typeM(), 16)
                     << " config: " << QString::number(s2typeM, 16);
-    SetSPBData<DWORD>(ParentMainbl, BciNumber::Abs_104);
-    SetSPBData<DWORD>(ParentMainbl, BciNumber::Cycle_104);
-    SetSPBData<DWORD>(ParentMainbl, BciNumber::T1_104);
-    SetSPBData<DWORD>(ParentMainbl, BciNumber::T2_104);
-    SetSPBData<DWORD>(ParentMainbl, BciNumber::T3_104);
-    SetSPBData<DWORD>(ParentMainbl, BciNumber::k_104);
-    SetSPBData<DWORD>(ParentMainbl, BciNumber::w_104);
+    SetSPBData<DWORD>(Parent, BciNumber::Abs_104);
+    SetSPBData<DWORD>(Parent, BciNumber::Cycle_104);
+    SetSPBData<DWORD>(Parent, BciNumber::T1_104);
+    SetSPBData<DWORD>(Parent, BciNumber::T2_104);
+    SetSPBData<DWORD>(Parent, BciNumber::T3_104);
+    SetSPBData<DWORD>(Parent, BciNumber::k_104);
+    SetSPBData<DWORD>(Parent, BciNumber::w_104);
 
-    WDFunc::SetCBIndex(ParentCtype, nameByValue(BciNumber::CType),
-        StdFunc::countSetBits(S2::getRecord(BciNumber::CType).value<DWORD>() & 0x0a));
+    CheckBoxGroup *checkBoxGroup
+        = dynamic_cast<CheckBoxGroup *>(Parent->findChild<QWidget *>(nameByValue(BciNumber::CType)));
+    if (checkBoxGroup)
+    {
+        checkBoxGroup->setBits(S2::getRecord(BciNumber::CType).value<DWORD>());
+        qDebug() << checkBoxGroup->metaObject()->className();
+    }
 }
 
 void Config::FillBack() const
@@ -120,28 +136,18 @@ void Config::FillBack() const
     S2::setRecordValue({ BciNumber::MTypeB_ID, DWORD(Board::GetInstance().typeB()) });
     S2::setRecordValue({ BciNumber::MTypeE_ID, DWORD(Board::GetInstance().typeM()) });
 
-    SPBDataS2<DWORD>(ParentMainbl, BciNumber::Abs_104);
-    SPBDataS2<DWORD>(ParentMainbl, BciNumber::Cycle_104);
-    SPBDataS2<DWORD>(ParentMainbl, BciNumber::T1_104);
-    SPBDataS2<DWORD>(ParentMainbl, BciNumber::T2_104);
-    SPBDataS2<DWORD>(ParentMainbl, BciNumber::T3_104);
-    SPBDataS2<DWORD>(ParentMainbl, BciNumber::k_104);
-    SPBDataS2<DWORD>(ParentMainbl, BciNumber::w_104);
+    SPBDataS2<DWORD>(Parent, BciNumber::Abs_104);
+    SPBDataS2<DWORD>(Parent, BciNumber::Cycle_104);
+    SPBDataS2<DWORD>(Parent, BciNumber::T1_104);
+    SPBDataS2<DWORD>(Parent, BciNumber::T2_104);
+    SPBDataS2<DWORD>(Parent, BciNumber::T3_104);
+    SPBDataS2<DWORD>(Parent, BciNumber::k_104);
+    SPBDataS2<DWORD>(Parent, BciNumber::w_104);
 
-    int cbidx = WDFunc::CBIndex(ParentCtype, nameByValue(BciNumber::CType));
-    switch (cbidx)
-    {
-    case 1:
-        cbidx = 8;
-        break;
-    case 2:
-        cbidx = 10;
-        break;
-    default:
-        cbidx = 0;
-        break;
-    }
-    S2::setRecordValue({ BciNumber::CType, DWORD(cbidx) });
+    CheckBoxGroup *checkBoxGroup
+        = dynamic_cast<CheckBoxGroup *>(Parent->findChild<QWidget *>(nameByValue(BciNumber::CType)));
+    if (checkBoxGroup)
+        S2::setRecordValue({ BciNumber::CType, checkBoxGroup->bits<DWORD>() });
 }
 
 void Config::removeFotter()
@@ -155,4 +161,14 @@ void Config::removeFotter()
                          }),
         S2::config.end());
     Q_ASSERT(counter < 2);
+}
+
+QObject *Config::getParent() const
+{
+    return Parent;
+}
+
+void Config::setParent(QObject *value)
+{
+    Parent = value;
 }

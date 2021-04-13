@@ -1,21 +1,11 @@
 #include "journkiv.h"
 
 #include "../gen/timefunc.h"
-#include "module_kiv.h"
 #include "modules.h"
-JournKIV::JournKIV(QObject *parent) : Journals(parent)
-{
-    m_workJourDescription = AVM_KIV::workJourDescription;
-}
 
-void JournKIV::setWorkJourDescription()
+JournKIV::JournKIV(QMap<Modules::JournalType, DataTypes::JournalDesc> &jourMap, QObject *parent)
+    : Journals(jourMap, parent)
 {
-    m_workJourDescription = AVM_KIV::workJourDescription;
-}
-
-void JournKIV::setMeasJourHeaders()
-{
-    m_measJourHeaders = AVM_KIV::measJourHeaders;
 }
 
 QVector<QVariant> JournKIV::createMeasRecord(const char *file)
@@ -36,9 +26,4 @@ QVector<QVariant> JournKIV::createMeasRecord(const char *file)
 int JournKIV::measureSize()
 {
     return sizeof(AVM_KIV::MeasureStruct);
-}
-
-int JournKIV::workJournalID()
-{
-    return AVM_KIV::workJourId;
 }

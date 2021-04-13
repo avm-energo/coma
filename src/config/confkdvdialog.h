@@ -5,36 +5,34 @@
 class ConfigKDV;
 class ConfKDVDialog : public AbstractConfDialog
 {
-    Q_OBJECT
 public:
     explicit ConfKDVDialog(ConfigKDV *ckdv, QWidget *parent = nullptr);
     ~ConfKDVDialog();
 
 private:
-    void Fill() override;
-    void FillBack() const override;
-    void SetupUI() override;
+    //    void Fill() override;
+    //    void FillBack() const override;
+    //    void SetupUI() override;
     void CheckConf() const override;
 
 protected:
-    QWidget *analogWidget();
-    QWidget *settingWidget();
-    QWidget *alarmWidget();
-    QWidget *commonAlarmWidget();
-    QWidget *vibrAlarmWidget();
-    QWidget *hystWidget();
-    QWidget *otherWidget();
-    QWidget *recordWidget();
-    QWidget *motorWidget();
-    virtual QWidget *connectionWidget();
+    //    QWidget *analogWidget();
+    //    QWidget *settingWidget();
+    //    QWidget *alarmWidget();
+    //    QWidget *commonAlarmWidget();
+    //    QWidget *vibrAlarmWidget();
+    //    QWidget *hystWidget();
+    //    QWidget *otherWidget();
+    //    QWidget *recordWidget();
+    //    QWidget *motorWidget();
+    //    virtual QWidget *connectionWidget();
 
-    void FillKdv();
-    void FillBackKdv() const;
+    //    void FillKdv();
+    //    void FillBackKdv() const;
 
     ConfigKDV *ConfKDV;
 
-private slots:
-
+private:
     void SetDefConf() override;
 };
 

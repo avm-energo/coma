@@ -25,6 +25,7 @@
 #include "../avtuk/parseid9050.h"
 #include "../avtuk/swjdialog.h"
 #include "../avtuk/trendviewdialog.h"
+#include "../comaversion/comaversion.h"
 #include "../dialogs/connectdialog.h"
 #include "../dialogs/errordialog.h"
 #include "../dialogs/keypressdialog.h"
@@ -144,7 +145,8 @@ QToolBar *Coma::createToolBar()
     tb->addAction(QIcon(":/icons/tnstop.svg"), "Разрыв соединения", this, &Coma::DisconnectAndClear);
     tb->addSeparator();
     tb->addAction(QIcon(":/icons/tnsettings.svg"), "Настройки", [this]() {
-        SettingsDialog *dlg = new SettingsDialog;
+        SettingsDialog *dlg = new SettingsDialog(this);
+        dlg->setMinimumSize(this->size() / 4);
         connect(dlg, &SettingsDialog::disableAlarmUpdate, AlarmW, &AlarmWidget::disableAlarm);
         dlg->setAttribute(Qt::WA_DeleteOnClose);
         dlg->show();
@@ -156,8 +158,9 @@ QToolBar *Coma::createToolBar()
     jourAct->setShortcuts(QKeySequence::Open);
     jourAct->setStatusTip(tr("Открыть протокол работы"));
 
-    connect(jourAct, &QAction::triggered, this, []() {
-        ErrorDialog *dlg = new ErrorDialog;
+    connect(jourAct, &QAction::triggered, this, [this]() {
+        ErrorDialog *dlg = new ErrorDialog(this);
+        dlg->setMinimumWidth(this->width() / 2);
         dlg->setAttribute(Qt::WA_DeleteOnClose);
         dlg->show();
     });
@@ -196,6 +199,12 @@ void Coma::SetupUI()
 void Coma::PrepareDialogs()
 {
     Q_INIT_RESOURCE(settings);
+    if (m_Module->isConfigOutdated())
+    {
+        m_Module->eraseSettings();
+        m_Module->putConfigVersion();
+    }
+
     if (!m_Module->loadSettings())
     {
         qCritical() << "No conf .xml file for this module";
@@ -567,10 +576,25 @@ void Coma::setupConnection()
         }
     });
     WaitWidget *ww = new WaitWidget;
-    auto connection = std::shared_ptr<QMetaObject::Connection>(new QMetaObject::Connection);
-    *connection = connect(&board, &Board::readyRead, this, [=]() {
+
+    auto connectionReady = std::shared_ptr<QMetaObject::Connection>(new QMetaObject::Connection);
+    auto connectionTimeout = std::shared_ptr<QMetaObject::Connection>(new QMetaObject::Connection);
+    *connectionTimeout = connect(ww, &WaitWidget::destroyed, this, [=] {
+        QObject::disconnect(*connectionReady);
+        QObject::disconnect(*connectionTimeout);
+        if (Board::GetInstance().type() != 0)
+            return;
+
+        QMessageBox::critical(this, "Ошибка", "Не удалось соединиться с прибором", QMessageBox::Ok);
+        DisconnectAndClear();
+        qCritical() << "Cannot connect" << Error::Timeout;
+        QApplication::restoreOverrideCursor();
+    });
+    *connectionReady = connect(&board, &Board::readyRead, this, [=]() {
+        QObject::disconnect(*connectionTimeout);
+        QObject::disconnect(*connectionReady);
         ww->Stop();
-        QObject::disconnect(*connection);
+
         QApplication::restoreOverrideCursor();
         prepare();
     });
@@ -586,26 +610,17 @@ void Coma::setupConnection()
     // loop.exec();
     if (!BaseInterface::iface()->start(ConnectSettings))
     {
+        QObject::disconnect(*connectionReady);
+        QObject::disconnect(*connectionTimeout);
         ww->Stop();
-        QObject::disconnect(*connection);
+
         QMessageBox::critical(this, "Ошибка", "Не удалось установить связь", QMessageBox::Ok);
         QApplication::restoreOverrideCursor();
         qCritical() << "Cannot connect" << Error::GeneralError;
 
         return;
     }
-    //    QTimer timer;
-    //    timer.setSingleShot(true);
-    //    timer.start(INTERVAL::WAIT);
-    //    connect(&timer, &QTimer::timeout, this, [=] {
-    //        if (Board::GetInstance().type() != 0)
-    //            return;
-    //        QObject::disconnect(*connection);
-    //        QMessageBox::critical(this, "Ошибка", "Не удалось соединиться с прибором", QMessageBox::Ok);
-    //        DisconnectAndClear();
-    //        qCritical() << "Cannot connect" << Error::Timeout;
-    //        QApplication::restoreOverrideCursor();
-    //    });
+
     DataManager::clearQueue();
     BaseInterface::iface()->reqBSI();
 }
@@ -622,7 +637,7 @@ void Coma::DisconnectAndClear()
     m_Module->closeDialogs();
 
     clearWidgets();
-
+    Board::GetInstance().reset();
     // BUG Segfault
     //    if (Reconnect)
     //        QMessageBox::information(this, "Разрыв связи", "Связь разорвана", QMessageBox::Ok, QMessageBox::Ok);

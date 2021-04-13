@@ -8,12 +8,7 @@
 #include "../check/checkkivdialog.h"
 #include "../check/checkktfdialog.h"
 #include "../check/checkktfharmonicdialog.h"
-#include "../config/conf8084dialog.h"
-#include "../config/configkdv.h"
-#include "../config/configkiv.h"
-#include "../config/confkdvdialog.h"
-#include "../config/confkivdialog.h"
-#include "../config/confktfdialog.h"
+#include "../config/abstractconfdialog.h"
 #include "../dialogs/journalsdialog.h"
 #include "../module/journkdv.h"
 #include "../module/journkiv.h"
@@ -36,48 +31,45 @@ void TuneModule::createModule(Modules::Model model)
     {
     case Model::KIV:
     {
-        auto JOUR = UniquePointer<Journals>(new JournKIV(this));
+        auto jour = UniquePointer<Journals>(new JournKIV(settings()->journals));
         if (board.interfaceType() != Board::InterfaceType::RS485)
         {
-            ConfigKIV *CKIV = new ConfigKIV;
-            addDialogToList(new ConfKIVDialog(CKIV), "Конфигурирование", "conf1");
+            addDialogToList(new AbstractConfDialog(settings()->configSettings), "Конфигурирование", "conf1");
             if (board.interfaceType() == Board::InterfaceType::USB)
             {
 
-                addDialogToList(new TuneKIVDialog /*(CKIV)*/, "Регулировка");
+                addDialogToList(new TuneKIVDialog, "Регулировка");
             }
         }
         CheckKIVDialog *cdkiv = new CheckKIVDialog;
         addDialogToList(cdkiv, "Проверка");
 
         addDialogToList(new StartupKIVDialog, "Начальные\nзначения");
-        Module::create(std::move(JOUR));
+        Module::create(std::move(jour));
 
         break;
     }
     case Model::KTF:
     {
-        auto JOUR = UniquePointer<Journals>(new JournKTF(this));
+        auto jour = UniquePointer<Journals>(new JournKTF(settings()->journals, this));
         if (board.interfaceType() != Board::InterfaceType::RS485)
         {
-            ConfigKTF *CKTF = new ConfigKTF;
-            addDialogToList(new ConfKTFDialog(CKTF), "Конфигурирование", "conf1");
+            addDialogToList(new AbstractConfDialog(settings()->configSettings), "Конфигурирование", "conf1");
         }
         CheckKTFDialog *cdktf = new CheckKTFDialog;
         addDialogToList(cdktf, "Проверка");
 
         addDialogToList(new StartupKTFDialog, "Старение\nизоляции");
         addDialogToList(new CheckKTFHarmonicDialog, "Гармоники");
-        Module::create(std::move(JOUR));
+        Module::create(std::move(jour));
         break;
     }
     case Model::KDV:
     {
-        auto JOUR = UniquePointer<Journals>(new JournKDV(this));
+        auto jour = UniquePointer<Journals>(new JournKDV(settings()->journals, this));
         if (board.interfaceType() != Board::InterfaceType::RS485)
         {
-            ConfigKDV *CKDV = new ConfigKDV;
-            addDialogToList(new ConfKDVDialog(CKDV), "Конфигурирование", "conf1");
+            addDialogToList(new AbstractConfDialog(settings()->configSettings), "Конфигурирование", "conf1");
         }
         CheckKDVDialog *cdkdv = new CheckKDVDialog;
         addDialogToList(cdkdv);
@@ -85,7 +77,7 @@ void TuneModule::createModule(Modules::Model model)
         addDialogToList(new StartupKDVDialog, "Старение\nизоляции");
         addDialogToList(new CheckKDVHarmonicDialog, "Гармоники");
         addDialogToList(new CheckKDVVibrDialog, "Вибрации");
-        Module::create(std::move(JOUR));
+        Module::create(std::move(jour));
         break;
     }
     default:
@@ -103,11 +95,10 @@ void TuneModule::create(Modules::BaseBoard typeB, Modules::MezzanineBoard typeM)
         qDebug("Here is KIV");
         if (board.interfaceType() != Board::InterfaceType::RS485)
         {
-            ConfigKIV *CKIV = new ConfigKIV;
-            addDialogToList(new Conf8084Dialog(CKIV), "Конфигурирование", "conf1");
+            addDialogToList(new AbstractConfDialog(settings()->configSettings), "Конфигурирование", "conf1");
             if (board.interfaceType() == Board::InterfaceType::USB)
             {
-                addDialogToList(new Tune84Dialog /*(CKIV)*/, "Регулировка");
+                addDialogToList(new Tune84Dialog, "Регулировка");
             }
         }
         CheckKIVDialog *cdkiv = new CheckKIVDialog;
@@ -118,8 +109,7 @@ void TuneModule::create(Modules::BaseBoard typeB, Modules::MezzanineBoard typeM)
     if ((typeB == BaseBoard::MTB_86) && (typeM == MezzanineBoard::MTM_00))
     {
         qDebug("Here is AVTUK-8600");
-        ConfigKDV *CKDV = new ConfigKDV;
-        addDialogToList(new ConfKDVDialog(CKDV), "Конфигурирование", "conf1");
+        addDialogToList(new AbstractConfDialog(settings()->configSettings), "Конфигурирование", "conf1");
         addDialogToList(new CheckKDVVibrDialog, "Вибрации");
     }
     if ((typeB == BaseBoard::MTB_80) && (typeM == MezzanineBoard::MTM_82))
@@ -138,10 +128,11 @@ void TuneModule::create(Modules::BaseBoard typeB, Modules::MezzanineBoard typeM)
 void TuneModule::create(QTimer *updateTimer)
 {
     using namespace Modules;
-    const auto &board = Board::GetInstance();
+    auto &board = Board::GetInstance();
     quint16 typeb = board.typeB();
     if (BaseBoards.contains(typeb)) // there must be two-part module
     {
+        board.setDeviceType(Board::Controller);
         quint16 typem = board.typeM();
         Q_UNUSED(typem)
         switch (typeb)
@@ -166,6 +157,7 @@ void TuneModule::create(QTimer *updateTimer)
     }
     else
     {
+        board.setDeviceType(Board::Module);
         quint16 mtype = board.type();
         createModule(Modules::Model(mtype));
     }

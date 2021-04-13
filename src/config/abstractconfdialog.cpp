@@ -14,15 +14,15 @@
 #include <QGridLayout>
 #include <QGroupBox>
 #include <QMessageBox>
+#include <QScrollArea>
 #include <QTextEdit>
 
-AbstractConfDialog::AbstractConfDialog(QWidget *parent) : UDialog(parent)
+AbstractConfDialog::AbstractConfDialog(const QList<DataTypes::RecordPair> &defaultConfig, QWidget *parent)
+    : UDialog(parent), m_defaultValues(defaultConfig)
 {
     m_password = "121941";
     setSuccessMsg("Конфигурация записана успешно");
     const auto &manager = DataManager::GetInstance();
-    // connect(&manager, &DataManager::confParametersListReceived, this,
-    // &AbstractConfDialog::confParametersListReceived);
     connect(&manager, &DataManager::dataRecVListReceived, this, &AbstractConfDialog::confReceived);
 }
 
@@ -51,44 +51,54 @@ void AbstractConfDialog::WriteConf()
     BaseInterface::iface()->writeS2File(DataTypes::Config, &buffer);
 }
 
-void AbstractConfDialog::confReceived(const QList<DataTypes::DataRecV> &list)
+// thanx to P0471R0
+template <class Container> auto sinserter(Container &c)
 {
-    //  S2::configV.clear();
-    //   const auto &configV = &S2::configV;
-    S2::configV = list;
-    Fill();
-    // std::swap(list,configV);
-    // std::swap(S2::configV,list);
+    using std::end;
+    return std::inserter(c, end(c));
 }
 
-void AbstractConfDialog::confParametersListReceived(const DataTypes::ConfParametersListStruct &cfpl)
+bool operator<(const BciNumber &number, const DataTypes::RecordPair &record)
 {
-    const auto &config = &S2::config;
-    S2::configV.clear();
-    const auto &configV = &S2::configV;
-    for (const auto &cfp : cfpl)
+    return number < static_cast<BciNumber>(record.record.getId());
+}
+
+bool operator<(const DataTypes::RecordPair &record, const BciNumber &number)
+{
+    return number < static_cast<BciNumber>(record.record.getId());
+}
+
+void AbstractConfDialog::checkForDiff(const QList<DataTypes::DataRecV> &list)
+{
+    std::set<BciNumber> receivedItems;
+    std::transform(list.cbegin(), list.cend(), sinserter(receivedItems),
+        [](const DataTypes::DataRecV &record) { return static_cast<BciNumber>(record.getId()); });
+
+    std::vector<BciNumber> diffItems;
+    std::set_difference(receivedItems.cbegin(), receivedItems.cend(), m_defaultValues.cbegin(), m_defaultValues.cend(),
+        std::back_inserter(diffItems));
+
+    if (!diffItems.empty())
     {
-        S2::findElemAndWriteIt(config, cfp);
+        qDebug() << diffItems;
     }
-    std::transform(config->begin(), config->end(), std::back_inserter(S2::configV),
-        [](const auto &oldRec) -> DataTypes::DataRecV { return DataTypes::DataRecV(oldRec); });
-    // std::for_each(configV->cbegin(), configV->cend(), [](auto &value) { value.printer(); });
+}
+
+void AbstractConfDialog::confReceived(const QList<DataTypes::DataRecV> &list)
+{
+    S2::configV = list;
+
+    using namespace DataTypes;
+    const auto s2typeB = S2::getRecord(BciNumber::MTypeB_ID).value<DWORD>();
+    if (s2typeB != Board::GetInstance().typeB())
+        qCritical() << "Conflict typeB, module: " << QString::number(Board::GetInstance().typeB(), 16)
+                    << " config: " << QString::number(s2typeB, 16);
+    const auto s2typeM = S2::getRecord(BciNumber::MTypeE_ID).value<DWORD>();
+    if (s2typeM != Board::GetInstance().typeM())
+        qCritical() << "Conflict typeB, module: " << QString::number(Board::GetInstance().typeM(), 16)
+                    << " config: " << QString::number(s2typeM, 16);
+    checkForDiff(list);
     Fill();
-    //    qDebug() << std::equal(config->cbegin(), config->cend(), configV->cbegin(), configV->cend(),
-    //        [](const S2DataTypes::DataRec &oldRec, const S2DataTypes::DataRecV &newRec) {
-    //            bool status = true;
-    //            status = S2DataTypes::is_same(oldRec, newRec.serialize());
-    //            if (!status)
-    //                qDebug() << status;
-    //            return status;
-    //        });
-    for (auto i = 0; i != configV->size() && i != config->size(); ++i)
-    {
-        const auto oldRec = config->at(i);
-        const auto newRec = configV->at(i).serialize();
-        if (!S2DataTypes::is_same(oldRec, newRec))
-            qDebug() << oldRec.id << oldRec.numByte;
-    }
 }
 
 void AbstractConfDialog::SaveConfToFile()
@@ -174,64 +184,139 @@ QWidget *AbstractConfDialog::ConfButtons()
     return wdgt;
 }
 
-// void AbstractConfDialog::ButtonReadConf()
-//{
-//    ReadConf();
-//    switch (Board::GetInstance().interfaceType())
-//    {
-//    case Board::InterfaceType::Ethernet:
-//    {
-//        //        if ((ModuleBSI::Health() & HTH_CONFIG) || (StdFunc::IsInEmulateMode())) // если в модуле нет
-//        //        конфигурации,
-//        if ((ModuleBSI::noConfig()) || (StdFunc::IsInEmulateMode())) // если в модуле нет конфигурации,
-//                                                                     // заполнить поля по умолчанию
-//            emit DefConfToBeLoaded();
-//        else // иначе заполнить значениями из модуля
-//            emit ReadConfig(1);
-//        break;
-//    }
-//    case Board::InterfaceType::USB:
-//    {
-//        Error::Msg res = ModuleBSI::PrereadConf(this, S2::config);
-//        if (res == Error::Msg::ResEmpty)
-//            emit DefConfToBeLoaded();
-//        else if (res == Error::Msg::NoError)
-//            emit NewConfToBeLoaded();
-//        break;
-//    }
-//    }
-//}
+QWidget *widgetAt(QTabWidget *tabWidget, int index)
+{
+    for (int i = 0; i != tabWidget->count(); ++i)
+        if (tabWidget->widget(i)->objectName().toInt() == index)
+            return tabWidget->widget(i);
+    return nullptr;
+}
+
+delegate::WidgetGroup groupForId(BciNumber id)
+{
+    const auto widgetMap = WidgetFactory::getWidgetMap();
+    auto search = widgetMap.find(id);
+    if (search == widgetMap.end())
+    {
+        qWarning() << "Not found" << id;
+        return delegate::WidgetGroup::EmptyGroup;
+    }
+    const auto var = search->second;
+
+    delegate::WidgetGroup group = delegate::WidgetGroup::EmptyGroup;
+    std::visit([&](const auto &arg) { group = arg.group; }, var);
+    return group;
+}
+
+void AbstractConfDialog::SetupUI()
+{
+
+    QVBoxLayout *vlyout = new QVBoxLayout;
+    QTabWidget *ConfTW = new QTabWidget(this);
+
+    WidgetFactory factory;
+    for (const auto record : (m_defaultValues))
+    {
+        if (!record.visibility)
+            continue;
+        BciNumber id = static_cast<BciNumber>(record.record.getId());
+        QWidget *widget = factory.createWidget(id, this);
+        if (!widget)
+        {
+            qWarning() << "Bad config widget for item: " << QString::number(id);
+            continue;
+        }
+
+        auto group = groupForId(id);
+        auto child = widgetAt(ConfTW, group);
+
+        QGroupBox *subBox = nullptr;
+        if (!child)
+        {
+            subBox = new QGroupBox("Группа " + QVariant::fromValue(group).toString(), this);
+            QVBoxLayout *subvlyout = new QVBoxLayout;
+            subvlyout->setAlignment(Qt::AlignTop);
+            subvlyout->setSpacing(0);
+
+            subvlyout->setContentsMargins(0, 0, 0, 0);
+
+            subBox->setLayout(subvlyout);
+
+            QScrollArea *scrollArea = new QScrollArea;
+            scrollArea->setObjectName(QString::number(group));
+            scrollArea->setFrameShape(QFrame::NoFrame);
+            scrollArea->setWidgetResizable(true);
+            scrollArea->setWidget(subBox);
+
+            ConfTW->addTab(scrollArea, QVariant::fromValue(group).toString());
+        }
+        else
+        {
+            subBox = qobject_cast<QGroupBox *>(child->findChild<QGroupBox *>());
+        }
+
+        auto *lyout = subBox->layout();
+        lyout->addWidget(widget);
+    }
+    vlyout->addWidget(ConfTW);
+    vlyout->addWidget(ConfButtons());
+    setLayout(vlyout);
+}
+
+void AbstractConfDialog::Fill()
+{
+    for (const auto defRecord : m_defaultValues)
+    {
+        if (!defRecord.visibility)
+            continue;
+        BciNumber id = static_cast<BciNumber>(defRecord.record.getId());
+        const auto record = S2::getRecord(id);
+        std::visit(
+            [=](const auto &&value) {
+                WidgetFactory factory;
+                bool status = factory.fillWidget(this, static_cast<BciNumber>(record.getId()), value);
+                if (!status)
+                {
+                    qWarning() << "Couldnt fill widget for item: " << record.getId();
+                }
+            },
+            record.getData());
+    }
+}
 
 void AbstractConfDialog::PrereadConf()
 {
-    //    if ((ModuleBSI::Health() & HTH_CONFIG) || (StdFunc::IsInEmulateMode())) // если в модуле нет конфигурации,
-    //    заполнить
     if (Board::GetInstance().noConfig()) // если в модуле нет конфигурации, заполнить поля по умолчанию
     {
         SetDefConf();
         QMessageBox::information(this, "Успешно", "Задана конфигурация по умолчанию", QMessageBox::Ok);
     }
-    //        IsNeededDefConf = true; // emit LoadDefConf();
-    else // иначе заполнить значениями из модуля
-         //        ReadConf(confIndex);
+    else
         ReadConf();
 }
 
-// по имени виджета взять его номер
+void AbstractConfDialog::FillBack() const
+{
+    WidgetFactory factory;
+    for (const auto record : m_defaultValues)
+    {
+        if (!record.visibility)
+            continue;
+        BciNumber id = static_cast<BciNumber>(record.record.getId());
+        bool status = factory.fillBack(id, this);
+        if (!status)
+        {
+            qWarning() << "Couldnt fill back item from widget: " << id;
+        }
+    }
+}
 
-// int AbstractConfDialog::GetChNumFromObjectName(QString ObjectName)
-//{
-//    QStringList ObjectNameSl = ObjectName.split(".");
-//    int ChNum;
-//    bool ok;
-//    if (ObjectNameSl.size() > 1)
-//        ChNum = ObjectNameSl.at(1).toInt(&ok);
-//    else
-//        return Error::Msg::GeneralError;
-//    if (!ok)
-//        return Error::Msg::GeneralError;
-//    return ChNum;
-//}
+void AbstractConfDialog::SetDefConf()
+{
+    for (const auto &record : m_defaultValues)
+        S2::setRecordValue(record.record);
+    Fill();
+}
 
 bool AbstractConfDialog::PrepareConfToWrite()
 {
@@ -261,4 +346,8 @@ void AbstractConfDialog::uponInterfaceSetting()
 {
     SetupUI();
     PrereadConf();
+}
+
+void AbstractConfDialog::CheckConf()
+{
 }

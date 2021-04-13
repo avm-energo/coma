@@ -2,18 +2,9 @@
 
 #include "modules.h"
 
-JournKDV::JournKDV(QObject *parent) : Journals(parent)
+JournKDV::JournKDV(QMap<Modules::JournalType, DataTypes::JournalDesc> &jourMap, QObject *parent)
+    : Journals(jourMap, parent)
 {
-}
-
-void JournKDV::setWorkJourDescription()
-{
-    m_workJourDescription = AVM_KDV::workJourDescription;
-}
-
-void JournKDV::setMeasJourHeaders()
-{
-    m_measJourHeaders = AVM_KDV::measJourHeaders;
 }
 
 QVector<QVariant> JournKDV::createMeasRecord(const char *file)
@@ -33,9 +24,4 @@ QVector<QVariant> JournKDV::createMeasRecord(const char *file)
 int JournKDV::measureSize()
 {
     return sizeof(AVM_KDV::MeasureStruct);
-}
-
-int JournKDV::workJournalID()
-{
-    return AVM_KDV::workJourId;
 }

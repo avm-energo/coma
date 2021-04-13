@@ -37,22 +37,9 @@ QDebug operator<<(QDebug debug, const DataTypes::FileStruct &st)
     return debug.maybeSpace();
 }
 
-QDebug operator<<(QDebug debug, const DataTypes::ConfParameterStruct &st)
-{
-    debug.nospace() << QString::number(st.ID) << ":" << st.data.toHex();
-    return debug.maybeSpace();
-}
-
 QDebug operator<<(QDebug debug, const DataTypes::BlockStruct &st)
 {
     debug.nospace() << QString::number(st.ID) << ":" << st.data.toHex();
-    return debug.maybeSpace();
-}
-
-QDebug operator<<(QDebug debug, const DataTypes::ConfParametersListStruct &list)
-{
-    for (const auto &st : list)
-        debug.nospace() << st;
     return debug.maybeSpace();
 }
 

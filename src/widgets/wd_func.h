@@ -1,6 +1,7 @@
 #ifndef WD_FUNC
 #define WD_FUNC
 
+#include "checkboxgroup.h"
 #include "ecombobox.h"
 #include "etableview.h"
 //#include "passwordlineedit.h"
@@ -66,10 +67,15 @@ public:
         QWidget *parent, const QString &cbname, const QStringList &cbsl, const QString &cbcolor = "");
     static QComboBox *NewCB2(QWidget *parent, const QString &cbname, const QStringList &cbsl);
     static QComboBox *NewCB2(QWidget *parent, const QStringList &cbsl);
-    static bool SetCBData(QWidget *w, const QString &cbname, const QString &cbvalue);
-    static bool SetCBIndex(QObject *w, const QString &cbname, int index);
+    static bool SetCBData(const QWidget *w, const QString &cbname, const QString &cbvalue);
+    static bool SetCBIndex(const QObject *w, const QString &cbname, int index);
     static bool SetCBColor(QWidget *w, const QString &cbname, const QString &color);
-    static QString CBData(QWidget *w, const QString &cbname);
+    static QString CBData(const QWidget *w, const QString &cbname);
+    template <typename T> static T CBData(const QWidget *w, const QString &cbname)
+    {
+        auto buffer = CBData(w, cbname);
+        return QVariant(buffer).value<T>();
+    }
     static int CBIndex(const QObject *w, const QString &cbname)
     {
         QComboBox *cb = w->findChild<QComboBox *>(cbname);
@@ -85,11 +91,11 @@ public:
 
     static QDoubleSpinBox *NewSPB2(
         QWidget *parent, const QString &spbname, const double min, const double max, const int decimals);
-    template <size_t N>
-    static DoubleSpinBoxGroup<N> *NewSPBG(
-        QWidget *parent, const QString &spbname, const double min, const double max, const int decimals)
+
+    static DoubleSpinBoxGroup *NewSPBG(
+        QWidget *parent, const QString &spbname, int count, const double min, const double max, const int decimals)
     {
-        auto spinBoxGroup = new DoubleSpinBoxGroup<N>(parent);
+        auto spinBoxGroup = new DoubleSpinBoxGroup(count, parent);
         spinBoxGroup->setObjectName(spbname);
         double step = std::pow(0.1f, decimals);
         spinBoxGroup->setSingleStep(step);
@@ -99,14 +105,31 @@ public:
         return spinBoxGroup;
     }
 
-    static bool SetSPBData(QObject *w, const QString &spbname, const double &spbvalue);
+    static bool SetSPBData(const QObject *w, const QString &spbname, const double &spbvalue);
     template <size_t N, typename T>
-    static bool SetSPBGData(QWidget *w, const QString &spbname, const std::array<T, N> spbvalue)
+    static bool SetSPBGData(const QWidget *w, const QString &spbname, const std::array<T, N> spbvalue)
     {
-        auto *spbg = static_cast<DoubleSpinBoxGroup<N> *>(w->findChild<QWidget *>(spbname));
+        auto *spbg = static_cast<DoubleSpinBoxGroup *>(w->findChild<QWidget *>(spbname));
+        if (spbg == nullptr)
+            return false;
+        spbg->setValue(std::vector<float>(spbvalue.cbegin(), spbvalue.cend()));
+        return true;
+    }
+    template <typename T>
+    static bool SetSPBGData(const QWidget *w, const QString &spbname, const std::vector<T> &spbvalue)
+    {
+        auto *spbg = dynamic_cast<DoubleSpinBoxGroup *>(w->findChild<QWidget *>(spbname));
         if (spbg == nullptr)
             return false;
         spbg->setValue(spbvalue);
+        return true;
+    }
+    template <typename T> static bool SetSPBGData(const QWidget *w, const QString &spbname, const QList<T> &spbvalue)
+    {
+        auto *spbg = dynamic_cast<DoubleSpinBoxGroup *>(w->findChild<QWidget *>(spbname));
+        if (spbg == nullptr)
+            return false;
+        spbg->setValue(spbvalue.toVector().toStdVector());
         return true;
     }
     template <typename T> static bool SPBData(const QObject *w, const QString &spbname, T &spbvalue)
@@ -133,13 +156,15 @@ public:
     template <size_t N, typename T>
     static bool SPBGData(const QWidget *w, const QString &spbname, std::array<T, N> &spbvalue)
     {
-        auto *spbg = static_cast<DoubleSpinBoxGroup<N> *>(w->findChild<QWidget *>(spbname));
+        auto *spbg = static_cast<DoubleSpinBoxGroup *>(w->findChild<QWidget *>(spbname));
         if (spbg == nullptr)
         {
             spbvalue = {};
             return false;
         }
-        spbvalue = spbg->value();
+        auto vector = spbg->value();
+        std::copy_n(vector.cbegin(), N, spbvalue.begin());
+        // spbvalue = spbg->value();
         return true;
     }
     static bool SetLEColor(QWidget *w, const QString &lename, const QColor &color);
@@ -176,7 +201,30 @@ public:
         data = chb->isChecked();
         return true;
     }
+    template <typename T, std::enable_if_t<std::is_unsigned_v<T>, bool> = true>
+    static bool ChBGData(const QWidget *w, const QString &chbname, T &data)
+    {
+        auto *checkBoxGroup = w->findChild<CheckBoxGroup *>(chbname);
+        if (!checkBoxGroup)
+            return false;
+        data = checkBoxGroup->bits<std::remove_reference_t<decltype(data)>>();
+        return true;
+    }
     static bool SetChBData(QWidget *w, const QString &chbname, bool data);
+
+    template <typename T, std::enable_if_t<std::is_unsigned_v<T>, bool> = true>
+    static bool SetChBGData(const QWidget *w, const QString &name, const T data)
+    {
+        auto checkBoxGroup = w->findChild<CheckBoxGroup *>(name);
+        if (!checkBoxGroup)
+        {
+            qDebug() << name;
+            qDebug() << w->findChildren<QWidget *>();
+            return false;
+        }
+        checkBoxGroup->setBits(data);
+        return true;
+    }
     static bool RBData(QWidget *w, const QString &rbname, bool &data);
     static bool SetRBData(QWidget *w, const QString &rbname, bool data);
     static bool SetIPCtrlData(const QObject *w, const QString &name, const std::array<quint8, 4> &value);

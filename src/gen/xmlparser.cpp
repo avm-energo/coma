@@ -1,7 +1,22 @@
 #include "xmlparser.h"
 
 #include "../module/module.h"
+#include "../widgets/checkboxgroup.h"
 #include "board.h"
+
+namespace keys
+{
+constexpr char name[] = "name";
+constexpr char stringArray[] = "string-array";
+constexpr char string[] = "string";
+constexpr char color[] = "color";
+constexpr char unsigned32[] = "quint32";
+constexpr char className[] = "class";
+constexpr char group[] = "group";
+constexpr char type[] = "type";
+constexpr char desc[] = "description";
+}
+
 XmlParser::XmlParser()
 {
 }
@@ -28,42 +43,42 @@ DataTypes::Alarm XmlParser::parseAlarm(QDomElement domElement)
 #ifdef XML_DEBUG
     qDebug() << "TagName: " << domElement.tagName() << domElement.attribute("name", "");
 #endif
-    alarm.name = domElement.attribute("name", "");
-    auto element = domElement.firstChildElement("string-array");
+    alarm.name = domElement.attribute(keys::name, "");
+    auto element = domElement.firstChildElement(keys::stringArray);
     alarm.desc = parseStringList(element);
-    element = domElement.firstChildElement("color");
+    element = domElement.firstChildElement(keys::color);
     alarm.color = element.isNull() ? "" : element.text();
-    element = domElement.firstChildElement("quint32");
+    element = domElement.firstChildElement(keys::unsigned32);
     while (!element.isNull())
     {
-        const auto name = element.attribute("name", "");
+        const auto name = element.attribute(keys::name, "");
         if (name.contains("flags", Qt::CaseInsensitive))
             alarm.flags = parseHexInt32(element);
         if (name.contains("addr", Qt::CaseInsensitive))
             alarm.startAddr = parseInt32(element);
-        element = element.nextSiblingElement("quint32");
+        element = element.nextSiblingElement(keys::unsigned32);
     }
 
     return alarm;
 }
 
-DataTypes::Journal XmlParser::parseJournal(QDomElement domElement)
+DataTypes::JournalDesc XmlParser::parseJournal(QDomElement domElement)
 {
-    DataTypes::Journal journal;
+    DataTypes::JournalDesc journal;
 #ifdef XML_DEBUG
     qDebug() << "TagName: " << domElement.tagName() << domElement.attribute("name", "");
 #endif
-    journal.name = domElement.attribute("name", "");
-    journal.id = parseInt32(domElement.firstChildElement("quint32"));
-    domElement = domElement.firstChildElement("string-array");
+    journal.name = domElement.attribute(keys::name, "");
+    journal.id = parseInt32(domElement.firstChildElement(keys::unsigned32));
+    domElement = domElement.firstChildElement(keys::stringArray);
     while (!domElement.isNull())
     {
-        const auto name = domElement.attribute("name", "");
-        if (name.contains("description"), Qt::CaseInsensitive)
+        const auto name = domElement.attribute(keys::name, "");
+        if (name.contains((keys::desc), Qt::CaseInsensitive))
             journal.desc = parseStringList(domElement);
-        if (name.contains("header"), Qt::CaseInsensitive)
+        if (name.contains(("header"), Qt::CaseInsensitive))
             journal.header = parseStringList(domElement);
-        domElement = domElement.nextSiblingElement("string-array");
+        domElement = domElement.nextSiblingElement(keys::stringArray);
     }
     return journal;
 }
@@ -114,37 +129,52 @@ QStringList XmlParser::parseStringList(QDomElement domElement)
     return description;
 }
 
-// using BYTE = unsigned char;
-// using WORD = unsigned short;
-// using DWORD = unsigned int;
-// using BYTE_4t = std::array<BYTE, 4>;
-// using WORD_4t = std::array<WORD, 4>;
-// using BYTE_16t = std::array<BYTE, 16>;
-// using WORD_16t = std::array<WORD, 16>;
-// using FLOAT_2t = std::array<float, 2>;
-// using FLOAT_2t_2t = std::array<FLOAT_2t, 2>;
-// using FLOAT_3t = std::array<float, 3>;
-// using FLOAT_6t = std::array<float, 6>;
-// using FLOAT_8t = std::array<float, 8>;
-
-// ctti::unnamed_type_id<WORD>().hash()
 ctti::unnamed_type_id_t XmlParser::parseType(QDomElement domElement)
 {
     using namespace DataTypes;
     auto name = domElement.text();
     name.replace(" ", "");
+    if (name.isEmpty())
+        return 0;
     const auto arrSize = name.count('[');
     switch (arrSize)
     {
     case 0:
+        // Primitive types
         if (name.contains("BYTE", Qt::CaseInsensitive))
             return ctti::unnamed_type_id<BYTE>().hash();
         if (name.contains("DWORD", Qt::CaseInsensitive))
             return ctti::unnamed_type_id<DWORD>().hash();
         if (name.contains("WORD", Qt::CaseInsensitive))
             return ctti::unnamed_type_id<WORD>().hash();
+        if (name.contains("INT32", Qt::CaseInsensitive))
+            return ctti::unnamed_type_id<INT32>().hash();
         if (name.contains("float", Qt::CaseInsensitive))
             return ctti::unnamed_type_id<float>().hash();
+        // Widget classes
+        // Group should be checked before single widget
+        if (name.contains("Group", Qt::CaseInsensitive))
+        {
+            if (name.contains("DoubleSpinBoxGroup", Qt::CaseInsensitive))
+                return ctti::unnamed_type_id<DoubleSpinBoxGroup>().hash();
+            if (name.contains("CheckBoxGroup", Qt::CaseInsensitive))
+                return ctti::unnamed_type_id<CheckBoxGroup>().hash();
+        }
+        if (name.contains("Label", Qt::CaseInsensitive))
+            return ctti::unnamed_type_id<QLabel>().hash();
+        if (name.contains("DoubleSpinBox", Qt::CaseInsensitive))
+            return ctti::unnamed_type_id<QDoubleSpinBox>().hash();
+        if (name.contains("IpControl", Qt::CaseInsensitive))
+            return ctti::unnamed_type_id<IPCtrl>().hash();
+        if (name.contains("CheckBox", Qt::CaseInsensitive))
+            return ctti::unnamed_type_id<QCheckBox>().hash();
+        if (name.contains("ComboBox", Qt::CaseInsensitive))
+            return ctti::unnamed_type_id<QComboBox>().hash();
+        if (name.contains("LineEdit", Qt::CaseInsensitive))
+            return ctti::unnamed_type_id<QLineEdit>().hash();
+        // Another types
+        if (name.contains("TableView", Qt::CaseInsensitive))
+            return ctti::unnamed_type_id<QTableView>().hash();
 
     case 1:
 
@@ -179,6 +209,161 @@ ctti::unnamed_type_id_t XmlParser::parseType(QDomElement domElement)
     return 0;
 }
 
+delegate::itemVariant XmlParser::parseWidget(QDomElement domElement)
+{
+    auto name = domElement.text();
+#ifdef XML_DEBUG
+    qDebug() << name;
+#endif
+    QString className = domElement.attribute(keys::className);
+    auto type = parseType(domElement.firstChildElement(keys::type));
+
+    if (!className.isEmpty())
+    {
+        return parseItem(domElement, type);
+    }
+    QStringList items;
+
+    QDomElement childElement = domElement.firstChildElement(keys::stringArray);
+    if (!childElement.isNull())
+        items = parseStringList(childElement);
+
+    childElement = domElement.firstChildElement(keys::group);
+    auto widgetGroup = static_cast<delegate::WidgetGroup>(childElement.text().toInt());
+
+    const QString description = domElement.firstChildElement(keys::string).text();
+    switch (type.hash())
+    {
+    case ctti::unnamed_type_id<QDoubleSpinBox>().hash():
+    {
+        bool status = false;
+        delegate::DoubleSpinBoxWidget widget(type, widgetGroup);
+
+        QDomElement childElement = domElement.firstChildElement("min");
+        widget.min = childElement.text().toDouble(&status);
+        childElement = domElement.firstChildElement("max");
+        widget.max = childElement.text().toDouble(&status);
+        childElement = domElement.firstChildElement("decimals");
+        widget.decimals = childElement.text().toUInt(&status);
+        if (!status)
+            qWarning() << name << className;
+
+        widget.desc = description;
+        return widget;
+    }
+    case ctti::unnamed_type_id<DoubleSpinBoxGroup>().hash():
+    {
+        bool status = false;
+        delegate::DoubleSpinBoxGroup widget(type, widgetGroup);
+
+        QDomElement childElement = domElement.firstChildElement("min");
+        widget.min = childElement.text().toDouble(&status);
+        childElement = domElement.firstChildElement("max");
+        widget.max = childElement.text().toDouble(&status);
+        childElement = domElement.firstChildElement("decimals");
+        widget.decimals = childElement.text().toUInt(&status);
+        childElement = domElement.firstChildElement("count");
+        widget.count = childElement.text().toUInt(&status);
+        if (!status)
+            qWarning() << name << className;
+
+        widget.desc = description;
+        widget.items = items;
+        return widget;
+    }
+    case ctti::unnamed_type_id<CheckBoxGroup>().hash():
+    {
+        bool status = false;
+        delegate::CheckBoxGroup widget(type, widgetGroup);
+
+        QDomElement childElement = domElement.firstChildElement("count");
+        widget.count = childElement.text().toUInt(&status);
+        if (!status)
+            qWarning() << name << className;
+
+        widget.desc = description;
+        widget.items = items;
+        return widget;
+    }
+    case ctti::unnamed_type_id<QComboBox>().hash():
+    {
+        delegate::QComboBox widget(type, widgetGroup);
+
+        widget.desc = description;
+        widget.items = items;
+        QDomElement childElement = domElement.firstChildElement("field");
+        // QComboBox depends on index by default
+        widget.primaryField
+            = childElement.text().contains("data") ? delegate::QComboBox::data : delegate::QComboBox::index;
+        return widget;
+    }
+
+    default:
+    {
+    }
+    }
+    return delegate::Widget(type, description, widgetGroup);
+}
+
+DataTypes::RecordPair XmlParser::parseRecord(QDomElement domElement)
+{
+    using namespace DataTypes;
+    QDomElement childElement = domElement.firstChildElement("id");
+    if (childElement.isNull())
+        return {};
+    bool status = false;
+    int id = childElement.text().toInt(&status);
+    if (!status)
+        return {};
+
+    childElement = domElement.firstChildElement("defaultValue");
+    if (childElement.isNull())
+        return {};
+    childElement = domElement.firstChildElement("visibility");
+    // visibility=true by default
+    if (childElement.isNull() || childElement.text() == "true")
+        return RecordPair { DataTypes::DataRecV(id, childElement.text()), true };
+    if (childElement.text() == "false")
+        return RecordPair { DataTypes::DataRecV(id, childElement.text()), false };
+    Q_ASSERT(false && "Wrong visible value: " && childElement.text().toStdString().c_str());
+    return RecordPair { DataTypes::DataRecV(id, childElement.text()), true };
+}
+
+delegate::Item XmlParser::parseItem(QDomElement domElement, ctti::unnamed_type_id_t parentType)
+{
+    auto name = domElement.text();
+#ifdef XML_DEBUG
+    qDebug() << name;
+#endif
+    QString className = domElement.attribute(keys::className);
+    if (className.isEmpty())
+        return { 0 };
+    auto classes = QMetaEnum::fromType<delegate::ItemType>();
+    bool status = false;
+    auto itemType = static_cast<delegate::ItemType>(classes.keyToValue(className.toStdString().c_str(), &status));
+    if (!status)
+        return { 0 };
+
+    QDomElement childElement = domElement.firstChildElement(keys::group);
+    auto widgetGroup = static_cast<delegate::WidgetGroup>(childElement.text().toInt());
+    switch (itemType)
+    {
+    case delegate::ItemType::ModbusItem:
+    {
+
+        QDomElement childElement = domElement.firstChildElement("parent");
+        bool status = false;
+        auto parent = static_cast<BciNumber>(childElement.text().toUInt(&status));
+        if (!status)
+            qWarning() << name << className;
+        delegate::Item item(parentType, itemType, parent, widgetGroup);
+        return item;
+    }
+    default:
+        return delegate::Item(parentType, itemType, BciNumber::dummyElement, widgetGroup);
+    }
+}
+
 void XmlParser::traverseNode(const QDomNode &node, ModuleSettings *const settings)
 {
     QDomNode domNode = node.firstChild();
@@ -189,13 +374,11 @@ void XmlParser::traverseNode(const QDomNode &node, ModuleSettings *const setting
             QDomElement domElement = domNode.toElement();
             if (!domElement.isNull())
             {
-                if (domElement.tagName() == "quint32")
+                if (domElement.tagName() == keys::unsigned32)
                 {
-                    //      qDebug() << "Attr: " << domElement.attribute("name", "")
-                    //               << "\tValue: " << /*qPrintable*/ (domElement.text());
                     XmlParser::parseInt32(domElement);
                 }
-                if (domElement.tagName() == "string-array")
+                if (domElement.tagName() == keys::stringArray)
                 {
 #ifdef XML_DEBUG
                     qDebug() << "Attr: " << domElement.attribute("name", "");
@@ -206,8 +389,8 @@ void XmlParser::traverseNode(const QDomNode &node, ModuleSettings *const setting
                 }
                 if (domElement.tagName() == "alarm")
                 {
-
-                    qDebug() << "Attr: " << domElement.attribute("name", "");
+                    using namespace Modules;
+                    qDebug() << "Attr: " << domElement.attribute(keys::name, "");
                     const auto alarm = XmlParser::parseAlarm(domElement);
                     if (alarm.name.contains("critical", Qt::CaseInsensitive))
                         settings->alarms.insert(AlarmType::Critical, alarm);
@@ -224,6 +407,7 @@ void XmlParser::traverseNode(const QDomNode &node, ModuleSettings *const setting
 #ifdef XML_DEBUG
                     qDebug() << "Attr: " << domElement.attribute("name", "");
 #endif
+                    using namespace Modules;
                     const auto journal = XmlParser::parseJournal(domElement);
                     if (journal.name.contains("work", Qt::CaseInsensitive))
                         settings->journals.insert(JournalType::Work, journal);
@@ -242,8 +426,6 @@ void XmlParser::traverseNode(const QDomNode &node, ModuleSettings *const setting
                         domNode = domNode.nextSibling();
                         continue;
                     }
-
-                    // qDebug() << "Attr: " << domElement.attribute("mtypea", "") << domElement.attribute("mtypeb", "");
                 }
 
                 if (domElement.tagName() == "modbus")
@@ -270,11 +452,13 @@ void XmlParser::traverseNode(const QDomNode &node, ModuleSettings *const setting
                     domNode = domNode.nextSibling();
                     continue;
                 }
-                //                else
-                //                {
-                //                    qDebug() << "TagName: " << domElement.tagName() << "\tText: " << /*qPrintable*/
-                //                    (domElement.text());
-                //                }
+                if (domElement.tagName() == "record")
+                {
+
+                    settings->configSettings.push_back(parseRecord(domElement));
+                    domNode = domNode.nextSibling();
+                    continue;
+                }
             }
         }
         traverseNode(domNode, settings);
@@ -282,7 +466,7 @@ void XmlParser::traverseNode(const QDomNode &node, ModuleSettings *const setting
     }
 }
 
-void XmlParser::traverseNode(const QDomNode &node, S2DataTypes::valueTypeMap *const settings)
+void XmlParser::traverseNode(const QDomNode &node, GlobalSettings &settings)
 {
     QDomNode domNode = node.firstChild();
     while (!domNode.isNull())
@@ -294,15 +478,16 @@ void XmlParser::traverseNode(const QDomNode &node, S2DataTypes::valueTypeMap *co
             {
                 if (domElement.tagName() == "record")
                 {
-
-                    domElement = domElement.firstChild().toElement();
-                    const auto id = XmlParser::parseInt32(domElement);
-                    domElement = domElement.nextSibling().toElement();
-                    settings->insert({ id, parseType(domElement) });
 #ifdef XML_DEBUG
-                    const auto type = domElement.text();
-                    qDebug() << id << type;
+                    qDebug() << domElement.text();
 #endif
+                    domElement = domElement.firstChild().toElement();
+                    BciNumber id = static_cast<BciNumber>(XmlParser::parseInt32(domElement));
+                    domElement = domElement.nextSibling().toElement();
+                    settings.s2filesMap->insert({ id, parseType(domElement) });
+                    domElement = domElement.nextSibling().toElement();
+                    settings.s2widgetMap->insert({ id, parseWidget(domElement) });
+
                     domNode = domNode.nextSibling();
                     continue;
                 }

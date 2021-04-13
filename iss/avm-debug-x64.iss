@@ -10,9 +10,9 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;#define Prefix "C:\Progs\out"
 #define ARCH "win64"
-#define QT_DIR "C:\Qt\5.14.2\msvc2017_64\bin"
-;#define Redist_DIR "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Redist\MSVC\v142"
-#define Redist_DIR "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Redist\MSVC\14.16.27012"
+#define QT_DIR "C:\Qt\5.15.2\msvc2019_64\bin"
+#define Redist_DIR "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Redist\MSVC\v142"
+;;#define Redist_DIR "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Redist\MSVC\14.16.27012"
 #define LIB_DIR "..\lib"
 #define Build_DIR  "..\bin"
 #define ApplicationVersion GetFileVersion('..\bin\win64\release\AVM-Debug\AVM-Debug.exe')
@@ -77,4 +77,4 @@ Name: "{group}\{#Name}"; Filename: "{app}\{#ExeName}"
 Name: "{group}\Удалить программу {#Name}"; Filename: "{uninstallexe}"
 
 [Run]
-Filename: "{tmp}\vc_redist.x64.exe"; Parameters: "/install /quiet /norestart"; StatusMsg: Устанавливается пакет MSVC2017 Redistributable...
+Filename: "{tmp}\vc_redist.x64.exe"; Parameters: "/install /quiet /norestart"; StatusMsg: Устанавливается пакет MSVC2019 Redistributable...

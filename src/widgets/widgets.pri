@@ -3,7 +3,10 @@ SOURCES += \
     $$PWD/alarmbutton.cpp  \
     $$PWD/alarmwidget.cpp  \
     $$PWD/basespinboxgroup.cpp \
+    $$PWD/checkboxgroup.cpp \
+    $$PWD/checkboxgroup_p.cpp \
     $$PWD/coma.cpp \
+  #  $$PWD/doublespinboxgroup.cpp \
     $$PWD/ecombobox.cpp  \
     $$PWD/edoublespinbox.cpp  \
     $$PWD/errorprotocolwidget.cpp \
@@ -13,6 +16,7 @@ SOURCES += \
     $$PWD/lineeditfield.cpp \
     $$PWD/passwordlineedit.cpp \
     $$PWD/signalchoosewidget.cpp \
+ #   $$PWD/spinboxgroup.cpp \
     $$PWD/splashscreen.cpp \
     $$PWD/styleloader.cpp \
     $$PWD/udialog.cpp \
@@ -28,7 +32,10 @@ HEADERS += \
     $$PWD/alarmbutton.h \
     $$PWD/alarmwidget.h \
     $$PWD/basespinboxgroup.h \
+    $$PWD/checkboxgroup.h \
+    $$PWD/checkboxgroup_p.h \
     $$PWD/coma.h \
+    #$$PWD/doublespinboxgroup.h \
     $$PWD/ecombobox.h \
     $$PWD/edoublespinbox.h \
     $$PWD/errorprotocolwidget.h \
@@ -39,6 +46,7 @@ HEADERS += \
     $$PWD/lineeditfield.h \
     $$PWD/passwordlineedit.h \
     $$PWD/signalchoosewidget.h \
+  #  $$PWD/spinboxgroup.h \
     $$PWD/splashscreen.h \
     $$PWD/styleloader.h \
     $$PWD/udialog.h \
