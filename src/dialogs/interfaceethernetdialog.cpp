@@ -126,7 +126,7 @@ void InterfaceEthernetDialog::scanInterface()
     m_progress->setRange(0, addr_count - 1);
 
     connect(this, &InterfaceEthernetDialog::pingFinished, &InterfaceEthernetDialog::handlePingFinish);
-    for (quint32 i = 0; i < addr_count; ++i)
+    for (int i = 0; i < addr_count; ++i)
     {
         createPingTask(subnet.first.toIPv4Address() + i);
     }

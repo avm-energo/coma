@@ -58,7 +58,7 @@ public slots:
 
 private:
     TuneKIVCheck *TKIVCheckDialog;
-    TuneKIVADC *TKIVADCDialog;
+    TuneKIVADC *TKIVADCUDialog, *TKIVADCIDialog;
     TuneKIVR *TKIVRDialog;
     TuneKIVTemp60 *TKIV60Dialog, *TKIV20Dialog;
 
