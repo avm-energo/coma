@@ -220,7 +220,7 @@ void Journals::FillJour(const DataTypes::FileStruct &fs)
     }
 }
 
-void Journals::StartSaveJour(int jtype, QAbstractItemModel *amdl, QString filename)
+void Journals::saveJour(DataTypes::FilesEnum jtype, QAbstractItemModel *amdl, QString filename)
 {
     QString jourtypestr;
     Qt::SortOrder order = Qt::AscendingOrder;
