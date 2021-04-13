@@ -26,7 +26,7 @@
           <item>Авария по недопустимому небалансу токов</item>
         </string-array>
         <!--Флаги сигнализации-->
-        <quint32 name="criticalFlags">0x9CE000</quint32>
+        <quint64 name="criticalFlags">0x9CE000</quint64>
         <!--Стартовый адрес сигнализации-->
 		    <quint32 name="startAddr">3011</quint32>
         <!--Цвет сигнализации если событие произошло-->
@@ -53,7 +53,7 @@
           <item>Не заданы паспортные значения</item>
           <item>Сигнализация по повышенному небалансу токов</item>
         </string-array>
-        <quint32 name="warningFlags">0xC71FFF</quint32>
+        <quint64 name="warningFlags">0xC71FFF</quint64>
 		    <quint32 name="startAddr">3011</quint32>
 		    <color>#ffff00</color>
       </alarm>

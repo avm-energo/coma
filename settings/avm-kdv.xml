@@ -56,8 +56,9 @@
           <item>Вероятно ухудшенное состояние подшипников</item>
           <item>Вероятно смещение вала</item>
         </string-array>
-        <quint64 name="warningFlags">0x00</quint64>
-		    <quint32 name="startAddr">5011</quint32>
+        <!-- <quint64 name="warningFlags">0x1aaaaaff</quint64>-->
+        <quint64 name="warningFlags">0x1ffeaaaaa</quint64>
+        <quint32 name="startAddr">5011</quint32>
 		    <color>#ffff00</color>
       </alarm>
       <!--Описываем журнал, имя обязательно-->
@@ -350,7 +351,7 @@
 		   <!--блок 18 еще в процессе(не понятно что длать с типом time)-->   
        <group id="alarmModule">
           <start-addr>5011</start-addr>
-          <count>32</count>
+          <count>33</count>
           <block>100</block>
         </group>         
       </protocom>

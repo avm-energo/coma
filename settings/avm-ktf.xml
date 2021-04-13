@@ -16,7 +16,7 @@
           <item>Аварийное сообщение по недопустимому уровню пускового тока</item>
         </string-array>
         <!--Флаги сигнализации-->
-        <quint32 name="criticalFlags">0x5000</quint32>
+        <quint64 name="criticalFlags">0x5000</quint64>
         <!--Стартовый адрес сигнализации-->
 		    <quint32 name="startAddr">5011</quint32>
         <!--Цвет сигнализации если событие произошло-->
@@ -38,7 +38,7 @@
           <item>Неисправны все датчики температуры обмотки</item>
           <item>Сигнализация по опасному уровню пусково-го тока</item>
         </string-array>
-        <quint32 name="warningFlags">0xfff2</quint32>
+        <quint64 name="warningFlags">0xfff2</quint64>
 		    <quint32 name="startAddr">5011</quint32>
 		    <color>#ffff00</color>
       </alarm>

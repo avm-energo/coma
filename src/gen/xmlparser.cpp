@@ -11,6 +11,7 @@ constexpr char stringArray[] = "string-array";
 constexpr char string[] = "string";
 constexpr char color[] = "color";
 constexpr char unsigned32[] = "quint32";
+constexpr char unsigned64[] = "quint64";
 constexpr char className[] = "class";
 constexpr char group[] = "group";
 constexpr char type[] = "type";
@@ -48,15 +49,26 @@ DataTypes::Alarm XmlParser::parseAlarm(QDomElement domElement)
     alarm.desc = parseStringList(element);
     element = domElement.firstChildElement(keys::color);
     alarm.color = element.isNull() ? "" : element.text();
+
     element = domElement.firstChildElement(keys::unsigned32);
-    while (!element.isNull())
+    if (!element.isNull())
+    {
+    const auto name = element.attribute(keys::name, "");
+    if (name.contains("addr", Qt::CaseInsensitive))
+        alarm.startAddr = parseInt32(element);
+    }
+
+    element = domElement.firstChildElement(keys::unsigned64);
+    if (!element.isNull())
     {
         const auto name = element.attribute(keys::name, "");
         if (name.contains("flags", Qt::CaseInsensitive))
-            alarm.flags = parseHexInt32(element);
-        if (name.contains("addr", Qt::CaseInsensitive))
-            alarm.startAddr = parseInt32(element);
-        element = element.nextSiblingElement(keys::unsigned32);
+            alarm.flags = parseHexInt64(element);
+
+//        element = element.nextSiblingElement(keys::unsigned32);
+
+//        if (name.contains("addr", Qt::CaseInsensitive))
+//            alarm.startAddr = parseInt32(element);
     }
 
     return alarm;
@@ -96,7 +108,7 @@ quint32 XmlParser::parseInt32(QDomElement domElement)
     return number;
 }
 
-quint64 XmlParser::parseHexInt32(QDomElement domElement)
+quint64 XmlParser::parseHexInt64(QDomElement domElement)
 {
     auto str = domElement.text();
 #ifdef XML_DEBUG
