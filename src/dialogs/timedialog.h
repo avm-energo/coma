@@ -6,45 +6,59 @@
 class TimeDialog : public UDialog
 {
     Q_OBJECT
+    enum TimeZone : int
+    {
+        DesktopTZ = 0,
+        UTC = 1,
 
+    };
+    Q_PROPERTY(TimeZone timeZone READ timeZone WRITE setTimeZone NOTIFY timeZoneChanged)
 public:
     explicit TimeDialog(QWidget *parent = nullptr);
     ~TimeDialog();
 
-    bool First;
-    QTimer *Timer;
-
-    int timeZone() const;
+    TimeZone timeZone() const;
     void setTimeZone(int timeZone);
 
 private:
-    void SetupUI();
-    void SetTime(quint32 unixtimestamp);
-    void WriteTime(QDateTime &myDateTime);
+    void setupUI();
+    void setTime(quint32 unixtimestamp);
+    void writeTime(QDateTime &myDateTime);
 
-    int m_timeZone;
+    bool First;
+    QTimer *Timer;
+    TimeZone m_timeZone;
 
 signals:
-    //    void ethTimeRequest();
-    //    void modBusTimeRequest();
-    //    void ethWriteTimeToModule(uint);
-    //    void modbusWriteTimeToModule(uint);
+
+    void timeZoneChanged(TimeDialog::TimeZone timeZone);
 
 public slots:
-    void ErrorRead();
-    void TimeWritten();
-    // void updateSysTime();
-    //    void USBUpdate();
-    //    void MBSUpdate();
-    //    void ETHUpdate();
+    void errorRead();
     void reqUpdate();
 
 private slots:
 
-    void Write_PCDate();
-    void Write_Date();
+    void writePCDate();
+    void writeDate();
     void uponInterfaceSetting();
     void updateBitStringData(const DataTypes::BitStringStruct &bs);
 };
+
+namespace detail
+{
+enum Widgets : int
+{
+    Timezone,
+    DesktopDatetime,
+    ModuleDatetime,
+    WriteDatetime
+};
+
+inline QString nameByValue(Widgets key)
+{
+    return QString::number(key);
+}
+}
 
 #endif // MNKTIME_H

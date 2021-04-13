@@ -14,18 +14,19 @@
 #include <QTimeZone>
 #include <QTimer>
 #include <QVBoxLayout>
-TimeDialog::TimeDialog(QWidget *parent) : UDialog(parent)
+
+constexpr char directOrder[] = "dd-MM-yyyy HH:mm:ss";
+constexpr char reverseOrder[] = "yyyy-MM-ddTHH:mm:ss";
+
+TimeDialog::TimeDialog(QWidget *parent) : UDialog(parent), First(false), Timer(new QTimer(this)), m_timeZone(DesktopTZ)
 {
-    setTimeZone(0);
-    First = false;
-    Timer = new QTimer(this);
 }
 
 TimeDialog::~TimeDialog()
 {
 }
 
-void TimeDialog::SetupUI()
+void TimeDialog::setupUI()
 {
     QVBoxLayout *mainLayout = new QVBoxLayout;
 
@@ -33,7 +34,7 @@ void TimeDialog::SetupUI()
 
     auto *timeZoneLbl = WDFunc::NewLBL2(time, "Часовой пояс:");
     const QStringList cbl { "Местное время " + QString(QTimeZone::systemTimeZoneId()), "Время по Гринвичу" };
-    auto *cb = WDFunc::NewCB2(time, cbl);
+    auto *cb = WDFunc::NewCB2(time, detail::nameByValue(detail::Timezone), cbl);
     connect(cb, qOverload<int>(&QComboBox::currentIndexChanged), this, &TimeDialog::setTimeZone);
     auto *line = new QHBoxLayout;
     line->addWidget(timeZoneLbl);
@@ -41,13 +42,14 @@ void TimeDialog::SetupUI()
     mainLayout->addLayout(line);
 
     auto *sysTimeText = WDFunc::NewLBL2(time, "Дата и время ПК:");
-    auto *sysTimeVal = WDFunc::NewLBL2(time, QDateTime::currentDateTimeUtc().toString("yyyy-MM-ddTHH:mm:ss"));
+    auto *sysTimeVal = WDFunc::NewLBL2(
+        time, QDateTime::currentDateTimeUtc().toString(reverseOrder), detail::nameByValue(detail::DesktopDatetime));
     connect(Timer, &QTimer::timeout, [=] {
         QString tmps;
         if (timeZone() == 0)
-            tmps = QDateTime::currentDateTime().toString("dd-MM-yyyy HH:mm:ss");
+            tmps = QDateTime::currentDateTime().toString(directOrder);
         else
-            tmps = QDateTime::currentDateTimeUtc().toString("dd-MM-yyyy HH:mm:ss");
+            tmps = QDateTime::currentDateTimeUtc().toString(directOrder);
         sysTimeVal->setText(tmps);
     });
     line = new QHBoxLayout;
@@ -56,18 +58,34 @@ void TimeDialog::SetupUI()
     mainLayout->addLayout(line);
 
     QPushButton *Button = new QPushButton("Записать дату и время ПК в модуль");
-    connect(Button, &QAbstractButton::clicked, this, &TimeDialog::Write_PCDate);
+    connect(Button, &QAbstractButton::clicked, this, &TimeDialog::writePCDate);
     mainLayout->addWidget(Button);
 
     auto *moduleTimeText = WDFunc::NewLBL2(time, "Дата и время в модуле:");
-    auto *moduleTimeVal = WDFunc::NewLBL2(time, "dd-MM-yyyy HH:mm:ss", "moduleTime");
+    auto *moduleTimeVal = WDFunc::NewLBL2(time, directOrder, detail::nameByValue(detail::ModuleDatetime));
     line = new QHBoxLayout;
     line->addWidget(moduleTimeText);
     line->addWidget(moduleTimeVal);
     mainLayout->addLayout(line);
 
     auto *moduleWTimeText = WDFunc::NewLBL2(time, "Дата и время для записи в модуль");
-    auto *moduleWTimeVal = WDFunc::NewLE2(time, "Date", "dd-MM-yyyy HH:mm:ss" /*, paramcolor*/);
+    auto *moduleWTimeVal = WDFunc::NewLE2(time, detail::nameByValue(detail::WriteDatetime), directOrder);
+    connect(this, &TimeDialog::timeZoneChanged, this, [moduleWTimeVal](TimeZone tz) {
+        QDateTime myDateTime = QDateTime::fromString(moduleWTimeVal->text(), directOrder);
+        if (tz == DesktopTZ)
+        {
+            myDateTime.setTimeZone(QTimeZone::utc());
+
+            moduleWTimeVal->setText(myDateTime.toLocalTime().toString(directOrder));
+        }
+        else
+        {
+            myDateTime.setTimeZone(QTimeZone::systemTimeZone());
+            moduleWTimeVal->setText(myDateTime.toUTC().toString(directOrder));
+        }
+    });
+
+    moduleWTimeVal->setPlaceholderText("dd-MM-yyyy HH:mm:ss");
     // Неожиданно QLineEdit имеют отличную от QLabel default size policy
     moduleWTimeVal->setSizePolicy(moduleWTimeText->sizePolicy());
     moduleWTimeVal->setToolTip("день-месяц-год часы:минуты:секунды");
@@ -77,7 +95,7 @@ void TimeDialog::SetupUI()
     mainLayout->addLayout(line);
 
     Button = new QPushButton("Записать заданное время в модуль");
-    connect(Button, &QAbstractButton::clicked, this, &TimeDialog::Write_Date);
+    connect(Button, &QAbstractButton::clicked, this, &TimeDialog::writeDate);
     mainLayout->addWidget(Button);
     mainLayout->addSpacing(height() / 2);
 
@@ -93,59 +111,44 @@ void TimeDialog::SetupUI()
     Timer->start(1000);
 }
 
-void TimeDialog::Write_PCDate()
+void TimeDialog::writePCDate()
 {
-    QDateTime myDateTime;
-    if (timeZone() == 0)
-        myDateTime = QDateTime::currentDateTime();
-    else
-        myDateTime = QDateTime::currentDateTimeUtc();
-    WriteTime(myDateTime);
+    QDateTime myDateTime = QDateTime::currentDateTimeUtc();
+    writeTime(myDateTime);
 }
 
-void TimeDialog::WriteTime(QDateTime &myDateTime)
+void TimeDialog::writeTime(QDateTime &myDateTime)
 {
     uint time = myDateTime.toSecsSinceEpoch();
     BaseInterface::iface()->writeTime(time);
-    //    switch (Board::GetInstance().interfaceType())
-    //    {
-    //    case Board::InterfaceType::USB:
-    //    {
-    //        TimeFunc::Wait(100);
-    //        if (Commands::WriteTimeMNK(time, sizeof(uint)) != Error::Msg::NoError)
-    //            QMessageBox::information(this, "INFO",
-    //                "Ошибка"); // QMessageBox::information(this,
-    //                           // "INFO", "Записано успешно");
-    //        break;
-    //    }
-    //    case Board::InterfaceType::Ethernet:
-    //        emit ethWriteTimeToModule(time);
-    //        break;
-    //    case Board::InterfaceType::RS485:
-    //        emit modbusWriteTimeToModule(time);
-    //        break;
-    //    }
 }
 
-int TimeDialog::timeZone() const
+TimeDialog::TimeZone TimeDialog::timeZone() const
 {
     return m_timeZone;
 }
 
 void TimeDialog::setTimeZone(int timeZone)
 {
-    m_timeZone = timeZone;
+    m_timeZone = static_cast<TimeZone>(timeZone);
+    emit timeZoneChanged(m_timeZone);
 }
 
-void TimeDialog::Write_Date()
+void TimeDialog::writeDate()
 {
-    QDateTime myDateTime = QDateTime::fromString(WDFunc::LEData(this, "Date"), "dd-MM-yyyy HH:mm:ss");
-    WriteTime(myDateTime);
+    QDateTime myDateTime
+        = QDateTime::fromString(WDFunc::LEData(this, detail::nameByValue(detail::WriteDatetime)), directOrder);
+    if (timeZone() == DesktopTZ)
+        myDateTime.setTimeZone(QTimeZone::systemTimeZone());
+    else
+        myDateTime.setTimeZone(QTimeZone::utc());
+    auto buffer = myDateTime.toUTC();
+    writeTime(buffer);
 }
 
 void TimeDialog::uponInterfaceSetting()
 {
-    SetupUI();
+    setupUI();
     connect(&DataManager::GetInstance(), &DataManager::bitStringReceived, this, &::TimeDialog::updateBitStringData);
 }
 
@@ -155,101 +158,38 @@ void TimeDialog::updateBitStringData(const DataTypes::BitStringStruct &bs)
         && (bs.sigAdr != 4600) // other interfaces know address
     )
         return;
-    SetTime(bs.sigVal);
+    setTime(bs.sigVal);
 }
-
-// void TimeDialog::ETHUpdate()
-//{
-// QString qStr;
-// QDateTime myDateTime;
-//    int startadr = 0;
-//    memcpy(&startadr, &(Time->BS.SigAdr[0]), sizeof(Time->BS.SigAdr));
-
-//    if (startadr == MBS_TIMEREG)
-//    {
-//        memcpy((quint32 *)(&unixtimestamp), ((quint32 *)(&Time->BS.SigVal)), sizeof(Time->BS.SigVal));
-//        SetTime(unixtimestamp);
-//    }
-//}
 
 void TimeDialog::reqUpdate()
 {
     if (updatesEnabled())
     {
         BaseInterface::iface()->reqTime();
-        //        uint unixtimestamp = 0;
-        //        QList<DataTypes::SignalsStruct> list;
-        //        // DataManager::getSignals(TIMEREG, TIMEREG, DataTypes::SignalTypes::BitString, list);
-        //        if (!list.isEmpty())
-        //        {
-        //            for (auto signal : list)
-        //            {
-        //                DataTypes::BitStringStruct bs = qvariant_cast<DataTypes::BitStringStruct>(signal.data);
-        //                memcpy(&unixtimestamp, &bs.sigVal, sizeof(quint32));
-        //                SetTime(unixtimestamp);
-        //            }
-        //        }
-        //        // send command to get time
-        //        switch (Board::GetInstance().interfaceType())
-        //        {
-        //        case Board::InterfaceType::USB:
-        //            USBUpdate();
-        //            break;
-        //        case Board::InterfaceType::Ethernet:
-        //            ETHUpdate();
-        //            break;
-        //        case Board::InterfaceType::RS485:
-        //            MBSUpdate();
-        //            break;
-        //        default:
-        //            break;
-        //        }
     }
 }
 
-void TimeDialog::SetTime(quint32 unixtimestamp)
+void TimeDialog::setTime(quint32 unixtimestamp)
 {
     QDateTime myDateTime;
 
-    if (timeZone() == 0)
+    if (timeZone() == DesktopTZ)
         myDateTime = QDateTime::fromSecsSinceEpoch(unixtimestamp, Qt::LocalTime);
     else
         myDateTime = QDateTime::fromSecsSinceEpoch(unixtimestamp, Qt::UTC);
 
-    QString moduleTime = myDateTime.toString("dd-MM-yyyy HH:mm:ss");
-    WDFunc::SetLBLText(this, "moduleTime", moduleTime);
-    WDFunc::SetLEData(this, "moduleTime", moduleTime);
+    QString moduleTime = myDateTime.toString(directOrder);
+    WDFunc::SetLBLText(this, detail::nameByValue(detail::ModuleDatetime), moduleTime);
+    WDFunc::SetLEData(this, detail::nameByValue(detail::ModuleDatetime), moduleTime);
     if (First == 0)
     {
-        WDFunc::SetLEData(this, "Date", moduleTime);
+        WDFunc::SetLEData(this, detail::nameByValue(detail::WriteDatetime), moduleTime);
         First = 1;
     }
 }
 
-// void TimeDialog::MBSUpdate(QList<ModBus::BSISignalStruct> Time)
-// void TimeDialog::MBSUpdate()
-//{
-//    uint unixtimestamp = 0;
-
-//    /*    if (Time.size() == 0)
-//        {
-//            ERMSG("Некорректное время");
-//            return;
-//        }
-//        if (Time.at(0).SigAdr == MBS_TIMEREG)
-//        {
-//            unixtimestamp = Time.at(0).Val;
-//            SetTime(unixtimestamp);
-//        } */
-//}
-
-void TimeDialog::ErrorRead()
+void TimeDialog::errorRead()
 {
 
-    WDFunc::SetLBLText(this, "moduleTime", "Ошибка чтения");
-}
-
-void TimeDialog::TimeWritten()
-{
-    QMessageBox::information(this, "Успешно", "Время записано успешно");
+    WDFunc::SetLBLText(this, detail::nameByValue(detail::ModuleDatetime), "Ошибка чтения");
 }
