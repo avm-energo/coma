@@ -2,6 +2,7 @@
 
 #include <QApplication>
 #include <QComboBox>
+#include <QDebug>
 #include <QPainter>
 #include <QSpinBox>
 #include <QStringListModel>
@@ -27,17 +28,19 @@ QWidget *ComboBoxDelegate::createEditor(
 
 void ComboBoxDelegate::setEditorData(QWidget *editor, const QModelIndex &index) const
 {
-    const auto value = index.model()->data(index, Qt::EditRole).toInt();
+    auto value = index.model()->data(index, Qt::EditRole).toInt() - offset();
     QComboBox *comboBoxEdit = qobject_cast<QComboBox *>(editor);
 
-    comboBoxEdit->setCurrentIndex(value - m_offset);
+    if (value < 0)
+        value = 0;
+    comboBoxEdit->setCurrentIndex(value);
 }
 
 void ComboBoxDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const
 {
     QComboBox *comboBoxEdit = qobject_cast<QComboBox *>(editor);
 
-    const auto value = comboBoxEdit->currentIndex() + m_offset;
+    const auto value = comboBoxEdit->currentIndex() + offset();
     model->setData(index, value, Qt::EditRole);
 }
 
@@ -75,11 +78,10 @@ void ComboBoxDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opti
     QStyleOptionComboBox styleOption;
     styleOption.rect = option.rect;
     styleOption.direction = option.direction;
-    const int indexNumber = index.data(Qt::DisplayRole).toInt() - offset();
-    if (indexNumber < m_list.size() && 0 <= indexNumber)
-        styleOption.currentText = m_list.at(indexNumber);
-    else
-        styleOption.currentText = m_list.front();
+    int indexNumber = index.data(Qt::DisplayRole).toInt() - offset();
+    if (indexNumber >= m_list.size() || indexNumber < 0)
+        indexNumber = 0;
+    styleOption.currentText = m_list.at(indexNumber);
     styleOption.fontMetrics = option.fontMetrics;
     const int iconWidth = style->pixelMetric(QStyle::PM_SmallIconSize, nullptr, widget);
     styleOption.iconSize = QSize(iconWidth, iconWidth);
