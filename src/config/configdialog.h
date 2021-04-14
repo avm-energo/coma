@@ -17,16 +17,13 @@ public:
     void FillBack() const;
     void SetDefConf();
 
-protected:
-    QStringList CheckConfErrors;
+private:
     QWidget *ConfButtons();
 
-    virtual void SetupUI();
+    void SetupUI();
     void Fill();
     bool PrepareConfToWrite();
     void uponInterfaceSetting() override;
-
-private:
     void CheckConf();
     void SaveConfToFile();
     void LoadConfFromFile();
@@ -35,5 +32,6 @@ private:
     void checkForDiff(const QList<DataTypes::DataRecV> &list);
     void confReceived(const QList<DataTypes::DataRecV> &list);
 
+    QStringList CheckConfErrors;
     const QList<DataTypes::RecordPair> m_defaultValues;
 };
