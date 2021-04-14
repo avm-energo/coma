@@ -3,11 +3,11 @@
 #include "../module/module.h"
 
 #include <QObject>
-class TuneModule : public Module
+class DbgModule : public Module
 {
     Q_OBJECT
 public:
-    explicit TuneModule(QObject *parent = nullptr);
+    explicit DbgModule(QObject *parent = nullptr);
     void create(QTimer *updateTimer) override;
     using Module::create;
 

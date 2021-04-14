@@ -27,11 +27,10 @@
 
 #include "trendviewdialog.h"
 
-//#include "../check/checkdialog85.h"
-#include "../config/config.h"
 #include "../gen/colors.h"
 #include "../gen/error.h"
 #include "../gen/files.h"
+#include "../gen/pch.h"
 #include "../gen/stdfunc.h"
 #include "../widgets/signalchoosewidget.h"
 #include "../widgets/wd_func.h"

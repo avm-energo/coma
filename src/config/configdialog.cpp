@@ -1,4 +1,4 @@
-#include "abstractconfdialog.h"
+#include "configdialog.h"
 
 #include "../dialogs/keypressdialog.h"
 #include "../gen/board.h"
@@ -17,21 +17,21 @@
 #include <QScrollArea>
 #include <QTextEdit>
 
-AbstractConfDialog::AbstractConfDialog(const QList<DataTypes::RecordPair> &defaultConfig, QWidget *parent)
+ConfigDialog::ConfigDialog(const QList<DataTypes::RecordPair> &defaultConfig, QWidget *parent)
     : UDialog(parent), m_defaultValues(defaultConfig)
 {
     m_password = "121941";
     setSuccessMsg("Конфигурация записана успешно");
     const auto &manager = DataManager::GetInstance();
-    connect(&manager, &DataManager::dataRecVListReceived, this, &AbstractConfDialog::confReceived);
+    connect(&manager, &DataManager::dataRecVListReceived, this, &ConfigDialog::confReceived);
 }
 
-void AbstractConfDialog::ReadConf()
+void ConfigDialog::ReadConf()
 {
     BaseInterface::iface()->reqFile(DataTypes::Config, true);
 }
 
-void AbstractConfDialog::WriteConf()
+void ConfigDialog::WriteConf()
 {
     if (!checkPassword())
         return;
@@ -68,7 +68,7 @@ bool operator<(const DataTypes::RecordPair &record, const BciNumber &number)
     return number < static_cast<BciNumber>(record.record.getId());
 }
 
-void AbstractConfDialog::checkForDiff(const QList<DataTypes::DataRecV> &list)
+void ConfigDialog::checkForDiff(const QList<DataTypes::DataRecV> &list)
 {
     std::set<BciNumber> receivedItems;
     std::transform(list.cbegin(), list.cend(), sinserter(receivedItems),
@@ -84,7 +84,7 @@ void AbstractConfDialog::checkForDiff(const QList<DataTypes::DataRecV> &list)
     }
 }
 
-void AbstractConfDialog::confReceived(const QList<DataTypes::DataRecV> &list)
+void ConfigDialog::confReceived(const QList<DataTypes::DataRecV> &list)
 {
     S2::configV = list;
 
@@ -101,7 +101,7 @@ void AbstractConfDialog::confReceived(const QList<DataTypes::DataRecV> &list)
     Fill();
 }
 
-void AbstractConfDialog::SaveConfToFile()
+void ConfigDialog::SaveConfToFile()
 {
     QByteArray ba;
     if (!PrepareConfToWrite())
@@ -134,7 +134,7 @@ void AbstractConfDialog::SaveConfToFile()
     }
 }
 
-void AbstractConfDialog::LoadConfFromFile()
+void ConfigDialog::LoadConfFromFile()
 {
     QByteArray ba;
     Error::Msg res = Files::LoadFromFile(Files::ChooseFileForOpen(this, "Config files (*.cf)"), ba);
@@ -152,30 +152,30 @@ void AbstractConfDialog::LoadConfFromFile()
     QMessageBox::information(this, "Успешно", "Загрузка прошла успешно!");
 }
 
-QWidget *AbstractConfDialog::ConfButtons()
+QWidget *ConfigDialog::ConfButtons()
 {
     QWidget *wdgt = new QWidget;
     QGridLayout *wdgtlyout = new QGridLayout;
     QString tmps = ((DEVICETYPE == DEVICETYPE_MODULE) ? "модуля" : "прибора");
     QPushButton *pb = new QPushButton("Прочитать из " + tmps);
-    connect(pb, &QAbstractButton::clicked, this, &AbstractConfDialog::ReadConf);
+    connect(pb, &QAbstractButton::clicked, this, &ConfigDialog::ReadConf);
     if (StdFunc::IsInEmulateMode())
         pb->setEnabled(false);
     wdgtlyout->addWidget(pb, 0, 0, 1, 1);
     tmps = ((DEVICETYPE == DEVICETYPE_MODULE) ? "модуль" : "прибор");
     pb = new QPushButton("Записать в " + tmps);
     pb->setObjectName("WriteConfPB");
-    connect(pb, &QAbstractButton::clicked, this, &AbstractConfDialog::WriteConf);
+    connect(pb, &QAbstractButton::clicked, this, &ConfigDialog::WriteConf);
     if (StdFunc::IsInEmulateMode())
         pb->setEnabled(false);
     wdgtlyout->addWidget(pb, 0, 1, 1, 1);
     pb = new QPushButton("Прочитать из файла");
     pb->setIcon(QIcon(":/icons/tnload.svg"));
-    connect(pb, &QAbstractButton::clicked, this, &AbstractConfDialog::LoadConfFromFile);
+    connect(pb, &QAbstractButton::clicked, this, &ConfigDialog::LoadConfFromFile);
     wdgtlyout->addWidget(pb, 1, 0, 1, 1);
     pb = new QPushButton("Записать в файл");
     pb->setIcon(QIcon(":/icons/tnsave.svg"));
-    connect(pb, &QAbstractButton::clicked, this, &AbstractConfDialog::SaveConfToFile);
+    connect(pb, &QAbstractButton::clicked, this, &ConfigDialog::SaveConfToFile);
     wdgtlyout->addWidget(pb, 1, 1, 1, 1);
     pb = new QPushButton("Взять конфигурацию по умолчанию");
     connect(pb, &QAbstractButton::clicked, this, [this] { SetDefConf(); });
@@ -208,7 +208,7 @@ delegate::WidgetGroup groupForId(BciNumber id)
     return group;
 }
 
-void AbstractConfDialog::SetupUI()
+void ConfigDialog::SetupUI()
 {
 
     QVBoxLayout *vlyout = new QVBoxLayout;
@@ -263,7 +263,7 @@ void AbstractConfDialog::SetupUI()
     setLayout(vlyout);
 }
 
-void AbstractConfDialog::Fill()
+void ConfigDialog::Fill()
 {
     for (const auto defRecord : m_defaultValues)
     {
@@ -284,7 +284,7 @@ void AbstractConfDialog::Fill()
     }
 }
 
-void AbstractConfDialog::PrereadConf()
+void ConfigDialog::PrereadConf()
 {
     if (Board::GetInstance().noConfig()) // если в модуле нет конфигурации, заполнить поля по умолчанию
     {
@@ -295,7 +295,7 @@ void AbstractConfDialog::PrereadConf()
         ReadConf();
 }
 
-void AbstractConfDialog::FillBack() const
+void ConfigDialog::FillBack() const
 {
     WidgetFactory factory;
     for (const auto record : m_defaultValues)
@@ -311,14 +311,14 @@ void AbstractConfDialog::FillBack() const
     }
 }
 
-void AbstractConfDialog::SetDefConf()
+void ConfigDialog::SetDefConf()
 {
     for (const auto &record : m_defaultValues)
         S2::setRecordValue(record.record);
     Fill();
 }
 
-bool AbstractConfDialog::PrepareConfToWrite()
+bool ConfigDialog::PrepareConfToWrite()
 {
     FillBack();
     CheckConfErrors.clear();
@@ -342,12 +342,12 @@ bool AbstractConfDialog::PrepareConfToWrite()
     return false;
 }
 
-void AbstractConfDialog::uponInterfaceSetting()
+void ConfigDialog::uponInterfaceSetting()
 {
     SetupUI();
     PrereadConf();
 }
 
-void AbstractConfDialog::CheckConf()
+void ConfigDialog::CheckConf()
 {
 }

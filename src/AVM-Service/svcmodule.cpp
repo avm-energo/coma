@@ -1,4 +1,4 @@
-#include "servicemodule.h"
+#include "svcmodule.h"
 
 #include "../check/checkkdvdialog.h"
 #include "../check/checkkdvharmonicdialog.h"
@@ -6,7 +6,7 @@
 #include "../check/checkkivdialog.h"
 #include "../check/checkktfdialog.h"
 #include "../check/checkktfharmonicdialog.h"
-#include "../config/abstractconfdialog.h"
+#include "../config/configdialog.h"
 #include "../dialogs/journalsdialog.h"
 #include "../gen/board.h"
 #include "../module/journkdv.h"
@@ -17,11 +17,11 @@
 #include "../startup/startupkivdialog.h"
 #include "../startup/startupktfdialog.h"
 
-ServiceModule::ServiceModule(QObject *parent) : Module(parent)
+SvcModule::SvcModule(QObject *parent) : Module(parent)
 {
 }
 
-void ServiceModule::create(QTimer *updateTimer)
+void SvcModule::create(QTimer *updateTimer)
 {
     using namespace Modules;
     auto &board = Board::GetInstance();
@@ -65,7 +65,7 @@ void ServiceModule::create(QTimer *updateTimer)
     }
 }
 
-void ServiceModule::createModule(Modules::Model model)
+void SvcModule::createModule(Modules::Model model)
 {
     using namespace Modules;
     const auto &board = Board::GetInstance();
@@ -77,7 +77,7 @@ void ServiceModule::createModule(Modules::Model model)
         if (board.interfaceType() != Board::InterfaceType::RS485)
         {
             //   ConfigKIV *CKIV = new ConfigKIV;
-            addDialogToList(new AbstractConfDialog(settings()->configSettings), "Конфигурирование", "conf1");
+            addDialogToList(new ConfigDialog(settings()->configSettings), "Конфигурирование", "conf1");
         }
         CheckKIVDialog *cdkiv = new CheckKIVDialog;
         addDialogToList(cdkiv, "Проверка");
@@ -92,7 +92,7 @@ void ServiceModule::createModule(Modules::Model model)
         if (board.interfaceType() != Board::InterfaceType::RS485)
         {
             //  ConfigKTF *CKTF = new ConfigKTF;
-            addDialogToList(new AbstractConfDialog(settings()->configSettings), "Конфигурирование", "conf1");
+            addDialogToList(new ConfigDialog(settings()->configSettings), "Конфигурирование", "conf1");
         }
         CheckKTFDialog *cdktf = new CheckKTFDialog;
         addDialogToList(cdktf, "Проверка");
@@ -109,7 +109,7 @@ void ServiceModule::createModule(Modules::Model model)
         if (board.interfaceType() != Board::InterfaceType::RS485)
         {
             //  ConfigKDV *CKDV = new ConfigKDV;
-            addDialogToList(new AbstractConfDialog(settings()->configSettings), "Конфигурирование", "conf1");
+            addDialogToList(new ConfigDialog(settings()->configSettings), "Конфигурирование", "conf1");
         }
         CheckKDVDialog *cdkdv = new CheckKDVDialog;
         addDialogToList(cdkdv);
@@ -125,7 +125,7 @@ void ServiceModule::createModule(Modules::Model model)
     }
 }
 
-void ServiceModule::create(Modules::BaseBoard typeB, Modules::MezzanineBoard typeM)
+void SvcModule::create(Modules::BaseBoard typeB, Modules::MezzanineBoard typeM)
 {
     Q_UNUSED(typeB);
     Q_UNUSED(typeM);

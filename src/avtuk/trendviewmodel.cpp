@@ -1,6 +1,5 @@
 #include "trendviewmodel.h"
 
-#include "../config/config.h"
 #include "../gen/error.h"
 #include "../gen/files.h"
 #include "../gen/stdfunc.h"

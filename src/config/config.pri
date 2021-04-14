@@ -1,8 +1,8 @@
 SOURCES += \
-    $$PWD/abstractconfdialog.cpp \
+    $$PWD/configdialog.cpp \
     $$PWD/widgetfactory.cpp
 
 HEADERS += \
-    $$PWD/abstractconfdialog.h \
+    $$PWD/configdialog.h \
     $$PWD/delegate.h \
     $$PWD/widgetfactory.h
