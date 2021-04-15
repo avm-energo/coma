@@ -1,6 +1,9 @@
 #include "timefunc.h"
 
+#include "../dialogs/settingsdialog.h"
+
 #include <QDateTime>
+#include <QSettings>
 
 TimeFunc::TimeFunc()
 {
@@ -30,10 +33,10 @@ QString TimeFunc::NsTimeToString(quint64 nstime)
     return tmps;
 }
 
-QString TimeFunc::UnixTime64ToString(quint64 utime)
+QString TimeFunc::UnixTime64ToString(quint64 utime, QTimeZone tz)
 {
     quint32 tmpi = utime >> 32;
-    QDateTime tn = QDateTime::fromSecsSinceEpoch(tmpi, Qt::UTC);
+    QDateTime tn = QDateTime::fromSecsSinceEpoch(tmpi, tz);
     quint32 timens = utime & 0xFFFFFFFF;
     QString ms = QString::number((timens / 1000000));
     QString mcs = QString::number(((timens - ms.toInt() * 1000000) / 1000));
@@ -42,10 +45,10 @@ QString TimeFunc::UnixTime64ToString(quint64 utime)
     return time;
 }
 
-QString TimeFunc::UnixTime64ToInvStringFractional(quint64 utime)
+QString TimeFunc::UnixTime64ToInvStringFractional(quint64 utime, QTimeZone tz)
 {
     quint32 tmpi = utime >> 32;
-    QDateTime tn = QDateTime::fromSecsSinceEpoch(tmpi, Qt::UTC); // in seconds
+    QDateTime tn = QDateTime::fromSecsSinceEpoch(tmpi, tz); // in seconds
     utime &= 0x00000000FFFFFFFF;
     QString outs = tn.toString("yyyy/MM/dd hh:mm:ss");
     QString frac = QString::number(utime);
@@ -54,8 +57,18 @@ QString TimeFunc::UnixTime64ToInvStringFractional(quint64 utime)
     return outs;
 }
 
-QString TimeFunc::UnixTime32ToInvString(quint32 utime)
+QString TimeFunc::UnixTime32ToInvString(quint32 utime, QTimeZone tz)
 {
-    QDateTime tn = QDateTime::fromSecsSinceEpoch(utime, Qt::UTC); // in seconds
+    QDateTime tn = QDateTime::fromSecsSinceEpoch(utime, tz); // in seconds
     return tn.toString("yyyy/MM/dd hh:mm:ss");
+}
+
+QTimeZone TimeFunc::userTimeZone()
+{
+    auto sets = std::make_unique<QSettings>();
+    QString timezone = QTimeZone::systemTimeZone().displayName(QTimeZone::StandardTime, QTimeZone::OffsetName);
+    timezone = sets->value(settings::timezoneKey, timezone).toString();
+    if (!timezone.isEmpty())
+        return QTimeZone(timezone.toUtf8());
+    return QTimeZone::systemTimeZone();
 }

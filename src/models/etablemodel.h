@@ -32,8 +32,7 @@ public:
     bool insertRows(int row, int count, const QModelIndex &index = QModelIndex()) override;
     bool removeRows(int position, int rows, const QModelIndex &index = QModelIndex()) override;
     // получение индекса элемента в заголовке, который содержит текст hdrtext
-    int headerPosition(
-        QVariant hdrtext, Qt::Orientation orientation = Qt::Horizontal, int role = Qt::DisplayRole) const;
+    int headerPosition(QString hdrtext, Qt::Orientation orientation = Qt::Horizontal, int role = Qt::DisplayRole) const;
     // добавление новой колонки с текстом в заголовке hdrtext для варианта двух столбцов
     void addColumn(const QString hdrtext);
     // добавление строки

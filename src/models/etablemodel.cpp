@@ -204,10 +204,15 @@ int ETableModel::rowCount(const QModelIndex &index) const
 
 // ###################################### Свои методы ############################################
 
-int ETableModel::headerPosition(QVariant hdrtext, Qt::Orientation orientation, int role) const
+int ETableModel::headerPosition(QString hdrtext, Qt::Orientation orientation, int role) const
 {
     if ((orientation == Qt::Horizontal) && (role == Qt::DisplayRole || role == Qt::EditRole))
-        return hdr.indexOf(hdrtext.toString());
+    {
+        auto it = std::find_if(hdr.cbegin(), hdr.cend(), [&](const QString &s) { return s.contains(hdrtext); });
+        if (it == hdr.cend())
+            return -1;
+        return hdr.indexOf(*it);
+    }
     return -1;
 }
 

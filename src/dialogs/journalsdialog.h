@@ -45,7 +45,6 @@ public slots:
 
 private:
     QString JourFile;
-    int JourType;
     bool ok;
     UniquePointer<Journals> m_jour;
     QSortFilterProxyModel *ProxyWorkModel, *ProxySysModel, *ProxyMeasModel;
