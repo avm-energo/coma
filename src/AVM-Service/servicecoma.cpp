@@ -8,7 +8,7 @@
 #include "../interfaces/protocom.h"
 #include "../widgets/aboutwidget.h"
 #include "config.h"
-#include "servicemodule.h"
+#include "svcmodule.h"
 ServiceComa::ServiceComa(QWidget *parent) : Coma(parent)
 {
 }
@@ -19,7 +19,7 @@ ServiceComa::~ServiceComa()
 
 void ServiceComa::PrepareDialogs()
 {
-    m_Module = ModulePointer(new ServiceModule);
+    m_Module = ModulePointer(new SvcModule);
     Coma::PrepareDialogs();
 }
 

@@ -32,6 +32,7 @@ JournalDialog::JournalDialog(UniquePointer<Journals> jour, QWidget *parent) : UD
 
     connect(m_jour.get(), &Journals::Done, this, &JournalDialog::Done);
     connect(m_jour.get(), &Journals::Error, this, &JournalDialog::Error);
+    connect(this, &JournalDialog::StartSaveJour, m_jour.get(), &Journals::saveJour);
 
     SetupUI();
 }
@@ -65,7 +66,7 @@ void JournalDialog::SetupUI()
     }
 }
 
-QWidget *JournalDialog::JourTab(int jourtype)
+QWidget *JournalDialog::JourTab(DataTypes::FilesEnum jourtype)
 {
     QSortFilterProxyModel *mdl;
     QHBoxLayout *hlyout = new QHBoxLayout;
@@ -103,7 +104,7 @@ QWidget *JournalDialog::JourTab(int jourtype)
     });
     hlyout->addWidget(eraseButton);
     QPushButton *saveButton = WDFunc::NewPB(
-        this, "sj." + QString::number(jourtype), "Сохранить журнал в файл", this, [=] { SaveJour(JourType); });
+        this, "sj." + QString::number(jourtype), "Сохранить журнал в файл", this, [=] { SaveJour(jourtype); });
     saveButton->setEnabled(false);
     connect(m_jour.get(), &Journals::Done, [saveButton](const QString &str, const int &number) {
         Q_UNUSED(str)
@@ -130,7 +131,7 @@ void JournalDialog::EraseJour()
         BaseInterface::iface()->writeCommand(Queries::QC_EraseJournals);
 }
 
-void JournalDialog::SaveJour(int jourType)
+void JournalDialog::SaveJour(DataTypes::FilesEnum jourType)
 {
     QString jourfilestr;
     QString tvname;

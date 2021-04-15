@@ -1,6 +1,5 @@
 #include "eoscillogram.h"
 
-#include "../config/config.h"
 #include "../gen/colors.h"
 #include "../gen/datatypes.h"
 #include "../gen/error.h"

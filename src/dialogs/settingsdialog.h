@@ -19,4 +19,14 @@ signals:
     void disableAlarmUpdate();
 };
 
+namespace settings
+{
+constexpr char logKey[] = "WriteLog";
+constexpr char logWidget[] = "writelogchb";
+constexpr char tuneCountKey[] = "TuneRequestCount";
+constexpr char tuneCountWidget[] = "reqcount";
+constexpr char timezoneKey[] = "Timezone";
+constexpr char timezoneWidget[] = "timezoneCB";
+}
+
 #endif // SETTINGSDIALOG_H

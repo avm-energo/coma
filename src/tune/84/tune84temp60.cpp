@@ -120,10 +120,12 @@ Error::Msg Tune84Temp60::waitForTempToRise()
         1800 }; // isallowedtostop = true, isIncrement = false, format: mm:ss, 30 minutes
     ww->Init(wws);
     ww->SetMessage("Пожалуйста, подождите");
+    StdFunc::setCancelDisabled(); // to prevent cancellation of the main algorythm while breaking waiting
     QEventLoop loop;
     connect(ww, &WaitWidget::finished, &loop, &QEventLoop::quit);
     ww->Start();
     loop.exec();
+    StdFunc::setCancelEnabled();
     //    if (StdFunc::isCancelled())
     //        return Error::Msg::ResEmpty;
     return Error::Msg::NoError;

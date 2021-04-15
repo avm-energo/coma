@@ -19,7 +19,6 @@ public:
     void SetProxyModels(QSortFilterProxyModel *workmdl, QSortFilterProxyModel *sysmdl, QSortFilterProxyModel *measmdl);
     void SetJourType(DataTypes::FilesEnum jourtype);
     void SetJourFile(const QString &jourfile);
-    //    void SetParentWidget(QWidget *w);
 
     virtual int measureSize() = 0;
     int workJournalID();
@@ -34,8 +33,6 @@ signals:
 protected:
     QStringList m_workJourDescription, m_measJourHeaders;
     virtual QVector<QVariant> createMeasRecord(const char *file) = 0;
-    // virtual void setWorkJourDescription() = 0;
-    //  virtual void setMeasJourHeaders() = 0;
 
 private:
     ETableModel *m_sysModel, *m_workModel, *_measModel;
@@ -48,16 +45,10 @@ private:
     void FillMeasTable(const QByteArray &ba);
     void resultReady(ETableModel *model);
 
-    // void prepareJour(QByteArray &ba, int JourType);
-
 public slots:
     void FillJour(const DataTypes::FileStruct &fs);
-    //    void FillSysJour(QByteArray ba);
-    //    void FillMeasJour(QByteArray ba);
-    //    void FillWorkJour(QByteArray ba);
-    // void ReadJourFileAndProcessIt();
-    //    void StartGetJour();
-    void StartSaveJour(int jtype, QAbstractItemModel *mdl, QString filename);
+
+    void saveJour(DataTypes::FilesEnum jtype, QAbstractItemModel *mdl, QString filename);
 };
 
 #endif // JOURNALS_H

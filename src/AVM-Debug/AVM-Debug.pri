@@ -1,8 +1,8 @@
 SOURCES += \
+    $$PWD/dbgmodule.cpp \
     $$PWD/debugcoma.cpp \
-    $$PWD/main.cpp \
-    $$PWD/tunemodule.cpp
+    $$PWD/main.cpp
 
 HEADERS += \
-    $$PWD/debugcoma.h \
-    $$PWD/tunemodule.h
+    $$PWD/dbgmodule.h \
+    $$PWD/debugcoma.h

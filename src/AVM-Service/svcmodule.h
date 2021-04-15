@@ -3,11 +3,11 @@
 #include "../module/module.h"
 
 #include <QObject>
-class ServiceModule : public Module
+class SvcModule : public Module
 {
     Q_OBJECT
 public:
-    explicit ServiceModule(QObject *parent = nullptr);
+    explicit SvcModule(QObject *parent = nullptr);
     void create(QTimer *updateTimer) override;
 
 protected:

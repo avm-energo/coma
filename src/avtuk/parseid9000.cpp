@@ -1,6 +1,5 @@
 #include "parseid9000.h"
 
-#include "../config/config.h"
 #include "../gen/colors.h"
 #include "../gen/error.h"
 #include "../gen/timefunc.h"

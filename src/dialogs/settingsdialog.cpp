@@ -1,16 +1,16 @@
 #include "settingsdialog.h"
 
-//#include "../config.h"
 #include "../widgets/styleloader.h"
 #include "../widgets/wd_func.h"
 
-#include <QFileDialog>
+#include <QDateTime>
 #include <QMessageBox>
 #include <QMetaEnum>
 #include <QSettings>
+#include <QTimeZone>
 #include <QVBoxLayout>
 #include <QtDebug>
-#include <memory>
+
 SettingsDialog::SettingsDialog(QWidget *parent) : QDialog(parent)
 {
     setAttribute(Qt::WA_DeleteOnClose);
@@ -23,15 +23,11 @@ void SettingsDialog::SetupUI()
 {
     using namespace Style;
     QVBoxLayout *vlyout = new QVBoxLayout;
-    // QHBoxLayout *hlyout = new QHBoxLayout;
-    vlyout->addWidget(WDFunc::NewChB2(this, "writelogchb", "Запись обмена данными в файл"));
-    // auto cb = WDFunc::NewChB2(this, "updatealarm", "Обновление сигнализации");
+    vlyout->addWidget(WDFunc::NewChB2(this, settings::logWidget, "Запись обмена данными в файл"));
     auto pb = new QPushButton("Выключить обновление сигнализации");
     connect(pb, &QCheckBox::clicked, this, &SettingsDialog::disableAlarmUpdate);
     vlyout->addWidget(pb);
-    //  vlyout->addLayout(hlyout);
-    //  hlyout=new QHBoxLayout;
-    vlyout->addWidget(WDFunc::NewLBLAndLE(this, "Степень усреднения для регулировки", "reqcount", true));
+    vlyout->addWidget(WDFunc::NewLBLAndLE(this, "Степень усреднения для регулировки", settings::tuneCountWidget, true));
 
     auto themeEnum = QMetaEnum::fromType<Name>;
     QStringList values;
@@ -42,8 +38,13 @@ void SettingsDialog::SetupUI()
     auto *themeCB = WDFunc::NewCB2(this, values);
     int position = StyleLoader::GetInstance().styleNumber();
     themeCB->setCurrentIndex(position);
-    const QString style = StyleLoader::GetInstance().styleFile();
-    vlyout->addWidget(themeCB);
+
+    //  const QString style = StyleLoader::GetInstance().styleFile();
+    QHBoxLayout *hlyout = new QHBoxLayout;
+    hlyout->addWidget(new QLabel("Тема", this));
+    hlyout->addWidget(themeCB);
+    vlyout->addLayout(hlyout);
+    //    vlyout->addWidget(themeCB);
     connect(themeCB, &QComboBox::currentTextChanged, [=](const QString &text) {
         auto answer = QMessageBox::question(
             this, "Предупреждение", "Тема будет изменена\n Приложение может не отвечать некоторое время");
@@ -55,7 +56,19 @@ void SettingsDialog::SetupUI()
         styleLoader.setAppStyleSheet();
         styleLoader.save();
     });
+    QList<QByteArray> zoneList = QTimeZone::availableTimeZoneIds();
 
+    QStringList zonestrList;
+    std::copy_if(zoneList.cbegin(), zoneList.cend(), std::back_inserter(zonestrList),
+        [](const auto array) { return (array.contains("UTC+")); });
+
+    auto *timezoneCB = WDFunc::NewCB2(this, settings::timezoneWidget, zonestrList);
+    QString timezone = QTimeZone::systemTimeZone().displayName(QTimeZone::StandardTime, QTimeZone::OffsetName);
+    timezoneCB->setCurrentText(timezone);
+    hlyout = new QHBoxLayout;
+    hlyout->addWidget(new QLabel("Часовой пояс", this));
+    hlyout->addWidget(timezoneCB);
+    vlyout->addLayout(hlyout);
     pb = new QPushButton("Готово");
     connect(pb, &QAbstractButton::clicked, this, &SettingsDialog::AcceptSettings);
     vlyout->addWidget(pb);
@@ -65,10 +78,13 @@ void SettingsDialog::SetupUI()
 void SettingsDialog::Fill()
 {
     auto sets = std::make_unique<QSettings>();
-    bool writeUSBLog = sets->value("WriteLog", "0").toBool();
-    WDFunc::SetChBData(this, "writelogchb", writeUSBLog);
-    int N = sets->value("TuneRequestCount", "20").toInt();
-    WDFunc::SetLEData(this, "reqcount", QString::number(N));
+    bool writeUSBLog = sets->value(settings::logKey, "0").toBool();
+    WDFunc::SetChBData(this, settings::logWidget, writeUSBLog);
+    int N = sets->value(settings::tuneCountKey, "20").toInt();
+    WDFunc::SetLEData(this, settings::tuneCountWidget, QString::number(N));
+    QString timezone = QTimeZone::systemTimeZone().displayName(QTimeZone::StandardTime, QTimeZone::OffsetName);
+    timezone = sets->value(settings::timezoneKey, timezone).toString();
+    WDFunc::SetCBData(this, settings::timezoneWidget, timezone);
 }
 
 void SettingsDialog::AcceptSettings()
@@ -76,14 +92,17 @@ void SettingsDialog::AcceptSettings()
     bool tmpb = false;
     auto sets = std::make_unique<QSettings>();
 
-    WDFunc::ChBData(this, "writelogchb", tmpb);
-    sets->setValue("WriteLog", (tmpb) ? "1" : "0");
-    int N = WDFunc::LEData(this, "reqcount").toInt();
+    WDFunc::ChBData(this, settings::logWidget, tmpb);
+    sets->setValue(settings::logKey, (tmpb) ? "1" : "0");
+    int N = WDFunc::LEData(this, settings::tuneCountWidget).toInt();
     if ((N < 0) || (N > 100))
     {
         N = 20;
         qWarning() << "Неверное число степени усреднения, установлено по умолчанию 20";
     }
-    sets->setValue("TuneRequestCount", N);
+    sets->setValue(settings::tuneCountKey, N);
+    QString timezone = WDFunc::CBData(this, settings::timezoneWidget);
+    if (!timezone.isEmpty())
+        sets->setValue(settings::timezoneKey, timezone);
     close();
 }

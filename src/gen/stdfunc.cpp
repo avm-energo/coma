@@ -27,6 +27,7 @@ QString StdFunc::HomeDir = "";       // рабочий каталог прогр
 QString StdFunc::SystemHomeDir = ""; // системный каталог программы
 bool StdFunc::Emul = false;
 bool StdFunc::Cancelled = false;
+bool StdFunc::s_cancelEnabled = true;
 // QString StdFunc::PrbMsg = "";
 QString StdFunc::DeviceIP = "";
 QString StdFunc::s_OrganizationString = "";
@@ -145,7 +146,8 @@ int StdFunc::tuneRequestCount()
 
 void StdFunc::cancel()
 {
-    Cancelled = true;
+    if (s_cancelEnabled)
+        Cancelled = true;
 }
 
 void StdFunc::clearCancel()
@@ -156,6 +158,16 @@ void StdFunc::clearCancel()
 bool StdFunc::isCancelled()
 {
     return Cancelled;
+}
+
+void StdFunc::setCancelDisabled()
+{
+    s_cancelEnabled = false;
+}
+
+void StdFunc::setCancelEnabled()
+{
+    s_cancelEnabled = true;
 }
 
 bool StdFunc::IsInEmulateMode()

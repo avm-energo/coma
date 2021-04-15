@@ -1,6 +1,5 @@
 #include "checkktfharmonicdialog.h"
 
-#include "../config/config.h"
 #include "../gen/colors.h"
 #include "../gen/datamanager.h"
 #include "../gen/error.h"

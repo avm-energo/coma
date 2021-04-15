@@ -65,3 +65,66 @@
 ```
 
 Отдельно рассматривается случай, если какой-то элемент не отображается самостоятельно а является частью другого большого виджета, например несколько элементов отображаются внутри QTableView (пример элементы 1061-1064. Тогда элемент type должен содержать тот типа того класса, внутри которого будут отображаться все элементы группы (например QTableView), а в атрибуте class необходимо указать виджет, отвечающий за представление элемента внутри большого виджета. В этом случае также используется поле parent в качестве ключа, по которому можно найти все связанные элементы.
+
+
+
+
+
+
+
+## Концепция работы с xml в контексте конфигурации
+
+### WidgetFactory
+
+```c++
+class WidgetFactory
+{
+..
+public:
+    WidgetFactory();
+    QWidget *createWidget(BciNumber key, QWidget *parent = nullptr);
+    template <typename T> bool fillWidget(const QWidget *parent, BciNumber key, const T &value);
+    bool fillBack(BciNumber key, const QWidget *parent);
+
+...
+
+private:
+...
+};
+```
+
+```WidgetFactory::createWidget``` создает виджет в соответствие с  его описанием в s2files. Если что-то пошло не так, то выведет ошибку и вернет nullptr.
+
+```WidgetFactory::fillWidget<T>``` поместит в виджет данные типа T, если тип T не может быть сконвертирован во внутренний тип виджета, или виджет не будет найден, то метод вернет false. Т.е. если в виджет было установлено значение, то вернет true, во всех иных случаях - false.
+
+```WidgetFactory::fillBack``` отличается от предыдыщих fillBack, внутри метод использует статический объект  ```QList<DataTypes::DataRecV> S2::configV```, который и является нашей конфигурацией. Т.е. он ищет виджет, берет из него значение и устанавливает его (значение) в конфигурацию. Пользователю класса не возвращается полученное значение но возвращается статус операции. Если значение было установлено то true, в противном случае - false.
+
+### ConfigDialog
+
+```c++
+class ConfigDialog : public UDialog
+{
+public:
+    explicit ConfigDialog(const QList<DataTypes::RecordPair> &defaultConfig, QWidget *parent = nullptr);
+
+...
+    void FillBack() const;
+    void SetDefConf();
+
+...
+
+    void SetupUI();
+    void Fill();
+
+};
+```
+
+```ConfigDialog::SetupUI()``` использует метод ```WidgetFactory::createWidget``` т.е. он создает виджет для каждого элемента, описаного в xml текущего модуля. 
+
+```ConfigDialog::Fill()``` заполнит все созданные виджеты, используя метод```WidgetFactory::fillWidget<T>``` .
+
+```ConfigDialog::FillBack()``` - обертка, аналогичная методу Fill().
+
+```ConfigDialog::SetDefConf()``` - возьмет конфигурацию по умолчанию из xml для текущего модуля и отобразит ее.
+
+Класс ConfigDialog является непосредственным пользователем класса WidgetFactory.

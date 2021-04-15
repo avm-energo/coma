@@ -1,8 +1,8 @@
 SOURCES += \
     $$PWD/servicecoma.cpp \
     $$PWD/main.cpp \
-    $$PWD/servicemodule.cpp
+    $$PWD/svcmodule.cpp
 	
 HEADERS += \
     $$PWD/servicecoma.h \
-    $$PWD/servicemodule.h
+    $$PWD/svcmodule.h

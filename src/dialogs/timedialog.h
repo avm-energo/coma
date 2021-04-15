@@ -11,40 +11,41 @@ public:
     explicit TimeDialog(QWidget *parent = nullptr);
     ~TimeDialog();
 
+private:
+    void setupUI();
+    void setTime(quint32 unixtimestamp);
+    void writeTime(QDateTime &myDateTime);
+
     bool First;
     QTimer *Timer;
 
-    int timeZone() const;
-    void setTimeZone(int timeZone);
-
-private:
-    void SetupUI();
-    void SetTime(quint32 unixtimestamp);
-    void WriteTime(QDateTime &myDateTime);
-
-    int m_timeZone;
-
-signals:
-    //    void ethTimeRequest();
-    //    void modBusTimeRequest();
-    //    void ethWriteTimeToModule(uint);
-    //    void modbusWriteTimeToModule(uint);
-
 public slots:
-    void ErrorRead();
-    void TimeWritten();
-    // void updateSysTime();
-    //    void USBUpdate();
-    //    void MBSUpdate();
-    //    void ETHUpdate();
+    void errorRead();
     void reqUpdate();
 
 private slots:
 
-    void Write_PCDate();
-    void Write_Date();
+    void writePCDate();
+    void writeDate();
     void uponInterfaceSetting();
     void updateBitStringData(const DataTypes::BitStringStruct &bs);
 };
+
+namespace settings
+{
+enum Widgets : int
+{
+    Timezone,
+    DesktopDatetime,
+    ModuleDatetime,
+    ModuleDatetimeUtc,
+    WriteDatetime
+};
+
+inline QString nameByValue(Widgets key)
+{
+    return QString::number(key);
+}
+}
 
 #endif // MNKTIME_H

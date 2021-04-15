@@ -1,4 +1,4 @@
-#include "tunemodule.h"
+#include "dbgmodule.h"
 
 #include "../avtuk/oscdialog.h"
 #include "../avtuk/switchjournaldialog.h"
@@ -8,7 +8,7 @@
 #include "../check/checkkivdialog.h"
 #include "../check/checkktfdialog.h"
 #include "../check/checkktfharmonicdialog.h"
-#include "../config/abstractconfdialog.h"
+#include "../config/configdialog.h"
 #include "../dialogs/journalsdialog.h"
 #include "../module/journkdv.h"
 #include "../module/journkiv.h"
@@ -19,11 +19,11 @@
 #include "../tune/84/tune84dialog.h"
 #include "../tune/kiv/tunekivdialog.h"
 
-TuneModule::TuneModule(QObject *parent) : Module(parent)
+DbgModule::DbgModule(QObject *parent) : Module(parent)
 {
 }
 
-void TuneModule::createModule(Modules::Model model)
+void DbgModule::createModule(Modules::Model model)
 {
     using namespace Modules;
     const auto &board = Board::GetInstance();
@@ -34,7 +34,7 @@ void TuneModule::createModule(Modules::Model model)
         auto jour = UniquePointer<Journals>(new JournKIV(settings()->journals));
         if (board.interfaceType() != Board::InterfaceType::RS485)
         {
-            addDialogToList(new AbstractConfDialog(settings()->configSettings), "Конфигурирование", "conf1");
+            addDialogToList(new ConfigDialog(settings()->configSettings), "Конфигурирование", "conf1");
             if (board.interfaceType() == Board::InterfaceType::USB)
             {
 
@@ -54,7 +54,7 @@ void TuneModule::createModule(Modules::Model model)
         auto jour = UniquePointer<Journals>(new JournKTF(settings()->journals, this));
         if (board.interfaceType() != Board::InterfaceType::RS485)
         {
-            addDialogToList(new AbstractConfDialog(settings()->configSettings), "Конфигурирование", "conf1");
+            addDialogToList(new ConfigDialog(settings()->configSettings), "Конфигурирование", "conf1");
         }
         CheckKTFDialog *cdktf = new CheckKTFDialog;
         addDialogToList(cdktf, "Проверка");
@@ -69,7 +69,7 @@ void TuneModule::createModule(Modules::Model model)
         auto jour = UniquePointer<Journals>(new JournKDV(settings()->journals, this));
         if (board.interfaceType() != Board::InterfaceType::RS485)
         {
-            addDialogToList(new AbstractConfDialog(settings()->configSettings), "Конфигурирование", "conf1");
+            addDialogToList(new ConfigDialog(settings()->configSettings), "Конфигурирование", "conf1");
         }
         CheckKDVDialog *cdkdv = new CheckKDVDialog;
         addDialogToList(cdkdv);
@@ -86,7 +86,7 @@ void TuneModule::createModule(Modules::Model model)
     }
 }
 
-void TuneModule::create(Modules::BaseBoard typeB, Modules::MezzanineBoard typeM)
+void DbgModule::create(Modules::BaseBoard typeB, Modules::MezzanineBoard typeM)
 {
     using namespace Modules;
     const auto &board = Board::GetInstance();
@@ -95,7 +95,7 @@ void TuneModule::create(Modules::BaseBoard typeB, Modules::MezzanineBoard typeM)
         qDebug("Here is KIV");
         if (board.interfaceType() != Board::InterfaceType::RS485)
         {
-            addDialogToList(new AbstractConfDialog(settings()->configSettings), "Конфигурирование", "conf1");
+            addDialogToList(new ConfigDialog(settings()->configSettings), "Конфигурирование", "conf1");
             if (board.interfaceType() == Board::InterfaceType::USB)
             {
                 addDialogToList(new Tune84Dialog, "Регулировка");
@@ -109,7 +109,7 @@ void TuneModule::create(Modules::BaseBoard typeB, Modules::MezzanineBoard typeM)
     if ((typeB == BaseBoard::MTB_86) && (typeM == MezzanineBoard::MTM_00))
     {
         qDebug("Here is AVTUK-8600");
-        addDialogToList(new AbstractConfDialog(settings()->configSettings), "Конфигурирование", "conf1");
+        addDialogToList(new ConfigDialog(settings()->configSettings), "Конфигурирование", "conf1");
         addDialogToList(new CheckKDVVibrDialog, "Вибрации");
     }
     if ((typeB == BaseBoard::MTB_80) && (typeM == MezzanineBoard::MTM_82))
@@ -125,7 +125,7 @@ void TuneModule::create(Modules::BaseBoard typeB, Modules::MezzanineBoard typeM)
     }
 }
 
-void TuneModule::create(QTimer *updateTimer)
+void DbgModule::create(QTimer *updateTimer)
 {
     using namespace Modules;
     auto &board = Board::GetInstance();

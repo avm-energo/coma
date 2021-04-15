@@ -6,7 +6,7 @@
 #include "../interfaces/protocom.h"
 #include "../widgets/aboutwidget.h"
 #include "config.h"
-#include "tunemodule.h"
+#include "dbgmodule.h"
 DebugComa::DebugComa(QWidget *parent) : Coma(parent)
 {
 }
@@ -17,7 +17,7 @@ DebugComa::~DebugComa()
 
 void DebugComa::PrepareDialogs()
 {
-    m_Module = ModulePointer(new TuneModule);
+    m_Module = ModulePointer(new DbgModule);
     Coma::PrepareDialogs();
 }
 

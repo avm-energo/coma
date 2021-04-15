@@ -7,26 +7,23 @@
 //#define MAXBYTEARRAY 65535
 //#define MAXCONFSIZE 4096 // максимальный размер файла конфигурации
 
-class AbstractConfDialog : public UDialog
+class ConfigDialog : public UDialog
 {
 public:
-    explicit AbstractConfDialog(const QList<DataTypes::RecordPair> &defaultConfig, QWidget *parent = nullptr);
+    explicit ConfigDialog(const QList<DataTypes::RecordPair> &defaultConfig, QWidget *parent = nullptr);
 
     void PrereadConf();
 
     void FillBack() const;
     void SetDefConf();
 
-protected:
-    QStringList CheckConfErrors;
+private:
     QWidget *ConfButtons();
 
-    virtual void SetupUI();
+    void SetupUI();
     void Fill();
     bool PrepareConfToWrite();
     void uponInterfaceSetting() override;
-
-private:
     void CheckConf();
     void SaveConfToFile();
     void LoadConfFromFile();
@@ -35,5 +32,6 @@ private:
     void checkForDiff(const QList<DataTypes::DataRecV> &list);
     void confReceived(const QList<DataTypes::DataRecV> &list);
 
+    QStringList CheckConfErrors;
     const QList<DataTypes::RecordPair> m_defaultValues;
 };

@@ -11,18 +11,40 @@
 #include <cmath>
 
 //#include <QAbstractItemModelTester>
+#include "../gen/timefunc.h"
+
 #include <QApplication>
 #include <QDate>
 #include <QDebug>
 #include <QFile>
 #include <QObject>
 #include <QVariant>
+namespace AVM
+{
+const QString datetimeHeader = QStringList({ "Дата/Время", TimeFunc::userTimeZoneName() }).join("");
+
+// const QStringList eventJourHeaders {
+//    " № ",              //
+//    datetimeHeader,     //
+//    "Описание события", //
+//    "Тип события"       //
+//};
+}
 
 Journals::Journals(QMap<Modules::JournalType, DataTypes::JournalDesc> &jourMap, QObject *parent)
     : QObject(parent), m_jourMap(jourMap)
 {
     m_workJourDescription = jourMap.value(Modules::JournalType::Work).desc;
+
     m_measJourHeaders = jourMap.value(Modules::JournalType::Meas).header;
+    auto time_pos = std::find_if(
+        m_measJourHeaders.begin(), m_measJourHeaders.end(), [](const QString &str) { return str.contains("UTC"); });
+    if (time_pos != m_measJourHeaders.end())
+        time_pos->replace("UTC", TimeFunc::userTimeZoneName());
+    //    std::for_each(m_measJourHeaders.begin(), m_measJourHeaders.end(), [](QString &str) {
+    //        if (str.contains("UTC"))
+    //            str.replace("UTC", TimeFunc::userTimeZoneName());
+    //    });
     m_sysModel = new ETableModel(this);
     m_workModel = new ETableModel(this);
     _measModel = new ETableModel(this);
@@ -65,7 +87,8 @@ int Journals::workJournalID()
 QVector<QVariant> prepareRow(AVM::EventStruct &event, int eventID, int eventNumber, QStringList &eventDesc)
 {
     int N;
-    QVector<QVariant> vl { eventNumber, TimeFunc::UnixTime64ToInvStringFractional(event.Time) };
+    QVector<QVariant> vl { eventNumber,
+        TimeFunc::UnixTime64ToInvStringFractional(event.Time, TimeFunc::userTimeZone()) };
 
     memcpy(&N, &event.EvNum, sizeof(event.EvNum));
     N = (N & 0x00FFFFFF) - eventID;
@@ -124,7 +147,11 @@ void Journals::FillEventsTable(const QByteArray &ba)
         ValueLists.append(vl);
     }
 
-    model->setHorizontalHeaderLabels(AVM::eventJourHeaders);
+    auto header = AVM::eventJourHeaders;
+    auto time_pos = std::find_if(header.begin(), header.end(), [](const QString &str) { return str.contains("UTC"); });
+    if (time_pos != header.end())
+        time_pos->replace("UTC", TimeFunc::userTimeZoneName());
+    model->setHorizontalHeaderLabels(header);
 
     model->fillModel(ValueLists);
     resultReady(model);
@@ -193,7 +220,7 @@ void Journals::resultReady(ETableModel *model)
         return;
     }
 
-    int dateidx = model->headerPosition("Дата/Время UTC");
+    int dateidx = model->headerPosition("Дата/Время");
     pmdl->invalidate();
     pmdl->setDynamicSortFilter(false);
     pmdl->setSourceModel(model);
@@ -220,7 +247,7 @@ void Journals::FillJour(const DataTypes::FileStruct &fs)
     }
 }
 
-void Journals::StartSaveJour(int jtype, QAbstractItemModel *amdl, QString filename)
+void Journals::saveJour(DataTypes::FilesEnum jtype, QAbstractItemModel *amdl, QString filename)
 {
     QString jourtypestr;
     Qt::SortOrder order = Qt::AscendingOrder;
@@ -244,7 +271,7 @@ void Journals::StartSaveJour(int jtype, QAbstractItemModel *amdl, QString filena
 
     QSortFilterProxyModel *pmdl = static_cast<QSortFilterProxyModel *>(amdl);
     ETableModel *mdl = static_cast<ETableModel *>(pmdl->sourceModel());
-    int dateidx = mdl->headerPosition("Дата/Время UTC");
+    int dateidx = mdl->headerPosition("Дата/Время");
     pmdl->sort(dateidx, order);
     QXlsx::Document *doc = new QXlsx::Document(filename);
     QXlsx::Worksheet *workSheet = doc->currentWorksheet();
@@ -265,14 +292,17 @@ void Journals::StartSaveJour(int jtype, QAbstractItemModel *amdl, QString filena
     cellModuleType.setColumn(4);
     workSheet->writeString(cellModuleType, QString::number(Board::GetInstance().serialNumber(Board::BaseMezzAdd), 16));
 
+    auto datetime = QDateTime::currentDateTimeUtc().toTimeZone(TimeFunc::userTimeZone());
+
     workSheet->writeString(cellDate, "Дата: ");
     cellDate.setColumn(2);
-    workSheet->writeDate(cellDate, QDate::currentDate());
+    workSheet->writeDate(cellDate, datetime.date());
 
     workSheet->writeString(cellTime, "Время: ");
     cellTime.setColumn(2);
-    workSheet->writeTime(cellTime, QTime::currentTime());
-
+    workSheet->writeTime(cellTime, datetime.time());
+    cellTime.setColumn(3);
+    workSheet->writeString(cellTime, TimeFunc::userTimeZoneName());
     // пишем в файл заголовки
     for (int i = 0; i < pmdl->columnCount(); ++i)
     {
@@ -313,10 +343,10 @@ void Journals::StartSaveJour(int jtype, QAbstractItemModel *amdl, QString filena
             QVariant value = pmdl->data(pmdl->index(i, 1), Qt::DisplayRole);
             switch (value.type())
             {
-            case QMetaType::Float:
+            case QVariant::Type::Double:
                 workSheet->writeNumeric(currentCell, pmdl->data(pmdl->index(i, j), Qt::DisplayRole).toFloat());
                 break;
-            case QMetaType::Int:
+            case QVariant::Type::Int:
                 workSheet->writeNumeric(currentCell, pmdl->data(pmdl->index(i, j), Qt::DisplayRole).toInt());
                 break;
             default:

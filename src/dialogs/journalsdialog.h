@@ -25,19 +25,19 @@ private:
     QProgressDialog *progress;
 
     void SetupUI();
-    QWidget *JourTab(int jourtype);
+    QWidget *JourTab(DataTypes::FilesEnum jourtype);
     int GetJourNum(const QString &objname);
     //    void setConnections() override;
 
 signals:
     void StartGetJour();
     void StartReadFile();
-    void StartSaveJour(int, QAbstractItemModel *, QString);
+    void StartSaveJour(DataTypes::FilesEnum, QAbstractItemModel *, QString);
 
 private slots:
     void JourFileChoosed(QString &file);
     void EraseJour();
-    void SaveJour(int jourType);
+    void SaveJour(DataTypes::FilesEnum jourType);
     void Done(QString msg, DataTypes::FilesEnum jourType);
     void Error(QString msg);
 
@@ -45,7 +45,6 @@ public slots:
 
 private:
     QString JourFile;
-    int JourType;
     bool ok;
     UniquePointer<Journals> m_jour;
     QSortFilterProxyModel *ProxyWorkModel, *ProxySysModel, *ProxyMeasModel;
