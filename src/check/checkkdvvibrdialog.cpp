@@ -62,7 +62,7 @@ UWidget *CheckKDVVibrDialog::Bd1W()
 
         glyout->addWidget(WDFunc::NewLBL2(this, "Датчик №" + QString::number(4 + i)), row, column, 1, 1);
         row++;
-        glyout->addWidget(WDFunc::NewLBLT(this, "", QString::number(63 + i), ValuesFormat,
+        glyout->addWidget(WDFunc::NewLBLT(this, "", QString::number(60 + i), ValuesFormat,
                               "Среднеквадратичное значение виброускорения по каналу " + QString::number(i) + ", м/с2"),
             row, column, 1, 1);
         column++;
@@ -226,7 +226,7 @@ UWidget *CheckKDVVibrDialog::Bd3W()
 
         glyout->addWidget(WDFunc::NewLBL2(this, "Датчик №" + QString::number(1 + i)), row, column, 1, 1);
         row++;
-        glyout->addWidget(WDFunc::NewLBLT(this, "", QString::number(6060 + i), ValuesFormat,
+        glyout->addWidget(WDFunc::NewLBLT(this, "", QString::number(6058 + i), ValuesFormat,
                               "Скорость изменения среднеквадратичного значения виброускорения по каналу"
                                   + QString::number(1 + i) + ", м/с2/час"),
             row, column, 1, 1);
@@ -240,7 +240,7 @@ UWidget *CheckKDVVibrDialog::Bd3W()
 
         glyout->addWidget(WDFunc::NewLBL2(this, "Датчик №" + QString::number(4 + i)), row, column, 1, 1);
         row++;
-        glyout->addWidget(WDFunc::NewLBLT(this, "", QString::number(6063 + i), ValuesFormat,
+        glyout->addWidget(WDFunc::NewLBLT(this, "", QString::number(6061 + i), ValuesFormat,
                               "Скорость изменения среднеквадратичного значения виброускорения по каналу"
                                   + QString::number(4 + i) + ", м/с2/час"),
             row, column, 1, 1);
@@ -263,7 +263,7 @@ UWidget *CheckKDVVibrDialog::Bd3W()
 
         glyout->addWidget(WDFunc::NewLBL2(this, "Датчик №" + QString::number(1 + i)), row, column, 1, 1);
         row++;
-        glyout->addWidget(WDFunc::NewLBLT(this, "", QString::number(6066 + i), ValuesFormat,
+        glyout->addWidget(WDFunc::NewLBLT(this, "", QString::number(6064 + i), ValuesFormat,
                               "Скорость изменения среднеквадратичного значения виброскорости по каналу "
                                   + QString::number(1 + i) + ", мм/с/час"),
             row, column, 1, 1);
@@ -277,7 +277,7 @@ UWidget *CheckKDVVibrDialog::Bd3W()
 
         glyout->addWidget(WDFunc::NewLBL2(this, "Датчик №" + QString::number(4 + i)), row, column, 1, 1);
         row++;
-        glyout->addWidget(WDFunc::NewLBLT(this, "", QString::number(6069 + i), ValuesFormat,
+        glyout->addWidget(WDFunc::NewLBLT(this, "", QString::number(6067 + i), ValuesFormat,
                               "Скорость изменения среднеквадратичного значения виброскорости по каналу  "
                                   + QString::number(4 + i) + ", мм/с/час"),
             row, column, 1, 1);
@@ -300,7 +300,7 @@ UWidget *CheckKDVVibrDialog::Bd3W()
 
         glyout->addWidget(WDFunc::NewLBL2(this, "Датчик №" + QString::number(1 + i)), row, column, 1, 1);
         row++;
-        glyout->addWidget(WDFunc::NewLBLT(this, "", QString::number(6052 + i), ValuesFormat,
+        glyout->addWidget(WDFunc::NewLBLT(this, "", QString::number(6070 + i), ValuesFormat,
                               "Скорость изменения среднеквадратичного значения виброперемещения по каналу "
                                   + QString::number(1 + i) + ", мкм/час"),
             row, column, 1, 1);
@@ -314,7 +314,7 @@ UWidget *CheckKDVVibrDialog::Bd3W()
 
         glyout->addWidget(WDFunc::NewLBL2(this, "Датчик №" + QString::number(4 + i)), row, column, 1, 1);
         row++;
-        glyout->addWidget(WDFunc::NewLBLT(this, "", QString::number(6055 + i), ValuesFormat,
+        glyout->addWidget(WDFunc::NewLBLT(this, "", QString::number(6073 + i), ValuesFormat,
                               "Скорость изменения среднеквадратичного значения виброперемещения по каналу "
                                   + QString::number(4 + i) + ", мкм/час"),
             row, column, 1, 1);
