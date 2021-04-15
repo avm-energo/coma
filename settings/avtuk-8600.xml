@@ -16,7 +16,7 @@
           <item>Высокая скорость нарастания вибрации</item>
         </string-array>
         <!--Флаги сигнализации-->
-        <quint32 name="criticalFlags">0x0000000C</quint32>
+        <quint64 name="criticalFlags">0x0000000C</quint64>
         <!--Стартовый адрес сигнализации-->
 		    <quint32 name="startAddr">5011</quint32>
         <!--Цвет сигнализации если событие произошло-->
@@ -27,7 +27,7 @@
           <item>Повышенный уровень вибрации</item>
           <item>Повышенная скорость нарастания вибрации</item>
         </string-array>
-        <quint32 name="warningFlags">0x00000003</quint32>
+        <quint64 name="warningFlags">0x00000003</quint64>
 		    <quint32 name="startAddr">5011</quint32>
 		    <color>#ffff00</color>
       </alarm>

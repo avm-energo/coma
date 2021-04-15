@@ -124,7 +124,7 @@ UWidget *CheckKDVDialog::Bd1W()
     lyout->addLayout(glyout);
     lyout->addStretch(100);
     w->setLayout(lyout);
-    w->setFloatBdQuery({ { 101, 2 }, { 1000, 4 }, { 1400, 4 }, { 2400, 1 }, { 2420, 16 }, { 4500, 3 }, { 1220, 4 } });
+    w->setFloatBdQuery({ { 101, 2 }, { 1000, 11 }, { 1400, 11 }, { 2400, 7 }, { 2420, 32 }, { 4500, 7 }, { 1220, 8 } });
     return w;
 }
 
@@ -331,7 +331,7 @@ UWidget *CheckKDVDialog::Bd3W()
     lyout->addLayout(glyout);
     lyout->addStretch(100);
     w->setLayout(lyout);
-    w->setFloatBdQuery({ { 4003, 3 }, { 5200, 1 } });
+    w->setFloatBdQuery({ { 4000, 6 } });
     return w;
 }
 
@@ -363,19 +363,19 @@ UWidget *CheckKDVDialog::Bd4W()
                               "по 1-й гармонике и их среднее, А"),
             3, i, 1, 1);
         glyout->addWidget(WDFunc::NewLBL2(this, "P " + pphase[i] + ", кВт"), 4, i, 1, 1);
-        glyout->addWidget(WDFunc::NewLBLT(this, "", QString::number(2450 + i), ValuesFormat,
+        glyout->addWidget(WDFunc::NewLBLT(this, "", QString::number(2436 + i), ValuesFormat,
                               "Активная мощность по 1-й гармонике, по фазам и суммарная, кВт"),
             5, i, 1, 1);
         glyout->addWidget(WDFunc::NewLBL2(this, "Q " + pphase[i] + ", кВАр"), 6, i, 1, 1);
-        glyout->addWidget(WDFunc::NewLBLT(this, "", QString::number(2454 + i), ValuesFormat,
+        glyout->addWidget(WDFunc::NewLBLT(this, "", QString::number(2440 + i), ValuesFormat,
                               "Реактивня мощность по 1-й гармонике, кВАр"),
             7, i, 1, 1);
         glyout->addWidget(WDFunc::NewLBL2(this, "S " + pphase[i] + ", кВА"), 8, i, 1, 1);
         glyout->addWidget(
-            WDFunc::NewLBLT(this, "", QString::number(2458 + i), ValuesFormat, "Полная мощность по 1-й гармонике, кВА"),
+            WDFunc::NewLBLT(this, "", QString::number(2444 + i), ValuesFormat, "Полная мощность по 1-й гармонике, кВА"),
             9, i, 1, 1);
         glyout->addWidget(WDFunc::NewLBL2(this, "CosPhi " + phase[i] + ""), 10, i, 1, 1);
-        glyout->addWidget(WDFunc::NewLBLT(this, "", QString::number(2462 + i), ValuesFormat,
+        glyout->addWidget(WDFunc::NewLBLT(this, "", QString::number(2448 + i), ValuesFormat,
                               "Косинус phi по 1-й гармонике,по фазам и средний "),
             11, i, 1, 1);
         glyout->addWidget(WDFunc::NewLBL2(this, "Uлин " + ppphase[i] + ", кВ"), 12, i, 1, 1);
@@ -394,7 +394,7 @@ UWidget *CheckKDVDialog::Bd4W()
     lyout->addLayout(glyout);
     lyout->addStretch(100);
     w->setLayout(lyout);
-    w->setFloatBdQuery({ { 1004, 4 }, { 1404, 4 }, { 2450, 16 }, { 1224, 4 } });
+    w->setFloatBdQuery({ { 1000, 11 }, { 1400, 11 }, { 2420, 32 }, { 1220, 8 } });
     return w;
 }
 
@@ -412,21 +412,21 @@ UWidget *CheckKDVDialog::Bd5W()
     QGroupBox *gb = new QGroupBox("Данные по напряжению");
 
     glyout->addWidget(WDFunc::NewLBL2(this, "U0, кВ"), 0, 0, 1, 1);
-    glyout->addWidget(WDFunc::NewLBLT(this, "", QString::number(1020), ValuesFormat,
+    glyout->addWidget(WDFunc::NewLBLT(this, "", QString::number(1011), ValuesFormat,
                           "Напряжение нулевой последовательности гр.1, кВ"),
         1, 0, 1, 1);
     glyout->addWidget(WDFunc::NewLBL2(this, "U1, кВ"), 0, 1, 1, 1);
     glyout->addWidget(
-        WDFunc::NewLBLT(this, "", QString::number(1021), ValuesFormat, "Температура окружающей среды, °С"), 1, 1, 1, 1);
+        WDFunc::NewLBLT(this, "", QString::number(1012), ValuesFormat, "Температура окружающей среды, °С"), 1, 1, 1, 1);
     glyout->addWidget(WDFunc::NewLBL2(this, "U2, кВ"), 0, 2, 1, 1);
-    glyout->addWidget(WDFunc::NewLBLT(this, "", QString::number(1022), ValuesFormat, "Частота, Гц"), 1, 2, 1, 1);
+    glyout->addWidget(WDFunc::NewLBLT(this, "", QString::number(1013), ValuesFormat, "Частота, Гц"), 1, 2, 1, 1);
     glyout->addWidget(WDFunc::NewLBL2(this, "KunsimU0"), 2, 0, 1, 1);
-    glyout->addWidget(WDFunc::NewLBLT(this, "", QString::number(1023), ValuesFormat,
+    glyout->addWidget(WDFunc::NewLBLT(this, "", QString::number(1014), ValuesFormat,
                           "Коэффициент несимметрии напряжения по "
                           "обратной последовательности гр.1, %"),
         3, 0, 1, 1);
     glyout->addWidget(WDFunc::NewLBL2(this, "KunsimU2"), 2, 1, 1, 1);
-    glyout->addWidget(WDFunc::NewLBLT(this, "", QString::number(1024), ValuesFormat,
+    glyout->addWidget(WDFunc::NewLBLT(this, "", QString::number(1015), ValuesFormat,
                           "Коэффициент несимметрии напряжения по "
                           "нулевой последовательности гр.1, %"),
         3, 1, 1, 1);
@@ -434,7 +434,7 @@ UWidget *CheckKDVDialog::Bd5W()
     {
 
         glyout->addWidget(WDFunc::NewLBL2(this, "THD" + phase[i] + ""), 4, i, 1, 1);
-        glyout->addWidget(WDFunc::NewLBLT(this, "", QString::number(1025 + i), ValuesFormat,
+        glyout->addWidget(WDFunc::NewLBLT(this, "", QString::number(1016 + i), ValuesFormat,
                               "Общий коэффициент гарм. искажений напряжения фазы " + phase[i] + " гр.1"),
             5, i, 1, 1);
     }
@@ -459,29 +459,29 @@ UWidget *CheckKDVDialog::Bd5W()
 
     glyout->addWidget(WDFunc::NewLBL2(this, "I0, кВ"), 6, 0, 1, 1);
     glyout->addWidget(
-        WDFunc::NewLBLT(this, "", QString::number(1420), ValuesFormat, "Ток нулевой последовательности гр.1, A"), 7, 0,
+        WDFunc::NewLBLT(this, "", QString::number(1411), ValuesFormat, "Ток нулевой последовательности гр.1, A"), 7, 0,
         1, 1);
     glyout->addWidget(WDFunc::NewLBL2(this, "I1, кВ"), 6, 1, 1, 1);
     glyout->addWidget(
-        WDFunc::NewLBLT(this, "", QString::number(1421), ValuesFormat, "Ток прямой последовательности гр.1, А"), 7, 1,
+        WDFunc::NewLBLT(this, "", QString::number(1412), ValuesFormat, "Ток прямой последовательности гр.1, А"), 7, 1,
         1, 1);
     glyout->addWidget(WDFunc::NewLBL2(this, "I2, А"), 6, 2, 1, 1);
     glyout->addWidget(
-        WDFunc::NewLBLT(this, "", QString::number(1422), ValuesFormat, "Ток обратной последовательности гр.1, А"), 7, 2,
+        WDFunc::NewLBLT(this, "", QString::number(1413), ValuesFormat, "Ток обратной последовательности гр.1, А"), 7, 2,
         1, 1);
     glyout->addWidget(WDFunc::NewLBL2(this, "KunsimI0"), 8, 0, 1, 1);
-    glyout->addWidget(WDFunc::NewLBLT(this, "", QString::number(1423), ValuesFormat,
+    glyout->addWidget(WDFunc::NewLBLT(this, "", QString::number(1414), ValuesFormat,
                           "Коэффициент несимметрии тока по обратной последовательности гр.1,%"),
         9, 0, 1, 1);
     glyout->addWidget(WDFunc::NewLBL2(this, "KunsimI2"), 8, 1, 1, 1);
-    glyout->addWidget(WDFunc::NewLBLT(this, "", QString::number(1424), ValuesFormat,
+    glyout->addWidget(WDFunc::NewLBLT(this, "", QString::number(1415), ValuesFormat,
                           "Коэффициент несимметрии тока по нулевой последовательности гр.1,%"),
         9, 1, 1, 1);
     for (i = 0; i < 3; ++i)
     {
 
         glyout->addWidget(WDFunc::NewLBL2(this, "THD" + phase[i] + ""), 10, i, 1, 1);
-        glyout->addWidget(WDFunc::NewLBLT(this, "", QString::number(1425 + i), ValuesFormat,
+        glyout->addWidget(WDFunc::NewLBLT(this, "", QString::number(1416 + i), ValuesFormat,
                               "Общий коэффициент гарм. искажений тока фазы " + phase[i] + " гр.1"),
             11, i, 1, 1);
     }
@@ -503,6 +503,6 @@ UWidget *CheckKDVDialog::Bd5W()
     lyout->addLayout(glyout);
     lyout->addStretch(100);
     w->setLayout(lyout);
-    w->setFloatBdQuery({ { 1020, 8 }, { 1008, 3 }, { 1420, 8 }, { 1408, 3 } });
+    w->setFloatBdQuery({ { 1000, 11 }, { 1011, 8 }, { 1400, 11 }, { 1411, 8 } });
     return w;
 }
