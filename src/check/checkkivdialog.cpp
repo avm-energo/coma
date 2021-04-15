@@ -135,6 +135,7 @@ UWidget *CheckKIVDialog::Bd1W()
               { 3032, { { 2428, Colors::ColorsMap.value(Colors::Red) } } },
               { 3034, { { 2432, Colors::ColorsMap.value(Colors::AConfO) } } },
               { 3035, { { 2432, Colors::ColorsMap.value(Colors::Red) } } } };
+    //почему нет 33-го
 
     w->setHighlightMap(hmap);
     return w;
