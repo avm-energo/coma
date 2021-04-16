@@ -11,12 +11,6 @@ public:
     explicit StartupKTFDialog(QWidget *parent = nullptr);
     ~StartupKTFDialog();
 
-    //    int corDIndex;
-    //    bool ok;
-    //    int first;
-    //    QTimer *MessageTimer;
-
-    // int WriteCheckPassword();
     void GetCorBd() override;
 
 private:
@@ -38,14 +32,14 @@ private:
 
     void FillCor() override;
     void FillBackCor() override;
-    //    float ToFloat(QString text);
+
     void SetupUI() override;
     void FillBd(QWidget *parent, QString Name, QString Value);
 
 signals:
 
 public slots:
-    //    void GetCorBdButton() override;
+
     void WriteCor() override;
     void SetupCor() override;
     void ResetCor() override;

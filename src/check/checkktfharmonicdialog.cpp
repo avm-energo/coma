@@ -23,9 +23,6 @@
 CheckKTFHarmonicDialog::CheckKTFHarmonicDialog(QWidget *parent) : AbstractCheckDialog(parent)
 
 {
-    //    QString tmps = "QDialog {background-color: " + QString(Colors::UCONFCLR) + ";}";
-    //    setStyleSheet(tmps);
-    //    QStringList sl;
 
     m_BdUIList = { { "Гармоники U 2-11", BdUWidget(3020, 2, 12) }, { "Гармоники U 12-21", BdUWidget(3030, 12, 22) },
         { "Гармоники U 22-31", BdUWidget(3040, 22, 32) }, { "Гармоники U 32-41", BdUWidget(3050, 32, 42) },
@@ -187,20 +184,6 @@ UWidget *CheckKTFHarmonicDialog::BdIWidget(int value, int min, int max)
 //    }
 //}
 
-// void CheckKTFHarmonicDialog::ETHUpdate()
-//{
-//    updateFloatData();
-//}
-
-// void CheckKTFHarmonicDialog::MBSUpdate()
-//{
-//}
-
-// void CheckKTFHarmonicDialog::reqUpdate()
-//{
-//    updateFloatData();
-//}
-
 // void CheckKTFHarmonicDialog::updateFloatData()
 //{
 //    QList<DataTypes::SignalsStruct> list;
@@ -231,15 +214,4 @@ UWidget *CheckKTFHarmonicDialog::BdIWidget(int value, int min, int max)
 //            ChHarmKTF->FillBd(
 //                this, QString::number(Signal.at(i).SigAdr), WDFunc::StringValueWithCheck(Signal.at(i).flVal, 3));
 //    }
-//}
-// void CheckKTFHarmonicDialog::SetWarnColor(int position, bool value)
-//{
-//    Q_UNUSED(position)
-//    Q_UNUSED(value)
-//}
-
-// void CheckKTFHarmonicDialog::SetAlarmColor(int position, bool value)
-//{
-//    Q_UNUSED(position)
-//    Q_UNUSED(value)
 //}

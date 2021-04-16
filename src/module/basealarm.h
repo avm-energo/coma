@@ -11,10 +11,7 @@ class BaseAlarm : public QWidget
     Q_OBJECT
 public:
     explicit BaseAlarm(QWidget *parent = nullptr);
-    //    explicit BaseAlarm(QWidget *parent = nullptr);
 
-    //    void setInterface(BaseInterface *interface) noexcept;
-    //    BaseInterface *iface() const noexcept;
     void disable();
 public slots:
     virtual void reqUpdate() = 0;
@@ -29,7 +26,6 @@ protected:
     virtual void setupUI(const QStringList &events);
     virtual void updatePixmap(bool isset, int position);
 
-    //    BaseInterface *m_iface;
 signals:
     void updateAlarm(bool value);
     void updateColor(QColor);

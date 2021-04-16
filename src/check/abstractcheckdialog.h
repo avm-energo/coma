@@ -63,8 +63,6 @@ public:
     ~AbstractCheckDialog();
     void SetupUI();
 
-    // визуализация наборов текущих данных от модуля
-    //    virtual QWidget *BdUI(int bdnum) = 0;
     // row - строка для записи заголовков
     virtual void PrepareHeadersForFile(int row);
     // row - номер строки для записи в файл xlsx, bdnum - номер блока данных
@@ -81,10 +79,7 @@ signals:
 
 public slots:
     void StopAnalogMeasurements();
-    //    virtual void SetWarnColor(int position, bool value) = 0;
-    //    virtual void SetAlarmColor(int position, bool value) = 0;
-    //    virtual void StartBdMeasurements();
-    //    virtual void StopBdMeasurements();
+
     void reqUpdate() override;
 
 private:
@@ -105,17 +100,10 @@ private:
     //    Bip Bip_block;
     bool m_readDataInProgress;
     QElapsedTimer *ElapsedTimeCounter;
-    //  int m_currentTabIndex, m_oldTabIndex;
 
-    //    void CheckIP();
-    //    void GetIP();
-    //    void Check1PPS();
     void ReadAnalogMeasurementsAndWriteToFile();
 
 protected:
-    Check *Ch;
-    //    QTimer *BdTimer;
-    //    int BdNum;
     bool XlsxWriting;
     const QString ValuesFormat = "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; font: bold; }";
     void uponInterfaceSetting() override;
@@ -126,8 +114,6 @@ private slots:
     void StartAnalogMeasurements();
     void TimerTimeout();
     void TWTabChanged(int index);
-
-    // UWidget interface
 };
 
 #endif // ABSTRACTCHECKDIALOG_H

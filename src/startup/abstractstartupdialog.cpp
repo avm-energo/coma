@@ -91,7 +91,7 @@ void AbstractStartupDialog::WriteCor()
         DataTypes::FloatStruct value { it.key(), *it.value() };
         values.push_back(QVariant::fromValue(value));
     }
-    BaseInterface::iface()->writeCommand(Queries::QC_WriteUserValues, /*StdFunc::toVariantList*/ (values));
+    BaseInterface::iface()->writeCommand(Queries::QC_WriteUserValues, values);
     GetCorBd();
 }
 
@@ -122,38 +122,6 @@ float AbstractStartupDialog::ToFloat(QString text)
     }
     return tmpf;
 }
-
-// void AbstractStartupDialog::MessageOk()
-//{
-//    QMessageBox::information(this, "INFO", "Записано успешно");
-//}
-
-// void AbstractStartupDialog::updateFloatData()
-//{
-//    QList<DataTypes::SignalsStruct> list;
-//    DataManager::getSignals(m_startupBlockDescription.initStartRegAdr, m_startupBlockDescription.size / 4,
-//        DataTypes::SignalTypes::FloatWithTime, list); // /4 => float data by default
-//    if (list.isEmpty())
-//        return;
-//    for (const auto &signal : list)
-//    {
-//        DataTypes::FloatStruct fwt = qvariant_cast<DataTypes::FloatStruct>(signal.data);
-
-//    if (((Signal)->fl.SigAdr >= MBS_INITREG) && ((Signal)->fl.SigAdr <= 4010))
-//    {
-//        for (int i = 0; i < Signal->SigNumber; i++)
-//        {
-// FillBd(
-//    this, QString::number((Signal + i)->fl.SigAdr), WDFunc::StringValueWithCheck((Signal +
-//    i)->fl.SigVal));
-//        FillBd(this, QString::number(fwt.sigAdr), fwt.sigVal);
-//    }
-
-//        if (first)
-//  QMessageBox::information(this, "INFO", "Прочитано успешно");
-//        else
-//            first = 1;
-//}
 
 void AbstractStartupDialog::updateFloatData(const DataTypes::FloatStruct &fl)
 {

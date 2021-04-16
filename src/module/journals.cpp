@@ -19,17 +19,6 @@
 #include <QFile>
 #include <QObject>
 #include <QVariant>
-namespace AVM
-{
-const QString datetimeHeader = QStringList({ "Дата/Время", TimeFunc::userTimeZoneName() }).join("");
-
-// const QStringList eventJourHeaders {
-//    " № ",              //
-//    datetimeHeader,     //
-//    "Описание события", //
-//    "Тип события"       //
-//};
-}
 
 Journals::Journals(QMap<Modules::JournalType, DataTypes::JournalDesc> &jourMap, QObject *parent)
     : QObject(parent), m_jourMap(jourMap)
@@ -41,10 +30,7 @@ Journals::Journals(QMap<Modules::JournalType, DataTypes::JournalDesc> &jourMap, 
         m_measJourHeaders.begin(), m_measJourHeaders.end(), [](const QString &str) { return str.contains("UTC"); });
     if (time_pos != m_measJourHeaders.end())
         time_pos->replace("UTC", TimeFunc::userTimeZoneName());
-    //    std::for_each(m_measJourHeaders.begin(), m_measJourHeaders.end(), [](QString &str) {
-    //        if (str.contains("UTC"))
-    //            str.replace("UTC", TimeFunc::userTimeZoneName());
-    //    });
+
     m_sysModel = new ETableModel(this);
     m_workModel = new ETableModel(this);
     _measModel = new ETableModel(this);
@@ -55,14 +41,6 @@ void Journals::SetProxyModels(
     _proxyWorkModel = workmdl;
     _proxySysModel = sysmdl;
     _proxyMeasModel = measmdl;
-    //    connect(m_sysModel, &ETableModel::pushProgress, this, &Journals::resendResult);
-    //    connect(m_workModel, &ETableModel::pushProgress, this, &Journals::resendResult);
-    //    connect(_measModel, &ETableModel::pushProgress, this, &Journals::resendResult);
-    //    connect(m_sysModel, &ETableModel::pushMaxProgress, this, &Journals::resendMaxResult);
-    //    connect(m_workModel, &ETableModel::pushMaxProgress, this, &Journals::resendMaxResult);
-    //    connect(_measModel, &ETableModel::pushMaxProgress, this, &Journals::resendMaxResult);
-    // auto tester = new QAbstractItemModelTester(_workModel, QAbstractItemModelTester::FailureReportingMode::Fatal,
-    // this);
 }
 
 Journals::~Journals()
@@ -351,10 +329,7 @@ void Journals::saveJour(DataTypes::FilesEnum jtype, QAbstractItemModel *amdl, QS
                 break;
             default:
                 workSheet->writeString(currentCell, pmdl->data(pmdl->index(i, j), Qt::DisplayRole).toString());
-                //                if (pmdl->data(pmdl->index(i, j), Qt::DisplayRole).toString() == "nan")
-                //                    qDebug() << "Not A Number float";
-                //                if (pmdl->data(pmdl->index(i, j), Qt::DisplayRole).toString() == "inf")
-                //                    qDebug() << "Infinitive float";
+
                 break;
             }
         }

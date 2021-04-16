@@ -13,10 +13,7 @@ public:
     explicit StartupKIVDialog(QWidget *parent = nullptr);
     ~StartupKIVDialog();
 
-    // void GetCorBd() override;
-
 private:
-    //  bool WriteCheckPassword();
     struct CorData
     {
         float C_init[3];    //Начальные значени емкостей вводов
@@ -29,17 +26,11 @@ private:
 
     CorData *CorBlock;
 
-    // void FillCor() override;
-    // void FillBackCor() override;
-    //    float ToFloat(QString text);
     void SetupUI() override;
-    // void FillBd(QWidget *parent, QString Name, QString Value);
 
 signals:
 
 public slots:
-
-    void MessageOk();
 
     void SaveToFile() override;
     void ReadFromFile() override;

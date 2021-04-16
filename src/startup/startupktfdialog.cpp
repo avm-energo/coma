@@ -16,14 +16,9 @@
 
 StartupKTFDialog::StartupKTFDialog(QWidget *parent) : AbstractStartupDialog(parent)
 {
-    // int i;
 
     Bd9Block = new Bd9;
     WBd7Block = new WBd7;
-
-    //  first = 0;
-
-    // SetupUI();
 }
 
 StartupKTFDialog::~StartupKTFDialog()
@@ -32,18 +27,15 @@ StartupKTFDialog::~StartupKTFDialog()
 
 void StartupKTFDialog::SetupUI()
 {
-    // QWidget *cp2 = new QWidget;
-    QString tmps = "QDialog {background-color: " + QString(Colors::ACONFCLR) + ";}";
-    setStyleSheet(tmps);
+
     QVBoxLayout *lyout = new QVBoxLayout;
     QGridLayout *glyout = new QGridLayout;
     ETableView *tv = new ETableView;
     tv->setObjectName("cor");
     int row = 0;
-    QString paramcolor = Colors::MAINWINCLR;
 
-    glyout->addWidget(WDFunc::NewLBL(this, "Текущий расход ресурса изоляции, час:"), row, 1, 1, 1);
-    glyout->addWidget(WDFunc::NewSPB(this, QString::number(907), 0, 1000000, 5, paramcolor), row, 2, 1, 2);
+    glyout->addWidget(WDFunc::NewLBL2(this, "Текущий расход ресурса изоляции, час:"), row, 1, 1, 1);
+    glyout->addWidget(WDFunc::NewSPB2(this, QString::number(907), 0, 1000000, 5), row, 2, 1, 2);
     row++;
 
     QPushButton *pb = new QPushButton("Прочитать из модуля");

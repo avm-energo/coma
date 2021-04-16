@@ -10,9 +10,6 @@ public:
     StartupKDVDialog(QWidget *parent = nullptr);
     ~StartupKDVDialog();
 
-    // int corDIndex;
-    // int first;
-
     void GetCorBd() override;
 
 private:
@@ -45,19 +42,13 @@ private:
     void FillCor() override;
     void FillBackWBd8();
 
-    //    float ToFloat(QString text);
     void SetupUI() override;
     void FillBd(QWidget *parent, QString Name, QString Value);
 
 signals:
-    //    void SendCom45(quint32);
-    //    void SendCom50(quint32 adr, float data);
-    //    void RS485WriteCorBd(ModBus::Information, float *);
-    //    void RS485ReadCorBd(ModBus::Information);
-    //    void CorReadRequest();
 
 public slots:
-    //    void GetCorBdButton() override;
+
     void WriteCor() override;
     void SetupCor() override;
     void ResetCor() override;

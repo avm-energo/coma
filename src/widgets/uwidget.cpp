@@ -106,12 +106,6 @@ void UWidget::reqUpdate()
         BaseInterface::iface()->reqAlarms(query.sigAdr, query.sigQuantity);
 }
 
-// void UWidget::setInterface(BaseInterface *iface)
-//{
-//    m_iface = iface;
-//    uponInterfaceSetting();
-//}
-
 void UWidget::uponInterfaceSetting()
 {
 }
@@ -122,8 +116,3 @@ bool UWidget::checkPassword()
     KeyPressDialog *dlg = new KeyPressDialog;
     return dlg->CheckPassword(m_password);
 }
-
-// BaseInterface *UWidget::iface()
-//{
-//    return m_iface;
-//}

@@ -320,7 +320,7 @@ UWidget *CheckKDVDialog::Bd3W()
         13, 0, 1, 1);
 
     glyout->addWidget(WDFunc::NewLBL2(this, "Дата и время пуска:"), 12, 1, 1, 1);
-    glyout->addWidget(WDFunc::NewLE(this, "IsTime", "dd-MM-yyyy HH:mm:ss"), 13, 1, 1, 4);
+    glyout->addWidget(WDFunc::NewLE2(this, "IsTime", "dd-MM-yyyy HH:mm:ss"), 13, 1, 1, 4);
 
     vlyout->addLayout(glyout);
     gb->setLayout(vlyout);

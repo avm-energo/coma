@@ -11,7 +11,6 @@ class UDialog : public UWidget
 public:
     UDialog(QWidget *parent = nullptr);
     virtual void updateGeneralResponse(const DataTypes::GeneralResponseStruct &response);
-    //    virtual void setConnections() = 0;
 
 public slots:
 

@@ -195,10 +195,6 @@ int JournalDialog::GetJourNum(const QString &objname)
     return jourtype;
 }
 
-// void JournalDialog::setConnections()
-//{
-//}
-
 void JournalDialog::StartReadJourFile()
 {
     progress->setMinimumDuration(0);
@@ -207,10 +203,9 @@ void JournalDialog::StartReadJourFile()
     emit StartReadFile();
 }
 
-void JournalDialog::Done(QString msg, DataTypes::FilesEnum jourType)
+void JournalDialog::Done(QString msg, [[maybe_unused]] DataTypes::FilesEnum jourType)
 {
-    // Q_UNUSED(msg)
-    // new QAbstractItemModelTester(ProxyWorkModel, QAbstractItemModelTester::FailureReportingMode::Warning, this);
+
     disconnect(m_jour.get(), &Journals::resendMaxResult, this->progress, &QProgressDialog::setMaximum);
     disconnect(m_jour.get(), &Journals::resendResult, this->progress, &QProgressDialog::setValue);
     QMessageBox::information(this, "Успешно", msg);

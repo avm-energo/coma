@@ -1,5 +1,4 @@
-#ifndef MODULEFABRIC_H
-#define MODULEFABRIC_H
+#pragma once
 
 #include "../config/widgetfactory.h"
 #include "../gen/datatypes.h"
@@ -70,8 +69,4 @@ private:
     QList<UDialog *> m_dialogs;
 
     std::unique_ptr<ModuleSettings> m_settings;
-
-    // void traverseNode(const QDomNode &node);
 };
-
-#endif // MODULEFABRIC_H

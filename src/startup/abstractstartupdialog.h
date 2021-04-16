@@ -49,15 +49,13 @@ private:
     StartupBlockStruct m_startupBlockDescription;
     QMap<quint16, float *> m_regMap;
 
-    //    virtual void FillWb7() = 0;
-    //    virtual void FillBackBd9() = 0;
     float ToFloat(QString text);
     virtual void SetupUI() = 0;
     void FillBd(QWidget *parent, QString Name, QString Value);
     void FillBd(QWidget *parent, QString Name, float Value);
 
 public slots:
-    // void GetCorBdButton();
+
     void reqUpdate() override;
 };
 

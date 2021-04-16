@@ -5,7 +5,6 @@
 #include "../gen/datamanager.h"
 #include "../gen/error.h"
 #include "../gen/stdfunc.h"
-#include "../widgets/etabwidget.h"
 #include "../widgets/wd_func.h"
 
 #include <QCoreApplication>
@@ -79,12 +78,6 @@ void AbstractCheckDialog::WriteToFile(int row, int bdnum)
 void AbstractCheckDialog::PrepareAnalogMeasurements()
 {
 }
-
-// QWidget *AbstractCheckDialog::CustomTab() { return nullptr; }
-
-// void AbstractCheckDialog::Check1PPS()
-//{
-//}
 
 void AbstractCheckDialog::SetBd(int bdnum, void *block, int blocksize, bool toxlsx)
 {
@@ -228,12 +221,6 @@ void AbstractCheckDialog::uponInterfaceSetting()
 // void AbstractCheckDialog::StartBdMeasurements() { BdTimer->start(); }
 
 // void AbstractCheckDialog::StopBdMeasurements() { BdTimer->stop(); }
-
-// void AbstractCheckDialog::onModbusStateChanged()
-//{
-//    if (Board::GetInstance().connectionState() == Board::ConnectionState::Connected)
-//        QMessageBox::information(this, "Успешно", "Связь по MODBUS установлена");
-//}
 
 void AbstractCheckDialog::StartAnalogMeasurements()
 {

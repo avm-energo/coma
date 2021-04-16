@@ -2,7 +2,6 @@
 #define CHECKKTFDIALOG_H
 
 #include "abstractcheckdialog.h"
-//#include "checkktf.h"
 
 class CheckKTFDialog : public AbstractCheckDialog
 {
@@ -12,34 +11,19 @@ public:
     explicit CheckKTFDialog(QWidget *parent = nullptr);
     ~CheckKTFDialog();
 
-public slots:
-    //    void SetAlarmColor(int position, bool value) override;
-    //    void SetWarnColor(int position, bool value) override;
-    //    void USBUpdate() override;
-    //    void ETHUpdate() override;
-    //    void MBSUpdate() override;
-    //    void reqUpdate() override;
-
 private:
-    //  CheckKTF *ChKTF;
-
-    //    QWidget *AutoCheckUI();            // UI для автоматической проверки модуля
-    //    QWidget *BdUI(int bdnum) override; // визуализация наборов текущих данных от модуля
     void PrepareHeadersForFile(int row) override;  // row - строка для записи заголовков
     void WriteToFile(int row, int bdnum) override; // row - номер строки для записи в файл
                                                    // xlsx, bdnum - номер блока данных
-                                                   //    void ChooseValuesToWrite() override;
-                                                   //    void SetDefaultValuesToWrite() override;
-                                                   //    void PrepareAnalogMeasurements() override;
+
+    //    void ChooseValuesToWrite() override;
+    //    void SetDefaultValuesToWrite() override;
+    //    void PrepareAnalogMeasurements() override;
     UWidget *Bd1W();
     UWidget *Bd2W();
     UWidget *Bd3W();
     UWidget *Bd4W();
     UWidget *Bd5W();
-    //    void updateFloatData();
-
-private slots:
-    //    void UpdateModBusData(QList<ModBus::SignalStruct> Signal) override;
 };
 
 #endif // CHECKKTFDIALOG_H

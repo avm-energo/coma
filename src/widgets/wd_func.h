@@ -35,11 +35,9 @@ public:
     static bool SetCWData(QWidget *w, const QString &cwname, const QString &cwvalue);
     static QString CWData(QWidget *w, const QString &cwname);
     static bool SetCWColor(QWidget *w, const QString &cwname, const QColor &color);
-    [[deprecated("Use instead second version with global style sheet")]] static QLineEdit *NewLE(
-        QWidget *w, const QString &lename, const QString &letext = "", const QString &lestyle = "");
+
     static QLineEdit *NewLE2(QWidget *w, const QString &lename, const QString &letext = "");
-    [[deprecated("Use instead second version with global style sheet")]] static PasswordLineEdit *NewPswLE(QWidget *w,
-        const QString &lename, QLineEdit::EchoMode echostyle = QLineEdit::Normal, const QString &lestyle = "");
+
     static PasswordLineEdit *NewPswLE2(
         QWidget *w, const QString &lename, QLineEdit::EchoMode echostyle = QLineEdit::Normal);
     static bool SetLEData(QObject *w, const QString &lename, const QString &levalue, const QString &restring = "");
@@ -63,8 +61,7 @@ public:
     static bool SetTEData(QWidget *w, const QString &tename, const QString &tetext);
     static bool TEData(QWidget *w, const QString &tename, QString &tevalue);
     static bool SetLBLTColor(QWidget *w, const QString &lblname, const QString &color);
-    [[deprecated("Use instead second version with global style sheet")]] static QComboBox *NewCB(
-        QWidget *parent, const QString &cbname, const QStringList &cbsl, const QString &cbcolor = "");
+
     static QComboBox *NewCB2(QWidget *parent, const QString &cbname, const QStringList &cbsl);
     static QComboBox *NewCB2(QWidget *parent, const QStringList &cbsl);
     static bool SetCBData(const QWidget *w, const QString &cbname, const QString &cbvalue);
@@ -83,11 +80,6 @@ public:
             return -1;
         return cb->currentIndex();
     }
-    //    static QMetaObject::Connection CBConnect(
-    //        QWidget *w, const QString &cbname, int cbconnecttype, const QObject *receiver, const char *method);
-
-    [[deprecated("Use instead second version with global style sheet")]] static QDoubleSpinBox *NewSPB(
-        QWidget *parent, const QString &spbname, double min, double max, int decimals, const QString &spbcolor = "");
 
     static QDoubleSpinBox *NewSPB2(
         QWidget *parent, const QString &spbname, const double min, const double max, const int decimals);
@@ -178,9 +170,7 @@ public:
         bool Fixed = false);
     static QLabel *NewLBLT2(
         QWidget *w, const QString &text, const QString &lblname = "", const QString &lbltip = "", bool fixed = false);
-    // static QLabel *NewLBLTT(QWidget *w, const QString &text, const QString
-    // &lblname="", const QString &lblstyle="", const QString &lbltip="",bool
-    // Fixed=false);
+
     static bool SetLBLImage(QWidget *w, const QString &lblname, QPixmap *pm);
     static bool SetLBLColor(QWidget *w, const QString &lblname, const QString &lblcolor);
     static bool SetLBLText(QWidget *w, const QString &lblname, const QString &lbltext = "", bool enabled = true);
@@ -300,8 +290,7 @@ public:
     static ETableView *NewTV(QWidget *w, const QString &tvname, QAbstractItemModel *model);
     static QTableView *NewQTV(QWidget *w, const QString &tvname, QAbstractItemModel *model);
     static QAbstractItemModel *TVModel(QWidget *w, const QString &tvname);
-    //    static void TVConnect(
-    //        QWidget *w, const QString &tvname, int signaltype, const QObject *receiver, const char *method);
+
     static void SortTV(QWidget *w, const QString &tvname, int column, Qt::SortOrder sortorder);
     static QVariant TVData(QWidget *w, const QString &tvname, int column);
 

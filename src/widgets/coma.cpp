@@ -41,7 +41,6 @@
 #include "../interfaces/settingstypes.h"
 #include "../module/module.h"
 #include "../widgets/aboutwidget.h"
-#include "../widgets/etabwidget.h"
 #include "../widgets/splashscreen.h"
 #include "../widgets/styleloader.h"
 #include "../widgets/wd_func.h"
@@ -186,7 +185,6 @@ void Coma::SetupUI()
 
     AlarmW = new AlarmWidget(this);
 
-    // AlarmW->setMaximumWidth(780);
     hlyout->addWidget(AlarmW, Qt::AlignCenter);
 
     lyout->addLayout(hlyout);
@@ -530,13 +528,6 @@ void Coma::SetProgressBarCount(int prbnum, int count)
     }
 }
 
-// void Coma::getAbout()
-//{
-//    AboutWidget *w = new AboutWidget;
-//    w->setupUI();
-//    w->show();
-//}
-
 void Coma::disconnect()
 {
     qInfo(__PRETTY_FUNCTION__);
@@ -663,11 +654,8 @@ void Coma::keyPressEvent(QKeyEvent *e)
 
 void Coma::mainTWTabChanged(int tabindex)
 {
-    // Q_ASSERT(m_Module != nullptr);
     m_Module->parentTWTabChanged(tabindex);
 }
-
-//}
 
 void Coma::update(const DataTypes::GeneralResponseStruct &rsp)
 {

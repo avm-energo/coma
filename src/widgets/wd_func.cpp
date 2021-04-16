@@ -27,34 +27,12 @@
 #ifdef __GNUC__
 #include <cfloat>
 #endif
-QLineEdit *WDFunc::NewLE(QWidget *w, const QString &lename, const QString &letext, const QString &lecolor)
-{
-    QLineEdit *le = new QLineEdit(w);
-    le->setObjectName(lename);
-    le->setText(letext);
-    if (!lecolor.isEmpty())
-    {
-        QString tmps = "QLineEdit {background-color: " + lecolor + ";}";
-        le->setStyleSheet(tmps);
-    }
-    return le;
-}
 
 QLineEdit *WDFunc::NewLE2(QWidget *w, const QString &lename, const QString &letext)
 {
     QLineEdit *le = new QLineEdit(w);
     le->setObjectName(lename);
     le->setText(letext);
-    return le;
-}
-
-PasswordLineEdit *WDFunc::NewPswLE(
-    QWidget *w, const QString &lename, QLineEdit::EchoMode echostyle, const QString &lestyle)
-{
-    PasswordLineEdit *le = new PasswordLineEdit(echostyle, w);
-    le->setObjectName(lename);
-    if (!lestyle.isEmpty())
-        le->setStyleSheet(lestyle);
     return le;
 }
 
@@ -223,21 +201,6 @@ bool WDFunc::TEData(QWidget *w, const QString &tename, QString &tevalue)
     return true;
 }
 
-QComboBox *WDFunc::NewCB(QWidget *parent, const QString &cbname, const QStringList &cbsl, const QString &cbcolor)
-{
-    QComboBox *cb = new QComboBox(parent);
-    cb->setObjectName(cbname);
-    QStringListModel *cblm = new QStringListModel(cb);
-    cblm->setStringList(cbsl);
-    cb->setModel(cblm);
-    if (!cbcolor.isEmpty())
-    {
-        QString tmps = "QComboBox {background-color: " + cbcolor + ";}";
-        cb->setStyleSheet(tmps);
-    }
-    return cb;
-}
-
 QComboBox *WDFunc::NewCB2(QWidget *parent, const QString &cbname, const QStringList &cbsl)
 {
     QComboBox *cb = NewCB2(parent, cbsl);
@@ -262,24 +225,6 @@ QString WDFunc::CBData(const QWidget *w, const QString &cbname)
     return cb->currentText();
 }
 
-// QMetaObject::Connection WDFunc::CBConnect(
-//    QWidget *w, const QString &cbname, int cbconnecttype, const QObject *receiver, const char *method)
-//{
-//    EComboBox *cb = w->findChild<EComboBox *>(cbname);
-//    if (cb == nullptr)
-//        return QMetaObject::Connection();
-//    switch (cbconnecttype)
-//    {
-//    case CT_INDEXCHANGED:
-//        return QObject::connect(cb, SIGNAL(currentIndexChanged(int)), receiver, method);
-//    case CT_TEXTCHANGED:
-//        return QObject::connect(cb, SIGNAL(currentTextChanged(const QString &)), receiver, method);
-//    default:
-//        break;
-//    }
-//    return QMetaObject::Connection();
-//}
-
 bool WDFunc::SetCBData(const QWidget *w, const QString &cbname, const QString &cbvalue)
 {
     QComboBox *cb = w->findChild<QComboBox *>(cbname);
@@ -299,15 +244,7 @@ bool WDFunc::SetCBIndex(const QObject *w, const QString &cbname, int index)
         cb->setCurrentIndex(index);
         return true;
     }
-    //    else
-    //    {
-    //        int newIndex = cb->findText(QString::number(index));
-    //        if (newIndex != -1)
-    //        {
-    //            cb->setCurrentIndex(newIndex);
-    //            return true;
-    //        }
-    //    }
+
     return false;
 }
 
@@ -321,26 +258,6 @@ bool WDFunc::SetCBColor(QWidget *w, const QString &cbname, const QString &color)
     pal.setColor(QPalette::Text, QColor(color));
     cb->setPalette(pal);
     return true;
-}
-
-QDoubleSpinBox *WDFunc::NewSPB(
-    QWidget *parent, const QString &spbname, double min, double max, int decimals, const QString &spbcolor)
-{
-    EDoubleSpinBox *dsb = new EDoubleSpinBox(parent);
-
-    double step = qPow(0.1f, decimals);
-    dsb->setObjectName(spbname);
-    dsb->setSingleStep(step);
-    dsb->setDecimals(decimals);
-    dsb->setMinimum(min);
-    dsb->setMaximum(max);
-
-    if (!spbcolor.isEmpty())
-    {
-        QString tmps = "QDoubleSpinBox {background-color: " + spbcolor + ";}";
-        dsb->setStyleSheet(tmps);
-    }
-    return dsb;
 }
 
 QDoubleSpinBox *WDFunc::NewSPB2(
@@ -368,15 +285,6 @@ bool WDFunc::SetSPBData(const QObject *w, const QString &spbname, const double &
     spb->setValue(spbvalue);
     return true;
 }
-
-/*bool WDFunc::SetSPBColor(QWidget *w, const QString &spbname, QString color)
-{
-    QDoubleSpinBox *spb = w->findChild<QDoubleSpinBox *>(spbname);
-    if (spb == nullptr)
-        return false;
-    spb->setStyle();
-    return true;
-}*/
 
 bool WDFunc::SetLBLImage(QWidget *w, const QString &lblname, QPixmap *pm)
 {
@@ -718,8 +626,6 @@ QPushButton *WDFunc::NewPBCommon(
     return pb;
 }
 
-// QMainWindow *WDFunc::getComaWindow() { Coma }
-
 QCheckBox *WDFunc::NewChB2(QWidget *parent, const QString &chbname, const QString &chbtext)
 {
     QCheckBox *chb = new QCheckBox(parent);
@@ -876,33 +782,6 @@ QImage *WDFunc::TwoImages(const QString &first, const QString &second)
     return image;
 }
 
-// QPushButton *WDFunc::NewPB(QWidget *parent, const QString &pbname, const QString &text, const QObject *receiver,
-//    const char *method, const QString &icon, const QString &pbtooltip)
-//{
-//    QPushButton *pb = new QPushButton(parent);
-//    pb->setStyleSheet("QPushButton {background-color: rgba(0,0,0,0); border: 1px solid gray; "
-//                      "border-radius: 5px; border-style: outset; padding: 2px 5px;}"
-//                      "QPushButton:pressed {border-style: inset;}"
-//                      "QPushButton:disabled {border: none;}");
-//    pb->setObjectName(pbname);
-//    if (!icon.isEmpty())
-//        pb->setIcon(QIcon(icon));
-//    pb->setText(text);
-//    pb->setToolTip(pbtooltip);
-//    if (receiver != nullptr)
-//        QObject::connect(pb, SIGNAL(clicked(bool)), receiver, method);
-//    return pb;
-//}
-
-// QMetaObject::Connection WDFunc::PBConnect(
-//    QWidget *w, const QString &pbname, const QObject *receiver, const char *method)
-//{
-//    QPushButton *pb = w->findChild<QPushButton *>(pbname);
-//    if (pb == nullptr)
-//        return QMetaObject::Connection();
-//    return QObject::connect(pb, SIGNAL(clicked(bool)), receiver, method);
-//}
-
 ETableView *WDFunc::NewTV(QWidget *w, const QString &tvname, QAbstractItemModel *model)
 {
     ETableView *tv = new ETableView(w);
@@ -962,29 +841,6 @@ void WDFunc::SetQTVModel(QWidget *w, const QString &tvname, QAbstractItemModel *
     tv->setSortingEnabled(sortenable);
     delete m;
 }
-
-// void WDFunc::TVConnect(QWidget *w, const QString &tvname, int signaltype, const QObject *receiver, const char
-// *method)
-//{
-//    ETableView *tv = w->findChild<ETableView *>(tvname);
-//    if (tv == nullptr)
-//        return;
-//    switch (signaltype)
-//    {
-//    case CT_DCLICKED:
-//        QObject::connect(tv, SIGNAL(doubleClicked(QModelIndex)), receiver, method);
-//        break;
-//    case CT_CLICKED:
-//        QObject::connect(tv, SIGNAL(clicked(QModelIndex)), receiver, method);
-//        break;
-//    case CT_CONTEXT:
-//        tv->setContextMenuPolicy(Qt::CustomContextMenu);
-//        QObject::connect(tv, SIGNAL(customContextMenuRequested(QPoint)), receiver, method);
-//        break;
-//    default:
-//        break;
-//    }
-//}
 
 void WDFunc::SortTV(QWidget *w, const QString &tvname, int column, Qt::SortOrder sortorder)
 {

@@ -6,8 +6,7 @@
 #include "../module/modules.h"
 
 #include <QSortFilterProxyModel>
-//#include <QStandardItemModel>
-//#include "../models/estandarditemmodel.h"
+
 class Journals : public QObject
 {
     Q_OBJECT

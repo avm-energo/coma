@@ -15,16 +15,6 @@ ETableView::ETableView(QWidget *parent) : QTableView(parent)
     // connect(this, &ETableView::datachanged, this, &QTableView::resizeColumnsToContents);
 }
 
-/*void ETableView::setAData(QVariant dat)
-{
-    this->adata = dat;
-}
-
-QVariant ETableView::getAData()
-{
-    return this->adata;
-} */
-
 void ETableView::dataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight, const QVector<int> &roles)
 {
     Q_UNUSED(topLeft);

@@ -24,19 +24,6 @@ void ModuleAlarm::reqUpdate()
     update();
 }
 
-// int Alarm::realAlarmSize()
-//{
-//    return m_realAlarmSize;
-//}
-
-/*void Alarm::Update(std::bitset<32> &states)
-{
-    for (int i = 0; i < m_realAlarmSize; ++i)
-    {
-        UpdatePixmaps(states[i], i);
-    }
-} */
-
 void ModuleAlarm::update(const DataTypes::SinglePointWithTimeStruct &sp)
 {
     const auto minAddress = m_startAlarmAddress;

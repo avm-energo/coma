@@ -226,15 +226,6 @@ UWidget *CheckKDVHarmonicDialog::BdUWidget(unsigned int value, int min, int max)
 //    }
 //}
 
-// void CheckKDVHarmonicDialog::ETHUpdate()
-//{
-//    updateFloatData();
-//}
-
-// void CheckKDVHarmonicDialog::MBSUpdate()
-//{
-//}
-
 // void CheckKDVHarmonicDialog::updateFloatData()
 //{
 //    QList<DataTypes::SignalsStruct> list;
@@ -271,17 +262,3 @@ UWidget *CheckKDVHarmonicDialog::BdUWidget(unsigned int value, int min, int max)
 //                this, QString::number(Signal.at(i).SigAdr), WDFunc::StringValueWithCheck(Signal.at(i).flVal, 3));
 //    }
 //}
-
-// void CheckKDVHarmonicDialog::SetWarnColor(int position, bool value)
-//{
-//    Q_UNUSED(position)
-//    Q_UNUSED(value)
-//}
-
-// void CheckKDVHarmonicDialog::SetAlarmColor(int position, bool value)
-//{
-//    Q_UNUSED(position)
-//    Q_UNUSED(value)
-//}
-
-// void CheckKDVHarmonicDialog::update() { updateFloatData(); }

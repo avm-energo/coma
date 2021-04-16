@@ -31,6 +31,7 @@ void Module::createAlarm(AlarmWidget *aw)
 
     Q_ASSERT(aw->count() == 0);
     AlarmStateAll *alarmStateAll = new AlarmStateAll;
+    alarmStateAll->setupUI(AVM::HthToolTip);
     aw->addAlarm(alarmStateAll);
     if (m_settings)
     {

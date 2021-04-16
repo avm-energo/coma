@@ -75,9 +75,3 @@ void FWUploadDialog::RunSoft()
     setSuccessMsg("Переход на новое ПО выполнен успешно");
     BaseInterface::iface()->writeCommand(Queries::QC_StartFirmwareUpgrade);
 }
-
-// bool FWUploadDialog::WriteCheckPassword()
-//{
-//    KeyPressDialog dlg; // = new KeyPressDialog;
-//    return dlg.CheckPassword("admin");
-//}

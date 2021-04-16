@@ -55,7 +55,7 @@ void TimeDialog::setupUI()
     mainLayout->addLayout(hlyout);
     hlyout = new QHBoxLayout;
 
-    QPushButton *Button = new QPushButton("Записать время (UTC) ПК в модуль");
+    QPushButton *Button = new QPushButton("Записать время ПК без учёта часового пояса (UTC) в модуль");
     connect(Button, &QAbstractButton::clicked, this, &TimeDialog::writePCDate);
 
     mainLayout->addWidget(Button);

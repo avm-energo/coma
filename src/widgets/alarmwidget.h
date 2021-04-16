@@ -1,10 +1,9 @@
 #ifndef ALARMWIDGET_H
 #define ALARMWIDGET_H
 
-#include "../module/basealarm.h"
-#include "../widgets/uwidget.h"
-//#define BSIWARNMASK 0x00005F55
-//#define BSIALARMMASK 0x000020AA
+#include <QWidget>
+
+class BaseAlarm;
 
 class AlarmWidget : public QWidget
 {
@@ -24,7 +23,7 @@ public slots:
 
 private:
     QList<BaseAlarm *> m_alarms;
-    // QDialogButtonBox *buttons;
+
     QTimer *m_timer;
     const QStringList buttonDescription {
         "Состояние устройства",           //
@@ -32,7 +31,6 @@ private:
         "Аварийная сигнализация"          //
     };
     int m_counter = 0;
-    //    AlarmClass *Alarm;
 };
 
 #endif // ALARMWIDGET_H

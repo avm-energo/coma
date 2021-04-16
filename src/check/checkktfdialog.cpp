@@ -3,7 +3,6 @@
 #include "../gen/colors.h"
 #include "../gen/datamanager.h"
 #include "../gen/error.h"
-#include "../widgets/etabwidget.h"
 #include "../widgets/wd_func.h"
 
 #include <QCoreApplication>
@@ -23,14 +22,10 @@
 
 CheckKTFDialog::CheckKTFDialog(QWidget *parent) : AbstractCheckDialog(parent)
 {
-    //    QString tmps = "QDialog {background-color: " + QString(Colors::UCONFCLR) + ";}";
-    //    setStyleSheet(tmps);
-    // QStringList sl;
 
     m_BdUIList = { { "Основные", Bd1W() }, { "Модель", Bd2W() }, { "Ресурс", Bd3W() }, { "1-я гармоника", Bd4W() },
         { "Несимметрия", Bd5W() } };
     m_BdUIList.first().widget->setUpdatesEnabled();
-    // SetupUI();
 
     Timer->setInterval(ANMEASINT);
 }
@@ -363,7 +358,7 @@ UWidget *CheckKTFDialog::Bd3W()
         7, 0, 1, 1);
 
     glyout->addWidget(WDFunc::NewLBL(this, "Дата и время пуска:"), 6, 1, 1, 1);
-    glyout->addWidget(WDFunc::NewLE(this, "IsTime", "dd-MM-yyyy HH:mm:ss"), 7, 1, 1, 4);
+    glyout->addWidget(WDFunc::NewLE2(this, "IsTime", "dd-MM-yyyy HH:mm:ss"), 7, 1, 1, 4);
 
     vlyout->addLayout(glyout);
     gb->setLayout(vlyout);
