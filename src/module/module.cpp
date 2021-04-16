@@ -101,8 +101,6 @@ void Module::closeDialogs()
 {
     while (!m_dialogs.isEmpty())
         m_dialogs.takeFirst()->close();
-
-    S2::config.clear();
 }
 
 ModuleSettings *Module::settings() const

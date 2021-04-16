@@ -109,7 +109,7 @@ void ConfigDialog::SaveConfToFile()
         qCritical("Ошибка чтения конфигурации");
         return;
     }
-    S2::StoreDataMem(ba, &S2::config, DataTypes::Config);
+    S2::StoreDataMem(ba, S2::configV, DataTypes::Config);
     quint32 length = *reinterpret_cast<quint32 *>(&ba.data()[4]);
     length += sizeof(S2DataTypes::FileHeader);
     Q_ASSERT(length == quint32(ba.size()));
@@ -143,12 +143,10 @@ void ConfigDialog::LoadConfFromFile()
         qCritical("Ошибка при загрузке файла конфигурации");
         return;
     }
-    if (!S2::RestoreDataMem(&(ba.data()[0]), ba.size(), &S2::config))
-    {
-        qCritical("Ошибка при разборе файла конфигурации");
-        return;
-    }
-    Fill();
+    QList<DataTypes::DataRecV> outlistV;
+    S2::RestoreData(ba, outlistV);
+
+    confReceived(outlistV);
     QMessageBox::information(this, "Успешно", "Загрузка прошла успешно!");
 }
 

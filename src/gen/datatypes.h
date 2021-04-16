@@ -29,8 +29,6 @@ enum SignalTypes
     SinglePointWithTime,
     ByteArray,
     File,
-    // ConfParameter,
-    // ConfParametersList,
     DataRecVList,
     Block,
     OscillogramInfo,

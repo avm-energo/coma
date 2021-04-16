@@ -56,7 +56,7 @@ void BaseInterface::resume()
 void BaseInterface::writeS2File(DataTypes::FilesEnum number, S2DataTypes::S2ConfigType *file)
 {
     QByteArray ba;
-    S2::StoreDataMem(ba, file, number);
+    S2::StoreDataMem(ba, *file, number);
 
     // с 4 байта начинается FileHeader.size
     quint32 length = *reinterpret_cast<quint32 *>(&ba.data()[4]);
@@ -173,7 +173,7 @@ Error::Msg BaseInterface::writeFileSync(int filenum, QByteArray &ba)
 Error::Msg BaseInterface::writeS2FileSync(DataTypes::FilesEnum number, S2DataTypes::S2ConfigType *file)
 {
     QByteArray ba;
-    S2::StoreDataMem(ba, file, number);
+    S2::StoreDataMem(ba, *file, number);
 
     // с 4 байта начинается FileHeader.size
     quint32 length = *reinterpret_cast<quint32 *>(&ba.data()[4]);

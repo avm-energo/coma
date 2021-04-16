@@ -4,39 +4,46 @@
 
 #include <QVector>
 constexpr int MAXSIZE = 200000;
+class BaseInterface;
 class S2
 {
+    friend BaseInterface;
+
 public:
     S2();
     // S2: Сборщик в память:
     // 0 - успешно, иначе код ошибки S2: получение размера:
-    static void StoreDataMem(QByteArray &mem, QVector<S2DataTypes::DataRec> *dr, int fname);
-    static QByteArray StoreDataMem(QVector<S2DataTypes::DataRec> *dr, int fname);
 
-    // S2: Поиск элемента в массиве описаний
-    static bool RestoreDataMem(void *mem, quint32 memsize, QVector<S2DataTypes::DataRec> *dr);
+    static void StoreDataMem(QByteArray &mem, const QList<DataTypes::DataRecV> &dr, int fname);
+
     // restore IDs and contents in ConfParameters list
     static bool RestoreData(QByteArray bain, QList<DataTypes::ConfParameterStruct> &outlist);
     static bool RestoreData(QByteArray bain, QList<DataTypes::DataRecV> &outlist);
-    static const S2DataTypes::DataRec *FindElem(QVector<S2DataTypes::DataRec> *, quint32);
+
+    static S2DataTypes::S2ConfigType ParseHexToS2(QByteArray &ba);
+
+    static QList<DataTypes::DataRecV> configV;
+    static DataTypes::DataRecV getRecord(unsigned int id);
+    static void setRecordValue(const DataTypes::DataRecV &record);
+    static void tester(S2DataTypes::S2ConfigType &buffer);
+
+    static quint32 crc32buf(const QByteArray &data);
+
+private:
+    static void StoreDataMem(QByteArray &mem, const QVector<S2DataTypes::DataRec> &dr, int fname);
+    // S2: Поиск элемента в массиве описаний
+    static bool RestoreDataMem(void *mem, quint32 memsize, const QVector<S2DataTypes::DataRec> &dr);
     static void findElemAndWriteIt(QVector<S2DataTypes::DataRec> *s2config, const DataTypes::ConfParameterStruct &cfp);
     static bool findElemAndWriteIt(S2DataTypes::DataRec *record, const DataTypes::ConfParameterStruct &cfp);
-    static S2DataTypes::S2ConfigType ParseHexToS2(QByteArray &ba);
+    static const S2DataTypes::DataRec *FindElem(const QVector<S2DataTypes::DataRec> *, quint32);
+
     static quint32 getTime32();
     static quint32 GetCRC32(char *, quint32);
     static void updCRC32(const char byte, quint32 *dwCRC32);
     static bool CheckCRC32(void *m, const quint32 length, const quint32 crctocheck);
 
     static quint32 updateCRC32(unsigned char ch, quint32 crc);
-    static quint32 crc32buf(const QByteArray &data);
 
-    static S2DataTypes::S2ConfigType config;
-    static QList<DataTypes::DataRecV> configV;
-    static DataTypes::DataRecV getRecord(unsigned int id);
-    static void setRecordValue(const DataTypes::DataRecV &record);
-    static void tester(S2DataTypes::S2ConfigType &buffer);
-
-private:
     //    const unsigned long dwPolynomial = 0xEDB88320;
 };
 

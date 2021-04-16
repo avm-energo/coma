@@ -5,7 +5,6 @@
 #include <cassert>
 #include <map>
 
-class ConfigBlock;
 class QString;
 namespace S2DataTypes
 {
@@ -26,7 +25,7 @@ namespace DataTypes
 
 class DataRecV
 {
-    friend ConfigBlock;
+
     template <typename T> struct true_type
     {
         static constexpr bool value = std::is_variant_alternative<T, valueType>();

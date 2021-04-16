@@ -4,24 +4,24 @@
 
 #include <QDateTime>
 #include <QDebug>
-S2DataTypes::S2ConfigType S2::config;
+
 QList<DataTypes::DataRecV> S2::configV;
 S2::S2()
 {
 }
 
-void S2::StoreDataMem(QByteArray &mem, QVector<S2DataTypes::DataRec> *dr, int fname)
+void S2::StoreDataMem(QByteArray &mem, const QVector<S2DataTypes::DataRec> &dr, int fname)
 {
     quint32 crc = 0xFFFFFFFF;
     S2DataTypes::FileHeader header;
     QByteArray ba;
     quint32 i = 0;
     header.size = 0;
-    for (S2DataTypes::DataRec &record : *dr)
+    for (const S2DataTypes::DataRec &record : dr)
     {
-        char *Rptr = reinterpret_cast<char *>(&record);
+        const char *Rptr = reinterpret_cast<const char *>(&record);
         quint32 tmpi = sizeof(S2DataTypes::DataRec) - sizeof(void *);
-        ba = QByteArray::fromRawData(reinterpret_cast<char *>(&record), tmpi);
+        ba = QByteArray::fromRawData(reinterpret_cast<const char *>(&record), tmpi);
         mem.append(ba);
         header.size += tmpi;
         for (i = 0; i < tmpi; i++)
@@ -48,45 +48,15 @@ void S2::StoreDataMem(QByteArray &mem, QVector<S2DataTypes::DataRec> *dr, int fn
     return;
 }
 
-QByteArray S2::StoreDataMem(QVector<S2DataTypes::DataRec> *dr, int fname)
+void S2::StoreDataMem(QByteArray &mem, const QList<DataTypes::DataRecV> &dr, int fname)
 {
-    quint32 crc = 0xFFFFFFFF;
-    S2DataTypes::FileHeader header;
-    QByteArray ba, s2buffer;
-    quint32 i = 0;
-    header.size = 0;
-    for (S2DataTypes::DataRec &record : *dr)
-    {
-        char *Rptr = reinterpret_cast<char *>(&record);
-        quint32 tmpi = sizeof(S2DataTypes::DataRec) - sizeof(void *);
-        ba = QByteArray::fromRawData(reinterpret_cast<char *>(&record), tmpi);
-        s2buffer.append(ba);
-        header.size += tmpi;
-        for (i = 0; i < tmpi; i++)
-            updCRC32((Rptr)[i], &crc);
-        if (record.id == S2DataTypes::dummyElement)
-            break;
-        if (record.thedata)
-        {
-            tmpi = record.numByte;
-            header.size += tmpi;
-            char *data = static_cast<char *>(record.thedata);
-            for (i = 0; i < tmpi; i++)
-                updCRC32(data[i], &crc);
-            ba = QByteArray::fromRawData(data, tmpi);
-            s2buffer.append(ba);
-        }
-    }
-    header.crc32 = crc;
-    header.thetime = getTime32();
-    header.service = 0xFFFF;
-    header.fname = static_cast<quint16>(fname);
-    ba = QByteArray::fromRawData(reinterpret_cast<char *>(&header), sizeof(header));
-    s2buffer.prepend(ba);
-    return s2buffer;
+    QVector<S2DataTypes::DataRec> recVec;
+    std::transform(
+        dr.cbegin(), dr.cend(), std::back_inserter(recVec), [](const auto &record) { return record.serialize(); });
+    StoreDataMem(mem, recVec, fname);
 }
 
-bool S2::RestoreDataMem(void *mem, quint32 memsize, QVector<S2DataTypes::DataRec> *dr)
+bool S2::RestoreDataMem(void *mem, quint32 memsize, const QVector<S2DataTypes::DataRec> &dr)
 {
     unsigned char *m = static_cast<unsigned char *>(mem);
     S2DataTypes::DataRec R;
@@ -128,7 +98,7 @@ bool S2::RestoreDataMem(void *mem, quint32 memsize, QVector<S2DataTypes::DataRec
         m += tmpi;
         if (R.id != S2DataTypes::dummyElement)
         {
-            const S2DataTypes::DataRec *r = FindElem(dr, R.id);
+            const S2DataTypes::DataRec *r = FindElem(&dr, R.id);
             if (r == nullptr) // элемент не найден в описании, пропускаем
             {
                 tmpi = R.numByte;
@@ -275,14 +245,13 @@ bool S2::RestoreData(QByteArray bain, QList<DataTypes::DataRecV> &outlist)
     return true;
 }
 
-const S2DataTypes::DataRec *S2::FindElem(QVector<S2DataTypes::DataRec> *dr, quint32 id)
+const S2DataTypes::DataRec *S2::FindElem(const QVector<S2DataTypes::DataRec> *dr, quint32 id)
 {
     for (auto it = dr->cbegin(); it != dr->cend(); ++it)
     {
-        S2DataTypes::DataRec R = *it;
-        if (R.id == id)
+        if (it->id == id)
             return it;
-        if (R.id == S2DataTypes::dummyElement)
+        if (it->id == S2DataTypes::dummyElement)
             return nullptr;
     }
     return nullptr;
