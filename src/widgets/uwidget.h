@@ -53,7 +53,7 @@ public slots:
     void updateSPData(const DataTypes::SinglePointWithTimeStruct &sp);
 
 protected:
-    QString m_password;
+    QString m_hash;
 
     bool checkPassword();
 

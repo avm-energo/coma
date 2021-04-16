@@ -24,11 +24,15 @@
 #include <QMessageBox>
 #include <QPushButton>
 #include <QSpinBox>
-
-AbstractStartupDialog::AbstractStartupDialog(QWidget *parent) : UDialog(parent)
+namespace crypto
+{
+static constexpr char hash[] = "d93fdd6d1fb5afcca939fa650b62541d09dbcb766f41c39352dc75f348fb35dc";
+static constexpr char name[] = "startHash";
+}
+AbstractStartupDialog::AbstractStartupDialog(QWidget *parent) : UDialog(crypto::hash, crypto::name, parent)
 {
     m_updateState = ThereWasNoUpdatesRecently;
-    m_password = "121941";
+
     setSuccessMsg("Стартовые значения записаны успешно");
 }
 

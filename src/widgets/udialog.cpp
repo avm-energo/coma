@@ -4,12 +4,22 @@
 #include "../gen/datamanager.h"
 
 #include <QMessageBox>
+#include <QSettings>
 UDialog::UDialog(QWidget *parent) : UWidget(parent)
 {
     const auto &manager = DataManager::GetInstance();
     setSuccessMsg("Записано успешно");
     setErrorMsg("При записи произошла ошибка");
     connect(&manager, &DataManager::responseReceived, this, &UDialog::updateGeneralResponse);
+}
+
+UDialog::UDialog(const QString hash, const QString key, QWidget *parent) : UDialog(parent)
+{
+    auto sets = std::make_unique<QSettings>();
+    auto value = sets->value(key, "").toString();
+    if (value.isEmpty())
+        sets->setValue(key, hash);
+    m_hash = sets->value(key, "").toString();
 }
 
 void UDialog::updateGeneralResponse(const DataTypes::GeneralResponseStruct &response)

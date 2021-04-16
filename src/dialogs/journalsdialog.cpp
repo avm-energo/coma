@@ -17,8 +17,13 @@
 #include <QHeaderView>
 #include <QSortFilterProxyModel>
 #include <QVBoxLayout>
-
-JournalDialog::JournalDialog(UniquePointer<Journals> jour, QWidget *parent) : UDialog(parent), m_jour(std::move(jour))
+namespace crypto
+{
+static constexpr char hash[] = "d93fdd6d1fb5afcca939fa650b62541d09dbcb766f41c39352dc75f348fb35dc";
+static constexpr char name[] = "jourHash";
+}
+JournalDialog::JournalDialog(UniquePointer<Journals> jour, QWidget *parent)
+    : UDialog(crypto::hash, crypto::name, parent), m_jour(std::move(jour))
 {
     connect(&DataManager::GetInstance(), &DataManager::fileReceived, m_jour.get(), &Journals::FillJour);
     ProxyWorkModel = new QSortFilterProxyModel(this);
@@ -27,7 +32,7 @@ JournalDialog::JournalDialog(UniquePointer<Journals> jour, QWidget *parent) : UD
     progress = new QProgressDialog(this);
     progress->setCancelButton(nullptr);
     progress->cancel();
-    m_password = "121941";
+
     m_jour->SetProxyModels(ProxyWorkModel, ProxySysModel, ProxyMeasModel);
 
     connect(m_jour.get(), &Journals::Done, this, &JournalDialog::Done);

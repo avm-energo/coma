@@ -15,10 +15,14 @@
 #include <QGridLayout>
 #include <QMessageBox>
 #include <QVBoxLayout>
-
-FWUploadDialog::FWUploadDialog(QWidget *parent) : UDialog(parent)
+namespace crypto
 {
-    m_password = "admin";
+static constexpr char hash[] = "fb001dfcffd1c899f3297871406242f097aecf1a5342ccf3ebcd116146188e4b";
+static constexpr char name[] = "fwHash";
+}
+FWUploadDialog::FWUploadDialog(QWidget *parent) : UDialog(crypto::hash, crypto::name, parent)
+{
+
     SetupUI();
 }
 

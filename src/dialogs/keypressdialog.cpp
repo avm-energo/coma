@@ -4,6 +4,7 @@
 #include "../widgets/passwordlineedit.h"
 #include "../widgets/wd_func.h"
 
+#include <QCryptographicHash>
 #include <QDebug>
 #include <QEventLoop>
 #include <QMessageBox>
@@ -27,8 +28,10 @@ bool KeyPressDialog::CheckPassword(const QString &password)
         qCritical("Отмена ввода пароля");
         return false;
     }
-
-    if (m_password != password)
+    QCryptographicHash hasher(QCryptographicHash::Sha3_256);
+    hasher.addData(m_password.toUtf8());
+    auto buffer = QString::fromUtf8(hasher.result().toHex());
+    if (password != buffer)
     {
         qCritical("Пароль введён неверно");
         QMessageBox::critical(this, "Неправильно", "Пароль введён неверно", QMessageBox::Ok);

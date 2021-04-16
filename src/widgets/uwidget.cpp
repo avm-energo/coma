@@ -112,7 +112,7 @@ void UWidget::uponInterfaceSetting()
 
 bool UWidget::checkPassword()
 {
-    Q_ASSERT(!m_password.isEmpty());
+    Q_ASSERT(!m_hash.isEmpty());
     KeyPressDialog *dlg = new KeyPressDialog;
-    return dlg->CheckPassword(m_password);
+    return dlg->CheckPassword(m_hash);
 }

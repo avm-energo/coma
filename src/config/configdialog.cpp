@@ -16,11 +16,14 @@
 #include <QMessageBox>
 #include <QScrollArea>
 #include <QTextEdit>
-
-ConfigDialog::ConfigDialog(const QList<DataTypes::RecordPair> &defaultConfig, QWidget *parent)
-    : UDialog(parent), m_defaultValues(defaultConfig)
+namespace crypto
 {
-    m_password = "121941";
+static constexpr char hash[] = "d93fdd6d1fb5afcca939fa650b62541d09dbcb766f41c39352dc75f348fb35dc";
+static constexpr char name[] = "confHash";
+}
+ConfigDialog::ConfigDialog(const QList<DataTypes::RecordPair> &defaultConfig, QWidget *parent)
+    : UDialog(crypto::hash, crypto::name, parent), m_defaultValues(defaultConfig)
+{
     setSuccessMsg("Конфигурация записана успешно");
     const auto &manager = DataManager::GetInstance();
     connect(&manager, &DataManager::dataRecVListReceived, this, &ConfigDialog::confReceived);
