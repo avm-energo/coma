@@ -148,92 +148,93 @@ template <typename T> bool WidgetFactory::fillWidget(const QWidget *parent, BciN
     }
 
     const auto var = search->second;
-    std::visit(overloaded {
-                   [&](const auto &arg) {
+    std::visit(
+        overloaded {
+            [&](const auto &arg) {
 #ifdef DEBUG_FACTORY
-                       qDebug() << "DefaultWidget" << key;
+                qDebug() << "DefaultWidget" << key;
 #endif
-                       using namespace delegate;
-                       if constexpr (std::is_same<T, IPCtrl::container_type>::value)
-                       {
-                           if (arg.type == ctti::unnamed_type_id<IPCtrl>())
-                           {
-                               status = fillIpCtrl(parent, key, value);
-                               return;
-                           }
-                       }
-                       if constexpr (!std::is_container<T>())
-                       {
-                           if (arg.type == ctti::unnamed_type_id<QCheckBox>())
-                           {
-                               status = fillCheckBox(parent, key, value);
-                               return;
-                           }
-                       }
-                       if (arg.type == ctti::unnamed_type_id<QLineEdit>())
-                       {
-                           status = fillLineEdit(parent, key, value);
-                           return;
-                       }
-                   },
-                   [&]([[maybe_unused]] const delegate::DoubleSpinBoxGroup &arg) {
-                       if constexpr (std::is_container<T>())
-                           if constexpr (sizeof(T::value_type) != 1 && !std::is_container<typename T::value_type>())
-                           {
+                using namespace delegate;
+                if constexpr (std::is_same<T, IPCtrl::container_type>::value)
+                {
+                    if (arg.type == ctti::unnamed_type_id<IPCtrl>())
+                    {
+                        status = fillIpCtrl(parent, key, value);
+                        return;
+                    }
+                }
+                if constexpr (!std::is_container<T>())
+                {
+                    if (arg.type == ctti::unnamed_type_id<QCheckBox>())
+                    {
+                        status = fillCheckBox(parent, key, value);
+                        return;
+                    }
+                }
+                if (arg.type == ctti::unnamed_type_id<QLineEdit>())
+                {
+                    status = fillLineEdit(parent, key, value);
+                    return;
+                }
+            },
+            [&]([[maybe_unused]] const delegate::DoubleSpinBoxGroup &arg) {
+                if constexpr (std::is_container<T>())
+                    if constexpr (sizeof(typename T::value_type) != 1 && !std::is_container<typename T::value_type>())
+                    {
 #ifdef DEBUG_FACTORY
-                               qDebug() << "DoubleSpinBoxGroupWidget" << key;
+                        qDebug() << "DoubleSpinBoxGroupWidget" << key;
 #endif
-                               status = WDFunc::SetSPBGData(parent, QString::number(key), value);
-                           }
-                   },
-                   [&]([[maybe_unused]] const delegate::DoubleSpinBoxWidget &arg) {
-                       if constexpr (!std::is_container<T>())
-                       {
+                        status = WDFunc::SetSPBGData(parent, QString::number(key), value);
+                    }
+            },
+            [&]([[maybe_unused]] const delegate::DoubleSpinBoxWidget &arg) {
+                if constexpr (!std::is_container<T>())
+                {
 #ifdef DEBUG_FACTORY
-                           qDebug() << "DoubleSpinBoxWidget" << key;
+                    qDebug() << "DoubleSpinBoxWidget" << key;
 #endif
-                           status = WDFunc::SetSPBData(parent, QString::number(key), value);
-                       }
-                   },
-                   [&]([[maybe_unused]] const delegate::CheckBoxGroup &arg) {
-                       if constexpr (std::is_unsigned_v<T>)
-                       {
+                    status = WDFunc::SetSPBData(parent, QString::number(key), value);
+                }
+            },
+            [&]([[maybe_unused]] const delegate::CheckBoxGroup &arg) {
+                if constexpr (std::is_unsigned_v<T>)
+                {
 #ifdef DEBUG_FACTORY
-                           qDebug() << "CheckBoxGroupWidget" << key;
+                    qDebug() << "CheckBoxGroupWidget" << key;
 #endif
-                           status = WDFunc::SetChBGData(parent, QString::number(key), value);
-                       }
-                   },
-                   [&](const delegate::QComboBox &arg) {
-                       if constexpr (!std::is_container<T>())
-                       {
+                    status = WDFunc::SetChBGData(parent, QString::number(key), value);
+                }
+            },
+            [&](const delegate::QComboBox &arg) {
+                if constexpr (!std::is_container<T>())
+                {
 #ifdef DEBUG_FACTORY
-                           qDebug() << "QComboBox" << key;
+                    qDebug() << "QComboBox" << key;
 #endif
-                           switch (arg.primaryField)
-                           {
-                           case delegate::QComboBox::data:
-                           {
-                               auto index = arg.items.indexOf(QString::number(value));
-                               if (index != -1)
-                                   status = WDFunc::SetCBIndex(parent, QString::number(key), index);
-                               break;
-                           }
-                           default:
-                           {
-                               status = WDFunc::SetCBIndex(parent, QString::number(key), value);
-                               break;
-                           }
-                           }
-                       }
-                   },
-                   [&](const delegate::Item &arg) {
+                    switch (arg.primaryField)
+                    {
+                    case delegate::QComboBox::data:
+                    {
+                        auto index = arg.items.indexOf(QString::number(value));
+                        if (index != -1)
+                            status = WDFunc::SetCBIndex(parent, QString::number(key), index);
+                        break;
+                    }
+                    default:
+                    {
+                        status = WDFunc::SetCBIndex(parent, QString::number(key), value);
+                        break;
+                    }
+                    }
+                }
+            },
+            [&](const delegate::Item &arg) {
 #ifdef DEBUG_FACTORY
-                       qDebug() << "Item" << key;
+                qDebug() << "Item" << key;
 #endif
-                       status = fillTableView(parent, key, arg.parent, arg.type, value);
-                   },
-               },
+                status = fillTableView(parent, key, arg.parent, arg.type, value);
+            },
+        },
         var);
     return status;
 }

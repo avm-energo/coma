@@ -6,6 +6,7 @@
 #include "etableview.h"
 //#include "passwordlineedit.h"
 
+#include "../gen/pch.h"
 #include "basespinboxgroup.h"
 
 #include <QCheckBox>
