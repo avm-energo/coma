@@ -10,6 +10,7 @@
 class LogClass;
 class ProtocomThread : public QObject
 {
+    typedef QQueue<QByteArray> ByteQueue;
     Q_OBJECT
 public:
     explicit ProtocomThread(QObject *parent = nullptr);
@@ -48,9 +49,37 @@ private:
     Proto::CommandStruct m_currentCommand;
     QPair<quint64, QByteArray> m_buffer;
     void checkQueue();
-
     void fileHelper(DataTypes::FilesEnum fileNum);
 
+    quint16 extractLength(const QByteArray &ba);
+    void appendInt16(QByteArray &ba, quint16 size);
+
+    bool isCommandExist(int cmd);
+    // Если размер меньше MaxSegmenthLength то сегмент считается последним (единственным)
+    inline bool isOneSegment(unsigned len);
+    inline bool isSplitted(unsigned len);
+
+    // TODO вынести в отдельный класс как static методы?
+    QByteArray prepareOk(bool isStart, byte cmd);
+    QByteArray prepareError();
+    QByteArray prepareBlock(Proto::CommandStruct &cmdStr, Proto::Starters startByte = Proto::Starters::Request);
+    QByteArray prepareBlock(
+        Proto::Commands cmd, QByteArray &data, Proto::Starters startByte = Proto::Starters::Request);
+    ByteQueue prepareLongBlk(Proto::CommandStruct &cmdStr);
+
+    void handleBitString(const QByteArray &ba, quint16 sigAddr);
+    void handleBitStringArray(const QByteArray &ba, QList<quint16> arr_addr);
+    void handleFloat(const QByteArray &ba, quint32 sigAddr);
+    void handleFloatArray(const QByteArray &ba, quint32 sigAddr, quint32 sigCount);
+    void handleSinglePoint(const QByteArray &ba, const quint16 addr);
+    void handleFile(QByteArray &ba, DataTypes::FilesEnum addr, bool isShouldRestored);
+    void handleInt(const byte num);
+    void handleBool(const bool status = true, int errorSize = 0, int errorCode = 0);
+    void handleProgress(const quint64 progress);
+    void handleMaxProgress(const quint64 progress);
+    void handleRawBlock(const QByteArray &ba, quint32 blkNum);
+    inline void handleCommand(const QByteArray &ba);
+    void handleTechBlock(const QByteArray &ba, quint32 blkNum);
 signals:
     void writeDataAttempt(const QByteArray);
     void errorOccurred(Error::Msg);

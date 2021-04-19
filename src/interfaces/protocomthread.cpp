@@ -17,42 +17,6 @@ typedef QQueue<QByteArray> ByteQueue;
 using Proto::CommandStruct;
 using Proto::Direction;
 using Proto::Starters;
-quint16 extractLength(const QByteArray &ba);
-void appendInt16(QByteArray &ba, quint16 size);
-
-bool isCommandExist(int cmd);
-// Если размер меньше MaxSegmenthLength то сегмент считается последним (единственным)
-inline bool isOneSegment(unsigned len);
-inline bool isSplitted(unsigned len);
-
-// TODO вынести в отдельный класс как static методы?
-QByteArray prepareOk(bool isStart, byte cmd);
-QByteArray prepareError();
-QByteArray prepareBlock(CommandStruct &cmdStr, Starters startByte = Starters::Request);
-QByteArray prepareBlock(Proto::Commands cmd, QByteArray &data, Proto::Starters startByte = Starters::Request);
-ByteQueue prepareLongBlk(CommandStruct &cmdStr);
-
-void handleBitString(const QByteArray &ba, quint16 sigAddr);
-void handleBitStringArray(const QByteArray &ba, QList<quint16> arr_addr);
-void handleFloat(const QByteArray &ba, quint32 sigAddr);
-void handleFloatArray(const QByteArray &ba, quint32 sigAddr, quint32 sigCount);
-void handleSinglePoint(const QByteArray &ba, const quint16 addr);
-void handleFile(QByteArray &ba, DataTypes::FilesEnum addr, bool isShouldRestored);
-void handleInt(const byte num);
-void handleBool(const bool status = true, int errorSize = 0, int errorCode = 0);
-void handleProgress(const quint64 progress)
-{
-    DataTypes::GeneralResponseStruct resp { DataTypes::GeneralResponseTypes::DataCount, progress };
-    DataManager::addSignalToOutList(DataTypes::SignalTypes::GeneralResponse, resp);
-}
-void handleMaxProgress(const quint64 progress)
-{
-    DataTypes::GeneralResponseStruct resp { DataTypes::GeneralResponseTypes::DataSize, progress };
-    DataManager::addSignalToOutList(DataTypes::SignalTypes::GeneralResponse, resp);
-}
-void handleRawBlock(const QByteArray &ba, quint32 blkNum);
-inline void handleCommand(const QByteArray &ba);
-void handleTechBlock(const QByteArray &ba, quint32 blkNum);
 
 ProtocomThread::ProtocomThread(QObject *parent) : QObject(parent), m_currentCommand({})
 {
@@ -522,20 +486,20 @@ void ProtocomThread::writeLog(QByteArray ba, Direction dir)
 #endif
 }
 
-quint16 extractLength(const QByteArray &ba)
+quint16 ProtocomThread::extractLength(const QByteArray &ba)
 {
     quint16 len = static_cast<quint8>(ba.at(2));
     len += static_cast<quint8>(ba.at(3)) * 256;
     return len;
 }
 
-void appendInt16(QByteArray &ba, quint16 size)
+void ProtocomThread::appendInt16(QByteArray &ba, quint16 size)
 {
     ba.append(static_cast<char>(size % 0x100));
     ba.append(static_cast<char>(size / 0x100));
 }
 
-bool isCommandExist(int cmd)
+bool ProtocomThread::isCommandExist(int cmd)
 {
     if (cmd == -1)
     {
@@ -545,20 +509,20 @@ bool isCommandExist(int cmd)
     return true;
 }
 
-bool isOneSegment(unsigned len)
+bool ProtocomThread::isOneSegment(unsigned len)
 {
     using Proto::Limits::MaxSegmenthLength;
     Q_ASSERT(len <= MaxSegmenthLength);
     return (len != MaxSegmenthLength);
 }
 
-bool isSplitted(unsigned len)
+bool ProtocomThread::isSplitted(unsigned len)
 {
     using Proto::Limits::MaxSegmenthLength;
     return !(len < MaxSegmenthLength);
 }
 
-QByteArray prepareOk(bool isStart, byte cmd)
+QByteArray ProtocomThread::prepareOk(bool isStart, byte cmd)
 {
     QByteArray tmpba;
     if (isStart)
@@ -572,7 +536,7 @@ QByteArray prepareOk(bool isStart, byte cmd)
     return tmpba;
 }
 
-QByteArray prepareError()
+QByteArray ProtocomThread::prepareError()
 {
     QByteArray tmpba;
     tmpba.append(Proto::Starters::Request);
@@ -583,7 +547,7 @@ QByteArray prepareError()
     return tmpba;
 }
 
-QByteArray prepareBlock(CommandStruct &cmdStr, Proto::Starters startByte)
+QByteArray ProtocomThread::prepareBlock(CommandStruct &cmdStr, Proto::Starters startByte)
 {
 
     /* QByteArray ba;
@@ -598,7 +562,7 @@ QByteArray prepareBlock(CommandStruct &cmdStr, Proto::Starters startByte)
     ;
 }
 
-QByteArray prepareBlock(Proto::Commands cmd, QByteArray &data, Proto::Starters startByte)
+QByteArray ProtocomThread::prepareBlock(Proto::Commands cmd, QByteArray &data, Proto::Starters startByte)
 {
     QByteArray ba;
     ba.append(startByte);
@@ -611,7 +575,7 @@ QByteArray prepareBlock(Proto::Commands cmd, QByteArray &data, Proto::Starters s
     return ba;
 }
 
-ByteQueue prepareLongBlk(CommandStruct &cmdStr)
+ByteQueue ProtocomThread::prepareLongBlk(CommandStruct &cmdStr)
 {
     ByteQueue bq;
     using Proto::Limits::MaxSegmenthLength;
@@ -641,7 +605,7 @@ ByteQueue prepareLongBlk(CommandStruct &cmdStr)
     return bq;
 }
 
-void handleBitString(const QByteArray &ba, quint16 sigAddr)
+void ProtocomThread::handleBitString(const QByteArray &ba, quint16 sigAddr)
 {
     Q_ASSERT(ba.size() == sizeof(quint32));
 
@@ -650,7 +614,7 @@ void handleBitString(const QByteArray &ba, quint16 sigAddr)
     DataManager::addSignalToOutList(DataTypes::SignalTypes::BitString, resp);
 }
 
-void handleBitStringArray(const QByteArray &ba, QList<quint16> arr_addr)
+void ProtocomThread::handleBitStringArray(const QByteArray &ba, QList<quint16> arr_addr)
 {
     Q_ASSERT(ba.size() / 4 == arr_addr.size());
     for (int i = 0; i != arr_addr.size(); i++)
@@ -660,7 +624,7 @@ void handleBitStringArray(const QByteArray &ba, QList<quint16> arr_addr)
     }
 }
 
-void handleFloat(const QByteArray &ba, quint32 sigAddr)
+void ProtocomThread::handleFloat(const QByteArray &ba, quint32 sigAddr)
 {
     Q_ASSERT(ba.size() == 4);
     float blk = *reinterpret_cast<const float *>(ba.data());
@@ -668,7 +632,7 @@ void handleFloat(const QByteArray &ba, quint32 sigAddr)
     DataManager::addSignalToOutList(DataTypes::SignalTypes::Float, resp);
 }
 
-void handleFloatArray(const QByteArray &ba, quint32 sigAddr, quint32 sigCount)
+void ProtocomThread::handleFloatArray(const QByteArray &ba, quint32 sigAddr, quint32 sigCount)
 {
     if (!sigCount)
         handleFloat(ba, sigAddr);
@@ -681,7 +645,7 @@ void handleFloatArray(const QByteArray &ba, quint32 sigAddr, quint32 sigCount)
     }
 }
 
-void handleSinglePoint(const QByteArray &ba, const quint16 addr)
+void ProtocomThread::handleSinglePoint(const QByteArray &ba, const quint16 addr)
 {
     for (quint32 i = 0; i != quint32(ba.size()); ++i)
     {
@@ -691,7 +655,7 @@ void handleSinglePoint(const QByteArray &ba, const quint16 addr)
     }
 }
 
-void handleFile(QByteArray &ba, DataTypes::FilesEnum addr, bool isShouldRestored)
+void ProtocomThread::handleFile(QByteArray &ba, DataTypes::FilesEnum addr, bool isShouldRestored)
 {
     if (isShouldRestored)
     {
@@ -708,13 +672,13 @@ void handleFile(QByteArray &ba, DataTypes::FilesEnum addr, bool isShouldRestored
     }
 }
 
-void handleInt(const byte num)
+void ProtocomThread::handleInt(const byte num)
 {
     DataTypes::GeneralResponseStruct resp { DataTypes::GeneralResponseTypes::Ok, num };
     DataManager::addSignalToOutList(DataTypes::SignalTypes::GeneralResponse, resp);
 }
 
-void handleBool(const bool status, int errorSize, int errorCode)
+void ProtocomThread::handleBool(const bool status, int errorSize, int errorCode)
 {
     if (status)
     {
@@ -731,19 +695,31 @@ void handleBool(const bool status, int errorSize, int errorCode)
     }
 }
 
-void handleRawBlock(const QByteArray &ba, quint32 blkNum)
+void ProtocomThread::handleProgress(const quint64 progress)
+{
+    DataTypes::GeneralResponseStruct resp { DataTypes::GeneralResponseTypes::DataCount, progress };
+    DataManager::addSignalToOutList(DataTypes::SignalTypes::GeneralResponse, resp);
+}
+
+void ProtocomThread::handleMaxProgress(const quint64 progress)
+{
+    DataTypes::GeneralResponseStruct resp { DataTypes::GeneralResponseTypes::DataSize, progress };
+    DataManager::addSignalToOutList(DataTypes::SignalTypes::GeneralResponse, resp);
+}
+
+void ProtocomThread::handleRawBlock(const QByteArray &ba, quint32 blkNum)
 {
     DataTypes::BlockStruct resp { blkNum, ba };
     DataManager::addSignalToOutList(DataTypes::SignalTypes::Block, resp);
 }
 
-void handleCommand(const QByteArray &ba)
+void ProtocomThread::handleCommand(const QByteArray &ba)
 {
     qCritical("We should be here, something went wrong");
     qDebug() << ba.toHex();
 }
 
-void handleTechBlock(const QByteArray &ba, quint32 blkNum)
+void ProtocomThread::handleTechBlock(const QByteArray &ba, quint32 blkNum)
 {
     switch (blkNum)
     {

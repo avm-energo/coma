@@ -119,7 +119,7 @@ private:
     void Com51WriteTime(quint32 time);
     //    void convert(IEC104Thread::SponSignals *signal);
     void setGeneralResponse(DataTypes::GeneralResponseTypes type, quint64 data = 0);
-
+    bool handleFile(QByteArray &ba, DataTypes::FilesEnum addr, bool isConfigFile);
 private slots:
     void SendTestAct();
 
