@@ -258,7 +258,7 @@ Error::Msg IEC104Thread::isIncomeDataValid(QByteArray ba)
     }
 }
 
-bool handleFile(QByteArray &ba, DataTypes::FilesEnum addr, bool isConfigFile)
+bool IEC104Thread::handleFile(QByteArray &ba, DataTypes::FilesEnum addr, bool isConfigFile)
 {
     if (isConfigFile)
     {
