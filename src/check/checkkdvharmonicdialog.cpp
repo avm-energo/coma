@@ -24,9 +24,9 @@
 CheckKDVHarmonicDialog::CheckKDVHarmonicDialog(QWidget *parent) : AbstractCheckDialog(parent)
 {
 
-//    QString tmps = "QDialog {background-color: " + QString(Colors::UCONFCLR) + ";}";
-//    setStyleSheet(tmps);
-//    QStringList sl;
+    //    QString tmps = "QDialog {background-color: " + QString(Colors::UCONFCLR) + ";}";
+    //    setStyleSheet(tmps);
+    //    QStringList sl;
 
     m_BdUIList = { { "Гармоники U 2-11", BdUWidget(3020, 2, 12) }, { "Гармоники U 12-21", BdUWidget(3030, 12, 22) },
         { "Гармоники U 22-31", BdUWidget(3040, 22, 32) }, { "Гармоники U 32-41", BdUWidget(3050, 32, 42) },
@@ -66,8 +66,7 @@ UWidget *CheckKDVHarmonicDialog::BdIWidget(unsigned int value, int min, int max)
     font.setPointSize(11);
     gb->setFont(font);
 
-
-    gb = new QGroupBox("Данные по гармоническому составу напряжения");
+    gb = new QGroupBox("Данные по гармоническому составу тока");
     gb->setFont(font);
     vlyout = new QVBoxLayout;
     glyout = new QGridLayout;
@@ -80,7 +79,7 @@ UWidget *CheckKDVHarmonicDialog::BdIWidget(unsigned int value, int min, int max)
         for (int h = min; h < max; h++)
         {
             if (k > 0)
-            s = s + 2;
+                s = s + 2;
             k = s + 1;
             glyout->addWidget(WDFunc::NewLBL(this, phase[i] + "Гм. " + QString::number(h)), s, i, 1, 1);
             glyout->addWidget(WDFunc::NewLBLT(this, "", QString::number((value + j) + i * 126), ValuesFormat,
@@ -89,7 +88,6 @@ UWidget *CheckKDVHarmonicDialog::BdIWidget(unsigned int value, int min, int max)
             j++;
         }
     }
-
 
     vlyout->addLayout(glyout);
     gb->setLayout(vlyout);
@@ -100,7 +98,7 @@ UWidget *CheckKDVHarmonicDialog::BdIWidget(unsigned int value, int min, int max)
     lyout->addLayout(glyout);
     lyout->addStretch(100);
     w->setLayout(lyout);
-    w->setFloatBdQuery({ { 3020, 61 }, { 3146, 61 }, { 3272, 61 } });
+    w->setFloatBdQuery({ { 3420, 61 }, { 3546, 61 }, { 3672, 61 } });
     return w;
 }
 
@@ -121,7 +119,7 @@ UWidget *CheckKDVHarmonicDialog::BdUWidget(unsigned int value, int min, int max)
     ffont.setPointSize(11);
     gb->setFont(ffont);
 
-    gb = new QGroupBox("Данные по гармоническому составу тока");
+    gb = new QGroupBox("Данные по гармоническому составу напряжения");
     gb->setFont(ffont);
     vlyout = new QVBoxLayout;
     glyout = new QGridLayout;
@@ -135,7 +133,7 @@ UWidget *CheckKDVHarmonicDialog::BdUWidget(unsigned int value, int min, int max)
         for (int h = min; h < max; h++)
         {
             if (k > 0)
-            s = s + 2;
+                s = s + 2;
             k = s + 1;
             glyout->addWidget(WDFunc::NewLBL(this, phase[i] + "Гм. " + QString::number(h)), s, i, 1, 1);
             glyout->addWidget(
@@ -155,7 +153,6 @@ UWidget *CheckKDVHarmonicDialog::BdUWidget(unsigned int value, int min, int max)
     lyout->addLayout(glyout);
     lyout->addStretch(100);
     w->setLayout(lyout);
-    w->setFloatBdQuery({ { 3420, 61 }, { 3546, 61 }, { 3672, 61 } });
+    w->setFloatBdQuery({ { 3020, 61 }, { 3146, 61 }, { 3272, 61 } });
     return w;
 }
-

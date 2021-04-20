@@ -57,7 +57,7 @@
           <item>Вероятно смещение вала</item>
         </string-array>
         <!-- <quint64 name="warningFlags">0x1aaaaaff</quint64>-->
-        <quint64 name="warningFlags">0x1ffeaaaaa</quint64>
+        <quint64 name="warningFlags">0xaaaaafff</quint64>
         <quint32 name="startAddr">5011</quint32>
 		    <color>#ffff00</color>
       </alarm>
