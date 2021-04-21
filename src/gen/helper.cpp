@@ -1,7 +1,9 @@
 #include "helper.h"
 
 #include "../interfaces/usbhidportinfo.h"
+#ifdef QT_GUI_LIB
 #include "../models/errorprotocolitem.h"
+#endif
 #include "timefunc.h"
 QDebug operator<<(QDebug debug, const DataTypes::BitStringStruct &st)
 {
@@ -78,7 +80,7 @@ QDebug operator<<(QDebug debug, const UsbHidSettings &settings)
 #endif
     return debug.maybeSpace();
 }
-
+#ifdef QT_GUI_LIB
 QDebug operator<<(QDebug debug, const ErrorProtocolItem &item)
 {
     const auto &values = item.constData();
@@ -92,3 +94,4 @@ QDebug operator<<(QDebug debug, const ETableItemData &item)
     debug.nospace() << item.value << ":" << item.role;
     return debug.maybeSpace();
 }
+#endif
