@@ -10,30 +10,56 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fpic")
-find_package(QT NAMES Qt6 Qt5 COMPONENTS Core REQUIRED)
-find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core REQUIRED)
+find_package(Qt5Core)
+find_package(
+  QT NAMES Qt6 Qt5
+  COMPONENTS Core Widgets Network SerialPort
+  REQUIRED)
+find_package(
+  Qt5
+  COMPONENTS Core Widgets Network SerialPort
+  REQUIRED)
 
-add_library(interfaces STATIC
+add_library(
+  ${PROJECT_NAME} STATIC
   baseinterface.cpp
-  interfacesettings.h
-  protocom_p.h
-  protocom.h
-  protocomprivate.h
-  protocomthread.h
-  settingstypes.h
-  usbhidport.h
-  usbhidportinfo.h
-  usbhidsettings.h
-  usbhidsettings.cpp
-  usbhidportinfo.cpp
-  usbhidport.cpp
-  protocomthread.cpp
-  protocom.cpp
-  protocom_p.cpp
-  interfacesettings.cpp
   baseinterface.h
-)
-set_property(TARGET interfaces PROPERTY POSITION_INDEPENDENT_CODE ON)
-target_link_libraries(interfaces PRIVATE Qt${QT_VERSION_MAJOR}::Core)
-target_link_libraries(interfaces PRIVATE hidapi-hidraw)
-target_compile_definitions(interfaces PRIVATE INTERFACES_LIBRARY)
+  ethernet.cpp
+  ethernet.h
+  iec104.cpp
+  iec104.h
+  iec104private.h
+  iec104thread.cpp
+  iec104thread.h
+  interfacesettings.cpp
+  interfacesettings.h
+  modbus.cpp
+  modbus.h
+  modbusprivate.cpp
+  modbusprivate.h
+  modbusthread.cpp
+  modbusthread.h
+  protocom.cpp
+  protocom.h
+  protocom_p.cpp
+  protocom_p.h
+  protocomprivate.h
+  protocomthread.cpp
+  protocomthread.h
+  serialport.cpp
+  serialport.h
+  settingstypes.h
+  usbhidport.cpp
+  usbhidport.h
+  usbhidportinfo.cpp
+  usbhidportinfo.h
+  usbhidsettings.cpp
+  usbhidsettings.h)
+set_property(TARGET ${PROJECT_NAME} PROPERTY POSITION_INDEPENDENT_CODE ON)
+target_link_libraries(
+  ${PROJECT_NAME}
+  PRIVATE Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::Network
+          Qt${QT_VERSION_MAJOR}::SerialPort)
+target_link_libraries(${PROJECT_NAME} PRIVATE hidapi-hidraw)
+target_link_libraries(${PROJECT_NAME} PRIVATE hidapi-hidraw)
+target_compile_definitions(${PROJECT_NAME} PRIVATE ${PROJECT_NAME}_LIBRARY)

@@ -1,0 +1,2 @@
+#cmakedefine gitHash "@SHORT_HASH@"
+#cmakedefine gitCommitCounter @gitCommitCounter@
