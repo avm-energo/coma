@@ -1,5 +1,6 @@
 #pragma once
-#include "../config/widgetfactory.h"
+//#include "../config/widgetfactory.h"
+#include "../config/delegate.h"
 #include "datatypes.h"
 
 #include <QDomElement>

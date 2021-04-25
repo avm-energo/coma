@@ -54,20 +54,21 @@ public:
         for (auto *spinBox : spinBoxes)
             spinBox->setSingleStep(m_singleStep);
     }
-    template <std::enable_if_t<!std::is_same<float, T>::value, bool> = true> auto value() const
-    {
-        auto spinBoxes = findChildren<S *>();
-        std::array<T, m_count> array;
-        std::transform(
-            spinBoxes.cbegin(), spinBoxes.cend(), array.begin(), [](const auto *spinBox) { return spinBox->value(); });
-        return array;
-    }
+    //    template <std::enable_if_t<!std::is_same<float, T>::value, bool> = true> auto value() const
+    //    {
+    //        auto spinBoxes = findChildren<S *>();
+    //        std::array<T, m_count> array;
+    //        std::transform(
+    //            spinBoxes.cbegin(), spinBoxes.cend(), array.begin(), [](const auto *spinBox) { return
+    //            spinBox->value(); });
+    //        return array;
+    //    }
     auto value() const
     {
         auto spinBoxes = findChildren<S *>();
-        std::vector<float> vector;
+        std::vector<T> vector;
         std::transform(spinBoxes.cbegin(), spinBoxes.cend(), std::back_inserter(vector),
-            [](const auto *spinBox) { return spinBox->value(); });
+            [](const auto *spinBox) { return T(spinBox->value()); });
         return vector;
     }
     void setValue(const std::vector<T> &array)

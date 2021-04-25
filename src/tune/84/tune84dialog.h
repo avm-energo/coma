@@ -1,7 +1,7 @@
 #ifndef TUNE84DIALOG_H
 #define TUNE84DIALOG_H
 
-#include "../../gen/report.h"
+#include "../../models/report.h"
 #include "../../widgets/udialog.h"
 #include "../generaltunedialog.h"
 #include "../kiv/tunekivtemp60.h"

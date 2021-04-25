@@ -1,7 +1,9 @@
 #include "xmlparser.h"
 
-#include "../module/module.h"
-#include "../widgets/checkboxgroup.h"
+//#include "../module/module.h"
+//#include "../widgets/checkboxgroup.h"
+
+#include "../interfaces/baseinterface.h"
 #include "board.h"
 #include "settings.h"
 namespace keys
@@ -141,6 +143,16 @@ QStringList XmlParser::parseStringList(QDomElement domElement)
     }
     return description;
 }
+
+class DoubleSpinBoxGroup;
+class QLabel;
+class QDoubleSpinBox;
+class QCheckBox;
+class QComboBox;
+class QTableView;
+class CheckBoxGroup;
+class IPCtrl;
+class QLineEdit;
 
 ctti::unnamed_type_id_t XmlParser::parseType(QDomElement domElement)
 {

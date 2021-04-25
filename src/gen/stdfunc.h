@@ -5,6 +5,7 @@
 #include <QString>
 #include <cmath>
 #include <functional>
+#include <memory>
 #define MAINSLEEP 20
 #define MAINTIMEOUT 2000 // 2 sec timeout for general operations
 

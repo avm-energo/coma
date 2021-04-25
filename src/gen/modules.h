@@ -9,6 +9,7 @@ namespace Modules
 {
 
 Q_NAMESPACE
+
 enum Model
 {
     KTF = 0xA287,

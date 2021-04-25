@@ -1,7 +1,10 @@
 #include "report.h"
 
-#include "error.h"
-#include "stdfunc.h"
+#include "../gen/error.h"
+#include "../gen/stdfunc.h"
+
+#include <LimeReport>
+//#include "limereport/lrreportengine.h"s
 
 #include <QStandardItem>
 

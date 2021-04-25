@@ -2,9 +2,13 @@
 #define REPORT_H
 
 #include "../gen/error.h"
-#include "limereport/lrreportengine.h"
 
 #include <QStandardItemModel>
+
+namespace LimeReport
+{
+class ReportEngine;
+}
 
 class ReportModel : public QStandardItemModel
 {

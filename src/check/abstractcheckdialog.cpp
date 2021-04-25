@@ -6,6 +6,7 @@
 #include "../gen/error.h"
 #include "../gen/stdfunc.h"
 #include "../widgets/wd_func.h"
+#include "xlsxdocument.h"
 
 #include <QCoreApplication>
 #include <QFileDialog>

@@ -2,7 +2,7 @@
 #define ABSTRACTTUNEDIALOG_H
 
 #include "../datablocks/datablock.h"
-#include "../gen/report.h"
+#include "../models/report.h"
 
 #include <QByteArray>
 #include <QCloseEvent>

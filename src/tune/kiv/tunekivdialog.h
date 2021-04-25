@@ -1,7 +1,7 @@
 #ifndef TUNEKIVDIALOG_H
 #define TUNEKIVDIALOG_H
 
-#include "../../gen/report.h"
+#include "../../models/report.h"
 #include "../../widgets/udialog.h"
 #include "../generaltunedialog.h"
 #include "tunekivadc.h"

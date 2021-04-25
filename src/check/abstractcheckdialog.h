@@ -18,7 +18,6 @@
 
 #include "../widgets/udialog.h"
 #include "check.h"
-#include "xlsxdocument.h"
 
 #include <QBitArray>
 #include <QElapsedTimer>
@@ -31,6 +30,11 @@ constexpr int ANMEASINT = 2000;
 constexpr int BT_STARTBD_BASE = 0;
 // блоки Bd для мезонинной платы нумеруются с 101 (100 base + 1st block)
 constexpr int BT_STARTBD_MEZ = 100;
+
+namespace QXlsx
+{
+class Document;
+}
 
 class AbstractCheckDialog : public UDialog
 {

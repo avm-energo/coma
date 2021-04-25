@@ -202,7 +202,7 @@ struct JournalDesc
 };
 
 #pragma pack(push) /* push current alignment to stack */
-#pragma pack(1) /* set alignment to 1 byte boundary */
+#pragma pack(1)    /* set alignment to 1 byte boundary */
 struct OscInfo
 {
     quint32 fileNum;    // номер файла осциллограмм
@@ -321,7 +321,7 @@ struct FileStruct
 typedef QVector<S2DataTypes::DataRec> S2ConfigType;
 
 #pragma pack(push) /* push current alignment to stack */
-#pragma pack(1) /* set alignment to 1 byte boundary */
+#pragma pack(1)    /* set alignment to 1 byte boundary */
 struct SwitchJourInfo
 {
     quint16 fileNum;    // Номер файла

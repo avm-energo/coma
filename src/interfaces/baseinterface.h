@@ -18,7 +18,7 @@ enum INTERVAL
 };
 
 struct ConnectStruct;
-struct InterfaceSettings;
+
 class BaseInterface : public QObject
 {
     Q_OBJECT
