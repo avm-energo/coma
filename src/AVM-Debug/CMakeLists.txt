@@ -7,11 +7,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fpic")
-# find_package(QT NAMES Qt6 Qt5 COMPONENTS Widgets REQUIRED)
-# find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets REQUIRED)
-# find_package(QT NAMES Qt6 Qt5 COMPONENTS Core REQUIRED)
-# find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core REQUIRED) find_package(QT
-# NAMES Qt6 Qt5 COMPONENTS Xml REQUIRED)
+
 find_package(
   QT NAMES Qt6 Qt5
   COMPONENTS Core Xml Widgets
@@ -21,16 +17,12 @@ find_package(
   COMPONENTS Core Xml Widgets
   REQUIRED)
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
-set(PROGNAME "AVM-Service")
-set(SOFTDEVELOPER "AVM-Energo")
+set(PROGNAME "AVM-Debug")
 set(COMAVERSION 2.0.0)
 configure_file(cconfig.h.in config.h @ONLY)
-link_directories(${CMAKE_CURRENT_SOURCE_DIR}/../../lib)
-link_directories(${LimeReportDir})
-# find_package( QT NAMES Qt6 Qt5 COMPONENTS Core Xml Widgets REQUIRED)
-# find_package( Qt${QT_VERSION_MAJOR} COMPONENTS Core Xml widgets REQUIRED)
-# find_package(QT NAMES Qt6 Qt5 COMPONENTS Core REQUIRED)
-message(${QT_VERSION_MAJOR},"")
+
+link_directories(${ThirdPartyLibDir})
+
 add_executable(${PROJECT_NAME} dbgmodule.cpp dbgmodule.h debugcoma.cpp
                                debugcoma.h main.cpp)
 target_link_libraries(

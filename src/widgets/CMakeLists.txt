@@ -88,5 +88,4 @@ target_link_libraries(
   PRIVATE Qt${QT_VERSION_MAJOR}::Network
   PRIVATE QXlsx
   PRIVATE CONAN_PKG::boost)
-target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_17)
 target_compile_definitions(${PROJECT_NAME} PRIVATE ${PROJECT_NAME}_LIBRARY)

@@ -11,24 +11,16 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fpic")
 set(CMAKE_SCRIPT_MODE_FILE ON)
-find_package(Qt5Core)
-find_package(
-  QXlsx CONFIG REQUIRED PATHS
-  ${CMAKE_CURRENT_SOURCE_DIR}/../../share/QXlsx/cmake
-  ${CMAKE_CURRENT_SOURCE_DIR}/../../share/QXlsx)
 
 find_package(
   QT NAMES Qt6 Qt5
-  COMPONENTS Core Network Widgets
+  COMPONENTS Core]
   REQUIRED)
 find_package(
   Qt${QT_VERSION_MAJOR}
-  COMPONENTS Core Network Xml Widgets
+  COMPONENTS Core
   REQUIRED)
-find_package(
-  Qt${QT_VERSION_MAJOR}
-  COMPONENTS Widgets
-  REQUIRED)
+
 find_package(Git REQUIRED)
 execute_process(
   COMMAND ${GIT_EXECUTABLE} rev-parse --short=8 HEAD
@@ -68,10 +60,6 @@ set_property(TARGET ${PROJECT_NAME} PROPERTY POSITION_INDEPENDENT_CODE ON)
 
 target_link_libraries(
   ${PROJECT_NAME}
-  PRIVATE Qt${QT_VERSION_MAJOR}::Core
-  PRIVATE Qt${QT_VERSION_MAJOR}::Widgets
-  PRIVATE Qt${QT_VERSION_MAJOR}::Xml
-  PRIVATE Qt${QT_VERSION_MAJOR}::Network
-  PRIVATE QXlsx)
-target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_17)
+  PRIVATE Qt${QT_VERSION_MAJOR}::Core)
+
 target_compile_definitions(${PROJECT_NAME} PRIVATE ${PROJECT_NAME}_LIBRARY)

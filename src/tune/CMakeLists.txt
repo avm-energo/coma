@@ -40,9 +40,7 @@ find_package(
   Qt${QT_VERSION_MAJOR}
   COMPONENTS Widgets
   REQUIRED)
-set(LimeReportDir
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../include/LimeReport/build/5.15.2/linux64/release/lib
-)
+
 link_directories(${LimeReportDir})
 include_directories(${LimeReportDir}/include)
 
@@ -88,5 +86,5 @@ target_link_libraries(
   PRIVATE Qt${QT_VERSION_MAJOR}::Qml
   PRIVATE QXlsx
   PRIVATE limereport)
-target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_17)
+
 target_compile_definitions(${PROJECT_NAME} PRIVATE ${PROJECT_NAME}_LIBRARY)
