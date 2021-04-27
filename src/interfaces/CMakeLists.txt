@@ -9,7 +9,6 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fpic")
 find_package(Qt5Core)
 find_package(
   QT NAMES Qt6 Qt5
@@ -60,5 +59,10 @@ target_link_libraries(
   ${PROJECT_NAME}
   PRIVATE Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::Network
           Qt${QT_VERSION_MAJOR}::SerialPort)
-target_link_libraries(${PROJECT_NAME} PRIVATE hidapi-hidraw)
+if (UNIX)
+    target_link_libraries(${PROJECT_NAME} PRIVATE hidapi-hidraw)
+endif()
+if (WIN32)
+    target_link_libraries(${PROJECT_NAME} PRIVATE hidapi)
+endif()
 target_compile_definitions(${PROJECT_NAME} PRIVATE ${PROJECT_NAME}_LIBRARY)

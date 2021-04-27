@@ -1,0 +1,25 @@
+From 540d15fb3a50d4ed43a9e5fe8201565090058d05 Mon Sep 17 00:00:00 2001
+From: atom <tomasiche@gmail.com>
+Date: Tue, 27 Apr 2021 15:50:35 +0300
+Subject: [PATCH] fix broken iterators
+
+---
+ CMakeLists.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 88ee14b..b520d33 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -42,7 +42,7 @@ target_compile_definitions(QXlsx PRIVATE
+     QT_NO_KEYWORDS
+     QT_NO_CAST_TO_ASCII
+     QT_NO_CAST_FROM_ASCII
+-    QT_STRICT_ITERATORS
++ #   QT_STRICT_ITERATORS
+     QT_NO_URL_CAST_FROM_STRING
+     QT_NO_CAST_FROM_BYTEARRAY
+     QT_USE_QSTRINGBUILDER
+-- 
+2.27.0.windows.1
+

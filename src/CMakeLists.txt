@@ -55,7 +55,11 @@ message(STATUS "QT version - ${QT_VERSION}")
 set(LimeReportDir
     ${CMAKE_CURRENT_SOURCE_DIR}/../include/LimeReport/build/${QT_VERSION}/${PROJECT_TARGET_NAME}/${CMAKE_BUILD_TYPE_LOWER}/lib
 )
-set(ThirdPartyLibDir ${CMAKE_CURRENT_SOURCE_DIR}/../lib/${PROJECT_TARGET_NAME}/${CMAKE_BUILD_TYPE_LOWER})
+set(ThirdPartyLibDir ${CMAKE_CURRENT_SOURCE_DIR}/../${PROJECT_TARGET_NAME}/${CMAKE_BUILD_TYPE_LOWER})
+
+include_directories(${ThirdPartyLibDir}/include)
+link_directories(${ThirdPartyLibDir}/lib)
+
 add_subdirectory(interfaces)
 add_subdirectory(gen)
 # add_subdirectory(alise)

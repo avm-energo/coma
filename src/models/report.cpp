@@ -3,7 +3,7 @@
 #include "../gen/error.h"
 #include "../gen/stdfunc.h"
 
-#include <LimeReport>
+#include <limereport/LimeReport>
 //#include "limereport/lrreportengine.h"s
 
 #include <QStandardItem>
