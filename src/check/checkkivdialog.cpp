@@ -63,28 +63,27 @@ UWidget *CheckKIVDialog::Bd1W()
     glyout = new QGridLayout;
     for (i = 0; i < 3; ++i)
     {
-        glyout->addWidget(WDFunc::NewLBL2(this, "Ueff ф." + phase[i] + ", кВ"), 2, i, 1, 1);
+        glyout->addWidget(WDFunc::NewLBL2(this, "U ф." + phase[i] + ", кВ"), 2, i, 1, 1);
         glyout->addWidget(WDFunc::NewLBLT(this, "", QString::number(1000 + i), ValuesFormat,
-                              "Действующие значения напряжений по 1-й гармонике, кВ"),
+                              "Фазное действующее напряжение по 1-й гармонике, кВ"),
             3, i, 1, 1);
-        glyout->addWidget(WDFunc::NewLBL2(this, "Ieff ф." + phase[i] + ", мА"), 4, i, 1, 1);
+        glyout->addWidget(WDFunc::NewLBL2(this, "I ф." + phase[i] + ", мА"), 4, i, 1, 1);
         glyout->addWidget(WDFunc::NewLBLT(this, "", QString::number(1100 + i), ValuesFormat,
-                              "Действующие значения токов по 1-й гармонике, мА"),
+                              "Действующее значение тока утечки ввода по 1-й гармонике, мА"),
             5, i, 1, 1);
-        glyout->addWidget(WDFunc::NewLBL2(this, "Cbush ф." + phase[i] + ", пФ"), 6, i, 1, 1);
+        glyout->addWidget(WDFunc::NewLBL2(this, "C1 ф." + phase[i] + ", пФ"), 6, i, 1, 1);
         glyout->addWidget(
-            WDFunc::NewLBLT(this, "", QString::number(2420 + i), ValuesFormat, "Ёмкости вводов, пФ"), 7, i, 1, 1);
-        glyout->addWidget(WDFunc::NewLBL2(this, "Tg_d ф." + phase[i] + ", %"), 8, i, 1, 1);
+            WDFunc::NewLBLT(this, "", QString::number(2420 + i), ValuesFormat, "Емкость С1 ввода, пФ"), 7, i, 1, 1);
+        glyout->addWidget(WDFunc::NewLBL2(this, "tgδ ф." + phase[i] + ", %"), 8, i, 1, 1);
         glyout->addWidget(
-            WDFunc::NewLBLT(this, "", QString::number(2423 + i), ValuesFormat, "Тангенсы дельта вводов, %"), 9, i, 1,
-            1);
-        glyout->addWidget(WDFunc::NewLBL2(this, "dCbush ф." + QString(phase.at(i)) + ", %"), 10, i, 1, 1);
+            WDFunc::NewLBLT(this, "", QString::number(2423 + i), ValuesFormat, "Тангенс дельта ввода, %"), 9, i, 1, 1);
+        glyout->addWidget(WDFunc::NewLBL2(this, "∆C ф." + phase[i] + ", %"), 10, i, 1, 1);
         glyout->addWidget(
-            WDFunc::NewLBLT(this, "", QString::number(2426 + i), ValuesFormat, "Изменение емкостей вводов, пФ"), 11, i,
+            WDFunc::NewLBLT(this, "", QString::number(2426 + i), ValuesFormat, "Приращение емкости С1 ввода, %"), 11, i,
             1, 1);
-        glyout->addWidget(WDFunc::NewLBL2(this, "dTg_d ф." + phase[i] + ", %"), 12, i, 1, 1);
+        glyout->addWidget(WDFunc::NewLBL2(this, "∆tgδ ф." + phase[i] + ", %"), 12, i, 1, 1);
         glyout->addWidget(
-            WDFunc::NewLBLT(this, "", QString::number(2429 + i), ValuesFormat, "Изменение тангенсов дельта вводов, %"),
+            WDFunc::NewLBLT(this, "", QString::number(2429 + i), ValuesFormat, "Приращение тангенса дельта ввода, %"),
             13, i, 1, 1);
     }
 
@@ -95,12 +94,12 @@ UWidget *CheckKIVDialog::Bd1W()
     gb = new QGroupBox("Параметры небаланса токов");
     vlyout = new QVBoxLayout;
     glyout = new QGridLayout;
-    glyout->addWidget(WDFunc::NewLBL2(this, "Iunb, мА"), 14, 0, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL2(this, "Iunb, %"), 14, 0, 1, 1);
     glyout->addWidget(
-        WDFunc::NewLBLT(this, "", "2432", ValuesFormat, "Действующее значение тока небаланса, %"), 15, 0, 1, 1);
-    glyout->addWidget(WDFunc::NewLBL2(this, "Phy_unb, град."), 14, 1, 1, 1);
+        WDFunc::NewLBLT(this, "", "2432", ValuesFormat, "Действующее значение небаланса токов, %"), 15, 0, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL2(this, "Phi_unb, град."), 14, 1, 1, 1);
     glyout->addWidget(
-        WDFunc::NewLBLT(this, "", "2433", ValuesFormat, "Угол тока небаланса относительно тока ф.А, град."), 15, 1, 1,
+        WDFunc::NewLBLT(this, "", "2433", ValuesFormat, "Угол небаланса токов относительно тока ф.А, град."), 15, 1, 1,
         1);
 
     vlyout->addLayout(glyout);
@@ -181,15 +180,41 @@ UWidget *CheckKIVDialog::Bd2W()
     int i;
     for (i = 0; i < 3; ++i)
     {
-        glyout->addWidget(WDFunc::NewLBL2(this, "Phy_U ф." + phase[i] + ", град."), 4, i, 1, 1);
+        glyout->addWidget(WDFunc::NewLBL2(this, "Phy_U ф." + phase[i] + ", град."), 0, i, 1, 1);
         glyout->addWidget(WDFunc::NewLBLT(this, "", QString::number(2401 + i), ValuesFormat,
                               "Угол по напряжению ф." + phase[i] + ", град."),
-            5, i, 1, 1);
-        glyout->addWidget(WDFunc::NewLBL2(this, "Phy_I ф." + phase[i] + ", град."), 6, i, 1, 1);
+            1, i, 1, 1);
+        glyout->addWidget(WDFunc::NewLBL2(this, "Phy_I ф." + phase[i] + ", град."), 2, i, 1, 1);
         glyout->addWidget(WDFunc::NewLBLT(this, "", QString::number(2404 + i), ValuesFormat,
                               "Угол по току ф." + phase[i] + ", град."),
-            7, i, 1, 1);
+            3, i, 1, 1);
     }
+
+    vlyout2->addLayout(glyout);
+    gb->setLayout(vlyout2);
+    vlyout1->addWidget(gb);
+
+    gb = new QGroupBox("Коэффициенты несимметрии");
+    vlyout2 = new QVBoxLayout;
+    glyout = new QGridLayout;
+
+    glyout->addWidget(WDFunc::NewLBL2(this, "KuI0, %"), 0, 0, 1, 1);
+    glyout->addWidget(WDFunc::NewLBLT(this, "", QString::number(1114), ValuesFormat,
+                          "Коэффициент несимметрии тока по нулевой последовательности, %"),
+        1, 0, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL2(this, "KuI2, %"), 0, 1, 1, 1);
+    glyout->addWidget(WDFunc::NewLBLT(this, "", QString::number(1115), ValuesFormat,
+                          "Коэффициент несимметрии тока по обратной последовательности, %"),
+        1, 1, 1, 1);
+
+    glyout->addWidget(WDFunc::NewLBL2(this, "KuU0, %"), 0, 2, 1, 1);
+    glyout->addWidget(WDFunc::NewLBLT(this, "", QString::number(1014), ValuesFormat,
+                          "Коэффициент несимметрии напряжения по нулевой последовательности, %s"),
+        1, 2, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL2(this, "KuU2, %"), 0, 3, 1, 1);
+    glyout->addWidget(WDFunc::NewLBLT(this, "", QString::number(1015), ValuesFormat,
+                          "Коэффициент несимметрии напряжения по обратной последовательности, %"),
+        1, 3, 1, 1);
 
     vlyout2->addLayout(glyout);
     gb->setLayout(vlyout2);

@@ -72,7 +72,7 @@ void StartupKIVDialog::SetupUI()
     }
     row++;
 
-    glyout->addWidget(WDFunc::NewLBL2(this, "Начальное действ. значение тока небаланса, мА:"), row, 1, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL2(this, "Начальное значение небаланса токов, %:"), row, 1, 1, 1);
     glyout->addWidget(WDFunc::NewSPB2(this, QString::number(4009), 0, 10000, 1), row, 2, 1, 3);
 
     row++;

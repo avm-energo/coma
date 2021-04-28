@@ -670,7 +670,7 @@
 		<widget>
 			<type>QDoubleSpinBox</type>
 			<group>4</group>
-			<string>Уставка предупредительной сигнализации по изменению емкости, %</string>
+			<string>Уставка предупредительной сигнализации по приращению емкости, %</string>
 			<min>0</min>
 			<max>10000</max>
 			<decimals>1</decimals>
@@ -682,7 +682,7 @@
 		<widget>
 			<type>QDoubleSpinBox</type>
 			<group>4</group>
-			<string>Уставка аварийной сигнализации по изменению емкости, %</string>
+			<string>Уставка аварийной сигнализации по приращению емкости, %</string>
 			<min>0</min>
 			<max>10000</max>
 			<decimals>1</decimals>
@@ -694,7 +694,7 @@
 		<widget>
 			<type>QDoubleSpinBox</type>
 			<group>4</group>
-			<string>Уставка предупредительной сигнализации по изменению tg δ, %</string>
+			<string>Уставка предупредительной сигнализации по приращению tg δ, %</string>
 			<min>0</min>
 			<max>10000</max>
 			<decimals>1</decimals>
@@ -706,7 +706,7 @@
 		<widget>
 			<type>QDoubleSpinBox</type>
 			<group>4</group>
-			<string>Уставка аварийной сигнализации по изменению tg δ, %</string>
+			<string>Уставка аварийной сигнализации по приращению tg δ, %</string>
 			<min>0</min>
 			<max>10000</max>
 			<decimals>1</decimals>
@@ -718,7 +718,7 @@
 		<widget>
 			<type>QDoubleSpinBox</type>
 			<group>4</group>
-			<string>Уставка предупредительной сигнализации по изменению небаланса токов, %</string>
+			<string>Уставка предупредительной сигнализации по приращению небаланса токов, %</string>
 			<min>0</min>
 			<max>10000</max>
 			<decimals>1</decimals>
@@ -730,7 +730,7 @@
 		<widget>
 			<type>QDoubleSpinBox</type>
 			<group>4</group>
-			<string>Уставка аварийной сигнализации по изменению небаланса токов, %</string>
+			<string>Уставка аварийной сигнализации по приращению небаланса токов, %</string>
 			<min>0</min>
 			<max>10000</max>
 			<decimals>1</decimals>
