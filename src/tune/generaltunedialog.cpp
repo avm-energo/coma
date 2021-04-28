@@ -2,8 +2,10 @@
 
 #include "../gen/board.h"
 #include "../gen/stdfunc.h"
+#include "../widgets/wd_func.h"
 #include "tunesequencefile.h"
 
+#include <QHBoxLayout>
 #include <QIcon>
 #include <QPainter>
 #include <QPushButton>
@@ -14,6 +16,33 @@ GeneralTuneDialog::GeneralTuneDialog(QWidget *parent) : UDialog(parent)
 {
     TuneSequenceFile::init();
     m_calibrSteps = 0;
+}
+
+void GeneralTuneDialog::SetupUI()
+{
+    QHBoxLayout *hlyout = new QHBoxLayout;
+    QVBoxLayout *lyout = new QVBoxLayout;
+
+    lyout->addStretch(100);
+    int count = 1;
+    for (auto d : m_dialogList)
+    {
+        QString tns = "tn" + QString::number(count++);
+        lyout->addWidget(WDFunc::NewHexagonPB(
+            this, tns, [&d]() { d.dialog->show(); }, ":/icons/" + tns + ".svg", d.caption));
+    }
+    lyout->addWidget(WDFunc::NewHexagonPB(
+        this, "tnprotocol", [this]() { PrepareReport(); }, ":/icons/tnprotocol.svg",
+        "Генерация протокола регулировки"));
+    lyout->addStretch(100);
+    hlyout->addLayout(lyout);
+    hlyout->addWidget(m_BacWidget, 100);
+    setLayout(hlyout);
+    setCalibrButtons();
+}
+
+void GeneralTuneDialog::PrepareReport()
+{
 }
 
 void GeneralTuneDialog::setCalibrButtons()

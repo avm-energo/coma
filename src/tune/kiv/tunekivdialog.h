@@ -57,10 +57,11 @@ public:
 public slots:
 
 private:
-    TuneKIVCheck *TKIVCheckDialog;
-    TuneKIVADC *TKIVADCUDialog, *TKIVADCIDialog;
-    TuneKIVR *TKIVRDialog;
-    TuneKIVTemp60 *TKIV60Dialog, *TKIV20Dialog;
+    //    TuneKIVCheck *TKIVCheckDialog;
+    //    TuneKIVADC *TKIVADCUDialog, *TKIVADCIDialog;
+    //    TuneKIVR *TKIVRDialog;
+    //    TuneKIVTemp60 *TKIV60Dialog, *TKIV20Dialog;
+    void PrepareReport() override;
 
     //    QDialog *ask;
     //    QLineEdit *ledit;
@@ -73,12 +74,12 @@ private:
     //        TUNEMAN
     //    };
 
-    LimeReport::ReportEngine *m_Report;
+    //    LimeReport::ReportEngine *m_Report;
 
     //    int m_tuneControlType;
     //    bool m_Cancelled = false, m_defConfig;
 
-    void SetupUI();
+    //    void SetupUI();
 
     //    int m_filterSteps;
 
@@ -141,7 +142,7 @@ private slots:
         void SaveValuesTempMinus20();
         void SaveValuesTemp60();
         void CloseAsk(); */
-    void GenerateReport();
+    //    void GenerateReport();
 };
 
 #endif // TUNEKIVDIALOG_H

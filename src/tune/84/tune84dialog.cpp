@@ -15,44 +15,55 @@ Tune84Dialog::Tune84Dialog(QWidget *parent) : GeneralTuneDialog(parent)
     // ReportModel = new QStandardItemModel;
     // ViewModel = new QStandardItemModel;
     setAttribute(Qt::WA_DeleteOnClose);
-    T84ADCUDialog = new Tune84ADC(TS84_ADCU, this);
-    T84ADCIDialog = new Tune84ADC(TS84_ADCI, this);
-    T8460Dialog = new TuneKIVTemp60(TS84_60TUNING, this);
-    T84CheckDialog = new Tune84Check(TS84_CHECKING, this);
+
+    m_dialogList = { { "Проверка правильности измерения входных сигналов", new Tune84Check(TS84_CHECKING, this) },
+        { "Регулировка каналов напряжения", new Tune84ADC(TS84_ADCU, this) },
+        { "Регулировка каналов тока", new Tune84ADC(TS84_ADCI, this) },
+        { "Настройка температурной коррекции +60 °С", new TuneKIVTemp60(TS84_60TUNING, this) },
+        { "Настройка температурной коррекции -20 °С", new TuneKIVTemp60(TS84_20TUNING, this) } };
+    Bac *bac = new Bac;
+    m_BacWidget = bac->widget();
+
+    //    T84ADCUDialog = new Tune84ADC(TS84_ADCU, this);
+    //    T84ADCIDialog = new Tune84ADC(TS84_ADCI, this);
+    //    T8460Dialog = new TuneKIVTemp60(TS84_60TUNING, this);
+    //    T84CheckDialog = new Tune84Check(TS84_CHECKING, this);
     SetupUI();
 }
 
-void Tune84Dialog::SetupUI()
-{
-    //    QString tmps = "QDialog {background-color: " + QString(Colors::ACONFCLR) + ";}";
-    //    setStyleSheet(tmps);
-    QHBoxLayout *hlyout = new QHBoxLayout;
-    QVBoxLayout *lyout = new QVBoxLayout;
+// void Tune84Dialog::SetupUI()
+//{
+//    //    QString tmps = "QDialog {background-color: " + QString(Colors::ACONFCLR) + ";}";
+//    //    setStyleSheet(tmps);
+//    QHBoxLayout *hlyout = new QHBoxLayout;
+//    QVBoxLayout *lyout = new QVBoxLayout;
 
-    lyout->addStretch(100);
-    lyout->addWidget(WDFunc::NewHexagonPB(
-        this, "tn1", [this]() { T84CheckDialog->show(); }, ":/icons/tn1.svg",
-        "Проверка правильности измерения входных сигналов"));
-    lyout->addWidget(WDFunc::NewHexagonPB(
-        this, "tn2", [this]() { T84ADCUDialog->show(); }, ":/icons/tn2.svg", "Регулировка каналов напряжения"));
-    lyout->addWidget(WDFunc::NewHexagonPB(
-        this, "tn3", [this]() { T84ADCUDialog->show(); }, ":/icons/tn3.svg", "Регулировка каналов тока"));
-    lyout->addWidget(WDFunc::NewHexagonPB(
-        this, "tn4", [this]() { T8460Dialog->show(); }, ":/icons/tn4.svg", "Настройка температурной коррекции +60 °С"));
-    lyout->addWidget(WDFunc::NewHexagonPB(
-        this, "tn5", [this]() { T8420Dialog->show(); }, ":/icons/tn5.svg", "Настройка температурной коррекции -20 °С"));
-    lyout->addWidget(WDFunc::NewHexagonPB(
-        this, "tnprotocol", [this]() { GenerateReport(); }, ":/icons/tnprotocol.svg",
-        "Генерация протокола регулировки"));
-    lyout->addStretch(100);
-    hlyout->addLayout(lyout);
-    Bac *bac = new Bac;
-    hlyout->addWidget(bac->widget(), 100);
-    setLayout(hlyout);
-    setCalibrButtons();
-}
+//    lyout->addStretch(100);
+//    lyout->addWidget(WDFunc::NewHexagonPB(
+//        this, "tn1", [this]() { T84CheckDialog->show(); }, ":/icons/tn1.svg",
+//        "Проверка правильности измерения входных сигналов"));
+//    lyout->addWidget(WDFunc::NewHexagonPB(
+//        this, "tn2", [this]() { T84ADCUDialog->show(); }, ":/icons/tn2.svg", "Регулировка каналов напряжения"));
+//    lyout->addWidget(WDFunc::NewHexagonPB(
+//        this, "tn3", [this]() { T84ADCUDialog->show(); }, ":/icons/tn3.svg", "Регулировка каналов тока"));
+//    lyout->addWidget(WDFunc::NewHexagonPB(
+//        this, "tn4", [this]() { T8460Dialog->show(); }, ":/icons/tn4.svg", "Настройка температурной коррекции +60
+//        °С"));
+//    lyout->addWidget(WDFunc::NewHexagonPB(
+//        this, "tn5", [this]() { T8420Dialog->show(); }, ":/icons/tn5.svg", "Настройка температурной коррекции -20
+//        °С"));
+//    lyout->addWidget(WDFunc::NewHexagonPB(
+//        this, "tnprotocol", [this]() { GenerateReport(); }, ":/icons/tnprotocol.svg",
+//        "Генерация протокола регулировки"));
+//    lyout->addStretch(100);
+//    hlyout->addLayout(lyout);
+//    Bac *bac = new Bac;
+//    hlyout->addWidget(bac->widget(), 100);
+//    setLayout(hlyout);
+//    setCalibrButtons();
+//}
 
-void Tune84Dialog::GenerateReport()
+void Tune84Dialog::PrepareReport()
 {
     /*    // данные в таблицу уже получены или из файла, или в процессе работы
         // отобразим таблицу

@@ -2,6 +2,7 @@
 #define GENERALTUNEDIALOG_H
 
 #include "../widgets/udialog.h"
+#include "abstracttunedialog.h"
 
 #include <QDomDocument>
 #include <QWidget>
@@ -10,9 +11,20 @@ class GeneralTuneDialog : public UDialog
 {
     Q_OBJECT
 public:
+    struct TuneDialogStruct
+    {
+        QString caption;
+        AbstractTuneDialog *dialog;
+    };
+
     int m_calibrSteps;
+    QList<TuneDialogStruct> m_dialogList;
+    LimeReport::ReportEngine *m_Report;
+    QWidget *m_BacWidget;
 
     GeneralTuneDialog(QWidget *parent = nullptr);
+    void SetupUI();
+    virtual void PrepareReport();
 
 private:
     void setIconProcessed(const QString &name);
@@ -26,6 +38,7 @@ private:
 
 public slots:
     void setCalibrButtons();
+    void GenerateReport();
 };
 
 #endif // GENERALTUNEDIALOG_H
