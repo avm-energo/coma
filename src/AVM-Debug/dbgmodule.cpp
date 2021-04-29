@@ -42,6 +42,8 @@ void DbgModule::createModule(Modules::Model model)
             }
         }
         CheckKIVDialog *cdkiv = new CheckKIVDialog;
+        cdkiv->setHighlights(AbstractCheckDialog::Warning, settings()->highlightWarn);
+        cdkiv->setHighlights(AbstractCheckDialog::Critical, settings()->highlightCrit);
         addDialogToList(cdkiv, "Проверка");
 
         addDialogToList(new StartupKIVDialog, "Начальные\nзначения");

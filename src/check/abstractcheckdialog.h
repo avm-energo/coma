@@ -41,7 +41,12 @@ public:
         QString widgetCaption;
         UWidget *widget;
     };
-
+    enum Highlight
+    {
+        Warning,
+        Critical
+    };
+    using HighlightMap = QMultiMap<quint32, quint32>;
     QXlsx::Document *xlsx;
     QTimer *Timer;
     int WRow;
@@ -74,7 +79,21 @@ public:
     void PrepareAnalogMeasurements();
     void SetBd(int bdnum, void *block, int blocksize, bool toxlsx = true);
     QWidget *BottomUI();
+    void setHighlights(Highlight type, const HighlightMap &map)
+    {
+        switch (type)
+        {
+        case Warning:
 
+            m_highlightWarn = map;
+            break;
+        case Critical:
+
+            m_highlightCrit = map;
+            break;
+        }
+    }
+    void updateSPData(const DataTypes::SinglePointWithTimeStruct &sp) override;
 signals:
 
 public slots:
@@ -89,7 +108,7 @@ private:
         int blocknum;
         bool toxlsxwrite;
     };
-
+    QMultiMap<quint32, quint32> m_highlightWarn, m_highlightCrit;
     QMap<int, BdBlocks *> Bd_blocks;
     //    struct Bip
     //    {

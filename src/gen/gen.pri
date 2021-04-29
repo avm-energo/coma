@@ -35,6 +35,7 @@ HEADERS += \
     $$PWD/datarecv.h \
     $$PWD/s2helper.h \
     $$PWD/xmlparser.h \
+    $$PWD/settings.h \
     $$PWD/timefunc.h
 
 

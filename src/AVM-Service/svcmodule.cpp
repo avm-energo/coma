@@ -80,6 +80,9 @@ void SvcModule::createModule(Modules::Model model)
             addDialogToList(new ConfigDialog(settings()->configSettings), "Конфигурирование", "conf1");
         }
         CheckKIVDialog *cdkiv = new CheckKIVDialog;
+        cdkiv->setHighlights(AbstractCheckDialog::Warning, settings()->highlightWarn);
+        cdkiv->setHighlights(AbstractCheckDialog::Critical, settings()->highlightCrit);
+
         addDialogToList(cdkiv, "Проверка");
 
         addDialogToList(new StartupKIVDialog, "Начальные\nзначения");

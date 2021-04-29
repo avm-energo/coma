@@ -47,15 +47,13 @@ void AbstractCheckDialog::SetupUI()
 
     QVBoxLayout *lyout = new QVBoxLayout;
     QTabWidget *CheckTW = new QTabWidget;
-
+    connect(&DataManager::GetInstance(), &DataManager::singlePointReceived, this, &AbstractCheckDialog::updateSPData);
     for (auto &w : m_BdUIList)
     {
-        //        w.widget->setInterface(iface());
         w.widget->uponInterfaceSetting();
         CheckTW->addTab(w.widget, " " + w.widgetCaption + " ");
         connect(&DataManager::GetInstance(), &DataManager::floatReceived, w.widget, &UWidget::updateFloatData,
             Qt::QueuedConnection);
-        connect(&DataManager::GetInstance(), &DataManager::singlePointReceived, w.widget, &UWidget::updateSPData);
     }
 
     lyout->addWidget(CheckTW);
@@ -132,6 +130,39 @@ QWidget *AbstractCheckDialog::BottomUI()
     lyout->addWidget(pb);
     w->setLayout(lyout);
     return w;
+}
+
+void AbstractCheckDialog::updateSPData(const DataTypes::SinglePointWithTimeStruct &sp)
+{
+    bool status = sp.sigVal;
+    QList<HighlightMap::mapped_type> regs;
+    QString color;
+    if (m_highlightWarn.contains(sp.sigAdr))
+    {
+        regs = m_highlightWarn.values(sp.sigAdr);
+        color = "yellow";
+    }
+    else if (m_highlightCrit.contains(sp.sigAdr))
+    {
+        regs = m_highlightCrit.values(sp.sigAdr);
+        color = "red";
+    }
+    for (const auto reg : qAsConst(regs))
+    {
+        QLabel *lbl = findChild<QLabel *>(QString::number(reg));
+        if (!lbl)
+            continue;
+        if (status)
+        {
+            lbl->setStyleSheet(
+                "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; font: bold; background-color:"
+                + color + "; color : black; }");
+        }
+        else
+        {
+            lbl->setStyleSheet(ValuesFormat);
+        }
+    }
 }
 
 void AbstractCheckDialog::StartAnalogMeasurementsToFile()

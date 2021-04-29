@@ -3,7 +3,7 @@
 #include "../module/module.h"
 #include "../widgets/checkboxgroup.h"
 #include "board.h"
-
+#include "settings.h"
 namespace keys
 {
 constexpr char name[] = "name";
@@ -53,9 +53,9 @@ DataTypes::Alarm XmlParser::parseAlarm(QDomElement domElement)
     element = domElement.firstChildElement(keys::unsigned32);
     if (!element.isNull())
     {
-    const auto name = element.attribute(keys::name, "");
-    if (name.contains("addr", Qt::CaseInsensitive))
-        alarm.startAddr = parseInt32(element);
+        const auto name = element.attribute(keys::name, "");
+        if (name.contains("addr", Qt::CaseInsensitive))
+            alarm.startAddr = parseInt32(element);
     }
 
     element = domElement.firstChildElement(keys::unsigned64);
@@ -65,10 +65,10 @@ DataTypes::Alarm XmlParser::parseAlarm(QDomElement domElement)
         if (name.contains("flags", Qt::CaseInsensitive))
             alarm.flags = parseHexInt64(element);
 
-//        element = element.nextSiblingElement(keys::unsigned32);
+        //        element = element.nextSiblingElement(keys::unsigned32);
 
-//        if (name.contains("addr", Qt::CaseInsensitive))
-//            alarm.startAddr = parseInt32(element);
+        //        if (name.contains("addr", Qt::CaseInsensitive))
+        //            alarm.startAddr = parseInt32(element);
     }
 
     return alarm;
@@ -440,6 +440,14 @@ void XmlParser::traverseNode(const QDomNode &node, ModuleSettings *const setting
                     }
                 }
 
+                if (domElement.tagName() == "multimap")
+                {
+                    if (domElement.attribute("name").contains("warn", Qt::CaseInsensitive))
+                        settings->highlightWarn = parseMultiMap<quint32, quint32>(domElement);
+                    else if (domElement.attribute("name").contains("crit", Qt::CaseInsensitive))
+                        settings->highlightCrit = parseMultiMap<quint32, quint32>(domElement);
+                }
+
                 if (domElement.tagName() == "modbus")
                 {
                     if (Board::GetInstance().interfaceType() == Board::RS485)
@@ -508,4 +516,52 @@ void XmlParser::traverseNode(const QDomNode &node, GlobalSettings &settings)
         traverseNode(domNode, settings);
         domNode = domNode.nextSibling();
     }
+}
+
+template <typename Key, typename Value> QMultiMap<Key, Value> XmlParser::parseMultiMap(QDomElement domElement)
+{
+    QMultiMap<Key, Value> map;
+    if (domElement.isNull())
+        return map;
+
+    QDomNode domNode = domElement.firstChild();
+    while (!domNode.isNull())
+    {
+        if (domNode.isElement())
+        {
+            QDomElement domElement = domNode.toElement();
+            if (!domElement.isNull())
+            {
+                if (domElement.tagName() == "item")
+                {
+#ifdef XML_DEBUG
+                    qDebug() << domElement.text();
+#endif
+                    // domElement = domElement.firstChild().toElement();
+                    auto nodes = domElement.childNodes();
+                    Key key;
+                    int i = 0;
+                    while (i != nodes.count())
+                    {
+                        domElement = nodes.item(i++).toElement();
+                        if (domElement.tagName() == "key")
+                        {
+                            key = QVariant(domElement.text()).value<Key>();
+                        }
+                        else if (domElement.tagName() == "value")
+                        {
+                            Value value = QVariant(domElement.text()).value<Value>();
+                            map.insert(key, value);
+                        }
+                    }
+
+                    domNode = domNode.nextSibling();
+                    continue;
+                }
+            }
+        }
+
+        domNode = domNode.nextSibling();
+    }
+    return map;
 }

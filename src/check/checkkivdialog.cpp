@@ -111,32 +111,32 @@ UWidget *CheckKIVDialog::Bd1W()
     w->setFloatBdQuery({ { 101, 2 }, { 1000, 16 }, { 1100, 16 }, { 2400, 7 }, { 2420, 14 }, { 4501, 2 } });
     w->setSpBdQuery({ { 3011, 25 } });
 
-    QMap<int, QList<UWidget::HighlightWarnAlarmStruct>> hmap
-        = { { 3011, { { 1000, Colors::ColorsMap.value(Colors::AConfO) } } },
-              { 3012, { { 1001, Colors::ColorsMap.value(Colors::AConfO) } } },
-              { 3013, { { 1002, Colors::ColorsMap.value(Colors::AConfO) } } },
-              { 3014, { { 1100, Colors::ColorsMap.value(Colors::AConfO) } } },
-              { 3015, { { 1101, Colors::ColorsMap.value(Colors::AConfO) } } },
-              { 3016, { { 1102, Colors::ColorsMap.value(Colors::AConfO) } } },
-              { 3018, { { 1000, Colors::ColorsMap.value(Colors::AConfO) } } },
-              { 3019, { { 1001, Colors::ColorsMap.value(Colors::AConfO) } } },
-              { 3020, { { 1002, Colors::ColorsMap.value(Colors::AConfO) } } },
-              { 3021, { { 2429, Colors::ColorsMap.value(Colors::AConfO) } } },
-              { 3022, { { 2430, Colors::ColorsMap.value(Colors::AConfO) } } },
-              { 3023, { { 2431, Colors::ColorsMap.value(Colors::AConfO) } } },
-              { 3024, { { 2429, Colors::ColorsMap.value(Colors::Red) } } },
-              { 3025, { { 2430, Colors::ColorsMap.value(Colors::Red) } } },
-              { 3026, { { 2431, Colors::ColorsMap.value(Colors::Red) } } },
-              { 3027, { { 2426, Colors::ColorsMap.value(Colors::AConfO) } } },
-              { 3028, { { 2427, Colors::ColorsMap.value(Colors::AConfO) } } },
-              { 3029, { { 2428, Colors::ColorsMap.value(Colors::AConfO) } } },
-              { 3030, { { 2426, Colors::ColorsMap.value(Colors::Red) } } },
-              { 3031, { { 2427, Colors::ColorsMap.value(Colors::Red) } } },
-              { 3032, { { 2428, Colors::ColorsMap.value(Colors::Red) } } },
-              { 3034, { { 2432, Colors::ColorsMap.value(Colors::AConfO) } } },
-              { 3035, { { 2432, Colors::ColorsMap.value(Colors::Red) } } } };
+    //    QMap<int, QList<UWidget::HighlightWarnAlarmStruct>> hmap
+    //        = { { 3011, { { 1000, Colors::ColorsMap.value(Colors::AConfO) } } },
+    //              { 3012, { { 1001, Colors::ColorsMap.value(Colors::AConfO) } } },
+    //              { 3013, { { 1002, Colors::ColorsMap.value(Colors::AConfO) } } },
+    //              { 3014, { { 1100, Colors::ColorsMap.value(Colors::AConfO) } } },
+    //              { 3015, { { 1101, Colors::ColorsMap.value(Colors::AConfO) } } },
+    //              { 3016, { { 1102, Colors::ColorsMap.value(Colors::AConfO) } } },
+    //              { 3018, { { 1000, Colors::ColorsMap.value(Colors::AConfO) } } },
+    //              { 3019, { { 1001, Colors::ColorsMap.value(Colors::AConfO) } } },
+    //              { 3020, { { 1002, Colors::ColorsMap.value(Colors::AConfO) } } },
+    //              { 3021, { { 2429, Colors::ColorsMap.value(Colors::AConfO) } } },
+    //              { 3022, { { 2430, Colors::ColorsMap.value(Colors::AConfO) } } },
+    //              { 3023, { { 2431, Colors::ColorsMap.value(Colors::AConfO) } } },
+    //              { 3024, { { 2429, Colors::ColorsMap.value(Colors::Red) } } },
+    //              { 3025, { { 2430, Colors::ColorsMap.value(Colors::Red) } } },
+    //              { 3026, { { 2431, Colors::ColorsMap.value(Colors::Red) } } },
+    //              { 3027, { { 2426, Colors::ColorsMap.value(Colors::AConfO) } } },
+    //              { 3028, { { 2427, Colors::ColorsMap.value(Colors::AConfO) } } },
+    //              { 3029, { { 2428, Colors::ColorsMap.value(Colors::AConfO) } } },
+    //              { 3030, { { 2426, Colors::ColorsMap.value(Colors::Red) } } },
+    //              { 3031, { { 2427, Colors::ColorsMap.value(Colors::Red) } } },
+    //              { 3032, { { 2428, Colors::ColorsMap.value(Colors::Red) } } },
+    //              { 3034, { { 2432, Colors::ColorsMap.value(Colors::AConfO) } } },
+    //              { 3035, { { 2432, Colors::ColorsMap.value(Colors::Red) } } } };
 
-    w->setHighlightMap(hmap);
+    //    w->setHighlightMap(hmap);
     return w;
 }
 

@@ -171,14 +171,3 @@ private:
     QList<Register> m_regs;
     QMultiMap<quint32, Register> m_dictionaryRegs;
 };
-
-// For template not in header
-//#include "interfacesettings.cpp"
-struct InterfaceSettings
-{
-    // std::variant<InterfaceInfo<CommandsMBS::ModbusGroup>, //
-    //    InterfaceInfo<Proto::ProtocomGroup>,              //
-    //    InterfaceInfo<Commands104::Iec104Group>           //
-    //    >
-    QVariant settings;
-};

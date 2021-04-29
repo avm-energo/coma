@@ -40,7 +40,9 @@ public:
     //    void setInterface(BaseInterface *iface);
     //    BaseInterface *iface();
     virtual void uponInterfaceSetting();
-
+    virtual void reqUpdate();
+    virtual void updateFloatData(const DataTypes::FloatStruct &fl);
+    virtual void updateSPData(const DataTypes::SinglePointWithTimeStruct &sp);
 signals:
     // //     signals to set "ProgressBar2" in main Coma
     //    void setGeneralProgressBarSize(quint32 size);
@@ -48,9 +50,6 @@ signals:
     //    void setGeneralProgressBarMessage(const QString &msg);
 
 public slots:
-    virtual void reqUpdate();
-    virtual void updateFloatData(const DataTypes::FloatStruct &fl);
-    void updateSPData(const DataTypes::SinglePointWithTimeStruct &sp);
 
 protected:
     QString m_hash;

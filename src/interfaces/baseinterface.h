@@ -3,6 +3,7 @@
 #include "../gen/datatypes.h"
 #include "../gen/error.h"
 #include "../gen/logclass.h"
+#include "../gen/settings.h"
 #include "../gen/stdfunc.h"
 #include "interfacesettings.h"
 
