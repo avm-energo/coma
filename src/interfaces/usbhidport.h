@@ -23,9 +23,7 @@ class UsbHidPort : public QObject
 public:
     explicit UsbHidPort(const UsbHidSettings &dev, LogClass *logh, QObject *parent = 0);
     ~UsbHidPort();
-#ifdef QT_GUI_LIB
-    void connectToGui(QObject *object);
-#endif
+
     bool setupConnection();
     void closeConnection();
     void writeDataAttempt(const QByteArray &ba);

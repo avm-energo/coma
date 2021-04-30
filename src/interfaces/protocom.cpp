@@ -35,9 +35,7 @@ bool Protocom::start(const ConnectStruct &st)
 bool Protocom::start(const UsbHidSettings &usbhid)
 {
     UsbHidPort *port = new UsbHidPort(usbhid, Log);
-#ifdef QT_GUI_LIB
-    port->connectToGui(this);
-#endif
+
     ProtocomThread *parser = new ProtocomThread;
 
     QThread *portThread = new QThread;
@@ -78,7 +76,7 @@ bool Protocom::start(const UsbHidSettings &usbhid)
         portThread->deleteLater();
         return false;
     }
-
+    connect(this, &BaseInterface::nativeEvent, port, &UsbHidPort::nativeEvent, Qt::DirectConnection);
     qInfo() << metaObject()->className() << "connected";
     port->moveToThread(portThread);
     parser->moveToThread(parseThread);

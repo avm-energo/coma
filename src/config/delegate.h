@@ -1,6 +1,6 @@
 #pragma once
 #include "../ctti/type_id.hpp"
-#include "../module/modules.h"
+#include "../gen/modules.h"
 
 #include <QObject>
 #include <variant>

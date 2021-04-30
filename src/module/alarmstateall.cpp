@@ -3,7 +3,7 @@
 #include "../gen/board.h"
 #include "../gen/colors.h"
 #include "../gen/error.h"
-#include "../module/modules.h"
+#include "../gen/modules.h"
 #include "../widgets/wd_func.h"
 
 #include <QBoxLayout>

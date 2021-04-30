@@ -2,12 +2,12 @@
 
 #include "../config/widgetfactory.h"
 #include "../gen/datatypes.h"
+//#include "../gen/modules.h"
 #include "../module/alarmstateall.h"
 #include "../widgets/alarmwidget.h"
 #include "../widgets/udialog.h"
 #include "journals.h"
 #include "modulealarm.h"
-#include "modules.h"
 
 class Module : public QObject
 {

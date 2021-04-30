@@ -59,19 +59,8 @@ contains(QT_ARCH, x86_64) {
 }
 
 LIBRARIES += \
-    comaversion \
-    check \
-    config \
-    datablock \
-    dialogs \
     interfaces \
-    models \
-    module \
-    startup \
-    widgets \
-    general \
-    avtuk \
-    qcustomplot
+    general
 
 include(../../deps.pri)
 

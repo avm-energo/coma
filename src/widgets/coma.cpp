@@ -614,6 +614,7 @@ void Coma::setupConnection()
 
     DataManager::clearQueue();
     BaseInterface::iface()->reqBSI();
+    connect(this, &Coma::sendMessage, BaseInterface::iface(), &BaseInterface::nativeEvent);
 }
 
 void Coma::DisconnectAndClear()

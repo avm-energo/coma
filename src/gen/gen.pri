@@ -36,7 +36,10 @@ HEADERS += \
     $$PWD/s2helper.h \
     $$PWD/xmlparser.h \
     $$PWD/settings.h \
-    $$PWD/timefunc.h
+    $$PWD/timefunc.h \
+    $$PWD/module_kxx.h \
+    $$PWD/modules.h \
+    $$PWD/registers.h
 
 
 

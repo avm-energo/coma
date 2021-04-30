@@ -1,17 +1,9 @@
 #include "usbhidport.h"
 
-#ifdef QT_GUI_LIB
-#include "../widgets/coma.h"
-#include "../widgets/wd_func.h"
-#endif
-
 #include "../gen/helper.h"
 #include "../gen/stdfunc.h"
 #include "baseinterface.h"
 
-//#ifdef QT_GUI_LIB
-//#include <QApplication>
-//#endif
 #include <QCoreApplication>
 #include <QDebug>
 #include <QElapsedTimer>
@@ -45,16 +37,7 @@ UsbHidPort::~UsbHidPort()
 {
     // qDebug() << "UsbHidPort deleted";
 }
-#ifdef QT_GUI_LIB
-void UsbHidPort::connectToGui(QObject *object)
-{
-    Coma *mainWindow = qobject_cast<Coma *>(WDFunc::getMainWindow());
-    /// TODO Может быть полезно
-    // Q_ASSERT(mainWindow != nullptr);
-    if (mainWindow != nullptr)
-        connect(mainWindow, &Coma::sendMessage, this, &UsbHidPort::nativeEvent, Qt::DirectConnection);
-}
-#endif
+
 inline hid_device *openDevice(const UsbHidSettings &dev)
 {
     return hid_open(dev.vendor_id, dev.product_id, dev.serial.toStdWString().c_str());

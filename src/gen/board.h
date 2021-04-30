@@ -3,7 +3,7 @@
 #define DEVICETYPE_MODULE 1 // модуль
 #define DEVICETYPE_DEVICE 2 // прибор
 
-#include "../module/modules.h"
+#include "../gen/modules.h"
 #include "datatypes.h"
 #include "singleton.h"
 

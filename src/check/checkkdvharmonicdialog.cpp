@@ -3,7 +3,7 @@
 #include "../gen/colors.h"
 #include "../gen/datamanager.h"
 #include "../gen/error.h"
-#include "../module/modules.h"
+#include "../gen/modules.h"
 #include "../widgets/wd_func.h"
 
 #include <QCoreApplication>

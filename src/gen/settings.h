@@ -1,6 +1,6 @@
 #pragma once
 #include "../config/delegate.h"
-#include "../module/modules.h"
+#include "../gen/modules.h"
 #include "datatypes.h"
 struct InterfaceSettings
 {

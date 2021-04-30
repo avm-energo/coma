@@ -1,6 +1,6 @@
 #include "journkdv.h"
 
-#include "modules.h"
+#include "../gen/modules.h"
 
 JournKDV::JournKDV(QMap<Modules::JournalType, DataTypes::JournalDesc> &jourMap, QObject *parent)
     : Journals(jourMap, parent)

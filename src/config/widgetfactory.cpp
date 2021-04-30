@@ -1,8 +1,8 @@
 #include "widgetfactory.h"
 
+#include "../gen/module_kxx.h"
 #include "../gen/s2.h"
 #include "../models/comboboxdelegate.h"
-#include "../module/module_kxx.h"
 #include "../widgets/checkboxgroup.h"
 #include "../widgets/ipctrl.h"
 

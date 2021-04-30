@@ -146,7 +146,7 @@ public:
 signals:
     void reconnect();
     void finish();
-
+    void nativeEvent(void *message);
     void stateChanged(BaseInterface::State m_state);
 
 private:

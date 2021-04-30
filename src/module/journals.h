@@ -2,8 +2,8 @@
 #define JOURNALS_H
 
 #include "../gen/datatypes.h"
+#include "../gen/modules.h"
 #include "../models/etablemodel.h"
-#include "../module/modules.h"
 
 #include <QSortFilterProxyModel>
 
