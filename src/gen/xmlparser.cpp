@@ -331,11 +331,11 @@ DataTypes::RecordPair XmlParser::parseRecord(QDomElement domElement)
     childElement = domElement.firstChildElement("defaultValue");
     if (childElement.isNull())
         return {};
-    childElement = domElement.firstChildElement("visibility");
+    auto visibilityElement = domElement.firstChildElement("visibility");
     // visibility=true by default
-    if (childElement.isNull() || childElement.text() == "true")
+    if (visibilityElement.isNull() || visibilityElement.text() == "true")
         return RecordPair { DataTypes::DataRecV(id, childElement.text()), true };
-    if (childElement.text() == "false")
+    if (visibilityElement.text() == "false")
         return RecordPair { DataTypes::DataRecV(id, childElement.text()), false };
     Q_ASSERT(false && "Wrong visible value: " && childElement.text().toStdString().c_str());
     return RecordPair { DataTypes::DataRecV(id, childElement.text()), true };

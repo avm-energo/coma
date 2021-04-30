@@ -418,9 +418,10 @@
       </iec60870>
 
       <s2files>
+        
 				<record>
 					<id>3</id>
-					<defaultValue>1</defaultValue>
+					<defaultValue>8</defaultValue>
 				</record>
 				<record>
 					<id>4</id>
@@ -452,23 +453,23 @@
 				</record>
 				<record>
 					<id>20</id>
-					<defaultValue>172,16,29,12</defaultValue>
+					<defaultValue>172,16,28,254</defaultValue>
 				</record>
 				<record>
 					<id>21</id>
-					<defaultValue>255,255,252,0</defaultValue>
+					<defaultValue>255,255,255,0</defaultValue>
 				</record>
 				<record>
 					<id>22</id>
-					<defaultValue>172,16,29,1</defaultValue>
+					<defaultValue>172,16,28,1</defaultValue>
 				</record>
 				<record>
 					<id>23</id>
-					<defaultValue>2404,2405,502,502</defaultValue>
+					<defaultValue>2404,2405,502,0</defaultValue>
 				</record>
 				<record>
 					<id>24</id>
-					<defaultValue>172,16,29,12</defaultValue>
+					<defaultValue>172,16,28,12</defaultValue>
 				</record>
 				<record>
 					<id>25</id>
@@ -484,7 +485,7 @@
 				</record>
 				<record>
 					<id>28</id>
-					<defaultValue>0</defaultValue>
+					<defaultValue>1</defaultValue>
 				</record>
 				<record>
 					<id>1003</id>
@@ -506,11 +507,11 @@
 				</record>
 				<record>
 					<id>1018</id>
-					<defaultValue>0.5</defaultValue>
+					<defaultValue>3.0</defaultValue>
 				</record>
 				<record>
 					<id>1019</id>
-					<defaultValue>1.0</defaultValue>
+					<defaultValue>5.0</defaultValue>
 				</record>
 				<record>
 					<id>1020</id>
@@ -522,23 +523,23 @@
 				</record>
 				<record>
 					<id>1022</id>
-					<defaultValue>1.0</defaultValue>
+					<defaultValue>3.0</defaultValue>
 				</record>
 				<record>
 					<id>1023</id>
-					<defaultValue>1.5</defaultValue>
+					<defaultValue>5.0</defaultValue>
 				</record>
 				<record>
 					<id>1024</id>
-					<defaultValue></defaultValue>
+					<defaultValue>2.0</defaultValue>
 				</record>
 				<record>
 					<id>1025</id>
-					<defaultValue></defaultValue>
+					<defaultValue>2.0</defaultValue>
 				</record>
 				<record>
 					<id>1026</id>
-					<defaultValue></defaultValue>
+					<defaultValue>2.0</defaultValue>
 				</record>
 				<record>
 					<id>1027</id>
@@ -566,10 +567,18 @@
 				</record>
 				<record>
 					<id>1035</id>
-					<defaultValue>0</defaultValue>
+					<defaultValue>5.0</defaultValue>
 				</record>
 				<record>
 					<id>1036</id>
+					<defaultValue>5.0</defaultValue>
+				</record>
+				<record>
+					<id>1037</id>
+					<defaultValue>0</defaultValue>
+				</record>
+				<record>
+					<id>1038</id>
 					<defaultValue>0</defaultValue>
 				</record>
 				<record>
@@ -578,7 +587,7 @@
 				</record>
 				<record>
 					<id>1040</id>
-					<defaultValue>1500,1500,1500</defaultValue>
+					<defaultValue>2200,2200,2200</defaultValue>
 				</record>
 				<record>
 					<id>1050</id>
