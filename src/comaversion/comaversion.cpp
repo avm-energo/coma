@@ -1,6 +1,6 @@
 #include "comaversion.h"
 
-#include "gversion.h"
+#include <gversion.h>
 
 QString GitVersion::getGitHash()
 {

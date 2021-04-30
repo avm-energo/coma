@@ -10,7 +10,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 set(CMAKE_SCRIPT_MODE_FILE ON)
-
+include_directories(${CMAKE_CURRENT_BINARY_DIR})
 find_package(
   QT NAMES Qt6 Qt5
   COMPONENTS Core]
@@ -57,8 +57,6 @@ configure_file(version.h.in gversion.h @ONLY)
 add_library(${PROJECT_NAME} STATIC comaversion.h comaversion.cpp)
 set_property(TARGET ${PROJECT_NAME} PROPERTY POSITION_INDEPENDENT_CODE ON)
 
-target_link_libraries(
-  ${PROJECT_NAME}
-  PRIVATE Qt${QT_VERSION_MAJOR}::Core)
+target_link_libraries(${PROJECT_NAME} PRIVATE Qt${QT_VERSION_MAJOR}::Core)
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE ${PROJECT_NAME}_LIBRARY)
