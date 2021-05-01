@@ -247,7 +247,7 @@ void StartupKDVDialog::SaveToFile()
     ba.resize(sizeof(*WBd7Block) + sizeof(*WBd8Block));
     memcpy(&(ba.data()[0]), WBd7Block, sizeof(*WBd7Block));
     memcpy(&(ba.data()[sizeof(*WBd7Block)]), WBd8Block, sizeof(*WBd8Block));
-    Error::Msg res = Files::SaveToFile(Files::ChooseFileForSave(this, "Tune files (*.cor)", "cor"), ba);
+    Error::Msg res = Files::SaveToFile(WDFunc::ChooseFileForSave(this, "Tune files (*.cor)", "cor"), ba);
     switch (res)
     {
     case Error::Msg::NoError:
@@ -272,7 +272,7 @@ void StartupKDVDialog::ReadFromFile()
     QByteArray ba;
     ba.resize(sizeof(*Bd9Block));
 
-    Error::Msg res = Files::LoadFromFile(Files::ChooseFileForOpen(this, "Tune files (*.cor)"), ba);
+    Error::Msg res = Files::LoadFromFile(WDFunc::ChooseFileForOpen(this, "Tune files (*.cor)"), ba);
     if (res != Error::Msg::NoError)
     {
         QMessageBox::critical(this, "Ошибка", "Ошибка при загрузке файла");

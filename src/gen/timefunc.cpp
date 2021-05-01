@@ -1,9 +1,10 @@
 #include "timefunc.h"
 
-#include "../dialogs/settingsdialog.h"
+#include "settings.h"
 
 #include <QDateTime>
 #include <QSettings>
+#include <memory>
 
 TimeFunc::TimeFunc()
 {
@@ -62,7 +63,6 @@ QString TimeFunc::UnixTime32ToInvString(quint32 utime, QTimeZone tz)
     QDateTime tn = QDateTime::fromSecsSinceEpoch(utime, tz); // in seconds
     return tn.toString("yyyy/MM/dd hh:mm:ss");
 }
-
 QTimeZone TimeFunc::userTimeZone()
 {
     auto sets = std::make_unique<QSettings>();

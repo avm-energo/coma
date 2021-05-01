@@ -1,12 +1,9 @@
 #ifndef STDFUNC_H
 #define STDFUNC_H
 
-#include <QString>
-#ifdef QT_GUI_LIB
-#include <QWidget>
-#else
 #include <QObject>
-#endif
+#include <QString>
+#include <cmath>
 #include <functional>
 #define MAINSLEEP 20
 #define MAINTIMEOUT 2000 // 2 sec timeout for general operations
@@ -50,10 +47,11 @@ public:
 
     static void Init();
     static QString VerToStr(quint32);
-#ifdef QT_GUI_LIB
-    static bool floatIsWithinLimits(
-        QWidget *w, double var, double value, double tolerance = 0.1, bool showMessage = true);
-#endif
+    static bool floatIsWithinLimits(double var, double base, double tolerance)
+    {
+        auto tmpf = fabs(var - base);
+        return (tmpf < fabs(tolerance));
+    }
     static float toFloat(const QString &text, bool *ok = nullptr);
     static void SetHomeDir(const QString &dir);
     static QString GetHomeDir();

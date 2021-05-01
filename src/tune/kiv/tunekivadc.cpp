@@ -131,14 +131,14 @@ Error::Msg TuneKIVADC::checkTuneCoefs()
     for (int i = 0; i < 3; ++i)
     {
         for (float *coef : tcoefs)
-            if (!StdFunc::floatIsWithinLimits(this, *(coef + i), 1.0, 0.05))
+            if (!WDFunc::floatIsWithinLimits(this, *(coef + i), 1.0, 0.05))
                 return Error::Msg::GeneralError;
     }
-    if (!StdFunc::floatIsWithinLimits(this, m_bac->data()->K_freq, 1.0, 0.05))
+    if (!WDFunc::floatIsWithinLimits(this, m_bac->data()->K_freq, 1.0, 0.05))
         return Error::Msg::GeneralError;
     for (int i = 0; i < 6; ++i)
     {
-        if (!StdFunc::floatIsWithinLimits(this, m_bac->data()->DPsi[i], 0.0, 1.0))
+        if (!WDFunc::floatIsWithinLimits(this, m_bac->data()->DPsi[i], 0.0, 1.0))
             return Error::Msg::GeneralError;
     }
 #endif
@@ -333,19 +333,19 @@ bool TuneKIVADC::checkBdaIn(int current)
 #endif
     for (int i = 0; i < 3; ++i)
     {
-        if (StdFunc::floatIsWithinLimits(this, m_bdain->data()->IUefNat_filt[i], 57.75, 3.0))
+        if (WDFunc::floatIsWithinLimits(this, m_bdain->data()->IUefNat_filt[i], 57.75, 3.0))
         {
-            if (StdFunc::floatIsWithinLimits(this, m_bdain->data()->IUeff_filtered[i], 57.75, 3.0))
+            if (WDFunc::floatIsWithinLimits(this, m_bdain->data()->IUeff_filtered[i], 57.75, 3.0))
             {
                 if (m_tuneStep == KIVTS_ADCU)
                     continue;
-                if (StdFunc::floatIsWithinLimits(this, m_bdain->data()->IUefNat_filt[i + 3], current, 50))
+                if (WDFunc::floatIsWithinLimits(this, m_bdain->data()->IUefNat_filt[i + 3], current, 50))
                 {
-                    if (StdFunc::floatIsWithinLimits(this, m_bdain->data()->IUeff_filtered[i + 3], current, 50))
+                    if (WDFunc::floatIsWithinLimits(this, m_bdain->data()->IUeff_filtered[i + 3], current, 50))
                     {
-                        if (StdFunc::floatIsWithinLimits(this, m_bdain->data()->phi_next_f[i], 0, 1))
+                        if (WDFunc::floatIsWithinLimits(this, m_bdain->data()->phi_next_f[i], 0, 1))
                         {
-                            if (StdFunc::floatIsWithinLimits(this, m_bdain->data()->phi_next_f[i + 3], 89, 3))
+                            if (WDFunc::floatIsWithinLimits(this, m_bdain->data()->phi_next_f[i + 3], 89, 3))
                                 continue;
                         }
                     }
@@ -355,7 +355,7 @@ bool TuneKIVADC::checkBdaIn(int current)
 
         return false;
     }
-    if (StdFunc::floatIsWithinLimits(this, m_bdain->data()->Pt100_R, 100, 5))
+    if (WDFunc::floatIsWithinLimits(this, m_bdain->data()->Pt100_R, 100, 5))
         return true;
     return false;
 }

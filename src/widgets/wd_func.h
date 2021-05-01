@@ -302,6 +302,13 @@ public:
     static QMainWindow *getMainWindow();
     static QMainWindow *getComaWindow();
 
+    static bool floatIsWithinLimits(QWidget *w, double var, double base, double tolerance, bool showMessage = true);
+    static QString ChooseFileForOpen(QWidget *parent, QString mask);
+    /// Input: QString mask: описание файлов, например: "Файлы журналов (*.swj)";
+    /// QString ext - расширение по умолчанию Output: QString filename
+    static QString ChooseFileForSave(
+        QWidget *parent, const QString &mask, const QString &ext, const QString &filenamestr = "");
+
 private:
     static QPushButton *NewPBCommon(QWidget *parent, const QString &pbname, const QString &text,
         const QString &icon = "", const QString &pbtooltip = "");

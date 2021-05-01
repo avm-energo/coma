@@ -3,7 +3,9 @@
 #include "../gen/board.h"
 #include "../gen/colors.h"
 #include "../gen/error.h"
+#include "../gen/files.h"
 #include "../gen/modules.h"
+#include "../gen/stdfunc.h"
 #include "../models/etablemodel.h"
 #include "edoublespinbox.h"
 #include "etableview.h"
@@ -11,9 +13,11 @@
 #include "passwordlineedit.h"
 
 #include <QApplication>
+#include <QFileDialog>
 #include <QHBoxLayout>
 #include <QHeaderView>
 #include <QMainWindow>
+#include <QMessageBox>
 #include <QPainter>
 #include <QPalette>
 #include <QPen>
@@ -612,6 +616,48 @@ QMainWindow *WDFunc::getMainWindow()
         if (QMainWindow *mainWin = qobject_cast<QMainWindow *>(w))
             return mainWin;
     return nullptr;
+}
+
+bool WDFunc::floatIsWithinLimits(QWidget *w, double var, double base, double tolerance, bool showMessage)
+{
+    if (StdFunc::floatIsWithinLimits(var, base, tolerance))
+        return true;
+    else if (showMessage)
+    {
+        qCritical() << "Ошибочное значение: должно быть " << QString::number(base, 'f', 5) << "±"
+                    << QString::number(tolerance, 'f', 5) << ", а получили: " << QString::number(var, 'f', 5);
+        QMessageBox::critical(w, "Ошибка",
+            "Ошибочное значение: должно быть " + QString::number(base, 'f', 5) + "±"
+                + QString::number(tolerance, 'f', 5) + ", а получили: " + QString::number(var, 'f', 5));
+    }
+    return false;
+}
+
+QString WDFunc::ChooseFileForOpen(QWidget *parent, QString mask)
+{
+    QFileDialog *dlg = new QFileDialog;
+    dlg->setAttribute(Qt::WA_DeleteOnClose);
+    dlg->setFileMode(QFileDialog::AnyFile);
+    QString filename = dlg->getOpenFileName(
+        parent, "Открыть файл", StdFunc::GetHomeDir(), mask, Q_NULLPTR, QFileDialog::DontUseNativeDialog);
+    QFileInfo info(filename);
+    StdFunc::SetHomeDir(info.absolutePath());
+    dlg->close();
+    return filename;
+}
+
+QString WDFunc::ChooseFileForSave(QWidget *parent, const QString &mask, const QString &ext, const QString &filenamestr)
+{
+    QString tmps = Files::ChooseFileForSave(ext, filenamestr);
+    QFileDialog *dlg = new QFileDialog;
+    dlg->setAttribute(Qt::WA_DeleteOnClose);
+    dlg->setFileMode(QFileDialog::AnyFile);
+    QString filename
+        = dlg->getSaveFileName(parent, "Сохранить файл", tmps, mask, Q_NULLPTR, QFileDialog::DontUseNativeDialog);
+    QFileInfo info(filename);
+    StdFunc::SetHomeDir(info.absolutePath());
+    dlg->close();
+    return filename;
 }
 
 QPushButton *WDFunc::NewPBCommon(

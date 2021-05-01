@@ -1,5 +1,6 @@
 #include "settingsdialog.h"
 
+#include "../gen/settings.h"
 #include "../widgets/styleloader.h"
 #include "../widgets/wd_func.h"
 

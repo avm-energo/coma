@@ -324,13 +324,13 @@ void Coma::startWork(const ConnectStruct st)
 
 void Coma::loadOsc()
 {
-    QString filename = Files::ChooseFileForOpen(this, "Oscillogram files (*.osc)");
+    QString filename = WDFunc::ChooseFileForOpen(this, "Oscillogram files (*.osc)");
     oscManager->LoadOscFromFile(filename);
 }
 
 void Coma::loadSwj()
 {
-    QString filename = Files::ChooseFileForOpen(this, "Switch journal files (*.swj)");
+    QString filename = WDFunc::ChooseFileForOpen(this, "Switch journal files (*.swj)");
     oscManager->loadSwjFromFile(filename);
 }
 

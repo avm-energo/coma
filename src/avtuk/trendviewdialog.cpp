@@ -408,7 +408,7 @@ void TrendViewDialog::saveToComtrade()
 
 void TrendViewDialog::saveToOsc()
 {
-    QString filename = Files::ChooseFileForSave(this, "Файлы осциллограмм (*.osc)", "osc");
+    QString filename = WDFunc::ChooseFileForSave(this, "Файлы осциллограмм (*.osc)", "osc");
     Files::SaveToFile(filename, m_arrayToSave /*, BAToSave.size(*/);
 }
 

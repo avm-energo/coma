@@ -95,7 +95,7 @@ void StartupKIVDialog::SaveToFile()
     QByteArray ba = QByteArray::fromRawData(reinterpret_cast<char *>(CorBlock), sizeof(CorBlock));
     FillBackCor();
 
-    Error::Msg res = Files::SaveToFile(Files::ChooseFileForSave(this, "Tune files (*.cor)", "cor"), ba);
+    Error::Msg res = Files::SaveToFile(WDFunc::ChooseFileForSave(this, "Tune files (*.cor)", "cor"), ba);
     switch (res)
     {
     case Error::Msg::NoError:
@@ -120,7 +120,7 @@ void StartupKIVDialog::ReadFromFile()
     QByteArray ba;
     ba.resize(sizeof(CorData));
 
-    Error::Msg res = Files::LoadFromFile(Files::ChooseFileForOpen(this, "Tune files (*.cor)"), ba);
+    Error::Msg res = Files::LoadFromFile(WDFunc::ChooseFileForOpen(this, "Tune files (*.cor)"), ba);
     if (res != Error::Msg::NoError)
     {
         QMessageBox::critical(this, "Ошибка", "Ошибка при загрузке файла");

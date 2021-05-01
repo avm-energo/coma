@@ -172,7 +172,7 @@ void JournalDialog::SaveJour(DataTypes::FilesEnum jourType)
         + QString("%1").arg(board.serialNumber(Board::BaseAdd), 8, 10, QChar('0')) + " ";
     jourfilestr += QDate::currentDate().toString("dd-MM-yyyy") + ".xlsx";
     // запрашиваем имя файла для сохранения
-    QString filename = Files::ChooseFileForSave(nullptr, "Excel documents (*.xlsx)", "xlsx", jourfilestr);
+    QString filename = WDFunc::ChooseFileForSave(nullptr, "Excel documents (*.xlsx)", "xlsx", jourfilestr);
 
     progress->setMinimumDuration(0);
     connect(m_jour.get(), &Journals::resendMaxResult, progress, &QProgressDialog::setMaximum);
