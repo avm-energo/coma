@@ -12,6 +12,9 @@ AlarmButton::~AlarmButton()
 void AlarmButton::setPixmap(const QPixmap &pixmap)
 {
     m_pixmap = pixmap;
+    const int y = (height() - m_pixmap.height()) / 2;
+    const int x = width() / 20;
+    update(x, y, m_pixmap.width(), m_pixmap.height());
 }
 
 QSize AlarmButton::sizeHint() const
