@@ -42,9 +42,6 @@ add_library(
   modulealarm.h
   module.cpp
   module.h
-  module_kxx.h
-  modules.h
-  registers.h
   ../../settings/settings.qrc)
 set_property(TARGET ${PROJECT_NAME} PROPERTY POSITION_INDEPENDENT_CODE ON)
 target_link_libraries(

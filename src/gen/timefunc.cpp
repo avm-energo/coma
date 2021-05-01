@@ -77,4 +77,3 @@ QTimeZone TimeFunc::userTimeZone()
         return QTimeZone(timezone.toUtf8());
     return QTimeZone::systemTimeZone();
 }
-#endif

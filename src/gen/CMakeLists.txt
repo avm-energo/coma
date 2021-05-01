@@ -52,6 +52,9 @@ add_library(
   stdfunc.cpp
   xmlparser.cpp
   xmlparser.h
+  module_kxx.h
+  modules.h
+  registers.h
   s2.cpp)
 set_property(TARGET ${PROJECT_NAME} PROPERTY POSITION_INDEPENDENT_CODE ON)
 target_link_libraries(

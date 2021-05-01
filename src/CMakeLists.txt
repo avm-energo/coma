@@ -62,7 +62,7 @@ link_directories(${ThirdPartyLibDir}/lib)
 
 add_subdirectory(interfaces)
 add_subdirectory(gen)
-# add_subdirectory(alise)
+add_subdirectory(alise)
 add_subdirectory(config)
 add_subdirectory(avtuk)
 add_subdirectory(check)
