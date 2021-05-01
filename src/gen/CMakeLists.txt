@@ -35,7 +35,6 @@ add_library(
   error.h
   error.cpp
   errorqueue.cpp
-  errorqueue.cpp
   files.cpp
   files.h
   helper.cpp
@@ -55,6 +54,7 @@ add_library(
   module_kxx.h
   modules.h
   registers.h
+  errorqueue.h
   s2.cpp)
 set_property(TARGET ${PROJECT_NAME} PROPERTY POSITION_INDEPENDENT_CODE ON)
 target_link_libraries(
