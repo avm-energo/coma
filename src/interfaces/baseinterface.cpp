@@ -12,6 +12,7 @@ BaseInterface::InterfacePointer BaseInterface::m_iface;
 
 BaseInterface::BaseInterface(QObject *parent) : QObject(parent), /* m_working(false),*/ Log(new LogClass(this))
 {
+    qRegisterMetaType<BaseInterface::State>();
     timeoutTimer = new QTimer(this);
     timeoutTimer->setInterval(MAINTIMEOUT);
     connect(timeoutTimer, &QTimer::timeout, this, &BaseInterface::timeout);
@@ -252,6 +253,7 @@ void BaseInterface::stop()
 {
     Log->info("Stop()");
     setState(BaseInterface::State::Stop);
+    qInfo() << metaObject()->className() << "disconnected";
 }
 
 void BaseInterface::resultReady(const DataTypes::BlockStruct &result)

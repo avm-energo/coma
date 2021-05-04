@@ -543,7 +543,7 @@
 		<widget>
 			<type>QDoubleSpinBox</type>
 			<group>6</group>
-			<string>Интервал усреднения данных  (в периодах основной частоты)</string>
+			<string>Интервал усреднения данных (в периодах основной частоты)</string>
 			<min>0</min>
 			<max>10000</max>
 			<decimals>0</decimals>
@@ -834,7 +834,7 @@
 		<widget>
 			<type>QCheckBox</type>
 			<group>6</group>
-			<string>Сигнализация по наличию входного напряжения, % от ном.</string>
+			<string>Метод контроля - прямых измерений</string>
 		</widget>
 	</record>
 	<record>
@@ -843,7 +843,7 @@
 		<widget>
 			<type>QCheckBox</type>
 			<group>6</group>
-			<string>Сигнализация по небалансу токов</string>
+			<string>Метод контроля - по небалансу токов</string>
 		</widget>
 	</record>
 	<record>

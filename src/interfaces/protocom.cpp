@@ -10,7 +10,13 @@
 
 #include <QDebug>
 #include <QThread>
-
+#ifdef _WIN32
+// clang-format off
+#include <windows.h>
+// Header dbt must be the last header, thanx to microsoft
+#include <dbt.h>
+// clang-format on
+#endif
 using Proto::CommandStruct;
 using Proto::Starters;
 
@@ -76,7 +82,22 @@ bool Protocom::start(const UsbHidSettings &usbhid)
         portThread->deleteLater();
         return false;
     }
-    connect(this, &BaseInterface::nativeEvent, port, &UsbHidPort::nativeEvent, Qt::DirectConnection);
+#ifdef _WIN32
+    connect(this, &BaseInterface::nativeEvent, this, [port](auto &&msg) {
+        MSG *message = static_cast<MSG *>(msg);
+        if (!msg)
+            return;
+        auto *devint = reinterpret_cast<DEV_BROADCAST_DEVICEINTERFACE *>(message->lParam);
+        if (!devint)
+            return;
+        USBMessage usbMessage;
+        usbMessage.guid = QString::fromStdWString(&devint->dbcc_name[0]);
+        usbMessage.type = devint->dbcc_devicetype;
+
+        QMetaObject::invokeMethod(port, [=] { port->usbEvent(usbMessage, message->wParam); });
+    });
+#endif
+    connect(port, &UsbHidPort::stateChanged, this, &BaseInterface::stateChanged, Qt::QueuedConnection);
     qInfo() << metaObject()->className() << "connected";
     port->moveToThread(portThread);
     parser->moveToThread(parseThread);

@@ -146,7 +146,7 @@ public:
 signals:
     void reconnect();
     void finish();
-    void nativeEvent(void *message);
+    void nativeEvent(void *const message);
     void stateChanged(BaseInterface::State m_state);
 
 private:
@@ -168,5 +168,7 @@ private slots:
     void fileReceived(const DataTypes::FileStruct &file);
     void timeout();
 };
+
+Q_DECLARE_METATYPE(BaseInterface::State)
 
 #endif // BASEINTERFACE_H

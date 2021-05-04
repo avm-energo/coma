@@ -135,32 +135,43 @@ QWidget *AbstractCheckDialog::BottomUI()
 void AbstractCheckDialog::updateSPData(const DataTypes::SinglePointWithTimeStruct &sp)
 {
     bool status = sp.sigVal;
-    QList<HighlightMap::mapped_type> regs;
-    QString color;
-    if (m_highlightWarn.contains(sp.sigAdr))
+
+    if (m_highlightCrit.contains(sp.sigAdr))
     {
-        regs = m_highlightWarn.values(sp.sigAdr);
-        color = "yellow";
-    }
-    else if (m_highlightCrit.contains(sp.sigAdr))
-    {
-        regs = m_highlightCrit.values(sp.sigAdr);
-        color = "red";
-    }
-    for (const auto reg : qAsConst(regs))
-    {
-        QLabel *lbl = findChild<QLabel *>(QString::number(reg));
-        if (!lbl)
-            continue;
-        if (status)
+        const QList<HighlightMap::mapped_type> regs = m_highlightCrit.values(sp.sigAdr);
+        const QString color = "red";
+        for (const auto reg : qAsConst(regs))
         {
-            lbl->setStyleSheet(
-                "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; font: bold; background-color:"
-                + color + "; color : black; }");
+            QLabel *lbl = findChild<QLabel *>(QString::number(reg));
+            if (!lbl)
+                continue;
+            if (status)
+            {
+                lbl->setStyleSheet(
+                    "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; font: bold; background-color:"
+                    + color + "; color : black; }");
+            }
         }
-        else
+    }
+    else if (m_highlightWarn.contains(sp.sigAdr))
+    {
+        const QList<HighlightMap::mapped_type> regs = m_highlightWarn.values(sp.sigAdr);
+        const QString color = "yellow";
+        for (const auto reg : qAsConst(regs))
         {
-            lbl->setStyleSheet(ValuesFormat);
+            QLabel *lbl = findChild<QLabel *>(QString::number(reg));
+            if (!lbl)
+                continue;
+            if (status)
+            {
+                lbl->setStyleSheet(
+                    "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; font: bold; background-color:"
+                    + color + "; color : black; }");
+            }
+            else
+            {
+                lbl->setStyleSheet(ValuesFormat);
+            }
         }
     }
 }

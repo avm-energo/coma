@@ -2,11 +2,19 @@
 
 #include "../gen/error.h"
 #include "../gen/logclass.h"
+#include "baseinterface.h"
 #include "hidapi/hidapi.h"
 #include "protocomprivate.h"
 #include "settingstypes.h"
 
 #include <QWaitCondition>
+
+struct USBMessage
+{
+    QString guid;
+    quint32 type;
+};
+
 namespace HID
 {
 // максимальная длина одного сегмента (0x40)
@@ -31,8 +39,7 @@ public:
     UsbHidSettings deviceInfo() const;
     void setDeviceInfo(const UsbHidSettings &deviceInfo);
 
-    void nativeEvent(void *message);
-
+    void usbEvent(const USBMessage message, quint32 type);
     bool shouldBeStopped() const;
     void shouldBeStopped(bool isShouldBeStopped);
 
@@ -41,7 +48,7 @@ signals:
     void finished();
     void started();
     void clearQueries();
-
+    void stateChanged(BaseInterface::State);
 public slots:
     void poll();
 
