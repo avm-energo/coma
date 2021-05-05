@@ -2,7 +2,18 @@ AllowAllParametersOfDeclarationOnNextLine: false
 AllowShortFunctionsOnASingleLine : false
 AlignTrailingComments: true
 BasedOnStyle: WebKit
-BreakBeforeBraces: Allman
+BreakBeforeBraces: Custom
+BraceWrapping:
+  AfterClass: true
+  AfterControlStatement: Always
+  AfterEnum: true
+  AfterStruct: true
+  SplitEmptyFunction: true
+  BeforeLambdaBody: false
+  AfterCaseLabel: true
+  AfterFunction : true
+  AfterNamespace : true
+  BeforeElse: true
 ConstructorInitializerAllOnOneLineOrOnePerLine: true
 ColumnLimit: 120
 PointerBindsToType: false
