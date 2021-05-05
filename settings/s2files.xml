@@ -1,6 +1,53 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <?xml-stylesheet type="text/xsl" href="s2files.xsl"?>
 <s2files xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="s2files.xsd">
+	<map name="categories">
+		<item>
+			<key>0</key>
+			<value>Пустая группа</value>
+		</item>
+		<item>
+			<key>1</key>
+			<value>IEC 60870-5-104</value>
+		</item>
+		<item>
+			<key>2</key>
+			<value>Настройки IP</value>
+		</item>
+		<item>
+			<key>3</key>
+			<value>Аналоговые параметры</value>
+		</item>
+		<item>
+			<key>4</key>
+			<value>Уставки</value>
+		</item>
+		<item>
+			<key>5</key>
+			<value>Пустая группа</value>
+		</item>
+		<item>
+			<key>6</key>
+			<value>Пустая группа</value>
+		</item>
+		<item>
+			<key>7</key>
+			<value>Остальные</value>
+		</item>
+		<item>
+			<key>8</key>
+			<value>Modbus RTU</value>
+		</item>
+		<item>
+			<key>9</key>
+			<value>Пустая группа</value>
+		</item>
+		<item>
+			<key>10</key>
+			<value>Пустая группа</value>
+		</item>
+		
+	</map>
 	<record>
 		<id>1</id>
 		<type>DWORD</type>
@@ -542,7 +589,7 @@
 		<type>DWORD</type>
 		<widget>
 			<type>QDoubleSpinBox</type>
-			<group>6</group>
+			<group>7</group>
 			<string>Интервал усреднения данных (в периодах основной частоты)</string>
 			<min>0</min>
 			<max>10000</max>
@@ -741,7 +788,7 @@
 		<type>FLOAT</type>
 		<widget>
 			<type>QDoubleSpinBox</type>
-			<group>5</group>
+			<group>7</group>
 			<string>Гистерезис на отключение сигнализации по dC, % от уставки</string>
 			<min>0</min>
 			<max>10000</max>
@@ -753,7 +800,7 @@
 		<type>FLOAT</type>
 		<widget>
 			<type>QDoubleSpinBox</type>
-			<group>5</group>
+			<group>7</group>
 			<string>Гистерезис на отключение сигнализации по dTg, % от уставки</string>
 			<min>0</min>
 			<max>10000</max>
@@ -765,7 +812,7 @@
 		<type>FLOAT</type>
 		<widget>
 			<type>QDoubleSpinBox</type>
-			<group>5</group>
+			<group>7</group>
 			<string>Гистерезис на отключение сигнализации по небалансу токов, %</string>
 			<min>0</min>
 			<max>10000</max>
@@ -809,7 +856,7 @@
 		<type>DWORD</type>
 		<widget>
 			<type>QDoubleSpinBox</type>
-			<group>6</group>
+			<group>7</group>
 			<string>Интервал записи данных в ПЗУ (тренд), в секундах</string>
 			<min>0</min>
 			<max>10000</max>
@@ -821,7 +868,7 @@
 		<type>FLOAT</type>
 		<widget>
 			<type>QDoubleSpinBox</type>
-			<group>6</group>
+			<group>4</group>
 			<string>Низкое напряжение для сигнализации</string>
 			<min>0</min>
 			<max>10000</max>
@@ -833,7 +880,7 @@
 		<type>BYTE</type>
 		<widget>
 			<type>QCheckBox</type>
-			<group>6</group>
+			<group>3</group>
 			<string>Метод контроля - прямых измерений</string>
 		</widget>
 	</record>
@@ -842,7 +889,7 @@
 		<type>BYTE</type>
 		<widget>
 			<type>QCheckBox</type>
-			<group>6</group>
+			<group>3</group>
 			<string>Метод контроля - по небалансу токов</string>
 		</widget>
 	</record>
@@ -851,7 +898,7 @@
 		<type>DWORD</type>
 		<widget>
 			<type>QDoubleSpinBox</type>
-			<group>6</group>
+			<group>4</group>
 			<string>Задержка на формирование предупредительных событий, сек</string>
 			<min>0</min>
 			<max>10000</max>
@@ -863,7 +910,7 @@
 		<type>DWORD</type>
 		<widget>
 			<type>QDoubleSpinBox</type>
-			<group>6</group>
+			<group>4</group>
 			<string>Задержка на формирование аварийных событий, сек</string>
 			<min>0</min>
 			<max>10000</max>
@@ -875,7 +922,7 @@
 		<type>DWORD</type>
 		<widget>
 			<type>QDoubleSpinBox</type>
-			<group>7</group>
+			<group>4</group>
 			<string>Задержка срабатывания реле предупредительной сигнализации</string>
 			<min>0</min>
 			<max>10000</max>
@@ -887,7 +934,7 @@
 		<type>DWORD</type>
 		<widget>
 			<type>QDoubleSpinBox</type>
-			<group>7</group>
+			<group>4</group>
 			<string>Задержка срабатывания реле аварийной сигнализации</string>
 			<min>0</min>
 			<max>10000</max>

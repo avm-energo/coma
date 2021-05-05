@@ -8,8 +8,8 @@
 
 #include <QHeaderView>
 #include <QStandardItem>
-widgetMap WidgetFactory::widgetMap;
-
+widgetMap WidgetFactory::m_widgetMap;
+categoryMap WidgetFactory::m_categoryMap;
 // forward declarations
 // helpers for create widget
 static QWidget *createModbusView(QWidget *parent);
@@ -110,8 +110,8 @@ WidgetFactory::WidgetFactory()
 QWidget *WidgetFactory::createWidget(BciNumber key, QWidget *parent)
 {
     QWidget *widget = nullptr;
-    auto search = widgetMap.find(key);
-    if (search == widgetMap.end())
+    auto search = m_widgetMap.find(key);
+    if (search == m_widgetMap.end())
     {
         qWarning() << "Not found" << key;
         return widget;
@@ -179,8 +179,8 @@ QWidget *WidgetFactory::createWidget(BciNumber key, QWidget *parent)
 bool WidgetFactory::fillBack(BciNumber key, const QWidget *parent)
 {
     bool status = false;
-    auto search = widgetMap.find(key);
-    if (search == widgetMap.end())
+    auto search = m_widgetMap.find(key);
+    if (search == m_widgetMap.end())
     {
         qWarning() << "Not found" << key;
         return status;
@@ -263,8 +263,8 @@ QList<QStandardItem *> WidgetFactory::createItem(
     BciNumber key, const DataTypes::BYTE_8t &value, [[maybe_unused]] const QWidget *parent)
 {
     QList<QStandardItem *> items {};
-    auto search = widgetMap.find(key);
-    if (search == widgetMap.end())
+    auto search = m_widgetMap.find(key);
+    if (search == m_widgetMap.end())
     {
         qWarning() << "Not found" << key;
         return items;

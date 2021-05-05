@@ -234,7 +234,7 @@ void ConfigDialog::SetupUI()
         QGroupBox *subBox = nullptr;
         if (!child)
         {
-            subBox = new QGroupBox("Группа " + QVariant::fromValue(group).toString(), this);
+            subBox = new QGroupBox("Группа " + factory.getCategory(group), this);
             QVBoxLayout *subvlyout = new QVBoxLayout;
             subvlyout->setAlignment(Qt::AlignTop);
             subvlyout->setSpacing(0);
@@ -249,7 +249,7 @@ void ConfigDialog::SetupUI()
             scrollArea->setWidgetResizable(true);
             scrollArea->setWidget(subBox);
 
-            ConfTW->addTab(scrollArea, QVariant::fromValue(group).toString());
+            ConfTW->addTab(scrollArea, factory.getCategory(group));
         }
         else
         {

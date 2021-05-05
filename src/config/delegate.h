@@ -120,4 +120,5 @@ struct Item : Widget
 
 using itemVariant = std::variant<Widget, QComboBox, DoubleSpinBoxGroup, DoubleSpinBoxWidget, CheckBoxGroup, Item>;
 }
+using categoryMap = QMap<delegate::WidgetGroup, QString>;
 using widgetMap = std::map<BciNumber, delegate::itemVariant>;

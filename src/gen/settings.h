@@ -27,6 +27,7 @@ struct GlobalSettings
 {
     S2DataTypes::valueTypeMap *s2filesMap;
     widgetMap *s2widgetMap;
+    categoryMap *s2categories;
 };
 
 namespace settings

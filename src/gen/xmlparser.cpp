@@ -443,9 +443,9 @@ void XmlParser::traverseNode(const QDomNode &node, ModuleSettings *const setting
                 if (domElement.tagName() == "multimap")
                 {
                     if (domElement.attribute("name").contains("warn", Qt::CaseInsensitive))
-                        settings->highlightWarn = parseMultiMap<quint32, quint32>(domElement);
+                        settings->highlightWarn = parseMap<QMultiMap<quint32, quint32>>(domElement);
                     else if (domElement.attribute("name").contains("crit", Qt::CaseInsensitive))
-                        settings->highlightCrit = parseMultiMap<quint32, quint32>(domElement);
+                        settings->highlightCrit = parseMap<QMultiMap<quint32, quint32>>(domElement);
                 }
 
                 if (domElement.tagName() == "modbus")
@@ -511,6 +511,10 @@ void XmlParser::traverseNode(const QDomNode &node, GlobalSettings &settings)
                     domNode = domNode.nextSibling();
                     continue;
                 }
+                if (domElement.tagName() == "map")
+                {
+                    *settings.s2categories = parseMap<categoryMap>(domElement);
+                }
             }
         }
         traverseNode(domNode, settings);
@@ -518,9 +522,11 @@ void XmlParser::traverseNode(const QDomNode &node, GlobalSettings &settings)
     }
 }
 
-template <typename Key, typename Value> QMultiMap<Key, Value> XmlParser::parseMultiMap(QDomElement domElement)
+template <typename Container> Container XmlParser::parseMap(QDomElement domElement)
 {
-    QMultiMap<Key, Value> map;
+    Container map;
+    using Key = typename decltype(map)::key_type;
+    using Value = typename decltype(map)::mapped_type;
     if (domElement.isNull())
         return map;
 
@@ -550,8 +556,16 @@ template <typename Key, typename Value> QMultiMap<Key, Value> XmlParser::parseMu
                         }
                         else if (domElement.tagName() == "value")
                         {
-                            Value value = QVariant(domElement.text()).value<Value>();
-                            map.insert(key, value);
+                            if constexpr (std::is_same_v<QString, Value>)
+                            {
+                                Value value = domElement.text();
+                                map.insert(key, value);
+                            }
+                            else
+                            {
+                                Value value = QVariant(domElement.text()).value<Value>();
+                                map.insert(key, value);
+                            }
                         }
                     }
 

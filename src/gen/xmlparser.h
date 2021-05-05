@@ -25,5 +25,5 @@ private:
     static quint32 parseInt32(QDomElement domElement);
     static quint64 parseHexInt64(QDomElement domElement);
     static QStringList parseStringList(QDomElement domElement);
-    template <typename Key, typename Value> static QMultiMap<Key, Value> parseMultiMap(QDomElement domElement);
+    template <typename Container> static Container parseMap(QDomElement domElement);
 };

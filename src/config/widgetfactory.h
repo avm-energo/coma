@@ -32,7 +32,11 @@ public:
     }
     static auto getWidgetMap()
     {
-        return widgetMap;
+        return m_widgetMap;
+    }
+    static auto getCategory(delegate::WidgetGroup key)
+    {
+        return m_categoryMap.value(key);
     }
 
 private:
@@ -57,7 +61,8 @@ private:
     bool fillTableView(const QWidget *parent, BciNumber key, BciNumber parentKey, //
         ctti::unnamed_type_id_t type, const T &value);
 
-    static widgetMap widgetMap;
+    static widgetMap m_widgetMap;
+    static categoryMap m_categoryMap;
 };
 
 // Template specialisation
@@ -135,8 +140,8 @@ bool WidgetFactory::fillTableView(
 template <typename T> bool WidgetFactory::fillWidget(const QWidget *parent, BciNumber key, const T &value)
 {
     bool status = false;
-    auto search = widgetMap.find(key);
-    if (search == widgetMap.end())
+    auto search = m_widgetMap.find(key);
+    if (search == m_widgetMap.end())
     {
         if (key == BciNumber::dummyElement)
         {
