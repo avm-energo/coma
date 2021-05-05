@@ -16,6 +16,7 @@ int main(int argc, char *argv[])
     Q_INIT_RESOURCE(lightstyle);
     Q_INIT_RESOURCE(styles);
     Q_INIT_RESOURCE(vectorIcons);
+    a.setWindowIcon(QIcon(":/icons/coma.ico"));
     Logging::writeStart();
     qInstallMessageHandler(Logging::messageHandler);
     ServiceComa w;
