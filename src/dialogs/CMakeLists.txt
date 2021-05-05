@@ -17,11 +17,11 @@ find_package(
 
 find_package(
   QT NAMES Qt6 Qt5
-  COMPONENTS Core Network Xml Widgets SerialPort Concurrent
+  COMPONENTS Core Network Xml Widgets SerialPort Concurrent Svg
   REQUIRED)
 find_package(
   Qt${QT_VERSION_MAJOR}
-  COMPONENTS Core Network Xml Widgets SerialPort Concurrent
+  COMPONENTS Core Network Xml Widgets SerialPort Concurrent Svg
   REQUIRED)
 
 add_library(
@@ -44,6 +44,8 @@ add_library(
   interfaceusbdialog.h
   journalsdialog.cpp
   journalsdialog.h
+  hiddendialog.cpp
+  hiddendialog.h
   keypressdialog.cpp
   keypressdialog.h
   settingsdialog.cpp
@@ -61,5 +63,6 @@ target_link_libraries(
   PRIVATE Qt${QT_VERSION_MAJOR}::Network
   PRIVATE Qt${QT_VERSION_MAJOR}::SerialPort
   PRIVATE Qt${QT_VERSION_MAJOR}::Concurrent
+  PRIVATE Qt${QT_VERSION_MAJOR}::Svg
   PRIVATE QXlsx)
 target_compile_definitions(${PROJECT_NAME} PRIVATE ${PROJECT_NAME}_LIBRARY)
