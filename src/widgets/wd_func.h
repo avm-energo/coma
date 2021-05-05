@@ -48,7 +48,8 @@ public:
         QLineEdit *le = w->findChild<QLineEdit *>(lename);
         if (le == nullptr)
             value = T();
-        value = qvariant_cast<T>(le->text());
+        else
+            value = qvariant_cast<T>(le->text());
     }
     template <typename T> static bool LENumber(QWidget *w, const QString &lename, T &levalue)
     {

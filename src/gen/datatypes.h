@@ -164,6 +164,7 @@ struct BlockStruct
     QByteArray data;
 };
 
+typedef BlockStruct HardwareStruct;
 typedef QList<ConfParameterStruct> ConfParametersListStruct;
 
 struct SignalsStruct
@@ -239,8 +240,9 @@ enum Commands
     QUSB_ReqBlkDataTech,
     QUSB_WriteBlkDataTech,
     QUSB_ReqOscInfo,
-    QUSB_SetMode, // SMode (0x43) - not tested yet
-    QUSB_GetMode  // GMode (0x28) - not tested yet
+    QUSB_SetMode,
+    QUSB_GetMode,
+    QUSB_WriteHardware
 };
 
 struct Command

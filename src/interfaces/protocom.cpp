@@ -83,19 +83,21 @@ bool Protocom::start(const UsbHidSettings &usbhid)
         return false;
     }
 #ifdef _WIN32
-    connect(this, &BaseInterface::nativeEvent, this, [port](auto &&msg) {
-        MSG *message = static_cast<MSG *>(msg);
-        if (!msg)
-            return;
-        auto *devint = reinterpret_cast<DEV_BROADCAST_DEVICEINTERFACE *>(message->lParam);
-        if (!devint)
-            return;
-        USBMessage usbMessage;
-        usbMessage.guid = QString::fromStdWString(&devint->dbcc_name[0]);
-        usbMessage.type = devint->dbcc_devicetype;
+    connect(this, &BaseInterface::nativeEvent, this,
+        [port](auto &&msg)
+        {
+            MSG *message = static_cast<MSG *>(msg);
+            if (!msg)
+                return;
+            auto *devint = reinterpret_cast<DEV_BROADCAST_DEVICEINTERFACE *>(message->lParam);
+            if (!devint)
+                return;
+            USBMessage usbMessage;
+            usbMessage.guid = QString::fromStdWString(&devint->dbcc_name[0]);
+            usbMessage.type = devint->dbcc_devicetype;
 
-        QMetaObject::invokeMethod(port, [=] { port->usbEvent(usbMessage, message->wParam); });
-    });
+            QMetaObject::invokeMethod(port, [=] { port->usbEvent(usbMessage, message->wParam); });
+        });
 #endif
     connect(port, &UsbHidPort::stateChanged, this, &BaseInterface::stateChanged, Qt::QueuedConnection);
     qInfo() << metaObject()->className() << "connected";
@@ -277,6 +279,11 @@ void Protocom::writeCommand(Queries::Commands cmd, QVariant item)
 
         Q_ASSERT(item.canConvert<quint32>());
         d->handleBlk(protoCmd, item.toUInt());
+        break;
+    case Commands::WriteHardware:
+
+        Q_ASSERT(item.canConvert<DataTypes::HardwareStruct>());
+        d->handleBlk(protoCmd, item.value<DataTypes::BlockStruct>());
         break;
 
     case Commands::WriteBlkData:
