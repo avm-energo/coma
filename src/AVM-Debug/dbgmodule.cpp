@@ -9,6 +9,7 @@
 #include "../check/checkktfdialog.h"
 #include "../check/checkktfharmonicdialog.h"
 #include "../config/configdialog.h"
+#include "../dialogs/hiddendialog.h"
 #include "../dialogs/journalsdialog.h"
 #include "../module/journkdv.h"
 #include "../module/journkiv.h"
@@ -18,7 +19,6 @@
 #include "../startup/startupktfdialog.h"
 #include "../tune/84/tune84dialog.h"
 #include "../tune/kiv/tunekivdialog.h"
-
 DbgModule::DbgModule(QObject *parent) : Module(parent)
 {
 }
@@ -164,6 +164,9 @@ void DbgModule::create(QTimer *updateTimer)
         createModule(Modules::Model(mtype));
     }
     createCommon();
+    HiddenDialog *hiddenDialog = new HiddenDialog;
+    hiddenDialog->fill();
+    addDialogToList(hiddenDialog, "Секретные операции", "hidden");
     QList<UDialog *> dlgs = dialogs();
     for (auto *d : dlgs)
     {

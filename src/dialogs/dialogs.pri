@@ -3,6 +3,7 @@ SOURCES += \
     $$PWD/connectdialog.cpp \
     $$PWD/errordialog.cpp \
     $$PWD/fwuploaddialog.cpp \
+    $$PWD/hiddendialog.cpp \
     $$PWD/infodialog.cpp \
     $$PWD/interfaceethernetdialog.cpp \
     $$PWD/interfaceserialdialog.cpp \
@@ -22,6 +23,7 @@ HEADERS += \
     $$PWD/interfaceserialdialog.h \
     $$PWD/interfaceusbdialog.h \
     $$PWD/journalsdialog.h \
+    $$PWD/hiddendialog.h \
     $$PWD/keypressdialog.h \
     $$PWD/settingsdialog.h \
     $$PWD/timedialog.h
