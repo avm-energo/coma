@@ -869,7 +869,7 @@
 		<widget>
 			<type>QDoubleSpinBox</type>
 			<group>4</group>
-			<string>Низкое напряжение для сигнализации</string>
+			<string>Низкое напряжение для сигнализации, % от номинального</string>
 			<min>0</min>
 			<max>10000</max>
 			<decimals>1</decimals>
