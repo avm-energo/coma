@@ -12,11 +12,11 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 find_package(Qt5Core)
 find_package(
   QT NAMES Qt6 Qt5
-  COMPONENTS Core Network Widgets Xml
+  COMPONENTS Core Network Xml
   REQUIRED)
 find_package(
   Qt${QT_VERSION_MAJOR}
-  COMPONENTS Core Network Widgets Xml
+  COMPONENTS Core Network Xml
   REQUIRED)
 
 add_library(
@@ -61,6 +61,5 @@ target_link_libraries(
   gen
   PRIVATE Qt${QT_VERSION_MAJOR}::Core
   PRIVATE Qt${QT_VERSION_MAJOR}::Xml
-  PRIVATE Qt${QT_VERSION_MAJOR}::Widgets
   PRIVATE Qt${QT_VERSION_MAJOR}::Network)
 target_compile_definitions(${PROJECT_NAME} PRIVATE ${PROJECT_NAME}_LIBRARY)

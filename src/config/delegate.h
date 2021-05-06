@@ -6,7 +6,6 @@
 #include <variant>
 namespace delegate
 {
-Q_NAMESPACE
 
 enum class ItemType : int
 {
@@ -14,22 +13,7 @@ enum class ItemType : int
 };
 
 using WidgetGroup = int;
-// enum WidgetGroup : int
-//{
-//    EmptyGroup = 0,
-//    MainGroup = 1,
-//    ComGroup = 2,
-//    AnalogGroup = 3,
-//    ThresholdGroup = 4,
-//    HystGroup = 5,
-//    IntervalGroup,
-//    TempGroup = 7,
-//    ModbusGroup = 8,
-//    Motorgroup = 9,
-//    //...to be continued
-//};
-// Q_ENUM_NS(WidgetGroup)
-Q_ENUM_NS(ItemType)
+
 struct Widget
 {
     Widget(const ctti::unnamed_type_id_t type_) : type(type_)

@@ -5,7 +5,12 @@
 
 #include <QDomElement>
 #include <QObject>
-
+namespace delegate
+{
+Q_NAMESPACE
+Q_ENUM_NS(WidgetGroup)
+Q_ENUM_NS(ItemType)
+}
 struct ModuleSettings;
 struct GlobalSettings;
 class XmlParser
