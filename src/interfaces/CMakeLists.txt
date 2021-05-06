@@ -12,11 +12,11 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 find_package(Qt5Core)
 find_package(
   QT NAMES Qt6 Qt5
-  COMPONENTS Core Widgets Network SerialPort
+  COMPONENTS Core Network SerialPort
   REQUIRED)
 find_package(
   Qt5
-  COMPONENTS Core Widgets Network SerialPort
+  COMPONENTS Core Network SerialPort
   REQUIRED)
 
 add_library(
