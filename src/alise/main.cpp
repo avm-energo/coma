@@ -1,14 +1,42 @@
-#include <QCoreApplication>
-#include <iostream>
+#include "../gen/datamanager.h"
+#include "../gen/stdfunc.h"
 #include "../interfaces/baseinterface.h"
 #include "../interfaces/protocom.h"
+#include "../interfaces/usbhidportinfo.h"
+
+#include <QCoreApplication>
+#include <QObject>
+#include <iostream>
+void print(const DataTypes::BitStringStruct &st)
+{
+    std::cout << "BitString {"
+              << "Addr:" << st.sigAdr << ","
+              << "Val:" << st.sigVal << ","
+              << "Qual:" << st.sigQuality << " }" << std::endl;
+}
+
 int main(int argc, char *argv[])
 {
-    std::cout<<"Hello "<<std::endl;
-   // BaseInterface *interface=new Proto
-    BaseInterface::InterfacePointer device(new Protocom);
-    device->reqBSI();
+    std::cout << "Started " << std::endl;
+
     QCoreApplication a(argc, argv);
-    std::cout<<"world"<<std::endl;
+    const auto devices = UsbHidPortInfo::devicesFound(0x0483);
+    for (const auto &device : devices)
+    {
+        std::cout << "Vendor id:" << std::hex << device.vendor_id << std::dec << " : "
+                  << "Product id:" << std::hex << device.product_id << std::dec << " : "
+                  << "Serial number:" << device.serial.toStdString() << std::endl;
+    }
+    BaseInterface::InterfacePointer device;
+    device = BaseInterface::InterfacePointer(new Protocom());
+    BaseInterface::setIface(std::move(device));
+
+    auto protocom = static_cast<Protocom *>(BaseInterface::iface());
+    protocom->start(devices.first());
+    const auto &manager = DataManager::GetInstance();
+    QObject::connect(&manager, &DataManager::bitStringReceived, &print);
+    protocom->reqBSI();
+    StdFunc::Wait(1000);
+    std::cout << "Finished" << std::endl;
     return a.exec();
 }
