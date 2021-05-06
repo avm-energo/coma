@@ -57,11 +57,11 @@ public:
 public slots:
 
 private:
-    //    TuneKIVCheck *TKIVCheckDialog;
-    //    TuneKIVADC *TKIVADCUDialog, *TKIVADCIDialog;
-    //    TuneKIVR *TKIVRDialog;
-    //    TuneKIVTemp60 *TKIV60Dialog, *TKIV20Dialog;
-    void PrepareReport() override;
+    TuneKIVCheck *TKIVCheckDialog;
+    TuneKIVADC *TKIVADCUDialog, *TKIVADCIDialog;
+    TuneKIVR *TKIVRDialog;
+    TuneKIVTemp60 *TKIV60Dialog, *TKIV20Dialog;
+    void prepareReport() override;
 
     //    QDialog *ask;
     //    QLineEdit *ledit;

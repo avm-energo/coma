@@ -12,6 +12,8 @@ Bac::Bac(QObject *parent) : DataBlock(parent)
     m_blockData = new BlockData;
     setBlock({ 2, "Настроечные параметры", DataTypes::DataBlockTypes::BacBlock, m_blockData, sizeof(BlockData) });
     createWidget();
+    readBlockFromModule();
+    updateWidget();
 }
 
 void Bac::createWidget()
@@ -95,40 +97,40 @@ void Bac::createWidget()
     {
         glyout->addWidget(WDFunc::NewLBL2(m_widget, "N1_TT[" + QString::number(i) + "]"), 0, i, 1, 1);
         glyout->addWidget(
-            WDFunc::NewLBLT2(m_widget, "", "tune" + QString::number(i), "Число витков первичной обмотки"), 1, i, 1, 1);
+            WDFunc::NewLE2(m_widget, "tune" + QString::number(i), "", "Число витков первичной обмотки"), 1, i, 1, 1);
         glyout->addWidget(WDFunc::NewLBL2(m_widget, "KmU[" + QString::number(i) + "]"), 0, i + 3, 1, 1);
-        glyout->addWidget(WDFunc::NewLBLT2(m_widget, "", "tune" + QString::number(i + 3), "Коэффициенты по напряжению"),
+        glyout->addWidget(WDFunc::NewLE2(m_widget, "tune" + QString::number(i + 3), "", "Коэффициенты по напряжению"),
             1, i + 3, 1, 1);
         glyout->addWidget(WDFunc::NewLBL2(m_widget, "KmI1[" + QString::number(i) + "]"), 2, i, 1, 1);
         glyout->addWidget(
-            WDFunc::NewLBLT2(m_widget, "", "tune" + QString::number(i + 6), "Коэффициенты по току для Кацп=1"), 3, i, 1,
+            WDFunc::NewLE2(m_widget, "tune" + QString::number(i + 6), "", "Коэффициенты по току для Кацп=1"), 3, i, 1,
             1);
         glyout->addWidget(WDFunc::NewLBL2(m_widget, "KmI2[" + QString::number(i) + "]"), 2, i + 3, 1, 1);
         glyout->addWidget(
-            WDFunc::NewLBLT2(m_widget, "", "tune" + QString::number(i + 9), "Коэффициенты по току для Кацп=2"), 3,
-            i + 3, 1, 1);
+            WDFunc::NewLE2(m_widget, "tune" + QString::number(i + 9), "", "Коэффициенты по току для Кацп=2"), 3, i + 3,
+            1, 1);
         glyout->addWidget(WDFunc::NewLBL2(m_widget, "KmI4[" + QString::number(i) + "]"), 4, i, 1, 1);
         glyout->addWidget(
-            WDFunc::NewLBLT2(m_widget, "", "tune" + QString::number(i + 12), "Коэффициенты по току для Кацп=4"), 5, i,
-            1, 1);
+            WDFunc::NewLE2(m_widget, "tune" + QString::number(i + 12), "", "Коэффициенты по току для Кацп=4"), 5, i, 1,
+            1);
         glyout->addWidget(WDFunc::NewLBL2(m_widget, "KmI8[" + QString::number(i) + "]"), 4, i + 3, 1, 1);
         glyout->addWidget(
-            WDFunc::NewLBLT2(m_widget, "", "tune" + QString::number(i + 15), "Коэффициенты по току для Кацп=8"), 5,
-            i + 3, 1, 1);
+            WDFunc::NewLE2(m_widget, "tune" + QString::number(i + 15), "", "Коэффициенты по току для Кацп=8"), 5, i + 3,
+            1, 1);
         glyout->addWidget(WDFunc::NewLBL2(m_widget, "KmI16[" + QString::number(i) + "]"), 6, i, 1, 1);
         glyout->addWidget(
-            WDFunc::NewLBLT2(m_widget, "", "tune" + QString::number(i + 18), "Коэффициенты по току для Кацп=16"), 7, i,
-            1, 1);
+            WDFunc::NewLE2(m_widget, "tune" + QString::number(i + 18), "", "Коэффициенты по току для Кацп=16"), 7, i, 1,
+            1);
         glyout->addWidget(WDFunc::NewLBL2(m_widget, "KmI32[" + QString::number(i) + "]"), 6, i + 3, 1, 1);
         glyout->addWidget(
-            WDFunc::NewLBLT2(m_widget, "", "tune" + QString::number(i + 21), "Коэффициенты по току для Кацп=32"), 7,
+            WDFunc::NewLE2(m_widget, "tune" + QString::number(i + 21), "", "Коэффициенты по току для Кацп=32"), 7,
             i + 3, 1, 1);
         glyout->addWidget(WDFunc::NewLBL2(m_widget, "TKPsi_a[" + QString::number(i) + "]"), 8, i, 1, 1);
-        glyout->addWidget(WDFunc::NewLBLT2(m_widget, "", "tune" + QString::number(i + 24),
+        glyout->addWidget(WDFunc::NewLE2(m_widget, "tune" + QString::number(i + 24), "",
                               "Коэффициенты линейной коррекции по tg delta"),
             9, i, 1, 1);
         glyout->addWidget(WDFunc::NewLBL2(m_widget, "TKPsi_b[" + QString::number(i) + "]"), 8, i + 3, 1, 1);
-        glyout->addWidget(WDFunc::NewLBLT2(m_widget, "", "tune" + QString::number(i + 27),
+        glyout->addWidget(WDFunc::NewLE2(m_widget, "tune" + QString::number(i + 27), "",
                               "Коэффициенты квадратичной коррекции по tg delta"),
             9, i + 3, 1, 1);
     }
@@ -136,25 +138,25 @@ void Bac::createWidget()
     {
         glyout->addWidget(WDFunc::NewLBL2(m_widget, "DPsi[" + QString::number(i) + "]"), 10, i, 1, 1);
         glyout->addWidget(
-            WDFunc::NewLBLT2(m_widget, "", "tune" + QString::number(i + 30), "Коррекция фазы в градусах"), 11, i, 1, 1);
+            WDFunc::NewLE2(m_widget, "tune" + QString::number(i + 30), "", "Коррекция фазы в градусах"), 11, i, 1, 1);
         glyout->addWidget(WDFunc::NewLBL2(m_widget, "TKUa[" + QString::number(i) + "]"), 12, i, 1, 1);
-        glyout->addWidget(WDFunc::NewLBLT2(m_widget, "", "tune" + QString::number(i + 36),
-                              "Коэффициенты линейной коррекции по U и I"),
+        glyout->addWidget(
+            WDFunc::NewLE2(m_widget, "tune" + QString::number(i + 36), "", "Коэффициенты линейной коррекции по U и I"),
             13, i, 1, 1);
         glyout->addWidget(WDFunc::NewLBL2(m_widget, "TKUb[" + QString::number(i) + "]"), 14, i, 1, 1);
-        glyout->addWidget(WDFunc::NewLBLT2(m_widget, "", "tune" + QString::number(i + 42),
+        glyout->addWidget(WDFunc::NewLE2(m_widget, "tune" + QString::number(i + 42), "",
                               "Коэффициенты квадратичной коррекции по U и I"),
             15, i, 1, 1);
     }
 
     glyout->addWidget(WDFunc::NewLBL2(m_widget, "K_freq"), 16, 0, 1, 1);
-    glyout->addWidget(WDFunc::NewLBLT2(m_widget, "", "tune48", "Коррекция частоты"), 17, 0, 1, 1);
+    glyout->addWidget(WDFunc::NewLE2(m_widget, "tune48", "", "Коррекция частоты"), 17, 0, 1, 1);
     glyout->addWidget(WDFunc::NewLBL2(m_widget, "Art"), 16, 1, 1, 1);
-    glyout->addWidget(WDFunc::NewLBLT2(m_widget, "", "tune49", "Коэффициент в канале Pt100"), 17, 1, 1, 1);
+    glyout->addWidget(WDFunc::NewLE2(m_widget, "tune49", "", "Коэффициент в канале Pt100"), 17, 1, 1, 1);
     glyout->addWidget(WDFunc::NewLBL2(m_widget, "Brt"), 16, 2, 1, 1);
-    glyout->addWidget(WDFunc::NewLBLT2(m_widget, "", "tune50", "Смещение в канале Pt100"), 17, 2, 1, 1);
+    glyout->addWidget(WDFunc::NewLE2(m_widget, "tune50", "", "Смещение в канале Pt100"), 17, 2, 1, 1);
     glyout->addWidget(WDFunc::NewLBL2(m_widget, "Tmk0"), 16, 3, 1, 1);
-    glyout->addWidget(WDFunc::NewLBLT2(m_widget, "", "tune51", "Начальная температура МК для коррекции"), 17, 3, 1, 1);
+    glyout->addWidget(WDFunc::NewLE2(m_widget, "tune51", "", "Начальная температура МК для коррекции"), 17, 3, 1, 1);
     gb->setLayout(glyout);
     lyout->addWidget(gb);
 
@@ -203,40 +205,38 @@ void Bac::updateWidget()
     {
         for (int i = 0; i < 3; i++)
         {
-            WDFunc::SetLBLText(m_widget, "tune" + QString::number(i), QString::number(m_blockData->N1_TT[i], 'g', 5));
-            WDFunc::SetLBLText(m_widget, "tune" + QString::number(i + 3), QString::number(m_blockData->KmU[i], 'f', 5));
-            WDFunc::SetLBLText(
-                m_widget, "tune" + QString::number(i + 6), QString::number(m_blockData->KmI1[i], 'f', 5));
-            WDFunc::SetLBLText(
-                m_widget, "tune" + QString::number(i + 9), QString::number(m_blockData->KmI2[i], 'f', 5));
-            WDFunc::SetLBLText(
+            WDFunc::SetLEData(m_widget, "tune" + QString::number(i), QString::number(m_blockData->N1_TT[i], 'g', 5));
+            WDFunc::SetLEData(m_widget, "tune" + QString::number(i + 3), QString::number(m_blockData->KmU[i], 'f', 5));
+            WDFunc::SetLEData(m_widget, "tune" + QString::number(i + 6), QString::number(m_blockData->KmI1[i], 'f', 5));
+            WDFunc::SetLEData(m_widget, "tune" + QString::number(i + 9), QString::number(m_blockData->KmI2[i], 'f', 5));
+            WDFunc::SetLEData(
                 m_widget, "tune" + QString::number(i + 12), QString::number(m_blockData->KmI4[i], 'f', 5));
-            WDFunc::SetLBLText(
+            WDFunc::SetLEData(
                 m_widget, "tune" + QString::number(i + 15), QString::number(m_blockData->KmI8[i], 'f', 5));
-            WDFunc::SetLBLText(
+            WDFunc::SetLEData(
                 m_widget, "tune" + QString::number(i + 18), QString::number(m_blockData->KmI16[i], 'f', 5));
-            WDFunc::SetLBLText(
+            WDFunc::SetLEData(
                 m_widget, "tune" + QString::number(i + 21), QString::number(m_blockData->KmI32[i], 'f', 5));
-            WDFunc::SetLBLText(
+            WDFunc::SetLEData(
                 m_widget, "tune" + QString::number(i + 24), QString::number(m_blockData->TKPsi_a[i], 'e', 5));
-            WDFunc::SetLBLText(
+            WDFunc::SetLEData(
                 m_widget, "tune" + QString::number(i + 27), QString::number(m_blockData->TKPsi_b[i], 'e', 5));
         }
 
         for (int i = 0; i < 6; i++)
         {
-            WDFunc::SetLBLText(
+            WDFunc::SetLEData(
                 m_widget, "tune" + QString::number(i + 30), QString::number(m_blockData->DPsi[i], 'f', 5));
-            WDFunc::SetLBLText(
+            WDFunc::SetLEData(
                 m_widget, "tune" + QString::number(i + 36), QString::number(m_blockData->TKUa[i], 'e', 5));
-            WDFunc::SetLBLText(
+            WDFunc::SetLEData(
                 m_widget, "tune" + QString::number(i + 42), QString::number(m_blockData->TKUb[i], 'e', 5));
         }
 
-        WDFunc::SetLBLText(m_widget, "tune48", QString::number(m_blockData->K_freq, 'f', 5));
-        WDFunc::SetLBLText(m_widget, "tune49", QString::number(m_blockData->Art, 'f', 5));
-        WDFunc::SetLBLText(m_widget, "tune50", QString::number(m_blockData->Brt, 'f', 5));
-        WDFunc::SetLBLText(m_widget, "tune51", QString::number(m_blockData->Tmk0, 'f', 5));
+        WDFunc::SetLEData(m_widget, "tune48", QString::number(m_blockData->K_freq, 'f', 5));
+        WDFunc::SetLEData(m_widget, "tune49", QString::number(m_blockData->Art, 'f', 5));
+        WDFunc::SetLEData(m_widget, "tune50", QString::number(m_blockData->Brt, 'f', 5));
+        WDFunc::SetLEData(m_widget, "tune51", QString::number(m_blockData->Tmk0, 'f', 5));
     }
 }
 
@@ -244,31 +244,30 @@ void Bac::updateFromWidget()
 {
     if (m_widgetIsSet)
     {
-        QString tmps;
         for (int i = 0; i < 3; i++)
         {
-            m_blockData->N1_TT[i] = WDFunc::LBLText(m_widget, "tune" + QString::number(i)).toUInt();
-            m_blockData->KmU[i] = StdFunc::toFloat(WDFunc::LBLText(m_widget, "tune" + QString::number(i + 3)));
-            m_blockData->KmI1[i] = StdFunc::toFloat(WDFunc::LBLText(m_widget, "tune" + QString::number(i + 6)));
-            m_blockData->KmI2[i] = StdFunc::toFloat(WDFunc::LBLText(m_widget, "tune" + QString::number(i + 9)));
-            m_blockData->KmI4[i] = StdFunc::toFloat(WDFunc::LBLText(m_widget, "tune" + QString::number(i + 12)));
-            m_blockData->KmI8[i] = StdFunc::toFloat(WDFunc::LBLText(m_widget, "tune" + QString::number(i + 15)));
-            m_blockData->KmI16[i] = StdFunc::toFloat(WDFunc::LBLText(m_widget, "tune" + QString::number(i + 18)));
-            m_blockData->KmI32[i] = StdFunc::toFloat(WDFunc::LBLText(m_widget, "tune" + QString::number(i + 21)));
-            m_blockData->TKPsi_a[i] = StdFunc::toFloat(WDFunc::LBLText(m_widget, "tune" + QString::number(i + 24)));
-            m_blockData->TKPsi_b[i] = StdFunc::toFloat(WDFunc::LBLText(m_widget, "tune" + QString::number(i + 27)));
+            m_blockData->N1_TT[i] = WDFunc::LEData(m_widget, "tune" + QString::number(i)).toUInt();
+            m_blockData->KmU[i] = StdFunc::toFloat(WDFunc::LEData(m_widget, "tune" + QString::number(i + 3)));
+            m_blockData->KmI1[i] = StdFunc::toFloat(WDFunc::LEData(m_widget, "tune" + QString::number(i + 6)));
+            m_blockData->KmI2[i] = StdFunc::toFloat(WDFunc::LEData(m_widget, "tune" + QString::number(i + 9)));
+            m_blockData->KmI4[i] = StdFunc::toFloat(WDFunc::LEData(m_widget, "tune" + QString::number(i + 12)));
+            m_blockData->KmI8[i] = StdFunc::toFloat(WDFunc::LEData(m_widget, "tune" + QString::number(i + 15)));
+            m_blockData->KmI16[i] = StdFunc::toFloat(WDFunc::LEData(m_widget, "tune" + QString::number(i + 18)));
+            m_blockData->KmI32[i] = StdFunc::toFloat(WDFunc::LEData(m_widget, "tune" + QString::number(i + 21)));
+            m_blockData->TKPsi_a[i] = StdFunc::toFloat(WDFunc::LEData(m_widget, "tune" + QString::number(i + 24)));
+            m_blockData->TKPsi_b[i] = StdFunc::toFloat(WDFunc::LEData(m_widget, "tune" + QString::number(i + 27)));
         }
 
         for (int i = 0; i < 6; i++)
         {
-            m_blockData->DPsi[i] = StdFunc::toFloat(WDFunc::LBLText(m_widget, "tune" + QString::number(i + 30)));
-            m_blockData->TKUa[i] = StdFunc::toFloat(WDFunc::LBLText(m_widget, "tune" + QString::number(i + 36)));
-            m_blockData->TKUb[i] = StdFunc::toFloat(WDFunc::LBLText(m_widget, "tune" + QString::number(i + 42)));
+            m_blockData->DPsi[i] = StdFunc::toFloat(WDFunc::LEData(m_widget, "tune" + QString::number(i + 30)));
+            m_blockData->TKUa[i] = StdFunc::toFloat(WDFunc::LEData(m_widget, "tune" + QString::number(i + 36)));
+            m_blockData->TKUb[i] = StdFunc::toFloat(WDFunc::LEData(m_widget, "tune" + QString::number(i + 42)));
         }
-        m_blockData->K_freq = StdFunc::toFloat(WDFunc::LBLText(m_widget, "tune48"));
-        m_blockData->Art = StdFunc::toFloat(WDFunc::LBLText(m_widget, "tune49"));
-        m_blockData->Brt = StdFunc::toFloat(WDFunc::LBLText(m_widget, "tune50"));
-        m_blockData->Tmk0 = StdFunc::toFloat(WDFunc::LBLText(m_widget, "tune51"));
+        m_blockData->K_freq = StdFunc::toFloat(WDFunc::LEData(m_widget, "tune48"));
+        m_blockData->Art = StdFunc::toFloat(WDFunc::LEData(m_widget, "tune49"));
+        m_blockData->Brt = StdFunc::toFloat(WDFunc::LEData(m_widget, "tune50"));
+        m_blockData->Tmk0 = StdFunc::toFloat(WDFunc::LEData(m_widget, "tune51"));
     }
 }
 

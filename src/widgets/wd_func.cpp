@@ -32,11 +32,12 @@
 #include <cfloat>
 #endif
 
-QLineEdit *WDFunc::NewLE2(QWidget *w, const QString &lename, const QString &letext)
+QLineEdit *WDFunc::NewLE2(QWidget *w, const QString &lename, const QString &letext, const QString &tooltip)
 {
     QLineEdit *le = new QLineEdit(w);
     le->setObjectName(lename);
     le->setText(letext);
+    le->setToolTip(tooltip);
     return le;
 }
 

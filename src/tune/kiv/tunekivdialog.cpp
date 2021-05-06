@@ -12,23 +12,22 @@ TuneKIVDialog::TuneKIVDialog(QWidget *parent) : GeneralTuneDialog(parent)
     m_calibrSteps = 6;
     // CKIV = ckiv;
     setAttribute(Qt::WA_DeleteOnClose);
-    m_dialogList = { { "Проверка правильности измерения входных сигналов", new TuneKIVCheck(KIVTS_CHECKING, this) },
-        { "Регулировка канала Pt100", new TuneKIVR(KIVTS_PT100, this) },
-        { "Регулировка каналов напряжения", new TuneKIVADC(KIVTS_ADCU, this) },
-        { "Регулировка каналов тока", new TuneKIVADC(KIVTS_ADCI, this) },
-        { "Настройка температурной коррекции +60 °С", new TuneKIVTemp60(KIVTS_60TUNING, this) },
-        { "Настройка температурной коррекции -20 °С", new TuneKIVTemp60(KIVTS_20TUNING, this) } };
+    TKIVADCUDialog = new TuneKIVADC(KIVTS_ADCU, this);
+    TKIVADCIDialog = new TuneKIVADC(KIVTS_ADCI, this);
+    TKIV60Dialog = new TuneKIVTemp60(KIVTS_60TUNING, this);
+    TKIV20Dialog = new TuneKIVTemp60(KIVTS_20TUNING, this);
+    TKIVCheckDialog = new TuneKIVCheck(KIVTS_CHECKING, this);
+    TKIVRDialog = new TuneKIVR(KIVTS_PT100, this);
+    m_dialogList = { { "Проверка правильности измерения входных сигналов", TKIVCheckDialog },
+        { "Регулировка канала Pt100", TKIVRDialog }, { "Регулировка каналов напряжения", TKIVADCUDialog },
+        { "Регулировка каналов тока", TKIVADCIDialog }, { "Настройка температурной коррекции +60 °С", TKIV60Dialog },
+        { "Настройка температурной коррекции -20 °С", TKIV20Dialog } };
     Bac *bac = new Bac;
     m_BacWidget = bac->widget();
-    //    TKIVADCUDialog = new TuneKIVADC(KIVTS_ADCU, this);
-    //    TKIVADCIDialog = new TuneKIVADC(KIVTS_ADCI, this);
-    //    TKIV60Dialog = new TuneKIVTemp60(KIVTS_60TUNING, this);
-    //    TKIVCheckDialog = new TuneKIVCheck(KIVTS_CHECKING, this);
-    //    TKIVRDialog = new TuneKIVR(KIVTS_PT100, this);
     SetupUI();
 }
 
-void TuneKIVDialog::PrepareReport()
+void TuneKIVDialog::prepareReport()
 {
     /*    // данные в таблицу уже получены или из файла, или в процессе работы
         // отобразим таблицу

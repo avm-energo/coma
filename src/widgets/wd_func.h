@@ -36,9 +36,7 @@ public:
     static bool SetCWData(QWidget *w, const QString &cwname, const QString &cwvalue);
     static QString CWData(QWidget *w, const QString &cwname);
     static bool SetCWColor(QWidget *w, const QString &cwname, const QColor &color);
-
-    static QLineEdit *NewLE2(QWidget *w, const QString &lename, const QString &letext = "");
-
+    static QLineEdit *NewLE2(QWidget *w, const QString &lename, const QString &letext = "", const QString &tooltip="");
     static PasswordLineEdit *NewPswLE2(
         QWidget *w, const QString &lename, QLineEdit::EchoMode echostyle = QLineEdit::Normal);
     static bool SetLEData(QObject *w, const QString &lename, const QString &levalue, const QString &restring = "");

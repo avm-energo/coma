@@ -27,7 +27,7 @@ private:
     //    TuneKIVTemp60 *T8460Dialog, *T8420Dialog;
 
     //    LimeReport::ReportEngine *m_Report;
-    void PrepareReport() override;
+    void prepareReport() override;
 
     //    void SetupUI();
 

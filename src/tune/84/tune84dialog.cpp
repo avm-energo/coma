@@ -63,7 +63,7 @@ Tune84Dialog::Tune84Dialog(QWidget *parent) : GeneralTuneDialog(parent)
 //    setCalibrButtons();
 //}
 
-void Tune84Dialog::PrepareReport()
+void Tune84Dialog::prepareReport()
 {
     /*    // данные в таблицу уже получены или из файла, или в процессе работы
         // отобразим таблицу

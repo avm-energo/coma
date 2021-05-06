@@ -131,14 +131,14 @@ Error::Msg TuneKIVADC::checkTuneCoefs()
     for (int i = 0; i < 3; ++i)
     {
         for (float *coef : tcoefs)
-            if (!WDFunc::floatIsWithinLimits(this, *(coef + i), 1.0, 0.05))
+            if (!WDFunc::floatIsWithinLimits(this, "коэффициента по току", *(coef + i), 1.0, 0.05))
                 return Error::Msg::GeneralError;
     }
-    if (!WDFunc::floatIsWithinLimits(this, m_bac->data()->K_freq, 1.0, 0.05))
+    if (!WDFunc::floatIsWithinLimits(this, "коэффициента по частоте", m_bac->data()->K_freq, 1.0, 0.05))
         return Error::Msg::GeneralError;
     for (int i = 0; i < 6; ++i)
     {
-        if (!WDFunc::floatIsWithinLimits(this, m_bac->data()->DPsi[i], 0.0, 1.0))
+        if (!WDFunc::floatIsWithinLimits(this, "коэффициента по углу", m_bac->data()->DPsi[i], 0.0, 1.0))
             return Error::Msg::GeneralError;
     }
 #endif
@@ -333,19 +333,19 @@ bool TuneKIVADC::checkBdaIn(int current)
 #endif
     for (int i = 0; i < 3; ++i)
     {
-        if (WDFunc::floatIsWithinLimits(this, m_bdain->data()->IUefNat_filt[i], 57.75, 3.0))
+        if (WDFunc::floatIsWithinLimits(this, "напряжения", m_bdain->data()->IUefNat_filt[i], 57.75, 3.0))
         {
-            if (WDFunc::floatIsWithinLimits(this, m_bdain->data()->IUeff_filtered[i], 57.75, 3.0))
+            if (WDFunc::floatIsWithinLimits(this, "напряжения", m_bdain->data()->IUeff_filtered[i], 57.75, 3.0))
             {
                 if (m_tuneStep == KIVTS_ADCU)
                     continue;
-                if (WDFunc::floatIsWithinLimits(this, m_bdain->data()->IUefNat_filt[i + 3], current, 50))
+                if (WDFunc::floatIsWithinLimits(this, "тока", m_bdain->data()->IUefNat_filt[i + 3], current, 50))
                 {
-                    if (WDFunc::floatIsWithinLimits(this, m_bdain->data()->IUeff_filtered[i + 3], current, 50))
+                    if (WDFunc::floatIsWithinLimits(this, "тока", m_bdain->data()->IUeff_filtered[i + 3], current, 50))
                     {
-                        if (WDFunc::floatIsWithinLimits(this, m_bdain->data()->phi_next_f[i], 0, 1))
+                        if (WDFunc::floatIsWithinLimits(this, "угла", m_bdain->data()->phi_next_f[i], 0, 1))
                         {
-                            if (WDFunc::floatIsWithinLimits(this, m_bdain->data()->phi_next_f[i + 3], 89, 3))
+                            if (WDFunc::floatIsWithinLimits(this, "угла", m_bdain->data()->phi_next_f[i + 3], 89, 3))
                                 continue;
                         }
                     }

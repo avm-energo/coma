@@ -24,7 +24,7 @@ public:
 
     GeneralTuneDialog(QWidget *parent = nullptr);
     void SetupUI();
-    virtual void PrepareReport();
+    virtual void prepareReport();
 
 private:
     void setIconProcessed(const QString &name);
@@ -38,7 +38,7 @@ private:
 
 public slots:
     void setCalibrButtons();
-    void GenerateReport();
+    void generateReport();
 };
 
 #endif // GENERALTUNEDIALOG_H
