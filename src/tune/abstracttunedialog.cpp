@@ -21,7 +21,11 @@
 #include <QScrollArea>
 #include <QScrollBar>
 #include <QVBoxLayout>
-
+namespace crypto
+{
+static constexpr char hash[] = "d93fdd6d1fb5afcca939fa650b62541d09dbcb766f41c39352dc75f348fb35dc";
+static constexpr char name[] = "tuneHash";
+}
 AbstractTuneDialog::AbstractTuneDialog(int tuneStep, QWidget *parent) : QDialog(parent)
 {
     TuneVariant = 0;
@@ -193,7 +197,7 @@ void AbstractTuneDialog::stopWait()
 Error::Msg AbstractTuneDialog::CheckPassword()
 {
     KeyPressDialog dlg; // = new KeyPressDialog;
-    return (dlg.CheckPassword("121941")) ? Error::Msg::NoError : Error::Msg::GeneralError;
+    return (dlg.CheckPassword(crypto::hash)) ? Error::Msg::NoError : Error::Msg::GeneralError;
 }
 
 int AbstractTuneDialog::addWidgetToTabWidget(QWidget *w, const QString &caption)
