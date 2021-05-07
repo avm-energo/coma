@@ -68,7 +68,7 @@ void GeneralTuneDialog::generateReport()
     prepareReport();
     if (QMessageBox::question(this, "Сохранить", "Сохранить протокол поверки?"))
     {
-        QString filename = Files::ChooseFileForSave(this, "*.pdf", "pdf");
+        QString filename = WDFunc::ChooseFileForSave(this, "*.pdf", "pdf");
         if (!filename.isEmpty())
         {
             m_Report->designReport();

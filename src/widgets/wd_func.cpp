@@ -619,16 +619,17 @@ QMainWindow *WDFunc::getMainWindow()
     return nullptr;
 }
 
-bool WDFunc::floatIsWithinLimits(QWidget *w, double var, double base, double tolerance, bool showMessage)
+bool WDFunc::floatIsWithinLimits(
+    QWidget *w, const QString &varname, double var, double base, double tolerance, bool showMessage)
 {
     if (StdFunc::floatIsWithinLimits(var, base, tolerance))
         return true;
     else if (showMessage)
     {
-        qCritical() << "Ошибочное значение: должно быть " << QString::number(base, 'f', 5) << "±"
+        qCritical() << "Ошибочное значение " + varname + ": должно быть " << QString::number(base, 'f', 5) << "±"
                     << QString::number(tolerance, 'f', 5) << ", а получили: " << QString::number(var, 'f', 5);
         QMessageBox::critical(w, "Ошибка",
-            "Ошибочное значение: должно быть " + QString::number(base, 'f', 5) + "±"
+            "Ошибочное значение " + varname + ": должно быть " + QString::number(base, 'f', 5) + "±"
                 + QString::number(tolerance, 'f', 5) + ", а получили: " + QString::number(var, 'f', 5));
     }
     return false;

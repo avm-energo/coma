@@ -329,19 +329,19 @@ bool Tune84ADC::checkBdaIn(int current)
 {
     for (int i = 0; i < 3; ++i)
     {
-        if (StdFunc::floatIsWithinLimits(this, "напряжения", m_bdain->data()->IUefNat_filt[i], 57.75, 3.0))
+        if (WDFunc::floatIsWithinLimits(this, "напряжения", m_bdain->data()->IUefNat_filt[i], 57.75, 3.0))
         {
-            if (StdFunc::floatIsWithinLimits(this, "напряжения", m_bdain->data()->IUeff_filtered[i], 57.75, 3.0))
+            if (WDFunc::floatIsWithinLimits(this, "напряжения", m_bdain->data()->IUeff_filtered[i], 57.75, 3.0))
             {
                 if (m_tuneStep == TS84_ADCU)
                     continue;
-                if (StdFunc::floatIsWithinLimits(this, "тока", m_bdain->data()->IUefNat_filt[i + 3], current, 50))
+                if (WDFunc::floatIsWithinLimits(this, "тока", m_bdain->data()->IUefNat_filt[i + 3], current, 50))
                 {
-                    if (StdFunc::floatIsWithinLimits(this, "тока", m_bdain->data()->IUeff_filtered[i + 3], current, 50))
+                    if (WDFunc::floatIsWithinLimits(this, "тока", m_bdain->data()->IUeff_filtered[i + 3], current, 50))
                     {
-                        if (StdFunc::floatIsWithinLimits(this, "угла", m_bdain->data()->phi_next_f[i], 0, 1))
+                        if (WDFunc::floatIsWithinLimits(this, "угла", m_bdain->data()->phi_next_f[i], 0, 1))
                         {
-                            if (StdFunc::floatIsWithinLimits(this, "угла", m_bdain->data()->phi_next_f[i + 3], 89, 3))
+                            if (WDFunc::floatIsWithinLimits(this, "угла", m_bdain->data()->phi_next_f[i + 3], 89, 3))
                                 continue;
                         }
                     }
