@@ -45,3 +45,6 @@ lib
 *.vcxproj.user
 
 *msvc_make.bat
+/conan*
+/graph_info.json
+/src/comaversion/gversion.h

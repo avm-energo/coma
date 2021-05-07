@@ -22,6 +22,7 @@ TuneKIVADC::TuneKIVADC(int tuneStep, QWidget *parent) : AbstractTuneDialog(tuneS
     m_BdainWidgetIndex = addWidgetToTabWidget(m_bdain->widget(), "Текущие данные");
     m_Bd0WidgetIndex = addWidgetToTabWidget(m_bd0->widget(), "Общие данные");
     m_isEnergoMonitorDialogCreated = false;
+    m_curTuneStep = 0;
     SetupUI();
 }
 
@@ -355,13 +356,15 @@ bool TuneKIVADC::checkBdaIn(int current)
 
         return false;
     }
-    if (WDFunc::floatIsWithinLimits(this, m_bdain->data()->Pt100_R, 100, 5))
+    if (WDFunc::floatIsWithinLimits(this, "сопротивления", m_bdain->data()->Pt100_R, 100, 5))
         return true;
     return false;
 }
 
 Error::Msg TuneKIVADC::showEnergomonitorInputDialog()
 {
+    if ((m_curTuneStep == 1) && (m_tuneStep == KIVTS_ADCU)) // only the first input has any means
+        return Error::Msg::ResEmpty;
     if (!m_isEnergoMonitorDialogCreated)
     {
         QDialog *dlg = new QDialog(this);
@@ -370,9 +373,9 @@ Error::Msg TuneKIVADC::showEnergomonitorInputDialog()
         vlyout->addWidget(WDFunc::NewLBL2(this, "Ввод значений сигналов c Энергомонитора"));
         if (m_tuneStep == KIVTS_ADCU)
         {
-            vlyout->addWidget(WDFunc::NewLBLAndLE(this, "Uэт, В", "ValuetuneU"));
-            vlyout->addWidget(WDFunc::NewLBLAndLE(this, "fэт, Гц:", "ValuetuneF"));
-            vlyout->addWidget(WDFunc::NewLBLAndLE(this, "Yэт, град", "ValuetuneY"));
+            vlyout->addWidget(WDFunc::NewLBLAndLE(this, "Uэт, В", "ValuetuneU", true));
+            vlyout->addWidget(WDFunc::NewLBLAndLE(this, "fэт, Гц:", "ValuetuneF", true));
+            vlyout->addWidget(WDFunc::NewLBLAndLE(this, "Yэт, град", "ValuetuneY", true));
         }
         else
             vlyout->addWidget(WDFunc::NewLBLAndLE(this, "Iэт, мА", "ValuetuneI", true));

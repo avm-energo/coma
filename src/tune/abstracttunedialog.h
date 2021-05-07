@@ -19,7 +19,7 @@
 #define WAITFORCONST 1 // seconds to let voltages be constant
 
 // disable all limits checks
-//#define NO_LIMITS
+#define NO_LIMITS
 class AbstractTuneDialog : public QDialog
 {
     Q_OBJECT
