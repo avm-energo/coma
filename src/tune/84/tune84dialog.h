@@ -22,16 +22,17 @@ public:
 public slots:
 
 private:
-    Tune84Check *T84CheckDialog;
-    Tune84ADC *T84ADCUDialog, *T84ADCIDialog;
-    TuneKIVTemp60 *T8460Dialog, *T8420Dialog;
+    //    Tune84Check *T84CheckDialog;
+    //    Tune84ADC *T84ADCUDialog, *T84ADCIDialog;
+    //    TuneKIVTemp60 *T8460Dialog, *T8420Dialog;
 
-    LimeReport::ReportEngine *m_Report;
+    //    LimeReport::ReportEngine *m_Report;
+    void prepareReport() override;
 
-    void SetupUI();
+    //    void SetupUI();
 
 private slots:
-    void GenerateReport();
+    //    void GenerateReport();
 };
 
 #endif // TUNE84DIALOG_H

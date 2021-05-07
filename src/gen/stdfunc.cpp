@@ -253,10 +253,12 @@ quint32 StdFunc::checkPort(quint32 ip4Addr, quint16 port)
     QEventLoop *loop = new QEventLoop;
 
     QObject::connect(sock, &QAbstractSocket::connected, [&]() { loop->quit(); });
-    QObject::connect(timer, &QTimer::timeout, [&]() {
-        loop->quit();
-        ip4Addr = 0;
-    });
+    QObject::connect(timer, &QTimer::timeout,
+        [&]()
+        {
+            loop->quit();
+            ip4Addr = 0;
+        });
     timer->start();
     // qDebug() << "Timer started";
     Q_ASSERT(sock != nullptr);

@@ -1,10 +1,14 @@
 #include "generaltunedialog.h"
 
 #include "../gen/board.h"
+#include "../gen/files.h"
 #include "../gen/stdfunc.h"
+#include "../widgets/wd_func.h"
 #include "tunesequencefile.h"
 
+#include <QHBoxLayout>
 #include <QIcon>
+#include <QMessageBox>
 #include <QPainter>
 #include <QPushButton>
 #include <QSettings>
@@ -14,6 +18,33 @@ GeneralTuneDialog::GeneralTuneDialog(QWidget *parent) : UDialog(parent)
 {
     TuneSequenceFile::init();
     m_calibrSteps = 0;
+}
+
+void GeneralTuneDialog::SetupUI()
+{
+    QHBoxLayout *hlyout = new QHBoxLayout;
+    QVBoxLayout *lyout = new QVBoxLayout;
+
+    lyout->addStretch(100);
+    int count = 1;
+    for (auto &d : m_dialogList)
+    {
+        QString tns = "tn" + QString::number(count++);
+        lyout->addWidget(WDFunc::NewHexagonPB(
+            this, tns, [&d]() { d.dialog->show(); }, ":/icons/" + tns + ".svg", d.caption));
+    }
+    lyout->addWidget(WDFunc::NewHexagonPB(
+        this, "tnprotocol", [this]() { prepareReport(); }, ":/icons/tnprotocol.svg",
+        "Генерация протокола регулировки"));
+    lyout->addStretch(100);
+    hlyout->addLayout(lyout);
+    hlyout->addWidget(m_BacWidget, 100);
+    setLayout(hlyout);
+    setCalibrButtons();
+}
+
+void GeneralTuneDialog::prepareReport()
+{
 }
 
 void GeneralTuneDialog::setCalibrButtons()
@@ -29,6 +60,27 @@ void GeneralTuneDialog::setCalibrButtons()
         setIconRestricted("tn" + QString::number(i));
     if (calibrstep < m_calibrSteps)
         setIconRestricted("tnprotocol");
+}
+
+void GeneralTuneDialog::generateReport()
+{
+    m_Report = new LimeReport::ReportEngine;
+    prepareReport();
+    if (QMessageBox::question(this, "Сохранить", "Сохранить протокол поверки?"))
+    {
+        QString filename = WDFunc::ChooseFileForSave(this, "*.pdf", "pdf");
+        if (!filename.isEmpty())
+        {
+            m_Report->designReport();
+            m_Report->printToPDF(filename);
+            //        report->previewReport();
+            //  report->designReport();
+            QMessageBox::information(this, "Успешно!", "Записано успешно!");
+        }
+        else
+            QMessageBox::information(this, "Отменено", "Действие отменено");
+    }
+    delete m_Report;
 }
 
 void GeneralTuneDialog::setIconProcessed(const QString &name)

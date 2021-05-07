@@ -102,7 +102,7 @@ Error::Msg TuneKIVR::processR120()
     if (StdFunc::isCancelled())
         return Error::Msg::GeneralError;
 #ifndef NO_LIMITS
-    if (WDFunc::floatIsWithinLimits(this, pt100_120, m_pt100, 40, false))
+    if (WDFunc::floatIsWithinLimits(this, "сопротивления", pt100_120, m_pt100, 40, false))
     {
         WARNMSG("Ошибка в полученных данных, значения сопротивлений равны");
         StdFunc::cancel();

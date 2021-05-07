@@ -116,6 +116,7 @@ Error::Msg DataBlock::writeBlockToModule()
     {
         //        if (update)
         //            updateValues();
+        updateFromWidget();
         if (BaseInterface::iface()->writeBlockSync(
                 m_block.blocknum, DataTypes::DataBlockTypes::BacBlock, m_block.block, m_block.blocksize)
             != Error::Msg::NoError)
@@ -204,6 +205,7 @@ Error::Msg DataBlock::loadFromFileAndWriteToModule(const QString &filename)
     if (Files::LoadFromFile(filename, ba) == Error::Msg::NoError)
     {
         memcpy(m_block.block, &ba.data()[0], m_block.blocksize);
+        updateWidget();
         if (writeBlockToModule() == Error::Msg::NoError)
             return Error::Msg::NoError;
     }
