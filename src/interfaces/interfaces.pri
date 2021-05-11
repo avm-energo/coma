@@ -33,8 +33,5 @@ HEADERS += \
     $$PWD/usbhidportinfo.h \
     $$PWD/usbhidsettings.h
 
-SUBDIRS += \
-    $$PWD/interfaces.pro
-
 
 
