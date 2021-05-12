@@ -25,43 +25,47 @@ static bool fillBackComboBox(BciNumber key, const QWidget *parent, delegate::QCo
 
 template <typename T> QWidget *helper(const T &arg, QWidget *parent, BciNumber key)
 {
-    QWidget *widget = nullptr;
+    QWidget *widget = new QWidget(parent);
+    QHBoxLayout *lyout = new QHBoxLayout;
+    auto label = new QLabel(arg.desc, parent);
+    label->setToolTip(arg.toolTip);
+    label->setToolTipDuration(60000);
+    lyout->addWidget(label);
+    widget->setLayout(lyout);
     switch (arg.type.hash())
     {
     case ctti::unnamed_type_id<IPCtrl>().hash():
     {
-        widget = new QWidget(parent);
-        QHBoxLayout *lyout = new QHBoxLayout;
-        lyout->addWidget(new QLabel(arg.desc, parent));
         auto control = new IPCtrl(parent);
         control->setObjectName(QString::number(key));
         lyout->addWidget(control);
-        widget->setLayout(lyout);
+
         break;
     }
     case ctti::unnamed_type_id<QCheckBox>().hash():
     {
-        widget = new QCheckBox(arg.desc, parent);
-        widget->setObjectName(QString::number(key));
+        auto checkbox = new QCheckBox(parent);
+        checkbox->setObjectName(QString::number(key));
+        lyout->addWidget(checkbox);
+
         break;
     }
     case ctti::unnamed_type_id<QLineEdit>().hash():
     {
-        widget = new QWidget(parent);
-        QHBoxLayout *lyout = new QHBoxLayout;
-        lyout->addWidget(new QLabel(arg.desc, parent));
         auto lineEdit = new QLineEdit(parent);
         auto sizePolicy = lineEdit->sizePolicy();
         sizePolicy.setHorizontalPolicy(QSizePolicy::Preferred);
         lineEdit->setSizePolicy(sizePolicy);
         lineEdit->setObjectName(QString::number(key));
         lyout->addWidget(lineEdit);
-        widget->setLayout(lyout);
+
         break;
     }
 
     default:
         Q_ASSERT(false && "False type");
+        widget->deleteLater();
+        widget = nullptr;
         break;
     }
 

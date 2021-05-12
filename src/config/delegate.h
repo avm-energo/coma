@@ -38,13 +38,14 @@ struct Widget
     Widget(const ctti::unnamed_type_id_t type_, const WidgetGroup group_) : type(type_), group(group_)
     {
     }
-    Widget(const ctti::unnamed_type_id_t type_, const QString &desc_, const WidgetGroup group_)
-        : type(type_), desc(desc_), group(group_)
+    Widget(const ctti::unnamed_type_id_t type_, const QString &desc_, const WidgetGroup group_, const QString &toolTip_)
+        : type(type_), desc(desc_), group(group_), toolTip(toolTip_)
     {
     }
     ctti::unnamed_type_id_t type;
     QString desc;
     WidgetGroup group;
+    QString toolTip;
 };
 
 struct DoubleSpinBoxWidget : Widget

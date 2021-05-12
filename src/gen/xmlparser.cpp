@@ -16,6 +16,7 @@ constexpr char className[] = "class";
 constexpr char group[] = "group";
 constexpr char type[] = "type";
 constexpr char desc[] = "description";
+constexpr char toolTip[] = "toolTip";
 }
 
 XmlParser::XmlParser()
@@ -244,6 +245,8 @@ delegate::itemVariant XmlParser::parseWidget(QDomElement domElement)
     auto widgetGroup = static_cast<delegate::WidgetGroup>(childElement.text().toInt());
 
     const QString description = domElement.firstChildElement(keys::string).text();
+    const QString toolTip = domElement.firstChildElement(keys::toolTip).text();
+
     switch (type.hash())
     {
     case ctti::unnamed_type_id<QDoubleSpinBox>().hash():
@@ -261,6 +264,7 @@ delegate::itemVariant XmlParser::parseWidget(QDomElement domElement)
             qWarning() << name << className;
 
         widget.desc = description;
+        widget.toolTip = toolTip;
         return widget;
     }
     case ctti::unnamed_type_id<DoubleSpinBoxGroup>().hash():
@@ -280,6 +284,7 @@ delegate::itemVariant XmlParser::parseWidget(QDomElement domElement)
             qWarning() << name << className;
 
         widget.desc = description;
+        widget.toolTip = toolTip;
         widget.items = items;
         return widget;
     }
@@ -294,6 +299,7 @@ delegate::itemVariant XmlParser::parseWidget(QDomElement domElement)
             qWarning() << name << className;
 
         widget.desc = description;
+        widget.toolTip = toolTip;
         widget.items = items;
         return widget;
     }
@@ -302,6 +308,7 @@ delegate::itemVariant XmlParser::parseWidget(QDomElement domElement)
         delegate::QComboBox widget(type, widgetGroup);
 
         widget.desc = description;
+        widget.toolTip = toolTip;
         widget.items = items;
         QDomElement childElement = domElement.firstChildElement("field");
         // QComboBox depends on index by default
@@ -314,7 +321,7 @@ delegate::itemVariant XmlParser::parseWidget(QDomElement domElement)
     {
     }
     }
-    return delegate::Widget(type, description, widgetGroup);
+    return delegate::Widget(type, description, widgetGroup, toolTip);
 }
 
 DataTypes::RecordPair XmlParser::parseRecord(QDomElement domElement)
@@ -514,6 +521,7 @@ void XmlParser::traverseNode(const QDomNode &node, GlobalSettings &settings)
                 if (domElement.tagName() == "map")
                 {
                     *settings.s2categories = parseMap<categoryMap>(domElement);
+                    qDebug() << *settings.s2categories;
                 }
             }
         }
