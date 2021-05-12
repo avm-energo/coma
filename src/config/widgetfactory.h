@@ -34,6 +34,10 @@ public:
     {
         return m_widgetMap;
     }
+    static auto getCategoryMap()
+    {
+        return m_categoryMap;
+    }
     static auto getCategory(delegate::WidgetGroup key)
     {
         return m_categoryMap.value(key);

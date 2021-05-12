@@ -21,6 +21,7 @@ private:
     QWidget *ConfButtons();
 
     void SetupUI();
+    void createTabs(QTabWidget *tabWidget);
     void Fill();
     bool PrepareConfToWrite();
     void uponInterfaceSetting() override;

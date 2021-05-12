@@ -200,11 +200,11 @@ delegate::WidgetGroup groupForId(BciNumber id)
     if (search == widgetMap.end())
     {
         qWarning() << "Not found" << id;
-        return delegate::WidgetGroup::EmptyGroup;
+        return 0;
     }
     const auto var = search->second;
 
-    delegate::WidgetGroup group = delegate::WidgetGroup::EmptyGroup;
+    delegate::WidgetGroup group = 0;
     std::visit([&](const auto &arg) { group = arg.group; }, var);
     return group;
 }
@@ -216,7 +216,9 @@ void ConfigDialog::SetupUI()
     QTabWidget *ConfTW = new QTabWidget(this);
 
     WidgetFactory factory;
-    for (const auto record : (m_defaultValues))
+    createTabs(ConfTW);
+
+    for (const auto &record : qAsConst(m_defaultValues))
     {
         if (!record.visibility)
             continue;
@@ -231,37 +233,52 @@ void ConfigDialog::SetupUI()
         auto group = groupForId(id);
         auto child = widgetAt(ConfTW, group);
 
-        QGroupBox *subBox = nullptr;
-        if (!child)
+        QGroupBox *subBox = qobject_cast<QGroupBox *>(child->findChild<QGroupBox *>());
+        Q_ASSERT(subBox);
+        if (!subBox)
         {
-            subBox = new QGroupBox("Группа " + factory.getCategory(group), this);
-            QVBoxLayout *subvlyout = new QVBoxLayout;
-            subvlyout->setAlignment(Qt::AlignTop);
-            subvlyout->setSpacing(0);
-
-            subvlyout->setContentsMargins(0, 0, 0, 0);
-
-            subBox->setLayout(subvlyout);
-
-            QScrollArea *scrollArea = new QScrollArea;
-            scrollArea->setObjectName(QString::number(group));
-            scrollArea->setFrameShape(QFrame::NoFrame);
-            scrollArea->setWidgetResizable(true);
-            scrollArea->setWidget(subBox);
-
-            ConfTW->addTab(scrollArea, factory.getCategory(group));
+            widget->deleteLater();
+            continue;
         }
-        else
-        {
-            subBox = qobject_cast<QGroupBox *>(child->findChild<QGroupBox *>());
-        }
-
         auto *lyout = subBox->layout();
         lyout->addWidget(widget);
     }
     vlyout->addWidget(ConfTW);
     vlyout->addWidget(ConfButtons());
     setLayout(vlyout);
+}
+
+void ConfigDialog::createTabs(QTabWidget *tabWidget)
+{
+    std::set<delegate::WidgetGroup> currentCategories, intersection;
+    const auto categories = WidgetFactory::getCategoryMap();
+    for (const auto &record : qAsConst(m_defaultValues))
+    {
+        auto group = groupForId(static_cast<BciNumber>(record.record.getId()));
+        if (categories.contains(group))
+            intersection.insert(group);
+    }
+    for (const auto &group : intersection)
+    {
+        QGroupBox *subBox = nullptr;
+
+        subBox = new QGroupBox("Группа " + WidgetFactory::getCategory(group), this);
+        QVBoxLayout *subvlyout = new QVBoxLayout;
+        subvlyout->setAlignment(Qt::AlignTop);
+        subvlyout->setSpacing(0);
+
+        subvlyout->setContentsMargins(0, 0, 0, 0);
+
+        subBox->setLayout(subvlyout);
+
+        QScrollArea *scrollArea = new QScrollArea;
+        scrollArea->setObjectName(QString::number(group));
+        scrollArea->setFrameShape(QFrame::NoFrame);
+        scrollArea->setWidgetResizable(true);
+        scrollArea->setWidget(subBox);
+
+        tabWidget->addTab(scrollArea, WidgetFactory::getCategory(group));
+    }
 }
 
 void ConfigDialog::Fill()
