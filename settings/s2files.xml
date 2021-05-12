@@ -721,7 +721,7 @@
 		<widget>
 			<type>QDoubleSpinBox</type>
 			<group>200</group>
-			<string>Уставка предупредительной сигнализации по Δ емкости, %</string>
+			<string>Уставка предупредительной сигнализации по ΔC, %</string>
 			<min>0</min>
 			<max>10000</max>
 			<decimals>1</decimals>
@@ -733,7 +733,7 @@
 		<widget>
 			<type>QDoubleSpinBox</type>
 			<group>200</group>
-			<string>Уставка аварийной сигнализации по Δ емкости, %</string>
+			<string>Уставка аварийной сигнализации по ΔC, %</string>
 			<min>0</min>
 			<max>10000</max>
 			<decimals>1</decimals>
@@ -745,7 +745,7 @@
 		<widget>
 			<type>QDoubleSpinBox</type>
 			<group>200</group>
-			<string>Уставка предупредительной сигнализации по Δ tg δ, %</string>
+			<string>Уставка предупредительной сигнализации по Δtg δ, %</string>
 			<min>0</min>
 			<max>10000</max>
 			<decimals>1</decimals>
@@ -757,7 +757,7 @@
 		<widget>
 			<type>QDoubleSpinBox</type>
 			<group>200</group>
-			<string>Уставка аварийной сигнализации по Δ tg δ, %</string>
+			<string>Уставка аварийной сигнализации по Δtg δ, %</string>
 			<min>0</min>
 			<max>10000</max>
 			<decimals>1</decimals>
@@ -805,7 +805,7 @@
 		<widget>
 			<type>QDoubleSpinBox</type>
 			<group>300</group>
-			<string>Гистерезис на отключение сигнализации по ΔTg, % от уставки</string>
+			<string>Гистерезис на отключение сигнализации по Δtg δ, % от уставки</string>
 			<min>0</min>
 			<max>10000</max>
 			<decimals>1</decimals>
@@ -967,7 +967,7 @@
 		<widget>
 			<type>DoubleSpinBoxGroup</type>
 			<group>100</group>
-			<string>Паспортные значения tgδ вводов, %</string>
+			<string>Паспортные значения tg δ вводов, %</string>
 			<count>3</count>
 			<min>0</min>
 			<max>10</max>
@@ -980,7 +980,7 @@
 		<widget>
 			<type>DoubleSpinBoxGroup</type>
 			<group>100</group>
-			<string>Паспортные значения емкостей С1  вводов, пФ</string>
+			<string>Паспортные значения емкостей С1 вводов, пФ</string>
 			<count>3</count>
 			<min>0</min>
 			<max>20000</max>
