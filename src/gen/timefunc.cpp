@@ -63,6 +63,11 @@ QString TimeFunc::UnixTime32ToInvString(quint32 utime, QTimeZone tz)
     QDateTime tn = QDateTime::fromSecsSinceEpoch(utime, tz); // in seconds
     return tn.toString("yyyy/MM/dd hh:mm:ss");
 }
+
+quint64 TimeFunc::InvStringToUnixTime32(QString utime, QTimeZone tz)
+{
+    return QDateTime::fromString(utime, "yyyy/MM/dd hh:mm:ss").toSecsSinceEpoch();
+}
 QTimeZone TimeFunc::userTimeZone()
 {
     auto sets = std::make_unique<QSettings>();

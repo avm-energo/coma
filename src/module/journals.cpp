@@ -21,7 +21,7 @@
 #include <QVariant>
 
 Journals::Journals(QMap<Modules::JournalType, DataTypes::JournalDesc> &jourMap, QObject *parent)
-    : QObject(parent), m_jourMap(jourMap)
+    : QObject(parent), m_timezone(TimeFunc::userTimeZone()), m_jourMap(jourMap)
 {
     m_workJourDescription = jourMap.value(Modules::JournalType::Work).desc;
 
@@ -31,9 +31,9 @@ Journals::Journals(QMap<Modules::JournalType, DataTypes::JournalDesc> &jourMap, 
     if (time_pos != m_measJourHeaders.end())
         time_pos->replace("UTC", TimeFunc::userTimeZoneName());
 
-    m_sysModel = new ETableModel(this);
-    m_workModel = new ETableModel(this);
-    _measModel = new ETableModel(this);
+    m_sysModel = new EDynamicTableModel(this);
+    m_workModel = new EDynamicTableModel(this);
+    m_measModel = new EDynamicTableModel(this);
 }
 void Journals::SetProxyModels(
     QSortFilterProxyModel *workmdl, QSortFilterProxyModel *sysmdl, QSortFilterProxyModel *measmdl)
@@ -62,32 +62,62 @@ int Journals::workJournalID()
     return m_jourMap.value(Modules::JournalType::Work).id;
 }
 
-QVector<QVariant> prepareRow(AVM::EventStruct &event, int eventID, int eventNumber, QStringList &eventDesc)
+QVector<QVector<QVariant>> Journals::createCommon(const QByteArray &array, const int eventid, const QStringList &desc)
 {
-    int N;
-    QVector<QVariant> vl { eventNumber,
-        TimeFunc::UnixTime64ToInvStringFractional(event.Time, TimeFunc::userTimeZone()) };
+    const auto basize = array.size();
+    const char *file = array.constData();
 
-    memcpy(&N, &event.EvNum, sizeof(event.EvNum));
-    N = (N & 0x00FFFFFF) - eventID;
-    Q_ASSERT((N <= eventDesc.size()) && (N > 0));
-    if ((N <= eventDesc.size()) && (N > 0))
+    const auto recordsize = sizeof(AVM::EventStruct);
+    QVector<QVector<QVariant>> ValueLists;
+    ValueLists.reserve(basize / recordsize);
+
+    int counter, i;
+    std::vector<CommonEvent> events;
+    for (i = 0, counter = 0; i < basize; i += recordsize)
     {
-        vl << eventDesc.at(--N);
+        AVM::EventStruct event;
+        memcpy(&event, file, recordsize);
+        file += recordsize;
+        i += recordsize;
+        if (event.Time == ULLONG_MAX)
+            continue;
+        ++counter;
+        int N;
+
+        CommonEvent commonEvent { counter, event.Time };
+        memcpy(&N, &event.EvNum, sizeof(event.EvNum));
+        N = (N & 0x00FFFFFF) - eventid;
+        Q_ASSERT((N <= desc.size()) && (N > 0));
+        QString eventDesc;
+        if ((N <= desc.size()) && (N > 0))
+        {
+            eventDesc = desc.at(--N);
+        }
+        else
+            eventDesc = "Некорректный номер события";
+        commonEvent.desc = eventDesc;
+        QString eventType;
+        if (event.EvType)
+            eventType = "Пришло";
+        else
+            eventType = "Ушло";
+        commonEvent.direction = eventType;
+        events.push_back(commonEvent);
     }
-    else
-        vl << "Некорректный номер события";
-    if (event.EvType)
-        vl << "Пришло";
-    else
-        vl << "Ушло";
-    return vl;
+    std::sort(events.begin(), events.end(),
+        [](const CommonEvent &lhs, const CommonEvent &rhs) { return lhs.time > rhs.time; });
+    std::transform(events.cbegin(), events.cend(), std::back_inserter(ValueLists), [](const CommonEvent &event) {
+        return QVector<QVariant> { event.counter,
+            TimeFunc::UnixTime64ToInvStringFractional(event.time, TimeFunc::userTimeZone()), event.desc,
+            event.direction };
+    });
+    return ValueLists;
 }
 
 void Journals::FillEventsTable(const QByteArray &ba)
 {
-    ETableModel *model;
-    AVM::EventStruct event;
+    EDynamicTableModel *model;
+
     QStringList sl;
     int mineventid = -1;
     if (m_jourType == DataTypes::JourSys)
@@ -106,24 +136,8 @@ void Journals::FillEventsTable(const QByteArray &ba)
         return;
     if (!model->isEmpty())
         model->clearModel();
-    const auto basize = ba.size();
-    const char *file = ba.constData();
-    const auto recordsize = sizeof(AVM::EventStruct);
-    int counter, i;
-    QVector<QVector<QVariant>> ValueLists;
-    ValueLists.reserve(basize / recordsize);
 
-    for (i = 0, counter = 0; i < basize; i += recordsize)
-    {
-        memcpy(&event, file, recordsize);
-        file += recordsize;
-        i += recordsize;
-        if (event.Time == ULLONG_MAX)
-            continue;
-        ++counter;
-        QVector<QVariant> vl(prepareRow(event, mineventid, counter, sl));
-        ValueLists.append(vl);
-    }
+    QVector<QVector<QVariant>> ValueLists = createCommon(ba, mineventid, sl);
 
     auto header = AVM::eventJourHeaders;
     auto time_pos = std::find_if(header.begin(), header.end(), [](const QString &str) { return str.contains("UTC"); });
@@ -142,23 +156,11 @@ void Journals::FillMeasTable(const QByteArray &ba)
         qWarning() << "Meas Byte Array is empty";
         return;
     }
-    auto model = _measModel;
+    auto model = m_measModel;
     if (!model->isEmpty())
         model->clearModel();
-    QVector<QVector<QVariant>> ValueLists;
 
-    const auto basize = ba.size();
-    const char *file = ba.constData();
-    const auto recordsize = measureSize();
-    for (int i = 0; i < basize; i += recordsize)
-    {
-        QVector<QVariant> vl(createMeasRecord(file));
-
-        file += recordsize;
-
-        if (!vl.isEmpty())
-            ValueLists.append(vl);
-    }
+    QVector<QVector<QVariant>> ValueLists = createMeas(ba);
 
     Q_ASSERT(!m_measJourHeaders.isEmpty());
     model->setHorizontalHeaderLabels(m_measJourHeaders);
@@ -174,35 +176,28 @@ void Journals::FillMeasTable(const QByteArray &ba)
     resultReady(model);
 }
 
-void Journals::resultReady(ETableModel *model)
+void Journals::resultReady(EDynamicTableModel *model)
 {
     QSortFilterProxyModel *pmdl;
-    Qt::SortOrder order;
 
     switch (m_jourType)
     {
     case DataTypes::JourWork:
         pmdl = _proxyWorkModel;
-        order = Qt::DescendingOrder;
         break;
     case DataTypes::JourSys:
         pmdl = _proxySysModel;
-        order = Qt::DescendingOrder;
         break;
     case DataTypes::JourMeas:
         pmdl = _proxyMeasModel;
-        order = Qt::AscendingOrder;
         break;
     default:
         qDebug("Default case");
         return;
     }
 
-    int dateidx = model->headerPosition("Дата/Время");
-    pmdl->invalidate();
-    pmdl->setDynamicSortFilter(false);
     pmdl->setSourceModel(model);
-    pmdl->sort(dateidx, order);
+
     emit Done("Прочитано успешно", m_jourType);
 }
 
@@ -225,32 +220,36 @@ void Journals::FillJour(const DataTypes::FileStruct &fs)
     }
 }
 
-void Journals::saveJour(DataTypes::FilesEnum jtype, QAbstractItemModel *amdl, QString filename)
+void Journals::saveJour(DataTypes::FilesEnum jtype, QString filename)
 {
     QString jourtypestr;
-    Qt::SortOrder order = Qt::AscendingOrder;
+    EDynamicTableModel *pmdl = nullptr;
     switch (jtype)
     {
     case DataTypes::JourSys:
         jourtypestr = "Системный журнал";
-        order = Qt::DescendingOrder;
+        pmdl = m_sysModel;
         break;
     case DataTypes::JourMeas:
         jourtypestr = "Журнал измерений";
-        order = Qt::AscendingOrder;
+        pmdl = m_measModel;
         break;
     case DataTypes::JourWork:
         jourtypestr = "Журнал событий";
-        order = Qt::DescendingOrder;
+        pmdl = m_workModel;
         break;
     default:
         break;
     }
 
-    QSortFilterProxyModel *pmdl = static_cast<QSortFilterProxyModel *>(amdl);
-    ETableModel *mdl = static_cast<ETableModel *>(pmdl->sourceModel());
-    int dateidx = mdl->headerPosition("Дата/Время");
-    pmdl->sort(dateidx, order);
+    // EDynamicTableModel *pmdl = qobject_cast<EDynamicTableModel *>(amdl);
+    if (!pmdl)
+        return;
+    //    while (amdl->canFetchMore(amdl->index(0, 0)))
+    //    {
+    //        amdl->fetchMore(amdl->index(0, 0));
+    //    }
+
     QXlsx::Document *doc = new QXlsx::Document(filename);
     QXlsx::Worksheet *workSheet = doc->currentWorksheet();
 
@@ -270,7 +269,7 @@ void Journals::saveJour(DataTypes::FilesEnum jtype, QAbstractItemModel *amdl, QS
     cellModuleType.setColumn(4);
     workSheet->writeString(cellModuleType, QString::number(Board::GetInstance().serialNumber(Board::BaseMezzAdd), 16));
 
-    auto datetime = QDateTime::currentDateTimeUtc().toTimeZone(TimeFunc::userTimeZone());
+    auto datetime = QDateTime::currentDateTimeUtc().toTimeZone(m_timezone);
 
     workSheet->writeString(cellDate, "Дата: ");
     cellDate.setColumn(2);
@@ -302,9 +301,10 @@ void Journals::saveJour(DataTypes::FilesEnum jtype, QAbstractItemModel *amdl, QS
         workSheet->writeString(cellHeader, tempString);
     }
     // теперь по всем строкам модели пишем данные
-    emit resendMaxResult(pmdl->rowCount());
-    for (int i = 0; i < pmdl->rowCount(); ++i)
+    emit resendMaxResult(pmdl->itemCount());
+    for (int i = 0; i < pmdl->itemCount(); ++i)
     {
+        qDebug() << i;
 
         QXlsx::CellReference currentCell(6 + i, 1);
         // номер события
@@ -338,6 +338,6 @@ void Journals::saveJour(DataTypes::FilesEnum jtype, QAbstractItemModel *amdl, QS
     }
 
     doc->save();
-    emit resendResult(pmdl->rowCount());
+    emit resendResult(pmdl->itemCount());
     emit Done("Файл создан успешно", m_jourType);
 }

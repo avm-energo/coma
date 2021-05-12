@@ -177,7 +177,7 @@ void JournalDialog::SaveJour(DataTypes::FilesEnum jourType)
     progress->setMinimumDuration(0);
     connect(m_jour.get(), &Journals::resendMaxResult, progress, &QProgressDialog::setMaximum);
     connect(m_jour.get(), &Journals::resendResult, progress, &QProgressDialog::setValue);
-    emit StartSaveJour(jourType, amdl, filename);
+    emit StartSaveJour(jourType, filename);
 }
 
 int JournalDialog::GetJourNum(const QString &objname)
@@ -200,15 +200,15 @@ int JournalDialog::GetJourNum(const QString &objname)
     return jourtype;
 }
 
-void JournalDialog::StartReadJourFile()
-{
-    progress->setMinimumDuration(0);
-    connect(m_jour.get(), &Journals::resendMaxResult, progress, &QProgressDialog::setMaximum);
-    connect(m_jour.get(), &Journals::resendResult, progress, &QProgressDialog::setValue);
-    emit StartReadFile();
-}
+// void JournalDialog::StartReadJourFile()
+//{
+//    progress->setMinimumDuration(0);
+//    connect(m_jour.get(), &Journals::resendMaxResult, progress, &QProgressDialog::setMaximum);
+//    connect(m_jour.get(), &Journals::resendResult, progress, &QProgressDialog::setValue);
+//    emit StartReadFile();
+//}
 
-void JournalDialog::Done(QString msg, [[maybe_unused]] DataTypes::FilesEnum jourType)
+void JournalDialog::Done(QString msg)
 {
 
     disconnect(m_jour.get(), &Journals::resendMaxResult, this->progress, &QProgressDialog::setMaximum);

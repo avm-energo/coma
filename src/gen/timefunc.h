@@ -25,6 +25,7 @@ public:
     static QString UnixTime64ToString(quint64 utime, QTimeZone tz = QTimeZone::utc());
     static QString UnixTime64ToInvStringFractional(quint64 utime, QTimeZone tz = QTimeZone::utc());
     static QString UnixTime32ToInvString(quint32 utime, QTimeZone tz = QTimeZone::utc());
+    static quint64 InvStringToUnixTime32(QString utime, QTimeZone tz = QTimeZone::utc());
     static QTimeZone userTimeZone();
     static QString userTimeZoneName()
     {

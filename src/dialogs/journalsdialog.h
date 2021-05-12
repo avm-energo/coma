@@ -17,38 +17,26 @@ public:
     JournalDialog(UniquePointer<Journals> jour, QWidget *parent = nullptr);
     ~JournalDialog();
 
-    quint8 start;
-    int SaveI;
+signals:
+    void StartSaveJour(DataTypes::FilesEnum, QString);
 
 private:
-    QMessageBox *MsgBox;
-    QProgressDialog *progress;
-
     void SetupUI();
     QWidget *JourTab(DataTypes::FilesEnum jourtype);
     int GetJourNum(const QString &objname);
-    //    void setConnections() override;
-
-signals:
-    void StartGetJour();
-    void StartReadFile();
-    void StartSaveJour(DataTypes::FilesEnum, QAbstractItemModel *, QString);
 
 private slots:
     void JourFileChoosed(QString &file);
     void EraseJour();
     void SaveJour(DataTypes::FilesEnum jourType);
-    void Done(QString msg, DataTypes::FilesEnum jourType);
+    void Done(QString msg);
     void Error(QString msg);
-
-public slots:
 
 private:
     QString JourFile;
-    bool ok;
     UniquePointer<Journals> m_jour;
     QSortFilterProxyModel *ProxyWorkModel, *ProxySysModel, *ProxyMeasModel;
-    void StartReadJourFile();
+    QProgressDialog *progress;
     QMap<DataTypes::FilesEnum, QTableView *> views;
 };
 
