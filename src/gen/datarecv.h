@@ -19,13 +19,12 @@ struct DataRec
 bool is_same(const S2DataTypes::DataRec &lhs, const S2DataTypes::DataRec &rhs);
 
 }
-
+class S2;
 namespace DataTypes
 {
-
 class DataRecV
 {
-
+    friend class ::S2;
     template <typename T> struct true_type
     {
         static constexpr bool value = std::is_variant_alternative<T, valueType>();

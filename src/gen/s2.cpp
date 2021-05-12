@@ -236,10 +236,14 @@ bool S2::RestoreData(QByteArray bain, QList<DataTypes::DataRecV> &outlist)
             //                return Error::Msg::SizeError;
             //            }
             //            cfp.data = bain.left(size);
-            DataTypes::DataRecV DRV(DR, bain.left(size));
+            auto search = DataTypes::DataRecV::map.find(DR.id);
+            Q_ASSERT(search != DataTypes::DataRecV::map.end());
+            if (search != DataTypes::DataRecV::map.end())
+            {
+                DataTypes::DataRecV DRV(DR, bain.left(size));
+                outlist.append(DRV);
+            }
             bain.remove(0, size);
-
-            outlist.append(DRV);
         }
     }
     return true;
