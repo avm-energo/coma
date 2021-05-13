@@ -271,15 +271,15 @@ UWidget *CheckKDVDialog::Bd3W()
 
     glyout->addWidget(WDFunc::NewLBL2(this, "Относительная скорость старения изоляции"), 0, 0, 1, 1);
     glyout->addWidget(
-        WDFunc::NewLBLT(this, "", QString::number(4000), ValuesFormat, "Относительная скорость старения изоляции"), 1,
+        WDFunc::NewLBLT(this, "", QString::number(4700), ValuesFormat, "Относительная скорость старения изоляции"), 1,
         0, 1, 1);
     glyout->addWidget(WDFunc::NewLBL2(this, "Интегральное старение изоляции, час"), 2, 0, 1, 1);
     glyout->addWidget(
-        WDFunc::NewLBLT(this, "", QString::number(4001), ValuesFormat, "Интегральное старение изоляции, час"), 3, 0, 1,
+        WDFunc::NewLBLT(this, "", QString::number(4701), ValuesFormat, "Интегральное старение изоляции, час"), 3, 0, 1,
         1);
     glyout->addWidget(WDFunc::NewLBL2(this, "Остаточный ресурс изоляции, час"), 4, 0, 1, 1);
     glyout->addWidget(
-        WDFunc::NewLBLT(this, "", QString::number(4002), ValuesFormat, "Остаточный ресурс изоляции, час"), 5, 0, 1, 1);
+        WDFunc::NewLBLT(this, "", QString::number(4702), ValuesFormat, "Остаточный ресурс изоляции, час"), 5, 0, 1, 1);
 
     vlyout->addLayout(glyout);
     gb->setLayout(vlyout);
@@ -294,15 +294,15 @@ UWidget *CheckKDVDialog::Bd3W()
 
     glyout->addWidget(WDFunc::NewLBL2(this, "Наработка при нормальной нагрузке, час"), 6, 0, 1, 1);
     glyout->addWidget(
-        WDFunc::NewLBLT(this, "", QString::number(4003), ValuesFormat, "Наработка при нормальной нагрузке, час"), 7, 0,
+        WDFunc::NewLBLT(this, "", QString::number(4703), ValuesFormat, "Наработка при нормальной нагрузке, час"), 7, 0,
         1, 1);
     glyout->addWidget(WDFunc::NewLBL2(this, "Наработка в режиме перегрузки, час"), 8, 0, 1, 1);
     glyout->addWidget(
-        WDFunc::NewLBLT(this, "", QString::number(4004), ValuesFormat, "Наработка в режиме перегрузки, час"), 9, 0, 1,
+        WDFunc::NewLBLT(this, "", QString::number(4704), ValuesFormat, "Наработка в режиме перегрузки, час"), 9, 0, 1,
         1);
     glyout->addWidget(WDFunc::NewLBL2(this, "Общая наработка, час"), 10, 0, 1, 1);
     glyout->addWidget(
-        WDFunc::NewLBLT(this, "", QString::number(4005), ValuesFormat, "Общая наработка, час"), 11, 0, 1, 1);
+        WDFunc::NewLBLT(this, "", QString::number(4705), ValuesFormat, "Общая наработка, час"), 11, 0, 1, 1);
 
     vlyout->addLayout(glyout);
     gb->setLayout(vlyout);
@@ -331,7 +331,7 @@ UWidget *CheckKDVDialog::Bd3W()
     lyout->addLayout(glyout);
     lyout->addStretch(100);
     w->setLayout(lyout);
-    w->setFloatBdQuery({ { 4000, 6 } });
+    w->setFloatBdQuery({ { 4700, 6 } });
     return w;
 }
 
