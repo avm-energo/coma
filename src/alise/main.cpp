@@ -21,6 +21,11 @@ int main(int argc, char *argv[])
 
     QCoreApplication a(argc, argv);
     const auto devices = UsbHidPortInfo::devicesFound(0x0483);
+    if (devices.isEmpty())
+    {
+        std::cout<<"No devices"<<std::endl;
+        return a.exec();
+    }
     for (const auto &device : devices)
     {
         std::cout << "Vendor id:" << std::hex << device.vendor_id << std::dec << " : "
@@ -32,7 +37,8 @@ int main(int argc, char *argv[])
     BaseInterface::setIface(std::move(device));
 
     auto protocom = static_cast<Protocom *>(BaseInterface::iface());
-    protocom->start(devices.first());
+    if (!protocom->start(devices.first()))
+        std::cout<<"Couldnt connect"<<std::endl;
     const auto &manager = DataManager::GetInstance();
     QObject::connect(&manager, &DataManager::bitStringReceived, &print);
     protocom->reqBSI();
