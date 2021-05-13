@@ -137,7 +137,7 @@ void Journals::FillEventsTable(const QByteArray &ba)
     if (!model->isEmpty())
         model->clearModel();
 
-    QVector<QVector<QVariant>> ValueLists = createCommon(ba, mineventid, sl);
+    const QVector<QVector<QVariant>> ValueLists = createCommon(ba, mineventid, sl);
 
     auto header = AVM::eventJourHeaders;
     auto time_pos = std::find_if(header.begin(), header.end(), [](const QString &str) { return str.contains("UTC"); });
@@ -160,7 +160,7 @@ void Journals::FillMeasTable(const QByteArray &ba)
     if (!model->isEmpty())
         model->clearModel();
 
-    QVector<QVector<QVariant>> ValueLists = createMeas(ba);
+    const QVector<QVector<QVariant>> ValueLists = createMeas(ba);
 
     Q_ASSERT(!m_measJourHeaders.isEmpty());
     model->setHorizontalHeaderLabels(m_measJourHeaders);

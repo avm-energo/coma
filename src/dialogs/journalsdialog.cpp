@@ -12,6 +12,8 @@
 #ifdef MODELDEBUG
 #include <QAbstractItemModelTester>
 #endif
+#include "../widgets/QProgressIndicator.h"
+
 #include <QDateTime>
 #include <QDebug>
 #include <QHeaderView>
@@ -100,8 +102,22 @@ QWidget *JournalDialog::JourTab(DataTypes::FilesEnum jourtype)
         qDebug("Default case");
         return w;
     }
-    QPushButton *getButton = WDFunc::NewPB(this, "gj." + QString::number(jourtype), "Получить " + str, this,
-        [=] { BaseInterface::iface()->reqFile(DataTypes::FilesEnum(jourtype)); });
+    auto *modelView = WDFunc::NewTV(this, tvname, mdl);
+    QDialog *progressDialog = new QDialog(
+        this, Qt::WindowSystemMenuHint | Qt::WindowTitleHint | Qt::FramelessWindowHint | Qt::NoDropShadowWindowHint);
+    QProgressIndicator *progressIndicator = new QProgressIndicator(this);
+    hlyout->addWidget(progressIndicator);
+    progressDialog->setLayout(hlyout);
+    hlyout = new QHBoxLayout;
+    progressIndicator->startAnimation();
+    QPushButton *getButton = WDFunc::NewPB(this, "gj." + QString::number(jourtype), "Получить " + str, this, [=] {
+        progressDialog->show();
+        progressIndicator->startAnimation();
+        BaseInterface::iface()->reqFile(DataTypes::FilesEnum(jourtype));
+        modelView->setUpdatesEnabled(false);
+    });
+    connect(m_jour.get(), &Journals::Done, progressDialog, &QWidget::close);
+    connect(m_jour.get(), &Journals::Done, modelView, [modelView] { modelView->setUpdatesEnabled(true); });
     hlyout->addWidget(getButton);
     QPushButton *eraseButton = WDFunc::NewPB(this, "ej." + QString::number(jourtype), "Стереть " + str, this, [=] {
         if (checkPassword())
@@ -118,7 +134,7 @@ QWidget *JournalDialog::JourTab(DataTypes::FilesEnum jourtype)
     });
     hlyout->addWidget(saveButton);
     vlyout->addLayout(hlyout);
-    auto *modelView = WDFunc::NewTV(this, tvname, mdl);
+
     views.insert(DataTypes::FilesEnum(jourtype), modelView);
     vlyout->addWidget(modelView, 89);
     w->setLayout(vlyout);

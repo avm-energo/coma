@@ -32,7 +32,7 @@ public:
     void setHorizontalHeaderLabels(const QStringList hdrl);
     void setHeaders(const QStringList hdrl);
     void clearModel();
-    void fillModel(QVector<QVector<QVariant>> &);
+    void fillModel(const QVector<QVector<QVariant>> &);
     int itemCount() const
     {
         return int(maindata.size());

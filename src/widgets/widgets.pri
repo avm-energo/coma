@@ -17,7 +17,8 @@ SOURCES += \
     $$PWD/uwidget.cpp \
     $$PWD/waitwidget.cpp \
     $$PWD/ipctrl.cpp \
-    $$PWD/wd_func.cpp
+    $$PWD/wd_func.cpp \
+    $$PWD/QProgressIndicator.cpp
 
 
 
@@ -40,4 +41,5 @@ HEADERS += \
     $$PWD/uwidget.h \
     $$PWD/waitwidget.h \
     $$PWD/ipctrl.h \
-    $$PWD/wd_func.h
+    $$PWD/wd_func.h \
+    $$PWD/QProgressIndicator.h

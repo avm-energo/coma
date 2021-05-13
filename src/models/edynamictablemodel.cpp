@@ -177,7 +177,7 @@ int EDynamicTableModel::rowCount(const QModelIndex &index) const
 }
 
 /// Fill all model directly
-void EDynamicTableModel::fillModel(QVector<QVector<QVariant>> &lsl)
+void EDynamicTableModel::fillModel(const QVector<QVector<QVariant>> &lsl)
 {
     beginResetModel();
     //  beginInsertRows(index(0, 0, QModelIndex()), 0, lsl.size());
