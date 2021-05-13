@@ -74,12 +74,12 @@ Error::Msg Tune84Check::check()
     bda->readAndUpdate();
 #ifndef NO_LIMITS
     for (int i = 0; i < 3; ++i)
-        if (!WDFunc::floatIsWithinLimits(this, bda->data()->Ueff_ADC[i], 2150000.0, 150000.0))
+        if (!WDFunc::floatIsWithinLimits(this, "напряжения", bda->data()->Ueff_ADC[i], 2150000.0, 150000.0))
             return Error::Msg::GeneralError;
     for (int i = 3; i < 6; ++i)
-        if (!WDFunc::floatIsWithinLimits(this, bda->data()->Ueff_ADC[i], 1220000.0, 60000.0))
+        if (!WDFunc::floatIsWithinLimits(this, "тока", bda->data()->Ueff_ADC[i], 1220000.0, 60000.0))
             return Error::Msg::GeneralError;
-    if (!WDFunc::floatIsWithinLimits(this, bda->data()->Frequency, 51.0, 0.05))
+    if (!WDFunc::floatIsWithinLimits(this, "частоты", bda->data()->Frequency, 51.0, 0.05))
         return Error::Msg::GeneralError;
 #endif
     return Error::Msg::NoError;
