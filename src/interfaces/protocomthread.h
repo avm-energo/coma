@@ -68,6 +68,9 @@ private:
     ByteQueue prepareLongBlk(Proto::CommandStruct &cmdStr);
 
     void handleBitString(const QByteArray &ba, quint16 sigAddr);
+#ifdef __linux
+    void handleUnixTime(const QByteArray &ba, quint16 sigAddr);
+#endif
     void handleBitStringArray(const QByteArray &ba, QList<quint16> arr_addr);
     void handleFloat(const QByteArray &ba, quint32 sigAddr);
     void handleFloatArray(const QByteArray &ba, quint32 sigAddr, quint32 sigCount);

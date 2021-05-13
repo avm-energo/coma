@@ -22,6 +22,10 @@
 #include <memoryapi.h>
 #endif
 
+#ifdef __linux__
+#include <time.h>
+#endif
+
 typedef QQueue<QByteArray> ByteQueue;
 using Proto::CommandStruct;
 using Proto::Direction;
@@ -167,6 +171,13 @@ void ProtocomThread::handle(const Proto::Commands cmd)
     }
     case Commands::ReadTime:
 
+#ifdef __linux
+        if (m_buffer.second.size()==sizeof (quint64))
+        {
+            handleUnixTime(m_buffer.second, addr);
+            break;
+        }
+#endif
         handleBitString(m_buffer.second, addr);
         break;
 
@@ -719,7 +730,17 @@ void ProtocomThread::handleBitString(const QByteArray &ba, quint16 sigAddr)
     DataTypes::BitStringStruct resp { sigAddr, value, {} };
     DataManager::addSignalToOutList(DataTypes::SignalTypes::BitString, resp);
 }
+#ifdef __linux
+void ProtocomThread::handleUnixTime(const QByteArray &ba,[[maybe_unused]] quint16 sigAddr)
+{
+    Q_ASSERT(ba.size() == sizeof(quint64));
 
+    quint32 secs = *reinterpret_cast<const quint32 *>(ba.data());
+    quint32 nsecs = *reinterpret_cast<const quint32 *>(ba.data()+sizeof(quint32));
+    timespec resp { secs,nsecs };
+    DataManager::addSignalToOutList(DataTypes::SignalTypes::Timespec, resp);
+}
+#endif
 void ProtocomThread::handleBitStringArray(const QByteArray &ba, QList<quint16> arr_addr)
 {
     Q_ASSERT(ba.size() / 4 == arr_addr.size());

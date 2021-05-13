@@ -10,7 +10,9 @@
 #include <QQueue>
 #include <QVariant>
 #include <queue>
-
+#ifdef __linux__
+#include <time.h>
+#endif
 #define INQUEUEMAXSIZE 100
 
 template <class> inline constexpr bool always_false_v = false;
@@ -127,6 +129,10 @@ signals:
     void responseReceived(const DataTypes::GeneralResponseStruct &);
     void oscInfoReceived(const DataTypes::OscInfo &);
     void blockReceived(const DataTypes::BlockStruct &);
+#ifdef __linux__
+    void timeReceived(const timespec &);
+#endif
+
 };
 
 #endif // DATAMANAGER_H

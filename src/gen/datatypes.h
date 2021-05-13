@@ -4,6 +4,10 @@
 
 #include <QDataStream>
 #include <QVariant>
+#ifdef __linux__
+#include <time.h>
+Q_DECLARE_METATYPE(timespec);
+#endif
 namespace DataTypes
 {
 
@@ -32,7 +36,12 @@ enum SignalTypes
     DataRecVList,
     Block,
     OscillogramInfo,
+#ifdef __linux
+    Timespec,
+#endif
     GeneralResponse
+
+
 };
 
 enum GeneralResponseTypes
@@ -391,4 +400,5 @@ Q_DECLARE_METATYPE(DataTypes::GeneralResponseStruct)
 Q_DECLARE_METATYPE(DataTypes::DataRecV)
 Q_DECLARE_METATYPE(DataTypes::OscInfo)
 Q_DECLARE_METATYPE(Queries::Command)
+
 #endif // DATATYPES_H

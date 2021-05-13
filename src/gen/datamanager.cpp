@@ -1,6 +1,7 @@
 #include "datamanager.h"
 
 #include "helper.h"
+
 // QList<DataTypes::SignalsStruct> DataManager::s_outputList;
 // QMutex DataManager::s_outListMutex;
 QMutex DataManager::s_inQueueMutex;
@@ -282,6 +283,18 @@ void DataManager::checkTypeAndSendSignals(DataTypes::SignalsStruct &str)
         }
         break;
     }
+#ifdef __linux__
+case Timespec:
+    {
+        Q_ASSERT(str.data.canConvert<timespec>());
+        if (str.data.canConvert<timespec>())
+        {
+            timespec time = str.data.value<timespec>();
+            emit timeReceived(time);
+        }
+        break;
+    }
+#endif
     default:
         break;
     }
