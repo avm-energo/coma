@@ -75,7 +75,7 @@ UWidget *CheckKTFHarmonicDialog::BdUWidget(int value, int min, int max)
         for (int h = min; h < max; h++)
         {
             if (k > 0)
-                s = s + 2;
+            s = s + 2;
             k = s + 1;
             glyout->addWidget(WDFunc::NewLBL(this, phase[i] + "Гм. " + QString::number(h)), s, i, 1, 1);
             glyout->addWidget(WDFunc::NewLBLT(this, "", QString::number((value + j) + i * 126), ValuesFormat,
@@ -129,7 +129,7 @@ UWidget *CheckKTFHarmonicDialog::BdIWidget(int value, int min, int max)
         for (int h = min; h < max; h++)
         {
             if (k > 0)
-                s = s + 2;
+            s = s + 2;
             k = s + 1;
             glyout->addWidget(WDFunc::NewLBL(this, phase[i] + "Гм. " + QString::number(h)), s, i, 1, 1);
             glyout->addWidget(WDFunc::NewLBLT(this, "", QString::number((value + j) + i * 126), ValuesFormat,
@@ -152,66 +152,3 @@ UWidget *CheckKTFHarmonicDialog::BdIWidget(int value, int min, int max)
     return w;
 }
 
-// void CheckKTFHarmonicDialog::ChooseValuesToWrite() { }
-// void CheckKTFHarmonicDialog::SetDefaultValuesToWrite() { }
-// void CheckKTFHarmonicDialog::PrepareAnalogMeasurements() { }
-
-// void CheckKTFHarmonicDialog::USBUpdate()
-//{
-//    QTabWidget *CheckTW = this->findChild<QTabWidget *>("checktw0");
-//    if (CheckTW == nullptr)
-//    {
-//        qDebug("CheckTW is null");
-//        return;
-//    }
-
-//    for (int i = 0; i < 5; i++)
-//    {
-//        if (CheckTW->currentIndex() == IndexWd.at(i))
-//        {
-//            if (Commands::GetBd(5, &ChHarmKTF->Bd_block5, sizeof(CheckHarmonicKTF::Bd5)) == Error::Msg::NoError)
-//                ChHarmKTF->FillBd5(this);
-//        }
-//    }
-
-//    for (int i = 6; i < 12; i++)
-//    {
-//        if (CheckTW->currentIndex() == IndexWd.at(i))
-//        {
-//            if (Commands::GetBd(7, &ChHarmKTF->Bd_block7, sizeof(CheckHarmonicKTF::Bd7)) == Error::Msg::NoError)
-//                ChHarmKTF->FillBd7(this);
-//        }
-//    }
-//}
-
-// void CheckKTFHarmonicDialog::updateFloatData()
-//{
-//    QList<DataTypes::SignalsStruct> list;
-//    DataManager::getSignals(0, 99999, DataTypes::SignalTypes::FloatWithTime, list);
-//    if (!list.isEmpty())
-//    {
-//        foreach (DataTypes::SignalsStruct signal, list)
-//        {
-//            DataTypes::FloatWithTimeStruct fwt = qvariant_cast<DataTypes::FloatWithTimeStruct>(signal.data);
-//            ChHarmKTF->FillBd(this, QString::number(fwt.sigAdr), WDFunc::StringValueWithCheck(fwt.sigVal, 3));
-//        }
-//    }
-//}
-
-// void CheckKTFHarmonicDialog::UpdateModBusData(QList<ModBus::SignalStruct> Signal)
-//{
-
-//    int i = 0;
-//    for (i = 0; i < Signal.size(); ++i)
-//    {
-//        // sig = *(Signal+i);
-//        if ((((Signal.at(i).SigAdr >= 1011) && (Signal.at(i).SigAdr <= 1015)))
-//            || ((Signal.at(i).SigAdr >= 1111) && (Signal.at(i).SigAdr <= 1115)))
-//            ChHarmKTF->FillBd(
-//                this, QString::number((Signal.at(i).SigAdr) + 9), WDFunc::StringValueWithCheck(Signal.at(i).flVal,
-//                3));
-//        else
-//            ChHarmKTF->FillBd(
-//                this, QString::number(Signal.at(i).SigAdr), WDFunc::StringValueWithCheck(Signal.at(i).flVal, 3));
-//    }
-//}

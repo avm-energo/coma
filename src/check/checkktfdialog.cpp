@@ -175,7 +175,22 @@ UWidget *CheckKTFDialog::Bd1W()
     w->setStyleSheet("QWidget {background-color: " + QString(Colors::UCONFCLR) + ";}");
     w->setFloatBdQuery({ { 101, 2 }, { 1000, 11 }, { 1011, 8 }, { 1400, 11 }, { 1411, 8 }, { 1220, 8 }, { 2400, 7 },
         { 2420, 32 }, { 4500, 7 } });
-    //   w->setSpBdQuery({ { 3011, 25 } });
+    // w->setSpBdQuery({ { 5011, 15 } });
+    //    QMap<int, QList<UWidget::HighlightWarnAlarmStruct>> hmap
+    //        = { { 5011, { { 1000, Colors::ColorsMap.value(Colors::AConfO) } } },
+    //              { 5012, { { 1001, Colors::ColorsMap.value(Colors::AConfO) } } },
+    //              { 5013, { { 1002, Colors::ColorsMap.value(Colors::AConfO) } } },
+    //              { 5014, { { 1400, Colors::ColorsMap.value(Colors::AConfO) } } },
+    //              { 5015, { { 1401, Colors::ColorsMap.value(Colors::AConfO) } } },
+    //              { 5016, { { 1402, Colors::ColorsMap.value(Colors::AConfO) } } },
+    //              { 5018, { { 1000, Colors::ColorsMap.value(Colors::AConfO) } } },
+    //              { 5019, { { 1001, Colors::ColorsMap.value(Colors::AConfO) } } },
+    //              { 5020, { { 1002, Colors::ColorsMap.value(Colors::AConfO) } } },
+    //              { 5021, { { 2429, Colors::ColorsMap.value(Colors::AConfO) } } },
+    //              { 5022, { { 2430, Colors::ColorsMap.value(Colors::AConfO) } } },
+    //              { 5023, { { 2431, Colors::ColorsMap.value(Colors::Red) } } },
+    //              { 5024, { { 2429, Colors::ColorsMap.value(Colors::AConfO) } } },
+    //              { 5025, { { 2430, Colors::ColorsMap.value(Colors::Red) } } } };
 
     return w;
 }

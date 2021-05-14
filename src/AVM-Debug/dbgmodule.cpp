@@ -60,9 +60,9 @@ void DbgModule::createModule(Modules::Model model)
         }
         CheckKTFDialog *cdktf = new CheckKTFDialog;
         addDialogToList(cdktf, "Проверка");
-
-        addDialogToList(new StartupKTFDialog, "Старение\nизоляции");
         addDialogToList(new CheckKTFHarmonicDialog, "Гармоники");
+        addDialogToList(new StartupKTFDialog, "Старение\nизоляции");
+
         Module::create(std::move(jour));
         break;
     }
@@ -74,11 +74,10 @@ void DbgModule::createModule(Modules::Model model)
             addDialogToList(new ConfigDialog(settings()->configSettings), "Конфигурирование", "conf1");
         }
         CheckKDVDialog *cdkdv = new CheckKDVDialog;
-        addDialogToList(cdkdv);
-
-        addDialogToList(new StartupKDVDialog, "Старение\nизоляции");
+        addDialogToList(cdkdv, "Проверка");
         addDialogToList(new CheckKDVHarmonicDialog, "Гармоники");
         addDialogToList(new CheckKDVVibrDialog, "Вибрации");
+        addDialogToList(new StartupKDVDialog, "Старение\nизоляции");
         Module::create(std::move(jour));
         break;
     }
