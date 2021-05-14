@@ -111,7 +111,7 @@ void Logging::messageHandler(QtMsgType type, const QMessageLogContext &context, 
     logFile.open(QFile::Append | QFile::Text);
     out << QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss.zzz "); // Log datetime
     out << msgTypes.value(type) << space;                                     // Msg category
-#ifdef _DEBUG
+#ifdef QT_DEBUG
     out << context.file << space << context.line << space;
 #endif
     // NOTE Если будем использовать категории

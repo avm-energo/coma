@@ -31,7 +31,7 @@ ErrorProtocolWidget::ErrorProtocolWidget(QWidget *parent) : QWidget(parent)
     Model->setHeaderData(3, Qt::Horizontal, "Сообщение", Qt::EditRole);
     tv->setModel(Model);
 
-#ifndef _DEBUG
+#ifndef QT_DEBUG
     tv->setColumnHidden(1, true);
     tv->setColumnHidden(2, true);
 #endif

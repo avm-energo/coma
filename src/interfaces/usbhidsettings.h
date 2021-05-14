@@ -4,7 +4,7 @@
 struct UsbHidSettings
 {
     explicit UsbHidSettings() = default;
-#if _DEBUG
+#ifdef QT_DEBUG
     explicit UsbHidSettings(unsigned short dev, unsigned short pid, const QString &arr, const QString &str)
         : vendor_id(dev), product_id(pid), serial(arr), path(str)
 #else
@@ -26,7 +26,7 @@ struct UsbHidSettings
     unsigned short vendor_id;
     unsigned short product_id;
     QString serial;
-#if _DEBUG
+#ifdef QT_DEBUG
     QString path;
 #endif
     /// From Windows message string

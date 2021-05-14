@@ -10,7 +10,7 @@
 
 #include <QDebug>
 #include <QThread>
-#ifdef _WIN32
+#ifdef Q_OS_WINDOWS
 // clang-format off
 #include <windows.h>
 // Header dbt must be the last header, thanx to microsoft
@@ -82,7 +82,7 @@ bool Protocom::start(const UsbHidSettings &usbhid)
         portThread->deleteLater();
         return false;
     }
-#ifdef _WIN32
+#ifdef Q_OS_WINDOWS
     connect(this, &BaseInterface::nativeEvent, port, [port](auto &&msg) {
         MSG *message = static_cast<MSG *>(msg);
         if (!msg)

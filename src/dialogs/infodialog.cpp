@@ -6,7 +6,7 @@
 #include "../gen/error.h"
 #include "../gen/stdfunc.h"
 #include "../widgets/wd_func.h"
-#ifdef _DEBUG
+#ifdef QT_DEBUG
 #include <QDebug>
 #include <QElapsedTimer>
 #endif

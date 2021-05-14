@@ -11,7 +11,7 @@
 #include <QRegularExpression>
 #include <QTimer>
 #include <array>
-#ifdef _WIN32
+#ifdef Q_OS_WINDOWS
 // clang-format off
 #include <windows.h>
 // Header dbt must be the last header, thanx to microsoft
@@ -51,12 +51,9 @@ bool UsbHidPort::setupConnection()
         finish();
         return false;
     }
-    //#ifdef __linux__
-    //   m_hidDevice = hid_open_path(deviceInfo().path.toStdString().c_str());
-    //#endif
-    //#ifdef _WIN32
+
     m_hidDevice = openDevice(m_deviceInfo);
-    //#endif
+
     if (!m_hidDevice)
     {
         qCritical() << Error::Msg::OpenError;
@@ -209,7 +206,7 @@ void UsbHidPort::clear()
 
 void UsbHidPort::usbEvent(const USBMessage message, quint32 type)
 {
-#ifdef _WIN32
+#ifdef Q_OS_WINDOWS
     qDebug() << message.guid << message.type;
     switch (type)
     {

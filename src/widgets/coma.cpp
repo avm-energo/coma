@@ -57,7 +57,7 @@
 #include <QtGlobal>
 #include <functional>
 #include <memory>
-#ifdef _WIN32
+#ifdef Q_OS_WINDOWS
 // clang-format off
 #include <windows.h>
 // Header dbt must be the last header, thanx to microsoft
@@ -95,9 +95,10 @@ Coma::Coma(QWidget *parent) : QMainWindow(parent)
         dir.mkpath(".");
     StdFunc::Init();
     qInfo("=== Log started ===\n");
-#ifdef __linux__
+#ifdef Q_OS_LINUX
     // linux code goes here
-#elif _WIN32
+#endif
+#ifdef Q_OS_WINDOWS
     // Listen to device events
     registerForDeviceNotification(this);
 #else
@@ -406,7 +407,7 @@ bool Coma::nativeEvent(const QByteArray &eventType, void *message, long *result)
 #endif
     if (eventType == "windows_generic_MSG")
     {
-#ifdef _WIN32
+#ifdef Q_OS_WINDOWS
         MSG *msg = static_cast<MSG *>(message);
         int msgType = msg->message;
         if (msgType != WM_DEVICECHANGE)

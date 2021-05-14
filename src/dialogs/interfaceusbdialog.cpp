@@ -34,7 +34,7 @@ void InterfaceUSBDialog::setInterface(QModelIndex index)
     settings.vendor_id = mdl->data(mdl->index(row, 0)).toString().toUInt(nullptr, 16);
     settings.product_id = mdl->data(mdl->index(row, 1)).toString().toUInt(nullptr, 16);
     settings.serial = mdl->data(mdl->index(row, 2)).toString();
-#if _DEBUG
+#ifdef QT_DEBUG
     settings.path = mdl->data(mdl->index(row, 3)).toString();
 #endif
     ConnectStruct st { QString(), settings };
@@ -51,7 +51,7 @@ bool InterfaceUSBDialog::updateModel()
         return false;
     }
     QStringList sl { "VID", "PID", "Serial" };
-#if _DEBUG
+#ifdef QT_DEBUG
     sl.push_back("Path");
 #endif
     QStandardItemModel *mdl = new QStandardItemModel(this);
@@ -59,13 +59,12 @@ bool InterfaceUSBDialog::updateModel()
     mdl->setHorizontalHeaderLabels(sl);
     for (const auto &row : usbDevices)
     {
-        QList<QStandardItem *> device
-        {
-            new QStandardItem(QString::number(row.vendor_id, 16)),      //
-                new QStandardItem(QString::number(row.product_id, 16)), //
-                new QStandardItem(row.serial),                          //
-#if _DEBUG
-                new QStandardItem(row.path) //
+        QList<QStandardItem *> device {
+            new QStandardItem(QString::number(row.vendor_id, 16)),  //
+            new QStandardItem(QString::number(row.product_id, 16)), //
+            new QStandardItem(row.serial),                          //
+#ifdef QT_DEBUG
+            new QStandardItem(row.path) //
 #endif
         };
         mdl->appendRow(device);
