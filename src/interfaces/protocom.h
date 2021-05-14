@@ -26,6 +26,9 @@ public:
     void writeFile(quint32 filenum, const QByteArray &file) override;
     // void writeConfigFile() override;
     void writeTime(quint32 time) override;
+#ifdef Q_OS_LINUX
+    void writeTime(const timespec &time) const;
+#endif
     void writeCommand(Queries::Commands cmd, QVariant item = 0) override;
     void writeCommand(Queries::Commands cmd, const QVariantList &list) override;
     void reqFloats(quint32 sigAdr, quint32 sigCount) override;
@@ -39,7 +42,7 @@ protected:
 private:
     bool isValidRegs(const quint32 sigAdr, const quint32 sigCount);
 signals:
-    void wakeUpParser();
+    void wakeUpParser() const;
     void wakeUpPort();
 };
 

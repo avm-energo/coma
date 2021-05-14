@@ -14,16 +14,16 @@
 //#include <QMetaEnum>
 #include <QThread>
 
+#ifdef Q_OS_LINUX
+#include <time.h>
+#endif
+
 #ifdef Q_OS_WINDOWS
 #define BUFFERSIZE 5
 
 #include <Windows.h>
 #include <fileapi.h>
 #include <memoryapi.h>
-#endif
-
-#ifdef __linux__
-#include <time.h>
 #endif
 
 typedef QQueue<QByteArray> ByteQueue;
@@ -171,7 +171,7 @@ void ProtocomThread::handle(const Proto::Commands cmd)
     }
     case Commands::ReadTime:
 
-#ifdef __linux
+#ifdef Q_OS_LINUX
         if (m_buffer.second.size()==sizeof (quint64))
         {
             handleUnixTime(m_buffer.second, addr);
@@ -474,7 +474,18 @@ void ProtocomThread::parseRequest(const CommandStruct &cmdStr)
     }
     case Commands::WriteTime:
     {
+#ifdef Q_OS_LINUX
+        if (m_currentCommand.arg1.canConvert<timespec>())
+        {
+            timespec time=m_currentCommand.arg1.value<timespec>();
+            m_currentCommand.ba.push_back(StdFunc::arrayFromNumber(quint32(time.tv_sec)));
+            m_currentCommand.ba.push_back(StdFunc::arrayFromNumber(quint32(time.tv_nsec)));
+        }
+        else
+#endif
+        {
         m_currentCommand.ba = StdFunc::arrayFromNumber(m_currentCommand.arg1.value<quint32>());
+        }
         QByteArray ba = prepareBlock(m_currentCommand);
         emit writeDataAttempt(ba);
         break;

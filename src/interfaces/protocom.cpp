@@ -181,6 +181,13 @@ void Protocom::writeTime(quint32 time)
     emit wakeUpParser();
 }
 
+void Protocom::writeTime(const timespec &time) const
+{
+    CommandStruct inp { Proto::Commands::WriteTime, QVariant::fromValue( time), QVariant(), {} };
+    DataManager::addToInQueue(inp);
+    emit wakeUpParser();
+}
+
 void Protocom::reqFloats(quint32 sigAdr, quint32 sigCount)
 {
     Q_D(Protocom);
