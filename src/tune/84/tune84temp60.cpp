@@ -52,28 +52,27 @@ void Tune84Temp60::setMessages()
 
 void Tune84Temp60::setTuneFunctions()
 {
-    int count = 0;
-    m_tuneFunctions[m_messages.at(count++)]
-        = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&AbstractTuneDialog::CheckPassword);
+    m_tuneFunctions.push_back(
+        reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&AbstractTuneDialog::CheckPassword));
     Error::Msg (AbstractTuneDialog::*func)()
         = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&AbstractTuneDialog::saveWorkConfig);
-    m_tuneFunctions[m_messages.at(count++)] = func;
+    m_tuneFunctions.push_back(func);
     func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&Tune84Temp60::setNewConfAndTune);
-    m_tuneFunctions[m_messages.at(count++)] = func;
+    m_tuneFunctions.push_back(func);
     func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&Tune84Temp60::showTempDialog);
-    m_tuneFunctions[m_messages.at(count++)] = func;
+    m_tuneFunctions.push_back(func);
     func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&Tune84Temp60::waitForTempToRise);
-    m_tuneFunctions[m_messages.at(count++)] = func;
+    m_tuneFunctions.push_back(func);
     func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&Tune84Temp60::showSignalsDialog);
-    m_tuneFunctions[m_messages.at(count++)] = func;
+    m_tuneFunctions.push_back(func);
     func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&Tune84Temp60::analogMeasurement);
-    m_tuneFunctions[m_messages.at(count++)] = func;
+    m_tuneFunctions.push_back(func);
     func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&Tune84Temp60::inputEnergomonitorValues);
-    m_tuneFunctions[m_messages.at(count++)] = func;
+    m_tuneFunctions.push_back(func);
     if (m_tuneStep == TS84_20TUNING)
     {
         func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&Tune84Temp60::writeTuneCoefs);
-        m_tuneFunctions[m_messages.at(count++)] = func;
+        m_tuneFunctions.push_back(func);
     }
 }
 

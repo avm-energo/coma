@@ -32,22 +32,21 @@ void TuneKIVR::setMessages()
 
 void TuneKIVR::setTuneFunctions()
 {
-    int count = 0;
-    m_tuneFunctions[m_messages.at(count++)]
-        = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&AbstractTuneDialog::CheckPassword);
+    m_tuneFunctions.push_back(
+        reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&AbstractTuneDialog::CheckPassword));
     Error::Msg (AbstractTuneDialog::*func)()
         = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVR::showPreWarning);
-    m_tuneFunctions[m_messages.at(count++)] = func;
+    m_tuneFunctions.push_back(func);
     func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&AbstractTuneDialog::readTuneCoefs);
-    m_tuneFunctions[m_messages.at(count++)] = func;
+    m_tuneFunctions.push_back(func);
     func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVR::setR80);
-    m_tuneFunctions[m_messages.at(count++)] = func;
+    m_tuneFunctions.push_back(func);
     func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVR::processR80);
-    m_tuneFunctions[m_messages.at(count++)] = func;
+    m_tuneFunctions.push_back(func);
     func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVR::setR120);
-    m_tuneFunctions[m_messages.at(count++)] = func;
+    m_tuneFunctions.push_back(func);
     func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVR::processR120);
-    m_tuneFunctions[m_messages.at(count++)] = func;
+    m_tuneFunctions.push_back(func);
 }
 
 Error::Msg TuneKIVR::showPreWarning()

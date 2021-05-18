@@ -28,75 +28,80 @@ TuneKIVADC::TuneKIVADC(int tuneStep, QWidget *parent) : AbstractTuneDialog(tuneS
 
 void TuneKIVADC::setMessages()
 {
-    m_messages.append("1. Ввод пароля...");
-    m_messages.append("2. Сохранение текущей конфигурации...");
-    m_messages.append("3. Отображение предупреждения...");
-    m_messages.append("4. Запрос настроечных параметров...");
-    m_messages.append("5. Проверка настроечных параметров...");
-    m_messages.append("6. Задание режима конфигурирования модуля...");
-    m_messages.append("7. Регулировка для Кацп = 1...");
-    m_messages.append("8. Отображение диалога задания входных данных...");
-    m_messages.append("9. Регулировка для Кацп = 2...");
-    m_messages.append("10. Отображение диалога задания входных данных...");
-    m_messages.append("11. Регулировка для Кацп = 4...");
-    m_messages.append("12. Отображение диалога задания входных данных...");
-    m_messages.append("13. Регулировка для Кацп = 8...");
-    m_messages.append("14. Отображение диалога задания входных данных...");
-    m_messages.append("15. Регулировка для Кацп = 16...");
-    m_messages.append("16. Отображение диалога задания входных данных...");
-    m_messages.append("17. Регулировка для Кацп = 32...");
-    m_messages.append("18. Отображение диалога задания входных данных...");
-    m_messages.append("19. Регулировка канала Tmk0...");
-    m_messages.append("20. Запись настроечных коэффициентов и восстановление конфигурации...");
-    m_messages.append("21. Проверка регулировки...");
+    m_messages.append("Ввод пароля...");
+    m_messages.append("Сохранение текущей конфигурации...");
+    m_messages.append("Отображение предупреждения...");
+    m_messages.append("Запрос настроечных параметров...");
+    m_messages.append("Проверка настроечных параметров...");
+    m_messages.append("Задание режима конфигурирования модуля...");
+    m_messages.append("Регулировка для Кацп = 1...");
+    m_messages.append("Отображение диалога задания входных данных...");
+    if (m_tuneStep == KIVTS_ADCI)
+    {
+        m_messages.append("Регулировка для Кацп = 2...");
+        m_messages.append("Отображение диалога задания входных данных...");
+        m_messages.append("Регулировка для Кацп = 4...");
+        m_messages.append("Отображение диалога задания входных данных...");
+        m_messages.append("Регулировка для Кацп = 8...");
+        m_messages.append("Отображение диалога задания входных данных...");
+        m_messages.append("Регулировка для Кацп = 16...");
+        m_messages.append("Отображение диалога задания входных данных...");
+        m_messages.append("Регулировка для Кацп = 32...");
+        m_messages.append("Отображение диалога задания входных данных...");
+        m_messages.append("Регулировка канала Tmk0...");
+    }
+    m_messages.append("Запись настроечных коэффициентов и восстановление конфигурации...");
+    m_messages.append("Проверка регулировки...");
 }
 
 void TuneKIVADC::setTuneFunctions()
 {
-    int count = 0;
-    m_tuneFunctions[m_messages.at(count++)]
-        = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&AbstractTuneDialog::CheckPassword);
-    m_tuneFunctions[m_messages.at(count++)]
-        = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&AbstractTuneDialog::saveWorkConfig);
+    m_tuneFunctions.push_back(
+        reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&AbstractTuneDialog::CheckPassword));
+    m_tuneFunctions.push_back(
+        reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&AbstractTuneDialog::saveWorkConfig));
     Error::Msg (AbstractTuneDialog::*func)()
         = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVADC::showPreWarning);
-    m_tuneFunctions[m_messages.at(count++)] = func;
+    m_tuneFunctions.push_back(func);
     func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&AbstractTuneDialog::readTuneCoefs);
-    m_tuneFunctions[m_messages.at(count++)] = func;
+    m_tuneFunctions.push_back(func);
     func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVADC::checkTuneCoefs);
-    m_tuneFunctions[m_messages.at(count++)] = func;
+    m_tuneFunctions.push_back(func);
     func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVADC::setSMode2);
-    m_tuneFunctions[m_messages.at(count++)] = func;
+    m_tuneFunctions.push_back(func);
     func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVADC::ADCCoef1);
-    m_tuneFunctions[m_messages.at(count++)] = func;
+    m_tuneFunctions.push_back(func);
     func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVADC::showEnergomonitorInputDialog);
-    m_tuneFunctions[m_messages.at(count++)] = func;
-    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVADC::ADCCoef2);
-    m_tuneFunctions[m_messages.at(count++)] = func;
-    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVADC::showEnergomonitorInputDialog);
-    m_tuneFunctions[m_messages.at(count++)] = func;
-    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVADC::ADCCoef4);
-    m_tuneFunctions[m_messages.at(count++)] = func;
-    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVADC::showEnergomonitorInputDialog);
-    m_tuneFunctions[m_messages.at(count++)] = func;
-    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVADC::ADCCoef8);
-    m_tuneFunctions[m_messages.at(count++)] = func;
-    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVADC::showEnergomonitorInputDialog);
-    m_tuneFunctions[m_messages.at(count++)] = func;
-    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVADC::ADCCoef16);
-    m_tuneFunctions[m_messages.at(count++)] = func;
-    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVADC::showEnergomonitorInputDialog);
-    m_tuneFunctions[m_messages.at(count++)] = func;
-    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVADC::ADCCoef32);
-    m_tuneFunctions[m_messages.at(count++)] = func;
-    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVADC::showEnergomonitorInputDialog);
-    m_tuneFunctions[m_messages.at(count++)] = func;
-    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVADC::Tmk0);
-    m_tuneFunctions[m_messages.at(count++)] = func;
+    m_tuneFunctions.push_back(func);
+    if (m_tuneStep == KIVTS_ADCI)
+    {
+        func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVADC::ADCCoef2);
+        m_tuneFunctions.push_back(func);
+        func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVADC::showEnergomonitorInputDialog);
+        m_tuneFunctions.push_back(func);
+        func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVADC::ADCCoef4);
+        m_tuneFunctions.push_back(func);
+        func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVADC::showEnergomonitorInputDialog);
+        m_tuneFunctions.push_back(func);
+        func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVADC::ADCCoef8);
+        m_tuneFunctions.push_back(func);
+        func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVADC::showEnergomonitorInputDialog);
+        m_tuneFunctions.push_back(func);
+        func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVADC::ADCCoef16);
+        m_tuneFunctions.push_back(func);
+        func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVADC::showEnergomonitorInputDialog);
+        m_tuneFunctions.push_back(func);
+        func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVADC::ADCCoef32);
+        m_tuneFunctions.push_back(func);
+        func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVADC::showEnergomonitorInputDialog);
+        m_tuneFunctions.push_back(func);
+        func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVADC::Tmk0);
+        m_tuneFunctions.push_back(func);
+    }
     func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVADC::SendBac);
-    m_tuneFunctions[m_messages.at(count++)] = func;
+    m_tuneFunctions.push_back(func);
     func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVADC::CheckTune);
-    m_tuneFunctions[m_messages.at(count++)] = func;
+    m_tuneFunctions.push_back(func);
 }
 
 Error::Msg TuneKIVADC::showPreWarning()
@@ -210,27 +215,27 @@ Error::Msg TuneKIVADC::ADCCoef1()
 
 Error::Msg TuneKIVADC::ADCCoef2()
 {
-    return (m_tuneStep == KIVTS_ADCI) ? ADCCoef(2) : Error::Msg::ResEmpty;
+    return (m_tuneStep == KIVTS_ADCI || m_tuneStep == KIVTS_ADCU) ? ADCCoef(2) : Error::Msg::ResEmpty;
 }
 
 Error::Msg TuneKIVADC::ADCCoef4()
 {
-    return (m_tuneStep == KIVTS_ADCI) ? ADCCoef(4) : Error::Msg::ResEmpty;
+    return (m_tuneStep == KIVTS_ADCI || m_tuneStep == KIVTS_ADCU) ? ADCCoef(4) : Error::Msg::ResEmpty;
 }
 
 Error::Msg TuneKIVADC::ADCCoef8()
 {
-    return (m_tuneStep == KIVTS_ADCI) ? ADCCoef(8) : Error::Msg::ResEmpty;
+    return (m_tuneStep == KIVTS_ADCI || m_tuneStep == KIVTS_ADCU) ? ADCCoef(8) : Error::Msg::ResEmpty;
 }
 
 Error::Msg TuneKIVADC::ADCCoef16()
 {
-    return (m_tuneStep == KIVTS_ADCI) ? ADCCoef(16) : Error::Msg::ResEmpty;
+    return (m_tuneStep == KIVTS_ADCI || m_tuneStep == KIVTS_ADCU) ? ADCCoef(16) : Error::Msg::ResEmpty;
 }
 
 Error::Msg TuneKIVADC::ADCCoef32()
 {
-    return (m_tuneStep == KIVTS_ADCI) ? ADCCoef(32) : Error::Msg::ResEmpty;
+    return (m_tuneStep == KIVTS_ADCI || m_tuneStep == KIVTS_ADCU) ? ADCCoef(32) : Error::Msg::ResEmpty;
 }
 
 Error::Msg TuneKIVADC::Tmk0()
@@ -363,7 +368,7 @@ bool TuneKIVADC::checkBdaIn(int current)
 
 Error::Msg TuneKIVADC::showEnergomonitorInputDialog()
 {
-    if ((m_curTuneStep == 1) && (m_tuneStep == KIVTS_ADCU)) // only the first input has any means
+    if ((m_curTuneStep != 1) && (m_tuneStep == KIVTS_ADCU)) // only the first input has any means
         return Error::Msg::ResEmpty;
     if (!m_isEnergoMonitorDialogCreated)
     {

@@ -9,7 +9,7 @@
 
 TuneKIVDialog::TuneKIVDialog(QWidget *parent) : GeneralTuneDialog(parent)
 {
-    m_calibrSteps = 6;
+
     // CKIV = ckiv;
     setAttribute(Qt::WA_DeleteOnClose);
     TKIVADCUDialog = new TuneKIVADC(KIVTS_ADCU, this);
@@ -22,6 +22,7 @@ TuneKIVDialog::TuneKIVDialog(QWidget *parent) : GeneralTuneDialog(parent)
         { "Регулировка канала Pt100", TKIVRDialog }, { "Регулировка каналов напряжения", TKIVADCUDialog },
         { "Регулировка каналов тока", TKIVADCIDialog }, { "Настройка температурной коррекции +60 °С", TKIV60Dialog },
         { "Настройка температурной коррекции -20 °С", TKIV20Dialog } };
+    m_calibrSteps = m_dialogList.size() + 1;
     Bac *bac = new Bac;
     m_BacWidget = bac->widget();
     SetupUI();

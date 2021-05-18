@@ -9,7 +9,7 @@
 
 Tune84Dialog::Tune84Dialog(QWidget *parent) : GeneralTuneDialog(parent)
 {
-    m_calibrSteps = 6;
+
     //    TKIV = tkiv;
     //  CKIV = ckiv;
     // ReportModel = new QStandardItemModel;
@@ -21,6 +21,7 @@ Tune84Dialog::Tune84Dialog(QWidget *parent) : GeneralTuneDialog(parent)
         { "Регулировка каналов тока", new Tune84ADC(TS84_ADCI, this) },
         { "Настройка температурной коррекции +60 °С", new TuneKIVTemp60(TS84_60TUNING, this) },
         { "Настройка температурной коррекции -20 °С", new TuneKIVTemp60(TS84_20TUNING, this) } };
+    m_calibrSteps = m_dialogList.size() + 1;
     Bac *bac = new Bac;
     m_BacWidget = bac->widget();
 

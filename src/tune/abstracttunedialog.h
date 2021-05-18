@@ -39,7 +39,7 @@ public:
     int m_blockCount;
     QStringList m_messages;
     quint32 SecondsToEnd15SecondsInterval;
-    QHash<QString, Error::Msg (AbstractTuneDialog::*)()> m_tuneFunctions;
+    QList<Error::Msg (AbstractTuneDialog::*)()> m_tuneFunctions;
     quint8 bStep;
     int TuneVariant; // вариант регулировочных параметров
     // ReportModel *RepModel; // модель, в которую заносим данные для отчёта

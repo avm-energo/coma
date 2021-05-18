@@ -108,8 +108,7 @@ QWidget *AbstractTuneDialog::TuneUI()
     hlyout->addStretch(300);
     hlyout->addWidget(WDFunc::NewHexagonPB(
         this, "finishpb",
-        [this]()
-        {
+        [this]() {
             emit Finished();
             this->hide();
         },
@@ -272,7 +271,7 @@ void AbstractTuneDialog::startTune()
     for (bStep = 0; bStep < m_messages.size(); ++bStep)
     {
         MsgSetVisible(NoMsg, bStep);
-        Error::Msg res = (this->*m_tuneFunctions[m_messages.at(bStep)])();
+        Error::Msg res = (this->*m_tuneFunctions.at(bStep))();
         if ((res == Error::Msg::GeneralError) || (StdFunc::isCancelled()))
         {
             MsgSetVisible(ErMsg, bStep);
@@ -394,12 +393,10 @@ Error::Msg AbstractTuneDialog::writeTuneCoefs(bool isUserChoosingRequired)
             tw->addTab(it.value()->widget(false), it.value()->block().caption); // do not show buttons
         lyout->addWidget(tw);
         hlyout->addWidget(WDFunc::NewPB(this, "", "Записать", this, &AbstractTuneDialog::writeTuneCoefsSlot));
-        hlyout->addWidget(WDFunc::NewPB(this, "", "Отмена",
-            [this]()
-            {
-                CancelTune();
-                emit generalEventReceived();
-            }));
+        hlyout->addWidget(WDFunc::NewPB(this, "", "Отмена", [this]() {
+            CancelTune();
+            emit generalEventReceived();
+        }));
 
         lyout->addLayout(hlyout);
         dlg->setLayout(lyout);
