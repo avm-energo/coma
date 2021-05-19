@@ -627,9 +627,11 @@ void Coma::DisconnectAndClear()
 
     AlarmW->clear();
     disconnect();
-    m_Module->closeDialogs();
-
-    clearWidgets();
+    if (m_Module)
+    {
+        m_Module->closeDialogs();
+        clearWidgets();
+    }
     Board::GetInstance().reset();
     // BUG Segfault
     //    if (Reconnect)
