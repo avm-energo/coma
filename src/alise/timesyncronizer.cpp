@@ -4,7 +4,7 @@
 
 #include <QDateTime>
 #include <iostream>
-
+#include <sys/timex.h>
 void printts(const timespec &st)
 {
     auto datetime = QDateTime::fromMSecsSinceEpoch(((st.tv_sec * 1000) + (st.tv_nsec / 1.0e6)));
@@ -33,4 +33,11 @@ timespec TimeSyncronizer::currentTime() const
 void TimeSyncronizer::setCurrentTime(const timespec &currentTime)
 {
     m_currentTime = currentTime;
+}
+
+bool TimeSyncronizer::isNtpSync() const
+{
+    ntptimeval time;
+    int status = ntp_gettime(&time);
+    return status != -1;
 }

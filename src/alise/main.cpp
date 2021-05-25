@@ -9,6 +9,10 @@
 #include <QCoreApplication>
 #include <QDateTime>
 #include <QObject>
+//#include <grpc/grpc.h>
+//#include "../grpc_proto/grpc_proto.grpc.pb.h"
+//#include "grpc_proto.pb.h"
+//#include "grpc_async_server.h"
 void printbs(const DataTypes::BitStringStruct &st)
 {
     std::cout << "BitString {"
@@ -17,16 +21,13 @@ void printbs(const DataTypes::BitStringStruct &st)
               << "Qual:" << st.sigQuality << " }" << std::endl;
 }
 
-int main(int argc, char *argv[])
+void alise_test()
 {
-    std::cout << "Started " << std::endl;
-
-    QCoreApplication a(argc, argv);
     const auto devices = UsbHidPortInfo::devicesFound(0x0483);
     if (devices.isEmpty())
     {
         std::cout << "No devices" << std::endl;
-        return a.exec();
+        return;
     }
     for (const auto &device : devices)
     {
@@ -44,6 +45,8 @@ int main(int argc, char *argv[])
     const auto &manager = DataManager::GetInstance();
     QObject::connect(&manager, &DataManager::bitStringReceived, &printbs);
     TimeSyncronizer timeSync;
+    if (timeSync.isNtpSync())
+        std::cout << "Ntp enabled";
     QObject::connect(&manager, &DataManager::timeReceived, &timeSync, &TimeSyncronizer::handleTime);
     QObject::connect(&timeSync, &TimeSyncronizer::sendTime, protocom, [&](const timespec &time) {
         protocom->writeTime(time);
@@ -57,5 +60,14 @@ int main(int argc, char *argv[])
         // do stuff
         QCoreApplication::exit(0);
     });
+}
+
+int main(int argc, char *argv[])
+{
+    std::cout << "Started " << std::endl;
+
+    QCoreApplication a(argc, argv);
+    alise_test();
+    std::cout << "Finished" << std::endl;
     return a.exec();
 }

@@ -210,7 +210,8 @@ quint32 StdFunc::ping(quint32 addr)
     QString exec = "ping";
 #ifdef Q_OS_WINDOWS
     QString param = "-n";
-#elif Q_OS_LINUX
+#endif
+#ifdef Q_OS_LINUX
     QString param = "-c";
 #endif
     QHostAddress host(addr);

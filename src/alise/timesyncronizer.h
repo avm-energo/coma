@@ -11,7 +11,7 @@ public:
 
     timespec currentTime() const;
     void setCurrentTime(const timespec &currentTime);
-
+    bool isNtpSync() const;
 signals:
     void sendTime(const timespec &);
 public slots:
