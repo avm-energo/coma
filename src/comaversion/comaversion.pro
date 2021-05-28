@@ -13,6 +13,20 @@ TEMPLATE=lib
 
 TARGET = comaversion$${LIB_SUFFIX}
 
+qmakeforce.target = dummy
+win32 {
+qmakeforce.commands = del /F /Q Makefile ##to force rerun of qmake
+}
+
+unix {
+qmakeforce.commands = rm -f Makefile ##to force rerun of qmake
+}
+
+
+qmakeforce.depends = FORCE
+PRE_TARGETDEPS += $$qmakeforce.target
+QMAKE_EXTRA_TARGETS += qmakeforce
+
 DEFINES += COMAVERSION_LIBRARY
 
 include(comaversion.pri)
