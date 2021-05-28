@@ -257,13 +257,13 @@ void EDynamicTableModel::setHeaders(const QStringList hdrl)
 
 void EDynamicTableModel::clearModel()
 {
-
     beginResetModel();
     if (!maindata.empty())
         qDeleteAll(maindata);
     hdr.clear();
     maindata.clear();
     ColFormat.clear();
+    dataCount = 0;
     qDebug() << "Model was cleared";
     endResetModel();
 }
