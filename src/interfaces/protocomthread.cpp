@@ -10,8 +10,17 @@
 #include "baseinterface.h"
 
 #include <QDebug>
+#include <QStorageInfo>
 //#include <QMetaEnum>
 #include <QThread>
+
+#ifdef Q_OS_WINDOWS
+#define BUFFERSIZE 5
+
+#include <Windows.h>
+#include <fileapi.h>
+#include <memoryapi.h>
+#endif
 
 typedef QQueue<QByteArray> ByteQueue;
 using Proto::CommandStruct;
@@ -237,6 +246,102 @@ void ProtocomThread::checkQueue()
     //       break;
     //    }
 }
+#if defined(Q_OS_WINDOWS)
+void ProtocomThread::fileHelper(DataTypes::FilesEnum fileNum)
+{
+    std::wstring fileToFind;
+    switch (fileNum)
+    {
+    case DataTypes::JourSys:
+    {
+
+        fileToFind = L"system.dat";
+        break;
+    }
+    case DataTypes::JourMeas:
+    {
+        fileToFind = L"measj.dat";
+        break;
+    }
+    case DataTypes::JourWork:
+    {
+        fileToFind = L"workj.dat";
+        break;
+    }
+    default:
+    {
+        m_currentCommand.ba = StdFunc::arrayFromNumber(fileNum);
+        QByteArray ba = prepareBlock(m_currentCommand);
+        emit writeDataAttempt(ba);
+        return;
+    }
+    }
+    isCommandRequested = false;
+
+    QStringList drives = Files::Drives();
+    if (drives.isEmpty())
+    {
+        qCritical() << Error::NoDeviceError;
+        return;
+    }
+    QStringList files = Files::SearchForFile(drives, QString::fromStdWString(fileToFind));
+    if (files.isEmpty())
+    {
+        qCritical() << Error::FileNameError;
+        return;
+    }
+    QString JourFile = Files::GetFirstDriveWithLabel(files, "AVM");
+    if (JourFile.isEmpty())
+    {
+        qCritical() << Error::FileNameError;
+        return;
+    }
+    QFile file(JourFile);
+    QStorageInfo storageInfo(JourFile);
+    QString nativePath = storageInfo.rootPath().replace(('/'), ('\\'));
+    std::wstring nativePathW(nativePath.toStdWString().c_str());
+    nativePathW += fileToFind;
+    HANDLE hFile;
+    OVERLAPPED ol = { 0 };
+    hFile = CreateFile(nativePathW.c_str(),                                        // file to open
+        GENERIC_READ,                                                              // open for reading
+        FILE_SHARE_READ,                                                           // share for reading
+        NULL,                                                                      // default security
+        OPEN_EXISTING,                                                             // existing file only
+        FILE_ATTRIBUTE_NORMAL /*| FILE_FLAG_OVERLAPPED*/ | FILE_FLAG_NO_BUFFERING, // normal file
+        NULL);
+    if (hFile == INVALID_HANDLE_VALUE)
+    {
+        qCritical() << Error::FileNameError;
+        return;
+    }
+
+    QByteArray buffer;
+    buffer.resize(file.size());
+    DWORD lpNumberOfBytesRead;
+    if (FALSE == ReadFile(hFile, buffer.data(), buffer.size(), &lpNumberOfBytesRead, &ol))
+    {
+        DWORD dwLastError = GetLastError();
+
+        if (dwLastError != 0)
+        { // Don't want to see a "operation done successfully" error
+            TCHAR lpBuffer[256] = L"?";
+            FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM,      // It´s a system error
+                NULL,                                      // No string to be formatted needed
+                dwLastError,                               // Hey Windows: Please explain this error!
+                MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // Do it in the standard language
+                lpBuffer,                                  // Put the message here
+                255,                                       // Number of bytes to store the message
+                NULL);
+            qCritical() << Error::FileOpenError << std::wstring(lpBuffer);
+        }
+        qDebug() << "Fail to read";
+        return;
+    }
+    QByteArray ba = buffer;
+    handleFile(ba, fileNum, false);
+}
+#else
 
 void ProtocomThread::fileHelper(DataTypes::FilesEnum fileNum)
 {
@@ -297,6 +402,7 @@ void ProtocomThread::fileHelper(DataTypes::FilesEnum fileNum)
     handleFile(ba, fileNum, false);
 }
 
+#endif
 void ProtocomThread::parseRequest(const CommandStruct &cmdStr)
 {
 #ifdef PROTOCOM_DEBUG
