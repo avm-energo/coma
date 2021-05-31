@@ -1,10 +1,8 @@
-cmake_minimum_required(VERSION 3.13)
+cmake_minimum_required(VERSION 3.14)
 
 project(grpc_proto C CXX)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+
 include(${CMAKE_CURRENT_SOURCE_DIR}/../../conanbuildinfo.cmake)
 include(${CONAN_LIB_DIRS_GRPC}/cmake/grpc_cpp_plugin.cmake)
 conan_basic_setup(TARGETS)

@@ -22,6 +22,7 @@ enum BaseBoard : quint16
 {
     MTB_00 = 0x00,
     MTB_12 = 0x12,
+    MTB_14 = 0x14,
     MTB_21 = 0x21,
     MTB_22 = 0x22,
     MTB_31 = 0x31,
@@ -55,6 +56,7 @@ enum MezzanineBoard : quint16
 
 const QMap<quint16, QString> BaseBoards {
     { MTB_00, "АВ_ТУК-00" }, // нет базовой платы
+    { MTB_14, "АВ_ТУК-14" }, // alise (ЦКУ sonica)
     //        {MTB_12,{"АВ-ТУК-12 (ЦКУ)", 0x1200}}, // процессорный, не комбинируется
     { MTB_21, "АВ-ТУК-21" }, // аналоговый ввод DC, комбинируется с 2x,3x
     // { MTB_22, "АВ-ТУК-22" },     // аналоговый ввод DC, комбинируется с 2x,3x
@@ -718,4 +720,14 @@ enum Registers : quint16
     AlarmInb = 3035
 
 };
+}
+
+namespace AVTUK_14
+{
+constexpr uint16_t DiscretePowerBlock = 1;
+struct DiscretePowerSignals
+{
+    uint8_t PWRIN;
+};
+
 }

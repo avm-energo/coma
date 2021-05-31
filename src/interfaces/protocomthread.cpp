@@ -136,7 +136,7 @@ void ProtocomThread::handle(const Proto::Commands cmd)
         if (isSplitted(m_currentCommand.ba.size()))
         {
             // For first segment
-            if (progress == NULL)
+            if (!progress)
                 handleMaxProgress(m_currentCommand.ba.size());
 
             progress += Proto::Limits::MaxSegmenthLength;
@@ -172,7 +172,7 @@ void ProtocomThread::handle(const Proto::Commands cmd)
     case Commands::ReadTime:
 
 #ifdef Q_OS_LINUX
-        if (m_buffer.second.size()==sizeof (quint64))
+        if (m_buffer.second.size() == sizeof(quint64))
         {
             handleUnixTime(m_buffer.second, addr);
             break;
@@ -477,14 +477,14 @@ void ProtocomThread::parseRequest(const CommandStruct &cmdStr)
 #ifdef Q_OS_LINUX
         if (m_currentCommand.arg1.canConvert<timespec>())
         {
-            timespec time=m_currentCommand.arg1.value<timespec>();
+            timespec time = m_currentCommand.arg1.value<timespec>();
             m_currentCommand.ba.push_back(StdFunc::arrayFromNumber(quint32(time.tv_sec)));
             m_currentCommand.ba.push_back(StdFunc::arrayFromNumber(quint32(time.tv_nsec)));
         }
         else
 #endif
         {
-        m_currentCommand.ba = StdFunc::arrayFromNumber(m_currentCommand.arg1.value<quint32>());
+            m_currentCommand.ba = StdFunc::arrayFromNumber(m_currentCommand.arg1.value<quint32>());
         }
         QByteArray ba = prepareBlock(m_currentCommand);
         emit writeDataAttempt(ba);
@@ -742,13 +742,13 @@ void ProtocomThread::handleBitString(const QByteArray &ba, quint16 sigAddr)
     DataManager::addSignalToOutList(DataTypes::SignalTypes::BitString, resp);
 }
 #ifdef __linux
-void ProtocomThread::handleUnixTime(const QByteArray &ba,[[maybe_unused]] quint16 sigAddr)
+void ProtocomThread::handleUnixTime(const QByteArray &ba, [[maybe_unused]] quint16 sigAddr)
 {
     Q_ASSERT(ba.size() == sizeof(quint64));
 
     quint32 secs = *reinterpret_cast<const quint32 *>(ba.data());
-    quint32 nsecs = *reinterpret_cast<const quint32 *>(ba.data()+sizeof(quint32));
-    timespec resp { secs,nsecs };
+    quint32 nsecs = *reinterpret_cast<const quint32 *>(ba.data() + sizeof(quint32));
+    timespec resp { secs, nsecs };
     DataManager::addSignalToOutList(DataTypes::SignalTypes::Timespec, resp);
 }
 #endif

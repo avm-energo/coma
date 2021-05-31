@@ -3,6 +3,7 @@
 #include "../interfaces/baseinterface.h"
 #include "../interfaces/protocom.h"
 #include "../interfaces/usbhidportinfo.h"
+#include "grpc_sync_server.h"
 #include "helper.h"
 #include "timesyncronizer.h"
 
@@ -67,7 +68,9 @@ int main(int argc, char *argv[])
     std::cout << "Started " << std::endl;
 
     QCoreApplication a(argc, argv);
-    alise_test();
+    ServerController controller;
+    controller.launch();
+    // alise_test();
     std::cout << "Finished" << std::endl;
     return a.exec();
 }
