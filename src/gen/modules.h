@@ -725,9 +725,18 @@ enum Registers : quint16
 namespace AVTUK_14
 {
 constexpr uint16_t DiscretePowerBlock = 1;
+// NOTE
+constexpr uint16_t IndicationBlock = 1;
 struct DiscretePowerSignals
 {
     uint8_t PWRIN;
+};
+struct Indication
+{
+    uint8_t PulseCnt1;
+    uint16_t PulseFreq1;
+    uint8_t PulseCnt2;
+    uint16_t PulseFreq2;
 };
 
 }

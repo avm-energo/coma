@@ -9,7 +9,20 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/../../conanbuildinfo.cmake)
 conan_basic_setup(TARGETS)
 find_package(Protobuf REQUIRED)
 
-add_executable(${PROJECT_NAME} main.cpp timesyncronizer.cpp timesyncronizer.h helper.h grpc_sync_server.h grpc_sync_server.cpp)
+add_executable(
+    ${PROJECT_NAME}
+    main.cpp
+    timesyncronizer.cpp
+    timesyncronizer.h
+    helper.h
+    grpc_sync_server.h
+    grpc_sync_server.cpp
+    serverrunner.cpp
+    serverrunner.h
+    controller.cpp
+    controller.h
+    stmbroker.cpp
+    stmbroker.h)
 target_compile_definitions(${PROJECT_NAME} PUBLIC gRPC_USE_PROTO_LITE)
 target_include_directories(${PROJECT_NAME} PUBLIC ${grpc_proto_DIR})
 message(STATUS ALISE ${grpc_proto_DIR})

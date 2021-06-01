@@ -86,7 +86,7 @@ public:
     Error::Msg writeS2FileSync(DataTypes::FilesEnum number, S2DataTypes::S2ConfigType *file);
     Error::Msg readS2FileSync(quint32 filenum);
     Error::Msg readFileSync(quint32 filenum, QByteArray &ba);
-
+    Error::Msg reqTimeSync(void *block, quint32 blocksize);
     InterfaceSettings settings() const;
     template <class T> T settings() const
     {

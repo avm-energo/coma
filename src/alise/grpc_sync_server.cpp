@@ -1,7 +1,7 @@
 #include "grpc_sync_server.h"
 
-#include <grpcpp/ext/channelz_service_plugin.h>
-#include <grpcpp/ext/proto_server_reflection_plugin.h>
+#include "serverrunner.h"
+
 #include <grpcpp/health_check_service_interface.h>
 #include <iostream>
 #include <memory>
@@ -20,41 +20,32 @@ grpc::Status SynchronizerServiceImpl::SayHello(
     return Status::OK;
 }
 
-std::ostream &operator<<(std::ostream &os, const alise::Health &health)
-{
-    os << health.desc().c_str() << ":" << health.health_code() << std::endl;
-    return os;
-}
-
-std::ostream &operator<<(std::ostream &os, const alise::UnixTimestamp &timestamp)
-{
-    os << timestamp.sec() << ":" << timestamp.nsec() << std::endl;
-    return os;
-}
-
 grpc::Status SynchronizerServiceImpl::GetHealth(
     grpc::ServerContext *context, const Empty *request, alise::Health *health)
 {
-    std::cout << health;
+    health->set_code(m_health.code());
+    health->set_desc(m_health.desc());
+    std::cout << health->SerializeAsString() << std::endl;
     return Status::OK;
 }
 
 grpc::Status SynchronizerServiceImpl::SetHealth(
     grpc::ServerContext *context, const alise::Health *request, alise::Reply *response)
 {
-    if (m_timer)
-    {
-        m_timer->stop();
-        m_timer->start();
-        std::cout << response->status() << "," << request;
-    }
+    m_health.set_code(request->code());
+    m_health.set_desc(request->desc());
+    std::cout << m_health.SerializeAsString();
+    m_parent->healthChanged(*request);
+    response->set_status(true);
     return Status::OK;
 }
 
 grpc::Status SynchronizerServiceImpl::SetTime(
     grpc::ServerContext *context, const alise::UnixTimestamp *request, alise::Reply *response)
 {
+
     std::cout << response->status() << "," << request;
+    m_parent->timeChanged(*request);
     return Status::OK;
 }
 
@@ -62,6 +53,8 @@ grpc::Status SynchronizerServiceImpl::GetTime(
     grpc::ServerContext *context, const Empty *request, alise::UnixTimestamp *response)
 {
     std::cout << request;
+    // alise::UnixTimestamp buffer;
+    m_parent->requestTime(*response);
     return Status::OK;
 }
 
@@ -72,37 +65,6 @@ static unsigned int stoui(const std::string &s)
     if (result != lresult)
         throw std::out_of_range("Not a uint_16");
     return result;
-}
-
-void ServerRunner::runServer()
-{
-    std::string server_address(m_addr + ":" + std::to_string(m_port));
-    SynchronizerServiceImpl service(m_timer.get());
-    grpc::EnableDefaultHealthCheckService(true);
-    grpc::reflection::InitProtoReflectionServerBuilderPlugin();
-
-    grpc::channelz::experimental::InitChannelzService();
-    ServerBuilder builder;
-    // grpc::ChannelzService
-    // builder.
-    // Listen on the given address without any authentication mechanism.
-    builder.AddListeningPort(server_address, grpc::InsecureServerCredentials());
-    // Register "service" as the instance through which we'll communicate with
-    // clients. In this case it corresponds to an *synchronous* service.
-    builder.RegisterService(&service);
-    // Finally assemble the server.
-    m_server = builder.BuildAndStart();
-    std::cout << "Server listening on " << server_address << std::endl;
-
-    // Wait for the server to shutdown. Note that some other thread must be
-    // responsible for shutting down the server for this call to ever return.
-    m_server->Wait();
-}
-
-void ServerRunner::stopServer()
-{
-    gpr_timespec deadline { 60, 0, GPR_CLOCK_MONOTONIC };
-    m_server->Shutdown(deadline);
 }
 
 }

@@ -88,8 +88,9 @@ Error::Msg BaseInterface::reqBlockSync(
     blockmap[DataTypes::DataBlockTypes::BacBlock] = Queries::QUSB_ReqTuningCoef;
     blockmap[DataTypes::DataBlockTypes::BdaBlock] = Queries::QUSB_ReqBlkDataA;
     blockmap[DataTypes::DataBlockTypes::BdBlock] = Queries::QUSB_ReqBlkData;
-    //    blockmap[DataBlockTypes::BciBlock] = Queries::;
-    writeCommand(blockmap[blocktype], blocknum);
+
+    Q_ASSERT(blockmap.contains(blocktype));
+    writeCommand(blockmap.value(blocktype), blocknum);
     timeoutTimer->start();
     while (m_busy)
     {
@@ -223,6 +224,44 @@ Error::Msg BaseInterface::readFileSync(quint32 filenum, QByteArray &ba)
     if (m_timeout)
         return Error::Msg::Timeout;
     ba = m_byteArrayResult;
+    return Error::Msg::NoError;
+}
+
+Error::Msg BaseInterface::reqTimeSync(void *block, quint32 blocksize)
+{
+    Q_ASSERT(blocksize == sizeof(timespec) || sizeof(DataTypes::BitStringStruct));
+    m_busy = true;
+    m_timeout = false;
+    auto connection = std::shared_ptr<QMetaObject::Connection>(new QMetaObject::Connection);
+    if (blocksize == sizeof(DataTypes::BitStringStruct))
+    {
+        *connection = connect(&DataManager::GetInstance(), &DataManager::bitStringReceived, this,
+            [&](const DataTypes::BitStringStruct bs) {
+                QObject::disconnect(*connection);
+                *static_cast<DataTypes::BitStringStruct *>(block) = bs;
+                m_busy = false;
+            });
+    }
+#ifdef Q_OS_LINUX
+    else if (blocksize == sizeof(timespec))
+    {
+        *connection = connect(&DataManager::GetInstance(), &DataManager::timeReceived, this, [&](const timespec ts) {
+            QObject::disconnect(*connection);
+            *static_cast<timespec *>(block) = ts;
+            m_busy = false;
+        });
+    }
+#endif
+    timeoutTimer->start();
+    reqTime();
+    while (m_busy)
+    {
+        QCoreApplication::processEvents(QEventLoop::AllEvents);
+        StdFunc::Wait();
+    }
+    if (m_timeout)
+        return Error::Msg::Timeout;
+    memcpy(block, &m_byteArrayResult.data()[0], blocksize);
     return Error::Msg::NoError;
 }
 

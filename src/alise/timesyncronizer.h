@@ -1,5 +1,4 @@
-#ifndef TIMESYNCRONIZER_H
-#define TIMESYNCRONIZER_H
+#pragma once
 
 #include <QObject>
 #include <time.h>
@@ -20,5 +19,3 @@ public slots:
 private:
     timespec m_currentTime;
 };
-
-#endif // TIMESYNCRONIZER_H
