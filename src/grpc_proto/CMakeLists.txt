@@ -43,10 +43,13 @@ add_custom_command(
         "${hw_proto}"
       DEPENDS "${hw_proto}")
 
+add_custom_target(protos_generated DEPENDS ${hw_grpc_srcs} ${hw_grpc_hdrs})
 # Include generated *.pb.h files
 add_library(${PROJECT_NAME} ${hw_grpc_srcs} ${hw_grpc_hdrs} ${PROTO_SRCS} ${PROTO_HDRS} )
-target_compile_definitions(${PROJECT_NAME} PUBLIC  _GLIBCXX_USE_CXX11_ABI=0)
-#protobuf_generate(TARGET hw_grpc_proto LANGUAGE grpc GENERATE_EXTENSIONS ${hw_grpc_srcs} ${hw_grpc_hdrs} PLUGIN "protoc-gen-grpc="${GRPC_CPP_PLUGIN_PROGRAM})
+add_dependencies(${PROJECT_NAME} protos_generated)
+target_compile_definitions(${PROJECT_NAME} PUBLIC _GLIBCXX_USE_CXX11_ABI=0)
+target_compile_definitions(${PROJECT_NAME} PUBLIC gRPC_USE_PROTO_LITE)
+#protobuf_generate(TARGET hw_grpc_proto LANGUAGE grpc GENERATE_EXTENSIONS ${hw_grpc_srcs} ${hw_grpc_hdrs} PLUGIN ${GRPC_CPP_PLUGIN_PROGRAM})
 # hw_grpc_proto
 
 target_link_libraries(${PROJECT_NAME}

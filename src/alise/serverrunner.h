@@ -26,6 +26,7 @@ signals:
     void healthChanged(const alise::Health);
     void timeChanged(const alise::UnixTimestamp);
     void requestTime(alise::UnixTimestamp &);
+    void requestPowerStatus(alise::PowerStatus &);
 
 private:
     SharedPointer<QTimer> m_timer = SharedPointer<QTimer>(new QTimer(this), [](QObject *obj) { obj->deleteLater(); });

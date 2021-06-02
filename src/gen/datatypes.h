@@ -41,7 +41,6 @@ enum SignalTypes
 #endif
     GeneralResponse
 
-
 };
 
 enum GeneralResponseTypes
@@ -244,6 +243,7 @@ enum Commands
     QC_ReqBitStrings,
     QUSB_ReqTuningCoef,
     QUSB_WriteTuningCoef,
+    QUSB_WriteBlkData,
     QUSB_ReqBlkData,
     QUSB_ReqBlkDataA,
     QUSB_ReqBlkDataTech,

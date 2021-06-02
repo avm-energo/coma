@@ -49,10 +49,18 @@ grpc::Status SynchronizerServiceImpl::SetTime(
     return Status::OK;
 }
 
+grpc::Status SynchronizerServiceImpl::GetPowerStatus(
+    grpc::ServerContext *context, const google::protobuf::Empty *request, alise::PowerStatus *response)
+{
+    std::cout << request << std::endl;
+    m_parent->requestPowerStatus(*response);
+    return Status::OK;
+}
+
 grpc::Status SynchronizerServiceImpl::GetTime(
     grpc::ServerContext *context, const Empty *request, alise::UnixTimestamp *response)
 {
-    std::cout << request;
+    std::cout << request << std::endl;
     // alise::UnixTimestamp buffer;
     m_parent->requestTime(*response);
     return Status::OK;

@@ -12,6 +12,7 @@ namespace runner
 using alise::Health;
 using alise::HelloReply;
 using alise::HelloRequest;
+using alise::PowerStatus;
 using alise::Reply;
 using alise::Synchronizer;
 using alise::UnixTimestamp;
@@ -38,6 +39,8 @@ private:
     Status GetHealth(ServerContext *context, const Empty *request, Health *health) override;
     Status SetHealth(ServerContext *context, const Health *request, Reply *response) override;
     Status SetTime(ServerContext *context, const UnixTimestamp *request, Reply *response) override;
+
+    Status GetPowerStatus(ServerContext *context, const Empty *request, PowerStatus *response) override;
 
     // Is this necessary?
     Status GetTime(ServerContext *context, const Empty *request, UnixTimestamp *response) override;
