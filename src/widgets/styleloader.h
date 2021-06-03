@@ -5,7 +5,7 @@
 #include <QKeySequence>
 #include <QMap>
 #include <QObject>
-constexpr char defaultStyleFile[] = ":/qdarkstyle/style.qss";
+constexpr char defaultStyleFile[] = ":/qdarkstyle/light/style.qss";
 constexpr char defaultStyleKey[] = "F5";
 
 namespace Style
@@ -13,25 +13,27 @@ namespace Style
 Q_NAMESPACE
 enum Name
 {
+    Light,
     Dark,
     Drakula,
     Aqua,
-    Console,
-    ElegantDark,
-    ManjaroMix,
-    MaterialDark,
+    //    Console,
+    //    ElegantDark,
+    //    ManjaroMix,
+    //    MaterialDark,
     Ubuntu
 };
 Q_ENUM_NS(Name);
 const QMap<Name, QString> themes {
-    { Dark, ":/qdarkstyle/style.qss" },               //
-    { Drakula, ":/style/qss-dracula/dracula.css" },   //
-    { Aqua, ":/style/QSS/Aqua.qss" },                 //
-    { Console, ":/style/QSS/ConsoleStyle.qss" },      //
-    { ElegantDark, ":/style/QSS/ElegantDark.qss" },   //
-    { ManjaroMix, ":/style/QSS/ManjaroMix.qss" },     //
-    { MaterialDark, ":/style/QSS/MaterialDark.qss" }, //
-    { Ubuntu, ":/style/QSS/Ubuntu.qss" }              //
+    { Light, defaultStyleFile },                    //
+    { Dark, ":/qdarkstyle/dark/style.qss" },        //
+    { Drakula, ":/style/qss-dracula/dracula.css" }, //
+    { Aqua, ":/style/QSS/Aqua.qss" },               //
+                                                    //  { Console, ":/style/QSS/ConsoleStyle.qss" },      //
+                                                    //  { ElegantDark, ":/style/QSS/ElegantDark.qss" },   //
+                                                    //  { ManjaroMix, ":/style/QSS/ManjaroMix.qss" },     //
+                                                    //   { MaterialDark, ":/style/QSS/MaterialDark.qss" }, //
+    { Ubuntu, ":/style/QSS/Ubuntu.qss" }            //
 };
 }
 

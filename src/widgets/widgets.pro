@@ -14,7 +14,8 @@ include(widgets.pri)
 
 RESOURCES += \
     ../../images/vectorIcons.qrc \
-    styles/QDarkStyleSheet/qdarkstyle/style.qrc \
+    styles/QDarkStyleSheet/qdarkstyle/light/lightstyle.qrc \
+    styles/QDarkStyleSheet/qdarkstyle/dark/darkstyle.qrc \
     styles/styles.qrc
 
 
