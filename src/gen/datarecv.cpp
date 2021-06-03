@@ -287,6 +287,10 @@ DataRecV::DataRecV(const int _id, const QString &str) : id(_id)
     }
 }
 
+DataRecV::DataRecV(const int _id) : DataRecV(_id, QString::number(0))
+{
+}
+
 bool operator==(const DataTypes::DataRecV &lhs, const DataTypes::DataRecV &rhs)
 {
     using namespace S2DataTypes;

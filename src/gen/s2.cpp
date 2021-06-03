@@ -243,6 +243,10 @@ bool S2::RestoreData(QByteArray bain, QList<DataTypes::DataRecV> &outlist)
                 DataTypes::DataRecV DRV(DR, bain.left(size));
                 outlist.append(DRV);
             }
+            else
+            {
+                qCritical("В модуле неизвестная конфигурация, необходимо взять конфигурацию по умолчанию");
+            }
             bain.remove(0, size);
         }
     }
@@ -564,7 +568,7 @@ DataTypes::DataRecV S2::getRecord(unsigned int id)
     else
     {
         qDebug() << Error::NullDataError << id;
-        return DataTypes::DataRecV();
+        return DataTypes::DataRecV(id);
     }
 }
 

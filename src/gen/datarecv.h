@@ -36,6 +36,7 @@ public:
     DataRecV(const S2DataTypes::DataRec &record);
     DataRecV(const S2DataTypes::DataRec &record, const char *rawdata);
     DataRecV(const int _id, const QString &str);
+    DataRecV(const int _id);
     template <typename T
 #if (_MSC_VER > 1924)
         ,
