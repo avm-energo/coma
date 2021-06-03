@@ -3,6 +3,21 @@
 	<xs:element name="s2files">
 		<xs:complexType>
 			<xs:sequence>
+				<xs:element maxOccurs="1" name="map">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element maxOccurs="unbounded" name="item">
+								<xs:complexType>
+									<xs:sequence>
+											<xs:element name="key" type="xs:unsignedShort" />
+											<xs:element name="value" type="xs:string" />
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+						<xs:attribute name="name" type="xs:string" use="required" />
+					</xs:complexType>
+				</xs:element>
 				<xs:element maxOccurs="unbounded" name="record">
 					<xs:complexType>
 						<xs:sequence>
@@ -13,9 +28,10 @@
 									<xs:sequence>
 										<xs:choice maxOccurs="unbounded">
 											<xs:element name="type" type="xs:string" />
-											<xs:element name="group" type="xs:unsignedByte" />
+											<xs:element name="group" type="xs:unsignedShort" />
 											<xs:element name="field" type="xs:string" />
 											<xs:element name="string" type="xs:string" />
+											<xs:element name="toolTip" type="xs:string" />
 											<xs:element name="min" type="xs:int" />
 											<xs:element name="max" type="xs:int" />
 											<xs:element name="decimals" type="xs:unsignedByte" />

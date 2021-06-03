@@ -116,6 +116,7 @@ void DbgModule::create(Modules::BaseBoard typeB, Modules::MezzanineBoard typeM)
     if ((typeB == BaseBoard::MTB_80) && (typeM == MezzanineBoard::MTM_82))
     {
         qDebug("Here is AVTUK-8082");
+        addDialogToList(new ConfigDialog(settings()->configSettings), "Конфигурирование", "conf1");
         addDialogToList(new OscDialog, "Осциллограммы");
     }
     if ((typeB == BaseBoard::MTB_80) && (typeM == MezzanineBoard::MTM_85))

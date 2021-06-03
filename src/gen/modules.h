@@ -277,6 +277,8 @@ enum BciNumber : unsigned
     U2nom_2 = 1051,
     ITT1nom_KTF_KDV = 1052,
     ITT2nom_KTF_KDV = 1053,
+    TTconf1 = 1054,
+    TTconf2 = 1055,
     MBMaster = 1060,
     MBMab1 = 1061,
     MBMab2 = 1062,

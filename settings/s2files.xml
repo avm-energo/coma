@@ -583,10 +583,33 @@
 	<record>
 		<id>1001</id>
 		<type>DWORD</type>
+		<widget>
+			<type>QComboBox</type>
+			<group>50</group>
+			<string>Тип контролируемого оборудования</string>
+			<string-array>
+				<item>однофазный трансформатор/АТ</item>
+				<item>трехфазный трансформатор/АТ</item>
+				<item>однофазный реактор</item>
+				<item>трехфазный реактор</item>
+			</string-array>
+		</widget>
 	</record>
 	<record>
 		<id>1002</id>
 		<type>DWORD</type>
+		<widget>
+			<type>QComboBox</type>
+			<group>300</group>
+			<field>data</field>
+			<string>Количество точек оцифровки на период</string>
+			<string-array>
+				<item>64</item>
+				<item>80</item>
+				<item>128</item>
+				<item>256</item>
+			</string-array>
+		</widget>
 	</record>
 	<record>
 		<id>1003</id>
@@ -605,7 +628,7 @@
 		<type>DWORD</type>
 		<widget>
 			<type>QDoubleSpinBox</type>
-			<group>6</group>
+			<group>300</group>
 			<string>Постоянная времени фильтрации гармоник</string>
 			<min>0</min>
 			<max>10000</max>
@@ -617,7 +640,7 @@
 		<type>DWORD</type>
 		<widget>
 			<type>CheckBoxGroup</type>
-			<group>100</group>
+			<group>300</group>
 			<string>Разрешение запуска осциллограммы</string>
 			<string-array>
 				<item>По команде от модуля 12</item>
@@ -642,14 +665,41 @@
 	<record>
 		<id>1007</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>100</group>
+			<string>Класс напряжения гр.2, кВ</string>
+			<toolTip>Номинальное первичное напряжение внешнего ТН</toolTip>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>2</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1008</id>
 		<type>FLOAT[6]</type>
+		<widget>
+			<type>DoubleSpinBoxGroup</type>
+			<group>100</group>
+			<string>Номинальный первичный ток</string>
+			<count>6</count>
+			<min>0</min>
+			<max>10</max>
+			<decimals>2</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1009</id>
 		<type>FLOAT[6]</type>
+		<widget>
+			<type>DoubleSpinBoxGroup</type>
+			<group>100</group>
+			<string>Номинальный вторичный ток</string>
+			<count>6</count>
+			<min>0</min>
+			<max>10</max>
+			<decimals>2</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1010</id>
@@ -1002,6 +1052,14 @@
 	<record>
 		<id>1051</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>100</group>
+			<string>Номинальное вторичное напряжение первой тройки, В</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>1</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1052</id>
@@ -1025,6 +1083,26 @@
 			<min>0</min>
 			<max>10000</max>
 			<decimals>1</decimals>
+		</widget>
+	</record>
+	<record>
+		<id>1054</id>
+		<type>BYTE</type>
+		<widget>
+			<type>QCheckBox</type>
+			<group>50</group>
+			<string>включение ТТ 1-й тройки</string>
+			<toolTip>0 – в линейных проводах (по умолчанию), 1 – в обмотках, соединенных в треугольник.</toolTip>
+		</widget>
+	</record>
+	<record>
+		<id>1055</id>
+		<type>BYTE</type>
+		<widget>
+			<type>QCheckBox</type>
+			<group>50</group>
+			<string>включение ТТ 2-й тройки</string>
+			<toolTip>0 – в линейных проводах (по умолчанию), 1 – в обмотках, соединенных в треугольник.</toolTip>
 		</widget>
 	</record>
 	<record>
@@ -1215,7 +1293,7 @@
 		<type>DWORD</type>
 		<widget>
 			<type>QDoubleSpinBox</type>
-			<group>6</group>
+			<group>300</group>
 			<string>Количество точек осциллограммы на период основной частоты</string>
 			<min>0</min>
 			<max>10000</max>
