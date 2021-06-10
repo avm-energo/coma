@@ -33,7 +33,8 @@ public:
         Unknown,
         USB,
         Ethernet,
-        RS485
+        RS485,
+        Emulator
     };
 
     enum Types

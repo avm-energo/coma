@@ -547,7 +547,8 @@ void XmlParser::traverseNode(const QDomNode &node, ModuleSettings *const setting
                 }
                 if (domElement.tagName() == "protocom")
                 {
-                    if (Board::GetInstance().interfaceType() == Board::USB)
+                    if (Board::GetInstance().interfaceType() == Board::USB
+                        || Board::GetInstance().interfaceType() == Board::Emulator)
                         settings->ifaceSettings = (BaseInterface::iface()->parseSettings(domElement));
 
                     domNode = domNode.nextSibling();

@@ -31,10 +31,16 @@ struct SerialPortSettings
     }
 };
 
+struct EmulatorSettings
+{
+    quint16 typeB;
+    quint16 typeM;
+};
+
 struct ConnectStruct
 {
     QString name;
-    std::variant<IEC104Settings, SerialPortSettings, UsbHidSettings> settings;
+    std::variant<IEC104Settings, SerialPortSettings, UsbHidSettings, EmulatorSettings> settings;
 };
 
 // how much entries can we have for interfaces of each type in registry

@@ -3,6 +3,7 @@
 #include "../comaversion/comaversion.h"
 #include "../gen/board.h"
 #include "../gen/datamanager.h"
+#include "../interfaces/emulator.h"
 #include "../interfaces/protocom.h"
 #include "../widgets/aboutwidget.h"
 #include "config.h"
@@ -41,6 +42,11 @@ void DebugComa::setupConnection()
     case Board::InterfaceType::USB:
     {
         device = BaseInterface::InterfacePointer(new Protocom());
+        break;
+    }
+    case Board::InterfaceType::Emulator:
+    {
+        device = BaseInterface::InterfacePointer(new Emulator());
         break;
     }
     default:
