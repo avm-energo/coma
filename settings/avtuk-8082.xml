@@ -337,11 +337,11 @@
 				</record>
         <record>
 					<id>1001</id>
-					<defaultValue>0</defaultValue>
+					<defaultValue>1</defaultValue>
 				</record>
         <record>
 					<id>1002</id>
-					<defaultValue>64</defaultValue>
+					<defaultValue>256</defaultValue>
 				</record>
 				<record>
 					<id>1003</id>
@@ -349,15 +349,15 @@
 				</record>
         <record>
 					<id>1004</id>
-					<defaultValue>0</defaultValue>
+					<defaultValue>3</defaultValue>
 				</record>
         <record>
 					<id>1005</id>
-					<defaultValue>0</defaultValue>
+					<defaultValue>7</defaultValue>
 				</record>
 				<record>
 					<id>1006</id>
-					<defaultValue>220</defaultValue>
+					<defaultValue>500</defaultValue>
 				</record>
         <record>
 					<id>1007</id>
@@ -365,29 +365,23 @@
 				</record>
         <record>
 					<id>1008</id>
-					<defaultValue>0,0,0,0,0,0</defaultValue>
+					<defaultValue>600,600,600,1000,1000,1000</defaultValue>
 				</record>
         <record>
 					<id>1009</id>
-					<defaultValue>0,0,0,0,0,0</defaultValue>
+					<defaultValue>5,5,5,5,5,5</defaultValue>
 				</record>
         <record>
 					<id>1010</id>
-					<defaultValue>0</defaultValue>
+					<defaultValue>2</defaultValue>
 				</record>
         <record>
 					<id>1011</id>
-					<defaultValue>0</defaultValue>
+					<defaultValue>2</defaultValue>
 				</record>
 				<record>
 					<id>1012</id>
 					<defaultValue>0.5</defaultValue>
-					<visibility>false</visibility>
-				</record>
-				<record>
-					<id>1013</id>
-					<defaultValue>0.5</defaultValue>
-					<visibility>false</visibility>
 				</record>
 				<record>
 					<id>1050</id>

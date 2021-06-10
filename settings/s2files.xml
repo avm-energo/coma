@@ -684,7 +684,7 @@
 			<string>Номинальный первичный ток</string>
 			<count>6</count>
 			<min>0</min>
-			<max>10</max>
+			<max>10000</max>
 			<decimals>2</decimals>
 		</widget>
 	</record>
