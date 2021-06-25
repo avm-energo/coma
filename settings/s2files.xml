@@ -68,10 +68,10 @@
 			<group>220</group>
 			<string>Настройка времени</string>
 			<string-array>
-				<item>SNTP  IP:172.16.28.2</item>
+				<item>NTP IP:172.16.28.2</item>
 				<item>синхронизация по входу 1PPS</item>
-				<item>SNTP  IP:172.16.28.1</item>
-				<item>адрес SNTP   берется из конфигурации</item>
+				<item>NTP IP:172.16.28.1</item>
+				<item>адрес NTP берется из конфигурации</item>
 			</string-array>
 			<count>4</count>
 		</widget>
@@ -202,7 +202,7 @@
 		<widget>
 			<type>IpControl</type>
 			<group>220</group>
-			<string>Адрес SNTP сервера</string>
+			<string>Адрес NTP сервера</string>
 		</widget>
 	</record>
 	<record>
