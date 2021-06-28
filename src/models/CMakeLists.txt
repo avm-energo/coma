@@ -45,6 +45,8 @@ add_library(
   etablemodel.h
   etablerow.cpp
   etablerow.h
+  edynamictablemodel.cpp
+  edynamictablemodel.h
   report.cpp
   report.h)
 set_property(TARGET ${PROJECT_NAME} PROPERTY POSITION_INDEPENDENT_CODE ON)

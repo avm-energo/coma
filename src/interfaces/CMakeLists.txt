@@ -13,7 +13,7 @@ find_package(
   Qt5
   COMPONENTS Core Network SerialPort
   REQUIRED)
-
+find_package(hidapi)
 add_library(
   ${PROJECT_NAME} STATIC
   baseinterface.cpp
@@ -57,6 +57,6 @@ if (UNIX)
     target_link_libraries(${PROJECT_NAME} PRIVATE hidapi-hidraw)
 endif()
 if (WIN32)
-    target_link_libraries(${PROJECT_NAME} PRIVATE hidapi)
+    target_link_libraries(${PROJECT_NAME} PRIVATE hidapi::hidapi)
 endif()
 target_compile_definitions(${PROJECT_NAME} PRIVATE ${PROJECT_NAME}_LIBRARY)

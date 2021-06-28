@@ -3,7 +3,6 @@
 #include "../gen/error.h"
 #include "../gen/logclass.h"
 #include "baseinterface.h"
-#include "hidapi/hidapi.h"
 #include "protocomprivate.h"
 #include "settingstypes.h"
 
@@ -14,6 +13,9 @@ struct USBMessage
     QString guid;
     quint32 type;
 };
+
+struct hid_device_;
+typedef struct hid_device_ hid_device; /**< opaque hidapi structure */
 
 namespace HID
 {

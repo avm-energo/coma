@@ -3,6 +3,7 @@
 #include "../gen/helper.h"
 #include "../gen/stdfunc.h"
 #include "baseinterface.h"
+#include "hidapi/hidapi.h"
 
 #include <QCoreApplication>
 #include <QDebug>

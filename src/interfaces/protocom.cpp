@@ -180,14 +180,14 @@ void Protocom::writeTime(quint32 time)
     DataManager::addToInQueue(inp);
     emit wakeUpParser();
 }
-
+#ifdef Q_OS_LINUX
 void Protocom::writeTime(const timespec &time) const
 {
-    CommandStruct inp { Proto::Commands::WriteTime, QVariant::fromValue( time), QVariant(), {} };
+    CommandStruct inp { Proto::Commands::WriteTime, QVariant::fromValue(time), QVariant(), {} };
     DataManager::addToInQueue(inp);
     emit wakeUpParser();
 }
-
+#endif
 void Protocom::reqFloats(quint32 sigAdr, quint32 sigCount)
 {
     Q_D(Protocom);

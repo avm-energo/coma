@@ -73,6 +73,8 @@ add_library(
   waitwidget.h
   wd_func.cpp
   wd_func.h
+  QProgressIndicator.cpp
+  QProgressIndicator.h
   ../../images/vectorIcons.qrc
   styles/QDarkStyleSheet/qdarkstyle/style.qrc
   styles/styles.qrc)
