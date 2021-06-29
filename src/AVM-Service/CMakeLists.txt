@@ -25,8 +25,6 @@ find_package(
   ${CMAKE_CURRENT_SOURCE_DIR}/../../share/QXlsx/cmake
   ${CMAKE_CURRENT_SOURCE_DIR}/../../share/QXlsx)
 
-link_directories(${ThirdPartyLibDir})
-
 add_executable(${PROJECT_NAME} main.cpp servicecoma.cpp servicecoma.h
                                svcmodule.cpp svcmodule.h)
 target_link_libraries(
@@ -46,4 +44,4 @@ target_link_libraries(
   Qt${QT_VERSION_MAJOR}::Widgets
   Qt${QT_VERSION_MAJOR}::Network
   QXlsx
-  limereport)
+  ${LIMEREPORT_LIBS})

@@ -13,8 +13,8 @@
 #include <QPushButton>
 #include <QSettings>
 #include <QSvgRenderer>
-#include <limereport/LimeReport>
-
+//#include <limereport/LimeReport>
+#include <LimeReport>
 GeneralTuneDialog::GeneralTuneDialog(QWidget *parent) : UDialog(parent)
 {
     TuneSequenceFile::init();

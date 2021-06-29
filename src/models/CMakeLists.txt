@@ -16,8 +16,8 @@ find_package(
   ${CMAKE_CURRENT_SOURCE_DIR}/../../share/QXlsx)
 
 
-include_directories(${LimeReportDir}/include)
-link_directories(${ThirdPartyLibDir})
+#include_directories(${LimeReportDir}/include)
+#link_directories(${ThirdPartyLibDir})
 # add_library(limereport SHARED IMPORTED)
 find_package(
   QT NAMES Qt6 Qt5
@@ -60,5 +60,7 @@ target_link_libraries(
   PRIVATE Qt${QT_VERSION_MAJOR}::PrintSupport
   PRIVATE Qt${QT_VERSION_MAJOR}::Qml
   PRIVATE QXlsx
-  PRIVATE limereport)
+  PUBLIC ${LIMEREPORT_LIBS})
+message(STATUS "LIME LIBS: " ${LIMEREPORT_LIBS})
+
 target_compile_definitions(${PROJECT_NAME} PRIVATE ${PROJECT_NAME}_LIBRARY)

@@ -40,8 +40,8 @@ find_package(
   COMPONENTS Widgets
   REQUIRED)
 
-link_directories(${LimeReportDir})
-include_directories(${LimeReportDir}/include)
+#link_directories(${LimeReportDir})
+#include_directories(${LimeReportDir}/include)
 
 add_library(
   ${PROJECT_NAME} STATIC
