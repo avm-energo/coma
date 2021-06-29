@@ -31,6 +31,14 @@ find_package(
 include(${CMAKE_CURRENT_SOURCE_DIR}/../../conanbuildinfo.cmake)
 conan_basic_setup(TARGETS)
 
+if (NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/styles/QDarkStyleSheet/qdarkstyle/dark/darkstyle.qrc)
+    file(RENAME styles/QDarkStyleSheet/qdarkstyle/dark/style.qrc
+         styles/QDarkStyleSheet/qdarkstyle/dark/darkstyle.qrc)
+endif()
+if (NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/styles/QDarkStyleSheet/qdarkstyle/light/lightstyle.qrc)
+    file(RENAME styles/QDarkStyleSheet/qdarkstyle/light/style.qrc
+         styles/QDarkStyleSheet/qdarkstyle/light/lightstyle.qrc)
+endif()
 add_library(
   ${PROJECT_NAME} STATIC
   aboutwidget.cpp
@@ -76,7 +84,8 @@ add_library(
   QProgressIndicator.cpp
   QProgressIndicator.h
   ../../images/vectorIcons.qrc
-  styles/QDarkStyleSheet/qdarkstyle/style.qrc
+  styles/QDarkStyleSheet/qdarkstyle/light/lightstyle.qrc
+  styles/QDarkStyleSheet/qdarkstyle/dark/darkstyle.qrc
   styles/styles.qrc)
 set_property(TARGET ${PROJECT_NAME} PROPERTY POSITION_INDEPENDENT_CODE ON)
 
