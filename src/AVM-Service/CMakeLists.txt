@@ -25,8 +25,13 @@ find_package(
   ${CMAKE_CURRENT_SOURCE_DIR}/../../share/QXlsx/cmake
   ${CMAKE_CURRENT_SOURCE_DIR}/../../share/QXlsx)
 
-add_executable(${PROJECT_NAME} main.cpp servicecoma.cpp servicecoma.h
-                               svcmodule.cpp svcmodule.h)
+add_executable(${PROJECT_NAME}
+    main.cpp
+    servicecoma.cpp
+    servicecoma.h
+    svcmodule.cpp
+    svcmodule.h
+    ../coma.rc)
 target_link_libraries(
   ${PROJECT_NAME}
   interfaces
@@ -45,3 +50,7 @@ target_link_libraries(
   Qt${QT_VERSION_MAJOR}::Network
   QXlsx
   ${LIMEREPORT_LIBS})
+
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+                   COMMAND ${CMAKE_COMMAND} -E copy_directory
+                       ${CMAKE_SOURCE_DIR}/../images $<TARGET_FILE_DIR:${PROJECT_NAME}>/images)

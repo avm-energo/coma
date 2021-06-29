@@ -20,8 +20,13 @@ set(PROGNAME "AVM-Debug")
 set(COMAVERSION 2.0.0)
 configure_file(cconfig.h.in config.h @ONLY)
 
-add_executable(${PROJECT_NAME} dbgmodule.cpp dbgmodule.h debugcoma.cpp
-                               debugcoma.h main.cpp)
+add_executable(${PROJECT_NAME}
+    dbgmodule.cpp
+    dbgmodule.h
+    debugcoma.cpp
+    debugcoma.h
+    ../coma.rc
+    main.cpp)
 target_link_libraries(
   ${PROJECT_NAME}
   interfaces
