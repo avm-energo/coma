@@ -15,6 +15,8 @@ find_package(
   Qt${QT_VERSION_MAJOR}
   COMPONENTS Core Xml Widgets
   REQUIRED)
+
+find_package(QXlsx REQUIRED)
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 set(PROGNAME "AVM-Debug")
 set(COMAVERSION 2.0.0)

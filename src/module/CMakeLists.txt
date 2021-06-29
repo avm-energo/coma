@@ -10,11 +10,9 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 find_package(Qt5Core)
-# set(QXlsx_DIR ) message(${QXlsx_DIR})
+
 find_package(
-  QXlsx CONFIG REQUIRED PATHS
-  ${CMAKE_CURRENT_SOURCE_DIR}/../../share/QXlsx/cmake
-  ${CMAKE_CURRENT_SOURCE_DIR}/../../share/QXlsx)
+  QXlsx CONFIG REQUIRED)
 find_package(
   QT NAMES Qt6 Qt5
   COMPONENTS Core Network Xml Widgets

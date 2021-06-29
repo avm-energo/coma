@@ -51,7 +51,7 @@ add_library(
   registers.h
   errorqueue.h
   s2.cpp)
-#set_property(TARGET ${PROJECT_NAME} PROPERTY POSITION_INDEPENDENT_CODE ON)
+
 target_link_libraries(
   gen
   PRIVATE Qt${QT_VERSION_MAJOR}::Core

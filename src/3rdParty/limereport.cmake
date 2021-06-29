@@ -1,29 +1,23 @@
-project(3rdParty)
+project(limereport)
 
 find_package(
   QT NAMES Qt6 Qt5
   COMPONENTS Core Xml Widgets
   REQUIRED)
+
+if (NOT EXISTS "${CMAKE_CURRENT_LIST_DIR}/conanbuildinfo.txt" )
+    execute_process(COMMAND conan install jom/1.1.3@ -g cmake -g cmake_find_package
+        WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
+        RESULT_VARIABLE CMD_ERROR)
+    message(STATUS "Installing jom")
+    message( STATUS "CMD_ERROR:" ${CMD_ERROR})
+endif()
+
 find_package(jom REQUIRED)
 
-
-include(conanbuildinfo)
-# required modules for our task
-include(CheckIncludeFile)
-include(CheckIncludeFileCXX)
-include(CheckIncludeFiles)
-include(ExternalProject)
+include(${CMAKE_CURRENT_LIST_DIR}/conanbuildinfo.cmake)
 
 message(STATUS "QMAKE : " ${Qt${QT_VERSION_MAJOR}Core_QMAKE_EXECUTABLE})
-
-get_filename_component(NMAKE_DIR nmake.exe DIRECTORY)
-
-message(STATUS "NMAKE DIR: " ${NMAKE_DIR} $ENV{VCINSTALLDIR})
-# Example C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\
-if ($ENV{VCINSTALLDIR} STREQUAL "")
-    message(FATAL_ERROR "unexpected: the enviroment variable 'VCINSTALLDIR' is the empty string")
-endif()
-set(VCVARS $ENV{VCINSTALLDIR}/Auxiliary/Build/vcvarsall.bat)
 
 set(LIMEREPORT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../include/LimeReport)
 message(STATUS "Limereport directory: " ${LIMEREPORT_DIR})

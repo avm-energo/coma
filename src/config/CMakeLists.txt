@@ -25,7 +25,6 @@ find_package(
 
 add_library(${PROJECT_NAME} STATIC configdialog.cpp configdialog.h delegate.h
                                    widgetfactory.cpp widgetfactory.h)
-set_property(TARGET ${PROJECT_NAME} PROPERTY POSITION_INDEPENDENT_CODE ON)
 
 target_link_libraries(
   ${PROJECT_NAME}

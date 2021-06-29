@@ -10,10 +10,9 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 find_package(Qt5Core)
+
 find_package(
-  QXlsx CONFIG REQUIRED PATHS
-  ${ThirdPartyLibDir}/share/QXlsx/cmake
-  ${ThirdPartyLibDir}/share/QXlsx)
+  QXlsx CONFIG REQUIRED)
 find_package(
   QT NAMES Qt6 Qt5
   COMPONENTS Core Network Xml Widgets
@@ -49,7 +48,7 @@ add_library(
   trendviewdialog.h
   trendviewmodel.cpp
   trendviewmodel.h)
-set_property(TARGET ${PROJECT_NAME} PROPERTY POSITION_INDEPENDENT_CODE ON)
+
 target_link_libraries(
   ${PROJECT_NAME}
   PRIVATE qcustomplot

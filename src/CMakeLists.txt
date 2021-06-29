@@ -68,6 +68,7 @@ include(CheckIncludeFileCXX)
 include(CheckIncludeFiles)
 include(ExternalProject)
 include(limereport)
+include(qxlsx)
 set(ThirdPartyLibDir ${CMAKE_CURRENT_SOURCE_DIR}/../${PROJECT_TARGET_NAME}/${CMAKE_BUILD_TYPE_LOWER})
 
 #include_directories(${ThirdPartyLibDir}/include)

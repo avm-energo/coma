@@ -11,10 +11,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 find_package(Qt5Core)
-find_package(
-  QXlsx CONFIG REQUIRED PATHS
-  ${CMAKE_CURRENT_SOURCE_DIR}/../../share/QXlsx/cmake
-  ${CMAKE_CURRENT_SOURCE_DIR}/../../share/QXlsx)
+find_package(QXlsx CONFIG REQUIRED)
 
 find_package(
   QT NAMES Qt6 Qt5
@@ -47,7 +44,6 @@ add_library(
   checkktfdialog.h
   checkktfharmonicdialog.cpp
   checkktfharmonicdialog.h)
-set_property(TARGET ${PROJECT_NAME} PROPERTY POSITION_INDEPENDENT_CODE ON)
 
 target_link_libraries(
   ${PROJECT_NAME}

@@ -10,15 +10,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 find_package(Qt5Core)
-find_package(
-  QXlsx CONFIG REQUIRED PATHS
-  ${CMAKE_CURRENT_SOURCE_DIR}/../../share/QXlsx/cmake
-  ${CMAKE_CURRENT_SOURCE_DIR}/../../share/QXlsx)
-
-
-#include_directories(${LimeReportDir}/include)
-#link_directories(${ThirdPartyLibDir})
-# add_library(limereport SHARED IMPORTED)
+find_package(QXlsx CONFIG REQUIRED)
 find_package(
   QT NAMES Qt6 Qt5
   COMPONENTS Core Network Xml Widgets PrintSupport Qml
@@ -60,7 +52,6 @@ target_link_libraries(
   PRIVATE Qt${QT_VERSION_MAJOR}::PrintSupport
   PRIVATE Qt${QT_VERSION_MAJOR}::Qml
   PRIVATE QXlsx
-  PUBLIC ${LIMEREPORT_LIBS})
-message(STATUS "LIME LIBS: " ${LIMEREPORT_LIBS})
+  PUBLIC limereport)
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE ${PROJECT_NAME}_LIBRARY)

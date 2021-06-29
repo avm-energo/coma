@@ -11,9 +11,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 find_package(Qt5Core)
 find_package(
-  QXlsx CONFIG REQUIRED PATHS
-  ${CMAKE_CURRENT_SOURCE_DIR}/../../share/QXlsx/cmake
-  ${CMAKE_CURRENT_SOURCE_DIR}/../../share/QXlsx)
+  QXlsx CONFIG REQUIRED)
 
 find_package(
   QT NAMES Qt6 Qt5
