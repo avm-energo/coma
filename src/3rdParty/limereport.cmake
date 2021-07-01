@@ -36,7 +36,7 @@ endif()
 
 ExternalProject_Add(LimeReport
     SOURCE_DIR ${LIMEREPORT_DIR}
-    CONFIGURE_COMMAND ${Qt${QT_VERSION_MAJOR}Core_QMAKE_EXECUTABLE} ${LIMEREPORT_DIR} "CONFIG+=no_zint"  -recursive -spec win32-msvc
+    CONFIGURE_COMMAND ${Qt${QT_VERSION_MAJOR}Core_QMAKE_EXECUTABLE} ${LIMEREPORT_DIR} "CONFIG+=no_zint" "CONFIG+=no_formdesigner" "CONFIG+=no_embedded_designer"  -recursive -spec win32-msvc
     BUILD_COMMAND ${JOM_EXEC} /NOLOGO -f Makefile release
     INSTALL_COMMAND ${JOM_EXEC} /NOLOGO -f Makefile uninstall
     USES_TERMINAL_BUILD TRUE

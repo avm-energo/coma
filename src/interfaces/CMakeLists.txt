@@ -4,6 +4,7 @@ project(interfaces LANGUAGES CXX)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
+find_package(hidapi REQUIRED)
 find_package(Qt5Core)
 find_package(
   QT NAMES Qt6 Qt5
@@ -13,7 +14,7 @@ find_package(
   Qt5
   COMPONENTS Core Network SerialPort
   REQUIRED)
-find_package(hidapi)
+
 add_library(
   ${PROJECT_NAME} STATIC
   baseinterface.cpp
