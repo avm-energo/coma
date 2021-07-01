@@ -2,6 +2,15 @@ cmake_minimum_required(VERSION 3.15)
 project(root)
 add_compile_definitions(DEVICETYPE=1)
 set(SOFTDEVELOPER "AVM-Energo")
+
+if (NOT EXISTS "${CMAKE_SOURCE_DIR}/../conanbuildinfo.txt" )
+    execute_process(COMMAND conan install . -g cmake -g cmake_find_package
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/..
+        RESULT_VARIABLE CMD_ERROR)
+    message(STATUS "Init conan")
+    message( STATUS "CMD_ERROR:" ${CMD_ERROR})
+endif()
+
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
