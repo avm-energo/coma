@@ -76,7 +76,7 @@ if(NOT DEFINED CACHED_PROJECT_TARGET_NAME)
     set(CACHED_PROJECT_TARGET_NAME "dummy")
 endif()
 if (NOT ( EXISTS "${CMAKE_SOURCE_DIR}/../conanbuildinfo.txt" AND ${CACHED_PROJECT_TARGET_NAME} STREQUAL ${PROJECT_TARGET_NAME}))
-    execute_process(COMMAND ${CONAN_EXEC} install . -g cmake -g cmake_find_package -s arch="${CONAN_TARGET_NAME}" -s arch_build="${CONAN_TARGET_NAME}"
+    execute_process(COMMAND ${CONAN_EXEC} install . -g cmake -g cmake_find_package -s arch=${CONAN_TARGET_NAME} -s arch_build=${CONAN_TARGET_NAME}
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/..
         RESULT_VARIABLE CMD_ERROR)
     set(CACHED_PROJECT_TARGET_NAME ${PROJECT_TARGET_NAME} CACHE STRING "Cached target arch")
