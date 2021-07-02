@@ -76,6 +76,18 @@ set(CMAKE_REQUIRED_INCLUDES ${CMAKE_REQUIRED_INCLUDES_SAVE})
         set(HAVE_LIMEREPORT 1)
 endif (NOT HAVE_LIMEREPORT)
 
+# Hack to make it work, otherwise INTERFACE_INCLUDE_DIRECTORIES will not be propagated
+get_filename_component(_fullpath "${LIMEREPORT_BINARY_DIR}" REALPATH)
+if (NOT EXISTS ${_fullpath})
+file(MAKE_DIRECTORY ${_fullpath})
+message(STATUS "Created directory: " ${_fullpath})
+endif()
+get_filename_component(_fullpath "${LIMEREPORT_INCLUDE_DIRS}" REALPATH)
+if (NOT EXISTS ${_fullpath})
+file(MAKE_DIRECTORY ${_fullpath})
+message(STATUS "Created directory: " ${_fullpath})
+endif()
+
 add_library(limereport SHARED IMPORTED GLOBAL)
 set_target_properties(limereport PROPERTIES
   IMPORTED_LOCATION ${LIMEREPORT_BINARY_DIR}

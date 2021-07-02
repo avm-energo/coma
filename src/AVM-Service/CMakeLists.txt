@@ -43,7 +43,10 @@ target_link_libraries(
   Qt${QT_VERSION_MAJOR}::Xml
   Qt${QT_VERSION_MAJOR}::Widgets
   Qt${QT_VERSION_MAJOR}::Network
-  qxlsx)
+  QXlsx
+  )
+
+add_dependencies(${PROJECT_NAME} QXlsxBuild)
 
 add_custom_command(
   TARGET ${PROJECT_NAME}

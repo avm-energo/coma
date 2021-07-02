@@ -17,29 +17,49 @@ execute_process(COMMAND git apply ${CMAKE_CURRENT_LIST_DIR}/0001-fix-broken-iter
        OUTPUT_FILE CMD_OUTPUT
        ERROR_VARIABLE CMD_ERROR)
 
+   set(QXLSX_BINARY_DIR ${CMAKE_SOURCE_DIR}/bin)
+   set(QXLSX_INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/include)
+   set(QXLSX_LIBRARY_DIR ${CMAKE_SOURCE_DIR}/lib)
+
 ExternalProject_Add(QXlsxBuild
     SOURCE_DIR ${QXLSX_SRC_DIR}
     CONFIGURE_COMMAND ${CMAKE_COMMAND} -S ${QXLSX_SRC_DIR} -DQt${QT_VERSION_MAJOR}_DIR:STRING=${QT_DIR} -DCMAKE_BUILD_TYPE:String=Release -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_CURRENT_SOURCE_DIR}
     BUILD_COMMAND ${CMAKE_COMMAND} --build . --config Release
     INSTALL_COMMAND cmake --install . --config Release
+    BUILD_BYPRODUCTS ${QXLSX_LIBRARY_DIR}/QXlsx.lib
     USES_TERMINAL_BUILD TRUE
     USES_TERMINAL_CONFIGURE TRUE)
 
-set(QXLSX_BINARY_DIR ${CMAKE_SOURCE_DIR}/bin)
-set(QXLSX_INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/include)
-set(QXLSX_LIBRARY_DIR ${CMAKE_SOURCE_DIR}/lib)
 
-add_library(qxlsx SHARED IMPORTED GLOBAL)
-set_target_properties(qxlsx PROPERTIES
+
+# Hack to make it work, otherwise INTERFACE_INCLUDE_DIRECTORIES will not be propagated
+get_filename_component(_fullpath "${QXLSX_BINARY_DIR}" REALPATH)
+if (NOT EXISTS ${_fullpath})
+file(MAKE_DIRECTORY ${_fullpath})
+message(STATUS "Created directory: " ${_fullpath})
+endif()
+get_filename_component(_fullpath "${QXLSX_INCLUDE_DIRS}" REALPATH)
+if (NOT EXISTS ${_fullpath})
+file(MAKE_DIRECTORY ${_fullpath})
+message(STATUS "Created directory: " ${_fullpath})
+endif()
+get_filename_component(_fullpath "${QXLSX_LIBRARY_DIR}" REALPATH)
+if (NOT EXISTS ${_fullpath})
+file(MAKE_DIRECTORY ${_fullpath})
+message(STATUS "Created directory: " ${_fullpath})
+endif()
+
+add_library(QXlsx SHARED IMPORTED GLOBAL)
+set_target_properties(QXlsx PROPERTIES
   IMPORTED_LOCATION ${QXLSX_BINARY_DIR}
   INTERFACE_INCLUDE_DIRECTORIES ${QXLSX_INCLUDE_DIRS}
-  IMPORTED_IMPLIB ${QXLSX_LIBRARY_DIR}/qxlsx.lib)
+  IMPORTED_IMPLIB ${QXLSX_LIBRARY_DIR}/QXlsx.lib)
 
 include_directories(${QXLSX_INCLUDE_DIRS})
 
 
 
-set(QXLSX_LIBS qxlsx)
+set(QXLSX_LIBS QXlsx)
 set(QXLSX_LIBRARY_DIRS ${QXLSX_BINARY_DIR} ${QXLSX_LIBRARY_DIR})
 
 link_directories(${QXLSX_LIBRARY_DIRS})

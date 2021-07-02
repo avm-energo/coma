@@ -48,7 +48,10 @@ target_link_libraries(
   Qt${QT_VERSION_MAJOR}::Qml
   Qt${QT_VERSION_MAJOR}::Sql
   limereport
-  qxlsx)
+  QXlsx
+  )
+
+add_dependencies(${PROJECT_NAME} QXlsxBuild)
 
 if(CMAKE_BUILD_TYPE EQUAL "DEBUG")
   message(STATUS "debug mode")
