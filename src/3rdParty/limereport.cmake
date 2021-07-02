@@ -5,12 +5,14 @@ find_package(
   COMPONENTS Core Xml Widgets
   REQUIRED)
 
-if (NOT EXISTS "${CMAKE_CURRENT_LIST_DIR}/conanbuildinfo.txt" )
+get_filename_component(_fullpath "${CMAKE_CURRENT_LIST_DIR}/conanbuildinfo.cmake" REALPATH)
+if (NOT EXISTS "${_fullpath}" )
     execute_process(COMMAND ${CONAN_EXEC} install jom/1.1.3@ -g cmake -g cmake_find_package
         WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
         RESULT_VARIABLE CMD_ERROR)
+    message(STATUS "Cannot find jom: " ${_fullpath})
     message(STATUS "Installing jom")
-    message( STATUS "CMD_ERROR:" ${CMD_ERROR})
+    message(STATUS "CMD_ERROR:" ${CMD_ERROR})
 endif()
 
 find_package(jom REQUIRED)
