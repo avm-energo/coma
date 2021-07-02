@@ -15,13 +15,7 @@ if(CONAN_FOUND)
     set(CONAN_EXEC conan)
 endif()
 
-if (NOT EXISTS "${CMAKE_SOURCE_DIR}/../conanbuildinfo.txt" )
-    execute_process(COMMAND ${CONAN_EXEC} install . -g cmake -g cmake_find_package
-        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/..
-        RESULT_VARIABLE CMD_ERROR)
-    message(STATUS "Init conan")
-    message( STATUS "CMD_ERROR:" ${CMD_ERROR})
-endif()
+
 
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
@@ -66,6 +60,22 @@ elseif(CMAKE_SYSTEM_NAME_LOWER STREQUAL "unix")
   endif()
 endif()
 string(TOLOWER "${CMAKE_BUILD_TYPE}" CMAKE_BUILD_TYPE_LOWER)
+
+message(STATUS "Cached target arch: " ${CACHED_PROJECT_TARGET_NAME})
+message(STATUS "Current target arch: " ${PROJECT_TARGET_NAME})
+
+if(NOT DEFINED CACHED_PROJECT_TARGET_NAME)
+    set(CACHED_PROJECT_TARGET_NAME "dummy")
+endif()
+if (NOT ( EXISTS "${CMAKE_SOURCE_DIR}/../conanbuildinfo.txt" AND ${CACHED_PROJECT_TARGET_NAME} STREQUAL ${PROJECT_TARGET_NAME}))
+    execute_process(COMMAND ${CONAN_EXEC} install . -g cmake -g cmake_find_package
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/..
+        RESULT_VARIABLE CMD_ERROR)
+    set(CACHED_PROJECT_TARGET_NAME ${PROJECT_TARGET_NAME} CACHE STRING "Cached target arch")
+    message(STATUS "Init conan for " ${PROJECT_TARGET_NAME})
+    message( STATUS "CMD_ERROR:" ${CMD_ERROR})
+endif()
+
 
 message(STATUS "Modules dir: " ${CMAKE_MODULE_PATH})
 
