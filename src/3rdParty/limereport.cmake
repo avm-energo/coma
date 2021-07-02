@@ -34,7 +34,7 @@ if (${CMD_ERROR})
 endif()
 
 
-ExternalProject_Add(LimeReport
+ExternalProject_Add(LimeReportBuild
     SOURCE_DIR ${LIMEREPORT_DIR}
     CONFIGURE_COMMAND ${Qt${QT_VERSION_MAJOR}Core_QMAKE_EXECUTABLE} ${LIMEREPORT_DIR} "CONFIG+=no_zint" "CONFIG+=no_formdesigner" "CONFIG+=no_embedded_designer"  -recursive -spec win32-msvc
     BUILD_COMMAND ${JOM_EXEC} /NOLOGO -f Makefile release
@@ -42,7 +42,7 @@ ExternalProject_Add(LimeReport
     USES_TERMINAL_BUILD TRUE
     USES_TERMINAL_CONFIGURE TRUE)
 
-ExternalProject_Get_property(LimeReport SOURCE_DIR)
+ExternalProject_Get_property(LimeReportBuild SOURCE_DIR)
 message(STATUS "Source dir of LimeReport = ${SOURCE_DIR}")
 
 set (LIMEREPORT_BINARY_DIR ${SOURCE_DIR}/build/${Qt${QT_VERSION_MAJOR}Core_VERSION_STRING}/${PROJECT_TARGET_NAME}/release/lib)

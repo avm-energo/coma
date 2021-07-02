@@ -51,7 +51,7 @@ target_link_libraries(
   QXlsx
   )
 
-add_dependencies(${PROJECT_NAME} QXlsxBuild)
+add_dependencies(${PROJECT_NAME} QXlsxBuild LimeReportBuild)
 
 if(CMAKE_BUILD_TYPE EQUAL "DEBUG")
   message(STATUS "debug mode")
