@@ -3,6 +3,13 @@ project(root)
 add_compile_definitions(DEVICETYPE=1)
 set(SOFTDEVELOPER "AVM-Energo")
 
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTOUIC ON)
+set(CMAKE_AUTORCC ON)
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+
 find_program(CONAN_FOUND "conan")
 if(CONAN_FOUND)
     set(CONAN_EXEC conan)
@@ -22,6 +29,8 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/../scripts")
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/..")
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/3rdParty")
+
+
 include(DetermineTargetArchitecture)
 target_architecture(PROJECT_ARCHITECTURE)
 message(STATUS "Target architecture - ${PROJECT_ARCHITECTURE}")
@@ -75,6 +84,14 @@ find_package(
 set(QT_VERSION ${Qt5Core_VERSION})
 message(STATUS "QT version - ${QT_VERSION}")
 
+if(CMAKE_BUILD_TYPE EQUAL "DEBUG")
+  message(STATUS "debug mode")
+  set(MODE_DIR Debug)
+else()
+  message(STATUS "not a debug mode")
+  set(MODE_DIR Release)
+endif(CMAKE_BUILD_TYPE EQUAL "DEBUG")
+
 # required modules for our task
 include(CheckIncludeFile)
 include(CheckIncludeFileCXX)
@@ -83,12 +100,7 @@ include(ExternalProject)
 include(limereport)
 include(qxlsx)
 
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_AUTOMOC ON)
-set(CMAKE_AUTOUIC ON)
-set(CMAKE_AUTORCC ON)
-set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+
 
 
 add_subdirectory(interfaces)

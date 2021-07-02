@@ -3,12 +3,7 @@ cmake_minimum_required(VERSION 3.14)
 project(qcustomplot LANGUAGES CXX)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
-set(CMAKE_AUTOMOC ON)
-set(CMAKE_AUTOUIC ON)
-set(CMAKE_AUTORCC ON)
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+
 find_package(Qt5Core)
 
 find_package(
@@ -25,7 +20,6 @@ find_package(
   REQUIRED)
 
 add_library(${PROJECT_NAME} STATIC qcustomplot.cpp qcustomplot.h)
-set_property(TARGET ${PROJECT_NAME} PROPERTY POSITION_INDEPENDENT_CODE ON)
 
 target_link_libraries(
   ${PROJECT_NAME}

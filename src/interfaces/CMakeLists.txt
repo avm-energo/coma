@@ -61,3 +61,9 @@ if (WIN32)
     target_link_libraries(${PROJECT_NAME} PRIVATE hidapi::hidapi)
 endif()
 target_compile_definitions(${PROJECT_NAME} PRIVATE ${PROJECT_NAME}_LIBRARY)
+
+#get_target_property(LINKS hidapi::hidapi IMPORTED_LOCATION )
+message(STATUS "Interfaces import dirs" "${hidapi_LIB_DIRS}/../bin")
+install(
+  CODE "set(hidapi_BIN_DIRS \"${hidapi_LIB_DIRS}/../bin\")"
+)
