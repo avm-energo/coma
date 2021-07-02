@@ -1,4 +1,3 @@
-
 find_package(
   QT NAMES Qt6 Qt5
   COMPONENTS Core Xml Widgets
@@ -21,10 +20,20 @@ execute_process(COMMAND git apply ${CMAKE_CURRENT_LIST_DIR}/0001-fix-broken-iter
    set(QXLSX_INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/${PROJECT_TARGET_NAME}/include)
    set(QXLSX_LIBRARY_DIR ${CMAKE_SOURCE_DIR}/${PROJECT_TARGET_NAME}/lib)
 
+if(${PROJECT_ARCHITECTURE}} MATCHES "x86_64")
+    set(QXLSX_TARGET_NAME "x64")
+elseif(${PROJECT_ARCHITECTURE}} MATCHES "i386")
+    set(QXLSX_TARGET_NAME "Win32")
+else()
+    message(FATAL_ERROR "Invalid arch name: ${PROJECT_ARCHITECTURE}")
+endif()    
+
+
+
 ExternalProject_Add(QXlsxBuild
     SOURCE_DIR ${QXLSX_SRC_DIR}
     CONFIGURE_COMMAND ${CMAKE_COMMAND} -S ${QXLSX_SRC_DIR} -DQt${QT_VERSION_MAJOR}_DIR:STRING=${QT_DIR} -DCMAKE_BUILD_TYPE:String=Release -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_SOURCE_DIR}/${PROJECT_TARGET_NAME}
-    BUILD_COMMAND ${CMAKE_COMMAND} --build . --config Release
+    BUILD_COMMAND ${CMAKE_COMMAND} -A ${QXLSX_TARGET_NAME} --build . --config Release
     INSTALL_COMMAND cmake --install . --config Release
     BUILD_BYPRODUCTS ${QXLSX_LIBRARY_DIR}/QXlsx.lib
     USES_TERMINAL_BUILD TRUE
