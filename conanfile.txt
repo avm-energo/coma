@@ -5,8 +5,3 @@ hidapi/0.10.1
 
 [options]
 hidapi:shared=True
-
-[imports]
-bin, *.dll -> ./src/bin # Copies all dll files from packages bin folder to my "bin" folder
-lib, *.dylib* -> ./src/bin # Copies all dylib files from packages lib folder to my "bin" folder
-lib, *.so* -> ./src/bin # Copies all so files from packages lib folder to my "bin" folder

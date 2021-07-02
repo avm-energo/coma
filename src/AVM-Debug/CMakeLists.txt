@@ -108,6 +108,8 @@ install(
                 ".*system32/.*\\.dll"
             DIRECTORIES
             "$<TARGET_PROPERTY:AVM-Debug,LINK_DIRECTORIES>"
+            "$<TARGET_PROPERTY:QXlsx,IMPORTED_LOCATION>"
+            "$<TARGET_PROPERTY:limereport,IMPORTED_LOCATION>"
             ${QT_BIN_DIR}
             RESOLVED_DEPENDENCIES_VAR RES
             UNRESOLVED_DEPENDENCIES_VAR UNRES
