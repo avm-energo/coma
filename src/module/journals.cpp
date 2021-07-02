@@ -1,17 +1,10 @@
 #include "journals.h"
 
-//#include "../config/config.h"
 #include "../gen/board.h"
 #include "../gen/error.h"
 #include "../gen/files.h"
 #include "../gen/timefunc.h"
 #include "../widgets/wd_func.h"
-#include "xlsxdocument.h"
-
-#include <cmath>
-
-//#include <QAbstractItemModelTester>
-#include "../gen/timefunc.h"
 
 #include <QApplication>
 #include <QDate>
@@ -19,6 +12,8 @@
 #include <QFile>
 #include <QObject>
 #include <QVariant>
+#include <QXlsx/xlsxdocument.h>
+#include <cmath>
 
 Journals::Journals(QMap<Modules::JournalType, DataTypes::JournalDesc> &jourMap, QObject *parent)
     : QObject(parent), m_timezone(TimeFunc::userTimeZone()), m_jourMap(jourMap)

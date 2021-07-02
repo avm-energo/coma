@@ -22,8 +22,11 @@ execute_process(
   OUTPUT_VARIABLE SHORT_HASH
   OUTPUT_STRIP_TRAILING_WHITESPACE)
 set(gitHash ${SHORT_HASH})
-message(${SHORT_HASH_RESULT} "Hash")
-message(${SHORT_HASH} "Hash")
+if (${SHORT_HASH_RESULT})
+   message(STATUS ${SHORT_HASH_RESULT} " - could not get git hash")
+endif()
+
+message(STATUS "Commit short hash: " ${SHORT_HASH})
 set(SHORT_HASH_FILE "version.txt")
 add_custom_command(
   OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/gversion.h

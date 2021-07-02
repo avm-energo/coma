@@ -6,8 +6,7 @@
 #include "../gen/error.h"
 #include "../gen/stdfunc.h"
 #include "../widgets/wd_func.h"
-#include "xlsxdocument.h"
-
+//#include "xlsxdocument.h"
 #include <QCoreApplication>
 #include <QFileDialog>
 #include <QGroupBox>
@@ -20,6 +19,7 @@
 #include <QTabWidget>
 #include <QTime>
 #include <QVBoxLayout>
+#include <QXlsx/xlsxdocument.h>
 //#include <QtMath>
 //#include <QtTest/QTest>
 

@@ -16,7 +16,7 @@ find_package(
   COMPONENTS Core Xml Widgets Sql Qml
   REQUIRED)
 
-find_package(QXlsx REQUIRED)
+#find_package(QXlsx REQUIRED)
 find_package(hidapi REQUIRED)
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
@@ -47,13 +47,14 @@ target_link_libraries(
   Qt${QT_VERSION_MAJOR}::Widgets
   Qt${QT_VERSION_MAJOR}::Qml
   Qt${QT_VERSION_MAJOR}::Sql
-  limereport)
+  limereport
+  qxlsx)
 
 if(CMAKE_BUILD_TYPE EQUAL "DEBUG")
-  message("debug mode")
+  message(STATUS "debug mode")
   set(MODE_DIR Debug)
 else()
-  message("not a debug mode")
+  message(STATUS "not a debug mode")
   set(MODE_DIR Release)
 endif(CMAKE_BUILD_TYPE EQUAL "DEBUG")
 
@@ -104,7 +105,6 @@ install(
                 ".*system32/.*\\.dll"
             DIRECTORIES
             "$<TARGET_PROPERTY:AVM-Debug,LINK_DIRECTORIES>"
-            "$<TARGET_FILE_DIR:QXlsx>"
             ${QT_BIN_DIR}
             RESOLVED_DEPENDENCIES_VAR RES
             UNRESOLVED_DEPENDENCIES_VAR UNRES

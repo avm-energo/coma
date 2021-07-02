@@ -9,9 +9,9 @@
 #include "parseid9050.h"
 #include "parsemodule.h"
 #include "trendviewdialog.h"
-#include "xlsxdocument.h"
-
+//#include "xlsxdocument.h"
 #include <QVector>
+#include <QXlsx/xlsxdocument.h>
 #include <cstring>
 
 EOscillogram::EOscillogram(QObject *parent) : QObject(parent)

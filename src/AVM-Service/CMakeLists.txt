@@ -20,10 +20,10 @@ find_package(
   Qt${QT_VERSION_MAJOR}
   COMPONENTS Core Xml Widgets Network
   REQUIRED)
-find_package(
-  QXlsx CONFIG REQUIRED PATHS
-  ${CMAKE_CURRENT_SOURCE_DIR}/../../share/QXlsx/cmake
-  ${CMAKE_CURRENT_SOURCE_DIR}/../../share/QXlsx)
+#find_package(
+#  QXlsx CONFIG REQUIRED PATHS
+#  ${CMAKE_CURRENT_SOURCE_DIR}/../../share/QXlsx/cmake
+#  ${CMAKE_CURRENT_SOURCE_DIR}/../../share/QXlsx)
 
 add_executable(${PROJECT_NAME} main.cpp servicecoma.cpp servicecoma.h
                                svcmodule.cpp svcmodule.h ../coma.rc)
@@ -43,7 +43,7 @@ target_link_libraries(
   Qt${QT_VERSION_MAJOR}::Xml
   Qt${QT_VERSION_MAJOR}::Widgets
   Qt${QT_VERSION_MAJOR}::Network
-  QXlsx)
+  qxlsx)
 
 add_custom_command(
   TARGET ${PROJECT_NAME}
@@ -52,10 +52,10 @@ add_custom_command(
           $<TARGET_FILE_DIR:${PROJECT_NAME}>/images)
 
 if(CMAKE_BUILD_TYPE EQUAL "DEBUG")
-  message("debug mode")
+  message(STATUS "debug mode")
   set(MODE_DIR Debug)
 else()
-  message("not a debug mode")
+  message(STATUS "not a debug mode")
   set(MODE_DIR Release)
 endif(CMAKE_BUILD_TYPE EQUAL "DEBUG")
 
@@ -94,7 +94,6 @@ install(
             ".*system32/.*\\.dll"
           DIRECTORIES
             "$<TARGET_PROPERTY:AVM-Service,LINK_DIRECTORIES>"
-            "$<TARGET_FILE_DIR:QXlsx>"
           RESOLVED_DEPENDENCIES_VAR RES
           UNRESOLVED_DEPENDENCIES_VAR UNRES
           CONFLICTING_DEPENDENCIES_PREFIX CONFLICTING_DEPENDENCIES

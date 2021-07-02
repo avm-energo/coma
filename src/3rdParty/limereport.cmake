@@ -27,10 +27,10 @@ message(STATUS "JOM Location: " ${JOM_EXEC})
 execute_process(COMMAND ${JOM_EXEC} /version
     RESULT_VARIABLE CMD_ERROR
        OUTPUT_FILE CMD_OUTPUT)
-message( STATUS "CMD_ERROR:" ${CMD_ERROR})
-message( STATUS "CMD_OUTPUT:" ${CMD_OUTPUT})
+
 if (${CMD_ERROR})
-    error("No jom executable")
+    message( STATUS "CMD_ERROR:" ${CMD_ERROR})
+    message( STATUS "CMD_OUTPUT:" ${CMD_OUTPUT})
 endif()
 
 
