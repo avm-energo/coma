@@ -3,8 +3,13 @@ project(root)
 add_compile_definitions(DEVICETYPE=1)
 set(SOFTDEVELOPER "AVM-Energo")
 
+find_program(CONAN_FOUND "conan")
+if(CONAN_FOUND)
+    set(CONAN_EXEC conan)
+endif()
+
 if (NOT EXISTS "${CMAKE_SOURCE_DIR}/../conanbuildinfo.txt" )
-    execute_process(COMMAND conan install . -g cmake -g cmake_find_package
+    execute_process(COMMAND ${CONAN_EXEC} install . -g cmake -g cmake_find_package
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/..
         RESULT_VARIABLE CMD_ERROR)
     message(STATUS "Init conan")

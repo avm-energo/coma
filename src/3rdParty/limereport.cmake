@@ -6,7 +6,7 @@ find_package(
   REQUIRED)
 
 if (NOT EXISTS "${CMAKE_CURRENT_LIST_DIR}/conanbuildinfo.txt" )
-    execute_process(COMMAND conan install jom/1.1.3@ -g cmake -g cmake_find_package
+    execute_process(COMMAND ${CONAN_EXEC} install jom/1.1.3@ -g cmake -g cmake_find_package
         WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
         RESULT_VARIABLE CMD_ERROR)
     message(STATUS "Installing jom")
