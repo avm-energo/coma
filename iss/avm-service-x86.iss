@@ -10,11 +10,11 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;#define Prefix "C:\Progs\out"
 #define ARCH "win32"
+#define BUILD_TYPE "Release"
 #define QT_DIR "C:\Qt\5.15.2\msvc2019\bin"
 #define Redist_DIR "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Redist\MSVC\v142"
-;#define Redist_DIR "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Redist\MSVC\14.16.27012"
-#define LIB_DIR "..\lib"
-#define Build_DIR  "..\bin"
+
+#define OUTPUT_DIR  "..\output"
 #define ApplicationVersion GetFileVersion('..\bin\win32\release\AVM-Service\AVM-Service.exe')
 
 
@@ -65,8 +65,8 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked; OnlyBelowVersion: 6.1; Check: not IsAdminInstallMode
 
 [Files]
-Source: "{#Build_DIR}\{#ARCH}\release\{#EngName}\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs
-Source: "{#LIB_DIR}\{#ARCH}\release\*.dll"; DestDir: "{app}"; 
+Source: "{#OUTPUT_DIR}\{#ARCH}\{#BUILD_TYPE}\{#EngName}\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs
+;Source: "{#LIB_DIR}\{#ARCH}\release\*.dll"; DestDir: "{app}"; 
 Source: "{#Redist_DIR}\vc_redist.x86.exe"; DestDir: "{tmp}"; Flags: deleteafterinstall
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
