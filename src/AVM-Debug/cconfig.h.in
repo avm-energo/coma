@@ -1,4 +1,0 @@
-#cmakedefine PROGNAME "@PROGNAME@"
-#cmakedefine COMAVERSION "@COMAVERSION@"
-#cmakedefine PROGCAPTION "@PROGCAPTION@"
-#cmakedefine SOFTDEVELOPER "@SOFTDEVELOPER@"

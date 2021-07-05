@@ -1,12 +1,20 @@
 project(AVM-Service)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
+set(PROJECT_VERSION_MAJOR 2)
+set(PROJECT_VERSION_MINOR 1)
+set(PROJECT_VERSION_PATCH 2)
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
-set(PROGNAME "AVM-Service")
+set(PROGNAME ${PROJECT_NAME})
 set(COMAVERSION 2.0.0)
-configure_file(cconfig.h.in config.h @ONLY)
+configure_file(${CMAKE_SOURCE_DIR}/cconfig.h.in ${CMAKE_CURRENT_BINARY_DIR}/config.h @ONLY)
+configure_file(
+  ${CMAKE_SOURCE_DIR}/versioninfo.rc.in
+  ${CMAKE_CURRENT_BINARY_DIR}/versioninfo.rc
+  @ONLY)
+
 find_package(
   QT NAMES Qt6 Qt5
   COMPONENTS Core Xml Widgets Network
@@ -15,10 +23,6 @@ find_package(
   Qt${QT_VERSION_MAJOR}
   COMPONENTS Core Xml Widgets Network
   REQUIRED)
-#find_package(
-#  QXlsx CONFIG REQUIRED PATHS
-#  ${CMAKE_CURRENT_SOURCE_DIR}/../../share/QXlsx/cmake
-#  ${CMAKE_CURRENT_SOURCE_DIR}/../../share/QXlsx)
 
 add_executable(${PROJECT_NAME} main.cpp servicecoma.cpp servicecoma.h
                                svcmodule.cpp svcmodule.h ../coma.rc)

@@ -1,6 +1,10 @@
 project(AVM-Debug)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
+set(PROJECT_VERSION_MAJOR 2)
+set(PROJECT_VERSION_MINOR 1)
+set(PROJECT_VERSION_PATCH 3)
+
 
 find_package(
   QT NAMES Qt6 Qt5
@@ -17,7 +21,12 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 set(PROGNAME "AVM-Debug")
 set(COMAVERSION 2.0.0)
-configure_file(cconfig.h.in config.h @ONLY)
+configure_file(${CMAKE_SOURCE_DIR}/cconfig.h.in ${CMAKE_CURRENT_BINARY_DIR}/config.h @ONLY)
+
+configure_file(
+  ${CMAKE_SOURCE_DIR}/versioninfo.rc.in
+  ${CMAKE_CURRENT_BINARY_DIR}/versioninfo.rc
+  @ONLY)
 
 add_executable(${PROJECT_NAME}
     dbgmodule.cpp
@@ -25,7 +34,10 @@ add_executable(${PROJECT_NAME}
     debugcoma.cpp
     debugcoma.h
     ../coma.rc
+    ${CMAKE_CURRENT_BINARY_DIR}/versioninfo.rc
     main.cpp)
+
+
 
 if(CMAKE_BUILD_TYPE STREQUAL "Release")
     set_property(TARGET ${PROJECT_NAME} PROPERTY WIN32_EXECUTABLE true)
