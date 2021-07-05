@@ -22,6 +22,11 @@ find_package(
 
 add_executable(${PROJECT_NAME} main.cpp servicecoma.cpp servicecoma.h
                                svcmodule.cpp svcmodule.h ../coma.rc)
+
+if(CMAKE_BUILD_TYPE STREQUAL "Release")
+    set_property(TARGET ${PROJECT_NAME} PROPERTY WIN32_EXECUTABLE true)
+endif()
+
 target_link_libraries(
   ${PROJECT_NAME}
   interfaces

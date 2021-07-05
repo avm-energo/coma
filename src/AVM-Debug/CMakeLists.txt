@@ -19,8 +19,18 @@ set(PROGNAME "AVM-Debug")
 set(COMAVERSION 2.0.0)
 configure_file(cconfig.h.in config.h @ONLY)
 
-add_executable(${PROJECT_NAME} dbgmodule.cpp dbgmodule.h debugcoma.cpp
-                               debugcoma.h ../coma.rc main.cpp)
+add_executable(${PROJECT_NAME}
+    dbgmodule.cpp
+    dbgmodule.h
+    debugcoma.cpp
+    debugcoma.h
+    ../coma.rc
+    main.cpp)
+
+if(CMAKE_BUILD_TYPE STREQUAL "Release")
+    set_property(TARGET ${PROJECT_NAME} PROPERTY WIN32_EXECUTABLE true)
+endif()
+
 target_link_libraries(
   ${PROJECT_NAME}
   interfaces
