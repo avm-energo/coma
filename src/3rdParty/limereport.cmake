@@ -7,10 +7,17 @@ find_package(
 set(LIMEREPORT_BUILD_DIR ${CMAKE_BINARY_DIR}/LimeReportBuild)
 
 get_filename_component(_fullpath "${LIMEREPORT_BUILD_DIR}/conanbuildinfo.cmake" REALPATH)
+set(CONAN_JOM_INIT ${CONAN_EXEC} install jom/1.1.3@ -g cmake -g cmake_find_package -s arch=${CONAN_TARGET_NAME} -s arch_build=${CONAN_TARGET_NAME} -if ${LIMEREPORT_BUILD_DIR})
 if (NOT ( EXISTS "${_fullpath}" AND ${CACHED_PROJECT_TARGET_NAME} STREQUAL ${PROJECT_TARGET_NAME}))
-    execute_process(COMMAND ${CONAN_EXEC} install jom/1.1.3@ -g cmake -g cmake_find_package -s arch=${CONAN_TARGET_NAME} -s arch_build=${CONAN_TARGET_NAME} -if ${LIMEREPORT_BUILD_DIR}
+#    execute_process(COMMAND ${CONAN_JOM_INIT}
+#        WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
+#        RESULT_VARIABLE CMD_ERROR)
+    execute_process(
+        COMMAND ${CMAKE_COMMAND} -E env
+            CONAN_USER_HOME=${USER_DIRECTORY} ${CONAN_JOM_INIT}
+        RESULT_VARIABLE CMD_ERROR
         WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
-        RESULT_VARIABLE CMD_ERROR)
+    )
     message(STATUS "Cannot find jom: " ${_fullpath})
     message(STATUS "Installing jom")
     message(STATUS "CMD_ERROR:" ${CMD_ERROR})

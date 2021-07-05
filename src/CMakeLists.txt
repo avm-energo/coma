@@ -83,10 +83,18 @@ endif()
 message(STATUS "Current user directory for conan: " ${USER_DIRECTORY})
 set(ENV{CONAN_USER_HOME} ${USER_DIRECTORY})
 
+set(CONAN_MAIN_INIT ${CONAN_EXEC} install . -g cmake -g cmake_find_package -s arch=${CONAN_TARGET_NAME} -s arch_build=${CONAN_TARGET_NAME} -if ${CMAKE_BINARY_DIR} --build=missing)
+
 if (NOT ( EXISTS "${CMAKE_BINARY_DIR}/conanbuildinfo.txt" AND ${CACHED_PROJECT_TARGET_NAME} STREQUAL ${PROJECT_TARGET_NAME}))
-    execute_process(COMMAND ${CONAN_EXEC} install . -g cmake -g cmake_find_package -s arch=${CONAN_TARGET_NAME} -s arch_build=${CONAN_TARGET_NAME} -if ${CMAKE_BINARY_DIR} --build=missing
+#    execute_process(COMMAND ${CONAN_MAIN_INIT}
+#        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/..
+#        RESULT_VARIABLE CMD_ERROR)
+    execute_process(
+        COMMAND ${CMAKE_COMMAND} -E env
+            CONAN_USER_HOME=${USER_DIRECTORY} ${CONAN_MAIN_INIT}
+        RESULT_VARIABLE CMD_ERROR
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/..
-        RESULT_VARIABLE CMD_ERROR)
+    )
     set(CACHED_PROJECT_TARGET_NAME ${PROJECT_TARGET_NAME} CACHE STRING "Cached target arch" FORCE)
     message(STATUS "Init conan for " ${PROJECT_TARGET_NAME})
     message( STATUS "CMD_ERROR:" ${CMD_ERROR})
