@@ -14,7 +14,7 @@ int main(int argc, char *argv[])
     QCoreApplication::setApplicationVersion(COMAVERSION);
     Q_INIT_RESOURCE(darkstyle);
     Q_INIT_RESOURCE(lightstyle);
-    Q_INIT_RESOURCE(style);
+    Q_INIT_RESOURCE(styles);
     Q_INIT_RESOURCE(vectorIcons);
     a.setWindowIcon(QIcon(":/icons/coma.ico"));
     Logging::writeStart();

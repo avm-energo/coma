@@ -5,8 +5,6 @@ set(PROJECT_VERSION_MAJOR 2)
 set(PROJECT_VERSION_MINOR 1)
 set(PROJECT_VERSION_PATCH 2)
 
-include_directories(${CMAKE_CURRENT_BINARY_DIR})
-
 set(PROGNAME ${PROJECT_NAME})
 set(COMAVERSION 2.0.0)
 configure_file(${CMAKE_SOURCE_DIR}/cconfig.h.in ${CMAKE_CURRENT_BINARY_DIR}/config.h @ONLY)
@@ -24,8 +22,17 @@ find_package(
   COMPONENTS Core Xml Widgets Network
   REQUIRED)
 
-add_executable(${PROJECT_NAME} main.cpp servicecoma.cpp servicecoma.h
-                               svcmodule.cpp svcmodule.h ../coma.rc)
+add_executable(${PROJECT_NAME}
+    main.cpp
+    servicecoma.cpp
+    servicecoma.h
+    svcmodule.cpp
+    svcmodule.h
+    ../coma.rc
+    ${CMAKE_CURRENT_BINARY_DIR}/versioninfo.rc
+    )
+
+target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 
 if(CMAKE_BUILD_TYPE STREQUAL "Release")
     set_property(TARGET ${PROJECT_NAME} PROPERTY WIN32_EXECUTABLE true)

@@ -17,7 +17,7 @@ find_package(
 
 #find_package(QXlsx REQUIRED)
 find_package(hidapi REQUIRED)
-include_directories(${CMAKE_CURRENT_BINARY_DIR})
+
 
 set(PROGNAME "AVM-Debug")
 set(COMAVERSION 2.0.0)
@@ -37,6 +37,7 @@ add_executable(${PROJECT_NAME}
     ${CMAKE_CURRENT_BINARY_DIR}/versioninfo.rc
     main.cpp)
 
+target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 
 
 if(CMAKE_BUILD_TYPE STREQUAL "Release")
