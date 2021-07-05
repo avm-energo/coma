@@ -84,3 +84,5 @@ set(CMAKE_REQUIRED_INCLUDES ${CMAKE_REQUIRED_INCLUDES_SAVE})
         message(STATUS "Did not build QXlsx correctly as cannot find xlsxdocument.h. Will build it.")
         set(HAVE_QXLSX 1)
 endif (NOT HAVE_QXLSX)
+
+add_dependencies(QXlsx QXlsxBuild)

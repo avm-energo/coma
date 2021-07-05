@@ -69,7 +69,7 @@ target_link_libraries(
   QXlsx
   )
 
-add_dependencies(${PROJECT_NAME} QXlsxBuild LimeReportBuild)
+#add_dependencies(${PROJECT_NAME} QXlsxBuild LimeReportBuild)
 
 set(INSTALL_PROJECT_PATH ${PROJECT_TARGET_NAME}/${MODE_DIR}/${PROJECT_NAME})
 

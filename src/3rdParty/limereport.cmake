@@ -52,6 +52,7 @@ ExternalProject_Add(LimeReportBuild
     CONFIGURE_COMMAND ${Qt${QT_VERSION_MAJOR}Core_QMAKE_EXECUTABLE} ${LIMEREPORT_DIR} "CONFIG+=no_zint" "CONFIG+=no_formdesigner" "CONFIG+=no_embedded_designer"  -recursive -spec win32-msvc
     BUILD_COMMAND ${JOM_EXEC} /NOLOGO -f Makefile release
     INSTALL_COMMAND ${JOM_EXEC} /NOLOGO -f Makefile uninstall
+    BUILD_BYPRODUCTS ${LIMEREPORT_DIR}/build/${Qt${QT_VERSION_MAJOR}Core_VERSION_STRING}/${PROJECT_TARGET_NAME}/release/lib/limereport.lib
     USES_TERMINAL_BUILD TRUE
     USES_TERMINAL_CONFIGURE TRUE)
 
@@ -110,3 +111,5 @@ set_target_properties(limereport PROPERTIES
   IMPORTED_LOCATION ${LIMEREPORT_BINARY_DIR}
   INTERFACE_INCLUDE_DIRECTORIES ${LIMEREPORT_INCLUDE_DIRS}
   IMPORTED_IMPLIB ${LIMEREPORT_BINARY_DIR}/limereport.lib)
+
+add_dependencies(limereport LimeReportBuild)
