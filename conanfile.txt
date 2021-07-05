@@ -5,6 +5,6 @@ hidapi/0.10.1
 
 [options]
 hidapi:shared=True
-boost:header_only=False
+boost:header_only=True
 
     

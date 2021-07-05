@@ -1,13 +1,14 @@
-project(limereport)
 
 find_package(
   QT NAMES Qt6 Qt5
   COMPONENTS Core Xml Widgets
   REQUIRED)
 
-get_filename_component(_fullpath "${CMAKE_SOURCE_DIR}/3rdParty/conanbuildinfo.cmake" REALPATH)
+set(LIMEREPORT_BUILD_DIR ${CMAKE_BINARY_DIR}/LimeReportBuild)
+
+get_filename_component(_fullpath "${LIMEREPORT_BUILD_DIR}/conanbuildinfo.cmake" REALPATH)
 if (NOT ( EXISTS "${_fullpath}" AND ${CACHED_PROJECT_TARGET_NAME} STREQUAL ${PROJECT_TARGET_NAME}))
-    execute_process(COMMAND ${CONAN_EXEC} install jom/1.1.3@ -g cmake -g cmake_find_package -s arch=${CONAN_TARGET_NAME} -s arch_build=${CONAN_TARGET_NAME}
+    execute_process(COMMAND ${CONAN_EXEC} install jom/1.1.3@ -g cmake -g cmake_find_package -s arch=${CONAN_TARGET_NAME} -s arch_build=${CONAN_TARGET_NAME} -if ${LIMEREPORT_BUILD_DIR}
         WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
         RESULT_VARIABLE CMD_ERROR)
     message(STATUS "Cannot find jom: " ${_fullpath})
@@ -15,13 +16,15 @@ if (NOT ( EXISTS "${_fullpath}" AND ${CACHED_PROJECT_TARGET_NAME} STREQUAL ${PRO
     message(STATUS "CMD_ERROR:" ${CMD_ERROR})
 endif()
 
+list(APPEND CMAKE_MODULE_PATH "${LIMEREPORT_BUILD_DIR}")
+
 find_package(jom REQUIRED)
 
-include(${CMAKE_CURRENT_LIST_DIR}/conanbuildinfo.cmake)
+include(${LIMEREPORT_BUILD_DIR}/conanbuildinfo.cmake)
 
 message(STATUS "QMAKE : " ${Qt${QT_VERSION_MAJOR}Core_QMAKE_EXECUTABLE})
 
-set(LIMEREPORT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../include/LimeReport)
+set(LIMEREPORT_DIR ${CMAKE_SOURCE_DIR}/../include/LimeReport)
 message(STATUS "Limereport directory: " ${LIMEREPORT_DIR})
 
 set(JOM_EXEC ${CONAN_BIN_DIRS_JOM}/jom.exe)
@@ -37,6 +40,7 @@ endif()
 
 
 ExternalProject_Add(LimeReportBuild
+    BINARY_DIR ${LIMEREPORT_BUILD_DIR}
     SOURCE_DIR ${LIMEREPORT_DIR}
     CONFIGURE_COMMAND ${Qt${QT_VERSION_MAJOR}Core_QMAKE_EXECUTABLE} ${LIMEREPORT_DIR} "CONFIG+=no_zint" "CONFIG+=no_formdesigner" "CONFIG+=no_embedded_designer"  -recursive -spec win32-msvc
     BUILD_COMMAND ${JOM_EXEC} /NOLOGO -f Makefile release
@@ -64,9 +68,9 @@ if (NOT EXISTS "${_fullpath}" )
     file(MAKE_DIRECTORY ${_fullpath})
     message(STATUS "Created directory: " ${_fullpath})
 endif()
-include_directories(${LIMEREPORT_INCLUDE_DIRS})
+#include_directories(${LIMEREPORT_INCLUDE_DIRS})
 
-link_directories(${LIMEREPORT_BINARY_DIR})
+#link_directories(${LIMEREPORT_BINARY_DIR})
 set(LIMEREPORT_LIBS limereport)
 set(LIMEREPORT_LIBRARY_DIRS ${LIMEREPORT_BINARY_DIR})
 

@@ -18,7 +18,7 @@ find_package(
   Qt${QT_VERSION_MAJOR}
   COMPONENTS Widgets
   REQUIRED)
-include(${CMAKE_CURRENT_SOURCE_DIR}/../../conanbuildinfo.cmake)
+include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup(TARGETS)
 
 if (NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/styles/QDarkStyleSheet/qdarkstyle/dark/darkstyle.qrc)
