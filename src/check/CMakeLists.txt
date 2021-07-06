@@ -47,5 +47,5 @@ target_link_libraries(
   PRIVATE Qt${QT_VERSION_MAJOR}::Network
   PRIVATE QXlsx)
 
-add_dependencies(${PROJECT_NAME} QXlsxBuild)
+#add_dependencies(${PROJECT_NAME} QXlsxBuild)
 target_compile_definitions(${PROJECT_NAME} PRIVATE ${PROJECT_NAME}_LIBRARY)

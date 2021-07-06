@@ -48,5 +48,5 @@ target_link_libraries(
   PRIVATE QXlsx
   PUBLIC limereport)
 
-add_dependencies(${PROJECT_NAME} QXlsxBuild LimeReportBuild)
+#add_dependencies(${PROJECT_NAME} QXlsxBuild LimeReportBuild)
 target_compile_definitions(${PROJECT_NAME} PRIVATE ${PROJECT_NAME}_LIBRARY)

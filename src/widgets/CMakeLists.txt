@@ -89,5 +89,5 @@ target_link_libraries(
   PRIVATE QXlsx
   PRIVATE CONAN_PKG::boost)
 
-add_dependencies(${PROJECT_NAME} QXlsxBuild)
+#add_dependencies(${PROJECT_NAME} QXlsxBuild)
 target_compile_definitions(${PROJECT_NAME} PRIVATE ${PROJECT_NAME}_LIBRARY)
