@@ -11,8 +11,8 @@
 TuneKIVR::TuneKIVR(int tuneStep, QWidget *parent) : AbstractTuneDialog(tuneStep, parent)
 {
     // CKIV = ckiv;
-    m_bac = new Bac;
-    m_bda = new Bda;
+    m_bac = new Bac(this);
+    m_bda = new Bda(this);
     SetBac(m_bac);
     m_BacWidgetIndex = addWidgetToTabWidget(m_bac->widget(), "Настроечные параметры");
     m_BdaWidgetIndex = addWidgetToTabWidget(m_bda->widget(), "Текущие данные");

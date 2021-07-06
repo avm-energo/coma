@@ -7,8 +7,8 @@
 
 Bd0::Bd0(QObject *parent) : DataBlock(parent)
 {
-    m_blockData = new BlockData;
-    setBlock({ 0, "Общие", DataTypes::DataBlockTypes::BdBlock, m_blockData, sizeof(BlockData) });
+    m_blockData = std::unique_ptr<BlockData>(new BlockData);
+    setBlock({ 0, "Общие", DataTypes::DataBlockTypes::BdBlock, m_blockData.get(), sizeof(BlockData) });
     createWidget();
 }
 
@@ -62,5 +62,5 @@ void Bd0::updateWidget()
 
 Bd0::BlockData *Bd0::data()
 {
-    return m_blockData;
+    return m_blockData.get();
 }

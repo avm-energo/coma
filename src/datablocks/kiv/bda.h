@@ -22,7 +22,7 @@ public:
     BlockData *data();
 
 private:
-    BlockData *m_blockData;
+    std::unique_ptr<BlockData> m_blockData;
     //    QWidget *m_widget;
 };
 

@@ -9,10 +9,6 @@
 
 TuneKIV::TuneKIV()
 {
-    m_Bac = new Bac;
-    m_Bd0 = new Bd0;
-    m_Bda = new Bda;
-    m_Bdain = new BdaIn;
     m_BdaTempWidgetIsSet = false;
 }
 

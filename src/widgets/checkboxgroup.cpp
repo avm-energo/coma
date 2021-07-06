@@ -52,6 +52,11 @@ CheckBoxGroup::CheckBoxGroup(const QStringList &desc, QWidget *parent)
     setLayout(gridlyout);
 }
 
+CheckBoxGroup::~CheckBoxGroup()
+{
+    delete d_ptr;
+}
+
 template <typename T, std::enable_if_t<std::is_unsigned_v<T>, bool>> void CheckBoxGroup::setBits(const T value)
 {
     Q_D(CheckBoxGroup);

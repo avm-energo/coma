@@ -66,7 +66,7 @@ bool WDFunc::SetLEData(QObject *w, const QString &lename, const QString &levalue
     {
         QRegExp re;
         re.setPattern(restring);
-        QValidator *val = new QRegExpValidator(re);
+        QValidator *val = new QRegExpValidator(re, w);
         le->setValidator(val);
     }
     return true;

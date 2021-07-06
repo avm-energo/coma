@@ -13,10 +13,10 @@
 TuneKIVADC::TuneKIVADC(int tuneStep, QWidget *parent) : AbstractTuneDialog(tuneStep, parent)
 {
     // CKIV = ckiv;
-    m_bac = new Bac;
-    m_bda = new Bda;
-    m_bdain = new BdaIn;
-    m_bd0 = new Bd0;
+    m_bac = new Bac(this);
+    m_bda = new Bda(this);
+    m_bdain = new BdaIn(this);
+    m_bd0 = new Bd0(this);
     SetBac(m_bac);
     m_BacWidgetIndex = addWidgetToTabWidget(m_bac->widget(), "Настроечные параметры");
     m_BdainWidgetIndex = addWidgetToTabWidget(m_bdain->widget(), "Текущие данные");

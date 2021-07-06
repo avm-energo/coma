@@ -9,8 +9,8 @@
 
 BdaIn::BdaIn(QObject *parent) : DataBlock(parent)
 {
-    m_blockData = new BlockData;
-    setBlock({ 1, "Текущие данные", DataTypes::DataBlockTypes::BdBlock, m_blockData, sizeof(BlockData) });
+    m_blockData = std::unique_ptr<BlockData>(new BlockData);
+    setBlock({ 1, "Текущие данные", DataTypes::DataBlockTypes::BdBlock, m_blockData.get(), sizeof(BlockData) });
     createWidget();
 }
 
@@ -90,5 +90,5 @@ void BdaIn::updateWidget()
 
 BdaIn::BlockData *BdaIn::data()
 {
-    return m_blockData;
+    return m_blockData.get();
 }
