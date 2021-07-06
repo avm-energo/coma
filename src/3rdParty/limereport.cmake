@@ -6,52 +6,71 @@ find_package(
 
 set(LIMEREPORT_BUILD_DIR ${CMAKE_BINARY_DIR}/LimeReportBuild)
 
-get_filename_component(_fullpath "${LIMEREPORT_BUILD_DIR}/conanbuildinfo.cmake" REALPATH)
-set(CONAN_JOM_INIT ${CONAN_EXEC} install jom/1.1.3@ -g cmake -g cmake_find_package -s arch=${CONAN_TARGET_NAME} -s arch_build=${CONAN_TARGET_NAME} -if ${LIMEREPORT_BUILD_DIR})
-if (NOT ( EXISTS "${_fullpath}" AND ${CACHED_PROJECT_TARGET_NAME} STREQUAL ${PROJECT_TARGET_NAME}))
-#    execute_process(COMMAND ${CONAN_JOM_INIT}
-#        WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
-#        RESULT_VARIABLE CMD_ERROR)
-    execute_process(
-        COMMAND ${CMAKE_COMMAND} -E env
-            CONAN_USER_HOME=${USER_DIRECTORY} ${CONAN_JOM_INIT}
+
+if(CMAKE_SYSTEM_NAME_LOWER STREQUAL "windows")
+    get_filename_component(_fullpath "${LIMEREPORT_BUILD_DIR}/conanbuildinfo.cmake" REALPATH)
+    set(CONAN_JOM_INIT ${CONAN_EXEC} install jom/1.1.3@ -g cmake -g cmake_find_package -s arch=${CONAN_TARGET_NAME} -s arch_build=${CONAN_TARGET_NAME} -if ${LIMEREPORT_BUILD_DIR})
+    if (NOT ( EXISTS "${_fullpath}" AND ${CACHED_PROJECT_TARGET_NAME} STREQUAL ${PROJECT_TARGET_NAME}))
+    #    execute_process(COMMAND ${CONAN_JOM_INIT}
+    #        WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
+    #        RESULT_VARIABLE CMD_ERROR)
+        execute_process(
+            COMMAND ${CMAKE_COMMAND} -E env
+                CONAN_USER_HOME=${USER_DIRECTORY} ${CONAN_JOM_INIT}
+            RESULT_VARIABLE CMD_ERROR
+            WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
+        )
+        message(STATUS "Cannot find jom: " ${_fullpath})
+        message(STATUS "Installing jom")
+        message(STATUS "CMD_ERROR:" ${CMD_ERROR})
+    endif()
+    list(APPEND CMAKE_MODULE_PATH "${LIMEREPORT_BUILD_DIR}")
+    find_package(jom REQUIRED)
+    include(${LIMEREPORT_BUILD_DIR}/conanbuildinfo.cmake)
+    set(JOM_EXEC ${CONAN_BIN_DIRS_JOM}/jom.exe)
+    message(STATUS "JOM Location: " ${JOM_EXEC})
+    execute_process(COMMAND ${JOM_EXEC} /version
         RESULT_VARIABLE CMD_ERROR
-        WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
-    )
-    message(STATUS "Cannot find jom: " ${_fullpath})
-    message(STATUS "Installing jom")
-    message(STATUS "CMD_ERROR:" ${CMD_ERROR})
+        OUTPUT_FILE CMD_OUTPUT)
+
+    if (${CMD_ERROR})
+        message( STATUS "CMD_ERROR:" ${CMD_ERROR})
+        message( STATUS "CMD_OUTPUT:" ${CMD_OUTPUT})
+    endif()
+    set(LIMEREPORT_BUILD_COMMAND ${JOM_EXEC} /NOLOGO -f Makefile release)
+    set(LIMEREPORT_INSTALL_COMMAND ${JOM_EXEC} /NOLOGO -f Makefile uninstall)
+    set(LIMEREPORT_SPEC win32-msvc)
+
+else()
+    find_program(MAKE_EXEC "make")
+    if(NOT MAKE_EXEC)
+        message(STATUS "No make found, install build-essential")
+    endif()
+    set(LIMEREPORT_SPEC "linux-g++")
+    if (NOT LIMEREPORT_THREADS)
+        set(LIMEREPORT_THREADS 16)
+    endif()
+    set(LIMEREPORT_BUILD_COMMAND ${MAKE_EXEC} -j ${LIMEREPORT_THREADS} sub-limereport)
+    set(LIMEREPORT_INSTALL_COMMAND echo "No install : )")
 endif()
 
-list(APPEND CMAKE_MODULE_PATH "${LIMEREPORT_BUILD_DIR}")
 
-find_package(jom REQUIRED)
-
-include(${LIMEREPORT_BUILD_DIR}/conanbuildinfo.cmake)
 
 message(STATUS "QMAKE : " ${Qt${QT_VERSION_MAJOR}Core_QMAKE_EXECUTABLE})
 
 set(LIMEREPORT_DIR ${CMAKE_SOURCE_DIR}/../include/LimeReport)
 message(STATUS "Limereport directory: " ${LIMEREPORT_DIR})
 
-set(JOM_EXEC ${CONAN_BIN_DIRS_JOM}/jom.exe)
-message(STATUS "JOM Location: " ${JOM_EXEC})
-execute_process(COMMAND ${JOM_EXEC} /version
-    RESULT_VARIABLE CMD_ERROR
-       OUTPUT_FILE CMD_OUTPUT)
 
-if (${CMD_ERROR})
-    message( STATUS "CMD_ERROR:" ${CMD_ERROR})
-    message( STATUS "CMD_OUTPUT:" ${CMD_OUTPUT})
-endif()
+
 
 
 ExternalProject_Add(LimeReportBuild
     BINARY_DIR ${LIMEREPORT_BUILD_DIR}
     SOURCE_DIR ${LIMEREPORT_DIR}
-    CONFIGURE_COMMAND ${Qt${QT_VERSION_MAJOR}Core_QMAKE_EXECUTABLE} ${LIMEREPORT_DIR} "CONFIG+=no_zint" "CONFIG+=no_formdesigner" "CONFIG+=no_embedded_designer"  -recursive -spec win32-msvc
-    BUILD_COMMAND ${JOM_EXEC} /NOLOGO -f Makefile release
-    INSTALL_COMMAND ${JOM_EXEC} /NOLOGO -f Makefile uninstall
+    CONFIGURE_COMMAND ${Qt${QT_VERSION_MAJOR}Core_QMAKE_EXECUTABLE} ${LIMEREPORT_DIR} "CONFIG+=no_zint" "CONFIG+=no_formdesigner" "CONFIG+=no_embedded_designer"  -recursive -spec ${LIMEREPORT_SPEC}
+    BUILD_COMMAND ${LIMEREPORT_BUILD_COMMAND}
+    INSTALL_COMMAND ${LIMEREPORT_INSTALL_COMMAND}
     BUILD_BYPRODUCTS ${LIMEREPORT_DIR}/build/${Qt${QT_VERSION_MAJOR}Core_VERSION_STRING}/${PROJECT_TARGET_NAME}/release/lib/limereport.lib
     USES_TERMINAL_BUILD TRUE
     USES_TERMINAL_CONFIGURE TRUE)
@@ -108,8 +127,13 @@ endif()
 
 add_library(limereport SHARED IMPORTED GLOBAL)
 set_target_properties(limereport PROPERTIES
-  IMPORTED_LOCATION ${LIMEREPORT_BINARY_DIR}
-  INTERFACE_INCLUDE_DIRECTORIES ${LIMEREPORT_INCLUDE_DIRS}
-  IMPORTED_IMPLIB ${LIMEREPORT_BINARY_DIR}/limereport.lib)
-
+  INTERFACE_INCLUDE_DIRECTORIES ${LIMEREPORT_INCLUDE_DIRS})
+if(CMAKE_SYSTEM_NAME_LOWER STREQUAL "windows")
+    set_target_properties(limereport PROPERTIES
+      IMPORTED_LOCATION ${LIMEREPORT_BINARY_DIR}
+      IMPORTED_IMPLIB ${LIMEREPORT_BINARY_DIR}/limereport.lib)
+else()
+    set_target_properties(limereport PROPERTIES
+      IMPORTED_LOCATION ${LIMEREPORT_BINARY_DIR}/liblimereport.so)
+endif()
 add_dependencies(limereport LimeReportBuild)

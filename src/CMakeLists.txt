@@ -55,6 +55,10 @@ if(CMAKE_SYSTEM_NAME_LOWER STREQUAL "windows")
   endif()
 elseif(CMAKE_SYSTEM_NAME_LOWER STREQUAL "linux")
   message(STATUS "Linux")
+
+  string(APPEND CMAKE_CXX_FLAGS_DEBUG " -fno-omit-frame-pointer -fsanitize=address")
+  string(APPEND CMAKE_LINKER_FLAGS_DEBUG " -fno-omit-frame-pointer -fsanitize=address")
+
   if (NOT USER_DIRECTORY)
     set(USER_DIRECTORY $ENV{HOME})
   endif()
@@ -136,9 +140,6 @@ include(CheckIncludeFiles)
 include(ExternalProject)
 include(limereport)
 include(qxlsx)
-
-
-
 
 add_subdirectory(interfaces)
 add_subdirectory(gen)
