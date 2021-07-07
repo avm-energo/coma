@@ -96,11 +96,15 @@ message(STATUS "Qt binaries directory: " ${QT_BIN_DIR})
 
 install(CODE "set(QT_BIN_DIR \"${QT_BIN_DIR}\")")
 
-message(STATUS "windeployqt: " ${QT_BIN_DIR}/windeployqt.exe)
+if(CMAKE_SYSTEM_NAME_LOWER STREQUAL "windows")
 
-install(
-  CODE [[execute_process(COMMAND ${QT_BIN_DIR}/windeployqt.exe --no-quick-import --no-system-d3d-compiler --no-virtualkeyboard --no-compiler-runtime --no-webkit2 --no-angle --no-opengl-sw ${CMAKE_INSTALL_PREFIX}/${INSTALL_PROJECT_PATH}/AVM-Debug.exe
-    WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX}/${INSTALL_PROJECT_PATH})]])
+    message(STATUS "windeployqt: " ${QT_BIN_DIR}/windeployqt.exe)
+
+    install(
+      CODE [[execute_process(COMMAND ${QT_BIN_DIR}/windeployqt.exe --no-quick-import --no-system-d3d-compiler --no-virtualkeyboard --no-compiler-runtime --no-webkit2 --no-angle --no-opengl-sw ${CMAKE_INSTALL_PREFIX}/${INSTALL_PROJECT_PATH}/AVM-Debug.exe
+        WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX}/${INSTALL_PROJECT_PATH})]])
+
+endif()
 
 install(
   DIRECTORY $<TARGET_FILE_DIR:${PROJECT_NAME}>/images
@@ -109,40 +113,46 @@ install(
   FILES_MATCHING
   PATTERN "*.png")
 
-install(
-  CODE [[
-        file(GET_RUNTIME_DEPENDENCIES
-            PRE_EXCLUDE_REGEXES
-                "api-ms-*"
-            POST_EXCLUDE_REGEXES
-                ".*system32/.*\\.dll"
-            DIRECTORIES
-            "$<TARGET_PROPERTY:AVM-Debug,LINK_DIRECTORIES>"
-            "$<TARGET_PROPERTY:QXlsx,IMPORTED_LOCATION>"
-            "$<TARGET_PROPERTY:limereport,IMPORTED_LOCATION>"
-            ${QT_BIN_DIR}
-            ${hidapi_BIN_DIRS}
-            RESOLVED_DEPENDENCIES_VAR RES
-            UNRESOLVED_DEPENDENCIES_VAR UNRES
-            CONFLICTING_DEPENDENCIES_PREFIX CONFLICTING_DEPENDENCIES
-            EXECUTABLES $<TARGET_FILE:AVM-Debug>
-        )
+if(CMAKE_SYSTEM_NAME_LOWER STREQUAL "windows")
 
-        message("\n\nFound dependencies :")
-        foreach(DEP ${RES})
-            message("${DEP}")
-        endforeach()
-        message("\n\nNot found dependencies :")
-        foreach(DEP ${UNRES})
-            message("${DEP}")
-        endforeach()
-        foreach(_file ${RES})
-          file(INSTALL
-            DESTINATION "${CMAKE_INSTALL_PREFIX}/${INSTALL_PROJECT_PATH}"
-            TYPE SHARED_LIBRARY
-            #TODO requires 3.15+
-            #FOLLLOW_SYMLINK_CHAIN
-            FILES "${_file}"
-          )
-      endforeach()
-    ]])
+    install(
+      CODE [[
+            file(GET_RUNTIME_DEPENDENCIES
+                PRE_EXCLUDE_REGEXES
+                    "api-ms-*"
+                POST_EXCLUDE_REGEXES
+                    ".*system32/.*\\.dll"
+                DIRECTORIES
+                "$<TARGET_PROPERTY:AVM-Debug,LINK_DIRECTORIES>"
+                "$<TARGET_PROPERTY:QXlsx,IMPORTED_LOCATION>"
+                "$<TARGET_PROPERTY:limereport,IMPORTED_LOCATION>"
+                ${QT_BIN_DIR}
+                ${hidapi_BIN_DIRS}
+                RESOLVED_DEPENDENCIES_VAR RES
+                UNRESOLVED_DEPENDENCIES_VAR UNRES
+                CONFLICTING_DEPENDENCIES_PREFIX CONFLICTING_DEPENDENCIES
+                EXECUTABLES $<TARGET_FILE:AVM-Debug>
+            )
+
+            message("\n\nFound dependencies :")
+            foreach(DEP ${RES})
+                message("${DEP}")
+            endforeach()
+            message("\n\nNot found dependencies :")
+            foreach(DEP ${UNRES})
+                message("${DEP}")
+            endforeach()
+            foreach(_file ${RES})
+              file(INSTALL
+                DESTINATION "${CMAKE_INSTALL_PREFIX}/${INSTALL_PROJECT_PATH}"
+                TYPE SHARED_LIBRARY
+                #TODO requires 3.15+
+                #FOLLLOW_SYMLINK_CHAIN
+                FILES "${_file}"
+              )
+          endforeach()
+        ]])
+
+else()
+
+endif()
