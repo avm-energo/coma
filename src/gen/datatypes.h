@@ -149,13 +149,22 @@ struct FileStruct
 
 inline QDataStream &operator<<(QDataStream &stream, const FileStruct &str)
 {
+#if QT_VERSION >= 0x051200
     stream << str.filenum;
+#else
+    stream << std::underlying_type_t<FilesEnum>(str.filenum);
+#endif
     stream << str.filedata;
     return stream;
 }
 inline QDataStream &operator>>(QDataStream &stream, FileStruct &str)
 {
+#if QT_VERSION >= 0x051200
     stream >> str.filenum;
+#else
+    stream >> *reinterpret_cast<std::underlying_type_t<FilesEnum> *>(&str.filenum);
+#endif
+
     stream >> str.filedata;
     return stream;
 }

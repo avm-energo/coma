@@ -224,9 +224,12 @@ quint32 StdFunc::ping(quint32 addr)
         QTextCodec *codec = QTextCodec::codecForMib(2086);
         QString p_stdout = codec->toUnicode(pingProcess->readAllStandardOutput());
         QString p_stderr = codec->toUnicode(pingProcess->readAllStandardError());
+#if QT_VERSION >= 0x051200
         QStringList list = p_stderr.isEmpty() ? p_stdout.split("\r\n", Qt::SkipEmptyParts)
                                               : p_stderr.split("\r\n", Qt::SkipEmptyParts);
-
+#else
+        QStringList list = p_stderr.isEmpty() ? p_stdout.split("\r\n") : p_stderr.split("\r\n");
+#endif
         if (std::any_of(list.constBegin(), list.constEnd(),
                 [](const QString &i) { return i.contains("TTL", Qt::CaseInsensitive); }))
         {

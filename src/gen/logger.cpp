@@ -117,8 +117,11 @@ void Logging::messageHandler(QtMsgType type, const QMessageLogContext &context, 
     // NOTE Если будем использовать категории
     // << context.category << space // Msg category
     out << msg // Message
+#if QT_VERSION >= 0x051200
         << Qt::endl;
-
+#else
+        << endl;
+#endif
     out.flush(); // Flush buffer
     logFile.close();
     checkNGzip(fileName);
