@@ -3,6 +3,7 @@
 #include <QLayout>
 #include <QPushButton>
 #include <QSettings>
+#include <memory>
 AbstractInterfaceDialog::AbstractInterfaceDialog(QWidget *parent) : QDialog(parent)
 {
     setAttribute(Qt::WA_DeleteOnClose);

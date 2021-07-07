@@ -11,6 +11,7 @@
 #include <QSettings>
 #include <QStandardItemModel>
 #include <QVBoxLayout>
+#include <memory>
 InterfaceSerialDialog::InterfaceSerialDialog(QWidget *parent) : AbstractInterfaceDialog(parent)
 {
 }
