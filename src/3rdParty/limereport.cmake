@@ -6,6 +6,7 @@ find_package(
 
 set(LIMEREPORT_BUILD_DIR ${CMAKE_BINARY_DIR}/LimeReportBuild)
 
+set(LIMEREPORT_DIR ${CMAKE_SOURCE_DIR}/../include/LimeReport)
 
 if(CMAKE_SYSTEM_NAME_LOWER STREQUAL "windows")
     get_filename_component(_fullpath "${LIMEREPORT_BUILD_DIR}/conanbuildinfo.cmake" REALPATH)
@@ -40,7 +41,7 @@ if(CMAKE_SYSTEM_NAME_LOWER STREQUAL "windows")
     set(LIMEREPORT_BUILD_COMMAND ${JOM_EXEC} /NOLOGO -f Makefile release)
     set(LIMEREPORT_INSTALL_COMMAND ${JOM_EXEC} /NOLOGO -f Makefile uninstall)
     set(LIMEREPORT_SPEC win32-msvc)
-
+    set(LIMEREPORT_LIB_SUFFIX lib)
 else()
     find_program(MAKE_EXEC "make")
     if(NOT MAKE_EXEC)
@@ -52,13 +53,15 @@ else()
     endif()
     set(LIMEREPORT_BUILD_COMMAND ${MAKE_EXEC} -j ${LIMEREPORT_THREADS} sub-limereport)
     set(LIMEREPORT_INSTALL_COMMAND echo "No install : )")
+    set(LIMEREPORT_LIB_SUFFIX so)
+    set(LIMEREPORT_LIB_PREFFIX lib)
 endif()
 
 
 
 message(STATUS "QMAKE : " ${Qt${QT_VERSION_MAJOR}Core_QMAKE_EXECUTABLE})
 
-set(LIMEREPORT_DIR ${CMAKE_SOURCE_DIR}/../include/LimeReport)
+
 message(STATUS "Limereport directory: " ${LIMEREPORT_DIR})
 
 
@@ -71,7 +74,7 @@ ExternalProject_Add(LimeReportBuild
     CONFIGURE_COMMAND ${Qt${QT_VERSION_MAJOR}Core_QMAKE_EXECUTABLE} ${LIMEREPORT_DIR} "CONFIG+=no_zint" "CONFIG+=no_formdesigner" "CONFIG+=no_embedded_designer"  -recursive -spec ${LIMEREPORT_SPEC}
     BUILD_COMMAND ${LIMEREPORT_BUILD_COMMAND}
     INSTALL_COMMAND ${LIMEREPORT_INSTALL_COMMAND}
-    BUILD_BYPRODUCTS ${LIMEREPORT_DIR}/build/${Qt${QT_VERSION_MAJOR}Core_VERSION_STRING}/${PROJECT_TARGET_NAME}/release/lib/limereport.lib
+    BUILD_BYPRODUCTS ${LIMEREPORT_DIR}/build/${Qt${QT_VERSION_MAJOR}Core_VERSION_STRING}/${PROJECT_TARGET_NAME}/release/lib/${LIMEREPORT_LIB_PREFFIX}limereport.${LIMEREPORT_LIB_SUFFIX}
     USES_TERMINAL_BUILD TRUE
     USES_TERMINAL_CONFIGURE TRUE)
 
