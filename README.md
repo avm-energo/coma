@@ -9,7 +9,7 @@
 
 - Python - https://www.python.org/ (for pip)
 - Python-pip - https://pypi.org/project/pip/ (for conan)
-- conan - https://conan.io/downloads.html (cab be installed with python-pip)
+- conan - https://conan.io/downloads.html (can be installed with python-pip)
 - Qt 5.15.2+ (Qt 5.14.2 does not fully supported) - https://www.qt.io/ 
 - C++ compiler with full C++17 support (for example MSVC 2019 [compiler] minimum supported MSVC)
 
@@ -53,4 +53,12 @@ supported options for multi-config generators:
 ```$ cmake --install . [<options>]```
 
 supported options for multi-config generators same as for build step
+
+
+
+#### How to provide cmake options in QtCreator 
+
+For example, if you want to provide path to conan executable ```CONAN_EXEC``` , you need to append -DCONAN_EXEC=path_to_conan to cmake configure command (look at image).
+
+![example](example.jpg)
 
