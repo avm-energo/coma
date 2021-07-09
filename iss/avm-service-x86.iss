@@ -15,7 +15,7 @@
 #define Redist_DIR "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Redist\MSVC\v142"
 
 #define OUTPUT_DIR  "..\output"
-#define ApplicationVersion GetFileVersion('..\bin\win32\release\AVM-Service\AVM-Service.exe')
+#define ApplicationVersion GetFileVersion('..\bin\win32\Release\AVM-Service\AVM-Service.exe')
 
 
 
