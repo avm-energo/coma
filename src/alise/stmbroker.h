@@ -25,9 +25,9 @@ public /*slots*/:
 
 private:
     AVTUK_14::Indication transform(alise::Health_Code code) const;
-    timespec transform(alise::UnixTimestamp timestamp) const
+    timespec transform(google::protobuf::Timestamp timestamp) const
     {
-        return timespec { timestamp.sec(), timestamp.nsec() };
+        return timespec { timestamp.seconds(), timestamp.nanos() };
     }
     // Controller m_controller;
     Protocom *m_interface;

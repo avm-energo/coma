@@ -21,9 +21,11 @@ endif()
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_BINARY_DIR}")
 
+include(${CMAKE_CURRENT_BINARY_DIR}/conanbuildinfo.cmake)
+conan_basic_setup(TARGETS)
+
 find_package(Protobuf REQUIRED)
 
-include_directories(${CONAN_INCLUDE_DIRS_PROTOBUF})
 include(ProtobufGenerateWrapper)
 
 set(PROTO_FOLDER ${CMAKE_CURRENT_SOURCE_DIR}/protos)
@@ -41,10 +43,12 @@ message(STATUS "Generated hdrs: " ${PROTO_HDRS})
 
 add_library(${PROJECT_NAME} ${PROTO_SRCS} ${PROTO_HDRS})
 
-#target_compile_definitions(${PROJECT_NAME} PUBLIC _GLIBCXX_USE_CXX11_ABI=0)
+target_include_directories(${PROJECT_NAME} PUBLIC ${CONAN_INCLUDE_DIRS_PROTOBUF})
+
+#target_compile_definitions(${PROJECT_NAME} PRIVATE _GLIBCXX_USE_CXX11_ABI=0)
 
 target_link_libraries(${PROJECT_NAME}
-  PRIVATE protobuf
+  PRIVATE protobuf::protobuf
   )
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE ${PROJECT_NAME}_LIBRARY)

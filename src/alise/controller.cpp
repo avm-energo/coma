@@ -25,7 +25,10 @@ Controller::~Controller()
 bool Controller::launch()
 {
     if (!m_stmBroker.connectToStm())
+    {
+        delete worker;
         return false;
+    }
     workerThread.start();
     return true;
 }

@@ -61,7 +61,7 @@ void ZeroSubscriber::work()
                     qWarning() << Error::WriteError;
                     continue;
                 }
-                qInfo() << "Someone said to Alise:" << helloAlise.message().c_str();
+                qInfo() << "Someone said to Alise:" << helloAlise.message();
             }
             else
             {

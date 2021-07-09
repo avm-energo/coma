@@ -107,7 +107,7 @@ AVTUK_14::Indication StmBroker::transform(alise::Health_Code code) const
     {
     case alise::Health_Code_Startup:
     {
-        return { 0, 0, 1, maxFreq };
+        return { 1, maxFreq, 0, 0 };
     }
     case alise::Health_Code_Work:
     {
