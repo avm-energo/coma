@@ -30,36 +30,32 @@ void ZeroPublisher::work()
     }
 }
 
+template <typename T> void ZeroPublisher::appendToQueue(const std::string &id, const T &paylod)
+{
+    alise::PackedMessage packedMessage;
+    packedMessage.mutable_content()->PackFrom(paylod);
+    std::string serialized_update;
+    packedMessage.SerializeToString(&serialized_update);
+    qDebug() << paylod.DebugString().c_str();
+    _mutex.lock();
+    _queue.push({ id, serialized_update });
+    _mutex.unlock();
+    _waiter.wakeOne();
+}
+
 void ZeroPublisher::publishTime(const timespec time)
 {
-
     google::protobuf::Timestamp protoTime;
     protoTime.set_seconds(time.tv_sec);
     protoTime.set_nanos(time.tv_nsec);
-    alise::PackedMessage packedMessage;
-    packedMessage.mutable_content()->PackFrom(protoTime);
-    std::string serialized_update;
-    packedMessage.SerializeToString(&serialized_update);
-    qDebug() << protoTime.DebugString().c_str();
-    _mutex.lock();
-    _queue.push(serialized_update);
-    _mutex.unlock();
-    _waiter.wakeOne();
+    appendToQueue(sonica, protoTime);
 }
 
 void ZeroPublisher::publishPowerStatus(const AVTUK_14::DiscretePowerSignals powerStatus)
 {
     alise::PowerStatus protoPower;
     protoPower.set_pwrin(powerStatus.PWRIN);
-    alise::PackedMessage packedMessage;
-    packedMessage.mutable_content()->PackFrom(protoPower);
-    std::string serialized_update;
-    packedMessage.SerializeToString(&serialized_update);
-    qDebug() << protoPower.DebugString().c_str();
-    _mutex.lock();
-    _queue.push(serialized_update);
-    _mutex.unlock();
-    _waiter.wakeOne();
+    appendToQueue(sonica, protoPower);
 }
 
 void ZeroPublisher::publishBlock(const DataTypes::BlockStruct blk)
@@ -72,5 +68,30 @@ void ZeroPublisher::publishBlock(const DataTypes::BlockStruct blk)
         memcpy(&powerStatus.PWRIN, blk.data.data(), sizeof(powerStatus.PWRIN));
         publishPowerStatus(powerStatus);
     }
+    }
+}
+
+void ZeroPublisher::publishHello(const std::string id, const uint32_t code)
+{
+    alise::HelloReply helloReply;
+    helloReply.set_message(code + 1);
+    appendToQueue(id, helloReply);
+}
+
+void ZeroPublisher::send(itemType &str)
+{
+    zmq::message_t identity(str.first);
+    zmq::message_t msg(str.second);
+    qDebug() << "Send message to: {" << str.first.c_str() << "}, with payload: {" << str.second.c_str() << "}";
+    _worker.send(identity, zmq::send_flags::sndmore);
+    _worker.send(msg, zmq::send_flags::none);
+}
+
+void ZeroPublisher::checkQueue()
+{
+    while (!_queue.empty())
+    {
+        send(_queue.back());
+        _queue.pop();
     }
 }

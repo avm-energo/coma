@@ -19,33 +19,36 @@ bool ZeroRunner::runServer()
     backendPub_.bind("inproc://backendPub");
     connect(this, &ZeroRunner::timeReceived, this, &ZeroRunner::publishTime, Qt::DirectConnection);
 
-    auto subscriber = std::unique_ptr<std::thread>(new std::thread([&] {
-        auto new_worker = UniquePointer<ZeroSubscriber>(new ZeroSubscriber(ctx_, ZMQ_DEALER));
+    auto new_sub = UniquePointer<ZeroSubscriber>(new ZeroSubscriber(ctx_, ZMQ_DEALER));
+    auto new_pub = UniquePointer<ZeroPublisher>(new ZeroPublisher(ctx_, ZMQ_DEALER));
 
-        connect(new_worker.get(), &ZeroSubscriber::timeReceived, this, &ZeroRunner::timeReceived, Qt::DirectConnection);
+    connect(new_sub.get(), &ZeroSubscriber::helloReceived, new_pub.get(), &ZeroPublisher::publishHello);
+
+    auto subscriber = std::unique_ptr<std::thread>(new std::thread([&, worker = std::move(new_sub)] {
+        // auto new_worker = UniquePointer<ZeroSubscriber>(new ZeroSubscriber(ctx_, ZMQ_DEALER));
+
+        connect(worker.get(), &ZeroSubscriber::timeReceived, this, &ZeroRunner::timeReceived, Qt::DirectConnection);
         // connect(new_worker.get(), &ZeroSubscriber::timeReceived, this, &ZeroRunner::publishTime,
         // Qt::DirectConnection);
-        connect(
-            new_worker.get(), &ZeroSubscriber::healthReceived, this, &ZeroRunner::healthReceived, Qt::DirectConnection);
+        connect(worker.get(), &ZeroSubscriber::healthReceived, this, &ZeroRunner::healthReceived, Qt::DirectConnection);
         auto timeSync = UniquePointer<TimeSyncronizer>(new TimeSyncronizer);
         if (timeSync->isNtpSync())
             std::cout << "Ntp enabled";
-        connect(new_worker.get(), &ZeroSubscriber::timeReceived, timeSync.get(), &TimeSyncronizer::handleTime);
-        new_worker->work();
+        connect(worker.get(), &ZeroSubscriber::timeReceived, timeSync.get(), &TimeSyncronizer::handleTime);
+        worker->work();
     }));
 
-    auto publisher = std::unique_ptr<std::thread>(new std::thread([&] {
-        auto new_worker = UniquePointer<ZeroPublisher>(new ZeroPublisher(ctx_, ZMQ_DEALER));
+    auto publisher = std::unique_ptr<std::thread>(new std::thread([&, worker = std::move(new_pub)] {
+        // auto new_worker = UniquePointer<ZeroPublisher>(new ZeroPublisher(ctx_, ZMQ_DEALER));
 
-        connect(this, &ZeroRunner::publishTime, new_worker.get(), &ZeroPublisher::publishTime, Qt::DirectConnection);
+        connect(this, &ZeroRunner::publishTime, worker.get(), &ZeroPublisher::publishTime, Qt::DirectConnection);
         // connect(this, &ZeroRunner::publishPowerStatus, new_worker.get(), &ZeroPublisher::publishPowerStatus,
         //  Qt::DirectConnection);
         const auto &manager = DataManager::GetInstance();
+        connect(&manager, &DataManager::timeReceived, worker.get(), &ZeroPublisher::publishTime, Qt::DirectConnection);
         connect(
-            &manager, &DataManager::timeReceived, new_worker.get(), &ZeroPublisher::publishTime, Qt::DirectConnection);
-        connect(&manager, &DataManager::blockReceived, new_worker.get(), &ZeroPublisher::publishBlock,
-            Qt::DirectConnection);
-        new_worker->work();
+            &manager, &DataManager::blockReceived, worker.get(), &ZeroPublisher::publishBlock, Qt::DirectConnection);
+        worker->work();
     }));
 
     publisher->detach();

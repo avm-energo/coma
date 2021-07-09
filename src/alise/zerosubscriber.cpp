@@ -62,6 +62,7 @@ void ZeroSubscriber::work()
                     continue;
                 }
                 qInfo() << "Someone said to Alise:" << helloAlise.message();
+                emit helloReceived(identity.to_string(), helloAlise.message());
             }
             else
             {

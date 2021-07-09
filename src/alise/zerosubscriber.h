@@ -16,6 +16,7 @@ class ZeroSubscriber : public QObject
     Q_OBJECT
 public:
     using healthType = alise::Health_Code;
+    // using alise::HelloReply;
     explicit ZeroSubscriber(zmq::context_t &ctx, int sock_type, QObject *parent = nullptr);
     void work();
     void stop()
@@ -25,6 +26,7 @@ public:
 signals:
     void timeReceived(timespec);
     void healthReceived(healthType);
+    void helloReceived(std::string id, uint32_t code);
 
 private:
     zmq::context_t &_ctx;
