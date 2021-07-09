@@ -5,7 +5,7 @@ project(comaversion LANGUAGES CXX)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 set(CMAKE_SCRIPT_MODE_FILE ON)
-include_directories(${CMAKE_CURRENT_BINARY_DIR})
+
 find_package(
   QT NAMES Qt6 Qt5
   COMPONENTS Core]
@@ -28,7 +28,7 @@ if (${SHORT_HASH_RESULT})
 endif()
 
 message(STATUS "Commit short hash: " ${SHORT_HASH})
-set(SHORT_HASH_FILE "version.txt")
+set(SHORT_HASH_FILE ${CMAKE_CURRENT_BINARY_DIR}/version.txt)
 add_custom_command(
   OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/gversion.h
   COMMAND echo "#define ${SHORT_HASH} $(git rev-parse head)"
@@ -53,9 +53,10 @@ execute_process(
   RESULT_VARIABLE COMMIT_COUNT_RESULT
   OUTPUT_VARIABLE COMMIT_COUNT)
 set(gitCommitCounter ${COMMIT_COUNT})
-configure_file(version.h.in gversion.h @ONLY)
+configure_file(version.h.in ${CMAKE_CURRENT_BINARY_DIR}/gversion.h @ONLY)
 add_library(${PROJECT_NAME} STATIC comaversion.h comaversion.cpp)
 
+target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 target_link_libraries(${PROJECT_NAME} PRIVATE Qt${QT_VERSION_MAJOR}::Core)
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE ${PROJECT_NAME}_LIBRARY)
