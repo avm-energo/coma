@@ -6,7 +6,7 @@ set(PROJECT_VERSION_MINOR 1)
 set(PROJECT_VERSION_PATCH 2)
 
 set(PROGNAME ${PROJECT_NAME})
-set(COMAVERSION 2.0.0)
+
 configure_file(${CMAKE_SOURCE_DIR}/cconfig.h.in ${CMAKE_CURRENT_BINARY_DIR}/config.h @ONLY)
 configure_file(
   ${CMAKE_SOURCE_DIR}/versioninfo.rc.in
