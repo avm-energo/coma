@@ -50,7 +50,6 @@ DataBlock::DataBlock(QObject *parent) : QObject(parent)
 
 DataBlock::~DataBlock()
 {
-    return;
 }
 
 void DataBlock::setBlock(const DataBlock::BlockStruct &bds)

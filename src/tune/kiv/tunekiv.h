@@ -90,11 +90,6 @@ public:
         float dpsiU[2]; // interphase voltages angles (B-A, C-B)
     };
 
-    //    Bac m_Bac;
-    Bac *m_Bac;
-    Bda *m_Bda;
-    BdaIn *m_Bdain;
-    Bd0 *m_Bd0;
     Bda_temp m_Bda_temp;
 
     //    Bac m_Bac_block, m_Bac_newblock;

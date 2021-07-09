@@ -50,11 +50,11 @@ void WaitWidget::Init(WaitWidget::ww_struct &ww)
 void WaitWidget::Start()
 {
     show();
-    QTimer *tmr = new QTimer;
+    QTimer *tmr = new QTimer(this);
     tmr->setInterval(10);
     connect(tmr, &QTimer::timeout, this, &WaitWidget::Rotate);
     tmr->start();
-    QTimer *tmrs = new QTimer;
+    QTimer *tmrs = new QTimer(this);
     tmrs->setInterval(1000);
     connect(tmrs, &QTimer::timeout, this, &WaitWidget::UpdateSeconds);
     tmrs->start();

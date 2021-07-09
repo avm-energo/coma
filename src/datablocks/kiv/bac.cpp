@@ -9,8 +9,8 @@
 
 Bac::Bac(QObject *parent) : DataBlock(parent)
 {
-    m_blockData = new BlockData;
-    setBlock({ 2, "Настроечные параметры", DataTypes::DataBlockTypes::BacBlock, m_blockData, sizeof(BlockData) });
+    m_blockData = std::unique_ptr<BlockData>(new BlockData);
+    setBlock({ 2, "Настроечные параметры", DataTypes::DataBlockTypes::BacBlock, m_blockData.get(), sizeof(BlockData) });
     createWidget();
     readBlockFromModule();
     updateWidget();
@@ -273,5 +273,5 @@ void Bac::updateFromWidget()
 
 Bac::BlockData *Bac::data()
 {
-    return m_blockData;
+    return m_blockData.get();
 }
