@@ -1,0 +1,35 @@
+#pragma once
+#include "../gen/datatypes.h"
+#include "../gen/modules.h"
+#include "protos.pb.h"
+
+#include <QMutex>
+#include <QObject>
+#include <QWaitCondition>
+#include <vector>
+#include <zmq.hpp>
+
+// Q_DECLARE_METATYPE(alise::Health_Code);
+
+class ZeroSubscriber : public QObject
+{
+    Q_OBJECT
+public:
+    using healthType = alise::Health_Code;
+    explicit ZeroSubscriber(zmq::context_t &ctx, int sock_type, QObject *parent = nullptr);
+    void work();
+    void stop()
+    {
+        is_active = false;
+    }
+signals:
+    void timeReceived(timespec);
+    void healthReceived(healthType);
+
+private:
+    zmq::context_t &_ctx;
+    zmq::socket_t _worker;
+    QMutex _mutex;
+    QWaitCondition _waiter;
+    bool is_active = true;
+};

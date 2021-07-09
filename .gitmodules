@@ -16,3 +16,6 @@
 [submodule "include/hidapi"]
 	path = include/hidapi
 	url = https://github.com/libusb/hidapi
+[submodule "src/protos/protos"]
+	path = src/protos/protos
+	url = ssh://git@git.avmenergo.ru:5507/atom/protos.git
