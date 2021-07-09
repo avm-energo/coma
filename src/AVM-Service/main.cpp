@@ -1,9 +1,9 @@
 #include "../gen/logger.h"
-#include "config.h"
 #include "servicecoma.h"
 
 #include <QApplication>
 #include <QCommandLineParser>
+#include <config.h>
 
 int main(int argc, char *argv[])
 {
