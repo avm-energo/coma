@@ -6,13 +6,20 @@
 #include <variant>
 namespace delegate
 {
+Q_NAMESPACE
+// Q_NAMESPACE
 
 enum class ItemType : int
 {
     ModbusItem
 };
 
+// Q_ENUM_NS(ItemType)
+
 using WidgetGroup = int;
+
+Q_ENUM_NS(WidgetGroup)
+Q_ENUM_NS(ItemType)
 
 struct Widget
 {
