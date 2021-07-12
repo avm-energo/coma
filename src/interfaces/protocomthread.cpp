@@ -746,9 +746,11 @@ void ProtocomThread::handleUnixTime(const QByteArray &ba, [[maybe_unused]] quint
 {
     Q_ASSERT(ba.size() == sizeof(quint64));
 
-    quint32 secs = *reinterpret_cast<const quint32 *>(ba.data());
-    quint32 nsecs = *reinterpret_cast<const quint32 *>(ba.data() + sizeof(quint32));
-    timespec resp { secs, nsecs };
+    const quint32 secs = *reinterpret_cast<const quint32 *>(ba.data());
+    const quint32 nsecs = *reinterpret_cast<const quint32 *>(ba.data() + sizeof(quint32));
+    timespec resp;
+    resp.tv_nsec = nsecs;
+    resp.tv_sec = secs;
     DataManager::addSignalToOutList(DataTypes::SignalTypes::Timespec, resp);
 }
 #endif

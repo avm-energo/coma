@@ -27,7 +27,10 @@ private:
     AVTUK_14::Indication transform(alise::Health_Code code) const;
     timespec transform(google::protobuf::Timestamp timestamp) const
     {
-        return timespec { timestamp.seconds(), timestamp.nanos() };
+        timespec temp;
+        temp.tv_nsec = timestamp.nanos();
+        temp.tv_sec = timestamp.seconds();
+        return temp;
     }
     // Controller m_controller;
     Protocom *m_interface;
