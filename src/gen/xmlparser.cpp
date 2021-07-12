@@ -369,10 +369,10 @@ delegate::Item XmlParser::parseItem(QDomElement domElement, ctti::unnamed_type_i
     QString className = domElement.attribute(keys::className);
     if (className.isEmpty())
         return { 0 };
-    auto classes = QMetaEnum::fromType<delegate::ItemType>();
-    bool status = false;
-    auto itemType = static_cast<delegate::ItemType>(classes.keyToValue(className.toStdString().c_str(), &status));
-    if (!status)
+    delegate::ItemType itemType;
+    if (className == "ModbusItem")
+        itemType = delegate::ItemType::ModbusItem;
+    else
         return { 0 };
 
     QDomElement childElement = domElement.firstChildElement(keys::group);
