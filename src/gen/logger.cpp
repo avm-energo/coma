@@ -60,9 +60,9 @@ void Logging::messageHandler(QtMsgType type, const QMessageLogContext &context, 
             context.line,                                                 // Line
             msg                                                           // Message
         };
-#ifdef QT_GUI_LIB
+        //#ifdef QT_GUI_LIB
         ErrorQueue::GetInstance().pushError(tmpm);
-#endif
+        //#endif
         break;
     }
     case QtDebugMsg:
@@ -77,7 +77,7 @@ void Logging::messageHandler(QtMsgType type, const QMessageLogContext &context, 
         std::cout << sourceFile.toStdString() << colon << context.line << space << colon << space << msg.toStdString()
                   << std::endl;
 #endif
-#ifdef QT_GUI_LIB
+        //#ifdef QT_GUI_LIB
         ErrorMsg tmpm {
             QDateTime::currentDateTime().toString("dd-MM-yyyy hh:mm:ss"), // DateTime
             type,                                                         // Msg type
@@ -86,7 +86,7 @@ void Logging::messageHandler(QtMsgType type, const QMessageLogContext &context, 
             msg                                                           // Message
         };
         ErrorQueue::GetInstance().pushError(tmpm);
-#endif
+        //#endif
         return;
     }
     case QtCriticalMsg:
@@ -98,9 +98,9 @@ void Logging::messageHandler(QtMsgType type, const QMessageLogContext &context, 
             context.line,                                                 // Line
             msg                                                           // Message
         };
-#ifdef QT_GUI_LIB
+        //#ifdef QT_GUI_LIB
         ErrorQueue::GetInstance().pushError(tmpm);
-#endif
+        //#endif
         break;
     }
     case QtFatalMsg:
