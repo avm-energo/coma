@@ -8,6 +8,7 @@
 #include "../check/checkktfharmonicdialog.h"
 #include "../config/configdialog.h"
 #include "../dialogs/journalsdialog.h"
+#include "../dialogs/timedialog.h"
 #include "../gen/board.h"
 #include "../gen/modules.h"
 #include "../module/journkdv.h"
@@ -16,7 +17,6 @@
 #include "../startup/startupkdvdialog.h"
 #include "../startup/startupkivdialog.h"
 #include "../startup/startupktfdialog.h"
-
 SvcModule::SvcModule(QObject *parent) : Module(parent)
 {
 }
@@ -123,6 +123,8 @@ void SvcModule::createModule(Modules::Model model)
     default:
         assert(false);
     }
+    TimeDialog *tdlg = new TimeDialog;
+    addDialogToList(tdlg, "Время", "time");
 }
 
 void SvcModule::create(Modules::BaseBoard typeB, Modules::MezzanineBoard typeM)

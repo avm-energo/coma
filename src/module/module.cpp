@@ -302,8 +302,8 @@ void Module::create(UniquePointer<Journals> jour)
 void Module::createCommon()
 {
     const auto &board = Board::GetInstance();
-    TimeDialog *tdlg = new TimeDialog;
-    addDialogToList(tdlg, "Время", "time");
+    //    TimeDialog *tdlg = new TimeDialog;
+    //    addDialogToList(tdlg, "Время", "time");
 
     if (board.interfaceType() != Board::InterfaceType::RS485)
         addDialogToList(new FWUploadDialog, "Загрузка ВПО");

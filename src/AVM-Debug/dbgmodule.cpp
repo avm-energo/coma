@@ -11,6 +11,7 @@
 #include "../config/configdialog.h"
 #include "../dialogs/hiddendialog.h"
 #include "../dialogs/journalsdialog.h"
+#include "../dialogs/timedialog.h"
 #include "../module/journkdv.h"
 #include "../module/journkiv.h"
 #include "../module/journktf.h"
@@ -85,6 +86,8 @@ void DbgModule::createModule(Modules::Model model)
         break;
         //  assert(false);
     }
+    TimeDialog *tdlg = new TimeDialog;
+    addDialogToList(tdlg, "Время", "time");
 }
 
 void DbgModule::create(Modules::BaseBoard typeB, Modules::MezzanineBoard typeM)
