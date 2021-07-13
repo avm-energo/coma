@@ -26,7 +26,7 @@ public:
 signals:
     void timeReceived(timespec);
     void healthReceived(healthType);
-    void helloReceived(std::string id, uint32_t code);
+    void helloReceived(const QString, quint32);
 
 private:
     zmq::context_t &_ctx;

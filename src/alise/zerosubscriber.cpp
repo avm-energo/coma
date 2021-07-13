@@ -4,6 +4,7 @@
 
 #include <QCoreApplication>
 #include <QDebug>
+#include <QString>
 ZeroSubscriber::ZeroSubscriber(zmq::context_t &ctx, int sock_type, QObject *parent)
     : QObject(parent), _ctx(ctx), _worker(_ctx, sock_type)
 {
@@ -53,16 +54,16 @@ void ZeroSubscriber::work()
                 unixTime.tv_nsec = protoTime.nanos();
                 emit timeReceived(unixTime);
             }
-            else if (messageContent.Is<alise::HelloReply>())
+            else if (messageContent.Is<alise::HelloRequest>())
             {
-                alise::HelloReply helloAlise;
+                alise::HelloRequest helloAlise;
                 if (!messageContent.UnpackTo(&helloAlise))
                 {
                     qWarning() << Error::WriteError;
                     continue;
                 }
                 qInfo() << "Someone said to Alise:" << helloAlise.message();
-                emit helloReceived(identity.to_string(), helloAlise.message());
+                emit helloReceived(QString::fromStdString(identity.to_string()), helloAlise.message());
             }
             else
             {

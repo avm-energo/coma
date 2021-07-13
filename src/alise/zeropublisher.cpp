@@ -48,14 +48,14 @@ void ZeroPublisher::publishTime(const timespec time)
     google::protobuf::Timestamp protoTime;
     protoTime.set_seconds(time.tv_sec);
     protoTime.set_nanos(time.tv_nsec);
-    appendToQueue(sonica, protoTime);
+    appendToQueue(admin, protoTime);
 }
 
 void ZeroPublisher::publishPowerStatus(const AVTUK_14::DiscretePowerSignals powerStatus)
 {
     alise::PowerStatus protoPower;
     protoPower.set_pwrin(powerStatus.PWRIN);
-    appendToQueue(sonica, protoPower);
+    appendToQueue(booter, protoPower);
 }
 
 void ZeroPublisher::publishBlock(const DataTypes::BlockStruct blk)
@@ -71,11 +71,11 @@ void ZeroPublisher::publishBlock(const DataTypes::BlockStruct blk)
     }
 }
 
-void ZeroPublisher::publishHello(const std::string id, const uint32_t code)
+void ZeroPublisher::publishHello(const QString id, const quint32 code)
 {
     alise::HelloReply helloReply;
     helloReply.set_message(code + 1);
-    appendToQueue(id, helloReply);
+    appendToQueue(id.toStdString(), helloReply);
 }
 
 void ZeroPublisher::send(itemType &str)

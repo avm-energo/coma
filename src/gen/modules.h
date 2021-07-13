@@ -726,7 +726,7 @@ namespace AVTUK_CCU
 {
 constexpr uint16_t DiscretePowerBlock = 1;
 // NOTE
-constexpr uint16_t IndicationBlock = 1;
+constexpr uint16_t IndicationBlock = 2;
 struct DiscretePowerSignals
 {
     uint8_t PWRIN;

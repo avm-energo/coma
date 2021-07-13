@@ -15,6 +15,7 @@ Q_DECLARE_METATYPE(AVTUK_14::Indication);
 
 constexpr char booter[] = "sb";
 constexpr char sonica[] = "sc";
+constexpr char admin[] = "sa";
 
 // template <typename T> void appendToQueue(std::string &&id, const T &paylod);
 
@@ -40,7 +41,7 @@ public slots:
     void publishTime(const timespec time);
     void publishPowerStatus(const AVTUK_14::DiscretePowerSignals powerStatus);
     void publishBlock(const DataTypes::BlockStruct blk);
-    void publishHello(const std::string id, const uint32_t code);
+    void publishHello(const QString id, const quint32 code);
 
 private:
     zmq::context_t &_ctx;
