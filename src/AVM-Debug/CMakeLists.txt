@@ -90,21 +90,7 @@ install(
       ${CMAKE_INSTALL_PREFIX}/${INSTALL_PROJECT_PATH}
 )
 
-get_filename_component(QT_BIN_DIR ${QT_QMAKE_EXECUTABLE} DIRECTORY)
 
-message(STATUS "Qt binaries directory: " ${QT_BIN_DIR})
-
-install(CODE "set(QT_BIN_DIR \"${QT_BIN_DIR}\")")
-
-if(CMAKE_SYSTEM_NAME_LOWER STREQUAL "windows")
-
-    message(STATUS "windeployqt: " ${QT_BIN_DIR}/windeployqt.exe)
-
-    install(
-      CODE [[execute_process(COMMAND ${QT_BIN_DIR}/windeployqt.exe --no-quick-import --no-system-d3d-compiler --no-virtualkeyboard --no-compiler-runtime --no-webkit2 --no-angle --no-opengl-sw ${CMAKE_INSTALL_PREFIX}/${INSTALL_PROJECT_PATH}/AVM-Debug.exe
-        WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX}/${INSTALL_PROJECT_PATH})]])
-
-endif()
 
 install(
   DIRECTORY $<TARGET_FILE_DIR:${PROJECT_NAME}>/images
@@ -153,6 +139,16 @@ if(CMAKE_SYSTEM_NAME_LOWER STREQUAL "windows")
           endforeach()
         ]])
 
-else()
+    get_filename_component(QT_BIN_DIR ${QT_QMAKE_EXECUTABLE} DIRECTORY)
+
+    message(STATUS "Qt binaries directory: " ${QT_BIN_DIR})
+
+    install(CODE "set(QT_BIN_DIR \"${QT_BIN_DIR}\")")
+
+    message(STATUS "windeployqt: " ${QT_BIN_DIR}/windeployqt.exe)
+
+    install(
+      CODE [[execute_process(COMMAND ${QT_BIN_DIR}/windeployqt.exe --no-quick-import --no-system-d3d-compiler --no-virtualkeyboard --no-compiler-runtime --no-webkit2 --no-angle --no-opengl-sw ${CMAKE_INSTALL_PREFIX}/${INSTALL_PROJECT_PATH}/AVM-Debug.exe
+        WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX}/${INSTALL_PROJECT_PATH})]])
 
 endif()

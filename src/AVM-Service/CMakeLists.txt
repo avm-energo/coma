@@ -128,17 +128,12 @@ if(CMAKE_SYSTEM_NAME_LOWER STREQUAL "windows")
               )
           endforeach()
       ]])
-else()
 
-endif()
+    get_filename_component(QT_BIN_DIR ${QT_QMAKE_EXECUTABLE} DIRECTORY)
 
-get_filename_component(QT_BIN_DIR ${QT_QMAKE_EXECUTABLE} DIRECTORY)
+    message(STATUS "Qt binaries directory: " ${QT_BIN_DIR})
 
-message(STATUS "Qt binaries directory: " ${QT_BIN_DIR})
-
-install(CODE "set(QT_BIN_DIR \"${QT_BIN_DIR}\")")
-
-if(CMAKE_SYSTEM_NAME_LOWER STREQUAL "windows")
+    install(CODE "set(QT_BIN_DIR \"${QT_BIN_DIR}\")")
 
     message(STATUS "windeployqt: " ${QT_BIN_DIR}/windeployqt.exe)
 
