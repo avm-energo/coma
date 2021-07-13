@@ -40,14 +40,14 @@ if(CMAKE_SYSTEM_NAME_LOWER STREQUAL "windows")
     endif()
     set(LIMEREPORT_BUILD_COMMAND ${JOM_EXEC} /NOLOGO -f Makefile release)
     set(LIMEREPORT_INSTALL_COMMAND ${JOM_EXEC} /NOLOGO -f Makefile uninstall)
-    set(LIMEREPORT_SPEC win32-msvc)
+  #  set(LIMEREPORT_SPEC win32-msvc)
     set(LIMEREPORT_LIB_SUFFIX lib)
 else()
     find_program(MAKE_EXEC "make")
     if(NOT MAKE_EXEC)
         message(STATUS "No make found, install build-essential")
     endif()
-    set(LIMEREPORT_SPEC "linux-g++")
+  #  set(LIMEREPORT_SPEC linux-g++)
     if (NOT LIMEREPORT_THREADS)
         set(LIMEREPORT_THREADS 16)
     endif()
@@ -71,7 +71,7 @@ message(STATUS "Limereport directory: " ${LIMEREPORT_DIR})
 ExternalProject_Add(LimeReportBuild
     BINARY_DIR ${LIMEREPORT_BUILD_DIR}
     SOURCE_DIR ${LIMEREPORT_DIR}
-    CONFIGURE_COMMAND ${Qt${QT_VERSION_MAJOR}Core_QMAKE_EXECUTABLE} ${LIMEREPORT_DIR} "CONFIG+=no_zint" "CONFIG+=no_formdesigner" "CONFIG+=no_embedded_designer"  -recursive -spec ${LIMEREPORT_SPEC}
+    CONFIGURE_COMMAND ${Qt${QT_VERSION_MAJOR}Core_QMAKE_EXECUTABLE} ${LIMEREPORT_DIR} "CONFIG+=no_zint" "CONFIG+=no_formdesigner" "CONFIG+=no_embedded_designer"  -recursive #-spec ${LIMEREPORT_SPEC}
     BUILD_COMMAND ${LIMEREPORT_BUILD_COMMAND}
     INSTALL_COMMAND ${LIMEREPORT_INSTALL_COMMAND}
     BUILD_BYPRODUCTS ${LIMEREPORT_DIR}/build/${Qt${QT_VERSION_MAJOR}Core_VERSION_STRING}/${PROJECT_TARGET_NAME}/release/lib/${LIMEREPORT_LIB_PREFFIX}limereport.${LIMEREPORT_LIB_SUFFIX}
