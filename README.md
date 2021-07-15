@@ -1,8 +1,8 @@
 | OS | Status | Download |
 |----------|--------|----------|
-| Windows x64 | [![](http://172.16.31.73:27015/app/rest/builds/buildType:AVMService_CiAVMServiceWindowsBuild_BuildX64/statusIcon.svg)](http://172.16.31.73:27015/buildConfiguration/AVMService_CiAVMServiceWindowsBuild_BuildX64) | [Download](file://///Fserver/av-tuk/SOFT/AVTUK-S/CI/) |
-| Windows x86 | [![](http://172.16.31.73:27015/app/rest/builds/buildType:AVMService_CiAVMServiceWindowsBuild_BuildX86/statusIcon.svg)](http://172.16.31.73:27015/buildConfiguration/AVMService_CiAVMServiceWindowsBuild_BuildX86) | [Download](file://///Fserver/av-tuk/SOFT/AVTUK-S/CI/) |
-
+| Windows x64 | [![](http://172.16.31.73:27015/app/rest/builds/buildType:Coma_WindowsBuild_Develop_BuildX64/statusIcon.svg)](http://172.16.31.73:27015/buildConfiguration/Coma_WindowsBuild_Develop_BuildX64) | [Download](file://///Fserver/av-tuk/SOFT/AVTUK-S/) |
+| Windows x86 | [![](http://172.16.31.73:27015/app/rest/builds/buildType:Coma_WindowsBuild_Develop_BuildX86/statusIcon.svg)](http://172.16.31.73:27015/buildConfiguration/Coma_WindowsBuild_Develop_BuildX86) | [Download](file://///Fserver/av-tuk/SOFT/AVTUK-S/) |
+| Linux (Debian 10) x64 | [![](http://172.16.31.73:27015/app/rest/builds/buildType:Coma_LinuxBuild_Develop_BuildX64/statusIcon.svg)](http://172.16.31.73:27015/buildConfiguration/Coma_LinuxBuild_Develop_BuildX64) | [Download](file://///Fserver/av-tuk/SOFT/AVTUK-S/) |
 
 
 # Requires:  
@@ -44,6 +44,11 @@ supported options:
 * CMAKE_INSTALL_PREFIX=install_prefix - prefix for cmake --build --target install
 * CMAKE_PREFIX_PATH:STRING=path_to_qt - path to Qt location, for example C:\Qt\5.15.2\msvc2019
 * A x64/Win32 - used to change target arch only with Visual Studio cmake generator, ninja uses only provided compilers
+* BUILD_WITH_ALISE:BOOL=ON (off by default) - do u wanna build Alise? Use only if you know her.
+* CPACK_PACKAGE_DIRECTORY - output directory for deb packages
+* LIMEREPORT_THREADS - count of threads used to build LimeReport (only for *nix), default value -16
+* COMMIT_COUNT - output of command ```git rev-list --count HEAD```, neccessary if you don't have git in PATH or you don't have git locally
+* SHORT_HASH - output of command ```git rev-parse --short"="8 HEAD```, neccessary if you don't have git in PATH or you don't have git locally
 
 ```$ cmake --build . [<options>]```
 
