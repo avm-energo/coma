@@ -283,7 +283,7 @@ void ConfigDialog::createTabs(QTabWidget *tabWidget)
 
 void ConfigDialog::Fill()
 {
-    for (const auto defRecord : m_defaultValues)
+    for (const auto &defRecord : m_defaultValues)
     {
         if (!defRecord.visibility)
             continue;

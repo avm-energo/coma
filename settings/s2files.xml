@@ -417,6 +417,34 @@
 		<type>DWORD[16]</type>
 	</record>
 	<record>
+		<id>211</id>
+		<type>BYTE[32]</type>
+		<widget>
+				<type>CheckBoxGroup</type>
+				<group>300</group>
+				<string>Тип входа</string>
+				<string-array>
+					<item>используется или нет</item>
+					<item>инверсия</item>
+				</string-array>
+				<count>2</count>
+		</widget>
+
+	</record>
+	<record>
+		<id>212</id>
+		<type>DWORD[32]</type>
+		<widget>
+			<type>DoubleSpinBoxGroup</type>
+			<group>100</group>
+			<string>Время задержки для контроля дребезга контактов входы</string>
+			<count>32</count>
+			<min>0</min>
+			<max>65554</max>
+			<decimals>0</decimals>
+		</widget>
+	</record>
+	<record>
 		<id>231</id>
 		<type>BYTE[16]</type>
 	</record>
@@ -439,6 +467,32 @@
 	<record>
 		<id>236</id>
 		<type>DWORD[16]</type>
+	</record>
+	<record>
+		<id>241</id>
+		<type>BYTE[32]</type>
+		<widget>
+			<type>DoubleSpinBoxGroup</type>
+			<group>100</group>
+			<string>Тип входа</string>
+			<count>32</count>
+			<min>0</min>
+			<max>254</max>
+			<decimals>0</decimals>
+		</widget>
+	</record>
+	<record>
+		<id>242</id>
+		<type>DWORD[32]</type>
+		<widget>
+			<type>DoubleSpinBoxGroup</type>
+			<group>100</group>
+			<string>Время задержки для контроля дребезга контактов входы</string>
+			<count>32</count>
+			<min>0</min>
+			<max>65554</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>301</id>
@@ -531,26 +585,75 @@
 	<record>
 		<id>401</id>
 		<type>BYTE</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>300</group>
+			<string>Тип WatchDog </string>
+			<min>0</min>
+			<max>254</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>402</id>
 		<type>BYTE</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>300</group>
+			<string>Номер  выхода для WD</string>
+			<min>0</min>
+			<max>254</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>403</id>
 		<type>WORD</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>300</group>
+			<string>Время WD</string>
+			<min>0</min>
+			<max>254</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>404</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>300</group>
+			<string>Ширина короткого импульса</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>405</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>300</group>
+			<string>Ширина длинного импульса</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>406</id>
-		<type>BYTE</type>
+		<type>BYTE[16]</type>
+		<widget>
+			<type>DoubleSpinBoxGroup</type>
+			<group>100</group>
+			<string>Тип выхода</string>
+			<count>16</count>
+			<min>0</min>
+			<max>254</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>407</id>
@@ -559,26 +662,75 @@
 	<record>
 		<id>421</id>
 		<type>BYTE</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>300</group>
+			<string>Тип WatchDog </string>
+			<min>0</min>
+			<max>254</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>422</id>
 		<type>BYTE</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>300</group>
+			<string>Номер  выхода для WD</string>
+			<min>0</min>
+			<max>254</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>423</id>
 		<type>BYTE</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>300</group>
+			<string>Время WD</string>
+			<min>0</min>
+			<max>254</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>424</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>300</group>
+			<string>Ширина короткого импульса</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>425</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>300</group>
+			<string>Ширина длинного импульса</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>426</id>
 		<type>BYTE[16]</type>
+		<widget>
+			<type>DoubleSpinBoxGroup</type>
+			<group>100</group>
+			<string>Тип выхода</string>
+			<count>16</count>
+			<min>0</min>
+			<max>254</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1001</id>

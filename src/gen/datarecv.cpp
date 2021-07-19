@@ -214,6 +214,13 @@ DataRecV::DataRecV(const int _id, const QString &str) : id(_id)
         data = arr;
         break;
     }
+    case ctti::unnamed_type_id<DWORD_4t>().hash():
+    {
+        DWORD_4t arr {};
+        arr << str;
+        data = arr;
+        break;
+    }
     case ctti::unnamed_type_id<BYTE_8t>().hash():
     {
         BYTE_8t arr {};
@@ -228,6 +235,13 @@ DataRecV::DataRecV(const int _id, const QString &str) : id(_id)
         data = arr;
         break;
     }
+    case ctti::unnamed_type_id<DWORD_8t>().hash():
+    {
+        DWORD_8t arr {};
+        arr << str;
+        data = arr;
+        break;
+    }
     case ctti::unnamed_type_id<BYTE_16t>().hash():
     {
         BYTE_16t arr {};
@@ -238,6 +252,34 @@ DataRecV::DataRecV(const int _id, const QString &str) : id(_id)
     case ctti::unnamed_type_id<WORD_16t>().hash():
     {
         WORD_16t arr {};
+        arr << str;
+        data = arr;
+        break;
+    }
+    case ctti::unnamed_type_id<DWORD_16t>().hash():
+    {
+        DWORD_16t arr {};
+        arr << str;
+        data = arr;
+        break;
+    }
+    case ctti::unnamed_type_id<BYTE_32t>().hash():
+    {
+        BYTE_32t arr {};
+        arr << str;
+        data = arr;
+        break;
+    }
+    case ctti::unnamed_type_id<WORD_32t>().hash():
+    {
+        WORD_32t arr {};
+        arr << str;
+        data = arr;
+        break;
+    }
+    case ctti::unnamed_type_id<DWORD_32t>().hash():
+    {
+        DWORD_32t arr {};
         arr << str;
         data = arr;
         break;
