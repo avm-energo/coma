@@ -2,6 +2,7 @@
 
 #include "../avtuk/oscdialog.h"
 #include "../avtuk/switchjournaldialog.h"
+#include "../check/check3533dialog.h"
 #include "../check/checkkdvdialog.h"
 #include "../check/checkkdvharmonicdialog.h"
 #include "../check/checkkdvvibrdialog.h"
@@ -132,6 +133,8 @@ void DbgModule::create(Modules::BaseBoard typeB, Modules::MezzanineBoard typeM)
     {
         qDebug("Here is AVTUK-3533");
         addDialogToList(new ConfigDialog(settings()->configSettings), "Конфигурирование", "conf1");
+        Check3533Dialog *check = new Check3533Dialog;
+        addDialogToList(check, "Проверка");
         // addDialogToList(new OscDialog, "Осциллограммы");
     }
 }

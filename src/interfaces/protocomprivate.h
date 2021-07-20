@@ -123,6 +123,7 @@ enum Commands : byte
     /// Fake commands
     FakeReadRegData,
     FakeReadAlarms,
+    FakeReadBitString,
     RawCommand = 0x01
 
 };

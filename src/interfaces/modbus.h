@@ -29,7 +29,7 @@ const QMap<Queries::Commands, CommandStruct> CommandsTranslateMap {
 };
 }
 
-class ModBus : public BaseInterface
+class ModBus final : public BaseInterface
 {
     Q_OBJECT
 
@@ -96,7 +96,7 @@ public:
     void writeCommand(Queries::Commands cmd, QVariant item) override;
     void writeCommand(Queries::Commands cmd, const QVariantList &list) override;
     void reqFloats(quint32 sigAdr, quint32 sigCount) override;
-    //    void reqBitStrings(quint32 sigAdr, quint32 sigCount);
+    void reqBitStrings(quint32 sigAdr, quint32 sigCount) override {};
 
     //    int CheckIndex, CheckHarmIndex, CheckVibrIndex, CorIndex, TimeIndex;
     InterfaceSettings parseSettings(QDomElement domElement) const override;

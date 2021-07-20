@@ -4,7 +4,7 @@
 #include "protocomprivate.h"
 struct UsbHidSettings;
 class ProtocomPrivate;
-class Protocom : public BaseInterface
+class Protocom final : public BaseInterface
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(Protocom);
@@ -22,6 +22,7 @@ public:
     void reqFile(quint32 filenum, bool isConfigFile = false) override;
     void reqStartup(quint32 sigAdr, quint32 sigCount) override;
     void reqBSI() override;
+    void reqBitStrings(quint32 sigAdr = 0, quint32 sigCount = 0) override;
     // Support only S2 format
     void writeFile(quint32 filenum, const QByteArray &file) override;
     // void writeConfigFile() override;

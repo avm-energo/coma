@@ -26,7 +26,7 @@ const QMap<Queries::Commands, CommandStruct> CommandsTranslateMap {
 };
 }
 
-class IEC104 : public BaseInterface
+class IEC104 final : public BaseInterface
 {
     Q_OBJECT
 
@@ -136,7 +136,7 @@ public slots:
     void writeTime(quint32 time) override;
     void writeCommand(Queries::Commands cmd, QVariant item) override;
     void reqFloats(quint32 sigAdr = 0, quint32 sigCount = 0) override;
-    //    void reqBitStrings(quint32 sigAdr = 0, quint32 sigCount = 0);
+    void reqBitStrings(quint32 sigAdr = 0, quint32 sigCount = 0);
 
     //    static void SelectFile(char);
     void stop() override;
