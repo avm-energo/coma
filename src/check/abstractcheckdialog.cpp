@@ -15,13 +15,11 @@
 #include <QLineEdit>
 #include <QMessageBox>
 #include <QPushButton>
-#include <QRadioButton>
 #include <QTabWidget>
 #include <QTime>
 #include <QVBoxLayout>
 #include <QXlsx/xlsxdocument.h>
 //#include <QtMath>
-//#include <QtTest/QTest>
 
 AbstractCheckDialog::AbstractCheckDialog(QWidget *parent) : UDialog(parent)
 {

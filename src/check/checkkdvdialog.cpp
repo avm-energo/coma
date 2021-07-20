@@ -1,18 +1,8 @@
 #include "checkkdvdialog.h"
 
-#include "../gen/colors.h"
-#include "../gen/datamanager.h"
-#include "../gen/error.h"
 #include "../widgets/wd_func.h"
 
 #include <QGroupBox>
-#include <QHBoxLayout>
-#include <QLabel>
-#include <QLineEdit>
-#include <QMessageBox>
-#include <QPushButton>
-#include <QTabWidget>
-#include <QVBoxLayout>
 
 CheckKDVDialog::CheckKDVDialog(QWidget *parent) : AbstractCheckDialog(parent)
 {

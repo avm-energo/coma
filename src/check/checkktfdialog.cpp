@@ -1,24 +1,8 @@
 #include "checkktfdialog.h"
 
-#include "../gen/colors.h"
-#include "../gen/datamanager.h"
-#include "../gen/error.h"
 #include "../widgets/wd_func.h"
 
-#include <QCoreApplication>
-#include <QDebug>
-#include <QFileDialog>
 #include <QGroupBox>
-#include <QHBoxLayout>
-#include <QLabel>
-#include <QLineEdit>
-#include <QMessageBox>
-#include <QPushButton>
-#include <QRadioButton>
-#include <QTabWidget>
-#include <QTime>
-#include <QVBoxLayout>
-#include <QtMath>
 
 CheckKTFDialog::CheckKTFDialog(QWidget *parent) : AbstractCheckDialog(parent)
 {
@@ -172,7 +156,6 @@ UWidget *CheckKTFDialog::Bd1W()
     lyout->addLayout(glyout);
     lyout->addStretch(100);
     w->setLayout(lyout);
-    w->setStyleSheet("QWidget {background-color: " + QString(Colors::UCONFCLR) + ";}");
     w->setFloatBdQuery({ { 101, 2 }, { 1000, 11 }, { 1011, 8 }, { 1400, 11 }, { 1411, 8 }, { 1220, 8 }, { 2400, 7 },
         { 2420, 32 }, { 4500, 7 } });
     // w->setSpBdQuery({ { 5011, 15 } });

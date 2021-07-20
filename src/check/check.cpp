@@ -28,8 +28,6 @@ QWidget *Check::Bd0W(QWidget *parent)
     lyout->addLayout(glyout);
     lyout->addStretch(100);
     w->setLayout(lyout);
-    // QString tmps = "QWidget {background-color: " + QString(Colors::UCONFCLR) + ";}";
-    // w->setStyleSheet(tmps);
     return w;
 }
 

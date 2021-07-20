@@ -5,8 +5,6 @@ set(PROJECT_VERSION_MAJOR 2)
 set(PROJECT_VERSION_MINOR 1)
 set(PROJECT_VERSION_PATCH 2)
 
-set(PROGNAME ${PROJECT_NAME})
-
 configure_file(${CMAKE_SOURCE_DIR}/cconfig.h.in ${CMAKE_CURRENT_BINARY_DIR}/config.h @ONLY)
 configure_file(
   ${CMAKE_SOURCE_DIR}/versioninfo.rc.in

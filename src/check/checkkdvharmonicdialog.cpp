@@ -1,32 +1,11 @@
 #include "checkkdvharmonicdialog.h"
 
-#include "../gen/colors.h"
-#include "../gen/datamanager.h"
-#include "../gen/error.h"
-#include "../gen/modules.h"
 #include "../widgets/wd_func.h"
 
-#include <QCoreApplication>
-#include <QDebug>
-#include <QFileDialog>
 #include <QGroupBox>
-#include <QHBoxLayout>
-#include <QLabel>
-#include <QLineEdit>
-#include <QMessageBox>
-#include <QPushButton>
-#include <QRadioButton>
-#include <QTabWidget>
-#include <QTime>
-#include <QVBoxLayout>
-#include <QtMath>
 
 CheckKDVHarmonicDialog::CheckKDVHarmonicDialog(QWidget *parent) : AbstractCheckDialog(parent)
 {
-
-    //    QString tmps = "QDialog {background-color: " + QString(Colors::UCONFCLR) + ";}";
-    //    setStyleSheet(tmps);
-    //    QStringList sl;
 
     m_BdUIList = { { "Гармоники U 2-11", BdUWidget(3020, 2, 12) }, { "Гармоники U 12-21", BdUWidget(3030, 12, 22) },
         { "Гармоники U 22-31", BdUWidget(3040, 22, 32) }, { "Гармоники U 32-41", BdUWidget(3050, 32, 42) },

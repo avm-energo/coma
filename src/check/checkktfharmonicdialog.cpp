@@ -1,24 +1,8 @@
 #include "checkktfharmonicdialog.h"
 
-#include "../gen/colors.h"
-#include "../gen/datamanager.h"
-#include "../gen/error.h"
-#include "../gen/modules.h"
 #include "../widgets/wd_func.h"
 
-#include <QCoreApplication>
-#include <QFileDialog>
 #include <QGroupBox>
-#include <QHBoxLayout>
-#include <QLabel>
-#include <QLineEdit>
-#include <QMessageBox>
-#include <QPushButton>
-#include <QRadioButton>
-#include <QTabWidget>
-#include <QTime>
-#include <QVBoxLayout>
-#include <QtMath>
 
 CheckKTFHarmonicDialog::CheckKTFHarmonicDialog(QWidget *parent) : AbstractCheckDialog(parent)
 
@@ -75,7 +59,7 @@ UWidget *CheckKTFHarmonicDialog::BdUWidget(int value, int min, int max)
         for (int h = min; h < max; h++)
         {
             if (k > 0)
-            s = s + 2;
+                s = s + 2;
             k = s + 1;
             glyout->addWidget(WDFunc::NewLBL(this, phase[i] + "Гм. " + QString::number(h)), s, i, 1, 1);
             glyout->addWidget(WDFunc::NewLBLT(this, "", QString::number((value + j) + i * 126), ValuesFormat,
@@ -129,7 +113,7 @@ UWidget *CheckKTFHarmonicDialog::BdIWidget(int value, int min, int max)
         for (int h = min; h < max; h++)
         {
             if (k > 0)
-            s = s + 2;
+                s = s + 2;
             k = s + 1;
             glyout->addWidget(WDFunc::NewLBL(this, phase[i] + "Гм. " + QString::number(h)), s, i, 1, 1);
             glyout->addWidget(WDFunc::NewLBLT(this, "", QString::number((value + j) + i * 126), ValuesFormat,
@@ -151,4 +135,3 @@ UWidget *CheckKTFHarmonicDialog::BdIWidget(int value, int min, int max)
     w->setFloatBdQuery({ { 3420, 61 }, { 3546, 61 }, { 3672, 61 } });
     return w;
 }
-

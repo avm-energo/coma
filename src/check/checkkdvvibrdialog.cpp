@@ -1,12 +1,8 @@
 #include "checkkdvvibrdialog.h"
 
-#include "../gen/datamanager.h"
 #include "../widgets/wd_func.h"
 
 #include <QGroupBox>
-#include <QHBoxLayout>
-#include <QLabel>
-#include <QPushButton>
 
 CheckKDVVibrDialog::CheckKDVVibrDialog(QWidget *parent) : AbstractCheckDialog(parent)
 {
