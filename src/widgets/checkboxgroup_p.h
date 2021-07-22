@@ -9,7 +9,9 @@ class CheckBoxGroupPrivate
     Q_DECLARE_PUBLIC(CheckBoxGroup);
 
 public:
-    CheckBoxGroupPrivate();
+    CheckBoxGroupPrivate()
+    {
+    }
     template <typename T> void setBits(const T value)
     {
         Q_Q(CheckBoxGroup);
@@ -44,10 +46,19 @@ public:
     {
         m_bitset.flip(i);
     }
-    QStringList description() const;
-    void setDescription(const QStringList &description);
+    QStringList description() const
+    {
+        return m_description;
+    }
+    void setDescription(const QStringList &description)
+    {
+        m_description = description;
+    }
 
-    void setHiddenPositions(const QList<int> &hiddenPositions);
+    void setHiddenPositions(const QList<int> &hiddenPositions)
+    {
+        m_hiddenPositions = hiddenPositions;
+    }
 
 private:
     CheckBoxGroup *q_ptr;

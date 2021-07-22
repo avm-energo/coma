@@ -213,6 +213,17 @@ template <typename T> bool WidgetFactory::fillWidget(const QWidget *parent, BciN
 #endif
                     status = WDFunc::SetChBGData(parent, QString::number(key), value);
                 }
+                else if constexpr (std::is_container<T>())
+                {
+                    typedef std::remove_reference_t<typename T::value_type> internalType;
+                    if constexpr (std::is_unsigned_v<internalType>)
+                    {
+#ifdef DEBUG_FACTORY
+                        qDebug() << "CheckBoxGroupWidget" << key;
+#endif
+                        status = WDFunc::SetChBGData(parent, QString::number(key), value);
+                    }
+                }
             },
             [&](const delegate::QComboBox &arg) {
                 if constexpr (!std::is_container<T>())

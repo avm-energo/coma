@@ -566,6 +566,17 @@ static bool fillBackChBG(BciNumber key, const QWidget *parent)
                     if (status)
                         S2::setRecordValue({ key, buffer });
                 }
+            }
+            else if constexpr (std::is_container<internalType>())
+            {
+                typedef internalType Container;
+                typedef std::remove_reference_t<typename internalType::value_type> internalType;
+                if constexpr (std::is_integral<internalType>::value)
+                {
+                    Container buffer;
+                    status = WDFunc::ChBGData(parent, QString::number(key), buffer);
+                }
+            }
         },
         record.getData());
     return status;
