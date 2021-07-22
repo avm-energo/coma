@@ -5,19 +5,43 @@
 #include <QHBoxLayout>
 #include <QSpinBox>
 #include <QWidget>
+
 template <typename T, class S, std::enable_if_t<std::is_base_of<QAbstractSpinBox, S>::value, bool> = true>
 class BaseSpinBoxGroup : public QWidget
 {
+    static constexpr int defaultRatio = 3;
+    static constexpr int maxRatio = 5;
+    int goldenRatio(int value)
+    {
+        for (auto i = maxRatio; i != defaultRatio; --i)
+        {
+            if (!(value % i))
+                return i;
+        }
+        return defaultRatio;
+    }
+
 public:
     explicit BaseSpinBoxGroup(int count, QWidget *parent = nullptr) : QWidget(parent), m_count(count)
     {
-        QHBoxLayout *layout = new QHBoxLayout;
+        QVBoxLayout *vlyout = new QVBoxLayout;
+        auto itemsOneLine = goldenRatio(m_count);
 
+        QHBoxLayout *layout = new QHBoxLayout;
         for (auto i = 0; i != m_count; ++i)
         {
             layout->addWidget(new S(this));
+            auto temp1 = (i + 1) / itemsOneLine;
+            auto temp2 = (i + 1) % itemsOneLine;
+
+            if ((temp1 != 0) && (temp2 == 0))
+            {
+                vlyout->addLayout(layout);
+                layout = new QHBoxLayout;
+            }
         }
-        setLayout(layout);
+        vlyout->addLayout(layout);
+        setLayout(vlyout);
     }
     T minimum() const
     {
@@ -54,15 +78,7 @@ public:
         for (auto *spinBox : spinBoxes)
             spinBox->setSingleStep(m_singleStep);
     }
-    //    template <std::enable_if_t<!std::is_same<float, T>::value, bool> = true> auto value() const
-    //    {
-    //        auto spinBoxes = findChildren<S *>();
-    //        std::array<T, m_count> array;
-    //        std::transform(
-    //            spinBoxes.cbegin(), spinBoxes.cend(), array.begin(), [](const auto *spinBox) { return
-    //            spinBox->value(); });
-    //        return array;
-    //    }
+
     auto value() const
     {
         auto spinBoxes = findChildren<S *>();

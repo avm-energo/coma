@@ -1,7 +1,9 @@
 #include "datarecv.h"
 
 #include "datatypes.h"
+#include "s2helper.h"
 
+#include <type_traits>
 std::map<int, ctti::unnamed_type_id_t> DataTypes::DataRecV::map;
 
 namespace DataTypes
@@ -20,7 +22,8 @@ S2DataTypes::DataRec DataRecV::serialize() const
     return std::visit(
         [=](auto &arg) -> S2DataTypes::DataRec {
             //  std::cout << data.index() << std::endl;
-            S2DataTypes::DataRec record { id, sizeof(arg), (void *)(&arg) };
+            typedef std::remove_reference_t<decltype(arg)> internalType;
+            S2DataTypes::DataRec record { id, sizeof(internalType), (void *)(&arg) };
             return record;
         },
         data);
@@ -43,7 +46,7 @@ DataRecV::DataRecV(const S2DataTypes::DataRec &record, const char *rawdata) : id
     {
     case ctti::unnamed_type_id<BYTE>().hash():
     {
-        assert(sizeof(BYTE) == record.numByte);
+        Q_ASSERT(sizeof(BYTE) == record.numByte);
         data = *reinterpret_cast<const BYTE *>(rawdata);
         break;
     }
@@ -77,6 +80,12 @@ DataRecV::DataRecV(const S2DataTypes::DataRec &record, const char *rawdata) : id
         data = *reinterpret_cast<const WORD_4t *>(rawdata);
         break;
     }
+    case ctti::unnamed_type_id<DWORD_4t>().hash():
+    {
+        assert(sizeof(DWORD_4t) == record.numByte);
+        data = *reinterpret_cast<const DWORD_4t *>(rawdata);
+        break;
+    }
     case ctti::unnamed_type_id<BYTE_8t>().hash():
     {
         assert(sizeof(BYTE_8t) == record.numByte);
@@ -89,6 +98,12 @@ DataRecV::DataRecV(const S2DataTypes::DataRec &record, const char *rawdata) : id
         data = *reinterpret_cast<const WORD_8t *>(rawdata);
         break;
     }
+    case ctti::unnamed_type_id<DWORD_8t>().hash():
+    {
+        assert(sizeof(DWORD_8t) == record.numByte);
+        data = *reinterpret_cast<const DWORD_8t *>(rawdata);
+        break;
+    }
     case ctti::unnamed_type_id<BYTE_16t>().hash():
     {
         assert(sizeof(BYTE_16t) == record.numByte);
@@ -99,6 +114,30 @@ DataRecV::DataRecV(const S2DataTypes::DataRec &record, const char *rawdata) : id
     {
         assert(sizeof(WORD_16t) == record.numByte);
         data = *reinterpret_cast<const WORD_16t *>(rawdata);
+        break;
+    }
+    case ctti::unnamed_type_id<DWORD_16t>().hash():
+    {
+        assert(sizeof(DWORD_16t) == record.numByte);
+        data = *reinterpret_cast<const DWORD_16t *>(rawdata);
+        break;
+    }
+    case ctti::unnamed_type_id<BYTE_32t>().hash():
+    {
+        assert(sizeof(BYTE_32t) == record.numByte);
+        data = *reinterpret_cast<const BYTE_32t *>(rawdata);
+        break;
+    }
+    case ctti::unnamed_type_id<WORD_32t>().hash():
+    {
+        assert(sizeof(WORD_32t) == record.numByte);
+        data = *reinterpret_cast<const WORD_32t *>(rawdata);
+        break;
+    }
+    case ctti::unnamed_type_id<DWORD_32t>().hash():
+    {
+        assert(sizeof(DWORD_32t) == record.numByte);
+        data = *reinterpret_cast<const DWORD_32t *>(rawdata);
         break;
     }
     case ctti::unnamed_type_id<float>().hash():
@@ -364,8 +403,10 @@ void DataRecV::setData(const valueType &value)
 }
 bool S2DataTypes::is_same(const S2DataTypes::DataRec &lhs, const S2DataTypes::DataRec &rhs)
 {
+    bool is_same_value = false;
     if ((lhs.id == rhs.id) && (lhs.numByte == rhs.numByte))
-        return !memcmp(lhs.thedata, rhs.thedata, lhs.numByte);
+        is_same_value = !memcmp(lhs.thedata, rhs.thedata, lhs.numByte);
 
-    return false;
+    Q_ASSERT(is_same_value);
+    return is_same_value;
 }

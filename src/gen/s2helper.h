@@ -77,6 +77,13 @@ using FLOAT_3t = std::array<float, 3>;
 using FLOAT_6t = std::array<float, 6>;
 using FLOAT_8t = std::array<float, 8>;
 
+static_assert(sizeof(BYTE) != sizeof(WORD), "Broken datatypes");
+static_assert(sizeof(BYTE) != sizeof(DWORD), "Broken datatypes");
+static_assert(sizeof(INT32) == sizeof(DWORD), "Broken datatypes");
+static_assert(sizeof(float) == sizeof(DWORD), "Broken datatypes");
+static_assert(sizeof(WORD_4t) == sizeof(BYTE_8t), "Broken datatypes");
+static_assert(sizeof(DWORD_4t) == sizeof(BYTE_16t), "Broken datatypes");
+static_assert(sizeof(FLOAT_2t) == sizeof(BYTE_8t), "Broken datatypes");
 namespace detail
 {
 

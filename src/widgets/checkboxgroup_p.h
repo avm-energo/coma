@@ -15,7 +15,7 @@ public:
     template <typename T> void setBits(const T value)
     {
         Q_Q(CheckBoxGroup);
-        m_bitset = boost::dynamic_bitset(sizeof(T), value);
+        m_bitset = boost::dynamic_bitset(sizeof(T) * 8, value);
         [[maybe_unused]] const T test = (T)m_bitset.to_ulong();
         QList<QCheckBox *> checkBoxes = q->findChildren<QCheckBox *>();
         for (QCheckBox *checkBox : checkBoxes)

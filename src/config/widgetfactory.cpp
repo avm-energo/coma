@@ -559,6 +559,7 @@ static bool fillBackChBG(BciNumber key, const QWidget *parent)
         [&](auto &&arg) {
             typedef std::remove_reference_t<decltype(arg)> internalType;
             if constexpr (!std::is_container<internalType>())
+            {
                 if constexpr (std::is_unsigned_v<internalType>)
                 {
                     internalType buffer = 0;
@@ -567,6 +568,7 @@ static bool fillBackChBG(BciNumber key, const QWidget *parent)
                         S2::setRecordValue({ key, buffer });
                 }
             }
+
             else if constexpr (std::is_container<internalType>())
             {
                 typedef internalType Container;
