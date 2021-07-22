@@ -69,10 +69,11 @@ struct CheckBoxGroup : Widget, Group
 
 struct QComboBox : Widget, Group
 {
-    enum PrimaryField : bool
+    enum PrimaryField : int
     {
         index = 0,
-        data = 1
+        data = 1,
+        bitfield = 2
     };
     QComboBox(const ctti::unnamed_type_id_t type_, const WidgetGroup group_) : Widget(type_, group_)
     {
@@ -110,6 +111,8 @@ struct Item : Widget
     ItemType itemType;
     BciNumber parent;
 };
+
+template <class... Args> using tempVariant = std::variant<std::variant<Args...>, Args...>;
 
 using itemVariant = std::variant<Widget, QComboBox, DoubleSpinBoxGroup, DoubleSpinBoxWidget, CheckBoxGroup, Item>;
 }

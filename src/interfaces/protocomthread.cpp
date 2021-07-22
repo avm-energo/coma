@@ -210,6 +210,9 @@ void ProtocomThread::handle(const Proto::Commands cmd)
         case Commands::FakeReadAlarms:
             handleSinglePoint(m_buffer.second, addr);
             break;
+        case Commands::FakeReadBitString:
+            handleBitString(m_buffer.second, addr);
+            break;
         default:
             handleRawBlock(m_buffer.second, addr);
             break;
@@ -434,6 +437,8 @@ void ProtocomThread::parseRequest(const CommandStruct &cmdStr)
         emit writeDataAttempt(ba);
         break;
     }
+    case Commands::FakeReadAlarms:
+    case Commands::FakeReadBitString:
     case Commands::FakeReadRegData:
     {
 
@@ -442,12 +447,12 @@ void ProtocomThread::parseRequest(const CommandStruct &cmdStr)
         break;
     }
 
-    case Commands::FakeReadAlarms:
-    {
-        QByteArray ba = prepareBlock(Commands::ReadBlkData, m_currentCommand.ba);
-        emit writeDataAttempt(ba);
-        break;
-    }
+        //    case Commands::FakeReadAlarms:
+        //    {
+        //        QByteArray ba = prepareBlock(Commands::ReadBlkData, m_currentCommand.ba);
+        //        emit writeDataAttempt(ba);
+        //        break;
+        //    }
         //    case Commands::ReadBlkDataA:
         //    {
         //        m_currentCommand.ba = StdFunc::arrayFromNumber(m_currentCommand.arg1.value<quint8>());

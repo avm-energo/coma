@@ -67,6 +67,11 @@ void UWidget::setSpBdQuery(const QList<UWidget::BdQuery> &list)
     m_spBdQueryList = list;
 }
 
+void UWidget::setBsBdQuery(const QList<UWidget::BdQuery> &list)
+{
+    m_bsBdQueryList = list;
+}
+
 void UWidget::updateFloatData(const DataTypes::FloatStruct &fl)
 {
     ++m_timerCounter;
@@ -104,6 +109,8 @@ void UWidget::reqUpdate()
         BaseInterface::iface()->reqFloats(query.sigAdr, query.sigQuantity);
     for (const auto &query : qAsConst(m_spBdQueryList))
         BaseInterface::iface()->reqAlarms(query.sigAdr, query.sigQuantity);
+    for (const auto &query : qAsConst(m_bsBdQueryList))
+        BaseInterface::iface()->reqBitStrings(query.sigAdr, query.sigQuantity);
 }
 
 void UWidget::uponInterfaceSetting()

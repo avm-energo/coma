@@ -599,6 +599,10 @@ static bool fillBackComboBox(BciNumber key, const QWidget *parent, delegate::QCo
                     S2::setRecordValue({ key, buffer });
                     break;
                 }
+                case delegate::QComboBox::bitfield:
+                {
+                    // NOTE Nothing here
+                }
                 default:
                 {
                     int status_code = WDFunc::CBIndex(parent, QString::number(key));

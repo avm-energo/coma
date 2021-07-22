@@ -161,6 +161,21 @@ void Protocom::reqBSI()
     emit wakeUpParser();
 }
 
+void Protocom::reqBitStrings(quint32 sigAdr, quint32 sigCount)
+{
+    Q_D(Protocom);
+    if (!isValidRegs(sigAdr, sigCount))
+        return;
+    CommandStruct inp {
+        Proto::Commands::FakeReadBitString,             // Fake command
+        sigAdr,                                         // Signal addr
+        sigCount,                                       // Count signals
+        StdFunc::arrayFromNumber(d->blockByReg(sigAdr)) // Protocom block
+    };
+    DataManager::addToInQueue(inp);
+    emit wakeUpParser();
+}
+
 void Protocom::writeFile(quint32 filenum, const QByteArray &file)
 {
     Q_UNUSED(filenum);

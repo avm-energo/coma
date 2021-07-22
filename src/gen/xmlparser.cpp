@@ -209,12 +209,22 @@ ctti::unnamed_type_id_t XmlParser::parseType(QDomElement domElement)
             return ctti::unnamed_type_id<BYTE_8t>().hash();
         if (name.contains("BYTE[16]", Qt::CaseInsensitive))
             return ctti::unnamed_type_id<BYTE_16t>().hash();
+        if (name.contains("BYTE[32]", Qt::CaseInsensitive))
+            return ctti::unnamed_type_id<BYTE_32t>().hash();
         if (name.contains("WORD[4]", Qt::CaseInsensitive))
             return ctti::unnamed_type_id<WORD_4t>().hash();
         if (name.contains("WORD[8]", Qt::CaseInsensitive))
             return ctti::unnamed_type_id<WORD_8t>().hash();
         if (name.contains("WORD[16]", Qt::CaseInsensitive))
             return ctti::unnamed_type_id<WORD_16t>().hash();
+        if (name.contains("WORD[32]", Qt::CaseInsensitive))
+            return ctti::unnamed_type_id<WORD_32t>().hash();
+        if (name.contains("DWORD[8]", Qt::CaseInsensitive))
+            return ctti::unnamed_type_id<DWORD_8t>().hash();
+        if (name.contains("DWORD[16]", Qt::CaseInsensitive))
+            return ctti::unnamed_type_id<DWORD_16t>().hash();
+        if (name.contains("DWORD[32]", Qt::CaseInsensitive))
+            return ctti::unnamed_type_id<DWORD_32t>().hash();
         if (name.contains("float[2]", Qt::CaseInsensitive))
             return ctti::unnamed_type_id<FLOAT_2t>().hash();
         if (name.contains("float[3]", Qt::CaseInsensitive))
@@ -324,8 +334,13 @@ delegate::itemVariant XmlParser::parseWidget(QDomElement domElement)
         widget.items = items;
         QDomElement childElement = domElement.firstChildElement("field");
         // QComboBox depends on index by default
-        widget.primaryField
-            = childElement.text().contains("data") ? delegate::QComboBox::data : delegate::QComboBox::index;
+        if (childElement.text().contains("data"))
+            widget.primaryField = delegate::QComboBox::data;
+        else if (childElement.text().contains("bitfield"))
+            widget.primaryField = delegate::QComboBox::bitfield;
+        else
+            widget.primaryField = delegate::QComboBox::index;
+        //    = childElement.text().contains("data") ? delegate::QComboBox::data : delegate::QComboBox::index;
         return widget;
     }
 

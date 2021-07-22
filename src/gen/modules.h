@@ -46,6 +46,7 @@ enum MezzanineBoard : quint16
     MTM_21 = 0x21,
     MTM_22 = 0x22,
     MTM_31 = 0x31,
+    MTM_33 = 0x33,
     MTM_35 = 0x35,
     MTM_81 = 0x81,
     MTM_82 = 0x82,
@@ -79,6 +80,7 @@ const QMap<quint16, QString> MezzanineBoards {
     { MTM_21, "21" },         // аналоговый ввод, комбинируется с 2x,3x
     { MTM_22, "22" },         // аналоговый ввод, комбинируется с 2x,3x
     { MTM_31, "31" },         // дискретный ввод, комбинируется с 2x,3x
+    { MTM_33, "33" },         // дискретный ввод, комбинируется с 2x,3x
     { MTM_35, "35" },         // дискретный вывод, комбинируется с 2x,3x
     { MTM_81, "81 (Э2Т0Н)" }, // 0U6I, комбинируется с 80,84
     { MTM_82, "82 (Э1Т1Н)" }, // 3U3I, комбинируется с 80,84
@@ -189,18 +191,22 @@ enum BciNumber : unsigned
     filterthr_IDE = 133,
     filtern_IDE = 134,
     hysteresisA_IDE = 135,
-    in_typeD_IDB = 201,
-    dly_time_IDB = 202,
+    in_typeD16_IDB = 201,
+    dly_time16_IDB = 202,
     Pair_IDB = 203,
     Signal_type_IDB = 204,
     in_typeD2_IDB = 205,
     dly_time2_IDB = 206,
-    in_typeD_IDE = 231,
-    dly_time_IDE = 232,
+    in_typeD32_IDB = 211,
+    dly_time32_IDB = 212,
+    in_typeD16_IDE = 231,
+    dly_time16_IDE = 232,
     Pair_IDE = 233,
     Signal_type_IDE = 234,
     in_typeD2_IDE = 235,
     dly_time2_IDE = 236,
+    in_typeD32_IDE = 241,
+    dly_time32_IDE = 242,
     in_typeT_IDB = 301,
     in_minT_IDB = 302,
     in_maxT_IDB = 303,

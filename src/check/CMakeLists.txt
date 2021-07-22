@@ -4,9 +4,6 @@ project(check LANGUAGES CXX)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-find_package(Qt5Core)
-#find_package(QXlsx CONFIG REQUIRED)
-
 find_package(
   QT NAMES Qt6 Qt5
   COMPONENTS Core Network Widgets
@@ -37,7 +34,9 @@ add_library(
   checkktfdialog.cpp
   checkktfdialog.h
   checkktfharmonicdialog.cpp
-  checkktfharmonicdialog.h)
+  checkktfharmonicdialog.h
+  check3533dialog.h
+  check3533dialog.cpp)
 
 target_link_libraries(
   ${PROJECT_NAME}
@@ -47,5 +46,4 @@ target_link_libraries(
   PRIVATE Qt${QT_VERSION_MAJOR}::Network
   PRIVATE QXlsx)
 
-#add_dependencies(${PROJECT_NAME} QXlsxBuild)
 target_compile_definitions(${PROJECT_NAME} PRIVATE ${PROJECT_NAME}_LIBRARY)
