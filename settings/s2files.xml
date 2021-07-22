@@ -427,6 +427,25 @@
 	<record>
 		<id>205</id>
 		<type>DWORD</type>
+		<widget>
+			<type>CheckBoxGroup</type>
+			<group>300</group>
+			<string>Инверсия</string>
+			<string-array>
+				<item>Инвертирован вход 1</item>
+				<item>Инвертирован вход 2</item>
+				<item>Инвертирован вход 3</item>
+				<item>Инвертирован вход 4</item>
+				<item>Инвертирован вход 5</item>
+				<item>Инвертирован вход 6</item>
+				<item>Инвертирован вход 7</item>
+				<item>Инвертирован вход 8</item>
+				<item>Инвертирован вход 9</item>
+				<item>Инвертирован вход 10</item>
+				<item>Инвертирован вход 11</item>
+			</string-array>
+			<count>11</count>
+		</widget>
 	</record>
 	<record>
 		<id>206</id>

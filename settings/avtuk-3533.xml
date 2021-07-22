@@ -68,11 +68,15 @@
 					<defaultValue>8</defaultValue>
 				</record>
 				<record>
-					<id>241</id>
+					<id>205</id>
 					<defaultValue>0</defaultValue>
 				</record>
 				<record>
-					<id>242</id>
+					<id>211</id>
+					<defaultValue>0</defaultValue>
+				</record>
+				<record>
+					<id>212</id>
 					<defaultValue>2</defaultValue>
 				</record>
 				<record>
@@ -95,34 +99,15 @@
 					<id>405</id>
 					<defaultValue>0</defaultValue>
 				</record>
+				<record>
+					<id>407</id>
+					<defaultValue>0</defaultValue>
+				</record>
         <record>
-					<id>406</id>
+					<id>408</id>
 					<defaultValue>0</defaultValue>
 				</record>
-        <record>
-					<id>421</id>
-					<defaultValue>0</defaultValue>
-				</record>
-				<record>
-					<id>422</id>
-					<defaultValue>0</defaultValue>
-				</record>
-				<record>
-					<id>423</id>
-					<defaultValue>0</defaultValue>
-				</record>
-				<record>
-					<id>424</id>
-					<defaultValue>0</defaultValue>
-				</record>
-				<record>
-					<id>425</id>
-					<defaultValue>0</defaultValue>
-				</record>
-				<record>
-					<id>426</id>
-					<defaultValue>0</defaultValue>
-				</record>
+
 			</s2files>
     </resources>
   </module>
