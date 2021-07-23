@@ -481,15 +481,47 @@
 			<type>DoubleSpinBoxGroup</type>
 			<group>100</group>
 			<string>Время задержки для контроля дребезга контактов входы</string>
-			<count>32</count>
+			<count>30</count>
 			<min>0</min>
 			<max>65554</max>
 			<decimals>0</decimals>
 		</widget>
 	</record>
 	<record>
+		<id>231</id>
+		<type>BYTE[16]</type>
+		<widget>
+			<type>CheckBoxGroup</type>
+			<group>100</group>
+			<string>Тип входа №0…15</string>
+			<string-array>
+				<item>Не использовать вход 1</item>
+				<item>Не использовать вход 2</item>
+				<item>Не использовать вход 3</item>
+				<item>Не использовать вход 4</item>
+				<item>Не использовать вход 5</item>
+				<item>Не использовать вход 6</item>
+				<item>Не использовать вход 7</item>
+				<item>Не использовать вход 8</item>
+				<item>Не использовать вход 9</item>
+				<item>Не использовать вход 10</item>
+				<item>Не использовать вход 11</item>
+			</string-array>
+			<count>11</count>
+		</widget>
+	</record>
+	<record>
 		<id>232</id>
 		<type>DWORD[16]</type>
+		<widget>
+			<type>DoubleSpinBoxGroup</type>
+			<group>100</group>
+			<string>Время фильтрации</string>
+			<count>11</count>
+			<min>0</min>
+			<max>65536</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>233</id>
@@ -498,26 +530,83 @@
 	<record>
 		<id>234</id>
 		<type>WORD</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>300</group>
+			<string>Время определения состояния сигнала переменного напряжения(в периодах сети)</string>
+			<min>0</min>
+			<max>254</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>235</id>
 		<type>DWORD</type>
+		<widget>
+			<type>CheckBoxGroup</type>
+			<group>300</group>
+			<string>Инверсия</string>
+			<string-array>
+				<item>Инвертировать вход 1</item>
+				<item>Инвертировать вход 2</item>
+				<item>Инвертировать вход 3</item>
+				<item>Инвертировать вход 4</item>
+				<item>Инвертировать вход 5</item>
+				<item>Инвертировать вход 6</item>
+				<item>Инвертировать вход 7</item>
+				<item>Инвертировать вход 8</item>
+				<item>Инвертировать вход 9</item>
+				<item>Инвертировать вход 10</item>
+				<item>Инвертировать вход 11</item>
+				<item>Инвертировать вход 12</item>
+				<item>Инвертировать вход 13</item>
+				<item>Инвертировать вход 14</item>
+				<item>Инвертировать вход 15</item>
+				<item>Инвертировать вход 16</item>
+				<item>Инвертировать вход 17</item>
+				<item>Инвертировать вход 18</item>
+				<item>Инвертировать вход 19</item>
+				<item>Инвертировать вход 20</item>
+				<item>Инвертировать вход 21</item>
+				<item>Инвертировать вход 22</item>
+				<item>Инвертировать вход 23</item>
+				<item>Инвертировать вход 24</item>
+				<item>Инвертировать вход 25</item>
+				<item>Инвертировать вход 26</item>
+				<item>Инвертировать вход 27</item>
+				<item>Инвертировать вход 28</item>
+				<item>Инвертировать вход 29</item>
+				<item>Инвертировать вход 30</item>
+			</string-array>
+			<count>30</count>
+		</widget>
 	</record>
 	<record>
 		<id>236</id>
 		<type>DWORD</type>
+		<widget>
+			<type>QComboBoxGroup</type>
+			<group>300</group>
+			<string>Тип напряжения</string>
+			<string-array>
+				<item>-</item>
+				<item>~</item>
+			</string-array>
+			<count>11</count>
+		</widget>
 	</record>
 	<record>
 		<id>241</id>
 		<type>BYTE[32]</type>
 		<widget>
-			<type>DoubleSpinBoxGroup</type>
-			<group>100</group>
-			<string>Тип входа</string>
-			<count>32</count>
-			<min>0</min>
-			<max>254</max>
-			<decimals>0</decimals>
+			<type>QComboBoxGroup</type>
+			<group>300</group>
+			<string>Тип напряжения</string>
+			<string-array>
+				<item>-</item>
+				<item>~</item>
+			</string-array>
+			<count>30</count>
 		</widget>
 	</record>
 	<record>
@@ -527,7 +616,7 @@
 			<type>DoubleSpinBoxGroup</type>
 			<group>100</group>
 			<string>Время задержки для контроля дребезга контактов входы</string>
-			<count>32</count>
+			<count>30</count>
 			<min>0</min>
 			<max>65554</max>
 			<decimals>0</decimals>

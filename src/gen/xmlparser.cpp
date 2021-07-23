@@ -149,6 +149,7 @@ class QLabel;
 class QDoubleSpinBox;
 class QCheckBox;
 class QComboBox;
+class QComboBoxGroup;
 class QTableView;
 class CheckBoxGroup;
 class IPCtrl;
@@ -184,6 +185,9 @@ ctti::unnamed_type_id_t XmlParser::parseType(QDomElement domElement)
                 return ctti::unnamed_type_id<DoubleSpinBoxGroup>().hash();
             if (name.contains("CheckBoxGroup", Qt::CaseInsensitive))
                 return ctti::unnamed_type_id<CheckBoxGroup>().hash();
+            if (name.contains("ComboBoxGroup", Qt::CaseInsensitive))
+                return ctti::unnamed_type_id<QComboBoxGroup>().hash();
+            Q_ASSERT(false && "False type");
         }
         if (name.contains("Label", Qt::CaseInsensitive))
             return ctti::unnamed_type_id<QLabel>().hash();
@@ -331,7 +335,7 @@ delegate::itemVariant XmlParser::parseWidget(QDomElement domElement)
 
         widget.desc = description;
         widget.toolTip = toolTip;
-        widget.items = items;
+        widget.model = items;
         QDomElement childElement = domElement.firstChildElement("field");
         // QComboBox depends on index by default
         if (childElement.text().contains("data"))
@@ -343,7 +347,29 @@ delegate::itemVariant XmlParser::parseWidget(QDomElement domElement)
         //    = childElement.text().contains("data") ? delegate::QComboBox::data : delegate::QComboBox::index;
         return widget;
     }
+    case ctti::unnamed_type_id<QComboBoxGroup>().hash():
+    {
+        delegate::QComboBoxGroup widget(type, widgetGroup);
 
+        widget.desc = description;
+        widget.toolTip = toolTip;
+        widget.model = items;
+        QDomElement childElement = domElement.firstChildElement("field");
+        // QComboBox depends on index by default
+        if (childElement.text().contains("data"))
+            widget.primaryField = delegate::QComboBox::data;
+        else if (childElement.text().contains("bitfield"))
+            widget.primaryField = delegate::QComboBox::bitfield;
+        else
+            widget.primaryField = delegate::QComboBox::index;
+        //    = childElement.text().contains("data") ? delegate::QComboBox::data : delegate::QComboBox::index;
+        childElement = domElement.firstChildElement("count");
+        bool status = false;
+        widget.count = childElement.text().toUInt(&status);
+        if (!status)
+            qWarning() << name << className;
+        return widget;
+    }
     default:
     {
     }

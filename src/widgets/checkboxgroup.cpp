@@ -6,7 +6,7 @@
 #include <QVBoxLayout>
 
 CheckBoxGroup::CheckBoxGroup(const QStringList &desc, const QList<int> &ignorePos, QWidget *parent)
-    : QWidget(parent), d_ptr(new CheckBoxGroupPrivate)
+    : QWidget(parent), d_ptr(new CheckBoxGroupPrivate(desc.size()))
 {
     Q_D(CheckBoxGroup);
     d->q_ptr = this;
@@ -31,7 +31,7 @@ CheckBoxGroup::CheckBoxGroup(const QStringList &desc, const QList<int> &ignorePo
 }
 
 CheckBoxGroup::CheckBoxGroup(const QStringList &desc, QWidget *parent)
-    : QWidget(parent), d_ptr(new CheckBoxGroupPrivate)
+    : QWidget(parent), d_ptr(new CheckBoxGroupPrivate(desc.size()))
 {
     Q_D(CheckBoxGroup);
     d->q_ptr = this;

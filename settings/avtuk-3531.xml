@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <modules xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="device-schema.xsd">
   <!--Здесь мы описаваем текущий модуль, обязательно указать mtypeb и mtypem-->
-  <module mtypeb="35" mtypem="33">
+  <module mtypeb="35" mtypem="31">
     <!--Здесь укаазно название модуля-->
-    <name>AVTUK-3533</name>
+    <name>AVTUK-3531</name>
     <!--Минимальная версия прошивки модуля, для которой описаны настройки-->
-    <version>2.5.0</version>
+    <version>2.4.2</version>
     <!--Дальше идет всё, что несредственно относится к модулю-->
     <resources>
       <!--Описываем сигнализацию, имя обязательно-->
@@ -25,12 +25,7 @@
           <start-addr>101</start-addr>
           <count>2</count>
           <block>0</block>
-       </group>
-       <group>
-          <start-addr>5001</start-addr>
-          <count>1</count>
-          <block>103</block>
-       </group>      
+       </group>    
       </protocom>
       <iec60870>     
       </iec60870>
@@ -68,16 +63,24 @@
 					<defaultValue>8</defaultValue>
 				</record>
 				<record>
-					<id>235</id>
+					<id>231</id>
 					<defaultValue>0</defaultValue>
 				</record>
 				<record>
-					<id>241</id>
-					<defaultValue>0</defaultValue>
-				</record>
-				<record>
-					<id>242</id>
+					<id>232</id>
 					<defaultValue>2</defaultValue>
+				</record>
+				<record>
+					<id>234</id>
+					<defaultValue>2</defaultValue>
+				</record>
+				<record>
+					<id>235</id>
+					<defaultValue>2</defaultValue>
+				</record>
+				<record>
+					<id>236</id>
+					<defaultValue>0</defaultValue>
 				</record>
 				<record>
 					<id>401</id>

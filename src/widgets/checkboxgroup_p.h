@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../gen/stdfunc.h"
 #include "checkboxgroup.h"
 
 #include <boost/dynamic_bitset.hpp>
@@ -9,8 +10,9 @@ class CheckBoxGroupPrivate
     Q_DECLARE_PUBLIC(CheckBoxGroup);
 
 public:
-    CheckBoxGroupPrivate()
+    CheckBoxGroupPrivate(int count)
     {
+        m_bitset = boost::dynamic_bitset(std::size_t(std_ext::clp2(count)));
     }
     template <typename T> void setBits(const T value)
     {

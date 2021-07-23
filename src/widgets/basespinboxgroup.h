@@ -1,47 +1,32 @@
 #pragma once
+
+#include "helper.h"
+
 #include <QAbstractSpinBox>
 #include <QDebug>
 #include <QDoubleSpinBox>
 #include <QHBoxLayout>
+#include <QLabel>
 #include <QSpinBox>
 #include <QWidget>
-
 template <typename T, class S, std::enable_if_t<std::is_base_of<QAbstractSpinBox, S>::value, bool> = true>
 class BaseSpinBoxGroup : public QWidget
 {
-    static constexpr int defaultRatio = 3;
-    static constexpr int maxRatio = 5;
-    int goldenRatio(int value)
-    {
-        for (auto i = maxRatio; i != defaultRatio; --i)
-        {
-            if (!(value % i))
-                return i;
-        }
-        return defaultRatio;
-    }
 
 public:
     explicit BaseSpinBoxGroup(int count, QWidget *parent = nullptr) : QWidget(parent), m_count(count)
     {
-        QVBoxLayout *vlyout = new QVBoxLayout;
-        auto itemsOneLine = goldenRatio(m_count);
+        auto itemsOneLine = detail::goldenRatio(m_count);
 
-        QHBoxLayout *layout = new QHBoxLayout;
+        QGridLayout *gridlyout = new QGridLayout;
         for (auto i = 0; i != m_count; ++i)
         {
+            QHBoxLayout *layout = new QHBoxLayout;
+            layout->addWidget(new QLabel(QString::number(i + 1), this));
             layout->addWidget(new S(this));
-            auto temp1 = (i + 1) / itemsOneLine;
-            auto temp2 = (i + 1) % itemsOneLine;
-
-            if ((temp1 != 0) && (temp2 == 0))
-            {
-                vlyout->addLayout(layout);
-                layout = new QHBoxLayout;
-            }
+            gridlyout->addLayout(layout, i / itemsOneLine, i % itemsOneLine);
         }
-        vlyout->addLayout(layout);
-        setLayout(vlyout);
+        setLayout(gridlyout);
     }
     T minimum() const
     {

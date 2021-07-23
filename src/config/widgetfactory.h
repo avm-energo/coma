@@ -5,6 +5,7 @@
 #include "delegate.h"
 
 #include <QStandardItemModel>
+#include <bitset>
 
 //#define DEBUG_FACTORY
 
@@ -235,7 +236,7 @@ template <typename T> bool WidgetFactory::fillWidget(const QWidget *parent, BciN
                     {
                     case delegate::QComboBox::data:
                     {
-                        auto index = arg.items.indexOf(QString::number(value));
+                        auto index = arg.model.indexOf(QString::number(value));
                         if (index != -1)
                             status = WDFunc::SetCBIndex(parent, QString::number(key), index);
                         break;
@@ -245,6 +246,31 @@ template <typename T> bool WidgetFactory::fillWidget(const QWidget *parent, BciN
                         status = WDFunc::SetCBIndex(parent, QString::number(key), value);
                         break;
                     }
+                    }
+                }
+            },
+            [&](const delegate::QComboBoxGroup &arg) {
+                if constexpr (!std::is_container<T>())
+                {
+#ifdef DEBUG_FACTORY
+                    qDebug() << "QComboBoxGroup" << key;
+#endif
+                    std::bitset<sizeof(T) *CHAR_BIT> bitset = value;
+                    int count = arg.count;
+                    bool flag = false;
+                    for (auto i = 0; i != count; ++i)
+                    {
+                        status = WDFunc::SetCBIndex(
+                            parent, QString::number(key) + "-" + QString::number(i), bitset.test(i));
+                        Q_ASSERT(status && "Couldn't fill QComboBox");
+                        if (!status && !flag)
+                        {
+                            flag = true;
+                        }
+                        if (flag)
+                        {
+                            status = false;
+                        }
                     }
                 }
             },

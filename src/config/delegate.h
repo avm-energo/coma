@@ -59,7 +59,7 @@ struct CheckBoxGroup : Widget, Group
     }
 };
 
-struct QComboBox : Widget, Group
+struct QComboBox : Widget
 {
     enum PrimaryField : int
     {
@@ -71,6 +71,14 @@ struct QComboBox : Widget, Group
     {
     }
     PrimaryField primaryField = index;
+    QStringList model;
+};
+
+struct QComboBoxGroup : QComboBox, Group
+{
+    QComboBoxGroup(const ctti::unnamed_type_id_t type_, const WidgetGroup group_) : QComboBox(type_, group_)
+    {
+    }
 };
 struct Item : Widget
 {
@@ -104,9 +112,15 @@ struct Item : Widget
     BciNumber parent;
 };
 
-template <class... Args> using tempVariant = std::variant<std::variant<Args...>, Args...>;
-
-using itemVariant = std::variant<Widget, QComboBox, DoubleSpinBoxGroup, DoubleSpinBoxWidget, CheckBoxGroup, Item>;
+using itemVariant = std::variant< //
+    Widget,                       //
+    QComboBox,                    //
+    DoubleSpinBoxGroup,           //
+    DoubleSpinBoxWidget,          //
+    CheckBoxGroup,                //
+    Item,                         //
+    QComboBoxGroup                //
+    >;
 }
 using categoryMap = QMap<delegate::WidgetGroup, QString>;
 using widgetMap = std::map<BciNumber, delegate::itemVariant>;

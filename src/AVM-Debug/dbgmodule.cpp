@@ -137,6 +137,14 @@ void DbgModule::create(Modules::BaseBoard typeB, Modules::MezzanineBoard typeM)
         addDialogToList(check, "Проверка");
         // addDialogToList(new OscDialog, "Осциллограммы");
     }
+    if ((typeB == BaseBoard::MTB_35) && (typeM == MezzanineBoard::MTM_31))
+    {
+        qDebug("Here is AVTUK-3533");
+        addDialogToList(new ConfigDialog(settings()->configSettings), "Конфигурирование", "conf1");
+        //   Check3533Dialog *check = new Check3533Dialog;
+        //   addDialogToList(check, "Проверка");
+        // addDialogToList(new OscDialog, "Осциллограммы");
+    }
 }
 
 void DbgModule::create(QTimer *updateTimer)
