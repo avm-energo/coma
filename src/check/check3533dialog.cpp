@@ -21,6 +21,7 @@ Check3533Dialog::Check3533Dialog(QWidget *parent) : AbstractCheckDialog(parent)
 
 void Check3533Dialog::updatePixmap(bool isset, int position)
 {
+    Q_ASSERT(!isset);
     auto pixmap = WDFunc::NewCircle((isset) ? m_alarmColor : m_normalColor, circleRadius);
     auto status = WDFunc::SetLBLImage(this, QString::number(position), &pixmap);
     if (!status)
@@ -29,6 +30,8 @@ void Check3533Dialog::updatePixmap(bool isset, int position)
 
 void Check3533Dialog::updateBitStringData(const DataTypes::BitStringStruct &bs)
 {
+    if (bs.sigAdr != 5001)
+        return;
     std::bitset<sizeof(bs.sigVal) * 8> values = bs.sigVal;
     for (auto i = 0; i != values.size(); ++i)
     {
