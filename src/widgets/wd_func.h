@@ -156,7 +156,7 @@ public:
             return false;
         }
         auto vector = spbg->value();
-        std::copy_n(vector.cbegin(), N, spbvalue.begin());
+        std::copy_n(vector.cbegin(), std::min(N, vector.size()), spbvalue.begin());
         // spbvalue = spbg->value();
         return true;
     }

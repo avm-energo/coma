@@ -21,6 +21,8 @@ find_package(
 add_library(${PROJECT_NAME} STATIC configdialog.cpp configdialog.h delegate.h
                                    widgetfactory.cpp widgetfactory.h)
 
+option(DEBUG_WIDGET_FACTORY "Enable debug logging for WidgetFactory" OFF)
+
 target_link_libraries(
   ${PROJECT_NAME}
   PRIVATE Qt${QT_VERSION_MAJOR}::Core
@@ -28,3 +30,7 @@ target_link_libraries(
   PRIVATE Qt${QT_VERSION_MAJOR}::Xml
   PRIVATE Qt${QT_VERSION_MAJOR}::Network)
 target_compile_definitions(${PROJECT_NAME} PRIVATE ${PROJECT_NAME}_LIBRARY)
+
+if (DEBUG_WIDGET_FACTORY)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE DEBUG_FACTORY)
+endif(DEBUG_WIDGET_FACTORY)

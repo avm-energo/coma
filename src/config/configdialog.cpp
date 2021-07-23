@@ -16,6 +16,7 @@
 #include <QMessageBox>
 #include <QScrollArea>
 #include <QTextEdit>
+#include <set>
 namespace crypto
 {
 static constexpr char hash[] = "d93fdd6d1fb5afcca939fa650b62541d09dbcb766f41c39352dc75f348fb35dc";
@@ -316,7 +317,7 @@ void ConfigDialog::PrereadConf()
 void ConfigDialog::FillBack() const
 {
     WidgetFactory factory;
-    for (const auto record : m_defaultValues)
+    for (const auto &record : m_defaultValues)
     {
         if (!record.visibility)
             continue;
