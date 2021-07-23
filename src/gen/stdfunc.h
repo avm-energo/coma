@@ -132,4 +132,26 @@ private:
     static int m_tuneRequestCount; // степень усреднения для регулировки
 };
 
+namespace std_ext
+{
+#if defined(Q_CC_MSVC)
+__forceinline
+#elif defined(Q_CC_GNU)
+__attribute__((always_inline)) inline
+#else
+inline
+#endif
+    unsigned int
+    clp2(unsigned int x)
+{
+    --x;
+    x |= x >> 1;
+    x |= x >> 2;
+    x |= x >> 4;
+    x |= x >> 8;
+    x |= x >> 16;
+    return ++x;
+}
+}
+
 #endif // STDFUNC_H
