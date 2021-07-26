@@ -99,6 +99,8 @@ enum Commands : byte
     WriteBlkCmd = 0x35,
     // запись технологического блока
     WriteBlkTech = 0x2B,
+    // отправка команды 104
+    WriteSingleCommand = 0x2D,
     // запись файла
     WriteFile = 0x32,
     // задание варианта использования

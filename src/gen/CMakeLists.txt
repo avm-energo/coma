@@ -39,6 +39,7 @@ add_library(
   logger.h
   logger.cpp
   pch.h
+  uint24.h
   singleton.h
   timefunc.h
   timefunc.cpp

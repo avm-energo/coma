@@ -89,9 +89,9 @@ public:
 
     static void removeSubstr(std::string &str, std::string &substr);
 
-    template <typename T> static QByteArray arrayFromNumber(T number)
+    template <typename T, size_t size = sizeof(T)> static QByteArray arrayFromNumber(T number)
     {
-        QByteArray ba(sizeof(T), 0);
+        QByteArray ba(size, 0);
         *(reinterpret_cast<T *>(ba.data())) = number;
         return ba;
     }

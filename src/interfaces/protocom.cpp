@@ -304,6 +304,13 @@ void Protocom::writeCommand(Queries::Commands cmd, QVariant item)
         Q_ASSERT(item.canConvert<quint32>());
         d->handleBlk(protoCmd, item.toUInt());
         break;
+
+    case Commands::WriteSingleCommand:
+
+        Q_ASSERT(item.canConvert<DataTypes::SingleCommand>());
+        d->handleCommand(protoCmd, item.value<DataTypes::SingleCommand>());
+        break;
+
     case Commands::WriteHardware:
 
         Q_ASSERT(item.canConvert<DataTypes::HardwareStruct>());

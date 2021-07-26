@@ -2,6 +2,8 @@
 
 #include "../widgets/udialog.h"
 
+constexpr uint16_t startRelayReg = 5201;
+
 class RelayDialog : public UDialog
 {
 public:
@@ -9,4 +11,8 @@ public:
 
 protected:
     QWidget *RelayWidget(int relayCount, QWidget *parent);
+
+private:
+    void changeRelay(int number);
+    std::map<uint16_t, bool> relays;
 };
