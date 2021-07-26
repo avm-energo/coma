@@ -8,20 +8,20 @@
 #include <QGroupBox>
 #include <bitset>
 
+constexpr int offset = 1;
+constexpr int columns = 6;
+
 Check3533Dialog::Check3533Dialog(QWidget *parent) : AbstractCheckDialog(parent)
 {
     m_BdUIList = { { "Основные", Bd1W() } };
     m_BdUIList.first().widget->setUpdatesEnabled();
 
     Timer->setInterval(ANMEASINT);
-    auto *widget = m_BdUIList.first().widget;
     connect(&DataManager::GetInstance(), &DataManager::bitStringReceived, this, &Check3533Dialog::updateBitStringData);
-    qDebug() << widget->findChildren<QLabel *>();
 }
 
 void Check3533Dialog::updatePixmap(bool isset, int position)
 {
-    Q_ASSERT(!isset);
     auto pixmap = WDFunc::NewCircle((isset) ? m_alarmColor : m_normalColor, circleRadius);
     auto status = WDFunc::SetLBLImage(this, QString::number(position), &pixmap);
     if (!status)
@@ -35,13 +35,12 @@ void Check3533Dialog::updateBitStringData(const DataTypes::BitStringStruct &bs)
     std::bitset<sizeof(bs.sigVal) * 8> values = bs.sigVal;
     for (auto i = 0; i != values.size(); ++i)
     {
-        updatePixmap(values.test(i), i);
+        updatePixmap(values.test(i), i + offset);
     }
 }
 
 UWidget *Check3533Dialog::Bd1W()
 {
-    int i;
     UWidget *w = new UWidget;
     QVBoxLayout *lyout = new QVBoxLayout;
     QVBoxLayout *vlyout = new QVBoxLayout;
@@ -61,16 +60,16 @@ UWidget *Check3533Dialog::Bd1W()
     {
 
         QHBoxLayout *hlyout = new QHBoxLayout;
-        auto labelText = new QLabel(QString::number(i) + ":", this);
+        auto labelText = new QLabel(QString::number(i + offset) + ":", this);
         hlyout->addWidget(labelText);
 
         auto pixmap = WDFunc::NewCircle(m_normalColor, circleRadius);
         auto label = new QLabel(this);
-        label->setObjectName(QString::number(i));
+        label->setObjectName(QString::number(i + offset));
         label->setPixmap(pixmap);
 
         hlyout->addWidget(label);
-        glyout->addLayout(hlyout, i % 3, i / 3);
+        glyout->addLayout(hlyout, i / columns, i % columns);
     }
     gb->setLayout(glyout);
     lyout->addWidget(gb);
