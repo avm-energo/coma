@@ -1,6 +1,7 @@
 #include "dbgmodule.h"
 
 #include "../avtuk/oscdialog.h"
+#include "../avtuk/relaydialog.h"
 #include "../avtuk/switchjournaldialog.h"
 #include "../check/check3533dialog.h"
 #include "../check/checkkdvdialog.h"
@@ -144,6 +145,10 @@ void DbgModule::create(Modules::BaseBoard typeB, Modules::MezzanineBoard typeM)
         //   Check3533Dialog *check = new Check3533Dialog;
         //   addDialogToList(check, "Проверка");
         // addDialogToList(new OscDialog, "Осциллограммы");
+    }
+    if (typeB == BaseBoard::MTB_35)
+    {
+        addDialogToList(new RelayDialog(4), "Реле", "relay1");
     }
 }
 
