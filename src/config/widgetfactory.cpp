@@ -187,8 +187,7 @@ QWidget *WidgetFactory::createWidget(BciNumber key, QWidget *parent)
                        {
                            QHBoxLayout *layout = new QHBoxLayout;
                            layout->addWidget(new QLabel(QString::number(i + 1), parent));
-                           layout->addWidget(
-                               WDFunc::NewCB2(parent, QString::number(key) + "-" + QString::number(i), arg.model));
+                           layout->addWidget(WDFunc::NewCB2(parent, widgetName(key, i), arg.model));
                            gridlyout->addLayout(layout, i / itemsOneLine, i % itemsOneLine);
                        }
 
@@ -669,8 +668,7 @@ static bool fillBackComboBoxGroup(BciNumber key, const QWidget *parent, int coun
                 assert(size_t(count) <= bitset.size());
                 for (int i = 0; i != count; ++i)
                 {
-                    const QString widgetName = QString::number(key) + "-" + QString::number(i);
-                    int status_code = WDFunc::CBIndex(parent, widgetName);
+                    int status_code = WDFunc::CBIndex(parent, widgetName(key, i));
                     if (status_code == -1)
                         break;
                     bitset.set(i, bool(status_code));
@@ -687,8 +685,7 @@ static bool fillBackComboBoxGroup(BciNumber key, const QWidget *parent, int coun
                     assert(size_t(count) <= container.size());
                     for (int i = 0; i != count; ++i)
                     {
-                        const QString widgetName = QString::number(key) + "-" + QString::number(i);
-                        int status_code = WDFunc::CBIndex(parent, widgetName);
+                        int status_code = WDFunc::CBIndex(parent, widgetName(key, i));
                         if (status_code == -1)
                             break;
                         container.at(i) = internalType(status_code);

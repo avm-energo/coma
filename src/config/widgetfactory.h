@@ -70,6 +70,11 @@ private:
     static categoryMap m_categoryMap;
 };
 
+const inline QString widgetName(int group, int item)
+{
+    return QString::number(group) + "-" + QString::number(item);
+}
+
 // Template specialisation
 
 template <>
@@ -260,8 +265,7 @@ template <typename T> bool WidgetFactory::fillWidget(const QWidget *parent, BciN
                     bool flag = false;
                     for (auto i = 0; i != count; ++i)
                     {
-                        status = WDFunc::SetCBIndex(
-                            parent, QString::number(key) + "-" + QString::number(i), bitset.test(i));
+                        status = WDFunc::SetCBIndex(parent, widgetName(key, i), bitset.test(i));
                         Q_ASSERT(status && "Couldn't fill QComboBox");
                         if (!status && !flag)
                         {
@@ -270,6 +274,31 @@ template <typename T> bool WidgetFactory::fillWidget(const QWidget *parent, BciN
                         if (flag)
                         {
                             status = false;
+                        }
+                    }
+                }
+                else if constexpr (std::is_container<T>())
+                {
+                    typedef std::remove_reference_t<typename T::value_type> internalType;
+                    if constexpr (std::is_unsigned_v<internalType>)
+                    {
+#ifdef DEBUG_FACTORY
+                        qDebug() << "QComboBoxGroup" << key;
+#endif
+                        auto count = std::min(std::size_t(arg.count), value.size());
+                        bool flag = false;
+                        for (auto i = 0; i != count; ++i)
+                        {
+                            status = WDFunc::SetCBIndex(parent, widgetName(key, i), value.at(i));
+                            Q_ASSERT(status && "Couldn't fill QComboBox");
+                            if (!status && !flag)
+                            {
+                                flag = true;
+                            }
+                            if (flag)
+                            {
+                                status = false;
+                            }
                         }
                     }
                 }
