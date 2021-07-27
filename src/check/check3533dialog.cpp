@@ -8,6 +8,8 @@
 #include <QGroupBox>
 #include <bitset>
 
+constexpr uint16_t INPUT_QUANITY = 32;
+
 constexpr int offset = 1;
 constexpr int columns = 6;
 

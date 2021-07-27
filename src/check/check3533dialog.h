@@ -2,8 +2,6 @@
 
 #include "abstractcheckdialog.h"
 
-constexpr uint16_t INPUT_QUANITY = 32;
-
 class Check3533Dialog : public AbstractCheckDialog
 {
     QColor m_normalColor = (Qt::green);

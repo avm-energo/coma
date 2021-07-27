@@ -56,7 +56,6 @@ target_link_libraries(
   models
   startup
   tune
-  qcustomplot
   avtuk
   datablocks
   comaversion
