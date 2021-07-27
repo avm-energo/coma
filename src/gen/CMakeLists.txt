@@ -51,6 +51,7 @@ add_library(
   modules.h
   registers.h
   errorqueue.h
+  std_ext.h
   s2.cpp)
 
 target_link_libraries(

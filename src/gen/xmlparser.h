@@ -20,9 +20,9 @@ public:
 
     static ctti::unnamed_type_id_t parseType(QDomElement domElement);
     static delegate::itemVariant parseWidget(QDomElement domElement);
-    static DataTypes::RecordPair parseRecord(QDomElement domElement);
+    static DataTypes::RecordPair parseRecord(QDomElement domElement, widgetMap *const s2widgetMap);
     static delegate::Item parseItem(QDomElement domElement, ctti::unnamed_type_id_t parentType);
-    static void traverseNode(const QDomNode &node, ModuleSettings *const settings);
+    static void traverseNode(const QDomNode &node, ModuleSettings *const settings, GlobalSettings &gsettings);
     static void traverseNode(const QDomNode &node, GlobalSettings &settings);
 
 private:

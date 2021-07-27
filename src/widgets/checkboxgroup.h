@@ -13,6 +13,7 @@ class CheckBoxGroup : public QWidget
 public:
     CheckBoxGroup(const QStringList &desc, const QList<int> &ignorePos, QWidget *parent = nullptr);
     CheckBoxGroup(const QStringList &desc, QWidget *parent = nullptr);
+    CheckBoxGroup(const QStringList &desc, int count, QWidget *parent = nullptr);
     ~CheckBoxGroup();
     template <typename T, std::enable_if_t<std::is_unsigned_v<T>, bool> = true> void setBits(const T value);
     template <typename Container, std::enable_if_t<std::is_container<Container>::value, bool> = true>

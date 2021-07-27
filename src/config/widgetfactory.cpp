@@ -154,7 +154,8 @@ QWidget *WidgetFactory::createWidget(BciNumber key, QWidget *parent)
                        widget = new QWidget(parent);
                        QHBoxLayout *lyout = new QHBoxLayout;
                        lyout->addWidget(new QLabel(arg.desc, parent));
-                       auto group = new CheckBoxGroup(arg.items, parent);
+
+                       auto group = new CheckBoxGroup(arg.items, arg.count, parent);
                        group->setObjectName(QString::number(key));
                        lyout->addWidget(group);
                        widget->setLayout(lyout);

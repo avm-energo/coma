@@ -52,6 +52,28 @@ CheckBoxGroup::CheckBoxGroup(const QStringList &desc, QWidget *parent)
     setLayout(gridlyout);
 }
 
+CheckBoxGroup::CheckBoxGroup(const QStringList &desc, int count, QWidget *parent)
+    : QWidget(parent), d_ptr(new CheckBoxGroupPrivate(count))
+{
+    Q_D(CheckBoxGroup);
+    d->q_ptr = this;
+    d->setDescription(desc);
+    QGridLayout *gridlyout = new QGridLayout;
+    for (auto i = 0; i != std::min(d->description().size(), count); ++i)
+    {
+        const QString name = d->description().at(i);
+        QCheckBox *checkBox = new QCheckBox(name, this);
+        checkBox->setObjectName(QString::number(i));
+        gridlyout->addWidget(checkBox, i / 2, i % 2);
+        connect(checkBox, &QCheckBox::stateChanged, this, [=](const int value) {
+            Qt::CheckState state = Qt::CheckState(value);
+            if (!(state == Qt::Checked && d->test(i)) && !(state == Qt::Unchecked && !d->test(i)))
+                d->flip(i);
+        });
+    }
+    setLayout(gridlyout);
+}
+
 CheckBoxGroup::~CheckBoxGroup()
 {
     delete d_ptr;

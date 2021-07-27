@@ -6,6 +6,7 @@
 #include "../interfaces/baseinterface.h"
 #include "board.h"
 #include "settings.h"
+#include "std_ext.h"
 namespace keys
 {
 constexpr char name[] = "name";
@@ -377,20 +378,48 @@ delegate::itemVariant XmlParser::parseWidget(QDomElement domElement)
     return delegate::Widget(type, description, widgetGroup, toolTip);
 }
 
-DataTypes::RecordPair XmlParser::parseRecord(QDomElement domElement)
+DataTypes::RecordPair XmlParser::parseRecord(QDomElement domElement, widgetMap *const s2widgetMap)
 {
     using namespace DataTypes;
     QDomElement childElement = domElement.firstChildElement("id");
+    // ID cannot be empty
     if (childElement.isNull())
         return {};
     bool status = false;
     int id = childElement.text().toInt(&status);
+    // ID should be convertible to int
     if (!status)
         return {};
 
     childElement = domElement.firstChildElement("defaultValue");
+    // defaultValue is necessary, is this ok?
     if (childElement.isNull())
         return {};
+    // override settings
+    childElement = domElement.firstChildElement("widget");
+    if (!childElement.isNull())
+    {
+        auto newWidget = parseWidget(childElement);
+        auto oldWidget = s2widgetMap->at(BciNumber(id));
+        newWidget = std::visit(
+            [&](auto &&lhs, auto &&rhs) -> delegate::itemVariant {
+                using T = std::decay_t<decltype(lhs)>;
+                using J = std::decay_t<decltype(rhs)>;
+
+                if constexpr (std::is_same_v<T, J>)
+                {
+                    if constexpr (std::is_same_v<T, delegate::Item>)
+                    {
+                        abort();
+                    }
+                    return lhs.merge(rhs);
+                }
+                abort();
+            },
+            oldWidget, newWidget);
+        s2widgetMap->insert_or_assign(BciNumber(id), newWidget);
+    }
+
     auto visibilityElement = domElement.firstChildElement("visibility");
     // visibility=true by default
     if (visibilityElement.isNull() || visibilityElement.text() == "true")
@@ -436,7 +465,7 @@ delegate::Item XmlParser::parseItem(QDomElement domElement, ctti::unnamed_type_i
     }
 }
 
-void XmlParser::traverseNode(const QDomNode &node, ModuleSettings *const settings)
+void XmlParser::traverseNode(const QDomNode &node, ModuleSettings *const settings, GlobalSettings &gsettings)
 {
     QDomNode domNode = node.firstChild();
     while (!domNode.isNull())
@@ -535,13 +564,13 @@ void XmlParser::traverseNode(const QDomNode &node, ModuleSettings *const setting
                 if (domElement.tagName() == "record")
                 {
 
-                    settings->configSettings.push_back(parseRecord(domElement));
+                    settings->configSettings.push_back(parseRecord(domElement, gsettings.s2widgetMap));
                     domNode = domNode.nextSibling();
                     continue;
                 }
             }
         }
-        traverseNode(domNode, settings);
+        traverseNode(domNode, settings, gsettings);
         domNode = domNode.nextSibling();
     }
 }
