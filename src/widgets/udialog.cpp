@@ -30,6 +30,8 @@ void UDialog::updateGeneralResponse(const DataTypes::GeneralResponseStruct &resp
     {
     case DataTypes::Ok:
     {
+        if (successMsg().isEmpty())
+            break;
         QMessageBox::information(this, "Успех", successMsg());
         break;
     }

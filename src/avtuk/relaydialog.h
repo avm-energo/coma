@@ -11,8 +11,23 @@ public:
 
 protected:
     QWidget *RelayWidget(int relayCount, QWidget *parent);
+    void paintEvent(QPaintEvent *event) override;
 
 private:
-    void changeRelay(int number);
+    void changeRelay(int number)
+    {
+        bool state = !relays.at(number);
+        changeRelay(number, state);
+    }
+    void changeRelay(int number, bool state);
+    void resetRelays(int count)
+    {
+        for (auto i = startRelayReg; i != startRelayReg + count; ++i)
+        {
+            changeRelay(i, false);
+        }
+    }
     std::map<uint16_t, bool> relays;
+
+    bool isReset = false;
 };
