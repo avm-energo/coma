@@ -72,7 +72,7 @@ bool StmBroker::connectToStm()
 void StmBroker::checkPowerUnit()
 {
     Q_CHECK_PTR(m_interface);
-    m_interface->writeCommand(Queries::QUSB_ReqBlkData, AVTUK_14::DiscretePowerBlock);
+    m_interface->writeCommand(Queries::QUSB_ReqBlkData, AVTUK_14::MainBlock);
 }
 
 void StmBroker::setIndication(alise::Health_Code code)
@@ -96,6 +96,11 @@ void StmBroker::getTime()
 {
     Q_CHECK_PTR(m_interface);
     m_interface->reqTime();
+}
+
+void StmBroker::rebootMyself()
+{
+    m_interface->writeCommand(Queries::QUSB_Reboot, 0xff);
 }
 
 AVTUK_14::Indication StmBroker::transform(alise::Health_Code code) const

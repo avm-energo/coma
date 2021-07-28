@@ -8,7 +8,7 @@
 #include <queue>
 #include <vector>
 #include <zmq.hpp>
-Q_DECLARE_METATYPE(AVTUK_14::DiscretePowerSignals);
+Q_DECLARE_METATYPE(AVTUK_14::Main);
 Q_DECLARE_METATYPE(AVTUK_14::Indication);
 
 #define LOG_PROTOBUF
@@ -39,7 +39,7 @@ public:
 signals:
 public slots:
     void publishTime(const timespec time);
-    void publishPowerStatus(const AVTUK_14::DiscretePowerSignals powerStatus);
+    void publishPowerStatus(const AVTUK_14::Main powerStatus);
     void publishBlock(const DataTypes::BlockStruct blk);
     void publishHello(const QString id, const quint32 code);
 

@@ -43,7 +43,10 @@ add_executable(
     zeropublisher.cpp
     zeropublisher.h
     zerosubscriber.cpp
-    zerosubscriber.h)
+    zerosubscriber.h
+    interfaces.qrc
+    recovery.cpp
+    recovery.h)
 target_include_directories(${PROJECT_NAME} PUBLIC ${CONAN_INCLUDE_DIRS_CPPZMQ})
 target_include_directories(${PROJECT_NAME} PUBLIC ${PROTOS_GENERATED_DIR})
 

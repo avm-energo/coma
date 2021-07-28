@@ -1,4 +1,5 @@
 #pragma once
+#include "recovery.h"
 #include "stmbroker.h"
 #include "timesyncronizer.h"
 #include "zerorunner.h"
@@ -12,7 +13,7 @@ public:
     explicit Controller(QObject *parent = nullptr) noexcept;
     explicit Controller(std::string addr, QObject *parent = nullptr) noexcept;
 
-    ~Controller();
+    ~Controller() override;
 
     bool launch();
     void shutdown();
@@ -23,4 +24,5 @@ private:
     StmBroker m_stmBroker;
     TimeSyncronizer timeSync;
     QThread workerThread;
+    Recovery recovery;
 };

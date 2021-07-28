@@ -31,7 +31,7 @@ public slots:
     void stopServer();
 signals:
     void publishTime(timespec time);
-    void publishPowerStatus(AVTUK_14::DiscretePowerSignals powerStatus);
+    void publishPowerStatus(AVTUK_14::Main powerStatus);
     void timeReceived(timespec);
     void healthReceived(ZeroSubscriber::healthType);
 

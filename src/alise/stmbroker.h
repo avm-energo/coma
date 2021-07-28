@@ -22,6 +22,7 @@ public /*slots*/:
 
     void setTime(timespec time);
     void getTime();
+    void rebootMyself();
 
 private:
     AVTUK_14::Indication transform(alise::Health_Code code) const;
