@@ -1,0 +1,9 @@
+[Unit]
+Description=alise
+
+[Service]
+Type=simple
+ExecStart=@EXE_PATH@
+
+[Install]
+WantedBy=multi-user.target
