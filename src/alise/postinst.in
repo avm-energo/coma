@@ -27,7 +27,13 @@ systemctl start $service_name 2>/dev/null
 #
 # Suffocate any exit code that this prints - it's purely diagnostic.
 systemctl status $service_name --no-pager || true
-systemctl is-active --quiet alise || systemctl enable alise
+if pgrep -x alise >/dev/null
+then
+    systemctl enable $service_name
+else
+    echo "$service_name stopped"
+fi
+
 
 # Only print about the service if it was installed for the first time.
 #if [ $1 -eq 1 ]; then
