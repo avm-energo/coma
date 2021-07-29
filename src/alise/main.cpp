@@ -10,8 +10,8 @@ int main(int argc, char *argv[])
     std::cout << "Started " << std::endl;
 
     QCoreApplication a(argc, argv);
-    //  Logging::writeStart();
-    // qInstallMessageHandler(Logging::messageHandler);
+    Logging::writeStart();
+    qInstallMessageHandler(Logging::messageHandler);
     Controller controller;
     if (!controller.launch())
         return 13;
