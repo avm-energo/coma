@@ -65,6 +65,17 @@ void ZeroSubscriber::work()
                 qInfo() << "Someone said to Alise:" << helloAlise.message();
                 emit helloReceived(QString::fromStdString(identity.to_string()), helloAlise.message());
             }
+            else if (messageContent.Is<alise::TimeRequest>())
+            {
+                alise::TimeRequest payload;
+                if (!messageContent.UnpackTo(&payload))
+                {
+                    qWarning() << Error::WriteError;
+                    continue;
+                }
+                qInfo() << "TimeRequested";
+                emit timeRequest();
+            }
             else
             {
                 qWarning() << Error::WrongType;

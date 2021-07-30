@@ -17,36 +17,31 @@ bool ZeroRunner::runServer()
     frontend_.bind("tcp://*:5555");
     backendSub_.bind("inproc://backendSub");
     backendPub_.bind("inproc://backendPub");
-    connect(this, &ZeroRunner::timeReceived, this, &ZeroRunner::publishTime, Qt::DirectConnection);
+    // connect(this, &ZeroRunner::timeReceived, this, &ZeroRunner::publishTime, Qt::DirectConnection);
 
     auto new_sub = UniquePointer<ZeroSubscriber>(new ZeroSubscriber(ctx_, ZMQ_DEALER));
     auto new_pub = UniquePointer<ZeroPublisher>(new ZeroPublisher(ctx_, ZMQ_DEALER));
 
     connect(new_sub.get(), &ZeroSubscriber::helloReceived, new_pub.get(), &ZeroPublisher::publishHello,
         Qt::DirectConnection);
+    connect(new_sub.get(), &ZeroSubscriber::timeReceived, this, &ZeroRunner::timeReceived, Qt::DirectConnection);
+
+    auto timeSync = UniquePointer<TimeSyncronizer>(new TimeSyncronizer);
+
+    connect(new_sub.get(), &ZeroSubscriber::timeReceived, timeSync.get(), &TimeSyncronizer::handleTime,
+        Qt::DirectConnection);
 
     auto subscriber = std::unique_ptr<std::thread>(new std::thread([&, worker = std::move(new_sub)] {
-        // auto new_worker = UniquePointer<ZeroSubscriber>(new ZeroSubscriber(ctx_, ZMQ_DEALER));
-
-        connect(worker.get(), &ZeroSubscriber::timeReceived, this, &ZeroRunner::timeReceived, Qt::DirectConnection);
-        // connect(new_worker.get(), &ZeroSubscriber::timeReceived, this, &ZeroRunner::publishTime,
-        // Qt::DirectConnection);
         connect(worker.get(), &ZeroSubscriber::healthReceived, this, &ZeroRunner::healthReceived, Qt::DirectConnection);
-        auto timeSync = UniquePointer<TimeSyncronizer>(new TimeSyncronizer);
-        if (timeSync->isNtpSync())
-            std::cout << "Ntp enabled";
-        connect(worker.get(), &ZeroSubscriber::timeReceived, timeSync.get(), &TimeSyncronizer::handleTime);
+        connect(worker.get(), &ZeroSubscriber::timeRequest, this, &ZeroRunner::timeRequest, Qt::DirectConnection);
         worker->work();
     }));
 
     auto publisher = std::unique_ptr<std::thread>(new std::thread([&, worker = std::move(new_pub)] {
-        // auto new_worker = UniquePointer<ZeroPublisher>(new ZeroPublisher(ctx_, ZMQ_DEALER));
-
-        connect(this, &ZeroRunner::publishTime, worker.get(), &ZeroPublisher::publishTime, Qt::DirectConnection);
-        // connect(this, &ZeroRunner::publishPowerStatus, new_worker.get(), &ZeroPublisher::publishPowerStatus,
-        //  Qt::DirectConnection);
         const auto &manager = DataManager::GetInstance();
         connect(&manager, &DataManager::timeReceived, worker.get(), &ZeroPublisher::publishTime, Qt::DirectConnection);
+        connect(
+            this, &ZeroRunner::publishNtpStatus, worker.get(), &ZeroPublisher::publishNtpStatus, Qt::DirectConnection);
         connect(
             &manager, &DataManager::blockReceived, worker.get(), &ZeroPublisher::publishBlock, Qt::DirectConnection);
         worker->work();
@@ -75,7 +70,7 @@ bool ZeroRunner::runServer()
                 while (1)
                 {
                     //  Process all parts of the message
-                    auto len = frontend_.recv(message, zmq::recv_flags::none);
+                    [[maybe_unused]] auto len = frontend_.recv(message, zmq::recv_flags::none);
                     more = frontend_.get(zmq::sockopt::rcvmore);
                     backendSub_.send(message, more ? zmq::send_flags::sndmore : zmq::send_flags::none);
 
@@ -88,7 +83,7 @@ bool ZeroRunner::runServer()
                 while (1)
                 {
                     //  Process all parts of the message
-                    auto len = backendPub_.recv(message);
+                    [[maybe_unused]] auto len = backendPub_.recv(message);
                     more = backendPub_.get(zmq::sockopt::rcvmore);
                     frontend_.send(message, more ? zmq::send_flags::sndmore : zmq::send_flags::none);
 

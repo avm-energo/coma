@@ -64,7 +64,6 @@ bool StmBroker::connectToStm()
     m_timer.start();
 
     QObject::connect(&m_timer, &QTimer::timeout, this, &StmBroker::checkPowerUnit);
-    QObject::connect(&m_timer, &QTimer::timeout, this, &StmBroker::getTime);
 
     return true;
 }

@@ -1,8 +1,9 @@
 #include "timesyncronizer.h"
 
 #include "helper.h"
-//#include
+
 #include <QDateTime>
+#include <QTimer>
 #include <iostream>
 #include <sys/timex.h>
 void printts(const timespec &st)
@@ -14,6 +15,10 @@ void printts(const timespec &st)
 
 TimeSyncronizer::TimeSyncronizer(QObject *parent) : QObject(parent)
 {
+    QTimer *timer = new QTimer(this);
+    timer->setInterval(1000);
+    connect(timer, &QTimer::timeout, this, [this] { emit ntpStatusChanged(ntpStatus()); });
+    timer->start();
 }
 
 void TimeSyncronizer::handleTime(const timespec &time)
@@ -34,9 +39,25 @@ void TimeSyncronizer::setCurrentTime(const timespec &currentTime)
     clock_settime(CLOCK_REALTIME, &currentTime);
 }
 
-bool TimeSyncronizer::isNtpSync() const
+bool TimeSyncronizer::ntpStatus() const
 {
     ntptimeval time;
     int status = ntp_gettime(&time);
-    return status != -1;
+    switch (status)
+    {
+    case TIME_OK:
+        return true;
+    case TIME_INS:
+        return true;
+    case TIME_DEL:
+        return true;
+    case TIME_OOP:
+        return true;
+    case TIME_WAIT:
+        return true;
+    case TIME_ERROR:
+        return false;
+    default:
+        return false;
+    }
 }

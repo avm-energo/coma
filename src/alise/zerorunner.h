@@ -30,10 +30,13 @@ public slots:
     bool runServer();
     void stopServer();
 signals:
-    void publishTime(timespec time);
     void publishPowerStatus(AVTUK_14::Main powerStatus);
-    void timeReceived(timespec);
+    void publishNtpStatus(bool);
+
+    void timeRequest();
+
     void healthReceived(ZeroSubscriber::healthType);
+    void timeReceived(timespec);
 
 private:
     void proxy(zmq::socket_t &front, zmq::socket_t &sub, zmq::socket_t &pub);

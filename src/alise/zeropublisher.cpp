@@ -55,7 +55,7 @@ void ZeroPublisher::publishPowerStatus(const AVTUK_14::Main powerStatus)
 {
     alise::PowerStatus protoPower;
     protoPower.set_pwrin(powerStatus.PWRIN);
-    appendToQueue(booter, protoPower);
+    appendToQueue(sonica, protoPower);
 }
 
 void ZeroPublisher::publishBlock(const DataTypes::BlockStruct blk)
@@ -76,6 +76,13 @@ void ZeroPublisher::publishHello(const QString id, const quint32 code)
     alise::HelloReply helloReply;
     helloReply.set_message(code + 1);
     appendToQueue(id.toStdString(), helloReply);
+}
+
+void ZeroPublisher::publishNtpStatus(bool status)
+{
+    alise::NtpStatus ntpStatus;
+    ntpStatus.set_isntpenabled(status);
+    appendToQueue(admin, ntpStatus);
 }
 
 void ZeroPublisher::send(itemType &str)

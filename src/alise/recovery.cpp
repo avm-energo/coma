@@ -2,10 +2,11 @@
 
 #include "../gen/modules.h"
 
+#include <QDebug>
 #include <QDir>
 
 constexpr char eth0path[] = "/etc/network/interfaces.d/eth0";
-constexpr char eth1path[] = "/etc/network/interfaces.d/eth1";
+constexpr char eth2path[] = "/etc/network/interfaces.d/eth2";
 
 Recovery::Recovery(QObject *parent) : QObject(parent)
 {
@@ -13,6 +14,11 @@ Recovery::Recovery(QObject *parent) : QObject(parent)
 
 void Recovery::eth0()
 {
+    if (!QFile::exists(":/network/eth0"))
+    {
+        qCritical() << "No eth0 recovery";
+        return;
+    }
     if (QFile::exists(eth0path))
     {
         QFile::remove(eth0path);
@@ -21,14 +27,19 @@ void Recovery::eth0()
     QFile::copy(":/network/eth0", eth0path);
 }
 
-void Recovery::eth1()
+void Recovery::eth2()
 {
-    if (QFile::exists(eth1path))
+    if (!QFile::exists(":/network/eth2"))
     {
-        QFile::remove(eth1path);
+        qCritical() << "No eth0 recovery";
+        return;
+    }
+    if (QFile::exists(eth2path))
+    {
+        QFile::remove(eth2path);
     }
 
-    QFile::copy(":/network/eth1", eth1path);
+    QFile::copy(":/network/eth2", eth2path);
 }
 
 void Recovery::receiveBlock(const DataTypes::BlockStruct blk)
@@ -42,7 +53,7 @@ void Recovery::receiveBlock(const DataTypes::BlockStruct blk)
         if (mainBlock.resetReq)
         {
             eth0();
-            eth1();
+            eth2();
             emit rebootReq();
         }
     }

@@ -10,8 +10,12 @@ public:
 
     timespec currentTime() const;
     void setCurrentTime(const timespec &currentTime);
-    bool isNtpSync() const;
+    bool ntpStatus() const;
 
+    Q_PROPERTY(bool ntpStatus READ ntpStatus NOTIFY ntpStatusChanged)
 public slots:
     void handleTime(const timespec &time);
+
+signals:
+    void ntpStatusChanged(bool);
 };

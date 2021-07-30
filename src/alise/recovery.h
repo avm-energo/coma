@@ -15,6 +15,6 @@ signals:
 
 private:
     void eth0();
-    void eth1();
+    void eth2();
 };
 #endif // RECOVERY_H

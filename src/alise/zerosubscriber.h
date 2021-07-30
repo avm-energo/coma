@@ -25,6 +25,7 @@ public:
     }
 signals:
     void timeReceived(timespec);
+    void timeRequest();
     void healthReceived(healthType);
     void helloReceived(const QString, quint32);
 
