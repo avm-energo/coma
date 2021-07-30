@@ -16,11 +16,12 @@ Controller::Controller(std::string addr, QObject *parent) noexcept
 
     connect(&workerThread, &QThread::finished, worker, &QObject::deleteLater, Qt::QueuedConnection);
     connect(&workerThread, &QThread::started, worker, &runner::ZeroRunner::runServer, Qt::QueuedConnection);
-    connect(worker, &runner::ZeroRunner::healthReceived, &m_stmBroker, &StmBroker::setIndication, Qt::DirectConnection);
-    connect(worker, &runner::ZeroRunner::timeReceived, &m_stmBroker, &StmBroker::setTime, Qt::DirectConnection);
-    connect(worker, &runner::ZeroRunner::timeRequest, &m_stmBroker, &StmBroker::getTime, Qt::DirectConnection);
+    connect(worker, &runner::ZeroRunner::healthReceived, &m_stmBroker,
+        &StmBroker::setIndication /*, Qt::DirectConnection*/);
+    connect(worker, &runner::ZeroRunner::timeReceived, &m_stmBroker, &StmBroker::setTime /*, Qt::DirectConnection*/);
+    connect(worker, &runner::ZeroRunner::timeRequest, &m_stmBroker, &StmBroker::getTime /*, Qt::DirectConnection*/);
     const auto &manager = DataManager::GetInstance();
-    connect(&manager, &DataManager::blockReceived, &recovery, &Recovery::receiveBlock, Qt::DirectConnection);
+    connect(&manager, &DataManager::blockReceived, &recovery, &Recovery::receiveBlock /*, Qt::DirectConnection*/);
 
     // NOTE avtuk will be rebooted
     connect(&recovery, &Recovery::rebootReq, &m_stmBroker, &StmBroker::rebootMyself);

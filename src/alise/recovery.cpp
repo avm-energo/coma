@@ -4,6 +4,7 @@
 
 #include <QDebug>
 #include <QDir>
+#include <QProcess>
 
 constexpr char eth0path[] = "/etc/network/interfaces.d/eth0";
 constexpr char eth2path[] = "/etc/network/interfaces.d/eth2";
@@ -24,7 +25,16 @@ void Recovery::eth0()
         QFile::remove(eth0path);
     }
 
-    QFile::copy(":/network/eth0", eth0path);
+    if (!QFile::copy(":/network/eth0", eth0path))
+    {
+        qCritical() << "Couldn't copy eth0";
+        return;
+    }
+    if (!QFile(eth0path).setPermissions(QFileDevice::ReadOwner | QFileDevice::WriteOwner | QFileDevice::ReadUser
+            | QFileDevice::ReadGroup | QFileDevice::ReadOther))
+    {
+        qCritical() << "Couldn't change perm for " << eth0path;
+    }
 }
 
 void Recovery::eth2()
@@ -39,7 +49,16 @@ void Recovery::eth2()
         QFile::remove(eth2path);
     }
 
-    QFile::copy(":/network/eth2", eth2path);
+    if (!QFile::copy(":/network/eth2", eth2path))
+    {
+        qCritical() << "Couldn't copy eth2";
+        return;
+    }
+    if (!QFile(eth2path).setPermissions(QFileDevice::ReadOwner | QFileDevice::WriteOwner | QFileDevice::ReadUser
+            | QFileDevice::ReadGroup | QFileDevice::ReadOther))
+    {
+        qCritical() << "Couldn't change perm for " << eth2path;
+    }
 }
 
 void Recovery::receiveBlock(const DataTypes::BlockStruct blk)
@@ -50,11 +69,17 @@ void Recovery::receiveBlock(const DataTypes::BlockStruct blk)
     {
         AVTUK_14::Main mainBlock;
         memcpy(&mainBlock, blk.data.data(), sizeof(mainBlock));
-        if (mainBlock.resetReq)
+        if (mainBlock.resetReq && (!resetInit))
         {
             eth0();
             eth2();
+            QString program = "/etc/init.d/networking";
+            QStringList arguments { "restart" };
+            QProcess *myProcess = new QProcess(this);
+            myProcess->start(program, arguments);
+            myProcess->waitForFinished();
             emit rebootReq();
+            resetInit = true;
         }
     }
     }
