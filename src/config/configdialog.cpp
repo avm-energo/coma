@@ -95,12 +95,22 @@ void ConfigDialog::confReceived(const QList<DataTypes::DataRecV> &list)
     using namespace DataTypes;
     const auto s2typeB = S2::getRecord(BciNumber::MTypeB_ID).value<DWORD>();
     if (s2typeB != Board::GetInstance().typeB())
-        qCritical() << "Conflict typeB, module: " << QString::number(Board::GetInstance().typeB(), 16)
-                    << " config: " << QString::number(s2typeB, 16);
+    {
+        qCritical() << "Conflict typeB, module: " <<                //
+            QString::number(Board::GetInstance().typeB(), 16)       //
+                    << " config: " << QString::number(s2typeB, 16); //
+        S2::setRecordValue({ BciNumber::MTypeB_ID, DWORD(Board::GetInstance().typeB()) });
+    }
+
     const auto s2typeM = S2::getRecord(BciNumber::MTypeE_ID).value<DWORD>();
     if (s2typeM != Board::GetInstance().typeM())
-        qCritical() << "Conflict typeB, module: " << QString::number(Board::GetInstance().typeM(), 16)
-                    << " config: " << QString::number(s2typeM, 16);
+    {
+        qCritical() << "Conflict typeB, module: " <<                //
+            QString::number(Board::GetInstance().typeM(), 16)       //
+                    << " config: " << QString::number(s2typeM, 16); //
+        S2::setRecordValue({ BciNumber::MTypeE_ID, DWORD(Board::GetInstance().typeM()) });
+    }
+
     checkForDiff(list);
     Fill();
 }
