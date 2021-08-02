@@ -61,6 +61,24 @@ void Recovery::eth2()
     }
 }
 
+void Recovery::sync()
+{
+    QString program = "sync";
+    QProcess *myProcess = new QProcess(this);
+    myProcess->setProgram(program);
+    myProcess->start();
+    myProcess->waitForFinished();
+}
+
+void Recovery::restartNetwork()
+{
+    QString program = "/etc/init.d/networking";
+    QStringList arguments { "restart" };
+    QProcess *myProcess = new QProcess(this);
+    myProcess->start(program, arguments);
+    myProcess->waitForFinished();
+}
+
 void Recovery::receiveBlock(const DataTypes::BlockStruct blk)
 {
     switch (blk.data.size())
@@ -73,11 +91,9 @@ void Recovery::receiveBlock(const DataTypes::BlockStruct blk)
         {
             eth0();
             eth2();
-            QString program = "/etc/init.d/networking";
-            QStringList arguments { "restart" };
-            QProcess *myProcess = new QProcess(this);
-            myProcess->start(program, arguments);
-            myProcess->waitForFinished();
+            sync();
+            restartNetwork();
+            sync();
             emit rebootReq();
             resetInit = true;
         }
