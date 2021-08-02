@@ -11,7 +11,7 @@ Controller::Controller(QObject *parent) noexcept : Controller("0.0.0.0", parent)
 Controller::Controller(std::string addr, QObject *parent) noexcept
     : QObject(parent), worker(new runner::ZeroRunner()), m_stmBroker({})
 {
-    StdFunc::Init();
+
     worker->moveToThread(&workerThread);
 
     connect(&workerThread, &QThread::finished, worker, &QObject::deleteLater, Qt::QueuedConnection);

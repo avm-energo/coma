@@ -1,6 +1,7 @@
 
 #include "../comaversion/comaversion.h"
 #include "../gen/logger.h"
+#include "../gen/stdfunc.h"
 #include "controller.h"
 #include "stmbroker.h"
 
@@ -25,7 +26,7 @@ int main(int argc, char *argv[])
         parser.process(QCoreApplication::arguments());
         return 0;
     }
-
+    StdFunc::Init();
     Logging::writeStart();
     qInstallMessageHandler(Logging::messageHandler);
     Controller controller;
