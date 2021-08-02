@@ -50,9 +50,10 @@ add_executable(
 target_include_directories(${PROJECT_NAME} PUBLIC ${CONAN_INCLUDE_DIRS_CPPZMQ})
 target_include_directories(${PROJECT_NAME} PUBLIC ${PROTOS_GENERATED_DIR})
 
+configure_file(${CMAKE_SOURCE_DIR}/cconfig.h.in ${CMAKE_CURRENT_BINARY_DIR}/config.h @ONLY)
 
 message(STATUS ALISE ${protos_DIR})
-target_link_libraries(${PROJECT_NAME} interfaces gen protos Qt5::Core Qt5::Xml pthread ZeroMQ::libzmq-static cppzmq::cppzmq)
+target_link_libraries(${PROJECT_NAME} interfaces gen comaversion protos Qt5::Core Qt5::Xml pthread ZeroMQ::libzmq-static cppzmq::cppzmq)
 
 install(TARGETS ${PROJECT_NAME}
 )
