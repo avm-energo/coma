@@ -6,14 +6,15 @@
 
 #include <QDebug>
 #include <QMutexLocker>
+#include <QTimer>
 #include <fstream>
 #include <iostream>
 #include <thread>
 namespace runner
 {
-bool ZeroRunner::runServer()
+void ZeroRunner::runServer()
 {
-
+    qRegisterMetaType<ZeroSubscriber::healthType>("healthType");
     frontend_.bind("tcp://*:5555");
     backendSub_.bind("inproc://backendSub");
     backendPub_.bind("inproc://backendPub");
@@ -24,16 +25,16 @@ bool ZeroRunner::runServer()
 
     connect(new_sub.get(), &ZeroSubscriber::helloReceived, new_pub.get(), &ZeroPublisher::publishHello,
         Qt::DirectConnection);
-    connect(new_sub.get(), &ZeroSubscriber::timeReceived, this, &ZeroRunner::timeReceived, Qt::DirectConnection);
+    connect(new_sub.get(), &ZeroSubscriber::timeReceived, this, &ZeroRunner::timeReceived /*, Qt::DirectConnection*/);
 
     auto timeSync = UniquePointer<TimeSyncronizer>(new TimeSyncronizer);
 
     connect(new_sub.get(), &ZeroSubscriber::timeReceived, timeSync.get(), &TimeSyncronizer::handleTime,
         Qt::DirectConnection);
 
+    connect(new_sub.get(), &ZeroSubscriber::healthReceived, this, &ZeroRunner::healthReceived);
     auto subscriber = std::unique_ptr<std::thread>(new std::thread([&, worker = std::move(new_sub)] {
-        connect(worker.get(), &ZeroSubscriber::healthReceived, this, &ZeroRunner::healthReceived, Qt::DirectConnection);
-        connect(worker.get(), &ZeroSubscriber::timeRequest, this, &ZeroRunner::timeRequest, Qt::DirectConnection);
+        connect(worker.get(), &ZeroSubscriber::timeRequest, this, &ZeroRunner::timeRequest /*, Qt::DirectConnection*/);
         worker->work();
     }));
 
@@ -50,6 +51,22 @@ bool ZeroRunner::runServer()
     publisher->detach();
     subscriber->detach();
 
+    auto controller = std::unique_ptr<std::thread>(new std::thread([&] { polling(); }));
+
+    controller->detach();
+    qDebug() << "ZeroRunner started";
+    QTimer *timer = new QTimer(this);
+    timer->setInterval(1000);
+    timer->callOnTimeout([] { qDebug("Timeout timer"); });
+    timer->start();
+}
+
+void ZeroRunner::stopServer()
+{
+}
+
+void ZeroRunner::polling()
+{
     //  proxy(frontend_, backendSub_, backendPub_);
     zmq_pollitem_t items[] = {
         { frontend_, 0, ZMQ_POLLIN, 0 },   //
@@ -95,18 +112,14 @@ bool ZeroRunner::runServer()
 
     } catch (std::exception &e)
     {
+
         qDebug() << "Exception: " << e.what();
-        return false;
+        return;
     }
     frontend_.close();
     backendPub_.close();
     backendSub_.close();
     ctx_.close();
-    return true;
-}
-
-void ZeroRunner::stopServer()
-{
 }
 
 }

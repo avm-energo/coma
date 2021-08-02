@@ -36,3 +36,5 @@ private:
     QWaitCondition _waiter;
     bool is_active = true;
 };
+
+Q_DECLARE_METATYPE(ZeroSubscriber::healthType)

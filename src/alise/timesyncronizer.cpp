@@ -24,19 +24,19 @@ TimeSyncronizer::TimeSyncronizer(QObject *parent) : QObject(parent)
 void TimeSyncronizer::handleTime(const timespec &time)
 {
     printts(time);
-    setCurrentTime(time);
+    setSystemTime(time);
 }
 
-timespec TimeSyncronizer::currentTime() const
+timespec TimeSyncronizer::systemTime() const
 {
     timespec time;
     clock_gettime(CLOCK_REALTIME, &time);
     return time;
 }
 
-void TimeSyncronizer::setCurrentTime(const timespec &currentTime)
+void TimeSyncronizer::setSystemTime(const timespec &systemTime)
 {
-    clock_settime(CLOCK_REALTIME, &currentTime);
+    clock_settime(CLOCK_REALTIME, &systemTime);
 }
 
 bool TimeSyncronizer::ntpStatus() const

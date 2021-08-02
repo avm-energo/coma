@@ -27,7 +27,7 @@ public:
         kMaxThread = 1
     };
 public slots:
-    bool runServer();
+    void runServer();
     void stopServer();
 signals:
     void publishPowerStatus(AVTUK_14::Main powerStatus);
@@ -40,6 +40,7 @@ signals:
 
 private:
     void proxy(zmq::socket_t &front, zmq::socket_t &sub, zmq::socket_t &pub);
+    void polling();
 
     QMutex _mutex;
 

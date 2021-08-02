@@ -36,7 +36,7 @@ template <typename T> void ZeroPublisher::appendToQueue(const std::string &id, c
     packedMessage.mutable_content()->PackFrom(paylod);
     std::string serialized_update;
     packedMessage.SerializeToString(&serialized_update);
-    qDebug() << paylod.DebugString().c_str();
+    //  qDebug() << paylod.DebugString().c_str();
     _mutex.lock();
     _queue.push({ id, serialized_update });
     _mutex.unlock();
@@ -89,7 +89,7 @@ void ZeroPublisher::send(itemType &str)
 {
     zmq::message_t identity(str.first);
     zmq::message_t msg(str.second);
-    qDebug() << "Send message to: {" << str.first.c_str() << "}, with payload: {" << str.second.c_str() << "}";
+    //    qDebug() << "Send message to: {" << str.first.c_str() << "}, with payload: {" << str.second.c_str() << "}";
     _worker.send(identity, zmq::send_flags::sndmore);
     _worker.send(msg, zmq::send_flags::none);
 }

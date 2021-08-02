@@ -80,6 +80,7 @@ void ZeroSubscriber::work()
             {
                 qWarning() << Error::WrongType;
             }
+            QCoreApplication::processEvents();
             // zmq::poll(items, 1, 1000);
         }
         _worker.close();

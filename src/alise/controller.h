@@ -17,12 +17,13 @@ public:
 
     bool launch();
     void shutdown();
+    void syncTime(const timespec &);
 signals:
 
 private:
     runner::ZeroRunner *worker;
     StmBroker m_stmBroker;
     TimeSyncronizer timeSync;
-    QThread workerThread;
+
     Recovery recovery;
 };
