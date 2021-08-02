@@ -207,7 +207,7 @@ template <typename T, size_t N> std::array<T, N> operator<<(std::array<T, N> &ar
     return (array << list);
 }
 
-DataRecV::DataRecV(const int _id, const QString &str) : id(_id)
+DataRecV::DataRecV(const unsigned _id, const QString &str) : id(_id)
 {
     using namespace detail;
 
@@ -368,7 +368,7 @@ DataRecV::DataRecV(const int _id, const QString &str) : id(_id)
     }
 }
 
-DataRecV::DataRecV(const int _id) : DataRecV(_id, QString::number(0))
+DataRecV::DataRecV(const unsigned _id) : DataRecV(_id, QString::number(0))
 {
 }
 

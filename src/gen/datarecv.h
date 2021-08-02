@@ -35,8 +35,8 @@ public:
     friend bool operator!=(const DataRecV &lhs, const DataRecV &rhs);
     DataRecV(const S2DataTypes::DataRec &record);
     DataRecV(const S2DataTypes::DataRec &record, const char *rawdata);
-    DataRecV(const int _id, const QString &str);
-    DataRecV(const int _id);
+    DataRecV(const unsigned _id, const QString &str);
+    DataRecV(const unsigned _id);
     template <typename T
 #if (_MSC_VER > 1924)
         ,

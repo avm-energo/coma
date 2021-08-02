@@ -670,8 +670,10 @@ static bool fillBackComboBoxGroup(BciNumber key, const QWidget *parent, int coun
                 for (int i = 0; i != count; ++i)
                 {
                     int status_code = WDFunc::CBIndex(parent, widgetName(key, i));
+                    status = !status_code;
                     if (status_code == -1)
                         break;
+
                     bitset.set(i, bool(status_code));
                 }
                 S2::setRecordValue({ key, static_cast<internalType>(bitset.to_ullong()) });
@@ -687,10 +689,12 @@ static bool fillBackComboBoxGroup(BciNumber key, const QWidget *parent, int coun
                     for (int i = 0; i != count; ++i)
                     {
                         int status_code = WDFunc::CBIndex(parent, widgetName(key, i));
+                        status = !status_code;
                         if (status_code == -1)
                             break;
                         container.at(i) = internalType(status_code);
                     }
+
                     S2::setRecordValue({ key, container });
                 }
             }
