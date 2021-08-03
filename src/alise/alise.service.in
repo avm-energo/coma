@@ -5,5 +5,11 @@ Description=alise
 Type=simple
 ExecStart=@EXE_PATH@
 
+Restart=on-failure
+RestartSec=60s
+
+[Path]
+PathExists=/dev/hidraw0
+
 [Install]
 WantedBy=multi-user.target
