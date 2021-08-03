@@ -61,6 +61,7 @@ install(TARGETS ${PROJECT_NAME}
 # Configure the service file so that it knows where the
 # binary was installed.
 set(SERVICE_NAME ${PROJECT_NAME}.service)
+set(SERVICE_PATH_NAME ${PROJECT_NAME}.path)
 set(EXE_PATH ${CPACK_PACKAGING_INSTALL_PREFIX}/bin/${PROJECT_NAME})
 set(SERVICE_IN ${SERVICE_NAME}.in)
 set(SERVICE_OUT ${CMAKE_CURRENT_BINARY_DIR}/${SERVICE_NAME})
@@ -69,7 +70,7 @@ configure_file(${SERVICE_IN} ${SERVICE_OUT} @ONLY)
 # Install the service file in the share directory. The post
 # install DEB script will handle placing the file where
 # it's supposed to go.
-install(FILES ${SERVICE_OUT} DESTINATION share)
+install(FILES ${SERVICE_OUT} ${SERVICE_PATH_NAME} DESTINATION share)
 
 # Configure the scripts that are executed by the DEB.
 # This could be done without going through the rigmarole of
