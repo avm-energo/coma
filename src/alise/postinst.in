@@ -12,11 +12,14 @@ fi
 # file was changing between releases...
 deb_install_prefix=@CPACK_PACKAGING_INSTALL_PREFIX@
 service_name=@SERVICE_NAME@
+service_name_path=@SERVICE_PATH_NAME@
 # if [ $1 -eq 1 ]; then
     systemctl stop $service_name 2>/dev/null
     systemctl disable $service_name 2>/dev/null
     cp $deb_install_prefix/share/$service_name /usr/lib/systemd/system/$service_name
+    cp $deb_install_prefix/share/$service_name /usr/lib/systemd/system/$service_name_path
     chmod 644 /usr/lib/systemd/system/$service_name
+    chmod 644 /usr/lib/systemd/system/$service_name_path
     systemctl daemon-reload
 # fi
 systemctl start $service_name 2>/dev/null
