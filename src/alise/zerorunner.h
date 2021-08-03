@@ -6,6 +6,7 @@
 #include <QMutex>
 #include <QObject>
 #include <zmq.hpp>
+
 namespace runner
 {
 constexpr uint32_t timeout = 300000;
@@ -30,7 +31,7 @@ public slots:
     void runServer();
     void stopServer();
 signals:
-    void publishPowerStatus(AVTUK_14::Main powerStatus);
+    // void publishPowerStatus(AVTUK_14::Main powerStatus);
     void publishNtpStatus(bool);
 
     void timeRequest();

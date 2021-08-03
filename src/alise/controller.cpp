@@ -4,6 +4,10 @@
 #include "../gen/stdfunc.h"
 
 #include <iostream>
+
+constexpr int minSecs = 60;
+constexpr int hourSecs = minSecs * minSecs;
+
 Controller::Controller(QObject *parent) noexcept : Controller("0.0.0.0", parent)
 {
 }
@@ -11,18 +15,27 @@ Controller::Controller(QObject *parent) noexcept : Controller("0.0.0.0", parent)
 Controller::Controller(std::string addr, QObject *parent) noexcept
     : QObject(parent), worker(new runner::ZeroRunner(this)), m_stmBroker({})
 {
-    connect(worker, &runner::ZeroRunner::healthReceived, &m_stmBroker, &StmBroker::setIndication, Qt::DirectConnection);
-    connect(worker, &runner::ZeroRunner::timeReceived, &m_stmBroker, &StmBroker::setTime, Qt::DirectConnection);
-    connect(worker, &runner::ZeroRunner::timeReceived, &timeSync, &TimeSyncronizer::handleTime, Qt::DirectConnection);
-    connect(worker, &runner::ZeroRunner::timeRequest, &m_stmBroker, &StmBroker::getTime, Qt::DirectConnection);
+    connect(worker, &runner::ZeroRunner::healthReceived, &m_stmBroker, &StmBroker::setIndication);
+    connect(worker, &runner::ZeroRunner::timeReceived, &m_stmBroker, &StmBroker::setTime);
+    connect(worker, &runner::ZeroRunner::timeReceived, &timeSync, &TimeSyncronizer::handleTime);
+    connect(worker, &runner::ZeroRunner::timeRequest, &m_stmBroker, &StmBroker::getTime);
     const auto &manager = DataManager::GetInstance();
-    connect(&manager, &DataManager::blockReceived, &recovery, &Recovery::receiveBlock, Qt::DirectConnection);
+    connect(&manager, &DataManager::blockReceived, &recovery, &Recovery::receiveBlock);
 
     // NOTE avtuk will be rebooted
-    connect(&recovery, &Recovery::rebootReq, &m_stmBroker, &StmBroker::rebootMyself, Qt::DirectConnection);
+    connect(&recovery, &Recovery::rebootReq, &m_stmBroker, &StmBroker::rebootMyself);
 
-    connect(&timeSync, &TimeSyncronizer::ntpStatusChanged, worker, &runner::ZeroRunner::publishNtpStatus/*,
-        Qt::DirectConnection*/);
+    connect(&timeSync, &TimeSyncronizer::ntpStatusChanged, worker, &runner::ZeroRunner::publishNtpStatus);
+    connect(&timeSync, &TimeSyncronizer::ntpStatusChanged, this, [&](bool status) {
+        if (!status)
+            return;
+        syncCounter++;
+        if (syncCounter == minSecs)
+        {
+            m_stmBroker.setTime(timeSync.systemTime());
+            syncCounter = 0;
+        }
+    });
 }
 
 Controller::~Controller()

@@ -89,7 +89,7 @@ void ZeroPublisher::send(itemType &str)
 {
     zmq::message_t identity(str.first);
     zmq::message_t msg(str.second);
-    //    qDebug() << "Send message to: {" << str.first.c_str() << "}, with payload: {" << str.second.c_str() << "}";
+    // qDebug() << "Send message to: {" << str.first.c_str() << "}, with payload: {" << str.second.c_str() << "}";
     _worker.send(identity, zmq::send_flags::sndmore);
     _worker.send(msg, zmq::send_flags::none);
 }

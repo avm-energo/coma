@@ -21,7 +21,7 @@ TimeSyncronizer::TimeSyncronizer(QObject *parent) : QObject(parent)
     timer->start();
 }
 
-void TimeSyncronizer::handleTime(const timespec &time)
+void TimeSyncronizer::handleTime(const timespec time)
 {
     printts(time);
     setSystemTime(time);

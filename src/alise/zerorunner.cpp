@@ -15,17 +15,18 @@ namespace runner
 void ZeroRunner::runServer()
 {
     qRegisterMetaType<ZeroSubscriber::healthType>("healthType");
+    qRegisterMetaType<timespec>();
+    qRegisterMetaType<AVTUK_14::Main>();
     frontend_.bind("tcp://*:5555");
     backendSub_.bind("inproc://backendSub");
     backendPub_.bind("inproc://backendPub");
-    // connect(this, &ZeroRunner::timeReceived, this, &ZeroRunner::publishTime, Qt::DirectConnection);
 
     auto new_sub = UniquePointer<ZeroSubscriber>(new ZeroSubscriber(ctx_, ZMQ_DEALER));
     auto new_pub = UniquePointer<ZeroPublisher>(new ZeroPublisher(ctx_, ZMQ_DEALER));
 
     connect(new_sub.get(), &ZeroSubscriber::helloReceived, new_pub.get(), &ZeroPublisher::publishHello,
         Qt::DirectConnection);
-    connect(new_sub.get(), &ZeroSubscriber::timeReceived, this, &ZeroRunner::timeReceived /*, Qt::DirectConnection*/);
+    connect(new_sub.get(), &ZeroSubscriber::timeReceived, this, &ZeroRunner::timeReceived);
 
     auto timeSync = UniquePointer<TimeSyncronizer>(new TimeSyncronizer);
 
@@ -34,7 +35,7 @@ void ZeroRunner::runServer()
 
     connect(new_sub.get(), &ZeroSubscriber::healthReceived, this, &ZeroRunner::healthReceived);
     auto subscriber = std::unique_ptr<std::thread>(new std::thread([&, worker = std::move(new_sub)] {
-        connect(worker.get(), &ZeroSubscriber::timeRequest, this, &ZeroRunner::timeRequest /*, Qt::DirectConnection*/);
+        connect(worker.get(), &ZeroSubscriber::timeRequest, this, &ZeroRunner::timeRequest);
         worker->work();
     }));
 

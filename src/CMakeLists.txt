@@ -60,6 +60,10 @@ if(CMAKE_SYSTEM_NAME_LOWER STREQUAL "windows")
 elseif(CMAKE_SYSTEM_NAME_LOWER STREQUAL "linux")
   message(STATUS "Linux")
 
+  string(APPEND CMAKE_CXX_FLAGS_DEBUG " -fno-omit-frame-pointer -fsanitize=address,undefined -fstack-protector")
+  string(APPEND CMAKE_LINKER_FLAGS_DEBUG " -fno-omit-frame-pointer -fsanitize=address,undefined -fstack-protector")
+  set(CMAKE_EXPORT_COMPILE_COMMANDS             ON)
+
   if (NOT USER_DIRECTORY)
     set(USER_DIRECTORY $ENV{HOME})
   endif()

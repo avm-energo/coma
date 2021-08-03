@@ -26,4 +26,6 @@ private:
     TimeSyncronizer timeSync;
 
     Recovery recovery;
+
+    int syncCounter = 0;
 };

@@ -106,7 +106,6 @@ AVTUK_14::Indication StmBroker::transform(alise::Health_Code code) const
 {
     constexpr auto maxFreq = 4000;
     constexpr auto minFreq = 1000;
-    // return { 1, minFreq, 0, 0 };
     switch (code)
     {
     case alise::Health_Code_Startup:
