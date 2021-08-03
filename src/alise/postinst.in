@@ -14,15 +14,15 @@ deb_install_prefix=@CPACK_PACKAGING_INSTALL_PREFIX@
 service_name=@SERVICE_NAME@
 service_name_path=@SERVICE_PATH_NAME@
 # if [ $1 -eq 1 ]; then
-    systemctl stop $service_name 2>/dev/null
-    systemctl disable $service_name 2>/dev/null
+    systemctl stop $service_name_path 2>/dev/null
+    systemctl disable $service_name_path 2>/dev/null
     cp $deb_install_prefix/share/$service_name /usr/lib/systemd/system/$service_name
     cp $deb_install_prefix/share/$service_name_path /usr/lib/systemd/system/$service_name_path
     chmod 644 /usr/lib/systemd/system/$service_name
     chmod 644 /usr/lib/systemd/system/$service_name_path
     systemctl daemon-reload
 # fi
-systemctl start $service_name 2>/dev/null
+systemctl start $service_name_path 2>/dev/null
 
 # Not required, but it lets the user know the name of the
 # service by printing it to the terminal. Also, if it's disabled,
@@ -32,7 +32,7 @@ systemctl start $service_name 2>/dev/null
 systemctl status $service_name --no-pager || true
 if pgrep -x alise >/dev/null
 then
-    systemctl enable $service_name
+    systemctl enable $service_name_path
 else
     echo "$service_name stopped"
 fi

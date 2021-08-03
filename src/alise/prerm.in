@@ -1,6 +1,6 @@
 # Enable verbose logging.
 service_name=@SERVICE_NAME@
-
+service_name_path=@SERVICE_PATH_NAME@
 
 
 if [ "@VERBOSE_LOGGING@" = "TRUE" ]; then
@@ -8,7 +8,10 @@ if [ "@VERBOSE_LOGGING@" = "TRUE" ]; then
     echo "Running preun script for v@CMAKE_PROJECT_VERSION@"
 fi
 
-systemctl stop $service_name 2>/dev/null
 systemctl disable $service_name 2>/dev/null
+systemctl disable $service_name_path 2>/dev/null
+systemctl stop $service_name 2>/dev/null
+systemctl stop $service_name_path 2>/dev/null
+
 
 # %systemd_preun @SERVICE_NAME@

@@ -4,7 +4,6 @@ Description=alise
 [Service]
 Type=simple
 ExecStart=@EXE_PATH@
-
 Restart=on-failure
 RestartSec=60s
 
