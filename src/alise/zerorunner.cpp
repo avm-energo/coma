@@ -55,11 +55,7 @@ void ZeroRunner::runServer()
     auto controller = std::unique_ptr<std::thread>(new std::thread([&] { polling(); }));
 
     controller->detach();
-    qDebug() << "ZeroRunner started";
-    QTimer *timer = new QTimer(this);
-    timer->setInterval(1000);
-    timer->callOnTimeout([] { qDebug("Timeout timer"); });
-    timer->start();
+    qInfo() << "ZeroRunner started";
 }
 
 void ZeroRunner::stopServer()

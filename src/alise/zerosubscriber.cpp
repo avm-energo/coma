@@ -22,12 +22,12 @@ void ZeroSubscriber::work()
             zmq::message_t msg;
 
             auto id = _worker.recv(identity);
-            qInfo() << "Received id bytes: " << id.value();
-            qInfo() << "Received id: " << identity.to_string().c_str();
+            qDebug() << "Received id bytes: " << id.value();
+            qDebug() << "Received id: " << identity.to_string().c_str();
             auto ms = _worker.recv(msg);
-            qInfo() << "Received msg bytes: " << ms.value();
+            qDebug() << "Received msg bytes: " << ms.value();
             std::string data(msg.to_string());
-            qInfo() << "Received msg: " << data.c_str();
+            qDebug() << "Received msg: " << data.c_str();
             alise::PackedMessage packedMessage;
             packedMessage.ParseFromString(data);
             const auto &messageContent = packedMessage.content();
@@ -39,6 +39,7 @@ void ZeroSubscriber::work()
                     qWarning() << Error::WriteError;
                     continue;
                 }
+                qInfo() << "Receive health:" << protoHealth.code();
                 emit healthReceived(protoHealth.code());
             }
             else if (messageContent.Is<google::protobuf::Timestamp>())
@@ -52,6 +53,7 @@ void ZeroSubscriber::work()
                 timespec unixTime;
                 unixTime.tv_sec = protoTime.seconds();
                 unixTime.tv_nsec = protoTime.nanos();
+                qInfo() << "Receive time:" << unixTime.tv_sec << ":" << unixTime.tv_nsec;
                 emit timeReceived(unixTime);
             }
             else if (messageContent.Is<alise::HelloRequest>())
@@ -81,11 +83,10 @@ void ZeroSubscriber::work()
                 qWarning() << Error::WrongType;
             }
             QCoreApplication::processEvents();
-            // zmq::poll(items, 1, 1000);
         }
         _worker.close();
     } catch (std::exception &e)
     {
-        qDebug() << "Exception: " << e.what();
+        qInfo() << "Exception: " << e.what();
     }
 }
