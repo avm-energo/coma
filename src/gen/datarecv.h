@@ -101,6 +101,27 @@ public:
 private:
     unsigned int id;
     valueType data;
+
+    template <typename T> void helper(unsigned int numByte, const char *rawdata, valueType &data)
+    {
+        constexpr auto hash = ctti::unnamed_type_id<T>().hash();
+        assert(sizeof(T) == numByte);
+        data = *reinterpret_cast<const T *>(rawdata);
+    }
+    template <typename T, std::enable_if_t<std::is_container<T>::value, bool> = true>
+    valueType helper(const QString &str)
+    {
+        T arr {};
+        arr << str;
+        data = arr;
+        return valueType(arr);
+    }
+    template <typename T, std::enable_if_t<!std::is_container<T>::value, bool> = true>
+    valueType helper(const QString &str)
+    {
+        valueType data = QVariant(str).value<T>();
+        return data;
+    }
 };
 
 bool operator==(const DataTypes::DataRecV &lhs, const DataTypes::DataRecV &rhs);
