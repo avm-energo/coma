@@ -1,6 +1,0 @@
-<RCC>
-    <qresource prefix="/network">
-        <file>eth0</file>
-        <file>eth2</file>
-    </qresource>
-</RCC>

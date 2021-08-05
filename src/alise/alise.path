@@ -1,8 +1,0 @@
-[Unit]
-Description=Enable alise path
-
-[Path]
-PathExists=/dev/hidraw0
-
-[Install]
-WantedBy=multi-user.target
