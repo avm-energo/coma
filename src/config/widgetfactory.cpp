@@ -667,12 +667,16 @@ static bool fillBackComboBoxGroup(BciNumber key, const QWidget *parent, int coun
             {
                 std::bitset<sizeof(internalType) *CHAR_BIT> bitset = 0;
                 assert(size_t(count) <= bitset.size());
+                status = true;
                 for (int i = 0; i != count; ++i)
                 {
                     int status_code = WDFunc::CBIndex(parent, widgetName(key, i));
-                    status = !status_code;
+
                     if (status_code == -1)
+                    {
+                        status = false;
                         break;
+                    }
 
                     bitset.set(i, bool(status_code));
                 }
@@ -686,12 +690,16 @@ static bool fillBackComboBoxGroup(BciNumber key, const QWidget *parent, int coun
                 {
                     Container container = {};
                     assert(size_t(count) <= container.size());
+                    status = true;
                     for (int i = 0; i != count; ++i)
                     {
                         int status_code = WDFunc::CBIndex(parent, widgetName(key, i));
-                        status = !status_code;
+
                         if (status_code == -1)
+                        {
+                            status = false;
                             break;
+                        }
                         container.at(i) = internalType(status_code);
                     }
 
