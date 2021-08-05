@@ -1,4 +1,4 @@
-project(alise VERSION 0.0.1)
+project(alise VERSION 1.0.0)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 set(CMAKE_CXX_STANDARD 17)
