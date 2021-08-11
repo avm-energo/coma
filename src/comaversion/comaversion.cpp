@@ -2,18 +2,18 @@
 
 #include <gversion.h>
 
-QString GitVersion::getGitHash()
+QString GitVersion::getGitHash() const
 {
     const QString buffer(gitHash);
     return buffer;
 }
 
-unsigned long long GitVersion::getGitCounter()
+unsigned long long GitVersion::getGitCounter() const
 {
     return gitCommitCounter;
 }
 
-QString GitVersion::getConfigVersion()
+QString GitVersion::getConfigVersion() const
 {
     QString str;
     auto counter = gitCommitCounter;

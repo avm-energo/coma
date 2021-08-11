@@ -142,11 +142,11 @@ DataRecV::DataRecV(const S2DataTypes::DataRec &record, const char *rawdata) : id
     }
 }
 
-template <typename T, size_t N> std::array<T, N> operator<<(std::array<T, N> &array, const QStringList list)
+template <typename T, size_t N> std::array<T, N> operator<<(std::array<T, N> &array, const QStringList &list)
 {
     Q_ASSERT(size_t(list.size()) <= array.size());
     std::transform(
-        list.cbegin(), list.cend(), array.begin(), [](const QString str) { return QVariant(str).value<T>(); });
+        list.cbegin(), list.cend(), array.begin(), [](const QString &str) { return QVariant(str).value<T>(); });
     return array;
 }
 

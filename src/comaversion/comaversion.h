@@ -5,9 +5,9 @@
 class GitVersion
 {
 public:
-    QString getGitHash();
-    unsigned long long getGitCounter();
-    QString getConfigVersion();
+    QString getGitHash() const;
+    unsigned long long getGitCounter() const;
+    QString getConfigVersion() const;
 
 private:
 };
