@@ -721,8 +721,8 @@ enum Registers : quint16
 
 };
 }
-
-namespace AVTUK_14
+/// AVTUK Central Controller Unit
+namespace AVTUK_CCU
 {
 constexpr uint16_t DiscretePowerBlock = 1;
 // NOTE
