@@ -5,7 +5,7 @@
 #include <QDataStream>
 #include <QVariant>
 #ifdef __linux__
-#include <time.h>
+#include <ctime>
 Q_DECLARE_METATYPE(timespec);
 #endif
 namespace DataTypes
@@ -123,6 +123,8 @@ struct FileStruct
     }
     FileStruct &operator=(const FileStruct &source)
     {
+        if (this == &source)
+            return *this;
         filenum = source.filenum;
         filedata = source.filedata;
         return *this;
@@ -132,7 +134,7 @@ struct FileStruct
         // rhs.filenum = 0;
         rhs.filedata = nullptr;
     }
-    FileStruct operator=(FileStruct &&rhs) noexcept
+    FileStruct &operator=(FileStruct &&rhs) noexcept
     {
         if (this != &rhs)
         {
