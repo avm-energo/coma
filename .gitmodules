@@ -22,3 +22,4 @@
 [submodule "src/alise"]
 	path = src/alise
 	url = ssh://git@git.avmenergo.ru:5507/forevel/alise.git
+	branch = develop
