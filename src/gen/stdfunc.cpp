@@ -40,6 +40,13 @@ void StdFunc::Init()
 
     SystemHomeDir = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + "/"
         + QCoreApplication::applicationName() + "/";
+    if ((!SystemHomeDir.contains("/root")) && SystemHomeDir.startsWith("//"))
+    {
+
+        if (SystemHomeDir.front() == "/")
+            SystemHomeDir.replace(0, 1, "/root");
+    }
+
     QDir dir(SystemHomeDir);
     if (!dir.exists())
         dir.mkdir(SystemHomeDir);

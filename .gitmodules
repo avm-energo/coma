@@ -16,6 +16,10 @@
 [submodule "include/hidapi"]
 	path = include/hidapi
 	url = https://github.com/libusb/hidapi
-[submodule "src/grpc_proto/protos"]
-	path = src/grpc_proto/protos
-	url = ssh://git@git.avmenergo.ru:5507/atom/protos.git
+[submodule "src/protos/protos"]
+	path = src/protos/protos
+	url = ../../atom/protos.git
+[submodule "src/alise"]
+	path = src/alise
+	url =../../forevel/alise.git
+	branch = develop
