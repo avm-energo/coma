@@ -11,6 +11,7 @@
 
 #include <QDebug>
 #include <QStorageInfo>
+#include <QtEndian>
 //#include <QMetaEnum>
 #include <QThread>
 
@@ -209,6 +210,9 @@ void ProtocomThread::handle(const Proto::Commands cmd)
             break;
         case Commands::FakeReadAlarms:
             handleSinglePoint(m_buffer.second, addr);
+            break;
+        case Commands::FakeReadBitString:
+            handleBitString(m_buffer.second, addr);
             break;
         default:
             handleRawBlock(m_buffer.second, addr);
@@ -434,6 +438,8 @@ void ProtocomThread::parseRequest(const CommandStruct &cmdStr)
         emit writeDataAttempt(ba);
         break;
     }
+    case Commands::FakeReadAlarms:
+    case Commands::FakeReadBitString:
     case Commands::FakeReadRegData:
     {
 
@@ -442,33 +448,8 @@ void ProtocomThread::parseRequest(const CommandStruct &cmdStr)
         break;
     }
 
-    case Commands::FakeReadAlarms:
-    {
-        QByteArray ba = prepareBlock(Commands::ReadBlkData, m_currentCommand.ba);
-        emit writeDataAttempt(ba);
-        break;
-    }
-        //    case Commands::ReadBlkDataA:
-        //    {
-        //        m_currentCommand.ba = StdFunc::arrayFromNumber(m_currentCommand.arg1.value<quint8>());
-        //        QByteArray ba = prepareBlock(m_currentCommand);
-        //        emit writeDataAttempt(ba);
-        //    }
-        //    case Commands::ReadBlkAC:
-        //    {
-        //        m_currentCommand.ba = StdFunc::arrayFromNumber(m_currentCommand.arg1.value<quint8>());
-        //        QByteArray ba = prepareBlock(m_currentCommand);
-        //        emit writeDataAttempt(ba);
-        //    }
-        //    case Commands::ReadBlkTech:
-        //    {
-        //        m_currentCommand.ba = StdFunc::arrayFromNumber(m_currentCommand.arg1.value<quint8>());
-        //        QByteArray ba = prepareBlock(m_currentCommand);
-        //        emit writeDataAttempt(ba);
-        //    }
     case Commands::ReadFile:
     {
-        // const Files::FilesEnum fileNumber = m_currentCommand.arg1.value<Files::FilesEnum>();
         fileHelper(m_currentCommand.arg1.value<DataTypes::FilesEnum>());
         break;
     }
@@ -495,28 +476,22 @@ void ProtocomThread::parseRequest(const CommandStruct &cmdStr)
         emit writeDataAttempt(m_currentCommand.ba);
         break;
     }
+    case Commands::WriteSingleCommand:
+    {
+        assert(m_currentCommand.arg1.canConvert<uint24>());
+        uint24 addr = m_currentCommand.arg1.value<uint24>();
+        //   constexpr auto size = sizeof(addr);
+        quint32 test = addr;
+        QByteArray buffer = StdFunc::arrayFromNumber((addr)) + m_currentCommand.ba;
+        //   buffer.remove(0, 1);
+        QByteArray ba = prepareBlock(Commands::WriteSingleCommand, buffer);
+        emit writeDataAttempt(ba);
+        break;
+    }
     case Commands::WriteFile:
     {
     }
 
-        //    case Commands::WriteMode:
-        //    {
-        //        m_currentCommand.ba = StdFunc::arrayFromNumber(m_currentCommand.arg1.value<quint8>());
-        //        QByteArray ba = prepareBlock(m_currentCommand);
-        //        emit writeDataAttempt(ba);
-        //    }
-        //    case Commands::WriteVariant:
-        //    {
-        //        m_currentCommand.ba = StdFunc::arrayFromNumber(m_currentCommand.arg1.value<quint8>());
-        //        QByteArray ba = prepareBlock(m_currentCommand);
-        //        emit writeDataAttempt(ba);
-        //    }
-        //    case Commands::Test:
-        //    {
-        //        m_currentCommand.ba = StdFunc::arrayFromNumber(m_currentCommand.arg1.value<quint8>());
-        //        QByteArray ba = prepareBlock(m_currentCommand);
-        //        emit writeDataAttempt(ba);
-        //    }
     default:
     {
         if (isSplitted(m_currentCommand.ba.size()))

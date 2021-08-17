@@ -309,10 +309,6 @@
 		<type>FLOAT[8]</type>
 	</record>
 	<record>
-		<id>110</id>
-		<type>BYTE[8]</type>
-	</record>
-	<record>
 		<id>111</id>
 		<type>WORD</type>
 	</record>
@@ -331,6 +327,18 @@
 	<record>
 		<id>115</id>
 		<type>FLOAT</type>
+	</record>
+	<record>
+		<id>116</id>
+		<type>DWORD</type>
+	</record>
+	<record>
+		<id>117</id>
+		<type>DWORD</type>
+	</record>
+	<record>
+		<id>118</id>
+		<type>DWORD</type>
 	</record>
 	<record>
 		<id>121</id>
@@ -369,10 +377,6 @@
 		<type>FLOAT[8]</type>
 	</record>
 	<record>
-		<id>130</id>
-		<type>BYTE[8]</type>
-	</record>
-	<record>
 		<id>131</id>
 		<type>WORD</type>
 	</record>
@@ -393,6 +397,18 @@
 		<type>FLOAT</type>
 	</record>
 	<record>
+		<id>136</id>
+		<type>DWORD</type>
+	</record>
+	<record>
+		<id>137</id>
+		<type>DWORD</type>
+	</record>
+	<record>
+		<id>138</id>
+		<type>DWORD</type>
+	</record>
+	<record>
 		<id>201</id>
 		<type>BYTE[16]</type>
 	</record>
@@ -410,19 +426,102 @@
 	</record>
 	<record>
 		<id>205</id>
-		<type>BYTE[16]</type>
+		<type>DWORD</type>
+		<widget>
+			<type>CheckBoxGroup</type>
+			<group>300</group>
+			<string>Инверсия</string>
+			<string-array>
+				<item>Инвертирован вход 1</item>
+				<item>Инвертирован вход 2</item>
+				<item>Инвертирован вход 3</item>
+				<item>Инвертирован вход 4</item>
+				<item>Инвертирован вход 5</item>
+				<item>Инвертирован вход 6</item>
+				<item>Инвертирован вход 7</item>
+				<item>Инвертирован вход 8</item>
+				<item>Инвертирован вход 9</item>
+				<item>Инвертирован вход 10</item>
+				<item>Инвертирован вход 11</item>
+			</string-array>
+			<count>11</count>
+		</widget>
 	</record>
 	<record>
 		<id>206</id>
-		<type>DWORD[16]</type>
+		<type>DWORD</type>
+	</record>
+	<record>
+		<id>211</id>
+		<type>BYTE[32]</type>
+		<widget>
+			<type>CheckBoxGroup</type>
+			<group>300</group>
+			<string>Тип входа</string>
+			<string-array>
+				<item>Используется вход 1</item>
+				<item>Используется вход 2</item>
+				<item>Используется вход 3</item>
+				<item>Используется вход 4</item>
+				<item>Используется вход 5</item>
+				<item>Используется вход 6</item>
+				<item>Используется вход 7</item>
+				<item>Используется вход 8</item>
+				<item>Используется вход 9</item>
+				<item>Используется вход 10</item>
+				<item>Используется вход 11</item>
+			</string-array>
+			<count>11</count>
+		</widget>
+	</record>
+	<record>
+		<id>212</id>
+		<type>DWORD[32]</type>
+		<widget>
+			<type>DoubleSpinBoxGroup</type>
+			<group>100</group>
+			<string>Время задержки для контроля дребезга контактов входы</string>
+			<count>30</count>
+			<min>0</min>
+			<max>65554</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>231</id>
 		<type>BYTE[16]</type>
+		<widget>
+			<type>CheckBoxGroup</type>
+			<group>100</group>
+			<string>Тип входа №0…15</string>
+			<string-array>
+				<item>Не использовать вход 1</item>
+				<item>Не использовать вход 2</item>
+				<item>Не использовать вход 3</item>
+				<item>Не использовать вход 4</item>
+				<item>Не использовать вход 5</item>
+				<item>Не использовать вход 6</item>
+				<item>Не использовать вход 7</item>
+				<item>Не использовать вход 8</item>
+				<item>Не использовать вход 9</item>
+				<item>Не использовать вход 10</item>
+				<item>Не использовать вход 11</item>
+			</string-array>
+			<count>11</count>
+		</widget>
 	</record>
 	<record>
 		<id>232</id>
 		<type>DWORD[16]</type>
+		<widget>
+			<type>DoubleSpinBoxGroup</type>
+			<group>100</group>
+			<string>Время фильтрации</string>
+			<count>11</count>
+			<min>0</min>
+			<max>65536</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>233</id>
@@ -431,14 +530,124 @@
 	<record>
 		<id>234</id>
 		<type>WORD</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>300</group>
+			<string>Время определения состояния сигнала переменного напряжения(в периодах сети)</string>
+			<min>0</min>
+			<max>254</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>235</id>
-		<type>BYTE[16]</type>
+		<type>DWORD</type>
+		<widget>
+			<type>CheckBoxGroup</type>
+			<group>300</group>
+			<string>Инверсия</string>
+			<string-array>
+				<item>Инвертировать вход 1</item>
+				<item>Инвертировать вход 2</item>
+				<item>Инвертировать вход 3</item>
+				<item>Инвертировать вход 4</item>
+				<item>Инвертировать вход 5</item>
+				<item>Инвертировать вход 6</item>
+				<item>Инвертировать вход 7</item>
+				<item>Инвертировать вход 8</item>
+				<item>Инвертировать вход 9</item>
+				<item>Инвертировать вход 10</item>
+				<item>Инвертировать вход 12</item>
+				<item>Инвертировать вход 13</item>
+				<item>Инвертировать вход 14</item>
+				<item>Инвертировать вход 15</item>
+				<item>Инвертировать вход 16</item>
+				<item>Инвертировать вход 17</item>
+				<item>Инвертировать вход 18</item>
+				<item>Инвертировать вход 19</item>
+				<item>Инвертировать вход 20</item>
+				<item>Инвертировать вход 21</item>
+				<item>Инвертировать вход 22</item>
+				<item>Инвертировать вход 23</item>
+				<item>Инвертировать вход 24</item>
+				<item>Инвертировать вход 25</item>
+				<item>Инвертировать вход 26</item>
+				<item>Инвертировать вход 27</item>
+				<item>Инвертировать вход 28</item>
+				<item>Инвертировать вход 29</item>
+				<item>Инвертировать вход 30</item>
+			</string-array>
+			<count>30</count>
+		</widget>
 	</record>
 	<record>
 		<id>236</id>
-		<type>DWORD[16]</type>
+		<type>DWORD</type>
+		<widget>
+			<type>QComboBoxGroup</type>
+			<group>300</group>
+			<string>Тип напряжения</string>
+			<string-array>
+				<item>-</item>
+				<item>~</item>
+			</string-array>
+			<count>11</count>
+		</widget>
+	</record>
+	<record>
+		<id>241</id>
+		<type>BYTE[32]</type>
+		<widget>
+			<type>CheckBoxGroup</type>
+			<group>300</group>
+			<string>Тип входа </string>
+			<string-array>
+				<item>Не использовать вход 1</item>
+				<item>Не использовать вход 2</item>
+				<item>Не использовать вход 3</item>
+				<item>Не использовать вход 4</item>
+				<item>Не использовать вход 5</item>
+				<item>Не использовать вход 6</item>
+				<item>Не использовать вход 7</item>
+				<item>Не использовать вход 8</item>
+				<item>Не использовать вход 9</item>
+				<item>Не использовать вход 10</item>
+				<item>Не использовать вход 11</item>
+				<item>Не использовать вход 12</item>
+				<item>Не использовать вход 13</item>
+				<item>Не использовать вход 14</item>
+				<item>Не использовать вход 15</item>
+				<item>Не использовать вход 16</item>
+				<item>Не использовать вход 17</item>
+				<item>Не использовать вход 18</item>
+				<item>Не использовать вход 19</item>
+				<item>Не использовать вход 20</item>
+				<item>Не использовать вход 21</item>
+				<item>Не использовать вход 22</item>
+				<item>Не использовать вход 23</item>
+				<item>Не использовать вход 24</item>
+				<item>Не использовать вход 25</item>
+				<item>Не использовать вход 26</item>
+				<item>Не использовать вход 27</item>
+				<item>Не использовать вход 28</item>
+				<item>Не использовать вход 29</item>
+				<item>Не использовать вход 30</item>
+			</string-array>
+			<count>30</count>
+		</widget>
+	</record>
+	<record>
+		<id>242</id>
+		<type>DWORD[32]</type>
+		<widget>
+			<type>DoubleSpinBoxGroup</type>
+			<group>100</group>
+			<string>Время задержки для контроля дребезга контактов входы</string>
+			<count>30</count>
+			<min>0</min>
+			<max>65554</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>301</id>
@@ -482,11 +691,11 @@
 	</record>
 	<record>
 		<id>311</id>
-		<type>FLOAT[8]</type>
+		<type>DWORD[8]</type>
 	</record>
 	<record>
 		<id>321</id>
-		<type>BYTE[8]</type>
+		<type>FLOAT[8]</type>
 	</record>
 	<record>
 		<id>322</id>
@@ -531,54 +740,174 @@
 	<record>
 		<id>401</id>
 		<type>BYTE</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>300</group>
+			<string>Тип WatchDog </string>
+			<min>0</min>
+			<max>254</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>402</id>
 		<type>BYTE</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>300</group>
+			<string>Номер  выхода для WD</string>
+			<min>0</min>
+			<max>254</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>403</id>
-		<type>WORD</type>
+		<type>BYTE</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>300</group>
+			<string>Время WD</string>
+			<min>0</min>
+			<max>254</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>404</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>300</group>
+			<string>Ширина короткого импульса</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>405</id>
 		<type>FLOAT</type>
-	</record>
-	<record>
-		<id>406</id>
-		<type>BYTE</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>300</group>
+			<string>Ширина длинного импульса</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>407</id>
+		<type>DWORD</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>300</group>
+			<string>Постоянный сигнал или импульс </string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>0</decimals>
+		</widget>
+	</record>
+	<record>
+		<id>408</id>
+		<type>DWORD</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>300</group>
+			<string>Короткий или длинный импульс</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>0</decimals>
+		</widget>
+	</record>
+	<record>
+		<id>409</id>
 		<type>DWORD</type>
 	</record>
 	<record>
 		<id>421</id>
 		<type>BYTE</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>300</group>
+			<string>Тип WatchDog </string>
+			<min>0</min>
+			<max>254</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>422</id>
 		<type>BYTE</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>300</group>
+			<string>Номер  выхода для WD</string>
+			<min>0</min>
+			<max>254</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>423</id>
 		<type>BYTE</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>300</group>
+			<string>Время WD</string>
+			<min>0</min>
+			<max>254</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>424</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>300</group>
+			<string>Ширина короткого импульса</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>425</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>300</group>
+			<string>Ширина длинного импульса</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
-		<id>426</id>
-		<type>BYTE[16]</type>
+		<id>427</id>
+		<type>DWORD</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>300</group>
+			<string>Постоянный сигнал или импульс</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>0</decimals>
+		</widget>
+	</record>
+	<record>
+		<id>428</id>
+		<type>DWORD</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>300</group>
+			<string>Короткий или длинный импульс</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1001</id>

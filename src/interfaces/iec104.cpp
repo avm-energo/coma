@@ -214,13 +214,13 @@ void IEC104::reqFloats(quint32 sigAdr, quint32 sigCount)
     DataManager::addToInQueue(inp);
 }
 
-// void IEC104::reqBitStrings(quint32 sigAdr, quint32 sigCount)
-//{
-//    Q_UNUSED(sigAdr)
-//    Q_UNUSED(sigCount)
-//    Commands104::CommandStruct inp { Commands104::CM104_REQGROUP, MAINBITSTRINGGROUP, 0, {} };
-//    DataManager::addToInQueue(inp);
-//}
+void IEC104::reqBitStrings(quint32 sigAdr, quint32 sigCount)
+{
+    Q_UNUSED(sigAdr)
+    Q_UNUSED(sigCount)
+    Commands104::CommandStruct inp { Commands104::CM104_REQGROUP, MAINBITSTRINGGROUP, 0, {} };
+    DataManager::addToInQueue(inp);
+}
 
 // void IEC104::CorReadRequest()
 //{

@@ -37,12 +37,14 @@ public:
     void setHighlightMap(const QMap<int, QList<HighlightWarnAlarmStruct>> &map);
     void setFloatBdQuery(const QList<BdQuery> &list);
     void setSpBdQuery(const QList<BdQuery> &list);
+    void setBsBdQuery(const QList<BdQuery> &list);
     //    void setInterface(BaseInterface *iface);
     //    BaseInterface *iface();
     virtual void uponInterfaceSetting();
     virtual void reqUpdate();
     virtual void updateFloatData(const DataTypes::FloatStruct &fl);
     virtual void updateSPData(const DataTypes::SinglePointWithTimeStruct &sp);
+    virtual void updateBitStringData(const DataTypes::BitStringStruct &bs) {};
 signals:
     // //     signals to set "ProgressBar2" in main Coma
     //    void setGeneralProgressBarSize(quint32 size);
@@ -66,6 +68,7 @@ private:
 
     QList<BdQuery> m_floatBdQueryList;
     QList<BdQuery> m_spBdQueryList;
+    QList<BdQuery> m_bsBdQueryList;
     QMap<int, QList<HighlightWarnAlarmStruct>> m_highlightMap;
 
 private slots:

@@ -165,7 +165,9 @@ bool Module::loadSettings()
     {
         m_settings = std::unique_ptr<ModuleSettings>(new ModuleSettings);
         QDomElement domElement = domDoc.documentElement();
-        XmlParser::traverseNode(domElement, m_settings.get());
+        GlobalSettings settings { &DataTypes::DataRecV::map, &WidgetFactory::m_widgetMap,
+            &WidgetFactory::m_categoryMap };
+        XmlParser::traverseNode(domElement, m_settings.get(), settings);
         file.close();
         return true;
     }

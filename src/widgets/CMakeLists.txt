@@ -71,6 +71,7 @@ add_library(
   waitwidget.h
   wd_func.cpp
   wd_func.h
+  helper.h
   QProgressIndicator.cpp
   QProgressIndicator.h
   ../../images/vectorIcons.qrc

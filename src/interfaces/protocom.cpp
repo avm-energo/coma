@@ -161,6 +161,21 @@ void Protocom::reqBSI()
     emit wakeUpParser();
 }
 
+void Protocom::reqBitStrings(quint32 sigAdr, quint32 sigCount)
+{
+    Q_D(Protocom);
+    if (!isValidRegs(sigAdr, sigCount))
+        return;
+    CommandStruct inp {
+        Proto::Commands::FakeReadBitString,             // Fake command
+        sigAdr,                                         // Signal addr
+        sigCount,                                       // Count signals
+        StdFunc::arrayFromNumber(d->blockByReg(sigAdr)) // Protocom block
+    };
+    DataManager::addToInQueue(inp);
+    emit wakeUpParser();
+}
+
 void Protocom::writeFile(quint32 filenum, const QByteArray &file)
 {
     Q_UNUSED(filenum);
@@ -289,6 +304,13 @@ void Protocom::writeCommand(Queries::Commands cmd, QVariant item)
         Q_ASSERT(item.canConvert<quint32>());
         d->handleBlk(protoCmd, item.toUInt());
         break;
+
+    case Commands::WriteSingleCommand:
+
+        Q_ASSERT(item.canConvert<DataTypes::SingleCommand>());
+        d->handleCommand(protoCmd, item.value<DataTypes::SingleCommand>());
+        break;
+
     case Commands::WriteHardware:
 
         Q_ASSERT(item.canConvert<DataTypes::HardwareStruct>());

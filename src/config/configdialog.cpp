@@ -16,6 +16,7 @@
 #include <QMessageBox>
 #include <QScrollArea>
 #include <QTextEdit>
+#include <set>
 namespace crypto
 {
 static constexpr char hash[] = "d93fdd6d1fb5afcca939fa650b62541d09dbcb766f41c39352dc75f348fb35dc";
@@ -94,12 +95,22 @@ void ConfigDialog::confReceived(const QList<DataTypes::DataRecV> &list)
     using namespace DataTypes;
     const auto s2typeB = S2::getRecord(BciNumber::MTypeB_ID).value<DWORD>();
     if (s2typeB != Board::GetInstance().typeB())
-        qCritical() << "Conflict typeB, module: " << QString::number(Board::GetInstance().typeB(), 16)
-                    << " config: " << QString::number(s2typeB, 16);
+    {
+        qCritical() << "Conflict typeB, module: " <<                //
+            QString::number(Board::GetInstance().typeB(), 16)       //
+                    << " config: " << QString::number(s2typeB, 16); //
+        S2::setRecordValue({ BciNumber::MTypeB_ID, DWORD(Board::GetInstance().typeB()) });
+    }
+
     const auto s2typeM = S2::getRecord(BciNumber::MTypeE_ID).value<DWORD>();
     if (s2typeM != Board::GetInstance().typeM())
-        qCritical() << "Conflict typeB, module: " << QString::number(Board::GetInstance().typeM(), 16)
-                    << " config: " << QString::number(s2typeM, 16);
+    {
+        qCritical() << "Conflict typeB, module: " <<                //
+            QString::number(Board::GetInstance().typeM(), 16)       //
+                    << " config: " << QString::number(s2typeM, 16); //
+        S2::setRecordValue({ BciNumber::MTypeE_ID, DWORD(Board::GetInstance().typeM()) });
+    }
+
     checkForDiff(list);
     Fill();
 }
@@ -283,7 +294,7 @@ void ConfigDialog::createTabs(QTabWidget *tabWidget)
 
 void ConfigDialog::Fill()
 {
-    for (const auto defRecord : m_defaultValues)
+    for (const auto &defRecord : m_defaultValues)
     {
         if (!defRecord.visibility)
             continue;
@@ -316,7 +327,7 @@ void ConfigDialog::PrereadConf()
 void ConfigDialog::FillBack() const
 {
     WidgetFactory factory;
-    for (const auto record : m_defaultValues)
+    for (const auto &record : m_defaultValues)
     {
         if (!record.visibility)
             continue;

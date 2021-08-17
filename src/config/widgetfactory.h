@@ -5,6 +5,7 @@
 #include "delegate.h"
 
 #include <QStandardItemModel>
+#include <bitset>
 
 //#define DEBUG_FACTORY
 
@@ -68,6 +69,11 @@ private:
     static widgetMap m_widgetMap;
     static categoryMap m_categoryMap;
 };
+
+const inline QString widgetName(int group, int item)
+{
+    return QString::number(group) + "-" + QString::number(item);
+}
 
 // Template specialisation
 
@@ -213,6 +219,17 @@ template <typename T> bool WidgetFactory::fillWidget(const QWidget *parent, BciN
 #endif
                     status = WDFunc::SetChBGData(parent, QString::number(key), value);
                 }
+                else if constexpr (std::is_container<T>())
+                {
+                    typedef std::remove_reference_t<typename T::value_type> internalType;
+                    if constexpr (std::is_unsigned_v<internalType>)
+                    {
+#ifdef DEBUG_FACTORY
+                        qDebug() << "CheckBoxGroupWidget" << key;
+#endif
+                        status = WDFunc::SetChBGData(parent, QString::number(key), value);
+                    }
+                }
             },
             [&](const delegate::QComboBox &arg) {
                 if constexpr (!std::is_container<T>())
@@ -224,7 +241,7 @@ template <typename T> bool WidgetFactory::fillWidget(const QWidget *parent, BciN
                     {
                     case delegate::QComboBox::data:
                     {
-                        auto index = arg.items.indexOf(QString::number(value));
+                        auto index = arg.model.indexOf(QString::number(value));
                         if (index != -1)
                             status = WDFunc::SetCBIndex(parent, QString::number(key), index);
                         break;
@@ -234,6 +251,55 @@ template <typename T> bool WidgetFactory::fillWidget(const QWidget *parent, BciN
                         status = WDFunc::SetCBIndex(parent, QString::number(key), value);
                         break;
                     }
+                    }
+                }
+            },
+            [&](const delegate::QComboBoxGroup &arg) {
+                if constexpr (!std::is_container<T>())
+                {
+#ifdef DEBUG_FACTORY
+                    qDebug() << "QComboBoxGroup" << key;
+#endif
+                    std::bitset<sizeof(T) *CHAR_BIT> bitset = value;
+                    int count = arg.count;
+                    bool flag = false;
+                    for (auto i = 0; i != count; ++i)
+                    {
+                        status = WDFunc::SetCBIndex(parent, widgetName(key, i), bitset.test(i));
+                        Q_ASSERT(status && "Couldn't fill QComboBox");
+                        if (!status && !flag)
+                        {
+                            flag = true;
+                        }
+                        if (flag)
+                        {
+                            status = false;
+                        }
+                    }
+                }
+                else if constexpr (std::is_container<T>())
+                {
+                    typedef std::remove_reference_t<typename T::value_type> internalType;
+                    if constexpr (std::is_unsigned_v<internalType>)
+                    {
+#ifdef DEBUG_FACTORY
+                        qDebug() << "QComboBoxGroup" << key;
+#endif
+                        auto count = std::min(std::size_t(arg.count), value.size());
+                        bool flag = false;
+                        for (auto i = 0; i != count; ++i)
+                        {
+                            status = WDFunc::SetCBIndex(parent, widgetName(key, i), value.at(i));
+                            Q_ASSERT(status && "Couldn't fill QComboBox");
+                            if (!status && !flag)
+                            {
+                                flag = true;
+                            }
+                            if (flag)
+                            {
+                                status = false;
+                            }
+                        }
                     }
                 }
             },
