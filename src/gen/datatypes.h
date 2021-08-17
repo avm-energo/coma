@@ -267,6 +267,7 @@ enum Commands
     QUSB_ReqBlkDataA,
     QUSB_ReqBlkDataTech,
     QUSB_WriteBlkDataTech,
+    QUSB_Reboot,
     QUSB_ReqOscInfo,
     QUSB_SetMode,
     QUSB_GetMode,

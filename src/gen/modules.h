@@ -739,12 +739,12 @@ enum Registers : quint16
 /// AVTUK Central Controller Unit
 namespace AVTUK_CCU
 {
-constexpr uint16_t DiscretePowerBlock = 1;
-// NOTE
-constexpr uint16_t IndicationBlock = 1;
-struct DiscretePowerSignals
+constexpr uint16_t MainBlock = 1;
+constexpr uint16_t IndicationBlock = 2;
+struct Main
 {
     uint8_t PWRIN;
+    bool resetReq;
 };
 struct Indication
 {

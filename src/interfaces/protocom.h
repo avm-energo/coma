@@ -67,6 +67,7 @@ const QMap<Queries::Commands, Proto::Commands> getProtoCommand {
     { Queries::QUSB_ReqBlkDataTech, Proto::Commands::ReadBlkTech },                //
     { Queries::QUSB_ReqOscInfo, Proto::Commands::ReadBlkTech },                    //
     { Queries::QUSB_WriteBlkDataTech, Proto::Commands::WriteBlkTech },             //
+    { Queries::QUSB_Reboot, Proto::Commands::WriteBlkCmd },                        //
     { Queries::QC_ReqAlarms, Proto::Commands::FakeReadAlarms },                    //
     { Queries::QUSB_GetMode, Proto::Commands::ReadMode },                          //
     { Queries::QUSB_SetMode, Proto::Commands::WriteMode },                         //

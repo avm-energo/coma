@@ -88,7 +88,8 @@ target_link_libraries(
   PRIVATE Qt${QT_VERSION_MAJOR}::Xml
   PRIVATE Qt${QT_VERSION_MAJOR}::Network
   PRIVATE QXlsx
-  PRIVATE CONAN_PKG::boost)
+  PRIVATE CONAN_PKG::boost
+  )
 
 #add_dependencies(${PROJECT_NAME} QXlsxBuild)
 target_compile_definitions(${PROJECT_NAME} PRIVATE ${PROJECT_NAME}_LIBRARY)

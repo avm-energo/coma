@@ -66,9 +66,13 @@ elseif(CMAKE_SYSTEM_NAME_LOWER STREQUAL "linux")
   if(${PROJECT_ARCHITECTURE}} MATCHES "x86_64")
     set(PROJECT_TARGET_NAME "linux64")
     set(AVTUK-14 TRUE)
+    set(CPACK_DEBIAN_PACKAGE_ARCHITECTURE amd64)
   elseif(${PROJECT_ARCHITECTURE}} MATCHES "i386")
     set(PROJECT_TARGET_NAME "linux32")
+  elseif(${PROJECT_ARCHITECTURE}} MATCHES "armv7")
+    set(PROJECT_TARGET_NAME "linux-armhf")
     set(AVTUK-12 TRUE)
+    set(CPACK_DEBIAN_PACKAGE_ARCHITECTURE armhf)
   else()
     message(FATAL_ERROR "Invalid arch name: ${PROJECT_ARCHITECTURE}")
   endif()
@@ -104,21 +108,22 @@ message(STATUS "Current user directory for conan: " ${USER_DIRECTORY})
 
 set(CONAN_MAIN_INIT ${CONAN_EXEC} install . --profile ${CONAN_PROFILE}  -g cmake -g cmake_find_package -s arch=${CONAN_TARGET_NAME} -s arch_build=${CONAN_TARGET_NAME} -if ${CMAKE_BINARY_DIR} --build=missing)
 
-if (NOT ( EXISTS "${CMAKE_BINARY_DIR}/conanbuildinfo.txt" AND ${CACHED_PROJECT_TARGET_NAME} STREQUAL ${PROJECT_TARGET_NAME}))
-#    execute_process(COMMAND ${CONAN_MAIN_INIT}
-#        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/..
-#        RESULT_VARIABLE CMD_ERROR)
-    execute_process(
-        COMMAND ${CMAKE_COMMAND} -E env
-            CONAN_USER_HOME=${USER_DIRECTORY} ${CONAN_MAIN_INIT}
-        RESULT_VARIABLE CMD_ERROR
-        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/..
-    )
-    set(CACHED_PROJECT_TARGET_NAME ${PROJECT_TARGET_NAME} CACHE STRING "Cached target arch" FORCE)
-    message(STATUS "Init conan for " ${PROJECT_TARGET_NAME})
-    message( STATUS "CMD_ERROR:" ${CMD_ERROR})
+if (NOT AVTUK-12)
+    if (NOT ( EXISTS "${CMAKE_BINARY_DIR}/conanbuildinfo.txt" AND ${CACHED_PROJECT_TARGET_NAME} STREQUAL ${PROJECT_TARGET_NAME}))
+    #    execute_process(COMMAND ${CONAN_MAIN_INIT}
+    #        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/..
+    #        RESULT_VARIABLE CMD_ERROR)
+        execute_process(
+            COMMAND ${CMAKE_COMMAND} -E env
+                CONAN_USER_HOME=${USER_DIRECTORY} ${CONAN_MAIN_INIT}
+            RESULT_VARIABLE CMD_ERROR
+            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/..
+        )
+        set(CACHED_PROJECT_TARGET_NAME ${PROJECT_TARGET_NAME} CACHE STRING "Cached target arch" FORCE)
+        message(STATUS "Init conan for " ${PROJECT_TARGET_NAME})
+        message( STATUS "CMD_ERROR:" ${CMD_ERROR})
+    endif()
 endif()
-
 
 message(STATUS "Modules dir: " ${CMAKE_MODULE_PATH})
 
@@ -157,24 +162,35 @@ if (NOT QT_VERSION_MAJOR)
 endif()
 
 message(STATUS "Qt version: ${QT_VERSION_MAJOR}")
-if (Qt${QT_VERSION_MAJOR}Widgets_FOUND)
-    message(STATUS "QtGui found")
-endif()
-if (Qt${QT_VERSION_MAJOR}Widgets_FOUND)
-    message(STATUS "QtWidgets found")
+if (NOT AVTUK-12)
+    if (Qt${QT_VERSION_MAJOR}Widgets_FOUND)
+        message(STATUS "QtGui found")
+    endif()
+    if (Qt${QT_VERSION_MAJOR}Widgets_FOUND)
+        message(STATUS "QtWidgets found")
+    endif()
+
+    if (Qt${QT_VERSION_MAJOR}Gui_FOUND)
+        include(limereport)
+        include(qxlsx)
+    endif()
 endif()
 
-if (Qt${QT_VERSION_MAJOR}Gui_FOUND)
-    include(limereport)
-    include(qxlsx)
-endif()
-
+option(BUILD_WITH_ALISE "Build with alise for AVTUK" OFF)
 if (NOT AVTUK-12)
     add_subdirectory(interfaces)
 endif()
 add_subdirectory(gen)
 add_subdirectory(comaversion)
-if (Qt${QT_VERSION_MAJOR}Widgets_FOUND)
+if (BUILD_WITH_ALISE)
+   # find_package(Protobuf REQUIRED)
+  #  find_package(ZeroMQ REQUIRED)
+  #  find_package(libsodium REQUIRED)
+    set(PROTOS_GENERATED_DIR ${CMAKE_CURRENT_BINARY_DIR}/protos/protos)
+    add_subdirectory(alise)
+    add_subdirectory(protos)
+endif()
+if (Qt${QT_VERSION_MAJOR}Widgets_FOUND AND NOT AVTUK-12)
     add_subdirectory(config)
     add_subdirectory(avtuk)
     add_subdirectory(check)
