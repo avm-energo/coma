@@ -6,6 +6,7 @@
 #include "../interfaces/baseinterface.h"
 #include "board.h"
 #include "settings.h"
+#include "std_ext.h"
 namespace keys
 {
 constexpr char name[] = "name";
@@ -149,6 +150,7 @@ class QLabel;
 class QDoubleSpinBox;
 class QCheckBox;
 class QComboBox;
+class QComboBoxGroup;
 class QTableView;
 class CheckBoxGroup;
 class IPCtrl;
@@ -184,6 +186,9 @@ ctti::unnamed_type_id_t XmlParser::parseType(QDomElement domElement)
                 return ctti::unnamed_type_id<DoubleSpinBoxGroup>().hash();
             if (name.contains("CheckBoxGroup", Qt::CaseInsensitive))
                 return ctti::unnamed_type_id<CheckBoxGroup>().hash();
+            if (name.contains("ComboBoxGroup", Qt::CaseInsensitive))
+                return ctti::unnamed_type_id<QComboBoxGroup>().hash();
+            Q_ASSERT(false && "False type");
         }
         if (name.contains("Label", Qt::CaseInsensitive))
             return ctti::unnamed_type_id<QLabel>().hash();
@@ -209,12 +214,22 @@ ctti::unnamed_type_id_t XmlParser::parseType(QDomElement domElement)
             return ctti::unnamed_type_id<BYTE_8t>().hash();
         if (name.contains("BYTE[16]", Qt::CaseInsensitive))
             return ctti::unnamed_type_id<BYTE_16t>().hash();
+        if (name.contains("BYTE[32]", Qt::CaseInsensitive))
+            return ctti::unnamed_type_id<BYTE_32t>().hash();
+        if (name.contains("DWORD[8]", Qt::CaseInsensitive))
+            return ctti::unnamed_type_id<DWORD_8t>().hash();
+        if (name.contains("DWORD[16]", Qt::CaseInsensitive))
+            return ctti::unnamed_type_id<DWORD_16t>().hash();
+        if (name.contains("DWORD[32]", Qt::CaseInsensitive))
+            return ctti::unnamed_type_id<DWORD_32t>().hash();
         if (name.contains("WORD[4]", Qt::CaseInsensitive))
             return ctti::unnamed_type_id<WORD_4t>().hash();
         if (name.contains("WORD[8]", Qt::CaseInsensitive))
             return ctti::unnamed_type_id<WORD_8t>().hash();
         if (name.contains("WORD[16]", Qt::CaseInsensitive))
             return ctti::unnamed_type_id<WORD_16t>().hash();
+        if (name.contains("WORD[32]", Qt::CaseInsensitive))
+            return ctti::unnamed_type_id<WORD_32t>().hash();
         if (name.contains("float[2]", Qt::CaseInsensitive))
             return ctti::unnamed_type_id<FLOAT_2t>().hash();
         if (name.contains("float[3]", Qt::CaseInsensitive))
@@ -321,14 +336,41 @@ delegate::itemVariant XmlParser::parseWidget(QDomElement domElement)
 
         widget.desc = description;
         widget.toolTip = toolTip;
-        widget.items = items;
+        widget.model = items;
         QDomElement childElement = domElement.firstChildElement("field");
         // QComboBox depends on index by default
-        widget.primaryField
-            = childElement.text().contains("data") ? delegate::QComboBox::data : delegate::QComboBox::index;
+        if (childElement.text().contains("data"))
+            widget.primaryField = delegate::QComboBox::data;
+        else if (childElement.text().contains("bitfield"))
+            widget.primaryField = delegate::QComboBox::bitfield;
+        else
+            widget.primaryField = delegate::QComboBox::index;
+        //    = childElement.text().contains("data") ? delegate::QComboBox::data : delegate::QComboBox::index;
         return widget;
     }
+    case ctti::unnamed_type_id<QComboBoxGroup>().hash():
+    {
+        delegate::QComboBoxGroup widget(type, widgetGroup);
 
+        widget.desc = description;
+        widget.toolTip = toolTip;
+        widget.model = items;
+        QDomElement childElement = domElement.firstChildElement("field");
+        // QComboBox depends on index by default
+        if (childElement.text().contains("data"))
+            widget.primaryField = delegate::QComboBox::data;
+        else if (childElement.text().contains("bitfield"))
+            widget.primaryField = delegate::QComboBox::bitfield;
+        else
+            widget.primaryField = delegate::QComboBox::index;
+        //    = childElement.text().contains("data") ? delegate::QComboBox::data : delegate::QComboBox::index;
+        childElement = domElement.firstChildElement("count");
+        bool status = false;
+        widget.count = childElement.text().toUInt(&status);
+        if (!status)
+            qWarning() << name << className;
+        return widget;
+    }
     default:
     {
     }
@@ -336,20 +378,48 @@ delegate::itemVariant XmlParser::parseWidget(QDomElement domElement)
     return delegate::Widget(type, description, widgetGroup, toolTip);
 }
 
-DataTypes::RecordPair XmlParser::parseRecord(QDomElement domElement)
+DataTypes::RecordPair XmlParser::parseRecord(QDomElement domElement, widgetMap *const s2widgetMap)
 {
     using namespace DataTypes;
     QDomElement childElement = domElement.firstChildElement("id");
+    // ID cannot be empty
     if (childElement.isNull())
         return {};
     bool status = false;
     int id = childElement.text().toInt(&status);
+    // ID should be convertible to int
     if (!status)
         return {};
 
     childElement = domElement.firstChildElement("defaultValue");
+    // defaultValue is necessary, is this ok?
     if (childElement.isNull())
         return {};
+    // override settings
+    childElement = domElement.firstChildElement("widget");
+    if (!childElement.isNull())
+    {
+        auto newWidget = parseWidget(childElement);
+        auto oldWidget = s2widgetMap->at(BciNumber(id));
+        newWidget = std::visit(
+            [&](auto &&lhs, auto &&rhs) -> delegate::itemVariant {
+                using T = std::decay_t<decltype(lhs)>;
+                using J = std::decay_t<decltype(rhs)>;
+
+                if constexpr (std::is_same_v<T, J>)
+                {
+                    if constexpr (std::is_same_v<T, delegate::Item>)
+                    {
+                        abort();
+                    }
+                    return lhs.merge(rhs);
+                }
+                abort();
+            },
+            oldWidget, newWidget);
+        s2widgetMap->insert_or_assign(BciNumber(id), newWidget);
+    }
+
     auto visibilityElement = domElement.firstChildElement("visibility");
     // visibility=true by default
     if (visibilityElement.isNull() || visibilityElement.text() == "true")
@@ -395,7 +465,7 @@ delegate::Item XmlParser::parseItem(QDomElement domElement, ctti::unnamed_type_i
     }
 }
 
-void XmlParser::traverseNode(const QDomNode &node, ModuleSettings *const settings)
+void XmlParser::traverseNode(const QDomNode &node, ModuleSettings *const settings, GlobalSettings &gsettings)
 {
     QDomNode domNode = node.firstChild();
     while (!domNode.isNull())
@@ -494,13 +564,13 @@ void XmlParser::traverseNode(const QDomNode &node, ModuleSettings *const setting
                 if (domElement.tagName() == "record")
                 {
 
-                    settings->configSettings.push_back(parseRecord(domElement));
+                    settings->configSettings.push_back(parseRecord(domElement, gsettings.s2widgetMap));
                     domNode = domNode.nextSibling();
                     continue;
                 }
             }
         }
-        traverseNode(domNode, settings);
+        traverseNode(domNode, settings, gsettings);
         domNode = domNode.nextSibling();
     }
 }

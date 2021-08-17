@@ -3,7 +3,6 @@
 #include "../widgets/udialog.h"
 #include "widgetfactory.h"
 
-#include <set>
 //#define MAXBYTEARRAY 65535
 //#define MAXCONFSIZE 4096 // максимальный размер файла конфигурации
 

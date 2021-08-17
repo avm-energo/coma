@@ -4,6 +4,7 @@
 #include "../gen/s2.h"
 #include "../models/comboboxdelegate.h"
 #include "../widgets/checkboxgroup.h"
+#include "../widgets/helper.h"
 #include "../widgets/ipctrl.h"
 
 #include <QHeaderView>
@@ -22,6 +23,7 @@ static bool fillBackSPBG(BciNumber key, const QWidget *parent);
 static bool fillBackSPB(BciNumber key, const QWidget *parent);
 static bool fillBackChBG(BciNumber key, const QWidget *parent);
 static bool fillBackComboBox(BciNumber key, const QWidget *parent, delegate::QComboBox::PrimaryField field);
+static bool fillBackComboBoxGroup(BciNumber key, const QWidget *parent, int count);
 
 template <typename T> QWidget *helper(const T &arg, QWidget *parent, BciNumber key)
 {
@@ -123,13 +125,6 @@ QWidget *WidgetFactory::createWidget(BciNumber key, QWidget *parent)
 
     const auto var = search->second;
     std::visit(overloaded {
-                   [&](const auto &arg) {
-#ifdef DEBUG_FACTORY
-                       qDebug() << "DefaultWidget" << key;
-#endif
-                       using namespace delegate;
-                       widget = helper(arg, parent, key);
-                   },
                    [&](const delegate::DoubleSpinBoxGroup &arg) {
 #ifdef DEBUG_FACTORY
                        qDebug() << "DoubleSpinBoxGroupWidget" << key;
@@ -159,7 +154,8 @@ QWidget *WidgetFactory::createWidget(BciNumber key, QWidget *parent)
                        widget = new QWidget(parent);
                        QHBoxLayout *lyout = new QHBoxLayout;
                        lyout->addWidget(new QLabel(arg.desc, parent));
-                       auto group = new CheckBoxGroup(arg.items, parent);
+
+                       auto group = new CheckBoxGroup(arg.items, arg.count, parent);
                        group->setObjectName(QString::number(key));
                        lyout->addWidget(group);
                        widget->setLayout(lyout);
@@ -172,8 +168,39 @@ QWidget *WidgetFactory::createWidget(BciNumber key, QWidget *parent)
                        widget = new QWidget(parent);
                        QHBoxLayout *lyout = new QHBoxLayout;
                        lyout->addWidget(new QLabel(arg.desc, parent));
-                       lyout->addWidget(WDFunc::NewCB2(parent, QString::number(key), arg.items));
+                       lyout->addWidget(WDFunc::NewCB2(parent, QString::number(key), arg.model));
                        widget->setLayout(lyout);
+                   },
+                   [&](const delegate::QComboBoxGroup &arg) {
+#ifdef DEBUG_FACTORY
+                       qDebug() << "QComboBoxGroup" << key;
+#endif
+                       // Q_ASSERT(desc.count() == arg.count);
+                       widget = new QWidget(parent);
+                       QHBoxLayout *mainLyout = new QHBoxLayout;
+                       mainLyout->addWidget(new QLabel(arg.desc, parent));
+
+                       int count = arg.count;
+                       auto itemsOneLine = detail::goldenRatio(count);
+
+                       QGridLayout *gridlyout = new QGridLayout;
+                       for (auto i = 0; i != count; ++i)
+                       {
+                           QHBoxLayout *layout = new QHBoxLayout;
+                           layout->addWidget(new QLabel(QString::number(i + 1), parent));
+                           layout->addWidget(WDFunc::NewCB2(parent, widgetName(key, i), arg.model));
+                           gridlyout->addLayout(layout, i / itemsOneLine, i % itemsOneLine);
+                       }
+
+                       mainLyout->addLayout(gridlyout);
+                       widget->setLayout(mainLyout);
+                   },
+                   [&](const auto &arg) {
+#ifdef DEBUG_FACTORY
+                       qDebug() << "DefaultWidget" << key;
+#endif
+                       using namespace delegate;
+                       widget = helper(arg, parent, key);
                    },
                },
         var);
@@ -244,6 +271,12 @@ bool WidgetFactory::fillBack(BciNumber key, const QWidget *parent)
                        qDebug("QComboBox");
 #endif
                        status = fillBackComboBox(key, parent, arg.primaryField);
+                   },
+                   [&](const delegate::QComboBoxGroup &arg) {
+#ifdef DEBUG_FACTORY
+                       qDebug("QComboBoxGroup");
+#endif
+                       status = fillBackComboBoxGroup(key, parent, arg.count);
                    },
                    [&](const delegate::Item &arg) {
 #ifdef DEBUG_FACTORY
@@ -559,6 +592,7 @@ static bool fillBackChBG(BciNumber key, const QWidget *parent)
         [&](auto &&arg) {
             typedef std::remove_reference_t<decltype(arg)> internalType;
             if constexpr (!std::is_container<internalType>())
+            {
                 if constexpr (std::is_unsigned_v<internalType>)
                 {
                     internalType buffer = 0;
@@ -566,6 +600,20 @@ static bool fillBackChBG(BciNumber key, const QWidget *parent)
                     if (status)
                         S2::setRecordValue({ key, buffer });
                 }
+            }
+
+            else if constexpr (std::is_container<internalType>())
+            {
+                typedef internalType Container;
+                typedef std::remove_reference_t<typename internalType::value_type> internalType;
+                if constexpr (std::is_integral<internalType>::value)
+                {
+                    Container buffer;
+                    status = WDFunc::ChBGData(parent, QString::number(key), buffer);
+                    if (status)
+                        S2::setRecordValue({ key, buffer });
+                }
+            }
         },
         record.getData());
     return status;
@@ -588,6 +636,10 @@ static bool fillBackComboBox(BciNumber key, const QWidget *parent, delegate::QCo
                     S2::setRecordValue({ key, buffer });
                     break;
                 }
+                case delegate::QComboBox::bitfield:
+                {
+                    // NOTE Nothing here
+                }
                 default:
                 {
                     int status_code = WDFunc::CBIndex(parent, QString::number(key));
@@ -598,6 +650,61 @@ static bool fillBackComboBox(BciNumber key, const QWidget *parent, delegate::QCo
                 }
                 }
                 status = true;
+            }
+        },
+        record.getData());
+    return status;
+}
+
+static bool fillBackComboBoxGroup(BciNumber key, const QWidget *parent, int count)
+{
+    bool status = false;
+    auto record = S2::getRecord(key);
+    std::visit(
+        [&](auto &&arg) {
+            typedef std::remove_reference_t<decltype(arg)> internalType;
+            if constexpr (std::is_unsigned_v<internalType>)
+            {
+                std::bitset<sizeof(internalType) *CHAR_BIT> bitset = 0;
+                assert(size_t(count) <= bitset.size());
+                status = true;
+                for (int i = 0; i != count; ++i)
+                {
+                    int status_code = WDFunc::CBIndex(parent, widgetName(key, i));
+
+                    if (status_code == -1)
+                    {
+                        status = false;
+                        break;
+                    }
+
+                    bitset.set(i, bool(status_code));
+                }
+                S2::setRecordValue({ key, static_cast<internalType>(bitset.to_ullong()) });
+            }
+            else if constexpr (std::is_container<internalType>())
+            {
+                typedef internalType Container;
+                typedef std::remove_reference_t<typename internalType::value_type> internalType;
+                if constexpr (std::is_unsigned_v<internalType>)
+                {
+                    Container container = {};
+                    assert(size_t(count) <= container.size());
+                    status = true;
+                    for (int i = 0; i != count; ++i)
+                    {
+                        int status_code = WDFunc::CBIndex(parent, widgetName(key, i));
+
+                        if (status_code == -1)
+                        {
+                            status = false;
+                            break;
+                        }
+                        container.at(i) = internalType(status_code);
+                    }
+
+                    S2::setRecordValue({ key, container });
+                }
             }
         },
         record.getData());

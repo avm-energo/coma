@@ -68,7 +68,7 @@ public:
 
     void reqAlarms(quint32 sigAdr = 0, quint32 sigCount = 0);
     virtual void reqFloats(quint32 sigAdr = 0, quint32 sigCount = 0) = 0;
-    //    virtual void reqBitStrings(quint32 sigAdr = 0, quint32 sigCount = 0) = 0;
+    virtual void reqBitStrings(quint32 sigAdr = 0, quint32 sigCount = 0) = 0;
     /// Прямая запись данных
     virtual void writeRaw(const QByteArray &)
     {

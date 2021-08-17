@@ -28,12 +28,12 @@ template <typename T> using SharedPointer = std::shared_ptr<T>;
 template <typename T> using UniquePointer = std::unique_ptr<T, QtHelper::deleteLaterDeletor>;
 
 //// Another variant of std::unique_ptr with deleteLater
-//template <typename T, std::enable_if_t<std::is_base_of<QObject, T>, bool>::value = true>
-//using UniquePointer2 = std::unique_ptr<T, decltype(std::mem_fn(&QObject::deleteLater))>;
+// template <typename T, std::enable_if_t<std::is_base_of<QObject, T>, bool>::value = true>
+// using UniquePointer2 = std::unique_ptr<T, decltype(std::mem_fn(&QObject::deleteLater))>;
 
 //// like std::make_unique
-//template <typename T, typename... Args, std::enable_if_t<std::is_base_of<QObject, T>, bool>::value = true>
-//UniquePointer2<T> create_unique(Args... args)
+// template <typename T, typename... Args, std::enable_if_t<std::is_base_of<QObject, T>, bool>::value = true>
+// UniquePointer2<T> create_unique(Args... args)
 //{
 //    return UniquePointer2<T>(new T(args...), std::mem_fn(&QObject::deleteLater));
 //}
@@ -89,9 +89,9 @@ public:
 
     static void removeSubstr(std::string &str, std::string &substr);
 
-    template <typename T> static QByteArray arrayFromNumber(T number)
+    template <typename T, size_t size = sizeof(T)> static QByteArray arrayFromNumber(T number)
     {
-        QByteArray ba(sizeof(T), 0);
+        QByteArray ba(size, 0);
         *(reinterpret_cast<T *>(ba.data())) = number;
         return ba;
     }
@@ -131,5 +131,27 @@ private:
     //    static QString PrbMsg;
     static int m_tuneRequestCount; // степень усреднения для регулировки
 };
+
+namespace std_ext
+{
+#if defined(Q_CC_MSVC) || defined(Q_CC_CLANG)
+__forceinline
+#elif defined(Q_CC_GNU)
+__attribute__((always_inline)) inline
+#else
+inline
+#endif
+    unsigned int
+    clp2(unsigned int x)
+{
+    --x;
+    x |= x >> 1;
+    x |= x >> 2;
+    x |= x >> 4;
+    x |= x >> 8;
+    x |= x >> 16;
+    return ++x;
+}
+}
 
 #endif // STDFUNC_H

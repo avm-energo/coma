@@ -39,6 +39,7 @@ add_library(
   logger.h
   logger.cpp
   pch.h
+  uint24.h
   singleton.h
   timefunc.h
   timefunc.cpp
@@ -50,6 +51,7 @@ add_library(
   modules.h
   registers.h
   errorqueue.h
+  std_ext.h
   s2.cpp)
 
 target_link_libraries(

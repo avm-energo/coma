@@ -1,23 +1,32 @@
 #pragma once
+
 #include <QAbstractSpinBox>
 #include <QDebug>
 #include <QDoubleSpinBox>
 #include <QHBoxLayout>
+#include <QLabel>
 #include <QSpinBox>
 #include <QWidget>
 template <typename T, class S, std::enable_if_t<std::is_base_of<QAbstractSpinBox, S>::value, bool> = true>
 class BaseSpinBoxGroup : public QWidget
 {
+
 public:
     explicit BaseSpinBoxGroup(int count, QWidget *parent = nullptr) : QWidget(parent), m_count(count)
     {
-        QHBoxLayout *layout = new QHBoxLayout;
-
+        auto parentWidth = parent->width();
+        auto columnWidth = parentWidth / 2;
+        QGridLayout *gridlyout = new QGridLayout;
         for (auto i = 0; i != m_count; ++i)
         {
+            QHBoxLayout *layout = new QHBoxLayout;
+            layout->addWidget(new QLabel(QString::number(i + 1), this));
             layout->addWidget(new S(this));
+            auto width = layout->totalMinimumSize().width();
+            auto itemsOneLine = columnWidth / width;
+            gridlyout->addLayout(layout, i / itemsOneLine, i % itemsOneLine);
         }
-        setLayout(layout);
+        setLayout(gridlyout);
     }
     T minimum() const
     {
@@ -54,15 +63,7 @@ public:
         for (auto *spinBox : spinBoxes)
             spinBox->setSingleStep(m_singleStep);
     }
-    //    template <std::enable_if_t<!std::is_same<float, T>::value, bool> = true> auto value() const
-    //    {
-    //        auto spinBoxes = findChildren<S *>();
-    //        std::array<T, m_count> array;
-    //        std::transform(
-    //            spinBoxes.cbegin(), spinBoxes.cend(), array.begin(), [](const auto *spinBox) { return
-    //            spinBox->value(); });
-    //        return array;
-    //    }
+
     auto value() const
     {
         auto spinBoxes = findChildren<S *>();

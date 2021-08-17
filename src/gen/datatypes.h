@@ -1,6 +1,7 @@
 #ifndef DATATYPES_H
 #define DATATYPES_H
 #include "datarecv.h"
+#include "uint24.h"
 
 #include <QDataStream>
 #include <QVariant>
@@ -198,6 +199,12 @@ struct Signal
     quint16 value;
 };
 
+struct SingleCommand
+{
+    uint24 addr;
+    bool value;
+};
+
 struct GeneralResponseStruct
 {
     GeneralResponseTypes type;
@@ -252,6 +259,7 @@ enum Commands
     QC_ReqAlarms,
     QC_ReqFloats,
     QC_ReqBitStrings,
+    QC_WriteSingleCommand,
     QUSB_ReqTuningCoef,
     QUSB_WriteTuningCoef,
     QUSB_WriteBlkData,
@@ -396,6 +404,8 @@ struct OscHeader
 
 }
 
+Q_DECLARE_METATYPE(DataTypes::SingleCommand)
+Q_DECLARE_METATYPE(uint24)
 Q_DECLARE_METATYPE(DataTypes::BitStringStruct)
 Q_DECLARE_METATYPE(DataTypes::FloatWithTimeStruct)
 Q_DECLARE_METATYPE(DataTypes::FloatStruct)

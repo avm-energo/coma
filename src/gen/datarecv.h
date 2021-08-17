@@ -35,8 +35,8 @@ public:
     friend bool operator!=(const DataRecV &lhs, const DataRecV &rhs);
     DataRecV(const S2DataTypes::DataRec &record);
     DataRecV(const S2DataTypes::DataRec &record, const char *rawdata);
-    DataRecV(const int _id, const QString &str);
-    DataRecV(const int _id);
+    DataRecV(const unsigned _id, const QString &str);
+    DataRecV(const unsigned _id);
     template <typename T
 #if (_MSC_VER > 1924)
         ,
@@ -101,6 +101,27 @@ public:
 private:
     unsigned int id;
     valueType data;
+
+    template <typename T> void helper(unsigned int numByte, const char *rawdata, valueType &data)
+    {
+        constexpr auto hash = ctti::unnamed_type_id<T>().hash();
+        assert(sizeof(T) == numByte);
+        data = *reinterpret_cast<const T *>(rawdata);
+    }
+    template <typename T, std::enable_if_t<std::is_container<T>::value, bool> = true>
+    valueType helper(const QString &str)
+    {
+        T arr {};
+        arr << str;
+        data = arr;
+        return valueType(arr);
+    }
+    template <typename T, std::enable_if_t<!std::is_container<T>::value, bool> = true>
+    valueType helper(const QString &str)
+    {
+        valueType data = QVariant(str).value<T>();
+        return data;
+    }
 };
 
 bool operator==(const DataTypes::DataRecV &lhs, const DataTypes::DataRecV &rhs);

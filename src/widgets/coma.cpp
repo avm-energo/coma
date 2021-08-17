@@ -390,7 +390,7 @@ void Coma::prepare()
     qDebug() << MainTW->width() << width();
 
     AlrmTimer->start();
-    qInfo() << NAMEOF(MainTW) << "created";
+    qDebug() << NAMEOF(MainTW) << "created";
 
     BdaTimer->start();
     auto *msgSerialNumber = statusBar()->findChild<QLabel *>("SerialNumber");
@@ -620,7 +620,7 @@ void Coma::setupConnection()
 
 void Coma::DisconnectAndClear()
 {
-    qInfo(__PRETTY_FUNCTION__);
+    qDebug(__PRETTY_FUNCTION__);
     const auto &board = Board::GetInstance();
     if (board.connectionState() == Board::ConnectionState::Closed)
         return;

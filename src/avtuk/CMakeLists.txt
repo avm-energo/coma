@@ -39,6 +39,8 @@ add_library(
   switchjournaldialog.h
   swjdialog.cpp
   swjdialog.h
+  relaydialog.h
+  relaydialog.cpp
   trendviewdialog.cpp
   trendviewdialog.h
   trendviewmodel.cpp

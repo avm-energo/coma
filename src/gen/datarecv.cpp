@@ -1,7 +1,9 @@
 #include "datarecv.h"
 
 #include "datatypes.h"
+#include "s2helper.h"
 
+#include <type_traits>
 std::map<int, ctti::unnamed_type_id_t> DataTypes::DataRecV::map;
 
 namespace DataTypes
@@ -20,7 +22,8 @@ S2DataTypes::DataRec DataRecV::serialize() const
     return std::visit(
         [=](auto &arg) -> S2DataTypes::DataRec {
             //  std::cout << data.index() << std::endl;
-            S2DataTypes::DataRec record { id, sizeof(arg), (void *)(&arg) };
+            typedef std::remove_reference_t<decltype(arg)> internalType;
+            S2DataTypes::DataRec record { id, sizeof(internalType), (void *)(&arg) };
             return record;
         },
         data);
@@ -28,6 +31,19 @@ S2DataTypes::DataRec DataRecV::serialize() const
 
 DataRecV::DataRecV(const S2DataTypes::DataRec &record) : DataRecV(record, static_cast<const char *>(record.thedata))
 {
+}
+
+template <typename T, typename F> static constexpr bool is_variant_alternative()
+{
+    constexpr auto size = std::variant_size_v<F>;
+    bool state = false;
+    std::for_constexpr<size>([&](auto index) {
+        if constexpr (std::is_same_v<T, std::variant_alternative_t<index, F>>)
+        {
+            state = true;
+        }
+    });
+    return state;
 }
 
 DataRecV::DataRecV(const S2DataTypes::DataRec &record, const char *rawdata) : id(record.id)
@@ -43,98 +59,112 @@ DataRecV::DataRecV(const S2DataTypes::DataRec &record, const char *rawdata) : id
     {
     case ctti::unnamed_type_id<BYTE>().hash():
     {
-        assert(sizeof(BYTE) == record.numByte);
-        data = *reinterpret_cast<const BYTE *>(rawdata);
+        helper<BYTE>(record.numByte, rawdata, data);
         break;
     }
     case ctti::unnamed_type_id<WORD>().hash():
     {
-        assert(sizeof(WORD) == record.numByte);
-        data = *reinterpret_cast<const WORD *>(rawdata);
+        helper<WORD>(record.numByte, rawdata, data);
         break;
     }
     case ctti::unnamed_type_id<DWORD>().hash():
     {
-        assert(sizeof(DWORD) == record.numByte);
-        data = *reinterpret_cast<const DWORD *>(rawdata);
+        helper<DWORD>(record.numByte, rawdata, data);
         break;
     }
     case ctti::unnamed_type_id<INT32>().hash():
     {
-        assert(sizeof(INT32) == record.numByte);
-        data = *reinterpret_cast<const INT32 *>(rawdata);
+        helper<INT32>(record.numByte, rawdata, data);
         break;
     }
     case ctti::unnamed_type_id<BYTE_4t>().hash():
     {
-        assert(sizeof(BYTE_4t) == record.numByte);
-        data = *reinterpret_cast<const BYTE_4t *>(rawdata);
+        helper<BYTE_4t>(record.numByte, rawdata, data);
         break;
     }
     case ctti::unnamed_type_id<WORD_4t>().hash():
     {
-        assert(sizeof(WORD_4t) == record.numByte);
-        data = *reinterpret_cast<const WORD_4t *>(rawdata);
+        helper<WORD_4t>(record.numByte, rawdata, data);
+        break;
+    }
+    case ctti::unnamed_type_id<DWORD_4t>().hash():
+    {
+        helper<DWORD_4t>(record.numByte, rawdata, data);
         break;
     }
     case ctti::unnamed_type_id<BYTE_8t>().hash():
     {
-        assert(sizeof(BYTE_8t) == record.numByte);
-        data = *reinterpret_cast<const BYTE_8t *>(rawdata);
+        helper<BYTE_8t>(record.numByte, rawdata, data);
         break;
     }
     case ctti::unnamed_type_id<WORD_8t>().hash():
     {
-        assert(sizeof(WORD_8t) == record.numByte);
-        data = *reinterpret_cast<const WORD_8t *>(rawdata);
+        helper<WORD_8t>(record.numByte, rawdata, data);
+        break;
+    }
+    case ctti::unnamed_type_id<DWORD_8t>().hash():
+    {
+        helper<DWORD_8t>(record.numByte, rawdata, data);
         break;
     }
     case ctti::unnamed_type_id<BYTE_16t>().hash():
     {
-        assert(sizeof(BYTE_16t) == record.numByte);
-        data = *reinterpret_cast<const BYTE_16t *>(rawdata);
+        helper<BYTE_16t>(record.numByte, rawdata, data);
         break;
     }
     case ctti::unnamed_type_id<WORD_16t>().hash():
     {
-        assert(sizeof(WORD_16t) == record.numByte);
-        data = *reinterpret_cast<const WORD_16t *>(rawdata);
+        helper<WORD_16t>(record.numByte, rawdata, data);
+        break;
+    }
+    case ctti::unnamed_type_id<DWORD_16t>().hash():
+    {
+        helper<DWORD_16t>(record.numByte, rawdata, data);
+        break;
+    }
+    case ctti::unnamed_type_id<BYTE_32t>().hash():
+    {
+        helper<BYTE_32t>(record.numByte, rawdata, data);
+        break;
+    }
+    case ctti::unnamed_type_id<WORD_32t>().hash():
+    {
+        helper<WORD_32t>(record.numByte, rawdata, data);
+        break;
+    }
+    case ctti::unnamed_type_id<DWORD_32t>().hash():
+    {
+        helper<DWORD_32t>(record.numByte, rawdata, data);
         break;
     }
     case ctti::unnamed_type_id<float>().hash():
     {
-        assert(sizeof(float) == record.numByte);
-        data = *reinterpret_cast<const float *>(rawdata);
+        helper<float>(record.numByte, rawdata, data);
         break;
     }
     case ctti::unnamed_type_id<FLOAT_2t>().hash():
     {
-        assert(sizeof(FLOAT_2t) == record.numByte);
-        data = *reinterpret_cast<const FLOAT_2t *>(rawdata);
+        helper<FLOAT_2t>(record.numByte, rawdata, data);
         break;
     }
     case ctti::unnamed_type_id<FLOAT_2t_2t>().hash():
     {
-        assert(sizeof(FLOAT_2t_2t) == record.numByte);
-        data = *reinterpret_cast<const FLOAT_2t_2t *>(rawdata);
+        helper<FLOAT_2t_2t>(record.numByte, rawdata, data);
         break;
     }
     case ctti::unnamed_type_id<FLOAT_3t>().hash():
     {
-        assert(sizeof(FLOAT_3t) == record.numByte);
-        data = *reinterpret_cast<const FLOAT_3t *>(rawdata);
+        helper<FLOAT_3t>(record.numByte, rawdata, data);
         break;
     }
     case ctti::unnamed_type_id<FLOAT_6t>().hash():
     {
-        assert(sizeof(FLOAT_6t) == record.numByte);
-        data = *reinterpret_cast<const FLOAT_6t *>(rawdata);
+        helper<FLOAT_6t>(record.numByte, rawdata, data);
         break;
     }
     case ctti::unnamed_type_id<FLOAT_8t>().hash():
     {
-        assert(sizeof(FLOAT_8t) == record.numByte);
-        data = *reinterpret_cast<const FLOAT_8t *>(rawdata);
+        helper<FLOAT_8t>(record.numByte, rawdata, data);
         break;
     }
     default:
@@ -168,7 +198,7 @@ template <typename T, size_t N> std::array<T, N> operator<<(std::array<T, N> &ar
     return (array << list);
 }
 
-DataRecV::DataRecV(const int _id, const QString &str) : id(_id)
+DataRecV::DataRecV(const unsigned _id, const QString &str) : id(_id)
 {
     using namespace detail;
 
@@ -182,104 +212,112 @@ DataRecV::DataRecV(const int _id, const QString &str) : id(_id)
     {
     case ctti::unnamed_type_id<BYTE>().hash():
     {
-        data = QVariant(str).value<BYTE>();
+        data = helper<BYTE>(str);
         break;
     }
     case ctti::unnamed_type_id<WORD>().hash():
     {
-        data = QVariant(str).value<WORD>();
+        data = helper<WORD>(str);
         break;
     }
     case ctti::unnamed_type_id<DWORD>().hash():
     {
-        data = QVariant(str).value<DWORD>();
+        data = helper<DWORD>(str);
         break;
     }
     case ctti::unnamed_type_id<INT32>().hash():
     {
-        data = QVariant(str).value<INT32>();
+        data = helper<INT32>(str);
         break;
     }
     case ctti::unnamed_type_id<BYTE_4t>().hash():
     {
-        BYTE_4t arr {};
-        arr << str;
-        data = arr;
+        data = helper<BYTE_4t>(str);
         break;
     }
     case ctti::unnamed_type_id<WORD_4t>().hash():
     {
-        WORD_4t arr {};
-        arr << str;
-        data = arr;
+        data = helper<WORD_4t>(str);
+        break;
+    }
+    case ctti::unnamed_type_id<DWORD_4t>().hash():
+    {
+        data = helper<DWORD_4t>(str);
         break;
     }
     case ctti::unnamed_type_id<BYTE_8t>().hash():
     {
-        BYTE_8t arr {};
-        arr << str;
-        data = arr;
+        data = helper<BYTE_8t>(str);
         break;
     }
     case ctti::unnamed_type_id<WORD_8t>().hash():
     {
-        WORD_8t arr {};
-        arr << str;
-        data = arr;
+        data = helper<WORD_8t>(str);
+        break;
+    }
+    case ctti::unnamed_type_id<DWORD_8t>().hash():
+    {
+        data = helper<DWORD_8t>(str);
         break;
     }
     case ctti::unnamed_type_id<BYTE_16t>().hash():
     {
-        BYTE_16t arr {};
-        arr << str;
-        data = arr;
+        data = helper<BYTE_16t>(str);
         break;
     }
     case ctti::unnamed_type_id<WORD_16t>().hash():
     {
-        WORD_16t arr {};
-        arr << str;
-        data = arr;
+        data = helper<WORD_16t>(str);
+        break;
+    }
+    case ctti::unnamed_type_id<DWORD_16t>().hash():
+    {
+        data = helper<DWORD_16t>(str);
+        break;
+    }
+    case ctti::unnamed_type_id<BYTE_32t>().hash():
+    {
+        data = helper<BYTE_32t>(str);
+        break;
+    }
+    case ctti::unnamed_type_id<WORD_32t>().hash():
+    {
+        data = helper<WORD_32t>(str);
+        break;
+    }
+    case ctti::unnamed_type_id<DWORD_32t>().hash():
+    {
+        data = helper<DWORD_32t>(str);
         break;
     }
     case ctti::unnamed_type_id<float>().hash():
     {
-        data = QVariant(str).value<float>();
+        data = helper<float>(str);
         break;
     }
     case ctti::unnamed_type_id<FLOAT_2t>().hash():
     {
-        FLOAT_2t arr {};
-        arr << str;
-        data = arr;
+        data = helper<FLOAT_2t>(str);
         break;
     }
     case ctti::unnamed_type_id<FLOAT_2t_2t>().hash():
     {
-        FLOAT_2t_2t arr {};
-        arr << str;
-        data = arr;
+        data = helper<FLOAT_2t_2t>(str);
         break;
     }
     case ctti::unnamed_type_id<FLOAT_3t>().hash():
     {
-        FLOAT_3t arr {};
-        arr << str;
-        data = arr;
+        data = helper<FLOAT_3t>(str);
         break;
     }
     case ctti::unnamed_type_id<FLOAT_6t>().hash():
     {
-        FLOAT_6t arr {};
-        arr << str;
-        data = arr;
+        data = helper<FLOAT_6t>(str);
         break;
     }
     case ctti::unnamed_type_id<FLOAT_8t>().hash():
     {
-        FLOAT_8t arr {};
-        arr << str;
-        data = arr;
+        data = helper<FLOAT_8t>(str);
         break;
     }
     default:
@@ -287,7 +325,7 @@ DataRecV::DataRecV(const int _id, const QString &str) : id(_id)
     }
 }
 
-DataRecV::DataRecV(const int _id) : DataRecV(_id, QString::number(0))
+DataRecV::DataRecV(const unsigned _id) : DataRecV(_id, QString::number(0))
 {
 }
 
@@ -322,8 +360,10 @@ void DataRecV::setData(const valueType &value)
 }
 bool S2DataTypes::is_same(const S2DataTypes::DataRec &lhs, const S2DataTypes::DataRec &rhs)
 {
+    bool is_same_value = false;
     if ((lhs.id == rhs.id) && (lhs.numByte == rhs.numByte))
-        return !memcmp(lhs.thedata, rhs.thedata, lhs.numByte);
+        is_same_value = !memcmp(lhs.thedata, rhs.thedata, lhs.numByte);
 
-    return false;
+    Q_ASSERT(is_same_value);
+    return is_same_value;
 }
