@@ -6,6 +6,32 @@
 #include <cassert>
 #include <map>
 
+template <typename T, size_t N1, size_t N2>
+auto inline operator<<(std::array<std::array<T, N2>, N1> &array, const QStringList &list) -> decltype(array)
+{
+    Q_ASSERT(size_t(list.size()) <= (N1 * N2));
+    T *ptr = reinterpret_cast<T *>(array.data());
+    for (auto i = 0; i != (N1 * N2); ++i)
+    {
+        *ptr = QVariant(list.at(i)).value<T>();
+    }
+    return array;
+}
+
+template <typename T, size_t N> std::array<T, N> inline operator<<(std::array<T, N> &array, const QStringList &list)
+{
+    Q_ASSERT(size_t(list.size()) <= array.size());
+    std::transform(
+        list.cbegin(), list.cend(), array.begin(), [](const QString &str) { return QVariant(str).value<T>(); });
+    return array;
+}
+
+template <typename T, size_t N> std::array<T, N> inline operator<<(std::array<T, N> &array, const QString str)
+{
+    const auto list = str.split(',');
+    return (array << list);
+}
+
 class QString;
 namespace S2DataTypes
 {
