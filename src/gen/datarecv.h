@@ -2,6 +2,7 @@
 #include "../ctti/type_id.hpp"
 #include "s2helper.h"
 
+#include <QVariant>
 #include <cassert>
 #include <map>
 

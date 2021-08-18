@@ -134,9 +134,9 @@ private:
 
 namespace std_ext
 {
-#if defined(Q_CC_MSVC) || defined(Q_CC_CLANG)
+#if defined(Q_CC_MSVC)
 __forceinline
-#elif defined(Q_CC_GNU)
+#elif defined(Q_CC_GNU) || defined(Q_CC_CLANG)
 __attribute__((always_inline)) inline
 #else
 inline
