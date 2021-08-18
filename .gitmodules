@@ -18,8 +18,8 @@
 	url = https://github.com/libusb/hidapi
 [submodule "src/protos/protos"]
 	path = src/protos/protos
-	url = ../../atom/protos.git
+	url = ../../avm-energo/protos.git
 [submodule "src/alise"]
 	path = src/alise
-	url =../../forevel/alise.git
+	url =../../avm-energo/alise.git
 	branch = develop
