@@ -4,8 +4,6 @@ project(models LANGUAGES CXX)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-find_package(Qt5Core)
-
 find_package(
   QT NAMES Qt6 Qt5
   COMPONENTS Core Network Xml Widgets PrintSupport Qml
@@ -48,5 +46,4 @@ target_link_libraries(
   PRIVATE QXlsx
   PUBLIC limereport)
 
-#add_dependencies(${PROJECT_NAME} QXlsxBuild LimeReportBuild)
 target_compile_definitions(${PROJECT_NAME} PRIVATE ${PROJECT_NAME}_LIBRARY)

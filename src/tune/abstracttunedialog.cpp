@@ -15,7 +15,8 @@
 //#include "limereport/lrreportengine.h"
 #include "tunesequencefile.h"
 
-#include <LimeReport>
+#include <limereport/LimeReport>
+//#include <LimeReport>
 //#include <limereport/LimeReport>
 //#include <LimeReport>
 #include <QDebug>
