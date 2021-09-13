@@ -44,11 +44,13 @@ void DebugComa::setupConnection()
         device = BaseInterface::InterfacePointer(new Protocom());
         break;
     }
+#ifdef ENABLE_EMULATOR
     case Board::InterfaceType::Emulator:
     {
         device = BaseInterface::InterfacePointer(new Emulator());
         break;
     }
+#endif
     default:
         qFatal("Connection type error");
     }

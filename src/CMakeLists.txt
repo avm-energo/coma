@@ -151,6 +151,7 @@ find_package(
 set(QT_VERSION ${Qt5Core_VERSION})
 message(STATUS "QT version - ${QT_VERSION}")
 
+option(ENABLE_EMULATOR "Enable emulator interface" OFF)
 if(CMAKE_BUILD_TYPE EQUAL "DEBUG")
   message(STATUS "debug mode")
   set(MODE_DIR Debug)

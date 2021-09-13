@@ -15,43 +15,48 @@ find_package(
   COMPONENTS Core Network SerialPort
   REQUIRED)
 
+set(SRCS   baseinterface.cpp
+    baseinterface.h
+    ethernet.cpp
+    ethernet.h
+    iec104.cpp
+    iec104.h
+    iec104private.h
+    iec104thread.cpp
+    iec104thread.h
+    interfacesettings.cpp
+    interfacesettings.h
+    modbus.cpp
+    modbus.h
+    modbusprivate.cpp
+    modbusprivate.h
+    modbusthread.cpp
+    modbusthread.h
+    protocom.cpp
+    protocom.h
+    protocom_p.cpp
+    protocom_p.h
+    protocomprivate.h
+    protocomthread.cpp
+    protocomthread.h
+    serialport.cpp
+    serialport.h
+    settingstypes.h
+    usbhidport.cpp
+    usbhidport.h
+    usbhidportinfo.cpp
+    usbhidportinfo.h
+    usbhidsettings.cpp
+    usbhidsettings.h)
+
+if (ENABLE_EMULATOR)
+    list(APPEND SRCS emulator.cpp emulator.h)
+endif()
+
 add_library(
   ${PROJECT_NAME} STATIC
-  baseinterface.cpp
-  baseinterface.h
-  emulator.cpp
-  emulator.h
-  ethernet.cpp
-  ethernet.h
-  iec104.cpp
-  iec104.h
-  iec104private.h
-  iec104thread.cpp
-  iec104thread.h
-  interfacesettings.cpp
-  interfacesettings.h
-  modbus.cpp
-  modbus.h
-  modbusprivate.cpp
-  modbusprivate.h
-  modbusthread.cpp
-  modbusthread.h
-  protocom.cpp
-  protocom.h
-  protocom_p.cpp
-  protocom_p.h
-  protocomprivate.h
-  protocomthread.cpp
-  protocomthread.h
-  serialport.cpp
-  serialport.h
-  settingstypes.h
-  usbhidport.cpp
-  usbhidport.h
-  usbhidportinfo.cpp
-  usbhidportinfo.h
-  usbhidsettings.cpp
-  usbhidsettings.h)
+  ${SRCS}
+)
 
 target_link_libraries(
   ${PROJECT_NAME}

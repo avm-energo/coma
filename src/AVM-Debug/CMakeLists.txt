@@ -59,6 +59,10 @@ target_link_libraries(
   QXlsx)
 
 
+if (ENABLE_EMULATOR)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE ENABLE_EMULATOR)
+endif()
+
 if(CMAKE_SYSTEM_NAME_LOWER STREQUAL "windows")
 
   set(INSTALL_PROJECT_PATH ${PROJECT_TARGET_NAME}/${MODE_DIR}/${PROJECT_NAME})
