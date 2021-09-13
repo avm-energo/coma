@@ -1668,94 +1668,296 @@
 	<record>
 		<id>1101</id>
 		<type>DWORD</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>100</group>
+			<string>Тип коммутируемого оборудования</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1102</id>
 		<type>DWORD</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>100</group>
+			<string>Тип магнитопровода</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1103</id>
 		<type>DWORD</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>100</group>
+			<string>Наличие обмотки соединенной в треугольник</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1104</id>
 		<type>DWORD</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>100</group>
+			<string>Схема подключения нейтрали</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1105</id>
 		<type>DWORD</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>100</group>
+			<string>Тип обслуживаемых коммутационных операций</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1106</id>
 		<type>DWORD</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>100</group>
+			<string>Наличие (1) или отсутствие (0) сигналов  второй тройки напряжений (сторона нагрузки)</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1107</id>
 		<type>DWORD</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>100</group>
+			<string>Учитывается (1) или нет (0) остаточный магнитный поток при коммутации трансформатора</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>0</decimals>
+		</widget>
+	</record>
+	<record>
+		<id>1108</id>
+		<type>DWORD</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>100</group>
+			<string>Наличие (1) или отсутствие (0) сигналов  тока</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1111</id>
-		<type>DWORD</type>
+		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>100</group>
+			<string>Предельное значение механического ресурса</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1112</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>100</group>
+			<string>Предельное значение коммутационного ресурса</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1113</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>100</group>
+			<string>Класс напряжения (номинальное линейное первичное напряжение внешнего ТН, кВ)</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1114</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>100</group>
+			<string>Номинальный ток выключателя, А</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1115</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>100</group>
+			<string>Номинальный ток отключения выключателя, кА</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1116</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>100</group>
+			<string>Номинальный первичный ток внешнего ТТ, А</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1117</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>100</group>
+			<string>Номинальный вторичный ток внешнего ТТ (1А или 5А)</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1118</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>100</group>
+			<string>Целевое время, предоставляемое  для горения дуги, мс</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1119</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>100</group>
+			<string>Cкорость снижения пробивного напряжения между контактами при включении, кВ/мс</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1120</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>100</group>
+			<string>Cкорость роста пробивного напряжения между контактами при отключении, кВ/мс</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1121</id>
 		<type>FLOAT[3]</type>
+		<widget>
+			<type>DoubleSpinBoxGroup</type>
+			<group>100</group>
+			<string>Собственное время отключения полюсов А,В,С, мс</string>
+			<count>3</count>
+			<min>0</min>
+			<max>65554</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1122</id>
 		<type>FLOAT[3]</type>
+		<widget>
+			<type>DoubleSpinBoxGroup</type>
+			<group>100</group>
+			<string>Собственное время включения полюсов А,В,С мс</string>
+			<count>3</count>
+			<min>0</min>
+			<max>65554</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1123</id>
 		<type>FLOAT[3]</type>
+		<widget>
+			<type>DoubleSpinBoxGroup</type>
+			<group>100</group>
+			<string>Задержка отключения полюсов А,В,С в свободно конфигурируемом режиме относительно перехода через ноль напряжения фазы А в положительном направлении, мс</string>
+			<count>3</count>
+			<min>0</min>
+			<max>65554</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1124</id>
 		<type>FLOAT[3]</type>
+		<widget>
+			<type>DoubleSpinBoxGroup</type>
+			<group>100</group>
+			<string>Задержка включения полюсов А,В,С в свободно конфигурируемом режиме относительно перехода через ноль напряжения фазы А в положительном направлении, мс</string>
+			<count>3</count>
+			<min>0</min>
+			<max>65554</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1125</id>
 		<type>FLOAT[3]</type>
+		<widget>
+			<type>DoubleSpinBoxGroup</type>
+			<group>100</group>
+			<string>Механическая задержка срабатывания блок-контакта отключенного состояния относительно перемещения главного контакта  для полюсов А,В,С, мс, при включении</string>
+			<count>3</count>
+			<min>0</min>
+			<max>65554</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1126</id>
 		<type>FLOAT[3]</type>
+		<widget>
+			<type>DoubleSpinBoxGroup</type>
+			<group>100</group>
+			<string>Механическая задержка срабатывания блок-контакта включенного состояния относительно перемещения главного контакта  для полюсов А,В,С, мс, при включении</string>
+			<count>3</count>
+			<min>0</min>
+			<max>65554</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1127</id>
