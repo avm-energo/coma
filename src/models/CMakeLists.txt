@@ -6,11 +6,11 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 find_package(
   QT NAMES Qt6 Qt5
-  COMPONENTS Core Network Xml Widgets PrintSupport Qml
+  COMPONENTS Core Xml Widgets PrintSupport Qml
   REQUIRED)
 find_package(
   Qt${QT_VERSION_MAJOR}
-  COMPONENTS Core Network Xml Widgets PrintSupport Qml
+  COMPONENTS Core Xml Widgets PrintSupport Qml
   REQUIRED)
 find_package(
   Qt${QT_VERSION_MAJOR}
@@ -40,7 +40,6 @@ target_link_libraries(
   PRIVATE Qt${QT_VERSION_MAJOR}::Core
   PRIVATE Qt${QT_VERSION_MAJOR}::Widgets
   PRIVATE Qt${QT_VERSION_MAJOR}::Xml
-  PRIVATE Qt${QT_VERSION_MAJOR}::Network
   PRIVATE Qt${QT_VERSION_MAJOR}::PrintSupport
   PRIVATE Qt${QT_VERSION_MAJOR}::Qml
   PRIVATE QXlsx

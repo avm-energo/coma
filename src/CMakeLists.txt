@@ -91,6 +91,12 @@ elseif(CMAKE_SYSTEM_NAME_LOWER STREQUAL "unix")
 endif()
 string(TOLOWER "${CMAKE_BUILD_TYPE}" CMAKE_BUILD_TYPE_LOWER)
 
+if (MSVC)
+    string(APPEND CMAKE_CXX_FLAGS " /w14456 /w14189 /w14458 /w14100 /w14996")
+else()
+    #TODO make the same as msvc
+endif()
+
 if (NOT MSVC_C_ARCHITECTURE_ID)
     if (NOT AVTUK-12)
         string(APPEND CMAKE_CXX_FLAGS_DEBUG " -fno-omit-frame-pointer -fsanitize=address,undefined -fstack-protector")
