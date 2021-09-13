@@ -4,8 +4,6 @@ project(module LANGUAGES CXX)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-find_package(Qt5Core)
-
 find_package(
   QT NAMES Qt6 Qt5
   COMPONENTS Core Network Xml Widgets
@@ -44,5 +42,4 @@ target_link_libraries(
   PRIVATE Qt${QT_VERSION_MAJOR}::Network
   PRIVATE QXlsx)
 
-#add_dependencies(${PROJECT_NAME} QXlsxBuild)
 target_compile_definitions(${PROJECT_NAME} PRIVATE INTERFACES_LIBRARY)

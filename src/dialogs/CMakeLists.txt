@@ -4,16 +4,13 @@ project(dialogs LANGUAGES CXX)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-find_package(Qt5Core)
-
-
 find_package(
   QT NAMES Qt6 Qt5
-  COMPONENTS Core Network Xml Widgets SerialPort Concurrent Svg
+  COMPONENTS Core Widgets SerialPort Concurrent Svg
   REQUIRED)
 find_package(
   Qt${QT_VERSION_MAJOR}
-  COMPONENTS Core Network Xml Widgets SerialPort Concurrent Svg
+  COMPONENTS Core Widgets SerialPort Concurrent Svg
   REQUIRED)
 
 add_library(
@@ -50,12 +47,9 @@ target_link_libraries(
   PRIVATE interfaces
   PRIVATE Qt${QT_VERSION_MAJOR}::Core
   PRIVATE Qt${QT_VERSION_MAJOR}::Widgets
-  PRIVATE Qt${QT_VERSION_MAJOR}::Xml
-  PRIVATE Qt${QT_VERSION_MAJOR}::Network
   PRIVATE Qt${QT_VERSION_MAJOR}::SerialPort
   PRIVATE Qt${QT_VERSION_MAJOR}::Concurrent
   PRIVATE Qt${QT_VERSION_MAJOR}::Svg
   PRIVATE QXlsx)
 
-#add_dependencies(${PROJECT_NAME} QXlsxBuild)
 target_compile_definitions(${PROJECT_NAME} PRIVATE ${PROJECT_NAME}_LIBRARY)

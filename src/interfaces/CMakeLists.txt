@@ -5,7 +5,7 @@ project(interfaces LANGUAGES CXX)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 find_package(hidapi REQUIRED)
-find_package(Qt5Core)
+
 find_package(
   QT NAMES Qt6 Qt5
   COMPONENTS Core Network SerialPort
@@ -50,20 +50,19 @@ add_library(
   usbhidportinfo.h
   usbhidsettings.cpp
   usbhidsettings.h)
+
 target_link_libraries(
   ${PROJECT_NAME}
   PRIVATE Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::Network
           Qt${QT_VERSION_MAJOR}::SerialPort)
-if (UNIX)
-    target_link_libraries(${PROJECT_NAME} PRIVATE hidapi-hidraw)
+
+if(UNIX)
+  target_link_libraries(${PROJECT_NAME} PRIVATE hidapi-hidraw)
 endif()
-if (WIN32)
-    target_link_libraries(${PROJECT_NAME} PRIVATE hidapi::hidapi)
+if(WIN32)
+  target_link_libraries(${PROJECT_NAME} PRIVATE hidapi::hidapi)
 endif()
 target_compile_definitions(${PROJECT_NAME} PRIVATE ${PROJECT_NAME}_LIBRARY)
 
-#get_target_property(LINKS hidapi::hidapi IMPORTED_LOCATION )
 message(STATUS "Interfaces import dirs" "${hidapi_LIB_DIRS}/../bin")
-install(
-  CODE "set(hidapi_BIN_DIRS \"${hidapi_LIB_DIRS}/../bin\")"
-)
+install(CODE "set(hidapi_BIN_DIRS \"${hidapi_LIB_DIRS}/../bin\")")
