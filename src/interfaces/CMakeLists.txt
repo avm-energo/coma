@@ -19,6 +19,8 @@ add_library(
   ${PROJECT_NAME} STATIC
   baseinterface.cpp
   baseinterface.h
+  emulator.cpp
+  emulator.h
   ethernet.cpp
   ethernet.h
   iec104.cpp

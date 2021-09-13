@@ -62,6 +62,10 @@ void Emulator::reqFloats(quint32 sigAdr, quint32 sigCount)
 {
 }
 
+void Emulator::reqBitStrings(quint32 sigAdr, quint32 sigCount)
+{
+}
+
 InterfaceSettings Emulator::parseSettings(QDomElement domElement) const
 {
     return BaseInterface::parseSettings<Proto::ProtocomGroup>(domElement);

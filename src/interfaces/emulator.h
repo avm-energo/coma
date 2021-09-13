@@ -17,6 +17,7 @@ public:
     void writeTime(quint32) override;
     void writeCommand(Queries::Commands, QVariant) override;
     void reqFloats(quint32 sigAdr, quint32 sigCount) override;
+    void reqBitStrings(quint32 sigAdr, quint32 sigCount) override;
     InterfaceSettings parseSettings(QDomElement domElement) const override;
 
 private:

@@ -25,6 +25,8 @@ add_library(
   fwuploaddialog.h
   infodialog.cpp
   infodialog.h
+  interfaceemudialog.cpp
+  interfaceemudialog.h
   interfaceethernetdialog.cpp
   interfaceethernetdialog.h
   interfaceserialdialog.cpp
