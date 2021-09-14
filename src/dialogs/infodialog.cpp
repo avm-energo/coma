@@ -12,9 +12,12 @@
 #endif
 #include <QVBoxLayout>
 
-InfoDialog::InfoDialog(QWidget *parent) : UDialog(parent)
+InfoDialog::InfoDialog(QWidget *parent) : UDialog(parent), m_oneShotUpdateFlag(false)
 {
-    m_oneShotUpdateFlag = false;
+    connect(BaseInterface::iface(), &BaseInterface::stateChanged, this, [&](BaseInterface::State state) {
+        if (state == BaseInterface::State::Run)
+            m_oneShotUpdateFlag = false;
+    });
     connect(&Board::GetInstance(), &Board::readyRead, this, &InfoDialog::sync);
 }
 
