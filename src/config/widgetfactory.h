@@ -248,7 +248,8 @@ template <typename T> bool WidgetFactory::fillWidget(const QWidget *parent, BciN
                     }
                     default:
                     {
-                        status = WDFunc::SetCBIndex(parent, QString::number(key), value);
+                        if constexpr (std::is_integral_v<T>)
+                            status = WDFunc::SetCBIndex(parent, QString::number(key), value);
                         break;
                     }
                     }
