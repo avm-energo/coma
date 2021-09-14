@@ -1962,242 +1962,815 @@
 	<record>
 		<id>1127</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>100</group>
+			<string>Уставка скачка напряжения для запуска осциллографирования (в %% от номинала) </string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1128</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>100</group>
+			<string>Уставка скачка тока для запуска осциллографирования (в %%  от ITT2nom)</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1129</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>100</group>
+			<string>Уставка контроля минимума напряжения (в %% от номинала)</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1130</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>100</group>
+			<string>Уставка контроля минимума тока (в %% от номинала)</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1131</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>100</group>
+			<string>Собственное время отключения полюса выключателя (повышенное значение / предупредительная уставка)</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1132</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>100</group>
+			<string>Собственное время отключения полюса  выключателя (повышенное значение / аварийная уставка)</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1133</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>100</group>
+			<string>Собственное время включения полюса выключателя (повышенное значение / предупредительная уставка)</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1134</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>100</group>
+			<string>Собственное время включения полюса выключателя (повышенное значение / аварийная уставка)</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1135</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>100</group>
+			<string>Время перемещения главного контакта при отключении полюса выключателя (повышенное значение / предупредительная уставка)</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1136</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>100</group>
+			<string>Время перемещения главного контакта при отключении полюса выключателя (повышенное значение / аварийная уставка)</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1137</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>100</group>
+			<string>Время перемещения главного контакта при включении полюса выключателя (повышенное значение / предупредительная уставка)</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1138</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>100</group>
+			<string>Время перемещения главного контакта при включении полюса выключателя (повышенное значение / аварийная уставка)</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1139</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>100</group>
+			<string>Погрешность выполненной синхронной коммутации при отключении (повышенное значение / предупредительная уставка)</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1140</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>100</group>
+			<string>Погрешность выполненной синхронной коммутации при отключении (повышенное значение / аварийная уставка)</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1141</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>100</group>
+			<string>Погрешность выполненной синхронной коммутации при включении (повышенное значение / предупредительная уставка)</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1142</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>100</group>
+			<string>Погрешность выполненной синхронной коммутации при включении (повышенное значение / аварийная уставка)</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1143</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>100</group>
+			<string>Время рассинхронизации фаз выключателя (повышенное значение / предупредительная уставка)</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1144</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>100</group>
+			<string>Время рассинхронизации фаз выключателя (повышенное значение / аварийная уставка)</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1145</id>
 		<type>FLOAT[2]</type>
+		<widget>
+			<type>DoubleSpinBoxGroup</type>
+			<group>100</group>
+			<string>Время горения дуги в полюсе выключателя (повышенное значение / предупредительная уставка)</string>
+			<count>2</count>
+			<min>0</min>
+			<max>65554</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1146</id>
 		<type>FLOAT[2]</type>
+		<widget>
+			<type>DoubleSpinBoxGroup</type>
+			<group>100</group>
+			<string>Время горения дуги в полюсе выключателя (повышенное значение / аварийная уставка)</string>
+			<count>2</count>
+			<min>0</min>
+			<max>65554</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1147</id>
 		<type>DWORD</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>100</group>
+			<string>Остаточный механический ресурс (пониженное значение / предупредительная уставка)</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1148</id>
 		<type>DWORD</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>100</group>
+			<string>Остаточный механический ресурс (пониженное значение / аварийная уставка)</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1149</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>100</group>
+			<string>Остаточный коммутационный ресурс (пониженное значение / предупредительная уставка)</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1150</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>100</group>
+			<string>Остаточный коммутационный ресурс (пониженное значение / аварийная уставка)</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1151</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>100</group>
+			<string>Ток в выключателе при выполнении коммутации (повышенное значение / предупредительная уставка)</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1152</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>100</group>
+			<string>Ток в выключателе при выполнении коммутации (повышенное значение / аварийная уставка)</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1153</id>
 		<type>DWORD</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>100</group>
+			<string>Использование вспомогательного аналогового сигнала, 0 – отсутствие этого сигнала</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1154</id>
 		<type>FLOAT[3]</type>
+		<widget>
+			<type>DoubleSpinBoxGroup</type>
+			<group>100</group>
+			<string>Время горения дуги в полюсе выключателя (повышенное значение / аварийная уставка)</string>
+			<count>3</count>
+			<min>0</min>
+			<max>65554</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1155</id>
 		<type>FLOAT[3]</type>
+		<widget>
+			<type>DoubleSpinBoxGroup</type>
+			<group>100</group>
+			<string>Механическая задержка срабатывания блок-контакта включенного состояния относительно перемещения главного контакта  для полюсов А,В,С, мс, при отключении</string>
+			<count>3</count>
+			<min>0</min>
+			<max>65554</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
+	<record>
+		<id>1156</id>
+		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>100</group>
+			<string>Постоянная времени коррекции собственного времени включения выключателя по длительности безоперационного простоя, час</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>0</decimals>
+		</widget>
+	</record>
+	<record>
+		<id>1157</id>
+		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>100</group>
+			<string>Постоянная времени коррекции собственного времени отключения выключателя по длительности безоперационного простоя, час</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>0</decimals>
+		</widget>
+	</record>
+	<record>
+		<id>1158</id>
+		<type>DWORD</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>100</group>
+			<string>Интервал подключения полюсов КБ, соединенной в звезду с заземленной нейтралью, град.;
+				опции:  60 (обратный порядок чередования фаз) или 120  (прямой порядок чередования фаз)</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>0</decimals>
+		</widget>
+	</record>
+	<record>
+		<id>1159</id>
+		<type>DWORD</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>100</group>
+			<string>Интервал отключения полюсов КБ, соединенной в звезду с заземленной нейтралью, град.;
+				опции:  60 (обратный порядок чередования фаз) или 120  (прямой порядок чередования фаз)
+				</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>0</decimals>
+		</widget>
+	</record>
+	<record>
+		<id>1160</id>
+		<type>DWORD</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>100</group>
+			<string>Интервал подключения последней фазы КБ, соединенной в треугольник или в звезду с изолированной нейтралью, град.;
+				опции:  90 или 270. 
+			   </string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>0</decimals>
+		</widget>
+	</record>
+	<record>
+		<id>1161</id>
+		<type>DWORD</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>100</group>
+			<string>Интервал подключения полюсов реактора с магнитно-независимыми фазами, град.;
+				опции:  60 (обратный порядок чередования фаз) или 120  (прямой порядок чередования фаз)
+				 </string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>0</decimals>
+		</widget>
+	</record>	
 	<record>
 		<id>1162</id>
 		<type>DWORD</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>100</group>
+			<string>1 – использовать адаптивный алгоритм определения времен включения и отключения, 0 – не использовать.</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1163</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>100</group>
+			<string>Допустимое время включения соленоида включения, мс</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1164</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>100</group>
+			<string>Допустимое время включения соленоида отключения, мс</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1165</id>
 		<type>BYTE</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>100</group>
+			<string>Порядковый номер аппарата</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1166</id>
 		<type>BYTE</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>100</group>
+			<string>Тип аппарата</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1168</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>100</group>
+			<string>Предельное значение коммутационного ресурса при номинальном токе</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1169</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>100</group>
+			<string>Номинальное давление в гидроприводе Мпа</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1170</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>100</group>
+			<string>Предупредительная уставка давления в гидроприводе</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1171</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>100</group>
+			<string>Аварийная уставка давления в гидроприводе</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1172</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>100</group>
+			<string>Аварийная уставка давления в гидроприводе</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1173</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>100</group>
+			<string>Допустимое отклонение собственного времени включения, мс</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1176</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>100</group>
+			<string>Константа запрограмированная под конкретный тип выключателя</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1177</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>100</group>
+			<string>Константа запрограмированная под конкретный тип выключателя</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1178</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>100</group>
+			<string>Константа запрограмированная под конкретный тип выключателя</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1179</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>100</group>
+			<string>Константа запрограмированная под конкретный тип выключателя</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1180</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>100</group>
+			<string>Константа запрограмированная под конкретный тип выключателя</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1181</id>
 		<type>BYTE</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>100</group>
+			<string>Выбор алгоритма расчёта ресурса</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1182</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>100</group>
+			<string>Ток отсечки выключателя</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1183</id>
 		<type>FLOAT[3]</type>
+		<widget>
+			<type>DoubleSpinBoxGroup</type>
+			<group>100</group>
+			<string>Дополнительное смещение момента отключения, град</string>
+			<count>3</count>
+			<min>0</min>
+			<max>65554</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1184</id>
 		<type>FLOAT[3]</type>
+		<widget>
+			<type>DoubleSpinBoxGroup</type>
+			<group>100</group>
+			<string>Дополнительное смещение момента включения, град</string>
+			<count>3</count>
+			<min>0</min>
+			<max>65554</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1190</id>
 		<type>FLOAT[2] [2]</type>
+		<widget>
+			<type>DoubleSpinBoxGroup</type>
+			<group>100</group>
+			<string>Поправка ко времени выключателя по напряжению питания соленоида</string>
+			<count>4</count>
+			<min>0</min>
+			<max>65554</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1191</id>
 		<type>FLOAT[2] [2]</type>
+		<widget>
+			<type>DoubleSpinBoxGroup</type>
+			<group>100</group>
+			<string>Поправка ко времени выключателя по напряжению питания соленоида</string>
+			<count>4</count>
+			<min>0</min>
+			<max>65554</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1192</id>
 		<type>FLOAT[2] [2]</type>
+		<widget>
+			<type>DoubleSpinBoxGroup</type>
+			<group>100</group>
+			<string>Поправка ко времени выключателя по температуре окружающей среды</string>
+			<count>4</count>
+			<min>0</min>
+			<max>65554</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1193</id>
 		<type>FLOAT[2] [2]</type>
+		<widget>
+			<type>DoubleSpinBoxGroup</type>
+			<group>100</group>
+			<string>Поправка ко времени выключателя по температуре окружающей среды</string>
+			<count>4</count>
+			<min>0</min>
+			<max>65554</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1194</id>
 		<type>FLOAT[2] [2]</type>
+		<widget>
+			<type>DoubleSpinBoxGroup</type>
+			<group>100</group>
+			<string>Поправка ко времени выключателя по температуре в приводе</string>
+			<count>4</count>
+			<min>0</min>
+			<max>65554</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1195</id>
 		<type>FLOAT[2] [2]</type>
+		<widget>
+			<type>DoubleSpinBoxGroup</type>
+			<group>100</group>
+			<string>Поправка ко времени выключателя по температуре в приводе</string>
+			<count>4</count>
+			<min>0</min>
+			<max>65554</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1196</id>
 		<type>FLOAT[2] [2]</type>
+		<widget>
+			<type>DoubleSpinBoxGroup</type>
+			<group>100</group>
+			<string>Поправка ко времени выключателя по давлению в приводе</string>
+			<count>4</count>
+			<min>0</min>
+			<max>65554</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1197</id>
 		<type>FLOAT[2] [2]</type>
+		<widget>
+			<type>DoubleSpinBoxGroup</type>
+			<group>100</group>
+			<string>Поправка ко времени выключателя по давлению в приводе</string>
+			<count>4</count>
+			<min>0</min>
+			<max>65554</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1198</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>100</group>
+			<string>Максимальная коррекция собственного времени включения выключателя по длительности безоперационного простоя, мс</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1199</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>100</group>
+			<string>Максимальная коррекция собственного времени отключения выключателя по длительности безоперационного простоя, мс</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1200</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>100</group>
+			<string>Коэффициент адартации расчетных собственных времён вкл/откл по фактическим значениям</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>1201</id>
