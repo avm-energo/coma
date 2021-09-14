@@ -30,4 +30,6 @@ private:
     static quint64 parseHexInt64(QDomElement domElement);
     static QStringList parseStringList(QDomElement domElement);
     template <typename Container> static Container parseMap(QDomElement domElement);
+
+    static void mergeWidget(const QDomElement &domElement, widgetMap *const s2widgetMap, BciNumber id);
 };
