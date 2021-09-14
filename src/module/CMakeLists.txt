@@ -13,6 +13,9 @@ find_package(
   COMPONENTS Core Network Xml Widgets
   REQUIRED)
 
+#WARN Do not use in release build
+option(USE_BUILTIN_XML "Use builtin xml configs instead of locally stored" OFF)
+
 add_library(
   ${PROJECT_NAME} STATIC
   alarmstateall.cpp
@@ -43,3 +46,7 @@ target_link_libraries(
   PRIVATE QXlsx)
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE INTERFACES_LIBRARY)
+
+if(USE_BUILTIN_XML)
+   target_compile_definitions(${PROJECT_NAME} PRIVATE USE_INTERNAL_RCS)
+endif()
