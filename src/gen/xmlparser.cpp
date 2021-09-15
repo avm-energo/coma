@@ -234,14 +234,16 @@ ctti::unnamed_type_id_t XmlParser::parseType(QDomElement domElement)
             return ctti::unnamed_type_id<FLOAT_2t>().hash();
         if (name.contains("float[3]", Qt::CaseInsensitive))
             return ctti::unnamed_type_id<FLOAT_3t>().hash();
+        if (name.contains("float[4]", Qt::CaseInsensitive))
+            return ctti::unnamed_type_id<FLOAT_4t>().hash();
         if (name.contains("float[6]", Qt::CaseInsensitive))
             return ctti::unnamed_type_id<FLOAT_6t>().hash();
         if (name.contains("float[8]", Qt::CaseInsensitive))
             return ctti::unnamed_type_id<FLOAT_8t>().hash();
 
-    case 2:
-        if (name.contains("float[2][2]", Qt::CaseInsensitive))
-            return ctti::unnamed_type_id<FLOAT_2t_2t>().hash();
+        //    case 2:
+        //        if (name.contains("float[2][2]", Qt::CaseInsensitive))
+        //            return ctti::unnamed_type_id<FLOAT_2t_2t>().hash();
 
     default:
         assert(false && "Unknown type");

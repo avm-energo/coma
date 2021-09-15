@@ -147,14 +147,19 @@ DataRecV::DataRecV(const S2DataTypes::DataRec &record, const char *rawdata) : id
         helper<FLOAT_2t>(record.numByte, rawdata, data);
         break;
     }
-    case ctti::unnamed_type_id<FLOAT_2t_2t>().hash():
-    {
-        helper<FLOAT_2t_2t>(record.numByte, rawdata, data);
-        break;
-    }
+        //    case ctti::unnamed_type_id<FLOAT_2t_2t>().hash():
+        //    {
+        //        helper<FLOAT_2t_2t>(record.numByte, rawdata, data);
+        //        break;
+        //    }
     case ctti::unnamed_type_id<FLOAT_3t>().hash():
     {
         helper<FLOAT_3t>(record.numByte, rawdata, data);
+        break;
+    }
+    case ctti::unnamed_type_id<FLOAT_4t>().hash():
+    {
+        helper<FLOAT_4t>(record.numByte, rawdata, data);
         break;
     }
     case ctti::unnamed_type_id<FLOAT_6t>().hash():
@@ -274,14 +279,19 @@ DataRecV::DataRecV(const unsigned _id, const QString &str) : id(_id)
         data = helper<FLOAT_2t>(str);
         break;
     }
-    case ctti::unnamed_type_id<FLOAT_2t_2t>().hash():
-    {
-        data = helper<FLOAT_2t_2t>(str);
-        break;
-    }
+        //    case ctti::unnamed_type_id<FLOAT_2t_2t>().hash():
+        //    {
+        //        data = helper<FLOAT_2t_2t>(str);
+        //        break;
+        //    }
     case ctti::unnamed_type_id<FLOAT_3t>().hash():
     {
         data = helper<FLOAT_3t>(str);
+        break;
+    }
+    case ctti::unnamed_type_id<FLOAT_4t>().hash():
+    {
+        data = helper<FLOAT_4t>(str);
         break;
     }
     case ctti::unnamed_type_id<FLOAT_6t>().hash():

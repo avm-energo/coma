@@ -2710,104 +2710,104 @@
 	</record>
 	<record>
 		<id>1190</id>
-		<type>FLOAT[2] [2]</type>
+		<type>FLOAT[4]</type>
 		<widget>
 			<type>DoubleSpinBoxGroup</type>
 			<group>52</group>
 			<string>Поправка ко времени выключателя по напряжению питания соленоида</string>
 			<count>4</count>
-			<min>0</min>
+			<min>-1000</min>
 			<max>65554</max>
 			<decimals>0</decimals>
 		</widget>
 	</record>
 	<record>
 		<id>1191</id>
-		<type>FLOAT[2] [2]</type>
+		<type>FLOAT[4]</type>
 		<widget>
 			<type>DoubleSpinBoxGroup</type>
 			<group>52</group>
 			<string>Поправка ко времени выключателя по напряжению питания соленоида</string>
 			<count>4</count>
-			<min>0</min>
+			<min>-1000</min>
 			<max>65554</max>
 			<decimals>0</decimals>
 		</widget>
 	</record>
 	<record>
 		<id>1192</id>
-		<type>FLOAT[2] [2]</type>
+		<type>FLOAT[4]</type>
 		<widget>
 			<type>DoubleSpinBoxGroup</type>
 			<group>52</group>
 			<string>Поправка ко времени выключателя по температуре окружающей среды</string>
 			<count>4</count>
-			<min>0</min>
+			<min>-1000</min>
 			<max>65554</max>
 			<decimals>0</decimals>
 		</widget>
 	</record>
 	<record>
 		<id>1193</id>
-		<type>FLOAT[2] [2]</type>
+		<type>FLOAT[4]</type>
 		<widget>
 			<type>DoubleSpinBoxGroup</type>
 			<group>52</group>
 			<string>Поправка ко времени выключателя по температуре окружающей среды</string>
 			<count>4</count>
-			<min>0</min>
+			<min>-1000</min>
 			<max>65554</max>
 			<decimals>0</decimals>
 		</widget>
 	</record>
 	<record>
 		<id>1194</id>
-		<type>FLOAT[2] [2]</type>
+		<type>FLOAT[4]</type>
 		<widget>
 			<type>DoubleSpinBoxGroup</type>
 			<group>52</group>
 			<string>Поправка ко времени выключателя по температуре в приводе</string>
 			<count>4</count>
-			<min>0</min>
+			<min>-1000</min>
 			<max>65554</max>
 			<decimals>0</decimals>
 		</widget>
 	</record>
 	<record>
 		<id>1195</id>
-		<type>FLOAT[2] [2]</type>
+		<type>FLOAT[4]</type>
 		<widget>
 			<type>DoubleSpinBoxGroup</type>
 			<group>52</group>
 			<string>Поправка ко времени выключателя по температуре в приводе</string>
 			<count>4</count>
-			<min>0</min>
+			<min>-1000</min>
 			<max>65554</max>
 			<decimals>0</decimals>
 		</widget>
 	</record>
 	<record>
 		<id>1196</id>
-		<type>FLOAT[2] [2]</type>
+		<type>FLOAT[4]</type>
 		<widget>
 			<type>DoubleSpinBoxGroup</type>
 			<group>52</group>
 			<string>Поправка ко времени выключателя по давлению в приводе</string>
 			<count>4</count>
-			<min>0</min>
+			<min>-1000</min>
 			<max>65554</max>
 			<decimals>0</decimals>
 		</widget>
 	</record>
 	<record>
 		<id>1197</id>
-		<type>FLOAT[2] [2]</type>
+		<type>FLOAT[4]</type>
 		<widget>
 			<type>DoubleSpinBoxGroup</type>
 			<group>52</group>
 			<string>Поправка ко времени выключателя по давлению в приводе</string>
 			<count>4</count>
-			<min>0</min>
+			<min>-1000</min>
 			<max>65554</max>
 			<decimals>0</decimals>
 		</widget>
