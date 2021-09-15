@@ -54,8 +54,6 @@ void OscDialog::SetupUI()
         BaseInterface::iface()->writeCommand(Queries::QUSB_ReqOscInfo, 1);
     });
 
-    if (StdFunc::IsInEmulateMode())
-        getButton->setEnabled(false);
     hlyout->addWidget(getButton);
     auto *eraseButton = WDFunc::NewPB(this, "", "Стереть все осциллограммы в памяти", this, &OscDialog::EraseOsc);
     hlyout->addWidget(eraseButton);
@@ -107,6 +105,8 @@ void OscDialog::fillOscInfo(DataTypes::OscInfo info)
 
 void OscDialog::fillOsc(const DataTypes::FileStruct file)
 {
+    if (!updatesEnabled())
+        return;
     quint16 curFileNum = quint16(file.filenum);
     quint16 minFileNum = quint16(DataTypes::FilesEnum::FileOscMin);
     quint16 maxFileNum = quint16(DataTypes::FilesEnum::FileOscMax);

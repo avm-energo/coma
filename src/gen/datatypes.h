@@ -37,6 +37,7 @@ enum SignalTypes
     DataRecVList,
     Block,
     OscillogramInfo,
+    SwitchJournalInfo,
 #ifdef __linux
     Timespec,
 #endif
@@ -428,5 +429,6 @@ Q_DECLARE_METATYPE(DataTypes::GeneralResponseStruct)
 Q_DECLARE_METATYPE(DataTypes::DataRecV)
 Q_DECLARE_METATYPE(DataTypes::OscInfo)
 Q_DECLARE_METATYPE(Queries::Command)
+Q_DECLARE_METATYPE(S2DataTypes::SwitchJourInfo)
 
 #endif // DATATYPES_H

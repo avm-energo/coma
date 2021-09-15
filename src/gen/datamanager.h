@@ -128,11 +128,11 @@ signals:
     void dataRecVListReceived(const QList<DataTypes::DataRecV> &);
     void responseReceived(const DataTypes::GeneralResponseStruct &);
     void oscInfoReceived(const DataTypes::OscInfo &);
+    void swjInfoReceived(const S2DataTypes::SwitchJourInfo &);
     void blockReceived(const DataTypes::BlockStruct &);
 #ifdef __linux__
     void timeReceived(const timespec &);
 #endif
-
 };
 
 #endif // DATAMANAGER_H

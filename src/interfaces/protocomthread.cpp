@@ -871,6 +871,21 @@ void ProtocomThread::handleTechBlock(const QByteArray &ba, quint32 blkNum)
         qDebug("Блок технологических событий BTe");
         break;
     }
+    case 0x04:
+    {
+        qDebug("Блок наличия журналов переключения");
+        Q_ASSERT(ba.size() % sizeof(S2DataTypes::SwitchJourInfo) == 0);
+        for (int i = 0; i != ba.size(); i += sizeof(S2DataTypes::SwitchJourInfo))
+        {
+            QByteArray buffer = ba.mid(i, sizeof(S2DataTypes::SwitchJourInfo));
+
+            S2DataTypes::SwitchJourInfo swjInfo;
+            memcpy(&swjInfo, buffer.constData(), sizeof(S2DataTypes::SwitchJourInfo));
+            DataManager::addSignalToOutList(DataTypes::SignalTypes::SwitchJournalInfo, swjInfo);
+        }
+        break;
+    }
+
         // Блок рабочего архива (Bra)
     case 0x05:
     {

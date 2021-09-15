@@ -105,7 +105,7 @@ void SWJDialog::Init(S2DataTypes::SwitchJourInfo swj)
     }
     else
     {
-        QPixmap *pm = new QPixmap("images/hr.png");
+        QPixmap *pm = new QPixmap(":/icons/hr.png");
         glyout->addWidget(WDFunc::NewLBL(this, "", "", "", pm), 8, 4, 1, 1);
     }
     vlyout->addLayout(glyout);

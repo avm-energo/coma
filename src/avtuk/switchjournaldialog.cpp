@@ -26,6 +26,7 @@ SwitchJournalDialog::SwitchJournalDialog(EOscillogram *osc, QWidget *parent) : U
 SwitchJournalDialog::SwitchJournalDialog(QWidget *parent) : UDialog(parent)
 {
     connect(&DataManager::GetInstance(), &DataManager::fileReceived, this, &SwitchJournalDialog::FillJour);
+    connect(&DataManager::GetInstance(), &DataManager::swjInfoReceived, this, &SwitchJournalDialog::fillSwJInfo);
     SetupUI();
 }
 
@@ -34,23 +35,28 @@ void SwitchJournalDialog::SetupUI()
     QVBoxLayout *lyout = new QVBoxLayout;
     QHBoxLayout *hlyout = new QHBoxLayout;
     QPushButton *pb = new QPushButton("Получить журналы переключений");
-    connect(pb, &QAbstractButton::clicked,
-        [] { BaseInterface::iface()->writeCommand(Queries::QUSB_ReqBlkDataTech, TECH_SWJ); });
-    if (StdFunc::IsInEmulateMode())
-        pb->setEnabled(false);
+    connect(pb, &QAbstractButton::clicked, [&] {
+        currentRow = 0;
+        SWJMap.clear();
+        BaseInterface::iface()->writeCommand(Queries::QUSB_ReqBlkDataTech, TECH_SWJ);
+    });
+
     hlyout->addWidget(pb);
     pb = new QPushButton("Стереть журнал переключений");
     connect(pb, &QAbstractButton::clicked, this, &SwitchJournalDialog::eraseJournals);
-    if (StdFunc::IsInEmulateMode())
-        pb->setEnabled(false);
+
     hlyout->addWidget(pb);
     lyout->addLayout(hlyout);
     SwjTableView = new ETableView;
     TableModel = new ETableModel;
     SwjTableView->setModel(TableModel);
-    SwjTableView->horizontalHeader()->setVisible(false);
-    SwjTableView->verticalHeader()->setVisible(false);
-    lyout->addWidget(SwjTableView, 89);
+
+    TableModel->setHorizontalHeaderLabels(
+        { "#", "Номер переключения", "Дата/Время", "Аппарат", "Переключение", "Скачать" });
+    PushButtonDelegate *dg = new PushButtonDelegate(this);
+    connect(dg, &PushButtonDelegate::clicked, this, &SwitchJournalDialog::getSwJ);
+    SwjTableView->setItemDelegateForColumn(5, dg); // устанавливаем делегата (кнопки "Скачать") для соотв. столбца
+    lyout->addWidget(SwjTableView);
     setLayout(lyout);
 }
 
@@ -71,21 +77,25 @@ void SwitchJournalDialog::processSWJournal(QByteArray &ba)
         {
             SWJMap[tmpi] = tmpswj;
             TableModel->addRow();
-            TableModel->setData(TableModel->index(CurRow, 0, QModelIndex()), QVariant(tmpswj.fileNum), Qt::EditRole);
-            TableModel->setData(TableModel->index(CurRow, 1, QModelIndex()), QVariant(tmpswj.num), Qt::EditRole);
-            TableModel->setData(TableModel->index(CurRow, 2, QModelIndex()),
+            TableModel->setData(
+                TableModel->index(CurRow, Column::number, QModelIndex()), QVariant(tmpswj.fileNum), Qt::EditRole);
+            TableModel->setData(
+                TableModel->index(CurRow, Column::switchNumber, QModelIndex()), QVariant(tmpswj.num), Qt::EditRole);
+            TableModel->setData(TableModel->index(CurRow, Column::datetime, QModelIndex()),
                 QVariant(TimeFunc::UnixTime64ToString(tmpswj.time)), Qt::EditRole);
             QStringList tmpsl { "D", "G", "CB" };
             QString tmps = (tmpswj.typeA < tmpsl.size()) ? tmpsl.at(tmpswj.typeA) : "N/A";
             tmps += QString::number(tmpswj.numA);
-            TableModel->setData(TableModel->index(CurRow, 3, QModelIndex()), QVariant(tmps), Qt::EditRole);
+            TableModel->setData(TableModel->index(CurRow, Column::id, QModelIndex()), QVariant(tmps), Qt::EditRole);
             tmps = (tmpswj.options & 0x00000001) ? "ВКЛ" : "ОТКЛ";
-            TableModel->setData(TableModel->index(CurRow, 4, QModelIndex()), QVariant(tmps), Qt::EditRole);
+            TableModel->setData(
+                TableModel->index(CurRow, Column::switchType, QModelIndex()), QVariant(tmps), Qt::EditRole);
             if (SWJMap.contains(tmpswj.time))
                 tmps = ":/icons/osc.svg";
             else
-                tmps = "images/hr.png";
-            TableModel->setData(TableModel->index(CurRow, 5, QModelIndex()), QVariant(QIcon(tmps)), Qt::DecorationRole);
+                tmps = ":/icons/hr.png";
+            TableModel->setData(
+                TableModel->index(CurRow, Column::download, QModelIndex()), QVariant(QIcon(tmps)), Qt::DecorationRole);
             TableModel->setData(TableModel->index(CurRow, 6, QModelIndex()), QVariant("Далее"), Qt::EditRole);
             ++CurRow;
         }
@@ -121,6 +131,48 @@ void SwitchJournalDialog::processOscillograms()
 
 void SwitchJournalDialog::FillJour(const DataTypes::FileStruct &fs)
 {
+}
+
+void SwitchJournalDialog::fillSwJInfo(S2DataTypes::SwitchJourInfo swjInfo)
+{
+    if (swjInfo.num == 0)
+        return;
+    if (SWJMap.contains(swjInfo.num))
+        return;
+
+    QString craftType = (swjInfo.typeA < craftTypeList.size()) ? craftTypeList.at(swjInfo.typeA) : "N/A";
+    craftType += QString::number(swjInfo.numA);
+    SWJMap.insert(swjInfo.num, swjInfo);
+    QVector<QVariant> lsl { QVariant(swjInfo.fileNum),   //
+        swjInfo.num,                                     //
+        TimeFunc::UnixTime64ToString(swjInfo.time),      //
+        craftType,                                       //
+        (swjInfo.options & 0x00000001) ? "ВКЛ" : "ОТКЛ", //
+        "Скачать" };
+    TableModel->addRowWithData(lsl);
+
+    ++currentRow;
+}
+
+void SwitchJournalDialog::getSwJ(const QModelIndex &idx)
+{
+    bool ok = false;
+    auto fileNum
+        = idx.model()->data(idx.sibling(idx.row(), Column::number), Qt::DisplayRole).toUInt(&ok); // номер файла
+    reqSwJNum
+        = idx.model()->data(idx.sibling(idx.row(), Column::switchNumber), Qt::DisplayRole).toUInt(&ok); // номер файла
+    if (!ok)
+    {
+        qWarning("Cannot convert");
+        return;
+    }
+    if (!SWJMap.contains(reqSwJNum))
+    {
+        qWarning("Cannot find");
+        return;
+    }
+    quint32 size = SWJMap.value(reqSwJNum).fileLength;
+    BaseInterface::iface()->reqFile(fileNum, Queries::FileFormat::CustomS2, size + sizeof(S2DataTypes::DataRecHeader));
 }
 
 void SwitchJournalDialog::loadJournals()
