@@ -25,6 +25,7 @@ constexpr int MT_FT_NONE = 0x04;
 OscDialog::OscDialog(QWidget *parent) : UDialog(parent)
 {
     connect(&DataManager::GetInstance(), &DataManager::oscInfoReceived, this, &OscDialog::fillOscInfo);
+    connect(&DataManager::GetInstance(), &DataManager::fileReceived, this, &OscDialog::fillOsc);
     SetupUI();
 }
 
@@ -67,18 +68,21 @@ void OscDialog::SetupUI()
     setLayout(lyout);
 }
 
-void OscDialog::GetOsc(QModelIndex idx)
+void OscDialog::GetOsc(const QModelIndex &idx)
 {
     emit StopCheckTimer();
     bool ok = false;
-    int oscnum = idx.model()->data(idx.sibling(idx.row(), 0), Qt::DisplayRole).toInt(&ok); // номер осциллограммы
+    int oscnum
+        = idx.model()->data(idx.sibling(idx.row(), Column::number), Qt::DisplayRole).toInt(&ok); // номер осциллограммы
+    quint32 oscsize = idx.model()->data(idx.sibling(idx.row(), Column::size), Qt::DisplayRole).toInt(&ok);
     if (!ok)
     {
         qWarning("Cannot convert");
         return;
     }
 
-    BaseInterface::iface()->reqFile(oscnum, true);
+    BaseInterface::iface()->reqFile(
+        oscnum, Queries::FileFormat::CustomS2, oscsize + sizeof(S2DataTypes::DataRecHeader));
 }
 
 void OscDialog::EraseOsc()
@@ -99,4 +103,15 @@ void OscDialog::fillOscInfo(DataTypes::OscInfo info)
     };
 
     tm->addRowWithData(lsl);
+}
+
+void OscDialog::fillOsc(const DataTypes::FileStruct file)
+{
+    quint16 curFileNum = quint16(file.filenum);
+    quint16 minFileNum = quint16(DataTypes::FilesEnum::FileOscMin);
+    quint16 maxFileNum = quint16(DataTypes::FilesEnum::FileOscMax);
+
+    if ((curFileNum < minFileNum) || (curFileNum > maxFileNum))
+        return;
+    manager.loadOsc(file.filedata);
 }

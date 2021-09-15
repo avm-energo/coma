@@ -13,13 +13,18 @@ OscManager::OscManager(QObject *parent) : QObject(parent)
 {
 }
 
-void OscManager::LoadOscFromFile(const QString &filename)
+void OscManager::loadOscFromFile(const QString &filename)
 {
 
     QByteArray buffer = 0;
     if (Files::LoadFromFile(filename, buffer) != Error::NoError)
         return;
 
+    loadOsc(buffer);
+}
+
+void OscManager::loadOsc(const QByteArray &buffer)
+{
     // TrendViewDialog *trendDlg = new TrendViewDialog();
     trendDialog = UniquePointer<TrendViewDialog>(new TrendViewDialog);
     trendDialog->setArrayToSave(buffer);

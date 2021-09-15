@@ -118,7 +118,7 @@ void Protocom::reqTime()
     emit wakeUpParser();
 }
 
-void Protocom::reqFile(quint32 filenum, bool isConfigFile)
+void Protocom::reqFile(quint32 filenum, FileFormat format)
 {
     // Q_ASSERT(filenum >= std::numeric_limits<DataTypes::FilesEnum>::max());
     // Q_ASSERT(filenum < DataTypes::FilesEnum::FileOscMax);
@@ -127,7 +127,7 @@ void Protocom::reqFile(quint32 filenum, bool isConfigFile)
     CommandStruct inp {
         Proto::Commands::ReadFile, // Command
         filenum,                   // File number
-        isConfigFile,              // Is file should be restored
+        format,                    // Is file should be restored
         ba                         // Empty QByteArray
     };
     DataManager::addToInQueue(inp);

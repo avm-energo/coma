@@ -38,7 +38,7 @@ void Emulator::reqBSI()
     }
 }
 
-void Emulator::reqFile(quint32, bool isConfigFile)
+void Emulator::reqFile(quint32, FileFormat format)
 {
 }
 

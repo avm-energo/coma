@@ -193,7 +193,7 @@ Error::Msg BaseInterface::readS2FileSync(quint32 filenum)
         QObject::disconnect(*connection);
         m_busy = false;
     });
-    reqFile(filenum, true);
+    reqFile(filenum, FileFormat::DefaultS2);
     timeoutTimer->start();
     while (m_busy)
     {
@@ -214,7 +214,7 @@ Error::Msg BaseInterface::readFileSync(quint32 filenum, QByteArray &ba)
     //    timer->setInterval(MAINTIMEOUT);
     //    connect(timer, &QTimer::timeout, this, &BaseInterface::timeout);
     connect(&DataManager::GetInstance(), &DataManager::fileReceived, this, &BaseInterface::fileReceived);
-    reqFile(filenum, false);
+    reqFile(filenum, FileFormat::Binary);
     timeoutTimer->start();
     while (m_busy)
     {
@@ -293,6 +293,14 @@ void BaseInterface::stop()
     Log->info("Stop()");
     setState(BaseInterface::State::Stop);
     qInfo() << metaObject()->className() << "disconnected";
+}
+
+void BaseInterface::reqFile(quint32 id, FileFormat format, quint32 expectedSize)
+{
+    DataTypes::GeneralResponseStruct resp { DataTypes::GeneralResponseTypes::DataSize, expectedSize };
+    DataManager::addSignalToOutList(DataTypes::SignalTypes::GeneralResponse, resp);
+
+    reqFile(id, format);
 }
 
 void BaseInterface::resultReady(const DataTypes::BlockStruct &result)

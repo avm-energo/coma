@@ -86,7 +86,7 @@ public:
     //    void BSIrequest();
     void reqStartup(quint32 sigAdr, quint32 sigCount) override;
     void reqBSI() override;
-    void reqFile(quint32 filenum, bool isConfigFile) override;
+    void reqFile(quint32 filenum, FileFormat format) override;
     //    void reqAlarms(quint32 sigAdr, quint32 sigCount);
     void writeFile(quint32 filenum, const QByteArray &file) override;
     //    void writeConfigFile(S2DataTypes::S2ConfigType *) override {};

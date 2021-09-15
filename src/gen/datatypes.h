@@ -282,6 +282,12 @@ struct Command
     QByteArray ba;
 };
 
+enum FileFormat : quint32
+{
+    Binary = 0,
+    DefaultS2 = 1,
+    CustomS2
+};
 }
 
 namespace S2DataTypes

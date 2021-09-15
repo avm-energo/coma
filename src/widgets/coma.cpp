@@ -326,7 +326,7 @@ void Coma::startWork(const ConnectStruct st)
 void Coma::loadOsc()
 {
     QString filename = WDFunc::ChooseFileForOpen(this, "Oscillogram files (*.osc)");
-    oscManager->LoadOscFromFile(filename);
+    oscManager->loadOscFromFile(filename);
 }
 
 void Coma::loadSwj()

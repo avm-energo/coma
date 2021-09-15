@@ -19,7 +19,7 @@ public:
     // void stop() override;
 
     void reqTime() override;
-    void reqFile(quint32 filenum, bool isConfigFile = false) override;
+    void reqFile(quint32 filenum, FileFormat format) override;
     void reqStartup(quint32 sigAdr, quint32 sigCount) override;
     void reqBSI() override;
     void reqBitStrings(quint32 sigAdr = 0, quint32 sigCount = 0) override;

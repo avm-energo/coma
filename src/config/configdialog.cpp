@@ -32,7 +32,7 @@ ConfigDialog::ConfigDialog(const QList<DataTypes::RecordPair> &defaultConfig, QW
 
 void ConfigDialog::ReadConf()
 {
-    BaseInterface::iface()->reqFile(DataTypes::Config, true);
+    BaseInterface::iface()->reqFile(DataTypes::Config, BaseInterface::FileFormat::DefaultS2);
 }
 
 void ConfigDialog::WriteConf()
