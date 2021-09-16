@@ -98,11 +98,7 @@ void SwitchJournalDialog::processOscillograms()
     int RecordSize = sizeof(S2DataTypes::OscInfo); // GBo struct size
     OscInfoSize = MAXOSCBUFSIZE;
     OscInfo.resize(OscInfoSize);
-    //  if ((Commands::GetBt(TECH_Bo, &(OscInfo.data()[0]), OscInfoSize)) != Error::ER_NOERROR)
-    //  {
-    //      qWarning("Ошибка при приёме буфера осциллограмм");
-    //      return;
-    //  }
+
     for (int i = 0; i < OscInfoSize; i += RecordSize)
     {
         S2DataTypes::OscInfo gbos;
@@ -202,7 +198,7 @@ void SwitchJournalDialog::showJournal(QModelIndex idx)
         return;
     }
     S2DataTypes::SwitchJourInfo swjr = SWJMap[SWJNum];
-    // EOscillogram::GBoStruct gbos;
+
     if (swjr.fileNum)
     {
         SWJDialog *dlg = new SWJDialog(SWJDOscFunc);
@@ -210,10 +206,6 @@ void SwitchJournalDialog::showJournal(QModelIndex idx)
         dlg->Init(swjr);
         dlg->show();
     }
-
-    // bool oscexist = OscMap.keys().contains(swjr.Time);
-    // if (oscexist)
-    //     gbos = OscMap[swjr.Time];
 }
 
 void SwitchJournalDialog::eraseJournals()
