@@ -3,6 +3,9 @@
 #include "trendviewdialog.h"
 
 #include <QObject>
+
+class TrendViewDialog;
+
 class OscManager : public QObject
 {
 public:
@@ -13,4 +16,6 @@ public:
 
 private:
     UniquePointer<TrendViewDialog> trendDialog;
+
+    const QStringList phases { "фазы А, В, С", "фаза А", "фаза В", "фаза С" };
 };

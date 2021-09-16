@@ -15,7 +15,7 @@ public:
     void handleBlk(const Proto::Commands cmd, const quint32 addr, const quint32 count);
 
     void handleBlk(const Proto::Commands cmd, const DataTypes::Signal &signal);
-    void handleBlk(const Proto::Commands cmd, const DataTypes::ConfParameterStruct &str)
+    void handleBlk(const Proto::Commands cmd, const DataTypes::S2Record &str)
     {
         handleBlk(cmd, str.ID, str.data);
     }

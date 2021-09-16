@@ -26,11 +26,11 @@ void S2::StoreDataMem(QByteArray &mem, const QVector<S2DataTypes::DataRec> &dr, 
         header.size += tmpi;
         for (i = 0; i < tmpi; i++)
             updCRC32((Rptr)[i], &crc);
-        if (record.id == S2DataTypes::dummyElement)
+        if (record.header.id == S2DataTypes::dummyElement)
             break;
         if (record.thedata)
         {
-            tmpi = record.numByte;
+            tmpi = record.header.numByte;
             header.size += tmpi;
             char *data = static_cast<char *>(record.thedata);
             for (i = 0; i < tmpi; i++)
@@ -83,8 +83,8 @@ bool S2::RestoreDataMem(void *mem, quint32 memsize, const QVector<S2DataTypes::D
         return false;
     }
     pos = fhsize;
-    R.id = 0;
-    while ((R.id != S2DataTypes::dummyElement) && (pos < memsize))
+    R.header.id = 0;
+    while ((R.header.id != S2DataTypes::dummyElement) && (pos < memsize))
     {
         tmpi = sizeof(S2DataTypes::DataRec) - sizeof(void *);
         pos += tmpi;
@@ -96,12 +96,12 @@ bool S2::RestoreDataMem(void *mem, quint32 memsize, const QVector<S2DataTypes::D
         }
         memcpy(&R, m, tmpi);
         m += tmpi;
-        if (R.id != S2DataTypes::dummyElement)
+        if (R.header.id != S2DataTypes::dummyElement)
         {
-            const S2DataTypes::DataRec *r = FindElem(&dr, R.id);
+            const S2DataTypes::DataRec *r = FindElem(&dr, R.header.id);
             if (r == nullptr) // элемент не найден в описании, пропускаем
             {
-                tmpi = R.numByte;
+                tmpi = R.header.numByte;
                 pos += tmpi;
                 if (pos > memsize)
                 {
@@ -113,13 +113,13 @@ bool S2::RestoreDataMem(void *mem, quint32 memsize, const QVector<S2DataTypes::D
                 continue;
             }
             noIDs = false;
-            if (r->numByte != R.numByte) //несовпадения описания прочитанного элемента с ожидаемым
+            if (r->header.numByte != R.header.numByte) //несовпадения описания прочитанного элемента с ожидаемым
             {
                 qCritical() << "S2: block description mismatch" << Error::Msg::DescError; // несовпадение описаний
                                                                                           // одного и того же блока
                 return false;
             }
-            tmpi = r->numByte;
+            tmpi = r->header.numByte;
             pos += tmpi;
             if (pos > memsize)
             {
@@ -144,7 +144,7 @@ bool S2::RestoreDataMem(void *mem, quint32 memsize, const QVector<S2DataTypes::D
     return true;
 }
 
-bool S2::RestoreData(QByteArray bain, QList<DataTypes::ConfParameterStruct> &outlist)
+bool S2::RestoreData(QByteArray bain, QList<DataTypes::S2Record> &outlist)
 {
     Q_ASSERT(bain.size() >= sizeof(S2DataTypes::FileHeader));
     qInfo() << "S2 File size:" << bain.size();
@@ -161,8 +161,8 @@ bool S2::RestoreData(QByteArray bain, QList<DataTypes::ConfParameterStruct> &out
         qCritical() << "S2" << Error::Msg::CrcError; // выход за границу принятых байт
         return false;
     }
-    DR.id = 0;
-    while ((DR.id != S2DataTypes::dummyElement) && (!bain.isEmpty()))
+    DR.header.id = 0;
+    while ((DR.header.id != S2DataTypes::dummyElement) && (!bain.isEmpty()))
     {
         auto size = sizeof(S2DataTypes::DataRec) - sizeof(void *);
         if (size > bain.size())
@@ -171,16 +171,16 @@ bool S2::RestoreData(QByteArray bain, QList<DataTypes::ConfParameterStruct> &out
             return false;
         }
         memcpy(&DR, &bain.data()[0], size);
-        DataTypes::DataRecV DRV(DR);
-        if (!S2DataTypes::is_same(DR, DRV.serialize()))
-            qDebug() << DRV.getId();
+        //        DataTypes::DataRecV DRV(DR);
+        //        if (!S2DataTypes::is_same(DR, DRV.serialize()))
+        //            qDebug() << DRV.getId();
         bain.remove(0, size);
         //  Q_ASSERT(!bain.isEmpty());
-        if (DR.id != S2DataTypes::dummyElement)
+        if (DR.header.id != S2DataTypes::dummyElement)
         {
-            DataTypes::ConfParameterStruct cfp;
-            cfp.ID = DR.id;
-            size = DR.numByte;
+            DataTypes::S2Record cfp;
+            cfp.ID = DR.header.id;
+            size = DR.header.numByte;
             if (size > bain.size())
             {
                 qCritical() << "S2" << Error::Msg::SizeError; // выход за границу принятых байт
@@ -211,8 +211,8 @@ bool S2::RestoreData(QByteArray bain, QList<DataTypes::DataRecV> &outlist)
         qCritical() << Error::Msg::CrcError << "S2"; // выход за границу принятых байт
         return false;
     }
-    DR.id = 0;
-    while ((DR.id != S2DataTypes::dummyElement) && (!bain.isEmpty()))
+    DR.header.id = 0;
+    while ((DR.header.id != S2DataTypes::dummyElement) && (!bain.isEmpty()))
     {
         auto size = sizeof(S2DataTypes::DataRec) - sizeof(void *);
         if (size > bain.size())
@@ -222,21 +222,13 @@ bool S2::RestoreData(QByteArray bain, QList<DataTypes::DataRecV> &outlist)
         }
         memcpy(&DR, &bain.data()[0], size);
 
-        // if (!S2DataTypes::is_same(DR, DRV.serialize()))
-        //     qDebug() << DRV.id;
         bain.remove(0, size);
-        if (DR.id != S2DataTypes::dummyElement)
+        if (DR.header.id != S2DataTypes::dummyElement)
         {
-            //            DataTypes::ConfParameterStruct cfp;
-            //            cfp.ID = DR.id;
-            size = DR.numByte;
-            //            if (size > bain.size())
-            //            {
-            //                qCritical("S2: out of memory"); // выход за границу принятых байт
-            //                return Error::Msg::SizeError;
-            //            }
-            //            cfp.data = bain.left(size);
-            auto search = DataTypes::DataRecV::map.find(DR.id);
+
+            size = DR.header.numByte;
+
+            auto search = DataTypes::DataRecV::map.find(DR.header.id);
             Q_ASSERT(search != DataTypes::DataRecV::map.end());
             if (search != DataTypes::DataRecV::map.end())
             {
@@ -257,34 +249,34 @@ const S2DataTypes::DataRec *S2::FindElem(const QVector<S2DataTypes::DataRec> *dr
 {
     for (auto it = dr->cbegin(); it != dr->cend(); ++it)
     {
-        if (it->id == id)
+        if (it->header.id == id)
             return it;
-        if (it->id == S2DataTypes::dummyElement)
+        if (it->header.id == S2DataTypes::dummyElement)
             return nullptr;
     }
     return nullptr;
 }
 
-void S2::findElemAndWriteIt(QVector<S2DataTypes::DataRec> *s2config, const DataTypes::ConfParameterStruct &cfp)
+void S2::findElemAndWriteIt(QVector<S2DataTypes::DataRec> *s2config, const DataTypes::S2Record &cfp)
 {
     std::for_each(s2config->begin(), s2config->end(), [&](S2DataTypes::DataRec &record) {
         findElemAndWriteIt(&record, cfp); //
     });
 }
 
-bool S2::findElemAndWriteIt(S2DataTypes::DataRec *record, const DataTypes::ConfParameterStruct &cfp)
+bool S2::findElemAndWriteIt(S2DataTypes::DataRec *record, const DataTypes::S2Record &cfp)
 {
-    if (record->id != cfp.ID)
+    if (record->header.id != cfp.ID)
     {
         return false;
     }
 
-    if (record->numByte != static_cast<quint32>(cfp.data.size()))
+    if (record->header.numByte != static_cast<quint32>(cfp.data.size()))
     {
         qCritical() << "S2: Wrong element size in ConfParameter" << Error::Msg::HeaderSizeError;
-        qDebug() << "Wait for element" << record->id    //
-                 << "with size:" << record->numByte     //
-                 << "but get size:" << cfp.data.size(); //
+        qDebug() << "Wait for element" << record->header.id //
+                 << "with size:" << record->header.numByte  //
+                 << "but get size:" << cfp.data.size();     //
         return false;
     }
     memcpy(record->thedata, cfp.data, cfp.data.size());
@@ -604,7 +596,7 @@ void S2::tester(S2DataTypes::S2ConfigType &buffer)
         const auto oldRec = buffer.at(i);
         const auto newRec = bufferV.at(i).serialize();
         if (!S2DataTypes::is_same(oldRec, newRec))
-            qDebug() << oldRec.id << oldRec.numByte;
+            qDebug() << oldRec.header.id << oldRec.header.numByte;
     }
     // test funcs end
 }

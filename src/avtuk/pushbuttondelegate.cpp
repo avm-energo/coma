@@ -1,13 +1,9 @@
 #include "pushbuttondelegate.h"
 
 #include "../models/etablemodel.h"
-#include "../models/etablerow.h"
 
 #include <QApplication>
 #include <QMouseEvent>
-#include <QPainter>
-#include <QStandardItem>
-#include <QStandardItemModel>
 
 PushButtonDelegate::PushButtonDelegate(QObject *parent) : QStyledItemDelegate(parent)
 {

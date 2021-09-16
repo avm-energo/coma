@@ -87,17 +87,17 @@ void IEC104Thread::Run()
                 {
                     //                    S2ConfigType *ptr = reinterpret_cast<S2ConfigType
                     //                    *>(inp.args.ptrarg); FileReady(ptr);
-                    m_fileIsConfigFile = false;
+                    m_fileIsConfigFile = Queries::FileFormat::Binary;
                     m_file = inp.ba;
                     FileReady(inp.uintarg);
                     break;
                 }
                 case Commands104::CM104_REQCONFIGFILE:
-                    m_fileIsConfigFile = true;
+                    m_fileIsConfigFile = Queries::FileFormat::DefaultS2;
                     SelectFile(inp.uintarg);
                     break;
                 case Commands104::CM104_REQFILE:
-                    m_fileIsConfigFile = false;
+                    m_fileIsConfigFile = Queries::FileFormat::Binary;
                     SelectFile(inp.uintarg);
                     break;
                 case Commands104::CM104_COM51:
@@ -250,32 +250,38 @@ Error::Msg IEC104Thread::isIncomeDataValid(QByteArray ba)
         }
         // return I104_RCVWRONG;
         return Error::Msg::GeneralError;
-    }
-    catch (...)
+    } catch (...)
     {
         ERMSG("Fatal exception");
         return Error::Msg::GeneralError;
     }
 }
 
-bool IEC104Thread::handleFile(QByteArray &ba, DataTypes::FilesEnum addr, bool isConfigFile)
+bool IEC104Thread::handleFile(QByteArray &ba, DataTypes::FilesEnum addr, Queries::FileFormat format)
 {
-    if (isConfigFile)
+    using Queries::FileFormat;
+    switch (format)
+    {
+    case FileFormat::DefaultS2:
     {
         QList<DataTypes::DataRecV> outlistV;
         if (!S2::RestoreData(ba, outlistV))
             return false;
         DataManager::addSignalToOutList(DataTypes::DataRecVList, outlistV);
+        break;
     }
-    else
+    default:
     {
-        DataTypes::ConfParametersListStruct outlist;
+        DataTypes::S2FilePack outlist;
         if (!S2::RestoreData(ba, outlist))
             return false;
         Q_ASSERT(outlist.size() == 1 && "Only one file supported");
         DataTypes::FileStruct df { addr, outlist.first().data };
         DataManager::addSignalToOutList(DataTypes::SignalTypes::File, df);
+        break;
     }
+    }
+
     return true;
 }
 
@@ -632,8 +638,7 @@ void IEC104Thread::ParseIFormat(QByteArray &ba) // основной разбор
         //        }
         //        else
         //            delete[] BS104Signals;
-    }
-    catch (...)
+    } catch (...)
     {
         m_log->error("Catch exception");
     }

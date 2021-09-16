@@ -1,13 +1,8 @@
 #ifndef PARSEID9000_H
 #define PARSEID9000_H
 
+#include "../gen/datatypes.h"
 #include "parsemodule.h"
-#include "trendviewdialog.h"
-#include "trendviewmodel.h"
-
-#include <QByteArray>
-#include <QObject>
-#include <QVector>
 
 class ParseID9000 : public ParseModule
 {
@@ -44,7 +39,6 @@ public:
     };
 
     bool Parse(int &count);
-    //    void Save(quint32 *len);
     bool ParseID21(quint32 id, S2DataTypes::OscHeader &OHD, const QString &fn, int &count);
     bool ParseID8x(quint32 id, S2DataTypes::OscHeader &OHD, const QString &fn, TrendViewDialog *dlg, int &count);
     bool ParseID85(quint32 id, S2DataTypes::OscHeader &OHD, const QString &fn, TrendViewDialog *dlg, int &count);

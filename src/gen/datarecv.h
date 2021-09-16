@@ -37,10 +37,17 @@ namespace S2DataTypes
 {
 using valueTypeMap = std::map<int, ctti::unnamed_type_id_t>;
 
+struct DataRecHeader
+{
+    // id
+    quint32 id;
+    // количество байт в TypeTheData
+    quint32 numByte;
+};
+
 struct DataRec
 {
-    unsigned int id;
-    unsigned int numByte;
+    DataRecHeader header;
     void *thedata;
 };
 bool is_same(const S2DataTypes::DataRec &lhs, const S2DataTypes::DataRec &rhs);

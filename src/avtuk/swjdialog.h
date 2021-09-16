@@ -1,10 +1,12 @@
 #ifndef SWJDIALOG_H
 #define SWJDIALOG_H
 
-#include "eoscillogram.h"
-#include "trendviewdialog.h"
+#include "../gen/datatypes.h"
 
 #include <QDialog>
+
+class EOscillogram;
+class TrendViewDialog;
 
 class SWJDialog : public QDialog
 {
@@ -31,12 +33,11 @@ public slots:
 #endif
 private:
     S2DataTypes::SwitchJourInfo SWJInf;
-    // EOscillogram::GBoStruct GBOs;
+
     S2DataTypes::DataRecSwitchJour SwRec;
     EOscillogram *SWJOscFunc;
     bool Mode;
     TrendViewDialog *m_trendViewDialog;
-    // TrendViewModel *mdl;
 };
 
 #endif // SWJDIALOG_H

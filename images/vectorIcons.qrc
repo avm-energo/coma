@@ -30,5 +30,6 @@
         <file>osc.svg</file>
         <file>resize.svg</file>
         <file>coma.ico</file>
+		<file>hr.png</file>
     </qresource>
 </RCC>

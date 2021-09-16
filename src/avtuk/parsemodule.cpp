@@ -1,5 +1,6 @@
 #include "parsemodule.h"
 
+#include "trendviewdialog.h"
 ParseModule::ParseModule(QByteArray &BA)
 {
     BArray = BA;

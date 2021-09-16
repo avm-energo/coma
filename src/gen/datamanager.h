@@ -127,7 +127,7 @@ signals:
     void fileReceived(const DataTypes::FileStruct &);
     void dataRecVListReceived(const QList<DataTypes::DataRecV> &);
     void responseReceived(const DataTypes::GeneralResponseStruct &);
-    void oscInfoReceived(const DataTypes::OscInfo &);
+    void oscInfoReceived(const S2DataTypes::OscInfo &);
     void swjInfoReceived(const S2DataTypes::SwitchJourInfo &);
     void blockReceived(const DataTypes::BlockStruct &);
 #ifdef __linux__

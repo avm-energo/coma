@@ -1,16 +1,8 @@
 #include "parseid10031.h"
 
-#include "../gen/colors.h"
 #include "../gen/error.h"
+#include "../gen/modules.h"
 #include "../gen/timefunc.h"
-#include "eoscillogram.h"
-#include "parsemodule.h"
-#include "trendviewdialog.h"
-#include "trendviewmodel.h"
-
-#include <QVector>
-
-// quint32 ParseID10031::len2;
 
 ParseID10031::ParseID10031(QByteArray &BA) : ParseModule(BA)
 {
@@ -18,12 +10,10 @@ ParseID10031::ParseID10031(QByteArray &BA) : ParseModule(BA)
 
 bool ParseID10031::Parse(int &count)
 {
-    QStringList tmpdv { "OCNA", "OCNB", "OCNC", "OCFA", "OCFB", "OCFC", "BKCA", "BKCB", "BKCC", "BKOA", "BKOB", "BKOC",
-        "CSC", "CSO", "CNA", "CNB", "CNC", "CFA", "CFB", "CFC" };
-    QStringList tmpav { "USA", "USB", "USC", "IA", "IB", "IC", "ULA", "ULB", "ULC" };
+    const QStringList tmpdv { "OCNA", "OCNB", "OCNC", "OCFA", "OCFB", "OCFC", "BKCA", "BKCB", "BKCC", "BKOA", "BKOB",
+        "BKOC", "CSC", "CSO", "CNA", "CNB", "CNC", "CFA", "CFB", "CFC" };
+    const QStringList tmpav { "USA", "USB", "USC", "IA", "IB", "IC", "ULA", "ULB", "ULC" };
 
-    // ParseID10031::SWJournalRecordStruct SWJ;
-    // PosPlusPlus(&SWJ, count, sizeof(SWJ));
     S2DataTypes::DataRecHeader DR;
     if (!PosPlusPlus(&DR, count, sizeof(DR)))
         return false;
@@ -31,12 +21,10 @@ bool ParseID10031::Parse(int &count)
     S2DataTypes::OscHeader OHD;
     if (!PosPlusPlus(&OHD, count, sizeof(OHD)))
         return false;
-    //    ParseID10031::len2 = OHD.len;
 
     if (!PosPlusPlus(&DR, count, sizeof(DR)))
         return false;
 
-    // TrendViewModel::SaveID(DR.id); // для выбора
     // составляем имя файла осциллограммы
     QString tmps = TimeFunc::UnixTime64ToString(OHD.time);
     tmps.replace("/", "-");
@@ -52,7 +40,7 @@ bool ParseID10031::Parse(int &count)
 
     switch (DR.id)
     {
-    case MT_ID85:
+    case AVTUK_85::OSC_ID:
         if (!ParseID85(OHD, tmps, count))
             return false;
         break;
@@ -63,7 +51,7 @@ bool ParseID10031::Parse(int &count)
 bool ParseID10031::ParseID85(S2DataTypes::OscHeader &OHD, const QString &fn, int &count)
 {
 
-    float xmin = -10; //-(static_cast<float>(OHD.len/2));
+    float xmin = -10;
 
     if (!m_trendViewModel->SetPointsAxis(xmin, OHD.step))
         return false;
@@ -72,7 +60,7 @@ bool ParseID10031::ParseID85(S2DataTypes::OscHeader &OHD, const QString &fn, int
         Point85 point;
         if (!PosPlusPlus(&point, count, sizeof(Point85)))
             return false;
-        //                quint32 DisPoint = point.Dis & 0x000FFFFF; // оставляем только младшие 20 бит
+
         quint32 DisPoint = point.Dis;
         for (int i = 0; i < m_trendViewModel->tmpdv_85.size(); ++i)
         {
@@ -88,9 +76,3 @@ bool ParseID10031::ParseID85(S2DataTypes::OscHeader &OHD, const QString &fn, int
     m_trendViewModel->SetFilename(fn);
     return true;
 }
-
-/*void ParseID10031::Save(quint32 *len)
-{
-//    len = &ParseID10031::len2;
-    TModel->Len =
-} */

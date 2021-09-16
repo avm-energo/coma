@@ -1,14 +1,9 @@
 #include "parseid9000.h"
 
-#include "../gen/colors.h"
 #include "../gen/error.h"
+#include "../gen/modules.h"
 #include "../gen/timefunc.h"
-#include "eoscillogram.h"
-#include "parsemodule.h"
 #include "trendviewdialog.h"
-#include "trendviewmodel.h"
-
-#include <QVector>
 
 ParseID9000::ParseID9000(QByteArray &BA) : ParseModule(BA)
 {
@@ -43,7 +38,7 @@ bool ParseID9000::Parse(int &count)
 
     switch (DR.id)
     {
-    case MT_ID21:
+    case AVTUK_21::OSC_ID_MIN:
     case 10002:
     case 10003:
     case 10004:
@@ -58,17 +53,17 @@ bool ParseID9000::Parse(int &count)
     case 10013:
     case 10014:
     case 10015:
-    case MT_ID21E:
+    case AVTUK_21::OSC_ID_MAX:
         if (!ParseID21(DR.id, OHD, tmps, count))
             return false;
         break;
 
-    case MT_ID80:
+    case AVTUK_8X::OSC_ID:
         if (!ParseID8x(DR.id, OHD, tmps, m_trendViewDialog, count))
             return false;
         break;
 
-    case MT_ID85:
+    case AVTUK_85::OSC_ID:
         // if (ParseID85(DR.id, OHD, tmps, tmpav, tmpdv, dlg, count) != Error::ER_NOERROR)
         //    return Error::ER_GENERALERROR;
         break;
@@ -191,9 +186,3 @@ bool ParseID9000::ParseID85(
     dlg->show();*/
     return true;
 }
-
-/*void ParseID9000::Save(quint32 *len)
-{
-
-
-}*/

@@ -1,13 +1,10 @@
 #ifndef OSCDIALOG_H
 #define OSCDIALOG_H
 
-#include "../models/etablemodel.h"
 #include "../widgets/udialog.h"
-#include "eoscillogram.h"
 #include "oscmanager.h"
 
-#include <QByteArray>
-#include <QDialog>
+class ETableModel;
 
 class OscDialog : public UDialog
 {
@@ -36,7 +33,7 @@ signals:
     void StopCheckTimer();
 
 public slots:
-    void fillOscInfo(DataTypes::OscInfo info);
+    void fillOscInfo(S2DataTypes::OscInfo info);
     void fillOsc(const DataTypes::FileStruct file);
 private slots:
 

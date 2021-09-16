@@ -5,7 +5,6 @@
 #include <QMap>
 #include <QVector>
 
-// constexpr int MT_ID85 = 10030; // ID осциллограммы по модулю 8085
 class TrendViewModel
 {
 public:
@@ -29,66 +28,11 @@ public:
     float xmax, xmin;
     quint32 Len;
 
-    QStringList acolors_85 {
-        Colors::YLWCOLOR, //
-        Colors::GRNCOLOR, //
-        Colors::REDCOLOR, //
-        Colors::YLLCOLOR, //
-        Colors::GRLCOLOR, //
-        Colors::RDLCOLOR, //
-        Colors::YLDCOLOR, //
-        Colors::GRDCOLOR, //
-        Colors::RDDCOLOR  //
-    };
-    QStringList dcolors_85 {
-        Colors::YLWCOLOR, //
-        Colors::GRNCOLOR, //
-        Colors::REDCOLOR, //
-        Colors::YLLCOLOR, //
-        Colors::GRLCOLOR, //
-        Colors::RDLCOLOR, //
-        Colors::YLDCOLOR, //
-        Colors::GRDCOLOR, //
-        Colors::RDDCOLOR, //
-        Colors::YLWCOLOR, //
-        Colors::GRNCOLOR, //
-        Colors::REDCOLOR, //
-        Colors::BLUCOLOR, //
-        Colors::BLDCOLOR, //
-        Colors::YLLCOLOR, //
-        Colors::GRLCOLOR, //
-        Colors::RDLCOLOR, //
-        Colors::YLDCOLOR, //
-        Colors::GRDCOLOR, //
-        Colors::RDDCOLOR  //
-    };
-    QStringList ddescr_85 {
-        "Оперативное управление включением полюса А",                                                 //
-        "Оперативное управление включением полюса B",                                                 //
-        "Оперативное управление включением полюса C",                                                 //
-        "Оперативное управление отключением полюса А",                                                //
-        "Оперативное управление отключением полюса B",                                                //
-        "Оперативное управление отключением полюса C",                                                //
-        "НЗ блок-контакт полюса А", "НЗ блок-контакт полюса B",                                       //
-        "НЗ блок-контакт полюса C", "НО блок-контакт полюса А",                                       //
-        "НО блок-контакт полюса В", "НО блок-контакт полюса С", "Контроль цепи соленоида отключения", //
-        "Контроль цепи соленоида включения", "Выходная команда на включение полюса А",                //
-        "Выходная команда на включение полюса В", "Выходная команда на включение полюса С",           //
-        "Выходная команда на отключение полюса А", "Выходная команда на отключение полюса В",         //
-        "Выходная команда на отключение полюса С"                                                     //
-    };
+    static const QStringList acolors_85;
+    static const QStringList dcolors_85;
+    static const QStringList ddescr_85;
 
-    QStringList adescr_85 {
-        "Напряжение сети ф.А",        //
-        "Напряжение сети ф.В",        //
-        "Напряжение сети ф.С",        //
-        "Ток в выключателе ф.А",      //
-        "Ток в выключателе ф.В",      //
-        "Ток в выключателе ф.С",      //
-        "Напряжение на нагрузке ф.А", //
-        "Напряжение на нагрузке ф.В", //
-        "Напряжение на нагрузке ф.С"  //
-    };
+    static const QStringList adescr_85;
     QStringList
         tmpdv_85; /* = QStringList() << "OCNA" << "OCNB" << "OCNC" << "OCFA" << "OCFB" << "OCFC" \
                                   << "BKCA" << "BKCB" << "BKCC" << "BKOA" << "BKOB" << "BKOC" \
@@ -98,17 +42,11 @@ public:
     QStringList
         tmpav_85; // = QStringList() << "USA" << "USB" << "USC" << "IA" << "IB" << "IC" << "ULA" << "ULB" << "ULC";
 
-    QStringList acolors_80 { Colors::YLWCOLOR, Colors::GRNCOLOR, Colors::REDCOLOR, Colors::YLLCOLOR, Colors::GRLCOLOR,
-        Colors::RDLCOLOR, Colors::YLDCOLOR, Colors::GRDCOLOR, Colors::RDDCOLOR };
-    QStringList dcolors_80 { Colors::YLWCOLOR, Colors::GRNCOLOR, Colors::REDCOLOR, Colors::YLLCOLOR, Colors::GRLCOLOR,
-        Colors::RDLCOLOR, Colors::YLDCOLOR, Colors::GRDCOLOR, Colors::RDDCOLOR, Colors::YLWCOLOR, Colors::GRNCOLOR,
-        Colors::REDCOLOR, Colors::BLUCOLOR, Colors::BLDCOLOR, Colors::YLLCOLOR, Colors::GRLCOLOR, Colors::RDLCOLOR,
-        Colors::YLDCOLOR, Colors::GRDCOLOR, Colors::RDDCOLOR, Colors::YLWCOLOR, Colors::GRNCOLOR, Colors::REDCOLOR,
-        Colors::YLLCOLOR, Colors::GRLCOLOR, Colors::RDLCOLOR, Colors::YLDCOLOR, Colors::GRDCOLOR, Colors::RDDCOLOR,
-        Colors::YLWCOLOR, Colors::GRNCOLOR, Colors::REDCOLOR };
+    static const QStringList acolors_80;
+    static const QStringList dcolors_80;
 
-    QStringList tmpdv_80 = QStringList();
-    QStringList tmpav_80 { "USA", "USB", "USC", "IA", "IB", "IC", "ULA", "ULB", "ULC" };
+    QStringList tmpdv_80;
+    static inline const QStringList tmpav_80 { "USA", "USB", "USC", "IA", "IB", "IC", "ULA", "ULB", "ULC" };
 
     // QStringList tmpav_21 { "UA", "UB", "UC", "IA", "IB", "IC" };
     QStringList acolors_21 { Colors::YLWCOLOR };
@@ -121,10 +59,77 @@ private:
     bool NoDiscrete, NoAnalog;
     QStringList DigitalNames, AnalogNames;
     int WRow;
-
-    // void WriteToFile(int row, QXlsx::Document *xls);
-
-    // public slots:
-    // void SaveToExcel(QWidget *parent);
-    // void SaveToComtrade();
 };
+
+inline const QStringList TrendViewModel::acolors_85 {
+    Colors::YLWCOLOR, //
+    Colors::GRNCOLOR, //
+    Colors::REDCOLOR, //
+    Colors::YLLCOLOR, //
+    Colors::GRLCOLOR, //
+    Colors::RDLCOLOR, //
+    Colors::YLDCOLOR, //
+    Colors::GRDCOLOR, //
+    Colors::RDDCOLOR  //
+};
+
+inline const QStringList TrendViewModel::dcolors_85 {
+    Colors::YLWCOLOR, //
+    Colors::GRNCOLOR, //
+    Colors::REDCOLOR, //
+    Colors::YLLCOLOR, //
+    Colors::GRLCOLOR, //
+    Colors::RDLCOLOR, //
+    Colors::YLDCOLOR, //
+    Colors::GRDCOLOR, //
+    Colors::RDDCOLOR, //
+    Colors::YLWCOLOR, //
+    Colors::GRNCOLOR, //
+    Colors::REDCOLOR, //
+    Colors::BLUCOLOR, //
+    Colors::BLDCOLOR, //
+    Colors::YLLCOLOR, //
+    Colors::GRLCOLOR, //
+    Colors::RDLCOLOR, //
+    Colors::YLDCOLOR, //
+    Colors::GRDCOLOR, //
+    Colors::RDDCOLOR  //
+};
+
+inline const QStringList TrendViewModel::ddescr_85 {
+    "Оперативное управление включением полюса А",                                                 //
+    "Оперативное управление включением полюса B",                                                 //
+    "Оперативное управление включением полюса C",                                                 //
+    "Оперативное управление отключением полюса А",                                                //
+    "Оперативное управление отключением полюса B",                                                //
+    "Оперативное управление отключением полюса C",                                                //
+    "НЗ блок-контакт полюса А", "НЗ блок-контакт полюса B",                                       //
+    "НЗ блок-контакт полюса C", "НО блок-контакт полюса А",                                       //
+    "НО блок-контакт полюса В", "НО блок-контакт полюса С", "Контроль цепи соленоида отключения", //
+    "Контроль цепи соленоида включения", "Выходная команда на включение полюса А",                //
+    "Выходная команда на включение полюса В", "Выходная команда на включение полюса С",           //
+    "Выходная команда на отключение полюса А", "Выходная команда на отключение полюса В",         //
+    "Выходная команда на отключение полюса С"                                                     //
+};
+
+inline const QStringList TrendViewModel::adescr_85 {
+    "Напряжение сети ф.А",        //
+    "Напряжение сети ф.В",        //
+    "Напряжение сети ф.С",        //
+    "Ток в выключателе ф.А",      //
+    "Ток в выключателе ф.В",      //
+    "Ток в выключателе ф.С",      //
+    "Напряжение на нагрузке ф.А", //
+    "Напряжение на нагрузке ф.В", //
+    "Напряжение на нагрузке ф.С"  //
+};
+
+inline const QStringList TrendViewModel::acolors_80 { Colors::YLWCOLOR, Colors::GRNCOLOR, Colors::REDCOLOR,
+    Colors::YLLCOLOR, Colors::GRLCOLOR, Colors::RDLCOLOR, Colors::YLDCOLOR, Colors::GRDCOLOR, Colors::RDDCOLOR };
+
+inline const QStringList TrendViewModel::dcolors_80 { Colors::YLWCOLOR, Colors::GRNCOLOR, Colors::REDCOLOR,
+    Colors::YLLCOLOR, Colors::GRLCOLOR, Colors::RDLCOLOR, Colors::YLDCOLOR, Colors::GRDCOLOR, Colors::RDDCOLOR,
+    Colors::YLWCOLOR, Colors::GRNCOLOR, Colors::REDCOLOR, Colors::BLUCOLOR, Colors::BLDCOLOR, Colors::YLLCOLOR,
+    Colors::GRLCOLOR, Colors::RDLCOLOR, Colors::YLDCOLOR, Colors::GRDCOLOR, Colors::RDDCOLOR, Colors::YLWCOLOR,
+    Colors::GRNCOLOR, Colors::REDCOLOR, Colors::YLLCOLOR, Colors::GRLCOLOR, Colors::RDLCOLOR, Colors::YLDCOLOR,
+    Colors::GRDCOLOR, Colors::RDDCOLOR, Colors::YLWCOLOR, Colors::GRNCOLOR, Colors::REDCOLOR };

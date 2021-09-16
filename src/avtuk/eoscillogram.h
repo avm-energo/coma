@@ -7,11 +7,6 @@
 #include <QByteArray>
 #include <QObject>
 #include <QVector>
-constexpr int MT_HEAD_ID = 9000; // ID осциллограммы
-constexpr int MT_HEAD87 = 9050;  // ID осциллограммы и спектрограммы модуля 87
-constexpr int SWJ_ID85 = 10031;  // ID осциллограммы c журналом по модулю 8085
-
-constexpr int MAXOSCBUFSIZE = 262144; // максимальный размер буфера для осциллограмм
 
 class EOscillogram : public QObject
 {

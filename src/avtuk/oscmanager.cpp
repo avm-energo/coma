@@ -1,14 +1,11 @@
 #include "oscmanager.h"
 
-#include "../gen/datatypes.h"
 #include "../gen/files.h"
+#include "../gen/modules.h"
 #include "../gen/timefunc.h"
 #include "../widgets/wd_func.h"
 #include "eoscillogram.h"
-#include "parseid9050.h"
 #include "swjdialog.h"
-#include "trendviewdialog.h"
-
 OscManager::OscManager(QObject *parent) : QObject(parent)
 {
 }
@@ -37,7 +34,7 @@ void OscManager::loadOsc(const QByteArray &buffer)
 
     switch (mdl->idOsc)
     {
-    case MT_ID85:
+    case AVTUK_85::OSC_ID:
     {
 
         trendDialog->setAnalogNames(mdl->tmpav_85);
@@ -49,7 +46,7 @@ void OscManager::loadOsc(const QByteArray &buffer)
         trendDialog->setRange(mdl->xmin, mdl->xmax, -200, 200);
         break;
     }
-    case MT_ID80:
+    case AVTUK_8X::OSC_ID:
     {
         mdl->tmpdv_80.clear();
         trendDialog->setAnalogNames(mdl->tmpav_80);
@@ -60,7 +57,7 @@ void OscManager::loadOsc(const QByteArray &buffer)
         break;
     }
 
-    case MT_ID21:
+    case AVTUK_21::OSC_ID_MIN:
     {
         // период отсчётов - 20 мс, длительность записи осциллограммы 10 сек, итого 500 точек по 4 байта на каждую
         // mdl->tmpav_21 << QString::number(mdl->idOsc); // пока сделано для одного канала в осциллограмме
@@ -118,7 +115,7 @@ void OscManager::loadSwjFromFile(const QString &filename)
         qCritical() << "Некорректная структура файла журнала";
         return;
     }
-    QStringList phase = { "фазы А, В, С", "фаза А", "фаза В", "фаза С" };
+
     EOscillogram *OscFunc = new EOscillogram(this);
     OscFunc->BA = buffer;
     S2DataTypes::SwitchJourRecord SWJ;
@@ -191,7 +188,7 @@ void OscManager::loadSwjFromFile(const QString &filename)
     {
         if (((OscFunc->SWJRecord.options >> 3) == i))
         {
-            tmps = phase.at(i);
+            tmps = phases.at(i);
         }
     }
     glyout->addWidget(new QLabel(tmps, swjDialog), 5, 4, 1, 1);
@@ -223,7 +220,7 @@ void OscManager::loadSwjFromFile(const QString &filename)
     }
     else
     {
-        QPixmap *pm = new QPixmap("images/hr.png");
+        QPixmap *pm = new QPixmap(":/icons/hr.png");
         glyout->addWidget(WDFunc::NewLBL(swjDialog, "", "", "", pm), 8, 4, 1, 1);
     }
     vlyout->addLayout(glyout);

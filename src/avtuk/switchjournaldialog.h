@@ -1,14 +1,13 @@
 #ifndef SWITCHJOURNALDIALOG_H
 #define SWITCHJOURNALDIALOG_H
 
-#include "../models/etablemodel.h"
-#include "../widgets/etableview.h"
 #include "../widgets/udialog.h"
-#include "eoscillogram.h"
-#include "swjdialog.h"
 
-#include <QDialog>
 #include <QModelIndex>
+
+class EOscillogram;
+class ETableModel;
+class ETableView;
 
 class SwitchJournalDialog : public UDialog
 {
@@ -32,7 +31,7 @@ private:
     const QStringList craftTypeList { "D", "G", "CB" };
     ETableModel *TableModel;
     ETableView *SwjTableView;
-    QMap<quint64, DataTypes::OscInfo> OscMap;
+    QMap<quint64, S2DataTypes::OscInfo> OscMap;
     QMap<int, S2DataTypes::SwitchJourInfo> SWJMap;
     EOscillogram *SWJDOscFunc;
 

@@ -173,7 +173,7 @@ inline QDataStream &operator>>(QDataStream &stream, FileStruct &str)
     return stream;
 }
 
-struct ConfParameterStruct
+struct S2Record
 {
     quint32 ID;
     QByteArray data;
@@ -186,7 +186,7 @@ struct BlockStruct
 };
 
 typedef BlockStruct HardwareStruct;
-typedef QList<ConfParameterStruct> ConfParametersListStruct;
+typedef QList<S2Record> S2FilePack;
 
 struct SignalsStruct
 {
@@ -228,17 +228,6 @@ struct JournalDesc
     QString name;
 };
 
-#pragma pack(push) /* push current alignment to stack */
-#pragma pack(1)    /* set alignment to 1 byte boundary */
-struct OscInfo
-{
-    quint32 fileNum;    // номер файла осциллограмм
-    quint32 fileLength; // длина файла за исключением FileHeader (16 байт)
-    quint32 id; // Тип файла - осциллограмма и количество осциллограмм в файле (10000, 10001 ...)
-    quint64 unixtime; // Время начала записи осциллограммы
-    quint32 id0; // ID первой осциллограммы в файле (определяет структуру точки и номер канала)
-};
-#pragma pack(pop)
 }
 
 namespace Queries
@@ -305,31 +294,6 @@ struct FileHeader
     quint32 thetime;
 };
 
-// S2: Определение типа записи
-
-struct DataRec;
-// struct DataRec
-//{
-//    quint32 id;
-//    quint32 num_byte;
-//    void *thedata;
-//};
-// inline bool is_same(const S2DataTypes::DataRec &lhs, const S2DataTypes::DataRec &rhs)
-//{
-//    if ((lhs.id == rhs.id) && (lhs.num_byte == rhs.num_byte))
-//        return !memcmp(lhs.thedata, rhs.thedata, lhs.num_byte);
-//    else
-//        return false;
-//}
-
-struct DataRecHeader
-{
-    // id
-    quint32 id;
-    // количество байт в TypeTheData
-    quint32 numByte;
-};
-
 /// Тип группы плат
 struct DataRecT
 {
@@ -355,6 +319,22 @@ struct FileStruct
     DataRecHeader void_recHeader;
 };
 typedef QVector<S2DataTypes::DataRec> S2ConfigType;
+
+#pragma pack(push) /* push current alignment to stack */
+#pragma pack(1)    /* set alignment to 1 byte boundary */
+struct OscInfo
+{
+    //  quint32 fileNum;    // номер файла осциллограмм
+    //  quint32 fileLength; // длина файла за исключением FileHeader (16 байт)
+    // заголовок записи
+    DataRecHeader typeHeader;
+    quint32 id; // Тип файла - осциллограмма и количество осциллограмм в файле (10000, 10001 ...) <- неверное описание
+    /// Время начала записи осциллограммы
+    quint64 unixtime;
+    /// ID первой осциллограммы в файле (определяет структуру точки и номер канала)
+    quint32 idOsc0;
+};
+#pragma pack(pop)
 
 #pragma pack(push) /* push current alignment to stack */
 #pragma pack(1)    /* set alignment to 1 byte boundary */
@@ -420,14 +400,14 @@ Q_DECLARE_METATYPE(DataTypes::FloatStruct)
 Q_DECLARE_METATYPE(DataTypes::SinglePointWithTimeStruct)
 Q_DECLARE_METATYPE(DataTypes::FileStruct)
 Q_DECLARE_METATYPE(DataTypes::FilesEnum)
-Q_DECLARE_METATYPE(DataTypes::ConfParameterStruct)
+Q_DECLARE_METATYPE(DataTypes::S2Record)
 Q_DECLARE_METATYPE(DataTypes::BlockStruct)
-Q_DECLARE_METATYPE(DataTypes::ConfParametersListStruct)
+Q_DECLARE_METATYPE(DataTypes::S2FilePack)
 Q_DECLARE_METATYPE(DataTypes::SignalsStruct)
 Q_DECLARE_METATYPE(DataTypes::Signal)
 Q_DECLARE_METATYPE(DataTypes::GeneralResponseStruct)
 Q_DECLARE_METATYPE(DataTypes::DataRecV)
-Q_DECLARE_METATYPE(DataTypes::OscInfo)
+Q_DECLARE_METATYPE(S2DataTypes::OscInfo)
 Q_DECLARE_METATYPE(Queries::Command)
 Q_DECLARE_METATYPE(S2DataTypes::SwitchJourInfo)
 

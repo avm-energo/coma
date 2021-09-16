@@ -776,6 +776,7 @@ void ProtocomThread::handleFile(QByteArray &ba, DataTypes::FilesEnum addr, Queri
     {
         DataTypes::FileStruct resp { addr, ba };
         DataManager::addSignalToOutList(DataTypes::SignalTypes::File, resp);
+        break;
     }
     case FileFormat::DefaultS2:
     {
@@ -784,11 +785,20 @@ void ProtocomThread::handleFile(QByteArray &ba, DataTypes::FilesEnum addr, Queri
         if (!S2::RestoreData(ba, outlistV))
             return;
         DataManager::addSignalToOutList(DataTypes::DataRecVList, outlistV);
+        break;
     }
     case FileFormat::CustomS2:
     {
-        DataTypes::FileStruct resp { addr, ba };
-        DataManager::addSignalToOutList(DataTypes::SignalTypes::File, resp);
+        DataTypes::S2FilePack outlist;
+        if (!S2::RestoreData(ba, outlist))
+            return;
+        for (auto &&file : outlist)
+        {
+            DataTypes::FileStruct resp { DataTypes::FilesEnum(file.ID), file.data };
+            DataManager::addSignalToOutList(DataTypes::SignalTypes::File, resp);
+        }
+
+        break;
     }
     }
 }
@@ -847,13 +857,13 @@ void ProtocomThread::handleTechBlock(const QByteArray &ba, quint32 blkNum)
         //  Блок наличия осциллограмм Bo
     case 0x01:
     {
-        Q_ASSERT(ba.size() % sizeof(DataTypes::OscInfo) == 0);
-        for (int i = 0; i != ba.size(); i += sizeof(DataTypes::OscInfo))
+        Q_ASSERT(ba.size() % sizeof(S2DataTypes::OscInfo) == 0);
+        for (int i = 0; i != ba.size(); i += sizeof(S2DataTypes::OscInfo))
         {
-            QByteArray buffer = ba.mid(i, sizeof(DataTypes::OscInfo));
+            QByteArray buffer = ba.mid(i, sizeof(S2DataTypes::OscInfo));
 
-            DataTypes::OscInfo oscInfo;
-            memcpy(&oscInfo, buffer.constData(), sizeof(DataTypes::OscInfo));
+            S2DataTypes::OscInfo oscInfo;
+            memcpy(&oscInfo, buffer.constData(), sizeof(S2DataTypes::OscInfo));
             DataManager::addSignalToOutList(DataTypes::SignalTypes::OscillogramInfo, oscInfo);
         }
 

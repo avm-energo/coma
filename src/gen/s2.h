@@ -17,7 +17,7 @@ public:
     static void StoreDataMem(QByteArray &mem, const QList<DataTypes::DataRecV> &dr, int fname);
 
     // restore IDs and contents in ConfParameters list
-    static bool RestoreData(QByteArray bain, QList<DataTypes::ConfParameterStruct> &outlist);
+    static bool RestoreData(QByteArray bain, QList<DataTypes::S2Record> &outlist);
     static bool RestoreData(QByteArray bain, QList<DataTypes::DataRecV> &outlist);
 
     static S2DataTypes::S2ConfigType ParseHexToS2(QByteArray &ba);
@@ -33,8 +33,8 @@ private:
     static void StoreDataMem(QByteArray &mem, const QVector<S2DataTypes::DataRec> &dr, int fname);
     // S2: Поиск элемента в массиве описаний
     static bool RestoreDataMem(void *mem, quint32 memsize, const QVector<S2DataTypes::DataRec> &dr);
-    static void findElemAndWriteIt(QVector<S2DataTypes::DataRec> *s2config, const DataTypes::ConfParameterStruct &cfp);
-    static bool findElemAndWriteIt(S2DataTypes::DataRec *record, const DataTypes::ConfParameterStruct &cfp);
+    static void findElemAndWriteIt(QVector<S2DataTypes::DataRec> *s2config, const DataTypes::S2Record &cfp);
+    static bool findElemAndWriteIt(S2DataTypes::DataRec *record, const DataTypes::S2Record &cfp);
     static const S2DataTypes::DataRec *FindElem(const QVector<S2DataTypes::DataRec> *, quint32);
 
     static quint32 getTime32();

@@ -67,7 +67,8 @@ private:
     //    int incLS;
     int m_signalCounter, m_noAnswer;
     bool m_isFileSending;
-    bool m_fileIsConfigFile; // flag indicates that S2::RestoreData should be executed upon file received
+    // flag indicates how file should be restored
+    Queries::FileFormat m_fileIsConfigFile;
     QByteArray m_file;
     QList<QByteArray> m_parseData;
     //    quint32 ReadDataSize;
@@ -119,7 +120,7 @@ private:
     void Com51WriteTime(quint32 time);
     //    void convert(IEC104Thread::SponSignals *signal);
     void setGeneralResponse(DataTypes::GeneralResponseTypes type, quint64 data = 0);
-    bool handleFile(QByteArray &ba, DataTypes::FilesEnum addr, bool isConfigFile);
+    bool handleFile(QByteArray &ba, DataTypes::FilesEnum addr, Queries::FileFormat format);
 private slots:
     void SendTestAct();
 

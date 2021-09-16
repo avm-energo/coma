@@ -1,24 +1,17 @@
-#include "../gen/stdfunc.h"
+#include "swjdialog.h"
 
-#include <QPushButton>
-#include <QVBoxLayout>
-//#if PROGSIZE != PROGSIZE_EMUL
-//#include "../gen/commands.h"
-//#endif
-#include "../gen/colors.h"
 #include "../gen/error.h"
 #include "../gen/files.h"
+#include "../gen/modules.h"
 #include "../gen/timefunc.h"
 #include "../widgets/wd_func.h"
-#include "QMessageBox"
-#include "parseid9050.h"
-#include "swjdialog.h"
-#include "trendviewmodel.h"
+#include "eoscillogram.h"
+#include "trendviewdialog.h"
 
 SWJDialog::SWJDialog(EOscillogram *osc, int mode, QWidget *parent) : QDialog(parent)
 {
     Mode = mode;
-    //    SWJOscFunc = new EOscillogram(this);
+
     SWJOscFunc = osc;
 }
 
@@ -278,7 +271,7 @@ void SWJDialog::GetSwjOscData()
 
     switch (mdl->idOsc)
     {
-    case MT_ID85:
+    case AVTUK_85::OSC_ID:
     {
 
         m_trendViewDialog->setAnalogNames(mdl->tmpav_85);
@@ -290,7 +283,7 @@ void SWJDialog::GetSwjOscData()
         m_trendViewDialog->setRange(mdl->xmin, mdl->xmax, -200, 200);
         break;
     }
-    case MT_ID80:
+    case AVTUK_8X::OSC_ID:
     {
         mdl->tmpdv_80.clear();
         m_trendViewDialog->setAnalogNames(mdl->tmpav_80);
@@ -301,7 +294,7 @@ void SWJDialog::GetSwjOscData()
         break;
     }
 
-    case MT_ID21:
+    case AVTUK_21::OSC_ID_MIN:
     {
         // период отсчётов - 20 мс, длительность записи осциллограммы 10 сек, итого 500 точек по 4 байта на каждую
         mdl->tmpav_21 << QString::number(mdl->idOsc); // пока сделано для одного канала в осциллограмме

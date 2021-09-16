@@ -1,18 +1,15 @@
 #include "eoscillogram.h"
 
-#include "../gen/colors.h"
 #include "../gen/datatypes.h"
 #include "../gen/error.h"
+#include "../gen/modules.h"
 #include "../gen/timefunc.h"
 #include "parseid10031.h"
 #include "parseid9000.h"
 #include "parseid9050.h"
-#include "parsemodule.h"
-#include "trendviewdialog.h"
-//#include "xlsxdocument.h"
-#include <QVector>
+
+#include <QDebug>
 #include <QXlsx/xlsxdocument.h>
-#include <cstring>
 
 EOscillogram::EOscillogram(QObject *parent) : QObject(parent)
 {
@@ -239,10 +236,10 @@ void EOscillogram::SaveToComtrade()
 {
 }
 
-// void EOscillogram::SetFilename(const QString &fn)
-//{
-//    Filename = fn;
-//}
+/* void EOscillogram::SetFilename(const QString &fn)
+{
+    Filename = fn;
+}*/
 
 bool EOscillogram::PosPlusPlus(void *dst, int size)
 {
@@ -290,12 +287,12 @@ bool EOscillogram::ProcessOsc(TrendViewModel *mdl)
             // PM = new ParseID9000(BA);
             break;
 
-        case MT_HEAD87:
+        case AVTUK_87::OSC_SPC_ID:
             parseModule = std::unique_ptr<ParseModule>(new ParseID9050(BA));
             // PM = new ParseID9050(BA);
             break;
 
-        case SWJ_ID85:
+        case AVTUK_85::SWJ_ID:
         {
             memcpy(&SWJRecord, &(BA.data()[Pos]), sizeof(S2DataTypes::SwitchJourRecord));
             if (DR.numByte == sizeof(S2DataTypes::SwitchJourRecord))

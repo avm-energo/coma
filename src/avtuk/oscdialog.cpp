@@ -1,23 +1,13 @@
 #include "oscdialog.h"
 
 #include "../gen/datamanager.h"
-#include "../gen/error.h"
 #include "../gen/files.h"
-#include "../gen/stdfunc.h"
 #include "../gen/timefunc.h"
+#include "../models/etablemodel.h"
 #include "../widgets/etableview.h"
 #include "../widgets/wd_func.h"
-#include "QMessageBox"
 #include "pushbuttondelegate.h"
 
-#include <QApplication>
-#include <QDateTime>
-#include <QFileDialog>
-#include <QLabel>
-#include <QMessageBox>
-#include <QPushButton>
-#include <QVBoxLayout>
-#include <QWidget>
 constexpr int MT_FT_XLSX = 0x01;
 constexpr int MT_FT_COMTRADE = 0x02;
 constexpr int MT_FT_NONE = 0x04;
@@ -47,7 +37,7 @@ void OscDialog::SetupUI()
     tv->setMouseTracking(true);
     PushButtonDelegate *dg = new PushButtonDelegate(tv);
     connect(dg, &PushButtonDelegate::clicked, this, &OscDialog::GetOsc);
-    tv->setItemDelegateForColumn(4, dg); // устанавливаем делегата (кнопки "Скачать") для соотв. столбца
+    tv->setItemDelegateForColumn(Column::download, dg); // устанавливаем делегата (кнопки "Скачать") для соотв. столбца
 
     auto *getButton = WDFunc::NewPB(this, "", "Получить данные по осциллограммам ", this, [=] {
         counter = 0;
@@ -89,14 +79,14 @@ void OscDialog::EraseOsc()
         BaseInterface::iface()->writeCommand(Queries::QC_EraseTechBlock, 1);
 }
 
-void OscDialog::fillOscInfo(DataTypes::OscInfo info)
+void OscDialog::fillOscInfo(S2DataTypes::OscInfo info)
 {
     counter++;
     QVector<QVariant> lsl {
-        QString::number(info.fileNum),               //
+        QString::number(info.typeHeader.id),         //
         TimeFunc::UnixTime64ToString(info.unixtime), //
-        info.id,                                     //
-        info.fileLength,                             //
+        info.idOsc0,                                 //
+        info.typeHeader.numByte,                     //
         "Скачать",
     };
 

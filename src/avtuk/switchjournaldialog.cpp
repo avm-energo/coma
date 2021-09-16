@@ -1,23 +1,19 @@
 #include "switchjournaldialog.h"
 
 #include "../gen/datamanager.h"
-#include "../gen/error.h"
-#include "../gen/stdfunc.h"
 #include "../gen/timefunc.h"
+#include "../models/etablemodel.h"
 #include "../widgets/wd_func.h"
 #include "pushbuttondelegate.h"
-#include "trendviewdialog.h"
+#include "swjdialog.h"
 
-#include <QHeaderView>
-#include <QMessageBox>
-#include <QPushButton>
-#include <QVBoxLayout>
 constexpr int MAXSWJNUM = 262144;
 
 constexpr unsigned char TECH_SWJ = 0x04;
 
 SwitchJournalDialog::SwitchJournalDialog(EOscillogram *osc, QWidget *parent) : UDialog(parent)
 {
+
     setAttribute(Qt::WA_DeleteOnClose);
     SetupUI();
     SWJDOscFunc = osc;
@@ -63,40 +59,27 @@ void SwitchJournalDialog::SetupUI()
 void SwitchJournalDialog::processSWJournal(QByteArray &ba)
 {
     S2DataTypes::SwitchJourInfo tmpswj;
-    int SWJRecordSize = sizeof(S2DataTypes::SwitchJourInfo);
-    int BaSize = ba.size();
-    int BaPos = 0;
-    int CurRow = 1;
+    auto SWJRecordSize = sizeof(S2DataTypes::SwitchJourInfo);
+    size_t BaSize = ba.size();
+    size_t BaPos = 0;
+    size_t CurRow = 1;
     SWJMap.clear();
     while ((BaPos + SWJRecordSize) <= BaSize)
     {
-        size_t tmpt = static_cast<size_t>(SWJRecordSize);
-        memcpy(&tmpswj, &(ba.data()[BaPos]), tmpt);
-        int tmpi = static_cast<int>(tmpswj.num);
-        if ((tmpswj.num != 0) && (!SWJMap.contains(tmpi))) // пропуск пустых записей
+        memcpy(&tmpswj, &(ba.data()[BaPos]), SWJRecordSize);
+        const auto recordNum = tmpswj.num;
+        if ((tmpswj.num != 0) && (!SWJMap.contains(recordNum))) // пропуск пустых записей
         {
-            SWJMap[tmpi] = tmpswj;
-            TableModel->addRow();
-            TableModel->setData(
-                TableModel->index(CurRow, Column::number, QModelIndex()), QVariant(tmpswj.fileNum), Qt::EditRole);
-            TableModel->setData(
-                TableModel->index(CurRow, Column::switchNumber, QModelIndex()), QVariant(tmpswj.num), Qt::EditRole);
-            TableModel->setData(TableModel->index(CurRow, Column::datetime, QModelIndex()),
-                QVariant(TimeFunc::UnixTime64ToString(tmpswj.time)), Qt::EditRole);
-            QStringList tmpsl { "D", "G", "CB" };
-            QString tmps = (tmpswj.typeA < tmpsl.size()) ? tmpsl.at(tmpswj.typeA) : "N/A";
-            tmps += QString::number(tmpswj.numA);
-            TableModel->setData(TableModel->index(CurRow, Column::id, QModelIndex()), QVariant(tmps), Qt::EditRole);
-            tmps = (tmpswj.options & 0x00000001) ? "ВКЛ" : "ОТКЛ";
-            TableModel->setData(
-                TableModel->index(CurRow, Column::switchType, QModelIndex()), QVariant(tmps), Qt::EditRole);
-            if (SWJMap.contains(tmpswj.time))
-                tmps = ":/icons/osc.svg";
-            else
-                tmps = ":/icons/hr.png";
-            TableModel->setData(
-                TableModel->index(CurRow, Column::download, QModelIndex()), QVariant(QIcon(tmps)), Qt::DecorationRole);
-            TableModel->setData(TableModel->index(CurRow, 6, QModelIndex()), QVariant("Далее"), Qt::EditRole);
+            SWJMap.insert(recordNum, tmpswj);
+            QString craftType = (tmpswj.typeA < craftTypeList.size()) ? craftTypeList.at(tmpswj.typeA) : "N/A";
+            craftType += QString::number(tmpswj.numA);
+            QVector<QVariant> lsl { QVariant(tmpswj.fileNum),   //
+                tmpswj.num,                                     //
+                TimeFunc::UnixTime64ToString(tmpswj.time),      //
+                craftType,                                      //
+                (tmpswj.options & 0x00000001) ? "ВКЛ" : "ОТКЛ", //
+                "Скачать" };
+            TableModel->addRowWithData(lsl);
             ++CurRow;
         }
         BaPos += SWJRecordSize;
@@ -112,7 +95,7 @@ void SwitchJournalDialog::processOscillograms()
 {
     QByteArray OscInfo;
     int OscInfoSize; // размер считанного буфера с информацией об осциллограммах
-    int RecordSize = sizeof(DataTypes::OscInfo); // GBo struct size
+    int RecordSize = sizeof(S2DataTypes::OscInfo); // GBo struct size
     OscInfoSize = MAXOSCBUFSIZE;
     OscInfo.resize(OscInfoSize);
     //  if ((Commands::GetBt(TECH_Bo, &(OscInfo.data()[0]), OscInfoSize)) != Error::ER_NOERROR)
@@ -122,7 +105,7 @@ void SwitchJournalDialog::processOscillograms()
     //  }
     for (int i = 0; i < OscInfoSize; i += RecordSize)
     {
-        DataTypes::OscInfo gbos;
+        S2DataTypes::OscInfo gbos;
         size_t tmpt = static_cast<size_t>(RecordSize);
         memcpy(&gbos, &(OscInfo.data()[i]), tmpt);
         OscMap[gbos.unixtime] = gbos;
@@ -131,6 +114,12 @@ void SwitchJournalDialog::processOscillograms()
 
 void SwitchJournalDialog::FillJour(const DataTypes::FileStruct &fs)
 {
+    if (!updatesEnabled())
+        return;
+    SWJDialog *dlg = new SWJDialog(SWJDOscFunc);
+    dlg->setModal(false);
+    dlg->Init(SWJMap.value(reqSwJNum));
+    dlg->show();
 }
 
 void SwitchJournalDialog::fillSwJInfo(S2DataTypes::SwitchJourInfo swjInfo)
@@ -140,9 +129,10 @@ void SwitchJournalDialog::fillSwJInfo(S2DataTypes::SwitchJourInfo swjInfo)
     if (SWJMap.contains(swjInfo.num))
         return;
 
+    SWJMap.insert(swjInfo.num, swjInfo);
     QString craftType = (swjInfo.typeA < craftTypeList.size()) ? craftTypeList.at(swjInfo.typeA) : "N/A";
     craftType += QString::number(swjInfo.numA);
-    SWJMap.insert(swjInfo.num, swjInfo);
+
     QVector<QVariant> lsl { QVariant(swjInfo.fileNum),   //
         swjInfo.num,                                     //
         TimeFunc::UnixTime64ToString(swjInfo.time),      //

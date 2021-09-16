@@ -46,7 +46,7 @@ public:
     {
         qDebug() << st;
     }
-    void print(const DataTypes::OscInfo &st)
+    void print(const S2DataTypes::OscInfo &st)
     {
         qDebug() << st;
     }
