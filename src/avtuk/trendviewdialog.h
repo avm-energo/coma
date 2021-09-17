@@ -34,7 +34,7 @@ public:
         QCPGraph *graph;
         bool isVisible;
     };
-    TrendViewDialog(QByteArray &ba, QWidget *parent = nullptr);
+    TrendViewDialog(const QByteArray &ba, QWidget *parent = nullptr);
     TrendViewDialog(QWidget *parent = nullptr);
     ~TrendViewDialog();
 
@@ -73,7 +73,7 @@ private:
     // should we rescale upper and lower ranges automatically to let the zero not moving
     bool digitalRescaleActivated, analogRescaleActivated;
 
-    QByteArray m_arrayToSave;
+    const QByteArray m_arrayToSave;
 
     QToolBar *createToolBar(SignalTypes type);
     void changeRange(QCPRange range);

@@ -7,7 +7,7 @@
 class ParseID9050 : public ParseModule
 {
 public:
-    ParseID9050(QByteArray &BA);
+    ParseID9050(const QByteArray &BA);
 
     QMultiMap<QString, int> Channel;
 
@@ -33,6 +33,10 @@ public:
         int &count);
     bool ParseSpectr(
         quint32 id, SpectHeader_Data &SHD, const QString &fn, QStringList tmpav, TrendViewDialog *dlg, int &count);
+    bool Parse(quint32 id, S2DataTypes::OscHeader &header, TrendViewModel *model) override
+    {
+        return true;
+    }
 };
 
 #endif // PARSEID9050_H

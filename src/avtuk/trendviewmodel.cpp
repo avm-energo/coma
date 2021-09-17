@@ -3,7 +3,7 @@
 TrendViewModel::TrendViewModel(const QStringList &dlist, const QStringList &alist, int pointsnum)
 
 {
-    this->PointsNum = pointsnum;
+    PointsNum = pointsnum;
     DigitalNames = dlist;
     AnalogNames = alist;
     for (int i = 0; i < dlist.size(); ++i)
@@ -66,4 +66,18 @@ int TrendViewModel::AContains(const QString &key)
 void TrendViewModel::SaveID(quint32 id)
 {
     idOsc = id;
+}
+
+void TrendViewModel::processDigitalNames(const QStringList &list)
+{
+    DigitalNames = list;
+    for (auto &&item : list)
+        DigitalMainData.insert(item, QVector<double>());
+}
+
+void TrendViewModel::processAnalogNames(const QStringList &list)
+{
+    AnalogNames = list;
+    for (auto &&item : list)
+        AnalogMainData.insert(item, QVector<double>());
 }

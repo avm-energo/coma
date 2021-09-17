@@ -101,7 +101,11 @@ void OscDialog::fillOsc(const DataTypes::FileStruct file)
     quint16 minFileNum = quint16(DataTypes::FilesEnum::FileOscMin);
     quint16 maxFileNum = quint16(DataTypes::FilesEnum::FileOscMax);
 
-    if ((curFileNum < minFileNum) || (curFileNum > maxFileNum))
+    // if ((curFileNum < minFileNum) || (curFileNum > maxFileNum))
+    //      return;
+    if ((file.filenum == 9000) || (file.filenum == 10031))
         return;
+    OscManager oscManager;
+    oscManager.load(file);
     manager.loadOsc(file.filedata);
 }

@@ -7,41 +7,16 @@
 class ParseID9000 : public ParseModule
 {
 public:
-    ParseID9000(QByteArray &BA);
-
-    struct Point85
-    {
-        float An[9]; // Ua,Ub,Uc (напряжение источника), Ia, Ib, Ic (ток ВВ), Ua,Ub,Uc (напряжение нагрузки)
-        quint32 Dis;
-    };
-    // Dis:
-    // 31-29:	nOx – НО блок-контакты полюсов А, В, С (нефильтр.)
-    // 28-26:	nCx – НЗ блок-контакты полюсов А, В, С (нефильтр.)
-    // 25-23:	nFx – оперативное управление отключением полюсов А, В, С (нефильтр.)
-    // 22-20:	nNx – оперативное управление включением полюсов А, В, С (нефильтр.)
-    // 19-17:	CFx – выходные команды на отключение полюсов А, В, С
-    // 16-14:	CNx – выходные команды на включение полюсов А, В, С
-    // 13:      CSC – контроль цепи соленоида отключения
-    // 12:      CSO – контроль цепи соленоида включения
-    // 11-9:	BKOx – НО блок-контакты полюсов А, В, С
-    // 8-6:     BKCx – НЗ блок-контакты полюсов А, В, С
-    // 5-3:     OCFx – оперативное управление отключением полюсов А, В, С
-    // 2-0:     OCNx – оперативное управление включением полюсов А, В, С
-
-    struct Point21
-    {
-        float An;
-    };
-
-    struct Point8x
-    {
-        float An[6];
-    };
+    ParseID9000(const QByteArray &BA);
 
     bool Parse(int &count);
-    bool ParseID21(quint32 id, S2DataTypes::OscHeader &OHD, const QString &fn, int &count);
-    bool ParseID8x(quint32 id, S2DataTypes::OscHeader &OHD, const QString &fn, TrendViewDialog *dlg, int &count);
-    bool ParseID85(quint32 id, S2DataTypes::OscHeader &OHD, const QString &fn, TrendViewDialog *dlg, int &count);
+    bool ParseID21(quint32 id, S2DataTypes::OscHeader &OHD, int &count);
+    bool ParseID8x(quint32 id, S2DataTypes::OscHeader &OHD, TrendViewDialog *dlg, int &count);
+    bool ParseID85(quint32 id, S2DataTypes::OscHeader &OHD, TrendViewDialog *dlg, int &count);
+    bool Parse(quint32 id, S2DataTypes::OscHeader &header, TrendViewModel *model) override
+    {
+        return true;
+    }
 };
 
 #endif // PARSEID9000_H

@@ -3,11 +3,18 @@
 #include "../gen/files.h"
 #include "../gen/modules.h"
 #include "../gen/s2.h"
+#include "../gen/std_ext.h"
 #include "../gen/timefunc.h"
 #include "../widgets/wd_func.h"
 #include "eoscillogram.h"
+#include "parseid10001.h"
+#include "parseid10020.h"
+#include "parseid10030.h"
+#include "parseid10031.h"
+#include "parseid9000.h"
+#include "parseid9050.h"
 #include "swjdialog.h"
-OscManager::OscManager(QObject *parent) : QObject(parent)
+OscManager::OscManager(const QByteArray &ba) : FileManager(ba)
 {
 }
 
@@ -97,6 +104,87 @@ void OscManager::loadOsc(const QByteArray &buffer)
     trendDialog->show();
 }
 
+QVariant OscManager::load(const DataTypes::FileStruct &fs)
+{
+    // ##TODO
+
+    quint16 curFileNum = std_ext::to_underlying(fs.filenum);
+    quint16 minFileNum = std_ext::to_underlying(DataTypes::FilesEnum::FileOscMin);
+    quint16 maxFileNum = std_ext::to_underlying(DataTypes::FilesEnum::FileOscMax);
+
+    constexpr size_t minSize = sizeof(S2DataTypes::OscHeader) + sizeof(S2DataTypes::DataRecHeader);
+    if (fs.filedata.size() <= minSize)
+    {
+        qCritical() << Error::SizeError;
+        return {};
+    }
+    S2DataTypes::OscHeader oscHeader;
+    size_t position = 0;
+    memcpy(&oscHeader, &fs.filedata.data()[position], sizeof(S2DataTypes::OscHeader));
+    position += sizeof(S2DataTypes::OscHeader);
+
+    S2DataTypes::DataRecHeader dataHeader;
+    memcpy(&dataHeader, &fs.filedata.data()[position], sizeof(S2DataTypes::DataRecHeader));
+    position += sizeof(S2DataTypes::DataRecHeader);
+
+    auto filename = generateFilename(dataHeader.id, oscHeader.time);
+
+    auto trendViewModel = std::make_unique<TrendViewModel>(oscHeader.len);
+
+    {
+        trendViewModel->SetFilename(filename);
+        trendViewModel->SaveID(dataHeader.id);
+        trendViewModel->Len = oscHeader.len;
+        trendViewModel->xmax = oscHeader.len / 2;
+        trendViewModel->xmin = -trendViewModel->xmax;
+    }
+
+    std::unique_ptr<ParseModule> parseModule;
+    switch (curFileNum)
+    {
+    case AVTUK_85::OSC_ID:
+    {
+        parseModule = std::make_unique<ParseID10030>(fs.filedata);
+        break;
+    }
+    case AVTUK_8X::OSC_ID:
+    {
+        parseModule = std::make_unique<ParseID10020>(fs.filedata);
+        break;
+    }
+    case AVTUK_21::OSC_ID_MIN:
+    case 10002:
+    case 10003:
+    case 10004:
+    case 10005:
+    case 10006:
+    case 10007:
+    case 10008:
+    case 10009:
+    case 10010:
+    case 10011:
+    case 10012:
+    case 10013:
+    case 10014:
+    case 10015:
+    case AVTUK_21::OSC_ID_MAX:
+
+    {
+        parseModule = std::make_unique<ParseID10001>(fs.filedata);
+        break;
+    }
+
+    default:
+        return {};
+    }
+    int i = 0;
+    if (!parseModule->Parse(curFileNum, oscHeader, trendViewModel.get()))
+        return false;
+
+    auto model = *(parseModule->trendViewModel());
+    return {};
+}
+
 void OscManager::loadSwjFromFile(const QString &filename)
 {
 
@@ -133,9 +221,9 @@ void OscManager::loadSwjFromFile(const QString &filename)
     QVBoxLayout *vlyout = new QVBoxLayout;
     QGridLayout *glyout = new QGridLayout;
 
-    EOscillogram *OscFunc = new EOscillogram(this);
+    auto OscFunc = std::make_unique<EOscillogram>();
     OscFunc->BA = buffer;
-    SWJDialog *swjDialog = new SWJDialog(OscFunc, SWJDialog::SWJ_MODE_OFFLINE);
+    SWJDialog *swjDialog = new SWJDialog(std::move(OscFunc), SWJDialog::SWJ_MODE_OFFLINE);
     swjDialog->GetSwjOscData();
     glyout->addWidget(new QLabel("Номер", swjDialog), 0, 0, 1, 1);
     glyout->addWidget(new QLabel("Дата, время", swjDialog), 0, 1, 1, 1);
@@ -208,7 +296,7 @@ void OscManager::loadSwjFromFile(const QString &filename)
         glyout->addWidget(new QLabel("Осциллограмма:", swjDialog), 8, 0, 1, 4);
         QPushButton *pb = new QPushButton("Открыть осциллограмму", swjDialog);
         pb->setIcon(QIcon(":/icons/osc.svg"));
-        connect(pb, &QPushButton::clicked, this, [swjDialog] {
+        QObject::connect(pb, &QPushButton::clicked, swjDialog, [&] {
             swjDialog->trendViewDialog()->showPlot();
             swjDialog->trendViewDialog()->show();
         });
@@ -320,4 +408,15 @@ void OscManager::loadSwjFromFile(const QString &filename)
 
     swjDialog->setLayout(vlyout);
     swjDialog->show();
+}
+
+QString OscManager::generateFilename(quint32 id, quint64 timestamp)
+{
+    // составляем имя файла осциллограммы
+    QString filename = TimeFunc::UnixTime64ToString(timestamp);
+    filename.replace("/", "-");
+    filename.replace(":", "_");
+    filename.insert(0, "_");
+    filename.insert(0, QString::number(id));
+    return filename;
 }

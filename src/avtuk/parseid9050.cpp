@@ -5,7 +5,7 @@
 #include "../gen/timefunc.h"
 #include "trendviewdialog.h"
 
-ParseID9050::ParseID9050(QByteArray &BA) : ParseModule(BA)
+ParseID9050::ParseID9050(const QByteArray &BA) : ParseModule(BA)
 {
     Channel.insert("Channel_0", ID_OSC_CH0);
     Channel.insert("Channel_0", ID_SPECTR_CH0);

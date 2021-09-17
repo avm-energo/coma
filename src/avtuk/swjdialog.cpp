@@ -8,16 +8,16 @@
 #include "eoscillogram.h"
 #include "trendviewdialog.h"
 
-SWJDialog::SWJDialog(EOscillogram *osc, int mode, QWidget *parent) : QDialog(parent)
+SWJDialog::SWJDialog(std::unique_ptr<EOscillogram> osc, int mode, QWidget *parent) : QDialog(parent)
 {
     Mode = mode;
 
-    SWJOscFunc = osc;
+    SWJOscFunc = std::move(osc);
 }
 
 void SWJDialog::Init(S2DataTypes::SwitchJourInfo swj)
 {
-    SWJInf = swj;
+
     QVBoxLayout *vlyout = new QVBoxLayout;
     QGridLayout *glyout = new QGridLayout;
 
@@ -88,7 +88,7 @@ void SWJDialog::Init(S2DataTypes::SwitchJourInfo swj)
     else
         glyout->addWidget(WDFunc::NewLBLT2(this, QString::number(SWJOscFunc->SWJRecord.tOutside)), 7, 4, 1, 1);
 
-    if (SWJInf.fileLength)
+    if (swj.fileLength)
     {
         glyout->addWidget(WDFunc::NewLBL2(this, "Осциллограмма:"), 8, 0, 1, 4);
         QPushButton *pb = new QPushButton("Открыть осциллограмму");

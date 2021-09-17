@@ -1,7 +1,11 @@
 find_package(
   QT NAMES Qt6 Qt5
-  COMPONENTS Core Xml Widgets
-  REQUIRED)
+  COMPONENTS Core Widgets Sql Network Xml Svg Qml PrintSupport Script UiTools
+  )
+find_package(
+  Qt${QT_VERSION_MAJOR}
+  COMPONENTS Core Widgets Sql Network Xml Svg Qml PrintSupport Script UiTools
+  )
 
 set(LIMEREPORT_SRC_DIR ${CMAKE_SOURCE_DIR}/../include/LimeReport)
 message(STATUS "LimeReport directory: " ${LIMEREPORT_SRC_DIR})
@@ -38,7 +42,8 @@ ExternalProject_Add(
   SOURCE_DIR ${LIMEREPORT_SRC_DIR}
   CONFIGURE_COMMAND
     ${CMAKE_COMMAND} ${CUSTOM_TARGET_GENERATOR} ${CUSTOM_TARGET_PLATFORM_ARG} -S ${LIMEREPORT_SRC_DIR}
-    -DQt${QT_VERSION_MAJOR}_DIR:STRING=${QT_DIR}
+    -DQT${QT_VERSION_MAJOR}_DIR:STRING=${QT_DIR}
+    -DQT_DIR:STRING=${QT_DIR}
     -DQT_QMAKE_EXECUTABLE:STRING=${QT_QMAKE_EXECUTABLE}
     -DCMAKE_PREFIX_PATH:STRING=${CMAKE_PREFIX_PATH}
     -DCMAKE_BUILD_TYPE:String=Release

@@ -42,15 +42,15 @@
 #include <QVector>
 #include <algorithm>
 
-TrendViewDialog::TrendViewDialog(QByteArray &ba, QWidget *parent) : QDialog(parent)
+TrendViewDialog::TrendViewDialog(const QByteArray &ba, QWidget *parent)
+    : QDialog(parent)
+    , rangeChangeInProgress(false)
+    , starting(true)
+    , rangeAxisInProgress(false)
+    , digitalRescaleActivated(false)
+    , analogRescaleActivated(false)
+    , m_arrayToSave(ba)
 {
-
-    rangeChangeInProgress = false;
-    rangeAxisInProgress = false;
-    starting = true;
-    m_arrayToSave = ba;
-    analogRescaleActivated = false;
-    digitalRescaleActivated = false;
 }
 
 TrendViewDialog::TrendViewDialog(QWidget *parent)
@@ -460,7 +460,8 @@ QByteArray TrendViewDialog::arrayToSave() const
 
 void TrendViewDialog::setArrayToSave(const QByteArray &arrayToSave)
 {
-    m_arrayToSave = arrayToSave;
+    auto ba_ptr = const_cast<QByteArray *>(&m_arrayToSave);
+    *ba_ptr = arrayToSave;
 }
 
 void TrendViewDialog::setDigitalColors(const QStringList &colors)

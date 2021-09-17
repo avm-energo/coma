@@ -11,12 +11,12 @@ constexpr int MAXSWJNUM = 262144;
 
 constexpr unsigned char TECH_SWJ = 0x04;
 
-SwitchJournalDialog::SwitchJournalDialog(EOscillogram *osc, QWidget *parent) : UDialog(parent)
+SwitchJournalDialog::SwitchJournalDialog(std::unique_ptr<EOscillogram> osc, QWidget *parent) : UDialog(parent)
 {
 
     setAttribute(Qt::WA_DeleteOnClose);
     SetupUI();
-    SWJDOscFunc = osc;
+    SWJDOscFunc = std::move(osc);
 }
 
 SwitchJournalDialog::SwitchJournalDialog(QWidget *parent) : UDialog(parent)
@@ -112,7 +112,7 @@ void SwitchJournalDialog::FillJour(const DataTypes::FileStruct &fs)
 {
     if (!updatesEnabled())
         return;
-    SWJDialog *dlg = new SWJDialog(SWJDOscFunc);
+    SWJDialog *dlg = new SWJDialog(std::move(SWJDOscFunc));
     dlg->setModal(false);
     dlg->Init(SWJMap.value(reqSwJNum));
     dlg->show();
@@ -201,7 +201,7 @@ void SwitchJournalDialog::showJournal(QModelIndex idx)
 
     if (swjr.fileNum)
     {
-        SWJDialog *dlg = new SWJDialog(SWJDOscFunc);
+        SWJDialog *dlg = new SWJDialog(std::move(SWJDOscFunc));
         dlg->setModal(false);
         dlg->Init(swjr);
         dlg->show();

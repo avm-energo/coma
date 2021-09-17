@@ -113,7 +113,7 @@ Coma::Coma(QWidget *parent) : QMainWindow(parent)
     LoadSettings();
     splash->deleteLater();
     setStatusBar(WDFunc::NewSB(this));
-    oscManager = new OscManager(this);
+    oscManager = new OscManager;
 }
 
 Coma::~Coma()

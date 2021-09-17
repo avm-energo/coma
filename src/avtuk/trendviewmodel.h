@@ -9,6 +9,7 @@ class TrendViewModel
 {
 public:
     TrendViewModel(const QStringList &dlist, const QStringList &alist, int pointsnum);
+    TrendViewModel(int pointsnum) : PointsNum(pointsnum) {};
     TrendViewModel() = default;
     ~TrendViewModel() = default;
 
@@ -24,6 +25,10 @@ public:
     int DContains(const QString &key);
     int AContains(const QString &key);
     void SaveID(quint32 id);
+
+    void processDigitalNames(const QStringList &list);
+    void processAnalogNames(const QStringList &list);
+
     quint32 idOsc;
     float xmax, xmin;
     quint32 Len;

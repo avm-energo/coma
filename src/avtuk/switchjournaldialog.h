@@ -24,7 +24,7 @@ class SwitchJournalDialog : public UDialog
     };
 
 public:
-    SwitchJournalDialog(EOscillogram *osc, QWidget *parent = nullptr);
+    SwitchJournalDialog(std::unique_ptr<EOscillogram> osc, QWidget *parent = nullptr);
     explicit SwitchJournalDialog(QWidget *parent = nullptr);
 
 private:
@@ -33,7 +33,7 @@ private:
     ETableView *SwjTableView;
     QMap<quint64, S2DataTypes::OscInfo> OscMap;
     QMap<int, S2DataTypes::SwitchJourInfo> SWJMap;
-    EOscillogram *SWJDOscFunc;
+    std::unique_ptr<EOscillogram> SWJDOscFunc;
 
     void SetupUI();
     void processSWJournal(QByteArray &ba);

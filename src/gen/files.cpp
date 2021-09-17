@@ -48,7 +48,7 @@ Error::Msg Files::LoadFromFile(const QString &filename, QByteArray &ba)
     return Error::Msg::NoError;
 }
 
-Error::Msg Files::SaveToFile(const QString &filename, QByteArray &src)
+Error::Msg Files::SaveToFile(const QString &filename, const QByteArray &src)
 {
     if (filename.isEmpty())
         return Error::Msg::NoError; // Пустое имя файла

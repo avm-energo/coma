@@ -2,10 +2,10 @@
 #define SWJDIALOG_H
 
 #include "../gen/datatypes.h"
+#include "eoscillogram.h"
 
 #include <QDialog>
 
-class EOscillogram;
 class TrendViewDialog;
 
 class SWJDialog : public QDialog
@@ -18,7 +18,7 @@ public:
         SWJ_MODE_ONLINE
     };
 
-    SWJDialog(EOscillogram *osc, int mode = SWJ_MODE_ONLINE, QWidget *parent = nullptr);
+    SWJDialog(std::unique_ptr<EOscillogram> osc, int mode = SWJ_MODE_ONLINE, QWidget *parent = nullptr);
     void Init(S2DataTypes::SwitchJourInfo swj);
     void LoadOsc(QByteArray &ba); // для оффлайн режима
 
@@ -32,10 +32,8 @@ public slots:
     void ShowOsc();
 #endif
 private:
-    S2DataTypes::SwitchJourInfo SWJInf;
-
     S2DataTypes::DataRecSwitchJour SwRec;
-    EOscillogram *SWJOscFunc;
+    std::unique_ptr<EOscillogram> SWJOscFunc;
     bool Mode;
     TrendViewDialog *m_trendViewDialog;
 };
