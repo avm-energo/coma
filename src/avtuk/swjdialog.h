@@ -3,6 +3,8 @@
 
 #include "../gen/datatypes.h"
 #include "eoscillogram.h"
+#include "oscmanager.h"
+#include "swjmanager.h"
 
 #include <QDialog>
 
@@ -32,6 +34,9 @@ public slots:
     void ShowOsc();
 #endif
 private:
+    OscManager oscManager;
+    SwjManager swjManager;
+
     S2DataTypes::DataRecSwitchJour SwRec;
     std::unique_ptr<EOscillogram> SWJOscFunc;
     bool Mode;

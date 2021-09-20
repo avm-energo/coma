@@ -18,12 +18,7 @@ public:
     FileManager(const QByteArray &ba) : buffer(ba)
     {
     }
-    QVariant load(const QByteArray &ba)
-    {
-        return {};
-    };
 
-    [[nodiscard]] std::unique_ptr<TrendViewModel> virtual load(const OscHeader &header, const FileStruct &fs) = 0;
     template <typename S2Type> [[nodiscard]] S2Type loadCommon(const FileStruct &fs) const
     {
         static_assert(false, "Unsupported type");
