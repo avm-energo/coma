@@ -15,12 +15,22 @@ find_package(
 
 add_library(
   ${PROJECT_NAME} STATIC
+  filemanager.cpp
+  filemanager.h
+  swjmanager.cpp
+  swjmanager.h
   eoscillogram.cpp
   eoscillogram.h
   oscdialog.cpp
   oscdialog.h
   oscmanager.cpp
   oscmanager.h
+  parseid10001.cpp
+  parseid10001.h
+  parseid10020.cpp
+  parseid10020.h
+  parseid10030.h
+  parseid10030.cpp
   parseid10031.cpp
   parseid10031.h
   parseid9000.cpp

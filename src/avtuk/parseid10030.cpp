@@ -9,7 +9,7 @@ bool ParseID10030::Parse(int &count)
     return true;
 }
 
-bool ParseID10030::Parse(quint32 id, S2DataTypes::OscHeader &header, TrendViewModel *model)
+bool ParseID10030::Parse(quint32 id, const S2DataTypes::OscHeader &header, TrendViewModel *model)
 {
     const QStringList digitalValues { "OCNA", "OCNB", "OCNC", "OCFA", "OCFB", "OCFC", "BKCA", "BKCB", "BKCC", "BKOA",
         "BKOB", "BKOC", "CSC", "CSO", "CNA", "CNB", "CNC", "CFA", "CFB", "CFC" };
@@ -44,4 +44,5 @@ bool ParseID10030::Parse(quint32 id, S2DataTypes::OscHeader &header, TrendViewMo
         for (int i = 0; i < model->tmpav_85.size(); ++i)
             model->AddAnalogPoint(model->tmpav_85.at(i), point.An[i]);
     }
+    return true;
 }

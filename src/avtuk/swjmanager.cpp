@@ -4,7 +4,7 @@ SwjManager::SwjManager(const QByteArray &ba) : FileManager(ba)
 {
 }
 
-QVariant SwjManager::load(const DataTypes::FileStruct &fs)
+std::unique_ptr<TrendViewModel> SwjManager::load(const S2DataTypes::OscHeader &header, const DataTypes::FileStruct &fs)
 {
     return {};
 }

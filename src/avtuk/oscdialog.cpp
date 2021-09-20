@@ -103,9 +103,26 @@ void OscDialog::fillOsc(const DataTypes::FileStruct file)
 
     // if ((curFileNum < minFileNum) || (curFileNum > maxFileNum))
     //      return;
-    if ((file.filenum == 9000) || (file.filenum == 10031))
-        return;
-    OscManager oscManager;
-    oscManager.load(file);
-    manager.loadOsc(file.filedata);
+    //   if ((file.filenum == 9000) || (file.filenum == 10031))
+    //     return;
+    switch (std_ext::to_underlying(file.filenum))
+    {
+    case 9000:
+    {
+        // FileManager manager;
+        oscHeader = manager.loadCommon<S2DataTypes::OscHeader>(file);
+        break;
+    }
+    case 10031:
+    {
+        break;
+    }
+    default:
+    {
+        assert(oscHeader.has_value());
+        //  OscManager oscManager;
+        auto model = manager.load(oscHeader.value(), file);
+        manager.loadOsc(std::move(model));
+    }
+    }
 }

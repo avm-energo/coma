@@ -20,59 +20,47 @@ OscManager::OscManager(const QByteArray &ba) : FileManager(ba)
 
 void OscManager::loadOscFromFile(const QString &filename)
 {
-
     QByteArray buffer = 0;
     if (Files::LoadFromFile(filename, buffer) != Error::NoError)
         return;
-
-    loadOsc(buffer);
 }
 
-void OscManager::loadOsc(const QByteArray &buffer)
+void OscManager::loadOsc(std::unique_ptr<TrendViewModel> &&model)
 {
     trendDialog = UniquePointer<TrendViewDialog>(new TrendViewDialog);
-    trendDialog->setArrayToSave(buffer);
-    EOscillogram *OscFunc = new EOscillogram(trendDialog.get());
-    OscFunc->BA = buffer;
-    std::unique_ptr<TrendViewModel> mdl = std::unique_ptr<TrendViewModel>(new TrendViewModel);
-    OscFunc->ProcessOsc(mdl.get());
-    mdl->xmax = (static_cast<float>(mdl->Len / 2));
-    mdl->xmin = -mdl->xmax;
+    model->xmax = (static_cast<float>(model->Len / 2));
+    model->xmin = -model->xmax;
 
-    switch (mdl->idOsc)
+    switch (model->idOsc)
     {
     case AVTUK_85::OSC_ID:
     {
 
-        trendDialog->setAnalogNames(mdl->tmpav_85);
-        trendDialog->setDigitalNames(mdl->tmpdv_85);
-        trendDialog->setDigitalColors(mdl->dcolors_85);
-        trendDialog->setAnalogColors(mdl->acolors_85);
-        trendDialog->setDiscreteDescriptions(mdl->ddescr_85);
-        trendDialog->setAnalogDescriptions(mdl->adescr_85);
-        trendDialog->setRange(mdl->xmin, mdl->xmax, -200, 200);
+        trendDialog->setAnalogNames(model->tmpav_85);
+        trendDialog->setDigitalNames(model->tmpdv_85);
+        trendDialog->setDigitalColors(model->dcolors_85);
+        trendDialog->setAnalogColors(model->acolors_85);
+        trendDialog->setDiscreteDescriptions(model->ddescr_85);
+        trendDialog->setAnalogDescriptions(model->adescr_85);
+        trendDialog->setRange(model->xmin, model->xmax, -200, 200);
         break;
     }
     case AVTUK_8X::OSC_ID:
     {
-        mdl->tmpdv_80.clear();
-        trendDialog->setAnalogNames(mdl->tmpav_80);
-        trendDialog->setDigitalNames(mdl->tmpdv_80);
-        trendDialog->setDigitalColors(mdl->dcolors_80);
-        trendDialog->setAnalogColors(mdl->acolors_80);
-        trendDialog->setRange(mdl->xmin, mdl->xmax, -200, 200);
+        model->tmpdv_80.clear();
+        trendDialog->setAnalogNames(model->tmpav_80);
+        trendDialog->setDigitalNames(model->tmpdv_80);
+        trendDialog->setDigitalColors(model->dcolors_80);
+        trendDialog->setAnalogColors(model->acolors_80);
+        trendDialog->setRange(model->xmin, model->xmax, -200, 200);
         break;
     }
 
     case AVTUK_21::OSC_ID_MIN:
     {
-        // период отсчётов - 20 мс, длительность записи осциллограммы 10 сек, итого 500 точек по 4 байта на каждую
-        // mdl->tmpav_21 << QString::number(mdl->idOsc); // пока сделано для одного канала в осциллограмме
-        // TrendViewModel *TModel = new TrendViewModel(QStringList(), tmpav, *len);
-        // dlg->SetModel(TModel);
-        trendDialog->setAnalogColors(mdl->acolors_21);
-        trendDialog->setAnalogNames(mdl->tmpav_21);
-        trendDialog->setAnalogDescriptions(mdl->adescr_21);
+        trendDialog->setAnalogColors(model->acolors_21);
+        trendDialog->setAnalogNames(model->tmpav_21);
+        trendDialog->setAnalogDescriptions(model->adescr_21);
         // 10000 мс, 20 мА (сделать автонастройку в зависимости от конфигурации по данному каналу)
         trendDialog->setRange(0, 10000, -20, 20);
 
@@ -89,28 +77,26 @@ void OscManager::loadOsc(const QByteArray &buffer)
     case ID_OSC_CH0 + 7:
     {
 
-        trendDialog->setAnalogNames(mdl->tmpav_85);
-        trendDialog->setDigitalNames(mdl->tmpdv_85);
-        trendDialog->setDigitalColors(mdl->dcolors_85);
-        trendDialog->setAnalogColors(mdl->acolors_85);
-        trendDialog->setRange(mdl->xmin, mdl->xmax, -200, 200);
+        trendDialog->setAnalogNames(model->tmpav_85);
+        trendDialog->setDigitalNames(model->tmpdv_85);
+        trendDialog->setDigitalColors(model->dcolors_85);
+        trendDialog->setAnalogColors(model->acolors_85);
+        trendDialog->setRange(model->xmin, model->xmax, -200, 200);
         break;
     }
     }
-    trendDialog->setTrendModel(std::move(mdl));
+    trendDialog->setTrendModel(std::move(model));
     trendDialog->setupPlots();
     trendDialog->setupUI();
     trendDialog->showPlot();
     trendDialog->show();
 }
 
-QVariant OscManager::load(const DataTypes::FileStruct &fs)
+std::unique_ptr<TrendViewModel> OscManager::load(const OscHeader &header, const FileStruct &fs)
 {
     // ##TODO
 
     quint16 curFileNum = std_ext::to_underlying(fs.filenum);
-    quint16 minFileNum = std_ext::to_underlying(DataTypes::FilesEnum::FileOscMin);
-    quint16 maxFileNum = std_ext::to_underlying(DataTypes::FilesEnum::FileOscMax);
 
     constexpr size_t minSize = sizeof(S2DataTypes::OscHeader) + sizeof(S2DataTypes::DataRecHeader);
     if (fs.filedata.size() <= minSize)
@@ -118,24 +104,16 @@ QVariant OscManager::load(const DataTypes::FileStruct &fs)
         qCritical() << Error::SizeError;
         return {};
     }
-    S2DataTypes::OscHeader oscHeader;
-    size_t position = 0;
-    memcpy(&oscHeader, &fs.filedata.data()[position], sizeof(S2DataTypes::OscHeader));
-    position += sizeof(S2DataTypes::OscHeader);
 
-    S2DataTypes::DataRecHeader dataHeader;
-    memcpy(&dataHeader, &fs.filedata.data()[position], sizeof(S2DataTypes::DataRecHeader));
-    position += sizeof(S2DataTypes::DataRecHeader);
+    auto filename = generateFilename(curFileNum, header.time);
 
-    auto filename = generateFilename(dataHeader.id, oscHeader.time);
-
-    auto trendViewModel = std::make_unique<TrendViewModel>(oscHeader.len);
+    auto trendViewModel = std::make_unique<TrendViewModel>(header.len);
 
     {
         trendViewModel->SetFilename(filename);
-        trendViewModel->SaveID(dataHeader.id);
-        trendViewModel->Len = oscHeader.len;
-        trendViewModel->xmax = oscHeader.len / 2;
+        trendViewModel->SaveID(curFileNum);
+        trendViewModel->Len = header.len;
+        trendViewModel->xmax = header.len / 2;
         trendViewModel->xmin = -trendViewModel->xmax;
     }
 
@@ -177,12 +155,10 @@ QVariant OscManager::load(const DataTypes::FileStruct &fs)
     default:
         return {};
     }
-    int i = 0;
-    if (!parseModule->Parse(curFileNum, oscHeader, trendViewModel.get()))
-        return false;
 
-    auto model = *(parseModule->trendViewModel());
-    return {};
+    assert(parseModule->Parse(curFileNum, header, trendViewModel.get()));
+
+    return std::move(trendViewModel);
 }
 
 void OscManager::loadSwjFromFile(const QString &filename)

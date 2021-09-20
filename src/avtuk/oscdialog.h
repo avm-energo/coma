@@ -4,12 +4,14 @@
 #include "../widgets/udialog.h"
 #include "oscmanager.h"
 
+#include <optional>
+
 class ETableModel;
 
 class OscDialog : public UDialog
 {
     Q_OBJECT
-
+    using OscHeader = S2DataTypes::OscHeader;
     enum Column
     {
         number = 0,
@@ -26,6 +28,8 @@ public:
 private:
     void SetupUI();
     OscManager manager;
+    std::optional<OscHeader> oscHeader;
+
     ETableModel *tm;
     int counter = 0;
 

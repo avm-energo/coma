@@ -9,7 +9,7 @@ bool ParseID10020::Parse(int &count)
     return true;
 }
 
-bool ParseID10020::Parse(quint32 id, S2DataTypes::OscHeader &header, TrendViewModel *model)
+bool ParseID10020::Parse(quint32 id, const S2DataTypes::OscHeader &header, TrendViewModel *model)
 {
     float xmin = -(header.step * 512);
 

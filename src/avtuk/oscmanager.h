@@ -13,8 +13,9 @@ public:
     OscManager() = default;
     OscManager(const QByteArray &ba);
     void loadOscFromFile(const QString &filename);
-    void loadOsc(const QByteArray &buffer);
-    QVariant load(const DataTypes::FileStruct &fs) override;
+    void loadOsc(std::unique_ptr<TrendViewModel> &&model);
+    std::unique_ptr<TrendViewModel> load(const OscHeader &header, const FileStruct &fs) override;
+
     void loadSwjFromFile(const QString &filename);
     QString generateFilename(quint32 id, quint64 timestamp);
 

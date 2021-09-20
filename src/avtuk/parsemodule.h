@@ -13,7 +13,7 @@ public:
     bool PosPlusPlus(void *dst, int &count, int size);
     virtual bool Parse(int &count) = 0;
 
-    virtual bool Parse(quint32 id, S2DataTypes::OscHeader &OHD, TrendViewModel *model) = 0;
+    virtual bool Parse(quint32 id, const S2DataTypes::OscHeader &OHD, TrendViewModel *model) = 0;
 
     TrendViewModel *trendViewModel() const;
 

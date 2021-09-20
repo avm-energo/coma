@@ -5,5 +5,6 @@ class SwjManager : public FileManager
 {
 public:
     SwjManager(const QByteArray &ba);
-    QVariant load(const DataTypes::FileStruct &fs) override;
+    std::unique_ptr<TrendViewModel> load(
+        const S2DataTypes::OscHeader &header, const DataTypes::FileStruct &fs) override;
 };

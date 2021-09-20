@@ -33,7 +33,7 @@ public:
         int &count);
     bool ParseSpectr(
         quint32 id, SpectHeader_Data &SHD, const QString &fn, QStringList tmpav, TrendViewDialog *dlg, int &count);
-    bool Parse(quint32 id, S2DataTypes::OscHeader &header, TrendViewModel *model) override
+    bool Parse(quint32 id, const S2DataTypes::OscHeader &header, TrendViewModel *model) override
     {
         return true;
     }

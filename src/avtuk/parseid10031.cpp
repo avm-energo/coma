@@ -20,7 +20,7 @@ bool ParseID10031::ParseID85(S2DataTypes::OscHeader &OHD, const QString &fn, int
     return true;
 }
 
-bool ParseID10031::Parse(quint32 id, S2DataTypes::OscHeader &header, TrendViewModel *model)
+bool ParseID10031::Parse(quint32 id, const S2DataTypes::OscHeader &header, TrendViewModel *model)
 {
 
     return true;

@@ -13,7 +13,7 @@ public:
     bool ParseID21(quint32 id, S2DataTypes::OscHeader &OHD, int &count);
     bool ParseID8x(quint32 id, S2DataTypes::OscHeader &OHD, TrendViewDialog *dlg, int &count);
     bool ParseID85(quint32 id, S2DataTypes::OscHeader &OHD, TrendViewDialog *dlg, int &count);
-    bool Parse(quint32 id, S2DataTypes::OscHeader &header, TrendViewModel *model) override
+    bool Parse(quint32 id, const S2DataTypes::OscHeader &header, TrendViewModel *model) override
     {
         return true;
     }

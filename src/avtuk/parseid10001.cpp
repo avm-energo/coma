@@ -9,7 +9,7 @@ bool ParseID10001::Parse(int &count)
     return true;
 }
 
-bool ParseID10001::Parse(quint32 id, S2DataTypes::OscHeader &header, TrendViewModel *model)
+bool ParseID10001::Parse(quint32 id, const S2DataTypes::OscHeader &header, TrendViewModel *model)
 {
     Q_UNUSED(id);
     if (!model->SetPointsAxis(0, header.step))
