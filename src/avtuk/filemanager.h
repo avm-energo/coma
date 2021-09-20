@@ -1,5 +1,6 @@
 #pragma once
 #include "../gen/datatypes.h"
+#include "../gen/modules.h"
 #include "../gen/std_ext.h"
 #include "trendviewmodel.h"
 
@@ -10,6 +11,7 @@ class FileManager
 protected:
     using OscHeader = S2DataTypes::OscHeader;
     using FileStruct = DataTypes::FileStruct;
+    using SwitchJourRecord = S2DataTypes::SwitchJourRecord;
 
 public:
     FileManager() = default;
@@ -29,11 +31,19 @@ public:
     }
     template <> [[nodiscard]] OscHeader loadCommon(const FileStruct &fs) const
     {
-        assert(std_ext::to_underlying(fs.filenum) == 9000);
+        assert(std_ext::to_underlying(fs.filenum) == MT_HEAD_ID);
         assert(fs.filedata.size() == sizeof(OscHeader));
-        OscHeader oscHeader;
-        memcpy(&oscHeader, fs.filedata.data(), sizeof(OscHeader));
-        return oscHeader;
+        OscHeader record;
+        memcpy(&record, fs.filedata.data(), sizeof(OscHeader));
+        return record;
+    }
+    template <> [[nodiscard]] SwitchJourRecord loadCommon(const FileStruct &fs) const
+    {
+        assert(std_ext::to_underlying(fs.filenum) == AVTUK_85::SWJ_ID);
+        assert(fs.filedata.size() == sizeof(SwitchJourRecord));
+        SwitchJourRecord record;
+        memcpy(&record, fs.filedata.data(), sizeof(SwitchJourRecord));
+        return record;
     }
 
 protected:

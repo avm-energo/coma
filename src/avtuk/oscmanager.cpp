@@ -155,8 +155,12 @@ std::unique_ptr<TrendViewModel> OscManager::load(const OscHeader &header, const 
     default:
         return {};
     }
-
-    assert(parseModule->Parse(curFileNum, header, trendViewModel.get()));
+    bool result = parseModule->Parse(curFileNum, header, trendViewModel.get());
+    if (!result)
+    {
+        qCritical() << Error::GeneralError;
+        return {};
+    }
 
     return std::move(trendViewModel);
 }

@@ -8,10 +8,6 @@
 #include "../widgets/wd_func.h"
 #include "pushbuttondelegate.h"
 
-constexpr int MT_FT_XLSX = 0x01;
-constexpr int MT_FT_COMTRADE = 0x02;
-constexpr int MT_FT_NONE = 0x04;
-
 OscDialog::OscDialog(QWidget *parent) : UDialog(parent)
 {
     connect(&DataManager::GetInstance(), &DataManager::oscInfoReceived, this, &OscDialog::fillOscInfo);
@@ -97,31 +93,30 @@ void OscDialog::fillOsc(const DataTypes::FileStruct file)
 {
     if (!updatesEnabled())
         return;
-    quint16 curFileNum = quint16(file.filenum);
-    quint16 minFileNum = quint16(DataTypes::FilesEnum::FileOscMin);
-    quint16 maxFileNum = quint16(DataTypes::FilesEnum::FileOscMax);
 
-    // if ((curFileNum < minFileNum) || (curFileNum > maxFileNum))
-    //      return;
-    //   if ((file.filenum == 9000) || (file.filenum == 10031))
-    //     return;
     switch (std_ext::to_underlying(file.filenum))
     {
-    case 9000:
+    case MT_HEAD_ID:
     {
-        // FileManager manager;
         oscHeader = manager.loadCommon<S2DataTypes::OscHeader>(file);
         break;
     }
-    case 10031:
+    case AVTUK_85::SWJ_ID:
     {
         break;
     }
     default:
     {
+        // how to parse oscillograms without oscHeader
         assert(oscHeader.has_value());
-        //  OscManager oscManager;
+
         auto model = manager.load(oscHeader.value(), file);
+
+        if (!model)
+        {
+            qWarning() << Error::ReadError;
+            return;
+        }
         manager.loadOsc(std::move(model));
     }
     }
