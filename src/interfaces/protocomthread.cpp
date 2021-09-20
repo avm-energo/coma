@@ -791,7 +791,12 @@ void ProtocomThread::handleFile(QByteArray &ba, DataTypes::FilesEnum addr, Queri
     {
         DataTypes::S2FilePack outlist;
         if (!S2::RestoreData(ba, outlist))
+        {
+            DataTypes::GeneralResponseStruct resp { DataTypes::GeneralResponseTypes::Error,
+                static_cast<quint64>(ba.size()) };
+            DataManager::addSignalToOutList(DataTypes::SignalTypes::GeneralResponse, resp);
             return;
+        }
         for (auto &&file : outlist)
         {
             DataTypes::FileStruct resp { DataTypes::FilesEnum(file.ID), file.data };
