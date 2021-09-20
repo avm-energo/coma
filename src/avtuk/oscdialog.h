@@ -28,7 +28,7 @@ public:
 private:
     void SetupUI();
     OscManager manager;
-    std::optional<OscHeader> oscHeader;
+    //  std::optional<OscHeader> oscHeader;
 
     ETableModel *tm;
     int counter = 0;

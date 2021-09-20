@@ -98,7 +98,8 @@ void OscDialog::fillOsc(const DataTypes::FileStruct file)
     {
     case MT_HEAD_ID:
     {
-        oscHeader = manager.loadCommon<S2DataTypes::OscHeader>(file);
+        auto header = manager.loadCommon(file);
+        manager.setHeader(header);
         break;
     }
     case AVTUK_85::SWJ_ID:
@@ -107,10 +108,8 @@ void OscDialog::fillOsc(const DataTypes::FileStruct file)
     }
     default:
     {
-        // how to parse oscillograms without oscHeader
-        assert(oscHeader.has_value());
 
-        auto model = manager.load(oscHeader.value(), file);
+        auto model = manager.load(file);
 
         if (!model)
         {

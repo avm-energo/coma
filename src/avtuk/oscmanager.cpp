@@ -92,9 +92,15 @@ void OscManager::loadOsc(std::unique_ptr<TrendViewModel> &&model)
     trendDialog->show();
 }
 
-std::unique_ptr<TrendViewModel> OscManager::load(const OscHeader &header, const FileStruct &fs)
+std::unique_ptr<TrendViewModel> OscManager::load(const FileStruct &fs)
 {
     // ##TODO
+    if (!oscHeader)
+    {
+        qCritical() << Error::DescError;
+        return {};
+    }
+    const auto &header = oscHeader.value();
 
     quint16 curFileNum = std_ext::to_underlying(fs.filenum);
 
@@ -388,15 +394,4 @@ void OscManager::loadSwjFromFile(const QString &filename)
 
     swjDialog->setLayout(vlyout);
     swjDialog->show();
-}
-
-QString OscManager::generateFilename(quint32 id, quint64 timestamp)
-{
-    // составляем имя файла осциллограммы
-    QString filename = TimeFunc::UnixTime64ToString(timestamp);
-    filename.replace("/", "-");
-    filename.replace(":", "_");
-    filename.insert(0, "_");
-    filename.insert(0, QString::number(id));
-    return filename;
 }

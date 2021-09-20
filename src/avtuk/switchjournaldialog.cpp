@@ -7,6 +7,7 @@
 #include "pushbuttondelegate.h"
 #include "swjdialog.h"
 
+#include <QHeaderView>
 constexpr int MAXSWJNUM = 262144;
 
 constexpr unsigned char TECH_SWJ = 0x04;
@@ -112,10 +113,63 @@ void SwitchJournalDialog::FillJour(const DataTypes::FileStruct &fs)
 {
     if (!updatesEnabled())
         return;
-    SWJDialog *dlg = new SWJDialog(std::move(SWJDOscFunc));
-    dlg->setModal(false);
-    dlg->Init(SWJMap.value(reqSwJNum));
-    dlg->show();
+    if (!updatesEnabled())
+        return;
+
+    switch (std_ext::to_underlying(fs.filenum))
+    {
+    case MT_HEAD_ID:
+    {
+        auto header = oscManager.loadCommon(fs);
+        oscManager.setHeader(header);
+        break;
+    }
+    case AVTUK_85::SWJ_ID:
+    {
+        auto swj = swjManager.load(fs);
+        QVBoxLayout *vlyout = new QVBoxLayout;
+
+        auto tableView = new QTableView(this);
+        tableView->setModel(swj.commonModel);
+        tableView->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+        tableView->resizeColumnsToContents();
+        tableView->setShowGrid(false);
+        tableView->horizontalHeader()->hide();
+        tableView->verticalHeader()->hide();
+        vlyout->addWidget(tableView);
+
+        tableView = new QTableView(this);
+        tableView->setModel(swj.detailModel);
+        tableView->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+        tableView->setShowGrid(false);
+        tableView->resizeColumnsToContents();
+        tableView->horizontalHeader()->hide();
+        tableView->verticalHeader()->hide();
+        vlyout->addWidget(tableView);
+        QDialog *dialog = new QDialog;
+        dialog->setLayout(vlyout);
+        dialog->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+        dialog->setAttribute(Qt::WA_DeleteOnClose);
+
+        dialog->show();
+        dialog->setMinimumHeight(WDFunc::getMainWindow()->height());
+        dialog->setMinimumWidth(WDFunc::getMainWindow()->width());
+        dialog->adjustSize();
+        break;
+    }
+    default:
+    {
+
+        auto model = oscManager.load(fs);
+
+        if (!model)
+        {
+            qWarning() << Error::ReadError;
+            return;
+        }
+        oscManager.loadOsc(std::move(model));
+    }
+    }
 }
 
 void SwitchJournalDialog::fillSwJInfo(S2DataTypes::SwitchJourInfo swjInfo)

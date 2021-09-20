@@ -2,6 +2,8 @@
 #define SWITCHJOURNALDIALOG_H
 
 #include "../widgets/udialog.h"
+#include "oscmanager.h"
+#include "swjmanager.h"
 
 #include <QModelIndex>
 
@@ -34,7 +36,8 @@ private:
     QMap<quint64, S2DataTypes::OscInfo> OscMap;
     QMap<int, S2DataTypes::SwitchJourInfo> SWJMap;
     std::unique_ptr<EOscillogram> SWJDOscFunc;
-
+    OscManager oscManager;
+    SwjManager swjManager;
     void SetupUI();
     void processSWJournal(QByteArray &ba);
 

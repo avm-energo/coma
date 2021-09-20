@@ -8,6 +8,7 @@
 #include "eoscillogram.h"
 #include "trendviewdialog.h"
 
+#include <QTableView>
 SWJDialog::SWJDialog(std::unique_ptr<EOscillogram> osc, int mode, QWidget *parent) : QDialog(parent)
 {
     Mode = mode;
@@ -208,9 +209,9 @@ void SWJDialog::Init(S2DataTypes::SwitchJourInfo swj)
         glyout->addWidget(WDFunc::NewLBLT(this, str.setNum(value, 'f', 2)),row,i+1,1,1);
     }*/
     vlyout->addLayout(glyout);
-    QPushButton *pb = new QPushButton("Сохранить журнал в файл");
-    connect(pb, SIGNAL(clicked(bool)), this, SLOT(SaveSWJ()));
-    vlyout->addWidget(pb);
+    //  QPushButton *pb = new QPushButton("Сохранить журнал в файл");
+    //    connect(pb, SIGNAL(clicked(bool)), this, SLOT(SaveSWJ()));
+    // vlyout->addWidget(pb);
     setLayout(vlyout);
 }
 
@@ -219,6 +220,38 @@ void SWJDialog::LoadOsc(QByteArray &ba)
     // OscFunc->BA = ba;
     SWJOscFunc->BA.resize(ba.size());
     memcpy(&(SWJOscFunc->BA.data()[0]), &(ba.data()[0]), ba.size());
+}
+
+void SWJDialog::fillSwj(const DataTypes::FileStruct file)
+{
+    if (!updatesEnabled())
+        return;
+
+    switch (std_ext::to_underlying(file.filenum))
+    {
+    case MT_HEAD_ID:
+    {
+        auto header = oscManager.loadCommon(file);
+        oscManager.setHeader(header);
+        break;
+    }
+    case AVTUK_85::SWJ_ID:
+    {
+        break;
+    }
+    default:
+    {
+
+        auto model = oscManager.load(file);
+
+        if (!model)
+        {
+            qWarning() << Error::ReadError;
+            return;
+        }
+        oscManager.loadOsc(std::move(model));
+    }
+    }
 }
 
 #if PROGSIZE != PROGSIZE_EMUL

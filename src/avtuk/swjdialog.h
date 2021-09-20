@@ -23,7 +23,7 @@ public:
     SWJDialog(std::unique_ptr<EOscillogram> osc, int mode = SWJ_MODE_ONLINE, QWidget *parent = nullptr);
     void Init(S2DataTypes::SwitchJourInfo swj);
     void LoadOsc(QByteArray &ba); // для оффлайн режима
-
+    void fillSwj(const DataTypes::FileStruct file);
     void GetSwjOscData();
 
     TrendViewDialog *trendViewDialog() const;

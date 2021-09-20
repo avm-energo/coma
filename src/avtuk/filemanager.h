@@ -1,12 +1,11 @@
 #pragma once
 #include "../gen/datatypes.h"
-#include "../gen/modules.h"
-#include "../gen/std_ext.h"
-#include "trendviewmodel.h"
+#include "../gen/timefunc.h"
 
 #include <QByteArray>
 #include <QVariant>
-class FileManager
+
+template <typename T> class FileManager
 {
 protected:
     using OscHeader = S2DataTypes::OscHeader;
@@ -14,33 +13,24 @@ protected:
     using SwitchJourRecord = S2DataTypes::SwitchJourRecord;
 
 public:
+    using Record = T;
     FileManager() = default;
     FileManager(const QByteArray &ba) : buffer(ba)
     {
     }
-
-    template <typename S2Type> [[nodiscard]] S2Type loadCommon(const FileStruct &fs) const
-    {
-        static_assert(false, "Unsupported type");
-        return {};
-    }
-    template <> [[nodiscard]] OscHeader loadCommon(const FileStruct &fs) const
-    {
-        assert(std_ext::to_underlying(fs.filenum) == MT_HEAD_ID);
-        assert(fs.filedata.size() == sizeof(OscHeader));
-        OscHeader record;
-        memcpy(&record, fs.filedata.data(), sizeof(OscHeader));
-        return record;
-    }
-    template <> [[nodiscard]] SwitchJourRecord loadCommon(const FileStruct &fs) const
-    {
-        assert(std_ext::to_underlying(fs.filenum) == AVTUK_85::SWJ_ID);
-        assert(fs.filedata.size() == sizeof(SwitchJourRecord));
-        SwitchJourRecord record;
-        memcpy(&record, fs.filedata.data(), sizeof(SwitchJourRecord));
-        return record;
-    }
+    QString generateFilename(quint32 id, quint64 timestamp);
 
 protected:
     QByteArray buffer;
 };
+
+template <typename T> QString FileManager<T>::generateFilename(quint32 id, quint64 timestamp)
+{
+    // составляем имя файла осциллограммы
+    QString filename = TimeFunc::UnixTime64ToString(timestamp);
+    filename.replace("/", "-");
+    filename.replace(":", "_");
+    filename.insert(0, "_");
+    filename.insert(0, QString::number(id));
+    return filename;
+}
