@@ -11,7 +11,7 @@
 void SwjManager::loadFromFile(const QString &filename)
 {
 
-    QByteArray buffer = 0;
+    QByteArray buffer;
 
     if (Files::LoadFromFile(filename, buffer) != Error::NoError)
         return;
@@ -82,45 +82,45 @@ SwjManager::SwjModel SwjManager::load(const DataTypes::FileStruct &fs)
         new QStandardItem(QString::number(record.voltage[1])), new QStandardItem(QString::number(record.voltage[2])) });
 
     detailModel->appendRow({
-        new QStandardItem(detailDesc.at(3)),                                        //
-        new QStandardItem(QString::number(float(record.ownTime[0]) / 100, 'f', 2)), //
-        new QStandardItem(QString::number(float(record.ownTime[1]) / 100, 'f', 2)), //
-        new QStandardItem(QString::number(float(record.ownTime[2]) / 100, 'f', 2))  //
+        new QStandardItem(detailDesc.at(3)),                                         //
+        new QStandardItem(QString::number(double(record.ownTime[0]) / 100, 'f', 2)), //
+        new QStandardItem(QString::number(double(record.ownTime[1]) / 100, 'f', 2)), //
+        new QStandardItem(QString::number(double(record.ownTime[2]) / 100, 'f', 2))  //
     });
 
     detailModel->appendRow({
-        new QStandardItem(detailDesc.at(5)),                                         //
-        new QStandardItem(QString::number(float(record.fullTime[0]) / 100, 'f', 2)), //
-        new QStandardItem(QString::number(float(record.fullTime[1]) / 100, 'f', 2)), //
-        new QStandardItem(QString::number(float(record.fullTime[2]) / 100, 'f', 2))  //
+        new QStandardItem(detailDesc.at(5)),                                          //
+        new QStandardItem(QString::number(double(record.fullTime[0]) / 100, 'f', 2)), //
+        new QStandardItem(QString::number(double(record.fullTime[1]) / 100, 'f', 2)), //
+        new QStandardItem(QString::number(double(record.fullTime[2]) / 100, 'f', 2))  //
     });
 
     detailModel->appendRow({
-        new QStandardItem(detailDesc.at(6)),                                        //
-        new QStandardItem(QString::number(float(record.movTime[0]) / 100, 'f', 2)), //
-        new QStandardItem(QString::number(float(record.movTime[1]) / 100, 'f', 2)), //
-        new QStandardItem(QString::number(float(record.movTime[2]) / 100, 'f', 2))  //
+        new QStandardItem(detailDesc.at(6)),                                         //
+        new QStandardItem(QString::number(double(record.movTime[0]) / 100, 'f', 2)), //
+        new QStandardItem(QString::number(double(record.movTime[1]) / 100, 'f', 2)), //
+        new QStandardItem(QString::number(double(record.movTime[2]) / 100, 'f', 2))  //
     });
 
     detailModel->appendRow({
-        new QStandardItem(detailDesc.at(7)),                                         //
-        new QStandardItem(QString::number(float(record.archTime[0]) / 100, 'f', 2)), //
-        new QStandardItem(QString::number(float(record.archTime[1]) / 100, 'f', 2)), //
-        new QStandardItem(QString::number(float(record.archTime[2]) / 100, 'f', 2))  //
+        new QStandardItem(detailDesc.at(7)),                                          //
+        new QStandardItem(QString::number(double(record.archTime[0]) / 100, 'f', 2)), //
+        new QStandardItem(QString::number(double(record.archTime[1]) / 100, 'f', 2)), //
+        new QStandardItem(QString::number(double(record.archTime[2]) / 100, 'f', 2))  //
     });
 
     detailModel->appendRow({
-        new QStandardItem(detailDesc.at(8)),                                         //
-        new QStandardItem(QString::number(float(record.idleTime[0]) / 100, 'f', 2)), //
-        new QStandardItem(QString::number(float(record.idleTime[1]) / 100, 'f', 2)), //
-        new QStandardItem(QString::number(float(record.idleTime[2]) / 100, 'f', 2))  //
+        new QStandardItem(detailDesc.at(8)),                                          //
+        new QStandardItem(QString::number(double(record.idleTime[0]) / 100, 'f', 2)), //
+        new QStandardItem(QString::number(double(record.idleTime[1]) / 100, 'f', 2)), //
+        new QStandardItem(QString::number(double(record.idleTime[2]) / 100, 'f', 2))  //
     });
 
     detailModel->appendRow({
-        new QStandardItem(detailDesc.at(8)),                                           //
-        new QStandardItem(QString::number(float(record.inaccuracy[0]) / 100, 'f', 2)), //
-        new QStandardItem(QString::number(float(record.inaccuracy[1]) / 100, 'f', 2)), //
-        new QStandardItem(QString::number(float(record.inaccuracy[2]) / 100, 'f', 2))  //
+        new QStandardItem(detailDesc.at(8)),                                            //
+        new QStandardItem(QString::number(double(record.inaccuracy[0]) / 100, 'f', 2)), //
+        new QStandardItem(QString::number(double(record.inaccuracy[1]) / 100, 'f', 2)), //
+        new QStandardItem(QString::number(double(record.inaccuracy[2]) / 100, 'f', 2))  //
     });
 
     detailModel->appendRow({

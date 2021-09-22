@@ -12,6 +12,7 @@ class OscManager : public FileManager<S2DataTypes::OscHeader>
 {
 public:
     OscManager() = default;
+    virtual ~OscManager();
     void loadOscFromFile(const QString &filename);
     void loadOsc(std::unique_ptr<TrendViewModel> &&model);
     std::unique_ptr<TrendViewModel> load(const FileStruct &fs);

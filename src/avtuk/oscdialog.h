@@ -23,13 +23,10 @@ class OscDialog : public UDialog
 
 public:
     explicit OscDialog(QWidget *parent = nullptr);
-    ~OscDialog();
 
 private:
     void SetupUI();
     OscManager manager;
-    //  std::optional<OscHeader> oscHeader;
-
     ETableModel *tm;
     int counter = 0;
 

@@ -9,8 +9,6 @@ class ParseID9050 : public ParseModule
 public:
     ParseID9050(const QByteArray &BA);
 
-    QMultiMap<QString, int> Channel;
-
     struct SpectHeader_Data
     {
         quint64 t1; // Время начала события
@@ -37,6 +35,9 @@ public:
     {
         return true;
     }
+
+private:
+    QMultiMap<QString, int> Channel;
 };
 
 #endif // PARSEID9050_H

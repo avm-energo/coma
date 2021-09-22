@@ -15,9 +15,13 @@
 #include "parseid9050.h"
 #include "swjdialog.h"
 
+OscManager::~OscManager()
+{
+}
+
 void OscManager::loadOscFromFile(const QString &filename)
 {
-    QByteArray buffer = 0;
+    QByteArray buffer;
     if (Files::LoadFromFile(filename, buffer) != Error::NoError)
         return;
 }
@@ -116,7 +120,7 @@ std::unique_ptr<TrendViewModel> OscManager::load(const FileStruct &fs)
         trendViewModel->SetFilename(filename);
         trendViewModel->SaveID(curFileNum);
         trendViewModel->Len = header.len;
-        trendViewModel->xmax = header.len / 2;
+        trendViewModel->xmax = float(header.len) / 2;
         trendViewModel->xmin = -trendViewModel->xmax;
     }
 
@@ -165,13 +169,13 @@ std::unique_ptr<TrendViewModel> OscManager::load(const FileStruct &fs)
         return {};
     }
 
-    return std::move(trendViewModel);
+    return trendViewModel;
 }
 
 void OscManager::loadSwjFromFile(const QString &filename)
 {
 
-    QByteArray buffer = 0;
+    QByteArray buffer;
 
     if (Files::LoadFromFile(filename, buffer) != Error::NoError)
         return;
@@ -395,8 +399,8 @@ void OscManager::loadSwjFromFile(const QString &filename)
 
 void OscManager::loadFromFile(const QString &filename)
 {
-
-    QByteArray buffer = 0;
+    files.clear();
+    QByteArray buffer;
 
     if (Files::LoadFromFile(filename, buffer) != Error::NoError)
         return;
@@ -405,16 +409,21 @@ void OscManager::loadFromFile(const QString &filename)
 
     if (files.size() < 2)
     {
-        qWarning() << Error::SizeError << "No enough records";
+        qWarning() << Error::SizeError << "Not enough records";
         return;
     }
 
-    auto foundOscHeader = std::find_if(files.cbegin(), files.cbegin(), isOscHeader);
+    auto foundOscHeader
+        = std::find_if(files.cbegin(), files.cend(), [](auto &&record) { return (record.ID == MT_HEAD_ID); });
+
     if (foundOscHeader == std::cend(files))
     {
         qWarning() << Error::DescError << "No osc header";
         return;
     }
+
+    auto header = loadCommon({ DataTypes::FilesEnum(foundOscHeader->ID), foundOscHeader->data });
+    setHeader(header);
 
     auto isOsc = [](const DataTypes::S2Record &record) {
         // ##TODO add other oscs
@@ -431,9 +440,6 @@ void OscManager::loadFromFile(const QString &filename)
         qWarning() << Error::DescError << "No osc";
         return;
     }
-
-    auto header = loadCommon({ DataTypes::FilesEnum(foundOscHeader->ID), foundOscHeader->data });
-    setHeader(header);
 
     auto model = load({ DataTypes::FilesEnum(foundOsc->ID), foundOsc->data });
 

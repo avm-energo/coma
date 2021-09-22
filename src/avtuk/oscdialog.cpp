@@ -15,10 +15,6 @@ OscDialog::OscDialog(QWidget *parent) : UDialog(parent)
     SetupUI();
 }
 
-OscDialog::~OscDialog()
-{
-}
-
 void OscDialog::SetupUI()
 {
     QVBoxLayout *lyout = new QVBoxLayout;

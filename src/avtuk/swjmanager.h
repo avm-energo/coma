@@ -14,6 +14,7 @@ public:
     };
 
     SwjManager() = default;
+    virtual ~SwjManager() = default;
     void loadFromFile(const QString &filename) override;
 
     Record loadCommon(const FileStruct &fs) const
