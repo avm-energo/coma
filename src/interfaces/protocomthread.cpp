@@ -399,7 +399,7 @@ void ProtocomThread::fileHelper(DataTypes::FilesEnum fileNum)
         return;
     }
     QByteArray ba = file.readAll();
-    handleFile(ba, fileNum, false);
+    handleFile(ba, fileNum, Queries::FileFormat::Binary);
 }
 
 #endif

@@ -32,7 +32,7 @@ ConfigDialog::ConfigDialog(const QList<DataTypes::RecordPair> &defaultConfig, QW
 
 void ConfigDialog::ReadConf()
 {
-    BaseInterface::iface()->reqFile(DataTypes::Config, BaseInterface::FileFormat::DefaultS2);
+    BaseInterface::iface()->reqFile(DataTypes::Config, Queries::FileFormat::DefaultS2);
 }
 
 void ConfigDialog::WriteConf()
@@ -51,7 +51,7 @@ void ConfigDialog::WriteConf()
         [](const auto &record) -> S2DataTypes::DataRec { return record.serialize(); });
     S2::tester(buffer);
 
-    buffer.push_back({ S2DataTypes::dummyElement, 0, nullptr });
+    buffer.push_back({ { S2DataTypes::dummyElement, 0 }, nullptr });
     BaseInterface::iface()->writeS2File(DataTypes::Config, &buffer);
 }
 

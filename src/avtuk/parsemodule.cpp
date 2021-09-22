@@ -5,6 +5,10 @@ ParseModule::ParseModule(const QByteArray &BA) : BArray(BA)
 {
 }
 
+ParseModule::~ParseModule()
+{
+}
+
 bool ParseModule::PosPlusPlus(void *dst, int &count, int size)
 {
     if (count > BArray.size())

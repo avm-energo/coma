@@ -3,13 +3,14 @@
 #include "../gen/datatypes.h"
 #include "trendviewmodel.h"
 
+#include <memory>
 class TrendViewDialog;
 
 class ParseModule
 {
 public:
     ParseModule(const QByteArray &BA);
-
+    virtual ~ParseModule();
     bool PosPlusPlus(void *dst, int &count, int size);
     virtual bool Parse(int &count) = 0;
 
