@@ -15,7 +15,6 @@ find_package(
 
 add_library(
   ${PROJECT_NAME} STATIC
-  filemanager.cpp
   filemanager.h
   swjmanager.cpp
   swjmanager.h

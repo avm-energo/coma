@@ -13,8 +13,9 @@ public:
         QAbstractItemModel *detailModel;
     };
 
-    SwjManager(const QByteArray &ba);
     SwjManager() = default;
+    void loadFromFile(const QString &filename) override;
+
     Record loadCommon(const FileStruct &fs) const
     {
         assert(std_ext::to_underlying(fs.filenum) == AVTUK_85::SWJ_ID);

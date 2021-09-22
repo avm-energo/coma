@@ -36,6 +36,7 @@ private:
     QMap<quint64, S2DataTypes::OscInfo> OscMap;
     QMap<int, S2DataTypes::SwitchJourInfo> SWJMap;
     std::unique_ptr<EOscillogram> SWJDOscFunc;
+    std::unique_ptr<TrendViewModel> oscModel;
     OscManager oscManager;
     SwjManager swjManager;
     void SetupUI();

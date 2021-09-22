@@ -55,9 +55,15 @@ void OscDialog::SetupUI()
 void OscDialog::GetOsc(const QModelIndex &idx)
 {
     emit StopCheckTimer();
+
+    auto model = idx.model();
+    if (!model)
+    {
+        qWarning() << Error::DescError;
+        return;
+    }
     bool ok = false;
-    int oscnum
-        = idx.model()->data(idx.sibling(idx.row(), Column::number), Qt::DisplayRole).toInt(&ok); // номер осциллограммы
+    int oscnum = model->data(idx.sibling(idx.row(), Column::number), Qt::DisplayRole).toInt(&ok); // номер осциллограммы
     quint32 oscsize = idx.model()->data(idx.sibling(idx.row(), Column::size), Qt::DisplayRole).toInt(&ok);
     if (!ok)
     {

@@ -12,12 +12,12 @@ class OscManager : public FileManager<S2DataTypes::OscHeader>
 {
 public:
     OscManager() = default;
-    OscManager(const QByteArray &ba);
     void loadOscFromFile(const QString &filename);
     void loadOsc(std::unique_ptr<TrendViewModel> &&model);
     std::unique_ptr<TrendViewModel> load(const FileStruct &fs);
 
     void loadSwjFromFile(const QString &filename);
+    void loadFromFile(const QString &filename) override;
 
     Record loadCommon(const FileStruct &fs) const
     {

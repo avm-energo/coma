@@ -1,5 +1,6 @@
 #pragma once
 #include "../gen/datatypes.h"
+#include "../gen/modules.h"
 #include "../gen/timefunc.h"
 
 #include <QByteArray>
@@ -15,16 +16,22 @@ protected:
 public:
     using Record = T;
     FileManager() = default;
-    FileManager(const QByteArray &ba) : buffer(ba)
+
+    QString generateFilename(quint32 id, quint64 timestamp) const;
+
+    void virtual loadFromFile(const QString &filename) = 0;
+    void clearBuffer()
     {
+        files.clear();
     }
-    QString generateFilename(quint32 id, quint64 timestamp);
 
 protected:
-    QByteArray buffer;
+    const static inline auto isOscHeader = [](const DataTypes::S2Record &record) { return (record.ID == MT_HEAD_ID); };
+
+    DataTypes::S2FilePack files;
 };
 
-template <typename T> QString FileManager<T>::generateFilename(quint32 id, quint64 timestamp)
+template <typename T> QString FileManager<T>::generateFilename(quint32 id, quint64 timestamp) const
 {
     // составляем имя файла осциллограммы
     QString filename = TimeFunc::UnixTime64ToString(timestamp);

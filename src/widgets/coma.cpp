@@ -113,7 +113,6 @@ Coma::Coma(QWidget *parent) : QMainWindow(parent)
     LoadSettings();
     splash->deleteLater();
     setStatusBar(WDFunc::NewSB(this));
-    oscManager = new OscManager;
 }
 
 Coma::~Coma()
@@ -326,13 +325,13 @@ void Coma::startWork(const ConnectStruct st)
 void Coma::loadOsc()
 {
     QString filename = WDFunc::ChooseFileForOpen(this, "Oscillogram files (*.osc)");
-    oscManager->loadOscFromFile(filename);
+    oscManager.loadFromFile(filename);
 }
 
 void Coma::loadSwj()
 {
     QString filename = WDFunc::ChooseFileForOpen(this, "Switch journal files (*.swj)");
-    oscManager->loadSwjFromFile(filename);
+    swjManager.loadFromFile(filename);
 }
 
 void Coma::newTimers()

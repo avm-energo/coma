@@ -136,6 +136,16 @@ void SwitchJournalDialog::FillJour(const DataTypes::FileStruct &fs)
         tableView->setShowGrid(false);
         tableView->horizontalHeader()->hide();
         tableView->verticalHeader()->hide();
+
+        auto pb = new QPushButton(QIcon(":/icons/osc.svg"), "Открыть", tableView);
+        connect(pb, &QPushButton::clicked, this, [&] {
+            if (oscModel)
+            {
+
+                oscManager.loadOsc(std::move(oscModel));
+            }
+        });
+        tableView->setIndexWidget(tableView->model()->index(9, 1), pb);
         vlyout->addWidget(tableView);
 
         tableView = new QTableView(this);
@@ -160,14 +170,13 @@ void SwitchJournalDialog::FillJour(const DataTypes::FileStruct &fs)
     default:
     {
 
-        auto model = oscManager.load(fs);
+        oscModel = oscManager.load(fs);
 
-        if (!model)
+        if (!oscModel)
         {
             qWarning() << Error::ReadError;
             return;
         }
-        oscManager.loadOsc(std::move(model));
     }
     }
 }

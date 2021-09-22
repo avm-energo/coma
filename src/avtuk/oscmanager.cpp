@@ -14,9 +14,6 @@
 #include "parseid9000.h"
 #include "parseid9050.h"
 #include "swjdialog.h"
-OscManager::OscManager(const QByteArray &ba) : FileManager(ba)
-{
-}
 
 void OscManager::loadOscFromFile(const QString &filename)
 {
@@ -394,4 +391,56 @@ void OscManager::loadSwjFromFile(const QString &filename)
 
     swjDialog->setLayout(vlyout);
     swjDialog->show();
+}
+
+void OscManager::loadFromFile(const QString &filename)
+{
+
+    QByteArray buffer = 0;
+
+    if (Files::LoadFromFile(filename, buffer) != Error::NoError)
+        return;
+
+    S2::RestoreData(buffer, files);
+
+    if (files.size() < 2)
+    {
+        qWarning() << Error::SizeError << "No enough records";
+        return;
+    }
+
+    auto foundOscHeader = std::find_if(files.cbegin(), files.cbegin(), isOscHeader);
+    if (foundOscHeader == std::cend(files))
+    {
+        qWarning() << Error::DescError << "No osc header";
+        return;
+    }
+
+    auto isOsc = [](const DataTypes::S2Record &record) {
+        // ##TODO add other oscs
+        return ((record.ID == AVTUK_85::OSC_ID)                                             //
+            || (record.ID == AVTUK_8X::OSC_ID)                                              //
+            || ((record.ID >= AVTUK_21::OSC_ID_MIN) && (record.ID <= AVTUK_21::OSC_ID_MAX)) //
+        );
+    };
+
+    auto foundOsc = std::find_if(files.cbegin(), files.cend(), isOsc);
+
+    if (foundOsc == std::cend(files))
+    {
+        qWarning() << Error::DescError << "No osc";
+        return;
+    }
+
+    auto header = loadCommon({ DataTypes::FilesEnum(foundOscHeader->ID), foundOscHeader->data });
+    setHeader(header);
+
+    auto model = load({ DataTypes::FilesEnum(foundOsc->ID), foundOsc->data });
+
+    if (!model)
+    {
+        qWarning() << Error::ReadError;
+        return;
+    }
+    loadOsc(std::move(model));
 }
