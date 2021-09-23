@@ -118,7 +118,7 @@ void OscDialog::fillOsc(const DataTypes::FileStruct file)
             qWarning() << Error::ReadError;
             return;
         }
-        manager.loadOsc(std::move(model));
+        manager.loadOsc(model.get());
     }
     }
 }

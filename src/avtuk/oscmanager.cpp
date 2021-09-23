@@ -26,7 +26,7 @@ void OscManager::loadOscFromFile(const QString &filename)
         return;
 }
 
-void OscManager::loadOsc(std::unique_ptr<TrendViewModel> &&model)
+void OscManager::loadOsc(TrendViewModel *model)
 {
     trendDialog = UniquePointer<TrendViewDialog>(new TrendViewDialog);
     model->xmax = (static_cast<float>(model->Len / 2));
@@ -86,7 +86,7 @@ void OscManager::loadOsc(std::unique_ptr<TrendViewModel> &&model)
         break;
     }
     }
-    trendDialog->setTrendModel(std::move(model));
+    trendDialog->setTrendModel(model);
     trendDialog->setupPlots();
     trendDialog->setupUI();
     trendDialog->showPlot();
@@ -95,14 +95,16 @@ void OscManager::loadOsc(std::unique_ptr<TrendViewModel> &&model)
 
 std::unique_ptr<TrendViewModel> OscManager::load(const FileStruct &fs)
 {
-    // ##TODO
     if (!oscHeader)
     {
         qCritical() << Error::DescError;
         return {};
     }
-    const auto &header = oscHeader.value();
+    return load(oscHeader.value(), fs);
+}
 
+std::unique_ptr<TrendViewModel> OscManager::load(const Record &record, const FileStruct &fs)
+{
     quint16 curFileNum = std_ext::to_underlying(fs.filenum);
 
     constexpr size_t minSize = sizeof(S2DataTypes::OscHeader) + sizeof(S2DataTypes::DataRecHeader);
@@ -112,15 +114,15 @@ std::unique_ptr<TrendViewModel> OscManager::load(const FileStruct &fs)
         return {};
     }
 
-    auto filename = generateFilename(curFileNum, header.time);
+    auto filename = generateFilename(curFileNum, record.time);
 
-    auto trendViewModel = std::make_unique<TrendViewModel>(header.len);
+    auto trendViewModel = std::make_unique<TrendViewModel>(record.len);
 
     {
         trendViewModel->SetFilename(filename);
         trendViewModel->SaveID(curFileNum);
-        trendViewModel->Len = header.len;
-        trendViewModel->xmax = float(header.len) / 2;
+        trendViewModel->Len = record.len;
+        trendViewModel->xmax = float(record.len) / 2;
         trendViewModel->xmin = -trendViewModel->xmax;
     }
 
@@ -162,7 +164,7 @@ std::unique_ptr<TrendViewModel> OscManager::load(const FileStruct &fs)
     default:
         return {};
     }
-    bool result = parseModule->Parse(curFileNum, header, trendViewModel.get());
+    bool result = parseModule->Parse(curFileNum, record, trendViewModel.get());
     if (!result)
     {
         qCritical() << Error::GeneralError;
@@ -397,56 +399,61 @@ void OscManager::loadSwjFromFile(const QString &filename)
     swjDialog->show();
 }
 
-void OscManager::loadFromFile(const QString &filename)
+File::Vector OscManager::loadFromFile(const QString &filename)
 {
-    files.clear();
     QByteArray buffer;
-
     if (Files::LoadFromFile(filename, buffer) != Error::NoError)
-        return;
+        return {};
 
-    S2::RestoreData(buffer, files);
+    DataTypes::S2FilePack outlist;
+    S2::RestoreData(buffer, outlist);
 
-    if (files.size() < 2)
+    File::Vector vector;
+    bool status = loadRecords(outlist, vector);
+    if (!status)
+    {
+        qWarning() << Error::ReadError;
+    }
+    return vector;
+    // if (status)
+    //{
+    //
+    //  }
+    //  loadOsc(model.get());
+}
+
+bool OscManager::loadRecords(const DataTypes::S2FilePack &input, File::Vector &output)
+{
+    if (input.size() < 2)
     {
         qWarning() << Error::SizeError << "Not enough records";
-        return;
+        return false;
     }
 
-    auto foundOscHeader
-        = std::find_if(files.cbegin(), files.cend(), [](auto &&record) { return (record.ID == MT_HEAD_ID); });
+    auto foundOscHeader = std::find_if(input.cbegin(), input.cend(), isOscHeader);
 
-    if (foundOscHeader == std::cend(files))
+    if (foundOscHeader == std::cend(input))
     {
         qWarning() << Error::DescError << "No osc header";
-        return;
+        return false;
     }
 
     auto header = loadCommon({ DataTypes::FilesEnum(foundOscHeader->ID), foundOscHeader->data });
-    setHeader(header);
+    output.push_back(header);
+    auto foundOsc = std::find_if(input.cbegin(), input.cend(), isOsc);
 
-    auto isOsc = [](const DataTypes::S2Record &record) {
-        // ##TODO add other oscs
-        return ((record.ID == AVTUK_85::OSC_ID)                                             //
-            || (record.ID == AVTUK_8X::OSC_ID)                                              //
-            || ((record.ID >= AVTUK_21::OSC_ID_MIN) && (record.ID <= AVTUK_21::OSC_ID_MAX)) //
-        );
-    };
-
-    auto foundOsc = std::find_if(files.cbegin(), files.cend(), isOsc);
-
-    if (foundOsc == std::cend(files))
+    if (foundOsc == std::cend(input))
     {
         qWarning() << Error::DescError << "No osc";
-        return;
+        return false;
     }
-
-    auto model = load({ DataTypes::FilesEnum(foundOsc->ID), foundOsc->data });
+    auto model = load(header, { DataTypes::FilesEnum(foundOsc->ID), foundOsc->data });
 
     if (!model)
     {
         qWarning() << Error::ReadError;
-        return;
+        return false;
     }
-    loadOsc(std::move(model));
+    output.push_back(std::move(model));
+    return true;
 }

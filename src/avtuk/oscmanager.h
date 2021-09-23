@@ -5,7 +5,6 @@
 #include "filemanager.h"
 #include "trendviewdialog.h"
 
-#include <QObject>
 #include <optional>
 
 class OscManager : public FileManager<S2DataTypes::OscHeader>
@@ -14,11 +13,13 @@ public:
     OscManager() = default;
     virtual ~OscManager();
     void loadOscFromFile(const QString &filename);
-    void loadOsc(std::unique_ptr<TrendViewModel> &&model);
+    void loadOsc(TrendViewModel *model);
     std::unique_ptr<TrendViewModel> load(const FileStruct &fs);
+    std::unique_ptr<TrendViewModel> load(const Record &record, const FileStruct &fs);
 
     void loadSwjFromFile(const QString &filename);
-    void loadFromFile(const QString &filename) override;
+    File::Vector loadFromFile(const QString &filename) override;
+    bool loadRecords(const DataTypes::S2FilePack &input, File::Vector &output) override;
 
     Record loadCommon(const FileStruct &fs) const
     {
@@ -37,7 +38,16 @@ public:
         oscHeader = header;
     }
 
+    static inline const auto isOsc = [](const DataTypes::S2Record &record) {
+        // ##TODO add other oscs
+        return ((record.ID == AVTUK_85::OSC_ID)                                             //
+            || (record.ID == AVTUK_8X::OSC_ID)                                              //
+            || ((record.ID >= AVTUK_21::OSC_ID_MIN) && (record.ID <= AVTUK_21::OSC_ID_MAX)) //
+        );
+    };
+
 private:
+    std::unique_ptr<TrendViewModel> model;
     UniquePointer<TrendViewDialog> trendDialog;
     std::optional<Record> oscHeader;
     const QStringList phases { "фазы А, В, С", "фаза А", "фаза В", "фаза С" };

@@ -415,9 +415,9 @@ void TrendViewDialog::showPlot()
     this->showMaximized();
 }
 
-void TrendViewDialog::setModel(std::unique_ptr<TrendViewModel> model)
+void TrendViewDialog::setModel(TrendViewModel *model)
 {
-    m_trendModel = std::move(model);
+    m_trendModel = model;
 }
 
 void TrendViewDialog::setRange(float XRangeMin, float XRangeMax, float YRangeMin, float YRangeMax)
@@ -448,9 +448,9 @@ void TrendViewDialog::setDiscreteDescriptions(const QStringList &descr)
     digitalDescription.descriptions = descr;
 }
 
-void TrendViewDialog::setTrendModel(std::unique_ptr<TrendViewModel> mdl)
+void TrendViewDialog::setTrendModel(TrendViewModel *mdl)
 {
-    m_trendModel = std::move(mdl);
+    m_trendModel = mdl;
 }
 
 QByteArray TrendViewDialog::arrayToSave() const

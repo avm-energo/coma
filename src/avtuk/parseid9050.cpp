@@ -83,7 +83,7 @@ bool ParseID9050::ParseOsc(
         TModel->AddAnalogPoint(tmpav.at(0), point.An);
     }
     TModel->SetFilename(fn);
-    dlg->setModel(std::move(TModel));
+    dlg->setModel(TModel.get());
     dlg->setAnalogNames(tmpav);
     // 10000 мкс, 1250 мВ (сделать автонастройку в зависимости от конфигурации по данному каналу)
     dlg->setRange(0, 10000, -1250, 1250);
@@ -112,7 +112,7 @@ bool ParseID9050::ParseSpectr(quint32 id, ParseID9050::SpectHeader_Data &SHD, co
         TModel->AddAnalogPoint(tmpav.at(0), point.An);
     }
     TModel->SetFilename(fn);
-    dlg->setModel(std::move(TModel));
+    dlg->setModel(TModel.get());
     dlg->setAnalogNames(tmpav);
     // 1000000 Гц, 2 о.е. (сделать автонастройку в зависимости от конфигурации по данному каналу)
     dlg->setRange(0, 1000000, 0, 2);

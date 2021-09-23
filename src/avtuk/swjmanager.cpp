@@ -3,53 +3,61 @@
 #include "../gen/error.h"
 #include "../gen/files.h"
 #include "../gen/s2.h"
+#include "oscmanager.h"
 
 #include <QDebug>
 #include <QStandardItem>
 #include <QStandardItemModel>
 
-void SwjManager::loadFromFile(const QString &filename)
+File::Vector SwjManager::loadFromFile(const QString &filename)
 {
-
     QByteArray buffer;
-
     if (Files::LoadFromFile(filename, buffer) != Error::NoError)
-        return;
+        return {};
 
     DataTypes::S2FilePack outlist;
     S2::RestoreData(buffer, outlist);
 
-    S2DataTypes::SwitchJourRecord journalRecord;
-
-    bool foundSwj = false, foundOsc = false;
-    for (auto &&file : outlist)
+    File::Vector vector;
+    bool status = loadRecords(outlist, vector);
+    if (!status)
     {
-        if (file.data.size() == sizeof(S2DataTypes::SwitchJourRecord))
-        {
-            journalRecord = *reinterpret_cast<S2DataTypes::SwitchJourRecord *>(file.data.data());
-            foundSwj = true;
-        }
-        if ((file.ID == AVTUK_85::OSC_ID) || (file.ID == AVTUK_8X::OSC_ID))
-        {
-            foundOsc = true;
-        }
+        qWarning() << Error::ReadError;
     }
-
-    if (!foundSwj)
-    {
-        qCritical() << Error::NoIdError;
-        return;
-    }
+    return vector;
 }
 
-SwjManager::SwjModel SwjManager::load(const DataTypes::FileStruct &fs)
+bool SwjManager::loadRecords(const DataTypes::S2FilePack &input, File::Vector &output)
+{
+    if (input.empty())
+    {
+        qWarning() << Error::SizeError << "Not enough records";
+        return false;
+    }
+
+    auto foundSwj = std::find_if(input.cbegin(), input.cend(), isSwj);
+
+    if (foundSwj == std::cend(input))
+    {
+        qWarning() << Error::DescError << "No swj header";
+        return false;
+    }
+
+    auto model = load({ DataTypes::FilesEnum(foundSwj->ID), foundSwj->data });
+
+    output.push_back(std::move(model));
+
+    return true;
+}
+
+SwjModel SwjManager::load(const FileStruct &fs)
 {
     // Support only avtuk-85 swj
     assert(std_ext::to_underlying(fs.filenum) == AVTUK_85::SWJ_ID);
     auto record = loadCommon(fs);
-    SwjModel model { new QStandardItemModel, new QStandardItemModel };
-    auto commonModel = qobject_cast<QStandardItemModel *>(model.commonModel);
-    auto detailModel = qobject_cast<QStandardItemModel *>(model.detailModel);
+    SwjModel model { std::make_unique<QStandardItemModel>(), std::make_unique<QStandardItemModel>() };
+    auto commonModel = qobject_cast<QStandardItemModel *>(model.commonModel.get());
+    auto detailModel = qobject_cast<QStandardItemModel *>(model.detailModel.get());
 
     commonModel->appendRow({ new QStandardItem("Номер"), new QStandardItem(QString::number(record.num)) });
     commonModel->appendRow({ new QStandardItem("Дата, время"), new QStandardItem(QString::number(record.time)) });

@@ -113,8 +113,6 @@ void SwitchJournalDialog::FillJour(const DataTypes::FileStruct &fs)
 {
     if (!updatesEnabled())
         return;
-    if (!updatesEnabled())
-        return;
 
     switch (std_ext::to_underlying(fs.filenum))
     {
@@ -130,7 +128,7 @@ void SwitchJournalDialog::FillJour(const DataTypes::FileStruct &fs)
         QVBoxLayout *vlyout = new QVBoxLayout;
 
         auto tableView = new QTableView(this);
-        tableView->setModel(swj.commonModel);
+        tableView->setModel(swj.commonModel.get());
         tableView->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
         tableView->resizeColumnsToContents();
         tableView->setShowGrid(false);
@@ -142,14 +140,14 @@ void SwitchJournalDialog::FillJour(const DataTypes::FileStruct &fs)
             if (oscModel)
             {
 
-                oscManager.loadOsc(std::move(oscModel));
+                oscManager.loadOsc(oscModel.get());
             }
         });
         tableView->setIndexWidget(tableView->model()->index(9, 1), pb);
         vlyout->addWidget(tableView);
 
         tableView = new QTableView(this);
-        tableView->setModel(swj.detailModel);
+        tableView->setModel(swj.detailModel.get());
         tableView->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
         tableView->setShowGrid(false);
         tableView->resizeColumnsToContents();

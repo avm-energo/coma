@@ -2,20 +2,18 @@
 #include "../gen/modules.h"
 #include "../gen/std_ext.h"
 #include "filemanager.h"
+#include "oscmanager.h"
 
 #include <QAbstractItemModel>
 class SwjManager : public FileManager<S2DataTypes::SwitchJourRecord>
 {
-public:
-    struct SwjModel
-    {
-        QAbstractItemModel *commonModel;
-        QAbstractItemModel *detailModel;
-    };
+    using SwitchJourRecord = S2DataTypes::SwitchJourRecord;
 
+public:
     SwjManager() = default;
     virtual ~SwjManager() = default;
-    void loadFromFile(const QString &filename) override;
+    File::Vector loadFromFile(const QString &filename) override;
+    bool loadRecords(const DataTypes::S2FilePack &input, File::Vector &output) override;
 
     Record loadCommon(const FileStruct &fs) const
     {
@@ -25,9 +23,23 @@ public:
         memcpy(&record, fs.filedata.data(), sizeof(Record));
         return record;
     }
-    [[nodiscard]] SwjModel load(const DataTypes::FileStruct &fs);
+    [[nodiscard]] SwjModel load(const FileStruct &fs);
+    bool enableOsc()
+    {
+        if (manager)
+            return false;
+        manager = std::make_unique<OscManager>();
+        return true;
+    }
+    static inline const auto isSwj = [](const DataTypes::S2Record &record) {
+        // ##TODO add other swjs
+        return ((record.ID == AVTUK_85::SWJ_ID)                 //
+            && (record.data.size() == sizeof(SwitchJourRecord)) //
+        );
+    };
 
 private:
+    std::unique_ptr<OscManager> manager;
     static inline const QStringList phases { "фазы А, В, С", "фаза А", "фаза В", "фаза С" };
     static inline const QStringList detailDesc {
         "Измеренное значение",                                     //

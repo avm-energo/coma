@@ -249,7 +249,7 @@ void SWJDialog::fillSwj(const DataTypes::FileStruct file)
             qWarning() << Error::ReadError;
             return;
         }
-        oscManager.loadOsc(std::move(model));
+        oscManager.loadOsc(model.get());
     }
     }
 }
@@ -358,7 +358,7 @@ void SWJDialog::GetSwjOscData()
         break;
     }
     }
-    m_trendViewDialog->setTrendModel(std::move(mdl));
+    m_trendViewDialog->setTrendModel(mdl.get());
     m_trendViewDialog->setupPlots();
     m_trendViewDialog->setupUI();
     m_trendViewDialog->setModal(false);

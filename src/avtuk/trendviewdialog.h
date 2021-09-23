@@ -41,7 +41,7 @@ public:
     // инициализация графиков
     // имена графиков контактных/аналоговых сигналов, количество точек, диапазон по оси Y для аналоговых
     void showPlot();
-    void setModel(std::unique_ptr<TrendViewModel> model);
+    void setModel(TrendViewModel *model);
     void setRange(float XRangeMin, float XRangeMax, float YRangeMin, float YRangeMax);
     void setDigitalNames(const QStringList &names);
     void setAnalogNames(const QStringList &names);
@@ -54,13 +54,13 @@ public:
     void setAnalogDescriptions(const QStringList &descr);
     void setDiscreteDescriptions(const QStringList &descr);
 
-    void setTrendModel(std::unique_ptr<TrendViewModel> mdl);
+    void setTrendModel(TrendViewModel *mdl);
 
     QByteArray arrayToSave() const;
     void setArrayToSave(const QByteArray &arrayToSave);
 
 private:
-    std::unique_ptr<TrendViewModel> m_trendModel;
+    TrendViewModel *m_trendModel;
     QMap<QString, SignalOscPropertiesStruct> signalOscPropertiesMap;
     std::unique_ptr<QCustomPlot> mainPlot;
     QCPLegend *analogLegend, *discreteLegend;

@@ -75,6 +75,7 @@ private:
     QListWidget *MainLW;
     OscManager oscManager;
     SwjManager swjManager;
+    File::Vector fileVector;
 
     bool TimeThrFinished;
 

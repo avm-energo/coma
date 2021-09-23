@@ -325,13 +325,80 @@ void Coma::startWork(const ConnectStruct st)
 void Coma::loadOsc()
 {
     QString filename = WDFunc::ChooseFileForOpen(this, "Oscillogram files (*.osc)");
-    oscManager.loadFromFile(filename);
+    fileVector = oscManager.loadFromFile(filename);
+    TrendViewModel *oscModel = nullptr;
+    for (auto &item : fileVector)
+    {
+        std::visit(overloaded {
+                       [&](S2DataTypes::OscHeader &header) { oscManager.setHeader(header); },  //
+                       []([[maybe_unused]] auto &&arg) { /* here we ignore swj*/ },            //
+                       [&](std::unique_ptr<TrendViewModel> &model) { oscModel = model.get(); } //
+                   },
+            item);
+    }
+    if (oscModel)
+    {
+        oscManager.loadOsc(oscModel);
+    }
 }
 
 void Coma::loadSwj()
 {
     QString filename = WDFunc::ChooseFileForOpen(this, "Switch journal files (*.swj)");
-    swjManager.loadFromFile(filename);
+    fileVector = oscManager.loadFromFile(filename);
+    auto oscVector = swjManager.loadFromFile(filename);
+    std::move(oscVector.begin(), oscVector.end(), std::back_inserter(fileVector));
+    SwjModel *swjModel = nullptr;
+    TrendViewModel *oscModel = nullptr;
+    for (auto &item : fileVector)
+    {
+        std::visit(overloaded {
+                       [&](S2DataTypes::OscHeader &header) { oscManager.setHeader(header); },  //
+                       [&](SwjModel &model) { swjModel = &model; },                            //
+                       [&](std::unique_ptr<TrendViewModel> &model) { oscModel = model.get(); } //
+                   },
+            item);
+    }
+    if (!swjModel)
+        return;
+
+    QVBoxLayout *vlyout = new QVBoxLayout;
+
+    auto tableView = new QTableView(this);
+    tableView->setModel(swjModel->commonModel.get());
+    tableView->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    tableView->resizeColumnsToContents();
+    tableView->setShowGrid(false);
+    tableView->horizontalHeader()->hide();
+    tableView->verticalHeader()->hide();
+
+    auto pb = new QPushButton(QIcon(":/icons/osc.svg"), "Открыть", tableView);
+    connect(pb, &QPushButton::clicked, this, [&manager = oscManager, oscModel] {
+        if (oscModel)
+        {
+            manager.loadOsc(oscModel);
+        }
+    });
+    tableView->setIndexWidget(tableView->model()->index(9, 1), pb);
+    vlyout->addWidget(tableView);
+
+    tableView = new QTableView(this);
+    tableView->setModel(swjModel->detailModel.get());
+    tableView->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    tableView->setShowGrid(false);
+    tableView->resizeColumnsToContents();
+    tableView->horizontalHeader()->hide();
+    tableView->verticalHeader()->hide();
+    vlyout->addWidget(tableView);
+    QDialog *dialog = new QDialog;
+    dialog->setLayout(vlyout);
+    dialog->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    dialog->setAttribute(Qt::WA_DeleteOnClose);
+
+    dialog->show();
+    dialog->setMinimumHeight(WDFunc::getMainWindow()->height());
+    dialog->setMinimumWidth(WDFunc::getMainWindow()->width());
+    dialog->adjustSize();
 }
 
 void Coma::newTimers()
