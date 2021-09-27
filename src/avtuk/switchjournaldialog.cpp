@@ -35,7 +35,7 @@ void SwitchJournalDialog::SetupUI()
     hlyout->addWidget(pb);
     lyout->addLayout(hlyout);
     SwjTableView = new ETableView;
-    TableModel = new ETableModel;
+    TableModel = new ETableModel(SwjTableView);
     SwjTableView->setModel(TableModel);
 
     TableModel->setHorizontalHeaderLabels(
@@ -62,11 +62,12 @@ void SwitchJournalDialog::FillJour(const DataTypes::FileStruct &fs)
     }
     case AVTUK_85::SWJ_ID:
     {
-        auto swj = swjManager.load(fs);
+        SwjManager swjManager;
+        swjModel = swjManager.load(fs);
         QVBoxLayout *vlyout = new QVBoxLayout;
 
         auto tableView = new QTableView(this);
-        tableView->setModel(swj.commonModel.get());
+        tableView->setModel(swjModel.commonModel.get());
         tableView->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
         tableView->resizeColumnsToContents();
         tableView->setShowGrid(false);
@@ -85,7 +86,7 @@ void SwitchJournalDialog::FillJour(const DataTypes::FileStruct &fs)
         vlyout->addWidget(tableView);
 
         tableView = new QTableView(this);
-        tableView->setModel(swj.detailModel.get());
+        tableView->setModel(swjModel.detailModel.get());
         tableView->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
         tableView->setShowGrid(false);
         tableView->resizeColumnsToContents();

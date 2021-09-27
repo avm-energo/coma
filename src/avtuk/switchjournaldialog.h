@@ -36,15 +36,13 @@ private:
     void getSwJ(const QModelIndex &idx);
     void eraseJournals();
 
-    const QStringList craftTypeList { "D", "G", "CB" };
     ETableModel *TableModel;
     ETableView *SwjTableView;
     QMap<int, S2DataTypes::SwitchJourInfo> swjMap;
 
     std::unique_ptr<TrendViewModel> oscModel;
     OscManager oscManager;
-    SwjManager swjManager;
-
+    SwjModel swjModel;
     quint32 reqSwJNum = 0;
 };
 
