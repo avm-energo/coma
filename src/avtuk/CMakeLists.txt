@@ -34,8 +34,9 @@ add_library(
   parseid10031.h
   parseid9000.cpp
   parseid9000.h
-  parseid9050.cpp
-  parseid9050.h
+# TODO Check with real avtuk
+#  parseid9050.cpp
+#  parseid9050.h
   parsemodule.cpp
   parsemodule.h
   pushbuttondelegate.cpp
@@ -55,7 +56,6 @@ target_link_libraries(
   ${PROJECT_NAME}
   PRIVATE qcustomplot
   PRIVATE Qt${QT_VERSION_MAJOR}::Core
-  PRIVATE Qt${QT_VERSION_MAJOR}::Widgets
-  PRIVATE QXlsx)
+  PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE ${PROJECT_NAME}_LIBRARY)

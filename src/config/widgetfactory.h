@@ -1,5 +1,6 @@
 #pragma once
 #include "../gen/datatypes.h"
+#include "../gen/std_ext.h"
 #include "../widgets/ipctrl.h"
 #include "../widgets/wd_func.h"
 #include "delegate.h"
@@ -8,14 +9,6 @@
 #include <bitset>
 
 //#define DEBUG_FACTORY
-
-// helper type for the visitor
-template <class... Ts> struct overloaded : Ts...
-{
-    using Ts::operator()...;
-};
-// explicit deduction guide (not needed as of C++20)
-template <class... Ts> overloaded(Ts...) -> overloaded<Ts...>;
 
 class WidgetFactory
 {

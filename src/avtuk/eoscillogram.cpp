@@ -9,7 +9,6 @@
 #include "parseid9050.h"
 
 #include <QDebug>
-#include <QXlsx/xlsxdocument.h>
 
 EOscillogram::EOscillogram(QObject *parent) : QObject(parent)
 {
@@ -72,9 +71,10 @@ bool EOscillogram::ProcessOsc(TrendViewModel *mdl)
             parseModule = std::unique_ptr<ParseModule>(new ParseID9000(BA));
             break;
 
-        case AVTUK_87::OSC_SPC_ID:
-            parseModule = std::unique_ptr<ParseModule>(new ParseID9050(BA));
-            break;
+            // #TODO find real module
+            //        case AVTUK_87::OSC_SPC_ID:
+            //            parseModule = std::unique_ptr<ParseModule>(new ParseID9050(BA));
+            //            break;
 
         case AVTUK_85::SWJ_ID:
         {
