@@ -38,6 +38,9 @@ public:
         );
     };
 
+    static QString craftType(quint8 id);
+    static QString switchType(quint32 value);
+
 private:
     std::unique_ptr<OscManager> manager;
     static inline const QStringList phases { "фазы А, В, С", "фаза А", "фаза В", "фаза С" };
@@ -55,8 +58,6 @@ private:
         "Давление в гидросистеме привода, Па"                      //
     };
 
-    QString craftType(quint8 id) const;
-    QString switchType(quint32 value) const;
     QString commutationType(quint32 value) const;
     QString result(quint16 value) const;
     QString commutationPhases(quint32 value) const;

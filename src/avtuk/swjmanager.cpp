@@ -148,7 +148,7 @@ SwjModel SwjManager::load(const FileStruct &fs) const
     return model;
 }
 
-inline QString SwjManager::craftType(quint8 id) const
+inline QString SwjManager::craftType(quint8 id)
 {
     const QStringList tmpsl { "CB", "G", "D", "N/A" };
     switch (id)
@@ -172,7 +172,7 @@ inline QString SwjManager::craftType(quint8 id) const
     }
 }
 
-inline QString SwjManager::switchType(quint32 value) const
+inline QString SwjManager::switchType(quint32 value)
 {
     return (value & 0x00000001) ? "ВКЛЮЧЕНИЕ" : "ОТКЛЮЧЕНИЕ";
 }

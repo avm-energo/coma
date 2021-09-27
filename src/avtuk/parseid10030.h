@@ -25,6 +25,5 @@ public:
     // 5-3:     OCFx – оперативное управление отключением полюсов А, В, С
     // 2-0:     OCNx – оперативное управление включением полюсов А, В, С
 public:
-    bool Parse(int &count) override;
     bool Parse(quint32 id, const S2DataTypes::OscHeader &header, TrendViewModel *model) override;
 };

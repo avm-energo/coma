@@ -1,12 +1,9 @@
 #include "parseid10020.h"
 
+#include "trendviewmodel.h"
+
 ParseID10020::ParseID10020(const QByteArray &BA) : ParseModule(BA)
 {
-}
-
-bool ParseID10020::Parse(int &count)
-{
-    return true;
 }
 
 bool ParseID10020::Parse(quint32 id, const S2DataTypes::OscHeader &header, TrendViewModel *model)

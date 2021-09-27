@@ -28,8 +28,6 @@ add_library(
   parseid10020.h
   parseid10030.h
   parseid10030.cpp
-  parseid10031.cpp
-  parseid10031.h
 # TODO Check with real avtuk
 #  parseid9050.cpp
 #  parseid9050.h

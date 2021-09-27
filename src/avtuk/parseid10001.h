@@ -12,6 +12,5 @@ public:
     };
 
 public:
-    bool Parse(int &count) override;
     bool Parse(quint32 id, const S2DataTypes::OscHeader &header, TrendViewModel *model) override;
 };
