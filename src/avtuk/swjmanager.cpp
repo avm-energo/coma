@@ -9,7 +9,7 @@
 #include <QStandardItem>
 #include <QStandardItemModel>
 
-File::Vector SwjManager::loadFromFile(const QString &filename)
+File::Vector SwjManager::loadFromFile(const QString &filename) const
 {
     QByteArray buffer;
     if (Files::LoadFromFile(filename, buffer) != Error::NoError)
@@ -27,7 +27,7 @@ File::Vector SwjManager::loadFromFile(const QString &filename)
     return vector;
 }
 
-bool SwjManager::loadRecords(const DataTypes::S2FilePack &input, File::Vector &output)
+bool SwjManager::loadRecords(const DataTypes::S2FilePack &input, File::Vector &output) const
 {
     if (input.empty())
     {
@@ -50,7 +50,7 @@ bool SwjManager::loadRecords(const DataTypes::S2FilePack &input, File::Vector &o
     return true;
 }
 
-SwjModel SwjManager::load(const FileStruct &fs)
+SwjModel SwjManager::load(const FileStruct &fs) const
 {
     // Support only avtuk-85 swj
     assert(std_ext::to_underlying(fs.filenum) == AVTUK_85::SWJ_ID);
@@ -148,7 +148,7 @@ SwjModel SwjManager::load(const FileStruct &fs)
     return model;
 }
 
-inline QString SwjManager::craftType(quint8 id)
+inline QString SwjManager::craftType(quint8 id) const
 {
     const QStringList tmpsl { "CB", "G", "D", "N/A" };
     switch (id)
@@ -172,12 +172,12 @@ inline QString SwjManager::craftType(quint8 id)
     }
 }
 
-inline QString SwjManager::switchType(quint32 value)
+inline QString SwjManager::switchType(quint32 value) const
 {
     return (value & 0x00000001) ? "ВКЛЮЧЕНИЕ" : "ОТКЛЮЧЕНИЕ";
 }
 
-inline QString SwjManager::commutationType(quint32 value)
+inline QString SwjManager::commutationType(quint32 value) const
 {
     if ((value >> 1))
     {
@@ -191,12 +191,12 @@ inline QString SwjManager::commutationType(quint32 value)
     return "Несинхронная от внешнего устройства";
 }
 
-inline QString SwjManager::result(quint16 value)
+inline QString SwjManager::result(quint16 value) const
 {
     return value ? "НЕУСПЕШНО" : "УСПЕШНО";
 }
 
-inline QString SwjManager::commutationPhases(quint32 value)
+inline QString SwjManager::commutationPhases(quint32 value) const
 {
     for (int i = 0; i < phases.size(); i++)
     {
@@ -208,7 +208,7 @@ inline QString SwjManager::commutationPhases(quint32 value)
     return "-";
 }
 
-inline QString SwjManager::floatToString(float value)
+inline QString SwjManager::floatToString(float value) const
 {
     if (value == std::numeric_limits<float>::max())
         return "-";

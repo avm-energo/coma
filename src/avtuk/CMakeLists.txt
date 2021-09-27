@@ -18,8 +18,6 @@ add_library(
   filemanager.h
   swjmanager.cpp
   swjmanager.h
-  eoscillogram.cpp
-  eoscillogram.h
   oscdialog.cpp
   oscdialog.h
   oscmanager.cpp
@@ -32,8 +30,6 @@ add_library(
   parseid10030.cpp
   parseid10031.cpp
   parseid10031.h
-  parseid9000.cpp
-  parseid9000.h
 # TODO Check with real avtuk
 #  parseid9050.cpp
 #  parseid9050.h
@@ -43,8 +39,6 @@ add_library(
   pushbuttondelegate.h
   switchjournaldialog.cpp
   switchjournaldialog.h
-  swjdialog.cpp
-  swjdialog.h
   relaydialog.h
   relaydialog.cpp
   trendviewdialog.cpp

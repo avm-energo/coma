@@ -34,8 +34,8 @@ public:
 
     QString generateFilename(quint32 id, quint64 timestamp) const;
 
-    File::Vector virtual loadFromFile(const QString &filename) = 0;
-    bool virtual loadRecords(const DataTypes::S2FilePack &input, File::Vector &output) = 0;
+    File::Vector virtual loadFromFile(const QString &filename) const = 0;
+    bool virtual loadRecords(const DataTypes::S2FilePack &input, File::Vector &output) const = 0;
     void clearBuffer()
     {
         files.clear();

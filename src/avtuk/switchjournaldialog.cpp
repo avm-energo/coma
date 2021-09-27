@@ -5,7 +5,7 @@
 #include "../models/etablemodel.h"
 #include "../widgets/wd_func.h"
 #include "pushbuttondelegate.h"
-#include "swjdialog.h"
+//#include "swjdialog.h"
 
 #include <QHeaderView>
 constexpr int MAXSWJNUM = 262144;
@@ -17,7 +17,7 @@ SwitchJournalDialog::SwitchJournalDialog(std::unique_ptr<EOscillogram> osc, QWid
 
     setAttribute(Qt::WA_DeleteOnClose);
     SetupUI();
-    SWJDOscFunc = std::move(osc);
+    // SWJDOscFunc = std::move(osc);
 }
 
 SwitchJournalDialog::SwitchJournalDialog(QWidget *parent) : UDialog(parent)
@@ -262,10 +262,10 @@ void SwitchJournalDialog::showJournal(QModelIndex idx)
 
     if (swjr.fileNum)
     {
-        SWJDialog *dlg = new SWJDialog(std::move(SWJDOscFunc));
-        dlg->setModal(false);
-        dlg->Init(swjr);
-        dlg->show();
+        // SWJDialog *dlg = new SWJDialog(std::move(SWJDOscFunc));
+        // dlg->setModal(false);
+        // dlg->Init(swjr);
+        // dlg->show();
     }
 }
 

@@ -1,7 +1,6 @@
 #ifndef COMA_H
 #define COMA_H
 #include "../avtuk/oscmanager.h"
-#include "../avtuk/swjmanager.h"
 #include "../gen/datatypes.h"
 #include "../gen/stdfunc.h"
 #include "../interfaces/settingstypes.h"
@@ -74,7 +73,7 @@ private:
     QStackedWidget *MainTW;
     QListWidget *MainLW;
     OscManager oscManager;
-    SwjManager swjManager;
+
     File::Vector fileVector;
 
     bool TimeThrFinished;

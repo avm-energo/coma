@@ -12,8 +12,8 @@ class SwjManager : public FileManager<S2DataTypes::SwitchJourRecord>
 public:
     SwjManager() = default;
     virtual ~SwjManager() = default;
-    File::Vector loadFromFile(const QString &filename) override;
-    bool loadRecords(const DataTypes::S2FilePack &input, File::Vector &output) override;
+    File::Vector loadFromFile(const QString &filename) const override;
+    bool loadRecords(const DataTypes::S2FilePack &input, File::Vector &output) const override;
 
     Record loadCommon(const FileStruct &fs) const
     {
@@ -23,7 +23,7 @@ public:
         memcpy(&record, fs.filedata.data(), sizeof(Record));
         return record;
     }
-    [[nodiscard]] SwjModel load(const FileStruct &fs);
+    [[nodiscard]] SwjModel load(const FileStruct &fs) const;
     bool enableOsc()
     {
         if (manager)
@@ -55,10 +55,10 @@ private:
         "Давление в гидросистеме привода, Па"                      //
     };
 
-    QString craftType(quint8 id);
-    QString switchType(quint32 value);
-    QString commutationType(quint32 value);
-    QString result(quint16 value);
-    QString commutationPhases(quint32 value);
-    QString floatToString(float value);
+    QString craftType(quint8 id) const;
+    QString switchType(quint32 value) const;
+    QString commutationType(quint32 value) const;
+    QString result(quint16 value) const;
+    QString commutationPhases(quint32 value) const;
+    QString floatToString(float value) const;
 };

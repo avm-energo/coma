@@ -22,9 +22,7 @@
 
 #include "coma.h"
 
-#include "../avtuk/parseid9050.h"
-#include "../avtuk/swjdialog.h"
-#include "../avtuk/trendviewdialog.h"
+#include "../avtuk/swjmanager.h"
 #include "../comaversion/comaversion.h"
 #include "../dialogs/connectdialog.h"
 #include "../dialogs/errordialog.h"
@@ -324,6 +322,7 @@ void Coma::startWork(const ConnectStruct st)
 
 void Coma::loadOsc()
 {
+
     QString filename = WDFunc::ChooseFileForOpen(this, "Oscillogram files (*.osc)");
     fileVector = oscManager.loadFromFile(filename);
     TrendViewModel *oscModel = nullptr;
@@ -344,6 +343,8 @@ void Coma::loadOsc()
 
 void Coma::loadSwj()
 {
+
+    SwjManager swjManager;
     QString filename = WDFunc::ChooseFileForOpen(this, "Switch journal files (*.swj)");
     fileVector = oscManager.loadFromFile(filename);
     auto oscVector = swjManager.loadFromFile(filename);
