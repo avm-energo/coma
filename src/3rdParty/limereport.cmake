@@ -17,8 +17,6 @@ conan_cmake_install(
   ${CMAKE_BINARY_DIR}
   BUILD
   missing
-  REMOTE
-  conan-center
   SETTINGS
   ${settings})
 
