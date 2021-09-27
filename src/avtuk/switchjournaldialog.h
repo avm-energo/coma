@@ -3,7 +3,6 @@
 
 #include "../widgets/udialog.h"
 #include "oscmanager.h"
-#include "swjmanager.h"
 
 #include <QModelIndex>
 
@@ -27,23 +26,36 @@ class SwitchJournalDialog : public UDialog
 public:
     explicit SwitchJournalDialog(QWidget *parent = nullptr);
 
+public:
+    void fillJour(const DataTypes::FileStruct &fs);
+    void fillSwJInfo(S2DataTypes::SwitchJourInfo swjInfo);
+
 private:
-    void SetupUI();
+    void setupUI();
     void processSWJournal(QByteArray &ba);
     void processOscillograms();
-    void FillJour(const DataTypes::FileStruct &fs);
-    void fillSwJInfo(S2DataTypes::SwitchJourInfo swjInfo);
     void getSwJ(const QModelIndex &idx);
     void eraseJournals();
 
-    ETableModel *TableModel;
-    ETableView *SwjTableView;
+    ETableModel *tableModel;
+    ETableView *swjTableView;
     QMap<int, S2DataTypes::SwitchJourInfo> swjMap;
 
     std::unique_ptr<TrendViewModel> oscModel;
     OscManager oscManager;
     SwjModel swjModel;
     quint32 reqSwJNum = 0;
+};
+
+class SwitchJournalViewDialog : public QDialog
+{
+public:
+    SwitchJournalViewDialog(SwjModel &swjModel, TrendViewModel *const oscModel, OscManager &oscManager);
+    SwitchJournalViewDialog(
+        SwjModel &swjModel, const std::unique_ptr<TrendViewModel> &oscModel, OscManager &oscManager);
+
+private:
+    QPushButton *create(SwjModel &swjModel);
 };
 
 #endif // SWITCHJOURNALDIALOG_H

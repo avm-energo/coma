@@ -24,22 +24,17 @@ class OscDialog : public UDialog
 public:
     explicit OscDialog(QWidget *parent = nullptr);
 
-private:
-    void SetupUI();
-    OscManager manager;
-    ETableModel *tm;
-    int counter = 0;
-
-signals:
-    void StopCheckTimer();
-
 public slots:
     void fillOscInfo(S2DataTypes::OscInfo info);
     void fillOsc(const DataTypes::FileStruct file);
-private slots:
 
-    void GetOsc(const QModelIndex &);
-    void EraseOsc();
+private:
+    void setupUI();
+    OscManager manager;
+    ETableModel *tableModel;
+    int counter = 0;
+    void getOsc(const QModelIndex &);
+    void eraseOsc();
 };
 
 #endif // OSCDIALOG_H

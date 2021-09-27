@@ -22,6 +22,7 @@
 
 #include "coma.h"
 
+#include "../avtuk/switchjournaldialog.h"
 #include "../avtuk/swjmanager.h"
 #include "../comaversion/comaversion.h"
 #include "../dialogs/connectdialog.h"
@@ -363,36 +364,7 @@ void Coma::loadSwj()
     if (!swjModel)
         return;
 
-    QVBoxLayout *vlyout = new QVBoxLayout;
-
-    auto tableView = new QTableView(this);
-    tableView->setModel(swjModel->commonModel.get());
-    tableView->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    tableView->resizeColumnsToContents();
-    tableView->setShowGrid(false);
-    tableView->horizontalHeader()->hide();
-    tableView->verticalHeader()->hide();
-
-    auto pb = new QPushButton(QIcon(":/icons/osc.svg"), "Открыть", tableView);
-    connect(pb, &QPushButton::clicked, this, [&manager = oscManager, oscModel] {
-        if (oscModel)
-        {
-            manager.loadOsc(oscModel);
-        }
-    });
-    tableView->setIndexWidget(tableView->model()->index(9, 1), pb);
-    vlyout->addWidget(tableView);
-
-    tableView = new QTableView(this);
-    tableView->setModel(swjModel->detailModel.get());
-    tableView->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    tableView->setShowGrid(false);
-    tableView->resizeColumnsToContents();
-    tableView->horizontalHeader()->hide();
-    tableView->verticalHeader()->hide();
-    vlyout->addWidget(tableView);
-    QDialog *dialog = new QDialog;
-    dialog->setLayout(vlyout);
+    auto dialog = new SwitchJournalViewDialog(*swjModel, oscModel, oscManager);
     dialog->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     dialog->setAttribute(Qt::WA_DeleteOnClose);
 

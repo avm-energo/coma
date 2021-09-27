@@ -76,8 +76,7 @@ SwjModel SwjManager::load(const FileStruct &fs) const
     commonModel->appendRow(
         { new QStandardItem("Температура окружающей среды, Град"), new QStandardItem(floatToString(record.tOutside)) });
 
-    commonModel->appendRow(
-        { new QStandardItem("Осциллограмма"), new QStandardItem(QIcon(":/icons/osc.svg"), "Открыть") });
+    commonModel->appendRow({ new QStandardItem("Осциллограмма"), new QStandardItem("Открыть") });
 
     detailModel->appendRow({ new QStandardItem(detailDesc.at(0)), new QStandardItem("A"), new QStandardItem("B"),
         new QStandardItem("C") });

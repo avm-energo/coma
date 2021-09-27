@@ -12,23 +12,23 @@ OscDialog::OscDialog(QWidget *parent) : UDialog(parent)
 {
     connect(&DataManager::GetInstance(), &DataManager::oscInfoReceived, this, &OscDialog::fillOscInfo);
     connect(&DataManager::GetInstance(), &DataManager::fileReceived, this, &OscDialog::fillOsc);
-    SetupUI();
+    setupUI();
 }
 
-void OscDialog::SetupUI()
+void OscDialog::setupUI()
 {
     QVBoxLayout *lyout = new QVBoxLayout;
     QHBoxLayout *hlyout = new QHBoxLayout;
     ETableView *tv = new ETableView;
 
-    tm = new ETableModel(this);
-    tm->setHorizontalHeaderLabels({ "#", "Дата/Время", "ИД", "Длина", "Скачать" });
+    tableModel = new ETableModel(this);
+    tableModel->setHorizontalHeaderLabels({ "#", "Дата/Время", "ИД", "Длина", "Скачать" });
 
-    tv->setModel(tm);
+    tv->setModel(tableModel);
     tv->setSelectionMode(QAbstractItemView::SingleSelection);
     tv->setMouseTracking(true);
     PushButtonDelegate *dg = new PushButtonDelegate(tv);
-    connect(dg, &PushButtonDelegate::clicked, this, &OscDialog::GetOsc);
+    connect(dg, &PushButtonDelegate::clicked, this, &OscDialog::getOsc);
     tv->setItemDelegateForColumn(Column::download, dg); // устанавливаем делегата (кнопки "Скачать") для соотв. столбца
 
     auto *getButton = WDFunc::NewPB(this, "", "Получить данные по осциллограммам ", this, [=] {
@@ -37,7 +37,7 @@ void OscDialog::SetupUI()
     });
 
     hlyout->addWidget(getButton);
-    auto *eraseButton = WDFunc::NewPB(this, "", "Стереть все осциллограммы в памяти", this, &OscDialog::EraseOsc);
+    auto *eraseButton = WDFunc::NewPB(this, "", "Стереть все осциллограммы в памяти", this, &OscDialog::eraseOsc);
     hlyout->addWidget(eraseButton);
 
     if (StdFunc::IsInEmulateMode())
@@ -48,9 +48,8 @@ void OscDialog::SetupUI()
     setLayout(lyout);
 }
 
-void OscDialog::GetOsc(const QModelIndex &idx)
+void OscDialog::getOsc(const QModelIndex &idx)
 {
-    emit StopCheckTimer();
 
     auto model = idx.model();
     if (!model)
@@ -71,7 +70,7 @@ void OscDialog::GetOsc(const QModelIndex &idx)
         oscnum, Queries::FileFormat::CustomS2, oscsize + sizeof(S2DataTypes::DataRecHeader));
 }
 
-void OscDialog::EraseOsc()
+void OscDialog::eraseOsc()
 {
     if (checkPassword())
         BaseInterface::iface()->writeCommand(Queries::QC_EraseTechBlock, 1);
@@ -88,7 +87,7 @@ void OscDialog::fillOscInfo(S2DataTypes::OscInfo info)
         "Скачать",
     };
 
-    tm->addRowWithData(lsl);
+    tableModel->addRowWithData(lsl);
 }
 
 void OscDialog::fillOsc(const DataTypes::FileStruct file)

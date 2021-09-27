@@ -5,6 +5,7 @@
 #include "../models/etablemodel.h"
 #include "../widgets/wd_func.h"
 #include "pushbuttondelegate.h"
+#include "swjmanager.h"
 
 #include <QHeaderView>
 constexpr int MAXSWJNUM = 262144;
@@ -13,12 +14,12 @@ constexpr unsigned char TECH_SWJ = 0x04;
 
 SwitchJournalDialog::SwitchJournalDialog(QWidget *parent) : UDialog(parent)
 {
-    connect(&DataManager::GetInstance(), &DataManager::fileReceived, this, &SwitchJournalDialog::FillJour);
+    connect(&DataManager::GetInstance(), &DataManager::fileReceived, this, &SwitchJournalDialog::fillJour);
     connect(&DataManager::GetInstance(), &DataManager::swjInfoReceived, this, &SwitchJournalDialog::fillSwJInfo);
-    SetupUI();
+    setupUI();
 }
 
-void SwitchJournalDialog::SetupUI()
+void SwitchJournalDialog::setupUI()
 {
     QVBoxLayout *lyout = new QVBoxLayout;
     QHBoxLayout *hlyout = new QHBoxLayout;
@@ -34,20 +35,20 @@ void SwitchJournalDialog::SetupUI()
 
     hlyout->addWidget(pb);
     lyout->addLayout(hlyout);
-    SwjTableView = new ETableView;
-    TableModel = new ETableModel(SwjTableView);
-    SwjTableView->setModel(TableModel);
+    swjTableView = new ETableView;
+    tableModel = new ETableModel(swjTableView);
+    swjTableView->setModel(tableModel);
 
-    TableModel->setHorizontalHeaderLabels(
+    tableModel->setHorizontalHeaderLabels(
         { "#", "Номер переключения", "Дата/Время", "Аппарат", "Переключение", "Скачать" });
     PushButtonDelegate *dg = new PushButtonDelegate(this);
     connect(dg, &PushButtonDelegate::clicked, this, &SwitchJournalDialog::getSwJ);
-    SwjTableView->setItemDelegateForColumn(5, dg); // устанавливаем делегата (кнопки "Скачать") для соотв. столбца
-    lyout->addWidget(SwjTableView);
+    swjTableView->setItemDelegateForColumn(5, dg); // устанавливаем делегата (кнопки "Скачать") для соотв. столбца
+    lyout->addWidget(swjTableView);
     setLayout(lyout);
 }
 
-void SwitchJournalDialog::FillJour(const DataTypes::FileStruct &fs)
+void SwitchJournalDialog::fillJour(const DataTypes::FileStruct &fs)
 {
     if (!updatesEnabled())
         return;
@@ -64,39 +65,40 @@ void SwitchJournalDialog::FillJour(const DataTypes::FileStruct &fs)
     {
         SwjManager swjManager;
         swjModel = swjManager.load(fs);
-        QVBoxLayout *vlyout = new QVBoxLayout;
+        //        QVBoxLayout *vlyout = new QVBoxLayout;
 
-        auto tableView = new QTableView(this);
-        tableView->setModel(swjModel.commonModel.get());
-        tableView->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-        tableView->resizeColumnsToContents();
-        tableView->setShowGrid(false);
-        tableView->horizontalHeader()->hide();
-        tableView->verticalHeader()->hide();
+        //        auto tableView = new QTableView(this);
+        //        tableView->setModel(swjModel.commonModel.get());
+        //        tableView->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+        //        tableView->resizeColumnsToContents();
+        //        tableView->setShowGrid(false);
+        //        tableView->horizontalHeader()->hide();
+        //        tableView->verticalHeader()->hide();
 
-        auto pb = new QPushButton(QIcon(":/icons/osc.svg"), "Открыть", tableView);
-        connect(pb, &QPushButton::clicked, this, [&] {
-            if (oscModel)
-            {
+        //        auto pb = new QPushButton(QIcon(":/icons/osc.svg"), "Открыть", tableView);
+        //        connect(pb, &QPushButton::clicked, this, [&] {
+        //            if (oscModel)
+        //            {
 
-                oscManager.loadOsc(oscModel.get());
-            }
-        });
-        tableView->setIndexWidget(tableView->model()->index(9, 1), pb);
-        vlyout->addWidget(tableView);
+        //                oscManager.loadOsc(oscModel.get());
+        //            }
+        //        });
+        //        tableView->setIndexWidget(tableView->model()->index(9, 1), pb);
+        //        vlyout->addWidget(tableView);
 
-        tableView = new QTableView(this);
-        tableView->setModel(swjModel.detailModel.get());
-        tableView->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-        tableView->setShowGrid(false);
-        tableView->resizeColumnsToContents();
-        tableView->horizontalHeader()->hide();
-        tableView->verticalHeader()->hide();
-        vlyout->addWidget(tableView);
-        QDialog *dialog = new QDialog;
-        dialog->setLayout(vlyout);
-        dialog->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-        dialog->setAttribute(Qt::WA_DeleteOnClose);
+        //        tableView = new QTableView(this);
+        //        tableView->setModel(swjModel.detailModel.get());
+        //        tableView->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+        //        tableView->setShowGrid(false);
+        //        tableView->resizeColumnsToContents();
+        //        tableView->horizontalHeader()->hide();
+        //        tableView->verticalHeader()->hide();
+        //        vlyout->addWidget(tableView);
+        //        QDialog *dialog = new QDialog;
+        //        dialog->setLayout(vlyout);
+        //        dialog->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+        //        dialog->setAttribute(Qt::WA_DeleteOnClose);
+        auto dialog = new SwitchJournalViewDialog(swjModel, oscModel, oscManager);
         dialog->show();
         dialog->setMinimumHeight(WDFunc::getMainWindow()->height());
         dialog->setMinimumWidth(WDFunc::getMainWindow()->width());
@@ -132,7 +134,7 @@ void SwitchJournalDialog::fillSwJInfo(S2DataTypes::SwitchJourInfo swjInfo)
         SwjManager::craftType(swjInfo.typeA) + QString::number(swjInfo.numA), //
         SwjManager::switchType(swjInfo.options),                              //
         "Скачать" };
-    TableModel->addRowWithData(lsl);
+    tableModel->addRowWithData(lsl);
 }
 
 void SwitchJournalDialog::getSwJ(const QModelIndex &idx)
@@ -163,4 +165,65 @@ void SwitchJournalDialog::eraseJournals()
 {
     if (checkPassword())
         BaseInterface::iface()->writeCommand(Queries::QC_EraseTechBlock, TECH_SWJ);
+}
+
+SwitchJournalViewDialog::SwitchJournalViewDialog(
+    SwjModel &swjModel, TrendViewModel *const oscModel, OscManager &oscManager)
+    : QDialog(nullptr)
+{
+    auto pb = create(swjModel);
+    connect(pb, &QPushButton::clicked, this, [oscModel, &manager = oscManager] {
+        if (oscModel)
+        {
+            manager.loadOsc(oscModel);
+        }
+    });
+}
+
+SwitchJournalViewDialog::SwitchJournalViewDialog(
+    SwjModel &swjModel, const std::unique_ptr<TrendViewModel> &oscModel, OscManager &oscManager)
+
+{
+    auto pb = create(swjModel);
+    connect(pb, &QPushButton::clicked, this, [&] {
+        if (oscModel)
+        {
+            oscManager.loadOsc(oscModel.get());
+        }
+    });
+}
+
+QPushButton *SwitchJournalViewDialog::create(SwjModel &swjModel)
+{
+    QVBoxLayout *vlyout = new QVBoxLayout;
+
+    auto tableView = new QTableView(this);
+    tableView->setModel(swjModel.commonModel.get());
+    tableView->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    tableView->resizeColumnsToContents();
+    tableView->setShowGrid(false);
+    tableView->horizontalHeader()->hide();
+    tableView->verticalHeader()->hide();
+    auto pb = new QPushButton(QIcon(":/icons/osc.svg"), "Открыть", tableView);
+
+    tableView->setIndexWidget(tableView->model()->index(9, 1), pb);
+    tableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
+
+    vlyout->addWidget(tableView);
+
+    tableView = new QTableView(this);
+    tableView->setModel(swjModel.detailModel.get());
+    tableView->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    tableView->setShowGrid(false);
+    tableView->resizeColumnsToContents();
+    tableView->horizontalHeader()->hide();
+    tableView->verticalHeader()->hide();
+    tableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    vlyout->addWidget(tableView);
+
+    setLayout(vlyout);
+    setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    setAttribute(Qt::WA_DeleteOnClose);
+
+    return pb;
 }
