@@ -36,6 +36,10 @@ public:
     {
         oscHeader = header;
     }
+    Record header() const
+    {
+        return oscHeader.value();
+    }
 
     static inline const auto isOsc = [](const DataTypes::S2Record &record) {
         // ##TODO add other oscs

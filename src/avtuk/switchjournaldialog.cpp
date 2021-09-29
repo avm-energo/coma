@@ -1,6 +1,9 @@
 #include "switchjournaldialog.h"
 
+#include "../gen/board.h"
 #include "../gen/datamanager.h"
+#include "../gen/files.h"
+#include "../gen/s2.h"
 #include "../gen/timefunc.h"
 #include "../models/etablemodel.h"
 #include "../widgets/wd_func.h"
@@ -52,7 +55,8 @@ void SwitchJournalDialog::fillJour(const DataTypes::FileStruct &fs)
 {
     if (!updatesEnabled())
         return;
-
+    fileBuffer.push_back(fs);
+    ++fileCounter;
     switch (std_ext::to_underlying(fs.filenum))
     {
     case MT_HEAD_ID:
@@ -65,39 +69,6 @@ void SwitchJournalDialog::fillJour(const DataTypes::FileStruct &fs)
     {
         SwjManager swjManager;
         swjModel = swjManager.load(fs);
-        //        QVBoxLayout *vlyout = new QVBoxLayout;
-
-        //        auto tableView = new QTableView(this);
-        //        tableView->setModel(swjModel.commonModel.get());
-        //        tableView->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-        //        tableView->resizeColumnsToContents();
-        //        tableView->setShowGrid(false);
-        //        tableView->horizontalHeader()->hide();
-        //        tableView->verticalHeader()->hide();
-
-        //        auto pb = new QPushButton(QIcon(":/icons/osc.svg"), "Открыть", tableView);
-        //        connect(pb, &QPushButton::clicked, this, [&] {
-        //            if (oscModel)
-        //            {
-
-        //                oscManager.loadOsc(oscModel.get());
-        //            }
-        //        });
-        //        tableView->setIndexWidget(tableView->model()->index(9, 1), pb);
-        //        vlyout->addWidget(tableView);
-
-        //        tableView = new QTableView(this);
-        //        tableView->setModel(swjModel.detailModel.get());
-        //        tableView->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-        //        tableView->setShowGrid(false);
-        //        tableView->resizeColumnsToContents();
-        //        tableView->horizontalHeader()->hide();
-        //        tableView->verticalHeader()->hide();
-        //        vlyout->addWidget(tableView);
-        //        QDialog *dialog = new QDialog;
-        //        dialog->setLayout(vlyout);
-        //        dialog->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-        //        dialog->setAttribute(Qt::WA_DeleteOnClose);
         auto dialog = new SwitchJournalViewDialog(swjModel, oscModel, oscManager);
         dialog->show();
         dialog->setMinimumHeight(WDFunc::getMainWindow()->height());
@@ -116,6 +87,24 @@ void SwitchJournalDialog::fillJour(const DataTypes::FileStruct &fs)
             return;
         }
     }
+    }
+    // header, swj, osc
+    if (fileCounter == 3)
+    {
+        QByteArray ba;
+        S2::StoreDataMem(ba, fileBuffer, reqSwJNum);
+        const auto &header = oscManager.header();
+        QString filename = StdFunc::GetSystemHomeDir();
+        filename.push_back(Board::GetInstance().UID());
+        filename.push_back("-");
+        filename.push_back(QString::number(Board::GetInstance().type(), 16));
+        filename.push_back("-");
+        filename.push_back(QString::number(reqSwJNum));
+        filename.push_back("-");
+        filename.push_back(QString::number(header.time));
+        filename.push_back(".swj");
+
+        Files::SaveToFile(filename, ba);
     }
 }
 
@@ -139,6 +128,8 @@ void SwitchJournalDialog::fillSwJInfo(S2DataTypes::SwitchJourInfo swjInfo)
 
 void SwitchJournalDialog::getSwJ(const QModelIndex &idx)
 {
+    fileBuffer.clear();
+    fileCounter = 0;
     bool ok = false;
     auto model = idx.model();
 
@@ -158,7 +149,8 @@ void SwitchJournalDialog::getSwJ(const QModelIndex &idx)
         return;
     }
     quint32 size = swjMap.value(reqSwJNum).fileLength;
-    BaseInterface::iface()->reqFile(fileNum, Queries::FileFormat::CustomS2, size + sizeof(S2DataTypes::DataRecHeader));
+    BaseInterface::iface()->reqFile(
+        fileNum, Queries::FileFormat::CustomS2, size + 2 * sizeof(S2DataTypes::DataRecHeader));
 }
 
 void SwitchJournalDialog::eraseJournals()

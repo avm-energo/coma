@@ -1,6 +1,7 @@
 #ifndef DATATYPES_H
 #define DATATYPES_H
 #include "datarecv.h"
+#include "std_ext.h"
 #include "uint24.h"
 
 #include <QDataStream>
@@ -114,41 +115,47 @@ struct FileStruct
     friend QDataStream &operator<<(QDataStream &stream, const FileStruct &str);
     friend QDataStream &operator>>(QDataStream &stream, FileStruct &str);
     FileStruct() = default;
-    ~FileStruct()
-    {
-    }
+    //    ~FileStruct()
+    //    {
+    //    }
     FileStruct(const FilesEnum num, const QByteArray &file) : filenum(num), filedata(file)
     {
     }
-    FileStruct(const FileStruct &source) : FileStruct(source.filenum, source.filedata)
-    {
-    }
-    FileStruct &operator=(const FileStruct &source)
-    {
-        if (this == &source)
-            return *this;
-        filenum = source.filenum;
-        filedata = source.filedata;
-        return *this;
-    }
-    FileStruct(FileStruct &&rhs) noexcept : filenum(rhs.filenum), filedata(rhs.filedata)
-    {
-        // rhs.filenum = 0;
-        rhs.filedata = nullptr;
-    }
-    FileStruct &operator=(FileStruct &&rhs) noexcept
-    {
-        if (this != &rhs)
-        {
-            filenum = rhs.filenum;
-            filedata = rhs.filedata;
-            // rhs.filenum = NULL;
-            rhs.filedata = nullptr;
-        }
-        return *this;
-    }
+    //    FileStruct(const FileStruct &source) : FileStruct(source.filenum, source.filedata)
+    //    {
+    //    }
+    //    FileStruct &operator=(const FileStruct &source)
+    //    {
+    //        if (this == &source)
+    //            return *this;
+    //        filenum = source.filenum;
+    //        filedata = source.filedata;
+    //        return *this;
+    //    }
+    //    FileStruct(FileStruct &&rhs) noexcept : filenum(rhs.filenum), filedata(rhs.filedata)
+    //    {
+    //        // rhs.filenum = 0;
+    //        rhs.filedata = nullptr;
+    //    }
+    //    FileStruct &operator=(FileStruct &&rhs) noexcept
+    //    {
+    //        if (this != &rhs)
+    //        {
+    //            filenum = rhs.filenum;
+    //            filedata = rhs.filedata;
+    //            // rhs.filenum = NULL;
+    //            rhs.filedata = nullptr;
+    //        }
+    //        return *this;
+    //    }
+
     FilesEnum filenum;
     QByteArray filedata;
+
+    S2DataTypes::DataRec serialize()
+    {
+        return { { std_ext::to_underlying(filenum), quint32(filedata.size()) }, static_cast<void *>(filedata.data()) };
+    }
 };
 
 inline QDataStream &operator<<(QDataStream &stream, const FileStruct &str)

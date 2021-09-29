@@ -56,6 +56,16 @@ void S2::StoreDataMem(QByteArray &mem, const QList<DataTypes::DataRecV> &dr, int
     StoreDataMem(mem, recVec, fname);
 }
 
+void S2::StoreDataMem(QByteArray &mem, std::vector<DataTypes::FileStruct> &dr, int fname)
+{
+    QVector<S2DataTypes::DataRec> recVec;
+    for (auto &record : dr)
+    {
+        recVec.push_back(record.serialize());
+    }
+    StoreDataMem(mem, recVec, fname);
+}
+
 bool S2::RestoreDataMem(void *mem, quint32 memsize, const QVector<S2DataTypes::DataRec> &dr)
 {
     unsigned char *m = static_cast<unsigned char *>(mem);

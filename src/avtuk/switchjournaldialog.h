@@ -40,6 +40,8 @@ private:
     ETableModel *tableModel;
     ETableView *swjTableView;
     QMap<int, S2DataTypes::SwitchJourInfo> swjMap;
+    std::vector<DataTypes::FileStruct> fileBuffer;
+    std::size_t fileCounter = 0;
 
     std::unique_ptr<TrendViewModel> oscModel;
     OscManager oscManager;
