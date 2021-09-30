@@ -29,6 +29,11 @@ void SwitchJournalDialog::setupUI()
     QPushButton *pb = new QPushButton("Получить журналы переключений");
     connect(pb, &QAbstractButton::clicked, [&] {
         swjMap.clear();
+        tableModel = UniquePointer<ETableModel>(new ETableModel);
+        tableModel->setHorizontalHeaderLabels(
+            { "#", "Номер переключения", "Дата/Время", "Аппарат", "Переключение", "Скачать" });
+        swjTableView->setModel(tableModel.get());
+
         BaseInterface::iface()->writeCommand(Queries::QUSB_ReqBlkDataTech, TECH_SWJ);
     });
 
@@ -39,11 +44,7 @@ void SwitchJournalDialog::setupUI()
     hlyout->addWidget(pb);
     lyout->addLayout(hlyout);
     swjTableView = new ETableView;
-    tableModel = new ETableModel(swjTableView);
-    swjTableView->setModel(tableModel);
 
-    tableModel->setHorizontalHeaderLabels(
-        { "#", "Номер переключения", "Дата/Время", "Аппарат", "Переключение", "Скачать" });
     PushButtonDelegate *dg = new PushButtonDelegate(this);
     connect(dg, &PushButtonDelegate::clicked, this, &SwitchJournalDialog::getSwJ);
     swjTableView->setItemDelegateForColumn(5, dg); // устанавливаем делегата (кнопки "Скачать") для соотв. столбца
@@ -94,17 +95,15 @@ void SwitchJournalDialog::fillJour(const DataTypes::FileStruct &fs)
         QByteArray ba;
         S2::StoreDataMem(ba, fileBuffer, reqSwJNum);
         const auto &header = oscManager.header();
-        QString filename = StdFunc::GetSystemHomeDir();
-        filename.push_back(Board::GetInstance().UID());
-        filename.push_back("-");
-        filename.push_back(QString::number(Board::GetInstance().type(), 16));
-        filename.push_back("-");
-        filename.push_back(QString::number(reqSwJNum));
-        filename.push_back("-");
-        filename.push_back(QString::number(header.time));
-        filename.push_back(".swj");
-
-        Files::SaveToFile(filename, ba);
+        QString file = filename(header.time);
+        if (Files::SaveToFile(file, ba) == Error::Msg::NoError)
+        {
+            qInfo() << "Swj saved: " << file;
+        }
+        else
+        {
+            qWarning() << "Fail to save swj: " << file;
+        }
     }
 }
 
@@ -157,6 +156,21 @@ void SwitchJournalDialog::eraseJournals()
 {
     if (checkPassword())
         BaseInterface::iface()->writeCommand(Queries::QC_EraseTechBlock, TECH_SWJ);
+}
+
+QString SwitchJournalDialog::filename(quint64 time) const
+{
+    const auto &board = Board::GetInstance();
+    QString filename = StdFunc::GetSystemHomeDir();
+    filename.push_back(board.UID());
+    filename.push_back("-");
+    filename.push_back(QString::number(board.type(), 16));
+    filename.push_back("-");
+    filename.push_back(QString::number(reqSwJNum));
+    filename.push_back("-");
+    filename.push_back(QString::number(time));
+    filename.push_back(".swj");
+    return filename;
 }
 
 SwitchJournalViewDialog::SwitchJournalViewDialog(

@@ -36,8 +36,9 @@ private:
     void processOscillograms();
     void getSwJ(const QModelIndex &idx);
     void eraseJournals();
+    QString filename(quint64 time) const;
 
-    ETableModel *tableModel;
+    UniquePointer<ETableModel> tableModel;
     ETableView *swjTableView;
     QMap<int, S2DataTypes::SwitchJourInfo> swjMap;
     std::vector<DataTypes::FileStruct> fileBuffer;
