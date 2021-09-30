@@ -11,6 +11,7 @@
 #include "swjmanager.h"
 
 #include <QHeaderView>
+#include <QMessageBox>
 constexpr int MAXSWJNUM = 262144;
 
 constexpr unsigned char TECH_SWJ = 0x04;
@@ -57,7 +58,7 @@ void SwitchJournalDialog::fillJour(const DataTypes::FileStruct &fs)
     if (!updatesEnabled())
         return;
     fileBuffer.push_back(fs);
-    ++fileCounter;
+
     switch (fs.ID)
     {
     case MT_HEAD_ID:
@@ -90,12 +91,12 @@ void SwitchJournalDialog::fillJour(const DataTypes::FileStruct &fs)
     }
     }
     // header, swj, osc
-    if (fileCounter == 3)
+    if (fileBuffer.size() == 3)
     {
         QByteArray ba;
         S2::StoreDataMem(ba, fileBuffer, reqSwJNum);
-        const auto &header = oscManager.header();
-        QString file = filename(header.time);
+        auto time = swjMap.value(reqSwJNum).time;
+        QString file = filename(time);
         if (Files::SaveToFile(file, ba) == Error::Msg::NoError)
         {
             qInfo() << "Swj saved: " << file;
@@ -128,7 +129,7 @@ void SwitchJournalDialog::fillSwJInfo(S2DataTypes::SwitchJourInfo swjInfo)
 void SwitchJournalDialog::getSwJ(const QModelIndex &idx)
 {
     fileBuffer.clear();
-    fileCounter = 0;
+
     bool ok = false;
     auto model = idx.model();
 
@@ -148,14 +149,53 @@ void SwitchJournalDialog::getSwJ(const QModelIndex &idx)
         return;
     }
     quint32 size = swjMap.value(reqSwJNum).fileLength;
-    BaseInterface::iface()->reqFile(
-        fileNum, Queries::FileFormat::CustomS2, size + 2 * sizeof(S2DataTypes::DataRecHeader));
+
+    if (!loadIfExist(size))
+        BaseInterface::iface()->reqFile(
+            fileNum, Queries::FileFormat::CustomS2, size + 2 * sizeof(S2DataTypes::DataRecHeader));
 }
 
 void SwitchJournalDialog::eraseJournals()
 {
     if (checkPassword())
         BaseInterface::iface()->writeCommand(Queries::QC_EraseTechBlock, TECH_SWJ);
+}
+
+bool SwitchJournalDialog::loadIfExist(quint32 size)
+{
+    auto time = swjMap.value(reqSwJNum).time;
+    auto file = filename(time);
+    QByteArray ba;
+
+    QFile swjFile(file);
+
+    if (!swjFile.exists())
+        return false;
+
+    if (swjFile.size() < size)
+        return false;
+
+    int ret = QMessageBox::question(this, "Кэширование", "Прочитать из кэша");
+    if ((ret == QMessageBox::StandardButton::Ok) || (ret == QMessageBox::StandardButton::Yes))
+    {
+        if (Files::LoadFromFile(file, ba) == Error::Msg::NoError)
+        {
+            qInfo() << "Swj loaded from file: " << file;
+            DataTypes::S2FilePack outlist;
+            S2::RestoreData(ba, outlist);
+            for (auto &&file : outlist)
+            {
+                DataTypes::FileStruct resp { DataTypes::FilesEnum(file.ID), file.data };
+                DataManager::addSignalToOutList(DataTypes::SignalTypes::File, resp);
+            }
+            return true;
+        }
+        else
+        {
+            qWarning() << "Failed to load swj from file: " << file;
+        }
+    }
+    return false;
 }
 
 QString SwitchJournalDialog::filename(quint64 time) const

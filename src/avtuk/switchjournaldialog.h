@@ -32,17 +32,15 @@ public:
 
 private:
     void setupUI();
-    void processSWJournal(QByteArray &ba);
-    void processOscillograms();
     void getSwJ(const QModelIndex &idx);
     void eraseJournals();
+    bool loadIfExist(quint32 size);
     QString filename(quint64 time) const;
 
     UniquePointer<ETableModel> tableModel;
     ETableView *swjTableView;
     QMap<int, S2DataTypes::SwitchJourInfo> swjMap;
     std::vector<DataTypes::FileStruct> fileBuffer;
-    std::size_t fileCounter = 0;
 
     std::unique_ptr<TrendViewModel> oscModel;
     OscManager oscManager;
