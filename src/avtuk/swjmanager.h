@@ -38,8 +38,33 @@ public:
         );
     };
 
-    static QString craftType(quint8 id);
-    static QString switchType(quint32 value);
+    static QString craftType(quint8 id)
+    {
+        const QStringList tmpsl { "CB", "G", "D", "N/A" };
+        switch (id)
+        {
+        case 1:
+        {
+            return tmpsl.at(0);
+        }
+        case 2:
+        {
+            return tmpsl.at(1);
+        }
+        case 4:
+        {
+            return tmpsl.at(2);
+        }
+        default:
+        {
+            return tmpsl.at(3);
+        }
+        }
+    }
+    static QString switchType(quint32 value)
+    {
+        return (value & 0x00000001) ? "ВКЛЮЧЕНИЕ" : "ОТКЛЮЧЕНИЕ";
+    }
 
 private:
     std::unique_ptr<OscManager> manager;
