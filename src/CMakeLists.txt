@@ -92,6 +92,7 @@ endif()
 string(TOLOWER "${CMAKE_BUILD_TYPE}" CMAKE_BUILD_TYPE_LOWER)
 
 if (MSVC)
+    add_compile_options(/permissive-)
     string(APPEND CMAKE_CXX_FLAGS " /w14456 /w14189 /w14458 /w14100 /w14996")
 else()
     #TODO make the same as msvc
