@@ -30,11 +30,16 @@ public slots:
 
 private:
     void setupUI();
-    OscManager manager;
-    ETableModel *tableModel;
-    int counter = 0;
     void getOsc(const QModelIndex &);
     void eraseOsc();
+    QString filename(quint64 time, quint32 oscNum) const;
+    bool loadIfExist(quint32 size);
+
+    OscManager manager;
+    QMap<int, S2DataTypes::OscInfo> oscMap;
+    std::vector<DataTypes::FileStruct> fileBuffer;
+    UniquePointer<ETableModel> tableModel;
+    int reqOscNum;
 };
 
 #endif // OSCDIALOG_H
