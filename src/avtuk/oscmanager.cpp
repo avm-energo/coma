@@ -92,10 +92,10 @@ std::unique_ptr<TrendViewModel> OscManager::load(const FileStruct &fs) const
 
 std::unique_ptr<TrendViewModel> OscManager::load(const Record &record, const FileStruct &fs) const
 {
-    quint16 curFileNum = std_ext::to_underlying(fs.filenum);
+    auto curFileNum = fs.ID;
 
     constexpr size_t minSize = sizeof(S2DataTypes::OscHeader) + sizeof(S2DataTypes::DataRecHeader);
-    if (fs.filedata.size() <= minSize)
+    if (fs.data.size() <= minSize)
     {
         qCritical() << Error::SizeError;
         return {};
@@ -118,12 +118,12 @@ std::unique_ptr<TrendViewModel> OscManager::load(const Record &record, const Fil
     {
     case AVTUK_85::OSC_ID:
     {
-        parseModule = std::make_unique<ParseID10030>(fs.filedata);
+        parseModule = std::make_unique<ParseID10030>(fs.data);
         break;
     }
     case AVTUK_8X::OSC_ID:
     {
-        parseModule = std::make_unique<ParseID10020>(fs.filedata);
+        parseModule = std::make_unique<ParseID10020>(fs.data);
         break;
     }
     case AVTUK_21::OSC_ID_MIN:
@@ -144,7 +144,7 @@ std::unique_ptr<TrendViewModel> OscManager::load(const Record &record, const Fil
     case AVTUK_21::OSC_ID_MAX:
 
     {
-        parseModule = std::make_unique<ParseID10001>(fs.filedata);
+        parseModule = std::make_unique<ParseID10001>(fs.data);
         break;
     }
 

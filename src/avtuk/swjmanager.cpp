@@ -53,7 +53,7 @@ bool SwjManager::loadRecords(const DataTypes::S2FilePack &input, File::Vector &o
 SwjModel SwjManager::load(const FileStruct &fs) const
 {
     // Support only avtuk-85 swj
-    assert(std_ext::to_underlying(fs.filenum) == AVTUK_85::SWJ_ID);
+    assert((fs.ID) == AVTUK_85::SWJ_ID);
     auto record = loadCommon(fs);
     SwjModel model { std::make_unique<QStandardItemModel>(), std::make_unique<QStandardItemModel>() };
     auto commonModel = qobject_cast<QStandardItemModel *>(model.commonModel.get());

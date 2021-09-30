@@ -58,7 +58,7 @@ void SwitchJournalDialog::fillJour(const DataTypes::FileStruct &fs)
         return;
     fileBuffer.push_back(fs);
     ++fileCounter;
-    switch (std_ext::to_underlying(fs.filenum))
+    switch (fs.ID)
     {
     case MT_HEAD_ID:
     {

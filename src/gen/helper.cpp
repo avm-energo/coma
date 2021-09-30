@@ -34,8 +34,8 @@ QDebug operator<<(QDebug debug, const DataTypes::SinglePointWithTimeStruct &st)
 
 QDebug operator<<(QDebug debug, const DataTypes::FileStruct &st)
 {
-    debug.nospace() << QString::number(st.filenum) << ":"
-                    << "File size: " << QString::number(st.filedata.size());
+    debug.nospace() << QString::number(st.ID) << ":"
+                    << "File size: " << QString::number(st.data.size());
     return debug.maybeSpace();
 }
 

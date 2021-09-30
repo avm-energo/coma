@@ -95,7 +95,7 @@ void OscDialog::fillOsc(const DataTypes::FileStruct file)
     if (!updatesEnabled())
         return;
 
-    switch (std_ext::to_underlying(file.filenum))
+    switch (file.ID)
     {
     case MT_HEAD_ID:
     {

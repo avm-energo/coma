@@ -323,7 +323,7 @@ void BaseInterface::responseReceived(const DataTypes::GeneralResponseStruct &res
 void BaseInterface::fileReceived(const DataTypes::FileStruct &file)
 {
     disconnect(&DataManager::GetInstance(), &DataManager::fileReceived, this, &BaseInterface::fileReceived);
-    m_byteArrayResult = file.filedata;
+    m_byteArrayResult = file.data;
     m_busy = false;
 }
 

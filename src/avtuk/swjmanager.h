@@ -17,10 +17,10 @@ public:
 
     Record loadCommon(const FileStruct &fs) const
     {
-        assert(std_ext::to_underlying(fs.filenum) == AVTUK_85::SWJ_ID);
-        assert(fs.filedata.size() == sizeof(Record));
+        assert((fs.ID) == AVTUK_85::SWJ_ID);
+        assert(fs.data.size() == sizeof(Record));
         Record record;
-        memcpy(&record, fs.filedata.data(), sizeof(Record));
+        memcpy(&record, fs.data.data(), sizeof(Record));
         return record;
     }
     [[nodiscard]] SwjModel load(const FileStruct &fs) const;

@@ -115,46 +115,22 @@ struct FileStruct
     friend QDataStream &operator<<(QDataStream &stream, const FileStruct &str);
     friend QDataStream &operator>>(QDataStream &stream, FileStruct &str);
     FileStruct() = default;
-    //    ~FileStruct()
-    //    {
-    //    }
-    FileStruct(const FilesEnum num, const QByteArray &file) : filenum(num), filedata(file)
+
+    FileStruct(const FilesEnum num, const QByteArray &file) : ID(num), data(file)
     {
     }
-    //    FileStruct(const FileStruct &source) : FileStruct(source.filenum, source.filedata)
-    //    {
-    //    }
-    //    FileStruct &operator=(const FileStruct &source)
-    //    {
-    //        if (this == &source)
-    //            return *this;
-    //        filenum = source.filenum;
-    //        filedata = source.filedata;
-    //        return *this;
-    //    }
-    //    FileStruct(FileStruct &&rhs) noexcept : filenum(rhs.filenum), filedata(rhs.filedata)
-    //    {
-    //        // rhs.filenum = 0;
-    //        rhs.filedata = nullptr;
-    //    }
-    //    FileStruct &operator=(FileStruct &&rhs) noexcept
-    //    {
-    //        if (this != &rhs)
-    //        {
-    //            filenum = rhs.filenum;
-    //            filedata = rhs.filedata;
-    //            // rhs.filenum = NULL;
-    //            rhs.filedata = nullptr;
-    //        }
-    //        return *this;
-    //    }
-
-    FilesEnum filenum;
-    QByteArray filedata;
+    FileStruct(const quint8 num, const QByteArray &file) : ID(num), data(file)
+    {
+    }
+    FileStruct(const quint8 num) : ID(num)
+    {
+    }
+    std::underlying_type_t<FilesEnum> ID;
+    QByteArray data;
 
     S2DataTypes::DataRec serialize()
     {
-        return { { std_ext::to_underlying(filenum), quint32(filedata.size()) }, static_cast<void *>(filedata.data()) };
+        return { { ID, quint32(data.size()) }, static_cast<void *>(data.data()) };
     }
 };
 
@@ -163,9 +139,9 @@ inline QDataStream &operator<<(QDataStream &stream, const FileStruct &str)
 #if QT_VERSION >= 0x051200
     stream << str.filenum;
 #else
-    stream << std::underlying_type_t<FilesEnum>(str.filenum);
+    stream << std::underlying_type_t<FilesEnum>(str.ID);
 #endif
-    stream << str.filedata;
+    stream << str.data;
     return stream;
 }
 inline QDataStream &operator>>(QDataStream &stream, FileStruct &str)
@@ -173,18 +149,12 @@ inline QDataStream &operator>>(QDataStream &stream, FileStruct &str)
 #if QT_VERSION >= 0x051200
     stream >> str.filenum;
 #else
-    stream >> *reinterpret_cast<std::underlying_type_t<FilesEnum> *>(&str.filenum);
+    stream >> *reinterpret_cast<std::underlying_type_t<FilesEnum> *>(&str.ID);
 #endif
 
-    stream >> str.filedata;
+    stream >> str.data;
     return stream;
 }
-
-struct S2Record
-{
-    quint32 ID;
-    QByteArray data;
-};
 
 struct BlockStruct
 {
@@ -192,6 +162,7 @@ struct BlockStruct
     QByteArray data;
 };
 
+typedef BlockStruct S2Record;
 typedef BlockStruct HardwareStruct;
 typedef QList<S2Record> S2FilePack;
 
@@ -407,7 +378,6 @@ Q_DECLARE_METATYPE(DataTypes::FloatStruct)
 Q_DECLARE_METATYPE(DataTypes::SinglePointWithTimeStruct)
 Q_DECLARE_METATYPE(DataTypes::FileStruct)
 Q_DECLARE_METATYPE(DataTypes::FilesEnum)
-Q_DECLARE_METATYPE(DataTypes::S2Record)
 Q_DECLARE_METATYPE(DataTypes::BlockStruct)
 Q_DECLARE_METATYPE(DataTypes::S2FilePack)
 Q_DECLARE_METATYPE(DataTypes::SignalsStruct)
