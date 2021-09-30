@@ -2502,7 +2502,7 @@
 	</record>
 	<record>
 		<id>1165</id>
-		<type>BYTE</type>
+		<type>DWORD</type>
 		<widget>
 			<type>QDoubleSpinBox</type>
 			<group>102</group>
@@ -2514,7 +2514,7 @@
 	</record>
 	<record>
 		<id>1166</id>
-		<type>BYTE</type>
+		<type>DWORD</type>
 		<widget>
 			<type>QComboBox</type>
 			<group>102</group>
