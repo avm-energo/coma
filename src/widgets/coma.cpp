@@ -331,7 +331,7 @@ void Coma::loadOsc()
     {
         std::visit(overloaded {
                        [&](S2DataTypes::OscHeader &header) { oscManager.setHeader(header); },  //
-                       []([[maybe_unused]] auto &&arg) { /* here we ignore swj*/ },            //
+                       [](auto &&arg) { Q_UNUSED(arg) },                                       //
                        [&](std::unique_ptr<TrendViewModel> &model) { oscModel = model.get(); } //
                    },
             item);
