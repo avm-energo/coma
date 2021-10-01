@@ -1,7 +1,7 @@
 #include "widgetfactory.h"
 
-#include "../gen/configv.h"
 #include "../gen/module_kxx.h"
+#include "../gen/s2.h"
 #include "../models/comboboxdelegate.h"
 #include "../widgets/checkboxgroup.h"
 #include "../widgets/helper.h"
@@ -14,6 +14,16 @@ categoryMap WidgetFactory::m_categoryMap;
 // forward declarations
 // helpers for create widget
 static QWidget *createModbusView(QWidget *parent);
+// helpers for fill back from widget
+static bool fillBackModbus(BciNumber key, const QWidget *parent, ctti::unnamed_type_id_t type, BciNumber parentKey);
+static bool fillBackIpCtrl(BciNumber key, const QWidget *parent);
+static bool fillBackCheckBox(BciNumber key, const QWidget *parent);
+static bool fillBackLineEdit(BciNumber key, const QWidget *parent);
+static bool fillBackSPBG(BciNumber key, const QWidget *parent);
+static bool fillBackSPB(BciNumber key, const QWidget *parent);
+static bool fillBackChBG(BciNumber key, const QWidget *parent);
+static bool fillBackComboBox(BciNumber key, const QWidget *parent, delegate::QComboBox::PrimaryField field);
+static bool fillBackComboBoxGroup(BciNumber key, const QWidget *parent, int count);
 
 template <typename T> QWidget *helper(const T &arg, QWidget *parent, BciNumber key)
 {
@@ -83,7 +93,7 @@ template <> QWidget *helper(const delegate::Item &arg, QWidget *parent, [[maybe_
     return nullptr;
 }
 
-template <typename T> bool WidgetFactory::fillBackItem(BciNumber key, const QWidget *parent, BciNumber parentKey)
+template <typename T> bool fillBackItem(BciNumber key, const QWidget *parent, BciNumber parentKey)
 {
     switch (parentKey)
     {
@@ -99,7 +109,7 @@ template <typename T> bool WidgetFactory::fillBackItem(BciNumber key, const QWid
     // return true;
 };
 
-WidgetFactory::WidgetFactory(ConfigV *config) : configV(config)
+WidgetFactory::WidgetFactory()
 {
 }
 
@@ -293,7 +303,7 @@ bool WidgetFactory::fillBack(BciNumber key, const QWidget *parent)
 #ifdef DEBUG_FACTORY
                        qDebug("Item");
 #endif
-                       auto record = configV->getRecord(key);
+                       auto record = S2::getRecord(key);
                        std::visit(
                            [&](auto &&type) {
                                typedef std::remove_reference_t<decltype(type)> internalType;
@@ -355,7 +365,7 @@ QList<QStandardItem *> WidgetFactory::createItem(
     return items;
 }
 
-static QWidget *createModbusView(QWidget *parent)
+QWidget *createModbusView(QWidget *parent)
 {
     QTableView *tableView = new QTableView(parent);
 
@@ -413,8 +423,7 @@ static QWidget *createModbusView(QWidget *parent)
     // tableView->setMinimumWidth(tableView->horizontalHeader()->height() * 5);
     return tableView;
 }
-bool WidgetFactory::fillBackModbus(
-    BciNumber key, const QWidget *parent, ctti::unnamed_type_id_t type, BciNumber parentKey)
+bool fillBackModbus(BciNumber key, const QWidget *parent, ctti::unnamed_type_id_t type, BciNumber parentKey)
 {
     auto tableView = parent->findChild<QTableView *>(WidgetFactory::hashedName(type, parentKey));
     // QTableView *tv = parent->findChild<QTableView *>(hashedName(type, parentKey));
@@ -489,29 +498,28 @@ bool WidgetFactory::fillBackModbus(
         }
 
         DataTypes::BYTE_8t masterBuffer = *reinterpret_cast<DataTypes::BYTE_8t *>(&master);
-        configV->setRecordValue({ key, masterBuffer });
+        S2::setRecordValue({ key, masterBuffer });
     }
     return true;
 }
 
-bool WidgetFactory::fillBackIpCtrl(BciNumber key, const QWidget *parent)
+static bool fillBackIpCtrl(BciNumber key, const QWidget *parent)
 {
     auto widget = parent->findChild<IPCtrl *>(QString::number(key));
     if (!widget)
         return false;
-    configV->setRecordValue({ key, widget->getIP() });
-
+    S2::setRecordValue({ key, widget->getIP() });
     return true;
 }
 
-bool WidgetFactory::fillBackCheckBox(BciNumber key, const QWidget *parent)
+static bool fillBackCheckBox(BciNumber key, const QWidget *parent)
 {
     bool status = false;
     auto widget = parent->findChild<QCheckBox *>(QString::number(key));
     if (!widget)
         return status;
     bool state = widget->isChecked();
-    auto record = configV->getRecord(key);
+    auto record = S2::getRecord(key);
     std::visit(
         [&](auto &&arg) {
             typedef std::remove_reference_t<decltype(arg)> internalType;
@@ -523,18 +531,18 @@ bool WidgetFactory::fillBackCheckBox(BciNumber key, const QWidget *parent)
             }
         },
         record.getData());
-    configV->setRecordValue(record);
+    S2::setRecordValue(record);
     return status;
 }
 
-bool WidgetFactory::fillBackLineEdit(BciNumber key, const QWidget *parent)
+static bool fillBackLineEdit(BciNumber key, const QWidget *parent)
 {
     bool status = false;
     auto widget = parent->findChild<QLineEdit *>(QString::number(key));
     if (!widget)
         return status;
     const QString text = widget->text();
-    auto record = configV->getRecord(key);
+    auto record = S2::getRecord(key);
     std::visit(
         [&](auto &&arg) {
             typedef std::remove_reference_t<decltype(arg)> internalType;
@@ -554,14 +562,14 @@ bool WidgetFactory::fillBackLineEdit(BciNumber key, const QWidget *parent)
                 }
         },
         record.getData());
-    configV->setRecordValue(record);
+    S2::setRecordValue(record);
     return status;
 }
 
-bool WidgetFactory::fillBackSPBG(BciNumber key, const QWidget *parent)
+static bool fillBackSPBG(BciNumber key, const QWidget *parent)
 {
     bool status = false;
-    auto record = configV->getRecord(key);
+    auto record = S2::getRecord(key);
     std::visit(
         [&](auto &&arg) {
             typedef std::remove_reference_t<decltype(arg)> internalType;
@@ -572,24 +580,24 @@ bool WidgetFactory::fillBackSPBG(BciNumber key, const QWidget *parent)
                     internalType buffer {};
                     status = WDFunc::SPBGData(parent, QString::number(key), buffer);
                     if (status)
-                        configV->setRecordValue({ key, buffer });
+                        S2::setRecordValue({ key, buffer });
                 }
         },
         record.getData());
     return status;
 }
 
-bool WidgetFactory::fillBackSPB(BciNumber key, const QWidget *parent)
+static bool fillBackSPB(BciNumber key, const QWidget *parent)
 {
     bool status = false;
-    auto record = configV->getRecord(key);
+    auto record = S2::getRecord(key);
     std::visit(
         [&](auto &&arg) {
             typedef std::remove_reference_t<decltype(arg)> internalType;
-            if constexpr (!std_ext::is_container<internalType>())
+            if constexpr (!std::is_container<internalType>())
             {
                 auto buffer = WDFunc::SPBData<internalType>(parent, QString::number(key));
-                configV->setRecordValue({ key, buffer });
+                S2::setRecordValue({ key, buffer });
                 status = true;
             }
         },
@@ -597,25 +605,25 @@ bool WidgetFactory::fillBackSPB(BciNumber key, const QWidget *parent)
     return status;
 }
 
-bool WidgetFactory::fillBackChBG(BciNumber key, const QWidget *parent)
+static bool fillBackChBG(BciNumber key, const QWidget *parent)
 {
     bool status = false;
-    auto record = configV->getRecord(key);
+    auto record = S2::getRecord(key);
     std::visit(
         [&](auto &&arg) {
             typedef std::remove_reference_t<decltype(arg)> internalType;
-            if constexpr (!std_ext::is_container<internalType>())
+            if constexpr (!std::is_container<internalType>())
             {
                 if constexpr (std::is_unsigned_v<internalType>)
                 {
                     internalType buffer = 0;
                     status = WDFunc::ChBGData(parent, QString::number(key), buffer);
                     if (status)
-                        configV->setRecordValue({ key, buffer });
+                        S2::setRecordValue({ key, buffer });
                 }
             }
 
-            else if constexpr (std_ext::is_container<internalType>())
+            else if constexpr (std::is_container<internalType>())
             {
                 typedef internalType Container;
                 typedef std::remove_reference_t<typename internalType::value_type> internalType;
@@ -624,7 +632,7 @@ bool WidgetFactory::fillBackChBG(BciNumber key, const QWidget *parent)
                     Container buffer;
                     status = WDFunc::ChBGData(parent, QString::number(key), buffer);
                     if (status)
-                        configV->setRecordValue({ key, buffer });
+                        S2::setRecordValue({ key, buffer });
                 }
             }
         },
@@ -632,10 +640,10 @@ bool WidgetFactory::fillBackChBG(BciNumber key, const QWidget *parent)
     return status;
 }
 
-bool WidgetFactory::fillBackComboBox(BciNumber key, const QWidget *parent, delegate::QComboBox::PrimaryField field)
+static bool fillBackComboBox(BciNumber key, const QWidget *parent, delegate::QComboBox::PrimaryField field)
 {
     bool status = false;
-    auto record = configV->getRecord(key);
+    auto record = S2::getRecord(key);
     std::visit(
         [&](auto &&arg) {
             typedef std::remove_reference_t<decltype(arg)> internalType;
@@ -646,7 +654,7 @@ bool WidgetFactory::fillBackComboBox(BciNumber key, const QWidget *parent, deleg
                 case delegate::QComboBox::data:
                 {
                     auto buffer = WDFunc::CBData<internalType>(parent, QString::number(key));
-                    configV->setRecordValue({ key, buffer });
+                    S2::setRecordValue({ key, buffer });
                     break;
                 }
                 case delegate::QComboBox::bitfield:
@@ -660,7 +668,7 @@ bool WidgetFactory::fillBackComboBox(BciNumber key, const QWidget *parent, deleg
                         int status_code = WDFunc::CBIndex(parent, QString::number(key));
                         if (status_code == -1)
                             return;
-                        configV->setRecordValue({ key, static_cast<internalType>(status_code) });
+                        S2::setRecordValue({ key, static_cast<internalType>(status_code) });
                     }
                     break;
                 }
@@ -672,10 +680,10 @@ bool WidgetFactory::fillBackComboBox(BciNumber key, const QWidget *parent, deleg
     return status;
 }
 
-bool WidgetFactory::fillBackComboBoxGroup(BciNumber key, const QWidget *parent, int count)
+static bool fillBackComboBoxGroup(BciNumber key, const QWidget *parent, int count)
 {
     bool status = false;
-    auto record = configV->getRecord(key);
+    auto record = S2::getRecord(key);
     std::visit(
         [&](auto &&arg) {
             typedef std::remove_reference_t<decltype(arg)> internalType;
@@ -696,9 +704,9 @@ bool WidgetFactory::fillBackComboBoxGroup(BciNumber key, const QWidget *parent, 
 
                     bitset.set(i, bool(status_code));
                 }
-                configV->setRecordValue({ key, static_cast<internalType>(bitset.to_ullong()) });
+                S2::setRecordValue({ key, static_cast<internalType>(bitset.to_ullong()) });
             }
-            else if constexpr (std_ext::is_container<internalType>())
+            else if constexpr (std::is_container<internalType>())
             {
                 typedef internalType Container;
                 typedef std::remove_reference_t<typename internalType::value_type> internalType;
@@ -718,7 +726,8 @@ bool WidgetFactory::fillBackComboBoxGroup(BciNumber key, const QWidget *parent, 
                         }
                         container.at(i) = internalType(status_code);
                     }
-                    configV->setRecordValue({ key, container });
+
+                    S2::setRecordValue({ key, container });
                 }
             }
         },

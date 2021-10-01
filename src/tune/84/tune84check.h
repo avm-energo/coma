@@ -10,7 +10,7 @@ class Tune84Check : public AbstractTuneDialog
 {
     Q_OBJECT
 public:
-    Tune84Check(int tuneStep, QWidget *parent = nullptr);
+    Tune84Check(ConfigV *config, int tuneStep, QWidget *parent = nullptr);
 
 private:
     void setMessages() override;

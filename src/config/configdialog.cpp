@@ -2,6 +2,7 @@
 
 #include "../dialogs/keypressdialog.h"
 #include "../gen/board.h"
+#include "../gen/configv.h"
 #include "../gen/datamanager.h"
 #include "../gen/error.h"
 #include "../gen/files.h"
@@ -22,8 +23,8 @@ namespace crypto
 static constexpr char hash[] = "d93fdd6d1fb5afcca939fa650b62541d09dbcb766f41c39352dc75f348fb35dc";
 static constexpr char name[] = "confHash";
 }
-ConfigDialog::ConfigDialog(const QList<DataTypes::RecordPair> &defaultConfig, QWidget *parent)
-    : UDialog(crypto::hash, crypto::name, parent), m_defaultValues(defaultConfig)
+ConfigDialog::ConfigDialog(ConfigV *config, const QList<DataTypes::RecordPair> &defaultConfig, QWidget *parent)
+    : UDialog(crypto::hash, crypto::name, parent), m_defaultValues(defaultConfig), configV(config)
 {
     setSuccessMsg("Конфигурация записана успешно");
     const auto &manager = DataManager::GetInstance();
@@ -45,9 +46,8 @@ void ConfigDialog::WriteConf()
         return;
     }
     S2DataTypes::S2ConfigType buffer;
-    const auto &confList = S2::configV;
 
-    std::transform(confList.begin(), confList.end(), std::back_inserter(buffer),
+    std::transform(configV->getConfig().cbegin(), configV->getConfig().cend(), std::back_inserter(buffer),
         [](const auto &record) -> S2DataTypes::DataRec { return record.serialize(); });
     S2::tester(buffer);
 
@@ -90,25 +90,25 @@ void ConfigDialog::checkForDiff(const QList<DataTypes::DataRecV> &list)
 
 void ConfigDialog::confReceived(const QList<DataTypes::DataRecV> &list)
 {
-    S2::configV = list;
+    configV->setConfig(list);
 
     using namespace DataTypes;
-    const auto s2typeB = S2::getRecord(BciNumber::MTypeB_ID).value<DWORD>();
+    const auto s2typeB = configV->getRecord(BciNumber::MTypeB_ID).value<DWORD>();
     if (s2typeB != Board::GetInstance().typeB())
     {
         qCritical() << "Conflict typeB, module: " <<                //
             QString::number(Board::GetInstance().typeB(), 16)       //
                     << " config: " << QString::number(s2typeB, 16); //
-        S2::setRecordValue({ BciNumber::MTypeB_ID, DWORD(Board::GetInstance().typeB()) });
+        configV->setRecordValue({ BciNumber::MTypeB_ID, DWORD(Board::GetInstance().typeB()) });
     }
 
-    const auto s2typeM = S2::getRecord(BciNumber::MTypeE_ID).value<DWORD>();
+    const auto s2typeM = configV->getRecord(BciNumber::MTypeE_ID).value<DWORD>();
     if (s2typeM != Board::GetInstance().typeM())
     {
         qCritical() << "Conflict typeB, module: " <<                //
             QString::number(Board::GetInstance().typeM(), 16)       //
                     << " config: " << QString::number(s2typeM, 16); //
-        S2::setRecordValue({ BciNumber::MTypeE_ID, DWORD(Board::GetInstance().typeM()) });
+        configV->setRecordValue({ BciNumber::MTypeE_ID, DWORD(Board::GetInstance().typeM()) });
     }
 
     checkForDiff(list);
@@ -123,7 +123,7 @@ void ConfigDialog::SaveConfToFile()
         qCritical("Ошибка чтения конфигурации");
         return;
     }
-    S2::StoreDataMem(ba, S2::configV, DataTypes::Config);
+    S2::StoreDataMem(ba, configV->getConfig(), DataTypes::Config);
     quint32 length = *reinterpret_cast<quint32 *>(&ba.data()[4]);
     length += sizeof(S2DataTypes::FileHeader);
     Q_ASSERT(length == quint32(ba.size()));
@@ -226,7 +226,7 @@ void ConfigDialog::SetupUI()
     QVBoxLayout *vlyout = new QVBoxLayout;
     QTabWidget *ConfTW = new QTabWidget(this);
 
-    WidgetFactory factory;
+    WidgetFactory factory(configV);
     createTabs(ConfTW);
 
     for (const auto &record : qAsConst(m_defaultValues))
@@ -299,10 +299,10 @@ void ConfigDialog::Fill()
         if (!defRecord.visibility)
             continue;
         BciNumber id = static_cast<BciNumber>(defRecord.record.getId());
-        const auto record = S2::getRecord(id);
+        const auto record = configV->getRecord(id);
         std::visit(
             [=](const auto &&value) {
-                WidgetFactory factory;
+                WidgetFactory factory(configV);
                 bool status = factory.fillWidget(this, static_cast<BciNumber>(record.getId()), value);
                 if (!status)
                 {
@@ -326,7 +326,7 @@ void ConfigDialog::PrereadConf()
 
 void ConfigDialog::FillBack() const
 {
-    WidgetFactory factory;
+    WidgetFactory factory(configV);
     for (const auto &record : m_defaultValues)
     {
         if (!record.visibility)
@@ -343,7 +343,7 @@ void ConfigDialog::FillBack() const
 void ConfigDialog::SetDefConf()
 {
     for (const auto &record : m_defaultValues)
-        S2::setRecordValue(record.record);
+        configV->setRecordValue(record.record);
     Fill();
 }
 

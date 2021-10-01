@@ -1,8 +1,8 @@
 #pragma once
 
 #include "../config/widgetfactory.h"
+#include "../gen/configv.h"
 #include "../gen/datatypes.h"
-//#include "../gen/modules.h"
 #include "../module/alarmstateall.h"
 #include "../widgets/alarmwidget.h"
 #include "../widgets/udialog.h"
@@ -43,6 +43,9 @@ public:
     bool isConfigOutdated() const;
     void eraseSettings() const;
     void putConfigVersion() const;
+
+protected:
+    ConfigV configV;
 
 private:
     QList<UDialog *> m_dialogs;

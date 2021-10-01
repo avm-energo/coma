@@ -86,7 +86,7 @@ public:
     // Bac & Bda blocks only supported for now
     Error::Msg reqBlockSync(quint32 blocknum, DataTypes::DataBlockTypes blocktype, void *block, quint32 blocksize);
     Error::Msg writeBlockSync(quint32 blocknum, DataTypes::DataBlockTypes blocktype, void *block, quint32 blocksize);
-    Error::Msg writeConfFileSync();
+    Error::Msg writeConfFileSync(const QList<DataTypes::DataRecV> &config);
     Error::Msg writeFileSync(int filenum, QByteArray &ba);
     Error::Msg writeS2FileSync(DataTypes::FilesEnum number, S2DataTypes::S2ConfigType *file);
     Error::Msg readS2FileSync(quint32 filenum);

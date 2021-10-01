@@ -11,7 +11,8 @@
 #include <QPushButton>
 #include <QVBoxLayout>
 
-TuneKIVCheck::TuneKIVCheck(int tuneStep, QWidget *parent) : AbstractTuneDialog(tuneStep, parent)
+TuneKIVCheck::TuneKIVCheck(ConfigV *config, int tuneStep, QWidget *parent)
+    : AbstractTuneDialog(config, tuneStep, parent)
 {
     SetupUI();
 }

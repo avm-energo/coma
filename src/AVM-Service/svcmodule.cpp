@@ -77,7 +77,7 @@ void SvcModule::createModule(Modules::Model model)
         if (board.interfaceType() != Board::InterfaceType::RS485)
         {
             //   ConfigKIV *CKIV = new ConfigKIV;
-            addDialogToList(new ConfigDialog(settings()->configSettings), "Конфигурирование", "conf1");
+            addDialogToList(new ConfigDialog(&configV, settings()->configSettings), "Конфигурирование", "conf1");
         }
         CheckKIVDialog *cdkiv = new CheckKIVDialog;
         cdkiv->setHighlights(AbstractCheckDialog::Warning, settings()->highlightWarn);
@@ -95,7 +95,7 @@ void SvcModule::createModule(Modules::Model model)
         if (board.interfaceType() != Board::InterfaceType::RS485)
         {
             //  ConfigKTF *CKTF = new ConfigKTF;
-            addDialogToList(new ConfigDialog(settings()->configSettings), "Конфигурирование", "conf1");
+            addDialogToList(new ConfigDialog(&configV, settings()->configSettings), "Конфигурирование", "conf1");
         }
         CheckKTFDialog *cdktf = new CheckKTFDialog;
         addDialogToList(cdktf, "Проверка");
@@ -110,7 +110,7 @@ void SvcModule::createModule(Modules::Model model)
         if (board.interfaceType() != Board::InterfaceType::RS485)
         {
             //  ConfigKDV *CKDV = new ConfigKDV;
-            addDialogToList(new ConfigDialog(settings()->configSettings), "Конфигурирование", "conf1");
+            addDialogToList(new ConfigDialog(&configV, settings()->configSettings), "Конфигурирование", "conf1");
         }
         CheckKDVDialog *cdkdv = new CheckKDVDialog;
         addDialogToList(cdkdv, "Проверка");
