@@ -241,6 +241,7 @@ if (NOT AVTUK-12)
 
         include(limereport)
         include(qxlsx)
+        include(qcp)
 
     endif()
 endif()
