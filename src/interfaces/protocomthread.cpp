@@ -336,8 +336,10 @@ void ProtocomThread::fileHelper(DataTypes::FilesEnum fileNum)
             qCritical() << Error::FileOpenError << std::wstring(lpBuffer);
         }
         qDebug() << "Fail to read";
+        CloseHandle(hFile);
         return;
     }
+    CloseHandle(hFile);
     QByteArray ba = buffer;
     handleFile(ba, fileNum, FileFormat::Binary);
 }

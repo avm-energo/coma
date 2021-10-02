@@ -8,6 +8,14 @@
 #define LOG_MAX_SIZE 1048576
 #define LOGFILE "coma.log"
 
+const static QMap<QtMsgType, const char *> msgTypes {
+    { QtDebugMsg, "[DEBUG]" },       //
+    { QtWarningMsg, "[WARNING]" },   //
+    { QtCriticalMsg, "[CRITICAL]" }, //
+    { QtFatalMsg, "[FATAL]" },       //
+    { QtInfoMsg, "[INFO]" }          //
+};
+
 void checkNGzip(QString &fileName)
 {
     QFile logFile(fileName);

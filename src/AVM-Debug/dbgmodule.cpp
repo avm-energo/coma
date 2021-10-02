@@ -133,7 +133,7 @@ void DbgModule::create(Modules::BaseBoard typeB, Modules::MezzanineBoard typeM)
     if ((typeB == BaseBoard::MTB_85) && (typeM == MezzanineBoard::MTM_85))
     {
         qDebug("Here is AVTUK-8585");
-        addDialogToList(new ConfigDialog(settings()->configSettings), "Конфигурирование", "conf1");
+        addDialogToList(new ConfigDialog(&configV, settings()->configSettings), "Конфигурирование", "conf1");
         addDialogToList(new SwitchJournalDialog, "Журнал переключений");
         addDialogToList(new OscDialog, "Осциллограммы");
     }
