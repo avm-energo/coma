@@ -8,7 +8,6 @@
 #include <QByteArray>
 #include <QVariant>
 #include <memory>
-class QAbstractItemModel;
 
 struct SwjModel
 {
@@ -32,8 +31,6 @@ protected:
 public:
     FileManager() = default;
 
-    QString generateFilename(quint32 id, quint64 timestamp) const;
-
     File::Vector virtual loadFromFile(const QString &filename) const = 0;
     bool virtual loadRecords(const DataTypes::S2FilePack &input, File::Vector &output) const = 0;
     void clearBuffer()
@@ -41,19 +38,8 @@ public:
         files.clear();
     }
 
-    const static inline auto isOscHeader = [](const DataTypes::S2Record &record) { return (record.ID == MT_HEAD_ID); };
-
 protected:
     DataTypes::S2FilePack files;
-};
 
-template <typename T> QString FileManager<T>::generateFilename(quint32 id, quint64 timestamp) const
-{
-    // составляем имя файла осциллограммы
-    QString filename = TimeFunc::UnixTime64ToString(timestamp);
-    filename.replace("/", "-");
-    filename.replace(":", "_");
-    filename.insert(0, "_");
-    filename.insert(0, QString::number(id));
-    return filename;
-}
+    const static inline auto isOscHeader = [](const DataTypes::S2Record &record) { return (record.ID == MT_HEAD_ID); };
+};

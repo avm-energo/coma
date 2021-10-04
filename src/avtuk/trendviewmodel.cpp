@@ -48,11 +48,6 @@ bool TrendViewModel::SetPointsAxis(float start, float step)
     return true;
 }
 
-void TrendViewModel::SetFilename(const QString &fn)
-{
-    Filename = fn;
-}
-
 int TrendViewModel::DContains(const QString &key)
 {
     return DigitalMainData.contains(key);

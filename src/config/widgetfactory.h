@@ -49,8 +49,7 @@ private:
 
     template <typename T, std::enable_if_t<std::is_same<T, IPCtrl::container_type>::value, bool> = true>
     bool fillIpCtrl(const QWidget *parent, BciNumber key, const T &value);
-    template <typename T, std::enable_if_t<!std::is_container<T>::value, bool> = true>
-    bool fillCheckBox(const QWidget *parent, BciNumber key, const T &value);
+    bool fillCheckBox(const QWidget *parent, BciNumber key, bool value);
     template <typename T, std::enable_if_t<!std::is_container<T>::value, bool> = true>
     bool fillLineEdit(const QWidget *parent, BciNumber key, const T &value);
     template <typename T, std::enable_if_t<std::is_container<T>::value, bool> = true>
@@ -62,6 +61,15 @@ private:
     static widgetMap m_widgetMap;
     static categoryMap m_categoryMap;
 };
+
+inline bool WidgetFactory::fillCheckBox(const QWidget *parent, BciNumber key, bool value)
+{
+    auto widget = parent->findChild<QCheckBox *>(QString::number(key));
+    if (!widget)
+        return false;
+    widget->setChecked(bool(value));
+    return true;
+}
 
 const inline QString widgetName(int group, int item)
 {
@@ -82,16 +90,6 @@ bool WidgetFactory::fillIpCtrl(const QWidget *parent, BciNumber key, const T &va
     if (!widget)
         return false;
     widget->setIP(value);
-    return true;
-}
-
-template <typename T, std::enable_if_t<!std::is_container<T>::value, bool>>
-bool WidgetFactory::fillCheckBox(const QWidget *parent, BciNumber key, const T &value)
-{
-    auto widget = parent->findChild<QCheckBox *>(QString::number(key));
-    if (!widget)
-        return false;
-    widget->setChecked(bool(value));
     return true;
 }
 

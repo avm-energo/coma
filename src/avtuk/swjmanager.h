@@ -31,12 +31,6 @@ public:
         manager = std::make_unique<OscManager>();
         return true;
     }
-    static inline const auto isSwj = [](const DataTypes::S2Record &record) {
-        // ##TODO add other swjs
-        return ((record.ID == AVTUK_85::SWJ_ID)                 //
-            && (record.data.size() == sizeof(SwitchJourRecord)) //
-        );
-    };
 
     static QString craftType(quint8 id)
     {
@@ -65,6 +59,14 @@ public:
     {
         return (value & 0x00000001) ? "ВКЛЮЧЕНИЕ" : "ОТКЛЮЧЕНИЕ";
     }
+
+protected:
+    static inline const auto isSwj = [](const DataTypes::S2Record &record) {
+        // ##TODO add other swjs
+        return ((record.ID == AVTUK_85::SWJ_ID)                 //
+            && (record.data.size() == sizeof(SwitchJourRecord)) //
+        );
+    };
 
 private:
     std::unique_ptr<OscManager> manager;

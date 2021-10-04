@@ -101,12 +101,9 @@ std::unique_ptr<TrendViewModel> OscManager::load(const Record &record, const Fil
         return {};
     }
 
-    auto filename = generateFilename(curFileNum, record.time);
-
     auto trendViewModel = std::make_unique<TrendViewModel>(record.len);
 
     {
-        trendViewModel->SetFilename(filename);
         trendViewModel->SaveID(curFileNum);
         trendViewModel->Len = record.len;
         trendViewModel->xmax = float(record.len) / 2;

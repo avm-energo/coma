@@ -21,7 +21,6 @@ public:
     void AddAnalogPoint(const QString &GraphNum, float PointValue);
     void AddDigitalPoint(const QString &GraphNum, int PointValue);
     bool SetPointsAxis(float start, float step);
-    void SetFilename(const QString &fn);
     int DContains(const QString &key);
     int AContains(const QString &key);
     void SaveID(quint32 id);
@@ -60,7 +59,6 @@ public:
 
 private:
     int PointsNum;
-    QString Filename;
     bool NoDiscrete, NoAnalog;
     QStringList DigitalNames, AnalogNames;
     int WRow;

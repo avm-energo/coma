@@ -11,7 +11,7 @@ find_package(
   COMPONENTS Core Network SerialPort
   REQUIRED)
 find_package(
-  Qt5
+  Qt${QT_VERSION_MAJOR}
   COMPONENTS Core Network SerialPort
   REQUIRED)
 

@@ -41,6 +41,7 @@ public:
         return oscHeader.value();
     }
 
+protected:
     static inline const auto isOsc = [](const DataTypes::S2Record &record) {
         // ##TODO add other oscs
         return ((record.ID == AVTUK_85::OSC_ID)                                             //
