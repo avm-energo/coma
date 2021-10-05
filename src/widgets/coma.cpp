@@ -22,9 +22,8 @@
 
 #include "coma.h"
 
-#include "../avtuk/parseid9050.h"
-#include "../avtuk/swjdialog.h"
-#include "../avtuk/trendviewdialog.h"
+#include "../avtuk/switchjournaldialog.h"
+#include "../avtuk/swjmanager.h"
 #include "../comaversion/comaversion.h"
 #include "../dialogs/connectdialog.h"
 #include "../dialogs/errordialog.h"
@@ -113,7 +112,6 @@ Coma::Coma(QWidget *parent) : QMainWindow(parent)
     LoadSettings();
     splash->deleteLater();
     setStatusBar(WDFunc::NewSB(this));
-    oscManager = new OscManager(this);
 }
 
 Coma::~Coma()
@@ -325,14 +323,55 @@ void Coma::startWork(const ConnectStruct st)
 
 void Coma::loadOsc()
 {
+
     QString filename = WDFunc::ChooseFileForOpen(this, "Oscillogram files (*.osc)");
-    oscManager->LoadOscFromFile(filename);
+    fileVector = oscManager.loadFromFile(filename);
+    TrendViewModel *oscModel = nullptr;
+    for (auto &item : fileVector)
+    {
+        std::visit(overloaded {
+                       [&](S2DataTypes::OscHeader &header) { oscManager.setHeader(header); },  //
+                       [](auto &&arg) { Q_UNUSED(arg) },                                       //
+                       [&](std::unique_ptr<TrendViewModel> &model) { oscModel = model.get(); } //
+                   },
+            item);
+    }
+    if (oscModel)
+    {
+        oscManager.loadOsc(oscModel);
+    }
 }
 
 void Coma::loadSwj()
 {
+
+    SwjManager swjManager;
     QString filename = WDFunc::ChooseFileForOpen(this, "Switch journal files (*.swj)");
-    oscManager->loadSwjFromFile(filename);
+    fileVector = oscManager.loadFromFile(filename);
+    auto oscVector = swjManager.loadFromFile(filename);
+    std::move(oscVector.begin(), oscVector.end(), std::back_inserter(fileVector));
+    SwjModel *swjModel = nullptr;
+    TrendViewModel *oscModel = nullptr;
+    for (auto &item : fileVector)
+    {
+        std::visit(overloaded {
+                       [&](S2DataTypes::OscHeader &header) { oscManager.setHeader(header); },  //
+                       [&](SwjModel &model) { swjModel = &model; },                            //
+                       [&](std::unique_ptr<TrendViewModel> &model) { oscModel = model.get(); } //
+                   },
+            item);
+    }
+    if (!swjModel)
+        return;
+
+    auto dialog = new SwitchJournalViewDialog(*swjModel, oscModel, oscManager);
+    dialog->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    dialog->setAttribute(Qt::WA_DeleteOnClose);
+
+    dialog->show();
+    dialog->setMinimumHeight(WDFunc::getMainWindow()->height());
+    dialog->setMinimumWidth(WDFunc::getMainWindow()->width());
+    dialog->adjustSize();
 }
 
 void Coma::newTimers()

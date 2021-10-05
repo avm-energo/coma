@@ -131,7 +131,9 @@ QWidget *WidgetFactory::createWidget(BciNumber key, QWidget *parent)
 #endif
                        widget = new QWidget(parent);
                        QHBoxLayout *lyout = new QHBoxLayout;
-                       lyout->addWidget(new QLabel(arg.desc, parent));
+                       auto label = new QLabel(arg.desc, parent);
+                       label->setToolTip(arg.toolTip);
+                       lyout->addWidget(label);
                        lyout->addWidget(
                            WDFunc::NewSPBG(parent, QString::number(key), arg.count, arg.min, arg.max, arg.decimals));
                        widget->setLayout(lyout);
@@ -142,7 +144,9 @@ QWidget *WidgetFactory::createWidget(BciNumber key, QWidget *parent)
 #endif
                        widget = new QWidget(parent);
                        QHBoxLayout *lyout = new QHBoxLayout;
-                       lyout->addWidget(new QLabel(arg.desc, parent));
+                       auto label = new QLabel(arg.desc, parent);
+                       label->setToolTip(arg.toolTip);
+                       lyout->addWidget(label);
                        lyout->addWidget(WDFunc::NewSPB2(parent, QString::number(key), arg.min, arg.max, arg.decimals));
                        widget->setLayout(lyout);
                    },
@@ -153,7 +157,9 @@ QWidget *WidgetFactory::createWidget(BciNumber key, QWidget *parent)
                        // Q_ASSERT(desc.count() == arg.count);
                        widget = new QWidget(parent);
                        QHBoxLayout *lyout = new QHBoxLayout;
-                       lyout->addWidget(new QLabel(arg.desc, parent));
+                       auto label = new QLabel(arg.desc, parent);
+                       label->setToolTip(arg.toolTip);
+                       lyout->addWidget(label);
 
                        auto group = new CheckBoxGroup(arg.items, arg.count, parent);
                        group->setObjectName(QString::number(key));
@@ -167,7 +173,9 @@ QWidget *WidgetFactory::createWidget(BciNumber key, QWidget *parent)
                        // Q_ASSERT(desc.count() == arg.count);
                        widget = new QWidget(parent);
                        QHBoxLayout *lyout = new QHBoxLayout;
-                       lyout->addWidget(new QLabel(arg.desc, parent));
+                       auto label = new QLabel(arg.desc, parent);
+                       label->setToolTip(arg.toolTip);
+                       lyout->addWidget(label);
                        lyout->addWidget(WDFunc::NewCB2(parent, QString::number(key), arg.model));
                        widget->setLayout(lyout);
                    },
@@ -177,8 +185,11 @@ QWidget *WidgetFactory::createWidget(BciNumber key, QWidget *parent)
 #endif
                        // Q_ASSERT(desc.count() == arg.count);
                        widget = new QWidget(parent);
+
                        QHBoxLayout *mainLyout = new QHBoxLayout;
-                       mainLyout->addWidget(new QLabel(arg.desc, parent));
+                       auto label = new QLabel(arg.desc, parent);
+                       label->setToolTip(arg.toolTip);
+                       mainLyout->addWidget(label);
 
                        int count = arg.count;
                        auto itemsOneLine = detail::goldenRatio(count);
@@ -626,7 +637,7 @@ static bool fillBackComboBox(BciNumber key, const QWidget *parent, delegate::QCo
     std::visit(
         [&](auto &&arg) {
             typedef std::remove_reference_t<decltype(arg)> internalType;
-            if constexpr (std::is_unsigned_v<internalType>)
+            if constexpr (std::is_arithmetic_v<internalType>)
             {
                 switch (field)
                 {
@@ -642,10 +653,13 @@ static bool fillBackComboBox(BciNumber key, const QWidget *parent, delegate::QCo
                 }
                 default:
                 {
-                    int status_code = WDFunc::CBIndex(parent, QString::number(key));
-                    if (status_code == -1)
-                        return;
-                    S2::setRecordValue({ key, static_cast<internalType>(status_code) });
+                    if constexpr (std::is_integral_v<internalType>)
+                    {
+                        int status_code = WDFunc::CBIndex(parent, QString::number(key));
+                        if (status_code == -1)
+                            return;
+                        S2::setRecordValue({ key, static_cast<internalType>(status_code) });
+                    }
                     break;
                 }
                 }

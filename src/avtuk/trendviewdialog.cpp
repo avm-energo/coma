@@ -27,9 +27,9 @@
 
 #include "trendviewdialog.h"
 
-#include "../gen/colors.h"
 #include "../gen/error.h"
 #include "../gen/files.h"
+#include "../gen/modules.h"
 #include "../gen/pch.h"
 #include "../gen/stdfunc.h"
 #include "../widgets/signalchoosewidget.h"
@@ -38,19 +38,19 @@
 
 #include <QAction>
 #include <QPen>
+#include <QToolBar>
 #include <QVector>
 #include <algorithm>
 
-TrendViewDialog::TrendViewDialog(QByteArray &ba, QWidget *parent) : QDialog(parent)
+TrendViewDialog::TrendViewDialog(const QByteArray &ba, QWidget *parent)
+    : QDialog(parent)
+    , rangeChangeInProgress(false)
+    , starting(true)
+    , rangeAxisInProgress(false)
+    , digitalRescaleActivated(false)
+    , analogRescaleActivated(false)
+    , m_arrayToSave(ba)
 {
-    // setAttribute(Qt::WA_DeleteOnClose);
-    // setWindowFlags(Qt::WindowMinMaxButtonsHint);
-    rangeChangeInProgress = false;
-    rangeAxisInProgress = false;
-    starting = true;
-    m_arrayToSave = ba;
-    analogRescaleActivated = false;
-    digitalRescaleActivated = false;
 }
 
 TrendViewDialog::TrendViewDialog(QWidget *parent)
@@ -79,7 +79,7 @@ void TrendViewDialog::setupUI()
         SignalChooseWidget *scw
             = new SignalChooseWidget(digitalDescription.names, digitalDescription.descriptions, this);
         scw->setObjectName("digital");
-        // scw->setAccessibleDescription("Descr");
+
         connect(scw, &SignalChooseWidget::signalChoosed, this, &TrendViewDialog::signalChoosed);
         connect(scw, &SignalChooseWidget::signalToggled, this, &TrendViewDialog::signalToggled);
         vlyout->addWidget(scw);
@@ -94,30 +94,10 @@ void TrendViewDialog::setupUI()
         vlyout->addWidget(scw);
     }
     hlyout->addLayout(vlyout);
-    //    if (MainPlot.isNull())
-    //    {
-    //        qDebug(__PRETTY_FUNCTION__);
-    //        return;
-    //    }
+
     hlyout->addWidget(mainPlot.get(), 100);
     lyout->addLayout(hlyout);
-    /*    hlyout = new QHBoxLayout;
-        QPushButton *pb = new QPushButton("Сохранить в Excel");
-        connect(pb,SIGNAL(clicked(bool)),this,SLOT(SaveToExcel()));
-        hlyout->addWidget(pb);
-        hlyout->addStretch(10);
-        pb = new QPushButton("Сохранить в Comtrade");
-        connect(pb,SIGNAL(clicked(bool)),this,SLOT(SaveToComtrade()));
-        hlyout->addWidget(pb);
-        hlyout->addStretch(10);
-        pb = new QPushButton("Сохранить в файл .osc");
-        connect(pb,SIGNAL(clicked(bool)),this,SLOT(SaveToOsc()));
-        hlyout->addWidget(pb);
-        hlyout->addStretch(10);
-        pb = new QPushButton("Готово");
-        connect(pb,SIGNAL(clicked(bool)),this,SLOT(close()));
-        hlyout->addWidget(pb);
-        lyout->addLayout(hlyout); */
+
     setLayout(lyout);
 }
 
@@ -171,7 +151,7 @@ QCPLegend *TrendViewDialog::createLegend(int rectindex)
 int TrendViewDialog::visibleSignalOscDescriptionSize(TrendViewDialog::SignalTypes type)
 {
     int count = 0;
-    for (SignalOscPropertiesStruct st : signalOscPropertiesMap)
+    for (auto &&st : qAsConst(signalOscPropertiesMap))
     {
         if ((st.type == type) && (st.isVisible == true))
             ++count;
@@ -186,6 +166,7 @@ void TrendViewDialog::graphClicked(QCPAbstractPlottable *plot, int dataIndex)
                           .arg(plot->name())
                           .arg(dataIndex)
                           .arg(dataValue);
+    qDebug() << message;
 }
 
 void TrendViewDialog::signalChoosed(QString signame)
@@ -250,9 +231,7 @@ void TrendViewDialog::signalToggled(QString signame, bool isChecked)
                     signalOscPropertiesMap[signame].isVisible = true;
                     signalOscPropertiesMap[signame].graph = graph;
                     QPen pen;
-                    /*                graph->keyAxis()->setLabel("Time, ms");
-                                    graph->keyAxis()->setRange(XMin, XMax);
-                                    graph->valueAxis()->setLabel(graphname); */
+
                     graph->setName(signame);
                     if (type == ST_DIGITAL)
                     {
@@ -267,13 +246,7 @@ void TrendViewDialog::signalToggled(QString signame, bool isChecked)
                     }
                     else
                     {
-                        /*                    double min =
-                           *std::min_element(TrendModel->AnalogMainData[graphname].constBegin(), \
-                                                                           TrendModel->AnalogMainData[graphname].constEnd());
-                                            double max =
-                           *std::max_element(TrendModel->AnalogMainData[graphname].constBegin(), \
-                                                                           TrendModel->AnalogMainData[graphname].constEnd());
-                                            graph->valueAxis()->setRange(min, max); */
+
                         graph->setData(m_trendModel->MainPoints, m_trendModel->AnalogMainData[signame]);
                         analogLegend->addItem(new QCPPlottableLegendItem(analogLegend, graph));
                         if (!analogDescription.colors[signame].isEmpty())
@@ -283,8 +256,6 @@ void TrendViewDialog::signalToggled(QString signame, bool isChecked)
                                 qSin(count * 0.3 + 1.5) * 80 + 80));
                     }
                     graph->setPen(pen);
-                    //                graph->rescaleValueAxis(true, true);
-                    //                graph->rescaleKeyAxis();
                 }
             }
             else
@@ -352,64 +323,16 @@ void TrendViewDialog::mouseWheel()
     mainPlot->replot();
 }
 
-void TrendViewDialog::mousePress()
-{
-    /*    QList<QCPAxis*> axesList;
-
-        // https://github.com/mmccullo/qcustomplot-interaction-example/blob/master/mainwindow.cpp
-        // if an axis is selected, only allow the direction of that axis to be dragged
-        // if no axis is selected, check if a graph is selected and drag both axes
-
-        QList<QCPAxisRect *> axisrects = MainPlot->axisRects();
-        foreach(QCPAxisRect *rect, axisrects)
-        {
-            axesList.clear();
-            foreach(QCPAxis *axis, rect->axes())
-            {
-                if ((axis != nullptr) && (axis->selectedParts().testFlag(QCPAxis::spAxis)))
-                    axesList.append(axis);
-            }
-
-            bool selectedGraph = false;
-
-            // is a graph selected?
-            QList<QCPGraph *> GraphList = rect->graphs();
-            for (int i = 0; i < GraphList.size(); ++i)
-            {
-                QCPGraph *graph = GraphList.at(i);
-                if (graph->selected())
-                {
-                    selectedGraph = true;
-                    axesList.append(graph->keyAxis());
-                    axesList.append(graph->valueAxis());
-                    break;
-                }
-            }
-
-            // set the axes to drag
-            rect->setRangeDragAxes(axesList);
-        } */
-}
-
 void TrendViewDialog::analogRangeChanged(QCPRange range)
 {
     if (!noDiscrete)
         changeRange(range);
 }
 
-void TrendViewDialog::saveToExcel()
-{
-    // TrendModel->SaveToExcel(this);
-}
-
-void TrendViewDialog::saveToComtrade()
-{
-}
-
 void TrendViewDialog::saveToOsc()
 {
     QString filename = WDFunc::ChooseFileForSave(this, "Файлы осциллограмм (*.osc)", "osc");
-    Files::SaveToFile(filename, m_arrayToSave /*, BAToSave.size(*/);
+    Files::SaveToFile(filename, m_arrayToSave);
 }
 
 void TrendViewDialog::setRescale(bool isChecked)
@@ -468,8 +391,6 @@ void TrendViewDialog::showPlot()
                 }
             }
         }
-        /*        QCPItemTracer *itr = new QCPItemTracer(AnalogPlot);
-                itr->position->setCoords(0, 0); */
     }
     QCPMarginGroup *group = new QCPMarginGroup(mainPlot.get());
     QCPAxisRect *rect = mainPlot->axisRect(0);
@@ -477,7 +398,7 @@ void TrendViewDialog::showPlot()
         rect->setMarginGroup(QCP::msLeft, group);
     switch (m_trendModel->idOsc)
     {
-    case MT_ID85:
+    case AVTUK_85::OSC_ID:
     {
         rect = mainPlot->axisRect(1);
         if (rect != nullptr)
@@ -494,9 +415,9 @@ void TrendViewDialog::showPlot()
     this->showMaximized();
 }
 
-void TrendViewDialog::setModel(std::unique_ptr<TrendViewModel> model)
+void TrendViewDialog::setModel(TrendViewModel *model)
 {
-    m_trendModel = std::move(model);
+    m_trendModel = model;
 }
 
 void TrendViewDialog::setRange(float XRangeMin, float XRangeMax, float YRangeMin, float YRangeMax)
@@ -507,29 +428,29 @@ void TrendViewDialog::setRange(float XRangeMin, float XRangeMax, float YRangeMin
     yMax = YRangeMax;
 }
 
-void TrendViewDialog::setDigitalNames(QStringList &names)
+void TrendViewDialog::setDigitalNames(const QStringList &names)
 {
     digitalDescription.names = names;
 }
 
-void TrendViewDialog::setAnalogNames(QStringList &names)
+void TrendViewDialog::setAnalogNames(const QStringList &names)
 {
     analogDescription.names = names;
 }
 
-void TrendViewDialog::setAnalogDescriptions(QStringList &descr)
+void TrendViewDialog::setAnalogDescriptions(const QStringList &descr)
 {
     analogDescription.descriptions = descr;
 }
 
-void TrendViewDialog::setDiscreteDescriptions(QStringList &descr)
+void TrendViewDialog::setDiscreteDescriptions(const QStringList &descr)
 {
     digitalDescription.descriptions = descr;
 }
 
-void TrendViewDialog::setTrendModel(std::unique_ptr<TrendViewModel> mdl)
+void TrendViewDialog::setTrendModel(TrendViewModel *mdl)
 {
-    m_trendModel = std::move(mdl);
+    m_trendModel = mdl;
 }
 
 QByteArray TrendViewDialog::arrayToSave() const
@@ -539,10 +460,11 @@ QByteArray TrendViewDialog::arrayToSave() const
 
 void TrendViewDialog::setArrayToSave(const QByteArray &arrayToSave)
 {
-    m_arrayToSave = arrayToSave;
+    auto ba_ptr = const_cast<QByteArray *>(&m_arrayToSave);
+    *ba_ptr = arrayToSave;
 }
 
-void TrendViewDialog::setDigitalColors(QStringList &colors)
+void TrendViewDialog::setDigitalColors(const QStringList &colors)
 {
     for (int i = 0; i < digitalDescription.names.size(); ++i)
     {
@@ -554,7 +476,7 @@ void TrendViewDialog::setDigitalColors(QStringList &colors)
     }
 }
 
-void TrendViewDialog::setAnalogColors(QStringList &colors)
+void TrendViewDialog::setAnalogColors(const QStringList &colors)
 {
     for (int i = 0; i < analogDescription.names.size(); ++i)
     {
@@ -576,14 +498,14 @@ void TrendViewDialog::analogAxis(int &MainPlotLayoutRow)
     mainPlot->plotLayout()->addElement(
         MainPlotLayoutRow++, 0, title); // place the title in the empty cell we've just created
     QCPAxisRect *AnalogAxisRect = new QCPAxisRect(mainPlot.get());
-    if (m_trendModel->idOsc == MT_ID85)
+    if (m_trendModel->idOsc == AVTUK_85::OSC_ID)
         AnalogAxisRect->addAxis(QCPAxis::atLeft);
     mainPlot->plotLayout()->addElement(MainPlotLayoutRow++, 0, AnalogAxisRect);
     analogLegend = createLegend(MainPlotLayoutRow++);
     int count = 0;
     switch (m_trendModel->idOsc)
     {
-    case MT_ID85:
+    case AVTUK_85::OSC_ID:
     {
         while (count < AnalogGraphNum)
         {
@@ -667,7 +589,7 @@ void TrendViewDialog::analogAxis(int &MainPlotLayoutRow)
                     graph->keyAxis()->setLabel("Time, ms");
                 }
                 graph->keyAxis()->setRange(xMin, xMax);
-                //            graph->valueAxis()->setLabel(tmps);
+
                 graph->setName(tmps);
                 analogLegend->addItem(new QCPPlottableLegendItem(analogLegend, graph));
                 SignalOscProperties.graph = graph;
@@ -694,11 +616,11 @@ void TrendViewDialog::digitalAxis(int &MainPlotLayoutRow)
     QPen pen;
     QCPTextElement *title = new QCPTextElement(mainPlot.get());
     title->setText("Дискретные сигналы");
-    // title->setFont(QFont("sans", 12, QFont::Bold));
+
     mainPlot->plotLayout()->addElement(
         MainPlotLayoutRow++, 0, title); // place the title in the empty cell we've just created
     QCPAxisRect *DigitalAxisRect = new QCPAxisRect(mainPlot.get());
-    //        DiscreteRectIndex = RectIndex++;
+
     mainPlot->plotLayout()->addElement(MainPlotLayoutRow++, 0, DigitalAxisRect);
     discreteLegend = createLegend(MainPlotLayoutRow++);
 
@@ -722,7 +644,7 @@ void TrendViewDialog::digitalAxis(int &MainPlotLayoutRow)
             graph->valueAxis()->setRange(-1, 2);
             graph->keyAxis()->setLabel("Time, ms");
             graph->keyAxis()->setRange(xMin, xMax);
-            //            graph->valueAxis()->setLabel(tmps);
+
             graph->setName(tmps);
             graph->setLineStyle(QCPGraph::lsStepLeft); // импульсы
             discreteLegend->addItem(new QCPPlottableLegendItem(discreteLegend, graph));
@@ -753,7 +675,7 @@ void TrendViewDialog::setupPlots()
     mainPlot->setInteractions(QCP::iRangeZoom | QCP::iSelectPlottables | QCP::iSelectAxes);
     mainPlot->setAutoAddPlottableToLegend(false);
     int MainPlotLayoutRow = 0;
-    //    int RectIndex = 0;
+
     if (digitalDescription.names.size() != 0)
     {
         digitalAxis(MainPlotLayoutRow);
@@ -768,6 +690,6 @@ void TrendViewDialog::setupPlots()
         noAnalog = true;
     connect(mainPlot.get(), &QCustomPlot::plottableClick, this, &TrendViewDialog::graphClicked);
     connect(mainPlot.get(), &QCustomPlot::mouseWheel, this, &TrendViewDialog::mouseWheel);
-    connect(mainPlot.get(), &QCustomPlot::mousePress, this, &TrendViewDialog::mousePress);
+
     starting = false;
 }

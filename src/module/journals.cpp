@@ -198,17 +198,17 @@ void Journals::resultReady(EDynamicTableModel *model)
 
 void Journals::FillJour(const DataTypes::FileStruct &fs)
 {
-    m_jourType = fs.filenum;
-    switch (fs.filenum)
+    m_jourType = DataTypes::FilesEnum(fs.ID);
+    switch (fs.ID)
     {
     case DataTypes::JourMeas:
-        FillMeasTable(fs.filedata);
+        FillMeasTable(fs.data);
         break;
     case DataTypes::JourSys:
-        FillEventsTable(fs.filedata);
+        FillEventsTable(fs.data);
         break;
     case DataTypes::JourWork:
-        FillEventsTable(fs.filedata);
+        FillEventsTable(fs.data);
         break;
     default:
         break;

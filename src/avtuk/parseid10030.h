@@ -1,18 +1,10 @@
-#ifndef PARSEID9000_H
-#define PARSEID9000_H
-
+#pragma once
 #include "parsemodule.h"
-#include "trendviewdialog.h"
-#include "trendviewmodel.h"
 
-#include <QByteArray>
-#include <QObject>
-#include <QVector>
-
-class ParseID9000 : public ParseModule
+class ParseID10030 : public ParseModule
 {
 public:
-    ParseID9000(QByteArray &BA);
+    ParseID10030(const QByteArray &BA);
 
     struct Point85
     {
@@ -32,22 +24,6 @@ public:
     // 8-6:     BKCx – НЗ блок-контакты полюсов А, В, С
     // 5-3:     OCFx – оперативное управление отключением полюсов А, В, С
     // 2-0:     OCNx – оперативное управление включением полюсов А, В, С
-
-    struct Point21
-    {
-        float An;
-    };
-
-    struct Point8x
-    {
-        float An[6];
-    };
-
-    bool Parse(int &count);
-    //    void Save(quint32 *len);
-    bool ParseID21(quint32 id, S2DataTypes::OscHeader &OHD, const QString &fn, int &count);
-    bool ParseID8x(quint32 id, S2DataTypes::OscHeader &OHD, const QString &fn, TrendViewDialog *dlg, int &count);
-    bool ParseID85(quint32 id, S2DataTypes::OscHeader &OHD, const QString &fn, TrendViewDialog *dlg, int &count);
+public:
+    bool Parse(quint32 id, const S2DataTypes::OscHeader &header, TrendViewModel *model) override;
 };
-
-#endif // PARSEID9000_H

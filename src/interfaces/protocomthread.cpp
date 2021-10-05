@@ -31,6 +31,7 @@ typedef QQueue<QByteArray> ByteQueue;
 using Proto::CommandStruct;
 using Proto::Direction;
 using Proto::Starters;
+using Queries::FileFormat;
 
 ProtocomThread::ProtocomThread(QObject *parent) : QObject(parent), m_currentCommand({})
 {
@@ -103,24 +104,7 @@ void ProtocomThread::finish(Error::Msg msg)
 
 ProtocomThread::~ProtocomThread()
 {
-    // log->deleteLater();
-    // OscTimer->deleteLater();
-    // m_waitTimer->deleteLater();
 }
-
-// bool ProtocomThread::Reconnect()
-//{
-// FIXME Сделать reconnect
-//    m_usbWorker->closeConnection();
-//    if (m_usbWorker->setupConnection() == Error::Msg::NoError
-//        && Board::GetInstance().interfaceType() == Board::InterfaceType::USB)
-//    {
-//        Board::GetInstance().setConnectionState(Board::ConnectionState::Connected);
-//    }
-//    else
-//        return false;
-//    return true;
-//}
 
 void ProtocomThread::handle(const Proto::Commands cmd)
 {
@@ -155,6 +139,7 @@ void ProtocomThread::handle(const Proto::Commands cmd)
 
             // break;
         }
+
         //  GVar MS GMode MS
         if (!m_buffer.second.isEmpty())
             handleInt(m_buffer.second.front());
@@ -233,7 +218,7 @@ void ProtocomThread::handle(const Proto::Commands cmd)
 
     case Commands::ReadFile:
 
-        handleFile(m_buffer.second, FilesEnum(addr), static_cast<bool>(count));
+        handleFile(m_buffer.second, FilesEnum(addr), FileFormat(count));
         break;
 
     default:
@@ -354,7 +339,7 @@ void ProtocomThread::fileHelper(DataTypes::FilesEnum fileNum)
         return;
     }
     QByteArray ba = buffer;
-    handleFile(ba, fileNum, false);
+    handleFile(ba, fileNum, FileFormat::Binary);
 }
 #else
 
@@ -414,7 +399,7 @@ void ProtocomThread::fileHelper(DataTypes::FilesEnum fileNum)
         return;
     }
     QByteArray ba = file.readAll();
-    handleFile(ba, fileNum, false);
+    handleFile(ba, fileNum, Queries::FileFormat::Binary);
 }
 
 #endif
@@ -480,10 +465,9 @@ void ProtocomThread::parseRequest(const CommandStruct &cmdStr)
     {
         assert(m_currentCommand.arg1.canConvert<uint24>());
         uint24 addr = m_currentCommand.arg1.value<uint24>();
-        //   constexpr auto size = sizeof(addr);
-        quint32 test = addr;
+
         QByteArray buffer = StdFunc::arrayFromNumber((addr)) + m_currentCommand.ba;
-        //   buffer.remove(0, 1);
+
         QByteArray ba = prepareBlock(Commands::WriteSingleCommand, buffer);
         emit writeDataAttempt(ba);
         break;
@@ -549,13 +533,27 @@ void ProtocomThread::parseResponse(QByteArray ba)
 
         // Потому что на эту команду модуль не отдает пустой ответ
         if (isOneSegment(size) || (cmd == Proto::ReadBlkStartInfo))
+        {
             handle(Proto::Commands(cmd));
+            // Progress for big files
+            if (m_currentCommand.cmd == Proto::Commands::ReadFile)
+            {
+                progress += size;
+                handleProgress(progress);
+            }
+        }
         else
         {
 
             auto tba = prepareOk(false, cmd);
             Q_ASSERT(tba.size() == 4);
             emit writeDataAttempt(tba);
+            // Progress for big files
+            if (m_currentCommand.cmd == Proto::Commands::ReadFile)
+            {
+                progress += Proto::Limits::MaxSegmenthLength;
+                handleProgress(progress);
+            }
         }
         break;
     }
@@ -770,20 +768,43 @@ void ProtocomThread::handleSinglePoint(const QByteArray &ba, const quint16 addr)
     }
 }
 
-void ProtocomThread::handleFile(QByteArray &ba, DataTypes::FilesEnum addr, bool isShouldRestored)
+void ProtocomThread::handleFile(QByteArray &ba, DataTypes::FilesEnum addr, Queries::FileFormat format)
 {
-    if (isShouldRestored)
+    switch (format)
+    {
+    case FileFormat::Binary:
+    {
+        DataTypes::FileStruct resp { addr, ba };
+        DataManager::addSignalToOutList(DataTypes::SignalTypes::File, resp);
+        break;
+    }
+    case FileFormat::DefaultS2:
     {
         QList<DataTypes::DataRecV> outlistV;
 
         if (!S2::RestoreData(ba, outlistV))
             return;
         DataManager::addSignalToOutList(DataTypes::DataRecVList, outlistV);
+        break;
     }
-    else
+    case FileFormat::CustomS2:
     {
-        DataTypes::FileStruct resp { addr, ba };
-        DataManager::addSignalToOutList(DataTypes::SignalTypes::File, resp);
+        DataTypes::S2FilePack outlist;
+        if (!S2::RestoreData(ba, outlist))
+        {
+            DataTypes::GeneralResponseStruct resp { DataTypes::GeneralResponseTypes::Error,
+                static_cast<quint64>(ba.size()) };
+            DataManager::addSignalToOutList(DataTypes::SignalTypes::GeneralResponse, resp);
+            return;
+        }
+        for (auto &&file : outlist)
+        {
+            DataTypes::FileStruct resp { DataTypes::FilesEnum(file.ID), file.data };
+            DataManager::addSignalToOutList(DataTypes::SignalTypes::File, resp);
+        }
+
+        break;
+    }
     }
 }
 
@@ -841,13 +862,13 @@ void ProtocomThread::handleTechBlock(const QByteArray &ba, quint32 blkNum)
         //  Блок наличия осциллограмм Bo
     case 0x01:
     {
-        Q_ASSERT(ba.size() % sizeof(DataTypes::OscInfo) == 0);
-        for (int i = 0; i != ba.size(); i += sizeof(DataTypes::OscInfo))
+        Q_ASSERT(ba.size() % sizeof(S2DataTypes::OscInfo) == 0);
+        for (int i = 0; i != ba.size(); i += sizeof(S2DataTypes::OscInfo))
         {
-            QByteArray buffer = ba.mid(i, sizeof(DataTypes::OscInfo));
+            QByteArray buffer = ba.mid(i, sizeof(S2DataTypes::OscInfo));
 
-            DataTypes::OscInfo oscInfo;
-            memcpy(&oscInfo, buffer.constData(), sizeof(DataTypes::OscInfo));
+            S2DataTypes::OscInfo oscInfo;
+            memcpy(&oscInfo, buffer.constData(), sizeof(S2DataTypes::OscInfo));
             DataManager::addSignalToOutList(DataTypes::SignalTypes::OscillogramInfo, oscInfo);
         }
 
@@ -865,6 +886,21 @@ void ProtocomThread::handleTechBlock(const QByteArray &ba, quint32 blkNum)
         qDebug("Блок технологических событий BTe");
         break;
     }
+    case 0x04:
+    {
+        qDebug("Блок наличия журналов переключения");
+        Q_ASSERT(ba.size() % sizeof(S2DataTypes::SwitchJourInfo) == 0);
+        for (int i = 0; i != ba.size(); i += sizeof(S2DataTypes::SwitchJourInfo))
+        {
+            QByteArray buffer = ba.mid(i, sizeof(S2DataTypes::SwitchJourInfo));
+
+            S2DataTypes::SwitchJourInfo swjInfo;
+            memcpy(&swjInfo, buffer.constData(), sizeof(S2DataTypes::SwitchJourInfo));
+            DataManager::addSignalToOutList(DataTypes::SignalTypes::SwitchJournalInfo, swjInfo);
+        }
+        break;
+    }
+
         // Блок рабочего архива (Bra)
     case 0x05:
     {

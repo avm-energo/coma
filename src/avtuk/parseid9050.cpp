@@ -1,16 +1,11 @@
 #include "parseid9050.h"
 
-#include "../gen/colors.h"
 #include "../gen/error.h"
+#include "../gen/modules.h"
 #include "../gen/timefunc.h"
-#include "eoscillogram.h"
-#include "parsemodule.h"
 #include "trendviewdialog.h"
-#include "trendviewmodel.h"
 
-#include <QVector>
-
-ParseID9050::ParseID9050(QByteArray &BA) : ParseModule(BA)
+ParseID9050::ParseID9050(const QByteArray &BA) : ParseModule(BA)
 {
     Channel.insert("Channel_0", ID_OSC_CH0);
     Channel.insert("Channel_0", ID_SPECTR_CH0);
@@ -88,7 +83,7 @@ bool ParseID9050::ParseOsc(
         TModel->AddAnalogPoint(tmpav.at(0), point.An);
     }
     TModel->SetFilename(fn);
-    dlg->setModel(std::move(TModel));
+    dlg->setModel(TModel.get());
     dlg->setAnalogNames(tmpav);
     // 10000 мкс, 1250 мВ (сделать автонастройку в зависимости от конфигурации по данному каналу)
     dlg->setRange(0, 10000, -1250, 1250);
@@ -117,10 +112,10 @@ bool ParseID9050::ParseSpectr(quint32 id, ParseID9050::SpectHeader_Data &SHD, co
         TModel->AddAnalogPoint(tmpav.at(0), point.An);
     }
     TModel->SetFilename(fn);
-    dlg->setModel(std::move(TModel));
+    dlg->setModel(TModel.get());
     dlg->setAnalogNames(tmpav);
-    dlg->setRange(
-        0, 1000000, 0, 2); // 1000000 Гц, 2 о.е. (сделать автонастройку в зависимости от конфигурации по данному каналу)
+    // 1000000 Гц, 2 о.е. (сделать автонастройку в зависимости от конфигурации по данному каналу)
+    dlg->setRange(0, 1000000, 0, 2);
     dlg->setupPlots();
     dlg->setupUI();
 

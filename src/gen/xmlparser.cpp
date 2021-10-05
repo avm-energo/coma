@@ -234,14 +234,16 @@ ctti::unnamed_type_id_t XmlParser::parseType(QDomElement domElement)
             return ctti::unnamed_type_id<FLOAT_2t>().hash();
         if (name.contains("float[3]", Qt::CaseInsensitive))
             return ctti::unnamed_type_id<FLOAT_3t>().hash();
+        if (name.contains("float[4]", Qt::CaseInsensitive))
+            return ctti::unnamed_type_id<FLOAT_4t>().hash();
         if (name.contains("float[6]", Qt::CaseInsensitive))
             return ctti::unnamed_type_id<FLOAT_6t>().hash();
         if (name.contains("float[8]", Qt::CaseInsensitive))
             return ctti::unnamed_type_id<FLOAT_8t>().hash();
 
-    case 2:
-        if (name.contains("float[2][2]", Qt::CaseInsensitive))
-            return ctti::unnamed_type_id<FLOAT_2t_2t>().hash();
+        //    case 2:
+        //        if (name.contains("float[2][2]", Qt::CaseInsensitive))
+        //            return ctti::unnamed_type_id<FLOAT_2t_2t>().hash();
 
     default:
         assert(false && "Unknown type");
@@ -378,6 +380,29 @@ delegate::itemVariant XmlParser::parseWidget(QDomElement domElement)
     return delegate::Widget(type, description, widgetGroup, toolTip);
 }
 
+void XmlParser::mergeWidget(const QDomElement &domElement, widgetMap *const s2widgetMap, BciNumber id)
+{
+    auto newWidget = parseWidget(domElement);
+    auto oldWidget = s2widgetMap->at(id);
+    newWidget = std::visit(
+        [&](auto &&lhs, auto &&rhs) -> delegate::itemVariant {
+            using T = std::decay_t<decltype(lhs)>;
+            using J = std::decay_t<decltype(rhs)>;
+
+            if constexpr (std::is_same_v<T, J>)
+            {
+                if constexpr (std::is_same_v<T, delegate::Item>)
+                {
+                    abort();
+                }
+                return lhs.merge(rhs);
+            }
+            abort();
+        },
+        oldWidget, newWidget);
+    s2widgetMap->insert_or_assign(id, newWidget);
+}
+
 DataTypes::RecordPair XmlParser::parseRecord(QDomElement domElement, widgetMap *const s2widgetMap)
 {
     using namespace DataTypes;
@@ -391,43 +416,27 @@ DataTypes::RecordPair XmlParser::parseRecord(QDomElement domElement, widgetMap *
     if (!status)
         return {};
 
-    childElement = domElement.firstChildElement("defaultValue");
-    // defaultValue is necessary, is this ok?
-    if (childElement.isNull())
-        return {};
     // override settings
-    childElement = domElement.firstChildElement("widget");
-    if (!childElement.isNull())
+    auto widgetElement = domElement.firstChildElement("widget");
+    if (!widgetElement.isNull())
     {
-        auto newWidget = parseWidget(childElement);
-        auto oldWidget = s2widgetMap->at(BciNumber(id));
-        newWidget = std::visit(
-            [&](auto &&lhs, auto &&rhs) -> delegate::itemVariant {
-                using T = std::decay_t<decltype(lhs)>;
-                using J = std::decay_t<decltype(rhs)>;
-
-                if constexpr (std::is_same_v<T, J>)
-                {
-                    if constexpr (std::is_same_v<T, delegate::Item>)
-                    {
-                        abort();
-                    }
-                    return lhs.merge(rhs);
-                }
-                abort();
-            },
-            oldWidget, newWidget);
-        s2widgetMap->insert_or_assign(BciNumber(id), newWidget);
+        mergeWidget(widgetElement, s2widgetMap, BciNumber(id));
     }
+
+    auto defaultValueElement = domElement.firstChildElement("defaultValue");
+    // defaultValue is necessary, is this ok?
+    if (defaultValueElement.isNull())
+        return {};
+    auto defaultValue = defaultValueElement.text();
 
     auto visibilityElement = domElement.firstChildElement("visibility");
     // visibility=true by default
     if (visibilityElement.isNull() || visibilityElement.text() == "true")
-        return RecordPair { DataTypes::DataRecV(id, childElement.text()), true };
+        return RecordPair { DataTypes::DataRecV(id, defaultValue), true };
     if (visibilityElement.text() == "false")
-        return RecordPair { DataTypes::DataRecV(id, childElement.text()), false };
-    Q_ASSERT(false && "Wrong visible value: " && childElement.text().toStdString().c_str());
-    return RecordPair { DataTypes::DataRecV(id, childElement.text()), true };
+        return RecordPair { DataTypes::DataRecV(id, defaultValue), false };
+    Q_ASSERT(false && "Wrong visible value: " && defaultValue.toStdString().c_str());
+    return RecordPair { DataTypes::DataRecV(id, defaultValue), true };
 }
 
 delegate::Item XmlParser::parseItem(QDomElement domElement, ctti::unnamed_type_id_t parentType)
@@ -547,7 +556,8 @@ void XmlParser::traverseNode(const QDomNode &node, ModuleSettings *const setting
                 }
                 if (domElement.tagName() == "protocom")
                 {
-                    if (Board::GetInstance().interfaceType() == Board::USB)
+                    if (Board::GetInstance().interfaceType() == Board::USB
+                        || Board::GetInstance().interfaceType() == Board::Emulator)
                         settings->ifaceSettings = (BaseInterface::iface()->parseSettings(domElement));
 
                     domNode = domNode.nextSibling();

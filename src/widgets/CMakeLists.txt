@@ -4,31 +4,30 @@ project(widgets LANGUAGES CXX)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-find_package(Qt5Core)
-
 find_package(
   QT NAMES Qt6 Qt5
-  COMPONENTS Core Network Widgets
+  COMPONENTS Core Xml Widgets
   REQUIRED)
 find_package(
   Qt${QT_VERSION_MAJOR}
-  COMPONENTS Core Network Xml Widgets
+  COMPONENTS Core Xml Widgets
   REQUIRED)
-find_package(
-  Qt${QT_VERSION_MAJOR}
-  COMPONENTS Widgets
-  REQUIRED)
+
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup(TARGETS)
 
-if (NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/styles/QDarkStyleSheet/qdarkstyle/dark/darkstyle.qrc)
-    file(RENAME styles/QDarkStyleSheet/qdarkstyle/dark/style.qrc
-         styles/QDarkStyleSheet/qdarkstyle/dark/darkstyle.qrc)
+set(QDARKSTYLESHEET_PATH
+    ${CMAKE_CURRENT_SOURCE_DIR}/styles/QDarkStyleSheet/qdarkstyle)
+
+if(NOT EXISTS ${QDARKSTYLESHEET_PATH}/dark/darkstyle.qrc)
+  file(RENAME ${QDARKSTYLESHEET_PATH}/dark/style.qrc
+       ${QDARKSTYLESHEET_PATH}/dark/darkstyle.qrc)
 endif()
-if (NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/styles/QDarkStyleSheet/qdarkstyle/light/lightstyle.qrc)
-    file(RENAME styles/QDarkStyleSheet/qdarkstyle/light/style.qrc
-         styles/QDarkStyleSheet/qdarkstyle/light/lightstyle.qrc)
+if(NOT EXISTS ${QDARKSTYLESHEET_PATH}/light/lightstyle.qrc)
+  file(RENAME ${QDARKSTYLESHEET_PATH}/light/style.qrc
+       ${QDARKSTYLESHEET_PATH}/light/lightstyle.qrc)
 endif()
+
 add_library(
   ${PROJECT_NAME} STATIC
   aboutwidget.cpp
@@ -86,10 +85,7 @@ target_link_libraries(
   PRIVATE Qt${QT_VERSION_MAJOR}::Core
   PRIVATE Qt${QT_VERSION_MAJOR}::Widgets
   PRIVATE Qt${QT_VERSION_MAJOR}::Xml
-  PRIVATE Qt${QT_VERSION_MAJOR}::Network
   PRIVATE QXlsx
-  PRIVATE CONAN_PKG::boost
-  )
+  PRIVATE CONAN_PKG::boost)
 
-#add_dependencies(${PROJECT_NAME} QXlsxBuild)
 target_compile_definitions(${PROJECT_NAME} PRIVATE ${PROJECT_NAME}_LIBRARY)

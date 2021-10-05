@@ -755,3 +755,57 @@ struct Indication
 };
 
 }
+
+// Oscillogram / SwitchJournal Part
+
+/// ID заголовка осциллограммы
+constexpr int MT_HEAD_ID = 9000;
+
+constexpr int ID_OSC_CH0 = 10040; // ID осциллограммы канала 0
+constexpr int ID_OSC_CH1 = 10041; // ID осциллограммы канала 1
+constexpr int ID_OSC_CH2 = 10042; // ID осциллограммы канала 2
+constexpr int ID_OSC_CH3 = 10043; // ID осциллограммы канала 3
+constexpr int ID_OSC_CH4 = 10044; // ID осциллограммы канала 4
+constexpr int ID_OSC_CH5 = 10045; // ID осциллограммы канала 5
+constexpr int ID_OSC_CH6 = 10046; // ID осциллограммы канала 6
+constexpr int ID_OSC_CH7 = 10047; // ID осциллограммы канала 7
+
+constexpr int ID_SPECTR_CH0 = 10050; // ID спектрограммы канала 0
+constexpr int ID_SPECTR_CH1 = 10051; // ID спектрограммы канала 1
+constexpr int ID_SPECTR_CH2 = 10052; // ID спектрограммы канала 2
+constexpr int ID_SPECTR_CH3 = 10053; // ID спектрограммы канала 3
+constexpr int ID_SPECTR_CH4 = 10054; // ID спектрограммы канала 4
+constexpr int ID_SPECTR_CH5 = 10055; // ID спектрограммы канала 5
+constexpr int ID_SPECTR_CH6 = 10056; // ID спектрограммы канала 6
+constexpr int ID_SPECTR_CH7 = 10057; // ID спектрограммы канала 7
+
+namespace AVTUK_85
+{
+/// ID журнала переключений с осциллограммой модуля 8085/8585
+constexpr int SWJ_ID = 10031;
+/// ID осциллограммы по модулю 8085/8585
+constexpr int OSC_ID = 10030;
+}
+
+namespace AVTUK_8X
+{
+/// ID осциллограммы по модулю 808x
+constexpr int OSC_ID = 10020;
+}
+
+namespace AVTUK_87
+{
+/// ID осциллограммы и спектрограммы модуля 87
+constexpr int OSC_SPC_ID = 9050;
+}
+
+namespace AVTUK_21
+{
+/// первый ID осциллограммы по модулю 21
+constexpr int OSC_ID_MIN = 10001;
+/// последний ID осциллограммы по модулю 21
+constexpr int OSC_ID_MAX = 10016;
+}
+
+/// максимальный размер буфера для осциллограмм
+constexpr int MAXOSCBUFSIZE = 262144;

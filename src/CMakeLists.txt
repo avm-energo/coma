@@ -15,11 +15,14 @@ if(CONAN_FOUND)
     set(CONAN_EXEC conan)
 endif()
 
-
+if(NOT CONAN_EXEC)
+    message(FATAL_ERROR  "Conan package manager required, please download it from https://conan.io/downloads.html")
+endif(NOT CONAN_EXEC)
 
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/../scripts")
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_BINARY_DIR}")
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/3rdParty")
@@ -41,7 +44,7 @@ elseif(${PROJECT_ARCHITECTURE}} MATCHES "armv7")
     set(CONAN_PROFILE "armhf")
 else()
     message(FATAL_ERROR "Invalid arch name: ${PROJECT_ARCHITECTURE}")
-endif()    
+endif()
 
 if(CMAKE_SYSTEM_NAME_LOWER STREQUAL "windows")
   message(STATUS "Windows")
@@ -88,13 +91,23 @@ elseif(CMAKE_SYSTEM_NAME_LOWER STREQUAL "unix")
 endif()
 string(TOLOWER "${CMAKE_BUILD_TYPE}" CMAKE_BUILD_TYPE_LOWER)
 
-if (NOT AVTUK-12)
-    string(APPEND CMAKE_CXX_FLAGS_DEBUG " -fno-omit-frame-pointer -fsanitize=address,undefined -fstack-protector")
-    string(APPEND CMAKE_LINKER_FLAGS_DEBUG " -fno-omit-frame-pointer -fsanitize=address,undefined -fstack-protector")
+if (MSVC)
+    add_compile_options(/permissive-)
+    string(APPEND CMAKE_CXX_FLAGS " /w14456 /w14189 /w14458 /w14100 /w14996")
 else()
-    string(APPEND CMAKE_CXX_FLAGS_DEBUG " -fno-omit-frame-pointer -fstack-protector")
-    string(APPEND CMAKE_LINKER_FLAGS_DEBUG " -fno-omit-frame-pointer -fstack-protector")
+    #TODO make the same as msvc
 endif()
+
+if (NOT MSVC_C_ARCHITECTURE_ID)
+    if (NOT AVTUK-12)
+        string(APPEND CMAKE_CXX_FLAGS_DEBUG " -fno-omit-frame-pointer -fsanitize=address,undefined -fstack-protector")
+        string(APPEND CMAKE_LINKER_FLAGS_DEBUG " -fno-omit-frame-pointer -fsanitize=address,undefined -fstack-protector")
+    else()
+        string(APPEND CMAKE_CXX_FLAGS_DEBUG " -fno-omit-frame-pointer -fstack-protector")
+        string(APPEND CMAKE_LINKER_FLAGS_DEBUG " -fno-omit-frame-pointer -fstack-protector")
+    endif(NOT AVTUK-12)
+endif(NOT MSVC_C_ARCHITECTURE_ID)
+
 set(CMAKE_EXPORT_COMPILE_COMMANDS             ON)
 
 message(STATUS "Cached target arch: " ${CACHED_PROJECT_TARGET_NAME})
@@ -110,9 +123,6 @@ set(CONAN_MAIN_INIT ${CONAN_EXEC} install . --profile ${CONAN_PROFILE}  -g cmake
 
 if (NOT AVTUK-12)
     if (NOT ( EXISTS "${CMAKE_BINARY_DIR}/conanbuildinfo.txt" AND ${CACHED_PROJECT_TARGET_NAME} STREQUAL ${PROJECT_TARGET_NAME}))
-    #    execute_process(COMMAND ${CONAN_MAIN_INIT}
-    #        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/..
-    #        RESULT_VARIABLE CMD_ERROR)
         execute_process(
             COMMAND ${CMAKE_COMMAND} -E env
                 CONAN_USER_HOME=${USER_DIRECTORY} ${CONAN_MAIN_INIT}
@@ -142,6 +152,7 @@ find_package(
 set(QT_VERSION ${Qt5Core_VERSION})
 message(STATUS "QT version - ${QT_VERSION}")
 
+option(ENABLE_EMULATOR "Enable emulator interface" OFF)
 if(CMAKE_BUILD_TYPE EQUAL "DEBUG")
   message(STATUS "debug mode")
   set(MODE_DIR Debug)
@@ -155,6 +166,26 @@ include(CheckIncludeFile)
 include(CheckIncludeFileCXX)
 include(CheckIncludeFiles)
 include(ExternalProject)
+
+
+if(NOT EXISTS "${CMAKE_BINARY_DIR}/conan.cmake")
+  message(STATUS "Downloading conan.cmake from https://github.com/conan-io/cmake-conan")
+  file(DOWNLOAD "https://raw.githubusercontent.com/conan-io/cmake-conan/v0.16.1/conan.cmake"
+                "${CMAKE_BINARY_DIR}/conan.cmake"
+                EXPECTED_HASH SHA256=396e16d0f5eabdc6a14afddbcfff62a54a7ee75c6da23f32f7a31bc85db23484
+                TLS_VERIFY ON)
+endif()
+
+include(${CMAKE_BINARY_DIR}/conan.cmake)
+
+conan_cmake_autodetect(settings)
+
+if(NOT CONAN_DEBUG)
+    list(TRANSFORM settings REPLACE "^.*(Debug)$"  "build_type=Release")
+    list(TRANSFORM settings REPLACE "^.*(MDd)$"  "compiler.runtime=MD")
+    list(TRANSFORM settings REPLACE "^.*(MTd)$"  "compiler.runtime=MT")
+endif(NOT CONAN_DEBUG)
+
 
 # Old Qt does not provide QT_VERSION_MAJOR
 if (NOT QT_VERSION_MAJOR)
@@ -171,8 +202,25 @@ if (NOT AVTUK-12)
     endif()
 
     if (Qt${QT_VERSION_MAJOR}Gui_FOUND)
+
+        if(${PROJECT_ARCHITECTURE}} MATCHES "x86_64")
+          set(WINDOWS_TARGET_NAME "x64")
+        elseif(${PROJECT_ARCHITECTURE}} MATCHES "i386")
+          set(WINDOWS_TARGET_NAME "Win32")
+        else()
+          message(FATAL_ERROR "Invalid arch name: ${PROJECT_ARCHITECTURE}")
+        endif()
+
+        if(CMAKE_GENERATOR MATCHES "Visual Studio")
+          set(CUSTOM_TARGET_PLATFORM_ARG -A${WINDOWS_TARGET_NAME})
+        else()
+            set(CUSTOM_TARGET_GENERATOR "-G${CMAKE_GENERATOR}")
+          # Other stuff
+        endif()
+
         include(limereport)
         include(qxlsx)
+
     endif()
 endif()
 
@@ -183,9 +231,6 @@ endif()
 add_subdirectory(gen)
 add_subdirectory(comaversion)
 if (BUILD_WITH_ALISE)
-   # find_package(Protobuf REQUIRED)
-  #  find_package(ZeroMQ REQUIRED)
-  #  find_package(libsodium REQUIRED)
     set(PROTOS_GENERATED_DIR ${CMAKE_CURRENT_BINARY_DIR}/protos/protos)
     add_subdirectory(alise)
     add_subdirectory(protos)

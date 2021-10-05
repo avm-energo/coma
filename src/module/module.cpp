@@ -124,7 +124,11 @@ bool Module::loadSettings()
 
         moduleName = /*moduleName.split("-").last();*/ match.captured(0);
     }
+#ifdef USE_INTERNAL_RCS
+    QDir directory(":/module");
+#else
     QDir directory(StdFunc::GetSystemHomeDir());
+#endif
     qDebug() << directory;
     auto allFiles = directory.entryList(QDir::Files);
     auto xmlFiles = allFiles.filter(".xml");
@@ -183,7 +187,11 @@ bool Module::loadS2Settings()
 {
     const auto name = "s2files";
 
+#ifdef USE_INTERNAL_RCS
+    QDir directory(":/module");
+#else
     QDir directory(StdFunc::GetSystemHomeDir());
+#endif
     qDebug() << directory;
     auto allFiles = directory.entryList(QDir::Files);
     auto xmlFiles = allFiles.filter(".xml");

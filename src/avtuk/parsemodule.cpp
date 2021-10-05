@@ -1,8 +1,12 @@
 #include "parsemodule.h"
 
-ParseModule::ParseModule(QByteArray &BA)
+#include "trendviewdialog.h"
+ParseModule::ParseModule(const QByteArray &BA) : BArray(BA)
 {
-    BArray = BA;
+}
+
+ParseModule::~ParseModule()
+{
 }
 
 bool ParseModule::PosPlusPlus(void *dst, int &count, int size)
@@ -13,9 +17,4 @@ bool ParseModule::PosPlusPlus(void *dst, int &count, int size)
     count = count + size;
 
     return true;
-}
-
-TrendViewModel *ParseModule::trendViewModel() const
-{
-    return m_trendViewModel.get();
 }

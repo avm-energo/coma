@@ -34,8 +34,8 @@ QDebug operator<<(QDebug debug, const DataTypes::SinglePointWithTimeStruct &st)
 
 QDebug operator<<(QDebug debug, const DataTypes::FileStruct &st)
 {
-    debug.nospace() << QString::number(st.filenum) << ":"
-                    << "File size: " << QString::number(st.filedata.size());
+    debug.nospace() << QString::number(st.ID) << ":"
+                    << "File size: " << QString::number(st.data.size());
     return debug.maybeSpace();
 }
 
@@ -63,11 +63,11 @@ QDebug operator<<(QDebug debug, const DataTypes::GeneralResponseStruct &st)
     return debug.maybeSpace();
 }
 
-QDebug operator<<(QDebug debug, const DataTypes::OscInfo &st)
+QDebug operator<<(QDebug debug, const S2DataTypes::OscInfo &st)
 {
 
-    debug.nospace() << st.fileNum << ":" << st.fileLength << ":" << st.id << ":"
-                    << TimeFunc::UnixTime64ToString(st.unixtime) << ":" << st.id0;
+    debug.nospace() << st.typeHeader.id << ":" << st.typeHeader.numByte << ":" << st.id << ":"
+                    << TimeFunc::UnixTime64ToString(st.unixtime) << ":" << st.idOsc0;
     return debug.maybeSpace();
 }
 

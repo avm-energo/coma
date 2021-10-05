@@ -40,8 +40,8 @@ QString TimeFunc::UnixTime64ToString(quint64 utime, QTimeZone tz)
     QDateTime tn = QDateTime::fromSecsSinceEpoch(tmpi, tz);
     quint32 timens = utime & 0xFFFFFFFF;
     QString ms = QString::number((timens / 1000000));
-    QString mcs = QString::number(((timens - ms.toInt() * 1000000) / 1000));
-    QString ns = QString::number(timens - ms.toInt() * 1000000 - mcs.toInt() * 1000);
+    QString mcs = QString::number(timens / 1000 - ms.toULongLong() * 1000);
+    QString ns = QString::number(timens - ms.toULongLong() * 1000000 - mcs.toULongLong() * 1000);
     QString time = tn.toString("dd/MM/yyyy hh:mm:ss.") + ms + "." + mcs + "." + ns;
     return time;
 }

@@ -130,6 +130,13 @@ void DbgModule::create(Modules::BaseBoard typeB, Modules::MezzanineBoard typeM)
         addDialogToList(new SwitchJournalDialog, "Журнал переключений");
         addDialogToList(new OscDialog, "Осциллограммы");
     }
+    if ((typeB == BaseBoard::MTB_85) && (typeM == MezzanineBoard::MTM_85))
+    {
+        qDebug("Here is AVTUK-8585");
+        addDialogToList(new ConfigDialog(settings()->configSettings), "Конфигурирование", "conf1");
+        addDialogToList(new SwitchJournalDialog, "Журнал переключений");
+        addDialogToList(new OscDialog, "Осциллограммы");
+    }
     if ((typeB == BaseBoard::MTB_35) && (typeM == MezzanineBoard::MTM_33))
     {
         qDebug("Here is AVTUK-3533");

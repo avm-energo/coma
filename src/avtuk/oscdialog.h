@@ -3,34 +3,42 @@
 
 #include "../models/etablemodel.h"
 #include "../widgets/udialog.h"
-#include "eoscillogram.h"
+#include "oscmanager.h"
 
-#include <QByteArray>
-#include <QDialog>
+#include <optional>
 
 class OscDialog : public UDialog
 {
     Q_OBJECT
+    using OscHeader = S2DataTypes::OscHeader;
+    enum Column
+    {
+        number = 0,
+        datetime = 1,
+        id = 2,
+        size = 3,
+        download = 4
+    };
 
 public:
     explicit OscDialog(QWidget *parent = nullptr);
-    ~OscDialog();
-
-private:
-    void SetupUI();
-
-    ETableModel *tm;
-    int counter = 0;
-
-signals:
-    void StopCheckTimer();
 
 public slots:
-    void fillOscInfo(DataTypes::OscInfo info);
-private slots:
+    void fillOscInfo(S2DataTypes::OscInfo info);
+    void fillOsc(const DataTypes::FileStruct file);
 
-    void GetOsc(QModelIndex);
-    void EraseOsc();
+private:
+    void setupUI();
+    void getOsc(const QModelIndex &);
+    void eraseOsc();
+    QString filename(quint64 time, quint32 oscNum) const;
+    bool loadIfExist(quint32 size);
+
+    OscManager manager;
+    QMap<int, S2DataTypes::OscInfo> oscMap;
+    std::vector<DataTypes::FileStruct> fileBuffer;
+    UniquePointer<ETableModel> tableModel;
+    int reqOscNum;
 };
 
 #endif // OSCDIALOG_H

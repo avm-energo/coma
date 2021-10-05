@@ -75,7 +75,7 @@ private:
     void handleFloat(const QByteArray &ba, quint32 sigAddr);
     void handleFloatArray(const QByteArray &ba, quint32 sigAddr, quint32 sigCount);
     void handleSinglePoint(const QByteArray &ba, const quint16 addr);
-    void handleFile(QByteArray &ba, DataTypes::FilesEnum addr, bool isShouldRestored);
+    void handleFile(QByteArray &ba, DataTypes::FilesEnum addr, Queries::FileFormat format);
     void handleInt(const byte num);
     void handleBool(const bool status = true, int errorSize = 0, int errorCode = 0);
     void handleProgress(const quint64 progress);

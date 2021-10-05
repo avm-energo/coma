@@ -1,6 +1,7 @@
 #ifndef DATATYPES_H
 #define DATATYPES_H
 #include "datarecv.h"
+#include "std_ext.h"
 #include "uint24.h"
 
 #include <QDataStream>
@@ -37,6 +38,7 @@ enum SignalTypes
     DataRecVList,
     Block,
     OscillogramInfo,
+    SwitchJournalInfo,
 #ifdef __linux
     Timespec,
 #endif
@@ -113,41 +115,23 @@ struct FileStruct
     friend QDataStream &operator<<(QDataStream &stream, const FileStruct &str);
     friend QDataStream &operator>>(QDataStream &stream, FileStruct &str);
     FileStruct() = default;
-    ~FileStruct()
+
+    FileStruct(const FilesEnum num, const QByteArray &file) : ID(num), data(file)
     {
     }
-    FileStruct(const FilesEnum num, const QByteArray &file) : filenum(num), filedata(file)
+    FileStruct(const quint8 num, const QByteArray &file) : ID(num), data(file)
     {
     }
-    FileStruct(const FileStruct &source) : FileStruct(source.filenum, source.filedata)
+    FileStruct(const quint8 num) : ID(num)
     {
     }
-    FileStruct &operator=(const FileStruct &source)
+    std::underlying_type_t<FilesEnum> ID;
+    QByteArray data;
+
+    S2DataTypes::DataRec serialize()
     {
-        if (this == &source)
-            return *this;
-        filenum = source.filenum;
-        filedata = source.filedata;
-        return *this;
+        return { { ID, quint32(data.size()) }, static_cast<void *>(data.data()) };
     }
-    FileStruct(FileStruct &&rhs) noexcept : filenum(rhs.filenum), filedata(rhs.filedata)
-    {
-        // rhs.filenum = 0;
-        rhs.filedata = nullptr;
-    }
-    FileStruct &operator=(FileStruct &&rhs) noexcept
-    {
-        if (this != &rhs)
-        {
-            filenum = rhs.filenum;
-            filedata = rhs.filedata;
-            // rhs.filenum = NULL;
-            rhs.filedata = nullptr;
-        }
-        return *this;
-    }
-    FilesEnum filenum;
-    QByteArray filedata;
 };
 
 inline QDataStream &operator<<(QDataStream &stream, const FileStruct &str)
@@ -155,9 +139,9 @@ inline QDataStream &operator<<(QDataStream &stream, const FileStruct &str)
 #if QT_VERSION >= 0x051200
     stream << str.filenum;
 #else
-    stream << std::underlying_type_t<FilesEnum>(str.filenum);
+    stream << std::underlying_type_t<FilesEnum>(str.ID);
 #endif
-    stream << str.filedata;
+    stream << str.data;
     return stream;
 }
 inline QDataStream &operator>>(QDataStream &stream, FileStruct &str)
@@ -165,18 +149,12 @@ inline QDataStream &operator>>(QDataStream &stream, FileStruct &str)
 #if QT_VERSION >= 0x051200
     stream >> str.filenum;
 #else
-    stream >> *reinterpret_cast<std::underlying_type_t<FilesEnum> *>(&str.filenum);
+    stream >> *reinterpret_cast<std::underlying_type_t<FilesEnum> *>(&str.ID);
 #endif
 
-    stream >> str.filedata;
+    stream >> str.data;
     return stream;
 }
-
-struct ConfParameterStruct
-{
-    quint32 ID;
-    QByteArray data;
-};
 
 struct BlockStruct
 {
@@ -184,8 +162,9 @@ struct BlockStruct
     QByteArray data;
 };
 
+typedef BlockStruct S2Record;
 typedef BlockStruct HardwareStruct;
-typedef QList<ConfParameterStruct> ConfParametersListStruct;
+typedef QList<S2Record> S2FilePack;
 
 struct SignalsStruct
 {
@@ -227,17 +206,6 @@ struct JournalDesc
     QString name;
 };
 
-#pragma pack(push) /* push current alignment to stack */
-#pragma pack(1)    /* set alignment to 1 byte boundary */
-struct OscInfo
-{
-    quint32 fileNum;    // номер файла осциллограмм
-    quint32 fileLength; // длина файла за исключением FileHeader (16 байт)
-    quint32 id; // Тип файла - осциллограмма и количество осциллограмм в файле (10000, 10001 ...)
-    quint64 unixtime; // Время начала записи осциллограммы
-    quint32 id0; // ID первой осциллограммы в файле (определяет структуру точки и номер канала)
-};
-#pragma pack(pop)
 }
 
 namespace Queries
@@ -282,6 +250,12 @@ struct Command
     QByteArray ba;
 };
 
+enum FileFormat : quint32
+{
+    Binary = 0,
+    DefaultS2 = 1,
+    CustomS2
+};
 }
 
 namespace S2DataTypes
@@ -296,31 +270,6 @@ struct FileHeader
     quint32 size;
     quint32 crc32;
     quint32 thetime;
-};
-
-// S2: Определение типа записи
-
-struct DataRec;
-// struct DataRec
-//{
-//    quint32 id;
-//    quint32 num_byte;
-//    void *thedata;
-//};
-// inline bool is_same(const S2DataTypes::DataRec &lhs, const S2DataTypes::DataRec &rhs)
-//{
-//    if ((lhs.id == rhs.id) && (lhs.num_byte == rhs.num_byte))
-//        return !memcmp(lhs.thedata, rhs.thedata, lhs.num_byte);
-//    else
-//        return false;
-//}
-
-struct DataRecHeader
-{
-    // id
-    quint32 id;
-    // количество байт в TypeTheData
-    quint32 numByte;
 };
 
 /// Тип группы плат
@@ -348,6 +297,22 @@ struct FileStruct
     DataRecHeader void_recHeader;
 };
 typedef QVector<S2DataTypes::DataRec> S2ConfigType;
+
+#pragma pack(push) /* push current alignment to stack */
+#pragma pack(1)    /* set alignment to 1 byte boundary */
+struct OscInfo
+{
+    //  quint32 fileNum;    // номер файла осциллограмм
+    //  quint32 fileLength; // длина файла за исключением FileHeader (16 байт)
+    // заголовок записи
+    DataRecHeader typeHeader;
+    quint32 id; // Тип файла - осциллограмма и количество осциллограмм в файле (10000, 10001 ...) <- неверное описание
+    /// Время начала записи осциллограммы
+    quint64 unixtime;
+    /// ID первой осциллограммы в файле (определяет структуру точки и номер канала)
+    quint32 idOsc0;
+};
+#pragma pack(pop)
 
 #pragma pack(push) /* push current alignment to stack */
 #pragma pack(1)    /* set alignment to 1 byte boundary */
@@ -413,14 +378,14 @@ Q_DECLARE_METATYPE(DataTypes::FloatStruct)
 Q_DECLARE_METATYPE(DataTypes::SinglePointWithTimeStruct)
 Q_DECLARE_METATYPE(DataTypes::FileStruct)
 Q_DECLARE_METATYPE(DataTypes::FilesEnum)
-Q_DECLARE_METATYPE(DataTypes::ConfParameterStruct)
 Q_DECLARE_METATYPE(DataTypes::BlockStruct)
-Q_DECLARE_METATYPE(DataTypes::ConfParametersListStruct)
+Q_DECLARE_METATYPE(DataTypes::S2FilePack)
 Q_DECLARE_METATYPE(DataTypes::SignalsStruct)
 Q_DECLARE_METATYPE(DataTypes::Signal)
 Q_DECLARE_METATYPE(DataTypes::GeneralResponseStruct)
 Q_DECLARE_METATYPE(DataTypes::DataRecV)
-Q_DECLARE_METATYPE(DataTypes::OscInfo)
+Q_DECLARE_METATYPE(S2DataTypes::OscInfo)
 Q_DECLARE_METATYPE(Queries::Command)
+Q_DECLARE_METATYPE(S2DataTypes::SwitchJourInfo)
 
 #endif // DATATYPES_H

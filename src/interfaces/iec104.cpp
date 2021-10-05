@@ -141,10 +141,10 @@ void IEC104::reqBSI()
 //    DataManager::addToInQueue(inp);
 //}
 
-void IEC104::reqFile(quint32 filenum, bool isConfigFile)
+void IEC104::reqFile(quint32 filenum, FileFormat format)
 {
-    Commands104::CommandStruct inp { (isConfigFile) ? Commands104::CM104_REQCONFIGFILE : Commands104::CM104_REQFILE,
-        filenum, 0, {} };
+    Commands104::CommandStruct inp { (format) ? Commands104::CM104_REQCONFIGFILE : Commands104::CM104_REQFILE, filenum,
+        0, {} };
     DataManager::addToInQueue(inp);
 }
 

@@ -1,9 +1,8 @@
 #ifndef COMA_H
 #define COMA_H
-
+#include "../avtuk/oscmanager.h"
 #include "../gen/datatypes.h"
 #include "../gen/stdfunc.h"
-#include "../avtuk/oscmanager.h"
 #include "../interfaces/settingstypes.h"
 
 #include <QListWidget>
@@ -73,7 +72,9 @@ private slots:
 private:
     QStackedWidget *MainTW;
     QListWidget *MainLW;
-    OscManager *oscManager;
+    OscManager oscManager;
+
+    File::Vector fileVector;
 
     bool TimeThrFinished;
 

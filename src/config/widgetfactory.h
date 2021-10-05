@@ -1,5 +1,6 @@
 #pragma once
 #include "../gen/datatypes.h"
+#include "../gen/std_ext.h"
 #include "../widgets/ipctrl.h"
 #include "../widgets/wd_func.h"
 #include "delegate.h"
@@ -8,14 +9,6 @@
 #include <bitset>
 
 //#define DEBUG_FACTORY
-
-// helper type for the visitor
-template <class... Ts> struct overloaded : Ts...
-{
-    using Ts::operator()...;
-};
-// explicit deduction guide (not needed as of C++20)
-template <class... Ts> overloaded(Ts...) -> overloaded<Ts...>;
 
 class WidgetFactory
 {
@@ -56,8 +49,7 @@ private:
 
     template <typename T, std::enable_if_t<std::is_same<T, IPCtrl::container_type>::value, bool> = true>
     bool fillIpCtrl(const QWidget *parent, BciNumber key, const T &value);
-    template <typename T, std::enable_if_t<!std::is_container<T>::value, bool> = true>
-    bool fillCheckBox(const QWidget *parent, BciNumber key, const T &value);
+    bool fillCheckBox(const QWidget *parent, BciNumber key, bool value);
     template <typename T, std::enable_if_t<!std::is_container<T>::value, bool> = true>
     bool fillLineEdit(const QWidget *parent, BciNumber key, const T &value);
     template <typename T, std::enable_if_t<std::is_container<T>::value, bool> = true>
@@ -69,6 +61,15 @@ private:
     static widgetMap m_widgetMap;
     static categoryMap m_categoryMap;
 };
+
+inline bool WidgetFactory::fillCheckBox(const QWidget *parent, BciNumber key, bool value)
+{
+    auto widget = parent->findChild<QCheckBox *>(QString::number(key));
+    if (!widget)
+        return false;
+    widget->setChecked(bool(value));
+    return true;
+}
 
 const inline QString widgetName(int group, int item)
 {
@@ -89,16 +90,6 @@ bool WidgetFactory::fillIpCtrl(const QWidget *parent, BciNumber key, const T &va
     if (!widget)
         return false;
     widget->setIP(value);
-    return true;
-}
-
-template <typename T, std::enable_if_t<!std::is_container<T>::value, bool>>
-bool WidgetFactory::fillCheckBox(const QWidget *parent, BciNumber key, const T &value)
-{
-    auto widget = parent->findChild<QCheckBox *>(QString::number(key));
-    if (!widget)
-        return false;
-    widget->setChecked(bool(value));
     return true;
 }
 
@@ -248,7 +239,8 @@ template <typename T> bool WidgetFactory::fillWidget(const QWidget *parent, BciN
                     }
                     default:
                     {
-                        status = WDFunc::SetCBIndex(parent, QString::number(key), value);
+                        if constexpr (std::is_integral_v<T>)
+                            status = WDFunc::SetCBIndex(parent, QString::number(key), value);
                         break;
                     }
                     }

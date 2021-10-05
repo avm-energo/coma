@@ -1,28 +1,20 @@
 #ifndef PARSEMODULE_H
 #define PARSEMODULE_H
+#include "../gen/datatypes.h"
 
-#include "trendviewdialog.h"
-#include "trendviewmodel.h"
-
-#include <QByteArray>
-#include <QObject>
-#include <QVector>
+class TrendViewModel;
 
 class ParseModule
 {
 public:
-    ParseModule(QByteArray &BA);
-
+    ParseModule(const QByteArray &BA);
+    virtual ~ParseModule();
     bool PosPlusPlus(void *dst, int &count, int size);
-    virtual bool Parse(int &count) = 0;
-    //    virtual void Save(quint32 *len) = 0;
-    TrendViewModel *trendViewModel() const;
 
-protected:
-    QByteArray BArray;
-    std::unique_ptr<TrendViewModel> m_trendViewModel;
-    TrendViewDialog *m_trendViewDialog;
-    quint32 id;
+    virtual bool Parse(quint32 id, const S2DataTypes::OscHeader &OHD, TrendViewModel *model) = 0;
+
+private:
+    const QByteArray BArray;
 };
 
 #endif // PARSEMODULE_H

@@ -129,7 +129,7 @@ public slots:
     void reqStartup(quint32 sigAdr = 0, quint32 sigCount = 0) override;
     void reqBSI() override;
     // void reqAlarms(quint32 sigAdr = 0, quint32 sigCount = 0);
-    void reqFile(quint32 filenum, bool isConfigFile) override;
+    void reqFile(quint32 filenum, FileFormat format) override;
     void writeFile(quint32 filenum, const QByteArray &file) override;
     // void writeConfigFile(S2DataTypes::S2ConfigType *s2config) override;
     void reqTime() override;

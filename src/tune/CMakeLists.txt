@@ -4,8 +4,6 @@ project(tune LANGUAGES CXX)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-find_package(Qt5Core)
-
 find_package(
   QT NAMES Qt6 Qt5
   COMPONENTS Core
@@ -16,6 +14,7 @@ find_package(
              PrintSupport
              Qml
   REQUIRED)
+
 find_package(
   Qt${QT_VERSION_MAJOR}
   COMPONENTS Core
@@ -30,9 +29,6 @@ find_package(
   Qt${QT_VERSION_MAJOR}
   COMPONENTS Widgets
   REQUIRED)
-
-#link_directories(${LimeReportDir})
-#include_directories(${LimeReportDir}/include)
 
 add_library(
   ${PROJECT_NAME} STATIC
@@ -76,5 +72,4 @@ target_link_libraries(
   PRIVATE QXlsx
   PRIVATE limereport)
 
-#add_dependencies(${PROJECT_NAME} QXlsxBuild LimeReportBuild)
 target_compile_definitions(${PROJECT_NAME} PRIVATE ${PROJECT_NAME}_LIBRARY)

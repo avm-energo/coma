@@ -19,7 +19,7 @@ public:
     // void stop() override;
 
     void reqTime() override;
-    void reqFile(quint32 filenum, bool isConfigFile = false) override;
+    void reqFile(quint32 filenum, FileFormat format) override;
     void reqStartup(quint32 sigAdr, quint32 sigCount) override;
     void reqBSI() override;
     void reqBitStrings(quint32 sigAdr = 0, quint32 sigCount = 0) override;
@@ -50,7 +50,7 @@ signals:
 namespace
 {
 
-const QMap<Queries::Commands, Proto::Commands> getProtoCommand {
+inline const QMap<Queries::Commands, Proto::Commands> getProtoCommand {
 
     { Queries::Commands::QC_StartFirmwareUpgrade, Proto::Commands::WriteUpgrade }, //
     { Queries::QC_SetNewConfiguration, Proto::Commands::WriteBlkTech },            //
@@ -74,7 +74,7 @@ const QMap<Queries::Commands, Proto::Commands> getProtoCommand {
     { Queries::QUSB_WriteHardware, Proto::Commands::WriteHardware }                //
 };
 
-const QMap<Queries::Commands, Proto::WCommands> getWCommand {
+inline const QMap<Queries::Commands, Proto::WCommands> getWCommand {
 
     { Queries::QC_SetStartupValues, Proto::WCommands::InitStartupValues },    //
     { Queries::QC_ClearStartupValues, Proto::WCommands::EraseStartupValues }, //

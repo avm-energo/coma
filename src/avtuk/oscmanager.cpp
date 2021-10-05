@@ -1,69 +1,54 @@
 #include "oscmanager.h"
 
-#include "../gen/datatypes.h"
 #include "../gen/files.h"
+#include "../gen/modules.h"
+#include "../gen/s2.h"
 #include "../gen/timefunc.h"
 #include "../widgets/wd_func.h"
-#include "eoscillogram.h"
-#include "parseid9050.h"
-#include "swjdialog.h"
-#include "trendviewdialog.h"
+#include "parseid10001.h"
+#include "parseid10020.h"
+#include "parseid10030.h"
 
-OscManager::OscManager(QObject *parent) : QObject(parent)
+OscManager::~OscManager()
 {
 }
 
-void OscManager::LoadOscFromFile(const QString &filename)
+void OscManager::loadOsc(TrendViewModel *model)
 {
-
-    QByteArray buffer = 0;
-    if (Files::LoadFromFile(filename, buffer) != Error::NoError)
-        return;
-
-    // TrendViewDialog *trendDlg = new TrendViewDialog();
     trendDialog = UniquePointer<TrendViewDialog>(new TrendViewDialog);
-    trendDialog->setArrayToSave(buffer);
-    EOscillogram *OscFunc = new EOscillogram(trendDialog.get());
-    OscFunc->BA = buffer;
-    std::unique_ptr<TrendViewModel> mdl = std::unique_ptr<TrendViewModel>(new TrendViewModel);
-    OscFunc->ProcessOsc(mdl.get());
-    mdl->xmax = (static_cast<float>(mdl->Len / 2));
-    mdl->xmin = -mdl->xmax;
+    model->xmax = (static_cast<float>(model->Len / 2));
+    model->xmin = -model->xmax;
 
-    switch (mdl->idOsc)
+    switch (model->idOsc)
     {
-    case MT_ID85:
+    case AVTUK_85::OSC_ID:
     {
 
-        trendDialog->setAnalogNames(mdl->tmpav_85);
-        trendDialog->setDigitalNames(mdl->tmpdv_85);
-        trendDialog->setDigitalColors(mdl->dcolors_85);
-        trendDialog->setAnalogColors(mdl->acolors_85);
-        trendDialog->setDiscreteDescriptions(mdl->ddescr_85);
-        trendDialog->setAnalogDescriptions(mdl->adescr_85);
-        trendDialog->setRange(mdl->xmin, mdl->xmax, -200, 200);
+        trendDialog->setAnalogNames(model->tmpav_85);
+        trendDialog->setDigitalNames(model->tmpdv_85);
+        trendDialog->setDigitalColors(model->dcolors_85);
+        trendDialog->setAnalogColors(model->acolors_85);
+        trendDialog->setDiscreteDescriptions(model->ddescr_85);
+        trendDialog->setAnalogDescriptions(model->adescr_85);
+        trendDialog->setRange(model->xmin, model->xmax, -200, 200);
         break;
     }
-    case MT_ID80:
+    case AVTUK_8X::OSC_ID:
     {
-        mdl->tmpdv_80.clear();
-        trendDialog->setAnalogNames(mdl->tmpav_80);
-        trendDialog->setDigitalNames(mdl->tmpdv_80);
-        trendDialog->setDigitalColors(mdl->dcolors_80);
-        trendDialog->setAnalogColors(mdl->acolors_80);
-        trendDialog->setRange(mdl->xmin, mdl->xmax, -200, 200);
+        model->tmpdv_80.clear();
+        trendDialog->setAnalogNames(model->tmpav_80);
+        trendDialog->setDigitalNames(model->tmpdv_80);
+        trendDialog->setDigitalColors(model->dcolors_80);
+        trendDialog->setAnalogColors(model->acolors_80);
+        trendDialog->setRange(model->xmin, model->xmax, -200, 200);
         break;
     }
 
-    case MT_ID21:
+    case AVTUK_21::OSC_ID_MIN:
     {
-        // период отсчётов - 20 мс, длительность записи осциллограммы 10 сек, итого 500 точек по 4 байта на каждую
-        // mdl->tmpav_21 << QString::number(mdl->idOsc); // пока сделано для одного канала в осциллограмме
-        // TrendViewModel *TModel = new TrendViewModel(QStringList(), tmpav, *len);
-        // dlg->SetModel(TModel);
-        trendDialog->setAnalogColors(mdl->acolors_21);
-        trendDialog->setAnalogNames(mdl->tmpav_21);
-        trendDialog->setAnalogDescriptions(mdl->adescr_21);
+        trendDialog->setAnalogColors(model->acolors_21);
+        trendDialog->setAnalogNames(model->tmpav_21);
+        trendDialog->setAnalogDescriptions(model->adescr_21);
         // 10000 мс, 20 мА (сделать автонастройку в зависимости от конфигурации по данному каналу)
         trendDialog->setRange(0, 10000, -20, 20);
 
@@ -80,254 +65,149 @@ void OscManager::LoadOscFromFile(const QString &filename)
     case ID_OSC_CH0 + 7:
     {
 
-        trendDialog->setAnalogNames(mdl->tmpav_85);
-        trendDialog->setDigitalNames(mdl->tmpdv_85);
-        trendDialog->setDigitalColors(mdl->dcolors_85);
-        trendDialog->setAnalogColors(mdl->acolors_85);
-        trendDialog->setRange(mdl->xmin, mdl->xmax, -200, 200);
+        trendDialog->setAnalogNames(model->tmpav_85);
+        trendDialog->setDigitalNames(model->tmpdv_85);
+        trendDialog->setDigitalColors(model->dcolors_85);
+        trendDialog->setAnalogColors(model->acolors_85);
+        trendDialog->setRange(model->xmin, model->xmax, -200, 200);
         break;
     }
     }
-    trendDialog->setTrendModel(std::move(mdl));
+    trendDialog->setTrendModel(model);
     trendDialog->setupPlots();
     trendDialog->setupUI();
     trendDialog->showPlot();
     trendDialog->show();
 }
 
-void OscManager::loadSwjFromFile(const QString &filename)
+std::unique_ptr<TrendViewModel> OscManager::load(const FileStruct &fs) const
 {
-    // bool haveosc;
-    int SWJRSize = sizeof(S2DataTypes::SwitchJourRecord);
-    qDebug() << SWJRSize << sizeof(S2DataTypes::SwitchJourInfo);
-    // return;
-    // int GBOSize = sizeof(EOscillogram::GBoStruct);
-
-    QByteArray buffer = 0;
-
-    if (Files::LoadFromFile(filename, buffer) != Error::NoError)
-        return;
-
-    if (buffer.size() < SWJRSize)
+    if (!oscHeader)
     {
-        qCritical() << "Некорректная структура файла журнала";
-        return;
+        qCritical() << Error::DescError;
+        return {};
     }
-    QStringList phase = { "фазы А, В, С", "фаза А", "фаза В", "фаза С" };
-    EOscillogram *OscFunc = new EOscillogram(this);
-    OscFunc->BA = buffer;
-    S2DataTypes::SwitchJourRecord SWJ;
-    size_t tmpi = static_cast<size_t>(SWJRSize);
-    memcpy(&SWJ, &(OscFunc->BA.data()[0]), tmpi); // копируем информацию о переключении
-    S2DataTypes::SwitchJourInfo swjr;
-    swjr.fileLength = OscFunc->BA.size();
-    // EOscillogram::GBoStruct gbos;
-    // tmpi = static_cast<size_t>(GBOSize);
-    // memcpy(&gbos, &(ba.data()[SWJRSize]), tmpi); // копируем информацию об осциллограмме
-    /* ba.remove(0, SWJRSize); // оставляем только саму осциллограмму
-    if (ba.isEmpty()) // осциллограммы в журнале нет
-        haveosc = false;
-    else
-        haveosc = true;*/
-    // dlg->Init(swjr, haveosc, gbos);
+    return load(oscHeader.value(), fs);
+}
 
-    // if (!ba.isEmpty())
-    //   dlg->LoadOsc(ba);
+std::unique_ptr<TrendViewModel> OscManager::load(const Record &record, const FileStruct &fs) const
+{
+    auto curFileNum = fs.ID;
 
-    QVBoxLayout *vlyout = new QVBoxLayout;
-    QGridLayout *glyout = new QGridLayout;
-
-    SWJDialog *swjDialog = new SWJDialog(OscFunc, SWJDialog::SWJ_MODE_OFFLINE);
-    swjDialog->GetSwjOscData();
-    glyout->addWidget(new QLabel("Номер", swjDialog), 0, 0, 1, 1);
-    glyout->addWidget(new QLabel("Дата, время", swjDialog), 0, 1, 1, 1);
-    glyout->addWidget(new QLabel("Аппарат", swjDialog), 0, 2, 1, 2);
-    glyout->addWidget(new QLabel("Переключение", swjDialog), 0, 4, 1, 2);
-    glyout->addWidget(new QLabel(QString::number(OscFunc->SWJRecord.num), swjDialog), 1, 0, 1, 1);
-    glyout->addWidget(new QLabel(TimeFunc::UnixTime64ToString(OscFunc->SWJRecord.time), swjDialog), 1, 1, 1, 1);
-    QString str, tmps;
-    QStringList tmpsl { "CB", "G", "D" };
-    if (OscFunc->SWJRecord.typeA == 1)
-        tmps = tmpsl.at(0); //: "N/A";
-    else if (OscFunc->SWJRecord.typeA == 2)
-        tmps = tmpsl.at(1);
-    else if (OscFunc->SWJRecord.typeA == 4)
-        tmps = tmpsl.at(2);
-    else
-        tmps = "N/A";
-    glyout->addWidget(new QLabel(tmps, swjDialog), 1, 2, 1, 1);
-    glyout->addWidget(new QLabel(QString::number(OscFunc->SWJRecord.numA), swjDialog), 1, 3, 1, 1);
-    tmps = (OscFunc->SWJRecord.options & 0x00000001) ? "ВКЛЮЧЕНИЕ" : "ОТКЛЮЧЕНИЕ";
-    glyout->addWidget(new QLabel(tmps, swjDialog), 1, 4, 1, 2);
-    glyout->addWidget(new QLabel("Тип коммутации:", swjDialog), 3, 0, 1, 4);
-
-    quint32 tmpi32 = (OscFunc->SWJRecord.options >> 1) & 0x03;
-    switch (tmpi32)
+    constexpr size_t minSize = sizeof(S2DataTypes::OscHeader) + sizeof(S2DataTypes::DataRecHeader);
+    if (fs.data.size() <= minSize)
     {
-    case 2:
-        tmps = "Несинхронная от АВМ-СК";
+        qCritical() << Error::SizeError;
+        return {};
+    }
+
+    auto trendViewModel = std::make_unique<TrendViewModel>(record.len);
+
+    {
+        trendViewModel->SaveID(curFileNum);
+        trendViewModel->Len = record.len;
+        trendViewModel->xmax = float(record.len) / 2;
+        trendViewModel->xmin = -trendViewModel->xmax;
+    }
+
+    std::unique_ptr<ParseModule> parseModule;
+    switch (curFileNum)
+    {
+    case AVTUK_85::OSC_ID:
+    {
+        parseModule = std::make_unique<ParseID10030>(fs.data);
         break;
-    case 3:
-        tmps = "Синхронная от АВМ-СК";
+    }
+    case AVTUK_8X::OSC_ID:
+    {
+        parseModule = std::make_unique<ParseID10020>(fs.data);
         break;
+    }
+    case AVTUK_21::OSC_ID_MIN:
+    case 10002:
+    case 10003:
+    case 10004:
+    case 10005:
+    case 10006:
+    case 10007:
+    case 10008:
+    case 10009:
+    case 10010:
+    case 10011:
+    case 10012:
+    case 10013:
+    case 10014:
+    case 10015:
+    case AVTUK_21::OSC_ID_MAX:
+
+    {
+        parseModule = std::make_unique<ParseID10001>(fs.data);
+        break;
+    }
+
     default:
-        tmps = "Несинхронная от внешнего устройства";
-        break;
+        return {};
+    }
+    bool result = parseModule->Parse(curFileNum, record, trendViewModel.get());
+    if (!result)
+    {
+        qCritical() << Error::GeneralError;
+        return {};
     }
 
-    glyout->addWidget(new QLabel(tmps, swjDialog), 3, 4, 1, 1);
+    return trendViewModel;
+}
 
-    glyout->addWidget(new QLabel("Результат переключения:", swjDialog), 4, 0, 1, 4);
-    tmps = (OscFunc->SWJRecord.result) ? "НЕУСПЕШНО" : "УСПЕШНО";
-    glyout->addWidget(new QLabel(tmps, swjDialog), 4, 4, 1, 1);
+File::Vector OscManager::loadFromFile(const QString &filename) const
+{
+    QByteArray buffer;
+    if (Files::LoadFromFile(filename, buffer) != Error::NoError)
+        return {};
 
-    glyout->addWidget(new QLabel("Коммутируемые фазы:", swjDialog), 5, 0, 1, 4);
-    for (int i = 0; i < 4; i++)
-    {
-        if (((OscFunc->SWJRecord.options >> 3) == i))
-        {
-            tmps = phase.at(i);
-        }
-    }
-    glyout->addWidget(new QLabel(tmps, swjDialog), 5, 4, 1, 1);
+    DataTypes::S2FilePack outlist;
+    S2::RestoreData(buffer, outlist);
 
-    glyout->addWidget(new QLabel("Напряжение питания цепей соленоидов, В:", swjDialog), 6, 0, 1, 4);
+    File::Vector vector;
+    bool status = loadRecords(outlist, vector);
+    if (!status)
+    {
+        qWarning() << Error::ReadError;
+    }
+    return vector;
+}
 
-    if (OscFunc->SWJRecord.supplyVoltage == std::numeric_limits<float>::max())
-        glyout->addWidget(new QLabel("-", swjDialog), 6, 4, 1, 1);
-    else
-        glyout->addWidget(new QLabel(QString::number(OscFunc->SWJRecord.supplyVoltage), swjDialog), 6, 4, 1, 1);
+bool OscManager::loadRecords(const DataTypes::S2FilePack &input, File::Vector &output) const
+{
+    if (input.size() < 2)
+    {
+        qWarning() << Error::SizeError << "Not enough records";
+        return false;
+    }
 
-    glyout->addWidget(new QLabel("Температура окружающей среды, Град:", swjDialog), 7, 0, 1, 4);
+    auto foundOscHeader = std::find_if(input.cbegin(), input.cend(), isOscHeader);
 
-    if (OscFunc->SWJRecord.tOutside == std::numeric_limits<float>::max())
-        glyout->addWidget(new QLabel("-", swjDialog), 7, 4, 1, 1);
-    else
-        glyout->addWidget(new QLabel(QString::number(OscFunc->SWJRecord.tOutside), swjDialog), 7, 4, 1, 1);
+    if (foundOscHeader == std::cend(input))
+    {
+        qWarning() << Error::DescError << "No osc header";
+        return false;
+    }
 
-    if (swjr.fileLength)
+    auto header = loadCommon({ DataTypes::FilesEnum(foundOscHeader->ID), foundOscHeader->data });
+    output.push_back(header);
+    auto foundOsc = std::find_if(input.cbegin(), input.cend(), isOsc);
+
+    if (foundOsc == std::cend(input))
     {
-        glyout->addWidget(new QLabel("Осциллограмма:", swjDialog), 8, 0, 1, 4);
-        QPushButton *pb = new QPushButton("Открыть осциллограмму", swjDialog);
-        pb->setIcon(QIcon(":/icons/osc.svg"));
-        connect(pb, &QPushButton::clicked, this, [swjDialog] {
-            swjDialog->trendViewDialog()->showPlot();
-            swjDialog->trendViewDialog()->show();
-        });
-        glyout->addWidget(pb, 8, 4, 1, 1);
+        qWarning() << Error::DescError << "No osc";
+        return false;
     }
-    else
+    auto model = load(header, { DataTypes::FilesEnum(foundOsc->ID), foundOsc->data });
+
+    if (!model)
     {
-        QPixmap *pm = new QPixmap("images/hr.png");
-        glyout->addWidget(WDFunc::NewLBL(swjDialog, "", "", "", pm), 8, 4, 1, 1);
+        qWarning() << Error::ReadError;
+        return false;
     }
-    vlyout->addLayout(glyout);
-    vlyout->addStretch(10);
-    glyout = new QGridLayout;
-    QStringList sl {
-        "Действующее значение тока в момент коммутации, А",        //
-        "Действующее значение напряжения в момент коммутации, кВ", //
-        "Собственное время коммутации, мс",                        //
-        "Полное время коммутации, мс",                             //
-        "Время перемещения главного контакта, мс",                 //
-        "Время горения дуги, мс",                                  //
-        "Время безоперационного простоя к моменту коммутации, ч",  //
-        "Погрешность синхронной коммутации, мс",                   //
-        "Температура внутри привода, Град",                        //
-        "Давление в гидросистеме привода, Па"                      //
-    };
-    glyout->addWidget(new QLabel("Измеренное значение", swjDialog), 0, 0, 1, 1);
-    glyout->addWidget(new QLabel("A", swjDialog), 0, 1, 1, 1);
-    glyout->addWidget(new QLabel("B", swjDialog), 0, 2, 1, 1);
-    glyout->addWidget(new QLabel("C", swjDialog), 0, 3, 1, 1);
-    glyout->setColumnStretch(0, 10);
-    int row = 1;
-    glyout->addWidget(new QLabel(sl.at(row - 1), swjDialog), row, 0, 1, 1);
-    for (int i = 0; i < 3; ++i)
-        glyout->addWidget(
-            new QLabel(QString::number(OscFunc->SWJRecord.amperage[i], 'f', 1), swjDialog), row, i + 1, 1, 1);
-    ++row;
-    glyout->addWidget(new QLabel(sl.at(row - 1), swjDialog), row, 0, 1, 1);
-    for (int i = 0; i < 3; ++i)
-        glyout->addWidget(
-            new QLabel(QString::number(OscFunc->SWJRecord.voltage[i], 'f', 1), swjDialog), row, i + 1, 1, 1);
-    ++row;
-    glyout->addWidget(new QLabel(sl.at(row - 1), swjDialog), row, 0, 1, 1);
-    for (int i = 0; i < 3; ++i)
-    {
-        float value = static_cast<float>(OscFunc->SWJRecord.ownTime[i]);
-        value = value / 100;
-        glyout->addWidget(new QLabel(str.setNum(value, 'f', 2), swjDialog), row, i + 1, 1, 1);
-    }
-    ++row;
-    glyout->addWidget(new QLabel(sl.at(row - 1), swjDialog), row, 0, 1, 1);
-    for (int i = 0; i < 3; ++i)
-    {
-        float value = static_cast<float>(OscFunc->SWJRecord.fullTime[i]);
-        value = value / 100;
-        glyout->addWidget(new QLabel(str.setNum(value, 'f', 2), swjDialog), row, i + 1, 1, 1);
-    }
-    ++row;
-    glyout->addWidget(new QLabel(sl.at(row - 1), swjDialog), row, 0, 1, 1);
-    for (int i = 0; i < 3; ++i)
-    {
-        float value = static_cast<float>(OscFunc->SWJRecord.movTime[i]);
-        value = value / 100;
-        glyout->addWidget(new QLabel(str.setNum(value, 'f', 2), swjDialog), row, i + 1, 1, 1);
-    }
-    ++row;
-    glyout->addWidget(new QLabel(sl.at(row - 1), swjDialog), row, 0, 1, 1);
-    for (int i = 0; i < 3; ++i)
-    {
-        float value = static_cast<float>(OscFunc->SWJRecord.archTime[i]);
-        value = value / 100;
-        glyout->addWidget(new QLabel(str.setNum(value, 'f', 2), swjDialog), row, i + 1, 1, 1);
-    }
-    ++row;
-    glyout->addWidget(new QLabel(sl.at(row - 1), swjDialog), row, 0, 1, 1);
-    for (int i = 0; i < 3; ++i)
-    {
-        float value = static_cast<float>(OscFunc->SWJRecord.idleTime[i]);
-        value = value / 100;
-        glyout->addWidget(new QLabel(str.setNum(value, 'f', 2), swjDialog), row, i + 1, 1, 1);
-    }
-    ++row;
-    glyout->addWidget(new QLabel(sl.at(row - 1), swjDialog), row, 0, 1, 1);
-    for (int i = 0; i < 3; ++i)
-    {
-        float value = static_cast<float>(OscFunc->SWJRecord.inaccuracy[i]);
-        value = value / 100;
-        glyout->addWidget(new QLabel(str.setNum(value, 'f', 2), swjDialog), row, i + 1, 1, 1);
-    }
-    ++row;
-    glyout->addWidget(new QLabel(sl.at(row - 1), swjDialog), row, 0, 1, 1);
-    for (int i = 0; i < 3; ++i)
-    {
-        float value = OscFunc->SWJRecord.tInside[i];
-        if (value == std::numeric_limits<float>::max())
-            glyout->addWidget(new QLabel("-", swjDialog), row, i + 1, 1, 1);
-        else
-            glyout->addWidget(new QLabel(str.setNum(value, 'f', 2), swjDialog), row, i + 1, 1, 1);
-    }
-    ++row;
-    glyout->addWidget(new QLabel(sl.at(row - 1), swjDialog), row, 0, 1, 1);
-    for (int i = 0; i < 3; ++i)
-    {
-        float value;
-        value = OscFunc->SWJRecord.phyd[i];
-        if (value == std::numeric_limits<float>::max())
-            glyout->addWidget(new QLabel("-", swjDialog), row, i + 1, 1, 1);
-        else
-            glyout->addWidget(new QLabel(str.setNum(value, 'f', 2), swjDialog), row, i + 1, 1, 1);
-    }
-    vlyout->addLayout(glyout);
-    // QPushButton *pb = new QPushButton("Сохранить журнал в файл");
-    // connect(pb,SIGNAL(clicked(bool)),this,SLOT(SWJDialog::SaveSWJ()));
-    // vlyout->addWidget(pb);
-    // setLayout(vlyout);
-    /*lyout = new QVBoxLayout;
-    lyout->addWidget(TuneTW);
-    setLayout(lyout);*/
-    swjDialog->setLayout(vlyout);
-    swjDialog->show();
+    output.push_back(std::move(model));
+    return true;
 }

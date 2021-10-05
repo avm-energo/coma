@@ -3,6 +3,7 @@
 #include "../gen/board.h"
 #include "../gen/error.h"
 #include "../widgets/wd_func.h"
+#include "interfaceemudialog.h"
 #include "interfaceethernetdialog.h"
 #include "interfaceserialdialog.h"
 #include "interfaceusbdialog.h"
@@ -13,11 +14,12 @@
 
 ConnectDialog::ConnectDialog(QWidget *parent) : QDialog(parent)
 {
-    QStringList intersl;
+    QStringList intersl { "USB" };
     if (QCoreApplication::applicationName().contains("service", Qt::CaseInsensitive))
-        intersl = QStringList { "USB", "Ethernet", "RS485" };
-    if (QCoreApplication::applicationName().contains("debug", Qt::CaseInsensitive))
-        intersl = QStringList { "USB" };
+        intersl += QStringList { "Ethernet", "RS485" };
+#ifdef ENABLE_EMULATOR
+    intersl.push_back("Emulator");
+#endif
     setMinimumWidth(150);
     setAttribute(Qt::WA_DeleteOnClose);
     QVBoxLayout *lyout = new QVBoxLayout;
@@ -57,6 +59,13 @@ void ConnectDialog::setInterface()
         m_idialog = new InterfaceSerialDialog(this);
         break;
     }
+#ifdef ENABLE_EMULATOR
+    case Board::InterfaceType::Emulator:
+    {
+        m_idialog = new InterfaceEmuDialog(this);
+        break;
+    }
+#endif
     default:
     {
         return;

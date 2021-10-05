@@ -1,181 +1,275 @@
 #include "switchjournaldialog.h"
 
+#include "../gen/board.h"
 #include "../gen/datamanager.h"
-#include "../gen/error.h"
-#include "../gen/stdfunc.h"
+#include "../gen/files.h"
+#include "../gen/s2.h"
 #include "../gen/timefunc.h"
+#include "../models/etablemodel.h"
 #include "../widgets/wd_func.h"
 #include "pushbuttondelegate.h"
-#include "trendviewdialog.h"
+#include "swjmanager.h"
 
 #include <QHeaderView>
 #include <QMessageBox>
-#include <QPushButton>
-#include <QVBoxLayout>
 constexpr int MAXSWJNUM = 262144;
 
 constexpr unsigned char TECH_SWJ = 0x04;
 
-SwitchJournalDialog::SwitchJournalDialog(EOscillogram *osc, QWidget *parent) : UDialog(parent)
-{
-    setAttribute(Qt::WA_DeleteOnClose);
-    SetupUI();
-    SWJDOscFunc = osc;
-}
-
 SwitchJournalDialog::SwitchJournalDialog(QWidget *parent) : UDialog(parent)
 {
-    connect(&DataManager::GetInstance(), &DataManager::fileReceived, this, &SwitchJournalDialog::FillJour);
-    SetupUI();
+    connect(&DataManager::GetInstance(), &DataManager::fileReceived, this, &SwitchJournalDialog::fillJour);
+    connect(&DataManager::GetInstance(), &DataManager::swjInfoReceived, this, &SwitchJournalDialog::fillSwJInfo);
+    setupUI();
 }
 
-void SwitchJournalDialog::SetupUI()
+void SwitchJournalDialog::setupUI()
 {
     QVBoxLayout *lyout = new QVBoxLayout;
     QHBoxLayout *hlyout = new QHBoxLayout;
     QPushButton *pb = new QPushButton("Получить журналы переключений");
-    connect(pb, &QAbstractButton::clicked,
-        [] { BaseInterface::iface()->writeCommand(Queries::QUSB_ReqBlkDataTech, TECH_SWJ); });
-    if (StdFunc::IsInEmulateMode())
-        pb->setEnabled(false);
+    connect(pb, &QAbstractButton::clicked, [&] {
+        swjMap.clear();
+        tableModel = UniquePointer<ETableModel>(new ETableModel);
+        tableModel->setHorizontalHeaderLabels(
+            { "#", "Номер переключения", "Дата/Время", "Аппарат", "Переключение", "Скачать" });
+        swjTableView->setModel(tableModel.get());
+
+        BaseInterface::iface()->writeCommand(Queries::QUSB_ReqBlkDataTech, TECH_SWJ);
+    });
+
     hlyout->addWidget(pb);
     pb = new QPushButton("Стереть журнал переключений");
     connect(pb, &QAbstractButton::clicked, this, &SwitchJournalDialog::eraseJournals);
-    if (StdFunc::IsInEmulateMode())
-        pb->setEnabled(false);
+
     hlyout->addWidget(pb);
     lyout->addLayout(hlyout);
-    SwjTableView = new ETableView;
-    TableModel = new ETableModel;
-    SwjTableView->setModel(TableModel);
-    SwjTableView->horizontalHeader()->setVisible(false);
-    SwjTableView->verticalHeader()->setVisible(false);
-    lyout->addWidget(SwjTableView, 89);
+    swjTableView = new ETableView;
+
+    PushButtonDelegate *dg = new PushButtonDelegate(this);
+    connect(dg, &PushButtonDelegate::clicked, this, &SwitchJournalDialog::getSwJ);
+    swjTableView->setItemDelegateForColumn(5, dg); // устанавливаем делегата (кнопки "Скачать") для соотв. столбца
+    lyout->addWidget(swjTableView);
     setLayout(lyout);
 }
 
-void SwitchJournalDialog::processSWJournal(QByteArray &ba)
+void SwitchJournalDialog::fillJour(const DataTypes::FileStruct &fs)
 {
-    S2DataTypes::SwitchJourInfo tmpswj;
-    int SWJRecordSize = sizeof(S2DataTypes::SwitchJourInfo);
-    int BaSize = ba.size();
-    int BaPos = 0;
-    int CurRow = 1;
-    SWJMap.clear();
-    while ((BaPos + SWJRecordSize) <= BaSize)
+    if (!updatesEnabled())
+        return;
+    fileBuffer.push_back(fs);
+
+    switch (fs.ID)
     {
-        size_t tmpt = static_cast<size_t>(SWJRecordSize);
-        memcpy(&tmpswj, &(ba.data()[BaPos]), tmpt);
-        int tmpi = static_cast<int>(tmpswj.num);
-        if ((tmpswj.num != 0) && (!SWJMap.contains(tmpi))) // пропуск пустых записей
+    case MT_HEAD_ID:
+    {
+        auto header = oscManager.loadCommon(fs);
+        oscManager.setHeader(header);
+        break;
+    }
+    case AVTUK_85::SWJ_ID:
+    {
+        SwjManager swjManager;
+        swjModel = swjManager.load(fs);
+        auto dialog = new SwitchJournalViewDialog(swjModel, oscModel, oscManager);
+        dialog->show();
+        dialog->setMinimumHeight(WDFunc::getMainWindow()->height());
+        dialog->setMinimumWidth(WDFunc::getMainWindow()->width());
+        dialog->adjustSize();
+        break;
+    }
+    default:
+    {
+
+        oscModel = oscManager.load(fs);
+
+        if (!oscModel)
         {
-            SWJMap[tmpi] = tmpswj;
-            TableModel->addRow();
-            TableModel->setData(TableModel->index(CurRow, 0, QModelIndex()), QVariant(tmpswj.fileNum), Qt::EditRole);
-            TableModel->setData(TableModel->index(CurRow, 1, QModelIndex()), QVariant(tmpswj.num), Qt::EditRole);
-            TableModel->setData(TableModel->index(CurRow, 2, QModelIndex()),
-                QVariant(TimeFunc::UnixTime64ToString(tmpswj.time)), Qt::EditRole);
-            QStringList tmpsl { "D", "G", "CB" };
-            QString tmps = (tmpswj.typeA < tmpsl.size()) ? tmpsl.at(tmpswj.typeA) : "N/A";
-            tmps += QString::number(tmpswj.numA);
-            TableModel->setData(TableModel->index(CurRow, 3, QModelIndex()), QVariant(tmps), Qt::EditRole);
-            tmps = (tmpswj.options & 0x00000001) ? "ВКЛ" : "ОТКЛ";
-            TableModel->setData(TableModel->index(CurRow, 4, QModelIndex()), QVariant(tmps), Qt::EditRole);
-            if (SWJMap.contains(tmpswj.time))
-                tmps = ":/icons/osc.svg";
-            else
-                tmps = "images/hr.png";
-            TableModel->setData(TableModel->index(CurRow, 5, QModelIndex()), QVariant(QIcon(tmps)), Qt::DecorationRole);
-            TableModel->setData(TableModel->index(CurRow, 6, QModelIndex()), QVariant("Далее"), Qt::EditRole);
-            ++CurRow;
+            qWarning() << Error::ReadError;
+            return;
         }
-        BaPos += SWJRecordSize;
     }
-    PushButtonDelegate *dg = new PushButtonDelegate(this);
-    connect(dg, &PushButtonDelegate::clicked, this, &SwitchJournalDialog::showJournal);
-    SwjTableView->setItemDelegateForColumn(5, dg); // устанавливаем делегата (кнопки "Скачать") для соотв. столбца
-    SwjTableView->resizeRowsToContents();
-    SwjTableView->resizeColumnsToContents();
-}
-
-void SwitchJournalDialog::processOscillograms()
-{
-    QByteArray OscInfo;
-    int OscInfoSize; // размер считанного буфера с информацией об осциллограммах
-    int RecordSize = sizeof(DataTypes::OscInfo); // GBo struct size
-    OscInfoSize = MAXOSCBUFSIZE;
-    OscInfo.resize(OscInfoSize);
-    //  if ((Commands::GetBt(TECH_Bo, &(OscInfo.data()[0]), OscInfoSize)) != Error::ER_NOERROR)
-    //  {
-    //      qWarning("Ошибка при приёме буфера осциллограмм");
-    //      return;
-    //  }
-    for (int i = 0; i < OscInfoSize; i += RecordSize)
+    }
+    // header, swj, osc
+    if (fileBuffer.size() == 3)
     {
-        DataTypes::OscInfo gbos;
-        size_t tmpt = static_cast<size_t>(RecordSize);
-        memcpy(&gbos, &(OscInfo.data()[i]), tmpt);
-        OscMap[gbos.unixtime] = gbos;
+        QByteArray ba;
+        S2::StoreDataMem(ba, fileBuffer, reqSwJNum);
+        auto time = swjMap.value(reqSwJNum).time;
+        QString file = filename(time);
+        if (Files::SaveToFile(file, ba) == Error::Msg::NoError)
+        {
+            qInfo() << "Swj saved: " << file;
+        }
+        else
+        {
+            qWarning() << "Fail to save swj: " << file;
+        }
     }
 }
 
-void SwitchJournalDialog::FillJour(const DataTypes::FileStruct &fs)
+void SwitchJournalDialog::fillSwJInfo(S2DataTypes::SwitchJourInfo swjInfo)
 {
+    if (swjInfo.num == 0)
+        return;
+    if (swjMap.contains(swjInfo.num))
+        return;
+
+    swjMap.insert(swjInfo.num, swjInfo);
+
+    QVector<QVariant> lsl { QVariant(swjInfo.fileNum),                        //
+        swjInfo.num,                                                          //
+        TimeFunc::UnixTime64ToString(swjInfo.time),                           //
+        SwjManager::craftType(swjInfo.typeA) + QString::number(swjInfo.numA), //
+        SwjManager::switchType(swjInfo.options),                              //
+        "Скачать" };
+    tableModel->addRowWithData(lsl);
 }
 
-void SwitchJournalDialog::loadJournals()
+void SwitchJournalDialog::getSwJ(const QModelIndex &idx)
 {
-    TableModel->clearModel();
-    TableModel->addColumn("#");
-    TableModel->addColumn("Time");
-    TableModel->addColumn("TypeANumA");
-    TableModel->addColumn("Options");
-    TableModel->addColumn("Osc");
-    TableModel->addColumn("Next");
-    TableModel->addRow();
-    TableModel->setRowTextAlignment(0, Qt::AlignVCenter | Qt::AlignCenter);
-    TableModel->setData(TableModel->index(0, 0, QModelIndex()), QVariant("Номер файла"), Qt::EditRole);
-    TableModel->setData(TableModel->index(0, 1, QModelIndex()), QVariant("Номер переключения"), Qt::EditRole);
-    TableModel->setData(TableModel->index(0, 2, QModelIndex()), QVariant("Дата, время"), Qt::EditRole);
-    TableModel->setData(TableModel->index(0, 3, QModelIndex()), QVariant("Аппарат"), Qt::EditRole);
-    TableModel->setData(TableModel->index(0, 4, QModelIndex()), QVariant("Переключение"), Qt::EditRole);
-    // TableModel->setData(TableModel->index(0, 5, QModelIndex()), QVariant("Осц"), Qt::EditRole);
-    // SwjTableView->setSpan(0, 3, 1, 2); // объединение 3 и 4 столбцов в 0 ряду
-    QByteArray SWJournals_INF;
-    int SWJINFSIZE = sizeof(S2DataTypes::SwitchJourInfo) * MAXSWJNUM;
-    SWJournals_INF.resize(SWJINFSIZE);
-    //   Commands::GetBt(TECH_SWJ, &(SWJournals_INF.data()[0]), SWJINFSIZE); // в SWJSize - реальная длина в байтах
-    SWJournals_INF.resize(SWJINFSIZE);
-    // ProcessOscillograms();
-    processSWJournal(SWJournals_INF);
-}
+    fileBuffer.clear();
 
-void SwitchJournalDialog::showJournal(QModelIndex idx)
-{
-    bool ok;
-    int SWJNum = TableModel->data(idx.sibling(idx.row(), 1), Qt::DisplayRole).toInt(&ok); // номер осциллограммы
+    bool ok = false;
+    auto model = idx.model();
+
+    if (!model)
+        return;
+
+    auto fileNum = model->data(idx.sibling(idx.row(), Column::number), Qt::DisplayRole).toUInt(&ok); // номер файла
+    reqSwJNum = model->data(idx.sibling(idx.row(), Column::switchNumber), Qt::DisplayRole).toUInt(&ok); // номер файла
     if (!ok)
     {
-        qWarning("");
+        qWarning("Cannot convert");
         return;
     }
-    S2DataTypes::SwitchJourInfo swjr = SWJMap[SWJNum];
-    // EOscillogram::GBoStruct gbos;
-    if (swjr.fileNum)
+    if (!swjMap.contains(reqSwJNum))
     {
-        SWJDialog *dlg = new SWJDialog(SWJDOscFunc);
-        dlg->setModal(false);
-        dlg->Init(swjr);
-        dlg->show();
+        qWarning("Cannot find");
+        return;
     }
+    quint32 size = swjMap.value(reqSwJNum).fileLength;
 
-    // bool oscexist = OscMap.keys().contains(swjr.Time);
-    // if (oscexist)
-    //     gbos = OscMap[swjr.Time];
+    if (!loadIfExist(size))
+        BaseInterface::iface()->reqFile(
+            fileNum, Queries::FileFormat::CustomS2, size + 2 * sizeof(S2DataTypes::DataRecHeader));
 }
 
 void SwitchJournalDialog::eraseJournals()
 {
     if (checkPassword())
         BaseInterface::iface()->writeCommand(Queries::QC_EraseTechBlock, TECH_SWJ);
+}
+
+bool SwitchJournalDialog::loadIfExist(quint32 size)
+{
+    auto time = swjMap.value(reqSwJNum).time;
+    auto file = filename(time);
+    QByteArray ba;
+
+    QFile swjFile(file);
+
+    if (!swjFile.exists())
+        return false;
+
+    if (swjFile.size() < size)
+        return false;
+
+    int ret = QMessageBox::question(this, "Кэширование", "Прочитать из кэша");
+    if ((ret == QMessageBox::StandardButton::Ok) || (ret == QMessageBox::StandardButton::Yes))
+    {
+        if (Files::LoadFromFile(file, ba) == Error::Msg::NoError)
+        {
+            qInfo() << "Swj loaded from file: " << file;
+            DataTypes::S2FilePack outlist;
+            S2::RestoreData(ba, outlist);
+            for (auto &&file : outlist)
+            {
+                DataTypes::FileStruct resp { DataTypes::FilesEnum(file.ID), file.data };
+                DataManager::addSignalToOutList(DataTypes::SignalTypes::File, resp);
+            }
+            return true;
+        }
+        else
+        {
+            qWarning() << "Failed to load swj from file: " << file;
+        }
+    }
+    return false;
+}
+
+QString SwitchJournalDialog::filename(quint64 time) const
+{
+    const auto &board = Board::GetInstance();
+    QString filename = StdFunc::GetSystemHomeDir();
+    filename.push_back(board.UID());
+    filename.push_back("-");
+    filename.push_back(QString::number(board.type(), 16));
+    filename.push_back("-");
+    filename.push_back(QString::number(reqSwJNum));
+    filename.push_back("-");
+    filename.push_back(QString::number(time));
+    filename.push_back(".swj");
+    return filename;
+}
+
+SwitchJournalViewDialog::SwitchJournalViewDialog(
+    SwjModel &swjModel, TrendViewModel *const oscModel, OscManager &oscManager)
+    : QDialog(nullptr)
+{
+    auto pb = create(swjModel);
+    connect(pb, &QPushButton::clicked, this, [oscModel, &manager = oscManager] {
+        if (oscModel)
+        {
+            manager.loadOsc(oscModel);
+        }
+    });
+}
+
+SwitchJournalViewDialog::SwitchJournalViewDialog(
+    SwjModel &swjModel, const std::unique_ptr<TrendViewModel> &oscModel, OscManager &oscManager)
+
+{
+    auto pb = create(swjModel);
+    connect(pb, &QPushButton::clicked, this, [&] {
+        if (oscModel)
+        {
+            oscManager.loadOsc(oscModel.get());
+        }
+    });
+}
+
+QPushButton *SwitchJournalViewDialog::create(SwjModel &swjModel)
+{
+    QVBoxLayout *vlyout = new QVBoxLayout;
+
+    auto tableView = new QTableView(this);
+    tableView->setModel(swjModel.commonModel.get());
+    tableView->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    tableView->resizeColumnsToContents();
+    tableView->setShowGrid(false);
+    tableView->horizontalHeader()->hide();
+    tableView->verticalHeader()->hide();
+    auto pb = new QPushButton(QIcon(":/icons/osc.svg"), "Открыть", tableView);
+
+    tableView->setIndexWidget(tableView->model()->index(9, 1), pb);
+    tableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
+
+    vlyout->addWidget(tableView);
+
+    tableView = new QTableView(this);
+    tableView->setModel(swjModel.detailModel.get());
+    tableView->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    tableView->setShowGrid(false);
+    tableView->resizeColumnsToContents();
+    tableView->horizontalHeader()->hide();
+    tableView->verticalHeader()->hide();
+    tableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    vlyout->addWidget(tableView);
+
+    setLayout(vlyout);
+    setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    setAttribute(Qt::WA_DeleteOnClose);
+
+    return pb;
 }

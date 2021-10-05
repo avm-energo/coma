@@ -275,16 +275,26 @@ void DataManager::checkTypeAndSendSignals(DataTypes::SignalsStruct &str)
     }
     case OscillogramInfo:
     {
-        Q_ASSERT(str.data.canConvert<OscInfo>());
-        if (str.data.canConvert<OscInfo>())
+        Q_ASSERT(str.data.canConvert<S2DataTypes::OscInfo>());
+        if (str.data.canConvert<S2DataTypes::OscInfo>())
         {
-            OscInfo oscInfo = str.data.value<OscInfo>();
+            S2DataTypes::OscInfo oscInfo = str.data.value<S2DataTypes::OscInfo>();
             emit oscInfoReceived(oscInfo);
         }
         break;
     }
+    case SwitchJournalInfo:
+    {
+        Q_ASSERT(str.data.canConvert<S2DataTypes::SwitchJourInfo>());
+        if (str.data.canConvert<S2DataTypes::SwitchJourInfo>())
+        {
+            S2DataTypes::SwitchJourInfo swjInfo = str.data.value<S2DataTypes::SwitchJourInfo>();
+            emit swjInfoReceived(swjInfo);
+        }
+        break;
+    }
 #ifdef __linux__
-case Timespec:
+    case Timespec:
     {
         Q_ASSERT(str.data.canConvert<timespec>());
         if (str.data.canConvert<timespec>())

@@ -3,6 +3,7 @@
 #include "../comaversion/comaversion.h"
 #include "../gen/board.h"
 #include "../gen/datamanager.h"
+#include "../interfaces/emulator.h"
 #include "../interfaces/protocom.h"
 #include "../widgets/aboutwidget.h"
 #include "config.h"
@@ -43,6 +44,13 @@ void DebugComa::setupConnection()
         device = BaseInterface::InterfacePointer(new Protocom());
         break;
     }
+#ifdef ENABLE_EMULATOR
+    case Board::InterfaceType::Emulator:
+    {
+        device = BaseInterface::InterfacePointer(new Emulator());
+        break;
+    }
+#endif
     default:
         qFatal("Connection type error");
     }

@@ -1,41 +1,62 @@
 #ifndef SWITCHJOURNALDIALOG_H
 #define SWITCHJOURNALDIALOG_H
 
-#include "../models/etablemodel.h"
-#include "../widgets/etableview.h"
 #include "../widgets/udialog.h"
-#include "eoscillogram.h"
-#include "swjdialog.h"
+#include "oscmanager.h"
 
-#include <QDialog>
 #include <QModelIndex>
+
+class ETableModel;
+class ETableView;
 
 class SwitchJournalDialog : public UDialog
 {
     Q_OBJECT
+
+    enum Column
+    {
+        number = 0,
+        switchNumber = 1,
+        datetime = 2,
+        id = 3,
+        switchType = 4,
+        download = 5
+    };
+
 public:
-    SwitchJournalDialog(EOscillogram *osc, QWidget *parent = nullptr);
     explicit SwitchJournalDialog(QWidget *parent = nullptr);
 
+public:
+    void fillJour(const DataTypes::FileStruct &fs);
+    void fillSwJInfo(S2DataTypes::SwitchJourInfo swjInfo);
+
 private:
-    ETableModel *TableModel;
-    ETableView *SwjTableView;
-    QMap<quint64, DataTypes::OscInfo> OscMap;
-    QMap<int, S2DataTypes::SwitchJourInfo> SWJMap;
-    EOscillogram *SWJDOscFunc;
-
-    void SetupUI();
-    void processSWJournal(QByteArray &ba);
-
-    void processOscillograms();
-
-public slots:
-    void FillJour(const DataTypes::FileStruct &fs);
-
-private slots:
-    void loadJournals();
-    void showJournal(QModelIndex idx);
+    void setupUI();
+    void getSwJ(const QModelIndex &idx);
     void eraseJournals();
+    bool loadIfExist(quint32 size);
+    QString filename(quint64 time) const;
+
+    UniquePointer<ETableModel> tableModel;
+    ETableView *swjTableView;
+    QMap<int, S2DataTypes::SwitchJourInfo> swjMap;
+    std::vector<DataTypes::FileStruct> fileBuffer;
+
+    std::unique_ptr<TrendViewModel> oscModel;
+    OscManager oscManager;
+    SwjModel swjModel;
+    quint32 reqSwJNum = 0;
+};
+
+class SwitchJournalViewDialog : public QDialog
+{
+public:
+    SwitchJournalViewDialog(SwjModel &swjModel, TrendViewModel *const oscModel, OscManager &oscManager);
+    SwitchJournalViewDialog(
+        SwjModel &swjModel, const std::unique_ptr<TrendViewModel> &oscModel, OscManager &oscManager);
+
+private:
+    QPushButton *create(SwjModel &swjModel);
 };
 
 #endif // SWITCHJOURNALDIALOG_H
