@@ -92,6 +92,18 @@ public:
         }
     }
     void updateSPData(const DataTypes::SinglePointWithTimeStruct &sp) override;
+
+protected:
+    /*!
+       \brief QList для вкладок текущего виджета
+
+    QList для вкладок текущего виджета, по умолчанию обновление отключено
+        для всех вкладок, если хотим обновлять какую-то вкладку сразу, то
+        необходимо включить обновление для нее
+            */
+    QList<BdUIStruct> m_BdUIList;
+    QTimer *Timer;
+    QXlsx::Document *xlsx;
 signals:
 
 public slots:
@@ -111,6 +123,7 @@ private:
 
     bool m_readDataInProgress;
     QElapsedTimer *ElapsedTimeCounter;
+    int WRow;
 
     void ReadAnalogMeasurementsAndWriteToFile();
 

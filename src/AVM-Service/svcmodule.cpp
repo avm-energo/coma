@@ -3,6 +3,7 @@
 #include "../check/abstractcheckdialog.h"
 #include "../config/configdialog.h"
 #include "../dialogs/journalsdialog.h"
+#include "../dialogs/plotdialog.h"
 #include "../dialogs/timedialog.h"
 #include "../gen/board.h"
 #include "../gen/modules.h"
@@ -94,7 +95,10 @@ void SvcModule::createModule(Modules::Model model)
             }
         }
 
+        addDialogToList(cdkiv, "Проверка");
+        addDialogToList(new PlotDialog, "Диаграммы");
         addDialogToList(new StartupKIVDialog, "Начальные\nзначения");
+
         Module::create(std::move(jour));
         break;
     }

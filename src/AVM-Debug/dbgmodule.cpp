@@ -8,6 +8,7 @@
 #include "../config/configdialog.h"
 #include "../dialogs/hiddendialog.h"
 #include "../dialogs/journalsdialog.h"
+#include "../dialogs/plotdialog.h"
 #include "../dialogs/timedialog.h"
 #include "../module/journkdv.h"
 #include "../module/journkiv.h"
@@ -51,7 +52,11 @@ void DbgModule::createModule(Modules::Model model)
                 addDialogToList(check, item.header, "check:" + item.header);
             }
         }
-
+        CheckKIVDialog *cdkiv = new CheckKIVDialog;
+        cdkiv->setHighlights(AbstractCheckDialog::Warning, settings()->highlightWarn);
+        cdkiv->setHighlights(AbstractCheckDialog::Critical, settings()->highlightCrit);
+        addDialogToList(cdkiv, "Проверка");
+        addDialogToList(new PlotDialog, "Диаграммы");
         addDialogToList(new StartupKIVDialog, "Начальные\nзначения");
         Module::create(std::move(jour));
 
