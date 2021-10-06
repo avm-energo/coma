@@ -531,6 +531,8 @@ void ProtocomThread::parseResponse(QByteArray ba)
         m_buffer.first += size;
         m_buffer.second.append(ba);
 
+        quint32 filenum = m_currentCommand.arg1.value<quint32>();
+
         // Потому что на эту команду модуль не отдает пустой ответ
         if (isOneSegment(size) || (cmd == Proto::ReadBlkStartInfo))
         {
@@ -538,8 +540,11 @@ void ProtocomThread::parseResponse(QByteArray ba)
             // Progress for big files
             if (m_currentCommand.cmd == Proto::Commands::ReadFile)
             {
-                progress += size;
-                handleProgress(progress);
+                if (filenum != DataTypes::Config)
+                {
+                    progress += size;
+                    handleProgress(progress);
+                }
             }
         }
         else
@@ -551,8 +556,11 @@ void ProtocomThread::parseResponse(QByteArray ba)
             // Progress for big files
             if (m_currentCommand.cmd == Proto::Commands::ReadFile)
             {
-                progress += Proto::Limits::MaxSegmenthLength;
-                handleProgress(progress);
+                if (filenum != DataTypes::Config)
+                {
+                    progress += Proto::Limits::MaxSegmenthLength;
+                    handleProgress(progress);
+                }
             }
         }
         break;
