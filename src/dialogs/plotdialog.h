@@ -1,7 +1,7 @@
 #pragma once
 #include "../widgets/udialog.h"
 
-#include <unordered_set>
+#include <set>
 
 #define ANIMATED_PLOT
 
@@ -59,7 +59,7 @@ struct Phase
 struct GraphData
 {
     QCPPolarGraph *graph;
-    std::unordered_set<quint32> regs;
+    std::set<quint32> regs;
     Phase phase;
     bool contains(quint32 reg)
     {
