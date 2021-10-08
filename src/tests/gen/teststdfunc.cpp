@@ -11,4 +11,11 @@ void TestStdFunc::VerToStr()
     QVERIFY(expectedString == realString);
 }
 
+void TestStdFunc::StrToVer()
+{
+    quint32 expectedValue = 50528257;
+    auto realValue = StdFunc::StrToVer("3.3-0001");
+    QVERIFY(expectedValue == realValue);
+}
+
 QTEST_GUILESS_MAIN(TestStdFunc)

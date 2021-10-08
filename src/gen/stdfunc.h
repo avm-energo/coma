@@ -48,6 +48,7 @@ public:
 
     static void Init();
     static QString VerToStr(quint32);
+    static quint32 StrToVer(const QString &str);
     static bool floatIsWithinLimits(double var, double base, double tolerance)
     {
         auto tmpf = fabs(var - base);

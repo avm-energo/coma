@@ -66,6 +66,17 @@ QString StdFunc::VerToStr(quint32 num)
     return tmpString;
 }
 
+quint32 StdFunc::StrToVer(const QString &str)
+{
+    auto dotPos = str.indexOf('.');
+    int mv = str.leftRef(dotPos).toInt() << 24;
+    auto dashPos = str.indexOf('-');
+    int lv = str.midRef(dotPos + 1, dashPos - dotPos - 1).toInt() << 16;
+    auto svStr = str.rightRef(str.size() - dashPos - 1);
+    int sv = svStr.toInt();
+    return mv | lv | sv;
+}
+
 float StdFunc::toFloat(const QString &text, bool *ok)
 {
     bool floatok;

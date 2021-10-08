@@ -27,6 +27,7 @@ private slots:
     {
     }
     void VerToStr();
+    void StrToVer();
 signals:
 private:
 };
