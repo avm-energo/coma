@@ -124,96 +124,106 @@ QWidget *WidgetFactory::createWidget(BciNumber key, QWidget *parent)
     }
 
     const auto var = search->second;
-    std::visit(overloaded {
-                   [&](const delegate::DoubleSpinBoxGroup &arg) {
+    std::visit(
+        overloaded {
+            [&](const delegate::DoubleSpinBoxGroup &arg) {
 #ifdef DEBUG_FACTORY
-                       qDebug() << "DoubleSpinBoxGroupWidget" << key;
+                qDebug() << "DoubleSpinBoxGroupWidget" << key;
 #endif
-                       widget = new QWidget(parent);
-                       QHBoxLayout *lyout = new QHBoxLayout;
-                       auto label = new QLabel(arg.desc, parent);
-                       label->setToolTip(arg.toolTip);
-                       lyout->addWidget(label);
-                       lyout->addWidget(
-                           WDFunc::NewSPBG(parent, QString::number(key), arg.count, arg.min, arg.max, arg.decimals));
-                       widget->setLayout(lyout);
-                   },
-                   [&](const delegate::DoubleSpinBoxWidget &arg) {
-#ifdef DEBUG_FACTORY
-                       qDebug() << "DoubleSpinBoxWidget" << key;
-#endif
-                       widget = new QWidget(parent);
-                       QHBoxLayout *lyout = new QHBoxLayout;
-                       auto label = new QLabel(arg.desc, parent);
-                       label->setToolTip(arg.toolTip);
-                       lyout->addWidget(label);
-                       lyout->addWidget(WDFunc::NewSPB2(parent, QString::number(key), arg.min, arg.max, arg.decimals));
-                       widget->setLayout(lyout);
-                   },
-                   [&](const delegate::CheckBoxGroup &arg) {
-#ifdef DEBUG_FACTORY
-                       qDebug() << "CheckBoxGroupWidget" << key;
-#endif
-                       // Q_ASSERT(desc.count() == arg.count);
-                       widget = new QWidget(parent);
-                       QHBoxLayout *lyout = new QHBoxLayout;
-                       auto label = new QLabel(arg.desc, parent);
-                       label->setToolTip(arg.toolTip);
-                       lyout->addWidget(label);
+                widget = new QWidget(parent);
+                QHBoxLayout *lyout = new QHBoxLayout;
+                auto label = new QLabel(arg.desc, parent);
+                label->setToolTip(arg.toolTip);
+                lyout->addWidget(label);
 
-                       auto group = new CheckBoxGroup(arg.items, arg.count, parent);
-                       group->setObjectName(QString::number(key));
-                       lyout->addWidget(group);
-                       widget->setLayout(lyout);
-                   },
-                   [&](const delegate::QComboBox &arg) {
+                QWidget *spbGroup;
+                if (!arg.items.isEmpty())
+                {
+                    assert(arg.items.count() == arg.count);
+                    spbGroup = WDFunc::NewSPBG(parent, QString::number(key), arg.items, arg.min, arg.max, arg.decimals);
+                }
+                else
+                    spbGroup = WDFunc::NewSPBG(parent, QString::number(key), arg.count, arg.min, arg.max, arg.decimals);
+
+                lyout->addWidget(spbGroup);
+                widget->setLayout(lyout);
+            },
+            [&](const delegate::DoubleSpinBoxWidget &arg) {
 #ifdef DEBUG_FACTORY
-                       qDebug() << "QComboBox" << key;
+                qDebug() << "DoubleSpinBoxWidget" << key;
 #endif
-                       // Q_ASSERT(desc.count() == arg.count);
-                       widget = new QWidget(parent);
-                       QHBoxLayout *lyout = new QHBoxLayout;
-                       auto label = new QLabel(arg.desc, parent);
-                       label->setToolTip(arg.toolTip);
-                       lyout->addWidget(label);
-                       lyout->addWidget(WDFunc::NewCB2(parent, QString::number(key), arg.model));
-                       widget->setLayout(lyout);
-                   },
-                   [&](const delegate::QComboBoxGroup &arg) {
+                widget = new QWidget(parent);
+                QHBoxLayout *lyout = new QHBoxLayout;
+                auto label = new QLabel(arg.desc, parent);
+                label->setToolTip(arg.toolTip);
+                lyout->addWidget(label);
+                lyout->addWidget(WDFunc::NewSPB2(parent, QString::number(key), arg.min, arg.max, arg.decimals));
+                widget->setLayout(lyout);
+            },
+            [&](const delegate::CheckBoxGroup &arg) {
 #ifdef DEBUG_FACTORY
-                       qDebug() << "QComboBoxGroup" << key;
+                qDebug() << "CheckBoxGroupWidget" << key;
 #endif
-                       // Q_ASSERT(desc.count() == arg.count);
-                       widget = new QWidget(parent);
+                // Q_ASSERT(desc.count() == arg.count);
+                widget = new QWidget(parent);
+                QHBoxLayout *lyout = new QHBoxLayout;
+                auto label = new QLabel(arg.desc, parent);
+                label->setToolTip(arg.toolTip);
+                lyout->addWidget(label);
 
-                       QHBoxLayout *mainLyout = new QHBoxLayout;
-                       auto label = new QLabel(arg.desc, parent);
-                       label->setToolTip(arg.toolTip);
-                       mainLyout->addWidget(label);
-
-                       int count = arg.count;
-                       auto itemsOneLine = detail::goldenRatio(count);
-
-                       QGridLayout *gridlyout = new QGridLayout;
-                       for (auto i = 0; i != count; ++i)
-                       {
-                           QHBoxLayout *layout = new QHBoxLayout;
-                           layout->addWidget(new QLabel(QString::number(i + 1), parent));
-                           layout->addWidget(WDFunc::NewCB2(parent, widgetName(key, i), arg.model));
-                           gridlyout->addLayout(layout, i / itemsOneLine, i % itemsOneLine);
-                       }
-
-                       mainLyout->addLayout(gridlyout);
-                       widget->setLayout(mainLyout);
-                   },
-                   [&](const auto &arg) {
+                auto group = new CheckBoxGroup(arg.items, arg.count, parent);
+                group->setObjectName(QString::number(key));
+                lyout->addWidget(group);
+                widget->setLayout(lyout);
+            },
+            [&](const delegate::QComboBox &arg) {
 #ifdef DEBUG_FACTORY
-                       qDebug() << "DefaultWidget" << key;
+                qDebug() << "QComboBox" << key;
 #endif
-                       using namespace delegate;
-                       widget = helper(arg, parent, key);
-                   },
-               },
+                // Q_ASSERT(desc.count() == arg.count);
+                widget = new QWidget(parent);
+                QHBoxLayout *lyout = new QHBoxLayout;
+                auto label = new QLabel(arg.desc, parent);
+                label->setToolTip(arg.toolTip);
+                lyout->addWidget(label);
+                lyout->addWidget(WDFunc::NewCB2(parent, QString::number(key), arg.model));
+                widget->setLayout(lyout);
+            },
+            [&](const delegate::QComboBoxGroup &arg) {
+#ifdef DEBUG_FACTORY
+                qDebug() << "QComboBoxGroup" << key;
+#endif
+                // Q_ASSERT(desc.count() == arg.count);
+                widget = new QWidget(parent);
+
+                QHBoxLayout *mainLyout = new QHBoxLayout;
+                auto label = new QLabel(arg.desc, parent);
+                label->setToolTip(arg.toolTip);
+                mainLyout->addWidget(label);
+
+                int count = arg.count;
+                auto itemsOneLine = detail::goldenRatio(count);
+
+                QGridLayout *gridlyout = new QGridLayout;
+                for (auto i = 0; i != count; ++i)
+                {
+                    QHBoxLayout *layout = new QHBoxLayout;
+                    layout->addWidget(new QLabel(QString::number(i + 1), parent));
+                    layout->addWidget(WDFunc::NewCB2(parent, widgetName(key, i), arg.model));
+                    gridlyout->addLayout(layout, i / itemsOneLine, i % itemsOneLine);
+                }
+
+                mainLyout->addLayout(gridlyout);
+                widget->setLayout(mainLyout);
+            },
+            [&](const auto &arg) {
+#ifdef DEBUG_FACTORY
+                qDebug() << "DefaultWidget" << key;
+#endif
+                using namespace delegate;
+                widget = helper(arg, parent, key);
+            },
+        },
         var);
     return widget;
 }

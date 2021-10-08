@@ -28,6 +28,23 @@ public:
         }
         setLayout(gridlyout);
     }
+    explicit BaseSpinBoxGroup(const QStringList &list, QWidget *parent = nullptr)
+        : QWidget(parent), m_count(list.size())
+    {
+        auto parentWidth = parent->width();
+        auto columnWidth = parentWidth / 2;
+        QGridLayout *gridlyout = new QGridLayout;
+        for (auto i = 0; i != m_count; ++i)
+        {
+            QHBoxLayout *layout = new QHBoxLayout;
+            layout->addWidget(new QLabel(list.at(i), this));
+            layout->addWidget(new S(this));
+            auto width = layout->totalMinimumSize().width();
+            auto itemsOneLine = columnWidth / width;
+            gridlyout->addLayout(layout, i / itemsOneLine, i % itemsOneLine);
+        }
+        setLayout(gridlyout);
+    }
     T minimum() const
     {
         return m_minimum;

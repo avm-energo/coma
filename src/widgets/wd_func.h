@@ -97,6 +97,18 @@ public:
         spinBoxGroup->setMaximum(max);
         return spinBoxGroup;
     }
+    static DoubleSpinBoxGroup *NewSPBG(QWidget *parent, const QString &spbname, const QStringList &list,
+        const double min, const double max, const int decimals)
+    {
+        auto spinBoxGroup = new DoubleSpinBoxGroup(list, parent);
+        spinBoxGroup->setObjectName(spbname);
+        double step = std::pow(0.1f, decimals);
+        spinBoxGroup->setSingleStep(step);
+        spinBoxGroup->setDecimals(decimals);
+        spinBoxGroup->setMinimum(min);
+        spinBoxGroup->setMaximum(max);
+        return spinBoxGroup;
+    }
 
     static bool SetSPBData(const QObject *w, const QString &spbname, const double &spbvalue);
     template <size_t N, typename T>

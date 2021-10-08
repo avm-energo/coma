@@ -2701,6 +2701,11 @@
 			<type>DoubleSpinBoxGroup</type>
 			<group>100</group>
 			<string>Дополнительное смещение момента отключения, град</string>
+			<string-array>
+				<item>A</item>
+				<item>B</item>
+				<item>C</item>
+			</string-array>
 			<count>3</count>
 			<min>0</min>
 			<max>65554</max>
@@ -2714,6 +2719,11 @@
 			<type>DoubleSpinBoxGroup</type>
 			<group>100</group>
 			<string>Дополнительное смещение момента включения, град</string>
+			<string-array>
+				<item>A</item>
+				<item>B</item>
+				<item>C</item>
+			</string-array>
 			<count>3</count>
 			<min>0</min>
 			<max>65554</max>
