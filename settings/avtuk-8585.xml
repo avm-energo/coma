@@ -5,7 +5,7 @@
     <!--Здесь укаазно название модуля-->
     <name>AVTUK-8585</name>
     <!--Минимальная версия прошивки модуля, для которой описаны настройки-->
-    <version>2.1.2</version>
+    <version>3.3.0</version>
     <!--Дальше идет всё, что несредственно относится к модулю-->
     <resources>
       <!--Описываем сигнализацию, имя обязательно-->
@@ -100,11 +100,11 @@
 				<record>
 					<id>1106</id>
 					<defaultValue>0</defaultValue>
-					<visibility>false</visibility>
 				</record>
 				<record>
 					<id>1107</id>
 					<defaultValue>0</defaultValue>
+					<visibility>false</visibility>
 				</record>
 				<record>
 					<id>1108</id>
@@ -149,6 +149,7 @@
         		<record>
 					<id>1120</id>
 					<defaultValue>70.0</defaultValue>
+					<visibility>false</visibility>		
 				</record>
 				<record>
 					<id>1121</id>
@@ -332,7 +333,8 @@
 				</record>
 				<record>
 					<id>1166</id>
-					<defaultValue>1</defaultValue>
+					<defaultValue>0</defaultValue>
+					<visibility>false</visibility>
 				</record>
 				<record>
 					<id>1168</id>
