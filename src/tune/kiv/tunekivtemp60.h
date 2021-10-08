@@ -35,7 +35,7 @@ private:
     BdaIn *m_bdain;
     Bd0 *m_bd0;
     MidTuneStruct m_midTuneStruct;
-    QVector<TuneDescrStruct> m_tuneDescrVector()
+    const QVector<TuneDescrStruct> m_tuneDescrVector()
     {
         QVector<TuneDescrStruct> vect;
         for (int i = 0; i < 6; ++i)

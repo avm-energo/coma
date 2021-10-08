@@ -9,6 +9,7 @@
 #include "../gen/stdfunc.h"
 #include "../gen/timefunc.h"
 #include "../interfaces/protocom.h"
+#include "../widgets/epopup.h"
 #include "../widgets/waitwidget.h"
 #include "../widgets/wd_func.h"
 #include "generaltunedialog.h"
@@ -90,7 +91,7 @@ QWidget *AbstractTuneDialog::TuneUI()
     w2lyout->addWidget(WDFunc::NewLBL2(this, "Для запуска регулировки нажмите кнопку \"Начать настройку\""));
     for (i = 0; i < m_messages.size(); ++i)
     {
-        QHBoxLayout *hlyout = new QHBoxLayout;
+        hlyout = new QHBoxLayout;
         hlyout->addWidget(WDFunc::NewLBL2(w2, m_messages.at(i), "tunemsg" + QString::number(i)));
         hlyout->addWidget(WDFunc::NewLBL2(w2, "", "tunemsgres" + QString::number(i)));
         hlyout->addStretch(1);
@@ -102,7 +103,7 @@ QWidget *AbstractTuneDialog::TuneUI()
     area->setWidget(w2);
     lyout->addWidget(area);
     lyout->addWidget(WDFunc::NewLBL2(w2, "Настройка завершена!", "tunemsg" + QString::number(i)));
-    for (int i = 0; i < m_messages.size(); ++i)
+    for (i = 0; i < m_messages.size(); ++i)
     {
         WDFunc::SetVisible(w2, "tunemsg" + QString::number(i), false);
         WDFunc::SetVisible(w2, "tunemsgres" + QString::number(i), false);
@@ -249,6 +250,7 @@ void AbstractTuneDialog::MsgClear()
 
 void AbstractTuneDialog::startTune()
 {
+    Error::Msg res;
     if (checkCalibrStep() != Error::Msg::NoError)
         return;
     WDFunc::SetEnabled(this, "starttune", false);
@@ -275,10 +277,11 @@ void AbstractTuneDialog::startTune()
     for (bStep = 0; bStep < m_messages.size(); ++bStep)
     {
         MsgSetVisible(NoMsg, bStep);
-        Error::Msg res = (this->*m_tuneFunctions.at(bStep))();
+        res = (this->*m_tuneFunctions.at(bStep))();
         if ((res == Error::Msg::GeneralError) || (StdFunc::isCancelled()))
         {
             MsgSetVisible(ErMsg, bStep);
+#ifndef DEBUGISON
             WDFunc::SetEnabled(this, "starttune", true);
             WDFunc::SetEnabled(this, "stoptune", false);
             WDFunc::SetEnabled(this, "finishpb", true);
@@ -286,6 +289,7 @@ void AbstractTuneDialog::startTune()
             loadAllTuneCoefs();
             QMessageBox::critical(this, "Ошибка", Error::MsgStr[res]);
             return;
+#endif
         }
         else if (res == Error::Msg::ResEmpty)
             MsgSetVisible(SkMsg, bStep);
@@ -296,7 +300,7 @@ void AbstractTuneDialog::startTune()
     WDFunc::SetEnabled(this, "starttune", true);
     WDFunc::SetEnabled(this, "stoptune", false);
     WDFunc::SetEnabled(this, "finishpb", true);
-    QMessageBox::information(this, "Готово", "Настройка завершена!");
+    EPopupWorker::information("Настройка завершена!");
     TuneSequenceFile::saveTuneSequenceFile(m_tuneStep + 1); // +1 to let the next stage run
 }
 

@@ -86,7 +86,7 @@ Error::Msg TuneKIVTemp60::setNewConfAndTune()
         m_bac->data()->TKUb[i] = 0;
     }
     m_bac->data()->TKPsi_a[0] = m_bac->data()->TKPsi_a[1] = m_bac->data()->TKPsi_a[2] = 0;
-    m_bac->data()->TKPsi_b[0] = m_bac->data()->TKPsi_b[1] = m_bac->data()->TKPsi_a[2] = 0;
+    m_bac->data()->TKPsi_b[0] = m_bac->data()->TKPsi_b[1] = m_bac->data()->TKPsi_b[2] = 0;
     if (writeTuneCoefs(false) != Error::Msg::NoError)
         return Error::Msg::GeneralError;
     return Error::Msg::NoError;

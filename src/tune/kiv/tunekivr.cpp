@@ -2,6 +2,7 @@
 
 #include "../../gen/colors.h"
 #include "../../gen/stdfunc.h"
+#include "../../widgets/epopup.h"
 #include "../../widgets/waitwidget.h"
 #include "../../widgets/wd_func.h"
 
@@ -118,9 +119,12 @@ Error::Msg TuneKIVR::processR120()
 
 void TuneKIVR::setR(int r)
 {
-    if (QMessageBox::question(this, "Подтверждение", "Установите сопротивление " + QString::number(r, 'f', 1) + " Ом")
-        == QMessageBox::No)
+    if (!EPopupWorker::next("Установите сопротивление " + QString::number(r, 'f', 1) + " Ом"))
         CancelTune();
+    //    if (QMessageBox::question(this, "Подтверждение", "Установите сопротивление " + QString::number(r, 'f', 1) + "
+    //    Ом")
+    //        == QMessageBox::No)
+    //        CancelTune();
 }
 
 double TuneKIVR::processR()
