@@ -3,7 +3,7 @@
 
 #include <set>
 
-#define ANIMATED_PLOT
+//#define ANIMATED_PLOT
 
 class QCustomPlot;
 class QCPPolarGraph;

@@ -115,7 +115,7 @@ void PlotDialog::updateFloatData(const DataTypes::FloatStruct &fl)
             graph->addData({ -150, 0, 120 }, { valueRadius, 0, valueRadius }, true);
         }
 
-        angularAxis->setRange(0, 360);
+        angularAxis->setRange(-180, 180);
         angularAxis->setRangeReversed(true);
         angularAxis->radialAxis()->setRange(0, 1);
         examplePlot->replot();
@@ -229,7 +229,7 @@ void PlotDialog::setupUI()
 
         graphPhaseC = createAxis(angularAxis, QColor(Qt::red), { 2403, 2406 });
 
-        angularAxis->setRange(0, 360);
+        angularAxis->setRange(-180, 180);
         angularAxis->setRangeReversed(true);
         angularAxis->radialAxis()->setRange(0, 1);
 
