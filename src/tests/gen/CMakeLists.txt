@@ -1,4 +1,4 @@
-project(protocom_test)
+project(gen_test)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
@@ -15,6 +15,5 @@ find_package(
   Qt${QT_VERSION_MAJOR}
   COMPONENTS Core Xml Test
   REQUIRED)
-add_executable(${PROJECT_NAME} testprotocom.cpp testprotocom.h console.cpp
-                               console.h #[[main.cpp]])
-target_link_libraries(${PROJECT_NAME} interfaces gen Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::Xml Qt${QT_VERSION_MAJOR}::Test)
+add_executable(${PROJECT_NAME} teststdfunc.cpp teststdfunc.h)
+target_link_libraries(${PROJECT_NAME} gen Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::Xml Qt${QT_VERSION_MAJOR}::Test)
