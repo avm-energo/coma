@@ -7,6 +7,12 @@ struct InterfaceSettings
     QVariant settings;
 };
 
+struct ModuleType
+{
+    quint16 typeB;
+    quint16 typeM;
+};
+
 struct ModuleSettings
 {
     int alarmCount() const
@@ -21,6 +27,8 @@ struct ModuleSettings
     InterfaceSettings ifaceSettings;
     QList<DataTypes::RecordPair> configSettings;
     QMultiMap<quint32, quint32> highlightWarn, highlightCrit;
+    ModuleType moduleType;
+    int interfaceType;
 };
 
 struct GlobalSettings
