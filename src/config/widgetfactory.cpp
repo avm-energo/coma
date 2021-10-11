@@ -546,14 +546,14 @@ static bool fillBackLineEdit(BciNumber key, const QWidget *parent)
     std::visit(
         [&](auto &&arg) {
             typedef std::remove_reference_t<decltype(arg)> internalType;
-            if constexpr (!std::is_container<internalType>())
+            if constexpr (!std_ext::is_container<internalType>())
             {
                 const auto value = QVariant(text).value<internalType>();
                 record.setData(value);
                 status = true;
             }
-            if constexpr (std::is_container<internalType>())
-                if constexpr (!std::is_container<typename internalType::value_type>())
+            if constexpr (std_ext::is_container<internalType>())
+                if constexpr (!std_ext::is_container<typename internalType::value_type>())
                 {
                     const auto value = QVariant(text).value<typename internalType::value_type>();
                     arg.at(0) = value;
@@ -573,9 +573,9 @@ static bool fillBackSPBG(BciNumber key, const QWidget *parent)
     std::visit(
         [&](auto &&arg) {
             typedef std::remove_reference_t<decltype(arg)> internalType;
-            if constexpr (std::is_container<internalType>())
+            if constexpr (std_ext::is_container<internalType>())
                 if constexpr (sizeof(typename internalType::value_type) != 1
-                    && !std::is_container<typename internalType::value_type>())
+                    && !std_ext::is_container<typename internalType::value_type>())
                 {
                     internalType buffer {};
                     status = WDFunc::SPBGData(parent, QString::number(key), buffer);
@@ -594,7 +594,7 @@ static bool fillBackSPB(BciNumber key, const QWidget *parent)
     std::visit(
         [&](auto &&arg) {
             typedef std::remove_reference_t<decltype(arg)> internalType;
-            if constexpr (!std::is_container<internalType>())
+            if constexpr (!std_ext::is_container<internalType>())
             {
                 auto buffer = WDFunc::SPBData<internalType>(parent, QString::number(key));
                 S2::setRecordValue({ key, buffer });
@@ -612,7 +612,7 @@ static bool fillBackChBG(BciNumber key, const QWidget *parent)
     std::visit(
         [&](auto &&arg) {
             typedef std::remove_reference_t<decltype(arg)> internalType;
-            if constexpr (!std::is_container<internalType>())
+            if constexpr (!std_ext::is_container<internalType>())
             {
                 if constexpr (std::is_unsigned_v<internalType>)
                 {
@@ -623,7 +623,7 @@ static bool fillBackChBG(BciNumber key, const QWidget *parent)
                 }
             }
 
-            else if constexpr (std::is_container<internalType>())
+            else if constexpr (std_ext::is_container<internalType>())
             {
                 typedef internalType Container;
                 typedef std::remove_reference_t<typename internalType::value_type> internalType;
@@ -706,7 +706,7 @@ static bool fillBackComboBoxGroup(BciNumber key, const QWidget *parent, int coun
                 }
                 S2::setRecordValue({ key, static_cast<internalType>(bitset.to_ullong()) });
             }
-            else if constexpr (std::is_container<internalType>())
+            else if constexpr (std_ext::is_container<internalType>())
             {
                 typedef internalType Container;
                 typedef std::remove_reference_t<typename internalType::value_type> internalType;

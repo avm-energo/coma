@@ -1,5 +1,6 @@
 #pragma once
 #include "../gen/s2helper.h"
+#include "../gen/std_ext.h"
 
 #include <QCheckBox>
 #include <map>
@@ -16,7 +17,7 @@ public:
     CheckBoxGroup(const QStringList &desc, int count, QWidget *parent = nullptr);
     ~CheckBoxGroup();
     template <typename T, std::enable_if_t<std::is_unsigned_v<T>, bool> = true> void setBits(const T value);
-    template <typename Container, std::enable_if_t<std::is_container<Container>::value, bool> = true>
+    template <typename Container, std::enable_if_t<std_ext::is_container<Container>::value, bool> = true>
     void setBits(const Container &container)
     {
         QList<QCheckBox *> checkBoxes = findChildren<QCheckBox *>();
@@ -32,7 +33,8 @@ public:
     }
 
     template <typename T, std::enable_if_t<std::is_unsigned_v<T>, bool> = true> T bits();
-    template <typename Container, std::enable_if_t<std::is_container<Container>::value, bool> = true> Container bits()
+    template <typename Container, std::enable_if_t<std_ext::is_container<Container>::value, bool> = true>
+    Container bits()
     {
         QList<QCheckBox *> checkBoxes = findChildren<QCheckBox *>();
         std::map<int, typename Container::value_type> buffer;
