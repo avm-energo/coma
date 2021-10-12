@@ -245,8 +245,8 @@ void Journals::saveJour(DataTypes::FilesEnum jtype, QString filename)
     //        amdl->fetchMore(amdl->index(0, 0));
     //    }
 
-    QXlsx::Document *doc = new QXlsx::Document(filename);
-    QXlsx::Worksheet *workSheet = doc->currentWorksheet();
+    QXlsx::Document doc(filename);
+    QXlsx::Worksheet *workSheet = doc.currentWorksheet();
 
     QXlsx::CellReference cellJourType(1, 1);
     QXlsx::CellReference cellModuleType(2, 1);
@@ -282,15 +282,15 @@ void Journals::saveJour(DataTypes::FilesEnum jtype, QString filename)
         QString tempString = pmdl->headerData(i, Qt::Horizontal, Qt::DisplayRole).toString();
         if (tempString.length() > 10)
         {
-            if (!doc->setColumnWidth(cellHeader.column(), cellHeader.column(), tempString.length() * 2))
+            if (!doc.setColumnWidth(cellHeader.column(), cellHeader.column(), tempString.length() * 2))
                 qDebug("Couldnt change column width");
             if (tempString.contains("Описание"))
-                if (!doc->setColumnWidth(cellHeader.column(), cellHeader.column(), tempString.length() * 4))
+                if (!doc.setColumnWidth(cellHeader.column(), cellHeader.column(), tempString.length() * 4))
                     qDebug("Couldnt change column width");
         }
         else
         {
-            if (!doc->setColumnWidth(cellHeader.column(), cellHeader.column(), 8 * sqrt(tempString.length() / 3)))
+            if (!doc.setColumnWidth(cellHeader.column(), cellHeader.column(), 8 * sqrt(tempString.length() / 3)))
                 qDebug("Couldnt change column width");
         }
         workSheet->writeString(cellHeader, tempString);
@@ -332,7 +332,7 @@ void Journals::saveJour(DataTypes::FilesEnum jtype, QString filename)
         emit resendResult(i);
     }
 
-    doc->save();
+    doc.save();
     emit resendResult(pmdl->itemCount());
     emit Done("Файл создан успешно", m_jourType);
 }

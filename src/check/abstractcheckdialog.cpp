@@ -243,7 +243,7 @@ void AbstractCheckDialog::ReadAnalogMeasurementsAndWriteToFile()
     int bdkeyssize = Bd_blocks.size();
     for (int bdnum = 0; bdnum < bdkeyssize; ++bdnum)
     {
-        if (XlsxWriting && (Bd_blocks.value(bdnum)->toxlsxwrite))
+        if (Bd_blocks.value(bdnum)->toxlsxwrite)
         {
             if (XlsxWriting)
                 WriteToFile(WRow, bdnum);

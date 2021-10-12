@@ -14,9 +14,8 @@
 #include <QSettings>
 #include <QSvgRenderer>
 #include <limereport/LimeReport>
-//#include <limereport/LimeReport>
-//#include <LimeReport>
-GeneralTuneDialog::GeneralTuneDialog(QWidget *parent) : UDialog(parent)
+
+GeneralTuneDialog::GeneralTuneDialog(ConfigV *config, QWidget *parent) : UDialog(parent), configV(config)
 {
     TuneSequenceFile::init();
     m_calibrSteps = 0;

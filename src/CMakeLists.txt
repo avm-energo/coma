@@ -152,7 +152,12 @@ find_package(
 set(QT_VERSION ${Qt5Core_VERSION})
 message(STATUS "QT version - ${QT_VERSION}")
 
+##### OPTIONS #####
 option(ENABLE_EMULATOR "Enable emulator interface" OFF)
+option(ENABLE_PVS "Enable PVS-Studio" OFF)
+option(BUILD_WITH_ALISE "Build with alise for AVTUK" OFF)
+
+
 if(CMAKE_BUILD_TYPE EQUAL "DEBUG")
   message(STATUS "debug mode")
   set(MODE_DIR Debug)
@@ -177,6 +182,22 @@ if(NOT EXISTS "${CMAKE_BINARY_DIR}/conan.cmake")
 endif()
 
 include(${CMAKE_BINARY_DIR}/conan.cmake)
+
+
+
+if (ENABLE_PVS)
+
+    if(NOT EXISTS "${CMAKE_BINARY_DIR}/PVS-Studio.cmake")
+      message(STATUS "Downloading PVS-Studio.cmake from https://github.com/viva64/pvs-studio-cmake-examples")
+      file(DOWNLOAD "https://raw.githubusercontent.com/viva64/pvs-studio-cmake-examples/master/PVS-Studio.cmake"
+                    "${CMAKE_BINARY_DIR}/conan.cmake"
+                    EXPECTED_HASH SHA256=C53013A568A71CC4DBB10437256F16C027004B08ECA3DAF9911BAC08896B4DE7
+                    TLS_VERIFY ON)
+    endif()
+
+    include(${CMAKE_BINARY_DIR}/PVS-Studio.cmake)
+
+endif()
 
 conan_cmake_autodetect(settings)
 
@@ -224,7 +245,6 @@ if (NOT AVTUK-12)
     endif()
 endif()
 
-option(BUILD_WITH_ALISE "Build with alise for AVTUK" OFF)
 if (NOT AVTUK-12)
     add_subdirectory(interfaces)
 endif()
@@ -252,4 +272,15 @@ if (Qt${QT_VERSION_MAJOR}Widgets_FOUND AND NOT AVTUK-12)
     add_subdirectory(AVM-Debug)
 else()
     message(STATUS "Build without gui")
+endif()
+
+if (ENABLE_PVS)
+
+    pvs_studio_add_target(
+        TARGET ${PROJECT_NAME}.analyze ALL
+        OUTPUT FORMAT errorfile
+        COMPILE_COMMANDS
+        MODE GA:1,2
+        LOG ${PROJECT_NAME}.err)
+
 endif()

@@ -92,7 +92,7 @@ void StartupKIVDialog::SetupUI()
 
 void StartupKIVDialog::SaveToFile()
 {
-    QByteArray ba = QByteArray::fromRawData(reinterpret_cast<char *>(CorBlock), sizeof(CorBlock));
+    QByteArray ba = QByteArray::fromRawData(reinterpret_cast<char *>(CorBlock), sizeof(CorData));
     FillBackCor();
 
     Error::Msg res = Files::SaveToFile(WDFunc::ChooseFileForSave(this, "Tune files (*.cor)", "cor"), ba);

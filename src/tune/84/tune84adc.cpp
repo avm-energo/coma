@@ -1,18 +1,18 @@
 #include "tune84adc.h"
 
 #include "../../gen/colors.h"
-#include "../../gen/s2.h"
 #include "../../gen/stdfunc.h"
 #include "../../widgets/waitwidget.h"
 #include "../../widgets/wd_func.h"
+#include "../gen/configv.h"
 #include "../tunesteps.h"
 
 #include <QMessageBox>
 #include <QVBoxLayout>
 
-Tune84ADC::Tune84ADC(int tuneStep, /*ConfigKIV *ckiv,*/ QWidget *parent) : AbstractTuneDialog(tuneStep, parent)
+Tune84ADC::Tune84ADC(ConfigV *config, int tuneStep, QWidget *parent) : AbstractTuneDialog(config, tuneStep, parent)
 {
-    //  CKIV = ckiv;
+
     m_bac = new Bac;
     m_bda = new Bda;
     m_bdain = new BdaIn;
@@ -159,7 +159,8 @@ Error::Msg Tune84ADC::ADCCoef(int coef)
 {
     QMap<int, int> currentMap = { { 1, 290 }, { 2, 250 }, { 4, 140 }, { 8, 80 }, { 16, 40 }, { 32, 23 } };
     m_curTuneStep = coef;
-    S2::setRecordValue({ BciNumber::Unom1, float(220) });
+
+    configV->setRecordValue({ BciNumber::Unom1, float(220) });
     //  CKIV->Bci_block.Unom1 = 220;
 
     Error::Msg res = setADCCoef(coef);
@@ -284,11 +285,12 @@ Error::Msg Tune84ADC::CheckTune()
 Error::Msg Tune84ADC::setADCCoef(int coef)
 {
     QMap<int, float> adcCoefMap = { { 1, 9000 }, { 2, 4500 }, { 4, 2250 }, { 8, 1124 }, { 16, 562 }, { 32, 281 } };
-    S2::setRecordValue({ BciNumber::C_Pasp_ID,
+    configV->setRecordValue({ BciNumber::C_Pasp_ID,
         DataTypes::FLOAT_3t({ adcCoefMap.value(coef), adcCoefMap.value(coef), adcCoefMap.value(coef) }) });
+
     // CKIV->Bci_block.C_pasp[0] = CKIV->Bci_block.C_pasp[1] = CKIV->Bci_block.C_pasp[2] = adcCoefMap[coef];
 
-    return BaseInterface::iface()->writeConfFileSync();
+    return BaseInterface::iface()->writeConfFileSync(configV->getConfig());
 }
 
 Error::Msg Tune84ADC::showRetomDialog(int coef)

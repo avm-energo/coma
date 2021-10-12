@@ -51,7 +51,9 @@ add_library(
   registers.h
   errorqueue.h
   std_ext.h
-  s2.cpp)
+  s2.cpp
+  configv.cpp
+  configv.h)
 
 target_link_libraries(
   gen

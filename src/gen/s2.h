@@ -4,6 +4,7 @@
 
 #include <QVector>
 constexpr int MAXSIZE = 200000;
+
 class BaseInterface;
 class S2
 {
@@ -22,9 +23,6 @@ public:
 
     static S2DataTypes::S2ConfigType ParseHexToS2(QByteArray &ba);
 
-    static QList<DataTypes::DataRecV> configV;
-    static DataTypes::DataRecV getRecord(unsigned int id);
-    static void setRecordValue(const DataTypes::DataRecV &record);
     static void tester(S2DataTypes::S2ConfigType &buffer);
 
     static quint32 crc32buf(const QByteArray &data);

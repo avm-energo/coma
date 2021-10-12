@@ -1,5 +1,5 @@
 #pragma once
-//#include "../config/widgetfactory.h"
+
 #include "../config/delegate.h"
 #include "datatypes.h"
 
@@ -32,4 +32,6 @@ private:
     template <typename Container> static Container parseMap(QDomElement domElement);
 
     static void mergeWidget(const QDomElement &domElement, widgetMap *const s2widgetMap, BciNumber id);
+
+    static bool isCorrectModule(const QString &typem, const QString &typeb, quint16 m_typem, quint16 m_typeb);
 };

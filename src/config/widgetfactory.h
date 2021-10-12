@@ -10,12 +10,14 @@
 
 //#define DEBUG_FACTORY
 
+class ConfigV;
+
 class WidgetFactory
 {
     friend class Module;
 
 public:
-    WidgetFactory();
+    WidgetFactory(ConfigV *config);
     QWidget *createWidget(BciNumber key, QWidget *parent = nullptr);
     template <typename T> bool fillWidget(const QWidget *parent, BciNumber key, const T &value);
     bool fillBack(BciNumber key, const QWidget *parent);
@@ -58,8 +60,22 @@ private:
     bool fillTableView(const QWidget *parent, BciNumber key, BciNumber parentKey, //
         ctti::unnamed_type_id_t type, const T &value);
 
+    template <typename T> bool fillBackItem(BciNumber key, const QWidget *parent, BciNumber parentKey);
+
+    // helpers for fill back from widget
+    bool fillBackModbus(BciNumber key, const QWidget *parent, ctti::unnamed_type_id_t type, BciNumber parentKey);
+    bool fillBackIpCtrl(BciNumber key, const QWidget *parent);
+    bool fillBackCheckBox(BciNumber key, const QWidget *parent);
+    bool fillBackLineEdit(BciNumber key, const QWidget *parent);
+    bool fillBackSPBG(BciNumber key, const QWidget *parent);
+    bool fillBackSPB(BciNumber key, const QWidget *parent);
+    bool fillBackChBG(BciNumber key, const QWidget *parent);
+    bool fillBackComboBox(BciNumber key, const QWidget *parent, delegate::QComboBox::PrimaryField field);
+    bool fillBackComboBoxGroup(BciNumber key, const QWidget *parent, int count);
+
     static widgetMap m_widgetMap;
     static categoryMap m_categoryMap;
+    ConfigV *configV;
 };
 
 inline bool WidgetFactory::fillCheckBox(const QWidget *parent, BciNumber key, bool value)

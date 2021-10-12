@@ -49,7 +49,7 @@ class TuneKIVDialog : public GeneralTuneDialog
 {
     Q_OBJECT
 public:
-    explicit TuneKIVDialog(QWidget *parent = nullptr);
+    explicit TuneKIVDialog(ConfigV *config, QWidget *parent = nullptr);
 
     // signals:
     //    void Send();

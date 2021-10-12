@@ -19,7 +19,13 @@
 
 constexpr char versionFile[] = "coma.ver";
 
-Module::Module(QObject *parent) : QObject(parent)
+Module::Module(QObject *parent)
+    : QObject(parent)
+#ifdef USE_INTERNAL_RCS
+    , m_directory(resourceDirectory)
+#else
+    , m_directory(StdFunc::GetSystemHomeDir())
+#endif
 {
 }
 void Module::createAlarm(AlarmWidget *aw)
@@ -110,9 +116,17 @@ ModuleSettings *Module::settings() const
 
 bool Module::loadSettings()
 {
+    auto str = Board::GetInstance().moduleName();
+    if (str.isEmpty())
+        return false;
+    return loadSettings(str);
+}
+
+bool Module::loadSettings(QString &moduleName, quint16 mtypem, quint16 mtypeb, int interfaceType)
+{
     if (!loadS2Settings())
         return false;
-    auto moduleName = Board::GetInstance().moduleName();
+
     if (moduleName.isEmpty())
         return false;
     if (moduleName.contains("-"))
@@ -124,13 +138,9 @@ bool Module::loadSettings()
 
         moduleName = /*moduleName.split("-").last();*/ match.captured(0);
     }
-#ifdef USE_INTERNAL_RCS
-    QDir directory(":/module");
-#else
-    QDir directory(StdFunc::GetSystemHomeDir());
-#endif
-    qDebug() << directory;
-    auto allFiles = directory.entryList(QDir::Files);
+    QDir dir(m_directory);
+    qDebug() << dir;
+    auto allFiles = dir.entryList(QDir::Files);
     auto xmlFiles = allFiles.filter(".xml");
     qDebug() << xmlFiles;
     QDomDocument domDoc;
@@ -138,22 +148,25 @@ bool Module::loadSettings()
     for (const auto &xmlFile : xmlFiles)
     {
         if (xmlFile.contains(moduleName, Qt::CaseInsensitive))
-            file.setFileName(directory.filePath(xmlFile));
+        {
+            file.setFileName(dir.filePath(xmlFile));
+            break;
+        }
     }
     if (file.fileName().isEmpty())
     {
-        directory = QDir(":/module");
-        allFiles = directory.entryList(QDir::Files);
+        dir = QDir(resourceDirectory);
+        allFiles = dir.entryList(QDir::Files);
         xmlFiles = allFiles.filter(".xml");
         qDebug() << xmlFiles;
         for (const auto &xmlFile : qAsConst(xmlFiles))
         {
             if (!xmlFile.contains(moduleName, Qt::CaseInsensitive))
                 continue;
-            if (!QFile::copy(directory.filePath(xmlFile), StdFunc::GetSystemHomeDir() + xmlFile))
+            if (!QFile::copy(dir.filePath(xmlFile), StdFunc::GetSystemHomeDir() + xmlFile))
             {
                 qCritical() << Error::DescError;
-                qInfo() << directory.filePath(xmlFile) << StdFunc::GetSystemHomeDir() + xmlFile;
+                qInfo() << dir.filePath(xmlFile) << StdFunc::GetSystemHomeDir() + xmlFile;
                 return false;
             }
 
@@ -168,6 +181,9 @@ bool Module::loadSettings()
     if (domDoc.setContent(&file))
     {
         m_settings = std::unique_ptr<ModuleSettings>(new ModuleSettings);
+        m_settings->moduleType.typeB = mtypeb;
+        m_settings->moduleType.typeM = mtypem;
+        m_settings->interfaceType = interfaceType;
         QDomElement domElement = domDoc.documentElement();
         GlobalSettings settings { &DataTypes::DataRecV::map, &WidgetFactory::m_widgetMap,
             &WidgetFactory::m_categoryMap };
@@ -187,13 +203,9 @@ bool Module::loadS2Settings()
 {
     const auto name = "s2files";
 
-#ifdef USE_INTERNAL_RCS
-    QDir directory(":/module");
-#else
-    QDir directory(StdFunc::GetSystemHomeDir());
-#endif
-    qDebug() << directory;
-    auto allFiles = directory.entryList(QDir::Files);
+    QDir dir(m_directory);
+    qDebug() << dir;
+    auto allFiles = dir.entryList(QDir::Files);
     auto xmlFiles = allFiles.filter(".xml");
     qDebug() << xmlFiles;
     QDomDocument domDoc;
@@ -201,22 +213,22 @@ bool Module::loadS2Settings()
     for (const auto &xmlFile : xmlFiles)
     {
         if (xmlFile.contains(name, Qt::CaseInsensitive))
-            file.setFileName(directory.filePath(xmlFile));
+            file.setFileName(dir.filePath(xmlFile));
     }
     if (file.fileName().isEmpty())
     {
-        directory = QDir(":/module");
-        allFiles = directory.entryList(QDir::Files);
+        dir = QDir(resourceDirectory);
+        allFiles = dir.entryList(QDir::Files);
         xmlFiles = allFiles.filter(".xml");
         qDebug() << xmlFiles;
         for (const auto &xmlFile : qAsConst(xmlFiles))
         {
             if (!xmlFile.contains(name, Qt::CaseInsensitive))
                 continue;
-            if (!QFile::copy(directory.filePath(xmlFile), StdFunc::GetSystemHomeDir() + xmlFile))
+            if (!QFile::copy(dir.filePath(xmlFile), StdFunc::GetSystemHomeDir() + xmlFile))
             {
                 qCritical() << Error::DescError;
-                qInfo() << directory.filePath(xmlFile) << StdFunc::GetSystemHomeDir() + xmlFile;
+                qInfo() << dir.filePath(xmlFile) << StdFunc::GetSystemHomeDir() + xmlFile;
                 return false;
             }
 
@@ -297,6 +309,16 @@ void Module::putConfigVersion() const
     GitVersion version;
     out << version.getGitCounter();
     file.close();
+}
+
+const QString &Module::directory() const
+{
+    return m_directory;
+}
+
+void Module::setDirectory(const QString &newDirectory)
+{
+    m_directory = newDirectory;
 }
 
 void Module::create(UniquePointer<Journals> jour)
