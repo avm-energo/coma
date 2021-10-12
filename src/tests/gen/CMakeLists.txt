@@ -28,6 +28,6 @@ if(CMAKE_SYSTEM_NAME_LOWER STREQUAL "windows")
         ${PROJECT_NAME}
     PROPERTIES
         # Make sure DLL is found by adding its directory to PATH
-        ENVIRONMENT "PATH=${QT_BIN_DIR};$ENV{PATH}"
+        ENVIRONMENT "PATH=${QT_BIN_DIR};"
     )
 endif()
