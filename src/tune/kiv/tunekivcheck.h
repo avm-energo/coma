@@ -10,7 +10,7 @@ class TuneKIVCheck : public AbstractTuneDialog
 {
     Q_OBJECT
 public:
-    TuneKIVCheck(int tuneStep, QWidget *parent = nullptr);
+    TuneKIVCheck(ConfigV *config, int tuneStep, QWidget *parent = nullptr);
 
 private:
     void setMessages() override;

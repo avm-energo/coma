@@ -153,14 +153,24 @@ public:
         m_dictionaryRegs.clear();
     }
 
-    QList<Group> groups() const
+    const auto &groups() const
     {
         return m_groups;
     }
 
-    QMultiMap<quint32, Group> dictionary() const
+    const auto &dictionary() const
     {
         return m_dictionary;
+    }
+
+    const auto &regs() const
+    {
+        return m_regs;
+    }
+
+    const auto &dictionaryRegs() const
+    {
+        return m_dictionaryRegs;
     }
 
 private:

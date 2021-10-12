@@ -13,24 +13,23 @@
 #include "../widgets/wd_func.h"
 #include "generaltunedialog.h"
 //#include "limereport/lrreportengine.h"
+#include "../gen/configv.h"
 #include "tunesequencefile.h"
 
-#include <limereport/LimeReport>
-//#include <LimeReport>
-//#include <limereport/LimeReport>
-//#include <LimeReport>
 #include <QDebug>
 #include <QMessageBox>
 #include <QProgressBar>
 #include <QScrollArea>
 #include <QScrollBar>
 #include <QVBoxLayout>
+#include <limereport/LimeReport>
 namespace crypto
 {
 static constexpr char hash[] = "d93fdd6d1fb5afcca939fa650b62541d09dbcb766f41c39352dc75f348fb35dc";
 static constexpr char name[] = "tuneHash";
 }
-AbstractTuneDialog::AbstractTuneDialog(int tuneStep, QWidget *parent) : QDialog(parent)
+AbstractTuneDialog::AbstractTuneDialog(ConfigV *config, int tuneStep, QWidget *parent)
+    : QDialog(parent), configV(config)
 {
     TuneVariant = 0;
     IsNeededDefConf = false;

@@ -37,11 +37,11 @@ void DbgModule::createModule(Modules::Model model)
         auto jour = UniquePointer<Journals>(new JournKIV(settings()->journals));
         if (board.interfaceType() != Board::InterfaceType::RS485)
         {
-            addDialogToList(new ConfigDialog(settings()->configSettings), "Конфигурирование", "conf1");
+            addDialogToList(new ConfigDialog(&configV, settings()->configSettings), "Конфигурирование", "conf1");
             if (board.interfaceType() == Board::InterfaceType::USB)
             {
 
-                addDialogToList(new TuneKIVDialog, "Регулировка");
+                addDialogToList(new TuneKIVDialog(&configV), "Регулировка");
             }
         }
         CheckKIVDialog *cdkiv = new CheckKIVDialog;
@@ -59,7 +59,7 @@ void DbgModule::createModule(Modules::Model model)
         auto jour = UniquePointer<Journals>(new JournKTF(settings()->journals, this));
         if (board.interfaceType() != Board::InterfaceType::RS485)
         {
-            addDialogToList(new ConfigDialog(settings()->configSettings), "Конфигурирование", "conf1");
+            addDialogToList(new ConfigDialog(&configV, settings()->configSettings), "Конфигурирование", "conf1");
         }
         CheckKTFDialog *cdktf = new CheckKTFDialog;
         addDialogToList(cdktf, "Проверка");
@@ -74,7 +74,7 @@ void DbgModule::createModule(Modules::Model model)
         auto jour = UniquePointer<Journals>(new JournKDV(settings()->journals, this));
         if (board.interfaceType() != Board::InterfaceType::RS485)
         {
-            addDialogToList(new ConfigDialog(settings()->configSettings), "Конфигурирование", "conf1");
+            addDialogToList(new ConfigDialog(&configV, settings()->configSettings), "Конфигурирование", "conf1");
         }
         CheckKDVDialog *cdkdv = new CheckKDVDialog;
         addDialogToList(cdkdv, "Проверка");
@@ -101,10 +101,10 @@ void DbgModule::create(Modules::BaseBoard typeB, Modules::MezzanineBoard typeM)
         qDebug("Here is KIV");
         if (board.interfaceType() != Board::InterfaceType::RS485)
         {
-            addDialogToList(new ConfigDialog(settings()->configSettings), "Конфигурирование", "conf1");
+            addDialogToList(new ConfigDialog(&configV, settings()->configSettings), "Конфигурирование", "conf1");
             if (board.interfaceType() == Board::InterfaceType::USB)
             {
-                addDialogToList(new Tune84Dialog, "Регулировка");
+                addDialogToList(new Tune84Dialog(&configV), "Регулировка");
             }
         }
         CheckKIVDialog *cdkiv = new CheckKIVDialog;
@@ -115,13 +115,13 @@ void DbgModule::create(Modules::BaseBoard typeB, Modules::MezzanineBoard typeM)
     if ((typeB == BaseBoard::MTB_86) && (typeM == MezzanineBoard::MTM_00))
     {
         qDebug("Here is AVTUK-8600");
-        addDialogToList(new ConfigDialog(settings()->configSettings), "Конфигурирование", "conf1");
+        addDialogToList(new ConfigDialog(&configV, settings()->configSettings), "Конфигурирование", "conf1");
         addDialogToList(new CheckKDVVibrDialog, "Вибрации");
     }
     if ((typeB == BaseBoard::MTB_80) && (typeM == MezzanineBoard::MTM_82))
     {
         qDebug("Here is AVTUK-8082");
-        addDialogToList(new ConfigDialog(settings()->configSettings), "Конфигурирование", "conf1");
+        addDialogToList(new ConfigDialog(&configV, settings()->configSettings), "Конфигурирование", "conf1");
         addDialogToList(new OscDialog, "Осциллограммы");
     }
     if ((typeB == BaseBoard::MTB_80) && (typeM == MezzanineBoard::MTM_85))
@@ -133,14 +133,14 @@ void DbgModule::create(Modules::BaseBoard typeB, Modules::MezzanineBoard typeM)
     if ((typeB == BaseBoard::MTB_85) && (typeM == MezzanineBoard::MTM_85))
     {
         qDebug("Here is AVTUK-8585");
-        addDialogToList(new ConfigDialog(settings()->configSettings), "Конфигурирование", "conf1");
+        addDialogToList(new ConfigDialog(&configV, settings()->configSettings), "Конфигурирование", "conf1");
         addDialogToList(new SwitchJournalDialog, "Журнал переключений");
         addDialogToList(new OscDialog, "Осциллограммы");
     }
     if ((typeB == BaseBoard::MTB_35) && (typeM == MezzanineBoard::MTM_33))
     {
         qDebug("Here is AVTUK-3533");
-        addDialogToList(new ConfigDialog(settings()->configSettings), "Конфигурирование", "conf1");
+        addDialogToList(new ConfigDialog(&configV, settings()->configSettings), "Конфигурирование", "conf1");
         Check3533Dialog *check = new Check3533Dialog;
         addDialogToList(check, "Проверка");
         // addDialogToList(new OscDialog, "Осциллограммы");
@@ -148,7 +148,7 @@ void DbgModule::create(Modules::BaseBoard typeB, Modules::MezzanineBoard typeM)
     if ((typeB == BaseBoard::MTB_35) && (typeM == MezzanineBoard::MTM_31))
     {
         qDebug("Here is AVTUK-3533");
-        addDialogToList(new ConfigDialog(settings()->configSettings), "Конфигурирование", "conf1");
+        addDialogToList(new ConfigDialog(&configV, settings()->configSettings), "Конфигурирование", "conf1");
         //   Check3533Dialog *check = new Check3533Dialog;
         //   addDialogToList(check, "Проверка");
         // addDialogToList(new OscDialog, "Осциллограммы");

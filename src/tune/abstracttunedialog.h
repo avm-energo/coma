@@ -20,6 +20,8 @@
 
 // disable all limits checks
 // #define NO_LIMITS
+class ConfigV;
+
 class AbstractTuneDialog : public QDialog
 {
     Q_OBJECT
@@ -32,7 +34,7 @@ public:
         NoMsg
     };
 
-    explicit AbstractTuneDialog(int tuneStep, QWidget *parent = nullptr);
+    explicit AbstractTuneDialog(ConfigV *config, int tuneStep, QWidget *parent = nullptr);
     ~AbstractTuneDialog();
 
     bool IsNeededDefConf;
@@ -103,6 +105,8 @@ private slots:
 protected:
     void closeEvent(QCloseEvent *e);
     void keyPressEvent(QKeyEvent *e);
+
+    ConfigV *configV;
 };
 
 #endif // ABSTRACTTUNEDIALOG_H

@@ -13,7 +13,7 @@ class TuneKIVADC : public AbstractTuneDialog
 {
     Q_OBJECT
 public:
-    TuneKIVADC(int tuneStep, QWidget *parent = nullptr);
+    TuneKIVADC(ConfigV *config, int tuneStep, QWidget *parent = nullptr);
 
 private:
     Bac *m_bac;

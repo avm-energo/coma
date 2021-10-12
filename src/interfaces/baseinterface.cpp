@@ -134,20 +134,11 @@ Error::Msg BaseInterface::writeBlockSync(
     }
 }
 
-Error::Msg BaseInterface::writeConfFileSync()
+Error::Msg BaseInterface::writeConfFileSync(const QList<DataTypes::DataRecV> &config)
 {
-    //    QByteArray ba;
-    //    S2::StoreDataMem(ba, &S2::config, DataTypes::Config);
-
-    //    // с 4 байта начинается FileHeader.size
-    //    quint32 length = *reinterpret_cast<quint32 *>(&ba.data()[4]);
-    //    length += sizeof(S2DataTypes::FileHeader);
-    //    Q_ASSERT(length == quint32(ba.size()));
-    //    return writeFileSync(DataTypes::Config, ba);
     S2DataTypes::S2ConfigType buffer;
-    const auto &confList = S2::configV;
 
-    std::transform(confList.begin(), confList.end(), std::back_inserter(buffer),
+    std::transform(config.begin(), config.end(), std::back_inserter(buffer),
         [](const auto &record) -> S2DataTypes::DataRec { return record.serialize(); });
     S2::tester(buffer);
 

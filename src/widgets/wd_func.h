@@ -1,13 +1,12 @@
 #ifndef WD_FUNC
 #define WD_FUNC
 
+#include "../gen/pch.h"
+#include "../gen/std_ext.h"
+#include "basespinboxgroup.h"
 #include "checkboxgroup.h"
 #include "ecombobox.h"
 #include "etableview.h"
-//#include "passwordlineedit.h"
-
-#include "../gen/pch.h"
-#include "basespinboxgroup.h"
 
 #include <QCheckBox>
 #include <QDebug>
@@ -89,6 +88,18 @@ public:
         QWidget *parent, const QString &spbname, int count, const double min, const double max, const int decimals)
     {
         auto spinBoxGroup = new DoubleSpinBoxGroup(count, parent);
+        spinBoxGroup->setObjectName(spbname);
+        double step = std::pow(0.1f, decimals);
+        spinBoxGroup->setSingleStep(step);
+        spinBoxGroup->setDecimals(decimals);
+        spinBoxGroup->setMinimum(min);
+        spinBoxGroup->setMaximum(max);
+        return spinBoxGroup;
+    }
+    static DoubleSpinBoxGroup *NewSPBG(QWidget *parent, const QString &spbname, const QStringList &list,
+        const double min, const double max, const int decimals)
+    {
+        auto spinBoxGroup = new DoubleSpinBoxGroup(list, parent);
         spinBoxGroup->setObjectName(spbname);
         double step = std::pow(0.1f, decimals);
         spinBoxGroup->setSingleStep(step);
@@ -192,7 +203,7 @@ public:
         data = chb->isChecked();
         return true;
     }
-    template <typename T, std::enable_if_t<std::is_unsigned_v<T> || std::is_container<T>::value, bool> = true>
+    template <typename T, std::enable_if_t<std::is_unsigned_v<T> || std_ext::is_container<T>::value, bool> = true>
     static bool ChBGData(const QWidget *w, const QString &chbname, T &data)
     {
         auto *checkBoxGroup = w->findChild<CheckBoxGroup *>(chbname);
@@ -203,7 +214,7 @@ public:
     }
     static bool SetChBData(QWidget *w, const QString &chbname, bool data);
 
-    template <typename T, std::enable_if_t<std::is_unsigned_v<T> || std::is_container<T>::value, bool> = true>
+    template <typename T, std::enable_if_t<std::is_unsigned_v<T> || std_ext::is_container<T>::value, bool> = true>
     static bool SetChBGData(const QWidget *w, const QString &name, const T data)
     {
         auto checkBoxGroup = w->findChild<CheckBoxGroup *>(name);

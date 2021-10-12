@@ -5,7 +5,6 @@
 #include <QDateTime>
 #include <QDebug>
 
-QList<DataTypes::DataRecV> S2::configV;
 S2::S2()
 {
 }
@@ -559,35 +558,6 @@ quint32 S2::crc32buf(const QByteArray &data)
 {
     return ~std::accumulate(data.begin(), data.end(), quint32(0xFFFFFFFF),
         [](quint32 oldcrc32, char buf) { return updateCRC32(buf, oldcrc32); });
-}
-
-DataTypes::DataRecV S2::getRecord(unsigned int id)
-{
-    auto result = std::find_if(
-        std::cbegin(configV), std::cend(configV), [id](const auto &record) { return (id == record.getId()); });
-    if (result != std::cend(configV))
-        return *result;
-    else
-    {
-        qDebug() << Error::NullDataError << id;
-        return DataTypes::DataRecV(id);
-    }
-}
-
-void S2::setRecordValue(const DataTypes::DataRecV &record)
-{
-
-    auto result = std::find_if(
-        std::begin(configV), std::end(configV), [record](const auto &lhs) { return (lhs.getId() == record.getId()); });
-    if (result != std::end(configV))
-    {
-        // buffer is here for debug purposes
-        [[maybe_unused]] DataTypes::DataRecV &buffer = *result;
-        Q_ASSERT(result->typeIndex() == record.typeIndex());
-        *result = record;
-    }
-    else
-        configV.push_back(record);
 }
 
 void S2::tester(S2DataTypes::S2ConfigType &buffer)

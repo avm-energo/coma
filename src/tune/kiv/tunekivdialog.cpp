@@ -7,17 +7,16 @@
 #include "../../widgets/wd_func.h"
 #include "../tunesteps.h"
 
-TuneKIVDialog::TuneKIVDialog(QWidget *parent) : GeneralTuneDialog(parent)
+TuneKIVDialog::TuneKIVDialog(ConfigV *config, QWidget *parent) : GeneralTuneDialog(config, parent)
 {
 
-    // CKIV = ckiv;
     setAttribute(Qt::WA_DeleteOnClose);
-    TKIVADCUDialog = new TuneKIVADC(KIVTS_ADCU, this);
-    TKIVADCIDialog = new TuneKIVADC(KIVTS_ADCI, this);
-    TKIV60Dialog = new TuneKIVTemp60(KIVTS_60TUNING, this);
-    TKIV20Dialog = new TuneKIVTemp60(KIVTS_20TUNING, this);
-    TKIVCheckDialog = new TuneKIVCheck(KIVTS_CHECKING, this);
-    TKIVRDialog = new TuneKIVR(KIVTS_PT100, this);
+    TKIVADCUDialog = new TuneKIVADC(config, KIVTS_ADCU, this);
+    TKIVADCIDialog = new TuneKIVADC(config, KIVTS_ADCI, this);
+    TKIV60Dialog = new TuneKIVTemp60(config, KIVTS_60TUNING, this);
+    TKIV20Dialog = new TuneKIVTemp60(config, KIVTS_20TUNING, this);
+    TKIVCheckDialog = new TuneKIVCheck(config, KIVTS_CHECKING, this);
+    TKIVRDialog = new TuneKIVR(config, KIVTS_PT100, this);
     m_dialogList = { { "Проверка правильности измерения входных сигналов", TKIVCheckDialog },
         { "Регулировка канала Pt100", TKIVRDialog }, { "Регулировка каналов напряжения", TKIVADCUDialog },
         { "Регулировка каналов тока", TKIVADCIDialog }, { "Настройка температурной коррекции +60 °С", TKIV60Dialog },

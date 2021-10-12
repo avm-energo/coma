@@ -20,10 +20,28 @@ public:
         for (auto i = 0; i != m_count; ++i)
         {
             QHBoxLayout *layout = new QHBoxLayout;
-            layout->addWidget(new QLabel(QString::number(i + 1), this));
+            layout->addWidget(new QLabel(QString::number(i + 1), this), 0, Qt::AlignRight);
             layout->addWidget(new S(this));
-            auto width = layout->totalMinimumSize().width();
+            auto width = layout->minimumSize().width();
             auto itemsOneLine = columnWidth / width;
+            gridlyout->addLayout(layout, i / itemsOneLine, i % itemsOneLine);
+        }
+        setLayout(gridlyout);
+    }
+    explicit BaseSpinBoxGroup(const QStringList &list, QWidget *parent = nullptr)
+        : QWidget(parent), m_count(list.size())
+    {
+        auto parentWidth = parent->width();
+        auto columnWidth = parentWidth / 2;
+        QGridLayout *gridlyout = new QGridLayout;
+        for (auto i = 0; i != m_count; ++i)
+        {
+            QHBoxLayout *layout = new QHBoxLayout;
+            layout->addWidget(new QLabel(list.at(i), this), 0, Qt::AlignRight);
+            layout->addWidget(new S(this));
+            auto width = layout->minimumSize().width();
+            auto itemsOneLine = columnWidth / width;
+            Q_ASSERT(itemsOneLine > 0);
             gridlyout->addLayout(layout, i / itemsOneLine, i % itemsOneLine);
         }
         setLayout(gridlyout);

@@ -1,12 +1,12 @@
 #include "xmlparser.h"
 
-//#include "../module/module.h"
-//#include "../widgets/checkboxgroup.h"
-
-#include "../interfaces/baseinterface.h"
+#include "../interfaces/iec104.h"
+#include "../interfaces/modbus.h"
+#include "../interfaces/protocom.h"
 #include "board.h"
 #include "settings.h"
 #include "std_ext.h"
+
 namespace keys
 {
 constexpr char name[] = "name";
@@ -26,20 +26,15 @@ XmlParser::XmlParser()
 {
 }
 
-bool isCorrectModule(const QString &typem, const QString &typeb)
+bool XmlParser::isCorrectModule(const QString &typem, const QString &typeb, quint16 m_typem, quint16 m_typeb)
 {
-    const auto &board = Board::GetInstance();
     quint16 mtypem = typem.toUInt(nullptr, 16);
     quint16 mtypeb = typeb.toUInt(nullptr, 16);
 #ifdef XML_DEBUG
-    qDebug() << typem << mtypem;
-    qDebug() << typem << mtypeb;
+    qDebug() << m_typem << mtypem;
+    qDebug() << m_typeb << mtypeb;
 #endif
-    if (board.typeB() != mtypeb)
-        return false;
-    if (board.typeM() != mtypem)
-        return false;
-    return true;
+    return (m_typeb == mtypeb && m_typem == mtypem);
 }
 
 DataTypes::Alarm XmlParser::parseAlarm(QDomElement domElement)
@@ -531,7 +526,8 @@ void XmlParser::traverseNode(const QDomNode &node, ModuleSettings *const setting
                 }
                 if (domElement.tagName() == "module")
                 {
-                    if (!isCorrectModule(domElement.attribute("mtypem", ""), domElement.attribute("mtypeb", "")))
+                    if (!isCorrectModule(domElement.attribute("mtypem", ""), domElement.attribute("mtypeb", ""),
+                            settings->moduleType.typeM, settings->moduleType.typeB))
                     {
                         domNode = domNode.nextSibling();
                         continue;
@@ -548,25 +544,33 @@ void XmlParser::traverseNode(const QDomNode &node, ModuleSettings *const setting
 
                 if (domElement.tagName() == "modbus")
                 {
-                    if (Board::GetInstance().interfaceType() == Board::RS485)
-                        settings->ifaceSettings = (BaseInterface::iface()->parseSettings(domElement));
+                    if (settings->interfaceType == Board::RS485)
+                    {
+                        ModBus interface;
+                        settings->ifaceSettings = interface.parseSettings(domElement);
+                    }
 
                     domNode = domNode.nextSibling();
                     continue;
                 }
                 if (domElement.tagName() == "protocom")
                 {
-                    if (Board::GetInstance().interfaceType() == Board::USB
-                        || Board::GetInstance().interfaceType() == Board::Emulator)
-                        settings->ifaceSettings = (BaseInterface::iface()->parseSettings(domElement));
+                    if (settings->interfaceType == Board::USB || settings->interfaceType == Board::Emulator)
+                    {
+                        Protocom interface;
+                        settings->ifaceSettings = interface.parseSettings(domElement);
+                    }
 
                     domNode = domNode.nextSibling();
                     continue;
                 }
                 if (domElement.tagName() == "iec60870")
                 {
-                    if (Board::GetInstance().interfaceType() == Board::Ethernet)
-                        settings->ifaceSettings = (BaseInterface::iface()->parseSettings(domElement));
+                    if (settings->interfaceType == Board::Ethernet)
+                    {
+                        IEC104 interface;
+                        settings->ifaceSettings = interface.parseSettings(domElement);
+                    }
 
                     domNode = domNode.nextSibling();
                     continue;

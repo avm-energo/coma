@@ -1,6 +1,7 @@
 #pragma once
 #include "../ctti/type_id.hpp"
 #include "s2helper.h"
+#include "std_ext.h"
 
 #include <QVariant>
 #include <cassert>
@@ -61,7 +62,7 @@ class DataRecV
     friend class ::S2;
     template <typename T> struct true_type
     {
-        static constexpr bool value = std::is_variant_alternative<T, valueType>();
+        static constexpr bool value = std_ext::is_variant_alternative<T, valueType>();
     };
 
 public:
@@ -142,7 +143,7 @@ private:
         assert(sizeof(T) == numByte);
         data = *reinterpret_cast<const T *>(rawdata);
     }
-    template <typename T, std::enable_if_t<std::is_container<T>::value, bool> = true>
+    template <typename T, std::enable_if_t<std_ext::is_container<T>::value, bool> = true>
     valueType helper(const QString &str)
     {
         T arr {};
@@ -150,7 +151,7 @@ private:
         data = arr;
         return valueType(arr);
     }
-    template <typename T, std::enable_if_t<!std::is_container<T>::value, bool> = true>
+    template <typename T, std::enable_if_t<!std_ext::is_container<T>::value, bool> = true>
     valueType helper(const QString &str)
     {
         valueType data = QVariant(str).value<T>();

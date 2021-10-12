@@ -37,7 +37,7 @@ template <typename T, typename F> static constexpr bool is_variant_alternative()
 {
     constexpr auto size = std::variant_size_v<F>;
     bool state = false;
-    std::for_constexpr<size>([&](auto index) {
+    std_ext::for_constexpr<size>([&](auto index) {
         if constexpr (std::is_same_v<T, std::variant_alternative_t<index, F>>)
         {
             state = true;

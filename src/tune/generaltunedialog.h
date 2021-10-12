@@ -22,9 +22,12 @@ public:
     LimeReport::ReportEngine *m_Report;
     QWidget *m_BacWidget;
 
-    GeneralTuneDialog(QWidget *parent = nullptr);
+    GeneralTuneDialog(ConfigV *config, QWidget *parent = nullptr);
     void SetupUI();
     virtual void prepareReport();
+
+protected:
+    ConfigV *configV;
 
 private:
     void setIconProcessed(const QString &name);
