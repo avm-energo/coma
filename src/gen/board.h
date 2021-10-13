@@ -111,7 +111,14 @@ public:
     bool noConfig() const;
     bool noRegPars() const;
 
-    const Modules::StartupInfoBlock &baseSerialInfo() const;
+    const Modules::StartupInfoBlock &baseSerialInfo() const
+    {
+        return m_startupInfoBlock;
+    }
+    const Modules::StartupInfoBlockExt0 &baseSerialInfoExt() const
+    {
+        return m_startupInfoBlockExt;
+    }
 
     static bool isUSIO(Modules::BaseBoard typeB, Modules::MezzanineBoard typeM);
 
@@ -123,7 +130,9 @@ private:
     ConnectionState m_connectionState;
 
     Modules::StartupInfoBlock m_startupInfoBlock {};
-    Modules::StartupInfoBlockExt m_startupInfoBlockExt {};
+    Modules::StartupInfoBlockExt0 m_startupInfoBlockExt {};
+
+    void updateExt(const DataTypes::BitStringStruct &bs);
 
     template <typename T> bool isSerialNumberSet(T value)
     {
@@ -135,6 +144,7 @@ private:
         return value || isSerialNumberSet(args...);
     }
     int m_updateCounter = 0;
+    int m_updateCounterExt = 0;
     bool m_updateType = false;
 
 signals:
@@ -148,4 +158,6 @@ signals:
     void healthChanged(quint32);
     /// This signal is emitted when all StartupInfoBlock members updated
     void readyRead();
+    /// This signal is emitted when all StartupInfoBlockExt members updated
+    void readyReadExt();
 };

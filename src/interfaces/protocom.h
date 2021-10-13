@@ -22,6 +22,7 @@ public:
     void reqFile(quint32 filenum, FileFormat format) override;
     void reqStartup(quint32 sigAdr, quint32 sigCount) override;
     void reqBSI() override;
+    void reqBSIExt() override;
     void reqBitStrings(quint32 sigAdr = 0, quint32 sigCount = 0) override;
     // Support only S2 format
     void writeFile(quint32 filenum, const QByteArray &file) override;

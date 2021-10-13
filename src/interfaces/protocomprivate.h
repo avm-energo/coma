@@ -68,6 +68,9 @@ enum Commands : byte
     ///
     /// namespace READ
     ///
+    ///
+    // чтение блока стартовой информации (дополнительного)
+    ReadBlkStartInfoExt = 0x20,
     // чтение блока стартовой информации
     ReadBlkStartInfo = 0x21,
     // чтение настроечных коэффициентов
@@ -176,8 +179,6 @@ Q_ENUM_NS(TypeId)
 // GBsi,ErPg - bitstring,
 // GBac, GBda, GBd,GBt - float,
 // GF - file
-// Список регистров BSI
-const QList<quint16> bsiReg { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };
 
 // Получаем номер блока по номеру регистра
 // Количество регистров необходимо для проверки

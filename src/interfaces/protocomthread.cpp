@@ -167,9 +167,14 @@ void ProtocomThread::handle(const Proto::Commands cmd)
         handleBitString(m_buffer.second, addr);
         break;
 
+    case Commands::ReadBlkStartInfoExt:
+
+        handleBitStringArray(m_buffer.second, Modules::bsiExtStartReg);
+        break;
+
     case Commands::ReadBlkStartInfo:
 
-        handleBitStringArray(m_buffer.second, bsiReg);
+        handleBitStringArray(m_buffer.second, Modules::bsiReg);
         break;
 
     case Commands::ReadBlkAC:
@@ -744,6 +749,16 @@ void ProtocomThread::handleBitStringArray(const QByteArray &ba, QList<quint16> a
     {
         QByteArray temp = ba.mid(sizeof(qint32) * i, sizeof(qint32));
         handleBitString(temp, arr_addr.at(i));
+    }
+}
+
+void ProtocomThread::handleBitStringArray(const QByteArray &ba, quint16 start_addr)
+{
+    Q_ASSERT(ba.size() % sizeof(quint32) == 0);
+    for (int i = 0; i != (ba.size() / sizeof(quint32)); i++)
+    {
+        QByteArray temp = ba.mid(sizeof(qint32) * i, sizeof(qint32));
+        handleBitString(temp, start_addr + i);
     }
 }
 

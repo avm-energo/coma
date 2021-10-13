@@ -38,6 +38,10 @@ void Emulator::reqBSI()
     }
 }
 
+void Emulator::reqBSIExt()
+{
+}
+
 void Emulator::reqFile(quint32, FileFormat format)
 {
 }

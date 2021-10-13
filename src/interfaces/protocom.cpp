@@ -166,6 +166,18 @@ void Protocom::reqBSI()
     emit wakeUpParser();
 }
 
+void Protocom::reqBSIExt()
+{
+    CommandStruct inp {
+        Proto::Commands::ReadBlkStartInfoExt, // Command
+        QVariant(),                           // Board type(Null because only 1 board contains bsi)
+        QVariant(),                           // Null arg
+        {}                                    // Null
+    };
+    DataManager::addToInQueue(inp);
+    emit wakeUpParser();
+}
+
 void Protocom::reqBitStrings(quint32 sigAdr, quint32 sigCount)
 {
     Q_D(Protocom);

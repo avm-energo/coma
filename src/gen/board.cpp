@@ -144,7 +144,7 @@ void Board::update(const DataTypes::BitStringStruct &bs)
 {
     // Only bsi block
     if (bs.sigAdr < 1 || bs.sigAdr > 15)
-        return;
+        return updateExt(bs);
     quint32 &item = *(reinterpret_cast<quint32 *>(&m_startupInfoBlock) + (bs.sigAdr - BSIREG));
     // std::copy_n(&bs.sigVal, sizeof(quint32), &item);
     item = bs.sigVal;
@@ -197,9 +197,22 @@ bool Board::noRegPars() const
     return health() & HTH_REGPARS;
 }
 
-const Modules::StartupInfoBlock &Board::baseSerialInfo() const
+void Board::updateExt(const DataTypes::BitStringStruct &bs)
 {
-    return m_startupInfoBlock;
+    constexpr auto minCount = sizeof(Modules::StartupInfoBlockExt0) / sizeof(quint32);
+    constexpr auto lastExt0Reg = Modules::bsiExtStartReg + minCount;
+    // BsiExt0
+    if ((bs.sigAdr >= Modules::bsiExtStartReg) && (bs.sigAdr <= lastExt0Reg))
+    {
+        quint32 &item = *(reinterpret_cast<quint32 *>(&m_startupInfoBlockExt) + (bs.sigAdr - Modules::bsiExtStartReg));
+        item = bs.sigVal;
+        ++m_updateCounterExt;
+    }
+    if (m_updateCounterExt == minCount)
+    {
+        emit readyReadExt();
+        m_updateCounterExt = 0;
+    }
 }
 
 bool Board::isUSIO(Modules::BaseBoard typeB, Modules::MezzanineBoard typeM)

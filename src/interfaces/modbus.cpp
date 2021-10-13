@@ -160,6 +160,10 @@ void ModBus::reqBSI()
     DataManager::addToInQueue(inp);
 }
 
+void ModBus::reqBSIExt()
+{
+}
+
 void ModBus::reqFile(quint32 filenum, FileFormat format)
 {
     Q_UNUSED(filenum)

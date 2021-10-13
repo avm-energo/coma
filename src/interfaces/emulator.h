@@ -11,6 +11,7 @@ public:
     bool start(const ConnectStruct &st) override;
     void reqStartup(quint32 sigAdr, quint32 sigCount) override;
     void reqBSI() override;
+    void reqBSIExt() override;
     void reqFile(quint32, FileFormat format) override;
     void writeFile(quint32, const QByteArray &) override;
     void reqTime() override;

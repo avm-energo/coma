@@ -72,6 +72,7 @@ private:
     void handleUnixTime(const QByteArray &ba, quint16 sigAddr);
 #endif
     void handleBitStringArray(const QByteArray &ba, QList<quint16> arr_addr);
+    void handleBitStringArray(const QByteArray &ba, quint16 start_addr);
     void handleFloat(const QByteArray &ba, quint32 sigAddr);
     void handleFloatArray(const QByteArray &ba, quint32 sigAddr, quint32 sigCount);
     void handleSinglePoint(const QByteArray &ba, const quint16 addr);

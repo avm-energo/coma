@@ -12,18 +12,19 @@ public:
     explicit InfoDialog(QWidget *parent = nullptr);
 
     void SetupUI();
-    void FillBsi();
-    void uponInterfaceSetting();
 
-signals:
+    void uponInterfaceSetting() override;
+    void reqUpdate() override;
 
 public slots:
-    void ClearBsi();
-    void reqUpdate();
+    // void ClearBsi();
+
     void sync();
+    void syncExt();
 
 private:
-    bool m_oneShotUpdateFlag;
+    void FillBsi();
+    void FillBsiExt();
 };
 
 #endif // INFODIALOG_H

@@ -56,6 +56,7 @@ public:
     virtual void stop();
     virtual void reqStartup(quint32 sigAdr = 0, quint32 sigCount = 0) = 0;
     virtual void reqBSI() = 0;
+    virtual void reqBSIExt() = 0;
     virtual void reqFile(quint32, FileFormat format = FileFormat::Binary) = 0;
     void reqFile(quint32 id, FileFormat format, quint32 expectedSize);
     virtual void writeFile(quint32, const QByteArray &) = 0;
