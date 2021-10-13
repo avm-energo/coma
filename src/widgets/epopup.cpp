@@ -5,32 +5,124 @@
 #include <QEventLoop>
 #include <QPropertyAnimation>
 
-EPopup::EPopup(MessageTypes type, const QString &msg, QWidget *parent) : QDialog(parent)
+ESimplePopup::ESimplePopup(MessageTypes type, const QString &msg, QWidget *parent) : EPopup(parent)
+{
+    ESimplePopup(type, WDFunc::NewLBL2(this, msg), parent);
+}
+
+ESimplePopup::ESimplePopup(MessageTypes type, QWidget *w, QWidget *parent)
 {
     setAttribute(Qt::WA_DeleteOnClose);
     if (type < c_captions.size())
         setWindowTitle(c_captions.at(type));
     QVBoxLayout *lyout = new QVBoxLayout;
-    lyout->addWidget(WDFunc::NewLBL2(this, msg));
+    lyout->addWidget(w);
     QHBoxLayout *hlyout = new QHBoxLayout;
     hlyout->addStretch(100);
-    if (type == EPopup::QUESTMSG)
+    if (type == ESimplePopup::QUESTMSG)
     {
-        hlyout->addWidget(WDFunc::NewPB(this, "", "Ага", this, &EPopup::acceptSlot));
+        hlyout->addWidget(WDFunc::NewPB(this, "", "Ага", this, &ESimplePopup::acceptSlot));
         hlyout->addStretch(5);
-        hlyout->addWidget(WDFunc::NewPB(this, "", "Неа", this, &EPopup::cancelSlot));
+        hlyout->addWidget(WDFunc::NewPB(this, "", "Неа", this, &ESimplePopup::cancelSlot));
     }
-    else if (type == EPopup::NEXTMSG)
+    else if (type == ESimplePopup::NEXTMSG)
     {
-        hlyout->addWidget(WDFunc::NewPB(this, "", "Далее", this, &EPopup::acceptSlot));
+        hlyout->addWidget(WDFunc::NewPB(this, "", "Далее", this, &ESimplePopup::acceptSlot));
         hlyout->addStretch(5);
-        hlyout->addWidget(WDFunc::NewPB(this, "", "Отмена", this, &EPopup::cancelSlot));
+        hlyout->addWidget(WDFunc::NewPB(this, "", "Отмена", this, &ESimplePopup::cancelSlot));
     }
     else
         hlyout->addWidget(WDFunc::NewPB(this, "", "Ага", [&] { this->aboutToClose(); }));
     hlyout->addStretch(100);
     lyout->addLayout(hlyout);
     setLayout(lyout);
+}
+
+bool EMessageBox::m_result = false;
+
+void EMessageBox::information(const QString &msg)
+{
+    m_result = false;
+    ESimplePopup *dlg = new ESimplePopup(ESimplePopup::INFOMESSAGE, msg);
+    dlg->show();
+    QEventLoop loop;
+    QObject::connect(dlg, &ESimplePopup::destroyed, &loop, &QEventLoop::quit);
+    loop.exec();
+}
+
+bool EMessageBox::question(const QString &msg)
+{
+    m_result = false;
+    ESimplePopup *dlg = new ESimplePopup(ESimplePopup::QUESTMSG, msg);
+    QObject::connect(dlg, &ESimplePopup::accepted, [] { m_result = true; });
+    QObject::connect(dlg, &ESimplePopup::cancelled, [] { m_result = false; });
+    dlg->show();
+    QEventLoop loop;
+    QObject::connect(dlg, &ESimplePopup::destroyed, &loop, &QEventLoop::quit);
+    loop.exec();
+    return m_result;
+}
+
+void EMessageBox::warning(const QString &msg)
+{
+    m_result = false;
+    ESimplePopup *dlg = new ESimplePopup(ESimplePopup::WARNMESSAGE, msg);
+    dlg->show();
+    QEventLoop loop;
+    QObject::connect(dlg, &ESimplePopup::destroyed, &loop, &QEventLoop::quit);
+    loop.exec();
+}
+
+void EMessageBox::error(const QString &msg)
+{
+    m_result = false;
+    ESimplePopup *dlg = new ESimplePopup(ESimplePopup::ERMESSAGE, msg);
+    dlg->show();
+    QEventLoop loop;
+    QObject::connect(dlg, &ESimplePopup::destroyed, &loop, &QEventLoop::quit);
+    loop.exec();
+}
+
+bool EMessageBox::next(const QString &msg)
+{
+    m_result = false;
+    ESimplePopup *dlg = new ESimplePopup(ESimplePopup::NEXTMSG, msg);
+    QObject::connect(dlg, &ESimplePopup::accepted, [] { m_result = true; });
+    QObject::connect(dlg, &ESimplePopup::cancelled, [] { m_result = false; });
+    dlg->show();
+    QEventLoop loop;
+    QObject::connect(dlg, &ESimplePopup::destroyed, &loop, &QEventLoop::quit);
+    loop.exec();
+    return m_result;
+}
+
+bool EMessageBox::next(QWidget *w)
+{
+    m_result = false;
+    ESimplePopup *dlg = new ESimplePopup(ESimplePopup::NEXTMSG, w);
+    QObject::connect(dlg, &ESimplePopup::accepted, [] { m_result = true; });
+    QObject::connect(dlg, &ESimplePopup::cancelled, [] { m_result = false; });
+    dlg->show();
+    QEventLoop loop;
+    QObject::connect(dlg, &ESimplePopup::destroyed, &loop, &QEventLoop::quit);
+    loop.exec();
+    return m_result;
+}
+
+bool EMessageBox::editableNext(EEditablePopup *popup)
+{
+    m_result = false;
+    popup->execPopup();
+    QObject::connect(popup, &EPopup::accepted, [] { m_result = true; });
+    QObject::connect(popup, &EPopup::cancelled, [] { m_result = false; });
+    QEventLoop loop;
+    QObject::connect(popup, &EPopup::destroyed, &loop, &QEventLoop::quit);
+    loop.exec();
+    return m_result;
+}
+
+EPopup::EPopup(QWidget *parent) : QDialog(parent)
+{
 }
 
 void EPopup::aboutToClose()
@@ -44,18 +136,6 @@ void EPopup::aboutToClose()
     connect(anim, &QPropertyAnimation::finished, &loop, &QEventLoop::quit);
     loop.exec();
     close();
-}
-
-void EPopup::acceptSlot()
-{
-    emit accepted();
-    aboutToClose();
-}
-
-void EPopup::cancelSlot()
-{
-    emit cancelled();
-    aboutToClose();
 }
 
 void EPopup::showEvent(QShowEvent *e)
@@ -80,60 +160,63 @@ void EPopup::keyPressEvent(QKeyEvent *e)
         cancelSlot();
 }
 
-bool EPopupWorker::m_result = false;
-
-void EPopupWorker::information(const QString &msg)
+void EPopup::acceptSlot()
 {
-    m_result = false;
-    EPopup *dlg = new EPopup(EPopup::INFOMESSAGE, msg);
-    dlg->show();
-    QEventLoop loop;
-    QObject::connect(dlg, &EPopup::destroyed, &loop, &QEventLoop::quit);
-    loop.exec();
+    emit accepted();
+    aboutToClose();
 }
 
-bool EPopupWorker::question(const QString &msg)
+void EPopup::cancelSlot()
 {
-    m_result = false;
-    EPopup *dlg = new EPopup(EPopup::QUESTMSG, msg);
-    QObject::connect(dlg, &EPopup::accepted, [] { m_result = true; });
-    QObject::connect(dlg, &EPopup::cancelled, [] { m_result = false; });
-    dlg->show();
-    QEventLoop loop;
-    QObject::connect(dlg, &EPopup::destroyed, &loop, &QEventLoop::quit);
-    loop.exec();
-    return m_result;
+    emit cancelled();
+    aboutToClose();
 }
 
-void EPopupWorker::warning(const QString &msg)
+EEditablePopup::EEditablePopup(const QString &caption, QWidget *parent) : EPopup(parent)
 {
-    m_result = false;
-    EPopup *dlg = new EPopup(EPopup::WARNMESSAGE, msg);
-    dlg->show();
-    QEventLoop loop;
-    QObject::connect(dlg, &EPopup::destroyed, &loop, &QEventLoop::quit);
-    loop.exec();
+    setAttribute(Qt::WA_DeleteOnClose);
+    this->caption = caption;
 }
 
-void EPopupWorker::error(const QString &msg)
+void EEditablePopup::addFloatParameter(const QString &name, float &parameter)
 {
-    m_result = false;
-    EPopup *dlg = new EPopup(EPopup::ERMESSAGE, msg);
-    dlg->show();
-    QEventLoop loop;
-    QObject::connect(dlg, &EPopup::destroyed, &loop, &QEventLoop::quit);
-    loop.exec();
+    m_floatParList[name] = std::make_unique<float>(parameter);
 }
 
-bool EPopupWorker::next(const QString &msg)
+void EEditablePopup::execPopup()
 {
-    m_result = false;
-    EPopup *dlg = new EPopup(EPopup::NEXTMSG, msg);
-    QObject::connect(dlg, &EPopup::accepted, [] { m_result = true; });
-    QObject::connect(dlg, &EPopup::cancelled, [] { m_result = false; });
-    dlg->show();
-    QEventLoop loop;
-    QObject::connect(dlg, &EPopup::destroyed, &loop, &QEventLoop::quit);
-    loop.exec();
-    return m_result;
+    QVBoxLayout *lyout = new QVBoxLayout;
+    lyout->addWidget(WDFunc::NewLBL2(this, caption));
+    QHBoxLayout *hlyout;
+    for (std::map<QString, std::unique_ptr<float>>::iterator it = m_floatParList.begin(); it != m_floatParList.end();
+         ++it)
+        lyout->addWidget(WDFunc::NewLBLAndLE(this, it->first, it->first, true));
+    hlyout = new QHBoxLayout;
+    hlyout->addStretch(100);
+    hlyout->addWidget(WDFunc::NewPB(this, "", "Далее", this, &EEditablePopup::acceptSlot));
+    hlyout->addStretch(5);
+    hlyout->addWidget(WDFunc::NewPB(this, "", "Отмена", this, &EPopup::cancelSlot));
+    hlyout->addStretch(100);
+    lyout->addLayout(hlyout);
+    setLayout(lyout);
+    show();
 }
+
+void EEditablePopup::acceptSlot()
+{
+    for (std::map<QString, std::unique_ptr<float>>::iterator it = m_floatParList.begin(); it != m_floatParList.end();
+         ++it)
+    {
+        bool ok;
+        float fl;
+        fl = WDFunc::LEData(this, it->first).toFloat(&ok);
+        if (ok)
+            *it->second = fl;
+        else
+        {
+            EMessageBox::warning("Значение " + it->first + "ошибочно, будет принудительно приравнено нулю");
+            *it->second = 0.0;
+        }
+        emit accepted();
+        aboutToClose();
+    }

@@ -53,7 +53,8 @@ void TuneKIVR::setTuneFunctions()
 Error::Msg TuneKIVR::showPreWarning()
 {
     showTWTab(m_BacWidgetIndex);
-    QDialog *dlg = new QDialog;
+    //    QDialog *dlg = new QDialog;
+    QWidget *w = new QWidget;
     QVBoxLayout *lyout = new QVBoxLayout;
 
     lyout->addWidget(WDFunc::NewLBL2(this, "", "", new QPixmap("images/tunekiv1.png")));
@@ -68,11 +69,13 @@ Error::Msg TuneKIVR::showPreWarning()
         "разместите модуль в термокамеру с диапазоном регулирования температуры "
         "от минус 20 до +60°С. Установите нормальное значение температуры "
         "в камере 20±5°С"));
-    lyout->addWidget(WDFunc::NewPB(this, "", "Готово", [dlg] { dlg->close(); }));
-    lyout->addWidget(WDFunc::NewPB(this, "cancelpb", "Отмена", [dlg] { dlg->close(); }));
-    dlg->setLayout(lyout);
-    WDFunc::PBConnect(dlg, "cancelpb", static_cast<AbstractTuneDialog *>(this), &AbstractTuneDialog::CancelTune);
-    dlg->exec();
+    //    lyout->addWidget(WDFunc::NewPB(this, "", "Готово", [dlg] { dlg->close(); }));
+    //    lyout->addWidget(WDFunc::NewPB(this, "cancelpb", "Отмена", [dlg] { dlg->close(); }));
+    //    dlg->setLayout(lyout);
+    //    WDFunc::PBConnect(dlg, "cancelpb", static_cast<AbstractTuneDialog *>(this), &AbstractTuneDialog::CancelTune);
+    //    dlg->exec();
+    if (!EMessageBox::next(w))
+        CancelTune();
     return Error::Msg::NoError;
 }
 
@@ -119,7 +122,7 @@ Error::Msg TuneKIVR::processR120()
 
 void TuneKIVR::setR(int r)
 {
-    if (!EPopupWorker::next("Установите сопротивление " + QString::number(r, 'f', 1) + " Ом"))
+    if (!EMessageBox::next("Установите сопротивление " + QString::number(r, 'f', 1) + " Ом"))
         CancelTune();
     //    if (QMessageBox::question(this, "Подтверждение", "Установите сопротивление " + QString::number(r, 'f', 1) + "
     //    Ом")

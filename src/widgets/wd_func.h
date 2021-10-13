@@ -299,6 +299,9 @@ public:
     static QPixmap NewCircle(QColor color, int radius);
     static QPixmap NewLedIndicator(QColor color, float height);
     static QPixmap NewSVG(QString &str, QSize size);
+    static QFrame *newHLine(QWidget *w);
+    static QFrame *newVLine(QWidget *w);
+
     static QMainWindow *getMainWindow();
     static QMainWindow *getComaWindow();
 

@@ -300,7 +300,7 @@ void AbstractTuneDialog::startTune()
     WDFunc::SetEnabled(this, "starttune", true);
     WDFunc::SetEnabled(this, "stoptune", false);
     WDFunc::SetEnabled(this, "finishpb", true);
-    EPopupWorker::information("Настройка завершена!");
+    EMessageBox::information("Настройка завершена!");
     TuneSequenceFile::saveTuneSequenceFile(m_tuneStep + 1); // +1 to let the next stage run
 }
 

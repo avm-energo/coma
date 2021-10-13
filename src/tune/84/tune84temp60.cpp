@@ -157,14 +157,15 @@ Error::Msg Tune84Temp60::analogMeasurement()
 {
     emit setProgressSize(StdFunc::tuneRequestCount());
     //    startWait();
-    int i = 0;
-    for (int i = 0; i < 6; ++i)
+    int i;
+    for (i = 0; i < 6; ++i)
     {
         m_midTuneStruct.u[i] = 0.0;
         if (i < 3)
             m_midTuneStruct.y[i] = 0.0;
     }
     m_midTuneStruct.tmk = 0.0;
+    i = 0;
     while ((!StdFunc::isCancelled()) && (i < StdFunc::tuneRequestCount()))
     {
         m_bd0->readAndUpdate();
@@ -180,7 +181,7 @@ Error::Msg Tune84Temp60::analogMeasurement()
         emit setProgressCount(i);
         StdFunc::Wait(500);
     }
-    for (int i = 0; i < 6; ++i)
+    for (i = 0; i < 6; ++i)
     {
         m_midTuneStruct.u[i] /= StdFunc::tuneRequestCount();
         if (i < 3)

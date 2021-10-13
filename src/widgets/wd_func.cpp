@@ -611,6 +611,24 @@ QPixmap WDFunc::NewLedIndicator(QColor color, float height)
     return myPix;
 }
 
+QFrame *WDFunc::newHLine(QWidget *w)
+{
+    QFrame *line = new QFrame(w);
+    line->setFrameShape(QFrame::HLine); // Horizontal line
+    line->setFrameShadow(QFrame::Sunken);
+    line->setLineWidth(1);
+    return line;
+}
+
+QFrame *WDFunc::newVLine(QWidget *w)
+{
+    QFrame *line = new QFrame(w);
+    line->setFrameShape(QFrame::VLine); // Vertical line
+    line->setFrameShadow(QFrame::Sunken);
+    line->setLineWidth(1);
+    return line;
+}
+
 QMainWindow *WDFunc::getMainWindow()
 {
     for (QWidget *w : qApp->topLevelWidgets())

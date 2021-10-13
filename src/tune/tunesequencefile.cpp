@@ -5,6 +5,7 @@
 
 #include <QDebug>
 
+std::map<QString, std::unique_ptr<float>> TuneSequenceFile::s_tuneDescrMap;
 std::unique_ptr<QSettings> TuneSequenceFile::s_tsSettings;
 QString TuneSequenceFile::s_cpuSerialNum;
 bool TuneSequenceFile::s_tsfInitialized = false;
@@ -63,4 +64,28 @@ bool TuneSequenceFile::isInitialized()
         return false;
     }
     return true;
+}
+
+void TuneSequenceFile::clearTuneDescrVector()
+{
+    s_tuneDescrMap.clear();
+}
+
+void TuneSequenceFile::addItemToTuneDescrVector(const QString &descr, float &value)
+{
+    s_tuneDescrMap[descr] = std::make_unique<float>(value);
+}
+
+void TuneSequenceFile::loadItemsFromFile()
+{
+    for (std::map<QString, std::unique_ptr<float>>::iterator it = s_tuneDescrMap.begin(); it != s_tuneDescrMap.end();
+         ++it)
+        *it->second = StdFunc::toFloat(TuneSequenceFile::value(it->first, 0.0).toString());
+}
+
+void TuneSequenceFile::saveItemsToFile()
+{
+    for (std::map<QString, std::unique_ptr<float>>::iterator it = s_tuneDescrMap.begin(); it != s_tuneDescrMap.end();
+         ++it)
+        TuneSequenceFile::setValue(it->first, *it->second);
 }

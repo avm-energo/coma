@@ -21,10 +21,19 @@ private:
     BdaIn *m_bdain;
     Bd0 *m_bd0;
     double m_pt100;
-    bool m_isEnergoMonitorDialogCreated;
+    //    bool m_isEnergoMonitorDialogCreated;
     int m_curTuneStep;
     BdaIn::BlockData m_bdainBlockData;
     int m_BacWidgetIndex, m_BdainWidgetIndex, m_Bd0WidgetIndex;
+    struct MidTuneStruct
+    {
+        float fet;
+        float uet;
+        float iet;
+        float yet;
+    };
+
+    MidTuneStruct m_midTuneStruct;
 
     void setMessages() override;
     void setTuneFunctions() override;
