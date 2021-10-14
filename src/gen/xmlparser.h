@@ -34,4 +34,8 @@ private:
     static void mergeWidget(const QDomElement &domElement, widgetMap *const s2widgetMap, BciNumber id);
 
     static bool isCorrectModule(const QString &typem, const QString &typeb, quint16 m_typem, quint16 m_typeb);
+    static bool isOutdated(quint32 configVersion, quint32 realVersion)
+    {
+        return realVersion < configVersion;
+    }
 };

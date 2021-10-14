@@ -527,10 +527,18 @@ void XmlParser::traverseNode(const QDomNode &node, ModuleSettings *const setting
                 if (domElement.tagName() == "module")
                 {
                     if (!isCorrectModule(domElement.attribute("mtypem", ""), domElement.attribute("mtypeb", ""),
-                            settings->moduleType.typeM, settings->moduleType.typeB))
+                            settings->startupInfoBlock.MTypeM, settings->startupInfoBlock.MTypeB))
                     {
                         domNode = domNode.nextSibling();
                         continue;
+                    }
+                }
+
+                if (domElement.tagName() == "version")
+                {
+                    if (isOutdated(StdFunc::StrToVer(domElement.text()), settings->startupInfoBlock.Fwver))
+                    {
+                        qWarning("Outdated module firmware, please update to latest");
                     }
                 }
 
