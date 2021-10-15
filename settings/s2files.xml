@@ -2732,7 +2732,7 @@
 		<widget>
 			<type>QDoubleSpinBox</type>
 			<group>203</group>
-			<string>Ток отсечки выключателя</string>
+			<string>Ток отсечки выключателя, кА</string>
 			<min>0</min>
 			<max>10000</max>
 			<decimals>0</decimals>
