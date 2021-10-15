@@ -613,7 +613,8 @@ QPixmap WDFunc::NewLedIndicator(QColor color, float height)
 
 QMainWindow *WDFunc::getMainWindow()
 {
-    for (QWidget *w : qApp->topLevelWidgets())
+    const auto widgets = qApp->topLevelWidgets();
+    for (QWidget *w : widgets)
         if (QMainWindow *mainWin = qobject_cast<QMainWindow *>(w))
             return mainWin;
     return nullptr;
