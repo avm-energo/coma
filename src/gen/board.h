@@ -111,7 +111,7 @@ public:
     bool noConfig() const;
     bool noRegPars() const;
 
-    Modules::StartupInfoBlock baseSerialInfo() const;
+    const Modules::StartupInfoBlock &baseSerialInfo() const;
 
 private:
     static constexpr int StartupInfoBlockMembers = sizeof(Modules::StartupInfoBlock) / sizeof(quint32);

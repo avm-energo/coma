@@ -50,8 +50,9 @@ public:
     void closeDialogs();
     ModuleSettings *settings() const;
     bool loadSettings();
-    bool loadSettings(QString &moduleName, quint16 mtypem = Board::GetInstance().typeM(),
-        quint16 mtypeb = Board::GetInstance().typeB(), int interfaceType = Board::GetInstance().interfaceType());
+    bool loadSettings(QString &moduleName,
+        const Modules::StartupInfoBlock &startupInfoBlock = Board::GetInstance().baseSerialInfo(),
+        int interfaceType = Board::GetInstance().interfaceType());
     bool loadS2Settings();
     quint64 configVersion() const;
     bool isConfigOutdated() const;

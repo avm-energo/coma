@@ -122,7 +122,7 @@ bool Module::loadSettings()
     return loadSettings(str);
 }
 
-bool Module::loadSettings(QString &moduleName, quint16 mtypem, quint16 mtypeb, int interfaceType)
+bool Module::loadSettings(QString &moduleName, const Modules::StartupInfoBlock &startupInfoBlock, int interfaceType)
 {
     if (!loadS2Settings())
         return false;
@@ -180,9 +180,9 @@ bool Module::loadSettings(QString &moduleName, quint16 mtypem, quint16 mtypeb, i
     }
     if (domDoc.setContent(&file))
     {
-        m_settings = std::unique_ptr<ModuleSettings>(new ModuleSettings);
-        m_settings->moduleType.typeB = mtypeb;
-        m_settings->moduleType.typeM = mtypem;
+        m_settings = std::unique_ptr<ModuleSettings>(new ModuleSettings(startupInfoBlock));
+        // m_settings->startupInfoBlock = &startupInfoBlock;
+        // m_settings->moduleType.typeM = startupInfoBlock;
         m_settings->interfaceType = interfaceType;
         QDomElement domElement = domDoc.documentElement();
         GlobalSettings settings { &DataTypes::DataRecV::map, &WidgetFactory::m_widgetMap,

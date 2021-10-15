@@ -15,6 +15,9 @@ struct ModuleType
 
 struct ModuleSettings
 {
+    ModuleSettings(const Modules::StartupInfoBlock &startupInfoBlock_) : startupInfoBlock(startupInfoBlock_)
+    {
+    }
     int alarmCount() const
     {
         int counter = 0;
@@ -27,7 +30,7 @@ struct ModuleSettings
     InterfaceSettings ifaceSettings;
     QList<DataTypes::RecordPair> configSettings;
     QMultiMap<quint32, quint32> highlightWarn, highlightCrit;
-    ModuleType moduleType;
+    const Modules::StartupInfoBlock &startupInfoBlock;
     int interfaceType;
 };
 

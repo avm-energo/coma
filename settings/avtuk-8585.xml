@@ -5,7 +5,7 @@
     <!--Здесь укаазно название модуля-->
     <name>AVTUK-8585</name>
     <!--Минимальная версия прошивки модуля, для которой описаны настройки-->
-    <version>3.3.0</version>
+    <version>3.3-0001</version>
     <!--Дальше идет всё, что несредственно относится к модулю-->
     <resources>
       <!--Описываем сигнализацию, имя обязательно-->
@@ -123,6 +123,10 @@
 					<defaultValue>220</defaultValue>
 				</record>
 				<record>
+					<id>1165</id>
+					<defaultValue>0</defaultValue>
+				</record>
+				<record>
 					<id>1114</id>
 					<defaultValue>2000</defaultValue>
 				</record>
@@ -160,12 +164,44 @@
 					<defaultValue>60,60,60</defaultValue>
 				</record>
 				<record>
+					<id>1172</id>
+					<defaultValue>1.0</defaultValue>
+				</record>
+				<record>
+					<id>1173</id>
+					<defaultValue>1.0</defaultValue>
+				</record>
+				<record>
 					<id>1123</id>
 					<defaultValue>90,210,150</defaultValue>
 				</record>
         		<record>
 					<id>1124</id>
 					<defaultValue>90,210,150</defaultValue>
+				</record>
+				<record>
+					<id>1158</id>
+					<defaultValue>60</defaultValue>
+				</record>
+				<record>
+					<id>1159</id>
+					<defaultValue>60</defaultValue>
+				</record>
+				<record>
+					<id>1160</id>
+					<defaultValue>90</defaultValue>
+				</record>
+				<record>
+					<id>1161</id>
+					<defaultValue>60</defaultValue>
+				</record>
+				<record>
+					<id>1183</id>
+					<defaultValue>0,0,0</defaultValue>
+				</record>
+				<record>
+					<id>1184</id>
+					<defaultValue>0,0,0</defaultValue>
 				</record>
 				<record>
 					<id>1125</id>
@@ -259,7 +295,7 @@
 					<id>1147</id>
 					<defaultValue>100</defaultValue>
 				</record>
-        		<record>
+				<record>
 					<id>1148</id>
 					<defaultValue>2s0</defaultValue>
 				</record>
@@ -267,7 +303,7 @@
 					<id>1149</id>
 					<defaultValue>5</defaultValue>
 				</record>
-        		<record>
+				<record>
 					<id>1150</id>
 					<defaultValue>2</defaultValue>
 				</record>
@@ -275,7 +311,7 @@
 					<id>1151</id>
 					<defaultValue>3000</defaultValue>
 				</record>
-        		<record>
+				<record>
 					<id>1152</id>
 					<defaultValue>4000</defaultValue>
 				</record>
@@ -283,37 +319,13 @@
 					<id>1153</id>
 					<defaultValue>1</defaultValue>
 				</record>
-        		<record>
+				<record>
 					<id>1154</id>
 					<defaultValue>1,1,1</defaultValue>
 				</record>
 				<record>
 					<id>1155</id>
 					<defaultValue>1,1,1</defaultValue>
-				</record>
-        		<record>
-					<id>1156</id>
-					<defaultValue>32</defaultValue>
-				</record>
-				<record>
-					<id>1157</id>
-					<defaultValue>20</defaultValue>
-				</record>
-        		<record>
-					<id>1158</id>
-					<defaultValue>60</defaultValue>
-				</record>
-				<record>
-					<id>1159</id>
-					<defaultValue>60</defaultValue>
-				</record>
-				<record>
-					<id>1160</id>
-					<defaultValue>90</defaultValue>
-				</record>
-        		<record>
-					<id>1161</id>
-					<defaultValue>60</defaultValue>
 				</record>
 				<record>
 					<id>1162</id>
@@ -326,10 +338,6 @@
 				<record>
 					<id>1164</id>
 					<defaultValue>300</defaultValue>
-				</record>
-        		<record>
-					<id>1165</id>
-					<defaultValue>0</defaultValue>
 				</record>
 				<record>
 					<id>1166</id>
@@ -351,14 +359,6 @@
 				<record>
 					<id>1171</id>
 					<defaultValue>34</defaultValue>
-				</record>
-        		<record>
-					<id>1172</id>
-					<defaultValue>1.0</defaultValue>
-				</record>
-				<record>
-					<id>1173</id>
-					<defaultValue>1.0</defaultValue>
 				</record>
         		<record>
 					<id>1176</id>
@@ -387,14 +387,6 @@
 				<record>
 					<id>1182</id>
 					<defaultValue>20.0</defaultValue>
-				</record>
-        		<record>
-					<id>1183</id>
-					<defaultValue>0,0,0</defaultValue>
-				</record>
-				<record>
-					<id>1184</id>
-					<defaultValue>0,0,0</defaultValue>
 				</record>
 				<record>
 					<id>1190</id>
@@ -435,6 +427,14 @@
         		<record>
 					<id>1199</id>
 					<defaultValue>0.4</defaultValue>
+				</record>
+				<record>
+					<id>1156</id>
+					<defaultValue>32</defaultValue>
+				</record>
+				<record>
+					<id>1157</id>
+					<defaultValue>20</defaultValue>
 				</record>
 				<record>
 					<id>1200</id>

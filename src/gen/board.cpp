@@ -197,7 +197,7 @@ bool Board::noRegPars() const
     return health() & HTH_REGPARS;
 }
 
-Modules::StartupInfoBlock Board::baseSerialInfo() const
+const Modules::StartupInfoBlock &Board::baseSerialInfo() const
 {
     return m_startupInfoBlock;
 }
