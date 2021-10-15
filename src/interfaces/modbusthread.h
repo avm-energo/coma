@@ -15,36 +15,33 @@ public:
     ~ModbusThread();
     void setDeviceAddress(quint8 adr);
 
-    // ConnectionStates State();
-    //    void Init(QQueue<ModBus::InOutStruct> *inq, QList<ModBus::InOutStruct> *outl);
+    void setDelay(quint8 newDelay);
 
 public slots:
-    void Run();
-    void FinishThread();
-    void ParseReply(QByteArray ba);
+    void run();
+    void finishThread();
+    void parseReply(QByteArray ba);
 
 signals:
-    // void ModbusState(ConnectionStates);
+
     void clearBuffer();
     void finished();
-    void Write(QByteArray);
+    void write(QByteArray);
 
 private:
-    //    QQueue<ModBus::InOutStruct> *InQueue;
-    //    QList<ModBus::InOutStruct> *OutList;
-    bool Busy; // port is busy with write/read operation
-               //  bool AboutToFinish;
+    bool busy; // port is busy with write/read operation
+
     quint8 deviceAddress;
-    //    ModBus::InOutStruct Inp, Outp;
-    // ConnectionStates _state;
-    LogClass *Log;
+    // delay in ms
+    quint8 delay;
+
+    LogClass *log;
     QByteArray m_readData;
     CommandsMBS::CommandStruct m_commandSent;
     int m_bytesToReceive;
 
     void readRegisters(CommandsMBS::CommandStruct &cms);
     void readCoils(CommandsMBS::CommandStruct &cms);
-    //    void readHoldingRegisters(CommandsMBS::CommandStruct &cms);
     void writeMultipleRegisters(CommandsMBS::CommandStruct &cms);
     void setQueryStartBytes(CommandsMBS::CommandStruct &cms, QByteArray &ba);
     QByteArray createReadPDU(const CommandsMBS::CommandStruct &cms) const;
@@ -56,11 +53,8 @@ private:
     void getIntegerSignals(QByteArray &bain);
     void getCommandResponse(QByteArray &bain);
     void getSinglePointSignals(QByteArray &bain);
-    bool checkReceivedByteArray(QByteArray &bain);
 
-    //    void SendAndGetResult(ModBus::InOutStruct &inp);
-    void Send();
-    quint16 CalcCRC(QByteArray &ba) const;
+    quint16 calcCRC(QByteArray &ba) const;
 
     template <typename T> T unpackReg(QByteArray ba) const
     {
@@ -70,8 +64,6 @@ private:
 
         return *reinterpret_cast<T *>(ba.data());
     }
-
-    //    void AddToOutQueue(ModBus::InOutStruct &outp);
 
 signals:
 };

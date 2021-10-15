@@ -13,25 +13,26 @@ class SerialPort : public QObject
 public:
     explicit SerialPort(QObject *parent = nullptr);
     ~SerialPort();
-    bool Init(SerialPortSettings settings);
+    bool init(SerialPortSettings settings);
     bool clear();
 
 signals:
-    void Read(QByteArray);
+    void read(QByteArray);
     void connected();
-    void errorOccurred();
+    void error();
 
 private:
-    QPointer<QSerialPort> Port;
+    QPointer<QSerialPort> port;
+    bool m_connected = false;
 
 public slots:
-    void WriteBytes(QByteArray ba);
-    void Disconnect();
+    void writeBytes(QByteArray ba);
+    void disconnect();
     bool reconnect();
 
 private slots:
-    void ReadBytes();
-    void ErrorOccurred(QSerialPort::SerialPortError err);
+    void readBytes();
+    void errorOccurred(QSerialPort::SerialPortError err);
 };
 
 #endif // SERIALPORT_H

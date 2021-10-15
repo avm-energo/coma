@@ -13,31 +13,32 @@ SerialPort::SerialPort(QObject *parent) : QObject(parent)
 
 SerialPort::~SerialPort()
 {
-    if (Port->isOpen())
-        Port->close();
+    if (port->isOpen())
+        port->close();
 }
 
-bool SerialPort::Init(SerialPortSettings settings)
+bool SerialPort::init(SerialPortSettings settings)
 {
-    Port = new QSerialPort(settings.Port, this);
-    Port->setBaudRate(settings.Baud);
-    Port->setDataBits(QSerialPort::Data8);
+    m_connected = true;
+    port = new QSerialPort(settings.Port, this);
+    port->setBaudRate(settings.Baud);
+    port->setDataBits(QSerialPort::Data8);
     if (settings.Parity == "Нет")
-        Port->setParity(QSerialPort::NoParity);
+        port->setParity(QSerialPort::NoParity);
     else if (settings.Parity == "Чет")
-        Port->setParity(QSerialPort::EvenParity);
+        port->setParity(QSerialPort::EvenParity);
     else
-        Port->setParity(QSerialPort::OddParity);
-    Port->setStopBits(settings.Stop == "1" ? QSerialPort::OneStop : QSerialPort::TwoStop);
-    Port->setFlowControl(QSerialPort::NoFlowControl);
-    Port->setReadBufferSize(1024);
-    connect(Port.data(), &QSerialPort::errorOccurred, this, &SerialPort::ErrorOccurred);
-    connect(Port, &QIODevice::readyRead, this, &SerialPort::ReadBytes);
+        port->setParity(QSerialPort::OddParity);
+    port->setStopBits(settings.Stop == "1" ? QSerialPort::OneStop : QSerialPort::TwoStop);
+    port->setFlowControl(QSerialPort::NoFlowControl);
+    port->setReadBufferSize(1024);
+    connect(port.data(), &QSerialPort::errorOccurred, this, &SerialPort::errorOccurred);
+    connect(port, &QIODevice::readyRead, this, &SerialPort::readBytes);
 
     QTimer *connectionTimer = new QTimer(this);
     connectionTimer->setInterval(TIMEOUT);
-    connect(Port, &QIODevice::bytesWritten, this, [connectionTimer] { connectionTimer->start(); });
-    connect(Port, &QIODevice::readyRead, connectionTimer, &QTimer::stop);
+    connect(port, &QIODevice::bytesWritten, this, [connectionTimer] { connectionTimer->start(); });
+    connect(port, &QIODevice::readyRead, connectionTimer, &QTimer::stop);
     connect(connectionTimer, &QTimer::timeout, [=] {
         qInfo() << this->metaObject()->className() << Error::Timeout;
         reconnect();
@@ -47,53 +48,56 @@ bool SerialPort::Init(SerialPortSettings settings)
 
 bool SerialPort::clear()
 {
-    return Port->clear();
+    return port->clear();
 }
 
-void SerialPort::WriteBytes(QByteArray ba)
+void SerialPort::writeBytes(QByteArray ba)
 {
-    if (!Port->isOpen())
+    if (!port->isOpen())
         return;
-    Port->write(ba.data(), ba.size());
+    port->write(ba.data(), ba.size());
     QCoreApplication::processEvents();
 }
 
-void SerialPort::Disconnect()
+void SerialPort::disconnect()
 {
-    Port->close();
+    m_connected = false;
+    port->close();
 }
 
 bool SerialPort::reconnect()
 {
-    if (!Port->open(QIODevice::ReadWrite))
+    if (!m_connected)
+        return false;
+    if (!port->open(QIODevice::ReadWrite))
     {
-        qCritical() << Port->metaObject()->className() << Port->portName() << Error::OpenError;
+        qCritical() << port->metaObject()->className() << port->portName() << Error::OpenError;
         return false;
     }
     emit connected();
     return true;
 }
 
-void SerialPort::ErrorOccurred(QSerialPort::SerialPortError err)
+void SerialPort::errorOccurred(QSerialPort::SerialPortError err)
 {
     if (!err)
         return;
-    if (Port->isOpen())
-        Port->close();
+    if (port->isOpen())
+        port->close();
     if (err == QSerialPort::NotOpenError || err == QSerialPort::ResourceError || err == QSerialPort::TimeoutError)
     {
         qCritical() << QVariant::fromValue(err).toString();
-        emit errorOccurred();
+        emit error();
     }
     else
         qDebug() << QVariant::fromValue(err).toString();
 }
 
-void SerialPort::ReadBytes()
+void SerialPort::readBytes()
 {
     QByteArray ba;
-    while (Port->bytesAvailable())
-        ba += Port->readAll();
+    while (port->bytesAvailable())
+        ba += port->readAll();
     if (ba.size())
-        emit Read(ba);
+        emit read(ba);
 }
