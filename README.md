@@ -1,6 +1,6 @@
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/0274299843044cd9b50db7b3801f6ae7)](https://app.codacy.com/gh/Jihadist/coma?utm_source=github.com&utm_medium=referral&utm_content=Jihadist/coma&utm_campaign=Badge_Grade_Settings)
 | OS | Status | Download |
 |----------|--------|----------|
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/0274299843044cd9b50db7b3801f6ae7)](https://app.codacy.com/gh/Jihadist/coma?utm_source=github.com&utm_medium=referral&utm_content=Jihadist/coma&utm_campaign=Badge_Grade_Settings)
 | Windows x64 | [![](http://172.16.31.73:27015/app/rest/builds/buildType:Coma_WindowsBuild_Develop_BuildX64/statusIcon.svg)](http://172.16.31.73:27015/buildConfiguration/Coma_WindowsBuild_Develop_BuildX64) | [Download](file://///Rserver/av-tuk/SOFT/AVTUK-S/) |
 | Windows x86 | [![](http://172.16.31.73:27015/app/rest/builds/buildType:Coma_WindowsBuild_Develop_BuildX86/statusIcon.svg)](http://172.16.31.73:27015/buildConfiguration/Coma_WindowsBuild_Develop_BuildX86) | [Download](file://///Rserver/av-tuk/SOFT/AVTUK-S/) |
 | Linux (Debian 10) x64 | [![](http://172.16.31.73:27015/app/rest/builds/buildType:Coma_LinuxBuild_Develop_BuildX64/statusIcon.svg)](http://172.16.31.73:27015/buildConfiguration/Coma_LinuxBuild_Develop_BuildX64) | [Download](file://///Rserver/av-tuk/SOFT/AVTUK-S/) |
@@ -58,7 +58,7 @@ supported options:
   - A x64/Win32 - used to change target arch only with Visual Studio cmake generator, ninja uses only provided compilers
   - BUILD_WITH_ALISE:BOOL=ON (off by default) - do u wanna build Alise? Use only if you know her.
   - ENABLE_EMULATOR:BOOL=ON (off by default) - coma'll be built with dummy interface, it can be used without real device 
-```$ cmake --build . [<options>]```
+  ```$ cmake --build . [<options>]```
 
 supported options for multi-config generators:
 - config Release/Debug
