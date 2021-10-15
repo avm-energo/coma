@@ -238,7 +238,6 @@
 			<field>data</field>
 			<string>Скорость RS485 интерфейса</string>
 			<string-array>
-				<item>1200</item>
 				<item>2400</item>
 				<item>4800</item>
 				<item>9600</item>

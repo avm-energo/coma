@@ -70,7 +70,7 @@ void InterfaceSerialDialog::addInterface()
     lyout->addWidget(WDFunc::NewLE2(dlg, "namele"), count++, 1, 1, 1);
     lyout->addWidget(WDFunc::NewLBL2(dlg, "Порт:"), count, 0, 1, 1, Qt::AlignLeft);
     lyout->addWidget(WDFunc::NewCB2(dlg, "portcb", ports), count++, 1, 1, 1);
-    QStringList sl { "1200", "2400", "4800", "9600", "19200", "38400", "57600", "115200" };
+    QStringList sl { "2400", "4800", "9600", "19200", "38400", "57600", "115200" };
     lyout->addWidget(WDFunc::NewLBL2(dlg, "Скорость:"), count, 0, 1, 1, Qt::AlignLeft);
     lyout->addWidget(WDFunc::NewCB2(dlg, "speedcb", sl), count++, 1, 1, 1);
     sl = QStringList({ "Нет", "Нечет", "Чет" });
