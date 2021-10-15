@@ -94,11 +94,12 @@ void InterfaceSerialDialog::addInterface()
 bool InterfaceSerialDialog::updateModel()
 {
     QStringList rslist;
+    QSettings sets;
     for (int i = 0; i < MAXREGISTRYINTERFACECOUNT; ++i)
     {
-        auto sets = std::unique_ptr<QSettings>(new QSettings);
         QString rsname = "RS485-" + QString::number(i);
-        rslist << sets->value(rsname, "").toString();
+        if (sets.contains(rsname))
+            rslist << sets.value(rsname, "").toString();
     }
     QStringList sl { "Имя", "Порт", "Скорость", "Четность", "Стоп бит", "Адрес" };
     QStandardItemModel *mdl = static_cast<QStandardItemModel *>(tableView->model());
