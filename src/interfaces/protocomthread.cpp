@@ -816,6 +816,8 @@ void ProtocomThread::handleFile(QByteArray &ba, DataTypes::FilesEnum addr, Queri
         break;
     }
     }
+    DataTypes::GeneralResponseStruct resp { DataTypes::GeneralResponseTypes::Ok, static_cast<quint64>(ba.size()) };
+    DataManager::addSignalToOutList(DataTypes::SignalTypes::GeneralResponse, resp);
 }
 
 void ProtocomThread::handleInt(const byte num)

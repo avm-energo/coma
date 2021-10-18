@@ -26,18 +26,20 @@ static constexpr char name[] = "confHash";
 ConfigDialog::ConfigDialog(ConfigV *config, const QList<DataTypes::RecordPair> &defaultConfig, QWidget *parent)
     : UDialog(crypto::hash, crypto::name, parent), m_defaultValues(defaultConfig), configV(config)
 {
-    setSuccessMsg("Конфигурация записана успешно");
+
     const auto &manager = DataManager::GetInstance();
     connect(&manager, &DataManager::dataRecVListReceived, this, &ConfigDialog::confReceived);
 }
 
 void ConfigDialog::ReadConf()
 {
+    setSuccessMsg(tr("Конфигурация прочитана успешно"));
     BaseInterface::iface()->reqFile(DataTypes::Config, Queries::FileFormat::DefaultS2);
 }
 
 void ConfigDialog::WriteConf()
 {
+    setSuccessMsg(tr("Конфигурация записана успешно"));
     if (!checkPassword())
         return;
     if (!PrepareConfToWrite())

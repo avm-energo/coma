@@ -281,7 +281,8 @@ bool IEC104Thread::handleFile(QByteArray &ba, DataTypes::FilesEnum addr, Queries
         break;
     }
     }
-
+    DataTypes::GeneralResponseStruct resp { DataTypes::GeneralResponseTypes::Ok, static_cast<quint64>(ba.size()) };
+    DataManager::addSignalToOutList(DataTypes::SignalTypes::GeneralResponse, resp);
     return true;
 }
 
@@ -897,6 +898,9 @@ void IEC104Thread::SendSegments()
     ASDU cmd = ASDUFilePrefix(F_SG_NA_1, 0x01, m_sectionNum);
     cmd.append('\x0');
     unsigned char diff;
+
+    DataTypes::GeneralResponseStruct resp { DataTypes::GeneralResponseTypes::Ok, static_cast<quint64>(m_file.size()) };
+
     do
     {
         quint32 filesize = m_file.size();
@@ -927,6 +931,8 @@ void IEC104Thread::SendSegments()
     m_KSS = 0;
     GI = CreateGI(0x12);
     Send(1, GI, cmd); // ASDU = QByteArray()
+
+    DataManager::addSignalToOutList(DataTypes::SignalTypes::GeneralResponse, resp);
 }
 
 void IEC104Thread::LastSection()
