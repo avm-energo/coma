@@ -1798,7 +1798,7 @@
 			<group>203</group>
 			<string>Предельное значение механического ресурса</string>
 			<min>0</min>
-			<max>10000</max>
+			<max>99999</max>
 			<decimals>0</decimals>
 		</widget>
 	</record>
@@ -1810,7 +1810,7 @@
 			<group>203</group>
 			<string>Предельное значение коммутационного ресурса</string>
 			<min>0</min>
-			<max>10000</max>
+			<max>99999</max>
 			<decimals>0</decimals>
 		</widget>
 	</record>
@@ -2590,7 +2590,7 @@
 			<group>203</group>
 			<string>Предельное значение коммутационного ресурса при номинальном токе</string>
 			<min>0</min>
-			<max>10000</max>
+			<max>99999</max>
 			<decimals>0</decimals>
 		</widget>
 	</record>
