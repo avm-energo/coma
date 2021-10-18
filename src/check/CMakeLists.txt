@@ -32,7 +32,11 @@ add_library(
   checkktfharmonicdialog.cpp
   checkktfharmonicdialog.h
   check3533dialog.h
-  check3533dialog.cpp)
+  check3533dialog.cpp
+  signaldialog.cpp
+  signaldialog.h
+  signaldialog84.h
+  signaldialog84.cpp)
 
 target_link_libraries(
   ${PROJECT_NAME}

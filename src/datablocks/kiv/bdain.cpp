@@ -21,13 +21,26 @@ void BdaIn::createWidget()
     //    QVBoxLayout *vlyout = new QVBoxLayout;
     QGridLayout *glyout = new QGridLayout;
     QGroupBox *gb = new QGroupBox("Измеренные данные");
-    for (int i = 0; i < 6; ++i)
+    for (int i = 0; i < 3; ++i)
     {
         QString IndexStr = "[" + QString::number(i) + "]";
         glyout->addWidget(WDFunc::NewLBL2(m_widget, "IUefNat_filt" + IndexStr), 0, i, 1, 1);
         glyout->addWidget(WDFunc::NewLBLT2(m_widget, "", "bdainvalue" + QString::number(i),
-                              "Истинные действующие значения сигналов в В или мА на входе"),
+                              "Истинные действующие значения напряжения в В на входе"),
             1, i, 1, 1);
+    }
+    for (int i = 3; i < 6; ++i)
+    {
+        QString IndexStr = "[" + QString::number(i) + "]";
+        glyout->addWidget(WDFunc::NewLBL2(m_widget, "IUefNat_filt" + IndexStr), 0, i, 1, 1);
+        glyout->addWidget(WDFunc::NewLBLT2(m_widget, "", "bdainvalue" + QString::number(i),
+                              "Истинные действующие значения тока в мА на входе"),
+            1, i, 1, 1);
+    }
+    for (int i = 0; i < 6; ++i)
+    {
+        QString IndexStr = "[" + QString::number(i) + "]";
+
         glyout->addWidget(WDFunc::NewLBL2(m_widget, "IUeff_filtered" + IndexStr), 2, i, 1, 1);
         glyout->addWidget(WDFunc::NewLBLT2(m_widget, "", "bdainvalue" + QString::number(i + 6),
                               "Действующие значения сигналов по 1-й гармонике"),

@@ -10,6 +10,7 @@
 #include "../check/checkkivdialog.h"
 #include "../check/checkktfdialog.h"
 #include "../check/checkktfharmonicdialog.h"
+#include "../check/signaldialog84.h"
 #include "../config/configdialog.h"
 #include "../dialogs/hiddendialog.h"
 #include "../dialogs/journalsdialog.h"
@@ -42,6 +43,7 @@ void DbgModule::createModule(Modules::Model model)
             {
 
                 addDialogToList(new TuneKIVDialog(&configV), "Регулировка");
+                addDialogToList(new SignalDialog84(), "Входные сигналы");
             }
         }
         CheckKIVDialog *cdkiv = new CheckKIVDialog;
