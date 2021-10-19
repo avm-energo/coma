@@ -1,0 +1,9 @@
+<RCC>
+    <qresource prefix="/osc">
+        <file>1021.osc</file>
+    </qresource>
+    <qresource prefix="/swj">
+        <file>356_2.swj</file>
+        <file>1337.swj</file>
+    </qresource>
+</RCC>
