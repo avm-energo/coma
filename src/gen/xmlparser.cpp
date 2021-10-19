@@ -615,7 +615,7 @@ void XmlParser::traverseNode(const QDomNode &node, GlobalSettings &settings)
                     domElement = domElement.firstChild().toElement();
                     BciNumber id = static_cast<BciNumber>(XmlParser::parseInt32(domElement));
                     domElement = domElement.nextSibling().toElement();
-                    settings.s2filesMap->insert({ id, parseType(domElement) });
+                    settings.s2filesMap->insert(id, parseType(domElement));
                     domElement = domElement.nextSibling().toElement();
                     settings.s2widgetMap->insert({ id, parseWidget(domElement) });
 
