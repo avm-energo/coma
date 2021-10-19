@@ -27,9 +27,6 @@ target_link_libraries(${PROJECT_NAME} gen module
     widgets
     dialogs
     models
-    avtuk
-    config
-    comaversion
     Qt${QT_VERSION_MAJOR}::Core
     Qt${QT_VERSION_MAJOR}::Xml
     Qt${QT_VERSION_MAJOR}::Widgets

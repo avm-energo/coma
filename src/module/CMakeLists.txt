@@ -38,12 +38,16 @@ add_library(
 
 target_link_libraries(
   ${PROJECT_NAME}
-  PRIVATE gen
-  PRIVATE Qt${QT_VERSION_MAJOR}::Core
-  PRIVATE Qt${QT_VERSION_MAJOR}::Widgets
-  PRIVATE Qt${QT_VERSION_MAJOR}::Xml
-  PRIVATE Qt${QT_VERSION_MAJOR}::Network
-  PRIVATE QXlsx)
+  PRIVATE
+  gen
+  widgets
+  config
+  comaversion
+  Qt${QT_VERSION_MAJOR}::Core
+  Qt${QT_VERSION_MAJOR}::Widgets
+  Qt${QT_VERSION_MAJOR}::Xml
+  Qt${QT_VERSION_MAJOR}::Network
+  PUBLIC QXlsx)
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE INTERFACES_LIBRARY)
 

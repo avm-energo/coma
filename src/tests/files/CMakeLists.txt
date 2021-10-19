@@ -16,6 +16,7 @@ find_package(
   COMPONENTS Core Xml Test
   REQUIRED)
 
+find_package(hidapi REQUIRED)
 
 add_executable(${PROJECT_NAME}
     testfiles.cpp
@@ -25,12 +26,10 @@ add_test(NAME ${PROJECT_NAME} COMMAND ${PROJECT_NAME})
 
 target_link_libraries(${PROJECT_NAME}
     gen
+    avtuk
     widgets
     dialogs
     models
-    avtuk
-    config
-    comaversion
     Qt${QT_VERSION_MAJOR}::Core
     Qt${QT_VERSION_MAJOR}::Xml
     Qt${QT_VERSION_MAJOR}::Widgets
@@ -38,10 +37,12 @@ target_link_libraries(${PROJECT_NAME}
 
 if(CMAKE_SYSTEM_NAME_LOWER STREQUAL "windows")
     get_filename_component(QT_BIN_DIR ${QT_QMAKE_EXECUTABLE} DIRECTORY)
+    get_filename_component(hidapi_BIN_DIR ${hidapi_LIB_DIRS}/../bin ABSOLUTE)
     set_tests_properties(
         ${PROJECT_NAME}
     PROPERTIES
         # Make sure DLL is found by adding its directory to PATH
-        ENVIRONMENT "PATH=${QT_BIN_DIR};"
+        ENVIRONMENT "PATH=${hidapi_BIN_DIR}\;${QT_BIN_DIR}\;$<TARGET_PROPERTY:QXlsx,IMPORTED_LOCATION>\;"
     )
+
 endif()
