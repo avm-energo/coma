@@ -113,19 +113,16 @@ QWidget *AbstractCheckDialog::BottomUI()
     QPushButton *pb = new QPushButton("Запустить чтение аналоговых сигналов");
     pb->setObjectName("pbmeasurements");
     connect(pb, &QAbstractButton::clicked, this, &AbstractCheckDialog::StartAnalogMeasurements);
-    if (StdFunc::IsInEmulateMode())
-        pb->setEnabled(false);
+
     lyout->addWidget(pb);
     pb = new QPushButton("Запустить чтение аналоговых сигналов в файл");
     pb->setObjectName("pbfilemeasurements");
     connect(pb, &QAbstractButton::clicked, this, &AbstractCheckDialog::StartAnalogMeasurementsToFile);
-    if (StdFunc::IsInEmulateMode())
-        pb->setEnabled(false);
+
     lyout->addWidget(pb);
     pb = new QPushButton("Остановить чтение аналоговых сигналов");
     connect(pb, &QAbstractButton::clicked, this, &AbstractCheckDialog::StopAnalogMeasurements);
-    if (StdFunc::IsInEmulateMode())
-        pb->setEnabled(false);
+
     lyout->addWidget(pb);
     w->setLayout(lyout);
     return w;

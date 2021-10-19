@@ -41,8 +41,6 @@ void OscDialog::setupUI()
     auto *eraseButton = WDFunc::NewPB(this, "", "Стереть все осциллограммы в памяти", this, &OscDialog::eraseOsc);
     hlyout->addWidget(eraseButton);
 
-    if (StdFunc::IsInEmulateMode())
-        eraseButton->setEnabled(false);
     hlyout->addWidget(eraseButton);
     lyout->addLayout(hlyout);
     lyout->addWidget(tv);

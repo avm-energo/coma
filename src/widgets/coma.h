@@ -25,19 +25,11 @@ class Coma : public QMainWindow
 
 public:
     using ModulePointer = UniquePointer<Module>;
-    enum Modes
-    {
-        COMA_GENERALMODE, // обычный режим
-        COMA_AUTON_OSCMODE, // автономный режим с отображением сохранённой осциллограммы
-        COMA_AUTON_PROTMODE, // автономный режим с отображением протокола из прибора
-        COMA_AUTON_SWJMODE, // автономный режим с отображением сохранённого журнала
-        COMA_AUTON_MODE // просто автономный режим
-    };
 
     Coma(QWidget *parent = nullptr);
     ~Coma();
-    void setMode(int mode);
-    void go(const QString &parameter = "");
+
+    void go();
     void clearWidgets();
     void setupMenubar();
 
@@ -46,6 +38,8 @@ public:
     void disconnect();
     virtual void setupConnection();
 
+    void loadOsc(QString &filename);
+    void loadSwj(QString &filename);
 public slots:
     void DisconnectAndClear();
 
@@ -62,7 +56,7 @@ private slots:
     void loadOsc();
     void loadSwj();
 
-    virtual void getAbout() = 0;
+    virtual void getAbout() {};
     void closeEvent(QCloseEvent *event) override;
 
     void update(const DataTypes::GeneralResponseStruct &rsp);
@@ -76,16 +70,7 @@ private:
 
     File::Vector fileVector;
 
-    bool TimeThrFinished;
-
     bool Reconnect;
-    int Mode; // режим запуска программы
-
-    quint8 HaveAlreadyRed = 0;
-
-    quint32 Mes;
-
-    QString SavePort;
 
     ConnectStruct ConnectSettings;
 
@@ -110,6 +95,19 @@ protected:
     virtual void PrepareDialogs();
 signals:
     void sendMessage(void *);
+};
+
+class ComaHelper
+{
+public:
+    static void initResources()
+    {
+        Q_INIT_RESOURCE(darkstyle);
+        Q_INIT_RESOURCE(lightstyle);
+        Q_INIT_RESOURCE(styles);
+        Q_INIT_RESOURCE(vectorIcons);
+    }
+    static void parserHelper(const char *appName, Coma *coma);
 };
 
 #endif // COMA_H

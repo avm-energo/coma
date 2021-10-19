@@ -33,14 +33,10 @@ void FWUploadDialog::SetupUI()
 
     QString tmps = ((DEVICETYPE == DEVICETYPE_MODULE) ? "модуля" : "прибора");
     QPushButton *pb = WDFunc::NewPB(this, "", "Записать ПО в память " + tmps, this, &FWUploadDialog::LoadFW);
-    if (StdFunc::IsInEmulateMode())
-        pb->setEnabled(false);
 
     glyout->addWidget(pb, 1, 1, 1, 1);
 
     pb = WDFunc::NewPB(this, "", "Перейти на новое ПО", this, &FWUploadDialog::RunSoft);
-    if (StdFunc::IsInEmulateMode())
-        pb->setEnabled(false);
 
     glyout->addWidget(pb, 2, 1, 1, 1);
 

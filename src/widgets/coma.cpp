@@ -84,34 +84,6 @@ void registerForDeviceNotification(QWidget *ptr)
 
 Coma::Coma(QWidget *parent) : QMainWindow(parent)
 {
-    // Load settings before anything
-
-    SplashScreen *splash = new SplashScreen(QPixmap("images/surgery.png"));
-    splash->show();
-    // http://stackoverflow.com/questions/2241808/checking-if-a-folder-exists-and-creating-folders-in-qt-c
-    QDir dir(StdFunc::GetHomeDir());
-    if (!dir.exists())
-        dir.mkpath(".");
-    StdFunc::Init();
-    qInfo("=== Log started ===\n");
-#ifdef Q_OS_LINUX
-    // linux code goes here
-#endif
-#ifdef Q_OS_WINDOWS
-    // Listen to device events
-    registerForDeviceNotification(this);
-#else
-
-#endif
-
-    Reconnect = false;
-
-    newTimers();
-
-    splash->finish(this);
-    LoadSettings();
-    splash->deleteLater();
-    setStatusBar(WDFunc::NewSB(this));
 }
 
 Coma::~Coma()
@@ -274,8 +246,8 @@ void Coma::setupMenubar()
     menubar->addSeparator();
     menu = new QMenu(menubar);
     menu->setTitle("Автономная работа");
-    menu->addAction("Загрузка осциллограммы", this, &Coma::loadOsc);
-    menu->addAction("Загрузка журнала переключений", this, &Coma::loadSwj);
+    menu->addAction("Загрузка осциллограммы", this, qOverload<>(&Coma::loadOsc));
+    menu->addAction("Загрузка журнала переключений", this, qOverload<>(&Coma::loadSwj));
     menubar->addMenu(menu);
     setMenuBar(menubar);
 }
@@ -321,10 +293,8 @@ void Coma::startWork(const ConnectStruct st)
     setupConnection();
 }
 
-void Coma::loadOsc()
+void Coma::loadOsc(QString &filename)
 {
-
-    QString filename = WDFunc::ChooseFileForOpen(this, "Oscillogram files (*.osc)");
     fileVector = oscManager.loadFromFile(filename);
     TrendViewModel *oscModel = nullptr;
     for (auto &item : fileVector)
@@ -342,11 +312,11 @@ void Coma::loadOsc()
     }
 }
 
-void Coma::loadSwj()
+void Coma::loadSwj(QString &filename)
 {
 
     SwjManager swjManager;
-    QString filename = WDFunc::ChooseFileForOpen(this, "Switch journal files (*.swj)");
+
     fileVector = oscManager.loadFromFile(filename);
     auto oscVector = swjManager.loadFromFile(filename);
     std::move(oscVector.begin(), oscVector.end(), std::back_inserter(fileVector));
@@ -468,16 +438,37 @@ bool Coma::nativeEvent(const QByteArray &eventType, void *message, long *result)
     return false;
 }
 
-void Coma::setMode(int mode)
+void Coma::go()
 {
-    Mode = mode;
-}
+    // Load settings before anything
 
-void Coma::go(const QString &parameter)
-{
-    Q_UNUSED(parameter)
-    if (Mode != COMA_GENERALMODE)
-        StdFunc::SetEmulated(true);
+    SplashScreen *splash = new SplashScreen(QPixmap("images/surgery.png"));
+    splash->show();
+    // http://stackoverflow.com/questions/2241808/checking-if-a-folder-exists-and-creating-folders-in-qt-c
+    QDir dir(StdFunc::GetHomeDir());
+    if (!dir.exists())
+        dir.mkpath(".");
+    StdFunc::Init();
+    qInfo("=== Log started ===\n");
+#ifdef Q_OS_LINUX
+    // linux code goes here
+#endif
+#ifdef Q_OS_WINDOWS
+    // Listen to device events
+    registerForDeviceNotification(this);
+#else
+
+#endif
+
+    Reconnect = false;
+
+    newTimers();
+
+    splash->finish(this);
+    LoadSettings();
+    splash->deleteLater();
+    setStatusBar(WDFunc::NewSB(this));
+
     SetupUI();
     show();
 }
@@ -494,7 +485,6 @@ void Coma::reconnect()
         disconnect();
         clearWidgets();
         MainTW->hide();
-        StdFunc::SetEmulated(false);
     }
 
     QMessageBox msgBox;
@@ -573,8 +563,6 @@ void Coma::disconnect()
     qInfo(__PRETTY_FUNCTION__);
     BdaTimer->stop();
     AlarmW->clear();
-    if (StdFunc::IsInEmulateMode())
-        return;
 
     BaseInterface::iface()->stop();
 
@@ -657,6 +645,18 @@ void Coma::setupConnection()
     connect(this, &Coma::sendMessage, BaseInterface::iface(), &BaseInterface::nativeEvent);
 }
 
+void Coma::loadOsc()
+{
+    QString filename = WDFunc::ChooseFileForOpen(this, "Oscillogram files (*.osc)");
+    loadOsc(filename);
+}
+
+void Coma::loadSwj()
+{
+    QString filename = WDFunc::ChooseFileForOpen(this, "Switch journal files (*.swj)");
+    loadSwj(filename);
+}
+
 void Coma::DisconnectAndClear()
 {
     qDebug(__PRETTY_FUNCTION__);
@@ -677,8 +677,6 @@ void Coma::DisconnectAndClear()
     //        QMessageBox::information(this, "Разрыв связи", "Связь разорвана", QMessageBox::Ok, QMessageBox::Ok);
     //    else
     //        QMessageBox::information(this, "Разрыв связи", "Не удалось установить связь");
-
-    StdFunc::SetEmulated(false);
 
     Reconnect = false;
 }
@@ -715,4 +713,36 @@ void Coma::closeEvent(QCloseEvent *event)
 {
     DisconnectAndClear();
     event->accept();
+}
+
+void ComaHelper::parserHelper(const char *appName, Coma *coma)
+{
+    QCommandLineParser parser;
+    parser.setApplicationDescription(appName);
+    parser.addHelpOption();
+    parser.addVersionOption();
+    parser.addPositionalArgument("file", "file with oscillogramm (*.osc) or with switch journal (*.swj)");
+    parser.process(QCoreApplication::arguments());
+    const QStringList files = parser.positionalArguments();
+    if (!files.isEmpty())
+    {
+        QString Parameter;
+        Parameter = files.at(0);
+        QString filestail = Parameter.right(3);
+        if (filestail == "osc")
+        {
+            coma->loadOsc(Parameter);
+        }
+        else if (filestail == "swj")
+        {
+            coma->loadSwj(Parameter);
+        }
+        // TODO
+        // else if (filestail == "vrf")
+        else
+        {
+            std::cout << "Wrong file" << std::endl;
+            std::exit(0);
+        }
+    }
 }

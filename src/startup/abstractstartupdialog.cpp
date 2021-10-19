@@ -73,8 +73,7 @@ QWidget *AbstractStartupDialog::buttonWidget()
         pb->setIconSize(QSize(50, 50));
 
         connect(pb, &QAbstractButton::clicked, this, i.second);
-        if (StdFunc::IsInEmulateMode())
-            pb->setEnabled(false);
+
         group->addButton(pb, QDialogButtonBox::ActionRole);
     }
     group->setCenterButtons(true);
