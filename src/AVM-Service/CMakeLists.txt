@@ -45,6 +45,7 @@ target_link_libraries(
   dialogs
   models
   startup
+  datablocks
   comaversion
   Qt${QT_VERSION_MAJOR}::Core
   Qt${QT_VERSION_MAJOR}::Xml
