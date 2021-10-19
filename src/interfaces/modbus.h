@@ -34,62 +34,19 @@ class ModBus final : public BaseInterface
     Q_OBJECT
 
 public:
-    //    struct InOutStruct
-    //    {
-    //        int Command;
-    //        QByteArray Ba;
-    //        int TaskNum;
-    //        Error::Msg Res;
-    //        qint64 ReadSize;
-    //        bool Checked;
-    //    };
-
-    //        typedef struct
-    //        {
-    //            float flVal;
-    //            int SigAdr;
-    //        } SignalStruct;
-
-    //        typedef struct
-    //        {
-    //            quint32 Val;
-    //            int SigAdr;
-    //        } BSISignalStruct;
-
-    //    struct Information
-    //    {
-    //        quint16 adr;
-    //        int size;
-    //    };
-
-    //    struct ComInfo
-    //    {
-    //        char Command;
-    //        quint16 Address;
-    //        quint16 Quantity;
-    //        quint8 SizeBytes;
-    //        QByteArray Data;
-    //    };
-
-    //        struct Coils
-    //        {
-    //            int countBytes;
-    //            QByteArray Bytes;
-    //        };
-
     ModBus(QObject *parent = nullptr);
     ~ModBus();
 
-    bool start(const ConnectStruct &st) override;
+    bool start(const ConnectStruct &connectStruct) override;
     void pause() override {};
     void resume() override {};
-    //    void BSIrequest();
+
     void reqStartup(quint32 sigAdr, quint32 sigCount) override;
     void reqBSI() override;
     void reqFile(quint32 filenum, FileFormat format) override;
-    //    void reqAlarms(quint32 sigAdr, quint32 sigCount);
+
     void writeFile(quint32 filenum, const QByteArray &file) override;
-    //    void writeConfigFile(S2DataTypes::S2ConfigType *) override {};
+
     void reqTime() override;
     void writeTime(quint32 time) override;
     // writeCommand writes only float signals whose addresses are the lowest and are sequentally lays in the list
@@ -98,58 +55,34 @@ public:
     void reqFloats(quint32 sigAdr, quint32 sigCount) override;
     void reqBitStrings(quint32 sigAdr, quint32 sigCount) override {};
 
-    //    int CheckIndex, CheckHarmIndex, CheckVibrIndex, CorIndex, TimeIndex;
     InterfaceSettings parseSettings(QDomElement domElement) const override;
-public slots:
-    //    Error::Msg SendAndGetResult(Queries::CommandMBS &request, ModBus::InOutStruct &outp);
-    //    void ModWriteCor(ModBus::Information info, float *); //, int*);
-    //    void ModReadCor(ModBus::Information info);
-    //    void ReadTime();
-    //    void WriteTime(uint);
-    //    void Tabs(int);
-    //    void StartPolling();
-    //    void StopPolling();
-    // void stop() override;
 
 signals:
     void clearBuffer();
-    //    void SignalsReceived(QList<ModBus::SignalStruct> Signal);
-    //    void CorSignalsReceived(QList<ModBus::SignalStruct> Signal);
-    //    void CorSignalsWritten();
-    //    void TimeSignalsReceived(QList<ModBus::BSISignalStruct> Signal);
-    //    void TimeWritten();
-    //    void BsiFromModbus(QList<ModBus::BSISignalStruct>, unsigned int);
-    //    // void ModbusState(ConnectionStates);
-    //    void ErrorRead();
-    //    void ErrorCrc();
-    // void Finished();
-    // void FinishModbusThread();
-    //    void CoilSignalsReady(ModBus::Coils);
-    //    void TimeReadError();
-    // void ReconnectSignal();
 
 private:
-    SerialPortSettings Settings;
-    //    int CycleGroup;
-    //    QTimer *PollingTimer;
-    //    bool TimePollEnabled, MainPollEnabled;
-    // bool AboutToFinish;
-    //    QByteArray SignalGroups[SIGNALGROUPSNUM];
-    //    int _taskCounter;
-    //    QQueue<InOutStruct> InQueue;
-    //    QList<InOutStruct> OutList;
-    // LogClass *Log;
-
-    //    Error::Msg SendAndGet(InOutStruct &inp, InOutStruct &outp);
-    //    bool GetResultFromOutQueue(int index, InOutStruct &outp);
-    //    Error::Msg GetSignalsFromByteArray(
-    //        QByteArray &bain, int startadr, QList<BSISignalStruct> &BSIsig, unsigned int &size);
-    //    Error::Msg GetFloatSignalsFromByteArray(QByteArray &bain, int startadr, QList<SignalStruct> &Sig, int &size);
     bool isValidRegs(const CommandsMBS::CommandStruct &cmd) const;
     bool isValidRegs(const quint32 sigAdr, const quint32 sigCount) const;
     CommandsMBS::TypeId type(const quint32 addr, const quint32 count) const;
     CommandsMBS::TypeId type(const quint32 addr, const quint32 count, const CommandsMBS::Commands cmd) const;
     void writeFloat(const DataTypes::FloatStruct &flstr);
+
+    quint8 obtainDelay(quint32 baudRate) const
+    {
+        switch (baudRate)
+        {
+        case 2400:
+            return 16;
+        case 4800:
+            return 8;
+        case 9600:
+            return 4;
+        case 19200:
+            return 3;
+        default:
+            return 2;
+        }
+    }
 
     template <typename T> QByteArray packReg(T value)
     {
@@ -165,8 +98,8 @@ private:
     }
 
 private slots:
-    //    void Polling();
-    void SendReconnectSignal();
+
+    void sendReconnectSignal();
 
 protected:
 };

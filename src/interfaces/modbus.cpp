@@ -19,37 +19,38 @@ using namespace CommandsMBS;
 
 ModBus::ModBus(QObject *parent) : BaseInterface(parent)
 {
-    Log->Init("modbus.log");
-    Log->info("=== Log started ===");
 }
 
 ModBus::~ModBus()
 {
 }
 
-bool ModBus::start(const ConnectStruct &st)
+bool ModBus::start(const ConnectStruct &connectStruct)
 {
-    Q_ASSERT(std::holds_alternative<SerialPortSettings>(st.settings));
+    Log->Init(QString(metaObject()->className()) + ".log");
+    Log->info(logStart);
+    Q_ASSERT(std::holds_alternative<SerialPortSettings>(connectStruct.settings));
     qInfo() << metaObject()->className() << "connect";
-    if (!std::holds_alternative<SerialPortSettings>(st.settings))
+    if (!std::holds_alternative<SerialPortSettings>(connectStruct.settings))
         return false;
 
-    Settings = std::get<SerialPortSettings>(st.settings);
-    SerialPort *port = new SerialPort;
+    const auto &st = std::get<SerialPortSettings>(connectStruct.settings);
+    SerialPort *port = new SerialPort(this);
     ModbusThread *parser = new ModbusThread;
-    parser->setDeviceAddress(Settings.Address);
+    parser->setDelay(obtainDelay(st.Baud));
+    parser->setDeviceAddress(st.Address);
     QThread *thr = new QThread;
     thr->setObjectName("Modbus thread");
 
-    connect(thr, &QThread::started, parser, &ModbusThread::Run);
+    connect(thr, &QThread::started, parser, &ModbusThread::run);
     connect(parser, &ModbusThread::finished, thr, &QThread::quit);
-    connect(thr, &QThread::finished, port, &SerialPort::Disconnect);
+    connect(thr, &QThread::finished, port, &SerialPort::disconnect);
     connect(thr, &QThread::finished, thr, &QObject::deleteLater);
     connect(thr, &QThread::finished, parser, &QObject::deleteLater);
-    connect(port, &SerialPort::Read, parser, &ModbusThread::ParseReply);
-    connect(parser, &ModbusThread::Write, port, &SerialPort::WriteBytes);
+    connect(port, &SerialPort::read, parser, &ModbusThread::parseReply);
+    connect(parser, &ModbusThread::write, port, &SerialPort::writeBytes);
     connect(parser, &ModbusThread::clearBuffer, port, &SerialPort::clear);
-    connect(port, &SerialPort::errorOccurred, this, &ModBus::SendReconnectSignal);
+    connect(port, &SerialPort::error, this, &ModBus::sendReconnectSignal);
     connect(this, &BaseInterface::reconnect, port, &SerialPort::reconnect);
     connect(port, &SerialPort::connected, port, [=] {
         setState(BaseInterface::Run);
@@ -57,7 +58,7 @@ bool ModBus::start(const ConnectStruct &st)
         thr->start();
         StdFunc::Wait(1000);
     });
-    if (!port->Init(Settings))
+    if (!port->init(st))
     {
         port->deleteLater();
         parser->deleteLater();
@@ -69,7 +70,7 @@ bool ModBus::start(const ConnectStruct &st)
     return true;
 }
 
-void ModBus::SendReconnectSignal()
+void ModBus::sendReconnectSignal()
 {
     switch (state())
     {
@@ -164,12 +165,6 @@ void ModBus::reqFile(quint32 filenum, FileFormat format)
     Q_UNUSED(filenum)
     Q_UNUSED(format)
 }
-
-// void ModBus::reqAlarms(quint32 sigAdr, quint32 sigCount)
-//{
-//    CommandsMBS::CommandStruct inp { CommandsMBS::Commands::MBS_READHOLDINGREGISTERS, TIMEREG, 2, {} };
-//    DataManager::addToInQueue(inp);
-//}
 
 void ModBus::writeFile(quint32 filenum, const QByteArray &file)
 {
