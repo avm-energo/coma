@@ -22,6 +22,9 @@ public slots:
     void sync();
     void syncExt();
 
+signals:
+    void fetchBsi();
+
 private:
     void FillBsi();
     void FillBsiExt();

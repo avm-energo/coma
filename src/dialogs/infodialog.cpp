@@ -6,20 +6,25 @@
 #include "../gen/error.h"
 #include "../gen/stdfunc.h"
 #include "../widgets/wd_func.h"
-#ifdef QT_DEBUG
-#include <QDebug>
-#include <QElapsedTimer>
-#endif
+
+#include <QMessageBox>
 #include <QVBoxLayout>
 
 InfoDialog::InfoDialog(QWidget *parent) : UDialog(parent)
 {
-    //  connect(BaseInterface::iface(), &BaseInterface::stateChanged, this, [&](BaseInterface::State state) {
-    //      if (state == BaseInterface::State::Run)
-    //         m_oneShotUpdateFlag = false;
-    //  });
+
     connect(&Board::GetInstance(), &Board::readyRead, this, &InfoDialog::sync);
     connect(&Board::GetInstance(), &Board::readyReadExt, this, &InfoDialog::syncExt);
+
+    connect(this, &InfoDialog::fetchBsi, BaseInterface::iface(), &BaseInterface::reqBSI);
+    if (BaseInterface::iface()->supportBSIExt())
+    {
+        connect(this, &InfoDialog::fetchBsi, BaseInterface::iface(), &BaseInterface::reqBSIExt);
+    }
+    else
+    {
+        QMessageBox::warning(this, "BsiExt", "BsiExt не поддерживается");
+    }
 }
 
 void InfoDialog::SetupUI()
@@ -93,15 +98,6 @@ void InfoDialog::uponInterfaceSetting()
     FillBsi();
 }
 
-// void InfoDialog::ClearBsi()
-//{
-//    QList<QLabel *> allLabels = this->findChildren<QLabel *>();
-//    for (QLabel *label : allLabels)
-//    {
-//        label->clear();
-//    }
-//}
-
 void InfoDialog::sync()
 {
     if (updatesEnabled())
@@ -122,7 +118,6 @@ void InfoDialog::reqUpdate()
 {
     if (updatesEnabled())
     {
-        BaseInterface::iface()->reqBSI();
-        BaseInterface::iface()->reqBSIExt();
+        emit fetchBsi();
     }
 }
