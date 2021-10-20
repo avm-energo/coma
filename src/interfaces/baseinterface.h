@@ -23,6 +23,7 @@ class BaseInterface : public QObject
 {
     Q_OBJECT
 
+    Q_PROPERTY(State state READ state WRITE setState NOTIFY stateChanged)
 protected:
     using FileFormat = Queries::FileFormat;
 
@@ -149,22 +150,28 @@ public:
     }
     virtual InterfaceSettings parseSettings(QDomElement domElement) const = 0;
 
+    bool virtual supportBSIExt()
+    {
+        return true;
+    }
+
 signals:
     void reconnect();
     void finish();
     void nativeEvent(void *const message);
     void stateChanged(BaseInterface::State m_state);
 
-private:
+protected:
     bool m_busy, m_timeout;
     QByteArray m_byteArrayResult;
     bool m_responseResult;
-    static InterfacePointer m_iface;
+
     QTimer *timeoutTimer;
+
+private:
+    static InterfacePointer m_iface;
     State m_state;
     InterfaceSettings m_settings;
-
-    Q_PROPERTY(State state READ state WRITE setState NOTIFY stateChanged)
 
     QMutex _stateMutex;
 

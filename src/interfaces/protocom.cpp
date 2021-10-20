@@ -8,6 +8,7 @@
 #include "settingstypes.h"
 #include "usbhidport.h"
 
+#include <QCoreApplication>
 #include <QDebug>
 #include <QThread>
 #ifdef Q_OS_WINDOWS
@@ -245,6 +246,43 @@ void Protocom::writeRaw(const QByteArray &ba)
 InterfaceSettings Protocom::parseSettings(QDomElement domElement) const
 {
     return BaseInterface::parseSettings<Proto::ProtocomGroup>(domElement);
+}
+
+bool Protocom::supportBSIExt()
+{
+    m_busy = true;
+    m_timeout = false;
+    bool status = false;
+    auto connectionBitString = std::shared_ptr<QMetaObject::Connection>(new QMetaObject::Connection);
+
+    *connectionBitString = connect(
+        &DataManager::GetInstance(), &DataManager::bitStringReceived, this, [&](const DataTypes::BitStringStruct bs) {
+            if (bs.sigAdr != Modules::bsiExtStartReg)
+                return;
+            QObject::disconnect(*connectionBitString);
+            m_busy = false;
+            status = true;
+        });
+
+    auto connectionError = std::shared_ptr<QMetaObject::Connection>(new QMetaObject::Connection);
+    *connectionError = connect(&DataManager::GetInstance(), &DataManager::responseReceived, this,
+        [&](const DataTypes::GeneralResponseStruct resp) {
+            QObject::disconnect(*connectionError);
+            m_busy = false;
+            if (resp.type == DataTypes::Error)
+            {
+                status = false;
+            }
+        });
+
+    timeoutTimer->start();
+    reqBSIExt();
+    while (m_busy)
+    {
+        QCoreApplication::processEvents(QEventLoop::AllEvents);
+        StdFunc::Wait(100);
+    }
+    return status;
 }
 
 void Protocom::writeCommand(Queries::Commands cmd, QVariant item)

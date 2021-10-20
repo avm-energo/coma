@@ -37,6 +37,8 @@ public:
     void writeRaw(const QByteArray &ba) override;
     InterfaceSettings parseSettings(QDomElement domElement) const override;
 
+    bool supportBSIExt() override;
+
 protected:
     ProtocomPrivate *const d_ptr;
     Protocom(ProtocomPrivate &dd, QObject *parent);
