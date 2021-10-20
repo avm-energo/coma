@@ -254,23 +254,25 @@ bool Protocom::supportBSIExt()
     m_timeout = false;
     bool status = false;
     auto connectionBitString = std::shared_ptr<QMetaObject::Connection>(new QMetaObject::Connection);
+    auto connectionError = std::shared_ptr<QMetaObject::Connection>(new QMetaObject::Connection);
 
     *connectionBitString = connect(
         &DataManager::GetInstance(), &DataManager::bitStringReceived, this, [&](const DataTypes::BitStringStruct bs) {
             if (bs.sigAdr != Modules::bsiExtStartReg)
                 return;
             QObject::disconnect(*connectionBitString);
+            QObject::disconnect(*connectionError);
             m_busy = false;
             status = true;
         });
 
-    auto connectionError = std::shared_ptr<QMetaObject::Connection>(new QMetaObject::Connection);
     *connectionError = connect(&DataManager::GetInstance(), &DataManager::responseReceived, this,
         [&](const DataTypes::GeneralResponseStruct resp) {
-            QObject::disconnect(*connectionError);
-            m_busy = false;
             if (resp.type == DataTypes::Error)
             {
+                QObject::disconnect(*connectionBitString);
+                QObject::disconnect(*connectionError);
+                m_busy = false;
                 status = false;
             }
         });
