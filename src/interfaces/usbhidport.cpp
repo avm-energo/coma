@@ -93,16 +93,30 @@ void UsbHidPort::poll()
             continue;
         }
         // Read
+        QByteArray ba;
+        // timeout from module (if avtuk accidentally couldnt response)
+        if ((bytes == 0) && (m_waitForReply) && (missingCounter == 10))
+        {
+            array = { 0x3c, 0xf0, 0x01, 0x00, 0x01 };
+            bytes = 5;
+            m_waitForReply = false;
+            missingCounter = 0;
+        }
         if (bytes > 0)
         {
-            QByteArray ba(reinterpret_cast<char *>(array.data()), bytes);
-            writeLog(ba.toHex(), Direction::FromDevice);
-            emit dataReceived(ba);
+            ba = QByteArray(reinterpret_cast<char *>(array.data()), bytes);
             m_waitForReply = false;
         }
-        // QCoreApplication::processEvents(QEventLoop::AllEvents);
+        if (!ba.isEmpty())
+        {
+            writeLog(ba.toHex(), Direction::FromDevice);
+            emit dataReceived(ba);
+        }
         if (m_waitForReply)
+        {
+            ++missingCounter;
             continue;
+        }
         // write data to port if there's something delayed in out queue
         checkQueue();
     }

@@ -78,4 +78,5 @@ private:
     QMutex _mutex;
     QList<QByteArray> m_writeQueue;
     UsbHidSettings m_deviceInfo;
+    int missingCounter = 0;
 };
