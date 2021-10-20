@@ -279,6 +279,45 @@ void BaseInterface::setState(const State &state)
     emit stateChanged(m_state);
 }
 
+bool BaseInterface::supportBSIExt()
+{
+    m_busy = true;
+    m_timeout = false;
+    bool status = false;
+    auto connectionBitString = std::shared_ptr<QMetaObject::Connection>(new QMetaObject::Connection);
+    auto connectionError = std::shared_ptr<QMetaObject::Connection>(new QMetaObject::Connection);
+
+    *connectionBitString = connect(
+        &DataManager::GetInstance(), &DataManager::bitStringReceived, this, [&](const DataTypes::BitStringStruct bs) {
+            if (bs.sigAdr != Modules::bsiExtStartReg)
+                return;
+            QObject::disconnect(*connectionBitString);
+            QObject::disconnect(*connectionError);
+            m_busy = false;
+            status = true;
+        });
+
+    *connectionError = connect(&DataManager::GetInstance(), &DataManager::responseReceived, this,
+        [&](const DataTypes::GeneralResponseStruct resp) {
+            if (resp.type == DataTypes::Error)
+            {
+                QObject::disconnect(*connectionBitString);
+                QObject::disconnect(*connectionError);
+                m_busy = false;
+                status = false;
+            }
+        });
+
+    timeoutTimer->start();
+    reqBSIExt();
+    while (m_busy)
+    {
+        QCoreApplication::processEvents(QEventLoop::AllEvents);
+        StdFunc::Wait(100);
+    }
+    return status;
+}
+
 void BaseInterface::stop()
 {
     Log->info("Stop()");

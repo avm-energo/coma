@@ -150,10 +150,7 @@ public:
     }
     virtual InterfaceSettings parseSettings(QDomElement domElement) const = 0;
 
-    bool virtual supportBSIExt()
-    {
-        return true;
-    }
+    bool virtual supportBSIExt();
 
 signals:
     void reconnect();
@@ -162,13 +159,12 @@ signals:
     void stateChanged(BaseInterface::State m_state);
 
 protected:
+private:
     bool m_busy, m_timeout;
     QByteArray m_byteArrayResult;
     bool m_responseResult;
 
     QTimer *timeoutTimer;
-
-private:
     static InterfacePointer m_iface;
     State m_state;
     InterfaceSettings m_settings;

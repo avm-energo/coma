@@ -162,6 +162,16 @@ void ModBus::reqBSI()
 
 void ModBus::reqBSIExt()
 {
+    constexpr auto regCount = sizeof(Modules::StartupInfoBlockExt0) / sizeof(quint32);
+    CommandsMBS::CommandStruct inp {
+        CommandsMBS::Commands::MBS_READINPUTREGISTER, //
+        31,                                           //
+        static_cast<quint8>(regCount * 2),            //
+        {},                                           //
+        TypeId::Uint32,                               //
+        __PRETTY_FUNCTION__                           //
+    };
+    DataManager::addToInQueue(inp);
 }
 
 void ModBus::reqFile(quint32 filenum, FileFormat format)

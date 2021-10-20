@@ -148,7 +148,11 @@ public slots:
     //    static void FileReady(S2ConfigType *s2config);
     //    static void getTime();
     //    static void com51WriteTime(uint time);
-
+    bool supportBSIExt() override
+    {
+        // no way to check
+        return true;
+    }
 signals:
     void StopAll();
     //    void Floatsignalsready(IEC104Thread::FlSignals104 *);
