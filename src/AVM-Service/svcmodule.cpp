@@ -17,6 +17,8 @@
 #include "../startup/startupkdvdialog.h"
 #include "../startup/startupkivdialog.h"
 #include "../startup/startupktfdialog.h"
+
+#include <QMainWindow>
 SvcModule::SvcModule(QObject *parent) : Module(parent)
 {
 }
@@ -121,7 +123,23 @@ void SvcModule::createModule(Modules::Model model)
         break;
     }
     default:
-        assert(false);
+        // wrong module
+        {
+
+            QString message = QString("Неизвестный модуль\n"
+                                      "Прочитан некорретный BSI: typeB:%1, typeM:%2\n"
+                                      "%3 не поддерживает такой модуль")
+                                  .arg(board.baseSerialInfo().MTypeB, 0, 16)
+                                  .arg(board.baseSerialInfo().MTypeM, 0, 16)
+                                  .arg(QCoreApplication::applicationName());
+            QWidget *parent = qobject_cast<QWidget *>(WDFunc::getMainWindow());
+            Q_CHECK_PTR(parent);
+            if (parent)
+                QMessageBox::warning(parent, "Некорретный BSI", message);
+            return;
+        }
+
+        //  assert(false);
     }
     TimeDialog *tdlg = new TimeDialog;
     addDialogToList(tdlg, "Время", "time");

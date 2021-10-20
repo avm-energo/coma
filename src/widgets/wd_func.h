@@ -311,7 +311,6 @@ public:
     static QPixmap NewLedIndicator(QColor color, float height);
     static QPixmap NewSVG(QString &str, QSize size);
     static QMainWindow *getMainWindow();
-    static QMainWindow *getComaWindow();
 
     static bool floatIsWithinLimits(
         QWidget *w, const QString &varname, double var, double base, double tolerance, bool showMessage = true);
