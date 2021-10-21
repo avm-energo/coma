@@ -2,6 +2,7 @@
 #include "../gen/pch.h"
 
 #include <QMap>
+
 /**
  *  Перечисление для хранения списка приборов
  */
@@ -104,10 +105,6 @@ enum JournalType
     Meas,
     System
 };
-
-// Список регистров BSI
-const QList<quint16> bsiReg { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };
-constexpr quint16 bsiExtStartReg = 16;
 
 struct StartupInfoBlock
 {

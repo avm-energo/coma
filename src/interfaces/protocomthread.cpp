@@ -1,10 +1,10 @@
 #include "protocomthread.h"
 
-//#include "../gen/board.h"
 #include "../gen/datamanager.h"
 #include "../gen/files.h"
 #include "../gen/helper.h"
 #include "../gen/logclass.h"
+#include "../gen/registers.h"
 #include "../gen/s2.h"
 #include "../gen/stdfunc.h"
 #include "baseinterface.h"
@@ -169,12 +169,12 @@ void ProtocomThread::handle(const Proto::Commands cmd)
 
     case Commands::ReadBlkStartInfoExt:
 
-        handleBitStringArray(m_buffer.second, Modules::bsiExtStartReg);
+        handleBitStringArray(m_buffer.second, Regs::bsiExtStartReg);
         break;
 
     case Commands::ReadBlkStartInfo:
 
-        handleBitStringArray(m_buffer.second, Modules::bsiReg);
+        handleBitStringArray(m_buffer.second, Regs::bsiReg);
         break;
 
     case Commands::ReadBlkAC:
@@ -742,7 +742,8 @@ void ProtocomThread::handleUnixTime(const QByteArray &ba, [[maybe_unused]] quint
     DataManager::addSignalToOutList(DataTypes::SignalTypes::Timespec, resp);
 }
 #endif
-void ProtocomThread::handleBitStringArray(const QByteArray &ba, QList<quint16> arr_addr)
+template <std::size_t N>
+void ProtocomThread::handleBitStringArray(const QByteArray &ba, std::array<quint16, N> arr_addr)
 {
     Q_ASSERT(ba.size() / 4 == arr_addr.size());
     for (int i = 0; i != arr_addr.size(); i++)

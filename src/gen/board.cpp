@@ -145,7 +145,7 @@ void Board::update(const DataTypes::BitStringStruct &bs)
     // Only bsi block
     if (bs.sigAdr < 1 || bs.sigAdr > 15)
         return updateExt(bs);
-    quint32 &item = *(reinterpret_cast<quint32 *>(&m_startupInfoBlock) + (bs.sigAdr - BSIREG));
+    quint32 &item = *(reinterpret_cast<quint32 *>(&m_startupInfoBlock) + (bs.sigAdr - Regs::bsiStartReg));
     // std::copy_n(&bs.sigVal, sizeof(quint32), &item);
     item = bs.sigVal;
     m_updateCounter++;
@@ -200,11 +200,11 @@ bool Board::noRegPars() const
 void Board::updateExt(const DataTypes::BitStringStruct &bs)
 {
     constexpr auto minCount = sizeof(Modules::StartupInfoBlockExt0) / sizeof(quint32);
-    constexpr auto lastExt0Reg = Modules::bsiExtStartReg + minCount;
+    constexpr auto lastExt0Reg = Regs::bsiExtStartReg + minCount;
     // BsiExt0
-    if ((bs.sigAdr >= Modules::bsiExtStartReg) && (bs.sigAdr <= lastExt0Reg))
+    if ((bs.sigAdr >= Regs::bsiExtStartReg) && (bs.sigAdr <= lastExt0Reg))
     {
-        quint32 &item = *(reinterpret_cast<quint32 *>(&m_startupInfoBlockExt) + (bs.sigAdr - Modules::bsiExtStartReg));
+        quint32 &item = *(reinterpret_cast<quint32 *>(&m_startupInfoBlockExt) + (bs.sigAdr - Regs::bsiExtStartReg));
         item = bs.sigVal;
         ++m_updateCounterExt;
     }

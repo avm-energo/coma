@@ -71,7 +71,7 @@ private:
 #ifdef __linux
     void handleUnixTime(const QByteArray &ba, quint16 sigAddr);
 #endif
-    void handleBitStringArray(const QByteArray &ba, QList<quint16> arr_addr);
+    template <std::size_t N> void handleBitStringArray(const QByteArray &ba, std::array<quint16, N> arr_addr);
     void handleBitStringArray(const QByteArray &ba, quint16 start_addr);
     void handleFloat(const QByteArray &ba, quint32 sigAddr);
     void handleFloatArray(const QByteArray &ba, quint32 sigAddr, quint32 sigCount);

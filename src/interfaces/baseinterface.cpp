@@ -1,6 +1,7 @@
 #include "baseinterface.h"
 
 #include "../gen/datamanager.h"
+#include "../gen/registers.h"
 #include "../gen/s2.h"
 #include "../gen/stdfunc.h"
 
@@ -289,7 +290,7 @@ bool BaseInterface::supportBSIExt()
 
     *connectionBitString = connect(
         &DataManager::GetInstance(), &DataManager::bitStringReceived, this, [&](const DataTypes::BitStringStruct bs) {
-            if (bs.sigAdr != Modules::bsiExtStartReg)
+            if (bs.sigAdr != Regs::bsiExtStartReg)
                 return;
             QObject::disconnect(*connectionBitString);
             QObject::disconnect(*connectionError);
