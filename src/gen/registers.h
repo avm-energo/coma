@@ -6,7 +6,7 @@
 namespace Regs
 {
 
-constexpr uint16_t bsiExtStartReg = 31;
+constexpr uint16_t bsiExtStartReg = 40;
 constexpr uint16_t timeReg = 4600;
 constexpr uint16_t timeCountRegs = 1;
 constexpr uint16_t setInitReg = 900;

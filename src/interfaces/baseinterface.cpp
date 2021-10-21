@@ -285,26 +285,30 @@ bool BaseInterface::supportBSIExt()
     m_busy = true;
     m_timeout = false;
     bool status = false;
-    auto connectionBitString = std::shared_ptr<QMetaObject::Connection>(new QMetaObject::Connection);
-    auto connectionError = std::shared_ptr<QMetaObject::Connection>(new QMetaObject::Connection);
+    auto connBitString = std::shared_ptr<QMetaObject::Connection>(new QMetaObject::Connection);
+    auto connError = std::shared_ptr<QMetaObject::Connection>(new QMetaObject::Connection);
 
-    *connectionBitString = connect(
-        &DataManager::GetInstance(), &DataManager::bitStringReceived, this, [&](const DataTypes::BitStringStruct bs) {
+    *connBitString = connect(&DataManager::GetInstance(), &DataManager::bitStringReceived, this,
+        [=, &busy = m_busy, &status](const DataTypes::BitStringStruct bs) {
             if (bs.sigAdr != Regs::bsiExtStartReg)
                 return;
-            QObject::disconnect(*connectionBitString);
-            QObject::disconnect(*connectionError);
-            m_busy = false;
+            if (connBitString)
+                QObject::disconnect(*connBitString);
+            if (connError)
+                QObject::disconnect(*connError);
+            busy = false;
             status = true;
         });
 
-    *connectionError = connect(&DataManager::GetInstance(), &DataManager::responseReceived, this,
-        [&](const DataTypes::GeneralResponseStruct resp) {
+    *connError = connect(&DataManager::GetInstance(), &DataManager::responseReceived, this,
+        [=, &busy = m_busy, &status](const DataTypes::GeneralResponseStruct resp) {
             if (resp.type == DataTypes::Error)
             {
-                QObject::disconnect(*connectionBitString);
-                QObject::disconnect(*connectionError);
-                m_busy = false;
+                if (connBitString)
+                    QObject::disconnect(*connBitString);
+                if (connError)
+                    QObject::disconnect(*connError);
+                busy = false;
                 status = false;
             }
         });
