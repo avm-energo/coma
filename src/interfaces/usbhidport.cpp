@@ -10,6 +10,7 @@
 #include <QElapsedTimer>
 #include <QMetaEnum>
 #include <QRegularExpression>
+#include <QSettings>
 #include <QTimer>
 #include <array>
 #ifdef Q_OS_WINDOWS
@@ -32,6 +33,8 @@ UsbHidPort::UsbHidPort(const UsbHidSettings &dev, LogClass *logh, QObject *paren
     m_hidDevice = nullptr;
     m_shouldBeStopped = false;
     connect(this, &UsbHidPort::clearQueries, &UsbHidPort::clear);
+    QSettings sets;
+    missingCounterMax = sets.value(settings::hidTimeout, "50").toInt();
 }
 
 UsbHidPort::~UsbHidPort()
@@ -84,7 +87,7 @@ void UsbHidPort::poll()
         if (!m_hidDevice)
             continue;
         std::array<byte, HID::MaxSegmenthLength + 1> array; // +1 to ID
-        bytes = hid_read_timeout(m_hidDevice, array.data(), HID::MaxSegmenthLength + 1, 30);
+        bytes = hid_read_timeout(m_hidDevice, array.data(), HID::MaxSegmenthLength + 1, 100);
         // Write
         if (bytes < 0)
         {
@@ -95,7 +98,7 @@ void UsbHidPort::poll()
         // Read
         QByteArray ba;
         // timeout from module (if avtuk accidentally couldnt response)
-        if ((bytes == 0) && (m_waitForReply) && (missingCounter == 10))
+        if ((bytes == 0) && (m_waitForReply) && (missingCounter == missingCounterMax))
         {
             array = { 0x3c, 0xf0, 0x01, 0x00, 0x01 };
             bytes = 5;
@@ -106,9 +109,11 @@ void UsbHidPort::poll()
         {
             ba = QByteArray(reinterpret_cast<char *>(array.data()), bytes);
             m_waitForReply = false;
+            missingCounter = 0;
         }
         if (!ba.isEmpty())
         {
+            missingCounter = 0;
             writeLog(ba.toHex(), Direction::FromDevice);
             emit dataReceived(ba);
         }
@@ -118,7 +123,10 @@ void UsbHidPort::poll()
             continue;
         }
         // write data to port if there's something delayed in out queue
-        checkQueue();
+        if (checkQueue())
+        {
+            missingCounter = 0;
+        }
     }
     finish();
 }
@@ -358,18 +366,20 @@ bool UsbHidPort::writeData(QByteArray &ba)
         qCritical() << Error::Msg::WriteError;
         return false;
     }
+    missingCounter = 0;
     return true;
 }
 
-void UsbHidPort::checkQueue()
+bool UsbHidPort::checkQueue()
 {
     QMutexLocker locker(&_mutex);
     if (m_writeQueue.isEmpty())
-        return;
+        return false;
     QByteArray ba = m_writeQueue.takeFirst();
     locker.unlock();
     if (writeData(ba))
-        m_waitForReply = true;
+        return m_waitForReply = true;
     else
         emit clearQueries();
+    return false;
 }

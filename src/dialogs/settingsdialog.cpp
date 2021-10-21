@@ -29,7 +29,10 @@ void SettingsDialog::SetupUI()
     connect(pb, &QCheckBox::clicked, this, &SettingsDialog::disableAlarmUpdate);
     vlyout->addWidget(pb);
     vlyout->addWidget(WDFunc::NewLBLAndLE(this, "Степень усреднения для регулировки", settings::tuneCountWidget, true));
-
+    vlyout->addWidget(WDFunc::NewLBLAndLE(this,
+        "Таймаут для HID-порта, мс * 100\n"
+        "Необходимо переподкючение для обновления",
+        settings::hidTimeout, true));
     auto themeEnum = QMetaEnum::fromType<Name>;
     QStringList values;
     for (int i = 0; i < themeEnum().keyCount(); i++)
@@ -83,6 +86,8 @@ void SettingsDialog::Fill()
     WDFunc::SetChBData(this, settings::logWidget, writeUSBLog);
     int N = sets->value(settings::tuneCountKey, "20").toInt();
     WDFunc::SetLEData(this, settings::tuneCountWidget, QString::number(N));
+    int timeout = sets->value(settings::hidTimeout, "50").toInt();
+    WDFunc::SetLEData(this, settings::hidTimeout, QString::number(timeout));
     QString timezone = QTimeZone::systemTimeZone().displayName(QTimeZone::StandardTime, QTimeZone::OffsetName);
     timezone = sets->value(settings::timezoneKey, timezone).toString();
     WDFunc::SetCBData(this, settings::timezoneWidget, timezone);
@@ -95,13 +100,23 @@ void SettingsDialog::AcceptSettings()
 
     WDFunc::ChBData(this, settings::logWidget, tmpb);
     sets->setValue(settings::logKey, (tmpb) ? "1" : "0");
-    int N = WDFunc::LEData(this, settings::tuneCountWidget).toInt();
-    if ((N < 0) || (N > 100))
     {
-        N = 20;
-        qWarning() << "Неверное число степени усреднения, установлено по умолчанию 20";
+        int N = WDFunc::LEData(this, settings::tuneCountWidget).toInt();
+        if ((N < 0) || (N > 100))
+        {
+            N = 20;
+            qWarning() << "Неверное число степени усреднения, установлено по умолчанию 20";
+        }
+        sets->setValue(settings::tuneCountKey, N);
     }
-    sets->setValue(settings::tuneCountKey, N);
+    {
+        int N = WDFunc::LEData(this, settings::hidTimeout).toInt();
+        if (N > 100)
+        {
+            qWarning() << "Слишком большой таймаут";
+        }
+        sets->setValue(settings::hidTimeout, N);
+    }
     QString timezone = WDFunc::CBData(this, settings::timezoneWidget);
     if (!timezone.isEmpty())
         sets->setValue(settings::timezoneKey, timezone);

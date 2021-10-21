@@ -63,7 +63,7 @@ private:
 
     bool writeData(QByteArray &ba);
 
-    void checkQueue();
+    bool checkQueue();
     void finish();
     void clear();
     void deviceConnected(const UsbHidSettings &st);
@@ -79,4 +79,5 @@ private:
     QList<QByteArray> m_writeQueue;
     UsbHidSettings m_deviceInfo;
     int missingCounter = 0;
+    int missingCounterMax;
 };
