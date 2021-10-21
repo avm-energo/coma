@@ -39,6 +39,22 @@ StartupKIVDialog::~StartupKIVDialog()
     delete CorBlock;
 }
 
+void StartupKIVDialog::SetupCor()
+{
+    auto spinBoxes = findChildren<QDoubleSpinBox *>();
+    for (const auto spinBox : spinBoxes)
+    {
+        if (spinBox->value())
+        {
+            QString message(tr("Сбросьте начальные значения и подождите 30 секунд\n"
+                               "После чего повторите операцию задания начальных значений"));
+            QMessageBox::warning(this, tr("Начальные значения"), message);
+            return;
+        }
+    }
+    AbstractStartupDialog::SetupCor();
+}
+
 void StartupKIVDialog::SetupUI()
 {
     QVBoxLayout *lyout = new QVBoxLayout;
