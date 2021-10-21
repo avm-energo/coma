@@ -24,6 +24,7 @@ public:
     static delegate::Item parseItem(QDomElement domElement, ctti::unnamed_type_id_t parentType);
     static void traverseNode(const QDomNode &node, ModuleSettings *const settings, GlobalSettings &gsettings);
     static void traverseNode(const QDomNode &node, GlobalSettings &settings);
+    static void traverseNodeS2(const QDomNode &node, QList<DataTypes::RecordPair> &settings, widgetMap *widgets);
 
 private:
     static quint32 parseInt32(QDomElement domElement);

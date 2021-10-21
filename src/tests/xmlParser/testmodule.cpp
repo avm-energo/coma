@@ -17,7 +17,7 @@ void TestModule::checkA284()
     QVERIFY(module.loadSettings(str, bsi));
     auto settings = module.settings();
     QCOMPARE(settings->alarms.size(), 2);
-    QCOMPARE(settings->configSettings.size(), 48);
+    QCOMPARE(settings->configSettings.general.size(), 48);
     QCOMPARE(settings->highlightCrit.size(), 7);
     QCOMPARE(settings->highlightWarn.size(), 30);
     QCOMPARE(settings->journals.size(), 2);
@@ -34,7 +34,7 @@ void TestModule::checkA284USB()
     auto settings = module.settings();
     QVERIFY(settings->ifaceSettings.settings.isValid());
     QCOMPARE(settings->alarms.size(), 2);
-    QCOMPARE(settings->configSettings.size(), 48);
+    QCOMPARE(settings->configSettings.general.size(), 48);
     QCOMPARE(settings->highlightCrit.size(), 7);
     QCOMPARE(settings->highlightWarn.size(), 30);
     QCOMPARE(settings->journals.size(), 2);
@@ -54,7 +54,7 @@ void TestModule::checkA284Eth()
     auto settings = module.settings();
     QVERIFY(settings->ifaceSettings.settings.isValid());
     QCOMPARE(settings->alarms.size(), 2);
-    QCOMPARE(settings->configSettings.size(), 48);
+    QCOMPARE(settings->configSettings.general.size(), 48);
     QCOMPARE(settings->highlightCrit.size(), 7);
     QCOMPARE(settings->highlightWarn.size(), 30);
     QCOMPARE(settings->journals.size(), 2);
@@ -70,7 +70,7 @@ void TestModule::checkA284Modbus()
     auto settings = module.settings();
     QVERIFY(settings->ifaceSettings.settings.isValid());
     QCOMPARE(settings->alarms.size(), 2);
-    QCOMPARE(settings->configSettings.size(), 48);
+    QCOMPARE(settings->configSettings.general.size(), 48);
     QCOMPARE(settings->highlightCrit.size(), 7);
     QCOMPARE(settings->highlightWarn.size(), 30);
     QCOMPARE(settings->journals.size(), 2);
@@ -91,7 +91,7 @@ void TestModule::check8084()
     QVERIFY(module.loadSettings(str, bsi));
     auto settings = module.settings();
     QCOMPARE(settings->alarms.size(), 2);
-    QCOMPARE(settings->configSettings.size(), 39);
+    QCOMPARE(settings->configSettings.general.size(), 39);
     QCOMPARE(settings->highlightCrit.size(), 0);
     QCOMPARE(settings->highlightWarn.size(), 0);
     QCOMPARE(settings->journals.size(), 2);
@@ -107,7 +107,7 @@ void TestModule::check8084USB()
     QVERIFY(module.loadSettings(str, bsi, Board::InterfaceType::USB));
     auto settings = module.settings();
     QCOMPARE(settings->alarms.size(), 2);
-    QCOMPARE(settings->configSettings.size(), 39);
+    QCOMPARE(settings->configSettings.general.size(), 39);
     QCOMPARE(settings->highlightCrit.size(), 0);
     QCOMPARE(settings->highlightWarn.size(), 0);
     QCOMPARE(settings->journals.size(), 2);

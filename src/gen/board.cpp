@@ -202,11 +202,39 @@ const Modules::StartupInfoBlock &Board::baseSerialInfo() const
     return m_startupInfoBlock;
 }
 
-// QList<quint16> Board::getBaseBoardsList() const
-//{
-//    QList<quint16> list = Modules::BaseBoards.keys();
-//    return list;
-//}
+bool Board::isUSIO(Modules::BaseBoard typeB, Modules::MezzanineBoard typeM)
+{
+    using Modules::BaseBoard;
+    using Modules::MezzanineBoard;
+    bool status = false;
+    switch (typeB)
+    {
+    case Modules::MTB_21:
+    case Modules::MTB_22:
+    case Modules::MTB_31:
+    case Modules::MTB_33:
+    case Modules::MTB_34:
+    case Modules::MTB_35:
+        status = true;
+        break;
+    default:
+        status = false;
+    }
+    switch (typeM)
+    {
+    case Modules::MTM_21:
+    case Modules::MTM_22:
+    case Modules::MTM_31:
+    case Modules::MTM_33:
+    case Modules::MTM_34:
+    case Modules::MTM_35:
+        status &= true;
+        break;
+    default:
+        status = false;
+    }
+    return status;
+}
 
 Board::Types Board::boardType() const
 {

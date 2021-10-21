@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s2files>
+    <record>
+        <id>235</id>
+        <defaultValue>0</defaultValue>
+        <widget>
+            <type>CheckBoxGroup</type>
+            <count>30</count>					
+        </widget>
+    </record>
+    <record>
+        <id>241</id>
+        <defaultValue>0</defaultValue>
+    </record>
+    <record>
+        <id>242</id>
+        <defaultValue>2</defaultValue>
+    </record>
+</s2files>

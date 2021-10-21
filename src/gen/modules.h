@@ -47,6 +47,7 @@ enum MezzanineBoard : quint16
     MTM_22 = 0x22,
     MTM_31 = 0x31,
     MTM_33 = 0x33,
+    MTM_34 = 0x34,
     MTM_35 = 0x35,
     MTM_81 = 0x81,
     MTM_82 = 0x82,
