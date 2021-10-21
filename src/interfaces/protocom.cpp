@@ -27,6 +27,11 @@ Protocom::Protocom(QObject *parent) : BaseInterface(parent), d_ptr(new ProtocomP
     qRegisterMetaType<UsbHidSettings>();
 }
 
+Protocom::~Protocom()
+{
+    delete d_ptr;
+}
+
 bool Protocom::start(const ConnectStruct &st)
 {
     // Q_ASSERT(Board::GetInstance().interfaceType() == Board::InterfaceType::USB);

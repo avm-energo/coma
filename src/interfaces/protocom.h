@@ -11,7 +11,7 @@ class Protocom final : public BaseInterface
 
 public:
     explicit Protocom(QObject *parent = nullptr);
-
+    ~Protocom();
     bool start(const ConnectStruct &st) override;
     bool start(const UsbHidSettings &usbhid);
     // void pause() override {};

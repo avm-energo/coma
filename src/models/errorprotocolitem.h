@@ -4,7 +4,7 @@
 #include "etablerow.h"
 
 #include <QObject>
-class ErrorProtocolItem : public AbstractTableRow<std::vector<ETableItemData *>>
+class ErrorProtocolItem : public AbstractTableRow<std::vector<ETableItemData>>
 {
     Q_OBJECT
 public:
