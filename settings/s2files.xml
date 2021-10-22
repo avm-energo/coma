@@ -298,138 +298,430 @@
 	<record>
 		<id>101</id>
 		<type>BYTE[8]</type>
+		<widget>
+			<type>DoubleSpinBoxGroup</type>
+			<group>100</group>
+			<string>Тип входа</string>
+			<count>8</count>
+			<min>0</min>
+			<max>254</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>102</id>
 		<type>FLOAT[8]</type>
+		<widget>
+			<type>DoubleSpinBoxGroup</type>
+			<group>100</group>
+			<string>Мин. значение диапазона изменения сигнала</string>
+			<count>8</count>
+			<min>0</min>
+			<max>65534</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>103</id>
 		<type>FLOAT[8]</type>
+		<widget>
+			<type>DoubleSpinBoxGroup</type>
+			<group>100</group>
+			<string>Макс. значение диапазона изменения сигнала</string>
+			<count>8</count>
+			<min>0</min>
+			<max>65534</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>104</id>
 		<type>FLOAT[8]</type>
+		<widget>
+			<type>DoubleSpinBoxGroup</type>
+			<group>100</group>
+			<string>Мин. значение сигнала в инженерных единицах</string>
+			<count>8</count>
+			<min>0</min>
+			<max>65534</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>105</id>
 		<type>FLOAT[8]</type>
+		<widget>
+			<type>DoubleSpinBoxGroup</type>
+			<group>100</group>
+			<string>Макс. значение сигнала в инженерных единицах</string>
+			<count>8</count>
+			<min>0</min>
+			<max>65534</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>106</id>
 		<type>FLOAT[8]</type>
+		<widget>
+			<type>DoubleSpinBoxGroup</type>
+			<group>100</group>
+			<string>Значение аварийной уставки по мин. значению</string>
+			<count>8</count>
+			<min>0</min>
+			<max>65534</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>107</id>
 		<type>FLOAT[8]</type>
+		<widget>
+			<type>DoubleSpinBoxGroup</type>
+			<group>100</group>
+			<string>Значение предупредительной уставки по макс. значению</string>
+			<count>8</count>
+			<min>0</min>
+			<max>65534</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>108</id>
 		<type>FLOAT[8]</type>
+		<widget>
+			<type>DoubleSpinBoxGroup</type>
+			<group>100</group>
+			<string>Значение предупредительной уставки по макс. значению</string>
+			<count>8</count>
+			<min>0</min>
+			<max>65534</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>109</id>
 		<type>FLOAT[8]</type>
+		<widget>
+			<type>DoubleSpinBoxGroup</type>
+			<group>100</group>
+			<string>Значение аварийной уставки по макс. значению</string>
+			<count>8</count>
+			<min>0</min>
+			<max>65534</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>111</id>
 		<type>WORD</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>300</group>
+			<string>Задержка в мс начала фиксации</string>
+			<min>0</min>
+			<max>254</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>112</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>300</group>
+			<string>Гистерезис для уставок</string>
+			<min>0</min>
+			<max>65534</max>
+			<decimals>2</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>113</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>300</group>
+			<string>Степень фильтрации (0…255)</string>
+			<toolTip>Степень фильтрации (0…255), 0 – фильтрация отсутствует</toolTip>
+			<min>0</min>
+			<max>255</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>114</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>300</group>
+			<string>Пороговое значение, при превышении которого между замерами, фильтр не работает</string>
+			<min>0</min>
+			<max>65534</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>115</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>300</group>
+			<string>Пороговое значение, при превышении которого между замерами, фильтр не работает</string>
+			<min>0</min>
+			<max>65534</max>
+			<decimals>2</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>116</id>
 		<type>DWORD</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>300</group>
+			<string>Признаки запуска осциллограмм по команде 104, по канально</string>
+			<min>0</min>
+			<max>65534</max>
+			<decimals>2</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>117</id>
 		<type>DWORD</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>300</group>
+			<string>Признаки запуска осциллограмм по I2C, по канально</string>
+			<min>0</min>
+			<max>65534</max>
+			<decimals>2</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>118</id>
 		<type>DWORD</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>300</group>
+			<string>Признаки запуска осциллограмм по заданному алгоритму</string>
+			<min>0</min>
+			<max>65534</max>
+			<decimals>2</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>121</id>
 		<type>BYTE[8]</type>
+		<widget>
+			<type>DoubleSpinBoxGroup</type>
+			<group>100</group>
+			<string>Тип входа</string>
+			<count>8</count>
+			<min>0</min>
+			<max>254</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>122</id>
 		<type>FLOAT[8]</type>
+		<widget>
+			<type>DoubleSpinBoxGroup</type>
+			<group>100</group>
+			<string>Мин. значение диапазона изменения сигнала</string>
+			<count>8</count>
+			<min>0</min>
+			<max>65534</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>123</id>
 		<type>FLOAT[8]</type>
+		<widget>
+			<type>DoubleSpinBoxGroup</type>
+			<group>100</group>
+			<string>Макс. значение диапазона изменения сигнала</string>
+			<count>8</count>
+			<min>0</min>
+			<max>65534</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>124</id>
 		<type>FLOAT[8]</type>
+		<widget>
+			<type>DoubleSpinBoxGroup</type>
+			<group>100</group>
+			<string>Мин. значение сигнала в инженерных единицах</string>
+			<count>8</count>
+			<min>0</min>
+			<max>65534</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>125</id>
 		<type>FLOAT[8]</type>
+		<widget>
+			<type>DoubleSpinBoxGroup</type>
+			<group>100</group>
+			<string>Макс. значение сигнала в инженерных единицах</string>
+			<count>8</count>
+			<min>0</min>
+			<max>65534</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>126</id>
 		<type>FLOAT[8]</type>
+		<widget>
+			<type>DoubleSpinBoxGroup</type>
+			<group>100</group>
+			<string>Значение аварийной уставки по мин. значению</string>
+			<count>8</count>
+			<min>0</min>
+			<max>65534</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>127</id>
 		<type>FLOAT[8]</type>
+		<widget>
+			<type>DoubleSpinBoxGroup</type>
+			<group>100</group>
+			<string>Значение предупредительной уставки по макс. значению</string>
+			<count>8</count>
+			<min>0</min>
+			<max>65534</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>128</id>
 		<type>FLOAT[8]</type>
+		<widget>
+			<type>DoubleSpinBoxGroup</type>
+			<group>100</group>
+			<string>Значение предупредительной уставки по макс. значению</string>
+			<count>8</count>
+			<min>0</min>
+			<max>65534</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>129</id>
 		<type>FLOAT[8]</type>
+		<widget>
+			<type>DoubleSpinBoxGroup</type>
+			<group>100</group>
+			<string>Значение аварийной уставки по макс. значению</string>
+			<count>8</count>
+			<min>0</min>
+			<max>65534</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>131</id>
 		<type>WORD</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>300</group>
+			<string>Задержка в мс начала фиксации</string>
+			<min>0</min>
+			<max>254</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>132</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>300</group>
+			<string>Гистерезис для уставок</string>
+			<min>0</min>
+			<max>65534</max>
+			<decimals>2</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>133</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>300</group>
+			<string>Степень фильтрации (0…255)</string>
+			<toolTip>Степень фильтрации (0…255), 0 – фильтрация отсутствует</toolTip>
+			<min>0</min>
+			<max>255</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>134</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>300</group>
+			<string>Пороговое значение, при превышении которого между замерами, фильтр не работает</string>
+			<min>0</min>
+			<max>65534</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>135</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>300</group>
+			<string>Пороговое значение, при превышении которого между замерами, фильтр не работает</string>
+			<min>0</min>
+			<max>65534</max>
+			<decimals>2</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>136</id>
 		<type>DWORD</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>300</group>
+			<string>Признаки запуска осциллограмм по команде 104, по канально</string>
+			<min>0</min>
+			<max>65534</max>
+			<decimals>2</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>137</id>
 		<type>DWORD</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>300</group>
+			<string>Признаки запуска осциллограмм по I2C, по канально</string>
+			<min>0</min>
+			<max>65534</max>
+			<decimals>2</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>138</id>
 		<type>DWORD</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>300</group>
+			<string>Признаки запуска осциллограмм по заданному алгоритму</string>
+			<min>0</min>
+			<max>65534</max>
+			<decimals>2</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>201</id>

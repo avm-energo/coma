@@ -17,5 +17,7 @@
         <file>config-3100.xml</file>
         <file>config-0022.xml</file>
         <file>config-2200.xml</file>
+        <file>config-0021.xml</file>
+        <file>config-2100.xml</file>
     </qresource>
 </RCC>
