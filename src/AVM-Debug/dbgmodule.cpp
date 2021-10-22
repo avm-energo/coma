@@ -140,20 +140,34 @@ void DbgModule::create(Modules::BaseBoard typeB, Modules::MezzanineBoard typeM)
 void DbgModule::createUSIO(Modules::BaseBoard typeB, Modules::MezzanineBoard typeM)
 {
     using namespace Modules;
+    QString message("Here is AVTUK-%1%2");
+    qDebug() << message.arg(typeB, 0, 16).arg(typeM, 0, 16);
+    if (!settings()->configSettings.general.empty())
+    {
+        addDialogToList(new ConfigDialog(&configV, settings()->configSettings.general),
+            "Конфигурирование"
+            "\nобщая",
+            "confGeneral");
+    }
+    if (!settings()->configSettings.base.empty())
+    {
+        addDialogToList(new ConfigDialog(&configV, settings()->configSettings.base, false),
+            "Конфигурирование"
+            "\nбазовая",
+            "confBase");
+    }
+    if (!settings()->configSettings.mezz.empty())
+    {
+        addDialogToList(new ConfigDialog(&configV, settings()->configSettings.mezz, false),
+            "Конфигурирование"
+            "\nмезонинная",
+            "confMezz");
+    }
     if ((typeB == BaseBoard::MTB_35) && (typeM == MezzanineBoard::MTM_33))
     {
-        qDebug("Here is AVTUK-3533");
-        addDialogToList(new ConfigDialog(&configV, settings()->configSettings.general), "Конфигурирование", "conf1");
+
         Check3533Dialog *check = new Check3533Dialog;
         addDialogToList(check, "Проверка");
-        // addDialogToList(new OscDialog, "Осциллограммы");
-    }
-    if ((typeB == BaseBoard::MTB_35) && (typeM == MezzanineBoard::MTM_31))
-    {
-        qDebug("Here is AVTUK-3533");
-        addDialogToList(new ConfigDialog(&configV, settings()->configSettings.general), "Конфигурирование", "conf1");
-        //   Check3533Dialog *check = new Check3533Dialog;
-        //   addDialogToList(check, "Проверка");
         // addDialogToList(new OscDialog, "Осциллограммы");
     }
     if (typeB == BaseBoard::MTB_35)
