@@ -35,16 +35,12 @@ void DbgModule::createModule(Modules::Model model)
     case Model::KIV:
     {
         auto jour = UniquePointer<Journals>(new JournKIV(settings()->journals));
-        if (board.interfaceType() != Board::InterfaceType::RS485)
-        {
-            addDialogToList(
-                new ConfigDialog(&configV, settings()->configSettings.general), "Конфигурирование", "conf1");
-            if (board.interfaceType() == Board::InterfaceType::USB)
-            {
 
-                addDialogToList(new TuneKIVDialog(&configV), "Регулировка");
-            }
-        }
+        addDialogToList(new ConfigDialog(&configV, settings()->configSettings.general), "Конфигурирование", "conf1");
+        if (board.interfaceType() == Board::InterfaceType::USB)
+
+            addDialogToList(new TuneKIVDialog(&configV), "Регулировка");
+
         CheckKIVDialog *cdkiv = new CheckKIVDialog;
         cdkiv->setHighlights(AbstractCheckDialog::Warning, settings()->highlightWarn);
         cdkiv->setHighlights(AbstractCheckDialog::Critical, settings()->highlightCrit);
@@ -58,11 +54,9 @@ void DbgModule::createModule(Modules::Model model)
     case Model::KTF:
     {
         auto jour = UniquePointer<Journals>(new JournKTF(settings()->journals, this));
-        if (board.interfaceType() != Board::InterfaceType::RS485)
-        {
-            addDialogToList(
-                new ConfigDialog(&configV, settings()->configSettings.general), "Конфигурирование", "conf1");
-        }
+
+        addDialogToList(new ConfigDialog(&configV, settings()->configSettings.general), "Конфигурирование", "conf1");
+
         CheckKTFDialog *cdktf = new CheckKTFDialog;
         addDialogToList(cdktf, "Проверка");
         addDialogToList(new CheckKTFHarmonicDialog, "Гармоники");
@@ -74,11 +68,9 @@ void DbgModule::createModule(Modules::Model model)
     case Model::KDV:
     {
         auto jour = UniquePointer<Journals>(new JournKDV(settings()->journals, this));
-        if (board.interfaceType() != Board::InterfaceType::RS485)
-        {
-            addDialogToList(
-                new ConfigDialog(&configV, settings()->configSettings.general), "Конфигурирование", "conf1");
-        }
+
+        addDialogToList(new ConfigDialog(&configV, settings()->configSettings.general), "Конфигурирование", "conf1");
+
         CheckKDVDialog *cdkdv = new CheckKDVDialog;
         addDialogToList(cdkdv, "Проверка");
         addDialogToList(new CheckKDVHarmonicDialog, "Гармоники");
