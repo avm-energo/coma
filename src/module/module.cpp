@@ -122,6 +122,32 @@ bool Module::loadSettings()
     return loadSettings(str);
 }
 
+bool Module::loadUsioSettings(const Modules::StartupInfoBlock &startupInfoBlock)
+{
+    QString configGeneral("config-general");
+    if (!obtainXmlFile(configGeneral))
+        return false;
+    if (!obtainXmlConfig(configGeneral, m_settings->configSettings.general))
+        return false;
+    QString configBase("config-%100");
+    configBase = configBase.arg(startupInfoBlock.MTypeB, 0, 16);
+    if (!obtainXmlFile(configBase))
+        qWarning() << Error::OpenError << configBase;
+    else if (!obtainXmlConfig(configBase, m_settings->configSettings.base))
+        qWarning() << Error::OpenError << configBase;
+    // if avtuk-3131/3535 ignore config for mezz board
+    if (startupInfoBlock.MTypeB != startupInfoBlock.MTypeM)
+    {
+        QString configMezz("config-00%1");
+        configMezz = configMezz.arg(startupInfoBlock.MTypeM, 0, 16);
+        if (!obtainXmlFile(configMezz))
+            qWarning() << Error::OpenError << configMezz;
+        else if (!obtainXmlConfig(configMezz, m_settings->configSettings.mezz))
+            qWarning() << Error::OpenError << configMezz;
+    }
+    return true;
+}
+
 bool Module::loadSettings(QString &moduleName, const Modules::StartupInfoBlock &startupInfoBlock, int interfaceType)
 {
     if (!loadS2Settings())
@@ -143,27 +169,8 @@ bool Module::loadSettings(QString &moduleName, const Modules::StartupInfoBlock &
         return false;
     if (Board::isUSIO(Modules::BaseBoard(startupInfoBlock.MTypeB), Modules::MezzanineBoard(startupInfoBlock.MTypeM)))
     {
-        QString configGeneral("config-general");
-        if (!obtainXmlFile(configGeneral))
+        if (!loadUsioSettings(startupInfoBlock))
             return false;
-        if (!obtainXmlConfig(configGeneral, m_settings->configSettings.general))
-            return false;
-        QString configBase("config-%100");
-        configBase = configBase.arg(startupInfoBlock.MTypeB, 0, 16);
-        if (!obtainXmlFile(configBase))
-            return false;
-        if (!obtainXmlConfig(configBase, m_settings->configSettings.base))
-            return false;
-        // if avtuk-3131/3535 ignore config for mezz board
-        if (startupInfoBlock.MTypeB != startupInfoBlock.MTypeM)
-        {
-            QString configMezz("config-00%1");
-            configMezz = configMezz.arg(startupInfoBlock.MTypeM, 0, 16);
-            if (!obtainXmlFile(configMezz))
-                return false;
-            if (!obtainXmlConfig(configMezz, m_settings->configSettings.mezz))
-                return false;
-        }
     }
 
     QDir dir(m_directory);
