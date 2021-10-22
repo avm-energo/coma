@@ -738,91 +738,285 @@
 	</record>
 	<record>
 		<id>301</id>
-		<type>BYTE[8]</type>
+		<type>FLOAT[8]</type>
+		<widget>
+			<type>DoubleSpinBoxGroup</type>
+			<group>100</group>
+			<string>Сопротивление при 100 град. С</string>
+			<count>8</count>
+			<min>0</min>
+			<max>65554</max>
+			<decimals>3</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>302</id>
 		<type>FLOAT[8]</type>
+		<widget>
+			<type>DoubleSpinBoxGroup</type>
+			<group>100</group>
+			<string>Мин. значение сигнала в градусах</string>
+			<count>8</count>
+			<min>-65554</min>
+			<max>65554</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>303</id>
 		<type>FLOAT[8]</type>
+		<widget>
+			<type>DoubleSpinBoxGroup</type>
+			<group>100</group>
+			<string>Макс. значение сигнала в градусах</string>
+			<count>8</count>
+			<min>-65554</min>
+			<max>65554</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>304</id>
 		<type>FLOAT[8]</type>
+		<widget>
+			<type>DoubleSpinBoxGroup</type>
+			<group>202</group>
+			<string>Значение уставки по мин. значению</string>
+			<count>8</count>
+			<min>-65554</min>
+			<max>65554</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>305</id>
 		<type>FLOAT[8]</type>
+		<widget>
+			<type>DoubleSpinBoxGroup</type>
+			<group>201</group>
+			<string>Значение уставки по мин. значению</string>
+			<count>8</count>
+			<min>-65554</min>
+			<max>65554</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>306</id>
 		<type>FLOAT[8]</type>
+		<widget>
+			<type>DoubleSpinBoxGroup</type>
+			<group>201</group>
+			<string>Значение уставки по макс. значению</string>
+			<count>8</count>
+			<min>-65554</min>
+			<max>65554</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>307</id>
 		<type>FLOAT[8]</type>
+		<widget>
+			<type>DoubleSpinBoxGroup</type>
+			<group>202</group>
+			<string>Значение уставки по макс. значению</string>
+			<count>8</count>
+			<min>-65554</min>
+			<max>65554</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>308</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>300</group>
+			<string>Пороговое значение, при превышении которого между замерами, фильтр не работает</string>
+			<min>0</min>
+			<max>254</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>309</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>300</group>
+			<string>Степень фильтрации (0…255)</string>
+			<toolTip>Степень фильтрации (0…255), 0 – фильтрация отсутствует</toolTip>
+			<min>0</min>
+			<max>255</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>310</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>300</group>
+			<string>Гистерезис для уставок</string>
+			<min>0</min>
+			<max>65554</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>311</id>
 		<type>DWORD[8]</type>
+		<widget>
+			<type>DoubleSpinBoxGroup</type>
+			<group>100</group>
+			<string>Сопротивление при 0 градусов</string>
+			<count>8</count>
+			<min>0</min>
+			<max>65536</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>321</id>
 		<type>FLOAT[8]</type>
+		<widget>
+			<type>DoubleSpinBoxGroup</type>
+			<group>100</group>
+			<string>Сопротивление при 100 град. С</string>
+			<count>8</count>
+			<min>0</min>
+			<max>65554</max>
+			<decimals>3</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>322</id>
 		<type>FLOAT[8]</type>
+		<widget>
+			<type>DoubleSpinBoxGroup</type>
+			<group>100</group>
+			<string>Минимальное значение сигнала в градусах</string>
+			<count>8</count>
+			<min>-65554</min>
+			<max>65554</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>323</id>
 		<type>FLOAT[8]</type>
+		<widget>
+			<type>DoubleSpinBoxGroup</type>
+			<group>100</group>
+			<string>Максимальное значение сигнала в градусах</string>
+			<count>8</count>
+			<min>-65554</min>
+			<max>65554</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>324</id>
 		<type>FLOAT[8]</type>
+		<widget>
+			<type>DoubleSpinBoxGroup</type>
+			<group>202</group>
+			<string>Значение уставки по мин. значению</string>
+			<count>8</count>
+			<min>-65554</min>
+			<max>65554</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>325</id>
 		<type>FLOAT[8]</type>
+		<widget>
+			<type>DoubleSpinBoxGroup</type>
+			<group>201</group>
+			<string>Значение уставки по мин. значению</string>
+			<count>8</count>
+			<min>-65554</min>
+			<max>65554</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>326</id>
 		<type>FLOAT[8]</type>
+		<widget>
+			<type>DoubleSpinBoxGroup</type>
+			<group>201</group>
+			<string>Значение уставки по макс. значению</string>
+			<count>8</count>
+			<min>-65554</min>
+			<max>65554</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>327</id>
 		<type>FLOAT[8]</type>
+		<widget>
+			<type>DoubleSpinBoxGroup</type>
+			<group>202</group>
+			<string>Значение уставки по макс. значению</string>
+			<count>8</count>
+			<min>-65554</min>
+			<max>65554</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>328</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>300</group>
+			<string>Пороговое значение, при превышении которого между замерами, фильтр не работает</string>
+			<min>0</min>
+			<max>254</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>329</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>300</group>
+			<string>Степень фильтрации (0…255)</string>
+			<toolTip>Степень фильтрации (0…255), 0 – фильтрация отсутствует</toolTip>
+			<min>0</min>
+			<max>255</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>330</id>
 		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>300</group>
+			<string>Гистерезис для уставок</string>
+			<min>0</min>
+			<max>65554</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>331</id>
-		<type>FLOAT[8]</type>
+		<type>DWORD[8]</type>
+		<widget>
+			<type>DoubleSpinBoxGroup</type>
+			<group>100</group>
+			<string>Сопротивление при 0 градусов</string>
+			<count>8</count>
+			<min>0</min>
+			<max>65536</max>
+			<decimals>0</decimals>
+		</widget>
 	</record>
 	<record>
 		<id>401</id>
