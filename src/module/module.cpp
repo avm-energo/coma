@@ -154,12 +154,16 @@ bool Module::loadSettings(QString &moduleName, const Modules::StartupInfoBlock &
             return false;
         if (!obtainXmlConfig(configBase, m_settings->configSettings.base))
             return false;
-        QString configMezz("config-00%1");
-        configMezz = configMezz.arg(startupInfoBlock.MTypeM, 0, 16);
-        if (!obtainXmlFile(configMezz))
-            return false;
-        if (!obtainXmlConfig(configMezz, m_settings->configSettings.mezz))
-            return false;
+        // if avtuk-3131/3535 ignore config for mezz board
+        if (startupInfoBlock.MTypeB != startupInfoBlock.MTypeM)
+        {
+            QString configMezz("config-00%1");
+            configMezz = configMezz.arg(startupInfoBlock.MTypeM, 0, 16);
+            if (!obtainXmlFile(configMezz))
+                return false;
+            if (!obtainXmlConfig(configMezz, m_settings->configSettings.mezz))
+                return false;
+        }
     }
 
     QDir dir(m_directory);
