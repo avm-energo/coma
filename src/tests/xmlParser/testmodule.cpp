@@ -172,6 +172,9 @@ void TestModule::check3533()
     bsi.MTypeM = 0x33;
     QVERIFY(module.loadSettings(str, bsi));
     auto settings = module.settings();
+    QCOMPARE(settings->configSettings.general.size(), 8);
+    QCOMPARE(settings->configSettings.base.size(), 7);
+    QCOMPARE(settings->configSettings.mezz.size(), 3);
     QVERIFY(!settings->ifaceSettings.settings.isValid());
 }
 
@@ -183,6 +186,9 @@ void TestModule::check3533USB()
     bsi.MTypeM = 0x33;
     QVERIFY(module.loadSettings(str, bsi, Board::InterfaceType::USB));
     auto settings = module.settings();
+    QCOMPARE(settings->configSettings.general.size(), 8);
+    QCOMPARE(settings->configSettings.base.size(), 7);
+    QCOMPARE(settings->configSettings.mezz.size(), 3);
     QVERIFY(settings->ifaceSettings.settings.isValid());
     QVERIFY(settings->ifaceSettings.settings.canConvert<InterfaceInfo<Proto::ProtocomGroup>>());
     const auto &st = settings->ifaceSettings.settings.value<InterfaceInfo<Proto::ProtocomGroup>>();
