@@ -1328,7 +1328,7 @@
 		<widget>
 			<type>QDoubleSpinBox</type>
 			<group>300</group>
-			<string>Номер  выхода для WD</string>
+			<string>Номер выхода для WD</string>
 			<min>0</min>
 			<max>254</max>
 			<decimals>0</decimals>
@@ -1376,7 +1376,7 @@
 		<widget>
 			<type>QDoubleSpinBox</type>
 			<group>300</group>
-			<string>Постоянный сигнал или импульс </string>
+			<string>Постоянный сигнал или импульс</string>
 			<min>0</min>
 			<max>10000</max>
 			<decimals>0</decimals>
