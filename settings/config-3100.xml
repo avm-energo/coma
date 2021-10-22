@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<s2files>
+<s2files xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="s2files.xsd">
     <record>
         <id>201</id>
         <defaultValue>0</defaultValue>
