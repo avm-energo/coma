@@ -513,13 +513,17 @@
 		<id>121</id>
 		<type>BYTE[8]</type>
 		<widget>
-			<type>DoubleSpinBoxGroup</type>
+			<type>QComboBoxGroup</type>
 			<group>100</group>
 			<string>Тип входа</string>
+			<string-array>
+				<item>вход не используется</item>
+				<item>постоянный ток</item>
+				<item>постоянное напряжение</item>
+				<item>переменный ток</item>
+				<item>переменное напряжение</item>
+			</string-array>
 			<count>8</count>
-			<min>0</min>
-			<max>254</max>
-			<decimals>0</decimals>
 		</widget>
 	</record>
 	<record>
@@ -691,36 +695,60 @@
 		<id>136</id>
 		<type>DWORD</type>
 		<widget>
-			<type>QDoubleSpinBox</type>
+			<type>CheckBoxGroup</type>
 			<group>300</group>
 			<string>Признаки запуска осциллограмм по команде 104, по канально</string>
-			<min>0</min>
-			<max>65534</max>
-			<decimals>2</decimals>
+			<string-array>
+				<item>1</item>
+				<item>2</item>
+				<item>3</item>
+				<item>4</item>
+				<item>5</item>
+				<item>6</item>
+				<item>7</item>
+				<item>8</item>
+			</string-array>
+			<count>8</count>
 		</widget>
 	</record>
 	<record>
 		<id>137</id>
 		<type>DWORD</type>
 		<widget>
-			<type>QDoubleSpinBox</type>
+			<type>CheckBoxGroup</type>
 			<group>300</group>
 			<string>Признаки запуска осциллограмм по I2C, по канально</string>
-			<min>0</min>
-			<max>65534</max>
-			<decimals>2</decimals>
+			<string-array>
+				<item>1</item>
+				<item>2</item>
+				<item>3</item>
+				<item>4</item>
+				<item>5</item>
+				<item>6</item>
+				<item>7</item>
+				<item>8</item>
+			</string-array>
+			<count>8</count>
 		</widget>
 	</record>
 	<record>
 		<id>138</id>
 		<type>DWORD</type>
 		<widget>
-			<type>QDoubleSpinBox</type>
+			<type>CheckBoxGroup</type>
 			<group>300</group>
 			<string>Признаки запуска осциллограмм по заданному алгоритму</string>
-			<min>0</min>
-			<max>65534</max>
-			<decimals>2</decimals>
+			<string-array>
+				<item>1</item>
+				<item>2</item>
+				<item>3</item>
+				<item>4</item>
+				<item>5</item>
+				<item>6</item>
+				<item>7</item>
+				<item>8</item>
+			</string-array>
+			<count>8</count>
 		</widget>
 	</record>
 	<record>
@@ -1314,12 +1342,9 @@
 		<id>401</id>
 		<type>BYTE</type>
 		<widget>
-			<type>QDoubleSpinBox</type>
+			<type>QCheckBox</type>
 			<group>300</group>
-			<string>Тип WatchDog </string>
-			<min>0</min>
-			<max>254</max>
-			<decimals>0</decimals>
+			<string>WatchDog </string>
 		</widget>
 	</record>
 	<record>
@@ -1340,7 +1365,7 @@
 		<widget>
 			<type>QDoubleSpinBox</type>
 			<group>300</group>
-			<string>Время WD</string>
+			<string>Время WD, с шагом 10 мс</string>
 			<min>0</min>
 			<max>254</max>
 			<decimals>0</decimals>
