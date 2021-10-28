@@ -55,7 +55,7 @@ public:
         }
         }
     }
-    static QString switchType(quint32 value)
+    static QString switchType(quint8 value)
     {
         return (value & 0x00000001) ? "ВКЛЮЧЕНИЕ" : "ОТКЛЮЧЕНИЕ";
     }
@@ -85,8 +85,8 @@ private:
         "Давление в гидросистеме привода, Па"                      //
     };
 
-    QString commutationType(quint32 value) const;
-    QString result(quint16 value) const;
-    QString commutationPhases(quint32 value) const;
+    QString commutationType(quint8 value) const;
+    const QString result(quint16 value) const;
+    QString commutationPhases(quint8 value) const;
     QString floatToString(float value) const;
 };

@@ -64,8 +64,7 @@ SwjModel SwjManager::load(const FileStruct &fs) const
     commonModel->appendRow({ new QStandardItem("Аппарат"), new QStandardItem(craftType(record.typeA)) });
     commonModel->appendRow({ new QStandardItem("Переключение"), new QStandardItem(switchType(record.options)) });
     commonModel->appendRow({ new QStandardItem("Тип коммутации"), new QStandardItem(commutationType(record.options)) });
-    commonModel->appendRow(
-        { new QStandardItem("Результат переключения"), new QStandardItem(commutationType(record.result)) });
+    commonModel->appendRow({ new QStandardItem("Результат переключения"), new QStandardItem(result(record.result)) });
 
     commonModel->appendRow(
         { new QStandardItem("Коммутируемые фазы"), new QStandardItem(commutationPhases(record.options)) });
@@ -147,34 +146,43 @@ SwjModel SwjManager::load(const FileStruct &fs) const
     return model;
 }
 
-inline QString SwjManager::commutationType(quint32 value) const
+inline QString SwjManager::commutationType(quint8 value) const
 {
-    if ((value >> 1))
+    std::bitset<8> bitset = value;
+    if (!bitset.test(2))
     {
-        if (((value >> 1) & 0x00000001))
-            return "Несинхронная от АВМ-СК";
-
-        if (((value >> 1) & 0x00000011) == 3)
-            return "Синхронная от АВМ-СК";
+        QString str("несинхронная от %1");
+        if (bitset.test(1))
+            return str.arg("АВ-ТУК");
+        else
+            return str.arg("внешнего устройства");
     }
-
-    return "Несинхронная от внешнего устройства";
+    else
+    {
+        QString str("синхронная от %1");
+        if (bitset.test(1))
+            return str.arg("АВ-ТУК");
+        else
+            return "зарезервировано";
+    }
 }
 
-inline QString SwjManager::result(quint16 value) const
+inline const QString SwjManager::result(quint16 value) const
 {
     return value ? "НЕУСПЕШНО" : "УСПЕШНО";
 }
 
-inline QString SwjManager::commutationPhases(quint32 value) const
+inline QString SwjManager::commutationPhases(quint8 value) const
 {
-    for (int i = 0; i < phases.size(); i++)
-    {
-        if (((value >> 3) == i))
-        {
-            return phases.at(i);
-        }
-    }
+    std::bitset<8> bitset = value;
+    if (!bitset.test(3) && !bitset.test(4))
+        return "фазы А, В, С (одновременно)";
+    if (!bitset.test(3) && bitset.test(4))
+        return "фаза A";
+    if (bitset.test(3) && !bitset.test(4))
+        return "фаза B";
+    if (bitset.test(3) && bitset.test(4))
+        return "фаза C";
     return "-";
 }
 
