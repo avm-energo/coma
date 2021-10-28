@@ -52,25 +52,25 @@ HiddenDialog::HiddenDialog(QWidget *parent) : UDialog(crypto::hash, crypto::name
 
     m_withMezzanine = false;
     if (m_bhb.BoardBBhb.MType == 0xA1)
-        m_BGImage = "images/pkdn.svg";
+        m_BGImage = ":/icons/pkdn.svg";
     else
     {
         switch (m_type)
         {
         case BYMY:
-            m_BGImage = "images/BM.svg";
+            m_BGImage = ":/icons/BM.svg";
             m_withMezzanine = true;
             break;
         case BNMY:
-            m_BGImage = "images/BnM.svg";
+            m_BGImage = ":/icons/BnM.svg";
             m_type = BYMY;
             m_withMezzanine = true;
             break;
         case BYMN:
-            m_BGImage = "images/BMn.svg";
+            m_BGImage = ":/icons/BMn.svg";
             break;
         case BNMN:
-            m_BGImage = "images/BnMn.svg";
+            m_BGImage = ":/icons/BnMn.svg";
             m_type = BYMN;
             break;
         default:
@@ -152,13 +152,11 @@ void HiddenDialog::setupUI()
     hlyout = new QHBoxLayout;
     hlyout->setAlignment(Qt::AlignRight);
     QPushButton *pb = new QPushButton("Режим Д'Артяньян");
-    connect(pb, &QAbstractButton::clicked, this,
-        [=]
-        {
-            KeyPressDialog *dlg = new KeyPressDialog(this);
-            bool status = dlg->CheckPassword(crypto::hashLevel2);
-            updateMode(status);
-        });
+    connect(pb, &QAbstractButton::clicked, this, [=] {
+        KeyPressDialog *dlg = new KeyPressDialog(this);
+        bool status = dlg->CheckPassword(crypto::hashLevel2);
+        updateMode(status);
+    });
     hlyout->addWidget(pb);
     pb = new QPushButton("Записать и закрыть");
     pb->setObjectName("acceptpb");
