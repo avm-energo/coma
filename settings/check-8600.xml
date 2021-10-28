@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+    <signals type="float">
+        <group>200,210</group>
+        <start-addr>6040</start-addr>
+        <count>36</count>
+    </signals>
+    <check header="Вибрации">
+        <record header="Среднеквадратичные значения виброускорений, м/с2" desc="Датчик №">
+            <type>LabelGroup</type>
+            <group>200</group>
+            <start-addr>6040</start-addr>
+            <count>6</count>
+        </record>
+        <record header="Среднеквадратичные значения виброскоростей, мм/с" desc="Датчик №">
+            <type>LabelGroup</type>
+            <group>200</group>
+            <start-addr>6046</start-addr>
+            <count>6</count>
+        </record>
+        <record header="Среднеквадратичные значения виброперемещений, мкм" desc="Датчик №">
+            <type>LabelGroup</type>
+            <group>200</group>
+            <start-addr>6052</start-addr>
+            <count>6</count>
+        </record>
+        <record header="Скорость изменения среднеквадратичного значения виброускорения, м/с2/час" desc="Датчик №">
+            <type>LabelGroup</type>
+            <group>210</group>
+            <start-addr>6058</start-addr>
+            <count>6</count>
+        </record>
+        <record header="Скорость изменения среднеквадратичного значения виброскорости, мм/с/час" desc="Датчик №">
+            <type>LabelGroup</type>
+            <group>210</group>
+            <start-addr>6064</start-addr>
+            <count>6</count>
+        </record>
+        <record header="Скорость изменения среднеквадратичного значения виброперемещения, мкм/час" desc="Датчик №">
+            <type>LabelGroup</type>
+            <group>210</group>
+            <start-addr>6070</start-addr>
+            <count>6</count>
+        </record>
+    </check>
+</root>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+    <check>
+        <map name="categories">
+            <item>
+                <key>0</key>
+                <value>Пустая группа</value>
+            </item>
+            <item>
+                <key>1</key>
+                <value>Основные</value>
+            </item>
+            <item>
+                <key>10</key>
+                <value>Дополнительные</value>
+            </item>
+            <item>
+                <key>200</key>
+                <value>Среднеквадратичные значения</value>
+            </item>
+            <item>
+                <key>210</key>
+                <value>Скорости изменения</value>
+            </item>
+            
+        </map>
+    </check>    
+</root>

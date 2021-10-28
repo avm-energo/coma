@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+    <signals type="float">
+        <group>1</group>
+        <start-addr>101</start-addr>
+        <count>2</count>
+    </signals>
+    <signals type="float">
+        <group>1,10</group>
+        <start-addr>1000</start-addr>
+        <count>16</count>
+    </signals>
+    <signals type="float">
+        <group>1,10</group>
+        <start-addr>1100</start-addr>
+        <count>16</count>
+    </signals>
+    <signals type="float">
+        <group>1,10</group>
+        <start-addr>2400</start-addr>
+        <count>7</count>
+    </signals>
+    <signals type="float">
+        <group>1</group>
+        <start-addr>2420</start-addr>
+        <count>14</count>
+    </signals>
+    <signals type="float">
+        <group>1,10</group>
+        <start-addr>4501</start-addr>
+        <count>2</count>
+    </signals>
+    <signals type="singlePoint">
+        <group>1</group>
+        <start-addr>3011</start-addr>
+        <count>25</count>
+    </signals>
+    <check header="Текущие данные">
+        <record header="Общие">
+            <group>1</group>
+            <record desc="Температура микроконтроллера, °С">
+                <addr>101</addr>
+            </record>
+            <record desc="Tamb, °С">
+                <addr>4501</addr>
+            </record>
+            <record desc="Частота, Гц">
+                <addr>2400</addr>
+            </record>
+        </record>
+        <record header="Параметры вводов">
+            <group>1</group>
+            <record desc="U ф.%1, кВ">
+                <start-addr>1000</start-addr>
+                <count>3</count>
+                <string-array>A,B,C</string-array>
+            </record>
+            <record desc="I ф.%1, мА">
+                <start-addr>1100</start-addr>
+                <count>3</count>
+                <string-array>A,B,C</string-array>
+            </record>
+            <record desc="C1 ф.%1, пФ">
+                <start-addr>2420</start-addr>
+                <count>3</count>
+                <string-array>A,B,C</string-array>
+            </record>
+            <record desc="tgδ ф.%1, %">
+                <start-addr>2423</start-addr>
+                <count>3</count>
+                <string-array>A,B,C</string-array>
+            </record>
+            <record desc="∆C ф.%1, %">
+                <start-addr>2426</start-addr>
+                <count>3</count>
+                <string-array>A,B,C</string-array>
+            </record>
+            <record desc="∆tgδ ф.%1, %">
+                <start-addr>2429</start-addr>
+                <count>3</count>
+                <string-array>A,B,C</string-array>
+            </record>
+        </record>
+        <record header="Параметры небаланса токов">
+            <group>1</group>
+            <record desc="Iunb, %">
+                <addr>2432</addr>
+            </record>
+            <record desc="Phi_unb, град.">
+                <addr>2433</addr>
+            </record>
+        </record>
+        <record header="Симметричные составляющие">
+            <group>10</group>
+            <record desc="U %1, кВ">
+                <start-addr>1011</start-addr>
+                <count>3</count>
+            </record>
+            <record desc="I %1, мА">
+                <start-addr>1111</start-addr>
+                <count>3</count>
+            </record>
+        </record>
+        <record header="Угловые значения">
+            <group>10</group>
+            <record desc="Phy_U ф.%1, град.">
+                <start-addr>2401</start-addr>
+                <count>3</count>
+            </record>
+            <record desc="Phy_I ф.%1, град.">
+                <start-addr>2404</start-addr>
+                <count>3</count>
+            </record>
+        </record>
+        <record header="Коэффициенты несимметрии">
+            <group>10</group>
+            <record desc="KuI%1, %">
+                <start-addr>1114</start-addr>
+                <count>2</count>
+            </record>
+            <record desc="KuU%1, %">
+                <start-addr>1014</start-addr>
+                <count>2</count>
+            </record>
+        </record>
+        <record header="Температура">
+            <group>10</group>
+            <record desc="Ramb, Ом">
+                <addr>4502</addr>
+            </record>
+        </record>
+    </check>
+</root>
