@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<root>
+<root xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:noNamespaceSchemaLocation="check-board.xsd">
     <signals type="float">
         <group>1</group>
         <start-addr>101</start-addr>
@@ -39,13 +40,13 @@
         <record header="Общие">
             <group>1</group>
             <record desc="Температура микроконтроллера, °С">
-                <addr>101</addr>
+                <start-addr>101</start-addr>
             </record>
             <record desc="Tamb, °С">
-                <addr>4501</addr>
+                <start-addr>4501</start-addr>
             </record>
             <record desc="Частота, Гц">
-                <addr>2400</addr>
+                <start-addr>2400</start-addr>
             </record>
         </record>
         <record header="Параметры вводов">
@@ -84,10 +85,10 @@
         <record header="Параметры небаланса токов">
             <group>1</group>
             <record desc="Iunb, %">
-                <addr>2432</addr>
+                <start-addr>2432</start-addr>
             </record>
             <record desc="Phi_unb, град.">
-                <addr>2433</addr>
+                <start-addr>2433</start-addr>
             </record>
         </record>
         <record header="Симметричные составляющие">
@@ -126,7 +127,7 @@
         <record header="Температура">
             <group>10</group>
             <record desc="Ramb, Ом">
-                <addr>4502</addr>
+                <start-addr>4502</start-addr>
             </record>
         </record>
     </check>

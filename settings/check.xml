@@ -1,25 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
-<root>
+<!DOCTYPE root  [
+    <!ENTITY groupEmpty "0">  
+    <!ENTITY groupMain "1"> 
+    <!ENTITY groupAdditional "10"> 
+    <!ENTITY groupRmsValues "200"> 
+    <!ENTITY groupChangeRate "210"> 
+]> 
+<root xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:noNamespaceSchemaLocation="check.xsd">
+    
     <check>
         <map name="categories">
             <item>
-                <key>0</key>
+                <key>&groupEmpty;</key>
                 <value>Пустая группа</value>
             </item>
             <item>
-                <key>1</key>
+                <key>&groupMain;</key>
                 <value>Основные</value>
             </item>
             <item>
-                <key>10</key>
+                <key>&groupAdditional;</key>
                 <value>Дополнительные</value>
             </item>
             <item>
-                <key>200</key>
+                <key>&groupRmsValues;</key>
                 <value>Среднеквадратичные значения</value>
             </item>
             <item>
-                <key>210</key>
+                <key>&groupChangeRate;</key>
                 <value>Скорости изменения</value>
             </item>
             
