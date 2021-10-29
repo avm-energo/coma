@@ -60,7 +60,8 @@ SwjModel SwjManager::load(const FileStruct &fs) const
     auto detailModel = qobject_cast<QStandardItemModel *>(model.detailModel.get());
 
     commonModel->appendRow({ new QStandardItem("Номер"), new QStandardItem(QString::number(record.num)) });
-    commonModel->appendRow({ new QStandardItem("Дата, время"), new QStandardItem(QString::number(record.time)) });
+    commonModel->appendRow(
+        { new QStandardItem("Дата, время"), new QStandardItem(TimeFunc::UnixTime64ToString(record.time)) });
     commonModel->appendRow({ new QStandardItem("Аппарат"), new QStandardItem(craftType(record.typeA)) });
     commonModel->appendRow({ new QStandardItem("Переключение"), new QStandardItem(switchType(record.options)) });
     commonModel->appendRow({ new QStandardItem("Тип коммутации"), new QStandardItem(commutationType(record.options)) });
