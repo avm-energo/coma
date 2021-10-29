@@ -784,6 +784,9 @@ void ProtocomThread::handleFile(QByteArray &ba, DataTypes::FilesEnum addr, Queri
     {
     case FileFormat::Binary:
     {
+        DataTypes::GeneralResponseStruct genResp { DataTypes::GeneralResponseTypes::Ok,
+            static_cast<quint64>(ba.size()) };
+        DataManager::addSignalToOutList(DataTypes::SignalTypes::GeneralResponse, genResp);
         DataTypes::FileStruct resp { addr, ba };
         DataManager::addSignalToOutList(DataTypes::SignalTypes::File, resp);
         break;
@@ -793,7 +796,15 @@ void ProtocomThread::handleFile(QByteArray &ba, DataTypes::FilesEnum addr, Queri
         QList<DataTypes::DataRecV> outlistV;
 
         if (!S2::RestoreData(ba, outlistV))
+        {
+            DataTypes::GeneralResponseStruct resp { DataTypes::GeneralResponseTypes::Error,
+                static_cast<quint64>(ba.size()) };
+            DataManager::addSignalToOutList(DataTypes::SignalTypes::GeneralResponse, resp);
             return;
+        }
+        DataTypes::GeneralResponseStruct genResp { DataTypes::GeneralResponseTypes::Ok,
+            static_cast<quint64>(ba.size()) };
+        DataManager::addSignalToOutList(DataTypes::SignalTypes::GeneralResponse, genResp);
         DataManager::addSignalToOutList(DataTypes::DataRecVList, outlistV);
         break;
     }
@@ -807,17 +818,17 @@ void ProtocomThread::handleFile(QByteArray &ba, DataTypes::FilesEnum addr, Queri
             DataManager::addSignalToOutList(DataTypes::SignalTypes::GeneralResponse, resp);
             return;
         }
+        DataTypes::GeneralResponseStruct genResp { DataTypes::GeneralResponseTypes::Ok,
+            static_cast<quint64>(ba.size()) };
+        DataManager::addSignalToOutList(DataTypes::SignalTypes::GeneralResponse, genResp);
         for (auto &&file : outlist)
         {
             DataTypes::FileStruct resp { DataTypes::FilesEnum(file.ID), file.data };
             DataManager::addSignalToOutList(DataTypes::SignalTypes::File, resp);
         }
-
         break;
     }
     }
-    DataTypes::GeneralResponseStruct resp { DataTypes::GeneralResponseTypes::Ok, static_cast<quint64>(ba.size()) };
-    DataManager::addSignalToOutList(DataTypes::SignalTypes::GeneralResponse, resp);
 }
 
 void ProtocomThread::handleInt(const byte num)
