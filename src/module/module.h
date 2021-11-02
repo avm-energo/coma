@@ -57,6 +57,7 @@ public:
     bool obtainXmlFile(const QString &filename) const;
     bool obtainXmlConfig(const QString &filename, QList<DataTypes::RecordPair> &config) const;
     bool loadS2Settings();
+    bool loadCheckSettings();
     quint64 configVersion() const;
     bool isConfigOutdated() const;
     void eraseSettings() const;
@@ -67,6 +68,7 @@ public:
 
 protected:
     ConfigV configV;
+    GlobalSettings gsettings;
 
 private:
     QList<UDialog *> m_dialogs;

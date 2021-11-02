@@ -22,8 +22,9 @@ public:
     static config::itemVariant parseWidget(QDomElement domElement);
     static DataTypes::RecordPair parseRecord(QDomElement domElement, config::widgetMap *const s2widgetMap);
     static config::Item parseItem(QDomElement domElement, ctti::unnamed_type_id_t parentType);
-    static void traverseNode(const QDomNode &node, ModuleSettings *const settings, GlobalSettings &gsettings);
+    static void traverseNode(const QDomNode &node, ModuleSettings *const settings, ConfigSettings &configSettings);
     static void traverseNode(const QDomNode &node, ConfigSettings &settings);
+    static void traverseNode(const QDomNode &node, CheckSettings &settings);
     static void traverseNodeS2(
         const QDomNode &node, QList<DataTypes::RecordPair> &settings, config::widgetMap *widgets);
 

@@ -27,6 +27,7 @@ Module::Module(QObject *parent)
     , m_directory(StdFunc::GetSystemHomeDir())
 #endif
 {
+    gsettings = { { &DataTypes::DataRecV::map, &WidgetFactory::m_widgetMap, &WidgetFactory::m_categoryMap }, {} };
 }
 void Module::createAlarm(AlarmWidget *aw)
 {
@@ -155,6 +156,10 @@ bool Module::loadSettings(QString &moduleName, const Modules::StartupInfoBlock &
 {
     if (!loadS2Settings())
         return false;
+    if (!loadCheckSettings())
+    {
+        qWarning() << "No check dialogs";
+    }
     m_settings = std::unique_ptr<ModuleSettings>(new ModuleSettings(startupInfoBlock));
     m_settings->interfaceType = interfaceType;
     if (moduleName.isEmpty())
@@ -197,9 +202,8 @@ bool Module::loadSettings(QString &moduleName, const Modules::StartupInfoBlock &
     {
 
         QDomElement domElement = domDoc.documentElement();
-        GlobalSettings settings { &DataTypes::DataRecV::map, &WidgetFactory::m_widgetMap,
-            &WidgetFactory::m_categoryMap };
-        XmlParser::traverseNode(domElement, m_settings.get(), settings);
+
+        XmlParser::traverseNode(domElement, m_settings.get(), gsettings.config);
         file.close();
         return true;
     }
@@ -272,7 +276,7 @@ bool Module::obtainXmlConfig(const QString &filename, QList<DataTypes::RecordPai
     {
 
         QDomElement domElement = domDoc.documentElement();
-        XmlParser::traverseNodeS2(domElement, config, &WidgetFactory::m_widgetMap);
+        XmlParser::traverseNodeS2(domElement, config, gsettings.config.s2widgetMap);
         file.close();
         return true;
     }
@@ -286,48 +290,71 @@ bool Module::obtainXmlConfig(const QString &filename, QList<DataTypes::RecordPai
 
 bool Module::loadS2Settings()
 {
-    const auto name = "s2files";
-
+    constexpr auto name = "s2files.xml";
     QDir dir(m_directory);
     qDebug() << dir;
-    auto allFiles = dir.entryList(QDir::Files);
-    auto xmlFiles = allFiles.filter(".xml");
-    qDebug() << xmlFiles;
     QDomDocument domDoc;
     QFile file;
-    for (const auto &xmlFile : xmlFiles)
-    {
-        if (xmlFile.contains(name, Qt::CaseInsensitive))
-            file.setFileName(dir.filePath(xmlFile));
-    }
-    if (file.fileName().isEmpty())
+
+    file.setFileName(dir.filePath(name));
+    if (!file.exists())
     {
         dir = QDir(resourceDirectory);
-        allFiles = dir.entryList(QDir::Files);
-        xmlFiles = allFiles.filter(".xml");
-        qDebug() << xmlFiles;
-        for (const auto &xmlFile : qAsConst(xmlFiles))
+        if (!QFile::copy(dir.filePath(name), StdFunc::GetSystemHomeDir() + name))
         {
-            if (!xmlFile.contains(name, Qt::CaseInsensitive))
-                continue;
-            if (!QFile::copy(dir.filePath(xmlFile), StdFunc::GetSystemHomeDir() + xmlFile))
-            {
-                qCritical() << Error::DescError;
-                qInfo() << dir.filePath(xmlFile) << StdFunc::GetSystemHomeDir() + xmlFile;
-                return false;
-            }
-
-            return loadS2Settings();
+            qCritical() << Error::DescError;
+            qInfo() << dir.filePath(name) << StdFunc::GetSystemHomeDir() + name;
+            return false;
         }
+        return loadS2Settings();
     }
     if (file.open(QIODevice::ReadOnly))
     {
         if (domDoc.setContent(&file))
         {
             QDomElement domElement = domDoc.documentElement();
-            ConfigSettings settings { &DataTypes::DataRecV::map, &WidgetFactory::m_widgetMap,
-                &WidgetFactory::m_categoryMap };
-            XmlParser::traverseNode(domElement, settings);
+            XmlParser::traverseNode(domElement, gsettings.config);
+            file.close();
+            return true;
+        }
+        file.close();
+        qInfo() << Error::WrongFileError << file.fileName();
+        return false;
+    }
+    else
+    {
+        qCritical() << Error::FileOpenError << file.fileName();
+        return false;
+    }
+}
+
+bool Module::loadCheckSettings()
+{
+    constexpr auto name = "check.xml";
+    QDir dir(m_directory);
+    qDebug() << dir;
+    QDomDocument domDoc;
+    QFile file;
+
+    file.setFileName(dir.filePath(name));
+    if (!file.exists())
+    {
+        dir = QDir(resourceDirectory);
+        if (!QFile::copy(dir.filePath(name), StdFunc::GetSystemHomeDir() + name))
+        {
+            qCritical() << Error::DescError;
+            qInfo() << dir.filePath(name) << StdFunc::GetSystemHomeDir() + name;
+            return false;
+        }
+        return loadCheckSettings();
+    }
+
+    if (file.open(QIODevice::ReadOnly))
+    {
+        if (domDoc.setContent(&file))
+        {
+            QDomElement domElement = domDoc.documentElement();
+            XmlParser::traverseNode(domElement, gsettings.check);
             file.close();
             return true;
         }

@@ -469,7 +469,7 @@ config::Item XmlParser::parseItem(QDomElement domElement, ctti::unnamed_type_id_
     }
 }
 
-void XmlParser::traverseNode(const QDomNode &node, ModuleSettings *const settings, GlobalSettings &gsettings)
+void XmlParser::traverseNode(const QDomNode &node, ModuleSettings *const settings, ConfigSettings &configSettings)
 {
     QDomNode domNode = node.firstChild();
     while (!domNode.isNull())
@@ -586,13 +586,13 @@ void XmlParser::traverseNode(const QDomNode &node, ModuleSettings *const setting
                 if (domElement.tagName() == "record")
                 {
 
-                    settings->configSettings.general.push_back(parseRecord(domElement, gsettings.config.s2widgetMap));
+                    settings->configSettings.general.push_back(parseRecord(domElement, configSettings.s2widgetMap));
                     domNode = domNode.nextSibling();
                     continue;
                 }
             }
         }
-        traverseNode(domNode, settings, gsettings);
+        traverseNode(domNode, settings, configSettings);
         domNode = domNode.nextSibling();
     }
 }
@@ -626,6 +626,28 @@ void XmlParser::traverseNode(const QDomNode &node, ConfigSettings &settings)
                 {
                     *settings.s2categories = parseMap<categoryMap>(domElement);
                     qDebug() << *settings.s2categories;
+                }
+            }
+        }
+        traverseNode(domNode, settings);
+        domNode = domNode.nextSibling();
+    }
+}
+
+void XmlParser::traverseNode(const QDomNode &node, CheckSettings &settings)
+{
+    QDomNode domNode = node.firstChild();
+    while (!domNode.isNull())
+    {
+        if (domNode.isElement())
+        {
+            QDomElement domElement = domNode.toElement();
+            if (!domElement.isNull())
+            {
+                if (domElement.tagName() == "map")
+                {
+                    settings.categories = parseMap<decltype(settings.categories)>(domElement);
+                    qDebug() << settings.categories;
                 }
             }
         }
