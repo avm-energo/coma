@@ -25,6 +25,15 @@ private:
     int m_curTuneStep;
     BdaIn::BlockData m_bdainBlockData;
     int m_BacWidgetIndex, m_BdainWidgetIndex, m_Bd0WidgetIndex;
+    struct MidTuneStruct
+    {
+        float fet;
+        float uet;
+        float iet;
+        float yet;
+    };
+
+    MidTuneStruct m_midTuneStruct;
 
     void setMessages() override;
     void setTuneFunctions() override;

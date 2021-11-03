@@ -4,6 +4,7 @@
 #include "../../gen/files.h"
 #include "../../gen/stdfunc.h"
 #include "../../interfaces/protocom.h"
+#include "../../widgets/epopup.h"
 #include "../../widgets/wd_func.h"
 
 #include <QDialog>
@@ -39,7 +40,7 @@ void Tune84Check::setTuneFunctions()
 
 Error::Msg Tune84Check::showScheme()
 {
-    QDialog *dlg = new QDialog;
+    QWidget *w = new QWidget(this);
     QVBoxLayout *lyout = new QVBoxLayout;
 
     lyout->addWidget(WDFunc::NewLBL2(this, "", "", new QPixmap("images/tunekiv1.png")));
@@ -48,22 +49,34 @@ Error::Msg Tune84Check::showScheme()
         "2. Включите питание Энергомонитор 3.1КМ и настройте его на режим измерения тока"
         "и напряжения в однофазной сети переменного тока, установите предел измерения"
         "по напряжению 60 В, по току - 2,5 А;"));
-    lyout->addWidget(WDFunc::NewLBL2(this,
-        "3. Включите питание источника сигналов. При работе с имитатором ИС АВМ-КИВ задайте напряжение U1 равным 60,0 "
-        "В,"
-        "ток I1 равным 29 мА, tgδ равным +0,2 %;\nПри работе с РЕТОМ-51 задайте напряжение U1 равным 60,0 В с углом 0 "
-        "град.,"
+
+    QHBoxLayout *hlyout = new QHBoxLayout;
+    QVBoxLayout *vlyout = new QVBoxLayout;
+    vlyout->addWidget(WDFunc::NewLBL2(this, "РЕТОМ"));
+    vlyout->addWidget(WDFunc::newHLine(this));
+    vlyout->addWidget(WDFunc::NewLBL2(this,
+        "3. Включите питание источника сигналов. Задайте напряжение U1 равным 60,0 В с углом 0 град.,\n"
         "ток I1 равным 5 А с углом 89,9 град., включите выходы РЕТОМ-51;"));
+    hlyout->addLayout(vlyout);
+    hlyout->addWidget(WDFunc::newVLine(this));
+    vlyout = new QVBoxLayout;
+    vlyout->addWidget(WDFunc::NewLBL2(this, "ИМИТАТОР"));
+    vlyout->addWidget(WDFunc::newHLine(this));
+    vlyout->addWidget(WDFunc::NewLBL2(this,
+        "3. Включите питание источника сигналов. Задайте напряжение U1 равным 60,0 В,\n"
+        "ток I1 равным 29 мА, tgδ равным +0,2 %"));
+    hlyout->addLayout(vlyout);
+    lyout->addLayout(hlyout);
+
     lyout->addWidget(WDFunc::NewLBL2(this,
         "4. По показаниям Энергомонитора убедитесь, что входное напряжение от источника"
         "составляет 60 ± 0,25 В, ток – 0,500 ± 25 мА, частота – 51,0 ± 0,05 Гц;"));
     lyout->addWidget(WDFunc::NewLBL2(
-        this, "6. Убедитесь, что частота мигания светодиода «Работа»  на лицевой панели увеличилась до 1 Гц;"));
-    lyout->addWidget(WDFunc::NewPB(this, "", "Готово", [dlg] { dlg->close(); }));
-    lyout->addWidget(WDFunc::NewPB(this, "cancelpb", "Отмена", [dlg] { dlg->close(); }));
-    dlg->setLayout(lyout);
-    WDFunc::PBConnect(dlg, "cancelpb", static_cast<AbstractTuneDialog *>(this), &AbstractTuneDialog::CancelTune);
-    dlg->exec();
+        this, "5. Убедитесь, что частота мигания светодиода «Работа»  на лицевой панели увеличилась до 1 Гц;"));
+    lyout->addWidget(WDFunc::NewLBL2(this, "6. Установите на магазине сопротивлений сопротивление 100,0 Ом."));
+    w->setLayout(hlyout);
+    if (!EMessageBox::next(w))
+        CancelTune();
     return Error::Msg::NoError;
 }
 

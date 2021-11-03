@@ -8,6 +8,7 @@
 #include "../gen/stdfunc.h"
 #include "../models/etablemodel.h"
 #include "edoublespinbox.h"
+#include "epopup.h"
 #include "etableview.h"
 #include "ipctrl.h"
 #include "passwordlineedit.h"
@@ -17,7 +18,6 @@
 #include <QHBoxLayout>
 #include <QHeaderView>
 #include <QMainWindow>
-#include <QMessageBox>
 #include <QPainter>
 #include <QPalette>
 #include <QPen>
@@ -646,9 +646,8 @@ bool WDFunc::floatIsWithinLimits(
     {
         qCritical() << "Ошибочное значение " + varname + ": должно быть " << QString::number(base, 'f', 5) << "±"
                     << QString::number(tolerance, 'f', 5) << ", а получили: " << QString::number(var, 'f', 5);
-        QMessageBox::critical(w, "Ошибка",
-            "Ошибочное значение " + varname + ": должно быть " + QString::number(base, 'f', 5) + "±"
-                + QString::number(tolerance, 'f', 5) + ", а получили: " + QString::number(var, 'f', 5));
+        EMessageBox::error("Ошибочное значение " + varname + ": должно быть " + QString::number(base, 'f', 5) + "±"
+            + QString::number(tolerance, 'f', 5) + ", а получили: " + QString::number(var, 'f', 5));
     }
     return false;
 }

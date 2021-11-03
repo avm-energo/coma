@@ -486,15 +486,14 @@ void TuneKIVADC::CalcTuneCoefs()
             m_bac->data()->DPsi[i] = m_bac->data()->DPsi[i] - m_bdainBlockData.phi_next_f[i];
         for (int i = 3; i < 6; ++i)
             m_bac->data()->DPsi[i] = m_bac->data()->DPsi[i] + m_midTuneStruct.yet - m_bdainBlockData.phi_next_f[i];
-        QDialog *dlg = this->findChild<QDialog *>("energomonitordlg");
-        if (dlg != nullptr)
-            dlg->close();
-        return;
+        //        QDialog *dlg = this->findChild<QDialog *>("energomonitordlg");
+        //        if (dlg != nullptr)
+        //            dlg->close();
+        //        return;
         //                }
         //            }
         //        }
-        EMessageBox::error("Не задано одно из значений!");
+        //        EMessageBox::error("Не задано одно из значений!");
         //        QMessageBox::critical(this, "Ошибка!", "Не задано одно из значений!");
     }
-    StdFunc::cancel();
 }

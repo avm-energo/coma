@@ -106,7 +106,7 @@ Error::Msg TuneKIVTemp60::setNewConfAndTune()
 Error::Msg TuneKIVTemp60::showTempDialog()
 {
     //    QDialog *dlg = new QDialog;
-    QVBoxLayout *lyout = new QVBoxLayout;
+    //    QVBoxLayout *lyout = new QVBoxLayout;
 
     //    QWidget *w = new QWidget;
     QString tempstr = (m_tuneStep == KIVTS_60TUNING) ? "+60" : "-20";
@@ -147,7 +147,7 @@ Error::Msg TuneKIVTemp60::waitForTempToRise()
 
 Error::Msg TuneKIVTemp60::showSignalsDialog()
 {
-    QDialog *dlg = new QDialog;
+    //    QDialog *dlg = new QDialog;
     QVBoxLayout *lyout = new QVBoxLayout;
 
     QWidget *w = new QWidget(this);

@@ -268,8 +268,7 @@ void AbstractTuneDialog::startTune()
     readTuneCoefs();
     if (saveAllTuneCoefs() != Error::Msg::NoError)
     {
-        if (QMessageBox::question(this, "Вопрос", "Сохранение настроечных коэффициентов не произведено, продолжать?")
-            == QMessageBox::No)
+        if (!EMessageBox::question("Сохранение настроечных коэффициентов не произведено, продолжать?"))
             return;
     }
     StdFunc::clearCancel();
@@ -287,7 +286,7 @@ void AbstractTuneDialog::startTune()
             WDFunc::SetEnabled(this, "finishpb", true);
             qWarning() << m_messages.at(bStep);
             loadAllTuneCoefs();
-            QMessageBox::critical(this, "Ошибка", Error::MsgStr[res]);
+            EMessageBox::error(Error::MsgStr[res]);
             return;
 #endif
         }
@@ -425,7 +424,7 @@ void AbstractTuneDialog::writeTuneCoefsSlot()
         if (it.value()->writeBlockToModule() != Error::Msg::NoError)
             CancelTune();
     }
-    QMessageBox::information(this, "Внимание", "Коэффициенты записаны успешно!");
+    EMessageBox::information("Коэффициенты записаны успешно!");
     emit generalEventReceived();
 }
 
@@ -436,18 +435,16 @@ Error::Msg AbstractTuneDialog::checkCalibrStep()
     //    if (!storedcalibrations.contains(cpuserialnum + "/step"))
     if (!TuneSequenceFile::contains("step"))
     {
-        QMessageBox::warning(this, "Внимание",
-            "Не выполнены предыдущие шаги регулировки, пожалуйста,\n"
-            "начните заново с шага 1");
+        EMessageBox::warning("Не выполнены предыдущие шаги регулировки, пожалуйста,\n"
+                             "начните заново с шага 1");
         return Error::Msg::ResEmpty;
     }
     //    int calibrstep = storedcalibrations.value(cpuserialnum + "/step", "1").toInt();
     int calibrstep = TuneSequenceFile::value("step").toInt();
     if (calibrstep < m_tuneStep)
     {
-        QMessageBox::warning(this, "Внимание",
-            "Перед выполнением шага " + QString::number(m_tuneStep) + " необходимо\nвыполнить шаг "
-                + QString::number(calibrstep) + "!");
+        EMessageBox::warning("Перед выполнением шага " + QString::number(m_tuneStep) + " необходимо\nвыполнить шаг "
+            + QString::number(calibrstep) + "!");
 
         return Error::Msg::ResEmpty;
     }
