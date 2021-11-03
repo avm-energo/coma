@@ -11,6 +11,7 @@ namespace keys
 {
 constexpr char name[] = "name";
 constexpr char stringArray[] = "string-array";
+constexpr char uintSet[] = "uint-set";
 constexpr char string[] = "string";
 constexpr char color[] = "color";
 constexpr char unsigned32[] = "quint32";
@@ -397,7 +398,7 @@ void XmlParser::mergeWidget(const QDomElement &domElement, config::widgetMap *co
     s2widgetMap->insert_or_assign(id, newWidget);
 }
 
-DataTypes::RecordPair XmlParser::parseRecord(QDomElement domElement, config::widgetMap *const s2widgetMap)
+DataTypes::RecordPair XmlParser::parseRecordConfig(QDomElement domElement, config::widgetMap *const s2widgetMap)
 {
     using namespace DataTypes;
     QDomElement childElement = domElement.firstChildElement("id");
@@ -433,7 +434,7 @@ DataTypes::RecordPair XmlParser::parseRecord(QDomElement domElement, config::wid
     return RecordPair { DataTypes::DataRecV(id, defaultValue), true };
 }
 
-check::detail::Record XmlParser::parseRecordHelper(QDomElement domElement)
+check::detail::Record XmlParserHelper::parseRecordCheck(QDomElement domElement)
 {
     check::detail::Record rec;
     bool ok = false;
@@ -453,7 +454,7 @@ check::detail::Record XmlParser::parseRecordHelper(QDomElement domElement)
         return rec;
     }
 
-    auto items = parseStringList(domElement.firstChildElement(keys::stringArray));
+    auto items = XmlParser::parseStringList(domElement.firstChildElement(keys::stringArray));
     assert(rec.count == items.count());
 
     for (auto &&item : items)
@@ -466,11 +467,42 @@ check::detail::Record XmlParser::parseRecordHelper(QDomElement domElement)
     return rec;
 }
 
-check::itemVariant XmlParser::parseRecord(QDomElement domElement)
+check::detail::Signals XmlParserHelper::parseSignals(QDomElement domElement)
+{
+    check::detail::Signals signls;
+    auto typeElement = domElement.firstChildElement(keys::type);
+    if (typeElement.isNull())
+        throw std::runtime_error("null element");
+
+    signls.type = XmlParser::parseType(typeElement);
+    auto vectorElement = domElement.firstChildElement(keys::uintSet);
+    if (typeElement.isNull())
+        throw std::runtime_error("null element");
+
+    signls.groups = XmlParser::parseSet<uint16_t>(vectorElement);
+    auto addrElement = domElement.firstChildElement("start-addr");
+    bool ok = false;
+    if (addrElement.isNull())
+        throw std::runtime_error("null element");
+
+    signls.start_addr = addrElement.text().toUShort(&ok);
+    assert(ok);
+
+    auto countElement = domElement.firstChildElement("count");
+    if (countElement.isNull())
+        throw std::runtime_error("null element");
+
+    signls.count = countElement.text().toUShort(&ok);
+    assert(ok);
+
+    return signls;
+}
+
+check::itemVariant XmlParser::parseRecordCheck(QDomElement domElement)
 {
     auto record = domElement.firstChildElement("record");
     if (record.isNull())
-        return parseRecordHelper(record);
+        return XmlParserHelper::parseRecordCheck(record);
 
     check::detail::RecordList recordList;
     auto header = domElement.attribute("header");
@@ -479,7 +511,7 @@ check::itemVariant XmlParser::parseRecord(QDomElement domElement)
     recordList.header = header;
     while (!record.isNull())
     {
-        recordList.records.emplace_back(parseRecordHelper(record));
+        recordList.records.emplace_back(XmlParserHelper::parseRecordCheck(record));
         record = record.nextSiblingElement("record");
     }
     return std::move(recordList);
@@ -638,7 +670,8 @@ void XmlParser::traverseNode(const QDomNode &node, ModuleSettings *const setting
                 if (domElement.tagName() == "record")
                 {
 
-                    settings->configSettings.general.push_back(parseRecord(domElement, configSettings.s2widgetMap));
+                    settings->configSettings.general.push_back(
+                        parseRecordConfig(domElement, configSettings.s2widgetMap));
                     domNode = domNode.nextSibling();
                     continue;
                 }
@@ -735,7 +768,7 @@ void XmlParser::traverseNodeS2(const QDomNode &node, QList<DataTypes::RecordPair
                 if (domElement.tagName() == "record")
                 {
 
-                    settings.push_back(parseRecord(domElement, widgets));
+                    settings.push_back(parseRecordConfig(domElement, widgets));
                     domNode = domNode.nextSibling();
                     continue;
                 }
@@ -746,7 +779,7 @@ void XmlParser::traverseNodeS2(const QDomNode &node, QList<DataTypes::RecordPair
     }
 }
 
-void XmlParser::traverseNodeCheck(const QDomNode &node, check::itemVector &settings)
+void XmlParser::traverseNodeCheck(const QDomNode &node, CheckSettings &settings)
 {
     QDomNode domNode = node.firstChild();
     while (!domNode.isNull())
@@ -758,6 +791,7 @@ void XmlParser::traverseNodeCheck(const QDomNode &node, check::itemVector &setti
             {
                 if (domElement.tagName() == "signals")
                 {
+                    settings.signlsVec.push_back(XmlParserHelper::parseSignals(domElement));
                     domNode = domNode.nextSibling();
                     continue;
                 }
@@ -765,7 +799,7 @@ void XmlParser::traverseNodeCheck(const QDomNode &node, check::itemVector &setti
                 if (domElement.tagName() == "record")
                 {
 
-                    settings.push_back(parseRecord(domElement));
+                    settings.items.push_back(parseRecordCheck(domElement));
                     domNode = domNode.nextSibling();
                     continue;
                 }
@@ -774,6 +808,38 @@ void XmlParser::traverseNodeCheck(const QDomNode &node, check::itemVector &setti
         traverseNodeCheck(domNode, settings);
         domNode = domNode.nextSibling();
     }
+}
+
+template <typename T> std::vector<T> XmlParser::parseVector(QDomElement domElement)
+{
+    const auto &nodes = domElement.childNodes();
+    std::vector<T> vector;
+    Q_ASSERT(!nodes.isEmpty());
+    int i = 0;
+#ifdef XML_DEBUG
+    qDebug() << "TagName: " << domElement.tagName() << domElement.attribute("name", "");
+#endif
+    while (i != nodes.count())
+    {
+        vector.push_back(QVariant(nodes.item(i++).toElement().text()).value<T>());
+    }
+    return vector;
+}
+
+template <typename T> std::set<T> XmlParser::parseSet(QDomElement domElement)
+{
+    const auto &nodes = domElement.childNodes();
+    std::set<T> set;
+    Q_ASSERT(!nodes.isEmpty());
+    int i = 0;
+#ifdef XML_DEBUG
+    qDebug() << "TagName: " << domElement.tagName() << domElement.attribute("name", "");
+#endif
+    while (i != nodes.count())
+    {
+        set.insert(QVariant(nodes.item(i++).toElement().text()).value<T>());
+    }
+    return set;
 }
 
 template <typename Container> Container XmlParser::parseMap(QDomElement domElement)

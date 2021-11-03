@@ -3,43 +3,61 @@
  xsi:noNamespaceSchemaLocation="check-board.xsd">
     <signals>
         <type>float</type>
-        <group>1</group>
+        <uint-set>
+            <item>1</item>
+        </uint-set>
         <start-addr>101</start-addr>
         <count>2</count>
     </signals>
     <signals>
         <type>float</type>
-        <group>1,10</group>
+        <uint-set>
+            <item>1</item>
+            <item>10</item>
+        </uint-set>
         <start-addr>1000</start-addr>
         <count>16</count>
     </signals>
     <signals>
         <type>float</type>
-        <group>1,10</group>
+        <uint-set>
+            <item>1</item>
+            <item>10</item>
+        </uint-set>
         <start-addr>1100</start-addr>
         <count>16</count>
     </signals>
     <signals>
         <type>float</type>
-        <group>1,10</group>
+        <uint-set>
+            <item>1</item>
+            <item>10</item>
+        </uint-set>
         <start-addr>2400</start-addr>
         <count>7</count>
     </signals>
     <signals>
         <type>float</type>
-        <group>1</group>
+        <uint-set>
+            <item>1</item>
+        </uint-set>
         <start-addr>2420</start-addr>
         <count>14</count>
     </signals>
     <signals>
         <type>float</type>
-        <group>1,10</group>
+        <uint-set>
+            <item>1</item>
+            <item>10</item>
+        </uint-set>
         <start-addr>4501</start-addr>
         <count>2</count>
     </signals>
     <signals>
         <type>DWORD</type>
-        <group>1</group>
+        <uint-set>
+            <item>1</item>
+        </uint-set>
         <start-addr>3011</start-addr>
         <count>25</count>
     </signals>

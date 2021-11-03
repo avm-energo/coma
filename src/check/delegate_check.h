@@ -5,6 +5,7 @@
 #include <QStringList>
 #include <cstdint>
 #include <optional>
+#include <set>
 #include <variant>
 
 namespace check
@@ -32,8 +33,16 @@ namespace detail
         QString header;
         std::vector<Record> records;
     };
+    struct Signals
+    {
+        ctti::unnamed_type_id_t type = 0;
+        std::set<uint16_t> groups;
+        uint16_t start_addr;
+        uint16_t count;
+    };
 }
 using itemVariant = std::variant<detail::Record, detail::RecordList>;
 using itemVector = std::vector<itemVariant>;
+using signalsVector = std::vector<detail::Signals>;
 }
 #endif // DELEGATE_H

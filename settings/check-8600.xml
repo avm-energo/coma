@@ -3,7 +3,10 @@
  xsi:noNamespaceSchemaLocation="check-board.xsd">
     <signals>
         <type>float</type>
-        <group>200,210</group>
+        <uint-set>
+            <item>200</item>
+            <item>210</item>
+        </uint-set>
         <start-addr>6040</start-addr>
         <count>36</count>
     </signals>

@@ -442,7 +442,7 @@ bool Module::loadS2Settings()
 
 // #### C H E C K ####
 
-bool Module::obtainXmlCheck(const QString &filename, check::itemVector &check)
+bool Module::obtainXmlCheck(const QString &filename, CheckSettings &check)
 {
     QDir dir(m_directory);
     auto xmlFiles = dir.entryList(QDir::Files).filter(".xml");
@@ -526,14 +526,14 @@ bool Module::loadCheckSettings(Modules::BaseBoard typeB, Modules::MezzanineBoard
     checkBase = checkBase.arg(typeB, 0, 16);
     if (!obtainXmlFile(checkBase))
         qWarning() << Error::OpenError << checkBase;
-    else if (!obtainXmlCheck(checkBase, gsettings.check.items))
+    else if (!obtainXmlCheck(checkBase, gsettings.check))
         qWarning() << Error::OpenError << checkBase;
 
     QString checkMezz("check-00%1");
     checkMezz = checkMezz.arg(typeM, 0, 16);
     if (!obtainXmlFile(checkMezz))
         qWarning() << Error::OpenError << checkMezz;
-    else if (!obtainXmlCheck(checkMezz, gsettings.check.items))
+    else if (!obtainXmlCheck(checkMezz, gsettings.check))
         qWarning() << Error::OpenError << checkMezz;
 
     return true;

@@ -51,6 +51,7 @@ struct ModuleSettings
 struct CheckSettings
 {
     check::itemVector items;
+    check::signalsVector signlsVec;
     categoryMap categories;
 };
 
