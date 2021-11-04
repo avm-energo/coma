@@ -299,13 +299,17 @@
 		<id>101</id>
 		<type>BYTE[8]</type>
 		<widget>
-			<type>DoubleSpinBoxGroup</type>
+			<type>QComboBoxGroup</type>
 			<group>100</group>
 			<string>Тип входа</string>
+			<string-array>
+				<item>вход не используется</item>
+				<item>постоянный ток</item>
+				<item>постоянное напряжение</item>
+				<item>переменный ток</item>
+				<item>переменное напряжение</item>
+			</string-array>
 			<count>8</count>
-			<min>0</min>
-			<max>254</max>
-			<decimals>0</decimals>
 		</widget>
 	</record>
 	<record>
@@ -379,7 +383,7 @@
 		<widget>
 			<type>DoubleSpinBoxGroup</type>
 			<group>100</group>
-			<string>Значение предупредительной уставки по макс. значению</string>
+			<string>Значение предупредительной уставки по мин. значению</string>
 			<count>8</count>
 			<min>0</min>
 			<max>65534</max>
@@ -467,7 +471,8 @@
 		<widget>
 			<type>QDoubleSpinBox</type>
 			<group>300</group>
-			<string>Пороговое значение, при превышении которого между замерами, фильтр не работает</string>
+			<string>Пороговое значение, при превышении которого начинается запись осциллограмм</string>
+			<toolTip>Пороговое значение, при превышении которого начинается запись осциллограмм (одно на все каналы)</toolTip>
 			<min>0</min>
 			<max>65534</max>
 			<decimals>2</decimals>
@@ -477,24 +482,40 @@
 		<id>116</id>
 		<type>DWORD</type>
 		<widget>
-			<type>QDoubleSpinBox</type>
+			<type>CheckBoxGroup</type>
 			<group>300</group>
-			<string>Признаки запуска осциллограмм по команде 104, по канально</string>
-			<min>0</min>
-			<max>65534</max>
-			<decimals>2</decimals>
+			<string>Признаки запуска осциллограмм по команде 104, по-канально</string>
+			<string-array>
+				<item>1</item>
+				<item>2</item>
+				<item>3</item>
+				<item>4</item>
+				<item>5</item>
+				<item>6</item>
+				<item>7</item>
+				<item>8</item>
+			</string-array>
+			<count>8</count>
 		</widget>
 	</record>
 	<record>
 		<id>117</id>
 		<type>DWORD</type>
 		<widget>
-			<type>QDoubleSpinBox</type>
+			<type>CheckBoxGroup</type>
 			<group>300</group>
-			<string>Признаки запуска осциллограмм по I2C, по канально</string>
-			<min>0</min>
-			<max>65534</max>
-			<decimals>2</decimals>
+			<string>Признаки запуска осциллограмм по I2C, по-канально</string>
+			<string-array>
+				<item>1</item>
+				<item>2</item>
+				<item>3</item>
+				<item>4</item>
+				<item>5</item>
+				<item>6</item>
+				<item>7</item>
+				<item>8</item>
+			</string-array>
+			<count>8</count>
 		</widget>
 	</record>
 	<record>
@@ -597,7 +618,7 @@
 		<widget>
 			<type>DoubleSpinBoxGroup</type>
 			<group>100</group>
-			<string>Значение предупредительной уставки по макс. значению</string>
+			<string>Значение предупредительной уставки по мин. значению</string>
 			<count>8</count>
 			<min>0</min>
 			<max>65534</max>
@@ -648,7 +669,8 @@
 		<widget>
 			<type>QDoubleSpinBox</type>
 			<group>300</group>
-			<string>Гистерезис для уставок</string>
+			<string>Пороговое значение, при превышении которого начинается запись осциллограмм</string>
+			<toolTip>Пороговое значение, при превышении которого начинается запись осциллограмм (одно на все каналы)</toolTip>
 			<min>0</min>
 			<max>65534</max>
 			<decimals>2</decimals>
@@ -685,7 +707,7 @@
 		<widget>
 			<type>QDoubleSpinBox</type>
 			<group>300</group>
-			<string>Пороговое значение, при превышении которого между замерами, фильтр не работает</string>
+			<string>Гистерезис для уставок</string>
 			<min>0</min>
 			<max>65534</max>
 			<decimals>2</decimals>
@@ -697,7 +719,7 @@
 		<widget>
 			<type>CheckBoxGroup</type>
 			<group>300</group>
-			<string>Признаки запуска осциллограмм по команде 104, по канально</string>
+			<string>Признаки запуска осциллограмм по команде 104, по-канально</string>
 			<string-array>
 				<item>1</item>
 				<item>2</item>
@@ -717,7 +739,7 @@
 		<widget>
 			<type>CheckBoxGroup</type>
 			<group>300</group>
-			<string>Признаки запуска осциллограмм по I2C, по канально</string>
+			<string>Признаки запуска осциллограмм по I2C, по-канально</string>
 			<string-array>
 				<item>1</item>
 				<item>2</item>
@@ -759,6 +781,7 @@
 			<group>100</group>
 			<string>Тип входа №0…15</string>
 			<string-array>
+				<item>Не использовать вход 0</item>
 				<item>Не использовать вход 1</item>
 				<item>Не использовать вход 2</item>
 				<item>Не использовать вход 3</item>
@@ -770,8 +793,12 @@
 				<item>Не использовать вход 9</item>
 				<item>Не использовать вход 10</item>
 				<item>Не использовать вход 11</item>
+				<item>Не использовать вход 12</item>
+				<item>Не использовать вход 13</item>
+				<item>Не использовать вход 14</item>
+				<item>Не использовать вход 15</item>
 			</string-array>
-			<count>11</count>
+			<count>16</count>
 		</widget>
 	</record>
 	<record>
