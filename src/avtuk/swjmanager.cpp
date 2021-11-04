@@ -171,7 +171,7 @@ inline QString SwjManager::commutationType(quint8 value) const
 
 inline const QString SwjManager::result(quint16 value) const
 {
-    return value ? "НЕУСПЕШНО" : "УСПЕШНО";
+    return value ? "УСПЕШНО" : "НЕУСПЕШНО";
 }
 
 inline QString SwjManager::commutationPhases(quint8 value) const
