@@ -16,39 +16,30 @@ OscManager::~OscManager()
 void OscManager::loadOsc(TrendViewModel *model)
 {
     trendDialog = UniquePointer<TrendViewDialog>(new TrendViewDialog);
-    model->xmax = (static_cast<float>(model->Len / 2));
-    model->xmin = -model->xmax;
+    model->setXmax((static_cast<float>(model->length() / 2)));
+    model->setXmin(-model->xmax());
 
-    switch (model->idOsc)
+    trendDialog->setAnalogNames(model->analogValues());
+    trendDialog->setDigitalNames(model->digitalValues());
+    trendDialog->setDigitalColors(model->digitalColors());
+    trendDialog->setAnalogColors(model->analogColors());
+    trendDialog->setDiscreteDescriptions(model->digitalDescriptions());
+    trendDialog->setAnalogDescriptions(model->analogDescriptions());
+    switch (model->idOsc())
     {
     case AVTUK_85::OSC_ID:
     {
-
-        trendDialog->setAnalogNames(model->tmpav_85);
-        trendDialog->setDigitalNames(model->tmpdv_85);
-        trendDialog->setDigitalColors(model->dcolors_85);
-        trendDialog->setAnalogColors(model->acolors_85);
-        trendDialog->setDiscreteDescriptions(model->ddescr_85);
-        trendDialog->setAnalogDescriptions(model->adescr_85);
-        trendDialog->setRange(model->xmin, model->xmax, -200, 200);
+        trendDialog->setRange(model->xmin(), model->xmax(), -200, 200);
         break;
     }
     case AVTUK_8X::OSC_ID:
     {
-        model->tmpdv_80.clear();
-        trendDialog->setAnalogNames(model->tmpav_80);
-        trendDialog->setDigitalNames(model->tmpdv_80);
-        trendDialog->setDigitalColors(model->dcolors_80);
-        trendDialog->setAnalogColors(model->acolors_80);
-        trendDialog->setRange(model->xmin, model->xmax, -200, 200);
+        trendDialog->setRange(model->xmin(), model->xmax(), -200, 200);
         break;
     }
 
     case AVTUK_21::OSC_ID_MIN:
     {
-        trendDialog->setAnalogColors(model->acolors_21);
-        trendDialog->setAnalogNames(model->tmpav_21);
-        trendDialog->setAnalogDescriptions(model->adescr_21);
         // 10000 мс, 20 мА (сделать автонастройку в зависимости от конфигурации по данному каналу)
         trendDialog->setRange(0, 10000, -20, 20);
 
@@ -64,12 +55,7 @@ void OscManager::loadOsc(TrendViewModel *model)
     case ID_OSC_CH0 + 6:
     case ID_OSC_CH0 + 7:
     {
-
-        trendDialog->setAnalogNames(model->tmpav_85);
-        trendDialog->setDigitalNames(model->tmpdv_85);
-        trendDialog->setDigitalColors(model->dcolors_85);
-        trendDialog->setAnalogColors(model->acolors_85);
-        trendDialog->setRange(model->xmin, model->xmax, -200, 200);
+        trendDialog->setRange(model->xmin(), model->xmax(), -200, 200);
         break;
     }
     }
@@ -78,6 +64,8 @@ void OscManager::loadOsc(TrendViewModel *model)
     trendDialog->setupUI();
     trendDialog->showPlot();
     trendDialog->show();
+    qDebug() << trendDialog->size();
+    trendDialog->adjustSize();
 }
 
 std::unique_ptr<TrendViewModel> OscManager::load(const FileStruct &fs) const
@@ -100,27 +88,20 @@ std::unique_ptr<TrendViewModel> OscManager::load(const Record &record, const Fil
         qCritical() << Error::SizeError;
         return {};
     }
-
-    auto trendViewModel = std::make_unique<TrendViewModel>(record.len);
-
-    {
-        trendViewModel->SaveID(curFileNum);
-        trendViewModel->Len = record.len;
-        trendViewModel->xmax = float(record.len) / 2;
-        trendViewModel->xmin = -trendViewModel->xmax;
-    }
-
+    std::unique_ptr<TrendViewModel> trendViewModel;
     std::unique_ptr<ParseModule> parseModule;
     switch (curFileNum)
     {
     case AVTUK_85::OSC_ID:
     {
         parseModule = std::make_unique<ParseID10030>(fs.data);
+        trendViewModel = std::make_unique<TrendViewModel85>((record.len));
         break;
     }
     case AVTUK_8X::OSC_ID:
     {
         parseModule = std::make_unique<ParseID10020>(fs.data);
+        trendViewModel = std::make_unique<TrendViewModel80>((record.len));
         break;
     }
     case AVTUK_21::OSC_ID_MIN:
@@ -139,15 +120,23 @@ std::unique_ptr<TrendViewModel> OscManager::load(const Record &record, const Fil
     case 10014:
     case 10015:
     case AVTUK_21::OSC_ID_MAX:
-
     {
         parseModule = std::make_unique<ParseID10001>(fs.data);
+        trendViewModel = std::make_unique<TrendViewModel21>((record.len));
         break;
     }
 
     default:
         return {};
     }
+
+    {
+        trendViewModel->setIdOsc(curFileNum);
+        trendViewModel->setLength(record.len);
+        trendViewModel->setXmax(float(record.len) / 2);
+        trendViewModel->setXmin(-trendViewModel->xmax());
+    }
+
     bool result = parseModule->Parse(curFileNum, record, trendViewModel.get());
     if (!result)
     {
