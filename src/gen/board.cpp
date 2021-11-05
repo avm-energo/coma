@@ -189,7 +189,7 @@ quint32 Board::health() const
 
 bool Board::noConfig() const
 {
-    return (health() & HTH_CONFIG) || StdFunc::IsInEmulateMode();
+    return (health() & HTH_CONFIG);
 }
 
 bool Board::noRegPars() const

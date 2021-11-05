@@ -69,8 +69,6 @@ public:
     static bool isCancelled();
     static void setCancelDisabled();
     static void setCancelEnabled();
-    static bool IsInEmulateMode();
-    static void SetEmulated(bool tb);
     static int IndexByBit(quint32 dword); // возвращение номера первого, начиная с младшего,
                                           // установленного бита, нумерация с 1, dword=0 => return 0
     static quint32 BitByIndex(int idx); // возвращение битовой маски по индексу (0
@@ -127,7 +125,7 @@ public:
 private:
     static QString HomeDir;       // рабочий каталог программы
     static QString SystemHomeDir; // системный каталог программы
-    static bool Emul;
+
     static bool Cancelled, s_cancelEnabled;
     //    static QString PrbMsg;
     static int m_tuneRequestCount; // степень усреднения для регулировки

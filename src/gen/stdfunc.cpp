@@ -22,7 +22,7 @@
 
 QString StdFunc::HomeDir = "";       // рабочий каталог программы
 QString StdFunc::SystemHomeDir = ""; // системный каталог программы
-bool StdFunc::Emul = false;
+
 bool StdFunc::Cancelled = false;
 bool StdFunc::s_cancelEnabled = true;
 // QString StdFunc::PrbMsg = "";
@@ -36,7 +36,6 @@ StdFunc::StdFunc()
 
 void StdFunc::Init()
 {
-    Emul = false;
 
     SystemHomeDir = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + "/"
         + QCoreApplication::applicationName() + "/";
@@ -167,16 +166,6 @@ void StdFunc::setCancelDisabled()
 void StdFunc::setCancelEnabled()
 {
     s_cancelEnabled = true;
-}
-
-bool StdFunc::IsInEmulateMode()
-{
-    return Emul;
-}
-
-void StdFunc::SetEmulated(bool tb)
-{
-    Emul = tb;
 }
 
 int StdFunc::IndexByBit(quint32 dword)

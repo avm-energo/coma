@@ -173,15 +173,13 @@ QWidget *ConfigDialog::ConfButtons()
     QString tmps = ((DEVICETYPE == DEVICETYPE_MODULE) ? "модуля" : "прибора");
     QPushButton *pb = new QPushButton("Прочитать из " + tmps);
     connect(pb, &QAbstractButton::clicked, this, &ConfigDialog::ReadConf);
-    if (StdFunc::IsInEmulateMode())
-        pb->setEnabled(false);
+
     wdgtlyout->addWidget(pb, 0, 0, 1, 1);
     tmps = ((DEVICETYPE == DEVICETYPE_MODULE) ? "модуль" : "прибор");
     pb = new QPushButton("Записать в " + tmps);
     pb->setObjectName("WriteConfPB");
     connect(pb, &QAbstractButton::clicked, this, &ConfigDialog::WriteConf);
-    if (StdFunc::IsInEmulateMode())
-        pb->setEnabled(false);
+
     wdgtlyout->addWidget(pb, 0, 1, 1, 1);
     pb = new QPushButton("Прочитать из файла");
     // pb->setIcon(QIcon(":/icons/tnload.svg"));

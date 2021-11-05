@@ -59,18 +59,6 @@ void JournalDialog::SetupUI()
 
     lyout->addWidget(ConfTW);
     setLayout(lyout);
-    if (StdFunc::IsInEmulateMode())
-    {
-        WDFunc::SetEnabled(this, "gj." + QString::number(DataTypes::JourSys), false);
-        WDFunc::SetEnabled(this, "gj." + QString::number(DataTypes::JourMeas), false);
-        WDFunc::SetEnabled(this, "gj." + QString::number(DataTypes::JourWork), false);
-        WDFunc::SetEnabled(this, "ej." + QString::number(DataTypes::JourSys), false);
-        WDFunc::SetEnabled(this, "ej." + QString::number(DataTypes::JourMeas), false);
-        WDFunc::SetEnabled(this, "ej." + QString::number(DataTypes::JourWork), false);
-        WDFunc::SetEnabled(this, "sj." + QString::number(DataTypes::JourSys), false);
-        WDFunc::SetEnabled(this, "sj." + QString::number(DataTypes::JourMeas), false);
-        WDFunc::SetEnabled(this, "sj." + QString::number(DataTypes::JourWork), false);
-    }
 }
 
 QWidget *JournalDialog::JourTab(DataTypes::FilesEnum jourtype)
