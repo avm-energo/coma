@@ -467,27 +467,40 @@ check::detail::Record XmlParserHelper::parseRecordCheck(QDomElement domElement)
     }
     else
     {
+        auto strArrayElement = domElement.firstChildElement(keys::stringArray);
         QStringList str;
-        for (auto i = 0; i != rec.count; i++)
+        if (!strArrayElement.isNull())
         {
-            str.push_back(desc.arg(i));
+            auto strList = XmlParser::parseStringList(strArrayElement);
+            assert(rec.count == strList.count());
+            for (auto &&item : strList)
+            {
+                str.push_back(desc.arg(item));
+            }
+        }
+        else
+        {
+            for (auto i = 0; i != rec.count; i++)
+            {
+                str.push_back(desc.arg(i));
+            }
         }
         rec.desc = str;
     }
 
-    auto arrayElement = domElement.firstChildElement(keys::stringArray);
-    if (arrayElement.isNull())
-        return rec;
-    auto items = XmlParser::parseStringList(arrayElement);
-    assert(rec.count == items.count());
+    //    auto arrayElement = domElement.firstChildElement(keys::stringArray);
+    //    if (arrayElement.isNull())
+    //        return rec;
+    //    auto items = XmlParser::parseStringList(arrayElement);
+    //    assert(rec.count == items.count());
 
-    for (auto &&item : items)
-    {
-        if (rec.desc.has_value())
-            rec.desc->push_back(desc.arg(item));
-        else
-            rec.desc = QStringList(desc.arg(item));
-    }
+    //    for (auto &&item : items)
+    //    {
+    //        if (rec.desc.has_value())
+    //            rec.desc->push_back(desc.arg(item));
+    //        else
+    //            rec.desc = QStringList(desc.arg(item));
+    //    }
     return rec;
 }
 
@@ -529,9 +542,10 @@ check::itemVariant XmlParser::parseRecordCheck(QDomElement domElement)
         return XmlParserHelper::parseRecordCheck(domElement);
 
     check::detail::RecordList recordList;
-    auto header = domElement.attribute("header");
+
     auto group = domElement.firstChildElement(keys::group).text().toUShort();
     recordList.group = group;
+    auto header = domElement.attribute("header");
     recordList.header = header;
     while (!record.isNull())
     {
