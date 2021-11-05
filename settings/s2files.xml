@@ -484,7 +484,7 @@
 		<widget>
 			<type>CheckBoxGroup</type>
 			<group>300</group>
-			<string>Признаки запуска осциллограмм по команде 104, по-канально</string>
+			<string>Признаки запуска осциллограмм по команде 104, поканально</string>
 			<string-array>
 				<item>1</item>
 				<item>2</item>
@@ -504,7 +504,7 @@
 		<widget>
 			<type>CheckBoxGroup</type>
 			<group>300</group>
-			<string>Признаки запуска осциллограмм по I2C, по-канально</string>
+			<string>Признаки запуска осциллограмм по I2C, поканально</string>
 			<string-array>
 				<item>1</item>
 				<item>2</item>
@@ -719,7 +719,7 @@
 		<widget>
 			<type>CheckBoxGroup</type>
 			<group>300</group>
-			<string>Признаки запуска осциллограмм по команде 104, по-канально</string>
+			<string>Признаки запуска осциллограмм по команде 104, поканально</string>
 			<string-array>
 				<item>1</item>
 				<item>2</item>
@@ -739,7 +739,7 @@
 		<widget>
 			<type>CheckBoxGroup</type>
 			<group>300</group>
-			<string>Признаки запуска осциллограмм по I2C, по-канально</string>
+			<string>Признаки запуска осциллограмм по I2C, поканально</string>
 			<string-array>
 				<item>1</item>
 				<item>2</item>
@@ -914,7 +914,7 @@
 		<widget>
 			<type>DoubleSpinBoxGroup</type>
 			<group>100</group>
-			<string>Время задержки для контроля дребезга контактов входы</string>
+			<string>Время фильтрации дребезга контактов по входам, мс</string>
 			<count>30</count>
 			<min>0</min>
 			<max>65554</max>
@@ -1076,7 +1076,7 @@
 		<widget>
 			<type>DoubleSpinBoxGroup</type>
 			<group>100</group>
-			<string>Время задержки для контроля дребезга контактов входы</string>
+			<string>Время фильтрации дребезга контактов по входам, мс</string>
 			<count>30</count>
 			<min>0</min>
 			<max>65554</max>
@@ -1205,7 +1205,7 @@
 		<widget>
 			<type>QDoubleSpinBox</type>
 			<group>300</group>
-			<string>Гистерезис для уставок</string>
+			<string>Гистерезис для уставок в % от диапазона</string>
 			<min>0</min>
 			<max>65554</max>
 			<decimals>0</decimals>
@@ -1243,7 +1243,7 @@
 		<widget>
 			<type>DoubleSpinBoxGroup</type>
 			<group>100</group>
-			<string>Минимальное значение сигнала в градусах</string>
+			<string>Мин. значение сигнала в градусах</string>
 			<count>8</count>
 			<min>-65554</min>
 			<max>65554</max>
@@ -1256,7 +1256,7 @@
 		<widget>
 			<type>DoubleSpinBoxGroup</type>
 			<group>100</group>
-			<string>Максимальное значение сигнала в градусах</string>
+			<string>Макс. значение сигнала в градусах</string>
 			<count>8</count>
 			<min>-65554</min>
 			<max>65554</max>
@@ -1346,7 +1346,7 @@
 		<widget>
 			<type>QDoubleSpinBox</type>
 			<group>300</group>
-			<string>Гистерезис для уставок</string>
+			<string>Гистерезис для уставок в % от диапазона</string>
 			<min>0</min>
 			<max>65554</max>
 			<decimals>0</decimals>
@@ -1371,7 +1371,7 @@
 		<widget>
 			<type>QCheckBox</type>
 			<group>300</group>
-			<string>WatchDog </string>
+			<string>WatchDog включен</string>
 		</widget>
 	</record>
 	<record>
@@ -1454,12 +1454,9 @@
 		<id>421</id>
 		<type>BYTE</type>
 		<widget>
-			<type>QDoubleSpinBox</type>
+			<type>QCheckBox</type>
 			<group>300</group>
-			<string>Тип WatchDog </string>
-			<min>0</min>
-			<max>254</max>
-			<decimals>0</decimals>
+			<string>WatchDog включен</string>
 		</widget>
 	</record>
 	<record>
