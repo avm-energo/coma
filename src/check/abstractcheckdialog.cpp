@@ -436,11 +436,14 @@ void CheckDialog::setup(const check::detail::RecordList &arg, QGroupBox *gb, siz
             QHBoxLayout *layout = new QHBoxLayout;
             // layout->setStretchFactor()
             QLabel *textLabel = new QLabel(currentRecord.desc->at(j));
-            textLabel->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+            // textLabel->setStyleSheet(ValuesFormat);
+            textLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
+
+            // textLabel->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
             QFontMetrics fn(textLabel->font());
             textLabel->setMaximumHeight(fn.height());
 
-            layout->addWidget(textLabel);
+            layout->addWidget(textLabel /*, 2, Qt::AlignLeft*/);
 
             QLabel *valueLabel = new QLabel;
             valueLabel->setMaximumHeight(fn.height());
@@ -448,7 +451,7 @@ void CheckDialog::setup(const check::detail::RecordList &arg, QGroupBox *gb, siz
             valueLabel->setObjectName(QString::number(currentRecord.start_addr + j));
             valueLabel->setStyleSheet(ValuesFormat);
             valueLabel->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
-            layout->addWidget(valueLabel);
+            layout->addWidget(valueLabel /*, 3, Qt::AlignLeft*/);
             auto currentRow = (i * j) / itemsOneLine;
             auto currentColumn = (i * j) % itemsOneLine;
             gridlyout->addLayout(layout, i, j);

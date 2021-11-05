@@ -104,8 +104,11 @@ void DbgModule::create(Modules::BaseBoard typeB, Modules::MezzanineBoard typeM)
                 addDialogToList(new Tune84Dialog(&configV), "Регулировка");
             }
         }
+
         CheckKIVDialog *cdkiv = new CheckKIVDialog;
         addDialogToList(cdkiv, "Проверка");
+        addDialogToList(new CheckDialog(gsettings.check), "Проверка2");
+        //  CheckDialog *check = new CheckDialog(gsettings.check);
 
         addDialogToList(new StartupKIVDialog, "Начальные\nзначения");
     }
