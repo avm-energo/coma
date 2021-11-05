@@ -369,36 +369,91 @@ void CheckDialog::setupUI()
     {
         UWidget *w = new UWidget;
         QVBoxLayout *lyout = new QVBoxLayout;
-        for (auto &&value : itemByGroup.values(key))
+        auto values = itemByGroup.values(key);
+        for (auto it = values.crbegin(); it != values.crend(); it++)
+        //    for (auto &&value : itemByGroup.values(key))
         {
             //...//
             QGroupBox *gb = new QGroupBox();
-            std::visit(overloaded { [&](const check::detail::Record &arg) {
-                                       gb->setTitle(arg.header.value());
-
-                                       int count = arg.desc->count();
-                                       auto itemsOneLine = detail::goldenRatio(count);
-
-                                       QGridLayout *gridlyout = new QGridLayout;
-                                       for (auto i = 0; i != count; ++i)
-                                       {
-                                           QVBoxLayout *layout = new QVBoxLayout;
-                                           layout->addWidget(new QLabel(arg.desc.value().at(i)));
-                                           QLabel *valueLabel = new QLabel;
-                                           valueLabel->setObjectName(QString::number(arg.start_addr + i));
-                                           valueLabel->setStyleSheet(ValuesFormat);
-                                           layout->addWidget(valueLabel);
-                                           gridlyout->addLayout(layout, i / itemsOneLine, i % itemsOneLine);
-                                       }
-
-                                       gb->setLayout(gridlyout);
-                                   },
-                           [&](const check::detail::RecordList &arg) { gb->setTitle(arg.header); } },
-                value);
+            std::visit(overloaded { [&](const check::detail::Record &arg) { setup(arg, gb); },
+                           [&](const check::detail::RecordList &arg) {
+                               size_t rowCount = 0;
+                               setup(arg, gb, rowCount);
+                           } },
+                *it);
             lyout->addWidget(gb);
         }
+        lyout->addStretch(100);
         w->setLayout(lyout);
         m_BdUIList.push_back({ m_settings.categories.value(key), w });
     }
     m_BdUIList.first().widget->setUpdatesEnabled();
+}
+
+void CheckDialog::setup(const check::detail::Record &arg, QGroupBox *gb)
+{
+    gb->setTitle(arg.header.value());
+
+    auto count = std::size(arg.desc.value());
+    auto itemsOneLine = detail::goldenRatio(count);
+
+    QGridLayout *gridlyout = new QGridLayout;
+    for (auto i = 0; i != count; ++i)
+    {
+        QVBoxLayout *layout = new QVBoxLayout;
+        layout->addWidget(new QLabel(arg.desc.value().at(i)));
+        QLabel *valueLabel = new QLabel;
+        valueLabel->setObjectName(QString::number(arg.start_addr + i));
+        valueLabel->setStyleSheet(ValuesFormat);
+        layout->addWidget(valueLabel);
+        gridlyout->addLayout(layout, i / itemsOneLine, i % itemsOneLine);
+    }
+
+    gb->setLayout(gridlyout);
+}
+
+void CheckDialog::setup(const check::detail::RecordList &arg, QGroupBox *gb, size_t &rowCount)
+{
+    gb->setTitle(arg.header);
+
+    QGridLayout *gridlyout = new QGridLayout;
+
+    //    for (auto &&record : arg.records)
+    //    {
+    //        auto itemsOneLine = detail::goldenRatio(record.desc->count());
+    //        rowCount += (record.desc->count() / itemsOneLine);
+    //    }
+    int count = std::size(arg.records);
+    for (int i = 0; i != count; ++i)
+    {
+
+        // one item per record
+        const auto &currentRecord = arg.records.at(i);
+
+        auto itemsOneLine = detail::goldenRatio(currentRecord.desc->count());
+        for (int j = 0; j < currentRecord.desc->count(); ++j)
+        {
+            QHBoxLayout *layout = new QHBoxLayout;
+            // layout->setStretchFactor()
+            QLabel *textLabel = new QLabel(currentRecord.desc->at(j));
+            textLabel->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+            QFontMetrics fn(textLabel->font());
+            textLabel->setMaximumHeight(fn.height());
+
+            layout->addWidget(textLabel);
+
+            QLabel *valueLabel = new QLabel;
+            valueLabel->setMaximumHeight(fn.height());
+
+            valueLabel->setObjectName(QString::number(currentRecord.start_addr + j));
+            valueLabel->setStyleSheet(ValuesFormat);
+            valueLabel->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+            layout->addWidget(valueLabel);
+            auto currentRow = (i * j) / itemsOneLine;
+            auto currentColumn = (i * j) % itemsOneLine;
+            gridlyout->addLayout(layout, i, j);
+        }
+        //  }
+    }
+    gb->setLayout(gridlyout);
 }

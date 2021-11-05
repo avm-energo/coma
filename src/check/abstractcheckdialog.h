@@ -131,6 +131,8 @@ private slots:
     void TWTabChanged(int index);
 };
 
+class QGroupBox;
+
 class CheckDialog : public AbstractCheckDialog
 {
     Q_OBJECT
@@ -142,6 +144,9 @@ private:
     const CheckSettings &m_settings;
 
     void setupUI();
+
+    void setup(const check::detail::Record &arg, QGroupBox *gb);
+    void setup(const check::detail::RecordList &arg, QGroupBox *gb, size_t &rowCount);
 };
 
 #endif // ABSTRACTCHECKDIALOG_H
