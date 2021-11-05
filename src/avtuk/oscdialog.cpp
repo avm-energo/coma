@@ -166,14 +166,14 @@ void OscDialog::fillOsc(const DataTypes::FileStruct file)
     default:
     {
 
-        auto model = manager.load(file);
+        oscModel = manager.load(file);
 
-        if (!model)
+        if (!oscModel)
         {
             qWarning() << Error::ReadError;
             return;
         }
-        manager.loadOsc(model.get());
+        manager.loadOsc(oscModel.get());
     }
     }
     fileBuffer.push_back(file);

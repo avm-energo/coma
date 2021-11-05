@@ -8,7 +8,7 @@ class SignalChooseWidget : public QWidget
 {
     Q_OBJECT
 public:
-    explicit SignalChooseWidget(QStringList &snames, QStringList &discr, QWidget *parent = nullptr);
+    explicit SignalChooseWidget(const QStringList &snames, const QStringList &discr, QWidget *parent = nullptr);
 
 signals:
     // при выборе сигнала - требуется выделить тренд при включении или отключении вставить или убрать из осциллограммы
@@ -30,7 +30,6 @@ signals:
     void clicked();
 
 protected:
-    void mouseMoveEvent(QMouseEvent *e);
-    void mousePressEvent(QMouseEvent *e);
+    void mousePressEvent(QMouseEvent *e) override;
 };
 #endif // SIGNALCHOOSEWIDGET_H
