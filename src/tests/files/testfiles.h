@@ -26,6 +26,8 @@ private slots:
     {
     }
     void testOsc();
+    void testOsc85();
+
     void testSwj();
 signals:
 private:

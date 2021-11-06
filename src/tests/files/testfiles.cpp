@@ -23,8 +23,31 @@ void TestFiles::testOsc()
                        },                                //
                        [](auto &&arg) { Q_UNUSED(arg) }, //
                        [](std::unique_ptr<TrendViewModel> &model) {
-                           QCOMPARE(model->MainPoints.size(), 498);
-                           QCOMPARE(model->Len, 498);
+                           QCOMPARE(model->mainPoints().size(), 498);
+                           QCOMPARE(model->length(), 498);
+                       } //
+                   },
+            item);
+    }
+}
+
+void TestFiles::testOsc85()
+{
+    OscManager oscManager;
+    auto fileVector = oscManager.loadFromFile(":/osc/37353239303451123f0033-8585-2005-6730917119207093248.osc");
+    QCOMPARE(fileVector.size(), 2);
+    for (auto &item : fileVector)
+    {
+        std::visit(overloaded {
+                       [](S2DataTypes::OscHeader &record) {
+                           QCOMPARE(record.len, 1947);
+                           QCOMPARE(record.step, 0.0792380943894);
+                           QCOMPARE(record.time, 6730917119207093248);
+                       },                                //
+                       [](auto &&arg) { Q_UNUSED(arg) }, //
+                       [](std::unique_ptr<TrendViewModel> &model) {
+                           QCOMPARE(model->mainPoints().size(), 1947);
+                           QCOMPARE(model->length(), 1947);
                        } //
                    },
             item);
@@ -36,18 +59,14 @@ void TestFiles::testSwj()
     SwjManager swjManager;
     OscManager oscManager;
 
-    auto fileVector = oscManager.loadFromFile(":/swj/356_2.swj");
+    constexpr char path[] = ":/swj/37353239303451123f0033-8585-1110420049-6730912496292894630.swj";
+
+    auto fileVector = oscManager.loadFromFile(path);
     {
-        auto oscVector = swjManager.loadFromFile(":/swj/356_2.swj");
+        auto oscVector = swjManager.loadFromFile(path);
         std::move(oscVector.begin(), oscVector.end(), std::back_inserter(fileVector));
     }
     QCOMPARE(fileVector.size(), 3);
-    auto fileVector2 = oscManager.loadFromFile(":/swj/1337.swj");
-    {
-        auto oscVector = swjManager.loadFromFile(":/swj/1337.swj");
-        std::move(oscVector.begin(), oscVector.end(), std::back_inserter(fileVector2));
-    }
-    QCOMPARE(fileVector2.size(), 3);
 
     auto checkModel = [](SwjModel &model) {
         auto commonModel = model.commonModel.get();
@@ -64,30 +83,14 @@ void TestFiles::testSwj()
     {
         std::visit(overloaded {
                        [](S2DataTypes::OscHeader &record) {
-                           QCOMPARE(record.len, 3840);
+                           QCOMPARE(record.len, 4096);
                            QCOMPARE(record.step, 0.0792380943894);
-                           QCOMPARE(record.time, 6665603355934695424);
+                           QCOMPARE(record.time, 6730912496293968896);
                        },          //
                        checkModel, //
                        [](std::unique_ptr<TrendViewModel> &model) {
-                           QCOMPARE(model->MainPoints.size(), 3840);
-                           QCOMPARE(model->Len, 3840);
-                       } //
-                   },
-            item);
-    }
-    for (auto &item : fileVector2)
-    {
-        std::visit(overloaded {
-                       [](S2DataTypes::OscHeader &record) {
-                           QCOMPARE(record.len, 2098);
-                           QCOMPARE(record.step, 0.0792380943894);
-                           QCOMPARE(record.time, 6904198229938224128);
-                       },          //
-                       checkModel, //
-                       [](std::unique_ptr<TrendViewModel> &model) {
-                           QCOMPARE(model->MainPoints.size(), 2098);
-                           QCOMPARE(model->Len, 2098);
+                           QCOMPARE(model->mainPoints().size(), 4096);
+                           QCOMPARE(model->length(), 4096);
                        } //
                    },
             item);
