@@ -21,6 +21,10 @@ constexpr char group[] = "group";
 constexpr char type[] = "type";
 constexpr char desc[] = "description";
 constexpr char toolTip[] = "toolTip";
+constexpr char record[] = "record";
+constexpr char key[] = "key";
+constexpr char value[] = "value";
+constexpr char map[] = "map";
 }
 
 XmlParser::XmlParser()
@@ -64,11 +68,6 @@ DataTypes::Alarm XmlParser::parseAlarm(QDomElement domElement)
         const auto name = element.attribute(keys::name, "");
         if (name.contains("flags", Qt::CaseInsensitive))
             alarm.flags = parseHexInt64(element);
-
-        //        element = element.nextSiblingElement(keys::unsigned32);
-
-        //        if (name.contains("addr", Qt::CaseInsensitive))
-        //            alarm.startAddr = parseInt32(element);
     }
 
     return alarm;
@@ -480,7 +479,7 @@ check::detail::Record XmlParserHelper::parseRecordCheck(QDomElement domElement)
         }
         else
         {
-            for (auto i = 0; i != rec.count; i++)
+            for (auto i = 1; i <= rec.count; i++)
             {
                 str.push_back(desc.arg(i));
             }
@@ -488,19 +487,6 @@ check::detail::Record XmlParserHelper::parseRecordCheck(QDomElement domElement)
         rec.desc = str;
     }
 
-    //    auto arrayElement = domElement.firstChildElement(keys::stringArray);
-    //    if (arrayElement.isNull())
-    //        return rec;
-    //    auto items = XmlParser::parseStringList(arrayElement);
-    //    assert(rec.count == items.count());
-
-    //    for (auto &&item : items)
-    //    {
-    //        if (rec.desc.has_value())
-    //            rec.desc->push_back(desc.arg(item));
-    //        else
-    //            rec.desc = QStringList(desc.arg(item));
-    //    }
     return rec;
 }
 
@@ -537,7 +523,7 @@ check::detail::Signals XmlParserHelper::parseSignals(QDomElement domElement)
 
 check::itemVariant XmlParser::parseRecordCheck(QDomElement domElement)
 {
-    auto record = domElement.firstChildElement("record");
+    auto record = domElement.firstChildElement(keys::record);
     if (record.isNull())
         return XmlParserHelper::parseRecordCheck(domElement);
 
@@ -550,7 +536,7 @@ check::itemVariant XmlParser::parseRecordCheck(QDomElement domElement)
     while (!record.isNull())
     {
         recordList.records.emplace_back(XmlParserHelper::parseRecordCheck(record));
-        record = record.nextSiblingElement("record");
+        record = record.nextSiblingElement(keys::record);
     }
     return std::move(recordList);
 }
@@ -658,7 +644,7 @@ void XmlParser::traverseNode(const QDomNode &node, ModuleSettings *const setting
 
                 if (domElement.tagName() == "version")
                 {
-                    if (isOutdated(StdFunc::StrToVer(domElement.text()), settings->startupInfoBlock.Fwver))
+                    if (settings->startupInfoBlock.isOutdated(StdFunc::StrToVer(domElement.text())))
                     {
                         qWarning("Outdated module firmware, please update to latest");
                     }
@@ -705,7 +691,7 @@ void XmlParser::traverseNode(const QDomNode &node, ModuleSettings *const setting
                     domNode = domNode.nextSibling();
                     continue;
                 }
-                if (domElement.tagName() == "record")
+                if (domElement.tagName() == keys::record)
                 {
 
                     settings->configSettings.general.push_back(
@@ -730,7 +716,7 @@ void XmlParser::traverseNode(const QDomNode &node, ConfigSettings &settings)
             QDomElement domElement = domNode.toElement();
             if (!domElement.isNull())
             {
-                if (domElement.tagName() == "record")
+                if (domElement.tagName() == keys::record)
                 {
 #ifdef XML_DEBUG
                     qDebug() << domElement.text();
@@ -745,7 +731,7 @@ void XmlParser::traverseNode(const QDomNode &node, ConfigSettings &settings)
                     domNode = domNode.nextSibling();
                     continue;
                 }
-                if (domElement.tagName() == "map")
+                if (domElement.tagName() == keys::map)
                 {
                     *settings.s2categories = parseMap<categoryMap>(domElement);
                     qDebug() << *settings.s2categories;
@@ -767,7 +753,7 @@ void XmlParser::traverseNode(const QDomNode &node, categoryMap &settings)
             QDomElement domElement = domNode.toElement();
             if (!domElement.isNull())
             {
-                if (domElement.tagName() == "map")
+                if (domElement.tagName() == keys::map)
                 {
                     settings = parseMap<categoryMap>(domElement);
                     qDebug() << settings;
@@ -803,7 +789,7 @@ void XmlParser::traverseNodeS2(const QDomNode &node, QList<DataTypes::RecordPair
                     continue;
                 }
 
-                if (domElement.tagName() == "record")
+                if (domElement.tagName() == keys::record)
                 {
 
                     settings.push_back(parseRecordConfig(domElement, widgets));
@@ -863,7 +849,7 @@ CheckItem XmlParser::traverseNodeCheck(const QDomNode &node)
                     continue;
                 }
 
-                if (domElement.tagName() == "record")
+                if (domElement.tagName() == keys::record)
                 {
 
                     checkItem.itemsVector.emplace_back(parseRecordCheck(domElement));
@@ -938,11 +924,11 @@ template <typename Container> Container XmlParser::parseMap(QDomElement domEleme
                     while (i != nodes.count())
                     {
                         domElement = nodes.item(i++).toElement();
-                        if (domElement.tagName() == "key")
+                        if (domElement.tagName() == keys::key)
                         {
                             key = QVariant(domElement.text()).value<Key>();
                         }
-                        else if (domElement.tagName() == "value")
+                        else if (domElement.tagName() == keys::value)
                         {
                             if constexpr (std::is_same_v<QString, Value>)
                             {

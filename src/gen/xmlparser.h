@@ -19,8 +19,6 @@ class XmlParser
 public:
     XmlParser();
 
-    //  static check::detail::Signals
-
     static config::Item parseItem(QDomElement domElement, ctti::unnamed_type_id_t parentType);
     static void traverseNode(const QDomNode &node, ModuleSettings *const settings, ConfigSettings &configSettings);
     static void traverseNode(const QDomNode &node, ConfigSettings &settings);
@@ -50,10 +48,6 @@ private:
     static void mergeWidget(const QDomElement &domElement, config::widgetMap *const s2widgetMap, BciNumber id);
 
     static bool isCorrectModule(const QString &typem, const QString &typeb, quint16 m_typem, quint16 m_typeb);
-    static bool isOutdated(quint32 configVersion, quint32 realVersion)
-    {
-        return realVersion < configVersion;
-    }
 };
 
 class XmlParserHelper
