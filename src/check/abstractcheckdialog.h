@@ -120,7 +120,8 @@ protected:
     QList<BdUIStruct> m_BdUIList;
 
     bool XlsxWriting;
-    const QString ValuesFormat = "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; font: bold; }";
+    static constexpr char ValuesFormat[]
+        = "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; font: bold; }";
     void uponInterfaceSetting() override;
 
 private slots:
@@ -147,7 +148,7 @@ private:
     void setupUI();
 
     void setup(const check::detail::Record &arg, QGroupBox *gb);
-    void setup(const check::detail::RecordList &arg, QGroupBox *gb, size_t &rowCount);
+    void setup(const check::detail::RecordList &arg, QGroupBox *gb);
 };
 
 #endif // ABSTRACTCHECKDIALOG_H

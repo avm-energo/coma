@@ -7,6 +7,7 @@
 #include "../gen/stdfunc.h"
 #include "../widgets/wd_func.h"
 //#include "xlsxdocument.h"
+#include "../gen/s2helper.h"
 #include "../widgets/helper.h"
 
 #include <QCoreApplication>
@@ -371,21 +372,43 @@ void CheckDialog::setupUI()
         QVBoxLayout *lyout = new QVBoxLayout;
         auto values = itemByGroup.values(key);
         for (auto it = values.crbegin(); it != values.crend(); it++)
-        //    for (auto &&value : itemByGroup.values(key))
         {
-            //...//
             QGroupBox *gb = new QGroupBox();
             std::visit(overloaded { [&](const check::detail::Record &arg) { setup(arg, gb); },
-                           [&](const check::detail::RecordList &arg) {
-                               size_t rowCount = 0;
-                               setup(arg, gb, rowCount);
-                           } },
+                           [&](const check::detail::RecordList &arg) { setup(arg, gb); } },
                 *it);
             lyout->addWidget(gb);
         }
         lyout->addStretch(100);
         w->setLayout(lyout);
         m_BdUIList.push_back({ m_categories.value(key), w });
+
+        for (auto &&sig : m_item.signlsVec)
+        {
+
+            auto search = sig.groups.find(key);
+            if (search != sig.groups.cend())
+            {
+                using namespace DataTypes;
+                switch (sig.type.hash())
+                {
+
+                case ctti::unnamed_type_id<float>().hash():
+                {
+                    w->setFloatBdQuery({ { sig.start_addr, sig.count } });
+                    break;
+                }
+
+                case ctti::unnamed_type_id<DWORD>().hash():
+                {
+                    w->setBsBdQuery({ { sig.start_addr, sig.count } });
+                    break;
+                }
+                default:
+                    assert(false);
+                }
+            }
+        }
     }
     m_BdUIList.first().widget->setUpdatesEnabled();
 }
@@ -412,7 +435,7 @@ void CheckDialog::setup(const check::detail::Record &arg, QGroupBox *gb)
     gb->setLayout(gridlyout);
 }
 
-void CheckDialog::setup(const check::detail::RecordList &arg, QGroupBox *gb, size_t &rowCount)
+void CheckDialog::setup(const check::detail::RecordList &arg, QGroupBox *gb)
 {
     gb->setTitle(arg.header);
 
