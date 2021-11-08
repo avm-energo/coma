@@ -779,9 +779,8 @@
 		<widget>
 			<type>CheckBoxGroup</type>
 			<group>100</group>
-			<string>Тип входа №0…15</string>
+			<string>Тип входа</string>
 			<string-array>
-				<item>Не использовать вход 0</item>
 				<item>Не использовать вход 1</item>
 				<item>Не использовать вход 2</item>
 				<item>Не использовать вход 3</item>
@@ -797,6 +796,7 @@
 				<item>Не использовать вход 13</item>
 				<item>Не использовать вход 14</item>
 				<item>Не использовать вход 15</item>
+				<item>Не использовать вход 16</item>
 			</string-array>
 			<count>16</count>
 		</widget>
@@ -807,7 +807,7 @@
 		<widget>
 			<type>DoubleSpinBoxGroup</type>
 			<group>100</group>
-			<string>Время фильтрации</string>
+			<string>Время фильтрации, 250 мкс</string>
 			<count>11</count>
 			<min>0</min>
 			<max>65536</max>
@@ -927,7 +927,7 @@
 		<widget>
 			<type>CheckBoxGroup</type>
 			<group>100</group>
-			<string>Тип входа №0…15</string>
+			<string>Тип входа</string>
 			<string-array>
 				<item>Не использовать вход 1</item>
 				<item>Не использовать вход 2</item>
@@ -940,6 +940,11 @@
 				<item>Не использовать вход 9</item>
 				<item>Не использовать вход 10</item>
 				<item>Не использовать вход 11</item>
+				<item>Не использовать вход 12</item>
+				<item>Не использовать вход 13</item>
+				<item>Не использовать вход 14</item>
+				<item>Не использовать вход 15</item>
+				<item>Не использовать вход 16</item>
 			</string-array>
 			<count>11</count>
 		</widget>
