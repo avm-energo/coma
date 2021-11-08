@@ -381,8 +381,6 @@ void CheckDialog::setupUI()
         }
         lyout->addStretch(100);
         w->setLayout(lyout);
-        m_BdUIList.push_back({ m_categories.value(key), w });
-
         for (auto &&sig : m_item.signlsVec)
         {
 
@@ -395,13 +393,13 @@ void CheckDialog::setupUI()
 
                 case ctti::unnamed_type_id<float>().hash():
                 {
-                    w->setFloatBdQuery({ { sig.start_addr, sig.count } });
+                    w->addFloatBd({ sig.start_addr, sig.count });
                     break;
                 }
 
                 case ctti::unnamed_type_id<DWORD>().hash():
                 {
-                    w->setBsBdQuery({ { sig.start_addr, sig.count } });
+                    w->addSpBd({ sig.start_addr, sig.count });
                     break;
                 }
                 default:
@@ -409,6 +407,8 @@ void CheckDialog::setupUI()
                 }
             }
         }
+
+        m_BdUIList.push_back({ m_categories.value(key), w });
     }
     m_BdUIList.first().widget->setUpdatesEnabled();
 }
