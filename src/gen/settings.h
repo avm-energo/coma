@@ -48,10 +48,16 @@ struct ModuleSettings
     int interfaceType;
 };
 
+struct CheckItem
+{
+    QString header;
+    check::itemVector itemsVector;
+    check::signalsVector signlsVec;
+};
+
 struct CheckSettings
 {
-    check::itemVector items;
-    check::signalsVector signlsVec;
+    std::vector<CheckItem> items;
     categoryMap categories;
 };
 

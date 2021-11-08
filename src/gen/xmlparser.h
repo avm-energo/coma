@@ -28,6 +28,7 @@ public:
     static void traverseNodeS2(
         const QDomNode &node, QList<DataTypes::RecordPair> &settings, config::widgetMap *widgets);
     static void traverseNodeCheck(const QDomNode &node, CheckSettings &settings);
+    static CheckItem traverseNodeCheck(const QDomNode &node);
 
 private:
     static DataTypes::Alarm parseAlarm(QDomElement domElement);

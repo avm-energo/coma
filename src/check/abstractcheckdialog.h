@@ -137,11 +137,12 @@ class CheckDialog : public AbstractCheckDialog
 {
     Q_OBJECT
 public:
-    explicit CheckDialog(const CheckSettings &settings, QWidget *parent = nullptr);
+    explicit CheckDialog(const CheckItem &item, const categoryMap &categories, QWidget *parent = nullptr);
     ~CheckDialog() override;
 
 private:
-    const CheckSettings &m_settings;
+    const CheckItem &m_item;
+    const categoryMap &m_categories;
 
     void setupUI();
 

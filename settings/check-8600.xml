@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
  xsi:noNamespaceSchemaLocation="check-board.xsd">
-    <signals>
-        <type>float</type>
-        <uint-set>
-            <item>200</item>
-            <item>210</item>
-        </uint-set>
-        <start-addr>6040</start-addr>
-        <count>36</count>
-    </signals>
     <check header="Вибрации">
+        <signals>
+            <type>float</type>
+            <uint-set>
+                <item>200</item>
+                <item>210</item>
+            </uint-set>
+            <start-addr>6040</start-addr>
+            <count>36</count>
+        </signals>
         <record header="Среднеквадратичные значения виброускорений, м/с2" desc="Датчик №%1">
             <group>200</group>
             <start-addr>6040</start-addr>

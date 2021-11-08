@@ -344,8 +344,8 @@ void AbstractCheckDialog::SetTimerPeriod()
         Timer->start();
 }
 
-CheckDialog::CheckDialog(const CheckSettings &settings, QWidget *parent)
-    : AbstractCheckDialog(parent), m_settings(settings)
+CheckDialog::CheckDialog(const CheckItem &item, const categoryMap &categories, QWidget *parent)
+    : AbstractCheckDialog(parent), m_item(item), m_categories(categories)
 {
     Timer->setInterval(ANMEASINT);
     setupUI();
@@ -357,8 +357,8 @@ CheckDialog::~CheckDialog()
 
 void CheckDialog::setupUI()
 {
-    QMultiMap<uint16_t, decltype(m_settings.items)::value_type> itemByGroup;
-    for (auto &&item : m_settings.items)
+    QMultiMap<uint16_t, check::itemVector::value_type> itemByGroup;
+    for (auto &&item : m_item.itemsVector)
     {
         std::visit(overloaded { [&](const check::detail::Record &arg) { itemByGroup.insert(arg.group.value(), arg); },
                        [&](const check::detail::RecordList &arg) { itemByGroup.insert(arg.group, arg); } },
@@ -385,7 +385,7 @@ void CheckDialog::setupUI()
         }
         lyout->addStretch(100);
         w->setLayout(lyout);
-        m_BdUIList.push_back({ m_settings.categories.value(key), w });
+        m_BdUIList.push_back({ m_categories.value(key), w });
     }
     m_BdUIList.first().widget->setUpdatesEnabled();
 }

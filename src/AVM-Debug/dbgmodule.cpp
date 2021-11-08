@@ -107,7 +107,8 @@ void DbgModule::create(Modules::BaseBoard typeB, Modules::MezzanineBoard typeM)
 
         CheckKIVDialog *cdkiv = new CheckKIVDialog;
         addDialogToList(cdkiv, "Проверка");
-        addDialogToList(new CheckDialog(gsettings.check), "Проверка2");
+        addDialogToList(new CheckDialog(gsettings.check.items.at(0), gsettings.check.categories),
+            gsettings.check.items.at(0).header);
         //  CheckDialog *check = new CheckDialog(gsettings.check);
 
         addDialogToList(new StartupKIVDialog, "Начальные\nзначения");
@@ -117,7 +118,8 @@ void DbgModule::create(Modules::BaseBoard typeB, Modules::MezzanineBoard typeM)
         qDebug("Here is AVTUK-8600");
         addDialogToList(new ConfigDialog(&configV, settings()->configSettings.general), "Конфигурирование", "conf1");
         addDialogToList(new CheckKDVVibrDialog, "Вибрации");
-        addDialogToList(new CheckDialog(gsettings.check), "Проверка2");
+        addDialogToList(new CheckDialog(gsettings.check.items.at(0), gsettings.check.categories),
+            gsettings.check.items.at(0).header);
     }
     if ((typeB == BaseBoard::MTB_80) && (typeM == MezzanineBoard::MTM_82))
     {

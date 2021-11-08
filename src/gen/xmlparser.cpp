@@ -827,17 +827,11 @@ void XmlParser::traverseNodeCheck(const QDomNode &node, CheckSettings &settings)
             QDomElement domElement = domNode.toElement();
             if (!domElement.isNull())
             {
-                if (domElement.tagName() == "signals")
-                {
-                    settings.signlsVec.push_back(XmlParserHelper::parseSignals(domElement));
-                    domNode = domNode.nextSibling();
-                    continue;
-                }
 
-                if (domElement.tagName() == "record")
+                if (domElement.tagName() == "check")
                 {
 
-                    settings.items.push_back(parseRecordCheck(domElement));
+                    settings.items.emplace_back(traverseNodeCheck(domElement));
                     domNode = domNode.nextSibling();
                     continue;
                 }
@@ -846,6 +840,42 @@ void XmlParser::traverseNodeCheck(const QDomNode &node, CheckSettings &settings)
         traverseNodeCheck(domNode, settings);
         domNode = domNode.nextSibling();
     }
+}
+
+CheckItem XmlParser::traverseNodeCheck(const QDomNode &node)
+{
+    CheckItem checkItem;
+    QString header = node.toElement().attribute("header");
+    assert(!header.isEmpty());
+    checkItem.header = header;
+    QDomNode domNode = node.firstChild();
+    while (!domNode.isNull())
+    {
+        if (domNode.isElement())
+        {
+            QDomElement domElement = domNode.toElement();
+            if (!domElement.isNull())
+            {
+                if (domElement.tagName() == "signals")
+                {
+                    checkItem.signlsVec.emplace_back(XmlParserHelper::parseSignals(domElement));
+                    domNode = domNode.nextSibling();
+                    continue;
+                }
+
+                if (domElement.tagName() == "record")
+                {
+
+                    checkItem.itemsVector.emplace_back(parseRecordCheck(domElement));
+                    domNode = domNode.nextSibling();
+                    continue;
+                }
+            }
+        }
+        //   traverseNodeCheck(domNode, settings);
+        domNode = domNode.nextSibling();
+    }
+    return checkItem;
 }
 
 template <typename T> std::vector<T> XmlParser::parseVector(QDomElement domElement)
