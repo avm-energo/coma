@@ -52,6 +52,8 @@ add_library(
   errorprotocolwidget.h
   etableview.cpp
   etableview.h
+  flowlayout.cpp
+  flowlayout.h
   ipctrl.cpp
   ipctrl.h
   passwordlineedit.cpp
