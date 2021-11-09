@@ -1486,7 +1486,7 @@
 		<widget>
 			<type>QDoubleSpinBox</type>
 			<group>300</group>
-			<string>Время WD</string>
+			<string>Время WD, с шагом 10 мс</string>
 			<min>0</min>
 			<max>254</max>
 			<decimals>0</decimals>
