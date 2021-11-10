@@ -1,6 +1,7 @@
 #include "checkboxgroup.h"
 
 #include "checkboxgroup_p.h"
+#include "flowlayout.h"
 
 #include <QDebug>
 #include <QVBoxLayout>
@@ -12,7 +13,7 @@ CheckBoxGroup::CheckBoxGroup(const QStringList &desc, const QList<int> &ignorePo
     d->q_ptr = this;
     d->setDescription(desc);
     d->setHiddenPositions(ignorePos);
-    QGridLayout *gridlyout = new QGridLayout;
+    FlowLayout *flowLayout = new FlowLayout;
     for (auto i = 0; i != d->description().size(); ++i)
     {
         const QString name = d->description().at(i);
@@ -20,14 +21,14 @@ CheckBoxGroup::CheckBoxGroup(const QStringList &desc, const QList<int> &ignorePo
             continue;
         QCheckBox *checkBox = new QCheckBox(name, this);
         checkBox->setObjectName(QString::number(i));
-        gridlyout->addWidget(checkBox, i / 2, i % 2);
+        flowLayout->addWidget(checkBox);
         connect(checkBox, &QCheckBox::stateChanged, this, [=](const int value) {
             Qt::CheckState state = Qt::CheckState(value);
             if (!(state == Qt::Checked && d->test(i)) && !(state == Qt::Unchecked && !d->test(i)))
                 d->flip(i);
         });
     }
-    setLayout(gridlyout);
+    setLayout(flowLayout);
 }
 
 CheckBoxGroup::CheckBoxGroup(const QStringList &desc, QWidget *parent)
@@ -36,20 +37,20 @@ CheckBoxGroup::CheckBoxGroup(const QStringList &desc, QWidget *parent)
     Q_D(CheckBoxGroup);
     d->q_ptr = this;
     d->setDescription(desc);
-    QGridLayout *gridlyout = new QGridLayout;
+    FlowLayout *flowLayout = new FlowLayout;
     for (auto i = 0; i != d->description().size(); ++i)
     {
         const QString name = d->description().at(i);
         QCheckBox *checkBox = new QCheckBox(name, this);
         checkBox->setObjectName(QString::number(i));
-        gridlyout->addWidget(checkBox, i / 2, i % 2);
+        flowLayout->addWidget(checkBox);
         connect(checkBox, &QCheckBox::stateChanged, this, [=](const int value) {
             Qt::CheckState state = Qt::CheckState(value);
             if (!(state == Qt::Checked && d->test(i)) && !(state == Qt::Unchecked && !d->test(i)))
                 d->flip(i);
         });
     }
-    setLayout(gridlyout);
+    setLayout(flowLayout);
 }
 
 CheckBoxGroup::CheckBoxGroup(const QStringList &desc, int count, QWidget *parent)
@@ -58,20 +59,21 @@ CheckBoxGroup::CheckBoxGroup(const QStringList &desc, int count, QWidget *parent
     Q_D(CheckBoxGroup);
     d->q_ptr = this;
     d->setDescription(desc);
-    QGridLayout *gridlyout = new QGridLayout;
+    FlowLayout *flowLayout = new FlowLayout;
+
     for (auto i = 0; i != std::min(d->description().size(), count); ++i)
     {
         const QString name = d->description().at(i);
         QCheckBox *checkBox = new QCheckBox(name, this);
         checkBox->setObjectName(QString::number(i));
-        gridlyout->addWidget(checkBox, i / 2, i % 2);
+        flowLayout->addWidget(checkBox);
         connect(checkBox, &QCheckBox::stateChanged, this, [=](const int value) {
             Qt::CheckState state = Qt::CheckState(value);
             if (!(state == Qt::Checked && d->test(i)) && !(state == Qt::Unchecked && !d->test(i)))
                 d->flip(i);
         });
     }
-    setLayout(gridlyout);
+    setLayout(flowLayout);
 }
 
 CheckBoxGroup::~CheckBoxGroup()

@@ -51,35 +51,6 @@
 #include "flowlayout.h"
 
 #include <QtWidgets>
-//! [1]
-
-//! [1]
-
-//! [2]
-
-//! [2]
-
-//! [3]
-
-//! [3]
-
-//! [4]
-
-//! [4]
-
-//! [5]
-
-//! [5]
-
-//! [6]
-
-//! [6]
-
-//! [7]
-
-//! [7]
-
-//! [8]
 
 QSize FlowLayout::minimumSize() const
 {
@@ -91,9 +62,7 @@ QSize FlowLayout::minimumSize() const
     size += QSize(margins.left() + margins.right(), margins.top() + margins.bottom());
     return size;
 }
-//! [8]
 
-//! [9]
 int FlowLayout::doLayout(const QRect &rect, bool testOnly) const
 {
     int left, top, right, bottom;
@@ -102,13 +71,10 @@ int FlowLayout::doLayout(const QRect &rect, bool testOnly) const
     int x = effectiveRect.x();
     int y = effectiveRect.y();
     int lineHeight = 0;
-    //! [9]
 
-    //! [10]
     auto result = std::max_element(itemList.cbegin(), itemList.cend(),
         [](QLayoutItem *lhs, QLayoutItem *rhs) { return lhs->sizeHint().width() < rhs->sizeHint().width(); });
     const auto maxWidth = (*result)->sizeHint().width();
-    qDebug() << maxWidth;
 
     for (QLayoutItem *item : qAsConst(itemList))
     {
@@ -119,8 +85,7 @@ int FlowLayout::doLayout(const QRect &rect, bool testOnly) const
         int spaceY = verticalSpacing();
         if (spaceY == -1)
             spaceY = wid->style()->layoutSpacing(QSizePolicy::PushButton, QSizePolicy::PushButton, Qt::Vertical);
-        //! [10]
-        //! [11]
+
         int nextX = x + maxWidth + spaceX;
         if (nextX - spaceX > effectiveRect.right() && lineHeight > 0)
         {
@@ -138,8 +103,7 @@ int FlowLayout::doLayout(const QRect &rect, bool testOnly) const
     }
     return y + lineHeight - rect.y() + bottom;
 }
-//! [11]
-//! [12]
+
 int FlowLayout::smartSpacing(QStyle::PixelMetric pm) const
 {
     QObject *parent = this->parent();
@@ -157,4 +121,3 @@ int FlowLayout::smartSpacing(QStyle::PixelMetric pm) const
         return static_cast<QLayout *>(parent)->spacing();
     }
 }
-//! [12]

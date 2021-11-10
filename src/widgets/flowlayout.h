@@ -54,7 +54,7 @@
 #include <QLayout>
 #include <QRect>
 #include <QStyle>
-//! [0]
+
 class FlowLayout : public QLayout
 {
     Q_OBJECT
@@ -71,7 +71,7 @@ public:
     ~FlowLayout() override
     {
         QLayoutItem *item;
-        while ((item = takeAt(0)))
+        while ((item = FlowLayout::takeAt(0)))
             delete item;
     }
 
@@ -147,6 +147,5 @@ private:
     int m_hSpace;
     int m_vSpace;
 };
-//! [0]
 
 #endif // FLOWLAYOUT_H
