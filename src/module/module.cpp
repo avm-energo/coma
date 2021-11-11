@@ -127,10 +127,12 @@ bool Module::loadUsioSettings(const Modules::StartupInfoBlock &startupInfoBlock)
     QString configGeneral("config-general");
     if (!obtainXmlFile(configGeneral))
         return false;
+    assert(m_settings->configSettings.general.isEmpty());
     if (!obtainXmlConfig(configGeneral, m_settings->configSettings.general))
         return false;
     QString configBase("config-%100");
     configBase = configBase.arg(startupInfoBlock.MTypeB, 0, 16);
+    assert(m_settings->configSettings.base.isEmpty());
     if (!obtainXmlFile(configBase))
         qWarning() << Error::OpenError << configBase;
     else if (!obtainXmlConfig(configBase, m_settings->configSettings.base))
@@ -140,6 +142,7 @@ bool Module::loadUsioSettings(const Modules::StartupInfoBlock &startupInfoBlock)
     {
         QString configMezz("config-00%1");
         configMezz = configMezz.arg(startupInfoBlock.MTypeM, 0, 16);
+        assert(m_settings->configSettings.mezz.isEmpty());
         if (!obtainXmlFile(configMezz))
             qWarning() << Error::OpenError << configMezz;
         else if (!obtainXmlConfig(configMezz, m_settings->configSettings.mezz))
@@ -356,9 +359,7 @@ quint64 Module::configVersion() const
 bool Module::isConfigOutdated() const
 {
     GitVersion version;
-
     return configVersion() < version.getGitCounter();
-    return false;
 }
 
 void Module::eraseSettings() const
