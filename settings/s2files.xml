@@ -459,10 +459,10 @@
 		<widget>
 			<type>QDoubleSpinBox</type>
 			<group>300</group>
-			<string>Пороговое значение, при превышении которого между замерами, фильтр не работает</string>
+			<string>Доля от диапазона, при превышении которой между замерами фильтр не работает</string>
 			<min>0</min>
-			<max>65534</max>
-			<decimals>0</decimals>
+			<max>1</max>
+			<decimals>2</decimals>
 		</widget>
 	</record>
 	<record>
@@ -471,10 +471,9 @@
 		<widget>
 			<type>QDoubleSpinBox</type>
 			<group>300</group>
-			<string>Пороговое значение, при превышении которого начинается запись осциллограмм</string>
-			<toolTip>Пороговое значение, при превышении которого начинается запись осциллограмм (одно на все каналы)</toolTip>
+			<string>Доля от диапазона, при превышении которой начинается запись осциллограмм</string>
 			<min>0</min>
-			<max>65534</max>
+			<max>1</max>
 			<decimals>2</decimals>
 		</widget>
 	</record>
@@ -669,8 +668,7 @@
 		<widget>
 			<type>QDoubleSpinBox</type>
 			<group>300</group>
-			<string>Пороговое значение, при превышении которого начинается запись осциллограмм</string>
-			<toolTip>Пороговое значение, при превышении которого начинается запись осциллограмм (одно на все каналы)</toolTip>
+			<string>Гистерезис для уставок</string>
 			<min>0</min>
 			<max>65534</max>
 			<decimals>2</decimals>
@@ -695,10 +693,10 @@
 		<widget>
 			<type>QDoubleSpinBox</type>
 			<group>300</group>
-			<string>Пороговое значение, при превышении которого между замерами, фильтр не работает</string>
+			<string>Доля от диапазона, при превышении которой между замерами фильтр не работает</string>
 			<min>0</min>
-			<max>65534</max>
-			<decimals>0</decimals>
+			<max>1</max>
+			<decimals>2</decimals>
 		</widget>
 	</record>
 	<record>
@@ -707,9 +705,9 @@
 		<widget>
 			<type>QDoubleSpinBox</type>
 			<group>300</group>
-			<string>Гистерезис для уставок</string>
+			<string>Доля от диапазона, при превышении которой начинается запись осциллограмм</string>
 			<min>0</min>
-			<max>65534</max>
+			<max>1</max>
 			<decimals>2</decimals>
 		</widget>
 	</record>
@@ -1185,7 +1183,8 @@
 		<widget>
 			<type>QDoubleSpinBox</type>
 			<group>300</group>
-			<string>Пороговое значение, при превышении которого между замерами, фильтр не работает</string>
+			<string>Порог фильтрации</string>
+			<toolTip>Пороговое значение в инженерных единицах, при превышении которого между двумя последовательными замерами, фильтр не срабатывает</toolTip>
 			<min>0</min>
 			<max>254</max>
 			<decimals>0</decimals>
@@ -1326,7 +1325,8 @@
 		<widget>
 			<type>QDoubleSpinBox</type>
 			<group>300</group>
-			<string>Пороговое значение, при превышении которого между замерами, фильтр не работает</string>
+			<string>Порог фильтрации</string>
+			<toolTip>Пороговое значение в инженерных единицах, при превышении которого между двумя последовательными замерами, фильтр не срабатывает</toolTip>
 			<min>0</min>
 			<max>254</max>
 			<decimals>0</decimals>
