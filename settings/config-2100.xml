@@ -42,7 +42,7 @@
     </record>
     <record>
         <id>112</id>
-        <defaultValue>0.02</defaultValue>
+        <defaultValue>2</defaultValue>
     </record>
     <record>
         <id>113</id>
@@ -54,7 +54,7 @@
     </record>
     <record>
         <id>115</id>
-        <defaultValue>0.05</defaultValue>
+        <defaultValue>5</defaultValue>
     </record>
     <record>
         <id>116</id>

@@ -30,15 +30,15 @@
     </record>
     <record>
         <id>308</id>
-        <defaultValue>16</defaultValue>
-    </record>
-    <record>
-        <id>309</id>
         <defaultValue>10</defaultValue>
     </record>
     <record>
+        <id>309</id>
+        <defaultValue>16</defaultValue>
+    </record>
+    <record>
         <id>310</id>
-        <defaultValue>0</defaultValue>
+        <defaultValue>2</defaultValue>
     </record>
     <record>
         <id>311</id>
