@@ -21,12 +21,15 @@ public:
     static ctti::unnamed_type_id_t parseType(QDomElement domElement);
     static config::itemVariant parseWidget(QDomElement domElement);
     static DataTypes::RecordPair parseRecord(QDomElement domElement, config::widgetMap *const s2widgetMap);
+    static check::itemVariant parseRecord(QDomElement domElement);
+    static check::detail::Record parseRecordHelper(QDomElement domElement);
     static config::Item parseItem(QDomElement domElement, ctti::unnamed_type_id_t parentType);
     static void traverseNode(const QDomNode &node, ModuleSettings *const settings, ConfigSettings &configSettings);
     static void traverseNode(const QDomNode &node, ConfigSettings &settings);
-    static void traverseNode(const QDomNode &node, CheckSettings &settings);
+    static void traverseNode(const QDomNode &node, categoryMap &settings);
     static void traverseNodeS2(
         const QDomNode &node, QList<DataTypes::RecordPair> &settings, config::widgetMap *widgets);
+    static void traverseNodeCheck(const QDomNode &node, check::itemVector &settings);
 
 private:
     static quint32 parseInt32(QDomElement domElement);

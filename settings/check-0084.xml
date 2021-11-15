@@ -2,37 +2,37 @@
 <root xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
  xsi:noNamespaceSchemaLocation="check-board.xsd">
     <signals>
-        <type>FLOAT</type>
+        <type>float</type>
         <group>1</group>
         <start-addr>101</start-addr>
         <count>2</count>
     </signals>
     <signals>
-        <type>FLOAT</type>
+        <type>float</type>
         <group>1,10</group>
         <start-addr>1000</start-addr>
         <count>16</count>
     </signals>
     <signals>
-        <type>FLOAT</type>
+        <type>float</type>
         <group>1,10</group>
         <start-addr>1100</start-addr>
         <count>16</count>
     </signals>
     <signals>
-        <type>FLOAT</type>
+        <type>float</type>
         <group>1,10</group>
         <start-addr>2400</start-addr>
         <count>7</count>
     </signals>
     <signals>
-        <type>FLOAT</type>
+        <type>float</type>
         <group>1</group>
         <start-addr>2420</start-addr>
         <count>14</count>
     </signals>
     <signals>
-        <type>FLOAT</type>
+        <type>float</type>
         <group>1,10</group>
         <start-addr>4501</start-addr>
         <count>2</count>
@@ -61,32 +61,56 @@
             <record desc="U ф.%1, кВ">
                 <start-addr>1000</start-addr>
                 <count>3</count>
-                <string-array>A,B,C</string-array>
+                <string-array>
+                    <item>A</item>
+                    <item>B</item>
+                    <item>C</item>
+                </string-array>
             </record>
             <record desc="I ф.%1, мА">
                 <start-addr>1100</start-addr>
                 <count>3</count>
-                <string-array>A,B,C</string-array>
+                <string-array>
+                    <item>A</item>
+                    <item>B</item>
+                    <item>C</item>
+                </string-array>
             </record>
             <record desc="C1 ф.%1, пФ">
                 <start-addr>2420</start-addr>
                 <count>3</count>
-                <string-array>A,B,C</string-array>
+                <string-array>
+                    <item>A</item>
+                    <item>B</item>
+                    <item>C</item>
+                </string-array>
             </record>
             <record desc="tgδ ф.%1, %">
                 <start-addr>2423</start-addr>
                 <count>3</count>
-                <string-array>A,B,C</string-array>
+                <string-array>
+                    <item>A</item>
+                    <item>B</item>
+                    <item>C</item>
+                </string-array>
             </record>
             <record desc="∆C ф.%1, %">
                 <start-addr>2426</start-addr>
                 <count>3</count>
-                <string-array>A,B,C</string-array>
+                <string-array>
+                    <item>A</item>
+                    <item>B</item>
+                    <item>C</item>
+                </string-array>
             </record>
             <record desc="∆tgδ ф.%1, %">
                 <start-addr>2429</start-addr>
                 <count>3</count>
-                <string-array>A,B,C</string-array>
+                <string-array>
+                    <item>A</item>
+                    <item>B</item>
+                    <item>C</item>
+                </string-array>
             </record>
         </record>
         <record header="Параметры небаланса токов">
@@ -103,10 +127,20 @@
             <record desc="U %1, кВ">
                 <start-addr>1011</start-addr>
                 <count>3</count>
+                <string-array>
+                    <item>A</item>
+                    <item>B</item>
+                    <item>C</item>
+                </string-array>
             </record>
             <record desc="I %1, мА">
                 <start-addr>1111</start-addr>
                 <count>3</count>
+                <string-array>
+                    <item>A</item>
+                    <item>B</item>
+                    <item>C</item>
+                </string-array>
             </record>
         </record>
         <record header="Угловые значения">
@@ -114,10 +148,20 @@
             <record desc="Phy_U ф.%1, град.">
                 <start-addr>2401</start-addr>
                 <count>3</count>
+                <string-array>
+                    <item>A</item>
+                    <item>B</item>
+                    <item>C</item>
+                </string-array>
             </record>
             <record desc="Phy_I ф.%1, град.">
                 <start-addr>2404</start-addr>
                 <count>3</count>
+                <string-array>
+                    <item>A</item>
+                    <item>B</item>
+                    <item>C</item>
+                </string-array>
             </record>
         </record>
         <record header="Коэффициенты несимметрии">
@@ -125,10 +169,18 @@
             <record desc="KuI%1, %">
                 <start-addr>1114</start-addr>
                 <count>2</count>
+                <string-array>
+                    <item>A</item>
+                    <item>B</item>
+                </string-array>
             </record>
             <record desc="KuU%1, %">
                 <start-addr>1014</start-addr>
                 <count>2</count>
+                <string-array>
+                    <item>A</item>
+                    <item>B</item>
+                </string-array>
             </record>
         </record>
         <record header="Температура">

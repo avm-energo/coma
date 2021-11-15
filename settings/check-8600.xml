@@ -2,7 +2,7 @@
 <root xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
  xsi:noNamespaceSchemaLocation="check-board.xsd">
     <signals>
-        <type>FLOAT</type>
+        <type>float</type>
         <group>200,210</group>
         <start-addr>6040</start-addr>
         <count>36</count>

@@ -253,122 +253,6 @@ bool Module::obtainXmlFile(const QString &filename) const
     return true;
 }
 
-bool Module::obtainXmlConfig(const QString &filename, QList<DataTypes::RecordPair> &config) const
-{
-    QDir dir(m_directory);
-    auto xmlFiles = dir.entryList(QDir::Files).filter(".xml");
-    QDomDocument domDoc;
-    QFile file;
-    for (const auto &xmlFile : xmlFiles)
-    {
-        if (xmlFile.contains(filename, Qt::CaseInsensitive))
-        {
-            file.setFileName(dir.filePath(xmlFile));
-            break;
-        }
-    }
-    if (!file.open(QIODevice::ReadOnly))
-    {
-        qCritical() << Error::FileOpenError << file.fileName();
-        return false;
-    }
-    if (domDoc.setContent(&file))
-    {
-
-        QDomElement domElement = domDoc.documentElement();
-        XmlParser::traverseNodeS2(domElement, config, gsettings.config.s2widgetMap);
-        file.close();
-        return true;
-    }
-    else
-    {
-        file.close();
-        qInfo() << Error::WrongFileError << file.fileName();
-        return false;
-    }
-}
-
-bool Module::loadS2Settings()
-{
-    constexpr auto name = "s2files.xml";
-    QDir dir(m_directory);
-    qDebug() << dir;
-    QDomDocument domDoc;
-    QFile file;
-
-    file.setFileName(dir.filePath(name));
-    if (!file.exists())
-    {
-        dir = QDir(resourceDirectory);
-        if (!QFile::copy(dir.filePath(name), StdFunc::GetSystemHomeDir() + name))
-        {
-            qCritical() << Error::DescError;
-            qInfo() << dir.filePath(name) << StdFunc::GetSystemHomeDir() + name;
-            return false;
-        }
-        return loadS2Settings();
-    }
-    if (file.open(QIODevice::ReadOnly))
-    {
-        if (domDoc.setContent(&file))
-        {
-            QDomElement domElement = domDoc.documentElement();
-            XmlParser::traverseNode(domElement, gsettings.config);
-            file.close();
-            return true;
-        }
-        file.close();
-        qInfo() << Error::WrongFileError << file.fileName();
-        return false;
-    }
-    else
-    {
-        qCritical() << Error::FileOpenError << file.fileName();
-        return false;
-    }
-}
-
-bool Module::loadCheckSettings()
-{
-    constexpr auto name = "check.xml";
-    QDir dir(m_directory);
-    qDebug() << dir;
-    QDomDocument domDoc;
-    QFile file;
-
-    file.setFileName(dir.filePath(name));
-    if (!file.exists())
-    {
-        dir = QDir(resourceDirectory);
-        if (!QFile::copy(dir.filePath(name), StdFunc::GetSystemHomeDir() + name))
-        {
-            qCritical() << Error::DescError;
-            qInfo() << dir.filePath(name) << StdFunc::GetSystemHomeDir() + name;
-            return false;
-        }
-        return loadCheckSettings();
-    }
-
-    if (file.open(QIODevice::ReadOnly))
-    {
-        if (domDoc.setContent(&file))
-        {
-            QDomElement domElement = domDoc.documentElement();
-            XmlParser::traverseNode(domElement, gsettings.check);
-            file.close();
-            return true;
-        }
-        file.close();
-        qInfo() << Error::WrongFileError << file.fileName();
-        return false;
-    }
-    else
-    {
-        qCritical() << Error::FileOpenError << file.fileName();
-        return false;
-    }
-}
-
 quint64 Module::configVersion() const
 {
     QDir directory(StdFunc::GetSystemHomeDir());
@@ -451,4 +335,206 @@ void Module::createCommon()
         addDialogToList(new FWUploadDialog, "Загрузка ВПО");
 
     addDialogToList(new InfoDialog, "О приборе", "info");
+}
+
+// #### C O N F I G ####
+
+bool Module::obtainXmlConfig(const QString &filename, QList<DataTypes::RecordPair> &config) const
+{
+    QDir dir(m_directory);
+    auto xmlFiles = dir.entryList(QDir::Files).filter(".xml");
+    QDomDocument domDoc;
+    QFile file;
+    for (const auto &xmlFile : xmlFiles)
+    {
+        if (xmlFile.contains(filename, Qt::CaseInsensitive))
+        {
+            file.setFileName(dir.filePath(xmlFile));
+            break;
+        }
+    }
+    if (!file.open(QIODevice::ReadOnly))
+    {
+        qCritical() << Error::FileOpenError << file.fileName();
+        return false;
+    }
+    if (domDoc.setContent(&file))
+    {
+
+        QDomElement domElement = domDoc.documentElement();
+        XmlParser::traverseNodeS2(domElement, config, gsettings.config.s2widgetMap);
+        file.close();
+        return true;
+    }
+    else
+    {
+        file.close();
+        qInfo() << Error::WrongFileError << file.fileName();
+        return false;
+    }
+}
+
+bool Module::loadUsioSettings(const Modules::StartupInfoBlock &startupInfoBlock)
+{
+    QString configGeneral("config-general");
+    if (!obtainXmlFile(configGeneral))
+        return false;
+    if (!obtainXmlConfig(configGeneral, m_settings->configSettings.general))
+        return false;
+    QString configBase("config-%100");
+    configBase = configBase.arg(startupInfoBlock.MTypeB, 0, 16);
+    if (!obtainXmlFile(configBase))
+        qWarning() << Error::OpenError << configBase;
+    else if (!obtainXmlConfig(configBase, m_settings->configSettings.base))
+        qWarning() << Error::OpenError << configBase;
+    // if avtuk-3131/3535 ignore config for mezz board
+    if (startupInfoBlock.MTypeB != startupInfoBlock.MTypeM)
+    {
+        QString configMezz("config-00%1");
+        configMezz = configMezz.arg(startupInfoBlock.MTypeM, 0, 16);
+        if (!obtainXmlFile(configMezz))
+            qWarning() << Error::OpenError << configMezz;
+        else if (!obtainXmlConfig(configMezz, m_settings->configSettings.mezz))
+            qWarning() << Error::OpenError << configMezz;
+    }
+    return true;
+}
+
+bool Module::loadS2Settings()
+{
+    constexpr auto name = "s2files.xml";
+    QDir dir(m_directory);
+    qDebug() << dir;
+    QDomDocument domDoc;
+    QFile file;
+
+    file.setFileName(dir.filePath(name));
+    if (!file.exists())
+    {
+        dir = QDir(resourceDirectory);
+        if (!QFile::copy(dir.filePath(name), StdFunc::GetSystemHomeDir() + name))
+        {
+            qCritical() << Error::DescError;
+            qInfo() << dir.filePath(name) << StdFunc::GetSystemHomeDir() + name;
+            return false;
+        }
+        return loadS2Settings();
+    }
+    if (file.open(QIODevice::ReadOnly))
+    {
+        if (domDoc.setContent(&file))
+        {
+            QDomElement domElement = domDoc.documentElement();
+            XmlParser::traverseNode(domElement, gsettings.config);
+            file.close();
+            return true;
+        }
+        file.close();
+        qInfo() << Error::WrongFileError << file.fileName();
+        return false;
+    }
+    else
+    {
+        qCritical() << Error::FileOpenError << file.fileName();
+        return false;
+    }
+}
+
+// #### C H E C K ####
+
+bool Module::obtainXmlCheck(const QString &filename, check::itemVector &check)
+{
+    QDir dir(m_directory);
+    auto xmlFiles = dir.entryList(QDir::Files).filter(".xml");
+    QDomDocument domDoc;
+    QFile file;
+    for (const auto &xmlFile : xmlFiles)
+    {
+        if (xmlFile.contains(filename, Qt::CaseInsensitive))
+        {
+            file.setFileName(dir.filePath(xmlFile));
+            break;
+        }
+    }
+    if (!file.open(QIODevice::ReadOnly))
+    {
+        qCritical() << Error::FileOpenError << file.fileName();
+        return false;
+    }
+    if (domDoc.setContent(&file))
+    {
+
+        QDomElement domElement = domDoc.documentElement();
+        XmlParser::traverseNodeCheck(domElement, check);
+        file.close();
+        return true;
+    }
+    else
+    {
+        file.close();
+        qInfo() << Error::WrongFileError << file.fileName();
+        return false;
+    }
+}
+
+bool Module::loadCheckSettings()
+{
+    constexpr auto name = "check.xml";
+    QDir dir(m_directory);
+    qDebug() << dir;
+    QDomDocument domDoc;
+    QFile file;
+
+    file.setFileName(dir.filePath(name));
+    if (!file.exists())
+    {
+        dir = QDir(resourceDirectory);
+        if (!QFile::copy(dir.filePath(name), StdFunc::GetSystemHomeDir() + name))
+        {
+            qCritical() << Error::DescError;
+            qInfo() << dir.filePath(name) << StdFunc::GetSystemHomeDir() + name;
+            return false;
+        }
+        return loadCheckSettings();
+    }
+
+    if (file.open(QIODevice::ReadOnly))
+    {
+        if (domDoc.setContent(&file))
+        {
+            QDomElement domElement = domDoc.documentElement();
+            XmlParser::traverseNode(domElement, gsettings.check.categories);
+            file.close();
+            const auto &board = Board::GetInstance();
+            return loadCheckSettings(
+                static_cast<Modules::BaseBoard>(board.typeB()), static_cast<Modules::MezzanineBoard>(board.typeM()));
+        }
+        file.close();
+        qInfo() << Error::WrongFileError << file.fileName();
+        return false;
+    }
+    else
+    {
+        qCritical() << Error::FileOpenError << file.fileName();
+        return false;
+    }
+}
+
+bool Module::loadCheckSettings(Modules::BaseBoard typeB, Modules::MezzanineBoard typeM)
+{
+    QString checkBase("check-%100");
+    checkBase = checkBase.arg(typeB, 0, 16);
+    if (!obtainXmlFile(checkBase))
+        qWarning() << Error::OpenError << checkBase;
+    else if (!obtainXmlCheck(checkBase, gsettings.check.items))
+        qWarning() << Error::OpenError << checkBase;
+
+    QString checkMezz("check-00%1");
+    checkMezz = checkMezz.arg(typeM, 0, 16);
+    if (!obtainXmlFile(checkMezz))
+        qWarning() << Error::OpenError << checkMezz;
+    else if (!obtainXmlCheck(checkMezz, gsettings.check.items))
+        qWarning() << Error::OpenError << checkMezz;
+
+    return true;
 }

@@ -56,8 +56,10 @@ public:
         int interfaceType = Board::GetInstance().interfaceType());
     bool obtainXmlFile(const QString &filename) const;
     bool obtainXmlConfig(const QString &filename, QList<DataTypes::RecordPair> &config) const;
+    bool obtainXmlCheck(const QString &filename, check::itemVector &check);
     bool loadS2Settings();
     bool loadCheckSettings();
+    bool loadCheckSettings(Modules::BaseBoard typeB, Modules::MezzanineBoard typeM);
     quint64 configVersion() const;
     bool isConfigOutdated() const;
     void eraseSettings() const;

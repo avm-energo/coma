@@ -29,6 +29,7 @@ namespace detail
     struct RecordList
     {
         uint16_t group;
+        QString header;
         std::vector<Record> records;
     };
 }

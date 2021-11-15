@@ -433,6 +433,58 @@ DataTypes::RecordPair XmlParser::parseRecord(QDomElement domElement, config::wid
     return RecordPair { DataTypes::DataRecV(id, defaultValue), true };
 }
 
+check::detail::Record XmlParser::parseRecordHelper(QDomElement domElement)
+{
+    check::detail::Record rec;
+    bool ok = false;
+    rec.start_addr = domElement.firstChildElement("start-addr").text().toUShort(&ok);
+    assert(ok);
+    auto countElement = domElement.firstChildElement("count");
+    if (!countElement.isNull())
+    {
+        rec.count = domElement.firstChildElement("count").text().toUShort(&ok);
+        assert(ok);
+    }
+
+    auto desc = domElement.attribute("desc");
+    if (!rec.count.has_value())
+    {
+        rec.desc = QStringList(desc);
+        return rec;
+    }
+
+    auto items = parseStringList(domElement.firstChildElement(keys::stringArray));
+    assert(rec.count == items.count());
+
+    for (auto &&item : items)
+    {
+        if (rec.desc.has_value())
+            rec.desc->push_back(desc.arg(item));
+        else
+            rec.desc = QStringList(desc.arg(item));
+    }
+    return rec;
+}
+
+check::itemVariant XmlParser::parseRecord(QDomElement domElement)
+{
+    auto record = domElement.firstChildElement("record");
+    if (record.isNull())
+        return parseRecordHelper(record);
+
+    check::detail::RecordList recordList;
+    auto header = domElement.attribute("header");
+    auto group = domElement.firstChildElement(keys::group).text().toUShort();
+    recordList.group = group;
+    recordList.header = header;
+    while (!record.isNull())
+    {
+        recordList.records.emplace_back(parseRecordHelper(record));
+        record = record.nextSiblingElement("record");
+    }
+    return std::move(recordList);
+}
+
 config::Item XmlParser::parseItem(QDomElement domElement, ctti::unnamed_type_id_t parentType)
 {
     using namespace config;
@@ -634,7 +686,7 @@ void XmlParser::traverseNode(const QDomNode &node, ConfigSettings &settings)
     }
 }
 
-void XmlParser::traverseNode(const QDomNode &node, CheckSettings &settings)
+void XmlParser::traverseNode(const QDomNode &node, categoryMap &settings)
 {
     QDomNode domNode = node.firstChild();
     while (!domNode.isNull())
@@ -646,8 +698,8 @@ void XmlParser::traverseNode(const QDomNode &node, CheckSettings &settings)
             {
                 if (domElement.tagName() == "map")
                 {
-                    settings.categories = parseMap<decltype(settings.categories)>(domElement);
-                    qDebug() << settings.categories;
+                    settings = parseMap<categoryMap>(domElement);
+                    qDebug() << settings;
                 }
             }
         }
@@ -690,6 +742,36 @@ void XmlParser::traverseNodeS2(const QDomNode &node, QList<DataTypes::RecordPair
             }
         }
         traverseNodeS2(domNode, settings, widgets);
+        domNode = domNode.nextSibling();
+    }
+}
+
+void XmlParser::traverseNodeCheck(const QDomNode &node, check::itemVector &settings)
+{
+    QDomNode domNode = node.firstChild();
+    while (!domNode.isNull())
+    {
+        if (domNode.isElement())
+        {
+            QDomElement domElement = domNode.toElement();
+            if (!domElement.isNull())
+            {
+                if (domElement.tagName() == "signals")
+                {
+                    domNode = domNode.nextSibling();
+                    continue;
+                }
+
+                if (domElement.tagName() == "record")
+                {
+
+                    settings.push_back(parseRecord(domElement));
+                    domNode = domNode.nextSibling();
+                    continue;
+                }
+            }
+        }
+        traverseNodeCheck(domNode, settings);
         domNode = domNode.nextSibling();
     }
 }
