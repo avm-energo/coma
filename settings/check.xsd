@@ -1,11 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE root [
-    <!ENTITY groupEmpty "0">  
-    <!ENTITY groupMain "1"> 
-    <!ENTITY groupAdditional "10"> 
-    <!ENTITY groupRmsValues "200"> 
-    <!ENTITY groupChangeRate "210"> 
-]>
+
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
     <xs:element name="root">
         <xs:complexType>

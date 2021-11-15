@@ -17,6 +17,7 @@ add_library(
   ${PROJECT_NAME} STATIC
   abstractcheckdialog.cpp
   abstractcheckdialog.h
+  delegate_check.h
   check.cpp
   check.h
   checkkdvdialog.cpp

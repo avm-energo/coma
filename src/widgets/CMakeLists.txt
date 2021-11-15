@@ -44,6 +44,7 @@ add_library(
   checkboxgroup_p.h
   coma.cpp
   coma.h
+  delegate_common.h
   ecombobox.cpp
   ecombobox.h
   edoublespinbox.cpp

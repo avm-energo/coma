@@ -28,8 +28,8 @@ XmlParser::XmlParser()
 
 bool XmlParser::isCorrectModule(const QString &typem, const QString &typeb, quint16 m_typem, quint16 m_typeb)
 {
-    quint16 mtypem = typem.toUInt(nullptr, 16);
-    quint16 mtypeb = typeb.toUInt(nullptr, 16);
+    quint16 mtypem = typem.toUShort(nullptr, 16);
+    quint16 mtypeb = typeb.toUShort(nullptr, 16);
 #ifdef XML_DEBUG
     qDebug() << m_typem << mtypem;
     qDebug() << m_typeb << mtypeb;
@@ -201,6 +201,7 @@ ctti::unnamed_type_id_t XmlParser::parseType(QDomElement domElement)
         if (name.contains("TableView", Qt::CaseInsensitive))
             return ctti::unnamed_type_id<QTableView>().hash();
 
+        [[fallthrough]];
     case 1:
 
         if (name.contains("BYTE[4]", Qt::CaseInsensitive))
@@ -236,17 +237,14 @@ ctti::unnamed_type_id_t XmlParser::parseType(QDomElement domElement)
         if (name.contains("float[8]", Qt::CaseInsensitive))
             return ctti::unnamed_type_id<FLOAT_8t>().hash();
 
-        //    case 2:
-        //        if (name.contains("float[2][2]", Qt::CaseInsensitive))
-        //            return ctti::unnamed_type_id<FLOAT_2t_2t>().hash();
-
+        [[fallthrough]];
     default:
         assert(false && "Unknown type");
     }
     return 0;
 }
 
-delegate::itemVariant XmlParser::parseWidget(QDomElement domElement)
+config::itemVariant XmlParser::parseWidget(QDomElement domElement)
 {
     auto name = domElement.text();
 #ifdef XML_DEBUG
@@ -289,7 +287,7 @@ delegate::itemVariant XmlParser::parseWidget(QDomElement domElement)
 
         widget.desc = description;
         widget.toolTip = toolTip;
-        return widget;
+        return std::move(widget);
     }
     case ctti::unnamed_type_id<DoubleSpinBoxGroup>().hash():
     {
@@ -310,7 +308,7 @@ delegate::itemVariant XmlParser::parseWidget(QDomElement domElement)
         widget.desc = description;
         widget.toolTip = toolTip;
         widget.items = items;
-        return widget;
+        return std::move(widget);
     }
     case ctti::unnamed_type_id<CheckBoxGroup>().hash():
     {
@@ -325,7 +323,7 @@ delegate::itemVariant XmlParser::parseWidget(QDomElement domElement)
         widget.desc = description;
         widget.toolTip = toolTip;
         widget.items = items;
-        return widget;
+        return std::move(widget);
     }
     case ctti::unnamed_type_id<QComboBox>().hash():
     {
@@ -343,7 +341,7 @@ delegate::itemVariant XmlParser::parseWidget(QDomElement domElement)
         else
             widget.primaryField = delegate::QComboBox::index;
         //    = childElement.text().contains("data") ? delegate::QComboBox::data : delegate::QComboBox::index;
-        return widget;
+        return std::move(widget);
     }
     case ctti::unnamed_type_id<QComboBoxGroup>().hash():
     {
@@ -366,7 +364,7 @@ delegate::itemVariant XmlParser::parseWidget(QDomElement domElement)
         widget.count = childElement.text().toUInt(&status);
         if (!status)
             qWarning() << name << className;
-        return widget;
+        return std::move(widget);
     }
     default:
     {
@@ -375,18 +373,19 @@ delegate::itemVariant XmlParser::parseWidget(QDomElement domElement)
     return delegate::Widget(type, description, widgetGroup, toolTip);
 }
 
-void XmlParser::mergeWidget(const QDomElement &domElement, widgetMap *const s2widgetMap, BciNumber id)
+void XmlParser::mergeWidget(const QDomElement &domElement, config::widgetMap *const s2widgetMap, BciNumber id)
 {
+    using namespace config;
     auto newWidget = parseWidget(domElement);
     auto oldWidget = s2widgetMap->at(id);
     newWidget = std::visit(
-        [&](auto &&lhs, auto &&rhs) -> delegate::itemVariant {
+        [&](auto &&lhs, auto &&rhs) -> itemVariant {
             using T = std::decay_t<decltype(lhs)>;
             using J = std::decay_t<decltype(rhs)>;
 
             if constexpr (std::is_same_v<T, J>)
             {
-                if constexpr (std::is_same_v<T, delegate::Item>)
+                if constexpr (std::is_same_v<T, Item>)
                 {
                     abort();
                 }
@@ -398,7 +397,7 @@ void XmlParser::mergeWidget(const QDomElement &domElement, widgetMap *const s2wi
     s2widgetMap->insert_or_assign(id, newWidget);
 }
 
-DataTypes::RecordPair XmlParser::parseRecord(QDomElement domElement, widgetMap *const s2widgetMap)
+DataTypes::RecordPair XmlParser::parseRecord(QDomElement domElement, config::widgetMap *const s2widgetMap)
 {
     using namespace DataTypes;
     QDomElement childElement = domElement.firstChildElement("id");
@@ -406,7 +405,7 @@ DataTypes::RecordPair XmlParser::parseRecord(QDomElement domElement, widgetMap *
     if (childElement.isNull())
         return {};
     bool status = false;
-    int id = childElement.text().toInt(&status);
+    unsigned id = childElement.text().toUInt(&status);
     // ID should be convertible to int
     if (!status)
         return {};
@@ -434,8 +433,9 @@ DataTypes::RecordPair XmlParser::parseRecord(QDomElement domElement, widgetMap *
     return RecordPair { DataTypes::DataRecV(id, defaultValue), true };
 }
 
-delegate::Item XmlParser::parseItem(QDomElement domElement, ctti::unnamed_type_id_t parentType)
+config::Item XmlParser::parseItem(QDomElement domElement, ctti::unnamed_type_id_t parentType)
 {
+    using namespace config;
     auto name = domElement.text();
 #ifdef XML_DEBUG
     qDebug() << name;
@@ -461,11 +461,11 @@ delegate::Item XmlParser::parseItem(QDomElement domElement, ctti::unnamed_type_i
         auto parent = static_cast<BciNumber>(childElement.text().toUInt(&status));
         if (!status)
             qWarning() << name << className;
-        delegate::Item item(parentType, itemType, parent, widgetGroup);
+        Item item(parentType, itemType, parent, widgetGroup);
         return item;
     }
     default:
-        return delegate::Item(parentType, itemType, BciNumber::dummyElement, widgetGroup);
+        return Item(parentType, itemType, BciNumber::dummyElement, widgetGroup);
     }
 }
 
@@ -586,7 +586,7 @@ void XmlParser::traverseNode(const QDomNode &node, ModuleSettings *const setting
                 if (domElement.tagName() == "record")
                 {
 
-                    settings->configSettings.general.push_back(parseRecord(domElement, gsettings.s2widgetMap));
+                    settings->configSettings.general.push_back(parseRecord(domElement, gsettings.config.s2widgetMap));
                     domNode = domNode.nextSibling();
                     continue;
                 }
@@ -597,7 +597,7 @@ void XmlParser::traverseNode(const QDomNode &node, ModuleSettings *const setting
     }
 }
 
-void XmlParser::traverseNode(const QDomNode &node, GlobalSettings &settings)
+void XmlParser::traverseNode(const QDomNode &node, ConfigSettings &settings)
 {
     QDomNode domNode = node.firstChild();
     while (!domNode.isNull())
@@ -634,7 +634,7 @@ void XmlParser::traverseNode(const QDomNode &node, GlobalSettings &settings)
     }
 }
 
-void XmlParser::traverseNodeS2(const QDomNode &node, QList<DataTypes::RecordPair> &settings, widgetMap *widgets)
+void XmlParser::traverseNodeS2(const QDomNode &node, QList<DataTypes::RecordPair> &settings, config::widgetMap *widgets)
 {
     QDomNode domNode = node.firstChild();
     while (!domNode.isNull())

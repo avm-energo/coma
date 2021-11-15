@@ -23,5 +23,8 @@
         <file>config-3400.xml</file>
         <file>config-0035.xml</file>
         <file>config-3300.xml</file>
+        <file>check.xml</file>
+        <file>check-8600.xml</file>
+        <file>check-0084.xml</file>
     </qresource>
 </RCC>

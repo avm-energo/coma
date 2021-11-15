@@ -1,37 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
  xsi:noNamespaceSchemaLocation="check-board.xsd">
-    <signals type="float">
+    <signals>
+        <type>FLOAT</type>
         <group>1</group>
         <start-addr>101</start-addr>
         <count>2</count>
     </signals>
-    <signals type="float">
+    <signals>
+        <type>FLOAT</type>
         <group>1,10</group>
         <start-addr>1000</start-addr>
         <count>16</count>
     </signals>
-    <signals type="float">
+    <signals>
+        <type>FLOAT</type>
         <group>1,10</group>
         <start-addr>1100</start-addr>
         <count>16</count>
     </signals>
-    <signals type="float">
+    <signals>
+        <type>FLOAT</type>
         <group>1,10</group>
         <start-addr>2400</start-addr>
         <count>7</count>
     </signals>
-    <signals type="float">
+    <signals>
+        <type>FLOAT</type>
         <group>1</group>
         <start-addr>2420</start-addr>
         <count>14</count>
     </signals>
-    <signals type="float">
+    <signals>
+        <type>FLOAT</type>
         <group>1,10</group>
         <start-addr>4501</start-addr>
         <count>2</count>
     </signals>
-    <signals type="singlePoint">
+    <signals>
+        <type>DWORD</type>
         <group>1</group>
         <start-addr>3011</start-addr>
         <count>25</count>
