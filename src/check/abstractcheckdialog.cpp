@@ -7,6 +7,8 @@
 #include "../gen/stdfunc.h"
 #include "../widgets/wd_func.h"
 //#include "xlsxdocument.h"
+#include "../widgets/helper.h"
+
 #include <QCoreApplication>
 #include <QFileDialog>
 #include <QGroupBox>
@@ -340,4 +342,63 @@ void AbstractCheckDialog::SetTimerPeriod()
     Timer->setInterval(per);
     if (TimerIsActive)
         Timer->start();
+}
+
+CheckDialog::CheckDialog(const CheckSettings &settings, QWidget *parent)
+    : AbstractCheckDialog(parent), m_settings(settings)
+{
+    Timer->setInterval(ANMEASINT);
+    setupUI();
+}
+
+CheckDialog::~CheckDialog()
+{
+}
+
+void CheckDialog::setupUI()
+{
+    QMultiMap<uint16_t, decltype(m_settings.items)::value_type> itemByGroup;
+    for (auto &&item : m_settings.items)
+    {
+        std::visit(overloaded { [&](const check::detail::Record &arg) { itemByGroup.insert(arg.group.value(), arg); },
+                       [&](const check::detail::RecordList &arg) { itemByGroup.insert(arg.group, arg); } },
+            item);
+    }
+    auto keys = itemByGroup.uniqueKeys();
+    for (auto &&key : keys)
+    {
+        UWidget *w = new UWidget;
+        QVBoxLayout *lyout = new QVBoxLayout;
+        for (auto &&value : itemByGroup.values(key))
+        {
+            //...//
+            QGroupBox *gb = new QGroupBox();
+            std::visit(overloaded { [&](const check::detail::Record &arg) {
+                                       gb->setTitle(arg.header.value());
+
+                                       int count = arg.desc->count();
+                                       auto itemsOneLine = detail::goldenRatio(count);
+
+                                       QGridLayout *gridlyout = new QGridLayout;
+                                       for (auto i = 0; i != count; ++i)
+                                       {
+                                           QVBoxLayout *layout = new QVBoxLayout;
+                                           layout->addWidget(new QLabel(arg.desc.value().at(i)));
+                                           QLabel *valueLabel = new QLabel;
+                                           valueLabel->setObjectName(QString::number(arg.start_addr + i));
+                                           valueLabel->setStyleSheet(ValuesFormat);
+                                           layout->addWidget(valueLabel);
+                                           gridlyout->addLayout(layout, i / itemsOneLine, i % itemsOneLine);
+                                       }
+
+                                       gb->setLayout(gridlyout);
+                                   },
+                           [&](const check::detail::RecordList &arg) { gb->setTitle(arg.header); } },
+                value);
+            lyout->addWidget(gb);
+        }
+        w->setLayout(lyout);
+        m_BdUIList.push_back({ m_settings.categories.value(key), w });
+    }
+    m_BdUIList.first().widget->setUpdatesEnabled();
 }

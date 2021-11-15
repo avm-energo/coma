@@ -438,6 +438,18 @@ check::detail::Record XmlParserHelper::parseRecordCheck(QDomElement domElement)
 {
     check::detail::Record rec;
     bool ok = false;
+
+    auto header = domElement.attribute("header");
+    rec.header = header;
+
+    auto groupElement = domElement.firstChildElement(keys::group);
+    if (!groupElement.isNull())
+    {
+        auto group = groupElement.text().toUShort(&ok);
+        rec.group = group;
+        assert(ok);
+    }
+
     rec.start_addr = domElement.firstChildElement("start-addr").text().toUShort(&ok);
     assert(ok);
     auto countElement = domElement.firstChildElement("count");
@@ -453,8 +465,20 @@ check::detail::Record XmlParserHelper::parseRecordCheck(QDomElement domElement)
         rec.desc = QStringList(desc);
         return rec;
     }
+    else
+    {
+        QStringList str;
+        for (auto i = 0; i != rec.count; i++)
+        {
+            str.push_back(desc.arg(i));
+        }
+        rec.desc = str;
+    }
 
-    auto items = XmlParser::parseStringList(domElement.firstChildElement(keys::stringArray));
+    auto arrayElement = domElement.firstChildElement(keys::stringArray);
+    if (arrayElement.isNull())
+        return rec;
+    auto items = XmlParser::parseStringList(arrayElement);
     assert(rec.count == items.count());
 
     for (auto &&item : items)
@@ -502,7 +526,7 @@ check::itemVariant XmlParser::parseRecordCheck(QDomElement domElement)
 {
     auto record = domElement.firstChildElement("record");
     if (record.isNull())
-        return XmlParserHelper::parseRecordCheck(record);
+        return XmlParserHelper::parseRecordCheck(domElement);
 
     check::detail::RecordList recordList;
     auto header = domElement.attribute("header");

@@ -1,7 +1,6 @@
 #include "module.h"
 
 #include "../comaversion/comaversion.h"
-#include "../config/configdialog.h"
 #include "../ctti/type_id.hpp"
 #include "../dialogs/fwuploaddialog.h"
 #include "../dialogs/infodialog.h"

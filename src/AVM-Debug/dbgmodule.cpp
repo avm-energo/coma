@@ -114,6 +114,7 @@ void DbgModule::create(Modules::BaseBoard typeB, Modules::MezzanineBoard typeM)
         qDebug("Here is AVTUK-8600");
         addDialogToList(new ConfigDialog(&configV, settings()->configSettings.general), "Конфигурирование", "conf1");
         addDialogToList(new CheckKDVVibrDialog, "Вибрации");
+        addDialogToList(new CheckDialog(gsettings.check), "Проверка2");
     }
     if ((typeB == BaseBoard::MTB_80) && (typeM == MezzanineBoard::MTM_82))
     {

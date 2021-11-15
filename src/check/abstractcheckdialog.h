@@ -16,6 +16,7 @@
 #ifndef ABSTRACTCHECKDIALOG_H
 #define ABSTRACTCHECKDIALOG_H
 
+#include "../gen/settings.h"
 #include "../widgets/udialog.h"
 #include "check.h"
 
@@ -51,14 +52,7 @@ public:
         Critical
     };
     using HighlightMap = QMultiMap<quint32, quint32>;
-    QXlsx::Document *xlsx;
-    QTimer *Timer;
-    int WRow;
-    // количество вкладок с выводом блоков данных модуля, один блок может быть разделён на несколько вкладок
-    //    int BdUINum;
-    // тип платы
-    //    QList<int> IndexWd;
-    // bool m_timerCounter;
+
     /*!
        \brief QList для вкладок текущего виджета
 
@@ -66,10 +60,9 @@ public:
             для всех вкладок, если хотим обновлять какую-то вкладку сразу, то
             необходимо включить обновление для нее
     */
-    QList<BdUIStruct> m_BdUIList;
 
     explicit AbstractCheckDialog(QWidget *parent = nullptr);
-    ~AbstractCheckDialog();
+    ~AbstractCheckDialog() override;
     void SetupUI();
 
     // row - строка для записи заголовков
@@ -114,19 +107,18 @@ private:
     };
     QMultiMap<quint32, quint32> m_highlightWarn, m_highlightCrit;
     QMap<int, BdBlocks *> Bd_blocks;
-    //    struct Bip
-    //    {
-    //        quint8 ip[4];
-    //    };
 
-    //    int m_newTWIndex;
-    //    Bip Bip_block;
     bool m_readDataInProgress;
     QElapsedTimer *ElapsedTimeCounter;
 
     void ReadAnalogMeasurementsAndWriteToFile();
 
 protected:
+    QTimer *Timer;
+    int WRow;
+    QXlsx::Document *xlsx;
+    QList<BdUIStruct> m_BdUIList;
+
     bool XlsxWriting;
     const QString ValuesFormat = "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; font: bold; }";
     void uponInterfaceSetting() override;
@@ -137,6 +129,19 @@ private slots:
     void StartAnalogMeasurements();
     void TimerTimeout();
     void TWTabChanged(int index);
+};
+
+class CheckDialog : public AbstractCheckDialog
+{
+    Q_OBJECT
+public:
+    explicit CheckDialog(const CheckSettings &settings, QWidget *parent = nullptr);
+    ~CheckDialog() override;
+
+private:
+    const CheckSettings &m_settings;
+
+    void setupUI();
 };
 
 #endif // ABSTRACTCHECKDIALOG_H
