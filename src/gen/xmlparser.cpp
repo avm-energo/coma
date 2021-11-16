@@ -173,6 +173,14 @@ ctti::unnamed_type_id_t XmlParser::parseType(QDomElement domElement)
             return ctti::unnamed_type_id<INT32>().hash();
         if (name.contains("float", Qt::CaseInsensitive))
             return ctti::unnamed_type_id<float>().hash();
+        // 104 types
+        if (name.contains("M_SP", Qt::CaseInsensitive))
+            return ctti::unnamed_type_id<DataTypes::SinglePointWithTimeStruct>().hash();
+        if (name.contains("M_BO", Qt::CaseInsensitive))
+            return ctti::unnamed_type_id<DataTypes::BitStringStruct>().hash();
+        if (name.contains("M_ME", Qt::CaseInsensitive))
+            return ctti::unnamed_type_id<DataTypes::FloatStruct>().hash();
+
         // Widget classes
         // Group should be checked before single widget
         if (name.contains("Group", Qt::CaseInsensitive))

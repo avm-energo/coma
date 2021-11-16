@@ -391,17 +391,24 @@ void CheckDialog::setupUI()
                 switch (sig.type.hash())
                 {
 
-                case ctti::unnamed_type_id<float>().hash():
+                case ctti::unnamed_type_id<DataTypes::FloatStruct>().hash():
                 {
                     w->addFloatBd({ sig.start_addr, sig.count });
                     break;
                 }
 
-                case ctti::unnamed_type_id<DWORD>().hash():
+                case ctti::unnamed_type_id<DataTypes::SinglePointWithTimeStruct>().hash():
                 {
                     w->addSpBd({ sig.start_addr, sig.count });
                     break;
                 }
+
+                case ctti::unnamed_type_id<DataTypes::BitStringStruct>().hash():
+                {
+                    w->addBsBd({ sig.start_addr, sig.count });
+                    break;
+                }
+
                 default:
                     assert(false);
                 }
@@ -441,11 +448,6 @@ void CheckDialog::setup(const check::detail::RecordList &arg, QGroupBox *gb)
 
     QGridLayout *gridlyout = new QGridLayout;
 
-    //    for (auto &&record : arg.records)
-    //    {
-    //        auto itemsOneLine = detail::goldenRatio(record.desc->count());
-    //        rowCount += (record.desc->count() / itemsOneLine);
-    //    }
     int count = std::size(arg.records);
     for (int i = 0; i != count; ++i)
     {
@@ -453,20 +455,18 @@ void CheckDialog::setup(const check::detail::RecordList &arg, QGroupBox *gb)
         // one item per record
         const auto &currentRecord = arg.records.at(i);
 
-        auto itemsOneLine = detail::goldenRatio(currentRecord.desc->count());
         for (int j = 0; j < currentRecord.desc->count(); ++j)
         {
             QHBoxLayout *layout = new QHBoxLayout;
-            // layout->setStretchFactor()
+
             QLabel *textLabel = new QLabel(currentRecord.desc->at(j));
             // textLabel->setStyleSheet(ValuesFormat);
             textLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
 
-            // textLabel->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
             QFontMetrics fn(textLabel->font());
             textLabel->setMaximumHeight(fn.height());
 
-            layout->addWidget(textLabel /*, 2, Qt::AlignLeft*/);
+            layout->addWidget(textLabel);
 
             QLabel *valueLabel = new QLabel;
             valueLabel->setMaximumHeight(fn.height());
@@ -474,12 +474,10 @@ void CheckDialog::setup(const check::detail::RecordList &arg, QGroupBox *gb)
             valueLabel->setObjectName(QString::number(currentRecord.start_addr + j));
             valueLabel->setStyleSheet(ValuesFormat);
             valueLabel->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
-            layout->addWidget(valueLabel /*, 3, Qt::AlignLeft*/);
-            auto currentRow = (i * j) / itemsOneLine;
-            auto currentColumn = (i * j) % itemsOneLine;
+            layout->addWidget(valueLabel);
+
             gridlyout->addLayout(layout, i, j);
         }
-        //  }
     }
     gb->setLayout(gridlyout);
 }

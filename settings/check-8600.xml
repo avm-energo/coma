@@ -3,7 +3,7 @@
  xsi:noNamespaceSchemaLocation="check-board.xsd">
     <check header="Вибрации">
         <signals>
-            <type>float</type>
+            <type>M_ME</type>
             <uint-set>
                 <item>200</item>
                 <item>210</item>

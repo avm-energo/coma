@@ -68,8 +68,11 @@ private:
     BaseInterface *m_iface;
     int m_regLeast, m_regCount;
 
+    /// float
     QList<BdQuery> m_floatBdQueryList;
+    /// single-point
     QList<BdQuery> m_spBdQueryList;
+    /// bit strings
     QList<BdQuery> m_bsBdQueryList;
     QMap<int, QList<HighlightWarnAlarmStruct>> m_highlightMap;
 

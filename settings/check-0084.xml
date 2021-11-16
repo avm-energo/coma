@@ -3,7 +3,7 @@
  xsi:noNamespaceSchemaLocation="check-board.xsd">
     <check header="Текущие данные">
         <signals>
-            <type>float</type>
+            <type>M_ME</type>
             <uint-set>
                 <item>1</item>
             </uint-set>
@@ -11,7 +11,7 @@
             <count>2</count>
         </signals>
         <signals>
-            <type>float</type>
+            <type>M_ME</type>
             <uint-set>
                 <item>1</item>
                 <item>10</item>
@@ -20,7 +20,7 @@
             <count>16</count>
         </signals>
         <signals>
-            <type>float</type>
+            <type>M_ME</type>
             <uint-set>
                 <item>1</item>
                 <item>10</item>
@@ -29,7 +29,7 @@
             <count>16</count>
         </signals>
         <signals>
-            <type>float</type>
+            <type>M_ME</type>
             <uint-set>
                 <item>1</item>
                 <item>10</item>
@@ -38,7 +38,7 @@
             <count>7</count>
         </signals>
         <signals>
-            <type>float</type>
+            <type>M_ME</type>
             <uint-set>
                 <item>1</item>
             </uint-set>
@@ -46,7 +46,7 @@
             <count>14</count>
         </signals>
         <signals>
-            <type>float</type>
+            <type>M_ME</type>
             <uint-set>
                 <item>1</item>
                 <item>10</item>
@@ -55,7 +55,7 @@
             <count>2</count>
         </signals>
         <signals>
-            <type>DWORD</type>
+            <type>M_SP</type>
             <uint-set>
                 <item>1</item>
             </uint-set>
