@@ -13,13 +13,19 @@ constexpr uint16_t INPUT_QUANITY = 32;
 constexpr int offset = 1;
 constexpr int columns = 6;
 
-Check3533Dialog::Check3533Dialog(QWidget *parent) : AbstractCheckDialog(parent)
+Check3533Dialog::Check3533Dialog(const CheckItem &item, const categoryMap &categories, QWidget *parent)
+    : CheckDialog(item, categories, parent)
+{
+    Timer->setInterval(ANMEASINT);
+    connect(&DataManager::GetInstance(), &DataManager::bitStringReceived, this, &Check3533Dialog::updateBitStringData);
+}
+
+void Check3533Dialog::setupUI()
 {
     m_BdUIList = { { "Основные", Bd1W() } };
     m_BdUIList.first().widget->setUpdatesEnabled();
 
-    Timer->setInterval(ANMEASINT);
-    connect(&DataManager::GetInstance(), &DataManager::bitStringReceived, this, &Check3533Dialog::updateBitStringData);
+    AbstractCheckDialog::setupUI();
 }
 
 void Check3533Dialog::updatePixmap(bool isset, int position)

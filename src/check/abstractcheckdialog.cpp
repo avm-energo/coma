@@ -44,9 +44,8 @@ AbstractCheckDialog::~AbstractCheckDialog()
     Bd_blocks.clear();
 }
 
-void AbstractCheckDialog::SetupUI()
+void AbstractCheckDialog::setupUI()
 {
-
     QVBoxLayout *lyout = new QVBoxLayout;
     QTabWidget *CheckTW = new QTabWidget;
     connect(&DataManager::GetInstance(), &DataManager::singlePointReceived, this, &AbstractCheckDialog::updateSPData);
@@ -256,7 +255,7 @@ void AbstractCheckDialog::ReadAnalogMeasurementsAndWriteToFile()
 
 void AbstractCheckDialog::uponInterfaceSetting()
 {
-    SetupUI();
+    setupUI();
 }
 
 // void AbstractCheckDialog::StartBdMeasurements() { BdTimer->start(); }
@@ -349,7 +348,6 @@ CheckDialog::CheckDialog(const CheckItem &item, const categoryMap &categories, Q
     : AbstractCheckDialog(parent), m_item(item), m_categories(categories)
 {
     Timer->setInterval(ANMEASINT);
-    setupUI();
 }
 
 CheckDialog::~CheckDialog()
@@ -381,43 +379,50 @@ void CheckDialog::setupUI()
         }
         lyout->addStretch(100);
         w->setLayout(lyout);
-        for (auto &&sig : m_item.signlsVec)
-        {
-
-            auto search = sig.groups.find(key);
-            if (search != sig.groups.cend())
-            {
-                using namespace DataTypes;
-                switch (sig.type.hash())
-                {
-
-                case ctti::unnamed_type_id<DataTypes::FloatStruct>().hash():
-                {
-                    w->addFloatBd({ sig.start_addr, sig.count });
-                    break;
-                }
-
-                case ctti::unnamed_type_id<DataTypes::SinglePointWithTimeStruct>().hash():
-                {
-                    w->addSpBd({ sig.start_addr, sig.count });
-                    break;
-                }
-
-                case ctti::unnamed_type_id<DataTypes::BitStringStruct>().hash():
-                {
-                    w->addBsBd({ sig.start_addr, sig.count });
-                    break;
-                }
-
-                default:
-                    assert(false);
-                }
-            }
-        }
+        addSignals(key, w);
 
         m_BdUIList.push_back({ m_categories.value(key), w });
     }
     m_BdUIList.first().widget->setUpdatesEnabled();
+
+    AbstractCheckDialog::setupUI();
+}
+
+void CheckDialog::addSignals(unsigned int key, UWidget *widget)
+{
+    for (auto &&sig : m_item.signlsVec)
+    {
+
+        auto search = sig.groups.find(key);
+        if (search != sig.groups.cend())
+        {
+            using namespace DataTypes;
+            switch (sig.type.hash())
+            {
+
+            case ctti::unnamed_type_id<DataTypes::FloatStruct>().hash():
+            {
+                widget->addFloatBd({ sig.start_addr, sig.count });
+                break;
+            }
+
+            case ctti::unnamed_type_id<DataTypes::SinglePointWithTimeStruct>().hash():
+            {
+                widget->addSpBd({ sig.start_addr, sig.count });
+                break;
+            }
+
+            case ctti::unnamed_type_id<DataTypes::BitStringStruct>().hash():
+            {
+                widget->addBsBd({ sig.start_addr, sig.count });
+                break;
+            }
+
+            default:
+                assert(false);
+            }
+        }
+    }
 }
 
 void CheckDialog::setup(const check::detail::Record &arg, QGroupBox *gb)

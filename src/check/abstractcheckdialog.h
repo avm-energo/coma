@@ -63,7 +63,8 @@ public:
 
     explicit AbstractCheckDialog(QWidget *parent = nullptr);
     ~AbstractCheckDialog() override;
-    void SetupUI();
+    /// if override, don't forget to call base
+    virtual void setupUI();
 
     // row - строка для записи заголовков
     virtual void PrepareHeadersForFile(int row);
@@ -140,13 +141,14 @@ class CheckDialog : public AbstractCheckDialog
 public:
     explicit CheckDialog(const CheckItem &item, const categoryMap &categories, QWidget *parent = nullptr);
     ~CheckDialog() override;
+    virtual void setupUI() override;
 
-private:
+protected:
     const CheckItem &m_item;
     const categoryMap &m_categories;
+    void addSignals(unsigned int key, UWidget *widget);
 
-    void setupUI();
-
+private:
     void setup(const check::detail::Record &arg, QGroupBox *gb);
     void setup(const check::detail::RecordList &arg, QGroupBox *gb);
 };

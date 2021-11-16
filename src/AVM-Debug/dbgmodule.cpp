@@ -105,7 +105,7 @@ void DbgModule::create(Modules::BaseBoard typeB, Modules::MezzanineBoard typeM)
 
     for (auto &&item : gsettings.check.items)
     {
-        addDialogToList(new CheckDialog(item, gsettings.check.categories), item.header);
+        addDialogToList(new CheckDialog(item, gsettings.check.categories), item.header, "check:" + item.header);
     }
 
     if ((typeB == BaseBoard::MTB_80) && (typeM == MezzanineBoard::MTM_84))
@@ -170,9 +170,10 @@ void DbgModule::createUSIO(Modules::BaseBoard typeB, Modules::MezzanineBoard typ
     }
     if ((typeB == BaseBoard::MTB_35) && (typeM == MezzanineBoard::MTM_33))
     {
-
-        Check3533Dialog *check = new Check3533Dialog;
-        addDialogToList(check, "Проверка");
+        for (auto &&item : gsettings.check.items)
+        {
+            addDialogToList(new Check3533Dialog(item, gsettings.check.categories), item.header, "check:" + item.header);
+        }
     }
     if (typeB == BaseBoard::MTB_35)
     {
