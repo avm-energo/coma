@@ -38,8 +38,14 @@ void Check3533Dialog::updatePixmap(bool isset, int position)
 
 void Check3533Dialog::updateBitStringData(const DataTypes::BitStringStruct &bs)
 {
-    if (bs.sigAdr != 5001)
+    auto result
+        = std::find_if(m_item.signlsVec.cbegin(), m_item.signlsVec.cend(), [&bs](const check::detail::Signals &sig) {
+              return (sig.start_addr == bs.sigAdr)
+                  && (sig.type == ctti::unnamed_type_id<DataTypes::BitStringStruct>().hash());
+          });
+    if (result == m_item.signlsVec.end())
         return;
+
     std::bitset<sizeof(bs.sigVal) * 8> values = bs.sigVal;
     for (auto i = 0; i != values.size(); ++i)
     {
@@ -82,8 +88,8 @@ UWidget *Check3533Dialog::Bd1W()
     gb->setLayout(glyout);
     lyout->addWidget(gb);
     w->setLayout(lyout);
-    w->setFloatBdQuery({ { 101, 2 } });
-    w->setBsBdQuery({ { 5001, 1 } });
+
+    addSignals(*m_item.signlsVec.at(0).groups.cbegin(), w);
 
     return w;
 }

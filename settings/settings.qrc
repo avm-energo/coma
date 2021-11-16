@@ -26,5 +26,6 @@
         <file>check.xml</file>
         <file>check-8600.xml</file>
         <file>check-0084.xml</file>
+        <file>check-3500.xml</file>
     </qresource>
 </RCC>
