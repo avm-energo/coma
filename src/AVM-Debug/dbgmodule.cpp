@@ -168,16 +168,24 @@ void DbgModule::createUSIO(Modules::BaseBoard typeB, Modules::MezzanineBoard typ
             "\nмезонинная",
             "confMezz");
     }
-    if ((typeB == BaseBoard::MTB_35) && (typeM == MezzanineBoard::MTM_33))
-    {
-        for (auto &&item : gsettings.check.items)
-        {
-            addDialogToList(new Check3533Dialog(item, gsettings.check.categories), item.header, "check:" + item.header);
-        }
-    }
+
+    const auto &item = gsettings.check.items.at(0);
     if (typeB == BaseBoard::MTB_35)
     {
         addDialogToList(new RelayDialog(4), "Реле", "relay1");
+        addDialogToList(new Check3533Dialog(item, gsettings.check.categories), item.header, "check:" + item.header);
+    }
+    else
+    {
+        addDialogToList(new CheckDialog(item, gsettings.check.categories), item.header, "check:" + item.header);
+    }
+    if (gsettings.check.items.size() == 2)
+    {
+        const auto &item = gsettings.check.items.at(1);
+        if (typeM == MezzanineBoard::MTM_35)
+            addDialogToList(new Check3533Dialog(item, gsettings.check.categories), item.header, "check:" + item.header);
+        else
+            addDialogToList(new CheckDialog(item, gsettings.check.categories), item.header, "check:" + item.header);
     }
 }
 
