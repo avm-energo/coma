@@ -26,6 +26,11 @@
           <count>2</count>
           <block>0</block>
        </group>    
+       <group>
+        <start-addr>3002</start-addr>
+        <count>1</count>
+        <block>103</block>
+     </group>  
       </protocom>
       <iec60870>     
       </iec60870>

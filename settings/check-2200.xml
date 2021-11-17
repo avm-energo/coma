@@ -11,11 +11,29 @@
             <start-addr>101</start-addr>
             <count>2</count>
         </signals>
+        <signals>
+            <type>M_ME</type>
+            <uint-set>
+                <item>1</item>
+            </uint-set>
+            <start-addr>4001</start-addr>
+            <count>16</count>
+        </signals>
         <record header="Общие">
             <group>1</group>
             <record desc="Температура микроконтроллера, °С">
                 <start-addr>101</start-addr>
             </record>
+        </record>
+        <record header="Текущее значение по каналу, °C" desc="Канал №%1">
+            <group>1</group>
+            <start-addr>4001</start-addr>
+            <count>8</count>
+        </record>
+        <record header="Текущее значение по каналу, Ом" desc="Канал №%1">
+            <group>1</group>
+            <start-addr>4008</start-addr>
+            <count>8</count>
         </record>
     </check>
 </root>

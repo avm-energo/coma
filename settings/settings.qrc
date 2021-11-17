@@ -29,5 +29,12 @@
         <file>check-3500.xml</file>
         <file>check-2100.xml</file>
         <file>check-0021.xml</file>
+        <file>check-0022.xml</file>
+        <file>check-0031.xml</file>
+        <file>check-0033.xml</file>
+        <file>check-2200.xml</file>
+        <file>check-3100.xml</file>
+        <file>check-3300.xml</file>
+        <file>check-0035.xml</file>
     </qresource>
 </RCC>

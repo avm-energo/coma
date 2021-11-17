@@ -182,7 +182,7 @@ void DbgModule::createUSIO(Modules::BaseBoard typeB, Modules::MezzanineBoard typ
     if (gsettings.check.items.size() == 2)
     {
         const auto &item = gsettings.check.items.at(1);
-        if (typeM == MezzanineBoard::MTM_35)
+        if (typeM == MezzanineBoard::MTM_31 || typeM == MezzanineBoard::MTM_33)
             addDialogToList(new Check3533Dialog(item, gsettings.check.categories), item.header, "check:" + item.header);
         else
             addDialogToList(new CheckDialog(item, gsettings.check.categories), item.header, "check:" + item.header);

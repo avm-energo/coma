@@ -2,20 +2,18 @@
 <root xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
  xsi:noNamespaceSchemaLocation="check-board.xsd">
     <check header="Текущие данные
-    базовая">
+    мезонинная">
         <signals>
-            <type>M_ME</type>
+            <type>M_BO</type>
             <uint-set>
                 <item>1</item>
             </uint-set>
-            <start-addr>101</start-addr>
-            <count>2</count>
+            <start-addr>3002</start-addr>
+            <count>1</count>
         </signals>
-        <record header="Общие">
+        <record header="Состояния входов">
             <group>1</group>
-            <record desc="Температура микроконтроллера, °С">
-                <start-addr>101</start-addr>
-            </record>
+            <start-addr>3002</start-addr>
         </record>
     </check>
 </root>

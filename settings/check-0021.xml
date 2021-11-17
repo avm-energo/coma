@@ -7,14 +7,6 @@
             <type>M_ME</type>
             <uint-set>
                 <item>1</item>
-            </uint-set>
-            <start-addr>101</start-addr>
-            <count>2</count>
-        </signals>
-        <signals>
-            <type>M_ME</type>
-            <uint-set>
-                <item>1</item>
                 <item>10</item>
             </uint-set>
             <start-addr>2001</start-addr>
