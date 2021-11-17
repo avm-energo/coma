@@ -32,8 +32,8 @@ add_library(
   checkktfdialog.h
   checkktfharmonicdialog.cpp
   checkktfharmonicdialog.h
-  check3533dialog.h
-  check3533dialog.cpp
+  check3133dialog.h
+  check3133dialog.cpp
   signaldialog.cpp
   signaldialog.h
   signaldialog84.h

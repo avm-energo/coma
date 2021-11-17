@@ -1,4 +1,4 @@
-#include "check3533dialog.h"
+#include "check3133dialog.h"
 
 #include "../gen/datamanager.h"
 #include "../widgets/wd_func.h"
@@ -13,14 +13,14 @@ constexpr uint16_t INPUT_QUANITY = 32;
 constexpr int offset = 1;
 constexpr int columns = 6;
 
-Check3533Dialog::Check3533Dialog(const CheckItem &item, const categoryMap &categories, QWidget *parent)
+Check3133Dialog::Check3133Dialog(const CheckItem &item, const categoryMap &categories, QWidget *parent)
     : CheckDialog(item, categories, parent)
 {
     Timer->setInterval(ANMEASINT);
-    connect(&DataManager::GetInstance(), &DataManager::bitStringReceived, this, &Check3533Dialog::updateBitStringData);
+    connect(&DataManager::GetInstance(), &DataManager::bitStringReceived, this, &Check3133Dialog::updateBitStringData);
 }
 
-void Check3533Dialog::setupUI()
+void Check3133Dialog::setupUI()
 {
     m_BdUIList = { { "Основные", Bd1W() } };
     m_BdUIList.first().widget->setUpdatesEnabled();
@@ -28,7 +28,7 @@ void Check3533Dialog::setupUI()
     AbstractCheckDialog::setupUI();
 }
 
-void Check3533Dialog::updatePixmap(bool isset, int position)
+void Check3133Dialog::updatePixmap(bool isset, int position)
 {
     auto pixmap = WDFunc::NewCircle((isset) ? m_alarmColor : m_normalColor, circleRadius);
     auto status = WDFunc::SetLBLImage(this, QString::number(position), &pixmap);
@@ -36,7 +36,7 @@ void Check3533Dialog::updatePixmap(bool isset, int position)
         qCritical() << Error::DescError;
 }
 
-void Check3533Dialog::updateBitStringData(const DataTypes::BitStringStruct &bs)
+void Check3133Dialog::updateBitStringData(const DataTypes::BitStringStruct &bs)
 {
     auto result
         = std::find_if(m_item.signlsVec.cbegin(), m_item.signlsVec.cend(), [&bs](const check::detail::Signals &sig) {
@@ -53,7 +53,38 @@ void Check3533Dialog::updateBitStringData(const DataTypes::BitStringStruct &bs)
     }
 }
 
-UWidget *Check3533Dialog::Bd1W()
+UWidget *CheckMezz3133Dialog::Bd1W()
+{
+    UWidget *w = new UWidget;
+    QVBoxLayout *lyout = new QVBoxLayout;
+    QGroupBox *gb = new QGroupBox("Состояние входов");
+    QGridLayout *glyout = new QGridLayout;
+
+    for (int i = 0; i < INPUT_QUANITY; ++i)
+    {
+
+        QHBoxLayout *hlyout = new QHBoxLayout;
+        auto labelText = new QLabel(QString::number(i + offset) + ":", this);
+        hlyout->addWidget(labelText);
+
+        auto pixmap = WDFunc::NewCircle(m_normalColor, circleRadius);
+        auto label = new QLabel(this);
+        label->setObjectName(QString::number(i + offset));
+        label->setPixmap(pixmap);
+
+        hlyout->addWidget(label);
+        glyout->addLayout(hlyout, i / columns, i % columns);
+    }
+    gb->setLayout(glyout);
+    lyout->addWidget(gb);
+    w->setLayout(lyout);
+
+    addSignals(*m_item.signlsVec.at(0).groups.cbegin(), w);
+
+    return w;
+}
+
+UWidget *CheckBase3133Dialog::Bd1W()
 {
     UWidget *w = new UWidget;
     QVBoxLayout *lyout = new QVBoxLayout;

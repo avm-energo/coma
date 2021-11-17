@@ -35,6 +35,5 @@
         <file>check-2200.xml</file>
         <file>check-3100.xml</file>
         <file>check-3300.xml</file>
-        <file>check-0035.xml</file>
     </qresource>
 </RCC>
