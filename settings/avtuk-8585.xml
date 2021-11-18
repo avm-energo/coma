@@ -20,19 +20,22 @@
       </modbus>
 
       <!--Описываем протокол Protocom-->
-       <protocom>    
-       <!-- 
-		disabled temporarily   
+       <protocom>      
 		<group>
           <start-addr>101</start-addr>
           <count>2</count>
           <block>0</block>
        </group>
        <group>
-          <start-addr>5001</start-addr>
-          <count>1</count>
-          <block>103</block>
-       </group>       -->
+          <start-addr>1000</start-addr>
+          <count>29</count>
+          <block>2</block>
+       </group>  
+	   <group>
+		<start-addr>1040</start-addr>
+		<count>9</count>
+		<block>2</block>
+	 </group> 
       </protocom>
       <iec60870>     
       </iec60870>
