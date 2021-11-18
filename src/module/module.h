@@ -56,10 +56,10 @@ public:
         int interfaceType = Board::GetInstance().interfaceType());
     bool obtainXmlFile(const QString &filename) const;
     bool obtainXmlConfig(const QString &filename, QList<DataTypes::RecordPair> &config) const;
-    bool obtainXmlCheck(const QString &filename, CheckSettings &check);
+    bool obtainXmlCheck(const QString &filename, std::vector<CheckItem> &check) const;
     bool loadS2Settings();
-    bool loadCheckSettings();
-    bool loadCheckSettings(Modules::BaseBoard typeB, Modules::MezzanineBoard typeM);
+    CheckSettings loadCheckSettings();
+    std::vector<CheckItem> loadCheckSettings(Modules::BaseBoard typeB, Modules::MezzanineBoard typeM) const;
     quint64 configVersion() const;
     bool isConfigOutdated() const;
     void eraseSettings() const;
@@ -68,9 +68,14 @@ public:
     const QString &directory() const;
     void setDirectory(const QString &newDirectory);
 
+    const GlobalSettings &gsettings() const
+    {
+        return m_gsettings;
+    }
+
 protected:
     ConfigV configV;
-    GlobalSettings gsettings;
+    GlobalSettings m_gsettings;
 
 private:
     QList<UDialog *> m_dialogs;

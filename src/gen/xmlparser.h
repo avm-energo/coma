@@ -25,7 +25,7 @@ public:
     static void traverseNode(const QDomNode &node, categoryMap &settings);
     static void traverseNodeS2(
         const QDomNode &node, QList<DataTypes::RecordPair> &settings, config::widgetMap *widgets);
-    static void traverseNodeCheck(const QDomNode &node, CheckSettings &settings);
+    static void traverseNodeCheck(const QDomNode &node, std::vector<CheckItem> &settings);
     static CheckItem traverseNodeCheck(const QDomNode &node);
 
 private:

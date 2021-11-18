@@ -103,9 +103,9 @@ void DbgModule::create(Modules::BaseBoard typeB, Modules::MezzanineBoard typeM)
         }
     }
 
-    for (auto &&item : gsettings.check.items)
+    for (auto &&item : m_gsettings.check.items)
     {
-        addDialogToList(new CheckDialog(item, gsettings.check.categories), item.header, "check:" + item.header);
+        addDialogToList(new CheckDialog(item, m_gsettings.check.categories), item.header, "check:" + item.header);
     }
 
     if ((typeB == BaseBoard::MTB_80) && (typeM == MezzanineBoard::MTM_84))
@@ -169,27 +169,27 @@ void DbgModule::createUSIO(Modules::BaseBoard typeB, Modules::MezzanineBoard typ
             "confMezz");
     }
 
-    const auto &item = gsettings.check.items.at(0);
+    const auto &item = m_gsettings.check.items.at(0);
     if (typeB == BaseBoard::MTB_35)
     {
         addDialogToList(new RelayDialog(4), "Реле", "relay1");
     }
     if (typeB == BaseBoard::MTB_31 || typeB == BaseBoard::MTB_33)
     {
-        addDialogToList(new CheckBase3133Dialog(item, gsettings.check.categories), item.header, "check:" + item.header);
+        addDialogToList(new CheckBase3133Dialog(item, m_gsettings.check.categories), item.header, "check:" + item.header);
     }
     else
     {
-        addDialogToList(new CheckDialog(item, gsettings.check.categories), item.header, "check:" + item.header);
+        addDialogToList(new CheckDialog(item, m_gsettings.check.categories), item.header, "check:" + item.header);
     }
-    if (gsettings.check.items.size() == 2)
+    if (m_gsettings.check.items.size() == 2)
     {
-        const auto &item = gsettings.check.items.at(1);
+        const auto &item = m_gsettings.check.items.at(1);
         if ((typeM == MezzanineBoard::MTM_31) || (typeM == MezzanineBoard::MTM_33))
             addDialogToList(
-                new CheckMezz3133Dialog(item, gsettings.check.categories), item.header, "check:" + item.header);
+                new CheckMezz3133Dialog(item, m_gsettings.check.categories), item.header, "check:" + item.header);
         else if ((typeM != MezzanineBoard::MTM_34) && (typeM != MezzanineBoard::MTM_35))
-            addDialogToList(new CheckDialog(item, gsettings.check.categories), item.header, "check:" + item.header);
+            addDialogToList(new CheckDialog(item, m_gsettings.check.categories), item.header, "check:" + item.header);
     }
 }
 

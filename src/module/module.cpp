@@ -26,7 +26,7 @@ Module::Module(QObject *parent)
     , m_directory(StdFunc::GetSystemHomeDir())
 #endif
 {
-    gsettings = { { &DataTypes::DataRecV::map, &WidgetFactory::m_widgetMap, &WidgetFactory::m_categoryMap }, {} };
+    m_gsettings = { { &DataTypes::DataRecV::map, &WidgetFactory::m_widgetMap, &WidgetFactory::m_categoryMap }, {} };
 }
 void Module::createAlarm(AlarmWidget *aw)
 {
@@ -126,10 +126,8 @@ bool Module::loadSettings(QString &moduleName, const Modules::StartupInfoBlock &
 {
     if (!loadS2Settings())
         return false;
-    if (!loadCheckSettings())
-    {
-        qWarning() << "No check dialogs";
-    }
+    m_gsettings.check = loadCheckSettings();
+
     m_settings = std::unique_ptr<ModuleSettings>(new ModuleSettings(startupInfoBlock));
     m_settings->interfaceType = interfaceType;
     if (moduleName.isEmpty())
@@ -173,7 +171,7 @@ bool Module::loadSettings(QString &moduleName, const Modules::StartupInfoBlock &
 
         QDomElement domElement = domDoc.documentElement();
 
-        XmlParser::traverseNode(domElement, m_settings.get(), gsettings.config);
+        XmlParser::traverseNode(domElement, m_settings.get(), m_gsettings.config);
         file.close();
         return true;
     }
@@ -332,7 +330,7 @@ bool Module::obtainXmlConfig(const QString &filename, QList<DataTypes::RecordPai
     {
 
         QDomElement domElement = domDoc.documentElement();
-        XmlParser::traverseNodeS2(domElement, config, gsettings.config.s2widgetMap);
+        XmlParser::traverseNodeS2(domElement, config, m_gsettings.config.s2widgetMap);
         file.close();
         return true;
     }
@@ -395,7 +393,7 @@ bool Module::loadS2Settings()
         if (domDoc.setContent(&file))
         {
             QDomElement domElement = domDoc.documentElement();
-            XmlParser::traverseNode(domElement, gsettings.config);
+            XmlParser::traverseNode(domElement, m_gsettings.config);
             file.close();
             return true;
         }
@@ -412,7 +410,7 @@ bool Module::loadS2Settings()
 
 // #### C H E C K ####
 
-bool Module::obtainXmlCheck(const QString &filename, CheckSettings &check)
+bool Module::obtainXmlCheck(const QString &filename, std::vector<CheckItem> &check) const
 {
     QDir dir(m_directory);
     auto xmlFiles = dir.entryList(QDir::Files).filter(".xml");
@@ -447,7 +445,7 @@ bool Module::obtainXmlCheck(const QString &filename, CheckSettings &check)
     }
 }
 
-bool Module::loadCheckSettings()
+CheckSettings Module::loadCheckSettings()
 {
     constexpr auto name = "check.xml";
     QDir dir(m_directory);
@@ -463,7 +461,7 @@ bool Module::loadCheckSettings()
         {
             qCritical() << Error::DescError;
             qInfo() << dir.filePath(name) << StdFunc::GetSystemHomeDir() + name;
-            return false;
+            assert(false);
         }
         return loadCheckSettings();
     }
@@ -472,39 +470,57 @@ bool Module::loadCheckSettings()
     {
         if (domDoc.setContent(&file))
         {
-            QDomElement domElement = domDoc.documentElement();
-            XmlParser::traverseNode(domElement, gsettings.check.categories);
-            file.close();
             const auto &board = Board::GetInstance();
-            return loadCheckSettings(
+            CheckSettings checkSettings;
+            checkSettings.items = loadCheckSettings(
                 static_cast<Modules::BaseBoard>(board.typeB()), static_cast<Modules::MezzanineBoard>(board.typeM()));
+            QDomElement domElement = domDoc.documentElement();
+            XmlParser::traverseNode(domElement, checkSettings.categories);
+            file.close();
+
+            return checkSettings;
         }
         file.close();
         qInfo() << Error::WrongFileError << file.fileName();
-        return false;
+        assert(false);
     }
     else
     {
         qCritical() << Error::FileOpenError << file.fileName();
-        return false;
+        assert(false);
     }
 }
 
-bool Module::loadCheckSettings(Modules::BaseBoard typeB, Modules::MezzanineBoard typeM)
+std::vector<CheckItem> Module::loadCheckSettings(Modules::BaseBoard typeB, Modules::MezzanineBoard typeM) const
 {
+    std::vector<CheckItem> check;
+    bool statusBase = true;
     QString checkBase("check-%100");
     checkBase = checkBase.arg(typeB, 0, 16);
     if (!obtainXmlFile(checkBase))
+    {
+        statusBase = false;
         qWarning() << Error::OpenError << checkBase;
-    else if (!obtainXmlCheck(checkBase, gsettings.check))
+    }
+    else if (!obtainXmlCheck(checkBase, check))
+    {
+        statusBase = false;
         qWarning() << Error::OpenError << checkBase;
+    }
 
+    bool statusMezz = true;
     QString checkMezz("check-00%1");
     checkMezz = checkMezz.arg(typeM, 0, 16);
     if (!obtainXmlFile(checkMezz))
+    {
+        statusMezz = false;
         qWarning() << Error::OpenError << checkMezz;
-    else if (!obtainXmlCheck(checkMezz, gsettings.check))
+    }
+    else if (!obtainXmlCheck(checkMezz, check))
+    {
+        statusMezz = false;
         qWarning() << Error::OpenError << checkMezz;
-
-    return true;
+    }
+    assert(statusBase || statusMezz);
+    return check;
 }

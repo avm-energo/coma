@@ -811,7 +811,7 @@ void XmlParser::traverseNodeS2(const QDomNode &node, QList<DataTypes::RecordPair
     }
 }
 
-void XmlParser::traverseNodeCheck(const QDomNode &node, CheckSettings &settings)
+void XmlParser::traverseNodeCheck(const QDomNode &node, std::vector<CheckItem> &settings)
 {
     QDomNode domNode = node.firstChild();
     while (!domNode.isNull())
@@ -825,7 +825,7 @@ void XmlParser::traverseNodeCheck(const QDomNode &node, CheckSettings &settings)
                 if (domElement.tagName() == "check")
                 {
 
-                    settings.items.emplace_back(traverseNodeCheck(domElement));
+                    settings.emplace_back(traverseNodeCheck(domElement));
                     domNode = domNode.nextSibling();
                     continue;
                 }
