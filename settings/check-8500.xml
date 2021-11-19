@@ -23,6 +23,7 @@
             <record desc="U ф.%1">
                 <start-addr>1000</start-addr>
                 <count>3</count>
+                <toolTip>Фазное среднеквадратичное напряжение источника ф.%1</toolTip>
                 <string-array>
                     <item>A</item>
                     <item>B</item>
@@ -31,10 +32,12 @@
             </record>
             <record desc="U ср.">
                 <start-addr>1003</start-addr>
+                <toolTip>Среднее по фазам действующее напряжение источника</toolTip>
             </record>
             <record desc="I ф.%1">
                 <start-addr>1004</start-addr>
                 <count>3</count>
+                <toolTip>Фазный среднеквадратичный ток ф.%1</toolTip>
                 <string-array>
                     <item>A</item>
                     <item>B</item>
@@ -43,10 +46,12 @@
             </record>
             <record desc="I ср.">
                 <start-addr>1007</start-addr>
+                <toolTip>Средний по фазам действующий ток</toolTip>
             </record>
             <record desc="Uи ф.%1">
                 <start-addr>1008</start-addr>
                 <count>3</count>
+                <toolTip>Фазное среднеквадратичное напряжение нагрузки ф.%1</toolTip>
                 <string-array>
                     <item>A</item>
                     <item>B</item>
@@ -55,10 +60,12 @@
             </record>
             <record desc="Uи ср.">
                 <start-addr>1011</start-addr>
+                <toolTip>Среднее по фазам действующее напряжение нагрузки</toolTip>
             </record>
             <record desc="P ф.%1">
                 <start-addr>1012</start-addr>
                 <count>3</count>
+                <toolTip>Истинная активная мощность фазы %1</toolTip>
                 <string-array>
                     <item>A</item>
                     <item>B</item>
@@ -67,10 +74,12 @@
             </record>
             <record desc="P суммарная">
                 <start-addr>1015</start-addr>
+                <toolTip>Истинная активная мощность суммарная</toolTip>
             </record>
             <record desc="Q ф.%1">
                 <start-addr>1016</start-addr>
                 <count>3</count>
+                <toolTip>Реактивная мощность фазы %1</toolTip>
                 <string-array>
                     <item>A</item>
                     <item>B</item>
@@ -79,10 +88,12 @@
             </record>
             <record desc="Q суммарная">
                 <start-addr>1019</start-addr>
+                <toolTip>Реактивная мощность суммарная</toolTip>
             </record>
             <record desc="S ф.%1">
                 <start-addr>1020</start-addr>
                 <count>3</count>
+                <toolTip>Полная (кажущаяся) мощность фазы %1</toolTip>
                 <string-array>
                     <item>A</item>
                     <item>B</item>
@@ -91,10 +102,12 @@
             </record>
             <record desc="S суммарная">
                 <start-addr>1023</start-addr>
+                <toolTip>Полная мощность суммарная</toolTip>
             </record>
             <record desc="cos ф.%1">
                 <start-addr>1024</start-addr>
                 <count>3</count>
+                <toolTip>Коэффициент мощности фазы %1 (по S и P)</toolTip>
                 <string-array>
                     <item>A</item>
                     <item>B</item>
@@ -103,6 +116,7 @@
             </record>
             <record desc="cos ср.">
                 <start-addr>1027</start-addr>
+                <toolTip>Коэффициент мощности средний (по S и P)</toolTip>
             </record>
             <record desc="Частота в сети, Гц">
                 <start-addr>1028</start-addr>
@@ -113,6 +127,7 @@
             <record desc="Tbo ф.%1">
                 <start-addr>1040</start-addr>
                 <count>3</count>
+                <toolTip>Текущее время безоперационного простоя полюса ф.%1 выключателя</toolTip>
                 <string-array>
                     <item>A</item>
                     <item>B</item>
@@ -122,6 +137,7 @@
             <record desc="Iznos ф.%1">
                 <start-addr>1043</start-addr>
                 <count>3</count>
+                <toolTip>Текущий электрический износ полюса ф.%1</toolTip>
                 <string-array>
                     <item>A</item>
                     <item>B</item>
@@ -131,6 +147,7 @@
             <record desc="Resurs ф.%1">
                 <start-addr>1046</start-addr>
                 <count>3</count>
+                <toolTip>Остаточный коммутационный ресурс ф.%1</toolTip>
                 <string-array>
                     <item>A</item>
                     <item>B</item>
