@@ -183,23 +183,34 @@ void TestModule::check8085()
 {
     QString str("АВ-ТУК-8585 (УСК)");
     Modules::StartupInfoBlock bsi;
-    bsi.MTypeB = 0x80;
+    bsi.MTypeB = 0x85;
     bsi.MTypeM = 0x85;
     QVERIFY(module.loadSettings(str, bsi));
     auto settings = module.settings();
     QVERIFY(!settings->ifaceSettings.settings.isValid());
-    // TODO Add other
+
+    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    QCOMPARE(checkSettings.size(), 1);
+    auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
+        [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
+    QCOMPARE(elementCount, 2);
 }
 
 void TestModule::check8085USB()
 {
     QString str("АВ-ТУК-8585 (УСК)");
     Modules::StartupInfoBlock bsi;
-    bsi.MTypeB = 0x80;
+    bsi.MTypeB = 0x85;
     bsi.MTypeM = 0x85;
     QVERIFY(module.loadSettings(str, bsi, Board::InterfaceType::USB));
-    //  auto settings = module.settings();
-    // QVERIFY(settings->ifaceSettings.settings.isValid());
+    auto settings = module.settings();
+    QVERIFY(settings->ifaceSettings.settings.isValid());
+
+    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    QCOMPARE(checkSettings.size(), 1);
+    auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
+        [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
+    QCOMPARE(elementCount, 2);
 }
 
 void TestModule::check8082()
