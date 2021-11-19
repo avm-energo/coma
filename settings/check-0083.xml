@@ -31,6 +31,7 @@
             <record desc="U ф.%1">
                 <start-addr>1000</start-addr>
                 <count>3</count>
+                <toolTip>Фазное истинное действующее напряжение ф.%1</toolTip>
                 <string-array>
                     <item>A</item>
                     <item>B</item>
@@ -39,10 +40,12 @@
             </record>
             <record desc="U ср.">
                 <start-addr>1003</start-addr>
+                <toolTip>Среднее истинное фазное действующее напряжение</toolTip>
             </record>
             <record desc="UhA1 ф.%1">
                 <start-addr>1004</start-addr>
                 <count>3</count>
+                <toolTip>Фазное действующее напряжение ф.%1 по 1-й гармонике</toolTip>
                 <string-array>
                     <item>A</item>
                     <item>B</item>
@@ -51,10 +54,12 @@
             </record>
             <record desc="UhA1 ср.">
                 <start-addr>1007</start-addr>
+                <toolTip>Среднее фазное действующее напряжение группы 1 по 1-й гарм.</toolTip>
             </record>
             <record desc="KrF_U ф.%1">
                 <start-addr>1008</start-addr>
                 <count>3</count>
+                <toolTip>Крест-фактор напряжения в фазе %1</toolTip>
                 <string-array>
                     <item>A</item>
                     <item>B</item>
@@ -67,6 +72,7 @@
             <record desc="U ф.%1">
                 <start-addr>1700</start-addr>
                 <count>3</count>
+                <toolTip>Фазное истинное действующее напряжение ф.%1</toolTip>
                 <string-array>
                     <item>A</item>
                     <item>B</item>
@@ -75,10 +81,12 @@
             </record>
             <record desc="U ср.">
                 <start-addr>1703</start-addr>
+                <toolTip>Среднее истинное фазное действующее напряжение</toolTip>
             </record>
             <record desc="UhA1 ф.%1">
                 <start-addr>1704</start-addr>
                 <count>3</count>
+                <toolTip>Фазное действующее напряжение ф.%1 по 1-й гармонике</toolTip>
                 <string-array>
                     <item>A</item>
                     <item>B</item>
@@ -87,10 +95,12 @@
             </record>
             <record desc="UhA1 ср.">
                 <start-addr>1707</start-addr>
+                <toolTip>Среднее фазное действующее напряжение группы 2 по 1-й гарм.</toolTip>
             </record>
             <record desc="KrF_U ф.%1">
                 <start-addr>1708</start-addr>
                 <count>3</count>
+                <toolTip>Крест-фактор напряжения в фазе %1</toolTip>
                 <string-array>
                     <item>A</item>
                     <item>B</item>
@@ -100,24 +110,32 @@
         </record>
         <record header="Данные по несимметрии и искажениям сигналов первой тройки">
             <group>10</group>
-            <record desc="U нулевой посл., кВ">
+            <record desc="U0, кВ">
                 <start-addr>1020</start-addr>
+                <toolTip>Напряжение нулевой последовательности гр.1, кВ</toolTip>
             </record>
-            <record desc="U прямой посл., кВ">
+            <record desc="U1, кВ">
                 <start-addr>1021</start-addr>
+                <toolTip>Напряжение прямой последовательности гр.1, кВ</toolTip>
             </record>
-            <record desc="U обратной посл., кВ">
+            <record desc="U2, кВ">
                 <start-addr>1022</start-addr>
+                <toolTip>Напряжение обратной последовательности гр.1, кВ</toolTip>
             </record>
-            <record desc="Коэф. несимметрии U по обратной посл., %">
+            <record desc="KuU2, %">
                 <start-addr>1023</start-addr>
+                <toolTip>Коэффициент несимметрии напряжения по
+                    обратной последовательности гр.1, %</toolTip>
             </record>
-            <record desc="Коэф. несимметрии U по нулевой посл., %">
+            <record desc="KuU0, %">
                 <start-addr>1024</start-addr>
+                <toolTip>Коэффициент несимметрии напряжения по
+                    нулевой последовательности гр.1, %</toolTip>
             </record>
-            <record desc="Общий коэф. гарм. искажений U ф.%1">
+            <record desc="THD_U ф.%1">
                 <start-addr>1025</start-addr>
                 <count>3</count>
+                <toolTip>Общий коэффициент гарм. искажений напряжения ф.%1 гр.1</toolTip>
                 <string-array>
                     <item>A</item>
                     <item>B</item>
