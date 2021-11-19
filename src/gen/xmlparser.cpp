@@ -466,33 +466,43 @@ check::detail::Record XmlParserHelper::parseRecordCheck(QDomElement domElement)
         assert(ok);
     }
 
+    QString toolTip;
+    auto toolTipElement = domElement.firstChildElement(keys::toolTip);
+    if (toolTipElement.isElement())
+        toolTip = toolTipElement.text();
+
     auto desc = domElement.attribute("desc");
+
     if (!rec.count.has_value())
     {
         rec.desc = QStringList(desc);
-        return rec;
+        if (!toolTip.isEmpty())
+            rec.toolTip = QStringList(toolTip);
     }
     else
     {
         auto strArrayElement = domElement.firstChildElement(keys::stringArray);
-        QStringList str;
+        QStringList strDesc, strToolTip;
         if (!strArrayElement.isNull())
         {
             auto strList = XmlParser::parseStringList(strArrayElement);
             assert(rec.count == strList.count());
             for (auto &&item : strList)
             {
-                str.push_back(desc.arg(item));
+                strToolTip.push_back(toolTip.arg(item));
+                strDesc.push_back(desc.arg(item));
             }
         }
         else
         {
             for (auto i = 1; i <= rec.count; i++)
             {
-                str.push_back(desc.arg(i));
+                strToolTip.push_back(toolTip.arg(i));
+                strDesc.push_back(desc.arg(i));
             }
         }
-        rec.desc = str;
+        rec.toolTip = strToolTip;
+        rec.desc = strDesc;
     }
 
     return rec;

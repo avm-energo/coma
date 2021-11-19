@@ -21,6 +21,7 @@ namespace detail
         std::optional<uint16_t> count;
         std::optional<QString> header;
         std::optional<QStringList> desc;
+        std::optional<QStringList> toolTip;
         void validate() const
         {
             assert(count.value() == desc.value().count());

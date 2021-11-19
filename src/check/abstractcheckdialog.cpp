@@ -438,6 +438,8 @@ void CheckDialog::setup(const check::detail::Record &arg, QGroupBox *gb)
         QVBoxLayout *layout = new QVBoxLayout;
         layout->addWidget(new QLabel(arg.desc.value().at(i)));
         QLabel *valueLabel = new QLabel;
+        if (arg.toolTip.has_value())
+            valueLabel->setToolTip(arg.toolTip.value().at(i));
         valueLabel->setObjectName(QString::number(arg.start_addr + i));
         valueLabel->setStyleSheet(ValuesFormat);
         layout->addWidget(valueLabel);
@@ -454,18 +456,20 @@ void CheckDialog::setup(const check::detail::RecordList &arg, QGroupBox *gb)
     QGridLayout *gridlyout = new QGridLayout;
 
     int count = std::size(arg.records);
+
     for (int i = 0; i != count; ++i)
     {
 
         // one item per record
         const auto &currentRecord = arg.records.at(i);
+        assert(
+            currentRecord.toolTip.has_value() ? (currentRecord.toolTip->size() == currentRecord.desc->size()) : true);
 
         for (int j = 0; j < currentRecord.desc->count(); ++j)
         {
             QHBoxLayout *layout = new QHBoxLayout;
 
             QLabel *textLabel = new QLabel(currentRecord.desc->at(j));
-            // textLabel->setStyleSheet(ValuesFormat);
             textLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
 
             QFontMetrics fn(textLabel->font());
@@ -474,6 +478,8 @@ void CheckDialog::setup(const check::detail::RecordList &arg, QGroupBox *gb)
             layout->addWidget(textLabel);
 
             QLabel *valueLabel = new QLabel;
+            if (currentRecord.toolTip.has_value())
+                valueLabel->setToolTip(currentRecord.toolTip->at(j));
             valueLabel->setMaximumHeight(fn.height());
 
             valueLabel->setObjectName(QString::number(currentRecord.start_addr + j));

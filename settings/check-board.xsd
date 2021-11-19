@@ -31,6 +31,7 @@
                                                 <xs:sequence minOccurs="0">
                                                     <xs:element name="start-addr" minOccurs="0" type="xs:unsignedShort" />
                                                     <xs:element name="count" minOccurs="0" type="xs:unsignedShort" />
+                                                    <xs:element name="toolTip" minOccurs="0" maxOccurs="1" type="xs:string" />
                                                     <xs:element name="string-array" minOccurs="0">
                                                         <xs:complexType>
                                                             <xs:sequence>
@@ -44,6 +45,7 @@
                                         </xs:element>    
                                         <xs:element name="start-addr"  minOccurs="0" type="xs:unsignedShort" />
                                         <xs:element name="count"  minOccurs="0" type="xs:unsignedShort" />
+                                        <xs:element name="toolTip" minOccurs="0" maxOccurs="1" type="xs:string" />
                                     </xs:sequence>
                                     <xs:attribute name="header" use="required" />
                                     <xs:attribute name="desc" />
