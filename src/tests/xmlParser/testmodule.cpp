@@ -34,11 +34,10 @@ TestModule::TestModule(QObject *parent) : QObject(parent)
 
 void TestModule::checkA284()
 {
-    QString str("KIV");
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0xA2;
     bsi.MTypeM = 0x84;
-    QVERIFY(module.loadSettings(str, bsi));
+    QVERIFY(module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->alarms.size(), 2);
     QCOMPARE(settings->configSettings.general.size(), 48);
@@ -56,11 +55,10 @@ void TestModule::checkA284()
 
 void TestModule::checkA284USB()
 {
-    QString str("KIV");
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0xA2;
     bsi.MTypeM = 0x84;
-    QVERIFY(module.loadSettings(str, bsi, Board::InterfaceType::USB));
+    QVERIFY(module.loadSettings(bsi, Board::InterfaceType::USB));
     auto settings = module.settings();
     QVERIFY(settings->ifaceSettings.settings.isValid());
     QCOMPARE(settings->alarms.size(), 2);
@@ -82,11 +80,10 @@ void TestModule::checkA284USB()
 
 void TestModule::checkA284Eth()
 {
-    QString str("KIV");
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0xA2;
     bsi.MTypeM = 0x84;
-    QVERIFY(module.loadSettings(str, bsi, Board::InterfaceType::Ethernet));
+    QVERIFY(module.loadSettings(bsi, Board::InterfaceType::Ethernet));
     auto settings = module.settings();
     QVERIFY(settings->ifaceSettings.settings.isValid());
     QCOMPARE(settings->alarms.size(), 2);
@@ -104,11 +101,10 @@ void TestModule::checkA284Eth()
 
 void TestModule::checkA284Modbus()
 {
-    QString str("KIV");
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0xA2;
     bsi.MTypeM = 0x84;
-    QVERIFY(module.loadSettings(str, bsi, Board::InterfaceType::RS485));
+    QVERIFY(module.loadSettings(bsi, Board::InterfaceType::RS485));
     auto settings = module.settings();
     QVERIFY(settings->ifaceSettings.settings.isValid());
     QCOMPARE(settings->alarms.size(), 2);
@@ -132,11 +128,10 @@ void TestModule::checkA284Modbus()
 
 void TestModule::check8084()
 {
-    QString str("АВ-ТУК-8084");
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x80;
     bsi.MTypeM = 0x84;
-    QVERIFY(module.loadSettings(str, bsi));
+    QVERIFY(module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->alarms.size(), 2);
     QCOMPARE(settings->configSettings.general.size(), 39);
@@ -154,11 +149,10 @@ void TestModule::check8084()
 
 void TestModule::check8084USB()
 {
-    QString str("АВ-ТУК-8084");
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x80;
     bsi.MTypeM = 0x84;
-    QVERIFY(module.loadSettings(str, bsi, Board::InterfaceType::USB));
+    QVERIFY(module.loadSettings(bsi, Board::InterfaceType::USB));
     auto settings = module.settings();
     QCOMPARE(settings->alarms.size(), 2);
     QCOMPARE(settings->configSettings.general.size(), 39);
@@ -181,11 +175,10 @@ void TestModule::check8084USB()
 
 void TestModule::check8085()
 {
-    QString str("АВ-ТУК-8585 (УСК)");
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x85;
     bsi.MTypeM = 0x85;
-    QVERIFY(module.loadSettings(str, bsi));
+    QVERIFY(module.loadSettings(bsi));
     auto settings = module.settings();
     QVERIFY(!settings->ifaceSettings.settings.isValid());
 
@@ -198,11 +191,10 @@ void TestModule::check8085()
 
 void TestModule::check8085USB()
 {
-    QString str("АВ-ТУК-8585 (УСК)");
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x85;
     bsi.MTypeM = 0x85;
-    QVERIFY(module.loadSettings(str, bsi, Board::InterfaceType::USB));
+    QVERIFY(module.loadSettings(bsi, Board::InterfaceType::USB));
     auto settings = module.settings();
     QVERIFY(settings->ifaceSettings.settings.isValid());
 
@@ -215,22 +207,20 @@ void TestModule::check8085USB()
 
 void TestModule::check8082()
 {
-    QString str("АВ-ТУК-8082 (Э1Т1Н)");
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x80;
     bsi.MTypeM = 0x82;
-    QVERIFY(module.loadSettings(str, bsi));
+    QVERIFY(module.loadSettings(bsi));
     auto settings = module.settings();
     QVERIFY(!settings->ifaceSettings.settings.isValid());
 }
 
 void TestModule::check8082USB()
 {
-    QString str("АВ-ТУК-8082 (Э1Т1Н)");
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x80;
     bsi.MTypeM = 0x82;
-    QVERIFY(module.loadSettings(str, bsi, Board::InterfaceType::USB));
+    QVERIFY(module.loadSettings(bsi, Board::InterfaceType::USB));
     //  auto settings = module.settings();
     // QVERIFY(settings->ifaceSettings.settings.isValid());
 }
@@ -252,11 +242,10 @@ void TestModule::check2100()
 
 void TestModule::check8083()
 {
-    QString str("АВ-ТУК-8083 (Э0Т2Н)");
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x80;
     bsi.MTypeM = 0x83;
-    QVERIFY(module.loadSettings(str, bsi));
+    QVERIFY(module.loadSettings(bsi));
     auto settings = module.settings();
     QVERIFY(!settings->ifaceSettings.settings.isValid());
 
@@ -269,12 +258,10 @@ void TestModule::check8083()
 
 void TestModule::check2121()
 {
-    QString str("АВ-ТУК-%1%2");
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x21;
     bsi.MTypeM = 0x21;
-    auto moduleName = str.arg(bsi.MTypeB, 0, 16).arg(bsi.MTypeM, 0, 16);
-    (module.loadSettings(moduleName, bsi));
+    (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk21);
@@ -290,12 +277,10 @@ void TestModule::check2121()
 
 void TestModule::check2122()
 {
-    QString str("АВ-ТУК-%1%2");
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x21;
     bsi.MTypeM = 0x22;
-    auto moduleName = str.arg(bsi.MTypeB, 0, 16).arg(bsi.MTypeM, 0, 16);
-    (module.loadSettings(moduleName, bsi));
+    (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk21);
@@ -311,12 +296,10 @@ void TestModule::check2122()
 
 void TestModule::check2131()
 {
-    QString str("АВ-ТУК-%1%2");
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x21;
     bsi.MTypeM = 0x31;
-    auto moduleName = str.arg(bsi.MTypeB, 0, 16).arg(bsi.MTypeM, 0, 16);
-    (module.loadSettings(moduleName, bsi));
+    (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk21);
@@ -332,12 +315,10 @@ void TestModule::check2131()
 
 void TestModule::check2133()
 {
-    QString str("АВ-ТУК-%1%2");
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x21;
     bsi.MTypeM = 0x33;
-    auto moduleName = str.arg(bsi.MTypeB, 0, 16).arg(bsi.MTypeM, 0, 16);
-    (module.loadSettings(moduleName, bsi));
+    (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk21);
@@ -353,12 +334,10 @@ void TestModule::check2133()
 
 void TestModule::check2134()
 {
-    QString str("АВ-ТУК-%1%2");
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x21;
     bsi.MTypeM = 0x34;
-    auto moduleName = str.arg(bsi.MTypeB, 0, 16).arg(bsi.MTypeM, 0, 16);
-    (module.loadSettings(moduleName, bsi));
+    (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk21);
@@ -374,12 +353,10 @@ void TestModule::check2134()
 
 void TestModule::check2135()
 {
-    QString str("АВ-ТУК-%1%2");
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x21;
     bsi.MTypeM = 0x35;
-    auto moduleName = str.arg(bsi.MTypeB, 0, 16).arg(bsi.MTypeM, 0, 16);
-    (module.loadSettings(moduleName, bsi));
+    (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk21);
@@ -410,12 +387,10 @@ void TestModule::check2200()
 
 void TestModule::check2221()
 {
-    QString str("АВ-ТУК-%1%2");
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x22;
     bsi.MTypeM = 0x21;
-    auto moduleName = str.arg(bsi.MTypeB, 0, 16).arg(bsi.MTypeM, 0, 16);
-    (module.loadSettings(moduleName, bsi));
+    (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk22);
@@ -431,12 +406,10 @@ void TestModule::check2221()
 
 void TestModule::check2222()
 {
-    QString str("АВ-ТУК-%1%2");
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x22;
     bsi.MTypeM = 0x22;
-    auto moduleName = str.arg(bsi.MTypeB, 0, 16).arg(bsi.MTypeM, 0, 16);
-    (module.loadSettings(moduleName, bsi));
+    (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk22);
@@ -452,12 +425,10 @@ void TestModule::check2222()
 
 void TestModule::check2231()
 {
-    QString str("АВ-ТУК-%1%2");
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x22;
     bsi.MTypeM = 0x31;
-    auto moduleName = str.arg(bsi.MTypeB, 0, 16).arg(bsi.MTypeM, 0, 16);
-    (module.loadSettings(moduleName, bsi));
+    (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk22);
@@ -473,12 +444,10 @@ void TestModule::check2231()
 
 void TestModule::check2233()
 {
-    QString str("АВ-ТУК-%1%2");
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x22;
     bsi.MTypeM = 0x33;
-    auto moduleName = str.arg(bsi.MTypeB, 0, 16).arg(bsi.MTypeM, 0, 16);
-    (module.loadSettings(moduleName, bsi));
+    (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk22);
@@ -494,12 +463,10 @@ void TestModule::check2233()
 
 void TestModule::check2234()
 {
-    QString str("АВ-ТУК-%1%2");
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x22;
     bsi.MTypeM = 0x34;
-    auto moduleName = str.arg(bsi.MTypeB, 0, 16).arg(bsi.MTypeM, 0, 16);
-    (module.loadSettings(moduleName, bsi));
+    (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk22);
@@ -515,12 +482,10 @@ void TestModule::check2234()
 
 void TestModule::check2235()
 {
-    QString str("АВ-ТУК-%1%2");
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x22;
     bsi.MTypeM = 0x35;
-    auto moduleName = str.arg(bsi.MTypeB, 0, 16).arg(bsi.MTypeM, 0, 16);
-    (module.loadSettings(moduleName, bsi));
+    (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk22);
@@ -551,12 +516,10 @@ void TestModule::check3100()
 
 void TestModule::check3121()
 {
-    QString str("АВ-ТУК-%1%2");
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x31;
     bsi.MTypeM = 0x21;
-    auto moduleName = str.arg(bsi.MTypeB, 0, 16).arg(bsi.MTypeM, 0, 16);
-    (module.loadSettings(moduleName, bsi));
+    (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk31);
@@ -572,12 +535,10 @@ void TestModule::check3121()
 
 void TestModule::check3122()
 {
-    QString str("АВ-ТУК-%1%2");
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x31;
     bsi.MTypeM = 0x22;
-    auto moduleName = str.arg(bsi.MTypeB, 0, 16).arg(bsi.MTypeM, 0, 16);
-    (module.loadSettings(moduleName, bsi));
+    (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk31);
@@ -593,12 +554,10 @@ void TestModule::check3122()
 
 void TestModule::check3131()
 {
-    QString str("АВ-ТУК-%1%2");
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x31;
     bsi.MTypeM = 0x31;
-    auto moduleName = str.arg(bsi.MTypeB, 0, 16).arg(bsi.MTypeM, 0, 16);
-    (module.loadSettings(moduleName, bsi));
+    (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk31);
@@ -614,12 +573,10 @@ void TestModule::check3131()
 
 void TestModule::check3133()
 {
-    QString str("АВ-ТУК-%1%2");
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x31;
     bsi.MTypeM = 0x33;
-    auto moduleName = str.arg(bsi.MTypeB, 0, 16).arg(bsi.MTypeM, 0, 16);
-    (module.loadSettings(moduleName, bsi));
+    (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk31);
@@ -635,12 +592,10 @@ void TestModule::check3133()
 
 void TestModule::check3134()
 {
-    QString str("АВ-ТУК-%1%2");
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x31;
     bsi.MTypeM = 0x34;
-    auto moduleName = str.arg(bsi.MTypeB, 0, 16).arg(bsi.MTypeM, 0, 16);
-    (module.loadSettings(moduleName, bsi));
+    (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk31);
@@ -656,12 +611,10 @@ void TestModule::check3134()
 
 void TestModule::check3135()
 {
-    QString str("АВ-ТУК-%1%2");
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x31;
     bsi.MTypeM = 0x35;
-    auto moduleName = str.arg(bsi.MTypeB, 0, 16).arg(bsi.MTypeM, 0, 16);
-    (module.loadSettings(moduleName, bsi));
+    (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk31);
@@ -692,12 +645,10 @@ void TestModule::check3300()
 
 void TestModule::check3321()
 {
-    QString str("АВ-ТУК-%1%2");
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x33;
     bsi.MTypeM = 0x21;
-    auto moduleName = str.arg(bsi.MTypeB, 0, 16).arg(bsi.MTypeM, 0, 16);
-    (module.loadSettings(moduleName, bsi));
+    (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk33);
@@ -713,12 +664,10 @@ void TestModule::check3321()
 
 void TestModule::check3322()
 {
-    QString str("АВ-ТУК-%1%2");
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x33;
     bsi.MTypeM = 0x22;
-    auto moduleName = str.arg(bsi.MTypeB, 0, 16).arg(bsi.MTypeM, 0, 16);
-    (module.loadSettings(moduleName, bsi));
+    (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk33);
@@ -734,12 +683,10 @@ void TestModule::check3322()
 
 void TestModule::check3331()
 {
-    QString str("АВ-ТУК-%1%2");
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x33;
     bsi.MTypeM = 0x31;
-    auto moduleName = str.arg(bsi.MTypeB, 0, 16).arg(bsi.MTypeM, 0, 16);
-    (module.loadSettings(moduleName, bsi));
+    (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk33);
@@ -755,12 +702,10 @@ void TestModule::check3331()
 
 void TestModule::check3333()
 {
-    QString str("АВ-ТУК-%1%2");
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x33;
     bsi.MTypeM = 0x33;
-    auto moduleName = str.arg(bsi.MTypeB, 0, 16).arg(bsi.MTypeM, 0, 16);
-    (module.loadSettings(moduleName, bsi));
+    (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk33);
@@ -776,12 +721,10 @@ void TestModule::check3333()
 
 void TestModule::check3334()
 {
-    QString str("АВ-ТУК-%1%2");
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x33;
     bsi.MTypeM = 0x34;
-    auto moduleName = str.arg(bsi.MTypeB, 0, 16).arg(bsi.MTypeM, 0, 16);
-    (module.loadSettings(moduleName, bsi));
+    (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk33);
@@ -801,8 +744,7 @@ void TestModule::check3335()
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x33;
     bsi.MTypeM = 0x35;
-    auto moduleName = str.arg(bsi.MTypeB, 0, 16).arg(bsi.MTypeM, 0, 16);
-    (module.loadSettings(moduleName, bsi));
+    (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk33);
@@ -833,12 +775,10 @@ void TestModule::check3400()
 
 void TestModule::check3421()
 {
-    QString str("АВ-ТУК-%1%2");
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x34;
     bsi.MTypeM = 0x21;
-    auto moduleName = str.arg(bsi.MTypeB, 0, 16).arg(bsi.MTypeM, 0, 16);
-    (module.loadSettings(moduleName, bsi));
+    (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk34);
@@ -854,12 +794,10 @@ void TestModule::check3421()
 
 void TestModule::check3422()
 {
-    QString str("АВ-ТУК-%1%2");
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x34;
     bsi.MTypeM = 0x22;
-    auto moduleName = str.arg(bsi.MTypeB, 0, 16).arg(bsi.MTypeM, 0, 16);
-    (module.loadSettings(moduleName, bsi));
+    (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk34);
@@ -875,12 +813,10 @@ void TestModule::check3422()
 
 void TestModule::check3431()
 {
-    QString str("АВ-ТУК-%1%2");
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x34;
     bsi.MTypeM = 0x31;
-    auto moduleName = str.arg(bsi.MTypeB, 0, 16).arg(bsi.MTypeM, 0, 16);
-    (module.loadSettings(moduleName, bsi));
+    (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk34);
@@ -896,12 +832,10 @@ void TestModule::check3431()
 
 void TestModule::check3433()
 {
-    QString str("АВ-ТУК-%1%2");
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x34;
     bsi.MTypeM = 0x33;
-    auto moduleName = str.arg(bsi.MTypeB, 0, 16).arg(bsi.MTypeM, 0, 16);
-    (module.loadSettings(moduleName, bsi));
+    (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk34);
@@ -917,12 +851,10 @@ void TestModule::check3433()
 
 void TestModule::check3434()
 {
-    QString str("АВ-ТУК-%1%2");
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x34;
     bsi.MTypeM = 0x34;
-    auto moduleName = str.arg(bsi.MTypeB, 0, 16).arg(bsi.MTypeM, 0, 16);
-    (module.loadSettings(moduleName, bsi));
+    (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk34);
@@ -938,12 +870,10 @@ void TestModule::check3434()
 
 void TestModule::check3435()
 {
-    QString str("АВ-ТУК-%1%2");
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x34;
     bsi.MTypeM = 0x35;
-    auto moduleName = str.arg(bsi.MTypeB, 0, 16).arg(bsi.MTypeM, 0, 16);
-    (module.loadSettings(moduleName, bsi));
+    (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk34);
@@ -974,12 +904,10 @@ void TestModule::check3500()
 
 void TestModule::check3521()
 {
-    QString str("АВ-ТУК-%1%2");
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x35;
     bsi.MTypeM = 0x21;
-    auto moduleName = str.arg(bsi.MTypeB, 0, 16).arg(bsi.MTypeM, 0, 16);
-    (module.loadSettings(moduleName, bsi));
+    (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk35);
@@ -995,12 +923,10 @@ void TestModule::check3521()
 
 void TestModule::check3522()
 {
-    QString str("АВ-ТУК-%1%2");
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x35;
     bsi.MTypeM = 0x22;
-    auto moduleName = str.arg(bsi.MTypeB, 0, 16).arg(bsi.MTypeM, 0, 16);
-    (module.loadSettings(moduleName, bsi));
+    (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk35);
@@ -1016,12 +942,10 @@ void TestModule::check3522()
 
 void TestModule::check3531()
 {
-    QString str("АВ-ТУК-%1%2");
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x35;
     bsi.MTypeM = 0x31;
-    auto moduleName = str.arg(bsi.MTypeB, 0, 16).arg(bsi.MTypeM, 0, 16);
-    (module.loadSettings(moduleName, bsi));
+    (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk35);
@@ -1037,12 +961,10 @@ void TestModule::check3531()
 
 void TestModule::check3533()
 {
-    QString str("АВ-ТУК-%1%2");
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x35;
     bsi.MTypeM = 0x33;
-    auto moduleName = str.arg(bsi.MTypeB, 0, 16).arg(bsi.MTypeM, 0, 16);
-    QVERIFY(module.loadSettings(moduleName, bsi));
+    QVERIFY(module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk35);
@@ -1058,12 +980,10 @@ void TestModule::check3533()
 
 void TestModule::check3534()
 {
-    QString str("АВ-ТУК-%1%2");
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x35;
     bsi.MTypeM = 0x34;
-    auto moduleName = str.arg(bsi.MTypeB, 0, 16).arg(bsi.MTypeM, 0, 16);
-    (module.loadSettings(moduleName, bsi));
+    (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk35);
@@ -1079,12 +999,10 @@ void TestModule::check3534()
 
 void TestModule::check3535()
 {
-    QString str("АВ-ТУК-%1%2");
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x35;
     bsi.MTypeM = 0x35;
-    auto moduleName = str.arg(bsi.MTypeB, 0, 16).arg(bsi.MTypeM, 0, 16);
-    (module.loadSettings(moduleName, bsi));
+    (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk35);
@@ -1100,11 +1018,10 @@ void TestModule::check3535()
 
 void TestModule::check3533USB()
 {
-    QString str("АВ-ТУК-3533");
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x35;
     bsi.MTypeM = 0x33;
-    QVERIFY(module.loadSettings(str, bsi, Board::InterfaceType::USB));
+    QVERIFY(module.loadSettings(bsi, Board::InterfaceType::USB));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk35);

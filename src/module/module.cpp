@@ -114,15 +114,7 @@ ModuleSettings *Module::settings() const
     return m_settings.get();
 }
 
-bool Module::loadSettings()
-{
-    auto str = Board::GetInstance().moduleName();
-    if (str.isEmpty())
-        return false;
-    return loadSettings(str);
-}
-
-bool Module::loadSettings(QString &moduleName, const Modules::StartupInfoBlock &startupInfoBlock, int interfaceType)
+bool Module::loadSettings(const Modules::StartupInfoBlock &startupInfoBlock, int interfaceType)
 {
     if (!loadS2Settings())
         return false;
@@ -130,37 +122,27 @@ bool Module::loadSettings(QString &moduleName, const Modules::StartupInfoBlock &
 
     m_settings = std::unique_ptr<ModuleSettings>(new ModuleSettings(startupInfoBlock));
     m_settings->interfaceType = interfaceType;
-    if (moduleName.isEmpty())
-        return false;
-    if (moduleName.contains("-"))
-    {
-        QRegularExpression regex("(?<=[-])\\d+");
-        QRegularExpressionMatch match = regex.match(moduleName);
-        if (!match.hasMatch())
-            return false;
-
-        moduleName = match.captured(0);
-    }
-    if (!obtainXmlFile(moduleName))
-        return false;
     if (Board::isUSIO(Modules::BaseBoard(startupInfoBlock.MTypeB), Modules::MezzanineBoard(startupInfoBlock.MTypeM)))
     {
         if (!loadUsioSettings(startupInfoBlock))
             return false;
     }
+    auto moduleName = QString::number(startupInfoBlock.type(), 16);
+
+    if (!obtainXmlFile(moduleName))
+        return false;
 
     QDir dir(m_directory);
     auto xmlFiles = dir.entryList(QDir::Files).filter(".xml");
     QDomDocument domDoc;
     QFile file;
-    for (const auto &xmlFile : xmlFiles)
-    {
-        if (xmlFile.contains(moduleName, Qt::CaseInsensitive) && !xmlFile.contains("config", Qt::CaseInsensitive))
-        {
-            file.setFileName(dir.filePath(xmlFile));
-            break;
-        }
-    }
+    auto result = std::find_if(xmlFiles.cbegin(), xmlFiles.cend(),
+        [&module = moduleName](const QString &str) { return str.contains(module, Qt::CaseInsensitive) && !str.contains("config", Qt::CaseInsensitive); });
+    if (result != std::cend(xmlFiles))
+        file.setFileName(dir.filePath(*result));
+    else
+        return false;
+
     if (!file.open(QIODevice::ReadOnly))
     {
         qCritical() << Error::FileOpenError << file.fileName();
@@ -191,14 +173,11 @@ bool Module::obtainXmlFile(const QString &filename) const
     qDebug() << xmlFiles;
     QDomDocument domDoc;
     QFile file;
-    for (const auto &xmlFile : xmlFiles)
-    {
-        if (xmlFile.contains(filename, Qt::CaseInsensitive))
-        {
-            file.setFileName(dir.filePath(xmlFile));
-            break;
-        }
-    }
+    auto result = std::find_if(xmlFiles.cbegin(), xmlFiles.cend(),
+        [&filename](const QString &str) { return str.contains(filename, Qt::CaseInsensitive); });
+    if (result != std::cend(xmlFiles))
+        file.setFileName(dir.filePath(*result));
+
     if (file.fileName().isEmpty())
     {
         dir = QDir(resourceDirectory);

@@ -124,6 +124,10 @@ struct StartupInfoBlock
     {
         return Fwver < configVersion;
     }
+    quint16 type() const
+    {
+        return quint16((MTypeB << 8) + MTypeM);
+    }
 };
 
 struct StartupInfoBlockExt

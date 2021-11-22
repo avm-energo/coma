@@ -1,20 +1,17 @@
 <RCC>
     <qresource prefix="/module">
-        <file>avm-kiv.xml</file>
-        <file>avm-kdv.xml</file>
-        <file>avm-ktf.xml</file>
         <file>avtuk-8084.xml</file>
         <file>avtuk-8600.xml</file>
         <file>avtuk-8082.xml</file>
-		<file>avtuk-8083.xml</file>
-		<file>avtuk-3533.xml</file>
+        <file>avtuk-8083.xml</file>
+        <file>avtuk-3533.xml</file>
         <file>avtuk-3531.xml</file>
         <file>avtuk-8585.xml</file>
         <file>s2files.xml</file>
         <file>config-0031.xml</file>
         <file>config-0033.xml</file>
         <file>config-3500.xml</file>
-		<file>config-3100.xml</file>
+        <file>config-3100.xml</file>
         <file>config-0022.xml</file>
         <file>config-2200.xml</file>
         <file>config-0021.xml</file>
@@ -39,5 +36,8 @@
         <file>check-3400.xml</file>
         <file>check-8500.xml</file>
         <file>check-0083.xml</file>
+        <file>avtuk-a284.xml</file>
+        <file>avtuk-a287.xml</file>
+        <file>avtuk-a387.xml</file>
     </qresource>
 </RCC>
