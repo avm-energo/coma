@@ -8,7 +8,6 @@
 #include "../widgets/wd_func.h"
 //#include "xlsxdocument.h"
 #include "../gen/s2helper.h"
-#include "../widgets/helper.h"
 
 #include <QCoreApplication>
 #include <QFileDialog>
@@ -425,12 +424,26 @@ void CheckDialog::addSignals(unsigned int key, UWidget *widget)
     }
 }
 
+constexpr int defaultRatio = 3;
+constexpr int maxRatio = 5;
+
+static inline int goldenRatio(int value)
+{
+    int multiplier = value / 10;
+    for (auto i = maxRatio + multiplier; i != defaultRatio; --i)
+    {
+        if (!(value % i))
+            return i;
+    }
+    return defaultRatio + multiplier;
+}
+
 void CheckDialog::setup(const check::detail::Record &arg, QGroupBox *gb)
 {
     gb->setTitle(arg.header.value());
 
     auto count = std::size(arg.desc.value());
-    auto itemsOneLine = detail::goldenRatio(count);
+    auto itemsOneLine = goldenRatio(count);
 
     QGridLayout *gridlyout = new QGridLayout;
     for (auto i = 0; i != count; ++i)
