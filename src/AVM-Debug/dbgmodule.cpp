@@ -101,11 +101,14 @@ void DbgModule::create(Modules::BaseBoard typeB, Modules::MezzanineBoard typeM)
             addDialogToList(
                 new ConfigDialog(&configV, settings()->configSettings.general), "Конфигурирование", "conf1");
         }
-    }
-
-    for (auto &&item : m_gsettings.check.items)
-    {
-        addDialogToList(new CheckDialog(item, m_gsettings.check.categories), item.header, "check:" + item.header);
+        if (settings()->ifaceSettings.settings.isValid())
+        {
+            for (auto &&item : m_gsettings.check.items)
+            {
+                addDialogToList(
+                    new CheckDialog(item, m_gsettings.check.categories), item.header, "check:" + item.header);
+            }
+        }
     }
 
     if ((typeB == BaseBoard::MTB_80) && (typeM == MezzanineBoard::MTM_84))
@@ -174,9 +177,14 @@ void DbgModule::createUSIO(Modules::BaseBoard typeB, Modules::MezzanineBoard typ
     {
         addDialogToList(new RelayDialog(4), "Реле", "relay1");
     }
+
+    if (!settings()->ifaceSettings.settings.isValid())
+        return;
+
     if (typeB == BaseBoard::MTB_31 || typeB == BaseBoard::MTB_33)
     {
-        addDialogToList(new CheckBase3133Dialog(item, m_gsettings.check.categories), item.header, "check:" + item.header);
+        addDialogToList(
+            new CheckBase3133Dialog(item, m_gsettings.check.categories), item.header, "check:" + item.header);
     }
     else
     {
@@ -239,4 +247,5 @@ void DbgModule::create(QTimer *updateTimer)
         connect(updateTimer, &QTimer::timeout, d, &UDialog::reqUpdate);
         d->uponInterfaceSetting();
     }
+    BaseInterface::iface()->setSettings(settings()->ifaceSettings);
 }

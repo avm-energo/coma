@@ -65,6 +65,7 @@ void SvcModule::create(QTimer *updateTimer)
         connect(updateTimer, &QTimer::timeout, d, &UDialog::reqUpdate);
         d->uponInterfaceSetting();
     }
+    BaseInterface::iface()->setSettings(settings()->ifaceSettings);
 }
 
 void SvcModule::createModule(Modules::Model model)

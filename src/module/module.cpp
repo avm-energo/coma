@@ -32,9 +32,6 @@ void Module::createAlarm(AlarmWidget *aw)
 {
     using namespace Modules;
 
-    if (m_settings)
-        BaseInterface::iface()->setSettings(settings()->ifaceSettings);
-
     Q_ASSERT(aw->count() == 0);
     AlarmStateAll *alarmStateAll = new AlarmStateAll;
     alarmStateAll->setupUI(AVM::HthToolTip);
@@ -500,6 +497,6 @@ std::vector<CheckItem> Module::loadCheckSettings(Modules::BaseBoard typeB, Modul
         statusMezz = false;
         qWarning() << Error::OpenError << checkMezz;
     }
-    assert(statusBase || statusMezz);
+    // assert(statusBase || statusMezz);
     return check;
 }
