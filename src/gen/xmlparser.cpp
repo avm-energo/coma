@@ -497,11 +497,14 @@ check::detail::Record XmlParserHelper::parseRecordCheck(QDomElement domElement)
         {
             for (auto i = 1; i <= rec.count; i++)
             {
-                strToolTip.push_back(toolTip.arg(i));
+                if (!toolTip.isEmpty())
+                    strToolTip.push_back(toolTip.arg(i));
                 strDesc.push_back(desc.arg(i));
             }
         }
-        rec.toolTip = strToolTip;
+        if (!toolTip.isEmpty())
+            rec.toolTip = strToolTip;
+
         rec.desc = strDesc;
     }
 
