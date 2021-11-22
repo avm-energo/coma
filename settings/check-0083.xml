@@ -34,7 +34,7 @@
             <uint-set>
                 <item>1</item>
             </uint-set>
-            <start-addr>1720</start-addr>
+            <start-addr>1220</start-addr>
             <count>8</count>
         </signals>
         <record header="Действующие значения и крест-факторы сигналов">
@@ -183,7 +183,7 @@
             <uint-set>
                 <item>1</item>
             </uint-set>
-            <start-addr>1220</start-addr>
+            <start-addr>1720</start-addr>
             <count>8</count>
         </signals>
         <signals>
