@@ -145,7 +145,7 @@
         </group>
         <group>
           <start-addr>1020</start-addr>
-          <count>9</count>
+          <count>8</count>
           <block>4</block>
         </group>
         <group>
@@ -165,7 +165,7 @@
         </group>
         <group>
           <start-addr>1720</start-addr>
-          <count>9</count>
+          <count>8</count>
           <block>6</block>
         </group>
         <group>

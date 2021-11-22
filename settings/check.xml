@@ -5,6 +5,11 @@
     <!ENTITY groupAdditional "10"> 
     <!ENTITY groupRmsValues "200"> 
     <!ENTITY groupChangeRate "210"> 
+    <!ENTITY groupHarm1 "310"> 
+    <!ENTITY groupHarm1A "311"> 
+    <!ENTITY groupHarm1B "312"> 
+    <!ENTITY groupHarm1C "313"> 
+    <!ENTITY groupHarm2 "320"> 
 ]> 
 <root xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
  xsi:noNamespaceSchemaLocation="check.xsd">
@@ -31,7 +36,26 @@
                 <key>&groupChangeRate;</key>
                 <value>Скорости изменения</value>
             </item>
-            
+            <item>
+                <key>&groupHarm1;</key>
+                <value>Гармоники первой тройки</value>
+            </item>
+            <item>
+                <key>&groupHarm1A;</key>
+                <value>Гармоники фазы A</value>
+            </item>
+            <item>
+                <key>&groupHarm1B;</key>
+                <value>Гармоники фазы B</value>
+            </item>
+            <item>
+                <key>&groupHarm1C;</key>
+                <value>Гармоники фазы C</value>
+            </item>
+            <item>
+                <key>&groupHarm2;</key>
+                <value>Гармоники второй тройки</value>
+            </item>
         </map>
     </check>    
 </root>
