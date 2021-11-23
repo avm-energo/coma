@@ -182,7 +182,7 @@ bool Module::loadSettings(QString &moduleName, const Modules::StartupInfoBlock &
     QFile file;
     for (const auto &xmlFile : xmlFiles)
     {
-        if (xmlFile.contains(moduleName, Qt::CaseInsensitive))
+        if (xmlFile.contains(moduleName, Qt::CaseInsensitive) && !xmlFile.contains("config", Qt::CaseInsensitive))
         {
             file.setFileName(dir.filePath(xmlFile));
             break;

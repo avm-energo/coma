@@ -43,6 +43,7 @@ private slots:
     void check8082();
     void check8082USB();
 
+    void check2100();
     void check2121();
     void check2122();
     void check2131();
@@ -50,6 +51,7 @@ private slots:
     void check2134();
     void check2135();
 
+    void check2200();
     void check2221();
     void check2222();
     void check2231();
@@ -57,6 +59,7 @@ private slots:
     void check2234();
     void check2235();
 
+    void check3100();
     void check3121();
     void check3122();
     void check3131();
@@ -64,6 +67,7 @@ private slots:
     void check3134();
     void check3135();
 
+    void check3300();
     void check3321();
     void check3322();
     void check3331();
@@ -71,6 +75,7 @@ private slots:
     void check3334();
     void check3335();
 
+    void check3400();
     void check3421();
     void check3422();
     void check3431();
@@ -78,6 +83,7 @@ private slots:
     void check3434();
     void check3435();
 
+    void check3500();
     void check3521();
     void check3522();
     void check3531();
