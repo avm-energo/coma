@@ -126,10 +126,10 @@ void DbgModule::create(Modules::BaseBoard typeB, Modules::MezzanineBoard typeM)
     {
         qDebug("Here is AVTUK-8600");
     }
-    if ((typeB == BaseBoard::MTB_80) && (typeM == MezzanineBoard::MTM_82))
+    if (typeB == BaseBoard::MTB_80)
     {
-        qDebug("Here is AVTUK-8082");
-        addDialogToList(new OscDialog, "Осциллограммы");
+        if ((typeM == MezzanineBoard::MTM_81) || (typeM == MezzanineBoard::MTM_82) || (typeM == MezzanineBoard::MTM_83))
+            addDialogToList(new OscDialog, "Осциллограммы");
     }
     if ((typeB == BaseBoard::MTB_80) && (typeM == MezzanineBoard::MTM_85))
     {

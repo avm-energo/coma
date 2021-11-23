@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <modules xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="device-schema.xsd">
   <!--Здесь мы описываем текущий модуль, обязательно указать mtypeb и mtypem-->
-  <module mtypeb="80" mtypem="82">
+  <module mtypeb="80" mtypem="81">
     <!--Здесь указано название модуля-->
-    <name>AVTUK-8082</name>
+    <name>AVTUK-8081</name>
     <!--Текущая конфигурация полностью неактуальна и является тестовой!!! -->
     <!--        ТЕСТОВАЯ                                                  -->
     <!--        КОНФИГУРАЦИЯ                                              -->
@@ -140,37 +140,32 @@
           <block>0</block>
         </group>
         <group>
-          <start-addr>1000</start-addr>
+          <start-addr>1400</start-addr>
           <count>11</count>
           <block>2</block>
         </group>
         <group>
-          <start-addr>1020</start-addr>
+          <start-addr>1420</start-addr>
           <count>8</count>
           <block>4</block>
         </group>
         <group>
-          <start-addr>1028</start-addr>
+          <start-addr>1428</start-addr>
           <count>183</count>
           <block>5</block>
         </group>
         <group>
-          <start-addr>1220</start-addr>
-          <count>8</count>
-          <block>8</block>
-        </group>
-        <group>
-          <start-addr>1400</start-addr>
+          <start-addr>2100</start-addr>
           <count>11</count>
           <block>3</block>
         </group>
         <group>
-          <start-addr>1420</start-addr>
+          <start-addr>2120</start-addr>
           <count>8</count>
           <block>6</block>
         </group>
         <group>
-          <start-addr>1428</start-addr>
+          <start-addr>2128</start-addr>
           <count>183</count>
           <block>7</block>
         </group>

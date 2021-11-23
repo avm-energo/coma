@@ -26,6 +26,9 @@ constexpr auto check31 = 1;
 constexpr auto check33 = 1;
 constexpr auto check34 = 0;
 constexpr auto check35 = 0;
+constexpr auto check8081 = 10;
+constexpr auto check8082 = 11;
+constexpr auto check8083 = 12;
 }
 
 TestModule::TestModule(QObject *parent) : QObject(parent)
@@ -205,6 +208,38 @@ void TestModule::check8085USB()
     QCOMPARE(elementCount, 2);
 }
 
+void TestModule::check8081()
+{
+    Modules::StartupInfoBlock bsi;
+    bsi.MTypeB = 0x80;
+    bsi.MTypeM = 0x81;
+    QVERIFY(module.loadSettings(bsi));
+    auto settings = module.settings();
+    QVERIFY(!settings->ifaceSettings.settings.isValid());
+
+    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    QCOMPARE(checkSettings.size(), 2);
+    auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
+        [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
+    QCOMPARE(elementCount, check::check8081);
+}
+
+void TestModule::check8081USB()
+{
+    Modules::StartupInfoBlock bsi;
+    bsi.MTypeB = 0x80;
+    bsi.MTypeM = 0x81;
+    QVERIFY(module.loadSettings(bsi, Board::InterfaceType::USB));
+    auto settings = module.settings();
+    QVERIFY(settings->ifaceSettings.settings.isValid());
+
+    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    QCOMPARE(checkSettings.size(), 2);
+    auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
+        [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
+    QCOMPARE(elementCount, check::check8081);
+}
+
 void TestModule::check8082()
 {
     Modules::StartupInfoBlock bsi;
@@ -213,6 +248,12 @@ void TestModule::check8082()
     QVERIFY(module.loadSettings(bsi));
     auto settings = module.settings();
     QVERIFY(!settings->ifaceSettings.settings.isValid());
+
+    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    QCOMPARE(checkSettings.size(), 2);
+    auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
+        [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
+    QCOMPARE(elementCount, check::check8082);
 }
 
 void TestModule::check8082USB()
@@ -221,8 +262,14 @@ void TestModule::check8082USB()
     bsi.MTypeB = 0x80;
     bsi.MTypeM = 0x82;
     QVERIFY(module.loadSettings(bsi, Board::InterfaceType::USB));
-    //  auto settings = module.settings();
-    // QVERIFY(settings->ifaceSettings.settings.isValid());
+    auto settings = module.settings();
+    QVERIFY(settings->ifaceSettings.settings.isValid());
+
+    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    QCOMPARE(checkSettings.size(), 2);
+    auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
+        [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
+    QCOMPARE(elementCount, check::check8082);
 }
 
 void TestModule::check2100()
@@ -253,7 +300,23 @@ void TestModule::check8083()
     QCOMPARE(checkSettings.size(), 2);
     auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
         [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
-    QCOMPARE(elementCount, 12);
+    QCOMPARE(elementCount, check::check8083);
+}
+
+void TestModule::check8083USB()
+{
+    Modules::StartupInfoBlock bsi;
+    bsi.MTypeB = 0x80;
+    bsi.MTypeM = 0x83;
+    QVERIFY(module.loadSettings(bsi, Board::InterfaceType::USB));
+    auto settings = module.settings();
+    QVERIFY(settings->ifaceSettings.settings.isValid());
+
+    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    QCOMPARE(checkSettings.size(), 2);
+    auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
+        [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
+    QCOMPARE(elementCount, check::check8083);
 }
 
 void TestModule::check2121()

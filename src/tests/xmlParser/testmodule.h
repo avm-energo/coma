@@ -40,11 +40,15 @@ private slots:
     void check8085();
     void check8085USB();
 
+    void check8081();
+    void check8081USB();
+
     void check8082();
     void check8082USB();
 
     void check2100();
     void check8083();
+    void check8083USB();
 
     void check2121();
     void check2122();
