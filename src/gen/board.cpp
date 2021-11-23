@@ -222,6 +222,7 @@ bool Board::isUSIO(Modules::BaseBoard typeB, Modules::MezzanineBoard typeM)
     }
     switch (typeM)
     {
+    case Modules::MTM_00:
     case Modules::MTM_21:
     case Modules::MTM_22:
     case Modules::MTM_31:
