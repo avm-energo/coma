@@ -483,14 +483,18 @@ check::detail::Record XmlParserHelper::parseRecordCheck(QDomElement domElement)
     {
         auto strArrayElement = domElement.firstChildElement(keys::stringArray);
         QStringList strDesc, strToolTip;
-        if (!strArrayElement.isNull())
+        if (strArrayElement.isElement())
         {
             auto strList = XmlParser::parseStringList(strArrayElement);
             assert(rec.count == strList.count());
             for (auto &&item : strList)
             {
-                strToolTip.push_back(toolTip.arg(item));
-                strDesc.push_back(desc.arg(item));
+                if (toolTip.isEmpty())
+                    strToolTip.push_back(item);
+                else
+                    strToolTip.push_back(toolTip.arg(item));
+                if (!desc.isEmpty())
+                    strDesc.push_back(desc.arg(item));
             }
         }
         else
@@ -499,7 +503,8 @@ check::detail::Record XmlParserHelper::parseRecordCheck(QDomElement domElement)
             {
                 if (!toolTip.isEmpty())
                     strToolTip.push_back(toolTip.arg(i));
-                strDesc.push_back(desc.arg(i));
+                if (!desc.isEmpty())
+                    strDesc.push_back(desc.arg(i));
             }
         }
         if (!toolTip.isEmpty())
