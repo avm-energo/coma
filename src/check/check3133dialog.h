@@ -12,6 +12,10 @@ public:
     void updateBitStringData(const DataTypes::BitStringStruct &bs) override;
 
 protected:
+    auto inputQuantity() const
+    {
+        return std::get<check::detail::Record>(m_item.itemsVector.front()).count.value();
+    }
     virtual UWidget *Bd1W() = 0;
 
     QColor m_normalColor = (Qt::green);

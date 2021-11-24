@@ -28,6 +28,7 @@
         <record header="Состояния входов">
             <group>1</group>
             <start-addr>3001</start-addr>
+            <count>30</count>
         </record>
     </check>
 </root>

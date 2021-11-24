@@ -8,8 +8,6 @@
 #include <QGroupBox>
 #include <bitset>
 
-constexpr uint16_t INPUT_QUANITY = 32;
-
 constexpr int offset = 1;
 constexpr int columns = 6;
 
@@ -60,7 +58,7 @@ UWidget *CheckMezz3133Dialog::Bd1W()
     QGroupBox *gb = new QGroupBox("Состояние входов");
     QGridLayout *glyout = new QGridLayout;
 
-    for (int i = 0; i < INPUT_QUANITY; ++i)
+    for (int i = 0; i < inputQuantity(); ++i)
     {
 
         QHBoxLayout *hlyout = new QHBoxLayout;
@@ -79,7 +77,7 @@ UWidget *CheckMezz3133Dialog::Bd1W()
     lyout->addWidget(gb);
     w->setLayout(lyout);
 
-    addSignals(*m_item.signlsVec.at(0).groups.cbegin(), w);
+    addSignals(*m_item.signlsVec.front().groups.cbegin(), w);
 
     return w;
 }
@@ -101,7 +99,7 @@ UWidget *CheckBase3133Dialog::Bd1W()
     gb = new QGroupBox("Состояние входов");
     glyout = new QGridLayout;
 
-    for (int i = 0; i < INPUT_QUANITY; ++i)
+    for (int i = 0; i < inputQuantity(); ++i)
     {
 
         QHBoxLayout *hlyout = new QHBoxLayout;
@@ -120,7 +118,7 @@ UWidget *CheckBase3133Dialog::Bd1W()
     lyout->addWidget(gb);
     w->setLayout(lyout);
 
-    addSignals(*m_item.signlsVec.at(0).groups.cbegin(), w);
+    addSignals(*m_item.signlsVec.front().groups.cbegin(), w);
 
     return w;
 }
