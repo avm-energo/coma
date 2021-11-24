@@ -21,7 +21,7 @@
         <defaultValue>2</defaultValue>
         <widget>
             <type>CheckBoxGroup</type>
-            <count>4</count>
+            <count>11</count>
         </widget>
     </record>
     <record>

@@ -3,10 +3,6 @@
     <record>
         <id>205</id>
         <defaultValue>0</defaultValue>
-        <widget>
-            <type>CheckBoxGroup</type>
-            <count>30</count>					
-        </widget>
     </record>
     <record>
         <id>211</id>
