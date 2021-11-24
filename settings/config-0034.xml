@@ -23,9 +23,17 @@
     <record>
         <id>427</id>
         <defaultValue>0</defaultValue>
+        <widget>
+			<type>QComboBoxGroup</type>
+			<count>28</count>
+		</widget>
     </record>
     <record>
         <id>428</id>
         <defaultValue>0</defaultValue>
+        <widget>
+			<type>QComboBoxGroup</type>
+			<count>28</count>
+		</widget>
     </record>
 </s2files>
