@@ -180,11 +180,6 @@
         </group>
 
         <!--Если у группы есть id то его необходимо также указать для другого модуля-->
-        <group id="startValue">
-          <start-addr>4000</start-addr>
-          <count>11</count>
-          <block>7</block>
-        </group>
         <group id="alarmModule">
           <start-addr>3011</start-addr>
           <count>25</count>
