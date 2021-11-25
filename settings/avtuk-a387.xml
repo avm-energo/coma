@@ -274,8 +274,18 @@
         </group>
         <group>
           <start-addr>1028</start-addr>
-          <count>183</count>
+          <count>61</count>
           <block>5</block>
+        </group>
+        <group>
+          <start-addr>1089</start-addr>
+          <count>61</count>
+          <block>25</block>
+        </group>
+        <group>
+          <start-addr>1150</start-addr>
+          <count>61</count>
+          <block>35</block>
         </group>
         <group>
           <start-addr>1220</start-addr>
@@ -294,8 +304,18 @@
         </group>
         <group>
           <start-addr>1428</start-addr>
-          <count>183</count>
+          <count>61</count>
           <block>7</block>
+        </group>
+        <group>
+          <start-addr>1489</start-addr>
+          <count>61</count>
+          <block>27</block>
+        </group>
+        <group>
+          <start-addr>1550</start-addr>
+          <count>61</count>
+          <block>37</block>
         </group>
         <group>
           <start-addr>4000</start-addr>
@@ -309,7 +329,7 @@
        </group> -->
         <group>
           <start-addr>4010</start-addr>
-          <count>20</count>
+          <count>22</count>
           <block>11</block>
         </group>
         <group>

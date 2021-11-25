@@ -70,13 +70,23 @@ void DbgModule::createModule(Modules::Model model)
     {
         auto jour = UniquePointer<Journals>(new JournKDV(settings()->journals, this));
 
-        addDialogToList(new ConfigDialog(&configV, settings()->configSettings.general), "Конфигурирование", "conf1");
+        if (settings())
+        {
+            if (!settings()->configSettings.general.isEmpty())
+            {
+                addDialogToList(
+                    new ConfigDialog(&configV, settings()->configSettings.general), "Конфигурирование", "conf1");
+            }
+            if (settings()->ifaceSettings.settings.isValid())
+            {
+                for (auto &&item : m_gsettings.check.items)
+                {
+                    addDialogToList(
+                        new CheckDialog(item, m_gsettings.check.categories), item.header, "check:" + item.header);
+                }
+            }
+        }
 
-        CheckKDVDialog *cdkdv = new CheckKDVDialog;
-        addDialogToList(cdkdv, "Проверка");
-        addDialogToList(new CheckKDVHarmonicDialog, "Гармоники");
-        addDialogToList(new CheckKDVVibrDialog, "Вибрации");
-        addDialogToList(new StartupKDVDialog, "Старение\nизоляции");
         Module::create(std::move(jour));
         break;
     }

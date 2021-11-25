@@ -23,11 +23,25 @@
             <type>M_ME</type>
             <uint-set>
                 <item>311</item>
-                <item>312</item>
-                <item>313</item>
             </uint-set>
             <start-addr>1028</start-addr>
-            <count>183</count>
+            <count>61</count>
+        </signals>
+        <signals>
+            <type>M_ME</type>
+            <uint-set>
+                <item>312</item>
+            </uint-set>
+            <start-addr>1089</start-addr>
+            <count>61</count>
+        </signals>
+        <signals>
+            <type>M_ME</type>
+            <uint-set>
+                <item>313</item>
+            </uint-set>
+            <start-addr>1150</start-addr>
+            <count>61</count>
         </signals>
         <signals>
             <type>M_ME</type>
@@ -182,11 +196,25 @@
             <type>M_ME</type>
             <uint-set>
                 <item>311</item>
-                <item>312</item>
-                <item>313</item>
             </uint-set>
             <start-addr>1428</start-addr>
-            <count>183</count>
+            <count>61</count>
+        </signals>
+        <signals>
+            <type>M_ME</type>
+            <uint-set>
+                <item>312</item>
+            </uint-set>
+            <start-addr>1489</start-addr>
+            <count>61</count>
+        </signals>
+        <signals>
+            <type>M_ME</type>
+            <uint-set>
+                <item>313</item>
+            </uint-set>
+            <start-addr>1550</start-addr>
+            <count>61</count>
         </signals>
         <record header="Действующие значения и крест-факторы сигналов">
             <group>1</group>
@@ -278,6 +306,164 @@
             <group>313</group>
             <start-addr>1550</start-addr>
             <count>61</count>
+        </record>
+    </check>
+    <check header="Вибрации">
+        <signals>
+            <type>M_ME</type>
+            <uint-set>
+                <item>200</item>
+                <item>210</item>
+            </uint-set>
+            <start-addr>6040</start-addr>
+            <count>36</count>
+        </signals>
+        <record header="Среднеквадратичные значения виброускорений, м/с2" desc="Датчик №%1">
+            <group>200</group>
+            <start-addr>6040</start-addr>
+            <count>6</count>
+        </record>
+        <record header="Среднеквадратичные значения виброскоростей, мм/с" desc="Датчик №%1">
+            <group>200</group>
+            <start-addr>6046</start-addr>
+            <count>6</count>
+        </record>
+        <record header="Среднеквадратичные значения виброперемещений, мкм" desc="Датчик №%1">
+            <group>200</group>
+            <start-addr>6052</start-addr>
+            <count>6</count>
+        </record>
+        <record header="Скорость изменения среднеквадратичного значения виброускорения, м/с2/час" desc="Датчик №%1">
+            <group>210</group>
+            <start-addr>6058</start-addr>
+            <count>6</count>
+        </record>
+        <record header="Скорость изменения среднеквадратичного значения виброскорости, мм/с/час" desc="Датчик №%1">
+            <group>210</group>
+            <start-addr>6064</start-addr>
+            <count>6</count>
+        </record>
+        <record header="Скорость изменения среднеквадратичного значения виброперемещения, мкм/час" desc="Датчик №%1">
+            <group>210</group>
+            <start-addr>6070</start-addr>
+            <count>6</count>
+        </record>
+    </check>
+    <check header="Текущие данные">
+        <signals>
+            <type>M_ME</type>
+            <uint-set>
+                <item>1</item>
+            </uint-set>
+            <start-addr>4000</start-addr>
+            <count>6</count>
+        </signals>
+        <signals>
+            <type>M_ME</type>
+            <uint-set>
+                <item>1</item>
+            </uint-set>
+            <start-addr>4010</start-addr>
+            <count>22</count>
+        </signals>
+        <signals>
+            <type>M_ME</type>
+            <uint-set>
+                <item>1</item>
+            </uint-set>
+            <start-addr>4500</start-addr>
+            <count>7</count>
+        </signals>
+        <record header="Данные по несимметрии и искажениям сигналов">
+            <group>1</group>
+            <record desc="Vst">
+                <start-addr>4000</start-addr>
+                <toolTip>Относительная скорость старения изоляции</toolTip>
+            </record>
+            <record desc="Age">
+                <start-addr>4001</start-addr>
+                <toolTip>Интегральное старение изоляции, час</toolTip>
+            </record>
+            <record desc="RESURS">
+                <start-addr>4002</start-addr>
+                <toolTip>Остаточный ресурс изоляции, час</toolTip>
+            </record>
+            <record desc="MotHnorm">
+                <start-addr>4003</start-addr>
+                <toolTip>Наработка при нормальной нагрузке, час</toolTip>
+            </record>
+            <record desc="MotHover">
+                <start-addr>4004</start-addr>
+                <toolTip>Наработка в режиме перегрузки, час</toolTip>
+            </record>
+            <record desc="MotHTotal">
+                <start-addr>4005</start-addr>
+                <toolTip>Общая наработка, час</toolTip>
+            </record>
+        </record>
+        <record header="Температура">
+            <group>1</group>
+            <record desc="Tw, °С">
+                <start-addr>4500</start-addr>
+                <toolTip>Температура обмотки (расчетная), °С</toolTip>
+            </record>
+            <record desc="Ta, °С">
+                <start-addr>4501</start-addr>
+                <toolTip>Температура окружающей среды, °С</toolTip>
+            </record>
+            <record desc="Rterm">
+                <start-addr>4502</start-addr>
+                <toolTip>Сопротивление термометра окружающей среды</toolTip>
+            </record>
+            <record desc="ExtTempWin%1">
+                <start-addr>4503</start-addr>
+                <count>4</count>
+                <toolTip>Температура обмотки, измеренная встроенным датчиком %1</toolTip>
+                <string-array>
+                    <item>1</item>
+                    <item>2</item>
+                    <item>3</item>
+                    <item>4</item>
+                </string-array>
+            </record>
+        </record>
+        <record header="Оставшееся время работы">
+            <group>1</group>
+            <record desc="Tpred">
+                <start-addr>4010</start-addr>
+                <toolTip>Температура обмотки (расчетная), °С</toolTip>
+            </record>
+            <record desc="Tdop">
+                <start-addr>4011</start-addr>
+                <toolTip>Допустимое оставшееся время работы при данной нагрузке</toolTip>
+            </record>
+            <record desc="Tdop%1%">
+                <start-addr>4012</start-addr>
+                <count>20</count>
+                <toolTip>Допустимое оставшееся время работы при нагрузке %1%</toolTip>
+                <string-array>
+                    <item>105</item>
+                    <item>110</item>
+                    <item>115</item>
+                    <item>120</item>
+                    <item>125</item>
+                    <item>130</item>
+                    <item>135</item>
+                    <item>140</item>
+                    <item>145</item>
+                    <item>150</item>
+                    <item>155</item>
+                    <item>160</item>
+                    <item>165</item>
+                    <item>170</item>
+                    <item>175</item>
+                    <item>180</item>
+                    <item>185</item>
+                    <item>190</item>
+                    <item>195</item>
+                    <item>120</item>
+                </string-array>
+            </record>
         </record>
     </check>
     
