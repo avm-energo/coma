@@ -133,8 +133,9 @@ bool Module::loadSettings(const Modules::StartupInfoBlock &startupInfoBlock, int
     auto xmlFiles = dir.entryList(QDir::Files).filter(".xml");
     QDomDocument domDoc;
     QFile file;
-    auto result = std::find_if(xmlFiles.cbegin(), xmlFiles.cend(),
-        [&module = moduleName](const QString &str) { return str.contains(module, Qt::CaseInsensitive) && !str.contains("config", Qt::CaseInsensitive); });
+    auto result = std::find_if(xmlFiles.cbegin(), xmlFiles.cend(), [&module = moduleName](const QString &str) {
+        return str.contains(module, Qt::CaseInsensitive) && str.contains("avtuk", Qt::CaseInsensitive);
+    });
     if (result != std::cend(xmlFiles))
         file.setFileName(dir.filePath(*result));
     else

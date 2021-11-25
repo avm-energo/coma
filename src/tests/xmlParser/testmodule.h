@@ -46,10 +46,10 @@ private slots:
     void check8082();
     void check8082USB();
 
-    void check2100();
     void check8083();
     void check8083USB();
 
+    void check2100();
     void check2121();
     void check2122();
     void check2131();
