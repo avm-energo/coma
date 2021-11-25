@@ -147,7 +147,7 @@ void TestModule::checkA387()
     QCOMPARE(checkSettings.size(), 4);
     auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
         [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
-    QCOMPARE(elementCount, 20);
+    QCOMPARE(elementCount, 21);
 }
 
 void TestModule::checkA387USB()
@@ -165,14 +165,14 @@ void TestModule::checkA387USB()
     QVERIFY(settings->ifaceSettings.settings.isValid());
     QVERIFY(settings->ifaceSettings.settings.canConvert<InterfaceInfo<Proto::ProtocomGroup>>());
     const auto &st = settings->ifaceSettings.settings.value<InterfaceInfo<Proto::ProtocomGroup>>();
-    QCOMPARE(st.dictionary().size(), 17);
-    QCOMPARE(st.groups().size(), 17);
+    QCOMPARE(st.dictionary().size(), 19);
+    QCOMPARE(st.groups().size(), 19);
 
     auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
     QCOMPARE(checkSettings.size(), 4);
     auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
         [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
-    QCOMPARE(elementCount, 20);
+    QCOMPARE(elementCount, 21);
 }
 
 void TestModule::check8084()

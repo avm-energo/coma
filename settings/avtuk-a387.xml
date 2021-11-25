@@ -337,11 +337,16 @@
           <count>7</count>
           <block>13</block>
         </group>
-        <!-- <group>
+        <group>
+          <start-addr>4520</start-addr>
+          <count>2</count>
+          <block>14</block>
+       </group>
+        <group>
           <start-addr>2400</start-addr>
           <count>7</count>
           <block>17</block>
-       </group> -->
+       </group>
         <group>
           <start-addr>6040</start-addr>
           <count>36</count>

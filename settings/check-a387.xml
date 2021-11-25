@@ -374,6 +374,14 @@
             <start-addr>4500</start-addr>
             <count>7</count>
         </signals>
+        <signals>
+            <type>M_ME</type>
+            <uint-set>
+                <item>10</item>
+            </uint-set>
+            <start-addr>2400</start-addr>
+            <count>7</count>
+        </signals>
         <record header="Данные по несимметрии и искажениям сигналов">
             <group>1</group>
             <record desc="Vst">
@@ -462,6 +470,25 @@
                     <item>190</item>
                     <item>195</item>
                     <item>120</item>
+                </string-array>
+            </record>
+        </record>
+        <record header="Данные по частоте и углам сдвига сигналов">
+            <group>10</group>
+            <record desc="Frequency">
+                <start-addr>2400</start-addr>
+                <toolTip>Частота в сети, Гц</toolTip>
+            </record>
+            <record desc="Ψ%10">
+                <start-addr>2401</start-addr>
+                <count>5</count>
+                <toolTip>Угол сдвига между каналами %1-0, градусов</toolTip>
+                <string-array>
+                    <item>1</item>
+                    <item>2</item>
+                    <item>3</item>
+                    <item>4</item>
+                    <item>5</item>
                 </string-array>
             </record>
         </record>
