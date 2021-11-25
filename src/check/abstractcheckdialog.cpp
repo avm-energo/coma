@@ -466,23 +466,21 @@ void CheckDialog::setup(const check::detail::RecordList &arg, QGroupBox *gb)
 {
     gb->setTitle(arg.header);
 
-    QGridLayout *gridlyout = new QGridLayout;
-
-    int count = std::size(arg.records);
-
-    for (int i = 0; i != count; ++i)
+    QVBoxLayout *mainLayout = new QVBoxLayout;
+    for (auto &&currentRecord : arg.records)
     {
 
-        // one item per record
-        const auto &currentRecord = arg.records.at(i);
         assert(
             currentRecord.toolTip.has_value() ? (currentRecord.toolTip->size() == currentRecord.desc->size()) : true);
 
-        for (int j = 0; j < currentRecord.desc->count(); ++j)
+        auto itemsOneLine = goldenRatio(currentRecord.desc->count());
+
+        QGridLayout *gridlyout = new QGridLayout;
+        for (auto i = 0; i < currentRecord.desc->count(); ++i)
         {
             QHBoxLayout *layout = new QHBoxLayout;
 
-            QLabel *textLabel = new QLabel(currentRecord.desc->at(j));
+            QLabel *textLabel = new QLabel(currentRecord.desc->at(i));
             textLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
 
             QFontMetrics fn(textLabel->font());
@@ -492,16 +490,16 @@ void CheckDialog::setup(const check::detail::RecordList &arg, QGroupBox *gb)
 
             QLabel *valueLabel = new QLabel;
             if (currentRecord.toolTip.has_value())
-                valueLabel->setToolTip(currentRecord.toolTip->at(j));
+                valueLabel->setToolTip(currentRecord.toolTip->at(i));
             valueLabel->setMaximumHeight(fn.height());
 
-            valueLabel->setObjectName(QString::number(currentRecord.start_addr + j));
+            valueLabel->setObjectName(QString::number(currentRecord.start_addr + i));
             valueLabel->setStyleSheet(ValuesFormat);
             valueLabel->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
             layout->addWidget(valueLabel);
-
-            gridlyout->addLayout(layout, i, j);
+            gridlyout->addLayout(layout, i / itemsOneLine, i % itemsOneLine);
         }
+        mainLayout->addLayout(gridlyout);
     }
-    gb->setLayout(gridlyout);
+    gb->setLayout(mainLayout);
 }
