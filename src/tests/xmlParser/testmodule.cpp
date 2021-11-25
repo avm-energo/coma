@@ -129,6 +129,73 @@ void TestModule::checkA284Modbus()
     //    QCOMPARE(elementCount, 7);
 }
 
+void TestModule::checkA287()
+{
+    Modules::StartupInfoBlock bsi;
+    bsi.MTypeB = 0xa2;
+    bsi.MTypeM = 0x87;
+    QVERIFY(module.loadSettings(bsi));
+    auto settings = module.settings();
+    QCOMPARE(settings->alarms.size(), 2);
+    QCOMPARE(settings->configSettings.general.size(), 53);
+    QCOMPARE(settings->highlightCrit.size(), 0);
+    QCOMPARE(settings->highlightWarn.size(), 0);
+    QCOMPARE(settings->journals.size(), 2);
+    QVERIFY(!settings->ifaceSettings.settings.isValid());
+
+    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    QCOMPARE(checkSettings.size(), 3);
+    auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
+        [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
+    QCOMPARE(elementCount, 15);
+}
+
+void TestModule::checkA287USB()
+{
+    Modules::StartupInfoBlock bsi;
+    bsi.MTypeB = 0xa2;
+    bsi.MTypeM = 0x87;
+    QVERIFY(module.loadSettings(bsi, Board::InterfaceType::USB));
+    auto settings = module.settings();
+    QCOMPARE(settings->alarms.size(), 2);
+    QCOMPARE(settings->configSettings.general.size(), 53);
+    QCOMPARE(settings->highlightCrit.size(), 0);
+    QCOMPARE(settings->highlightWarn.size(), 0);
+    QCOMPARE(settings->journals.size(), 2);
+    QVERIFY(settings->ifaceSettings.settings.isValid());
+    QVERIFY(settings->ifaceSettings.settings.canConvert<InterfaceInfo<Proto::ProtocomGroup>>());
+    const auto &st = settings->ifaceSettings.settings.value<InterfaceInfo<Proto::ProtocomGroup>>();
+    QCOMPARE(st.dictionary().size(), 17);
+    QCOMPARE(st.groups().size(), 17);
+
+    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    QCOMPARE(checkSettings.size(), 3);
+    auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
+        [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
+    QCOMPARE(elementCount, 15);
+}
+
+void TestModule::checkA287Eth()
+{
+    Modules::StartupInfoBlock bsi;
+    bsi.MTypeB = 0xA2;
+    bsi.MTypeM = 0x87;
+    QVERIFY(module.loadSettings(bsi, Board::InterfaceType::Ethernet));
+    auto settings = module.settings();
+    QVERIFY(settings->ifaceSettings.settings.isValid());
+    QCOMPARE(settings->alarms.size(), 2);
+    QCOMPARE(settings->configSettings.general.size(), 53);
+    QCOMPARE(settings->highlightCrit.size(), 0);
+    QCOMPARE(settings->highlightWarn.size(), 0);
+    QCOMPARE(settings->journals.size(), 2);
+
+    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    QCOMPARE(checkSettings.size(), 3);
+    auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
+        [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
+    QCOMPARE(elementCount, 15);
+}
+
 void TestModule::checkA387()
 {
     Modules::StartupInfoBlock bsi;
@@ -167,6 +234,27 @@ void TestModule::checkA387USB()
     const auto &st = settings->ifaceSettings.settings.value<InterfaceInfo<Proto::ProtocomGroup>>();
     QCOMPARE(st.dictionary().size(), 19);
     QCOMPARE(st.groups().size(), 19);
+
+    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    QCOMPARE(checkSettings.size(), 4);
+    auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
+        [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
+    QCOMPARE(elementCount, 21);
+}
+
+void TestModule::checkA387Eth()
+{
+    Modules::StartupInfoBlock bsi;
+    bsi.MTypeB = 0xA3;
+    bsi.MTypeM = 0x87;
+    QVERIFY(module.loadSettings(bsi, Board::InterfaceType::Ethernet));
+    auto settings = module.settings();
+    QVERIFY(settings->ifaceSettings.settings.isValid());
+    QCOMPARE(settings->alarms.size(), 2);
+    QCOMPARE(settings->configSettings.general.size(), 73);
+    QCOMPARE(settings->highlightCrit.size(), 0);
+    QCOMPARE(settings->highlightWarn.size(), 0);
+    QCOMPARE(settings->journals.size(), 2);
 
     auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
     QCOMPARE(checkSettings.size(), 4);

@@ -1,11 +1,6 @@
 #include "svcmodule.h"
 
-#include "../check/checkkdvdialog.h"
-#include "../check/checkkdvharmonicdialog.h"
-#include "../check/checkkdvvibrdialog.h"
 #include "../check/checkkivdialog.h"
-#include "../check/checkktfdialog.h"
-#include "../check/checkktfharmonicdialog.h"
 #include "../config/configdialog.h"
 #include "../dialogs/journalsdialog.h"
 #include "../dialogs/timedialog.h"
@@ -95,31 +90,52 @@ void SvcModule::createModule(Modules::Model model)
     case Model::KTF:
     {
         auto jour = UniquePointer<Journals>(new JournKTF(settings()->journals, this));
-        if (board.interfaceType() != Board::InterfaceType::RS485)
+
+        if (settings())
         {
-            addDialogToList(
-                new ConfigDialog(&configV, settings()->configSettings.general), "Конфигурирование", "conf1");
+            if (board.interfaceType() != Board::InterfaceType::RS485)
+            {
+                if (!settings()->configSettings.general.isEmpty())
+                {
+                    addDialogToList(
+                        new ConfigDialog(&configV, settings()->configSettings.general), "Конфигурирование", "conf1");
+                }
+            }
+            if (settings()->ifaceSettings.settings.isValid())
+            {
+                for (auto &&item : m_gsettings.check.items)
+                {
+                    addDialogToList(
+                        new CheckDialog(item, m_gsettings.check.categories), item.header, "check:" + item.header);
+                }
+            }
         }
-        CheckKTFDialog *cdktf = new CheckKTFDialog;
-        addDialogToList(cdktf, "Проверка");
-        addDialogToList(new CheckKTFHarmonicDialog, "Гармоники");
-        addDialogToList(new StartupKTFDialog, "Старение\nизоляции");
         Module::create(std::move(jour));
         break;
     }
     case Model::KDV:
     {
         auto jour = UniquePointer<Journals>(new JournKDV(settings()->journals, this));
-        if (board.interfaceType() != Board::InterfaceType::RS485)
+
+        if (settings())
         {
-            addDialogToList(
-                new ConfigDialog(&configV, settings()->configSettings.general), "Конфигурирование", "conf1");
+            if (board.interfaceType() != Board::InterfaceType::RS485)
+            {
+                if (!settings()->configSettings.general.isEmpty())
+                {
+                    addDialogToList(
+                        new ConfigDialog(&configV, settings()->configSettings.general), "Конфигурирование", "conf1");
+                }
+            }
+            if (settings()->ifaceSettings.settings.isValid())
+            {
+                for (auto &&item : m_gsettings.check.items)
+                {
+                    addDialogToList(
+                        new CheckDialog(item, m_gsettings.check.categories), item.header, "check:" + item.header);
+                }
+            }
         }
-        CheckKDVDialog *cdkdv = new CheckKDVDialog;
-        addDialogToList(cdkdv, "Проверка");
-        addDialogToList(new CheckKDVHarmonicDialog, "Гармоники");
-        addDialogToList(new CheckKDVVibrDialog, "Вибрации");
-        addDialogToList(new StartupKDVDialog, "Старение\nизоляции");
         Module::create(std::move(jour));
         break;
     }

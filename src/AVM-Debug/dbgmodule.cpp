@@ -4,13 +4,13 @@
 #include "../avtuk/relaydialog.h"
 #include "../avtuk/switchjournaldialog.h"
 #include "../check/check3133dialog.h"
-#include "../check/checkkdvdialog.h"
-#include "../check/checkkdvharmonicdialog.h"
-#include "../check/checkkdvvibrdialog.h"
 #include "../check/checkkivdialog.h"
+<<<<<<< HEAD
 #include "../check/checkktfdialog.h"
 #include "../check/checkktfharmonicdialog.h"
 #include "../check/signaldialog84.h"
+=======
+>>>>>>> 0dc587f1 ([*]  Refresh and update a287)
 #include "../config/configdialog.h"
 #include "../dialogs/hiddendialog.h"
 #include "../dialogs/journalsdialog.h"
@@ -56,12 +56,22 @@ void DbgModule::createModule(Modules::Model model)
     {
         auto jour = UniquePointer<Journals>(new JournKTF(settings()->journals, this));
 
-        addDialogToList(new ConfigDialog(&configV, settings()->configSettings.general), "Конфигурирование", "conf1");
-
-        CheckKTFDialog *cdktf = new CheckKTFDialog;
-        addDialogToList(cdktf, "Проверка");
-        addDialogToList(new CheckKTFHarmonicDialog, "Гармоники");
-        addDialogToList(new StartupKTFDialog, "Старение\nизоляции");
+        if (settings())
+        {
+            if (!settings()->configSettings.general.isEmpty())
+            {
+                addDialogToList(
+                    new ConfigDialog(&configV, settings()->configSettings.general), "Конфигурирование", "conf1");
+            }
+            if (settings()->ifaceSettings.settings.isValid())
+            {
+                for (auto &&item : m_gsettings.check.items)
+                {
+                    addDialogToList(
+                        new CheckDialog(item, m_gsettings.check.categories), item.header, "check:" + item.header);
+                }
+            }
+        }
 
         Module::create(std::move(jour));
         break;
@@ -220,7 +230,6 @@ void DbgModule::create(QTimer *updateTimer)
     {
         board.setDeviceType(Board::Controller);
         quint16 typem = board.typeM();
-        Q_UNUSED(typem)
         switch (typeb)
         {
         case BaseBoard::MTB_00:
