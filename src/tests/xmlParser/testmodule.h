@@ -34,6 +34,9 @@ private slots:
     void checkA284Eth();
     void checkA284Modbus();
 
+    void checkA387();
+    void checkA387USB();
+
     void check8084();
     void check8084USB();
 

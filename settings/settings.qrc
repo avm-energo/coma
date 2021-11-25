@@ -42,5 +42,6 @@
 		<file>check-0081.xml</file>
 		<file>check-0082.xml</file>
         <file>check-0083.xml</file>
+		<file>check-a387.xml</file>
     </qresource>
 </RCC>
