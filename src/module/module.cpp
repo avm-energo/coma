@@ -290,14 +290,11 @@ bool Module::obtainXmlConfig(const QString &filename, QList<DataTypes::RecordPai
     auto xmlFiles = dir.entryList(QDir::Files).filter(".xml");
     QDomDocument domDoc;
     QFile file;
-    for (const auto &xmlFile : xmlFiles)
-    {
-        if (xmlFile.contains(filename, Qt::CaseInsensitive))
-        {
-            file.setFileName(dir.filePath(xmlFile));
-            break;
-        }
-    }
+    auto result = std::find_if(xmlFiles.cbegin(), xmlFiles.cend(),
+        [&filename](const QString &str) { return str.contains(filename, Qt::CaseInsensitive); });
+    if (result != std::cend(xmlFiles))
+        file.setFileName(dir.filePath(*result));
+
     if (!file.open(QIODevice::ReadOnly))
     {
         qCritical() << Error::FileOpenError << file.fileName();
@@ -393,14 +390,11 @@ bool Module::obtainXmlCheck(const QString &filename, std::vector<CheckItem> &che
     auto xmlFiles = dir.entryList(QDir::Files).filter(".xml");
     QDomDocument domDoc;
     QFile file;
-    for (const auto &xmlFile : xmlFiles)
-    {
-        if (xmlFile.contains(filename, Qt::CaseInsensitive))
-        {
-            file.setFileName(dir.filePath(xmlFile));
-            break;
-        }
-    }
+    auto result = std::find_if(xmlFiles.cbegin(), xmlFiles.cend(),
+        [&filename](const QString &str) { return str.contains(filename, Qt::CaseInsensitive); });
+    if (result != std::cend(xmlFiles))
+        file.setFileName(dir.filePath(*result));
+
     if (!file.open(QIODevice::ReadOnly))
     {
         qCritical() << Error::FileOpenError << file.fileName();
@@ -472,31 +466,51 @@ std::vector<CheckItem> Module::loadCheckSettings(Modules::BaseBoard typeB, Modul
 {
     std::vector<CheckItem> check;
     bool statusBase = true;
-    QString checkBase("check-%100");
-    checkBase = checkBase.arg(typeB, 0, 16);
-    if (!obtainXmlFile(checkBase))
     {
-        statusBase = false;
-        qWarning() << Error::OpenError << checkBase;
+        QString checkBase("check-%100");
+        checkBase = checkBase.arg(typeB, 0, 16);
+        if (!obtainXmlFile(checkBase))
+        {
+            statusBase = false;
+            qWarning() << Error::OpenError << checkBase;
+        }
+        else if (!obtainXmlCheck(checkBase, check))
+        {
+            statusBase = false;
+            qWarning() << Error::OpenError << checkBase;
+        }
     }
-    else if (!obtainXmlCheck(checkBase, check))
-    {
-        statusBase = false;
-        qWarning() << Error::OpenError << checkBase;
-    }
-
     bool statusMezz = true;
-    QString checkMezz("check-00%1");
-    checkMezz = checkMezz.arg(typeM, 0, 16);
-    if (!obtainXmlFile(checkMezz))
     {
-        statusMezz = false;
-        qWarning() << Error::OpenError << checkMezz;
+        QString checkMezz("check-00%1");
+        checkMezz = checkMezz.arg(typeM, 0, 16);
+        if (!obtainXmlFile(checkMezz))
+        {
+            statusMezz = false;
+            qWarning() << Error::OpenError << checkMezz;
+        }
+        else if (!obtainXmlCheck(checkMezz, check))
+        {
+            statusMezz = false;
+            qWarning() << Error::OpenError << checkMezz;
+        }
     }
-    else if (!obtainXmlCheck(checkMezz, check))
+    bool isCheckByBoard = statusBase || statusMezz;
+    if (!isCheckByBoard)
     {
-        statusMezz = false;
-        qWarning() << Error::OpenError << checkMezz;
+        QString checkModule("check-");
+        checkModule.append(QString::number(quint8(typeB), 16));
+        checkModule.append(QString::number(quint8(typeM), 16));
+        if (!obtainXmlFile(checkModule))
+        {
+            statusMezz = false;
+            qWarning() << Error::OpenError << checkModule;
+        }
+        else if (!obtainXmlCheck(checkModule, check))
+        {
+            assert(false);
+            qWarning() << Error::OpenError << checkModule;
+        }
     }
     // assert(statusBase || statusMezz);
     return check;
