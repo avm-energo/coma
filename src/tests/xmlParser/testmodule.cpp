@@ -348,6 +348,7 @@ void TestModule::check8585()
     bsi.Fwver = StdFunc::StrToVer(version::avtuk8585);
     QVERIFY(module.loadSettings(bsi));
     auto settings = module.settings();
+    QCOMPARE(settings->alarms.size(), 2);
     QVERIFY(!settings->ifaceSettings.settings.isValid());
 
     auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
@@ -365,7 +366,14 @@ void TestModule::check8585USB()
     bsi.Fwver = StdFunc::StrToVer(version::avtuk8585);
     QVERIFY(module.loadSettings(bsi, Board::InterfaceType::USB));
     auto settings = module.settings();
+    QCOMPARE(settings->alarms.size(), 2);
     QVERIFY(settings->ifaceSettings.settings.isValid());
+    QVERIFY(settings->ifaceSettings.settings.canConvert<InterfaceInfo<Proto::ProtocomGroup>>());
+    const auto &st = settings->ifaceSettings.settings.value<InterfaceInfo<Proto::ProtocomGroup>>();
+    QCOMPARE(st.dictionary().size(), 4);
+    QCOMPARE(st.groups().size(), 4);
+    QCOMPARE(st.regs().size(), 0);
+    QCOMPARE(st.dictionaryRegs().size(), 0);
 
     auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
     QCOMPARE(checkSettings.size(), 1);
