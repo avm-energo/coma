@@ -55,6 +55,7 @@ public:
     bool obtainXmlFile(const QString &filename) const;
     bool obtainXmlConfig(const QString &filename, QList<DataTypes::RecordPair> &config) const;
     bool obtainXmlCheck(const QString &filename, std::vector<CheckItem> &check) const;
+    bool obtainXmlAlarm(const QString &filename, AlarmMap &alarmMap, Modules::AlarmType type) const;
     bool loadS2Settings();
     CheckSettings loadCheckSettings();
     std::vector<CheckItem> loadCheckSettings(Modules::BaseBoard typeB, Modules::MezzanineBoard typeM) const;

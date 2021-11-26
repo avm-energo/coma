@@ -27,6 +27,9 @@ struct ConfigSettings
     categoryMap *s2categories;
 };
 
+using AlarmMap = QMap<Modules::AlarmType, DataTypes::Alarm>;
+using JourMap = QMap<Modules::JournalType, DataTypes::JournalDesc>;
+
 struct ModuleSettings
 {
     ModuleSettings(const Modules::StartupInfoBlock &startupInfoBlock_) : startupInfoBlock(startupInfoBlock_)
@@ -39,8 +42,8 @@ struct ModuleSettings
             counter += alarm.desc.size();
         return counter;
     }
-    QMap<Modules::AlarmType, DataTypes::Alarm> alarms;
-    QMap<Modules::JournalType, DataTypes::JournalDesc> journals;
+    AlarmMap alarms;
+    JourMap journals;
     InterfaceSettings ifaceSettings;
     Configs configSettings;
     QMultiMap<quint32, quint32> highlightWarn, highlightCrit;

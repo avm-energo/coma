@@ -1,5 +1,9 @@
 <RCC>
     <qresource prefix="/module">
+		<file>alarm-0021.xml</file>
+		<file>alarm-0022.xml</file>
+		<file>alarm-2100.xml</file>
+		<file>alarm-2200.xml</file>
 	    <file>avtuk-a284.xml</file>
         <file>avtuk-a287.xml</file>
         <file>avtuk-a387.xml</file>

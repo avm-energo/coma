@@ -866,6 +866,29 @@ void XmlParser::traverseNodeCheck(const QDomNode &node, std::vector<CheckItem> &
     }
 }
 
+DataTypes::Alarm XmlParser::traverseNodeAlarm(const QDomNode &node)
+{
+    QDomNode domNode = node.firstChild();
+    while (!domNode.isNull())
+    {
+        if (domNode.isElement())
+        {
+            QDomElement domElement = domNode.toElement();
+            if (!domElement.isNull())
+            {
+                if (domElement.tagName() == "alarm")
+                {
+
+                    return parseAlarm(domElement);
+                }
+            }
+        }
+        traverseNodeAlarm(domNode);
+        domNode = domNode.nextSibling();
+    }
+    assert(false);
+}
+
 CheckItem XmlParser::traverseNodeCheck(const QDomNode &node)
 {
     CheckItem checkItem;

@@ -537,6 +537,7 @@ void TestModule::check2100()
     QCOMPARE(settings->configSettings.base.size(), config::avtuk21);
     QCOMPARE(settings->configSettings.mezz.size(), 0);
     QVERIFY(!settings->ifaceSettings.settings.isValid());
+    QCOMPARE(settings->alarms.size(), 1);
 
     auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
     QCOMPARE(checkSettings.size(), 1);
@@ -557,6 +558,7 @@ void TestModule::check2121()
     QCOMPARE(settings->configSettings.base.size(), config::avtuk21);
     QCOMPARE(settings->configSettings.mezz.size(), config::avtukSame);
     QVERIFY(!settings->ifaceSettings.settings.isValid());
+    QCOMPARE(settings->alarms.size(), 2);
 
     auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
     QCOMPARE(checkSettings.size(), 2);
@@ -577,6 +579,7 @@ void TestModule::check2122()
     QCOMPARE(settings->configSettings.base.size(), config::avtuk21);
     QCOMPARE(settings->configSettings.mezz.size(), config::avtuk22);
     QVERIFY(!settings->ifaceSettings.settings.isValid());
+    QCOMPARE(settings->alarms.size(), 2);
 
     auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
     QCOMPARE(checkSettings.size(), 2);
@@ -597,6 +600,7 @@ void TestModule::check2131()
     QCOMPARE(settings->configSettings.base.size(), config::avtuk21);
     QCOMPARE(settings->configSettings.mezz.size(), config::avtuk31);
     QVERIFY(!settings->ifaceSettings.settings.isValid());
+    QCOMPARE(settings->alarms.size(), 1);
 
     auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
     QCOMPARE(checkSettings.size(), 2);
@@ -617,6 +621,7 @@ void TestModule::check2133()
     QCOMPARE(settings->configSettings.base.size(), config::avtuk21);
     QCOMPARE(settings->configSettings.mezz.size(), config::avtuk33);
     QVERIFY(!settings->ifaceSettings.settings.isValid());
+    QCOMPARE(settings->alarms.size(), 1);
 
     auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
     QCOMPARE(checkSettings.size(), 2);
@@ -637,6 +642,7 @@ void TestModule::check2134()
     QCOMPARE(settings->configSettings.base.size(), config::avtuk21);
     QCOMPARE(settings->configSettings.mezz.size(), config::avtuk34);
     QVERIFY(!settings->ifaceSettings.settings.isValid());
+    QCOMPARE(settings->alarms.size(), 1);
 
     auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
     QCOMPARE(checkSettings.size(), 1);
@@ -657,6 +663,7 @@ void TestModule::check2135()
     QCOMPARE(settings->configSettings.base.size(), config::avtuk21);
     QCOMPARE(settings->configSettings.mezz.size(), config::avtuk35);
     QVERIFY(!settings->ifaceSettings.settings.isValid());
+    QCOMPARE(settings->alarms.size(), 1);
 
     auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
     QCOMPARE(checkSettings.size(), 1);
@@ -677,6 +684,7 @@ void TestModule::check2200()
     QCOMPARE(settings->configSettings.base.size(), config::avtuk22);
     QCOMPARE(settings->configSettings.mezz.size(), 0);
     QVERIFY(!settings->ifaceSettings.settings.isValid());
+    QCOMPARE(settings->alarms.size(), 1);
 
     auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
     QCOMPARE(checkSettings.size(), 1);
@@ -697,6 +705,7 @@ void TestModule::check2221()
     QCOMPARE(settings->configSettings.base.size(), config::avtuk22);
     QCOMPARE(settings->configSettings.mezz.size(), config::avtuk21);
     QVERIFY(!settings->ifaceSettings.settings.isValid());
+    QCOMPARE(settings->alarms.size(), 2);
 
     auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
     QCOMPARE(checkSettings.size(), 2);
@@ -717,6 +726,7 @@ void TestModule::check2222()
     QCOMPARE(settings->configSettings.base.size(), config::avtuk22);
     QCOMPARE(settings->configSettings.mezz.size(), config::avtukSame);
     QVERIFY(!settings->ifaceSettings.settings.isValid());
+    QCOMPARE(settings->alarms.size(), 2);
 
     auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
     QCOMPARE(checkSettings.size(), 2);
@@ -737,6 +747,7 @@ void TestModule::check2231()
     QCOMPARE(settings->configSettings.base.size(), config::avtuk22);
     QCOMPARE(settings->configSettings.mezz.size(), config::avtuk31);
     QVERIFY(!settings->ifaceSettings.settings.isValid());
+    QCOMPARE(settings->alarms.size(), 1);
 
     auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
     QCOMPARE(checkSettings.size(), 2);
@@ -757,6 +768,7 @@ void TestModule::check2233()
     QCOMPARE(settings->configSettings.base.size(), config::avtuk22);
     QCOMPARE(settings->configSettings.mezz.size(), config::avtuk33);
     QVERIFY(!settings->ifaceSettings.settings.isValid());
+    QCOMPARE(settings->alarms.size(), 1);
 
     auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
     QCOMPARE(checkSettings.size(), 2);
@@ -777,6 +789,7 @@ void TestModule::check2234()
     QCOMPARE(settings->configSettings.base.size(), config::avtuk22);
     QCOMPARE(settings->configSettings.mezz.size(), config::avtuk34);
     QVERIFY(!settings->ifaceSettings.settings.isValid());
+    QCOMPARE(settings->alarms.size(), 1);
 
     auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
     QCOMPARE(checkSettings.size(), 1);
@@ -797,6 +810,7 @@ void TestModule::check2235()
     QCOMPARE(settings->configSettings.base.size(), config::avtuk22);
     QCOMPARE(settings->configSettings.mezz.size(), config::avtuk35);
     QVERIFY(!settings->ifaceSettings.settings.isValid());
+    QCOMPARE(settings->alarms.size(), 1);
 
     auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
     QCOMPARE(checkSettings.size(), 1);
@@ -837,6 +851,7 @@ void TestModule::check3121()
     QCOMPARE(settings->configSettings.base.size(), config::avtuk31);
     QCOMPARE(settings->configSettings.mezz.size(), config::avtuk21);
     QVERIFY(!settings->ifaceSettings.settings.isValid());
+    QCOMPARE(settings->alarms.size(), 1);
 
     auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
     QCOMPARE(checkSettings.size(), 2);
@@ -857,6 +872,7 @@ void TestModule::check3122()
     QCOMPARE(settings->configSettings.base.size(), config::avtuk31);
     QCOMPARE(settings->configSettings.mezz.size(), config::avtuk22);
     QVERIFY(!settings->ifaceSettings.settings.isValid());
+    QCOMPARE(settings->alarms.size(), 1);
 
     auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
     QCOMPARE(checkSettings.size(), 2);
@@ -976,6 +992,7 @@ void TestModule::check3321()
     QCOMPARE(settings->configSettings.base.size(), config::avtuk33);
     QCOMPARE(settings->configSettings.mezz.size(), config::avtuk21);
     QVERIFY(!settings->ifaceSettings.settings.isValid());
+    QCOMPARE(settings->alarms.size(), 1);
 
     auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
     QCOMPARE(checkSettings.size(), 2);
@@ -996,6 +1013,7 @@ void TestModule::check3322()
     QCOMPARE(settings->configSettings.base.size(), config::avtuk33);
     QCOMPARE(settings->configSettings.mezz.size(), config::avtuk22);
     QVERIFY(!settings->ifaceSettings.settings.isValid());
+    QCOMPARE(settings->alarms.size(), 1);
 
     auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
     QCOMPARE(checkSettings.size(), 2);
@@ -1116,6 +1134,7 @@ void TestModule::check3421()
     QCOMPARE(settings->configSettings.base.size(), config::avtuk34);
     QCOMPARE(settings->configSettings.mezz.size(), config::avtuk21);
     QVERIFY(!settings->ifaceSettings.settings.isValid());
+    QCOMPARE(settings->alarms.size(), 1);
 
     auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
     QCOMPARE(checkSettings.size(), 2);
@@ -1136,6 +1155,7 @@ void TestModule::check3422()
     QCOMPARE(settings->configSettings.base.size(), config::avtuk34);
     QCOMPARE(settings->configSettings.mezz.size(), config::avtuk22);
     QVERIFY(!settings->ifaceSettings.settings.isValid());
+    QCOMPARE(settings->alarms.size(), 1);
 
     auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
     QCOMPARE(checkSettings.size(), 2);
@@ -1256,6 +1276,7 @@ void TestModule::check3521()
     QCOMPARE(settings->configSettings.base.size(), config::avtuk35);
     QCOMPARE(settings->configSettings.mezz.size(), config::avtuk21);
     QVERIFY(!settings->ifaceSettings.settings.isValid());
+    QCOMPARE(settings->alarms.size(), 1);
 
     auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
     QCOMPARE(checkSettings.size(), 2);
@@ -1276,6 +1297,7 @@ void TestModule::check3522()
     QCOMPARE(settings->configSettings.base.size(), config::avtuk35);
     QCOMPARE(settings->configSettings.mezz.size(), config::avtuk22);
     QVERIFY(!settings->ifaceSettings.settings.isValid());
+    QCOMPARE(settings->alarms.size(), 1);
 
     auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
     QCOMPARE(checkSettings.size(), 2);
