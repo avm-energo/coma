@@ -25,7 +25,7 @@
           <item>Вероятно сильное смещение вала</item>
         </string-array>
         <!--Флаги сигнализации-->
-        <quint64 name="criticalFlags">0x155555000</quint64>
+        <quint128 name="criticalFlags">101010101010101010101000000000000</quint128>
         <!--Стартовый адрес сигнализации-->
         <quint32 name="startAddr">5011</quint32>
         <!--Цвет сигнализации если событие произошло-->
@@ -56,8 +56,8 @@
           <item>Вероятно ухудшенное состояние подшипников</item>
           <item>Вероятно смещение вала</item>
         </string-array>
-        <!-- <quint64 name="warningFlags">0x1aaaaaff</quint64>-->
-        <quint64 name="warningFlags">0xaaaaafff</quint64>
+
+        <quint128 name="warningFlags">10101010101010101010111111111111</quint128>
         <quint32 name="startAddr">5011</quint32>
         <color>#ffff00</color>
       </alarm>

@@ -22,7 +22,7 @@
 															<xs:attribute name="name" type="xs:string" use="required" />
 														</xs:complexType>
 													</xs:element>
-													<xs:element minOccurs="0" maxOccurs="1" name="quint64">
+													<xs:element minOccurs="0" maxOccurs="1" name="quint128">
 														<xs:complexType>
 															<xs:simpleContent>
 																<xs:extension base="xs:string">

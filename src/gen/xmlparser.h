@@ -39,6 +39,7 @@ private:
 
     static quint32 parseInt32(QDomElement domElement);
     static quint64 parseHexInt64(QDomElement domElement);
+    static std::bitset<128> parseHexInt128(QDomElement domElement);
     static QStringList parseStringList(QDomElement domElement);
     template <typename T> static std::vector<T> parseVector(QDomElement domElement);
     template <typename T> static std::set<T> parseSet(QDomElement domElement);

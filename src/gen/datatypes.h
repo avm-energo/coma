@@ -192,7 +192,7 @@ struct GeneralResponseStruct
 
 struct Alarm
 {
-    quint64 flags;
+    std::bitset<128> flags;
     quint32 startAddr;
     QStringList desc;
     QString name;
