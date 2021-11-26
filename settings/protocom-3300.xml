@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+    <protocom>
+        <group>
+            <start-addr>101</start-addr>
+            <count>2</count>
+            <block>0</block>
+        </group>
+        <group>
+            <start-addr>3001</start-addr>
+            <count>1</count>
+            <block>3</block>
+        </group>
+    </protocom>
+</root>
