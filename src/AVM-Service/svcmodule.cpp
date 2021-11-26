@@ -1,6 +1,6 @@
 #include "svcmodule.h"
 
-#include "../check/checkkivdialog.h"
+#include "../check/abstractcheckdialog.h"
 #include "../config/configdialog.h"
 #include "../dialogs/journalsdialog.h"
 #include "../dialogs/timedialog.h"
@@ -72,16 +72,27 @@ void SvcModule::createModule(Modules::Model model)
     case Model::KIV:
     {
         auto jour = UniquePointer<Journals>(new JournKIV(settings()->journals, this));
-        if (board.interfaceType() != Board::InterfaceType::RS485)
-        {
-            addDialogToList(
-                new ConfigDialog(&configV, settings()->configSettings.general), "Конфигурирование", "conf1");
-        }
-        CheckKIVDialog *cdkiv = new CheckKIVDialog;
-        cdkiv->setHighlights(AbstractCheckDialog::Warning, settings()->highlightWarn);
-        cdkiv->setHighlights(AbstractCheckDialog::Critical, settings()->highlightCrit);
 
-        addDialogToList(cdkiv, "Проверка");
+        if (settings())
+        {
+            if (!settings()->configSettings.general.isEmpty())
+            {
+                if (board.interfaceType() != Board::InterfaceType::RS485)
+                {
+                    addDialogToList(
+                        new ConfigDialog(&configV, settings()->configSettings.general), "Конфигурирование", "conf1");
+                }
+            }
+            if (settings()->ifaceSettings.settings.isValid())
+            {
+                assert(m_gsettings.check.items.size() == 1);
+                auto &&item = m_gsettings.check.items.front();
+                auto check = new CheckDialog(item, m_gsettings.check.categories);
+                check->setHighlights(AbstractCheckDialog::Warning, settings()->highlightWarn);
+                check->setHighlights(AbstractCheckDialog::Critical, settings()->highlightCrit);
+                addDialogToList(check, item.header, "check:" + item.header);
+            }
+        }
 
         addDialogToList(new StartupKIVDialog, "Начальные\nзначения");
         Module::create(std::move(jour));

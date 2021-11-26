@@ -18,8 +18,6 @@ add_library(
   abstractcheckdialog.cpp
   abstractcheckdialog.h
   delegate_check.h
-  checkkivdialog.cpp
-  checkkivdialog.h
   check3133dialog.h
   check3133dialog.cpp
   signaldialog.cpp

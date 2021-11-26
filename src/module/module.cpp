@@ -508,7 +508,7 @@ std::vector<CheckItem> Module::loadCheckSettings(Modules::BaseBoard typeB, Modul
         }
         else if (!obtainXmlCheck(checkModule, check))
         {
-            assert(false);
+            // assert(false);
             qWarning() << Error::OpenError << checkModule;
         }
     }

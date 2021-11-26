@@ -13,6 +13,8 @@ constexpr auto avtuk31 = 5;
 constexpr auto avtuk33 = 3;
 constexpr auto avtuk34 = 7;
 constexpr auto avtuk35 = 7;
+constexpr auto avtuk8084 = 39;
+constexpr auto avma284 = 48;
 constexpr auto avtukSame = 0;
 }
 
@@ -29,6 +31,7 @@ constexpr auto check35 = 0;
 constexpr auto check8081 = 10;
 constexpr auto check8082 = 11;
 constexpr auto check8083 = 12;
+constexpr auto check8084 = 7;
 }
 
 TestModule::TestModule(QObject *parent) : QObject(parent)
@@ -43,17 +46,17 @@ void TestModule::checkA284()
     QVERIFY(module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->alarms.size(), 2);
-    QCOMPARE(settings->configSettings.general.size(), 48);
+    QCOMPARE(settings->configSettings.general.size(), config::avma284);
     QCOMPARE(settings->highlightCrit.size(), 7);
     QCOMPARE(settings->highlightWarn.size(), 30);
     QCOMPARE(settings->journals.size(), 2);
     QVERIFY(!settings->ifaceSettings.settings.isValid());
 
-    //    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB),
-    //    Modules::MezzanineBoard(bsi.MTypeM)); QCOMPARE(checkSettings.size(), 1); auto elementCount =
-    //    std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
-    //        [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
-    //    QCOMPARE(elementCount, 7);
+    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    QCOMPARE(checkSettings.size(), 1);
+    auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
+        [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
+    QCOMPARE(elementCount, check::check8084);
 }
 
 void TestModule::checkA284USB()
@@ -65,7 +68,7 @@ void TestModule::checkA284USB()
     auto settings = module.settings();
     QVERIFY(settings->ifaceSettings.settings.isValid());
     QCOMPARE(settings->alarms.size(), 2);
-    QCOMPARE(settings->configSettings.general.size(), 48);
+    QCOMPARE(settings->configSettings.general.size(), config::avma284);
     QCOMPARE(settings->highlightCrit.size(), 7);
     QCOMPARE(settings->highlightWarn.size(), 30);
     QCOMPARE(settings->journals.size(), 2);
@@ -74,11 +77,11 @@ void TestModule::checkA284USB()
     QCOMPARE(st.dictionary().size(), 8);
     QCOMPARE(st.groups().size(), 8);
 
-    //    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB),
-    //    Modules::MezzanineBoard(bsi.MTypeM)); QCOMPARE(checkSettings.size(), 1); auto elementCount =
-    //    std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
-    //        [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
-    //    QCOMPARE(elementCount, 7);
+    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    QCOMPARE(checkSettings.size(), 1);
+    auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
+        [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
+    QCOMPARE(elementCount, check::check8084);
 }
 
 void TestModule::checkA284Eth()
@@ -90,16 +93,16 @@ void TestModule::checkA284Eth()
     auto settings = module.settings();
     QVERIFY(settings->ifaceSettings.settings.isValid());
     QCOMPARE(settings->alarms.size(), 2);
-    QCOMPARE(settings->configSettings.general.size(), 48);
+    QCOMPARE(settings->configSettings.general.size(), config::avma284);
     QCOMPARE(settings->highlightCrit.size(), 7);
     QCOMPARE(settings->highlightWarn.size(), 30);
     QCOMPARE(settings->journals.size(), 2);
 
-    //    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB),
-    //    Modules::MezzanineBoard(bsi.MTypeM)); QCOMPARE(checkSettings.size(), 1); auto elementCount =
-    //    std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
-    //        [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
-    //    QCOMPARE(elementCount, 7);
+    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    QCOMPARE(checkSettings.size(), 1);
+    auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
+        [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
+    QCOMPARE(elementCount, check::check8084);
 }
 
 void TestModule::checkA284Modbus()
@@ -111,7 +114,7 @@ void TestModule::checkA284Modbus()
     auto settings = module.settings();
     QVERIFY(settings->ifaceSettings.settings.isValid());
     QCOMPARE(settings->alarms.size(), 2);
-    QCOMPARE(settings->configSettings.general.size(), 48);
+    QCOMPARE(settings->configSettings.general.size(), config::avma284);
     QCOMPARE(settings->highlightCrit.size(), 7);
     QCOMPARE(settings->highlightWarn.size(), 30);
     QCOMPARE(settings->journals.size(), 2);
@@ -122,11 +125,11 @@ void TestModule::checkA284Modbus()
     QCOMPARE(st.regs().size(), 2);
     QCOMPARE(st.dictionaryRegs().size(), 2);
 
-    //    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB),
-    //    Modules::MezzanineBoard(bsi.MTypeM)); QCOMPARE(checkSettings.size(), 1); auto elementCount =
-    //    std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
-    //        [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
-    //    QCOMPARE(elementCount, 7);
+    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    QCOMPARE(checkSettings.size(), 1);
+    auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
+        [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
+    QCOMPARE(elementCount, check::check8084);
 }
 
 void TestModule::checkA287()
@@ -271,7 +274,7 @@ void TestModule::check8084()
     QVERIFY(module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->alarms.size(), 2);
-    QCOMPARE(settings->configSettings.general.size(), 39);
+    QCOMPARE(settings->configSettings.general.size(), config::avtuk8084);
     QCOMPARE(settings->highlightCrit.size(), 0);
     QCOMPARE(settings->highlightWarn.size(), 0);
     QCOMPARE(settings->journals.size(), 2);
@@ -281,7 +284,7 @@ void TestModule::check8084()
     QCOMPARE(checkSettings.size(), 1);
     auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
         [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
-    QCOMPARE(elementCount, 7);
+    QCOMPARE(elementCount, check::check8084);
 }
 
 void TestModule::check8084USB()
@@ -307,7 +310,7 @@ void TestModule::check8084USB()
     QCOMPARE(checkSettings.size(), 1);
     auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
         [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
-    QCOMPARE(elementCount, 7);
+    QCOMPARE(elementCount, check::check8084);
 }
 
 void TestModule::check8085()

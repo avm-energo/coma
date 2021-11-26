@@ -4,13 +4,9 @@
 #include "../avtuk/relaydialog.h"
 #include "../avtuk/switchjournaldialog.h"
 #include "../check/check3133dialog.h"
-#include "../check/checkkivdialog.h"
-<<<<<<< HEAD
 #include "../check/checkktfdialog.h"
 #include "../check/checkktfharmonicdialog.h"
 #include "../check/signaldialog84.h"
-=======
->>>>>>> 0dc587f1 ([*]  Refresh and update a287)
 #include "../config/configdialog.h"
 #include "../dialogs/hiddendialog.h"
 #include "../dialogs/journalsdialog.h"
@@ -30,22 +26,33 @@ DbgModule::DbgModule(QObject *parent) : Module(parent)
 void DbgModule::createModule(Modules::Model model)
 {
     using namespace Modules;
-
     switch (model)
     {
     case Model::KIV:
     {
         auto jour = UniquePointer<Journals>(new JournKIV(settings()->journals));
 
-        addDialogToList(new ConfigDialog(&configV, settings()->configSettings.general), "Конфигурирование", "conf1");
+        if (settings())
+        {
+            if (!settings()->configSettings.general.isEmpty())
+            {
+                addDialogToList(
+                    new ConfigDialog(&configV, settings()->configSettings.general), "Конфигурирование", "conf1");
+            }
+            if (settings()->ifaceSettings.settings.isValid())
+            {
+                assert(m_gsettings.check.items.size() == 1);
+                auto &&item = m_gsettings.check.items.front();
 
-        addDialogToList(new TuneKIVDialog(&configV), "Регулировка");
-        addDialogToList(new SignalDialog84(), "Входные сигналы");
+                addDialogToList(new TuneKIVDialog(&configV), "Регулировка");
+                addDialogToList(new SignalDialog84(), "Входные сигналы");
 
-        CheckKIVDialog *cdkiv = new CheckKIVDialog;
-        cdkiv->setHighlights(AbstractCheckDialog::Warning, settings()->highlightWarn);
-        cdkiv->setHighlights(AbstractCheckDialog::Critical, settings()->highlightCrit);
-        addDialogToList(cdkiv, "Проверка");
+                auto check = new CheckDialog(item, m_gsettings.check.categories);
+                check->setHighlights(AbstractCheckDialog::Warning, settings()->highlightWarn);
+                check->setHighlights(AbstractCheckDialog::Critical, settings()->highlightCrit);
+                addDialogToList(check, item.header, "check:" + item.header);
+            }
+        }
 
         addDialogToList(new StartupKIVDialog, "Начальные\nзначения");
         Module::create(std::move(jour));
@@ -96,7 +103,6 @@ void DbgModule::createModule(Modules::Model model)
                 }
             }
         }
-
         Module::create(std::move(jour));
         break;
     }
@@ -137,8 +143,12 @@ void DbgModule::create(Modules::BaseBoard typeB, Modules::MezzanineBoard typeM)
 
         addDialogToList(new Tune84Dialog(&configV), "Регулировка");
 
-        CheckKIVDialog *cdkiv = new CheckKIVDialog;
-        addDialogToList(cdkiv, "Проверка");
+        assert(m_gsettings.check.items.size() == 1);
+        auto &&item = m_gsettings.check.items.front();
+        auto check = new CheckDialog(item, m_gsettings.check.categories);
+        check->setHighlights(AbstractCheckDialog::Warning, settings()->highlightWarn);
+        check->setHighlights(AbstractCheckDialog::Critical, settings()->highlightCrit);
+        addDialogToList(check, item.header, "check:" + item.header);
 
         addDialogToList(new StartupKIVDialog, "Начальные\nзначения");
     }
