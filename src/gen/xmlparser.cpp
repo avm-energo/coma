@@ -672,7 +672,7 @@ void XmlParser::traverseNode(const QDomNode &node, ModuleSettings *const setting
                 {
                     if (settings->startupInfoBlock.isOutdated(StdFunc::StrToVer(domElement.text())))
                     {
-                        qWarning("Outdated module firmware, please update to latest");
+                        throw std::runtime_error("Устаревшая версия ВПО, обновите ВПО");
                     }
                 }
 

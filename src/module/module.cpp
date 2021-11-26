@@ -150,8 +150,16 @@ bool Module::loadSettings(const Modules::StartupInfoBlock &startupInfoBlock, int
     {
 
         QDomElement domElement = domDoc.documentElement();
+        try
+        {
+            XmlParser::traverseNode(domElement, m_settings.get(), m_gsettings.config);
+        } catch (const std::exception &e)
+        {
+            file.close();
+            qCritical() << e.what();
+            return false;
+        }
 
-        XmlParser::traverseNode(domElement, m_settings.get(), m_gsettings.config);
         file.close();
         return true;
     }
@@ -397,7 +405,7 @@ bool Module::obtainXmlCheck(const QString &filename, std::vector<CheckItem> &che
 
     if (!file.open(QIODevice::ReadOnly))
     {
-        qCritical() << Error::FileOpenError << file.fileName();
+        qDebug() << Error::FileOpenError << file.fileName();
         return false;
     }
     if (domDoc.setContent(&file))

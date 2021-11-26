@@ -176,7 +176,10 @@ void Coma::PrepareDialogs()
 
     if (!m_Module->loadSettings())
     {
-        qCritical() << "No conf .xml file for this module";
+        QMessageBox::critical(this, "Ошибка",
+            "Не удалось найти конфигурацию для модуля.\n"
+            "Проверьте журнал сообщений.\n"
+            "Доступны минимальные функции.");
     }
 
     Q_CLEANUP_RESOURCE(settings);
