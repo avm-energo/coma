@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" parent-id="AVMService" archived="true" uuid="cc40d9fd-5f2f-4639-8788-1f9a246c83bd" xsi:noNamespaceSchemaLocation="https://www.jetbrains.com/teamcity/schemas/2020.1/project-config.xsd">
-  <name>AVMService-Windows-Build-x86</name>
-  <description>Deploy AVMService app in windows</description>
-  <parameters />
-  <cleanup />
-</project>
-
