@@ -176,10 +176,16 @@ public:
     void merge(const InterfaceInfo<Group> &rhs)
     {
         m_groups.append(rhs.m_groups);
-        m_dictionary.unite(rhs.m_dictionary);
+        for (auto it = rhs.m_dictionary.cbegin(); it != rhs.m_dictionary.cend(); it++)
+        {
+            m_dictionary.insert(it.key(), it.value());
+        }
 
         m_regs.append(rhs.m_regs);
-        m_dictionaryRegs.unite(rhs.m_dictionaryRegs);
+        for (auto it = rhs.m_dictionaryRegs.cbegin(); it != rhs.m_dictionaryRegs.cend(); it++)
+        {
+            m_dictionaryRegs.insert(it.key(), it.value());
+        }
     }
 
 private:

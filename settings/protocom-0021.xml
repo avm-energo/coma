@@ -7,9 +7,14 @@
             <block>0</block>
         </group>
         <group>
-            <start-addr>1201</start-addr>
+            <start-addr>2001</start-addr>
             <count>40</count>
             <block>101</block>
         </group>
+        <group id="alarmModule">
+            <start-addr>2201</start-addr>
+            <count>32</count>
+            <block>200</block>
+          </group> 
     </protocom>
 </root>

@@ -38,15 +38,27 @@ void Module::createAlarm(AlarmWidget *aw)
     aw->addAlarm(alarmStateAll);
     if (m_settings)
     {
-        if (settings()->alarms.contains((AlarmType::Warning)))
+        if (settings()->alarms.contains(AlarmType::Warning))
         {
-            auto *warnAlarm = new ModuleAlarm(settings()->alarms.value(AlarmType::Warning), settings()->alarmCount());
-            aw->addAlarm(warnAlarm, tr("Предупредительная сигнализация"));
+            auto *alarm = new ModuleAlarm(settings()->alarms.value(AlarmType::Warning), settings()->alarmCount());
+            aw->addAlarm(alarm, tr("Предупредительная сигнализация"));
         }
-        if (settings()->alarms.contains((AlarmType::Critical)))
+        if (settings()->alarms.contains(AlarmType::Critical))
         {
-            auto *critAlarm = new ModuleAlarm(settings()->alarms.value(AlarmType::Critical), settings()->alarmCount());
-            aw->addAlarm(critAlarm, tr("Аварийная сигнализация"));
+            auto *alarm = new ModuleAlarm(settings()->alarms.value(AlarmType::Critical), settings()->alarmCount());
+            aw->addAlarm(alarm, tr("Аварийная сигнализация"));
+        }
+        if (settings()->alarms.contains(AlarmType::Base))
+        {
+            auto *alarm = new ModuleAlarm(
+                settings()->alarms.value(AlarmType::Base), settings()->alarms.value(AlarmType::Base).desc.count());
+            aw->addAlarm(alarm, tr("Базовая сигнализация"));
+        }
+        if (settings()->alarms.contains(AlarmType::Mezz))
+        {
+            auto *alarm = new ModuleAlarm(
+                settings()->alarms.value(AlarmType::Mezz), settings()->alarms.value(AlarmType::Mezz).desc.count());
+            aw->addAlarm(alarm, tr("Мезонинная сигнализация"));
         }
     }
 }

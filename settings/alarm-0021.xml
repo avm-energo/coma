@@ -35,6 +35,7 @@
             <item>Достигнута уставка setmaxmax по каналу 6</item>
             <item>Достигнута уставка setmaxmax по каналу 7</item>
         </string-array>
+        <quint128 name="warningFlags">11111111111111111111111111111111</quint128>
         <!-- <quint128 name="flags">1111111111111111111111111111111111111111111111111111111111111111111111111</quint128> -->
         <quint32 name="startAddr">2201</quint32>
         <color>#ffff00</color>

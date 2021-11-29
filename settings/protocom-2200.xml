@@ -11,5 +11,10 @@
             <count>16</count>
             <block>2</block>
         </group>
+        <group id="alarmModule">
+            <start-addr>4101</start-addr>
+            <count>32</count>
+            <block>100</block>
+          </group> 
     </protocom>
 </root>
