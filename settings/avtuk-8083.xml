@@ -10,7 +10,7 @@
     <!--        !!!                                                       -->
     <!--        !!!                                                       -->
     <!--Минимальная версия прошивки модуля, для которой описаны настройки-->
-    <version>2.1</version>
+    <version>2.5.2</version>
     <!--Дальше идет всё, что несредственно относится к модулю-->
     <resources>
       <!--Описываем сигнализацию, имя обязательно-->
@@ -58,73 +58,6 @@
 		    <color>#ffff00</color>
       </alarm>
       <!--Описываем журнал, имя обязательно-->
-      <journal name="work">
-        <!--Номер журнала, имя обязательно-->
-        <quint32 name="workJourId">3010</quint32>
-        <!--Массив событий журнала, имя обязательно-->
-        <string-array name="workJourDescription">
-          <item>Отсутствует сигнал напряжения фазы A</item>
-          <item>Отсутствует сигнал напряжения фазы B</item>
-          <item>Отсутствует сигнал напряжения фазы С</item>
-          <item>Нет реактивного тока канала А (ток меньше 2мА)</item>
-          <item>Нет реактивного тока канала B (ток меньше 2мА)</item>
-          <item>Нет реактивного тока канала C (ток меньше 2мА)</item>
-          <item>Не заданы начальные значения</item>
-          <item>Низкое напряжение фазы A</item>
-          <item>Низкое напряжение фазы B</item>
-          <item>Низкое напряжение фазы C</item>
-          <item>Сигнализация по приращению тангенса дельта ввода фазы А</item>
-          <item>Сигнализация по приращению тангенса дельта ввода фазы B</item>
-          <item>Сигнализация по приращению тангенса дельта ввода фазы C</item>
-          <item>Авария по приращению тангенса дельта ввода фазы А</item>
-          <item>Авария по приращению тангенса дельта ввода фазы B</item>
-          <item>Авария по приращению тангенса дельта ввода фазы C</item>
-          <item>Сигнализация по приращению C ввода фазы А</item>
-          <item>Сигнализация по приращению C ввода фазы B</item>
-          <item>Сигнализация по приращению C ввода фазы C</item>
-          <item>Авария по приращению C ввода фазы А</item>
-          <item>Авария по приращению C ввода фазы B</item>
-          <item>Авария по приращению C ввода фазы C</item>
-          <item>Не заданы паспортные значения</item>
-          <item>Сигнализация по изменению небаланса тока</item>
-          <item>Авария по изменению небаланса тока</item>
-        </string-array>
-      </journal>
-      <journal name="meas">
-        <string-array name="measJourHeaders">
-          <item> № </item>
-          <item>Дата/Время UTC</item>
-          <item>Ueff фA</item>
-          <item>Ueff фB</item>
-          <item>Ueff фC</item>
-          <item>Ieff фA</item>
-          <item>Ieff фB</item>
-          <item>Ieff фC</item>
-          <item>Freq</item>
-          <item>U0</item>
-          <item>U1</item>
-          <item>U2</item>
-          <item>I0</item>
-          <item>I1</item>
-          <item>I2</item>
-          <item>Cbush фA</item>
-          <item>Cbush фB</item>
-          <item>Cbush фC</item>
-          <item>Tg_d фA</item>
-          <item>Tg_d фB</item>
-          <item>Tg_d фC</item>
-          <item>dCbush фA</item>
-          <item>dCbush фB</item>
-          <item>dCbush фC</item>
-          <item>dTg_d фA</item>
-          <item>dTg_d фB</item>
-          <item>dTg_d фC</item>
-          <item>Iunb</item>
-          <item>Phy_unb</item>
-          <item>Tmk, °С</item>
-          <item>Tamb, °С</item>
-        </string-array>
-      </journal>
       
       <!--Описываем протокол Modbus-->
       <modbus>
