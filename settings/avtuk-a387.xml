@@ -275,17 +275,17 @@
         <group>
           <start-addr>1028</start-addr>
           <count>61</count>
-          <block>5</block>
+          <block>25</block>
         </group>
         <group>
           <start-addr>1089</start-addr>
           <count>61</count>
-          <block>25</block>
+          <block>35</block>
         </group>
         <group>
           <start-addr>1150</start-addr>
           <count>61</count>
-          <block>35</block>
+          <block>45</block>
         </group>
         <group>
           <start-addr>1220</start-addr>
@@ -305,17 +305,17 @@
         <group>
           <start-addr>1428</start-addr>
           <count>61</count>
-          <block>7</block>
+          <block>27</block>
         </group>
         <group>
           <start-addr>1489</start-addr>
           <count>61</count>
-          <block>27</block>
+          <block>37</block>
         </group>
         <group>
           <start-addr>1550</start-addr>
           <count>61</count>
-          <block>37</block>
+          <block>47</block>
         </group>
         <group>
           <start-addr>4000</start-addr>
