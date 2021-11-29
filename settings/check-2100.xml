@@ -33,22 +33,22 @@
         </record>
         <record header="Текущее значение по каналу, мА" desc="Канал №%1">
             <group>1</group>
-            <start-addr>1008</start-addr>
+            <start-addr>1009</start-addr>
             <count>8</count>
         </record>
         <record header="Текущее значение по каналу, В" desc="Канал №%1">
             <group>1</group>
-            <start-addr>1016</start-addr>
+            <start-addr>1017</start-addr>
             <count>8</count>
         </record>
         <record header="Мин. значение по каналу, инж. единицы" desc="Канал №%1">
             <group>10</group>
-            <start-addr>1024</start-addr>
+            <start-addr>1025</start-addr>
             <count>8</count>
         </record>
         <record header="Макс. значение по каналу, инж. единицы" desc="Канал №%1">
             <group>10</group>
-            <start-addr>1032</start-addr>
+            <start-addr>1033</start-addr>
             <count>8</count>
         </record>
     </check>

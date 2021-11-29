@@ -19,22 +19,22 @@
         </record>
         <record header="Текущее значение по каналу, мА" desc="Канал №%1">
             <group>1</group>
-            <start-addr>2008</start-addr>
+            <start-addr>2009</start-addr>
             <count>8</count>
         </record>
         <record header="Текущее значение по каналу, В" desc="Канал №%1">
             <group>1</group>
-            <start-addr>2016</start-addr>
+            <start-addr>2017</start-addr>
             <count>8</count>
         </record>
         <record header="Мин. значение по каналу, инж. единицы" desc="Канал №%1">
             <group>10</group>
-            <start-addr>2024</start-addr>
+            <start-addr>2025</start-addr>
             <count>8</count>
         </record>
         <record header="Макс. значение по каналу, инж. единицы" desc="Канал №%1">
             <group>10</group>
-            <start-addr>2032</start-addr>
+            <start-addr>2033</start-addr>
             <count>8</count>
         </record>
     </check>
