@@ -34,6 +34,18 @@ constexpr auto check8083 = 12;
 constexpr auto check8084 = 7;
 }
 
+namespace version
+{
+constexpr auto usio = "3.2.2";
+constexpr auto avtuk8x = "2.5.2";
+constexpr auto avtuk8585 = "3.5-0005";
+constexpr auto avtuk8084 = "1.1.15";
+constexpr auto avma284 = "1.2.5";
+constexpr auto avtuk8600 = "1.0.5";
+constexpr auto avma287 = "0.6.04";
+constexpr auto avma387 = "0.9.0";
+}
+
 TestModule::TestModule(QObject *parent) : QObject(parent)
 {
 }
@@ -43,6 +55,7 @@ void TestModule::checkA284()
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0xA2;
     bsi.MTypeM = 0x84;
+    bsi.Fwver = StdFunc::StrToVer(version::avma284);
     QVERIFY(module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->alarms.size(), 2);
@@ -64,6 +77,7 @@ void TestModule::checkA284USB()
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0xA2;
     bsi.MTypeM = 0x84;
+    bsi.Fwver = StdFunc::StrToVer(version::avma284);
     QVERIFY(module.loadSettings(bsi, Board::InterfaceType::USB));
     auto settings = module.settings();
     QVERIFY(settings->ifaceSettings.settings.isValid());
@@ -89,6 +103,7 @@ void TestModule::checkA284Eth()
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0xA2;
     bsi.MTypeM = 0x84;
+    bsi.Fwver = StdFunc::StrToVer(version::avma284);
     QVERIFY(module.loadSettings(bsi, Board::InterfaceType::Ethernet));
     auto settings = module.settings();
     QVERIFY(settings->ifaceSettings.settings.isValid());
@@ -110,6 +125,7 @@ void TestModule::checkA284Modbus()
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0xA2;
     bsi.MTypeM = 0x84;
+    bsi.Fwver = StdFunc::StrToVer(version::avma284);
     QVERIFY(module.loadSettings(bsi, Board::InterfaceType::RS485));
     auto settings = module.settings();
     QVERIFY(settings->ifaceSettings.settings.isValid());
@@ -137,6 +153,7 @@ void TestModule::checkA287()
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0xa2;
     bsi.MTypeM = 0x87;
+    bsi.Fwver = StdFunc::StrToVer(version::avma287);
     QVERIFY(module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->alarms.size(), 2);
@@ -158,6 +175,7 @@ void TestModule::checkA287USB()
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0xa2;
     bsi.MTypeM = 0x87;
+    bsi.Fwver = StdFunc::StrToVer(version::avma287);
     QVERIFY(module.loadSettings(bsi, Board::InterfaceType::USB));
     auto settings = module.settings();
     QCOMPARE(settings->alarms.size(), 2);
@@ -183,6 +201,7 @@ void TestModule::checkA287Eth()
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0xA2;
     bsi.MTypeM = 0x87;
+    bsi.Fwver = StdFunc::StrToVer(version::avma287);
     QVERIFY(module.loadSettings(bsi, Board::InterfaceType::Ethernet));
     auto settings = module.settings();
     QVERIFY(settings->ifaceSettings.settings.isValid());
@@ -204,6 +223,7 @@ void TestModule::checkA387()
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0xa3;
     bsi.MTypeM = 0x87;
+    bsi.Fwver = StdFunc::StrToVer(version::avma387);
     QVERIFY(module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->alarms.size(), 2);
@@ -225,6 +245,7 @@ void TestModule::checkA387USB()
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0xa3;
     bsi.MTypeM = 0x87;
+    bsi.Fwver = StdFunc::StrToVer(version::avma387);
     QVERIFY(module.loadSettings(bsi, Board::InterfaceType::USB));
     auto settings = module.settings();
     QCOMPARE(settings->alarms.size(), 2);
@@ -250,6 +271,7 @@ void TestModule::checkA387Eth()
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0xA3;
     bsi.MTypeM = 0x87;
+    bsi.Fwver = StdFunc::StrToVer(version::avma387);
     QVERIFY(module.loadSettings(bsi, Board::InterfaceType::Ethernet));
     auto settings = module.settings();
     QVERIFY(settings->ifaceSettings.settings.isValid());
@@ -271,6 +293,7 @@ void TestModule::check8084()
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x80;
     bsi.MTypeM = 0x84;
+    bsi.Fwver = StdFunc::StrToVer(version::avtuk8084);
     QVERIFY(module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->alarms.size(), 2);
@@ -292,6 +315,7 @@ void TestModule::check8084USB()
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x80;
     bsi.MTypeM = 0x84;
+    bsi.Fwver = StdFunc::StrToVer(version::avtuk8084);
     QVERIFY(module.loadSettings(bsi, Board::InterfaceType::USB));
     auto settings = module.settings();
     QCOMPARE(settings->alarms.size(), 2);
@@ -318,6 +342,7 @@ void TestModule::check8085()
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x85;
     bsi.MTypeM = 0x85;
+    bsi.Fwver = StdFunc::StrToVer(version::avtuk8585);
     QVERIFY(module.loadSettings(bsi));
     auto settings = module.settings();
     QVERIFY(!settings->ifaceSettings.settings.isValid());
@@ -334,6 +359,7 @@ void TestModule::check8085USB()
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x85;
     bsi.MTypeM = 0x85;
+    bsi.Fwver = StdFunc::StrToVer(version::avtuk8585);
     QVERIFY(module.loadSettings(bsi, Board::InterfaceType::USB));
     auto settings = module.settings();
     QVERIFY(settings->ifaceSettings.settings.isValid());
@@ -350,6 +376,7 @@ void TestModule::check8081()
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x80;
     bsi.MTypeM = 0x81;
+    bsi.Fwver = StdFunc::StrToVer(version::avtuk8x);
     QVERIFY(module.loadSettings(bsi));
     auto settings = module.settings();
     QVERIFY(!settings->ifaceSettings.settings.isValid());
@@ -366,6 +393,7 @@ void TestModule::check8081USB()
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x80;
     bsi.MTypeM = 0x81;
+    bsi.Fwver = StdFunc::StrToVer(version::avtuk8x);
     QVERIFY(module.loadSettings(bsi, Board::InterfaceType::USB));
     auto settings = module.settings();
     QVERIFY(settings->ifaceSettings.settings.isValid());
@@ -382,6 +410,7 @@ void TestModule::check8082()
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x80;
     bsi.MTypeM = 0x82;
+    bsi.Fwver = StdFunc::StrToVer(version::avtuk8x);
     QVERIFY(module.loadSettings(bsi));
     auto settings = module.settings();
     QVERIFY(!settings->ifaceSettings.settings.isValid());
@@ -398,6 +427,7 @@ void TestModule::check8082USB()
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x80;
     bsi.MTypeM = 0x82;
+    bsi.Fwver = StdFunc::StrToVer(version::avtuk8x);
     QVERIFY(module.loadSettings(bsi, Board::InterfaceType::USB));
     auto settings = module.settings();
     QVERIFY(settings->ifaceSettings.settings.isValid());
@@ -414,6 +444,7 @@ void TestModule::check8083()
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x80;
     bsi.MTypeM = 0x83;
+    bsi.Fwver = StdFunc::StrToVer(version::avtuk8x);
     QVERIFY(module.loadSettings(bsi));
     auto settings = module.settings();
     QVERIFY(!settings->ifaceSettings.settings.isValid());
@@ -430,6 +461,7 @@ void TestModule::check8083USB()
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x80;
     bsi.MTypeM = 0x83;
+    bsi.Fwver = StdFunc::StrToVer(version::avtuk8x);
     QVERIFY(module.loadSettings(bsi, Board::InterfaceType::USB));
     auto settings = module.settings();
     QVERIFY(settings->ifaceSettings.settings.isValid());
@@ -446,6 +478,7 @@ void TestModule::check2100()
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x21;
     bsi.MTypeM = 0x00;
+    bsi.Fwver = StdFunc::StrToVer(version::usio);
     (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
@@ -465,6 +498,7 @@ void TestModule::check2121()
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x21;
     bsi.MTypeM = 0x21;
+    bsi.Fwver = StdFunc::StrToVer(version::usio);
     (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
@@ -484,6 +518,7 @@ void TestModule::check2122()
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x21;
     bsi.MTypeM = 0x22;
+    bsi.Fwver = StdFunc::StrToVer(version::usio);
     (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
@@ -503,6 +538,7 @@ void TestModule::check2131()
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x21;
     bsi.MTypeM = 0x31;
+    bsi.Fwver = StdFunc::StrToVer(version::usio);
     (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
@@ -522,6 +558,7 @@ void TestModule::check2133()
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x21;
     bsi.MTypeM = 0x33;
+    bsi.Fwver = StdFunc::StrToVer(version::usio);
     (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
@@ -541,6 +578,7 @@ void TestModule::check2134()
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x21;
     bsi.MTypeM = 0x34;
+    bsi.Fwver = StdFunc::StrToVer(version::usio);
     (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
@@ -560,6 +598,7 @@ void TestModule::check2135()
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x21;
     bsi.MTypeM = 0x35;
+    bsi.Fwver = StdFunc::StrToVer(version::usio);
     (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
@@ -579,6 +618,7 @@ void TestModule::check2200()
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x22;
     bsi.MTypeM = 0x00;
+    bsi.Fwver = StdFunc::StrToVer(version::usio);
     (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
@@ -598,6 +638,7 @@ void TestModule::check2221()
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x22;
     bsi.MTypeM = 0x21;
+    bsi.Fwver = StdFunc::StrToVer(version::usio);
     (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
@@ -617,6 +658,7 @@ void TestModule::check2222()
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x22;
     bsi.MTypeM = 0x22;
+    bsi.Fwver = StdFunc::StrToVer(version::usio);
     (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
@@ -636,6 +678,7 @@ void TestModule::check2231()
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x22;
     bsi.MTypeM = 0x31;
+    bsi.Fwver = StdFunc::StrToVer(version::usio);
     (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
@@ -655,6 +698,7 @@ void TestModule::check2233()
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x22;
     bsi.MTypeM = 0x33;
+    bsi.Fwver = StdFunc::StrToVer(version::usio);
     (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
@@ -674,6 +718,7 @@ void TestModule::check2234()
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x22;
     bsi.MTypeM = 0x34;
+    bsi.Fwver = StdFunc::StrToVer(version::usio);
     (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
@@ -693,6 +738,7 @@ void TestModule::check2235()
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x22;
     bsi.MTypeM = 0x35;
+    bsi.Fwver = StdFunc::StrToVer(version::usio);
     (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
@@ -712,6 +758,7 @@ void TestModule::check3100()
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x31;
     bsi.MTypeM = 0x00;
+    bsi.Fwver = StdFunc::StrToVer(version::usio);
     (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
@@ -731,6 +778,7 @@ void TestModule::check3121()
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x31;
     bsi.MTypeM = 0x21;
+    bsi.Fwver = StdFunc::StrToVer(version::usio);
     (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
@@ -750,6 +798,7 @@ void TestModule::check3122()
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x31;
     bsi.MTypeM = 0x22;
+    bsi.Fwver = StdFunc::StrToVer(version::usio);
     (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
@@ -769,6 +818,7 @@ void TestModule::check3131()
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x31;
     bsi.MTypeM = 0x31;
+    bsi.Fwver = StdFunc::StrToVer(version::usio);
     (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
@@ -788,6 +838,7 @@ void TestModule::check3133()
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x31;
     bsi.MTypeM = 0x33;
+    bsi.Fwver = StdFunc::StrToVer(version::usio);
     (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
@@ -807,6 +858,7 @@ void TestModule::check3134()
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x31;
     bsi.MTypeM = 0x34;
+    bsi.Fwver = StdFunc::StrToVer(version::usio);
     (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
@@ -845,6 +897,7 @@ void TestModule::check3300()
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x33;
     bsi.MTypeM = 0x00;
+    bsi.Fwver = StdFunc::StrToVer(version::usio);
     (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
@@ -864,6 +917,7 @@ void TestModule::check3321()
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x33;
     bsi.MTypeM = 0x21;
+    bsi.Fwver = StdFunc::StrToVer(version::usio);
     (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
@@ -883,6 +937,7 @@ void TestModule::check3322()
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x33;
     bsi.MTypeM = 0x22;
+    bsi.Fwver = StdFunc::StrToVer(version::usio);
     (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
@@ -902,6 +957,7 @@ void TestModule::check3331()
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x33;
     bsi.MTypeM = 0x31;
+    bsi.Fwver = StdFunc::StrToVer(version::usio);
     (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
@@ -921,6 +977,7 @@ void TestModule::check3333()
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x33;
     bsi.MTypeM = 0x33;
+    bsi.Fwver = StdFunc::StrToVer(version::usio);
     (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
@@ -940,6 +997,7 @@ void TestModule::check3334()
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x33;
     bsi.MTypeM = 0x34;
+    bsi.Fwver = StdFunc::StrToVer(version::usio);
     (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
@@ -960,6 +1018,7 @@ void TestModule::check3335()
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x33;
     bsi.MTypeM = 0x35;
+    bsi.Fwver = StdFunc::StrToVer(version::usio);
     (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
@@ -979,6 +1038,7 @@ void TestModule::check3400()
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x34;
     bsi.MTypeM = 0x00;
+    bsi.Fwver = StdFunc::StrToVer(version::usio);
     (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
@@ -998,6 +1058,7 @@ void TestModule::check3421()
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x34;
     bsi.MTypeM = 0x21;
+    bsi.Fwver = StdFunc::StrToVer(version::usio);
     (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
@@ -1017,6 +1078,7 @@ void TestModule::check3422()
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x34;
     bsi.MTypeM = 0x22;
+    bsi.Fwver = StdFunc::StrToVer(version::usio);
     (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
@@ -1036,6 +1098,7 @@ void TestModule::check3431()
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x34;
     bsi.MTypeM = 0x31;
+    bsi.Fwver = StdFunc::StrToVer(version::usio);
     (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
@@ -1055,6 +1118,7 @@ void TestModule::check3433()
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x34;
     bsi.MTypeM = 0x33;
+    bsi.Fwver = StdFunc::StrToVer(version::usio);
     (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
@@ -1074,6 +1138,7 @@ void TestModule::check3434()
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x34;
     bsi.MTypeM = 0x34;
+    bsi.Fwver = StdFunc::StrToVer(version::usio);
     (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
@@ -1093,6 +1158,7 @@ void TestModule::check3435()
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x34;
     bsi.MTypeM = 0x35;
+    bsi.Fwver = StdFunc::StrToVer(version::usio);
     (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
@@ -1112,6 +1178,7 @@ void TestModule::check3500()
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x35;
     bsi.MTypeM = 0x00;
+    bsi.Fwver = StdFunc::StrToVer(version::usio);
     (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
@@ -1131,6 +1198,7 @@ void TestModule::check3521()
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x35;
     bsi.MTypeM = 0x21;
+    bsi.Fwver = StdFunc::StrToVer(version::usio);
     (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
@@ -1150,6 +1218,7 @@ void TestModule::check3522()
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x35;
     bsi.MTypeM = 0x22;
+    bsi.Fwver = StdFunc::StrToVer(version::usio);
     (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
@@ -1169,6 +1238,7 @@ void TestModule::check3531()
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x35;
     bsi.MTypeM = 0x31;
+    bsi.Fwver = StdFunc::StrToVer(version::usio);
     (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
@@ -1188,6 +1258,7 @@ void TestModule::check3533()
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x35;
     bsi.MTypeM = 0x33;
+    bsi.Fwver = StdFunc::StrToVer(version::usio);
     QVERIFY(module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
@@ -1207,6 +1278,7 @@ void TestModule::check3534()
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x35;
     bsi.MTypeM = 0x34;
+    bsi.Fwver = StdFunc::StrToVer(version::usio);
     (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
@@ -1226,6 +1298,7 @@ void TestModule::check3535()
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x35;
     bsi.MTypeM = 0x35;
+    bsi.Fwver = StdFunc::StrToVer(version::usio);
     (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
@@ -1245,6 +1318,7 @@ void TestModule::check3533USB()
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x35;
     bsi.MTypeM = 0x33;
+    bsi.Fwver = StdFunc::StrToVer(version::usio);
     QVERIFY(module.loadSettings(bsi, Board::InterfaceType::USB));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
