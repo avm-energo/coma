@@ -14,7 +14,7 @@ public:
 protected:
     auto inputQuantity() const
     {
-        return std::get<check::detail::Record>(m_item.itemsVector.front()).count.value();
+        return std::get<check::detail::Record>(m_item.itemsVector.back()).count.value();
     }
     virtual UWidget *Bd1W() = 0;
 

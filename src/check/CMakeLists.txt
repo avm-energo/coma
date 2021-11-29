@@ -13,6 +13,10 @@ find_package(
   COMPONENTS Core Widgets
   REQUIRED)
 
+find_package(Boost
+    COMPONENTS headers
+    REQUIRED)
+
 add_library(
   ${PROJECT_NAME} STATIC
   abstractcheckdialog.cpp
@@ -29,6 +33,7 @@ target_link_libraries(
   ${PROJECT_NAME}
   PRIVATE Qt${QT_VERSION_MAJOR}::Core
   PRIVATE Qt${QT_VERSION_MAJOR}::Widgets
-  PRIVATE QXlsx)
+  PRIVATE QXlsx
+  PRIVATE Boost::headers)
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE ${PROJECT_NAME}_LIBRARY)

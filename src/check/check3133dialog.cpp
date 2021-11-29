@@ -7,6 +7,7 @@
 #include <QGridLayout>
 #include <QGroupBox>
 #include <bitset>
+#include <boost/dynamic_bitset.hpp>
 
 constexpr int offset = 1;
 constexpr int columns = 6;
@@ -44,7 +45,10 @@ void Check3133Dialog::updateBitStringData(const DataTypes::BitStringStruct &bs)
     if (result == m_item.signlsVec.end())
         return;
 
-    std::bitset<sizeof(bs.sigVal) * 8> values = bs.sigVal;
+    auto values = boost::dynamic_bitset(inputQuantity(), bs.sigVal);
+    const auto valuesSize = values.size();
+    const auto inputSize = inputQuantity();
+    assert(valuesSize == inputSize);
     for (auto i = 0; i != values.size(); ++i)
     {
         updatePixmap(values.test(i), i + offset);
@@ -58,7 +62,7 @@ UWidget *CheckMezz3133Dialog::Bd1W()
     QGroupBox *gb = new QGroupBox("Состояние входов");
     QGridLayout *glyout = new QGridLayout;
 
-    for (int i = 0; i < inputQuantity(); ++i)
+    for (int i = 0; i != inputQuantity(); ++i)
     {
 
         QHBoxLayout *hlyout = new QHBoxLayout;
@@ -99,7 +103,7 @@ UWidget *CheckBase3133Dialog::Bd1W()
     gb = new QGroupBox("Состояние входов");
     glyout = new QGridLayout;
 
-    for (int i = 0; i < inputQuantity(); ++i)
+    for (int i = 0; i != inputQuantity(); ++i)
     {
 
         QHBoxLayout *hlyout = new QHBoxLayout;
