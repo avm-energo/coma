@@ -80,12 +80,6 @@ private slots:
 
     void check3533USB();
 
-    void check8084();
-    void check8084USB();
-
-    void check8085();
-    void check8085USB();
-
     void check8081();
     void check8081USB();
 
@@ -94,6 +88,15 @@ private slots:
 
     void check8083();
     void check8083USB();
+
+    void check8084();
+    void check8084USB();
+
+    void check8585();
+    void check8585USB();
+
+    void check8600();
+    void check8600USB();
 
     void checkA284();
     void checkA284USB();
