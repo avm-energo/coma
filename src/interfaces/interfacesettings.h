@@ -173,6 +173,15 @@ public:
         return m_dictionaryRegs;
     }
 
+    void merge(const InterfaceInfo<Group> &rhs)
+    {
+        m_groups.append(rhs.m_groups);
+        m_dictionary.unite(rhs.m_dictionary);
+
+        m_regs.append(rhs.m_regs);
+        m_dictionaryRegs.unite(rhs.m_dictionaryRegs);
+    }
+
 private:
     // Realized two versions, only one will be stayed
     QList<Group> m_groups;

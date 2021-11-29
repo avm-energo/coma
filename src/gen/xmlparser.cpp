@@ -712,7 +712,17 @@ void XmlParser::traverseNode(const QDomNode &node, ModuleSettings *const setting
                     if (settings->interfaceType == Board::USB || settings->interfaceType == Board::Emulator)
                     {
                         Protocom interface;
-                        settings->ifaceSettings = interface.parseSettings(domElement);
+                        if (settings->ifaceSettings.settings.isNull())
+                            settings->ifaceSettings = interface.parseSettings(domElement);
+                        else if (settings->ifaceSettings.settings.canConvert<InterfaceInfo<Proto::ProtocomGroup>>())
+                        {
+                            auto oldSettings
+                                = settings->ifaceSettings.settings.value<InterfaceInfo<Proto::ProtocomGroup>>();
+                            auto newSettings = interface.parseSettings(domElement)
+                                                   .settings.value<InterfaceInfo<Proto::ProtocomGroup>>();
+                            oldSettings.merge(newSettings);
+                            settings->ifaceSettings = { QVariant::fromValue(oldSettings) };
+                        }
                     }
 
                     domNode = domNode.nextSibling();

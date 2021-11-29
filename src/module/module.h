@@ -52,6 +52,7 @@ public:
     bool loadUsioSettings(const Modules::StartupInfoBlock &startupInfoBlock);
     bool loadSettings(const Modules::StartupInfoBlock &startupInfoBlock = Board::GetInstance().baseSerialInfo(),
         int interfaceType = Board::GetInstance().interfaceType());
+    bool loadMainSettings(const QString &filename);
     bool obtainXmlFile(const QString &filename) const;
     bool obtainXmlConfig(const QString &filename, QList<DataTypes::RecordPair> &config) const;
     bool obtainXmlCheck(const QString &filename, std::vector<CheckItem> &check) const;
