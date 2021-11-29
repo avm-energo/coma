@@ -194,6 +194,16 @@
           <count>61</count>
           <block>47</block>
         </group>
+        <group>
+          <start-addr>2420</start-addr>
+          <count>16</count>
+          <block>21</block>
+        </group>
+        <group>
+          <start-addr>2450</start-addr>
+          <count>16</count>
+          <block>22</block>
+        </group>
 
         <group id="alarmModule">
           <start-addr>3011</start-addr>

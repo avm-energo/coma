@@ -352,6 +352,16 @@
           <count>36</count>
           <block>20</block>
         </group>
+        <group>
+          <start-addr>2420</start-addr>
+          <count>16</count>
+          <block>21</block>
+        </group>
+        <group>
+          <start-addr>2450</start-addr>
+          <count>16</count>
+          <block>22</block>
+        </group>
 
         <!--блок 18 еще в процессе(не понятно что длать с типом time)-->
         <group id="alarmModule">
