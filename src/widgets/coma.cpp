@@ -321,20 +321,20 @@ void Coma::loadSwj(QString &filename)
     auto oscVector = swjManager.loadFromFile(filename);
     std::move(oscVector.begin(), oscVector.end(), std::back_inserter(fileVector));
     SwjModel *swjModel = nullptr;
-    TrendViewModel *oscModel = nullptr;
+    std::unique_ptr<TrendViewModel> *oscModel = nullptr;
     for (auto &item : fileVector)
     {
         std::visit(overloaded {
-                       [&](S2DataTypes::OscHeader &header) { oscManager.setHeader(header); },  //
-                       [&](SwjModel &model) { swjModel = &model; },                            //
-                       [&](std::unique_ptr<TrendViewModel> &model) { oscModel = model.get(); } //
+                       [&](S2DataTypes::OscHeader &header) { oscManager.setHeader(header); }, //
+                       [&](SwjModel &model) { swjModel = &model; },                           //
+                       [&](std::unique_ptr<TrendViewModel> &model) { oscModel = &model; }     //
                    },
             item);
     }
     if (!swjModel)
         return;
 
-    auto dialog = new SwitchJournalViewDialog(*swjModel, oscModel, oscManager);
+    auto dialog = new SwitchJournalViewDialog(*swjModel, *oscModel, oscManager);
     dialog->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     dialog->setAttribute(Qt::WA_DeleteOnClose);
 
