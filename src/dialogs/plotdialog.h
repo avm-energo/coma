@@ -8,6 +8,7 @@
 class QCustomPlot;
 class QCPPolarGraph;
 class QCPItemText;
+class QCPPolarAxisAngular;
 
 struct Phase
 {
@@ -84,9 +85,13 @@ public:
     void reqUpdate() override;
     void setupUI();
 
+protected:
+    void paintEvent(QPaintEvent *event) override;
+
 private:
     GraphData graphPhaseA, graphPhaseB, graphPhaseC;
     QCustomPlot *customPlot;
+    QCPPolarAxisAngular *exampleAngularAxis = nullptr;
 
     void updateGraph(const GraphData &graphData, char phaseLiteral) const;
     QCPItemText *createText(QCustomPlot *parent, const QString &name, const QString &text) const;

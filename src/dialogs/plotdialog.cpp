@@ -8,6 +8,16 @@ constexpr double textRadius = 0.8;
 constexpr double headerIndentX = 0.15;
 constexpr double headerIndentY = 0.05;
 
+namespace originValues
+{
+constexpr auto Ua = 0;
+constexpr auto Ia = 90;
+constexpr auto Ub = -120;
+constexpr auto Ib = -30;
+constexpr auto Uc = 120;
+constexpr auto Ic = -150;
+}
+
 PlotDialog::PlotDialog(QWidget *parent) : UDialog(parent)
 {
     setupUI();
@@ -56,12 +66,26 @@ void PlotDialog::updateFloatData(const DataTypes::FloatStruct &fl)
     return textLabel;
 }
 
-static void addTextLabel(QString str, double xFactor, double yFactor, QCustomPlot *parent)
+static void addTextLabel(
+    QString str, QPointF point, QCustomPlot *parent, QCPItemPosition::PositionType type = QCPItemPosition::ptAbsolute)
 {
     QCPItemText *textLabel = new QCPItemText(parent);
+    textLabel->setObjectName(str);
     textLabel->setText(str);
     textLabel->setFont(QFont(parent->font().family(), 16));
-    textLabel->position->setType(QCPItemPosition::ptViewportRatio);
+    textLabel->position->setType(type);
+    textLabel->setClipToAxisRect(false);
+    textLabel->position->setCoords(point);
+}
+
+static void addTextLabel(QString str, double xFactor, double yFactor, QCustomPlot *parent,
+    QCPItemPosition::PositionType type = QCPItemPosition::ptAbsolute)
+{
+    QCPItemText *textLabel = new QCPItemText(parent);
+    textLabel->setObjectName(str);
+    textLabel->setText(str);
+    textLabel->setFont(QFont(parent->font().family(), 16));
+    textLabel->position->setType(type);
     textLabel->setClipToAxisRect(false);
     textLabel->position->setCoords(xFactor, yFactor);
 }
@@ -72,27 +96,27 @@ static void addTextLabel(QString str, double xFactor, double yFactor, QCustomPlo
     {
         examplePlot->setBackground(QColor(255, 255, 255, 100));
         examplePlot->setAttribute(Qt::WA_OpaquePaintEvent, false);
-        addTextLabel("Желаемая\n картина", headerIndentX, headerIndentY, examplePlot);
+        addTextLabel("Желаемая\n картина", headerIndentX, headerIndentY, examplePlot, QCPItemPosition::ptViewportRatio);
 
         examplePlot->plotLayout()->clear();
 
-        auto angularAxis = new QCPPolarAxisAngular(examplePlot);
+        exampleAngularAxis = new QCPPolarAxisAngular(examplePlot);
 
-        examplePlot->plotLayout()->addElement(0, 0, angularAxis);
+        examplePlot->plotLayout()->addElement(0, 0, exampleAngularAxis);
 
-        angularAxis->setRangeDrag(false);
-        angularAxis->setTickLabelMode(QCPPolarAxisAngular::lmUpright);
+        exampleAngularAxis->setRangeDrag(false);
+        exampleAngularAxis->setTickLabelMode(QCPPolarAxisAngular::lmUpright);
 
-        angularAxis->radialAxis()->setTickLabelMode(QCPPolarAxisRadial::lmUpright);
-        angularAxis->radialAxis()->setTickLabelRotation(0);
-        angularAxis->radialAxis()->setAngle(45);
+        exampleAngularAxis->radialAxis()->setTickLabelMode(QCPPolarAxisRadial::lmUpright);
+        exampleAngularAxis->radialAxis()->setTickLabelRotation(0);
+        exampleAngularAxis->radialAxis()->setAngle(45);
 
-        angularAxis->grid()->setAngularPen(QPen(QColor(200, 200, 200), 0, Qt::SolidLine));
+        exampleAngularAxis->grid()->setAngularPen(QPen(QColor(200, 200, 200), 0, Qt::SolidLine));
 
         QCPLegend legend;
-        angularAxis->grid()->setSubGridType(QCPPolarGrid::gtAll);
+        exampleAngularAxis->grid()->setSubGridType(QCPPolarGrid::gtAll);
         {
-            QCPPolarGraph *graph = new QCPPolarGraph(angularAxis, angularAxis->radialAxis());
+            QCPPolarGraph *graph = new QCPPolarGraph(exampleAngularAxis, exampleAngularAxis->radialAxis());
             graph->setScatterStyle(QCPScatterStyle::ssDiamond);
             QPen pen(QColor(255, 239, 0));
 
@@ -101,7 +125,7 @@ static void addTextLabel(QString str, double xFactor, double yFactor, QCustomPlo
             graph->addData({ 90, 0, 0 }, { valueRadius, 0, valueRadius }, true);
         }
         {
-            QCPPolarGraph *graph = new QCPPolarGraph(angularAxis, angularAxis->radialAxis());
+            QCPPolarGraph *graph = new QCPPolarGraph(exampleAngularAxis, exampleAngularAxis->radialAxis());
             graph->setScatterStyle(QCPScatterStyle::ssDiamond);
             QPen pen(Qt::green);
 
@@ -110,7 +134,7 @@ static void addTextLabel(QString str, double xFactor, double yFactor, QCustomPlo
             graph->addData({ -30, 0, 240 }, { valueRadius, 0, valueRadius }, true);
         }
         {
-            QCPPolarGraph *graph = new QCPPolarGraph(angularAxis, angularAxis->radialAxis());
+            QCPPolarGraph *graph = new QCPPolarGraph(exampleAngularAxis, exampleAngularAxis->radialAxis());
             graph->setScatterStyle(QCPScatterStyle::ssDiamond);
             QPen pen(Qt::red);
 
@@ -119,9 +143,17 @@ static void addTextLabel(QString str, double xFactor, double yFactor, QCustomPlo
             graph->addData({ -150, 0, 120 }, { valueRadius, 0, valueRadius }, true);
         }
 
-        angularAxis->setRange(-180, 180);
-        angularAxis->setRangeReversed(true);
-        angularAxis->radialAxis()->setRange(0, 1);
+        exampleAngularAxis->setRange(-180, 180);
+        exampleAngularAxis->setRangeReversed(true);
+        exampleAngularAxis->radialAxis()->setRange(0, 1);
+
+        using namespace originValues;
+        addTextLabel("Ua", exampleAngularAxis->coordToPixel(Ua, valueRadius), examplePlot);
+        addTextLabel("Ia", exampleAngularAxis->coordToPixel(Ia, valueRadius), examplePlot);
+        addTextLabel("Ub", exampleAngularAxis->coordToPixel(Ub, valueRadius), examplePlot);
+        addTextLabel("Ib", exampleAngularAxis->coordToPixel(Ib, valueRadius), examplePlot);
+        addTextLabel("Uc", exampleAngularAxis->coordToPixel(Uc, valueRadius), examplePlot);
+        addTextLabel("Ic", exampleAngularAxis->coordToPixel(Ic, valueRadius), examplePlot);
         examplePlot->replot();
     }
     return examplePlot;
@@ -244,4 +276,68 @@ void PlotDialog::setupUI()
     lyout->addWidget(examplePlot);
 
     setLayout(lyout);
+}
+
+void PlotDialog::paintEvent(QPaintEvent *event)
+{
+    UDialog::paintEvent(event);
+    if (!exampleAngularAxis)
+        return;
+
+    using namespace originValues;
+    auto textLabels = exampleAngularAxis->parentPlot()->findChildren<QCPItemText *>();
+    bool needToReplot = false;
+    for (auto &&label : qAsConst(textLabels))
+    {
+        if (label->objectName() == "Ua")
+        {
+            if (label->position->coords() != exampleAngularAxis->coordToPixel(Ua, valueRadius))
+            {
+                label->position->setCoords(exampleAngularAxis->coordToPixel(Ua, valueRadius));
+                needToReplot = true;
+            }
+        }
+        if (label->objectName() == "Ia")
+        {
+            if (label->position->coords() != exampleAngularAxis->coordToPixel(Ia, valueRadius))
+            {
+                label->position->setCoords(exampleAngularAxis->coordToPixel(Ia, valueRadius));
+                needToReplot = true;
+            }
+        }
+        if (label->objectName() == "Ub")
+        {
+            if (label->position->coords() != exampleAngularAxis->coordToPixel(Ub, valueRadius))
+            {
+                label->position->setCoords(exampleAngularAxis->coordToPixel(Ub, valueRadius));
+                needToReplot = true;
+            }
+        }
+        if (label->objectName() == "Ib")
+        {
+            if (label->position->coords() != exampleAngularAxis->coordToPixel(Ib, valueRadius))
+            {
+                label->position->setCoords(exampleAngularAxis->coordToPixel(Ib, valueRadius));
+                needToReplot = true;
+            }
+        }
+        if (label->objectName() == "Uc")
+        {
+            if (label->position->coords() != exampleAngularAxis->coordToPixel(Uc, valueRadius))
+            {
+                label->position->setCoords(exampleAngularAxis->coordToPixel(Uc, valueRadius));
+                needToReplot = true;
+            }
+        }
+        if (label->objectName() == "Ic")
+        {
+            if (label->position->coords() != exampleAngularAxis->coordToPixel(Ic, valueRadius))
+            {
+                label->position->setCoords(exampleAngularAxis->coordToPixel(Ic, valueRadius));
+                needToReplot = true;
+            }
+        }
+    }
+    if (needToReplot)
+        exampleAngularAxis->parentPlot()->replot(QCustomPlot::rpQueuedReplot);
 }
