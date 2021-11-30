@@ -36,7 +36,7 @@ struct ModuleSettings
 
 struct GlobalSettings
 {
-    S2DataTypes::valueTypeMap *s2filesMap;
+    DataTypes::valueMap *s2filesMap;
     widgetMap *s2widgetMap;
     categoryMap *s2categories;
 };

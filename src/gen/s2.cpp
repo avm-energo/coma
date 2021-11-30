@@ -237,9 +237,9 @@ bool S2::RestoreData(QByteArray bain, QList<DataTypes::DataRecV> &outlist)
 
             size = DR.header.numByte;
 
-            auto search = DataTypes::DataRecV::map.find(DR.header.id);
-            Q_ASSERT(search != DataTypes::DataRecV::map.end());
-            if (search != DataTypes::DataRecV::map.end())
+            auto search = DataTypes::DataRecV::map.map().find(DR.header.id);
+            Q_ASSERT(search != DataTypes::DataRecV::map.map().end());
+            if (search != DataTypes::DataRecV::map.map().end())
             {
                 DataTypes::DataRecV DRV(DR, bain.left(size));
                 outlist.append(DRV);

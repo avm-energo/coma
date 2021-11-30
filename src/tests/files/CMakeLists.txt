@@ -1,4 +1,4 @@
-project(xmlParser_test)
+project(files_test)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
@@ -18,12 +18,15 @@ find_package(
 
 find_package(hidapi REQUIRED)
 
-add_executable(${PROJECT_NAME} testmodule.cpp testmodule.h)
+add_executable(${PROJECT_NAME}
+    testfiles.cpp
+    testfiles.h
+    examples.qrc)
 add_test(NAME ${PROJECT_NAME} COMMAND ${PROJECT_NAME})
 
-target_link_libraries(${PROJECT_NAME} gen module
-    interfaces
+target_link_libraries(${PROJECT_NAME}
     gen
+    avtuk
     widgets
     dialogs
     models
@@ -39,7 +42,7 @@ if(CMAKE_SYSTEM_NAME_LOWER STREQUAL "windows")
         ${PROJECT_NAME}
     PROPERTIES
         # Make sure DLL is found by adding its directory to PATH
-        ENVIRONMENT "PATH=${hidapi_BIN_DIR}\;${QT_BIN_DIR}\;$<TARGET_PROPERTY:QXlsx,IMPORTED_LOCATION>;"
+        ENVIRONMENT "PATH=${hidapi_BIN_DIR}\;${QT_BIN_DIR}\;$<TARGET_PROPERTY:QXlsx,IMPORTED_LOCATION>\;"
     )
 
 endif()

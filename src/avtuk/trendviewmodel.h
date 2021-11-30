@@ -10,7 +10,7 @@ public:
     {
     }
     TrendViewModel() = default;
-    ~TrendViewModel() = default;
+    virtual ~TrendViewModel() = default;
 
     // инициализация графиков
     // имена графиков контактных/аналоговых сигналов, количество точек, диапазон по оси Y для аналоговых
@@ -76,7 +76,7 @@ public:
     TrendViewModel85(int pointsnum) : TrendViewModel(pointsnum)
     {
     }
-    virtual ~TrendViewModel85() = default;
+    virtual ~TrendViewModel85() override = default;
 
     QStringList analogColors() const override;
     QStringList digitalColors() const override;
@@ -92,7 +92,7 @@ public:
     TrendViewModel80(int pointsnum) : TrendViewModel(pointsnum)
     {
     }
-    virtual ~TrendViewModel80() = default;
+    virtual ~TrendViewModel80() override = default;
 
     QStringList analogColors() const override;
     QStringList digitalColors() const override;
@@ -108,7 +108,7 @@ public:
     TrendViewModel21(int pointsnum) : TrendViewModel(pointsnum)
     {
     }
-    virtual ~TrendViewModel21() = default;
+    virtual ~TrendViewModel21() override = default;
 
     QStringList analogColors() const override;
     QStringList digitalColors() const override;
