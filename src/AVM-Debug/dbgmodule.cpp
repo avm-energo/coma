@@ -171,6 +171,11 @@ void DbgModule::create(Modules::BaseBoard typeB, Modules::MezzanineBoard typeM)
         addDialogToList(new SwitchJournalDialog, "Журнал переключений");
         addDialogToList(new OscDialog, "Осциллограммы");
     }
+    if (!settings()->ifaceSettings.settings.isNull())
+    {
+        TimeDialog *tdlg = new TimeDialog;
+        addDialogToList(tdlg, "Время", "time");
+    }
 }
 
 void DbgModule::createUSIO(Modules::BaseBoard typeB, Modules::MezzanineBoard typeM)
