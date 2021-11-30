@@ -18,7 +18,7 @@
         </record>
         <record header="Текущее значение по каналу, Ом" desc="Канал №%1">
             <group>1</group>
-            <start-addr>4508</start-addr>
+            <start-addr>4509</start-addr>
             <count>8</count>
         </record>
     </check>
