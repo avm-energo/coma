@@ -154,26 +154,32 @@ bool Module::loadSettings(const Modules::StartupInfoBlock &startupInfoBlock, int
     }
     // load settings for every board of module
     // especially for usio modules, load directly protocom settings
-    else if (interfaceType == Board::InterfaceType::USB)
-    {
+    else
+        switch (interfaceType)
         {
-            QString protocomBase("protocom-%0100");
-            protocomBase = protocomBase.arg(startupInfoBlock.MTypeB, 0, 16);
-            if (!obtainXmlFile(protocomBase))
-                return false; // no valid protocom if no valid settings for base board
-            else if (!loadMainSettings(dir.filePath(protocomBase + ".xml")))
-                qWarning() << Error::OpenError << protocomBase;
-        }
+        case Board::InterfaceType::USB:
         {
-            QString protocomMezz("protocom-00%1");
-            protocomMezz = protocomMezz.arg(startupInfoBlock.MTypeM, 0, 16);
-            if (!obtainXmlFile(protocomMezz))
-                qDebug() << Error::OpenError << protocomMezz;
-            else if (!loadMainSettings(dir.filePath(protocomMezz + ".xml")))
-                qWarning() << Error::OpenError << protocomMezz;
+            {
+                QString protocomBase("protocom-%0100");
+                protocomBase = protocomBase.arg(startupInfoBlock.MTypeB, 0, 16);
+                if (!obtainXmlFile(protocomBase))
+                    return false; // no valid protocom if no valid settings for base board
+                else if (!loadMainSettings(dir.filePath(protocomBase + ".xml")))
+                    qWarning() << Error::OpenError << protocomBase;
+            }
+            {
+                QString protocomMezz("protocom-00%1");
+                protocomMezz = protocomMezz.arg(startupInfoBlock.MTypeM, 0, 16);
+                if (!obtainXmlFile(protocomMezz))
+                    qDebug() << Error::OpenError << protocomMezz;
+                else if (!loadMainSettings(dir.filePath(protocomMezz + ".xml")))
+                    qWarning() << Error::OpenError << protocomMezz;
+            }
+            return true;
         }
-        return true;
-    }
+        case Board::InterfaceType::Emulator:
+            return true;
+        }
     return false;
 }
 
