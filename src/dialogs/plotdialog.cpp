@@ -66,18 +66,6 @@ void PlotDialog::updateFloatData(const DataTypes::FloatStruct &fl)
     return textLabel;
 }
 
-static void addTextLabel(
-    QString str, QPointF point, QCustomPlot *parent, QCPItemPosition::PositionType type = QCPItemPosition::ptAbsolute)
-{
-    QCPItemText *textLabel = new QCPItemText(parent);
-    textLabel->setObjectName(str);
-    textLabel->setText(str);
-    textLabel->setFont(QFont(parent->font().family(), 16));
-    textLabel->position->setType(type);
-    textLabel->setClipToAxisRect(false);
-    textLabel->position->setCoords(point);
-}
-
 static void addTextLabel(QString str, double xFactor, double yFactor, QCustomPlot *parent,
     QCPItemPosition::PositionType type = QCPItemPosition::ptAbsolute)
 {
@@ -88,6 +76,12 @@ static void addTextLabel(QString str, double xFactor, double yFactor, QCustomPlo
     textLabel->position->setType(type);
     textLabel->setClipToAxisRect(false);
     textLabel->position->setCoords(xFactor, yFactor);
+}
+
+static inline void addTextLabel(
+    QString str, QPointF point, QCustomPlot *parent, QCPItemPosition::PositionType type = QCPItemPosition::ptAbsolute)
+{
+    addTextLabel(str, point.x(), point.y(), parent, type);
 }
 
 [[nodiscard]] QCustomPlot *PlotDialog::createExample()
@@ -105,16 +99,13 @@ static void addTextLabel(QString str, double xFactor, double yFactor, QCustomPlo
         examplePlot->plotLayout()->addElement(0, 0, exampleAngularAxis);
 
         exampleAngularAxis->setRangeDrag(false);
-        exampleAngularAxis->setTickLabelMode(QCPPolarAxisAngular::lmUpright);
-
-        exampleAngularAxis->radialAxis()->setTickLabelMode(QCPPolarAxisRadial::lmUpright);
-        exampleAngularAxis->radialAxis()->setTickLabelRotation(0);
-        exampleAngularAxis->radialAxis()->setAngle(45);
-
+        exampleAngularAxis->radialAxis()->setTickLabels(false);
+        exampleAngularAxis->radialAxis()->setAngle(0);
         exampleAngularAxis->grid()->setAngularPen(QPen(QColor(200, 200, 200), 0, Qt::SolidLine));
-
-        QCPLegend legend;
         exampleAngularAxis->grid()->setSubGridType(QCPPolarGrid::gtAll);
+
+        using namespace originValues;
+
         {
             QCPPolarGraph *graph = new QCPPolarGraph(exampleAngularAxis, exampleAngularAxis->radialAxis());
             graph->setScatterStyle(QCPScatterStyle::ssDiamond);
@@ -122,7 +113,7 @@ static void addTextLabel(QString str, double xFactor, double yFactor, QCustomPlo
 
             pen.setWidth(3);
             graph->setPen(pen);
-            graph->addData({ 90, 0, 0 }, { valueRadius, 0, valueRadius }, true);
+            graph->addData({ Ia, 0, Ua }, { valueRadius, 0, valueRadius }, true);
         }
         {
             QCPPolarGraph *graph = new QCPPolarGraph(exampleAngularAxis, exampleAngularAxis->radialAxis());
@@ -131,7 +122,7 @@ static void addTextLabel(QString str, double xFactor, double yFactor, QCustomPlo
 
             pen.setWidth(3);
             graph->setPen(pen);
-            graph->addData({ -30, 0, 240 }, { valueRadius, 0, valueRadius }, true);
+            graph->addData({ Ib, 0, 360 + Ub }, { valueRadius, 0, valueRadius }, true);
         }
         {
             QCPPolarGraph *graph = new QCPPolarGraph(exampleAngularAxis, exampleAngularAxis->radialAxis());
@@ -140,20 +131,23 @@ static void addTextLabel(QString str, double xFactor, double yFactor, QCustomPlo
 
             pen.setWidth(3);
             graph->setPen(pen);
-            graph->addData({ -150, 0, 120 }, { valueRadius, 0, valueRadius }, true);
+            graph->addData({ Ic, 0, Uc }, { valueRadius, 0, valueRadius }, true);
         }
 
         exampleAngularAxis->setRange(-180, 180);
         exampleAngularAxis->setRangeReversed(true);
         exampleAngularAxis->radialAxis()->setRange(0, 1);
 
-        using namespace originValues;
-        addTextLabel("Ua", exampleAngularAxis->coordToPixel(Ua, valueRadius), examplePlot);
-        addTextLabel("Ia", exampleAngularAxis->coordToPixel(Ia, valueRadius), examplePlot);
-        addTextLabel("Ub", exampleAngularAxis->coordToPixel(Ub, valueRadius), examplePlot);
-        addTextLabel("Ib", exampleAngularAxis->coordToPixel(Ib, valueRadius), examplePlot);
-        addTextLabel("Uc", exampleAngularAxis->coordToPixel(Uc, valueRadius), examplePlot);
-        addTextLabel("Ic", exampleAngularAxis->coordToPixel(Ic, valueRadius), examplePlot);
+        {
+            using namespace originValues;
+            addTextLabel("Ua", exampleAngularAxis->coordToPixel(Ua, valueRadius), examplePlot);
+            addTextLabel("Ia", exampleAngularAxis->coordToPixel(Ia, valueRadius), examplePlot);
+            addTextLabel("Ub", exampleAngularAxis->coordToPixel(Ub, valueRadius), examplePlot);
+            addTextLabel("Ib", exampleAngularAxis->coordToPixel(Ib, valueRadius), examplePlot);
+            addTextLabel("Uc", exampleAngularAxis->coordToPixel(Uc, valueRadius), examplePlot);
+            addTextLabel("Ic", exampleAngularAxis->coordToPixel(Ic, valueRadius), examplePlot);
+        }
+
         examplePlot->replot();
     }
     return examplePlot;
@@ -249,11 +243,8 @@ void PlotDialog::setupUI()
         customPlot->plotLayout()->addElement(0, 0, angularAxis);
 
         angularAxis->setRangeDrag(false);
-        angularAxis->setTickLabelMode(QCPPolarAxisAngular::lmUpright);
 
-        angularAxis->radialAxis()->setTickLabelMode(QCPPolarAxisRadial::lmUpright);
-        angularAxis->radialAxis()->setTickLabelRotation(0);
-        angularAxis->radialAxis()->setAngle(45);
+        angularAxis->radialAxis()->setAngle(0);
 
         angularAxis->grid()->setAngularPen(QPen(QColor(200, 200, 200), 0, Qt::SolidLine));
 
@@ -268,6 +259,8 @@ void PlotDialog::setupUI()
         angularAxis->setRange(-180, 180);
         angularAxis->setRangeReversed(true);
         angularAxis->radialAxis()->setRange(0, 1);
+
+        angularAxis->radialAxis()->setTickLabels(false);
 
         lyout->addWidget(customPlot);
     }
