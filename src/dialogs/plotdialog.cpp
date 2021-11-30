@@ -5,8 +5,8 @@
 
 constexpr double valueRadius = 0.9;
 constexpr double textRadius = 0.8;
-constexpr double headerIndentX = 0.2;
-constexpr double headerIndentY = 0.1;
+constexpr double headerIndentX = 0.15;
+constexpr double headerIndentY = 0.05;
 
 PlotDialog::PlotDialog(QWidget *parent) : UDialog(parent)
 {
@@ -56,19 +56,23 @@ void PlotDialog::updateFloatData(const DataTypes::FloatStruct &fl)
     return textLabel;
 }
 
+static void addTextLabel(QString str, double xFactor, double yFactor, QCustomPlot *parent)
+{
+    QCPItemText *textLabel = new QCPItemText(parent);
+    textLabel->setText(str);
+    textLabel->setFont(QFont(parent->font().family(), 16));
+    textLabel->position->setType(QCPItemPosition::ptViewportRatio);
+    textLabel->setClipToAxisRect(false);
+    textLabel->position->setCoords(xFactor, yFactor);
+}
+
 [[nodiscard]] QCustomPlot *PlotDialog::createExample()
 {
     QCustomPlot *examplePlot = new QCustomPlot(this);
     {
         examplePlot->setBackground(QColor(255, 255, 255, 100));
         examplePlot->setAttribute(Qt::WA_OpaquePaintEvent, false);
-        QCPItemText *textLabel = new QCPItemText(examplePlot);
-        textLabel->setText("Желаемая\n картина");
-        textLabel->setFont(QFont(font().family(), 16));
-        textLabel->position->setType(QCPItemPosition::ptViewportRatio);
-        textLabel->setClipToAxisRect(false);
-
-        textLabel->position->setCoords(headerIndentX, headerIndentY);
+        addTextLabel("Желаемая\n картина", headerIndentX, headerIndentY, examplePlot);
 
         examplePlot->plotLayout()->clear();
 
