@@ -16,4 +16,5 @@ protected:
 
 private:
     void create(Modules::BaseBoard typeB, Modules::MezzanineBoard typeM) override;
+    void createUSIO(Modules::BaseBoard typeB, Modules::MezzanineBoard typeM);
 };

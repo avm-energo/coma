@@ -113,6 +113,8 @@ public:
 
     const Modules::StartupInfoBlock &baseSerialInfo() const;
 
+    static bool isUSIO(Modules::BaseBoard typeB, Modules::MezzanineBoard typeM);
+
 private:
     static constexpr int StartupInfoBlockMembers = sizeof(Modules::StartupInfoBlock) / sizeof(quint32);
     InterfaceType m_interfaceType;

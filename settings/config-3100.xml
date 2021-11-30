@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s2files xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="s2files.xsd">
+    <record>
+        <id>201</id>
+        <defaultValue>0</defaultValue>
+        <widget>
+            <type>CheckBoxGroup</type>
+            <count>11</count>
+        </widget>
+    </record>
+    <record>
+        <id>202</id>
+        <defaultValue>2</defaultValue>
+    </record>
+    <record>
+        <id>204</id>
+        <defaultValue>2</defaultValue>
+    </record>
+    <record>
+        <id>205</id>
+        <defaultValue>2</defaultValue>
+        <widget>
+            <type>CheckBoxGroup</type>
+            <count>11</count>
+        </widget>
+    </record>
+    <record>
+        <id>206</id>
+        <defaultValue>0</defaultValue>
+    </record>
+</s2files>

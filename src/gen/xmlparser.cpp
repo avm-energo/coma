@@ -586,7 +586,7 @@ void XmlParser::traverseNode(const QDomNode &node, ModuleSettings *const setting
                 if (domElement.tagName() == "record")
                 {
 
-                    settings->configSettings.push_back(parseRecord(domElement, gsettings.s2widgetMap));
+                    settings->configSettings.general.push_back(parseRecord(domElement, gsettings.s2widgetMap));
                     domNode = domNode.nextSibling();
                     continue;
                 }
@@ -630,6 +630,44 @@ void XmlParser::traverseNode(const QDomNode &node, GlobalSettings &settings)
             }
         }
         traverseNode(domNode, settings);
+        domNode = domNode.nextSibling();
+    }
+}
+
+void XmlParser::traverseNodeS2(const QDomNode &node, QList<DataTypes::RecordPair> &settings, widgetMap *widgets)
+{
+    QDomNode domNode = node.firstChild();
+    while (!domNode.isNull())
+    {
+        if (domNode.isElement())
+        {
+            QDomElement domElement = domNode.toElement();
+            if (!domElement.isNull())
+            {
+                if (domElement.tagName() == keys::unsigned32)
+                {
+                    XmlParser::parseInt32(domElement);
+                }
+                if (domElement.tagName() == keys::stringArray)
+                {
+#ifdef XML_DEBUG
+                    qDebug() << "Attr: " << domElement.attribute("name", "");
+#endif
+                    XmlParser::parseStringList(domElement);
+                    domNode = domNode.nextSibling();
+                    continue;
+                }
+
+                if (domElement.tagName() == "record")
+                {
+
+                    settings.push_back(parseRecord(domElement, widgets));
+                    domNode = domNode.nextSibling();
+                    continue;
+                }
+            }
+        }
+        traverseNodeS2(domNode, settings, widgets);
         domNode = domNode.nextSibling();
     }
 }

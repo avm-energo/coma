@@ -3,7 +3,7 @@
 	<xs:element name="s2files">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element maxOccurs="1" name="map">
+				<xs:element minOccurs="0" maxOccurs="1" name="map">
 					<xs:complexType>
 						<xs:sequence>
 							<xs:element maxOccurs="unbounded" name="item">
@@ -22,7 +22,8 @@
 					<xs:complexType>
 						<xs:sequence>
 							<xs:element name="id" type="xs:unsignedShort" />
-							<xs:element name="type" type="xs:string" />
+							<xs:element minOccurs="0" maxOccurs="1" name="type" type="xs:string" />
+							<xs:element minOccurs="0" maxOccurs="1" name="defaultValue" type="xs:string" />
 							<xs:element minOccurs="0" name="widget">
 								<xs:complexType>
 									<xs:sequence>

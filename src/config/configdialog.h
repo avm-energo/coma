@@ -9,8 +9,8 @@
 class ConfigDialog : public UDialog
 {
 public:
-    explicit ConfigDialog(
-        ConfigV *config, const QList<DataTypes::RecordPair> &defaultConfig, QWidget *parent = nullptr);
+    explicit ConfigDialog(ConfigV *config, const QList<DataTypes::RecordPair> &defaultConfig, bool prereadConf = true,
+        QWidget *parent = nullptr);
 
     void PrereadConf();
 
@@ -33,6 +33,7 @@ private:
     void checkForDiff(const QList<DataTypes::DataRecV> &list);
     void confReceived(const QList<DataTypes::DataRecV> &list);
 
+    bool m_prereadConf;
     QStringList CheckConfErrors;
     const QList<DataTypes::RecordPair> m_defaultValues;
     ConfigV *configV;

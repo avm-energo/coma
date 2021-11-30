@@ -13,6 +13,13 @@ struct ModuleType
     quint16 typeM;
 };
 
+struct ConfigSettings
+{
+    QList<DataTypes::RecordPair> general;
+    QList<DataTypes::RecordPair> base;
+    QList<DataTypes::RecordPair> mezz;
+};
+
 struct ModuleSettings
 {
     ModuleSettings(const Modules::StartupInfoBlock &startupInfoBlock_) : startupInfoBlock(startupInfoBlock_)
@@ -28,7 +35,7 @@ struct ModuleSettings
     QMap<Modules::AlarmType, DataTypes::Alarm> alarms;
     QMap<Modules::JournalType, DataTypes::JournalDesc> journals;
     InterfaceSettings ifaceSettings;
-    QList<DataTypes::RecordPair> configSettings;
+    ConfigSettings configSettings;
     QMultiMap<quint32, quint32> highlightWarn, highlightCrit;
     const Modules::StartupInfoBlock &startupInfoBlock;
     int interfaceType;

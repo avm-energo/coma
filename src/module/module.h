@@ -50,9 +50,12 @@ public:
     void closeDialogs();
     ModuleSettings *settings() const;
     bool loadSettings();
+    bool loadUsioSettings(const Modules::StartupInfoBlock &startupInfoBlock);
     bool loadSettings(QString &moduleName,
         const Modules::StartupInfoBlock &startupInfoBlock = Board::GetInstance().baseSerialInfo(),
         int interfaceType = Board::GetInstance().interfaceType());
+    bool obtainXmlFile(const QString &filename) const;
+    bool obtainXmlConfig(const QString &filename, QList<DataTypes::RecordPair> &config) const;
     bool loadS2Settings();
     quint64 configVersion() const;
     bool isConfigOutdated() const;

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "helper.h"
+
 #include <QAbstractSpinBox>
 #include <QDebug>
 #include <QDoubleSpinBox>
@@ -14,16 +16,15 @@ class BaseSpinBoxGroup : public QWidget
 public:
     explicit BaseSpinBoxGroup(int count, QWidget *parent = nullptr) : QWidget(parent), m_count(count)
     {
-        auto parentWidth = parent->width();
-        auto columnWidth = parentWidth / 2;
+        auto itemsOneLine = detail::goldenRatio(m_count);
+        assert(itemsOneLine > 0);
+
         QGridLayout *gridlyout = new QGridLayout;
         for (auto i = 0; i != m_count; ++i)
         {
             QHBoxLayout *layout = new QHBoxLayout;
             layout->addWidget(new QLabel(QString::number(i + 1), this), 0, Qt::AlignRight);
             layout->addWidget(new S(this));
-            auto width = layout->minimumSize().width();
-            auto itemsOneLine = columnWidth / width;
             gridlyout->addLayout(layout, i / itemsOneLine, i % itemsOneLine);
         }
         setLayout(gridlyout);
@@ -31,17 +32,15 @@ public:
     explicit BaseSpinBoxGroup(const QStringList &list, QWidget *parent = nullptr)
         : QWidget(parent), m_count(list.size())
     {
-        auto parentWidth = parent->width();
-        auto columnWidth = parentWidth / 2;
+        auto itemsOneLine = detail::goldenRatio(m_count);
+        assert(itemsOneLine > 0);
+
         QGridLayout *gridlyout = new QGridLayout;
         for (auto i = 0; i != m_count; ++i)
         {
             QHBoxLayout *layout = new QHBoxLayout;
             layout->addWidget(new QLabel(list.at(i), this), 0, Qt::AlignRight);
             layout->addWidget(new S(this));
-            auto width = layout->minimumSize().width();
-            auto itemsOneLine = columnWidth / width;
-            Q_ASSERT(itemsOneLine > 0);
             gridlyout->addLayout(layout, i / itemsOneLine, i % itemsOneLine);
         }
         setLayout(gridlyout);
