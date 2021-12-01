@@ -124,7 +124,7 @@ bool Module::loadSettings(const Modules::StartupInfoBlock &startupInfoBlock, int
         if (!loadUsioSettings(startupInfoBlock))
             return false;
     }
-    auto moduleName = QString::number(startupInfoBlock.type(), 16);
+    auto moduleName = "avtuk-" + QString::number(startupInfoBlock.type(), 16);
 
     if (!obtainXmlFile(moduleName))
         return false;

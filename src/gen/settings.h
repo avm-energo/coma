@@ -22,7 +22,7 @@ struct Configs
 
 struct ConfigSettings
 {
-    S2DataTypes::valueTypeMap *s2filesMap;
+    DataTypes::valueMap *s2filesMap;
     config::widgetMap *s2widgetMap;
     categoryMap *s2categories;
 };

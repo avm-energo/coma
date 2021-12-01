@@ -4,8 +4,6 @@
 #include "../avtuk/relaydialog.h"
 #include "../avtuk/switchjournaldialog.h"
 #include "../check/check3133dialog.h"
-#include "../check/checkktfdialog.h"
-#include "../check/checkktfharmonicdialog.h"
 #include "../check/signaldialog84.h"
 #include "../config/configdialog.h"
 #include "../dialogs/hiddendialog.h"
