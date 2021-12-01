@@ -39,14 +39,14 @@ constexpr auto check8600 = 6;
 
 namespace version
 {
-constexpr auto usio = "3.2.2";
-constexpr auto avtuk8x = "2.5.2";
+constexpr auto usio = "3.2-0002";
+constexpr auto avtuk8x = "2.5-0002";
 constexpr auto avtuk8585 = "3.5-0005";
-constexpr auto avtuk8084 = "1.1.15";
-constexpr auto avma284 = "1.2.5";
-constexpr auto avtuk8600 = "1.0.5";
-constexpr auto avma287 = "0.6.04";
-constexpr auto avma387 = "0.9.0";
+constexpr auto avtuk8084 = "1.1-0015";
+constexpr auto avma284 = "1.2-0005";
+constexpr auto avtuk8600 = "1.0-0007";
+constexpr auto avma287 = "0.6-0004";
+constexpr auto avma387 = "0.9-0000";
 }
 
 TestModule::TestModule(QObject *parent) : QObject(parent)
