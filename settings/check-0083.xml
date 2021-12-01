@@ -23,11 +23,25 @@
             <type>M_ME</type>
             <uint-set>
                 <item>311</item>
-                <item>312</item>
-                <item>313</item>
             </uint-set>
             <start-addr>1028</start-addr>
-            <count>183</count>
+            <count>61</count>
+        </signals>
+        <signals>
+            <type>M_ME</type>
+            <uint-set>
+                <item>312</item>
+            </uint-set>
+            <start-addr>1089</start-addr>
+            <count>61</count>
+        </signals>
+        <signals>
+            <type>M_ME</type>
+            <uint-set>
+                <item>313</item>
+            </uint-set>
+            <start-addr>1150</start-addr>
+            <count>61</count>
         </signals>
         <signals>
             <type>M_ME</type>
@@ -190,11 +204,25 @@
             <type>M_ME</type>
             <uint-set>
                 <item>311</item>
-                <item>312</item>
-                <item>313</item>
             </uint-set>
             <start-addr>1728</start-addr>
-            <count>183</count>
+            <count>61</count>
+        </signals>
+        <signals>
+            <type>M_ME</type>
+            <uint-set>
+                <item>312</item>
+            </uint-set>
+            <start-addr>1789</start-addr>
+            <count>61</count>
+        </signals>
+        <signals>
+            <type>M_ME</type>
+            <uint-set>
+                <item>313</item>
+            </uint-set>
+            <start-addr>1850</start-addr>
+            <count>61</count>
         </signals>
         <record header="Действующие значения и крест-факторы сигналов">
             <group>1</group>
