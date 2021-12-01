@@ -9,7 +9,14 @@
 #include "../widgets/etableview.h"
 #include "../widgets/wd_func.h"
 #include "pushbuttondelegate.h"
-OscDialog::OscDialog(QWidget *parent) : UDialog(parent)
+
+namespace crypto
+{
+static constexpr char hash[] = "d93fdd6d1fb5afcca939fa650b62541d09dbcb766f41c39352dc75f348fb35dc";
+static constexpr char name[] = "oscHash";
+}
+
+OscDialog::OscDialog(QWidget *parent) : UDialog(crypto::hash, crypto::name, parent)
 {
     connect(&DataManager::GetInstance(), &DataManager::oscInfoReceived, this, &OscDialog::fillOscInfo);
     connect(&DataManager::GetInstance(), &DataManager::fileReceived, this, &OscDialog::fillOsc);
