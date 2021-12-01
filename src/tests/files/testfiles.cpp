@@ -72,7 +72,7 @@ void TestFiles::testSwj()
         auto commonModel = model.commonModel.get();
         QVERIFY(commonModel);
         QCOMPARE(commonModel->columnCount(), 2);
-        QCOMPARE(commonModel->rowCount(), 10);
+        QCOMPARE(commonModel->rowCount(), 9);
         auto detailModel = model.detailModel.get();
         QVERIFY(detailModel);
         QCOMPARE(detailModel->columnCount(), 4);

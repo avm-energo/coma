@@ -10,6 +10,7 @@
 #include "../check/checkkivdialog.h"
 #include "../check/checkktfdialog.h"
 #include "../check/checkktfharmonicdialog.h"
+#include "../check/signaldialog84.h"
 #include "../config/configdialog.h"
 #include "../dialogs/hiddendialog.h"
 #include "../dialogs/journalsdialog.h"
@@ -29,7 +30,7 @@ DbgModule::DbgModule(QObject *parent) : Module(parent)
 void DbgModule::createModule(Modules::Model model)
 {
     using namespace Modules;
-    const auto &board = Board::GetInstance();
+
     switch (model)
     {
     case Model::KIV:
@@ -37,9 +38,9 @@ void DbgModule::createModule(Modules::Model model)
         auto jour = UniquePointer<Journals>(new JournKIV(settings()->journals));
 
         addDialogToList(new ConfigDialog(&configV, settings()->configSettings.general), "Конфигурирование", "conf1");
-        if (board.interfaceType() == Board::InterfaceType::USB)
 
-            addDialogToList(new TuneKIVDialog(&configV), "Регулировка");
+        addDialogToList(new TuneKIVDialog(&configV), "Регулировка");
+        addDialogToList(new SignalDialog84(), "Входные сигналы");
 
         CheckKIVDialog *cdkiv = new CheckKIVDialog;
         cdkiv->setHighlights(AbstractCheckDialog::Warning, settings()->highlightWarn);
