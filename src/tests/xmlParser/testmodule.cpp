@@ -41,7 +41,7 @@ namespace version
 {
 constexpr auto usio = "3.2-0002";
 constexpr auto avtuk8x = "2.5-0002";
-constexpr auto avtuk8585 = "3.5-0005";
+constexpr auto avtuk8585 = "3.8-0001";
 constexpr auto avtuk8084 = "1.1-0015";
 constexpr auto avma284 = "1.2-0005";
 constexpr auto avtuk8600 = "1.0-0007";
