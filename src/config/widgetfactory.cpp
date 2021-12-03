@@ -4,7 +4,7 @@
 #include "../gen/module_kxx.h"
 #include "../models/comboboxdelegate.h"
 #include "../widgets/checkboxgroup.h"
-#include "../widgets/helper.h"
+#include "../widgets/flowlayout.h"
 #include "../widgets/ipctrl.h"
 
 #include <QHeaderView>
@@ -194,16 +194,27 @@ QWidget *WidgetFactory::createWidget(BciNumber key, QWidget *parent)
                 int count = arg.count;
                 auto itemsOneLine = detail::goldenRatio(count);
 
-                QGridLayout *gridlyout = new QGridLayout;
+                FlowLayout *flowLayout = new FlowLayout;
                 for (auto i = 0; i != count; ++i)
                 {
+                    QWidget *widget = new QWidget;
                     QHBoxLayout *layout = new QHBoxLayout;
                     layout->addWidget(new QLabel(QString::number(i + 1), parent));
                     layout->addWidget(WDFunc::NewCB2(parent, widgetName(key, i), arg.model));
-                    gridlyout->addLayout(layout, i / itemsOneLine, i % itemsOneLine);
+                    widget->setLayout(layout);
+                    flowLayout->addWidget(widget);
                 }
+                mainLyout->addLayout(flowLayout);
+                //                QGridLayout *gridlyout = new QGridLayout;
+                //                for (auto i = 0; i != count; ++i)
+                //                {
+                //                    QHBoxLayout *layout = new QHBoxLayout;
+                //                    layout->addWidget(new QLabel(QString::number(i + 1), parent));
+                //                    layout->addWidget(WDFunc::NewCB2(parent, widgetName(key, i), arg.model));
+                //                    gridlyout->addLayout(layout, i / itemsOneLine, i % itemsOneLine);
+                //                }
 
-                mainLyout->addLayout(gridlyout);
+                //                mainLyout->addLayout(gridlyout);
                 widget->setLayout(mainLyout);
             },
             [&](const auto &arg) {
