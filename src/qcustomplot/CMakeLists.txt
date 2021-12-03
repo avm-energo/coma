@@ -13,7 +13,9 @@ find_package(
   COMPONENTS Core Widgets
   REQUIRED)
 
-add_library(${PROJECT_NAME} STATIC qcustomplot.cpp qcustomplot.h)
+FetchContent_GetProperties(qcustomplot)
+message(STATUS ${qcustomplot_BINARY_DIR} )
+add_library(${PROJECT_NAME} STATIC ${qcustomplot_BINARY_DIR}/qcustomplot.h ${qcustomplot_BINARY_DIR}/qcustomplot.cpp)
 
 target_link_libraries(
   ${PROJECT_NAME}
