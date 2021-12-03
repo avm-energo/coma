@@ -16,6 +16,7 @@ constexpr char string[] = "string";
 constexpr char color[] = "color";
 constexpr char unsigned32[] = "quint32";
 constexpr char unsigned64[] = "quint64";
+constexpr char unsigned128[] = "quint128";
 constexpr char className[] = "class";
 constexpr char group[] = "group";
 constexpr char type[] = "type";
@@ -62,12 +63,12 @@ DataTypes::Alarm XmlParser::parseAlarm(QDomElement domElement)
             alarm.startAddr = parseInt32(element);
     }
 
-    element = domElement.firstChildElement(keys::unsigned64);
+    element = domElement.firstChildElement(keys::unsigned128);
     if (!element.isNull())
     {
         const auto name = element.attribute(keys::name, "");
         if (name.contains("flags", Qt::CaseInsensitive))
-            alarm.flags = parseHexInt64(element);
+            alarm.flags = parseHexInt128(element);
     }
 
     return alarm;
@@ -122,6 +123,17 @@ quint64 XmlParser::parseHexInt64(QDomElement domElement)
     const auto number = domElement.text().toULongLong(&ok, 16);
     Q_ASSERT(ok);
     return number;
+}
+
+std::bitset<128> XmlParser::parseHexInt128(QDomElement domElement)
+{
+    auto str = domElement.text();
+#ifdef XML_DEBUG
+    qDebug() << domElement.attribute("name", "") << domElement.text();
+#endif
+    if (domElement.text().isEmpty())
+        return 0;
+    return std::bitset<128>(str.toStdString());
 }
 
 QStringList XmlParser::parseStringList(QDomElement domElement)
@@ -700,7 +712,17 @@ void XmlParser::traverseNode(const QDomNode &node, ModuleSettings *const setting
                     if (settings->interfaceType == Board::USB || settings->interfaceType == Board::Emulator)
                     {
                         Protocom interface;
-                        settings->ifaceSettings = interface.parseSettings(domElement);
+                        if (settings->ifaceSettings.settings.isNull())
+                            settings->ifaceSettings = interface.parseSettings(domElement);
+                        else if (settings->ifaceSettings.settings.canConvert<InterfaceInfo<Proto::ProtocomGroup>>())
+                        {
+                            auto oldSettings
+                                = settings->ifaceSettings.settings.value<InterfaceInfo<Proto::ProtocomGroup>>();
+                            auto newSettings = interface.parseSettings(domElement)
+                                                   .settings.value<InterfaceInfo<Proto::ProtocomGroup>>();
+                            oldSettings.merge(newSettings);
+                            settings->ifaceSettings = { QVariant::fromValue(oldSettings) };
+                        }
                     }
 
                     domNode = domNode.nextSibling();
@@ -852,6 +874,29 @@ void XmlParser::traverseNodeCheck(const QDomNode &node, std::vector<CheckItem> &
         traverseNodeCheck(domNode, settings);
         domNode = domNode.nextSibling();
     }
+}
+
+DataTypes::Alarm XmlParser::traverseNodeAlarm(const QDomNode &node)
+{
+    QDomNode domNode = node.firstChild();
+    while (!domNode.isNull())
+    {
+        if (domNode.isElement())
+        {
+            QDomElement domElement = domNode.toElement();
+            if (!domElement.isNull())
+            {
+                if (domElement.tagName() == "alarm")
+                {
+
+                    return parseAlarm(domElement);
+                }
+            }
+        }
+        traverseNodeAlarm(domNode);
+        domNode = domNode.nextSibling();
+    }
+    assert(false);
 }
 
 CheckItem XmlParser::traverseNodeCheck(const QDomNode &node)

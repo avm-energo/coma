@@ -207,14 +207,15 @@ void DbgModule::createUSIO(Modules::BaseBoard typeB, Modules::MezzanineBoard typ
             "confMezz");
     }
 
+    if ((!settings()->ifaceSettings.settings.isValid())
+        && (Board::GetInstance().interfaceType() != Board::InterfaceType::Emulator))
+        return;
+
     const auto &item = m_gsettings.check.items.at(0);
     if (typeB == BaseBoard::MTB_35)
     {
         addDialogToList(new RelayDialog(4), "Реле", "relay1");
     }
-
-    if (!settings()->ifaceSettings.settings.isValid())
-        return;
 
     if (typeB == BaseBoard::MTB_31 || typeB == BaseBoard::MTB_33)
     {

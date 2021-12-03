@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+    <protocom>
+        <group>
+            <start-addr>101</start-addr>
+            <count>2</count>
+            <block>0</block>
+        </group>
+    </protocom>
+</root>

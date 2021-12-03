@@ -101,11 +101,12 @@ QVector<QVector<QVariant>> Journals::createCommon(const QByteArray &array, const
     }
     std::sort(events.begin(), events.end(),
         [](const CommonEvent &lhs, const CommonEvent &rhs) { return lhs.time > rhs.time; });
-    std::transform(events.cbegin(), events.cend(), std::back_inserter(ValueLists), [](const CommonEvent &event) {
-        return QVector<QVariant> { event.counter,
-            TimeFunc::UnixTime64ToInvStringFractional(event.time, TimeFunc::userTimeZone()), event.desc,
-            event.direction };
-    });
+    auto timeZone = TimeFunc::userTimeZone();
+    std::transform(
+        events.cbegin(), events.cend(), std::back_inserter(ValueLists), [timeZone](const CommonEvent &event) {
+            return QVector<QVariant> { event.counter, TimeFunc::UnixTime64ToInvStringFractional(event.time, timeZone),
+                event.desc, event.direction };
+        });
     return ValueLists;
 }
 
@@ -237,13 +238,8 @@ void Journals::saveJour(DataTypes::FilesEnum jtype, QString filename)
         break;
     }
 
-    // EDynamicTableModel *pmdl = qobject_cast<EDynamicTableModel *>(amdl);
     if (!pmdl)
         return;
-    //    while (amdl->canFetchMore(amdl->index(0, 0)))
-    //    {
-    //        amdl->fetchMore(amdl->index(0, 0));
-    //    }
 
     QXlsx::Document doc(filename);
     QXlsx::Worksheet *workSheet = doc.currentWorksheet();

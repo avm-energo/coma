@@ -38,15 +38,27 @@ void Module::createAlarm(AlarmWidget *aw)
     aw->addAlarm(alarmStateAll);
     if (m_settings)
     {
-        if (settings()->alarms.contains((AlarmType::Warning)))
+        if (settings()->alarms.contains(AlarmType::Warning))
         {
-            auto *warnAlarm = new ModuleAlarm(settings()->alarms.value(AlarmType::Warning), settings()->alarmCount());
-            aw->addAlarm(warnAlarm, tr("Предупредительная сигнализация"));
+            auto *alarm = new ModuleAlarm(settings()->alarms.value(AlarmType::Warning), settings()->alarmCount());
+            aw->addAlarm(alarm, tr("Предупредительная сигнализация"));
         }
-        if (settings()->alarms.contains((AlarmType::Critical)))
+        if (settings()->alarms.contains(AlarmType::Critical))
         {
-            auto *critAlarm = new ModuleAlarm(settings()->alarms.value(AlarmType::Critical), settings()->alarmCount());
-            aw->addAlarm(critAlarm, tr("Аварийная сигнализация"));
+            auto *alarm = new ModuleAlarm(settings()->alarms.value(AlarmType::Critical), settings()->alarmCount());
+            aw->addAlarm(alarm, tr("Аварийная сигнализация"));
+        }
+        if (settings()->alarms.contains(AlarmType::Base))
+        {
+            auto *alarm = new ModuleAlarm(
+                settings()->alarms.value(AlarmType::Base), settings()->alarms.value(AlarmType::Base).desc.count());
+            aw->addAlarm(alarm, tr("Базовая сигнализация"));
+        }
+        if (settings()->alarms.contains(AlarmType::Mezz))
+        {
+            auto *alarm = new ModuleAlarm(
+                settings()->alarms.value(AlarmType::Mezz), settings()->alarms.value(AlarmType::Mezz).desc.count());
+            aw->addAlarm(alarm, tr("Мезонинная сигнализация"));
         }
     }
 }
@@ -131,21 +143,56 @@ bool Module::loadSettings(const Modules::StartupInfoBlock &startupInfoBlock, int
 
     QDir dir(m_directory);
     auto xmlFiles = dir.entryList(QDir::Files).filter(".xml");
-    QDomDocument domDoc;
-    QFile file;
+
     auto result = std::find_if(xmlFiles.cbegin(), xmlFiles.cend(), [&module = moduleName](const QString &str) {
         return str.contains(module, Qt::CaseInsensitive) && str.contains("avtuk", Qt::CaseInsensitive);
     });
+    // load settings by entire module
     if (result != std::cend(xmlFiles))
-        file.setFileName(dir.filePath(*result));
+    {
+        return loadMainSettings(dir.filePath(*result));
+    }
+    // load settings for every board of module
+    // especially for usio modules, load directly protocom settings
     else
-        return false;
+        switch (interfaceType)
+        {
+        case Board::InterfaceType::USB:
+        {
+            {
+                QString protocomBase("protocom-%0100");
+                protocomBase = protocomBase.arg(startupInfoBlock.MTypeB, 0, 16);
+                if (!obtainXmlFile(protocomBase))
+                    return false; // no valid protocom if no valid settings for base board
+                else if (!loadMainSettings(dir.filePath(protocomBase + ".xml")))
+                    qWarning() << Error::OpenError << protocomBase;
+            }
+            {
+                QString protocomMezz("protocom-00%1");
+                protocomMezz = protocomMezz.arg(startupInfoBlock.MTypeM, 0, 16);
+                if (!obtainXmlFile(protocomMezz))
+                    qDebug() << Error::OpenError << protocomMezz;
+                else if (!loadMainSettings(dir.filePath(protocomMezz + ".xml")))
+                    qWarning() << Error::OpenError << protocomMezz;
+            }
+            return true;
+        }
+        case Board::InterfaceType::Emulator:
+            return true;
+        }
+    return false;
+}
 
+bool Module::loadMainSettings(const QString &filename)
+{
+    assert(!filename.isEmpty());
+    QFile file(filename);
     if (!file.open(QIODevice::ReadOnly))
     {
         qCritical() << Error::FileOpenError << file.fileName();
         return false;
     }
+    QDomDocument domDoc;
     if (domDoc.setContent(&file))
     {
 
@@ -303,6 +350,9 @@ bool Module::obtainXmlConfig(const QString &filename, QList<DataTypes::RecordPai
     if (result != std::cend(xmlFiles))
         file.setFileName(dir.filePath(*result));
 
+    if (file.fileName().isEmpty())
+        return false;
+
     if (!file.open(QIODevice::ReadOnly))
     {
         qCritical() << Error::FileOpenError << file.fileName();
@@ -326,27 +376,48 @@ bool Module::obtainXmlConfig(const QString &filename, QList<DataTypes::RecordPai
 
 bool Module::loadUsioSettings(const Modules::StartupInfoBlock &startupInfoBlock)
 {
-    QString configGeneral("config-general");
-    if (!obtainXmlFile(configGeneral))
-        return false;
-    if (!obtainXmlConfig(configGeneral, m_settings->configSettings.general))
-        return false;
-    QString configBase("config-%100");
-    configBase = configBase.arg(startupInfoBlock.MTypeB, 0, 16);
-    if (!obtainXmlFile(configBase))
-        qWarning() << Error::OpenError << configBase;
-    else if (!obtainXmlConfig(configBase, m_settings->configSettings.base))
-        qWarning() << Error::OpenError << configBase;
+    {
+        QString configGeneral("config-general");
+        if (!obtainXmlFile(configGeneral))
+            return false;
+        if (!obtainXmlConfig(configGeneral, m_settings->configSettings.general))
+            return false;
+    }
+    {
+        QString configBase("config-%0100");
+        configBase = configBase.arg(startupInfoBlock.MTypeB, 0, 16);
+        if (!obtainXmlFile(configBase))
+            qDebug() << Error::OpenError << configBase;
+        else if (!obtainXmlConfig(configBase, m_settings->configSettings.base))
+            qWarning() << Error::OpenError << configBase;
+    }
     // if avtuk-3131/3535 ignore config for mezz board
     if (startupInfoBlock.MTypeB != startupInfoBlock.MTypeM)
     {
         QString configMezz("config-00%1");
         configMezz = configMezz.arg(startupInfoBlock.MTypeM, 0, 16);
         if (!obtainXmlFile(configMezz))
-            qWarning() << Error::OpenError << configMezz;
+            qDebug() << Error::OpenError << configMezz;
         else if (!obtainXmlConfig(configMezz, m_settings->configSettings.mezz))
             qWarning() << Error::OpenError << configMezz;
     }
+    {
+        QString alarmBase("alarm-%0100");
+        alarmBase = alarmBase.arg(startupInfoBlock.MTypeB, 0, 16);
+        if (!obtainXmlFile(alarmBase))
+            qDebug() << Error::OpenError << alarmBase;
+        else if (!obtainXmlAlarm(alarmBase, m_settings->alarms, Modules::AlarmType::Base))
+            qWarning() << Error::OpenError << alarmBase;
+    }
+    {
+        QString alarmMezz("alarm-00%1");
+        alarmMezz = alarmMezz.arg(startupInfoBlock.MTypeM, 0, 16);
+        if (!obtainXmlFile(alarmMezz))
+            qDebug() << Error::OpenError << alarmMezz;
+        else if (!obtainXmlAlarm(alarmMezz, m_settings->alarms, Modules::AlarmType::Mezz))
+            qWarning() << Error::OpenError << alarmMezz;
+    }
+
     return true;
 }
 
@@ -403,6 +474,9 @@ bool Module::obtainXmlCheck(const QString &filename, std::vector<CheckItem> &che
     if (result != std::cend(xmlFiles))
         file.setFileName(dir.filePath(*result));
 
+    if (file.fileName().isEmpty())
+        return false;
+
     if (!file.open(QIODevice::ReadOnly))
     {
         qDebug() << Error::FileOpenError << file.fileName();
@@ -413,6 +487,40 @@ bool Module::obtainXmlCheck(const QString &filename, std::vector<CheckItem> &che
 
         QDomElement domElement = domDoc.documentElement();
         XmlParser::traverseNodeCheck(domElement, check);
+        file.close();
+        return true;
+    }
+    else
+    {
+        file.close();
+        qInfo() << Error::WrongFileError << file.fileName();
+        return false;
+    }
+}
+
+bool Module::obtainXmlAlarm(const QString &filename, AlarmMap &alarmMap, Modules::AlarmType type) const
+{
+    QDir dir(m_directory);
+    auto xmlFiles = dir.entryList(QDir::Files).filter(".xml");
+    QDomDocument domDoc;
+    QFile file;
+    auto result = std::find_if(xmlFiles.cbegin(), xmlFiles.cend(),
+        [&filename](const QString &str) { return str.contains(filename, Qt::CaseInsensitive); });
+    if (result != std::cend(xmlFiles))
+        file.setFileName(dir.filePath(*result));
+
+    if (file.fileName().isEmpty())
+        return false;
+
+    if (!file.open(QIODevice::ReadOnly))
+    {
+        qCritical() << Error::FileOpenError << file.fileName();
+        return false;
+    }
+    if (domDoc.setContent(&file))
+    {
+        QDomElement domElement = domDoc.documentElement();
+        alarmMap.insert(type, XmlParser::traverseNodeAlarm(domElement));
         file.close();
         return true;
     }
@@ -475,7 +583,7 @@ std::vector<CheckItem> Module::loadCheckSettings(Modules::BaseBoard typeB, Modul
     std::vector<CheckItem> check;
     bool statusBase = true;
     {
-        QString checkBase("check-%100");
+        QString checkBase("check-%0100");
         checkBase = checkBase.arg(typeB, 0, 16);
         if (!obtainXmlFile(checkBase))
         {

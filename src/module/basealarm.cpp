@@ -4,6 +4,8 @@
 #include "../widgets/wd_func.h"
 
 #include <QDebug>
+#include <QMainWindow>
+#include <QScrollArea>
 #include <QVBoxLayout>
 
 BaseAlarm::BaseAlarm(QWidget *parent) : QWidget(parent), m_actualAlarmFlags(0x0000)
@@ -45,9 +47,34 @@ void BaseAlarm::setupUI(const QStringList &events)
         hlyout->addWidget(WDFunc::NewLBL2(this, events.at(j++)), 1);
         vlayout->addLayout(hlyout);
     }
-    lyout->addLayout(vlayout);
 
-    lyout->addWidget(WDFunc::NewPB(this, "", "Ok", static_cast<QWidget *>(this), &QWidget::hide), 0);
+    auto mainWindow = WDFunc::getMainWindow();
+    if (mainWindow)
+    {
+        auto mainHeight = mainWindow->height();
+        const auto maxElements = mainHeight / (2 * circleRadius);
+        if (eventsCount <= maxElements)
+        {
+            lyout->addLayout(vlayout);
+        }
+        else
+        {
+            QWidget *widget = new QWidget(this);
+            widget->setLayout(vlayout);
+            QScrollArea *scrollArea = new QScrollArea(this);
+            scrollArea->setWidget(widget);
+            lyout->addWidget(scrollArea);
+        }
+    }
+    else
+    {
+        QWidget *widget = new QWidget(this);
+        widget->setLayout(vlayout);
+        QScrollArea *scrollArea = new QScrollArea(this);
+        scrollArea->setWidget(widget);
+        lyout->addWidget(scrollArea);
+    }
+    lyout->addWidget(WDFunc::NewPB(this, "", "Ok", static_cast<QWidget *>(this), &QWidget::hide));
     setLayout(lyout);
 }
 

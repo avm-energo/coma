@@ -41,7 +41,7 @@ namespace version
 {
 constexpr auto usio = "3.2-0002";
 constexpr auto avtuk8x = "2.5-0002";
-constexpr auto avtuk8585 = "3.5-0005";
+constexpr auto avtuk8585 = "3.8-0001";
 constexpr auto avtuk8084 = "1.1-0015";
 constexpr auto avma284 = "1.2-0005";
 constexpr auto avtuk8600 = "1.0-0007";
@@ -348,6 +348,7 @@ void TestModule::check8585()
     bsi.Fwver = StdFunc::StrToVer(version::avtuk8585);
     QVERIFY(module.loadSettings(bsi));
     auto settings = module.settings();
+    QCOMPARE(settings->alarms.size(), 2);
     QVERIFY(!settings->ifaceSettings.settings.isValid());
 
     auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
@@ -365,7 +366,14 @@ void TestModule::check8585USB()
     bsi.Fwver = StdFunc::StrToVer(version::avtuk8585);
     QVERIFY(module.loadSettings(bsi, Board::InterfaceType::USB));
     auto settings = module.settings();
+    QCOMPARE(settings->alarms.size(), 2);
     QVERIFY(settings->ifaceSettings.settings.isValid());
+    QVERIFY(settings->ifaceSettings.settings.canConvert<InterfaceInfo<Proto::ProtocomGroup>>());
+    const auto &st = settings->ifaceSettings.settings.value<InterfaceInfo<Proto::ProtocomGroup>>();
+    QCOMPARE(st.dictionary().size(), 4);
+    QCOMPARE(st.groups().size(), 4);
+    QCOMPARE(st.regs().size(), 0);
+    QCOMPARE(st.dictionaryRegs().size(), 0);
 
     auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
     QCOMPARE(checkSettings.size(), 1);
@@ -431,6 +439,7 @@ void TestModule::check8081()
     bsi.Fwver = StdFunc::StrToVer(version::avtuk8x);
     QVERIFY(module.loadSettings(bsi));
     auto settings = module.settings();
+    QCOMPARE(settings->alarms.size(), 0);
     QVERIFY(!settings->ifaceSettings.settings.isValid());
 
     auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
@@ -448,6 +457,7 @@ void TestModule::check8081USB()
     bsi.Fwver = StdFunc::StrToVer(version::avtuk8x);
     QVERIFY(module.loadSettings(bsi, Board::InterfaceType::USB));
     auto settings = module.settings();
+    QCOMPARE(settings->alarms.size(), 0);
     QVERIFY(settings->ifaceSettings.settings.isValid());
 
     auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
@@ -465,6 +475,7 @@ void TestModule::check8082()
     bsi.Fwver = StdFunc::StrToVer(version::avtuk8x);
     QVERIFY(module.loadSettings(bsi));
     auto settings = module.settings();
+    QCOMPARE(settings->alarms.size(), 0);
     QVERIFY(!settings->ifaceSettings.settings.isValid());
 
     auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
@@ -482,6 +493,7 @@ void TestModule::check8082USB()
     bsi.Fwver = StdFunc::StrToVer(version::avtuk8x);
     QVERIFY(module.loadSettings(bsi, Board::InterfaceType::USB));
     auto settings = module.settings();
+    QCOMPARE(settings->alarms.size(), 0);
     QVERIFY(settings->ifaceSettings.settings.isValid());
 
     auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
@@ -499,6 +511,7 @@ void TestModule::check8083()
     bsi.Fwver = StdFunc::StrToVer(version::avtuk8x);
     QVERIFY(module.loadSettings(bsi));
     auto settings = module.settings();
+    QCOMPARE(settings->alarms.size(), 0);
     QVERIFY(!settings->ifaceSettings.settings.isValid());
 
     auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
@@ -516,6 +529,7 @@ void TestModule::check8083USB()
     bsi.Fwver = StdFunc::StrToVer(version::avtuk8x);
     QVERIFY(module.loadSettings(bsi, Board::InterfaceType::USB));
     auto settings = module.settings();
+    QCOMPARE(settings->alarms.size(), 0);
     QVERIFY(settings->ifaceSettings.settings.isValid());
 
     auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
@@ -531,12 +545,13 @@ void TestModule::check2100()
     bsi.MTypeB = 0x21;
     bsi.MTypeM = 0x00;
     bsi.Fwver = StdFunc::StrToVer(version::usio);
-    (module.loadSettings(bsi));
+    QVERIFY(module.loadSettings(bsi, Board::InterfaceType::USB));
     auto settings = module.settings();
+    QCOMPARE(settings->alarms.size(), 1);
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk21);
     QCOMPARE(settings->configSettings.mezz.size(), 0);
-    QVERIFY(!settings->ifaceSettings.settings.isValid());
+    QVERIFY(settings->ifaceSettings.settings.isValid());
 
     auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
     QCOMPARE(checkSettings.size(), 1);
@@ -551,12 +566,13 @@ void TestModule::check2121()
     bsi.MTypeB = 0x21;
     bsi.MTypeM = 0x21;
     bsi.Fwver = StdFunc::StrToVer(version::usio);
-    (module.loadSettings(bsi));
+    QVERIFY(module.loadSettings(bsi, Board::InterfaceType::USB));
     auto settings = module.settings();
+    QCOMPARE(settings->alarms.size(), 2);
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk21);
     QCOMPARE(settings->configSettings.mezz.size(), config::avtukSame);
-    QVERIFY(!settings->ifaceSettings.settings.isValid());
+    QVERIFY(settings->ifaceSettings.settings.isValid());
 
     auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
     QCOMPARE(checkSettings.size(), 2);
@@ -571,12 +587,13 @@ void TestModule::check2122()
     bsi.MTypeB = 0x21;
     bsi.MTypeM = 0x22;
     bsi.Fwver = StdFunc::StrToVer(version::usio);
-    (module.loadSettings(bsi));
+    QVERIFY(module.loadSettings(bsi, Board::InterfaceType::USB));
     auto settings = module.settings();
+    QCOMPARE(settings->alarms.size(), 2);
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk21);
     QCOMPARE(settings->configSettings.mezz.size(), config::avtuk22);
-    QVERIFY(!settings->ifaceSettings.settings.isValid());
+    QVERIFY(settings->ifaceSettings.settings.isValid());
 
     auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
     QCOMPARE(checkSettings.size(), 2);
@@ -591,12 +608,13 @@ void TestModule::check2131()
     bsi.MTypeB = 0x21;
     bsi.MTypeM = 0x31;
     bsi.Fwver = StdFunc::StrToVer(version::usio);
-    (module.loadSettings(bsi));
+    QVERIFY(module.loadSettings(bsi, Board::InterfaceType::USB));
     auto settings = module.settings();
+    QCOMPARE(settings->alarms.size(), 1);
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk21);
     QCOMPARE(settings->configSettings.mezz.size(), config::avtuk31);
-    QVERIFY(!settings->ifaceSettings.settings.isValid());
+    QVERIFY(settings->ifaceSettings.settings.isValid());
 
     auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
     QCOMPARE(checkSettings.size(), 2);
@@ -611,12 +629,13 @@ void TestModule::check2133()
     bsi.MTypeB = 0x21;
     bsi.MTypeM = 0x33;
     bsi.Fwver = StdFunc::StrToVer(version::usio);
-    (module.loadSettings(bsi));
+    QVERIFY(module.loadSettings(bsi, Board::InterfaceType::USB));
     auto settings = module.settings();
+    QCOMPARE(settings->alarms.size(), 1);
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk21);
     QCOMPARE(settings->configSettings.mezz.size(), config::avtuk33);
-    QVERIFY(!settings->ifaceSettings.settings.isValid());
+    QVERIFY(settings->ifaceSettings.settings.isValid());
 
     auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
     QCOMPARE(checkSettings.size(), 2);
@@ -631,12 +650,13 @@ void TestModule::check2134()
     bsi.MTypeB = 0x21;
     bsi.MTypeM = 0x34;
     bsi.Fwver = StdFunc::StrToVer(version::usio);
-    (module.loadSettings(bsi));
+    QVERIFY(module.loadSettings(bsi, Board::InterfaceType::USB));
     auto settings = module.settings();
+    QCOMPARE(settings->alarms.size(), 1);
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk21);
     QCOMPARE(settings->configSettings.mezz.size(), config::avtuk34);
-    QVERIFY(!settings->ifaceSettings.settings.isValid());
+    QVERIFY(settings->ifaceSettings.settings.isValid());
 
     auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
     QCOMPARE(checkSettings.size(), 1);
@@ -651,12 +671,13 @@ void TestModule::check2135()
     bsi.MTypeB = 0x21;
     bsi.MTypeM = 0x35;
     bsi.Fwver = StdFunc::StrToVer(version::usio);
-    (module.loadSettings(bsi));
+    QVERIFY(module.loadSettings(bsi, Board::InterfaceType::USB));
     auto settings = module.settings();
+    QCOMPARE(settings->alarms.size(), 1);
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk21);
     QCOMPARE(settings->configSettings.mezz.size(), config::avtuk35);
-    QVERIFY(!settings->ifaceSettings.settings.isValid());
+    QVERIFY(settings->ifaceSettings.settings.isValid());
 
     auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
     QCOMPARE(checkSettings.size(), 1);
@@ -671,12 +692,13 @@ void TestModule::check2200()
     bsi.MTypeB = 0x22;
     bsi.MTypeM = 0x00;
     bsi.Fwver = StdFunc::StrToVer(version::usio);
-    (module.loadSettings(bsi));
+    QVERIFY(module.loadSettings(bsi, Board::InterfaceType::USB));
     auto settings = module.settings();
+    QCOMPARE(settings->alarms.size(), 1);
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk22);
     QCOMPARE(settings->configSettings.mezz.size(), 0);
-    QVERIFY(!settings->ifaceSettings.settings.isValid());
+    QVERIFY(settings->ifaceSettings.settings.isValid());
 
     auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
     QCOMPARE(checkSettings.size(), 1);
@@ -691,12 +713,13 @@ void TestModule::check2221()
     bsi.MTypeB = 0x22;
     bsi.MTypeM = 0x21;
     bsi.Fwver = StdFunc::StrToVer(version::usio);
-    (module.loadSettings(bsi));
+    QVERIFY(module.loadSettings(bsi, Board::InterfaceType::USB));
     auto settings = module.settings();
+    QCOMPARE(settings->alarms.size(), 2);
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk22);
     QCOMPARE(settings->configSettings.mezz.size(), config::avtuk21);
-    QVERIFY(!settings->ifaceSettings.settings.isValid());
+    QVERIFY(settings->ifaceSettings.settings.isValid());
 
     auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
     QCOMPARE(checkSettings.size(), 2);
@@ -711,12 +734,13 @@ void TestModule::check2222()
     bsi.MTypeB = 0x22;
     bsi.MTypeM = 0x22;
     bsi.Fwver = StdFunc::StrToVer(version::usio);
-    (module.loadSettings(bsi));
+    QVERIFY(module.loadSettings(bsi, Board::InterfaceType::USB));
     auto settings = module.settings();
+    QCOMPARE(settings->alarms.size(), 2);
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk22);
     QCOMPARE(settings->configSettings.mezz.size(), config::avtukSame);
-    QVERIFY(!settings->ifaceSettings.settings.isValid());
+    QVERIFY(settings->ifaceSettings.settings.isValid());
 
     auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
     QCOMPARE(checkSettings.size(), 2);
@@ -731,12 +755,13 @@ void TestModule::check2231()
     bsi.MTypeB = 0x22;
     bsi.MTypeM = 0x31;
     bsi.Fwver = StdFunc::StrToVer(version::usio);
-    (module.loadSettings(bsi));
+    QVERIFY(module.loadSettings(bsi, Board::InterfaceType::USB));
     auto settings = module.settings();
+    QCOMPARE(settings->alarms.size(), 1);
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk22);
     QCOMPARE(settings->configSettings.mezz.size(), config::avtuk31);
-    QVERIFY(!settings->ifaceSettings.settings.isValid());
+    QVERIFY(settings->ifaceSettings.settings.isValid());
 
     auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
     QCOMPARE(checkSettings.size(), 2);
@@ -751,12 +776,13 @@ void TestModule::check2233()
     bsi.MTypeB = 0x22;
     bsi.MTypeM = 0x33;
     bsi.Fwver = StdFunc::StrToVer(version::usio);
-    (module.loadSettings(bsi));
+    QVERIFY(module.loadSettings(bsi, Board::InterfaceType::USB));
     auto settings = module.settings();
+    QCOMPARE(settings->alarms.size(), 1);
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk22);
     QCOMPARE(settings->configSettings.mezz.size(), config::avtuk33);
-    QVERIFY(!settings->ifaceSettings.settings.isValid());
+    QVERIFY(settings->ifaceSettings.settings.isValid());
 
     auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
     QCOMPARE(checkSettings.size(), 2);
@@ -771,12 +797,13 @@ void TestModule::check2234()
     bsi.MTypeB = 0x22;
     bsi.MTypeM = 0x34;
     bsi.Fwver = StdFunc::StrToVer(version::usio);
-    (module.loadSettings(bsi));
+    QVERIFY(module.loadSettings(bsi, Board::InterfaceType::USB));
     auto settings = module.settings();
+    QCOMPARE(settings->alarms.size(), 1);
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk22);
     QCOMPARE(settings->configSettings.mezz.size(), config::avtuk34);
-    QVERIFY(!settings->ifaceSettings.settings.isValid());
+    QVERIFY(settings->ifaceSettings.settings.isValid());
 
     auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
     QCOMPARE(checkSettings.size(), 1);
@@ -791,12 +818,13 @@ void TestModule::check2235()
     bsi.MTypeB = 0x22;
     bsi.MTypeM = 0x35;
     bsi.Fwver = StdFunc::StrToVer(version::usio);
-    (module.loadSettings(bsi));
+    QVERIFY(module.loadSettings(bsi, Board::InterfaceType::USB));
     auto settings = module.settings();
+    QCOMPARE(settings->alarms.size(), 1);
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk22);
     QCOMPARE(settings->configSettings.mezz.size(), config::avtuk35);
-    QVERIFY(!settings->ifaceSettings.settings.isValid());
+    QVERIFY(settings->ifaceSettings.settings.isValid());
 
     auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
     QCOMPARE(checkSettings.size(), 1);
@@ -811,12 +839,13 @@ void TestModule::check3100()
     bsi.MTypeB = 0x31;
     bsi.MTypeM = 0x00;
     bsi.Fwver = StdFunc::StrToVer(version::usio);
-    (module.loadSettings(bsi));
+    QVERIFY(module.loadSettings(bsi, Board::InterfaceType::USB));
     auto settings = module.settings();
+    QCOMPARE(settings->alarms.size(), 0);
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk31);
     QCOMPARE(settings->configSettings.mezz.size(), 0);
-    QVERIFY(!settings->ifaceSettings.settings.isValid());
+    QVERIFY(settings->ifaceSettings.settings.isValid());
 
     auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
     QCOMPARE(checkSettings.size(), 1);
@@ -831,12 +860,13 @@ void TestModule::check3121()
     bsi.MTypeB = 0x31;
     bsi.MTypeM = 0x21;
     bsi.Fwver = StdFunc::StrToVer(version::usio);
-    (module.loadSettings(bsi));
+    QVERIFY(module.loadSettings(bsi, Board::InterfaceType::USB));
     auto settings = module.settings();
+    QCOMPARE(settings->alarms.size(), 1);
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk31);
     QCOMPARE(settings->configSettings.mezz.size(), config::avtuk21);
-    QVERIFY(!settings->ifaceSettings.settings.isValid());
+    QVERIFY(settings->ifaceSettings.settings.isValid());
 
     auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
     QCOMPARE(checkSettings.size(), 2);
@@ -851,12 +881,13 @@ void TestModule::check3122()
     bsi.MTypeB = 0x31;
     bsi.MTypeM = 0x22;
     bsi.Fwver = StdFunc::StrToVer(version::usio);
-    (module.loadSettings(bsi));
+    QVERIFY(module.loadSettings(bsi, Board::InterfaceType::USB));
     auto settings = module.settings();
+    QCOMPARE(settings->alarms.size(), 1);
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk31);
     QCOMPARE(settings->configSettings.mezz.size(), config::avtuk22);
-    QVERIFY(!settings->ifaceSettings.settings.isValid());
+    QVERIFY(settings->ifaceSettings.settings.isValid());
 
     auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
     QCOMPARE(checkSettings.size(), 2);
@@ -871,12 +902,13 @@ void TestModule::check3131()
     bsi.MTypeB = 0x31;
     bsi.MTypeM = 0x31;
     bsi.Fwver = StdFunc::StrToVer(version::usio);
-    (module.loadSettings(bsi));
+    QVERIFY(module.loadSettings(bsi, Board::InterfaceType::USB));
     auto settings = module.settings();
+    QCOMPARE(settings->alarms.size(), 0);
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk31);
     QCOMPARE(settings->configSettings.mezz.size(), config::avtukSame);
-    QVERIFY(!settings->ifaceSettings.settings.isValid());
+    QVERIFY(settings->ifaceSettings.settings.isValid());
 
     auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
     QCOMPARE(checkSettings.size(), 2);
@@ -891,12 +923,13 @@ void TestModule::check3133()
     bsi.MTypeB = 0x31;
     bsi.MTypeM = 0x33;
     bsi.Fwver = StdFunc::StrToVer(version::usio);
-    (module.loadSettings(bsi));
+    QVERIFY(module.loadSettings(bsi, Board::InterfaceType::USB));
     auto settings = module.settings();
+    QCOMPARE(settings->alarms.size(), 0);
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk31);
     QCOMPARE(settings->configSettings.mezz.size(), config::avtuk33);
-    QVERIFY(!settings->ifaceSettings.settings.isValid());
+    QVERIFY(settings->ifaceSettings.settings.isValid());
 
     auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
     QCOMPARE(checkSettings.size(), 2);
@@ -911,12 +944,13 @@ void TestModule::check3134()
     bsi.MTypeB = 0x31;
     bsi.MTypeM = 0x34;
     bsi.Fwver = StdFunc::StrToVer(version::usio);
-    (module.loadSettings(bsi));
+    QVERIFY(module.loadSettings(bsi, Board::InterfaceType::USB));
     auto settings = module.settings();
+    QCOMPARE(settings->alarms.size(), 0);
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk31);
     QCOMPARE(settings->configSettings.mezz.size(), config::avtuk34);
-    QVERIFY(!settings->ifaceSettings.settings.isValid());
+    QVERIFY(settings->ifaceSettings.settings.isValid());
 
     auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
     QCOMPARE(checkSettings.size(), 1);
@@ -930,12 +964,13 @@ void TestModule::check3135()
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x31;
     bsi.MTypeM = 0x35;
-    (module.loadSettings(bsi));
+    QVERIFY(module.loadSettings(bsi, Board::InterfaceType::USB));
     auto settings = module.settings();
+    QCOMPARE(settings->alarms.size(), 0);
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk31);
     QCOMPARE(settings->configSettings.mezz.size(), config::avtuk35);
-    QVERIFY(!settings->ifaceSettings.settings.isValid());
+    QVERIFY(settings->ifaceSettings.settings.isValid());
 
     auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
     QCOMPARE(checkSettings.size(), 1);
@@ -950,12 +985,13 @@ void TestModule::check3300()
     bsi.MTypeB = 0x33;
     bsi.MTypeM = 0x00;
     bsi.Fwver = StdFunc::StrToVer(version::usio);
-    (module.loadSettings(bsi));
+    QVERIFY(module.loadSettings(bsi, Board::InterfaceType::USB));
     auto settings = module.settings();
+    QCOMPARE(settings->alarms.size(), 0);
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk33);
     QCOMPARE(settings->configSettings.mezz.size(), 0);
-    QVERIFY(!settings->ifaceSettings.settings.isValid());
+    QVERIFY(settings->ifaceSettings.settings.isValid());
 
     auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
     QCOMPARE(checkSettings.size(), 1);
@@ -970,12 +1006,13 @@ void TestModule::check3321()
     bsi.MTypeB = 0x33;
     bsi.MTypeM = 0x21;
     bsi.Fwver = StdFunc::StrToVer(version::usio);
-    (module.loadSettings(bsi));
+    QVERIFY(module.loadSettings(bsi, Board::InterfaceType::USB));
     auto settings = module.settings();
+    QCOMPARE(settings->alarms.size(), 1);
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk33);
     QCOMPARE(settings->configSettings.mezz.size(), config::avtuk21);
-    QVERIFY(!settings->ifaceSettings.settings.isValid());
+    QVERIFY(settings->ifaceSettings.settings.isValid());
 
     auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
     QCOMPARE(checkSettings.size(), 2);
@@ -990,12 +1027,13 @@ void TestModule::check3322()
     bsi.MTypeB = 0x33;
     bsi.MTypeM = 0x22;
     bsi.Fwver = StdFunc::StrToVer(version::usio);
-    (module.loadSettings(bsi));
+    QVERIFY(module.loadSettings(bsi, Board::InterfaceType::USB));
     auto settings = module.settings();
+    QCOMPARE(settings->alarms.size(), 1);
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk33);
     QCOMPARE(settings->configSettings.mezz.size(), config::avtuk22);
-    QVERIFY(!settings->ifaceSettings.settings.isValid());
+    QVERIFY(settings->ifaceSettings.settings.isValid());
 
     auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
     QCOMPARE(checkSettings.size(), 2);
@@ -1010,12 +1048,13 @@ void TestModule::check3331()
     bsi.MTypeB = 0x33;
     bsi.MTypeM = 0x31;
     bsi.Fwver = StdFunc::StrToVer(version::usio);
-    (module.loadSettings(bsi));
+    QVERIFY(module.loadSettings(bsi, Board::InterfaceType::USB));
     auto settings = module.settings();
+    QCOMPARE(settings->alarms.size(), 0);
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk33);
     QCOMPARE(settings->configSettings.mezz.size(), config::avtuk31);
-    QVERIFY(!settings->ifaceSettings.settings.isValid());
+    QVERIFY(settings->ifaceSettings.settings.isValid());
 
     auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
     QCOMPARE(checkSettings.size(), 2);
@@ -1030,12 +1069,13 @@ void TestModule::check3333()
     bsi.MTypeB = 0x33;
     bsi.MTypeM = 0x33;
     bsi.Fwver = StdFunc::StrToVer(version::usio);
-    (module.loadSettings(bsi));
+    QVERIFY(module.loadSettings(bsi, Board::InterfaceType::USB));
     auto settings = module.settings();
+    QCOMPARE(settings->alarms.size(), 0);
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk33);
     QCOMPARE(settings->configSettings.mezz.size(), config::avtukSame);
-    QVERIFY(!settings->ifaceSettings.settings.isValid());
+    QVERIFY(settings->ifaceSettings.settings.isValid());
 
     auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
     QCOMPARE(checkSettings.size(), 2);
@@ -1050,12 +1090,13 @@ void TestModule::check3334()
     bsi.MTypeB = 0x33;
     bsi.MTypeM = 0x34;
     bsi.Fwver = StdFunc::StrToVer(version::usio);
-    (module.loadSettings(bsi));
+    QVERIFY(module.loadSettings(bsi, Board::InterfaceType::USB));
     auto settings = module.settings();
+    QCOMPARE(settings->alarms.size(), 0);
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk33);
     QCOMPARE(settings->configSettings.mezz.size(), config::avtuk34);
-    QVERIFY(!settings->ifaceSettings.settings.isValid());
+    QVERIFY(settings->ifaceSettings.settings.isValid());
 
     auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
     QCOMPARE(checkSettings.size(), 1);
@@ -1070,12 +1111,13 @@ void TestModule::check3335()
     bsi.MTypeB = 0x33;
     bsi.MTypeM = 0x35;
     bsi.Fwver = StdFunc::StrToVer(version::usio);
-    (module.loadSettings(bsi));
+    QVERIFY(module.loadSettings(bsi, Board::InterfaceType::USB));
     auto settings = module.settings();
+    QCOMPARE(settings->alarms.size(), 0);
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk33);
     QCOMPARE(settings->configSettings.mezz.size(), config::avtuk35);
-    QVERIFY(!settings->ifaceSettings.settings.isValid());
+    QVERIFY(settings->ifaceSettings.settings.isValid());
 
     auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
     QCOMPARE(checkSettings.size(), 1);
@@ -1092,6 +1134,7 @@ void TestModule::check3400()
     bsi.Fwver = StdFunc::StrToVer(version::usio);
     (module.loadSettings(bsi));
     auto settings = module.settings();
+    QCOMPARE(settings->alarms.size(), 0);
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk34);
     QCOMPARE(settings->configSettings.mezz.size(), 0);
@@ -1110,12 +1153,13 @@ void TestModule::check3421()
     bsi.MTypeB = 0x34;
     bsi.MTypeM = 0x21;
     bsi.Fwver = StdFunc::StrToVer(version::usio);
-    (module.loadSettings(bsi));
+    QVERIFY(module.loadSettings(bsi, Board::InterfaceType::USB));
     auto settings = module.settings();
+    QCOMPARE(settings->alarms.size(), 1);
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk34);
     QCOMPARE(settings->configSettings.mezz.size(), config::avtuk21);
-    QVERIFY(!settings->ifaceSettings.settings.isValid());
+    QVERIFY(settings->ifaceSettings.settings.isValid());
 
     auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
     QCOMPARE(checkSettings.size(), 2);
@@ -1130,12 +1174,13 @@ void TestModule::check3422()
     bsi.MTypeB = 0x34;
     bsi.MTypeM = 0x22;
     bsi.Fwver = StdFunc::StrToVer(version::usio);
-    (module.loadSettings(bsi));
+    QVERIFY(module.loadSettings(bsi, Board::InterfaceType::USB));
     auto settings = module.settings();
+    QCOMPARE(settings->alarms.size(), 1);
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk34);
     QCOMPARE(settings->configSettings.mezz.size(), config::avtuk22);
-    QVERIFY(!settings->ifaceSettings.settings.isValid());
+    QVERIFY(settings->ifaceSettings.settings.isValid());
 
     auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
     QCOMPARE(checkSettings.size(), 2);
@@ -1150,12 +1195,13 @@ void TestModule::check3431()
     bsi.MTypeB = 0x34;
     bsi.MTypeM = 0x31;
     bsi.Fwver = StdFunc::StrToVer(version::usio);
-    (module.loadSettings(bsi));
+    QVERIFY(module.loadSettings(bsi, Board::InterfaceType::USB));
     auto settings = module.settings();
+    QCOMPARE(settings->alarms.size(), 0);
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk34);
     QCOMPARE(settings->configSettings.mezz.size(), config::avtuk31);
-    QVERIFY(!settings->ifaceSettings.settings.isValid());
+    QVERIFY(settings->ifaceSettings.settings.isValid());
 
     auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
     QCOMPARE(checkSettings.size(), 2);
@@ -1170,12 +1216,13 @@ void TestModule::check3433()
     bsi.MTypeB = 0x34;
     bsi.MTypeM = 0x33;
     bsi.Fwver = StdFunc::StrToVer(version::usio);
-    (module.loadSettings(bsi));
+    QVERIFY(module.loadSettings(bsi, Board::InterfaceType::USB));
     auto settings = module.settings();
+    QCOMPARE(settings->alarms.size(), 0);
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk34);
     QCOMPARE(settings->configSettings.mezz.size(), config::avtuk33);
-    QVERIFY(!settings->ifaceSettings.settings.isValid());
+    QVERIFY(settings->ifaceSettings.settings.isValid());
 
     auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
     QCOMPARE(checkSettings.size(), 2);
@@ -1192,6 +1239,7 @@ void TestModule::check3434()
     bsi.Fwver = StdFunc::StrToVer(version::usio);
     (module.loadSettings(bsi));
     auto settings = module.settings();
+    QCOMPARE(settings->alarms.size(), 0);
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk34);
     QCOMPARE(settings->configSettings.mezz.size(), config::avtukSame);
@@ -1212,6 +1260,7 @@ void TestModule::check3435()
     bsi.Fwver = StdFunc::StrToVer(version::usio);
     (module.loadSettings(bsi));
     auto settings = module.settings();
+    QCOMPARE(settings->alarms.size(), 0);
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk34);
     QCOMPARE(settings->configSettings.mezz.size(), config::avtuk35);
@@ -1232,6 +1281,7 @@ void TestModule::check3500()
     bsi.Fwver = StdFunc::StrToVer(version::usio);
     (module.loadSettings(bsi));
     auto settings = module.settings();
+    QCOMPARE(settings->alarms.size(), 0);
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk35);
     QCOMPARE(settings->configSettings.mezz.size(), 0);
@@ -1250,12 +1300,13 @@ void TestModule::check3521()
     bsi.MTypeB = 0x35;
     bsi.MTypeM = 0x21;
     bsi.Fwver = StdFunc::StrToVer(version::usio);
-    (module.loadSettings(bsi));
+    QVERIFY(module.loadSettings(bsi, Board::InterfaceType::USB));
     auto settings = module.settings();
+    QCOMPARE(settings->alarms.size(), 1);
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk35);
     QCOMPARE(settings->configSettings.mezz.size(), config::avtuk21);
-    QVERIFY(!settings->ifaceSettings.settings.isValid());
+    QVERIFY(settings->ifaceSettings.settings.isValid());
 
     auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
     QCOMPARE(checkSettings.size(), 2);
@@ -1270,12 +1321,13 @@ void TestModule::check3522()
     bsi.MTypeB = 0x35;
     bsi.MTypeM = 0x22;
     bsi.Fwver = StdFunc::StrToVer(version::usio);
-    (module.loadSettings(bsi));
+    QVERIFY(module.loadSettings(bsi, Board::InterfaceType::USB));
     auto settings = module.settings();
+    QCOMPARE(settings->alarms.size(), 1);
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk35);
     QCOMPARE(settings->configSettings.mezz.size(), config::avtuk22);
-    QVERIFY(!settings->ifaceSettings.settings.isValid());
+    QVERIFY(settings->ifaceSettings.settings.isValid());
 
     auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
     QCOMPARE(checkSettings.size(), 2);
@@ -1290,12 +1342,13 @@ void TestModule::check3531()
     bsi.MTypeB = 0x35;
     bsi.MTypeM = 0x31;
     bsi.Fwver = StdFunc::StrToVer(version::usio);
-    (module.loadSettings(bsi));
+    QVERIFY(module.loadSettings(bsi, Board::InterfaceType::USB));
     auto settings = module.settings();
+    QCOMPARE(settings->alarms.size(), 0);
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk35);
     QCOMPARE(settings->configSettings.mezz.size(), config::avtuk31);
-    QVERIFY(!settings->ifaceSettings.settings.isValid());
+    QVERIFY(settings->ifaceSettings.settings.isValid());
 
     auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
     QCOMPARE(checkSettings.size(), 2);
@@ -1310,12 +1363,13 @@ void TestModule::check3533()
     bsi.MTypeB = 0x35;
     bsi.MTypeM = 0x33;
     bsi.Fwver = StdFunc::StrToVer(version::usio);
-    QVERIFY(module.loadSettings(bsi));
+    QVERIFY(module.loadSettings(bsi, Board::InterfaceType::USB));
     auto settings = module.settings();
+    QCOMPARE(settings->alarms.size(), 0);
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk35);
     QCOMPARE(settings->configSettings.mezz.size(), config::avtuk33);
-    QVERIFY(!settings->ifaceSettings.settings.isValid());
+    QVERIFY(settings->ifaceSettings.settings.isValid());
 
     auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
     QCOMPARE(checkSettings.size(), 2);
@@ -1332,6 +1386,7 @@ void TestModule::check3534()
     bsi.Fwver = StdFunc::StrToVer(version::usio);
     (module.loadSettings(bsi));
     auto settings = module.settings();
+    QCOMPARE(settings->alarms.size(), 0);
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk35);
     QCOMPARE(settings->configSettings.mezz.size(), config::avtuk34);
@@ -1352,6 +1407,7 @@ void TestModule::check3535()
     bsi.Fwver = StdFunc::StrToVer(version::usio);
     (module.loadSettings(bsi));
     auto settings = module.settings();
+    QCOMPARE(settings->alarms.size(), 0);
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk35);
     QCOMPARE(settings->configSettings.mezz.size(), config::avtukSame);
@@ -1372,6 +1428,7 @@ void TestModule::check3533USB()
     bsi.Fwver = StdFunc::StrToVer(version::usio);
     QVERIFY(module.loadSettings(bsi, Board::InterfaceType::USB));
     auto settings = module.settings();
+    QCOMPARE(settings->alarms.size(), 0);
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk35);
     QCOMPARE(settings->configSettings.mezz.size(), config::avtuk33);

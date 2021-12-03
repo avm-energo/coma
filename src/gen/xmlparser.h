@@ -26,9 +26,12 @@ public:
     static void traverseNodeS2(
         const QDomNode &node, QList<DataTypes::RecordPair> &settings, config::widgetMap *widgets);
     static void traverseNodeCheck(const QDomNode &node, std::vector<CheckItem> &settings);
-    static CheckItem traverseNodeCheck(const QDomNode &node);
+
+    static DataTypes::Alarm traverseNodeAlarm(const QDomNode &node);
 
 private:
+    static CheckItem traverseNodeCheck(const QDomNode &node);
+
     static DataTypes::Alarm parseAlarm(QDomElement domElement);
     static DataTypes::JournalDesc parseJournal(QDomElement domElement);
 
@@ -39,6 +42,7 @@ private:
 
     static quint32 parseInt32(QDomElement domElement);
     static quint64 parseHexInt64(QDomElement domElement);
+    static std::bitset<128> parseHexInt128(QDomElement domElement);
     static QStringList parseStringList(QDomElement domElement);
     template <typename T> static std::vector<T> parseVector(QDomElement domElement);
     template <typename T> static std::set<T> parseSet(QDomElement domElement);
