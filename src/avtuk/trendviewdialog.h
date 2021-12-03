@@ -1,9 +1,9 @@
 #ifndef TRENDVIEWDIALOG_H
 #define TRENDVIEWDIALOG_H
 
-#include "../qcustomplot/qcustomplot.h"
 #include "trendviewmodel.h"
 
+#include <../qcustomplot/qcustomplot.h>
 #include <QDialog>
 
 constexpr int MAXGRAPHSPERPLOT = 14;
