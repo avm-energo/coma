@@ -92,6 +92,18 @@ public:
         }
     }
     void updateSPData(const DataTypes::SinglePointWithTimeStruct &sp) override;
+
+protected:
+    /*!
+       \brief QList для вкладок текущего виджета
+
+    QList для вкладок текущего виджета, по умолчанию обновление отключено
+        для всех вкладок, если хотим обновлять какую-то вкладку сразу, то
+        необходимо включить обновление для нее
+            */
+    QList<BdUIStruct> m_BdUIList;
+    QTimer *Timer;
+    QXlsx::Document *xlsx;
 signals:
 
 public slots:
@@ -111,15 +123,11 @@ private:
 
     bool m_readDataInProgress;
     QElapsedTimer *ElapsedTimeCounter;
+    int WRow;
 
     void ReadAnalogMeasurementsAndWriteToFile();
 
 protected:
-    QTimer *Timer;
-    int WRow;
-    QXlsx::Document *xlsx;
-    QList<BdUIStruct> m_BdUIList;
-
     bool XlsxWriting;
     static constexpr char ValuesFormat[]
         = "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; font: bold; }";
