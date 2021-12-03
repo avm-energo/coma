@@ -1,7 +1,8 @@
 #include "plotdialog.h"
 
-#include "../../qcustomplot/qcustomplot.h"
 #include "../gen/datamanager.h"
+
+#include <../qcustomplot/qcustomplot.h>
 
 constexpr double valueRadius = 0.9;
 constexpr double textRadius = 0.8;

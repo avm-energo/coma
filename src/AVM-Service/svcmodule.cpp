@@ -95,7 +95,6 @@ void SvcModule::createModule(Modules::Model model)
             }
         }
 
-        addDialogToList(cdkiv, "Проверка");
         addDialogToList(new PlotDialog, "Диаграммы");
         addDialogToList(new StartupKIVDialog, "Начальные\nзначения");
 

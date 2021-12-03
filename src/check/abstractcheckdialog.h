@@ -128,11 +128,6 @@ private:
     void ReadAnalogMeasurementsAndWriteToFile();
 
 protected:
-    QTimer *Timer;
-    int WRow;
-    QXlsx::Document *xlsx;
-    QList<BdUIStruct> m_BdUIList;
-
     bool XlsxWriting;
     static constexpr char ValuesFormat[]
         = "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; font: bold; }";
