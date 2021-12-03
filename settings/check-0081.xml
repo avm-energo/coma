@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:noNamespaceSchemaLocation="check-board.xsd">
+    <check header="Текущие данные
+    Первая тройка">
+        <signals>
+            <type>M_ME</type>
+            <uint-set>
+                <item>1</item>
+            </uint-set>
+            <start-addr>1400</start-addr>
+            <count>11</count>
+        </signals>
+        <signals>
+            <type>M_ME</type>
+            <uint-set>
+                <item>1</item>
+            </uint-set>
+            <start-addr>1420</start-addr>
+            <count>8</count>
+        </signals>
+        <signals>
+            <type>M_ME</type>
+            <uint-set>
+                <item>311</item>
+            </uint-set>
+            <start-addr>1428</start-addr>
+            <count>61</count>
+        </signals>
+        <signals>
+            <type>M_ME</type>
+            <uint-set>
+                <item>312</item>
+            </uint-set>
+            <start-addr>1489</start-addr>
+            <count>61</count>
+        </signals>
+        <signals>
+            <type>M_ME</type>
+            <uint-set>
+                <item>313</item>
+            </uint-set>
+            <start-addr>1550</start-addr>
+            <count>61</count>
+        </signals>
+        <record header="Действующие значения и крест-факторы сигналов">
+            <group>1</group>
+            <record desc="I ф.%1, А">
+                <start-addr>1400</start-addr>
+                <count>3</count>
+                <toolTip>Фазное истинное действующее значение тока ф.%1, А</toolTip>
+                <string-array>
+                    <item>A</item>
+                    <item>B</item>
+                    <item>C</item>
+                </string-array>
+            </record>
+            <record desc="I ср., А">
+                <start-addr>1403</start-addr>
+                <toolTip>Среднее истинное фазное действующее значение тока, А</toolTip>
+            </record>
+            <record desc="IhA1 ф.%1, А">
+                <start-addr>1404</start-addr>
+                <count>3</count>
+                <toolTip>Фазное действующее ф.%1 по 1-й гармонике, А</toolTip>
+                <string-array>
+                    <item>A</item>
+                    <item>B</item>
+                    <item>C</item>
+                </string-array>
+            </record>
+            <record desc="IhA1 ср., А">
+                <start-addr>1407</start-addr>
+                <toolTip>Среднее фазное действующее значение тока по 1-й гарм., А</toolTip>
+            </record>
+            <record desc="KrF_I ф.%1">
+                <start-addr>1408</start-addr>
+                <count>3</count>
+                <toolTip>Крест-фактор тока в фазе %1</toolTip>
+                <string-array>
+                    <item>A</item>
+                    <item>B</item>
+                    <item>C</item>
+                </string-array>
+            </record>
+        </record>
+        <record header="Данные по несимметрии и искажениям сигналов">
+            <group>1</group>
+            <record desc="I0, А">
+                <start-addr>1420</start-addr>
+                <toolTip>Ток нулевой последовательности гр.1, А</toolTip>
+            </record>
+            <record desc="I1, А">
+                <start-addr>1421</start-addr>
+                <toolTip>Ток прямой последовательности гр.1, А</toolTip>
+            </record>
+            <record desc="I2, А">
+                <start-addr>1422</start-addr>
+                <toolTip>Ток обратной последовательности гр.1, А</toolTip>
+            </record>
+            <record desc="KuI2, %">
+                <start-addr>1423</start-addr>
+                <toolTip>Коэффициент несимметрии тока по
+                    обратной последовательности гр.1, %</toolTip>
+            </record>
+            <record desc="KuI0, %">
+                <start-addr>1424</start-addr>
+                <toolTip>Коэффициент несимметрии тока по
+                    нулевой последовательности гр.1, %</toolTip>
+            </record>
+            <record desc="THD_I ф.%1">
+                <start-addr>1425</start-addr>
+                <count>3</count>
+                <toolTip>Общий коэффициент гарм. искажений тока ф.%1 гр.1</toolTip>
+                <string-array>
+                    <item>A</item>
+                    <item>B</item>
+                    <item>C</item>
+                </string-array>
+            </record>
+        </record>
+        <record header="Данные по гармоническому составу сигналов фазы A" desc="Гм %1">
+            <group>311</group>
+            <start-addr>1428</start-addr>
+            <count>61</count>
+        </record>
+        <record header="Данные по гармоническому составу сигналов фазы В" desc="Гм %1">
+            <group>312</group>
+            <start-addr>1489</start-addr>
+            <count>61</count>
+        </record>
+        <record header="Данные по гармоническому составу сигналов фазы C" desc="Гм %1">
+            <group>313</group>
+            <start-addr>1550</start-addr>
+            <count>61</count>
+        </record>
+    </check>
+    <check header="Текущие данные
+    Вторая тройка">
+        <signals>
+            <type>M_ME</type>
+            <uint-set>
+                <item>1</item>
+            </uint-set>
+            <start-addr>2100</start-addr>
+            <count>11</count>
+        </signals>
+        <signals>
+            <type>M_ME</type>
+            <uint-set>
+                <item>1</item>
+            </uint-set>
+            <start-addr>2120</start-addr>
+            <count>8</count>
+        </signals>
+        <signals>
+            <type>M_ME</type>
+            <uint-set>
+                <item>311</item>
+            </uint-set>
+            <start-addr>2128</start-addr>
+            <count>61</count>
+        </signals>
+        <signals>
+            <type>M_ME</type>
+            <uint-set>
+                <item>312</item>
+            </uint-set>
+            <start-addr>2189</start-addr>
+            <count>61</count>
+        </signals>
+        <signals>
+            <type>M_ME</type>
+            <uint-set>
+                <item>313</item>
+            </uint-set>
+            <start-addr>2250</start-addr>
+            <count>61</count>
+        </signals>
+        <record header="Действующие значения и крест-факторы сигналов">
+            <group>1</group>
+            <record desc="I ф.%1, А">
+                <start-addr>2100</start-addr>
+                <count>3</count>
+                <toolTip>Фазное истинное действующее значение тока ф.%1, А</toolTip>
+                <string-array>
+                    <item>A</item>
+                    <item>B</item>
+                    <item>C</item>
+                </string-array>
+            </record>
+            <record desc="I ср., А">
+                <start-addr>2103</start-addr>
+                <toolTip>Среднее истинное фазное действующее значение тока</toolTip>
+            </record>
+            <record desc="IhA1 ф.%1, А">
+                <start-addr>2104</start-addr>
+                <count>3</count>
+                <toolTip>Фазное действующее значение тока ф.%1 по 1-й гармонике, А</toolTip>
+                <string-array>
+                    <item>A</item>
+                    <item>B</item>
+                    <item>C</item>
+                </string-array>
+            </record>
+            <record desc="IhA1 ср., А">
+                <start-addr>2107</start-addr>
+                <toolTip>Среднее фазное действующее значение тока группы 2 по 1-й гарм., А</toolTip>
+            </record>
+            <record desc="KrF_I ф.%1">
+                <start-addr>2108</start-addr>
+                <count>3</count>
+                <toolTip>Крест-фактор тока в фазе %1</toolTip>
+                <string-array>
+                    <item>A</item>
+                    <item>B</item>
+                    <item>C</item>
+                </string-array>
+            </record>
+        </record>
+        <record header="Данные по несимметрии и искажениям сигналов">
+            <group>1</group>
+            <record desc="I0, А">
+                <start-addr>2120</start-addr>
+                <toolTip>Ток нулевой последовательности гр.1, А</toolTip>
+            </record>
+            <record desc="I1, А">
+                <start-addr>2121</start-addr>
+                <toolTip>Ток прямой последовательности гр.1, А</toolTip>
+            </record>
+            <record desc="I2, А">
+                <start-addr>2122</start-addr>
+                <toolTip>Ток обратной последовательности гр.1, А</toolTip>
+            </record>
+            <record desc="KuI2, %">
+                <start-addr>2123</start-addr>
+                <toolTip>Коэффициент несимметрии тока по
+                    обратной последовательности гр.1, %</toolTip>
+            </record>
+            <record desc="KuI0, %">
+                <start-addr>2124</start-addr>
+                <toolTip>Коэффициент несимметрии тока по
+                    нулевой последовательности гр.1, %</toolTip>
+            </record>
+            <record desc="THD_I ф.%1">
+                <start-addr>2125</start-addr>
+                <count>3</count>
+                <toolTip>Общий коэффициент гарм. искажений тока ф.%1 гр.1</toolTip>
+                <string-array>
+                    <item>A</item>
+                    <item>B</item>
+                    <item>C</item>
+                </string-array>
+            </record>
+        </record>
+        <record header="Данные по гармоническому составу сигналов фазы A" desc="Гм %1">
+            <group>311</group>
+            <start-addr>2128</start-addr>
+            <count>61</count>
+        </record>
+        <record header="Данные по гармоническому составу сигналов фазы В" desc="Гм %1">
+            <group>312</group>
+            <start-addr>2189</start-addr>
+            <count>61</count>
+        </record>
+        <record header="Данные по гармоническому составу сигналов фазы C" desc="Гм %1">
+            <group>313</group>
+            <start-addr>2250</start-addr>
+            <count>61</count>
+        </record>
+    </check>    
+</root>

@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:noNamespaceSchemaLocation="check-board.xsd">
+    <check header="Текущие данные">
+        <signals>
+            <type>M_ME</type>
+            <uint-set>
+                <item>1</item>
+            </uint-set>
+            <start-addr>101</start-addr>
+            <count>2</count>
+        </signals>
+        <signals>
+            <type>M_ME</type>
+            <uint-set>
+                <item>1</item>
+                <item>10</item>
+            </uint-set>
+            <start-addr>1000</start-addr>
+            <count>16</count>
+        </signals>
+        <signals>
+            <type>M_ME</type>
+            <uint-set>
+                <item>1</item>
+                <item>10</item>
+            </uint-set>
+            <start-addr>1100</start-addr>
+            <count>16</count>
+        </signals>
+        <signals>
+            <type>M_ME</type>
+            <uint-set>
+                <item>1</item>
+                <item>10</item>
+            </uint-set>
+            <start-addr>2400</start-addr>
+            <count>7</count>
+        </signals>
+        <signals>
+            <type>M_ME</type>
+            <uint-set>
+                <item>1</item>
+            </uint-set>
+            <start-addr>2420</start-addr>
+            <count>14</count>
+        </signals>
+        <signals>
+            <type>M_ME</type>
+            <uint-set>
+                <item>1</item>
+                <item>10</item>
+            </uint-set>
+            <start-addr>4501</start-addr>
+            <count>2</count>
+        </signals>
+        <signals>
+            <type>M_SP</type>
+            <uint-set>
+                <item>1</item>
+            </uint-set>
+            <start-addr>3011</start-addr>
+            <count>25</count>
+        </signals>
+        <record header="Общие">
+            <group>1</group>
+            <record desc="Температура микроконтроллера, °С">
+                <start-addr>101</start-addr>
+                <toolTip>Температура микроконтроллера, °С</toolTip>
+            </record>
+            <record desc="Tamb, °С">
+                <start-addr>4501</start-addr>
+                <toolTip>Температура окружающей среды, °С</toolTip>
+            </record>
+            <record desc="Частота, Гц">
+                <start-addr>2400</start-addr>
+                <toolTip>Частота, Гц</toolTip>
+            </record>
+        </record>
+        <record header="Параметры вводов">
+            <group>1</group>
+            <record desc="U ф.%1, кВ">
+                <start-addr>1000</start-addr>
+                <count>3</count>
+                <toolTip>Фазное действующее напряжение по 1-й гармонике ф.%1, кВ</toolTip>
+                <string-array>
+                    <item>A</item>
+                    <item>B</item>
+                    <item>C</item>
+                </string-array>
+            </record>
+            <record desc="I ф.%1, мА">
+                <start-addr>1100</start-addr>
+                <count>3</count>
+                <toolTip>Действующее значение тока утечки ввода по 1-й гармонике ф.%1, мА</toolTip>
+                <string-array>
+                    <item>A</item>
+                    <item>B</item>
+                    <item>C</item>
+                </string-array>
+            </record>
+            <record desc="C1 ф.%1, пФ">
+                <start-addr>2420</start-addr>
+                <count>3</count>
+                <toolTip>Емкость С1 ввода ф.%1, пФ</toolTip>
+                <string-array>
+                    <item>A</item>
+                    <item>B</item>
+                    <item>C</item>
+                </string-array>
+            </record>
+            <record desc="tgδ ф.%1, %">
+                <start-addr>2423</start-addr>
+                <count>3</count>
+                <toolTip>Тангенс дельта ввода ф.%1, %</toolTip>
+                <string-array>
+                    <item>A</item>
+                    <item>B</item>
+                    <item>C</item>
+                </string-array>
+            </record>
+            <record desc="∆C ф.%1, %">
+                <start-addr>2426</start-addr>
+                <count>3</count>
+                <toolTip>Приращение емкости С1 ввода ф.%1, %</toolTip>
+                <string-array>
+                    <item>A</item>
+                    <item>B</item>
+                    <item>C</item>
+                </string-array>
+            </record>
+            <record desc="∆tgδ ф.%1, %">
+                <start-addr>2429</start-addr>
+                <count>3</count>
+                <toolTip>Приращение тангенса дельта ввода ф.%1, %</toolTip>
+                <string-array>
+                    <item>A</item>
+                    <item>B</item>
+                    <item>C</item>
+                </string-array>
+            </record>
+        </record>
+        <record header="Параметры небаланса токов">
+            <group>1</group>
+            <record desc="Iunb, %">
+                <start-addr>2432</start-addr>
+                <toolTip>Действующее значение небаланса токов, %</toolTip>
+            </record>
+            <record desc="Phi_unb, град.">
+                <start-addr>2433</start-addr>
+                <toolTip>Угол небаланса токов относительно тока ф.А, град.</toolTip>
+            </record>
+        </record>
+        <record header="Симметричные составляющие">
+            <group>10</group>
+            <record desc="U0, кВ">
+                <start-addr>1011</start-addr>
+                <toolTip>Напряжение нулевой последовательности, кВ</toolTip>
+            </record>
+            <record desc="U1, кВ">
+                <start-addr>1012</start-addr>
+                <toolTip>Напряжение прямой последовательности, кВ</toolTip>
+            </record>
+            <record desc="U2, кВ">
+                <start-addr>1013</start-addr>
+                <toolTip>Напряжение обратной последовательности, кВ</toolTip>
+            </record>
+            <record desc="I0, мА">
+                <start-addr>1111</start-addr>
+                <toolTip>Ток нулевой последовательности, мА</toolTip>
+            </record>
+            <record desc="I1, мА">
+                <start-addr>1112</start-addr>
+                <toolTip>Ток прямой последовательности, мА</toolTip>
+            </record>
+            <record desc="I2, мА">
+                <start-addr>1113</start-addr>
+                <toolTip>Ток обратной последовательности, мА</toolTip>
+            </record>
+        </record>
+        <record header="Угловые значения">
+            <group>10</group>
+            <record desc="Phy_U ф.%1, град.">
+                <start-addr>2401</start-addr>
+                <count>3</count>
+                <toolTip>Угол по напряжению ф.%1</toolTip>
+                <string-array>
+                    <item>A</item>
+                    <item>B</item>
+                    <item>C</item>
+                </string-array>
+            </record>
+            <record desc="Phy_I ф.%1, град.">
+                <start-addr>2404</start-addr>
+                <count>3</count>
+                <toolTip>Угол по току ф.%1</toolTip>
+                <string-array>
+                    <item>A</item>
+                    <item>B</item>
+                    <item>C</item>
+                </string-array>
+            </record>
+        </record>
+        <record header="Коэффициенты несимметрии">
+            <group>10</group>
+            <record desc="KuI1, %">
+                <start-addr>1114</start-addr>
+                <toolTip>Коэффициент несимметрии тока по нулевой последовательности, %</toolTip>
+            </record>
+            <record desc="KuI2, %">
+                <start-addr>1115</start-addr>
+                <toolTip>Коэффициент несимметрии тока по обратной последовательности, %</toolTip>
+            </record>
+            <record desc="KuU1, %">
+                <start-addr>1014</start-addr>
+                <toolTip>Коэффициент несимметрии напряжения по нулевой последовательности, %</toolTip>
+            </record>
+            <record desc="KuU2, %">
+                <start-addr>1015</start-addr>
+                <toolTip>Коэффициент несимметрии напряжения по обратной последовательности, %</toolTip>
+            </record>
+        </record>
+        <record header="Температура">
+            <group>10</group>
+            <record desc="Ramb, Ом">
+                <start-addr>4502</start-addr>
+                <toolTip>Сопротивление датчика, Ом</toolTip>
+            </record>
+        </record>
+    </check>
+</root>

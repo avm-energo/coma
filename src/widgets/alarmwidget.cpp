@@ -92,7 +92,6 @@ void AlarmWidget::addAlarm(BaseAlarm *alarm, const QString caption)
     Q_ASSERT(!pb->text().isEmpty() && "Couldn't find description");
     m_alarms.append(alarm);
     buttons->addButton(pb, QDialogButtonBox::ActionRole);
-    alarm->reqUpdate();
     ++m_counter;
 }
 

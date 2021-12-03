@@ -3,13 +3,7 @@
 #include "../avtuk/oscdialog.h"
 #include "../avtuk/relaydialog.h"
 #include "../avtuk/switchjournaldialog.h"
-#include "../check/check3533dialog.h"
-#include "../check/checkkdvdialog.h"
-#include "../check/checkkdvharmonicdialog.h"
-#include "../check/checkkdvvibrdialog.h"
-#include "../check/checkkivdialog.h"
-#include "../check/checkktfdialog.h"
-#include "../check/checkktfharmonicdialog.h"
+#include "../check/check3133dialog.h"
 #include "../check/signaldialog84.h"
 #include "../config/configdialog.h"
 #include "../dialogs/hiddendialog.h"
@@ -30,22 +24,33 @@ DbgModule::DbgModule(QObject *parent) : Module(parent)
 void DbgModule::createModule(Modules::Model model)
 {
     using namespace Modules;
-
     switch (model)
     {
     case Model::KIV:
     {
         auto jour = UniquePointer<Journals>(new JournKIV(settings()->journals));
 
-        addDialogToList(new ConfigDialog(&configV, settings()->configSettings.general), "Конфигурирование", "conf1");
+        if (settings())
+        {
+            if (!settings()->configSettings.general.isEmpty())
+            {
+                addDialogToList(
+                    new ConfigDialog(&configV, settings()->configSettings.general), "Конфигурирование", "conf1");
+            }
+            if (settings()->ifaceSettings.settings.isValid())
+            {
+                assert(m_gsettings.check.items.size() == 1);
+                auto &&item = m_gsettings.check.items.front();
 
-        addDialogToList(new TuneKIVDialog(&configV), "Регулировка");
-        addDialogToList(new SignalDialog84(), "Входные сигналы");
+                addDialogToList(new TuneKIVDialog(&configV), "Регулировка");
+                addDialogToList(new SignalDialog84(), "Входные сигналы");
 
-        CheckKIVDialog *cdkiv = new CheckKIVDialog;
-        cdkiv->setHighlights(AbstractCheckDialog::Warning, settings()->highlightWarn);
-        cdkiv->setHighlights(AbstractCheckDialog::Critical, settings()->highlightCrit);
-        addDialogToList(cdkiv, "Проверка");
+                auto check = new CheckDialog(item, m_gsettings.check.categories);
+                check->setHighlights(AbstractCheckDialog::Warning, settings()->highlightWarn);
+                check->setHighlights(AbstractCheckDialog::Critical, settings()->highlightCrit);
+                addDialogToList(check, item.header, "check:" + item.header);
+            }
+        }
 
         addDialogToList(new StartupKIVDialog, "Начальные\nзначения");
         Module::create(std::move(jour));
@@ -56,12 +61,22 @@ void DbgModule::createModule(Modules::Model model)
     {
         auto jour = UniquePointer<Journals>(new JournKTF(settings()->journals, this));
 
-        addDialogToList(new ConfigDialog(&configV, settings()->configSettings.general), "Конфигурирование", "conf1");
-
-        CheckKTFDialog *cdktf = new CheckKTFDialog;
-        addDialogToList(cdktf, "Проверка");
-        addDialogToList(new CheckKTFHarmonicDialog, "Гармоники");
-        addDialogToList(new StartupKTFDialog, "Старение\nизоляции");
+        if (settings())
+        {
+            if (!settings()->configSettings.general.isEmpty())
+            {
+                addDialogToList(
+                    new ConfigDialog(&configV, settings()->configSettings.general), "Конфигурирование", "conf1");
+            }
+            if (settings()->ifaceSettings.settings.isValid())
+            {
+                for (auto &&item : m_gsettings.check.items)
+                {
+                    addDialogToList(
+                        new CheckDialog(item, m_gsettings.check.categories), item.header, "check:" + item.header);
+                }
+            }
+        }
 
         Module::create(std::move(jour));
         break;
@@ -70,13 +85,22 @@ void DbgModule::createModule(Modules::Model model)
     {
         auto jour = UniquePointer<Journals>(new JournKDV(settings()->journals, this));
 
-        addDialogToList(new ConfigDialog(&configV, settings()->configSettings.general), "Конфигурирование", "conf1");
-
-        CheckKDVDialog *cdkdv = new CheckKDVDialog;
-        addDialogToList(cdkdv, "Проверка");
-        addDialogToList(new CheckKDVHarmonicDialog, "Гармоники");
-        addDialogToList(new CheckKDVVibrDialog, "Вибрации");
-        addDialogToList(new StartupKDVDialog, "Старение\nизоляции");
+        if (settings())
+        {
+            if (!settings()->configSettings.general.isEmpty())
+            {
+                addDialogToList(
+                    new ConfigDialog(&configV, settings()->configSettings.general), "Конфигурирование", "conf1");
+            }
+            if (settings()->ifaceSettings.settings.isValid())
+            {
+                for (auto &&item : m_gsettings.check.items)
+                {
+                    addDialogToList(
+                        new CheckDialog(item, m_gsettings.check.categories), item.header, "check:" + item.header);
+                }
+            }
+        }
         Module::create(std::move(jour));
         break;
     }
@@ -91,35 +115,49 @@ void DbgModule::createModule(Modules::Model model)
 void DbgModule::create(Modules::BaseBoard typeB, Modules::MezzanineBoard typeM)
 {
     using namespace Modules;
-    const auto &board = Board::GetInstance();
-    if ((typeB == BaseBoard::MTB_80) && (typeM == MezzanineBoard::MTM_84))
+    if (Board::isUSIO(typeB, typeM))
+        return createUSIO(typeB, typeM);
+
+    if (settings())
     {
-        qDebug("Here is KIV");
-        if (board.interfaceType() != Board::InterfaceType::RS485)
+        if (!settings()->configSettings.general.isEmpty())
         {
             addDialogToList(
                 new ConfigDialog(&configV, settings()->configSettings.general), "Конфигурирование", "conf1");
-            if (board.interfaceType() == Board::InterfaceType::USB)
+        }
+        if (settings()->ifaceSettings.settings.isValid())
+        {
+            for (auto &&item : m_gsettings.check.items)
             {
-                addDialogToList(new Tune84Dialog(&configV), "Регулировка");
+                addDialogToList(
+                    new CheckDialog(item, m_gsettings.check.categories), item.header, "check:" + item.header);
             }
         }
-        CheckKIVDialog *cdkiv = new CheckKIVDialog;
-        addDialogToList(cdkiv, "Проверка");
+    }
+
+    if ((typeB == BaseBoard::MTB_80) && (typeM == MezzanineBoard::MTM_84))
+    {
+        qDebug("Here is KIV");
+
+        addDialogToList(new Tune84Dialog(&configV), "Регулировка");
+
+        assert(m_gsettings.check.items.size() == 1);
+        auto &&item = m_gsettings.check.items.front();
+        auto check = new CheckDialog(item, m_gsettings.check.categories);
+        check->setHighlights(AbstractCheckDialog::Warning, settings()->highlightWarn);
+        check->setHighlights(AbstractCheckDialog::Critical, settings()->highlightCrit);
+        addDialogToList(check, item.header, "check:" + item.header);
 
         addDialogToList(new StartupKIVDialog, "Начальные\nзначения");
     }
     if ((typeB == BaseBoard::MTB_86) && (typeM == MezzanineBoard::MTM_00))
     {
         qDebug("Here is AVTUK-8600");
-        addDialogToList(new ConfigDialog(&configV, settings()->configSettings.general), "Конфигурирование", "conf1");
-        addDialogToList(new CheckKDVVibrDialog, "Вибрации");
     }
-    if ((typeB == BaseBoard::MTB_80) && (typeM == MezzanineBoard::MTM_82))
+    if (typeB == BaseBoard::MTB_80)
     {
-        qDebug("Here is AVTUK-8082");
-        addDialogToList(new ConfigDialog(&configV, settings()->configSettings.general), "Конфигурирование", "conf1");
-        addDialogToList(new OscDialog, "Осциллограммы");
+        if ((typeM == MezzanineBoard::MTM_81) || (typeM == MezzanineBoard::MTM_82) || (typeM == MezzanineBoard::MTM_83))
+            addDialogToList(new OscDialog, "Осциллограммы");
     }
     if ((typeB == BaseBoard::MTB_80) && (typeM == MezzanineBoard::MTM_85))
     {
@@ -130,12 +168,14 @@ void DbgModule::create(Modules::BaseBoard typeB, Modules::MezzanineBoard typeM)
     if ((typeB == BaseBoard::MTB_85) && (typeM == MezzanineBoard::MTM_85))
     {
         qDebug("Here is AVTUK-8585");
-        addDialogToList(new ConfigDialog(&configV, settings()->configSettings.general), "Конфигурирование", "conf1");
         addDialogToList(new SwitchJournalDialog, "Журнал переключений");
         addDialogToList(new OscDialog, "Осциллограммы");
     }
-    if (Board::isUSIO(typeB, typeM))
-        createUSIO(typeB, typeM);
+    if (!settings()->ifaceSettings.settings.isNull())
+    {
+        TimeDialog *tdlg = new TimeDialog;
+        addDialogToList(tdlg, "Время", "time");
+    }
 }
 
 void DbgModule::createUSIO(Modules::BaseBoard typeB, Modules::MezzanineBoard typeM)
@@ -164,16 +204,33 @@ void DbgModule::createUSIO(Modules::BaseBoard typeB, Modules::MezzanineBoard typ
             "\nмезонинная",
             "confMezz");
     }
-    if ((typeB == BaseBoard::MTB_35) && (typeM == MezzanineBoard::MTM_33))
-    {
 
-        Check3533Dialog *check = new Check3533Dialog;
-        addDialogToList(check, "Проверка");
-        // addDialogToList(new OscDialog, "Осциллограммы");
-    }
+    const auto &item = m_gsettings.check.items.at(0);
     if (typeB == BaseBoard::MTB_35)
     {
         addDialogToList(new RelayDialog(4), "Реле", "relay1");
+    }
+
+    if (!settings()->ifaceSettings.settings.isValid())
+        return;
+
+    if (typeB == BaseBoard::MTB_31 || typeB == BaseBoard::MTB_33)
+    {
+        addDialogToList(
+            new CheckBase3133Dialog(item, m_gsettings.check.categories), item.header, "check:" + item.header);
+    }
+    else
+    {
+        addDialogToList(new CheckDialog(item, m_gsettings.check.categories), item.header, "check:" + item.header);
+    }
+    if (m_gsettings.check.items.size() == 2)
+    {
+        const auto &item = m_gsettings.check.items.at(1);
+        if ((typeM == MezzanineBoard::MTM_31) || (typeM == MezzanineBoard::MTM_33))
+            addDialogToList(
+                new CheckMezz3133Dialog(item, m_gsettings.check.categories), item.header, "check:" + item.header);
+        else if ((typeM != MezzanineBoard::MTM_34) && (typeM != MezzanineBoard::MTM_35))
+            addDialogToList(new CheckDialog(item, m_gsettings.check.categories), item.header, "check:" + item.header);
     }
 }
 
@@ -186,7 +243,6 @@ void DbgModule::create(QTimer *updateTimer)
     {
         board.setDeviceType(Board::Controller);
         quint16 typem = board.typeM();
-        Q_UNUSED(typem)
         switch (typeb)
         {
         case BaseBoard::MTB_00:
@@ -223,4 +279,5 @@ void DbgModule::create(QTimer *updateTimer)
         connect(updateTimer, &QTimer::timeout, d, &UDialog::reqUpdate);
         d->uponInterfaceSetting();
     }
+    BaseInterface::iface()->setSettings(settings()->ifaceSettings);
 }

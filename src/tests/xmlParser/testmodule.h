@@ -29,19 +29,6 @@ private slots:
     void cleanupTestCase()
     {
     }
-    void checkA284();
-    void checkA284USB();
-    void checkA284Eth();
-    void checkA284Modbus();
-
-    void check8084();
-    void check8084USB();
-
-    void check8085();
-    void check8085USB();
-
-    void check8082();
-    void check8082USB();
 
     void check2100();
     void check2121();
@@ -92,6 +79,37 @@ private slots:
     void check3535();
 
     void check3533USB();
+
+    void check8081();
+    void check8081USB();
+
+    void check8082();
+    void check8082USB();
+
+    void check8083();
+    void check8083USB();
+
+    void check8084();
+    void check8084USB();
+
+    void check8585();
+    void check8585USB();
+
+    void check8600();
+    void check8600USB();
+
+    void checkA284();
+    void checkA284USB();
+    void checkA284Eth();
+    void checkA284Modbus();
+
+    void checkA287();
+    void checkA287USB();
+    void checkA287Eth();
+
+    void checkA387();
+    void checkA387USB();
+    void checkA387Eth();
 
 signals:
 private:

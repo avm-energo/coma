@@ -17,7 +17,7 @@ find_package(
   COMPONENTS Widgets
   REQUIRED)
 
-add_library(${PROJECT_NAME} STATIC configdialog.cpp configdialog.h delegate.h
+add_library(${PROJECT_NAME} STATIC configdialog.cpp configdialog.h
                                    widgetfactory.cpp widgetfactory.h)
 
 option(DEBUG_WIDGET_FACTORY "Enable debug logging for WidgetFactory" OFF)

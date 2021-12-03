@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:noNamespaceSchemaLocation="check-board.xsd">
+    <check header="Текущие данные
+    мезонинная">
+        <signals>
+            <type>M_ME</type>
+            <uint-set>
+                <item>1</item>
+            </uint-set>
+            <start-addr>4501</start-addr>
+            <count>16</count>
+        </signals>
+        <record header="Текущее значение по каналу, °C" desc="Канал №%1">
+            <group>1</group>
+            <start-addr>4501</start-addr>
+            <count>8</count>
+        </record>
+        <record header="Текущее значение по каналу, Ом" desc="Канал №%1">
+            <group>1</group>
+            <start-addr>4509</start-addr>
+            <count>8</count>
+        </record>
+    </check>
+</root>

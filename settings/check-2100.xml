@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:noNamespaceSchemaLocation="check-board.xsd">
+    <check header="Текущие данные
+    базовая">
+        <signals>
+            <type>M_ME</type>
+            <uint-set>
+                <item>1</item>
+            </uint-set>
+            <start-addr>101</start-addr>
+            <count>2</count>
+        </signals>
+        <signals>
+            <type>M_ME</type>
+            <uint-set>
+                <item>1</item>
+                <item>10</item>
+            </uint-set>
+            <start-addr>1001</start-addr>
+            <count>40</count>
+        </signals>
+        <record header="Общие">
+            <group>1</group>
+            <record desc="Температура микроконтроллера, °С">
+                <start-addr>101</start-addr>
+            </record>
+        </record>
+        <record header="Значение по каналу, инж. единицы" desc="Канал №%1">
+            <group>1</group>
+            <start-addr>1001</start-addr>
+            <count>8</count>
+        </record>
+        <record header="Текущее значение по каналу, мА" desc="Канал №%1">
+            <group>1</group>
+            <start-addr>1009</start-addr>
+            <count>8</count>
+        </record>
+        <record header="Текущее значение по каналу, В" desc="Канал №%1">
+            <group>1</group>
+            <start-addr>1017</start-addr>
+            <count>8</count>
+        </record>
+        <record header="Мин. значение по каналу, инж. единицы" desc="Канал №%1">
+            <group>10</group>
+            <start-addr>1025</start-addr>
+            <count>8</count>
+        </record>
+        <record header="Макс. значение по каналу, инж. единицы" desc="Канал №%1">
+            <group>10</group>
+            <start-addr>1033</start-addr>
+            <count>8</count>
+        </record>
+    </check>
+</root>

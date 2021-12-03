@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:noNamespaceSchemaLocation="check-board.xsd">
+    <check header="Текущие данные
+    базовая">
+        <signals>
+            <type>M_ME</type>
+            <uint-set>
+                <item>1</item>
+            </uint-set>
+            <start-addr>101</start-addr>
+            <count>2</count>
+        </signals>
+        <signals>
+            <type>M_BO</type>
+            <uint-set>
+                <item>1</item>
+            </uint-set>
+            <start-addr>3001</start-addr>
+            <count>1</count>
+        </signals>
+        <record header="Общие">
+            <group>1</group>
+            <record desc="Температура микроконтроллера, °С">
+                <start-addr>101</start-addr>
+            </record>
+        </record>
+        <record header="Состояния входов">
+            <group>1</group>
+            <start-addr>3001</start-addr>
+            <count>11</count>
+        </record>
+    </check>
+</root>

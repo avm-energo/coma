@@ -36,8 +36,11 @@ public:
     void setUpdateTimerPeriod(quint32 period);
     void setHighlightMap(const QMap<int, QList<HighlightWarnAlarmStruct>> &map);
     void setFloatBdQuery(const QList<BdQuery> &list);
+    void addFloatBd(const BdQuery &query);
     void setSpBdQuery(const QList<BdQuery> &list);
+    void addSpBd(const BdQuery &query);
     void setBsBdQuery(const QList<BdQuery> &list);
+    void addBsBd(const BdQuery &query);
     //    void setInterface(BaseInterface *iface);
     //    BaseInterface *iface();
     virtual void uponInterfaceSetting();
@@ -60,18 +63,35 @@ protected:
 
 private:
     bool m_updatesEnabled;
-    // QString m_caption;
     quint32 m_timerCounter;
     quint32 m_timerMax;
     BaseInterface *m_iface;
     int m_regLeast, m_regCount;
 
+    /// float
     QList<BdQuery> m_floatBdQueryList;
+    /// single-point
     QList<BdQuery> m_spBdQueryList;
+    /// bit strings
     QList<BdQuery> m_bsBdQueryList;
     QMap<int, QList<HighlightWarnAlarmStruct>> m_highlightMap;
 
 private slots:
 };
+
+inline void UWidget::addFloatBd(const BdQuery &query)
+{
+    m_floatBdQueryList.push_back(query);
+}
+
+inline void UWidget::addSpBd(const BdQuery &query)
+{
+    m_spBdQueryList.push_back(query);
+}
+
+inline void UWidget::addBsBd(const BdQuery &query)
+{
+    m_bsBdQueryList.push_back(query);
+}
 
 #endif // UWIDGET_H

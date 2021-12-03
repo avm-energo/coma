@@ -9,7 +9,7 @@
 
 #include <QHeaderView>
 #include <QStandardItem>
-widgetMap WidgetFactory::m_widgetMap;
+config::widgetMap WidgetFactory::m_widgetMap;
 categoryMap WidgetFactory::m_categoryMap;
 // forward declarations
 // helpers for create widget
@@ -64,7 +64,7 @@ template <typename T> QWidget *helper(const T &arg, QWidget *parent, BciNumber k
     return widget;
 }
 
-template <> QWidget *helper(const delegate::Item &arg, QWidget *parent, [[maybe_unused]] BciNumber key)
+template <> QWidget *helper(const config::Item &arg, QWidget *parent, [[maybe_unused]] BciNumber key)
 {
     QWidget *widget = nullptr;
     switch (arg.itemType)
@@ -289,7 +289,7 @@ bool WidgetFactory::fillBack(BciNumber key, const QWidget *parent)
 #endif
                        status = fillBackComboBoxGroup(key, parent, arg.count);
                    },
-                   [&](const delegate::Item &arg) {
+                   [&](const config::Item &arg) {
 #ifdef DEBUG_FACTORY
                        qDebug("Item");
 #endif
@@ -327,7 +327,7 @@ QList<QStandardItem *> WidgetFactory::createItem(
                        using namespace delegate;
                    },
 
-                   [&](const delegate::Item &arg) {
+                   [&](const config::Item &arg) {
 #ifdef DEBUG_FACTORY
                        qDebug("Item");
 #endif
@@ -439,47 +439,47 @@ bool WidgetFactory::fillBackModbus(
         auto data = value.toUInt(&status);
         switch (c)
         {
-        case delegate::Item::ModbusColumns::SensorType:
+        case config::Item::ModbusColumns::SensorType:
         {
             master.typedat = Bci::SensorType(status ? data : 0);
             break;
         }
-        case delegate::Item::ModbusColumns::BaudRate:
+        case config::Item::ModbusColumns::BaudRate:
         {
             master.parport.baud = CommandsMBS::BaudRate(status ? data : 0);
             break;
         }
-        case delegate::Item::ModbusColumns::Parity:
+        case config::Item::ModbusColumns::Parity:
         {
             master.parport.parity = CommandsMBS::Parity(status ? data : 0);
             break;
         }
-        case delegate::Item::ModbusColumns::StopBits:
+        case config::Item::ModbusColumns::StopBits:
         {
             master.parport.stop = CommandsMBS::StopBits(status ? data : 0);
             break;
         }
-        case delegate::Item::ModbusColumns::Timeout:
+        case config::Item::ModbusColumns::Timeout:
         {
             master.per = status ? data : 0;
             break;
         }
-        case delegate::Item::ModbusColumns::Address:
+        case config::Item::ModbusColumns::Address:
         {
             master.adr = status ? data : 0;
             break;
         }
-        case delegate::Item::ModbusColumns::FuncCode:
+        case config::Item::ModbusColumns::FuncCode:
         {
             master.type.reg = CommandsMBS::Commands(status ? data : 0);
             break;
         }
-        case delegate::Item::ModbusColumns::DataType:
+        case config::Item::ModbusColumns::DataType:
         {
             master.type.dat = CommandsMBS::TypeId(status ? data : 0);
             break;
         }
-        case delegate::Item::ModbusColumns::Register:
+        case config::Item::ModbusColumns::Register:
         {
             master.reg = (status ? data : 0);
             break;

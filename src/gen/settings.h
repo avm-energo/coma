@@ -1,5 +1,5 @@
 #pragma once
-#include "../config/delegate.h"
+#include "../check/delegate_check.h"
 #include "../gen/modules.h"
 #include "datatypes.h"
 struct InterfaceSettings
@@ -13,11 +13,18 @@ struct ModuleType
     quint16 typeM;
 };
 
-struct ConfigSettings
+struct Configs
 {
     QList<DataTypes::RecordPair> general;
     QList<DataTypes::RecordPair> base;
     QList<DataTypes::RecordPair> mezz;
+};
+
+struct ConfigSettings
+{
+    DataTypes::valueMap *s2filesMap;
+    config::widgetMap *s2widgetMap;
+    categoryMap *s2categories;
 };
 
 struct ModuleSettings
@@ -35,17 +42,29 @@ struct ModuleSettings
     QMap<Modules::AlarmType, DataTypes::Alarm> alarms;
     QMap<Modules::JournalType, DataTypes::JournalDesc> journals;
     InterfaceSettings ifaceSettings;
-    ConfigSettings configSettings;
+    Configs configSettings;
     QMultiMap<quint32, quint32> highlightWarn, highlightCrit;
     const Modules::StartupInfoBlock &startupInfoBlock;
     int interfaceType;
 };
 
+struct CheckItem
+{
+    QString header;
+    check::itemVector itemsVector;
+    check::signalsVector signlsVec;
+};
+
+struct CheckSettings
+{
+    std::vector<CheckItem> items;
+    categoryMap categories;
+};
+
 struct GlobalSettings
 {
-    DataTypes::valueMap *s2filesMap;
-    widgetMap *s2widgetMap;
-    categoryMap *s2categories;
+    ConfigSettings config;
+    CheckSettings check;
 };
 
 namespace settings

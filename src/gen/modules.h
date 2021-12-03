@@ -120,6 +120,14 @@ struct StartupInfoBlock
     quint32 SerialNum;
     quint32 Cfcrc;
     quint32 Hth;
+    bool isOutdated(quint32 configVersion) const
+    {
+        return Fwver < configVersion;
+    }
+    quint16 type() const
+    {
+        return quint16((MTypeB << 8) + MTypeM);
+    }
 };
 
 struct StartupInfoBlockExt

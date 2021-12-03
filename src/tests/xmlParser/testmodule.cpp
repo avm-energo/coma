@@ -13,7 +13,40 @@ constexpr auto avtuk31 = 5;
 constexpr auto avtuk33 = 3;
 constexpr auto avtuk34 = 7;
 constexpr auto avtuk35 = 7;
+constexpr auto avtuk8084 = 39;
+constexpr auto avtuk8600 = 36;
+constexpr auto avma284 = 48;
 constexpr auto avtukSame = 0;
+}
+
+namespace check
+{
+constexpr auto categories = 5;
+constexpr auto checkBase = 1;
+constexpr auto check21 = 5;
+constexpr auto check22 = 2;
+constexpr auto check31 = 1;
+constexpr auto check33 = 1;
+constexpr auto check34 = 0;
+constexpr auto check35 = 0;
+constexpr auto check8081 = 10;
+constexpr auto check8082 = 13;
+constexpr auto check8083 = 12;
+constexpr auto check8084 = 7;
+constexpr auto check8585 = 2;
+constexpr auto check8600 = 6;
+}
+
+namespace version
+{
+constexpr auto usio = "3.2-0002";
+constexpr auto avtuk8x = "2.5-0002";
+constexpr auto avtuk8585 = "3.5-0005";
+constexpr auto avtuk8084 = "1.1-0015";
+constexpr auto avma284 = "1.2-0005";
+constexpr auto avtuk8600 = "1.0-0007";
+constexpr auto avma287 = "0.6-0004";
+constexpr auto avma387 = "0.9-0000";
 }
 
 TestModule::TestModule(QObject *parent) : QObject(parent)
@@ -22,31 +55,37 @@ TestModule::TestModule(QObject *parent) : QObject(parent)
 
 void TestModule::checkA284()
 {
-    QString str("KIV");
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0xA2;
     bsi.MTypeM = 0x84;
-    QVERIFY(module.loadSettings(str, bsi));
+    bsi.Fwver = StdFunc::StrToVer(version::avma284);
+    QVERIFY(module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->alarms.size(), 2);
-    QCOMPARE(settings->configSettings.general.size(), 48);
+    QCOMPARE(settings->configSettings.general.size(), config::avma284);
     QCOMPARE(settings->highlightCrit.size(), 7);
     QCOMPARE(settings->highlightWarn.size(), 30);
     QCOMPARE(settings->journals.size(), 2);
     QVERIFY(!settings->ifaceSettings.settings.isValid());
+
+    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    QCOMPARE(checkSettings.size(), 1);
+    auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
+        [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
+    QCOMPARE(elementCount, check::check8084);
 }
 
 void TestModule::checkA284USB()
 {
-    QString str("KIV");
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0xA2;
     bsi.MTypeM = 0x84;
-    QVERIFY(module.loadSettings(str, bsi, Board::InterfaceType::USB));
+    bsi.Fwver = StdFunc::StrToVer(version::avma284);
+    QVERIFY(module.loadSettings(bsi, Board::InterfaceType::USB));
     auto settings = module.settings();
     QVERIFY(settings->ifaceSettings.settings.isValid());
     QCOMPARE(settings->alarms.size(), 2);
-    QCOMPARE(settings->configSettings.general.size(), 48);
+    QCOMPARE(settings->configSettings.general.size(), config::avma284);
     QCOMPARE(settings->highlightCrit.size(), 7);
     QCOMPARE(settings->highlightWarn.size(), 30);
     QCOMPARE(settings->journals.size(), 2);
@@ -54,35 +93,47 @@ void TestModule::checkA284USB()
     const auto &st = settings->ifaceSettings.settings.value<InterfaceInfo<Proto::ProtocomGroup>>();
     QCOMPARE(st.dictionary().size(), 8);
     QCOMPARE(st.groups().size(), 8);
+
+    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    QCOMPARE(checkSettings.size(), 1);
+    auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
+        [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
+    QCOMPARE(elementCount, check::check8084);
 }
 
 void TestModule::checkA284Eth()
 {
-    QString str("KIV");
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0xA2;
     bsi.MTypeM = 0x84;
-    QVERIFY(module.loadSettings(str, bsi, Board::InterfaceType::Ethernet));
+    bsi.Fwver = StdFunc::StrToVer(version::avma284);
+    QVERIFY(module.loadSettings(bsi, Board::InterfaceType::Ethernet));
     auto settings = module.settings();
     QVERIFY(settings->ifaceSettings.settings.isValid());
     QCOMPARE(settings->alarms.size(), 2);
-    QCOMPARE(settings->configSettings.general.size(), 48);
+    QCOMPARE(settings->configSettings.general.size(), config::avma284);
     QCOMPARE(settings->highlightCrit.size(), 7);
     QCOMPARE(settings->highlightWarn.size(), 30);
     QCOMPARE(settings->journals.size(), 2);
+
+    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    QCOMPARE(checkSettings.size(), 1);
+    auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
+        [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
+    QCOMPARE(elementCount, check::check8084);
 }
 
 void TestModule::checkA284Modbus()
 {
-    QString str("KIV");
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0xA2;
     bsi.MTypeM = 0x84;
-    QVERIFY(module.loadSettings(str, bsi, Board::InterfaceType::RS485));
+    bsi.Fwver = StdFunc::StrToVer(version::avma284);
+    QVERIFY(module.loadSettings(bsi, Board::InterfaceType::RS485));
     auto settings = module.settings();
     QVERIFY(settings->ifaceSettings.settings.isValid());
     QCOMPARE(settings->alarms.size(), 2);
-    QCOMPARE(settings->configSettings.general.size(), 48);
+    QCOMPARE(settings->configSettings.general.size(), config::avma284);
     QCOMPARE(settings->highlightCrit.size(), 7);
     QCOMPARE(settings->highlightWarn.size(), 30);
     QCOMPARE(settings->journals.size(), 2);
@@ -92,31 +143,183 @@ void TestModule::checkA284Modbus()
     QCOMPARE(st.groups().size(), 15);
     QCOMPARE(st.regs().size(), 2);
     QCOMPARE(st.dictionaryRegs().size(), 2);
+
+    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    QCOMPARE(checkSettings.size(), 1);
+    auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
+        [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
+    QCOMPARE(elementCount, check::check8084);
 }
 
-void TestModule::check8084()
+void TestModule::checkA287()
 {
-    QString str("АВ-ТУК-8084");
     Modules::StartupInfoBlock bsi;
-    bsi.MTypeB = 0x80;
-    bsi.MTypeM = 0x84;
-    QVERIFY(module.loadSettings(str, bsi));
+    bsi.MTypeB = 0xa2;
+    bsi.MTypeM = 0x87;
+    bsi.Fwver = StdFunc::StrToVer(version::avma287);
+    QVERIFY(module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->alarms.size(), 2);
-    QCOMPARE(settings->configSettings.general.size(), 39);
+    QCOMPARE(settings->configSettings.general.size(), 53);
     QCOMPARE(settings->highlightCrit.size(), 0);
     QCOMPARE(settings->highlightWarn.size(), 0);
     QCOMPARE(settings->journals.size(), 2);
     QVERIFY(!settings->ifaceSettings.settings.isValid());
+
+    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    QCOMPARE(checkSettings.size(), 3);
+    auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
+        [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
+    QCOMPARE(elementCount, 17);
+}
+
+void TestModule::checkA287USB()
+{
+    Modules::StartupInfoBlock bsi;
+    bsi.MTypeB = 0xa2;
+    bsi.MTypeM = 0x87;
+    bsi.Fwver = StdFunc::StrToVer(version::avma287);
+    QVERIFY(module.loadSettings(bsi, Board::InterfaceType::USB));
+    auto settings = module.settings();
+    QCOMPARE(settings->alarms.size(), 2);
+    QCOMPARE(settings->configSettings.general.size(), 53);
+    QCOMPARE(settings->highlightCrit.size(), 0);
+    QCOMPARE(settings->highlightWarn.size(), 0);
+    QCOMPARE(settings->journals.size(), 2);
+    QVERIFY(settings->ifaceSettings.settings.isValid());
+    QVERIFY(settings->ifaceSettings.settings.canConvert<InterfaceInfo<Proto::ProtocomGroup>>());
+    const auto &st = settings->ifaceSettings.settings.value<InterfaceInfo<Proto::ProtocomGroup>>();
+    QCOMPARE(st.dictionary().size(), 19);
+    QCOMPARE(st.groups().size(), 19);
+
+    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    QCOMPARE(checkSettings.size(), 3);
+    auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
+        [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
+    QCOMPARE(elementCount, 17);
+}
+
+void TestModule::checkA287Eth()
+{
+    Modules::StartupInfoBlock bsi;
+    bsi.MTypeB = 0xA2;
+    bsi.MTypeM = 0x87;
+    bsi.Fwver = StdFunc::StrToVer(version::avma287);
+    QVERIFY(module.loadSettings(bsi, Board::InterfaceType::Ethernet));
+    auto settings = module.settings();
+    QVERIFY(settings->ifaceSettings.settings.isValid());
+    QCOMPARE(settings->alarms.size(), 2);
+    QCOMPARE(settings->configSettings.general.size(), 53);
+    QCOMPARE(settings->highlightCrit.size(), 0);
+    QCOMPARE(settings->highlightWarn.size(), 0);
+    QCOMPARE(settings->journals.size(), 2);
+
+    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    QCOMPARE(checkSettings.size(), 3);
+    auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
+        [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
+    QCOMPARE(elementCount, 17);
+}
+
+void TestModule::checkA387()
+{
+    Modules::StartupInfoBlock bsi;
+    bsi.MTypeB = 0xa3;
+    bsi.MTypeM = 0x87;
+    bsi.Fwver = StdFunc::StrToVer(version::avma387);
+    QVERIFY(module.loadSettings(bsi));
+    auto settings = module.settings();
+    QCOMPARE(settings->alarms.size(), 2);
+    QCOMPARE(settings->configSettings.general.size(), 73);
+    QCOMPARE(settings->highlightCrit.size(), 0);
+    QCOMPARE(settings->highlightWarn.size(), 0);
+    QCOMPARE(settings->journals.size(), 2);
+    QVERIFY(!settings->ifaceSettings.settings.isValid());
+
+    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    QCOMPARE(checkSettings.size(), 4);
+    auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
+        [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
+    QCOMPARE(elementCount, 23);
+}
+
+void TestModule::checkA387USB()
+{
+    Modules::StartupInfoBlock bsi;
+    bsi.MTypeB = 0xa3;
+    bsi.MTypeM = 0x87;
+    bsi.Fwver = StdFunc::StrToVer(version::avma387);
+    QVERIFY(module.loadSettings(bsi, Board::InterfaceType::USB));
+    auto settings = module.settings();
+    QCOMPARE(settings->alarms.size(), 2);
+    QCOMPARE(settings->configSettings.general.size(), 73);
+    QCOMPARE(settings->highlightCrit.size(), 0);
+    QCOMPARE(settings->highlightWarn.size(), 0);
+    QCOMPARE(settings->journals.size(), 2);
+    QVERIFY(settings->ifaceSettings.settings.isValid());
+    QVERIFY(settings->ifaceSettings.settings.canConvert<InterfaceInfo<Proto::ProtocomGroup>>());
+    const auto &st = settings->ifaceSettings.settings.value<InterfaceInfo<Proto::ProtocomGroup>>();
+    QCOMPARE(st.dictionary().size(), 21);
+    QCOMPARE(st.groups().size(), 21);
+
+    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    QCOMPARE(checkSettings.size(), 4);
+    auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
+        [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
+    QCOMPARE(elementCount, 23);
+}
+
+void TestModule::checkA387Eth()
+{
+    Modules::StartupInfoBlock bsi;
+    bsi.MTypeB = 0xA3;
+    bsi.MTypeM = 0x87;
+    bsi.Fwver = StdFunc::StrToVer(version::avma387);
+    QVERIFY(module.loadSettings(bsi, Board::InterfaceType::Ethernet));
+    auto settings = module.settings();
+    QVERIFY(settings->ifaceSettings.settings.isValid());
+    QCOMPARE(settings->alarms.size(), 2);
+    QCOMPARE(settings->configSettings.general.size(), 73);
+    QCOMPARE(settings->highlightCrit.size(), 0);
+    QCOMPARE(settings->highlightWarn.size(), 0);
+    QCOMPARE(settings->journals.size(), 2);
+
+    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    QCOMPARE(checkSettings.size(), 4);
+    auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
+        [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
+    QCOMPARE(elementCount, 23);
+}
+
+void TestModule::check8084()
+{
+    Modules::StartupInfoBlock bsi;
+    bsi.MTypeB = 0x80;
+    bsi.MTypeM = 0x84;
+    bsi.Fwver = StdFunc::StrToVer(version::avtuk8084);
+    QVERIFY(module.loadSettings(bsi));
+    auto settings = module.settings();
+    QCOMPARE(settings->alarms.size(), 2);
+    QCOMPARE(settings->configSettings.general.size(), config::avtuk8084);
+    QCOMPARE(settings->highlightCrit.size(), 0);
+    QCOMPARE(settings->highlightWarn.size(), 0);
+    QCOMPARE(settings->journals.size(), 2);
+    QVERIFY(!settings->ifaceSettings.settings.isValid());
+
+    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    QCOMPARE(checkSettings.size(), 1);
+    auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
+        [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
+    QCOMPARE(elementCount, check::check8084);
 }
 
 void TestModule::check8084USB()
 {
-    QString str("АВ-ТУК-8084");
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x80;
     bsi.MTypeM = 0x84;
-    QVERIFY(module.loadSettings(str, bsi, Board::InterfaceType::USB));
+    bsi.Fwver = StdFunc::StrToVer(version::avtuk8084);
+    QVERIFY(module.loadSettings(bsi, Board::InterfaceType::USB));
     auto settings = module.settings();
     QCOMPARE(settings->alarms.size(), 2);
     QCOMPARE(settings->configSettings.general.size(), 39);
@@ -129,690 +332,1045 @@ void TestModule::check8084USB()
     QCOMPARE(st.groups().size(), 8);
     QCOMPARE(st.regs().size(), 0);
     QCOMPARE(st.dictionaryRegs().size(), 0);
+
+    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    QCOMPARE(checkSettings.size(), 1);
+    auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
+        [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
+    QCOMPARE(elementCount, check::check8084);
 }
 
-void TestModule::check8085()
+void TestModule::check8585()
 {
-    QString str("АВ-ТУК-8585 (УСК)");
     Modules::StartupInfoBlock bsi;
-    bsi.MTypeB = 0x80;
+    bsi.MTypeB = 0x85;
     bsi.MTypeM = 0x85;
-    QVERIFY(module.loadSettings(str, bsi));
+    bsi.Fwver = StdFunc::StrToVer(version::avtuk8585);
+    QVERIFY(module.loadSettings(bsi));
     auto settings = module.settings();
     QVERIFY(!settings->ifaceSettings.settings.isValid());
-    // TODO Add other
+
+    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    QCOMPARE(checkSettings.size(), 1);
+    auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
+        [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
+    QCOMPARE(elementCount, check::check8585);
 }
 
-void TestModule::check8085USB()
+void TestModule::check8585USB()
 {
-    QString str("АВ-ТУК-8585 (УСК)");
+    Modules::StartupInfoBlock bsi;
+    bsi.MTypeB = 0x85;
+    bsi.MTypeM = 0x85;
+    bsi.Fwver = StdFunc::StrToVer(version::avtuk8585);
+    QVERIFY(module.loadSettings(bsi, Board::InterfaceType::USB));
+    auto settings = module.settings();
+    QVERIFY(settings->ifaceSettings.settings.isValid());
+
+    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    QCOMPARE(checkSettings.size(), 1);
+    auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
+        [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
+    QCOMPARE(elementCount, check::check8585);
+}
+
+void TestModule::check8600()
+{
+    Modules::StartupInfoBlock bsi;
+    bsi.MTypeB = 0x86;
+    bsi.MTypeM = 0x00;
+    bsi.Fwver = StdFunc::StrToVer(version::avtuk8600);
+    QVERIFY(module.loadSettings(bsi));
+    auto settings = module.settings();
+    QCOMPARE(settings->alarms.size(), 2);
+    QCOMPARE(settings->configSettings.general.size(), config::avtuk8600);
+    QCOMPARE(settings->highlightCrit.size(), 0);
+    QCOMPARE(settings->highlightWarn.size(), 0);
+    QCOMPARE(settings->journals.size(), 2);
+    QVERIFY(!settings->ifaceSettings.settings.isValid());
+
+    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    QCOMPARE(checkSettings.size(), 1);
+    auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
+        [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
+    QCOMPARE(elementCount, check::check8600);
+}
+
+void TestModule::check8600USB()
+{
+    Modules::StartupInfoBlock bsi;
+    bsi.MTypeB = 0x86;
+    bsi.MTypeM = 0x00;
+    bsi.Fwver = StdFunc::StrToVer(version::avtuk8600);
+    QVERIFY(module.loadSettings(bsi, Board::InterfaceType::USB));
+    auto settings = module.settings();
+    QCOMPARE(settings->alarms.size(), 2);
+    QCOMPARE(settings->configSettings.general.size(), config::avtuk8600);
+    QCOMPARE(settings->highlightCrit.size(), 0);
+    QCOMPARE(settings->highlightWarn.size(), 0);
+    QCOMPARE(settings->journals.size(), 2);
+    QVERIFY(settings->ifaceSettings.settings.canConvert<InterfaceInfo<Proto::ProtocomGroup>>());
+    const auto &st = settings->ifaceSettings.settings.value<InterfaceInfo<Proto::ProtocomGroup>>();
+    QCOMPARE(st.dictionary().size(), 3);
+    QCOMPARE(st.groups().size(), 3);
+    QCOMPARE(st.regs().size(), 0);
+    QCOMPARE(st.dictionaryRegs().size(), 0);
+
+    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    QCOMPARE(checkSettings.size(), 1);
+    auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
+        [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
+    QCOMPARE(elementCount, check::check8600);
+}
+
+void TestModule::check8081()
+{
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x80;
-    bsi.MTypeM = 0x85;
-    QVERIFY(module.loadSettings(str, bsi, Board::InterfaceType::USB));
-    //  auto settings = module.settings();
-    // QVERIFY(settings->ifaceSettings.settings.isValid());
+    bsi.MTypeM = 0x81;
+    bsi.Fwver = StdFunc::StrToVer(version::avtuk8x);
+    QVERIFY(module.loadSettings(bsi));
+    auto settings = module.settings();
+    QVERIFY(!settings->ifaceSettings.settings.isValid());
+
+    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    QCOMPARE(checkSettings.size(), 2);
+    auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
+        [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
+    QCOMPARE(elementCount, check::check8081);
+}
+
+void TestModule::check8081USB()
+{
+    Modules::StartupInfoBlock bsi;
+    bsi.MTypeB = 0x80;
+    bsi.MTypeM = 0x81;
+    bsi.Fwver = StdFunc::StrToVer(version::avtuk8x);
+    QVERIFY(module.loadSettings(bsi, Board::InterfaceType::USB));
+    auto settings = module.settings();
+    QVERIFY(settings->ifaceSettings.settings.isValid());
+
+    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    QCOMPARE(checkSettings.size(), 2);
+    auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
+        [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
+    QCOMPARE(elementCount, check::check8081);
 }
 
 void TestModule::check8082()
 {
-    QString str("АВ-ТУК-8082 (Э1Т1Н)");
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x80;
     bsi.MTypeM = 0x82;
-    QVERIFY(module.loadSettings(str, bsi));
+    bsi.Fwver = StdFunc::StrToVer(version::avtuk8x);
+    QVERIFY(module.loadSettings(bsi));
     auto settings = module.settings();
     QVERIFY(!settings->ifaceSettings.settings.isValid());
+
+    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    QCOMPARE(checkSettings.size(), 3);
+    auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
+        [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
+    QCOMPARE(elementCount, check::check8082);
 }
 
 void TestModule::check8082USB()
 {
-    QString str("АВ-ТУК-8082 (Э1Т1Н)");
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x80;
     bsi.MTypeM = 0x82;
-    QVERIFY(module.loadSettings(str, bsi, Board::InterfaceType::USB));
-    //  auto settings = module.settings();
-    // QVERIFY(settings->ifaceSettings.settings.isValid());
+    bsi.Fwver = StdFunc::StrToVer(version::avtuk8x);
+    QVERIFY(module.loadSettings(bsi, Board::InterfaceType::USB));
+    auto settings = module.settings();
+    QVERIFY(settings->ifaceSettings.settings.isValid());
+
+    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    QCOMPARE(checkSettings.size(), 3);
+    auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
+        [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
+    QCOMPARE(elementCount, check::check8082);
+}
+
+void TestModule::check8083()
+{
+    Modules::StartupInfoBlock bsi;
+    bsi.MTypeB = 0x80;
+    bsi.MTypeM = 0x83;
+    bsi.Fwver = StdFunc::StrToVer(version::avtuk8x);
+    QVERIFY(module.loadSettings(bsi));
+    auto settings = module.settings();
+    QVERIFY(!settings->ifaceSettings.settings.isValid());
+
+    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    QCOMPARE(checkSettings.size(), 2);
+    auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
+        [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
+    QCOMPARE(elementCount, check::check8083);
+}
+
+void TestModule::check8083USB()
+{
+    Modules::StartupInfoBlock bsi;
+    bsi.MTypeB = 0x80;
+    bsi.MTypeM = 0x83;
+    bsi.Fwver = StdFunc::StrToVer(version::avtuk8x);
+    QVERIFY(module.loadSettings(bsi, Board::InterfaceType::USB));
+    auto settings = module.settings();
+    QVERIFY(settings->ifaceSettings.settings.isValid());
+
+    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    QCOMPARE(checkSettings.size(), 2);
+    auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
+        [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
+    QCOMPARE(elementCount, check::check8083);
 }
 
 void TestModule::check2100()
 {
-    QString str("АВ-ТУК-%1%2");
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x21;
     bsi.MTypeM = 0x00;
-    auto moduleName = str.arg(bsi.MTypeB, 0, 16).arg(bsi.MTypeM, 0, 16);
-    (module.loadSettings(moduleName, bsi));
+    bsi.Fwver = StdFunc::StrToVer(version::usio);
+    (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk21);
     QCOMPARE(settings->configSettings.mezz.size(), 0);
     QVERIFY(!settings->ifaceSettings.settings.isValid());
+
+    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    QCOMPARE(checkSettings.size(), 1);
+    auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
+        [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
+    QCOMPARE(elementCount, check::checkBase + check::check21);
 }
 
 void TestModule::check2121()
 {
-    QString str("АВ-ТУК-%1%2");
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x21;
     bsi.MTypeM = 0x21;
-    auto moduleName = str.arg(bsi.MTypeB, 0, 16).arg(bsi.MTypeM, 0, 16);
-    (module.loadSettings(moduleName, bsi));
+    bsi.Fwver = StdFunc::StrToVer(version::usio);
+    (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk21);
     QCOMPARE(settings->configSettings.mezz.size(), config::avtukSame);
     QVERIFY(!settings->ifaceSettings.settings.isValid());
+
+    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    QCOMPARE(checkSettings.size(), 2);
+    auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
+        [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
+    QCOMPARE(elementCount, check::checkBase + check::check21 + check::check21);
 }
 
 void TestModule::check2122()
 {
-    QString str("АВ-ТУК-%1%2");
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x21;
     bsi.MTypeM = 0x22;
-    auto moduleName = str.arg(bsi.MTypeB, 0, 16).arg(bsi.MTypeM, 0, 16);
-    (module.loadSettings(moduleName, bsi));
+    bsi.Fwver = StdFunc::StrToVer(version::usio);
+    (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk21);
     QCOMPARE(settings->configSettings.mezz.size(), config::avtuk22);
     QVERIFY(!settings->ifaceSettings.settings.isValid());
+
+    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    QCOMPARE(checkSettings.size(), 2);
+    auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
+        [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
+    QCOMPARE(elementCount, check::checkBase + check::check21 + check::check22);
 }
 
 void TestModule::check2131()
 {
-    QString str("АВ-ТУК-%1%2");
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x21;
     bsi.MTypeM = 0x31;
-    auto moduleName = str.arg(bsi.MTypeB, 0, 16).arg(bsi.MTypeM, 0, 16);
-    (module.loadSettings(moduleName, bsi));
+    bsi.Fwver = StdFunc::StrToVer(version::usio);
+    (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk21);
     QCOMPARE(settings->configSettings.mezz.size(), config::avtuk31);
     QVERIFY(!settings->ifaceSettings.settings.isValid());
+
+    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    QCOMPARE(checkSettings.size(), 2);
+    auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
+        [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
+    QCOMPARE(elementCount, check::checkBase + check::check21 + check::check31);
 }
 
 void TestModule::check2133()
 {
-    QString str("АВ-ТУК-%1%2");
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x21;
     bsi.MTypeM = 0x33;
-    auto moduleName = str.arg(bsi.MTypeB, 0, 16).arg(bsi.MTypeM, 0, 16);
-    (module.loadSettings(moduleName, bsi));
+    bsi.Fwver = StdFunc::StrToVer(version::usio);
+    (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk21);
     QCOMPARE(settings->configSettings.mezz.size(), config::avtuk33);
     QVERIFY(!settings->ifaceSettings.settings.isValid());
+
+    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    QCOMPARE(checkSettings.size(), 2);
+    auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
+        [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
+    QCOMPARE(elementCount, check::checkBase + check::check21 + check::check33);
 }
 
 void TestModule::check2134()
 {
-    QString str("АВ-ТУК-%1%2");
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x21;
     bsi.MTypeM = 0x34;
-    auto moduleName = str.arg(bsi.MTypeB, 0, 16).arg(bsi.MTypeM, 0, 16);
-    (module.loadSettings(moduleName, bsi));
+    bsi.Fwver = StdFunc::StrToVer(version::usio);
+    (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk21);
     QCOMPARE(settings->configSettings.mezz.size(), config::avtuk34);
     QVERIFY(!settings->ifaceSettings.settings.isValid());
+
+    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    QCOMPARE(checkSettings.size(), 1);
+    auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
+        [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
+    QCOMPARE(elementCount, check::checkBase + check::check21 + check::check34);
 }
 
 void TestModule::check2135()
 {
-    QString str("АВ-ТУК-%1%2");
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x21;
     bsi.MTypeM = 0x35;
-    auto moduleName = str.arg(bsi.MTypeB, 0, 16).arg(bsi.MTypeM, 0, 16);
-    (module.loadSettings(moduleName, bsi));
+    bsi.Fwver = StdFunc::StrToVer(version::usio);
+    (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk21);
     QCOMPARE(settings->configSettings.mezz.size(), config::avtuk35);
     QVERIFY(!settings->ifaceSettings.settings.isValid());
+
+    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    QCOMPARE(checkSettings.size(), 1);
+    auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
+        [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
+    QCOMPARE(elementCount, check::checkBase + check::check21 + check::check35);
 }
 
 void TestModule::check2200()
 {
-    QString str("АВ-ТУК-%1%2");
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x22;
     bsi.MTypeM = 0x00;
-    auto moduleName = str.arg(bsi.MTypeB, 0, 16).arg(bsi.MTypeM, 0, 16);
-    (module.loadSettings(moduleName, bsi));
+    bsi.Fwver = StdFunc::StrToVer(version::usio);
+    (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk22);
     QCOMPARE(settings->configSettings.mezz.size(), 0);
     QVERIFY(!settings->ifaceSettings.settings.isValid());
+
+    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    QCOMPARE(checkSettings.size(), 1);
+    auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
+        [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
+    QCOMPARE(elementCount, check::checkBase + check::check22);
 }
 
 void TestModule::check2221()
 {
-    QString str("АВ-ТУК-%1%2");
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x22;
     bsi.MTypeM = 0x21;
-    auto moduleName = str.arg(bsi.MTypeB, 0, 16).arg(bsi.MTypeM, 0, 16);
-    (module.loadSettings(moduleName, bsi));
+    bsi.Fwver = StdFunc::StrToVer(version::usio);
+    (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk22);
     QCOMPARE(settings->configSettings.mezz.size(), config::avtuk21);
     QVERIFY(!settings->ifaceSettings.settings.isValid());
+
+    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    QCOMPARE(checkSettings.size(), 2);
+    auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
+        [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
+    QCOMPARE(elementCount, check::checkBase + check::check22 + check::check21);
 }
 
 void TestModule::check2222()
 {
-    QString str("АВ-ТУК-%1%2");
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x22;
     bsi.MTypeM = 0x22;
-    auto moduleName = str.arg(bsi.MTypeB, 0, 16).arg(bsi.MTypeM, 0, 16);
-    (module.loadSettings(moduleName, bsi));
+    bsi.Fwver = StdFunc::StrToVer(version::usio);
+    (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk22);
     QCOMPARE(settings->configSettings.mezz.size(), config::avtukSame);
     QVERIFY(!settings->ifaceSettings.settings.isValid());
+
+    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    QCOMPARE(checkSettings.size(), 2);
+    auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
+        [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
+    QCOMPARE(elementCount, check::checkBase + check::check22 + check::check22);
 }
 
 void TestModule::check2231()
 {
-    QString str("АВ-ТУК-%1%2");
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x22;
     bsi.MTypeM = 0x31;
-    auto moduleName = str.arg(bsi.MTypeB, 0, 16).arg(bsi.MTypeM, 0, 16);
-    (module.loadSettings(moduleName, bsi));
+    bsi.Fwver = StdFunc::StrToVer(version::usio);
+    (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk22);
     QCOMPARE(settings->configSettings.mezz.size(), config::avtuk31);
     QVERIFY(!settings->ifaceSettings.settings.isValid());
+
+    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    QCOMPARE(checkSettings.size(), 2);
+    auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
+        [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
+    QCOMPARE(elementCount, check::checkBase + check::check22 + check::check31);
 }
 
 void TestModule::check2233()
 {
-    QString str("АВ-ТУК-%1%2");
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x22;
     bsi.MTypeM = 0x33;
-    auto moduleName = str.arg(bsi.MTypeB, 0, 16).arg(bsi.MTypeM, 0, 16);
-    (module.loadSettings(moduleName, bsi));
+    bsi.Fwver = StdFunc::StrToVer(version::usio);
+    (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk22);
     QCOMPARE(settings->configSettings.mezz.size(), config::avtuk33);
     QVERIFY(!settings->ifaceSettings.settings.isValid());
+
+    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    QCOMPARE(checkSettings.size(), 2);
+    auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
+        [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
+    QCOMPARE(elementCount, check::checkBase + check::check22 + check::check33);
 }
 
 void TestModule::check2234()
 {
-    QString str("АВ-ТУК-%1%2");
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x22;
     bsi.MTypeM = 0x34;
-    auto moduleName = str.arg(bsi.MTypeB, 0, 16).arg(bsi.MTypeM, 0, 16);
-    (module.loadSettings(moduleName, bsi));
+    bsi.Fwver = StdFunc::StrToVer(version::usio);
+    (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk22);
     QCOMPARE(settings->configSettings.mezz.size(), config::avtuk34);
     QVERIFY(!settings->ifaceSettings.settings.isValid());
+
+    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    QCOMPARE(checkSettings.size(), 1);
+    auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
+        [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
+    QCOMPARE(elementCount, check::checkBase + check::check22 + check::check34);
 }
 
 void TestModule::check2235()
 {
-    QString str("АВ-ТУК-%1%2");
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x22;
     bsi.MTypeM = 0x35;
-    auto moduleName = str.arg(bsi.MTypeB, 0, 16).arg(bsi.MTypeM, 0, 16);
-    (module.loadSettings(moduleName, bsi));
+    bsi.Fwver = StdFunc::StrToVer(version::usio);
+    (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk22);
     QCOMPARE(settings->configSettings.mezz.size(), config::avtuk35);
     QVERIFY(!settings->ifaceSettings.settings.isValid());
+
+    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    QCOMPARE(checkSettings.size(), 1);
+    auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
+        [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
+    QCOMPARE(elementCount, check::checkBase + check::check22 + check::check35);
 }
 
 void TestModule::check3100()
 {
-    QString str("АВ-ТУК-%1%2");
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x31;
     bsi.MTypeM = 0x00;
-    auto moduleName = str.arg(bsi.MTypeB, 0, 16).arg(bsi.MTypeM, 0, 16);
-    (module.loadSettings(moduleName, bsi));
+    bsi.Fwver = StdFunc::StrToVer(version::usio);
+    (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk31);
     QCOMPARE(settings->configSettings.mezz.size(), 0);
     QVERIFY(!settings->ifaceSettings.settings.isValid());
+
+    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    QCOMPARE(checkSettings.size(), 1);
+    auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
+        [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
+    QCOMPARE(elementCount, check::checkBase + check::check31);
 }
 
 void TestModule::check3121()
 {
-    QString str("АВ-ТУК-%1%2");
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x31;
     bsi.MTypeM = 0x21;
-    auto moduleName = str.arg(bsi.MTypeB, 0, 16).arg(bsi.MTypeM, 0, 16);
-    (module.loadSettings(moduleName, bsi));
+    bsi.Fwver = StdFunc::StrToVer(version::usio);
+    (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk31);
     QCOMPARE(settings->configSettings.mezz.size(), config::avtuk21);
     QVERIFY(!settings->ifaceSettings.settings.isValid());
+
+    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    QCOMPARE(checkSettings.size(), 2);
+    auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
+        [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
+    QCOMPARE(elementCount, check::checkBase + check::check31 + check::check21);
 }
 
 void TestModule::check3122()
 {
-    QString str("АВ-ТУК-%1%2");
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x31;
     bsi.MTypeM = 0x22;
-    auto moduleName = str.arg(bsi.MTypeB, 0, 16).arg(bsi.MTypeM, 0, 16);
-    (module.loadSettings(moduleName, bsi));
+    bsi.Fwver = StdFunc::StrToVer(version::usio);
+    (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk31);
     QCOMPARE(settings->configSettings.mezz.size(), config::avtuk22);
     QVERIFY(!settings->ifaceSettings.settings.isValid());
+
+    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    QCOMPARE(checkSettings.size(), 2);
+    auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
+        [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
+    QCOMPARE(elementCount, check::checkBase + check::check31 + check::check22);
 }
 
 void TestModule::check3131()
 {
-    QString str("АВ-ТУК-%1%2");
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x31;
     bsi.MTypeM = 0x31;
-    auto moduleName = str.arg(bsi.MTypeB, 0, 16).arg(bsi.MTypeM, 0, 16);
-    (module.loadSettings(moduleName, bsi));
+    bsi.Fwver = StdFunc::StrToVer(version::usio);
+    (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk31);
     QCOMPARE(settings->configSettings.mezz.size(), config::avtukSame);
     QVERIFY(!settings->ifaceSettings.settings.isValid());
+
+    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    QCOMPARE(checkSettings.size(), 2);
+    auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
+        [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
+    QCOMPARE(elementCount, 3);
 }
 
 void TestModule::check3133()
 {
-    QString str("АВ-ТУК-%1%2");
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x31;
     bsi.MTypeM = 0x33;
-    auto moduleName = str.arg(bsi.MTypeB, 0, 16).arg(bsi.MTypeM, 0, 16);
-    (module.loadSettings(moduleName, bsi));
+    bsi.Fwver = StdFunc::StrToVer(version::usio);
+    (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk31);
     QCOMPARE(settings->configSettings.mezz.size(), config::avtuk33);
     QVERIFY(!settings->ifaceSettings.settings.isValid());
+
+    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    QCOMPARE(checkSettings.size(), 2);
+    auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
+        [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
+    QCOMPARE(elementCount, check::checkBase + check::check31 + check::check33);
 }
 
 void TestModule::check3134()
 {
-    QString str("АВ-ТУК-%1%2");
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x31;
     bsi.MTypeM = 0x34;
-    auto moduleName = str.arg(bsi.MTypeB, 0, 16).arg(bsi.MTypeM, 0, 16);
-    (module.loadSettings(moduleName, bsi));
+    bsi.Fwver = StdFunc::StrToVer(version::usio);
+    (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk31);
     QCOMPARE(settings->configSettings.mezz.size(), config::avtuk34);
     QVERIFY(!settings->ifaceSettings.settings.isValid());
+
+    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    QCOMPARE(checkSettings.size(), 1);
+    auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
+        [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
+    QCOMPARE(elementCount, check::checkBase + check::check31 + check::check34);
 }
 
 void TestModule::check3135()
 {
-    QString str("АВ-ТУК-%1%2");
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x31;
     bsi.MTypeM = 0x35;
-    auto moduleName = str.arg(bsi.MTypeB, 0, 16).arg(bsi.MTypeM, 0, 16);
-    (module.loadSettings(moduleName, bsi));
+    (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk31);
     QCOMPARE(settings->configSettings.mezz.size(), config::avtuk35);
     QVERIFY(!settings->ifaceSettings.settings.isValid());
+
+    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    QCOMPARE(checkSettings.size(), 1);
+    auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
+        [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
+    QCOMPARE(elementCount, check::checkBase + check::check31 + check::check35);
 }
 
 void TestModule::check3300()
 {
-    QString str("АВ-ТУК-%1%2");
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x33;
     bsi.MTypeM = 0x00;
-    auto moduleName = str.arg(bsi.MTypeB, 0, 16).arg(bsi.MTypeM, 0, 16);
-    (module.loadSettings(moduleName, bsi));
+    bsi.Fwver = StdFunc::StrToVer(version::usio);
+    (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk33);
     QCOMPARE(settings->configSettings.mezz.size(), 0);
     QVERIFY(!settings->ifaceSettings.settings.isValid());
+
+    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    QCOMPARE(checkSettings.size(), 1);
+    auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
+        [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
+    QCOMPARE(elementCount, check::checkBase + check::check33);
 }
 
 void TestModule::check3321()
 {
-    QString str("АВ-ТУК-%1%2");
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x33;
     bsi.MTypeM = 0x21;
-    auto moduleName = str.arg(bsi.MTypeB, 0, 16).arg(bsi.MTypeM, 0, 16);
-    (module.loadSettings(moduleName, bsi));
+    bsi.Fwver = StdFunc::StrToVer(version::usio);
+    (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk33);
     QCOMPARE(settings->configSettings.mezz.size(), config::avtuk21);
     QVERIFY(!settings->ifaceSettings.settings.isValid());
+
+    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    QCOMPARE(checkSettings.size(), 2);
+    auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
+        [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
+    QCOMPARE(elementCount, 7);
 }
 
 void TestModule::check3322()
 {
-    QString str("АВ-ТУК-%1%2");
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x33;
     bsi.MTypeM = 0x22;
-    auto moduleName = str.arg(bsi.MTypeB, 0, 16).arg(bsi.MTypeM, 0, 16);
-    (module.loadSettings(moduleName, bsi));
+    bsi.Fwver = StdFunc::StrToVer(version::usio);
+    (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk33);
     QCOMPARE(settings->configSettings.mezz.size(), config::avtuk22);
     QVERIFY(!settings->ifaceSettings.settings.isValid());
+
+    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    QCOMPARE(checkSettings.size(), 2);
+    auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
+        [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
+    QCOMPARE(elementCount, check::checkBase + check::check33 + check::check22);
 }
 
 void TestModule::check3331()
 {
-    QString str("АВ-ТУК-%1%2");
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x33;
     bsi.MTypeM = 0x31;
-    auto moduleName = str.arg(bsi.MTypeB, 0, 16).arg(bsi.MTypeM, 0, 16);
-    (module.loadSettings(moduleName, bsi));
+    bsi.Fwver = StdFunc::StrToVer(version::usio);
+    (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk33);
     QCOMPARE(settings->configSettings.mezz.size(), config::avtuk31);
     QVERIFY(!settings->ifaceSettings.settings.isValid());
+
+    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    QCOMPARE(checkSettings.size(), 2);
+    auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
+        [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
+    QCOMPARE(elementCount, check::checkBase + check::check33 + check::check31);
 }
 
 void TestModule::check3333()
 {
-    QString str("АВ-ТУК-%1%2");
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x33;
     bsi.MTypeM = 0x33;
-    auto moduleName = str.arg(bsi.MTypeB, 0, 16).arg(bsi.MTypeM, 0, 16);
-    (module.loadSettings(moduleName, bsi));
+    bsi.Fwver = StdFunc::StrToVer(version::usio);
+    (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk33);
     QCOMPARE(settings->configSettings.mezz.size(), config::avtukSame);
     QVERIFY(!settings->ifaceSettings.settings.isValid());
+
+    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    QCOMPARE(checkSettings.size(), 2);
+    auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
+        [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
+    QCOMPARE(elementCount, check::checkBase + check::check33 + check::check33);
 }
 
 void TestModule::check3334()
 {
-    QString str("АВ-ТУК-%1%2");
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x33;
     bsi.MTypeM = 0x34;
-    auto moduleName = str.arg(bsi.MTypeB, 0, 16).arg(bsi.MTypeM, 0, 16);
-    (module.loadSettings(moduleName, bsi));
+    bsi.Fwver = StdFunc::StrToVer(version::usio);
+    (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk33);
     QCOMPARE(settings->configSettings.mezz.size(), config::avtuk34);
     QVERIFY(!settings->ifaceSettings.settings.isValid());
+
+    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    QCOMPARE(checkSettings.size(), 1);
+    auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
+        [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
+    QCOMPARE(elementCount, check::checkBase + check::check33 + check::check34);
 }
 
 void TestModule::check3335()
 {
-    QString str("АВ-ТУК-%1%2");
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x33;
     bsi.MTypeM = 0x35;
-    auto moduleName = str.arg(bsi.MTypeB, 0, 16).arg(bsi.MTypeM, 0, 16);
-    (module.loadSettings(moduleName, bsi));
+    bsi.Fwver = StdFunc::StrToVer(version::usio);
+    (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk33);
     QCOMPARE(settings->configSettings.mezz.size(), config::avtuk35);
     QVERIFY(!settings->ifaceSettings.settings.isValid());
+
+    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    QCOMPARE(checkSettings.size(), 1);
+    auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
+        [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
+    QCOMPARE(elementCount, check::checkBase + check::check33 + check::check35);
 }
 
 void TestModule::check3400()
 {
-    QString str("АВ-ТУК-%1%2");
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x34;
     bsi.MTypeM = 0x00;
-    auto moduleName = str.arg(bsi.MTypeB, 0, 16).arg(bsi.MTypeM, 0, 16);
-    (module.loadSettings(moduleName, bsi));
+    bsi.Fwver = StdFunc::StrToVer(version::usio);
+    (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk34);
     QCOMPARE(settings->configSettings.mezz.size(), 0);
     QVERIFY(!settings->ifaceSettings.settings.isValid());
+
+    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    QCOMPARE(checkSettings.size(), 1);
+    auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
+        [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
+    QCOMPARE(elementCount, check::checkBase + check::check34);
 }
 
 void TestModule::check3421()
 {
-    QString str("АВ-ТУК-%1%2");
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x34;
     bsi.MTypeM = 0x21;
-    auto moduleName = str.arg(bsi.MTypeB, 0, 16).arg(bsi.MTypeM, 0, 16);
-    (module.loadSettings(moduleName, bsi));
+    bsi.Fwver = StdFunc::StrToVer(version::usio);
+    (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk34);
     QCOMPARE(settings->configSettings.mezz.size(), config::avtuk21);
     QVERIFY(!settings->ifaceSettings.settings.isValid());
+
+    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    QCOMPARE(checkSettings.size(), 2);
+    auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
+        [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
+    QCOMPARE(elementCount, check::checkBase + check::check34 + check::check21);
 }
 
 void TestModule::check3422()
 {
-    QString str("АВ-ТУК-%1%2");
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x34;
     bsi.MTypeM = 0x22;
-    auto moduleName = str.arg(bsi.MTypeB, 0, 16).arg(bsi.MTypeM, 0, 16);
-    (module.loadSettings(moduleName, bsi));
+    bsi.Fwver = StdFunc::StrToVer(version::usio);
+    (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk34);
     QCOMPARE(settings->configSettings.mezz.size(), config::avtuk22);
     QVERIFY(!settings->ifaceSettings.settings.isValid());
+
+    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    QCOMPARE(checkSettings.size(), 2);
+    auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
+        [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
+    QCOMPARE(elementCount, check::checkBase + check::check34 + check::check22);
 }
 
 void TestModule::check3431()
 {
-    QString str("АВ-ТУК-%1%2");
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x34;
     bsi.MTypeM = 0x31;
-    auto moduleName = str.arg(bsi.MTypeB, 0, 16).arg(bsi.MTypeM, 0, 16);
-    (module.loadSettings(moduleName, bsi));
+    bsi.Fwver = StdFunc::StrToVer(version::usio);
+    (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk34);
     QCOMPARE(settings->configSettings.mezz.size(), config::avtuk31);
     QVERIFY(!settings->ifaceSettings.settings.isValid());
+
+    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    QCOMPARE(checkSettings.size(), 2);
+    auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
+        [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
+    QCOMPARE(elementCount, check::checkBase + check::check34 + check::check31);
 }
 
 void TestModule::check3433()
 {
-    QString str("АВ-ТУК-%1%2");
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x34;
     bsi.MTypeM = 0x33;
-    auto moduleName = str.arg(bsi.MTypeB, 0, 16).arg(bsi.MTypeM, 0, 16);
-    (module.loadSettings(moduleName, bsi));
+    bsi.Fwver = StdFunc::StrToVer(version::usio);
+    (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk34);
     QCOMPARE(settings->configSettings.mezz.size(), config::avtuk33);
     QVERIFY(!settings->ifaceSettings.settings.isValid());
+
+    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    QCOMPARE(checkSettings.size(), 2);
+    auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
+        [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
+    QCOMPARE(elementCount, check::checkBase + check::check34 + check::check33);
 }
 
 void TestModule::check3434()
 {
-    QString str("АВ-ТУК-%1%2");
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x34;
     bsi.MTypeM = 0x34;
-    auto moduleName = str.arg(bsi.MTypeB, 0, 16).arg(bsi.MTypeM, 0, 16);
-    (module.loadSettings(moduleName, bsi));
+    bsi.Fwver = StdFunc::StrToVer(version::usio);
+    (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk34);
     QCOMPARE(settings->configSettings.mezz.size(), config::avtukSame);
     QVERIFY(!settings->ifaceSettings.settings.isValid());
+
+    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    QCOMPARE(checkSettings.size(), 1);
+    auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
+        [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
+    QCOMPARE(elementCount, check::checkBase + check::check34 + check::check34);
 }
 
 void TestModule::check3435()
 {
-    QString str("АВ-ТУК-%1%2");
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x34;
     bsi.MTypeM = 0x35;
-    auto moduleName = str.arg(bsi.MTypeB, 0, 16).arg(bsi.MTypeM, 0, 16);
-    (module.loadSettings(moduleName, bsi));
+    bsi.Fwver = StdFunc::StrToVer(version::usio);
+    (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk34);
     QCOMPARE(settings->configSettings.mezz.size(), config::avtuk35);
     QVERIFY(!settings->ifaceSettings.settings.isValid());
+
+    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    QCOMPARE(checkSettings.size(), 1);
+    auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
+        [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
+    QCOMPARE(elementCount, check::checkBase + check::check34 + check::check35);
 }
 
 void TestModule::check3500()
 {
-    QString str("АВ-ТУК-%1%2");
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x35;
     bsi.MTypeM = 0x00;
-    auto moduleName = str.arg(bsi.MTypeB, 0, 16).arg(bsi.MTypeM, 0, 16);
-    (module.loadSettings(moduleName, bsi));
+    bsi.Fwver = StdFunc::StrToVer(version::usio);
+    (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk35);
     QCOMPARE(settings->configSettings.mezz.size(), 0);
     QVERIFY(!settings->ifaceSettings.settings.isValid());
+
+    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    QCOMPARE(checkSettings.size(), 1);
+    auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
+        [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
+    QCOMPARE(elementCount, check::checkBase + check::check35);
 }
 
 void TestModule::check3521()
 {
-    QString str("АВ-ТУК-%1%2");
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x35;
     bsi.MTypeM = 0x21;
-    auto moduleName = str.arg(bsi.MTypeB, 0, 16).arg(bsi.MTypeM, 0, 16);
-    (module.loadSettings(moduleName, bsi));
+    bsi.Fwver = StdFunc::StrToVer(version::usio);
+    (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk35);
     QCOMPARE(settings->configSettings.mezz.size(), config::avtuk21);
     QVERIFY(!settings->ifaceSettings.settings.isValid());
+
+    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    QCOMPARE(checkSettings.size(), 2);
+    auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
+        [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
+    QCOMPARE(elementCount, check::checkBase + check::check35 + check::check21);
 }
 
 void TestModule::check3522()
 {
-    QString str("АВ-ТУК-%1%2");
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x35;
     bsi.MTypeM = 0x22;
-    auto moduleName = str.arg(bsi.MTypeB, 0, 16).arg(bsi.MTypeM, 0, 16);
-    (module.loadSettings(moduleName, bsi));
+    bsi.Fwver = StdFunc::StrToVer(version::usio);
+    (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk35);
     QCOMPARE(settings->configSettings.mezz.size(), config::avtuk22);
     QVERIFY(!settings->ifaceSettings.settings.isValid());
+
+    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    QCOMPARE(checkSettings.size(), 2);
+    auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
+        [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
+    QCOMPARE(elementCount, check::checkBase + check::check35 + check::check22);
 }
 
 void TestModule::check3531()
 {
-    QString str("АВ-ТУК-%1%2");
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x35;
     bsi.MTypeM = 0x31;
-    auto moduleName = str.arg(bsi.MTypeB, 0, 16).arg(bsi.MTypeM, 0, 16);
-    (module.loadSettings(moduleName, bsi));
+    bsi.Fwver = StdFunc::StrToVer(version::usio);
+    (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk35);
     QCOMPARE(settings->configSettings.mezz.size(), config::avtuk31);
     QVERIFY(!settings->ifaceSettings.settings.isValid());
+
+    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    QCOMPARE(checkSettings.size(), 2);
+    auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
+        [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
+    QCOMPARE(elementCount, check::checkBase + check::check35 + check::check31);
 }
 
 void TestModule::check3533()
 {
-    QString str("АВ-ТУК-%1%2");
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x35;
     bsi.MTypeM = 0x33;
-    auto moduleName = str.arg(bsi.MTypeB, 0, 16).arg(bsi.MTypeM, 0, 16);
-    QVERIFY(module.loadSettings(moduleName, bsi));
+    bsi.Fwver = StdFunc::StrToVer(version::usio);
+    QVERIFY(module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk35);
     QCOMPARE(settings->configSettings.mezz.size(), config::avtuk33);
     QVERIFY(!settings->ifaceSettings.settings.isValid());
+
+    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    QCOMPARE(checkSettings.size(), 2);
+    auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
+        [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
+    QCOMPARE(elementCount, check::checkBase + check::check35 + check::check33);
 }
 
 void TestModule::check3534()
 {
-    QString str("АВ-ТУК-%1%2");
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x35;
     bsi.MTypeM = 0x34;
-    auto moduleName = str.arg(bsi.MTypeB, 0, 16).arg(bsi.MTypeM, 0, 16);
-    (module.loadSettings(moduleName, bsi));
+    bsi.Fwver = StdFunc::StrToVer(version::usio);
+    (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk35);
     QCOMPARE(settings->configSettings.mezz.size(), config::avtuk34);
     QVERIFY(!settings->ifaceSettings.settings.isValid());
+
+    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    QCOMPARE(checkSettings.size(), 1);
+    auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
+        [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
+    QCOMPARE(elementCount, check::checkBase + check::check35 + check::check34);
 }
 
 void TestModule::check3535()
 {
-    QString str("АВ-ТУК-%1%2");
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x35;
     bsi.MTypeM = 0x35;
-    auto moduleName = str.arg(bsi.MTypeB, 0, 16).arg(bsi.MTypeM, 0, 16);
-    (module.loadSettings(moduleName, bsi));
+    bsi.Fwver = StdFunc::StrToVer(version::usio);
+    (module.loadSettings(bsi));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk35);
     QCOMPARE(settings->configSettings.mezz.size(), config::avtukSame);
     QVERIFY(!settings->ifaceSettings.settings.isValid());
+
+    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    QCOMPARE(checkSettings.size(), 1);
+    auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
+        [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
+    QCOMPARE(elementCount, check::checkBase + check::check35 + check::check35);
 }
 
 void TestModule::check3533USB()
 {
-    QString str("АВ-ТУК-3533");
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x35;
     bsi.MTypeM = 0x33;
-    QVERIFY(module.loadSettings(str, bsi, Board::InterfaceType::USB));
+    bsi.Fwver = StdFunc::StrToVer(version::usio);
+    QVERIFY(module.loadSettings(bsi, Board::InterfaceType::USB));
     auto settings = module.settings();
     QCOMPARE(settings->configSettings.general.size(), 8);
     QCOMPARE(settings->configSettings.base.size(), config::avtuk35);
@@ -822,6 +1380,12 @@ void TestModule::check3533USB()
     const auto &st = settings->ifaceSettings.settings.value<InterfaceInfo<Proto::ProtocomGroup>>();
     QCOMPARE(st.dictionary().size(), 2);
     QCOMPARE(st.groups().size(), 2);
+
+    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    QCOMPARE(checkSettings.size(), 2);
+    auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
+        [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
+    QCOMPARE(elementCount, 2);
 }
 
 QTEST_GUILESS_MAIN(TestModule)
