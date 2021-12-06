@@ -46,7 +46,7 @@ constexpr auto avtuk8084 = "1.1-0015";
 constexpr auto avma284 = "1.2-0005";
 constexpr auto avtuk8600 = "1.0-0007";
 constexpr auto avma287 = "0.6-0004";
-constexpr auto avma387 = "0.9-0000";
+constexpr auto avma387 = "0.10-0000";
 }
 
 TestModule::TestModule(QObject *parent) : QObject(parent)
@@ -189,8 +189,8 @@ void TestModule::checkA287USB()
     QVERIFY(settings->ifaceSettings.settings.isValid());
     QVERIFY(settings->ifaceSettings.settings.canConvert<InterfaceInfo<Proto::ProtocomGroup>>());
     const auto &st = settings->ifaceSettings.settings.value<InterfaceInfo<Proto::ProtocomGroup>>();
-    QCOMPARE(st.dictionary().size(), 19);
-    QCOMPARE(st.groups().size(), 19);
+    QCOMPARE(st.dictionary().size(), 18);
+    QCOMPARE(st.groups().size(), 18);
 
     auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
     QCOMPARE(checkSettings.size(), 3);
@@ -259,8 +259,8 @@ void TestModule::checkA387USB()
     QVERIFY(settings->ifaceSettings.settings.isValid());
     QVERIFY(settings->ifaceSettings.settings.canConvert<InterfaceInfo<Proto::ProtocomGroup>>());
     const auto &st = settings->ifaceSettings.settings.value<InterfaceInfo<Proto::ProtocomGroup>>();
-    QCOMPARE(st.dictionary().size(), 21);
-    QCOMPARE(st.groups().size(), 21);
+    QCOMPARE(st.dictionary().size(), 20);
+    QCOMPARE(st.groups().size(), 20);
 
     auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
     QCOMPARE(checkSettings.size(), 4);

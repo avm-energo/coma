@@ -388,15 +388,7 @@
                 <item>10</item>
             </uint-set>
             <start-addr>2420</start-addr>
-            <count>16</count>
-        </signals>
-        <signals>
-            <type>M_ME</type>
-            <uint-set>
-                <item>10</item>
-            </uint-set>
-            <start-addr>2450</start-addr>
-            <count>16</count>
+            <count>32</count>
         </signals>
         <record header="Данные по несимметрии и искажениям сигналов">
             <group>1</group>
@@ -570,7 +562,7 @@
         <record header="Мощности по 1-й гармонике">
             <group>10</group>
             <record desc="P1%1, кВт">
-                <start-addr>2450</start-addr>
+                <start-addr>2436</start-addr>
                 <count>3</count>
                 <toolTip>Истинная активная мощность фазы %1 по 1-й гармонике, кВт</toolTip>
                 <string-array>
@@ -580,11 +572,11 @@
                 </string-array>
             </record>
             <record desc="P1 сумм, кВт">
-                <start-addr>2453</start-addr>
+                <start-addr>2439</start-addr>
                 <toolTip>Истинная активная мощность суммарная по 1-й гармонике, кВт</toolTip>
             </record>
             <record desc="Q1%1, кВАр">
-                <start-addr>2454</start-addr>
+                <start-addr>2440</start-addr>
                 <count>3</count>
                 <toolTip>Реактивная мощность фазы %1 по 1-й гармонике, кВАр</toolTip>
                 <string-array>
@@ -594,11 +586,11 @@
                 </string-array>
             </record>
             <record desc="Q1 сумм, кВАр">
-                <start-addr>2457</start-addr>
+                <start-addr>2443</start-addr>
                 <toolTip>Реактивная мощность суммарная по 1-й гармонике, кВАр</toolTip>
             </record>
             <record desc="S1%1, кВА">
-                <start-addr>2458</start-addr>
+                <start-addr>2444</start-addr>
                 <count>3</count>
                 <toolTip>Полная (кажущаяся) мощность фазы %1 по эфф. току и напряжению по 1-й гармонике, кВА</toolTip>
                 <string-array>
@@ -608,11 +600,11 @@
                 </string-array>
             </record>
             <record desc="S1 сумм, кВА">
-                <start-addr>2461</start-addr>
+                <start-addr>2447</start-addr>
                 <toolTip>Полная мощность по эфф. току и напряжению суммарная по 1-й гармонике, кВА</toolTip>
             </record>
             <record desc="Cos ϕ1 %1">
-                <start-addr>2462</start-addr>
+                <start-addr>2448</start-addr>
                 <count>3</count>
                 <toolTip>Коэффициент мощности фазы %1 (по S и P) по 1-й гармонике</toolTip>
                 <string-array>
@@ -622,7 +614,7 @@
                 </string-array>
             </record>
             <record desc="Cos ϕ1 ср">
-                <start-addr>2465</start-addr>
+                <start-addr>2451</start-addr>
                 <toolTip>Коэффициент мощности средний (по S и P) по 1-й гармонике</toolTip>
             </record>
         </record>

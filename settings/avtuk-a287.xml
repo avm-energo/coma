@@ -288,11 +288,11 @@
           <count>3</count>
           <block>9</block>
         </group>
-        <!-- <group>
+        <group>
           <start-addr>2420</start-addr>
           <count>32</count>
           <block>10</block>
-       </group> -->
+       </group>
         <group>
           <start-addr>4010</start-addr>
           <count>22</count>
@@ -308,7 +308,7 @@
           <count>7</count>
           <block>17</block>
         </group>
-        <group>
+        <!-- <group>
           <start-addr>2420</start-addr>
           <count>16</count>
           <block>21</block>
@@ -317,7 +317,7 @@
           <start-addr>2450</start-addr>
           <count>16</count>
           <block>22</block>
-        </group>
+        </group> -->
         <!--блок 18 еще в процессе(не понятно что длать с типом time)-->
         <group id="alarmModule">
           <start-addr>5011</start-addr>
