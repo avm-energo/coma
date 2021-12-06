@@ -66,7 +66,11 @@ void TestModule::checkA284()
     QCOMPARE(settings->highlightCrit.size(), 7);
     QCOMPARE(settings->highlightWarn.size(), 30);
     QCOMPARE(settings->journals.size(), 2);
+    auto workJourSize = settings->journals.value(Modules::JournalType::Work).desc.size();
+    auto alarmsCount = std::accumulate(settings->alarms.cbegin(), settings->alarms.cend(), 0,
+        [](int a, auto &&alarm) { return a + alarm.desc.size(); });
     QVERIFY(!settings->ifaceSettings.settings.isValid());
+    QCOMPARE(workJourSize, alarmsCount);
 
     auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
     QCOMPARE(checkSettings.size(), 1);
@@ -164,6 +168,11 @@ void TestModule::checkA287()
     QCOMPARE(settings->highlightCrit.size(), 0);
     QCOMPARE(settings->highlightWarn.size(), 0);
     QCOMPARE(settings->journals.size(), 2);
+    auto workJourSize = settings->journals.value(Modules::JournalType::Work).desc.size();
+    auto alarmsCount = std::accumulate(settings->alarms.cbegin(), settings->alarms.cend(), 0,
+        [](int a, auto &&alarm) { return a + alarm.desc.size(); });
+    QVERIFY(!settings->ifaceSettings.settings.isValid());
+    QCOMPARE(workJourSize, alarmsCount);
     QVERIFY(!settings->ifaceSettings.settings.isValid());
 
     auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
@@ -234,6 +243,11 @@ void TestModule::checkA387()
     QCOMPARE(settings->highlightCrit.size(), 0);
     QCOMPARE(settings->highlightWarn.size(), 0);
     QCOMPARE(settings->journals.size(), 2);
+    auto workJourSize = settings->journals.value(Modules::JournalType::Work).desc.size();
+    auto alarmsCount = std::accumulate(settings->alarms.cbegin(), settings->alarms.cend(), 0,
+        [](int a, auto &&alarm) { return a + alarm.desc.size(); });
+    QVERIFY(!settings->ifaceSettings.settings.isValid());
+    QCOMPARE(workJourSize, alarmsCount);
     QVERIFY(!settings->ifaceSettings.settings.isValid());
 
     auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
