@@ -479,7 +479,7 @@ const QStringList eventJourHeaders {
     "Описание события", //
     "Тип события"       //
 };
-constexpr quint32 sysJourId = 0;
+constexpr quint32 sysJourId = 1;
 struct EventStruct
 {
     EventStruct() = default;

@@ -55,7 +55,7 @@
       <!--Описываем журнал, имя обязательно-->
       <journal name="work">
         <!--Номер журнала, имя обязательно-->
-        <quint32 name="workJourId">3010</quint32>
+        <quint32 name="workJourId">3011</quint32>
         <!--Массив событий журнала, имя обязательно-->
         <string-array name="workJourDescription">
           <item>Отсутствует  напряжение фазы A</item>

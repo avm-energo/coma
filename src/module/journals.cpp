@@ -79,24 +79,24 @@ QVector<QVector<QVariant>> Journals::createCommon(const QByteArray &array, const
         ++counter;
         int N;
 
-        CommonEvent commonEvent { counter, event.Time };
         memcpy(&N, &event.EvNum, sizeof(event.EvNum));
         N = (N & 0x00FFFFFF) - eventid;
-        Q_ASSERT((N <= desc.size()) && (N > 0));
+        Q_ASSERT((N <= desc.size()) && (N >= 0));
         QString eventDesc;
-        if ((N <= desc.size()) && (N > 0))
+        if ((N <= desc.size()) && (N >= 0))
         {
-            eventDesc = desc.at(--N);
+            eventDesc = desc.at(N);
         }
         else
             eventDesc = "Некорректный номер события";
-        commonEvent.desc = eventDesc;
+
         QString eventType;
         if (event.EvType)
             eventType = "Пришло";
         else
             eventType = "Ушло";
-        commonEvent.direction = eventType;
+
+        CommonEvent commonEvent { counter, event.Time, eventDesc, eventType };
         events.push_back(commonEvent);
     }
     std::sort(events.begin(), events.end(),
