@@ -72,10 +72,8 @@ public:
     explicit Board(token);
 
     quint16 typeB() const;
-    // void setTypeB(const quint16 &typeB);
 
     quint16 typeM() const;
-    // void setTypeM(const quint16 &typeM);
 
     quint16 type() const;
     quint16 type(Types type) const;
@@ -101,8 +99,6 @@ public:
 
     ConnectionState connectionState() const;
     void setConnectionState(ConnectionState connectionState);
-
-    // QList<quint16> getBaseBoardsList() const;
 
     void update(const DataTypes::BitStringStruct &bs);
     void reset();

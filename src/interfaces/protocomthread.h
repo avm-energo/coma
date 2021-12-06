@@ -25,8 +25,7 @@ public:
     void clear();
 
 private:
-    // QByteArray InData, OutData;
-    QByteArray /*m_writeData,*/ m_readData;
+    QByteArray m_readData;
     bool isCommandRequested = false;
     quint64 progress = 0;
     void finish(Error::Msg msg);
@@ -35,10 +34,8 @@ private:
     void parseRequest(const Proto::CommandStruct &cmdStr);
     void handle(const Proto::Commands cmd);
 
-    // LogClass *log;
-
     QMutex _mutex;
-    // QMutex _mutex;
+
     QWaitCondition _waiter;
     void writeLog(QByteArray ba, Proto::Direction dir = Proto::NoDirection);
     void writeLog(Error::Msg msg, Proto::Direction dir = Proto::NoDirection)

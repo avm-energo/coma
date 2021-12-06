@@ -21,16 +21,13 @@
 #include <QTime>
 #include <QVBoxLayout>
 #include <QXlsx/xlsxdocument.h>
-//#include <QtMath>
 
 AbstractCheckDialog::AbstractCheckDialog(QWidget *parent) : UDialog(parent)
 {
-    // m_newTWIndex = 0;
     XlsxWriting = false;
     m_readDataInProgress = false;
     xlsx = nullptr;
     WRow = 0;
-    // m_oldTabIndex = m_currentTabIndex = 0;
     Timer = new QTimer(this);
     Timer->setObjectName("checktimer");
     connect(Timer, &QTimer::timeout, this, &AbstractCheckDialog::TimerTimeout);

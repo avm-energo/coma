@@ -1,7 +1,5 @@
 #pragma once
 #include <array>
-//#define INITREG 4000
-//#define INITREGCOUNT 11 // 11 floats results in 22 bytes
 
 namespace Regs
 {

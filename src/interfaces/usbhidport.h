@@ -71,7 +71,7 @@ private:
     void deviceConnected();
     void deviceDisconnected();
     bool m_waitForReply;
-    // QWaitCondition _waiter;
+
     hid_device *m_hidDevice;
     bool m_shouldBeStopped;
     LogClass *log;

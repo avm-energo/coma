@@ -39,7 +39,6 @@ UsbHidPort::UsbHidPort(const UsbHidSettings &dev, LogClass *logh, QObject *paren
 
 UsbHidPort::~UsbHidPort()
 {
-    // qDebug() << "UsbHidPort deleted";
 }
 
 inline hid_device *openDevice(const UsbHidSettings &dev)

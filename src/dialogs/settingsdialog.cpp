@@ -43,12 +43,10 @@ void SettingsDialog::SetupUI()
     int position = StyleLoader::GetInstance().styleNumber();
     themeCB->setCurrentIndex(position);
 
-    //  const QString style = StyleLoader::GetInstance().styleFile();
     QHBoxLayout *hlyout = new QHBoxLayout;
     hlyout->addWidget(new QLabel("Тема", this));
     hlyout->addWidget(themeCB);
     vlyout->addLayout(hlyout);
-    //    vlyout->addWidget(themeCB);
     connect(themeCB, &QComboBox::currentTextChanged, [=](const QString &text) {
         auto answer = QMessageBox::question(
             this, "Предупреждение", "Тема будет изменена\n Приложение может не отвечать некоторое время");

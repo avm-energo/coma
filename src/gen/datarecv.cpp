@@ -21,7 +21,6 @@ S2DataTypes::DataRec DataRecV::serialize() const
 {
     return std::visit(
         [=](auto &arg) -> S2DataTypes::DataRec {
-            //  std::cout << data.index() << std::endl;
             typedef std::remove_reference_t<decltype(arg)> internalType;
             S2DataTypes::DataRec record { id, sizeof(internalType), (void *)(&arg) };
             return record;
@@ -275,11 +274,6 @@ DataRecV::DataRecV(const valueMap &_map, const unsigned _id, const QString &str)
         data = helper<FLOAT_2t>(str);
         break;
     }
-        //    case ctti::unnamed_type_id<FLOAT_2t_2t>().hash():
-        //    {
-        //        data = helper<FLOAT_2t_2t>(str);
-        //        break;
-        //    }
     case ctti::unnamed_type_id<FLOAT_3t>().hash():
     {
         data = helper<FLOAT_3t>(str);

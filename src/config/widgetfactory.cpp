@@ -154,7 +154,7 @@ QWidget *WidgetFactory::createWidget(BciNumber key, QWidget *parent)
 #ifdef DEBUG_FACTORY
                 qDebug() << "CheckBoxGroupWidget" << key;
 #endif
-                // Q_ASSERT(desc.count() == arg.count);
+
                 widget = new QWidget(parent);
                 QHBoxLayout *lyout = new QHBoxLayout;
                 auto label = new QLabel(arg.desc, parent);
@@ -170,7 +170,7 @@ QWidget *WidgetFactory::createWidget(BciNumber key, QWidget *parent)
 #ifdef DEBUG_FACTORY
                 qDebug() << "QComboBox" << key;
 #endif
-                // Q_ASSERT(desc.count() == arg.count);
+
                 widget = new QWidget(parent);
                 QHBoxLayout *lyout = new QHBoxLayout;
                 auto label = new QLabel(arg.desc, parent);
@@ -183,7 +183,7 @@ QWidget *WidgetFactory::createWidget(BciNumber key, QWidget *parent)
 #ifdef DEBUG_FACTORY
                 qDebug() << "QComboBoxGroup" << key;
 #endif
-                // Q_ASSERT(desc.count() == arg.count);
+
                 widget = new QWidget(parent);
 
                 QHBoxLayout *mainLyout = new QHBoxLayout;
@@ -192,7 +192,6 @@ QWidget *WidgetFactory::createWidget(BciNumber key, QWidget *parent)
                 mainLyout->addWidget(label);
 
                 int count = arg.count;
-                auto itemsOneLine = detail::goldenRatio(count);
 
                 FlowLayout *flowLayout = new FlowLayout;
                 for (auto i = 0; i != count; ++i)
@@ -205,16 +204,6 @@ QWidget *WidgetFactory::createWidget(BciNumber key, QWidget *parent)
                     flowLayout->addWidget(widget);
                 }
                 mainLyout->addLayout(flowLayout);
-                //                QGridLayout *gridlyout = new QGridLayout;
-                //                for (auto i = 0; i != count; ++i)
-                //                {
-                //                    QHBoxLayout *layout = new QHBoxLayout;
-                //                    layout->addWidget(new QLabel(QString::number(i + 1), parent));
-                //                    layout->addWidget(WDFunc::NewCB2(parent, widgetName(key, i), arg.model));
-                //                    gridlyout->addLayout(layout, i / itemsOneLine, i % itemsOneLine);
-                //                }
-
-                //                mainLyout->addLayout(gridlyout);
                 widget->setLayout(mainLyout);
             },
             [&](const auto &arg) {
@@ -421,14 +410,14 @@ static QWidget *createModbusView(QWidget *parent)
         int width = tableView->horizontalHeader()->fontMetrics().horizontalAdvance(header.at(column)) * 1.5;
         tableView->setColumnWidth(column, width);
     }
-    // tableView->setMinimumWidth(tableView->horizontalHeader()->height() * 5);
+
     return tableView;
 }
 bool WidgetFactory::fillBackModbus(
     BciNumber key, const QWidget *parent, ctti::unnamed_type_id_t type, BciNumber parentKey)
 {
     auto tableView = parent->findChild<QTableView *>(WidgetFactory::hashedName(type, parentKey));
-    // QTableView *tv = parent->findChild<QTableView *>(hashedName(type, parentKey));
+
     if (tableView == nullptr)
     {
         qDebug("Пустой tv");

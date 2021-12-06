@@ -302,8 +302,6 @@ typedef QVector<S2DataTypes::DataRec> S2ConfigType;
 #pragma pack(1)    /* set alignment to 1 byte boundary */
 struct OscInfo
 {
-    //  quint32 fileNum;    // номер файла осциллограмм
-    //  quint32 fileLength; // длина файла за исключением FileHeader (16 байт)
     // заголовок записи
     DataRecHeader typeHeader;
     quint32 id; // Тип файла - осциллограмма и количество осциллограмм в файле (10000, 10001 ...) <- неверное описание

@@ -180,20 +180,6 @@ Q_ENUM_NS(TypeId)
 // GBac, GBda, GBd,GBt - float,
 // GF - file
 
-// Получаем номер блока по номеру регистра
-// Количество регистров необходимо для проверки
-// это дело уехало в xml
-// const QMap<quint16, QPair<quint8, quint16>> getBlkByReg {
-//    { 2420, { 4, 14 } },  //
-//    { 2400, { 5, 7 } },   //
-//    { 4501, { 8, 2 } },   //
-//    { 1000, { 2, 16 } },  //
-//    { 1100, { 3, 16 } },  //
-//    { 101, { 0, 2 } },    //
-//    { 4000, { 7, 12 } },  //
-//    { 3011, { 100, 25 } } //
-//};
-
 struct ProtocomGroup : BaseGroup<Commands, TypeId>
 {
     ProtocomGroup() = default;
@@ -227,13 +213,3 @@ Q_DECLARE_METATYPE(InterfaceInfo<Proto::ProtocomGroup>)
 
 #define HIDUSB_LOG
 //#define PROTOCOM_DEBUG
-
-//#define TECH_Bd0    0   // блок данных с температурой кристалла и напряжением
-//батареи
-#define TECH_Bo 1  // технологический блок осциллограмм
-#define TECH_Be 2  // технологический блок событий
-#define TECH_Bte 3 // технологический блок технологических событий
-#define TECH_SWJ 4 // технологический блок журнала переключений
-#define TECH_RA 5  // технологический блок рабочего архива
-
-constexpr int alarm_reg = 3011;

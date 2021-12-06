@@ -25,8 +25,6 @@ Board::Board(Singleton::token)
     m_interfaceType = Unknown;
     m_connectionState = ConnectionState::Closed;
     m_boardType = Types::None;
-    // m_deviceType = DeviceType::Module;
-    //    Q_UNUSED(parent)
 }
 
 quint16 Board::typeB() const
@@ -34,22 +32,10 @@ quint16 Board::typeB() const
     return m_startupInfoBlock.MTypeB;
 }
 
-// void Board::setTypeB(const quint16 &typeB)
-//{
-//    m_typeB = typeB;
-//    emit typeChanged();
-//}
-
 quint16 Board::typeM() const
 {
     return m_startupInfoBlock.MTypeM;
 }
-
-// void Board::setTypeM(const quint16 &typeM)
-//{
-//    m_typeM = typeM;
-//    emit typeChanged();
-//}
 
 quint16 Board::type() const
 {
@@ -78,8 +64,6 @@ QString Board::moduleName() const
     QString name = QVariant::fromValue(Modules::Model(type())).toString();
     if (name.isEmpty())
         name = Modules::BaseBoards.value(typeB()) + Modules::MezzanineBoards.value(typeM());
-    //  qDebug() << name << Modules::BaseBoards.value(typeB()) << Modules::MezzanineBoards.value(typeM())
-    //         << QString::number(typeB(), 16) << QString::number(typeM(), 16);
     return name;
 }
 
@@ -100,17 +84,6 @@ quint32 Board::serialNumber(Board::Types type) const
 
 QString Board::UID() const
 {
-    //    switch (ran)
-    //    {
-    //    case High:
-    //        return m_baseSerialInfo.UIDHigh;
-    //    case Mid:
-    //        return m_baseSerialInfo.UIDMid;
-    //    case Low:
-    //        return m_baseSerialInfo.UIDLow;
-    //    default:
-    //        return 0;
-    //    }
     return QString::number(m_startupInfoBlock.UIDHigh, 16) + QString::number(m_startupInfoBlock.UIDMid, 16)
         + QString::number(m_startupInfoBlock.UIDLow, 16);
 }
@@ -146,7 +119,7 @@ void Board::update(const DataTypes::BitStringStruct &bs)
     if (bs.sigAdr < 1 || bs.sigAdr > 15)
         return updateExt(bs);
     quint32 &item = *(reinterpret_cast<quint32 *>(&m_startupInfoBlock) + (bs.sigAdr - Regs::bsiStartReg));
-    // std::copy_n(&bs.sigVal, sizeof(quint32), &item);
+
     item = bs.sigVal;
     m_updateCounter++;
     // Last value updated

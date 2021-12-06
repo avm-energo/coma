@@ -22,7 +22,6 @@ void BaseAlarm::disable()
 
 void BaseAlarm::setupUI(const QStringList &events)
 {
-    // m_realAlarmSize = events.size();
     qint64 flagsCount = m_alarmFlags.count();
     qint64 eventsCount = events.size();
     Q_ASSERT(flagsCount == eventsCount);

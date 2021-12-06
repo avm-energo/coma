@@ -78,7 +78,7 @@ QWidget *AbstractStartupDialog::buttonWidget()
     }
     group->setCenterButtons(true);
     lyout->addWidget(group);
-    // lyout->addLayout(hlyout);
+
     w->setLayout(lyout);
     return w;
 }

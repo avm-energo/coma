@@ -62,6 +62,4 @@ void ProtocomPrivate::handleCommand(const Proto::Commands cmd, const DataTypes::
     Proto::CommandStruct inp { cmd, QVariant::fromValue(singleCmd.addr), QVariant(),
         StdFunc::arrayFromNumber(singleCmd.value) };
     DataManager::addToInQueue(inp);
-    // QByteArray arr = StdFunc::arrayFromNumber(singleCmd.addr);
-    // arr.push_back(StdFunc::arrayFromNumber(singleCmd.value));
 }

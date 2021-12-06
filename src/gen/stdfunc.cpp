@@ -25,7 +25,6 @@ QString StdFunc::SystemHomeDir = ""; // системный каталог про
 
 bool StdFunc::Cancelled = false;
 bool StdFunc::s_cancelEnabled = true;
-// QString StdFunc::PrbMsg = "";
 QString StdFunc::DeviceIP = "";
 QString StdFunc::s_OrganizationString = "";
 int StdFunc::m_tuneRequestCount = 0;
@@ -183,16 +182,6 @@ quint32 StdFunc::BitByIndex(int idx)
         return 0;
     return (0x00000001 << (idx - 1));
 }
-
-// QString StdFunc::PrbMessage()
-//{
-//    return PrbMsg;
-//}
-
-// void StdFunc::SetPrbMessage(const QString &msg)
-//{
-//    PrbMsg = msg;
-//}
 
 void StdFunc::Wait(int ms)
 {

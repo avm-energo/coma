@@ -24,7 +24,6 @@ using BYTE_32t = std::array<BYTE, 32>;
 using WORD_32t = std::array<WORD, 32>;
 using DWORD_32t = std::array<DWORD, 32>;
 using FLOAT_2t = std::array<float, 2>;
-// using FLOAT_2t_2t = std::array<FLOAT_2t, 2>;
 using FLOAT_3t = std::array<float, 3>;
 using FLOAT_4t = std::array<float, 4>;
 using FLOAT_6t = std::array<float, 6>;
@@ -68,6 +67,6 @@ using valueType = std::variant<BYTE, WORD, DWORD, INT32, //
     BYTE_8t, WORD_8t, DWORD_8t,                          //
     BYTE_16t, WORD_16t, DWORD_16t,                       //
     BYTE_32t, WORD_32t, DWORD_32t,                       //
-    float, FLOAT_2t, /*FLOAT_2t_2t,*/ FLOAT_3t, FLOAT_4t, FLOAT_6t, FLOAT_8t>;
+    float, FLOAT_2t, FLOAT_3t, FLOAT_4t, FLOAT_6t, FLOAT_8t>;
 
 }

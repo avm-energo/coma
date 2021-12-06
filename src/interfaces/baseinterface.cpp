@@ -18,15 +18,6 @@ BaseInterface::BaseInterface(QObject *parent) : QObject(parent), /* m_working(fa
     timeoutTimer->setInterval(MAINTIMEOUT);
     connect(timeoutTimer, &QTimer::timeout, this, &BaseInterface::timeout);
     m_state = State::None;
-    //    QMetaObject::Connection *const connection = new QMetaObject::Connection;
-    //    *connection = connect(
-    //        &Board::GetInstance(), qOverload<>(&Board::typeChanged), this,
-    //        [=]() {
-    //            QObject::disconnect(*connection);
-    //            delete connection;
-    //            loadSettings();
-    //        },
-    //        Qt::DirectConnection);
 }
 
 BaseInterface::~BaseInterface()
@@ -66,11 +57,6 @@ void BaseInterface::writeS2File(DataTypes::FilesEnum number, S2DataTypes::S2Conf
     Q_ASSERT(length == quint32(ba.size()));
     writeFile(number, ba);
 }
-
-// void BaseInterface::writeConfigFile()
-//{
-//    writeS2File(DataTypes::Config, &S2::config);
-//}
 
 void BaseInterface::reqAlarms(quint32 sigAdr, quint32 sigCount)
 {

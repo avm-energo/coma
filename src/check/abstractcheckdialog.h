@@ -27,11 +27,6 @@
 // default timer interval to check analog values
 constexpr int ANMEASINT = 2000;
 
-// блоки Bd для базовой платы нумеруются с 0 (0-й блок - общий для всех)
-constexpr int BT_STARTBD_BASE = 0;
-// блоки Bd для мезонинной платы нумеруются с 101 (100 base + 1st block)
-constexpr int BT_STARTBD_MEZ = 100;
-
 namespace QXlsx
 {
 class Document;

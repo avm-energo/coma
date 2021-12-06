@@ -180,11 +180,8 @@ bool S2::RestoreData(QByteArray bain, QList<DataTypes::S2Record> &outlist)
             return false;
         }
         memcpy(&DR, &bain.data()[0], size);
-        //        DataTypes::DataRecV DRV(DR);
-        //        if (!S2DataTypes::is_same(DR, DRV.serialize()))
-        //            qDebug() << DRV.getId();
         bain.remove(0, size);
-        //  Q_ASSERT(!bain.isEmpty());
+
         if (DR.header.id != S2DataTypes::dummyElement)
         {
             DataTypes::S2Record cfp;
