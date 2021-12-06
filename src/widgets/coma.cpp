@@ -334,7 +334,7 @@ void Coma::loadSwj(QString &filename)
                    },
             item);
     }
-    if (!swjModel)
+    if (!swjModel || !oscModel)
         return;
 
     auto dialog = new SwitchJournalViewDialog(*swjModel, *oscModel, oscManager);
