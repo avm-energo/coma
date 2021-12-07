@@ -1,6 +1,5 @@
 #include "logger.h"
 
-//#include "../config.h"
 #include "errorqueue.h"
 #include "stdfunc.h"
 
@@ -68,9 +67,7 @@ void Logging::messageHandler(QtMsgType type, const QMessageLogContext &context, 
             context.line,                                                 // Line
             msg                                                           // Message
         };
-        //#ifdef QT_GUI_LIB
         ErrorQueue::GetInstance().pushError(tmpm);
-        //#endif
         break;
     }
     case QtDebugMsg:
@@ -85,7 +82,6 @@ void Logging::messageHandler(QtMsgType type, const QMessageLogContext &context, 
         std::cout << sourceFile.toStdString() << colon << context.line << space << colon << space << msg.toStdString()
                   << std::endl;
 #endif
-        //#ifdef QT_GUI_LIB
         ErrorMsg tmpm {
             QDateTime::currentDateTime().toString("dd-MM-yyyy hh:mm:ss"), // DateTime
             type,                                                         // Msg type
@@ -94,7 +90,6 @@ void Logging::messageHandler(QtMsgType type, const QMessageLogContext &context, 
             msg                                                           // Message
         };
         ErrorQueue::GetInstance().pushError(tmpm);
-        //#endif
         return;
     }
     case QtCriticalMsg:
@@ -106,9 +101,7 @@ void Logging::messageHandler(QtMsgType type, const QMessageLogContext &context, 
             context.line,                                                 // Line
             msg                                                           // Message
         };
-        //#ifdef QT_GUI_LIB
         ErrorQueue::GetInstance().pushError(tmpm);
-        //#endif
         break;
     }
     case QtFatalMsg:
@@ -125,7 +118,7 @@ void Logging::messageHandler(QtMsgType type, const QMessageLogContext &context, 
     // NOTE Если будем использовать категории
     // << context.category << space // Msg category
     out << msg // Message
-#if QT_VERSION >= 0x051200
+#if QT_VERSION >= 0x050C00
         << Qt::endl;
 #else
         << endl;
