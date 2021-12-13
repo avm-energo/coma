@@ -13,31 +13,28 @@ find_package(
   COMPONENTS Core Widgets
   REQUIRED)
 
+find_package(Boost
+    COMPONENTS headers
+    REQUIRED)
+
 add_library(
   ${PROJECT_NAME} STATIC
   abstractcheckdialog.cpp
   abstractcheckdialog.h
-  check.cpp
-  check.h
-  checkkdvdialog.cpp
-  checkkdvdialog.h
-  checkkdvharmonicdialog.cpp
-  checkkdvharmonicdialog.h
-  checkkdvvibrdialog.cpp
-  checkkdvvibrdialog.h
-  checkkivdialog.cpp
-  checkkivdialog.h
-  checkktfdialog.cpp
-  checkktfdialog.h
-  checkktfharmonicdialog.cpp
-  checkktfharmonicdialog.h
-  check3533dialog.h
-  check3533dialog.cpp)
+  delegate_check.h
+  check3133dialog.h
+  check3133dialog.cpp
+  signaldialog.cpp
+  signaldialog.h
+  signaldialog84.h
+  signaldialog84.cpp)
 
 target_link_libraries(
   ${PROJECT_NAME}
   PRIVATE Qt${QT_VERSION_MAJOR}::Core
   PRIVATE Qt${QT_VERSION_MAJOR}::Widgets
-  PRIVATE QXlsx)
+  PRIVATE QXlsx
+  PRIVATE qcustomplot
+  PRIVATE Boost::headers)
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE ${PROJECT_NAME}_LIBRARY)

@@ -77,6 +77,7 @@ void AlarmWidget::addAlarm(BaseAlarm *alarm, const QString caption)
     QLayout *buttonBoxLayout = qobject_cast<QLayout *>(layout()->children().first());
     QDialogButtonBox *buttons = qobject_cast<QDialogButtonBox *>(buttonBoxLayout->itemAt(0)->widget());
     Q_ASSERT(buttons != nullptr);
+    alarm->setWindowTitle(caption);
     AlarmButton *pb = new AlarmButton(alarm);
 
     pb->setPixmap(WDFunc::NewCircle(Qt::green, 15));
@@ -92,7 +93,6 @@ void AlarmWidget::addAlarm(BaseAlarm *alarm, const QString caption)
     Q_ASSERT(!pb->text().isEmpty() && "Couldn't find description");
     m_alarms.append(alarm);
     buttons->addButton(pb, QDialogButtonBox::ActionRole);
-    alarm->reqUpdate();
     ++m_counter;
 }
 

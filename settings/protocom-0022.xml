@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+    <protocom>
+        <group>
+            <start-addr>101</start-addr>
+            <count>2</count>
+            <block>0</block>
+        </group>
+        <group>
+            <start-addr>4501</start-addr>
+            <count>16</count>
+            <block>102</block>
+        </group>
+        <group id="alarmModule">
+            <start-addr>4601</start-addr>
+            <count>32</count>
+            <block>200</block>
+          </group> 
+    </protocom>
+</root>

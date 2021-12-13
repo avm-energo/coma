@@ -1,6 +1,7 @@
 #include "baseinterface.h"
 
 #include "../gen/datamanager.h"
+#include "../gen/registers.h"
 #include "../gen/s2.h"
 #include "../gen/stdfunc.h"
 
@@ -17,15 +18,6 @@ BaseInterface::BaseInterface(QObject *parent) : QObject(parent), /* m_working(fa
     timeoutTimer->setInterval(MAINTIMEOUT);
     connect(timeoutTimer, &QTimer::timeout, this, &BaseInterface::timeout);
     m_state = State::None;
-    //    QMetaObject::Connection *const connection = new QMetaObject::Connection;
-    //    *connection = connect(
-    //        &Board::GetInstance(), qOverload<>(&Board::typeChanged), this,
-    //        [=]() {
-    //            QObject::disconnect(*connection);
-    //            delete connection;
-    //            loadSettings();
-    //        },
-    //        Qt::DirectConnection);
 }
 
 BaseInterface::~BaseInterface()
@@ -65,11 +57,6 @@ void BaseInterface::writeS2File(DataTypes::FilesEnum number, S2DataTypes::S2Conf
     Q_ASSERT(length == quint32(ba.size()));
     writeFile(number, ba);
 }
-
-// void BaseInterface::writeConfigFile()
-//{
-//    writeS2File(DataTypes::Config, &S2::config);
-//}
 
 void BaseInterface::reqAlarms(quint32 sigAdr, quint32 sigCount)
 {
@@ -277,6 +264,49 @@ void BaseInterface::setState(const State &state)
     QMutexLocker locker(&_stateMutex);
     m_state = state;
     emit stateChanged(m_state);
+}
+
+bool BaseInterface::supportBSIExt()
+{
+    m_busy = true;
+    m_timeout = false;
+    bool status = false;
+    auto connBitString = std::shared_ptr<QMetaObject::Connection>(new QMetaObject::Connection);
+    auto connError = std::shared_ptr<QMetaObject::Connection>(new QMetaObject::Connection);
+
+    *connBitString = connect(&DataManager::GetInstance(), &DataManager::bitStringReceived, this,
+        [=, &busy = m_busy, &status](const DataTypes::BitStringStruct bs) {
+            if (bs.sigAdr != Regs::bsiExtStartReg)
+                return;
+            if (connBitString)
+                QObject::disconnect(*connBitString);
+            if (connError)
+                QObject::disconnect(*connError);
+            busy = false;
+            status = true;
+        });
+
+    *connError = connect(&DataManager::GetInstance(), &DataManager::responseReceived, this,
+        [=, &busy = m_busy, &status](const DataTypes::GeneralResponseStruct resp) {
+            if (resp.type == DataTypes::Error)
+            {
+                if (connBitString)
+                    QObject::disconnect(*connBitString);
+                if (connError)
+                    QObject::disconnect(*connError);
+                busy = false;
+                status = false;
+            }
+        });
+
+    timeoutTimer->start();
+    reqBSIExt();
+    while (m_busy)
+    {
+        QCoreApplication::processEvents(QEventLoop::AllEvents);
+        StdFunc::Wait(100);
+    }
+    return status;
 }
 
 void BaseInterface::stop()

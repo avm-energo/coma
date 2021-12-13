@@ -49,11 +49,17 @@ public:
     void parentTWTabChanged(int index);
     void closeDialogs();
     ModuleSettings *settings() const;
-    bool loadSettings();
-    bool loadSettings(QString &moduleName,
-        const Modules::StartupInfoBlock &startupInfoBlock = Board::GetInstance().baseSerialInfo(),
+    bool loadUsioSettings(const Modules::StartupInfoBlock &startupInfoBlock);
+    bool loadSettings(const Modules::StartupInfoBlock &startupInfoBlock = Board::GetInstance().baseSerialInfo(),
         int interfaceType = Board::GetInstance().interfaceType());
+    bool loadMainSettings(const QString &filename);
+    bool obtainXmlFile(const QString &filename) const;
+    bool obtainXmlConfig(const QString &filename, QList<DataTypes::RecordPair> &config) const;
+    bool obtainXmlCheck(const QString &filename, std::vector<CheckItem> &check) const;
+    bool obtainXmlAlarm(const QString &filename, AlarmMap &alarmMap, Modules::AlarmType type) const;
     bool loadS2Settings();
+    CheckSettings loadCheckSettings();
+    std::vector<CheckItem> loadCheckSettings(Modules::BaseBoard typeB, Modules::MezzanineBoard typeM) const;
     quint64 configVersion() const;
     bool isConfigOutdated() const;
     void eraseSettings() const;
@@ -62,8 +68,14 @@ public:
     const QString &directory() const;
     void setDirectory(const QString &newDirectory);
 
+    const GlobalSettings &gsettings() const
+    {
+        return m_gsettings;
+    }
+
 protected:
     ConfigV configV;
+    GlobalSettings m_gsettings;
 
 private:
     QList<UDialog *> m_dialogs;

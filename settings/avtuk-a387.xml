@@ -1,0 +1,670 @@
+<?xml version="1.0" encoding="utf-8"?>
+<modules xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="device-schema.xsd">
+  <!--Здесь мы описаваем текущий модуль, обязательно указать mtypeb и mtypem-->
+  <module mtypeb="a3" mtypem="87">
+    <!--Здесь укаазно название модуля-->
+    <name>AVM-KDV</name>
+    <!--Минимальная версия прошивки модуля, для которой описаны настройки-->
+    <version>0.10-0002</version>
+    <!--Дальше идет всё, что несредственно относится к модулю-->
+    <resources>
+      <!--Описываем сигнализацию, имя обязательно-->
+      <alarm name="critical">
+        <!--Массив событий сигнализации, имя обязательно-->
+        <string-array name="criticalEvents">
+          <item>Недопустимое превышение температуры обмотки</item>
+          <item>Недопустимо высокий пусковой ток</item>
+          <item>Недопустимо высокий уровень вибрации</item>
+          <item>Высокая скорость нарастания вибрации</item>
+          <item>Высокий уровень несимметрии токов </item>
+          <item>Высокий уровень искажения токов</item>
+          <item>Аварийное состояние машины</item>
+          <item>Вероятно аварийное состояние статора</item>
+          <item>Вероятно аварийное состояние ротора</item>
+          <item>Вероятно аварийное состояние подшипников</item>
+          <item>Вероятно сильное смещение вала</item>
+        </string-array>
+        <!--Флаги сигнализации-->
+        <quint128 name="criticalFlags">101010101010101010101000000000000</quint128>
+        <!--Стартовый адрес сигнализации-->
+        <quint32 name="startAddr">5011</quint32>
+        <!--Цвет сигнализации если событие произошло-->
+        <color>#ff0000</color>
+      </alarm>
+      <alarm name="warning">
+        <string-array name="warningEvents">
+          <item>Отсутствует сигнал напряжения фазы A</item>
+          <item>Отсутствует сигнал напряжения фазы B</item>
+          <item>Отсутствует сигнал напряжения фазы С</item>
+          <item>Отсутствует сигнал тока фазы A</item>
+          <item>Отсутствует сигнал тока фазы B</item>
+          <item>Отсутствует сигнал тока фазы С</item>
+          <item>Перегрузка по току фазы A</item>
+          <item>Перегрузка по току фазы В</item>
+          <item>Перегрузка по току фазы С</item>
+          <item>Машина включена</item>
+          <item>Опасное превышение температуры обмотки</item>
+          <item>Неисправны все датчики температуры обмотки</item>
+          <item>Повышенный пусковой ток</item>
+          <item>Повышенный уровень вибрации</item>
+          <item>Повышенная скорость нарастания вибрации</item>
+          <item>Повышенная несимметрия токов </item>
+          <item>Повышенные искажения токов</item>
+          <item>Ухудшенное состояние машины</item>
+          <item>Вероятно ухудшенное состояние статора</item>
+          <item>Вероятно ухудшенное состояние ротора</item>
+          <item>Вероятно ухудшенное состояние подшипников</item>
+          <item>Вероятно смещение вала</item>
+        </string-array>
+
+        <quint128 name="warningFlags">10101010101010101010111111111111</quint128>
+        <quint32 name="startAddr">5011</quint32>
+        <color>#ffff00</color>
+      </alarm>
+      <!--Описываем журнал, имя обязательно-->
+      <journal name="work">
+        <!--Номер журнала, имя обязательно-->
+        <quint32 name="workJourId">5011</quint32>
+        <!--Массив событий журнала, имя обязательно-->
+        <string-array name="workJourDescription">
+          <item>Отсутствует сигнал напряжения фазы A</item>
+          <item>Отсутствует сигнал напряжения фазы B</item>
+          <item>Отсутствует сигнал напряжения фазы С</item>
+          <item>Отсутствует сигнал тока фазы A</item>
+          <item>Отсутствует сигнал тока фазы B</item>
+          <item>Отсутствует сигнал тока фазы С</item>
+          <item>Перегрузка по току фазы A</item>
+          <item>Перегрузка по току фазы В</item>
+          <item>Перегрузка по току фазы С</item>
+          <item>Машина включена</item>
+          <item>Опасное превышение температуры обмотки</item>
+          <item>Неисправны все датчики температуры обмотки</item>
+          <item>Аварийное сообщение по недопустимому превышению температуры обмотки</item>
+          <item>Повышенный пусковой ток</item>
+          <item>Недопустимо высокий пусковой ток</item>
+          <item>Повышенный уровень вибрации</item>
+          <item>Недопустимо высокий уровень вибрации</item>
+          <item>Повышенная скорость нарастания вибрации</item>
+          <item>Высокая скорость нарастания вибрации</item>
+          <item>Повышенная несимметрия токов </item>
+          <item>Высокий уровень несимметрии токов </item>
+          <item>Повышенные искажения токов</item>
+          <item>Высокий уровень искажения токов</item>
+          <item>Ухудшенное состояние машины</item>
+          <item>Аварийное состояние машины</item>
+          <item>Вероятно ухудшенное состояние статора</item>
+          <item>Вероятно ухудшенное состояние ротора</item>
+          <item>Вероятно ухудшенное состояние подшипников</item>
+          <item>Вероятно смещение вала</item>
+          <item>Вероятно аварийное состояние статора</item>
+          <item>Вероятно аварийное состояние ротора</item>
+          <item>Вероятно аварийное состояние подшипников</item>
+          <item>Вероятно сильное смещение вала</item>
+        </string-array>
+      </journal>
+      <journal name="meas">
+        <string-array name="measJourHeaders">
+          <item> № </item>
+          <item>Дата/Время UTC</item>
+          <item>Ueff фA</item>
+          <item>Ueff фB</item>
+          <item>Ueff фC</item>
+          <item>Ieff фA</item>
+          <item>Ieff фB</item>
+          <item>Ieff фC</item>
+          <item>Frequency</item>
+          <item>U1</item>
+          <item>U2</item>
+          <item>I1</item>
+          <item>I2</item>
+          <item>Pf сумм.</item>
+          <item>Qf сумм.</item>
+          <item>Sf сумм.</item>
+          <item>CosPhi</item>
+          <item>Tmk,°С</item>
+          <item>Tamb,°С</item>
+          <item>Twin,°С</item>
+          <item>VibrSCZ_V №1</item>
+          <item>VibrSCZ_V фB</item>
+          <item>VibrSCZ_V фC</item>
+          <item>VibrSCZ_V фA</item>
+          <item>VibrSCZ_V фB</item>
+          <item>VibrSCZ_V фC</item>
+          <item>VibrSCZ_D фA</item>
+          <item>VibrSCZ_D фB</item>
+          <item>VibrSCZ_D фC</item>
+          <item>VibrSCZ_D фA</item>
+          <item>VibrSCZ_D фB</item>
+          <item>VibrSCZ_D фC</item>
+        </string-array>
+      </journal>
+
+      <!--Описываем протокол Modbus-->
+      <modbus>
+        <group id="baseSerialInfo">
+          <function>04</function>
+          <type>uint32</type>
+          <start-addr>1</start-addr>
+          <count>32</count>
+        </group>
+        <group id="tempHardware">
+          <function>04</function>
+          <type>float</type>
+          <start-addr>101</start-addr>
+          <count>4</count>
+        </group>
+        <group id="voltage">
+          <function>04</function>
+          <type>float</type>
+          <start-addr>1000</start-addr>
+          <count>38</count>
+        </group>
+        <group id="lineVoltage">
+          <function>04</function>
+          <type>float</type>
+          <start-addr>1220</start-addr>
+          <count>16</count>
+        </group>
+        <group id="amperage">
+          <function>04</function>
+          <type>float</type>
+          <start-addr>1400</start-addr>
+          <count>38</count>
+        </group>
+        <group id="shearAngle">
+          <function>04</function>
+          <type>float</type>
+          <start-addr>2400</start-addr>
+          <count>14</count>
+        </group>
+        <group id="capacity">
+          <function>04</function>
+          <type>float</type>
+          <start-addr>2420</start-addr>
+          <count>64</count>
+        </group>
+        <group id="harmonicUA">
+          <function>04</function>
+          <type>float</type>
+          <start-addr>3020</start-addr>
+          <count>122</count>
+        </group>
+        <group id="harmonicUB">
+          <function>04</function>
+          <type>float</type>
+          <start-addr>3146</start-addr>
+          <count>122</count>
+        </group>
+        <group id="harmonicUC">
+          <function>01</function>
+          <type>bool</type>
+          <start-addr>3272</start-addr>
+          <count>122</count>
+        </group>
+        <group id="harmonicIA">
+          <function>04</function>
+          <type>float</type>
+          <start-addr>3420</start-addr>
+          <count>122</count>
+        </group>
+        <group id="harmonicIB">
+          <function>04</function>
+          <type>float</type>
+          <start-addr>3546</start-addr>
+          <count>122</count>
+        </group>
+        <group id="harmonicIC">
+          <function>04</function>
+          <type>float</type>
+          <start-addr>3672</start-addr>
+          <count>122</count>
+        </group>
+        <group id="insulation">
+          <function>04</function>
+          <type>float</type>
+          <start-addr>4700</start-addr>
+          <count>12</count>
+        </group>
+        <group id="load">
+          <function>04</function>
+          <type>float</type>
+          <start-addr>4010</start-addr>
+          <count>44</count>
+        </group>
+        <group id="tempExtern">
+          <function>04</function>
+          <type>float</type>
+          <start-addr>4500</start-addr>
+          <count>14</count>
+        </group>
+        <!--5200-5203 еще в процессе(не понятно что длать с типом time)-->
+        <group id="alarmModule">
+          <function>01</function>
+          <type>bool</type>
+          <start-addr>5011</start-addr>
+          <count>33</count>
+        </group>
+        <!--4600,4601 rtime;wtime еще в процессе(не понятно что длать с типом time)-->
+        <group id="vibrations">
+          <function>04</function>
+          <type>float</type>
+          <start-addr>6040</start-addr>
+          <count>72</count>
+        </group>
+      </modbus>
+
+      <!--Описываем протокол Protocom-->
+      <protocom>
+        <group>
+          <start-addr>101</start-addr>
+          <count>2</count>
+          <block>0</block>
+        </group>
+        <group>
+          <start-addr>1000</start-addr>
+          <count>11</count>
+          <block>2</block>
+        </group>
+        <group>
+          <start-addr>1020</start-addr>
+          <count>8</count>
+          <block>4</block>
+        </group>
+        <group>
+          <start-addr>1028</start-addr>
+          <count>61</count>
+          <block>25</block>
+        </group>
+        <group>
+          <start-addr>1089</start-addr>
+          <count>61</count>
+          <block>35</block>
+        </group>
+        <group>
+          <start-addr>1150</start-addr>
+          <count>61</count>
+          <block>45</block>
+        </group>
+        <group>
+          <start-addr>1220</start-addr>
+          <count>8</count>
+          <block>8</block>
+        </group>
+        <group>
+          <start-addr>1400</start-addr>
+          <count>11</count>
+          <block>3</block>
+        </group>
+        <group>
+          <start-addr>1420</start-addr>
+          <count>8</count>
+          <block>6</block>
+        </group>
+        <group>
+          <start-addr>1428</start-addr>
+          <count>61</count>
+          <block>27</block>
+        </group>
+        <group>
+          <start-addr>1489</start-addr>
+          <count>61</count>
+          <block>37</block>
+        </group>
+        <group>
+          <start-addr>1550</start-addr>
+          <count>61</count>
+          <block>47</block>
+        </group>
+        <group>
+          <start-addr>4000</start-addr>
+          <count>6</count>
+          <block>9</block>
+        </group>
+        <group>
+          <start-addr>2420</start-addr>
+          <count>32</count>
+          <block>10</block>
+       </group>
+        <group>
+          <start-addr>4010</start-addr>
+          <count>22</count>
+          <block>11</block>
+        </group>
+        <group>
+          <start-addr>4500</start-addr>
+          <count>7</count>
+          <block>13</block>
+        </group>
+        <group>
+          <start-addr>4520</start-addr>
+          <count>2</count>
+          <block>14</block>
+       </group>
+        <group>
+          <start-addr>2400</start-addr>
+          <count>7</count>
+          <block>17</block>
+       </group>
+        <group>
+          <start-addr>6040</start-addr>
+          <count>36</count>
+          <block>20</block>
+        </group>
+        <!-- <group>
+          <start-addr>2420</start-addr>
+          <count>16</count>
+          <block>21</block>
+        </group>
+        <group>
+          <start-addr>2450</start-addr>
+          <count>16</count>
+          <block>22</block>
+        </group> -->
+
+        <!--блок 18 еще в процессе(не понятно что длать с типом time)-->
+        <group id="alarmModule">
+          <start-addr>5011</start-addr>
+          <count>33</count>
+          <block>100</block>
+        </group>
+      </protocom>
+      <iec60870></iec60870>
+
+      <s2files>
+        <record>
+          <id>3</id>
+          <defaultValue>1</defaultValue>
+        </record>
+        <record>
+          <id>4</id>
+          <defaultValue>205</defaultValue>
+        </record>
+        <record>
+          <id>5</id>
+          <defaultValue>5</defaultValue>
+        </record>
+        <record>
+          <id>6</id>
+          <defaultValue>15</defaultValue>
+        </record>
+        <record>
+          <id>7</id>
+          <defaultValue>10</defaultValue>
+        </record>
+        <record>
+          <id>8</id>
+          <defaultValue>20</defaultValue>
+        </record>
+        <record>
+          <id>9</id>
+          <defaultValue>12</defaultValue>
+        </record>
+        <record>
+          <id>10</id>
+          <defaultValue>8</defaultValue>
+        </record>
+        <record>
+          <id>20</id>
+          <defaultValue>172,16,29,12</defaultValue>
+        </record>
+        <record>
+          <id>21</id>
+          <defaultValue>255,255,252,0</defaultValue>
+        </record>
+        <record>
+          <id>22</id>
+          <defaultValue>172,16,29,1</defaultValue>
+        </record>
+        <record>
+          <id>23</id>
+          <defaultValue>2404,2405,502,502</defaultValue>
+        </record>
+        <record>
+          <id>24</id>
+          <defaultValue>172,16,29,12</defaultValue>
+        </record>
+        <record>
+          <id>25</id>
+          <defaultValue>9600</defaultValue>
+        </record>
+        <record>
+          <id>26</id>
+          <defaultValue>0</defaultValue>
+        </record>
+        <record>
+          <id>27</id>
+          <defaultValue>0</defaultValue>
+        </record>
+        <record>
+          <id>28</id>
+          <defaultValue>0</defaultValue>
+        </record>
+        <record>
+          <id>1003</id>
+          <defaultValue>100</defaultValue>
+        </record>
+        <record>
+          <id>1004</id>
+          <defaultValue>3</defaultValue>
+        </record>
+        <record>
+          <id>1005</id>
+          <defaultValue>7</defaultValue>
+        </record>
+        <record>
+          <id>1006</id>
+          <defaultValue>0.38</defaultValue>
+        </record>
+        <record>
+          <id>1010</id>
+          <defaultValue>2</defaultValue>
+        </record>
+        <record>
+          <id>1011</id>
+          <defaultValue>2</defaultValue>
+        </record>
+        <record>
+          <id>1012</id>
+          <defaultValue>0.5</defaultValue>
+        </record>
+        <record>
+          <id>1013</id>
+          <defaultValue>0.2</defaultValue>
+        </record>
+        <record>
+          <id>1027</id>
+          <defaultValue>100.0</defaultValue>
+        </record>
+        <record>
+          <id>1028</id>
+          <defaultValue>1.385</defaultValue>
+        </record>
+        <record>
+          <id>1031</id>
+          <defaultValue>900</defaultValue>
+        </record>
+        <record>
+          <id>1037</id>
+          <defaultValue>0</defaultValue>
+        </record>
+        <record>
+          <id>1038</id>
+          <defaultValue>0</defaultValue>
+        </record>
+        <record>
+          <id>1050</id>
+          <defaultValue>100.0</defaultValue>
+        </record>
+        <record>
+          <id>1052</id>
+          <defaultValue>600</defaultValue>
+        </record>
+        <record>
+          <id>1053</id>
+          <defaultValue>5</defaultValue>
+        </record>
+        <record>
+          <id>1060</id>
+          <defaultValue>0</defaultValue>
+        </record>
+        <record>
+          <id>1061</id>
+          <defaultValue>0</defaultValue>
+        </record>
+        <record>
+          <id>1062</id>
+          <defaultValue>0</defaultValue>
+        </record>
+        <record>
+          <id>1063</id>
+          <defaultValue>0</defaultValue>
+        </record>
+        <record>
+          <id>1064</id>
+          <defaultValue>0</defaultValue>
+        </record>
+        <record>
+          <id>1072</id>
+          <defaultValue>105</defaultValue>
+        </record>
+        <record>
+          <id>1073</id>
+          <defaultValue>100</defaultValue>
+        </record>
+        <record>
+          <id>1074</id>
+          <defaultValue>25</defaultValue>
+        </record>
+        <record>
+          <id>1075</id>
+          <defaultValue>70</defaultValue>
+        </record>
+        <record>
+          <id>1076</id>
+          <defaultValue>0.1</defaultValue>
+        </record>
+        <record>
+          <id>1077</id>
+          <defaultValue>10</defaultValue>
+        </record>
+        <record>
+          <id>1078</id>
+          <defaultValue>120</defaultValue>
+        </record>
+        <record>
+          <id>1079</id>
+          <defaultValue>33</defaultValue>
+        </record>
+        <record>
+          <id>1080</id>
+          <defaultValue>300</defaultValue>
+        </record>
+        <record>
+          <id>1081</id>
+          <defaultValue>32</defaultValue>
+        </record>
+        <record>
+          <id>1082</id>
+          <defaultValue>2</defaultValue>
+        </record>
+        <record>
+          <id>1083</id>
+          <defaultValue>2</defaultValue>
+        </record>
+        <record>
+          <id>1084</id>
+          <defaultValue>0</defaultValue>
+        </record>
+        <record>
+          <id>1201</id>
+          <defaultValue>50</defaultValue>
+        </record>
+        <record>
+          <id>1202</id>
+          <defaultValue>0.03</defaultValue>
+        </record>
+        <record>
+          <id>1203</id>
+          <defaultValue>5</defaultValue>
+        </record>
+        <record>
+          <id>1204</id>
+          <defaultValue>2</defaultValue>
+        </record>
+        <record>
+          <id>1205</id>
+          <defaultValue>36</defaultValue>
+        </record>
+        <record>
+          <id>1206</id>
+          <defaultValue>24</defaultValue>
+        </record>
+        <record>
+          <id>1207</id>
+          <defaultValue>0</defaultValue>
+        </record>
+        <record>
+          <id>1208</id>
+          <defaultValue>3</defaultValue>
+        </record>
+        <record>
+          <id>1209</id>
+          <defaultValue>0.1</defaultValue>
+        </record>
+        <record>
+          <id>1210</id>
+          <defaultValue>8</defaultValue>
+        </record>
+        <record>
+          <id>1211</id>
+          <defaultValue>25</defaultValue>
+        </record>
+        <record>
+          <id>1212</id>
+          <defaultValue>80</defaultValue>
+        </record>
+        <record>
+          <id>1213</id>
+          <defaultValue>9.85</defaultValue>
+        </record>
+        <record>
+          <id>1214</id>
+          <defaultValue>31.4</defaultValue>
+        </record>
+        <record>
+          <id>1215</id>
+          <defaultValue>100</defaultValue>
+        </record>
+        <record>
+          <id>1216</id>
+          <defaultValue>0.3</defaultValue>
+        </record>
+        <record>
+          <id>1217</id>
+          <defaultValue>1</defaultValue>
+        </record>
+        <record>
+          <id>1218</id>
+          <defaultValue>3</defaultValue>
+        </record>
+        <record>
+          <id>1219</id>
+          <defaultValue>0.6</defaultValue>
+        </record>
+        <record>
+          <id>1220</id>
+          <defaultValue>2</defaultValue>
+        </record>
+        <record>
+          <id>1221</id>
+          <defaultValue>6</defaultValue>
+        </record>
+        <record>
+          <id>1222</id>
+          <defaultValue>1</defaultValue>
+        </record>
+
+      </s2files>
+    </resources>
+  </module>
+</modules>

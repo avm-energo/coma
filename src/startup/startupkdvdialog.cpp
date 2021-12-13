@@ -62,15 +62,11 @@ void StartupKDVDialog::SetupUI()
     QPushButton *pb = new QPushButton("Прочитать из модуля");
     // NOTE Use button widget instead
     // connect(pb, &QAbstractButton::clicked, this, &AbstractStartupDialog::GetCorBd);
-    if (StdFunc::IsInEmulateMode())
-        pb->setEnabled(false);
 
     glyout->addWidget(pb, row, 1, 1, 2);
 
     pb = new QPushButton("Записать в модуль");
     connect(pb, &QAbstractButton::clicked, this, &StartupKDVDialog::WriteCor);
-    if (StdFunc::IsInEmulateMode())
-        pb->setEnabled(false);
 
     glyout->addWidget(pb, row, 3, 1, 2);
 
@@ -78,15 +74,11 @@ void StartupKDVDialog::SetupUI()
 
     pb = new QPushButton("Прочитать значения из файла");
     connect(pb, &QAbstractButton::clicked, this, &StartupKDVDialog::ReadFromFile);
-    if (StdFunc::IsInEmulateMode())
-        pb->setEnabled(false);
 
     glyout->addWidget(pb, row, 1, 1, 2);
 
     pb = new QPushButton("Сохранить значения в файл");
     connect(pb, &QAbstractButton::clicked, this, &StartupKDVDialog::SaveToFile);
-    if (StdFunc::IsInEmulateMode())
-        pb->setEnabled(false);
 
     glyout->addWidget(pb, row, 3, 1, 2);
 

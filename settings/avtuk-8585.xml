@@ -1,41 +1,149 @@
 <?xml version="1.0" encoding="utf-8"?>
 <modules xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="device-schema.xsd">
-  <!--Здесь мы описаваем текущий модуль, обязательно указать mtypeb и mtypem-->
-  <module mtypeb="85" mtypem="85">
-    <!--Здесь укаазно название модуля-->
-    <name>AVTUK-8585</name>
-    <!--Минимальная версия прошивки модуля, для которой описаны настройки-->
-    <version>3.3-0001</version>
-    <!--Дальше идет всё, что несредственно относится к модулю-->
-    <resources>
-      <!--Описываем сигнализацию, имя обязательно-->
+	<!--Здесь мы описаваем текущий модуль, обязательно указать mtypeb и mtypem-->
+	<module mtypeb="85" mtypem="85">
+		<!--Здесь укаазно название модуля-->
+		<name>AVTUK-8585</name>
+		<!--Минимальная версия прошивки модуля, для которой описаны настройки-->
+		<version>3.8-0001</version>
+		<!--Дальше идет всё, что несредственно относится к модулю-->
+		<resources>
+			<alarm name="critical">
+				<!--Массив событий сигнализации, имя обязательно-->
+				<string-array name="criticalEvents">
+					<item>Не переключился блок контакт «полюс замкнут» ф.A</item>
+					<item>Не переключился блок контакт «полюс замкнут» ф.B</item>
+					<item>Не переключился блок контакт «полюс замкнут» ф.C</item>
+					<item>Не переключился блок контакт «полюс разомкнут» ф.A</item>
+					<item>Не переключился блок контакт «полюс разомкнут» ф.B</item>
+					<item>Не переключился блок контакт «полюс разомкнут» ф.C</item>
+					<item>Превышено время ожидания конца переключения ф.А</item>
+					<item>Превышено время ожидания конца переключения ф.B</item>
+					<item>Превышено время ожидания конца переключения ф.C</item>
+					<item>Авария по собственному времени откл. ф.А</item>
+					<item>Авария по собственному времени откл. ф.B</item>
+					<item>Авария по собственному времени откл. ф.C</item>
+					<item>Авария по собственному времени вкл. ф.A</item>
+					<item>Авария по собственному времени вкл. ф.B</item>
+					<item>Авария по собственному времени вкл. ф.C</item>
+					<item>Авария по времени перем. главного контакта при откл. ф.А</item>
+					<item>Авария по времени перем. главного контакта при откл. ф.B</item>
+					<item>Авария по времени перем. главного контакта при откл. ф.C</item>
+					<item>Авария по времени перем. главного контакта при вкл. ф.А</item>
+					<item>Авария по времени перем. главного контакта при вкл. ф.B</item>
+					<item>Авария по времени перем. главного контакта при вкл. ф.C</item>
+					<item>Авария по погрешности выполненной синх. коммутации при откл. ф.A</item>
+					<item>Авария по погрешности выполненной синх. коммутации при откл. ф.B</item>
+					<item>Авария по погрешности выполненной синх. коммутации при откл. ф.C</item>
+					<item>Авария по погрешности выполненной синх. коммутации при вкл. ф.A</item>
+					<item>Авария по погрешности выполненной синх. коммутации при вкл. ф.B</item>
+					<item>Авария по погрешности выполненной синх. коммутации при вкл. ф.C</item>
+					<item>Авария по времени рассинхронизации ф.A выключателя</item>
+					<item>Авария по времени рассинхронизации ф.B выключателя</item>
+					<item>Авария по времени рассинхронизации ф.С выключателя</item>
+					<item>Авария по времени горения дуги выключателя ф.А</item>
+					<item>Авария по времени горения дуги выключателя ф.B</item>
+					<item>Авария по времени горения дуги выключателя ф.C</item>
+					<item>Авария по остаточному механическому ресурсу для ф.А</item>
+					<item>Авария по остаточному механическому ресурсу для ф.В</item>
+					<item>Авария по остаточному механическому ресурсу для ф.С</item>
+					<item>Авария по коммутационному ресурсу для ф.А</item>
+					<item>Авария по коммутационному ресурсу для ф.В</item>
+					<item>Авария по коммутационному ресурсу для ф.С</item>
+					<item>Авария по току в выключателе ф.A при выполнении коммутации</item>
+					<item>Авария по току в выключателе ф.B при выполнении коммутации</item>
+					<item>Авария по току в выключателе ф.C при выполнении коммутации</item>
+					<item>Неисправность соленоидов отключения выключателя</item>
+					<item>Неисправность соленоидов включения выключателя</item>
+					<item>Устройство синх. коммутации в режиме отключения основного алгоритма</item>
+				</string-array>
+				<!--Флаги сигнализации-->
+				<quint128 name="criticalFlags">111111000111000111000111000111000111000111000111000111000111000111000000000111111111</quint128>
+				<!--Стартовый адрес сигнализации-->
+				<quint32 name="startAddr">3012</quint32>
+				<!--Цвет сигнализации если событие произошло-->
+				<color>#ff0000</color>
+			</alarm>
+			<alarm name="warning">
+				<string-array name="warningEvents">
+					<item>Недостаточный уровень переменного тока ф.А для синх. команд откл.</item>
+					<item>Недостаточный уровень переменного тока ф.B для синх. команд откл.</item>
+					<item>Недостаточный уровень переменного тока ф.С для синх. команд откл.</item>
+					<item>Недостаточный уровень переменного напряжения ф.А для синх. команд вкл.</item>
+					<item>Недостаточный уровень переменного напряжения ф.B для синх. команд вкл.</item>
+					<item>Недостаточный уровень переменного напряжения ф.С для синх. команд вкл.</item>
+					<item>Сигнализация по собственному времени откл. ф.А</item>
+					<item>Сигнализация по собственному времени откл. ф.B</item>
+					<item>Сигнализация по собственному времени откл. ф.C</item>
+					<item>Сигнализация по собственному времени вкл. ф.А</item>
+					<item>Сигнализация по собственному времени вкл. ф.B</item>
+					<item>Сигнализация по собственному времени вкл. ф.C</item>
+					<item>Повышенное временя перем. главного контакта при откл. ф.А</item>
+					<item>Повышенное временя перем. главного контакта при откл. ф.B</item>
+					<item>Повышенное временя перем. главного контакта при откл. ф.C</item>
+					<item>Повышенное временя перем. главного контакта при вкл. ф.А</item>
+					<item>Повышенное временя перем. главного контакта при вкл. ф.B</item>
+					<item>Повышенное временя перем. главного контакта при вкл. ф.C</item>
+					<item>Сигнализация по погрешности выполненной синх. коммутации при откл. ф.A</item>
+					<item>Сигнализация по погрешности выполненной синх. коммутации при откл. ф.B</item>
+					<item>Сигнализация по погрешности выполненной синх. коммутации при откл. ф.C</item>
+					<item>Сигнализация по погрешности выполненной синх. коммутации при вкл. ф.A</item>
+					<item>Сигнализация по погрешности выполненной синх. коммутации при вкл. ф.B</item>
+					<item>Сигнализация по погрешности выполненной синх. коммутации при вкл. ф.C</item>
+					<item>Сигнализация по времени рассинхронизации ф.A выключателя</item>
+					<item>Сигнализация по времени рассинхронизации ф.B выключателя</item>
+					<item>Сигнализация по времени рассинхронизации ф.C выключателя</item>
+					<item>Сигнализация по времени горения дуги выключателя ф.А</item>
+					<item>Сигнализация по времени горения дуги выключателя ф.B</item>
+					<item>Сигнализация по времени горения дуги выключателя ф.C</item>
+					<item>Сигнализация по остаточному механическому ресурсу для ф.А</item>
+					<item>Сигнализация по остаточному механическому ресурсу для ф.В</item>
+					<item>Сигнализация по остаточному механическому ресурсу для ф.С</item>
+					<item>Сигнализация по коммутационному ресурсу для ф.А</item>
+					<item>Сигнализация по коммутационному ресурсу ф.В</item>
+					<item>Сигнализация по коммутационному ресурсу ф.С</item>
+					<item>Сигнализация по току в выключателе ф.А при выполнении коммутации</item>
+					<item>Сигнализация по току в выключателе ф.B при выполнении коммутации</item>
+					<item>Сигнализация по току в выключателе ф.C при выполнении коммутации</item>
+				</string-array>
+				<quint128 name="warningFlags">111000111000111000111000111000111000111000111000111000111000111111111000000000</quint128>
+				<quint32 name="startAddr">3012</quint32>
+				<color>#ffff00</color>
+			</alarm>
+			<!--Описываем сигнализацию, имя обязательно-->
 
-      <!--Описываем журнал, имя обязательно-->
+			<!--Описываем журнал, имя обязательно-->
 
- 
-      
-      <!--Описываем протокол Modbus-->
-      <modbus>
-      <!--Модуль не поддерживает modbus-->
-      </modbus>
 
-      <!--Описываем протокол Protocom-->
-       <protocom>    
-       <!-- 
-		disabled temporarily   
-		<group>
-          <start-addr>101</start-addr>
-          <count>2</count>
-          <block>0</block>
-       </group>
-       <group>
-          <start-addr>5001</start-addr>
-          <count>1</count>
-          <block>103</block>
-       </group>       -->
-      </protocom>
-      <iec60870>     
-      </iec60870>
+			<!--Описываем протокол Modbus-->
+			<modbus>
+				<!--Модуль не поддерживает modbus-->
+			</modbus>
+
+			<!--Описываем протокол Protocom-->
+			<protocom>
+				<group>
+					<start-addr>101</start-addr>
+					<count>2</count>
+					<block>0</block>
+				</group>
+				<group>
+					<start-addr>1000</start-addr>
+					<count>29</count>
+					<block>2</block>
+				</group>
+				<group>
+					<start-addr>1040</start-addr>
+					<count>9</count>
+					<block>2</block>
+				</group>
+				<group id="alarmModule">
+					<start-addr>3012</start-addr>
+					<count>84</count>
+					<block>100</block>
+				  </group>   
+			</protocom>
+			<iec60870></iec60870>
 			<s2files>
 				<record>
 					<id>3</id>
@@ -114,7 +222,7 @@
 					<id>1111</id>
 					<defaultValue>40000</defaultValue>
 				</record>
-        		<record>
+				<record>
 					<id>1112</id>
 					<defaultValue>16000.0</defaultValue>
 				</record>
@@ -130,7 +238,7 @@
 					<id>1114</id>
 					<defaultValue>2000</defaultValue>
 				</record>
-        		<record>
+				<record>
 					<id>1115</id>
 					<defaultValue>6</defaultValue>
 				</record>
@@ -138,7 +246,7 @@
 					<id>1116</id>
 					<defaultValue>2000</defaultValue>
 				</record>
-        		<record>
+				<record>
 					<id>1117</id>
 					<defaultValue>5</defaultValue>
 				</record>
@@ -150,16 +258,16 @@
 					<id>1119</id>
 					<defaultValue>70.0</defaultValue>
 				</record>
-        		<record>
+				<record>
 					<id>1120</id>
 					<defaultValue>70.0</defaultValue>
-					<visibility>false</visibility>		
+					<visibility>false</visibility>
 				</record>
 				<record>
 					<id>1121</id>
 					<defaultValue>20,20,20</defaultValue>
 				</record>
-        		<record>
+				<record>
 					<id>1122</id>
 					<defaultValue>60,60,60</defaultValue>
 				</record>
@@ -175,7 +283,7 @@
 					<id>1123</id>
 					<defaultValue>90,210,150</defaultValue>
 				</record>
-        		<record>
+				<record>
 					<id>1124</id>
 					<defaultValue>90,210,150</defaultValue>
 				</record>
@@ -211,7 +319,7 @@
 					<id>1126</id>
 					<defaultValue>1,1,1</defaultValue>
 				</record>
-        		<record>
+				<record>
 					<id>1127</id>
 					<defaultValue>5</defaultValue>
 				</record>
@@ -219,7 +327,7 @@
 					<id>1128</id>
 					<defaultValue>5</defaultValue>
 				</record>
-        		<record>
+				<record>
 					<id>1129</id>
 					<defaultValue>5</defaultValue>
 				</record>
@@ -227,7 +335,7 @@
 					<id>1130</id>
 					<defaultValue>2</defaultValue>
 				</record>
-        		<record>
+				<record>
 					<id>1131</id>
 					<defaultValue>25</defaultValue>
 				</record>
@@ -239,7 +347,7 @@
 					<id>1133</id>
 					<defaultValue>25</defaultValue>
 				</record>
-        		<record>
+				<record>
 					<id>1134</id>
 					<defaultValue>30</defaultValue>
 				</record>
@@ -247,7 +355,7 @@
 					<id>1135</id>
 					<defaultValue>25</defaultValue>
 				</record>
-        		<record>
+				<record>
 					<id>1136</id>
 					<defaultValue>30</defaultValue>
 				</record>
@@ -255,7 +363,7 @@
 					<id>1137</id>
 					<defaultValue>25</defaultValue>
 				</record>
-        		<record>
+				<record>
 					<id>1138</id>
 					<defaultValue>30</defaultValue>
 				</record>
@@ -267,7 +375,7 @@
 					<id>1140</id>
 					<defaultValue>3</defaultValue>
 				</record>
-        		<record>
+				<record>
 					<id>1141</id>
 					<defaultValue>2</defaultValue>
 				</record>
@@ -275,7 +383,7 @@
 					<id>1142</id>
 					<defaultValue>3</defaultValue>
 				</record>
-        		<record>
+				<record>
 					<id>1143</id>
 					<defaultValue>10</defaultValue>
 				</record>
@@ -283,7 +391,7 @@
 					<id>1144</id>
 					<defaultValue>15</defaultValue>
 				</record>
-        		<record>
+				<record>
 					<id>1145</id>
 					<defaultValue>10,10</defaultValue>
 				</record>
@@ -331,7 +439,7 @@
 					<id>1162</id>
 					<defaultValue>0</defaultValue>
 				</record>
-        		<record>
+				<record>
 					<id>1163</id>
 					<defaultValue>300</defaultValue>
 				</record>
@@ -348,7 +456,7 @@
 					<id>1168</id>
 					<defaultValue>4000</defaultValue>
 				</record>
-        		<record>
+				<record>
 					<id>1169</id>
 					<defaultValue>32</defaultValue>
 				</record>
@@ -360,7 +468,7 @@
 					<id>1171</id>
 					<defaultValue>34</defaultValue>
 				</record>
-        		<record>
+				<record>
 					<id>1176</id>
 					<defaultValue>3960</defaultValue>
 				</record>
@@ -368,7 +476,7 @@
 					<id>1177</id>
 					<defaultValue>0.63</defaultValue>
 				</record>
-        		<record>
+				<record>
 					<id>1178</id>
 					<defaultValue>2.0</defaultValue>
 				</record>
@@ -376,7 +484,7 @@
 					<id>1179</id>
 					<defaultValue>9.68</defaultValue>
 				</record>
-        		<record>
+				<record>
 					<id>1180</id>
 					<defaultValue>5000</defaultValue>
 				</record>
@@ -392,7 +500,7 @@
 					<id>1190</id>
 					<defaultValue>200,1,240,-1</defaultValue>
 				</record>
-        		<record>
+				<record>
 					<id>1191</id>
 					<defaultValue>200,1,240,-1</defaultValue>
 				</record>
@@ -404,7 +512,7 @@
 					<id>1193</id>
 					<defaultValue>-20,1,60,-1</defaultValue>
 				</record>
-        		<record>
+				<record>
 					<id>1194</id>
 					<defaultValue>-20,1,60,-1</defaultValue>
 				</record>
@@ -412,11 +520,11 @@
 					<id>1195</id>
 					<defaultValue>-20,1,60,-1</defaultValue>
 				</record>
-        		<record>
+				<record>
 					<id>1196</id>
 					<defaultValue>29,1,33,-1</defaultValue>
 				</record>
-        		<record>
+				<record>
 					<id>1197</id>
 					<defaultValue>29,1,33,-1</defaultValue>
 				</record>
@@ -424,7 +532,7 @@
 					<id>1198</id>
 					<defaultValue>3.0</defaultValue>
 				</record>
-        		<record>
+				<record>
 					<id>1199</id>
 					<defaultValue>0.4</defaultValue>
 				</record>
@@ -441,6 +549,6 @@
 					<defaultValue>0.1</defaultValue>
 				</record>
 			</s2files>
-    </resources>
-  </module>
+		</resources>
+	</module>
 </modules>

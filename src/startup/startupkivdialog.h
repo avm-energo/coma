@@ -13,6 +13,8 @@ public:
     explicit StartupKIVDialog(QWidget *parent = nullptr);
     ~StartupKIVDialog();
 
+    void SetupCor() override;
+
 private:
     struct CorData
     {

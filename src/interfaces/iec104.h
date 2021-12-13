@@ -128,6 +128,7 @@ public:
 public slots:
     void reqStartup(quint32 sigAdr = 0, quint32 sigCount = 0) override;
     void reqBSI() override;
+    void reqBSIExt() override;
     // void reqAlarms(quint32 sigAdr = 0, quint32 sigCount = 0);
     void reqFile(quint32 filenum, FileFormat format) override;
     void writeFile(quint32 filenum, const QByteArray &file) override;
@@ -136,7 +137,7 @@ public slots:
     void writeTime(quint32 time) override;
     void writeCommand(Queries::Commands cmd, QVariant item) override;
     void reqFloats(quint32 sigAdr = 0, quint32 sigCount = 0) override;
-    void reqBitStrings(quint32 sigAdr = 0, quint32 sigCount = 0);
+    void reqBitStrings(quint32 sigAdr = 0, quint32 sigCount = 0) override;
 
     //    static void SelectFile(char);
     void stop() override;
@@ -147,7 +148,11 @@ public slots:
     //    static void FileReady(S2ConfigType *s2config);
     //    static void getTime();
     //    static void com51WriteTime(uint time);
-
+    bool supportBSIExt() override
+    {
+        // no way to check
+        return true;
+    }
 signals:
     void StopAll();
     //    void Floatsignalsready(IEC104Thread::FlSignals104 *);

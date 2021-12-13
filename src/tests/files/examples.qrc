@@ -1,0 +1,9 @@
+<RCC>
+    <qresource prefix="/osc">
+        <file>1021.osc</file>
+        <file>37353239303451123f0033-8585-2005-6730917119207093248.osc</file>
+    </qresource>
+    <qresource prefix="/swj">
+        <file>37353239303451123f0033-8585-1110420049-6730912496292894630.swj</file>
+    </qresource>
+</RCC>

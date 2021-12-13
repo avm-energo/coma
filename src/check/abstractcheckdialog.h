@@ -16,6 +16,7 @@
 #ifndef ABSTRACTCHECKDIALOG_H
 #define ABSTRACTCHECKDIALOG_H
 
+#include "../gen/settings.h"
 #include "../widgets/udialog.h"
 #include "check.h"
 
@@ -25,11 +26,6 @@
 
 // default timer interval to check analog values
 constexpr int ANMEASINT = 2000;
-
-// блоки Bd для базовой платы нумеруются с 0 (0-й блок - общий для всех)
-constexpr int BT_STARTBD_BASE = 0;
-// блоки Bd для мезонинной платы нумеруются с 101 (100 base + 1st block)
-constexpr int BT_STARTBD_MEZ = 100;
 
 namespace QXlsx
 {
@@ -51,14 +47,7 @@ public:
         Critical
     };
     using HighlightMap = QMultiMap<quint32, quint32>;
-    QXlsx::Document *xlsx;
-    QTimer *Timer;
-    int WRow;
-    // количество вкладок с выводом блоков данных модуля, один блок может быть разделён на несколько вкладок
-    //    int BdUINum;
-    // тип платы
-    //    QList<int> IndexWd;
-    // bool m_timerCounter;
+
     /*!
        \brief QList для вкладок текущего виджета
 
@@ -66,11 +55,11 @@ public:
             для всех вкладок, если хотим обновлять какую-то вкладку сразу, то
             необходимо включить обновление для нее
     */
-    QList<BdUIStruct> m_BdUIList;
 
     explicit AbstractCheckDialog(QWidget *parent = nullptr);
-    ~AbstractCheckDialog();
-    void SetupUI();
+    ~AbstractCheckDialog() override;
+    /// if override, don't forget to call base
+    virtual void setupUI();
 
     // row - строка для записи заголовков
     virtual void PrepareHeadersForFile(int row);
@@ -98,6 +87,18 @@ public:
         }
     }
     void updateSPData(const DataTypes::SinglePointWithTimeStruct &sp) override;
+
+protected:
+    /*!
+       \brief QList для вкладок текущего виджета
+
+    QList для вкладок текущего виджета, по умолчанию обновление отключено
+        для всех вкладок, если хотим обновлять какую-то вкладку сразу, то
+        необходимо включить обновление для нее
+            */
+    QList<BdUIStruct> m_BdUIList;
+    QTimer *Timer;
+    QXlsx::Document *xlsx;
 signals:
 
 public slots:
@@ -114,21 +115,17 @@ private:
     };
     QMultiMap<quint32, quint32> m_highlightWarn, m_highlightCrit;
     QMap<int, BdBlocks *> Bd_blocks;
-    //    struct Bip
-    //    {
-    //        quint8 ip[4];
-    //    };
 
-    //    int m_newTWIndex;
-    //    Bip Bip_block;
     bool m_readDataInProgress;
     QElapsedTimer *ElapsedTimeCounter;
+    int WRow;
 
     void ReadAnalogMeasurementsAndWriteToFile();
 
 protected:
     bool XlsxWriting;
-    const QString ValuesFormat = "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; font: bold; }";
+    static constexpr char ValuesFormat[]
+        = "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; font: bold; }";
     void uponInterfaceSetting() override;
 
 private slots:
@@ -137,6 +134,26 @@ private slots:
     void StartAnalogMeasurements();
     void TimerTimeout();
     void TWTabChanged(int index);
+};
+
+class QGroupBox;
+
+class CheckDialog : public AbstractCheckDialog
+{
+    Q_OBJECT
+public:
+    explicit CheckDialog(const CheckItem &item, const categoryMap &categories, QWidget *parent = nullptr);
+    ~CheckDialog() override;
+    virtual void setupUI() override;
+
+protected:
+    const CheckItem &m_item;
+    const categoryMap &m_categories;
+    void addSignals(unsigned int key, UWidget *widget);
+
+private:
+    void setup(const check::detail::Record &arg, QGroupBox *gb);
+    void setup(const check::detail::RecordList &arg, QGroupBox *gb);
 };
 
 #endif // ABSTRACTCHECKDIALOG_H

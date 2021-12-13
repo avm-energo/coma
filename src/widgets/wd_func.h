@@ -314,7 +314,6 @@ public:
     static QFrame *newVLine(QWidget *w);
 
     static QMainWindow *getMainWindow();
-    static QMainWindow *getComaWindow();
 
     static bool floatIsWithinLimits(
         QWidget *w, const QString &varname, double var, double base, double tolerance, bool showMessage = true);

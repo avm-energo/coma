@@ -43,6 +43,7 @@ public:
 
     void reqStartup(quint32 sigAdr, quint32 sigCount) override;
     void reqBSI() override;
+    void reqBSIExt() override;
     void reqFile(quint32 filenum, FileFormat format) override;
 
     void writeFile(quint32 filenum, const QByteArray &file) override;

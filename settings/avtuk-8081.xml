@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="utf-8"?>
+<modules xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="device-schema.xsd">
+  <!--Здесь мы описываем текущий модуль, обязательно указать mtypeb и mtypem-->
+  <module mtypeb="80" mtypem="81">
+    <!--Здесь указано название модуля-->
+    <name>AVTUK-8081</name>
+    <version>2.5-0002</version>
+    <!--Дальше идет всё, что несредственно относится к модулю-->
+    <resources>
+      <!--Описываем сигнализацию, имя обязательно-->
+
+      <!--Описываем протокол Modbus-->
+      <modbus>
+      </modbus>
+
+      <!--Описываем протокол Protocom-->
+      <!--Описываем протокол Protocom-->
+      <protocom>
+        <!--Protocom состоит только из групп-->
+        <group>
+          <start-addr>101</start-addr>
+          <count>2</count>
+          <block>0</block>
+        </group>
+        <group>
+          <start-addr>1400</start-addr>
+          <count>11</count>
+          <block>2</block>
+        </group>
+        <group>
+          <start-addr>1420</start-addr>
+          <count>8</count>
+          <block>4</block>
+        </group>
+        <group>
+          <start-addr>1028</start-addr>
+          <count>61</count>
+          <block>25</block>
+        </group>
+        <group>
+          <start-addr>1089</start-addr>
+          <count>61</count>
+          <block>35</block>
+        </group>
+        <group>
+          <start-addr>1150</start-addr>
+          <count>61</count>
+          <block>45</block>
+        </group>
+        <group>
+          <start-addr>2100</start-addr>
+          <count>11</count>
+          <block>3</block>
+        </group>
+        <group>
+          <start-addr>2120</start-addr>
+          <count>8</count>
+          <block>6</block>
+        </group>
+        <group>
+          <start-addr>1428</start-addr>
+          <count>61</count>
+          <block>27</block>
+        </group>
+        <group>
+          <start-addr>1489</start-addr>
+          <count>61</count>
+          <block>37</block>
+        </group>
+        <group>
+          <start-addr>1550</start-addr>
+          <count>61</count>
+          <block>47</block>
+        </group>
+
+        <group id="alarmModule">
+          <start-addr>3011</start-addr>
+          <count>25</count>
+          <block>100</block>
+        </group>      
+      </protocom>
+      <iec60870>
+        
+      </iec60870>
+
+      <s2files>
+				<record>
+					<id>3</id>
+					<defaultValue>1</defaultValue>
+				</record>
+				<record>
+					<id>4</id>
+					<defaultValue>205</defaultValue>
+				</record>
+				<record>
+					<id>5</id>
+					<defaultValue>5</defaultValue>
+				</record>
+				<record>
+					<id>6</id>
+					<defaultValue>15</defaultValue>
+				</record>
+				<record>
+					<id>7</id>
+					<defaultValue>10</defaultValue>
+				</record>
+				<record>
+					<id>8</id>
+					<defaultValue>20</defaultValue>
+				</record>
+				<record>
+					<id>9</id>
+					<defaultValue>12</defaultValue>
+				</record>
+				<record>
+					<id>10</id>
+					<defaultValue>8</defaultValue>
+				</record>
+        <record>
+					<id>1001</id>
+					<defaultValue>1</defaultValue>
+				</record>
+        <record>
+					<id>1002</id>
+					<defaultValue>256</defaultValue>
+				</record>
+				<record>
+					<id>1003</id>
+					<defaultValue>100</defaultValue>
+				</record>
+        <record>
+					<id>1004</id>
+					<defaultValue>3</defaultValue>
+				</record>
+        <record>
+					<id>1005</id>
+					<defaultValue>7</defaultValue>
+				</record>
+				<record>
+					<id>1006</id>
+					<defaultValue>500</defaultValue>
+				</record>
+        <record>
+					<id>1007</id>
+					<defaultValue>220</defaultValue>
+				</record>
+        <record>
+					<id>1008</id>
+					<defaultValue>600,600,600,1000,1000,1000</defaultValue>
+				</record>
+        <record>
+					<id>1009</id>
+					<defaultValue>5,5,5,5,5,5</defaultValue>
+				</record>
+        <record>
+					<id>1010</id>
+					<defaultValue>2</defaultValue>
+				</record>
+        <record>
+					<id>1011</id>
+					<defaultValue>2</defaultValue>
+				</record>
+				<record>
+					<id>1012</id>
+					<defaultValue>0.5</defaultValue>
+				</record>
+				<record>
+					<id>1050</id>
+					<defaultValue>100.0</defaultValue>
+				</record>
+        <record>
+					<id>1051</id>
+					<defaultValue>100.0</defaultValue>
+				</record>
+        <record>
+					<id>1054</id>
+					<defaultValue>0</defaultValue>
+				</record>
+        <record>
+					<id>1055</id>
+					<defaultValue>0</defaultValue>
+				</record>
+			</s2files>
+    </resources>
+  </module>
+</modules>

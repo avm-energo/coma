@@ -4,7 +4,8 @@
 
 #include <QVBoxLayout>
 
-SignalChooseWidget::SignalChooseWidget(QStringList &snames, QStringList &discr, QWidget *parent) : QWidget(parent)
+SignalChooseWidget::SignalChooseWidget(const QStringList &snames, const QStringList &discr, QWidget *parent)
+    : QWidget(parent)
 {
     QVBoxLayout *lyout = new QVBoxLayout;
     for (int i = 0; i < snames.size(); ++i)
@@ -34,23 +35,6 @@ MarkSignalWidget::MarkSignalWidget(const QString &text, QWidget *parent) : QLabe
 {
     setText(text);
     setMouseTracking(true);
-}
-
-void MarkSignalWidget::mouseMoveEvent(QMouseEvent *e)
-{
-    QString Hover = "QLabel::hover {border: 1px solid lightgray;}";
-    QString NoHover = "QLabel {border: 0px;}";
-    if (this->rect().contains(e->pos()))
-    {
-        setCursor(Qt::PointingHandCursor);
-        setStyleSheet(Hover);
-    }
-    else
-    {
-        setCursor(Qt::ArrowCursor);
-        setStyleSheet(NoHover);
-    }
-    e->accept();
 }
 
 void MarkSignalWidget::mousePressEvent(QMouseEvent *e)

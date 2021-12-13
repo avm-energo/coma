@@ -6,19 +6,25 @@
 #include "../gen/error.h"
 #include "../gen/stdfunc.h"
 #include "../widgets/wd_func.h"
-#ifdef QT_DEBUG
-#include <QDebug>
-#include <QElapsedTimer>
-#endif
+
+#include <QMessageBox>
 #include <QVBoxLayout>
 
-InfoDialog::InfoDialog(QWidget *parent) : UDialog(parent), m_oneShotUpdateFlag(false)
+InfoDialog::InfoDialog(QWidget *parent) : UDialog(parent)
 {
-    connect(BaseInterface::iface(), &BaseInterface::stateChanged, this, [&](BaseInterface::State state) {
-        if (state == BaseInterface::State::Run)
-            m_oneShotUpdateFlag = false;
-    });
+
     connect(&Board::GetInstance(), &Board::readyRead, this, &InfoDialog::sync);
+    connect(&Board::GetInstance(), &Board::readyReadExt, this, &InfoDialog::syncExt);
+
+    connect(this, &InfoDialog::fetchBsi, BaseInterface::iface(), &BaseInterface::reqBSI);
+    if (BaseInterface::iface()->supportBSIExt())
+    {
+        connect(this, &InfoDialog::fetchBsi, BaseInterface::iface(), &BaseInterface::reqBSIExt);
+    }
+    else
+    {
+        QMessageBox::warning(this, "BsiExt", "BsiExt не поддерживается");
+    }
 }
 
 void InfoDialog::SetupUI()
@@ -28,8 +34,10 @@ void InfoDialog::SetupUI()
 
     const QList<QPair<QString, QString>> dialogPage {
         { Board::GetInstance().moduleName(), "Тип устройства:" }, //
+        { "namepo", "Наименование программы:" },                  //
         { "snle", "Серийный номер устройства:" },                 //
         { "fwverle", "Версия ПО:" },                              //
+        { "verloader", "Верcия Loader:" },                        //
         { "cfcrcle", "КС конфигурации:" },                        //
         { "rstle", "Последний сброс:" },                          //
         { "rstcountle", "Количество сбросов:" },                  //
@@ -75,37 +83,41 @@ void InfoDialog::FillBsi()
     WDFunc::SetLBLText(this, "hwmle", StdFunc::VerToStr(bsi.HwverM));
 }
 
+void InfoDialog::FillBsiExt()
+{
+    const auto bsi = Board::GetInstance().baseSerialInfoExt();
+    WDFunc::SetLBLText(this, "verloader", StdFunc::VerToStr(bsi.VerLoader));
+    const char *str = reinterpret_cast<const char *>(&bsi.NamePO);
+    std::string string(str, sizeof(quint32));
+    WDFunc::SetLBLText(this, "namepo", QString::fromStdString(string));
+}
+
 void InfoDialog::uponInterfaceSetting()
 {
     SetupUI();
     FillBsi();
 }
 
-void InfoDialog::ClearBsi()
-{
-    QList<QLabel *> allLabels = this->findChildren<QLabel *>();
-    for (QLabel *label : allLabels)
-    {
-        label->clear();
-    }
-}
-
 void InfoDialog::sync()
 {
     if (updatesEnabled())
     {
-        if (!m_oneShotUpdateFlag)
-        {
-            m_oneShotUpdateFlag = true;
-            FillBsi();
-        }
+        FillBsi();
     }
-    else
-        m_oneShotUpdateFlag = false;
+}
+
+void InfoDialog::syncExt()
+{
+    if (updatesEnabled())
+    {
+        FillBsiExt();
+    }
 }
 
 void InfoDialog::reqUpdate()
 {
     if (updatesEnabled())
-        BaseInterface::iface()->reqBSI();
+    {
+        emit fetchBsi();
+    }
 }

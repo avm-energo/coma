@@ -37,6 +37,7 @@ private slots:
     void testFindDevices();
     void testConnection();
     void testBSIrequest();
+    void testBSIErequest();
 signals:
 private:
     Protocom *protocom;

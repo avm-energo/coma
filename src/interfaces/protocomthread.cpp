@@ -1,10 +1,10 @@
 #include "protocomthread.h"
 
-//#include "../gen/board.h"
 #include "../gen/datamanager.h"
 #include "../gen/files.h"
 #include "../gen/helper.h"
 #include "../gen/logclass.h"
+#include "../gen/registers.h"
 #include "../gen/s2.h"
 #include "../gen/stdfunc.h"
 #include "baseinterface.h"
@@ -35,10 +35,6 @@ using Queries::FileFormat;
 
 ProtocomThread::ProtocomThread(QObject *parent) : QObject(parent), m_currentCommand({})
 {
-    // QString tmps = "=== Log started ===";
-    // log = new LogClass;
-    // log->Init("canal.log");
-    // writeLog(tmps.toUtf8());
 }
 
 void ProtocomThread::setReadDataChunk(const QByteArray &readDataChunk)
@@ -65,7 +61,6 @@ void ProtocomThread::wakeUp()
 void ProtocomThread::parse()
 {
     while (BaseInterface::iface()->state() != BaseInterface::State::Stop)
-    // while (Board::GetInstance().connectionState() != Board::ConnectionState::Closed)
     {
         QMutexLocker locker(&_mutex);
         if (!isCommandRequested)
@@ -136,8 +131,6 @@ void ProtocomThread::handle(const Proto::Commands cmd)
                 handleProgress(progress);
                 return;
             }
-
-            // break;
         }
 
         //  GVar MS GMode MS
@@ -167,21 +160,24 @@ void ProtocomThread::handle(const Proto::Commands cmd)
         handleBitString(m_buffer.second, addr);
         break;
 
+    case Commands::ReadBlkStartInfoExt:
+
+        handleBitStringArray(m_buffer.second, Regs::bsiExtStartReg);
+        break;
+
     case Commands::ReadBlkStartInfo:
 
-        handleBitStringArray(m_buffer.second, bsiReg);
+        handleBitStringArray(m_buffer.second, Regs::bsiReg);
         break;
 
     case Commands::ReadBlkAC:
 
-        // handleFloatArray(m_buffer.second, addr, count);
         // Ожидается что в addr хранится номер блока
         handleRawBlock(m_buffer.second, addr);
         break;
 
     case Commands::ReadBlkDataA:
 
-        // handleFloatArray(m_buffer.second, addr, count);
         // Ожидается что в addr хранится номер блока
         handleRawBlock(m_buffer.second, addr);
         break;
@@ -207,7 +203,6 @@ void ProtocomThread::handle(const Proto::Commands cmd)
 
     case Commands::ReadBlkTech:
 
-        // handleFloatArray(m_buffer.second, addr, count);
         handleTechBlock(m_buffer.second, addr);
         break;
 
@@ -236,15 +231,11 @@ void ProtocomThread::checkQueue()
     CommandStruct inp;
     if (DataManager::deQueue(inp) != Error::Msg::NoError)
         return;
-    //    switch (inp.cmd)
-    //    {
-    //    default:
+
     isCommandRequested = true;
     progress = 0;
     m_currentCommand = inp;
     parseRequest(inp);
-    //       break;
-    //    }
 }
 #if defined(Q_OS_WINDOWS)
 void ProtocomThread::fileHelper(DataTypes::FilesEnum fileNum)
@@ -503,10 +494,7 @@ void ProtocomThread::parseResponse(QByteArray ba)
 #ifdef PROTOCOM_DEBUG
     qDebug("Start parse response");
 #endif
-    // using namespace Proto;
 
-    // QByteArray tmps = "<-" + ba.toHex() + "\n";
-    // log->WriteRaw(tmps);
     // Нет шапки
     if (ba.size() < 4)
     {
@@ -514,10 +502,6 @@ void ProtocomThread::parseResponse(QByteArray ba)
         return;
     }
     byte cmd = ba.at(1);
-    // BUG Не работает проверка на существование команды
-    // int cmdCode = QMetaEnum::fromType<Commands>().value(cmd);
-    // if (!isCommandExist(cmdCode))
-    //    return;
 
     quint16 size;
     std::copy(&ba.constData()[2], &ba.constData()[3], &size);
@@ -660,17 +644,7 @@ QByteArray ProtocomThread::prepareError()
 
 QByteArray ProtocomThread::prepareBlock(CommandStruct &cmdStr, Proto::Starters startByte)
 {
-
-    /* QByteArray ba;
-     ba.append(startByte);
-     ba.append(cmdStr.cmd);
-     appendInt16(ba, cmdStr.ba.size());*/
-    //    if (!cmdStr.arg1.isNull())
-    //        ba.append(cmdStr.arg1.toUInt());
-    /* if (!cmdStr.ba.isEmpty())
-         ba.append(cmdStr.ba);*/
-    return /*ba*/ prepareBlock(cmdStr.cmd, cmdStr.ba, startByte);
-    ;
+    return prepareBlock(cmdStr.cmd, cmdStr.ba, startByte);
 }
 
 QByteArray ProtocomThread::prepareBlock(Proto::Commands cmd, QByteArray &data, Proto::Starters startByte)
@@ -679,8 +653,7 @@ QByteArray ProtocomThread::prepareBlock(Proto::Commands cmd, QByteArray &data, P
     ba.append(startByte);
     ba.append(cmd);
     appendInt16(ba, data.size());
-    //    if (!cmdStr.arg1.isNull())
-    //        ba.append(cmdStr.arg1.toUInt());
+
     if (!data.isEmpty())
         ba.append(data);
     return ba;
@@ -696,22 +669,18 @@ ByteQueue ProtocomThread::prepareLongBlk(CommandStruct &cmdStr)
             / MaxSegmenthLength  // Максимальная длинна сегмента
         + 1; // Добавляем еще один сегмент в него попадет последняя часть
     bq.reserve(segCount);
-    //    if (cmdStr.arg1.isValid())
-    //    {
+
     QByteArray tba;
     if (cmdStr.arg1.isValid())
         tba = StdFunc::arrayFromNumber(cmdStr.arg1.value<quint8>());
     tba.append(cmdStr.ba.left(MaxSegmenthLength - 1));
-    //  }
-    // CommandStruct temp { cmdStr.cmd, cmdStr.arg1, cmdStr.arg2, tba };
+
     bq << prepareBlock(cmdStr.cmd, tba);
 
     for (int pos = MaxSegmenthLength - 1; pos < cmdStr.ba.size(); pos += MaxSegmenthLength)
     {
-        // temp = { cmdStr.cmd, cmdStr.arg1, cmdStr.arg2, cmdStr.ba.mid(pos, MaxSegmenthLength) };
         tba = cmdStr.ba.mid(pos, MaxSegmenthLength);
         bq << prepareBlock(cmdStr.cmd, tba, Proto::Starters::Continue);
-        // bq << prepareBlock(temp, Proto::Starters::Continue);
     }
     return bq;
 }
@@ -737,13 +706,24 @@ void ProtocomThread::handleUnixTime(const QByteArray &ba, [[maybe_unused]] quint
     DataManager::addSignalToOutList(DataTypes::SignalTypes::Timespec, resp);
 }
 #endif
-void ProtocomThread::handleBitStringArray(const QByteArray &ba, QList<quint16> arr_addr)
+template <std::size_t N>
+void ProtocomThread::handleBitStringArray(const QByteArray &ba, std::array<quint16, N> arr_addr)
 {
     Q_ASSERT(ba.size() / 4 == arr_addr.size());
     for (int i = 0; i != arr_addr.size(); i++)
     {
         QByteArray temp = ba.mid(sizeof(qint32) * i, sizeof(qint32));
         handleBitString(temp, arr_addr.at(i));
+    }
+}
+
+void ProtocomThread::handleBitStringArray(const QByteArray &ba, quint16 start_addr)
+{
+    Q_ASSERT(ba.size() % sizeof(quint32) == 0);
+    for (int i = 0; i != (ba.size() / sizeof(quint32)); i++)
+    {
+        QByteArray temp = ba.mid(sizeof(qint32) * i, sizeof(qint32));
+        handleBitString(temp, start_addr + i);
     }
 }
 
@@ -784,6 +764,9 @@ void ProtocomThread::handleFile(QByteArray &ba, DataTypes::FilesEnum addr, Queri
     {
     case FileFormat::Binary:
     {
+        DataTypes::GeneralResponseStruct genResp { DataTypes::GeneralResponseTypes::Ok,
+            static_cast<quint64>(ba.size()) };
+        DataManager::addSignalToOutList(DataTypes::SignalTypes::GeneralResponse, genResp);
         DataTypes::FileStruct resp { addr, ba };
         DataManager::addSignalToOutList(DataTypes::SignalTypes::File, resp);
         break;
@@ -793,7 +776,15 @@ void ProtocomThread::handleFile(QByteArray &ba, DataTypes::FilesEnum addr, Queri
         QList<DataTypes::DataRecV> outlistV;
 
         if (!S2::RestoreData(ba, outlistV))
+        {
+            DataTypes::GeneralResponseStruct resp { DataTypes::GeneralResponseTypes::Error,
+                static_cast<quint64>(ba.size()) };
+            DataManager::addSignalToOutList(DataTypes::SignalTypes::GeneralResponse, resp);
             return;
+        }
+        DataTypes::GeneralResponseStruct genResp { DataTypes::GeneralResponseTypes::Ok,
+            static_cast<quint64>(ba.size()) };
+        DataManager::addSignalToOutList(DataTypes::SignalTypes::GeneralResponse, genResp);
         DataManager::addSignalToOutList(DataTypes::DataRecVList, outlistV);
         break;
     }
@@ -807,17 +798,17 @@ void ProtocomThread::handleFile(QByteArray &ba, DataTypes::FilesEnum addr, Queri
             DataManager::addSignalToOutList(DataTypes::SignalTypes::GeneralResponse, resp);
             return;
         }
+        DataTypes::GeneralResponseStruct genResp { DataTypes::GeneralResponseTypes::Ok,
+            static_cast<quint64>(ba.size()) };
+        DataManager::addSignalToOutList(DataTypes::SignalTypes::GeneralResponse, genResp);
         for (auto &&file : outlist)
         {
             DataTypes::FileStruct resp { DataTypes::FilesEnum(file.ID), file.data };
             DataManager::addSignalToOutList(DataTypes::SignalTypes::File, resp);
         }
-
         break;
     }
     }
-    DataTypes::GeneralResponseStruct resp { DataTypes::GeneralResponseTypes::Ok, static_cast<quint64>(ba.size()) };
-    DataManager::addSignalToOutList(DataTypes::SignalTypes::GeneralResponse, resp);
 }
 
 void ProtocomThread::handleInt(const byte num)

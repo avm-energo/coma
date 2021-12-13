@@ -119,7 +119,7 @@ endif()
 
 message(STATUS "Current user directory for conan: " ${USER_DIRECTORY})
 
-set(CONAN_MAIN_INIT ${CONAN_EXEC} install . --profile ${CONAN_PROFILE}  -g cmake -g cmake_find_package -s arch=${CONAN_TARGET_NAME} -s arch_build=${CONAN_TARGET_NAME} -if ${CMAKE_BINARY_DIR} --build=missing)
+set(CONAN_MAIN_INIT ${CONAN_EXEC} install . --profile ${CONAN_PROFILE} -g cmake_find_package -s arch=${CONAN_TARGET_NAME} -s arch_build=${CONAN_TARGET_NAME} -if ${CMAKE_BINARY_DIR} --build=missing)
 
 if (NOT AVTUK-12)
     if (NOT ( EXISTS "${CMAKE_BINARY_DIR}/conanbuildinfo.txt" AND ${CACHED_PROJECT_TARGET_NAME} STREQUAL ${PROJECT_TARGET_NAME}))
@@ -241,6 +241,7 @@ if (NOT AVTUK-12)
 
         include(limereport)
         include(qxlsx)
+        include(qcp)
 
     endif()
 endif()

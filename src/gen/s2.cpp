@@ -180,11 +180,8 @@ bool S2::RestoreData(QByteArray bain, QList<DataTypes::S2Record> &outlist)
             return false;
         }
         memcpy(&DR, &bain.data()[0], size);
-        //        DataTypes::DataRecV DRV(DR);
-        //        if (!S2DataTypes::is_same(DR, DRV.serialize()))
-        //            qDebug() << DRV.getId();
         bain.remove(0, size);
-        //  Q_ASSERT(!bain.isEmpty());
+
         if (DR.header.id != S2DataTypes::dummyElement)
         {
             DataTypes::S2Record cfp;
@@ -237,9 +234,9 @@ bool S2::RestoreData(QByteArray bain, QList<DataTypes::DataRecV> &outlist)
 
             size = DR.header.numByte;
 
-            auto search = DataTypes::DataRecV::map.find(DR.header.id);
-            Q_ASSERT(search != DataTypes::DataRecV::map.end());
-            if (search != DataTypes::DataRecV::map.end())
+            auto search = DataTypes::DataRecV::map.map().find(DR.header.id);
+            Q_ASSERT(search != DataTypes::DataRecV::map.map().end());
+            if (search != DataTypes::DataRecV::map.map().end())
             {
                 DataTypes::DataRecV DRV(DR, bain.left(size));
                 outlist.append(DRV);

@@ -72,10 +72,8 @@ public:
     explicit Board(token);
 
     quint16 typeB() const;
-    // void setTypeB(const quint16 &typeB);
 
     quint16 typeM() const;
-    // void setTypeM(const quint16 &typeM);
 
     quint16 type() const;
     quint16 type(Types type) const;
@@ -102,8 +100,6 @@ public:
     ConnectionState connectionState() const;
     void setConnectionState(ConnectionState connectionState);
 
-    // QList<quint16> getBaseBoardsList() const;
-
     void update(const DataTypes::BitStringStruct &bs);
     void reset();
 
@@ -111,7 +107,16 @@ public:
     bool noConfig() const;
     bool noRegPars() const;
 
-    const Modules::StartupInfoBlock &baseSerialInfo() const;
+    const Modules::StartupInfoBlock &baseSerialInfo() const
+    {
+        return m_startupInfoBlock;
+    }
+    const Modules::StartupInfoBlockExt0 &baseSerialInfoExt() const
+    {
+        return m_startupInfoBlockExt;
+    }
+
+    static bool isUSIO(Modules::BaseBoard typeB, Modules::MezzanineBoard typeM);
 
 private:
     static constexpr int StartupInfoBlockMembers = sizeof(Modules::StartupInfoBlock) / sizeof(quint32);
@@ -121,7 +126,9 @@ private:
     ConnectionState m_connectionState;
 
     Modules::StartupInfoBlock m_startupInfoBlock {};
-    Modules::StartupInfoBlockExt m_startupInfoBlockExt {};
+    Modules::StartupInfoBlockExt0 m_startupInfoBlockExt {};
+
+    void updateExt(const DataTypes::BitStringStruct &bs);
 
     template <typename T> bool isSerialNumberSet(T value)
     {
@@ -133,6 +140,7 @@ private:
         return value || isSerialNumberSet(args...);
     }
     int m_updateCounter = 0;
+    int m_updateCounterExt = 0;
     bool m_updateType = false;
 
 signals:
@@ -146,4 +154,6 @@ signals:
     void healthChanged(quint32);
     /// This signal is emitted when all StartupInfoBlock members updated
     void readyRead();
+    /// This signal is emitted when all StartupInfoBlockExt members updated
+    void readyReadExt();
 };

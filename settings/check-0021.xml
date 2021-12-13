@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:noNamespaceSchemaLocation="check-board.xsd">
+    <check header="Текущие данные
+    мезонинная">
+        <signals>
+            <type>M_ME</type>
+            <uint-set>
+                <item>1</item>
+                <item>10</item>
+            </uint-set>
+            <start-addr>2001</start-addr>
+            <count>40</count>
+        </signals>
+        <record header="Значение по каналу, инж. единицы" desc="Канал №%1">
+            <group>1</group>
+            <start-addr>2001</start-addr>
+            <count>8</count>
+        </record>
+        <record header="Текущее значение по каналу, мА" desc="Канал №%1">
+            <group>1</group>
+            <start-addr>2009</start-addr>
+            <count>8</count>
+        </record>
+        <record header="Текущее значение по каналу, В" desc="Канал №%1">
+            <group>1</group>
+            <start-addr>2017</start-addr>
+            <count>8</count>
+        </record>
+        <record header="Мин. значение по каналу, инж. единицы" desc="Канал №%1">
+            <group>10</group>
+            <start-addr>2025</start-addr>
+            <count>8</count>
+        </record>
+        <record header="Макс. значение по каналу, инж. единицы" desc="Канал №%1">
+            <group>10</group>
+            <start-addr>2033</start-addr>
+            <count>8</count>
+        </record>
+    </check>
+</root>

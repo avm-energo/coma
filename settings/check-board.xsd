@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:element name="root">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="check" maxOccurs="unbounded">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="signals" maxOccurs="unbounded">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element name="type" type="xs:string" />
+                                        <xs:element name="uint-set">
+                                            <xs:complexType>
+                                                <xs:sequence>
+                                                    <xs:element name="item" maxOccurs="unbounded" type="xs:unsignedShort" />
+                                                </xs:sequence>
+                                            </xs:complexType>
+                                        </xs:element>
+                                        <xs:element name="start-addr" type="xs:unsignedShort" />
+                                        <xs:element name="count" type="xs:unsignedShort" />
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                            <xs:element name="record" maxOccurs="unbounded">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element name="group" type="xs:string" />
+                                        <xs:element name="record" minOccurs="0" maxOccurs="unbounded">
+                                            <xs:complexType>
+                                                <xs:sequence minOccurs="0">
+                                                    <xs:element name="start-addr" minOccurs="0" type="xs:unsignedShort" />
+                                                    <xs:element name="count" minOccurs="0" type="xs:unsignedShort" />
+                                                    <xs:element name="toolTip" minOccurs="0" maxOccurs="1" type="xs:string" />
+                                                    <xs:element name="string-array" minOccurs="0">
+                                                        <xs:complexType>
+                                                            <xs:sequence>
+                                                                <xs:element maxOccurs="unbounded" name="item" type="xs:string" />
+                                                            </xs:sequence>
+                                                        </xs:complexType>
+                                                    </xs:element>
+                                                </xs:sequence>
+                                                <xs:attribute name="desc" use="required" />
+                                            </xs:complexType>
+                                        </xs:element>    
+                                        <xs:element name="start-addr"  minOccurs="0" type="xs:unsignedShort" />
+                                        <xs:element name="count"  minOccurs="0" type="xs:unsignedShort" />
+                                        <xs:element name="toolTip" minOccurs="0" maxOccurs="1" type="xs:string" />
+                                    </xs:sequence>
+                                    <xs:attribute name="header" use="required" />
+                                    <xs:attribute name="desc" />
+                                </xs:complexType>
+                            </xs:element>
+                        </xs:sequence>
+                        <xs:attribute name="header" use="required" />
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>

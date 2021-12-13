@@ -39,7 +39,9 @@ set(SRCS
     settingsdialog.cpp
     settingsdialog.h
     timedialog.cpp
-    timedialog.h)
+    timedialog.h
+    plotdialog.cpp
+    plotdialog.h)
 
 if (ENABLE_EMULATOR)
     list(APPEND SRCS interfaceemudialog.cpp interfaceemudialog.h)

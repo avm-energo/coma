@@ -46,7 +46,7 @@ add_library(
 
 target_link_libraries(
   ${PROJECT_NAME}
-  PRIVATE qcustomplot
+  PUBLIC qcustomplot
   PRIVATE Qt${QT_VERSION_MAJOR}::Core
   PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
 

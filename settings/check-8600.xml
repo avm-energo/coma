@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:noNamespaceSchemaLocation="check-board.xsd">
+    <check header="Вибрации">
+        <signals>
+            <type>M_ME</type>
+            <uint-set>
+                <item>200</item>
+                <item>210</item>
+            </uint-set>
+            <start-addr>6040</start-addr>
+            <count>36</count>
+        </signals>
+        <record header="Среднеквадратичные значения виброускорений, м/с2" desc="Датчик №%1">
+            <group>200</group>
+            <start-addr>6040</start-addr>
+            <count>6</count>
+        </record>
+        <record header="Среднеквадратичные значения виброскоростей, мм/с" desc="Датчик №%1">
+            <group>200</group>
+            <start-addr>6046</start-addr>
+            <count>6</count>
+        </record>
+        <record header="Среднеквадратичные значения виброперемещений, мкм" desc="Датчик №%1">
+            <group>200</group>
+            <start-addr>6052</start-addr>
+            <count>6</count>
+        </record>
+        <record header="Скорость изменения среднеквадратичного значения виброускорения, м/с2/час" desc="Датчик №%1">
+            <group>210</group>
+            <start-addr>6058</start-addr>
+            <count>6</count>
+        </record>
+        <record header="Скорость изменения среднеквадратичного значения виброскорости, мм/с/час" desc="Датчик №%1">
+            <group>210</group>
+            <start-addr>6064</start-addr>
+            <count>6</count>
+        </record>
+        <record header="Скорость изменения среднеквадратичного значения виброперемещения, мкм/час" desc="Датчик №%1">
+            <group>210</group>
+            <start-addr>6070</start-addr>
+            <count>6</count>
+        </record>
+    </check>
+</root>

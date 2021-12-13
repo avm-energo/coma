@@ -5,7 +5,7 @@
     <!--Здесь укаазно название модуля-->
     <name>AVTUK-8600</name>
     <!--Минимальная версия прошивки модуля, для которой описаны настройки-->
-    <version>1.1.08</version>
+    <version>1.0-0007</version>
     <!--Дальше идет всё, что несредственно относится к модулю-->
     <resources>
       <!--Описываем сигнализацию, имя обязательно-->
@@ -16,7 +16,7 @@
           <item>Высокая скорость нарастания вибрации</item>
         </string-array>
         <!--Флаги сигнализации-->
-        <quint64 name="criticalFlags">0x0000000C</quint64>
+        <quint128 name="criticalFlags">1100</quint128>
         <!--Стартовый адрес сигнализации-->
 		    <quint32 name="startAddr">5011</quint32>
         <!--Цвет сигнализации если событие произошло-->
@@ -27,7 +27,7 @@
           <item>Повышенный уровень вибрации</item>
           <item>Повышенная скорость нарастания вибрации</item>
         </string-array>
-        <quint64 name="warningFlags">0x00000003</quint64>
+        <quint128 name="warningFlags">11</quint128>
 		    <quint32 name="startAddr">5011</quint32>
 		    <color>#ffff00</color>
       </alarm>

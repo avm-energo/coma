@@ -133,6 +133,11 @@ void IEC104::reqBSI()
     DataManager::addToInQueue(inp);
 }
 
+void IEC104::reqBSIExt()
+{
+    // No request, bsiExt is in the same group with bsi, so request bsi also requests bsi ext
+}
+
 // void IEC104::reqAlarms(quint32 sigAdr, quint32 sigCount)
 //{
 //    Q_UNUSED(sigAdr)

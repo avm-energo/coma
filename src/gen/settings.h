@@ -1,5 +1,5 @@
 #pragma once
-#include "../config/delegate.h"
+#include "../check/delegate_check.h"
 #include "../gen/modules.h"
 #include "datatypes.h"
 struct InterfaceSettings
@@ -13,6 +13,23 @@ struct ModuleType
     quint16 typeM;
 };
 
+struct Configs
+{
+    QList<DataTypes::RecordPair> general;
+    QList<DataTypes::RecordPair> base;
+    QList<DataTypes::RecordPair> mezz;
+};
+
+struct ConfigSettings
+{
+    DataTypes::valueMap *s2filesMap;
+    config::widgetMap *s2widgetMap;
+    categoryMap *s2categories;
+};
+
+using AlarmMap = QMap<Modules::AlarmType, DataTypes::Alarm>;
+using JourMap = QMap<Modules::JournalType, DataTypes::JournalDesc>;
+
 struct ModuleSettings
 {
     ModuleSettings(const Modules::StartupInfoBlock &startupInfoBlock_) : startupInfoBlock(startupInfoBlock_)
@@ -25,20 +42,32 @@ struct ModuleSettings
             counter += alarm.desc.size();
         return counter;
     }
-    QMap<Modules::AlarmType, DataTypes::Alarm> alarms;
-    QMap<Modules::JournalType, DataTypes::JournalDesc> journals;
+    AlarmMap alarms;
+    JourMap journals;
     InterfaceSettings ifaceSettings;
-    QList<DataTypes::RecordPair> configSettings;
+    Configs configSettings;
     QMultiMap<quint32, quint32> highlightWarn, highlightCrit;
     const Modules::StartupInfoBlock &startupInfoBlock;
     int interfaceType;
 };
 
+struct CheckItem
+{
+    QString header;
+    check::itemVector itemsVector;
+    check::signalsVector signlsVec;
+};
+
+struct CheckSettings
+{
+    std::vector<CheckItem> items;
+    categoryMap categories;
+};
+
 struct GlobalSettings
 {
-    S2DataTypes::valueTypeMap *s2filesMap;
-    widgetMap *s2widgetMap;
-    categoryMap *s2categories;
+    ConfigSettings config;
+    CheckSettings check;
 };
 
 namespace settings
@@ -47,6 +76,7 @@ constexpr char logKey[] = "WriteLog";
 constexpr char logWidget[] = "writelogchb";
 constexpr char tuneCountKey[] = "TuneRequestCount";
 constexpr char tuneCountWidget[] = "reqcount";
+constexpr char hidTimeout[] = "hidTimeout";
 constexpr char timezoneKey[] = "Timezone";
 constexpr char timezoneWidget[] = "timezoneCB";
 }

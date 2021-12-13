@@ -60,12 +60,13 @@ SwjModel SwjManager::load(const FileStruct &fs) const
     auto detailModel = qobject_cast<QStandardItemModel *>(model.detailModel.get());
 
     commonModel->appendRow({ new QStandardItem("Номер"), new QStandardItem(QString::number(record.num)) });
-    commonModel->appendRow({ new QStandardItem("Дата, время"), new QStandardItem(QString::number(record.time)) });
-    commonModel->appendRow({ new QStandardItem("Аппарат"), new QStandardItem(craftType(record.typeA)) });
+    commonModel->appendRow(
+        { new QStandardItem("Дата, время"), new QStandardItem(TimeFunc::UnixTime64ToString(record.time)) });
+    commonModel->appendRow(
+        { new QStandardItem("Аппарат"), new QStandardItem(craftType(record.typeA) + QString::number(record.numA)) });
     commonModel->appendRow({ new QStandardItem("Переключение"), new QStandardItem(switchType(record.options)) });
     commonModel->appendRow({ new QStandardItem("Тип коммутации"), new QStandardItem(commutationType(record.options)) });
-    commonModel->appendRow(
-        { new QStandardItem("Результат переключения"), new QStandardItem(commutationType(record.result)) });
+    commonModel->appendRow({ new QStandardItem("Результат переключения"), new QStandardItem(result(record.result)) });
 
     commonModel->appendRow(
         { new QStandardItem("Коммутируемые фазы"), new QStandardItem(commutationPhases(record.options)) });
@@ -75,8 +76,6 @@ SwjModel SwjManager::load(const FileStruct &fs) const
 
     commonModel->appendRow(
         { new QStandardItem("Температура окружающей среды, Град"), new QStandardItem(floatToString(record.tOutside)) });
-
-    commonModel->appendRow({ new QStandardItem("Осциллограмма"), new QStandardItem("Открыть") });
 
     detailModel->appendRow({ new QStandardItem(detailDesc.at(0)), new QStandardItem("A"), new QStandardItem("B"),
         new QStandardItem("C") });
@@ -96,28 +95,28 @@ SwjModel SwjManager::load(const FileStruct &fs) const
     });
 
     detailModel->appendRow({
-        new QStandardItem(detailDesc.at(5)),                                          //
+        new QStandardItem(detailDesc.at(4)),                                          //
         new QStandardItem(QString::number(double(record.fullTime[0]) / 100, 'f', 2)), //
         new QStandardItem(QString::number(double(record.fullTime[1]) / 100, 'f', 2)), //
         new QStandardItem(QString::number(double(record.fullTime[2]) / 100, 'f', 2))  //
     });
 
     detailModel->appendRow({
-        new QStandardItem(detailDesc.at(6)),                                         //
+        new QStandardItem(detailDesc.at(5)),                                         //
         new QStandardItem(QString::number(double(record.movTime[0]) / 100, 'f', 2)), //
         new QStandardItem(QString::number(double(record.movTime[1]) / 100, 'f', 2)), //
         new QStandardItem(QString::number(double(record.movTime[2]) / 100, 'f', 2))  //
     });
 
     detailModel->appendRow({
-        new QStandardItem(detailDesc.at(7)),                                          //
+        new QStandardItem(detailDesc.at(6)),                                          //
         new QStandardItem(QString::number(double(record.archTime[0]) / 100, 'f', 2)), //
         new QStandardItem(QString::number(double(record.archTime[1]) / 100, 'f', 2)), //
         new QStandardItem(QString::number(double(record.archTime[2]) / 100, 'f', 2))  //
     });
 
     detailModel->appendRow({
-        new QStandardItem(detailDesc.at(8)),                                          //
+        new QStandardItem(detailDesc.at(7)),                                          //
         new QStandardItem(QString::number(double(record.idleTime[0]) / 100, 'f', 2)), //
         new QStandardItem(QString::number(double(record.idleTime[1]) / 100, 'f', 2)), //
         new QStandardItem(QString::number(double(record.idleTime[2]) / 100, 'f', 2))  //
@@ -147,34 +146,43 @@ SwjModel SwjManager::load(const FileStruct &fs) const
     return model;
 }
 
-inline QString SwjManager::commutationType(quint32 value) const
+inline QString SwjManager::commutationType(quint8 value) const
 {
-    if ((value >> 1))
+    std::bitset<8> bitset = value;
+    if (!bitset.test(2))
     {
-        if (((value >> 1) & 0x00000001))
-            return "Несинхронная от АВМ-СК";
-
-        if (((value >> 1) & 0x00000011) == 3)
-            return "Синхронная от АВМ-СК";
+        QString str("несинхронная от %1");
+        if (bitset.test(1))
+            return str.arg("АВ-ТУК");
+        else
+            return str.arg("внешнего устройства");
     }
-
-    return "Несинхронная от внешнего устройства";
+    else
+    {
+        QString str("синхронная от %1");
+        if (bitset.test(1))
+            return str.arg("АВ-ТУК");
+        else
+            return "зарезервировано";
+    }
 }
 
-inline QString SwjManager::result(quint16 value) const
+inline const QString SwjManager::result(quint16 value) const
 {
-    return value ? "НЕУСПЕШНО" : "УСПЕШНО";
+    return value ? "УСПЕШНО" : "НЕУСПЕШНО";
 }
 
-inline QString SwjManager::commutationPhases(quint32 value) const
+inline QString SwjManager::commutationPhases(quint8 value) const
 {
-    for (int i = 0; i < phases.size(); i++)
-    {
-        if (((value >> 3) == i))
-        {
-            return phases.at(i);
-        }
-    }
+    std::bitset<8> bitset = value;
+    if (!bitset.test(3) && !bitset.test(4))
+        return "фазы А, В, С (одновременно)";
+    if (!bitset.test(3) && bitset.test(4))
+        return "фаза A";
+    if (bitset.test(3) && !bitset.test(4))
+        return "фаза B";
+    if (bitset.test(3) && bitset.test(4))
+        return "фаза C";
     return "-";
 }
 

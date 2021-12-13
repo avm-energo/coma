@@ -23,8 +23,12 @@ namespace crypto
 static constexpr char hash[] = "d93fdd6d1fb5afcca939fa650b62541d09dbcb766f41c39352dc75f348fb35dc";
 static constexpr char name[] = "confHash";
 }
-ConfigDialog::ConfigDialog(ConfigV *config, const QList<DataTypes::RecordPair> &defaultConfig, QWidget *parent)
-    : UDialog(crypto::hash, crypto::name, parent), m_defaultValues(defaultConfig), configV(config)
+ConfigDialog::ConfigDialog(
+    ConfigV *config, const QList<DataTypes::RecordPair> &defaultConfig, bool prereadConf, QWidget *parent)
+    : UDialog(crypto::hash, crypto::name, parent)
+    , m_prereadConf(prereadConf)
+    , m_defaultValues(defaultConfig)
+    , configV(config)
 {
 
     const auto &manager = DataManager::GetInstance();
@@ -173,22 +177,18 @@ QWidget *ConfigDialog::ConfButtons()
     QString tmps = ((DEVICETYPE == DEVICETYPE_MODULE) ? "модуля" : "прибора");
     QPushButton *pb = new QPushButton("Прочитать из " + tmps);
     connect(pb, &QAbstractButton::clicked, this, &ConfigDialog::ReadConf);
-    if (StdFunc::IsInEmulateMode())
-        pb->setEnabled(false);
+
     wdgtlyout->addWidget(pb, 0, 0, 1, 1);
     tmps = ((DEVICETYPE == DEVICETYPE_MODULE) ? "модуль" : "прибор");
     pb = new QPushButton("Записать в " + tmps);
     pb->setObjectName("WriteConfPB");
     connect(pb, &QAbstractButton::clicked, this, &ConfigDialog::WriteConf);
-    if (StdFunc::IsInEmulateMode())
-        pb->setEnabled(false);
+
     wdgtlyout->addWidget(pb, 0, 1, 1, 1);
     pb = new QPushButton("Прочитать из файла");
-    // pb->setIcon(QIcon(":/icons/tnload.svg"));
     connect(pb, &QAbstractButton::clicked, this, &ConfigDialog::LoadConfFromFile);
     wdgtlyout->addWidget(pb, 1, 0, 1, 1);
     pb = new QPushButton("Записать в файл");
-    // pb->setIcon(QIcon(":/icons/tnsave.svg"));
     connect(pb, &QAbstractButton::clicked, this, &ConfigDialog::SaveConfToFile);
     wdgtlyout->addWidget(pb, 1, 1, 1, 1);
     pb = new QPushButton("Взять конфигурацию по умолчанию");
@@ -376,7 +376,10 @@ bool ConfigDialog::PrepareConfToWrite()
 void ConfigDialog::uponInterfaceSetting()
 {
     SetupUI();
-    PrereadConf();
+    if (m_prereadConf)
+    {
+        PrereadConf();
+    }
 }
 
 void ConfigDialog::CheckConf()

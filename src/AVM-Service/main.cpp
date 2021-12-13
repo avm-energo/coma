@@ -2,55 +2,29 @@
 #include "servicecoma.h"
 
 #include <QApplication>
-#include <QCommandLineParser>
 #include <config.h>
 
 int main(int argc, char *argv[])
 {
-    QString Parameter;
+
     QApplication a(argc, argv);
     QCoreApplication::setApplicationName(PROGNAME);
     QCoreApplication::setOrganizationName(SOFTDEVELOPER);
     QCoreApplication::setApplicationVersion(COMAVERSION);
-    Q_INIT_RESOURCE(darkstyle);
-    Q_INIT_RESOURCE(lightstyle);
-    Q_INIT_RESOURCE(styles);
-    Q_INIT_RESOURCE(vectorIcons);
+    ComaHelper::initResources();
     a.setWindowIcon(QIcon(":/icons/coma.ico"));
     Logging::writeStart();
     qInstallMessageHandler(Logging::messageHandler);
     ServiceComa w;
-    w.setMode(Coma::COMA_GENERALMODE);
-
-    if (argc > 1) // есть аргументы запуска
+    // есть аргументы запуска
+    if (argc > 1)
     {
-        QCommandLineParser parser;
-        /*        parser.setApplicationDescription("COMA");
-                parser.addHelpOption();
-                parser.addVersionOption(); */
-        parser.addPositionalArgument("file", "file with oscillogramm (*.osc) or with switch journal (*.swj)");
-        parser.process(QCoreApplication::arguments());
-        const QStringList files = parser.positionalArguments();
-        // file is files.at(0)
-        if (!files.isEmpty())
-        {
-            Parameter = files.at(0);
-            QString filestail = Parameter.right(3);
-            if (filestail == "osc")
-                w.setMode(Coma::COMA_AUTON_OSCMODE);
-            else if (filestail == "swj")
-                w.setMode(Coma::COMA_AUTON_SWJMODE);
-            else if (filestail == "vrf")
-                w.setMode(Coma::COMA_AUTON_PROTMODE);
-            else
-            {
-                w.setMode(Coma::COMA_AUTON_MODE);
-                Parameter.clear();
-            }
-        }
+        ComaHelper::parserHelper(PROGNAME, &w);
     }
-
-    w.go(Parameter);
+    else
+    {
+        w.go();
+    }
 
     return a.exec();
 }

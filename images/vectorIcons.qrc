@@ -27,9 +27,14 @@
         <file>tn9.svg</file>
         <file>tnemul.svg</file>
         <file>tnprotocol.svg</file>
-        <file>osc.svg</file>
         <file>resize.svg</file>
         <file>coma.ico</file>
-		<file>hr.png</file>
+        <file>hr.png</file>
+        <file>BM.svg</file>
+        <file>BMn.svg</file>
+        <file>BnM.svg</file>
+        <file>BnMn.svg</file>
+        <file>pkdn.svg</file>
+        <file>tnosc.svg</file>
     </qresource>
 </RCC>

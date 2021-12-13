@@ -22,10 +22,9 @@
 
 QString StdFunc::HomeDir = "";       // рабочий каталог программы
 QString StdFunc::SystemHomeDir = ""; // системный каталог программы
-bool StdFunc::Emul = false;
+
 bool StdFunc::Cancelled = false;
 bool StdFunc::s_cancelEnabled = true;
-// QString StdFunc::PrbMsg = "";
 QString StdFunc::DeviceIP = "";
 QString StdFunc::s_OrganizationString = "";
 int StdFunc::m_tuneRequestCount = 0;
@@ -36,7 +35,6 @@ StdFunc::StdFunc()
 
 void StdFunc::Init()
 {
-    Emul = false;
 
     SystemHomeDir = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + "/"
         + QCoreApplication::applicationName() + "/";
@@ -169,16 +167,6 @@ void StdFunc::setCancelEnabled()
     s_cancelEnabled = true;
 }
 
-bool StdFunc::IsInEmulateMode()
-{
-    return Emul;
-}
-
-void StdFunc::SetEmulated(bool tb)
-{
-    Emul = tb;
-}
-
 int StdFunc::IndexByBit(quint32 dword)
 {
     quint32 bit = 0x00000001;
@@ -194,16 +182,6 @@ quint32 StdFunc::BitByIndex(int idx)
         return 0;
     return (0x00000001 << (idx - 1));
 }
-
-// QString StdFunc::PrbMessage()
-//{
-//    return PrbMsg;
-//}
-
-// void StdFunc::SetPrbMessage(const QString &msg)
-//{
-//    PrbMsg = msg;
-//}
 
 void StdFunc::Wait(int ms)
 {
@@ -242,7 +220,7 @@ quint32 StdFunc::ping(quint32 addr)
         QTextCodec *codec = QTextCodec::codecForMib(2086);
         QString p_stdout = codec->toUnicode(pingProcess->readAllStandardOutput());
         QString p_stderr = codec->toUnicode(pingProcess->readAllStandardError());
-#if QT_VERSION >= 0x051200
+#if QT_VERSION >= 0x050C00
         QStringList list = p_stderr.isEmpty() ? p_stdout.split("\r\n", Qt::SkipEmptyParts)
                                               : p_stderr.split("\r\n", Qt::SkipEmptyParts);
 #else

@@ -4,294 +4,90 @@
   <module mtypeb="80" mtypem="82">
     <!--Здесь указано название модуля-->
     <name>AVTUK-8082</name>
-    <!--Текущая конфигурация полностью неактуальна и является тестовой!!! -->
-    <!--        ТЕСТОВАЯ                                                  -->
-    <!--        КОНФИГУРАЦИЯ                                              -->
-    <!--        !!!                                                       -->
-    <!--        !!!                                                       -->
-    <!--Минимальная версия прошивки модуля, для которой описаны настройки-->
-    <version>2.1</version>
+    <version>2.5-0002</version>
     <!--Дальше идет всё, что несредственно относится к модулю-->
     <resources>
       <!--Описываем сигнализацию, имя обязательно-->
-      <alarm name="removedForTest">
-        <!--Массив событий сигнализации, имя обязательно-->
-        <string-array name="criticalEvents">
-          <item>Авария по приращению тангенса дельта ввода фазы А</item>
-          <item>Авария по приращению тангенса дельта ввода фазы B</item>
-          <item>Авария по приращению тангенса дельта ввода фазы C</item>
-          <item>Авария по приращению C ввода фазы А </item>
-          <item>Авария по приращению C ввода фазы B</item>
-          <item>Авария по приращению C ввода фазы C</item>
-          <item>Авария по недопустимому небалансу токов</item>
-        </string-array>
-        <!--Флаги сигнализации-->
-        <quint64 name="criticalFlags">0x9CE000</quint64>
-        <!--Стартовый адрес сигнализации-->
-		    <quint32 name="startAddr">3011</quint32>
-        <!--Цвет сигнализации если событие произошло-->
-		    <color>#ff0000</color>
-      </alarm>
-      <alarm name="removedForTest">
-        <string-array name="warningEvents">
-          <item>Отсутствует сигнал напряжения фазы A</item>
-          <item>Отсутствует сигнал напряжения фазы B</item>
-          <item>Отсутствует сигнал напряжения фазы С</item>
-          <item>Ток утечки ввода фазы A меньше 0,3 номинального</item>
-          <item>Ток утечки ввода фазы B меньше 0,3 номинального</item>
-          <item>Ток утечки ввода фазы C меньше 0,3 номинального</item>
-          <item>Не заданы начальные значения</item>
-          <item>Низкое напряжение фазы A</item>
-          <item>Низкое напряжение фазы B</item>
-          <item>Низкое напряжение фазы C</item>
-          <item>Сигнализация по приращению тангенса дельта ввода фазы А</item>
-          <item>Сигнализация по приращению тангенса дельта ввода фазы B</item>
-          <item>Сигнализация по приращению тангенса дельта ввода фазы C</item>
-          <item>Сигнализация по приращению C ввода фазы А</item>
-          <item>Сигнализация по приращению C ввода фазы B</item>
-          <item>Сигнализация по приращению C ввода фазы C</item>
-          <item>Не заданы паспортные значения</item>
-          <item>Сигнализация по повышенному небалансу токов</item>
-        </string-array>
-        <quint64 name="warningFlags">0xC71FFF</quint64>
-		    <quint32 name="startAddr">3011</quint32>
-		    <color>#ffff00</color>
-      </alarm>
-      <!--Описываем журнал, имя обязательно-->
-      <journal name="work">
-        <!--Номер журнала, имя обязательно-->
-        <quint32 name="workJourId">3010</quint32>
-        <!--Массив событий журнала, имя обязательно-->
-        <string-array name="workJourDescription">
-          <item>Отсутствует сигнал напряжения фазы A</item>
-          <item>Отсутствует сигнал напряжения фазы B</item>
-          <item>Отсутствует сигнал напряжения фазы С</item>
-          <item>Нет реактивного тока канала А (ток меньше 2мА)</item>
-          <item>Нет реактивного тока канала B (ток меньше 2мА)</item>
-          <item>Нет реактивного тока канала C (ток меньше 2мА)</item>
-          <item>Не заданы начальные значения</item>
-          <item>Низкое напряжение фазы A</item>
-          <item>Низкое напряжение фазы B</item>
-          <item>Низкое напряжение фазы C</item>
-          <item>Сигнализация по приращению тангенса дельта ввода фазы А</item>
-          <item>Сигнализация по приращению тангенса дельта ввода фазы B</item>
-          <item>Сигнализация по приращению тангенса дельта ввода фазы C</item>
-          <item>Авария по приращению тангенса дельта ввода фазы А</item>
-          <item>Авария по приращению тангенса дельта ввода фазы B</item>
-          <item>Авария по приращению тангенса дельта ввода фазы C</item>
-          <item>Сигнализация по приращению C ввода фазы А</item>
-          <item>Сигнализация по приращению C ввода фазы B</item>
-          <item>Сигнализация по приращению C ввода фазы C</item>
-          <item>Авария по приращению C ввода фазы А</item>
-          <item>Авария по приращению C ввода фазы B</item>
-          <item>Авария по приращению C ввода фазы C</item>
-          <item>Не заданы паспортные значения</item>
-          <item>Сигнализация по изменению небаланса тока</item>
-          <item>Авария по изменению небаланса тока</item>
-        </string-array>
-      </journal>
-      <journal name="meas">
-        <string-array name="measJourHeaders">
-          <item> № </item>
-          <item>Дата/Время UTC</item>
-          <item>Ueff фA</item>
-          <item>Ueff фB</item>
-          <item>Ueff фC</item>
-          <item>Ieff фA</item>
-          <item>Ieff фB</item>
-          <item>Ieff фC</item>
-          <item>Freq</item>
-          <item>U0</item>
-          <item>U1</item>
-          <item>U2</item>
-          <item>I0</item>
-          <item>I1</item>
-          <item>I2</item>
-          <item>Cbush фA</item>
-          <item>Cbush фB</item>
-          <item>Cbush фC</item>
-          <item>Tg_d фA</item>
-          <item>Tg_d фB</item>
-          <item>Tg_d фC</item>
-          <item>dCbush фA</item>
-          <item>dCbush фB</item>
-          <item>dCbush фC</item>
-          <item>dTg_d фA</item>
-          <item>dTg_d фB</item>
-          <item>dTg_d фC</item>
-          <item>Iunb</item>
-          <item>Phy_unb</item>
-          <item>Tmk, °С</item>
-          <item>Tamb, °С</item>
-        </string-array>
-      </journal>
       
       <!--Описываем протокол Modbus-->
       <modbus>
-        
-        <!--Необходимо стараться описывать всё группами-->
-        <!--Группа регистров, id обязателен-->
-        <group id="baseSerialInfo">
-          <!--Используемая функция-->
-          <function>04</function>
-          <!--Конечный тип данных-->
-          <type>uint32</type>
-          <!--Стартовый адрес-->
-          <start-addr>1</start-addr>
-          <!--Количество регистров-->
-          <count>30</count>
-        </group>
-        
-        <group id="tempHardware">
-            <function>04</function>
-            <type>float</type>
-            <start-addr>101</start-addr>
-            <count>4</count>
-        </group>
-        <group id="voltage">
-          <function>04</function>
-          <type>float</type>
-          <start-addr>1000</start-addr>
-          <count>32</count>
-        </group>
-        <group id="amperage">
-          <function>04</function>
-          <type>float</type>
-          <start-addr>1100</start-addr>
-          <count>32</count>
-        </group>
-        <group id="angle">
-          <function>04</function>
-          <type>float</type>
-          <start-addr>2400</start-addr>
-          <count>14</count>
-        </group>
-        <group id="capacity">
-          <function>04</function>
-          <type>float</type>
-          <start-addr>2420</start-addr>
-          <count>28</count>
-        </group>
-        <group id="tempExtern">
-          <function>04</function>
-          <type>float</type>
-          <start-addr>4501</start-addr>
-          <count>4</count>
-        </group>
-        <group id="status">
-          <function>04</function>
-          <type>uint32</type>
-          <start-addr>4520</start-addr>
-          <count>4</count>
-        </group>
-        <group id="alarmValue">
-          <function>04</function>
-          <type>uint32</type>
-          <start-addr>7000</start-addr>
-          <count>12</count>
-        </group>
-        <group id="alarmHardware">
-          <function>01</function>
-          <type>bool</type>
-          <start-addr>201</start-addr>
-          <count>3</count>
-        </group>
-        <group id="alarmModule">
-          <function>01</function>
-          <type>bool</type>
-          <start-addr>3011</start-addr>
-          <count>25</count>
-        </group>
-        <group id="rstartValue">
-          <function>04</function>
-          <type>float</type>
-          <start-addr>4000</start-addr>
-          <count>22</count>
-        </group>
-        
-        <!--Необходимо стараться описывать всё группами, но можно описать и один регистр-->
-        <!--Один регистр, имя обязательно-->        
-        <register id="Sbg">
-          <!--Используемая функция-->
-          <function>10</function>
-          <!--Конечный тип данных-->
-          <type>float</type>
-          <!--Адрес регистра-->
-          <start-addr>900</start-addr>
-          <!--Регистры пока поддерживаются только в определенных командах-->
-        </register>
-        
-        <register id="Clbg">
-          <function>10</function>
-          <type>float</type>
-          <start-addr>905</start-addr>
-        </register>
-        <group id="wstartValue">
-          <function>10</function>
-          <type>float</type>
-          <start-addr>910</start-addr>
-          <count>22</count>
-        </group>
-        <group id="rtime">
-          <function>03</function>
-          <type>uint32</type>
-          <start-addr>4600</start-addr>
-          <count>2</count>
-        </group>
-        <group id="wtime">
-          <function>10</function>
-          <type>uint32</type>
-          <start-addr>4600</start-addr>
-          <count>2</count>
-        </group>
       </modbus>
 
       <!--Описываем протокол Protocom-->
+      <!--Описываем протокол Protocom-->
       <protocom>
         <!--Protocom состоит только из групп-->
-        
-        <!--Группа регистров протокола IEC 60870 104, которой соответствует блок в Protocom'e-->
-        <group>
-          <!--Стартовый адрес регистра IEC 60870 104-->
-          <start-addr>2420</start-addr>
-          <!--Количество регистров IEC 60870 104-->
-          <count>14</count>
-          <!--Соответствующий блок-->
-          <block>4</block>
-          <!--Блок может содержать столько же данных или больше чем есть в указанных регистрах, но не меньше-->
-        </group>
-        
-        <group>
-          <start-addr>2400</start-addr>
-          <count>7</count>
-          <block>5</block>
-        </group>
-        <group>
-          <start-addr>4501</start-addr>
-          <count>2</count>
-          <block>8</block>
-        </group>
-        <group>
-          <start-addr>1000</start-addr>
-          <count>16</count>
-          <block>2</block>
-        </group>
-        <group>
-          <start-addr>1100</start-addr>
-          <count>16</count>
-          <block>3</block>
-        </group>
         <group>
           <start-addr>101</start-addr>
           <count>2</count>
           <block>0</block>
         </group>
-        <!--Если у группы есть id то его необходимо также указать для другого модуля-->
-        <group id="startValue">
-          <start-addr>4000</start-addr>
+        <group>
+          <start-addr>1000</start-addr>
           <count>11</count>
-          <block>7</block>
+          <block>2</block>
         </group>
+        <group>
+          <start-addr>1020</start-addr>
+          <count>8</count>
+          <block>4</block>
+        </group>
+        <group>
+          <start-addr>1028</start-addr>
+          <count>61</count>
+          <block>25</block>
+        </group>
+        <group>
+          <start-addr>1089</start-addr>
+          <count>61</count>
+          <block>35</block>
+        </group>
+        <group>
+          <start-addr>1150</start-addr>
+          <count>61</count>
+          <block>45</block>
+        </group>
+        <group>
+          <start-addr>1220</start-addr>
+          <count>8</count>
+          <block>8</block>
+        </group>
+        <group>
+          <start-addr>1400</start-addr>
+          <count>11</count>
+          <block>3</block>
+        </group>
+        <group>
+          <start-addr>1420</start-addr>
+          <count>8</count>
+          <block>6</block>
+        </group>
+        <group>
+          <start-addr>1428</start-addr>
+          <count>61</count>
+          <block>27</block>
+        </group>
+        <group>
+          <start-addr>1489</start-addr>
+          <count>61</count>
+          <block>37</block>
+        </group>
+        <group>
+          <start-addr>1550</start-addr>
+          <count>61</count>
+          <block>47</block>
+        </group>
+        <group>
+          <start-addr>2420</start-addr>
+          <count>16</count>
+          <block>21</block>
+        </group>
+        <group>
+          <start-addr>2450</start-addr>
+          <count>16</count>
+          <block>22</block>
+        </group>
+
         <group id="alarmModule">
           <start-addr>3011</start-addr>
           <count>25</count>

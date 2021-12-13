@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s2files xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="s2files.xsd">
+    <record>
+        <id>3</id>
+        <defaultValue>1</defaultValue>
+    </record>
+    <record>
+        <id>4</id>
+        <defaultValue>205</defaultValue>
+    </record>
+    <record>
+        <id>5</id>
+        <defaultValue>5</defaultValue>
+    </record>
+    <record>
+        <id>6</id>
+        <defaultValue>15</defaultValue>
+    </record>
+    <record>
+        <id>7</id>
+        <defaultValue>10</defaultValue>
+    </record>
+    <record>
+        <id>8</id>
+        <defaultValue>20</defaultValue>
+    </record>
+    <record>
+        <id>9</id>
+        <defaultValue>12</defaultValue>
+    </record>
+    <record>
+        <id>10</id>
+        <defaultValue>8</defaultValue>
+    </record>
+</s2files>

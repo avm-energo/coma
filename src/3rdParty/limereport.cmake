@@ -1,10 +1,10 @@
 find_package(
   QT NAMES Qt6 Qt5
-  COMPONENTS Core Widgets Sql Network Xml Svg Qml PrintSupport Script UiTools
+  COMPONENTS Core Widgets Sql Network Xml Svg Qml PrintSupport REQUIRED
   )
 find_package(
   Qt${QT_VERSION_MAJOR}
-  COMPONENTS Core Widgets Sql Network Xml Svg Qml PrintSupport Script UiTools
+  COMPONENTS Core Widgets Sql Network Xml Svg Qml PrintSupport REQUIRED
   )
 
 set(LIMEREPORT_SRC_DIR ${CMAKE_SOURCE_DIR}/../include/LimeReport)

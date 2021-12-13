@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+    <alarm>
+        <string-array name="events">
+            <item>Достигнута уставка setminmin по каналу 0</item>
+            <item>Достигнута уставка setminmin по каналу 1</item>
+            <item>Достигнута уставка setminmin по каналу 2</item>
+            <item>Достигнута уставка setminmin по каналу 3</item>
+            <item>Достигнута уставка setminmin по каналу 4</item>
+            <item>Достигнута уставка setminmin по каналу 5</item>
+            <item>Достигнута уставка setminmin по каналу 6</item>
+            <item>Достигнута уставка setminmin по каналу 7</item>
+            <item>Достигнута уставка setmin по каналу 0</item>
+            <item>Достигнута уставка setmin по каналу 1</item>
+            <item>Достигнута уставка setmin по каналу 2</item>
+            <item>Достигнута уставка setmin по каналу 3</item>
+            <item>Достигнута уставка setmin по каналу 4</item>
+            <item>Достигнута уставка setmin по каналу 5</item>
+            <item>Достигнута уставка setmin по каналу 6</item>
+            <item>Достигнута уставка setmin по каналу 7</item>
+            <item>Достигнута уставка setmax по каналу 0</item>
+            <item>Достигнута уставка setmax по каналу 1</item>
+            <item>Достигнута уставка setmax по каналу 2</item>
+            <item>Достигнута уставка setmax по каналу 3</item>
+            <item>Достигнута уставка setmax по каналу 4</item>
+            <item>Достигнута уставка setmax по каналу 5</item>
+            <item>Достигнута уставка setmax по каналу 6</item>
+            <item>Достигнута уставка setmax по каналу 7</item>
+            <item>Достигнута уставка setmaxmax по каналу 0</item>
+            <item>Достигнута уставка setmaxmax по каналу 1</item>
+            <item>Достигнута уставка setmaxmax по каналу 2</item>
+            <item>Достигнута уставка setmaxmax по каналу 3</item>
+            <item>Достигнута уставка setmaxmax по каналу 4</item>
+            <item>Достигнута уставка setmaxmax по каналу 5</item>
+            <item>Достигнута уставка setmaxmax по каналу 6</item>
+            <item>Достигнута уставка setmaxmax по каналу 7</item>
+        </string-array>
+        <quint128 name="warningFlags">11111111111111111111111111111111</quint128>
+        <!-- <quint128 name="flags">1111111111111111111111111111111111111111111111111111111111111111111111111</quint128> -->
+        <quint32 name="startAddr">4101</quint32>
+        <color>#ffff00</color>
+    </alarm>
+</root>

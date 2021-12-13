@@ -1,8 +1,8 @@
 project(AVM-Service)
 
 set(PROJECT_VERSION_MAJOR 2)
-set(PROJECT_VERSION_MINOR 3)
-set(PROJECT_VERSION_PATCH 3)
+set(PROJECT_VERSION_MINOR 4)
+set(PROJECT_VERSION_PATCH 0)
 
 find_package(
   QT NAMES Qt6 Qt5
@@ -45,6 +45,7 @@ target_link_libraries(
   dialogs
   models
   startup
+  datablocks
   comaversion
   Qt${QT_VERSION_MAJOR}::Core
   Qt${QT_VERSION_MAJOR}::Xml

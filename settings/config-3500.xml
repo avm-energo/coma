@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s2files xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="s2files.xsd">
+    <record>
+        <id>401</id>
+        <defaultValue>0</defaultValue>
+    </record>
+    <record>
+        <id>402</id>
+        <defaultValue>0</defaultValue>
+    </record>
+    <record>
+        <id>403</id>
+        <defaultValue>0</defaultValue>
+    </record>
+    <record>
+        <id>404</id>
+        <defaultValue>0</defaultValue>
+    </record>
+    <record>
+        <id>405</id>
+        <defaultValue>0</defaultValue>
+    </record>
+    <record>
+        <id>407</id>
+        <defaultValue>0</defaultValue>
+        <widget>
+			<type>QComboBoxGroup</type>
+			<count>4</count>
+		</widget>
+    </record>
+    <record>
+        <id>408</id>
+        <defaultValue>0</defaultValue>
+        <widget>
+			<type>QComboBoxGroup</type>
+			<count>4</count>
+		</widget>
+    </record>
+</s2files>

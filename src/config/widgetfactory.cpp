@@ -4,12 +4,12 @@
 #include "../gen/module_kxx.h"
 #include "../models/comboboxdelegate.h"
 #include "../widgets/checkboxgroup.h"
-#include "../widgets/helper.h"
+#include "../widgets/flowlayout.h"
 #include "../widgets/ipctrl.h"
 
 #include <QHeaderView>
 #include <QStandardItem>
-widgetMap WidgetFactory::m_widgetMap;
+config::widgetMap WidgetFactory::m_widgetMap;
 categoryMap WidgetFactory::m_categoryMap;
 // forward declarations
 // helpers for create widget
@@ -64,7 +64,7 @@ template <typename T> QWidget *helper(const T &arg, QWidget *parent, BciNumber k
     return widget;
 }
 
-template <> QWidget *helper(const delegate::Item &arg, QWidget *parent, [[maybe_unused]] BciNumber key)
+template <> QWidget *helper(const config::Item &arg, QWidget *parent, [[maybe_unused]] BciNumber key)
 {
     QWidget *widget = nullptr;
     switch (arg.itemType)
@@ -154,7 +154,7 @@ QWidget *WidgetFactory::createWidget(BciNumber key, QWidget *parent)
 #ifdef DEBUG_FACTORY
                 qDebug() << "CheckBoxGroupWidget" << key;
 #endif
-                // Q_ASSERT(desc.count() == arg.count);
+
                 widget = new QWidget(parent);
                 QHBoxLayout *lyout = new QHBoxLayout;
                 auto label = new QLabel(arg.desc, parent);
@@ -170,7 +170,7 @@ QWidget *WidgetFactory::createWidget(BciNumber key, QWidget *parent)
 #ifdef DEBUG_FACTORY
                 qDebug() << "QComboBox" << key;
 #endif
-                // Q_ASSERT(desc.count() == arg.count);
+
                 widget = new QWidget(parent);
                 QHBoxLayout *lyout = new QHBoxLayout;
                 auto label = new QLabel(arg.desc, parent);
@@ -183,7 +183,7 @@ QWidget *WidgetFactory::createWidget(BciNumber key, QWidget *parent)
 #ifdef DEBUG_FACTORY
                 qDebug() << "QComboBoxGroup" << key;
 #endif
-                // Q_ASSERT(desc.count() == arg.count);
+
                 widget = new QWidget(parent);
 
                 QHBoxLayout *mainLyout = new QHBoxLayout;
@@ -192,18 +192,18 @@ QWidget *WidgetFactory::createWidget(BciNumber key, QWidget *parent)
                 mainLyout->addWidget(label);
 
                 int count = arg.count;
-                auto itemsOneLine = detail::goldenRatio(count);
 
-                QGridLayout *gridlyout = new QGridLayout;
+                FlowLayout *flowLayout = new FlowLayout;
                 for (auto i = 0; i != count; ++i)
                 {
+                    QWidget *widget = new QWidget;
                     QHBoxLayout *layout = new QHBoxLayout;
                     layout->addWidget(new QLabel(QString::number(i + 1), parent));
                     layout->addWidget(WDFunc::NewCB2(parent, widgetName(key, i), arg.model));
-                    gridlyout->addLayout(layout, i / itemsOneLine, i % itemsOneLine);
+                    widget->setLayout(layout);
+                    flowLayout->addWidget(widget);
                 }
-
-                mainLyout->addLayout(gridlyout);
+                mainLyout->addLayout(flowLayout);
                 widget->setLayout(mainLyout);
             },
             [&](const auto &arg) {
@@ -289,7 +289,7 @@ bool WidgetFactory::fillBack(BciNumber key, const QWidget *parent)
 #endif
                        status = fillBackComboBoxGroup(key, parent, arg.count);
                    },
-                   [&](const delegate::Item &arg) {
+                   [&](const config::Item &arg) {
 #ifdef DEBUG_FACTORY
                        qDebug("Item");
 #endif
@@ -327,7 +327,7 @@ QList<QStandardItem *> WidgetFactory::createItem(
                        using namespace delegate;
                    },
 
-                   [&](const delegate::Item &arg) {
+                   [&](const config::Item &arg) {
 #ifdef DEBUG_FACTORY
                        qDebug("Item");
 #endif
@@ -410,14 +410,14 @@ static QWidget *createModbusView(QWidget *parent)
         int width = tableView->horizontalHeader()->fontMetrics().horizontalAdvance(header.at(column)) * 1.5;
         tableView->setColumnWidth(column, width);
     }
-    // tableView->setMinimumWidth(tableView->horizontalHeader()->height() * 5);
+
     return tableView;
 }
 bool WidgetFactory::fillBackModbus(
     BciNumber key, const QWidget *parent, ctti::unnamed_type_id_t type, BciNumber parentKey)
 {
     auto tableView = parent->findChild<QTableView *>(WidgetFactory::hashedName(type, parentKey));
-    // QTableView *tv = parent->findChild<QTableView *>(hashedName(type, parentKey));
+
     if (tableView == nullptr)
     {
         qDebug("Пустой tv");
@@ -439,47 +439,47 @@ bool WidgetFactory::fillBackModbus(
         auto data = value.toUInt(&status);
         switch (c)
         {
-        case delegate::Item::ModbusColumns::SensorType:
+        case config::Item::ModbusColumns::SensorType:
         {
             master.typedat = Bci::SensorType(status ? data : 0);
             break;
         }
-        case delegate::Item::ModbusColumns::BaudRate:
+        case config::Item::ModbusColumns::BaudRate:
         {
             master.parport.baud = CommandsMBS::BaudRate(status ? data : 0);
             break;
         }
-        case delegate::Item::ModbusColumns::Parity:
+        case config::Item::ModbusColumns::Parity:
         {
             master.parport.parity = CommandsMBS::Parity(status ? data : 0);
             break;
         }
-        case delegate::Item::ModbusColumns::StopBits:
+        case config::Item::ModbusColumns::StopBits:
         {
             master.parport.stop = CommandsMBS::StopBits(status ? data : 0);
             break;
         }
-        case delegate::Item::ModbusColumns::Timeout:
+        case config::Item::ModbusColumns::Timeout:
         {
             master.per = status ? data : 0;
             break;
         }
-        case delegate::Item::ModbusColumns::Address:
+        case config::Item::ModbusColumns::Address:
         {
             master.adr = status ? data : 0;
             break;
         }
-        case delegate::Item::ModbusColumns::FuncCode:
+        case config::Item::ModbusColumns::FuncCode:
         {
             master.type.reg = CommandsMBS::Commands(status ? data : 0);
             break;
         }
-        case delegate::Item::ModbusColumns::DataType:
+        case config::Item::ModbusColumns::DataType:
         {
             master.type.dat = CommandsMBS::TypeId(status ? data : 0);
             break;
         }
-        case delegate::Item::ModbusColumns::Register:
+        case config::Item::ModbusColumns::Register:
         {
             master.reg = (status ? data : 0);
             break;

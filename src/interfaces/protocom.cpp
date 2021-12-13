@@ -8,6 +8,7 @@
 #include "settingstypes.h"
 #include "usbhidport.h"
 
+#include <QCoreApplication>
 #include <QDebug>
 #include <QThread>
 #ifdef Q_OS_WINDOWS
@@ -25,6 +26,11 @@ Protocom::Protocom(QObject *parent) : BaseInterface(parent), d_ptr(new ProtocomP
     Q_D(Protocom);
     d->q_ptr = this;
     qRegisterMetaType<UsbHidSettings>();
+}
+
+Protocom::~Protocom()
+{
+    delete d_ptr;
 }
 
 bool Protocom::start(const ConnectStruct &st)
@@ -120,8 +126,6 @@ void Protocom::reqTime()
 
 void Protocom::reqFile(quint32 filenum, FileFormat format)
 {
-    // Q_ASSERT(filenum >= std::numeric_limits<DataTypes::FilesEnum>::max());
-    // Q_ASSERT(filenum < DataTypes::FilesEnum::FileOscMax);
     QByteArray ba = StdFunc::arrayFromNumber(quint16(filenum));
 
     CommandStruct inp {
@@ -156,6 +160,18 @@ void Protocom::reqBSI()
         QVariant(),                        // Board type(Null because only 1 board contains bsi)
         QVariant(),                        // Null arg
         {}                                 // Null
+    };
+    DataManager::addToInQueue(inp);
+    emit wakeUpParser();
+}
+
+void Protocom::reqBSIExt()
+{
+    CommandStruct inp {
+        Proto::Commands::ReadBlkStartInfoExt, // Command
+        QVariant(),                           // Board type(Null because only 1 board contains bsi)
+        QVariant(),                           // Null arg
+        {}                                    // Null
     };
     DataManager::addToInQueue(inp);
     emit wakeUpParser();

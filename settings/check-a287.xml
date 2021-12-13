@@ -1,0 +1,570 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:noNamespaceSchemaLocation="check-board.xsd">
+    <check header="Текущие данные
+    Первая тройка">
+        <signals>
+            <type>M_ME</type>
+            <uint-set>
+                <item>1</item>
+            </uint-set>
+            <start-addr>1000</start-addr>
+            <count>11</count>
+        </signals>
+        <signals>
+            <type>M_ME</type>
+            <uint-set>
+                <item>1</item>
+            </uint-set>
+            <start-addr>1020</start-addr>
+            <count>8</count>
+        </signals>
+        <signals>
+            <type>M_ME</type>
+            <uint-set>
+                <item>311</item>
+            </uint-set>
+            <start-addr>1028</start-addr>
+            <count>61</count>
+        </signals>
+        <signals>
+            <type>M_ME</type>
+            <uint-set>
+                <item>312</item>
+            </uint-set>
+            <start-addr>1089</start-addr>
+            <count>61</count>
+        </signals>
+        <signals>
+            <type>M_ME</type>
+            <uint-set>
+                <item>313</item>
+            </uint-set>
+            <start-addr>1150</start-addr>
+            <count>61</count>
+        </signals>
+        <signals>
+            <type>M_ME</type>
+            <uint-set>
+                <item>1</item>
+            </uint-set>
+            <start-addr>1220</start-addr>
+            <count>8</count>
+        </signals>
+        <record header="Действующие значения и крест-факторы сигналов">
+            <group>1</group>
+            <record desc="U ф.%1, кВ">
+                <start-addr>1000</start-addr>
+                <count>3</count>
+                <toolTip>Фазное истинное действующее напряжение ф.%1</toolTip>
+                <string-array>
+                    <item>A</item>
+                    <item>B</item>
+                    <item>C</item>
+                </string-array>
+            </record>
+            <record desc="U ср., кВ">
+                <start-addr>1003</start-addr>
+                <toolTip>Среднее истинное фазное действующее напряжение</toolTip>
+            </record>
+            <record desc="UhA1 ф.%1, кВ">
+                <start-addr>1004</start-addr>
+                <count>3</count>
+                <toolTip>Фазное действующее напряжение ф.%1 по 1-й гармонике</toolTip>
+                <string-array>
+                    <item>A</item>
+                    <item>B</item>
+                    <item>C</item>
+                </string-array>
+            </record>
+            <record desc="UhA1 ср., кВ">
+                <start-addr>1007</start-addr>
+                <toolTip>Среднее фазное действующее напряжение по 1-й гарм., кВ</toolTip>
+            </record>
+            <record desc="KrF_U ф.%1">
+                <start-addr>1008</start-addr>
+                <count>3</count>
+                <toolTip>Крест-фактор напряжения в фазе %1</toolTip>
+                <string-array>
+                    <item>A</item>
+                    <item>B</item>
+                    <item>C</item>
+                </string-array>
+            </record>
+        </record>
+        <record header="Линейные напряжения">
+            <group>1</group>
+            <record desc="U ф.%1, кВ">
+                <start-addr>1220</start-addr>
+                <count>3</count>
+                <toolTip>Истинное среднеквадр. линейное напряжение ф.%1, кВ</toolTip>
+                <string-array>
+                    <item>A</item>
+                    <item>B</item>
+                    <item>C</item>
+                </string-array>
+            </record>
+            <record desc="U ср., кВ">
+                <start-addr>1223</start-addr>
+                <toolTip>Истинное среднеквадр. линейное напряжение среднее в гр.1, кВ</toolTip>
+            </record>
+            <record desc="UhA1 ф.%1, кВ">
+                <start-addr>1224</start-addr>
+                <count>3</count>
+                <toolTip>Действ. линейное напряжение по 1-й гармонике ф.%1, кВ</toolTip>
+                <string-array>
+                    <item>A</item>
+                    <item>B</item>
+                    <item>C</item>
+                </string-array>
+            </record>
+            <record desc="UhA1 ср., кВ">
+                <start-addr>1227</start-addr>
+                <toolTip>Действ. линейное напряжение по 1-й гармонике среднее, кВ</toolTip>
+            </record>
+        </record>
+        <record header="Данные по несимметрии и искажениям сигналов">
+            <group>1</group>
+            <record desc="U0, кВ">
+                <start-addr>1020</start-addr>
+                <toolTip>Напряжение нулевой последовательности гр.1, кВ</toolTip>
+            </record>
+            <record desc="U1, кВ">
+                <start-addr>1021</start-addr>
+                <toolTip>Напряжение прямой последовательности гр.1, кВ</toolTip>
+            </record>
+            <record desc="U2, кВ">
+                <start-addr>1022</start-addr>
+                <toolTip>Напряжение обратной последовательности гр.1, кВ</toolTip>
+            </record>
+            <record desc="KuU2, %">
+                <start-addr>1023</start-addr>
+                <toolTip>Коэффициент несимметрии напряжения по
+                    обратной последовательности гр.1, %</toolTip>
+            </record>
+            <record desc="KuU0, %">
+                <start-addr>1024</start-addr>
+                <toolTip>Коэффициент несимметрии напряжения по
+                    нулевой последовательности гр.1, %</toolTip>
+            </record>
+            <record desc="THD_U ф.%1">
+                <start-addr>1025</start-addr>
+                <count>3</count>
+                <toolTip>Общий коэффициент гарм. искажений напряжения ф.%1 гр.1</toolTip>
+                <string-array>
+                    <item>A</item>
+                    <item>B</item>
+                    <item>C</item>
+                </string-array>
+            </record>
+        </record>
+        <record header="Данные по гармоническому составу сигналов фазы A" desc="Гм %1">
+            <group>311</group>
+            <start-addr>1028</start-addr>
+            <count>61</count>
+        </record>
+        <record header="Данные по гармоническому составу сигналов фазы В" desc="Гм %1">
+            <group>312</group>
+            <start-addr>1089</start-addr>
+            <count>61</count>
+        </record>
+        <record header="Данные по гармоническому составу сигналов фазы C" desc="Гм %1">
+            <group>313</group>
+            <start-addr>1150</start-addr>
+            <count>61</count>
+        </record>
+    </check>
+    <check header="Текущие данные
+    Вторая тройка">
+        <signals>
+            <type>M_ME</type>
+            <uint-set>
+                <item>1</item>
+            </uint-set>
+            <start-addr>1400</start-addr>
+            <count>11</count>
+        </signals>
+        <signals>
+            <type>M_ME</type>
+            <uint-set>
+                <item>1</item>
+            </uint-set>
+            <start-addr>1420</start-addr>
+            <count>8</count>
+        </signals>
+        <signals>
+            <type>M_ME</type>
+            <uint-set>
+                <item>311</item>
+            </uint-set>
+            <start-addr>1428</start-addr>
+            <count>61</count>
+        </signals>
+        <signals>
+            <type>M_ME</type>
+            <uint-set>
+                <item>312</item>
+            </uint-set>
+            <start-addr>1489</start-addr>
+            <count>61</count>
+        </signals>
+        <signals>
+            <type>M_ME</type>
+            <uint-set>
+                <item>313</item>
+            </uint-set>
+            <start-addr>1550</start-addr>
+            <count>61</count>
+        </signals>
+        <record header="Действующие значения и крест-факторы сигналов">
+            <group>1</group>
+            <record desc="I ф.%1, А">
+                <start-addr>1400</start-addr>
+                <count>3</count>
+                <toolTip>Фазное истинное действующее значение тока ф.%1, А</toolTip>
+                <string-array>
+                    <item>A</item>
+                    <item>B</item>
+                    <item>C</item>
+                </string-array>
+            </record>
+            <record desc="I ср., А">
+                <start-addr>1403</start-addr>
+                <toolTip>Среднее истинное фазное действующее значение тока, А</toolTip>
+            </record>
+            <record desc="IhA1 ф.%1, А">
+                <start-addr>1404</start-addr>
+                <count>3</count>
+                <toolTip>Фазное действующее значение тока ф.%1 по 1-й гармонике, А</toolTip>
+                <string-array>
+                    <item>A</item>
+                    <item>B</item>
+                    <item>C</item>
+                </string-array>
+            </record>
+            <record desc="IhA1 ср., А">
+                <start-addr>1407</start-addr>
+                <toolTip>Среднее фазное действующее значение тока по 1-й гарм., А</toolTip>
+            </record>
+            <record desc="KrF_I ф.%1, А">
+                <start-addr>1408</start-addr>
+                <count>3</count>
+                <toolTip>Крест-фактор тока в фазе %1, А</toolTip>
+                <string-array>
+                    <item>A</item>
+                    <item>B</item>
+                    <item>C</item>
+                </string-array>
+            </record>
+        </record>
+        <record header="Данные по несимметрии и искажениям сигналов">
+            <group>1</group>
+            <record desc="I0, А">
+                <start-addr>1420</start-addr>
+                <toolTip>Ток нулевой последовательности гр.1, А</toolTip>
+            </record>
+            <record desc="I1, А">
+                <start-addr>1421</start-addr>
+                <toolTip>Ток прямой последовательности гр.1, А</toolTip>
+            </record>
+            <record desc="I2, А">
+                <start-addr>1422</start-addr>
+                <toolTip>Ток обратной последовательности гр.1, А</toolTip>
+            </record>
+            <record desc="KuI2, %">
+                <start-addr>1423</start-addr>
+                <toolTip>Коэффициент несимметрии тока по
+                    обратной последовательности гр.1, %</toolTip>
+            </record>
+            <record desc="KuI0, %">
+                <start-addr>1424</start-addr>
+                <toolTip>Коэффициент несимметрии тока по
+                    нулевой последовательности гр.1, %</toolTip>
+            </record>
+            <record desc="THD_I ф.%1">
+                <start-addr>1425</start-addr>
+                <count>3</count>
+                <toolTip>Общий коэффициент гарм. искажений тока ф.%1 гр.1</toolTip>
+                <string-array>
+                    <item>A</item>
+                    <item>B</item>
+                    <item>C</item>
+                </string-array>
+            </record>
+        </record>
+        <record header="Данные по гармоническому составу сигналов фазы A" desc="Гм %1">
+            <group>311</group>
+            <start-addr>1428</start-addr>
+            <count>61</count>
+        </record>
+        <record header="Данные по гармоническому составу сигналов фазы В" desc="Гм %1">
+            <group>312</group>
+            <start-addr>1489</start-addr>
+            <count>61</count>
+        </record>
+        <record header="Данные по гармоническому составу сигналов фазы C" desc="Гм %1">
+            <group>313</group>
+            <start-addr>1550</start-addr>
+            <count>61</count>
+        </record>
+    </check>
+    <check header="Текущие данные">
+        <signals>
+            <type>M_ME</type>
+            <uint-set>
+                <item>1</item>
+            </uint-set>
+            <start-addr>4000</start-addr>
+            <count>3</count>
+        </signals>
+        <signals>
+            <type>M_ME</type>
+            <uint-set>
+                <item>1</item>
+            </uint-set>
+            <start-addr>4010</start-addr>
+            <count>22</count>
+        </signals>
+        <signals>
+            <type>M_ME</type>
+            <uint-set>
+                <item>1</item>
+            </uint-set>
+            <start-addr>4500</start-addr>
+            <count>7</count>
+        </signals>
+        <signals>
+            <type>M_ME</type>
+            <uint-set>
+                <item>10</item>
+            </uint-set>
+            <start-addr>2400</start-addr>
+            <count>7</count>
+        </signals>
+        <signals>
+            <type>M_ME</type>
+            <uint-set>
+                <item>10</item>
+            </uint-set>
+            <start-addr>2420</start-addr>
+            <count>32</count>
+        </signals>
+        <record header="Данные по несимметрии и искажениям сигналов">
+            <group>1</group>
+            <record desc="Vst">
+                <start-addr>4000</start-addr>
+                <toolTip>Относительная скорость старения изоляции</toolTip>
+            </record>
+            <record desc="Age">
+                <start-addr>4001</start-addr>
+                <toolTip>Интегральное старение изоляции, час</toolTip>
+            </record>
+            <record desc="RESURS">
+                <start-addr>4002</start-addr>
+                <toolTip>Остаточный ресурс изоляции, час</toolTip>
+            </record>
+        </record>
+        <record header="Температура">
+            <group>1</group>
+            <record desc="Tw, °С">
+                <start-addr>4500</start-addr>
+                <toolTip>Температура обмотки (расчетная), °С</toolTip>
+            </record>
+            <record desc="Ta, °С">
+                <start-addr>4501</start-addr>
+                <toolTip>Температура окружающей среды, °С</toolTip>
+            </record>
+            <record desc="Rterm">
+                <start-addr>4502</start-addr>
+                <toolTip>Сопротивление термометра окружающей среды</toolTip>
+            </record>
+            <record desc="ExtTempWin%1">
+                <start-addr>4503</start-addr>
+                <count>4</count>
+                <toolTip>Температура обмотки, измеренная встроенным датчиком %1</toolTip>
+                <string-array>
+                    <item>1</item>
+                    <item>2</item>
+                    <item>3</item>
+                    <item>4</item>
+                </string-array>
+            </record>
+        </record>
+        <record header="Оставшееся время работы">
+            <group>1</group>
+            <record desc="Tpred">
+                <start-addr>4010</start-addr>
+                <toolTip>Температура обмотки (расчетная), °С</toolTip>
+            </record>
+            <record desc="Tdop">
+                <start-addr>4011</start-addr>
+                <toolTip>Допустимое оставшееся время работы при данной нагрузке</toolTip>
+            </record>
+            <record desc="Tdop%1%">
+                <start-addr>4012</start-addr>
+                <count>20</count>
+                <toolTip>Допустимое оставшееся время работы при нагрузке %1%</toolTip>
+                <string-array>
+                    <item>105</item>
+                    <item>110</item>
+                    <item>115</item>
+                    <item>120</item>
+                    <item>125</item>
+                    <item>130</item>
+                    <item>135</item>
+                    <item>140</item>
+                    <item>145</item>
+                    <item>150</item>
+                    <item>155</item>
+                    <item>160</item>
+                    <item>165</item>
+                    <item>170</item>
+                    <item>175</item>
+                    <item>180</item>
+                    <item>185</item>
+                    <item>190</item>
+                    <item>195</item>
+                    <item>120</item>
+                </string-array>
+            </record>
+        </record>
+        <record header="Данные по частоте и углам сдвига сигналов">
+            <group>10</group>
+            <record desc="Frequency">
+                <start-addr>2400</start-addr>
+                <toolTip>Частота в сети, Гц</toolTip>
+            </record>
+            <record desc="Ψ%10">
+                <start-addr>2401</start-addr>
+                <count>5</count>
+                <toolTip>Угол сдвига между каналами %1-0, градусов</toolTip>
+                <string-array>
+                    <item>1</item>
+                    <item>2</item>
+                    <item>3</item>
+                    <item>4</item>
+                    <item>5</item>
+                </string-array>
+            </record>
+        </record>
+        <record header="Мощности">
+            <group>10</group>
+            <record desc="P%1, кВт">
+                <start-addr>2420</start-addr>
+                <count>3</count>
+                <toolTip>Истинная активная мощность фазы %1, кВт</toolTip>
+                <string-array>
+                    <item>A</item>
+                    <item>B</item>
+                    <item>C</item>
+                </string-array>
+            </record>
+            <record desc="P сумм, кВт">
+                <start-addr>2423</start-addr>
+                <toolTip>Истинная активная мощность суммарная, кВт</toolTip>
+            </record>
+            <record desc="Q%1, кВАр">
+                <start-addr>2424</start-addr>
+                <count>3</count>
+                <toolTip>Реактивная мощность фазы %1, кВАр</toolTip>
+                <string-array>
+                    <item>A</item>
+                    <item>B</item>
+                    <item>C</item>
+                </string-array>
+            </record>
+            <record desc="Q сумм, кВАр">
+                <start-addr>2427</start-addr>
+                <toolTip>Реактивная мощность суммарная, кВАр</toolTip>
+            </record>
+            <record desc="S%1, кВА">
+                <start-addr>2428</start-addr>
+                <count>3</count>
+                <toolTip>Полная (кажущаяся) мощность фазы %1 по эфф. току и напряжению, кВА</toolTip>
+                <string-array>
+                    <item>A</item>
+                    <item>B</item>
+                    <item>C</item>
+                </string-array>
+            </record>
+            <record desc="S сумм, кВА">
+                <start-addr>2431</start-addr>
+                <toolTip>Полная мощность по эфф. току и напряжению суммарная, кВА</toolTip>
+            </record>
+            <record desc="Cos ϕ %1">
+                <start-addr>2432</start-addr>
+                <count>3</count>
+                <toolTip>Коэффициент мощности фазы %1 (по S и P)</toolTip>
+                <string-array>
+                    <item>A</item>
+                    <item>B</item>
+                    <item>C</item>
+                </string-array>
+            </record>
+            <record desc="Cos ϕ ср">
+                <start-addr>2435</start-addr>
+                <toolTip>Коэффициент мощности средний (по S и P)</toolTip>
+            </record>
+        </record>
+        <record header="Мощности по 1-й гармонике">
+            <group>10</group>
+            <record desc="P1%1, кВт">
+                <start-addr>2436</start-addr>
+                <count>3</count>
+                <toolTip>Истинная активная мощность фазы %1 по 1-й гармонике, кВт</toolTip>
+                <string-array>
+                    <item>A</item>
+                    <item>B</item>
+                    <item>C</item>
+                </string-array>
+            </record>
+            <record desc="P1 сумм, кВт">
+                <start-addr>2439</start-addr>
+                <toolTip>Истинная активная мощность суммарная по 1-й гармонике, кВт</toolTip>
+            </record>
+            <record desc="Q1%1, кВАр">
+                <start-addr>2440</start-addr>
+                <count>3</count>
+                <toolTip>Реактивная мощность фазы %1 по 1-й гармонике, кВАр</toolTip>
+                <string-array>
+                    <item>A</item>
+                    <item>B</item>
+                    <item>C</item>
+                </string-array>
+            </record>
+            <record desc="Q1 сумм, кВАр">
+                <start-addr>2443</start-addr>
+                <toolTip>Реактивная мощность суммарная по 1-й гармонике, кВАр</toolTip>
+            </record>
+            <record desc="S1%1, кВА">
+                <start-addr>2444</start-addr>
+                <count>3</count>
+                <toolTip>Полная (кажущаяся) мощность фазы %1 по эфф. току и напряжению по 1-й гармонике, кВА</toolTip>
+                <string-array>
+                    <item>A</item>
+                    <item>B</item>
+                    <item>C</item>
+                </string-array>
+            </record>
+            <record desc="S1 сумм, кВА">
+                <start-addr>2447</start-addr>
+                <toolTip>Полная мощность по эфф. току и напряжению суммарная по 1-й гармонике, кВА</toolTip>
+            </record>
+            <record desc="Cos ϕ1 %1">
+                <start-addr>2448</start-addr>
+                <count>3</count>
+                <toolTip>Коэффициент мощности фазы %1 (по S и P) по 1-й гармонике</toolTip>
+                <string-array>
+                    <item>A</item>
+                    <item>B</item>
+                    <item>C</item>
+                </string-array>
+            </record>
+            <record desc="Cos ϕ1 ср">
+                <start-addr>2451</start-addr>
+                <toolTip>Коэффициент мощности средний (по S и P) по 1-й гармонике</toolTip>
+            </record>
+        </record>
+    </check>
+    
+</root>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:noNamespaceSchemaLocation="check-board.xsd">
+    <check header="Текущие данные
+    мезонинная">
+        <signals>
+            <type>M_BO</type>
+            <uint-set>
+                <item>1</item>
+            </uint-set>
+            <start-addr>3002</start-addr>
+            <count>1</count>
+        </signals>
+        <record header="Состояния входов">
+            <group>1</group>
+            <start-addr>3002</start-addr>
+            <count>30</count>
+        </record>
+    </check>
+</root>

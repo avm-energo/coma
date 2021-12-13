@@ -151,8 +151,22 @@ void ModBus::reqBSI()
 {
     CommandsMBS::CommandStruct inp {
         CommandsMBS::Commands::MBS_READINPUTREGISTER, //
-        BSIREG,                                       //
-        static_cast<quint8>(BSIENDREG * 2),           //
+        Regs::bsiStartReg,                            //
+        static_cast<quint8>(Regs::bsiEndReg * 2),     //
+        {},                                           //
+        TypeId::Uint32,                               //
+        __PRETTY_FUNCTION__                           //
+    };
+    DataManager::addToInQueue(inp);
+}
+
+void ModBus::reqBSIExt()
+{
+    constexpr auto regCount = sizeof(Modules::StartupInfoBlockExt0) / sizeof(quint32);
+    CommandsMBS::CommandStruct inp {
+        CommandsMBS::Commands::MBS_READINPUTREGISTER, //
+        31,                                           //
+        static_cast<quint8>(regCount * 2),            //
         {},                                           //
         TypeId::Uint32,                               //
         __PRETTY_FUNCTION__                           //
@@ -176,10 +190,10 @@ void ModBus::reqTime()
 {
     CommandsMBS::CommandStruct inp {
         CommandsMBS::Commands::MBS_READHOLDINGREGISTERS, //
-        TIMEREG,                                         //
+        Regs::timeReg,                                   //
         2,                                               //
         {},                                              //
-        type(TIMEREG, 2),                                //
+        type(Regs::timeReg, 2),                          //
         __PRETTY_FUNCTION__                              //
     };
     Q_ASSERT(isValidRegs(inp));
@@ -192,7 +206,7 @@ void ModBus::writeTime(quint32 time)
 
     CommandsMBS::CommandStruct inp {
         CommandsMBS::Commands::MBS_WRITEMULTIPLEREGISTERS, //
-        TIMEREG,                                           //
+        Regs::timeReg,                                     //
         2,                                                 //
         timeArray,                                         //
         TypeId::None,                                      //

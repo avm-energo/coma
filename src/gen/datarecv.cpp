@@ -4,7 +4,7 @@
 #include "s2helper.h"
 
 #include <type_traits>
-std::map<int, ctti::unnamed_type_id_t> DataTypes::DataRecV::map;
+DataTypes::valueMap DataTypes::DataRecV::map;
 
 namespace DataTypes
 {
@@ -21,16 +21,11 @@ S2DataTypes::DataRec DataRecV::serialize() const
 {
     return std::visit(
         [=](auto &arg) -> S2DataTypes::DataRec {
-            //  std::cout << data.index() << std::endl;
             typedef std::remove_reference_t<decltype(arg)> internalType;
             S2DataTypes::DataRec record { id, sizeof(internalType), (void *)(&arg) };
             return record;
         },
         data);
-}
-
-DataRecV::DataRecV(const S2DataTypes::DataRec &record) : DataRecV(record, static_cast<const char *>(record.thedata))
-{
 }
 
 template <typename T, typename F> static constexpr bool is_variant_alternative()
@@ -46,15 +41,15 @@ template <typename T, typename F> static constexpr bool is_variant_alternative()
     return state;
 }
 
-DataRecV::DataRecV(const S2DataTypes::DataRec &record, const char *rawdata) : id(record.header.id)
+DataRecV::DataRecV(const valueMap &_map, const S2DataTypes::DataRec &record, const char *rawdata) : id(record.header.id)
 {
     using namespace detail;
 
-    auto search = map.find(id);
-    assert(search != map.end());
+    auto search = _map.map().find(id);
+    assert(search != _map.map().end());
 
     // Exception inside ctor https://www.stroustrup.com/bs_faq2.html#ctor-exceptions
-    auto value = map.at(record.header.id);
+    auto value = _map.map().at(record.header.id);
     switch (value.hash())
     {
     case ctti::unnamed_type_id<BYTE>().hash():
@@ -177,16 +172,16 @@ DataRecV::DataRecV(const S2DataTypes::DataRec &record, const char *rawdata) : id
     }
 }
 
-DataRecV::DataRecV(const unsigned _id, const QString &str) : id(_id)
+DataRecV::DataRecV(const valueMap &_map, const unsigned _id, const QString &str) : id(_id)
 {
     using namespace detail;
 
-    auto search = map.find(_id);
-    assert(search != map.end());
+    auto search = _map.map().find(_id);
+    assert(search != _map.map().end());
     // return;
     // Exception inside ctor https://www.stroustrup.com/bs_faq2.html#ctor-exceptions
 
-    auto value = map.at(_id);
+    auto value = _map.map().at(_id);
     switch (value.hash())
     {
     case ctti::unnamed_type_id<BYTE>().hash():
@@ -279,11 +274,6 @@ DataRecV::DataRecV(const unsigned _id, const QString &str) : id(_id)
         data = helper<FLOAT_2t>(str);
         break;
     }
-        //    case ctti::unnamed_type_id<FLOAT_2t_2t>().hash():
-        //    {
-        //        data = helper<FLOAT_2t_2t>(str);
-        //        break;
-        //    }
     case ctti::unnamed_type_id<FLOAT_3t>().hash():
     {
         data = helper<FLOAT_3t>(str);
@@ -341,13 +331,4 @@ void DataRecV::setData(const valueType &value)
     assert(data.index() == value.index());
     data = value;
 }
-}
-bool S2DataTypes::is_same(const S2DataTypes::DataRec &lhs, const S2DataTypes::DataRec &rhs)
-{
-    bool is_same_value = false;
-    if ((lhs.header.id == rhs.header.id) && (lhs.header.numByte == rhs.header.numByte))
-        is_same_value = !memcmp(lhs.thedata, rhs.thedata, lhs.header.numByte);
-
-    Q_ASSERT(is_same_value);
-    return is_same_value;
 }

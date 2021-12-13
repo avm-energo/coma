@@ -2,8 +2,6 @@ cmake_minimum_required(VERSION 3.14)
 
 project(qcustomplot LANGUAGES CXX)
 
-set(CMAKE_INCLUDE_CURRENT_DIR ON)
-
 find_package(
   QT NAMES Qt6 Qt5
   COMPONENTS Core Widgets
@@ -13,12 +11,16 @@ find_package(
   COMPONENTS Core Widgets
   REQUIRED)
 
-add_library(${PROJECT_NAME} STATIC qcustomplot.cpp qcustomplot.h)
+FetchContent_GetProperties(qcustomplot_src)
+
+add_library(${PROJECT_NAME} STATIC ${qcustomplot_BINARY_DIR}/qcustomplot.cpp)
 
 target_link_libraries(
   ${PROJECT_NAME}
   PRIVATE Qt${QT_VERSION_MAJOR}::Core
   PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
+
+target_include_directories(${PROJECT_NAME} PUBLIC ${qcustomplot_BINARY_DIR})
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE ${PROJECT_NAME}_LIBRARY)
 

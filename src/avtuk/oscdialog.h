@@ -35,6 +35,7 @@ private:
     bool loadIfExist(quint32 size);
 
     OscManager manager;
+    std::unique_ptr<TrendViewModel> oscModel;
     QMap<int, S2DataTypes::OscInfo> oscMap;
     std::vector<DataTypes::FileStruct> fileBuffer;
     UniquePointer<ETableModel> tableModel;

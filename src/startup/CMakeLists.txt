@@ -27,6 +27,6 @@ add_library(
 target_link_libraries(
   ${PROJECT_NAME}
   PRIVATE Qt${QT_VERSION_MAJOR}::Core
-  PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
+  Qt${QT_VERSION_MAJOR}::Widgets)
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE INTERFACES_LIBRARY)

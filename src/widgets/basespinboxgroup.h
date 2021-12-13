@@ -1,5 +1,8 @@
 #pragma once
 
+#include "flowlayout.h"
+#include "helper.h"
+
 #include <QAbstractSpinBox>
 #include <QDebug>
 #include <QDoubleSpinBox>
@@ -10,41 +13,36 @@
 template <typename T, class S, std::enable_if_t<std::is_base_of<QAbstractSpinBox, S>::value, bool> = true>
 class BaseSpinBoxGroup : public QWidget
 {
+private:
+    [[nodiscard]] QWidget *createWidget(const QString &str)
+    {
+        QWidget *widget = new QWidget;
+        QHBoxLayout *layout = new QHBoxLayout;
+        layout->addWidget(new QLabel(str, this), 0, Qt::AlignRight);
+        layout->addWidget(new S(this));
+        widget->setLayout(layout);
+        return widget;
+    }
 
 public:
     explicit BaseSpinBoxGroup(int count, QWidget *parent = nullptr) : QWidget(parent), m_count(count)
     {
-        auto parentWidth = parent->width();
-        auto columnWidth = parentWidth / 2;
-        QGridLayout *gridlyout = new QGridLayout;
+        FlowLayout *flowLayout = new FlowLayout;
         for (auto i = 0; i != m_count; ++i)
         {
-            QHBoxLayout *layout = new QHBoxLayout;
-            layout->addWidget(new QLabel(QString::number(i + 1), this), 0, Qt::AlignRight);
-            layout->addWidget(new S(this));
-            auto width = layout->minimumSize().width();
-            auto itemsOneLine = columnWidth / width;
-            gridlyout->addLayout(layout, i / itemsOneLine, i % itemsOneLine);
+            flowLayout->addWidget(createWidget(QString::number(i + 1)));
         }
-        setLayout(gridlyout);
+        setLayout(flowLayout);
     }
     explicit BaseSpinBoxGroup(const QStringList &list, QWidget *parent = nullptr)
         : QWidget(parent), m_count(list.size())
     {
-        auto parentWidth = parent->width();
-        auto columnWidth = parentWidth / 2;
-        QGridLayout *gridlyout = new QGridLayout;
+        FlowLayout *flowLayout = new FlowLayout;
         for (auto i = 0; i != m_count; ++i)
         {
-            QHBoxLayout *layout = new QHBoxLayout;
-            layout->addWidget(new QLabel(list.at(i), this), 0, Qt::AlignRight);
-            layout->addWidget(new S(this));
-            auto width = layout->minimumSize().width();
-            auto itemsOneLine = columnWidth / width;
-            Q_ASSERT(itemsOneLine > 0);
-            gridlyout->addLayout(layout, i / itemsOneLine, i % itemsOneLine);
+            flowLayout->addWidget(createWidget(list.at(i)));
         }
-        setLayout(gridlyout);
+        setLayout(flowLayout);
     }
     T minimum() const
     {

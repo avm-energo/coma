@@ -33,13 +33,15 @@ public:
 private:
     void setupUI();
     void getSwJ(const QModelIndex &idx);
+
+    void exportSwJ(uint32_t swjNum);
     void eraseJournals();
     bool loadIfExist(quint32 size);
     QString filename(quint64 time) const;
 
     UniquePointer<ETableModel> tableModel;
     ETableView *swjTableView;
-    QMap<int, S2DataTypes::SwitchJourInfo> swjMap;
+    QMap<quint32, S2DataTypes::SwitchJourInfo> swjMap;
     std::vector<DataTypes::FileStruct> fileBuffer;
 
     std::unique_ptr<TrendViewModel> oscModel;
@@ -50,13 +52,17 @@ private:
 
 class SwitchJournalViewDialog : public QDialog
 {
+    Q_OBJECT
+    typedef const std::unique_ptr<TrendViewModel> &TrendViewModelCRef;
+
 public:
-    SwitchJournalViewDialog(SwjModel &swjModel, TrendViewModel *const oscModel, OscManager &oscManager);
     SwitchJournalViewDialog(
-        SwjModel &swjModel, const std::unique_ptr<TrendViewModel> &oscModel, OscManager &oscManager);
+        SwjModel &swjModel, TrendViewModelCRef oscModel, OscManager &oscManager, QWidget *parent = nullptr);
+signals:
+    void exportJour();
 
 private:
-    QPushButton *create(SwjModel &swjModel);
+    void setupUI(SwjModel &swjModel, TrendViewModelCRef oscModel, OscManager &oscManager);
 };
 
 #endif // SWITCHJOURNALDIALOG_H

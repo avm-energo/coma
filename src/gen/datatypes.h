@@ -136,8 +136,8 @@ struct FileStruct
 
 inline QDataStream &operator<<(QDataStream &stream, const FileStruct &str)
 {
-#if QT_VERSION >= 0x051200
-    stream << str.filenum;
+#if QT_VERSION >= 0x050C00
+    stream << str.ID;
 #else
     stream << std::underlying_type_t<FilesEnum>(str.ID);
 #endif
@@ -146,8 +146,8 @@ inline QDataStream &operator<<(QDataStream &stream, const FileStruct &str)
 }
 inline QDataStream &operator>>(QDataStream &stream, FileStruct &str)
 {
-#if QT_VERSION >= 0x051200
-    stream >> str.filenum;
+#if QT_VERSION >= 0x050C00
+    stream >> str.ID;
 #else
     stream >> *reinterpret_cast<std::underlying_type_t<FilesEnum> *>(&str.ID);
 #endif
@@ -192,7 +192,7 @@ struct GeneralResponseStruct
 
 struct Alarm
 {
-    quint64 flags;
+    std::bitset<128> flags;
     quint32 startAddr;
     QStringList desc;
     QString name;
@@ -302,8 +302,6 @@ typedef QVector<S2DataTypes::DataRec> S2ConfigType;
 #pragma pack(1)    /* set alignment to 1 byte boundary */
 struct OscInfo
 {
-    //  quint32 fileNum;    // номер файла осциллограмм
-    //  quint32 fileLength; // длина файла за исключением FileHeader (16 байт)
     // заголовок записи
     DataRecHeader typeHeader;
     quint32 id; // Тип файла - осциллограмма и количество осциллограмм в файле (10000, 10001 ...) <- неверное описание
@@ -318,42 +316,42 @@ struct OscInfo
 #pragma pack(1)    /* set alignment to 1 byte boundary */
 struct SwitchJourInfo
 {
-    quint16 fileNum;    // Номер файла
-    quint32 fileLength; // Размер файла
-    quint32 num;        // Порядковый номер переключения
-    quint8 numA;        // Порядковый номер аппарата
-    quint8 typeA;       // Тип аппарата
-    quint64 time;       // Время, когда произведено переключение
-    quint32 options; // Направление переключения, тип коммутации и коммутируемые фазы
+    uint16_t fileNum;    // Номер файла
+    uint32_t fileLength; // Размер файла
+    uint32_t num;        // Порядковый номер переключения
+    uint16_t numA;       // Порядковый номер аппарата
+    uint8_t typeA;       // Тип аппарата
+    uint8_t options; // Направление переключения, тип коммутации и коммутируемые фазы
+    uint64_t time; // Время, когда произведено переключение
 };
-
-#pragma pack(pop) /* restore original alignment from stack */
 
 struct SwitchJourRecord
 {
-    quint32 num;    // Порядковый номер переключения
-    quint8 numA;    // Порядковый номер аппарата
-    quint8 typeA;   // Тип аппарата
-    quint16 result; // Результат операции: успешно / с неисправностью
-    quint64 time;   // Время, когда произведено переключение
-    quint32 options; // Направление переключения, тип коммутации и коммутируемые фазы
-    float amperage[3];   // Значение тока в момент выдачи команды
-    float voltage[3];    // Значение напряжения в момент выдачи команды
-    quint16 ownTime[3];  // Собственное время коммутации
-    quint16 fullTime[3]; // Полное время коммутации (только для отключения, для включения будут нули)
-    quint16 movTime[3];  // Время перемещения главного контакта
-    quint16 archTime[3]; // Время горения дуги
-    quint16 idleTime[3]; // Время безоперационного простоя
-    quint16 inaccuracy[3]; // Погрешность синхронной коммутации (только для соответствующего типа коммутации, для
+    uint32_t num;   // Порядковый номер переключения
+    uint16_t numA;  // Порядковый номер аппарата
+    uint8_t typeA;  // Тип аппарата
+    uint8_t result; // Результат операции: успешно / с неисправностью
+    uint64_t time;  // Время, когда произведено переключение
+    uint8_t options; // Направление переключения, тип коммутации и коммутируемые фазы
+    float amperage[3];    // Значение тока в момент выдачи команды
+    float voltage[3];     // Значение напряжения в момент выдачи команды
+    uint16_t ownTime[3];  // Собственное время коммутации
+    uint16_t fullTime[3]; // Полное время коммутации (только для отключения, для включения будут нули)
+    uint16_t movTime[3];  // Время перемещения главного контакта
+    uint16_t archTime[3]; // Время горения дуги
+    float idleTime[3];    // Время безоперационного простоя
+    int16_t inaccuracy[3]; // Погрешность синхронной коммутации (только для соответствующего типа коммутации, для
                            // остальных типов нули
     float supplyVoltage;   // Напряжение питания цепей соленоидов
     float tOutside;        // Температура окружающей среды
     float tInside[3];      // Температура внутри привода
     float phyd[3];         // Давление в гидросистеме привода
-    quint64 oscTime;       // Время старта осциллограммы
-    quint8 Reserve[4];     // Резерв
-    quint32 timeF;         // Время записи в журнал
+    uint64_t oscTime;      // Время старта осциллограммы
+    uint8_t Reserve;       // Резерв
+    uint32_t timeF;        // Время записи в журнал
 };
+
+#pragma pack(pop) /* restore original alignment from stack */
 
 struct DataRecSwitchJour
 {

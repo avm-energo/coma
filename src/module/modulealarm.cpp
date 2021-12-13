@@ -30,19 +30,15 @@ void ModuleAlarm::update(const DataTypes::SinglePointWithTimeStruct &sp)
     const auto maxAddress = m_startAlarmAddress + m_alarmFlags.size();
     if (!((sp.sigAdr >= minAddress) && (sp.sigAdr <= maxAddress)))
         return;
-    // bool alarmFlag = false; // warning flag
 
     const int index = (sp.sigAdr - minAddress);
-    // int index = sp.sigAdr;
+
     const quint8 sigval = sp.sigVal;
     if (sigval & 0x80)
         return;
 
     if (m_alarmFlags.test(index))
     {
-        //    qDebug() << m_alarmFlags;
-        //    qDebug() << index << bool(sigval);
-        // alarmFlag = true;
         updatePixmap(sigval & 0x00000001, index);
     }
 }
@@ -65,9 +61,6 @@ void ModuleAlarm::update()
 
         if (m_alarmFlags.test(index))
         {
-            //    qDebug() << m_alarmFlags;
-            //    qDebug() << index << bool(sigval);
-            // alarmFlag = true;
             updatePixmap(sigval & 0x00000001, index);
         }
     }

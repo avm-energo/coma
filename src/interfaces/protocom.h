@@ -11,21 +11,18 @@ class Protocom final : public BaseInterface
 
 public:
     explicit Protocom(QObject *parent = nullptr);
-
+    ~Protocom();
     bool start(const ConnectStruct &st) override;
     bool start(const UsbHidSettings &usbhid);
-    // void pause() override {};
-    // void resume() override {};
-    // void stop() override;
 
     void reqTime() override;
     void reqFile(quint32 filenum, FileFormat format) override;
     void reqStartup(quint32 sigAdr, quint32 sigCount) override;
     void reqBSI() override;
+    void reqBSIExt() override;
     void reqBitStrings(quint32 sigAdr = 0, quint32 sigCount = 0) override;
     // Support only S2 format
     void writeFile(quint32 filenum, const QByteArray &file) override;
-    // void writeConfigFile() override;
     void writeTime(quint32 time) override;
 #ifdef Q_OS_LINUX
     void writeTime(const timespec &time) const;

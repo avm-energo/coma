@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s2files xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="s2files.xsd">
+    <record>
+        <id>301</id>
+        <defaultValue>1.385,1.385,1.385,1.385,1.385,1.385,1.385,1.385</defaultValue>
+    </record>
+    <record>
+        <id>302</id>
+        <defaultValue>-50,-50,-50,-50,-50,-50,-50,-50</defaultValue>
+    </record>
+    <record>
+        <id>303</id>
+        <defaultValue>150,150,150,150,150,150,150,150</defaultValue>
+    </record>
+    <record>
+        <id>304</id>
+        <defaultValue>-40,-40,-40,-40,-40,-40,-40,-40</defaultValue>
+    </record>
+    <record>
+        <id>305</id>
+        <defaultValue>-25,-25,-25,-25,-25,-25,-25,-25</defaultValue>
+    </record>
+    <record>
+        <id>306</id>
+        <defaultValue>900,900,900,900,900,900,900,900</defaultValue>
+    </record>
+    <record>
+        <id>307</id>
+        <defaultValue>100,100,100,100,100,100,100,100</defaultValue>
+    </record>
+    <record>
+        <id>308</id>
+        <defaultValue>10</defaultValue>
+    </record>
+    <record>
+        <id>309</id>
+        <defaultValue>16</defaultValue>
+    </record>
+    <record>
+        <id>310</id>
+        <defaultValue>2</defaultValue>
+    </record>
+    <record>
+        <id>311</id>
+        <defaultValue>100,100,100,100,100,100,100,100</defaultValue>
+    </record>
+</s2files>

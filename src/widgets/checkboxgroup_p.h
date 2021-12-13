@@ -7,18 +7,18 @@
 
 class CheckBoxGroupPrivate
 {
-    Q_DECLARE_PUBLIC(CheckBoxGroup);
+    Q_DECLARE_PUBLIC(CheckBoxGroup)
 
 public:
     CheckBoxGroupPrivate(int count)
     {
-        m_bitset = boost::dynamic_bitset(std::size_t(std_ext::clp2(count)));
+        m_bitset = boost::dynamic_bitset<>(std::size_t(std_ext::clp2(count)));
     }
     template <typename T> void setBits(const T value)
     {
         Q_Q(CheckBoxGroup);
         m_bitset = boost::dynamic_bitset(sizeof(T) * 8, value);
-        [[maybe_unused]] const T test = (T)m_bitset.to_ulong();
+        [[maybe_unused]] const T test = T(m_bitset.to_ulong());
         QList<QCheckBox *> checkBoxes = q->findChildren<QCheckBox *>();
         for (QCheckBox *checkBox : checkBoxes)
         {

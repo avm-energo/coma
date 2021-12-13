@@ -1,9 +1,9 @@
 #pragma once
 #include "../gen/datatypes.h"
 #include "../gen/std_ext.h"
+#include "../widgets/delegate_common.h"
 #include "../widgets/ipctrl.h"
 #include "../widgets/wd_func.h"
-#include "delegate.h"
 
 #include <QStandardItemModel>
 #include <bitset>
@@ -73,7 +73,7 @@ private:
     bool fillBackComboBox(BciNumber key, const QWidget *parent, delegate::QComboBox::PrimaryField field);
     bool fillBackComboBoxGroup(BciNumber key, const QWidget *parent, int count);
 
-    static widgetMap m_widgetMap;
+    static config::widgetMap m_widgetMap;
     static categoryMap m_categoryMap;
     ConfigV *configV;
 };
@@ -311,7 +311,7 @@ template <typename T> bool WidgetFactory::fillWidget(const QWidget *parent, BciN
                            }
                        }
                    },
-                   [&](const delegate::Item &arg) {
+                   [&](const config::Item &arg) {
 #ifdef DEBUG_FACTORY
                        qDebug() << "Item" << key;
 #endif
