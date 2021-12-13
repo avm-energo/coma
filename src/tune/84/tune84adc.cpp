@@ -2,6 +2,7 @@
 
 #include "../../gen/colors.h"
 #include "../../gen/stdfunc.h"
+#include "../../widgets/epopup.h"
 #include "../../widgets/waitwidget.h"
 #include "../../widgets/wd_func.h"
 #include "../gen/configv.h"
@@ -106,9 +107,10 @@ void Tune84ADC::setTuneFunctions()
 
 Error::Msg Tune84ADC::showPreWarning()
 {
-    QDialog *dlg = new QDialog;
+    //    QDialog *dlg = new QDialog;
     QVBoxLayout *lyout = new QVBoxLayout;
 
+    QWidget *w = new QWidget(this);
     lyout->addWidget(WDFunc::NewLBL2(this, "", "", new QPixmap("images/tunekiv1.png")));
     lyout->addWidget(WDFunc::NewLBL2(this, "1. Соберите схему подключения по одной из вышеприведённых картинок;"));
     lyout->addWidget(WDFunc::NewLBL2(this,
@@ -121,11 +123,15 @@ Error::Msg Tune84ADC::showPreWarning()
         "разместите модуль в термокамеру с диапазоном регулирования температуры "
         "от минус 20 до +60°С. Установите нормальное значение температуры "
         "в камере 20±5°С"));
-    lyout->addWidget(WDFunc::NewPB(this, "", "Готово", [dlg] { dlg->close(); }));
-    lyout->addWidget(WDFunc::NewPB(this, "cancelpb", "Отмена", [dlg] { dlg->close(); }));
-    dlg->setLayout(lyout);
-    WDFunc::PBConnect(dlg, "cancelpb", static_cast<AbstractTuneDialog *>(this), &AbstractTuneDialog::CancelTune);
-    dlg->exec();
+    //    lyout->addWidget(WDFunc::NewPB(this, "", "Готово", [dlg] { dlg->close(); }));
+    //    lyout->addWidget(WDFunc::NewPB(this, "cancelpb", "Отмена", [dlg] { dlg->close(); }));
+    w->setLayout(lyout);
+
+    if (!EMessageBox::next(w))
+        CancelTune();
+    //    dlg->setLayout(lyout);
+    //    WDFunc::PBConnect(dlg, "cancelpb", static_cast<AbstractTuneDialog *>(this), &AbstractTuneDialog::CancelTune);
+    //    dlg->exec();
     return Error::Msg::NoError;
 }
 
@@ -269,7 +275,7 @@ Error::Msg Tune84ADC::SendBac()
 
 Error::Msg Tune84ADC::CheckTune()
 {
-    QMessageBox::information(this, "Информация",
+    EMessageBox::information(
         "После закрытия данного сообщения для завершения настройки нажмите Enter\nДля отказа от настройки нажмите Esc");
     m_finished = false;
     while ((!StdFunc::isCancelled()) && !m_finished)
@@ -305,30 +311,55 @@ Error::Msg Tune84ADC::showRetomDialog(int coef)
     QMap<int, retomStruct> retomCoefMap
         = { { 1, { 290, 2.5, "30:3" } }, { 2, { 250, 2.5, "30:3" } }, { 4, { 140, 1, "30:6" } },
               { 8, { 80, 0.5, "30:6" } }, { 16, { 40, 0.1, "1:1" } }, { 32, { 23, 0.05, "1:1" } } };
-    QDialog *dlg = new QDialog;
-    QVBoxLayout *lyout = new QVBoxLayout;
-    QString tmps = "Задайте на РЕТОМ-51 или имитаторе АВМ-КИВ трёхфазный режим токов и напряжений (Uabc, Iabc)"
-                   "Угол между токами и напряжениями: 89.9 град. (tg 2 % в имитаторе),\n"
-                   "Значения напряжений: 57.75 В";
-    if (m_tuneStep == TS84_ADCI)
+
+    QWidget *w = new QWidget(this);
+    QHBoxLayout *hlyout = new QHBoxLayout;
+    QVBoxLayout *vlyout = new QVBoxLayout;
+    vlyout->addWidget(WDFunc::NewLBL2(this, "РЕТОМ"));
+    vlyout->addWidget(WDFunc::newHLine(this));
+    QString tmps;
+    tmps = "Задайте на РЕТОМ-51 трёхфазный режим токов и напряжений (Uabc, Iabc)\n"
+           "Угол между токами и напряжениями: 89.9 град.\n"
+           "Значения напряжений: 57.75 В";
+    if (m_tuneStep == KIVTS_ADCI)
         tmps += ", токов: " + QString::number(retomCoefMap[coef].i, 'f', 2) + " мА";
-    lyout->addWidget(WDFunc::NewLBL2(this, tmps));
-    tmps = "Значения тока и напряжения контролируются по показаниям прибора Энергомонитор.\n";
-    if (m_tuneStep == TS84_ADCI)
-        tmps += "Предел измерения тока в Энергомониторе: " + QString::number(retomCoefMap[coef].range, 'f', 2)
-            + " А.\n"
-              "Коэффициент передачи РЕТ-10 для режима с имитатором: "
-            + retomCoefMap[coef].ret10c + " (для РЕТОМ-51 коэффициент 30:3).";
-    lyout->addWidget(WDFunc::NewLBL2(this, tmps));
-    QPushButton *pb = new QPushButton("Готово");
-    connect(pb, SIGNAL(clicked()), dlg, SLOT(close()));
-    lyout->addWidget(pb);
-    pb = new QPushButton("Отмена");
-    connect(pb, SIGNAL(clicked()), this, SLOT(CancelTune()));
-    connect(pb, SIGNAL(clicked()), dlg, SLOT(close()));
-    lyout->addWidget(pb);
-    dlg->setLayout(lyout);
-    dlg->exec();
+    vlyout->addWidget(WDFunc::NewLBL2(this, tmps));
+    vlyout->addWidget(
+        WDFunc::NewLBL2(this, "Значения тока и напряжения контролируются по показаниям прибора Энергомонитор.\n"));
+    if (m_tuneStep == KIVTS_ADCI)
+        vlyout->addWidget(WDFunc::NewLBL2(this,
+            "Предел измерения тока в Энергомониторе: " + QString::number(retomCoefMap[coef].range, 'f', 2)
+                + " А.\nКоэффициент передачи РЕТ-10 30:3"));
+    hlyout->addLayout(vlyout);
+    hlyout->addWidget(WDFunc::newVLine(this));
+    vlyout = new QVBoxLayout;
+    vlyout->addWidget(WDFunc::NewLBL2(this, "ИМИТАТОР"));
+    vlyout->addWidget(WDFunc::newHLine(this));
+    tmps = "Установите на имитаторе АВМ-КИВ tg = 2 %,\n"
+           "Значения напряжений: 57.75 В";
+    if (m_tuneStep == KIVTS_ADCI)
+        tmps += ", токов: " + QString::number(retomCoefMap[coef].i, 'f', 2) + " мА";
+    vlyout->addWidget(WDFunc::NewLBL2(this, tmps));
+    vlyout->addWidget(
+        WDFunc::NewLBL2(this, "Значения тока и напряжения контролируются по показаниям прибора Энергомонитор.\n"));
+    if (m_tuneStep == KIVTS_ADCI)
+        vlyout->addWidget(WDFunc::NewLBL2(this,
+            "Предел измерения тока в Энергомониторе: " + QString::number(retomCoefMap[coef].range, 'f', 2)
+                + " А.\nКоэффициент передачи РЕТ-10 " + retomCoefMap[coef].ret10c));
+    hlyout->addLayout(vlyout);
+    w->setLayout(hlyout);
+    if (!EMessageBox::next(w))
+        CancelTune();
+    //    lyout->addWidget(WDFunc::NewLBL2(this, tmps));
+    //    QPushButton *pb = new QPushButton("Готово");
+    //    connect(pb, &QAbstractButton::clicked, dlg, &QWidget::close);
+    //    lyout->addWidget(pb);
+    //    pb = new QPushButton("Отмена");
+    //    connect(pb, &QAbstractButton::clicked, this, &AbstractTuneDialog::CancelTune);
+    //    connect(pb, &QAbstractButton::clicked, dlg, &QWidget::close);
+    //    lyout->addWidget(pb);
+    //    dlg->setLayout(lyout);
+    //    dlg->exec();
     return Error::Msg::NoError;
 }
 
@@ -364,34 +395,15 @@ Error::Msg Tune84ADC::showEnergomonitorInputDialog()
 {
     if ((m_curTuneStep != 1) && (m_tuneStep == TS84_ADCU)) // only the first input has any means
         return Error::Msg::ResEmpty;
-    if (!m_isEnergoMonitorDialogCreated)
+    EEditablePopup *popup = new EEditablePopup("Ввод значений сигналов c Энергомонитора");
+    if (m_tuneStep == TS84_ADCU)
     {
-        QDialog *dlg = new QDialog(this);
-        dlg->setObjectName("energomonitordlg");
-        QVBoxLayout *vlyout = new QVBoxLayout;
-        vlyout->addWidget(WDFunc::NewLBL2(this, "Ввод значений сигналов c Энергомонитора"));
-        if (m_tuneStep == TS84_ADCU)
-        {
-            vlyout->addWidget(WDFunc::NewLBLAndLE(this, "Uэт, В", "ValuetuneU", true));
-            vlyout->addWidget(WDFunc::NewLBLAndLE(this, "fэт, Гц:", "ValuetuneF", true));
-            vlyout->addWidget(WDFunc::NewLBLAndLE(this, "Yэт, град", "ValuetuneY", true));
-        }
-        else
-            vlyout->addWidget(WDFunc::NewLBLAndLE(this, "Iэт, мА", "ValuetuneI", true));
-        QPushButton *pb = new QPushButton("Продолжить");
-        connect(pb, SIGNAL(clicked()), this, SLOT(CalcTuneCoefs()));
-        vlyout->addWidget(pb);
-
-        dlg->setLayout(vlyout);
-        m_isEnergoMonitorDialogCreated = true;
-        dlg->exec();
+        popup->addFloatParameter("Uэт, В", m_midTuneStruct.uet);
+        popup->addFloatParameter("fэт, Гц", m_midTuneStruct.fet);
+        popup->addFloatParameter("Yэт, град", m_midTuneStruct.yet);
     }
     else
-    {
-        QDialog *dlg = this->findChild<QDialog *>("energomonitordlg");
-        if (dlg != nullptr)
-            dlg->exec();
-    }
+        popup->addFloatParameter("Iэт, мА", m_midTuneStruct.iet);
     return Error::Msg::NoError;
 }
 
@@ -400,55 +412,55 @@ void Tune84ADC::CalcTuneCoefs()
     QMap<int, float *> kmimap
         = { { 1, &m_bac->data()->KmI1[0] }, { 2, &m_bac->data()->KmI2[0] }, { 4, &m_bac->data()->KmI4[0] },
               { 8, &m_bac->data()->KmI8[0] }, { 16, &m_bac->data()->KmI16[0] }, { 32, &m_bac->data()->KmI32[0] } };
-    float uet, iet, yet, fet;
-    bool ok;
+    //    float uet, iet, yet, fet;
+    //    bool ok;
 
     if (m_tuneStep == TS84_ADCI)
     {
-        iet = StdFunc::toFloat(WDFunc::LEData(this, "ValuetuneI"), &ok);
-        if (ok)
-        {
-            assert(kmimap.contains(m_curTuneStep));
-            for (int i = 0; i < 3; ++i)
-                *(kmimap.value(m_curTuneStep) + i)
-                    = *(kmimap.value(m_curTuneStep) + i) * iet / m_bdainBlockData.IUefNat_filt[i + 3];
-            QDialog *dlg = this->findChild<QDialog *>("energomonitordlg");
-            if (dlg != nullptr)
-                dlg->close();
-            return;
-        }
-        else
-        {
-            QMessageBox::critical(this, "Ошибка!", "Не задано значение тока!");
-        }
+        //        iet = StdFunc::toFloat(WDFunc::LEData(this, "ValuetuneI"), &ok);
+        //        if (ok)
+        //        {
+        assert(kmimap.contains(m_curTuneStep));
+        for (int i = 0; i < 3; ++i)
+            *(kmimap.value(m_curTuneStep) + i)
+                = *(kmimap.value(m_curTuneStep) + i) * m_midTuneStruct.iet / m_bdainBlockData.IUefNat_filt[i + 3];
+        QDialog *dlg = this->findChild<QDialog *>("energomonitordlg");
+        if (dlg != nullptr)
+            dlg->close();
+        return;
+        //        }
+        //        else
+        //        {
+        //            EMessageBox::error("Не задано значение тока!");
+        //        }
     }
     else
     {
-        uet = StdFunc::toFloat(WDFunc::LEData(this, "ValuetuneU"), &ok);
-        if (ok)
-        {
-            yet = StdFunc::toFloat(WDFunc::LEData(this, "ValuetuneY"), &ok);
-            if (ok)
-            {
-                fet = StdFunc::toFloat(WDFunc::LEData(this, "ValuetuneF"), &ok);
-                if (ok)
-                {
-                    for (int i = 0; i < 3; ++i)
-                        m_bac->data()->KmU[i] = m_bac->data()->KmU[i] * uet / m_bdainBlockData.IUefNat_filt[i];
-                    m_bac->data()->K_freq = m_bac->data()->K_freq * fet / m_bdainBlockData.Frequency;
-                    for (int i = 1; i < 3; ++i)
-                        m_bac->data()->DPsi[i] = m_bac->data()->DPsi[i] - m_bdainBlockData.phi_next_f[i];
-                    for (int i = 3; i < 6; ++i)
-                        m_bac->data()->DPsi[i] = m_bac->data()->DPsi[i] + yet - m_bdainBlockData.phi_next_f[i];
-                    QDialog *dlg = this->findChild<QDialog *>("energomonitordlg");
-                    if (dlg != nullptr)
-                        dlg->close();
-                    return;
-                }
-            }
-        }
-        QMessageBox::critical(this, "Ошибка!", "Не задано одно из значений!");
-        return;
+        //        uet = StdFunc::toFloat(WDFunc::LEData(this, "ValuetuneU"), &ok);
+        //        if (ok)
+        //        {
+        //            yet = StdFunc::toFloat(WDFunc::LEData(this, "ValuetuneY"), &ok);
+        //            if (ok)
+        //            {
+        //                fet = StdFunc::toFloat(WDFunc::LEData(this, "ValuetuneF"), &ok);
+        //                if (ok)
+        //                {
+        for (int i = 0; i < 3; ++i)
+            m_bac->data()->KmU[i] = m_bac->data()->KmU[i] * m_midTuneStruct.uet / m_bdainBlockData.IUefNat_filt[i];
+        m_bac->data()->K_freq = m_bac->data()->K_freq * m_midTuneStruct.fet / m_bdainBlockData.Frequency;
+        for (int i = 1; i < 3; ++i)
+            m_bac->data()->DPsi[i] = m_bac->data()->DPsi[i] - m_bdainBlockData.phi_next_f[i];
+        for (int i = 3; i < 6; ++i)
+            m_bac->data()->DPsi[i] = m_bac->data()->DPsi[i] + m_midTuneStruct.yet - m_bdainBlockData.phi_next_f[i];
+        //                    QDialog *dlg = this->findChild<QDialog *>("energomonitordlg");
+        //                    if (dlg != nullptr)
+        //                        dlg->close();
+        //                    return;
+        //                }
+        //            }
+        //        }
+        //        QMessageBox::critical(this, "Ошибка!", "Не задано одно из значений!");
+        //        return;
     }
-    StdFunc::cancel();
+    //    StdFunc::cancel();
 }

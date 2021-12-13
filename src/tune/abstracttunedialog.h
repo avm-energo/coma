@@ -18,6 +18,8 @@
 #define TUNE_POINTSPER 500 // столько миллисекунд должно усредняться при регулировке
 #define WAITFORCONST 1 // seconds to let voltages be constant
 
+#define DEBUGISON
+
 // disable all limits checks
 // #define NO_LIMITS
 class ConfigV;

@@ -3,12 +3,12 @@
 #include "../gen/board.h"
 #include "../gen/files.h"
 #include "../gen/stdfunc.h"
+#include "../widgets/epopup.h"
 #include "../widgets/wd_func.h"
 #include "tunesequencefile.h"
 
 #include <QHBoxLayout>
 #include <QIcon>
-#include <QMessageBox>
 #include <QPainter>
 #include <QPushButton>
 #include <QSettings>
@@ -67,7 +67,7 @@ void GeneralTuneDialog::generateReport()
 {
     m_Report = new LimeReport::ReportEngine;
     prepareReport();
-    if (QMessageBox::question(this, "Сохранить", "Сохранить протокол поверки?"))
+    if (EMessageBox::question("Сохранить протокол поверки?"))
     {
         QString filename = WDFunc::ChooseFileForSave(this, "*.pdf", "pdf");
         if (!filename.isEmpty())
@@ -76,10 +76,10 @@ void GeneralTuneDialog::generateReport()
             m_Report->printToPDF(filename);
             //        report->previewReport();
             //  report->designReport();
-            QMessageBox::information(this, "Успешно!", "Записано успешно!");
+            EMessageBox::information("Записано успешно!");
         }
         else
-            QMessageBox::information(this, "Отменено", "Действие отменено");
+            EMessageBox::information("Действие отменено");
     }
     delete m_Report;
 }

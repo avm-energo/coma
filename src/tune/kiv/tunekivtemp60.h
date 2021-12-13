@@ -25,29 +25,23 @@ private:
         float yet;
     };
 
-    struct TuneDescrStruct
-    {
-        QString parametername;
-        float *parameter;
-    };
-
     Bac *m_bac;
     BdaIn *m_bdain;
     Bd0 *m_bd0;
     MidTuneStruct m_midTuneStruct;
-    QVector<TuneDescrStruct> m_tuneDescrVector()
-    {
-        QVector<TuneDescrStruct> vect;
-        for (int i = 0; i < 6; ++i)
-            vect.append({ "u_p" + QString::number(i), &m_midTuneStruct.u[i] });
-        for (int i = 0; i < 3; ++i)
-            vect.append({ "y_p" + QString::number(i), &m_midTuneStruct.y[i] });
-        vect.append({ "tmk_p", &m_midTuneStruct.tmk });
-        vect.append({ "uet_p", &m_midTuneStruct.uet });
-        vect.append({ "iet_p", &m_midTuneStruct.iet });
-        vect.append({ "yet_p", &m_midTuneStruct.yet });
-        return vect;
-    };
+    //    const QVector<TuneDescrStruct> m_tuneDescrVector()
+    //    {
+    //        QVector<TuneDescrStruct> vect;
+    //        for (int i = 0; i < 6; ++i)
+    //            vect.append({ "u_p" + QString::number(i), &m_midTuneStruct.u[i] });
+    //        for (int i = 0; i < 3; ++i)
+    //            vect.append({ "y_p" + QString::number(i), &m_midTuneStruct.y[i] });
+    //        vect.append({ "tmk_p", &m_midTuneStruct.tmk });
+    //        vect.append({ "uet_p", &m_midTuneStruct.uet });
+    //        vect.append({ "iet_p", &m_midTuneStruct.iet });
+    //        vect.append({ "yet_p", &m_midTuneStruct.yet });
+    //        return vect;
+    //    };
 
     void setMessages();
     void setTuneFunctions();

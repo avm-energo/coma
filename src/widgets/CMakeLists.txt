@@ -48,6 +48,8 @@ add_library(
   ecombobox.h
   edoublespinbox.cpp
   edoublespinbox.h
+  epopup.cpp
+  epopup.h
   errorprotocolwidget.cpp
   errorprotocolwidget.h
   etableview.cpp

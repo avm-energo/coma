@@ -8,6 +8,7 @@
 #include "../gen/stdfunc.h"
 #include "../models/etablemodel.h"
 #include "edoublespinbox.h"
+#include "epopup.h"
 #include "etableview.h"
 #include "ipctrl.h"
 #include "passwordlineedit.h"
@@ -17,7 +18,6 @@
 #include <QHBoxLayout>
 #include <QHeaderView>
 #include <QMainWindow>
-#include <QMessageBox>
 #include <QPainter>
 #include <QPalette>
 #include <QPen>
@@ -611,6 +611,24 @@ QPixmap WDFunc::NewLedIndicator(QColor color, float height)
     return myPix;
 }
 
+QFrame *WDFunc::newHLine(QWidget *w)
+{
+    QFrame *line = new QFrame(w);
+    line->setFrameShape(QFrame::HLine); // Horizontal line
+    line->setFrameShadow(QFrame::Sunken);
+    line->setLineWidth(1);
+    return line;
+}
+
+QFrame *WDFunc::newVLine(QWidget *w)
+{
+    QFrame *line = new QFrame(w);
+    line->setFrameShape(QFrame::VLine); // Vertical line
+    line->setFrameShadow(QFrame::Sunken);
+    line->setLineWidth(1);
+    return line;
+}
+
 QMainWindow *WDFunc::getMainWindow()
 {
     const auto widgets = qApp->topLevelWidgets();
@@ -629,9 +647,8 @@ bool WDFunc::floatIsWithinLimits(
     {
         qCritical() << "Ошибочное значение " + varname + ": должно быть " << QString::number(base, 'f', 5) << "±"
                     << QString::number(tolerance, 'f', 5) << ", а получили: " << QString::number(var, 'f', 5);
-        QMessageBox::critical(w, "Ошибка",
-            "Ошибочное значение " + varname + ": должно быть " + QString::number(base, 'f', 5) + "±"
-                + QString::number(tolerance, 'f', 5) + ", а получили: " + QString::number(var, 'f', 5));
+        EMessageBox::error("Ошибочное значение " + varname + ": должно быть " + QString::number(base, 'f', 5) + "±"
+            + QString::number(tolerance, 'f', 5) + ", а получили: " + QString::number(var, 'f', 5));
     }
     return false;
 }
