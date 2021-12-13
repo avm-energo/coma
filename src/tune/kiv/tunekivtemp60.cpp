@@ -2,7 +2,7 @@
 
 #include "../../gen/board.h"
 #include "../../gen/colors.h"
-#include "../../gen/s2.h"
+#include "../../gen/configv.h"
 #include "../../gen/stdfunc.h"
 #include "../../widgets/epopup.h"
 #include "../../widgets/waitwidget.h"
@@ -14,7 +14,8 @@
 #include <QMessageBox>
 #include <QVBoxLayout>
 
-TuneKIVTemp60::TuneKIVTemp60(int tuneStep, /*ConfigKIV *ckiv, */ QWidget *parent) : AbstractTuneDialog(tuneStep, parent)
+TuneKIVTemp60::TuneKIVTemp60(ConfigV *config, int tuneStep, QWidget *parent)
+    : AbstractTuneDialog(config, tuneStep, parent)
 {
     TuneSequenceFile::clearTuneDescrVector();
     for (int i = 0; i < 6; ++i)
@@ -86,10 +87,10 @@ Error::Msg TuneKIVTemp60::setNewConfAndTune()
     // CKIV->Bci_block.C_pasp[0] = CKIV->Bci_block.C_pasp[1] = CKIV->Bci_block.C_pasp[2] = 2250;
     // CKIV->Bci_block.Unom1 = 220;
 
-    S2::setRecordValue({ BciNumber::C_Pasp_ID, DataTypes::FLOAT_3t({ 2250, 2250, 2250 }) });
-    S2::setRecordValue({ BciNumber::Unom1, float(220) });
+    configV->setRecordValue({ BciNumber::C_Pasp_ID, DataTypes::FLOAT_3t({ 2250, 2250, 2250 }) });
+    configV->setRecordValue({ BciNumber::Unom1, float(220) });
 
-    if (BaseInterface::iface()->writeConfFileSync() != Error::Msg::NoError)
+    if (BaseInterface::iface()->writeConfFileSync(configV->getConfig()) != Error::Msg::NoError)
         return Error::Msg::GeneralError;
     for (int i = 0; i < 6; ++i)
     {

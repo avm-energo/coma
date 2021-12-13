@@ -98,7 +98,8 @@ private:
     void analogAxis85(int graphNum, QCPAxisRect *axisRect);
     void digitalAxis(int &MainPlotLayoutRow);
 
-    void showAxes(QCPGraph *graph, const QVector<double> &keys, const QVector<double> &values, TrendViewDialog::SignalTypes signalType, QString &widgetName);
+    void showAxes(QCPGraph *graph, const QVector<double> &keys, const QVector<double> &values,
+        TrendViewDialog::SignalTypes signalType, QString &widgetName);
     SignalChooseWidget *setupHelper(const TrendViewDialog::Signals &sig);
 
     void removeSig(QString signame);

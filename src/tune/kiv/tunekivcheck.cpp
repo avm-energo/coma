@@ -28,7 +28,6 @@ void TuneKIVCheck::setMessages()
 
 void TuneKIVCheck::setTuneFunctions()
 {
-    int count = 0;
     m_tuneFunctions.push_back(
         reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&AbstractTuneDialog::CheckPassword));
     Error::Msg (AbstractTuneDialog::*func)()

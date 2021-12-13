@@ -1,11 +1,11 @@
 #include "tunekivadc.h"
 
 #include "../../gen/colors.h"
+#include "../../gen/configv.h"
 #include "../../gen/stdfunc.h"
 #include "../../widgets/epopup.h"
 #include "../../widgets/waitwidget.h"
 #include "../../widgets/wd_func.h"
-#include "../gen/configv.h"
 #include "../tunesteps.h"
 
 #include <QMessageBox>

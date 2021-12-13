@@ -6,8 +6,8 @@
 //#include <LimeReport>
 //#include <limereport/LimeReport>
 //#include "limereport/lrreportengine.h"s
+#include <LimeReport>
 #include <QStandardItem>
-#include <limereport/LimeReport>
 
 ReportModel::ReportModel(QObject *parent) : QStandardItemModel(parent)
 {
