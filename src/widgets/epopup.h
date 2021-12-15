@@ -44,6 +44,10 @@ public:
 
     ESimplePopup(MessageTypes type, const QString &msg, QWidget *parent = nullptr);
     ESimplePopup(MessageTypes type, QWidget *w, QWidget *parent = nullptr);
+
+public slots:
+    void acceptSlot();
+    void cancelSlot();
 };
 
 class EEditablePopup : public EPopup
@@ -61,6 +65,7 @@ private:
 
 private slots:
     void acceptSlot();
+    void cancelSlot();
 };
 
 class EMessageBox

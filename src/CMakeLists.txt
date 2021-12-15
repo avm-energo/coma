@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.15)
-project(root)
+project(coma)
 add_compile_definitions(DEVICETYPE=1)
 set(SOFTDEVELOPER "AVM-Energo")
 
@@ -135,7 +135,8 @@ if (NOT AVTUK-12)
     endif()
 endif()
 
-message(STATUS "Modules dir: " ${CMAKE_MODULE_PATH})
+string(REPLACE ";" "  " _pathNamesSpaces "${CMAKE_MODULE_PATH}")
+message(STATUS "Modules dir: " "${_pathNamesSpaces}")
 
 message(STATUS "${CMAKE_BUILD_TYPE_LOWER} mode")
 message(STATUS "Target name - ${PROJECT_TARGET_NAME}")

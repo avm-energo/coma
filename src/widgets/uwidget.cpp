@@ -95,6 +95,11 @@ void UWidget::updateSPData(const DataTypes::SinglePointWithTimeStruct &sp)
         WDFunc::SetLBLTColor(this, QString::number(hst.fieldnum), (sp.sigVal == 1) ? Colors::TABCOLORA1 : hst.color);
 }
 
+void UWidget::updateBitStringData(const DataTypes::BitStringStruct &bs)
+{
+    Q_UNUSED(bs)
+}
+
 bool UWidget::updatesEnabled()
 {
     return QWidget::updatesEnabled();

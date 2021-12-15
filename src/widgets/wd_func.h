@@ -281,6 +281,7 @@ public:
         QObject::connect(pb, &QPushButton::clicked, context, functor);
         return pb;
     }
+
     template <typename Functor>
     inline static void PBConnect(QWidget *parent, const QString &pbname, QObject *context, Functor &&functor)
     {

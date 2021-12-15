@@ -95,7 +95,7 @@ UWidget *CheckBase3133Dialog::Bd1W()
     QGroupBox *gb = new QGroupBox("Общие");
 
     glyout->addWidget(WDFunc::NewLBL2(this, "Температура микроконтроллера, °С"), 0, 0, 1, 1);
-    glyout->addWidget(WDFunc::NewLBLT(this, "", "101", ValuesFormat, "Температура микроконтроллера, °С"), 1, 0, 1, 1);
+    glyout->addWidget(WDFunc::NewLBLT2(this, "", "101", ValuesFormat, "Температура микроконтроллера, °С"), 1, 0, 1, 1);
 
     vlyout->addLayout(glyout);
     gb->setLayout(vlyout);

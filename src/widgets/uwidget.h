@@ -47,7 +47,7 @@ public:
     virtual void reqUpdate();
     virtual void updateFloatData(const DataTypes::FloatStruct &fl);
     virtual void updateSPData(const DataTypes::SinglePointWithTimeStruct &sp);
-    virtual void updateBitStringData(const DataTypes::BitStringStruct &bs) {};
+    virtual void updateBitStringData(const DataTypes::BitStringStruct &bs);
 signals:
     // //     signals to set "ProgressBar2" in main Coma
     //    void setGeneralProgressBarSize(quint32 size);

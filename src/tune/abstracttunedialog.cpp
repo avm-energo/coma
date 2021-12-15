@@ -17,7 +17,7 @@
 #include "../gen/configv.h"
 #include "tunesequencefile.h"
 
-#include <LimeReport>
+#include <LimeReport/lrreportengine.h>
 #include <QDebug>
 #include <QMessageBox>
 #include <QProgressBar>

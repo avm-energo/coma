@@ -10,7 +10,7 @@ ESimplePopup::ESimplePopup(MessageTypes type, const QString &msg, QWidget *paren
     ESimplePopup(type, WDFunc::NewLBL2(this, msg), parent);
 }
 
-ESimplePopup::ESimplePopup(MessageTypes type, QWidget *w, QWidget *parent)
+ESimplePopup::ESimplePopup(MessageTypes type, QWidget *w, QWidget *parent) : EPopup(parent)
 {
     setAttribute(Qt::WA_DeleteOnClose);
     if (type < c_captions.size())
@@ -20,6 +20,7 @@ ESimplePopup::ESimplePopup(MessageTypes type, QWidget *w, QWidget *parent)
     QHBoxLayout *hlyout = new QHBoxLayout;
     hlyout->addStretch(100);
     if (type == ESimplePopup::QUESTMSG)
+
     {
         hlyout->addWidget(WDFunc::NewPB(this, "", "Ага", this, &ESimplePopup::acceptSlot));
         hlyout->addStretch(5);
@@ -36,6 +37,16 @@ ESimplePopup::ESimplePopup(MessageTypes type, QWidget *w, QWidget *parent)
     hlyout->addStretch(100);
     lyout->addLayout(hlyout);
     setLayout(lyout);
+}
+
+void ESimplePopup::acceptSlot()
+{
+    EPopup::acceptSlot();
+}
+
+void ESimplePopup::cancelSlot()
+{
+    EPopup::cancelSlot();
 }
 
 bool EMessageBox::m_result = false;
@@ -195,7 +206,7 @@ void EEditablePopup::execPopup()
     hlyout->addStretch(100);
     hlyout->addWidget(WDFunc::NewPB(this, "", "Далее", this, &EEditablePopup::acceptSlot));
     hlyout->addStretch(5);
-    hlyout->addWidget(WDFunc::NewPB(this, "", "Отмена", this, &EPopup::cancelSlot));
+    hlyout->addWidget(WDFunc::NewPB(this, "", "Отмена", this, &EEditablePopup::cancelSlot));
     hlyout->addStretch(100);
     lyout->addLayout(hlyout);
     setLayout(lyout);
@@ -220,3 +231,9 @@ void EEditablePopup::acceptSlot()
         emit accepted();
         aboutToClose();
     }
+}
+
+void EEditablePopup::cancelSlot()
+{
+    EPopup::cancelSlot();
+}
