@@ -58,7 +58,9 @@ add_library(
   84/tune84dialog.cpp
   84/tune84dialog.h
   84/tune84temp60.cpp
-  84/tune84temp60.h)
+  84/tune84temp60.h
+  82/tune82dialog.cpp
+  82/tune82dialog.h)
 
 target_link_libraries(
   ${PROJECT_NAME}
