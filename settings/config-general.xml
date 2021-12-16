@@ -32,4 +32,8 @@
         <id>10</id>
         <defaultValue>8</defaultValue>
     </record>
+    <record>
+        <id>11</id>
+        <defaultValue>0</defaultValue>
+    </record>
 </s2files>

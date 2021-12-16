@@ -167,6 +167,7 @@ enum BciNumber : unsigned
     T3_104 = 8,
     k_104 = 9,
     w_104 = 10,
+    timezone = 11,
     IP_ID = 20,
     Mask_ID = 21,
     GW_ID = 22,

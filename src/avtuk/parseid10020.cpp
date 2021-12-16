@@ -8,6 +8,7 @@ ParseID10020::ParseID10020(const QByteArray &BA) : ParseModule(BA)
 
 bool ParseID10020::Parse(quint32 id, const S2DataTypes::OscHeader &header, TrendViewModel *model)
 {
+    Q_UNUSED(id)
     const QStringList analogValues = model->analogValues();
 
     float xmin = -(header.step * 512);
@@ -20,8 +21,8 @@ bool ParseID10020::Parse(quint32 id, const S2DataTypes::OscHeader &header, Trend
         Point8x point;
         if (!PosPlusPlus(&point, position, sizeof(Point8x)))
             return false;
-        for (size_t i = 0; i < point.An.size(); ++i)
-            model->addAnalogPoint(analogValues.at(i), point.An[i]);
+        for (size_t j = 0; j < point.An.size(); ++j)
+            model->addAnalogPoint(analogValues.at(j), point.An[j]);
     }
     return true;
 }

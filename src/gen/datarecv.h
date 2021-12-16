@@ -174,8 +174,8 @@ private:
     template <typename T, std::enable_if_t<!std_ext::is_container<T>::value, bool> = true>
     valueType helper(const QString &str)
     {
-        valueType data = QVariant(str).value<T>();
-        return data;
+        valueType d = QVariant(str).value<T>();
+        return d;
     }
 };
 

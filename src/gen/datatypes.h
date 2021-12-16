@@ -198,6 +198,7 @@ struct Alarm
     QString name;
     QString color;
 };
+
 struct JournalDesc
 {
     quint32 id;

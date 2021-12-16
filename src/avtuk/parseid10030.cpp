@@ -7,6 +7,7 @@ ParseID10030::ParseID10030(const QByteArray &BA) : ParseModule(BA)
 
 bool ParseID10030::Parse(quint32 id, const S2DataTypes::OscHeader &header, TrendViewModel *model)
 {
+    Q_UNUSED(id)
     const QStringList digitalValues = model->digitalValues();
     const QStringList analogValues = model->analogValues();
     model->processDigitalNames(digitalValues);
@@ -24,16 +25,16 @@ bool ParseID10030::Parse(quint32 id, const S2DataTypes::OscHeader &header, Trend
             return false;
 
         quint32 DisPoint = point.Dis;
-        for (int i = 0; i < digitalValues.size(); ++i)
+        for (int j = 0; j < digitalValues.size(); ++j)
         {
             if (DisPoint & 0x00000001)
-                model->addDigitalPoint(digitalValues.at(i), 1);
+                model->addDigitalPoint(digitalValues.at(j), 1);
             else
-                model->addDigitalPoint(digitalValues.at(i), 0);
+                model->addDigitalPoint(digitalValues.at(j), 0);
             DisPoint >>= 1;
         }
-        for (int i = 0; i < analogValues.size(); ++i)
-            model->addAnalogPoint(analogValues.at(i), point.An[i]);
+        for (int j = 0; j < analogValues.size(); ++j)
+            model->addAnalogPoint(analogValues.at(j), point.An[j]);
     }
     return true;
 }

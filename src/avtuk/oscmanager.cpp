@@ -82,7 +82,7 @@ std::unique_ptr<TrendViewModel> OscManager::load(const Record &record, const Fil
 {
     auto curFileNum = fs.ID;
 
-    constexpr size_t minSize = sizeof(S2DataTypes::OscHeader) + sizeof(S2DataTypes::DataRecHeader);
+    constexpr int minSize = sizeof(S2DataTypes::OscHeader) + sizeof(S2DataTypes::DataRecHeader);
     if (fs.data.size() <= minSize)
     {
         qCritical() << Error::SizeError;

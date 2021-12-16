@@ -105,6 +105,8 @@ WidgetFactory::WidgetFactory(ConfigV *config) : configV(config)
 
 QWidget *WidgetFactory::createWidget(BciNumber key, QWidget *parent)
 {
+    if (key == BciNumber::timezone)
+        qWarning() << "timezone";
     QWidget *widget = nullptr;
     auto search = m_widgetMap.find(key);
     if (search == m_widgetMap.end())
@@ -196,12 +198,12 @@ QWidget *WidgetFactory::createWidget(BciNumber key, QWidget *parent)
                 FlowLayout *flowLayout = new FlowLayout;
                 for (auto i = 0; i != count; ++i)
                 {
-                    QWidget *widget = new QWidget;
+                    QWidget *w = new QWidget;
                     QHBoxLayout *layout = new QHBoxLayout;
                     layout->addWidget(new QLabel(QString::number(i + 1), parent));
                     layout->addWidget(WDFunc::NewCB2(parent, widgetName(key, i), arg.model));
-                    widget->setLayout(layout);
-                    flowLayout->addWidget(widget);
+                    w->setLayout(layout);
+                    flowLayout->addWidget(w);
                 }
                 mainLyout->addLayout(flowLayout);
                 widget->setLayout(mainLyout);
@@ -618,8 +620,8 @@ bool WidgetFactory::fillBackChBG(BciNumber key, const QWidget *parent)
             else if constexpr (std_ext::is_container<internalType>())
             {
                 typedef internalType Container;
-                typedef std::remove_reference_t<typename internalType::value_type> internalType;
-                if constexpr (std::is_integral<internalType>::value)
+                typedef std::remove_reference_t<typename internalType::value_type> iType;
+                if constexpr (std::is_integral<iType>::value)
                 {
                     Container buffer;
                     status = WDFunc::ChBGData(parent, QString::number(key), buffer);
@@ -701,8 +703,8 @@ bool WidgetFactory::fillBackComboBoxGroup(BciNumber key, const QWidget *parent, 
             else if constexpr (std_ext::is_container<internalType>())
             {
                 typedef internalType Container;
-                typedef std::remove_reference_t<typename internalType::value_type> internalType;
-                if constexpr (std::is_unsigned_v<internalType>)
+                typedef std::remove_reference_t<typename internalType::value_type> iType;
+                if constexpr (std::is_unsigned_v<iType>)
                 {
                     Container container = {};
                     assert(size_t(count) <= container.size());
@@ -716,7 +718,7 @@ bool WidgetFactory::fillBackComboBoxGroup(BciNumber key, const QWidget *parent, 
                             status = false;
                             break;
                         }
-                        container.at(i) = internalType(status_code);
+                        container.at(i) = iType(status_code);
                     }
                     configV->setRecordValue({ key, container });
                 }

@@ -132,6 +132,10 @@
 					<defaultValue>8</defaultValue>
 				</record>
         <record>
+          <id>11</id>
+          <defaultValue>0</defaultValue>
+        </record>
+        <record>
 					<id>1001</id>
 					<defaultValue>1</defaultValue>
 				</record>

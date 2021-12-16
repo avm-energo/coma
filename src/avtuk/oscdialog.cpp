@@ -121,9 +121,9 @@ bool OscDialog::loadIfExist(quint32 size)
             qInfo() << "Swj loaded from file: " << file;
             DataTypes::S2FilePack outlist;
             S2::RestoreData(ba, outlist);
-            for (auto &&file : outlist)
+            for (auto &&s2file : outlist)
             {
-                DataTypes::FileStruct resp { DataTypes::FilesEnum(file.ID), file.data };
+                DataTypes::FileStruct resp { DataTypes::FilesEnum(s2file.ID), s2file.data };
                 DataManager::addSignalToOutList(DataTypes::SignalTypes::File, resp);
             }
             return true;

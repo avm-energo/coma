@@ -338,6 +338,12 @@ void ModBus::reqFloats(quint32 sigAdr, quint32 sigCount)
     DataManager::addToInQueue(inp);
 }
 
+void ModBus::reqBitStrings(quint32 sigAdr, quint32 sigCount)
+{
+    Q_UNUSED(sigAdr)
+    Q_UNUSED(sigCount)
+}
+
 InterfaceSettings ModBus::parseSettings(QDomElement domElement) const
 {
     return BaseInterface::parseSettings<CommandsMBS::ModbusGroup>(domElement);

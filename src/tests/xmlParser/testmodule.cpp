@@ -21,7 +21,7 @@ constexpr auto avtukSame = 0;
 
 namespace check
 {
-constexpr auto categories = 5;
+// constexpr auto categories = 5;
 constexpr auto checkBase = 1;
 constexpr auto check21 = 5;
 constexpr auto check22 = 2;
@@ -72,7 +72,9 @@ void TestModule::checkA284()
     QVERIFY(!settings->ifaceSettings.settings.isValid());
     QCOMPARE(workJourSize, alarmsCount);
 
-    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    std::vector<CheckItem> checkSettings;
+    QVERIFY(
+        module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM), checkSettings));
     QCOMPARE(checkSettings.size(), 1);
     auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
         [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
@@ -98,7 +100,9 @@ void TestModule::checkA284USB()
     QCOMPARE(st.dictionary().size(), 8);
     QCOMPARE(st.groups().size(), 8);
 
-    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    std::vector<CheckItem> checkSettings;
+    QVERIFY(
+        module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM), checkSettings));
     QCOMPARE(checkSettings.size(), 1);
     auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
         [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
@@ -120,7 +124,9 @@ void TestModule::checkA284Eth()
     QCOMPARE(settings->highlightWarn.size(), 30);
     QCOMPARE(settings->journals.size(), 2);
 
-    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    std::vector<CheckItem> checkSettings;
+    QVERIFY(
+        module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM), checkSettings));
     QCOMPARE(checkSettings.size(), 1);
     auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
         [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
@@ -148,7 +154,9 @@ void TestModule::checkA284Modbus()
     QCOMPARE(st.regs().size(), 2);
     QCOMPARE(st.dictionaryRegs().size(), 2);
 
-    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    std::vector<CheckItem> checkSettings;
+    QVERIFY(
+        module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM), checkSettings));
     QCOMPARE(checkSettings.size(), 1);
     auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
         [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
@@ -175,7 +183,9 @@ void TestModule::checkA287()
     QCOMPARE(workJourSize, alarmsCount);
     QVERIFY(!settings->ifaceSettings.settings.isValid());
 
-    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    std::vector<CheckItem> checkSettings;
+    QVERIFY(
+        module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM), checkSettings));
     QCOMPARE(checkSettings.size(), 3);
     auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
         [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
@@ -201,7 +211,9 @@ void TestModule::checkA287USB()
     QCOMPARE(st.dictionary().size(), 18);
     QCOMPARE(st.groups().size(), 18);
 
-    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    std::vector<CheckItem> checkSettings;
+    QVERIFY(
+        module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM), checkSettings));
     QCOMPARE(checkSettings.size(), 3);
     auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
         [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
@@ -223,7 +235,9 @@ void TestModule::checkA287Eth()
     QCOMPARE(settings->highlightWarn.size(), 0);
     QCOMPARE(settings->journals.size(), 2);
 
-    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    std::vector<CheckItem> checkSettings;
+    QVERIFY(
+        module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM), checkSettings));
     QCOMPARE(checkSettings.size(), 3);
     auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
         [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
@@ -250,7 +264,9 @@ void TestModule::checkA387()
     QCOMPARE(workJourSize, alarmsCount);
     QVERIFY(!settings->ifaceSettings.settings.isValid());
 
-    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    std::vector<CheckItem> checkSettings;
+    QVERIFY(
+        module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM), checkSettings));
     QCOMPARE(checkSettings.size(), 4);
     auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
         [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
@@ -276,7 +292,9 @@ void TestModule::checkA387USB()
     QCOMPARE(st.dictionary().size(), 20);
     QCOMPARE(st.groups().size(), 20);
 
-    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    std::vector<CheckItem> checkSettings;
+    QVERIFY(
+        module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM), checkSettings));
     QCOMPARE(checkSettings.size(), 4);
     auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
         [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
@@ -298,7 +316,9 @@ void TestModule::checkA387Eth()
     QCOMPARE(settings->highlightWarn.size(), 0);
     QCOMPARE(settings->journals.size(), 2);
 
-    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    std::vector<CheckItem> checkSettings;
+    QVERIFY(
+        module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM), checkSettings));
     QCOMPARE(checkSettings.size(), 4);
     auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
         [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
@@ -320,7 +340,9 @@ void TestModule::check8084()
     QCOMPARE(settings->journals.size(), 2);
     QVERIFY(!settings->ifaceSettings.settings.isValid());
 
-    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    std::vector<CheckItem> checkSettings;
+    QVERIFY(
+        module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM), checkSettings));
     QCOMPARE(checkSettings.size(), 1);
     auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
         [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
@@ -347,7 +369,9 @@ void TestModule::check8084USB()
     QCOMPARE(st.regs().size(), 0);
     QCOMPARE(st.dictionaryRegs().size(), 0);
 
-    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    std::vector<CheckItem> checkSettings;
+    QVERIFY(
+        module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM), checkSettings));
     QCOMPARE(checkSettings.size(), 1);
     auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
         [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
@@ -365,7 +389,9 @@ void TestModule::check8585()
     QCOMPARE(settings->alarms.size(), 2);
     QVERIFY(!settings->ifaceSettings.settings.isValid());
 
-    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    std::vector<CheckItem> checkSettings;
+    QVERIFY(
+        module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM), checkSettings));
     QCOMPARE(checkSettings.size(), 1);
     auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
         [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
@@ -389,7 +415,9 @@ void TestModule::check8585USB()
     QCOMPARE(st.regs().size(), 0);
     QCOMPARE(st.dictionaryRegs().size(), 0);
 
-    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    std::vector<CheckItem> checkSettings;
+    QVERIFY(
+        module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM), checkSettings));
     QCOMPARE(checkSettings.size(), 1);
     auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
         [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
@@ -411,7 +439,9 @@ void TestModule::check8600()
     QCOMPARE(settings->journals.size(), 2);
     QVERIFY(!settings->ifaceSettings.settings.isValid());
 
-    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    std::vector<CheckItem> checkSettings;
+    QVERIFY(
+        module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM), checkSettings));
     QCOMPARE(checkSettings.size(), 1);
     auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
         [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
@@ -438,7 +468,9 @@ void TestModule::check8600USB()
     QCOMPARE(st.regs().size(), 0);
     QCOMPARE(st.dictionaryRegs().size(), 0);
 
-    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    std::vector<CheckItem> checkSettings;
+    QVERIFY(
+        module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM), checkSettings));
     QCOMPARE(checkSettings.size(), 1);
     auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
         [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
@@ -456,7 +488,9 @@ void TestModule::check8081()
     QCOMPARE(settings->alarms.size(), 0);
     QVERIFY(!settings->ifaceSettings.settings.isValid());
 
-    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    std::vector<CheckItem> checkSettings;
+    QVERIFY(
+        module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM), checkSettings));
     QCOMPARE(checkSettings.size(), 2);
     auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
         [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
@@ -474,7 +508,9 @@ void TestModule::check8081USB()
     QCOMPARE(settings->alarms.size(), 0);
     QVERIFY(settings->ifaceSettings.settings.isValid());
 
-    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    std::vector<CheckItem> checkSettings;
+    QVERIFY(
+        module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM), checkSettings));
     QCOMPARE(checkSettings.size(), 2);
     auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
         [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
@@ -492,7 +528,9 @@ void TestModule::check8082()
     QCOMPARE(settings->alarms.size(), 0);
     QVERIFY(!settings->ifaceSettings.settings.isValid());
 
-    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    std::vector<CheckItem> checkSettings;
+    QVERIFY(
+        module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM), checkSettings));
     QCOMPARE(checkSettings.size(), 3);
     auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
         [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
@@ -510,7 +548,9 @@ void TestModule::check8082USB()
     QCOMPARE(settings->alarms.size(), 0);
     QVERIFY(settings->ifaceSettings.settings.isValid());
 
-    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    std::vector<CheckItem> checkSettings;
+    QVERIFY(
+        module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM), checkSettings));
     QCOMPARE(checkSettings.size(), 3);
     auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
         [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
@@ -528,7 +568,9 @@ void TestModule::check8083()
     QCOMPARE(settings->alarms.size(), 0);
     QVERIFY(!settings->ifaceSettings.settings.isValid());
 
-    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    std::vector<CheckItem> checkSettings;
+    QVERIFY(
+        module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM), checkSettings));
     QCOMPARE(checkSettings.size(), 2);
     auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
         [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
@@ -546,7 +588,9 @@ void TestModule::check8083USB()
     QCOMPARE(settings->alarms.size(), 0);
     QVERIFY(settings->ifaceSettings.settings.isValid());
 
-    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    std::vector<CheckItem> checkSettings;
+    QVERIFY(
+        module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM), checkSettings));
     QCOMPARE(checkSettings.size(), 2);
     auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
         [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
@@ -567,7 +611,9 @@ void TestModule::check2100()
     QCOMPARE(settings->configSettings.mezz.size(), 0);
     QVERIFY(settings->ifaceSettings.settings.isValid());
 
-    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    std::vector<CheckItem> checkSettings;
+    QVERIFY(
+        module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM), checkSettings));
     QCOMPARE(checkSettings.size(), 1);
     auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
         [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
@@ -588,7 +634,9 @@ void TestModule::check2121()
     QCOMPARE(settings->configSettings.mezz.size(), config::avtukSame);
     QVERIFY(settings->ifaceSettings.settings.isValid());
 
-    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    std::vector<CheckItem> checkSettings;
+    QVERIFY(
+        module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM), checkSettings));
     QCOMPARE(checkSettings.size(), 2);
     auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
         [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
@@ -609,7 +657,9 @@ void TestModule::check2122()
     QCOMPARE(settings->configSettings.mezz.size(), config::avtuk22);
     QVERIFY(settings->ifaceSettings.settings.isValid());
 
-    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    std::vector<CheckItem> checkSettings;
+    QVERIFY(
+        module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM), checkSettings));
     QCOMPARE(checkSettings.size(), 2);
     auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
         [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
@@ -630,7 +680,9 @@ void TestModule::check2131()
     QCOMPARE(settings->configSettings.mezz.size(), config::avtuk31);
     QVERIFY(settings->ifaceSettings.settings.isValid());
 
-    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    std::vector<CheckItem> checkSettings;
+    QVERIFY(
+        module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM), checkSettings));
     QCOMPARE(checkSettings.size(), 2);
     auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
         [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
@@ -651,7 +703,9 @@ void TestModule::check2133()
     QCOMPARE(settings->configSettings.mezz.size(), config::avtuk33);
     QVERIFY(settings->ifaceSettings.settings.isValid());
 
-    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    std::vector<CheckItem> checkSettings;
+    QVERIFY(
+        module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM), checkSettings));
     QCOMPARE(checkSettings.size(), 2);
     auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
         [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
@@ -672,7 +726,9 @@ void TestModule::check2134()
     QCOMPARE(settings->configSettings.mezz.size(), config::avtuk34);
     QVERIFY(settings->ifaceSettings.settings.isValid());
 
-    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    std::vector<CheckItem> checkSettings;
+    QVERIFY(
+        module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM), checkSettings));
     QCOMPARE(checkSettings.size(), 1);
     auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
         [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
@@ -693,7 +749,9 @@ void TestModule::check2135()
     QCOMPARE(settings->configSettings.mezz.size(), config::avtuk35);
     QVERIFY(settings->ifaceSettings.settings.isValid());
 
-    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    std::vector<CheckItem> checkSettings;
+    QVERIFY(
+        module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM), checkSettings));
     QCOMPARE(checkSettings.size(), 1);
     auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
         [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
@@ -714,7 +772,9 @@ void TestModule::check2200()
     QCOMPARE(settings->configSettings.mezz.size(), 0);
     QVERIFY(settings->ifaceSettings.settings.isValid());
 
-    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    std::vector<CheckItem> checkSettings;
+    QVERIFY(
+        module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM), checkSettings));
     QCOMPARE(checkSettings.size(), 1);
     auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
         [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
@@ -735,7 +795,9 @@ void TestModule::check2221()
     QCOMPARE(settings->configSettings.mezz.size(), config::avtuk21);
     QVERIFY(settings->ifaceSettings.settings.isValid());
 
-    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    std::vector<CheckItem> checkSettings;
+    QVERIFY(
+        module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM), checkSettings));
     QCOMPARE(checkSettings.size(), 2);
     auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
         [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
@@ -756,7 +818,9 @@ void TestModule::check2222()
     QCOMPARE(settings->configSettings.mezz.size(), config::avtukSame);
     QVERIFY(settings->ifaceSettings.settings.isValid());
 
-    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    std::vector<CheckItem> checkSettings;
+    QVERIFY(
+        module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM), checkSettings));
     QCOMPARE(checkSettings.size(), 2);
     auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
         [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
@@ -777,7 +841,9 @@ void TestModule::check2231()
     QCOMPARE(settings->configSettings.mezz.size(), config::avtuk31);
     QVERIFY(settings->ifaceSettings.settings.isValid());
 
-    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    std::vector<CheckItem> checkSettings;
+    QVERIFY(
+        module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM), checkSettings));
     QCOMPARE(checkSettings.size(), 2);
     auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
         [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
@@ -798,7 +864,9 @@ void TestModule::check2233()
     QCOMPARE(settings->configSettings.mezz.size(), config::avtuk33);
     QVERIFY(settings->ifaceSettings.settings.isValid());
 
-    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    std::vector<CheckItem> checkSettings;
+    QVERIFY(
+        module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM), checkSettings));
     QCOMPARE(checkSettings.size(), 2);
     auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
         [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
@@ -819,7 +887,9 @@ void TestModule::check2234()
     QCOMPARE(settings->configSettings.mezz.size(), config::avtuk34);
     QVERIFY(settings->ifaceSettings.settings.isValid());
 
-    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    std::vector<CheckItem> checkSettings;
+    QVERIFY(
+        module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM), checkSettings));
     QCOMPARE(checkSettings.size(), 1);
     auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
         [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
@@ -840,7 +910,9 @@ void TestModule::check2235()
     QCOMPARE(settings->configSettings.mezz.size(), config::avtuk35);
     QVERIFY(settings->ifaceSettings.settings.isValid());
 
-    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    std::vector<CheckItem> checkSettings;
+    QVERIFY(
+        module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM), checkSettings));
     QCOMPARE(checkSettings.size(), 1);
     auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
         [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
@@ -861,7 +933,9 @@ void TestModule::check3100()
     QCOMPARE(settings->configSettings.mezz.size(), 0);
     QVERIFY(settings->ifaceSettings.settings.isValid());
 
-    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    std::vector<CheckItem> checkSettings;
+    QVERIFY(
+        module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM), checkSettings));
     QCOMPARE(checkSettings.size(), 1);
     auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
         [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
@@ -882,7 +956,9 @@ void TestModule::check3121()
     QCOMPARE(settings->configSettings.mezz.size(), config::avtuk21);
     QVERIFY(settings->ifaceSettings.settings.isValid());
 
-    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    std::vector<CheckItem> checkSettings;
+    QVERIFY(
+        module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM), checkSettings));
     QCOMPARE(checkSettings.size(), 2);
     auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
         [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
@@ -903,7 +979,9 @@ void TestModule::check3122()
     QCOMPARE(settings->configSettings.mezz.size(), config::avtuk22);
     QVERIFY(settings->ifaceSettings.settings.isValid());
 
-    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    std::vector<CheckItem> checkSettings;
+    QVERIFY(
+        module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM), checkSettings));
     QCOMPARE(checkSettings.size(), 2);
     auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
         [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
@@ -924,7 +1002,9 @@ void TestModule::check3131()
     QCOMPARE(settings->configSettings.mezz.size(), config::avtukSame);
     QVERIFY(settings->ifaceSettings.settings.isValid());
 
-    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    std::vector<CheckItem> checkSettings;
+    QVERIFY(
+        module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM), checkSettings));
     QCOMPARE(checkSettings.size(), 2);
     auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
         [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
@@ -945,7 +1025,9 @@ void TestModule::check3133()
     QCOMPARE(settings->configSettings.mezz.size(), config::avtuk33);
     QVERIFY(settings->ifaceSettings.settings.isValid());
 
-    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    std::vector<CheckItem> checkSettings;
+    QVERIFY(
+        module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM), checkSettings));
     QCOMPARE(checkSettings.size(), 2);
     auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
         [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
@@ -966,7 +1048,9 @@ void TestModule::check3134()
     QCOMPARE(settings->configSettings.mezz.size(), config::avtuk34);
     QVERIFY(settings->ifaceSettings.settings.isValid());
 
-    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    std::vector<CheckItem> checkSettings;
+    QVERIFY(
+        module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM), checkSettings));
     QCOMPARE(checkSettings.size(), 1);
     auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
         [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
@@ -986,7 +1070,9 @@ void TestModule::check3135()
     QCOMPARE(settings->configSettings.mezz.size(), config::avtuk35);
     QVERIFY(settings->ifaceSettings.settings.isValid());
 
-    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    std::vector<CheckItem> checkSettings;
+    QVERIFY(
+        module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM), checkSettings));
     QCOMPARE(checkSettings.size(), 1);
     auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
         [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
@@ -1007,7 +1093,9 @@ void TestModule::check3300()
     QCOMPARE(settings->configSettings.mezz.size(), 0);
     QVERIFY(settings->ifaceSettings.settings.isValid());
 
-    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    std::vector<CheckItem> checkSettings;
+    QVERIFY(
+        module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM), checkSettings));
     QCOMPARE(checkSettings.size(), 1);
     auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
         [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
@@ -1028,7 +1116,9 @@ void TestModule::check3321()
     QCOMPARE(settings->configSettings.mezz.size(), config::avtuk21);
     QVERIFY(settings->ifaceSettings.settings.isValid());
 
-    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    std::vector<CheckItem> checkSettings;
+    QVERIFY(
+        module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM), checkSettings));
     QCOMPARE(checkSettings.size(), 2);
     auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
         [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
@@ -1049,7 +1139,9 @@ void TestModule::check3322()
     QCOMPARE(settings->configSettings.mezz.size(), config::avtuk22);
     QVERIFY(settings->ifaceSettings.settings.isValid());
 
-    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    std::vector<CheckItem> checkSettings;
+    QVERIFY(
+        module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM), checkSettings));
     QCOMPARE(checkSettings.size(), 2);
     auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
         [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
@@ -1070,7 +1162,9 @@ void TestModule::check3331()
     QCOMPARE(settings->configSettings.mezz.size(), config::avtuk31);
     QVERIFY(settings->ifaceSettings.settings.isValid());
 
-    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    std::vector<CheckItem> checkSettings;
+    QVERIFY(
+        module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM), checkSettings));
     QCOMPARE(checkSettings.size(), 2);
     auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
         [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
@@ -1091,7 +1185,9 @@ void TestModule::check3333()
     QCOMPARE(settings->configSettings.mezz.size(), config::avtukSame);
     QVERIFY(settings->ifaceSettings.settings.isValid());
 
-    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    std::vector<CheckItem> checkSettings;
+    QVERIFY(
+        module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM), checkSettings));
     QCOMPARE(checkSettings.size(), 2);
     auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
         [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
@@ -1112,7 +1208,9 @@ void TestModule::check3334()
     QCOMPARE(settings->configSettings.mezz.size(), config::avtuk34);
     QVERIFY(settings->ifaceSettings.settings.isValid());
 
-    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    std::vector<CheckItem> checkSettings;
+    QVERIFY(
+        module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM), checkSettings));
     QCOMPARE(checkSettings.size(), 1);
     auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
         [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
@@ -1133,7 +1231,9 @@ void TestModule::check3335()
     QCOMPARE(settings->configSettings.mezz.size(), config::avtuk35);
     QVERIFY(settings->ifaceSettings.settings.isValid());
 
-    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    std::vector<CheckItem> checkSettings;
+    QVERIFY(
+        module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM), checkSettings));
     QCOMPARE(checkSettings.size(), 1);
     auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
         [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
@@ -1154,7 +1254,9 @@ void TestModule::check3400()
     QCOMPARE(settings->configSettings.mezz.size(), 0);
     QVERIFY(!settings->ifaceSettings.settings.isValid());
 
-    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    std::vector<CheckItem> checkSettings;
+    QVERIFY(
+        module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM), checkSettings));
     QCOMPARE(checkSettings.size(), 1);
     auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
         [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
@@ -1175,7 +1277,9 @@ void TestModule::check3421()
     QCOMPARE(settings->configSettings.mezz.size(), config::avtuk21);
     QVERIFY(settings->ifaceSettings.settings.isValid());
 
-    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    std::vector<CheckItem> checkSettings;
+    QVERIFY(
+        module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM), checkSettings));
     QCOMPARE(checkSettings.size(), 2);
     auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
         [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
@@ -1196,7 +1300,9 @@ void TestModule::check3422()
     QCOMPARE(settings->configSettings.mezz.size(), config::avtuk22);
     QVERIFY(settings->ifaceSettings.settings.isValid());
 
-    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    std::vector<CheckItem> checkSettings;
+    QVERIFY(
+        module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM), checkSettings));
     QCOMPARE(checkSettings.size(), 2);
     auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
         [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
@@ -1217,7 +1323,9 @@ void TestModule::check3431()
     QCOMPARE(settings->configSettings.mezz.size(), config::avtuk31);
     QVERIFY(settings->ifaceSettings.settings.isValid());
 
-    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    std::vector<CheckItem> checkSettings;
+    QVERIFY(
+        module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM), checkSettings));
     QCOMPARE(checkSettings.size(), 2);
     auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
         [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
@@ -1238,7 +1346,9 @@ void TestModule::check3433()
     QCOMPARE(settings->configSettings.mezz.size(), config::avtuk33);
     QVERIFY(settings->ifaceSettings.settings.isValid());
 
-    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    std::vector<CheckItem> checkSettings;
+    QVERIFY(
+        module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM), checkSettings));
     QCOMPARE(checkSettings.size(), 2);
     auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
         [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
@@ -1259,7 +1369,9 @@ void TestModule::check3434()
     QCOMPARE(settings->configSettings.mezz.size(), config::avtukSame);
     QVERIFY(!settings->ifaceSettings.settings.isValid());
 
-    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    std::vector<CheckItem> checkSettings;
+    QVERIFY(
+        module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM), checkSettings));
     QCOMPARE(checkSettings.size(), 1);
     auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
         [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
@@ -1280,7 +1392,9 @@ void TestModule::check3435()
     QCOMPARE(settings->configSettings.mezz.size(), config::avtuk35);
     QVERIFY(!settings->ifaceSettings.settings.isValid());
 
-    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    std::vector<CheckItem> checkSettings;
+    QVERIFY(
+        module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM), checkSettings));
     QCOMPARE(checkSettings.size(), 1);
     auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
         [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
@@ -1301,7 +1415,9 @@ void TestModule::check3500()
     QCOMPARE(settings->configSettings.mezz.size(), 0);
     QVERIFY(!settings->ifaceSettings.settings.isValid());
 
-    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    std::vector<CheckItem> checkSettings;
+    QVERIFY(
+        module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM), checkSettings));
     QCOMPARE(checkSettings.size(), 1);
     auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
         [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
@@ -1322,7 +1438,9 @@ void TestModule::check3521()
     QCOMPARE(settings->configSettings.mezz.size(), config::avtuk21);
     QVERIFY(settings->ifaceSettings.settings.isValid());
 
-    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    std::vector<CheckItem> checkSettings;
+    QVERIFY(
+        module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM), checkSettings));
     QCOMPARE(checkSettings.size(), 2);
     auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
         [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
@@ -1343,7 +1461,9 @@ void TestModule::check3522()
     QCOMPARE(settings->configSettings.mezz.size(), config::avtuk22);
     QVERIFY(settings->ifaceSettings.settings.isValid());
 
-    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    std::vector<CheckItem> checkSettings;
+    QVERIFY(
+        module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM), checkSettings));
     QCOMPARE(checkSettings.size(), 2);
     auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
         [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
@@ -1364,7 +1484,9 @@ void TestModule::check3531()
     QCOMPARE(settings->configSettings.mezz.size(), config::avtuk31);
     QVERIFY(settings->ifaceSettings.settings.isValid());
 
-    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    std::vector<CheckItem> checkSettings;
+    QVERIFY(
+        module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM), checkSettings));
     QCOMPARE(checkSettings.size(), 2);
     auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
         [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
@@ -1385,7 +1507,9 @@ void TestModule::check3533()
     QCOMPARE(settings->configSettings.mezz.size(), config::avtuk33);
     QVERIFY(settings->ifaceSettings.settings.isValid());
 
-    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    std::vector<CheckItem> checkSettings;
+    QVERIFY(
+        module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM), checkSettings));
     QCOMPARE(checkSettings.size(), 2);
     auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
         [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
@@ -1406,7 +1530,9 @@ void TestModule::check3534()
     QCOMPARE(settings->configSettings.mezz.size(), config::avtuk34);
     QVERIFY(!settings->ifaceSettings.settings.isValid());
 
-    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    std::vector<CheckItem> checkSettings;
+    QVERIFY(
+        module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM), checkSettings));
     QCOMPARE(checkSettings.size(), 1);
     auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
         [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
@@ -1427,7 +1553,9 @@ void TestModule::check3535()
     QCOMPARE(settings->configSettings.mezz.size(), config::avtukSame);
     QVERIFY(!settings->ifaceSettings.settings.isValid());
 
-    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    std::vector<CheckItem> checkSettings;
+    QVERIFY(
+        module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM), checkSettings));
     QCOMPARE(checkSettings.size(), 1);
     auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
         [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
@@ -1452,7 +1580,9 @@ void TestModule::check3533USB()
     QCOMPARE(st.dictionary().size(), 2);
     QCOMPARE(st.groups().size(), 2);
 
-    auto checkSettings = module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM));
+    std::vector<CheckItem> checkSettings;
+    QVERIFY(
+        module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM), checkSettings));
     QCOMPARE(checkSettings.size(), 2);
     auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
         [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });

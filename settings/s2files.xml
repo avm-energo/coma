@@ -185,6 +185,18 @@
 		</widget>
 	</record>
 	<record>
+		<id>11</id>
+		<type>INT32</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>210</group>
+			<string>Часовой пояс</string>
+			<min>-12</min>
+			<max>12</max>
+			<decimals>0</decimals>
+		</widget>
+	</record>
+	<record>
 		<id>20</id>
 		<type>BYTE[4]</type>
 		<widget>

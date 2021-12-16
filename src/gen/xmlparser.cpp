@@ -15,7 +15,7 @@ constexpr char uintSet[] = "uint-set";
 constexpr char string[] = "string";
 constexpr char color[] = "color";
 constexpr char unsigned32[] = "quint32";
-constexpr char unsigned64[] = "quint64";
+// constexpr char unsigned64[] = "quint64";
 constexpr char unsigned128[] = "quint128";
 constexpr char className[] = "class";
 constexpr char group[] = "group";
@@ -296,12 +296,12 @@ config::itemVariant XmlParser::parseWidget(QDomElement domElement)
         bool status = false;
         delegate::DoubleSpinBoxWidget widget(type, widgetGroup);
 
-        QDomElement childElement = domElement.firstChildElement("min");
-        widget.min = childElement.text().toDouble(&status);
-        childElement = domElement.firstChildElement("max");
-        widget.max = childElement.text().toDouble(&status);
-        childElement = domElement.firstChildElement("decimals");
-        widget.decimals = childElement.text().toUInt(&status);
+        QDomElement nextChildElement = domElement.firstChildElement("min");
+        widget.min = nextChildElement.text().toDouble(&status);
+        nextChildElement = domElement.firstChildElement("max");
+        widget.max = nextChildElement.text().toDouble(&status);
+        nextChildElement = domElement.firstChildElement("decimals");
+        widget.decimals = nextChildElement.text().toUInt(&status);
         if (!status)
             qWarning() << name << className;
 
@@ -314,14 +314,14 @@ config::itemVariant XmlParser::parseWidget(QDomElement domElement)
         bool status = false;
         delegate::DoubleSpinBoxGroup widget(type, widgetGroup);
 
-        QDomElement childElement = domElement.firstChildElement("min");
-        widget.min = childElement.text().toDouble(&status);
-        childElement = domElement.firstChildElement("max");
-        widget.max = childElement.text().toDouble(&status);
-        childElement = domElement.firstChildElement("decimals");
-        widget.decimals = childElement.text().toUInt(&status);
-        childElement = domElement.firstChildElement("count");
-        widget.count = childElement.text().toUInt(&status);
+        QDomElement nextChildElement = domElement.firstChildElement("min");
+        widget.min = nextChildElement.text().toDouble(&status);
+        nextChildElement = domElement.firstChildElement("max");
+        widget.max = nextChildElement.text().toDouble(&status);
+        nextChildElement = domElement.firstChildElement("decimals");
+        widget.decimals = nextChildElement.text().toUInt(&status);
+        nextChildElement = domElement.firstChildElement("count");
+        widget.count = nextChildElement.text().toUInt(&status);
         if (!status)
             qWarning() << name << className;
 
@@ -335,8 +335,8 @@ config::itemVariant XmlParser::parseWidget(QDomElement domElement)
         bool status = false;
         delegate::CheckBoxGroup widget(type, widgetGroup);
 
-        QDomElement childElement = domElement.firstChildElement("count");
-        widget.count = childElement.text().toUInt(&status);
+        QDomElement nextChildElement = domElement.firstChildElement("count");
+        widget.count = nextChildElement.text().toUInt(&status);
         if (!status)
             qWarning() << name << className;
 
@@ -352,11 +352,11 @@ config::itemVariant XmlParser::parseWidget(QDomElement domElement)
         widget.desc = description;
         widget.toolTip = toolTip;
         widget.model = items;
-        QDomElement childElement = domElement.firstChildElement("field");
+        QDomElement nextChildElement = domElement.firstChildElement("field");
         // QComboBox depends on index by default
-        if (childElement.text().contains("data"))
+        if (nextChildElement.text().contains("data"))
             widget.primaryField = delegate::QComboBox::data;
-        else if (childElement.text().contains("bitfield"))
+        else if (nextChildElement.text().contains("bitfield"))
             widget.primaryField = delegate::QComboBox::bitfield;
         else
             widget.primaryField = delegate::QComboBox::index;
@@ -370,18 +370,18 @@ config::itemVariant XmlParser::parseWidget(QDomElement domElement)
         widget.desc = description;
         widget.toolTip = toolTip;
         widget.model = items;
-        QDomElement childElement = domElement.firstChildElement("field");
+        QDomElement nextChildElement = domElement.firstChildElement("field");
         // QComboBox depends on index by default
-        if (childElement.text().contains("data"))
+        if (nextChildElement.text().contains("data"))
             widget.primaryField = delegate::QComboBox::data;
-        else if (childElement.text().contains("bitfield"))
+        else if (nextChildElement.text().contains("bitfield"))
             widget.primaryField = delegate::QComboBox::bitfield;
         else
             widget.primaryField = delegate::QComboBox::index;
         //    = childElement.text().contains("data") ? delegate::QComboBox::data : delegate::QComboBox::index;
-        childElement = domElement.firstChildElement("count");
+        nextChildElement = domElement.firstChildElement("count");
         bool status = false;
-        widget.count = childElement.text().toUInt(&status);
+        widget.count = nextChildElement.text().toUInt(&status);
         if (!status)
             qWarning() << name << className;
         return std::move(widget);
@@ -602,9 +602,9 @@ config::Item XmlParser::parseItem(QDomElement domElement, ctti::unnamed_type_id_
     case delegate::ItemType::ModbusItem:
     {
 
-        QDomElement childElement = domElement.firstChildElement("parent");
+        QDomElement nextChildElement = domElement.firstChildElement("parent");
         bool status = false;
-        auto parent = static_cast<BciNumber>(childElement.text().toUInt(&status));
+        auto parent = static_cast<BciNumber>(nextChildElement.text().toUInt(&status));
         if (!status)
             qWarning() << name << className;
         Item item(parentType, itemType, parent, widgetGroup);
@@ -897,6 +897,7 @@ DataTypes::Alarm XmlParser::traverseNodeAlarm(const QDomNode &node)
         domNode = domNode.nextSibling();
     }
     assert(false);
+    return DataTypes::Alarm();
 }
 
 CheckItem XmlParser::traverseNodeCheck(const QDomNode &node)

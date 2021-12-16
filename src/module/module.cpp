@@ -127,7 +127,8 @@ bool Module::loadSettings(const Modules::StartupInfoBlock &startupInfoBlock, int
 {
     if (!loadS2Settings())
         return false;
-    m_gsettings.check = loadCheckSettings();
+    if (!loadCheckSettings(m_gsettings.check))
+        return false;
 
     m_settings = std::unique_ptr<ModuleSettings>(new ModuleSettings(startupInfoBlock));
     m_settings->interfaceType = interfaceType;
@@ -141,7 +142,8 @@ bool Module::loadSettings(const Modules::StartupInfoBlock &startupInfoBlock, int
     if (!obtainXmlFile(moduleName))
         return false;
 
-    QDir dir(m_directory);
+    //    QDir dir(m_directory);
+    QDir dir(resourceDirectory);
     auto xmlFiles = dir.entryList(QDir::Files).filter(".xml");
 
     auto result = std::find_if(xmlFiles.cbegin(), xmlFiles.cend(), [&module = moduleName](const QString &str) {
@@ -220,37 +222,45 @@ bool Module::loadMainSettings(const QString &filename)
 
 bool Module::obtainXmlFile(const QString &filename) const
 {
-    QDir dir(m_directory);
-    qDebug() << dir;
-    auto xmlFiles = dir.entryList(QDir::Files).filter(".xml");
+    QDir dir(resourceDirectory);
+    QStringList xmlFiles = dir.entryList(QDir::Files).filter(".xml");
     qDebug() << xmlFiles;
-    QDomDocument domDoc;
-    QFile file;
-    auto result = std::find_if(xmlFiles.cbegin(), xmlFiles.cend(),
-        [&filename](const QString &str) { return str.contains(filename, Qt::CaseInsensitive); });
-    if (result != std::cend(xmlFiles))
-        file.setFileName(dir.filePath(*result));
-
-    if (file.fileName().isEmpty())
+    for (const auto &xmlFile : qAsConst(xmlFiles))
     {
-        dir = QDir(resourceDirectory);
-        xmlFiles = dir.entryList(QDir::Files).filter(".xml");
-        qDebug() << xmlFiles;
-        for (const auto &xmlFile : qAsConst(xmlFiles))
-        {
-            if (!xmlFile.contains(filename, Qt::CaseInsensitive))
-                continue;
-            if (!QFile::copy(dir.filePath(xmlFile), StdFunc::GetSystemHomeDir() + xmlFile))
-            {
-                qCritical() << Error::DescError;
-                qInfo() << dir.filePath(xmlFile) << StdFunc::GetSystemHomeDir() + xmlFile;
-                return false;
-            }
-
-            return obtainXmlFile(filename);
-        }
+        if (xmlFile.contains(filename, Qt::CaseInsensitive))
+            return true;
     }
-    return true;
+    /*    QDir dir(m_directory);
+        qDebug() << dir;
+        auto xmlFiles = dir.entryList(QDir::Files).filter(".xml");
+        qDebug() << xmlFiles;
+        QDomDocument domDoc;
+        QFile file;
+        auto result = std::find_if(xmlFiles.cbegin(), xmlFiles.cend(),
+            [&filename](const QString &str) { return str.contains(filename, Qt::CaseInsensitive); });
+        if (result != std::cend(xmlFiles))
+            file.setFileName(dir.filePath(*result));
+
+        if (file.fileName().isEmpty())
+        {
+            dir = QDir(resourceDirectory);
+            xmlFiles = dir.entryList(QDir::Files).filter(".xml");
+            qDebug() << xmlFiles;
+            for (const auto &xmlFile : qAsConst(xmlFiles))
+            {
+                if (!xmlFile.contains(filename, Qt::CaseInsensitive))
+                    continue;
+                if (!QFile::copy(dir.filePath(xmlFile), StdFunc::GetSystemHomeDir() + xmlFile))
+                {
+                    qCritical() << Error::DescError;
+                    qInfo() << dir.filePath(xmlFile) << StdFunc::GetSystemHomeDir() + xmlFile;
+                    return false;
+                }
+
+                return obtainXmlFile(filename);
+            }
+        } */
+    return false;
 }
 
 quint64 Module::configVersion() const
@@ -341,7 +351,8 @@ void Module::createCommon()
 
 bool Module::obtainXmlConfig(const QString &filename, QList<DataTypes::RecordPair> &config) const
 {
-    QDir dir(m_directory);
+    //    QDir dir(m_directory);
+    QDir dir(resourceDirectory);
     auto xmlFiles = dir.entryList(QDir::Files).filter(".xml");
     QDomDocument domDoc;
     QFile file;
@@ -424,7 +435,8 @@ bool Module::loadUsioSettings(const Modules::StartupInfoBlock &startupInfoBlock)
 bool Module::loadS2Settings()
 {
     constexpr auto name = "s2files.xml";
-    QDir dir(m_directory);
+    //    QDir dir(m_directory);
+    QDir dir(resourceDirectory);
     qDebug() << dir;
     QDomDocument domDoc;
     QFile file;
@@ -432,14 +444,14 @@ bool Module::loadS2Settings()
     file.setFileName(dir.filePath(name));
     if (!file.exists())
     {
-        dir = QDir(resourceDirectory);
-        if (!QFile::copy(dir.filePath(name), StdFunc::GetSystemHomeDir() + name))
-        {
-            qCritical() << Error::DescError;
-            qInfo() << dir.filePath(name) << StdFunc::GetSystemHomeDir() + name;
-            return false;
-        }
-        return loadS2Settings();
+        //        dir = QDir(resourceDirectory);
+        //        if (!QFile::copy(dir.filePath(name), StdFunc::GetSystemHomeDir() + name))
+        //        {
+        qCritical() << Error::DescError;
+        qInfo() << dir.filePath(name) << StdFunc::GetSystemHomeDir() + name;
+        return false;
+        //        }
+        //        return loadS2Settings();
     }
     if (file.open(QIODevice::ReadOnly))
     {
@@ -465,7 +477,8 @@ bool Module::loadS2Settings()
 
 bool Module::obtainXmlCheck(const QString &filename, std::vector<CheckItem> &check) const
 {
-    QDir dir(m_directory);
+    //    QDir dir(m_directory);
+    QDir dir(resourceDirectory);
     auto xmlFiles = dir.entryList(QDir::Files).filter(".xml");
     QDomDocument domDoc;
     QFile file;
@@ -500,7 +513,8 @@ bool Module::obtainXmlCheck(const QString &filename, std::vector<CheckItem> &che
 
 bool Module::obtainXmlAlarm(const QString &filename, AlarmMap &alarmMap, Modules::AlarmType type) const
 {
-    QDir dir(m_directory);
+    //    QDir dir(m_directory);
+    QDir dir(resourceDirectory);
     auto xmlFiles = dir.entryList(QDir::Files).filter(".xml");
     QDomDocument domDoc;
     QFile file;
@@ -532,25 +546,27 @@ bool Module::obtainXmlAlarm(const QString &filename, AlarmMap &alarmMap, Modules
     }
 }
 
-CheckSettings Module::loadCheckSettings()
+bool Module::loadCheckSettings(CheckSettings &settings)
 {
     constexpr auto name = "check.xml";
-    QDir dir(m_directory);
-    qDebug() << dir;
+    //    QDir dir(m_directory);
+    QDir dir(resourceDirectory);
+    //    qDebug() << dir;
     QDomDocument domDoc;
     QFile file;
 
     file.setFileName(dir.filePath(name));
     if (!file.exists())
     {
-        dir = QDir(resourceDirectory);
-        if (!QFile::copy(dir.filePath(name), StdFunc::GetSystemHomeDir() + name))
-        {
-            qCritical() << Error::DescError;
-            qInfo() << dir.filePath(name) << StdFunc::GetSystemHomeDir() + name;
-            assert(false);
-        }
-        return loadCheckSettings();
+        //        dir = QDir(resourceDirectory);
+        //        if (!QFile::copy(dir.filePath(name), StdFunc::GetSystemHomeDir() + name))
+        //        {
+        qCritical() << Error::DescError;
+        qInfo() << dir.filePath(name) << StdFunc::GetSystemHomeDir() + name;
+        assert(false);
+        return false;
+        //        }
+        //        return loadCheckSettings();
     }
 
     if (file.open(QIODevice::ReadOnly))
@@ -558,14 +574,15 @@ CheckSettings Module::loadCheckSettings()
         if (domDoc.setContent(&file))
         {
             const auto &board = Board::GetInstance();
-            CheckSettings checkSettings;
-            checkSettings.items = loadCheckSettings(
-                static_cast<Modules::BaseBoard>(board.typeB()), static_cast<Modules::MezzanineBoard>(board.typeM()));
+            //            CheckSettings checkSettings;
+            if (!loadCheckSettings(static_cast<Modules::BaseBoard>(board.typeB()),
+                    static_cast<Modules::MezzanineBoard>(board.typeM()), settings.items))
+                return false;
             QDomElement domElement = domDoc.documentElement();
-            XmlParser::traverseNode(domElement, checkSettings.categories);
+            XmlParser::traverseNode(domElement, settings.categories);
             file.close();
 
-            return checkSettings;
+            return true;
         }
         file.close();
         qInfo() << Error::WrongFileError << file.fileName();
@@ -576,11 +593,13 @@ CheckSettings Module::loadCheckSettings()
         qCritical() << Error::FileOpenError << file.fileName();
         assert(false);
     }
+    return false;
 }
 
-std::vector<CheckItem> Module::loadCheckSettings(Modules::BaseBoard typeB, Modules::MezzanineBoard typeM) const
+bool Module::loadCheckSettings(
+    Modules::BaseBoard typeB, Modules::MezzanineBoard typeM, std::vector<CheckItem> &check) const
 {
-    std::vector<CheckItem> check;
+    //    std::vector<CheckItem> check;
     bool statusBase = true;
     {
         QString checkBase("check-%0100");
@@ -619,15 +638,17 @@ std::vector<CheckItem> Module::loadCheckSettings(Modules::BaseBoard typeB, Modul
         checkModule.append(QString::number(quint8(typeM), 16));
         if (!obtainXmlFile(checkModule))
         {
-            statusMezz = false;
+            //            statusMezz = false;
             qWarning() << Error::OpenError << checkModule;
+            return false;
         }
         else if (!obtainXmlCheck(checkModule, check))
         {
             // assert(false);
             qWarning() << Error::OpenError << checkModule;
+            return false;
         }
     }
     // assert(statusBase || statusMezz);
-    return check;
+    return true;
 }

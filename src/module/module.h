@@ -58,8 +58,9 @@ public:
     bool obtainXmlCheck(const QString &filename, std::vector<CheckItem> &check) const;
     bool obtainXmlAlarm(const QString &filename, AlarmMap &alarmMap, Modules::AlarmType type) const;
     bool loadS2Settings();
-    CheckSettings loadCheckSettings();
-    std::vector<CheckItem> loadCheckSettings(Modules::BaseBoard typeB, Modules::MezzanineBoard typeM) const;
+    bool loadCheckSettings(CheckSettings &settings);
+    bool loadCheckSettings(
+        Modules::BaseBoard typeB, Modules::MezzanineBoard typeM, std::vector<CheckItem> &check) const;
     quint64 configVersion() const;
     bool isConfigOutdated() const;
     void eraseSettings() const;
