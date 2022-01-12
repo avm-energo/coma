@@ -24,10 +24,10 @@ QWidget *TuneKIV::BdaTempWidget()
     QHBoxLayout *hlyout = new QHBoxLayout;
     //    QGroupBox *gb = new QGroupBox("Общие данные");
     hlyout->addWidget(WDFunc::NewLBL2(m_BdaTempWidget, "temp"));
-    hlyout->addWidget(WDFunc::NewLBLT(m_BdaTempWidget, "", "temp", ValuesFormat, "Температура"));
+    hlyout->addWidget(WDFunc::NewLBLT2(m_BdaTempWidget, "", "temp", ValuesFormat, "Температура"));
     lyout->addLayout(hlyout);
     hlyout->addWidget(WDFunc::NewLBL2(m_BdaTempWidget, "resist"));
-    hlyout->addWidget(WDFunc::NewLBLT(m_BdaTempWidget, "", "resist", ValuesFormat, "Сопротивление"));
+    hlyout->addWidget(WDFunc::NewLBLT2(m_BdaTempWidget, "", "resist", ValuesFormat, "Сопротивление"));
     lyout->addLayout(hlyout);
     m_BdaTempWidget->setLayout(lyout);
     m_BdaTempWidgetIsSet = true;

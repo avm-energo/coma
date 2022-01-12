@@ -112,14 +112,14 @@ bool InterfaceSerialDialog::updateModel()
     {
         QString key = QCoreApplication::applicationName();
         key += "\\" + item;
-        auto sets = std::unique_ptr<QSettings>(new QSettings(QCoreApplication::organizationName(), key));
+        auto newSets = std::unique_ptr<QSettings>(new QSettings(QCoreApplication::organizationName(), key)); // !!!
         QList<QStandardItem *> items {
-            new QStandardItem(item),                                 //
-            new QStandardItem(sets->value("port", "").toString()),   //
-            new QStandardItem(sets->value("speed", "").toString()),  //
-            new QStandardItem(sets->value("parity", "").toString()), //
-            new QStandardItem(sets->value("stop", "").toString()),   //
-            new QStandardItem(sets->value("address", "").toString()) //
+            new QStandardItem(item),                                    //
+            new QStandardItem(newSets->value("port", "").toString()),   //
+            new QStandardItem(newSets->value("speed", "").toString()),  //
+            new QStandardItem(newSets->value("parity", "").toString()), //
+            new QStandardItem(newSets->value("stop", "").toString()),   //
+            new QStandardItem(newSets->value("address", "").toString()) //
         };
         mdl->appendRow(items);
     }

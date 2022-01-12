@@ -138,7 +138,7 @@ void StartupKTFDialog::GetCorBd()
 void StartupKTFDialog::WriteCor()
 {
     // int i;
-    quint32 adr = 907;
+    //    quint32 adr = 907;
 
     FillBackCor();
 

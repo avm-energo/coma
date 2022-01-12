@@ -147,7 +147,7 @@ void GeneralTuneDialog::replaceDomWithNewAttrRecursively(QDomElement &root, cons
     for (int i = 0; i < nodes.size(); ++i)
     {
         QDomNode node = nodes.at(i);
-        QString tmps = node.nodeName();
+        //        QString tmps = node.nodeName();
         if (node.nodeName() == name) // path
         {
             QDomNode newnode = node;

@@ -1,4 +1,4 @@
-#include "tune84dialog.h"
+#include "tune82dialog.h"
 
 #include "../../gen/colors.h"
 #include "../../gen/error.h"
@@ -7,23 +7,24 @@
 #include "../../widgets/wd_func.h"
 #include "../tunesteps.h"
 
-Tune84Dialog::Tune84Dialog(ConfigV *config, QWidget *parent) : GeneralTuneDialog(config, parent)
+Tune82Dialog::Tune82Dialog(ConfigV *config, QWidget *parent) : GeneralTuneDialog(config, parent)
 {
     setAttribute(Qt::WA_DeleteOnClose);
 
     m_dialogList
-        = { { "Проверка правильности измерения входных сигналов", new Tune84Check(config, TS84_CHECKING, this) },
-              { "Регулировка каналов напряжения", new Tune84ADC(config, TS84_ADCU, this) },
-              { "Регулировка каналов тока", new Tune84ADC(config, TS84_ADCI, this) },
-              { "Настройка температурной коррекции +60 °С", new TuneKIVTemp60(config, TS84_60TUNING, this) },
-              { "Настройка температурной коррекции -20 °С", new TuneKIVTemp60(config, TS84_20TUNING, this) } };
-    m_calibrSteps = m_dialogList.size() + 1;
+        = { { "Проверка правильности измерения входных сигналов", new Tune82Check(config, TS82_CHECKING, this) },
+              { "Регулировка каналов напряжения", new Tune82ADC(config, TS82_ADCU, this) },
+              { "Регулировка каналов тока", new Tune82ADC(config, TS82_ADCI, this) },
+              //              { "Настройка температурной коррекции +60 °С", new TuneKIVTemp60(config, TS84_60TUNING,
+              //              this) }, { "Настройка температурной коррекции -20 °С", new TuneKIVTemp60(config,
+              //              TS84_20TUNING, this) } };
+              m_calibrSteps = m_dialogList.size() + 1;
     Bac *bac = new Bac;
     m_BacWidget = bac->widget();
     SetupUI();
 }
 
-void Tune84Dialog::prepareReport()
+void Tune82Dialog::prepareReport()
 {
     /*    // данные в таблицу уже получены или из файла, или в процессе работы
         // отобразим таблицу

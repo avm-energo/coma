@@ -76,8 +76,8 @@ private:
     void handleFile(QByteArray &ba, DataTypes::FilesEnum addr, Queries::FileFormat format);
     void handleInt(const byte num);
     void handleBool(const bool status = true, int errorSize = 0, int errorCode = 0);
-    void handleProgress(const quint64 progress);
-    void handleMaxProgress(const quint64 progress);
+    void handleProgress(const quint64 count);
+    void handleMaxProgress(const quint64 count);
     void handleRawBlock(const QByteArray &ba, quint32 blkNum);
     inline void handleCommand(const QByteArray &ba);
     void handleTechBlock(const QByteArray &ba, quint32 blkNum);

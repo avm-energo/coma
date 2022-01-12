@@ -35,7 +35,7 @@ bool UsbHidSettings::hasPartialMatch(const QString &str)
     QRegularExpressionMatchIterator i = regex.globalMatch(buffer);
     while (i.hasNext())
     {
-        QRegularExpressionMatch match = i.next();
+        match = i.next();
         buffer = match.captured(0);
         const auto pair = buffer.split('_');
         bool ok = false;

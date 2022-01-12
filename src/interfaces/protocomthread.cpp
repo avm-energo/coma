@@ -834,15 +834,15 @@ void ProtocomThread::handleBool(const bool status, int errorSize, int errorCode)
     }
 }
 
-void ProtocomThread::handleProgress(const quint64 progress)
+void ProtocomThread::handleProgress(const quint64 count)
 {
-    DataTypes::GeneralResponseStruct resp { DataTypes::GeneralResponseTypes::DataCount, progress };
+    DataTypes::GeneralResponseStruct resp { DataTypes::GeneralResponseTypes::DataCount, count };
     DataManager::addSignalToOutList(DataTypes::SignalTypes::GeneralResponse, resp);
 }
 
-void ProtocomThread::handleMaxProgress(const quint64 progress)
+void ProtocomThread::handleMaxProgress(const quint64 count)
 {
-    DataTypes::GeneralResponseStruct resp { DataTypes::GeneralResponseTypes::DataSize, progress };
+    DataTypes::GeneralResponseStruct resp { DataTypes::GeneralResponseTypes::DataSize, count };
     DataManager::addSignalToOutList(DataTypes::SignalTypes::GeneralResponse, resp);
 }
 

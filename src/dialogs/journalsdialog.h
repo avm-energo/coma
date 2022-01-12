@@ -8,7 +8,7 @@
 #include <QProgressDialog>
 #include <QTableView>
 
-#define MAXSWJNUM 262144
+//#define MAXSWJNUM 262144
 
 class JournalDialog : public UDialog
 {

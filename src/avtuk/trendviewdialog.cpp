@@ -121,16 +121,16 @@ void TrendViewDialog::addSig(QString signame)
                 Q_CHECK_PTR(bottomAxis);
                 return;
             }
-            auto graph = mainPlot->addGraph(bottomAxis, leftAxis);
+            auto newGraph = mainPlot->addGraph(bottomAxis, leftAxis);
             signalOscPropertiesMap[signame].isVisible = true;
-            signalOscPropertiesMap[signame].graph = graph;
+            signalOscPropertiesMap[signame].graph = newGraph;
 
-            graph->setName(signame);
+            newGraph->setName(signame);
 
-            graph->setLineStyle(QCPGraph::lsStepLeft); // импульсы
-            graph->setData(m_trendModel->mainPoints(), m_trendModel->digitalMainData().value(signame));
+            newGraph->setLineStyle(QCPGraph::lsStepLeft); // импульсы
+            newGraph->setData(m_trendModel->mainPoints(), m_trendModel->digitalMainData().value(signame));
 
-            helper(digital, count, graph, signame);
+            helper(digital, count, newGraph, signame);
             mainPlot->replot();
         }
         else
@@ -162,15 +162,15 @@ void TrendViewDialog::addSig(QString signame)
                 Q_CHECK_PTR(bottomAxis);
                 return;
             }
-            auto graph = mainPlot->addGraph(bottomAxis, leftAxis);
+            auto newGraph = mainPlot->addGraph(bottomAxis, leftAxis);
 
             signalOscPropertiesMap[signame].isVisible = true;
-            signalOscPropertiesMap[signame].graph = graph;
+            signalOscPropertiesMap[signame].graph = newGraph;
 
-            graph->setName(signame);
+            newGraph->setName(signame);
 
-            graph->setData(m_trendModel->mainPoints(), m_trendModel->analogMainData().value(signame));
-            helper(analog, count, graph, signame);
+            newGraph->setData(m_trendModel->mainPoints(), m_trendModel->analogMainData().value(signame));
+            helper(analog, count, newGraph, signame);
             mainPlot->replot();
         }
         else

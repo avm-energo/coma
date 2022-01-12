@@ -10,7 +10,10 @@ set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-find_program(CONAN_FOUND "conan")
+# set(CMAKE_GENERATOR "Ninja")
+# message("-- Generator is set to ${CMAKE_GENERATOR}")
+
+find_program(CONAN_FOUND "conan" NO_CACHE)
 if(CONAN_FOUND)
     set(CONAN_EXEC conan)
 endif()
@@ -140,6 +143,7 @@ message(STATUS "Modules dir: " "${_pathNamesSpaces}")
 
 message(STATUS "${CMAKE_BUILD_TYPE_LOWER} mode")
 message(STATUS "Target name - ${PROJECT_TARGET_NAME}")
+
 find_package(
   QT NAMES Qt6 Qt5
   COMPONENTS Core

@@ -12,7 +12,7 @@
 
 #include <QHeaderView>
 #include <QMessageBox>
-constexpr int MAXSWJNUM = 262144;
+// constexpr int MAXSWJNUM = 262144;
 
 constexpr unsigned char TECH_SWJ = 0x04;
 
@@ -221,9 +221,9 @@ bool SwitchJournalDialog::loadIfExist(quint32 size)
             qInfo() << "Swj loaded from file: " << file;
             DataTypes::S2FilePack outlist;
             S2::RestoreData(ba, outlist);
-            for (auto &&file : outlist)
+            for (auto &&swjFile : outlist)
             {
-                DataTypes::FileStruct resp { DataTypes::FilesEnum(file.ID), file.data };
+                DataTypes::FileStruct resp { DataTypes::FilesEnum(swjFile.ID), swjFile.data };
                 DataManager::addSignalToOutList(DataTypes::SignalTypes::File, resp);
             }
             return true;
