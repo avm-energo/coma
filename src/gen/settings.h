@@ -72,11 +72,28 @@ struct GlobalSettings
 
 namespace settings
 {
-constexpr char logKey[] = "WriteLog";
-constexpr char logWidget[] = "writelogchb";
-constexpr char tuneCountKey[] = "TuneRequestCount";
-constexpr char tuneCountWidget[] = "reqcount";
-constexpr char hidTimeout[] = "hidTimeout";
-constexpr char timezoneKey[] = "Timezone";
-constexpr char timezoneWidget[] = "timezoneCB";
+struct RegValues
+{
+    QString name;
+    QString defValue;
+};
+
+enum SettingsKeys
+{
+    logKey,
+    logWidget,
+    tuneCountKey,
+    tuneCountWidget,
+    hidTimeout,
+    timezoneKey,
+    timezoneWidget,
+    MIPIP,
+    MIPAddress
+};
+
+const QMap<int, settings::RegValues> regMap { { logKey, { "WriteLog", "0" } }, { logWidget, { "writelogchb", "" } },
+    { tuneCountKey, { "TuneRequestCount", "20" } }, { tuneCountWidget, { "reqcount", "" } },
+    { hidTimeout, { "hidTimeout", "50" } }, { timezoneKey, { "Timezone", "0" } },
+    { timezoneWidget, { "timezoneCB", "" } }, { MIPIP, { "mipIP", "172.16.11.12" } },
+    { MIPAddress, { "mipAddress", "205" } } };
 }

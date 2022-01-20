@@ -123,7 +123,6 @@ void IEC104Thread::Run()
 
 void IEC104Thread::GetSomeData(QByteArray ba)
 {
-
     if (m_isFirstParse)
         m_log->info("<-- " + ba.toHex());
     m_isFirstParse = false;
@@ -141,7 +140,7 @@ void IEC104Thread::GetSomeData(QByteArray ba)
             return; // если так и не достигли конца пакета, надо брать следующий пакет
                     // в cutpckt
         }
-        Q_ASSERT(ba.size() >= missing_num);
+        Q_ASSERT(basize >= missing_num);
         m_cutPckt.append(ba.left(missing_num)); // взяли из текущего пакета сами байты
         ba.remove(0, missing_num);
         s_ParseReadMutex.lock();
@@ -155,7 +154,6 @@ void IEC104Thread::GetSomeData(QByteArray ba)
         m_isFirstParse = true;
         return;
     }
-
     m_cutPckt = ba.left(2);
     ba = ba.mid(2);
     GetSomeData(ba);

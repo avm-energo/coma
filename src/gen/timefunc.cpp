@@ -66,13 +66,14 @@ QString TimeFunc::UnixTime32ToInvString(quint32 utime, QTimeZone tz)
 
 quint64 TimeFunc::InvStringToUnixTime32(QString utime, QTimeZone tz)
 {
+    Q_UNUSED(tz)
     return QDateTime::fromString(utime, "yyyy/MM/dd hh:mm:ss").toSecsSinceEpoch();
 }
 QTimeZone TimeFunc::userTimeZone()
 {
     auto sets = std::make_unique<QSettings>();
     QString timezone = QTimeZone::systemTimeZone().displayName(QTimeZone::StandardTime, QTimeZone::OffsetName);
-    timezone = sets->value(settings::timezoneKey, timezone).toString();
+    timezone = sets->value(settings::timezoneKeyRegName, timezone).toString();
     if (!timezone.isEmpty())
         return QTimeZone(timezone.toUtf8());
     return QTimeZone::systemTimeZone();

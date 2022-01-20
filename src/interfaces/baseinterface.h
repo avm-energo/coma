@@ -28,7 +28,7 @@ protected:
     using FileFormat = Queries::FileFormat;
 
 public:
-    /// BaseInterface has our own memory manager
+    /// BaseInterface has its own memory manager
     /// because it can be created and deleted
     /// multiple times in runtime
     using InterfacePointer = UniquePointer<BaseInterface>;

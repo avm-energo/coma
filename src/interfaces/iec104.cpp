@@ -14,8 +14,6 @@
 IEC104::IEC104(QObject *parent)
     : BaseInterface(parent), EthThreadWorking(false), ParseThreadWorking(false), sock(new QTcpSocket(this))
 {
-    Log->Init("iec104.log");
-    Log->info("=== Log started ===");
 }
 
 IEC104::~IEC104()
@@ -24,6 +22,8 @@ IEC104::~IEC104()
 
 bool IEC104::start(const ConnectStruct &st)
 {
+    Log->Init(st.name + ".log");
+    Log->info("=== Log started ===");
     Q_ASSERT(std::holds_alternative<IEC104Settings>(st.settings));
     qInfo() << metaObject()->className() << "connect";
     if (!std::holds_alternative<IEC104Settings>(st.settings))

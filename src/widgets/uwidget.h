@@ -13,6 +13,12 @@ class UWidget : public QWidget
 {
     Q_OBJECT
 public:
+    enum WidgetType
+    {
+        NORMAL = 0,
+        WITHOUT_GUI = 1
+    };
+
     struct BdQuery
     {
         quint32 sigAdr;
@@ -25,7 +31,7 @@ public:
         QString color;
     };
 
-    explicit UWidget(QWidget *parent = nullptr);
+    explicit UWidget(bool withGUI = true, QWidget *parent = nullptr);
 
     void setUpdatesEnabled();
     void setUpdatesDisabled();
@@ -33,7 +39,6 @@ public:
     //    virtual void setConnections() = 0;
     const QString getCaption();
     void setCaption(const QString &caption);
-    void setUpdateTimerPeriod(quint32 period);
     void setHighlightMap(const QMap<int, QList<HighlightWarnAlarmStruct>> &map);
     void setFloatBdQuery(const QList<BdQuery> &list);
     void addFloatBd(const BdQuery &query);
@@ -63,8 +68,7 @@ protected:
 
 private:
     bool m_updatesEnabled;
-    quint32 m_timerCounter;
-    quint32 m_timerMax;
+    bool m_withGUI;
     BaseInterface *m_iface;
     int m_regLeast, m_regCount;
 

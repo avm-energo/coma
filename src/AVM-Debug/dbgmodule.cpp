@@ -228,12 +228,13 @@ void DbgModule::createUSIO(Modules::BaseBoard typeB, Modules::MezzanineBoard typ
     }
     if (m_gsettings.check.items.size() == 2)
     {
-        const auto &item = m_gsettings.check.items.at(1);
+        const auto &itemIn = m_gsettings.check.items.at(1);
         if ((typeM == MezzanineBoard::MTM_31) || (typeM == MezzanineBoard::MTM_33))
             addDialogToList(
-                new CheckMezz3133Dialog(item, m_gsettings.check.categories), item.header, "check:" + item.header);
+                new CheckMezz3133Dialog(itemIn, m_gsettings.check.categories), itemIn.header, "check:" + itemIn.header);
         else if ((typeM != MezzanineBoard::MTM_34) && (typeM != MezzanineBoard::MTM_35))
-            addDialogToList(new CheckDialog(item, m_gsettings.check.categories), item.header, "check:" + item.header);
+            addDialogToList(
+                new CheckDialog(itemIn, m_gsettings.check.categories), itemIn.header, "check:" + itemIn.header);
     }
 }
 

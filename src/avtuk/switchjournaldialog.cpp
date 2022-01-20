@@ -221,9 +221,9 @@ bool SwitchJournalDialog::loadIfExist(quint32 size)
             qInfo() << "Swj loaded from file: " << file;
             DataTypes::S2FilePack outlist;
             S2::RestoreData(ba, outlist);
-            for (auto &&swjFile : outlist)
+            for (auto &&swjFileIn : outlist)
             {
-                DataTypes::FileStruct resp { DataTypes::FilesEnum(swjFile.ID), swjFile.data };
+                DataTypes::FileStruct resp { DataTypes::FilesEnum(swjFileIn.ID), swjFileIn.data };
                 DataManager::addSignalToOutList(DataTypes::SignalTypes::File, resp);
             }
             return true;

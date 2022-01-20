@@ -9,14 +9,10 @@
 #include <QCoreApplication>
 #include <QDebug>
 #include <QEventLoop>
-UWidget::UWidget(QWidget *parent) : QWidget(parent)
+UWidget::UWidget(bool withGUI, QWidget *parent) : QWidget(parent)
 {
+    m_withGUI = withGUI;
     // m_updatesEnabled = false;
-    m_timerCounter = 0;
-    m_timerMax = 2; // 2 seconds by default
-                    // m_floatBdQueryList.clear();
-    // m_spBdQueryList.clear();
-    // m_highlightMap.clear();
     // Отключим обновление виджета по умолчанию
     QWidget::setUpdatesEnabled(false);
 }
@@ -38,18 +34,11 @@ void UWidget::setUpdatesDisabled()
 const QString UWidget::getCaption()
 {
     return QWidget::windowTitle();
-    // return m_caption;
 }
 
 void UWidget::setCaption(const QString &caption)
 {
     QWidget::setWindowTitle(caption);
-    // m_caption = caption;
-}
-
-void UWidget::setUpdateTimerPeriod(quint32 period)
-{
-    m_timerMax = period;
 }
 
 void UWidget::setHighlightMap(const QMap<int, QList<UWidget::HighlightWarnAlarmStruct>> &map)
@@ -74,8 +63,7 @@ void UWidget::setBsBdQuery(const QList<UWidget::BdQuery> &list)
 
 void UWidget::updateFloatData(const DataTypes::FloatStruct &fl)
 {
-    ++m_timerCounter;
-    if ((updatesEnabled()) /*&& (m_timerCounter >= m_timerMax)*/) // every second tick of the timer
+    if ((updatesEnabled()) && m_withGUI)
     {
         bool result = WDFunc::SetLBLText(this, QString::number(fl.sigAdr), WDFunc::StringValueWithCheck(fl.sigVal, 3));
 #ifdef UWIDGET_DEBUG
@@ -84,15 +72,18 @@ void UWidget::updateFloatData(const DataTypes::FloatStruct &fl)
 #else
         Q_UNUSED(result)
 #endif
-        m_timerCounter = 0;
     }
 }
 
 void UWidget::updateSPData(const DataTypes::SinglePointWithTimeStruct &sp)
 {
-    QList<HighlightWarnAlarmStruct> hstlist = m_highlightMap.value(sp.sigAdr);
-    for (const auto &hst : hstlist)
-        WDFunc::SetLBLTColor(this, QString::number(hst.fieldnum), (sp.sigVal == 1) ? Colors::TABCOLORA1 : hst.color);
+    if ((updatesEnabled()) && m_withGUI)
+    {
+        QList<HighlightWarnAlarmStruct> hstlist = m_highlightMap.value(sp.sigAdr);
+        for (const auto &hst : hstlist)
+            WDFunc::SetLBLTColor(
+                this, QString::number(hst.fieldnum), (sp.sigVal == 1) ? Colors::TABCOLORA1 : hst.color);
+    }
 }
 
 void UWidget::updateBitStringData(const DataTypes::BitStringStruct &bs)

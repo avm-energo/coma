@@ -50,9 +50,6 @@ void GeneralTuneDialog::prepareReport()
 
 void GeneralTuneDialog::setCalibrButtons()
 {
-    //    QString cpuserialnum = Board::GetInstance().UID();
-    //    QSettings storedcalibrations(StdFunc::GetSystemHomeDir() + "calibr.ini", QSettings::IniFormat);
-    //    int calibrstep = storedcalibrations.value(cpuserialnum + "/step", "1").toInt();
     int calibrstep = TuneSequenceFile::value("step", "1").toInt();
     for (int i = 1; i < calibrstep; ++i)
         setIconProcessed("tn" + QString::number(i));
