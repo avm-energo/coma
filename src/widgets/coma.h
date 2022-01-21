@@ -55,6 +55,7 @@ private slots:
     void startWork(const ConnectStruct st);
     void loadOsc();
     void loadSwj();
+    void checkDialog();
 
     virtual void getAbout() {};
     void closeEvent(QCloseEvent *event) override;

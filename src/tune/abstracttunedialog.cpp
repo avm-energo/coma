@@ -176,11 +176,6 @@ void AbstractTuneDialog::WaitNSeconds(int Seconds, bool isAllowedToStop)
     el.exec();
 }
 
-void AbstractTuneDialog::Wait15Seconds()
-{
-    WaitNSeconds(15, false);
-}
-
 void AbstractTuneDialog::startWait()
 {
     WaitWidget *ww = new WaitWidget;

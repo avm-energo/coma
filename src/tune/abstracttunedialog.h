@@ -42,7 +42,6 @@ public:
     bool IsNeededDefConf;
     int m_blockCount;
     QStringList m_messages;
-    quint32 SecondsToEnd15SecondsInterval;
     QList<Error::Msg (AbstractTuneDialog::*)()> m_tuneFunctions;
     quint8 bStep;
     int TuneVariant; // вариант регулировочных параметров
@@ -55,7 +54,6 @@ public:
     QWidget *MainUI();
     QWidget *BottomUI();
     void WaitNSeconds(int SecondsToWait, bool isAllowedToStop = false);
-    void Wait15Seconds();
     void startWait();
     void stopWait();
     Error::Msg CheckPassword();

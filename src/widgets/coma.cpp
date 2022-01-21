@@ -39,6 +39,7 @@
 #include "../interfaces/protocom.h"
 #include "../interfaces/settingstypes.h"
 #include "../module/module.h"
+#include "../tune/82/tune82checkmip.h"
 #include "../widgets/aboutwidget.h"
 #include "../widgets/splashscreen.h"
 #include "../widgets/styleloader.h"
@@ -251,6 +252,7 @@ void Coma::setupMenubar()
     menu->setTitle("Автономная работа");
     menu->addAction("Загрузка осциллограммы", this, qOverload<>(&Coma::loadOsc));
     menu->addAction("Загрузка журнала переключений", this, qOverload<>(&Coma::loadSwj));
+    menu->addAction("Проверка диалога", this, &Coma::checkDialog);
     menubar->addMenu(menu);
     setMenuBar(menubar);
 }
@@ -658,6 +660,12 @@ void Coma::loadSwj()
 {
     QString filename = WDFunc::ChooseFileForOpen(this, "Switch journal files (*.swj)");
     loadSwj(filename);
+}
+
+void Coma::checkDialog()
+{
+    Tune82CheckMip *w = new Tune82CheckMip;
+    w->show();
 }
 
 void Coma::DisconnectAndClear()

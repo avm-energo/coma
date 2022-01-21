@@ -2,18 +2,24 @@
 #define TUNE82CHECKMIP_H
 
 #include "../abstracttunedialog.h"
+#include "../gen/modules.h"
+#include "mip.h"
 
 class Tune82CheckMip : public AbstractTuneDialog
 {
     Q_OBJECT
 public:
-    Tune82CheckMip(ConfigV *config, int tuneStep, QWidget *parent = nullptr);
+    Tune82CheckMip(ConfigV *config, int tuneStep, Modules::MezzanineBoard type, QWidget *parent = nullptr);
+
+    void setModuleType(Modules::MezzanineBoard type);
 
 private:
     void setMessages() override;
     void setTuneFunctions() override;
     Error::Msg showScheme();
     Error::Msg check();
+
+    Mip::AvtukVariants m_moduleType;
 
 protected:
 };
