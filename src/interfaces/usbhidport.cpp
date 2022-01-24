@@ -26,6 +26,7 @@ using Proto::Starters;
 UsbHidPort::UsbHidPort(const UsbHidSettings &dev, LogClass *logh, QObject *parent)
     : QObject(parent), log(logh), m_deviceInfo(dev)
 {
+    using namespace settings;
     QString filename("UsbHidPort");
     filename.append(".").append(::logExt);
     log->Init(filename);
@@ -34,7 +35,7 @@ UsbHidPort::UsbHidPort(const UsbHidSettings &dev, LogClass *logh, QObject *paren
     m_shouldBeStopped = false;
     connect(this, &UsbHidPort::clearQueries, &UsbHidPort::clear);
     QSettings sets;
-    missingCounterMax = sets.value(settings::hidTimeoutRegName, "50").toInt();
+    missingCounterMax = sets.value(regMap[hidTimeout].name, "50").toInt();
 }
 
 UsbHidPort::~UsbHidPort()

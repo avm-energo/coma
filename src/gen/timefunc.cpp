@@ -71,9 +71,10 @@ quint64 TimeFunc::InvStringToUnixTime32(QString utime, QTimeZone tz)
 }
 QTimeZone TimeFunc::userTimeZone()
 {
+    using namespace settings;
     auto sets = std::make_unique<QSettings>();
     QString timezone = QTimeZone::systemTimeZone().displayName(QTimeZone::StandardTime, QTimeZone::OffsetName);
-    timezone = sets->value(settings::timezoneKeyRegName, timezone).toString();
+    timezone = sets->value(regMap[timezoneKey].name, timezone).toString();
     if (!timezone.isEmpty())
         return QTimeZone(timezone.toUtf8());
     return QTimeZone::systemTimeZone();
