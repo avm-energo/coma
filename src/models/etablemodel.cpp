@@ -245,8 +245,8 @@ void ETableModel::fillModel(QVector<QVector<QVariant>> &lsl)
         int count = 1;
         int row = lastEntry;
         ETableRow *item = new ETableRow();
-        for (int i = 0; i < rowVector.size(); ++i)
-            item->setData(i, rowVector.at(i), Qt::EditRole);
+        for (int j = 0; j < rowVector.size(); ++j)
+            item->setData(j, rowVector.at(j), Qt::EditRole);
         if (count >= rowCount() && count <= rowCount())
         {
             maindata.push_back(item);

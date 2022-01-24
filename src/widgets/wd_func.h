@@ -316,8 +316,7 @@ public:
 
     static QMainWindow *getMainWindow();
 
-    static bool floatIsWithinLimits(
-        QWidget *w, const QString &varname, double var, double base, double tolerance, bool showMessage = true);
+    static bool floatIsWithinLimits(const QString &varname, double var, double base, double tolerance, bool showMessage = true);
     static QString ChooseFileForOpen(QWidget *parent, QString mask);
     /// Input: QString mask: описание файлов, например: "Файлы журналов (*.swj)";
     /// QString ext - расширение по умолчанию Output: QString filename
