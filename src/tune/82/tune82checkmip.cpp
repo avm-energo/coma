@@ -1,13 +1,25 @@
 #include "tune82checkmip.h"
 
 #include "../gen/board.h"
+#include "../gen/configv.h"
 #include "../gen/modules.h"
 #include "../widgets/epopup.h"
 #include "../widgets/wd_func.h"
 
-Tune82CheckMip::Tune82CheckMip(ConfigV *config, int tuneStep, QWidget *parent)
+Tune82CheckMip::Tune82CheckMip(ConfigV *config, int tuneStep, Modules::MezzanineBoard type, QWidget *parent)
     : AbstractTuneDialog(config, tuneStep, parent)
 {
+    setModuleType(type);
+}
+
+void Tune82CheckMip::setModuleType(Modules::MezzanineBoard type)
+{
+    if (type == Modules::MezzanineBoard::MTM_81)
+        m_moduleType = Mip::AvtukVariants::M81;
+    else if (type == Modules::MezzanineBoard::MTM_82)
+        m_moduleType = Mip::AvtukVariants::M82;
+    else
+        m_moduleType = Mip::AvtukVariants::M83;
 }
 
 void Tune82CheckMip::setMessages()
@@ -71,5 +83,10 @@ Error::Msg Tune82CheckMip::showScheme()
 
 Error::Msg Tune82CheckMip::check()
 {
-    return Error::Msg::NoError;
+    Mip mip(false, m_moduleType, this);
+    mip.setNominalCurrent(configV->getRecord(BciNumber::I2nom).value<float>());
+    mip.start();
+    WaitNSeconds(5);
+    mip.stop();
+    return mip.check();
 }

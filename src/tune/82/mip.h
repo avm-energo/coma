@@ -1,14 +1,21 @@
 #ifndef MIP_H
 #define MIP_H
 
+#include "../../interfaces/iec104.h"
 #include "../gen/stdfunc.h"
-#include "../interfaces/iec104.h"
 #include "../widgets/uwidget.h"
 
 class Mip : public UWidget
 {
     Q_OBJECT
 public:
+    enum AvtukVariants
+    {
+        M81,
+        M82,
+        M83
+    };
+
     struct MipDataStruct
     {
         float reserved;
@@ -30,18 +37,23 @@ public:
         float reserved4[13]; // 34-46
     };
 
-    Mip(bool withGUI = true, QWidget *parent = nullptr);
+    Mip(bool withGUI = true, AvtukVariants ModuleType = M82, QWidget *parent = nullptr);
 
     void updateFloatData(const DataTypes::FloatStruct &fl) override;
-    MipDataStruct GetData();
+    MipDataStruct getData();
+    void start();
+    void stop();
+    Error::Msg check();
+    void setModuleType(AvtukVariants type);
+    void setNominalCurrent(double inom);
 
 private:
     UniquePointer<IEC104> m_device;
     MipDataStruct m_mipData;
+    AvtukVariants m_moduleType;
+    double iNom;
 
     void setupUI();
-    void Start();
-    void Stop();
 };
 
 #endif // MIP_H

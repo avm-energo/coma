@@ -2,13 +2,16 @@
 
 #include "../gen/datamanager.h"
 #include "../gen/settings.h"
+#include "../gen/stdfunc.h"
 #include "../interfaces/settingstypes.h"
+#include "../widgets/epopup.h"
 #include "../widgets/wd_func.h"
 
 #include <QSettings>
 
-Mip::Mip(bool withGUI, QWidget *parent) : UWidget(withGUI, parent)
+Mip::Mip(bool withGUI, AvtukVariants moduleType, QWidget *parent) : UWidget(withGUI, parent)
 {
+    m_moduleType = moduleType;
     if (withGUI)
         setupUI();
     setFloatBdQuery({ { 0, 46 } });
@@ -26,7 +29,7 @@ void Mip::updateFloatData(const DataTypes::FloatStruct &fl)
     UWidget::updateFloatData(fl);
 }
 
-Mip::MipDataStruct Mip::GetData()
+Mip::MipDataStruct Mip::getData()
 {
     return m_mipData;
 }
@@ -61,7 +64,7 @@ void Mip::setupUI()
     setLayout(lyout);
 }
 
-void Mip::Start()
+void Mip::start()
 {
     using namespace settings;
     auto sets = std::make_unique<QSettings>();
@@ -73,7 +76,63 @@ void Mip::Start()
     m_device->start(st);
 }
 
-void Mip::Stop()
+void Mip::stop()
 {
     m_device->stop();
+}
+
+Error::Msg Mip::check()
+{
+    double ithr, u, uthr;
+
+    assert((m_moduleType == M81) || (m_moduleType == M82) || (m_moduleType == M83));
+    switch (m_moduleType)
+    {
+    case M81:
+        u = 60.0;
+        uthr = 0.05;
+        iNom = 0;
+        ithr = FLT_MAX;
+        break;
+    case M82:
+        u = 60.0;
+        uthr = 0.05;
+        ithr = 0.05;
+        break;
+    case M83:
+        u = 0;
+        uthr = FLT_MAX;
+        ithr = 0.05;
+        break;
+    }
+
+    double ValuesToCheck[10] = { 0.0, 50.0, 50.0, 50.0, u, u, u, iNom, iNom, iNom };
+    double ThresholdsToCheck[10] = { 0.0, 0.05, 0.05, 0.05, uthr, uthr, uthr, ithr, ithr, ithr };
+    double *VTC, *TTC;
+    VTC = ValuesToCheck;
+    TTC = ThresholdsToCheck;
+    for (int i = 0; i < 10; i++)
+    {
+        float *mipdata = reinterpret_cast<float *>(&m_mipData);
+        if (!StdFunc::floatIsWithinLimits(*(mipdata + i), *VTC, *TTC))
+        {
+            EMessageBox::warning("Несовпадение МИП по параметру " + QString::number(i)
+                + ". Измерено: " + QString::number(*mipdata, 'f', 4) + ", должно быть: " + QString::number(*VTC, 'f', 4)
+                + " +/- " + QString::number(*TTC, 'f', 4));
+            return Error::Msg::GeneralError;
+        }
+        ++VTC;
+        ++TTC;
+    }
+    return Error::Msg::NoError;
+}
+
+void Mip::setModuleType(AvtukVariants type)
+{
+    m_moduleType = type;
+}
+
+void Mip::setNominalCurrent(double inom)
+{
+    iNom = inom;
 }

@@ -9,6 +9,7 @@
 #include <QQueue>
 #include <QTcpSocket>
 #include <QTimer>
+
 namespace Commands104
 {
 using namespace Queries;

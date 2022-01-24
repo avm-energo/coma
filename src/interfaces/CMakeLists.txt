@@ -60,8 +60,7 @@ add_library(
 
 target_link_libraries(
   ${PROJECT_NAME}
-  PRIVATE
-  gen
+  PRIVATE gen
   Qt${QT_VERSION_MAJOR}::Core
   Qt${QT_VERSION_MAJOR}::Network
   Qt${QT_VERSION_MAJOR}::SerialPort)
