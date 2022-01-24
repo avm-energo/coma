@@ -89,9 +89,11 @@ target_link_libraries(
   PRIVATE avtuk
   PRIVATE module
   PRIVATE Qt${QT_VERSION_MAJOR}::Core
+  PRIVATE Qt${QT_VERSION_MAJOR}::Network
   PRIVATE Qt${QT_VERSION_MAJOR}::Widgets
   PRIVATE Qt${QT_VERSION_MAJOR}::Xml
   PRIVATE QXlsx
+  PRIVATE tune
   PRIVATE Boost::headers)
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE ${PROJECT_NAME}_LIBRARY)
