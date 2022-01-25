@@ -31,11 +31,11 @@ TuneKIVTemp60::TuneKIVTemp60(ConfigV *config, int tuneStep, QWidget *parent)
     m_bac = new Bac(this);
     m_bdain = new BdaIn(this);
     m_bd0 = new Bd0(this);
-    SetBac(m_bac);
+    setBac(m_bac);
     addWidgetToTabWidget(m_bac->widget(), "Настроечные параметры");
     addWidgetToTabWidget(m_bdain->widget(), "Текущие данные");
     addWidgetToTabWidget(m_bd0->widget(), "Общие данные");
-    SetupUI();
+    setupUI();
 }
 
 void TuneKIVTemp60::setMessages()

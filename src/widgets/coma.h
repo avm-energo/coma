@@ -58,6 +58,7 @@ private slots:
     void checkDialog();
 
     virtual void getAbout() {};
+    virtual void checkDialog() {};
     void closeEvent(QCloseEvent *event) override;
 
     void update(const DataTypes::GeneralResponseStruct &rsp);

@@ -49,11 +49,11 @@ public:
     int m_tuneStep;
     bool m_finished;
 
-    void SetupUI();
-    QWidget *TuneUI();
-    QWidget *MainUI();
-    QWidget *BottomUI();
-    void WaitNSeconds(int SecondsToWait, bool isAllowedToStop = false);
+    void setupUI();
+    QWidget *tuneUI();
+    QWidget *mainUI();
+    QWidget *bottomUI();
+    void waitNSeconds(int SecondsToWait, bool isAllowedToStop = false);
     void startWait();
     void stopWait();
     Error::Msg CheckPassword();
@@ -62,7 +62,7 @@ public:
     int addWidgetToTabWidget(QWidget *w, const QString &caption);
     void MsgSetVisible(MsgTypes type, int msg, bool Visible = true);
     void MsgClear();
-    void SetBac(DataBlock *block);
+    void setBac(DataBlock *block);
     Error::Msg checkCalibrStep();
     //    void saveTuneSequenceFile(int step);
     Error::Msg saveWorkConfig();

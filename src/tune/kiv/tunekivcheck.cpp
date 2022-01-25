@@ -15,7 +15,7 @@
 TuneKIVCheck::TuneKIVCheck(ConfigV *config, int tuneStep, QWidget *parent)
     : AbstractTuneDialog(config, tuneStep, parent)
 {
-    SetupUI();
+    setupUI();
 }
 
 void TuneKIVCheck::setMessages()

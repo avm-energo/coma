@@ -47,19 +47,19 @@ AbstractTuneDialog::~AbstractTuneDialog()
 {
 }
 
-void AbstractTuneDialog::SetupUI()
+void AbstractTuneDialog::setupUI()
 {
     QHBoxLayout *hlyout = new QHBoxLayout;
     QVBoxLayout *vlyout = new QVBoxLayout;
-    hlyout->addWidget(TuneUI());
+    hlyout->addWidget(tuneUI());
     if (!m_mainWidgetList.isEmpty())
-        hlyout->addWidget(MainUI());
+        hlyout->addWidget(mainUI());
     vlyout->addLayout(hlyout);
-    vlyout->addWidget(BottomUI());
+    vlyout->addWidget(bottomUI());
     setLayout(vlyout);
 }
 
-QWidget *AbstractTuneDialog::TuneUI()
+QWidget *AbstractTuneDialog::tuneUI()
 {
     m_messages.clear();
     m_tuneFunctions.clear();
@@ -125,7 +125,7 @@ QWidget *AbstractTuneDialog::TuneUI()
     return w;
 }
 
-QWidget *AbstractTuneDialog::MainUI()
+QWidget *AbstractTuneDialog::mainUI()
 {
     QWidget *w = new QWidget;
     QVBoxLayout *lyout = new QVBoxLayout;
@@ -138,7 +138,7 @@ QWidget *AbstractTuneDialog::MainUI()
     return w;
 }
 
-QWidget *AbstractTuneDialog::BottomUI()
+QWidget *AbstractTuneDialog::bottomUI()
 {
     QWidget *w = new QWidget;
     QVBoxLayout *lyout = new QVBoxLayout;
@@ -156,12 +156,12 @@ QWidget *AbstractTuneDialog::BottomUI()
     return w;
 }
 
-void AbstractTuneDialog::SetBac(DataBlock *block)
+void AbstractTuneDialog::setBac(DataBlock *block)
 {
     AbsBac[block->block().blocknum] = block;
 }
 
-void AbstractTuneDialog::WaitNSeconds(int Seconds, bool isAllowedToStop)
+void AbstractTuneDialog::waitNSeconds(int Seconds, bool isAllowedToStop)
 {
     WaitWidget *w = new WaitWidget;
     WaitWidget::ww_struct ww;

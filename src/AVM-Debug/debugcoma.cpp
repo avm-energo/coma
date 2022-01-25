@@ -5,9 +5,11 @@
 #include "../gen/datamanager.h"
 #include "../interfaces/emulator.h"
 #include "../interfaces/protocom.h"
+#include "../tune/82/tune82checkmip.h"
 #include "../widgets/aboutwidget.h"
 #include "config.h"
 #include "dbgmodule.h"
+
 DebugComa::DebugComa(QWidget *parent) : Coma(parent)
 {
 }
@@ -56,4 +58,13 @@ void DebugComa::setupConnection()
     }
     BaseInterface::setIface(std::move(device));
     Coma::setupConnection();
+}
+
+void DebugComa::checkDialog()
+{
+    ConfigV config;
+    float i2nom = 5.0;
+    config.setRecordValue({ BciNumber::I2nom, i2nom });
+    Tune82CheckMip *dlg = new Tune82CheckMip(&config, 0, Modules::MezzanineBoard::MTM_82);
+    dlg->show();
 }

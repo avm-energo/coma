@@ -29,11 +29,11 @@ Tune84Temp60::Tune84Temp60(ConfigV *config, int tuneStep, QWidget *parent)
     m_bac = new Bac;
     m_bdain = new BdaIn;
     m_bd0 = new Bd0;
-    SetBac(m_bac);
+    setBac(m_bac);
     addWidgetToTabWidget(m_bac->widget(), "Настроечные параметры");
     addWidgetToTabWidget(m_bdain->widget(), "Текущие данные");
     addWidgetToTabWidget(m_bd0->widget(), "Общие данные");
-    SetupUI();
+    setupUI();
 }
 
 void Tune84Temp60::setMessages()
