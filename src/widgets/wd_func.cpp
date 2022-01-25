@@ -728,18 +728,18 @@ bool WDFunc::SetChBData(QWidget *w, const QString &chbname, bool data)
     return true;
 }
 
-void WDFunc::AddLabelAndLineedit(QLayout *lyout, QString caption, QString lename, bool enabled)
-{
-    QHBoxLayout *hlyout = new QHBoxLayout;
-    QLabel *lbl = new QLabel(caption);
-    hlyout->addWidget(lbl);
-    QLineEdit *le = new QLineEdit;
-    le->setObjectName(lename);
-    le->setEnabled(enabled);
-    hlyout->addWidget(le);
-    QVBoxLayout *vlyout = static_cast<QVBoxLayout *>(lyout);
-    vlyout->addLayout(hlyout);
-}
+// void WDFunc::AddLabelAndLineedit(QLayout *lyout, QString caption, QString lename, bool enabled)
+//{
+//    QHBoxLayout *hlyout = new QHBoxLayout;
+//    QLabel *lbl = new QLabel(caption);
+//    hlyout->addWidget(lbl);
+//    QLineEdit *le = new QLineEdit;
+//    le->setObjectName(lename);
+//    le->setEnabled(enabled);
+//    hlyout->addWidget(le);
+//    QVBoxLayout *vlyout = static_cast<QVBoxLayout *>(lyout);
+//    vlyout->addLayout(hlyout);
+//}
 
 void WDFunc::AddLabelAndLineeditH(QLayout *lyout, QString caption, QString lename, bool enabled)
 {
@@ -750,6 +750,24 @@ void WDFunc::AddLabelAndLineeditH(QLayout *lyout, QString caption, QString lenam
     le->setObjectName(lename);
     le->setEnabled(enabled);
     hlyout->addWidget(le, 10);
+}
+
+QWidget *WDFunc::NewLBLAndLBL(QWidget *parent, QString lblname, QString caption, bool enabled)
+{
+    static constexpr char valuesFormat[]
+        = "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; font: bold; }";
+    QWidget *w = new QWidget(parent);
+    w->setContentsMargins(0, 0, 0, 0);
+    QHBoxLayout *hlyout = new QHBoxLayout;
+    QLabel *lbl = new QLabel(caption);
+    hlyout->addWidget(lbl, 0);
+    lbl = new QLabel("");
+    lbl->setObjectName(lblname);
+    lbl->setEnabled(enabled);
+    lbl->setStyleSheet(valuesFormat);
+    hlyout->addWidget(lbl, 10);
+    w->setLayout(hlyout);
+    return w;
 }
 
 QWidget *WDFunc::NewLBLAndLE(QWidget *parent, QString caption, QString lename, bool enabled)

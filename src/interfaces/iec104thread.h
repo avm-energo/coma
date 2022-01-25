@@ -87,6 +87,7 @@ private:
     quint8 m_sectionNum;
     LogClass *m_log;
     quint8 m_baseAdrHigh, m_baseAdrLow;
+    quint16 m_baseAdr;
     QTimer *m_sendTestTimer;
     quint8 m_KSS;
     quint8 m_KSF;

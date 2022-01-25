@@ -232,8 +232,9 @@ public:
     static bool SetIPCtrlData(const QObject *w, const QString &name, const std::array<quint8, 4> &value);
     static std::array<quint8, 4> IPCtrlData(const QObject *w, const QString &name);
 
-    static void AddLabelAndLineedit(QLayout *lyout, QString caption, QString lename, bool enabled = false);
+    //    static void AddLabelAndLineedit(QLayout *lyout, QString caption, QString lename, bool enabled = false);
     static void AddLabelAndLineeditH(QLayout *lyout, QString caption, QString lename, bool enabled = false);
+    static QWidget *NewLBLAndLBL(QWidget *parent, QString lblname, QString caption, bool enabled = false);
     static QWidget *NewLBLAndLE(QWidget *parent, QString caption, QString lename, bool enabled = false);
     static void SetEnabled(QWidget *w, const QString &wname, bool enabled);
     static void SetVisible(QWidget *w, const QString &wname, bool visible);
@@ -316,7 +317,8 @@ public:
 
     static QMainWindow *getMainWindow();
 
-    static bool floatIsWithinLimits(const QString &varname, double var, double base, double tolerance, bool showMessage = true);
+    static bool floatIsWithinLimits(
+        const QString &varname, double var, double base, double tolerance, bool showMessage = true);
     static QString ChooseFileForOpen(QWidget *parent, QString mask);
     /// Input: QString mask: описание файлов, например: "Файлы журналов (*.swj)";
     /// QString ext - расширение по умолчанию Output: QString filename

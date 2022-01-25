@@ -2,8 +2,9 @@
 
 #include "../gen/board.h"
 #include "../gen/datamanager.h"
+#include "epopup.h"
 
-#include <QMessageBox>
+//#include <QMessageBox>
 #include <QSettings>
 UDialog::UDialog(QWidget *parent) : UWidget(parent)
 {
@@ -32,7 +33,7 @@ void UDialog::updateGeneralResponse(const DataTypes::GeneralResponseStruct &resp
     {
         if (successMsg().isEmpty())
             break;
-        QMessageBox::information(this, "Успех", successMsg());
+        EMessageBox::information(successMsg());
         break;
     }
     case DataTypes::Error:
@@ -54,7 +55,7 @@ void UDialog::updateGeneralResponse(const DataTypes::GeneralResponseStruct &resp
             msg = QVariant::fromValue(Error::Msg(response.data)).toString();
             break;
         }
-        QMessageBox::warning(this, "Ошибка", errorMsg() + " : " + msg);
+        EMessageBox::warning(errorMsg() + " : " + msg);
         break;
     }
     default:

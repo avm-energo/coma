@@ -9,26 +9,25 @@
 #include <QCoreApplication>
 #include <QDebug>
 #include <QEventLoop>
-UWidget::UWidget(bool withGUI, QWidget *parent) : QWidget(parent)
+UWidget::UWidget(QWidget *parent) : QWidget(parent)
 {
-    m_withGUI = withGUI;
-    // m_updatesEnabled = false;
+    m_updatesEnabled = false;
     // Отключим обновление виджета по умолчанию
-    QWidget::setUpdatesEnabled(false);
+    //    QWidget::setUpdatesEnabled(false);
 }
 
 void UWidget::setUpdatesEnabled()
 {
-    Q_ASSERT(!updatesEnabled());
-    QWidget::setUpdatesEnabled(true);
-    // m_updatesEnabled = true;
+    //    Q_ASSERT(!updatesEnabled());
+    //    QWidget::setUpdatesEnabled(true);
+    m_updatesEnabled = true;
 }
 
 void UWidget::setUpdatesDisabled()
 {
-    Q_ASSERT(updatesEnabled());
-    QWidget::setUpdatesEnabled(false);
-    // m_updatesEnabled = false;
+    //    Q_ASSERT(updatesEnabled());
+    //    QWidget::setUpdatesEnabled(false);
+    m_updatesEnabled = false;
 }
 
 const QString UWidget::getCaption()
@@ -63,7 +62,8 @@ void UWidget::setBsBdQuery(const QList<UWidget::BdQuery> &list)
 
 void UWidget::updateFloatData(const DataTypes::FloatStruct &fl)
 {
-    if ((updatesEnabled()) && m_withGUI)
+    //    if ((updatesEnabled()) && m_withGUI)
+    if (m_updatesEnabled)
     {
         bool result = WDFunc::SetLBLText(this, QString::number(fl.sigAdr), WDFunc::StringValueWithCheck(fl.sigVal, 3));
 #ifdef UWIDGET_DEBUG
@@ -77,7 +77,8 @@ void UWidget::updateFloatData(const DataTypes::FloatStruct &fl)
 
 void UWidget::updateSPData(const DataTypes::SinglePointWithTimeStruct &sp)
 {
-    if ((updatesEnabled()) && m_withGUI)
+    //    if ((updatesEnabled()) && m_withGUI)
+    if (m_updatesEnabled)
     {
         QList<HighlightWarnAlarmStruct> hstlist = m_highlightMap.value(sp.sigAdr);
         for (const auto &hst : hstlist)
@@ -93,7 +94,8 @@ void UWidget::updateBitStringData(const DataTypes::BitStringStruct &bs)
 
 bool UWidget::updatesEnabled()
 {
-    return QWidget::updatesEnabled();
+    //    return QWidget::updatesEnabled();
+    return m_updatesEnabled;
 }
 
 void UWidget::reqUpdate()

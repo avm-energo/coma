@@ -156,7 +156,7 @@ void EPopup::showEvent(QShowEvent *e)
     QPropertyAnimation *anim = new QPropertyAnimation(this, "windowOpacity");
     anim->setStartValue(0.0);
     anim->setEndValue(1.0);
-    anim->setDuration(1000);
+    anim->setDuration(750);
     anim->start(QAbstractAnimation::DeleteWhenStopped);
 }
 

@@ -31,7 +31,9 @@ public:
         QString color;
     };
 
-    explicit UWidget(bool withGUI = true, QWidget *parent = nullptr);
+    //    bool m_withGUI;
+
+    explicit UWidget(QWidget *parent = nullptr);
 
     void setUpdatesEnabled();
     void setUpdatesDisabled();
@@ -46,18 +48,12 @@ public:
     void addSpBd(const BdQuery &query);
     void setBsBdQuery(const QList<BdQuery> &list);
     void addBsBd(const BdQuery &query);
-    //    void setInterface(BaseInterface *iface);
-    //    BaseInterface *iface();
     virtual void uponInterfaceSetting();
     virtual void reqUpdate();
     virtual void updateFloatData(const DataTypes::FloatStruct &fl);
     virtual void updateSPData(const DataTypes::SinglePointWithTimeStruct &sp);
     virtual void updateBitStringData(const DataTypes::BitStringStruct &bs);
 signals:
-    // //     signals to set "ProgressBar2" in main Coma
-    //    void setGeneralProgressBarSize(quint32 size);
-    //    void setGeneralProgressBarCount(quint32 count);
-    //    void setGeneralProgressBarMessage(const QString &msg);
 
 public slots:
 
@@ -68,7 +64,6 @@ protected:
 
 private:
     bool m_updatesEnabled;
-    bool m_withGUI;
     BaseInterface *m_iface;
     int m_regLeast, m_regCount;
 

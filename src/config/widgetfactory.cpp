@@ -105,8 +105,8 @@ WidgetFactory::WidgetFactory(ConfigV *config) : configV(config)
 
 QWidget *WidgetFactory::createWidget(BciNumber key, QWidget *parent)
 {
-    if (key == BciNumber::timezone)
-        qWarning() << "timezone";
+    if (key == BciNumber::mTimezone)
+        qWarning() << "mTimezone";
     QWidget *widget = nullptr;
     auto search = m_widgetMap.find(key);
     if (search == m_widgetMap.end())
@@ -131,7 +131,7 @@ QWidget *WidgetFactory::createWidget(BciNumber key, QWidget *parent)
                 QWidget *spbGroup;
                 if (!arg.items.isEmpty())
                 {
-                    assert(arg.items.count() == arg.count);
+                    assert(static_cast<uint32_t>(arg.items.count()) == arg.count);
                     spbGroup = WDFunc::NewSPBG(parent, QString::number(key), arg.items, arg.min, arg.max, arg.decimals);
                 }
                 else

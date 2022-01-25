@@ -3,7 +3,7 @@
 
 #include "../../gen/stdfunc.h"
 #include "../../interfaces/iec104.h"
-#include "../../widgets/uwidget.h"
+#include "../../widgets/udialog.h"
 
 class Mip : public UWidget
 {
@@ -52,8 +52,12 @@ private:
     MipDataStruct m_mipData;
     AvtukVariants m_moduleType;
     double iNom;
+    //    bool m_withGUI;
 
     void setupUI();
+
+signals:
+    void finished();
 };
 
 #endif // MIP_H

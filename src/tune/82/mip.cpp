@@ -9,11 +9,12 @@
 
 #include <QSettings>
 
-Mip::Mip(bool withGUI, AvtukVariants moduleType, QWidget *parent) : UWidget(withGUI, parent)
+// Mip::Mip(bool withGUI, AvtukVariants moduleType, QWidget *parent) : UDialog(withGUI, parent)
+Mip::Mip(bool withGUI, AvtukVariants moduleType, QWidget *parent) : UWidget(parent)
 {
     m_moduleType = moduleType;
-    if (withGUI)
-        setupUI();
+    //    if (withGUI)
+    setupUI();
     setFloatBdQuery({ { 0, 46 } });
     connect(&DataManager::GetInstance(), &DataManager::floatReceived, this, &UWidget::updateFloatData,
         Qt::QueuedConnection);
@@ -36,31 +37,45 @@ Mip::MipDataStruct Mip::getData()
 
 void Mip::setupUI()
 {
-    QVBoxLayout *lyout = new QVBoxLayout;
+    QGridLayout *lyout = new QGridLayout;
     for (int i = 0; i < 3; ++i)
     {
-        lyout->addWidget(WDFunc::NewLBLAndLE(
-            this, QString::number(i + 1), "Частота ф. " + QString::number(i + 10, 36).toUpper(), true));
-        lyout->addWidget(WDFunc::NewLBLAndLE(
-            this, QString::number(i + 4), "Фазное напряжение ф. " + QString::number(i + 10, 36).toUpper(), true));
-        lyout->addWidget(WDFunc::NewLBLAndLE(
-            this, QString::number(i + 19), "Фазное напряжение ф. " + QString::number(i + 10, 36).toUpper(), true));
-        lyout->addWidget(WDFunc::NewLBLAndLE(
-            this, QString::number(i + 7), "Фазный ток ф. " + QString::number(i + 10, 36).toUpper(), true));
+        lyout->addWidget(WDFunc::NewLBLAndLBL(
+                             this, QString::number(i + 1), "Частота ф. " + QString::number(i + 10, 36).toUpper(), true),
+            0, i);
+        lyout->addWidget(WDFunc::NewLBLAndLBL(this, QString::number(i + 4),
+                             "Фазное напряжение ф. " + QString::number(i + 10, 36).toUpper(), true),
+            1, i);
+        lyout->addWidget(WDFunc::NewLBLAndLBL(this, QString::number(i + 19),
+                             "Фазное напряжение ф. " + QString::number(i + 10, 36).toUpper(), true),
+            2, i);
+        lyout->addWidget(WDFunc::NewLBLAndLBL(this, QString::number(i + 7),
+                             "Фазный ток ф. " + QString::number(i + 10, 36).toUpper(), true),
+            3, i);
     }
-    lyout->addWidget(WDFunc::NewLBLAndLE(this, "10", "Ток N", true));
+    lyout->addWidget(WDFunc::NewLBLAndLBL(this, "10", "Ток N", true), 4, 0);
     for (int i = 0; i < 3; ++i)
     {
-        lyout->addWidget(WDFunc::NewLBLAndLE(
-            this, QString::number(i + 11), "Угол ф. " + QString::number(i + 10, 36).toUpper(), true));
-        lyout->addWidget(WDFunc::NewLBLAndLE(
-            this, QString::number(i + 22), "Активная мощность ф. " + QString::number(i + 10, 36).toUpper(), true));
-        lyout->addWidget(WDFunc::NewLBLAndLE(
-            this, QString::number(i + 26), "Реактивная мощность ф. " + QString::number(i + 10, 36).toUpper(), true));
-        lyout->addWidget(WDFunc::NewLBLAndLE(
-            this, QString::number(i + 30), "Полная мощность ф. " + QString::number(i + 10, 36).toUpper(), true));
+        lyout->addWidget(WDFunc::NewLBLAndLBL(
+                             this, QString::number(i + 11), "Угол ф. " + QString::number(i + 10, 36).toUpper(), true),
+            5, i);
+        lyout->addWidget(WDFunc::NewLBLAndLBL(this, QString::number(i + 22),
+                             "Активная мощность ф. " + QString::number(i + 10, 36).toUpper(), true),
+            6, i);
+        lyout->addWidget(WDFunc::NewLBLAndLBL(this, QString::number(i + 26),
+                             "Реактивная мощность ф. " + QString::number(i + 10, 36).toUpper(), true),
+            7, i);
+        lyout->addWidget(WDFunc::NewLBLAndLBL(this, QString::number(i + 30),
+                             "Полная мощность ф. " + QString::number(i + 10, 36).toUpper(), true),
+            8, i);
     }
-    lyout->addWidget(WDFunc::NewLBLAndLE(this, "17", "Температура", true));
+    lyout->addWidget(WDFunc::NewLBLAndLBL(this, "17", "Температура", true), 9, 0);
+    lyout->addWidget(WDFunc::NewPB(this, "", "Далее",
+                         [this] {
+                             emit finished();
+                             this->close();
+                         }),
+        10, 0);
     setLayout(lyout);
 }
 
