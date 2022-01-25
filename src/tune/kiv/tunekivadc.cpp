@@ -18,13 +18,13 @@ TuneKIVADC::TuneKIVADC(ConfigV *config, int tuneStep, QWidget *parent) : Abstrac
     m_bda = new Bda(this);
     m_bdain = new BdaIn(this);
     m_bd0 = new Bd0(this);
-    SetBac(m_bac);
+    setBac(m_bac);
     m_BacWidgetIndex = addWidgetToTabWidget(m_bac->widget(), "Настроечные параметры");
     m_BdainWidgetIndex = addWidgetToTabWidget(m_bdain->widget(), "Текущие данные");
     m_Bd0WidgetIndex = addWidgetToTabWidget(m_bd0->widget(), "Общие данные");
     //    m_isEnergoMonitorDialogCreated = false;
     m_curTuneStep = 0;
-    SetupUI();
+    setupUI();
 }
 
 void TuneKIVADC::setMessages()

@@ -10,6 +10,7 @@ Tune82CheckMip::Tune82CheckMip(ConfigV *config, int tuneStep, Modules::Mezzanine
     : AbstractTuneDialog(config, tuneStep, parent)
 {
     setModuleType(type);
+    setupUI();
 }
 
 void Tune82CheckMip::setModuleType(Modules::MezzanineBoard type)
@@ -86,7 +87,7 @@ Error::Msg Tune82CheckMip::check()
     Mip mip(false, m_moduleType, this);
     mip.setNominalCurrent(configV->getRecord(BciNumber::I2nom).value<float>());
     mip.start();
-    WaitNSeconds(5);
+    waitNSeconds(5);
     mip.stop();
     return mip.check();
 }

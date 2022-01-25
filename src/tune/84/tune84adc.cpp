@@ -18,13 +18,13 @@ Tune84ADC::Tune84ADC(ConfigV *config, int tuneStep, QWidget *parent) : AbstractT
     m_bda = new Bda;
     m_bdain = new BdaIn;
     m_bd0 = new Bd0;
-    SetBac(m_bac);
+    setBac(m_bac);
     m_BacWidgetIndex = addWidgetToTabWidget(m_bac->widget(), "Настроечные параметры");
     m_BdainWidgetIndex = addWidgetToTabWidget(m_bdain->widget(), "Текущие данные");
     m_Bd0WidgetIndex = addWidgetToTabWidget(m_bd0->widget(), "Общие данные");
     m_isEnergoMonitorDialogCreated = false;
     m_curTuneStep = 0;
-    SetupUI();
+    setupUI();
 }
 
 void Tune84ADC::setMessages()

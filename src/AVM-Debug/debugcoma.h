@@ -12,4 +12,5 @@ public:
     void PrepareDialogs() override;
     void getAbout() override;
     void setupConnection() override;
+    void checkDialog() override;
 };

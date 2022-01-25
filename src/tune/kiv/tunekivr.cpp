@@ -14,10 +14,10 @@ TuneKIVR::TuneKIVR(ConfigV *config, int tuneStep, QWidget *parent) : AbstractTun
 
     m_bac = new Bac(this);
     m_bda = new Bda(this);
-    SetBac(m_bac);
+    setBac(m_bac);
     m_BacWidgetIndex = addWidgetToTabWidget(m_bac->widget(), "Настроечные параметры");
     m_BdaWidgetIndex = addWidgetToTabWidget(m_bda->widget(), "Текущие данные");
-    SetupUI();
+    setupUI();
 }
 
 void TuneKIVR::setMessages()

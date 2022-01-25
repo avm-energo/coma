@@ -1,9 +1,9 @@
 #ifndef MIP_H
 #define MIP_H
 
+#include "../../gen/stdfunc.h"
 #include "../../interfaces/iec104.h"
-#include "../gen/stdfunc.h"
-#include "../widgets/uwidget.h"
+#include "../../widgets/uwidget.h"
 
 class Mip : public UWidget
 {
