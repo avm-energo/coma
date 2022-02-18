@@ -1,0 +1,11 @@
+#!/bin/bash
+
+SERVER="http://172.16.31.73:27015"
+ACCESS_TOKEN="eyJ0eXAiOiAiVENWMiJ9.REpLNzZRbDAzZU5qWTROamtFZWJTU2h5UXdB.NjQ1ZDVjNWEtNzcxMC00MmE3LWE1NDAtZTA4NWI1NjY3YTUx"
+
+LOCATOR="vcsRoot:(id:Coma_DevelopAvmServiceGit)"
+
+# The following is one-line:
+(sleep 10;  curl --header "Authorization: Bearer $ACCESS_TOKEN" -X POST "$SERVER/app/rest/vcs-root-instances/commitHookNotification?locator=$LOCATOR")
+
+exit 0
