@@ -2,6 +2,7 @@
 
 #include "../dialogs/keypressdialog.h"
 #include "../gen/board.h"
+#include "../gen/configv.h"
 #include "../gen/datatypes.h"
 #include "../gen/error.h"
 #include "../gen/files.h"
@@ -13,11 +14,10 @@
 #include "../widgets/waitwidget.h"
 #include "../widgets/wd_func.h"
 #include "generaltunedialog.h"
-//#include "limereport/lrreportengine.h"
-#include "../gen/configv.h"
+#include "limereport/lrreportengine.h"
 #include "tunesequencefile.h"
 
-#include <LimeReport/lrreportengine.h>
+//#include <LimeReport/lrreportengine.h>
 #include <QDebug>
 #include <QMessageBox>
 #include <QProgressBar>
