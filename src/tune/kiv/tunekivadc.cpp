@@ -127,7 +127,7 @@ Error::Msg TuneKIVADC::showPreWarning()
     //    lyout->addWidget(WDFunc::NewPB(this, "cancelpb", "Отмена", [dlg] { dlg->close(); }));
     w->setLayout(lyout);
 
-    if (!EMessageBox::next(w))
+    if (!EMessageBox::next(this, w))
         CancelTune();
     //    dlg->setLayout(lyout);
     //    WDFunc::PBConnect(dlg, "cancelpb", static_cast<AbstractTuneDialog *>(this), &AbstractTuneDialog::CancelTune);
@@ -276,7 +276,7 @@ Error::Msg TuneKIVADC::SendBac()
 
 Error::Msg TuneKIVADC::CheckTune()
 {
-    EMessageBox::information(
+    EMessageBox::information(this,
         "После закрытия данного сообщения для завершения настройки нажмите Enter\nДля отказа от настройки нажмите Esc");
     //    QMessageBox::information(this, "Информация",
     //        "После закрытия данного сообщения для завершения настройки нажмите Enter\nДля отказа от настройки нажмите
@@ -352,7 +352,7 @@ Error::Msg TuneKIVADC::showRetomDialog(int coef)
                 + " А.\nКоэффициент передачи РЕТ-10 " + retomCoefMap[coef].ret10c));
     hlyout->addLayout(vlyout);
     w->setLayout(hlyout);
-    if (!EMessageBox::next(w))
+    if (!EMessageBox::next(this, w))
         CancelTune();
     //    lyout->addWidget(WDFunc::NewLBL2(this, tmps));
     //    QPushButton *pb = new QPushButton("Готово");
@@ -447,7 +447,7 @@ void TuneKIVADC::CalcTuneCoefs()
         = { { 1, &m_bac->data()->KmI1[0] }, { 2, &m_bac->data()->KmI2[0] }, { 4, &m_bac->data()->KmI4[0] },
               { 8, &m_bac->data()->KmI8[0] }, { 16, &m_bac->data()->KmI16[0] }, { 32, &m_bac->data()->KmI32[0] } };
     //    float uet, iet, yet, fet;
-    bool ok;
+    //    bool ok;
 
     if (m_tuneStep == KIVTS_ADCI)
     {

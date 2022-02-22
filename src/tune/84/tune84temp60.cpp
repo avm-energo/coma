@@ -112,7 +112,7 @@ Error::Msg Tune84Temp60::showTempDialog()
     //    dlg->setLayout(lyout);
     //    WDFunc::PBConnect(dlg, "cancelpb", static_cast<AbstractTuneDialog *>(this), &AbstractTuneDialog::CancelTune);
     //    dlg->exec();
-    if (!EMessageBox::next("Поместите модуль в термокамеру, установите температуру " + tempstr + " ± 2 °С"))
+    if (!EMessageBox::next(this, "Поместите модуль в термокамеру, установите температуру " + tempstr + " ± 2 °С"))
         CancelTune();
     return Error::Msg::NoError;
 }
@@ -184,7 +184,7 @@ Error::Msg Tune84Temp60::showSignalsDialog()
     lyout->addLayout(hlyout);
     w->setLayout(lyout);
 
-    if (!EMessageBox::next(w))
+    if (!EMessageBox::next(this, w))
         CancelTune();
     return Error::Msg::NoError;
 }

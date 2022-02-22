@@ -64,7 +64,7 @@ Error::Msg Tune82CheckMip::showScheme()
     }
     default:
     {
-        EMessageBox::error("Mezzanine board is not one of 81, 82 or 83");
+        EMessageBox::error(this, "Mezzanine board is not one of 81, 82 or 83");
         return Error::Msg::GeneralError;
     }
     }
@@ -82,7 +82,7 @@ Error::Msg Tune82CheckMip::showScheme()
     lyout->addWidget(WDFunc::NewLBL2(w, "5. Включите выходы РЕТОМ"));
 
     w->setLayout(lyout);
-    if (!EMessageBox::next(w))
+    if (!EMessageBox::next(this, w))
         CancelTune();
     return Error::Msg::NoError;
 }

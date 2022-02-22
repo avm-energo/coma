@@ -83,7 +83,7 @@ Error::Msg TuneKIVCheck::showScheme()
     //    lyout->addWidget(WDFunc::NewPB(this, "", "Готово", [dlg] { dlg->close(); }));
     //    lyout->addWidget(WDFunc::NewPB(this, "cancelpb", "Отмена", [dlg] { dlg->close(); }));
     w->setLayout(hlyout);
-    if (!EMessageBox::next(w))
+    if (!EMessageBox::next(this, w))
         CancelTune();
     //    dlg->setLayout(lyout);
     //    WDFunc::PBConnect(dlg, "cancelpb", static_cast<AbstractTuneDialog *>(this), &AbstractTuneDialog::CancelTune);

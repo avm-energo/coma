@@ -40,6 +40,7 @@
 #include "../interfaces/settingstypes.h"
 #include "../module/module.h"
 #include "../widgets/aboutwidget.h"
+#include "../widgets/epopup.h"
 #include "../widgets/splashscreen.h"
 #include "../widgets/styleloader.h"
 #include "../widgets/wd_func.h"
@@ -49,7 +50,6 @@
 #include <QDir>
 #include <QHBoxLayout>
 #include <QMenuBar>
-#include <QMessageBox>
 #include <QPainter>
 #include <QProgressBar>
 #include <QToolBar>
@@ -176,7 +176,7 @@ void Coma::PrepareDialogs()
 
     if (!m_Module->loadSettings())
     {
-        QMessageBox::critical(this, "Ошибка",
+        EMessageBox::error(this,
             "Не удалось найти конфигурацию для модуля.\n"
             "Проверьте журнал сообщений.\n"
             "Доступны минимальные функции.");
@@ -373,7 +373,7 @@ void Coma::prepare()
 {
 
     auto const &board = Board::GetInstance();
-    QMessageBox::information(this, "Связь установлена", "Установлена связь с " + board.moduleName(), QMessageBox::Ok);
+    EMessageBox::information(this, "Установлена связь с " + board.moduleName());
     Reconnect = true;
 
     PrepareDialogs();
@@ -491,11 +491,12 @@ void Coma::reconnect()
         MainTW->hide();
     }
 
-    QMessageBox msgBox;
-    msgBox.setText("Связь разорвана.\nПопытка переподключения");
-    msgBox.setIcon(QMessageBox::Warning);
-    msgBox.show();
-    msgBox.button(QMessageBox::Ok)->animateClick(3000);
+    /*    QMessageBox msgBox;
+        msgBox.setText("Связь разорвана.\nПопытка переподключения");
+        msgBox.setIcon(QMessageBox::Warning);
+        msgBox.show();
+        msgBox.button(QMessageBox::Ok)->animateClick(3000); */
+    EMessageBox::infoWithoutButtons(this, "Связь разорвана.\nПопытка переподключения", 3);
     attemptToRec();
 }
 
@@ -608,7 +609,7 @@ void Coma::setupConnection()
         if (Board::GetInstance().type() != 0)
             return;
 
-        QMessageBox::critical(this, "Ошибка", "Не удалось соединиться с прибором", QMessageBox::Ok);
+        EMessageBox::error(this, "Не удалось соединиться с прибором");
         DisconnectAndClear();
         qCritical() << "Cannot connect" << Error::Timeout;
         QApplication::restoreOverrideCursor();
@@ -637,7 +638,7 @@ void Coma::setupConnection()
         QObject::disconnect(*connectionTimeout);
         ww->Stop();
 
-        QMessageBox::critical(this, "Ошибка", "Не удалось установить связь", QMessageBox::Ok);
+        EMessageBox::error(this, "Не удалось установить связь");
         QApplication::restoreOverrideCursor();
         qCritical() << "Cannot connect" << Error::GeneralError;
 

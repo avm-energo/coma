@@ -33,7 +33,7 @@ void UDialog::updateGeneralResponse(const DataTypes::GeneralResponseStruct &resp
     {
         if (successMsg().isEmpty())
             break;
-        EMessageBox::information(successMsg());
+        EMessageBox::information(this, successMsg());
         break;
     }
     case DataTypes::Error:
@@ -52,10 +52,10 @@ void UDialog::updateGeneralResponse(const DataTypes::GeneralResponseStruct &resp
             [[fallthrough]];
         }
         default:
-            msg = QVariant::fromValue(Error::Msg(response.data)).toString();
+            msg = Error::MsgStr[Error::Msg(response.data)];
             break;
         }
-        EMessageBox::warning(errorMsg() + " : " + msg);
+        EMessageBox::warning(this, errorMsg() + " : " + msg);
         break;
     }
     default:

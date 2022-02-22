@@ -74,7 +74,7 @@ Error::Msg TuneKIVR::showPreWarning()
     //    dlg->setLayout(lyout);
     //    WDFunc::PBConnect(dlg, "cancelpb", static_cast<AbstractTuneDialog *>(this), &AbstractTuneDialog::CancelTune);
     //    dlg->exec();
-    if (!EMessageBox::next(w))
+    if (!EMessageBox::next(this, w))
         CancelTune();
     return Error::Msg::NoError;
 }
@@ -122,7 +122,7 @@ Error::Msg TuneKIVR::processR120()
 
 void TuneKIVR::setR(int r)
 {
-    if (!EMessageBox::next("Установите сопротивление " + QString::number(r, 'f', 1) + " Ом"))
+    if (!EMessageBox::next(this, "Установите сопротивление " + QString::number(r, 'f', 1) + " Ом"))
         CancelTune();
     //    if (QMessageBox::question(this, "Подтверждение", "Установите сопротивление " + QString::number(r, 'f', 1) + "
     //    Ом")

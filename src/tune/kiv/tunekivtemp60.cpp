@@ -116,7 +116,7 @@ Error::Msg TuneKIVTemp60::showTempDialog()
     //    lyout->addWidget(WDFunc::NewPB(this, "", "Готово", [&dlg] { dlg->close(); }));
     //    lyout->addWidget(WDFunc::NewPB(this, "cancelpb", "Отмена", [&dlg] { dlg->close(); }));
     //    w->setLayout(lyout);
-    if (!EMessageBox::next("Поместите модуль в термокамеру, установите температуру " + tempstr + " ± 2 °С"))
+    if (!EMessageBox::next(this, "Поместите модуль в термокамеру, установите температуру " + tempstr + " ± 2 °С"))
         CancelTune();
     //    dlg->setLayout(lyout);
     //    WDFunc::PBConnect(dlg, "cancelpb", static_cast<AbstractTuneDialog *>(this),
@@ -177,7 +177,7 @@ Error::Msg TuneKIVTemp60::showSignalsDialog()
     lyout->addLayout(hlyout);
     w->setLayout(lyout);
 
-    if (!EMessageBox::next(w))
+    if (!EMessageBox::next(this, w))
         CancelTune();
 
     //    lyout->addWidget(WDFunc::NewLBL2(this, "", "", new QPixmap("images/tunekiv1.png")));

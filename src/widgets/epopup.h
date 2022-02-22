@@ -38,7 +38,8 @@ public:
         WARNMESSAGE = 1,
         QUESTMSG = 2,
         ERMESSAGE = 3,
-        NEXTMSG = 4
+        NEXTMSG = 4,
+        WITHOUTANYBUTTONS = 5
     };
     const QStringList c_captions = { "Информация", "Предупреждение", "Вопрос", "Ошибка", "Далее" };
 
@@ -72,13 +73,15 @@ class EMessageBox
 {
 public:
     static bool m_result;
-    static void information(const QString &msg);
+    static void information(QWidget *parent, const QString &msg);
     static bool question(const QString &msg); // yes (1) / no (0)
-    static void warning(const QString &msg);
-    static void error(const QString &msg);
-    static bool next(const QString &msg); // next (1) / cancel (0)
-    static bool next(QWidget *w);         // next (1) / cancel (0)
+    static void warning(QWidget *parent, const QString &msg);
+    static void error(QWidget *parent, const QString &msg);
+    static bool next(QWidget *parent, const QString &msg); // next (1) / cancel (0)
+    static bool next(QWidget *parent, QWidget *w);         // next (1) / cancel (0)
     static bool editableNext(EEditablePopup *popup);
+    static void infoWithoutButtons(
+        QWidget *parent, const QString &msg, int timeout = 1); // timeout to close dialog in seconds
 };
 
 #endif // EPOPUP_H

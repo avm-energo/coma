@@ -127,7 +127,7 @@ Error::Msg Tune84ADC::showPreWarning()
     //    lyout->addWidget(WDFunc::NewPB(this, "cancelpb", "Отмена", [dlg] { dlg->close(); }));
     w->setLayout(lyout);
 
-    if (!EMessageBox::next(w))
+    if (!EMessageBox::next(this, w))
         CancelTune();
     //    dlg->setLayout(lyout);
     //    WDFunc::PBConnect(dlg, "cancelpb", static_cast<AbstractTuneDialog *>(this), &AbstractTuneDialog::CancelTune);
@@ -275,7 +275,7 @@ Error::Msg Tune84ADC::SendBac()
 
 Error::Msg Tune84ADC::CheckTune()
 {
-    EMessageBox::information(
+    EMessageBox::information(this,
         "После закрытия данного сообщения для завершения настройки нажмите Enter\nДля отказа от настройки нажмите Esc");
     m_finished = false;
     while ((!StdFunc::isCancelled()) && !m_finished)
@@ -348,7 +348,7 @@ Error::Msg Tune84ADC::showRetomDialog(int coef)
                 + " А.\nКоэффициент передачи РЕТ-10 " + retomCoefMap[coef].ret10c));
     hlyout->addLayout(vlyout);
     w->setLayout(hlyout);
-    if (!EMessageBox::next(w))
+    if (!EMessageBox::next(this, w))
         CancelTune();
     //    lyout->addWidget(WDFunc::NewLBL2(this, tmps));
     //    QPushButton *pb = new QPushButton("Готово");

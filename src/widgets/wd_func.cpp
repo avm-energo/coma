@@ -646,8 +646,9 @@ bool WDFunc::floatIsWithinLimits(const QString &varname, double var, double base
     {
         qCritical() << "Ошибочное значение " + varname + ": должно быть " << QString::number(base, 'f', 5) << "±"
                     << QString::number(tolerance, 'f', 5) << ", а получили: " << QString::number(var, 'f', 5);
-        EMessageBox::error("Ошибочное значение " + varname + ": должно быть " + QString::number(base, 'f', 5) + "±"
-            + QString::number(tolerance, 'f', 5) + ", а получили: " + QString::number(var, 'f', 5));
+        EMessageBox::error(nullptr,
+            "Ошибочное значение " + varname + ": должно быть " + QString::number(base, 'f', 5) + "±"
+                + QString::number(tolerance, 'f', 5) + ", а получили: " + QString::number(var, 'f', 5));
     }
     return false;
 }

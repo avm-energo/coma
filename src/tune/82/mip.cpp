@@ -131,9 +131,10 @@ Error::Msg Mip::check()
         float *mipdata = reinterpret_cast<float *>(&m_mipData);
         if (!StdFunc::floatIsWithinLimits(*(mipdata + i), *VTC, *TTC))
         {
-            EMessageBox::warning("Несовпадение МИП по параметру " + QString::number(i)
-                + ". Измерено: " + QString::number(*mipdata, 'f', 4) + ", должно быть: " + QString::number(*VTC, 'f', 4)
-                + " +/- " + QString::number(*TTC, 'f', 4));
+            EMessageBox::warning(this,
+                "Несовпадение МИП по параметру " + QString::number(i)
+                    + ". Измерено: " + QString::number(*mipdata, 'f', 4)
+                    + ", должно быть: " + QString::number(*VTC, 'f', 4) + " +/- " + QString::number(*TTC, 'f', 4));
             return Error::Msg::GeneralError;
         }
         ++VTC;

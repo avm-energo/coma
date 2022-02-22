@@ -293,7 +293,7 @@ void AbstractTuneDialog::startTune()
     WDFunc::SetEnabled(this, "starttune", true);
     WDFunc::SetEnabled(this, "stoptune", false);
     WDFunc::SetEnabled(this, "finishpb", true);
-    EMessageBox::information("Настройка завершена!");
+    EMessageBox::information(this, "Настройка завершена!");
     TuneSequenceFile::saveTuneSequenceFile(m_tuneStep + 1); // +1 to let the next stage run
 }
 
@@ -418,7 +418,7 @@ void AbstractTuneDialog::writeTuneCoefsSlot()
         if (it.value()->writeBlockToModule() != Error::Msg::NoError)
             CancelTune();
     }
-    EMessageBox::information("Коэффициенты записаны успешно!");
+    EMessageBox::information(this, "Коэффициенты записаны успешно!");
     emit generalEventReceived();
 }
 
@@ -429,16 +429,18 @@ Error::Msg AbstractTuneDialog::checkCalibrStep()
     //    if (!storedcalibrations.contains(cpuserialnum + "/step"))
     if (!TuneSequenceFile::contains("step"))
     {
-        EMessageBox::warning("Не выполнены предыдущие шаги регулировки, пожалуйста,\n"
-                             "начните заново с шага 1");
+        EMessageBox::warning(this,
+            "Не выполнены предыдущие шаги регулировки, пожалуйста,\n"
+            "начните заново с шага 1");
         return Error::Msg::ResEmpty;
     }
     //    int calibrstep = storedcalibrations.value(cpuserialnum + "/step", "1").toInt();
     int calibrstep = TuneSequenceFile::value("step").toInt();
     if (calibrstep < m_tuneStep)
     {
-        EMessageBox::warning("Перед выполнением шага " + QString::number(m_tuneStep) + " необходимо\nвыполнить шаг "
-            + QString::number(calibrstep) + "!");
+        EMessageBox::warning(this,
+            "Перед выполнением шага " + QString::number(m_tuneStep) + " необходимо\nвыполнить шаг "
+                + QString::number(calibrstep) + "!");
 
         return Error::Msg::ResEmpty;
     }

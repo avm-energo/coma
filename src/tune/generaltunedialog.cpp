@@ -73,10 +73,10 @@ void GeneralTuneDialog::generateReport()
             m_Report->printToPDF(filename);
             //        report->previewReport();
             //  report->designReport();
-            EMessageBox::information("Записано успешно!");
+            EMessageBox::information(this, "Записано успешно!");
         }
         else
-            EMessageBox::information("Действие отменено");
+            EMessageBox::information(this, "Действие отменено");
     }
     delete m_Report;
 }

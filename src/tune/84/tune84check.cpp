@@ -75,7 +75,7 @@ Error::Msg Tune84Check::showScheme()
         this, "5. Убедитесь, что частота мигания светодиода «Работа»  на лицевой панели увеличилась до 1 Гц;"));
     lyout->addWidget(WDFunc::NewLBL2(this, "6. Установите на магазине сопротивлений сопротивление 100,0 Ом."));
     w->setLayout(hlyout);
-    if (!EMessageBox::next(w))
+    if (!EMessageBox::next(this, w))
         CancelTune();
     return Error::Msg::NoError;
 }
