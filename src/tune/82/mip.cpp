@@ -107,7 +107,7 @@ Error::Msg Mip::check()
         u = 60.0;
         uthr = 0.05;
         iNom = 0;
-        ithr = FLT_MAX;
+        ithr = MAXFLOAT;
         break;
     case M82:
         u = 60.0;
@@ -116,7 +116,7 @@ Error::Msg Mip::check()
         break;
     case M83:
         u = 0;
-        uthr = FLT_MAX;
+        uthr = MAXFLOAT;
         ithr = 0.05;
         break;
     }

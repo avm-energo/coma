@@ -823,7 +823,7 @@ void WDFunc::setMinimumSize(QWidget *w, const QString &wname, int width, int hei
 
 QString WDFunc::StringValueWithCheck(float value, int precision, bool exp)
 {
-    if (value >= FLT_MAX || value <= -FLT_MAX)
+    if (value >= MAXFLOAT || value <= -MAXFLOAT)
         return "***";
     else if (exp == true)
         return QString::number(value, 'e', precision);
@@ -834,7 +834,7 @@ QString WDFunc::StringValueWithCheck(float value, int precision, bool exp)
 QVariant WDFunc::FloatValueWithCheck(float value)
 {
     QVariant tmps;
-    if (value >= FLT_MAX || value <= FLT_MIN)
+    if (value >= MAXFLOAT || value <= MAXFLOAT)
         tmps = "***";
     else
         tmps = value;
