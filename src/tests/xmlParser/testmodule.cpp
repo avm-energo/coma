@@ -597,7 +597,7 @@ void TestModule::check8083USB()
     QCOMPARE(elementCount, check::check8083);
 }
 
-void TestModule::check2100()
+/*void TestModule::check2100()
 {
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x21;
@@ -1588,5 +1588,5 @@ void TestModule::check3533USB()
         [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
     QCOMPARE(elementCount, 2);
 }
-
+*/
 QTEST_GUILESS_MAIN(TestModule)
