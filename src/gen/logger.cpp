@@ -59,6 +59,7 @@ void Logging::messageHandler(QtMsgType type, const QMessageLogContext &context, 
     switch (type)
     {
     case QtInfoMsg:
+    case QtDebugMsg:
     {
         ErrorMsg tmpm {
             QDateTime::currentDateTime().toString("dd-MM-yyyy hh:mm:ss"), // DateTime
@@ -70,11 +71,11 @@ void Logging::messageHandler(QtMsgType type, const QMessageLogContext &context, 
         ErrorQueue::GetInstance().pushError(tmpm);
         break;
     }
-    case QtDebugMsg:
-#ifdef QT_DEBUG
-        std::cout << sourceFile.toStdString() << colon << context.line << space << function << space << colon << space
-                  << msg.toStdString() << std::endl;
-#endif
+//    case QtDebugMsg:
+//#ifdef QT_DEBUG
+//        std::cout << sourceFile.toStdString() << colon << context.line << space << function << space << colon << space
+//                  << msg.toStdString() << std::endl;
+//#endif
         return;
     case QtWarningMsg:
     {
