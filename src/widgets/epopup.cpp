@@ -8,7 +8,7 @@
 
 ESimplePopup::ESimplePopup(MessageTypes type, const QString &msg, QWidget *parent) : EPopup(parent)
 {
-    ESimplePopup(type, WDFunc::NewLBL2(this, msg), parent);
+    ESimplePopup(type, WDFunc::NewLBL2(parent, msg), parent);
 }
 
 ESimplePopup::ESimplePopup(MessageTypes type, QWidget *w, QWidget *parent) : EPopup(parent)

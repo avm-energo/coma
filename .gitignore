@@ -55,4 +55,6 @@ unix*
 /src/share*
 /src/lib*
 /src/include*
+/src/out/build
+/include
 CMakeLists.txt.user
