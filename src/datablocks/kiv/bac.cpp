@@ -93,47 +93,40 @@ void Bac::createWidget()
     //    m_VModel->setValueData(m_VModel->index(7, 9), &m_Bac.Tmk0);
     //    tv->setModel(m_VModel);
     //    vlyout->addWidget(tv);
+
     for (int i = 0; i < 3; i++)
     {
         glyout->addWidget(WDFunc::NewLBL2(m_widget, "N1_TT[" + QString::number(i) + "]"), 0, i, 1, 1);
         glyout->addWidget(
             WDFunc::NewLE2(m_widget, "tune" + QString::number(i), "", "Число витков первичной обмотки"), 1, i, 1, 1);
         glyout->addWidget(WDFunc::NewLBL2(m_widget, "KmU[" + QString::number(i) + "]"), 0, i + 3, 1, 1);
-        glyout->addWidget(WDFunc::NewLE2(m_widget, "tune" + QString::number(i + 3), "", "Коэффициенты по напряжению"),
-            1, i + 3, 1, 1);
+        glyout->addWidget(WDFunc::NewLE2(m_widget, "tune" + QString::number(i + 3), "", "Коэффициенты по напряжению"), 1, i + 3, 1, 1);
         glyout->addWidget(WDFunc::NewLBL2(m_widget, "KmI1[" + QString::number(i) + "]"), 2, i, 1, 1);
         glyout->addWidget(
-            WDFunc::NewLE2(m_widget, "tune" + QString::number(i + 6), "", "Коэффициенты по току для Кацп=1"), 3, i, 1,
-            1);
+            WDFunc::NewLE2(m_widget, "tune" + QString::number(i + 6), "", "Коэффициенты по току для Кацп=1"), 3, i, 1, 1);
         glyout->addWidget(WDFunc::NewLBL2(m_widget, "KmI2[" + QString::number(i) + "]"), 2, i + 3, 1, 1);
         glyout->addWidget(
-            WDFunc::NewLE2(m_widget, "tune" + QString::number(i + 9), "", "Коэффициенты по току для Кацп=2"), 3, i + 3,
-            1, 1);
+            WDFunc::NewLE2(m_widget, "tune" + QString::number(i + 9), "", "Коэффициенты по току для Кацп=2"), 3, i + 3, 1, 1);
         glyout->addWidget(WDFunc::NewLBL2(m_widget, "KmI4[" + QString::number(i) + "]"), 4, i, 1, 1);
         glyout->addWidget(
-            WDFunc::NewLE2(m_widget, "tune" + QString::number(i + 12), "", "Коэффициенты по току для Кацп=4"), 5, i, 1,
-            1);
+            WDFunc::NewLE2(m_widget, "tune" + QString::number(i + 12), "", "Коэффициенты по току для Кацп=4"), 5, i, 1, 1);
         glyout->addWidget(WDFunc::NewLBL2(m_widget, "KmI8[" + QString::number(i) + "]"), 4, i + 3, 1, 1);
         glyout->addWidget(
-            WDFunc::NewLE2(m_widget, "tune" + QString::number(i + 15), "", "Коэффициенты по току для Кацп=8"), 5, i + 3,
-            1, 1);
+            WDFunc::NewLE2(m_widget, "tune" + QString::number(i + 15), "", "Коэффициенты по току для Кацп=8"), 5, i + 3, 1, 1);
         glyout->addWidget(WDFunc::NewLBL2(m_widget, "KmI16[" + QString::number(i) + "]"), 6, i, 1, 1);
         glyout->addWidget(
-            WDFunc::NewLE2(m_widget, "tune" + QString::number(i + 18), "", "Коэффициенты по току для Кацп=16"), 7, i, 1,
-            1);
+            WDFunc::NewLE2(m_widget, "tune" + QString::number(i + 18), "", "Коэффициенты по току для Кацп=16"), 7, i, 1, 1);
         glyout->addWidget(WDFunc::NewLBL2(m_widget, "KmI32[" + QString::number(i) + "]"), 6, i + 3, 1, 1);
         glyout->addWidget(
-            WDFunc::NewLE2(m_widget, "tune" + QString::number(i + 21), "", "Коэффициенты по току для Кацп=32"), 7,
-            i + 3, 1, 1);
+            WDFunc::NewLE2(m_widget, "tune" + QString::number(i + 21), "", "Коэффициенты по току для Кацп=32"), 7, i + 3, 1, 1);
         glyout->addWidget(WDFunc::NewLBL2(m_widget, "TKPsi_a[" + QString::number(i) + "]"), 8, i, 1, 1);
         glyout->addWidget(WDFunc::NewLE2(m_widget, "tune" + QString::number(i + 24), "",
-                              "Коэффициенты линейной коррекции по tg delta"),
-            9, i, 1, 1);
+                              "Коэффициенты линейной коррекции по tg delta"), 9, i, 1, 1);
         glyout->addWidget(WDFunc::NewLBL2(m_widget, "TKPsi_b[" + QString::number(i) + "]"), 8, i + 3, 1, 1);
         glyout->addWidget(WDFunc::NewLE2(m_widget, "tune" + QString::number(i + 27), "",
-                              "Коэффициенты квадратичной коррекции по tg delta"),
-            9, i + 3, 1, 1);
+                              "Коэффициенты квадратичной коррекции по tg delta"), 9, i + 3, 1, 1);
     }
+
     for (int i = 0; i < 6; i++)
     {
         glyout->addWidget(WDFunc::NewLBL2(m_widget, "DPsi[" + QString::number(i) + "]"), 10, i, 1, 1);

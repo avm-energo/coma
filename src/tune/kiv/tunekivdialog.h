@@ -125,7 +125,8 @@ private:
     float CurrentS; // текущее значение нагрузки
     int PovType, TempPovType; // тип поверяемого оборудования (по какому ГОСТу)
     QStandardItemModel *ReportModel, *ViewModel; // модель, в которую заносим данные для отчёта
-    int RowCount, ColumnCount; // количество рядов и столбцов в модели*/
+    int RowCount, ColumnCount; // количество рядов и столбцов в модели
+    */
 
     //    QHBoxLayout *newTunePBLayout(const QString &pbtext, const std::function<void()> fun);
 

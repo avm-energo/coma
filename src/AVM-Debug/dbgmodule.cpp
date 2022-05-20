@@ -241,6 +241,7 @@ void DbgModule::createUSIO(Modules::BaseBoard typeB, Modules::MezzanineBoard typ
 void DbgModule::create(QTimer *updateTimer)
 {
     using namespace Modules;
+    BaseInterface::iface()->setSettings(settings()->ifaceSettings);
     auto &board = Board::GetInstance();
     quint16 typeb = board.typeB();
     if (BaseBoards.contains(typeb)) // there must be two-part module
@@ -283,5 +284,4 @@ void DbgModule::create(QTimer *updateTimer)
         connect(updateTimer, &QTimer::timeout, d, &UDialog::reqUpdate);
         d->uponInterfaceSetting();
     }
-    BaseInterface::iface()->setSettings(settings()->ifaceSettings);
 }

@@ -55,6 +55,7 @@ private slots:
     void startWork(const ConnectStruct st);
     void loadOsc();
     void loadSwj();
+    void openModuleEditor();
 
     virtual void getAbout() {};
     virtual void checkDialog() {};

@@ -60,6 +60,8 @@ add_library(
   flowlayout.h
   ipctrl.cpp
   ipctrl.h
+  moduleseditor.cpp
+  moduleseditor.h
   passwordlineedit.cpp
   passwordlineedit.h
   signalchoosewidget.cpp

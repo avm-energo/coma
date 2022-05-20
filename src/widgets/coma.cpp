@@ -45,6 +45,7 @@
 #include "../widgets/styleloader.h"
 #include "../widgets/wd_func.h"
 #include "waitwidget.h"
+#include "moduleseditor.h"
 
 #include <QApplication>
 #include <QDir>
@@ -62,6 +63,7 @@
 // Header dbt must be the last header, thanx to microsoft
 #include <dbt.h>
 // clang-format on
+
 void registerForDeviceNotification(QWidget *ptr)
 {
     DEV_BROADCAST_DEVICEINTERFACE devInt;
@@ -252,6 +254,8 @@ void Coma::setupMenubar()
     menu->addAction("Загрузка осциллограммы", this, qOverload<>(&Coma::loadOsc));
     menu->addAction("Загрузка журнала переключений", this, qOverload<>(&Coma::loadSwj));
     menu->addAction("Проверка диалога", this, &Coma::checkDialog);
+    menu->addAction("Редактор модулей", this, &Coma::openModuleEditor);
+
     menubar->addMenu(menu);
     setMenuBar(menubar);
 }
@@ -348,6 +352,13 @@ void Coma::loadSwj(QString &filename)
     dialog->adjustSize();
 }
 
+void Coma::openModuleEditor()
+{
+    auto editor = new ModulesEditor(this);
+    editor->show();
+    return;
+}
+
 void Coma::newTimers()
 {
     BdaTimer = new QTimer(this);
@@ -365,13 +376,11 @@ void Coma::newTimers()
 
 void Coma::setupConnections()
 {
-
     connect(&DataManager::GetInstance(), &DataManager::responseReceived, this, &Coma::update);
 }
 
 void Coma::prepare()
 {
-
     auto const &board = Board::GetInstance();
     EMessageBox::information(this, "Установлена связь с " + board.moduleName());
     Reconnect = true;
