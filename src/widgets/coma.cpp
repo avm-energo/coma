@@ -356,7 +356,7 @@ void Coma::openModuleEditor()
 {
     if (editor == nullptr)
         editor = new ModulesEditor(this);
-    editor->show();
+    else editor->show();
 }
 
 void Coma::newTimers()

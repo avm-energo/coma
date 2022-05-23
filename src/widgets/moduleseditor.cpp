@@ -1,24 +1,33 @@
 #include "moduleseditor.h"
+#include "../module/module.h"
 
 #include <QPushButton>
-#include <QSplitter>
 #include <QStringList>
+#include <QTableView>
+#include <QTableWidget>
 #include <QToolBar>
 #include <QTreeView>
 #include <QTreeWidget>
-
-#include "wd_func.h"
+#include <QtXml>
 
 ModulesEditor::ModulesEditor(QWidget *parent) : QWidget(parent)
-                                              , master(nullptr)
-                                              , slave(nullptr)
+                                              //, master(nullptr)
+                                              //, slave(nullptr)
 {
     if (parent != nullptr) {
         auto size = parent->size();
         const int margin = 30;
         this->setGeometry(-4, margin, size.width(), size.height() - margin * 2 - 20);
+        SetupModelView();
         SetupUI(size);
+        ReadModulesToModel();
     }
+}
+
+void ModulesEditor::SetupModelView()
+{
+    slaveModel = new QStandardItemModel(this);
+
 }
 
 void ModulesEditor::SetupUI(QSize& pSize)
@@ -37,13 +46,14 @@ void ModulesEditor::SetupUI(QSize& pSize)
     cBtnLayout->addSpacing(10);
 
     // Получение рабочих пространств
-    master = GetWorkspace(WorkspaceType::Master);
-    slave = GetWorkspace(WorkspaceType::Slave);
+    auto master = GetWorkspace(WorkspaceType::Master);
+    auto slave = GetWorkspace(WorkspaceType::Slave);
     workspacesLayout->addLayout(master);
     workspacesLayout->addLayout(slave);
     mainLayout->addLayout(cBtnLayout);
     mainLayout->addLayout(workspacesLayout);
     this->setLayout(mainLayout);
+    this->show();
 }
 
 void ModulesEditor::Close()
@@ -73,20 +83,62 @@ QVBoxLayout *ModulesEditor::GetWorkspace(WorkspaceType type)
         toolbar->addAction(QIcon(":/icons/tnstart.svg"), "Создать свойство", this, &ModulesEditor::Close);
         toolbar->addSeparator();
         toolbar->addAction(QIcon(":/icons/tnstop.svg"), "Удалить свойство", this, &ModulesEditor::Close);
-        toolbar->addSeparator();
-        toolbar->addAction(QIcon(":/icons/tnsettings.svg"), "Закрыть модуль", this, &ModulesEditor::Close);
     }
     workspace->addWidget(toolbar);
 
-    // Настройка QTreeWidget
-    auto qtw = new QTreeWidget(this);
     if (type == Master)
-        qtw->setHeaderLabels({"Название", "Версия", "Type M", "Type B"});
+    {
+        // Создание и настройка QTableView
+        masterView = new QTableView(this);
+        masterView->setSortingEnabled(true);
+        workspace->addWidget(masterView);
+    }
     else
-        qtw->setHeaderLabel("Свойства");
-    qtw->setSortingEnabled(true);
-    //workspace->addWidget(new QSplitter(this));
-    workspace->addWidget(qtw);
+    {
+        // Создание и настройка QTreeView
+        slaveView = new QTreeView(this);
+        //qtw->setHeaderLabel("Свойства");
+        slaveView->setSortingEnabled(true);
+        workspace->addWidget(slaveView);
+    }
 
     return workspace;
+}
+
+QDir ModulesEditor::UnpackData()
+{
+    QDir resDir(resourceDirectory);
+    QDir homeDir(StdFunc::GetSystemHomeDir());
+    auto xmlFiles = resDir.entryList(QDir::Files).filter(".xml");
+    auto homeFiles = homeDir.entryList(QDir::Files).filter(".xml");
+    if (homeFiles.count() < xmlFiles.count()) {
+        foreach (QString filename, xmlFiles) {
+            if (!QFile::copy(resDir.filePath(filename), homeDir.filePath(filename)))
+            {
+                qCritical() << Error::DescError;
+                qInfo() << resDir.filePath(filename);
+            }
+        }
+    }
+    return homeDir;
+}
+
+void ModulesEditor::ReadModulesToModel()
+{
+    auto data = UnpackData().entryList(QDir::Files).filter(".xml");
+    masterModel = new QStandardItemModel(data.count(), 4);
+    masterModel->setHeaderData(0, Qt::Horizontal, "Название");
+    masterModel->setHeaderData(1, Qt::Horizontal, "Версия");
+    masterModel->setHeaderData(2, Qt::Horizontal, "Type M");
+    masterModel->setHeaderData(3, Qt::Horizontal, "Type B");
+
+    for (int i = 0; i < data.count(); i++)
+    {
+        QModelIndex mi = masterModel->index(i, 0);
+
+    }
+
+
+    masterView->setModel(masterModel);
+
 }
