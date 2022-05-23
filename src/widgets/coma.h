@@ -4,6 +4,7 @@
 #include "../gen/datatypes.h"
 #include "../gen/stdfunc.h"
 #include "../interfaces/settingstypes.h"
+#include "moduleseditor.h"
 
 #include <QListWidget>
 #include <QMainWindow>
@@ -69,6 +70,7 @@ private:
     QStackedWidget *MainTW;
     QListWidget *MainLW;
     OscManager oscManager;
+    ModulesEditor *editor;
 
     File::Vector fileVector;
 

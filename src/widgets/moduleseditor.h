@@ -18,7 +18,7 @@ private:
     QVBoxLayout *master;
     QVBoxLayout *slave;
 
-    void SetupUI();
+    void SetupUI(QSize&);
     QVBoxLayout *GetWorkspace(WorkspaceType);
 
 public:
@@ -28,7 +28,7 @@ public:
 
 signals:
 
-private slots:
+public slots:
     void Close();
 
 };

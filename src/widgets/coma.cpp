@@ -45,7 +45,6 @@
 #include "../widgets/styleloader.h"
 #include "../widgets/wd_func.h"
 #include "waitwidget.h"
-#include "moduleseditor.h"
 
 #include <QApplication>
 #include <QDir>
@@ -85,6 +84,7 @@ void registerForDeviceNotification(QWidget *ptr)
 #endif
 
 Coma::Coma(QWidget *parent) : QMainWindow(parent)
+                            , editor(nullptr)
 {
 }
 
@@ -354,9 +354,9 @@ void Coma::loadSwj(QString &filename)
 
 void Coma::openModuleEditor()
 {
-    auto editor = new ModulesEditor(this);
+    if (editor == nullptr)
+        editor = new ModulesEditor(this);
     editor->show();
-    return;
 }
 
 void Coma::newTimers()
