@@ -8,41 +8,27 @@
 
 constexpr char resourceDirectory[] = ":/module";
 
-ModulesEditor::ModulesEditor(QWidget *parent) : QWidget(parent)
+ModulesEditor::ModulesEditor(QWidget *parent) : QDialog(parent, Qt::Window)
+                                              , slaveModel(nullptr)
+                                              , masterModel(nullptr)
 {
-    if (parent != nullptr) {
-        auto size = parent->size();
-        const int margin = 30;
-        this->setGeometry(-4, margin, size.width(), size.height() - margin * 2 - 20);
-        SetupUI(size);
-        ReadModulesToModel();
+    if (parent != nullptr)
+    {
+        SetupUI(parent->size());
+        ReadModulesToMasterModel();
+        this->exec();
     }
 }
 
-void ModulesEditor::SetupUI(QSize& pSize)
+void ModulesEditor::SetupUI(QSize pSize)
 {
-    auto mainLayout = new QVBoxLayout(this);
-    auto workspacesLayout = new QHBoxLayout;
-    auto cBtnLayout = new QHBoxLayout;
+    this->setGeometry(0, 0, pSize.width(), pSize.height());
+    auto mainLayout = new QHBoxLayout(this);
 
-    // Настройка кнопки закрытия
-    auto closeButton = new QPushButton(this);
-    closeButton->setIcon(QIcon(":/icons/tnstop.svg"));
-    closeButton->setIconSize(QSize(40, 40));
-    QObject::connect(closeButton, &QPushButton::clicked, this, &ModulesEditor::Close);
-    cBtnLayout->addSpacing(pSize.width() - (40 + 10));
-    cBtnLayout->addWidget(closeButton);
-    cBtnLayout->addSpacing(10);
-
-    // Получение рабочих пространств
-    auto master = GetWorkspace(WorkspaceType::Master);
-    auto slave = GetWorkspace(WorkspaceType::Slave);
-    workspacesLayout->addLayout(master);
-    workspacesLayout->addLayout(slave);
-    mainLayout->addLayout(cBtnLayout);
-    mainLayout->addLayout(workspacesLayout);
+    // Добавление рабочих пространств на основной слой
+    mainLayout->addLayout(GetWorkspace(WorkspaceType::Master));
+    mainLayout->addLayout(GetWorkspace(WorkspaceType::Slave));
     this->setLayout(mainLayout);
-    this->show();
 }
 
 void ModulesEditor::Close()
@@ -54,7 +40,6 @@ QVBoxLayout *ModulesEditor::GetWorkspace(WorkspaceType type)
 {
     // Создание рабочего пространства
     auto workspace = new QVBoxLayout();
-    workspace->setSpacing(15);
     workspace->setContentsMargins(5, 5, 5, 5);
 
     // Настройка тулбара
@@ -80,6 +65,9 @@ QVBoxLayout *ModulesEditor::GetWorkspace(WorkspaceType type)
         // Создание и настройка QTableView
         masterView = new QTableView(this);
         masterView->setSortingEnabled(true);
+        QObject::connect(masterView, &QTableView::clicked, this, &ModulesEditor::MasterItemSelected);
+        masterView->setSelectionBehavior(QAbstractItemView::SelectionBehavior::SelectRows);
+        masterView->setSelectionMode(QAbstractItemView::SelectionMode::SingleSelection);
         workspace->addWidget(masterView);
     }
     else
@@ -100,6 +88,8 @@ QDir ModulesEditor::UnpackData()
     QDir homeDir(StdFunc::GetSystemHomeDir());
     auto xmlFiles = resDir.entryList(QDir::Files).filter(".xml");
     auto homeFiles = homeDir.entryList(QDir::Files).filter(".xml");
+
+    // Копируем файлы из ресурсов в AppData/Local/AVM-Debug
     if (homeFiles.count() < xmlFiles.count()) {
         foreach (QString filename, xmlFiles) {
             if (!QFile::copy(resDir.filePath(filename), homeDir.filePath(filename)))
@@ -112,8 +102,9 @@ QDir ModulesEditor::UnpackData()
     return homeDir;
 }
 
-void ModulesEditor::ReadModulesToModel()
+void ModulesEditor::ReadModulesToMasterModel()
 {
+    // Создание и настройка модели для master
     auto dir = UnpackData();
     auto modules = dir.entryList(QDir::Files).filter(".xml");
     masterModel = new QStandardItemModel(modules.count(), 4);
@@ -123,9 +114,9 @@ void ModulesEditor::ReadModulesToModel()
     masterModel->setHeaderData(3, Qt::Horizontal, "Версия");
     masterView->setModel(masterModel);
 
+    // Каждый xml-файл считывает в модель
     for (int i = 0; i < modules.count(); i++)
     {
-
         auto domDoc = new QDomDocument;
         auto moduleFile = new QFile(dir.filePath(modules[i]));
         if (moduleFile->open(QIODevice::ReadOnly))
@@ -133,17 +124,16 @@ void ModulesEditor::ReadModulesToModel()
             if (domDoc->setContent(moduleFile))
             {
                 auto domElement = domDoc->documentElement();
-                SearchModule(domElement, i, masterModel);
+                ParseXmlToMasterModel(domElement, i, masterModel);
             }
             moduleFile->close();
         }
-
         delete domDoc;
         delete moduleFile;
     }
 }
 
-void ModulesEditor::SearchModule(const QDomNode &node, const int &index, QStandardItemModel *model)
+void ModulesEditor::ParseXmlToMasterModel(const QDomNode &node, const int &index, QStandardItemModel *model)
 {
     auto domNode = node.firstChild();
     while (!domNode.isNull())
@@ -153,18 +143,21 @@ void ModulesEditor::SearchModule(const QDomNode &node, const int &index, QStanda
             auto domElement = domNode.toElement();
             if (!domElement.isNull())
             {
+                // Получаем аттрибуты TypeB и TypeM
                 if (domElement.tagName() == "module")
                 {
                     auto indexTypeB = masterModel->index(index, 1);
                     auto indexTypeM = masterModel->index(index, 2);
-                    model->setData(indexTypeM, domElement.attribute("mtypem", ""));
-                    model->setData(indexTypeB, domElement.attribute("mtypeb", ""));
+                    model->setData(indexTypeM, domElement.attribute("mtypem", "00"));
+                    model->setData(indexTypeB, domElement.attribute("mtypeb", "00"));
                 }
+                // Получаем имя модуля
                 else if (domElement.tagName() == "name")
                 {
                     auto indexName = masterModel->index(index, 0);
                     model->setData(indexName, domElement.text());
                 }
+                // И его версию
                 else if (domElement.tagName() == "version")
                 {
                     auto indexVersion = masterModel->index(index, 3);
@@ -173,8 +166,43 @@ void ModulesEditor::SearchModule(const QDomNode &node, const int &index, QStanda
                 }
             }
         }
-        SearchModule(domNode, index, model);
+        // Делаем это всё рекурсивно
+        ParseXmlToMasterModel(domNode, index, model);
         domNode = domNode.nextSibling();
     }
+}
+
+void ModulesEditor::MasterItemSelected(const QModelIndex &index)
+{
+    const auto row = index.row();
+    auto indexTypeB = masterModel->index(row, 1),
+         indexTypeM = masterModel->index(row, 2);
+    auto dataTypeB = masterModel->data(indexTypeB),
+         dataTypeM = masterModel->data(indexTypeM);
+    if (dataTypeB.canConvert<QString>() && dataTypeM.canConvert<QString>())
+    {
+        auto moduleType = (qvariant_cast<QString>(dataTypeB) + qvariant_cast<QString>(dataTypeM)).toLower();
+        QDir homeDir(StdFunc::GetSystemHomeDir());
+        auto module = homeDir.entryList(QDir::Files).filter(moduleType)[0];
+        qDebug() << module;
+
+        //if (slaveModel == nullptr)
+        //    slaveModel = CreateSlaveModel(0);
+
+        auto domDoc = new QDomDocument;
+        auto moduleFile = new QFile(homeDir.filePath(module));
+        if (moduleFile->open(QIODevice::ReadOnly))
+        {
+            if (domDoc->setContent(moduleFile))
+            {
+                auto domElement = domDoc->documentElement();
+                //SearchModule(domElement, i, masterModel);
+            }
+            moduleFile->close();
+        }
+        delete domDoc;
+        delete moduleFile;
+    }
+
 }
 
