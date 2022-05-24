@@ -60,8 +60,6 @@ add_library(
   flowlayout.h
   ipctrl.cpp
   ipctrl.h
-  moduleseditor.cpp
-  moduleseditor.h
   passwordlineedit.cpp
   passwordlineedit.h
   signalchoosewidget.cpp
@@ -90,6 +88,7 @@ target_link_libraries(
   ${PROJECT_NAME}
   PRIVATE avtuk
   PRIVATE module
+  PRIVATE editor
   PRIVATE Qt${QT_VERSION_MAJOR}::Core
   PRIVATE Qt${QT_VERSION_MAJOR}::Widgets
   PRIVATE Qt${QT_VERSION_MAJOR}::Xml

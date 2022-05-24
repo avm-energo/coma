@@ -1,33 +1,22 @@
 #include "moduleseditor.h"
-#include "../module/module.h"
+#include "../gen/stdfunc.h"
+#include "../gen/error.h"
 
 #include <QPushButton>
 #include <QStringList>
-#include <QTableView>
-#include <QTableWidget>
 #include <QToolBar>
-#include <QTreeView>
-#include <QTreeWidget>
-#include <QtXml>
+
+constexpr char resourceDirectory[] = ":/module";
 
 ModulesEditor::ModulesEditor(QWidget *parent) : QWidget(parent)
-                                              //, master(nullptr)
-                                              //, slave(nullptr)
 {
     if (parent != nullptr) {
         auto size = parent->size();
         const int margin = 30;
         this->setGeometry(-4, margin, size.width(), size.height() - margin * 2 - 20);
-        SetupModelView();
         SetupUI(size);
         ReadModulesToModel();
     }
-}
-
-void ModulesEditor::SetupModelView()
-{
-    slaveModel = new QStandardItemModel(this);
-
 }
 
 void ModulesEditor::SetupUI(QSize& pSize)
@@ -125,20 +114,67 @@ QDir ModulesEditor::UnpackData()
 
 void ModulesEditor::ReadModulesToModel()
 {
-    auto data = UnpackData().entryList(QDir::Files).filter(".xml");
-    masterModel = new QStandardItemModel(data.count(), 4);
+    auto dir = UnpackData();
+    auto modules = dir.entryList(QDir::Files).filter(".xml");
+    masterModel = new QStandardItemModel(modules.count(), 4);
     masterModel->setHeaderData(0, Qt::Horizontal, "Название");
-    masterModel->setHeaderData(1, Qt::Horizontal, "Версия");
+    masterModel->setHeaderData(1, Qt::Horizontal, "Type B");
     masterModel->setHeaderData(2, Qt::Horizontal, "Type M");
-    masterModel->setHeaderData(3, Qt::Horizontal, "Type B");
-
-    for (int i = 0; i < data.count(); i++)
-    {
-        QModelIndex mi = masterModel->index(i, 0);
-
-    }
-
-
+    masterModel->setHeaderData(3, Qt::Horizontal, "Версия");
     masterView->setModel(masterModel);
 
+    for (int i = 0; i < modules.count(); i++)
+    {
+
+        auto domDoc = new QDomDocument;
+        auto moduleFile = new QFile(dir.filePath(modules[i]));
+        if (moduleFile->open(QIODevice::ReadOnly))
+        {
+            if (domDoc->setContent(moduleFile))
+            {
+                auto domElement = domDoc->documentElement();
+                SearchModule(domElement, i, masterModel);
+            }
+            moduleFile->close();
+        }
+
+        delete domDoc;
+        delete moduleFile;
+    }
 }
+
+void ModulesEditor::SearchModule(const QDomNode &node, const int &index, QStandardItemModel *model)
+{
+    auto domNode = node.firstChild();
+    while (!domNode.isNull())
+    {
+        if (domNode.isElement())
+        {
+            auto domElement = domNode.toElement();
+            if (!domElement.isNull())
+            {
+                if (domElement.tagName() == "module")
+                {
+                    auto indexTypeB = masterModel->index(index, 1);
+                    auto indexTypeM = masterModel->index(index, 2);
+                    model->setData(indexTypeM, domElement.attribute("mtypem", ""));
+                    model->setData(indexTypeB, domElement.attribute("mtypeb", ""));
+                }
+                else if (domElement.tagName() == "name")
+                {
+                    auto indexName = masterModel->index(index, 0);
+                    model->setData(indexName, domElement.text());
+                }
+                else if (domElement.tagName() == "version")
+                {
+                    auto indexVersion = masterModel->index(index, 3);
+                    model->setData(indexVersion, domElement.text());
+                    break;
+                }
+            }
+        }
+        SearchModule(domNode, index, model);
+        domNode = domNode.nextSibling();
+    }
+}
+

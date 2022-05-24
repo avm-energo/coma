@@ -4,7 +4,7 @@
 #include "../gen/datatypes.h"
 #include "../gen/stdfunc.h"
 #include "../interfaces/settingstypes.h"
-#include "moduleseditor.h"
+#include "../editor/moduleseditor.h"
 
 #include <QListWidget>
 #include <QMainWindow>

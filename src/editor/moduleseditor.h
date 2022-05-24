@@ -6,6 +6,7 @@
 #include <QStandardItemModel>
 #include <QTableView>
 #include <QTreeView>
+#include <QtXml>
 #include <QWidget>
 
 class ModulesEditor : public QWidget
@@ -19,21 +20,19 @@ private:
         Slave = 2
     };
 
-    //QVBoxLayout *master;
-    //QVBoxLayout *slave;
     QStandardItemModel *masterModel;
     QTableView *masterView;
     QStandardItemModel *slaveModel;
     QTreeView *slaveView;
 
     void SetupUI(QSize&);
-    void SetupModelView();
     QVBoxLayout *GetWorkspace(WorkspaceType);
+    QDir UnpackData();
+    void ReadModulesToModel();
+    void SearchModule(const QDomNode &node, const int &index, QStandardItemModel *model);
 
 public:
     explicit ModulesEditor(QWidget *parent = nullptr);
-    QDir UnpackData();
-    void ReadModulesToModel();
 
 signals:
 
