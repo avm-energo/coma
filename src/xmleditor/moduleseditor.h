@@ -29,11 +29,12 @@ private:
     void SetupUI(QSize pSize);
     QVBoxLayout *GetWorkspace(WorkspaceType);
     QDir UnpackData();
-    QStandardItemModel *CreateSlaveModel(const int&);
     void ReadModulesToMasterModel();
     void ReadModuleToSlaveModel();
-    void ParseXmlToMasterModel(const QDomNode &node, const int &index, QStandardItemModel *model);
-    void ParseXmlToSlaveModel(const QDomNode &node, QStandardItemModel *model);
+    QStandardItemModel *CreateMasterModel(const int rows, const int cols);
+    QStandardItemModel *CreateSlaveModel();
+    void ParseXmlToMasterModel(const QDomNode &node, const int &index);
+    void ParseXmlToSlaveModel(QDomNode &node, int index, QStandardItem *parent);
 
 public:
     explicit ModulesEditor(QWidget *parent = nullptr);

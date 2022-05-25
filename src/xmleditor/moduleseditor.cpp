@@ -23,6 +23,7 @@ ModulesEditor::ModulesEditor(QWidget *parent) : QDialog(parent, Qt::Window)
 void ModulesEditor::SetupUI(QSize pSize)
 {
     this->setGeometry(0, 0, pSize.width(), pSize.height());
+    this->setWindowTitle("Modules Editor");
     auto mainLayout = new QHBoxLayout(this);
 
     // Добавление рабочих пространств на основной слой
@@ -107,11 +108,7 @@ void ModulesEditor::ReadModulesToMasterModel()
     // Создание и настройка модели для master
     auto dir = UnpackData();
     auto modules = dir.entryList(QDir::Files).filter(".xml");
-    masterModel = new QStandardItemModel(modules.count(), 4);
-    masterModel->setHeaderData(0, Qt::Horizontal, "Название");
-    masterModel->setHeaderData(1, Qt::Horizontal, "Type B");
-    masterModel->setHeaderData(2, Qt::Horizontal, "Type M");
-    masterModel->setHeaderData(3, Qt::Horizontal, "Версия");
+    if (masterModel == nullptr) masterModel = CreateMasterModel(modules.count(), 4);
     masterView->setModel(masterModel);
 
     // Каждый xml-файл считывает в модель
@@ -124,7 +121,7 @@ void ModulesEditor::ReadModulesToMasterModel()
             if (domDoc->setContent(moduleFile))
             {
                 auto domElement = domDoc->documentElement();
-                ParseXmlToMasterModel(domElement, i, masterModel);
+                ParseXmlToMasterModel(domElement, i);
             }
             moduleFile->close();
         }
@@ -133,7 +130,24 @@ void ModulesEditor::ReadModulesToMasterModel()
     }
 }
 
-void ModulesEditor::ParseXmlToMasterModel(const QDomNode &node, const int &index, QStandardItemModel *model)
+QStandardItemModel *ModulesEditor::CreateMasterModel(const int rows, const int cols)
+{
+    auto model = new QStandardItemModel(rows, cols);
+    model->setHeaderData(0, Qt::Horizontal, "Название");
+    model->setHeaderData(1, Qt::Horizontal, "Type B");
+    model->setHeaderData(2, Qt::Horizontal, "Type M");
+    model->setHeaderData(3, Qt::Horizontal, "Версия");
+    return model;
+}
+
+QStandardItemModel *ModulesEditor::CreateSlaveModel()
+{
+    auto model = new QStandardItemModel;
+    model->setHeaderData(0, Qt::Horizontal, "Свойства");
+    return model;
+}
+
+void ModulesEditor::ParseXmlToMasterModel(const QDomNode &node, const int &index)
 {
     auto domNode = node.firstChild();
     while (!domNode.isNull())
@@ -148,26 +162,26 @@ void ModulesEditor::ParseXmlToMasterModel(const QDomNode &node, const int &index
                 {
                     auto indexTypeB = masterModel->index(index, 1);
                     auto indexTypeM = masterModel->index(index, 2);
-                    model->setData(indexTypeM, domElement.attribute("mtypem", "00"));
-                    model->setData(indexTypeB, domElement.attribute("mtypeb", "00"));
+                    masterModel->setData(indexTypeM, domElement.attribute("mtypem", "00"));
+                    masterModel->setData(indexTypeB, domElement.attribute("mtypeb", "00"));
                 }
                 // Получаем имя модуля
                 else if (domElement.tagName() == "name")
                 {
                     auto indexName = masterModel->index(index, 0);
-                    model->setData(indexName, domElement.text());
+                    masterModel->setData(indexName, domElement.text());
                 }
                 // И его версию
                 else if (domElement.tagName() == "version")
                 {
                     auto indexVersion = masterModel->index(index, 3);
-                    model->setData(indexVersion, domElement.text());
+                    masterModel->setData(indexVersion, domElement.text());
                     break;
                 }
             }
         }
         // Делаем это всё рекурсивно
-        ParseXmlToMasterModel(domNode, index, model);
+        ParseXmlToMasterModel(domNode, index);
         domNode = domNode.nextSibling();
     }
 }
@@ -184,10 +198,13 @@ void ModulesEditor::MasterItemSelected(const QModelIndex &index)
         auto moduleType = (qvariant_cast<QString>(dataTypeB) + qvariant_cast<QString>(dataTypeM)).toLower();
         QDir homeDir(StdFunc::GetSystemHomeDir());
         auto module = homeDir.entryList(QDir::Files).filter(moduleType)[0];
-        qDebug() << module;
 
-        //if (slaveModel == nullptr)
-        //    slaveModel = CreateSlaveModel(0);
+        if (slaveModel == nullptr)
+        {
+            slaveModel = CreateSlaveModel();
+            slaveView->setModel(slaveModel);
+        }
+        else slaveModel->clear();
 
         auto domDoc = new QDomDocument;
         auto moduleFile = new QFile(homeDir.filePath(module));
@@ -196,7 +213,8 @@ void ModulesEditor::MasterItemSelected(const QModelIndex &index)
             if (domDoc->setContent(moduleFile))
             {
                 auto domElement = domDoc->documentElement();
-                //SearchModule(domElement, i, masterModel);
+                int index = 0;
+                ParseXmlToSlaveModel(domElement, index, nullptr);
             }
             moduleFile->close();
         }
@@ -206,3 +224,66 @@ void ModulesEditor::MasterItemSelected(const QModelIndex &index)
 
 }
 
+void ModulesEditor::ParseXmlToSlaveModel(QDomNode &node, int index, QStandardItem *parent)
+{
+    while (!node.isNull())
+    {
+        QStandardItem *element = nullptr;
+        auto aState = false;
+        if (node.isElement() && !node.isComment())
+        {
+            auto domElement = node.toElement();
+            if (!domElement.isNull())
+            {
+                auto name = domElement.tagName();
+                element = new QStandardItem(name);
+                if (parent == nullptr)
+                {
+                    parent = element;
+                    slaveModel->setItem(0, parent);
+                }
+                else
+                {
+                    parent->setChild(index, element);
+                    index++;
+                }
+
+                // Поиск аттрибутов
+                auto attrs = domElement.attributes();
+                if (attrs.count() > 0)
+                {
+                    aState = true;
+                    auto attributes = new QStandardItem("attributes");
+                    element->setChild(0, attributes);
+                    for (int i = 0; i < attrs.count(); i++)
+                    {
+                        auto attr = attrs.item(i).toAttr();
+                        auto aName = new QStandardItem(attr.name());
+                        attributes->setChild(i, aName);
+                        auto aValue = new QStandardItem(attr.value());
+                        aName->setChild(0, aValue);
+                    }
+                }
+
+            }
+        }
+        else if (node.isText())
+        {
+            auto text = node.toText();
+            if (!text.isNull()) {
+                if (parent != nullptr) {
+                    element = new QStandardItem(text.data());
+                    parent->setChild(0, element);
+                }
+            }
+            break;
+        }
+
+        // Делаем это всё рекурсивно
+        auto newIndex = 0;
+        if (aState) newIndex = 1;
+        auto cnode = node.firstChild();
+        ParseXmlToSlaveModel(cnode, newIndex, element);
+        node = node.nextSibling();
+    }
+}
