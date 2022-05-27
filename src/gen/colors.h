@@ -38,6 +38,7 @@ constexpr char YLLCOLOR[] = "#CCCC44";
 constexpr char YLDCOLOR[] = "#CCCC00";
 constexpr char BLDCOLOR[] = "#0000FF";
 constexpr char BLUCOLOR[] = "#2222FF";
+
 enum ColorsNumbers
 {
     Tab,
@@ -56,7 +57,6 @@ enum ColorsNumbers
 };
 
 const QMap<ColorsNumbers, QString> ColorsMap {
-
     { Tab, TABCOLOR },           //
     { TabA1, TABCOLORA1 },       //
     { ErProt, ERPROTCLR },       //
@@ -70,6 +70,6 @@ const QMap<ColorsNumbers, QString> ColorsMap {
     { UConf, UCONFCLR },         //
     { Red, REDCOLOR },           //
     { Nft, NFTCOLOR }            //
-
 };
+
 }

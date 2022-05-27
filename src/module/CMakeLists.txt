@@ -34,6 +34,8 @@ add_library(
   modulealarm.h
   module.cpp
   module.h
+  xmlconfigparser.cpp
+  xmlconfigparser.h
   ../../settings/settings.qrc)
 
 target_link_libraries(

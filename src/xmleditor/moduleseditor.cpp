@@ -1,6 +1,8 @@
 #include "moduleseditor.h"
-#include "../gen/stdfunc.h"
+
 #include "../gen/error.h"
+#include "../gen/stdfunc.h"
+#include "../module/xmlconfigparser.h"
 
 #include <QPushButton>
 #include <QStringList>
@@ -8,14 +10,13 @@
 
 constexpr char resourceDirectory[] = ":/module";
 
-ModulesEditor::ModulesEditor(QWidget *parent) : QDialog(parent, Qt::Window)
-                                              , slaveModel(nullptr)
-                                              , masterModel(nullptr)
+ModulesEditor::ModulesEditor(QWidget *parent) : QDialog(parent, Qt::Window), slaveModel(nullptr), masterModel(nullptr)
 {
     if (parent != nullptr)
     {
         SetupUI(parent->size());
         ReadModulesToMasterModel();
+        XmlConfigParser::ParseS2ConfigToMap();
         this->exec();
     }
 }
@@ -75,7 +76,7 @@ QVBoxLayout *ModulesEditor::GetWorkspace(WorkspaceType type)
     {
         // Создание и настройка QTreeView
         slaveView = new QTreeView(this);
-        //qtw->setHeaderLabel("Свойства");
+        // qtw->setHeaderLabel("Свойства");
         slaveView->setSortingEnabled(true);
         workspace->addWidget(slaveView);
     }
@@ -91,8 +92,10 @@ QDir ModulesEditor::UnpackData()
     auto homeFiles = homeDir.entryList(QDir::Files).filter(".xml");
 
     // Копируем файлы из ресурсов в AppData/Local/AVM-Debug
-    if (homeFiles.count() < xmlFiles.count()) {
-        foreach (QString filename, xmlFiles) {
+    if (homeFiles.count() < xmlFiles.count())
+    {
+        foreach (QString filename, xmlFiles)
+        {
             if (!QFile::copy(resDir.filePath(filename), homeDir.filePath(filename)))
             {
                 qCritical() << Error::DescError;
@@ -108,7 +111,8 @@ void ModulesEditor::ReadModulesToMasterModel()
     // Создание и настройка модели для master
     auto dir = UnpackData();
     auto modules = dir.entryList(QDir::Files).filter(".xml");
-    if (masterModel == nullptr) masterModel = CreateMasterModel(modules.count(), 4);
+    if (masterModel == nullptr)
+        masterModel = CreateMasterModel(modules.count(), 4);
     masterView->setModel(masterModel);
 
     // Каждый xml-файл считывает в модель
@@ -143,6 +147,7 @@ QStandardItemModel *ModulesEditor::CreateMasterModel(const int rows, const int c
 QStandardItemModel *ModulesEditor::CreateSlaveModel()
 {
     auto model = new QStandardItemModel;
+    model->setColumnCount(1);
     model->setHeaderData(0, Qt::Horizontal, "Свойства");
     return model;
 }
@@ -189,10 +194,8 @@ void ModulesEditor::ParseXmlToMasterModel(const QDomNode &node, const int &index
 void ModulesEditor::MasterItemSelected(const QModelIndex &index)
 {
     const auto row = index.row();
-    auto indexTypeB = masterModel->index(row, 1),
-         indexTypeM = masterModel->index(row, 2);
-    auto dataTypeB = masterModel->data(indexTypeB),
-         dataTypeM = masterModel->data(indexTypeM);
+    auto indexTypeB = masterModel->index(row, 1), indexTypeM = masterModel->index(row, 2);
+    auto dataTypeB = masterModel->data(indexTypeB), dataTypeM = masterModel->data(indexTypeM);
     if (dataTypeB.canConvert<QString>() && dataTypeM.canConvert<QString>())
     {
         auto moduleType = (qvariant_cast<QString>(dataTypeB) + qvariant_cast<QString>(dataTypeM)).toLower();
@@ -204,7 +207,8 @@ void ModulesEditor::MasterItemSelected(const QModelIndex &index)
             slaveModel = CreateSlaveModel();
             slaveView->setModel(slaveModel);
         }
-        else slaveModel->clear();
+        else
+            slaveModel->clear();
 
         auto domDoc = new QDomDocument;
         auto moduleFile = new QFile(homeDir.filePath(module));
@@ -221,7 +225,6 @@ void ModulesEditor::MasterItemSelected(const QModelIndex &index)
         delete domDoc;
         delete moduleFile;
     }
-
 }
 
 void ModulesEditor::ParseXmlToSlaveModel(QDomNode &node, int index, QStandardItem *parent)
@@ -264,14 +267,15 @@ void ModulesEditor::ParseXmlToSlaveModel(QDomNode &node, int index, QStandardIte
                         aName->setChild(0, aValue);
                     }
                 }
-
             }
         }
         else if (node.isText())
         {
             auto text = node.toText();
-            if (!text.isNull()) {
-                if (parent != nullptr) {
+            if (!text.isNull())
+            {
+                if (parent != nullptr)
+                {
                     element = new QStandardItem(text.data());
                     parent->setChild(0, element);
                 }
@@ -281,7 +285,8 @@ void ModulesEditor::ParseXmlToSlaveModel(QDomNode &node, int index, QStandardIte
 
         // Делаем это всё рекурсивно
         auto newIndex = 0;
-        if (aState) newIndex = 1;
+        if (aState)
+            newIndex = 1;
         auto cnode = node.firstChild();
         ParseXmlToSlaveModel(cnode, newIndex, element);
         node = node.nextSibling();

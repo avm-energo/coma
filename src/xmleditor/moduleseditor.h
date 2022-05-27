@@ -7,8 +7,8 @@
 #include <QStandardItemModel>
 #include <QTableView>
 #include <QTreeView>
-#include <QtXml>
 #include <QWidget>
+#include <QtXml>
 
 class ModulesEditor : public QDialog
 {
@@ -44,7 +44,6 @@ signals:
 public slots:
     void Close();
     void MasterItemSelected(const QModelIndex &index);
-
 };
 
 #endif // MODULESEDITOR_H

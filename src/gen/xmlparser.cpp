@@ -601,7 +601,6 @@ config::Item XmlParser::parseItem(QDomElement domElement, ctti::unnamed_type_id_
     {
     case delegate::ItemType::ModbusItem:
     {
-
         QDomElement nextChildElement = domElement.firstChildElement("parent");
         bool status = false;
         auto parent = static_cast<BciNumber>(nextChildElement.text().toUInt(&status));
