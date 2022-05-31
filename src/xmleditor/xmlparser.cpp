@@ -3,9 +3,9 @@
 #include "../interfaces/iec104.h"
 #include "../interfaces/modbus.h"
 #include "../interfaces/protocom.h"
-#include "board.h"
-#include "settings.h"
-#include "std_ext.h"
+#include "../gen/board.h"
+#include "../gen/settings.h"
+#include "../gen/std_ext.h"
 
 namespace keys
 {

@@ -1,6 +1,6 @@
 #include "xmlconfigparser.h"
 
-#include "gen/stdfunc.h"
+#include "../gen/stdfunc.h"
 
 #include <QtXml>
 

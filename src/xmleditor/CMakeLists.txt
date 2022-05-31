@@ -13,14 +13,19 @@ add_library(
   ${PROJECT_NAME} STATIC
   moduleseditor.cpp
   moduleseditor.h
+  xmlconfigparser.cpp
+  xmlconfigparser.h
+  xmlparser.cpp
+  xmlparser.h
   ../../settings/settings.qrc)
 
 target_link_libraries(
   ${PROJECT_NAME}
   PRIVATE gen
-  # TODO: Remove modules, using for tests
-  PRIVATE module
+  # TODO: Remove this dependence
+  PRIVATE interfaces
   PRIVATE Qt${QT_VERSION_MAJOR}::Core
+  PRIVATE Qt${QT_VERSION_MAJOR}::Network
   PRIVATE Qt${QT_VERSION_MAJOR}::Widgets
   PRIVATE Qt${QT_VERSION_MAJOR}::Xml)
 

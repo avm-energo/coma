@@ -44,8 +44,6 @@ add_library(
   timefunc.cpp
   datamanager.cpp
   stdfunc.cpp
-  xmlparser.cpp
-  xmlparser.h
   module_kxx.h
   modules.h
   registers.h

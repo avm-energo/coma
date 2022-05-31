@@ -2,7 +2,7 @@
 
 #include "../gen/error.h"
 #include "../gen/stdfunc.h"
-#include "../module/xmlconfigparser.h"
+#include "xmlconfigparser.h"
 
 #include <QPushButton>
 #include <QStringList>
