@@ -80,7 +80,7 @@ void TuneSequenceFile::loadItemsFromFile()
 {
     for (std::map<QString, std::unique_ptr<float>>::iterator it = s_tuneDescrMap.begin(); it != s_tuneDescrMap.end();
          ++it)
-        *it->second = StdFunc::toFloat(TuneSequenceFile::value(it->first, 0.0).toString());
+        *it->second = StdFunc::ToFloat(TuneSequenceFile::value(it->first, 0.0).toString());
 }
 
 void TuneSequenceFile::saveItemsToFile()

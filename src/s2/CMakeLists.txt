@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.15)
 
-project(xmleditor LANGUAGES CXX)
+project(s2 LANGUAGES CXX)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
@@ -11,19 +11,16 @@ find_package(
 
 add_library(
   ${PROJECT_NAME} STATIC
-  moduleseditor.cpp
-  moduleseditor.h
-  xmlconfigparser.cpp
-  xmlconfigparser.h
-  xmlparser.cpp
-  xmlparser.h
+  #configv.cpp
+  #configv.h
+  #s2.cpp
+  #s2.h
+  #s2helper.h
   ../../settings/settings.qrc)
 
 target_link_libraries(
   ${PROJECT_NAME}
   PRIVATE gen
-  # TODO: Remove this dependence
-  PRIVATE interfaces
   PRIVATE Qt${QT_VERSION_MAJOR}::Core
   PRIVATE Qt${QT_VERSION_MAJOR}::Network
   PRIVATE Qt${QT_VERSION_MAJOR}::Widgets

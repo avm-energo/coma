@@ -703,7 +703,7 @@ void Coma::resizeEvent(QResizeEvent *e)
 void Coma::keyPressEvent(QKeyEvent *e)
 {
     if (e->key() == Qt::Key_Escape)
-        StdFunc::cancel();
+        StdFunc::Cancel();
     QMainWindow::keyPressEvent(e);
 }
 

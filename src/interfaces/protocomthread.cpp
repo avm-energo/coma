@@ -261,7 +261,7 @@ void ProtocomThread::fileHelper(DataTypes::FilesEnum fileNum)
     }
     default:
     {
-        m_currentCommand.ba = StdFunc::arrayFromNumber(fileNum);
+        m_currentCommand.ba = StdFunc::ArrayFromNumber(fileNum);
         QByteArray ba = prepareBlock(m_currentCommand);
         emit writeDataAttempt(ba);
         return;
@@ -411,7 +411,7 @@ void ProtocomThread::parseRequest(const CommandStruct &cmdStr)
     case Commands::ReadBlkData:
     {
         const quint16 blk = m_currentCommand.arg1.value<quint16>();
-        m_currentCommand.ba = StdFunc::arrayFromNumber(quint8(blk));
+        m_currentCommand.ba = StdFunc::ArrayFromNumber(quint8(blk));
         QByteArray ba = prepareBlock(m_currentCommand);
         emit writeDataAttempt(ba);
         break;
@@ -443,7 +443,7 @@ void ProtocomThread::parseRequest(const CommandStruct &cmdStr)
         else
 #endif
         {
-            m_currentCommand.ba = StdFunc::arrayFromNumber(m_currentCommand.arg1.value<quint32>());
+            m_currentCommand.ba = StdFunc::ArrayFromNumber(m_currentCommand.arg1.value<quint32>());
         }
         QByteArray ba = prepareBlock(m_currentCommand);
         emit writeDataAttempt(ba);
@@ -459,7 +459,7 @@ void ProtocomThread::parseRequest(const CommandStruct &cmdStr)
         assert(m_currentCommand.arg1.canConvert<uint24>());
         uint24 addr = m_currentCommand.arg1.value<uint24>();
 
-        QByteArray buffer = StdFunc::arrayFromNumber((addr)) + m_currentCommand.ba;
+        QByteArray buffer = StdFunc::ArrayFromNumber((addr)) + m_currentCommand.ba;
 
         QByteArray ba = prepareBlock(Commands::WriteSingleCommand, buffer);
         emit writeDataAttempt(ba);
@@ -480,7 +480,7 @@ void ProtocomThread::parseRequest(const CommandStruct &cmdStr)
         else
         {
             if (m_currentCommand.arg1.isValid())
-                m_currentCommand.ba.prepend(StdFunc::arrayFromNumber(m_currentCommand.arg1.value<quint8>()));
+                m_currentCommand.ba.prepend(StdFunc::ArrayFromNumber(m_currentCommand.arg1.value<quint8>()));
             QByteArray ba = prepareBlock(m_currentCommand);
             emit writeDataAttempt(ba);
         }
@@ -672,7 +672,7 @@ ByteQueue ProtocomThread::prepareLongBlk(CommandStruct &cmdStr)
 
     QByteArray tba;
     if (cmdStr.arg1.isValid())
-        tba = StdFunc::arrayFromNumber(cmdStr.arg1.value<quint8>());
+        tba = StdFunc::ArrayFromNumber(cmdStr.arg1.value<quint8>());
     tba.append(cmdStr.ba.left(MaxSegmenthLength - 1));
 
     bq << prepareBlock(cmdStr.cmd, tba);
