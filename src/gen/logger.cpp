@@ -4,8 +4,8 @@
 #include "stdfunc.h"
 
 #include <iostream>
-#define LOG_MAX_SIZE 1048576
-#define LOGFILE "coma.log"
+constexpr quint64 LOG_MAX_SIZE = 1048576;
+const char* const LOGFILE = "coma.log";
 
 const static QMap<QtMsgType, const char *> msgTypes {
     { QtDebugMsg, "[DEBUG]" },       //

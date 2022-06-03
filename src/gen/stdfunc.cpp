@@ -34,8 +34,8 @@ StdFunc::StdFunc()
 }
 
 /*! \brief Initialization function for static class fields.
-    \details Initialize next fields by values: system home directory, organization, device IP, etc...
-*/
+ *  \details Initialize next fields by values: system home directory, organization, device IP, etc...
+ */
 void StdFunc::Init()
 {
     SystemHomeDir = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + "/"
@@ -55,8 +55,7 @@ void StdFunc::Init()
     SetTuneRequestCount(sets->value("TuneRequestCount", "20").toInt());
 }
 
-/*! \brief Converts a version from quint32 datatype to string view.
-*/
+/// \brief Converts a version from quint32 datatype to string view.
 QString StdFunc::VerToStr(quint32 num)
 {
     int mv = (num & 0xFF000000) >> 24;
@@ -67,8 +66,7 @@ QString StdFunc::VerToStr(quint32 num)
     return tmpString;
 }
 
-/*! \brief Converts a version from string view to quint32 datatype.
-*/
+/// \brief Converts a version from string view to quint32 datatype.
 quint32 StdFunc::StrToVer(const QString &str)
 {
     auto dotPos = str.indexOf('.');
@@ -80,8 +78,7 @@ quint32 StdFunc::StrToVer(const QString &str)
     return mv | lv | sv;
 }
 
-/*! \brief Converts a value from string view to float point datatype.
-*/
+/// \brief Converts a value from string view to float point datatype.
 float StdFunc::ToFloat(const QString &text, bool *ok)
 {
     bool floatok;
@@ -100,39 +97,36 @@ float StdFunc::ToFloat(const QString &text, bool *ok)
 }
 
 /*! \brief Checks that the number is in the specified interval.
-    \param var Checked number.
-    \param base,tolerance Limits of specified interval.
-*/
+ *  \param var Checked number.
+ *  \param base,tolerance Limits of specified interval.
+ */
 bool StdFunc::FloatIsWithinLimits(double var, double base, double tolerance)
 {
     auto tmpf = fabs(var - base);
     return (tmpf < fabs(tolerance));
 }
 
-/*! \brief Sets new path for home directory field.
-*/
+/// \brief Sets new path for home directory field.
 void StdFunc::SetHomeDir(const QString &dir)
 {
     HomeDir = dir;
 }
 
-/*! \brief Returns path for home directory.
-*/
+/// \brief Returns path for home directory.
 QString StdFunc::GetHomeDir()
 {
     return HomeDir;
 }
 
-/*! \brief Returns path for system home directory.
-*/
+/// \brief Returns path for system home directory.
 QString StdFunc::GetSystemHomeDir()
 {
     return SystemHomeDir;
 }
 
 /*! \brief Sets new device's IP.
-    \param ip String that contains new IP address.
-*/
+ *  \param ip String that contains new IP address.
+ */
 void StdFunc::SetDeviceIP(const QString &ip)
 {
     DeviceIP = ip;
@@ -140,8 +134,7 @@ void StdFunc::SetDeviceIP(const QString &ip)
     sets->setValue("DeviceIP", ip);
 }
 
-/*! \brief Returns device's IP.
- */
+/// \brief Returns device's IP.
 QString StdFunc::ForDeviceIP()
 {
     return DeviceIP;
@@ -157,53 +150,58 @@ void StdFunc::SetOrganizationString(const QString &str)
     sets->setValue("OrganizationString", str);
 }
 
-/*! \brief Returns organization name.
- */
+/// \brief Returns organization name.
 QString StdFunc::OrganizationString()
 {
     return s_OrganizationString;
 }
 
-/*! \brief Sets new tune request count.
- */
+/// \brief Sets new tune request count.
 void StdFunc::SetTuneRequestCount(int n)
 {
     m_tuneRequestCount = n;
 }
 
-/*! \brief Returns tune request count.
- */
+/// \brief Returns tune request count.
 int StdFunc::TuneRequestCount()
 {
     return m_tuneRequestCount;
 }
 
+/// \brief Sets cancel state in ON mode.
 void StdFunc::Cancel()
 {
     if (s_cancelEnabled)
         Cancelled = true;
 }
 
+/// \brief Turns off cancel state.
 void StdFunc::ClearCancel()
 {
     Cancelled = false;
 }
 
+/// \brief Returns cancel state.
 bool StdFunc::IsCancelled()
 {
     return Cancelled;
 }
 
+/// \brief Disallows to set cancel state.
 void StdFunc::SetCancelDisabled()
 {
     s_cancelEnabled = false;
 }
 
+/// \brief Allows to set cancel state.
 void StdFunc::SetCancelEnabled()
 {
     s_cancelEnabled = true;
 }
 
+/*! \brief Returns the number of bit set.
+ *  \details Returns the number of first bit set, starting with lower bits.
+ */
 int StdFunc::IndexByBit(quint32 dword)
 {
     quint32 bit = 0x00000001;
@@ -213,6 +211,10 @@ int StdFunc::IndexByBit(quint32 dword)
     return 0;
 }
 
+/*! \brief Returns the bit mask.
+ *  \details Returns the bit mask with using index.
+ *  \return Example: 0 => 0, 1 => 1, 2 => 2, 3 => 4, ...
+ */
 quint32 StdFunc::BitByIndex(int idx)
 {
     if ((idx == 0) || (idx > 31))
@@ -220,6 +222,7 @@ quint32 StdFunc::BitByIndex(int idx)
     return (0x00000001 << (idx - 1));
 }
 
+/// \brief Puts the thread to sleep for a given time in ms.
 void StdFunc::Wait(int ms)
 {
     QElapsedTimer tmr;
@@ -231,13 +234,11 @@ void StdFunc::Wait(int ms)
     }
 }
 
-/*!
-     \brief Ping ip address, return ip address if host is alive or return 0 if host is dead
-
-    Platform dependent ping function, ping ip address through cmdline utility, parse cmd output.
-    If output contains TTL host is alive else host is dead.
-    Returns ip address if host is alive; otherwise returns 0.
-*/
+/*! \brief Ping IP address, return IP address if host is alive or return 0 if host is dead
+ *  \details Platform dependent ping function, ping IP address through cmdline utility,
+ *  parse cmd output. If output contains TTL host is alive else host is dead.
+ *  \return IP address if host is alive, otherwise returns 0.
+ */
 quint32 StdFunc::Ping(quint32 addr)
 {
     QString exec = "ping";
@@ -248,7 +249,7 @@ quint32 StdFunc::Ping(quint32 addr)
     QString param = "-c";
 #endif
     QHostAddress host(addr);
-    auto *pingProcess = new QProcess;
+    auto pingProcess = new QProcess;
     QStringList params { param, "1", host.toString() };
 
     pingProcess->start(exec, params, QIODevice::ReadOnly);
@@ -276,9 +277,10 @@ quint32 StdFunc::Ping(quint32 addr)
     return 0;
 }
 
-/*! \brief Check port for ip4Addr ip address.
-    \param ip address of host, ip4Addr, port for checking, port.
-    \return Ip address of host if port is open otherwise return 0.
+/*! \brief Checks port for ip4Addr IP address.
+ *  \param ip4Addr[in] IP address of host.
+ *  \param port[in] Port for checking.
+ *  \return IP address of host if port is open, otherwise return 0.
 */
 quint32 StdFunc::CheckPort(quint32 ip4Addr, quint16 port)
 {
@@ -308,6 +310,10 @@ quint32 StdFunc::CheckPort(quint32 ip4Addr, quint16 port)
     return ip4Addr;
 }
 
+/*! \brief Compress input byte array with zlib.
+ *  \param data[in] Input byte array for compressing.
+ *  \return Compressed byte array.
+ */
 QByteArray StdFunc::Compress(const QByteArray &data)
 {
     // Compress the buffer (using zlib) in a compression rate at 9
@@ -357,6 +363,11 @@ QByteArray StdFunc::Compress(const QByteArray &data)
     return header + compressedData + footer;
 }
 
+/*! \brief Checks existing archive.
+ *  \details Cycle rotating 10 archive files with indexes [0...9], older archive
+ *  with index 9 will being deleted. For new archive will be free place with index 0.
+ *  \param path Path to directory with archives.
+ */
 bool StdFunc::CheckArchiveExist(const QString &path)
 {
     // rotating
@@ -381,6 +392,10 @@ bool StdFunc::CheckArchiveExist(const QString &path)
     return true;
 }
 
+/*! \brief Removes specified substring from specified string.
+ *  \param str[in, out] The string from which the substring will be removed.
+ *  \param substr[i] The substring that will be removed from string.
+ */
 void StdFunc::RemoveSubstr(std::string &str, std::string &substr)
 {
     std::string::size_type n = substr.length();
