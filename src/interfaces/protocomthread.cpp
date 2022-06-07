@@ -359,7 +359,7 @@ void ProtocomThread::fileHelper(DataTypes::FilesEnum fileNum)
 
     default:
     {
-        m_currentCommand.ba = StdFunc::arrayFromNumber(fileNum);
+        m_currentCommand.ba = StdFunc::ArrayFromNumber(fileNum);
         QByteArray ba = prepareBlock(m_currentCommand);
         emit writeDataAttempt(ba);
         return;
