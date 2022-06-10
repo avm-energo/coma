@@ -2,8 +2,8 @@
 
 #include "../../gen/board.h"
 #include "../../gen/colors.h"
-#include "../../gen/configv.h"
 #include "../../gen/stdfunc.h"
+#include "../../s2/configv.h"
 #include "../../widgets/epopup.h"
 #include "../../widgets/waitwidget.h"
 #include "../../widgets/wd_func.h"

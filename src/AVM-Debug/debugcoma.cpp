@@ -2,9 +2,9 @@
 
 #include "../comaversion/comaversion.h"
 #include "../gen/board.h"
-#include "../gen/datamanager.h"
 #include "../interfaces/emulator.h"
 #include "../interfaces/protocom.h"
+#include "../s2/datamanager.h"
 #include "../tune/82/tune82checkmip.h"
 #include "../widgets/aboutwidget.h"
 #include "config.h"

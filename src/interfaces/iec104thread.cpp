@@ -1,8 +1,8 @@
 #include "iec104thread.h"
 
-#include "../gen/datamanager.h"
 #include "../gen/pch.h"
-#include "../gen/s2.h"
+#include "../s2/datamanager.h"
+#include "../s2/s2.h"
 #include "iec104private.h"
 
 #include <QCoreApplication>

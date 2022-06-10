@@ -2,6 +2,7 @@
 
 #include "../gen/datatypes.h"
 #include "../gen/settings.h"
+#include "../s2/s2settings.h"
 
 #include <QDomElement>
 #include <QObject>

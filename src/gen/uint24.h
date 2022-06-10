@@ -123,6 +123,8 @@ public:
         return (int)*this != (int)val;
     }
 
+    // TODO: spaceship operator overload instead?
+
     bool operator>=(const uint24 &val) const
     {
         return (int)*this >= (int)val;

@@ -40,6 +40,7 @@ target_link_libraries(
   ${PROJECT_NAME}
   PRIVATE
   gen
+  s2
   widgets
   config
   comaversion

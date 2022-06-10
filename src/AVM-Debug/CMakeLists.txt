@@ -39,6 +39,7 @@ target_link_libraries(
   ${PROJECT_NAME}
   interfaces
   gen
+  s2
   module
   check
   config

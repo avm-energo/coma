@@ -1,6 +1,6 @@
 #include "check3133dialog.h"
 
-#include "../gen/datamanager.h"
+#include "../s2/datamanager.h"
 #include "../widgets/wd_func.h"
 
 #include <QDebug>

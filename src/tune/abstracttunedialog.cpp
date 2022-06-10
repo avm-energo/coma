@@ -2,7 +2,6 @@
 
 #include "../dialogs/keypressdialog.h"
 #include "../gen/board.h"
-#include "../gen/configv.h"
 #include "../gen/datatypes.h"
 #include "../gen/error.h"
 #include "../gen/files.h"
@@ -10,6 +9,7 @@
 #include "../gen/stdfunc.h"
 #include "../gen/timefunc.h"
 #include "../interfaces/protocom.h"
+#include "../s2/configv.h"
 #include "../widgets/epopup.h"
 #include "../widgets/waitwidget.h"
 #include "../widgets/wd_func.h"

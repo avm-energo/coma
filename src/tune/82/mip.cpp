@@ -1,9 +1,9 @@
 #include "mip.h"
 
-#include "../gen/datamanager.h"
 #include "../gen/settings.h"
 #include "../gen/stdfunc.h"
 #include "../interfaces/settingstypes.h"
+#include "../s2/datamanager.h"
 #include "../widgets/epopup.h"
 #include "../widgets/wd_func.h"
 

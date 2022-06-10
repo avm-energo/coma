@@ -1,6 +1,6 @@
 #include "s2.h"
 
-#include "error.h"
+#include "../gen/error.h"
 
 #include <QDateTime>
 #include <QDebug>

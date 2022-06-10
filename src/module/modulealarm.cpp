@@ -1,6 +1,6 @@
 #include "modulealarm.h"
 
-#include "../gen/datamanager.h"
+#include "../s2/datamanager.h"
 
 ModuleAlarm::ModuleAlarm(QWidget *parent) : BaseAlarm(parent)
 {

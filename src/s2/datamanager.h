@@ -1,19 +1,23 @@
 #ifndef DATAMANAGER_H
 #define DATAMANAGER_H
 
-#include "datatypes.h"
-#include "error.h"
-#include "singleton.h"
+#include "../gen/datatypes.h"
+#include "../gen/error.h"
+#include "../gen/singleton.h"
+#include "datarecv.h"
+#include "s2datatypes.h"
 
 #include <QMutex>
 #include <QObject>
 #include <QQueue>
 #include <QVariant>
 #include <queue>
+
 #ifdef __linux__
 #include <time.h>
 #endif
-#define INQUEUEMAXSIZE 100
+
+constexpr quint32 INQUEUEMAXSIZE = 100;
 
 template <class> inline constexpr bool always_false_v = false;
 
@@ -34,6 +38,7 @@ public:
     //    &response); static void setConfig(S2ConfigType *s2config);
     //    static void reqStartup();
     void checkTypeAndSendSignals(DataTypes::SignalsStruct &str);
+
     template <typename T> static void addSignalToOutList(DataTypes::SignalTypes type, T signal)
     {
         DataTypes::SignalsStruct str;
@@ -44,6 +49,7 @@ public:
         //        s_outputList.append(str);
         //        s_outListMutex.unlock();
     }
+
     template <typename T> static void addToInQueue(T data)
     {
         QVariant var;
@@ -51,6 +57,7 @@ public:
         QMutexLocker locker(&s_inQueueMutex);
         s_inputQueue.push(var);
     }
+
     template <typename T> static Error::Msg deQueue(T &cmd)
     {
         QMutexLocker locker(&s_inQueueMutex);
@@ -66,21 +73,25 @@ public:
         }
         return Error::Msg::ResEmpty;
     }
+
     static size_t queueSize()
     {
         return s_inputQueue.size();
     }
+
     static void clearQueue()
     {
         decltype(s_inputQueue) empty;
         std::swap(s_inputQueue, empty);
         GetInstance().m_registers.clear();
     }
+
     bool containsRegister(quint32 addr) const
     {
         QMutexLocker locker(&s_inQueueMutex);
         return m_registers.contains(addr);
     }
+
     template <typename T> bool containsRegister(quint32 addr) const
     {
         if (containsRegister(addr))
@@ -103,7 +114,6 @@ private:
     //    static QList<DataTypes::SignalsStruct> s_outputList;
     //    static QMutex s_outListMutex;
     static QMutex s_inQueueMutex;
-
     QMap<quint32, RegisterType> m_registers;
 
     template <typename T> void insertRegister(quint32 addr, T value)

@@ -17,4 +17,4 @@ find_package(
   REQUIRED)
 add_executable(${PROJECT_NAME} testprotocom.cpp testprotocom.h console.cpp
                                console.h #[[main.cpp]])
-target_link_libraries(${PROJECT_NAME} interfaces gen Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::Xml Qt${QT_VERSION_MAJOR}::Test)
+target_link_libraries(${PROJECT_NAME} interfaces gen s2 Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::Xml Qt${QT_VERSION_MAJOR}::Test)

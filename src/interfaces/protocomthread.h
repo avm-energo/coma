@@ -2,6 +2,7 @@
 
 #include "../gen/datatypes.h"
 #include "../gen/error.h"
+#include "../s2/s2datatypes.h"
 #include "protocomprivate.h"
 
 #include <QMutex>

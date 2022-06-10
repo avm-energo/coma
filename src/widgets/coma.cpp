@@ -30,7 +30,6 @@
 #include "../dialogs/keypressdialog.h"
 #include "../dialogs/settingsdialog.h"
 #include "../gen/board.h"
-#include "../gen/datamanager.h"
 #include "../gen/errorqueue.h"
 #include "../gen/files.h"
 #include "../gen/logger.h"
@@ -39,6 +38,7 @@
 #include "../interfaces/protocom.h"
 #include "../interfaces/settingstypes.h"
 #include "../module/module.h"
+#include "../s2/datamanager.h"
 #include "../widgets/aboutwidget.h"
 #include "../widgets/epopup.h"
 #include "../widgets/splashscreen.h"
@@ -83,8 +83,7 @@ void registerForDeviceNotification(QWidget *ptr)
 }
 #endif
 
-Coma::Coma(QWidget *parent) : QMainWindow(parent)
-                            , editor(nullptr)
+Coma::Coma(QWidget *parent) : QMainWindow(parent), editor(nullptr)
 {
 }
 
@@ -356,7 +355,8 @@ void Coma::openModuleEditor()
 {
     if (editor == nullptr)
         editor = new ModulesEditor(this);
-    else editor->exec();
+    else
+        editor->exec();
 }
 
 void Coma::newTimers()

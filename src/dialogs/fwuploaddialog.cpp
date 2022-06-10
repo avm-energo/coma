@@ -5,9 +5,9 @@
 #include "../gen/colors.h"
 #include "../gen/error.h"
 #include "../gen/files.h"
-#include "../gen/s2.h"
 #include "../gen/stdfunc.h"
 #include "../gen/timefunc.h"
+#include "../s2/s2.h"
 #include "../widgets/etableview.h"
 #include "../widgets/wd_func.h"
 

@@ -1,7 +1,7 @@
 #include "stdfunc.h"
 
 #include "../gen/error.h"
-#include "../gen/s2.h"
+//#include "../gen/s2.h"
 #include "pch.h"
 
 #include <QCoreApplication>
@@ -316,8 +316,8 @@ QByteArray StdFunc::compress(const QByteArray &data)
     QByteArray footer;
     QDataStream footerStream(&footer, QIODevice::WriteOnly);
     footerStream.setByteOrder(QDataStream::LittleEndian);
-    footerStream << quint32(S2::crc32buf(data)) // Append a four-byte CRC-32 of the uncompressed data
-                 << quint32(data.size());       // Append 4 bytes uncompressed input size modulo 2^32
+    // footerStream << quint32(S2::crc32buf(data)) // Append a four-byte CRC-32 of the uncompressed data
+    //             << quint32(data.size());       // Append 4 bytes uncompressed input size modulo 2^32
     return header + compressedData + footer;
 }
 

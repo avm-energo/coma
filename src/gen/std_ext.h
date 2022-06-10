@@ -52,6 +52,7 @@ struct is_container<T,
         void>> : public std::true_type
 {
 };
+
 namespace detail
 {
     template <class F, size_t... I> constexpr void for_constexpr_impl(F &&func, std::index_sequence<I...>)
@@ -59,6 +60,7 @@ namespace detail
         (func(std::integral_constant<std::size_t, I> {}), ...);
     }
 }
+
 template <size_t C, class F> constexpr void for_constexpr(F &&func)
 {
     std_ext::detail::for_constexpr_impl(std::forward<F>(func), std::make_index_sequence<C> {});
@@ -81,6 +83,7 @@ template <class Variant> std::type_info const &variant_type(Variant const &v)
 {
     return std::visit([](auto &&x) -> decltype(auto) { return typeid(x); }, v);
 }
+
 template <class T> struct remove_cvref
 {
     typedef std::remove_cv_t<std::remove_reference_t<T>> type;
@@ -104,6 +107,7 @@ inline
     x |= x >> 16;
     return ++x;
 }
+
 }
 
 // helper type for the visitor
@@ -111,5 +115,6 @@ template <class... Ts> struct overloaded : Ts...
 {
     using Ts::operator()...;
 };
+
 // explicit deduction guide (not needed as of C++20)
 template <class... Ts> overloaded(Ts...) -> overloaded<Ts...>;

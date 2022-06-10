@@ -1,6 +1,6 @@
 #include "configv.h"
 
-#include "error.h"
+#include "../gen/error.h"
 
 #include <QDebug>
 
@@ -19,7 +19,6 @@ DataTypes::DataRecV ConfigV::getRecord(unsigned int id)
 
 void ConfigV::setRecordValue(const DataTypes::DataRecV &record)
 {
-
     auto result = std::find_if(
         std::begin(config), std::end(config), [record](const auto &lhs) { return (lhs.getId() == record.getId()); });
     if (result != std::end(config))

@@ -1,6 +1,6 @@
 #pragma once
-#include "../gen/datatypes.h"
 #include "../gen/std_ext.h"
+#include "../s2/s2datatypes.h"
 #include "../widgets/delegate_common.h"
 #include "../widgets/ipctrl.h"
 #include "../widgets/wd_func.h"

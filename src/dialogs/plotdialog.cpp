@@ -1,6 +1,6 @@
 #include "plotdialog.h"
 
-#include "../gen/datamanager.h"
+#include "../s2/datamanager.h"
 
 #include <../qcustomplot/qcustomplot.h>
 

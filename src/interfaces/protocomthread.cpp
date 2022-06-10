@@ -1,12 +1,12 @@
 #include "protocomthread.h"
 
-#include "../gen/datamanager.h"
 #include "../gen/files.h"
 #include "../gen/helper.h"
 #include "../gen/logclass.h"
 #include "../gen/registers.h"
-#include "../gen/s2.h"
 #include "../gen/stdfunc.h"
+#include "../s2/datamanager.h"
+#include "../s2/s2.h"
 #include "baseinterface.h"
 
 #include <QDebug>

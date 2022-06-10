@@ -2,13 +2,13 @@
 
 #include "../dialogs/keypressdialog.h"
 #include "../gen/board.h"
-#include "../gen/configv.h"
-#include "../gen/datamanager.h"
 #include "../gen/error.h"
 #include "../gen/files.h"
-#include "../gen/s2.h"
 #include "../gen/stdfunc.h"
 #include "../gen/timefunc.h"
+#include "../s2/configv.h"
+#include "../s2/datamanager.h"
+#include "../s2/s2.h"
 #include "../widgets/wd_func.h"
 
 #include <QDebug>

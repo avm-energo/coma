@@ -24,6 +24,7 @@ option(DEBUG_WIDGET_FACTORY "Enable debug logging for WidgetFactory" OFF)
 
 target_link_libraries(
   ${PROJECT_NAME}
+  PRIVATE s2
   PRIVATE Qt${QT_VERSION_MAJOR}::Core
   PRIVATE Qt${QT_VERSION_MAJOR}::Widgets
   PRIVATE Qt${QT_VERSION_MAJOR}::Xml

@@ -2,7 +2,7 @@
 
 #include "../gen/error.h"
 #include "../gen/files.h"
-#include "../gen/s2.h"
+#include "../s2/s2.h"
 #include "oscmanager.h"
 
 #include <QDebug>

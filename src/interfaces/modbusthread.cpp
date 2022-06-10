@@ -1,9 +1,9 @@
 #include "modbusthread.h"
 
-#include "../gen/datamanager.h"
 #include "../gen/helper.h"
 #include "../gen/pch.h"
 #include "../gen/stdfunc.h"
+#include "../s2/datamanager.h"
 #include "baseinterface.h"
 
 #include <QCoreApplication>

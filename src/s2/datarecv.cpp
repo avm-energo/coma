@@ -1,9 +1,9 @@
 #include "datarecv.h"
 
-#include "datatypes.h"
 #include "s2helper.h"
 
 #include <type_traits>
+
 DataTypes::valueMap DataTypes::DataRecV::map;
 
 namespace DataTypes

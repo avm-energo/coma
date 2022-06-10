@@ -4,6 +4,7 @@
 #include "../gen/datatypes.h"
 #include "../gen/error.h"
 #include "../gen/logclass.h"
+#include "../s2/s2datatypes.h"
 
 #include <QQueue>
 #include <QTimer>

@@ -69,6 +69,7 @@ quint64 TimeFunc::InvStringToUnixTime32(QString utime, QTimeZone tz)
     Q_UNUSED(tz)
     return QDateTime::fromString(utime, "yyyy/MM/dd hh:mm:ss").toSecsSinceEpoch();
 }
+
 QTimeZone TimeFunc::userTimeZone()
 {
     using namespace settings;

@@ -1,6 +1,8 @@
 #ifndef S2_H
 #define S2_H
-#include "datatypes.h"
+#include "../gen/datatypes.h"
+#include "datarecv.h"
+#include "s2datatypes.h"
 
 #include <QVector>
 constexpr int MAXSIZE = 200000;

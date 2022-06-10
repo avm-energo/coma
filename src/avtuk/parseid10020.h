@@ -1,6 +1,9 @@
 #pragma once
 
 #include "parsemodule.h"
+
+#include <array>
+
 class ParseID10020 : public ParseModule
 {
 public:

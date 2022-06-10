@@ -1,6 +1,7 @@
 #include "usbhidport.h"
 
 #include "../gen/helper.h"
+#include "../gen/settings.h"
 #include "../gen/stdfunc.h"
 #include "baseinterface.h"
 #include "hidapi/hidapi.h"
@@ -13,6 +14,7 @@
 #include <QSettings>
 #include <QTimer>
 #include <array>
+
 #ifdef Q_OS_WINDOWS
 // clang-format off
 #include <windows.h>
@@ -20,6 +22,7 @@
 #include <dbt.h>
 // clang-format on
 #endif
+
 using Proto::CommandStruct;
 using Proto::Direction;
 using Proto::Starters;

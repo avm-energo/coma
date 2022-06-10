@@ -16,7 +16,7 @@
 #ifndef ABSTRACTCHECKDIALOG_H
 #define ABSTRACTCHECKDIALOG_H
 
-#include "../gen/settings.h"
+#include "../s2/s2settings.h"
 #include "../widgets/udialog.h"
 #include "check.h"
 

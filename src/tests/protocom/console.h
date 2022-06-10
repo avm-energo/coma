@@ -1,6 +1,8 @@
 #pragma once
 
 #include "../../gen/helper.h"
+#include "../../s2/filestruct.h"
+#include "../../s2/s2datatypes.h"
 
 #include <QDebug>
 #include <QObject>

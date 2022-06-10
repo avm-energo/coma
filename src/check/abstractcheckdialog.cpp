@@ -2,12 +2,12 @@
 
 #include "../gen/board.h"
 #include "../gen/colors.h"
-#include "../gen/datamanager.h"
 #include "../gen/error.h"
 #include "../gen/stdfunc.h"
+#include "../s2/datamanager.h"
+#include "../s2/s2helper.h"
 #include "../widgets/wd_func.h"
 //#include "xlsxdocument.h"
-#include "../gen/s2helper.h"
 
 #include <QCoreApplication>
 #include <QFileDialog>

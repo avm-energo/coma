@@ -1,11 +1,11 @@
 #include "switchjournaldialog.h"
 
 #include "../gen/board.h"
-#include "../gen/datamanager.h"
 #include "../gen/files.h"
-#include "../gen/s2.h"
 #include "../gen/timefunc.h"
 #include "../models/etablemodel.h"
+#include "../s2/datamanager.h"
+#include "../s2/s2.h"
 #include "../widgets/wd_func.h"
 #include "pushbuttondelegate.h"
 #include "swjmanager.h"

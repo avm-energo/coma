@@ -5,6 +5,7 @@
 #include "../gen/modules.h"
 #include "../gen/timefunc.h"
 #include "../models/edynamictablemodel.h"
+#include "../s2/filestruct.h"
 
 #include <QDebug>
 #include <QSortFilterProxyModel>

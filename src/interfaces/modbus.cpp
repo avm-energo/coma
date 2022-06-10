@@ -2,9 +2,9 @@
 
 #include "../gen/error.h"
 #include "../gen/registers.h"
-#include "../gen/s2.h"
 #include "../gen/stdfunc.h"
 #include "../gen/timefunc.h"
+#include "../s2/s2.h"
 #include "modbusthread.h"
 #include "serialport.h"
 #include "settingstypes.h"

@@ -7,10 +7,10 @@
 #include "../dialogs/journalsdialog.h"
 #include "../dialogs/timedialog.h"
 #include "../gen/board.h"
-#include "../gen/s2.h"
 #include "../gen/stdfunc.h"
-#include "../xmleditor/xmlparser.h"
+#include "../s2/s2.h"
 #include "../widgets/udialog.h"
+#include "../xmleditor/xmlparser.h"
 //#define XML_DEBUG
 
 #include <QDir>

@@ -1,7 +1,10 @@
-#pragma once
+#ifndef DATARECV_H
+#define DATARECV_H
+
 #include "../ctti/type_id.hpp"
+#include "../gen/std_ext.h"
+#include "datarec.h"
 #include "s2helper.h"
-#include "std_ext.h"
 
 #include <QVariant>
 #include <cassert>
@@ -34,36 +37,9 @@ template <typename T, size_t N> std::array<T, N> inline operator<<(std::array<T,
 }
 
 class QString;
-namespace S2DataTypes
-{
-
-struct DataRecHeader
-{
-    // id
-    quint32 id;
-    // количество байт в TypeTheData
-    quint32 numByte;
-};
-
-struct DataRec
-{
-    DataRecHeader header;
-    void *thedata;
-};
-inline bool is_same(const S2DataTypes::DataRec &lhs, const S2DataTypes::DataRec &rhs)
-{
-    bool is_same_value = false;
-    if ((lhs.header.id == rhs.header.id) && (lhs.header.numByte == rhs.header.numByte))
-        is_same_value = !memcmp(lhs.thedata, rhs.thedata, lhs.header.numByte);
-
-    Q_ASSERT(is_same_value);
-    return is_same_value;
-}
-
-}
-
 class S2;
 class Module;
+
 namespace DataTypes
 {
 
@@ -75,10 +51,12 @@ public:
     {
         static constexpr bool value = std_ext::is_variant_alternative<T, valueType>();
     };
+
     template <typename T, std::enable_if_t<true_type<T>::value, bool> = true> void insert(int key)
     {
         m_map.insert({ key, ctti::unnamed_type_id<T>() });
     }
+
     void insert(int key, ctti::unnamed_type_id_t value)
     {
         m_map.insert({ key, value });
@@ -163,6 +141,7 @@ private:
         assert(sizeof(T) == numByte);
         data = *reinterpret_cast<const T *>(rawdata);
     }
+
     template <typename T, std::enable_if_t<std_ext::is_container<T>::value, bool> = true>
     valueType helper(const QString &str)
     {
@@ -171,6 +150,7 @@ private:
         data = arr;
         return valueType(arr);
     }
+
     template <typename T, std::enable_if_t<!std_ext::is_container<T>::value, bool> = true>
     valueType helper(const QString &str)
     {
@@ -179,6 +159,17 @@ private:
     }
 };
 
-bool operator==(const DataTypes::DataRecV &lhs, const DataTypes::DataRecV &rhs);
-bool operator!=(const DataTypes::DataRecV &lhs, const DataTypes::DataRecV &rhs);
+bool operator==(const DataRecV &lhs, const DataRecV &rhs);
+bool operator!=(const DataRecV &lhs, const DataRecV &rhs);
+
+struct RecordPair
+{
+    DataRecV record;
+    bool visibility = true;
+};
+
 }
+
+Q_DECLARE_METATYPE(DataTypes::DataRecV)
+
+#endif // DATARECV_H

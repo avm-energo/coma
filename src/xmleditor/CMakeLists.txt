@@ -22,6 +22,7 @@ add_library(
 target_link_libraries(
   ${PROJECT_NAME}
   PRIVATE gen
+  PRIVATE s2
   # TODO: Remove this dependence
   PRIVATE interfaces
   PRIVATE Qt${QT_VERSION_MAJOR}::Core

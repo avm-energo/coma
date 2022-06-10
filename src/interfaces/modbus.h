@@ -1,8 +1,8 @@
 #ifndef MODBUS_H
 #define MODBUS_H
 
-#include "../gen/datamanager.h"
 #include "../gen/logclass.h"
+#include "../s2/datamanager.h"
 #include "baseinterface.h"
 #include "modbusprivate.h"
 #include "settingstypes.h"

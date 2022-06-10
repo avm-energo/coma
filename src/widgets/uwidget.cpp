@@ -2,8 +2,8 @@
 
 #include "../dialogs/keypressdialog.h"
 #include "../gen/colors.h"
-#include "../gen/datamanager.h"
 #include "../gen/stdfunc.h"
+#include "../s2/datamanager.h"
 #include "wd_func.h"
 //#define UWIDGET_DEBUG
 #include <QCoreApplication>

@@ -1,6 +1,6 @@
 #include "console.h"
 
-#include "../../gen/datamanager.h"
+#include "../../s2/datamanager.h"
 
 #include <QDebug>
 #include <QMetaMethod>

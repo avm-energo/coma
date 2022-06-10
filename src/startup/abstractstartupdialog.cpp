@@ -3,9 +3,9 @@
 #include "../dialogs/keypressdialog.h"
 #include "../gen/board.h"
 #include "../gen/colors.h"
-#include "../gen/datamanager.h"
 #include "../gen/helper.h"
 #include "../gen/stdfunc.h"
+#include "../s2/datamanager.h"
 #include "../widgets/etableview.h"
 #include "../widgets/wd_func.h"
 

@@ -1,5 +1,5 @@
 #pragma once
-#include "../gen/s2helper.h"
+#include "../s2/s2helper.h"
 #include "../gen/std_ext.h"
 
 #include <QCheckBox>

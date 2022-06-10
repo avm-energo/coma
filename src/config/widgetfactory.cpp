@@ -1,8 +1,8 @@
 #include "widgetfactory.h"
 
-#include "../gen/configv.h"
 #include "../gen/module_kxx.h"
 #include "../models/comboboxdelegate.h"
+#include "../s2/configv.h"
 #include "../widgets/checkboxgroup.h"
 #include "../widgets/flowlayout.h"
 #include "../widgets/ipctrl.h"
@@ -56,7 +56,7 @@ template <typename T> QWidget *helper(const T &arg, QWidget *parent, BciNumber k
 
     default:
         qWarning() << "Type not founded";
-        //Q_ASSERT(false && "False type");
+        // Q_ASSERT(false && "False type");
         widget->deleteLater();
         widget = nullptr;
         break;

@@ -1,9 +1,9 @@
 #include "baseinterface.h"
 
-#include "../gen/datamanager.h"
 #include "../gen/registers.h"
-#include "../gen/s2.h"
 #include "../gen/stdfunc.h"
+#include "../s2/datamanager.h"
+#include "../s2/s2.h"
 
 #include <QCoreApplication>
 #include <QMutexLocker>

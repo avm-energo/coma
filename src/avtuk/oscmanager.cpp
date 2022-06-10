@@ -2,8 +2,8 @@
 
 #include "../gen/files.h"
 #include "../gen/modules.h"
-#include "../gen/s2.h"
 #include "../gen/timefunc.h"
+#include "../s2/s2.h"
 #include "../widgets/wd_func.h"
 #include "parseid10001.h"
 #include "parseid10020.h"

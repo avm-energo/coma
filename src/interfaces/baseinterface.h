@@ -3,8 +3,8 @@
 #include "../gen/datatypes.h"
 #include "../gen/error.h"
 #include "../gen/logclass.h"
-#include "../gen/settings.h"
 #include "../gen/stdfunc.h"
+#include "../s2/s2settings.h"
 #include "interfacesettings.h"
 
 #include <QTimer>

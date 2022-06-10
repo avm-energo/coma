@@ -1,6 +1,7 @@
 #pragma once
 
-#include "std_ext.h"
+#include "../gen/std_ext.h"
+#include "s2datatypes.h"
 
 #include <array>
 #include <iostream>
@@ -36,9 +37,9 @@ static_assert(sizeof(float) == sizeof(DWORD), "Broken datatypes");
 static_assert(sizeof(WORD_4t) == sizeof(BYTE_8t), "Broken datatypes");
 static_assert(sizeof(DWORD_4t) == sizeof(BYTE_16t), "Broken datatypes");
 static_assert(sizeof(FLOAT_2t) == sizeof(BYTE_8t), "Broken datatypes");
+
 namespace detail
 {
-
     template <typename T> void print(const T &value)
     {
         if constexpr (std::is_unsigned<T>())
@@ -60,13 +61,12 @@ namespace detail
         else
             std::cout << value;
     }
-
 }
+
 using valueType = std::variant<BYTE, WORD, DWORD, INT32, //
     BYTE_4t, WORD_4t, DWORD_4t,                          //
     BYTE_8t, WORD_8t, DWORD_8t,                          //
     BYTE_16t, WORD_16t, DWORD_16t,                       //
     BYTE_32t, WORD_32t, DWORD_32t,                       //
     float, FLOAT_2t, FLOAT_3t, FLOAT_4t, FLOAT_6t, FLOAT_8t>;
-
 }

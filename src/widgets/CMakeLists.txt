@@ -88,6 +88,7 @@ target_link_libraries(
   ${PROJECT_NAME}
   PRIVATE avtuk
   PRIVATE module
+  PRIVATE s2
   PRIVATE xmleditor
   PRIVATE Qt${QT_VERSION_MAJOR}::Core
   PRIVATE Qt${QT_VERSION_MAJOR}::Widgets

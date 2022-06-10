@@ -1,7 +1,7 @@
 #include "udialog.h"
 
 #include "../gen/board.h"
-#include "../gen/datamanager.h"
+#include "../s2/datamanager.h"
 #include "epopup.h"
 
 //#include <QMessageBox>

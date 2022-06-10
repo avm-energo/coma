@@ -1,10 +1,11 @@
 #include "helper.h"
 
 #include "../interfaces/usbhidportinfo.h"
+#include "timefunc.h"
 #ifdef QT_GUI_LIB
 #include "../models/errorprotocolitem.h"
 #endif
-#include "timefunc.h"
+
 QDebug operator<<(QDebug debug, const DataTypes::BitStringStruct &st)
 {
     debug.nospace() << QString::number(st.sigAdr) << ":" << QString::number(st.sigVal, 16) << ":"
@@ -32,13 +33,6 @@ QDebug operator<<(QDebug debug, const DataTypes::SinglePointWithTimeStruct &st)
     return debug.maybeSpace();
 }
 
-QDebug operator<<(QDebug debug, const DataTypes::FileStruct &st)
-{
-    debug.nospace() << QString::number(st.ID) << ":"
-                    << "File size: " << QString::number(st.data.size());
-    return debug.maybeSpace();
-}
-
 QDebug operator<<(QDebug debug, const DataTypes::BlockStruct &st)
 {
     debug.nospace() << QString::number(st.ID) << ":" << st.data.toHex();
@@ -60,14 +54,6 @@ QDebug operator<<(QDebug debug, const DataTypes::Signal &st)
 QDebug operator<<(QDebug debug, const DataTypes::GeneralResponseStruct &st)
 {
     debug.nospace() << st.type << ":" << QString::number(st.data, 16);
-    return debug.maybeSpace();
-}
-
-QDebug operator<<(QDebug debug, const S2DataTypes::OscInfo &st)
-{
-
-    debug.nospace() << st.typeHeader.id << ":" << st.typeHeader.numByte << ":" << st.id << ":"
-                    << TimeFunc::UnixTime64ToString(st.unixtime) << ":" << st.idOsc0;
     return debug.maybeSpace();
 }
 

@@ -15,43 +15,34 @@ find_package(
 
 add_library(
   gen STATIC
-  settings.h
   board.cpp
   board.h
   colors.h
-  stdfunc.h
-  s2.h
-  s2helper.h
-  datamanager.h
-  datarecv.h
-  datarecv.cpp
   datatypes.h
   error.h
   error.cpp
+  errorqueue.h
   errorqueue.cpp
   files.cpp
   files.h
-  helper.cpp
   helper.h
+  helper.cpp
   logclass.cpp
   logclass.h
   logger.h
   logger.cpp
-  pch.h
-  uint24.h
-  singleton.h
-  timefunc.h
-  timefunc.cpp
-  datamanager.cpp
-  stdfunc.cpp
   module_kxx.h
   modules.h
+  pch.h
   registers.h
-  errorqueue.h
+  settings.h
+  singleton.h
+  stdfunc.h
+  stdfunc.cpp
   std_ext.h
-  s2.cpp
-  configv.cpp
-  configv.h)
+  timefunc.h
+  timefunc.cpp
+  uint24.h)
 
 target_link_libraries(
   gen
