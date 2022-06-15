@@ -93,14 +93,14 @@ public:
     }
     DataRecV(const unsigned _id);
     template <typename T, std::enable_if_t<valueMap::true_type<T>::value, bool> = true>
-    DataRecV(unsigned _id, T _data) : id(_id), data(_data)
+    DataRecV(quint16 _id, T _data) : id(_id), data(_data)
     {
     }
 
     DataRecV() = default;
     void printer() const;
     S2DataTypes::DataRec serialize() const;
-    unsigned int getId() const;
+    quint16 getId() const;
     valueType getData() const;
     void setData(const valueType &value);
 
@@ -125,15 +125,13 @@ public:
             data = value;
     }
 
-
     size_t typeIndex() const
     {
         return data.index();
     }
 
-
 private:
-    unsigned int id;
+    quint16 id;
     valueType data;
     static valueMap map;
 

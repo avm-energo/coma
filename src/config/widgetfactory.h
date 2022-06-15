@@ -18,11 +18,11 @@ class WidgetFactory
 
 public:
     WidgetFactory(ConfigV *config);
-    QWidget *createWidget(BciNumber key, QWidget *parent = nullptr);
-    template <typename T> bool fillWidget(const QWidget *parent, BciNumber key, const T &value);
-    bool fillBack(BciNumber key, const QWidget *parent);
+    QWidget *createWidget(quint16 key, QWidget *parent = nullptr);
+    template <typename T> bool fillWidget(const QWidget *parent, quint16 key, const T &value);
+    bool fillBack(quint16 key, const QWidget *parent);
 
-    static QString hashedName(ctti::unnamed_type_id_t type, BciNumber key)
+    static QString hashedName(ctti::unnamed_type_id_t type, quint16 key)
     {
         return QString::number(type.hash()) + QString::number(key);
     }
@@ -43,42 +43,42 @@ private:
     // Default template like a dummy function for sfinae
     // We will be here if specialisation doesn't exist for this T
     template <typename T>
-    QList<QStandardItem *> createItem([[maybe_unused]] BciNumber key, [[maybe_unused]] const T &value,
-        [[maybe_unused]] const QWidget *parent = nullptr)
+    QList<QStandardItem *> createItem(
+        [[maybe_unused]] quint16 key, [[maybe_unused]] const T &value, [[maybe_unused]] const QWidget *parent = nullptr)
     {
         return {};
     };
 
     template <typename T, std::enable_if_t<std::is_same<T, IPCtrl::container_type>::value, bool> = true>
-    bool fillIpCtrl(const QWidget *parent, BciNumber key, const T &value);
-    bool fillCheckBox(const QWidget *parent, BciNumber key, bool value);
+    bool fillIpCtrl(const QWidget *parent, quint16 key, const T &value);
+    bool fillCheckBox(const QWidget *parent, quint16 key, bool value);
     template <typename T, std::enable_if_t<!std_ext::is_container<T>::value, bool> = true>
-    bool fillLineEdit(const QWidget *parent, BciNumber key, const T &value);
+    bool fillLineEdit(const QWidget *parent, quint16 key, const T &value);
     template <typename T, std::enable_if_t<std_ext::is_container<T>::value, bool> = true>
-    bool fillLineEdit(const QWidget *parent, BciNumber key, const T &value);
+    bool fillLineEdit(const QWidget *parent, quint16 key, const T &value);
     template <typename T>
-    bool fillTableView(const QWidget *parent, BciNumber key, BciNumber parentKey, //
+    bool fillTableView(const QWidget *parent, quint16 key, quint16 parentKey, //
         ctti::unnamed_type_id_t type, const T &value);
 
-    template <typename T> bool fillBackItem(BciNumber key, const QWidget *parent, BciNumber parentKey);
+    template <typename T> bool fillBackItem(quint16 key, const QWidget *parent, quint16 parentKey);
 
     // helpers for fill back from widget
-    bool fillBackModbus(BciNumber key, const QWidget *parent, ctti::unnamed_type_id_t type, BciNumber parentKey);
-    bool fillBackIpCtrl(BciNumber key, const QWidget *parent);
-    bool fillBackCheckBox(BciNumber key, const QWidget *parent);
-    bool fillBackLineEdit(BciNumber key, const QWidget *parent);
-    bool fillBackSPBG(BciNumber key, const QWidget *parent);
-    bool fillBackSPB(BciNumber key, const QWidget *parent);
-    bool fillBackChBG(BciNumber key, const QWidget *parent);
-    bool fillBackComboBox(BciNumber key, const QWidget *parent, delegate::QComboBox::PrimaryField field);
-    bool fillBackComboBoxGroup(BciNumber key, const QWidget *parent, int count);
+    bool fillBackModbus(quint16 key, const QWidget *parent, ctti::unnamed_type_id_t type, quint16 parentKey);
+    bool fillBackIpCtrl(quint16 key, const QWidget *parent);
+    bool fillBackCheckBox(quint16 key, const QWidget *parent);
+    bool fillBackLineEdit(quint16 key, const QWidget *parent);
+    bool fillBackSPBG(quint16 key, const QWidget *parent);
+    bool fillBackSPB(quint16 key, const QWidget *parent);
+    bool fillBackChBG(quint16 key, const QWidget *parent);
+    bool fillBackComboBox(quint16 key, const QWidget *parent, delegate::QComboBox::PrimaryField field);
+    bool fillBackComboBoxGroup(quint16 key, const QWidget *parent, int count);
 
     static config::widgetMap m_widgetMap;
     static categoryMap m_categoryMap;
     ConfigV *configV;
 };
 
-inline bool WidgetFactory::fillCheckBox(const QWidget *parent, BciNumber key, bool value)
+inline bool WidgetFactory::fillCheckBox(const QWidget *parent, quint16 key, bool value)
 {
     auto widget = parent->findChild<QCheckBox *>(QString::number(key));
     if (!widget)
@@ -95,12 +95,12 @@ const inline QString widgetName(int group, int item)
 // Template specialisation
 
 template <>
-QList<QStandardItem *> WidgetFactory::createItem(BciNumber key, const DataTypes::BYTE_8t &value, const QWidget *parent);
+QList<QStandardItem *> WidgetFactory::createItem(quint16 key, const DataTypes::BYTE_8t &value, const QWidget *parent);
 
 // Template definition
 
 template <typename T, std::enable_if_t<std::is_same<T, IPCtrl::container_type>::value, bool>>
-bool WidgetFactory::fillIpCtrl(const QWidget *parent, BciNumber key, const T &value)
+bool WidgetFactory::fillIpCtrl(const QWidget *parent, quint16 key, const T &value)
 {
     auto widget = parent->findChild<IPCtrl *>(QString::number(key));
     if (!widget)
@@ -110,7 +110,7 @@ bool WidgetFactory::fillIpCtrl(const QWidget *parent, BciNumber key, const T &va
 }
 
 template <typename T, std::enable_if_t<!std_ext::is_container<T>::value, bool>>
-bool WidgetFactory::fillLineEdit(const QWidget *parent, BciNumber key, const T &value)
+bool WidgetFactory::fillLineEdit(const QWidget *parent, quint16 key, const T &value)
 {
     auto widget = parent->findChild<QLineEdit *>(QString::number(key));
     if (!widget)
@@ -120,7 +120,7 @@ bool WidgetFactory::fillLineEdit(const QWidget *parent, BciNumber key, const T &
 }
 
 template <typename T, std::enable_if_t<std_ext::is_container<T>::value, bool>>
-bool WidgetFactory::fillLineEdit(const QWidget *parent, BciNumber key, const T &value)
+bool WidgetFactory::fillLineEdit(const QWidget *parent, quint16 key, const T &value)
 {
     if constexpr (std::is_integral<typename T::value_type>::value)
     {
@@ -135,7 +135,7 @@ bool WidgetFactory::fillLineEdit(const QWidget *parent, BciNumber key, const T &
 
 template <typename T>
 bool WidgetFactory::fillTableView(
-    const QWidget *parent, BciNumber key, BciNumber parentKey, ctti::unnamed_type_id_t type, const T &value)
+    const QWidget *parent, quint16 key, quint16 parentKey, ctti::unnamed_type_id_t type, const T &value)
 {
     auto tableView = parent->findChild<QTableView *>(hashedName(type, parentKey));
     if (!tableView)
@@ -154,13 +154,13 @@ bool WidgetFactory::fillTableView(
     return true;
 }
 
-template <typename T> bool WidgetFactory::fillWidget(const QWidget *parent, BciNumber key, const T &value)
+template <typename T> bool WidgetFactory::fillWidget(const QWidget *parent, quint16 key, const T &value)
 {
     bool status = false;
     auto search = m_widgetMap.find(key);
     if (search == m_widgetMap.end())
     {
-        if (key == BciNumber::dummyElement)
+        if (key == 0)
         {
             qWarning() << "No S2 item for this widget";
             return status;

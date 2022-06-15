@@ -50,7 +50,7 @@ private:
 
     template <typename Container> static Container parseMap(QDomElement domElement);
 
-    static void mergeWidget(const QDomElement &domElement, config::widgetMap *const s2widgetMap, BciNumber id);
+    static void mergeWidget(const QDomElement &domElement, config::widgetMap *const s2widgetMap, quint16 id);
 
     static bool isCorrectModule(const QString &typem, const QString &typeb, quint16 m_typem, quint16 m_typeb);
 };

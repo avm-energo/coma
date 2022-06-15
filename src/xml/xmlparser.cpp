@@ -425,7 +425,7 @@ config::itemVariant XmlParser::parseWidget(QDomElement domElement)
     return delegate::Widget(type, description, widgetGroup, toolTip);
 }
 
-void XmlParser::mergeWidget(const QDomElement &domElement, config::widgetMap *const s2widgetMap, BciNumber id)
+void XmlParser::mergeWidget(const QDomElement &domElement, config::widgetMap *const s2widgetMap, quint16 id)
 {
     using namespace config;
     auto newWidget = parseWidget(domElement);
@@ -457,7 +457,7 @@ DataTypes::RecordPair XmlParser::parseRecordConfig(QDomElement domElement, confi
     if (childElement.isNull())
         return {};
     bool status = false;
-    unsigned id = childElement.text().toUInt(&status);
+    auto id = static_cast<quint16>(childElement.text().toUInt(&status));
     // ID should be convertible to int
     if (!status)
         return {};
@@ -466,7 +466,7 @@ DataTypes::RecordPair XmlParser::parseRecordConfig(QDomElement domElement, confi
     auto widgetElement = domElement.firstChildElement("widget");
     if (!widgetElement.isNull())
     {
-        mergeWidget(widgetElement, s2widgetMap, BciNumber(id));
+        mergeWidget(widgetElement, s2widgetMap, id);
     }
 
     auto defaultValueElement = domElement.firstChildElement("defaultValue");
@@ -635,14 +635,14 @@ config::Item XmlParser::parseItem(QDomElement domElement, ctti::unnamed_type_id_
     {
         QDomElement nextChildElement = domElement.firstChildElement("parent");
         bool status = false;
-        auto parent = static_cast<BciNumber>(nextChildElement.text().toUInt(&status));
+        auto parent = static_cast<quint16>(nextChildElement.text().toUInt(&status));
         if (!status)
             qWarning() << name << className;
         Item item(parentType, itemType, parent, widgetGroup);
         return item;
     }
     default:
-        return Item(parentType, itemType, BciNumber::dummyElement, widgetGroup);
+        return Item(parentType, itemType, 0, widgetGroup);
     }
 }
 
@@ -800,11 +800,11 @@ void XmlParser::traverseNode(const QDomNode &node, ConfigSettings &settings)
 #ifdef XML_DEBUG
                     qDebug() << domElement.text();
 #endif
-                    auto id = BciNumber::dummyElement;
+                    auto id = quint16(0);
                     auto recordChild = domElement.firstChildElement(keys::id);
                     if (!recordChild.isNull())
                     {
-                        id = static_cast<BciNumber>(XmlParser::parseInt32(recordChild));
+                        id = static_cast<quint16>(XmlParser::parseInt32(recordChild));
                     }
 
                     recordChild = domElement.firstChildElement(keys::type);

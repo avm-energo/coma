@@ -4,7 +4,7 @@
 
 #include <QDebug>
 
-DataTypes::DataRecV ConfigV::getRecord(unsigned int id)
+DataTypes::DataRecV ConfigV::getRecord(quint16 id)
 {
     auto result = std::find_if(
         std::cbegin(config), std::cend(config), [id](const auto &record) { return (id == record.getId()); });

@@ -27,7 +27,6 @@ private:
 
     void SetupUI(QSize pSize);
     QVBoxLayout *GetWorkspace(WorkspaceType);
-    QDir UnpackData();
     void ReadModulesToMasterModel();
     void ReadModuleToSlaveModel();
     QStandardItemModel *CreateMasterModel(const int rows, const int cols);

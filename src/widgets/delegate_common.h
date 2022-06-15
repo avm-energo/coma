@@ -175,17 +175,17 @@ struct Item : delegate::Widget
     Item(const ctti::unnamed_type_id_t type_, const delegate::ItemType itype_) : Widget(type_), itemType(itype_)
     {
     }
-    Item(const ctti::unnamed_type_id_t type_, const delegate::ItemType itype_, const BciNumber parent_)
+    Item(const ctti::unnamed_type_id_t type_, const delegate::ItemType itype_, const quint16 parent_)
         : Widget(type_), itemType(itype_), parent(parent_)
     {
     }
-    Item(const ctti::unnamed_type_id_t type_, const delegate::ItemType itype_, const BciNumber parent_,
+    Item(const ctti::unnamed_type_id_t type_, const delegate::ItemType itype_, const quint16 parent_,
         const delegate::WidgetGroup group_)
         : Widget(type_, group_), itemType(itype_), parent(parent_)
     {
     }
     delegate::ItemType itemType;
-    BciNumber parent;
+    quint16 parent;
 };
 
 using itemVariant = std::variant<  //
@@ -198,7 +198,7 @@ using itemVariant = std::variant<  //
     delegate::QComboBoxGroup       //
     >;
 
-using widgetMap = std::map<BciNumber, itemVariant>;
+using widgetMap = std::map<quint16, itemVariant>;
 };
 
 #endif // DELEGATE_COMMON_H

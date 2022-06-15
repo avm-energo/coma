@@ -6,6 +6,7 @@
 #include "../widgets/checkboxgroup.h"
 #include "../widgets/flowlayout.h"
 #include "../widgets/ipctrl.h"
+#include "../xml/xmlconfigparser.h"
 
 #include <QHeaderView>
 #include <QStandardItem>
@@ -15,7 +16,7 @@ categoryMap WidgetFactory::m_categoryMap;
 // helpers for create widget
 static QWidget *createModbusView(QWidget *parent);
 
-template <typename T> QWidget *helper(const T &arg, QWidget *parent, BciNumber key)
+template <typename T> QWidget *helper(const T &arg, QWidget *parent, quint16 key)
 {
     QWidget *widget = new QWidget(parent);
     QHBoxLayout *lyout = new QHBoxLayout;
@@ -65,7 +66,7 @@ template <typename T> QWidget *helper(const T &arg, QWidget *parent, BciNumber k
     return widget;
 }
 
-template <> QWidget *helper(const config::Item &arg, QWidget *parent, [[maybe_unused]] BciNumber key)
+template <> QWidget *helper(const config::Item &arg, QWidget *parent, [[maybe_unused]] quint16 key)
 {
     QWidget *widget = nullptr;
     switch (arg.itemType)
@@ -84,29 +85,27 @@ template <> QWidget *helper(const config::Item &arg, QWidget *parent, [[maybe_un
     return nullptr;
 }
 
-template <typename T> bool WidgetFactory::fillBackItem(BciNumber key, const QWidget *parent, BciNumber parentKey)
+template <typename T> bool WidgetFactory::fillBackItem(quint16 key, const QWidget *parent, quint16 parentKey)
 {
-    switch (parentKey)
-    {
-    case BciNumber::MBMaster:
+    const auto mbMaster = XmlConfigParser::GetIdByName("MBMaster");
+    if (parentKey == mbMaster)
     {
         return fillBackModbus(key, parent, ctti::unnamed_type_id<QTableView>(), parentKey);
-        break;
     }
-    default:
+    else
+    {
         Q_ASSERT(false && "Unsupported type");
         return false;
     }
-    // return true;
 };
 
 WidgetFactory::WidgetFactory(ConfigV *config) : configV(config)
 {
 }
 
-QWidget *WidgetFactory::createWidget(BciNumber key, QWidget *parent)
+QWidget *WidgetFactory::createWidget(quint16 key, QWidget *parent)
 {
-    if (key == BciNumber::mTimezone)
+    if (key == XmlConfigParser::GetIdByName("timezone"))
         qWarning() << "mTimezone";
     QWidget *widget = nullptr;
     auto search = m_widgetMap.find(key);
@@ -221,7 +220,7 @@ QWidget *WidgetFactory::createWidget(BciNumber key, QWidget *parent)
     return widget;
 }
 
-bool WidgetFactory::fillBack(BciNumber key, const QWidget *parent)
+bool WidgetFactory::fillBack(quint16 key, const QWidget *parent)
 {
     bool status = false;
     auto search = m_widgetMap.find(key);
@@ -311,7 +310,7 @@ bool WidgetFactory::fillBack(BciNumber key, const QWidget *parent)
 
 template <>
 QList<QStandardItem *> WidgetFactory::createItem(
-    BciNumber key, const DataTypes::BYTE_8t &value, [[maybe_unused]] const QWidget *parent)
+    quint16 key, const DataTypes::BYTE_8t &value, [[maybe_unused]] const QWidget *parent)
 {
     QList<QStandardItem *> items {};
     auto search = m_widgetMap.find(key);
@@ -416,8 +415,8 @@ static QWidget *createModbusView(QWidget *parent)
 
     return tableView;
 }
-bool WidgetFactory::fillBackModbus(
-    BciNumber key, const QWidget *parent, ctti::unnamed_type_id_t type, BciNumber parentKey)
+
+bool WidgetFactory::fillBackModbus(quint16 key, const QWidget *parent, ctti::unnamed_type_id_t type, quint16 parentKey)
 {
     auto tableView = parent->findChild<QTableView *>(WidgetFactory::hashedName(type, parentKey));
 
@@ -497,7 +496,7 @@ bool WidgetFactory::fillBackModbus(
     return true;
 }
 
-bool WidgetFactory::fillBackIpCtrl(BciNumber key, const QWidget *parent)
+bool WidgetFactory::fillBackIpCtrl(quint16 key, const QWidget *parent)
 {
     auto widget = parent->findChild<IPCtrl *>(QString::number(key));
     if (!widget)
@@ -507,7 +506,7 @@ bool WidgetFactory::fillBackIpCtrl(BciNumber key, const QWidget *parent)
     return true;
 }
 
-bool WidgetFactory::fillBackCheckBox(BciNumber key, const QWidget *parent)
+bool WidgetFactory::fillBackCheckBox(quint16 key, const QWidget *parent)
 {
     bool status = false;
     auto widget = parent->findChild<QCheckBox *>(QString::number(key));
@@ -530,7 +529,7 @@ bool WidgetFactory::fillBackCheckBox(BciNumber key, const QWidget *parent)
     return status;
 }
 
-bool WidgetFactory::fillBackLineEdit(BciNumber key, const QWidget *parent)
+bool WidgetFactory::fillBackLineEdit(quint16 key, const QWidget *parent)
 {
     bool status = false;
     auto widget = parent->findChild<QLineEdit *>(QString::number(key));
@@ -561,7 +560,7 @@ bool WidgetFactory::fillBackLineEdit(BciNumber key, const QWidget *parent)
     return status;
 }
 
-bool WidgetFactory::fillBackSPBG(BciNumber key, const QWidget *parent)
+bool WidgetFactory::fillBackSPBG(quint16 key, const QWidget *parent)
 {
     bool status = false;
     auto record = configV->getRecord(key);
@@ -582,7 +581,7 @@ bool WidgetFactory::fillBackSPBG(BciNumber key, const QWidget *parent)
     return status;
 }
 
-bool WidgetFactory::fillBackSPB(BciNumber key, const QWidget *parent)
+bool WidgetFactory::fillBackSPB(quint16 key, const QWidget *parent)
 {
     bool status = false;
     auto record = configV->getRecord(key);
@@ -600,7 +599,7 @@ bool WidgetFactory::fillBackSPB(BciNumber key, const QWidget *parent)
     return status;
 }
 
-bool WidgetFactory::fillBackChBG(BciNumber key, const QWidget *parent)
+bool WidgetFactory::fillBackChBG(quint16 key, const QWidget *parent)
 {
     bool status = false;
     auto record = configV->getRecord(key);
@@ -635,7 +634,7 @@ bool WidgetFactory::fillBackChBG(BciNumber key, const QWidget *parent)
     return status;
 }
 
-bool WidgetFactory::fillBackComboBox(BciNumber key, const QWidget *parent, delegate::QComboBox::PrimaryField field)
+bool WidgetFactory::fillBackComboBox(quint16 key, const QWidget *parent, delegate::QComboBox::PrimaryField field)
 {
     bool status = false;
     auto record = configV->getRecord(key);
@@ -675,7 +674,7 @@ bool WidgetFactory::fillBackComboBox(BciNumber key, const QWidget *parent, deleg
     return status;
 }
 
-bool WidgetFactory::fillBackComboBoxGroup(BciNumber key, const QWidget *parent, int count)
+bool WidgetFactory::fillBackComboBoxGroup(quint16 key, const QWidget *parent, int count)
 {
     bool status = false;
     auto record = configV->getRecord(key);

@@ -76,6 +76,7 @@ target_link_libraries(
   PRIVATE Qt${QT_VERSION_MAJOR}::PrintSupport
   PRIVATE Qt${QT_VERSION_MAJOR}::Qml
   PRIVATE QXlsx
+  PRIVATE xml
   PRIVATE limereport)
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE ${PROJECT_NAME}_LIBRARY)

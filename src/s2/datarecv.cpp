@@ -315,7 +315,7 @@ bool operator!=(const DataTypes::DataRecV &lhs, const DataTypes::DataRecV &rhs)
     return !(lhs == rhs);
 }
 
-unsigned int DataRecV::getId() const
+quint16 DataRecV::getId() const
 {
     return id;
 }

@@ -84,32 +84,10 @@ QVBoxLayout *XmlEditor::GetWorkspace(WorkspaceType type)
     return workspace;
 }
 
-QDir XmlEditor::UnpackData()
-{
-    QDir resDir(resourceDirectory);
-    QDir homeDir(StdFunc::GetSystemHomeDir());
-    auto xmlFiles = resDir.entryList(QDir::Files).filter(".xml");
-    auto homeFiles = homeDir.entryList(QDir::Files).filter(".xml");
-
-    // Копируем файлы из ресурсов в AppData/Local/AVM-Debug
-    if (homeFiles.count() < xmlFiles.count())
-    {
-        foreach (QString filename, xmlFiles)
-        {
-            if (!QFile::copy(resDir.filePath(filename), homeDir.filePath(filename)))
-            {
-                qCritical() << Error::DescError;
-                qInfo() << resDir.filePath(filename);
-            }
-        }
-    }
-    return homeDir;
-}
-
 void XmlEditor::ReadModulesToMasterModel()
 {
     // Создание и настройка модели для master
-    auto dir = UnpackData();
+    auto dir = QDir(StdFunc::GetSystemHomeDir());
     auto modules = dir.entryList(QDir::Files).filter(".xml");
     if (masterModel == nullptr)
         masterModel = CreateMasterModel(modules.count(), 4);

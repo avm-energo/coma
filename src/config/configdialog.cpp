@@ -10,6 +10,7 @@
 #include "../s2/datamanager.h"
 #include "../s2/s2.h"
 #include "../widgets/wd_func.h"
+#include "../xml/xmlconfigparser.h"
 
 #include <QDebug>
 #include <QGridLayout>
@@ -68,24 +69,28 @@ template <class Container> auto sinserter(Container &c)
     return std::inserter(c, end(c));
 }
 
-bool operator<(const BciNumber &number, const DataTypes::RecordPair &record)
+bool operator<(const quint16 &number, const DataTypes::RecordPair &record)
 {
-    return number < static_cast<BciNumber>(record.record.getId());
+    return number < record.record.getId();
 }
 
-bool operator<(const DataTypes::RecordPair &record, const BciNumber &number)
+bool operator<(const DataTypes::RecordPair &record, const quint16 &number)
 {
-    return number < static_cast<BciNumber>(record.record.getId());
+    return number < record.record.getId();
 }
 
 void ConfigDialog::checkForDiff(const QList<DataTypes::DataRecV> &list)
 {
-    std::set<BciNumber> receivedItems;
+    std::set<quint16> receivedItems;
     std::transform(list.cbegin(), list.cend(), sinserter(receivedItems),
-        [](const DataTypes::DataRecV &record) { return static_cast<BciNumber>(record.getId()); });
+        [](const DataTypes::DataRecV &record) { return record.getId(); });
 
-    std::vector<BciNumber> diffItems;
-    std::set_difference(receivedItems.cbegin(), receivedItems.cend(), m_defaultValues.cbegin(), m_defaultValues.cend(),
+    std::set<quint16> defaultItems;
+    std::transform(m_defaultValues.cbegin(), m_defaultValues.cend(), sinserter(defaultItems),
+        [](const DataTypes::RecordPair &record) { return record.record.getId(); });
+
+    std::vector<quint16> diffItems;
+    std::set_difference(receivedItems.cbegin(), receivedItems.cend(), defaultItems.cbegin(), defaultItems.cend(),
         std::back_inserter(diffItems));
 
     if (!diffItems.empty())
@@ -96,25 +101,25 @@ void ConfigDialog::checkForDiff(const QList<DataTypes::DataRecV> &list)
 
 void ConfigDialog::confReceived(const QList<DataTypes::DataRecV> &list)
 {
+    using namespace DataTypes;
     configV->setConfig(list);
 
-    using namespace DataTypes;
-    const auto s2typeB = configV->getRecord(BciNumber::MTypeB_ID).value<DWORD>();
+    const auto s2typeB = configV->getRecord(XmlConfigParser::GetIdByName("MTypeB_ID")).value<DWORD>();
     if (s2typeB != Board::GetInstance().typeB())
     {
         qCritical() << "Conflict typeB, module: " <<                //
             QString::number(Board::GetInstance().typeB(), 16)       //
                     << " config: " << QString::number(s2typeB, 16); //
-        configV->setRecordValue({ BciNumber::MTypeB_ID, DWORD(Board::GetInstance().typeB()) });
+        configV->setRecordValue({ XmlConfigParser::GetIdByName("MTypeB_ID"), DWORD(Board::GetInstance().typeB()) });
     }
 
-    const auto s2typeM = configV->getRecord(BciNumber::MTypeE_ID).value<DWORD>();
+    const auto s2typeM = configV->getRecord(XmlConfigParser::GetIdByName("MTypeE_ID")).value<DWORD>();
     if (s2typeM != Board::GetInstance().typeM())
     {
         qCritical() << "Conflict typeB, module: " <<                //
             QString::number(Board::GetInstance().typeM(), 16)       //
                     << " config: " << QString::number(s2typeM, 16); //
-        configV->setRecordValue({ BciNumber::MTypeE_ID, DWORD(Board::GetInstance().typeM()) });
+        configV->setRecordValue({ XmlConfigParser::GetIdByName("MTypeE_ID"), DWORD(Board::GetInstance().typeM()) });
     }
 
     checkForDiff(list);
@@ -206,7 +211,7 @@ QWidget *widgetAt(QTabWidget *tabWidget, int index)
     return nullptr;
 }
 
-delegate::WidgetGroup groupForId(BciNumber id)
+delegate::WidgetGroup groupForId(quint16 id)
 {
     const auto widgetMap = WidgetFactory::getWidgetMap();
     auto search = widgetMap.find(id);
@@ -235,7 +240,7 @@ void ConfigDialog::SetupUI()
     {
         if (!record.visibility)
             continue;
-        BciNumber id = static_cast<BciNumber>(record.record.getId());
+        auto id = record.record.getId();
         QWidget *widget = factory.createWidget(id, this);
         if (!widget)
         {
@@ -267,7 +272,7 @@ void ConfigDialog::createTabs(QTabWidget *tabWidget)
     const auto categories = WidgetFactory::getCategoryMap();
     for (const auto &record : qAsConst(m_defaultValues))
     {
-        auto group = groupForId(static_cast<BciNumber>(record.record.getId()));
+        auto group = groupForId(record.record.getId());
         if (categories.contains(group))
             intersection.insert(group);
     }
@@ -300,12 +305,12 @@ void ConfigDialog::Fill()
     {
         if (!defRecord.visibility)
             continue;
-        BciNumber id = static_cast<BciNumber>(defRecord.record.getId());
+        auto id = defRecord.record.getId();
         const auto record = configV->getRecord(id);
         std::visit(
             [=](const auto &&value) {
                 WidgetFactory factory(configV);
-                bool status = factory.fillWidget(this, static_cast<BciNumber>(record.getId()), value);
+                bool status = factory.fillWidget(this, record.getId(), value);
                 if (!status)
                 {
                     qWarning() << "Couldnt fill widget for item: " << record.getId();
@@ -333,8 +338,8 @@ void ConfigDialog::FillBack() const
     {
         if (!record.visibility)
             continue;
-        BciNumber id = static_cast<BciNumber>(record.record.getId());
-        bool status = factory.fillBack(id, this);
+        auto id = record.record.getId();
+        auto status = factory.fillBack(id, this);
         if (!status)
         {
             qWarning() << "Couldnt fill back item from widget: " << id;
@@ -357,15 +362,15 @@ bool ConfigDialog::PrepareConfToWrite()
     if (CheckConfErrors.isEmpty())
         return true;
 
-    QDialog *dlg = new QDialog;
+    auto dlg = new QDialog;
     dlg->setAttribute(Qt::WA_DeleteOnClose);
-    QVBoxLayout *vlyout = new QVBoxLayout;
-    QLabel *lbl = new QLabel("В конфигурации есть ошибки, проверьте и исправьте");
+    auto vlyout = new QVBoxLayout;
+    auto lbl = new QLabel("В конфигурации есть ошибки, проверьте и исправьте");
     vlyout->addWidget(lbl, 0, Qt::AlignLeft);
-    QTextEdit *te = new QTextEdit;
+    auto te = new QTextEdit;
     te->setPlainText(CheckConfErrors.join("\n"));
     vlyout->addWidget(te, 0, Qt::AlignCenter);
-    QPushButton *pb = new QPushButton("Хорошо");
+    auto pb = new QPushButton("Хорошо");
     connect(pb, &QAbstractButton::clicked, dlg, &QWidget::close);
     vlyout->addWidget(pb);
     dlg->setLayout(vlyout);

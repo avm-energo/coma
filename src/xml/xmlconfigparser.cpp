@@ -41,3 +41,8 @@ void XmlConfigParser::ParseS2ConfigToMap()
         qCritical("Error: \"s2files.xml\" not found");
     }
 }
+
+quint16 XmlConfigParser::GetIdByName(QString name)
+{
+    return NameIdMap.value(name, 0);
+}

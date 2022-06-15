@@ -44,6 +44,7 @@
 #include "../widgets/splashscreen.h"
 #include "../widgets/styleloader.h"
 #include "../widgets/wd_func.h"
+#include "../xml/xmlconfigparser.h"
 #include "waitwidget.h"
 
 #include <QApplication>
@@ -482,6 +483,7 @@ void Coma::go()
     splash->deleteLater();
     setStatusBar(WDFunc::NewSB(this));
 
+    UnpackProgramData();
     SetupUI();
     show();
 }
@@ -587,8 +589,30 @@ void Coma::disconnect()
     // Board::GetInstance().setConnectionState(Board::ConnectionState::Closed);
 }
 
+void Coma::UnpackProgramData()
+{
+    QDir resDir(resourceDirectory);
+    QDir homeDir(StdFunc::GetSystemHomeDir());
+    auto xmlFiles = resDir.entryList(QDir::Files).filter(".xml");
+    auto homeFiles = homeDir.entryList(QDir::Files).filter(".xml");
+
+    // Копируем файлы из ресурсов в AppData/Local/AVM-Debug
+    if (homeFiles.count() < xmlFiles.count())
+    {
+        foreach (QString filename, xmlFiles)
+        {
+            if (!QFile::copy(resDir.filePath(filename), homeDir.filePath(filename)))
+            {
+                qCritical() << Error::DescError;
+                qInfo() << resDir.filePath(filename);
+            }
+        }
+    }
+}
+
 void Coma::setupConnection()
 {
+    XmlConfigParser::ParseS2ConfigToMap();
     auto const &board = Board::GetInstance();
 
     connect(BaseInterface::iface(), &BaseInterface::stateChanged, [](const BaseInterface::State state) {

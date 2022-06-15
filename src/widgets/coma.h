@@ -84,6 +84,7 @@ private:
     void SetProgressBarCount(int prbnum, int count);
     void newTimers();
     void SetupUI();
+    void UnpackProgramData();
     // void CloseDialogs();
 
     void setupConnections();

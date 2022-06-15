@@ -157,6 +157,7 @@ constexpr int HTH_1PPS = 0x00000010;    // нет сигнала 1PPS
 constexpr int HTH_REL = 0x00000008;     // неисправность выходных реле (Д)
 constexpr int HTH_TUPP = 0x00000004;    // перегрев модуля
 
+/*
 enum BciNumber : unsigned
 {
     dummyElement = 0,
@@ -451,6 +452,7 @@ enum BciNumber : unsigned
     Ih_alarm = 1228,
 
 };
+*/
 
 namespace AVM
 {

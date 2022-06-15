@@ -6,6 +6,7 @@
 #include "../tunesequencefile.h"
 #include "../widgets/epopup.h"
 #include "../widgets/wd_func.h"
+#include "../xml/xmlconfigparser.h"
 
 #include <QEventLoop>
 
@@ -92,7 +93,7 @@ Error::Msg Tune82CheckMip::check()
     Mip *mip = new Mip(true, m_moduleType);
     mip->setUpdatesEnabled();
     mip->show();
-    mip->setNominalCurrent(configV->getRecord(BciNumber::I2nom).value<float>());
+    mip->setNominalCurrent(configV->getRecord(XmlConfigParser::GetIdByName("I2nom")).value<float>());
     mip->start();
     QEventLoop el;
     connect(mip, &Mip::finished, &el, &QEventLoop::quit);
