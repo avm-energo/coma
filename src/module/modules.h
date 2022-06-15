@@ -500,6 +500,7 @@ const QStringList eventJourHeaders {
     "Описание события", //
     "Тип события"       //
 };
+
 constexpr quint32 sysJourId = 1;
 struct EventStruct
 {
@@ -509,25 +510,24 @@ struct EventStruct
     quint8 EvNum[3];
     quint32 Reserv;
 };
-const QStringList Health
 
-    {
-        "ADCI", //
-        "FLS",  //
-        "TUP",  //
-        "ADCB", //
-        "1PPS", //
-        "ADCM", //
-        "REGB", //
-        "RCN",  //
-        "HWIB", //
-        "HWIM", //
-        "REGM", //
-        "BAT",  //
-        "NTP",  //
-        "FLS2", //
-        "FRM"   //
-    };
+const QStringList Health {
+    "ADCI", //
+    "FLS",  //
+    "TUP",  //
+    "ADCB", //
+    "1PPS", //
+    "ADCM", //
+    "REGB", //
+    "RCN",  //
+    "HWIB", //
+    "HWIM", //
+    "REGM", //
+    "BAT",  //
+    "NTP",  //
+    "FLS2", //
+    "FRM"   //
+};
 
 const QStringList HthToolTip {
     "Проблемы со встроенным АЦП ",                                                      //
@@ -630,6 +630,7 @@ struct MeasureStruct
     float Tamb;
     quint32 res;
 };
+
 enum Registers : quint16
 {
     MTypeB = 1,
@@ -767,17 +768,21 @@ enum Registers : quint16
     AlarmInb = 3035
 
 };
+
 }
+
 /// AVTUK Central Controller Unit
 namespace AVTUK_CCU
 {
 constexpr uint16_t MainBlock = 1;
 constexpr uint16_t IndicationBlock = 2;
+
 struct Main
 {
     uint8_t PWRIN;
     bool resetReq;
 };
+
 struct Indication
 {
     uint8_t PulseCnt1;

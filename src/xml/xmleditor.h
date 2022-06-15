@@ -1,5 +1,5 @@
-#ifndef MODULESEDITOR_H
-#define MODULESEDITOR_H
+#ifndef XMLEDITOR_H
+#define XMLEDITOR_H
 
 #include <QDialog>
 #include <QDir>
@@ -7,10 +7,9 @@
 #include <QStandardItemModel>
 #include <QTableView>
 #include <QTreeView>
-#include <QWidget>
 #include <QtXml>
 
-class ModulesEditor : public QDialog
+class XmlEditor : public QDialog
 {
     Q_OBJECT
 
@@ -37,7 +36,7 @@ private:
     void ParseXmlToSlaveModel(QDomNode &node, int index, QStandardItem *parent);
 
 public:
-    explicit ModulesEditor(QWidget *parent = nullptr);
+    explicit XmlEditor(QWidget *parent = nullptr);
 
 signals:
 
@@ -46,4 +45,4 @@ public slots:
     void MasterItemSelected(const QModelIndex &index);
 };
 
-#endif // MODULESEDITOR_H
+#endif // XMLEDITOR_H

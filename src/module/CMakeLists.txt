@@ -51,7 +51,7 @@ target_link_libraries(
   models
   s2
   widgets
-  xmleditor
+  xml
   Qt${QT_VERSION_MAJOR}::Core
   Qt${QT_VERSION_MAJOR}::Widgets
   Qt${QT_VERSION_MAJOR}::Xml

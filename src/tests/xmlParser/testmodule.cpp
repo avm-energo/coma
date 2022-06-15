@@ -6,7 +6,6 @@
 
 namespace config
 {
-
 constexpr auto avtuk21 = 17;
 constexpr auto avtuk22 = 11;
 constexpr auto avtuk31 = 5;

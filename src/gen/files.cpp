@@ -1,8 +1,6 @@
 #include "files.h"
 
-//#include "board.h"
 #include "error.h"
-//#include "stdfunc.h"
 
 #include <QDirIterator>
 #include <QFile>

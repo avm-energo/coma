@@ -90,7 +90,7 @@ target_link_libraries(
   PRIVATE dialogs
   PRIVATE module
   PRIVATE s2
-  PRIVATE xmleditor
+  PRIVATE xml
   PRIVATE Qt${QT_VERSION_MAJOR}::Core
   PRIVATE Qt${QT_VERSION_MAJOR}::Widgets
   PRIVATE Qt${QT_VERSION_MAJOR}::Xml

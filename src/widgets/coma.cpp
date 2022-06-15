@@ -354,7 +354,7 @@ void Coma::loadSwj(QString &filename)
 void Coma::openModuleEditor()
 {
     if (editor == nullptr)
-        editor = new ModulesEditor(this);
+        editor = new XmlEditor(this);
     else
         editor->exec();
 }

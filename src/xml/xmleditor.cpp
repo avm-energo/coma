@@ -1,4 +1,4 @@
-#include "moduleseditor.h"
+#include "xmleditor.h"
 
 #include "../gen/error.h"
 #include "../gen/stdfunc.h"
@@ -10,7 +10,7 @@
 
 constexpr char resourceDirectory[] = ":/module";
 
-ModulesEditor::ModulesEditor(QWidget *parent) : QDialog(parent, Qt::Window), slaveModel(nullptr), masterModel(nullptr)
+XmlEditor::XmlEditor(QWidget *parent) : QDialog(parent, Qt::Window), slaveModel(nullptr), masterModel(nullptr)
 {
     if (parent != nullptr)
     {
@@ -21,7 +21,7 @@ ModulesEditor::ModulesEditor(QWidget *parent) : QDialog(parent, Qt::Window), sla
     }
 }
 
-void ModulesEditor::SetupUI(QSize pSize)
+void XmlEditor::SetupUI(QSize pSize)
 {
     this->setGeometry(0, 0, pSize.width(), pSize.height());
     this->setWindowTitle("Modules Editor");
@@ -33,12 +33,12 @@ void ModulesEditor::SetupUI(QSize pSize)
     this->setLayout(mainLayout);
 }
 
-void ModulesEditor::Close()
+void XmlEditor::Close()
 {
     this->hide();
 }
 
-QVBoxLayout *ModulesEditor::GetWorkspace(WorkspaceType type)
+QVBoxLayout *XmlEditor::GetWorkspace(WorkspaceType type)
 {
     // Создание рабочего пространства
     auto workspace = new QVBoxLayout();
@@ -50,15 +50,15 @@ QVBoxLayout *ModulesEditor::GetWorkspace(WorkspaceType type)
     toolbar->setIconSize(QSize(30, 30));
     if (type == Master)
     {
-        toolbar->addAction(QIcon(":/icons/tnstart.svg"), "Создать модуль", this, &ModulesEditor::Close);
+        toolbar->addAction(QIcon(":/icons/tnstart.svg"), "Создать модуль", this, &XmlEditor::Close);
         toolbar->addSeparator();
-        toolbar->addAction(QIcon(":/icons/tnstop.svg"), "Удалить модуль", this, &ModulesEditor::Close);
+        toolbar->addAction(QIcon(":/icons/tnstop.svg"), "Удалить модуль", this, &XmlEditor::Close);
     }
     else
     {
-        toolbar->addAction(QIcon(":/icons/tnstart.svg"), "Создать свойство", this, &ModulesEditor::Close);
+        toolbar->addAction(QIcon(":/icons/tnstart.svg"), "Создать свойство", this, &XmlEditor::Close);
         toolbar->addSeparator();
-        toolbar->addAction(QIcon(":/icons/tnstop.svg"), "Удалить свойство", this, &ModulesEditor::Close);
+        toolbar->addAction(QIcon(":/icons/tnstop.svg"), "Удалить свойство", this, &XmlEditor::Close);
     }
     workspace->addWidget(toolbar);
 
@@ -67,7 +67,7 @@ QVBoxLayout *ModulesEditor::GetWorkspace(WorkspaceType type)
         // Создание и настройка QTableView
         masterView = new QTableView(this);
         masterView->setSortingEnabled(true);
-        QObject::connect(masterView, &QTableView::clicked, this, &ModulesEditor::MasterItemSelected);
+        QObject::connect(masterView, &QTableView::clicked, this, &XmlEditor::MasterItemSelected);
         masterView->setSelectionBehavior(QAbstractItemView::SelectionBehavior::SelectRows);
         masterView->setSelectionMode(QAbstractItemView::SelectionMode::SingleSelection);
         workspace->addWidget(masterView);
@@ -84,7 +84,7 @@ QVBoxLayout *ModulesEditor::GetWorkspace(WorkspaceType type)
     return workspace;
 }
 
-QDir ModulesEditor::UnpackData()
+QDir XmlEditor::UnpackData()
 {
     QDir resDir(resourceDirectory);
     QDir homeDir(StdFunc::GetSystemHomeDir());
@@ -106,7 +106,7 @@ QDir ModulesEditor::UnpackData()
     return homeDir;
 }
 
-void ModulesEditor::ReadModulesToMasterModel()
+void XmlEditor::ReadModulesToMasterModel()
 {
     // Создание и настройка модели для master
     auto dir = UnpackData();
@@ -134,7 +134,7 @@ void ModulesEditor::ReadModulesToMasterModel()
     }
 }
 
-QStandardItemModel *ModulesEditor::CreateMasterModel(const int rows, const int cols)
+QStandardItemModel *XmlEditor::CreateMasterModel(const int rows, const int cols)
 {
     auto model = new QStandardItemModel(rows, cols);
     model->setHeaderData(0, Qt::Horizontal, "Название");
@@ -144,7 +144,7 @@ QStandardItemModel *ModulesEditor::CreateMasterModel(const int rows, const int c
     return model;
 }
 
-QStandardItemModel *ModulesEditor::CreateSlaveModel()
+QStandardItemModel *XmlEditor::CreateSlaveModel()
 {
     auto model = new QStandardItemModel;
     model->setColumnCount(1);
@@ -152,7 +152,7 @@ QStandardItemModel *ModulesEditor::CreateSlaveModel()
     return model;
 }
 
-void ModulesEditor::ParseXmlToMasterModel(const QDomNode &node, const int &index)
+void XmlEditor::ParseXmlToMasterModel(const QDomNode &node, const int &index)
 {
     auto domNode = node.firstChild();
     while (!domNode.isNull())
@@ -191,7 +191,7 @@ void ModulesEditor::ParseXmlToMasterModel(const QDomNode &node, const int &index
     }
 }
 
-void ModulesEditor::MasterItemSelected(const QModelIndex &index)
+void XmlEditor::MasterItemSelected(const QModelIndex &index)
 {
     const auto row = index.row();
     auto indexTypeB = masterModel->index(row, 1), indexTypeM = masterModel->index(row, 2);
@@ -227,7 +227,7 @@ void ModulesEditor::MasterItemSelected(const QModelIndex &index)
     }
 }
 
-void ModulesEditor::ParseXmlToSlaveModel(QDomNode &node, int index, QStandardItem *parent)
+void XmlEditor::ParseXmlToSlaveModel(QDomNode &node, int index, QStandardItem *parent)
 {
     while (!node.isNull())
     {

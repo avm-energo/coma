@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.14)
 
-project(xmleditor LANGUAGES CXX)
+project(xml LANGUAGES CXX)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
@@ -11,8 +11,8 @@ find_package(
 
 add_library(
   ${PROJECT_NAME} STATIC
-  moduleseditor.cpp
-  moduleseditor.h
+  xmleditor.cpp
+  xmleditor.h
   xmlconfigparser.cpp
   xmlconfigparser.h
   xmlparser.cpp

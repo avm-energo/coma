@@ -4,7 +4,7 @@
 #include "../gen/datatypes.h"
 #include "../gen/stdfunc.h"
 #include "../interfaces/settingstypes.h"
-#include "../xmleditor/moduleseditor.h"
+#include "../xml/xmleditor.h"
 
 #include <QListWidget>
 #include <QMainWindow>
@@ -70,7 +70,7 @@ private:
     QStackedWidget *MainTW;
     QListWidget *MainLW;
     OscManager oscManager;
-    ModulesEditor *editor;
+    XmlEditor *editor;
 
     File::Vector fileVector;
 

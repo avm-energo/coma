@@ -9,7 +9,7 @@
 #include "../gen/stdfunc.h"
 #include "../s2/s2.h"
 #include "../widgets/udialog.h"
-#include "../xmleditor/xmlparser.h"
+#include "../xml/xmlparser.h"
 #include "board.h"
 //#define XML_DEBUG
 
