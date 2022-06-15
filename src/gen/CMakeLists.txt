@@ -15,8 +15,6 @@ find_package(
 
 add_library(
   gen STATIC
-  board.cpp
-  board.h
   colors.h
   datatypes.h
   error.h
@@ -31,8 +29,6 @@ add_library(
   logclass.h
   logger.h
   logger.cpp
-  module_kxx.h
-  modules.h
   pch.h
   registers.h
   settings.h

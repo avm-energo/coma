@@ -29,9 +29,9 @@
 
 #include "../gen/error.h"
 #include "../gen/files.h"
-#include "../gen/modules.h"
 #include "../gen/pch.h"
 #include "../gen/stdfunc.h"
+#include "../module/modules.h"
 #include "../widgets/signalchoosewidget.h"
 #include "../widgets/wd_func.h"
 

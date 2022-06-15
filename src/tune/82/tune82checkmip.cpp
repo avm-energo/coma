@@ -1,7 +1,7 @@
 #include "tune82checkmip.h"
 
-#include "../gen/board.h"
-#include "../gen/modules.h"
+#include "../module/board.h"
+#include "../module/modules.h"
 #include "../s2/configv.h"
 #include "../tunesequencefile.h"
 #include "../widgets/epopup.h"

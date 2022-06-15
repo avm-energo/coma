@@ -1,8 +1,8 @@
 #include "files.h"
 
-#include "board.h"
+//#include "board.h"
 #include "error.h"
-#include "stdfunc.h"
+//#include "stdfunc.h"
 
 #include <QDirIterator>
 #include <QFile>
@@ -16,17 +16,12 @@ Files::Files()
 {
 }
 
-QString Files::ChooseFileForSave(const QString &ext, const QString &filenamestr)
+QString Files::ChooseFileForSave(const QString &res, const QString &filenamestr)
 {
-    const auto &board = Board::GetInstance();
-    QString MTypeM = (board.typeM() == 0) ? "00" : QString::number(board.typeM(), 16);
-    QString tmps;
-    if (filenamestr.isEmpty())
-        tmps = StdFunc::GetHomeDir() + "/" + QString::number(board.typeB(), 16) + MTypeM + "-"
-            + QString("%1").arg(board.serialNumber(Board::BaseMezz), 8, 10, QChar('0')) + "." + ext;
+    if (!filenamestr.isEmpty())
+        return filenamestr;
     else
-        tmps = filenamestr;
-    return tmps;
+        return res;
 }
 
 Error::Msg Files::LoadFromFile(const QString &filename, QByteArray &ba)

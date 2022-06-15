@@ -1,8 +1,8 @@
 #include "generaltunedialog.h"
 
-#include "../gen/board.h"
 #include "../gen/files.h"
 #include "../gen/stdfunc.h"
+#include "../module/board.h"
 #include "../widgets/epopup.h"
 #include "../widgets/wd_func.h"
 #include "limereport/lrreportengine.h"

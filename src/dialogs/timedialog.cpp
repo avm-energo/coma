@@ -1,9 +1,9 @@
 #include "../dialogs/timedialog.h"
 
-#include "../gen/board.h"
 #include "../gen/colors.h"
 #include "../gen/error.h"
 #include "../gen/timefunc.h"
+#include "../module/board.h"
 #include "../s2/datamanager.h"
 #include "../widgets/wd_func.h"
 

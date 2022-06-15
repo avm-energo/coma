@@ -1,6 +1,6 @@
 #pragma once
-#include "../gen/modules.h"
 #include "../gen/std_ext.h"
+#include "../module/modules.h"
 #include "filemanager.h"
 #include "oscmanager.h"
 

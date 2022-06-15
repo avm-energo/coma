@@ -1,11 +1,11 @@
 #include "xmlparser.h"
 
+#include "../gen/settings.h"
+#include "../gen/std_ext.h"
 #include "../interfaces/iec104.h"
 #include "../interfaces/modbus.h"
 #include "../interfaces/protocom.h"
-#include "../gen/board.h"
-#include "../gen/settings.h"
-#include "../gen/std_ext.h"
+#include "../module/board.h"
 
 namespace keys
 {
@@ -197,13 +197,12 @@ ctti::unnamed_type_id_t XmlParser::parseType(QDomElement domElement)
 
         // New types from formatted s2files.xml
         // TODO: add handler for these types
-        if (name.contains("Type", Qt::CaseInsensitive) ||
-            name.contains("OscHeader_Data", Qt::CaseInsensitive) ||
-            name.contains("SpectHeader_Data", Qt::CaseInsensitive) ||
-            name.contains("DataPoint_Osc85", Qt::CaseInsensitive) ||
-            name.contains("SwRepDataStruct", Qt::CaseInsensitive) ||
-            name.contains("DataPoint_Osc87", Qt::CaseInsensitive) ||
-            name.contains("DataPoint_Spect87", Qt::CaseInsensitive))
+        if (name.contains("Type", Qt::CaseInsensitive) || name.contains("OscHeader_Data", Qt::CaseInsensitive)
+            || name.contains("SpectHeader_Data", Qt::CaseInsensitive)
+            || name.contains("DataPoint_Osc85", Qt::CaseInsensitive)
+            || name.contains("SwRepDataStruct", Qt::CaseInsensitive)
+            || name.contains("DataPoint_Osc87", Qt::CaseInsensitive)
+            || name.contains("DataPoint_Spect87", Qt::CaseInsensitive))
         {
             qWarning() << "Parsed unknown type";
             return 0;
@@ -275,15 +274,15 @@ ctti::unnamed_type_id_t XmlParser::parseType(QDomElement domElement)
 
         // New type from formatted s2files.xml
         // TODO: add handler for this type
-        if (name.contains("BYTE[]", Qt::CaseInsensitive)) {
+        if (name.contains("BYTE[]", Qt::CaseInsensitive))
+        {
             qWarning() << "Parsed unknown type";
             return 0;
         }
 
-
         [[fallthrough]];
     default:
-        //auto what = name;
+        // auto what = name;
         assert(false && "Unknown type");
     }
     return 0;
@@ -803,17 +802,20 @@ void XmlParser::traverseNode(const QDomNode &node, ConfigSettings &settings)
 #endif
                     auto id = BciNumber::dummyElement;
                     auto recordChild = domElement.firstChildElement(keys::id);
-                    if (!recordChild.isNull()) {
+                    if (!recordChild.isNull())
+                    {
                         id = static_cast<BciNumber>(XmlParser::parseInt32(recordChild));
                     }
 
                     recordChild = domElement.firstChildElement(keys::type);
-                    if (!recordChild.isNull()) {
+                    if (!recordChild.isNull())
+                    {
                         settings.s2filesMap->insert(id, parseType(domElement));
                     }
 
                     recordChild = domElement.firstChildElement(keys::widget);
-                    if (!recordChild.isNull()) {
+                    if (!recordChild.isNull())
+                    {
                         settings.s2widgetMap->insert({ id, parseWidget(domElement) });
                     }
 

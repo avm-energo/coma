@@ -1,9 +1,9 @@
 #include "oscdialog.h"
 
-#include "../gen/board.h"
 #include "../gen/files.h"
 #include "../gen/timefunc.h"
 #include "../models/etablemodel.h"
+#include "../module/board.h"
 #include "../s2/datamanager.h"
 #include "../s2/s2.h"
 #include "../widgets/etableview.h"

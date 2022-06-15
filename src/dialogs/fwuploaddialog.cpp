@@ -1,12 +1,12 @@
 #include "fwuploaddialog.h"
 
 #include "../dialogs/keypressdialog.h"
-#include "../gen/board.h"
 #include "../gen/colors.h"
 #include "../gen/error.h"
 #include "../gen/files.h"
 #include "../gen/stdfunc.h"
 #include "../gen/timefunc.h"
+#include "../module/board.h"
 #include "../s2/s2.h"
 #include "../widgets/etableview.h"
 #include "../widgets/wd_func.h"

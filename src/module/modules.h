@@ -17,8 +17,8 @@ enum Model
     KIV = 0xA284,
     KDV = 0xA387
 };
-
 Q_ENUM_NS(Model);
+
 enum BaseBoard : quint16
 {
     MTB_00 = 0x00,
@@ -99,6 +99,7 @@ enum AlarmType
     Base,
     Mezz
 };
+
 enum JournalType
 {
     Work,
@@ -123,10 +124,12 @@ struct StartupInfoBlock
     quint32 SerialNum;
     quint32 Cfcrc;
     quint32 Hth;
+
     bool isOutdated(quint32 configVersion) const
     {
         return Fwver < configVersion;
     }
+
     quint16 type() const
     {
         return quint16((MTypeB << 8) + MTypeM);

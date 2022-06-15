@@ -1,10 +1,10 @@
 #include "alarmstateall.h"
 
-#include "../gen/board.h"
 #include "../gen/colors.h"
 #include "../gen/error.h"
-#include "../gen/modules.h"
 #include "../widgets/wd_func.h"
+#include "board.h"
+#include "modules.h"
 
 #include <QBoxLayout>
 #include <QDebug>

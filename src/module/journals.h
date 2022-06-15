@@ -2,9 +2,9 @@
 #define JOURNALS_H
 
 #include "../gen/datatypes.h"
-#include "../gen/modules.h"
 #include "../gen/timefunc.h"
 #include "../models/edynamictablemodel.h"
+#include "../module/modules.h"
 #include "../s2/filestruct.h"
 
 #include <QDebug>

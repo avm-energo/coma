@@ -1,10 +1,10 @@
 #include "journals.h"
 
-#include "../gen/board.h"
 #include "../gen/error.h"
 #include "../gen/files.h"
 #include "../gen/timefunc.h"
 #include "../widgets/wd_func.h"
+#include "board.h"
 
 #include <QApplication>
 #include <QDate>

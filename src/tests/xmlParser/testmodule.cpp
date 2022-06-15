@@ -1,8 +1,8 @@
 #include "testmodule.h"
 
-#include "../../gen/board.h"
 #include "../../interfaces/modbusprivate.h"
 #include "../../interfaces/protocomprivate.h"
+#include "../../module/board.h"
 
 namespace config
 {

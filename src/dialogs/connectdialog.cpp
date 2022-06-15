@@ -1,7 +1,7 @@
 #include "connectdialog.h"
 
-#include "../gen/board.h"
 #include "../gen/error.h"
+#include "../module/board.h"
 #include "../widgets/wd_func.h"
 #include "interfaceemudialog.h"
 #include "interfaceethernetdialog.h"

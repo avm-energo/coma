@@ -26,10 +26,12 @@ struct INICOM
     friend bool operator==(const INICOM &lhs, const INICOM &rhs);
     friend bool operator!=(const INICOM &lhs, const INICOM &rhs);
 };
+
 bool inline operator==(const INICOM &lhs, const INICOM &rhs)
 {
     return (lhs.baud == rhs.baud) && (lhs.bits && rhs.bits) && (lhs.parity == rhs.parity) && (lhs.stop == rhs.stop);
 }
+
 bool inline operator!=(const INICOM &lhs, const INICOM &rhs)
 {
     return !(lhs == rhs);
@@ -44,10 +46,12 @@ struct TypeR
     friend bool operator==(const TypeR &lhs, const TypeR &rhs);
     friend bool operator!=(const TypeR &lhs, const TypeR &rhs);
 };
+
 bool inline operator==(const TypeR &lhs, const TypeR &rhs)
 {
     return (lhs.reg == rhs.reg) && (lhs.dat == rhs.dat);
 }
+
 bool inline operator!=(const TypeR &lhs, const TypeR &rhs)
 {
     return !(lhs == rhs);
@@ -62,28 +66,25 @@ enum SensorType : quint8
 #pragma pack(push, 1)
 struct ModbusItem
 {
-    // Тип датчика
-    SensorType typedat;
-    // Параметры порта
-    INICOM parport;
-    // Период опроса
-    quint8 per;
-    // Адрес
-    quint8 adr;
+    SensorType typedat; ///< Тип датчика
+    INICOM parport;     ///< Параметры порта
+    quint8 per;         ///< Период опроса
+    quint8 adr;         ///< Адрес
     TypeR type;
-    // Начальный адрес регистра
-    quint16 reg;
-    // Количество регистров
-    quint8 cnt;
+    quint16 reg; ///< Начальный адрес регистра
+    quint8 cnt;  ///< Количество регистров
+
     friend bool operator==(const ModbusItem &lhs, const ModbusItem &rhs);
     friend bool operator!=(const ModbusItem &lhs, const ModbusItem &rhs);
 };
 #pragma pack(pop)
+
 bool inline operator==(const ModbusItem &lhs, const ModbusItem &rhs)
 {
     return (lhs.typedat == rhs.typedat) && (lhs.parport == rhs.parport) && (lhs.per == rhs.per) && (lhs.adr == rhs.adr)
         && (lhs.type == rhs.type) && (lhs.reg == rhs.reg) && (lhs.cnt == rhs.cnt);
 }
+
 bool inline operator!=(const ModbusItem &lhs, const ModbusItem &rhs)
 {
     return !(lhs == rhs);

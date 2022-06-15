@@ -1,7 +1,7 @@
 #ifndef TUNE82CHECKMIP_H
 #define TUNE82CHECKMIP_H
 
-#include "../../gen/modules.h"
+#include "../../module/modules.h"
 #include "../abstracttunedialog.h"
 #include "mip.h"
 

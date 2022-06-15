@@ -3,9 +3,9 @@
 #define DEVICETYPE_MODULE 1 // модуль
 #define DEVICETYPE_DEVICE 2 // прибор
 
-#include "../gen/modules.h"
-#include "datatypes.h"
-#include "singleton.h"
+#include "../gen/datatypes.h"
+#include "../gen/singleton.h"
+#include "modules.h"
 
 class Board : public QObject, public Singleton<Board>
 {
@@ -139,6 +139,7 @@ private:
     {
         return value || isSerialNumberSet(args...);
     }
+
     int m_updateCounter = 0;
     int m_updateCounterExt = 0;
     bool m_updateType = false;

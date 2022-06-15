@@ -1,8 +1,8 @@
 #include "tunekivtemp60.h"
 
-#include "../../gen/board.h"
 #include "../../gen/colors.h"
 #include "../../gen/stdfunc.h"
+#include "../../module/board.h"
 #include "../../s2/configv.h"
 #include "../../widgets/epopup.h"
 #include "../../widgets/waitwidget.h"

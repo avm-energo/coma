@@ -1,7 +1,7 @@
 #include "tunesequencefile.h"
 
-#include "../gen/board.h"
 #include "../gen/stdfunc.h"
+#include "../module/board.h"
 
 #include <QDebug>
 

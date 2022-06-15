@@ -1,10 +1,10 @@
 #ifndef DATABLOCK_H
 #define DATABLOCK_H
 
-#include "../gen/board.h"
 #include "../gen/datatypes.h"
 #include "../gen/error.h"
 #include "../interfaces/baseinterface.h"
+#include "../module/board.h"
 //#include "../models/valuemodel.h"
 
 #include <QWidget>

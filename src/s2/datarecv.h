@@ -96,9 +96,13 @@ public:
     DataRecV(unsigned _id, T _data) : id(_id), data(_data)
     {
     }
+
     DataRecV() = default;
     void printer() const;
     S2DataTypes::DataRec serialize() const;
+    unsigned int getId() const;
+    valueType getData() const;
+    void setData(const valueType &value);
 
     template <typename T, std::enable_if_t<valueMap::true_type<T>::value, bool> = true> T value() const
     {
@@ -108,6 +112,7 @@ public:
         else
             return T();
     }
+
     template <typename T> void changeValue(const T value)
     {
         if (!data.valueless_by_exception())
@@ -120,15 +125,12 @@ public:
             data = value;
     }
 
-    unsigned int getId() const;
+
     size_t typeIndex() const
     {
         return data.index();
     }
 
-    valueType getData() const;
-
-    void setData(const valueType &value);
 
 private:
     unsigned int id;

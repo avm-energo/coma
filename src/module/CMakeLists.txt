@@ -22,6 +22,10 @@ add_library(
   alarmstateall.h
   basealarm.cpp
   basealarm.h
+  board.cpp
+  board.h
+  filehelper.cpp
+  filehelper.h
   journals.cpp
   journals.h
   journkdv.cpp
@@ -30,20 +34,23 @@ add_library(
   journkiv.h
   journktf.cpp
   journktf.h
-  modulealarm.cpp
-  modulealarm.h
   module.cpp
   module.h
+  modulealarm.cpp
+  modulealarm.h
+  modules.h
+  module_kxx.h
   ../../settings/settings.qrc)
 
 target_link_libraries(
   ${PROJECT_NAME}
   PRIVATE
-  gen
-  s2
-  widgets
   config
   comaversion
+  gen
+  models
+  s2
+  widgets
   xmleditor
   Qt${QT_VERSION_MAJOR}::Core
   Qt${QT_VERSION_MAJOR}::Widgets

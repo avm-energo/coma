@@ -1,7 +1,7 @@
 #pragma once
-#include "../gen/modules.h"
 #include "../gen/std_ext.h"
 #include "../gen/stdfunc.h"
+#include "../module/modules.h"
 #include "filemanager.h"
 #include "trendviewdialog.h"
 

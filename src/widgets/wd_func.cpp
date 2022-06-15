@@ -1,12 +1,13 @@
 #include "wd_func.h"
 
-#include "../gen/board.h"
 #include "../gen/colors.h"
 #include "../gen/error.h"
 #include "../gen/files.h"
-#include "../gen/modules.h"
 #include "../gen/stdfunc.h"
 #include "../models/etablemodel.h"
+#include "../module/board.h"
+#include "../module/filehelper.h"
+#include "../module/modules.h"
 #include "edoublespinbox.h"
 #include "epopup.h"
 #include "etableview.h"
@@ -668,7 +669,7 @@ QString WDFunc::ChooseFileForOpen(QWidget *parent, QString mask)
 
 QString WDFunc::ChooseFileForSave(QWidget *parent, const QString &mask, const QString &ext, const QString &filenamestr)
 {
-    QString tmps = Files::ChooseFileForSave(ext, filenamestr);
+    QString tmps = Files::ChooseFileForSave(FileHelper::ChooseFileForSave(ext), filenamestr);
     QFileDialog *dlg = new QFileDialog;
     dlg->setAttribute(Qt::WA_DeleteOnClose);
     dlg->setFileMode(QFileDialog::AnyFile);

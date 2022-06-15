@@ -9,7 +9,7 @@ class Files
 public:
     Files();
 
-    static QString ChooseFileForSave(const QString &ext, const QString &filenamestr = "");
+    static QString ChooseFileForSave(const QString &res, const QString &filenamestr = "");
 
     static Error::Msg LoadFromFile(const QString &filename, QByteArray &ba);
 

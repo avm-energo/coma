@@ -1,12 +1,12 @@
 #pragma once
 
 #include "../config/widgetfactory.h"
-#include "../gen/board.h"
 #include "../gen/datatypes.h"
 #include "../module/alarmstateall.h"
 #include "../s2/configv.h"
 #include "../widgets/alarmwidget.h"
 #include "../widgets/udialog.h"
+#include "board.h"
 #include "journals.h"
 #include "modulealarm.h"
 constexpr char resourceDirectory[] = ":/module";

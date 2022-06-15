@@ -1,7 +1,6 @@
 #include "oscmanager.h"
 
 #include "../gen/files.h"
-#include "../gen/modules.h"
 #include "../gen/timefunc.h"
 #include "../s2/s2.h"
 #include "../widgets/wd_func.h"

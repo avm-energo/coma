@@ -87,6 +87,7 @@ add_library(
 target_link_libraries(
   ${PROJECT_NAME}
   PRIVATE avtuk
+  PRIVATE dialogs
   PRIVATE module
   PRIVATE s2
   PRIVATE xmleditor

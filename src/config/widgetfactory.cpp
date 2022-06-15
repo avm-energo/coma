@@ -1,7 +1,7 @@
 #include "widgetfactory.h"
 
-#include "../gen/module_kxx.h"
 #include "../models/comboboxdelegate.h"
+#include "../module/module_kxx.h"
 #include "../s2/configv.h"
 #include "../widgets/checkboxgroup.h"
 #include "../widgets/flowlayout.h"

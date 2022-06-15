@@ -1,9 +1,9 @@
 #include "debugcoma.h"
 
 #include "../comaversion/comaversion.h"
-#include "../gen/board.h"
 #include "../interfaces/emulator.h"
 #include "../interfaces/protocom.h"
+#include "../module/board.h"
 #include "../s2/datamanager.h"
 #include "../tune/82/tune82checkmip.h"
 #include "../widgets/aboutwidget.h"

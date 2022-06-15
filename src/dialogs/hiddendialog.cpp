@@ -1,10 +1,10 @@
 #include "hiddendialog.h"
 
-#include "../gen/board.h"
 #include "../gen/datatypes.h"
 #include "../gen/error.h"
-#include "../gen/modules.h"
 #include "../interfaces/baseinterface.h"
+#include "../module/board.h"
+#include "../module/modules.h"
 #include "../widgets/wd_func.h"
 #include "keypressdialog.h"
 

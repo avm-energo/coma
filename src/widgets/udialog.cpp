@@ -1,6 +1,6 @@
 #include "udialog.h"
 
-#include "../gen/board.h"
+#include "../module/board.h"
 #include "../s2/datamanager.h"
 #include "epopup.h"
 

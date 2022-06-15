@@ -1,11 +1,11 @@
 #include "configdialog.h"
 
 #include "../dialogs/keypressdialog.h"
-#include "../gen/board.h"
 #include "../gen/error.h"
 #include "../gen/files.h"
 #include "../gen/stdfunc.h"
 #include "../gen/timefunc.h"
+#include "../module/board.h"
 #include "../s2/configv.h"
 #include "../s2/datamanager.h"
 #include "../s2/s2.h"

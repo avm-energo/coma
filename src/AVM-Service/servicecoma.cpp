@@ -1,10 +1,10 @@
 #include "servicecoma.h"
 
 #include "../comaversion/comaversion.h"
-#include "../gen/board.h"
 #include "../interfaces/iec104.h"
 #include "../interfaces/modbus.h"
 #include "../interfaces/protocom.h"
+#include "../module/board.h"
 #include "../s2/datamanager.h"
 #include "../widgets/aboutwidget.h"
 #include "config.h"
