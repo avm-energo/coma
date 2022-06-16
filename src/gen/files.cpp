@@ -4,11 +4,11 @@
 
 #include <QDirIterator>
 #include <QFile>
+#include <QStorageInfo>
+#include <memory>
 #ifdef QT_GUI_LIB
-
 #include <QFileDialog>
 #endif
-#include <QStorageInfo>
 
 Files::Files()
 {

@@ -1,6 +1,6 @@
 #ifndef FILES_H
 #define FILES_H
-#include "../gen/error.h"
+#include "error.h"
 
 #include <QString>
 
