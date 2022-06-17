@@ -285,7 +285,6 @@ else()
 endif()
 
 if (ENABLE_PVS)
-
     pvs_studio_add_target(
         TARGET ${PROJECT_NAME}.analyze ALL
         OUTPUT FORMAT errorfile

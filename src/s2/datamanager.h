@@ -29,14 +29,6 @@ public:
         DataTypes::SinglePointWithTimeStruct,                     //
         DataTypes::FloatStruct>;
     explicit DataManager(token, QObject *parent = nullptr);
-
-    //    static Error::Msg getSignals(quint32 firstSignalAdr, quint32 lastSignalAdr, DataTypes::SignalTypes type,
-    //        QList<DataTypes::SignalsStruct> &outlist);
-    //    static Error::Msg getFile(quint32 filenum, QByteArray &outba);
-    //    static Error::Msg getConfig(quint32 firstID, quint32 lastID, QList<DataTypes::ConfParameterStruct> &outlist);
-    //    static Error::Msg getResponse(DataTypes::GeneralResponseTypes type, DataTypes::GeneralResponseStruct
-    //    &response); static void setConfig(S2ConfigType *s2config);
-    //    static void reqStartup();
     void checkTypeAndSendSignals(DataTypes::SignalsStruct &str);
 
     template <typename T> static void addSignalToOutList(DataTypes::SignalTypes type, T signal)
@@ -111,8 +103,6 @@ public:
 
 private:
     static std::queue<QVariant> s_inputQueue;
-    //    static QList<DataTypes::SignalsStruct> s_outputList;
-    //    static QMutex s_outListMutex;
     static QMutex s_inQueueMutex;
     QMap<quint32, RegisterType> m_registers;
 
