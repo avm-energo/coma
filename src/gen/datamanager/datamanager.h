@@ -1,11 +1,11 @@
 #ifndef DATAMANAGER_H
 #define DATAMANAGER_H
 
-#include "../gen/datatypes.h"
-#include "../gen/error.h"
-#include "../gen/singleton.h"
-#include "datarecv.h"
-#include "s2datatypes.h"
+#include "../datatypes.h"
+#include "../error.h"
+#include "../singleton.h"
+//#include "datarecv.h"
+//#include "s2datatypes.h"
 
 #include <QMutex>
 #include <QObject>
@@ -28,6 +28,7 @@ public:
     using RegisterType = std::variant<DataTypes::BitStringStruct, //
         DataTypes::SinglePointWithTimeStruct,                     //
         DataTypes::FloatStruct>;
+
     explicit DataManager(token, QObject *parent = nullptr);
     void checkTypeAndSendSignals(DataTypes::SignalsStruct &str);
 
@@ -37,9 +38,6 @@ public:
         str.type = type;
         str.data.setValue(signal);
         GetInstance().checkTypeAndSendSignals(str);
-        //        s_outListMutex.lock();
-        //        s_outputList.append(str);
-        //        s_outListMutex.unlock();
     }
 
     template <typename T> static void addToInQueue(T data)
@@ -124,11 +122,11 @@ signals:
     void bitStringReceived(const DataTypes::BitStringStruct &);
     void singlePointReceived(const DataTypes::SinglePointWithTimeStruct &);
     void floatReceived(const DataTypes::FloatStruct &);
-    void fileReceived(const DataTypes::FileStruct &);
-    void dataRecVListReceived(const QList<DataTypes::DataRecV> &);
+    // void fileReceived(const DataTypes::FileStruct &);
+    // void dataRecVListReceived(const QList<DataTypes::DataRecV> &);
     void responseReceived(const DataTypes::GeneralResponseStruct &);
-    void oscInfoReceived(const S2DataTypes::OscInfo &);
-    void swjInfoReceived(const S2DataTypes::SwitchJourInfo &);
+    // void oscInfoReceived(const S2DataTypes::OscInfo &);
+    // void swjInfoReceived(const S2DataTypes::SwitchJourInfo &);
     void blockReceived(const DataTypes::BlockStruct &);
 #ifdef __linux__
     void timeReceived(const timespec &);

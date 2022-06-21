@@ -17,6 +17,10 @@ add_library(
   gen STATIC
   colors.h
   datatypes.h
+  datamanager/datamanager.h
+  datamanager/datamanager.cpp
+  datamanager/datatypeimpl.h
+  datamanager/registrator.h
   error.h
   error.cpp
   errorqueue.h

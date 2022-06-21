@@ -1,13 +1,25 @@
 #ifndef DATATYPES_H
 #define DATATYPES_H
 
+#include "datamanager/datatypeimpl.h"
 #include "uint24.h"
 
 #include <QVariant>
 
 #ifdef __linux__
 #include <ctime>
-Q_DECLARE_METATYPE(timespec);
+
+class TimeSpec : DataTypeImpl<TimeSpec>
+{
+public:
+    TimeSpec() : DataTypeImpl(this)
+    {
+    }
+
+    timespec tSpec;
+};
+
+Q_DECLARE_METATYPE(TimeSpec);
 #endif
 
 namespace DataTypes
@@ -48,40 +60,95 @@ enum GeneralResponseTypes
     DataCount
 };
 
-struct BitStringStruct
+class BitStringStruct : DataTypeImpl<BitStringStruct>
 {
+public:
+    BitStringStruct() : DataTypeImpl(this)
+    {
+    }
+
     //    quint8 sigAdr[3];
     quint32 sigAdr;
     quint32 sigVal;
     quint8 sigQuality;
-}; // первое - номера сигналов, второе - их значения ("" ~ недостоверное
-   // значение), третье - метка времени
 
-struct FloatWithTimeStruct
+signals:
+    void DataTypeReceived(const BitStringStruct &);
+};
+// первое - номера сигналов, второе - их значения ("" ~ недостоверное
+// значение), третье - метка времени
+
+class FloatWithTimeStruct : DataTypeImpl<FloatWithTimeStruct>
 {
+public:
+    FloatWithTimeStruct() : DataTypeImpl(this)
+    {
+    }
+
     quint32 sigAdr;
     float sigVal;
     quint8 sigQuality;
     quint64 CP56Time;
+
+signals:
+    void DataTypeReceived(const FloatWithTimeStruct &);
 };
 
-struct FloatStruct
+class FloatStruct : DataTypeImpl<FloatStruct>
 {
+public:
+    FloatStruct() : DataTypeImpl(this)
+    {
+    }
+
     quint32 sigAdr;
     float sigVal;
+
+signals:
+    void DataTypeReceived(const FloatStruct &);
 };
 
-struct SinglePointWithTimeStruct
+class SinglePointWithTimeStruct : DataTypeImpl<SinglePointWithTimeStruct>
 {
+public:
+    SinglePointWithTimeStruct() : DataTypeImpl(this)
+    {
+    }
+
     quint32 sigAdr;
     quint8 sigVal;
     quint64 CP56Time;
+
+signals:
+    void DataTypeReceived(const SinglePointWithTimeStruct &);
 };
 
-struct BlockStruct
+class BlockStruct : DataTypeImpl<BlockStruct>
 {
+public:
+    BlockStruct() : DataTypeImpl(this)
+    {
+    }
+
     quint32 ID;
     QByteArray data;
+
+signals:
+    void DataTypeReceived(const BlockStruct &);
+};
+
+class GeneralResponseStruct : DataTypeImpl<GeneralResponseStruct>
+{
+public:
+    GeneralResponseStruct() : DataTypeImpl(this)
+    {
+    }
+
+    GeneralResponseTypes type;
+    quint64 data;
+
+signals:
+    void DataTypeReceived(const GeneralResponseStruct &);
 };
 
 typedef BlockStruct S2Record;
@@ -104,12 +171,6 @@ struct SingleCommand
 {
     uint24 addr;
     bool value;
-};
-
-struct GeneralResponseStruct
-{
-    GeneralResponseTypes type;
-    quint64 data;
 };
 
 struct Alarm

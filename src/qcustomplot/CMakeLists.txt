@@ -18,6 +18,7 @@ add_library(${PROJECT_NAME} STATIC ${qcustomplot_BINARY_DIR}/qcustomplot.cpp)
 target_link_libraries(
   ${PROJECT_NAME}
   PRIVATE Qt${QT_VERSION_MAJOR}::Core
+  PRIVATE Qt${QT_VERSION_MAJOR}::PrintSupport
   PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${qcustomplot_BINARY_DIR})

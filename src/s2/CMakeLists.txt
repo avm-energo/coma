@@ -18,8 +18,6 @@ add_library(
   s2 STATIC
   configv.h
   configv.cpp
-  datamanager.h
-  datamanager.cpp
   datarec.h
   datarecv.h
   datarecv.cpp

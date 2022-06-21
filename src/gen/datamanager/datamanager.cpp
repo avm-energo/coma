@@ -1,6 +1,6 @@
 #include "datamanager.h"
 
-#include "../gen/helper.h"
+#include "../helper.h"
 
 QMutex DataManager::s_inQueueMutex;
 std::queue<QVariant> DataManager::s_inputQueue;
@@ -62,6 +62,7 @@ void DataManager::checkTypeAndSendSignals(DataTypes::SignalsStruct &str)
         }
         break;
     }
+    /*
     case File:
     {
         Q_ASSERT(str.data.canConvert<FileStruct>());
@@ -82,6 +83,7 @@ void DataManager::checkTypeAndSendSignals(DataTypes::SignalsStruct &str)
         }
         break;
     }
+    */
     case Block:
     {
         Q_ASSERT(str.data.canConvert<BlockStruct>());
@@ -102,26 +104,28 @@ void DataManager::checkTypeAndSendSignals(DataTypes::SignalsStruct &str)
         }
         break;
     }
-    case OscillogramInfo:
+    /*
+case OscillogramInfo:
+{
+    Q_ASSERT(str.data.canConvert<S2DataTypes::OscInfo>());
+    if (str.data.canConvert<S2DataTypes::OscInfo>())
     {
-        Q_ASSERT(str.data.canConvert<S2DataTypes::OscInfo>());
-        if (str.data.canConvert<S2DataTypes::OscInfo>())
-        {
-            S2DataTypes::OscInfo oscInfo = str.data.value<S2DataTypes::OscInfo>();
-            emit oscInfoReceived(oscInfo);
-        }
-        break;
+        S2DataTypes::OscInfo oscInfo = str.data.value<S2DataTypes::OscInfo>();
+        emit oscInfoReceived(oscInfo);
     }
-    case SwitchJournalInfo:
+    break;
+}
+case SwitchJournalInfo:
+{
+    Q_ASSERT(str.data.canConvert<S2DataTypes::SwitchJourInfo>());
+    if (str.data.canConvert<S2DataTypes::SwitchJourInfo>())
     {
-        Q_ASSERT(str.data.canConvert<S2DataTypes::SwitchJourInfo>());
-        if (str.data.canConvert<S2DataTypes::SwitchJourInfo>())
-        {
-            S2DataTypes::SwitchJourInfo swjInfo = str.data.value<S2DataTypes::SwitchJourInfo>();
-            emit swjInfoReceived(swjInfo);
-        }
-        break;
+        S2DataTypes::SwitchJourInfo swjInfo = str.data.value<S2DataTypes::SwitchJourInfo>();
+        emit swjInfoReceived(swjInfo);
     }
+    break;
+}
+    */
 #ifdef __linux__
     case Timespec:
     {
