@@ -1,9 +1,9 @@
 #ifndef COMA_H
 #define COMA_H
-#include "../avtuk/oscmanager.h"
 #include "../gen/datatypes.h"
 #include "../gen/stdfunc.h"
 #include "../interfaces/settingstypes.h"
+#include "../oscillograms/oscmanager.h"
 #include "../xmleditor/moduleseditor.h"
 
 #include <QListWidget>

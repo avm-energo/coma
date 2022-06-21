@@ -1,8 +1,8 @@
 #ifndef SWITCHJOURNALDIALOG_H
 #define SWITCHJOURNALDIALOG_H
 
+#include "../oscillograms/oscmanager.h"
 #include "../widgets/udialog.h"
-#include "oscmanager.h"
 
 #include <QModelIndex>
 

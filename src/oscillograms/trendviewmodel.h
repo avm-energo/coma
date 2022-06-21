@@ -28,12 +28,14 @@ public:
     virtual QStringList analogDescriptions() const = 0;
     virtual QStringList digitalDescriptions() const = 0;
     virtual QStringList analogValues() const = 0;
-    virtual void addAnalogValue(const QString &value)
+    virtual QStringList digitalValues() const = 0;
+
+    virtual void addDigitalValue(const QString &value)
     {
         Q_UNUSED(value)
     }
-    virtual QStringList digitalValues() const = 0;
-    virtual void addDigitalValue(const QString &value)
+
+    virtual void addAnalogValue(const QString &value)
     {
         Q_UNUSED(value)
     }

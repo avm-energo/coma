@@ -36,6 +36,7 @@ static_assert(sizeof(float) == sizeof(DWORD), "Broken datatypes");
 static_assert(sizeof(WORD_4t) == sizeof(BYTE_8t), "Broken datatypes");
 static_assert(sizeof(DWORD_4t) == sizeof(BYTE_16t), "Broken datatypes");
 static_assert(sizeof(FLOAT_2t) == sizeof(BYTE_8t), "Broken datatypes");
+
 namespace detail
 {
 
@@ -62,6 +63,7 @@ namespace detail
     }
 
 }
+
 using valueType = std::variant<BYTE, WORD, DWORD, INT32, //
     BYTE_4t, WORD_4t, DWORD_4t,                          //
     BYTE_8t, WORD_8t, DWORD_8t,                          //

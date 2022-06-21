@@ -28,14 +28,17 @@ public:
         memcpy(&record, fs.data.data(), sizeof(Record));
         return record;
     }
+
     void setHeader(Record &&header) noexcept
     {
         oscHeader = std::move(header);
     }
+
     void setHeader(const Record &header) noexcept
     {
         oscHeader = header;
     }
+
     Record header() const
     {
         return oscHeader.value();

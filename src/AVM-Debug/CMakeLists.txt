@@ -47,7 +47,7 @@ target_link_libraries(
   models
   startup
   tune
-  avtuk
+  oscillograms
   datablocks
   comaversion
   Qt${QT_VERSION_MAJOR}::Core

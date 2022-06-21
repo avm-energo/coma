@@ -62,6 +62,8 @@ add_library(
   ipctrl.h
   passwordlineedit.cpp
   passwordlineedit.h
+  pushbuttondelegate.cpp
+  pushbuttondelegate.h
   signalchoosewidget.cpp
   signalchoosewidget.h
   splashscreen.cpp
@@ -86,7 +88,7 @@ add_library(
 
 target_link_libraries(
   ${PROJECT_NAME}
-  PRIVATE avtuk
+  PRIVATE oscillograms
   PRIVATE module
   PRIVATE xmleditor
   PRIVATE Qt${QT_VERSION_MAJOR}::Core

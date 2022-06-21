@@ -239,7 +239,17 @@ QStringList TrendViewModel80::digitalColors() const
 
 QStringList TrendViewModel80::analogDescriptions() const
 {
-    return {};
+    return {
+        "Напряжение А, В",  //
+        "Напряжение В, В",  //
+        "Напряжение С, В",  //
+        "Ток А, А",         //
+        "Ток В, А",         //
+        "Ток С, А",         //
+        "Напряжение АB, В", //
+        "Напряжение ВC, В", //
+        "Напряжение СA, В"  //
+    };
 }
 
 QStringList TrendViewModel80::digitalDescriptions() const

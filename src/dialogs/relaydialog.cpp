@@ -54,6 +54,12 @@ void RelayDialog::paintEvent(QPaintEvent *event)
     QWidget::paintEvent(event);
 }
 
+void RelayDialog::changeRelay(int number)
+{
+    bool state = !relays.at(number);
+    changeRelay(number, state);
+}
+
 void RelayDialog::changeRelay(int number, bool state)
 {
     const auto &interface = BaseInterface::iface();
@@ -66,4 +72,12 @@ void RelayDialog::changeRelay(int number, bool state)
     if (state)
         text = "Замкнуто";
     WDFunc::SetLBLText(this, "lbl" + QString::number(number), text);
+}
+
+void RelayDialog::resetRelays(int count)
+{
+    for (auto i = startRelayReg; i != startRelayReg + count; ++i)
+    {
+        changeRelay(i, false);
+    }
 }

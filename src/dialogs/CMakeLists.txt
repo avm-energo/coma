@@ -32,16 +32,20 @@ set(SRCS
     interfaceusbdialog.h
     journalsdialog.cpp
     journalsdialog.h
-    hiddendialog.cpp
-    hiddendialog.h
     keypressdialog.cpp
     keypressdialog.h
+    hiddendialog.cpp
+    hiddendialog.h
+    plotdialog.cpp
+    plotdialog.h
+    relaydialog.h
+    relaydialog.cpp
     settingsdialog.cpp
     settingsdialog.h
+    switchjournaldialog.cpp
+    switchjournaldialog.h
     timedialog.cpp
-    timedialog.h
-    plotdialog.cpp
-    plotdialog.h)
+    timedialog.h)
 
 if (ENABLE_EMULATOR)
     list(APPEND SRCS interfaceemudialog.cpp interfaceemudialog.h)
@@ -55,6 +59,7 @@ add_library(
 target_link_libraries(
   ${PROJECT_NAME}
   PRIVATE interfaces
+  PRIVATE oscillograms
   PRIVATE Qt${QT_VERSION_MAJOR}::Core
   PRIVATE Qt${QT_VERSION_MAJOR}::Widgets
   PRIVATE Qt${QT_VERSION_MAJOR}::SerialPort

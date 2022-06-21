@@ -148,7 +148,8 @@ void TrendViewDialog::addSig(QString signame)
         {
             int count = mainPlot->graphCount();
             QCPAxisRect *axisRect = nullptr;
-            if ((m_trendModel->idOsc() >= AVTUK_21::OSC_ID_MIN) && (m_trendModel->idOsc() <= 10008))
+            // if ((m_trendModel->idOsc() >= AVTUK_21::OSC_ID_MIN) && (m_trendModel->idOsc() <= 10008))
+            if (m_trendModel->idOsc() != AVTUK_85::OSC_ID)
                 axisRect = mainPlot->axisRect(0);
             else
                 axisRect = mainPlot->axisRect(1);
@@ -181,7 +182,6 @@ void TrendViewDialog::addSig(QString signame)
 void TrendViewDialog::setupUI()
 {
     QVBoxLayout *vlyout = new QVBoxLayout;
-
     if (!digital.noSignals())
     {
         vlyout->addWidget(createToolBar(ST_DIGITAL));
@@ -192,11 +192,10 @@ void TrendViewDialog::setupUI()
         vlyout->addWidget(createToolBar(ST_ANALOG));
         vlyout->addWidget(setupHelper(analog));
     }
+
     QHBoxLayout *hlyout = new QHBoxLayout;
     hlyout->addLayout(vlyout);
-
     hlyout->addWidget(mainPlot.get(), 100);
-
     setLayout(hlyout);
 }
 
@@ -514,8 +513,8 @@ void TrendViewDialog::analogAxis(int &MainPlotLayoutRow)
     // place the title in the empty cell we've just created
     mainPlot->plotLayout()->addElement(MainPlotLayoutRow++, 0, title);
     QCPAxisRect *AnalogAxisRect = new QCPAxisRect(mainPlot.get());
-    if (m_trendModel->idOsc() == AVTUK_85::OSC_ID)
-        AnalogAxisRect->addAxis(QCPAxis::atLeft);
+    //    if (m_trendModel->idOsc() == AVTUK_85::OSC_ID)
+    AnalogAxisRect->addAxis(QCPAxis::atLeft);
     mainPlot->plotLayout()->addElement(MainPlotLayoutRow++, 0, AnalogAxisRect);
     analog.legend = createLegend(MainPlotLayoutRow++);
     switch (m_trendModel->idOsc())
@@ -718,7 +717,6 @@ void TrendViewDialog::digitalAxis(int &MainPlotLayoutRow)
 
 void TrendViewDialog::setupPlots()
 {
-
     mainPlot = std::unique_ptr<QCustomPlot>(new QCustomPlot);
     mainPlot->plotLayout()->clear();
     mainPlot->setInteractions(QCP::iRangeZoom | QCP::iSelectPlottables | QCP::iSelectAxes);
