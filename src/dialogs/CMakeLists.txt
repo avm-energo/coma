@@ -60,6 +60,7 @@ target_link_libraries(
   ${PROJECT_NAME}
   PRIVATE interfaces
   PRIVATE oscillograms
+  PRIVATE models
   PRIVATE Qt${QT_VERSION_MAJOR}::Core
   PRIVATE Qt${QT_VERSION_MAJOR}::Widgets
   PRIVATE Qt${QT_VERSION_MAJOR}::SerialPort

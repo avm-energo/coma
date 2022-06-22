@@ -92,7 +92,8 @@ public:
      *  \param number[in] Input data for convertation.
      *  \return Byte array view of input data.
      */
-    template <typename T, size_t size = sizeof(T), typename = enable_if_pod<T>> static QByteArray ArrayFromNumber(T number)
+    template <typename T, size_t size = sizeof(T), typename = enable_if_pod<T>>
+    static QByteArray ArrayFromNumber(T number)
     {
         QByteArray ba(size, 0);
         *(reinterpret_cast<T *>(ba.data())) = number;
