@@ -3,7 +3,7 @@
 #include "../gen/std_ext.h"
 #include "../gen/stdfunc.h"
 #include "filemanager.h"
-#include "trendviewdialog.h"
+#include "trendview/trendviewdialog.h"
 
 #include <optional>
 

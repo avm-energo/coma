@@ -6,9 +6,7 @@
 class TrendViewModel
 {
 public:
-    TrendViewModel(int pointsnum) : pointsNum(pointsnum)
-    {
-    }
+    TrendViewModel(int pointsnum);
     TrendViewModel() = default;
     virtual ~TrendViewModel() = default;
 
@@ -70,62 +68,4 @@ private:
 
     int pointsNum;
     QStringList digitalNames, analogNames;
-};
-
-class TrendViewModel85 : public TrendViewModel
-{
-public:
-    TrendViewModel85(int pointsnum) : TrendViewModel(pointsnum)
-    {
-    }
-    virtual ~TrendViewModel85() override = default;
-
-    QStringList analogColors() const override;
-    QStringList digitalColors() const override;
-    QStringList analogDescriptions() const override;
-    QStringList digitalDescriptions() const override;
-    QStringList analogValues() const override;
-    QStringList digitalValues() const override;
-};
-
-class TrendViewModel80 : public TrendViewModel
-{
-public:
-    TrendViewModel80(int pointsnum) : TrendViewModel(pointsnum)
-    {
-    }
-    virtual ~TrendViewModel80() override = default;
-
-    QStringList analogColors() const override;
-    QStringList digitalColors() const override;
-    QStringList analogDescriptions() const override;
-    QStringList digitalDescriptions() const override;
-    QStringList analogValues() const override;
-    QStringList digitalValues() const override;
-};
-
-class TrendViewModel21 : public TrendViewModel
-{
-public:
-    TrendViewModel21(int pointsnum) : TrendViewModel(pointsnum)
-    {
-    }
-    virtual ~TrendViewModel21() override = default;
-
-    QStringList analogColors() const override;
-    QStringList digitalColors() const override;
-    QStringList analogDescriptions() const override;
-    QStringList digitalDescriptions() const override;
-    QStringList analogValues() const override
-    {
-        return m_analogValues;
-    }
-    QStringList digitalValues() const override;
-    void addAnalogValue(const QString &value) override
-    {
-        m_analogValues.append(value);
-    }
-
-private:
-    QStringList m_analogValues;
 };

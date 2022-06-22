@@ -28,15 +28,23 @@ add_library(
   parseid10020.h
   parseid10030.h
   parseid10030.cpp
-# TODO Check with real avtuk
-#  parseid9050.cpp
-#  parseid9050.h
-  parsemodule.cpp
+  # TODO Check with real avtuk
+  # parseid9050.cpp
+  # parseid9050.h
   parsemodule.h
-  trendviewdialog.cpp
-  trendviewdialog.h
-  trendviewmodel.cpp
-  trendviewmodel.h)
+  parsemodule.cpp
+  trendview/trendviewdialog.h
+  trendview/trendviewdialog.cpp
+  trendview/trendviewmodel.h
+  trendview/trendviewmodel.cpp
+  trendview/trendviewmodel21.h
+  trendview/trendviewmodel21.cpp
+  trendview/trendviewmodel80.h
+  trendview/trendviewmodel80.cpp
+  trendview/trendviewmodel85.h
+  trendview/trendviewmodel85.cpp
+  trendview/trendviewmodels.h
+)
 
 target_link_libraries(
   ${PROJECT_NAME}

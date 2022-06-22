@@ -27,13 +27,13 @@
 
 #include "trendviewdialog.h"
 
-#include "../gen/error.h"
-#include "../gen/files.h"
-#include "../gen/modules.h"
-#include "../gen/pch.h"
-#include "../gen/stdfunc.h"
-#include "../widgets/signalchoosewidget.h"
-#include "../widgets/wd_func.h"
+#include "../../gen/error.h"
+#include "../../gen/files.h"
+#include "../../gen/modules.h"
+#include "../../gen/pch.h"
+#include "../../gen/stdfunc.h"
+#include "../../widgets/signalchoosewidget.h"
+#include "../../widgets/wd_func.h"
 
 #include <QAction>
 #include <QPen>
@@ -469,7 +469,7 @@ void TrendViewDialog::setAnalogDescriptions(const QStringList &descr)
     analog.description.descriptions = descr;
 }
 
-void TrendViewDialog::setDiscreteDescriptions(const QStringList &descr)
+void TrendViewDialog::setDigitalDescriptions(const QStringList &descr)
 {
     digital.description.descriptions = descr;
 }
@@ -656,19 +656,18 @@ void TrendViewDialog::digitalAxis(int &MainPlotLayoutRow)
 {
     auto graphNum = digital.description.names.size();
     QPen pen;
-    QCPTextElement *title = new QCPTextElement(mainPlot.get());
+    auto title = new QCPTextElement(mainPlot.get());
     title->setText("Дискретные сигналы");
 
-    mainPlot->plotLayout()->addElement(
-        MainPlotLayoutRow++, 0, title); // place the title in the empty cell we've just created
-    QCPAxisRect *DigitalAxisRect = new QCPAxisRect(mainPlot.get());
+    // place the title in the empty cell we've just created
+    mainPlot->plotLayout()->addElement(MainPlotLayoutRow++, 0, title);
+    auto DigitalAxisRect = new QCPAxisRect(mainPlot.get());
 
     mainPlot->plotLayout()->addElement(MainPlotLayoutRow++, 0, DigitalAxisRect);
     digital.legend = createLegend(MainPlotLayoutRow++);
     SignalOscPropertiesStruct SignalOscProperties { ST_DIGITAL, 0, nullptr, false };
     for (auto count = 0; count < graphNum; count++)
     {
-
         QString tmps = digital.description.names.at(count);
         if (count < MAXGRAPHSPERPLOT)
         {
@@ -723,12 +722,12 @@ void TrendViewDialog::setupPlots()
     mainPlot->setAutoAddPlottableToLegend(false);
     int MainPlotLayoutRow = 0;
 
-    if (!digital.description.names.empty())
+    if (!digital.noSignals())
     {
         digitalAxis(MainPlotLayoutRow);
     }
 
-    if (!analog.description.names.empty())
+    if (!analog.noSignals())
     {
         analogAxis(MainPlotLayoutRow);
     }

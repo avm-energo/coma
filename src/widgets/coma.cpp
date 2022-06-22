@@ -462,7 +462,7 @@ void Coma::go()
     StdFunc::Init();
     qInfo("=== Log started ===\n");
 #ifdef Q_OS_LINUX
-    // linux code goes here
+    // TODO: linux code goes here
 #endif
 #ifdef Q_OS_WINDOWS
     // Listen to device events

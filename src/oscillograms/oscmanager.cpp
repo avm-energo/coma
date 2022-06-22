@@ -19,11 +19,11 @@ void OscManager::loadOsc(TrendViewModel *model)
     model->setXmax((static_cast<float>(model->length() / 2)));
     model->setXmin(-model->xmax());
 
-    trendDialog->setAnalogNames(model->analogValues());
     trendDialog->setDigitalNames(model->digitalValues());
     trendDialog->setDigitalColors(model->digitalColors());
+    trendDialog->setDigitalDescriptions(model->digitalDescriptions());
+    trendDialog->setAnalogNames(model->analogValues());
     trendDialog->setAnalogColors(model->analogColors());
-    trendDialog->setDiscreteDescriptions(model->digitalDescriptions());
     trendDialog->setAnalogDescriptions(model->analogDescriptions());
 
     switch (model->idOsc())
@@ -44,7 +44,6 @@ void OscManager::loadOsc(TrendViewModel *model)
         trendDialog->setRange(0, 10000, -20, 20);
         break;
     }
-
     case ID_OSC_CH0:
     case ID_OSC_CH0 + 1:
     case ID_OSC_CH0 + 2:
@@ -58,6 +57,7 @@ void OscManager::loadOsc(TrendViewModel *model)
         break;
     }
     }
+
     trendDialog->setTrendModel(model);
     trendDialog->setupPlots();
     trendDialog->setupUI();
