@@ -810,31 +810,24 @@ constexpr int ID_SPECTR_CH7 = 10057; // ID спектрограммы канал
 
 namespace AVTUK_85
 {
-/// ID журнала переключений с осциллограммой модуля 8085/8585
-constexpr int SWJ_ID = 10031;
-/// ID осциллограммы по модулю 8085/8585
-constexpr int OSC_ID = 10030;
+constexpr quint32 SWJ_ID = 10031; ///< ID журнала переключений с осциллограммой модуля 8085/8585
+constexpr quint32 OSC_ID = 10030; ///< ID осциллограммы по модулю 8085/8585
 }
 
 namespace AVTUK_8X
 {
-/// ID осциллограммы по модулю 808x
-constexpr int OSC_ID = 10020;
+constexpr quint32 OSC_ID = 10020; ///< ID осциллограммы по модулю 808x
 }
 
 namespace AVTUK_87
 {
-/// ID осциллограммы и спектрограммы модуля 87
-constexpr int OSC_SPC_ID = 9050;
+constexpr quint32 OSC_SPC_ID = 9050; ///< ID осциллограммы и спектрограммы модуля 87
 }
 
 namespace AVTUK_21
 {
-/// первый ID осциллограммы по модулю 21
-constexpr int OSC_ID_MIN = 10001;
-/// последний ID осциллограммы по модулю 21
-constexpr int OSC_ID_MAX = 10016;
+constexpr quint32 OSC_ID_MIN = 10001; ///< Первый ID осциллограммы по модулю 21
+constexpr quint32 OSC_ID_MAX = 10016; ///< Последний ID осциллограммы по модулю 21
 }
 
-/// максимальный размер буфера для осциллограмм
-constexpr int MAXOSCBUFSIZE = 262144;
+constexpr quint32 MAXOSCBUFSIZE = 262144; ///< Максимальный размер буфера для осциллограмм

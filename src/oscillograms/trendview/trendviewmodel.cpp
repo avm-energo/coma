@@ -1,5 +1,7 @@
 #include "trendviewmodel.h"
 
+#include <QDebug>
+
 TrendViewModel::TrendViewModel(int pointsnum) : pointsNum(pointsnum)
 {
 }
@@ -11,6 +13,10 @@ void TrendViewModel::addAnalogPoint(const QString &graphNum, double pointValue)
         QVector<double> tmpv = m_analogMainData.value(graphNum);
         tmpv.append(pointValue);
         m_analogMainData.insert(graphNum, tmpv);
+    }
+    else
+    {
+        qWarning() << "Graph name not found!";
     }
 }
 
@@ -43,12 +49,12 @@ bool TrendViewModel::setPointsAxis(float start, float step)
     return true;
 }
 
-int TrendViewModel::digitalContains(const QString &key) const
+bool TrendViewModel::digitalContains(const QString &key) const
 {
     return m_digitalMainData.contains(key);
 }
 
-int TrendViewModel::analogContains(const QString &key) const
+bool TrendViewModel::analogContains(const QString &key) const
 {
     return m_analogMainData.contains(key);
 }

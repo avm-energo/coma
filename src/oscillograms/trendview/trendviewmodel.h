@@ -15,8 +15,8 @@ public:
     void addAnalogPoint(const QString &graphNum, double pointValue);
     void addDigitalPoint(const QString &GraphNum, int pointValue);
     bool setPointsAxis(float start, float step);
-    int digitalContains(const QString &key) const;
-    int analogContains(const QString &key) const;
+    bool digitalContains(const QString &key) const;
+    bool analogContains(const QString &key) const;
 
     void processDigitalNames(const QStringList &list);
     void processAnalogNames(const QStringList &list);

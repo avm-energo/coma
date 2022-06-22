@@ -12,6 +12,7 @@
 // Mip::Mip(bool withGUI, AvtukVariants moduleType, QWidget *parent) : UDialog(withGUI, parent)
 Mip::Mip(bool withGUI, AvtukVariants moduleType, QWidget *parent) : UWidget(parent)
 {
+    Q_UNUSED(withGUI);
     m_moduleType = moduleType;
     //    if (withGUI)
     setupUI();
