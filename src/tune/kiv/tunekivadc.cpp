@@ -174,10 +174,10 @@ Error::Msg TuneKIVADC::ADCCoef(int coef)
     if (res != Error::Msg::NoError)
         return res;
     showRetomDialog(coef);
-    if (StdFunc::isCancelled())
+    if (StdFunc::IsCancelled())
         return Error::Msg::GeneralError;
     showTWTab(m_BdainWidgetIndex);
-    emit setProgressSize(StdFunc::tuneRequestCount());
+    emit setProgressSize(StdFunc::TuneRequestCount());
     for (int i = 0; i < 6; ++i)
     {
         m_bdainBlockData.IUefNat_filt[i] = 0.0;
@@ -185,7 +185,7 @@ Error::Msg TuneKIVADC::ADCCoef(int coef)
     }
     m_bdainBlockData.Frequency = 0.0;
     int count = 0;
-    while ((!StdFunc::isCancelled()) && (count < StdFunc::tuneRequestCount()))
+    while ((!StdFunc::IsCancelled()) && (count < StdFunc::TuneRequestCount()))
     {
         m_bdain->readAndUpdate();
         if (checkBdaIn(currentMap[coef]))
@@ -205,11 +205,11 @@ Error::Msg TuneKIVADC::ADCCoef(int coef)
     }
     for (int i = 0; i < 6; ++i)
     {
-        m_bdainBlockData.IUefNat_filt[i] /= StdFunc::tuneRequestCount();
-        m_bdainBlockData.phi_next_f[i] /= StdFunc::tuneRequestCount();
+        m_bdainBlockData.IUefNat_filt[i] /= StdFunc::TuneRequestCount();
+        m_bdainBlockData.phi_next_f[i] /= StdFunc::TuneRequestCount();
     }
-    m_bdainBlockData.Frequency /= StdFunc::tuneRequestCount();
-    if (StdFunc::isCancelled())
+    m_bdainBlockData.Frequency /= StdFunc::TuneRequestCount();
+    if (StdFunc::IsCancelled())
         return Error::Msg::GeneralError;
     return Error::Msg::NoError;
 }
@@ -250,7 +250,7 @@ Error::Msg TuneKIVADC::Tmk0()
     int i = 0;
     double tmk0 = 0;
     showTWTab(m_Bd0WidgetIndex);
-    while ((!StdFunc::isCancelled()) && (i < 5))
+    while ((!StdFunc::IsCancelled()) && (i < 5))
     {
         m_bd0->readAndUpdate();
         tmk0 += m_bd0->data()->Tmk;
@@ -258,7 +258,7 @@ Error::Msg TuneKIVADC::Tmk0()
         emit setProgressCount(i);
         StdFunc::Wait(500);
     }
-    if (StdFunc::isCancelled())
+    if (StdFunc::IsCancelled())
         return Error::Msg::GeneralError;
     m_bac->data()->Tmk0 = tmk0 / 5;
     return Error::Msg::NoError;
@@ -282,12 +282,12 @@ Error::Msg TuneKIVADC::CheckTune()
     //        "После закрытия данного сообщения для завершения настройки нажмите Enter\nДля отказа от настройки нажмите
     //        Esc");
     m_finished = false;
-    while ((!StdFunc::isCancelled()) && !m_finished)
+    while ((!StdFunc::IsCancelled()) && !m_finished)
     {
         m_bdain->readAndUpdate();
         StdFunc::Wait(500);
     }
-    if (StdFunc::isCancelled())
+    if (StdFunc::IsCancelled())
         return Error::Msg::GeneralError;
     return Error::Msg::NoError;
 }

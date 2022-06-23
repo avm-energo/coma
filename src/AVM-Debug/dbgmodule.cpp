@@ -1,18 +1,18 @@
 #include "dbgmodule.h"
 
-#include "../avtuk/oscdialog.h"
-#include "../avtuk/relaydialog.h"
-#include "../avtuk/switchjournaldialog.h"
 #include "../check/check3133dialog.h"
 #include "../check/signaldialog84.h"
 #include "../config/configdialog.h"
 #include "../dialogs/hiddendialog.h"
 #include "../dialogs/journalsdialog.h"
 #include "../dialogs/plotdialog.h"
+#include "../dialogs/relaydialog.h"
+#include "../dialogs/switchjournaldialog.h"
 #include "../dialogs/timedialog.h"
 #include "../module/journkdv.h"
 #include "../module/journkiv.h"
 #include "../module/journktf.h"
+#include "../oscillograms/oscdialog.h"
 #include "../startup/startupkdvdialog.h"
 #include "../startup/startupkivdialog.h"
 #include "../startup/startupktfdialog.h"
@@ -241,6 +241,7 @@ void DbgModule::createUSIO(Modules::BaseBoard typeB, Modules::MezzanineBoard typ
 void DbgModule::create(QTimer *updateTimer)
 {
     using namespace Modules;
+    BaseInterface::iface()->setSettings(settings()->ifaceSettings);
     auto &board = Board::GetInstance();
     quint16 typeb = board.typeB();
     if (BaseBoards.contains(typeb)) // there must be two-part module
@@ -283,5 +284,4 @@ void DbgModule::create(QTimer *updateTimer)
         connect(updateTimer, &QTimer::timeout, d, &UDialog::reqUpdate);
         d->uponInterfaceSetting();
     }
-    BaseInterface::iface()->setSettings(settings()->ifaceSettings);
 }

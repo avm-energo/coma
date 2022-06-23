@@ -31,6 +31,7 @@ protected:
 class ESimplePopup : public EPopup
 {
     Q_OBJECT
+
 public:
     enum MessageTypes
     {
@@ -45,6 +46,9 @@ public:
 
     ESimplePopup(MessageTypes type, const QString &msg, QWidget *parent = nullptr);
     ESimplePopup(MessageTypes type, QWidget *w, QWidget *parent = nullptr);
+
+private:
+    void Create(MessageTypes &type, QWidget *w, QWidget *parent = nullptr);
 
 public slots:
     void acceptSlot();

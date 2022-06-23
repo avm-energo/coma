@@ -55,4 +55,9 @@ unix*
 /src/share*
 /src/lib*
 /src/include*
+/src/out/build
+/include
+/doc/doxy-doc/*
+/html/*
+/latex/*
 CMakeLists.txt.user

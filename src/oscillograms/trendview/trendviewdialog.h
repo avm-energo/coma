@@ -44,7 +44,7 @@ public:
 
     // блока данных
     void setAnalogDescriptions(const QStringList &descr);
-    void setDiscreteDescriptions(const QStringList &descr);
+    void setDigitalDescriptions(const QStringList &descr);
 
     void setTrendModel(TrendViewModel *mdl);
 

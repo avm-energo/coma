@@ -12,6 +12,7 @@
 // Mip::Mip(bool withGUI, AvtukVariants moduleType, QWidget *parent) : UDialog(withGUI, parent)
 Mip::Mip(bool withGUI, AvtukVariants moduleType, QWidget *parent) : UWidget(parent)
 {
+    Q_UNUSED(withGUI);
     m_moduleType = moduleType;
     //    if (withGUI)
     setupUI();
@@ -107,7 +108,7 @@ Error::Msg Mip::check()
         u = 60.0;
         uthr = 0.05;
         iNom = 0;
-        ithr = FLT_MAX;
+        ithr = MAXFLOAT;
         break;
     case M82:
         u = 60.0;
@@ -116,7 +117,7 @@ Error::Msg Mip::check()
         break;
     case M83:
         u = 0;
-        uthr = FLT_MAX;
+        uthr = MAXFLOAT;
         ithr = 0.05;
         break;
     }
@@ -129,7 +130,7 @@ Error::Msg Mip::check()
     for (int i = 0; i < 10; i++)
     {
         float *mipdata = reinterpret_cast<float *>(&m_mipData);
-        if (!StdFunc::floatIsWithinLimits(*(mipdata + i), *VTC, *TTC))
+        if (!StdFunc::FloatIsWithinLimits(*(mipdata + i), *VTC, *TTC))
         {
             EMessageBox::warning(this,
                 "Несовпадение МИП по параметру " + QString::number(i)

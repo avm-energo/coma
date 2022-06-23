@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.14)
 
-project(avtuk LANGUAGES CXX)
+project(oscillograms LANGUAGES CXX)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
@@ -28,21 +28,23 @@ add_library(
   parseid10020.h
   parseid10030.h
   parseid10030.cpp
-# TODO Check with real avtuk
-#  parseid9050.cpp
-#  parseid9050.h
-  parsemodule.cpp
+  # TODO Check with real avtuk
+  # parseid9050.cpp
+  # parseid9050.h
   parsemodule.h
-  pushbuttondelegate.cpp
-  pushbuttondelegate.h
-  switchjournaldialog.cpp
-  switchjournaldialog.h
-  relaydialog.h
-  relaydialog.cpp
-  trendviewdialog.cpp
-  trendviewdialog.h
-  trendviewmodel.cpp
-  trendviewmodel.h)
+  parsemodule.cpp
+  trendview/trendviewdialog.h
+  trendview/trendviewdialog.cpp
+  trendview/trendviewmodel.h
+  trendview/trendviewmodel.cpp
+  trendview/trendviewmodel21.h
+  trendview/trendviewmodel21.cpp
+  trendview/trendviewmodel80.h
+  trendview/trendviewmodel80.cpp
+  trendview/trendviewmodel85.h
+  trendview/trendviewmodel85.cpp
+  trendview/trendviewmodels.h
+)
 
 target_link_libraries(
   ${PROJECT_NAME}

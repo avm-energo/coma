@@ -88,7 +88,7 @@ Error::Msg TuneKIVR::setR80()
 Error::Msg TuneKIVR::processR80()
 {
     m_pt100 = processR();
-    if (StdFunc::isCancelled())
+    if (StdFunc::IsCancelled())
         return Error::Msg::GeneralError;
     return Error::Msg::NoError;
 }
@@ -102,13 +102,13 @@ Error::Msg TuneKIVR::setR120()
 Error::Msg TuneKIVR::processR120()
 {
     double pt100_120 = processR();
-    if (StdFunc::isCancelled())
+    if (StdFunc::IsCancelled())
         return Error::Msg::GeneralError;
 #ifndef NO_LIMITS
     if (WDFunc::floatIsWithinLimits("сопротивления", pt100_120, m_pt100, 40, false))
     {
         WARNMSG("Ошибка в полученных данных, значения сопротивлений равны");
-        StdFunc::cancel();
+        StdFunc::Cancel();
         return Error::Msg::GeneralError;
     }
 #endif
@@ -133,10 +133,10 @@ void TuneKIVR::setR(int r)
 double TuneKIVR::processR()
 {
     showTWTab(m_BdaWidgetIndex);
-    emit setProgressSize(StdFunc::tuneRequestCount());
+    emit setProgressSize(StdFunc::TuneRequestCount());
     int i = 0;
     double pt100 = 0.0;
-    while ((!StdFunc::isCancelled()) && (i < StdFunc::tuneRequestCount()))
+    while ((!StdFunc::IsCancelled()) && (i < StdFunc::TuneRequestCount()))
     {
         m_bda->readAndUpdate();
         pt100 += m_bda->data()->Pt100;
@@ -144,7 +144,7 @@ double TuneKIVR::processR()
         emit setProgressCount(i);
         StdFunc::Wait(500);
     }
-    if (StdFunc::isCancelled())
+    if (StdFunc::IsCancelled())
         return 0;
     pt100 /= i;
     return pt100;

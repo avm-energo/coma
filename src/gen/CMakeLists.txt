@@ -20,12 +20,10 @@ add_library(
   board.h
   colors.h
   stdfunc.h
-  s2.h
-  s2helper.h
   datamanager.h
+  datatypes.h
   datarecv.h
   datarecv.cpp
-  datatypes.h
   error.h
   error.cpp
   errorqueue.cpp
@@ -44,16 +42,19 @@ add_library(
   timefunc.cpp
   datamanager.cpp
   stdfunc.cpp
-  xmlparser.cpp
-  xmlparser.h
   module_kxx.h
   modules.h
   registers.h
   errorqueue.h
-  std_ext.h
-  s2.cpp
+
+  # TODO: переместить в S2
   configv.cpp
-  configv.h)
+  configv.h
+  s2.cpp
+  s2.h
+  s2helper.h
+  
+  std_ext.h)
 
 target_link_libraries(
   gen

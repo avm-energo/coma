@@ -1,6 +1,7 @@
 #include "parseid10030.h"
 
-#include "trendviewmodel.h"
+#include "trendview/trendviewmodel.h"
+
 ParseID10030::ParseID10030(const QByteArray &BA) : ParseModule(BA)
 {
 }

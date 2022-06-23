@@ -3,9 +3,9 @@
 #include "../interfaces/iec104.h"
 #include "../interfaces/modbus.h"
 #include "../interfaces/protocom.h"
-#include "board.h"
-#include "settings.h"
-#include "std_ext.h"
+#include "../gen/board.h"
+#include "../gen/settings.h"
+#include "../gen/std_ext.h"
 
 namespace keys
 {
@@ -26,6 +26,8 @@ constexpr char record[] = "record";
 constexpr char key[] = "key";
 constexpr char value[] = "value";
 constexpr char map[] = "map";
+constexpr char id[] = "id";
+constexpr char widget[] = "widget";
 }
 
 XmlParser::XmlParser()
@@ -193,6 +195,20 @@ ctti::unnamed_type_id_t XmlParser::parseType(QDomElement domElement)
         if (name.contains("M_ME", Qt::CaseInsensitive))
             return ctti::unnamed_type_id<DataTypes::FloatStruct>().hash();
 
+        // New types from formatted s2files.xml
+        // TODO: add handler for these types
+        if (name.contains("Type", Qt::CaseInsensitive) ||
+            name.contains("OscHeader_Data", Qt::CaseInsensitive) ||
+            name.contains("SpectHeader_Data", Qt::CaseInsensitive) ||
+            name.contains("DataPoint_Osc85", Qt::CaseInsensitive) ||
+            name.contains("SwRepDataStruct", Qt::CaseInsensitive) ||
+            name.contains("DataPoint_Osc87", Qt::CaseInsensitive) ||
+            name.contains("DataPoint_Spect87", Qt::CaseInsensitive))
+        {
+            qWarning() << "Parsed unknown type";
+            return 0;
+        }
+
         // Widget classes
         // Group should be checked before single widget
         if (name.contains("Group", Qt::CaseInsensitive))
@@ -257,8 +273,17 @@ ctti::unnamed_type_id_t XmlParser::parseType(QDomElement domElement)
         if (name.contains("float[8]", Qt::CaseInsensitive))
             return ctti::unnamed_type_id<FLOAT_8t>().hash();
 
+        // New type from formatted s2files.xml
+        // TODO: add handler for this type
+        if (name.contains("BYTE[]", Qt::CaseInsensitive)) {
+            qWarning() << "Parsed unknown type";
+            return 0;
+        }
+
+
         [[fallthrough]];
     default:
+        //auto what = name;
         assert(false && "Unknown type");
     }
     return 0;
@@ -271,7 +296,15 @@ config::itemVariant XmlParser::parseWidget(QDomElement domElement)
     qDebug() << name;
 #endif
     QString className = domElement.attribute(keys::className);
-    auto type = parseType(domElement.firstChildElement(keys::type));
+    /*
+    auto domType = domElement.firstChild();
+    while (domType.toElement().tagName() != keys::type) {
+        domType = domType.nextSibling();
+    }
+    auto type = parseType(domType.toElement());
+    */
+    auto domType = domElement.firstChildElement(keys::type);
+    auto type = parseType(domType);
 
     if (!className.isEmpty())
     {
@@ -601,7 +634,6 @@ config::Item XmlParser::parseItem(QDomElement domElement, ctti::unnamed_type_id_
     {
     case delegate::ItemType::ModbusItem:
     {
-
         QDomElement nextChildElement = domElement.firstChildElement("parent");
         bool status = false;
         auto parent = static_cast<BciNumber>(nextChildElement.text().toUInt(&status));
@@ -769,12 +801,30 @@ void XmlParser::traverseNode(const QDomNode &node, ConfigSettings &settings)
 #ifdef XML_DEBUG
                     qDebug() << domElement.text();
 #endif
+                    auto id = BciNumber::dummyElement;
+                    auto recordChild = domElement.firstChildElement(keys::id);
+                    if (!recordChild.isNull()) {
+                        id = static_cast<BciNumber>(XmlParser::parseInt32(recordChild));
+                    }
+
+                    recordChild = domElement.firstChildElement(keys::type);
+                    if (!recordChild.isNull()) {
+                        settings.s2filesMap->insert(id, parseType(domElement));
+                    }
+
+                    recordChild = domElement.firstChildElement(keys::widget);
+                    if (!recordChild.isNull()) {
+                        settings.s2widgetMap->insert({ id, parseWidget(domElement) });
+                    }
+
+                    /*
                     domElement = domElement.firstChild().toElement();
                     BciNumber id = static_cast<BciNumber>(XmlParser::parseInt32(domElement));
                     domElement = domElement.nextSibling().toElement();
                     settings.s2filesMap->insert(id, parseType(domElement));
                     domElement = domElement.nextSibling().toElement();
                     settings.s2widgetMap->insert({ id, parseWidget(domElement) });
+                    */
 
                     domNode = domNode.nextSibling();
                     continue;

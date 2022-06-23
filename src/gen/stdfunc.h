@@ -6,11 +6,16 @@
 #include <cmath>
 #include <functional>
 #include <memory>
+#include <type_traits>
 #define MAINSLEEP 20
 #define MAINTIMEOUT 2000 // 2 sec timeout for general operations
 
+/// \brief Namespace with internal helper structure
 namespace QtHelper
 {
+/*! \brief Functor for auto-deleting
+ *  \details Functor for auto-deleting object, used in UniquePointer as default deletor
+ */
 struct deleteLaterDeletor
 {
     void operator()(QObject *object) const
@@ -27,23 +32,26 @@ template <typename T> using SharedPointer = std::shared_ptr<T>;
 
 template <typename T> using UniquePointer = std::unique_ptr<T, QtHelper::deleteLaterDeletor>;
 
+// Evil template magic...
+template <typename T>
+using enable_if_pod = typename std::enable_if<std::is_trivial<T>::value && std::is_standard_layout<T>::value, bool>;
+
+/*! \brief Class contains most frequently used general purpose functions
+ *  \details That class contains static general purpose functions
+ */
 class StdFunc
 {
 public:
-    StdFunc();
+    static QString DeviceIP;             ///< Deice's IP address
+    static QString s_OrganizationString; ///< Name of organization
 
-    static QString DeviceIP;
-    static QString s_OrganizationString;
+    StdFunc();
 
     static void Init();
     static QString VerToStr(quint32);
     static quint32 StrToVer(const QString &str);
-    static bool floatIsWithinLimits(double var, double base, double tolerance)
-    {
-        auto tmpf = fabs(var - base);
-        return (tmpf < fabs(tolerance));
-    }
-    static float toFloat(const QString &text, bool *ok = nullptr);
+    static bool FloatIsWithinLimits(double var, double base, double tolerance);
+    static float ToFloat(const QString &text, bool *ok = nullptr);
     static void SetHomeDir(const QString &dir);
     static QString GetHomeDir();
     static QString GetSystemHomeDir();
@@ -51,47 +59,58 @@ public:
     static QString ForDeviceIP();
     static void SetOrganizationString(const QString &str);
     static QString OrganizationString();
-    static void setTuneRequestCount(int n);
-    static int tuneRequestCount();
-    static void cancel();
-    static void clearCancel();
-    static bool isCancelled();
-    static void setCancelDisabled();
-    static void setCancelEnabled();
-    static int IndexByBit(quint32 dword); // возвращение номера первого, начиная с младшего,
-                                          // установленного бита, нумерация с 1, dword=0 => return 0
-    static quint32 BitByIndex(int idx); // возвращение битовой маски по индексу (0
-                                        // => 0, 1 => 1, 2 => 2, 3 => 4, ...)
-                                        //    static QString PrbMessage();
-                                        //    static void SetPrbMessage(const QString &msg);
+    static void SetTuneRequestCount(int n);
+    static int TuneRequestCount();
+    static void Cancel();
+    static void ClearCancel();
+    static bool IsCancelled();
+    static void SetCancelDisabled();
+    static void SetCancelEnabled();
+    static int IndexByBit(quint32 dword);
+    static quint32 BitByIndex(int idx);
+    // static QString PrbMessage();
+    // static void SetPrbMessage(const QString &msg);
     static void Wait(int ms = MAINSLEEP);
 
-    static quint32 ping(quint32 addr);
-    static quint32 checkPort(quint32 ip4Addr, quint16 port);
+    static quint32 Ping(quint32 addr);
+    static quint32 CheckPort(quint32 ip4Addr, quint16 port);
+    static QByteArray Compress(const QByteArray &data);
+    static bool CheckArchiveExist(const QString &path);
+
+    static void RemoveSubstr(std::string &str, std::string &substr);
+
+    /*! \brief Template function for joining items into QList
+     *  \param list[out] QList for joining input item
+     *  \param item[in] Input item
+     */
     template <typename T> static void joinItem(QList<T> &list, const T item)
     {
         list.append(item);
     }
-    static QByteArray compress(const QByteArray &data);
-    static bool checkArchiveExist(const QString &path);
 
-    static void removeSubstr(std::string &str, std::string &substr);
-
-    template <typename T, size_t size = sizeof(T)> static QByteArray arrayFromNumber(T number)
+    /*! \brief Converts trivial data type in byte array view.
+     *  \param number[in] Input data for convertation.
+     *  \return Byte array view of input data.
+     */
+    template <typename T, size_t size = sizeof(T), typename = enable_if_pod<T>>
+    static QByteArray ArrayFromNumber(T number)
     {
         QByteArray ba(size, 0);
         *(reinterpret_cast<T *>(ba.data())) = number;
         return ba;
     }
 
-    template <typename T> static QVariantList toVariantList(const QList<T> &list)
+    /// \brief Converts list of known datatype to QVariant list.
+    template <typename T> static QVariantList ToVariantList(const QList<T> &list)
     {
         QVariantList newList;
         for (const T &item : list)
             newList.push_back(item);
         return newList;
     }
-    template <typename T> static QList<T> toValuesList(const QList<T *> &list)
+
+    /// \brief Converts QVariant list to list of pointers of known datatype.
+    template <typename T> static QList<T> ToValuesList(const QList<T *> &list)
     {
         QList<T> newList;
         newList.reserve(list.size());
@@ -99,8 +118,8 @@ public:
         return newList;
     }
 
-    // recursive function to count set bits
-    template <typename T> static int countSetBits(T N)
+    /// \brief Returns count of bit set in input data.
+    template <typename T, size_t size = sizeof(T), typename = enable_if_pod<T>> static int CountSetBits(T N)
     {
         int count = 0;
         for (int i = 0; i < sizeof(T) * 8; i++)
@@ -112,12 +131,10 @@ public:
     }
 
 private:
-    static QString HomeDir;       // рабочий каталог программы
-    static QString SystemHomeDir; // системный каталог программы
-
+    static QString HomeDir;        ///< \private Рабочий каталог программы
+    static QString SystemHomeDir;  ///< \private Системный каталог программы
+    static int m_tuneRequestCount; ///< \private Степень усреднения для регулировки
     static bool Cancelled, s_cancelEnabled;
-
-    static int m_tuneRequestCount; // степень усреднения для регулировки
 };
 
 #endif // STDFUNC_H

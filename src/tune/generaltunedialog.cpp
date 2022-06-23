@@ -5,6 +5,7 @@
 #include "../gen/stdfunc.h"
 #include "../widgets/epopup.h"
 #include "../widgets/wd_func.h"
+#include "limereport/lrreportengine.h"
 #include "tunesequencefile.h"
 
 #include <QHBoxLayout>
@@ -13,7 +14,6 @@
 #include <QPushButton>
 #include <QSettings>
 #include <QSvgRenderer>
-#include <limereport/LimeReport>
 
 GeneralTuneDialog::GeneralTuneDialog(ConfigV *config, QWidget *parent) : UDialog(parent), configV(config)
 {

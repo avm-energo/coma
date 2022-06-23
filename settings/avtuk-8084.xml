@@ -23,9 +23,9 @@
         <!--Флаги сигнализации-->
         <quint64 name="criticalFlags">0x138E000</quint64>
         <!--Стартовый адрес сигнализации-->
-		    <quint32 name="startAddr">3011</quint32>
+        <quint32 name="startAddr">3011</quint32>
         <!--Цвет сигнализации если событие произошло-->
-		    <color>#ff0000</color>
+        <color>#ff0000</color>
       </alarm>
       <alarm name="warning">
         <string-array name="warningEvents">
@@ -49,8 +49,8 @@
           <item>Сигнализация по повышенному небалансу токов</item>
         </string-array>
         <quint64 name="warningFlags">0xC71FFF</quint64>
-		    <quint32 name="startAddr">3011</quint32>
-		    <color>#ffff00</color>
+        <quint32 name="startAddr">3011</quint32>
+        <color>#ffff00</color>
       </alarm>
       <!--Описываем журнал, имя обязательно-->
       <journal name="work">
@@ -123,7 +123,6 @@
       
       <!--Описываем протокол Modbus-->
       <modbus>
-        
         <!--Необходимо стараться описывать всё группами-->
         <!--Группа регистров, id обязателен-->
         <group id="baseSerialInfo">
@@ -136,7 +135,6 @@
           <!--Количество регистров-->
           <count>30</count>
         </group>
-        
         <group id="tempHardware">
             <function>04</function>
             <type>float</type>
@@ -203,7 +201,6 @@
           <start-addr>4000</start-addr>
           <count>22</count>
         </group>
-        
         <!--Необходимо стараться описывать всё группами, но можно описать и один регистр-->
         <!--Один регистр, имя обязательно-->        
         <register id="Sbg">
@@ -215,7 +212,6 @@
           <start-addr>900</start-addr>
           <!--Регистры пока поддерживаются только в определенных командах-->
         </register>
-        
         <register id="Clbg">
           <function>10</function>
           <type>float</type>
@@ -244,7 +240,6 @@
       <!--Описываем протокол Protocom-->
       <protocom>
         <!--Protocom состоит только из групп-->
-        
         <!--Группа регистров протокола IEC 60870 104, которой соответствует блок в Protocom'e-->
         <group>
           <!--Стартовый адрес регистра IEC 60870 104-->
@@ -255,7 +250,6 @@
           <block>4</block>
           <!--Блок может содержать столько же данных или больше чем есть в указанных регистрах, но не меньше-->
         </group>
-        
         <group>
           <start-addr>2400</start-addr>
           <count>7</count>
@@ -293,170 +287,170 @@
           <block>100</block>
         </group>      
       </protocom>
+
       <iec60870>
-        
       </iec60870>
 
-			<s2files>
-				<record>
-					<id>3</id>
-					<defaultValue>1</defaultValue>
-				</record>
-				<record>
-					<id>4</id>
-					<defaultValue>205</defaultValue>
-				</record>
-				<record>
-					<id>5</id>
-					<defaultValue>5</defaultValue>
-				</record>
-				<record>
-					<id>6</id>
-					<defaultValue>15</defaultValue>
-				</record>
-				<record>
-					<id>7</id>
-					<defaultValue>10</defaultValue>
-				</record>
-				<record>
-					<id>8</id>
-					<defaultValue>20</defaultValue>
-				</record>
-				<record>
-					<id>9</id>
-					<defaultValue>12</defaultValue>
-				</record>
-				<record>
-					<id>10</id>
-					<defaultValue>8</defaultValue>
-				</record>
-				<record>
-					<id>20</id>
-					<defaultValue>172,16,29,12</defaultValue>
-				</record>
-				<record>
-					<id>21</id>
-					<defaultValue>255,255,252,0</defaultValue>
-				</record>
-				<record>
-					<id>22</id>
-					<defaultValue>172,16,29,1</defaultValue>
-				</record>
-				<record>
-					<id>23</id>
-					<defaultValue>2404,2405,502,502</defaultValue>
-				</record>
-				<record>
-					<id>24</id>
-					<defaultValue>172,16,29,12</defaultValue>
-				</record>
-				<record>
-					<id>25</id>
-					<defaultValue>9600</defaultValue>
-				</record>
-				<record>
-					<id>26</id>
-					<defaultValue>0</defaultValue>
-				</record>
-				<record>
-					<id>27</id>
-					<defaultValue>0</defaultValue>
-				</record>
-				<record>
-					<id>28</id>
-					<defaultValue>0</defaultValue>
-				</record>
-				<record>
-					<id>1003</id>
-					<defaultValue>100</defaultValue>
-				</record>
-				<record>
-					<id>1006</id>
-					<defaultValue>220</defaultValue>
-				</record>
-				<record>
-					<id>1012</id>
-					<defaultValue>0.5</defaultValue>
-					<visibility>false</visibility>
-				</record>
-				<record>
-					<id>1013</id>
-					<defaultValue>0.5</defaultValue>
-					<visibility>false</visibility>
-				</record>
-				<record>
-					<id>1018</id>
-					<defaultValue>0.5</defaultValue>
-				</record>
-				<record>
-					<id>1019</id>
-					<defaultValue>1.0</defaultValue>
-				</record>
-				<record>
-					<id>1020</id>
-					<defaultValue>1.0</defaultValue>
-				</record>
-				<record>
-					<id>1021</id>
-					<defaultValue>1.5</defaultValue>
-				</record>
-				<record>
-					<id>1022</id>
-					<defaultValue>1.0</defaultValue>
-				</record>
-				<record>
-					<id>1023</id>
-					<defaultValue>1.5</defaultValue>
-				</record>
-				<record>
-					<id>1024</id>
-					<defaultValue></defaultValue>
-				</record>
-				<record>
-					<id>1025</id>
-					<defaultValue></defaultValue>
-				</record>
-				<record>
-					<id>1026</id>
-					<defaultValue></defaultValue>
-				</record>
-				<record>
-					<id>1031</id>
-					<defaultValue>60</defaultValue>
-				</record>
-				<record>
-					<id>1032</id>
-					<defaultValue>80.0</defaultValue>
-				</record>
-				<record>
-					<id>1033</id>
-					<defaultValue>1</defaultValue>
-				</record>
-				<record>
-					<id>1034</id>
-					<defaultValue>1</defaultValue>
-				</record>
-				<record>
-					<id>1035</id>
-					<defaultValue>0</defaultValue>
-				</record>
-				<record>
-					<id>1036</id>
-					<defaultValue>0</defaultValue>
-				</record>
-				<record>
-					<id>1039</id>
-					<defaultValue>0.3,0.3,0.3</defaultValue>
-				</record>
-				<record>
-					<id>1040</id>
-					<defaultValue>1500,1500,1500</defaultValue>
-				</record>
-				<record>
-					<id>1050</id>
-					<defaultValue>100.0</defaultValue>
-				</record>
-			</s2files>
+    <s2files>
+        <record>
+            <id>3</id>
+            <defaultValue>1</defaultValue>
+        </record>
+        <record>
+            <id>4</id>
+            <defaultValue>205</defaultValue>
+        </record>
+        <record>
+            <id>5</id>
+            <defaultValue>5</defaultValue>
+        </record>
+        <record>
+            <id>6</id>
+            <defaultValue>15</defaultValue>
+        </record>
+        <record>
+            <id>7</id>
+            <defaultValue>10</defaultValue>
+        </record>
+        <record>
+            <id>8</id>
+            <defaultValue>20</defaultValue>
+        </record>
+        <record>
+            <id>9</id>
+            <defaultValue>12</defaultValue>
+        </record>
+        <record>
+            <id>10</id>
+            <defaultValue>8</defaultValue>
+        </record>
+        <record>
+            <id>20</id>
+            <defaultValue>172,16,29,12</defaultValue>
+        </record>
+        <record>
+            <id>21</id>
+            <defaultValue>255,255,252,0</defaultValue>
+        </record>
+        <record>
+            <id>22</id>
+        <defaultValue>172,16,29,1</defaultValue>
+        </record>
+        <record>
+            <id>23</id>
+            <defaultValue>2404,2405,502,502</defaultValue>
+        </record>
+        <record>
+            <id>24</id>
+            <defaultValue>172,16,29,12</defaultValue>
+        </record>
+        <record>
+            <id>25</id>
+            <defaultValue>9600</defaultValue>
+        </record>
+        <record>
+            <id>26</id>
+            <defaultValue>0</defaultValue>
+        </record>
+        <record>
+            <id>27</id>
+            <defaultValue>0</defaultValue>
+        </record>
+        <record>
+            <id>28</id>
+            <defaultValue>0</defaultValue>
+        </record>
+        <record>
+            <id>1003</id>
+            <defaultValue>100</defaultValue>
+        </record>
+        <record>
+            <id>1006</id>
+            <defaultValue>220</defaultValue>
+        </record>
+        <record>
+            <id>1012</id>
+            <defaultValue>0.5</defaultValue>
+            <visibility>false</visibility>
+        </record>
+        <record>
+            <id>1013</id>
+            <defaultValue>0.5</defaultValue>
+            <visibility>false</visibility>
+        </record>
+        <record>
+            <id>1018</id>
+            <defaultValue>0.5</defaultValue>
+        </record>
+        <record>
+            <id>1019</id>
+            <defaultValue>1.0</defaultValue>
+        </record>
+        <record>
+            <id>1020</id>
+            <defaultValue>1.0</defaultValue>
+        </record>
+        <record>
+            <id>1021</id>
+            <defaultValue>1.5</defaultValue>
+        </record>
+        <record>
+            <id>1022</id>
+            <defaultValue>1.0</defaultValue>
+        </record>
+        <record>
+            <id>1023</id>
+            <defaultValue>1.5</defaultValue>
+        </record>
+        <record>
+            <id>1024</id>
+            <defaultValue></defaultValue>
+        </record>
+        <record>
+            <id>1025</id>
+            <defaultValue></defaultValue>
+        </record>
+        <record>
+            <id>1026</id>
+            <defaultValue></defaultValue>
+        </record>
+        <record>
+            <id>1031</id>
+            <defaultValue>60</defaultValue>
+        </record>
+        <record>
+            <id>1032</id>
+            <defaultValue>80.0</defaultValue>
+        </record>
+        <record>
+            <id>1033</id>
+            <defaultValue>1</defaultValue>
+        </record>
+        <record>
+            <id>1034</id>
+            <defaultValue>1</defaultValue>
+        </record>
+        <record>
+            <id>1035</id>
+            <defaultValue>0</defaultValue>
+        </record>
+        <record>
+            <id>1036</id>
+            <defaultValue>0</defaultValue>
+        </record>
+        <record>
+            <id>1039</id>
+            <defaultValue>0.3,0.3,0.3</defaultValue>
+        </record>
+        <record>
+            <id>1040</id>
+            <defaultValue>1500,1500,1500</defaultValue>
+        </record>
+        <record>
+            <id>1050</id>
+            <defaultValue>100.0</defaultValue>
+        </record>
+      </s2files>
     </resources>
   </module>
 </modules>

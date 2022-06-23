@@ -43,6 +43,7 @@ target_link_libraries(
   widgets
   config
   comaversion
+  xmleditor
   Qt${QT_VERSION_MAJOR}::Core
   Qt${QT_VERSION_MAJOR}::Widgets
   Qt${QT_VERSION_MAJOR}::Xml

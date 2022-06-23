@@ -2,6 +2,7 @@
 
 #include "../dialogs/keypressdialog.h"
 #include "../gen/board.h"
+#include "../gen/configv.h"
 #include "../gen/datatypes.h"
 #include "../gen/error.h"
 #include "../gen/files.h"
@@ -13,11 +14,10 @@
 #include "../widgets/waitwidget.h"
 #include "../widgets/wd_func.h"
 #include "generaltunedialog.h"
-//#include "limereport/lrreportengine.h"
-#include "../gen/configv.h"
+#include "limereport/lrreportengine.h"
 #include "tunesequencefile.h"
 
-#include <LimeReport/lrreportengine.h>
+//#include <LimeReport/lrreportengine.h>
 #include <QDebug>
 #include <QMessageBox>
 #include <QProgressBar>
@@ -265,13 +265,13 @@ void AbstractTuneDialog::startTune()
         if (!EMessageBox::question("Сохранение настроечных коэффициентов не произведено, продолжать?"))
             return;
     }
-    StdFunc::clearCancel();
+    StdFunc::ClearCancel();
     MsgClear(); // очистка экрана с сообщениями
     for (bStep = 0; bStep < m_messages.size(); ++bStep)
     {
         MsgSetVisible(NoMsg, bStep);
         res = (this->*m_tuneFunctions.at(bStep))();
-        if ((res == Error::Msg::GeneralError) || (StdFunc::isCancelled()))
+        if ((res == Error::Msg::GeneralError) || (StdFunc::IsCancelled()))
         {
             MsgSetVisible(ErMsg, bStep);
 #ifndef DEBUGISON
@@ -407,7 +407,7 @@ Error::Msg AbstractTuneDialog::writeTuneCoefs(bool isUserChoosingRequired)
         ev.exec();
         dlg->close();
     }
-    return (StdFunc::isCancelled() ? Error::Msg::GeneralError : Error::Msg::NoError);
+    return (StdFunc::IsCancelled() ? Error::Msg::GeneralError : Error::Msg::NoError);
 }
 
 void AbstractTuneDialog::writeTuneCoefsSlot()
@@ -475,7 +475,7 @@ Error::Msg AbstractTuneDialog::loadWorkConfig()
 
 void AbstractTuneDialog::CancelTune()
 {
-    StdFunc::cancel();
+    StdFunc::Cancel();
 }
 
 // ##################### PROTECTED ####################
@@ -493,6 +493,6 @@ void AbstractTuneDialog::keyPressEvent(QKeyEvent *e)
         m_finished = true;
     }
     if (e->key() == Qt::Key_Escape)
-        StdFunc::cancel();
+        StdFunc::Cancel();
     QDialog::keyPressEvent(e);
 }

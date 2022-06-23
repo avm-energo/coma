@@ -1,9 +1,10 @@
 #ifndef COMA_H
 #define COMA_H
-#include "../avtuk/oscmanager.h"
 #include "../gen/datatypes.h"
 #include "../gen/stdfunc.h"
 #include "../interfaces/settingstypes.h"
+#include "../oscillograms/oscmanager.h"
+#include "../xmleditor/moduleseditor.h"
 
 #include <QListWidget>
 #include <QMainWindow>
@@ -55,6 +56,7 @@ private slots:
     void startWork(const ConnectStruct st);
     void loadOsc();
     void loadSwj();
+    void openModuleEditor();
 
     virtual void getAbout() {};
     virtual void checkDialog() {};
@@ -68,6 +70,7 @@ private:
     QStackedWidget *MainTW;
     QListWidget *MainLW;
     OscManager oscManager;
+    ModulesEditor *editor;
 
     File::Vector fileVector;
 

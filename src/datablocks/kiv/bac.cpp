@@ -93,6 +93,7 @@ void Bac::createWidget()
     //    m_VModel->setValueData(m_VModel->index(7, 9), &m_Bac.Tmk0);
     //    tv->setModel(m_VModel);
     //    vlyout->addWidget(tv);
+
     for (int i = 0; i < 3; i++)
     {
         glyout->addWidget(WDFunc::NewLBL2(m_widget, "N1_TT[" + QString::number(i) + "]"), 0, i, 1, 1);
@@ -134,6 +135,7 @@ void Bac::createWidget()
                               "Коэффициенты квадратичной коррекции по tg delta"),
             9, i + 3, 1, 1);
     }
+
     for (int i = 0; i < 6; i++)
     {
         glyout->addWidget(WDFunc::NewLBL2(m_widget, "DPsi[" + QString::number(i) + "]"), 10, i, 1, 1);
@@ -247,27 +249,27 @@ void Bac::updateFromWidget()
         for (int i = 0; i < 3; i++)
         {
             m_blockData->N1_TT[i] = WDFunc::LEData(m_widget, "tune" + QString::number(i)).toUInt();
-            m_blockData->KmU[i] = StdFunc::toFloat(WDFunc::LEData(m_widget, "tune" + QString::number(i + 3)));
-            m_blockData->KmI1[i] = StdFunc::toFloat(WDFunc::LEData(m_widget, "tune" + QString::number(i + 6)));
-            m_blockData->KmI2[i] = StdFunc::toFloat(WDFunc::LEData(m_widget, "tune" + QString::number(i + 9)));
-            m_blockData->KmI4[i] = StdFunc::toFloat(WDFunc::LEData(m_widget, "tune" + QString::number(i + 12)));
-            m_blockData->KmI8[i] = StdFunc::toFloat(WDFunc::LEData(m_widget, "tune" + QString::number(i + 15)));
-            m_blockData->KmI16[i] = StdFunc::toFloat(WDFunc::LEData(m_widget, "tune" + QString::number(i + 18)));
-            m_blockData->KmI32[i] = StdFunc::toFloat(WDFunc::LEData(m_widget, "tune" + QString::number(i + 21)));
-            m_blockData->TKPsi_a[i] = StdFunc::toFloat(WDFunc::LEData(m_widget, "tune" + QString::number(i + 24)));
-            m_blockData->TKPsi_b[i] = StdFunc::toFloat(WDFunc::LEData(m_widget, "tune" + QString::number(i + 27)));
+            m_blockData->KmU[i] = StdFunc::ToFloat(WDFunc::LEData(m_widget, "tune" + QString::number(i + 3)));
+            m_blockData->KmI1[i] = StdFunc::ToFloat(WDFunc::LEData(m_widget, "tune" + QString::number(i + 6)));
+            m_blockData->KmI2[i] = StdFunc::ToFloat(WDFunc::LEData(m_widget, "tune" + QString::number(i + 9)));
+            m_blockData->KmI4[i] = StdFunc::ToFloat(WDFunc::LEData(m_widget, "tune" + QString::number(i + 12)));
+            m_blockData->KmI8[i] = StdFunc::ToFloat(WDFunc::LEData(m_widget, "tune" + QString::number(i + 15)));
+            m_blockData->KmI16[i] = StdFunc::ToFloat(WDFunc::LEData(m_widget, "tune" + QString::number(i + 18)));
+            m_blockData->KmI32[i] = StdFunc::ToFloat(WDFunc::LEData(m_widget, "tune" + QString::number(i + 21)));
+            m_blockData->TKPsi_a[i] = StdFunc::ToFloat(WDFunc::LEData(m_widget, "tune" + QString::number(i + 24)));
+            m_blockData->TKPsi_b[i] = StdFunc::ToFloat(WDFunc::LEData(m_widget, "tune" + QString::number(i + 27)));
         }
 
         for (int i = 0; i < 6; i++)
         {
-            m_blockData->DPsi[i] = StdFunc::toFloat(WDFunc::LEData(m_widget, "tune" + QString::number(i + 30)));
-            m_blockData->TKUa[i] = StdFunc::toFloat(WDFunc::LEData(m_widget, "tune" + QString::number(i + 36)));
-            m_blockData->TKUb[i] = StdFunc::toFloat(WDFunc::LEData(m_widget, "tune" + QString::number(i + 42)));
+            m_blockData->DPsi[i] = StdFunc::ToFloat(WDFunc::LEData(m_widget, "tune" + QString::number(i + 30)));
+            m_blockData->TKUa[i] = StdFunc::ToFloat(WDFunc::LEData(m_widget, "tune" + QString::number(i + 36)));
+            m_blockData->TKUb[i] = StdFunc::ToFloat(WDFunc::LEData(m_widget, "tune" + QString::number(i + 42)));
         }
-        m_blockData->K_freq = StdFunc::toFloat(WDFunc::LEData(m_widget, "tune48"));
-        m_blockData->Art = StdFunc::toFloat(WDFunc::LEData(m_widget, "tune49"));
-        m_blockData->Brt = StdFunc::toFloat(WDFunc::LEData(m_widget, "tune50"));
-        m_blockData->Tmk0 = StdFunc::toFloat(WDFunc::LEData(m_widget, "tune51"));
+        m_blockData->K_freq = StdFunc::ToFloat(WDFunc::LEData(m_widget, "tune48"));
+        m_blockData->Art = StdFunc::ToFloat(WDFunc::LEData(m_widget, "tune49"));
+        m_blockData->Brt = StdFunc::ToFloat(WDFunc::LEData(m_widget, "tune50"));
+        m_blockData->Tmk0 = StdFunc::ToFloat(WDFunc::LEData(m_widget, "tune51"));
     }
 }
 

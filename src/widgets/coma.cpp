@@ -22,13 +22,12 @@
 
 #include "coma.h"
 
-#include "../avtuk/switchjournaldialog.h"
-#include "../avtuk/swjmanager.h"
 #include "../comaversion/comaversion.h"
 #include "../dialogs/connectdialog.h"
 #include "../dialogs/errordialog.h"
 #include "../dialogs/keypressdialog.h"
 #include "../dialogs/settingsdialog.h"
+#include "../dialogs/switchjournaldialog.h"
 #include "../gen/board.h"
 #include "../gen/datamanager.h"
 #include "../gen/errorqueue.h"
@@ -39,6 +38,7 @@
 #include "../interfaces/protocom.h"
 #include "../interfaces/settingstypes.h"
 #include "../module/module.h"
+#include "../oscillograms/swjmanager.h"
 #include "../widgets/aboutwidget.h"
 #include "../widgets/epopup.h"
 #include "../widgets/splashscreen.h"
@@ -62,6 +62,7 @@
 // Header dbt must be the last header, thanx to microsoft
 #include <dbt.h>
 // clang-format on
+
 void registerForDeviceNotification(QWidget *ptr)
 {
     DEV_BROADCAST_DEVICEINTERFACE devInt;
@@ -82,7 +83,7 @@ void registerForDeviceNotification(QWidget *ptr)
 }
 #endif
 
-Coma::Coma(QWidget *parent) : QMainWindow(parent)
+Coma::Coma(QWidget *parent) : QMainWindow(parent), editor(nullptr)
 {
 }
 
@@ -252,6 +253,8 @@ void Coma::setupMenubar()
     menu->addAction("Загрузка осциллограммы", this, qOverload<>(&Coma::loadOsc));
     menu->addAction("Загрузка журнала переключений", this, qOverload<>(&Coma::loadSwj));
     menu->addAction("Проверка диалога", this, &Coma::checkDialog);
+    menu->addAction("Редактор модулей", this, &Coma::openModuleEditor);
+
     menubar->addMenu(menu);
     setMenuBar(menubar);
 }
@@ -304,8 +307,8 @@ void Coma::loadOsc(QString &filename)
     for (auto &item : fileVector)
     {
         std::visit(overloaded {
-                       [&](S2DataTypes::OscHeader &header) { oscManager.setHeader(header); },  //
                        [](auto &&arg) { Q_UNUSED(arg) },                                       //
+                       [&](S2DataTypes::OscHeader &header) { oscManager.setHeader(header); },  //
                        [&](std::unique_ptr<TrendViewModel> &model) { oscModel = model.get(); } //
                    },
             item);
@@ -318,9 +321,7 @@ void Coma::loadOsc(QString &filename)
 
 void Coma::loadSwj(QString &filename)
 {
-
     SwjManager swjManager;
-
     fileVector = oscManager.loadFromFile(filename);
     auto oscVector = swjManager.loadFromFile(filename);
     std::move(oscVector.begin(), oscVector.end(), std::back_inserter(fileVector));
@@ -348,6 +349,14 @@ void Coma::loadSwj(QString &filename)
     dialog->adjustSize();
 }
 
+void Coma::openModuleEditor()
+{
+    if (editor == nullptr)
+        editor = new ModulesEditor(this);
+    else
+        editor->exec();
+}
+
 void Coma::newTimers()
 {
     BdaTimer = new QTimer(this);
@@ -365,13 +374,11 @@ void Coma::newTimers()
 
 void Coma::setupConnections()
 {
-
     connect(&DataManager::GetInstance(), &DataManager::responseReceived, this, &Coma::update);
 }
 
 void Coma::prepare()
 {
-
     auto const &board = Board::GetInstance();
     EMessageBox::information(this, "Установлена связь с " + board.moduleName());
     Reconnect = true;
@@ -455,7 +462,7 @@ void Coma::go()
     StdFunc::Init();
     qInfo("=== Log started ===\n");
 #ifdef Q_OS_LINUX
-    // linux code goes here
+    // TODO: linux code goes here
 #endif
 #ifdef Q_OS_WINDOWS
     // Listen to device events
@@ -694,7 +701,7 @@ void Coma::resizeEvent(QResizeEvent *e)
 void Coma::keyPressEvent(QKeyEvent *e)
 {
     if (e->key() == Qt::Key_Escape)
-        StdFunc::cancel();
+        StdFunc::Cancel();
     QMainWindow::keyPressEvent(e);
 }
 

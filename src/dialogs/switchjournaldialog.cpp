@@ -6,9 +6,9 @@
 #include "../gen/s2.h"
 #include "../gen/timefunc.h"
 #include "../models/etablemodel.h"
+#include "../oscillograms/swjmanager.h"
+#include "../widgets/pushbuttondelegate.h"
 #include "../widgets/wd_func.h"
-#include "pushbuttondelegate.h"
-#include "swjmanager.h"
 
 #include <QHeaderView>
 #include <QMessageBox>

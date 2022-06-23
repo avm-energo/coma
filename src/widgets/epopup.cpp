@@ -8,10 +8,15 @@
 
 ESimplePopup::ESimplePopup(MessageTypes type, const QString &msg, QWidget *parent) : EPopup(parent)
 {
-    ESimplePopup(type, WDFunc::NewLBL2(this, msg), parent);
+    Create(type, WDFunc::NewLBL2(parent, msg), parent);
 }
 
 ESimplePopup::ESimplePopup(MessageTypes type, QWidget *w, QWidget *parent) : EPopup(parent)
+{
+    Create(type, w, parent);
+}
+
+void ESimplePopup::Create(MessageTypes &type, QWidget *w, QWidget *parent)
 {
     setAttribute(Qt::WA_DeleteOnClose);
     if (type < c_captions.size())

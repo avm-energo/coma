@@ -1,10 +1,5 @@
 #include "error.h"
 
-#include <QDateTime>
-#include <QDebug>
-#include <QFile>
-#include <QStandardPaths>
-#include <QTextStream>
 QStringList &operator<<(QStringList &l, const ErrorMsg &obj)
 {
     l << obj.DateTime << obj.file << QString::number(obj.line, 10) << obj.msg;

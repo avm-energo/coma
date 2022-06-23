@@ -7,8 +7,8 @@
 #include "../gen/timefunc.h"
 #include "../models/etablemodel.h"
 #include "../widgets/etableview.h"
+#include "../widgets/pushbuttondelegate.h"
 #include "../widgets/wd_func.h"
-#include "pushbuttondelegate.h"
 
 namespace crypto
 {
