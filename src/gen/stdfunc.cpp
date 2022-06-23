@@ -168,7 +168,7 @@ int StdFunc::TuneRequestCount()
     return m_tuneRequestCount;
 }
 
-/// \brief Sets cancel state in ON mode.
+/// \brief Sets cancel state when enabled.
 void StdFunc::Cancel()
 {
     if (s_cancelEnabled)
@@ -199,8 +199,9 @@ void StdFunc::SetCancelEnabled()
     s_cancelEnabled = true;
 }
 
-/*! \brief Returns the number of bit set.
- *  \details Returns the number of first bit set, starting with lower bits.
+/*! \brief Returns the position of first bit set.
+ *  \details Returns position of the first '1' starting from LSB.
+ *  \param dword 32bit bitstring.
  */
 int StdFunc::IndexByBit(quint32 dword)
 {
@@ -211,15 +212,17 @@ int StdFunc::IndexByBit(quint32 dword)
     return 0;
 }
 
-/*! \brief Returns the bit mask.
- *  \details Returns the bit mask with using index.
+/*! \brief Returns the 32bit bitstring by index position.
+ *  \details Returns 32bit bitstring with '1' in index position.
+ *  \param index Position of '1' from LSB.
  *  \return Example: 0 => 0, 1 => 1, 2 => 2, 3 => 4, ...
  */
-quint32 StdFunc::BitByIndex(int idx)
+quint32 StdFunc::BitByIndex(int index)
 {
-    if ((idx == 0) || (idx > 31))
+    quint32 bit = 0x00000001;
+    if ((index == 0) || (index > 31))
         return 0;
-    return (0x00000001 << (idx - 1));
+    return (bit << (index - 1));
 }
 
 /// \brief Puts the thread to sleep for a given time in ms.
@@ -277,11 +280,12 @@ quint32 StdFunc::Ping(quint32 addr)
     return 0;
 }
 
-/*! \brief Checks port for ip4Addr IP address.
- *  \param ip4Addr[in] IP address of host.
- *  \param port[in] Port for checking.
- *  \return IP address of host if port is open, otherwise return 0.
-*/
+/*! \brief Checks port and IPv4 address for connection.
+ *  \details Checks if the connection can be made with given IP address and port.
+ *  \param ip4Addr[in] IPv4 host address.
+ *  \param port[in] Connection port.
+ *  \return IPv4 address if connection can be made, 0 otherwise.
+ */
 quint32 StdFunc::CheckPort(quint32 ip4Addr, quint16 port)
 {
     QHostAddress host(ip4Addr);
@@ -365,7 +369,7 @@ QByteArray StdFunc::Compress(const QByteArray &data)
 
 /*! \brief Checks existing archive.
  *  \details Cycle rotating 10 archive files with indexes [0...9], older archive
- *  with index 9 will being deleted. For new archive will be free place with index 0.
+ *  with index 9 will be deleted. For new archive index 0 will be given.
  *  \param path Path to directory with archives.
  */
 bool StdFunc::CheckArchiveExist(const QString &path)
