@@ -1,6 +1,6 @@
 #include "console.h"
 
-#include "../../s2/datamanager.h"
+#include "../../gen/datamanager/datamanager.h"
 
 #include <QDebug>
 #include <QMetaMethod>
@@ -12,8 +12,8 @@ template <typename T> void print(const T &data)
 
 Console::Console(QObject *parent) : QObject(parent)
 {
+    /*
     const auto &manager = DataManager::GetInstance();
-
     connect(&manager, &DataManager::bitStringReceived, [this](const auto &st) { print(st); });
     connect(&manager, &DataManager::dataReceived, [this](const auto &st) { print(st); });
     connect(&manager, &DataManager::singlePointReceived, [this](const auto &st) { print(st); });
@@ -22,4 +22,5 @@ Console::Console(QObject *parent) : QObject(parent)
     connect(&manager, &DataManager::responseReceived, [this](const auto &st) { print(st); });
     connect(&manager, &DataManager::blockReceived, [this](const auto &st) { print(st); });
     connect(&manager, &DataManager::oscInfoReceived, [this](const auto &st) { print(st); });
+    */
 }

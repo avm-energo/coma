@@ -4,6 +4,7 @@
 #include "../datatypes.h"
 #include "../error.h"
 #include "../singleton.h"
+#include "registrator.h"
 //#include "datarecv.h"
 //#include "s2datatypes.h"
 
@@ -30,14 +31,39 @@ public:
         DataTypes::FloatStruct>;
 
     explicit DataManager(token, QObject *parent = nullptr);
-    void checkTypeAndSendSignals(DataTypes::SignalsStruct &str);
 
-    template <typename T> static void addSignalToOutList(DataTypes::SignalTypes type, T signal)
+    template <typename T> static T &RegistrateType()
     {
-        DataTypes::SignalsStruct str;
-        str.type = type;
-        str.data.setValue(signal);
-        GetInstance().checkTypeAndSendSignals(str);
+        return registrator.RegistrateType<T>();
+    }
+
+    template <typename T> void addSignalToOutList(T &signal)
+    {
+        auto inserter = [&](T &type) {
+            try
+            {
+                RegisterType tmp = type;
+                insertRegister(type.sigAdr, type);
+            } catch (std::exception &)
+            {
+                auto st = typeid(T).hash_code() == typeid(DataTypes::FloatWithTimeStruct).hash_code();
+                if (st)
+                {
+                    DataTypes::FloatStruct fl;
+                    fl.sigAdr = type.sigAdr;
+                    fl.sigVal = type.sigVal;
+                    insertRegister(fl.sigAdr, fl);
+                }
+            }
+        };
+
+        inserter(signal);
+        registrator.CallSender<T>(QVariant(signal));
+
+        // DataTypes::SignalsStruct str;
+        // str.type = type;
+        // str.data.setValue(signal);
+        // GetInstance().checkTypeAndSendSignals(str);
     }
 
     template <typename T> static void addToInQueue(T data)
@@ -103,6 +129,7 @@ private:
     static std::queue<QVariant> s_inputQueue;
     static QMutex s_inQueueMutex;
     QMap<quint32, RegisterType> m_registers;
+    static Registrator registrator;
 
     template <typename T> void insertRegister(quint32 addr, T value)
     {
@@ -117,20 +144,20 @@ private:
             static_assert(always_false_v<T>, "unsupported type!");
     }
 
-signals:
-    void dataReceived(const DataTypes::SignalsStruct &);
-    void bitStringReceived(const DataTypes::BitStringStruct &);
-    void singlePointReceived(const DataTypes::SinglePointWithTimeStruct &);
-    void floatReceived(const DataTypes::FloatStruct &);
+    // signals:
+    // void dataReceived(const DataTypes::SignalsStruct &);
+    // void bitStringReceived(const DataTypes::BitStringStruct &);
+    // void singlePointReceived(const DataTypes::SinglePointWithTimeStruct &);
+    // void floatReceived(const DataTypes::FloatStruct &);
     // void fileReceived(const DataTypes::FileStruct &);
     // void dataRecVListReceived(const QList<DataTypes::DataRecV> &);
-    void responseReceived(const DataTypes::GeneralResponseStruct &);
+    // void responseReceived(const DataTypes::GeneralResponseStruct &);
     // void oscInfoReceived(const S2DataTypes::OscInfo &);
     // void swjInfoReceived(const S2DataTypes::SwitchJourInfo &);
-    void blockReceived(const DataTypes::BlockStruct &);
-#ifdef __linux__
-    void timeReceived(const timespec &);
-#endif
+    // void blockReceived(const DataTypes::BlockStruct &);
+    //#ifdef __linux__
+    // void timeReceived(const TimeSpec &);
+    //#endif
 };
 
 #endif // DATAMANAGER_H

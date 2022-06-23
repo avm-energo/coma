@@ -5,15 +5,19 @@
 namespace DataTypes
 {
 
-FileStruct::FileStruct(const FilesEnum num, const QByteArray &file) : ID(num), data(file)
+FileStruct::FileStruct() : DataTypeImpl(this)
 {
 }
 
-FileStruct::FileStruct(const quint8 num, const QByteArray &file) : ID(num), data(file)
+FileStruct::FileStruct(const FilesEnum num, const QByteArray &file) : DataTypeImpl(this), ID(num), data(file)
 {
 }
 
-FileStruct::FileStruct(const quint8 num) : ID(num)
+FileStruct::FileStruct(const quint8 num, const QByteArray &file) : DataTypeImpl(this), ID(num), data(file)
+{
+}
+
+FileStruct::FileStruct(const quint8 num) : DataTypeImpl(this), ID(num)
 {
 }
 

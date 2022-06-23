@@ -1,6 +1,7 @@
 #ifndef S2DATATYPES_H
 #define S2DATATYPES_H
 
+#include "../gen/datamanager/datatypeimpl.h"
 #include "../gen/std_ext.h"
 #include "filestruct.h"
 
@@ -22,8 +23,14 @@ inline bool is_same(const DataRec &lhs, const DataRec &rhs)
 
 #pragma pack(push) /* push current alignment to stack */
 #pragma pack(1)    /* set alignment to 1 byte boundary */
-struct OscInfo
+class OscInfo : public DataTypeImpl<OscInfo>
 {
+    Q_OBJECT
+public:
+    OscInfo() : DataTypeImpl(this)
+    {
+    }
+
     // заголовок записи
     DataRecHeader typeHeader;
     quint32 id; ///< Тип файла - осциллограмма и количество осциллограмм в файле (10000, 10001 ...) <- неверное описание
@@ -31,10 +38,19 @@ struct OscInfo
     quint32 idOsc0; ///< ID первой осциллограммы в файле (определяет структуру точки и номер канала)
 
     friend QDebug operator<<(QDebug debug, const S2DataTypes::OscInfo &st);
+
+signals:
+    void DataTypeReceived(const OscInfo &);
 };
 
-struct SwitchJourInfo
+class SwitchJourInfo : public DataTypeImpl<SwitchJourInfo>
 {
+    Q_OBJECT
+public:
+    SwitchJourInfo() : DataTypeImpl(this)
+    {
+    }
+
     uint16_t fileNum;    // Номер файла
     uint32_t fileLength; // Размер файла
     uint32_t num;        // Порядковый номер переключения
@@ -42,6 +58,9 @@ struct SwitchJourInfo
     uint8_t typeA;       // Тип аппарата
     uint8_t options; // Направление переключения, тип коммутации и коммутируемые фазы
     uint64_t time; // Время, когда произведено переключение
+
+signals:
+    void DataTypeReceived(const SwitchJourInfo &);
 };
 
 struct SwitchJourRecord

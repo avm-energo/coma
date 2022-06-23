@@ -1,6 +1,6 @@
 #include "datamanager.h"
 
-#include "../helper.h"
+//#include "../helper.h"
 
 QMutex DataManager::s_inQueueMutex;
 std::queue<QVariant> DataManager::s_inputQueue;
@@ -9,6 +9,7 @@ DataManager::DataManager(Singleton::token, QObject *parent) : QObject(parent)
 {
 }
 
+/*
 void DataManager::checkTypeAndSendSignals(DataTypes::SignalsStruct &str)
 {
     using namespace DataTypes;
@@ -62,7 +63,6 @@ void DataManager::checkTypeAndSendSignals(DataTypes::SignalsStruct &str)
         }
         break;
     }
-    /*
     case File:
     {
         Q_ASSERT(str.data.canConvert<FileStruct>());
@@ -83,7 +83,6 @@ void DataManager::checkTypeAndSendSignals(DataTypes::SignalsStruct &str)
         }
         break;
     }
-    */
     case Block:
     {
         Q_ASSERT(str.data.canConvert<BlockStruct>());
@@ -104,7 +103,6 @@ void DataManager::checkTypeAndSendSignals(DataTypes::SignalsStruct &str)
         }
         break;
     }
-    /*
 case OscillogramInfo:
 {
     Q_ASSERT(str.data.canConvert<S2DataTypes::OscInfo>());
@@ -125,14 +123,14 @@ case SwitchJournalInfo:
     }
     break;
 }
-    */
+
 #ifdef __linux__
     case Timespec:
     {
-        Q_ASSERT(str.data.canConvert<timespec>());
-        if (str.data.canConvert<timespec>())
+        Q_ASSERT(str.data.canConvert<TimeSpec>());
+        if (str.data.canConvert<TimeSpec>())
         {
-            timespec time = str.data.value<timespec>();
+            auto time = str.data.value<TimeSpec>();
             emit timeReceived(time);
         }
         break;
@@ -142,3 +140,4 @@ case SwitchJournalInfo:
         break;
     }
 }
+*/

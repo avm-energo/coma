@@ -9,14 +9,18 @@
 #ifdef __linux__
 #include <ctime>
 
-class TimeSpec : DataTypeImpl<TimeSpec>
+struct TimeSpec : DataTypeImpl<TimeSpec>
 {
+    Q_OBJECT
 public:
     TimeSpec() : DataTypeImpl(this)
     {
     }
 
     timespec tSpec;
+
+signals:
+    void DataTypeReceived(const TimeSpec &);
 };
 
 Q_DECLARE_METATYPE(TimeSpec);
@@ -60,8 +64,9 @@ enum GeneralResponseTypes
     DataCount
 };
 
-class BitStringStruct : DataTypeImpl<BitStringStruct>
+class BitStringStruct : public DataTypeImpl<BitStringStruct>
 {
+    Q_OBJECT
 public:
     BitStringStruct() : DataTypeImpl(this)
     {
@@ -78,8 +83,9 @@ signals:
 // первое - номера сигналов, второе - их значения ("" ~ недостоверное
 // значение), третье - метка времени
 
-class FloatWithTimeStruct : DataTypeImpl<FloatWithTimeStruct>
+class FloatWithTimeStruct : public DataTypeImpl<FloatWithTimeStruct>
 {
+    Q_OBJECT
 public:
     FloatWithTimeStruct() : DataTypeImpl(this)
     {
@@ -94,8 +100,9 @@ signals:
     void DataTypeReceived(const FloatWithTimeStruct &);
 };
 
-class FloatStruct : DataTypeImpl<FloatStruct>
+class FloatStruct : public DataTypeImpl<FloatStruct>
 {
+    Q_OBJECT
 public:
     FloatStruct() : DataTypeImpl(this)
     {
@@ -108,8 +115,9 @@ signals:
     void DataTypeReceived(const FloatStruct &);
 };
 
-class SinglePointWithTimeStruct : DataTypeImpl<SinglePointWithTimeStruct>
+class SinglePointWithTimeStruct : public DataTypeImpl<SinglePointWithTimeStruct>
 {
+    Q_OBJECT
 public:
     SinglePointWithTimeStruct() : DataTypeImpl(this)
     {
@@ -123,8 +131,9 @@ signals:
     void DataTypeReceived(const SinglePointWithTimeStruct &);
 };
 
-class BlockStruct : DataTypeImpl<BlockStruct>
+class BlockStruct : public DataTypeImpl<BlockStruct>
 {
+    Q_OBJECT
 public:
     BlockStruct() : DataTypeImpl(this)
     {
@@ -137,8 +146,9 @@ signals:
     void DataTypeReceived(const BlockStruct &);
 };
 
-class GeneralResponseStruct : DataTypeImpl<GeneralResponseStruct>
+class GeneralResponseStruct : public DataTypeImpl<GeneralResponseStruct>
 {
+    Q_OBJECT
 public:
     GeneralResponseStruct() : DataTypeImpl(this)
     {

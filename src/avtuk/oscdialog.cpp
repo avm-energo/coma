@@ -1,10 +1,10 @@
 #include "oscdialog.h"
 
+#include "../gen/datamanager/datamanager.h"
 #include "../gen/files.h"
 #include "../gen/timefunc.h"
 #include "../models/etablemodel.h"
 #include "../module/board.h"
-#include "../s2/datamanager.h"
 #include "../s2/s2.h"
 #include "../widgets/etableview.h"
 #include "../widgets/wd_func.h"
@@ -18,8 +18,11 @@ static constexpr char name[] = "oscHash";
 
 OscDialog::OscDialog(QWidget *parent) : UDialog(crypto::hash, crypto::name, parent)
 {
-    connect(&DataManager::GetInstance(), &DataManager::oscInfoReceived, this, &OscDialog::fillOscInfo);
-    connect(&DataManager::GetInstance(), &DataManager::fileReceived, this, &OscDialog::fillOsc);
+    auto mngr = &DataManager::GetInstance();
+    auto &holder_osc = mngr->RegistrateType<S2DataTypes::OscInfo>();
+    auto &holder_file = mngr->RegistrateType<DataTypes::FileStruct>();
+    connect(&holder_osc, &S2DataTypes::OscInfo::DataTypeReceived, this, &OscDialog::fillOscInfo);
+    connect(&holder_file, &DataTypes::FileStruct::DataTypeReceived, this, &OscDialog::fillOsc);
     setupUI();
 }
 
@@ -124,7 +127,8 @@ bool OscDialog::loadIfExist(quint32 size)
             for (auto &&s2file : outlist)
             {
                 DataTypes::FileStruct resp { DataTypes::FilesEnum(s2file.ID), s2file.data };
-                DataManager::addSignalToOutList(DataTypes::SignalTypes::File, resp);
+                auto mngr = &DataManager::GetInstance();
+                mngr->addSignalToOutList(resp);
             }
             return true;
         }

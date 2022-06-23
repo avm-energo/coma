@@ -11,14 +11,15 @@
 class Registrator
 {
 private:
-    std::map<DataTypes::SignalTypes, std::function<void(QVariant &, std::any &)>> sender_map;
-    std::map<DataTypes::SignalTypes, std::any> object_map;
+    std::map<std::size_t, std::function<void(QVariant &, std::any &)>> sender_map;
+    std::map<std::size_t, std::any> object_map;
 
 public:
     Registrator() = default;
 
-    template <typename T> T &RegistrateType(DataTypes::SignalTypes &type)
+    template <typename T> T &RegistrateType()
     {
+        auto hash_type = typeid(T).hash_code();
         auto lambda_sender = [](QVariant &obj, std::any &holder) {
             if (obj.canConvert<T>())
             {
@@ -29,17 +30,18 @@ public:
         };
 
         std::function sender(lambda_sender);
-        sender_map.insert(type, sender);
+        sender_map.insert(hash_type, sender);
         auto any = std::make_any<T>();
         any.emplace();
-        object_map.insert(type, any);
+        object_map.insert(hash_type, any);
         return std::any_cast<T>(any);
     }
 
-    inline void CallSender(const DataTypes::SignalTypes &type, QVariant &data)
+    template <typename T> void CallSender(QVariant &data)
     {
-        auto iter_s = sender_map.find(type);
-        auto iter_o = object_map.find(type);
+        auto hash_type = typeid(T).hash_code();
+        auto iter_s = sender_map.find(hash_type);
+        auto iter_o = object_map.find(hash_type);
         if (iter_s != sender_map.end() && iter_o != object_map.end())
         {
             auto sender = iter_s->second;
