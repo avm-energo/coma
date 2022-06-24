@@ -16,7 +16,7 @@ void TrendViewModel::addAnalogPoint(const QString &graphNum, double pointValue)
     }
     else
     {
-        qWarning() << "Graph name not found!";
+        qWarning() << "Graph with name " << graphNum << " not found!";
     }
 }
 

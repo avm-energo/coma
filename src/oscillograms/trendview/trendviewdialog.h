@@ -45,7 +45,6 @@ public:
     // блока данных
     void setAnalogDescriptions(const QStringList &descr);
     void setDigitalDescriptions(const QStringList &descr);
-
     void setTrendModel(TrendViewModel *mdl);
 
 private:
@@ -101,6 +100,7 @@ private:
     void showAxes(QCPGraph *graph, const QVector<double> &keys, const QVector<double> &values,
         TrendViewDialog::SignalTypes signalType, QString &widgetName);
     SignalChooseWidget *setupHelper(const TrendViewDialog::Signals &sig);
+    void PlotOverloadMessage(SignalChooseWidget *scw, QString &sname);
 
     void removeSig(QString signame);
     void addSig(QString signame);

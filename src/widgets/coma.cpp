@@ -234,24 +234,20 @@ QWidget *Coma::least()
 }
 void Coma::setupMenubar()
 {
-    QMenuBar *menubar = new QMenuBar(this);
-
-    QMenu *menu = new QMenu(menubar);
+    auto menubar = new QMenuBar(this);
+    auto menu = new QMenu(menubar);
     menu->setTitle("Главное");
-
     menu->addAction("Выход", this, &Coma::close);
     menu->addAction(QIcon(":/icons/tnstart.svg"), "Соединение", this, &Coma::prepareConnectDlg);
     menu->addAction(QIcon(":/icons/tnstop.svg"), "Разрыв соединения", this, &Coma::DisconnectAndClear);
-
     menubar->addMenu(menu);
-
     menubar->addAction("О программе", this, &Coma::getAbout);
-
     menubar->addSeparator();
+
     menu = new QMenu(menubar);
     menu->setTitle("Автономная работа");
     menu->addAction("Загрузка осциллограммы", this, qOverload<>(&Coma::loadOsc));
-    menu->addAction("Загрузка журнала переключений", this, qOverload<>(&Coma::loadSwj));
+    menu->addAction("Загрузка файла переключений", this, qOverload<>(&Coma::loadSwj));
     menu->addAction("Проверка диалога", this, &Coma::checkDialog);
     menu->addAction("Редактор модулей", this, &Coma::openModuleEditor);
 

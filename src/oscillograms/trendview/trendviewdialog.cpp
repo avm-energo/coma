@@ -32,6 +32,7 @@
 #include "../../gen/modules.h"
 #include "../../gen/pch.h"
 #include "../../gen/stdfunc.h"
+#include "../../widgets/epopup.h"
 #include "../../widgets/signalchoosewidget.h"
 #include "../../widgets/wd_func.h"
 
@@ -44,7 +45,7 @@ constexpr int VOLTAGE_AXIS_INDEX = 0;
 constexpr int CURRENT_AXIS_INDEX = 1;
 
 TrendViewDialog::TrendViewDialog(QWidget *parent)
-    : QDialog(parent), rangeChangeInProgress(false), starting(true), rangeAxisInProgress(false)
+    : QDialog(parent, Qt::Window), rangeChangeInProgress(false), starting(true), rangeAxisInProgress(false)
 {
     analog.rescaleActivated = false;
     digital.rescaleActivated = false;
@@ -106,7 +107,10 @@ void TrendViewDialog::addSig(QString signame)
     {
         auto digitalcount = visibleSignalOscDescriptionSize(ST_DIGITAL);
         if (digitalcount >= MAXGRAPHSPERPLOT)
+        {
+            PlotOverloadMessage(scw, signame);
             return;
+        }
 
         scw->setChecked(signame, true);
         auto graph = signalOscPropertiesMap.value(signame).graph;
@@ -141,7 +145,10 @@ void TrendViewDialog::addSig(QString signame)
     {
         auto analogcount = visibleSignalOscDescriptionSize(ST_ANALOG);
         if (analogcount >= MAXGRAPHSPERPLOT)
+        {
+            PlotOverloadMessage(scw, signame);
             return;
+        }
 
         scw->setChecked(signame, true);
         auto graph = signalOscPropertiesMap.value(signame).graph;
@@ -180,9 +187,14 @@ void TrendViewDialog::addSig(QString signame)
     }
 }
 
+void TrendViewDialog::PlotOverloadMessage(SignalChooseWidget *scw, QString &sname) {
+    scw->setChecked(sname, false);
+    EMessageBox::warning(this, "На плоскость добавлено максимальное число графиков.");
+}
+
 void TrendViewDialog::setupUI()
 {
-    QVBoxLayout *vlyout = new QVBoxLayout;
+    auto vlyout = new QVBoxLayout;
     if (!digital.noSignals())
     {
         vlyout->addWidget(createToolBar(ST_DIGITAL));
@@ -194,10 +206,13 @@ void TrendViewDialog::setupUI()
         vlyout->addWidget(setupHelper(analog));
     }
 
-    QHBoxLayout *hlyout = new QHBoxLayout;
+    auto hlyout = new QHBoxLayout;
     hlyout->addLayout(vlyout);
     hlyout->addWidget(mainPlot.get(), 100);
     setLayout(hlyout);
+    auto rect = QGuiApplication::primaryScreen()->size();
+    setGeometry(0, 0, rect.width() / 2, rect.height() / 2);
+    setWindowState(Qt::WindowMaximized);
 }
 
 QToolBar *TrendViewDialog::createToolBar(SignalTypes type)

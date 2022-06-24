@@ -17,14 +17,9 @@ int main(int argc, char *argv[])
     DebugComa w;
     // есть аргументы запуска
     if (argc > 1)
-    {
         ComaHelper::parserHelper(PROGNAME, &w);
-    }
     else
-    {
-
         w.go();
-    }
 
     return a.exec();
 }

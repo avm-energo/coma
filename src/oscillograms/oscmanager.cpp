@@ -64,7 +64,7 @@ void OscManager::loadOsc(TrendViewModel *model)
     trendDialog->showPlot();
     trendDialog->show();
     qDebug() << trendDialog->size();
-    trendDialog->adjustSize();
+    //trendDialog->adjustSize();
 }
 
 std::unique_ptr<TrendViewModel> OscManager::load(const FileStruct &fs) const
