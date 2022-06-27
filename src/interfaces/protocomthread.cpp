@@ -1,11 +1,11 @@
 #include "protocomthread.h"
 
+#include "../gen/datamanager/datamanager.h"
 #include "../gen/files.h"
 #include "../gen/helper.h"
 #include "../gen/logclass.h"
 #include "../gen/registers.h"
 #include "../gen/stdfunc.h"
-#include "../s2/datamanager.h"
 #include "../s2/s2.h"
 #include "baseinterface.h"
 
@@ -691,7 +691,7 @@ void ProtocomThread::handleBitString(const QByteArray &ba, quint16 sigAddr)
 
     quint32 value = *reinterpret_cast<const quint32 *>(ba.data());
     DataTypes::BitStringStruct resp { sigAddr, value, {} };
-    DataManager::addSignalToOutList(DataTypes::SignalTypes::BitString, resp);
+    DataManager::GetInstance().addSignalToOutList(resp);
 }
 #ifdef __linux
 void ProtocomThread::handleUnixTime(const QByteArray &ba, [[maybe_unused]] quint16 sigAddr)
@@ -703,7 +703,7 @@ void ProtocomThread::handleUnixTime(const QByteArray &ba, [[maybe_unused]] quint
     timespec resp;
     resp.tv_nsec = nsecs;
     resp.tv_sec = secs;
-    DataManager::addSignalToOutList(DataTypes::SignalTypes::Timespec, resp);
+    DataManager::GetInstance().addSignalToOutList(resp);
 }
 #endif
 template <std::size_t N>
@@ -732,7 +732,7 @@ void ProtocomThread::handleFloat(const QByteArray &ba, quint32 sigAddr)
     Q_ASSERT(ba.size() == 4);
     float blk = *reinterpret_cast<const float *>(ba.data());
     DataTypes::FloatStruct resp { sigAddr, blk };
-    DataManager::addSignalToOutList(DataTypes::SignalTypes::Float, resp);
+    DataManager::GetInstance().addSignalToOutList(resp);
 }
 
 void ProtocomThread::handleFloatArray(const QByteArray &ba, quint32 sigAddr, quint32 sigCount)
@@ -754,7 +754,7 @@ void ProtocomThread::handleSinglePoint(const QByteArray &ba, const quint16 addr)
     {
         quint8 value = ba.at(i);
         DataTypes::SinglePointWithTimeStruct data { (addr + i), value, 0 };
-        DataManager::addSignalToOutList(DataTypes::SinglePointWithTime, data);
+        DataManager::GetInstance().addSignalToOutList(data);
     }
 }
 
@@ -766,9 +766,9 @@ void ProtocomThread::handleFile(QByteArray &ba, DataTypes::FilesEnum addr, Queri
     {
         DataTypes::GeneralResponseStruct genResp { DataTypes::GeneralResponseTypes::Ok,
             static_cast<quint64>(ba.size()) };
-        DataManager::addSignalToOutList(DataTypes::SignalTypes::GeneralResponse, genResp);
+        DataManager::GetInstance().addSignalToOutList(genResp);
         DataTypes::FileStruct resp { addr, ba };
-        DataManager::addSignalToOutList(DataTypes::SignalTypes::File, resp);
+        DataManager::GetInstance().addSignalToOutList(resp);
         break;
     }
     case FileFormat::DefaultS2:
@@ -779,13 +779,13 @@ void ProtocomThread::handleFile(QByteArray &ba, DataTypes::FilesEnum addr, Queri
         {
             DataTypes::GeneralResponseStruct resp { DataTypes::GeneralResponseTypes::Error,
                 static_cast<quint64>(ba.size()) };
-            DataManager::addSignalToOutList(DataTypes::SignalTypes::GeneralResponse, resp);
+            DataManager::GetInstance().addSignalToOutList(resp);
             return;
         }
         DataTypes::GeneralResponseStruct genResp { DataTypes::GeneralResponseTypes::Ok,
             static_cast<quint64>(ba.size()) };
-        DataManager::addSignalToOutList(DataTypes::SignalTypes::GeneralResponse, genResp);
-        DataManager::addSignalToOutList(DataTypes::DataRecVList, outlistV);
+        DataManager::GetInstance().addSignalToOutList(genResp);
+        DataManager::GetInstance().addSignalToOutList(outlistV);
         break;
     }
     case FileFormat::CustomS2:
@@ -795,16 +795,16 @@ void ProtocomThread::handleFile(QByteArray &ba, DataTypes::FilesEnum addr, Queri
         {
             DataTypes::GeneralResponseStruct resp { DataTypes::GeneralResponseTypes::Error,
                 static_cast<quint64>(ba.size()) };
-            DataManager::addSignalToOutList(DataTypes::SignalTypes::GeneralResponse, resp);
+            DataManager::GetInstance().addSignalToOutList(resp);
             return;
         }
         DataTypes::GeneralResponseStruct genResp { DataTypes::GeneralResponseTypes::Ok,
             static_cast<quint64>(ba.size()) };
-        DataManager::addSignalToOutList(DataTypes::SignalTypes::GeneralResponse, genResp);
+        DataManager::GetInstance().addSignalToOutList(genResp);
         for (auto &&file : outlist)
         {
             DataTypes::FileStruct resp { DataTypes::FilesEnum(file.ID), file.data };
-            DataManager::addSignalToOutList(DataTypes::SignalTypes::File, resp);
+            DataManager::GetInstance().addSignalToOutList(resp);
         }
         break;
     }
@@ -814,7 +814,7 @@ void ProtocomThread::handleFile(QByteArray &ba, DataTypes::FilesEnum addr, Queri
 void ProtocomThread::handleInt(const byte num)
 {
     DataTypes::GeneralResponseStruct resp { DataTypes::GeneralResponseTypes::Ok, num };
-    DataManager::addSignalToOutList(DataTypes::SignalTypes::GeneralResponse, resp);
+    DataManager::GetInstance().addSignalToOutList(resp);
 }
 
 void ProtocomThread::handleBool(const bool status, int errorSize, int errorCode)
@@ -822,13 +822,13 @@ void ProtocomThread::handleBool(const bool status, int errorSize, int errorCode)
     if (status)
     {
         DataTypes::GeneralResponseStruct resp { DataTypes::GeneralResponseTypes::Ok, 0 };
-        DataManager::addSignalToOutList(DataTypes::SignalTypes::GeneralResponse, resp);
+        DataManager::GetInstance().addSignalToOutList(resp);
     }
     else
     {
         quint64 buffer = errorCode;
         DataTypes::GeneralResponseStruct resp { DataTypes::GeneralResponseTypes::Error, buffer };
-        DataManager::addSignalToOutList(DataTypes::SignalTypes::GeneralResponse, resp);
+        DataManager::GetInstance().addSignalToOutList(resp);
         // Module error code
         qCritical() << "Error size: " << errorSize << "Error code: " << QString::number(errorCode, 16);
     }
@@ -837,19 +837,19 @@ void ProtocomThread::handleBool(const bool status, int errorSize, int errorCode)
 void ProtocomThread::handleProgress(const quint64 count)
 {
     DataTypes::GeneralResponseStruct resp { DataTypes::GeneralResponseTypes::DataCount, count };
-    DataManager::addSignalToOutList(DataTypes::SignalTypes::GeneralResponse, resp);
+    DataManager::GetInstance().addSignalToOutList(resp);
 }
 
 void ProtocomThread::handleMaxProgress(const quint64 count)
 {
     DataTypes::GeneralResponseStruct resp { DataTypes::GeneralResponseTypes::DataSize, count };
-    DataManager::addSignalToOutList(DataTypes::SignalTypes::GeneralResponse, resp);
+    DataManager::GetInstance().addSignalToOutList(resp);
 }
 
 void ProtocomThread::handleRawBlock(const QByteArray &ba, quint32 blkNum)
 {
     DataTypes::BlockStruct resp { blkNum, ba };
-    DataManager::addSignalToOutList(DataTypes::SignalTypes::Block, resp);
+    DataManager::GetInstance().addSignalToOutList(resp);
 }
 
 void ProtocomThread::handleCommand(const QByteArray &ba)
@@ -872,7 +872,7 @@ void ProtocomThread::handleTechBlock(const QByteArray &ba, quint32 blkNum)
 
             S2DataTypes::OscInfo oscInfo;
             memcpy(&oscInfo, buffer.constData(), sizeof(S2DataTypes::OscInfo));
-            DataManager::addSignalToOutList(DataTypes::SignalTypes::OscillogramInfo, oscInfo);
+            DataManager::GetInstance().addSignalToOutList(oscInfo);
         }
 
         break;
@@ -899,7 +899,7 @@ void ProtocomThread::handleTechBlock(const QByteArray &ba, quint32 blkNum)
 
             S2DataTypes::SwitchJourInfo swjInfo;
             memcpy(&swjInfo, buffer.constData(), sizeof(S2DataTypes::SwitchJourInfo));
-            DataManager::addSignalToOutList(DataTypes::SignalTypes::SwitchJournalInfo, swjInfo);
+            DataManager::GetInstance().addSignalToOutList(swjInfo);
         }
         break;
     }

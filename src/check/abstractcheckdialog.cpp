@@ -1,10 +1,10 @@
 #include "abstractcheckdialog.h"
 
 #include "../gen/colors.h"
+#include "../gen/datamanager/typesproxy.h"
 #include "../gen/error.h"
 #include "../gen/stdfunc.h"
 #include "../module/board.h"
-#include "../s2/datamanager.h"
 #include "../s2/s2helper.h"
 #include "../widgets/wd_func.h"
 //#include "xlsxdocument.h"
@@ -42,15 +42,16 @@ AbstractCheckDialog::~AbstractCheckDialog()
 
 void AbstractCheckDialog::setupUI()
 {
+    static DataTypesProxy proxy(&DataManager::GetInstance());
+    proxy.RegisterType<DataTypes::SinglePointWithTimeStruct, DataTypes::FloatStruct>();
     QVBoxLayout *lyout = new QVBoxLayout;
     QTabWidget *CheckTW = new QTabWidget;
-    connect(&DataManager::GetInstance(), &DataManager::singlePointReceived, this, &AbstractCheckDialog::updateSPData);
+    connect(&proxy, &DataTypesProxy::DataStorable, this, &AbstractCheckDialog::updateSPData);
     for (auto &w : m_BdUIList)
     {
         w.widget->uponInterfaceSetting();
         CheckTW->addTab(w.widget, " " + w.widgetCaption + " ");
-        connect(&DataManager::GetInstance(), &DataManager::floatReceived, w.widget, &UWidget::updateFloatData,
-            Qt::QueuedConnection);
+        connect(&proxy, &DataTypesProxy::DataStorable, w.widget, &UWidget::updateFloatData, Qt::QueuedConnection);
     }
 
     lyout->addWidget(CheckTW);
@@ -126,45 +127,49 @@ QWidget *AbstractCheckDialog::BottomUI()
     return w;
 }
 
-void AbstractCheckDialog::updateSPData(const DataTypes::SinglePointWithTimeStruct &sp)
+// void AbstractCheckDialog::updateSPData(const DataTypes::SinglePointWithTimeStruct &sp)
+void AbstractCheckDialog::updateSPData(const QVariant &data)
 {
-    bool status = sp.sigVal;
-
-    if (m_highlightCrit.contains(sp.sigAdr))
+    if (data.canConvert<DataTypes::SinglePointWithTimeStruct>())
     {
-        const QList<HighlightMap::mapped_type> regs = m_highlightCrit.values(sp.sigAdr);
-        const QString color = "red";
-        for (const auto reg : qAsConst(regs))
+        auto sp = data.value<DataTypes::SinglePointWithTimeStruct>();
+        bool status = sp.sigVal;
+        if (m_highlightCrit.contains(sp.sigAdr))
         {
-            QLabel *lbl = findChild<QLabel *>(QString::number(reg));
-            if (!lbl)
-                continue;
-            if (status)
+            const QList<HighlightMap::mapped_type> regs = m_highlightCrit.values(sp.sigAdr);
+            const QString color = "red";
+            for (const auto reg : qAsConst(regs))
             {
-                lbl->setStyleSheet(
-                    "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; font: bold; background-color:"
-                    + color + "; color : black; }");
+                QLabel *lbl = findChild<QLabel *>(QString::number(reg));
+                if (!lbl)
+                    continue;
+                if (status)
+                {
+                    lbl->setStyleSheet("QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; font: bold; "
+                                       "background-color:"
+                        + color + "; color : black; }");
+                }
             }
         }
-    }
-    else if (m_highlightWarn.contains(sp.sigAdr))
-    {
-        const QList<HighlightMap::mapped_type> regs = m_highlightWarn.values(sp.sigAdr);
-        const QString color = "yellow";
-        for (const auto reg : qAsConst(regs))
+        else if (m_highlightWarn.contains(sp.sigAdr))
         {
-            QLabel *lbl = findChild<QLabel *>(QString::number(reg));
-            if (!lbl)
-                continue;
-            if (status)
+            const QList<HighlightMap::mapped_type> regs = m_highlightWarn.values(sp.sigAdr);
+            const QString color = "yellow";
+            for (const auto reg : qAsConst(regs))
             {
-                lbl->setStyleSheet(
-                    "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; font: bold; background-color:"
-                    + color + "; color : black; }");
-            }
-            else
-            {
-                lbl->setStyleSheet(ValuesFormat);
+                QLabel *lbl = findChild<QLabel *>(QString::number(reg));
+                if (!lbl)
+                    continue;
+                if (status)
+                {
+                    lbl->setStyleSheet("QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; font: bold; "
+                                       "background-color:"
+                        + color + "; color : black; }");
+                }
+                else
+                {
+                    lbl->setStyleSheet(ValuesFormat);
+                }
             }
         }
     }

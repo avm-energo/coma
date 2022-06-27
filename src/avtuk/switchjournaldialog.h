@@ -27,8 +27,8 @@ public:
     explicit SwitchJournalDialog(QWidget *parent = nullptr);
 
 public:
-    void fillJour(const DataTypes::FileStruct &fs);
-    void fillSwJInfo(S2DataTypes::SwitchJourInfo swjInfo);
+    void fillJour(const QVariant &data);
+    void fillSwJInfo(const QVariant &data);
 
 private:
     void setupUI();

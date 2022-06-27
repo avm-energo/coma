@@ -2,7 +2,6 @@
 #define DATARECV_H
 
 #include "../ctti/type_id.hpp"
-#include "../gen/datamanager/datatypeimpl.h"
 #include "../gen/std_ext.h"
 #include "datarec.h"
 #include "s2helper.h"
@@ -167,20 +166,6 @@ struct RecordPair
 {
     DataRecV record;
     bool visibility = true;
-};
-
-class DataRecvList : public DataTypeImpl<DataRecvList>
-{
-    Q_OBJECT
-public:
-    DataRecvList() : DataTypeImpl(this)
-    {
-    }
-
-    QList<DataRecV> list;
-
-signals:
-    void DataTypeReceived(const DataRecvList &);
 };
 
 }

@@ -1,10 +1,10 @@
 #include "debugcoma.h"
 
 #include "../comaversion/comaversion.h"
+#include "../gen/datamanager/typesproxy.h"
 #include "../interfaces/emulator.h"
 #include "../interfaces/protocom.h"
 #include "../module/board.h"
-#include "../s2/datamanager.h"
 #include "../tune/82/tune82checkmip.h"
 #include "../widgets/aboutwidget.h"
 #include "../xml/xmlconfigparser.h"
@@ -37,8 +37,10 @@ void DebugComa::getAbout()
 
 void DebugComa::setupConnection()
 {
+    static DataTypesProxy proxy(&DataManager::GetInstance());
+    proxy.RegisterType<DataTypes::BitStringStruct>();
     auto const &board = Board::GetInstance();
-    connect(&DataManager::GetInstance(), &DataManager::bitStringReceived, &Board::GetInstance(), &Board::update);
+    connect(&proxy, &DataTypesProxy::DataStorable, &board, &Board::update);
     BaseInterface::InterfacePointer device;
     switch (board.interfaceType())
     {

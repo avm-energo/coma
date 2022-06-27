@@ -1,11 +1,11 @@
 #include "servicecoma.h"
 
 #include "../comaversion/comaversion.h"
+#include "../gen/datamanager/typesproxy.h"
 #include "../interfaces/iec104.h"
 #include "../interfaces/modbus.h"
 #include "../interfaces/protocom.h"
 #include "../module/board.h"
-#include "../s2/datamanager.h"
 #include "../widgets/aboutwidget.h"
 #include "config.h"
 #include "svcmodule.h"
@@ -35,8 +35,10 @@ void ServiceComa::getAbout()
 
 void ServiceComa::setupConnection()
 {
+    static DataTypesProxy proxy(&DataManager::GetInstance());
+    proxy.RegisterType<DataTypes::BitStringStruct>();
     auto const &board = Board::GetInstance();
-    connect(&DataManager::GetInstance(), &DataManager::bitStringReceived, &Board::GetInstance(), &Board::update);
+    connect(&proxy, &DataTypesProxy::DataStorable, &board, &Board::update);
     BaseInterface::InterfacePointer device;
     switch (board.interfaceType())
     {

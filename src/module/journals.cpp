@@ -197,22 +197,27 @@ void Journals::resultReady(EDynamicTableModel *model)
     emit Done("Прочитано успешно", m_jourType);
 }
 
-void Journals::FillJour(const DataTypes::FileStruct &fs)
+// void Journals::FillJour(const DataTypes::FileStruct &fs)
+void Journals::FillJour(const QVariant &data)
 {
-    m_jourType = DataTypes::FilesEnum(fs.ID);
-    switch (fs.ID)
+    if (data.canConvert<DataTypes::FileStruct>())
     {
-    case DataTypes::JourMeas:
-        FillMeasTable(fs.data);
-        break;
-    case DataTypes::JourSys:
-        FillEventsTable(fs.data);
-        break;
-    case DataTypes::JourWork:
-        FillEventsTable(fs.data);
-        break;
-    default:
-        break;
+        auto fs = data.value<DataTypes::FileStruct>();
+        m_jourType = DataTypes::FilesEnum(fs.ID);
+        switch (fs.ID)
+        {
+        case DataTypes::JourMeas:
+            FillMeasTable(fs.data);
+            break;
+        case DataTypes::JourSys:
+            FillEventsTable(fs.data);
+            break;
+        case DataTypes::JourWork:
+            FillEventsTable(fs.data);
+            break;
+        default:
+            break;
+        }
     }
 }
 

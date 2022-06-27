@@ -31,7 +31,7 @@ private:
     void ReadConf();
     void WriteConf();
     void checkForDiff(const QList<DataTypes::DataRecV> &list);
-    void confReceived(const QList<DataTypes::DataRecV> &list);
+    void confReceived(const QVariant &data);
 
     bool m_prereadConf;
     QStringList CheckConfErrors;

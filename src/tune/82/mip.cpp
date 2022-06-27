@@ -1,9 +1,9 @@
 #include "mip.h"
 
+#include "../gen/datamanager/typesproxy.h"
 #include "../gen/settings.h"
 #include "../gen/stdfunc.h"
 #include "../interfaces/settingstypes.h"
-#include "../s2/datamanager.h"
 #include "../widgets/epopup.h"
 #include "../widgets/wd_func.h"
 
@@ -12,22 +12,28 @@
 // Mip::Mip(bool withGUI, AvtukVariants moduleType, QWidget *parent) : UDialog(withGUI, parent)
 Mip::Mip(bool withGUI, AvtukVariants moduleType, QWidget *parent) : UWidget(parent)
 {
+    static DataTypesProxy proxy(&DataManager::GetInstance());
+    proxy.RegisterType<DataTypes::FloatStruct>();
     m_moduleType = moduleType;
     //    if (withGUI)
     setupUI();
     setFloatBdQuery({ { 0, 46 } });
-    connect(&DataManager::GetInstance(), &DataManager::floatReceived, this, &UWidget::updateFloatData,
-        Qt::QueuedConnection);
+    connect(&proxy, &DataTypesProxy::DataStorable, this, &UWidget::updateFloatData, Qt::QueuedConnection);
 }
 
-void Mip::updateFloatData(const DataTypes::FloatStruct &fl)
+// void Mip::updateFloatData(const DataTypes::FloatStruct &fl)
+void Mip::updateFloatData(const QVariant &data)
 {
-    if (fl.sigAdr < 46)
+    if (data.canConvert<DataTypes::FloatStruct>())
     {
-        float *mipdata = reinterpret_cast<float *>(&m_mipData);
-        *(mipdata + fl.sigAdr) = fl.sigVal;
+        auto fl = data.value<DataTypes::FloatStruct>();
+        if (fl.sigAdr < 46)
+        {
+            float *mipdata = reinterpret_cast<float *>(&m_mipData);
+            *(mipdata + fl.sigAdr) = fl.sigVal;
+        }
+        UWidget::updateFloatData(data);
     }
-    UWidget::updateFloatData(fl);
 }
 
 Mip::MipDataStruct Mip::getData()

@@ -1,6 +1,6 @@
 #include "oscdialog.h"
 
-#include "../gen/datamanager/datamanager.h"
+#include "../gen/datamanager/typesproxy.h"
 #include "../gen/files.h"
 #include "../gen/timefunc.h"
 #include "../models/etablemodel.h"
@@ -19,10 +19,10 @@ static constexpr char name[] = "oscHash";
 OscDialog::OscDialog(QWidget *parent) : UDialog(crypto::hash, crypto::name, parent)
 {
     auto mngr = &DataManager::GetInstance();
-    auto &holder_osc = mngr->RegistrateType<S2DataTypes::OscInfo>();
-    auto &holder_file = mngr->RegistrateType<DataTypes::FileStruct>();
-    connect(&holder_osc, &S2DataTypes::OscInfo::DataTypeReceived, this, &OscDialog::fillOscInfo);
-    connect(&holder_file, &DataTypes::FileStruct::DataTypeReceived, this, &OscDialog::fillOsc);
+    static DataTypesProxy proxy(mngr);
+    proxy.RegisterType<S2DataTypes::OscInfo, DataTypes::FileStruct>();
+    connect(&proxy, &DataTypesProxy::DataStorable, this, &OscDialog::fillOscInfo);
+    connect(&proxy, &DataTypesProxy::DataStorable, this, &OscDialog::fillOsc);
     setupUI();
 }
 
@@ -140,66 +140,76 @@ bool OscDialog::loadIfExist(quint32 size)
     return false;
 }
 
-void OscDialog::fillOscInfo(S2DataTypes::OscInfo info)
+// void OscDialog::fillOscInfo(S2DataTypes::OscInfo info)
+void OscDialog::fillOscInfo(const QVariant &data)
 {
-    oscMap.insert(info.typeHeader.id, info);
-    QVector<QVariant> lsl {
-        QString::number(info.typeHeader.id),         //
-        TimeFunc::UnixTime64ToString(info.unixtime), //
-        info.idOsc0,                                 //
-        info.typeHeader.numByte,                     //
-        "Скачать",
-    };
+    if (data.canConvert<S2DataTypes::OscInfo>())
+    {
+        auto info = data.value<S2DataTypes::OscInfo>();
+        oscMap.insert(info.typeHeader.id, info);
+        QVector<QVariant> lsl {
+            QString::number(info.typeHeader.id),         //
+            TimeFunc::UnixTime64ToString(info.unixtime), //
+            info.idOsc0,                                 //
+            info.typeHeader.numByte,                     //
+            "Скачать",
+        };
 
-    tableModel->addRowWithData(lsl);
+        tableModel->addRowWithData(lsl);
+    }
 }
 
-void OscDialog::fillOsc(const DataTypes::FileStruct file)
+// void OscDialog::fillOsc(const DataTypes::FileStruct file)
+void OscDialog::fillOsc(const QVariant &data)
 {
     if (!updatesEnabled())
         return;
 
-    switch (file.ID)
+    if (data.canConvert<DataTypes::FileStruct>())
     {
-    case MT_HEAD_ID:
-    {
-        auto header = manager.loadCommon(file);
-        manager.setHeader(header);
-        break;
-    }
-    // ignore swj here
-    case AVTUK_85::SWJ_ID:
-    {
-        return;
-    }
-    default:
-    {
-
-        oscModel = manager.load(file);
-
-        if (!oscModel)
+        const auto file = data.value<DataTypes::FileStruct>();
+        switch (file.ID)
         {
-            qWarning() << Error::ReadError;
+        case MT_HEAD_ID:
+        {
+            auto header = manager.loadCommon(file);
+            manager.setHeader(header);
+            break;
+        }
+        // ignore swj here
+        case AVTUK_85::SWJ_ID:
+        {
             return;
         }
-        manager.loadOsc(oscModel.get());
-    }
-    }
-    fileBuffer.push_back(file);
-    // header, osc
-    if (fileBuffer.size() == 2)
-    {
-        QByteArray ba;
-        S2::StoreDataMem(ba, fileBuffer, reqOscNum);
-        auto time = oscMap.value(reqOscNum).unixtime;
-        QString file = filename(time, reqOscNum);
-        if (Files::SaveToFile(file, ba) == Error::Msg::NoError)
+        default:
         {
-            qInfo() << "Swj saved: " << file;
+
+            oscModel = manager.load(file);
+
+            if (!oscModel)
+            {
+                qWarning() << Error::ReadError;
+                return;
+            }
+            manager.loadOsc(oscModel.get());
         }
-        else
+        }
+        fileBuffer.push_back(file);
+        // header, osc
+        if (fileBuffer.size() == 2)
         {
-            qWarning() << "Fail to save swj: " << file;
+            QByteArray ba;
+            S2::StoreDataMem(ba, fileBuffer, reqOscNum);
+            auto time = oscMap.value(reqOscNum).unixtime;
+            QString file = filename(time, reqOscNum);
+            if (Files::SaveToFile(file, ba) == Error::Msg::NoError)
+            {
+                qInfo() << "Swj saved: " << file;
+            }
+            else
+            {
+                qWarning() << "Fail to save swj: " << file;
+            }
         }
     }
 }

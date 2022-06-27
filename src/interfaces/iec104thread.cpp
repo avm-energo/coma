@@ -1,7 +1,7 @@
 #include "iec104thread.h"
 
+#include "../gen/datamanager/datamanager.h"
 #include "../gen/pch.h"
-#include "../s2/datamanager.h"
 #include "../s2/s2.h"
 #include "iec104private.h"
 
@@ -256,7 +256,7 @@ bool IEC104Thread::handleFile(QByteArray &ba, DataTypes::FilesEnum addr, Queries
         QList<DataTypes::DataRecV> outlistV;
         if (!S2::RestoreData(ba, outlistV))
             return false;
-        DataManager::addSignalToOutList(DataTypes::DataRecVList, outlistV);
+        DataManager::GetInstance().addSignalToOutList(outlistV);
         break;
     }
     default:
@@ -266,12 +266,12 @@ bool IEC104Thread::handleFile(QByteArray &ba, DataTypes::FilesEnum addr, Queries
             return false;
         Q_ASSERT(outlist.size() == 1 && "Only one file supported");
         DataTypes::FileStruct df { addr, outlist.first().data };
-        DataManager::addSignalToOutList(DataTypes::SignalTypes::File, df);
+        DataManager::GetInstance().addSignalToOutList(df);
         break;
     }
     }
     DataTypes::GeneralResponseStruct resp { DataTypes::GeneralResponseTypes::Ok, static_cast<quint64>(ba.size()) };
-    DataManager::addSignalToOutList(DataTypes::SignalTypes::GeneralResponse, resp);
+    DataManager::GetInstance().addSignalToOutList(resp);
     return true;
 }
 
@@ -336,7 +336,7 @@ void IEC104Thread::ParseIFormat(QByteArray &ba) // основной разбор
                 memcpy(&time, &(ba.data()[index]), 7);
                 index += 7;
                 signal.CP56Time = time;
-                DataManager::addSignalToOutList(DataTypes::SignalTypes::FloatWithTime, signal);
+                DataManager::GetInstance().addSignalToOutList(signal);
                 break;
             }
 
@@ -351,7 +351,7 @@ void IEC104Thread::ParseIFormat(QByteArray &ba) // основной разбор
                 memcpy(&signal.sigVal, &(ba.data()[index]), 4);
                 index += 4;
                 signal.sigQuality = ba.at(index++);
-                DataManager::addSignalToOutList(DataTypes::SignalTypes::FloatWithTime, signal);
+                DataManager::GetInstance().addSignalToOutList(signal);
                 break;
             }
 
@@ -361,7 +361,7 @@ void IEC104Thread::ParseIFormat(QByteArray &ba) // основной разбор
                 DataTypes::SinglePointWithTimeStruct signal;
                 signal.sigAdr = objectAdr;
                 signal.sigVal = ba.at(index++);
-                DataManager::addSignalToOutList(DataTypes::SignalTypes::SinglePointWithTime, signal);
+                DataManager::GetInstance().addSignalToOutList(signal);
                 break;
             }
 
@@ -373,7 +373,7 @@ void IEC104Thread::ParseIFormat(QByteArray &ba) // основной разбор
                 signal.sigVal = ba.at(index++);
                 memcpy(&signal.CP56Time, &(ba.data()[index]), 7);
                 index += 7;
-                DataManager::addSignalToOutList(DataTypes::SignalTypes::SinglePointWithTime, signal);
+                DataManager::GetInstance().addSignalToOutList(signal);
                 break;
             }
 
@@ -385,7 +385,7 @@ void IEC104Thread::ParseIFormat(QByteArray &ba) // основной разбор
                 memcpy(&signal.sigVal, &(ba.data()[index]), 4);
                 index += 4;
                 memcpy(&signal.sigQuality, &(ba.data()[index++]), 1);
-                DataManager::addSignalToOutList(DataTypes::SignalTypes::BitString, signal);
+                DataManager::GetInstance().addSignalToOutList(signal);
                 break;
             }
 
@@ -497,7 +497,7 @@ void IEC104Thread::ParseIFormat(QByteArray &ba) // основной разбор
                 {
                     DataTypes::GeneralResponseStruct grs;
                     grs.type = DataTypes::GeneralResponseTypes::Ok;
-                    DataManager::addSignalToOutList(DataTypes::SignalTypes::GeneralResponse, grs);
+                    DataManager::GetInstance().addSignalToOutList(grs);
                 }
                 break;
             }
@@ -806,7 +806,7 @@ void IEC104Thread::SendSegments()
     GI = CreateGI(0x12);
     Send(1, GI, cmd); // ASDU = QByteArray()
 
-    DataManager::addSignalToOutList(DataTypes::SignalTypes::GeneralResponse, resp);
+    DataManager::GetInstance().addSignalToOutList(resp);
 }
 
 void IEC104Thread::LastSection()
@@ -862,5 +862,5 @@ void IEC104Thread::setGeneralResponse(DataTypes::GeneralResponseTypes type, quin
     DataTypes::GeneralResponseStruct grs;
     grs.type = type;
     grs.data = data;
-    DataManager::addSignalToOutList(DataTypes::SignalTypes::GeneralResponse, grs);
+    DataManager::GetInstance().addSignalToOutList(grs);
 }

@@ -60,7 +60,7 @@ private:
     void resultReady(EDynamicTableModel *model);
 
 public slots:
-    void FillJour(const DataTypes::FileStruct &fs);
+    void FillJour(const QVariant &data);
 
     void saveJour(DataTypes::FilesEnum jtype, QString filename);
 };

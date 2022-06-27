@@ -9,7 +9,7 @@ class Check3133Dialog : public CheckDialog
 public:
     Check3133Dialog(const CheckItem &item, const categoryMap &categories, QWidget *parent = nullptr);
     void setupUI() override;
-    void updateBitStringData(const DataTypes::BitStringStruct &bs) override;
+    void updateBitStringData(const QVariant &data) override;
 
 protected:
     auto inputQuantity() const

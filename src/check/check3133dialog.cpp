@@ -1,6 +1,6 @@
 #include "check3133dialog.h"
 
-#include "../s2/datamanager.h"
+#include "../gen/datamanager/typesproxy.h"
 #include "../widgets/wd_func.h"
 
 #include <QDebug>
@@ -15,8 +15,10 @@ constexpr int columns = 6;
 Check3133Dialog::Check3133Dialog(const CheckItem &item, const categoryMap &categories, QWidget *parent)
     : CheckDialog(item, categories, parent)
 {
+    static DataTypesProxy proxy(&DataManager::GetInstance());
+    proxy.RegisterType<DataTypes::BitStringStruct>();
     Timer->setInterval(ANMEASINT);
-    connect(&DataManager::GetInstance(), &DataManager::bitStringReceived, this, &Check3133Dialog::updateBitStringData);
+    connect(&proxy, &DataTypesProxy::DataStorable, this, &Check3133Dialog::updateBitStringData);
 }
 
 void Check3133Dialog::setupUI()
@@ -35,8 +37,10 @@ void Check3133Dialog::updatePixmap(bool isset, int position)
         qCritical() << Error::DescError;
 }
 
-void Check3133Dialog::updateBitStringData(const DataTypes::BitStringStruct &bs)
+// void Check3133Dialog::updateBitStringData(const DataTypes::BitStringStruct &bs)
+void Check3133Dialog::updateBitStringData(const QVariant &data)
 {
+    auto bs = data.value<DataTypes::BitStringStruct>();
     auto result
         = std::find_if(m_item.signlsVec.cbegin(), m_item.signlsVec.cend(), [&bs](const check::detail::Signals &sig) {
               return (sig.start_addr == bs.sigAdr)

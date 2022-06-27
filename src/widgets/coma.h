@@ -62,7 +62,7 @@ private slots:
     virtual void checkDialog() {};
     void closeEvent(QCloseEvent *event) override;
 
-    void update(const DataTypes::GeneralResponseStruct &rsp);
+    void update(const QVariant &data);
 
     void mainTWTabChanged(int tabindex);
 

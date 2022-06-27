@@ -1,11 +1,13 @@
 #include "modulealarm.h"
 
-#include "../s2/datamanager.h"
+#include "../gen/datamanager/typesproxy.h"
 
 ModuleAlarm::ModuleAlarm(QWidget *parent) : BaseAlarm(parent)
 {
-    connect(&DataManager::GetInstance(), &DataManager::singlePointReceived, this,
-        qOverload<const DataTypes::SinglePointWithTimeStruct &>(&ModuleAlarm::update));
+    auto mngr = &DataManager::GetInstance();
+    static DataTypesProxy proxy(mngr);
+    proxy.RegisterType<DataTypes::SinglePointWithTimeStruct>();
+    connect(&proxy, &DataTypesProxy::DataStorable, this, qOverload<const QVariant &>(&ModuleAlarm::update));
 }
 
 ModuleAlarm::ModuleAlarm(const DataTypes::Alarm &desc, const int count, QWidget *parent) : ModuleAlarm(parent)
@@ -24,8 +26,10 @@ void ModuleAlarm::reqUpdate()
     update();
 }
 
-void ModuleAlarm::update(const DataTypes::SinglePointWithTimeStruct &sp)
+// void ModuleAlarm::update(const DataTypes::SinglePointWithTimeStruct &sp)
+void ModuleAlarm::update(const QVariant &data)
 {
+    auto sp = data.value<DataTypes::SinglePointWithTimeStruct>();
     const auto minAddress = m_startAlarmAddress;
     const auto maxAddress = m_startAlarmAddress + m_alarmFlags.size();
     if (!((sp.sigAdr >= minAddress) && (sp.sigAdr <= maxAddress)))

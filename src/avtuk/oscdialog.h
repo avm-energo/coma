@@ -24,8 +24,8 @@ public:
     explicit OscDialog(QWidget *parent = nullptr);
 
 public slots:
-    void fillOscInfo(S2DataTypes::OscInfo info);
-    void fillOsc(const DataTypes::FileStruct file);
+    void fillOscInfo(const QVariant &data);
+    void fillOsc(const QVariant &data);
 
 private:
     void setupUI();

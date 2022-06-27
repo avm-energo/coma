@@ -3,9 +3,9 @@
 #include "../dialogs/keypressdialog.h"
 #include "../gen/colors.h"
 #include "../gen/stdfunc.h"
-#include "../s2/datamanager.h"
+// #include "../gen/datamanager/datamanager.h"
 #include "wd_func.h"
-//#define UWIDGET_DEBUG
+// #define UWIDGET_DEBUG
 #include <QCoreApplication>
 #include <QDebug>
 #include <QEventLoop>
@@ -60,36 +60,49 @@ void UWidget::setBsBdQuery(const QList<UWidget::BdQuery> &list)
     m_bsBdQueryList = list;
 }
 
-void UWidget::updateFloatData(const DataTypes::FloatStruct &fl)
+// void UWidget::updateFloatData(const DataTypes::FloatStruct &fl)
+void UWidget::updateFloatData(const QVariant &data)
 {
-    //    if ((updatesEnabled()) && m_withGUI)
-    if (m_updatesEnabled)
+    if (data.canConvert<DataTypes::FloatStruct>())
     {
-        bool result = WDFunc::SetLBLText(this, QString::number(fl.sigAdr), WDFunc::StringValueWithCheck(fl.sigVal, 3));
+        //    if ((updatesEnabled()) && m_withGUI)
+        if (m_updatesEnabled)
+        {
+            auto fl = data.value<DataTypes::FloatStruct>();
+            bool result
+                = WDFunc::SetLBLText(this, QString::number(fl.sigAdr), WDFunc::StringValueWithCheck(fl.sigVal, 3));
 #ifdef UWIDGET_DEBUG
-        if (!result)
-            qDebug() << Error::DescError << QString::number(fl.sigAdr) << WDFunc::StringValueWithCheck(fl.sigVal, 3);
+            if (!result)
+                qDebug() << Error::DescError << QString::number(fl.sigAdr)
+                         << WDFunc::StringValueWithCheck(fl.sigVal, 3);
 #else
-        Q_UNUSED(result)
+            Q_UNUSED(result)
 #endif
+        }
     }
 }
 
-void UWidget::updateSPData(const DataTypes::SinglePointWithTimeStruct &sp)
+// void UWidget::updateSPData(const DataTypes::SinglePointWithTimeStruct &sp)
+void UWidget::updateSPData(const QVariant &data)
 {
-    //    if ((updatesEnabled()) && m_withGUI)
-    if (m_updatesEnabled)
+    if (data.canConvert<DataTypes::SinglePointWithTimeStruct>())
     {
-        QList<HighlightWarnAlarmStruct> hstlist = m_highlightMap.value(sp.sigAdr);
-        for (const auto &hst : hstlist)
-            WDFunc::SetLBLTColor(
-                this, QString::number(hst.fieldnum), (sp.sigVal == 1) ? Colors::TABCOLORA1 : hst.color);
+        //    if ((updatesEnabled()) && m_withGUI)
+        if (m_updatesEnabled)
+        {
+            auto sp = data.value<DataTypes::SinglePointWithTimeStruct>();
+            QList<HighlightWarnAlarmStruct> hstlist = m_highlightMap.value(sp.sigAdr);
+            for (const auto &hst : hstlist)
+                WDFunc::SetLBLTColor(
+                    this, QString::number(hst.fieldnum), (sp.sigVal == 1) ? Colors::TABCOLORA1 : hst.color);
+        }
     }
 }
 
-void UWidget::updateBitStringData(const DataTypes::BitStringStruct &bs)
+// void UWidget::updateBitStringData(const DataTypes::BitStringStruct &bs)
+void UWidget::updateBitStringData(const QVariant &data)
 {
-    Q_UNUSED(bs)
+    Q_UNUSED(data)
 }
 
 bool UWidget::updatesEnabled()

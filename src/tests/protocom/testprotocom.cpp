@@ -1,7 +1,7 @@
 #include "testprotocom.h"
 
+#include "../../gen/datamanager/datamanager.h"
 #include "../../gen/stdfunc.h"
-#include "../../s2/datamanager.h"
 
 #include <QSignalSpy>
 TestProtocom::TestProtocom(QObject *parent) : QObject(parent)
@@ -27,7 +27,7 @@ void TestProtocom::testConnection()
 void TestProtocom::testBSIrequest()
 {
     const auto &manager = DataManager::GetInstance();
-    QSignalSpy spy(&manager, &DataManager::bitStringReceived);
+    QSignalSpy spy(&manager, &DataManager::dataReceived);
     protocom->reqBSI();
     StdFunc::Wait(1000);
     // spy.wait();
@@ -38,7 +38,7 @@ void TestProtocom::testBSIrequest()
 void TestProtocom::testBSIErequest()
 {
     const auto &manager = DataManager::GetInstance();
-    QSignalSpy spy(&manager, &DataManager::bitStringReceived);
+    QSignalSpy spy(&manager, &DataManager::dataReceived);
     protocom->reqBSIExt();
     StdFunc::Wait(1000);
     qDebug() << spy.count();

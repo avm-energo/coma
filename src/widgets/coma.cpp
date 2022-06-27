@@ -29,6 +29,7 @@
 #include "../dialogs/errordialog.h"
 #include "../dialogs/keypressdialog.h"
 #include "../dialogs/settingsdialog.h"
+#include "../gen/datamanager/typesproxy.h"
 #include "../gen/errorqueue.h"
 #include "../gen/files.h"
 #include "../gen/logger.h"
@@ -38,7 +39,6 @@
 #include "../interfaces/settingstypes.h"
 #include "../module/board.h"
 #include "../module/module.h"
-#include "../s2/datamanager.h"
 #include "../widgets/aboutwidget.h"
 #include "../widgets/epopup.h"
 #include "../widgets/splashscreen.h"
@@ -377,7 +377,10 @@ void Coma::newTimers()
 
 void Coma::setupConnections()
 {
-    connect(&DataManager::GetInstance(), &DataManager::responseReceived, this, &Coma::update);
+    auto mngr = &DataManager::GetInstance();
+    static DataTypesProxy proxy(mngr);
+    proxy.RegisterType<DataTypes::GeneralResponseStruct>();
+    connect(&proxy, &DataTypesProxy::DataStorable, this, &Coma::update);
 }
 
 void Coma::prepare()
@@ -736,9 +739,10 @@ void Coma::mainTWTabChanged(int tabindex)
     m_Module->parentTWTabChanged(tabindex);
 }
 
-void Coma::update(const DataTypes::GeneralResponseStruct &rsp)
+// void Coma::update(const DataTypes::GeneralResponseStruct &rsp)
+void Coma::update(const QVariant &data)
 {
-
+    auto rsp = data.value<DataTypes::GeneralResponseStruct>();
     if (rsp.type == DataTypes::GeneralResponseTypes::DataCount)
         SetProgressBarCount(1, rsp.data);
 

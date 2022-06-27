@@ -5,7 +5,7 @@
 #include "../gen/helper.h"
 #include "../gen/stdfunc.h"
 #include "../module/board.h"
-#include "../s2/datamanager.h"
+//#include "../s2/datamanager.h"
 #include "../widgets/etableview.h"
 #include "../widgets/wd_func.h"
 
@@ -126,13 +126,18 @@ float AbstractStartupDialog::ToFloat(QString text)
     return tmpf;
 }
 
-void AbstractStartupDialog::updateFloatData(const DataTypes::FloatStruct &fl)
+// void AbstractStartupDialog::updateFloatData(const DataTypes::FloatStruct &fl)
+void AbstractStartupDialog::updateFloatData(const QVariant &data)
 {
-    if (!updatesEnabled())
-        return;
-    // Игнорируем 4011 т.к. он нам не важен и все чужие регистры тоже игнорируем
-    if (fl.sigAdr >= m_regMap.firstKey() && fl.sigAdr <= m_regMap.lastKey())
-        FillBd(this, QString::number(fl.sigAdr), fl.sigVal);
+    if (data.canConvert<DataTypes::FloatStruct>())
+    {
+        if (!updatesEnabled())
+            return;
+        auto fl = data.value<DataTypes::FloatStruct>();
+        // Игнорируем 4011 т.к. он нам не важен и все чужие регистры тоже игнорируем
+        if (fl.sigAdr >= m_regMap.firstKey() && fl.sigAdr <= m_regMap.lastKey())
+            FillBd(this, QString::number(fl.sigAdr), fl.sigVal);
+    }
 }
 
 void AbstractStartupDialog::FillBd(QWidget *parent, QString Name, QString Value)

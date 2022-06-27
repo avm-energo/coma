@@ -1,8 +1,8 @@
 #include "protocom_p.h"
 
+//#include "../gen/datamanager/datamanager.h"
 #include "../gen/datatypes.h"
 #include "../gen/stdfunc.h"
-#include "../s2/datamanager.h"
 #include "protocomprivate.h"
 ProtocomPrivate::ProtocomPrivate()
 {

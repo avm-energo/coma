@@ -1,10 +1,10 @@
 #include "infodialog.h"
 
 #include "../gen/colors.h"
+// #include "../gen/datamanager/datamanager.h"
 #include "../gen/error.h"
 #include "../gen/stdfunc.h"
 #include "../module/board.h"
-#include "../s2/datamanager.h"
 #include "../widgets/wd_func.h"
 
 #include <QMessageBox>

@@ -1,9 +1,9 @@
 #include "modbusthread.h"
 
+#include "../gen/datamanager/datamanager.h"
 #include "../gen/helper.h"
 #include "../gen/pch.h"
 #include "../gen/stdfunc.h"
-#include "../s2/datamanager.h"
 #include "baseinterface.h"
 
 #include <QCoreApplication>
@@ -215,7 +215,7 @@ void ModbusThread::getFloatSignals(QByteArray &bain)
         DataTypes::FloatStruct signal;
         signal.sigVal = unpackReg<float>(ba.mid(i, sizeof(float)));
         signal.sigAdr = m_commandSent.adr + i / sizeof(float);
-        DataManager::addSignalToOutList(DataTypes::SignalTypes::Float, signal);
+        DataManager::GetInstance().addSignalToOutList(signal);
     }
 }
 
@@ -239,7 +239,7 @@ void ModbusThread::getIntegerSignals(QByteArray &bain)
         DataTypes::BitStringStruct signal;
         signal.sigVal = unpackReg<quint32>(ba.mid(i, sizeof(quint32)));
         signal.sigAdr = m_commandSent.adr + i / sizeof(quint32);
-        DataManager::addSignalToOutList(DataTypes::SignalTypes::BitString, signal);
+        DataManager::GetInstance().addSignalToOutList(signal);
     }
 }
 
@@ -262,7 +262,7 @@ void ModbusThread::getCommandResponse(QByteArray &bain)
     }
     DataTypes::GeneralResponseStruct grs;
     grs.type = DataTypes::GeneralResponseTypes::Ok;
-    DataManager::addSignalToOutList(DataTypes::SignalTypes::GeneralResponse, grs);
+    DataManager::GetInstance().addSignalToOutList(grs);
 }
 
 void ModbusThread::getSinglePointSignals(QByteArray &bain)
@@ -290,7 +290,7 @@ void ModbusThread::getSinglePointSignals(QByteArray &bain)
         {
             signal.sigAdr = m_commandSent.adr + i * 8 + j;
             signal.sigVal = ((0x01 << j) & ival) ? 1 : 0;
-            DataManager::addSignalToOutList(DataTypes::SignalTypes::SinglePointWithTime, signal);
+            DataManager::GetInstance().addSignalToOutList(signal);
         }
     }
 }

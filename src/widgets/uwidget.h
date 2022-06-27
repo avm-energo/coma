@@ -50,9 +50,9 @@ public:
     void addBsBd(const BdQuery &query);
     virtual void uponInterfaceSetting();
     virtual void reqUpdate();
-    virtual void updateFloatData(const DataTypes::FloatStruct &fl);
-    virtual void updateSPData(const DataTypes::SinglePointWithTimeStruct &sp);
-    virtual void updateBitStringData(const DataTypes::BitStringStruct &bs);
+    virtual void updateFloatData(const QVariant &data);
+    virtual void updateSPData(const QVariant &data);
+    virtual void updateBitStringData(const QVariant &data);
 signals:
 
 public slots:

@@ -2,12 +2,13 @@
 
 #include "../dialogs/keypressdialog.h"
 #include "../gen/colors.h"
+#include "../gen/datamanager/datamanager.h"
+#include "../gen/datamanager/typesproxy.h"
 #include "../gen/error.h"
 #include "../gen/files.h"
 #include "../gen/stdfunc.h"
 #include "../gen/timefunc.h"
 #include "../module/board.h"
-#include "../s2/datamanager.h"
 #include "../widgets/wd_func.h"
 #ifdef MODELDEBUG
 #include <QAbstractItemModelTester>
@@ -27,7 +28,10 @@ static constexpr char name[] = "jourHash";
 JournalDialog::JournalDialog(UniquePointer<Journals> jour, QWidget *parent)
     : UDialog(crypto::hash, crypto::name, parent), m_jour(std::move(jour))
 {
-    connect(&DataManager::GetInstance(), &DataManager::fileReceived, m_jour.get(), &Journals::FillJour);
+    auto mngr = &DataManager::GetInstance();
+    static DataTypesProxy proxy(mngr);
+    proxy.RegisterType<DataTypes::FileStruct>();
+    connect(&proxy, &DataTypesProxy::DataStorable, m_jour.get(), &Journals::FillJour);
     ProxyWorkModel = new QSortFilterProxyModel(this);
     ProxySysModel = new QSortFilterProxyModel(this);
     ProxyMeasModel = new QSortFilterProxyModel(this);

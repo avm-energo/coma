@@ -86,7 +86,7 @@ public:
             break;
         }
     }
-    void updateSPData(const DataTypes::SinglePointWithTimeStruct &sp) override;
+    void updateSPData(const QVariant &data) override;
 
 protected:
     /*!

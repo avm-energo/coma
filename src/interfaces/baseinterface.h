@@ -1,5 +1,7 @@
 #ifndef BASEINTERFACE_H
 #define BASEINTERFACE_H
+
+#include "../gen/datamanager/typesproxy.h"
 #include "../gen/datatypes.h"
 #include "../gen/error.h"
 #include "../gen/logclass.h"
@@ -41,7 +43,6 @@ public:
         None
     };
 
-public:
     LogClass *Log;
 
     explicit BaseInterface(QObject *parent = nullptr);
@@ -163,18 +164,20 @@ private:
     bool m_busy, m_timeout;
     QByteArray m_byteArrayResult;
     bool m_responseResult;
-
     QTimer *timeoutTimer;
     static InterfacePointer m_iface;
     State m_state;
     InterfaceSettings m_settings;
-
     QMutex _stateMutex;
+    static DataTypesProxy proxyBS, proxyGRS, proxyFS, proxyDRL, proxyBStr;
+#ifdef __linux__
+    static DataTypesProxy proxyTS;
+#endif
 
 private slots:
-    void resultReady(const DataTypes::BlockStruct &result);
-    void responseReceived(const DataTypes::GeneralResponseStruct &response);
-    void fileReceived(const DataTypes::FileStruct &file);
+    void resultReady(const QVariant &data);
+    void responseReceived(const QVariant &data);
+    void fileReceived(const QVariant &data);
     void timeout();
 };
 

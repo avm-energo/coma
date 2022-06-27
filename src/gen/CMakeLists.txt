@@ -19,8 +19,7 @@ add_library(
   datatypes.h
   datamanager/datamanager.h
   datamanager/datamanager.cpp
-  datamanager/datatypeimpl.h
-  datamanager/registrator.h
+  datamanager/typesproxy.h
   error.h
   error.cpp
   errorqueue.h

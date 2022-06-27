@@ -113,36 +113,41 @@ void Board::setConnectionState(ConnectionState connectionState)
     emit connectionStateChanged(connectionState);
 }
 
-void Board::update(const DataTypes::BitStringStruct &bs)
+// void Board::update(const DataTypes::BitStringStruct &bs)
+void Board::update(const QVariant &data)
 {
-    // Only bsi block
-    if (bs.sigAdr < 1 || bs.sigAdr > 15)
-        return updateExt(bs);
-    quint32 &item = *(reinterpret_cast<quint32 *>(&m_startupInfoBlock) + (bs.sigAdr - Regs::bsiStartReg));
+    if (data.canConvert<DataTypes::BitStringStruct>())
+    {
+        auto bs = data.value<DataTypes::BitStringStruct>();
+        // Only bsi block
+        if (bs.sigAdr < 1 || bs.sigAdr > 15)
+            return updateExt(bs);
+        quint32 &item = *(reinterpret_cast<quint32 *>(&m_startupInfoBlock) + (bs.sigAdr - Regs::bsiStartReg));
 
-    item = bs.sigVal;
-    m_updateCounter++;
-    // Last value updated
-    if (&item == &m_startupInfoBlock.Hth)
-    {
-        emit healthChanged(m_startupInfoBlock.Hth);
-    }
-    else if (&item == &m_startupInfoBlock.MTypeB || &item == &m_startupInfoBlock.MTypeM)
-    {
-        if (!m_updateType)
-            m_updateType = true;
-        else
+        item = bs.sigVal;
+        m_updateCounter++;
+        // Last value updated
+        if (&item == &m_startupInfoBlock.Hth)
         {
-            m_updateType = false;
-            emit typeChanged(type());
-            emit typeChanged();
+            emit healthChanged(m_startupInfoBlock.Hth);
         }
-    }
+        else if (&item == &m_startupInfoBlock.MTypeB || &item == &m_startupInfoBlock.MTypeM)
+        {
+            if (!m_updateType)
+                m_updateType = true;
+            else
+            {
+                m_updateType = false;
+                emit typeChanged(type());
+                emit typeChanged();
+            }
+        }
 
-    if (m_updateCounter == StartupInfoBlockMembers)
-    {
-        emit readyRead();
-        m_updateCounter = 0;
+        if (m_updateCounter == StartupInfoBlockMembers)
+        {
+            emit readyRead();
+            m_updateCounter = 0;
+        }
     }
 }
 

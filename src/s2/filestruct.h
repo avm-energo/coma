@@ -1,7 +1,6 @@
 #ifndef FILESTRUCT_H
 #define FILESTRUCT_H
 
-#include "../gen/datamanager/datatypeimpl.h"
 #include "datarec.h"
 
 #include <QDataStream>
@@ -25,14 +24,12 @@ enum FilesEnum : quint16
 
 };
 
-class FileStruct : public DataTypeImpl<FileStruct>
+struct FileStruct
 {
-    Q_OBJECT
-public:
     std::underlying_type_t<FilesEnum> ID;
     QByteArray data;
 
-    FileStruct();
+    FileStruct() = default;
     FileStruct(const FilesEnum num, const QByteArray &file);
     FileStruct(const quint8 num, const QByteArray &file);
     FileStruct(const quint8 num);
@@ -41,9 +38,6 @@ public:
     friend QDataStream &operator<<(QDataStream &stream, const FileStruct &str);
     friend QDataStream &operator>>(QDataStream &stream, FileStruct &str);
     friend QDebug operator<<(QDebug debug, const DataTypes::FileStruct &st);
-
-signals:
-    void DataTypeReceived(const FileStruct &);
 };
 
 }

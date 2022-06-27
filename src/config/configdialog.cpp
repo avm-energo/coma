@@ -1,13 +1,13 @@
 #include "configdialog.h"
 
 #include "../dialogs/keypressdialog.h"
+#include "../gen/datamanager/typesproxy.h"
 #include "../gen/error.h"
 #include "../gen/files.h"
 #include "../gen/stdfunc.h"
 #include "../gen/timefunc.h"
 #include "../module/board.h"
 #include "../s2/configv.h"
-#include "../s2/datamanager.h"
 #include "../s2/s2.h"
 #include "../widgets/wd_func.h"
 #include "../xml/xmlconfigparser.h"
@@ -32,8 +32,10 @@ ConfigDialog::ConfigDialog(
     , configV(config)
 {
 
-    const auto &manager = DataManager::GetInstance();
-    connect(&manager, &DataManager::dataRecVListReceived, this, &ConfigDialog::confReceived);
+    auto mngr = &DataManager::GetInstance();
+    static DataTypesProxy proxy(mngr);
+    proxy.RegisterType<S2DataTypes::OscInfo, DataTypes::FileStruct>();
+    connect(&proxy, &DataTypesProxy::DataStorable, this, &ConfigDialog::confReceived);
 }
 
 void ConfigDialog::ReadConf()
@@ -99,9 +101,11 @@ void ConfigDialog::checkForDiff(const QList<DataTypes::DataRecV> &list)
     }
 }
 
-void ConfigDialog::confReceived(const QList<DataTypes::DataRecV> &list)
+// void ConfigDialog::confReceived(const QList<DataTypes::DataRecV> &list)
+void ConfigDialog::confReceived(const QVariant &data)
 {
     using namespace DataTypes;
+    auto list = data.value<QList<DataTypes::DataRecV>>();
     configV->setConfig(list);
 
     const auto s2typeB = configV->getRecord(XmlConfigParser::GetIdByName("MTypeB_ID")).value<DWORD>();
@@ -170,8 +174,10 @@ void ConfigDialog::LoadConfFromFile()
     }
     QList<DataTypes::DataRecV> outlistV;
     S2::RestoreData(ba, outlistV);
+    QVariant outlist;
+    outlist.setValue(outlistV);
 
-    confReceived(outlistV);
+    confReceived(outlist);
     QMessageBox::information(this, "Успешно", "Загрузка прошла успешно!");
 }
 

@@ -11,7 +11,7 @@ class UDialog : public UWidget
 public:
     UDialog(QWidget *parent = nullptr);
     UDialog(const QString hash, const QString key, QWidget *parent = nullptr);
-    virtual void updateGeneralResponse(const DataTypes::GeneralResponseStruct &response);
+    virtual void updateGeneralResponse(const QVariant &data);
 
 public slots:
 

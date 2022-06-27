@@ -100,7 +100,7 @@ public:
     ConnectionState connectionState() const;
     void setConnectionState(ConnectionState connectionState);
 
-    void update(const DataTypes::BitStringStruct &bs);
+    void update(const QVariant &data);
     void reset();
 
     quint32 health() const;

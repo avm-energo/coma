@@ -1,17 +1,19 @@
 #include "udialog.h"
 
+#include "../gen/datamanager/typesproxy.h"
 #include "../module/board.h"
-#include "../s2/datamanager.h"
 #include "epopup.h"
 
-//#include <QMessageBox>
 #include <QSettings>
+
 UDialog::UDialog(QWidget *parent) : UWidget(parent)
 {
-    const auto &manager = DataManager::GetInstance();
+    auto mngr = &DataManager::GetInstance();
+    static DataTypesProxy proxy(mngr);
+    proxy.RegisterType<DataTypes::GeneralResponseStruct>();
     setSuccessMsg("Записано успешно");
     setErrorMsg("При записи произошла ошибка");
-    connect(&manager, &DataManager::responseReceived, this, &UDialog::updateGeneralResponse);
+    connect(&proxy, &DataTypesProxy::DataStorable, this, &UDialog::updateGeneralResponse);
 }
 
 UDialog::UDialog(const QString hash, const QString key, QWidget *parent) : UDialog(parent)
@@ -23,10 +25,13 @@ UDialog::UDialog(const QString hash, const QString key, QWidget *parent) : UDial
     m_hash = sets->value(key, "").toString();
 }
 
-void UDialog::updateGeneralResponse(const DataTypes::GeneralResponseStruct &response)
+// void UDialog::updateGeneralResponse(const DataTypes::GeneralResponseStruct &response)
+void UDialog::updateGeneralResponse(const QVariant &data)
 {
     if (!updatesEnabled())
         return;
+
+    auto response = data.value<DataTypes::GeneralResponseStruct>();
     switch (response.type)
     {
     case DataTypes::Ok:

@@ -1,10 +1,11 @@
 #include "../dialogs/timedialog.h"
 
 #include "../gen/colors.h"
+#include "../gen/datamanager/datamanager.h"
+#include "../gen/datamanager/typesproxy.h"
 #include "../gen/error.h"
 #include "../gen/timefunc.h"
 #include "../module/board.h"
-#include "../s2/datamanager.h"
 #include "../widgets/wd_func.h"
 
 #include <QDateTime>
@@ -143,12 +144,17 @@ void TimeDialog::writeDate()
 
 void TimeDialog::uponInterfaceSetting()
 {
+    auto mngr = &DataManager::GetInstance();
+    static DataTypesProxy proxy(mngr);
+    proxy.RegisterType<DataTypes::BitStringStruct>();
     setupUI();
-    connect(&DataManager::GetInstance(), &DataManager::bitStringReceived, this, &::TimeDialog::updateBitStringData);
+    connect(&proxy, &DataTypesProxy::DataStorable, this, &TimeDialog::updateBitStringData);
 }
 
-void TimeDialog::updateBitStringData(const DataTypes::BitStringStruct &bs)
+// void TimeDialog::updateBitStringData(const DataTypes::BitStringStruct &bs)
+void TimeDialog::updateBitStringData(const QVariant &data)
 {
+    auto bs = data.value<DataTypes::BitStringStruct>();
     if (bs.sigAdr              // USB doesnt know address so is empty
         && (bs.sigAdr != 4600) // other interfaces know address
     )

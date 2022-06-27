@@ -4,7 +4,6 @@
 #include "../datatypes.h"
 #include "../error.h"
 #include "../singleton.h"
-#include "registrator.h"
 //#include "datarecv.h"
 //#include "s2datatypes.h"
 
@@ -32,38 +31,17 @@ public:
 
     explicit DataManager(token, QObject *parent = nullptr);
 
-    template <typename T> static T &RegistrateType()
-    {
-        return registrator.RegistrateType<T>();
-    }
-
     template <typename T> void addSignalToOutList(T &signal)
     {
-        auto inserter = [&](T &type) {
-            try
-            {
-                RegisterType tmp = type;
-                insertRegister(type.sigAdr, type);
-            } catch (std::exception &)
-            {
-                auto st = typeid(T).hash_code() == typeid(DataTypes::FloatWithTimeStruct).hash_code();
-                if (st)
-                {
-                    DataTypes::FloatStruct fl;
-                    fl.sigAdr = type.sigAdr;
-                    fl.sigVal = type.sigVal;
-                    insertRegister(fl.sigAdr, fl);
-                }
-            }
-        };
-
-        inserter(signal);
-        registrator.CallSender<T>(QVariant(signal));
-
-        // DataTypes::SignalsStruct str;
-        // str.type = type;
-        // str.data.setValue(signal);
-        // GetInstance().checkTypeAndSendSignals(str);
+        if constexpr (std::is_same_v<T, DataTypes::FloatWithTimeStruct>)
+        {
+            DataTypes::FloatStruct fl;
+            fl.sigAdr = signal.sigAdr;
+            fl.sigVal = signal.sigVal;
+            insertRegister(fl);
+        }
+        else
+            insertRegister(signal);
     }
 
     template <typename T> static void addToInQueue(T data)
@@ -129,23 +107,22 @@ private:
     static std::queue<QVariant> s_inputQueue;
     static QMutex s_inQueueMutex;
     QMap<quint32, RegisterType> m_registers;
-    static Registrator registrator;
 
-    template <typename T> void insertRegister(quint32 addr, T value)
+    template <typename T> void insertRegister(T value)
     {
         QMutexLocker locker(&s_inQueueMutex);
         if constexpr ((std::is_same_v<T, DataTypes::BitStringStruct>)    //
             || (std::is_same_v<T, DataTypes::SinglePointWithTimeStruct>) //
             || (std::is_same_v<T, DataTypes::FloatStruct>))              //
         {
-            m_registers.insert(addr, value);
+            m_registers.insert(value.sigAdr, value);
         }
-        else
-            static_assert(always_false_v<T>, "unsupported type!");
+        // else
+        //     static_assert(always_false_v<T>, "unsupported type!");
     }
 
-    // signals:
-    // void dataReceived(const DataTypes::SignalsStruct &);
+signals:
+    void dataReceived(const std::size_t &, const QVariant &);
     // void bitStringReceived(const DataTypes::BitStringStruct &);
     // void singlePointReceived(const DataTypes::SinglePointWithTimeStruct &);
     // void floatReceived(const DataTypes::FloatStruct &);

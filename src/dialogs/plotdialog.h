@@ -81,7 +81,7 @@ class PlotDialog : public UDialog
 public:
     PlotDialog(QWidget *parent = nullptr);
 
-    void updateFloatData(const DataTypes::FloatStruct &fl) override;
+    void updateFloatData(const QVariant &data) override;
     void reqUpdate() override;
     void setupUI();
 

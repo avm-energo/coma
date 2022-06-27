@@ -2,14 +2,22 @@
 
 #include "../gen/registers.h"
 #include "../gen/stdfunc.h"
-#include "../s2/datamanager.h"
 #include "../s2/s2.h"
 
 #include <QCoreApplication>
 #include <QMutexLocker>
 #include <memory>
 
+// Static members
 BaseInterface::InterfacePointer BaseInterface::m_iface;
+DataTypesProxy BaseInterface::proxyBS(&DataManager::GetInstance());
+DataTypesProxy BaseInterface::proxyGRS(&DataManager::GetInstance());
+DataTypesProxy BaseInterface::proxyFS(&DataManager::GetInstance());
+DataTypesProxy BaseInterface::proxyDRL(&DataManager::GetInstance());
+DataTypesProxy BaseInterface::proxyBStr(&DataManager::GetInstance());
+#ifdef __linux__
+DataTypesProxy BaseInterface::proxyTS(&DataManager::GetInstance());
+#endif
 
 BaseInterface::BaseInterface(QObject *parent) : QObject(parent), /* m_working(false),*/ Log(new LogClass(this))
 {
@@ -18,6 +26,14 @@ BaseInterface::BaseInterface(QObject *parent) : QObject(parent), /* m_working(fa
     timeoutTimer->setInterval(MAINTIMEOUT);
     connect(timeoutTimer, &QTimer::timeout, this, &BaseInterface::timeout);
     m_state = State::None;
+    proxyBS.RegisterType<DataTypes::BlockStruct>();
+    proxyGRS.RegisterType<DataTypes::GeneralResponseStruct>();
+    proxyFS.RegisterType<DataTypes::FileStruct>();
+    proxyDRL.RegisterType<QList<DataTypes::DataRecV>>();
+    proxyBStr.RegisterType<DataTypes::BitStringStruct>();
+#ifdef __linux__
+    proxyTS.RegisterType<timespec>();
+#endif
 }
 
 BaseInterface::~BaseInterface()
@@ -70,7 +86,7 @@ Error::Msg BaseInterface::reqBlockSync(
 {
     m_busy = true;
     m_timeout = false;
-    connect(&DataManager::GetInstance(), &DataManager::blockReceived, this, &BaseInterface::resultReady);
+    connect(&proxyBS, &DataTypesProxy::DataStorable, this, &BaseInterface::resultReady);
     QMap<DataTypes::DataBlockTypes, Queries::Commands> blockmap;
     blockmap[DataTypes::DataBlockTypes::BacBlock] = Queries::QUSB_ReqTuningCoef;
     blockmap[DataTypes::DataBlockTypes::BdaBlock] = Queries::QUSB_ReqBlkDataA;
@@ -100,7 +116,7 @@ Error::Msg BaseInterface::writeBlockSync(
     memcpy(&bs.data.data()[0], block, blocksize);
     m_busy = true;
     m_timeout = false;
-    connect(&DataManager::GetInstance(), &DataManager::responseReceived, this, &BaseInterface::responseReceived);
+    connect(&proxyGRS, &DataTypesProxy::DataStorable, this, &BaseInterface::responseReceived);
     if (blocktype == DataTypes::DataBlockTypes::BacBlock)
     {
         writeCommand(Queries::QUSB_WriteTuningCoef, QVariant::fromValue(bs));
@@ -137,7 +153,7 @@ Error::Msg BaseInterface::writeFileSync(int filenum, QByteArray &ba)
 {
     m_busy = true;
     m_timeout = false;
-    connect(&DataManager::GetInstance(), &DataManager::responseReceived, this, &BaseInterface::responseReceived);
+    connect(&proxyGRS, &DataTypesProxy::DataStorable, this, &BaseInterface::responseReceived);
     writeFile(filenum, ba);
     timeoutTimer->start();
     while (m_busy)
@@ -167,7 +183,7 @@ Error::Msg BaseInterface::readS2FileSync(quint32 filenum)
     m_busy = true;
     m_timeout = false;
     auto connection = std::shared_ptr<QMetaObject::Connection>(new QMetaObject::Connection);
-    *connection = connect(&DataManager::GetInstance(), &DataManager::dataRecVListReceived, this, [=] {
+    *connection = connect(&proxyDRL, &DataTypesProxy::DataStorable, this, [=] {
         QObject::disconnect(*connection);
         m_busy = false;
     });
@@ -191,7 +207,7 @@ Error::Msg BaseInterface::readFileSync(quint32 filenum, QByteArray &ba)
     //    QTimer *timer = new QTimer;
     //    timer->setInterval(MAINTIMEOUT);
     //    connect(timer, &QTimer::timeout, this, &BaseInterface::timeout);
-    connect(&DataManager::GetInstance(), &DataManager::fileReceived, this, &BaseInterface::fileReceived);
+    connect(&proxyFS, &DataTypesProxy::DataStorable, this, &BaseInterface::fileReceived);
     reqFile(filenum, FileFormat::Binary);
     timeoutTimer->start();
     while (m_busy)
@@ -213,8 +229,10 @@ Error::Msg BaseInterface::reqTimeSync(void *block, quint32 blocksize)
     auto connection = std::shared_ptr<QMetaObject::Connection>(new QMetaObject::Connection);
     if (blocksize == sizeof(DataTypes::BitStringStruct))
     {
-        *connection = connect(&DataManager::GetInstance(), &DataManager::bitStringReceived, this,
-            [&](const DataTypes::BitStringStruct bs) {
+        *connection = connect(&proxyBStr, &DataTypesProxy::DataStorable, this,
+            // [&](const DataTypes::BitStringStruct bs) {
+            [&](const QVariant &data) {
+                auto bs = data.value<DataTypes::BitStringStruct>();
                 QObject::disconnect(*connection);
                 *static_cast<DataTypes::BitStringStruct *>(block) = bs;
                 m_busy = false;
@@ -223,11 +241,14 @@ Error::Msg BaseInterface::reqTimeSync(void *block, quint32 blocksize)
 #ifdef Q_OS_LINUX
     else if (blocksize == sizeof(timespec))
     {
-        *connection = connect(&DataManager::GetInstance(), &DataManager::timeReceived, this, [&](const timespec ts) {
-            QObject::disconnect(*connection);
-            *static_cast<timespec *>(block) = ts;
-            m_busy = false;
-        });
+        *connection = connect(&proxyTS, &DataTypesProxy::DataStorable, this,
+            // [&](const timespec ts)
+            [&](const QVariant &data) {
+                auto ts = data.value<timespec>();
+                QObject::disconnect(*connection);
+                *static_cast<timespec *>(block) = ts;
+                m_busy = false;
+            });
     }
 #endif
     timeoutTimer->start();
@@ -274,8 +295,10 @@ bool BaseInterface::supportBSIExt()
     auto connBitString = std::shared_ptr<QMetaObject::Connection>(new QMetaObject::Connection);
     auto connError = std::shared_ptr<QMetaObject::Connection>(new QMetaObject::Connection);
 
-    *connBitString = connect(&DataManager::GetInstance(), &DataManager::bitStringReceived, this,
-        [=, &busy = m_busy, &status](const DataTypes::BitStringStruct bs) {
+    *connBitString = connect(&proxyBStr, &DataTypesProxy::DataStorable, this,
+        // [=, &busy = m_busy, &status](const DataTypes::BitStringStruct bs)
+        [=, &busy = m_busy, &status](const QVariant &data) {
+            auto bs = data.value<DataTypes::BitStringStruct>();
             if (bs.sigAdr != Regs::bsiExtStartReg)
                 return;
             if (connBitString)
@@ -286,8 +309,10 @@ bool BaseInterface::supportBSIExt()
             status = true;
         });
 
-    *connError = connect(&DataManager::GetInstance(), &DataManager::responseReceived, this,
-        [=, &busy = m_busy, &status](const DataTypes::GeneralResponseStruct resp) {
+    *connError = connect(&proxyGRS, &DataTypesProxy::DataStorable, this,
+        // [=, &busy = m_busy, &status](const DataTypes::GeneralResponseStruct resp)
+        [=, &busy = m_busy, &status](const QVariant &data) {
+            auto resp = data.value<DataTypes::GeneralResponseStruct>();
             if (resp.type == DataTypes::Error)
             {
                 if (connBitString)
@@ -319,31 +344,36 @@ void BaseInterface::stop()
 void BaseInterface::reqFile(quint32 id, FileFormat format, quint32 expectedSize)
 {
     DataTypes::GeneralResponseStruct resp { DataTypes::GeneralResponseTypes::DataSize, expectedSize };
-    DataManager::addSignalToOutList(DataTypes::SignalTypes::GeneralResponse, resp);
-
+    (&DataManager::GetInstance())->addSignalToOutList(resp);
     reqFile(id, format);
 }
 
-void BaseInterface::resultReady(const DataTypes::BlockStruct &result)
+// void BaseInterface::resultReady(const DataTypes::BlockStruct &result)
+void BaseInterface::resultReady(const QVariant &data)
 {
-    disconnect(&DataManager::GetInstance(), &DataManager::blockReceived, this, &BaseInterface::resultReady);
+    auto result = data.value<DataTypes::BlockStruct>();
+    disconnect(&proxyBS, &DataTypesProxy::DataStorable, this, &BaseInterface::resultReady);
     m_byteArrayResult = result.data;
     m_busy = false;
 }
 
-void BaseInterface::responseReceived(const DataTypes::GeneralResponseStruct &response)
+// void BaseInterface::responseReceived(const DataTypes::GeneralResponseStruct &response)
+void BaseInterface::responseReceived(const QVariant &data)
 {
+    auto response = data.value<DataTypes::GeneralResponseStruct>();
     if ((response.type == DataTypes::GeneralResponseTypes::DataSize)
         || (response.type == DataTypes::GeneralResponseTypes::DataCount))
         return;
-    disconnect(&DataManager::GetInstance(), &DataManager::responseReceived, this, &BaseInterface::responseReceived);
+    disconnect(&proxyGRS, &DataTypesProxy::DataStorable, this, &BaseInterface::responseReceived);
     m_responseResult = (response.type == DataTypes::GeneralResponseTypes::Ok);
     m_busy = false;
 }
 
-void BaseInterface::fileReceived(const DataTypes::FileStruct &file)
+// void BaseInterface::fileReceived(const DataTypes::FileStruct &file)
+void BaseInterface::fileReceived(const QVariant &data)
 {
-    disconnect(&DataManager::GetInstance(), &DataManager::fileReceived, this, &BaseInterface::fileReceived);
+    auto file = data.value<DataTypes::FileStruct>();
+    disconnect(&proxyFS, &DataTypesProxy::DataStorable, this, &BaseInterface::fileReceived);
     m_byteArrayResult = file.data;
     m_busy = false;
 }

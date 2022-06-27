@@ -1,8 +1,8 @@
 #include "protocom.h"
 
+//#include "../gen/datamanager/datamanager.h"
 #include "../gen/files.h"
 #include "../gen/stdfunc.h"
-#include "../s2/datamanager.h"
 #include "protocom_p.h"
 #include "protocomthread.h"
 #include "settingstypes.h"

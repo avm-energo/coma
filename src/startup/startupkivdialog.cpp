@@ -2,12 +2,12 @@
 
 #include "../dialogs/keypressdialog.h"
 #include "../gen/colors.h"
+#include "../gen/datamanager/typesproxy.h"
 #include "../gen/error.h"
 #include "../gen/files.h"
 #include "../gen/stdfunc.h"
 #include "../gen/timefunc.h"
 #include "../module/board.h"
-#include "../s2/datamanager.h"
 #include "../widgets/wd_func.h"
 
 #include <QDebug>
@@ -57,8 +57,10 @@ void StartupKIVDialog::SetupCor()
 
 void StartupKIVDialog::SetupUI()
 {
-    QVBoxLayout *lyout = new QVBoxLayout;
-    QGridLayout *glyout = new QGridLayout;
+    static DataTypesProxy proxy(&DataManager::GetInstance());
+    proxy.RegisterType<DataTypes::FloatStruct>();
+    auto lyout = new QVBoxLayout;
+    auto glyout = new QGridLayout;
 
     int row = 0;
 
@@ -102,8 +104,7 @@ void StartupKIVDialog::SetupUI()
 
     setLayout(lyout);
     setObjectName("corDialog");
-    connect(&DataManager::GetInstance(), &DataManager::floatReceived, this, &UWidget::updateFloatData,
-        Qt::QueuedConnection);
+    connect(&proxy, &DataTypesProxy::DataStorable, this, &UWidget::updateFloatData, Qt::QueuedConnection);
 }
 
 void StartupKIVDialog::SaveToFile()
