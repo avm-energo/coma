@@ -30,16 +30,10 @@ private:
 
     void SetupUI() override;
 
-signals:
-
 public slots:
-
     void SaveToFile() override;
     void ReadFromFile() override;
-
     void ErrorRead();
-
-private slots:
 };
 
 #endif // CORDIALOG_H

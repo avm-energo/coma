@@ -29,7 +29,6 @@
 #include "../dialogs/errordialog.h"
 #include "../dialogs/keypressdialog.h"
 #include "../dialogs/settingsdialog.h"
-#include "../gen/datamanager/typesproxy.h"
 #include "../gen/errorqueue.h"
 #include "../gen/files.h"
 #include "../gen/logger.h"
@@ -86,6 +85,8 @@ void registerForDeviceNotification(QWidget *ptr)
 
 Coma::Coma(QWidget *parent) : QMainWindow(parent), editor(nullptr)
 {
+    receiver = UniquePointer<DataTypesProxy>(new DataTypesProxy(&DataManager::GetInstance()));
+    receiver->RegisterType<DataTypes::GeneralResponseStruct>();
 }
 
 Coma::~Coma()
@@ -377,10 +378,7 @@ void Coma::newTimers()
 
 void Coma::setupConnections()
 {
-    auto mngr = &DataManager::GetInstance();
-    static DataTypesProxy proxy(mngr);
-    proxy.RegisterType<DataTypes::GeneralResponseStruct>();
-    connect(&proxy, &DataTypesProxy::DataStorable, this, &Coma::update);
+    connect(receiver.get(), &DataTypesProxy::DataStorable, this, &Coma::update);
 }
 
 void Coma::prepare()
@@ -740,9 +738,9 @@ void Coma::mainTWTabChanged(int tabindex)
 }
 
 // void Coma::update(const DataTypes::GeneralResponseStruct &rsp)
-void Coma::update(const QVariant &data)
+void Coma::update(const QVariant &msg)
 {
-    auto rsp = data.value<DataTypes::GeneralResponseStruct>();
+    auto rsp = msg.value<DataTypes::GeneralResponseStruct>();
     if (rsp.type == DataTypes::GeneralResponseTypes::DataCount)
         SetProgressBarCount(1, rsp.data);
 

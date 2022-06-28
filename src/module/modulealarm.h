@@ -17,9 +17,11 @@ protected:
     quint32 m_startAlarmAddress;
     /// Общее количество регистров сигнализации
     quint32 m_alarmAllCounts;
+    UniquePointer<DataTypesProxy> proxy;
+
 public slots:
     //    void Update(std::bitset<32> &states);
-    void update(const QVariant &sp);
+    void update(const QVariant &msg);
     void update();
 };
 

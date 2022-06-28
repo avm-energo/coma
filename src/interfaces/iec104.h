@@ -1,6 +1,6 @@
 #ifndef IEC104_H
 #define IEC104_H
-#include "../gen/datamanager/datamanager.h"
+//#include "../gen/datamanager/datamanager.h"
 #include "../gen/logclass.h"
 #include "baseinterface.h"
 #include "iec104private.h"

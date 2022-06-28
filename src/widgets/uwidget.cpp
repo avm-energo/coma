@@ -9,11 +9,15 @@
 #include <QCoreApplication>
 #include <QDebug>
 #include <QEventLoop>
-UWidget::UWidget(QWidget *parent) : QWidget(parent)
+UWidget::UWidget(QWidget *parent)
+    : QWidget(parent), proxyFS(new DataTypesProxy), proxySP(new DataTypesProxy), proxyBS(new DataTypesProxy)
 {
     m_updatesEnabled = false;
     // Отключим обновление виджета по умолчанию
     //    QWidget::setUpdatesEnabled(false);
+    proxyFS->RegisterType<DataTypes::FloatStruct>();
+    proxySP->RegisterType<DataTypes::SinglePointWithTimeStruct>();
+    proxyBS->RegisterType<DataTypes::BitStringStruct>();
 }
 
 void UWidget::setUpdatesEnabled()
@@ -61,14 +65,14 @@ void UWidget::setBsBdQuery(const QList<UWidget::BdQuery> &list)
 }
 
 // void UWidget::updateFloatData(const DataTypes::FloatStruct &fl)
-void UWidget::updateFloatData(const QVariant &data)
+void UWidget::updateFloatData(const QVariant &msg)
 {
-    if (data.canConvert<DataTypes::FloatStruct>())
+    if (msg.canConvert<DataTypes::FloatStruct>())
     {
         //    if ((updatesEnabled()) && m_withGUI)
         if (m_updatesEnabled)
         {
-            auto fl = data.value<DataTypes::FloatStruct>();
+            auto fl = msg.value<DataTypes::FloatStruct>();
             bool result
                 = WDFunc::SetLBLText(this, QString::number(fl.sigAdr), WDFunc::StringValueWithCheck(fl.sigVal, 3));
 #ifdef UWIDGET_DEBUG
@@ -83,14 +87,14 @@ void UWidget::updateFloatData(const QVariant &data)
 }
 
 // void UWidget::updateSPData(const DataTypes::SinglePointWithTimeStruct &sp)
-void UWidget::updateSPData(const QVariant &data)
+void UWidget::updateSPData(const QVariant &msg)
 {
-    if (data.canConvert<DataTypes::SinglePointWithTimeStruct>())
+    if (msg.canConvert<DataTypes::SinglePointWithTimeStruct>())
     {
         //    if ((updatesEnabled()) && m_withGUI)
         if (m_updatesEnabled)
         {
-            auto sp = data.value<DataTypes::SinglePointWithTimeStruct>();
+            auto sp = msg.value<DataTypes::SinglePointWithTimeStruct>();
             QList<HighlightWarnAlarmStruct> hstlist = m_highlightMap.value(sp.sigAdr);
             for (const auto &hst : hstlist)
                 WDFunc::SetLBLTColor(
@@ -100,9 +104,9 @@ void UWidget::updateSPData(const QVariant &data)
 }
 
 // void UWidget::updateBitStringData(const DataTypes::BitStringStruct &bs)
-void UWidget::updateBitStringData(const QVariant &data)
+void UWidget::updateBitStringData(const QVariant &msg)
 {
-    Q_UNUSED(data)
+    Q_UNUSED(msg)
 }
 
 bool UWidget::updatesEnabled()

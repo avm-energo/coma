@@ -152,9 +152,9 @@ void TimeDialog::uponInterfaceSetting()
 }
 
 // void TimeDialog::updateBitStringData(const DataTypes::BitStringStruct &bs)
-void TimeDialog::updateBitStringData(const QVariant &data)
+void TimeDialog::updateBitStringData(const QVariant &msg)
 {
-    auto bs = data.value<DataTypes::BitStringStruct>();
+    auto bs = msg.value<DataTypes::BitStringStruct>();
     if (bs.sigAdr              // USB doesnt know address so is empty
         && (bs.sigAdr != 4600) // other interfaces know address
     )

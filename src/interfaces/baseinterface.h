@@ -169,15 +169,16 @@ private:
     State m_state;
     InterfaceSettings m_settings;
     QMutex _stateMutex;
-    static DataTypesProxy proxyBS, proxyGRS, proxyFS, proxyDRL, proxyBStr;
+    UniquePointer<DataTypesProxy> proxyBS, proxyGRS, proxyFS, proxyDRL, proxyBStr;
 #ifdef __linux__
-    static DataTypesProxy proxyTS;
+    UniquePointer<DataTypesProxy> proxyTS;
 #endif
+    void ProxyInit();
 
 private slots:
-    void resultReady(const QVariant &data);
-    void responseReceived(const QVariant &data);
-    void fileReceived(const QVariant &data);
+    void resultReady(const QVariant &msg);
+    void responseReceived(const QVariant &msg);
+    void fileReceived(const QVariant &msg);
     void timeout();
 };
 

@@ -12,6 +12,7 @@
 #include <QQueue>
 #include <QVariant>
 #include <queue>
+#include <variant>
 
 #ifdef __linux__
 #include <time.h>
@@ -42,6 +43,9 @@ public:
         }
         else
             insertRegister(signal);
+        QVariant data;
+        data.setValue(signal);
+        emit DataReceived(typeid(T).hash_code(), data);
     }
 
     template <typename T> static void addToInQueue(T data)
@@ -122,7 +126,7 @@ private:
     }
 
 signals:
-    void dataReceived(const std::size_t &, const QVariant &);
+    void DataReceived(const std::size_t &, const QVariant &);
     // void bitStringReceived(const DataTypes::BitStringStruct &);
     // void singlePointReceived(const DataTypes::SinglePointWithTimeStruct &);
     // void floatReceived(const DataTypes::FloatStruct &);

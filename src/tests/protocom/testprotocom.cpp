@@ -27,7 +27,7 @@ void TestProtocom::testConnection()
 void TestProtocom::testBSIrequest()
 {
     const auto &manager = DataManager::GetInstance();
-    QSignalSpy spy(&manager, &DataManager::dataReceived);
+    QSignalSpy spy(&manager, &DataManager::DataReceived);
     protocom->reqBSI();
     StdFunc::Wait(1000);
     // spy.wait();
@@ -38,7 +38,7 @@ void TestProtocom::testBSIrequest()
 void TestProtocom::testBSIErequest()
 {
     const auto &manager = DataManager::GetInstance();
-    QSignalSpy spy(&manager, &DataManager::dataReceived);
+    QSignalSpy spy(&manager, &DataManager::DataReceived);
     protocom->reqBSIExt();
     StdFunc::Wait(1000);
     qDebug() << spy.count();

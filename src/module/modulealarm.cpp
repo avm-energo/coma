@@ -2,12 +2,10 @@
 
 #include "../gen/datamanager/typesproxy.h"
 
-ModuleAlarm::ModuleAlarm(QWidget *parent) : BaseAlarm(parent)
+ModuleAlarm::ModuleAlarm(QWidget *parent) : BaseAlarm(parent), proxy(new DataTypesProxy)
 {
-    auto mngr = &DataManager::GetInstance();
-    static DataTypesProxy proxy(mngr);
-    proxy.RegisterType<DataTypes::SinglePointWithTimeStruct>();
-    connect(&proxy, &DataTypesProxy::DataStorable, this, qOverload<const QVariant &>(&ModuleAlarm::update));
+    proxy->RegisterType<DataTypes::SinglePointWithTimeStruct>();
+    connect(proxy.get(), &DataTypesProxy::DataStorable, this, qOverload<const QVariant &>(&ModuleAlarm::update));
 }
 
 ModuleAlarm::ModuleAlarm(const DataTypes::Alarm &desc, const int count, QWidget *parent) : ModuleAlarm(parent)
@@ -27,9 +25,9 @@ void ModuleAlarm::reqUpdate()
 }
 
 // void ModuleAlarm::update(const DataTypes::SinglePointWithTimeStruct &sp)
-void ModuleAlarm::update(const QVariant &data)
+void ModuleAlarm::update(const QVariant &msg)
 {
-    auto sp = data.value<DataTypes::SinglePointWithTimeStruct>();
+    auto sp = msg.value<DataTypes::SinglePointWithTimeStruct>();
     const auto minAddress = m_startAlarmAddress;
     const auto maxAddress = m_startAlarmAddress + m_alarmFlags.size();
     if (!((sp.sigAdr >= minAddress) && (sp.sigAdr <= maxAddress)))

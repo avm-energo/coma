@@ -16,13 +16,15 @@ static constexpr char hash[] = "d93fdd6d1fb5afcca939fa650b62541d09dbcb766f41c393
 static constexpr char name[] = "oscHash";
 }
 
-OscDialog::OscDialog(QWidget *parent) : UDialog(crypto::hash, crypto::name, parent)
+OscDialog::OscDialog(QWidget *parent)
+    : UDialog(crypto::hash, crypto::name, parent)
+    , proxyOI(new DataTypesProxy(&DataManager::GetInstance()))
+    , proxyFS(new DataTypesProxy(&DataManager::GetInstance()))
 {
-    auto mngr = &DataManager::GetInstance();
-    static DataTypesProxy proxy(mngr);
-    proxy.RegisterType<S2DataTypes::OscInfo, DataTypes::FileStruct>();
-    connect(&proxy, &DataTypesProxy::DataStorable, this, &OscDialog::fillOscInfo);
-    connect(&proxy, &DataTypesProxy::DataStorable, this, &OscDialog::fillOsc);
+    proxyOI->RegisterType<S2DataTypes::OscInfo>();
+    proxyFS->RegisterType<DataTypes::FileStruct>();
+    connect(proxyOI.get(), &DataTypesProxy::DataStorable, this, &OscDialog::fillOscInfo);
+    connect(proxyFS.get(), &DataTypesProxy::DataStorable, this, &OscDialog::fillOsc);
     setupUI();
 }
 
@@ -141,11 +143,11 @@ bool OscDialog::loadIfExist(quint32 size)
 }
 
 // void OscDialog::fillOscInfo(S2DataTypes::OscInfo info)
-void OscDialog::fillOscInfo(const QVariant &data)
+void OscDialog::fillOscInfo(const QVariant &msg)
 {
-    if (data.canConvert<S2DataTypes::OscInfo>())
+    if (msg.canConvert<S2DataTypes::OscInfo>())
     {
-        auto info = data.value<S2DataTypes::OscInfo>();
+        auto info = msg.value<S2DataTypes::OscInfo>();
         oscMap.insert(info.typeHeader.id, info);
         QVector<QVariant> lsl {
             QString::number(info.typeHeader.id),         //
@@ -160,14 +162,14 @@ void OscDialog::fillOscInfo(const QVariant &data)
 }
 
 // void OscDialog::fillOsc(const DataTypes::FileStruct file)
-void OscDialog::fillOsc(const QVariant &data)
+void OscDialog::fillOsc(const QVariant &msg)
 {
     if (!updatesEnabled())
         return;
 
-    if (data.canConvert<DataTypes::FileStruct>())
+    if (msg.canConvert<DataTypes::FileStruct>())
     {
-        const auto file = data.value<DataTypes::FileStruct>();
+        const auto file = msg.value<DataTypes::FileStruct>();
         switch (file.ID)
         {
         case MT_HEAD_ID:
@@ -201,14 +203,14 @@ void OscDialog::fillOsc(const QVariant &data)
             QByteArray ba;
             S2::StoreDataMem(ba, fileBuffer, reqOscNum);
             auto time = oscMap.value(reqOscNum).unixtime;
-            QString file = filename(time, reqOscNum);
-            if (Files::SaveToFile(file, ba) == Error::Msg::NoError)
+            QString sfile = filename(time, reqOscNum);
+            if (Files::SaveToFile(sfile, ba) == Error::Msg::NoError)
             {
-                qInfo() << "Swj saved: " << file;
+                qInfo() << "Swj saved: " << sfile;
             }
             else
             {
-                qWarning() << "Fail to save swj: " << file;
+                qWarning() << "Fail to save swj: " << sfile;
             }
         }
     }

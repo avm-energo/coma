@@ -50,15 +50,13 @@ public:
     void addBsBd(const BdQuery &query);
     virtual void uponInterfaceSetting();
     virtual void reqUpdate();
-    virtual void updateFloatData(const QVariant &data);
-    virtual void updateSPData(const QVariant &data);
-    virtual void updateBitStringData(const QVariant &data);
-signals:
-
-public slots:
+    virtual void updateFloatData(const QVariant &msg);
+    virtual void updateSPData(const QVariant &msg);
+    virtual void updateBitStringData(const QVariant &msg);
 
 protected:
     QString m_hash;
+    UniquePointer<DataTypesProxy> proxyFS, proxySP, proxyBS;
 
     bool checkPassword();
 

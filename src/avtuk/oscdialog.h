@@ -24,8 +24,8 @@ public:
     explicit OscDialog(QWidget *parent = nullptr);
 
 public slots:
-    void fillOscInfo(const QVariant &data);
-    void fillOsc(const QVariant &data);
+    void fillOscInfo(const QVariant &msg);
+    void fillOsc(const QVariant &msg);
 
 private:
     void setupUI();
@@ -39,6 +39,7 @@ private:
     QMap<int, S2DataTypes::OscInfo> oscMap;
     std::vector<DataTypes::FileStruct> fileBuffer;
     UniquePointer<ETableModel> tableModel;
+    UniquePointer<DataTypesProxy> proxyOI, proxyFS;
     int reqOscNum;
 };
 

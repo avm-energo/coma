@@ -39,7 +39,7 @@ public:
 
     Mip(bool withGUI = true, AvtukVariants ModuleType = M82, QWidget *parent = nullptr);
 
-    void updateFloatData(const QVariant &data) override;
+    void updateFloatData(const QVariant &msg) override;
     MipDataStruct getData();
     void start();
     void stop();

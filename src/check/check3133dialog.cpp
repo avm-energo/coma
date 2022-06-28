@@ -38,9 +38,9 @@ void Check3133Dialog::updatePixmap(bool isset, int position)
 }
 
 // void Check3133Dialog::updateBitStringData(const DataTypes::BitStringStruct &bs)
-void Check3133Dialog::updateBitStringData(const QVariant &data)
+void Check3133Dialog::updateBitStringData(const QVariant &msg)
 {
-    auto bs = data.value<DataTypes::BitStringStruct>();
+    auto bs = msg.value<DataTypes::BitStringStruct>();
     auto result
         = std::find_if(m_item.signlsVec.cbegin(), m_item.signlsVec.cend(), [&bs](const check::detail::Signals &sig) {
               return (sig.start_addr == bs.sigAdr)

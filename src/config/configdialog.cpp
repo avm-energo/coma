@@ -30,12 +30,10 @@ ConfigDialog::ConfigDialog(
     , m_prereadConf(prereadConf)
     , m_defaultValues(defaultConfig)
     , configV(config)
+    , proxyDRL(new DataTypesProxy)
 {
-
-    auto mngr = &DataManager::GetInstance();
-    static DataTypesProxy proxy(mngr);
-    proxy.RegisterType<S2DataTypes::OscInfo, DataTypes::FileStruct>();
-    connect(&proxy, &DataTypesProxy::DataStorable, this, &ConfigDialog::confReceived);
+    proxyDRL->RegisterType<QList<DataTypes::DataRecV>>();
+    connect(proxyDRL.get(), &DataTypesProxy::DataStorable, this, &ConfigDialog::confReceived);
 }
 
 void ConfigDialog::ReadConf()
@@ -102,10 +100,10 @@ void ConfigDialog::checkForDiff(const QList<DataTypes::DataRecV> &list)
 }
 
 // void ConfigDialog::confReceived(const QList<DataTypes::DataRecV> &list)
-void ConfigDialog::confReceived(const QVariant &data)
+void ConfigDialog::confReceived(const QVariant &msg)
 {
     using namespace DataTypes;
-    auto list = data.value<QList<DataTypes::DataRecV>>();
+    auto list = msg.value<QList<DataTypes::DataRecV>>();
     configV->setConfig(list);
 
     const auto s2typeB = configV->getRecord(XmlConfigParser::GetIdByName("MTypeB_ID")).value<DWORD>();

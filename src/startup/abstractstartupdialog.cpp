@@ -32,7 +32,6 @@ static constexpr char name[] = "startHash";
 AbstractStartupDialog::AbstractStartupDialog(QWidget *parent) : UDialog(crypto::hash, crypto::name, parent)
 {
     m_updateState = ThereWasNoUpdatesRecently;
-
     setSuccessMsg("Стартовые значения записаны успешно");
 }
 
@@ -127,13 +126,13 @@ float AbstractStartupDialog::ToFloat(QString text)
 }
 
 // void AbstractStartupDialog::updateFloatData(const DataTypes::FloatStruct &fl)
-void AbstractStartupDialog::updateFloatData(const QVariant &data)
+void AbstractStartupDialog::updateFloatData(const QVariant &msg)
 {
-    if (data.canConvert<DataTypes::FloatStruct>())
+    if (msg.canConvert<DataTypes::FloatStruct>())
     {
         if (!updatesEnabled())
             return;
-        auto fl = data.value<DataTypes::FloatStruct>();
+        auto fl = msg.value<DataTypes::FloatStruct>();
         // Игнорируем 4011 т.к. он нам не важен и все чужие регистры тоже игнорируем
         if (fl.sigAdr >= m_regMap.firstKey() && fl.sigAdr <= m_regMap.lastKey())
             FillBd(this, QString::number(fl.sigAdr), fl.sigVal);

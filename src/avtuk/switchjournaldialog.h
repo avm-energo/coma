@@ -27,8 +27,8 @@ public:
     explicit SwitchJournalDialog(QWidget *parent = nullptr);
 
 public:
-    void fillJour(const QVariant &data);
-    void fillSwJInfo(const QVariant &data);
+    void fillJour(const QVariant &msg);
+    void fillSwJInfo(const QVariant &msg);
 
 private:
     void setupUI();
@@ -48,6 +48,7 @@ private:
     OscManager oscManager;
     SwjModel swjModel;
     quint32 reqSwJNum = 0;
+    UniquePointer<DataTypesProxy> proxySWJ, proxyFS;
 };
 
 class SwitchJournalViewDialog : public QDialog

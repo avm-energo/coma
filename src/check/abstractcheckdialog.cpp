@@ -22,7 +22,10 @@
 #include <QVBoxLayout>
 #include <QXlsx/xlsxdocument.h>
 
-AbstractCheckDialog::AbstractCheckDialog(QWidget *parent) : UDialog(parent)
+AbstractCheckDialog::AbstractCheckDialog(QWidget *parent)
+    : UDialog(parent)
+    , proxySP(new DataTypesProxy(&DataManager::GetInstance()))
+    , proxyFS(new DataTypesProxy(&DataManager::GetInstance()))
 {
     XlsxWriting = false;
     m_readDataInProgress = false;
@@ -32,6 +35,8 @@ AbstractCheckDialog::AbstractCheckDialog(QWidget *parent) : UDialog(parent)
     Timer->setObjectName("checktimer");
     connect(Timer, &QTimer::timeout, this, &AbstractCheckDialog::TimerTimeout);
     Timer->setInterval(1000);
+    proxySP->RegisterType<DataTypes::SinglePointWithTimeStruct>();
+    proxyFS->RegisterType<DataTypes::FloatStruct>();
 }
 
 AbstractCheckDialog::~AbstractCheckDialog()
@@ -42,16 +47,15 @@ AbstractCheckDialog::~AbstractCheckDialog()
 
 void AbstractCheckDialog::setupUI()
 {
-    static DataTypesProxy proxy(&DataManager::GetInstance());
-    proxy.RegisterType<DataTypes::SinglePointWithTimeStruct, DataTypes::FloatStruct>();
     QVBoxLayout *lyout = new QVBoxLayout;
     QTabWidget *CheckTW = new QTabWidget;
-    connect(&proxy, &DataTypesProxy::DataStorable, this, &AbstractCheckDialog::updateSPData);
+    connect(proxySP.get(), &DataTypesProxy::DataStorable, this, &AbstractCheckDialog::updateSPData);
     for (auto &w : m_BdUIList)
     {
         w.widget->uponInterfaceSetting();
         CheckTW->addTab(w.widget, " " + w.widgetCaption + " ");
-        connect(&proxy, &DataTypesProxy::DataStorable, w.widget, &UWidget::updateFloatData, Qt::QueuedConnection);
+        connect(
+            proxyFS.get(), &DataTypesProxy::DataStorable, w.widget, &UWidget::updateFloatData, Qt::QueuedConnection);
     }
 
     lyout->addWidget(CheckTW);
@@ -128,48 +132,45 @@ QWidget *AbstractCheckDialog::BottomUI()
 }
 
 // void AbstractCheckDialog::updateSPData(const DataTypes::SinglePointWithTimeStruct &sp)
-void AbstractCheckDialog::updateSPData(const QVariant &data)
+void AbstractCheckDialog::updateSPData(const QVariant &msg)
 {
-    if (data.canConvert<DataTypes::SinglePointWithTimeStruct>())
+    auto sp = msg.value<DataTypes::SinglePointWithTimeStruct>();
+    bool status = sp.sigVal;
+    if (m_highlightCrit.contains(sp.sigAdr))
     {
-        auto sp = data.value<DataTypes::SinglePointWithTimeStruct>();
-        bool status = sp.sigVal;
-        if (m_highlightCrit.contains(sp.sigAdr))
+        const QList<HighlightMap::mapped_type> regs = m_highlightCrit.values(sp.sigAdr);
+        const QString color = "red";
+        for (const auto reg : qAsConst(regs))
         {
-            const QList<HighlightMap::mapped_type> regs = m_highlightCrit.values(sp.sigAdr);
-            const QString color = "red";
-            for (const auto reg : qAsConst(regs))
+            QLabel *lbl = findChild<QLabel *>(QString::number(reg));
+            if (!lbl)
+                continue;
+            if (status)
             {
-                QLabel *lbl = findChild<QLabel *>(QString::number(reg));
-                if (!lbl)
-                    continue;
-                if (status)
-                {
-                    lbl->setStyleSheet("QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; font: bold; "
-                                       "background-color:"
-                        + color + "; color : black; }");
-                }
+                lbl->setStyleSheet("QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; font: bold; "
+                                   "background-color:"
+                    + color + "; color : black; }");
             }
         }
-        else if (m_highlightWarn.contains(sp.sigAdr))
+    }
+    else if (m_highlightWarn.contains(sp.sigAdr))
+    {
+        const QList<HighlightMap::mapped_type> regs = m_highlightWarn.values(sp.sigAdr);
+        const QString color = "yellow";
+        for (const auto reg : qAsConst(regs))
         {
-            const QList<HighlightMap::mapped_type> regs = m_highlightWarn.values(sp.sigAdr);
-            const QString color = "yellow";
-            for (const auto reg : qAsConst(regs))
+            QLabel *lbl = findChild<QLabel *>(QString::number(reg));
+            if (!lbl)
+                continue;
+            if (status)
             {
-                QLabel *lbl = findChild<QLabel *>(QString::number(reg));
-                if (!lbl)
-                    continue;
-                if (status)
-                {
-                    lbl->setStyleSheet("QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; font: bold; "
-                                       "background-color:"
-                        + color + "; color : black; }");
-                }
-                else
-                {
-                    lbl->setStyleSheet(ValuesFormat);
-                }
+                lbl->setStyleSheet("QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; font: bold; "
+                                   "background-color:"
+                    + color + "; color : black; }");
+            }
+            else
+            {
+                lbl->setStyleSheet(ValuesFormat);
             }
         }
     }

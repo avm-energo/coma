@@ -86,7 +86,7 @@ public:
             break;
         }
     }
-    void updateSPData(const QVariant &data) override;
+    void updateSPData(const QVariant &msg) override;
 
 protected:
     /*!
@@ -119,6 +119,7 @@ private:
     bool m_readDataInProgress;
     QElapsedTimer *ElapsedTimeCounter;
     int WRow;
+    UniquePointer<DataTypesProxy> proxySP, proxyFS;
 
     void ReadAnalogMeasurementsAndWriteToFile();
 

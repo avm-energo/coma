@@ -20,6 +20,7 @@ add_library(
   datamanager/datamanager.h
   datamanager/datamanager.cpp
   datamanager/typesproxy.h
+  datamanager/typesproxy.cpp
   error.h
   error.cpp
   errorqueue.h

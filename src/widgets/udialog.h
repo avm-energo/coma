@@ -11,7 +11,7 @@ class UDialog : public UWidget
 public:
     UDialog(QWidget *parent = nullptr);
     UDialog(const QString hash, const QString key, QWidget *parent = nullptr);
-    virtual void updateGeneralResponse(const QVariant &data);
+    virtual void updateGeneralResponse(const QVariant &msg);
 
 public slots:
 
@@ -21,6 +21,8 @@ protected:
 
     QString errorMsg() const;
     void setErrorMsg(const QString errorMsg);
+
+    UniquePointer<DataTypesProxy> proxyGRS;
 
 private:
     QString m_successMsg;

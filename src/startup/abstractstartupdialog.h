@@ -35,7 +35,7 @@ protected:
     virtual void ResetCor();
     virtual void GetCorBd();
 
-    void updateFloatData(const QVariant &data) override;
+    void updateFloatData(const QVariant &msg) override;
     virtual void SaveToFile() = 0;
     virtual void ReadFromFile() = 0;
     void ErrorRead();

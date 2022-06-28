@@ -4,6 +4,7 @@
 #include "../datatypes.h"
 #include "datamanager.h"
 
+#include <QDebug>
 #include <algorithm>
 #include <typeinfo>
 #include <vector>
@@ -12,29 +13,17 @@ class DataTypesProxy : public QObject
 {
     Q_OBJECT
 private:
-    DataManager *manager;
-    std::vector<std::size_t> hash_types;
-
-    bool HasHash(const std::size_t &hash)
-    {
-        auto iter = std::find(hash_types.begin(), hash_types.end(), hash);
-        return (iter != hash_types.end());
-    }
+    std::size_t hash_type;
 
 public:
-    DataTypesProxy(DataManager *mngr, QObject *parent = nullptr) : QObject(parent), manager(mngr)
-    {
-        connect(manager, &DataManager::dataReceived, this, &DataTypesProxy::DataReceived);
-        hash_types.reserve(16);
-    }
+    DataTypesProxy(QObject *parent = nullptr);
 
     template <class T> void RegisterType()
     {
-        auto hash = typeid(T).hash_code();
-        if (!HasHash(hash))
-            hash_types.push_back(hash);
+        hash_type = typeid(T).hash_code();
     }
 
+    /*
     /// \see https://stackoverflow.com/questions/8793658/functions-with-variadic-templates
     template <typename H, typename T, typename... R> void RegisterType()
     {
@@ -43,11 +32,12 @@ public:
             hash_types.push_back(hash);
         RegisterType<T, R...>();
     }
+    */
 
 public slots:
-    void DataReceived(const std::size_t &hash, const QVariant &var)
+    void DataHandled(const std::size_t &hash, const QVariant &var)
     {
-        if (HasHash(hash))
+        if (hash_type == hash)
         {
             emit DataStorable(var);
         }

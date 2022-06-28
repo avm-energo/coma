@@ -1,6 +1,7 @@
 #ifndef COMA_H
 #define COMA_H
 #include "../avtuk/oscmanager.h"
+#include "../gen/datamanager/typesproxy.h"
 #include "../gen/datatypes.h"
 #include "../gen/stdfunc.h"
 #include "../interfaces/settingstypes.h"
@@ -51,6 +52,7 @@ protected:
     ModulePointer m_Module;
     QTimer *BdaTimer, *AlrmTimer;
     AlarmWidget *AlarmW;
+
 private slots:
     void prepareConnectDlg();
     void startWork(const ConnectStruct st);
@@ -62,7 +64,7 @@ private slots:
     virtual void checkDialog() {};
     void closeEvent(QCloseEvent *event) override;
 
-    void update(const QVariant &data);
+    void update(const QVariant &msg);
 
     void mainTWTabChanged(int tabindex);
 
@@ -71,6 +73,7 @@ private:
     QListWidget *MainLW;
     OscManager oscManager;
     XmlEditor *editor;
+    UniquePointer<DataTypesProxy> receiver;
 
     File::Vector fileVector;
 

@@ -6,14 +6,12 @@
 
 #include <QSettings>
 
-UDialog::UDialog(QWidget *parent) : UWidget(parent)
+UDialog::UDialog(QWidget *parent) : UWidget(parent), proxyGRS(new DataTypesProxy())
 {
-    auto mngr = &DataManager::GetInstance();
-    static DataTypesProxy proxy(mngr);
-    proxy.RegisterType<DataTypes::GeneralResponseStruct>();
+    proxyGRS->RegisterType<DataTypes::GeneralResponseStruct>();
     setSuccessMsg("Записано успешно");
     setErrorMsg("При записи произошла ошибка");
-    connect(&proxy, &DataTypesProxy::DataStorable, this, &UDialog::updateGeneralResponse);
+    connect(proxyGRS.get(), &DataTypesProxy::DataStorable, this, &UDialog::updateGeneralResponse);
 }
 
 UDialog::UDialog(const QString hash, const QString key, QWidget *parent) : UDialog(parent)
@@ -26,12 +24,12 @@ UDialog::UDialog(const QString hash, const QString key, QWidget *parent) : UDial
 }
 
 // void UDialog::updateGeneralResponse(const DataTypes::GeneralResponseStruct &response)
-void UDialog::updateGeneralResponse(const QVariant &data)
+void UDialog::updateGeneralResponse(const QVariant &msg)
 {
     if (!updatesEnabled())
         return;
 
-    auto response = data.value<DataTypes::GeneralResponseStruct>();
+    auto response = msg.value<DataTypes::GeneralResponseStruct>();
     switch (response.type)
     {
     case DataTypes::Ok:

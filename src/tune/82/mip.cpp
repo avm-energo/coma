@@ -12,27 +12,26 @@
 // Mip::Mip(bool withGUI, AvtukVariants moduleType, QWidget *parent) : UDialog(withGUI, parent)
 Mip::Mip(bool withGUI, AvtukVariants moduleType, QWidget *parent) : UWidget(parent)
 {
-    static DataTypesProxy proxy(&DataManager::GetInstance());
-    proxy.RegisterType<DataTypes::FloatStruct>();
+    Q_UNUSED(withGUI);
     m_moduleType = moduleType;
     //    if (withGUI)
     setupUI();
     setFloatBdQuery({ { 0, 46 } });
-    connect(&proxy, &DataTypesProxy::DataStorable, this, &UWidget::updateFloatData, Qt::QueuedConnection);
+    connect(proxyFS.get(), &DataTypesProxy::DataStorable, this, &UWidget::updateFloatData, Qt::QueuedConnection);
 }
 
 // void Mip::updateFloatData(const DataTypes::FloatStruct &fl)
-void Mip::updateFloatData(const QVariant &data)
+void Mip::updateFloatData(const QVariant &msg)
 {
-    if (data.canConvert<DataTypes::FloatStruct>())
+    if (msg.canConvert<DataTypes::FloatStruct>())
     {
-        auto fl = data.value<DataTypes::FloatStruct>();
+        auto fl = msg.value<DataTypes::FloatStruct>();
         if (fl.sigAdr < 46)
         {
             float *mipdata = reinterpret_cast<float *>(&m_mipData);
             *(mipdata + fl.sigAdr) = fl.sigVal;
         }
-        UWidget::updateFloatData(data);
+        UWidget::updateFloatData(msg);
     }
 }
 

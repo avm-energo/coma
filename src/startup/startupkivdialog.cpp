@@ -57,8 +57,6 @@ void StartupKIVDialog::SetupCor()
 
 void StartupKIVDialog::SetupUI()
 {
-    static DataTypesProxy proxy(&DataManager::GetInstance());
-    proxy.RegisterType<DataTypes::FloatStruct>();
     auto lyout = new QVBoxLayout;
     auto glyout = new QGridLayout;
 
@@ -104,7 +102,7 @@ void StartupKIVDialog::SetupUI()
 
     setLayout(lyout);
     setObjectName("corDialog");
-    connect(&proxy, &DataTypesProxy::DataStorable, this, &UWidget::updateFloatData, Qt::QueuedConnection);
+    connect(proxyFS.get(), &DataTypesProxy::DataStorable, this, &UWidget::updateFloatData, Qt::QueuedConnection);
 }
 
 void StartupKIVDialog::SaveToFile()

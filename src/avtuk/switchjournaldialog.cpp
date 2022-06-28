@@ -23,13 +23,13 @@ static constexpr char hash[] = "d93fdd6d1fb5afcca939fa650b62541d09dbcb766f41c393
 static constexpr char name[] = "swjourHash";
 }
 
-SwitchJournalDialog::SwitchJournalDialog(QWidget *parent) : UDialog(crypto::hash, crypto::name, parent)
+SwitchJournalDialog::SwitchJournalDialog(QWidget *parent)
+    : UDialog(crypto::hash, crypto::name, parent), proxySWJ(new DataTypesProxy), proxyFS(new DataTypesProxy)
 {
-    auto mngr = &DataManager::GetInstance();
-    static DataTypesProxy proxy(mngr);
-    proxy.RegisterType<S2DataTypes::SwitchJourInfo, DataTypes::FileStruct>();
-    connect(&proxy, &DataTypesProxy::DataStorable, this, &SwitchJournalDialog::fillJour);
-    connect(&proxy, &DataTypesProxy::DataStorable, this, &SwitchJournalDialog::fillSwJInfo);
+    proxySWJ->RegisterType<S2DataTypes::SwitchJourInfo>();
+    proxyFS->RegisterType<DataTypes::FileStruct>();
+    connect(proxySWJ.get(), &DataTypesProxy::DataStorable, this, &SwitchJournalDialog::fillSwJInfo);
+    connect(proxyFS.get(), &DataTypesProxy::DataStorable, this, &SwitchJournalDialog::fillJour);
     setupUI();
 }
 
@@ -67,14 +67,14 @@ void SwitchJournalDialog::setupUI()
 
 // const QVariant &data
 // void SwitchJournalDialog::fillJour(const DataTypes::FileStruct &fs)
-void SwitchJournalDialog::fillJour(const QVariant &data)
+void SwitchJournalDialog::fillJour(const QVariant &msg)
 {
     if (!updatesEnabled())
         return;
 
-    if (data.canConvert<DataTypes::FileStruct>())
+    if (msg.canConvert<DataTypes::FileStruct>())
     {
-        auto fs = data.value<DataTypes::FileStruct>();
+        auto fs = msg.value<DataTypes::FileStruct>();
         fileBuffer.push_back(fs);
 
         switch (fs.ID)
@@ -130,11 +130,11 @@ void SwitchJournalDialog::fillJour(const QVariant &data)
 }
 
 // void SwitchJournalDialog::fillSwJInfo(S2DataTypes::SwitchJourInfo swjInfo)
-void SwitchJournalDialog::fillSwJInfo(const QVariant &data)
+void SwitchJournalDialog::fillSwJInfo(const QVariant &msg)
 {
-    if (data.canConvert<S2DataTypes::SwitchJourInfo>())
+    if (msg.canConvert<S2DataTypes::SwitchJourInfo>())
     {
-        auto swjInfo = data.value<S2DataTypes::SwitchJourInfo>();
+        auto swjInfo = msg.value<S2DataTypes::SwitchJourInfo>();
         if (swjInfo.num == 0)
             return;
         if (swjMap.contains(swjInfo.num))

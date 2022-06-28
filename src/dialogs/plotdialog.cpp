@@ -48,15 +48,15 @@ static bool processPhase(GraphData &data, const DataTypes::FloatStruct &fl)
 }
 
 // void PlotDialog::updateFloatData(const DataTypes::FloatStruct &fl)
-void PlotDialog::updateFloatData(const QVariant &data)
+void PlotDialog::updateFloatData(const QVariant &msg)
 {
-    if (data.canConvert<DataTypes::FloatStruct>())
+    if (msg.canConvert<DataTypes::FloatStruct>())
     {
-        auto fl = data.value<DataTypes::FloatStruct>();
+        auto fl = msg.value<DataTypes::FloatStruct>();
         if (!processPhase(graphPhaseA, fl))
             if (!processPhase(graphPhaseB, fl))
                 processPhase(graphPhaseC, fl);
-        UWidget::updateFloatData(data);
+        UWidget::updateFloatData(msg);
     }
 }
 
