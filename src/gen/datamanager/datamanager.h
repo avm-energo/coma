@@ -11,13 +11,16 @@
 #include <QObject>
 #include <QQueue>
 #include <QVariant>
+#include <functional>
 #include <queue>
+#include <string>
 #include <variant>
 
 #ifdef __linux__
 #include <time.h>
 #endif
 
+Q_DECLARE_METATYPE(std::size_t);
 constexpr quint32 INQUEUEMAXSIZE = 100;
 
 template <class> inline constexpr bool always_false_v = false;
@@ -45,7 +48,9 @@ public:
             insertRegister(signal);
         QVariant data;
         data.setValue(signal);
-        emit DataReceived(typeid(T).hash_code(), data);
+        std::string type_name = typeid(T).name();
+        auto hash = std::hash<std::string> {}(type_name);
+        emit DataReceived(hash, data);
     }
 
     template <typename T> static void addToInQueue(T data)

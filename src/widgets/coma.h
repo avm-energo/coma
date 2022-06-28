@@ -52,6 +52,7 @@ protected:
     ModulePointer m_Module;
     QTimer *BdaTimer, *AlrmTimer;
     AlarmWidget *AlarmW;
+    UniquePointer<DataTypesProxy> proxyBS, proxyGRS;
 
 private slots:
     void prepareConnectDlg();
@@ -73,7 +74,6 @@ private:
     QListWidget *MainLW;
     OscManager oscManager;
     XmlEditor *editor;
-    UniquePointer<DataTypesProxy> receiver;
 
     File::Vector fileVector;
 

@@ -83,10 +83,11 @@ void registerForDeviceNotification(QWidget *ptr)
 }
 #endif
 
-Coma::Coma(QWidget *parent) : QMainWindow(parent), editor(nullptr)
+Coma::Coma(QWidget *parent)
+    : QMainWindow(parent), editor(nullptr), proxyBS(new DataTypesProxy), proxyGRS(new DataTypesProxy)
 {
-    receiver = UniquePointer<DataTypesProxy>(new DataTypesProxy(&DataManager::GetInstance()));
-    receiver->RegisterType<DataTypes::GeneralResponseStruct>();
+    proxyBS->RegisterType<DataTypes::BitStringStruct>();
+    proxyGRS->RegisterType<DataTypes::GeneralResponseStruct>();
 }
 
 Coma::~Coma()
@@ -378,7 +379,7 @@ void Coma::newTimers()
 
 void Coma::setupConnections()
 {
-    connect(receiver.get(), &DataTypesProxy::DataStorable, this, &Coma::update);
+    connect(proxyGRS.get(), &DataTypesProxy::DataStorable, this, &Coma::update);
 }
 
 void Coma::prepare()
@@ -651,26 +652,26 @@ void Coma::setupConnection()
     *connectionReady = connect(&board, &Board::readyRead, this, [=]() {
         QObject::disconnect(*connectionTimeout);
         QObject::disconnect(*connectionReady);
-        ww->Stop();
+        //        ww->Stop();
 
         QApplication::restoreOverrideCursor();
         prepare();
     });
 
-    ww->setObjectName("ww");
-    WaitWidget::ww_struct wws = { true, false, WaitWidget::WW_TIME,
-        15 }; // isallowedtostop = true, isIncrement = false, format: mm:ss, 30 minutes
-    ww->Init(wws);
-    ww->SetMessage("Пожалуйста, подождите");
+    //    ww->setObjectName("ww");
+    //    WaitWidget::ww_struct wws = { true, false, WaitWidget::WW_TIME,
+    //        15 }; // isallowedtostop = true, isIncrement = false, format: mm:ss, 30 minutes
+    //    ww->Init(wws);
+    //    ww->SetMessage("Пожалуйста, подождите");
     // QEventLoop loop;
     //  connect(ww, &WaitWidget::finished, &loop, &QEventLoop::quit);
-    ww->Start();
+    //    ww->Start();
     // loop.exec();
     if (!BaseInterface::iface()->start(ConnectSettings))
     {
         QObject::disconnect(*connectionReady);
         QObject::disconnect(*connectionTimeout);
-        ww->Stop();
+        //        ww->Stop();
 
         EMessageBox::error(this, "Не удалось установить связь");
         QApplication::restoreOverrideCursor();

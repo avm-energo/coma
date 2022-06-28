@@ -7,7 +7,6 @@
 #include <QDebug>
 #include <algorithm>
 #include <typeinfo>
-#include <vector>
 
 class DataTypesProxy : public QObject
 {
@@ -20,7 +19,11 @@ public:
 
     template <class T> void RegisterType()
     {
-        hash_type = typeid(T).hash_code();
+        std::string type_name = typeid(T).name();
+        hash_type = std::hash<std::string> {}(type_name);
+        auto mngr = &DataManager::GetInstance();
+        auto conn = connect(mngr, &DataManager::DataReceived, this, &DataTypesProxy::DataHandled, Qt::QueuedConnection);
+        Q_ASSERT(bool(conn));
     }
 
     /*

@@ -37,10 +37,8 @@ void DebugComa::getAbout()
 
 void DebugComa::setupConnection()
 {
-    static DataTypesProxy proxy(&DataManager::GetInstance());
-    proxy.RegisterType<DataTypes::BitStringStruct>();
     auto const &board = Board::GetInstance();
-    connect(&proxy, &DataTypesProxy::DataStorable, &board, &Board::update);
+    connect(proxyBS.get(), &DataTypesProxy::DataStorable, &board, &Board::update);
     BaseInterface::InterfacePointer device;
     switch (board.interfaceType())
     {
