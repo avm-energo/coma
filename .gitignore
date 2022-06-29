@@ -57,4 +57,4 @@ unix*
 /src/include*
 /src/out/build
 /include
-CMakeLists.txt.user
+CMakeLists.txt.user*

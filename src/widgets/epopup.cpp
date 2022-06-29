@@ -94,6 +94,7 @@ void EMessageBox::error(QWidget *parent, const QString &msg)
 {
     m_result = false;
     ESimplePopup *dlg = new ESimplePopup(ESimplePopup::ERMESSAGE, msg, parent);
+    dlg->setWindowFlag(Qt::WindowStaysOnTopHint, true);
     dlg->show();
     QEventLoop loop;
     QObject::connect(dlg, &ESimplePopup::destroyed, &loop, &QEventLoop::quit);
