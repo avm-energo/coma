@@ -2,6 +2,7 @@
 #define TYPESPROXY_H
 
 #include "../datatypes.h"
+#include "../stdfunc.h"
 #include "datamanager.h"
 
 #include <QDebug>
