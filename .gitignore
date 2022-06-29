@@ -60,4 +60,4 @@ unix*
 /doc/doxy-doc/*
 /html/*
 /latex/*
-CMakeLists.txt.user
+CMakeLists.txt.user*
