@@ -35,7 +35,6 @@ StdFunc::StdFunc()
 
 void StdFunc::Init()
 {
-
     SystemHomeDir = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + "/"
         + QCoreApplication::applicationName() + "/";
     if ((!SystemHomeDir.contains("/root")) && SystemHomeDir.startsWith("//"))
@@ -185,6 +184,14 @@ quint32 StdFunc::BitByIndex(int idx)
 
 void StdFunc::Wait(int ms)
 {
+    QTimer timer;
+    timer.setSingleShot(true);
+    QEventLoop loop;
+    QObject::connect(&timer, &QTimer::timeout, &loop, &QEventLoop::quit);
+    timer.start(ms);
+    loop.exec();
+
+    /*
     QElapsedTimer tmr;
     tmr.start();
     while (tmr.elapsed() < ms)
@@ -192,6 +199,7 @@ void StdFunc::Wait(int ms)
         QCoreApplication::processEvents(QEventLoop::AllEvents);
         QThread::msleep(MAINSLEEP);
     }
+    */
 }
 
 /*!

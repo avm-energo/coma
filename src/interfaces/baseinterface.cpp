@@ -13,6 +13,7 @@ BaseInterface::InterfacePointer BaseInterface::m_iface;
 
 BaseInterface::BaseInterface(QObject *parent) : QObject(parent), /* m_working(false),*/ Log(new LogClass(this))
 {
+    ProxyInit();
     qRegisterMetaType<BaseInterface::State>();
     timeoutTimer = new QTimer(this);
     timeoutTimer->setInterval(MAINTIMEOUT);
@@ -98,12 +99,14 @@ Error::Msg BaseInterface::reqBlockSync(
 
     Q_ASSERT(blockmap.contains(blocktype));
     writeCommand(blockmap.value(blocktype), blocknum);
+
     timeoutTimer->start();
     while (m_busy)
     {
         QCoreApplication::processEvents(QEventLoop::AllEvents);
         StdFunc::Wait();
     }
+
     quint32 resultsize = m_byteArrayResult.size();
     if ((m_timeout) || (resultsize < blocksize))
         return Error::Msg::Timeout;
