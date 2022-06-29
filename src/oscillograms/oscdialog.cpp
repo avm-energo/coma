@@ -7,8 +7,8 @@
 #include "../module/board.h"
 #include "../s2/s2.h"
 #include "../widgets/etableview.h"
+#include "../widgets/pushbuttondelegate.h"
 #include "../widgets/wd_func.h"
-#include "pushbuttondelegate.h"
 
 namespace crypto
 {

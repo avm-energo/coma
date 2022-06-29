@@ -31,7 +31,7 @@ void ProtocomPrivate::handleBlk(const Proto::Commands cmd, const quint32 addr, c
 void ProtocomPrivate::handleBlk(const Proto::Commands cmd, const DataTypes::Signal &signal)
 {
     quint8 block = blockByReg(signal.addr);
-    handleBlk(cmd, signal.addr, StdFunc::arrayFromNumber(quint8(block)), signal.value);
+    handleBlk(cmd, signal.addr, StdFunc::ArrayFromNumber(quint8(block)), signal.value);
 }
 
 void ProtocomPrivate::handleInt(const Proto::Commands cmd, const QByteArray data)
@@ -60,6 +60,6 @@ void ProtocomPrivate::handleCommand(const Proto::WCommands cmd)
 void ProtocomPrivate::handleCommand(const Proto::Commands cmd, const DataTypes::SingleCommand singleCmd)
 {
     Proto::CommandStruct inp { cmd, QVariant::fromValue(singleCmd.addr), QVariant(),
-        StdFunc::arrayFromNumber(singleCmd.value) };
+        StdFunc::ArrayFromNumber(singleCmd.value) };
     DataManager::addToInQueue(inp);
 }

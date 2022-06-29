@@ -22,13 +22,12 @@
 
 #include "coma.h"
 
-#include "../avtuk/switchjournaldialog.h"
-#include "../avtuk/swjmanager.h"
 #include "../comaversion/comaversion.h"
 #include "../dialogs/connectdialog.h"
 #include "../dialogs/errordialog.h"
 #include "../dialogs/keypressdialog.h"
 #include "../dialogs/settingsdialog.h"
+#include "../dialogs/switchjournaldialog.h"
 #include "../gen/errorqueue.h"
 #include "../gen/files.h"
 #include "../gen/logger.h"
@@ -38,6 +37,7 @@
 #include "../interfaces/settingstypes.h"
 #include "../module/board.h"
 #include "../module/module.h"
+#include "../oscillograms/swjmanager.h"
 #include "../widgets/aboutwidget.h"
 #include "../widgets/epopup.h"
 #include "../widgets/splashscreen.h"
@@ -237,24 +237,20 @@ QWidget *Coma::least()
 }
 void Coma::setupMenubar()
 {
-    QMenuBar *menubar = new QMenuBar(this);
-
-    QMenu *menu = new QMenu(menubar);
+    auto menubar = new QMenuBar(this);
+    auto menu = new QMenu(menubar);
     menu->setTitle("Главное");
-
     menu->addAction("Выход", this, &Coma::close);
     menu->addAction(QIcon(":/icons/tnstart.svg"), "Соединение", this, &Coma::prepareConnectDlg);
     menu->addAction(QIcon(":/icons/tnstop.svg"), "Разрыв соединения", this, &Coma::DisconnectAndClear);
-
     menubar->addMenu(menu);
-
     menubar->addAction("О программе", this, &Coma::getAbout);
-
     menubar->addSeparator();
+
     menu = new QMenu(menubar);
     menu->setTitle("Автономная работа");
     menu->addAction("Загрузка осциллограммы", this, qOverload<>(&Coma::loadOsc));
-    menu->addAction("Загрузка журнала переключений", this, qOverload<>(&Coma::loadSwj));
+    menu->addAction("Загрузка файла переключений", this, qOverload<>(&Coma::loadSwj));
     menu->addAction("Проверка диалога", this, &Coma::checkDialog);
     menu->addAction("Редактор модулей", this, &Coma::openModuleEditor);
 
@@ -324,9 +320,7 @@ void Coma::loadOsc(QString &filename)
 
 void Coma::loadSwj(QString &filename)
 {
-
     SwjManager swjManager;
-
     fileVector = oscManager.loadFromFile(filename);
     auto oscVector = swjManager.loadFromFile(filename);
     std::move(oscVector.begin(), oscVector.end(), std::back_inserter(fileVector));
@@ -467,7 +461,7 @@ void Coma::go()
     StdFunc::Init();
     qInfo("=== Log started ===\n");
 #ifdef Q_OS_LINUX
-    // linux code goes here
+    // TODO: linux code goes here
 #endif
 #ifdef Q_OS_WINDOWS
     // Listen to device events
@@ -729,7 +723,7 @@ void Coma::resizeEvent(QResizeEvent *e)
 void Coma::keyPressEvent(QKeyEvent *e)
 {
     if (e->key() == Qt::Key_Escape)
-        StdFunc::cancel();
+        StdFunc::Cancel();
     QMainWindow::keyPressEvent(e);
 }
 

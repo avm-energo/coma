@@ -215,7 +215,7 @@ void InterfaceEthernetDialog::createPingTask(quint32 ip)
         if (m_progress->value() == -1)
             emit pingFinished();
     });
-    QFuture<quint32> future = QtConcurrent::run(&StdFunc::ping, ip);
+    QFuture<quint32> future = QtConcurrent::run(&StdFunc::Ping, ip);
     watcher->setFuture(future);
 }
 
@@ -229,7 +229,7 @@ void InterfaceEthernetDialog::createPortTask()
     connect(watcher, &QFutureWatcher<QList<quint32>>::progressValueChanged, m_progress, &QProgressDialog::setValue);
     QFuture<QList<quint32>> future;
     future = QtConcurrent::mappedReduced(m_hosts,
-        std::bind(qOverload<quint32, quint16>(&StdFunc::checkPort), std::placeholders::_1, port),
+        std::bind(qOverload<quint32, quint16>(&StdFunc::CheckPort), std::placeholders::_1, port),
         &StdFunc::joinItem<quint32>);
     watcher->setFuture(future);
     future.waitForFinished();

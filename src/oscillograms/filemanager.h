@@ -3,7 +3,7 @@
 #include "../gen/timefunc.h"
 #include "../module/modules.h"
 #include "../s2/s2datatypes.h"
-#include "trendviewmodel.h"
+#include "trendview/trendviewmodels.h"
 
 #include <QAbstractItemModel>
 #include <QByteArray>

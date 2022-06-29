@@ -1,10 +1,10 @@
 #ifndef COMA_H
 #define COMA_H
-#include "../avtuk/oscmanager.h"
 #include "../gen/datamanager/typesproxy.h"
 #include "../gen/datatypes.h"
 #include "../gen/stdfunc.h"
 #include "../interfaces/settingstypes.h"
+#include "../oscillograms/oscmanager.h"
 #include "../xml/xmleditor.h"
 
 #include <QListWidget>

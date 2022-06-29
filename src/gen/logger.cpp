@@ -4,8 +4,8 @@
 #include "stdfunc.h"
 
 #include <iostream>
-#define LOG_MAX_SIZE 1048576
-#define LOGFILE "coma.log"
+constexpr quint64 LOG_MAX_SIZE = 1048576;
+const char* const LOGFILE = "coma.log";
 
 const static QMap<QtMsgType, const char *> msgTypes {
     { QtDebugMsg, "[DEBUG]" },       //
@@ -21,7 +21,7 @@ void checkNGzip(QString &fileName)
     QString GZippedLogFile = fileName;
     if (logFile.size() < LOG_MAX_SIZE)
         return;
-    if (!StdFunc::checkArchiveExist(GZippedLogFile))
+    if (!StdFunc::CheckArchiveExist(GZippedLogFile))
         return;
     GZippedLogFile += ".0.gz";
 
@@ -38,7 +38,7 @@ void checkNGzip(QString &fileName)
         return;
     }
 
-    fileOut.write(StdFunc::compress(logFile.readAll()));
+    fileOut.write(StdFunc::Compress(logFile.readAll()));
     fileOut.close();
     logFile.close();
 }
@@ -54,7 +54,7 @@ void Logging::messageHandler(QtMsgType type, const QMessageLogContext &context, 
 
     std::string function = context.function ? context.function : "";
     std::string rubbish(" __cdecl");
-    StdFunc::removeSubstr(function, rubbish);
+    StdFunc::RemoveSubstr(function, rubbish);
 
     switch (type)
     {

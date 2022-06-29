@@ -641,7 +641,7 @@ QMainWindow *WDFunc::getMainWindow()
 
 bool WDFunc::floatIsWithinLimits(const QString &varname, double var, double base, double tolerance, bool showMessage)
 {
-    if (StdFunc::floatIsWithinLimits(var, base, tolerance))
+    if (StdFunc::FloatIsWithinLimits(var, base, tolerance))
         return true;
     else if (showMessage)
     {

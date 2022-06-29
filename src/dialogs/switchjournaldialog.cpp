@@ -1,15 +1,14 @@
 #include "switchjournaldialog.h"
 
-#include "../gen/datamanager/datamanager.h"
+#include "../module/board.h"
 #include "../gen/datamanager/typesproxy.h"
 #include "../gen/files.h"
+#include "../s2/s2.h"
 #include "../gen/timefunc.h"
 #include "../models/etablemodel.h"
-#include "../module/board.h"
-#include "../s2/s2.h"
 #include "../widgets/wd_func.h"
-#include "pushbuttondelegate.h"
-#include "swjmanager.h"
+#include "../widgets/pushbuttondelegate.h"
+#include "../oscillograms/swjmanager.h"
 
 #include <QHeaderView>
 #include <QMessageBox>
@@ -65,66 +64,61 @@ void SwitchJournalDialog::setupUI()
     setLayout(lyout);
 }
 
-// const QVariant &data
 // void SwitchJournalDialog::fillJour(const DataTypes::FileStruct &fs)
 void SwitchJournalDialog::fillJour(const QVariant &msg)
 {
     if (!updatesEnabled())
         return;
+        
+    auto fs = msg.value<DataTypes::FileStruct>(); 
+    fileBuffer.push_back(fs);
 
-    if (msg.canConvert<DataTypes::FileStruct>())
+    switch (fs.ID)
     {
-        auto fs = msg.value<DataTypes::FileStruct>();
-        fileBuffer.push_back(fs);
+    case MT_HEAD_ID:
+    {
+        auto header = oscManager.loadCommon(fs);
+        oscManager.setHeader(header);
+        break;
+    }
+    case AVTUK_85::SWJ_ID:
+    {
+        SwjManager swjManager;
+        swjModel = swjManager.load(fs);
+        auto dialog = new SwitchJournalViewDialog(swjModel, oscModel, oscManager, this);
+        dialog->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+        connect(dialog, &SwitchJournalViewDialog::exportJour, this, [&, swjNum = reqSwJNum] { exportSwJ(swjNum); });
+        dialog->show();
+        dialog->setMinimumHeight(WDFunc::getMainWindow()->height());
+        dialog->setMinimumWidth(WDFunc::getMainWindow()->width());
+        dialog->adjustSize();
+        break;
+    }
+    default:
+    {
+        oscModel = oscManager.load(fs);
 
-        switch (fs.ID)
+        if (!oscModel)
         {
-        case MT_HEAD_ID:
-        {
-            auto header = oscManager.loadCommon(fs);
-            oscManager.setHeader(header);
-            break;
+            qWarning() << Error::ReadError;
+            return;
         }
-        case AVTUK_85::SWJ_ID:
+    }
+    }
+    // header, swj, osc
+    if (fileBuffer.size() == 3)
+    {
+        QByteArray ba;
+        S2::StoreDataMem(ba, fileBuffer, reqSwJNum);
+        auto time = swjMap.value(reqSwJNum).time;
+        QString file = filename(time);
+        if (Files::SaveToFile(file, ba) == Error::Msg::NoError)
         {
-            SwjManager swjManager;
-            swjModel = swjManager.load(fs);
-            auto dialog = new SwitchJournalViewDialog(swjModel, oscModel, oscManager, this);
-            dialog->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-            connect(dialog, &SwitchJournalViewDialog::exportJour, this, [&, swjNum = reqSwJNum] { exportSwJ(swjNum); });
-            dialog->show();
-            dialog->setMinimumHeight(WDFunc::getMainWindow()->height());
-            dialog->setMinimumWidth(WDFunc::getMainWindow()->width());
-            dialog->adjustSize();
-            break;
+            qInfo() << "Swj saved: " << file;
         }
-        default:
+        else
         {
-
-            oscModel = oscManager.load(fs);
-
-            if (!oscModel)
-            {
-                qWarning() << Error::ReadError;
-                return;
-            }
-        }
-        }
-        // header, swj, osc
-        if (fileBuffer.size() == 3)
-        {
-            QByteArray ba;
-            S2::StoreDataMem(ba, fileBuffer, reqSwJNum);
-            auto time = swjMap.value(reqSwJNum).time;
-            QString file = filename(time);
-            if (Files::SaveToFile(file, ba) == Error::Msg::NoError)
-            {
-                qInfo() << "Swj saved: " << file;
-            }
-            else
-            {
-                qWarning() << "Fail to save swj: " << file;
-            }
+            qWarning() << "Fail to save swj: " << file;
         }
     }
 }
@@ -132,26 +126,23 @@ void SwitchJournalDialog::fillJour(const QVariant &msg)
 // void SwitchJournalDialog::fillSwJInfo(S2DataTypes::SwitchJourInfo swjInfo)
 void SwitchJournalDialog::fillSwJInfo(const QVariant &msg)
 {
-    if (msg.canConvert<S2DataTypes::SwitchJourInfo>())
-    {
-        auto swjInfo = msg.value<S2DataTypes::SwitchJourInfo>();
-        if (swjInfo.num == 0)
-            return;
-        if (swjMap.contains(swjInfo.num))
-            return;
+	auto swjInfo = msg.value<S2DataTypes::SwitchJourInfo>();
+    if (swjInfo.num == 0)
+        return;
+    if (swjMap.contains(swjInfo.num))
+        return;
 
-        swjMap.insert(swjInfo.num, swjInfo);
+    swjMap.insert(swjInfo.num, swjInfo);
 
-        QVector<QVariant> lsl {
-            QVariant(swjInfo.fileNum),                                            //
-            swjInfo.num,                                                          //
-            TimeFunc::UnixTime64ToString(swjInfo.time),                           //
-            SwjManager::craftType(swjInfo.typeA) + QString::number(swjInfo.numA), //
-            SwjManager::switchType(swjInfo.options),                              //
-            tr("Скачать"),                                                        //
-        };
-        tableModel->addRowWithData(lsl);
-    }
+    QVector<QVariant> lsl {
+        QVariant(swjInfo.fileNum),                                            //
+        swjInfo.num,                                                          //
+        TimeFunc::UnixTime64ToString(swjInfo.time),                           //
+        SwjManager::craftType(swjInfo.typeA) + QString::number(swjInfo.numA), //
+        SwjManager::switchType(swjInfo.options),                              //
+        tr("Скачать"),                                                        //
+    };
+    tableModel->addRowWithData(lsl);
 }
 
 void SwitchJournalDialog::getSwJ(const QModelIndex &idx)

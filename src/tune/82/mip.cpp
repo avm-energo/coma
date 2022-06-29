@@ -134,7 +134,7 @@ Error::Msg Mip::check()
     for (int i = 0; i < 10; i++)
     {
         float *mipdata = reinterpret_cast<float *>(&m_mipData);
-        if (!StdFunc::floatIsWithinLimits(*(mipdata + i), *VTC, *TTC))
+        if (!StdFunc::FloatIsWithinLimits(*(mipdata + i), *VTC, *TTC))
         {
             EMessageBox::warning(this,
                 "Несовпадение МИП по параметру " + QString::number(i)

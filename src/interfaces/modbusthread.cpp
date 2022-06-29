@@ -363,9 +363,9 @@ void ModbusThread::setQueryStartBytes(CommandsMBS::CommandStruct &cms, QByteArra
     ba.append(deviceAddress); // адрес устройства
     ba.append(cms.cmd);       //аналоговый выход
     QByteArray bigEndArray;
-    bigEndArray = StdFunc::arrayFromNumber(qToBigEndian(cms.adr));
+    bigEndArray = StdFunc::ArrayFromNumber(qToBigEndian(cms.adr));
     ba.append(bigEndArray);
-    bigEndArray = StdFunc::arrayFromNumber(qToBigEndian(cms.quantity));
+    bigEndArray = StdFunc::ArrayFromNumber(qToBigEndian(cms.quantity));
     ba.append(bigEndArray);
 }
 
@@ -373,8 +373,8 @@ QByteArray ModbusThread::createReadPDU(const CommandsMBS::CommandStruct &cms) co
 {
     QByteArray ba;
     ba.append(cms.cmd);
-    ba.append(StdFunc::arrayFromNumber(qToBigEndian(cms.adr)));
-    ba.append(StdFunc::arrayFromNumber(qToBigEndian(cms.quantity)));
+    ba.append(StdFunc::ArrayFromNumber(qToBigEndian(cms.adr)));
+    ba.append(StdFunc::ArrayFromNumber(qToBigEndian(cms.quantity)));
     return ba;
 }
 

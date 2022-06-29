@@ -79,13 +79,13 @@
 	<record>
 		<id>1</id>
 		<name>MTypeB_ID</name>
-		<description>-</description>
+		<description>Тип базовой платы</description>
 		<type>DWORD</type>
 	</record>
 	<record>
 		<id>2</id>
 		<name>MTypeE_ID</name>
-		<description>-</description>
+		<description>Тип мезонинной платы</description>
 		<type>DWORD</type>
 	</record>
 	<record>
@@ -951,7 +951,7 @@
 	<record>
 		<id>204</id>
 		<name>AC_per_IDB</name>
-		<description>время определения состояние сигнада перемнного напряжения мс</description>
+		<description>Время определения состояние сигнала переменного напряжения мс</description>
 		<type>WORD</type>
 		<widget>
 			<type>QDoubleSpinBox</type>
@@ -1135,7 +1135,7 @@
 	<record>
 		<id>234</id>
 		<name>AC_per_IDE</name>
-		<description>Время определения состояние сигнада перемнного напряжения мс</description>
+		<description>Время определения состояние сигнала переменного напряжения мс</description>
 		<type>WORD</type>
 		<widget>
 			<type>QDoubleSpinBox</type>
@@ -1268,7 +1268,7 @@
 	<record>
 		<id>301</id>
 		<name>W100_IDB</name>
-		<description>Сопроивление при 100 град. С</description>
+		<description>Сопротивление при 100 град. С</description>
 		<type>FLOAT[8]</type>
 		<widget>
 			<type>DoubleSpinBoxGroup</type>
@@ -1328,7 +1328,7 @@
 	<record>
 		<id>305</id>
 		<name>setminT_IDB</name>
-		<description>Значение предупредительной уставки по  минимальному начению</description>
+		<description>Значение предупредительной уставки по минимальному значению</description>
 		<type>FLOAT[8]</type>
 		<widget>
 			<type>DoubleSpinBoxGroup</type>
@@ -1492,7 +1492,7 @@
 	<record>
 		<id>325</id>
 		<name>setminT_IDE</name>
-		<description>Значение предупредительной уставки по  минимальному начению</description>
+		<description>Значение предупредительной уставки по  минимальному значению</description>
 		<type>FLOAT[8]</type>
 		<widget>
 			<type>DoubleSpinBoxGroup</type>
@@ -2616,7 +2616,7 @@
 	<record>
 		<id>1080</id>
 		<name>Iwnom</name>
-		<description>Номинальный ток контролирууемой обмотки, А</description>
+		<description>Номинальный ток контролируемой обмотки, А</description>
 		<type>FLOAT</type>
 		<widget>
 			<type>QDoubleSpinBox</type>
@@ -3791,7 +3791,7 @@
 	<record>
 		<id>1176</id>
 		<name>RES_const_A_big</name>
-		<description>Константа запрограмированная под конкретный тип выключателя</description>
+		<description>Константа запрограммированная под конкретный тип выключателя</description>
 		<type>FLOAT</type>
 		<widget>
 			<type>QDoubleSpinBox</type>
@@ -3805,7 +3805,7 @@
 	<record>
 		<id>1177</id>
 		<name>RES_const_a_small</name>
-		<description>Константа запрограмированная под конкретный тип выключателя</description>
+		<description>Константа запрограммированная под конкретный тип выключателя</description>
 		<type>FLOAT</type>
 		<widget>
 			<type>QDoubleSpinBox</type>
@@ -3819,7 +3819,7 @@
 	<record>
 		<id>1178</id>
 		<name>RES_const_n_small</name>
-		<description>Константа запрограмированная под конкретный тип выключателя</description>
+		<description>Константа запрограммированная под конкретный тип выключателя</description>
 		<type>FLOAT</type>
 		<widget>
 			<type>QDoubleSpinBox</type>
@@ -3833,7 +3833,7 @@
 	<record>
 		<id>1179</id>
 		<name>RES_const_b</name>
-		<description>Константа запрограмированная под конкретный тип выключателя</description>
+		<description>Константа запрограммированная под конкретный тип выключателя</description>
 		<type>FLOAT</type>
 		<widget>
 			<type>QDoubleSpinBox</type>
@@ -3847,7 +3847,7 @@
 	<record>
 		<id>1180</id>
 		<name>RES_const_N_big</name>
-		<description>Константа запрограмированная под конкретный тип выключателя</description>
+		<description>Константа запрограммированная под конкретный тип выключателя</description>
 		<type>FLOAT</type>
 		<widget>
 			<type>QDoubleSpinBox</type>
@@ -4127,7 +4127,7 @@
 	<record>
 		<id>1200</id>
 		<name>Kad</name>
-		<description>Коэффициент адартации расчетных собственных времён вкл/откл по фактическим значениям</description>
+		<description>Коэффициент адаптации расчетных собственных времён вкл/откл по фактическим значениям</description>
 		<type>FLOAT</type>
 		<widget>
 			<type>QDoubleSpinBox</type>
@@ -4142,7 +4142,7 @@
 	<record>
 		<id>1201</id>
 		<name>Fnom</name>
-		<description>номинальная частота сети, Гц</description>
+		<description>Номинальная частота сети, Гц</description>
 		<type>FLOAT</type>
 		<widget>
 			<type>QDoubleSpinBox</type>
@@ -4156,7 +4156,7 @@
 	<record>
 		<id>1202</id>
 		<name>nom_slip</name>
-		<description>номинальное скольжение</description>
+		<description>Номинальное скольжение</description>
 		<type>FLOAT</type>
 		<widget>
 			<type>QDoubleSpinBox</type>
@@ -4184,7 +4184,7 @@
 	<record>
 		<id>1204</id>
 		<name>Poles</name>
-		<description>число пар полюсов машины</description>
+		<description>Число пар полюсов машины</description>
 		<type>DWORD</type>
 		<widget>
 			<type>QDoubleSpinBox</type>
@@ -4198,7 +4198,7 @@
 	<record>
 		<id>1205</id>
 		<name>Stator_Slotes</name>
-		<description>число пазов на статоре</description>
+		<description>Число пазов на статоре</description>
 		<type>DWORD</type>
 		<widget>
 			<type>QDoubleSpinBox</type>
@@ -4212,7 +4212,7 @@
 	<record>
 		<id>1206</id>
 		<name>Rotor_bars</name>
-		<description>число стержней ротора</description>
+		<description>Число стержней ротора</description>
 		<type>DWORD</type>
 		<widget>
 			<type>QDoubleSpinBox</type>
@@ -4226,7 +4226,7 @@
 	<record>
 		<id>1207</id>
 		<name>VibroType</name>
-		<description>тип датчика вибраций</description>
+		<description>Тип датчика вибраций</description>
 		<type>DWORD</type>
 		<widget>
 			<type>QDoubleSpinBox</type>
@@ -4240,7 +4240,7 @@
 	<record>
 		<id>1208</id>
 		<name>Sensors</name>
-		<description>подключенные датчики</description>
+		<description>Подключенные датчики</description>
 		<type>DWORD </type>
 		<widget>
 			<type>QDoubleSpinBox</type>
@@ -4254,7 +4254,7 @@
 	<record>
 		<id>1209</id>
 		<name>Kvibr</name>
-		<description>коэффициент передачи датчика вибраций (В/(м/с/с))</description>
+		<description>Коэффициент передачи датчика вибраций (В/(м/с/с))</description>
 		<type>FLOAT</type>
 		<widget>
 			<type>QDoubleSpinBox</type>
@@ -4268,7 +4268,7 @@
 	<record>
 		<id>1210</id>
 		<name>VibrA_pred</name>
-		<description>предупредительная уставка по СКЗ ускорения (м/с/с)</description>
+		<description>Предупредительная уставка по СКЗ ускорения (м/с/с)</description>
 		<type>FLOAT</type>
 		<widget>
 			<type>QDoubleSpinBox</type>
@@ -4282,7 +4282,7 @@
 	<record>
 		<id>1211</id>
 		<name>VibrV_pred</name>
-		<description>предупредительная уставка по СКЗ скорости (мм/с)</description>
+		<description>Предупредительная уставка по СКЗ скорости (мм/с)</description>
 		<type>FLOAT</type>
 		<widget>
 			<type>QDoubleSpinBox</type>
@@ -4296,7 +4296,7 @@
 	<record>
 		<id>1212</id>
 		<name>VibrD_pred</name>
-		<description>предупредительная уставка по СКЗ виброперемещения (мкм)</description>
+		<description>Предупредительная уставка по СКЗ виброперемещения (мкм)</description>
 		<type>FLOAT</type>
 		<widget>
 			<type>QDoubleSpinBox</type>
@@ -4310,7 +4310,7 @@
 	<record>
 		<id>1213</id>
 		<name>VibrA_alarm</name>
-		<description>аварийная уставка по СКЗ виброускорения (м/с/с)</description>
+		<description>Аварийная уставка по СКЗ виброускорения (м/с/с)</description>
 		<type>FLOAT</type>
 		<widget>
 			<type>QDoubleSpinBox</type>
@@ -4324,7 +4324,7 @@
 	<record>
 		<id>1214</id>
 		<name>VibrV_alarm</name>
-		<description>аварийная уставка по СКЗ виброскорости (мм/с)</description>
+		<description>Аварийная уставка по СКЗ виброскорости (мм/с)</description>
 		<type>FLOAT</type>
 		<widget>
 			<type>QDoubleSpinBox</type>
@@ -4338,7 +4338,7 @@
 	<record>
 		<id>1215</id>
 		<name>VibrD_alarm</name>
-		<description>аварийная уставка по СКЗ виброперемещения (мкм)</description>
+		<description>Аварийная уставка по СКЗ виброперемещения (мкм)</description>
 		<type>FLOAT</type>
 		<widget>
 			<type>QDoubleSpinBox</type>
@@ -4352,7 +4352,7 @@
 	<record>
 		<id>1216</id>
 		<name>VVibrA_pred</name>
-		<description>предупредительная уставка по скорости роста СКЗ виброускорения (м/с/с/час)</description>
+		<description>Предупредительная уставка по скорости роста СКЗ виброускорения (м/с/с/час)</description>
 		<type>FLOAT</type>
 		<widget>
 			<type>QDoubleSpinBox</type>
@@ -4366,7 +4366,7 @@
 	<record>
 		<id>1217</id>
 		<name>VVibrV_pred</name>
-		<description>предупредительная уставка по скорости роста СКЗ виброскорости (мм/с/час)</description>
+		<description>Предупредительная уставка по скорости роста СКЗ виброскорости (мм/с/час)</description>
 		<type>FLOAT</type>
 		<widget>
 			<type>QDoubleSpinBox</type>
@@ -4380,7 +4380,7 @@
 	<record>
 		<id>1218</id>
 		<name>VVibrD_pred</name>
-		<description>предупредительная уставка по скорости роста СКЗ вибросмещения (мкм/час)</description>
+		<description>Предупредительная уставка по скорости роста СКЗ виброперемещения (мкм/час)</description>
 		<type>FLOAT</type>
 		<widget>
 			<type>QDoubleSpinBox</type>
@@ -4394,7 +4394,7 @@
 	<record>
 		<id>1219</id>
 		<name>VVibrA_alarm</name>
-		<description>аварийная уставка по скорости роста СКЗ виброускорения (м/с/с/час)</description>
+		<description>Аварийная уставка по скорости роста СКЗ виброускорения (м/с/с/час)</description>
 		<type>FLOAT</type>
 		<widget>
 			<type>QDoubleSpinBox</type>
@@ -4408,7 +4408,7 @@
 	<record>
 		<id>1220</id>
 		<name>VVibrV_alarm</name>
-		<description>аварийная уставка по скорости роста СКЗ виброскорости (мм/с/час)</description>
+		<description>Аварийная уставка по скорости роста СКЗ виброскорости (мм/с/час)</description>
 		<type>FLOAT</type>
 		<widget>
 			<type>QDoubleSpinBox</type>
@@ -4422,7 +4422,7 @@
 	<record>
 		<id>1221</id>
 		<name>VVibrD_alarm</name>
-		<description>аварийная уставка по скорости роста СКЗ вибросмещения (мкм/час)</description>
+		<description>Аварийная уставка по скорости роста СКЗ виброперемещения (мкм/час)</description>
 		<type>FLOAT</type>
 		<widget>
 			<type>QDoubleSpinBox</type>
@@ -4436,7 +4436,7 @@
 	<record>
 		<id>1222</id>
 		<name>NumA</name>
-		<description>порядковый номер двигателя</description>
+		<description>Порядковый номер двигателя</description>
 		<type>DWORD</type>
 		<widget>
 			<type>QDoubleSpinBox</type>
@@ -4562,6 +4562,36 @@
 		<type>BYTE[]</type>
 	</record>
 	<record>
+		<id>10003</id>
+		<name>Osc21_2</name>
+		<description>2-й канал модуля 2100</description>
+		<type>BYTE[]</type>
+	</record>
+	<record>
+		<id>10004</id>
+		<name>Osc21_3</name>
+		<description>3-й канал модуля 2100</description>
+		<type>BYTE[]</type>
+	</record>
+	<record>
+		<id>10005</id>
+		<name>Osc21_4</name>
+		<description>4-й канал модуля 2100</description>
+		<type>BYTE[]</type>
+	</record>
+	<record>
+		<id>10006</id>
+		<name>Osc21_5</name>
+		<description>5-й канал модуля 2100</description>
+		<type>BYTE[]</type>
+	</record>
+	<record>
+		<id>10007</id>
+		<name>Osc21_6</name>
+		<description>6-й канал модуля 2100</description>
+		<type>BYTE[]</type>
+	</record>
+	<record>
 		<id>10008</id>
 		<name>Osc21_7</name>
 		<description>7-й канал модуля 2100</description>
@@ -4571,6 +4601,42 @@
 		<id>10009</id>
 		<name>Osc21_8</name>
 		<description>8-й канал модуля 2121</description>
+		<type>BYTE[]</type>
+	</record>
+	<record>
+		<id>10010</id>
+		<name>Osc21_9</name>
+		<description>9-й канал модуля 2121</description>
+		<type>BYTE[]</type>
+	</record>
+	<record>
+		<id>10011</id>
+		<name>Osc21_10</name>
+		<description>10-й канал модуля 2121</description>
+		<type>BYTE[]</type>
+	</record>
+	<record>
+		<id>10012</id>
+		<name>Osc21_11</name>
+		<description>11-й канал модуля 2121</description>
+		<type>BYTE[]</type>
+	</record>
+	<record>
+		<id>10013</id>
+		<name>Osc21_12</name>
+		<description>12-й канал модуля 2121</description>
+		<type>BYTE[]</type>
+	</record>
+	<record>
+		<id>10014</id>
+		<name>Osc21_13</name>
+		<description>13-й канал модуля 2121</description>
+		<type>BYTE[]</type>
+	</record>
+	<record>
+		<id>10015</id>
+		<name>Osc21_14</name>
+		<description>14-й канал модуля 2121</description>
 		<type>BYTE[]</type>
 	</record>
 	<record>
@@ -4616,6 +4682,36 @@
 		<type>DataPoint_Osc87</type>
 	</record>
 	<record>
+		<id>10042</id>
+		<name>Osc87_2</name>
+		<description>Осциллограмма 87 модуля, 2-й канал</description>
+		<type>DataPoint_Osc87</type>
+	</record>
+	<record>
+		<id>10043</id>
+		<name>Osc87_3</name>
+		<description>Осциллограмма 87 модуля, 3-й канал</description>
+		<type>DataPoint_Osc87</type>
+	</record>
+	<record>
+		<id>10044</id>
+		<name>Osc87_4</name>
+		<description>Осциллограмма 87 модуля, 4-й канал</description>
+		<type>DataPoint_Osc87</type>
+	</record>
+	<record>
+		<id>10045</id>
+		<name>Osc87_5</name>
+		<description>Осциллограмма 87 модуля, 5-й канал</description>
+		<type>DataPoint_Osc87</type>
+	</record>
+	<record>
+		<id>10046</id>
+		<name>Osc87_6</name>
+		<description>Осциллограмма 87 модуля, 6-й канал</description>
+		<type>DataPoint_Osc87</type>
+	</record>
+	<record>
 		<id>10047</id>
 		<name>Osc87_7</name>
 		<description>Осциллограмма 87 модуля, 7-й канал</description>
@@ -4631,6 +4727,36 @@
 		<id>10051</id>
 		<name>Spect87_1</name>
 		<description>Cпектрограмма 87 модуля, 1-й канал</description>
+		<type>DataPoint_Spect87</type>
+	</record>
+	<record>
+		<id>10052</id>
+		<name>Spect87_2</name>
+		<description>Cпектрограмма 87 модуля, 2-й канал</description>
+		<type>DataPoint_Spect87</type>
+	</record>
+	<record>
+		<id>10053</id>
+		<name>Spect87_3</name>
+		<description>Cпектрограмма 87 модуля, 3-й канал</description>
+		<type>DataPoint_Spect87</type>
+	</record>
+	<record>
+		<id>10054</id>
+		<name>Spect87_4</name>
+		<description>Cпектрограмма 87 модуля, 4-й канал</description>
+		<type>DataPoint_Spect87</type>
+	</record>
+	<record>
+		<id>10055</id>
+		<name>Spect87_5</name>
+		<description>Cпектрограмма 87 модуля, 5-й канал</description>
+		<type>DataPoint_Spect87</type>
+	</record>
+	<record>
+		<id>10056</id>
+		<name>Spect87_6</name>
+		<description>Cпектрограмма 87 модуля, 6-й канал</description>
 		<type>DataPoint_Spect87</type>
 	</record>
 	<record>

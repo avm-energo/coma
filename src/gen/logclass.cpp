@@ -106,7 +106,7 @@ void LogClass::CheckAndCompress()
     QString GZippedLogFile = LogFile;
     if (fp->size() < LOG_MAX_SIZE)
         return;
-    if (!StdFunc::checkArchiveExist(GZippedLogFile))
+    if (!StdFunc::CheckArchiveExist(GZippedLogFile))
         return;
     GZippedLogFile += ".0.gz";
 
@@ -125,7 +125,7 @@ void LogClass::CheckAndCompress()
     }
     fp->close();
 
-    fileOut.write(StdFunc::compress(fileIn.readAll()));
+    fileOut.write(StdFunc::Compress(fileIn.readAll()));
     fileIn.close();
     fileOut.close();
     fp->open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text);

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.14)
+cmake_minimum_required(VERSION 3.15)
 
 project(s2 LANGUAGES CXX)
 
@@ -11,11 +11,11 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 find_package(
   Qt${QT_VERSION_MAJOR}
-  COMPONENTS Core Network Xml
+  COMPONENTS Core Network Xml Widgets
   REQUIRED)
 
 add_library(
-  s2 STATIC
+  ${PROJECT_NAME} STATIC
   configv.h
   configv.cpp
   datarec.h
@@ -31,10 +31,11 @@ add_library(
   s2settings.h)
 
 target_link_libraries(
-  s2
+  ${PROJECT_NAME}
   PRIVATE gen
   PRIVATE Qt${QT_VERSION_MAJOR}::Core
   PRIVATE Qt${QT_VERSION_MAJOR}::Xml
-  PRIVATE Qt${QT_VERSION_MAJOR}::Network)
+  PRIVATE Qt${QT_VERSION_MAJOR}::Network
+  PRIVATE Qt${QT_VERSION_MAJOR}::Xml)
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE ${PROJECT_NAME}_LIBRARY)

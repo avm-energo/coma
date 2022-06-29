@@ -126,12 +126,12 @@ Error::Msg Tune84Temp60::waitForTempToRise()
         1800 }; // isallowedtostop = true, isIncrement = false, format: mm:ss, 30 minutes
     ww->Init(wws);
     ww->SetMessage("Пожалуйста, подождите");
-    StdFunc::setCancelDisabled(); // to prevent cancellation of the main algorythm while breaking waiting
+    StdFunc::SetCancelDisabled(); // to prevent cancellation of the main algorythm while breaking waiting
     QEventLoop loop;
     connect(ww, &WaitWidget::finished, &loop, &QEventLoop::quit);
     ww->Start();
     loop.exec();
-    StdFunc::setCancelEnabled();
+    StdFunc::SetCancelEnabled();
     //    if (StdFunc::isCancelled())
     //        return Error::Msg::ResEmpty;
     return Error::Msg::NoError;
@@ -192,7 +192,7 @@ Error::Msg Tune84Temp60::showSignalsDialog()
 
 Error::Msg Tune84Temp60::analogMeasurement()
 {
-    emit setProgressSize(StdFunc::tuneRequestCount());
+    emit setProgressSize(StdFunc::TuneRequestCount());
     //    startWait();
     int i;
     for (i = 0; i < 6; ++i)
@@ -203,7 +203,7 @@ Error::Msg Tune84Temp60::analogMeasurement()
     }
     m_midTuneStruct.tmk = 0.0;
     i = 0;
-    while ((!StdFunc::isCancelled()) && (i < StdFunc::tuneRequestCount()))
+    while ((!StdFunc::IsCancelled()) && (i < StdFunc::TuneRequestCount()))
     {
         m_bd0->readAndUpdate();
         m_bdain->readAndUpdate();
@@ -220,12 +220,12 @@ Error::Msg Tune84Temp60::analogMeasurement()
     }
     for (i = 0; i < 6; ++i)
     {
-        m_midTuneStruct.u[i] /= StdFunc::tuneRequestCount();
+        m_midTuneStruct.u[i] /= StdFunc::TuneRequestCount();
         if (i < 3)
-            m_midTuneStruct.y[i] /= StdFunc::tuneRequestCount();
+            m_midTuneStruct.y[i] /= StdFunc::TuneRequestCount();
     }
-    m_midTuneStruct.tmk /= StdFunc::tuneRequestCount();
-    if (StdFunc::isCancelled())
+    m_midTuneStruct.tmk /= StdFunc::TuneRequestCount();
+    if (StdFunc::IsCancelled())
         return Error::Msg::GeneralError;
     return Error::Msg::NoError;
 }

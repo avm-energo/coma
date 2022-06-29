@@ -56,7 +56,7 @@ template <typename T> QWidget *helper(const T &arg, QWidget *parent, quint16 key
     }
 
     default:
-        qWarning() << "Type not founded";
+        qWarning() << "Type not found";
         // Q_ASSERT(false && "False type");
         widget->deleteLater();
         widget = nullptr;
@@ -415,7 +415,6 @@ static QWidget *createModbusView(QWidget *parent)
 
     return tableView;
 }
-
 bool WidgetFactory::fillBackModbus(quint16 key, const QWidget *parent, ctti::unnamed_type_id_t type, quint16 parentKey)
 {
     auto tableView = parent->findChild<QTableView *>(WidgetFactory::hashedName(type, parentKey));

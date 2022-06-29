@@ -126,7 +126,7 @@ void Protocom::reqTime()
 
 void Protocom::reqFile(quint32 filenum, FileFormat format)
 {
-    QByteArray ba = StdFunc::arrayFromNumber(quint16(filenum));
+    QByteArray ba = StdFunc::ArrayFromNumber(quint16(filenum));
 
     CommandStruct inp {
         Proto::Commands::ReadFile, // Command
@@ -147,7 +147,7 @@ void Protocom::reqStartup(quint32 sigAdr, quint32 sigCount)
         Proto::Commands::FakeReadRegData,               // Fake command
         sigAdr,                                         // Signal addr
         sigCount,                                       // Count signals
-        StdFunc::arrayFromNumber(d->blockByReg(sigAdr)) // Protocom block
+        StdFunc::ArrayFromNumber(d->blockByReg(sigAdr)) // Protocom block
     };
     DataManager::addToInQueue(inp);
     emit wakeUpParser();
@@ -186,7 +186,7 @@ void Protocom::reqBitStrings(quint32 sigAdr, quint32 sigCount)
         Proto::Commands::FakeReadBitString,             // Fake command
         sigAdr,                                         // Signal addr
         sigCount,                                       // Count signals
-        StdFunc::arrayFromNumber(d->blockByReg(sigAdr)) // Protocom block
+        StdFunc::ArrayFromNumber(d->blockByReg(sigAdr)) // Protocom block
     };
     DataManager::addToInQueue(inp);
     emit wakeUpParser();
@@ -228,7 +228,7 @@ void Protocom::reqFloats(quint32 sigAdr, quint32 sigCount)
         Proto::Commands::FakeReadRegData,               // Fake command
         sigAdr,                                         // Signal addr
         sigCount,                                       // Count signals
-        StdFunc::arrayFromNumber(d->blockByReg(sigAdr)) // Protocom block
+        StdFunc::ArrayFromNumber(d->blockByReg(sigAdr)) // Protocom block
     };
     DataManager::addToInQueue(inp);
     emit wakeUpParser();
@@ -342,19 +342,19 @@ void Protocom::writeCommand(Queries::Commands cmd, QVariant item)
     case Commands::WriteMode:
 
         Q_ASSERT(item.canConvert<quint8>());
-        d->handleInt(protoCmd, StdFunc::arrayFromNumber(item.value<quint8>()));
+        d->handleInt(protoCmd, StdFunc::ArrayFromNumber(item.value<quint8>()));
         break;
 
     case Commands::WriteVariant:
 
         Q_ASSERT(item.canConvert<quint8>());
-        d->handleInt(protoCmd, StdFunc::arrayFromNumber(item.value<quint8>()));
+        d->handleInt(protoCmd, StdFunc::ArrayFromNumber(item.value<quint8>()));
         break;
 
     case Commands::EraseTech:
 
         Q_ASSERT(item.canConvert<quint8>());
-        d->handleInt(protoCmd, StdFunc::arrayFromNumber(item.value<quint8>()));
+        d->handleInt(protoCmd, StdFunc::ArrayFromNumber(item.value<quint8>()));
         break;
 
     // default case as case for Proto WCommand
@@ -393,7 +393,7 @@ void Protocom::writeCommand(Queries::Commands cmd, const QVariantList &list)
         for (const auto &i : list)
         {
             const float value = i.value<DataTypes::FloatStruct>().sigVal;
-            block.data.append(StdFunc::arrayFromNumber(value));
+            block.data.append(StdFunc::ArrayFromNumber(value));
         }
         writeCommand(cmd, QVariant::fromValue(block));
         break;

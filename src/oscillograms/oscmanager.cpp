@@ -18,12 +18,13 @@ void OscManager::loadOsc(TrendViewModel *model)
     model->setXmax((static_cast<float>(model->length() / 2)));
     model->setXmin(-model->xmax());
 
-    trendDialog->setAnalogNames(model->analogValues());
     trendDialog->setDigitalNames(model->digitalValues());
     trendDialog->setDigitalColors(model->digitalColors());
+    trendDialog->setDigitalDescriptions(model->digitalDescriptions());
+    trendDialog->setAnalogNames(model->analogValues());
     trendDialog->setAnalogColors(model->analogColors());
-    trendDialog->setDiscreteDescriptions(model->digitalDescriptions());
     trendDialog->setAnalogDescriptions(model->analogDescriptions());
+
     switch (model->idOsc())
     {
     case AVTUK_85::OSC_ID:
@@ -36,15 +37,12 @@ void OscManager::loadOsc(TrendViewModel *model)
         trendDialog->setRange(model->xmin(), model->xmax(), -200, 200);
         break;
     }
-
     case AVTUK_21::OSC_ID_MIN:
     {
         // 10000 мс, 20 мА (сделать автонастройку в зависимости от конфигурации по данному каналу)
         trendDialog->setRange(0, 10000, -20, 20);
-
         break;
     }
-
     case ID_OSC_CH0:
     case ID_OSC_CH0 + 1:
     case ID_OSC_CH0 + 2:
@@ -58,13 +56,14 @@ void OscManager::loadOsc(TrendViewModel *model)
         break;
     }
     }
+
     trendDialog->setTrendModel(model);
     trendDialog->setupPlots();
     trendDialog->setupUI();
     trendDialog->showPlot();
     trendDialog->show();
     qDebug() << trendDialog->size();
-    trendDialog->adjustSize();
+    //trendDialog->adjustSize();
 }
 
 std::unique_ptr<TrendViewModel> OscManager::load(const FileStruct &fs) const
@@ -89,6 +88,7 @@ std::unique_ptr<TrendViewModel> OscManager::load(const Record &record, const Fil
     }
     std::unique_ptr<TrendViewModel> trendViewModel;
     std::unique_ptr<ParseModule> parseModule;
+
     switch (curFileNum)
     {
     case AVTUK_85::OSC_ID:
@@ -124,7 +124,6 @@ std::unique_ptr<TrendViewModel> OscManager::load(const Record &record, const Fil
         trendViewModel = std::make_unique<TrendViewModel21>((record.len));
         break;
     }
-
     default:
         return {};
     }

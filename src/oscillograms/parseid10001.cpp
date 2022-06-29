@@ -1,6 +1,7 @@
 #include "parseid10001.h"
 
-#include "trendviewmodel.h"
+#include "trendview/trendviewmodel.h"
+
 ParseID10001::ParseID10001(const QByteArray &BA) : ParseModule(BA)
 {
 }
@@ -11,7 +12,7 @@ bool ParseID10001::Parse(quint32 id, const S2DataTypes::OscHeader &header, Trend
         return false;
     int position = 0;
     model->addAnalogValue(QString::number(id));
-    const QStringList analogValues = model->analogValues();
+    const auto analogValues = model->analogValues();
     for (quint32 i = 0; i < header.len; ++i) // цикл по точкам
     {
         Point21 point;
