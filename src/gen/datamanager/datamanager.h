@@ -4,8 +4,6 @@
 #include "../datatypes.h"
 #include "../error.h"
 #include "../singleton.h"
-//#include "datarecv.h"
-//#include "s2datatypes.h"
 
 #include <QMutex>
 #include <QObject>
@@ -126,24 +124,10 @@ private:
         {
             m_registers.insert(value.sigAdr, value);
         }
-        // else
-        //     static_assert(always_false_v<T>, "unsupported type!");
     }
 
 signals:
     void DataReceived(const std::size_t &, const QVariant &);
-    // void bitStringReceived(const DataTypes::BitStringStruct &);
-    // void singlePointReceived(const DataTypes::SinglePointWithTimeStruct &);
-    // void floatReceived(const DataTypes::FloatStruct &);
-    // void fileReceived(const DataTypes::FileStruct &);
-    // void dataRecVListReceived(const QList<DataTypes::DataRecV> &);
-    // void responseReceived(const DataTypes::GeneralResponseStruct &);
-    // void oscInfoReceived(const S2DataTypes::OscInfo &);
-    // void swjInfoReceived(const S2DataTypes::SwitchJourInfo &);
-    // void blockReceived(const DataTypes::BlockStruct &);
-    //#ifdef __linux__
-    // void timeReceived(const TimeSpec &);
-    //#endif
 };
 
 #endif // DATAMANAGER_H

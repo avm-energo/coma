@@ -28,16 +28,17 @@ private:
     void SetupUI(QSize pSize);
     QVBoxLayout *GetWorkspace(WorkspaceType);
     void ReadModulesToMasterModel();
-    void ReadModuleToSlaveModel();
-    QStandardItemModel *CreateMasterModel(const int rows, const int cols);
+    QStandardItemModel *CreateMasterModel(const int rows);
     QStandardItemModel *CreateSlaveModel();
-    void ParseXmlToMasterModel(const QDomNode &node, const int &index);
+
+    /// Parsing section
+    void ParseXmlToMasterModel(const QDomNode &node, const QString &filename, int &index);
     void ParseXmlToSlaveModel(QDomNode &node, int index, QStandardItem *parent);
+    int ParseXmlFindAllAttributes(QDomNode &domElement, QStandardItem *element);
+    bool ParseXmlCheck(QDomNode &checkNode, int &index, QStandardItem *parent);
 
 public:
     explicit XmlEditor(QWidget *parent = nullptr);
-
-signals:
 
 public slots:
     void Close();
