@@ -11,10 +11,12 @@ find_package(
 
 add_library(
   ${PROJECT_NAME} STATIC
-  xmleditor.cpp
-  xmleditor.h
   xmlconfigparser.cpp
   xmlconfigparser.h
+  xmleditcheckparser.h
+  xmleditcheckparser.cpp
+  xmleditor.cpp
+  xmleditor.h
   xmlparser.cpp
   xmlparser.h
   ../../settings/settings.qrc)

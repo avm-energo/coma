@@ -3,18 +3,11 @@
 #include "../gen/error.h"
 #include "../gen/stdfunc.h"
 #include "xmlconfigparser.h"
+#include "xmleditcheckparser.h"
 
 #include <QPushButton>
 #include <QStringList>
 #include <QToolBar>
-#include <utility>
-
-std::pair<QDomNode, QStandardItem *> ParseXmlAddCheckSubgroups(
-    QDomNode &checkNode, int &index, QStandardItem *parent, QString &groupName);
-void ParseXmlCheckChildrens(QDomNode &checkNode, int &index, QStandardItem *parent, QString groupName);
-void ParseXmlCheckGroup(QDomNode &groupNode, int &index, QStandardItem *parent);
-void ParseXmlCheckSignal(QDomNode &signalNode, int &index, QStandardItem *parent);
-void ParseXmlCheckRecord(QDomNode &recordNode, int &index, QStandardItem *parent);
 
 XmlEditor::XmlEditor(QWidget *parent) : QDialog(parent, Qt::Window), slaveModel(nullptr), masterModel(nullptr)
 {
@@ -112,7 +105,7 @@ void XmlEditor::ReadModulesToMasterModel()
                 auto domElement = domDoc->documentElement();
                 ParseXmlToMasterModel(domElement, modules[i], i);
             }
-            // Если парсер не смог корректно считать xml файл
+            // Если QtXml парсер не смог корректно считать xml файл
             else
                 qWarning() << errMsg << " Line: " << line << " Column: " << column;
             moduleFile->close();
@@ -222,11 +215,13 @@ void XmlEditor::ParseXmlToSlaveModel(QDomNode &node, int index, QStandardItem *p
         if (node.isElement() && !node.isComment())
         {
             auto name = node.nodeName();
-
             // Парсим ноду check
             if (name == "check")
-                state = ParseXmlCheck(node, index, parent);
-
+            {
+                auto checkParser = new XmlEditCheckParser(slaveModel, this);
+                checkParser->ParseXmlCheck(node, index, parent);
+                state = false;
+            }
             if (state)
             {
                 element = new QStandardItem(name);
@@ -256,7 +251,6 @@ void XmlEditor::ParseXmlToSlaveModel(QDomNode &node, int index, QStandardItem *p
             }
             break;
         }
-
         // Делаем это всё рекурсивно
         if (state)
         {
@@ -291,206 +285,3 @@ int XmlEditor::ParseXmlFindAllAttributes(QDomNode &domNode, QStandardItem *eleme
     }
     return 0;
 }
-
-bool XmlEditor::ParseXmlCheck(QDomNode &checkNode, int &index, QStandardItem *parent)
-{
-    // Парсим имя
-    QString name = "";
-    auto header = checkNode.attributes().namedItem("header");
-    if (!header.isNull())
-        name = header.toAttr().value();
-    else
-        name = checkNode.nodeName();
-
-    if (parent != nullptr)
-    {
-        auto element = new QStandardItem(name);
-        parent->setChild(index, element);
-        index++;
-
-        int newIndex = 0;
-        ParseXmlCheckChildrens(checkNode, newIndex, element, "groups");
-        ParseXmlCheckChildrens(checkNode, newIndex, element, "signals");
-        ParseXmlCheckChildrens(checkNode, newIndex, element, "records");
-    }
-
-    return false;
-}
-
-std::pair<QDomNode, QStandardItem *> ParseXmlAddCheckSubgroups(
-    QDomNode &checkNode, int &index, QStandardItem *parent, QString &groupName)
-{
-    auto checkSubgroup = checkNode.firstChildElement(groupName);
-    if (!checkSubgroup.isNull() && parent != nullptr)
-    {
-        auto group = new QStandardItem(checkSubgroup.nodeName());
-        parent->setChild(index, group);
-        index++;
-        return std::pair(checkSubgroup, group);
-    }
-    else
-        return std::pair(QDomNode(), nullptr);
-}
-
-void ParseXmlCheckChildrens(QDomNode &checkNode, int &index, QStandardItem *parent, QString groupName)
-{
-    auto result = ParseXmlAddCheckSubgroups(checkNode, index, parent, groupName);
-    auto groupNode = result.first;
-    auto newParent = result.second;
-    if (groupNode.hasChildNodes() && newParent != nullptr)
-    {
-        int newIndex = 0;
-        auto groupElement = groupNode.firstChild();
-        while (!groupElement.isNull())
-        {
-            // Если элемент - комментарий
-            if (groupElement.isComment())
-            {
-                groupElement = groupElement.nextSibling();
-                continue;
-            }
-            // парсим элемент из groups
-            if (groupName == "groups")
-                ParseXmlCheckGroup(groupElement, newIndex, newParent);
-            // парсим элемент из signals
-            else if (groupName == "signals")
-                ParseXmlCheckSignal(groupElement, newIndex, newParent);
-            // парсим элемент из records
-            else if (groupName == "records")
-                ParseXmlCheckRecord(groupElement, newIndex, newParent);
-            else
-            {
-                // unexpected, [[maybe_todo]]?
-            }
-            newIndex++;
-            groupElement = groupElement.nextSibling();
-        }
-    }
-    return;
-}
-
-void ParseXmlCheckGroup(QDomNode &groupNode, int &index, QStandardItem *parent)
-{
-    // Имя группы
-    auto nameElement = groupNode.firstChildElement("name");
-    if (!nameElement.isNull())
-    {
-        auto nameText = nameElement.firstChild().toText();
-        if (!nameText.isNull())
-        {
-            auto name = new QStandardItem(nameText.data());
-            parent->setChild(index, 0, name);
-        }
-    }
-    // ID группы
-    auto idElement = groupNode.firstChildElement("id");
-    if (!idElement.isNull())
-    {
-        auto idText = idElement.firstChild().toText();
-        if (!idText.isNull())
-        {
-            auto id = new QStandardItem(idText.data());
-            parent->setChild(index, 1, id);
-        }
-    }
-}
-
-void ParseXmlCheckSignal(QDomNode &signalNode, int &index, QStandardItem *parent)
-{
-    // Тип сигнала
-    auto typeElement = signalNode.firstChildElement("type");
-    if (!typeElement.isNull())
-    {
-        auto typeText = typeElement.firstChild().toText();
-        if (!typeText.isNull())
-        {
-            auto type = new QStandardItem(typeText.data());
-            parent->setChild(index, 0, type);
-        }
-    }
-    // Стартовый адрес
-    auto addrElement = signalNode.firstChildElement("start-addr");
-    if (!addrElement.isNull())
-    {
-        auto addrText = addrElement.firstChild().toText();
-        if (!addrText.isNull())
-        {
-            auto addr = new QStandardItem(addrText.data());
-            parent->setChild(index, 1, addr);
-        }
-    }
-    // Count
-    auto countElement = signalNode.firstChildElement("count");
-    if (!countElement.isNull())
-    {
-        auto countText = countElement.firstChild().toText();
-        if (!countText.isNull())
-        {
-            auto count = new QStandardItem(countText.data());
-            parent->setChild(index, 2, count);
-        }
-    }
-}
-
-void ParseXmlCheckRecord(QDomNode &recordNode, int &index, QStandardItem *parent)
-{
-    // Имя записи
-    auto attrs = recordNode.attributes();
-    if (attrs.count() > 0)
-    {
-        auto headerNode = attrs.namedItem("header");
-        if (!headerNode.isNull())
-        {
-            auto header = headerNode.toAttr().value();
-            auto descNode = attrs.namedItem("desc");
-            if (!descNode.isNull())
-            {
-                auto desc = descNode.toAttr().value();
-                header = header + " (" + desc + ")";
-            }
-            auto head = new QStandardItem(header);
-            parent->setChild(index, 0, head);
-        }
-    }
-    // Группа
-    auto groupElement = recordNode.firstChildElement("group");
-    if (!groupElement.isNull())
-    {
-        auto groupText = groupElement.firstChild().toText();
-        if (!groupText.isNull())
-        {
-            auto group = new QStandardItem(groupText.data());
-            parent->setChild(index, 1, group);
-        }
-    }
-    // Стартовый адрес
-    auto addrElement = recordNode.firstChildElement("start-addr");
-    if (!addrElement.isNull())
-    {
-        auto addrText = addrElement.firstChild().toText();
-        if (!addrText.isNull())
-        {
-            auto addr = new QStandardItem(addrText.data());
-            parent->setChild(index, 2, addr);
-        }
-    }
-    // Count
-    auto countElement = recordNode.firstChildElement("count");
-    if (!countElement.isNull())
-    {
-        auto countText = countElement.firstChild().toText();
-        if (!countText.isNull())
-        {
-            auto count = new QStandardItem(countText.data());
-            parent->setChild(index, 3, count);
-        }
-    }
-}
-
-//
-//
-//
-//
-//
-//
-//
