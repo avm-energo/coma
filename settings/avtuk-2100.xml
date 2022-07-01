@@ -34,14 +34,13 @@
                         </signal>
                     </signals>
                     <records>
-                        <record header="Общие">
+                        <record header="Общие" desc="Температура микроконтроллера, °С">
                             <group>1</group>
-                            <record desc="Температура микроконтроллера, °С">
-                                <start-addr>101</start-addr>
-                            </record>
-                            <record desc="Напряжение батарейки, В">
-                                <start-addr>102</start-addr>
-                            </record>
+                            <start-addr>101</start-addr>
+                        </record>
+                        <record header="Общие" desc="Напряжение батарейки, В">
+                            <group>1</group>
+                            <start-addr>102</start-addr>
                         </record>
                         <record header="Значение по каналу, инж. единицы" desc="Канал №%1">
                             <group>1</group>
@@ -72,4 +71,4 @@
                 </check>
             </resources>
     </module>
-</root>
+</modules>
