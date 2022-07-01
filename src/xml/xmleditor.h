@@ -4,6 +4,7 @@
 #include <QDialog>
 #include <QDir>
 #include <QHBoxLayout>
+#include <QStackedWidget>
 #include <QStandardItemModel>
 #include <QTableView>
 #include <QTreeView>
@@ -20,10 +21,15 @@ private:
         Slave = 2
     };
 
+    // Master items
     QStandardItemModel *masterModel;
     QTableView *masterView;
+
+    // Slave items
+    QStackedWidget *stackWidget;
     QStandardItemModel *slaveModel;
-    QTreeView *slaveView;
+    QTreeView *mainSlaveView;
+    QTableView *specSlaveView;
 
     void SetupUI(QSize pSize);
     QVBoxLayout *GetWorkspace(WorkspaceType);

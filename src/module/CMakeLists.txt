@@ -47,6 +47,7 @@ target_link_libraries(
   PRIVATE
   config
   comaversion
+  dialogs
   gen
   models
   s2

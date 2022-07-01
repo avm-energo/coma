@@ -73,10 +73,21 @@ QVBoxLayout *XmlEditor::GetWorkspace(WorkspaceType type)
     }
     else
     {
-        // Создание и настройка QTreeView
-        slaveView = new QTreeView(this);
-        slaveView->setSortingEnabled(true);
-        workspace->addWidget(slaveView);
+        // Создание и настройка QTreeView для slave
+        mainSlaveView = new QTreeView(this);
+        mainSlaveView->setSortingEnabled(true);
+        mainSlaveView->setHeaderHidden(false);
+
+        // Создание и настройка QTableView для slave
+        specSlaveView = new QTableView(this);
+        specSlaveView->setSortingEnabled(true);
+
+        // Создание и настройка QStackedWidget
+        stackWidget = new QStackedWidget(this);
+        stackWidget->addWidget(mainSlaveView);
+        stackWidget->addWidget(specSlaveView);
+        stackWidget->setCurrentWidget(mainSlaveView);
+        workspace->addWidget(stackWidget);
     }
 
     return workspace;
@@ -129,9 +140,9 @@ QStandardItemModel *XmlEditor::CreateMasterModel(const int rows)
 
 QStandardItemModel *XmlEditor::CreateSlaveModel()
 {
-    auto model = new QStandardItemModel;
-    model->setColumnCount(4);
-    // model->setHeaderData(0, Qt::Horizontal, "Свойства");
+    auto model = new QStandardItemModel(this);
+    model->setColumnCount(1);
+    model->setHeaderData(0, Qt::Horizontal, "Свойства");
     return model;
 }
 
@@ -175,29 +186,34 @@ void XmlEditor::MasterItemSelected(const QModelIndex &index)
     auto dataFilename = masterModel->data(indexFilename);
     if (dataFilename.canConvert<QString>())
     {
-        auto module = (qvariant_cast<QString>(dataFilename));
-        QDir homeDir(StdFunc::GetSystemHomeDir());
-
         if (slaveModel == nullptr)
         {
             slaveModel = CreateSlaveModel();
-            slaveView->setModel(slaveModel);
+            mainSlaveView->setModel(slaveModel);
         }
         else
         {
             slaveModel->clear();
-            slaveModel->setColumnCount(4);
+            slaveModel->setHorizontalHeaderLabels({ "Свойства" });
         }
 
         auto domDoc = new QDomDocument;
+        QDir homeDir(StdFunc::GetSystemHomeDir());
+        auto module = (qvariant_cast<QString>(dataFilename));
         auto moduleFile = new QFile(homeDir.filePath(module));
         if (moduleFile->open(QIODevice::ReadOnly))
         {
-            if (domDoc->setContent(moduleFile))
+            QString errMsg = "";
+            int line = 0, column = 0;
+            if (domDoc->setContent(moduleFile, &errMsg, &line, &column))
             {
-                auto domElement = domDoc->documentElement().firstChild();
+                // auto domElement = domDoc->documentElement().firstChild();
+                auto domElement = domDoc->documentElement();
                 ParseXmlToSlaveModel(domElement, 0, nullptr);
             }
+            // Если QtXml парсер не смог корректно считать xml файл
+            else
+                qWarning() << errMsg << " Line: " << line << " Column: " << column;
             moduleFile->close();
         }
         delete domDoc;
@@ -211,32 +227,32 @@ void XmlEditor::ParseXmlToSlaveModel(QDomNode &node, int index, QStandardItem *p
     {
         QStandardItem *element = nullptr;
         auto newIndex = 0;
-        auto state = true;
+        // auto state = true;
         if (node.isElement() && !node.isComment())
         {
             auto name = node.nodeName();
             // Парсим ноду check
-            if (name == "check")
+            // if (name == "check")
+            // {
+            //    auto checkParser = new XmlEditCheckParser(slaveModel, this);
+            //    checkParser->ParseXmlCheck(node, index, parent);
+            //    state = false;
+            // }
+            // if (state)
+            // {
+            element = new QStandardItem(name);
+            if (parent == nullptr)
             {
-                auto checkParser = new XmlEditCheckParser(slaveModel, this);
-                checkParser->ParseXmlCheck(node, index, parent);
-                state = false;
+                parent = element;
+                slaveModel->setItem(0, parent);
             }
-            if (state)
+            else
             {
-                element = new QStandardItem(name);
-                if (parent == nullptr)
-                {
-                    parent = element;
-                    slaveModel->setItem(0, parent);
-                }
-                else
-                {
-                    parent->setChild(index, element);
-                    index++;
-                }
-                newIndex = ParseXmlFindAllAttributes(node, element);
+                parent->setChild(index, element);
+                index++;
             }
+            newIndex = ParseXmlFindAllAttributes(node, element);
+            // }
         }
         else if (node.isText())
         {
@@ -252,11 +268,11 @@ void XmlEditor::ParseXmlToSlaveModel(QDomNode &node, int index, QStandardItem *p
             break;
         }
         // Делаем это всё рекурсивно
-        if (state)
-        {
-            auto cnode = node.firstChild();
-            ParseXmlToSlaveModel(cnode, newIndex, element);
-        }
+        // if (state)
+        // {
+        auto cnode = node.firstChild();
+        ParseXmlToSlaveModel(cnode, newIndex, element);
+        // }
         node = node.nextSibling();
     }
 }
