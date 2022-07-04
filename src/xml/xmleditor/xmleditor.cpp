@@ -1,8 +1,8 @@
 #include "xmleditor.h"
 
-#include "../gen/error.h"
-#include "../gen/stdfunc.h"
-#include "xmlconfigparser.h"
+#include "../../gen/error.h"
+#include "../../gen/stdfunc.h"
+#include "../xmlconfigparser.h"
 #include "xmleditcheckparser.h"
 
 #include <QPushButton>
@@ -209,7 +209,7 @@ void XmlEditor::MasterItemSelected(const QModelIndex &index)
             {
                 // auto domElement = domDoc->documentElement().firstChild();
                 auto domElement = domDoc->documentElement();
-                ParseXmlToSlaveModel(domElement, 0, nullptr);
+                // ParseXmlToSlaveModel(domElement, 0, nullptr);
             }
             // Если QtXml парсер не смог корректно считать xml файл
             else
@@ -221,6 +221,7 @@ void XmlEditor::MasterItemSelected(const QModelIndex &index)
     }
 }
 
+/*
 void XmlEditor::ParseXmlToSlaveModel(QDomNode &node, int index, QStandardItem *parent)
 {
     while (!node.isNull())
@@ -301,3 +302,4 @@ int XmlEditor::ParseXmlFindAllAttributes(QDomNode &domNode, QStandardItem *eleme
     }
     return 0;
 }
+*/

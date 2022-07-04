@@ -1,6 +1,22 @@
 #include "xmlproxymodel.h"
 
-XmlProxyModel::XmlProxyModel(QObject *parent) : QObject(parent)
+const std::map<QString, GroupTypes> XmlProxyModel::types {
+    { "resources", GroupTypes::Resources }, //
+    { "check", GroupTypes::Check },         //
+    { "groups", GroupTypes::Groups },       //
+    { "signals", GroupTypes::Signals },     //
+    { "records", GroupTypes::Records }      //
+};
+
+const std::map<GroupTypes, QStringList> XmlProxyModel::settings {
+    { GroupTypes::Resources, { "" } }, //
+    { GroupTypes::Check, { "" } },     //
+    { GroupTypes::Groups, { "" } },    //
+    { GroupTypes::Signals, { "" } },   //
+    { GroupTypes::Records, { "" } }    //
+};
+
+XmlProxyModel::XmlProxyModel(QObject *parent) : QObject(parent), proxyModel(nullptr)
 {
 }
 
@@ -34,6 +50,7 @@ void XmlProxyModel::ParseXmlToProxyModel(QDomNode &node, int index, QStandardIte
                 if (parent != nullptr)
                 {
                     element = new QStandardItem(text.data());
+
                     parent->setChild(0, element);
                 }
             }
@@ -70,8 +87,20 @@ int XmlProxyModel::ParseXmlFindAllAttributes(QDomNode &node, QStandardItem *elem
     return 0;
 }
 
+void XmlProxyModel::ItemAdjuster(QStandardItem *item)
+{
+    auto nodeName = item->data().value<QString>();
+    auto type = types.find(nodeName);
+    if (type != types.cend())
+    {
+        item->setData(type->second, GroupTypeRole);
+    }
+}
+
 void XmlProxyModel::ParseDocument(QDomDocument &doc)
 {
+    if (proxyModel != nullptr)
+        delete proxyModel;
     proxyModel = new QStandardItemModel(this);
     proxyModel->setColumnCount(1);
     ParseXmlToProxyModel(doc, 0, nullptr);

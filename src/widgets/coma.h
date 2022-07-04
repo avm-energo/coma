@@ -5,7 +5,7 @@
 #include "../gen/stdfunc.h"
 #include "../interfaces/settingstypes.h"
 #include "../oscillograms/oscmanager.h"
-#include "../xml/xmleditor.h"
+#include "../xml/xmleditor/xmleditor.h"
 
 #include <QListWidget>
 #include <QMainWindow>

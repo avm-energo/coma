@@ -13,14 +13,16 @@ add_library(
   ${PROJECT_NAME} STATIC
   xmlconfigparser.cpp
   xmlconfigparser.h
-  xmleditcheckparser.cpp
-  xmleditcheckparser.h
-  xmleditor.cpp
-  xmleditor.h
+  xmleditor/xmleditcheckparser.cpp
+  xmleditor/xmleditcheckparser.h
+  xmleditor/xmleditor.cpp
+  xmleditor/xmleditor.h
+  xmleditor/xmlproxymodel.cpp
+  xmleditor/xmlproxymodel.h
+  xmleditor/models/xmlmodel.h
+  xmleditor/models/xmlmodel.cpp
   xmlparser.cpp
   xmlparser.h
-  xmlproxymodel.cpp
-  xmlproxymodel.h
   ../../settings/settings.qrc)
 
 target_link_libraries(
