@@ -199,8 +199,8 @@ void XmlEditor::MasterItemSelected(const QModelIndex &index)
 
         auto domDoc = new QDomDocument;
         QDir homeDir(StdFunc::GetSystemHomeDir());
-        auto module = (qvariant_cast<QString>(dataFilename));
-        auto moduleFile = new QFile(homeDir.filePath(module));
+        auto filename = (qvariant_cast<QString>(dataFilename));
+        auto moduleFile = new QFile(homeDir.filePath(filename));
         if (moduleFile->open(QIODevice::ReadOnly))
         {
             QString errMsg = "";

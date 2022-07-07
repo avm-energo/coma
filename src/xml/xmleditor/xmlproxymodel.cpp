@@ -9,11 +9,11 @@ const std::map<QString, GroupTypes> XmlProxyModel::types {
 };
 
 const std::map<GroupTypes, QStringList> XmlProxyModel::settings {
-    { GroupTypes::Resources, { "" } }, //
-    { GroupTypes::Check, { "" } },     //
-    { GroupTypes::Groups, { "" } },    //
-    { GroupTypes::Signals, { "" } },   //
-    { GroupTypes::Records, { "" } }    //
+    { GroupTypes::Resources, { "XML", "Описание" } }, //
+    { GroupTypes::Check, { "XML", "Описание" } },     //
+    { GroupTypes::Groups, { "" } },                   //
+    { GroupTypes::Signals, { "" } },                  //
+    { GroupTypes::Records, { "" } }                   //
 };
 
 XmlProxyModel::XmlProxyModel(QObject *parent) : QObject(parent), proxyModel(nullptr)

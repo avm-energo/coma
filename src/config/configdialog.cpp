@@ -248,7 +248,7 @@ void ConfigDialog::SetupUI()
         QWidget *widget = factory.createWidget(id, this);
         if (!widget)
         {
-            qWarning() << "Bad config widget for item: " << QString::number(id);
+            qWarning() << "Bad config widget for item: " << id;
             continue;
         }
 
