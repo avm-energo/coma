@@ -4,23 +4,37 @@
 #include <QAbstractTableModel>
 #include <QtXml>
 
-constexpr int GroupTypeRole = 0x0105;
+constexpr int ModelNodeRole = 0x0105;
 
 enum GroupTypes : quint16
 {
-    Resources = 0,
+    None = 0,
+    Resources,
     Check,
     Groups,
     Signals,
     Records
 };
 
+class XmlModel;
+/// \brief Структура для хранения узла хранимой подмодели
+struct ModelNode
+{
+    XmlModel *modelPtr;
+    GroupTypes modelType;
+};
+Q_DECLARE_METATYPE(ModelNode);
+
+/// \brief Базовый абстрактный класс для моделей XML узлов
 class XmlModel : public QAbstractTableModel
 {
     Q_OBJECT
+    friend class ModelFabric;
+
 protected:
     int mRows, mCols;
     QHash<QModelIndex, QVariant> mHashTable;
+    QHash<int, ModelNode> mNodes;
 
     static const std::map<QString, GroupTypes> types;        ///< Types Map with enumeration, key = name of group type
     static const std::map<GroupTypes, QStringList> settings; ///< Settings Map, key = group type enumeration

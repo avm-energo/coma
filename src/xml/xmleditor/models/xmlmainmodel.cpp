@@ -19,9 +19,10 @@ void XmlMainModel::setDataNode(GroupTypes type, QDomNode &root)
                 {
                     setHorizontalHeaderLabels(settings.find(type)->second);
                     auto child = res.firstChild();
+                    int row = 0;
                     while (!child.isNull())
                     {
-                        CheckChilds(child);
+                        CheckChilds(child, row);
                         child = child.nextSibling();
                     }
                 }
@@ -34,14 +35,13 @@ void XmlMainModel::setDataNode(GroupTypes type, QDomNode &root)
     }
 }
 
-void XmlMainModel::CheckChilds(QDomNode &child)
+void XmlMainModel::CheckChilds(QDomNode &child, int &row)
 {
-    int row = 0;
     auto childNodeName = child.nodeName();
     auto type = types.find(childNodeName);
     if (type != types.cend())
     {
-        auto groupType = type->second;
+        auto modelNode = ModelNode { nullptr, type->second };
         auto itemIndex = index(row, 0);
         auto itemHeaderIndex = index(row, 1);
         setData(itemIndex, childNodeName);

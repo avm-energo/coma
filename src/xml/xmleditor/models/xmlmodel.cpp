@@ -24,14 +24,14 @@ QVariant XmlModel::data(const QModelIndex &index, int nRole) const
 {
     if (index.isValid())
     {
-        switch (nRole)
-        {
-        case Qt::DisplayRole:
-        case Qt::EditRole:
-        case (Qt::UserRole + 1):
+        if (nRole == Qt::DisplayRole || nRole == Qt::EditRole || nRole == (Qt::UserRole + 1))
             return mHashTable.value(index, QString(""));
-        default:
-            break;
+        else if (nRole == ModelNodeRole)
+        {
+            auto val = mNodes.value(index.row(), { nullptr, GroupTypes::None });
+            QVariant result;
+            result.setValue(val);
+            return result;
         }
     }
     return QVariant();
@@ -47,6 +47,11 @@ bool XmlModel::setData(const QModelIndex &index, const QVariant &val, int nRole)
             {
                 mHashTable.insert(index, val);
                 emit dataChanged(index, index);
+            }
+            else if (nRole == ModelNodeRole)
+            {
+                if (val.canConvert<ModelNode>())
+                    mNodes.insert(index.row(), val.value<ModelNode>());
             }
         }
     }
