@@ -18,7 +18,8 @@ bool ParseID10001::Parse(quint32 id, const S2DataTypes::OscHeader &header, Trend
         Point21 point;
         if (!PosPlusPlus(&point, position, sizeof(Point21)))
             return false;
-        model->addAnalogPoint(analogValues.at(0), point.An);
+        if (!model->addAnalogPoint(analogValues.at(0), point.An))
+            return false;
     }
 
     return true;

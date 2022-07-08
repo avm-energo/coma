@@ -6,17 +6,19 @@ TrendViewModel::TrendViewModel(int pointsnum) : pointsNum(pointsnum)
 {
 }
 
-void TrendViewModel::addAnalogPoint(const QString &graphNum, double pointValue)
+bool TrendViewModel::addAnalogPoint(const QString &graphNum, double pointValue)
 {
     if (m_analogMainData.contains(graphNum))
     {
         QVector<double> tmpv = m_analogMainData.value(graphNum);
         tmpv.append(pointValue);
         m_analogMainData.insert(graphNum, tmpv);
+        return true;
     }
     else
     {
         qWarning() << "Graph with name " << graphNum << " not found!";
+        return false;
     }
 }
 

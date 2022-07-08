@@ -6,8 +6,6 @@
 #include <../qcustomplot/qcustomplot.h>
 #include <QDialog>
 
-constexpr int MAXGRAPHSPERPLOT = 14;
-
 class QToolBar;
 class SignalChooseWidget;
 

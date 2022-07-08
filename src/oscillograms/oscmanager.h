@@ -50,6 +50,7 @@ protected:
         return ((record.ID == AVTUK_85::OSC_ID)                                             //
             || (record.ID == AVTUK_8X::OSC_ID)                                              //
             || ((record.ID >= AVTUK_21::OSC_ID_MIN) && (record.ID <= AVTUK_21::OSC_ID_MAX)) //
+            || (record.ID == AVTUK_KDV::OSC_ID) || (record.ID == AVTUK_KDV::SPEC_ID)        //
         );
     };
 

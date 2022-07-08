@@ -1,12 +1,12 @@
-#include "parseid10020.h"
+#include "parseid10050.h"
 
 #include "trendview/trendviewmodel.h"
 
-ParseID10020::ParseID10020(const QByteArray &BA) : ParseModule(BA)
+ParseID10050::ParseID10050(const QByteArray &BA) : ParseModule(BA)
 {
 }
 
-bool ParseID10020::Parse(quint32 id, const S2DataTypes::OscHeader &header, TrendViewModel *model)
+bool ParseID10050::Parse(quint32 id, const S2DataTypes::OscHeader &header, TrendViewModel *model)
 {
     Q_UNUSED(id)
     const auto analogValues = model->analogValues();
@@ -21,8 +21,8 @@ bool ParseID10020::Parse(quint32 id, const S2DataTypes::OscHeader &header, Trend
     auto position = 0;
     for (quint32 i = 0; i < header.len; ++i) // цикл по точкам
     {
-        Point8x point;
-        if (!PosPlusPlus(&point, position, sizeof(Point8x)))
+        PointSpec point;
+        if (!PosPlusPlus(&point, position, sizeof(PointSpec)))
             return false;
         for (std::size_t j = 0; j < point.An.size(); ++j)
         {

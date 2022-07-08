@@ -586,10 +586,7 @@ void TrendViewDialog::analogAxisDefault(int graphNum, QCPAxisRect *axisRect)
                     qSin(count * 0.3 + 1.5) * 80 + 80));
             graph->setPen(pen);
             graph->valueAxis()->setRange(sizeY.min, sizeY.max);
-            if ((m_trendModel->idOsc() > ID_OSC_CH0) && (m_trendModel->idOsc() < ID_OSC_CH7))
-                graph->keyAxis()->setLabel("Время, мкс");
-            else
-                graph->keyAxis()->setLabel("Время, мс");
+            graph->keyAxis()->setLabel(m_trendModel->xAxisDescription());
             graph->keyAxis()->setRange(sizeX.min, sizeX.max);
             graph->setName(tmps);
             // Adding graph in legend of plot
