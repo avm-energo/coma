@@ -3,7 +3,6 @@
 #include "../../gen/error.h"
 #include "../../gen/stdfunc.h"
 #include "../xmlconfigparser.h"
-#include "xmleditcheckparser.h"
 
 #include <QPushButton>
 #include <QStringList>
@@ -199,7 +198,7 @@ void XmlEditor::MasterItemSelected(const QModelIndex &index)
 
         auto domDoc = new QDomDocument;
         QDir homeDir(StdFunc::GetSystemHomeDir());
-        auto filename = (qvariant_cast<QString>(dataFilename));
+        auto filename = qvariant_cast<QString>(dataFilename);
         auto moduleFile = new QFile(homeDir.filePath(filename));
         if (moduleFile->open(QIODevice::ReadOnly))
         {
@@ -221,7 +220,6 @@ void XmlEditor::MasterItemSelected(const QModelIndex &index)
     }
 }
 
-/*
 void XmlEditor::ParseXmlToSlaveModel(QDomNode &node, int index, QStandardItem *parent)
 {
     while (!node.isNull())
@@ -302,4 +300,3 @@ int XmlEditor::ParseXmlFindAllAttributes(QDomNode &domNode, QStandardItem *eleme
     }
     return 0;
 }
-*/

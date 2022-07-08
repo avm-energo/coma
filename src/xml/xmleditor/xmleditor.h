@@ -39,8 +39,8 @@ private:
 
     /// Parsing section
     void ParseXmlToMasterModel(const QDomNode &node, const QString &filename, int &index);
-    // void ParseXmlToSlaveModel(QDomNode &node, int index, QStandardItem *parent);
-    // int ParseXmlFindAllAttributes(QDomNode &domElement, QStandardItem *element);
+    void ParseXmlToSlaveModel(QDomNode &node, int index, QStandardItem *parent);
+    int ParseXmlFindAllAttributes(QDomNode &domElement, QStandardItem *element);
 
 public:
     explicit XmlEditor(QWidget *parent = nullptr);
