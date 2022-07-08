@@ -88,6 +88,7 @@ add_library(
 
 target_link_libraries(
   ${PROJECT_NAME}
+  PRIVATE dialogs
   PRIVATE oscillograms
   PRIVATE module
   PRIVATE s2

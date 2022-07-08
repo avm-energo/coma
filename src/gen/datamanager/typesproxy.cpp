@@ -2,7 +2,12 @@
 
 DataTypesProxy::DataTypesProxy(QObject *parent) : QObject(parent), hash_type(0)
 {
-    //    auto mngr = &DataManager::GetInstance();
-    //    auto conn = connect(mngr, &DataManager::DataReceived, this, &DataTypesProxy::DataHandled);
-    //    Q_ASSERT(bool(conn));
+}
+
+void DataTypesProxy::DataHandled(const std::size_t &hash, const QVariant &var)
+{
+    if (hash_type == hash)
+    {
+        emit DataStorable(var);
+    }
 }

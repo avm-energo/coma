@@ -9,14 +9,12 @@ find_package(
   COMPONENTS Core Xml Widgets
   REQUIRED)
 
+file(GLOB_RECURSE files_cpp ${PROJECT_SOURCE_DIR}/*.cpp)
+file(GLOB_RECURSE files_h ${PROJECT_SOURCE_DIR}/*.h)
+
 add_library(
   ${PROJECT_NAME} STATIC
-  xmleditor.cpp
-  xmleditor.h
-  xmlconfigparser.cpp
-  xmlconfigparser.h
-  xmlparser.cpp
-  xmlparser.h
+  ${files_cpp} ${files_h}
   ../../settings/settings.qrc)
 
 target_link_libraries(

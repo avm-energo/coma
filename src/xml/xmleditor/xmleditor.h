@@ -4,6 +4,7 @@
 #include <QDialog>
 #include <QDir>
 #include <QHBoxLayout>
+#include <QStackedWidget>
 #include <QStandardItemModel>
 #include <QTableView>
 #include <QTreeView>
@@ -20,24 +21,29 @@ private:
         Slave = 2
     };
 
+    // Master items
     QStandardItemModel *masterModel;
     QTableView *masterView;
+
+    // Slave items
+    QStackedWidget *stackWidget;
     QStandardItemModel *slaveModel;
-    QTreeView *slaveView;
+    QTreeView *mainSlaveView;
+    QTableView *specSlaveView;
 
     void SetupUI(QSize pSize);
     QVBoxLayout *GetWorkspace(WorkspaceType);
     void ReadModulesToMasterModel();
-    void ReadModuleToSlaveModel();
-    QStandardItemModel *CreateMasterModel(const int rows, const int cols);
+    QStandardItemModel *CreateMasterModel(const int rows);
     QStandardItemModel *CreateSlaveModel();
-    void ParseXmlToMasterModel(const QDomNode &node, const int &index);
+
+    /// Parsing section
+    void ParseXmlToMasterModel(const QDomNode &node, const QString &filename, int &index);
     void ParseXmlToSlaveModel(QDomNode &node, int index, QStandardItem *parent);
+    int ParseXmlFindAllAttributes(QDomNode &domElement, QStandardItem *element);
 
 public:
     explicit XmlEditor(QWidget *parent = nullptr);
-
-signals:
 
 public slots:
     void Close();

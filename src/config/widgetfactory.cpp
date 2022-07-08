@@ -56,8 +56,8 @@ template <typename T> QWidget *helper(const T &arg, QWidget *parent, quint16 key
     }
 
     default:
-        qWarning() << "Type not found";
-        // Q_ASSERT(false && "False type");
+        qWarning() << "Type not found " << key;
+        Q_ASSERT(false && "False type");
         widget->deleteLater();
         widget = nullptr;
         break;

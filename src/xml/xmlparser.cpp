@@ -463,6 +463,7 @@ DataTypes::RecordPair XmlParser::parseRecordConfig(QDomElement domElement, confi
         return {};
 
     // override settings
+    auto name = domElement.text();
     auto widgetElement = domElement.firstChildElement("widget");
     if (!widgetElement.isNull())
     {
@@ -810,13 +811,13 @@ void XmlParser::traverseNode(const QDomNode &node, ConfigSettings &settings)
                     recordChild = domElement.firstChildElement(keys::type);
                     if (!recordChild.isNull())
                     {
-                        settings.s2filesMap->insert(id, parseType(domElement));
+                        settings.s2filesMap->insert(id, parseType(recordChild));
                     }
 
                     recordChild = domElement.firstChildElement(keys::widget);
                     if (!recordChild.isNull())
                     {
-                        settings.s2widgetMap->insert({ id, parseWidget(domElement) });
+                        settings.s2widgetMap->insert({ id, parseWidget(recordChild) });
                     }
 
                     /*
