@@ -15,7 +15,7 @@
                         <id>2</id>
                     </group>
                 </groups>
-                <signals>
+                <signals header="Сигналы">
                     <signal>
                         <type>M_ME</type>
                         <uint-set>
@@ -34,7 +34,7 @@
                         <count>40</count>
                     </signal>
                 </signals>
-                <records>
+                <records header="Записи">
                     <record header="Общие" desc="Температура микроконтроллера, °С">
                         <group>1</group>
                         <start-addr>101</start-addr>

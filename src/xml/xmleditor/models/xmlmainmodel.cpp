@@ -4,48 +4,8 @@ XmlMainModel::XmlMainModel(int rows, int cols, QObject *parent) : XmlModel(rows,
 {
 }
 
-void XmlMainModel::setDataNode(GroupTypes type, QDomNode &root)
+void XmlMainModel::parseNode(QDomNode &node, int &row)
 {
-    if (!root.isNull())
-    {
-        auto rootName = root.nodeName();
-        if (rootName == "modules")
-        {
-            auto module = root.firstChildElement("module");
-            if (!module.isNull())
-            {
-                auto res = module.firstChildElement("resources");
-                if (!res.isNull())
-                {
-                    setHorizontalHeaderLabels(settings.find(type)->second);
-                    auto child = res.firstChild();
-                    int row = 0;
-                    while (!child.isNull())
-                    {
-                        CheckChilds(child, row);
-                        child = child.nextSibling();
-                    }
-                }
-            }
-        }
-        else if (rootName == "s2files")
-        {
-            // TODO: сделать особый обработчик для s2files ноды
-        }
-    }
-}
-
-void XmlMainModel::CheckChilds(QDomNode &child, int &row)
-{
-    auto childNodeName = child.nodeName();
-    auto type = types.find(childNodeName);
-    if (type != types.cend())
-    {
-        auto modelNode = ModelNode { nullptr, type->second };
-        auto itemIndex = index(row, 0);
-        auto itemHeaderIndex = index(row, 1);
-        setData(itemIndex, childNodeName);
-        setData(itemHeaderIndex, child.toElement().attribute("header", ""));
-        row++;
-    }
+    Q_UNUSED(node);
+    Q_UNUSED(row);
 }

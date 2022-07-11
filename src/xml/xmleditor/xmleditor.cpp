@@ -8,7 +8,7 @@
 #include <QStringList>
 #include <QToolBar>
 
-XmlEditor::XmlEditor(QWidget *parent) : QDialog(parent, Qt::Window), slaveModel(nullptr), masterModel(nullptr)
+XmlEditor::XmlEditor(QWidget *parent) : QDialog(parent, Qt::Window), manager(nullptr), masterModel(nullptr)
 {
     if (parent != nullptr)
     {
@@ -72,20 +72,16 @@ QVBoxLayout *XmlEditor::GetWorkspace(WorkspaceType type)
     }
     else
     {
-        // Создание и настройка QTreeView для slave
-        mainSlaveView = new QTreeView(this);
-        mainSlaveView->setSortingEnabled(true);
-        mainSlaveView->setHeaderHidden(false);
-
         // Создание и настройка QTableView для slave
-        specSlaveView = new QTableView(this);
-        specSlaveView->setSortingEnabled(true);
+        tableSlaveView = new QTableView(this);
+        tableSlaveView->setSortingEnabled(true);
+        tableSlaveView->setSelectionBehavior(QAbstractItemView::SelectionBehavior::SelectRows);
+        tableSlaveView->setSelectionMode(QAbstractItemView::SelectionMode::SingleSelection);
 
         // Создание и настройка QStackedWidget
         stackWidget = new QStackedWidget(this);
-        stackWidget->addWidget(mainSlaveView);
-        stackWidget->addWidget(specSlaveView);
-        stackWidget->setCurrentWidget(mainSlaveView);
+        stackWidget->addWidget(tableSlaveView);
+        stackWidget->setCurrentWidget(tableSlaveView);
         workspace->addWidget(stackWidget);
     }
 
@@ -137,6 +133,7 @@ QStandardItemModel *XmlEditor::CreateMasterModel(const int rows)
     return model;
 }
 
+/*
 QStandardItemModel *XmlEditor::CreateSlaveModel()
 {
     auto model = new QStandardItemModel(this);
@@ -144,6 +141,7 @@ QStandardItemModel *XmlEditor::CreateSlaveModel()
     model->setHeaderData(0, Qt::Horizontal, "Свойства");
     return model;
 }
+*/
 
 void XmlEditor::ParseXmlToMasterModel(const QDomNode &node, const QString &filename, int &index)
 {
@@ -185,16 +183,8 @@ void XmlEditor::MasterItemSelected(const QModelIndex &index)
     auto dataFilename = masterModel->data(indexFilename);
     if (dataFilename.canConvert<QString>())
     {
-        if (slaveModel == nullptr)
-        {
-            slaveModel = CreateSlaveModel();
-            mainSlaveView->setModel(slaveModel);
-        }
-        else
-        {
-            slaveModel->clear();
-            slaveModel->setHorizontalHeaderLabels({ "Свойства" });
-        }
+        if (manager == nullptr)
+            manager = new ModelManager(tableSlaveView, this);
 
         auto domDoc = new QDomDocument;
         QDir homeDir(StdFunc::GetSystemHomeDir());
@@ -208,6 +198,7 @@ void XmlEditor::MasterItemSelected(const QModelIndex &index)
             {
                 // auto domElement = domDoc->documentElement().firstChild();
                 auto domElement = domDoc->documentElement();
+                manager->SetDocument(domElement);
                 // ParseXmlToSlaveModel(domElement, 0, nullptr);
             }
             // Если QtXml парсер не смог корректно считать xml файл
@@ -220,6 +211,7 @@ void XmlEditor::MasterItemSelected(const QModelIndex &index)
     }
 }
 
+/*
 void XmlEditor::ParseXmlToSlaveModel(QDomNode &node, int index, QStandardItem *parent)
 {
     while (!node.isNull())
@@ -300,3 +292,4 @@ int XmlEditor::ParseXmlFindAllAttributes(QDomNode &domNode, QStandardItem *eleme
     }
     return 0;
 }
+*/

@@ -1,6 +1,8 @@
 #ifndef XMLEDITOR_H
 #define XMLEDITOR_H
 
+#include "models/modelmanager.h"
+
 #include <QDialog>
 #include <QDir>
 #include <QHBoxLayout>
@@ -27,20 +29,21 @@ private:
 
     // Slave items
     QStackedWidget *stackWidget;
-    QStandardItemModel *slaveModel;
-    QTreeView *mainSlaveView;
-    QTableView *specSlaveView;
+    // QStandardItemModel *slaveModel;
+    // QTreeView *mainSlaveView;
+    QTableView *tableSlaveView;
+    ModelManager *manager;
 
     void SetupUI(QSize pSize);
     QVBoxLayout *GetWorkspace(WorkspaceType);
     void ReadModulesToMasterModel();
     QStandardItemModel *CreateMasterModel(const int rows);
-    QStandardItemModel *CreateSlaveModel();
+    // QStandardItemModel *CreateSlaveModel();
 
     /// Parsing section
     void ParseXmlToMasterModel(const QDomNode &node, const QString &filename, int &index);
-    void ParseXmlToSlaveModel(QDomNode &node, int index, QStandardItem *parent);
-    int ParseXmlFindAllAttributes(QDomNode &domElement, QStandardItem *element);
+    // void ParseXmlToSlaveModel(QDomNode &node, int index, QStandardItem *parent);
+    // int ParseXmlFindAllAttributes(QDomNode &domElement, QStandardItem *element);
 
 public:
     explicit XmlEditor(QWidget *parent = nullptr);

@@ -1,5 +1,7 @@
 #include "xmlmodel.h"
 
+#include "modelfabric.h"
+
 const std::map<QString, GroupTypes> XmlModel::types {
     { "resources", GroupTypes::Resources }, //
     { "check", GroupTypes::Check },         //
@@ -9,15 +11,16 @@ const std::map<QString, GroupTypes> XmlModel::types {
 };
 
 const std::map<GroupTypes, QStringList> XmlModel::settings {
-    { GroupTypes::Resources, { "XML", "Описание" } }, //
-    { GroupTypes::Check, { "XML", "Описание" } },     //
-    { GroupTypes::Groups, { "" } },                   //
-    { GroupTypes::Signals, { "" } },                  //
-    { GroupTypes::Records, { "" } }                   //
+    { GroupTypes::Resources, { "XML", "Описание" } },                                     //
+    { GroupTypes::Check, { "XML", "Описание" } },                                         //
+    { GroupTypes::Groups, { "Номер группы", "Название" } },                               //
+    { GroupTypes::Signals, { "Тип сигнала", "Стартовый адрес", "Количество" } },          //
+    { GroupTypes::Records, { "Заголовок", "Описание", "Группа", "Адрес", "Количество" } } //
 };
 
 XmlModel::XmlModel(int rows, int cols, QObject *parent) : QAbstractTableModel(parent), mRows(rows), mCols(cols)
 {
+    horizontalHeaders.reserve(mCols);
 }
 
 QVariant XmlModel::data(const QModelIndex &index, int nRole) const
@@ -28,10 +31,8 @@ QVariant XmlModel::data(const QModelIndex &index, int nRole) const
             return mHashTable.value(index, QString(""));
         else if (nRole == ModelNodeRole)
         {
-            auto val = mNodes.value(index.row(), { nullptr, GroupTypes::None });
-            QVariant result;
-            result.setValue(val);
-            return result;
+            auto val = mNodes.value(index.row(), QVariant());
+            return val;
         }
     }
     return QVariant();
@@ -51,7 +52,7 @@ bool XmlModel::setData(const QModelIndex &index, const QVariant &val, int nRole)
             else if (nRole == ModelNodeRole)
             {
                 if (val.canConvert<ModelNode>())
-                    mNodes.insert(index.row(), val.value<ModelNode>());
+                    mNodes.insert(index.row(), val);
             }
         }
     }
@@ -74,12 +75,83 @@ Qt::ItemFlags XmlModel::flags(const QModelIndex &index) const
     return index.isValid() ? (flags | Qt::ItemIsEditable) : flags;
 }
 
+bool XmlModel::setHeaderData(int section, Qt::Orientation orientation, const QVariant &value, int role)
+{
+    // Первоначальная проверка
+    if ((section < 0) //
+        || ((orientation == Qt::Horizontal) && (section >= columnCount()))
+        || ((orientation == Qt::Vertical) && (section >= rowCount())))
+    {
+        return false;
+    }
+
+    if (orientation == Qt::Horizontal && role == Qt::EditRole)
+    {
+        horizontalHeaders.insert(section, value);
+        return true;
+    }
+    return false;
+}
+
+QVariant XmlModel::headerData(int section, Qt::Orientation orientation, int role) const
+{
+    if (orientation == Qt::Orientation::Horizontal && role == Qt::DisplayRole)
+    {
+        if (section >= 0 && section < mCols)
+            return horizontalHeaders.value(section, QVariant());
+    }
+    else if (orientation == Qt::Orientation::Vertical && role == Qt::DisplayRole)
+    {
+        return QVariant::fromValue(QString::number(section + 1));
+    }
+    return QVariant();
+}
+
 void XmlModel::setHorizontalHeaderLabels(const QStringList &labels)
 {
+    if (labels.count() > columnCount())
+        mRows = labels.count();
+
     int column = 0;
     for (auto &label : labels)
     {
         setHeaderData(column, Qt::Horizontal, label);
         column++;
     }
+}
+
+void XmlModel::setDataNode(bool isChildModel, QDomNode &root)
+{
+    int row = 0;
+    if (isChildModel)
+    {
+        auto itemIndex = index(row, 0);
+        setData(itemIndex, QString(".."));
+        row++;
+    }
+    auto child = root.firstChild();
+    while (!child.isNull())
+    {
+        checkChilds(child, row);
+        child = child.nextSibling();
+    }
+}
+
+void XmlModel::checkChilds(QDomNode &child, int &row)
+{
+    auto childNodeName = child.nodeName();
+    auto type = types.find(childNodeName);
+    if (type != types.cend())
+    {
+        auto modelNode = ModelNode { nullptr, type->second };
+        auto itemIndex = index(row, 0);
+        auto itemHeaderIndex = index(row, 1);
+        setData(itemIndex, childNodeName);
+        setData(itemHeaderIndex, child.toElement().attribute("header", ""));
+        ModelFabric::CreateModel(modelNode, child, this);
+        setData(itemIndex, QVariant::fromValue(modelNode), ModelNodeRole);
+    }
+    else
+        parseNode(child, row);
+    row++;
 }
