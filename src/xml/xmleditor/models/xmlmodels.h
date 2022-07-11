@@ -1,7 +1,14 @@
-#ifndef XMLCHECKMODEL_H
-#define XMLCHECKMODEL_H
+#ifndef XMLMODELS_H
+#define XMLMODELS_H
 
 #include "xmlmodel.h"
+
+class XmlMainModel : public XmlModel
+{
+public:
+    XmlMainModel(int rows = 1, int cols = 1, QObject *parent = nullptr);
+    virtual void parseNode(QDomNode &node, int &row) override;
+};
 
 class XmlCheckModel : public XmlModel
 {
@@ -31,4 +38,4 @@ public:
     virtual void parseNode(QDomNode &node, int &row) override;
 };
 
-#endif // XMLCHECKMODEL_H
+#endif // XMLMODELS_H

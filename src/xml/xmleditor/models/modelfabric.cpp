@@ -1,7 +1,6 @@
 #include "modelfabric.h"
 
-#include "xmlcheckmodel.h"
-#include "xmlmainmodel.h"
+#include "xmlmodels.h"
 
 ModelFabric::ModelFabric()
 {

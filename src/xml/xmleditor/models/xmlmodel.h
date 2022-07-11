@@ -41,6 +41,9 @@ protected:
     QHash<int, QVariant> mNodes;
     QHash<int, QVariant> horizontalHeaders;
 
+    void parseTag(QDomNode &node, QString tagName, int row, int col);
+    void parseAttribute(QDomNode &node, QString attrName, int row, int col);
+
 public:
     static const std::map<QString, GroupTypes> types;        ///< Types Map with enumeration, key = name of group type
     static const std::map<GroupTypes, QStringList> settings; ///< Settings Map, key = group type enumeration

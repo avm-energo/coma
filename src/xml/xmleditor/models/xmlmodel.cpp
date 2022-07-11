@@ -155,3 +155,28 @@ void XmlModel::checkChilds(QDomNode &child, int &row)
         parseNode(child, row);
     row++;
 }
+
+void XmlModel::parseTag(QDomNode &node, QString tagName, int row, int col)
+{
+    auto namedNode = node.firstChildElement(tagName);
+    if (!namedNode.isNull())
+    {
+        auto tagIndex = index(row, col);
+        auto tag = namedNode.firstChild().toText().data();
+        setData(tagIndex, tag);
+    }
+}
+
+void XmlModel::parseAttribute(QDomNode &node, QString attrName, int row, int col)
+{
+    if (node.hasAttributes())
+    {
+        auto headerNode = node.attributes().namedItem(attrName);
+        if (!headerNode.isNull())
+        {
+            auto headerIndex = index(row, col);
+            auto header = headerNode.firstChild().toText().data();
+            setData(headerIndex, header);
+        }
+    }
+}
