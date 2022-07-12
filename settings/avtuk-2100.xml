@@ -15,25 +15,6 @@
                         <id>2</id>
                     </group>
                 </groups>
-                <signals header="Сигналы">
-                    <signal>
-                        <type>M_ME</type>
-                        <uint-set>
-                            <item>1</item>
-                        </uint-set>
-                        <start-addr>101</start-addr>
-                        <count>2</count>
-                    </signal>
-                    <signal>
-                        <type>M_ME</type>
-                        <uint-set>
-                            <item>1</item>
-                            <item>10</item>
-                        </uint-set>
-                        <start-addr>1001</start-addr>
-                        <count>40</count>
-                    </signal>
-                </signals>
                 <records header="Записи">
                     <record header="Общие" desc="Температура микроконтроллера, °С">
                         <group>1</group>
@@ -70,6 +51,39 @@
                     </record>
                 </records>
             </check>
+
+            <!-- Раздел сигналов -->
+            <!-- See also XmlParserHelper::parseSignals in xmlparser.cpp -->
+            <signals header="Сигналы">
+                <signal>
+                    <id>1</id>
+                    <!--
+                    <type>M_ME</type>
+                    <uint-set>
+                        <item>1</item>
+                    </uint-set>
+                    -->
+                    <start-addr>101</start-addr>
+                    <count>2</count>
+                </signal>
+                <signal>
+                    <id>2</id>
+                    <!--
+                    <type>M_ME</type>
+                    <uint-set>
+                        <item>1</item>
+                        <item>10</item>
+                    </uint-set>
+                    -->
+                    <start-addr>1001</start-addr>
+                    <count>40</count>
+                </signal>
+                <signal>
+                    <id>3</id>
+                    <start-addr>1201</start-addr>
+                    <count>32</count>
+                </signal>
+            </signals>
 
             <alarm>
                 <string-array name="events">
@@ -185,18 +199,27 @@
 
             <protocom>
                 <group>
+                    <signal-id>1</signal-id>
+                    <!--
                     <start-addr>101</start-addr>
                     <count>2</count>
+                    -->
                     <block>0</block>
                 </group>
                 <group>
+                    <signal-id>2</signal-id>
+                    <!--
                     <start-addr>1001</start-addr>
                     <count>40</count>
+                    -->
                     <block>1</block>
                 </group>
                 <group id="alarmModule">
+                    <signal-id>3</signal-id>
+                    <!--
                     <start-addr>1201</start-addr>
                     <count>32</count>
+                    -->
                     <block>100</block>
                   </group>
             </protocom>

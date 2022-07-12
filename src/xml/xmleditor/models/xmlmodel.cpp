@@ -10,7 +10,7 @@ const std::map<QString, GroupTypes> XmlModel::types {
     { "records", GroupTypes::Records }      //
 };
 
-const std::map<GroupTypes, QStringList> XmlModel::settings {
+const std::map<GroupTypes, QStringList> XmlModel::headers {
     { GroupTypes::Resources, { "XML", "Описание" } },                                     //
     { GroupTypes::Check, { "XML", "Описание" } },                                         //
     { GroupTypes::Groups, { "Номер группы", "Название" } },                               //

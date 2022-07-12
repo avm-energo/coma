@@ -8,8 +8,8 @@ ModelFabric::ModelFabric()
 
 void ModelFabric::CreateModel(ModelNode &mNode, QDomNode &root, QObject *parent)
 {
-    auto iter = XmlModel::settings.find(mNode.modelType);
-    if (iter != XmlModel::settings.cend())
+    auto iter = XmlModel::headers.find(mNode.modelType);
+    if (iter != XmlModel::headers.cend())
     {
         auto labels = iter->second;
         auto cols = labels.count(), rows = root.childNodes().count() + 1;
@@ -52,8 +52,8 @@ XmlModel *ModelFabric::CreateMainModel(QDomNode &root, QObject *parent)
                 if (!res.isNull())
                 {
                     auto type = GroupTypes::Resources;
-                    auto iter = XmlModel::settings.find(type);
-                    if (iter != XmlModel::settings.cend())
+                    auto iter = XmlModel::headers.find(type);
+                    if (iter != XmlModel::headers.cend())
                     {
                         auto labels = iter->second;
                         auto cols = labels.count(), rows = res.childNodes().count();

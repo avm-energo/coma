@@ -22,6 +22,7 @@ namespace detail
         std::optional<QString> header;
         std::optional<QStringList> desc;
         std::optional<QStringList> toolTip;
+
         void validate() const
         {
             assert(count.value() == desc.value().count());
@@ -34,6 +35,7 @@ namespace detail
         QString header;
         std::vector<Record> records;
     };
+
     struct Signals
     {
         ctti::unnamed_type_id_t type = 0;
@@ -42,6 +44,7 @@ namespace detail
         uint16_t count;
     };
 }
+
 using itemVariant = std::variant<detail::Record, detail::RecordList>;
 using itemVector = std::vector<itemVariant>;
 using signalsVector = std::vector<detail::Signals>;

@@ -2,11 +2,11 @@
 #define XMLMODEL_H
 
 #include <QAbstractTableModel>
-#include <QVector>
 #include <QtXml>
 
-constexpr int ModelNodeRole = 0x0105;
+constexpr int ModelNodeRole = 0x0105; ///< Role for setting node with submodule
 
+/// \brief Enumeration for saving type of submodule
 enum GroupTypes : quint16
 {
     None = 0,
@@ -18,6 +18,7 @@ enum GroupTypes : quint16
 };
 
 class XmlModel;
+
 /// \brief Структура для хранения узла хранимой подмодели
 struct ModelNode
 {
@@ -30,8 +31,6 @@ Q_DECLARE_METATYPE(ModelNode);
 class XmlModel : public QAbstractTableModel
 {
     Q_OBJECT
-    friend class ModelFabric;
-
 private:
     void checkChilds(QDomNode &child, int &row);
 
@@ -45,10 +44,10 @@ protected:
     void parseAttribute(QDomNode &node, QString attrName, int row, int col);
 
 public:
-    static const std::map<QString, GroupTypes> types;        ///< Types Map with enumeration, key = name of group type
-    static const std::map<GroupTypes, QStringList> settings; ///< Settings Map, key = group type enumeration
+    static const std::map<QString, GroupTypes> types;       ///< Types Map with enumeration, key = name of group type
+    static const std::map<GroupTypes, QStringList> headers; ///< Settings Map, key = group type enumeration
 
-    XmlModel(int rows, int cols, QObject *parent = nullptr);
+    explicit XmlModel(int rows, int cols, QObject *parent = nullptr);
     virtual QVariant data(const QModelIndex &index, int nRole = Qt::UserRole + 1) const override;
     virtual bool setData(const QModelIndex &index, const QVariant &val, int nRole = Qt::UserRole + 1) override;
     virtual int rowCount(const QModelIndex &index = QModelIndex()) const override;
