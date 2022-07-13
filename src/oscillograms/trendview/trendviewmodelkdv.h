@@ -12,6 +12,7 @@ public:
     QStringList analogDescriptions() const override;
     QStringList analogValues() const override;
     QString xAxisDescription() const override;
+    void setAnalogData(const QString &name, QVector<double> &data);
 };
 
 class TrendViewModelKDVSpec : public TrendViewModel
@@ -24,4 +25,5 @@ public:
     QStringList analogDescriptions() const override;
     QStringList analogValues() const override;
     QString xAxisDescription() const override;
+    void setAnalogData(const QString &name, QVector<double> &data);
 };

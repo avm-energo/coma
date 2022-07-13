@@ -62,7 +62,7 @@ void OscManager::loadOsc(TrendViewModel *model)
     trendDialog->setupUI();
     trendDialog->showPlot();
     trendDialog->show();
-    qDebug() << trendDialog->size();
+    //    qDebug() << trendDialog->size();
     // trendDialog->adjustSize();
 }
 
@@ -104,12 +104,14 @@ std::unique_ptr<TrendViewModel> OscManager::load(const Record &record, const Fil
         break;
     }
     case AVTUK_KDV::OSC_ID:
+    case AVTUK_KDV::OSCV_ID:
     {
         parseModule = std::make_unique<ParseID10040>(fs.data);
         trendViewModel = std::make_unique<TrendViewModelKDV>(record.len);
         break;
     }
     case AVTUK_KDV::SPEC_ID:
+    case AVTUK_KDV::SPECV_ID:
     {
         parseModule = std::make_unique<ParseID10050>(fs.data);
         trendViewModel = std::make_unique<TrendViewModelKDVSpec>(record.len);

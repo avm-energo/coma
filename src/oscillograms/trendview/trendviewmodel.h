@@ -77,8 +77,9 @@ public:
     const QMap<QString, QVector<double>> &digitalMainData() const;
     void setDigitalMainData(const QMap<QString, QVector<double>> &newDigitalMainData);
 
-private:
     QMap<QString, QVector<double>> m_analogMainData, m_digitalMainData;
+
+private:
     QVector<double> m_mainPoints;
     quint32 m_idOsc;
     float m_xmax, m_xmin;

@@ -22,7 +22,7 @@ public:
 
     Record loadCommon(const FileStruct &fs) const
     {
-        assert((fs.ID) == MT_HEAD_ID);
+        assert(((fs.ID) == MT_HEAD_ID) || ((fs.ID) == MT_SPEC_ID));
         assert(fs.data.size() == sizeof(Record));
         Record record;
         memcpy(&record, fs.data.data(), sizeof(Record));
@@ -50,7 +50,8 @@ protected:
         return ((record.ID == AVTUK_85::OSC_ID)                                             //
             || (record.ID == AVTUK_8X::OSC_ID)                                              //
             || ((record.ID >= AVTUK_21::OSC_ID_MIN) && (record.ID <= AVTUK_21::OSC_ID_MAX)) //
-            || (record.ID == AVTUK_KDV::OSC_ID) || (record.ID == AVTUK_KDV::SPEC_ID)        //
+            || (record.ID == AVTUK_KDV::OSC_ID) || (record.ID == AVTUK_KDV::OSCV_ID)
+            || (record.ID == AVTUK_KDV::SPEC_ID) || (record.ID == AVTUK_KDV::SPECV_ID) //
         );
     };
 

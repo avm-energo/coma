@@ -777,6 +777,7 @@ enum Registers : quint16
 
 /// ID заголовка осциллограммы
 constexpr int MT_HEAD_ID = 9000;
+constexpr int MT_SPEC_ID = 9100;
 
 /*constexpr int ID_OSC_CH0 = 10040; // ID осциллограммы канала 0
 constexpr int ID_OSC_CH1 = 10041; // ID осциллограммы канала 1
@@ -809,8 +810,10 @@ constexpr quint32 OSC_ID = 10020; ///< ID осциллограммы по мод
 
 namespace AVTUK_KDV
 {
-constexpr quint32 OSC_ID = 10040;  ///< ID осциллограммы модуля КДВ
-constexpr quint32 SPEC_ID = 10050; ///< ID спектрограммы модуля КДВ
+constexpr quint32 OSC_ID = 10040;   ///< ID осциллограммы модуля КДВ
+constexpr quint32 OSCV_ID = 10041;  ///< ID осциллограммы модуля КДВ
+constexpr quint32 SPEC_ID = 10050;  ///< ID спектрограммы модуля КДВ
+constexpr quint32 SPECV_ID = 10051; ///< ID осциллограммы модуля КДВ
 }
 
 namespace AVTUK_21
