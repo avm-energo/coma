@@ -5,10 +5,6 @@ project(widgets LANGUAGES CXX)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 find_package(
-  QT NAMES Qt6 Qt5
-  COMPONENTS Core Xml Widgets
-  REQUIRED)
-find_package(
   Qt${QT_VERSION_MAJOR}
   COMPONENTS Core Xml Widgets
   REQUIRED)
@@ -29,58 +25,12 @@ if(NOT EXISTS ${QDARKSTYLESHEET_PATH}/light/lightstyle.qrc)
        ${QDARKSTYLESHEET_PATH}/light/lightstyle.qrc)
 endif()
 
+file(GLOB_RECURSE files_cpp ${PROJECT_SOURCE_DIR}/*.cpp)
+file(GLOB_RECURSE files_h ${PROJECT_SOURCE_DIR}/*.h)
+
 add_library(
   ${PROJECT_NAME} STATIC
-  aboutwidget.cpp
-  aboutwidget.h
-  alarmbutton.cpp
-  alarmbutton.h
-  alarmwidget.cpp
-  alarmwidget.h
-  basespinboxgroup.cpp
-  basespinboxgroup.h
-  checkboxgroup.cpp
-  checkboxgroup.h
-  checkboxgroup_p.cpp
-  checkboxgroup_p.h
-  coma.cpp
-  coma.h
-  delegate_common.h
-  ecombobox.cpp
-  ecombobox.h
-  edoublespinbox.cpp
-  edoublespinbox.h
-  epopup.cpp
-  epopup.h
-  errorprotocolwidget.cpp
-  errorprotocolwidget.h
-  etableview.cpp
-  etableview.h
-  flowlayout.cpp
-  flowlayout.h
-  ipctrl.cpp
-  ipctrl.h
-  passwordlineedit.cpp
-  passwordlineedit.h
-  pushbuttondelegate.cpp
-  pushbuttondelegate.h
-  signalchoosewidget.cpp
-  signalchoosewidget.h
-  splashscreen.cpp
-  splashscreen.h
-  styleloader.cpp
-  styleloader.h
-  udialog.cpp
-  udialog.h
-  uwidget.cpp
-  uwidget.h
-  waitwidget.cpp
-  waitwidget.h
-  wd_func.cpp
-  wd_func.h
-  helper.h
-  QProgressIndicator.cpp
-  QProgressIndicator.h
+  ${files_cpp} ${files_h}
   ../../images/vectorIcons.qrc
   styles/QDarkStyleSheet/qdarkstyle/light/lightstyle.qrc
   styles/QDarkStyleSheet/qdarkstyle/dark/darkstyle.qrc

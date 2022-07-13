@@ -1,6 +1,6 @@
 #include "emulator.h"
 
-#include "../gen/datamanager.h"
+#include "../gen/datamanager/datamanager.h"
 #include "protocomprivate.h"
 Emulator::Emulator(QObject *parent) : BaseInterface(parent)
 {
@@ -34,7 +34,7 @@ void Emulator::reqBSI()
         DataTypes::BitStringStruct bitString;
         bitString.sigAdr = counter++;
         bitString.sigVal = i;
-        DataManager::GetInstance().addSignalToOutList(DataTypes::BitString, bitString);
+        DataManager::GetInstance().addSignalToOutList(bitString);
     }
 }
 

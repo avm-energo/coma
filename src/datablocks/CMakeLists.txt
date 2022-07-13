@@ -5,16 +5,8 @@ project(datablocks LANGUAGES CXX)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 find_package(
-  QT NAMES Qt6 Qt5
-  COMPONENTS Core Network Widgets
-  REQUIRED)
-find_package(
   Qt${QT_VERSION_MAJOR}
   COMPONENTS Core Network Xml Widgets
-  REQUIRED)
-find_package(
-  Qt${QT_VERSION_MAJOR}
-  COMPONENTS Widgets
   REQUIRED)
 
 add_library(

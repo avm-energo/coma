@@ -1,8 +1,8 @@
 #include "tune82adc.h"
 
 #include "../../gen/colors.h"
-#include "../../gen/configv.h"
 #include "../../gen/stdfunc.h"
+#include "../../s2/configv.h"
 #include "../../widgets/epopup.h"
 #include "../../widgets/waitwidget.h"
 #include "../../widgets/wd_func.h"
@@ -34,7 +34,7 @@ void Tune82ADC::setMessages()
     m_messages.append("Установка настроечных коэффициентов по умолчанию...");
     m_messages.append("Получение текущих аналоговых данных и их проверка...");
     m_messages.append("Сохранение значений фильтра...");
-//    m_messages.append("Установка коэффициентов...");
+    //    m_messages.append("Установка коэффициентов...");
 
     m_messages.append("7.3.3. Расчёт коррекции смещений сигналов по фазе...");
     m_messages.append("7.3.4. Расчёт коррекции по частоте...");
@@ -58,7 +58,6 @@ void Tune82ADC::setTuneFunctions()
     m_tuneFunctions.push_back(func);
     func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&Tune82ADC::calcPhaseCorrection);
     m_tuneFunctions.push_back(func);
-
 
     func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&Tune82ADC::ADCCoef1);
     m_tuneFunctions.push_back(func);
@@ -106,13 +105,12 @@ Error::Msg Tune82ADC::getAnalogData()
     m_bda->readBlockFromModule();
     waitNSeconds(1);
     return m_bda->checkValues(60.0, 1.0, 0.0, false);
-
 }
 
 Error::Msg Tune82ADC::saveUeff()
 {
     // сохраняем значения по п. 7.3.2 для выполнения п. 7.3.6
-    for (int i=0; i<6; i++)
+    for (int i = 0; i < 6; i++)
         IUefNat_filt_old[i] = m_bda->data()->IUefNat_filt[i];
     return Error::Msg::NoError;
 }
@@ -126,18 +124,17 @@ Error::Msg Tune82ADC::calcPhaseCorrection()
     Bac_newblock.DPsi[0] = 0;
     phiMip[0] = 0;
     phiMip[1] = RealData.dpsiU[0];
-    phiMip[2] = RealData.dpsiU[0]+RealData.dpsiU[1];
+    phiMip[2] = RealData.dpsiU[0] + RealData.dpsiU[1];
     phiMip[3] = RealData.d[0];
-    phiMip[4] = RealData.d[1]+RealData.dpsiU[0];
-    phiMip[5] = RealData.d[2]+RealData.dpsiU[0]+RealData.dpsiU[1];
+    phiMip[4] = RealData.d[1] + RealData.dpsiU[0];
+    phiMip[5] = RealData.d[2] + RealData.dpsiU[0] + RealData.dpsiU[1];
     int k = (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) == Config::MTM_82) ? 3 : 6;
-    for (int i=1; i<k; ++i)
+    for (int i = 1; i < k; ++i)
         Bac_newblock.DPsi[i] = Bac_block.DPsi[i] - phiMip[i] - Bda_block.phi_next_f[i];
     if (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) == Config::MTM_82)
     {
-        for (int i=3; i<6; ++i)
+        for (int i = 3; i < 6; ++i)
             Bac_newblock.DPsi[i] = Bac_block.DPsi[i] - phiMip[i] - Bda_block.phi_next_f[i];
-
     }
 
     return Error::Msg::NoError;

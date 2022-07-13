@@ -28,6 +28,7 @@ Module::Module(QObject *parent)
 {
     m_gsettings = { { &DataTypes::DataRecV::map, &WidgetFactory::m_widgetMap, &WidgetFactory::m_categoryMap }, {} };
 }
+
 void Module::createAlarm(AlarmWidget *aw)
 {
     using namespace Modules;
@@ -581,7 +582,6 @@ bool Module::loadCheckSettings(CheckSettings &settings)
             QDomElement domElement = domDoc.documentElement();
             XmlParser::traverseNode(domElement, settings.categories);
             file.close();
-
             return true;
         }
         file.close();

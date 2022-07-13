@@ -1,6 +1,6 @@
 #ifndef DELEGATE_H
 #define DELEGATE_H
-#include "../widgets/delegate_common.h"
+#include "../ctti/type_id.hpp"
 
 #include <QStringList>
 #include <cstdint>
@@ -23,7 +23,7 @@ namespace detail
         std::optional<QStringList> desc;
         std::optional<QStringList> toolTip;
 
-        void validate() const
+        inline void validate() const
         {
             assert(count.value() == desc.value().count());
         }
@@ -49,4 +49,5 @@ using itemVariant = std::variant<detail::Record, detail::RecordList>;
 using itemVector = std::vector<itemVariant>;
 using signalsVector = std::vector<detail::Signals>;
 }
+
 #endif // DELEGATE_H

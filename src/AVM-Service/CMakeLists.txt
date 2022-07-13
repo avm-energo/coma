@@ -5,10 +5,6 @@ set(PROJECT_VERSION_MINOR 4)
 set(PROJECT_VERSION_PATCH 1)
 
 find_package(
-  QT NAMES Qt6 Qt5
-  COMPONENTS Core Xml Widgets Network
-  REQUIRED)
-find_package(
   Qt${QT_VERSION_MAJOR}
   COMPONENTS Core Xml Widgets Network
   REQUIRED)
@@ -18,13 +14,12 @@ configure_file(${CMAKE_SOURCE_DIR}/cconfig.h.in
 configure_file(${CMAKE_SOURCE_DIR}/versioninfo.rc.in
                ${CMAKE_CURRENT_BINARY_DIR}/versioninfo.rc @ONLY)
 
+file(GLOB_RECURSE files_cpp ${PROJECT_SOURCE_DIR}/*.cpp)
+file(GLOB_RECURSE files_h ${PROJECT_SOURCE_DIR}/*.h)
+
 add_executable(
   ${PROJECT_NAME}
-  main.cpp
-  servicecoma.cpp
-  servicecoma.h
-  svcmodule.cpp
-  svcmodule.h
+  ${files_cpp} ${files_h}
   ../coma.rc
   ${CMAKE_CURRENT_BINARY_DIR}/versioninfo.rc)
 
@@ -40,8 +35,6 @@ target_link_libraries(
   gen
   s2
   module
-  check
-  config
   widgets
   dialogs
   models

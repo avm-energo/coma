@@ -5,44 +5,16 @@ project(gen LANGUAGES CXX)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 find_package(
-  QT NAMES Qt6 Qt5
-  COMPONENTS Core Network Xml
-  REQUIRED)
-find_package(
   Qt${QT_VERSION_MAJOR}
   COMPONENTS Core Network Xml
   REQUIRED)
 
+file(GLOB_RECURSE files_cpp ${PROJECT_SOURCE_DIR}/*.cpp)
+file(GLOB_RECURSE files_h ${PROJECT_SOURCE_DIR}/*.h)
+
 add_library(
   gen STATIC
-  colors.h
-  datatypes.h
-  datamanager/datamanager.h
-  datamanager/datamanager.cpp
-  datamanager/typesproxy.h
-  datamanager/typesproxy.cpp
-  error.h
-  error.cpp
-  errorqueue.h
-  errorqueue.cpp
-  files.cpp
-  files.h
-  helper.h
-  helper.cpp
-  logclass.cpp
-  logclass.h
-  logger.h
-  logger.cpp
-  pch.h
-  registers.h
-  settings.h
-  singleton.h
-  stdfunc.h
-  stdfunc.cpp
-  std_ext.h
-  timefunc.h
-  timefunc.cpp
-  uint24.h)
+  ${files_cpp} ${files_h} )
 
 target_link_libraries(
   gen

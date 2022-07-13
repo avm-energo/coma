@@ -2,7 +2,7 @@
 #define KIV_BDA_H
 
 #include "../datablock.h"
-#include "../gen/modules.h"
+#include "../module/modules.h"
 
 class Bda : public DataBlock
 {

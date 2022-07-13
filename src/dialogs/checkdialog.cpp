@@ -1,4 +1,4 @@
-#include "abstractcheckdialog.h"
+#include "checkdialog.h"
 
 #include "../gen/colors.h"
 #include "../gen/datamanager/typesproxy.h"
@@ -22,34 +22,40 @@
 #include <QVBoxLayout>
 #include <QXlsx/xlsxdocument.h>
 
-AbstractCheckDialog::AbstractCheckDialog(QWidget *parent)
+constexpr int defaultRatio = 3;
+constexpr int maxRatio = 5;
+
+CheckDialog::CheckDialog(const CheckItem &item, const categoryMap &categories, QWidget *parent)
     : UDialog(parent)
     , proxySP(new DataTypesProxy(&DataManager::GetInstance()))
     , proxyFS(new DataTypesProxy(&DataManager::GetInstance()))
+    , m_item(item)
+    , m_categories(categories)
 {
+    proxySP->RegisterType<DataTypes::SinglePointWithTimeStruct>();
+    proxyFS->RegisterType<DataTypes::FloatStruct>();
     XlsxWriting = false;
     m_readDataInProgress = false;
     xlsx = nullptr;
     WRow = 0;
     Timer = new QTimer(this);
     Timer->setObjectName("checktimer");
-    connect(Timer, &QTimer::timeout, this, &AbstractCheckDialog::TimerTimeout);
+    connect(Timer, &QTimer::timeout, this, &CheckDialog::TimerTimeout);
     Timer->setInterval(1000);
-    proxySP->RegisterType<DataTypes::SinglePointWithTimeStruct>();
-    proxyFS->RegisterType<DataTypes::FloatStruct>();
+    Timer->setInterval(ANMEASINT);
 }
 
-AbstractCheckDialog::~AbstractCheckDialog()
+CheckDialog::~CheckDialog()
 {
     qDeleteAll(Bd_blocks);
     Bd_blocks.clear();
 }
 
-void AbstractCheckDialog::setupUI()
+void CheckDialog::setupUIAbs()
 {
     QVBoxLayout *lyout = new QVBoxLayout;
     QTabWidget *CheckTW = new QTabWidget;
-    connect(proxySP.get(), &DataTypesProxy::DataStorable, this, &AbstractCheckDialog::updateSPData);
+    connect(proxySP.get(), &DataTypesProxy::DataStorable, this, &CheckDialog::updateSPData);
     for (auto &w : m_BdUIList)
     {
         w.widget->uponInterfaceSetting();
@@ -57,29 +63,12 @@ void AbstractCheckDialog::setupUI()
         connect(
             proxyFS.get(), &DataTypesProxy::DataStorable, w.widget, &UWidget::updateFloatData, Qt::QueuedConnection);
     }
-
     lyout->addWidget(CheckTW);
-
     setLayout(lyout);
-    connect(CheckTW, &QTabWidget::currentChanged, this, &AbstractCheckDialog::TWTabChanged);
+    connect(CheckTW, &QTabWidget::currentChanged, this, &CheckDialog::TWTabChanged);
 }
 
-void AbstractCheckDialog::PrepareHeadersForFile(int row)
-{
-    Q_UNUSED(row)
-}
-
-void AbstractCheckDialog::WriteToFile(int row, int bdnum)
-{
-    Q_UNUSED(row)
-    Q_UNUSED(bdnum)
-}
-
-void AbstractCheckDialog::PrepareAnalogMeasurements()
-{
-}
-
-void AbstractCheckDialog::SetBd(int bdnum, void *block, int blocksize, bool toxlsx)
+void CheckDialog::SetBd(int bdnum, void *block, int blocksize, bool toxlsx)
 {
     BdBlocks *bdblock = new BdBlocks;
     bdblock->block = block;
@@ -88,7 +77,7 @@ void AbstractCheckDialog::SetBd(int bdnum, void *block, int blocksize, bool toxl
     Bd_blocks[bdnum] = bdblock;
 }
 
-QWidget *AbstractCheckDialog::BottomUI()
+QWidget *CheckDialog::BottomUI()
 {
     QWidget *w = new QWidget;
     QVBoxLayout *lyout = new QVBoxLayout;
@@ -98,33 +87,33 @@ QWidget *AbstractCheckDialog::BottomUI()
     QRadioButton *rb = new QRadioButton;
     rb->setObjectName("1000");
     rb->setText("1");
-    connect(rb, &QAbstractButton::clicked, this, &AbstractCheckDialog::SetTimerPeriod);
+    connect(rb, &QAbstractButton::clicked, this, &CheckDialog::SetTimerPeriod);
     hlyout->addWidget(rb);
     rb = new QRadioButton;
     rb->setObjectName("2000");
     rb->setText("2");
     rb->setChecked(true);
-    connect(rb, &QAbstractButton::clicked, this, &AbstractCheckDialog::SetTimerPeriod);
+    connect(rb, &QAbstractButton::clicked, this, &CheckDialog::SetTimerPeriod);
     hlyout->addWidget(rb);
     rb = new QRadioButton;
     rb->setObjectName("10000");
     rb->setText("10");
-    connect(rb, &QAbstractButton::clicked, this, &AbstractCheckDialog::SetTimerPeriod);
+    connect(rb, &QAbstractButton::clicked, this, &CheckDialog::SetTimerPeriod);
     hlyout->addWidget(rb);
     lyout->addLayout(hlyout);
 
     QPushButton *pb = new QPushButton("Запустить чтение аналоговых сигналов");
     pb->setObjectName("pbmeasurements");
-    connect(pb, &QAbstractButton::clicked, this, &AbstractCheckDialog::StartAnalogMeasurements);
+    connect(pb, &QAbstractButton::clicked, this, &CheckDialog::StartAnalogMeasurements);
 
     lyout->addWidget(pb);
     pb = new QPushButton("Запустить чтение аналоговых сигналов в файл");
     pb->setObjectName("pbfilemeasurements");
-    connect(pb, &QAbstractButton::clicked, this, &AbstractCheckDialog::StartAnalogMeasurementsToFile);
+    connect(pb, &QAbstractButton::clicked, this, &CheckDialog::StartAnalogMeasurementsToFile);
 
     lyout->addWidget(pb);
     pb = new QPushButton("Остановить чтение аналоговых сигналов");
-    connect(pb, &QAbstractButton::clicked, this, &AbstractCheckDialog::StopAnalogMeasurements);
+    connect(pb, &QAbstractButton::clicked, this, &CheckDialog::StopAnalogMeasurements);
 
     lyout->addWidget(pb);
     w->setLayout(lyout);
@@ -132,7 +121,7 @@ QWidget *AbstractCheckDialog::BottomUI()
 }
 
 // void AbstractCheckDialog::updateSPData(const DataTypes::SinglePointWithTimeStruct &sp)
-void AbstractCheckDialog::updateSPData(const QVariant &msg)
+void CheckDialog::updateSPData(const QVariant &msg)
 {
     auto sp = msg.value<DataTypes::SinglePointWithTimeStruct>();
     bool status = sp.sigVal;
@@ -176,7 +165,7 @@ void AbstractCheckDialog::updateSPData(const QVariant &msg)
     }
 }
 
-void AbstractCheckDialog::StartAnalogMeasurementsToFile()
+void CheckDialog::StartAnalogMeasurementsToFile()
 {
     QFileDialog *dlg = new QFileDialog;
     dlg->setAttribute(Qt::WA_DeleteOnClose);
@@ -206,7 +195,6 @@ void AbstractCheckDialog::StartAnalogMeasurementsToFile()
     xlsx->write(2, 1, QVariant("Дата начала записи: " + QDateTime::currentDateTime().toString("dd-MM-yyyy")));
     xlsx->write(3, 1, QVariant("Время начала записи: " + QDateTime::currentDateTime().toString("hh:mm:ss")));
     xlsx->write(5, 1, QVariant("Дата и время отсчёта"));
-    PrepareHeadersForFile(6); // в 6 ряду пишем заголовки
     WRow = 7;
     QPushButton *pb = this->findChild<QPushButton *>("pbfilemeasurements");
     if (pb != nullptr)
@@ -219,16 +207,14 @@ void AbstractCheckDialog::StartAnalogMeasurementsToFile()
     StartAnalogMeasurements();
 }
 
-void AbstractCheckDialog::ReadAnalogMeasurementsAndWriteToFile()
+void CheckDialog::ReadAnalogMeasurementsAndWriteToFile()
 {
-
     // получение текущих аналоговых сигналов от модуля
     if (m_readDataInProgress)
     {
         ERMSG("Ещё не завершена предыдущая операция");
         return;
     }
-
     m_readDataInProgress = true;
     if (XlsxWriting)
     {
@@ -241,37 +227,31 @@ void AbstractCheckDialog::ReadAnalogMeasurementsAndWriteToFile()
             pb->setText("Идёт запись: " + TimeElapsed);
         }
     }
-    int bdkeyssize = Bd_blocks.size();
-    for (int bdnum = 0; bdnum < bdkeyssize; ++bdnum)
-    {
-        if (Bd_blocks.value(bdnum)->toxlsxwrite)
-        {
-            if (XlsxWriting)
-                WriteToFile(WRow, bdnum);
-        }
-    }
-
+    // int bdkeyssize = Bd_blocks.size();
+    // for (int bdnum = 0; bdnum < bdkeyssize; ++bdnum)
+    // {
+    //    if (Bd_blocks.value(bdnum)->toxlsxwrite)
+    //    {
+    //        if (XlsxWriting)
+    //            WriteToFile(WRow, bdnum);
+    //    }
+    // }
     WRow++;
     m_readDataInProgress = false;
 }
 
-void AbstractCheckDialog::uponInterfaceSetting()
+void CheckDialog::uponInterfaceSetting()
 {
     setupUI();
 }
 
-// void AbstractCheckDialog::StartBdMeasurements() { BdTimer->start(); }
-
-// void AbstractCheckDialog::StopBdMeasurements() { BdTimer->stop(); }
-
-void AbstractCheckDialog::StartAnalogMeasurements()
+void CheckDialog::StartAnalogMeasurements()
 {
-    //    CurBdNum = 1;
-    PrepareAnalogMeasurements();
+    // PrepareAnalogMeasurements();
     Timer->start();
 }
 
-void AbstractCheckDialog::StopAnalogMeasurements()
+void CheckDialog::StopAnalogMeasurements()
 {
     if (XlsxWriting)
     {
@@ -295,7 +275,7 @@ void AbstractCheckDialog::StopAnalogMeasurements()
     Timer->stop();
 }
 
-void AbstractCheckDialog::reqUpdate()
+void CheckDialog::reqUpdate()
 {
     if (!updatesEnabled())
         return;
@@ -305,12 +285,12 @@ void AbstractCheckDialog::reqUpdate()
     }
 }
 
-void AbstractCheckDialog::TimerTimeout()
+void CheckDialog::TimerTimeout()
 {
     ReadAnalogMeasurementsAndWriteToFile();
 }
 
-void AbstractCheckDialog::TWTabChanged(int index)
+void CheckDialog::TWTabChanged(int index)
 {
     if (index == -1)
         return;
@@ -328,7 +308,7 @@ void AbstractCheckDialog::TWTabChanged(int index)
     w->reqUpdate();
 }
 
-void AbstractCheckDialog::SetTimerPeriod()
+void CheckDialog::SetTimerPeriod()
 {
     bool TimerIsActive = false;
     if (Timer->isActive())
@@ -344,16 +324,6 @@ void AbstractCheckDialog::SetTimerPeriod()
     Timer->setInterval(per);
     if (TimerIsActive)
         Timer->start();
-}
-
-CheckDialog::CheckDialog(const CheckItem &item, const categoryMap &categories, QWidget *parent)
-    : AbstractCheckDialog(parent), m_item(item), m_categories(categories)
-{
-    Timer->setInterval(ANMEASINT);
-}
-
-CheckDialog::~CheckDialog()
-{
 }
 
 void CheckDialog::setupUI()
@@ -386,8 +356,7 @@ void CheckDialog::setupUI()
         m_BdUIList.push_back({ m_categories.value(key), w });
     }
     m_BdUIList.first().widget->setUpdatesEnabled();
-
-    AbstractCheckDialog::setupUI();
+    setupUIAbs();
 }
 
 void CheckDialog::addSignals(unsigned int key, UWidget *widget)
@@ -426,9 +395,6 @@ void CheckDialog::addSignals(unsigned int key, UWidget *widget)
         }
     }
 }
-
-constexpr int defaultRatio = 3;
-constexpr int maxRatio = 5;
 
 static inline int goldenRatio(int value)
 {
