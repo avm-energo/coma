@@ -104,17 +104,27 @@ std::unique_ptr<TrendViewModel> OscManager::load(const Record &record, const Fil
         break;
     }
     case AVTUK_KDV::OSC_ID:
-    case AVTUK_KDV::OSCV_ID:
     {
         parseModule = std::make_unique<ParseID10040>(fs.data);
         trendViewModel = std::make_unique<TrendViewModelKDV>(record.len);
         break;
     }
+    case AVTUK_KDV::OSCV_ID:
+    {
+        parseModule = std::make_unique<ParseID10040>(fs.data);
+        trendViewModel = std::make_unique<TrendViewModelKDVV>(record.len);
+        break;
+    }
     case AVTUK_KDV::SPEC_ID:
-    case AVTUK_KDV::SPECV_ID:
     {
         parseModule = std::make_unique<ParseID10050>(fs.data);
         trendViewModel = std::make_unique<TrendViewModelKDVSpec>(record.len);
+        break;
+    }
+    case AVTUK_KDV::SPECV_ID:
+    {
+        parseModule = std::make_unique<ParseID10050>(fs.data);
+        trendViewModel = std::make_unique<TrendViewModelKDVVSpec>(record.len);
         break;
     }
     case AVTUK_21::OSC_ID_MIN:

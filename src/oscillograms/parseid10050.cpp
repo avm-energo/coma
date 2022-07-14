@@ -21,7 +21,7 @@ bool ParseID10050::Parse(quint32 id, const S2DataTypes::OscHeader &header, Trend
     auto position = 0;
     QVector<double> vect;
     //    vect.resize(KDVOSCPOINTS);
-    for (quint32 i = 0; i < 7; ++i) // цикл по точкам
+    for (quint32 i = 0; i < 6; ++i) // цикл по точкам
     {
         vect.clear();
         if (!PosPlusPlus(&point, position, sizeof(point)))

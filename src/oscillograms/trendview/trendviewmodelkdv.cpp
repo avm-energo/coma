@@ -33,12 +33,31 @@ QStringList TrendViewModelKDV::analogValues() const
 
 QString TrendViewModelKDV::xAxisDescription() const
 {
-    return "Время, мкс";
+    return "Время, мс";
 }
 
 void TrendViewModelKDV::setAnalogData(const QString &name, QVector<double> &data)
 {
     m_analogMainData.insert(name, data);
+}
+
+TrendViewModelKDVV::TrendViewModelKDVV(int pointsnum) : TrendViewModelKDV(pointsnum)
+{
+}
+
+QStringList TrendViewModelKDVV::analogDescriptions() const
+{
+    return { "Виброперемещение кан. 1, мкм", //
+        "Виброперемещение кан. 2, мкм",      //
+        "Виброперемещение кан. 3, мкм",      //
+        "Виброперемещение кан. 4, мкм",      //
+        "Виброперемещение кан. 5, мкм",      //
+        "Виброперемещение кан. 6, мкм" };
+}
+
+QStringList TrendViewModelKDVV::analogValues() const
+{
+    return { "V1", "V2", "V3", "V4", "V5", "V6" };
 }
 
 TrendViewModelKDVSpec::TrendViewModelKDVSpec(int pointsnum) : TrendViewModel(pointsnum)
@@ -47,31 +66,29 @@ TrendViewModelKDVSpec::TrendViewModelKDVSpec(int pointsnum) : TrendViewModel(poi
 
 QStringList TrendViewModelKDVSpec::analogColors() const
 {
-    return {
-        Colors::BLDCOLOR, //
-        Colors::BLUCOLOR, //
-        Colors::BLLCOLOR, //
-        Colors::RDDCOLOR, //
-        Colors::REDCOLOR, //
-        Colors::RDLCOLOR,
-        Colors::YLDCOLOR //
-    };
+    return { Colors::BLDCOLOR, //
+        Colors::BLUCOLOR,      //
+        Colors::BLLCOLOR,      //
+        Colors::RDDCOLOR,      //
+        Colors::REDCOLOR,      //
+        Colors::RDLCOLOR };
 }
 
 QStringList TrendViewModelKDVSpec::analogDescriptions() const
 {
-    return { "Канал 1, мкм", //
-        "Канал 2, мкм",      //
-        "Канал 3, мкм",      //
-        "Канал 4, мкм",      //
-        "Канал 5, мкм",      //
-        "Канал 6, мкм",      //
-        "Частота, Гц" };
+    return {
+        "Ua, дБ", //
+        "Ub, дБ", //
+        "Uc, дБ", //
+        "Ia, дБ", //
+        "Ib, дБ", //
+        "Ic, дБ"  //
+    };
 }
 
 QStringList TrendViewModelKDVSpec::analogValues() const
 {
-    return { "S1", "S2", "S3", "SA", "SB", "SC", "F" };
+    return { "SUA", "SUB", "SUC", "SIA", "SIB", "SIC" };
 }
 
 QString TrendViewModelKDVSpec::xAxisDescription() const
@@ -82,4 +99,23 @@ QString TrendViewModelKDVSpec::xAxisDescription() const
 void TrendViewModelKDVSpec::setAnalogData(const QString &name, QVector<double> &data)
 {
     m_analogMainData.insert(name, data);
+}
+
+TrendViewModelKDVVSpec::TrendViewModelKDVVSpec(int pointsnum) : TrendViewModelKDVSpec(pointsnum)
+{
+}
+
+QStringList TrendViewModelKDVVSpec::analogDescriptions() const
+{
+    return { "Виброперемещение кан. 1, дБ", //
+        "Виброперемещение кан. 2, дБ",      //
+        "Виброперемещение кан. 3, дБ",      //
+        "Виброперемещение кан. 4, дБ",      //
+        "Виброперемещение кан. 5, дБ",      //
+        "Виброперемещение кан. 6, дБ" };
+}
+
+QStringList TrendViewModelKDVVSpec::analogValues() const
+{
+    return { "SV1", "SV2", "SV3", "SV4", "SV5", "SV6" };
 }

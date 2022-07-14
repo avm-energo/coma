@@ -13,6 +13,14 @@ public:
     OscManager() = default;
     virtual ~OscManager();
 
+    struct Kostyl
+    {
+        float BegFr;
+        float StepFr;
+        quint32 can;
+        quint32 len;
+    };
+
     void loadOsc(TrendViewModel *model);
     std::unique_ptr<TrendViewModel> load(const FileStruct &fs) const;
     std::unique_ptr<TrendViewModel> load(const Record &record, const FileStruct &fs) const;
@@ -22,10 +30,19 @@ public:
 
     Record loadCommon(const FileStruct &fs) const
     {
+        Kostyl kostyl;
         assert(((fs.ID) == MT_HEAD_ID) || ((fs.ID) == MT_SPEC_ID));
         assert(fs.data.size() == sizeof(Record));
         Record record;
-        memcpy(&record, fs.data.data(), sizeof(Record));
+        if (fs.ID == MT_HEAD_ID)
+            memcpy(&record, fs.data.data(), sizeof(Record));
+        else
+        {
+            memcpy(&kostyl, fs.data.data(), sizeof(Kostyl));
+            record.time = kostyl.BegFr;
+            record.step = kostyl.StepFr;
+            record.len = kostyl.len / 2;
+        }
         return record;
     }
 
