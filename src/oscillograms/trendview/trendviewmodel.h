@@ -1,14 +1,16 @@
 #pragma once
 
 #include <QMap>
+#include <QObject>
 #include <QVector>
 
 constexpr int MAXGRAPHSPERPLOT = 14;
 
-class TrendViewModel
+class TrendViewModel : public QObject
 {
+    Q_OBJECT
 public:
-    TrendViewModel(int pointsnum);
+    TrendViewModel(int pointsnum, QObject *parent = nullptr);
     TrendViewModel() = default;
     virtual ~TrendViewModel() = default;
 
@@ -22,6 +24,7 @@ public:
 
     void processDigitalNames(const QStringList &list);
     void processAnalogNames(const QStringList &list);
+    void toExcel();
 
     virtual QStringList analogColors() const = 0;
     virtual QStringList digitalColors() const
@@ -77,6 +80,8 @@ public:
     const QMap<QString, QVector<double>> &digitalMainData() const;
     void setDigitalMainData(const QMap<QString, QVector<double>> &newDigitalMainData);
 
+    void setFilename(const QString &filename);
+
     QMap<QString, QVector<double>> m_analogMainData, m_digitalMainData;
 
 private:
@@ -84,7 +89,14 @@ private:
     quint32 m_idOsc;
     float m_xmax, m_xmin;
     quint32 m_length;
+    QString m_filename;
 
     int pointsNum;
     QStringList digitalNames, analogNames;
+
+signals:
+    void recordsOverall(qint64 num);
+    void currentRecord(qint64 num);
+    void eventMessage(const QString &msg);
+    void finished();
 };

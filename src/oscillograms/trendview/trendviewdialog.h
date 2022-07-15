@@ -111,6 +111,7 @@ private slots:
     void digitalRangeChanged(const QCPRange &range);
     void analogRangeChanged(const QCPRange &range);
     void mouseWheel();
+    void exportToExcel();
 
     void setRescale(bool isChecked);
     void autoResizeRange(QCPAxisRect *rect, int index) const;
