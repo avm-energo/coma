@@ -32,7 +32,7 @@ void ModelManager::ViewModelItemClicked(const QModelIndex &index)
     if (data.isValid() && data.canConvert<ModelNode>())
     {
         auto modelNode = data.value<ModelNode>();
-        if (modelNode.modelPtr != nullptr && modelNode.modelType != GroupTypes::None)
+        if (modelNode.modelPtr != nullptr && modelNode.modelType != ModelType::None)
         {
             storage.push(curModel);
             curModel = modelNode.modelPtr;

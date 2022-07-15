@@ -2,6 +2,8 @@
 
 #include "xmlmodels.h"
 
+int ElementsCount(QDomNode &node);
+
 ModelFabric::ModelFabric()
 {
 }
@@ -12,19 +14,19 @@ void ModelFabric::CreateModel(ModelNode &mNode, QDomNode &root, QObject *parent)
     if (iter != XmlModel::headers.cend())
     {
         auto labels = iter->second;
-        auto cols = labels.count(), rows = root.childNodes().count() + 1;
+        auto cols = labels.count(), rows = ElementsCount(root) + 1;
         switch (mNode.modelType)
         {
-        case GroupTypes::Check:
+        case ModelType::Check:
             mNode.modelPtr = new XmlCheckModel(rows, cols, parent);
             break;
-        case GroupTypes::Groups:
+        case ModelType::Groups:
             mNode.modelPtr = new XmlCheckGroupsModel(rows, cols, parent);
             break;
-        case GroupTypes::Records:
-            mNode.modelPtr = new XmlCheckRecordsModel(rows, cols, parent);
-            break;
-        case GroupTypes::Signals:
+        // case GroupTypes::Records:
+        //    mNode.modelPtr = new XmlCheckRecordsModel(rows, cols, parent);
+        //    break;
+        case ModelType::Signals:
             mNode.modelPtr = new XmlCheckSignalsModel(rows, cols, parent);
             break;
         default:
@@ -43,25 +45,21 @@ XmlModel *ModelFabric::CreateMainModel(QDomNode &root, QObject *parent)
     if (!root.isNull())
     {
         auto rootName = root.nodeName();
-        if (rootName == "modules")
+        if (rootName == "module")
         {
-            auto module = root.firstChildElement("module");
-            if (!module.isNull())
+            auto res = root.firstChildElement("resources");
+            if (!res.isNull())
             {
-                auto res = module.firstChildElement("resources");
-                if (!res.isNull())
+                auto type = ModelType::Resources;
+                auto iter = XmlModel::headers.find(type);
+                if (iter != XmlModel::headers.cend())
                 {
-                    auto type = GroupTypes::Resources;
-                    auto iter = XmlModel::headers.find(type);
-                    if (iter != XmlModel::headers.cend())
-                    {
-                        auto labels = iter->second;
-                        auto cols = labels.count(), rows = res.childNodes().count();
-                        auto model = new XmlMainModel(rows, cols, parent);
-                        model->setHorizontalHeaderLabels(labels);
-                        model->setDataNode(false, res);
-                        return model;
-                    }
+                    auto labels = iter->second;
+                    auto cols = labels.count(), rows = ElementsCount(res);
+                    auto model = new XmlMainModel(rows, cols, parent);
+                    model->setHorizontalHeaderLabels(labels);
+                    model->setDataNode(false, res);
+                    return model;
                 }
             }
         }
@@ -71,4 +69,17 @@ XmlModel *ModelFabric::CreateMainModel(QDomNode &root, QObject *parent)
         }
     }
     return nullptr;
+}
+
+int ElementsCount(QDomNode &node)
+{
+    auto childs = node.childNodes();
+    int count = 0;
+    for (auto i = 0; i < childs.count(); i++)
+    {
+        auto child = childs.item(i);
+        if (!child.isComment() && child.isElement())
+            count++;
+    }
+    return count;
 }

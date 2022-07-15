@@ -2,20 +2,42 @@
 
 #include "modelfabric.h"
 
-const std::map<QString, GroupTypes> XmlModel::types {
-    { "resources", GroupTypes::Resources }, //
-    { "check", GroupTypes::Check },         //
-    { "groups", GroupTypes::Groups },       //
-    { "signals", GroupTypes::Signals },     //
-    { "records", GroupTypes::Records }      //
+const std::map<QString, ModelType> XmlModel::types {
+    { tags::res, ModelType::Resources },       //
+    { tags::sigs, ModelType::Signals },        //
+    { tags::checks, ModelType::Checks },       //
+    { tags::groups, ModelType::Groups },       //
+    { tags::check, ModelType::Check },         //
+    { tags::alarms, ModelType::Alarms },       //
+    { tags::critical, ModelType::CritAlarms }, //
+    { tags::warning, ModelType::WarnAlarms },  //
+    { tags::info, ModelType::InfoAlarms },     //
+    { tags::journals, ModelType::Journals },   //
+    { tags::work, ModelType::WorkJours },      //
+    { tags::meas, ModelType::MeasJours },      //
+    { tags::modbus, ModelType::Modbus },       //
+    { tags::protocom, ModelType::Protocom },   //
+    { tags::iec60870, ModelType::IEC60870 },   //
+    { tags::config, ModelType::Config }        //
 };
 
-const std::map<GroupTypes, QStringList> XmlModel::headers {
-    { GroupTypes::Resources, { "XML", "Описание" } },                                     //
-    { GroupTypes::Check, { "XML", "Описание" } },                                         //
-    { GroupTypes::Groups, { "Номер группы", "Название" } },                               //
-    { GroupTypes::Signals, { "Тип сигнала", "Стартовый адрес", "Количество" } },          //
-    { GroupTypes::Records, { "Заголовок", "Описание", "Группа", "Адрес", "Количество" } } //
+const std::map<ModelType, QStringList> XmlModel::headers {
+    { ModelType::Resources, { "XML", "Описание" } },                                         //
+    { ModelType::Signals, { "ID сигнала", "Стартовый адрес", "Количество" } },               //
+    { ModelType::Checks, { "XML", "Описание" } },                                            //
+    { ModelType::Groups, { "ID группы", "Название" } },                                      //
+    { ModelType::Check, { "Пока не знаю" } },                                                // TODO
+    { ModelType::Alarms, { "XML", "Описание" } },                                            //
+    { ModelType::CritAlarms, { "Адрес", "Описание" } },                                      //
+    { ModelType::WarnAlarms, { "Адрес", "Описание" } },                                      //
+    { ModelType::InfoAlarms, { "Пока не знаю" } },                                           // TODO
+    { ModelType::Journals, { "XML", "Описание" } },                                          //
+    { ModelType::WorkJours, { "Адрес", "Описание" } },                                       //
+    { ModelType::MeasJours, { "Заголовок" } },                                               //
+    { ModelType::Modbus, { "ID сигнала", "Тип регистра", "Возвращаемый тип", "Описание" } }, //
+    { ModelType::Protocom, { "ID сигнала", "Блок" } },                                       //
+    { ModelType::IEC60870, { "ID сигнала", "Тип сигнала", "Тип передачи", "Группа" } },      //
+    { ModelType::Config, { "ID виджета", "Значение по умолчанию" } }                         //
 };
 
 XmlModel::XmlModel(int rows, int cols, QObject *parent) : QAbstractTableModel(parent), mRows(rows), mCols(cols)

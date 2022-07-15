@@ -6,16 +6,56 @@
 
 constexpr int ModelNodeRole = 0x0105; ///< Role for setting node with submodule
 
+namespace tags
+{
+constexpr char res[] = "resources";
+constexpr char desc[] = "desc";
+constexpr char sigs[] = "signals";
+constexpr char sig[] = "signal";
+constexpr char checks[] = "checks";
+constexpr char groups[] = "groups";
+constexpr char group[] = "group";
+constexpr char check[] = "check";
+constexpr char header[] = "header";
+constexpr char record[] = "record";
+constexpr char alarms[] = "alarms";
+constexpr char critical[] = "critical";
+constexpr char info[] = "info";
+constexpr char warning[] = "warning";
+constexpr char journals[] = "journals";
+constexpr char work[] = "work";
+constexpr char meas[] = "meas";
+constexpr char modbus[] = "modbus";
+constexpr char protocom[] = "protocom";
+constexpr char iec60870[] = "iec60870";
+constexpr char config[] = "config";
+}
+
+namespace tags
+{
 /// \brief Enumeration for saving type of submodule
 enum GroupTypes : quint16
 {
     None = 0,
     Resources,
-    Check,
-    Groups,
     Signals,
-    Records
+    Checks,
+    Groups,
+    Check,
+    Alarms,
+    CritAlarms,
+    WarnAlarms,
+    InfoAlarms,
+    Journals,
+    WorkJours,
+    MeasJours,
+    Modbus,
+    Protocom,
+    IEC60870,
+    Config
 };
+}
+using ModelType = tags::GroupTypes;
 
 class XmlModel;
 
@@ -23,7 +63,7 @@ class XmlModel;
 struct ModelNode
 {
     XmlModel *modelPtr;
-    GroupTypes modelType;
+    ModelType modelType;
 };
 Q_DECLARE_METATYPE(ModelNode);
 
@@ -44,8 +84,8 @@ protected:
     void parseAttribute(QDomNode &node, QString attrName, int row, int col);
 
 public:
-    static const std::map<QString, GroupTypes> types;       ///< Types Map with enumeration, key = name of group type
-    static const std::map<GroupTypes, QStringList> headers; ///< Settings Map, key = group type enumeration
+    static const std::map<QString, ModelType> types;       ///< Types Map with enumeration, key = name of group type
+    static const std::map<ModelType, QStringList> headers; ///< Settings Map, key = group type enumeration
 
     explicit XmlModel(int rows, int cols, QObject *parent = nullptr);
     virtual QVariant data(const QModelIndex &index, int nRole = Qt::UserRole + 1) const override;
