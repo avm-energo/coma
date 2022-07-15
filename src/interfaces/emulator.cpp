@@ -17,7 +17,7 @@ bool Emulator::start(const ConnectStruct &st)
     return true;
 }
 
-void Emulator::reqStartup(quint32 sigAdr, quint32 sigCount)
+void Emulator::reqStartup(quint32, quint32)
 {
 }
 
@@ -42,7 +42,7 @@ void Emulator::reqBSIExt()
 {
 }
 
-void Emulator::reqFile(quint32, FileFormat format)
+void Emulator::reqFile(quint32, FileFormat)
 {
 }
 
@@ -62,11 +62,11 @@ void Emulator::writeCommand(Queries::Commands, QVariant)
 {
 }
 
-void Emulator::reqFloats(quint32 sigAdr, quint32 sigCount)
+void Emulator::reqFloats(quint32, quint32)
 {
 }
 
-void Emulator::reqBitStrings(quint32 sigAdr, quint32 sigCount)
+void Emulator::reqBitStrings(quint32, quint32)
 {
 }
 

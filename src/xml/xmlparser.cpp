@@ -911,7 +911,7 @@ void XmlParser::traverseNodeCheck(const QDomNode &node, std::vector<CheckItem> &
     {
         if (domNode.isElement())
         {
-            QDomElement domElement = domNode.toElement();
+            auto domElement = domNode.toElement();
             if (!domElement.isNull())
             {
                 if (domElement.tagName() == "check")

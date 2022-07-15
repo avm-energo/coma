@@ -143,7 +143,6 @@ bool Module::loadSettings(const Modules::StartupInfoBlock &startupInfoBlock, int
     if (!obtainXmlFile(moduleName))
         return false;
 
-    //    QDir dir(m_directory);
     QDir dir(resourceDirectory);
     auto xmlFiles = dir.entryList(QDir::Files).filter(".xml");
 
@@ -478,7 +477,6 @@ bool Module::loadS2Settings()
 
 bool Module::obtainXmlCheck(const QString &filename, std::vector<CheckItem> &check) const
 {
-    //    QDir dir(m_directory);
     QDir dir(resourceDirectory);
     auto xmlFiles = dir.entryList(QDir::Files).filter(".xml");
     QDomDocument domDoc;
@@ -498,7 +496,6 @@ bool Module::obtainXmlCheck(const QString &filename, std::vector<CheckItem> &che
     }
     if (domDoc.setContent(&file))
     {
-
         QDomElement domElement = domDoc.documentElement();
         XmlParser::traverseNodeCheck(domElement, check);
         file.close();
@@ -514,7 +511,6 @@ bool Module::obtainXmlCheck(const QString &filename, std::vector<CheckItem> &che
 
 bool Module::obtainXmlAlarm(const QString &filename, AlarmMap &alarmMap, Modules::AlarmType type) const
 {
-    //    QDir dir(m_directory);
     QDir dir(resourceDirectory);
     auto xmlFiles = dir.entryList(QDir::Files).filter(".xml");
     QDomDocument domDoc;
@@ -550,9 +546,7 @@ bool Module::obtainXmlAlarm(const QString &filename, AlarmMap &alarmMap, Modules
 bool Module::loadCheckSettings(CheckSettings &settings)
 {
     constexpr auto name = "check.xml";
-    //    QDir dir(m_directory);
     QDir dir(resourceDirectory);
-    //    qDebug() << dir;
     QDomDocument domDoc;
     QFile file;
 
@@ -575,11 +569,11 @@ bool Module::loadCheckSettings(CheckSettings &settings)
         if (domDoc.setContent(&file))
         {
             const auto &board = Board::GetInstance();
-            //            CheckSettings checkSettings;
-            if (!loadCheckSettings(static_cast<Modules::BaseBoard>(board.typeB()),
-                    static_cast<Modules::MezzanineBoard>(board.typeM()), settings.items))
+            auto typeb = static_cast<Modules::BaseBoard>(board.typeB());
+            auto typem = static_cast<Modules::MezzanineBoard>(board.typeM());
+            if (!loadCheckSettings(typeb, typem, settings.items))
                 return false;
-            QDomElement domElement = domDoc.documentElement();
+            auto domElement = domDoc.documentElement();
             XmlParser::traverseNode(domElement, settings.categories);
             file.close();
             return true;
@@ -596,10 +590,10 @@ bool Module::loadCheckSettings(CheckSettings &settings)
     return false;
 }
 
-bool Module::loadCheckSettings(
-    Modules::BaseBoard typeB, Modules::MezzanineBoard typeM, std::vector<CheckItem> &check) const
+bool Module::loadCheckSettings(const Modules::BaseBoard typeB, //
+    const Modules::MezzanineBoard typeM,                       //
+    std::vector<CheckItem> &check) const
 {
-    //    std::vector<CheckItem> check;
     bool statusBase = true;
     {
         QString checkBase("check-%0100");
@@ -638,17 +632,14 @@ bool Module::loadCheckSettings(
         checkModule.append(QString::number(quint8(typeM), 16));
         if (!obtainXmlFile(checkModule))
         {
-            //            statusMezz = false;
             qWarning() << Error::OpenError << checkModule;
             return false;
         }
         else if (!obtainXmlCheck(checkModule, check))
         {
-            // assert(false);
             qWarning() << Error::OpenError << checkModule;
             return false;
         }
     }
-    // assert(statusBase || statusMezz);
     return true;
 }

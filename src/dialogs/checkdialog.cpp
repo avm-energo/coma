@@ -331,8 +331,11 @@ void CheckDialog::setupUI()
     QMultiMap<uint16_t, check::itemVector::value_type> itemByGroup;
     for (auto &&item : m_item.itemsVector)
     {
-        std::visit(overloaded { [&](const check::detail::Record &arg) { itemByGroup.insert(arg.group.value(), arg); },
-                       [&](const check::detail::RecordList &arg) { itemByGroup.insert(arg.group, arg); } },
+        std::visit(overloaded {                              //
+                       [&](const check::detail::Record &arg) //
+                       { itemByGroup.insert(arg.group.value(), arg); },
+                       [&](const check::detail::RecordList &arg) //
+                       { itemByGroup.insert(arg.group, arg); } },
             item);
     }
     auto keys = itemByGroup.uniqueKeys();

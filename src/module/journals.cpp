@@ -77,8 +77,9 @@ QVector<QVector<QVariant>> Journals::createCommon(const QByteArray &array, const
         if (event.Time == ULLONG_MAX)
             continue;
         ++counter;
-        int N;
 
+        // TODO: FIX THAT
+        int N;
         memcpy(&N, &event.EvNum, sizeof(event.EvNum));
         N = (N & 0x00FFFFFF) - eventid;
         Q_ASSERT((N <= desc.size()) && (N >= 0));

@@ -21,11 +21,11 @@
           <item>Авария по недопустимому небалансу токов</item>
         </string-array>
         <!--Флаги сигнализации-->
-        <quint128 name="criticalFlags">0001001110001110000000000000</quint128>
+        <quint128 name="criticalFlags">1001110001110000000000000</quint128>
         <!--Стартовый адрес сигнализации-->
-		    <quint32 name="startAddr">3011</quint32>
+        <quint32 name="startAddr">3011</quint32>
         <!--Цвет сигнализации если событие произошло-->
-		    <color>#ff0000</color>
+        <color>#ff0000</color>
       </alarm>
       <alarm name="warning">
         <string-array name="warningEvents">
@@ -48,9 +48,9 @@
           <item>Не заданы паспортные значения</item>
           <item>Сигнализация по повышенному небалансу токов</item>
         </string-array>
-        <quint128 name="warningFlags">0000110001110001111111111111</quint128>
-		    <quint32 name="startAddr">3011</quint32>
-		    <color>#ffff00</color>
+        <quint128 name="warningFlags">0110001110001111111111111</quint128>
+        <quint32 name="startAddr">3011</quint32>
+        <color>#ffff00</color>
       </alarm>
       <!--Описываем журнал, имя обязательно-->
       <journal name="work">
