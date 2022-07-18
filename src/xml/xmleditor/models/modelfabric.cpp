@@ -17,17 +17,53 @@ void ModelFabric::CreateModel(ModelNode &mNode, QDomNode &root, QObject *parent)
         auto cols = labels.count(), rows = ElementsCount(root) + 1;
         switch (mNode.modelType)
         {
-        case ModelType::Check:
-            mNode.modelPtr = new XmlCheckModel(rows, cols, parent);
-            break;
-        case ModelType::Groups:
-            mNode.modelPtr = new XmlCheckGroupsModel(rows, cols, parent);
-            break;
-        // case GroupTypes::Records:
-        //    mNode.modelPtr = new XmlCheckRecordsModel(rows, cols, parent);
-        //    break;
         case ModelType::Signals:
-            mNode.modelPtr = new XmlCheckSignalsModel(rows, cols, parent);
+            mNode.modelPtr = new XmlSignalsModel(rows, cols, parent);
+            break;
+        case ModelType::SectionTabs:
+            mNode.modelPtr = new XmlSectionTabsModel(rows, cols, parent);
+            break;
+        case ModelType::Sections:
+            mNode.modelPtr = new XmlMainModel(rows, cols, parent);
+            break;
+        case ModelType::Section:
+            mNode.modelPtr = new XmlMainModel(rows, cols, parent);
+            break;
+        case ModelType::SGroup:
+            mNode.modelPtr = new XmlSectionGroupsModel(rows, cols, parent);
+            break;
+        case ModelType::Alarms:
+            mNode.modelPtr = new XmlAlarmsModel(rows, cols, parent);
+            break;
+        case ModelType::CritAlarms:
+            mNode.modelPtr = new XmlCritAlarmsModel(rows, cols, parent);
+            break;
+        case ModelType::WarnAlarms:
+            mNode.modelPtr = new XmlWarnAlarmsModel(rows, cols, parent);
+            break;
+        case ModelType::InfoAlarms:
+            mNode.modelPtr = new XmlWarnAlarmsModel(rows, cols, parent);
+            break;
+        case ModelType::Journals:
+            mNode.modelPtr = new XmlJoursModel(rows, cols, parent);
+            break;
+        case ModelType::WorkJours:
+            mNode.modelPtr = new XmlWorkJoursModel(rows, cols, parent);
+            break;
+        case ModelType::MeasJours:
+            mNode.modelPtr = new XmlMeasJoursModel(rows, cols, parent);
+            break;
+        case ModelType::Modbus:
+            mNode.modelPtr = new XmlModbusModel(rows, cols, parent);
+            break;
+        case ModelType::Protocom:
+            mNode.modelPtr = new XmlProtocomModel(rows, cols, parent);
+            break;
+        case ModelType::IEC60870:
+            mNode.modelPtr = new XmlIECModel(rows, cols, parent);
+            break;
+        case ModelType::Config:
+            mNode.modelPtr = new XmlConfigModel(rows, cols, parent);
             break;
         default:
             break;

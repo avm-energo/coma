@@ -5,9 +5,10 @@
 const std::map<QString, ModelType> XmlModel::types {
     { tags::res, ModelType::Resources },       //
     { tags::sigs, ModelType::Signals },        //
-    { tags::checks, ModelType::Checks },       //
-    { tags::groups, ModelType::Groups },       //
-    { tags::check, ModelType::Check },         //
+    { tags::tabs, ModelType::SectionTabs },    //
+    { tags::sections, ModelType::Sections },   //
+    { tags::section, ModelType::Section },     //
+    { tags::sgroup, ModelType::SGroup },       //
     { tags::alarms, ModelType::Alarms },       //
     { tags::critical, ModelType::CritAlarms }, //
     { tags::warning, ModelType::WarnAlarms },  //
@@ -24,16 +25,17 @@ const std::map<QString, ModelType> XmlModel::types {
 const std::map<ModelType, QStringList> XmlModel::headers {
     { ModelType::Resources, { "XML", "Описание" } },                                         //
     { ModelType::Signals, { "ID сигнала", "Стартовый адрес", "Количество" } },               //
-    { ModelType::Checks, { "XML", "Описание" } },                                            //
-    { ModelType::Groups, { "ID группы", "Название" } },                                      //
-    { ModelType::Check, { "Пока не знаю" } },                                                // TODO
+    { ModelType::SectionTabs, { "ID вкладки", "Название" } },                                //
+    { ModelType::Sections, { "XML", "Описание" } },                                          //
+    { ModelType::Section, { "XML", "Название", "ID вкладки" } },                             //
+    { ModelType::SGroup, { "Имя", "Адрес" } },                                               //
     { ModelType::Alarms, { "XML", "Описание" } },                                            //
     { ModelType::CritAlarms, { "Адрес", "Описание" } },                                      //
     { ModelType::WarnAlarms, { "Адрес", "Описание" } },                                      //
-    { ModelType::InfoAlarms, { "Пока не знаю" } },                                           // TODO
+    { ModelType::InfoAlarms, { "Адрес", "Описание" } },                                      //
     { ModelType::Journals, { "XML", "Описание" } },                                          //
     { ModelType::WorkJours, { "Адрес", "Описание" } },                                       //
-    { ModelType::MeasJours, { "Заголовок" } },                                               //
+    { ModelType::MeasJours, { "Название" } },                                                //
     { ModelType::Modbus, { "ID сигнала", "Тип регистра", "Возвращаемый тип", "Описание" } }, //
     { ModelType::Protocom, { "ID сигнала", "Блок" } },                                       //
     { ModelType::IEC60870, { "ID сигнала", "Тип сигнала", "Тип передачи", "Группа" } },      //
@@ -154,7 +156,10 @@ void XmlModel::setDataNode(bool isChildModel, QDomNode &root)
     auto child = root.firstChild();
     while (!child.isNull())
     {
-        checkChilds(child, row);
+        if (!child.isComment())
+        {
+            checkChilds(child, row);
+        }
         child = child.nextSibling();
     }
 }
@@ -169,7 +174,16 @@ void XmlModel::checkChilds(QDomNode &child, int &row)
         auto itemIndex = index(row, 0);
         auto itemHeaderIndex = index(row, 1);
         setData(itemIndex, childNodeName);
-        setData(itemHeaderIndex, child.toElement().attribute("header", ""));
+        auto desc = child.toElement().attribute("desc", "");
+        auto head = child.toElement().attribute("header", "");
+        auto header = desc.isEmpty() ? head : desc;
+        setData(itemHeaderIndex, header);
+        if (mCols == 3)
+        {
+            auto itemTabIndex = index(row, 2);
+            auto tab = child.toElement().attribute("tab", "");
+            setData(itemTabIndex, tab);
+        }
         ModelFabric::CreateModel(modelNode, child, this);
         setData(itemIndex, QVariant::fromValue(modelNode), ModelNodeRole);
     }

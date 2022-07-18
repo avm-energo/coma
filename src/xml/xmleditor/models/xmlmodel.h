@@ -11,13 +11,10 @@ namespace tags
 constexpr char res[] = "resources";
 constexpr char desc[] = "desc";
 constexpr char sigs[] = "signals";
-constexpr char sig[] = "signal";
-constexpr char checks[] = "checks";
-constexpr char groups[] = "groups";
-constexpr char group[] = "group";
-constexpr char check[] = "check";
-constexpr char header[] = "header";
-constexpr char record[] = "record";
+constexpr char tabs[] = "section-tabs";
+constexpr char sections[] = "sections";
+constexpr char section[] = "section";
+constexpr char sgroup[] = "sgroup";
 constexpr char alarms[] = "alarms";
 constexpr char critical[] = "critical";
 constexpr char info[] = "info";
@@ -34,14 +31,15 @@ constexpr char config[] = "config";
 namespace tags
 {
 /// \brief Enumeration for saving type of submodule
-enum GroupTypes : quint16
+enum NodeTypes : quint16
 {
     None = 0,
     Resources,
     Signals,
-    Checks,
-    Groups,
-    Check,
+    SectionTabs,
+    Sections,
+    Section,
+    SGroup,
     Alarms,
     CritAlarms,
     WarnAlarms,
@@ -55,7 +53,7 @@ enum GroupTypes : quint16
     Config
 };
 }
-using ModelType = tags::GroupTypes;
+using ModelType = tags::NodeTypes;
 
 class XmlModel;
 

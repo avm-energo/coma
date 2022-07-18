@@ -10,31 +10,106 @@ public:
     virtual void parseNode(QDomNode &node, int &row) override;
 };
 
-class XmlCheckModel : public XmlModel
+/// SIGNALS
+
+class XmlSignalsModel : public XmlModel
 {
 public:
-    explicit XmlCheckModel(int rows = 1, int cols = 1, QObject *parent = nullptr);
+    explicit XmlSignalsModel(int rows = 1, int cols = 1, QObject *parent = nullptr);
     virtual void parseNode(QDomNode &node, int &row) override;
 };
 
-class XmlCheckGroupsModel : public XmlModel
+/// SECTIONS
+
+class XmlSectionTabsModel : public XmlModel
 {
 public:
-    explicit XmlCheckGroupsModel(int rows = 1, int cols = 1, QObject *parent = nullptr);
+    explicit XmlSectionTabsModel(int rows = 1, int cols = 1, QObject *parent = nullptr);
     virtual void parseNode(QDomNode &node, int &row) override;
 };
 
-class XmlCheckSignalsModel : public XmlModel
+class XmlSectionGroupsModel : public XmlModel
 {
 public:
-    explicit XmlCheckSignalsModel(int rows = 1, int cols = 1, QObject *parent = nullptr);
+    explicit XmlSectionGroupsModel(int rows = 1, int cols = 1, QObject *parent = nullptr);
     virtual void parseNode(QDomNode &node, int &row) override;
 };
 
-class XmlCheckRecordsModel : public XmlModel
+/// ALARMS
+
+class XmlAlarmsModel : public XmlModel
 {
 public:
-    explicit XmlCheckRecordsModel(int rows = 1, int cols = 1, QObject *parent = nullptr);
+    explicit XmlAlarmsModel(int rows = 1, int cols = 1, QObject *parent = nullptr);
+    virtual void parseNode(QDomNode &node, int &row) override;
+};
+
+class XmlCritAlarmsModel : public XmlModel
+{
+public:
+    explicit XmlCritAlarmsModel(int rows = 1, int cols = 1, QObject *parent = nullptr);
+    virtual void parseNode(QDomNode &node, int &row) override;
+};
+
+class XmlWarnAlarmsModel : public XmlModel
+{
+public:
+    explicit XmlWarnAlarmsModel(int rows = 1, int cols = 1, QObject *parent = nullptr);
+    virtual void parseNode(QDomNode &node, int &row) override;
+};
+
+/// JOURNALS
+
+class XmlJoursModel : public XmlModel
+{
+public:
+    explicit XmlJoursModel(int rows = 1, int cols = 1, QObject *parent = nullptr);
+    virtual void parseNode(QDomNode &node, int &row) override;
+};
+
+class XmlWorkJoursModel : public XmlModel
+{
+public:
+    explicit XmlWorkJoursModel(int rows = 1, int cols = 1, QObject *parent = nullptr);
+    virtual void parseNode(QDomNode &node, int &row) override;
+};
+
+class XmlMeasJoursModel : public XmlModel
+{
+public:
+    explicit XmlMeasJoursModel(int rows = 1, int cols = 1, QObject *parent = nullptr);
+    virtual void parseNode(QDomNode &node, int &row) override;
+};
+
+/// DATA EXCHANGE PROTOCOLS
+
+class XmlModbusModel : public XmlModel
+{
+public:
+    explicit XmlModbusModel(int rows = 1, int cols = 1, QObject *parent = nullptr);
+    virtual void parseNode(QDomNode &node, int &row) override;
+};
+
+class XmlProtocomModel : public XmlModel
+{
+public:
+    explicit XmlProtocomModel(int rows = 1, int cols = 1, QObject *parent = nullptr);
+    virtual void parseNode(QDomNode &node, int &row) override;
+};
+
+class XmlIECModel : public XmlModel
+{
+public:
+    explicit XmlIECModel(int rows = 1, int cols = 1, QObject *parent = nullptr);
+    virtual void parseNode(QDomNode &node, int &row) override;
+};
+
+/// S2 CONFIG
+
+class XmlConfigModel : public XmlModel
+{
+public:
+    explicit XmlConfigModel(int rows = 1, int cols = 1, QObject *parent = nullptr);
     virtual void parseNode(QDomNode &node, int &row) override;
 };
 

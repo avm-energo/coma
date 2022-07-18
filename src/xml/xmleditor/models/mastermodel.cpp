@@ -59,7 +59,7 @@ void MasterModel::parseXmlNode(const QDomNode &node, const QString &filename, in
     // Устанавливаем имя файла
     auto indexFilename = this->index(index, 0);
     setData(indexFilename, filename);
-    auto domElModule = node.firstChildElement("module");
+    auto domElModule = node.toElement();
     if (!domElModule.isNull())
     {
         // Получаем аттрибуты TypeB и TypeM
