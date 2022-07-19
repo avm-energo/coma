@@ -2,12 +2,12 @@
 #define XMLEDITOR_H
 
 #include "models/mastermodel.h"
+#include "models/modelmanager.h"
 
 #include <QDialog>
 #include <QHBoxLayout>
-#include <QStackedWidget>
 #include <QTableView>
-#include <QTreeView>
+// #include <QTreeView>
 #include <QtXml>
 
 class XmlEditor : public QDialog
@@ -15,26 +15,22 @@ class XmlEditor : public QDialog
     Q_OBJECT
 
 private:
-    enum WorkspaceType
-    {
-        Master = 1,
-        Slave = 2
-    };
-
     // Master items
     MasterModel *masterModel;
     QTableView *masterView;
 
     // Slave items
-    QStackedWidget *stackWidget;
+    ModelManager *manager;
     QTableView *tableSlaveView;
 
     void SetupUI(QSize pSize);
-    QVBoxLayout *GetWorkspace(WorkspaceType);
+    QVBoxLayout *GetMasterWorkspace();
+    QVBoxLayout *GetSlaveWorkspace();
     void CreateMasterModel();
 
 public:
-    explicit XmlEditor(QWidget *parent = nullptr);
+    XmlEditor() = delete;
+    explicit XmlEditor(QWidget *parent);
 
 public slots:
     void Close();

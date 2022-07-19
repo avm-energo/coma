@@ -2,7 +2,7 @@
 
 #include "../../../gen/stdfunc.h"
 
-MasterModel::MasterModel(QObject *parent) : QStandardItemModel(0, 0, parent), manager(nullptr), slaveView(nullptr)
+MasterModel::MasterModel(QObject *parent) : QStandardItemModel(1, 1, parent)
 {
     readModulesToModel();
 }
@@ -15,11 +15,6 @@ void MasterModel::setHorizontalHeaderLabels(const QStringList &labels)
         setHeaderData(column, Qt::Horizontal, label);
         column++;
     }
-}
-
-void MasterModel::setSlaveView(QTableView *sView)
-{
-    slaveView = sView;
 }
 
 void MasterModel::readModulesToModel()
@@ -57,14 +52,14 @@ void MasterModel::readModulesToModel()
 void MasterModel::parseXmlNode(const QDomNode &node, const QString &filename, int &index)
 {
     // Устанавливаем имя файла
-    auto indexFilename = this->index(index, 0);
+    auto indexFilename = this->index(index, 4);
     setData(indexFilename, filename);
     auto domElModule = node.toElement();
     if (!domElModule.isNull())
     {
         // Получаем аттрибуты TypeB и TypeM
-        auto indexTypeB = this->index(index, 2);
-        auto indexTypeM = this->index(index, 3);
+        auto indexTypeB = this->index(index, 1);
+        auto indexTypeM = this->index(index, 2);
         setData(indexTypeM, domElModule.attribute("mtypem", "00"));
         setData(indexTypeB, domElModule.attribute("mtypeb", "00"));
 
@@ -72,7 +67,7 @@ void MasterModel::parseXmlNode(const QDomNode &node, const QString &filename, in
         auto domElName = domElModule.firstChildElement("name");
         if (!domElName.isNull())
         {
-            auto indexName = this->index(index, 1);
+            auto indexName = this->index(index, 0);
             setData(indexName, domElName.text());
         }
 
@@ -80,7 +75,7 @@ void MasterModel::parseXmlNode(const QDomNode &node, const QString &filename, in
         auto domElVersion = domElModule.firstChildElement("version");
         if (!domElVersion.isNull())
         {
-            auto indexVersion = this->index(index, 4);
+            auto indexVersion = this->index(index, 3);
             setData(indexVersion, domElVersion.text());
         }
     }
@@ -89,13 +84,10 @@ void MasterModel::parseXmlNode(const QDomNode &node, const QString &filename, in
 void MasterModel::masterItemSelected(const QModelIndex &index)
 {
     const auto row = index.row();
-    auto indexFilename = this->index(row, 0);
+    auto indexFilename = this->index(row, 4);
     auto dataFilename = data(indexFilename);
     if (dataFilename.canConvert<QString>())
     {
-        if (manager == nullptr)
-            manager = new ModelManager(slaveView, this);
-
         auto domDoc = new QDomDocument;
         QDir homeDir(StdFunc::GetSystemHomeDir());
         auto filename = qvariant_cast<QString>(dataFilename);
@@ -107,7 +99,7 @@ void MasterModel::masterItemSelected(const QModelIndex &index)
             if (domDoc->setContent(moduleFile, &errMsg, &line, &column))
             {
                 auto domElement = domDoc->documentElement();
-                manager->SetDocument(domElement);
+                emit itemSelected(domElement);
             }
             // Если QtXml парсер не смог корректно считать xml файл
             else

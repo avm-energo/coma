@@ -2,14 +2,18 @@
 
 // XmlMainModel functions //
 
-XmlMainModel::XmlMainModel(int rows, int cols, QObject *parent) : XmlModel(rows, cols, parent)
+XmlBaseModel::XmlBaseModel(int rows, int cols, QObject *parent) : XmlModel(rows, cols, parent)
 {
 }
 
-void XmlMainModel::parseNode(QDomNode &node, int &row)
+void XmlBaseModel::parseNode(QDomNode &node, int &row)
 {
-    Q_UNUSED(node);
-    Q_UNUSED(row);
+    auto itemIndex = index(row, 0);
+    auto itemHeaderIndex = index(row, 1);
+    auto nodeName = node.nodeName();
+    auto desc = node.toElement().attribute("desc", "");
+    setData(itemIndex, nodeName);
+    setData(itemHeaderIndex, desc);
 }
 
 // XmlCheckSignalsModel functions //
@@ -37,6 +41,35 @@ void XmlSectionTabsModel::parseNode(QDomNode &node, int &row)
     parseTag(node, "id", row, 1);   // ID вкладки
 }
 
+// XmlSectionsModel functions //
+
+XmlSectionsModel::XmlSectionsModel(int rows, int cols, QObject *parent) : XmlModel(rows, cols, parent)
+{
+}
+
+void XmlSectionsModel::parseNode(QDomNode &node, int &row)
+{
+    auto itemHeaderIndex = index(row, 0);
+    auto header = node.toElement().attribute("header", "");
+    setData(itemHeaderIndex, header);
+}
+
+// XmlSectionModel functions //
+
+XmlSectionModel::XmlSectionModel(int rows, int cols, QObject *parent) : XmlModel(rows, cols, parent)
+{
+}
+
+void XmlSectionModel::parseNode(QDomNode &node, int &row)
+{
+    auto itemHeaderIndex = index(row, 0);
+    auto header = node.toElement().attribute("header", "");
+    auto itemTabIndex = index(row, 1);
+    auto tab = node.toElement().attribute("tab", "");
+    setData(itemHeaderIndex, header);
+    setData(itemTabIndex, tab);
+}
+
 // XmlSectionGroupsModel functions //
 
 XmlSectionGroupsModel::XmlSectionGroupsModel(int rows, int cols, QObject *parent) : XmlModel(rows, cols, parent)
@@ -49,35 +82,7 @@ void XmlSectionGroupsModel::parseNode(QDomNode &node, int &row)
     parseTag(node, "start-addr", row, 1); // Адрес
 }
 
-/*
-// XmlChecksModel functions //
-
-XmlChecksModel::XmlChecksModel(int rows, int cols, QObject *parent) : XmlModel(rows, cols, parent)
-{
-}
-
-void XmlChecksModel::parseNode(QDomNode &node, int &row)
-{
-    Q_UNUSED(node);
-    Q_UNUSED(row);
-}
-
-// XmlCheckRecordsModel functions //
-XmlCheckRecordsModel::XmlCheckRecordsModel(int rows, int cols, QObject *parent) : XmlModel(rows, cols, parent)
-{
-}
-
-void XmlCheckRecordsModel::parseNode(QDomNode &node, int &row)
-{
-    parseAttribute(node, "header", row, 0); // Заголовок
-    parseAttribute(node, "desc", row, 1);   // Описание
-    parseTag(node, "group", row, 2);        // Группа
-    parseTag(node, "start-addr", row, 3);   // Стартовый адрес
-    parseTag(node, "count", row, 4);        // Количество
-}
-*/
-
-// XmlAlarmsModel functions //
+// XmlCritAlarmsModel functions //
 
 XmlAlarmsModel::XmlAlarmsModel(int rows, int cols, QObject *parent) : XmlModel(rows, cols, parent)
 {
@@ -85,44 +90,8 @@ XmlAlarmsModel::XmlAlarmsModel(int rows, int cols, QObject *parent) : XmlModel(r
 
 void XmlAlarmsModel::parseNode(QDomNode &node, int &row)
 {
-    Q_UNUSED(node);
-    Q_UNUSED(row);
-}
-
-// XmlCritAlarmsModel functions //
-
-XmlCritAlarmsModel::XmlCritAlarmsModel(int rows, int cols, QObject *parent) : XmlModel(rows, cols, parent)
-{
-}
-
-void XmlCritAlarmsModel::parseNode(QDomNode &node, int &row)
-{
-    parseTag(node, "addr", row, 0);   // Адрес
-    parseTag(node, "string", row, 1); // Строка с сообщением
-}
-
-// XmlWarnAlarmsModel functions //
-
-XmlWarnAlarmsModel::XmlWarnAlarmsModel(int rows, int cols, QObject *parent) : XmlModel(rows, cols, parent)
-{
-}
-
-void XmlWarnAlarmsModel::parseNode(QDomNode &node, int &row)
-{
-    parseTag(node, "addr", row, 0);   // Адрес
-    parseTag(node, "string", row, 1); // Строка с сообщением
-}
-
-// XmlJoursModel functions //
-
-XmlJoursModel::XmlJoursModel(int rows, int cols, QObject *parent) : XmlModel(rows, cols, parent)
-{
-}
-
-void XmlJoursModel::parseNode(QDomNode &node, int &row)
-{
-    Q_UNUSED(node);
-    Q_UNUSED(row);
+    parseTag(node, "string", row, 0); // Строка с сообщением
+    parseTag(node, "addr", row, 1);   // Адрес
 }
 
 // XmlWorkJoursModel functions //
@@ -170,8 +139,8 @@ XmlProtocomModel::XmlProtocomModel(int rows, int cols, QObject *parent) : XmlMod
 
 void XmlProtocomModel::parseNode(QDomNode &node, int &row)
 {
-    parseTag(node, "signal-id", row, 0); // ID сигнала
-    parseTag(node, "block", row, 1);     // Номер блока
+    parseTag(node, "block", row, 0);     // Номер блока
+    parseTag(node, "signal-id", row, 1); // ID сигнала
 }
 
 // XmlIECModel functions //

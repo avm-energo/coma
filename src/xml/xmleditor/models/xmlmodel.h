@@ -41,9 +41,7 @@ enum NodeTypes : quint16
     Section,
     SGroup,
     Alarms,
-    CritAlarms,
-    WarnAlarms,
-    InfoAlarms,
+    AlarmsItem,
     Journals,
     WorkJours,
     MeasJours,
@@ -70,7 +68,7 @@ class XmlModel : public QAbstractTableModel
 {
     Q_OBJECT
 private:
-    void checkChilds(QDomNode &child, int &row);
+    void parseDataNode(QDomNode &child, int &row);
 
 protected:
     int mRows, mCols;

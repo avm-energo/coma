@@ -24,28 +24,22 @@ void ModelFabric::CreateModel(ModelNode &mNode, QDomNode &root, QObject *parent)
             mNode.modelPtr = new XmlSectionTabsModel(rows, cols, parent);
             break;
         case ModelType::Sections:
-            mNode.modelPtr = new XmlMainModel(rows, cols, parent);
+            mNode.modelPtr = new XmlSectionsModel(rows, cols, parent);
             break;
         case ModelType::Section:
-            mNode.modelPtr = new XmlMainModel(rows, cols, parent);
+            mNode.modelPtr = new XmlSectionModel(rows, cols, parent);
             break;
         case ModelType::SGroup:
             mNode.modelPtr = new XmlSectionGroupsModel(rows, cols, parent);
             break;
         case ModelType::Alarms:
+            mNode.modelPtr = new XmlBaseModel(rows, cols, parent);
+            break;
+        case ModelType::AlarmsItem:
             mNode.modelPtr = new XmlAlarmsModel(rows, cols, parent);
             break;
-        case ModelType::CritAlarms:
-            mNode.modelPtr = new XmlCritAlarmsModel(rows, cols, parent);
-            break;
-        case ModelType::WarnAlarms:
-            mNode.modelPtr = new XmlWarnAlarmsModel(rows, cols, parent);
-            break;
-        case ModelType::InfoAlarms:
-            mNode.modelPtr = new XmlWarnAlarmsModel(rows, cols, parent);
-            break;
         case ModelType::Journals:
-            mNode.modelPtr = new XmlJoursModel(rows, cols, parent);
+            mNode.modelPtr = new XmlBaseModel(rows, cols, parent);
             break;
         case ModelType::WorkJours:
             mNode.modelPtr = new XmlWorkJoursModel(rows, cols, parent);
@@ -92,7 +86,7 @@ XmlModel *ModelFabric::CreateMainModel(QDomNode &root, QObject *parent)
                 {
                     auto labels = iter->second;
                     auto cols = labels.count(), rows = ElementsCount(res);
-                    auto model = new XmlMainModel(rows, cols, parent);
+                    auto model = new XmlBaseModel(rows, cols, parent);
                     model->setHorizontalHeaderLabels(labels);
                     model->setDataNode(false, res);
                     return model;

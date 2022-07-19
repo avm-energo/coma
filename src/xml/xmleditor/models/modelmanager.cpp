@@ -1,8 +1,7 @@
 #include "modelmanager.h"
 
-ModelManager::ModelManager(QTableView *view, QObject *parent) : QObject(parent), curModel(nullptr), tableView(view)
+ModelManager::ModelManager(QObject *parent) : QObject(parent), curModel(nullptr), curPath("")
 {
-    QObject::connect(tableView, &QTableView::clicked, this, &ModelManager::ViewModelItemClicked);
 }
 
 void ModelManager::ClearStorage()
@@ -14,6 +13,8 @@ void ModelManager::ClearStorage()
     }
     curModel->deleteLater();
     curModel = nullptr;
+    curPath = "";
+    emit PathChanged(curPath);
 }
 
 void ModelManager::SetDocument(QDomNode &doc)
@@ -23,7 +24,7 @@ void ModelManager::SetDocument(QDomNode &doc)
         ClearStorage();
 
     curModel = ModelFabric::CreateMainModel(doc, this);
-    tableView->setModel(curModel);
+    emit ModelChanged(curModel);
 }
 
 void ModelManager::ViewModelItemClicked(const QModelIndex &index)
@@ -34,9 +35,13 @@ void ModelManager::ViewModelItemClicked(const QModelIndex &index)
         auto modelNode = data.value<ModelNode>();
         if (modelNode.modelPtr != nullptr && modelNode.modelType != ModelType::None)
         {
+            auto nameIndex = curModel->index(index.row(), 0);
+            auto name = curModel->data(nameIndex).value<QString>();
+            curPath += "\\" + name;
             storage.push(curModel);
             curModel = modelNode.modelPtr;
-            tableView->setModel(curModel);
+            emit ModelChanged(curModel);
+            emit PathChanged(curPath);
         }
     }
     else
@@ -47,9 +52,11 @@ void ModelManager::ViewModelItemClicked(const QModelIndex &index)
             auto str = data.value<QString>();
             if (str == "..")
             {
+                curPath = curPath.left(curPath.lastIndexOf('\\'));
                 curModel = storage.top();
                 storage.pop();
-                tableView->setModel(curModel);
+                emit ModelChanged(curModel);
+                emit PathChanged(curPath);
             }
         }
     }

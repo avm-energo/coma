@@ -306,7 +306,6 @@
             </section>
             <section header="Текущие данные. Вторая тройка">
                 <sgroup header="Действующие значения и крест-факторы сигналов" tab="1">
-                    <tab>1</tab>
                     <mwidget desc="I ф.%1, А">
                         <start-addr>1400</start-addr>
                         <count>3</count>
@@ -347,7 +346,6 @@
                     </mwidget>
                 </sgroup>
                 <sgroup header="Данные по несимметрии и искажениям сигналов" tab="1">
-                    <tab>1</tab>
                     <mwidget desc="I0, А">
                         <start-addr>1420</start-addr>
                         <toolTip>Ток нулевой последовательности гр.1, А</toolTip>

@@ -10,9 +10,9 @@ const std::map<QString, ModelType> XmlModel::types {
     { tags::section, ModelType::Section },     //
     { tags::sgroup, ModelType::SGroup },       //
     { tags::alarms, ModelType::Alarms },       //
-    { tags::critical, ModelType::CritAlarms }, //
-    { tags::warning, ModelType::WarnAlarms },  //
-    { tags::info, ModelType::InfoAlarms },     //
+    { tags::critical, ModelType::AlarmsItem }, //
+    { tags::warning, ModelType::AlarmsItem },  //
+    { tags::info, ModelType::AlarmsItem },     //
     { tags::journals, ModelType::Journals },   //
     { tags::work, ModelType::WorkJours },      //
     { tags::meas, ModelType::MeasJours },      //
@@ -26,18 +26,16 @@ const std::map<ModelType, QStringList> XmlModel::headers {
     { ModelType::Resources, { "XML", "Описание" } },                                         //
     { ModelType::Signals, { "ID сигнала", "Стартовый адрес", "Количество" } },               //
     { ModelType::SectionTabs, { "ID вкладки", "Название" } },                                //
-    { ModelType::Sections, { "XML", "Описание" } },                                          //
-    { ModelType::Section, { "XML", "Название", "ID вкладки" } },                             //
+    { ModelType::Sections, { "Название" } },                                                 //
+    { ModelType::Section, { "Название", "ID вкладки" } },                                    //
     { ModelType::SGroup, { "Имя", "Адрес" } },                                               //
     { ModelType::Alarms, { "XML", "Описание" } },                                            //
-    { ModelType::CritAlarms, { "Адрес", "Описание" } },                                      //
-    { ModelType::WarnAlarms, { "Адрес", "Описание" } },                                      //
-    { ModelType::InfoAlarms, { "Адрес", "Описание" } },                                      //
+    { ModelType::AlarmsItem, { "Описание", "Адрес" } },                                      //
     { ModelType::Journals, { "XML", "Описание" } },                                          //
     { ModelType::WorkJours, { "Адрес", "Описание" } },                                       //
     { ModelType::MeasJours, { "Название" } },                                                //
     { ModelType::Modbus, { "ID сигнала", "Тип регистра", "Возвращаемый тип", "Описание" } }, //
-    { ModelType::Protocom, { "ID сигнала", "Блок" } },                                       //
+    { ModelType::Protocom, { "Блок", "ID сигнала" } },                                       //
     { ModelType::IEC60870, { "ID сигнала", "Тип сигнала", "Тип передачи", "Группа" } },      //
     { ModelType::Config, { "ID виджета", "Значение по умолчанию" } }                         //
 };
@@ -157,38 +155,23 @@ void XmlModel::setDataNode(bool isChildModel, QDomNode &root)
     while (!child.isNull())
     {
         if (!child.isComment())
-        {
-            checkChilds(child, row);
-        }
+            parseDataNode(child, row);
         child = child.nextSibling();
     }
 }
 
-void XmlModel::checkChilds(QDomNode &child, int &row)
+void XmlModel::parseDataNode(QDomNode &child, int &row)
 {
     auto childNodeName = child.nodeName();
     auto type = types.find(childNodeName);
     if (type != types.cend())
     {
         auto modelNode = ModelNode { nullptr, type->second };
-        auto itemIndex = index(row, 0);
-        auto itemHeaderIndex = index(row, 1);
-        setData(itemIndex, childNodeName);
-        auto desc = child.toElement().attribute("desc", "");
-        auto head = child.toElement().attribute("header", "");
-        auto header = desc.isEmpty() ? head : desc;
-        setData(itemHeaderIndex, header);
-        if (mCols == 3)
-        {
-            auto itemTabIndex = index(row, 2);
-            auto tab = child.toElement().attribute("tab", "");
-            setData(itemTabIndex, tab);
-        }
         ModelFabric::CreateModel(modelNode, child, this);
+        auto itemIndex = index(row, 0);
         setData(itemIndex, QVariant::fromValue(modelNode), ModelNodeRole);
     }
-    else
-        parseNode(child, row);
+    parseNode(child, row);
     row++;
 }
 

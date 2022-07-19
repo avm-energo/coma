@@ -3,10 +3,10 @@
 
 #include "xmlmodel.h"
 
-class XmlMainModel : public XmlModel
+class XmlBaseModel : public XmlModel
 {
 public:
-    explicit XmlMainModel(int rows = 1, int cols = 1, QObject *parent = nullptr);
+    explicit XmlBaseModel(int rows = 1, int cols = 1, QObject *parent = nullptr);
     virtual void parseNode(QDomNode &node, int &row) override;
 };
 
@@ -28,6 +28,20 @@ public:
     virtual void parseNode(QDomNode &node, int &row) override;
 };
 
+class XmlSectionsModel : public XmlModel
+{
+public:
+    explicit XmlSectionsModel(int rows = 1, int cols = 1, QObject *parent = nullptr);
+    virtual void parseNode(QDomNode &node, int &row) override;
+};
+
+class XmlSectionModel : public XmlModel
+{
+public:
+    explicit XmlSectionModel(int rows = 1, int cols = 1, QObject *parent = nullptr);
+    virtual void parseNode(QDomNode &node, int &row) override;
+};
+
 class XmlSectionGroupsModel : public XmlModel
 {
 public:
@@ -44,28 +58,7 @@ public:
     virtual void parseNode(QDomNode &node, int &row) override;
 };
 
-class XmlCritAlarmsModel : public XmlModel
-{
-public:
-    explicit XmlCritAlarmsModel(int rows = 1, int cols = 1, QObject *parent = nullptr);
-    virtual void parseNode(QDomNode &node, int &row) override;
-};
-
-class XmlWarnAlarmsModel : public XmlModel
-{
-public:
-    explicit XmlWarnAlarmsModel(int rows = 1, int cols = 1, QObject *parent = nullptr);
-    virtual void parseNode(QDomNode &node, int &row) override;
-};
-
 /// JOURNALS
-
-class XmlJoursModel : public XmlModel
-{
-public:
-    explicit XmlJoursModel(int rows = 1, int cols = 1, QObject *parent = nullptr);
-    virtual void parseNode(QDomNode &node, int &row) override;
-};
 
 class XmlWorkJoursModel : public XmlModel
 {
