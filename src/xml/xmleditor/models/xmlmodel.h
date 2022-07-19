@@ -92,6 +92,7 @@ public:
     bool setHeaderData(int section, Qt::Orientation orientation, //
         const QVariant &value, int role = Qt::EditRole) override;
     QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
+    void sort(int column, Qt::SortOrder order = Qt::AscendingOrder) override;
     void setHorizontalHeaderLabels(const QStringList &labels);
 
     void setDataNode(bool isChildModel, QDomNode &root);
