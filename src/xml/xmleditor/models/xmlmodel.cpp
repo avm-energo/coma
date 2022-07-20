@@ -122,10 +122,6 @@ QVariant XmlModel::headerData(int section, Qt::Orientation orientation, int role
         if (section >= 0 && section < mCols)
             return horizontalHeaders.value(section, QVariant());
     }
-    else if (orientation == Qt::Orientation::Vertical && role == Qt::DisplayRole)
-    {
-        return QVariant::fromValue(QString::number(section + 1));
-    }
     return QVariant();
 }
 

@@ -90,7 +90,10 @@ QVBoxLayout *XmlEditor::GetSlaveWorkspace()
     header->setSectionResizeMode(QHeaderView::ResizeToContents);
     QObject::connect(tableSlaveView, &QTableView::clicked, manager, &ModelManager::ViewModelItemClicked);
     QObject::connect(manager, &ModelManager::ModelChanged, this, //
-        [&](XmlModel *model) { tableSlaveView->setModel(model); });
+        [&](XmlSortProxyModel *model) -> void {
+            tableSlaveView->setModel(model);
+            tableSlaveView->sortByColumn(0, Qt::SortOrder::AscendingOrder);
+        });
     workspace->addWidget(tableSlaveView);
 
     return workspace;

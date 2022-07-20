@@ -11,10 +11,17 @@ void ModelManager::ClearStorage()
         curModel = storage.top();
         storage.pop();
     }
-    curModel->deleteLater();
+    curModel->sourceModel()->deleteLater();
     curModel = nullptr;
     curPath = "";
     emit PathChanged(curPath);
+}
+
+void ModelManager::ChangeModel(XmlModel *model)
+{
+    curModel = new XmlSortProxyModel(model);
+    curModel->setSourceModel(model);
+    emit ModelChanged(curModel);
 }
 
 void ModelManager::SetDocument(QDomNode &doc)
@@ -23,8 +30,7 @@ void ModelManager::SetDocument(QDomNode &doc)
     if (curModel != nullptr)
         ClearStorage();
 
-    curModel = ModelFabric::CreateMainModel(doc, this);
-    emit ModelChanged(curModel);
+    ChangeModel(ModelFabric::CreateMainModel(doc, this));
 }
 
 void ModelManager::ViewModelItemClicked(const QModelIndex &index)
@@ -39,8 +45,7 @@ void ModelManager::ViewModelItemClicked(const QModelIndex &index)
             auto name = curModel->data(nameIndex).value<QString>();
             curPath += "\\" + name;
             storage.push(curModel);
-            curModel = modelNode.modelPtr;
-            emit ModelChanged(curModel);
+            ChangeModel(modelNode.modelPtr);
             emit PathChanged(curPath);
         }
     }

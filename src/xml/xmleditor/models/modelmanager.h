@@ -3,19 +3,23 @@
 
 #include "modelfabric.h"
 
+#include <QSortFilterProxyModel>
 #include <QTableView>
 #include <stack>
+
+typedef QSortFilterProxyModel XmlSortProxyModel;
 
 class ModelManager : public QObject
 {
     Q_OBJECT
 private:
-    XmlModel *curModel;
+    XmlSortProxyModel *curModel;
     // QTableView *tableView;
-    std::stack<XmlModel *> storage;
+    std::stack<XmlSortProxyModel *> storage;
     QString curPath;
 
     void ClearStorage();
+    void ChangeModel(XmlModel *model);
 
 public:
     explicit ModelManager(QObject *parent = nullptr);
@@ -25,7 +29,7 @@ public slots:
     void SetDocument(QDomNode &doc);
 
 signals:
-    void ModelChanged(XmlModel *model);
+    void ModelChanged(XmlSortProxyModel *model);
     void PathChanged(const QString &path);
 };
 
