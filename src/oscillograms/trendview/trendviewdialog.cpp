@@ -378,37 +378,40 @@ void TrendViewDialog::exportToExcel()
     QFileInfo info(filename);
     StdFunc::SetHomeDir(info.absolutePath());
     dlg->close();
-    QDialog *dlg2 = new QDialog(this);
-    QVBoxLayout *lyout = new QVBoxLayout;
-    QLabel *lbl = new QLabel;
-    lyout->addWidget(lbl);
-    QProgressBar *bar = new QProgressBar;
-    bar->setMinimum(0);
-    lyout->addWidget(bar);
-    dlg2->setLayout(lyout);
-    connect(m_trendModel, &TrendViewModel::recordsOverall, bar, &QProgressBar::setMaximum, Qt::DirectConnection);
-    connect(m_trendModel, &TrendViewModel::currentRecord, bar, &QProgressBar::setValue, Qt::DirectConnection);
-    connect(
-        m_trendModel, &TrendViewModel::eventMessage, this, [&](const QString &msg) { lbl->setText(msg); },
-        Qt::DirectConnection);
-    dlg2->show();
+    //    QDialog *dlg2 = new QDialog(this);
+    //    QVBoxLayout *lyout = new QVBoxLayout;
+    //    QLabel *lbl = new QLabel;
+    //    lyout->addWidget(lbl);
+    //    QProgressBar *bar = new QProgressBar;
+    //    bar->setMinimum(0);
+    //    lyout->addWidget(bar);
+    //    dlg2->setLayout(lyout);
+    //    //    connect(m_trendModel, &TrendViewModel::recordsOverall, bar, &QProgressBar::setMaximum,
+    //    Qt::DirectConnection);
+    //    //    connect(m_trendModel, &TrendViewModel::currentRecord, bar, &QProgressBar::setValue,
+    //    Qt::DirectConnection);
+    //    //    connect(
+    //    //        m_trendModel, &TrendViewModel::eventMessage, this, [&](const QString &msg) { lbl->setText(msg); },
+    //    //        Qt::DirectConnection);
+    //    dlg2->show();
     try
     {
-        QEventLoop loop;
-        connect(m_trendModel, &TrendViewModel::finished, &loop, &QEventLoop::quit);
+        //        QEventLoop loop;
+        //        connect(m_trendModel, &TrendViewModel::finished, &loop, &QEventLoop::quit);
         m_trendModel->setFilename(filename);
-        QtConcurrent::run(m_trendModel, &TrendViewModel::toExcel);
-        loop.exec();
+        //        QtConcurrent::run(m_trendModel, &TrendViewModel::toExcel);
+        //        loop.exec();
+        m_trendModel->toExcel();
         //        m_trendModel->toExcel(filename);
-        dlg2->close();
+        //        dlg2->close();
         EMessageBox::information(this, "Файл создан успешно");
     } catch (ComaException e)
     {
-        dlg2->close();
+        //        dlg2->close();
         EMessageBox::error(this, e.message());
     } catch (...)
     {
-        dlg2->close();
+        //        dlg2->close();
         EMessageBox::error(this, "Неизвестная ошибка");
     };
 }

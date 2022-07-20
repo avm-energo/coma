@@ -82,9 +82,9 @@ void TrendViewModel::processAnalogNames(const QStringList &list)
 void TrendViewModel::toExcel()
 {
     constexpr int c_div = 1000;
-    emit eventMessage("Разборка осциллограммы");
-    QXlsx::Document doc(m_filename);
-    QXlsx::Worksheet *workSheet = doc.currentWorksheet();
+    //    emit eventMessage("Разборка осциллограммы");
+    QXlsx::Document *doc = new QXlsx::Document(m_filename, this);
+    QXlsx::Worksheet *workSheet = doc->currentWorksheet();
     workSheet->writeString(2, 2, "Тип осциллограммы:");
     workSheet->writeString(2, 3, QString::number(m_idOsc));
     int currentRow = 4;
@@ -95,7 +95,7 @@ void TrendViewModel::toExcel()
     int pushRow = currentRow;
     if (m_mainPoints.size() < 2)
     {
-        emit finished();
+        //        emit finished();
         throw ComaException("Недостаточно данных по оси абсцисс");
     }
     //    else
@@ -103,52 +103,53 @@ void TrendViewModel::toExcel()
     //        throw ComaException("Test exception");
     //        emit finished();
     //    }
-    emit eventMessage("Экспорт абсцисс");
-    emit recordsOverall(m_mainPoints.size());
+    //    emit eventMessage("Экспорт абсцисс");
+    // emit recordsOverall(m_mainPoints.size());
     int curCount = 0;
     for (int i = 0; i < m_mainPoints.size(); ++i)
     {
         workSheet->writeNumeric(currentRow++, 1, m_mainPoints.at(i));
         if (curCount >= c_div)
         {
-            emit currentRecord(i);
+            // emit currentRecord(i);
             curCount = 0;
         }
         ++curCount;
     }
     if (analogDescriptions().size() != analogValues().size())
     {
-        emit finished();
+        //        emit finished();
         throw ComaException("Размерности массивов значений и описаний не совпадают");
     }
     int currentColumn = 2;
-    emit eventMessage("Экспорт ординат");
+    //    emit eventMessage("Экспорт ординат");
     for (int j = 0; j < analogDescriptions().size(); ++j)
     {
         currentRow = pushRow;
         if (!m_analogMainData.contains(analogValues().at(j)))
         {
-            emit finished();
+            //            emit finished();
             throw ComaException("Количество значений не соответствует описанию");
         }
         QVector<double> vect = m_analogMainData[analogValues().at(j)];
-        emit recordsOverall(vect.size());
+        // emit recordsOverall(vect.size());
         int curCount = 0;
         for (int i = 0; i < vect.size(); ++i)
         {
             workSheet->writeNumeric(currentRow++, currentColumn, vect.at(i));
             if (curCount >= c_div)
             {
-                emit currentRecord(i);
+                // emit currentRecord(i);
                 curCount = 0;
             }
             ++curCount;
         }
         ++currentColumn;
     }
-    emit eventMessage("Запись файла");
-    doc.save();
-    emit finished();
+    //    emit eventMessage("Запись файла");
+    doc->save();
+    //    emit finished();
+    doc->deleteLater();
 }
 
 float TrendViewModel::xmin() const
