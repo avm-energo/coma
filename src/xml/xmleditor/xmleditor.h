@@ -34,6 +34,7 @@ public:
 
 public slots:
     void Close();
+    void EditItem();
 };
 
 #endif // XMLEDITOR_H

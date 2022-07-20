@@ -2,7 +2,7 @@
 
 // XmlMainModel functions //
 
-XmlBaseModel::XmlBaseModel(int rows, int cols, QObject *parent) : XmlModel(rows, cols, parent)
+XmlBaseModel::XmlBaseModel(int rows, int cols, ModelType type, QObject *parent) : XmlModel(rows, cols, type, parent)
 {
 }
 
@@ -18,7 +18,8 @@ void XmlBaseModel::parseNode(QDomNode &node, int &row)
 
 // XmlCheckSignalsModel functions //
 
-XmlSignalsModel::XmlSignalsModel(int rows, int cols, QObject *parent) : XmlModel(rows, cols, parent)
+XmlSignalsModel::XmlSignalsModel(int rows, int cols, ModelType type, QObject *parent)
+    : XmlModel(rows, cols, type, parent)
 {
 }
 
@@ -31,7 +32,8 @@ void XmlSignalsModel::parseNode(QDomNode &node, int &row)
 
 // XmlSectionTabsModel functions //
 
-XmlSectionTabsModel::XmlSectionTabsModel(int rows, int cols, QObject *parent) : XmlModel(rows, cols, parent)
+XmlSectionTabsModel::XmlSectionTabsModel(int rows, int cols, ModelType type, QObject *parent)
+    : XmlModel(rows, cols, type, parent)
 {
 }
 
@@ -43,7 +45,8 @@ void XmlSectionTabsModel::parseNode(QDomNode &node, int &row)
 
 // XmlSectionsModel functions //
 
-XmlSectionsModel::XmlSectionsModel(int rows, int cols, QObject *parent) : XmlModel(rows, cols, parent)
+XmlSectionsModel::XmlSectionsModel(int rows, int cols, ModelType type, QObject *parent)
+    : XmlModel(rows, cols, type, parent)
 {
 }
 
@@ -56,7 +59,8 @@ void XmlSectionsModel::parseNode(QDomNode &node, int &row)
 
 // XmlSectionModel functions //
 
-XmlSectionModel::XmlSectionModel(int rows, int cols, QObject *parent) : XmlModel(rows, cols, parent)
+XmlSectionModel::XmlSectionModel(int rows, int cols, ModelType type, QObject *parent)
+    : XmlModel(rows, cols, type, parent)
 {
 }
 
@@ -72,7 +76,8 @@ void XmlSectionModel::parseNode(QDomNode &node, int &row)
 
 // XmlSectionGroupsModel functions //
 
-XmlSectionGroupsModel::XmlSectionGroupsModel(int rows, int cols, QObject *parent) : XmlModel(rows, cols, parent)
+XmlSectionGroupsModel::XmlSectionGroupsModel(int rows, int cols, ModelType type, QObject *parent)
+    : XmlModel(rows, cols, type, parent)
 {
 }
 
@@ -84,7 +89,7 @@ void XmlSectionGroupsModel::parseNode(QDomNode &node, int &row)
 
 // XmlCritAlarmsModel functions //
 
-XmlAlarmsModel::XmlAlarmsModel(int rows, int cols, QObject *parent) : XmlModel(rows, cols, parent)
+XmlAlarmsModel::XmlAlarmsModel(int rows, int cols, ModelType type, QObject *parent) : XmlModel(rows, cols, type, parent)
 {
 }
 
@@ -96,7 +101,8 @@ void XmlAlarmsModel::parseNode(QDomNode &node, int &row)
 
 // XmlWorkJoursModel functions //
 
-XmlWorkJoursModel::XmlWorkJoursModel(int rows, int cols, QObject *parent) : XmlModel(rows, cols, parent)
+XmlWorkJoursModel::XmlWorkJoursModel(int rows, int cols, ModelType type, QObject *parent)
+    : XmlModel(rows, cols, type, parent)
 {
 }
 
@@ -108,7 +114,8 @@ void XmlWorkJoursModel::parseNode(QDomNode &node, int &row)
 
 // XmlMeasJoursModel functions //
 
-XmlMeasJoursModel::XmlMeasJoursModel(int rows, int cols, QObject *parent) : XmlModel(rows, cols, parent)
+XmlMeasJoursModel::XmlMeasJoursModel(int rows, int cols, ModelType type, QObject *parent)
+    : XmlModel(rows, cols, type, parent)
 {
 }
 
@@ -119,7 +126,7 @@ void XmlMeasJoursModel::parseNode(QDomNode &node, int &row)
 
 // XmlModbusModel functions //
 
-XmlModbusModel::XmlModbusModel(int rows, int cols, QObject *parent) : XmlModel(rows, cols, parent)
+XmlModbusModel::XmlModbusModel(int rows, int cols, ModelType type, QObject *parent) : XmlModel(rows, cols, type, parent)
 {
 }
 
@@ -133,7 +140,8 @@ void XmlModbusModel::parseNode(QDomNode &node, int &row)
 
 // XmlProtocomModel functions //
 
-XmlProtocomModel::XmlProtocomModel(int rows, int cols, QObject *parent) : XmlModel(rows, cols, parent)
+XmlProtocomModel::XmlProtocomModel(int rows, int cols, ModelType type, QObject *parent)
+    : XmlModel(rows, cols, type, parent)
 {
 }
 
@@ -145,7 +153,7 @@ void XmlProtocomModel::parseNode(QDomNode &node, int &row)
 
 // XmlIECModel functions //
 
-XmlIECModel::XmlIECModel(int rows, int cols, QObject *parent) : XmlModel(rows, cols, parent)
+XmlIECModel::XmlIECModel(int rows, int cols, ModelType type, QObject *parent) : XmlModel(rows, cols, type, parent)
 {
 }
 
@@ -159,7 +167,7 @@ void XmlIECModel::parseNode(QDomNode &node, int &row)
 
 // XmlConfigModel functions //
 
-XmlConfigModel::XmlConfigModel(int rows, int cols, QObject *parent) : XmlModel(rows, cols, parent)
+XmlConfigModel::XmlConfigModel(int rows, int cols, ModelType type, QObject *parent) : XmlModel(rows, cols, type, parent)
 {
 }
 

@@ -3,6 +3,8 @@
 #include <QHeaderView>
 #include <QLabel>
 #include <QToolBar>
+//---
+#include "dialogs/xmldialogs.h"
 
 XmlEditor::XmlEditor(QWidget *parent) : QDialog(parent, Qt::Window), masterModel(nullptr), manager(nullptr)
 {
@@ -70,7 +72,7 @@ QVBoxLayout *XmlEditor::GetSlaveWorkspace()
     toolbar->setIconSize(QSize(30, 30));
     toolbar->addAction(QIcon(":/icons/tnstart.svg"), "Создать", this, &XmlEditor::Close);
     toolbar->addSeparator();
-    toolbar->addAction(QIcon(":/icons/tnosc.svg"), "Редактировать", this, &XmlEditor::Close);
+    toolbar->addAction(QIcon(":/icons/tnosc.svg"), "Редактировать", this, &XmlEditor::EditItem);
     toolbar->addSeparator();
     toolbar->addAction(QIcon(":/icons/tnstop.svg"), "Удалить", this, &XmlEditor::Close);
     workspace->addWidget(toolbar);
@@ -109,4 +111,26 @@ void XmlEditor::CreateMasterModel()
         QObject::connect(masterModel, &MasterModel::itemSelected, manager, &ModelManager::SetDocument);
     }
     masterView->setModel(masterModel);
+}
+
+void XmlEditor::EditItem()
+{
+    auto proxyModel = qobject_cast<XmlSortProxyModel *>(tableSlaveView->model());
+    auto type = qobject_cast<XmlModel *>(proxyModel->sourceModel())->getModelType();
+    auto selected = tableSlaveView->selectionModel()->selectedRows();
+    auto row = selected.at(0).row();
+    auto cols = proxyModel->columnCount();
+    qDebug() << "Row: " << row << "  Cols: " << cols;
+
+    // XmlEditDialog *dialog = nullptr;
+    switch (type)
+    {
+    case ModelType::AlarmsItem:
+        // dialog = new XmlEditDialog(this);
+        break;
+    default:
+        // TODO: What must happenes here?
+        // qDebug() << "Тута нельзя редактировать ничаво!";
+        break;
+    }
 }

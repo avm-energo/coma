@@ -6,7 +6,7 @@
 class XmlBaseModel : public XmlModel
 {
 public:
-    explicit XmlBaseModel(int rows = 1, int cols = 1, QObject *parent = nullptr);
+    explicit XmlBaseModel(int rows, int cols, ModelType type, QObject *parent = nullptr);
     virtual void parseNode(QDomNode &node, int &row) override;
 };
 
@@ -15,7 +15,7 @@ public:
 class XmlSignalsModel : public XmlModel
 {
 public:
-    explicit XmlSignalsModel(int rows = 1, int cols = 1, QObject *parent = nullptr);
+    explicit XmlSignalsModel(int rows, int cols, ModelType type, QObject *parent = nullptr);
     virtual void parseNode(QDomNode &node, int &row) override;
 };
 
@@ -24,28 +24,28 @@ public:
 class XmlSectionTabsModel : public XmlModel
 {
 public:
-    explicit XmlSectionTabsModel(int rows = 1, int cols = 1, QObject *parent = nullptr);
+    explicit XmlSectionTabsModel(int rows, int cols, ModelType type, QObject *parent = nullptr);
     virtual void parseNode(QDomNode &node, int &row) override;
 };
 
 class XmlSectionsModel : public XmlModel
 {
 public:
-    explicit XmlSectionsModel(int rows = 1, int cols = 1, QObject *parent = nullptr);
+    explicit XmlSectionsModel(int rows, int cols, ModelType type, QObject *parent = nullptr);
     virtual void parseNode(QDomNode &node, int &row) override;
 };
 
 class XmlSectionModel : public XmlModel
 {
 public:
-    explicit XmlSectionModel(int rows = 1, int cols = 1, QObject *parent = nullptr);
+    explicit XmlSectionModel(int rows, int cols, ModelType type, QObject *parent = nullptr);
     virtual void parseNode(QDomNode &node, int &row) override;
 };
 
 class XmlSectionGroupsModel : public XmlModel
 {
 public:
-    explicit XmlSectionGroupsModel(int rows = 1, int cols = 1, QObject *parent = nullptr);
+    explicit XmlSectionGroupsModel(int rows, int cols, ModelType type, QObject *parent = nullptr);
     virtual void parseNode(QDomNode &node, int &row) override;
 };
 
@@ -54,7 +54,7 @@ public:
 class XmlAlarmsModel : public XmlModel
 {
 public:
-    explicit XmlAlarmsModel(int rows = 1, int cols = 1, QObject *parent = nullptr);
+    explicit XmlAlarmsModel(int rows, int cols, ModelType type, QObject *parent = nullptr);
     virtual void parseNode(QDomNode &node, int &row) override;
 };
 
@@ -63,14 +63,14 @@ public:
 class XmlWorkJoursModel : public XmlModel
 {
 public:
-    explicit XmlWorkJoursModel(int rows = 1, int cols = 1, QObject *parent = nullptr);
+    explicit XmlWorkJoursModel(int rows, int cols, ModelType type, QObject *parent = nullptr);
     virtual void parseNode(QDomNode &node, int &row) override;
 };
 
 class XmlMeasJoursModel : public XmlModel
 {
 public:
-    explicit XmlMeasJoursModel(int rows = 1, int cols = 1, QObject *parent = nullptr);
+    explicit XmlMeasJoursModel(int rows, int cols, ModelType type, QObject *parent = nullptr);
     virtual void parseNode(QDomNode &node, int &row) override;
 };
 
@@ -79,21 +79,21 @@ public:
 class XmlModbusModel : public XmlModel
 {
 public:
-    explicit XmlModbusModel(int rows = 1, int cols = 1, QObject *parent = nullptr);
+    explicit XmlModbusModel(int rows, int cols, ModelType type, QObject *parent = nullptr);
     virtual void parseNode(QDomNode &node, int &row) override;
 };
 
 class XmlProtocomModel : public XmlModel
 {
 public:
-    explicit XmlProtocomModel(int rows = 1, int cols = 1, QObject *parent = nullptr);
+    explicit XmlProtocomModel(int rows, int cols, ModelType type, QObject *parent = nullptr);
     virtual void parseNode(QDomNode &node, int &row) override;
 };
 
 class XmlIECModel : public XmlModel
 {
 public:
-    explicit XmlIECModel(int rows = 1, int cols = 1, QObject *parent = nullptr);
+    explicit XmlIECModel(int rows, int cols, ModelType type, QObject *parent = nullptr);
     virtual void parseNode(QDomNode &node, int &row) override;
 };
 
@@ -102,7 +102,7 @@ public:
 class XmlConfigModel : public XmlModel
 {
 public:
-    explicit XmlConfigModel(int rows = 1, int cols = 1, QObject *parent = nullptr);
+    explicit XmlConfigModel(int rows, int cols, ModelType type, QObject *parent = nullptr);
     virtual void parseNode(QDomNode &node, int &row) override;
 };
 

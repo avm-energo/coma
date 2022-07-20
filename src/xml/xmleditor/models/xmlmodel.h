@@ -72,6 +72,7 @@ private:
 
 protected:
     int mRows, mCols;
+    ModelType mType;
     QHash<QModelIndex, QVariant> mHashTable;
     QHash<int, QVariant> mNodes;
     QHash<int, QVariant> horizontalHeaders;
@@ -83,7 +84,7 @@ public:
     static const std::map<QString, ModelType> types;       ///< Types Map with enumeration, key = name of group type
     static const std::map<ModelType, QStringList> headers; ///< Settings Map, key = group type enumeration
 
-    explicit XmlModel(int rows, int cols, QObject *parent = nullptr);
+    explicit XmlModel(int rows, int cols, ModelType type, QObject *parent = nullptr);
     virtual QVariant data(const QModelIndex &index, int nRole = Qt::UserRole + 1) const override;
     virtual bool setData(const QModelIndex &index, const QVariant &val, int nRole = Qt::UserRole + 1) override;
     virtual int rowCount(const QModelIndex &index = QModelIndex()) const override;
@@ -92,9 +93,11 @@ public:
     bool setHeaderData(int section, Qt::Orientation orientation, //
         const QVariant &value, int role = Qt::EditRole) override;
     QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
-    void setHorizontalHeaderLabels(const QStringList &labels);
 
+    void setHorizontalHeaderLabels(const QStringList &labels);
     void setDataNode(bool isChildModel, QDomNode &root);
+    ModelType getModelType() const;
+
     virtual void parseNode(QDomNode &node, int &row) = 0;
 };
 

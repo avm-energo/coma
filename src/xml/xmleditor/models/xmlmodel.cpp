@@ -40,7 +40,8 @@ const std::map<ModelType, QStringList> XmlModel::headers {
     { ModelType::Config, { "ID виджета", "Значение по умолчанию" } }                         //
 };
 
-XmlModel::XmlModel(int rows, int cols, QObject *parent) : QAbstractTableModel(parent), mRows(rows), mCols(cols)
+XmlModel::XmlModel(int rows, int cols, ModelType type, QObject *parent)
+    : QAbstractTableModel(parent), mRows(rows), mCols(cols), mType(type)
 {
     horizontalHeaders.reserve(mCols);
 }
@@ -169,6 +170,11 @@ void XmlModel::parseDataNode(QDomNode &child, int &row)
     }
     parseNode(child, row);
     row++;
+}
+
+ModelType XmlModel::getModelType() const
+{
+    return mType;
 }
 
 void XmlModel::parseTag(QDomNode &node, QString tagName, int row, int col)
