@@ -74,7 +74,7 @@ protected:
 
 private:
     std::unique_ptr<TrendViewModel> m_model;
-    UniquePointer<TrendViewDialog> trendDialog;
+    TrendViewDialog *trendDialog;
     std::optional<Record> oscHeader;
     const QStringList phases { "фазы А, В, С", "фаза А", "фаза В", "фаза С" };
 };

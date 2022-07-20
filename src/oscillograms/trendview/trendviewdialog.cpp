@@ -53,6 +53,7 @@ TrendViewDialog::TrendViewDialog(QWidget *parent)
     digital.rescaleActivated = false;
     analog.type = ST_ANALOG;
     digital.type = ST_DIGITAL;
+    setAttribute(Qt::WA_DeleteOnClose);
 }
 
 SignalChooseWidget *TrendViewDialog::setupHelper(const TrendViewDialog::Signals &sig)

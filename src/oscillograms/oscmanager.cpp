@@ -16,7 +16,7 @@ OscManager::~OscManager()
 
 void OscManager::loadOsc(TrendViewModel *model)
 {
-    trendDialog = UniquePointer<TrendViewDialog>(new TrendViewDialog);
+    trendDialog = new TrendViewDialog;
     model->setXmax((static_cast<float>(model->length() / 2)));
     model->setXmin(-model->xmax());
 
