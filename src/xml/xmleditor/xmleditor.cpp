@@ -1,10 +1,10 @@
 #include "xmleditor.h"
 
+#include "dialogs/xmldialogs.h"
+
 #include <QHeaderView>
 #include <QLabel>
 #include <QToolBar>
-//---
-#include "dialogs/xmldialogs.h"
 
 XmlEditor::XmlEditor(QWidget *parent) : QDialog(parent, Qt::Window), masterModel(nullptr), manager(nullptr)
 {
@@ -90,7 +90,7 @@ QVBoxLayout *XmlEditor::GetSlaveWorkspace()
     tableSlaveView->setEditTriggers(QAbstractItemView::NoEditTriggers);
     auto header = tableSlaveView->horizontalHeader();
     header->setSectionResizeMode(QHeaderView::ResizeToContents);
-    QObject::connect(tableSlaveView, &QTableView::clicked, manager, &ModelManager::ViewModelItemClicked);
+    QObject::connect(tableSlaveView, &QTableView::doubleClicked, manager, &ModelManager::ViewModelItemClicked);
     QObject::connect(manager, &ModelManager::ModelChanged, this, //
         [&](XmlSortProxyModel *model) -> void {
             tableSlaveView->setModel(model);
@@ -107,7 +107,7 @@ void XmlEditor::CreateMasterModel()
     {
         masterModel = new MasterModel(this);
         masterModel->setHorizontalHeaderLabels({ "Устройство", "Type B", "Type M", "Версия", "Файл" });
-        QObject::connect(masterView, &QTableView::clicked, masterModel, &MasterModel::masterItemSelected);
+        QObject::connect(masterView, &QTableView::doubleClicked, masterModel, &MasterModel::masterItemSelected);
         QObject::connect(masterModel, &MasterModel::itemSelected, manager, &ModelManager::SetDocument);
     }
     masterView->setModel(masterModel);
@@ -116,21 +116,42 @@ void XmlEditor::CreateMasterModel()
 void XmlEditor::EditItem()
 {
     auto proxyModel = qobject_cast<XmlSortProxyModel *>(tableSlaveView->model());
-    auto type = qobject_cast<XmlModel *>(proxyModel->sourceModel())->getModelType();
+    auto model = qobject_cast<XmlModel *>(proxyModel->sourceModel());
+    auto type = model->getModelType();
     auto selected = tableSlaveView->selectionModel()->selectedRows();
-    auto row = selected.at(0).row();
-    auto cols = proxyModel->columnCount();
-    qDebug() << "Row: " << row << "  Cols: " << cols;
-
-    // XmlEditDialog *dialog = nullptr;
-    switch (type)
+    if (!selected.isEmpty())
     {
-    case ModelType::AlarmsItem:
-        // dialog = new XmlEditDialog(this);
-        break;
-    default:
-        // TODO: What must happenes here?
-        // qDebug() << "Тута нельзя редактировать ничаво!";
-        break;
+        auto row = selected.at(0).row();
+        XmlEditDialog *dialog = nullptr;
+        if (row != 0)
+        {
+            switch (type)
+            {
+            case ModelType::AlarmsItem:
+                // qDebug() << model->data(model->index(row, 0)) << model->data(model->index(row, 1));
+                dialog = new XmlEditAlarmDialog(proxyModel, this);
+                break;
+            default:
+                // TODO: What must happenes here?
+                // Предположительно, ничего, как и сейчас
+                // qDebug() << "Тута нельзя редактировать ничаво!";
+                break;
+            }
+        }
+        else
+        {
+            if (type == ModelType::Resources)
+            {
+                // TODO: Вызывать диалоговое окно для ModelType::Resources
+            }
+        }
+        if (dialog != nullptr)
+        {
+            dialog->setupUICall(row);
+        }
+    }
+    else
+    {
+        // TODO: Выводить сообщение, что ничего не выбрано
     }
 }

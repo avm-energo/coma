@@ -132,9 +132,11 @@ void XmlModel::setHorizontalHeaderLabels(const QStringList &labels)
         mRows = labels.count();
 
     int column = 0;
+    bool status = false;
     for (auto &label : labels)
     {
-        setHeaderData(column, Qt::Horizontal, label);
+        status = setHeaderData(column, Qt::Horizontal, label);
+        Q_ASSERT(status);
         column++;
     }
 }

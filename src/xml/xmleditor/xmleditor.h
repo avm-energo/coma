@@ -7,7 +7,6 @@
 #include <QDialog>
 #include <QHBoxLayout>
 #include <QTableView>
-// #include <QTreeView>
 #include <QtXml>
 
 class XmlEditor : public QDialog

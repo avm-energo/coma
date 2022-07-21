@@ -1,6 +1,6 @@
 #ifndef XMLDIALOGS_H
 #define XMLDIALOGS_H
 
-#include "xmleditdialog.h"
+#include "xmleditalarmdialog.h"
 
 #endif // XMLDIALOGS_H

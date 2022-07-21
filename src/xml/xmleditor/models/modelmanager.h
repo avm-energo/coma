@@ -2,19 +2,16 @@
 #define MODELMANAGER_H
 
 #include "modelfabric.h"
+#include "xmlsortproxymodel.h"
 
-#include <QSortFilterProxyModel>
 #include <QTableView>
 #include <stack>
-
-typedef QSortFilterProxyModel XmlSortProxyModel;
 
 class ModelManager : public QObject
 {
     Q_OBJECT
 private:
     XmlSortProxyModel *curModel;
-    // QTableView *tableView;
     std::stack<XmlSortProxyModel *> storage;
     QString curPath;
 
