@@ -122,19 +122,20 @@ void XmlEditor::EditItem()
     if (!selected.isEmpty())
     {
         auto row = selected.at(0).row();
-        XmlEditDialog *dialog = nullptr;
+        XmlDialog *dialog = nullptr;
         if (row != 0)
         {
             switch (type)
             {
             case ModelType::AlarmsItem:
-                // qDebug() << model->data(model->index(row, 0)) << model->data(model->index(row, 1));
-                dialog = new XmlEditAlarmDialog(proxyModel, this);
+                dialog = new XmlAlarmDialog(proxyModel, this);
+                break;
+            case ModelType::Signals:
+                dialog = new XmlSignalDialog(proxyModel, this);
                 break;
             default:
                 // TODO: What must happenes here?
                 // Предположительно, ничего, как и сейчас
-                // qDebug() << "Тута нельзя редактировать ничаво!";
                 break;
             }
         }
