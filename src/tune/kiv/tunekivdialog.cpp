@@ -21,7 +21,7 @@ TuneKIVDialog::TuneKIVDialog(ConfigV *config, QWidget *parent) : GeneralTuneDial
         { "Регулировка канала Pt100", TKIVRDialog }, { "Регулировка каналов напряжения", TKIVADCUDialog },
         { "Регулировка каналов тока", TKIVADCIDialog }, { "Настройка температурной коррекции +60 °С", TKIV60Dialog },
         { "Настройка температурной коррекции -20 °С", TKIV20Dialog } };
-    m_calibrSteps = m_dialogList.size() + 1;
+    //    m_calibrSteps = m_dialogList.size() + 1;
     Bac *bac = new Bac(this);
     m_BacWidget = bac->widget();
     SetupUI();

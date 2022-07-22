@@ -14,7 +14,6 @@
 
 TuneKIVADC::TuneKIVADC(ConfigV *config, int tuneStep, QWidget *parent) : AbstractTuneDialog(config, tuneStep, parent)
 {
-
     m_bac = new Bac(this);
     m_bda = new Bda(this);
     m_bdain = new BdaIn(this);

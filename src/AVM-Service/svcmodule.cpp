@@ -22,6 +22,7 @@ SvcModule::SvcModule(QObject *parent) : Module(parent)
 void SvcModule::create(QTimer *updateTimer)
 {
     using namespace Modules;
+    BaseInterface::iface()->setSettings(settings()->ifaceSettings);
     auto &board = Board::GetInstance();
     quint16 typeb = board.typeB();
     if (BaseBoards.contains(typeb)) // there must be two-part module
@@ -61,7 +62,6 @@ void SvcModule::create(QTimer *updateTimer)
         connect(updateTimer, &QTimer::timeout, d, &UDialog::reqUpdate);
         d->uponInterfaceSetting();
     }
-    BaseInterface::iface()->setSettings(settings()->ifaceSettings);
 }
 
 void SvcModule::createModule(Modules::Model model)
