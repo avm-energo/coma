@@ -1,10 +1,5 @@
 #include "xmlalarmdialog.h"
 
-#include <QHBoxLayout>
-#include <QLabel>
-#include <QPushButton>
-#include <QRegExpValidator>
-
 XmlAlarmDialog::XmlAlarmDialog(XmlSortProxyModel *model, QWidget *parent)
     : XmlDialog(model, parent), descInput(nullptr), addrInput(nullptr)
 {
@@ -16,23 +11,23 @@ void XmlAlarmDialog::setupUI(QStringList &selectedData)
     setupSizePos(650, 120);
     // Создание слоёв окна
     auto mainLayout = new QVBoxLayout(this);
-    auto layout1 = new QHBoxLayout(this);
-    auto layout2 = new QHBoxLayout(this);
+    auto descLayout = new QHBoxLayout(this);
+    auto addrLayout = new QHBoxLayout(this);
 
     // Виджеты для описания сигнализации
     auto descLabel = new QLabel("Описание сигнализации: ", this);
-    layout1->addWidget(descLabel);
+    descLayout->addWidget(descLabel);
     descInput = new QLineEdit("", this);
     QObject::connect(descInput, &QLineEdit::textEdited, this, qOverload<const QString &>(&XmlAlarmDialog::dataChanged));
-    layout1->addWidget(descInput);
+    descLayout->addWidget(descInput);
 
     // Виджеты для адреса сигнализации
     auto addrLabel = new QLabel("Адрес сигнализации: ", this);
-    layout2->addWidget(addrLabel);
+    addrLayout->addWidget(addrLabel);
     addrInput = new QLineEdit("", this);
     addrInput->setValidator(new QRegExpValidator(QRegExp("^([1-9][0-9]*|0)"), this));
     QObject::connect(addrInput, &QLineEdit::textEdited, this, qOverload<const QString &>(&XmlAlarmDialog::dataChanged));
-    layout2->addWidget(addrInput);
+    addrLayout->addWidget(addrInput);
 
     // Окно для создания item-а
     if (selectedData.isEmpty())
@@ -47,8 +42,8 @@ void XmlAlarmDialog::setupUI(QStringList &selectedData)
     }
 
     // Добавляем слои на главный слой
-    mainLayout->addLayout(layout1);
-    mainLayout->addLayout(layout2);
+    mainLayout->addLayout(descLayout);
+    mainLayout->addLayout(addrLayout);
     // Кнопка для сохранения изменений
     auto saveButton = new QPushButton("Сохранить изменения", this);
     QObject::connect(saveButton, &QPushButton::released, this, &XmlAlarmDialog::saveData);

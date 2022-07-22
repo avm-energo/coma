@@ -3,8 +3,6 @@
 
 #include "xmldialog.h"
 
-#include <QLineEdit>
-
 class XmlAlarmDialog : public XmlDialog
 {
     Q_OBJECT

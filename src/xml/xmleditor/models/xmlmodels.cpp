@@ -39,8 +39,8 @@ XmlSectionTabsModel::XmlSectionTabsModel(int rows, int cols, ModelType type, QOb
 
 void XmlSectionTabsModel::parseNode(QDomNode &node, int &row)
 {
-    parseTag(node, "name", row, 0); // Имя вкладки
-    parseTag(node, "id", row, 1);   // ID вкладки
+    parseTag(node, "id", row, 0);   // ID вкладки
+    parseTag(node, "name", row, 1); // Имя вкладки
 }
 
 // XmlSectionsModel functions //

@@ -116,15 +116,15 @@ void XmlEditor::CreateMasterModel()
 void XmlEditor::EditItem()
 {
     auto proxyModel = qobject_cast<XmlSortProxyModel *>(tableSlaveView->model());
-    auto model = qobject_cast<XmlModel *>(proxyModel->sourceModel());
-    auto type = model->getModelType();
     auto selected = tableSlaveView->selectionModel()->selectedRows();
     if (!selected.isEmpty())
     {
         auto row = selected.at(0).row();
-        XmlDialog *dialog = nullptr;
-        if (row != 0)
+        auto str = proxyModel->data(proxyModel->index(row, 0)).value<QString>();
+        if (str != "..")
         {
+            XmlDialog *dialog = nullptr;
+            auto type = qobject_cast<XmlModel *>(proxyModel->sourceModel())->getModelType();
             switch (type)
             {
             case ModelType::AlarmsItem:
@@ -133,22 +133,39 @@ void XmlEditor::EditItem()
             case ModelType::Signals:
                 dialog = new XmlSignalDialog(proxyModel, this);
                 break;
+            case ModelType::SectionTabs:
+                dialog = new XmlSTabDialog(proxyModel, this);
+                break;
+            case ModelType::WorkJours:
+                dialog = new XmlWorkJourDialog(proxyModel, this);
+                break;
+            case ModelType::MeasJours:
+                dialog = new XmlMeasJourDialog(proxyModel, this);
+                break;
+            // TODO: Допилить остальные диалоги
+            case ModelType::Modbus:
+                break;
+            case ModelType::Protocom:
+                break;
+            case ModelType::IEC60870:
+                break;
+            case ModelType::Config:
+                break;
+            case ModelType::Sections:
+                break;
+            case ModelType::Section:
+                break;
+            case ModelType::SGroup:
+                break;
             default:
                 // TODO: What must happenes here?
                 // Предположительно, ничего, как и сейчас
                 break;
             }
-        }
-        else
-        {
-            if (type == ModelType::Resources)
+            if (dialog != nullptr)
             {
-                // TODO: Вызывать диалоговое окно для ModelType::Resources
+                dialog->setupUICall(row);
             }
-        }
-        if (dialog != nullptr)
-        {
-            dialog->setupUICall(row);
         }
     }
     else

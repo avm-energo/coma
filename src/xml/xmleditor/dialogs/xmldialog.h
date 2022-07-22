@@ -4,6 +4,11 @@
 #include "../models/xmlsortproxymodel.h"
 
 #include <QDialog>
+#include <QHBoxLayout>
+#include <QLabel>
+#include <QLineEdit>
+#include <QPushButton>
+#include <QRegExpValidator>
 
 class XmlDialog : public QDialog
 {

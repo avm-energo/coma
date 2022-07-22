@@ -1,10 +1,5 @@
 #include "xmlsignaldialog.h"
 
-#include <QHBoxLayout>
-#include <QLabel>
-#include <QPushButton>
-#include <QRegExpValidator>
-
 XmlSignalDialog::XmlSignalDialog(XmlSortProxyModel *model, QWidget *parent) : XmlDialog(model, parent)
 {
 }
@@ -12,38 +7,38 @@ XmlSignalDialog::XmlSignalDialog(XmlSortProxyModel *model, QWidget *parent) : Xm
 void XmlSignalDialog::setupUI(QStringList &selectedData)
 {
     // Настройки окна (размер, положение)
-    setupSizePos(600, 160);
+    setupSizePos(500, 160);
     // Создание слоёв окна
     auto mainLayout = new QVBoxLayout(this);
-    auto layout1 = new QHBoxLayout(this);
-    auto layout2 = new QHBoxLayout(this);
-    auto layout3 = new QHBoxLayout(this);
+    auto idLayout = new QHBoxLayout(this);
+    auto addrLayout = new QHBoxLayout(this);
+    auto countLayout = new QHBoxLayout(this);
 
     // Виджеты для ID группы сигналов
     auto idLabel = new QLabel("ID группы: ", this);
-    layout1->addWidget(idLabel);
+    idLayout->addWidget(idLabel);
     idInput = new QLineEdit("", this);
     idInput->setValidator(new QRegExpValidator(QRegExp("^([1-9][0-9]*|0)"), this));
     QObject::connect(idInput, &QLineEdit::textEdited, this, qOverload<const QString &>(&XmlSignalDialog::dataChanged));
-    layout1->addWidget(idInput);
+    idLayout->addWidget(idInput);
 
     // Виджеты для адресов группы сигналов
     auto addrLabel = new QLabel("Адрес начального сигнала: ", this);
-    layout2->addWidget(addrLabel);
+    addrLayout->addWidget(addrLabel);
     addrInput = new QLineEdit("", this);
     addrInput->setValidator(new QRegExpValidator(QRegExp("^([1-9][0-9]*|0)"), this));
     QObject::connect(
         addrInput, &QLineEdit::textEdited, this, qOverload<const QString &>(&XmlSignalDialog::dataChanged));
-    layout2->addWidget(addrInput);
+    addrLayout->addWidget(addrInput);
 
     // Виджеты для количества сигналов в группе
     auto countLabel = new QLabel("Количество сигналов в группе: ", this);
-    layout3->addWidget(countLabel);
+    countLayout->addWidget(countLabel);
     countInput = new QLineEdit("", this);
     countInput->setValidator(new QRegExpValidator(QRegExp("^([1-9][0-9]*|0)"), this));
     QObject::connect(
         countInput, &QLineEdit::textEdited, this, qOverload<const QString &>(&XmlSignalDialog::dataChanged));
-    layout3->addWidget(countInput);
+    countLayout->addWidget(countInput);
 
     // Окно для создания item-а
     if (selectedData.isEmpty())
@@ -58,9 +53,9 @@ void XmlSignalDialog::setupUI(QStringList &selectedData)
         countInput->setText(selectedData[2]);
     }
 
-    mainLayout->addLayout(layout1);
-    mainLayout->addLayout(layout2);
-    mainLayout->addLayout(layout3);
+    mainLayout->addLayout(idLayout);
+    mainLayout->addLayout(addrLayout);
+    mainLayout->addLayout(countLayout);
     // Кнопка для сохранения изменений
     auto saveButton = new QPushButton("Сохранить изменения", this);
     QObject::connect(saveButton, &QPushButton::released, this, &XmlSignalDialog::saveData);
