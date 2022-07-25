@@ -1,7 +1,6 @@
 #include "xmldialog.h"
 
 #include <QGuiApplication>
-#include <QLayout>
 #include <QMessageBox>
 #include <QScreen>
 
@@ -39,7 +38,13 @@ void XmlDialog::reject()
 /// \brief Функция возвращает список с данными указанной строки из модели
 QStringList XmlDialog::getSelectedData()
 {
-    if (mRow >= 0)
+    // Если row = -1, то возвращаем пустой список (item создаётся с нуля)
+    if (mRow == createId)
+    {
+        isChanged = true;
+        return {};
+    }
+    else
     {
         QStringList selectedData;
         auto cols = mModel->columnCount();
@@ -50,9 +55,6 @@ QStringList XmlDialog::getSelectedData()
         }
         return selectedData;
     }
-    // Если row = -1, то возвращаем пустой список (item создаётся с нуля)
-    else
-        return {};
 }
 
 /// \brief Функция устанавливает фиксированный размер окна и отображает его в центре экрана
@@ -80,10 +82,20 @@ void XmlDialog::writeData(QStringList &saved)
     auto cols = mModel->columnCount();
     if (cols == saved.size())
     {
-        for (auto i = 0; i < cols; i++)
+        // Создаём данные
+        if (mRow == createId)
         {
-            auto index = mModel->index(mRow, i);
-            mModel->setData(index, saved[i]);
+            ;
+            ;
+        }
+        // Редактируем данные
+        else
+        {
+            for (auto i = 0; i < cols; i++)
+            {
+                auto index = mModel->index(mRow, i);
+                mModel->setData(index, saved[i]);
+            }
         }
     }
 }
@@ -116,6 +128,8 @@ void XmlDialog::saveData()
     }
 }
 
+/// \brief Перегрузка слота, вызываемого при изменении данных в диалоговом окне
+/// \see dataChanged
 void XmlDialog::dataChanged(const QString &strData)
 {
     Q_UNUSED(strData);

@@ -33,6 +33,7 @@ public:
 
 public slots:
     void Close();
+    void CreateItem();
     void EditItem();
 };
 

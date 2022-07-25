@@ -4,10 +4,6 @@
 
 int ElementsCount(QDomNode &node);
 
-ModelFabric::ModelFabric()
-{
-}
-
 void ModelFabric::CreateModel(ModelNode &mNode, QDomNode &root, QObject *parent)
 {
     auto iter = XmlModel::headers.find(mNode.modelType);

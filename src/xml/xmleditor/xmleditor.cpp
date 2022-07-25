@@ -1,6 +1,6 @@
 #include "xmleditor.h"
 
-#include "dialogs/xmldialogs.h"
+#include "dialogs/dialogfabric.h"
 
 #include <QHeaderView>
 #include <QLabel>
@@ -70,7 +70,7 @@ QVBoxLayout *XmlEditor::GetSlaveWorkspace()
     auto toolbar = new QToolBar(this);
     toolbar->setContextMenuPolicy(Qt::PreventContextMenu);
     toolbar->setIconSize(QSize(30, 30));
-    toolbar->addAction(QIcon(":/icons/tnstart.svg"), "Создать", this, &XmlEditor::Close);
+    toolbar->addAction(QIcon(":/icons/tnstart.svg"), "Создать", this, &XmlEditor::CreateItem);
     toolbar->addSeparator();
     toolbar->addAction(QIcon(":/icons/tnosc.svg"), "Редактировать", this, &XmlEditor::EditItem);
     toolbar->addSeparator();
@@ -113,69 +113,15 @@ void XmlEditor::CreateMasterModel()
     masterView->setModel(masterModel);
 }
 
+void XmlEditor::CreateItem()
+{
+    auto proxyModel = qobject_cast<XmlSortProxyModel *>(tableSlaveView->model());
+    XmlDialogFabric::CreateDialog(proxyModel, this);
+}
+
 void XmlEditor::EditItem()
 {
     auto proxyModel = qobject_cast<XmlSortProxyModel *>(tableSlaveView->model());
     auto selected = tableSlaveView->selectionModel()->selectedRows();
-    if (!selected.isEmpty())
-    {
-        auto row = selected.at(0).row();
-        auto str = proxyModel->data(proxyModel->index(row, 0)).value<QString>();
-        if (str != "..")
-        {
-            XmlDialog *dialog = nullptr;
-            auto type = qobject_cast<XmlModel *>(proxyModel->sourceModel())->getModelType();
-            switch (type)
-            {
-            case ModelType::AlarmsItem:
-                dialog = new XmlAlarmDialog(proxyModel, this);
-                break;
-            case ModelType::Signals:
-                dialog = new XmlSignalDialog(proxyModel, this);
-                break;
-            case ModelType::SectionTabs:
-                dialog = new XmlSTabDialog(proxyModel, this);
-                break;
-            case ModelType::WorkJours:
-                dialog = new XmlWorkJourDialog(proxyModel, this);
-                break;
-            case ModelType::MeasJours:
-                dialog = new XmlMeasJourDialog(proxyModel, this);
-                break;
-            case ModelType::Modbus:
-                dialog = new XmlModbusDialog(proxyModel, this);
-                break;
-            case ModelType::Protocom:
-                dialog = new XmlProtocomDialog(proxyModel, this);
-                break;
-            case ModelType::IEC60870:
-                dialog = new Xml104Dialog(proxyModel, this);
-                break;
-            case ModelType::Config:
-                dialog = new XmlConfigDialog(proxyModel, this);
-                break;
-            case ModelType::Sections:
-                dialog = new XmlSectionDialog(proxyModel, this);
-                break;
-            case ModelType::Section:
-                dialog = new XmlSGroupDialog(proxyModel, this);
-                break;
-            case ModelType::SGroup:
-                dialog = new XmlMWidgetDialog(proxyModel, this);
-                break;
-            default:
-                // TODO: What must happenes here?
-                // Предположительно, ничего, как и сейчас
-                break;
-            }
-            if (dialog != nullptr)
-            {
-                dialog->setupUICall(row);
-            }
-        }
-    }
-    else
-    {
-        // TODO: Выводить сообщение, что ничего не выбрано
-    }
+    XmlDialogFabric::EditDialog(proxyModel, selected, this);
 }

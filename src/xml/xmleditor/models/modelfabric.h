@@ -6,8 +6,7 @@
 class ModelFabric
 {
 public:
-    explicit ModelFabric();
-
+    explicit ModelFabric() = delete;
     static void CreateModel(ModelNode &mNode, QDomNode &root, QObject *parent = nullptr);
     static XmlModel *CreateMainModel(QDomNode &root, QObject *parent = nullptr);
 };

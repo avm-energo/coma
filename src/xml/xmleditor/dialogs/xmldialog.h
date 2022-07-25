@@ -10,10 +10,11 @@
 #include <QPushButton>
 #include <QRegExpValidator>
 
+constexpr auto createId = -1;
+
 class XmlDialog : public QDialog
 {
     Q_OBJECT
-
 protected:
     XmlSortProxyModel *mModel;
     bool isChanged;
