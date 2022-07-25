@@ -54,7 +54,7 @@ void ModelFabric::CreateModel(ModelNode &mNode, QDomNode &root, QObject *parent)
             mNode.modelPtr = new XmlProtocomModel(rows, cols, mNode.modelType, parent);
             break;
         case ModelType::IEC60870:
-            mNode.modelPtr = new XmlIECModel(rows, cols, mNode.modelType, parent);
+            mNode.modelPtr = new XmlIecModel(rows, cols, mNode.modelType, parent);
             break;
         case ModelType::Config:
             mNode.modelPtr = new XmlConfigModel(rows, cols, mNode.modelType, parent);

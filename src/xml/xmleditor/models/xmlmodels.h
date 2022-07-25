@@ -90,10 +90,10 @@ public:
     virtual void parseNode(QDomNode &node, int &row) override;
 };
 
-class XmlIECModel : public XmlModel
+class XmlIecModel : public XmlModel
 {
 public:
-    explicit XmlIECModel(int rows, int cols, ModelType type, QObject *parent = nullptr);
+    explicit XmlIecModel(int rows, int cols, ModelType type, QObject *parent = nullptr);
     virtual void parseNode(QDomNode &node, int &row) override;
 };
 

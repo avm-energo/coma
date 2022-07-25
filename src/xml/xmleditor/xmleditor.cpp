@@ -142,15 +142,19 @@ void XmlEditor::EditItem()
             case ModelType::MeasJours:
                 dialog = new XmlMeasJourDialog(proxyModel, this);
                 break;
-            // TODO: Допилить остальные диалоги
             case ModelType::Modbus:
+                dialog = new XmlModbusDialog(proxyModel, this);
                 break;
             case ModelType::Protocom:
+                dialog = new XmlProtocomDialog(proxyModel, this);
                 break;
             case ModelType::IEC60870:
+                dialog = new Xml104Dialog(proxyModel, this);
                 break;
             case ModelType::Config:
+                dialog = new XmlConfigDialog(proxyModel, this);
                 break;
+            // TODO: Допилить остальные диалоги
             case ModelType::Sections:
                 break;
             case ModelType::Section:

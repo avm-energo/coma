@@ -153,11 +153,11 @@ void XmlProtocomModel::parseNode(QDomNode &node, int &row)
 
 // XmlIECModel functions //
 
-XmlIECModel::XmlIECModel(int rows, int cols, ModelType type, QObject *parent) : XmlModel(rows, cols, type, parent)
+XmlIecModel::XmlIecModel(int rows, int cols, ModelType type, QObject *parent) : XmlModel(rows, cols, type, parent)
 {
 }
 
-void XmlIECModel::parseNode(QDomNode &node, int &row)
+void XmlIecModel::parseNode(QDomNode &node, int &row)
 {
     parseTag(node, "signal-id", row, 0);  // ID сигнала
     parseTag(node, "sig-type", row, 1);   // Тип сигнала
