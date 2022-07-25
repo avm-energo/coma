@@ -1,7 +1,7 @@
 #include "svcmodule.h"
 
-#include "../check/abstractcheckdialog.h"
-#include "../config/configdialog.h"
+#include "../dialogs/checkdialog.h"
+#include "../dialogs/configdialog.h"
 #include "../dialogs/journalsdialog.h"
 #include "../dialogs/plotdialog.h"
 #include "../dialogs/timedialog.h"
@@ -89,8 +89,8 @@ void SvcModule::createModule(Modules::Model model)
                 assert(m_gsettings.check.items.size() == 1);
                 auto &&item = m_gsettings.check.items.front();
                 auto check = new CheckDialog(item, m_gsettings.check.categories);
-                check->setHighlights(AbstractCheckDialog::Warning, settings()->highlightWarn);
-                check->setHighlights(AbstractCheckDialog::Critical, settings()->highlightCrit);
+                check->setHighlights(CheckDialog::Warning, settings()->highlightWarn);
+                check->setHighlights(CheckDialog::Critical, settings()->highlightCrit);
                 addDialogToList(check, item.header, "check:" + item.header);
             }
         }

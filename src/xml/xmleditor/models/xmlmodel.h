@@ -4,37 +4,101 @@
 #include <QAbstractTableModel>
 #include <QtXml>
 
-constexpr int GroupTypeRole = 0x0105;
+constexpr int ModelNodeRole = 0x0105; ///< Role for setting node with submodule
 
-enum GroupTypes : quint16
+namespace tags
 {
-    Resources = 0,
-    Check,
-    Groups,
-    Signals,
-    Records
-};
+constexpr char res[] = "resources";
+constexpr char desc[] = "desc";
+constexpr char sigs[] = "signals";
+constexpr char tabs[] = "section-tabs";
+constexpr char sections[] = "sections";
+constexpr char section[] = "section";
+constexpr char sgroup[] = "sgroup";
+constexpr char alarms[] = "alarms";
+constexpr char critical[] = "critical";
+constexpr char info[] = "info";
+constexpr char warning[] = "warning";
+constexpr char journals[] = "journals";
+constexpr char work[] = "work";
+constexpr char meas[] = "meas";
+constexpr char modbus[] = "modbus";
+constexpr char protocom[] = "protocom";
+constexpr char iec60870[] = "iec60870";
+constexpr char config[] = "config";
+}
 
+namespace tags
+{
+/// \brief Enumeration for saving type of submodule
+enum NodeTypes : quint16
+{
+    None = 0,
+    Resources,
+    Signals,
+    SectionTabs,
+    Sections,
+    Section,
+    SGroup,
+    Alarms,
+    AlarmsItem,
+    Journals,
+    WorkJours,
+    MeasJours,
+    Modbus,
+    Protocom,
+    IEC60870,
+    Config
+};
+}
+using ModelType = tags::NodeTypes;
+
+class XmlModel;
+
+/// \brief Структура для хранения узла хранимой подмодели
+struct ModelNode
+{
+    XmlModel *modelPtr = nullptr;
+    ModelType modelType = ModelType::None;
+};
+Q_DECLARE_METATYPE(ModelNode);
+
+/// \brief Базовый абстрактный класс для моделей XML узлов
 class XmlModel : public QAbstractTableModel
 {
     Q_OBJECT
+private:
+    void parseDataNode(QDomNode &child, int &row);
+
 protected:
     int mRows, mCols;
+    ModelType mType;
     QHash<QModelIndex, QVariant> mHashTable;
+    QHash<int, QVariant> mNodes;
+    QHash<int, QVariant> horizontalHeaders;
 
-    static const std::map<QString, GroupTypes> types;        ///< Types Map with enumeration, key = name of group type
-    static const std::map<GroupTypes, QStringList> settings; ///< Settings Map, key = group type enumeration
+    void parseTag(QDomNode &node, QString tagName, int row, int col);
+    void parseAttribute(QDomNode &node, QString attrName, int row, int col);
 
 public:
-    XmlModel(int rows, int cols, QObject *parent = nullptr);
+    static const std::map<QString, ModelType> types;       ///< Types Map with enumeration, key = name of group type
+    static const std::map<ModelType, QStringList> headers; ///< Settings Map, key = group type enumeration
+
+    explicit XmlModel(int rows, int cols, ModelType type, QObject *parent = nullptr);
     virtual QVariant data(const QModelIndex &index, int nRole = Qt::UserRole + 1) const override;
     virtual bool setData(const QModelIndex &index, const QVariant &val, int nRole = Qt::UserRole + 1) override;
     virtual int rowCount(const QModelIndex &index = QModelIndex()) const override;
     virtual int columnCount(const QModelIndex &index = QModelIndex()) const override;
     virtual Qt::ItemFlags flags(const QModelIndex &index) const override;
-    void setHorizontalHeaderLabels(const QStringList &labels);
+    bool setHeaderData(int section, Qt::Orientation orientation, //
+        const QVariant &value, int role = Qt::EditRole) override;
+    QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
 
-    virtual void setDataNode(GroupTypes type, QDomNode &root) = 0;
+    void setHorizontalHeaderLabels(const QStringList &labels);
+    void setDataNode(bool isChildModel, QDomNode &root);
+    ModelType getModelType() const;
+
+    virtual void parseNode(QDomNode &node, int &row) = 0;
 };
 
 #endif // XMLMODEL_H

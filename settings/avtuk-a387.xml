@@ -56,11 +56,11 @@
           <item>Вероятно ухудшенное состояние подшипников</item>
           <item>Вероятно смещение вала</item>
         </string-array>
-
         <quint128 name="warningFlags">10101010101010101010111111111111</quint128>
         <quint32 name="startAddr">5011</quint32>
         <color>#ffff00</color>
       </alarm>
+
       <!--Описываем журнал, имя обязательно-->
       <journal name="work">
         <!--Номер журнала, имя обязательно-->
@@ -663,8 +663,8 @@
           <id>1222</id>
           <defaultValue>1</defaultValue>
         </record>
-
       </s2files>
+
     </resources>
   </module>
 </modules>

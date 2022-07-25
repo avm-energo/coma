@@ -5,35 +5,16 @@ project(models LANGUAGES CXX)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 find_package(
-  QT NAMES Qt6 Qt5
-  COMPONENTS Core Xml Widgets PrintSupport Qml
-  REQUIRED)
-find_package(
   Qt${QT_VERSION_MAJOR}
   COMPONENTS Core Xml Widgets PrintSupport Qml
   REQUIRED)
-find_package(
-  Qt${QT_VERSION_MAJOR}
-  COMPONENTS Widgets
-  REQUIRED)
+
+file(GLOB_RECURSE files_cpp ${PROJECT_SOURCE_DIR}/*.cpp)
+file(GLOB_RECURSE files_h ${PROJECT_SOURCE_DIR}/*.h)
 
 add_library(
   ${PROJECT_NAME} STATIC
-  abstracttablerow.h
-  comboboxdelegate.cpp
-  comboboxdelegate.h
-  errorprotocolitem.cpp
-  errorprotocolitem.h
-  errorprotocolmodel.cpp
-  errorprotocolmodel.h
-  etablemodel.cpp
-  etablemodel.h
-  etablerow.cpp
-  etablerow.h
-  edynamictablemodel.cpp
-  edynamictablemodel.h
-  report.cpp
-  report.h)
+  ${files_cpp} ${files_h} )
 
 target_link_libraries(
   ${PROJECT_NAME}

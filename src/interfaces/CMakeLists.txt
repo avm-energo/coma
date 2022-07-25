@@ -9,56 +9,21 @@ conan_cmake_configure(REQUIRES hidapi/0.10.1 GENERATORS cmake_find_package)
 find_package(hidapi REQUIRED)
 
 find_package(
-  QT NAMES Qt6 Qt5
-  COMPONENTS Core Network SerialPort
-  REQUIRED)
-find_package(
   Qt${QT_VERSION_MAJOR}
   COMPONENTS Core Network SerialPort
   REQUIRED)
 
-set(SRCS   baseinterface.cpp
-    baseinterface.h
-    ethernet.cpp
-    ethernet.h
-    iec104.cpp
-    iec104.h
-    iec104private.h
-    iec104thread.cpp
-    iec104thread.h
-    interfacesettings.cpp
-    interfacesettings.h
-    modbus.cpp
-    modbus.h
-    modbusprivate.cpp
-    modbusprivate.h
-    modbusthread.cpp
-    modbusthread.h
-    protocom.cpp
-    protocom.h
-    protocom_p.cpp
-    protocom_p.h
-    protocomprivate.h
-    protocomthread.cpp
-    protocomthread.h
-    serialport.cpp
-    serialport.h
-    settingstypes.h
-    usbhidport.cpp
-    usbhidport.h
-    usbhidportinfo.cpp
-    usbhidportinfo.h
-    usbhidsettings.cpp
-    usbhidsettings.h)
+file(GLOB_RECURSE files_cpp ${PROJECT_SOURCE_DIR}/*.cpp)
+file(GLOB_RECURSE files_h ${PROJECT_SOURCE_DIR}/*.h)
 
 if (ENABLE_EMULATOR)
-    list(APPEND SRCS emulator.cpp emulator.h)
+    list(APPEND files_cpp emulator.cpp )
+    list(APPEND files_h emulator.h)
 endif()
 
 add_library(
   ${PROJECT_NAME} STATIC
-  ${SRCS}
-)
+  ${files_cpp} ${files_h} )
 
 target_link_libraries(
   ${PROJECT_NAME}

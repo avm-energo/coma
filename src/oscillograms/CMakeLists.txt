@@ -5,10 +5,13 @@ project(oscillograms LANGUAGES CXX)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 find_package(
+<<<<<<< HEAD
   QT NAMES Qt6 Qt5
   COMPONENTS Core Widgets Concurrent
   REQUIRED)
 find_package(
+=======
+>>>>>>> 23e06ece00c0c332dba5997bdbd7435563a5abe9
   Qt${QT_VERSION_MAJOR}
   COMPONENTS Core Widgets Concurrent
   REQUIRED)

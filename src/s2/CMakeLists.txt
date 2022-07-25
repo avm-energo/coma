@@ -14,21 +14,12 @@ find_package(
   COMPONENTS Core Network Xml Widgets
   REQUIRED)
 
+file(GLOB_RECURSE files_cpp ${PROJECT_SOURCE_DIR}/*.cpp)
+file(GLOB_RECURSE files_h ${PROJECT_SOURCE_DIR}/*.h)
+
 add_library(
   ${PROJECT_NAME} STATIC
-  configv.h
-  configv.cpp
-  datarec.h
-  datarecv.h
-  datarecv.cpp
-  filestruct.h
-  filestruct.cpp
-  s2.h
-  s2.cpp
-  s2datatypes.h
-  s2helper.h
-  s2helper.cpp
-  s2settings.h)
+  ${files_cpp} ${files_h} )
 
 target_link_libraries(
   ${PROJECT_NAME}

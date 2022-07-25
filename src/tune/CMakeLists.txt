@@ -5,17 +5,6 @@ project(tune LANGUAGES CXX)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 find_package(
-  QT NAMES Qt6 Qt5
-  COMPONENTS Core
-             Network
-             Xml
-             Widgets
-             Svg
-             PrintSupport
-             Qml
-  REQUIRED)
-
-find_package(
   Qt${QT_VERSION_MAJOR}
   COMPONENTS Core
              Network
@@ -24,10 +13,6 @@ find_package(
              Svg
              PrintSupport
              Qml
-  REQUIRED)
-find_package(
-  Qt${QT_VERSION_MAJOR}
-  COMPONENTS Widgets
   REQUIRED)
 
 file(GLOB_RECURSE files_cpp *.cpp)

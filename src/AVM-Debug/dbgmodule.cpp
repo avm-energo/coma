@@ -1,12 +1,12 @@
 #include "dbgmodule.h"
 
-#include "../check/check3133dialog.h"
-#include "../check/signaldialog84.h"
-#include "../config/configdialog.h"
+#include "../dialogs/checkdialog.h"
+#include "../dialogs/configdialog.h"
 #include "../dialogs/hiddendialog.h"
 #include "../dialogs/journalsdialog.h"
 #include "../dialogs/plotdialog.h"
 #include "../dialogs/relaydialog.h"
+#include "../dialogs/signaldialog84.h"
 #include "../dialogs/switchjournaldialog.h"
 #include "../dialogs/timedialog.h"
 #include "../module/journkdv.h"
@@ -47,8 +47,8 @@ void DbgModule::createModule(Modules::Model model)
                 addDialogToList(new SignalDialog84(), "Входные сигналы");
 
                 auto check = new CheckDialog(item, m_gsettings.check.categories);
-                check->setHighlights(AbstractCheckDialog::Warning, settings()->highlightWarn);
-                check->setHighlights(AbstractCheckDialog::Critical, settings()->highlightCrit);
+                check->setHighlights(CheckDialog::Warning, settings()->highlightWarn);
+                check->setHighlights(CheckDialog::Critical, settings()->highlightCrit);
                 addDialogToList(check, item.header, "check:" + item.header);
             }
         }
@@ -146,8 +146,8 @@ void DbgModule::create(Modules::BaseBoard typeB, Modules::MezzanineBoard typeM)
         assert(m_gsettings.check.items.size() == 1);
         auto &&item = m_gsettings.check.items.front();
         auto check = new CheckDialog(item, m_gsettings.check.categories);
-        check->setHighlights(AbstractCheckDialog::Warning, settings()->highlightWarn);
-        check->setHighlights(AbstractCheckDialog::Critical, settings()->highlightCrit);
+        check->setHighlights(CheckDialog::Warning, settings()->highlightWarn);
+        check->setHighlights(CheckDialog::Critical, settings()->highlightCrit);
         addDialogToList(check, item.header, "check:" + item.header);
 
         addDialogToList(new StartupKIVDialog, "Начальные\nзначения");
@@ -217,24 +217,26 @@ void DbgModule::createUSIO(Modules::BaseBoard typeB, Modules::MezzanineBoard typ
         addDialogToList(new RelayDialog(4), "Реле", "relay1");
     }
 
-    if (typeB == BaseBoard::MTB_31 || typeB == BaseBoard::MTB_33)
-    {
-        addDialogToList(
-            new CheckBase3133Dialog(item, m_gsettings.check.categories), item.header, "check:" + item.header);
-    }
-    else
-    {
-        addDialogToList(new CheckDialog(item, m_gsettings.check.categories), item.header, "check:" + item.header);
-    }
+    // if (typeB == BaseBoard::MTB_31 || typeB == BaseBoard::MTB_33)
+    // {
+    // addDialogToList(
+    //    new CheckBase3133Dialog(item, m_gsettings.check.categories), item.header, "check:" + item.header);
+    // }
+    // else
+    // {
+    addDialogToList(new CheckDialog(item, m_gsettings.check.categories), item.header, "check:" + item.header);
+    // }
     if (m_gsettings.check.items.size() == 2)
     {
         const auto &itemIn = m_gsettings.check.items.at(1);
-        if ((typeM == MezzanineBoard::MTM_31) || (typeM == MezzanineBoard::MTM_33))
-            addDialogToList(
-                new CheckMezz3133Dialog(itemIn, m_gsettings.check.categories), itemIn.header, "check:" + itemIn.header);
-        else if ((typeM != MezzanineBoard::MTM_34) && (typeM != MezzanineBoard::MTM_35))
-            addDialogToList(
-                new CheckDialog(itemIn, m_gsettings.check.categories), itemIn.header, "check:" + itemIn.header);
+        // if ((typeM == MezzanineBoard::MTM_31) || (typeM == MezzanineBoard::MTM_33))
+        // {
+        // addDialogToList(
+        //    new CheckMezz3133Dialog(itemIn, m_gsettings.check.categories), itemIn.header, "check:" +
+        //    itemIn.header);
+        // }
+        // else if ((typeM != MezzanineBoard::MTM_34) && (typeM != MezzanineBoard::MTM_35))
+        addDialogToList(new CheckDialog(itemIn, m_gsettings.check.categories), itemIn.header, "check:" + itemIn.header);
     }
 }
 

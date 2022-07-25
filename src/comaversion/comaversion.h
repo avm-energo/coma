@@ -8,6 +8,4 @@ public:
     QString getGitHash() const;
     unsigned long long getGitCounter() const;
     QString getConfigVersion() const;
-
-private:
 };

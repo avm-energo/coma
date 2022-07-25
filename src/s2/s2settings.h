@@ -1,6 +1,7 @@
 #pragma once
-#include "../check/delegate_check.h"
 #include "../gen/datatypes.h"
+#include "../widgets/delegate_common.h"
+#include "../xml/delegate_check.h"
 #include "datarecv.h"
 
 struct InterfaceSettings

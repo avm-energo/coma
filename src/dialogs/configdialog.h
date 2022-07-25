@@ -1,7 +1,7 @@
 #pragma once
 #include "../module/modules.h"
 #include "../widgets/udialog.h"
-#include "widgetfactory.h"
+#include "../widgets/widgetfactory.h"
 
 //#define MAXBYTEARRAY 65535
 //#define MAXCONFSIZE 4096 // максимальный размер файла конфигурации

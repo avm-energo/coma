@@ -5,10 +5,6 @@ project(module LANGUAGES CXX)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 find_package(
-  QT NAMES Qt6 Qt5
-  COMPONENTS Core Network Xml Widgets
-  REQUIRED)
-find_package(
   Qt${QT_VERSION_MAJOR}
   COMPONENTS Core Network Xml Widgets
   REQUIRED)
@@ -16,36 +12,17 @@ find_package(
 #WARN Do not use in release build
 option(USE_BUILTIN_XML "Use builtin xml configs instead of locally stored" OFF)
 
+file(GLOB_RECURSE files_cpp ${PROJECT_SOURCE_DIR}/*.cpp)
+file(GLOB_RECURSE files_h ${PROJECT_SOURCE_DIR}/*.h)
+
 add_library(
   ${PROJECT_NAME} STATIC
-  alarmstateall.cpp
-  alarmstateall.h
-  basealarm.cpp
-  basealarm.h
-  board.cpp
-  board.h
-  filehelper.cpp
-  filehelper.h
-  journals.cpp
-  journals.h
-  journkdv.cpp
-  journkdv.h
-  journkiv.cpp
-  journkiv.h
-  journktf.cpp
-  journktf.h
-  module.cpp
-  module.h
-  modulealarm.cpp
-  modulealarm.h
-  modules.h
-  module_kxx.h
+  ${files_cpp} ${files_h}
   ../../settings/settings.qrc)
 
 target_link_libraries(
   ${PROJECT_NAME}
   PRIVATE
-  config
   comaversion
   dialogs
   gen
