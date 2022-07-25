@@ -10,8 +10,8 @@ void XmlSTabDialog::setupUI(QStringList &selectedData)
     setupSizePos(500, 120);
     // Создание слоёв окна
     auto mainLayout = new QVBoxLayout(this);
-    auto idLayout = new QHBoxLayout(this);
-    auto nameLayout = new QHBoxLayout(this);
+    auto idLayout = new QHBoxLayout;
+    auto nameLayout = new QHBoxLayout;
 
     // Виджеты для ID вкладки
     auto idLabel = new QLabel("ID вкладки: ", this);
@@ -44,10 +44,7 @@ void XmlSTabDialog::setupUI(QStringList &selectedData)
     mainLayout->addLayout(idLayout);
     mainLayout->addLayout(nameLayout);
     // Кнопка для сохранения изменений
-    auto saveButton = new QPushButton("Сохранить изменения", this);
-    QObject::connect(saveButton, &QPushButton::released, this, &XmlSTabDialog::saveData);
-    mainLayout->addWidget(saveButton);
-    setLayout(mainLayout);
+    addSaveBtnAndApply(mainLayout);
 }
 
 QStringList XmlSTabDialog::collectData()

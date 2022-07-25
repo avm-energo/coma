@@ -10,24 +10,24 @@ void XmlConfigDialog::setupUI(QStringList &selectedData)
     setupSizePos(650, 120);
     // Создание слоёв окна
     auto mainLayout = new QVBoxLayout(this);
-    auto Layout1 = new QHBoxLayout(this);
-    auto Layout2 = new QHBoxLayout(this);
+    auto idLayout = new QHBoxLayout;
+    auto defLayout = new QHBoxLayout;
 
     // Виджеты для описания
     auto idLabel = new QLabel("S2 ID: ", this);
-    Layout1->addWidget(idLabel);
+    idLayout->addWidget(idLabel);
     idInput = new QLineEdit("", this);
     idInput->setValidator(new QRegExpValidator(QRegExp("^([1-9][0-9]*|0)"), this));
     QObject::connect(idInput, &QLineEdit::textEdited, this, qOverload<const QString &>(&XmlConfigDialog::dataChanged));
-    Layout1->addWidget(idInput);
+    idLayout->addWidget(idInput);
 
     // Виджеты для ID сигнала
     auto defLabel = new QLabel("Значение по умолчанию: ", this);
-    Layout2->addWidget(defLabel);
+    defLayout->addWidget(defLabel);
     defaultInput = new QLineEdit("", this);
     QObject::connect(
         defaultInput, &QLineEdit::textEdited, this, qOverload<const QString &>(&XmlConfigDialog::dataChanged));
-    Layout2->addWidget(defaultInput);
+    defLayout->addWidget(defaultInput);
 
     // Окно для создания item-а
     if (selectedData.isEmpty())
@@ -42,13 +42,10 @@ void XmlConfigDialog::setupUI(QStringList &selectedData)
     }
 
     // Добавляем слои на главный слой
-    mainLayout->addLayout(Layout1);
-    mainLayout->addLayout(Layout2);
+    mainLayout->addLayout(idLayout);
+    mainLayout->addLayout(defLayout);
     // Кнопка для сохранения изменений
-    auto saveButton = new QPushButton("Сохранить изменения", this);
-    QObject::connect(saveButton, &QPushButton::released, this, &XmlConfigDialog::saveData);
-    mainLayout->addWidget(saveButton);
-    setLayout(mainLayout);
+    addSaveBtnAndApply(mainLayout);
 }
 
 QStringList XmlConfigDialog::collectData()

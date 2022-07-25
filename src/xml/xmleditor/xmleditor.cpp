@@ -36,7 +36,7 @@ void XmlEditor::Close()
 
 QVBoxLayout *XmlEditor::GetMasterWorkspace()
 {
-    auto workspace = new QVBoxLayout(this);
+    auto workspace = new QVBoxLayout;
     workspace->setContentsMargins(5, 5, 5, 5);
 
     // Настройка тулбара
@@ -63,7 +63,7 @@ QVBoxLayout *XmlEditor::GetMasterWorkspace()
 
 QVBoxLayout *XmlEditor::GetSlaveWorkspace()
 {
-    auto workspace = new QVBoxLayout(this);
+    auto workspace = new QVBoxLayout;
     workspace->setContentsMargins(5, 5, 5, 5);
 
     // Настройка тулбара
@@ -154,12 +154,14 @@ void XmlEditor::EditItem()
             case ModelType::Config:
                 dialog = new XmlConfigDialog(proxyModel, this);
                 break;
-            // TODO: Допилить остальные диалоги
             case ModelType::Sections:
+                dialog = new XmlSectionDialog(proxyModel, this);
                 break;
             case ModelType::Section:
+                dialog = new XmlSGroupDialog(proxyModel, this);
                 break;
             case ModelType::SGroup:
+                dialog = new XmlMWidgetDialog(proxyModel, this);
                 break;
             default:
                 // TODO: What must happenes here?

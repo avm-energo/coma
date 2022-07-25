@@ -10,9 +10,9 @@ void XmlSignalDialog::setupUI(QStringList &selectedData)
     setupSizePos(500, 160);
     // Создание слоёв окна
     auto mainLayout = new QVBoxLayout(this);
-    auto idLayout = new QHBoxLayout(this);
-    auto addrLayout = new QHBoxLayout(this);
-    auto countLayout = new QHBoxLayout(this);
+    auto idLayout = new QHBoxLayout;
+    auto addrLayout = new QHBoxLayout;
+    auto countLayout = new QHBoxLayout;
 
     // Виджеты для ID группы сигналов
     auto idLabel = new QLabel("ID группы: ", this);
@@ -53,14 +53,12 @@ void XmlSignalDialog::setupUI(QStringList &selectedData)
         countInput->setText(selectedData[2]);
     }
 
+    // Добавляем слои на главный слой
     mainLayout->addLayout(idLayout);
     mainLayout->addLayout(addrLayout);
     mainLayout->addLayout(countLayout);
     // Кнопка для сохранения изменений
-    auto saveButton = new QPushButton("Сохранить изменения", this);
-    QObject::connect(saveButton, &QPushButton::released, this, &XmlSignalDialog::saveData);
-    mainLayout->addWidget(saveButton);
-    setLayout(mainLayout);
+    addSaveBtnAndApply(mainLayout);
 }
 
 QStringList XmlSignalDialog::collectData()

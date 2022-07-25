@@ -11,8 +11,8 @@ void XmlAlarmDialog::setupUI(QStringList &selectedData)
     setupSizePos(650, 120);
     // Создание слоёв окна
     auto mainLayout = new QVBoxLayout(this);
-    auto descLayout = new QHBoxLayout(this);
-    auto addrLayout = new QHBoxLayout(this);
+    auto descLayout = new QHBoxLayout;
+    auto addrLayout = new QHBoxLayout;
 
     // Виджеты для описания сигнализации
     auto descLabel = new QLabel("Описание сигнализации: ", this);
@@ -45,10 +45,7 @@ void XmlAlarmDialog::setupUI(QStringList &selectedData)
     mainLayout->addLayout(descLayout);
     mainLayout->addLayout(addrLayout);
     // Кнопка для сохранения изменений
-    auto saveButton = new QPushButton("Сохранить изменения", this);
-    QObject::connect(saveButton, &QPushButton::released, this, &XmlAlarmDialog::saveData);
-    mainLayout->addWidget(saveButton);
-    setLayout(mainLayout);
+    addSaveBtnAndApply(mainLayout);
 }
 
 QStringList XmlAlarmDialog::collectData()

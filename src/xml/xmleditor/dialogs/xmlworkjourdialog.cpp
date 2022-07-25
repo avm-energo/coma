@@ -10,8 +10,8 @@ void XmlWorkJourDialog::setupUI(QStringList &selectedData)
     setupSizePos(500, 120);
     // Создание слоёв окна
     auto mainLayout = new QVBoxLayout(this);
-    auto addrLayout = new QHBoxLayout(this);
-    auto descLayout = new QHBoxLayout(this);
+    auto addrLayout = new QHBoxLayout;
+    auto descLayout = new QHBoxLayout;
 
     // Виджеты для адреса события
     auto addrLabel = new QLabel("Адрес события: ", this);
@@ -46,10 +46,7 @@ void XmlWorkJourDialog::setupUI(QStringList &selectedData)
     mainLayout->addLayout(addrLayout);
     mainLayout->addLayout(descLayout);
     // Кнопка для сохранения изменений
-    auto saveButton = new QPushButton("Сохранить изменения", this);
-    QObject::connect(saveButton, &QPushButton::released, this, &XmlWorkJourDialog::saveData);
-    mainLayout->addWidget(saveButton);
-    setLayout(mainLayout);
+    addSaveBtnAndApply(mainLayout);
 }
 
 QStringList XmlWorkJourDialog::collectData()

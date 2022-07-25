@@ -21,6 +21,7 @@ protected:
 
     QStringList getSelectedData();
     void setupSizePos(int width, int height);
+    void addSaveBtnAndApply(QVBoxLayout *mainLayout);
 
 public:
     explicit XmlDialog() = delete;

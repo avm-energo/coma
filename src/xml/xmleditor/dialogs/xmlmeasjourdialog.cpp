@@ -10,7 +10,7 @@ void XmlMeasJourDialog::setupUI(QStringList &selectedData)
     setupSizePos(500, 80);
     // Создание слоёв окна
     auto mainLayout = new QVBoxLayout(this);
-    auto headLayout = new QHBoxLayout(this);
+    auto headLayout = new QHBoxLayout;
 
     // Виджеты для описания события
     auto headLabel = new QLabel("Заголовок события: ", this);
@@ -34,10 +34,7 @@ void XmlMeasJourDialog::setupUI(QStringList &selectedData)
     // Добавляем слои на главный слой
     mainLayout->addLayout(headLayout);
     // Кнопка для сохранения изменений
-    auto saveButton = new QPushButton("Сохранить изменения", this);
-    QObject::connect(saveButton, &QPushButton::released, this, &XmlMeasJourDialog::saveData);
-    mainLayout->addWidget(saveButton);
-    setLayout(mainLayout);
+    addSaveBtnAndApply(mainLayout);
 }
 
 QStringList XmlMeasJourDialog::collectData()

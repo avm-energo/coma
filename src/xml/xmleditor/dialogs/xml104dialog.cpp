@@ -10,43 +10,43 @@ void Xml104Dialog::setupUI(QStringList &selectedData)
     setupSizePos(650, 180);
     // Создание слоёв окна
     auto mainLayout = new QVBoxLayout(this);
-    auto Layout1 = new QHBoxLayout(this);
-    auto Layout2 = new QHBoxLayout(this);
-    auto Layout3 = new QHBoxLayout(this);
-    auto Layout4 = new QHBoxLayout(this);
+    auto sigIdLayout = new QHBoxLayout;
+    auto sigTypeLayout = new QHBoxLayout;
+    auto transTypeLayout = new QHBoxLayout;
+    auto sigGrpLayout = new QHBoxLayout;
 
     // Виджеты для ID сигнала
     auto sigIdLabel = new QLabel("ID сигнала: ", this);
-    Layout1->addWidget(sigIdLabel);
+    sigIdLayout->addWidget(sigIdLabel);
     sigIdInput = new QLineEdit("", this);
     sigIdInput->setValidator(new QRegExpValidator(QRegExp("^([1-9][0-9]*|0)"), this));
     QObject::connect(sigIdInput, &QLineEdit::textEdited, this, qOverload<const QString &>(&Xml104Dialog::dataChanged));
-    Layout1->addWidget(sigIdInput);
+    sigIdLayout->addWidget(sigIdInput);
 
     // Виджеты для типа регистра
     auto sigTypeLabel = new QLabel("Тип регистра: ", this);
-    Layout2->addWidget(sigTypeLabel);
+    sigTypeLayout->addWidget(sigTypeLabel);
     sigTypeInput = new QLineEdit("", this);
     sigTypeInput->setValidator(new QRegExpValidator(QRegExp("^([1-9][0-9]*|0)"), this));
     QObject::connect(
         sigTypeInput, &QLineEdit::textEdited, this, qOverload<const QString &>(&Xml104Dialog::dataChanged));
-    Layout2->addWidget(sigTypeInput);
+    sigTypeLayout->addWidget(sigTypeInput);
 
     // Виджеты для типа возвращаемого значения
     auto transTypeLabel = new QLabel("Тип передачи: ", this);
-    Layout3->addWidget(transTypeLabel);
+    transTypeLayout->addWidget(transTypeLabel);
     transTypeInput = new QLineEdit("", this);
     QObject::connect(
         transTypeInput, &QLineEdit::textEdited, this, qOverload<const QString &>(&Xml104Dialog::dataChanged));
-    Layout3->addWidget(transTypeInput);
+    transTypeLayout->addWidget(transTypeInput);
 
     // Виджеты для описания
     auto sigGroupLabel = new QLabel("Группа сигналов: ", this);
-    Layout4->addWidget(sigGroupLabel);
+    sigGrpLayout->addWidget(sigGroupLabel);
     sigGroupInput = new QLineEdit("", this);
     QObject::connect(
         sigGroupInput, &QLineEdit::textEdited, this, qOverload<const QString &>(&Xml104Dialog::dataChanged));
-    Layout4->addWidget(sigGroupInput);
+    sigGrpLayout->addWidget(sigGroupInput);
 
     // Окно для создания item-а
     if (selectedData.isEmpty())
@@ -63,15 +63,12 @@ void Xml104Dialog::setupUI(QStringList &selectedData)
     }
 
     // Добавляем слои на главный слой
-    mainLayout->addLayout(Layout1);
-    mainLayout->addLayout(Layout2);
-    mainLayout->addLayout(Layout3);
-    mainLayout->addLayout(Layout4);
+    mainLayout->addLayout(sigIdLayout);
+    mainLayout->addLayout(sigTypeLayout);
+    mainLayout->addLayout(transTypeLayout);
+    mainLayout->addLayout(sigGrpLayout);
     // Кнопка для сохранения изменений
-    auto saveButton = new QPushButton("Сохранить изменения", this);
-    QObject::connect(saveButton, &QPushButton::released, this, &Xml104Dialog::saveData);
-    mainLayout->addWidget(saveButton);
-    setLayout(mainLayout);
+    addSaveBtnAndApply(mainLayout);
 }
 
 QStringList Xml104Dialog::collectData()

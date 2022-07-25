@@ -64,6 +64,16 @@ void XmlDialog::setupSizePos(int width, int height)
     setFixedSize(this->size());
 }
 
+/// \brief Функция принимает главный слой, добавляет туда кнопку
+/// для сохранения данных и устанавливает слой в качестве основного
+void XmlDialog::addSaveBtnAndApply(QVBoxLayout *main)
+{
+    auto saveButton = new QPushButton("Сохранить изменения", this);
+    QObject::connect(saveButton, &QPushButton::released, this, &XmlDialog::saveData);
+    main->addWidget(saveButton);
+    setLayout(main);
+}
+
 /// \brief Функция для записи списка с данными в модель по указанной строке
 void XmlDialog::writeData(QStringList &saved)
 {
