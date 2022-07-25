@@ -69,29 +69,11 @@ QList<UDialog *> Module::dialogs()
     return list;
 }
 
-QList<UDialog *> Module::confDialogs()
-{
-    QList<UDialog *> list;
-    for (UDialog *dlg : qAsConst(m_dialogs))
-    {
-        if (dlg->objectName().contains("conf"))
-            list.append(dlg);
-    }
-    return list;
-}
-
 void Module::addDialogToList(UDialog *dlg, const QString &caption, const QString &name)
 {
     dlg->setObjectName(name);
     dlg->setCaption(caption);
     m_dialogs.append(dlg);
-}
-
-void Module::insertDialogToList(UDialog *dlg, int pos, const QString &caption, const QString &name)
-{
-    dlg->setObjectName(name);
-    dlg->setCaption(caption);
-    m_dialogs.insert(pos, dlg);
 }
 
 void Module::parentTWTabChanged(int index)

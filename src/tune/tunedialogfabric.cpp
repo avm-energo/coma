@@ -10,7 +10,12 @@ TuneDialogFabric::TuneDialogFabric()
 {
 }
 
-AbstractTuneDialog *TuneDialogFabric::GetTuneDialogForType(quint16 typeB, quint16 typeM)
+void TuneDialogFabric::setConfigV(ConfigV *config)
+{
+    s_Config = config;
+}
+
+GeneralTuneDialog *TuneDialogFabric::GetTuneDialogForType(quint16 typeB, quint16 typeM)
 {
     switch (typeB)
     {
@@ -19,8 +24,25 @@ AbstractTuneDialog *TuneDialogFabric::GetTuneDialogForType(quint16 typeB, quint1
         switch (typeM)
         {
         case Modules::MezzanineBoard::MTM_82:
-            return new Tune82Dialog();
+            return new Tune82Dialog(s_Config);
+        case Modules::MezzanineBoard::MTM_84:
+            return new Tune84Dialog(s_Config);
+        default:
+            return 0;
+        }
+    case Modules::BaseBoard::MTB_A2:
+    {
+        switch (typeM)
+        {
+        case Modules::MezzanineBoard::MTM_84:
+            return new TuneKIVDialog(s_Config);
+        default:
+            return 0;
         }
     }
+    default:
+        return 0;
     }
+    }
+    return 0;
 }

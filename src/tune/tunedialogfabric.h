@@ -1,17 +1,21 @@
 #ifndef TUNEDIALOGFABRIC_H
 #define TUNEDIALOGFABRIC_H
 
-#include "abstracttunedialog.h"
+#include "../s2/configv.h"
+#include "generaltunedialog.h"
 
 #include <QObject>
 
 class TuneDialogFabric
 {
-    Q_OBJECT
 public:
     TuneDialogFabric();
 
-    static AbstractTuneDialog *GetTuneDialogForType(quint16 typeB, quint16 typeM);
+    static void setConfigV(ConfigV *config);
+    static GeneralTuneDialog *GetTuneDialogForType(quint16 typeB, quint16 typeM);
+
+private:
+    static ConfigV *s_Config;
 };
 
 #endif // TUNEDIALOGFABRIC_H

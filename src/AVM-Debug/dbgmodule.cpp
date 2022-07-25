@@ -243,10 +243,11 @@ void DbgModule::create(QTimer *updateTimer)
     using namespace Modules;
     BaseInterface::iface()->setSettings(settings()->ifaceSettings);
     auto &board = Board::GetInstance();
+
     quint16 typeb = board.typeB();
     if (BaseBoards.contains(typeb)) // there must be two-part module
     {
-        board.setDeviceType(Board::Controller);
+        //        board.setDeviceType(Board::Controller);
         quint16 typem = board.typeM();
         switch (typeb)
         {
@@ -270,7 +271,7 @@ void DbgModule::create(QTimer *updateTimer)
     }
     else
     {
-        board.setDeviceType(Board::Module);
+        //        board.setDeviceType(Board::Module);
         quint16 mtype = board.type();
         createModule(Modules::Model(mtype));
     }
