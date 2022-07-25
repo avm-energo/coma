@@ -6,7 +6,7 @@
 #include "../dialogs/journalsdialog.h"
 #include "../dialogs/plotdialog.h"
 #include "../dialogs/relaydialog.h"
-#include "../dialogs/signaldialog84.h"
+//#include "../dialogs/signaldialog84.h"
 #include "../dialogs/switchjournaldialog.h"
 #include "../dialogs/timedialog.h"
 #include "../module/journkdv.h"
@@ -44,7 +44,7 @@ void DbgModule::createModule(Modules::Model model)
                 auto &&item = m_gsettings.check.items.front();
 
                 addDialogToList(new TuneKIVDialog(&configV), "Регулировка");
-                addDialogToList(new SignalDialog84(), "Входные сигналы");
+                //                addDialogToList(new SignalDialog84(), "Входные сигналы");
 
                 auto check = new CheckDialog(item, m_gsettings.check.categories);
                 check->setHighlights(CheckDialog::Warning, settings()->highlightWarn);
