@@ -52,9 +52,7 @@ XmlSectionsModel::XmlSectionsModel(int rows, int cols, ModelType type, QObject *
 
 void XmlSectionsModel::parseNode(QDomNode &node, int &row)
 {
-    auto itemHeaderIndex = index(row, 0);
-    auto header = node.toElement().attribute("header", "");
-    setData(itemHeaderIndex, header);
+    parseAttribute(node, "header", row, 0); // Заголовок
 }
 
 // XmlSectionModel functions //
@@ -66,25 +64,8 @@ XmlSectionModel::XmlSectionModel(int rows, int cols, ModelType type, QObject *pa
 
 void XmlSectionModel::parseNode(QDomNode &node, int &row)
 {
-    auto itemHeaderIndex = index(row, 0);
-    auto header = node.toElement().attribute("header", "");
-    auto itemTabIndex = index(row, 1);
-    auto tab = node.toElement().attribute("tab", "");
-    setData(itemHeaderIndex, header);
-    setData(itemTabIndex, tab);
-}
-
-// XmlSectionGroupsModel functions //
-
-XmlSectionGroupsModel::XmlSectionGroupsModel(int rows, int cols, ModelType type, QObject *parent)
-    : XmlModel(rows, cols, type, parent)
-{
-}
-
-void XmlSectionGroupsModel::parseNode(QDomNode &node, int &row)
-{
-    parseAttribute(node, "desc", row, 0); // Заголовок
-    parseTag(node, "start-addr", row, 1); // Адрес
+    parseAttribute(node, "header", row, 0); // Заголовок
+    parseAttribute(node, "tab", row, 1);    // ID вкладки
 }
 
 // XmlCritAlarmsModel functions //

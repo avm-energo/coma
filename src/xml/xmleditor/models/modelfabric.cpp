@@ -26,7 +26,7 @@ void ModelFabric::CreateModel(ModelNode &mNode, QDomNode &root, QObject *parent)
             mNode.modelPtr = new XmlSectionModel(rows, cols, mNode.modelType, parent);
             break;
         case ModelType::SGroup:
-            mNode.modelPtr = new XmlSectionGroupsModel(rows, cols, mNode.modelType, parent);
+            mNode.modelPtr = new XmlSGroupModel(rows, cols, mNode.modelType, parent);
             break;
         case ModelType::Alarms:
             mNode.modelPtr = new XmlBaseModel(rows, cols, mNode.modelType, parent);

@@ -53,10 +53,7 @@ QVariant XmlModel::data(const QModelIndex &index, int nRole) const
         if (nRole == Qt::DisplayRole || nRole == Qt::EditRole || nRole == (Qt::UserRole + 1))
             return mHashTable.value(index, QString(""));
         else if (nRole == ModelNodeRole)
-        {
-            auto val = mNodes.value(index.row(), QVariant());
-            return val;
-        }
+            return mNodes.value(index.row(), QVariant());
     }
     return QVariant();
 }
@@ -256,14 +253,10 @@ void XmlModel::parseTag(QDomNode &node, QString tagName, int row, int col)
 
 void XmlModel::parseAttribute(QDomNode &node, QString attrName, int row, int col)
 {
-    if (node.hasAttributes())
+    auto attr = node.toElement().attribute(attrName, "");
+    if (!attr.isNull())
     {
-        auto headerNode = node.attributes().namedItem(attrName);
-        if (!headerNode.isNull())
-        {
-            auto headerIndex = index(row, col);
-            auto header = headerNode.firstChild().toText().data();
-            setData(headerIndex, header);
-        }
+        auto attrIndex = index(row, col);
+        setData(attrIndex, attr);
     }
 }

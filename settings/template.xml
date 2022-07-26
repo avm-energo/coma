@@ -484,12 +484,6 @@
                         <start-addr>4503</start-addr>
                         <count>4</count>
                         <toolTip>Температура обмотки, измеренная встроенным датчиком %1</toolTip>
-                        <string-array>
-                            <item>1</item>
-                            <item>2</item>
-                            <item>3</item>
-                            <item>4</item>
-                        </string-array>
                     </mwidget>
                 </sgroup>
                 <sgroup header="Оставшееся время работы" tab="1">
@@ -525,7 +519,7 @@
                             <item>185</item>
                             <item>190</item>
                             <item>195</item>
-                            <item>120</item>
+                            <item>200</item>
                         </string-array>
                     </mwidget>
                 </sgroup>
@@ -538,13 +532,6 @@
                         <start-addr>2401</start-addr>
                         <count>5</count>
                         <toolTip>Угол сдвига между каналами %1-0, градусов</toolTip>
-                        <string-array>
-                            <item>1</item>
-                            <item>2</item>
-                            <item>3</item>
-                            <item>4</item>
-                            <item>5</item>
-                        </string-array>
                     </mwidget>
                 </sgroup>
                 <sgroup header="Мощности" tab="10">

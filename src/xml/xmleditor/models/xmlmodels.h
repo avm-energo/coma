@@ -2,6 +2,7 @@
 #define XMLMODELS_H
 
 #include "xmlmodel.h"
+#include "xmlsgroupmodel.h"
 
 class XmlBaseModel : public XmlModel
 {
@@ -39,13 +40,6 @@ class XmlSectionModel : public XmlModel
 {
 public:
     explicit XmlSectionModel(int rows, int cols, ModelType type, QObject *parent = nullptr);
-    virtual void parseNode(QDomNode &node, int &row) override;
-};
-
-class XmlSectionGroupsModel : public XmlModel
-{
-public:
-    explicit XmlSectionGroupsModel(int rows, int cols, ModelType type, QObject *parent = nullptr);
     virtual void parseNode(QDomNode &node, int &row) override;
 };
 
