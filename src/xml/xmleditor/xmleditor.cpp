@@ -74,7 +74,7 @@ QVBoxLayout *XmlEditor::GetSlaveWorkspace()
     toolbar->addSeparator();
     toolbar->addAction(QIcon(":/icons/tnosc.svg"), "Редактировать", this, &XmlEditor::EditItem);
     toolbar->addSeparator();
-    toolbar->addAction(QIcon(":/icons/tnstop.svg"), "Удалить", this, &XmlEditor::Close);
+    toolbar->addAction(QIcon(":/icons/tnstop.svg"), "Удалить", this, &XmlEditor::RemoveItem);
     workspace->addWidget(toolbar);
 
     // Label для отображения текущего положения в дереве моделей
@@ -124,4 +124,11 @@ void XmlEditor::EditItem()
     auto proxyModel = qobject_cast<XmlSortProxyModel *>(tableSlaveView->model());
     auto selected = tableSlaveView->selectionModel()->selectedRows();
     XmlDialogFabric::EditDialog(proxyModel, selected, this);
+}
+
+void XmlEditor::RemoveItem()
+{
+    auto proxyModel = qobject_cast<XmlSortProxyModel *>(tableSlaveView->model());
+    auto selected = tableSlaveView->selectionModel()->selectedRows();
+    XmlDialogFabric::RemoveDialog(proxyModel, selected, this);
 }

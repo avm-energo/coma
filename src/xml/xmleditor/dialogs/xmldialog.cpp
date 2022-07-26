@@ -85,8 +85,8 @@ void XmlDialog::writeData(QStringList &saved)
         // Создаём данные
         if (mRow == createId)
         {
-            ;
-            ;
+            auto index = mModel->append(saved);
+            mRow = index.row();
         }
         // Редактируем данные
         else

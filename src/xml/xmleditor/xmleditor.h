@@ -35,6 +35,7 @@ public slots:
     void Close();
     void CreateItem();
     void EditItem();
+    void RemoveItem();
 };
 
 #endif // XMLEDITOR_H

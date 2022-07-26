@@ -16,7 +16,20 @@
 
 #include <QMessageBox>
 
-void XmlDialogFabric::AnyDialog(XmlSortProxyModel *model, int row, QWidget *parent)
+namespace Helper
+{
+constexpr auto edit = 0;   ///< Константа для указания редактирования
+constexpr auto remove = 1; ///< Константа для указания удаления
+
+/// \brief Вспомогательная функция для вывода MessageBox с Warning сообщением
+inline void WarningMessage(QString &&text, QWidget *parent = nullptr)
+{
+    QMessageBox::warning(parent, "Ошибка", text, //
+        QMessageBox::Ok, QMessageBox::Ok);
+}
+}
+
+void XmlDialogFabric::Dialog(XmlSortProxyModel *model, int row, QWidget *parent)
 {
     XmlDialog *dialog = nullptr;
     auto type = qobject_cast<XmlModel *>(model->sourceModel())->getModelType();
@@ -69,12 +82,7 @@ void XmlDialogFabric::AnyDialog(XmlSortProxyModel *model, int row, QWidget *pare
     }
 }
 
-void XmlDialogFabric::CreateDialog(XmlSortProxyModel *model, QWidget *parent)
-{
-    AnyDialog(model, createId, parent);
-}
-
-void XmlDialogFabric::EditDialog(XmlSortProxyModel *model, QModelIndexList &selected, QWidget *parent)
+void XmlDialogFabric::Dialog(XmlSortProxyModel *model, QModelIndexList &selected, QWidget *parent, int type)
 {
     if (!selected.isEmpty())
     {
@@ -82,19 +90,40 @@ void XmlDialogFabric::EditDialog(XmlSortProxyModel *model, QModelIndexList &sele
         auto str = model->data(model->index(row, 0)).value<QString>();
         if (str != "..")
         {
-            AnyDialog(model, row, parent);
+            if (type == Helper::edit)
+                Dialog(model, row, parent);
+            else
+            {
+                auto modelType = qobject_cast<XmlModel *>(model->sourceModel())->getModelType();
+                if (modelType == ModelType::Resources || modelType == ModelType::Alarms)
+                    Helper::WarningMessage("Выбран недопустимый элемент", parent);
+                else
+                {
+                    auto resBtn = QMessageBox::question(parent, "Удаление", "Удалить выбранный элемент?",
+                        QMessageBox::No | QMessageBox::Yes, QMessageBox::No);
+                    if (resBtn == QMessageBox::Yes)
+                        model->remove(row);
+                }
+            }
         }
         else
-        {
-            QMessageBox::warning(parent, "Ошибка", //
-                "Выбран недопустимый элемент",     //
-                QMessageBox::Ok, QMessageBox::Ok);
-        }
+            Helper::WarningMessage("Выбран недопустимый элемент", parent);
     }
     else
-    {
-        QMessageBox::warning(parent, "Ошибка",      //
-            "Не выбран элемент для редактирования", //
-            QMessageBox::Ok, QMessageBox::Ok);
-    }
+        Helper::WarningMessage("Не выбран элемент", parent);
+}
+
+void XmlDialogFabric::CreateDialog(XmlSortProxyModel *model, QWidget *parent)
+{
+    Dialog(model, createId, parent);
+}
+
+void XmlDialogFabric::EditDialog(XmlSortProxyModel *model, QModelIndexList &selected, QWidget *parent)
+{
+    Dialog(model, selected, parent, Helper::edit);
+}
+
+void XmlDialogFabric::RemoveDialog(XmlSortProxyModel *model, QModelIndexList &selected, QWidget *parent)
+{
+    Dialog(model, selected, parent, Helper::remove);
 }

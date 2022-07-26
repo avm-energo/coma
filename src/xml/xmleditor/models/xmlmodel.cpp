@@ -65,7 +65,9 @@ bool XmlModel::setData(const QModelIndex &index, const QVariant &val, int nRole)
 {
     if (index.isValid() && val.isValid())
     {
-        if ((index.column() < mCols) && (index.row() < mRows))
+        auto column = index.column();
+        auto row = index.row();
+        if ((column >= 0 && column < mCols) && (row >= 0 && row < mRows))
         {
             if (nRole == Qt::EditRole || nRole == (Qt::UserRole + 1))
             {
@@ -177,6 +179,68 @@ void XmlModel::parseDataNode(QDomNode &child, int &row)
 ModelType XmlModel::getModelType() const
 {
     return mType;
+}
+
+const QModelIndex XmlModel::append(const QStringList &input)
+{
+    if (input.size() == mCols)
+    {
+        auto last = mRows;
+        beginInsertRows(QModelIndex(), last, last);
+        mRows++;
+        for (auto i = 0; i < mCols; i++)
+        {
+            auto itemIndex = index(last, i);
+            setData(itemIndex, input[i]);
+        }
+        endInsertRows();
+        return index(last, 0);
+    }
+    else
+        return index(-1, -1);
+}
+
+bool XmlModel::remove(int row)
+{
+    if (row >= 0 && row < mRows)
+    {
+        beginRemoveRows(QModelIndex(), row, row);
+        // Удаляем строку
+        for (auto i = 0; i < mCols; i++)
+        {
+            auto itemIndex = index(row, i);
+            mHashTable.remove(itemIndex);
+        }
+        // Удаляем подмодель, если она есть
+        mNodes.remove(row);
+        auto last = mRows - 1;
+        // Если строка была не последней
+        if (row != last)
+        {
+            // То перемещаем последнюю строку на место удалённой
+            beginMoveRows(QModelIndex(), last, last, QModelIndex(), row);
+            for (auto i = 0; i < mCols; i++)
+            {
+                auto srcIndex = index(last, i);
+                auto dstIndex = index(row, i);
+                mHashTable.insert(dstIndex, mHashTable.take(srcIndex));
+            };
+            // Если за ней закреплена подмодель, то переносим и её
+            auto node = mNodes.take(last);
+            bool isModelNull = node.value<ModelNode>().modelPtr == nullptr,
+                 isModelTypeNone = node.value<ModelNode>().modelType == ModelType::None;
+            if (!isModelNull && !isModelTypeNone)
+            {
+                mNodes.insert(row, node);
+            }
+            endMoveRows();
+        }
+        // Уменьшаем количество строк в модели
+        mRows--;
+        endRemoveRows();
+        return true;
+    }
+    return false;
 }
 
 void XmlModel::parseTag(QDomNode &node, QString tagName, int row, int col)

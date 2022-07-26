@@ -97,6 +97,8 @@ public:
     void setHorizontalHeaderLabels(const QStringList &labels);
     void setDataNode(bool isChildModel, QDomNode &root);
     ModelType getModelType() const;
+    virtual const QModelIndex append(const QStringList &input);
+    virtual bool remove(int row);
 
     virtual void parseNode(QDomNode &node, int &row) = 0;
 };
