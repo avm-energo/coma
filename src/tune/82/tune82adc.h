@@ -2,8 +2,8 @@
 #define TUNE82ADC_H
 
 #include "../../datablocks/82/bac.h"
-#include "../../datablocks/bd0.h"
 #include "../../datablocks/82/bda.h"
+#include "../../datablocks/bd0.h"
 //#include "../../datablocks/82/bdain.h"
 #include "../abstracttunedialog.h"
 
@@ -25,7 +25,7 @@ private:
     int m_curTuneStep;
     //    BdaIn::BlockData m_bdainBlockData;
     int m_BacWidgetIndex, m_BdainWidgetIndex, m_Bd0WidgetIndex;
-    float IUefNat_filt_old[6];      // для сохранения значений по п. 7.3.2
+    float IUefNat_filt_old[6]; // для сохранения значений по п. 7.3.2
 
     struct MidTuneStruct
     {
@@ -37,7 +37,6 @@ private:
 
     MidTuneStruct m_midTuneStruct;
 
-    void setMessages() override;
     void setTuneFunctions() override;
 
     Error::Msg setDefBac();

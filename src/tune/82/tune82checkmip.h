@@ -14,7 +14,6 @@ public:
     void setModuleType(Modules::MezzanineBoard type);
 
 private:
-    void setMessages() override;
     void setTuneFunctions() override;
     Error::Msg showScheme();
     Error::Msg check();

@@ -35,7 +35,6 @@ private:
 
     MidTuneStruct m_midTuneStruct;
 
-    void setMessages() override;
     void setTuneFunctions() override;
 
     Error::Msg showPreWarning();

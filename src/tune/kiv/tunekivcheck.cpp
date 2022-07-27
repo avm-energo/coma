@@ -18,25 +18,12 @@ TuneKIVCheck::TuneKIVCheck(ConfigV *config, int tuneStep, QWidget *parent)
     setupUI();
 }
 
-void TuneKIVCheck::setMessages()
-{
-    m_messages.append("1. Ввод пароля...");
-    m_messages.append("2. Сохранение текущей конфигурации...");
-    m_messages.append("3. Отображение схемы подключения...");
-    m_messages.append("4. Проверка...");
-}
-
 void TuneKIVCheck::setTuneFunctions()
 {
-    m_tuneFunctions.push_back(
-        reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&AbstractTuneDialog::CheckPassword));
-    Error::Msg (AbstractTuneDialog::*func)()
-        = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&AbstractTuneDialog::saveWorkConfig);
-    m_tuneFunctions.push_back(func);
-    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVCheck::showScheme);
-    m_tuneFunctions.push_back(func);
-    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVCheck::check);
-    m_tuneFunctions.push_back(func);
+    addTuneFunc("Ввод пароля...", &AbstractTuneDialog::CheckPassword);
+    addTuneFunc("Сохранение текущей конфигурации...", &AbstractTuneDialog::saveWorkConfig);
+    addTuneFunc("Отображение схемы подключения...", &TuneKIVCheck::showScheme);
+    addTuneFunc("Проверка...", &TuneKIVCheck::check);
 }
 
 Error::Msg TuneKIVCheck::showScheme()

@@ -13,7 +13,6 @@ public:
     Tune84Check(ConfigV *config, int tuneStep, QWidget *parent = nullptr);
 
 private:
-    void setMessages() override;
     void setTuneFunctions() override;
     Error::Msg showScheme();
     Error::Msg check();

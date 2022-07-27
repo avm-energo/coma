@@ -27,9 +27,10 @@ Tune82ADC::Tune82ADC(ConfigV *config, int tuneStep, QWidget *parent) : AbstractT
         setupUI(); */
 }
 
-void Tune82ADC::setMessages()
+void Tune82ADC::setTuneFunctions()
 {
-    m_messages.append("Ввод пароля...");
+    /*
+     *    m_messages.append("Ввод пароля...");
     m_messages.append("Сохранение текущей конфигурации...");
     m_messages.append("Установка настроечных коэффициентов по умолчанию...");
     m_messages.append("Получение текущих аналоговых данных и их проверка...");
@@ -41,11 +42,8 @@ void Tune82ADC::setMessages()
     m_messages.append("Регулировка канала Tmk0...");
     m_messages.append("Запись настроечных коэффициентов и восстановление конфигурации...");
     m_messages.append("Проверка регулировки...");
-}
 
-void Tune82ADC::setTuneFunctions()
-{
-    /*    m_tuneFunctions.push_back(
+     *     m_tuneFunctions.push_back(
             reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&AbstractTuneDialog::CheckPassword));
         m_tuneFunctions.push_back(
             reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&AbstractTuneDialog::saveWorkConfig));

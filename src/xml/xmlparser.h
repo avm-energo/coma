@@ -10,7 +10,7 @@ namespace delegate
 {
 
 }
-struct ModuleSettings;
+struct ModuleSettingsDeprecated;
 struct GlobalSettings;
 class XmlParserHelper;
 class XmlParser
@@ -21,7 +21,7 @@ public:
     XmlParser();
 
     static config::Item parseItem(QDomElement domElement, ctti::unnamed_type_id_t parentType);
-    static void traverseNode(const QDomNode &node, ModuleSettings *const settings, ConfigSettings &configSettings);
+    static void traverseNode(const QDomNode &node, ModuleSettingsDeprecated *const settings, ConfigSettings &configSettings);
     static void traverseNode(const QDomNode &node, ConfigSettings &settings);
     static void traverseNode(const QDomNode &node, categoryMap &settings);
     static void traverseNodeS2(

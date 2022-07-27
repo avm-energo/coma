@@ -1,14 +1,15 @@
 #include "createmoduledialogs.h"
 
-CreateModuleDialogs::CreateModuleDialogs(quint16 typeB, quint16 typeM)
+#include "../dialogs/configdialog.h"
+
+CreateModuleDialogs::CreateModuleDialogs(const ModuleSettings &settings) : m_settings(settings)
 {
-    m_typeB = typeB;
-    m_typeM = typeM;
 }
 
 QList<UDialog *> CreateModuleDialogs::CreateDialogs()
 {
     DeleteDialogs();
+    CreateConfigDialogs();
     return m_dialogs;
 }
 
@@ -21,6 +22,24 @@ void CreateModuleDialogs::DeleteDialogs()
     }
 }
 
+void CreateModuleDialogs::addDialogToList(UDialog *dlg, const QString &caption, const QString &name)
+{
+    dlg->setObjectName(name);
+    dlg->setCaption(caption);
+    m_dialogs.append(dlg);
+}
+
 void CreateModuleDialogs::CreateConfigDialogs()
+{
+    using ConfigHash = QHash<int, ModuleSettings::ConfigList>;
+    ConfigHash config = m_settings.getConfig();
+    for (ConfigHash::Iterator it = config.begin(); it != config.end(); ++it)
+    {
+        QString indexStr = QString::number(it.key());
+        addDialogToList(new ConfigDialog(&m_configV, it.value()), "Конфигурация " + indexStr, "conf" + indexStr);
+    }
+}
+
+void CreateModuleDialogs::CreateCheckDialogs()
 {
 }

@@ -20,34 +20,15 @@ TuneKIVR::TuneKIVR(ConfigV *config, int tuneStep, QWidget *parent) : AbstractTun
     setupUI();
 }
 
-void TuneKIVR::setMessages()
-{
-    m_messages.append("1. Ввод пароля...");
-    m_messages.append("2. Отображение предупреждения...");
-    m_messages.append("3. Запрос настроечных параметров...");
-    m_messages.append("4. Настройка канала измерения температуры (КИТ): установка 80 Ом...");
-    m_messages.append("5. Настройка КИТ: обработка...");
-    m_messages.append("6. Настройка канала измерения температуры (КИТ): установка 120 Ом...");
-    m_messages.append("7. Настройка КИТ: обработка и запись коэффициентов...");
-}
-
 void TuneKIVR::setTuneFunctions()
 {
-    m_tuneFunctions.push_back(
-        reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&AbstractTuneDialog::CheckPassword));
-    Error::Msg (AbstractTuneDialog::*func)()
-        = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVR::showPreWarning);
-    m_tuneFunctions.push_back(func);
-    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&AbstractTuneDialog::readTuneCoefs);
-    m_tuneFunctions.push_back(func);
-    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVR::setR80);
-    m_tuneFunctions.push_back(func);
-    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVR::processR80);
-    m_tuneFunctions.push_back(func);
-    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVR::setR120);
-    m_tuneFunctions.push_back(func);
-    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVR::processR120);
-    m_tuneFunctions.push_back(func);
+    addTuneFunc("1. Ввод пароля...", &AbstractTuneDialog::CheckPassword);
+    addTuneFunc("2. Отображение предупреждения...", &TuneKIVR::showPreWarning);
+    addTuneFunc("3. Запрос настроечных параметров...", &AbstractTuneDialog::readTuneCoefs);
+    addTuneFunc("4. Настройка канала измерения температуры (КИТ): установка 80 Ом...", &TuneKIVR::setR80);
+    addTuneFunc("5. Настройка КИТ: обработка...", &TuneKIVR::processR80);
+    addTuneFunc("6. Настройка канала измерения температуры (КИТ): установка 120 Ом...", &TuneKIVR::setR120);
+    addTuneFunc("7. Настройка КИТ: обработка и запись коэффициентов...", &TuneKIVR::processR120);
 }
 
 Error::Msg TuneKIVR::showPreWarning()

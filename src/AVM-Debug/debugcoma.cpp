@@ -63,9 +63,9 @@ void DebugComa::setupConnection()
 
 void DebugComa::checkDialog()
 {
-    ConfigV *config = new ConfigV;
-    float i2nom = 5.0;
-    config->setRecordValue({ XmlConfigParser::GetIdByName("I2nom"), i2nom });
-    Tune82CheckMip *dlg = new Tune82CheckMip(config, 0, Modules::MezzanineBoard::MTM_82);
-    dlg->show();
+    /*    ConfigV *config = new ConfigV;
+        float i2nom = 5.0;
+        config->setRecordValue({ XmlConfigParser::GetIdByName("I2nom"), i2nom });
+        Tune82CheckMip *dlg = new Tune82CheckMip(config, 0, Modules::MezzanineBoard::MTM_82);
+        dlg->show(); */
 }

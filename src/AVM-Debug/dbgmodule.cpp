@@ -16,8 +16,10 @@
 #include "../startup/startupkdvdialog.h"
 #include "../startup/startupkivdialog.h"
 #include "../startup/startupktfdialog.h"
+#include "../tune/82/tune82dialog.h"
 #include "../tune/84/tune84dialog.h"
 #include "../tune/kiv/tunekivdialog.h"
+
 DbgModule::DbgModule(QObject *parent) : Module(parent)
 {
 }
@@ -159,7 +161,10 @@ void DbgModule::create(Modules::BaseBoard typeB, Modules::MezzanineBoard typeM)
     if (typeB == BaseBoard::MTB_80)
     {
         if ((typeM == MezzanineBoard::MTM_81) || (typeM == MezzanineBoard::MTM_82) || (typeM == MezzanineBoard::MTM_83))
+        {
             addDialogToList(new OscDialog, "Осциллограммы");
+            addDialogToList(new Tune82Dialog(&configV, typeM), "Регулировка");
+        }
     }
     if ((typeB == BaseBoard::MTB_80) && (typeM == MezzanineBoard::MTM_85))
     {

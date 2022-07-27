@@ -101,7 +101,7 @@ void Module::closeDialogs()
         m_dialogs.takeFirst()->close();
 }
 
-ModuleSettings *Module::settings() const
+ModuleSettingsDeprecated *Module::settings() const
 {
     return m_settings.get();
 }
@@ -113,7 +113,7 @@ bool Module::loadSettings(const Modules::StartupInfoBlock &startupInfoBlock, int
     if (!loadCheckSettings(m_gsettings.check))
         return false;
 
-    m_settings = std::unique_ptr<ModuleSettings>(new ModuleSettings(startupInfoBlock));
+    m_settings = std::unique_ptr<ModuleSettingsDeprecated>(new ModuleSettingsDeprecated(startupInfoBlock));
     m_settings->interfaceType = interfaceType;
     if (Board::isUSIO(Modules::BaseBoard(startupInfoBlock.MTypeB), Modules::MezzanineBoard(startupInfoBlock.MTypeM)))
     {

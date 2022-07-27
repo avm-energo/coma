@@ -43,7 +43,6 @@ private:
     //        return vect;
     //    };
 
-    void setMessages();
     void setTuneFunctions();
     //    void FillBac(int bacnum);
     //    void FillBackBac(int bacnum);

@@ -28,19 +28,10 @@ void Tune82CheckMip::setModuleType(Modules::MezzanineBoard type)
         m_moduleType = Mip::AvtukVariants::M83;
 }
 
-void Tune82CheckMip::setMessages()
-{
-    m_messages.append("1. Отображение схемы подключения...");
-    m_messages.append("2. Проверка связи с МИП...");
-}
-
 void Tune82CheckMip::setTuneFunctions()
 {
-    Error::Msg (AbstractTuneDialog::*func)()
-        = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&Tune82CheckMip::showScheme);
-    m_tuneFunctions.push_back(func);
-    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&Tune82CheckMip::check);
-    m_tuneFunctions.push_back(func);
+    addTuneFunc("1. Отображение схемы подключения...", &Tune82CheckMip::showScheme);
+    addTuneFunc("2. Проверка связи с МИП...", &Tune82CheckMip::check);
 }
 
 Error::Msg Tune82CheckMip::showScheme()

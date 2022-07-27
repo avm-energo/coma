@@ -15,7 +15,7 @@ void TuneDialogFabric::setConfigV(ConfigV *config)
     s_Config = config;
 }
 
-GeneralTuneDialog *TuneDialogFabric::GetTuneDialogForType(quint16 typeB, quint16 typeM)
+GeneralTuneDialog *TuneDialogFabric::GetTuneDialogForType(Modules::BaseBoard typeB, Modules::MezzanineBoard typeM)
 {
     switch (typeB)
     {
@@ -24,7 +24,7 @@ GeneralTuneDialog *TuneDialogFabric::GetTuneDialogForType(quint16 typeB, quint16
         switch (typeM)
         {
         case Modules::MezzanineBoard::MTM_82:
-            return new Tune82Dialog(s_Config);
+            return new Tune82Dialog(s_Config, typeM);
         case Modules::MezzanineBoard::MTM_84:
             return new Tune84Dialog(s_Config);
         default:

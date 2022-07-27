@@ -22,7 +22,6 @@ private:
     BdaIn m_bdain;
     int m_BacWidgetIndex, m_BdaWidgetIndex;
 
-    void setMessages() override;
     void setTuneFunctions() override;
 
     Error::Msg showPreWarning();

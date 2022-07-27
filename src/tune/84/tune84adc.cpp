@@ -28,82 +28,32 @@ Tune84ADC::Tune84ADC(ConfigV *config, int tuneStep, QWidget *parent) : AbstractT
     setupUI();
 }
 
-void Tune84ADC::setMessages()
-{
-    m_messages.append("Ввод пароля...");
-    m_messages.append("Сохранение текущей конфигурации...");
-    m_messages.append("Отображение предупреждения...");
-    m_messages.append("Запрос настроечных параметров...");
-    m_messages.append("Проверка настроечных параметров...");
-    m_messages.append("Задание режима конфигурирования модуля...");
-    m_messages.append("Регулировка для Кацп = 1...");
-    m_messages.append("Отображение диалога задания входных данных...");
-    if (m_tuneStep == TS84_ADCI)
-    {
-        m_messages.append("Регулировка для Кацп = 2...");
-        m_messages.append("Отображение диалога задания входных данных...");
-        m_messages.append("Регулировка для Кацп = 4...");
-        m_messages.append("Отображение диалога задания входных данных...");
-        m_messages.append("Регулировка для Кацп = 8...");
-        m_messages.append("Отображение диалога задания входных данных...");
-        m_messages.append("Регулировка для Кацп = 16...");
-        m_messages.append("Отображение диалога задания входных данных...");
-        m_messages.append("Регулировка для Кацп = 32...");
-        m_messages.append("Отображение диалога задания входных данных...");
-        m_messages.append("Регулировка канала Tmk0...");
-    }
-    m_messages.append("Запись настроечных коэффициентов и восстановление конфигурации...");
-    m_messages.append("Проверка регулировки...");
-}
-
 void Tune84ADC::setTuneFunctions()
 {
-    m_tuneFunctions.push_back(
-        reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&AbstractTuneDialog::CheckPassword));
-    m_tuneFunctions.push_back(
-        reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&AbstractTuneDialog::saveWorkConfig));
-    Error::Msg (AbstractTuneDialog::*func)()
-        = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&Tune84ADC::showPreWarning);
-    m_tuneFunctions.push_back(func);
-    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&AbstractTuneDialog::readTuneCoefs);
-    m_tuneFunctions.push_back(func);
-    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&Tune84ADC::checkTuneCoefs);
-    m_tuneFunctions.push_back(func);
-    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&Tune84ADC::setSMode2);
-    m_tuneFunctions.push_back(func);
-    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&Tune84ADC::ADCCoef1);
-    m_tuneFunctions.push_back(func);
-    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&Tune84ADC::showEnergomonitorInputDialog);
-    m_tuneFunctions.push_back(func);
+    addTuneFunc("Ввод пароля...", &AbstractTuneDialog::CheckPassword);
+    addTuneFunc("Сохранение текущей конфигурации...", &AbstractTuneDialog::saveWorkConfig);
+    addTuneFunc("Отображение предупреждения...", &Tune84ADC::showPreWarning);
+    addTuneFunc("Запрос настроечных параметров...", &AbstractTuneDialog::readTuneCoefs);
+    addTuneFunc("Проверка настроечных параметров...", &Tune84ADC::checkTuneCoefs);
+    addTuneFunc("Задание режима конфигурирования модуля...", &Tune84ADC::setSMode2);
+    addTuneFunc("Регулировка для Кацп = 1...", &Tune84ADC::ADCCoef1);
+    addTuneFunc("Отображение диалога задания входных данных...", &Tune84ADC::showEnergomonitorInputDialog);
     if (m_tuneStep == TS84_ADCI)
     {
-        func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&Tune84ADC::ADCCoef2);
-        m_tuneFunctions.push_back(func);
-        func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&Tune84ADC::showEnergomonitorInputDialog);
-        m_tuneFunctions.push_back(func);
-        func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&Tune84ADC::ADCCoef4);
-        m_tuneFunctions.push_back(func);
-        func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&Tune84ADC::showEnergomonitorInputDialog);
-        m_tuneFunctions.push_back(func);
-        func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&Tune84ADC::ADCCoef8);
-        m_tuneFunctions.push_back(func);
-        func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&Tune84ADC::showEnergomonitorInputDialog);
-        m_tuneFunctions.push_back(func);
-        func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&Tune84ADC::ADCCoef16);
-        m_tuneFunctions.push_back(func);
-        func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&Tune84ADC::showEnergomonitorInputDialog);
-        m_tuneFunctions.push_back(func);
-        func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&Tune84ADC::ADCCoef32);
-        m_tuneFunctions.push_back(func);
-        func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&Tune84ADC::showEnergomonitorInputDialog);
-        m_tuneFunctions.push_back(func);
-        func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&Tune84ADC::Tmk0);
-        m_tuneFunctions.push_back(func);
+        addTuneFunc("Регулировка для Кацп = 2...", &Tune84ADC::ADCCoef2);
+        addTuneFunc("Отображение диалога задания входных данных...", &Tune84ADC::showEnergomonitorInputDialog);
+        addTuneFunc("Регулировка для Кацп = 4...", &Tune84ADC::ADCCoef4);
+        addTuneFunc("Отображение диалога задания входных данных...", &Tune84ADC::showEnergomonitorInputDialog);
+        addTuneFunc("Регулировка для Кацп = 8...", &Tune84ADC::ADCCoef8);
+        addTuneFunc("Отображение диалога задания входных данных...", &Tune84ADC::showEnergomonitorInputDialog);
+        addTuneFunc("Регулировка для Кацп = 16...", &Tune84ADC::ADCCoef16);
+        addTuneFunc("Отображение диалога задания входных данных...", &Tune84ADC::showEnergomonitorInputDialog);
+        addTuneFunc("Регулировка для Кацп = 32...", &Tune84ADC::ADCCoef32);
+        addTuneFunc("Отображение диалога задания входных данных...", &Tune84ADC::showEnergomonitorInputDialog);
+        addTuneFunc("Регулировка канала Tmk0...", &Tune84ADC::Tmk0);
     }
-    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&Tune84ADC::SendBac);
-    m_tuneFunctions.push_back(func);
-    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&Tune84ADC::CheckTune);
-    m_tuneFunctions.push_back(func);
+    addTuneFunc("Запись настроечных коэффициентов и восстановление конфигурации...", &Tune84ADC::SendBac);
+    addTuneFunc("Проверка регулировки...", &Tune84ADC::CheckTune);
 }
 
 Error::Msg Tune84ADC::showPreWarning()
