@@ -1,7 +1,5 @@
 #include "xmlsortproxymodel.h"
 
-#include "xmlmodel.h"
-
 XmlSortProxyModel::XmlSortProxyModel(QObject *parent) : QSortFilterProxyModel(parent)
 {
 }

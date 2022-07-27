@@ -2,9 +2,14 @@
 
 #include "xmlmodels.h"
 
-int ElementsCount(QDomNode &node);
-
-void ModelFabric::CreateModel(ModelNode &mNode, QDomNode &root, QObject *parent)
+/*! \brief Creates child XML model.
+ *  \details Creates child XML model for given parent XML model at base of given XML DOM node.
+ *  After creating new model stores in given ChildModelNode structure.
+ *  \param mNode [out] - structure that stores pointer to created child XML model.
+ *  \param root [in] - XML DOM node for calling XmlModel::setDataNode function.
+ *  \param parent [in] - pointer to parent XML model.
+ */
+void ModelFabric::CreateChildModel(ChildModelNode &mNode, QDomNode &root, QObject *parent)
 {
     auto iter = XmlModel::headers.find(mNode.modelType);
     if (iter != XmlModel::headers.cend())
@@ -66,7 +71,8 @@ void ModelFabric::CreateModel(ModelNode &mNode, QDomNode &root, QObject *parent)
     }
 }
 
-XmlModel *ModelFabric::CreateMainModel(QDomNode &root, QObject *parent)
+/// \brief Creates root XML model at base of given XML DOM node.
+XmlModel *ModelFabric::CreateRootModel(QDomNode &root, QObject *parent)
 {
     if (!root.isNull())
     {
@@ -97,7 +103,9 @@ XmlModel *ModelFabric::CreateMainModel(QDomNode &root, QObject *parent)
     return nullptr;
 }
 
-int ElementsCount(QDomNode &node)
+/// \brief Returns count of child nodes for given XML DOM node,
+/// that are not comments and are DOM elements.
+int ModelFabric::ElementsCount(QDomNode &node)
 {
     auto childs = node.childNodes();
     int count = 0;

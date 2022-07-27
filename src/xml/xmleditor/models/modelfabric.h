@@ -3,12 +3,16 @@
 
 #include "xmlmodel.h"
 
+/// \brief Class with static members for creating XML models.
 class ModelFabric
 {
+protected:
+    static int ElementsCount(QDomNode &node);
+
 public:
     explicit ModelFabric() = delete;
-    static void CreateModel(ModelNode &mNode, QDomNode &root, QObject *parent = nullptr);
-    static XmlModel *CreateMainModel(QDomNode &root, QObject *parent = nullptr);
+    static void CreateChildModel(ChildModelNode &mNode, QDomNode &root, QObject *parent = nullptr);
+    static XmlModel *CreateRootModel(QDomNode &root, QObject *parent = nullptr);
 };
 
 #endif // MODELFABRIC_H

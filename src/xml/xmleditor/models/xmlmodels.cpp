@@ -61,7 +61,7 @@ const QModelIndex XmlSectionsModel::append(const QStringList &input)
     auto row = result.row(), col = result.column();
     if (row >= 0 && col >= 0)
     {
-        ModelNode node { nullptr, ModelType::Section };
+        ChildModelNode node { nullptr, ModelType::Section };
         auto labels = XmlModel::headers.find(node.modelType)->second;
         node.modelPtr = new XmlSectionModel(1, labels.count(), node.modelType, this);
         node.modelPtr->setHorizontalHeaderLabels(labels);
@@ -91,7 +91,7 @@ const QModelIndex XmlSectionModel::append(const QStringList &input)
     auto row = result.row(), col = result.column();
     if (row >= 0 && col >= 0)
     {
-        ModelNode node { nullptr, ModelType::SGroup };
+        ChildModelNode node { nullptr, ModelType::SGroup };
         auto labels = XmlModel::headers.find(node.modelType)->second;
         node.modelPtr = new XmlSGroupModel(1, labels.count(), node.modelType, this);
         node.modelPtr->setHorizontalHeaderLabels(labels);

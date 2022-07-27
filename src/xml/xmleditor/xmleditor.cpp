@@ -96,6 +96,7 @@ QVBoxLayout *XmlEditor::GetSlaveWorkspace()
             tableSlaveView->setModel(model);
             tableSlaveView->sortByColumn(0, Qt::SortOrder::AscendingOrder);
         });
+    QObject::connect(manager, &ModelManager::EditQuery, this, &XmlEditor::EditItem);
     workspace->addWidget(tableSlaveView);
 
     return workspace;

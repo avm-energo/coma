@@ -6,6 +6,7 @@
 
 constexpr int ModelNodeRole = 0x0105; ///< Role for setting node with submodule
 
+/// \brief Namespace for storaging names of base XML tags.
 namespace tags
 {
 constexpr char res[] = "resources";
@@ -26,11 +27,8 @@ constexpr char modbus[] = "modbus";
 constexpr char protocom[] = "protocom";
 constexpr char iec60870[] = "iec60870";
 constexpr char config[] = "config";
-}
 
-namespace tags
-{
-/// \brief Enumeration for saving type of submodule
+/// \brief Enumeration for saving type of submodule.
 enum NodeTypes : quint16
 {
     None = 0,
@@ -53,23 +51,21 @@ enum NodeTypes : quint16
 }
 using ModelType = tags::NodeTypes;
 
+// Опережающее объявление
 class XmlModel;
 
-/// \brief Структура для хранения узла хранимой подмодели
-struct ModelNode
+/// \brief Structure for storaging child XML model node.
+struct ChildModelNode
 {
     XmlModel *modelPtr = nullptr;
     ModelType modelType = ModelType::None;
 };
-Q_DECLARE_METATYPE(ModelNode);
+Q_DECLARE_METATYPE(ChildModelNode);
 
-/// \brief Базовый абстрактный класс для моделей XML узлов
+/// \brief Base abstract XML model class.
 class XmlModel : public QAbstractTableModel
 {
     Q_OBJECT
-private:
-    void parseDataNode(QDomNode &child, int &row);
-
 protected:
     int mRows, mCols;
     ModelType mType;
@@ -77,13 +73,15 @@ protected:
     QHash<int, QVariant> mNodes;
     QHash<int, QVariant> horizontalHeaders;
 
-    void parseTag(QDomNode &node, QString tagName, int row, int col);
-    void parseAttribute(QDomNode &node, QString attrName, int row, int col);
+    void parseDataNode(QDomNode &child, int &row);
+    void parseTag(QDomNode &node, const QString tagName, int row, int col);
+    void parseAttribute(QDomNode &node, const QString attrName, int row, int col);
 
 public:
     static const std::map<QString, ModelType> types;       ///< Types Map with enumeration, key = name of group type
     static const std::map<ModelType, QStringList> headers; ///< Settings Map, key = group type enumeration
 
+    explicit XmlModel() = delete;
     explicit XmlModel(int rows, int cols, ModelType type, QObject *parent = nullptr);
     virtual QVariant data(const QModelIndex &index, int nRole = Qt::UserRole + 1) const override;
     virtual bool setData(const QModelIndex &index, const QVariant &val, int nRole = Qt::UserRole + 1) override;

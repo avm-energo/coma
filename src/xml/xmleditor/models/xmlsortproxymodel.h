@@ -1,6 +1,8 @@
 #ifndef XMLSORTPROXYMODEL_H
 #define XMLSORTPROXYMODEL_H
 
+#include "xmlmodel.h"
+
 #include <QSortFilterProxyModel>
 
 class XmlSortProxyModel : public QSortFilterProxyModel
