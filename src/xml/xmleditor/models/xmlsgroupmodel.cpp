@@ -30,6 +30,14 @@ bool XmlSGroupModel::setData(const QModelIndex &index, const QVariant &val, int 
         return XmlModel::setData(index, val, nRole);
 }
 
+bool XmlSGroupModel::remove(int row)
+{
+    auto state = XmlModel::remove(row);
+    if (state)
+        hideData.remove(row);
+    return state;
+}
+
 void XmlSGroupModel::parseNode(QDomNode &node, int &row)
 {
     parseAttribute(node, "desc", row, 0); // Заголовок
@@ -73,4 +81,51 @@ SGroupHideData XmlSGroupModel::parseHideData(QDomNode &node)
         }
     }
     return retVal;
+}
+
+QString accumulateStr(QStringList &src)
+{
+    QString result = "";
+    if (!src.isEmpty())
+    {
+        auto last = src.last();
+        for (auto &str : src)
+        {
+            result += str;
+            if (str != last)
+                result += ',';
+        }
+    }
+    return result;
+}
+
+QStringList deaccumulateStr(const QString &src)
+{
+    QStringList result = {};
+    if (src.length() > 0)
+    {
+        auto copy = src;
+        while (copy.length() > 0)
+        {
+            auto index = copy.indexOf(',');
+            auto item = copy.left(index);
+            result.append(item);
+            if (index == -1)
+                break;
+            copy = copy.right(copy.length() - (index + 1));
+        }
+    }
+    return result;
+}
+
+SGroupHideData convertHideData(QStringList &input)
+{
+    SGroupHideData hiding;
+    auto state = false;
+    auto count = input[0].toInt(&state);
+    if (state)
+        hiding.count = count;
+    hiding.tooltip = input[1];
+    hiding.array = deaccumulateStr(input[2]);
+    return hiding;
 }

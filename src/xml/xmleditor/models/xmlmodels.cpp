@@ -55,6 +55,23 @@ void XmlSectionsModel::parseNode(QDomNode &node, int &row)
     parseAttribute(node, "header", row, 0); // Заголовок
 }
 
+const QModelIndex XmlSectionsModel::append(const QStringList &input)
+{
+    auto result = XmlModel::append(input);
+    auto row = result.row(), col = result.column();
+    if (row >= 0 && col >= 0)
+    {
+        ModelNode node { nullptr, ModelType::Section };
+        auto labels = XmlModel::headers.find(node.modelType)->second;
+        node.modelPtr = new XmlSectionModel(1, labels.count(), node.modelType, this);
+        node.modelPtr->setHorizontalHeaderLabels(labels);
+        auto itemIndex = node.modelPtr->index(0, 0);
+        node.modelPtr->setData(itemIndex, QString(".."));
+        setData(index(row, 0), QVariant::fromValue(node), ModelNodeRole);
+    }
+    return result;
+}
+
 // XmlSectionModel functions //
 
 XmlSectionModel::XmlSectionModel(int rows, int cols, ModelType type, QObject *parent)
@@ -66,6 +83,23 @@ void XmlSectionModel::parseNode(QDomNode &node, int &row)
 {
     parseAttribute(node, "header", row, 0); // Заголовок
     parseAttribute(node, "tab", row, 1);    // ID вкладки
+}
+
+const QModelIndex XmlSectionModel::append(const QStringList &input)
+{
+    auto result = XmlModel::append(input);
+    auto row = result.row(), col = result.column();
+    if (row >= 0 && col >= 0)
+    {
+        ModelNode node { nullptr, ModelType::SGroup };
+        auto labels = XmlModel::headers.find(node.modelType)->second;
+        node.modelPtr = new XmlSGroupModel(1, labels.count(), node.modelType, this);
+        node.modelPtr->setHorizontalHeaderLabels(labels);
+        auto itemIndex = node.modelPtr->index(0, 0);
+        node.modelPtr->setData(itemIndex, QString(".."));
+        setData(index(row, 0), QVariant::fromValue(node), ModelNodeRole);
+    }
+    return result;
 }
 
 // XmlCritAlarmsModel functions //

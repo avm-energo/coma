@@ -30,7 +30,7 @@ public:
     virtual void reject() override;
 
     void setupUICall(int &row);
-    virtual void writeData(QStringList &saved);
+    void writeData(QStringList &saved);
 
     /// \brief Виртуальный метод для создания UI диалога (виджетов)
     virtual void setupUI(QStringList &selectedData) = 0;
@@ -40,7 +40,7 @@ public:
 public slots:
     void dataChanged();
     void dataChanged(const QString &strData);
-    void saveData();
+    virtual void saveData();
 };
 
 #endif // XMLDIALOG_H

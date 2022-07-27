@@ -72,8 +72,10 @@ void XmlDialogFabric::Dialog(XmlSortProxyModel *model, int row, QWidget *parent)
         dialog = new XmlMWidgetDialog(model, parent);
         break;
     default:
-        // TODO: What must happenes here?
-        // Предположительно, ничего, как и сейчас
+        if (row == createId)
+            Helper::WarningMessage("В данном разделе запрещено создание новых элементов", parent);
+        else
+            Helper::WarningMessage("Выбран недопустимый элемент", parent);
         break;
     }
     if (dialog != nullptr)
