@@ -2,9 +2,9 @@
 #define TUNE82DIALOG_H
 
 #include "../../models/report.h"
-#include "../../widgets/udialog.h"
+//#include "../../widgets/udialog.h"
 #include "../generaltunedialog.h"
-#include "../kiv/tunekivtemp60.h"
+//#include "../kiv/tunekivtemp60.h"
 //#include "tune82adc.h"
 //#include "tune82check.h"
 

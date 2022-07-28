@@ -1,5 +1,4 @@
-#ifndef KIV_BAC_H
-#define KIV_BAC_H
+#pragma once
 
 #include "../datablock.h"
 
@@ -43,5 +42,3 @@ public:
 private:
     std::unique_ptr<BlockData> m_blockData;
 };
-
-#endif // KIV_BAC_H

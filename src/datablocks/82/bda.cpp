@@ -8,14 +8,14 @@
 #include <QVBoxLayout>
 #include <QtMath>
 
-Bda::Bda(Modules::MezzanineBoard typem, QObject *parent) : DataBlock(parent)
+Bda82::Bda82(Modules::MezzanineBoard typem, QObject *parent) : DataBlock(parent)
 {
     m_typeM = typem;
     m_blockData = std::unique_ptr<BlockData>(new BlockData);
     setBlock({ 0, "Текущие данные", DataTypes::DataBlockTypes::BdaBlock, m_blockData.get(), sizeof(BlockData) });
 }
 
-void Bda::createWidget()
+void Bda82::createWidget()
 {
     m_widget = new QWidget;
     int i;
@@ -89,11 +89,11 @@ void Bda::createWidget()
     m_widgetIsSet = true;
 }
 
-void Bda::setDefBlock()
+void Bda82::setDefBlock()
 {
 }
 
-void Bda::updateWidget()
+void Bda82::updateWidget()
 {
     WDFunc::SetLBLText(m_widget, "value0", WDFunc::StringValueWithCheck(m_blockData->Frequency, 3));
     for (int i = 1; i < 4; i++)
@@ -138,7 +138,7 @@ void Bda::updateWidget()
     }
 }
 
-Error::Msg Bda::checkValues(float voltage, float current, float degree, float tolerance)
+Error::Msg Bda82::checkValues(float voltage, float current, float degree, float tolerance)
 {
     double phi = qDegreesToRadians(degree);
     double p = voltage * current * qCos(phi);
@@ -179,7 +179,7 @@ Error::Msg Bda::checkValues(float voltage, float current, float degree, float to
     return res;
 }
 
-Error::Msg Bda::checkAnalogValues(double u, double i, double p, double q, double s, double phi, double cosphi,
+Error::Msg Bda82::checkAnalogValues(double u, double i, double p, double q, double s, double phi, double cosphi,
     double utol, double itol, double pht, double pt, double ct)
 {
     double it = (m_typeM == Modules::MezzanineBoard::MTM_83) ? utol : itol; // 0t2n
@@ -206,7 +206,7 @@ Error::Msg Bda::checkAnalogValues(double u, double i, double p, double q, double
     return Error::Msg::NoError;
 }
 
-Bda::BlockData *Bda::data()
+Bda82::BlockData *Bda82::data()
 {
     return m_blockData.get();
 }

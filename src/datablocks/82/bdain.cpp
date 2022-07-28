@@ -7,14 +7,14 @@
 #include <QGroupBox>
 #include <QVBoxLayout>
 
-BdaIn::BdaIn(QObject *parent) : DataBlock(parent)
+BdaIn82::BdaIn82(QObject *parent) : DataBlock(parent)
 {
     m_blockData = std::unique_ptr<BlockData>(new BlockData);
     setBlock({ 1, "Текущие данные", DataTypes::DataBlockTypes::BdBlock, m_blockData.get(), sizeof(BlockData) });
     createWidget();
 }
 
-void BdaIn::createWidget()
+void BdaIn82::createWidget()
 {
     m_widget = new QWidget;
     QVBoxLayout *lyout = new QVBoxLayout;
@@ -71,11 +71,11 @@ void BdaIn::createWidget()
     m_widgetIsSet = true;
 }
 
-void BdaIn::setDefBlock()
+void BdaIn82::setDefBlock()
 {
 }
 
-void BdaIn::updateWidget()
+void BdaIn82::updateWidget()
 {
     if (m_widgetIsSet)
     {
@@ -101,7 +101,7 @@ void BdaIn::updateWidget()
     }
 }
 
-BdaIn::BlockData *BdaIn::data()
+BdaIn82::BlockData *BdaIn82::data()
 {
     return m_blockData.get();
 }

@@ -6,13 +6,13 @@
 #include <QFrame>
 #include <QVBoxLayout>
 
-Bd1::Bd1(QObject *parent) : DataBlock(parent)
+Bd21_1::Bd21_1(QObject *parent) : DataBlock(parent)
 {
     m_blockData = new BlockData;
     setBlock({ 1, "Все", DataTypes::DataBlockTypes::BdBlock, m_blockData, sizeof(BlockData) });
 }
 
-void Bd1::createWidget()
+void Bd21_1::createWidget()
 {
     QString ValuesFormat = "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; color: black;"
                            "background-color: "
@@ -130,7 +130,7 @@ void Bd1::createWidget()
     m_widget->setLayout(vlyout);
 }
 
-void Bd1::updateWidget()
+void Bd21_1::updateWidget()
 {
     int i;
     for (i = 0; i < 8; ++i)

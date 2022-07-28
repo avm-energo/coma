@@ -1,9 +1,8 @@
-#ifndef BD1_H
-#define BD1_H
+#pragma once
 
 #include "../datablock.h"
 
-class Bd1 : public DataBlock
+class Bd21_1 : public DataBlock
 {
     Q_OBJECT
 public:
@@ -17,7 +16,7 @@ public:
         //        float ainx[AIN21_NUMCH]; // максимальное значение по каналу (инж.)
     };
 
-    Bd1(QObject *parent = nullptr);
+    Bd21_1(QObject *parent = nullptr);
     void createWidget() override;
     void updateWidget() override;
 
@@ -25,5 +24,3 @@ private:
     BlockData *m_blockData;
     QWidget *m_widget;
 };
-
-#endif // BD1_H

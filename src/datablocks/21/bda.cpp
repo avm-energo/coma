@@ -6,13 +6,13 @@
 #include <QFrame>
 #include <QVBoxLayout>
 
-Bda::Bda(QObject *parent) : DataBlock(parent)
+Bda21::Bda21(QObject *parent) : DataBlock(parent)
 {
     m_blockData = new BlockData;
     setBlock({ 1, "Сырые измерения", DataTypes::DataBlockTypes::BdaBlock, m_blockData, sizeof(BlockData) });
 }
 
-void Bda::createWidget()
+void Bda21::createWidget()
 {
     m_widget = new QWidget;
     QVBoxLayout *vlyout = new QVBoxLayout;
@@ -32,7 +32,7 @@ void Bda::createWidget()
     m_widget->setLayout(vlyout);
 }
 
-void Bda::updateWidget()
+void Bda21::updateWidget()
 {
     int i;
     for (i = 0; i < 8; ++i)

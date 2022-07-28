@@ -1,9 +1,8 @@
-#ifndef KIV_BDAIN_H
-#define KIV_BDAIN_H
+#pragma once
 
 #include "../datablock.h"
 
-class BdaIn : public DataBlock
+class BdaIn82 : public DataBlock
 {
     Q_OBJECT
 public:
@@ -19,7 +18,7 @@ public:
         float Pt100_R;  // Измеренное сопротивление термометра, Ом
     };
 
-    BdaIn(QObject *parent = nullptr);
+    BdaIn82(QObject *parent = nullptr);
 
     void createWidget() override;
     void setDefBlock() override;
@@ -30,5 +29,3 @@ private:
     std::unique_ptr<BlockData> m_blockData;
     //    QWidget *m_widget;
 };
-
-#endif // KIV_BDAIN_H

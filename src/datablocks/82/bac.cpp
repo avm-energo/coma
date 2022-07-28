@@ -7,14 +7,14 @@
 #include <QGroupBox>
 #include <QVBoxLayout>
 
-Bac::Bac(QObject *parent) : DataBlock(parent)
+Bac82::Bac82(QObject *parent) : DataBlock(parent)
 {
     m_blockData = std::unique_ptr<BlockData>(new BlockData);
     setBlock({ 2, "Настроечные параметры", DataTypes::DataBlockTypes::BacBlock, m_blockData.get(), sizeof(BlockData) });
     readBlockFromModule();
 }
 
-void Bac::createWidget()
+void Bac82::createWidget()
 {
     //    QString ValuesFormat = "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; color: black;"
     //                           "background-color: "
@@ -165,7 +165,7 @@ void Bac::createWidget()
     //    return m_widget;
 }
 
-void Bac::setDefBlock()
+void Bac82::setDefBlock()
 {
     m_blockData->Kinter = 0.0;
     m_blockData->K_freq = 1.0;
@@ -179,7 +179,7 @@ void Bac::setDefBlock()
     writeBlockToModule();
 }
 
-void Bac::updateWidget()
+void Bac82::updateWidget()
 {
     if (m_widgetIsSet)
     {
@@ -198,23 +198,23 @@ void Bac::updateWidget()
     }
 }
 
-void Bac::updateFromWidget()
+void Bac82::updateFromWidget()
 {
     if (m_widgetIsSet)
     {
         for (int i = 0; i < 6; i++)
         {
-            m_blockData->KmU[i] = StdFunc::toFloat(WDFunc::LEData(this, "tune" + QString::number(i)));
-            m_blockData->KmI_5[i] = StdFunc::toFloat(WDFunc::LEData(this, "tune" + QString::number(i + 6)));
-            m_blockData->KmI_1[i] = StdFunc::toFloat(WDFunc::LEData(this, "tune" + QString::number(i + 12)));
-            m_blockData->DPsi[i] = StdFunc::toFloat(WDFunc::LEData(this, "tune" + QString::number(i + 18)));
+            m_blockData->KmU[i] = StdFunc::ToFloat(WDFunc::LEData(this, "tune" + QString::number(i)));
+            m_blockData->KmI_5[i] = StdFunc::ToFloat(WDFunc::LEData(this, "tune" + QString::number(i + 6)));
+            m_blockData->KmI_1[i] = StdFunc::ToFloat(WDFunc::LEData(this, "tune" + QString::number(i + 12)));
+            m_blockData->DPsi[i] = StdFunc::ToFloat(WDFunc::LEData(this, "tune" + QString::number(i + 18)));
         }
-        m_blockData->K_freq = StdFunc::toFloat(WDFunc::LEData(this, "tune24"));
-        m_blockData->Kinter = StdFunc::toFloat(WDFunc::LEData(this, "tune25"));
+        m_blockData->K_freq = StdFunc::ToFloat(WDFunc::LEData(this, "tune24"));
+        m_blockData->Kinter = StdFunc::ToFloat(WDFunc::LEData(this, "tune25"));
     }
 }
 
-Bac::BlockData *Bac::data()
+Bac82::BlockData *Bac82::data()
 {
     return m_blockData.get();
 }

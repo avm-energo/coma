@@ -1,3 +1,5 @@
+#pragma once
+
 #include "bda.h"
 
 #include "../../gen/colors.h"
