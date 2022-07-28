@@ -22,12 +22,12 @@ void XmlMeasJourDialog::setupUI(QStringList &selectedData)
 
     // Окно для создания item-а
     if (selectedData.isEmpty())
-        setWindowTitle("Создание события журнала измерений");
+        setTitle("Создание события журнала измерений");
     // Окно для редактирования item-а
     else
     {
         Q_ASSERT(selectedData.size() == 1);
-        setWindowTitle("Редактирование события журнала измерений");
+        setTitle("Редактирование события журнала измерений");
         headInput->setText(selectedData[0]);
     }
 

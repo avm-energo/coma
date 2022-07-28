@@ -32,12 +32,12 @@ void XmlWorkJourDialog::setupUI(QStringList &selectedData)
 
     // Окно для создания item-а
     if (selectedData.isEmpty())
-        setWindowTitle("Создание события рабочего журнала");
+        setTitle("Создание события рабочего журнала");
     // Окно для редактирования item-а
     else
     {
         Q_ASSERT(selectedData.size() == 2);
-        setWindowTitle("Редактирование события рабочего журнала");
+        setTitle("Редактирование события рабочего журнала");
         addrInput->setText(selectedData[0]);
         descInput->setText(selectedData[1]);
     }

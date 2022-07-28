@@ -6,7 +6,7 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 find_package(
   Qt${QT_VERSION_MAJOR}
-  COMPONENTS Core Xml Widgets
+  COMPONENTS Core Network Xml Widgets
   REQUIRED)
 
 file(GLOB_RECURSE files_cpp ${PROJECT_SOURCE_DIR}/*.cpp)
@@ -19,10 +19,7 @@ add_library(
 
 target_link_libraries(
   ${PROJECT_NAME}
-  PRIVATE gen
-  PRIVATE s2
-  # TODO: Remove this dependence
-  PRIVATE interfaces
+  PRIVATE widgets
   PRIVATE Qt${QT_VERSION_MAJOR}::Core
   PRIVATE Qt${QT_VERSION_MAJOR}::Network
   PRIVATE Qt${QT_VERSION_MAJOR}::Widgets

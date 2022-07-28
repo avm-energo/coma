@@ -15,10 +15,12 @@
 #include <QLineEdit>
 #include <QPushButton>
 #include <QRadioButton>
+
 class PasswordLineEdit;
 class QMainWindow;
 class QStatusBar;
 class QWidget;
+
 class WDFunc
 {
 public:
@@ -119,6 +121,7 @@ public:
         spbg->setValue(std::vector<float>(spbvalue.cbegin(), spbvalue.cend()));
         return true;
     }
+
     template <typename T>
     static bool SetSPBGData(const QWidget *w, const QString &spbname, const std::vector<T> &spbvalue)
     {
@@ -128,6 +131,7 @@ public:
         spbg->setValue(spbvalue);
         return true;
     }
+
     template <typename T> static bool SetSPBGData(const QWidget *w, const QString &spbname, const QList<T> &spbvalue)
     {
         auto *spbg = dynamic_cast<DoubleSpinBoxGroup *>(w->findChild<QWidget *>(spbname));
@@ -136,6 +140,7 @@ public:
         spbg->setValue(spbvalue.toVector().toStdVector());
         return true;
     }
+
     template <typename T> static bool SPBData(const QObject *w, const QString &spbname, T &spbvalue)
     {
         QDoubleSpinBox *spb = w->findChild<QDoubleSpinBox *>(spbname);
@@ -147,6 +152,7 @@ public:
         spbvalue = spb->value();
         return true;
     }
+
     template <typename T> static T SPBData(const QObject *w, const QString &spbname)
     {
         QDoubleSpinBox *spb = w->findChild<QDoubleSpinBox *>(spbname);
@@ -157,6 +163,7 @@ public:
         }
         return T(spb->value());
     }
+
     template <size_t N, typename T>
     static bool SPBGData(const QWidget *w, const QString &spbname, std::array<T, N> &spbvalue)
     {
@@ -171,6 +178,7 @@ public:
         // spbvalue = spbg->value();
         return true;
     }
+
     static bool SetLEColor(QWidget *w, const QString &lename, const QColor &color);
     [[deprecated("Use instead second version with global style sheet")]] static QLabel *NewLBL(QWidget *w,
         const QString &text, const QString &lblcolor = "", const QString &lblname = "", const QPixmap *pm = Q_NULLPTR,
@@ -203,6 +211,7 @@ public:
         data = chb->isChecked();
         return true;
     }
+
     template <typename T, std::enable_if_t<std::is_unsigned_v<T> || std_ext::is_container<T>::value, bool> = true>
     static bool ChBGData(const QWidget *w, const QString &chbname, T &data)
     {
@@ -212,6 +221,7 @@ public:
         data = checkBoxGroup->bits<std::remove_reference_t<decltype(data)>>();
         return true;
     }
+
     static bool SetChBData(QWidget *w, const QString &chbname, bool data);
 
     template <typename T, std::enable_if_t<std::is_unsigned_v<T> || std_ext::is_container<T>::value, bool> = true>
@@ -227,6 +237,7 @@ public:
         checkBoxGroup->setBits(data);
         return true;
     }
+
     static bool RBData(QWidget *w, const QString &rbname, bool &data);
     static bool SetRBData(QWidget *w, const QString &rbname, bool data);
     static bool SetIPCtrlData(const QObject *w, const QString &name, const std::array<quint8, 4> &value);
@@ -266,6 +277,7 @@ public:
         QObject::connect(pb, &QPushButton::clicked, receiver, method);
         return pb;
     }
+
     template <typename Functor>
     inline static QPushButton *NewPB(QWidget *parent, const QString &pbname, const QString &text, Functor &&functor,
         const QString &icon = "", const QString &pbtooltip = "")
@@ -274,6 +286,7 @@ public:
         QObject::connect(pb, &QPushButton::clicked, functor);
         return pb;
     }
+
     template <typename Functor>
     inline static QPushButton *NewPB(QWidget *parent, const QString &pbname, const QString &text, QObject *context,
         Functor &&functor, const QString &icon = "", const QString &pbtooltip = "")
@@ -290,6 +303,7 @@ public:
         if (pb != nullptr)
             QObject::connect(pb, &QPushButton::clicked, context, functor);
     }
+
     template <typename Object>
     inline static void PBConnect(
         QWidget *parent, const QString &pbname, const Object *receiver, void (Object::*method)())

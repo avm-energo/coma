@@ -35,6 +35,12 @@ void XmlDialog::reject()
     QDialog::reject();
 }
 
+void XmlDialog::setTitle(const QString title)
+{
+    mTitle = title;
+    setWindowTitle(mTitle);
+}
+
 /// \brief Функция возвращает список с данными указанной строки из модели
 QStringList XmlDialog::getSelectedData()
 {
@@ -105,7 +111,7 @@ void XmlDialog::dataChanged()
 {
     // Если появились изменения, меняем заголовок окна
     if (!isChanged)
-        setWindowTitle(windowTitle() + " [ИЗМЕНЕНО]");
+        setWindowTitle(mTitle + " [ИЗМЕНЕНО]");
     // Изменяем состояние (данные изменены)
     isChanged = true;
 }
@@ -122,9 +128,7 @@ void XmlDialog::saveData()
         // Изменяем состояние (данные сохранены, следовательно не изменены)
         isChanged = false;
         // После сохранения изменений в модель меняем заголовок окна
-        auto curTitle = windowTitle();
-        curTitle = curTitle.left(curTitle.lastIndexOf(" [ИЗМЕНЕНО]"));
-        setWindowTitle(curTitle);
+        setWindowTitle(mTitle);
     }
 }
 

@@ -60,70 +60,52 @@ bool EMessageBox::m_result = false;
 void EMessageBox::information(QWidget *parent, const QString &msg)
 {
     m_result = false;
-    ESimplePopup *dlg = new ESimplePopup(ESimplePopup::INFOMESSAGE, msg, parent);
-    dlg->show();
-    QEventLoop loop;
-    QObject::connect(dlg, &ESimplePopup::destroyed, &loop, &QEventLoop::quit);
-    loop.exec();
+    auto dlg = new ESimplePopup(ESimplePopup::INFOMESSAGE, msg, parent);
+    dlg->exec();
 }
 
 bool EMessageBox::question(const QString &msg)
 {
     m_result = false;
-    ESimplePopup *dlg = new ESimplePopup(ESimplePopup::QUESTMSG, msg);
+    auto dlg = new ESimplePopup(ESimplePopup::QUESTMSG, msg);
     QObject::connect(dlg, &ESimplePopup::accepted, [] { m_result = true; });
     QObject::connect(dlg, &ESimplePopup::cancelled, [] { m_result = false; });
-    dlg->show();
-    QEventLoop loop;
-    QObject::connect(dlg, &ESimplePopup::destroyed, &loop, &QEventLoop::quit);
-    loop.exec();
+    dlg->exec();
     return m_result;
 }
 
 void EMessageBox::warning(QWidget *parent, const QString &msg)
 {
     m_result = false;
-    ESimplePopup *dlg = new ESimplePopup(ESimplePopup::WARNMESSAGE, WDFunc::NewLBL2(parent, msg), parent);
-    dlg->show();
-    QEventLoop loop;
-    QObject::connect(dlg, &ESimplePopup::destroyed, &loop, &QEventLoop::quit);
-    loop.exec();
+    auto dlg = new ESimplePopup(ESimplePopup::WARNMESSAGE, WDFunc::NewLBL2(parent, msg), parent);
+    dlg->exec();
 }
 
 void EMessageBox::error(QWidget *parent, const QString &msg)
 {
     m_result = false;
-    ESimplePopup *dlg = new ESimplePopup(ESimplePopup::ERMESSAGE, msg, parent);
+    auto dlg = new ESimplePopup(ESimplePopup::ERMESSAGE, msg, parent);
     dlg->setWindowFlag(Qt::WindowStaysOnTopHint, true);
-    dlg->show();
-    QEventLoop loop;
-    QObject::connect(dlg, &ESimplePopup::destroyed, &loop, &QEventLoop::quit);
-    loop.exec();
+    dlg->exec();
 }
 
 bool EMessageBox::next(QWidget *parent, const QString &msg)
 {
     m_result = false;
-    ESimplePopup *dlg = new ESimplePopup(ESimplePopup::NEXTMSG, msg, parent);
-    QObject::connect(dlg, &ESimplePopup::accepted, [] { m_result = true; });
-    QObject::connect(dlg, &ESimplePopup::cancelled, [] { m_result = false; });
-    dlg->show();
-    QEventLoop loop;
-    QObject::connect(dlg, &ESimplePopup::destroyed, &loop, &QEventLoop::quit);
-    loop.exec();
+    auto dlg = new ESimplePopup(ESimplePopup::NEXTMSG, msg, parent);
+    QObject::connect(dlg, &ESimplePopup::accepted, [&] { m_result = true; });
+    QObject::connect(dlg, &ESimplePopup::cancelled, [&] { m_result = false; });
+    dlg->exec();
     return m_result;
 }
 
 bool EMessageBox::next(QWidget *parent, QWidget *w)
 {
     m_result = false;
-    ESimplePopup *dlg = new ESimplePopup(ESimplePopup::NEXTMSG, w, parent);
+    auto dlg = new ESimplePopup(ESimplePopup::NEXTMSG, w, parent);
     QObject::connect(dlg, &ESimplePopup::accepted, [] { m_result = true; });
     QObject::connect(dlg, &ESimplePopup::cancelled, [] { m_result = false; });
-    dlg->show();
-    QEventLoop loop;
-    QObject::connect(dlg, &ESimplePopup::destroyed, &loop, &QEventLoop::quit);
-    loop.exec();
+    dlg->exec();
     return m_result;
 }
 
@@ -133,18 +115,15 @@ bool EMessageBox::editableNext(EEditablePopup *popup)
     popup->execPopup();
     QObject::connect(popup, &EPopup::accepted, [] { m_result = true; });
     QObject::connect(popup, &EPopup::cancelled, [] { m_result = false; });
-    QEventLoop loop;
-    QObject::connect(popup, &EPopup::destroyed, &loop, &QEventLoop::quit);
-    loop.exec();
     return m_result;
 }
 
 void EMessageBox::infoWithoutButtons(QWidget *parent, const QString &msg, int timeout)
 {
     m_result = false;
-    ESimplePopup *dlg = new ESimplePopup(ESimplePopup::WITHOUTANYBUTTONS, msg, parent);
+    auto dlg = new ESimplePopup(ESimplePopup::WITHOUTANYBUTTONS, msg, parent);
     dlg->show();
-    QTimer *tmr = new QTimer();
+    auto tmr = new QTimer(parent);
     tmr->setInterval(timeout * 1000);
     tmr->setSingleShot(true);
     QObject::connect(tmr, &QTimer::timeout, [&] { dlg->close(); });
@@ -159,7 +138,7 @@ EPopup::EPopup(QWidget *parent) : QDialog(parent)
 
 void EPopup::aboutToClose()
 {
-    QPropertyAnimation *anim = new QPropertyAnimation(this, "windowOpacity");
+    auto anim = new QPropertyAnimation(this, "windowOpacity");
     anim->setStartValue(1.0);
     anim->setEndValue(0.0);
     anim->setDuration(500);
@@ -173,8 +152,7 @@ void EPopup::aboutToClose()
 void EPopup::showEvent(QShowEvent *e)
 {
     QDialog::showEvent(e);
-
-    QPropertyAnimation *anim = new QPropertyAnimation(this, "windowOpacity");
+    auto anim = new QPropertyAnimation(this, "windowOpacity");
     anim->setStartValue(0.0);
     anim->setEndValue(1.0);
     anim->setDuration(750);
@@ -217,13 +195,13 @@ void EEditablePopup::addFloatParameter(const QString &name, float &parameter)
 
 void EEditablePopup::execPopup()
 {
-    QVBoxLayout *lyout = new QVBoxLayout;
+    auto lyout = new QVBoxLayout;
     lyout->addWidget(WDFunc::NewLBL2(this, caption));
-    QHBoxLayout *hlyout;
+    // QHBoxLayout *hlyout;
     for (std::map<QString, std::unique_ptr<float>>::iterator it = m_floatParList.begin(); it != m_floatParList.end();
          ++it)
         lyout->addWidget(WDFunc::NewLBLAndLE(this, it->first, it->first, true));
-    hlyout = new QHBoxLayout;
+    auto hlyout = new QHBoxLayout;
     hlyout->addStretch(100);
     hlyout->addWidget(WDFunc::NewPB(this, "", "Далее", this, &EEditablePopup::acceptSlot));
     hlyout->addStretch(5);
@@ -231,7 +209,7 @@ void EEditablePopup::execPopup()
     hlyout->addStretch(100);
     lyout->addLayout(hlyout);
     setLayout(lyout);
-    show();
+    exec();
 }
 
 void EEditablePopup::acceptSlot()
@@ -239,10 +217,10 @@ void EEditablePopup::acceptSlot()
     for (std::map<QString, std::unique_ptr<float>>::iterator it = m_floatParList.begin(); it != m_floatParList.end();
          ++it)
     {
-        bool ok;
+        bool isOk = false;
         float fl;
-        fl = WDFunc::LEData(this, it->first).toFloat(&ok);
-        if (ok)
+        fl = WDFunc::LEData(this, it->first).toFloat(&isOk);
+        if (isOk)
             *it->second = fl;
         else
         {

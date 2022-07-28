@@ -50,12 +50,12 @@ void Xml104Dialog::setupUI(QStringList &selectedData)
 
     // Окно для создания item-а
     if (selectedData.isEmpty())
-        setWindowTitle("Создание элемента IEC60870");
+        setTitle("Создание элемента IEC60870");
     // Окно для редактирования item-а
     else
     {
         Q_ASSERT(selectedData.size() == 4);
-        setWindowTitle("Редактирование элемента IEC60870");
+        setTitle("Редактирование элемента IEC60870");
         sigIdInput->setText(selectedData[0]);
         sigTypeInput->setText(selectedData[1]);
         transTypeInput->setText(selectedData[2]);

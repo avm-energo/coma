@@ -35,7 +35,7 @@
 
 QLineEdit *WDFunc::NewLE2(QWidget *w, const QString &lename, const QString &letext, const QString &tooltip)
 {
-    QLineEdit *le = new QLineEdit(w);
+    auto le = new QLineEdit(w);
     le->setObjectName(lename);
     le->setText(letext);
     le->setToolTip(tooltip);
@@ -44,14 +44,14 @@ QLineEdit *WDFunc::NewLE2(QWidget *w, const QString &lename, const QString &lete
 
 PasswordLineEdit *WDFunc::NewPswLE2(QWidget *w, const QString &lename, QLineEdit::EchoMode echostyle)
 {
-    PasswordLineEdit *le = new PasswordLineEdit(echostyle, w);
+    auto le = new PasswordLineEdit(echostyle, w);
     le->setObjectName(lename);
     return le;
 }
 
 QString WDFunc::LEData(QObject *w, const QString &lename)
 {
-    QLineEdit *le = w->findChild<QLineEdit *>(lename);
+    auto le = w->findChild<QLineEdit *>(lename);
     if (le == nullptr)
         return QString();
     return le->text();
@@ -59,7 +59,7 @@ QString WDFunc::LEData(QObject *w, const QString &lename)
 
 bool WDFunc::SetLEData(QObject *w, const QString &lename, const QString &levalue, const QString &restring)
 {
-    QLineEdit *le = w->findChild<QLineEdit *>(lename);
+    auto le = w->findChild<QLineEdit *>(lename);
     if (le == nullptr)
         return false;
     le->setText(levalue);
@@ -67,7 +67,7 @@ bool WDFunc::SetLEData(QObject *w, const QString &lename, const QString &levalue
     {
         QRegExp re;
         re.setPattern(restring);
-        QValidator *val = new QRegExpValidator(re, w);
+        auto val = new QRegExpValidator(re, w);
         le->setValidator(val);
     }
     return true;
@@ -75,11 +75,11 @@ bool WDFunc::SetLEData(QObject *w, const QString &lename, const QString &levalue
 
 bool WDFunc::SetLEColor(QWidget *w, const QString &lename, const QColor &color)
 {
-    QLineEdit *le = w->findChild<QLineEdit *>(lename);
+    auto le = w->findChild<QLineEdit *>(lename);
     if (le == nullptr)
         return false;
     // http://forum.sources.ru/index.php?showtopic=313950
-    QPalette pal = le->palette();
+    auto pal = le->palette();
     pal.setColor(QPalette::Text, color);
     le->setPalette(pal);
     return true;
@@ -88,16 +88,16 @@ bool WDFunc::SetLEColor(QWidget *w, const QString &lename, const QColor &color)
 QLabel *WDFunc::NewLBL(QWidget *w, const QString &text, const QString &lblcolor, const QString &lblname,
     const QPixmap *pm, const QString &lbltip)
 {
-    QLabel *lbl = new QLabel(w);
+    auto lbl = new QLabel(w);
     lbl->setText(text);
     if (!lblname.isEmpty())
         lbl->setObjectName(lblname);
     if (!lblcolor.isEmpty())
     {
-        QString tmps = "QLabel {background-color: " + lblcolor + ";}";
+        auto tmps = "QLabel {background-color: " + lblcolor + ";}";
         lbl->setStyleSheet(tmps);
     }
-    if (pm != Q_NULLPTR)
+    if (pm != nullptr)
         lbl->setPixmap(*pm);
     lbl->setToolTip(lbltip);
     return lbl;
@@ -106,11 +106,11 @@ QLabel *WDFunc::NewLBL(QWidget *w, const QString &text, const QString &lblcolor,
 QLabel *WDFunc::NewLBL2(
     QWidget *w, const QString &text, const QString &lblname, const QPixmap *pm, const QString &lbltip)
 {
-    QLabel *lbl = new QLabel(w);
+    auto lbl = new QLabel(w);
     lbl->setText(text);
     if (!lblname.isEmpty())
         lbl->setObjectName(lblname);
-    if (pm != Q_NULLPTR)
+    if (pm != nullptr)
         lbl->setPixmap(*pm);
     lbl->setToolTip(lbltip);
     return lbl;
@@ -421,6 +421,7 @@ void WDFunc::TVAutoResize(QWidget *w, const QString &tvname)
 QVariant WDFunc::TVData(QWidget *w, const QString &tvname, int column)
 {
     QString tmps;
+    Q_UNUSED(tmps);
     ETableView *tv = w->findChild<ETableView *>(tvname);
     if (tv == nullptr)
         return QVariant();

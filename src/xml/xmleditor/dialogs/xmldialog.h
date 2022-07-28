@@ -16,6 +16,7 @@ class XmlDialog : public QDialog
 {
     Q_OBJECT
 protected:
+    QString mTitle;
     XmlSortProxyModel *mModel;
     bool isChanged;
     int mRow;
@@ -27,10 +28,10 @@ protected:
 public:
     explicit XmlDialog() = delete;
     explicit XmlDialog(XmlSortProxyModel *model, QWidget *parent);
-    virtual void reject() override;
-
     void setupUICall(int &row);
     void writeData(QStringList &saved);
+    void setTitle(const QString title);
+    virtual void reject() override;
 
     /// \brief Виртуальный метод для создания UI диалога (виджетов)
     virtual void setupUI(QStringList &selectedData) = 0;

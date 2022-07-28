@@ -29,8 +29,6 @@ public:
     virtual bool remove(int row) override;
 };
 
-QString accumulateStr(QStringList &src);
-QStringList deaccumulateStr(const QString &src);
 SGroupHideData convertHideData(QStringList &input);
 
 #endif // XMLSGROUPMODEL_H

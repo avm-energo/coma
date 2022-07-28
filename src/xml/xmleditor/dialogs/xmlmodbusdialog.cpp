@@ -52,12 +52,12 @@ void XmlModbusDialog::setupUI(QStringList &selectedData)
 
     // Окно для создания item-а
     if (selectedData.isEmpty())
-        setWindowTitle("Создание элемента Modbus");
+        setTitle("Создание элемента Modbus");
     // Окно для редактирования item-а
     else
     {
         Q_ASSERT(selectedData.size() == 4);
-        setWindowTitle("Редактирование элемента Modbus");
+        setTitle("Редактирование элемента Modbus");
         sigIdInput->setText(selectedData[0]);
         regTypeInput->setText(selectedData[1]);
         type->setCurrentText(selectedData[2]);

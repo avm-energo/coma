@@ -31,12 +31,12 @@ void XmlSGroupDialog::setupUI(QStringList &selectedData)
 
     // Окно для создания item-а
     if (selectedData.isEmpty())
-        setWindowTitle("Создание группы");
+        setTitle("Создание группы");
     // Окно для редактирования item-а
     else
     {
         Q_ASSERT(selectedData.size() == 2);
-        setWindowTitle("Редактирование группы");
+        setTitle("Редактирование группы");
         nameInput->setText(selectedData[0]);
         idTab->setText(selectedData[1]);
     }

@@ -42,12 +42,12 @@ void XmlSignalDialog::setupUI(QStringList &selectedData)
 
     // Окно для создания item-а
     if (selectedData.isEmpty())
-        setWindowTitle("Создание группы сигналов");
+        setTitle("Создание группы сигналов");
     // Окно для редактирования item-а
     else
     {
         Q_ASSERT(selectedData.size() == 3);
-        setWindowTitle("Редактирование группы сигналов");
+        setTitle("Редактирование группы сигналов");
         idInput->setText(selectedData[0]);
         addrInput->setText(selectedData[1]);
         countInput->setText(selectedData[2]);

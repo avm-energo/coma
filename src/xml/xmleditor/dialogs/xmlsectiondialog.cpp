@@ -22,12 +22,12 @@ void XmlSectionDialog::setupUI(QStringList &selectedData)
 
     // Окно для создания item-а
     if (selectedData.isEmpty())
-        setWindowTitle("Создание раздела");
+        setTitle("Создание раздела");
     // Окно для редактирования item-а
     else
     {
         Q_ASSERT(selectedData.size() == 1);
-        setWindowTitle("Редактирование раздела");
+        setTitle("Редактирование раздела");
         nameInput->setText(selectedData[0]);
     }
 

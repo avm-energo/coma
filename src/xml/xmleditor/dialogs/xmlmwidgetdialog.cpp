@@ -59,19 +59,19 @@ void XmlMWidgetDialog::setupUI(QStringList &selectedData)
 
     // Окно для создания item-а
     if (selectedData.isEmpty())
-        setWindowTitle("Создание описания мульти-виджета");
+        setTitle("Создание описания мульти-виджета");
     // Окно для редактирования item-а
     else
     {
         Q_ASSERT(selectedData.size() == 2);
-        setWindowTitle("Редактирование описания мульти-виджета");
+        setTitle("Редактирование описания мульти-виджета");
         desc->setText(selectedData[0]);
         startAddr->setText(selectedData[1]);
         auto qvarData = mModel->data(mModel->index(mRow, 0), SGroupDataRole);
         auto mWidgetData = qvarData.value<SGroupHideData>();
         count->setText(QString::number(mWidgetData.count));
         tooltip->setText(mWidgetData.tooltip);
-        strArray->setText(accumulateStr(mWidgetData.array));
+        strArray->setText(mWidgetData.array.join(','));
     }
 
     // Добавляем слои на главный слой
@@ -99,9 +99,7 @@ void XmlMWidgetDialog::saveData()
         // Изменяем состояние (данные сохранены, следовательно не изменены)
         isChanged = false;
         // После сохранения изменений в модель меняем заголовок окна
-        auto curTitle = windowTitle();
-        curTitle = curTitle.left(curTitle.lastIndexOf(" [ИЗМЕНЕНО]"));
-        setWindowTitle(curTitle);
+        setWindowTitle(mTitle);
     }
 }
 

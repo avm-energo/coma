@@ -1,5 +1,6 @@
 #include "dialogfabric.h"
 
+#include "../../../widgets/epopup.h"
 #include "../models/xmlmodel.h"
 #include "xml104dialog.h"
 #include "xmlalarmdialog.h"
@@ -21,70 +22,83 @@ namespace Helper
 constexpr auto edit = 0;   ///< Константа для указания редактирования
 constexpr auto remove = 1; ///< Константа для указания удаления
 
+/*
 /// \brief Вспомогательная функция для вывода MessageBox с Warning сообщением
 inline void WarningMessage(QString &&text, QWidget *parent = nullptr)
 {
     QMessageBox::warning(parent, "Ошибка", text, //
         QMessageBox::Ok, QMessageBox::Ok);
 }
+*/
 }
 
-void XmlDialogFabric::Dialog(XmlSortProxyModel *model, int row, QWidget *parent)
+void XmlDialogFabric::CreateOrEditDialog(XmlSortProxyModel *model, int row, QWidget *parent)
 {
-    XmlDialog *dialog = nullptr;
-    auto type = qobject_cast<XmlModel *>(model->sourceModel())->getModelType();
-    switch (type)
+    if (model != nullptr)
     {
-    case ModelType::AlarmsItem:
-        dialog = new XmlAlarmDialog(model, parent);
-        break;
-    case ModelType::Signals:
-        dialog = new XmlSignalDialog(model, parent);
-        break;
-    case ModelType::SectionTabs:
-        dialog = new XmlSTabDialog(model, parent);
-        break;
-    case ModelType::WorkJours:
-        dialog = new XmlWorkJourDialog(model, parent);
-        break;
-    case ModelType::MeasJours:
-        dialog = new XmlMeasJourDialog(model, parent);
-        break;
-    case ModelType::Modbus:
-        dialog = new XmlModbusDialog(model, parent);
-        break;
-    case ModelType::Protocom:
-        dialog = new XmlProtocomDialog(model, parent);
-        break;
-    case ModelType::IEC60870:
-        dialog = new Xml104Dialog(model, parent);
-        break;
-    case ModelType::Config:
-        dialog = new XmlConfigDialog(model, parent);
-        break;
-    case ModelType::Sections:
-        dialog = new XmlSectionDialog(model, parent);
-        break;
-    case ModelType::Section:
-        dialog = new XmlSGroupDialog(model, parent);
-        break;
-    case ModelType::SGroup:
-        dialog = new XmlMWidgetDialog(model, parent);
-        break;
-    default:
-        if (row == createId)
-            Helper::WarningMessage("В данном разделе запрещено создание новых элементов", parent);
+        auto srcModel = qobject_cast<XmlModel *>(model->sourceModel());
+        if (srcModel != nullptr)
+        {
+            XmlDialog *dialog = nullptr;
+            auto type = srcModel->getModelType();
+            switch (type)
+            {
+            case ModelType::AlarmsItem:
+                dialog = new XmlAlarmDialog(model, parent);
+                break;
+            case ModelType::Signals:
+                dialog = new XmlSignalDialog(model, parent);
+                break;
+            case ModelType::SectionTabs:
+                dialog = new XmlSTabDialog(model, parent);
+                break;
+            case ModelType::WorkJours:
+                dialog = new XmlWorkJourDialog(model, parent);
+                break;
+            case ModelType::MeasJours:
+                dialog = new XmlMeasJourDialog(model, parent);
+                break;
+            case ModelType::Modbus:
+                dialog = new XmlModbusDialog(model, parent);
+                break;
+            case ModelType::Protocom:
+                dialog = new XmlProtocomDialog(model, parent);
+                break;
+            case ModelType::IEC60870:
+                dialog = new Xml104Dialog(model, parent);
+                break;
+            case ModelType::Config:
+                dialog = new XmlConfigDialog(model, parent);
+                break;
+            case ModelType::Sections:
+                dialog = new XmlSectionDialog(model, parent);
+                break;
+            case ModelType::Section:
+                dialog = new XmlSGroupDialog(model, parent);
+                break;
+            case ModelType::SGroup:
+                dialog = new XmlMWidgetDialog(model, parent);
+                break;
+            default:
+                if (row == createId)
+                    EMessageBox::warning(parent, "В данном разделе запрещено создание новых элементов");
+                else
+                    EMessageBox::warning(parent, "Выбран недопустимый элемент");
+                break;
+            }
+            if (dialog != nullptr)
+            {
+                dialog->setupUICall(row);
+            }
+        }
         else
-            Helper::WarningMessage("Выбран недопустимый элемент", parent);
-        break;
+            EMessageBox::warning(parent, "Не выбрана модель");
     }
-    if (dialog != nullptr)
-    {
-        dialog->setupUICall(row);
-    }
+    else
+        EMessageBox::warning(parent, "Не выбрана модель");
 }
 
-void XmlDialogFabric::Dialog(XmlSortProxyModel *model, QModelIndexList &selected, QWidget *parent, int type)
+void XmlDialogFabric::RemoveOrEditDialog(XmlSortProxyModel *model, QModelIndexList &selected, QWidget *parent, int type)
 {
     if (!selected.isEmpty())
     {
@@ -93,12 +107,12 @@ void XmlDialogFabric::Dialog(XmlSortProxyModel *model, QModelIndexList &selected
         if (str != "..")
         {
             if (type == Helper::edit)
-                Dialog(model, row, parent);
+                CreateOrEditDialog(model, row, parent);
             else
             {
                 auto modelType = qobject_cast<XmlModel *>(model->sourceModel())->getModelType();
                 if (modelType == ModelType::Resources || modelType == ModelType::Alarms)
-                    Helper::WarningMessage("Выбран недопустимый элемент", parent);
+                    EMessageBox::warning(parent, "Выбран недопустимый элемент");
                 else
                 {
                     auto resBtn = QMessageBox::question(parent, "Удаление", "Удалить выбранный элемент?",
@@ -109,23 +123,23 @@ void XmlDialogFabric::Dialog(XmlSortProxyModel *model, QModelIndexList &selected
             }
         }
         else
-            Helper::WarningMessage("Выбран недопустимый элемент", parent);
+            EMessageBox::warning(parent, "Выбран недопустимый элемент");
     }
     else
-        Helper::WarningMessage("Не выбран элемент", parent);
+        EMessageBox::warning(parent, "Не выбран элемент");
 }
 
 void XmlDialogFabric::CreateDialog(XmlSortProxyModel *model, QWidget *parent)
 {
-    Dialog(model, createId, parent);
+    CreateOrEditDialog(model, createId, parent);
 }
 
 void XmlDialogFabric::EditDialog(XmlSortProxyModel *model, QModelIndexList &selected, QWidget *parent)
 {
-    Dialog(model, selected, parent, Helper::edit);
+    RemoveOrEditDialog(model, selected, parent, Helper::edit);
 }
 
 void XmlDialogFabric::RemoveDialog(XmlSortProxyModel *model, QModelIndexList &selected, QWidget *parent)
 {
-    Dialog(model, selected, parent, Helper::remove);
+    RemoveOrEditDialog(model, selected, parent, Helper::remove);
 }

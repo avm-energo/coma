@@ -30,12 +30,12 @@ void XmlSTabDialog::setupUI(QStringList &selectedData)
 
     // Окно для создания item-а
     if (selectedData.isEmpty())
-        setWindowTitle("Создание вкладки");
+        setTitle("Создание вкладки");
     // Окно для редактирования item-а
     else
     {
         Q_ASSERT(selectedData.size() == 2);
-        setWindowTitle("Редактирование вкладки");
+        setTitle("Редактирование вкладки");
         idInput->setText(selectedData[0]);
         nameInput->setText(selectedData[1]);
     }

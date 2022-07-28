@@ -31,12 +31,12 @@ void XmlAlarmDialog::setupUI(QStringList &selectedData)
 
     // Окно для создания item-а
     if (selectedData.isEmpty())
-        setWindowTitle("Создание сигнализации");
+        setTitle("Создание сигнализации");
     // Окно для редактирования item-а
     else
     {
         Q_ASSERT(selectedData.size() == 2);
-        setWindowTitle("Редактирование сигнализации");
+        setTitle("Редактирование сигнализации");
         descInput->setText(selectedData[0]);
         addrInput->setText(selectedData[1]);
     }

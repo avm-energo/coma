@@ -33,12 +33,12 @@ void XmlProtocomDialog::setupUI(QStringList &selectedData)
 
     // Окно для создания item-а
     if (selectedData.isEmpty())
-        setWindowTitle("Создание элемента Protocom");
+        setTitle("Создание элемента Protocom");
     // Окно для редактирования item-а
     else
     {
         Q_ASSERT(selectedData.size() == 2);
-        setWindowTitle("Редактирование элемента Protocom");
+        setTitle("Редактирование элемента Protocom");
         blockInput->setText(selectedData[0]);
         sigIdInput->setText(selectedData[1]);
     }

@@ -83,41 +83,6 @@ SGroupHideData XmlSGroupModel::parseHideData(QDomNode &node)
     return retVal;
 }
 
-QString accumulateStr(QStringList &src)
-{
-    QString result = "";
-    if (!src.isEmpty())
-    {
-        auto last = src.last();
-        for (auto &str : src)
-        {
-            result += str;
-            if (str != last)
-                result += ',';
-        }
-    }
-    return result;
-}
-
-QStringList deaccumulateStr(const QString &src)
-{
-    QStringList result = {};
-    if (src.length() > 0)
-    {
-        auto copy = src;
-        while (copy.length() > 0)
-        {
-            auto index = copy.indexOf(',');
-            auto item = copy.left(index);
-            result.append(item);
-            if (index == -1)
-                break;
-            copy = copy.right(copy.length() - (index + 1));
-        }
-    }
-    return result;
-}
-
 SGroupHideData convertHideData(QStringList &input)
 {
     SGroupHideData hiding;
@@ -126,6 +91,6 @@ SGroupHideData convertHideData(QStringList &input)
     if (state)
         hiding.count = count;
     hiding.tooltip = input[1];
-    hiding.array = deaccumulateStr(input[2]);
+    hiding.array = input[2].split(',');
     return hiding;
 }
