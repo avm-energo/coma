@@ -11,9 +11,16 @@ private:
 
 public:
     explicit XmlDialogFabric() = delete;
+
+    // Items в Slave View
     static void CreateDialog(XmlSortProxyModel *model, QWidget *parent = nullptr);
     static void EditDialog(XmlSortProxyModel *model, QModelIndexList &selected, QWidget *parent = nullptr);
     static void RemoveDialog(XmlSortProxyModel *model, QModelIndexList &selected, QWidget *parent = nullptr);
+
+    // Modules в Master View
+    static void CreateModuleDialog();
+    static void EditModuleDialog();
+    static void RemoveModuleDialog();
 };
 
 #endif // XMLDIALOGFABRIC_H

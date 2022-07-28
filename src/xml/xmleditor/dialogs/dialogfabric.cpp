@@ -21,78 +21,64 @@ namespace Helper
 {
 constexpr auto edit = 0;   ///< Константа для указания редактирования
 constexpr auto remove = 1; ///< Константа для указания удаления
-
-/*
-/// \brief Вспомогательная функция для вывода MessageBox с Warning сообщением
-inline void WarningMessage(QString &&text, QWidget *parent = nullptr)
-{
-    QMessageBox::warning(parent, "Ошибка", text, //
-        QMessageBox::Ok, QMessageBox::Ok);
-}
-*/
 }
 
 void XmlDialogFabric::CreateOrEditDialog(XmlSortProxyModel *model, int row, QWidget *parent)
 {
-    if (model != nullptr)
+    auto srcModel = qobject_cast<XmlModel *>(model->sourceModel());
+    if (srcModel != nullptr)
     {
-        auto srcModel = qobject_cast<XmlModel *>(model->sourceModel());
-        if (srcModel != nullptr)
+        XmlDialog *dialog = nullptr;
+        auto type = srcModel->getModelType();
+        switch (type)
         {
-            XmlDialog *dialog = nullptr;
-            auto type = srcModel->getModelType();
-            switch (type)
-            {
-            case ModelType::AlarmsItem:
-                dialog = new XmlAlarmDialog(model, parent);
-                break;
-            case ModelType::Signals:
-                dialog = new XmlSignalDialog(model, parent);
-                break;
-            case ModelType::SectionTabs:
-                dialog = new XmlSTabDialog(model, parent);
-                break;
-            case ModelType::WorkJours:
-                dialog = new XmlWorkJourDialog(model, parent);
-                break;
-            case ModelType::MeasJours:
-                dialog = new XmlMeasJourDialog(model, parent);
-                break;
-            case ModelType::Modbus:
-                dialog = new XmlModbusDialog(model, parent);
-                break;
-            case ModelType::Protocom:
-                dialog = new XmlProtocomDialog(model, parent);
-                break;
-            case ModelType::IEC60870:
-                dialog = new Xml104Dialog(model, parent);
-                break;
-            case ModelType::Config:
-                dialog = new XmlConfigDialog(model, parent);
-                break;
-            case ModelType::Sections:
-                dialog = new XmlSectionDialog(model, parent);
-                break;
-            case ModelType::Section:
-                dialog = new XmlSGroupDialog(model, parent);
-                break;
-            case ModelType::SGroup:
-                dialog = new XmlMWidgetDialog(model, parent);
-                break;
-            default:
-                if (row == createId)
-                    EMessageBox::warning(parent, "В данном разделе запрещено создание новых элементов");
-                else
-                    EMessageBox::warning(parent, "Выбран недопустимый элемент");
-                break;
-            }
-            if (dialog != nullptr)
-            {
-                dialog->setupUICall(row);
-            }
+        case ModelType::AlarmsItem:
+            dialog = new XmlAlarmDialog(model, parent);
+            break;
+        case ModelType::Signals:
+            dialog = new XmlSignalDialog(model, parent);
+            break;
+        case ModelType::SectionTabs:
+            dialog = new XmlSTabDialog(model, parent);
+            break;
+        case ModelType::WorkJours:
+            dialog = new XmlWorkJourDialog(model, parent);
+            break;
+        case ModelType::MeasJours:
+            dialog = new XmlMeasJourDialog(model, parent);
+            break;
+        case ModelType::Modbus:
+            dialog = new XmlModbusDialog(model, parent);
+            break;
+        case ModelType::Protocom:
+            dialog = new XmlProtocomDialog(model, parent);
+            break;
+        case ModelType::IEC60870:
+            dialog = new Xml104Dialog(model, parent);
+            break;
+        case ModelType::Config:
+            dialog = new XmlConfigDialog(model, parent);
+            break;
+        case ModelType::Sections:
+            dialog = new XmlSectionDialog(model, parent);
+            break;
+        case ModelType::Section:
+            dialog = new XmlSGroupDialog(model, parent);
+            break;
+        case ModelType::SGroup:
+            dialog = new XmlMWidgetDialog(model, parent);
+            break;
+        default:
+            if (row == createId)
+                EMessageBox::warning(parent, "В данном разделе запрещено создание новых элементов");
+            else
+                EMessageBox::warning(parent, "Выбран недопустимый элемент");
+            break;
         }
-        else
-            EMessageBox::warning(parent, "Не выбрана модель");
+        if (dialog != nullptr)
+        {
+            dialog->setupUICall(row);
+        }
     }
     else
         EMessageBox::warning(parent, "Не выбрана модель");

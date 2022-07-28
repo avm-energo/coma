@@ -103,6 +103,13 @@ XmlModel *ModelFabric::CreateRootModel(QDomNode &root, QObject *parent)
     return nullptr;
 }
 
+MasterModel *ModelFabric::CreateMasterModel(QObject *parent)
+{
+    auto masterModel = new MasterModel(parent);
+    masterModel->setHorizontalHeaderLabels({ "Устройство", "Type B", "Type M", "Версия", "Файл" });
+    return masterModel;
+}
+
 /// \brief Returns count of child nodes for given XML DOM node,
 /// that are not comments and are DOM elements.
 int ModelFabric::ElementsCount(QDomNode &node)

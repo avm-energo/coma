@@ -1,6 +1,7 @@
 #include "xmleditor.h"
 
 #include "dialogs/dialogfabric.h"
+#include "models/modelfabric.h"
 
 #include <QHeaderView>
 #include <QLabel>
@@ -12,13 +13,13 @@ XmlEditor::XmlEditor(QWidget *parent) : QDialog(parent, Qt::Window), masterModel
     {
         manager = new ModelManager(this);
         SetupUI(parent->size());
-        CreateMasterModel();
         this->exec();
     }
 }
 
 void XmlEditor::SetupUI(QSize pSize)
 {
+    // Размер окна
     this->setGeometry(0, 0, pSize.width(), pSize.height());
     this->setWindowTitle("Modules Editor");
     auto mainLayout = new QHBoxLayout(this);
@@ -45,6 +46,8 @@ QVBoxLayout *XmlEditor::GetMasterWorkspace()
     toolbar->setIconSize(QSize(30, 30));
     toolbar->addAction(QIcon(":/icons/tnstart.svg"), "Создать модуль", this, &XmlEditor::Close);
     toolbar->addSeparator();
+    toolbar->addAction(QIcon(":/icons/tnosc.svg"), "Редактировать модуль", this, &XmlEditor::Close);
+    toolbar->addSeparator();
     toolbar->addAction(QIcon(":/icons/tnstop.svg"), "Удалить модуль", this, &XmlEditor::Close);
     workspace->addWidget(toolbar);
 
@@ -57,6 +60,12 @@ QVBoxLayout *XmlEditor::GetMasterWorkspace()
     auto header = masterView->horizontalHeader();
     header->setSectionResizeMode(QHeaderView::Stretch);
     workspace->addWidget(masterView);
+
+    // Создание и настройка мастер модели
+    masterModel = ModelFabric::CreateMasterModel(this);
+    QObject::connect(masterView, &QTableView::doubleClicked, masterModel, &MasterModel::masterItemSelected);
+    QObject::connect(masterModel, &MasterModel::itemSelected, manager, &ModelManager::SetDocument);
+    masterView->setModel(masterModel);
 
     return workspace;
 }
@@ -90,6 +99,7 @@ QVBoxLayout *XmlEditor::GetSlaveWorkspace()
     tableSlaveView->setEditTriggers(QAbstractItemView::NoEditTriggers);
     auto header = tableSlaveView->horizontalHeader();
     header->setSectionResizeMode(QHeaderView::ResizeToContents);
+
     QObject::connect(tableSlaveView, &QTableView::doubleClicked, manager, &ModelManager::ViewModelItemClicked);
     QObject::connect(manager, &ModelManager::ModelChanged, this, //
         [&](XmlSortProxyModel *model) -> void {
@@ -102,34 +112,45 @@ QVBoxLayout *XmlEditor::GetSlaveWorkspace()
     return workspace;
 }
 
-void XmlEditor::CreateMasterModel()
-{
-    if (masterModel == nullptr)
-    {
-        masterModel = new MasterModel(this);
-        masterModel->setHorizontalHeaderLabels({ "Устройство", "Type B", "Type M", "Версия", "Файл" });
-        QObject::connect(masterView, &QTableView::doubleClicked, masterModel, &MasterModel::masterItemSelected);
-        QObject::connect(masterModel, &MasterModel::itemSelected, manager, &ModelManager::SetDocument);
-    }
-    masterView->setModel(masterModel);
-}
-
 void XmlEditor::CreateItem()
 {
-    auto proxyModel = qobject_cast<XmlSortProxyModel *>(tableSlaveView->model());
-    XmlDialogFabric::CreateDialog(proxyModel, this);
+    SlaveModelDialog(DialogType::Create);
 }
 
 void XmlEditor::EditItem()
 {
-    auto proxyModel = qobject_cast<XmlSortProxyModel *>(tableSlaveView->model());
-    auto selected = tableSlaveView->selectionModel()->selectedRows();
-    XmlDialogFabric::EditDialog(proxyModel, selected, this);
+    SlaveModelDialog(DialogType::Edit);
 }
 
 void XmlEditor::RemoveItem()
 {
+    SlaveModelDialog(DialogType::Remove);
+}
+
+void XmlEditor::SlaveModelDialog(DialogType dlgType)
+{
     auto proxyModel = qobject_cast<XmlSortProxyModel *>(tableSlaveView->model());
-    auto selected = tableSlaveView->selectionModel()->selectedRows();
-    XmlDialogFabric::RemoveDialog(proxyModel, selected, this);
+    switch (dlgType)
+    {
+    // Диалог создания элемента
+    case DialogType::Create:
+        if (proxyModel != nullptr)
+            XmlDialogFabric::CreateDialog(proxyModel, this);
+        break;
+    // Диалоги редактирования или удаления элементов
+    case DialogType::Edit:
+    case DialogType::Remove:
+        auto slctModel = tableSlaveView->selectionModel();
+        if (slctModel != nullptr)
+        {
+            auto selected = slctModel->selectedRows();
+            // Диалог редактирования элемента
+            if (dlgType == DialogType::Edit)
+                XmlDialogFabric::EditDialog(proxyModel, selected, this);
+            // Диалог удаления элемента
+            else
+                XmlDialogFabric::RemoveDialog(proxyModel, selected, this);
+        }
+        break;
+    }
 }

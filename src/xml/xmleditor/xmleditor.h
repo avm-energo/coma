@@ -14,6 +14,13 @@ class XmlEditor : public QDialog
     Q_OBJECT
 
 private:
+    enum DialogType : quint16
+    {
+        Create = 0,
+        Edit,
+        Remove
+    };
+
     // Master items
     MasterModel *masterModel;
     QTableView *masterView;
@@ -25,7 +32,7 @@ private:
     void SetupUI(QSize pSize);
     QVBoxLayout *GetMasterWorkspace();
     QVBoxLayout *GetSlaveWorkspace();
-    void CreateMasterModel();
+    void SlaveModelDialog(DialogType dlgType);
 
 public:
     XmlEditor() = delete;
