@@ -6,12 +6,19 @@
 class ModuleDialog : public QDialog
 {
     Q_OBJECT
+public:
+    enum Behaviour : quint16
+    {
+        Create = 0,
+        Edit = 1
+    };
+
 private:
     void SetupSizePos(int width, int height);
-    void SetupUI();
+    void SetupUI(Behaviour &behav);
 
 public:
-    ModuleDialog(QWidget *parent = nullptr);
+    ModuleDialog(Behaviour behav, QWidget *parent = nullptr);
 };
 
 #endif // MODULEDIALOG_H

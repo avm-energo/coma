@@ -1,6 +1,7 @@
 #include "xmleditor.h"
 
 #include "dialogs/dialogfabric.h"
+#include "dialogs/moduledialog.h"
 #include "models/modelfabric.h"
 
 #include <QHeaderView>
@@ -44,7 +45,7 @@ QVBoxLayout *XmlEditor::GetMasterWorkspace()
     auto toolbar = new QToolBar(this);
     toolbar->setContextMenuPolicy(Qt::PreventContextMenu);
     toolbar->setIconSize(QSize(30, 30));
-    toolbar->addAction(QIcon(":/icons/tnstart.svg"), "Создать модуль", this, &XmlEditor::Close);
+    toolbar->addAction(QIcon(":/icons/tnstart.svg"), "Создать модуль", this, &XmlEditor::CreateModule);
     toolbar->addSeparator();
     toolbar->addAction(QIcon(":/icons/tnosc.svg"), "Редактировать модуль", this, &XmlEditor::Close);
     toolbar->addSeparator();
@@ -79,12 +80,15 @@ QVBoxLayout *XmlEditor::GetSlaveWorkspace()
     auto toolbar = new QToolBar(this);
     toolbar->setContextMenuPolicy(Qt::PreventContextMenu);
     toolbar->setIconSize(QSize(30, 30));
-    toolbar->addAction(QIcon(":/icons/tnstart.svg"), "Создать", this, &XmlEditor::CreateItem);
-    toolbar->addSeparator();
-    toolbar->addAction(QIcon(":/icons/tnosc.svg"), "Редактировать", this, &XmlEditor::EditItem);
-    toolbar->addSeparator();
-    toolbar->addAction(QIcon(":/icons/tnstop.svg"), "Удалить", this, &XmlEditor::RemoveItem);
-    workspace->addWidget(toolbar);
+    toolbar->addAction(QIcon(":/icons/tnstart.svg"), "Создать", this,     //
+        [&]() { SlaveModelDialog(DialogType::Create); });                 //
+    toolbar->addSeparator();                                              //
+    toolbar->addAction(QIcon(":/icons/tnosc.svg"), "Редактировать", this, //
+        [&]() { SlaveModelDialog(DialogType::Edit); });                   //
+    toolbar->addSeparator();                                              //
+    toolbar->addAction(QIcon(":/icons/tnstop.svg"), "Удалить", this,      //
+        [&]() { SlaveModelDialog(DialogType::Remove); });                 //
+    workspace->addWidget(toolbar);                                        //
 
     // Label для отображения текущего положения в дереве моделей
     auto curPath = new QLabel("", this);
@@ -102,29 +106,15 @@ QVBoxLayout *XmlEditor::GetSlaveWorkspace()
 
     QObject::connect(tableSlaveView, &QTableView::doubleClicked, manager, &ModelManager::ViewModelItemClicked);
     QObject::connect(manager, &ModelManager::ModelChanged, this, //
-        [&](XmlSortProxyModel *model) -> void {
+        [&](XmlSortProxyModel *model) {
             tableSlaveView->setModel(model);
             tableSlaveView->sortByColumn(0, Qt::SortOrder::AscendingOrder);
         });
-    QObject::connect(manager, &ModelManager::EditQuery, this, &XmlEditor::EditItem);
+    QObject::connect(manager, &ModelManager::EditQuery, this, //
+        [&]() { SlaveModelDialog(DialogType::Edit); });       //
     workspace->addWidget(tableSlaveView);
 
     return workspace;
-}
-
-void XmlEditor::CreateItem()
-{
-    SlaveModelDialog(DialogType::Create);
-}
-
-void XmlEditor::EditItem()
-{
-    SlaveModelDialog(DialogType::Edit);
-}
-
-void XmlEditor::RemoveItem()
-{
-    SlaveModelDialog(DialogType::Remove);
 }
 
 void XmlEditor::SlaveModelDialog(DialogType dlgType)
@@ -140,10 +130,10 @@ void XmlEditor::SlaveModelDialog(DialogType dlgType)
     // Диалоги редактирования или удаления элементов
     case DialogType::Edit:
     case DialogType::Remove:
-        auto slctModel = tableSlaveView->selectionModel();
-        if (slctModel != nullptr)
+        auto selectModel = tableSlaveView->selectionModel();
+        if (selectModel != nullptr)
         {
-            auto selected = slctModel->selectedRows();
+            auto selected = selectModel->selectedRows();
             // Диалог редактирования элемента
             if (dlgType == DialogType::Edit)
                 XmlDialogFabric::EditDialog(proxyModel, selected, this);
@@ -153,4 +143,10 @@ void XmlEditor::SlaveModelDialog(DialogType dlgType)
         }
         break;
     }
+}
+
+void XmlEditor::CreateModule()
+{
+    auto a = new ModuleDialog(ModuleDialog::Create, this);
+    a->exec();
 }
