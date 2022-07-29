@@ -71,11 +71,11 @@ void Bda::updateWidget()
         for (int i = 0; i < 6; i++)
         {
             WDFunc::SetLBLText(
-                m_widget, "bdavalue" + QString::number(i), WDFunc::StringValueWithCheck(m_blockData->Ueff_ADC[i], 4));
+                m_widget, "bdavalue" + QString::number(i), WDFunc::StringFloatValueWithCheck(m_blockData->Ueff_ADC[i], 4));
         }
 
-        WDFunc::SetLBLText(m_widget, "bdavalue6", WDFunc::StringValueWithCheck(m_blockData->Frequency, 4));
-        WDFunc::SetLBLText(m_widget, "bdavalue7", WDFunc::StringValueWithCheck(m_blockData->Pt100, 4));
+        WDFunc::SetLBLText(m_widget, "bdavalue6", WDFunc::StringFloatValueWithCheck(m_blockData->Frequency, 4));
+        WDFunc::SetLBLText(m_widget, "bdavalue7", WDFunc::StringFloatValueWithCheck(m_blockData->Pt100, 4));
     }
 }
 

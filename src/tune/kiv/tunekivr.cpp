@@ -12,7 +12,7 @@
 TuneKIVR::TuneKIVR(ConfigV *config, int tuneStep, QWidget *parent) : AbstractTuneDialog(config, tuneStep, parent)
 {
 
-    m_bac = new Bac(this);
+    m_bac = new BacA284(this);
     m_bda = new Bda(this);
     setBac(m_bac);
     m_BacWidgetIndex = addWidgetToTabWidget(m_bac->widget(), "Настроечные параметры");

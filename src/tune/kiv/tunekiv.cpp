@@ -36,6 +36,6 @@ QWidget *TuneKIV::BdaTempWidget()
 
 void TuneKIV::updateBdaTempWidget()
 {
-    WDFunc::SetLBLText(m_BdaTempWidget, "temp", WDFunc::StringValueWithCheck(m_Bda_temp.temperature, 3));
-    WDFunc::SetLBLText(m_BdaTempWidget, "resist", WDFunc::StringValueWithCheck(m_Bda_temp.resistance, 3));
+    WDFunc::SetLBLText(m_BdaTempWidget, "temp", WDFunc::StringFloatValueWithCheck(m_Bda_temp.temperature, 3));
+    WDFunc::SetLBLText(m_BdaTempWidget, "resist", WDFunc::StringFloatValueWithCheck(m_Bda_temp.resistance, 3));
 }

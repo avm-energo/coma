@@ -25,7 +25,7 @@ private:
         float yet;
     };
 
-    Bac *m_bac;
+    BacA284 *m_bac;
     BdaIn *m_bdain;
     Bd0 *m_bd0;
     MidTuneStruct m_midTuneStruct;

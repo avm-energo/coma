@@ -74,7 +74,7 @@ void UWidget::updateFloatData(const QVariant &msg)
         {
             auto fl = msg.value<DataTypes::FloatStruct>();
             bool result
-                = WDFunc::SetLBLText(this, QString::number(fl.sigAdr), WDFunc::StringValueWithCheck(fl.sigVal, 3));
+                = WDFunc::SetLBLText(this, QString::number(fl.sigAdr), WDFunc::StringFloatValueWithCheck(fl.sigVal, 3));
 #ifdef UWIDGET_DEBUG
             if (!result)
                 qDebug() << Error::DescError << QString::number(fl.sigAdr)

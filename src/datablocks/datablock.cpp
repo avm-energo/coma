@@ -32,7 +32,6 @@
 
 #include <QDialogButtonBox>
 #include <QGroupBox>
-#include <QVBoxLayout>
 
 DataBlock::DataBlock(QObject *parent) : QObject(parent)
 {
@@ -58,13 +57,97 @@ QWidget *DataBlock::widget(bool showButtons)
     return m_widget;
 }
 
+void DataBlock::createWidget()
+{
+    m_widget = new QWidget;
+    QVBoxLayout *lyout = new QVBoxLayout;
+    int count = 0;
+    for (auto &group : m_valuesDesc)
+    {
+        if (group.values.size() == 1) // for only one parameter it doesn't need to make a groupbox
+        {
+            QWidget *w = new QWidget;
+            w->setLayout(addBlockValueToWidget(group.values.first()));
+            lyout->addWidget(w);
+            continue;
+        }
+        QGroupBox *gb = new QGroupBox(group.groupDesc);
+        QGridLayout *gridlyout = new QGridLayout;
+        auto itemsPerLine = StdFunc::goldenRatio(group.values.count());
+        for (auto &valueDesc : group.values)
+        {
+            gridlyout->addLayout(addBlockValueToWidget(valueDesc), count / itemsPerLine, count % itemsPerLine);
+            ++count;
+        }
+        gb->setLayout(gridlyout);
+        lyout->addWidget(gb);
+    }
+    m_widget->setLayout(lyout);
+}
+
+QHBoxLayout *DataBlock::addBlockValueToWidget(ValueStr &value)
+{
+    QHBoxLayout *layout = new QHBoxLayout;
+    QLabel *textLabel = new QLabel(value.desc);
+    textLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
+    QFontMetrics fn(textLabel->font());
+    textLabel->setMaximumHeight(fn.height());
+    layout->addWidget(textLabel);
+
+    QLabel *valueLabel = new QLabel;
+    valueLabel->setToolTip(value.tooltip);
+    valueLabel->setMaximumHeight(fn.height());
+    valueLabel->setObjectName(value.valueId);
+    valueLabel->setStyleSheet(ValuesFormat);
+    valueLabel->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+    layout->addWidget(valueLabel);
+    return layout;
+}
+
 DataBlock::BlockStruct DataBlock::block()
 {
     return m_block;
 }
 
+void DataBlock::updateWidget()
+{
+    specificUpdateWidget();
+    for (auto &group : m_valuesDesc)
+    {
+        for (auto &valueDesc : group.values)
+        {
+            std::visit(overloaded { [&](float *arg)                                                       //
+                           {                                                                              //
+                               WDFunc::SetLBLText(                                                        //
+                                   m_widget, valueDesc.valueId, WDFunc::StringFloatValueWithCheck(*arg)); //
+                           },                                                                             //
+                           [&](quint32 *arg)                                                              //
+                           {                                                                              //
+                               WDFunc::SetLBLText(m_widget, valueDesc.valueId, QString::number(*arg));    //
+                           } },                                                                           //
+                valueDesc.value);
+        }
+    }
+}
+
 void DataBlock::updateFromWidget()
 {
+    specificUpdateFromWidget();
+    for (auto &group : m_valuesDesc)
+    {
+        for (auto &valueDesc : group.values)
+        {
+            std::visit(overloaded { [&](float *arg)                                                  //
+                           {                                                                         //
+                               *arg = StdFunc::ToFloat(WDFunc::LEData(m_widget, valueDesc.valueId)); //
+                           },                                                                        //
+                           [&](quint32 *arg)                                                         //
+                           {                                                                         //
+                               *arg = WDFunc::LEData(m_widget, valueDesc.valueId).toUInt();          //
+                           } },                                                                      //
+                valueDesc.value);
+        }
+    }
 }
 
 Error::Msg DataBlock::writeBlockToModule()

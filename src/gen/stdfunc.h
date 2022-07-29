@@ -36,6 +36,9 @@ template <typename T> using UniquePointer = std::unique_ptr<T, QtHelper::deleteL
 template <typename T>
 using enable_if_pod = typename std::enable_if<std::is_trivial<T>::value && std::is_standard_layout<T>::value, bool>;
 
+constexpr int defaultRatio = 3;
+constexpr int maxRatio = 5;
+
 /*! \brief Class contains most frequently used general purpose functions
  *  \details That class contains static general purpose functions
  */
@@ -71,6 +74,16 @@ public:
     // static QString PrbMessage();
     // static void SetPrbMessage(const QString &msg);
     static void Wait(int ms = MAINSLEEP);
+    static inline int goldenRatio(int value)
+    {
+        int multiplier = value / 10;
+        for (auto i = maxRatio + multiplier; i != defaultRatio; --i)
+        {
+            if (!(value % i))
+                return i;
+        }
+        return defaultRatio + multiplier;
+    }
 
     static quint32 Ping(quint32 addr);
     static quint32 CheckPort(quint32 ip4Addr, quint16 port);

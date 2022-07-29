@@ -18,10 +18,7 @@ public:
 
     Bac82(QObject *parent = nullptr);
 
-    void createWidget() override;
-    void setDefBlock() override;
-    void updateWidget() override;
-    void updateFromWidget() override;
+    void setupValuesDesc() override;
     BlockData *data();
 
 private:

@@ -23,11 +23,13 @@ public:
         float CosPhi[3];    // 42-44 cos phi по 1-й гармонике
     };
 
+    float PHI[3]; // угол между током и напряжением
+
     Bda82(Modules::MezzanineBoard typem, QObject *parent = nullptr);
 
-    void createWidget() override;
-    void setDefBlock() override;
-    void updateWidget() override;
+    void setupValuesDesc() override;
+    void specificUpdateWidget() override;
+
     Error::Msg checkValues(float voltage, float current, float degree,
         float tolerance); // deg - угол в градусах между токами и напряжениями одной фазы, tol - 0: начальная точность,
                           // 1 - повышенная

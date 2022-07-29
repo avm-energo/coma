@@ -21,9 +21,7 @@ public:
 
     BdaIn(QObject *parent = nullptr);
 
-    void createWidget() override;
-    void setDefBlock() override;
-    void updateWidget() override;
+    void setupValuesDesc() override;
     BlockData *data();
 
 private:

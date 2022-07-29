@@ -239,7 +239,7 @@ public:
     static void SetEnabled(QWidget *w, const QString &wname, bool enabled);
     static void SetVisible(QWidget *w, const QString &wname, bool visible);
     static void setMinimumSize(QWidget *w, const QString &wname, int width, int height);
-    static QString StringValueWithCheck(float value, int precision = 5, bool exp = false);
+    static QString StringFloatValueWithCheck(float value, int precision = 5, bool exp = false);
     static QVariant FloatValueWithCheck(float value);
     static QImage *TwoImages(const QString &first, const QString &second);
 

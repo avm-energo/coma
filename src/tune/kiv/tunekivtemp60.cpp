@@ -29,7 +29,7 @@ TuneKIVTemp60::TuneKIVTemp60(ConfigV *config, int tuneStep, QWidget *parent)
     TuneSequenceFile::addItemToTuneDescrVector("yet_p", m_midTuneStruct.yet);
 
     // CKIV = ckiv;
-    m_bac = new Bac(this);
+    m_bac = new BacA284(this);
     m_bdain = new BdaIn(this);
     m_bd0 = new Bd0(this);
     setBac(m_bac);

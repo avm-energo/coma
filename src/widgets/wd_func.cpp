@@ -822,7 +822,7 @@ void WDFunc::setMinimumSize(QWidget *w, const QString &wname, int width, int hei
         qDebug() << "No such widget to set size";
 }
 
-QString WDFunc::StringValueWithCheck(float value, int precision, bool exp)
+QString WDFunc::StringFloatValueWithCheck(float value, int precision, bool exp)
 {
     if (value >= MAXFLOAT || value <= -MAXFLOAT)
         return "***";

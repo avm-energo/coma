@@ -15,127 +15,33 @@ Bda82::Bda82(Modules::MezzanineBoard typem, QObject *parent) : DataBlock(parent)
     setBlock({ 0, "Текущие данные", DataTypes::DataBlockTypes::BdaBlock, m_blockData.get(), sizeof(BlockData) });
 }
 
-void Bda82::createWidget()
+void Bda82::setupValuesDesc()
 {
-    m_widget = new QWidget;
-    int i;
-    QVBoxLayout *lyout = new QVBoxLayout;
-    QGridLayout *glyout = new QGridLayout;
-    QHBoxLayout *hlyout = new QHBoxLayout;
-    hlyout->addWidget(WDFunc::NewLBL2(m_widget, "Частота:"));
-    hlyout->addWidget(WDFunc::NewLE2(m_widget, "value0", "Частота сигналов, Гц"), Qt::AlignLeft);
-    lyout->addLayout(hlyout);
-    for (i = 1; i < 7; ++i)
-    {
-        QString IndexStr = "[" + QString::number(i - 1) + "]";
-        glyout->addWidget(WDFunc::NewLBL2(m_widget, "IUNF" + IndexStr), 0, (i - 1), 1, 1);
-        glyout->addWidget(WDFunc::NewLE2(m_widget, "value" + QString::number(i),
-                              QString::number(i) + "IUNF" + IndexStr + ".Истинные действующие значения сигналов"),
-            1, (i - 1), 1, 1);
-        glyout->addWidget(WDFunc::NewLBL2(m_widget, "IUF" + IndexStr), 2, (i - 1), 1, 1);
-        glyout->addWidget(WDFunc::NewLE2(m_widget, "value" + QString::number(i + 6),
-                              QString::number(i + 6) + "IUF" + IndexStr
-                                  + ".Действующие значения сигналов по 1-й гармонике\nотносительно ф. А 1-й группы"),
-            3, (i - 1), 1, 1);
-        glyout->addWidget(WDFunc::NewLBL2(m_widget, "PHF" + IndexStr), 4, (i - 1), 1, 1);
-        glyout->addWidget(WDFunc::NewLE2(m_widget, "value" + QString::number(i + 12),
-                              QString::number(i + 12) + "PHF" + IndexStr
-                                  + ".Угол сдвига между сигналами по первой гармонике\nотносительно ф. А 1-й группы"),
-            5, (i - 1), 1, 1);
-    }
-    for (i = 0; i < 3; ++i)
-    {
-        QString IndexStr = "[" + QString::number(i) + "]";
-        glyout->addWidget(WDFunc::NewLBL2(m_widget, "PNF" + IndexStr), 6, i, 1, 1);
-        glyout->addWidget(WDFunc::NewLE2(m_widget, "value" + QString::number(i + 19),
-                              QString::number(i + 19) + ".Истинная активная мощность"),
-            7, i, 1, 1);
-        glyout->addWidget(WDFunc::NewLBL2(m_widget, "SNF" + IndexStr), 6, i + 3, 1, 1);
-        glyout->addWidget(WDFunc::NewLE2(m_widget, "value" + QString::number(i + 22),
-                              QString::number(i + 22) + ".Кажущаяся полная мощность"),
-            7, i + 3, 1, 1);
-        glyout->addWidget(WDFunc::NewLBL2(m_widget, "QNF" + IndexStr), 8, i, 1, 1);
-        glyout->addWidget(WDFunc::NewLE2(m_widget, "value" + QString::number(i + 25),
-                              QString::number(i + 25) + ".Реактивная мощность"),
-            9, i, 1, 1);
-        glyout->addWidget(WDFunc::NewLBL2(m_widget, "Cos" + IndexStr), 8, i + 3, 1, 1);
-        glyout->addWidget(WDFunc::NewLE2(m_widget, "value" + QString::number(i + 28),
-                              QString::number(i + 28) + ".Cos phi по истинной активной мощности"),
-            9, i + 3, 1, 1);
-        glyout->addWidget(WDFunc::NewLBL2(m_widget, "PF" + IndexStr), 10, i, 1, 1);
-        glyout->addWidget(WDFunc::NewLE2(m_widget, "value" + QString::number(i + 31),
-                              QString::number(i + 31) + ".Активная мощность по 1-й гармонике"),
-            11, i, 1, 1);
-        glyout->addWidget(WDFunc::NewLBL2(m_widget, "QF" + IndexStr), 10, i + 3, 1, 1);
-        glyout->addWidget(WDFunc::NewLE2(m_widget, "value" + QString::number(i + 34),
-                              QString::number(i + 34) + ".Реактивная мощность по 1-й гармонике"),
-            11, i + 3, 1, 1);
-        glyout->addWidget(WDFunc::NewLBL2(m_widget, "SF" + IndexStr), 12, i, 1, 1);
-        glyout->addWidget(WDFunc::NewLE2(m_widget, "value" + QString::number(i + 37),
-                              QString::number(i + 37) + ".Полная мощность по 1-й гармонике"),
-            13, i, 1, 1);
-        glyout->addWidget(WDFunc::NewLBL2(m_widget, "CosPhi" + IndexStr), 12, i + 3, 1, 1);
-        glyout->addWidget(WDFunc::NewLE2(m_widget, "value" + QString::number(i + 40),
-                              QString::number(i + 40) + ".Cos phi по 1-й гармонике"),
-            13, i + 3, 1, 1);
-        glyout->addWidget(WDFunc::NewLBL2(m_widget, "PHI" + IndexStr), 14, i, 1, 1);
-        glyout->addWidget(WDFunc::NewLE2(m_widget, "value" + QString::number(i + 43),
-                              QString::number(i + 43) + ".Угол между током и напряжением"),
-            15, i, 1, 1);
-    }
-    lyout->addLayout(glyout);
-    lyout->addStretch(100);
-    m_widget->setLayout(lyout);
-    m_widgetIsSet = true;
+    int precision = (m_typeM != Modules::MezzanineBoard::MTM_81) ? 3 : 4;
+    m_valuesDesc.append({ "", { { "Частота:", "Частота сигналов, Гц", "value0", &m_blockData->Frequency, 3 } } });
+    m_valuesDesc.append(addGroupToValues(
+        "Истинные действующие значения сигналов", "IUNF", 6, 0, &m_blockData->IUefNat_filt[0], precision));
+    m_valuesDesc.append(addGroupToValues("Действующие значения сигналов по 1-й гармонике\nотносительно ф. А 1-й группы",
+        "IUF", 6, 6, &m_blockData->IUeff_filtered[0], precision));
+    m_valuesDesc.append(
+        addGroupToValues("Угол сдвига между сигналами по первой гармонике\nотносительно ф. А 1-й группы", "PHF", 6, 12,
+            &m_blockData->phi_next_f[0], 4));
+    m_valuesDesc.append(addGroupToValues("Истинная активная мощность", "PNF", 3, 18, &m_blockData->PNatf[0], 3));
+    m_valuesDesc.append(addGroupToValues("Кажущаяся полная мощность", "SNF", 3, 21, &m_blockData->SNatf[0], 3));
+    m_valuesDesc.append(addGroupToValues("Реактивная мощность", "QNF", 3, 24, &m_blockData->QNatf[0], 3));
+    m_valuesDesc.append(
+        addGroupToValues("Cos phi по истинной активной мощности", "Cos", 3, 27, &m_blockData->CosPhiNat[0], 4));
+    m_valuesDesc.append(addGroupToValues("Активная мощность по 1-й гармонике", "PF", 3, 30, &m_blockData->Pf[0], 3));
+    m_valuesDesc.append(addGroupToValues("Полная мощность по 1-й гармонике", "SF", 3, 33, &m_blockData->Sf[0], 3));
+    m_valuesDesc.append(addGroupToValues("Реактивная мощность по 1-й гармонике", "QF", 3, 36, &m_blockData->Qf[0], 3));
+    m_valuesDesc.append(addGroupToValues("Cos phi по 1-й гармонике", "CosPhi", 3, 39, &m_blockData->CosPhi[0], 4));
+    m_valuesDesc.append(addGroupToValues("Угол между током и напряжением", "PHI", 3, 42, &PHI[0], 4));
 }
 
-void Bda82::setDefBlock()
+void Bda82::specificUpdateWidget()
 {
-}
-
-void Bda82::updateWidget()
-{
-    WDFunc::SetLBLText(m_widget, "value0", WDFunc::StringValueWithCheck(m_blockData->Frequency, 3));
-    for (int i = 1; i < 4; i++)
-    {
-        int Precision = (m_typeM != Modules::MezzanineBoard::MTM_81) ? 3 : 4;
-        WDFunc::SetLBLText(m_widget, "value" + QString::number(i),
-            WDFunc::StringValueWithCheck(m_blockData->IUefNat_filt[i - 1], Precision));
-        WDFunc::SetLBLText(m_widget, "value" + QString::number(i + 6),
-            WDFunc::StringValueWithCheck(m_blockData->IUeff_filtered[i - 1], Precision));
-        Precision = (m_typeM != Modules::MezzanineBoard::MTM_83) ? 4 : 3;
-        WDFunc::SetLBLText(m_widget, "value" + QString::number(i + 3),
-            WDFunc::StringValueWithCheck(m_blockData->IUefNat_filt[i + 2], Precision));
-        WDFunc::SetLBLText(m_widget, "value" + QString::number(i + 9),
-            WDFunc::StringValueWithCheck(m_blockData->IUeff_filtered[i + 2], Precision));
-    }
-    for (int i = 1; i < 7; i++)
-    {
-        WDFunc::SetLBLText(m_widget, "value" + QString::number(i + 12),
-            WDFunc::StringValueWithCheck(m_blockData->phi_next_f[i - 1], 4));
-    }
-
-    for (int i = 0; i < 3; i++)
-    {
-        WDFunc::SetLBLText(
-            m_widget, "value" + QString::number(i + 19), WDFunc::StringValueWithCheck(m_blockData->PNatf[i], 3));
-        WDFunc::SetLBLText(
-            m_widget, "value" + QString::number(i + 22), WDFunc::StringValueWithCheck(m_blockData->SNatf[i], 3));
-        WDFunc::SetLBLText(
-            m_widget, "value" + QString::number(i + 25), WDFunc::StringValueWithCheck(m_blockData->QNatf[i], 3));
-        WDFunc::SetLBLText(
-            m_widget, "value" + QString::number(i + 28), WDFunc::StringValueWithCheck(m_blockData->CosPhiNat[i], 4));
-        WDFunc::SetLBLText(
-            m_widget, "value" + QString::number(i + 31), WDFunc::StringValueWithCheck(m_blockData->Pf[i], 3));
-        WDFunc::SetLBLText(
-            m_widget, "value" + QString::number(i + 34), WDFunc::StringValueWithCheck(m_blockData->Qf[i], 3));
-        WDFunc::SetLBLText(
-            m_widget, "value" + QString::number(i + 37), WDFunc::StringValueWithCheck(m_blockData->Sf[i], 3));
-        WDFunc::SetLBLText(
-            m_widget, "value" + QString::number(i + 40), WDFunc::StringValueWithCheck(m_blockData->CosPhi[i], 4));
-        float PHI = (180 * qAsin(m_blockData->Qf[i] / m_blockData->Sf[i]) / M_PI);
-        WDFunc::SetLBLText(m_widget, "value" + QString::number(i + 43), WDFunc::StringValueWithCheck(PHI, 4));
-    }
+    for (int i = 0; i < 3; ++i)
+        PHI[i] = (180 * qAsin(m_blockData->Qf[i] / m_blockData->Sf[i]) / M_PI);
 }
 
 Error::Msg Bda82::checkValues(float voltage, float current, float degree, float tolerance)

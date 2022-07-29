@@ -22,9 +22,6 @@
 #include <QVBoxLayout>
 #include <QXlsx/xlsxdocument.h>
 
-constexpr int defaultRatio = 3;
-constexpr int maxRatio = 5;
-
 CheckDialog::CheckDialog(const CheckItem &item, const categoryMap &categories, QWidget *parent)
     : UDialog(parent)
     , proxySP(new DataTypesProxy(&DataManager::GetInstance()))
@@ -404,23 +401,12 @@ void CheckDialog::addSignals(unsigned int key, UWidget *widget)
     }
 }
 
-static inline int goldenRatio(int value)
-{
-    int multiplier = value / 10;
-    for (auto i = maxRatio + multiplier; i != defaultRatio; --i)
-    {
-        if (!(value % i))
-            return i;
-    }
-    return defaultRatio + multiplier;
-}
-
 void CheckDialog::setup(const check::detail::Record &arg, QGroupBox *gb)
 {
     gb->setTitle(arg.header.value());
 
     auto count = std::size(arg.desc.value());
-    auto itemsOneLine = goldenRatio(count);
+    auto itemsOneLine = StdFunc::goldenRatio(count);
 
     QGridLayout *gridlyout = new QGridLayout;
     for (auto i = 0; i != count; ++i)
@@ -446,11 +432,10 @@ void CheckDialog::setup(const check::detail::RecordList &arg, QGroupBox *gb)
     QVBoxLayout *mainLayout = new QVBoxLayout;
     for (auto &&currentRecord : arg.records)
     {
-
         assert(
             currentRecord.toolTip.has_value() ? (currentRecord.toolTip->size() == currentRecord.desc->size()) : true);
 
-        auto itemsOneLine = goldenRatio(currentRecord.desc->count());
+        auto itemsOneLine = StdFunc::goldenRatio(currentRecord.desc->count());
 
         QGridLayout *gridlyout = new QGridLayout;
         for (auto i = 0; i < currentRecord.desc->count(); ++i)

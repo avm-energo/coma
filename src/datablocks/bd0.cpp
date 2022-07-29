@@ -56,8 +56,8 @@ void Bd0::setDefBlock()
 
 void Bd0::updateWidget()
 {
-    WDFunc::SetLBLText(m_widget, "101", WDFunc::StringValueWithCheck(m_blockData->Tmk, 3));
-    WDFunc::SetLBLText(m_widget, "102", WDFunc::StringValueWithCheck(m_blockData->Vbat, 3));
+    WDFunc::SetLBLText(m_widget, "101", WDFunc::StringFloatValueWithCheck(m_blockData->Tmk, 3));
+    WDFunc::SetLBLText(m_widget, "102", WDFunc::StringFloatValueWithCheck(m_blockData->Vbat, 3));
 }
 
 Bd0::BlockData *Bd0::data()

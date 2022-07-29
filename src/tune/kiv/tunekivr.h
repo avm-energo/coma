@@ -15,7 +15,7 @@ public:
     TuneKIVR(ConfigV *config, int tuneStep, QWidget *parent = nullptr);
 
 private:
-    Bac *m_bac;
+    BacA284 *m_bac;
     Bda *m_bda;
     double m_pt100;
     int m_curTuneStep;
