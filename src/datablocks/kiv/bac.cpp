@@ -70,9 +70,6 @@ void BacA284::setDefBlock()
         m_blockData->TKPsi_a[i] = 0;
         m_blockData->TKPsi_b[i] = 0;
     }
-    //    m_blockData->KmI4[0] = 0.997060814f;
-    //    m_blockData->KmI4[1] = 0.993458061f;
-    //    m_blockData->KmI4[2] = 0.992731500f;
 }
 
 BacA284::BlockData *BacA284::data()

@@ -1,11 +1,8 @@
 #include "bda.h"
 
-#include "../../gen/colors.h"
 #include "../../gen/stdfunc.h"
 #include "../../widgets/wd_func.h"
 
-#include <QGroupBox>
-#include <QVBoxLayout>
 #include <QtMath>
 
 Bda82::Bda82(Modules::MezzanineBoard typem, QObject *parent) : DataBlock(parent)
@@ -103,9 +100,11 @@ Error::Msg Bda82::checkAnalogValues(double u, double i, double p, double q, doub
         p, s, s, s, q, q, q, cosphi, cosphi, cosphi, p, p, p, q, q, q, s, s, s, cosphi, cosphi, cosphi };
     const QList<double> ThresholdsToCheck = { 0.005, ut, ut, ut, it, it, it, ut, ut, ut, it, it, it, pht, pht, pht, pht,
         pht, pht, pt, pt, pt, pt, pt, pt, pt, pt, pt, ct, ct, ct, pt, pt, pt, pt, pt, pt, pt, pt, pt, ct, ct, ct };
+    updateFromWidget();
+    BlockData *bd = data();
     for (int i = 0; i < 43; i++)
     {
-        float tmpf = WDFunc::LEData(m_widget, "value" + QString::number(i)).toFloat();
+        float tmpf = *(reinterpret_cast<float *>(bd) + i);
         if (!WDFunc::floatIsWithinLimits(valueNames.at(i), tmpf, ValuesToCheck.at(i), ThresholdsToCheck.at(i)))
             return Error::Msg::GeneralError;
     }

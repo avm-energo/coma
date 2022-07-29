@@ -12,10 +12,8 @@ public:
     };
 
     Bda21(QObject *parent = nullptr);
-    void createWidget() override;
-    void updateWidget() override;
+    void setupValuesDesc() override;
 
 private:
     BlockData *m_blockData;
-    QWidget *m_widget;
 };
