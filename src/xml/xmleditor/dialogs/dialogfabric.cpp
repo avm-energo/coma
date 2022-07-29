@@ -1,7 +1,6 @@
 #include "dialogfabric.h"
 
 #include "../../../widgets/epopup.h"
-#include "../models/xmlmodel.h"
 #include "xml104dialog.h"
 #include "xmlalarmdialog.h"
 #include "xmlconfigdialog.h"
@@ -128,4 +127,8 @@ void XmlDialogFabric::EditDialog(XmlSortProxyModel *model, QModelIndexList &sele
 void XmlDialogFabric::RemoveDialog(XmlSortProxyModel *model, QModelIndexList &selected, QWidget *parent)
 {
     RemoveOrEditDialog(model, selected, parent, Helper::remove);
+}
+
+void XmlDialogFabric::CreateModuleDialog(MasterModel *model)
+{
 }

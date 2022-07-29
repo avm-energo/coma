@@ -147,6 +147,6 @@ void XmlEditor::SlaveModelDialog(DialogType dlgType)
 
 void XmlEditor::CreateModule()
 {
-    auto a = new ModuleDialog(ModuleDialog::Create, this);
+    auto a = new ModuleDialog({}, this);
     a->exec();
 }

@@ -7,18 +7,15 @@ class ModuleDialog : public QDialog
 {
     Q_OBJECT
 public:
-    enum Behaviour : quint16
-    {
-        Create = 0,
-        Edit = 1
-    };
+protected:
+    QList<std::tuple<QString, QString, bool>> dlgSettings;
+    QList<QWidget *> dlgItems;
 
-private:
     void SetupSizePos(int width, int height);
-    void SetupUI(Behaviour &behav);
+    void SetupUI(const QStringList &inData);
 
 public:
-    ModuleDialog(Behaviour behav, QWidget *parent = nullptr);
+    ModuleDialog(const QStringList &inData, QWidget *parent = nullptr);
 };
 
 #endif // MODULEDIALOG_H

@@ -5,51 +5,47 @@
 #include <QGuiApplication>
 #include <QScreen>
 
-ModuleDialog::ModuleDialog(Behaviour behav, QWidget *parent) : QDialog(parent)
+ModuleDialog::ModuleDialog(const QStringList &inData, QWidget *parent) : QDialog(parent)
 {
+    dlgSettings = {
+        { "База: ", "bTypeInput", false },    //
+        { "Мезонин: ", "mTypeInput", false }, //
+        { "Версия", "verInput", false },      //
+        { "Название", "nameInput", false }    //
+    };
+    dlgItems.reserve(dlgSettings.count());
     setAttribute(Qt::WA_DeleteOnClose);
-    SetupUI(behav);
+    SetupUI(inData);
     //    this->exec();
 }
 
-void ModuleDialog::SetupUI(Behaviour &behav)
+void ModuleDialog::SetupUI(const QStringList &inData)
 {
     // Создание слоёв окна
     auto mainLayout = new QVBoxLayout(this);
     SetupSizePos(330, 200);
-    QList<std::pair<QString, QString>> dlgSettings = {
-        { "База: ", "bTypeInput" },    //
-        { "Мезонин: ", "mTypeInput" }, //
-        { "Версия", "verInput" },      //
-        { "Название", "nameInput" }    //
-    };
-
-    QList<QWidget *> dlgItems;
-    for (const auto &itemSettings : dlgSettings)
+    // https://github.com/KDE/clazy/blob/1.11/docs/checks/README-range-loop-detach.md
+    for (const auto &itemSettings : qAsConst(dlgSettings))
     {
-        auto uiItem = WDFunc::NewLBLAndLE(this, itemSettings.first, itemSettings.second, true);
+        auto idName = std::get<1>(itemSettings);
+        auto uiItem = WDFunc::NewLBLAndLE(this, std::get<0>(itemSettings), idName, true);
+        if (std::get<2>(itemSettings))
+        {
+            auto input = uiItem->findChild<QLineEdit *>(idName);
+            input->setValidator(new QRegExpValidator(QRegExp("^([1-9][0-9]*|0)"), this));
+        }
         mainLayout->addWidget(uiItem);
         dlgItems.append(uiItem);
     }
 
-    // [[maybe_unused]] auto bTypeItem = WDFunc::NewLBLAndLE(this, "База: ", "bTypeInput", true);
-    // [[maybe_unused]] auto mTypeItem = WDFunc::NewLBLAndLE(this, "Мезонин: ", "mTypeInput", true);
-    // [[maybe_unused]] auto verItem = WDFunc::NewLBLAndLE(this, "Версия", "verInput", true);
-    // [[maybe_unused]] auto nameItem = WDFunc::NewLBLAndLE(this, "Название", "nameInput", true);
-    // mainLayout->addWidget(bTypeItem);
-    // mainLayout->addWidget(mTypeItem);
-    // mainLayout->addWidget(verItem);
-    // mainLayout->addWidget(nameItem);
-
-    if (behav == Behaviour::Create)
+    if (inData.isEmpty())
     {
         setWindowTitle("Создание конфигурации модуля");
     }
     else
     {
+        Q_ASSERT(inData.count() >= 4);
         setWindowTitle("Редактирование конфигурации модуля");
-        ;
-        ;
     }
     setLayout(mainLayout);
 }

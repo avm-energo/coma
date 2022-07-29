@@ -293,6 +293,18 @@ public:
             QObject::connect(pb, &QPushButton::clicked, receiver, method);
     }
 
+    template <typename T> //
+    inline static T *GetChildFromParents(const QList<QWidget *> &parents, const QString &name)
+    {
+        for (auto &parent : parents)
+        {
+            auto child = parent->findChild<T *>(name);
+            if (child != nullptr)
+                return child;
+        }
+        return nullptr;
+    }
+
     static void SetTVModel(QWidget *parent, const QString &tvname, QAbstractItemModel *model, bool sortenable = false);
     static void SetQTVModel(QWidget *parent, const QString &tvname, QAbstractItemModel *model, bool sortenable = false);
     static ETableView *NewTV(QWidget *parent, const QString &tvname, QAbstractItemModel *model);

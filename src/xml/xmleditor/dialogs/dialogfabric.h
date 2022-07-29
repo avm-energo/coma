@@ -1,6 +1,7 @@
 #ifndef XMLDIALOGFABRIC_H
 #define XMLDIALOGFABRIC_H
 
+#include "../models/mastermodel.h"
 #include "../models/xmlsortproxymodel.h"
 
 class XmlDialogFabric
@@ -18,9 +19,9 @@ public:
     static void RemoveDialog(XmlSortProxyModel *model, QModelIndexList &selected, QWidget *parent = nullptr);
 
     // Modules в Master View
-    static void CreateModuleDialog();
-    static void EditModuleDialog();
-    static void RemoveModuleDialog();
+    static void CreateModuleDialog(MasterModel *model);
+    static void EditModuleDialog(MasterModel *model);
+    static void RemoveModuleDialog(MasterModel *model);
 };
 
 #endif // XMLDIALOGFABRIC_H
