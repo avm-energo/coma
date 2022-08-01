@@ -131,4 +131,5 @@ void XmlDialogFabric::RemoveDialog(XmlSortProxyModel *model, QModelIndexList &se
 
 void XmlDialogFabric::CreateModuleDialog(MasterModel *model)
 {
+    Q_UNUSED(model);
 }

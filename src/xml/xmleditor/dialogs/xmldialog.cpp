@@ -132,6 +132,7 @@ void XmlDialog::saveData()
     }
 }
 
+/// \overload dataChanged
 /// \brief Перегрузка слота, вызываемого при изменении данных в диалоговом окне
 /// \see dataChanged
 void XmlDialog::dataChanged(const QString &strData)
