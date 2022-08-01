@@ -7,7 +7,7 @@
 #include "../../widgets/wd_func.h"
 #include "../tunesteps.h"
 #include "tune82adc.h"
-#include "tune82checkmip.h"
+#include "tune82check.h"
 
 Tune82Dialog::Tune82Dialog(ConfigV *config, Modules::MezzanineBoard typeM, QWidget *parent)
     : GeneralTuneDialog(config, parent)
@@ -18,7 +18,7 @@ Tune82Dialog::Tune82Dialog(ConfigV *config, Modules::MezzanineBoard typeM, QWidg
     QString str;
     sl = str.split(',');
     m_dialogList = { { "Проверка правильности измерения входных сигналов",
-        new Tune82CheckMip(config, TS82_CHECKING, typeM, this) } };
+        new Tune82Check(config, TS82_CHECKING, typeM, this) } };
     if (typeM != Modules::MezzanineBoard::MTM_81)
     {
         m_dialogList.append({ "Регулировка каналов напряжения", new Tune82ADC(config, TS82_ADCU, this) });

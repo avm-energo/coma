@@ -126,17 +126,11 @@ float AbstractStartupDialog::ToFloat(QString text)
 }
 
 // void AbstractStartupDialog::updateFloatData(const DataTypes::FloatStruct &fl)
-void AbstractStartupDialog::updateFloatData(const QVariant &msg)
+void AbstractStartupDialog::updateFloatData(const DataTypes::FloatStruct &fl)
 {
-    if (msg.canConvert<DataTypes::FloatStruct>())
-    {
-        if (!updatesEnabled())
-            return;
-        auto fl = msg.value<DataTypes::FloatStruct>();
-        // Игнорируем 4011 т.к. он нам не важен и все чужие регистры тоже игнорируем
-        if (fl.sigAdr >= m_regMap.firstKey() && fl.sigAdr <= m_regMap.lastKey())
-            FillBd(this, QString::number(fl.sigAdr), fl.sigVal);
-    }
+    // Игнорируем 4011 т.к. он нам не важен и все чужие регистры тоже игнорируем
+    if (fl.sigAdr >= m_regMap.firstKey() && fl.sigAdr <= m_regMap.lastKey())
+        FillBd(this, QString::number(fl.sigAdr), fl.sigVal);
 }
 
 void AbstractStartupDialog::FillBd(QWidget *parent, QString Name, QString Value)

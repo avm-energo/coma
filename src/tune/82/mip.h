@@ -3,19 +3,13 @@
 
 #include "../../gen/stdfunc.h"
 #include "../../interfaces/iec104.h"
+#include "../../module/modules.h"
 #include "../../widgets/udialog.h"
 
-class Mip : public UWidget
+class Mip : public QObject
 {
     Q_OBJECT
 public:
-    enum AvtukVariants
-    {
-        M81,
-        M82,
-        M83
-    };
-
     struct MipDataStruct
     {
         float reserved;
@@ -37,24 +31,28 @@ public:
         float reserved4[13]; // 34-46
     };
 
-    Mip(bool withGUI = true, AvtukVariants ModuleType = M82, QWidget *parent = nullptr);
+    using MType = Modules::MezzanineBoard;
 
-    void updateFloatData(const QVariant &msg) override;
+    Mip(bool withGUI = true, MType ModuleType = MType::MTM_82, QWidget *parent = nullptr);
+
+    void updateData(const DataTypes::FloatStruct &fl);
     MipDataStruct getData();
     void start();
     void stop();
     Error::Msg check();
-    void setModuleType(AvtukVariants type);
+    void setModuleType(MType type);
     void setNominalCurrent(double inom);
+    UWidget *widget();
 
 private:
     UniquePointer<IEC104> m_device;
     MipDataStruct m_mipData;
-    AvtukVariants m_moduleType;
+    MType m_moduleType;
     double iNom;
-    //    bool m_withGUI;
+    UWidget *m_widget;
+    QWidget *m_parent;
 
-    void setupUI();
+    void setupWidget();
 
 signals:
     void finished();

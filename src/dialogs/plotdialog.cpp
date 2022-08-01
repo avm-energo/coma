@@ -21,12 +21,12 @@ constexpr auto Ic = -150;
 
 PlotDialog::PlotDialog(QWidget *parent) : UDialog(parent)
 {
-    auto mngr = &DataManager::GetInstance();
-    static DataTypesProxy proxy(mngr);
-    proxy.RegisterType<DataTypes::FloatStruct>();
+    //    auto mngr = &DataManager::GetInstance();
+    //    static DataTypesProxy proxy(mngr);
+    //    proxy.RegisterType<DataTypes::FloatStruct>();
     setupUI();
-    setFloatBdQuery({ { 2400, 7 } });
-    connect(&proxy, &DataTypesProxy::DataStorable, this, &UWidget::updateFloatData, Qt::QueuedConnection);
+    engine()->addFloat({ 2400, 7 });
+    //    connect(&proxy, &DataTypesProxy::DataStorable, this, &UWidget::updateFloatData, Qt::QueuedConnection);
 }
 
 static bool processPhase(GraphData &data, const DataTypes::FloatStruct &fl)
@@ -48,16 +48,12 @@ static bool processPhase(GraphData &data, const DataTypes::FloatStruct &fl)
 }
 
 // void PlotDialog::updateFloatData(const DataTypes::FloatStruct &fl)
-void PlotDialog::updateFloatData(const QVariant &msg)
+void PlotDialog::updateFloatData(const DataTypes::FloatStruct &fl)
 {
-    if (msg.canConvert<DataTypes::FloatStruct>())
-    {
-        auto fl = msg.value<DataTypes::FloatStruct>();
-        if (!processPhase(graphPhaseA, fl))
-            if (!processPhase(graphPhaseB, fl))
-                processPhase(graphPhaseC, fl);
-        UWidget::updateFloatData(msg);
-    }
+    if (!processPhase(graphPhaseA, fl))
+        if (!processPhase(graphPhaseB, fl))
+            processPhase(graphPhaseC, fl);
+    UWidget::updateFloatData(fl);
 }
 
 [[nodiscard]] QCPItemText *PlotDialog::createText(QCustomPlot *parent, const QString &name, const QString &text) const

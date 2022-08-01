@@ -1,5 +1,3 @@
-#pragma once
-
 #include "bdain.h"
 
 #include "../../gen/colors.h"

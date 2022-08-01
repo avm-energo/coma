@@ -18,7 +18,9 @@ private:
     Error::Msg showScheme();
     Error::Msg check();
 
-    Mip::AvtukVariants m_moduleType;
+    using MType = Modules::MezzanineBoard;
+
+    MType m_moduleType;
 
 protected:
 };

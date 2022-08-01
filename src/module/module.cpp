@@ -84,14 +84,14 @@ void Module::parentTWTabChanged(int index)
 
     for (auto &dialog : m_dialogs)
     {
-        if (dialog->updatesEnabled())
-            dialog->setUpdatesDisabled();
+        //        if (dialog->updatesEnabled())
+        dialog->engine()->setUpdatesEnabled(false);
     }
 
     UDialog *udlg = m_dialogs.at(index);
 
     udlg->setEnabled(true);
-    udlg->setUpdatesEnabled();
+    udlg->engine()->setUpdatesEnabled();
     udlg->reqUpdate();
 }
 

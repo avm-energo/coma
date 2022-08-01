@@ -16,7 +16,7 @@ public:
     Tune84ADC(ConfigV *config, int tuneStep, QWidget *parent = nullptr);
 
 private:
-    Bac *m_bac;
+    BacA284 *m_bac;
     Bda *m_bda;
     BdaIn *m_bdain;
     Bd0 *m_bd0;

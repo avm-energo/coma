@@ -21,11 +21,11 @@ Tune82CheckMip::Tune82CheckMip(ConfigV *config, int tuneStep, Modules::Mezzanine
 void Tune82CheckMip::setModuleType(Modules::MezzanineBoard type)
 {
     if (type == Modules::MezzanineBoard::MTM_81)
-        m_moduleType = Mip::AvtukVariants::M81;
+        m_moduleType = MType::MTM_81;
     else if (type == Modules::MezzanineBoard::MTM_82)
-        m_moduleType = Mip::AvtukVariants::M82;
+        m_moduleType = MType::MTM_82;
     else
-        m_moduleType = Mip::AvtukVariants::M83;
+        m_moduleType = MType::MTM_83;
 }
 
 void Tune82CheckMip::setTuneFunctions()
@@ -39,17 +39,17 @@ Error::Msg Tune82CheckMip::showScheme()
     QString pmpfile;
     switch (m_moduleType) // выводим окно с предупреждением о включении РЕТОМ-а по схеме в зависимости от исполнения
     {
-    case Mip::AvtukVariants::M81: // 2t0n
+    case MType::MTM_81: // 2t0n
     {
         pmpfile = "images/tune81.png";
         break;
     }
-    case Mip::AvtukVariants::M82:
+    case MType::MTM_82:
     {
         pmpfile = "images/tune82.png";
         break;
     }
-    case Mip::AvtukVariants::M83:
+    case MType::MTM_83:
     {
         pmpfile = "images/tune83.png";
         break;
@@ -69,7 +69,7 @@ Error::Msg Tune82CheckMip::showScheme()
         "3. Задайте на РЕТОМ трёхфазный режим токов и напряжений (Uabc, Iabc) с углами "
         "сдвига по всем фазам 0 град.;"));
     lyout->addWidget(WDFunc::NewLBL2(w, "4. Задайте на РЕТОМ значения напряжений по фазам 60 В;"));
-    if (m_moduleType != Mip::AvtukVariants::M83)
+    if (m_moduleType != MType::MTM_83)
         lyout->addWidget(WDFunc::NewLBL2(w, "    Задайте на РЕТОМ значения токов по фазам 1 А;"));
     lyout->addWidget(WDFunc::NewLBL2(w, "5. Включите выходы РЕТОМ"));
 
@@ -82,8 +82,8 @@ Error::Msg Tune82CheckMip::showScheme()
 Error::Msg Tune82CheckMip::check()
 {
     Mip *mip = new Mip(true, m_moduleType);
-    mip->setUpdatesEnabled();
-    mip->show();
+    //    mip->setUpdatesEnabled();
+    //    mip->show();
     mip->setNominalCurrent(configV->getRecord(XmlConfigParser::GetIdByName("I2nom")).value<float>());
     mip->start();
     QEventLoop el;

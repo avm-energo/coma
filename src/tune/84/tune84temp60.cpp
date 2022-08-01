@@ -27,7 +27,7 @@ Tune84Temp60::Tune84Temp60(ConfigV *config, int tuneStep, QWidget *parent)
     TuneSequenceFile::addItemToTuneDescrVector("uet_p", m_midTuneStruct.uet);
     TuneSequenceFile::addItemToTuneDescrVector("iet_p", m_midTuneStruct.iet);
     TuneSequenceFile::addItemToTuneDescrVector("yet_p", m_midTuneStruct.yet);
-    m_bac = new Bac;
+    m_bac = new BacA284;
     m_bdain = new BdaIn;
     m_bd0 = new Bd0;
     setBac(m_bac);

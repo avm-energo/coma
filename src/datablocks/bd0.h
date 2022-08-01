@@ -15,14 +15,11 @@ public:
 
     Bd0(QObject *parent = nullptr);
 
-    void createWidget() override;
-    void setDefBlock() override;
-    void updateWidget() override;
     BlockData *data();
+    void setupValuesDesc() override;
 
 private:
     std::unique_ptr<BlockData> m_blockData;
-    //    QWidget *m_widget;
 };
 
 #endif // BD0_H

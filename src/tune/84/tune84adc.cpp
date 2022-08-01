@@ -15,7 +15,7 @@
 Tune84ADC::Tune84ADC(ConfigV *config, int tuneStep, QWidget *parent) : AbstractTuneDialog(config, tuneStep, parent)
 {
 
-    m_bac = new Bac;
+    m_bac = new BacA284;
     m_bda = new Bda;
     m_bdain = new BdaIn;
     m_bd0 = new Bd0;
