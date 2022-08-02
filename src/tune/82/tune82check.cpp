@@ -94,6 +94,7 @@ Error::Msg Tune82Check::check()
 
 Error::Msg Tune82Check::checkMip()
 {
+    return Error::Msg::NoError;
 }
 
 void Tune82Check::showEvent(QShowEvent *e)

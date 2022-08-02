@@ -95,6 +95,7 @@ void Tune82ADC::setTuneFunctions()
 Error::Msg Tune82ADC::setDefBac()
 {
     m_bac->setDefBlock();
+    return Error::Msg::NoError;
 }
 
 Error::Msg Tune82ADC::getAnalogData()
@@ -103,6 +104,7 @@ Error::Msg Tune82ADC::getAnalogData()
         m_bda->readBlockFromModule();
         waitNSeconds(1);
         return m_bda->checkValues(60.0, 1.0, 0.0, false); */
+    return Error::Msg::NoError;
 }
 
 Error::Msg Tune82ADC::saveUeff()
