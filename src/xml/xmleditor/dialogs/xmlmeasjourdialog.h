@@ -6,13 +6,9 @@
 class XmlMeasJourDialog : public XmlDialog
 {
     Q_OBJECT
-private:
-    QLineEdit *headInput;
-
 public:
-    explicit XmlMeasJourDialog(XmlSortProxyModel *model, QWidget *parent);
-    virtual void setupUI(QStringList &selectedData) override;
-    virtual QStringList collectData() override;
+    explicit XmlMeasJourDialog(QWidget *parent);
+    virtual void setupUI(QVBoxLayout *mainLayout) override;
 };
 
 #endif // XMLMEASJOURDIALOG_H

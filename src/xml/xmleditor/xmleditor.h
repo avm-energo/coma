@@ -41,6 +41,9 @@ public:
 public slots:
     void Close();
     void CreateModule();
+    void EditModule();
+    void RemoveModule();
+    void SaveModule();
 };
 
 #endif // XMLEDITOR_H

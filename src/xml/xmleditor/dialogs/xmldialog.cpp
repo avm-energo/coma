@@ -1,69 +1,35 @@
 #include "xmldialog.h"
 
+#include "../../../widgets/epopup.h"
+
 #include <QGuiApplication>
-#include <QMessageBox>
+#include <QLineEdit>
 #include <QScreen>
 
-XmlDialog::XmlDialog(XmlSortProxyModel *model, QWidget *parent)
-    : QDialog(parent, Qt::Window), mModel(model), isChanged(false), mRow(0)
+XmlDialog::XmlDialog(QWidget *parent) : QDialog(parent, Qt::Window), isChanged(false)
 {
     setAttribute(Qt::WA_DeleteOnClose);
 }
 
-/// \brief Функция для вызова виртуального метода setupUI
-/// \details Вызывает setupUI, в качестве параметров
-/// передаётся строка с данными из модели
-void XmlDialog::setupUICall(int &row)
+void XmlDialog::startup(int row)
 {
     mRow = row; ///< row = -1, если диалог создаётся для создания item-а
-    auto selectedData = getSelectedData();
-    setupUI(selectedData);
-    this->exec();
-}
-
-/// \brief Функция, вызываемая при закрытии диалогового окна
-void XmlDialog::reject()
-{
-    // Если есть изменения, то показываем пользователю MessageBox
-    if (isChanged)
-    {
-        auto resBtn = QMessageBox::question(this, "Сохранение", tr("Сохранить изменения?\n"),
-            QMessageBox::Cancel | QMessageBox::No | QMessageBox::Yes, QMessageBox::Yes);
-        if (resBtn == QMessageBox::Yes)
-            saveData();
-    }
-    QDialog::reject();
-}
-
-void XmlDialog::setTitle(const QString title)
-{
-    mTitle = title;
-    setWindowTitle(mTitle);
-}
-
-/// \brief Функция возвращает список с данными указанной строки из модели
-QStringList XmlDialog::getSelectedData()
-{
-    // Если row = -1, то возвращаем пустой список (item создаётся с нуля)
     if (mRow == createId)
     {
+        mTitle = "Создание ";
         isChanged = true;
-        return {};
     }
     else
-    {
-        QStringList selectedData;
-        auto cols = mModel->columnCount();
-        for (auto i = 0; i < cols; i++)
-        {
-            auto index = mModel->index(mRow, i);
-            selectedData.append(mModel->data(index).value<QString>());
-        }
-        return selectedData;
-    }
+        mTitle = "Редактирование ";
+
+    auto mainLayout = new QVBoxLayout(this);
+    setupUI(mainLayout);
+    setWindowTitle(mTitle);
+    addSaveBtnAndApply(mainLayout);
+    setLayout(mainLayout);
+    emit modelDataRequest(row);
 }
 
-/// \brief Функция устанавливает фиксированный размер окна и отображает его в центре экрана
 void XmlDialog::setupSizePos(int width, int height)
 {
     // Настройки окна (размер, положение)
@@ -72,48 +38,52 @@ void XmlDialog::setupSizePos(int width, int height)
     setFixedSize(this->size());
 }
 
-/// \brief Функция принимает главный слой, добавляет туда кнопку
-/// для сохранения данных и устанавливает слой в качестве основного
 void XmlDialog::addSaveBtnAndApply(QVBoxLayout *main)
 {
     auto saveButton = new QPushButton("Сохранить изменения", this);
     QObject::connect(saveButton, &QPushButton::released, this, &XmlDialog::saveData);
     main->addWidget(saveButton);
-    setLayout(main);
 }
 
-/// \brief Функция для записи списка с данными в модель по указанной строке
-void XmlDialog::writeData(QStringList &saved)
+QStringList XmlDialog::collectData()
 {
-    auto cols = mModel->columnCount();
-    if (cols == saved.size())
+    QStringList collected;
+    for (auto &item : dlgItems)
     {
-        // Создаём данные
-        if (mRow == createId)
+        auto input = qobject_cast<QLineEdit *>(item);
+        collected.append(input->text());
+    }
+    return collected;
+}
+
+void XmlDialog::reject()
+{
+    // Если есть изменения, то показываем пользователю MessageBox
+    if (isChanged)
+    {
+        if (EMessageBox::question("Сохранить изменения?"))
+            saveData();
+    }
+    QDialog::reject();
+}
+
+bool XmlDialog::checkDataBeforeSaving()
+{
+    return true;
+}
+
+void XmlDialog::modelDataResponse(const QStringList &response)
+{
+    if (dlgItems.count() >= response.count())
+    {
+        auto iter = 0;
+        for (auto &item : dlgItems)
         {
-            auto index = mModel->append(saved);
-            mRow = index.row();
-        }
-        // Редактируем данные
-        else
-        {
-            for (auto i = 0; i < cols; i++)
-            {
-                auto index = mModel->index(mRow, i);
-                mModel->setData(index, saved[i]);
-            }
+            auto input = qobject_cast<QLineEdit *>(item);
+            input->setText(response[iter]);
+            iter++;
         }
     }
-}
-
-/// \brief Слот, вызываемый при изменении данных в диалоговом окне
-void XmlDialog::dataChanged()
-{
-    // Если появились изменения, меняем заголовок окна
-    if (!isChanged)
-        setWindowTitle(mTitle + " [ИЗМЕНЕНО]");
-    // Изменяем состояние (данные изменены)
-    isChanged = true;
 }
 
 void XmlDialog::saveData()
@@ -121,22 +91,44 @@ void XmlDialog::saveData()
     // Если есть изменения
     if (isChanged)
     {
-        // Собираем изменения из полей
-        auto collectedData = collectData();
-        // Записываем изменения в модель
-        writeData(collectedData);
-        // Изменяем состояние (данные сохранены, следовательно не изменены)
-        isChanged = false;
-        // После сохранения изменений в модель меняем заголовок окна
-        setWindowTitle(mTitle);
+        if (checkDataBeforeSaving())
+        {
+            // Собираем изменения из полей
+            auto collectedData = collectData();
+            // Отсылаем изменения в модель
+            if (mRow == createId)
+                emit createData(collectedData, &mRow);
+            else
+                emit updateData(collectedData, mRow);
+            // После сохранения изменений в модель меняем заголовок окна
+            setWindowTitle(mTitle);
+            // Изменяем состояние (данные сохранены, следовательно не изменены)
+            isChanged = false;
+        }
+        else
+            EMessageBox::warning(this, "");
     }
 }
 
-/// \overload dataChanged
-/// \brief Перегрузка слота, вызываемого при изменении данных в диалоговом окне
-/// \see dataChanged
+void XmlDialog::dataChanged()
+{
+    // Если появились изменения, меняем заголовок окна
+    if (!isChanged)
+    {
+        setWindowTitle(mTitle + " [ИЗМЕНЕНО]");
+        // Изменяем состояние (данные изменены)
+        isChanged = true;
+    }
+}
+
 void XmlDialog::dataChanged(const QString &strData)
 {
     Q_UNUSED(strData);
+    dataChanged();
+}
+
+void XmlDialog::dataChanged(int index)
+{
+    Q_UNUSED(index);
     dataChanged();
 }

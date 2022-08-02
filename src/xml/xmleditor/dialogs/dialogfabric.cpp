@@ -32,40 +32,40 @@ void XmlDialogFabric::CreateOrEditDialog(XmlSortProxyModel *model, int row, QWid
         switch (type)
         {
         case ModelType::AlarmsItem:
-            dialog = new XmlAlarmDialog(model, parent);
+            dialog = new XmlAlarmDialog(parent);
             break;
         case ModelType::Signals:
-            dialog = new XmlSignalDialog(model, parent);
+            dialog = new XmlSignalDialog(parent);
             break;
         case ModelType::SectionTabs:
-            dialog = new XmlSTabDialog(model, parent);
+            dialog = new XmlSTabDialog(parent);
             break;
         case ModelType::WorkJours:
-            dialog = new XmlWorkJourDialog(model, parent);
+            dialog = new XmlWorkJourDialog(parent);
             break;
         case ModelType::MeasJours:
-            dialog = new XmlMeasJourDialog(model, parent);
+            dialog = new XmlMeasJourDialog(parent);
             break;
         case ModelType::Modbus:
-            dialog = new XmlModbusDialog(model, parent);
+            dialog = new XmlModbusDialog(parent);
             break;
         case ModelType::Protocom:
-            dialog = new XmlProtocomDialog(model, parent);
+            dialog = new XmlProtocomDialog(parent);
             break;
         case ModelType::IEC60870:
-            dialog = new Xml104Dialog(model, parent);
+            dialog = new Xml104Dialog(parent);
             break;
         case ModelType::Config:
-            dialog = new XmlConfigDialog(model, parent);
+            dialog = new XmlConfigDialog(parent);
             break;
         case ModelType::Sections:
-            dialog = new XmlSectionDialog(model, parent);
+            dialog = new XmlSectionDialog(parent);
             break;
         case ModelType::Section:
-            dialog = new XmlSGroupDialog(model, parent);
+            dialog = new XmlSGroupDialog(parent);
             break;
         case ModelType::SGroup:
-            dialog = new XmlMWidgetDialog(model, parent);
+            dialog = new XmlMWidgetDialog(parent);
             break;
         default:
             if (row == createId)
@@ -76,7 +76,9 @@ void XmlDialogFabric::CreateOrEditDialog(XmlSortProxyModel *model, int row, QWid
         }
         if (dialog != nullptr)
         {
-            dialog->setupUICall(row);
+            // TODO: Connect XmlModel fuctions
+            dialog->startup(row);
+            dialog->exec();
         }
     }
     else
@@ -100,10 +102,14 @@ void XmlDialogFabric::RemoveOrEditDialog(XmlSortProxyModel *model, QModelIndexLi
                     EMessageBox::warning(parent, "Выбран недопустимый элемент");
                 else
                 {
+                    if (EMessageBox::question("Удалить выбранный элемент?"))
+                        model->remove(row);
+                    /*
                     auto resBtn = QMessageBox::question(parent, "Удаление", "Удалить выбранный элемент?",
                         QMessageBox::No | QMessageBox::Yes, QMessageBox::No);
                     if (resBtn == QMessageBox::Yes)
                         model->remove(row);
+                    */
                 }
             }
         }

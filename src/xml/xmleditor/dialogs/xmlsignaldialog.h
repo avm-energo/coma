@@ -6,13 +6,9 @@
 class XmlSignalDialog : public XmlDialog
 {
     Q_OBJECT
-private:
-    QLineEdit *idInput, *addrInput, *countInput;
-
 public:
-    explicit XmlSignalDialog(XmlSortProxyModel *model, QWidget *parent);
-    virtual void setupUI(QStringList &selectedData) override;
-    virtual QStringList collectData() override;
+    explicit XmlSignalDialog(QWidget *parent);
+    virtual void setupUI(QVBoxLayout *mainLayout) override;
 };
 
 #endif // XMLSIGNALDIALOG_H

@@ -6,13 +6,9 @@
 class XmlAlarmDialog : public XmlDialog
 {
     Q_OBJECT
-private:
-    QLineEdit *descInput, *addrInput;
-
 public:
-    explicit XmlAlarmDialog(XmlSortProxyModel *model, QWidget *parent);
-    virtual void setupUI(QStringList &selectedData) override;
-    virtual QStringList collectData() override;
+    explicit XmlAlarmDialog(QWidget *parent);
+    virtual void setupUI(QVBoxLayout *mainLayout) override;
 };
 
 #endif // XMLALARMDIALOG_H

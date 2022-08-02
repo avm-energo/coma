@@ -129,6 +129,8 @@ void MasterModel::getDialogRequest(const int &row)
                 auto itemStr = item.value<QString>();
                 retList.append(itemStr);
             }
+            else
+                retList.append("");
         }
         // Отправляем сигнал с ответом
         emit sendDialogResponse(retList);
@@ -137,10 +139,11 @@ void MasterModel::getDialogRequest(const int &row)
 
 void MasterModel::create(const QStringList &saved, int *row)
 {
+    *row = rowCount();
     QList<QStandardItem *> items;
     for (const auto &item : saved)
         items.append(new QStandardItem(item));
-    insertRow(rowCount() - 1, items);
+    insertRow(rowCount(), items);
     // TODO: Create the file - controller work
 }
 
@@ -156,6 +159,7 @@ void MasterModel::update(const QStringList &saved, const int &row)
             setData(itemIndex, saved[column]);
         }
     }
+    // TODO: Rename file if B or M changed - controller work
 }
 
 void MasterModel::remove(const int &row)

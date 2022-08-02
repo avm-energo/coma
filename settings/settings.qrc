@@ -57,5 +57,7 @@
         <file>protocom-3300.xml</file>
 		<file>protocom-3400.xml</file>
 		<file>protocom-3500.xml</file>
+		<file>template.xml</file>
+		<file>module-template.xml</file>
     </qresource>
 </RCC>

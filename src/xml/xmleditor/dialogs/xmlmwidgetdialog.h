@@ -6,16 +6,9 @@
 class XmlMWidgetDialog : public XmlDialog
 {
     Q_OBJECT
-private:
-    QLineEdit *desc, *startAddr, *count, *tooltip, *strArray;
-
 public:
-    XmlMWidgetDialog(XmlSortProxyModel *model, QWidget *parent);
-    virtual void setupUI(QStringList &selectedData) override;
-    virtual QStringList collectData() override;
-
-public slots:
-    virtual void saveData() override;
+    XmlMWidgetDialog(QWidget *parent);
+    virtual void setupUI(QVBoxLayout *mainLayout) override;
 };
 
 #endif // XMLMWIDGETDIALOG_H

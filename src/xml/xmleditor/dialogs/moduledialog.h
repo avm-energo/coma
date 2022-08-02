@@ -2,6 +2,7 @@
 #define MODULEDIALOG_H
 
 #include "xmleditor/dialogs/xmldialog.h"
+
 #include <QDialog>
 
 class ModuleDialog : public QDialog
@@ -12,6 +13,7 @@ protected:
     QList<std::tuple<QString, QString, bool>> dlgSettings;
     QList<QWidget *> dlgItems;
     int mRow;
+    QString mTitle;
 
     void SetupSizePos(int &width, int &height);
 

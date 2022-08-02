@@ -131,16 +131,16 @@ void TrendViewModel::toExcel()
         }
         auto analogVals = m_analogMainData[analogValues().at(j)];
         // emit recordsOverall(vect.size());
-        int curCount = 0;
+        int count = 0;
         for (auto &analogVal : analogVals)
         {
             workSheet->writeNumeric(currentRow++, currentColumn, analogVal);
-            if (curCount >= c_div)
+            if (count >= c_div)
             {
                 // emit currentRecord(i);
-                curCount = 0;
+                count = 0;
             }
-            ++curCount;
+            ++count;
         }
         ++currentColumn;
     }

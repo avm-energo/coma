@@ -47,9 +47,11 @@ QVBoxLayout *XmlEditor::GetMasterWorkspace()
     toolbar->setIconSize(QSize(30, 30));
     toolbar->addAction(QIcon(":/icons/tnstart.svg"), "Создать модуль", this, &XmlEditor::CreateModule);
     toolbar->addSeparator();
-    toolbar->addAction(QIcon(":/icons/tnosc.svg"), "Редактировать модуль", this, &XmlEditor::Close);
+    toolbar->addAction(QIcon(":/icons/tnosc.svg"), "Редактировать модуль", this, &XmlEditor::EditModule);
     toolbar->addSeparator();
-    toolbar->addAction(QIcon(":/icons/tnstop.svg"), "Удалить модуль", this, &XmlEditor::Close);
+    toolbar->addAction(QIcon(":/icons/tnstop.svg"), "Удалить модуль", this, &XmlEditor::RemoveModule);
+    toolbar->addSeparator();
+    toolbar->addAction(QIcon(":/icons/tnsave.svg"), "Сохранить модуль", this, &XmlEditor::SaveModule);
     workspace->addWidget(toolbar);
 
     // Создание и настройка QTableView для master
@@ -147,5 +149,35 @@ void XmlEditor::SlaveModelDialog(DialogType dlgType)
 
 void XmlEditor::CreateModule()
 {
-    auto a = new ModuleDialog(this);
+    auto moduleDlg = new ModuleDialog(this);
+    QObject::connect(moduleDlg, &ModuleDialog::ModelDataRequest, masterModel, &MasterModel::getDialogRequest);
+    QObject::connect(masterModel, &MasterModel::sendDialogResponse, moduleDlg, &ModuleDialog::ModelDataResponse);
+    QObject::connect(moduleDlg, &ModuleDialog::CreateData, masterModel, &MasterModel::create);
+    QObject::connect(moduleDlg, &ModuleDialog::UpdateData, masterModel, &MasterModel::update);
+    moduleDlg->SetData();
+    moduleDlg->exec();
+}
+
+void XmlEditor::EditModule()
+{
+    auto moduleDlg = new ModuleDialog(this);
+    QObject::connect(moduleDlg, &ModuleDialog::ModelDataRequest, masterModel, &MasterModel::getDialogRequest);
+    QObject::connect(masterModel, &MasterModel::sendDialogResponse, moduleDlg, &ModuleDialog::ModelDataResponse);
+    QObject::connect(moduleDlg, &ModuleDialog::CreateData, masterModel, &MasterModel::create);
+    QObject::connect(moduleDlg, &ModuleDialog::UpdateData, masterModel, &MasterModel::update);
+    auto selected = masterView->selectionModel()->selectedRows()[0].row();
+    moduleDlg->SetData(selected);
+    moduleDlg->exec();
+}
+
+void XmlEditor::RemoveModule()
+{
+    auto selected = masterView->selectionModel()->selectedRows()[0].row();
+    masterModel->remove(selected);
+}
+
+void XmlEditor::SaveModule()
+{
+    ;
+    ;
 }

@@ -6,13 +6,9 @@
 class Xml104Dialog : public XmlDialog
 {
     Q_OBJECT
-private:
-    QLineEdit *sigIdInput, *sigTypeInput, *transTypeInput, *sigGroupInput;
-
 public:
-    Xml104Dialog(XmlSortProxyModel *model, QWidget *parent);
-    virtual void setupUI(QStringList &selectedData) override;
-    virtual QStringList collectData() override;
+    Xml104Dialog(QWidget *parent);
+    virtual void setupUI(QVBoxLayout *mainLayout) override;
 };
 
 #endif // XML104DIALOG_H
