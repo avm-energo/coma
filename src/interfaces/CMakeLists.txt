@@ -4,6 +4,8 @@ project(interfaces LANGUAGES CXX)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
+conan_cmake_configure(REQUIRES hidapi/0.10.1 GENERATORS cmake_find_package)
+
 find_package(hidapi REQUIRED)
 
 find_package(

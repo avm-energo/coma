@@ -14,12 +14,13 @@ public:
     void setModuleType(Modules::MezzanineBoard type);
 
 private:
-    void setMessages() override;
     void setTuneFunctions() override;
     Error::Msg showScheme();
     Error::Msg check();
 
-    Mip::AvtukVariants m_moduleType;
+    using MType = Modules::MezzanineBoard;
+
+    MType m_moduleType;
 
 protected:
 };

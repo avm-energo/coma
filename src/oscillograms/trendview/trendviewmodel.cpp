@@ -1,22 +1,28 @@
 #include "trendviewmodel.h"
 
-#include <QDebug>
+#include "../gen/comaexception.h"
+#include "../widgets/epopup.h"
 
-TrendViewModel::TrendViewModel(int pointsnum) : pointsNum(pointsnum)
+#include <QDebug>
+#include <QXlsx/xlsxdocument.h>
+
+TrendViewModel::TrendViewModel(int pointsnum, QObject *parent) : pointsNum(pointsnum), QObject(parent)
 {
 }
 
-void TrendViewModel::addAnalogPoint(const QString &graphNum, double pointValue)
+bool TrendViewModel::addAnalogPoint(const QString &graphNum, double pointValue)
 {
     if (m_analogMainData.contains(graphNum))
     {
         QVector<double> tmpv = m_analogMainData.value(graphNum);
         tmpv.append(pointValue);
         m_analogMainData.insert(graphNum, tmpv);
+        return true;
     }
     else
     {
         qWarning() << "Graph with name " << graphNum << " not found!";
+        return false;
     }
 }
 
@@ -71,6 +77,79 @@ void TrendViewModel::processAnalogNames(const QStringList &list)
     analogNames = list;
     for (auto &&item : list)
         m_analogMainData.insert(item, QVector<double>());
+}
+
+void TrendViewModel::toExcel()
+{
+    constexpr int c_div = 1000;
+    //    emit eventMessage("Разборка осциллограммы");
+    QXlsx::Document *doc = new QXlsx::Document(m_filename, this);
+    QXlsx::Worksheet *workSheet = doc->currentWorksheet();
+    workSheet->writeString(2, 2, "Тип осциллограммы:");
+    workSheet->writeString(2, 3, QString::number(m_idOsc));
+    int currentRow = 4;
+    workSheet->writeString(currentRow, 1, xAxisDescription());
+    for (int i = 0; i < analogDescriptions().size(); ++i)
+        workSheet->writeString(currentRow, i + 2, analogDescriptions().at(i));
+    ++currentRow;
+    int pushRow = currentRow;
+    if (m_mainPoints.size() < 2)
+    {
+        //        emit finished();
+        throw ComaException("Недостаточно данных по оси абсцисс");
+    }
+    //    else
+    //    {
+    //        throw ComaException("Test exception");
+    //        emit finished();
+    //    }
+    //    emit eventMessage("Экспорт абсцисс");
+    // emit recordsOverall(m_mainPoints.size());
+    int curCount = 0;
+    for (int i = 0; i < m_mainPoints.size(); ++i)
+    {
+        workSheet->writeNumeric(currentRow++, 1, m_mainPoints.at(i));
+        if (curCount >= c_div)
+        {
+            // emit currentRecord(i);
+            curCount = 0;
+        }
+        ++curCount;
+    }
+    if (analogDescriptions().size() != analogValues().size())
+    {
+        //        emit finished();
+        throw ComaException("Размерности массивов значений и описаний не совпадают");
+    }
+    int currentColumn = 2;
+    //    emit eventMessage("Экспорт ординат");
+    for (int j = 0; j < analogDescriptions().size(); ++j)
+    {
+        currentRow = pushRow;
+        if (!m_analogMainData.contains(analogValues().at(j)))
+        {
+            //            emit finished();
+            throw ComaException("Количество значений не соответствует описанию");
+        }
+        QVector<double> vect = m_analogMainData[analogValues().at(j)];
+        // emit recordsOverall(vect.size());
+        int curCount = 0;
+        for (int i = 0; i < vect.size(); ++i)
+        {
+            workSheet->writeNumeric(currentRow++, currentColumn, vect.at(i));
+            if (curCount >= c_div)
+            {
+                // emit currentRecord(i);
+                curCount = 0;
+            }
+            ++curCount;
+        }
+        ++currentColumn;
+    }
+    //    emit eventMessage("Запись файла");
+    doc->save();
+    //    emit finished();
+    doc->deleteLater();
 }
 
 float TrendViewModel::xmin() const
@@ -141,4 +220,9 @@ const QMap<QString, QVector<double>> &TrendViewModel::digitalMainData() const
 void TrendViewModel::setDigitalMainData(const QMap<QString, QVector<double>> &newDigitalMainData)
 {
     m_digitalMainData = newDigitalMainData;
+}
+
+void TrendViewModel::setFilename(const QString &filename)
+{
+    m_filename = filename;
 }

@@ -70,29 +70,11 @@ QList<UDialog *> Module::dialogs()
     return list;
 }
 
-QList<UDialog *> Module::confDialogs()
-{
-    QList<UDialog *> list;
-    for (UDialog *dlg : qAsConst(m_dialogs))
-    {
-        if (dlg->objectName().contains("conf"))
-            list.append(dlg);
-    }
-    return list;
-}
-
 void Module::addDialogToList(UDialog *dlg, const QString &caption, const QString &name)
 {
     dlg->setObjectName(name);
     dlg->setCaption(caption);
     m_dialogs.append(dlg);
-}
-
-void Module::insertDialogToList(UDialog *dlg, int pos, const QString &caption, const QString &name)
-{
-    dlg->setObjectName(name);
-    dlg->setCaption(caption);
-    m_dialogs.insert(pos, dlg);
 }
 
 void Module::parentTWTabChanged(int index)
@@ -102,14 +84,14 @@ void Module::parentTWTabChanged(int index)
 
     for (auto &dialog : m_dialogs)
     {
-        if (dialog->updatesEnabled())
-            dialog->setUpdatesDisabled();
+        //        if (dialog->updatesEnabled())
+        dialog->engine()->setUpdatesEnabled(false);
     }
 
     UDialog *udlg = m_dialogs.at(index);
 
     udlg->setEnabled(true);
-    udlg->setUpdatesEnabled();
+    udlg->engine()->setUpdatesEnabled();
     udlg->reqUpdate();
 }
 
@@ -119,7 +101,7 @@ void Module::closeDialogs()
         m_dialogs.takeFirst()->close();
 }
 
-ModuleSettings *Module::settings() const
+ModuleSettingsDeprecated *Module::settings() const
 {
     return m_settings.get();
 }
@@ -131,7 +113,7 @@ bool Module::loadSettings(const Modules::StartupInfoBlock &startupInfoBlock, int
     if (!loadCheckSettings(m_gsettings.check))
         return false;
 
-    m_settings = std::unique_ptr<ModuleSettings>(new ModuleSettings(startupInfoBlock));
+    m_settings = std::unique_ptr<ModuleSettingsDeprecated>(new ModuleSettingsDeprecated(startupInfoBlock));
     m_settings->interfaceType = interfaceType;
     if (Board::isUSIO(Modules::BaseBoard(startupInfoBlock.MTypeB), Modules::MezzanineBoard(startupInfoBlock.MTypeM)))
     {

@@ -22,18 +22,15 @@
 #include <QVBoxLayout>
 #include <QXlsx/xlsxdocument.h>
 
-constexpr int defaultRatio = 3;
-constexpr int maxRatio = 5;
-
 CheckDialog::CheckDialog(const CheckItem &item, const categoryMap &categories, QWidget *parent)
     : UDialog(parent)
-    , proxySP(new DataTypesProxy(&DataManager::GetInstance()))
-    , proxyFS(new DataTypesProxy(&DataManager::GetInstance()))
+    //    , proxySP(new DataTypesProxy(&DataManager::GetInstance()))
+    //    , proxyFS(new DataTypesProxy(&DataManager::GetInstance()))
     , m_item(item)
     , m_categories(categories)
 {
-    proxySP->RegisterType<DataTypes::SinglePointWithTimeStruct>();
-    proxyFS->RegisterType<DataTypes::FloatStruct>();
+    //    proxySP->RegisterType<DataTypes::SinglePointWithTimeStruct>();
+    //    proxyFS->RegisterType<DataTypes::FloatStruct>();
     XlsxWriting = false;
     m_readDataInProgress = false;
     xlsx = nullptr;
@@ -55,13 +52,14 @@ void CheckDialog::setupUIAbs()
 {
     QVBoxLayout *lyout = new QVBoxLayout;
     QTabWidget *CheckTW = new QTabWidget;
-    connect(proxySP.get(), &DataTypesProxy::DataStorable, this, &CheckDialog::updateSPData);
+    //    connect(proxySP.get(), &DataTypesProxy::DataStorable, this, &CheckDialog::updateSPData);
     for (auto &w : m_BdUIList)
     {
         w.widget->uponInterfaceSetting();
         CheckTW->addTab(w.widget, " " + w.widgetCaption + " ");
-        connect(
-            proxyFS.get(), &DataTypesProxy::DataStorable, w.widget, &UWidget::updateFloatData, Qt::QueuedConnection);
+        //        connect(
+        //            proxyFS.get(), &DataTypesProxy::DataStorable, w.widget, &UWidget::updateFloatData,
+        //            Qt::QueuedConnection);
     }
     lyout->addWidget(CheckTW);
     setLayout(lyout);
@@ -120,10 +118,8 @@ QWidget *CheckDialog::BottomUI()
     return w;
 }
 
-// void AbstractCheckDialog::updateSPData(const DataTypes::SinglePointWithTimeStruct &sp)
-void CheckDialog::updateSPData(const QVariant &msg)
+void CheckDialog::updateSPData(const DataTypes::SinglePointWithTimeStruct &sp)
 {
-    auto sp = msg.value<DataTypes::SinglePointWithTimeStruct>();
     bool status = sp.sigVal;
     if (m_highlightCrit.contains(sp.sigAdr))
     {
@@ -227,15 +223,6 @@ void CheckDialog::ReadAnalogMeasurementsAndWriteToFile()
             pb->setText("Идёт запись: " + TimeElapsed);
         }
     }
-    // int bdkeyssize = Bd_blocks.size();
-    // for (int bdnum = 0; bdnum < bdkeyssize; ++bdnum)
-    // {
-    //    if (Bd_blocks.value(bdnum)->toxlsxwrite)
-    //    {
-    //        if (XlsxWriting)
-    //            WriteToFile(WRow, bdnum);
-    //    }
-    // }
     WRow++;
     m_readDataInProgress = false;
 }
@@ -296,15 +283,15 @@ void CheckDialog::TWTabChanged(int index)
         return;
     for (auto &item : m_BdUIList)
     {
-        if (item.widget->updatesEnabled())
-            item.widget->setUpdatesDisabled();
+        //        if (item.widget->updatesEnabled())
+        item.widget->engine()->setUpdatesEnabled(false);
     }
     Q_ASSERT(m_BdUIList.size() >= index);
     if (m_BdUIList.size() < index)
         return;
     UWidget *w = m_BdUIList.at(index).widget;
 
-    w->setUpdatesEnabled();
+    w->engine()->setUpdatesEnabled();
     w->reqUpdate();
 }
 
@@ -331,11 +318,16 @@ void CheckDialog::setupUI()
     QMultiMap<uint16_t, check::itemVector::value_type> itemByGroup;
     for (auto &&item : m_item.itemsVector)
     {
-        std::visit(overloaded {                              //
-                       [&](const check::detail::Record &arg) //
-                       { itemByGroup.insert(arg.group.value(), arg); },
-                       [&](const check::detail::RecordList &arg) //
-                       { itemByGroup.insert(arg.group, arg); } },
+        std::visit(overloaded {
+                       [&](const check::detail::Record &arg)           //
+                       {                                               //
+                           itemByGroup.insert(arg.group.value(), arg); //
+                       },                                              //
+                       [&](const check::detail::RecordList &arg)       //
+                       {                                               //
+                           itemByGroup.insert(arg.group, arg);         //
+                       }                                               //
+                   },
             item);
     }
     auto keys = itemByGroup.uniqueKeys();
@@ -358,7 +350,7 @@ void CheckDialog::setupUI()
 
         m_BdUIList.push_back({ m_categories.value(key), w });
     }
-    m_BdUIList.first().widget->setUpdatesEnabled();
+    m_BdUIList.first().widget->engine()->setUpdatesEnabled();
     setupUIAbs();
 }
 
@@ -376,19 +368,19 @@ void CheckDialog::addSignals(unsigned int key, UWidget *widget)
 
             case ctti::unnamed_type_id<DataTypes::FloatStruct>().hash():
             {
-                widget->addFloatBd({ sig.start_addr, sig.count });
+                widget->engine()->addFloat({ sig.start_addr, sig.count });
                 break;
             }
 
             case ctti::unnamed_type_id<DataTypes::SinglePointWithTimeStruct>().hash():
             {
-                widget->addSpBd({ sig.start_addr, sig.count });
+                widget->engine()->addSp({ sig.start_addr, sig.count });
                 break;
             }
 
             case ctti::unnamed_type_id<DataTypes::BitStringStruct>().hash():
             {
-                widget->addBsBd({ sig.start_addr, sig.count });
+                widget->engine()->addBs({ sig.start_addr, sig.count });
                 break;
             }
 
@@ -399,23 +391,12 @@ void CheckDialog::addSignals(unsigned int key, UWidget *widget)
     }
 }
 
-static inline int goldenRatio(int value)
-{
-    int multiplier = value / 10;
-    for (auto i = maxRatio + multiplier; i != defaultRatio; --i)
-    {
-        if (!(value % i))
-            return i;
-    }
-    return defaultRatio + multiplier;
-}
-
 void CheckDialog::setup(const check::detail::Record &arg, QGroupBox *gb)
 {
     gb->setTitle(arg.header.value());
 
     auto count = std::size(arg.desc.value());
-    auto itemsOneLine = goldenRatio(count);
+    auto itemsOneLine = StdFunc::goldenRatio(count);
 
     QGridLayout *gridlyout = new QGridLayout;
     for (auto i = 0; i != count; ++i)
@@ -441,11 +422,10 @@ void CheckDialog::setup(const check::detail::RecordList &arg, QGroupBox *gb)
     QVBoxLayout *mainLayout = new QVBoxLayout;
     for (auto &&currentRecord : arg.records)
     {
-
         assert(
             currentRecord.toolTip.has_value() ? (currentRecord.toolTip->size() == currentRecord.desc->size()) : true);
 
-        auto itemsOneLine = goldenRatio(currentRecord.desc->count());
+        auto itemsOneLine = StdFunc::goldenRatio(currentRecord.desc->count());
 
         QGridLayout *gridlyout = new QGridLayout;
         for (auto i = 0; i < currentRecord.desc->count(); ++i)

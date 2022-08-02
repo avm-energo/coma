@@ -7,6 +7,8 @@
 #include "parseid10001.h"
 #include "parseid10020.h"
 #include "parseid10030.h"
+#include "parseid10040.h"
+#include "parseid10050.h"
 
 OscManager::~OscManager()
 {
@@ -14,7 +16,7 @@ OscManager::~OscManager()
 
 void OscManager::loadOsc(TrendViewModel *model)
 {
-    trendDialog = UniquePointer<TrendViewDialog>(new TrendViewDialog);
+    trendDialog = new TrendViewDialog;
     model->setXmax((static_cast<float>(model->length() / 2)));
     model->setXmin(-model->xmax());
 
@@ -37,22 +39,20 @@ void OscManager::loadOsc(TrendViewModel *model)
         trendDialog->setRange(model->xmin(), model->xmax(), -200, 200);
         break;
     }
+    case AVTUK_KDV::OSC_ID:
+    {
+        trendDialog->setRange(model->xmin(), model->xmax(), -200, 200);
+        break;
+    }
+    case AVTUK_KDV::SPEC_ID:
+    {
+        trendDialog->setRange(model->xmin(), model->xmax(), -200, 200);
+        break;
+    }
     case AVTUK_21::OSC_ID_MIN:
     {
         // 10000 мс, 20 мА (сделать автонастройку в зависимости от конфигурации по данному каналу)
         trendDialog->setRange(0, 10000, -20, 20);
-        break;
-    }
-    case ID_OSC_CH0:
-    case ID_OSC_CH0 + 1:
-    case ID_OSC_CH0 + 2:
-    case ID_OSC_CH0 + 3:
-    case ID_OSC_CH0 + 4:
-    case ID_OSC_CH0 + 5:
-    case ID_OSC_CH0 + 6:
-    case ID_OSC_CH0 + 7:
-    {
-        trendDialog->setRange(model->xmin(), model->xmax(), -200, 200);
         break;
     }
     }
@@ -62,8 +62,8 @@ void OscManager::loadOsc(TrendViewModel *model)
     trendDialog->setupUI();
     trendDialog->showPlot();
     trendDialog->show();
-    qDebug() << trendDialog->size();
-    //trendDialog->adjustSize();
+    //    qDebug() << trendDialog->size();
+    // trendDialog->adjustSize();
 }
 
 std::unique_ptr<TrendViewModel> OscManager::load(const FileStruct &fs) const
@@ -101,6 +101,30 @@ std::unique_ptr<TrendViewModel> OscManager::load(const Record &record, const Fil
     {
         parseModule = std::make_unique<ParseID10020>(fs.data);
         trendViewModel = std::make_unique<TrendViewModel80>((record.len));
+        break;
+    }
+    case AVTUK_KDV::OSC_ID:
+    {
+        parseModule = std::make_unique<ParseID10040>(fs.data);
+        trendViewModel = std::make_unique<TrendViewModelKDV>(record.len);
+        break;
+    }
+    case AVTUK_KDV::OSCV_ID:
+    {
+        parseModule = std::make_unique<ParseID10040>(fs.data);
+        trendViewModel = std::make_unique<TrendViewModelKDVV>(record.len);
+        break;
+    }
+    case AVTUK_KDV::SPEC_ID:
+    {
+        parseModule = std::make_unique<ParseID10050>(fs.data);
+        trendViewModel = std::make_unique<TrendViewModelKDVSpec>(record.len);
+        break;
+    }
+    case AVTUK_KDV::SPECV_ID:
+    {
+        parseModule = std::make_unique<ParseID10050>(fs.data);
+        trendViewModel = std::make_unique<TrendViewModelKDVVSpec>(record.len);
         break;
     }
     case AVTUK_21::OSC_ID_MIN:

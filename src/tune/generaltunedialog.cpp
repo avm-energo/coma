@@ -28,6 +28,7 @@ void GeneralTuneDialog::SetupUI()
 
     lyout->addStretch(100);
     int count = 1;
+    m_calibrSteps = m_dialogList.size() + 1;
     for (auto &d : m_dialogList)
     {
         QString tns = "tn" + QString::number(count++);

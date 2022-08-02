@@ -5,14 +5,17 @@
 #include "../gen/error.h"
 #include "../interfaces/baseinterface.h"
 #include "../module/board.h"
-//#include "../models/valuemodel.h"
 
+#include <QHBoxLayout>
 #include <QWidget>
 
 class DataBlock : public QObject
 {
     Q_OBJECT
 public:
+    static constexpr char ValuesFormat[]
+        = "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; font: bold; }";
+
     struct BlockStruct
     {
         int blocknum;                        // number of the block to send corresponding command
@@ -27,7 +30,6 @@ public:
     {
         QString extension;
         QString mask;
-        //        QString filename;
     };
 
     QMap<DataTypes::DataBlockTypes, FilePropertiesStruct> ExtMap
@@ -36,8 +38,24 @@ public:
               { DataTypes::DataBlockTypes::BdBlock, { ".bd", "Data files (*.bd?)" } },
               { DataTypes::DataBlockTypes::BdaBlock, { ".bda", "Simple data files (*.bda)" } } };
 
-    bool m_widgetIsSet;
-    QWidget *m_widget;
+    using ValueType = std::variant<float *, quint32 *>;
+
+    /*! \brief Структура, описывающая значение
+     */
+    struct ValueStr
+    {
+        QString desc;
+        QString tooltip;
+        QString valueId;
+        ValueType value;
+        int precision;
+    };
+
+    struct ValueGroupStr
+    {
+        QString groupDesc;
+        QList<ValueStr> values;
+    };
 
     inline const QString cpuIDFilenameStr()
     {
@@ -45,47 +63,85 @@ public:
             = Board::GetInstance().UID() + ExtMap[m_block.blocktype].extension + QString::number(m_block.blocknum);
         return filenamestr;
     }
+
     explicit DataBlock(QObject *parent = nullptr);
     ~DataBlock();
+
+    /*! \brief Copy prepared block to inner variable m_block
+     *  \param bds[in] - prepared block
+     */
     void setBlock(const BlockStruct &bds);
-    //    virtual void setupUI() = 0;                                     // frontend for block visualisation
-    //    void setModel(const QList<ValueItem *> &dd, int columnsnumber); // default columnsnumber = 5
-    //    QWidget *widget();
+
+    /*! \brief Returns block visualisation for insert into GUI
+     *  \param showButtons[in] (bool) - show or not bottom buttons widget (load/save to/from file,
+     *         load/save to/from module, set defaults - for configuration and tune parameters
+     *  \returns QWidget - widget to insert into GUI
+     */
     QWidget *widget(bool showButtons = true);
-    virtual void createWidget() = 0;
+
+    /*! \brief Create block widget
+     */
+    void createWidget();
+
+    QHBoxLayout *addBlockValueToWidget(ValueStr &values);
+
+    /*! \brief Return block
+     */
     BlockStruct block();
-    virtual void setDefBlock() = 0;
-    virtual void updateWidget() = 0;
-    virtual void updateFromWidget(); // semi-virtual function, need to be reimplemented in corresponding blocks
-    //    static void getFileProperties(DataTypes::DataBlockTypes type, FilePropertiesStruct &st);
+
+    /*! \brief Copy values from block to widget fields
+     */
+    void updateWidget();
+
+    /*! \brief Update specific fields
+     */
+    virtual void specificUpdateWidget() {};
+
+    /*! \brief Update block values from widget fields
+     */
+    void updateFromWidget();
+
+    /*! \brief Update specific values
+     */
+    virtual void specificUpdateFromWidget() {};
+
+    /*! \brief Setup visual representation of block data
+     */
+    virtual void setupValuesDesc() = 0;
+
+    virtual void setDefBlock() {};
+
+    template <typename T>
+    DataBlock::ValueGroupStr addGroupToValues(
+        const QString &groupName, const QString &name, int howMuch, int fromWhich, T *startValue, int precision)
+    {
+        ValueGroupStr vg;
+        vg.groupDesc = groupName;
+        for (int i = 0; i < howMuch; ++i)
+        {
+            vg.values.append({ name + QString::number(i), "", "value[" + QString::number(i + fromWhich) + "]",
+                startValue, precision });
+            ++startValue;
+        }
+        return vg;
+    }
+
     void readBlockFromModule();
     Error::Msg writeBlockToModule();
-
     QWidget *blockButtonsUI();
+
+    bool m_widgetIsSet;
+    QWidget *m_widget;
+    QList<ValueGroupStr> m_valuesDesc;
 
 signals:
 
 private:
-    //    QList<DataDescription> m_dataList;
-    //    ValueModel *m_VModel;
-    BlockStruct m_block;
+    BlockStruct m_block, m_defBlock;
     bool m_isBottomButtonsWidgetCreated;
     QWidget *m_bottomButtonsWidget;
-    //    BaseInterface *m_iface;
-
-    //    int m_blockNum;
-    //    DataBlockTypes m_blockType;
-    //    QString m_blockName;
-    //    void *m_block;
-    //    int m_blockSize;
-    //    int m_curModelRow;
-    //    int m_curModelColumn;
-
-    void createBottomButtonsWidget();
 
 public slots:
-    //    void updateModel();
-    //    void updateValues();
     void setDefBlockAndUpdate();
     void readAndUpdate();
     Error::Msg readFromFile();

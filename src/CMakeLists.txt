@@ -117,6 +117,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS             ON)
 
 message(STATUS "Cached target arch: " ${CACHED_PROJECT_TARGET_NAME})
 message(STATUS "Current target arch: " ${PROJECT_TARGET_NAME})
+message(STATUS "Conan target arch: " ${CONAN_TARGET_NAME})
 message(STATUS "Sysroot: " ${CMAKE_SYSROOT})
 if(NOT DEFINED CACHED_PROJECT_TARGET_NAME)
     set(CACHED_PROJECT_TARGET_NAME "dummy")

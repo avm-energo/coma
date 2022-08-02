@@ -42,5 +42,6 @@ public:
 protected:
     DataTypes::S2FilePack files;
 
-    const static inline auto isOscHeader = [](const DataTypes::S2Record &record) { return (record.ID == MT_HEAD_ID); };
+    const static inline auto isOscHeader
+        = [](const DataTypes::S2Record &record) { return ((record.ID == MT_HEAD_ID) || (record.ID == MT_SPEC_ID)); };
 };

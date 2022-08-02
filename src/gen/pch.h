@@ -13,5 +13,3 @@
 #include <QObject>
 
 typedef unsigned char byte;
-
-#define NAMEOF(variable) ((decltype(&variable)) nullptr, #variable)

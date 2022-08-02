@@ -25,7 +25,10 @@ bool ParseID10020::Parse(quint32 id, const S2DataTypes::OscHeader &header, Trend
         if (!PosPlusPlus(&point, position, sizeof(Point8x)))
             return false;
         for (std::size_t j = 0; j < point.An.size(); ++j)
-            model->addAnalogPoint(analogValues.at(j), point.An[j]);
+        {
+            if (!model->addAnalogPoint(analogValues.at(j), point.An[j]))
+                return false;
+        }
     }
     return true;
 }

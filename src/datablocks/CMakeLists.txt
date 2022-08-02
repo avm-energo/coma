@@ -9,18 +9,14 @@ find_package(
   COMPONENTS Core Network Xml Widgets
   REQUIRED)
 
+file(GLOB_RECURSE files_cpp ${PROJECT_SOURCE_DIR}/*.cpp)
+file(GLOB_RECURSE files_h ${PROJECT_SOURCE_DIR}/*.h)
+
 add_library(
   ${PROJECT_NAME} STATIC
-  bd0.cpp
-  bd0.h
-  datablock.cpp
-  datablock.h
-  kiv/bac.cpp
-  kiv/bac.h
-  kiv/bda.cpp
-  kiv/bda.h
-  kiv/bdain.cpp
-  kiv/bdain.h)
+  ${files_cpp}
+  ${files.h}
+)
 
 target_link_libraries(
   ${PROJECT_NAME}

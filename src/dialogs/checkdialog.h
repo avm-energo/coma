@@ -79,7 +79,7 @@ public:
             break;
         }
     }
-    void updateSPData(const QVariant &msg) override;
+    void updateSPData(const DataTypes::SinglePointWithTimeStruct &sp) override;
 
 protected:
     /*! \brief QList для вкладок текущего виджета
@@ -113,7 +113,7 @@ private:
     bool m_readDataInProgress;
     QElapsedTimer *ElapsedTimeCounter;
     int WRow;
-    UniquePointer<DataTypesProxy> proxySP, proxyFS;
+    //    UniquePointer<DataTypesProxy> proxySP, proxyFS;
 
     void ReadAnalogMeasurementsAndWriteToFile();
     void setup(const check::detail::Record &arg, QGroupBox *gb);

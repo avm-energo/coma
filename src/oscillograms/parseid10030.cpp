@@ -35,7 +35,10 @@ bool ParseID10030::Parse(quint32 id, const S2DataTypes::OscHeader &header, Trend
             DisPoint >>= 1;
         }
         for (int j = 0; j < analogValues.size(); ++j)
-            model->addAnalogPoint(analogValues.at(j), point.An[j]);
+        {
+            if (!model->addAnalogPoint(analogValues.at(j), point.An[j]))
+                return false;
+        }
     }
     return true;
 }

@@ -15,14 +15,13 @@ public:
     TuneKIVR(ConfigV *config, int tuneStep, QWidget *parent = nullptr);
 
 private:
-    Bac *m_bac;
+    BacA284 *m_bac;
     Bda *m_bda;
     double m_pt100;
     int m_curTuneStep;
     BdaIn m_bdain;
     int m_BacWidgetIndex, m_BdaWidgetIndex;
 
-    void setMessages() override;
     void setTuneFunctions() override;
 
     Error::Msg showPreWarning();

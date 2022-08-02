@@ -102,7 +102,6 @@ void StartupKIVDialog::SetupUI()
 
     setLayout(lyout);
     setObjectName("corDialog");
-    connect(proxyFS.get(), &DataTypesProxy::DataStorable, this, &UWidget::updateFloatData, Qt::QueuedConnection);
 }
 
 void StartupKIVDialog::SaveToFile()

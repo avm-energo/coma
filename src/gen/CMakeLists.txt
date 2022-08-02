@@ -9,12 +9,14 @@ find_package(
   COMPONENTS Core Network Xml
   REQUIRED)
 
-file(GLOB_RECURSE files_cpp ${PROJECT_SOURCE_DIR}/*.cpp)
-file(GLOB_RECURSE files_h ${PROJECT_SOURCE_DIR}/*.h)
+file(GLOB_RECURSE files_cpp *.cpp)
+file(GLOB_RECURSE files_h *.h)
 
 add_library(
   gen STATIC
-  ${files_cpp} ${files_h} )
+  ${files_cpp}
+  ${files_h}
+)
 
 target_link_libraries(
   gen

@@ -38,6 +38,7 @@ constexpr char YLLCOLOR[] = "#CCCC44";
 constexpr char YLDCOLOR[] = "#CCCC00";
 constexpr char BLDCOLOR[] = "#0000FF";
 constexpr char BLUCOLOR[] = "#2222FF";
+constexpr char BLLCOLOR[] = "#6666FF";
 
 enum ColorsNumbers
 {

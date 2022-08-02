@@ -165,7 +165,7 @@ bool S2::RestoreData(QByteArray bain, QList<DataTypes::S2Record> &outlist)
     bain.remove(0, sizeof(S2DataTypes::FileHeader));
 
     // проверка контрольной суммы
-    if (!CheckCRC32(&bain.data()[0], bain.size(), fh.crc32))
+    if (!CheckCRC32(&bain.data()[0], fh.size, fh.crc32))
     {
         qCritical() << "S2" << Error::Msg::CrcError; // выход за границу принятых байт
         return false;

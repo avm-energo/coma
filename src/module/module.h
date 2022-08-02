@@ -40,15 +40,13 @@ public:
         Q_UNUSED(typeM);
     };
     QList<UDialog *> dialogs();
-    QList<UDialog *> confDialogs();
     void addDialogToList(UDialog *dlg, const QString &caption = "", const QString &name = "");
-    void insertDialogToList(UDialog *dlg, int pos = 0, const QString &caption = "", const QString &name = "");
 
     void startTimeTimer();
     void stopTimeTimer();
     void parentTWTabChanged(int index);
     void closeDialogs();
-    ModuleSettings *settings() const;
+    ModuleSettingsDeprecated *settings() const;
     bool loadUsioSettings(const Modules::StartupInfoBlock &startupInfoBlock);
     bool loadSettings(const Modules::StartupInfoBlock &startupInfoBlock = Board::GetInstance().baseSerialInfo(),
         int interfaceType = Board::GetInstance().interfaceType());
@@ -81,5 +79,5 @@ protected:
 private:
     QList<UDialog *> m_dialogs;
     QString m_directory;
-    std::unique_ptr<ModuleSettings> m_settings;
+    std::unique_ptr<ModuleSettingsDeprecated> m_settings;
 };

@@ -226,10 +226,10 @@ public:
     static void AddLabelAndLineeditH(QLayout *lyout, QString caption, QString lename, bool enabled = false);
     static QWidget *NewLBLAndLBL(QWidget *parent, QString lblname, QString caption, bool enabled = false);
     static QWidget *NewLBLAndLE(QWidget *parent, QString caption, QString lename, bool enabled = false);
-    static void SetEnabled(QWidget *parent, const QString &wname, bool enabled);
-    static void SetVisible(QWidget *parent, const QString &wname, bool visible);
-    static void setMinimumSize(QWidget *parent, const QString &wname, int width, int height);
-    static QString StringValueWithCheck(float value, int precision = 5, bool exp = false);
+    static void SetEnabled(QWidget *w, const QString &wname, bool enabled);
+    static void SetVisible(QWidget *w, const QString &wname, bool visible);
+    static void setMinimumSize(QWidget *w, const QString &wname, int width, int height);
+    static QString StringFloatValueWithCheck(float value, int precision = 5, bool exp = false);
     static QVariant FloatValueWithCheck(float value);
     static QImage *TwoImages(const QString &first, const QString &second);
 

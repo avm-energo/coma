@@ -28,7 +28,7 @@ private slots:
     void writePCDate();
     void writeDate();
     void uponInterfaceSetting();
-    void updateBitStringData(const QVariant &msg);
+    void updateBitStringData(const DataTypes::BitStringStruct &bs);
 };
 
 namespace settings

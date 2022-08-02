@@ -1,18 +1,22 @@
 #pragma once
 
 #include <QMap>
+#include <QObject>
 #include <QVector>
 
-class TrendViewModel
+constexpr int MAXGRAPHSPERPLOT = 14;
+
+class TrendViewModel : public QObject
 {
+    Q_OBJECT
 public:
-    TrendViewModel(int pointsnum);
+    TrendViewModel(int pointsnum, QObject *parent = nullptr);
     TrendViewModel() = default;
     virtual ~TrendViewModel() = default;
 
     // инициализация графиков
     // имена графиков контактных/аналоговых сигналов, количество точек, диапазон по оси Y для аналоговых
-    void addAnalogPoint(const QString &graphNum, double pointValue);
+    bool addAnalogPoint(const QString &graphNum, double pointValue);
     void addDigitalPoint(const QString &GraphNum, int pointValue);
     bool setPointsAxis(float start, float step);
     bool digitalContains(const QString &key) const;
@@ -20,13 +24,30 @@ public:
 
     void processDigitalNames(const QStringList &list);
     void processAnalogNames(const QStringList &list);
+    void toExcel();
 
     virtual QStringList analogColors() const = 0;
-    virtual QStringList digitalColors() const = 0;
+    virtual QStringList digitalColors() const
+    {
+        return {};
+    };
     virtual QStringList analogDescriptions() const = 0;
-    virtual QStringList digitalDescriptions() const = 0;
+    virtual QStringList digitalDescriptions() const
+    {
+        return {};
+    };
+    ;
     virtual QStringList analogValues() const = 0;
-    virtual QStringList digitalValues() const = 0;
+    virtual QStringList digitalValues() const
+    {
+        return {};
+    };
+    ;
+
+    virtual QString xAxisDescription() const
+    {
+        return "Время, мс";
+    };
 
     virtual void addDigitalValue(const QString &value)
     {
@@ -59,13 +80,23 @@ public:
     const QMap<QString, QVector<double>> &digitalMainData() const;
     void setDigitalMainData(const QMap<QString, QVector<double>> &newDigitalMainData);
 
-private:
+    void setFilename(const QString &filename);
+
     QMap<QString, QVector<double>> m_analogMainData, m_digitalMainData;
+
+private:
     QVector<double> m_mainPoints;
     quint32 m_idOsc;
     float m_xmax, m_xmin;
     quint32 m_length;
+    QString m_filename;
 
     int pointsNum;
     QStringList digitalNames, analogNames;
+
+signals:
+    void recordsOverall(qint64 num);
+    void currentRecord(qint64 num);
+    void eventMessage(const QString &msg);
+    void finished();
 };

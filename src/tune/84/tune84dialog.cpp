@@ -17,8 +17,8 @@ Tune84Dialog::Tune84Dialog(ConfigV *config, QWidget *parent) : GeneralTuneDialog
               { "Регулировка каналов тока", new Tune84ADC(config, TS84_ADCI, this) },
               { "Настройка температурной коррекции +60 °С", new TuneKIVTemp60(config, TS84_60TUNING, this) },
               { "Настройка температурной коррекции -20 °С", new TuneKIVTemp60(config, TS84_20TUNING, this) } };
-    m_calibrSteps = m_dialogList.size() + 1;
-    Bac *bac = new Bac;
+    //    m_calibrSteps = m_dialogList.size() + 1;
+    BacA284 *bac = new BacA284;
     m_BacWidget = bac->widget();
     SetupUI();
 }

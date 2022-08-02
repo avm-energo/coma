@@ -7,90 +7,23 @@
 #include <QGroupBox>
 #include <QVBoxLayout>
 
-Bac::Bac(QObject *parent) : DataBlock(parent)
+Bac82::Bac82(QObject *parent) : DataBlock(parent)
 {
     m_blockData = std::unique_ptr<BlockData>(new BlockData);
     setBlock({ 2, "Настроечные параметры", DataTypes::DataBlockTypes::BacBlock, m_blockData.get(), sizeof(BlockData) });
     readBlockFromModule();
 }
 
-void Bac::createWidget()
+void Bac82::setupValuesDesc()
 {
-    //    QString ValuesFormat = "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; color: black;"
-    //                           "background-color: "
-    //        + QString(Colors::ColorsMap[Colors::AConfO]) + "; font: bold 10px;}";
-    //    QString ValuesLEFormat = QString(Colors::ColorsMap[Colors::AConfO]);
+}
+
+/*void Bac82::createWidget()
+{
     m_widget = new QWidget;
     QVBoxLayout *lyout = new QVBoxLayout;
-    //    QVBoxLayout *vlyout = new QVBoxLayout;
     QGridLayout *glyout = new QGridLayout;
     QGroupBox *gb = new QGroupBox(block().caption);
-    //    ETableView *tv = new ETableView;
-    //    ValueDelegate *chdg = new ValueDelegate;
-    //    tv->setItemDelegate(chdg);
-    //    for (int i = 0; i < 3; i++)
-    //    {
-    //        m_VModel->setData(m_VModel->index(0, i * 2), "N1_TT[" + QString::number(i) + "]");
-    //        m_VModel->setData(m_VModel->index(0, i * 2 + 1), ValueItem::OUTVALUEINT);
-    //        m_VModel->setValueData(m_VModel->index(0, i * 2 + 1), &m_Bac.N1_TT[i]);
-    //        m_VModel->setData(m_VModel->index(0, i * 2 + 6), "KmU[" + QString::number(i) + "]");
-    //        m_VModel->setData(m_VModel->index(0, i * 2 + 7), ValueItem::OUTVALUEINT);
-    //        m_VModel->setValueData(m_VModel->index(0, i * 2 + 7), &m_Bac.KmU[i]);
-    //        m_VModel->setData(m_VModel->index(1, i * 2), "KmI1[" + QString::number(i) + "]");
-    //        m_VModel->setData(m_VModel->index(1, i * 2 + 1), ValueItem::OUTVALUEINT);
-    //        m_VModel->setValueData(m_VModel->index(1, i * 2 + 1), &m_Bac.KmI1[i]);
-    //        m_VModel->setData(m_VModel->index(1, i * 2 + 6), "KmI2[" + QString::number(i) + "]");
-    //        m_VModel->setData(m_VModel->index(1, i * 2 + 7), ValueItem::OUTVALUEINT);
-    //        m_VModel->setValueData(m_VModel->index(1, i * 2 + 7), &m_Bac.KmI2[i]);
-    //        m_VModel->setData(m_VModel->index(2, i * 2), "KmI4[" + QString::number(i) + "]");
-    //        m_VModel->setData(m_VModel->index(2, i * 2 + 1), ValueItem::OUTVALUEINT);
-    //        m_VModel->setValueData(m_VModel->index(2, i * 2 + 1), &m_Bac.KmI4[i]);
-    //        m_VModel->setData(m_VModel->index(2, i * 2 + 6), "KmI8[" + QString::number(i) + "]");
-    //        m_VModel->setData(m_VModel->index(2, i * 2 + 7), ValueItem::OUTVALUEINT);
-    //        m_VModel->setValueData(m_VModel->index(2, i * 2 + 7), &m_Bac.KmI8[i]);
-    //        m_VModel->setData(m_VModel->index(3, i * 2), "KmI16[" + QString::number(i) + "]");
-    //        m_VModel->setData(m_VModel->index(3, i * 2 + 1), ValueItem::OUTVALUEINT);
-    //        m_VModel->setValueData(m_VModel->index(3, i * 2 + 1), &m_Bac.KmI16[i]);
-    //        m_VModel->setData(m_VModel->index(3, i * 2 + 6), "KmI32[" + QString::number(i) + "]");
-    //        m_VModel->setData(m_VModel->index(3, i * 2 + 7), ValueItem::OUTVALUEINT);
-    //        m_VModel->setValueData(m_VModel->index(3, i * 2 + 7), &m_Bac.KmI32[i]);
-    //        m_VModel->setData(m_VModel->index(4, i * 2), "TKPsi_a[" + QString::number(i) + "]");
-    //        m_VModel->setData(m_VModel->index(4, i * 2 + 1), ValueItem::OUTVALUEINT);
-    //        m_VModel->setValueData(m_VModel->index(4, i * 2 + 1), &m_Bac.TKPsi_a[i]);
-    //        m_VModel->setData(m_VModel->index(4, i * 2 + 6), "TKPsi_b[" + QString::number(i) + "]");
-    //        m_VModel->setData(m_VModel->index(4, i * 2 + 7), ValueItem::OUTVALUEINT);
-    //        m_VModel->setValueData(m_VModel->index(4, i * 2 + 7), &m_Bac.TKPsi_b[i]);
-    //    }
-
-    //    for (int i = 0; i < 6; i++)
-    //    {
-    //        m_VModel->setData(m_VModel->index(5, i * 2), "DPsi[" + QString::number(i) + "]");
-    //        m_VModel->setData(m_VModel->index(5, i * 2 + 1), ValueItem::OUTVALUEINT);
-    //        m_VModel->setValueData(m_VModel->index(5, i * 2 + 1), &m_Bac.DPsi[i]);
-    //        m_VModel->setData(m_VModel->index(6, i * 2), "TKUa[" + QString::number(i) + "]");
-    //        m_VModel->setData(m_VModel->index(6, i * 2 + 1), ValueItem::OUTVALUEINT);
-    //        m_VModel->setValueData(m_VModel->index(6, i * 2 + 1), &m_Bac.TKUa[i]);
-    //        m_VModel->setData(m_VModel->index(7, i * 2), "TKUb[" + QString::number(i) + "]");
-    //        m_VModel->setData(m_VModel->index(7, i * 2 + 1), ValueItem::OUTVALUEINT);
-    //        m_VModel->setValueData(m_VModel->index(7, i * 2 + 1), &m_Bac.TKUb[i]);
-    //    }
-    //    m_VModel->setData(m_VModel->index(7, 0), "K_freq");
-    //    m_VModel->setData(m_VModel->index(7, 1), ValueItem::OUTVALUEINT);
-    //    m_VModel->setValueData(m_VModel->index(7, 1), &m_Bac.K_freq);
-    //    m_VModel->setData(m_VModel->index(7, 2), "Art");
-    //    m_VModel->setData(m_VModel->index(7, 3), ValueItem::OUTVALUEINT);
-    //    m_VModel->setValueData(m_VModel->index(7, 3), &m_Bac.Art);
-    //    m_VModel->setData(m_VModel->index(7, 4), "Brt");
-    //    m_VModel->setData(m_VModel->index(7, 5), ValueItem::OUTVALUEINT);
-    //    m_VModel->setValueData(m_VModel->index(7, 5), &m_Bac.Brt);
-    //    m_VModel->setData(m_VModel->index(7, 6), "Brt");
-    //    m_VModel->setData(m_VModel->index(7, 7), ValueItem::OUTVALUEINT);
-    //    m_VModel->setValueData(m_VModel->index(7, 7), &m_Bac.Brt);
-    //    m_VModel->setData(m_VModel->index(7, 8), "Tmk0");
-    //    m_VModel->setData(m_VModel->index(7, 9), ValueItem::OUTVALUEINT);
-    //    m_VModel->setValueData(m_VModel->index(7, 9), &m_Bac.Tmk0);
-    //    tv->setModel(m_VModel);
-    //    vlyout->addWidget(tv);
     for (int i = 0; i < 3; i++)
     {
         glyout->addWidget(WDFunc::NewLBL2(m_widget, "N1_TT[" + QString::number(i) + "]"), 0, i, 1, 1);
@@ -165,7 +98,7 @@ void Bac::createWidget()
     //    return m_widget;
 }
 
-void Bac::setDefBlock()
+void Bac82::setDefBlock()
 {
     m_blockData->Kinter = 0.0;
     m_blockData->K_freq = 1.0;
@@ -179,7 +112,7 @@ void Bac::setDefBlock()
     writeBlockToModule();
 }
 
-void Bac::updateWidget()
+void Bac82::updateWidget()
 {
     if (m_widgetIsSet)
     {
@@ -198,23 +131,23 @@ void Bac::updateWidget()
     }
 }
 
-void Bac::updateFromWidget()
+void Bac82::updateFromWidget()
 {
     if (m_widgetIsSet)
     {
         for (int i = 0; i < 6; i++)
         {
-            m_blockData->KmU[i] = StdFunc::toFloat(WDFunc::LEData(this, "tune" + QString::number(i)));
-            m_blockData->KmI_5[i] = StdFunc::toFloat(WDFunc::LEData(this, "tune" + QString::number(i + 6)));
-            m_blockData->KmI_1[i] = StdFunc::toFloat(WDFunc::LEData(this, "tune" + QString::number(i + 12)));
-            m_blockData->DPsi[i] = StdFunc::toFloat(WDFunc::LEData(this, "tune" + QString::number(i + 18)));
+            m_blockData->KmU[i] = StdFunc::ToFloat(WDFunc::LEData(this, "tune" + QString::number(i)));
+            m_blockData->KmI_5[i] = StdFunc::ToFloat(WDFunc::LEData(this, "tune" + QString::number(i + 6)));
+            m_blockData->KmI_1[i] = StdFunc::ToFloat(WDFunc::LEData(this, "tune" + QString::number(i + 12)));
+            m_blockData->DPsi[i] = StdFunc::ToFloat(WDFunc::LEData(this, "tune" + QString::number(i + 18)));
         }
-        m_blockData->K_freq = StdFunc::toFloat(WDFunc::LEData(this, "tune24"));
-        m_blockData->Kinter = StdFunc::toFloat(WDFunc::LEData(this, "tune25"));
+        m_blockData->K_freq = StdFunc::ToFloat(WDFunc::LEData(this, "tune24"));
+        m_blockData->Kinter = StdFunc::ToFloat(WDFunc::LEData(this, "tune25"));
     }
 }
-
-Bac::BlockData *Bac::data()
+*/
+Bac82::BlockData *Bac82::data()
 {
     return m_blockData.get();
 }

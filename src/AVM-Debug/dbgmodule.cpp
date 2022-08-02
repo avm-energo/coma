@@ -6,7 +6,7 @@
 #include "../dialogs/journalsdialog.h"
 #include "../dialogs/plotdialog.h"
 #include "../dialogs/relaydialog.h"
-#include "../dialogs/signaldialog84.h"
+//#include "../dialogs/signaldialog84.h"
 #include "../dialogs/switchjournaldialog.h"
 #include "../dialogs/timedialog.h"
 #include "../module/journkdv.h"
@@ -16,8 +16,10 @@
 #include "../startup/startupkdvdialog.h"
 #include "../startup/startupkivdialog.h"
 #include "../startup/startupktfdialog.h"
+#include "../tune/82/tune82dialog.h"
 #include "../tune/84/tune84dialog.h"
 #include "../tune/kiv/tunekivdialog.h"
+
 DbgModule::DbgModule(QObject *parent) : Module(parent)
 {
 }
@@ -44,7 +46,7 @@ void DbgModule::createModule(Modules::Model model)
                 auto &&item = m_gsettings.check.items.front();
 
                 addDialogToList(new TuneKIVDialog(&configV), "Регулировка");
-                addDialogToList(new SignalDialog84(), "Входные сигналы");
+                //                addDialogToList(new SignalDialog84(), "Входные сигналы");
 
                 auto check = new CheckDialog(item, m_gsettings.check.categories);
                 check->setHighlights(CheckDialog::Warning, settings()->highlightWarn);
@@ -159,7 +161,10 @@ void DbgModule::create(Modules::BaseBoard typeB, Modules::MezzanineBoard typeM)
     if (typeB == BaseBoard::MTB_80)
     {
         if ((typeM == MezzanineBoard::MTM_81) || (typeM == MezzanineBoard::MTM_82) || (typeM == MezzanineBoard::MTM_83))
+        {
             addDialogToList(new OscDialog, "Осциллограммы");
+            addDialogToList(new Tune82Dialog(&configV, typeM), "Регулировка");
+        }
     }
     if ((typeB == BaseBoard::MTB_80) && (typeM == MezzanineBoard::MTM_85))
     {
@@ -245,10 +250,11 @@ void DbgModule::create(QTimer *updateTimer)
     using namespace Modules;
     BaseInterface::iface()->setSettings(settings()->ifaceSettings);
     auto &board = Board::GetInstance();
+
     quint16 typeb = board.typeB();
     if (BaseBoards.contains(typeb)) // there must be two-part module
     {
-        board.setDeviceType(Board::Controller);
+        //        board.setDeviceType(Board::Controller);
         quint16 typem = board.typeM();
         switch (typeb)
         {
@@ -272,7 +278,7 @@ void DbgModule::create(QTimer *updateTimer)
     }
     else
     {
-        board.setDeviceType(Board::Module);
+        //        board.setDeviceType(Board::Module);
         quint16 mtype = board.type();
         createModule(Modules::Model(mtype));
     }

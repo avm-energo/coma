@@ -27,7 +27,7 @@ Tune84Temp60::Tune84Temp60(ConfigV *config, int tuneStep, QWidget *parent)
     TuneSequenceFile::addItemToTuneDescrVector("uet_p", m_midTuneStruct.uet);
     TuneSequenceFile::addItemToTuneDescrVector("iet_p", m_midTuneStruct.iet);
     TuneSequenceFile::addItemToTuneDescrVector("yet_p", m_midTuneStruct.yet);
-    m_bac = new Bac;
+    m_bac = new BacA284;
     m_bdain = new BdaIn;
     m_bd0 = new Bd0;
     setBac(m_bac);
@@ -39,45 +39,24 @@ Tune84Temp60::Tune84Temp60(ConfigV *config, int tuneStep, QWidget *parent)
 
 void Tune84Temp60::setMessages()
 {
-    m_messages.append("1. Ввод пароля...");
-    m_messages.append("2. Сохранение конфигурации...");
-    m_messages.append("3. Задание временной конфигурации и настроечных параметров...");
-    m_messages.append("4. Выдача диалога о температуре в камере...");
-    m_messages.append("5. Ожидание установления температурного режима...");
-    m_messages.append("6. Диалог об установлении входных сигналов...");
-    m_messages.append("7. Измерения...");
-    if (m_tuneStep == TS84_60TUNING)
-        m_messages.append("8. Ввод данных энергомонитора и сохранение промежуточных данных...");
-    else
-    {
-        m_messages.append("8. Ввод данных энергомонитора...");
-        m_messages.append("9. Запись коэффициентов в модуль...");
-    }
 }
 
 void Tune84Temp60::setTuneFunctions()
 {
-    m_tuneFunctions.push_back(
-        reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&AbstractTuneDialog::CheckPassword));
-    Error::Msg (AbstractTuneDialog::*func)()
-        = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&AbstractTuneDialog::saveWorkConfig);
-    m_tuneFunctions.push_back(func);
-    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&Tune84Temp60::setNewConfAndTune);
-    m_tuneFunctions.push_back(func);
-    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&Tune84Temp60::showTempDialog);
-    m_tuneFunctions.push_back(func);
-    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&Tune84Temp60::waitForTempToRise);
-    m_tuneFunctions.push_back(func);
-    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&Tune84Temp60::showSignalsDialog);
-    m_tuneFunctions.push_back(func);
-    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&Tune84Temp60::analogMeasurement);
-    m_tuneFunctions.push_back(func);
-    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&Tune84Temp60::inputEnergomonitorValues);
-    m_tuneFunctions.push_back(func);
-    if (m_tuneStep == TS84_20TUNING)
+    addTuneFunc("1. Ввод пароля...", &AbstractTuneDialog::CheckPassword);
+    addTuneFunc("2. Сохранение конфигурации...", &AbstractTuneDialog::saveWorkConfig);
+    addTuneFunc("3. Задание временной конфигурации и настроечных параметров...", &Tune84Temp60::setNewConfAndTune);
+    addTuneFunc("4. Выдача диалога о температуре в камере...", &Tune84Temp60::showTempDialog);
+    addTuneFunc("5. Ожидание установления температурного режима...", &Tune84Temp60::waitForTempToRise);
+    addTuneFunc("6. Диалог об установлении входных сигналов...", &Tune84Temp60::showSignalsDialog);
+    addTuneFunc("7. Измерения...", &Tune84Temp60::analogMeasurement);
+    if (m_tuneStep == TS84_60TUNING)
+        addTuneFunc("8. Ввод данных энергомонитора и сохранение промежуточных данных...",
+            &Tune84Temp60::inputEnergomonitorValues);
+    else
     {
-        func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&Tune84Temp60::writeTuneCoefs);
-        m_tuneFunctions.push_back(func);
+        addTuneFunc("8. Ввод данных энергомонитора...", &Tune84Temp60::inputEnergomonitorValues);
+        addTuneFunc("9. Запись коэффициентов в модуль...", &AbstractTuneDialog::writeTuneCoefs);
     }
 }
 

@@ -1,10 +1,9 @@
-#ifndef KIV_BDA_H
-#define KIV_BDA_H
+#pragma once
 
 #include "../datablock.h"
 #include "../module/modules.h"
 
-class Bda : public DataBlock
+class Bda82 : public DataBlock
 {
     Q_OBJECT
 public:
@@ -24,11 +23,13 @@ public:
         float CosPhi[3];    // 42-44 cos phi по 1-й гармонике
     };
 
-    Bda(Modules::MezzanineBoard typem, QObject *parent = nullptr);
+    float PHI[3]; // угол между током и напряжением
 
-    void createWidget() override;
-    void setDefBlock() override;
-    void updateWidget() override;
+    Bda82(Modules::MezzanineBoard typem, QObject *parent = nullptr);
+
+    void setupValuesDesc() override;
+    void specificUpdateWidget() override;
+
     Error::Msg checkValues(float voltage, float current, float degree,
         float tolerance); // deg - угол в градусах между токами и напряжениями одной фазы, tol - 0: начальная точность,
                           // 1 - повышенная
@@ -41,5 +42,3 @@ private:
     Error::Msg checkAnalogValues(double u, double i, double p, double q, double s, double phi, double cosphi,
         double utol, double itol, double pht, double pt, double ct);
 };
-
-#endif // KIV_BDA_H

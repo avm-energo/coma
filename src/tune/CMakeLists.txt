@@ -15,41 +15,13 @@ find_package(
              Qml
   REQUIRED)
 
+file(GLOB_RECURSE files_cpp *.cpp)
+file(GLOB_RECURSE files_h *.h)
+
 add_library(
   ${PROJECT_NAME} STATIC
-  abstracttunedialog.cpp
-  abstracttunedialog.h
-  generaltunedialog.cpp
-  generaltunedialog.h
-  tunesequencefile.cpp
-  tunesequencefile.h
-  tunesteps.h
-  kiv/tunekivadc.cpp
-  kiv/tunekivadc.h
-  kiv/tunekivcheck.cpp
-  kiv/tunekivcheck.h
-  kiv/tunekiv.cpp
-  kiv/tunekivdialog.cpp
-  kiv/tunekivdialog.h
-  kiv/tunekiv.h
-  kiv/tunekivr.cpp
-  kiv/tunekivr.h
-  kiv/tunekivtemp60.cpp
-  kiv/tunekivtemp60.h
-  84/tune84adc.cpp
-  84/tune84adc.h
-  84/tune84check.cpp
-  84/tune84check.h
-  84/tune84dialog.cpp
-  84/tune84dialog.h
-  84/tune84temp60.cpp
-  84/tune84temp60.h
-  82/tune82dialog.cpp
-  82/tune82dialog.h
-  82/tune82checkmip.cpp
-  82/tune82checkmip.h
-  82/mip.cpp
-  82/mip.h)
+  ${files_cpp}
+  ${files_h})
 
 target_link_libraries(
   ${PROJECT_NAME}

@@ -32,9 +32,9 @@ struct ConfigSettings
 using AlarmMap = QMap<Modules::AlarmType, DataTypes::Alarm>;
 using JourMap = QMap<Modules::JournalType, DataTypes::JournalDesc>;
 
-struct ModuleSettings
+struct ModuleSettingsDeprecated
 {
-    ModuleSettings(const Modules::StartupInfoBlock &startupInfoBlock_) : startupInfoBlock(startupInfoBlock_)
+    ModuleSettingsDeprecated(const Modules::StartupInfoBlock &startupInfoBlock) : startupInfoBlock(startupInfoBlock)
     {
     }
 

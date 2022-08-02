@@ -1,9 +1,8 @@
-#ifndef BDA21_H
-#define BDA21_H
+#pragma once
 
 #include "../datablock.h"
 
-class Bda : public DataBlock
+class Bda21 : public DataBlock
 {
     Q_OBJECT
 public:
@@ -12,13 +11,9 @@ public:
         float sin[8];
     };
 
-    Bda(QObject *parent = nullptr);
-    void createWidget() override;
-    void updateWidget() override;
+    Bda21(QObject *parent = nullptr);
+    void setupValuesDesc() override;
 
 private:
     BlockData *m_blockData;
-    QWidget *m_widget;
 };
-
-#endif // BDA21_H

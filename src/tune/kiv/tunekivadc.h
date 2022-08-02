@@ -16,7 +16,7 @@ public:
     TuneKIVADC(ConfigV *config, int tuneStep, QWidget *parent = nullptr);
 
 private:
-    Bac *m_bac;
+    BacA284 *m_bac;
     Bda *m_bda;
     BdaIn *m_bdain;
     Bd0 *m_bd0;
@@ -35,7 +35,6 @@ private:
 
     MidTuneStruct m_midTuneStruct;
 
-    void setMessages() override;
     void setTuneFunctions() override;
 
     Error::Msg showPreWarning();

@@ -9,29 +9,26 @@
 
 #include <QSettings>
 
-// Mip::Mip(bool withGUI, AvtukVariants moduleType, QWidget *parent) : UDialog(withGUI, parent)
-Mip::Mip(bool withGUI, AvtukVariants moduleType, QWidget *parent) : UWidget(parent)
+Mip::Mip(bool withGUI, MType moduleType, QWidget *parent) : QObject()
 {
-    Q_UNUSED(withGUI);
+    m_parent = parent;
     m_moduleType = moduleType;
-    //    if (withGUI)
-    setupUI();
-    setFloatBdQuery({ { 0, 46 } });
-    connect(proxyFS.get(), &DataTypesProxy::DataStorable, this, &UWidget::updateFloatData, Qt::QueuedConnection);
+    if (withGUI)
+    {
+        setupWidget();
+        m_widget->engine()->addFloat({ 0, 46 });
+        connect(m_widget->engine(), &ModuleDataUpdater::itsTimeToUpdateFloatSignal, this, &Mip::updateData);
+        //        connect(m_widget->proxyFS.get(), &DataTypesProxy::DataStorable, this, &Mip::updateData,
+        //        Qt::QueuedConnection);
+    }
 }
 
-// void Mip::updateFloatData(const DataTypes::FloatStruct &fl)
-void Mip::updateFloatData(const QVariant &msg)
+void Mip::updateData(const DataTypes::FloatStruct &fl)
 {
-    if (msg.canConvert<DataTypes::FloatStruct>())
+    if (fl.sigAdr < 46)
     {
-        auto fl = msg.value<DataTypes::FloatStruct>();
-        if (fl.sigAdr < 46)
-        {
-            float *mipdata = reinterpret_cast<float *>(&m_mipData);
-            *(mipdata + fl.sigAdr) = fl.sigVal;
-        }
-        UWidget::updateFloatData(msg);
+        float *mipdata = reinterpret_cast<float *>(&m_mipData);
+        *(mipdata + fl.sigAdr) = fl.sigVal;
     }
 }
 
@@ -40,48 +37,49 @@ Mip::MipDataStruct Mip::getData()
     return m_mipData;
 }
 
-void Mip::setupUI()
+void Mip::setupWidget()
 {
+    m_widget = new UWidget;
     QGridLayout *lyout = new QGridLayout;
     for (int i = 0; i < 3; ++i)
     {
-        lyout->addWidget(WDFunc::NewLBLAndLBL(
-                             this, QString::number(i + 1), "Частота ф. " + QString::number(i + 10, 36).toUpper(), true),
+        lyout->addWidget(WDFunc::NewLBLAndLBL(m_widget, QString::number(i + 1),
+                             "Частота ф. " + QString::number(i + 10, 36).toUpper(), true),
             0, i);
-        lyout->addWidget(WDFunc::NewLBLAndLBL(this, QString::number(i + 4),
+        lyout->addWidget(WDFunc::NewLBLAndLBL(m_widget, QString::number(i + 4),
                              "Фазное напряжение ф. " + QString::number(i + 10, 36).toUpper(), true),
             1, i);
-        lyout->addWidget(WDFunc::NewLBLAndLBL(this, QString::number(i + 19),
+        lyout->addWidget(WDFunc::NewLBLAndLBL(m_widget, QString::number(i + 19),
                              "Фазное напряжение ф. " + QString::number(i + 10, 36).toUpper(), true),
             2, i);
-        lyout->addWidget(WDFunc::NewLBLAndLBL(this, QString::number(i + 7),
+        lyout->addWidget(WDFunc::NewLBLAndLBL(m_widget, QString::number(i + 7),
                              "Фазный ток ф. " + QString::number(i + 10, 36).toUpper(), true),
             3, i);
     }
-    lyout->addWidget(WDFunc::NewLBLAndLBL(this, "10", "Ток N", true), 4, 0);
+    lyout->addWidget(WDFunc::NewLBLAndLBL(m_widget, "10", "Ток N", true), 4, 0);
     for (int i = 0; i < 3; ++i)
     {
-        lyout->addWidget(WDFunc::NewLBLAndLBL(
-                             this, QString::number(i + 11), "Угол ф. " + QString::number(i + 10, 36).toUpper(), true),
+        lyout->addWidget(WDFunc::NewLBLAndLBL(m_widget, QString::number(i + 11),
+                             "Угол ф. " + QString::number(i + 10, 36).toUpper(), true),
             5, i);
-        lyout->addWidget(WDFunc::NewLBLAndLBL(this, QString::number(i + 22),
+        lyout->addWidget(WDFunc::NewLBLAndLBL(m_widget, QString::number(i + 22),
                              "Активная мощность ф. " + QString::number(i + 10, 36).toUpper(), true),
             6, i);
-        lyout->addWidget(WDFunc::NewLBLAndLBL(this, QString::number(i + 26),
+        lyout->addWidget(WDFunc::NewLBLAndLBL(m_widget, QString::number(i + 26),
                              "Реактивная мощность ф. " + QString::number(i + 10, 36).toUpper(), true),
             7, i);
-        lyout->addWidget(WDFunc::NewLBLAndLBL(this, QString::number(i + 30),
+        lyout->addWidget(WDFunc::NewLBLAndLBL(m_widget, QString::number(i + 30),
                              "Полная мощность ф. " + QString::number(i + 10, 36).toUpper(), true),
             8, i);
     }
-    lyout->addWidget(WDFunc::NewLBLAndLBL(this, "17", "Температура", true), 9, 0);
-    lyout->addWidget(WDFunc::NewPB(this, "", "Далее",
-                         [this] {
+    lyout->addWidget(WDFunc::NewLBLAndLBL(m_widget, "17", "Температура", true), 9, 0);
+    lyout->addWidget(WDFunc::NewPB(m_widget, "", "Далее",
+                         [&] {
                              emit finished();
-                             this->close();
+                             m_widget->close();
                          }),
         10, 0);
-    setLayout(lyout);
+    m_widget->setLayout(lyout);
 }
 
 void Mip::start()
@@ -105,25 +103,27 @@ Error::Msg Mip::check()
 {
     double ithr, u, uthr;
 
-    assert((m_moduleType == M81) || (m_moduleType == M82) || (m_moduleType == M83));
+    assert((m_moduleType == MType::MTM_81) || (m_moduleType == MType::MTM_82) || (m_moduleType == MType::MTM_83));
     switch (m_moduleType)
     {
-    case M81:
+    case MType::MTM_81:
         u = 60.0;
         uthr = 0.05;
         iNom = 0;
         ithr = MAXFLOAT;
         break;
-    case M82:
+    case MType::MTM_82:
         u = 60.0;
         uthr = 0.05;
         ithr = 0.05;
         break;
-    case M83:
+    case MType::MTM_83:
         u = 0;
         uthr = MAXFLOAT;
         ithr = 0.05;
         break;
+    default:
+        return Error::GeneralError;
     }
 
     double ValuesToCheck[10] = { 0.0, 50.0, 50.0, 50.0, u, u, u, iNom, iNom, iNom };
@@ -136,7 +136,7 @@ Error::Msg Mip::check()
         float *mipdata = reinterpret_cast<float *>(&m_mipData);
         if (!StdFunc::FloatIsWithinLimits(*(mipdata + i), *VTC, *TTC))
         {
-            EMessageBox::warning(this,
+            EMessageBox::warning(m_parent,
                 "Несовпадение МИП по параметру " + QString::number(i)
                     + ". Измерено: " + QString::number(*mipdata, 'f', 4)
                     + ", должно быть: " + QString::number(*VTC, 'f', 4) + " +/- " + QString::number(*TTC, 'f', 4));
@@ -148,7 +148,7 @@ Error::Msg Mip::check()
     return Error::Msg::NoError;
 }
 
-void Mip::setModuleType(AvtukVariants type)
+void Mip::setModuleType(MType type)
 {
     m_moduleType = type;
 }
@@ -156,4 +156,9 @@ void Mip::setModuleType(AvtukVariants type)
 void Mip::setNominalCurrent(double inom)
 {
     iNom = inom;
+}
+
+UWidget *Mip::widget()
+{
+    return m_widget;
 }

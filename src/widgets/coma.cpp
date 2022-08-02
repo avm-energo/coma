@@ -409,7 +409,7 @@ void Coma::prepare()
     qDebug() << MainTW->width() << width();
 
     AlrmTimer->start();
-    qDebug() << NAMEOF(MainTW) << "created";
+    qDebug() << MainTW->objectName() << "created";
 
     BdaTimer->start();
     auto *msgSerialNumber = statusBar()->findChild<QLabel *>("SerialNumber");
