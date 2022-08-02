@@ -93,6 +93,7 @@ void ModuleDialog::DataChanged(const QString &str)
 {
     Q_UNUSED(str);
     DataChanged();
+    ;
 }
 
 void ModuleDialog::SaveData()
