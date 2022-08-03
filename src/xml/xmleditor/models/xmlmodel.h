@@ -1,7 +1,9 @@
 #ifndef XMLMODEL_H
 #define XMLMODEL_H
 
-#include <QAbstractTableModel>
+#include "ieditormodel.h"
+
+#include <QStandardItemModel>
 #include <QtXml>
 
 constexpr int ModelNodeRole = 0x0105; ///< Role for setting node with submodule
@@ -28,28 +30,7 @@ constexpr char protocom[] = "protocom";
 constexpr char iec60870[] = "iec60870";
 constexpr char config[] = "config";
 
-/// \brief Enumeration for saving type of submodule.
-enum NodeTypes : quint16
-{
-    None = 0,
-    Resources,
-    Signals,
-    SectionTabs,
-    Sections,
-    Section,
-    SGroup,
-    Alarms,
-    AlarmsItem,
-    Journals,
-    WorkJours,
-    MeasJours,
-    Modbus,
-    Protocom,
-    IEC60870,
-    Config
-};
 }
-using ModelType = tags::NodeTypes;
 
 // Опережающее объявление
 class XmlModel;
@@ -63,15 +44,11 @@ struct ChildModelNode
 Q_DECLARE_METATYPE(ChildModelNode);
 
 /// \brief Base abstract XML model class.
-class XmlModel : public QAbstractTableModel
+class XmlModel : public IEditorModel
 {
     Q_OBJECT
 protected:
-    int mRows, mCols;
-    ModelType mType;
-    QHash<QModelIndex, QVariant> mHashTable;
     QHash<int, QVariant> mNodes;
-    QHash<int, QVariant> horizontalHeaders;
 
     void parseDataNode(QDomNode &child, int &row);
     void parseTag(QDomNode &node, const QString tagName, int row, int col);
@@ -85,19 +62,8 @@ public:
     explicit XmlModel(int rows, int cols, ModelType type, QObject *parent = nullptr);
     virtual QVariant data(const QModelIndex &index, int nRole = Qt::UserRole + 1) const override;
     virtual bool setData(const QModelIndex &index, const QVariant &val, int nRole = Qt::UserRole + 1) override;
-    virtual int rowCount(const QModelIndex &index = QModelIndex()) const override;
-    virtual int columnCount(const QModelIndex &index = QModelIndex()) const override;
-    virtual Qt::ItemFlags flags(const QModelIndex &index) const override;
-    bool setHeaderData(int section, Qt::Orientation orientation, //
-        const QVariant &value, int role = Qt::EditRole) override;
-    QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
 
-    void setHorizontalHeaderLabels(const QStringList &labels);
     void setDataNode(bool isChildModel, QDomNode &root);
-    ModelType getModelType() const;
-    virtual const QModelIndex append(const QStringList &input);
-    virtual bool remove(int row);
-
     virtual void parseNode(QDomNode &node, int &row) = 0;
 };
 

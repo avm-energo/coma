@@ -74,15 +74,12 @@ bool XmlDialog::checkDataBeforeSaving()
 
 void XmlDialog::modelDataResponse(const QStringList &response)
 {
-    if (dlgItems.count() >= response.count())
+    auto sizeR = response.count(), sizeD = dlgItems.count();
+    auto size = (sizeR > sizeD ? sizeD : sizeR);
+    for (auto i = 0; i < size; i++)
     {
-        auto iter = 0;
-        for (auto &item : dlgItems)
-        {
-            auto input = qobject_cast<QLineEdit *>(item);
-            input->setText(response[iter]);
-            iter++;
-        }
+        auto input = qobject_cast<QLineEdit *>(dlgItems[i]);
+        input->setText(response[i]);
     }
 }
 

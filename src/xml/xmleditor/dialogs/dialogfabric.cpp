@@ -1,6 +1,7 @@
 #include "dialogfabric.h"
 
 #include "../../../widgets/epopup.h"
+#include "moduledialog.h"
 #include "xml104dialog.h"
 #include "xmlalarmdialog.h"
 #include "xmlconfigdialog.h"
@@ -22,15 +23,17 @@ constexpr auto edit = 0;   ///< Константа для указания ре�
 constexpr auto remove = 1; ///< Константа для указания удаления
 }
 
-void XmlDialogFabric::CreateOrEditDialog(XmlSortProxyModel *model, int row, QWidget *parent)
+void XmlDialogFabric::CreateOrEditDialog(IEditorModel *model, int row, QWidget *parent)
 {
-    auto srcModel = qobject_cast<XmlModel *>(model->sourceModel());
-    if (srcModel != nullptr)
+    if (model != nullptr)
     {
         XmlDialog *dialog = nullptr;
-        auto type = srcModel->getModelType();
+        auto type = model->getModelType();
         switch (type)
         {
+        case ModelType::Master:
+            dialog = new ModuleDialog(parent);
+            break;
         case ModelType::AlarmsItem:
             dialog = new XmlAlarmDialog(parent);
             break;
@@ -77,6 +80,10 @@ void XmlDialogFabric::CreateOrEditDialog(XmlSortProxyModel *model, int row, QWid
         if (dialog != nullptr)
         {
             // TODO: Connect XmlModel fuctions
+            QObject::connect(dialog, &XmlDialog::modelDataRequest, model, &IEditorModel::getDialogRequest);
+            QObject::connect(model, &IEditorModel::sendDialogResponse, dialog, &XmlDialog::modelDataResponse);
+            QObject::connect(dialog, &XmlDialog::createData, model, &IEditorModel::create);
+            QObject::connect(dialog, &XmlDialog::updateData, model, &IEditorModel::update);
             dialog->startup(row);
             dialog->exec();
         }
@@ -85,7 +92,7 @@ void XmlDialogFabric::CreateOrEditDialog(XmlSortProxyModel *model, int row, QWid
         EMessageBox::warning(parent, "Не выбрана модель");
 }
 
-void XmlDialogFabric::RemoveOrEditDialog(XmlSortProxyModel *model, QModelIndexList &selected, QWidget *parent, int type)
+void XmlDialogFabric::RemoveOrEditDialog(IEditorModel *model, QModelIndexList &selected, QWidget *parent, int type)
 {
     if (!selected.isEmpty())
     {
@@ -97,7 +104,7 @@ void XmlDialogFabric::RemoveOrEditDialog(XmlSortProxyModel *model, QModelIndexLi
                 CreateOrEditDialog(model, row, parent);
             else
             {
-                auto modelType = qobject_cast<XmlModel *>(model->sourceModel())->getModelType();
+                auto modelType = model->getModelType();
                 if (modelType == ModelType::Resources || modelType == ModelType::Alarms)
                     EMessageBox::warning(parent, "Выбран недопустимый элемент");
                 else
@@ -120,22 +127,17 @@ void XmlDialogFabric::RemoveOrEditDialog(XmlSortProxyModel *model, QModelIndexLi
         EMessageBox::warning(parent, "Не выбран элемент");
 }
 
-void XmlDialogFabric::CreateDialog(XmlSortProxyModel *model, QWidget *parent)
+void XmlDialogFabric::CreateDialog(IEditorModel *model, QWidget *parent)
 {
     CreateOrEditDialog(model, createId, parent);
 }
 
-void XmlDialogFabric::EditDialog(XmlSortProxyModel *model, QModelIndexList &selected, QWidget *parent)
+void XmlDialogFabric::EditDialog(IEditorModel *model, QModelIndexList &selected, QWidget *parent)
 {
     RemoveOrEditDialog(model, selected, parent, Helper::edit);
 }
 
-void XmlDialogFabric::RemoveDialog(XmlSortProxyModel *model, QModelIndexList &selected, QWidget *parent)
+void XmlDialogFabric::RemoveDialog(IEditorModel *model, QModelIndexList &selected, QWidget *parent)
 {
     RemoveOrEditDialog(model, selected, parent, Helper::remove);
-}
-
-void XmlDialogFabric::CreateModuleDialog(MasterModel *model)
-{
-    Q_UNUSED(model);
 }

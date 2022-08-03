@@ -23,9 +23,9 @@ void XmlEditor::SetupUI(QSize pSize)
     // Размер окна
     this->setGeometry(0, 0, pSize.width(), pSize.height());
     this->setWindowTitle("Modules Editor");
-    auto mainLayout = new QHBoxLayout(this);
 
     // Добавление рабочих пространств на основной слой
+    auto mainLayout = new QHBoxLayout(this);
     mainLayout->addLayout(GetMasterWorkspace());
     mainLayout->addLayout(GetSlaveWorkspace());
     this->setLayout(mainLayout);
@@ -42,20 +42,23 @@ QVBoxLayout *XmlEditor::GetMasterWorkspace()
     workspace->setContentsMargins(5, 5, 5, 5);
 
     // Настройка тулбара
+    masterView = new QTableView(this);
     auto toolbar = new QToolBar(this);
     toolbar->setContextMenuPolicy(Qt::PreventContextMenu);
     toolbar->setIconSize(QSize(30, 30));
-    toolbar->addAction(QIcon(":/icons/tnstart.svg"), "Создать модуль", this, &XmlEditor::CreateModule);
-    toolbar->addSeparator();
-    toolbar->addAction(QIcon(":/icons/tnosc.svg"), "Редактировать модуль", this, &XmlEditor::EditModule);
-    toolbar->addSeparator();
-    toolbar->addAction(QIcon(":/icons/tnstop.svg"), "Удалить модуль", this, &XmlEditor::RemoveModule);
-    toolbar->addSeparator();
+    toolbar->addAction(QIcon(":/icons/tnstart.svg"), "Создать модуль", this,     //
+        [&]() { ActionDialog(DialogType::Create, masterView); });                //
+    toolbar->addSeparator();                                                     //
+    toolbar->addAction(QIcon(":/icons/tnosc.svg"), "Редактировать модуль", this, //
+        [&]() { ActionDialog(DialogType::Edit, masterView); });                  //
+    toolbar->addSeparator();                                                     //
+    toolbar->addAction(QIcon(":/icons/tnstop.svg"), "Удалить модуль", this,      //
+        [&]() { ActionDialog(DialogType::Remove, masterView); });                //
+    toolbar->addSeparator();                                                     //
     toolbar->addAction(QIcon(":/icons/tnsave.svg"), "Сохранить модуль", this, &XmlEditor::SaveModule);
     workspace->addWidget(toolbar);
 
-    // Создание и настройка QTableView для master
-    masterView = new QTableView(this);
+    // Настройка QTableView для master
     masterView->setSortingEnabled(true);
     masterView->setSelectionBehavior(QAbstractItemView::SelectionBehavior::SelectRows);
     masterView->setSelectionMode(QAbstractItemView::SelectionMode::SingleSelection);
@@ -79,17 +82,18 @@ QVBoxLayout *XmlEditor::GetSlaveWorkspace()
     workspace->setContentsMargins(5, 5, 5, 5);
 
     // Настройка тулбара
+    tableSlaveView = new QTableView(this);
     auto toolbar = new QToolBar(this);
     toolbar->setContextMenuPolicy(Qt::PreventContextMenu);
     toolbar->setIconSize(QSize(30, 30));
     toolbar->addAction(QIcon(":/icons/tnstart.svg"), "Создать", this,     //
-        [&]() { SlaveModelDialog(DialogType::Create); });                 //
+        [&]() { ActionDialog(DialogType::Create, tableSlaveView); });     //
     toolbar->addSeparator();                                              //
     toolbar->addAction(QIcon(":/icons/tnosc.svg"), "Редактировать", this, //
-        [&]() { SlaveModelDialog(DialogType::Edit); });                   //
+        [&]() { ActionDialog(DialogType::Edit, tableSlaveView); });       //
     toolbar->addSeparator();                                              //
     toolbar->addAction(QIcon(":/icons/tnstop.svg"), "Удалить", this,      //
-        [&]() { SlaveModelDialog(DialogType::Remove); });                 //
+        [&]() { ActionDialog(DialogType::Remove, tableSlaveView); });     //
     workspace->addWidget(toolbar);                                        //
 
     // Label для отображения текущего положения в дереве моделей
@@ -97,8 +101,7 @@ QVBoxLayout *XmlEditor::GetSlaveWorkspace()
     QObject::connect(manager, &ModelManager::PathChanged, curPath, &QLabel::setText);
     workspace->addWidget(curPath);
 
-    // Создание и настройка QTableView для slave
-    tableSlaveView = new QTableView(this);
+    // Настройка QTableView для slave
     tableSlaveView->setSortingEnabled(true);
     tableSlaveView->setSelectionBehavior(QAbstractItemView::SelectionBehavior::SelectRows);
     tableSlaveView->setSelectionMode(QAbstractItemView::SelectionMode::SingleSelection);
@@ -108,72 +111,43 @@ QVBoxLayout *XmlEditor::GetSlaveWorkspace()
 
     QObject::connect(tableSlaveView, &QTableView::doubleClicked, manager, &ModelManager::ViewModelItemClicked);
     QObject::connect(manager, &ModelManager::ModelChanged, this, //
-        [&](XmlSortProxyModel *model) {
+        [&](XmlModel *model) {
             tableSlaveView->setModel(model);
             tableSlaveView->sortByColumn(0, Qt::SortOrder::AscendingOrder);
         });
-    QObject::connect(manager, &ModelManager::EditQuery, this, //
-        [&]() { SlaveModelDialog(DialogType::Edit); });       //
+    QObject::connect(manager, &ModelManager::EditQuery, this,       //
+        [&]() { ActionDialog(DialogType::Edit, tableSlaveView); }); //
     workspace->addWidget(tableSlaveView);
 
     return workspace;
 }
 
-void XmlEditor::SlaveModelDialog(DialogType dlgType)
+void XmlEditor::ActionDialog(DialogType dlgType, QTableView *srcView)
 {
-    auto proxyModel = qobject_cast<XmlSortProxyModel *>(tableSlaveView->model());
+    auto model = qobject_cast<IEditorModel *>(srcView->model());
     switch (dlgType)
     {
     // Диалог создания элемента
     case DialogType::Create:
-        if (proxyModel != nullptr)
-            XmlDialogFabric::CreateDialog(proxyModel, this);
+        if (model != nullptr)
+            XmlDialogFabric::CreateDialog(model, this);
         break;
     // Диалоги редактирования или удаления элементов
     case DialogType::Edit:
     case DialogType::Remove:
-        auto selectModel = tableSlaveView->selectionModel();
+        auto selectModel = srcView->selectionModel();
         if (selectModel != nullptr)
         {
             auto selected = selectModel->selectedRows();
             // Диалог редактирования элемента
             if (dlgType == DialogType::Edit)
-                XmlDialogFabric::EditDialog(proxyModel, selected, this);
+                XmlDialogFabric::EditDialog(model, selected, this);
             // Диалог удаления элемента
             else
-                XmlDialogFabric::RemoveDialog(proxyModel, selected, this);
+                XmlDialogFabric::RemoveDialog(model, selected, this);
         }
         break;
     }
-}
-
-void XmlEditor::CreateModule()
-{
-    auto moduleDlg = new ModuleDialog(this);
-    QObject::connect(moduleDlg, &ModuleDialog::ModelDataRequest, masterModel, &MasterModel::getDialogRequest);
-    QObject::connect(masterModel, &MasterModel::sendDialogResponse, moduleDlg, &ModuleDialog::ModelDataResponse);
-    QObject::connect(moduleDlg, &ModuleDialog::CreateData, masterModel, &MasterModel::create);
-    QObject::connect(moduleDlg, &ModuleDialog::UpdateData, masterModel, &MasterModel::update);
-    moduleDlg->SetData();
-    moduleDlg->exec();
-}
-
-void XmlEditor::EditModule()
-{
-    auto moduleDlg = new ModuleDialog(this);
-    QObject::connect(moduleDlg, &ModuleDialog::ModelDataRequest, masterModel, &MasterModel::getDialogRequest);
-    QObject::connect(masterModel, &MasterModel::sendDialogResponse, moduleDlg, &ModuleDialog::ModelDataResponse);
-    QObject::connect(moduleDlg, &ModuleDialog::CreateData, masterModel, &MasterModel::create);
-    QObject::connect(moduleDlg, &ModuleDialog::UpdateData, masterModel, &MasterModel::update);
-    auto selected = masterView->selectionModel()->selectedRows()[0].row();
-    moduleDlg->SetData(selected);
-    moduleDlg->exec();
-}
-
-void XmlEditor::RemoveModule()
-{
-    auto selected = masterView->selectionModel()->selectedRows()[0].row();
-    masterModel->remove(selected);
 }
 
 void XmlEditor::SaveModule()

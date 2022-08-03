@@ -1,8 +1,6 @@
 #ifndef XMLDIALOG_H
 #define XMLDIALOG_H
 
-#include "../models/xmlsortproxymodel.h"
-
 #include <QDialog>
 #include <QHBoxLayout>
 #include <QLabel>

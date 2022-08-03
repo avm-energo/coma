@@ -55,11 +55,10 @@ void XmlSectionsModel::parseNode(QDomNode &node, int &row)
     parseAttribute(node, "header", row, 0); // Заголовок
 }
 
-const QModelIndex XmlSectionsModel::append(const QStringList &input)
+void XmlSectionsModel::create(const QStringList &saved, int *row)
 {
-    auto result = XmlModel::append(input);
-    auto row = result.row(), col = result.column();
-    if (row >= 0 && col >= 0)
+    XmlModel::create(saved, row);
+    if (*row >= 0)
     {
         ChildModelNode node { nullptr, ModelType::Section };
         auto labels = XmlModel::headers.find(node.modelType)->second;
@@ -67,9 +66,8 @@ const QModelIndex XmlSectionsModel::append(const QStringList &input)
         node.modelPtr->setHorizontalHeaderLabels(labels);
         auto itemIndex = node.modelPtr->index(0, 0);
         node.modelPtr->setData(itemIndex, QString(".."));
-        setData(index(row, 0), QVariant::fromValue(node), ModelNodeRole);
+        setData(index(*row, 0), QVariant::fromValue(node), ModelNodeRole);
     }
-    return result;
 }
 
 // XmlSectionModel functions //
@@ -85,11 +83,10 @@ void XmlSectionModel::parseNode(QDomNode &node, int &row)
     parseAttribute(node, "tab", row, 1);    // ID вкладки
 }
 
-const QModelIndex XmlSectionModel::append(const QStringList &input)
+void XmlSectionModel::create(const QStringList &saved, int *row)
 {
-    auto result = XmlModel::append(input);
-    auto row = result.row(), col = result.column();
-    if (row >= 0 && col >= 0)
+    XmlModel::create(saved, row);
+    if (*row >= 0)
     {
         ChildModelNode node { nullptr, ModelType::SGroup };
         auto labels = XmlModel::headers.find(node.modelType)->second;
@@ -97,9 +94,8 @@ const QModelIndex XmlSectionModel::append(const QStringList &input)
         node.modelPtr->setHorizontalHeaderLabels(labels);
         auto itemIndex = node.modelPtr->index(0, 0);
         node.modelPtr->setData(itemIndex, QString(".."));
-        setData(index(row, 0), QVariant::fromValue(node), ModelNodeRole);
+        setData(index(*row, 0), QVariant::fromValue(node), ModelNodeRole);
     }
-    return result;
 }
 
 // XmlCritAlarmsModel functions //

@@ -2,19 +2,9 @@
 
 #include "../../../gen/stdfunc.h"
 
-MasterModel::MasterModel(QObject *parent) : QStandardItemModel(1, 1, parent)
+MasterModel::MasterModel(QObject *parent) : IEditorModel(1, 1, ModelType::Master, parent)
 {
     readModulesToModel();
-}
-
-void MasterModel::setHorizontalHeaderLabels(const QStringList &labels)
-{
-    int column = 0;
-    for (auto &label : labels)
-    {
-        setHeaderData(column, Qt::Horizontal, label);
-        column++;
-    }
 }
 
 void MasterModel::readModulesToModel()
@@ -111,59 +101,20 @@ void MasterModel::masterItemSelected(const QModelIndex &index)
     }
 }
 
-/// \brief Слот который принимает запрос от диалога и отправляет сигнал с ответом
-void MasterModel::getDialogRequest(const int &row)
-{
-    if (row >= 0 && row < rowCount())
-    {
-        QStringList retList;
-        auto cols = columnCount();
-        retList.reserve(cols);
-        // Собираем данные
-        for (auto column = 0; column < cols; column++)
-        {
-            auto itemIndex = index(row, column);
-            auto item = data(itemIndex);
-            if (item.isValid() && item.canConvert<QString>())
-            {
-                auto itemStr = item.value<QString>();
-                retList.append(itemStr);
-            }
-            else
-                retList.append("");
-        }
-        // Отправляем сигнал с ответом
-        emit sendDialogResponse(retList);
-    }
-}
-
 void MasterModel::create(const QStringList &saved, int *row)
 {
-    *row = rowCount();
-    QList<QStandardItem *> items;
-    for (const auto &item : saved)
-        items.append(new QStandardItem(item));
-    insertRow(rowCount(), items);
+    IEditorModel::create(saved, row);
     // TODO: Create the file - controller work
 }
 
 void MasterModel::update(const QStringList &saved, const int &row)
 {
-    if (row >= 0 && row < rowCount())
-    {
-        auto cols = saved.count();
-        // Обновляем данные
-        for (auto column = 0; column < cols; column++)
-        {
-            auto itemIndex = index(row, column);
-            setData(itemIndex, saved[column]);
-        }
-    }
+    IEditorModel::update(saved, row);
     // TODO: Rename file if B or M changed - controller work
 }
 
 void MasterModel::remove(const int &row)
 {
-    removeRow(row);
+    IEditorModel::remove(row);
     // TODO: Remove the file after - controller work
 }

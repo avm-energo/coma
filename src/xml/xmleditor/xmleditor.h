@@ -7,7 +7,6 @@
 #include <QDialog>
 #include <QHBoxLayout>
 #include <QTableView>
-#include <QtXml>
 
 class XmlEditor : public QDialog
 {
@@ -32,7 +31,7 @@ private:
     void SetupUI(QSize pSize);
     QVBoxLayout *GetMasterWorkspace();
     QVBoxLayout *GetSlaveWorkspace();
-    void SlaveModelDialog(DialogType dlgType);
+    void ActionDialog(DialogType dlgType, QTableView *srcView);
 
 public:
     XmlEditor() = delete;
@@ -40,9 +39,6 @@ public:
 
 public slots:
     void Close();
-    void CreateModule();
-    void EditModule();
-    void RemoveModule();
     void SaveModule();
 };
 

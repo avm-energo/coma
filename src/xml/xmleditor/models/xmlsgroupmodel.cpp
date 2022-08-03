@@ -30,12 +30,10 @@ bool XmlSGroupModel::setData(const QModelIndex &index, const QVariant &val, int 
         return XmlModel::setData(index, val, nRole);
 }
 
-bool XmlSGroupModel::remove(int row)
+void XmlSGroupModel::remove(const int &row)
 {
-    auto state = XmlModel::remove(row);
-    if (state)
-        hideData.remove(row);
-    return state;
+    XmlModel::remove(row);
+    hideData.remove(row);
 }
 
 void XmlSGroupModel::parseNode(QDomNode &node, int &row)

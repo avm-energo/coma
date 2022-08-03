@@ -65,7 +65,7 @@ class XmlSectionsModel : public XmlModel
 public:
     explicit XmlSectionsModel(int rows, int cols, ModelType type, QObject *parent = nullptr);
     virtual void parseNode(QDomNode &node, int &row) override;
-    virtual const QModelIndex append(const QStringList &input) override;
+    virtual void create(const QStringList &saved, int *row) override;
 };
 
 class XmlSectionModel : public XmlModel
@@ -73,7 +73,7 @@ class XmlSectionModel : public XmlModel
 public:
     explicit XmlSectionModel(int rows, int cols, ModelType type, QObject *parent = nullptr);
     virtual void parseNode(QDomNode &node, int &row) override;
-    virtual const QModelIndex append(const QStringList &input) override;
+    virtual void create(const QStringList &saved, int *row) override;
 };
 
 /// ALARMS

@@ -17,7 +17,7 @@ void ModelManager::ClearStorage()
         curModel = storage.top();
         storage.pop();
     }
-    curModel->sourceModel()->deleteLater();
+    curModel->deleteLater();
     curModel = nullptr;
     curPath = "";
     emit PathChanged(curPath);
@@ -26,8 +26,8 @@ void ModelManager::ClearStorage()
 /// \brief Replaces the current XML model by given model.
 void ModelManager::ChangeModel(XmlModel *model)
 {
-    curModel = new XmlSortProxyModel(model);
-    curModel->setSourceModel(model);
+    curModel = model;
+    // curModel->setSourceModel(model);
     emit ModelChanged(curModel);
 }
 

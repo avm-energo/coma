@@ -1,7 +1,7 @@
 #ifndef MODELMANAGER_H
 #define MODELMANAGER_H
 
-#include "xmlsortproxymodel.h"
+#include "xmlmodel.h"
 
 #include <QTableView>
 #include <stack>
@@ -13,8 +13,8 @@ class ModelManager : public QObject
 {
     Q_OBJECT
 private:
-    XmlSortProxyModel *curModel;
-    std::stack<XmlSortProxyModel *> storage;
+    XmlModel *curModel;
+    std::stack<XmlModel *> storage;
     QString curPath;
 
 protected:
@@ -31,7 +31,7 @@ public slots:
 
 signals:
     /// \details This signal is emitted when current XML model is changed.
-    void ModelChanged(XmlSortProxyModel *model);
+    void ModelChanged(XmlModel *model);
     /// \details This signal is emitted when current path in XML model is changed.
     void PathChanged(const QString &path);
     /// \details This signal is emitted when user double-clicked at item in current XML model.

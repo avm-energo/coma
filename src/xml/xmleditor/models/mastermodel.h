@@ -1,10 +1,11 @@
 #ifndef MASTERMODEL_H
 #define MASTERMODEL_H
 
-#include <QStandardItemModel>
+#include "ieditormodel.h"
+
 #include <QtXml>
 
-class MasterModel : public QStandardItemModel
+class MasterModel : public IEditorModel
 {
     Q_OBJECT
 private:
@@ -13,18 +14,15 @@ private:
 
 public:
     MasterModel(QObject *parent = nullptr);
-    void setHorizontalHeaderLabels(const QStringList &labels);
 
 public slots:
     void masterItemSelected(const QModelIndex &index);
-    void getDialogRequest(const int &row);
-    void create(const QStringList &saved, int *row);
-    void update(const QStringList &saved, const int &row);
-    void remove(const int &row);
+    virtual void create(const QStringList &saved, int *row) override;
+    virtual void update(const QStringList &saved, const int &row) override;
+    virtual void remove(const int &row) override;
 
 signals:
     void itemSelected(QDomNode &node);
-    void sendDialogResponse(const QStringList &response);
 };
 
 #endif // MASTERMODEL_H
