@@ -26,6 +26,9 @@ public:
     virtual QVariant data(const QModelIndex &index, int nRole = Qt::UserRole + 1) const override;
     virtual bool setData(const QModelIndex &index, const QVariant &val, int nRole = Qt::UserRole + 1) override;
     virtual void parseNode(QDomNode &node, int &row) override;
+
+public slots:
+    virtual void getDialogRequest(const int &row) override;
     virtual void remove(const int &row) override;
 };
 

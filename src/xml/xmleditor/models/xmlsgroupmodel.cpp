@@ -30,6 +30,40 @@ bool XmlSGroupModel::setData(const QModelIndex &index, const QVariant &val, int 
         return XmlModel::setData(index, val, nRole);
 }
 
+void XmlSGroupModel::getDialogRequest(const int &row)
+{
+    if (row >= 0 && row < rowCount())
+    {
+        QStringList retList;
+        auto cols = columnCount();
+        retList.reserve(cols);
+        // Собираем открытые данные
+        for (auto column = 0; column < cols; column++)
+        {
+            auto itemIndex = index(row, column);
+            auto item = data(itemIndex);
+            if (item.isValid() && item.canConvert<QString>())
+            {
+                auto itemStr = item.value<QString>();
+                retList.append(itemStr);
+            }
+            else
+                retList.append("");
+        }
+        // Собираем скрытые данные
+        auto hiding = hideData.value(row);
+        if (hiding.isValid() && hiding.canConvert<SGroupHideData>())
+        {
+            auto hidingVal = hiding.value<SGroupHideData>();
+            retList.append(QString::number(hidingVal.count));
+            retList.append(hidingVal.tooltip);
+            retList.append(hidingVal.array.join(','));
+        }
+        // Отправляем сигнал с ответом
+        emit sendDialogResponse(retList);
+    }
+}
+
 void XmlSGroupModel::remove(const int &row)
 {
     XmlModel::remove(row);

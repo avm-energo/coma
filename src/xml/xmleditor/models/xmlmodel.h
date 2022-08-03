@@ -65,6 +65,9 @@ public:
 
     void setDataNode(bool isChildModel, QDomNode &root);
     virtual void parseNode(QDomNode &node, int &row) = 0;
+
+public slots:
+    void watcher(const QList<QPersistentModelIndex> &parents, QAbstractItemModel::LayoutChangeHint hint);
 };
 
 #endif // XMLMODEL_H

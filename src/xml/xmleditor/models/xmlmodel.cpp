@@ -43,7 +43,8 @@ const std::map<ModelType, QStringList> XmlModel::headers {
 /// \brief Base XML model class ctor
 XmlModel::XmlModel(int rows, int cols, ModelType type, QObject *parent) : IEditorModel(rows, cols, type, parent)
 {
-    // horizontalHeaders.reserve(mCols);
+    mNodes.reserve(rows);
+    QObject::connect(this, &XmlModel::layoutAboutToBeChanged, this, &XmlModel::watcher);
 }
 
 /*! \brief Returns the data stored under the given role for the item referred to by the index.
@@ -165,4 +166,10 @@ void XmlModel::parseAttribute(QDomNode &node, const QString attrName, int row, i
         auto attrIndex = index(row, col);
         setData(attrIndex, attr);
     }
+}
+
+void XmlModel::watcher(const QList<QPersistentModelIndex> &parents, QAbstractItemModel::LayoutChangeHint hint)
+{
+    Q_UNUSED(parents);
+    Q_UNUSED(hint);
 }
