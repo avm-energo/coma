@@ -42,6 +42,7 @@ public:
 
 signals:
     void sendDialogResponse(const QStringList &response);
+    void modelChanged();
 
 public slots:
     virtual void getDialogRequest(const int &row);

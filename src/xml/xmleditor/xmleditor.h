@@ -28,18 +28,18 @@ private:
     ModelManager *manager;
     QTableView *tableSlaveView;
 
-    void SetupUI(QSize pSize);
-    QVBoxLayout *GetMasterWorkspace();
-    QVBoxLayout *GetSlaveWorkspace();
-    void ActionDialog(DialogType dlgType, QTableView *srcView);
+    void setupUI(QSize pSize);
+    QVBoxLayout *getMasterWorkspace();
+    QVBoxLayout *getSlaveWorkspace();
+    void actionDialog(DialogType dlgType, QTableView *srcView);
 
 public:
     XmlEditor() = delete;
     explicit XmlEditor(QWidget *parent);
 
 public slots:
-    void Close();
-    void SaveModule();
+    void close();
+    void saveModule();
 };
 
 #endif // XMLEDITOR_H

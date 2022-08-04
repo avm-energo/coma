@@ -13,12 +13,12 @@ XmlEditor::XmlEditor(QWidget *parent) : QDialog(parent, Qt::Window), dc(nullptr)
     {
         dc = new DataController(this);
         manager = new ModelManager(this);
-        SetupUI(parent->size());
+        setupUI(parent->size());
         this->exec();
     }
 }
 
-void XmlEditor::SetupUI(QSize pSize)
+void XmlEditor::setupUI(QSize pSize)
 {
     // Размер окна
     this->setGeometry(0, 0, pSize.width(), pSize.height());
@@ -26,17 +26,17 @@ void XmlEditor::SetupUI(QSize pSize)
 
     // Добавление рабочих пространств на основной слой
     auto mainLayout = new QHBoxLayout(this);
-    mainLayout->addLayout(GetMasterWorkspace());
-    mainLayout->addLayout(GetSlaveWorkspace());
+    mainLayout->addLayout(getMasterWorkspace());
+    mainLayout->addLayout(getSlaveWorkspace());
     this->setLayout(mainLayout);
 }
 
-void XmlEditor::Close()
+void XmlEditor::close()
 {
     this->hide();
 }
 
-QVBoxLayout *XmlEditor::GetMasterWorkspace()
+QVBoxLayout *XmlEditor::getMasterWorkspace()
 {
     auto workspace = new QVBoxLayout;
     workspace->setContentsMargins(5, 5, 5, 5);
@@ -47,15 +47,15 @@ QVBoxLayout *XmlEditor::GetMasterWorkspace()
     toolbar->setContextMenuPolicy(Qt::PreventContextMenu);
     toolbar->setIconSize(QSize(30, 30));
     toolbar->addAction(QIcon(":/icons/tnstart.svg"), "Создать модуль", this,     //
-        [&]() { ActionDialog(DialogType::Create, masterView); });                //
+        [&]() { actionDialog(DialogType::Create, masterView); });                //
     toolbar->addSeparator();                                                     //
     toolbar->addAction(QIcon(":/icons/tnosc.svg"), "Редактировать модуль", this, //
-        [&]() { ActionDialog(DialogType::Edit, masterView); });                  //
+        [&]() { actionDialog(DialogType::Edit, masterView); });                  //
     toolbar->addSeparator();                                                     //
     toolbar->addAction(QIcon(":/icons/tnstop.svg"), "Удалить модуль", this,      //
-        [&]() { ActionDialog(DialogType::Remove, masterView); });                //
+        [&]() { actionDialog(DialogType::Remove, masterView); });                //
     toolbar->addSeparator();                                                     //
-    toolbar->addAction(QIcon(":/icons/tnsave.svg"), "Сохранить модуль", this, &XmlEditor::SaveModule);
+    toolbar->addAction(QIcon(":/icons/tnsave.svg"), "Сохранить модуль", this, &XmlEditor::saveModule);
     workspace->addWidget(toolbar);
 
     // Настройка QTableView для master
@@ -80,7 +80,7 @@ QVBoxLayout *XmlEditor::GetMasterWorkspace()
     return workspace;
 }
 
-QVBoxLayout *XmlEditor::GetSlaveWorkspace()
+QVBoxLayout *XmlEditor::getSlaveWorkspace()
 {
     auto workspace = new QVBoxLayout;
     workspace->setContentsMargins(5, 5, 5, 5);
@@ -91,13 +91,13 @@ QVBoxLayout *XmlEditor::GetSlaveWorkspace()
     toolbar->setContextMenuPolicy(Qt::PreventContextMenu);
     toolbar->setIconSize(QSize(30, 30));
     toolbar->addAction(QIcon(":/icons/tnstart.svg"), "Создать", this,     //
-        [&]() { ActionDialog(DialogType::Create, tableSlaveView); });     //
+        [&]() { actionDialog(DialogType::Create, tableSlaveView); });     //
     toolbar->addSeparator();                                              //
     toolbar->addAction(QIcon(":/icons/tnosc.svg"), "Редактировать", this, //
-        [&]() { ActionDialog(DialogType::Edit, tableSlaveView); });       //
+        [&]() { actionDialog(DialogType::Edit, tableSlaveView); });       //
     toolbar->addSeparator();                                              //
     toolbar->addAction(QIcon(":/icons/tnstop.svg"), "Удалить", this,      //
-        [&]() { ActionDialog(DialogType::Remove, tableSlaveView); });     //
+        [&]() { actionDialog(DialogType::Remove, tableSlaveView); });     //
     workspace->addWidget(toolbar);                                        //
 
     // Label для отображения текущего положения в дереве моделей
@@ -120,13 +120,13 @@ QVBoxLayout *XmlEditor::GetSlaveWorkspace()
             tableSlaveView->sortByColumn(0, Qt::SortOrder::AscendingOrder);
         });
     QObject::connect(manager, &ModelManager::EditQuery, this,       //
-        [&]() { ActionDialog(DialogType::Edit, tableSlaveView); }); //
+        [&]() { actionDialog(DialogType::Edit, tableSlaveView); }); //
     workspace->addWidget(tableSlaveView);
 
     return workspace;
 }
 
-void XmlEditor::ActionDialog(DialogType dlgType, QTableView *srcView)
+void XmlEditor::actionDialog(DialogType dlgType, QTableView *srcView)
 {
     auto model = qobject_cast<IEditorModel *>(srcView->model());
     switch (dlgType)
@@ -154,7 +154,7 @@ void XmlEditor::ActionDialog(DialogType dlgType, QTableView *srcView)
     }
 }
 
-void XmlEditor::SaveModule()
+void XmlEditor::saveModule()
 {
     ;
     ;

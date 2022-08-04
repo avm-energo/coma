@@ -120,10 +120,13 @@ void MasterModel::update(const QStringList &saved, const int &row)
 {
     auto newSaved = getNewList(saved);
     IEditorModel::update(newSaved, row);
-    auto oldName = data(index(row, 4)).value<QString>();
-    auto newName = newSaved.last();
-    if (oldName != newName)
-        emit renameFile(oldName, newName);
+    emit modelChanged();
+
+    // TODO: This after must doing after accepting saving changes into file
+    //    auto oldName = data(index(row, 4)).value<QString>();
+    //    auto newName = newSaved.last();
+    //    if (oldName != newName)
+    //        emit renameFile(oldName, newName);
 }
 
 void MasterModel::remove(const int &row)
