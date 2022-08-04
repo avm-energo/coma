@@ -101,9 +101,11 @@ void XmlDialog::saveData()
             setWindowTitle(mTitle);
             // Изменяем состояние (данные сохранены, следовательно не изменены)
             isChanged = false;
+            this->reject();
         }
+        // Еслиданные окна не прошли проверку
         else
-            EMessageBox::warning(this, "");
+            EMessageBox::warning(this, "Введены некорректные данные");
     }
 }
 

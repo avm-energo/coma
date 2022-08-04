@@ -4,32 +4,6 @@ XmlSGroupModel::XmlSGroupModel(int rows, int cols, ModelType type, QObject *pare
 {
 }
 
-QVariant XmlSGroupModel::data(const QModelIndex &index, int nRole) const
-{
-    if (index.isValid() && nRole == SGroupDataRole)
-    {
-        return hideData.value(index.row(), QVariant());
-    }
-    else
-        return XmlModel::data(index, nRole);
-}
-
-bool XmlSGroupModel::setData(const QModelIndex &index, const QVariant &val, int nRole)
-{
-    if (index.isValid() && nRole == SGroupDataRole)
-    {
-        auto state = false;
-        if (val.isValid() && val.canConvert<SGroupHideData>())
-        {
-            hideData.insert(index.row(), val);
-            state = true;
-        }
-        return state;
-    }
-    else
-        return XmlModel::setData(index, val, nRole);
-}
-
 void XmlSGroupModel::getDialogRequest(const int &row)
 {
     if (row >= 0 && row < rowCount())
@@ -51,7 +25,7 @@ void XmlSGroupModel::getDialogRequest(const int &row)
                 retList.append("");
         }
         // Собираем скрытые данные
-        auto hiding = hideData.value(row);
+        auto hiding = data(index(row, 0), SGroupDataRole);
         if (hiding.isValid() && hiding.canConvert<SGroupHideData>())
         {
             auto hidingVal = hiding.value<SGroupHideData>();
@@ -64,10 +38,15 @@ void XmlSGroupModel::getDialogRequest(const int &row)
     }
 }
 
-void XmlSGroupModel::remove(const int &row)
+void XmlSGroupModel::update(const QStringList &saved, const int &row)
 {
-    XmlModel::remove(row);
-    hideData.remove(row);
+    Q_ASSERT(saved.count() == 5);
+    XmlModel::update(saved, row);
+    if (row >= 0 && row < rowCount())
+    {
+        auto newHide = convertHideData({ saved[2], saved[3], saved[4] });
+        setData(index(row, 0), QVariant::fromValue(newHide), SGroupDataRole);
+    }
 }
 
 void XmlSGroupModel::parseNode(QDomNode &node, int &row)
@@ -115,7 +94,7 @@ SGroupHideData XmlSGroupModel::parseHideData(QDomNode &node)
     return retVal;
 }
 
-SGroupHideData convertHideData(QStringList &input)
+SGroupHideData XmlSGroupModel::convertHideData(const QStringList &input)
 {
     SGroupHideData hiding;
     auto state = false;

@@ -55,15 +55,16 @@ void ModelManager::SetDocument(QDomNode &doc)
  */
 void ModelManager::ViewModelItemClicked(const QModelIndex &index)
 {
-    auto data = curModel->data(index, ModelNodeRole);
+    auto pureIndex = curModel->index(index.row(), 0);
+    auto data = curModel->data(pureIndex, ModelNodeRole);
     // Если кликнули по item-у, который содержит подмодель
     if (data.isValid() && data.canConvert<ChildModelNode>())
     {
         auto modelNode = data.value<ChildModelNode>();
         if (modelNode.modelPtr != nullptr && modelNode.modelType != ModelType::None)
         {
-            auto nameIndex = curModel->index(index.row(), 0);
-            auto name = curModel->data(nameIndex).value<QString>();
+            // auto nameIndex = curModel->index(index.row(), 0);
+            auto name = curModel->data(pureIndex).value<QString>();
             curPath += "\\" + name;
             storage.push(curModel);
             ChangeModel(modelNode.modelPtr);
@@ -72,7 +73,7 @@ void ModelManager::ViewModelItemClicked(const QModelIndex &index)
     }
     else
     {
-        data = curModel->data(curModel->index(index.row(), 0));
+        data = curModel->data(pureIndex);
         if (data.isValid() && data.canConvert<QString>())
         {
             auto str = data.value<QString>();
@@ -86,9 +87,7 @@ void ModelManager::ViewModelItemClicked(const QModelIndex &index)
                 emit PathChanged(curPath);
             }
             else
-            {
                 emit EditQuery();
-            }
         }
     }
 }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QStandardItemModel>
+#include <QtXml>
 
 namespace tags
 {

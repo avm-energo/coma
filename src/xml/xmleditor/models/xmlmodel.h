@@ -3,9 +3,6 @@
 
 #include "ieditormodel.h"
 
-#include <QStandardItemModel>
-#include <QtXml>
-
 constexpr int ModelNodeRole = 0x0105; ///< Role for setting node with submodule
 
 /// \brief Namespace for storaging names of base XML tags.
@@ -29,7 +26,6 @@ constexpr char modbus[] = "modbus";
 constexpr char protocom[] = "protocom";
 constexpr char iec60870[] = "iec60870";
 constexpr char config[] = "config";
-
 }
 
 // Опережающее объявление
@@ -48,8 +44,6 @@ class XmlModel : public IEditorModel
 {
     Q_OBJECT
 protected:
-    QHash<int, QVariant> mNodes;
-
     void parseDataNode(QDomNode &child, int &row);
     void parseTag(QDomNode &node, const QString tagName, int row, int col);
     void parseAttribute(QDomNode &node, const QString attrName, int row, int col);
@@ -60,14 +54,13 @@ public:
 
     explicit XmlModel() = delete;
     explicit XmlModel(int rows, int cols, ModelType type, QObject *parent = nullptr);
-    virtual QVariant data(const QModelIndex &index, int nRole = Qt::UserRole + 1) const override;
-    virtual bool setData(const QModelIndex &index, const QVariant &val, int nRole = Qt::UserRole + 1) override;
+    virtual QVariant data(const QModelIndex &index, int nRole = Qt::DisplayRole) const override;
+    virtual bool setData(const QModelIndex &index, const QVariant &val, int nRole = Qt::EditRole) override;
 
     void setDataNode(bool isChildModel, QDomNode &root);
     virtual void parseNode(QDomNode &node, int &row) = 0;
 
 public slots:
-    void watcher(const QList<QPersistentModelIndex> &parents, QAbstractItemModel::LayoutChangeHint hint);
 };
 
 #endif // XMLMODEL_H

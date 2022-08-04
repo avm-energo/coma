@@ -43,8 +43,6 @@ const std::map<ModelType, QStringList> XmlModel::headers {
 /// \brief Base XML model class ctor
 XmlModel::XmlModel(int rows, int cols, ModelType type, QObject *parent) : IEditorModel(rows, cols, type, parent)
 {
-    mNodes.reserve(rows);
-    QObject::connect(this, &XmlModel::layoutAboutToBeChanged, this, &XmlModel::watcher);
 }
 
 /*! \brief Returns the data stored under the given role for the item referred to by the index.
@@ -55,13 +53,9 @@ XmlModel::XmlModel(int rows, int cols, ModelType type, QObject *parent) : IEdito
 QVariant XmlModel::data(const QModelIndex &index, int nRole) const
 {
     if (index.isValid())
-    {
-        if (nRole == Qt::DisplayRole || nRole == Qt::EditRole || nRole == (Qt::UserRole + 1))
-            return QStandardItemModel::data(index, Qt::DisplayRole);
-        else if (nRole == ModelNodeRole)
-            return mNodes.value(index.row(), QVariant());
-    }
-    return QVariant();
+        return QStandardItemModel::data(index, nRole);
+    else
+        return QVariant();
 }
 
 /*! \brief Sets the role data for the item at index to value.
@@ -77,21 +71,7 @@ bool XmlModel::setData(const QModelIndex &index, const QVariant &val, int nRole)
         auto column = index.column();
         auto row = index.row();
         if ((column >= 0 && column < columnCount()) && (row >= 0 && row < rowCount()))
-        {
-            if (nRole == Qt::EditRole || nRole == (Qt::UserRole + 1))
-            {
-                return QStandardItemModel::setData(index, val, Qt::EditRole);
-                emit dataChanged(index, index);
-            }
-            else if (nRole == ModelNodeRole)
-            {
-                if (val.canConvert<ChildModelNode>())
-                {
-                    mNodes.insert(row, val);
-                    return true;
-                }
-            }
-        }
+            return QStandardItemModel::setData(index, val, nRole);
     }
     return false;
 }
@@ -166,10 +146,4 @@ void XmlModel::parseAttribute(QDomNode &node, const QString attrName, int row, i
         auto attrIndex = index(row, col);
         setData(attrIndex, attr);
     }
-}
-
-void XmlModel::watcher(const QList<QPersistentModelIndex> &parents, QAbstractItemModel::LayoutChangeHint hint)
-{
-    Q_UNUSED(parents);
-    Q_UNUSED(hint);
 }

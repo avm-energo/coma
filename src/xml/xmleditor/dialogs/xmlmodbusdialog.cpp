@@ -43,8 +43,9 @@ void XmlModbusDialog::setupUI(QVBoxLayout *mainLayout)
     type->setCurrentIndex(0);
     typeLayout->addWidget(typeLabel);
     typeLayout->addWidget(type);
-    QObject::connect(
-        type, SLOT(&QComboBox::currentIndexChanged), this, SIGNAL(qOverload<int>(&XmlModbusDialog::dataChanged)));
+    QObject::connect(                                          //
+        type, qOverload<int>(&QComboBox::currentIndexChanged), //
+        this, qOverload<int>(&XmlModbusDialog::dataChanged));  //
 
     // Виджеты для описания
     auto descLabel = new QLabel("Описание: ", this);
@@ -67,4 +68,23 @@ QStringList XmlModbusDialog::collectData()
     auto retVal = XmlDialog::collectData();
     retVal.insert(2, type->currentText());
     return retVal;
+}
+
+void XmlModbusDialog::modelDataResponse(const QStringList &response)
+{
+    auto size = response.count();
+    for (auto i = 0; i < size; i++)
+    {
+        if (i == 2)
+        {
+            type->setCurrentText(response[i]);
+            break;
+        }
+        else
+        {
+            auto input = qobject_cast<QLineEdit *>(dlgItems[i]);
+            input->setText(response[i]);
+        }
+    }
+    qobject_cast<QLineEdit *>(dlgItems.last())->setText(response.last());
 }

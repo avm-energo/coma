@@ -17,21 +17,16 @@ Q_DECLARE_METATYPE(SGroupHideData);
 class XmlSGroupModel : public XmlModel
 {
 private:
-    QHash<int, QVariant> hideData;
-
     SGroupHideData parseHideData(QDomNode &node);
+    SGroupHideData convertHideData(const QStringList &input);
 
 public:
     explicit XmlSGroupModel(int rows, int cols, ModelType type, QObject *parent = nullptr);
-    virtual QVariant data(const QModelIndex &index, int nRole = Qt::UserRole + 1) const override;
-    virtual bool setData(const QModelIndex &index, const QVariant &val, int nRole = Qt::UserRole + 1) override;
     virtual void parseNode(QDomNode &node, int &row) override;
 
 public slots:
     virtual void getDialogRequest(const int &row) override;
-    virtual void remove(const int &row) override;
+    void update(const QStringList &saved, const int &row) override;
 };
-
-SGroupHideData convertHideData(QStringList &input);
 
 #endif // XMLSGROUPMODEL_H
