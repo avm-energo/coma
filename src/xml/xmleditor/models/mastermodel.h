@@ -11,6 +11,7 @@ class MasterModel : public IEditorModel
 private:
     void readModulesToModel();
     void parseXmlNode(const QDomNode &node, const QString &filename, int &row);
+    QStringList getNewList(const QStringList &saved);
 
 public:
     MasterModel(QObject *parent = nullptr);
@@ -23,6 +24,9 @@ public slots:
 
 signals:
     void itemSelected(QDomNode &node);
+    void createFile(const QStringList &creationData);
+    void renameFile(const QString &oldName, const QString &newName);
+    void removeFile(const QString &filename);
 };
 
 #endif // MASTERMODEL_H

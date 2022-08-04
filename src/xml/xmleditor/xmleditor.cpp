@@ -1,17 +1,17 @@
 #include "xmleditor.h"
 
 #include "dialogs/dialogfabric.h"
-#include "dialogs/moduledialog.h"
 #include "models/modelfabric.h"
 
 #include <QHeaderView>
 #include <QLabel>
 #include <QToolBar>
 
-XmlEditor::XmlEditor(QWidget *parent) : QDialog(parent, Qt::Window), masterModel(nullptr), manager(nullptr)
+XmlEditor::XmlEditor(QWidget *parent) : QDialog(parent, Qt::Window), dc(nullptr), masterModel(nullptr), manager(nullptr)
 {
     if (parent != nullptr)
     {
+        dc = new DataController(this);
         manager = new ModelManager(this);
         SetupUI(parent->size());
         this->exec();
@@ -71,6 +71,10 @@ QVBoxLayout *XmlEditor::GetMasterWorkspace()
     masterModel = ModelFabric::CreateMasterModel(this);
     QObject::connect(masterView, &QTableView::doubleClicked, masterModel, &MasterModel::masterItemSelected);
     QObject::connect(masterModel, &MasterModel::itemSelected, manager, &ModelManager::SetDocument);
+    // Подключение контроллера данных
+    QObject::connect(masterModel, &MasterModel::createFile, dc, &DataController::createFile);
+    QObject::connect(masterModel, &MasterModel::renameFile, dc, &DataController::renameFile);
+    QObject::connect(masterModel, &MasterModel::removeFile, dc, &DataController::removeFile);
     masterView->setModel(masterModel);
 
     return workspace;

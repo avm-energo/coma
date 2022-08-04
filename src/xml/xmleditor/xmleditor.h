@@ -1,6 +1,7 @@
 #ifndef XMLEDITOR_H
 #define XMLEDITOR_H
 
+#include "datacontroller.h"
 #include "models/mastermodel.h"
 #include "models/modelmanager.h"
 
@@ -19,11 +20,10 @@ private:
         Edit,
         Remove
     };
-
+    DataController *dc;
     // Master items
     MasterModel *masterModel;
     QTableView *masterView;
-
     // Slave items
     ModelManager *manager;
     QTableView *tableSlaveView;

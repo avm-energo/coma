@@ -71,6 +71,14 @@ void MasterModel::parseXmlNode(const QDomNode &node, const QString &filename, in
     }
 }
 
+QStringList MasterModel::getNewList(const QStringList &saved)
+{
+    auto filename = "avtuk-" + saved[1].toLower() + saved[2].toLower() + ".xml";
+    auto newSaved = saved;
+    newSaved.append(filename);
+    return newSaved;
+}
+
 void MasterModel::masterItemSelected(const QModelIndex &index)
 {
     const auto row = index.row();
@@ -81,7 +89,7 @@ void MasterModel::masterItemSelected(const QModelIndex &index)
         auto domDoc = new QDomDocument;
         QDir homeDir(StdFunc::GetSystemHomeDir());
         auto filename = qvariant_cast<QString>(dataFilename);
-        auto moduleFile = new QFile(homeDir.filePath(filename));
+        auto moduleFile = new QFile(homeDir.filePath(filename), this);
         if (moduleFile->open(QIODevice::ReadOnly))
         {
             QString errMsg = "";
@@ -97,24 +105,30 @@ void MasterModel::masterItemSelected(const QModelIndex &index)
             moduleFile->close();
         }
         delete domDoc;
-        delete moduleFile;
+        moduleFile->deleteLater();
     }
 }
 
 void MasterModel::create(const QStringList &saved, int *row)
 {
-    IEditorModel::create(saved, row);
-    // TODO: Create the file - controller work
+    auto newSaved = getNewList(saved);
+    IEditorModel::create(newSaved, row);
+    emit createFile(newSaved);
 }
 
 void MasterModel::update(const QStringList &saved, const int &row)
 {
-    IEditorModel::update(saved, row);
-    // TODO: Rename file if B or M changed - controller work
+    auto newSaved = getNewList(saved);
+    IEditorModel::update(newSaved, row);
+    auto oldName = data(index(row, 4)).value<QString>();
+    auto newName = newSaved.last();
+    if (oldName != newName)
+        emit renameFile(oldName, newName);
 }
 
 void MasterModel::remove(const int &row)
 {
+    auto filename = data(index(row, 4)).value<QString>();
+    emit removeFile(filename);
     IEditorModel::remove(row);
-    // TODO: Remove the file after - controller work
 }

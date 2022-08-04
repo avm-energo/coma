@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<module mtypeb="%1" mtypem="%2">
-    <name>%3</name>
+<module mtypeb="%2" mtypem="%3">
+    <name>%1</name>
     <version>%4</version>
     <resources>
         <signals desc="Сигналы">

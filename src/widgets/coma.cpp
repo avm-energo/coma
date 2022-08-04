@@ -595,12 +595,16 @@ void Coma::UnpackProgramData()
     // Копируем файлы из ресурсов в AppData/Local/AVM-Debug
     if (homeFiles.count() < xmlFiles.count())
     {
-        foreach (QString filename, xmlFiles)
+        for (auto &filename : xmlFiles)
         {
             if (!QFile::copy(resDir.filePath(filename), homeDir.filePath(filename)))
             {
-                qCritical() << Error::DescError;
-                qInfo() << resDir.filePath(filename);
+                qCritical() << Error::DescError << resDir.filePath(filename);
+            }
+            QFile file(homeDir.filePath(filename));
+            if (!file.setPermissions(QFile::ReadOther | QFile::WriteOther))
+            {
+                qCritical() << "Произошло что-то плохое!";
             }
         }
     }
