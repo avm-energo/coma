@@ -20,6 +20,26 @@ ModelType IEditorModel::getModelType() const
     return mType;
 }
 
+// TODO: Remove this function (must be pure virtual)
+QDomElement *IEditorModel::toNode()
+{
+    return nullptr;
+}
+
+void IEditorModel::setAttribute(QDomDocument &doc, const QString &attrName, const QVariant &attrVar)
+{
+    auto attr = doc.createAttribute(attrName);
+    if (attrVar.isValid() && attrVar.canConvert<QString>())
+    {
+        auto attrVal = attrVar.value<QString>();
+        if (!attrVal.isEmpty())
+            attr.setValue(attrVal);
+    }
+    auto tempElem = doc.toElement();
+    tempElem.setAttributeNode(attr);
+    doc = tempElem.toDocument();
+}
+
 /// \brief Слот который принимает запрос от диалога и отправляет сигнал с ответом
 void IEditorModel::getDialogRequest(const int &row)
 {

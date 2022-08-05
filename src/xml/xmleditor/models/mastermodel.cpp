@@ -7,6 +7,14 @@ MasterModel::MasterModel(QObject *parent) : IEditorModel(1, 1, ModelType::Master
     readModulesToModel();
 }
 
+QDomDocument *MasterModel::toNode(const int row, QDomElement *elem)
+{
+    auto doc = new QDomDocument("module");
+    auto btypeVar = data(index(row, 1));
+    auto mtypeVar = data(index(row, 2));
+    return doc;
+}
+
 void MasterModel::readModulesToModel()
 {
     // Создание и настройка модели для Master View

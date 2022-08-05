@@ -15,6 +15,7 @@ private:
 
 public:
     MasterModel(QObject *parent = nullptr);
+    virtual QDomDocument *toNode(const int row, QDomElement *elem);
 
 public slots:
     void masterItemSelected(const QModelIndex &index);

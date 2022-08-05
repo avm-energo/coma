@@ -34,11 +34,13 @@ class IEditorModel : public QStandardItemModel
     Q_OBJECT
 protected:
     ModelType mType;
+    void setAttribute(QDomDocument &doc, const QString &attrName, const QVariant &attrVar);
 
 public:
     explicit IEditorModel(int rows, int cols, ModelType type, QObject *parent = nullptr);
     virtual void setHorizontalHeaderLabels(const QStringList &labels);
     ModelType getModelType() const;
+    virtual QDomElement *toNode();
 
 signals:
     void sendDialogResponse(const QStringList &response);
