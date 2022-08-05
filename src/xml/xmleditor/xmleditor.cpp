@@ -1,8 +1,10 @@
 #include "xmleditor.h"
 
+#include "../../widgets/epopup.h"
 #include "dialogs/dialogfabric.h"
 #include "models/modelfabric.h"
 
+#include <QFont>
 #include <QHeaderView>
 #include <QLabel>
 #include <QToolBar>
@@ -12,9 +14,15 @@ XmlEditor::XmlEditor(QWidget *parent) : QDialog(parent, Qt::Window), dc(nullptr)
     if (parent != nullptr)
     {
         dc = new DataController(this);
+        QObject::connect(dc, &DataController::highlightModified, this, [&]() {
+            auto row = masterView->selectionModel()->selectedRows().at(0).row();
+            dc->setRow(row);
+            setFontBolding(row, true);
+        });
         manager = new ModelManager(this);
+        QObject::connect(manager, &ModelManager::SaveModule, this, &XmlEditor::saveModule);
         setupUI(parent->size());
-        this->exec();
+        exec();
     }
 }
 
@@ -28,12 +36,13 @@ void XmlEditor::setupUI(QSize pSize)
     auto mainLayout = new QHBoxLayout(this);
     mainLayout->addLayout(getMasterWorkspace());
     mainLayout->addLayout(getSlaveWorkspace());
-    this->setLayout(mainLayout);
+    setLayout(mainLayout);
 }
 
-void XmlEditor::close()
+void XmlEditor::reject()
 {
-    this->hide();
+    saveModule();
+    hide();
 }
 
 QVBoxLayout *XmlEditor::getMasterWorkspace()
@@ -75,6 +84,7 @@ QVBoxLayout *XmlEditor::getMasterWorkspace()
     QObject::connect(masterModel, &MasterModel::createFile, dc, &DataController::createFile);
     QObject::connect(masterModel, &MasterModel::renameFile, dc, &DataController::renameFile);
     QObject::connect(masterModel, &MasterModel::removeFile, dc, &DataController::removeFile);
+    QObject::connect(masterModel, &MasterModel::modelChanged, dc, &DataController::configChanged);
     masterView->setModel(masterModel);
 
     return workspace;
@@ -118,6 +128,7 @@ QVBoxLayout *XmlEditor::getSlaveWorkspace()
         [&](XmlModel *model) {
             tableSlaveView->setModel(model);
             tableSlaveView->sortByColumn(0, Qt::SortOrder::AscendingOrder);
+            QObject::connect(model, &XmlModel::modelChanged, dc, &DataController::configChanged);
         });
     QObject::connect(manager, &ModelManager::EditQuery, this,       //
         [&]() { actionDialog(DialogType::Edit, tableSlaveView); }); //
@@ -154,8 +165,41 @@ void XmlEditor::actionDialog(DialogType dlgType, QTableView *srcView)
     }
 }
 
+void XmlEditor::setFontBolding(int row, bool state)
+{
+    auto cols = masterModel->columnCount();
+    for (auto column = 0; column < cols; column++)
+    {
+        auto index = masterModel->index(row, column);
+        auto font = masterModel->data(index, Qt::FontRole).value<QFont>();
+        font.setBold(state);
+        masterModel->setData(index, font, Qt::FontRole);
+    }
+}
+
+void XmlEditor::savingAsk()
+{
+    if (EMessageBox::question("Сохранить изменения?"))
+    {
+        auto slaveModel = manager->GetRootModel();
+        if (slaveModel != nullptr)
+        {
+            ;
+        }
+        else
+        {
+            // TODO: Вкладка справа не открыта, открыта только левая
+            // вкладка, и пользователь там что-то изменил (уже)
+        }
+    }
+}
+
 void XmlEditor::saveModule()
 {
-    ;
-    ;
+    if (dc->getModuleState())
+    {
+        savingAsk();
+        setFontBolding(dc->getRow(), false);
+        dc->resetOrSaved();
+    }
 }

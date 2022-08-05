@@ -7,7 +7,7 @@
 #include <QFile>
 #include <QTextStream>
 
-DataController::DataController(QObject *parent) : QObject(parent)
+DataController::DataController(QObject *parent) : QObject(parent), isModuleChanged(false), changedRow(-1)
 {
 }
 
@@ -15,6 +15,28 @@ QString DataController::getFilePath(const QString &filename)
 {
     auto dir = QDir(StdFunc::GetSystemHomeDir());
     return dir.filePath(filename);
+}
+
+void DataController::resetOrSaved()
+{
+    isModuleChanged = false;
+}
+
+bool DataController::getModuleState() const
+{
+    return isModuleChanged;
+}
+
+/// \brief Сохраняет номер строки изменённого конфига в мастер модели
+int DataController::getRow() const
+{
+    return changedRow;
+}
+
+/// \brief Возвращает сохранённую строку изменённого конфига
+void DataController::setRow(const int &row)
+{
+    changedRow = row;
 }
 
 void DataController::createFile(const QStringList &creationData)
@@ -72,5 +94,14 @@ void DataController::removeFile(const QString &filename)
         // Перемещаем его в корзину (не хард делитим!)
         if (!QFile::moveToTrash(filepath))
             EMessageBox::error(nullptr, "Не получилось удалить файл!");
+    }
+}
+
+void DataController::configChanged()
+{
+    if (!isModuleChanged)
+    {
+        isModuleChanged = true;
+        emit highlightModified();
     }
 }

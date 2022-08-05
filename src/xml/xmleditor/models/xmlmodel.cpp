@@ -76,6 +76,24 @@ bool XmlModel::setData(const QModelIndex &index, const QVariant &val, int nRole)
     return false;
 }
 
+void XmlModel::create(const QStringList &saved, int *row)
+{
+    IEditorModel::create(saved, row);
+    emit modelChanged();
+}
+
+void XmlModel::update(const QStringList &saved, const int &row)
+{
+    IEditorModel::update(saved, row);
+    emit modelChanged();
+}
+
+void XmlModel::remove(const int &row)
+{
+    IEditorModel::remove(row);
+    emit modelChanged();
+}
+
 /*! \brief Parses given XML DOM node in current XML model .
  *  \details For each child node of given XML DOM node applying function parseDataNode.
  *  \see parseDataNode, parseNode

@@ -3,7 +3,7 @@
 #include "modelfabric.h"
 
 /// \brief Main ctor for model manager.
-ModelManager::ModelManager(QObject *parent) : QObject(parent), curModel(nullptr), curPath("")
+ModelManager::ModelManager(QObject *parent) : QObject(parent), root(nullptr), curModel(nullptr), curPath("")
 {
 }
 
@@ -27,7 +27,6 @@ void ModelManager::ClearStorage()
 void ModelManager::ChangeModel(XmlModel *model)
 {
     curModel = model;
-    // curModel->setSourceModel(model);
     emit ModelChanged(curModel);
 }
 
@@ -40,8 +39,17 @@ void ModelManager::SetDocument(QDomNode &doc)
 {
     // Если уже есть модель
     if (curModel != nullptr)
+    {
         ClearStorage();
-    ChangeModel(ModelFabric::CreateRootModel(doc, this));
+        emit SaveModule();
+    }
+    root = ModelFabric::CreateRootModel(doc, this);
+    ChangeModel(root);
+}
+
+XmlModel *ModelManager::GetRootModel() const
+{
+    return root;
 }
 
 /*! \brief Slot that is called when user selects item in current XML model.
@@ -63,7 +71,6 @@ void ModelManager::ViewModelItemClicked(const QModelIndex &index)
         auto modelNode = data.value<ChildModelNode>();
         if (modelNode.modelPtr != nullptr && modelNode.modelType != ModelType::None)
         {
-            // auto nameIndex = curModel->index(index.row(), 0);
             auto name = curModel->data(pureIndex).value<QString>();
             curPath += "\\" + name;
             storage.push(curModel);

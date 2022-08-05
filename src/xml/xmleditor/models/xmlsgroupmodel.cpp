@@ -41,12 +41,13 @@ void XmlSGroupModel::getDialogRequest(const int &row)
 void XmlSGroupModel::update(const QStringList &saved, const int &row)
 {
     Q_ASSERT(saved.count() == 5);
-    XmlModel::update(saved, row);
+    IEditorModel::update(saved, row);
     if (row >= 0 && row < rowCount())
     {
         auto newHide = convertHideData({ saved[2], saved[3], saved[4] });
         setData(index(row, 0), QVariant::fromValue(newHide), SGroupDataRole);
     }
+    emit modelChanged();
 }
 
 void XmlSGroupModel::parseNode(QDomNode &node, int &row)

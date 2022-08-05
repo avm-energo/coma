@@ -3,7 +3,6 @@
 
 #include "xmlmodel.h"
 
-#include <QTableView>
 #include <stack>
 
 /// \brief Class for XML models managing.
@@ -13,7 +12,7 @@ class ModelManager : public QObject
 {
     Q_OBJECT
 private:
-    XmlModel *curModel;
+    XmlModel *root, *curModel;
     std::stack<XmlModel *> storage;
     QString curPath;
 
@@ -24,6 +23,7 @@ protected:
 public:
     explicit ModelManager() = delete;
     explicit ModelManager(QObject *parent = nullptr);
+    XmlModel *GetRootModel() const;
 
 public slots:
     void ViewModelItemClicked(const QModelIndex &index);
@@ -36,6 +36,8 @@ signals:
     void PathChanged(const QString &path);
     /// \details This signal is emitted when user double-clicked at item in current XML model.
     void EditQuery();
+    /// \details This
+    void SaveModule();
 };
 
 #endif // MODELMANAGER_H

@@ -32,13 +32,15 @@ private:
     QVBoxLayout *getMasterWorkspace();
     QVBoxLayout *getSlaveWorkspace();
     void actionDialog(DialogType dlgType, QTableView *srcView);
+    void setFontBolding(int row, bool state);
 
 public:
     XmlEditor() = delete;
     explicit XmlEditor(QWidget *parent);
+    virtual void reject() override;
 
 public slots:
-    void close();
+    void savingAsk();
     void saveModule();
 };
 

@@ -56,6 +56,9 @@ public:
     explicit XmlModel(int rows, int cols, ModelType type, QObject *parent = nullptr);
     virtual QVariant data(const QModelIndex &index, int nRole = Qt::DisplayRole) const override;
     virtual bool setData(const QModelIndex &index, const QVariant &val, int nRole = Qt::EditRole) override;
+    virtual void create(const QStringList &saved, int *row) override;
+    virtual void update(const QStringList &saved, const int &row) override;
+    virtual void remove(const int &row) override;
 
     void setDataNode(bool isChildModel, QDomNode &root);
     virtual void parseNode(QDomNode &node, int &row) = 0;

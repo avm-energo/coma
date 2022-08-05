@@ -57,7 +57,7 @@ void XmlSectionsModel::parseNode(QDomNode &node, int &row)
 
 void XmlSectionsModel::create(const QStringList &saved, int *row)
 {
-    XmlModel::create(saved, row);
+    IEditorModel::create(saved, row);
     if (*row >= 0)
     {
         ChildModelNode node { nullptr, ModelType::Section };
@@ -68,6 +68,7 @@ void XmlSectionsModel::create(const QStringList &saved, int *row)
         node.modelPtr->setData(itemIndex, QString(".."));
         setData(index(*row, 0), QVariant::fromValue(node), ModelNodeRole);
     }
+    emit modelChanged();
 }
 
 // XmlSectionModel functions //
@@ -85,7 +86,7 @@ void XmlSectionModel::parseNode(QDomNode &node, int &row)
 
 void XmlSectionModel::create(const QStringList &saved, int *row)
 {
-    XmlModel::create(saved, row);
+    IEditorModel::create(saved, row);
     if (*row >= 0)
     {
         ChildModelNode node { nullptr, ModelType::SGroup };
@@ -96,6 +97,7 @@ void XmlSectionModel::create(const QStringList &saved, int *row)
         node.modelPtr->setData(itemIndex, QString(".."));
         setData(index(*row, 0), QVariant::fromValue(node), ModelNodeRole);
     }
+    emit modelChanged();
 }
 
 // XmlCritAlarmsModel functions //
