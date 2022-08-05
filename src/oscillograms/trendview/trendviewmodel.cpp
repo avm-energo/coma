@@ -95,8 +95,8 @@ void TrendViewModel::toExcel()
     int pushRow = currentRow;
     if (m_mainPoints.size() < 2)
     {
-        //        emit finished();
-        throw ComaException("Недостаточно данных по оси абсцисс");
+        emit finished();
+        //        throw ComaException("Недостаточно данных по оси абсцисс");
     }
     //    else
     //    {
@@ -118,8 +118,8 @@ void TrendViewModel::toExcel()
     }
     if (analogDescriptions().size() != analogValues().size())
     {
-        //        emit finished();
-        throw ComaException("Размерности массивов значений и описаний не совпадают");
+        emit finished();
+        //        throw ComaException("Размерности массивов значений и описаний не совпадают");
     }
     int currentColumn = 2;
     //    emit eventMessage("Экспорт ординат");
@@ -128,8 +128,8 @@ void TrendViewModel::toExcel()
         currentRow = pushRow;
         if (!m_analogMainData.contains(analogValues().at(j)))
         {
-            //            emit finished();
-            throw ComaException("Количество значений не соответствует описанию");
+            emit finished();
+            //            throw ComaException("Количество значений не соответствует описанию");
         }
         QVector<double> vect = m_analogMainData[analogValues().at(j)];
         // emit recordsOverall(vect.size());

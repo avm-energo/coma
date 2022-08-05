@@ -11,15 +11,22 @@
 
 Mip::Mip(bool withGUI, MType moduleType, QWidget *parent) : QObject()
 {
+    m_withGUI = withGUI;
     m_parent = parent;
     m_moduleType = moduleType;
-    if (withGUI)
+    if (m_withGUI)
     {
         setupWidget();
         m_widget->engine()->addFloat({ 0, 46 });
         connect(m_widget->engine(), &ModuleDataUpdater::itsTimeToUpdateFloatSignal, this, &Mip::updateData);
-        //        connect(m_widget->proxyFS.get(), &DataTypesProxy::DataStorable, this, &Mip::updateData,
-        //        Qt::QueuedConnection);
+    }
+    else
+    {
+        m_updater = new ModuleDataUpdater;
+        // Отключим обновление виджета по умолчанию
+        m_updater->setUpdatesEnabled(false);
+        m_updater->addFloat({ 0, 46 });
+        connect(m_updater, &ModuleDataUpdater::itsTimeToUpdateFloatSignal, this, &Mip::updateData);
     }
 }
 
@@ -30,6 +37,8 @@ void Mip::updateData(const DataTypes::FloatStruct &fl)
         float *mipdata = reinterpret_cast<float *>(&m_mipData);
         *(mipdata + fl.sigAdr) = fl.sigVal;
     }
+    if (m_withGUI)
+        m_widget->updateFloatData(fl);
 }
 
 Mip::MipDataStruct Mip::getData()
@@ -92,10 +101,26 @@ void Mip::start()
     settings.baseadr = sets->value(regMap[MIPAddress].name, regMap[MIPAddress].defValue).toUInt();
     ConnectStruct st { "mip", settings };
     m_device->start(st);
+    if (m_withGUI)
+    {
+        widget()->engine()->setUpdatesEnabled();
+        widget()->show();
+    }
+    else
+    {
+        m_updater->setUpdatesEnabled();
+        QTimer *m_updateTimer = new QTimer;
+        m_updateTimer->setInterval(1000);
+        connect(m_updateTimer, &QTimer::timeout, m_updater, &ModuleDataUpdater::requestUpdates);
+        m_updateTimer->start();
+    }
 }
 
 void Mip::stop()
 {
+    m_updateTimer->stop();
+    m_updateTimer->deleteLater();
+    m_updater->setUpdatesEnabled(false);
     m_device->stop();
 }
 
@@ -136,10 +161,16 @@ Error::Msg Mip::check()
         float *mipdata = reinterpret_cast<float *>(&m_mipData);
         if (!StdFunc::FloatIsWithinLimits(*(mipdata + i), *VTC, *TTC))
         {
-            EMessageBox::warning(m_parent,
-                "Несовпадение МИП по параметру " + QString::number(i)
-                    + ". Измерено: " + QString::number(*mipdata, 'f', 4)
-                    + ", должно быть: " + QString::number(*VTC, 'f', 4) + " +/- " + QString::number(*TTC, 'f', 4));
+            if (m_withGUI)
+                EMessageBox::warning(m_parent,
+                    "Несовпадение МИП по параметру " + QString::number(i)
+                        + ". Измерено: " + QString::number(*mipdata, 'f', 4)
+                        + ", должно быть: " + QString::number(*VTC, 'f', 4) + " +/- " + QString::number(*TTC, 'f', 4));
+            else
+                qDebug() << "Несовпадение МИП по параметру " + QString::number(i)
+                         << ". Измерено: " + QString::number(*mipdata, 'f', 4)
+                         << ", должно быть: " + QString::number(*VTC, 'f', 4) << " +/- "
+                         << QString::number(*TTC, 'f', 4);
             return Error::Msg::GeneralError;
         }
         ++VTC;
@@ -153,7 +184,7 @@ void Mip::setModuleType(MType type)
     m_moduleType = type;
 }
 
-void Mip::setNominalCurrent(double inom)
+void Mip::setNominalCurrent(float inom)
 {
     iNom = inom;
 }

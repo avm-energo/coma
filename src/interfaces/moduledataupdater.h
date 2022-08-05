@@ -38,7 +38,7 @@ private:
     /// bit strings
     QList<BdQuery> m_bsQueryList;
 
-    BaseInterface *m_iface;
+    //    BaseInterface *m_iface;
     bool m_updatesEnabled;
 
 signals:

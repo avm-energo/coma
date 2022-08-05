@@ -5,7 +5,7 @@
 #include "../interfaces/emulator.h"
 #include "../interfaces/protocom.h"
 #include "../module/board.h"
-#include "../tune/82/tune82checkmip.h"
+#include "../tune/tunecheckmipdialog.h"
 #include "../widgets/aboutwidget.h"
 #include "../xml/xmlconfigparser.h"
 #include "config.h"

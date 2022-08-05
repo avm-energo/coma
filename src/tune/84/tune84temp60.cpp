@@ -7,9 +7,9 @@
 #include "../../widgets/epopup.h"
 #include "../../widgets/waitwidget.h"
 #include "../../widgets/wd_func.h"
+#include "../s2/s2.h"
 #include "../tunesequencefile.h"
 #include "../tunesteps.h"
-#include "../xml/xmlconfigparser.h"
 
 #include <QEventLoop>
 #include <QMessageBox>
@@ -62,8 +62,8 @@ void Tune84Temp60::setTuneFunctions()
 
 Error::Msg Tune84Temp60::setNewConfAndTune()
 {
-    configV->setRecordValue({ XmlConfigParser::GetIdByName("C_Pasp_ID"), DataTypes::FLOAT_3t({ 2250, 2250, 2250 }) });
-    configV->setRecordValue({ XmlConfigParser::GetIdByName("Unom1"), float(220) });
+    configV->setRecordValue({ S2::GetIdByName("C_Pasp_ID"), DataTypes::FLOAT_3t({ 2250, 2250, 2250 }) });
+    configV->setRecordValue({ S2::GetIdByName("Unom1"), float(220) });
 
     if (BaseInterface::iface()->writeConfFileSync(configV->getConfig()) != Error::Msg::NoError)
         return Error::Msg::GeneralError;

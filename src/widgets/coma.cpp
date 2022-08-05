@@ -38,6 +38,7 @@
 #include "../module/board.h"
 #include "../module/module.h"
 #include "../oscillograms/swjmanager.h"
+#include "../s2/s2.h"
 #include "../widgets/aboutwidget.h"
 #include "../widgets/epopup.h"
 #include "../widgets/splashscreen.h"
@@ -608,7 +609,7 @@ void Coma::UnpackProgramData()
 
 void Coma::setupConnection()
 {
-    XmlConfigParser::ParseS2ConfigToMap();
+    XmlConfigParser::ParseS2ConfigToMap(S2::NameIdMap);
     auto const &board = Board::GetInstance();
 
     connect(BaseInterface::iface(), &BaseInterface::stateChanged, [](const BaseInterface::State state) {

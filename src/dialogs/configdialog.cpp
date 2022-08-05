@@ -106,22 +106,22 @@ void ConfigDialog::confReceived(const QVariant &msg)
     auto list = msg.value<QList<DataTypes::DataRecV>>();
     configV->setConfig(list);
 
-    const auto s2typeB = configV->getRecord(XmlConfigParser::GetIdByName("MTypeB_ID")).value<DWORD>();
+    const auto s2typeB = configV->getRecord(S2::GetIdByName("MTypeB_ID")).value<DWORD>();
     if (s2typeB != Board::GetInstance().typeB())
     {
         qCritical() << "Conflict typeB, module: " <<                //
             QString::number(Board::GetInstance().typeB(), 16)       //
                     << " config: " << QString::number(s2typeB, 16); //
-        configV->setRecordValue({ XmlConfigParser::GetIdByName("MTypeB_ID"), DWORD(Board::GetInstance().typeB()) });
+        configV->setRecordValue({ S2::GetIdByName("MTypeB_ID"), DWORD(Board::GetInstance().typeB()) });
     }
 
-    const auto s2typeM = configV->getRecord(XmlConfigParser::GetIdByName("MTypeE_ID")).value<DWORD>();
+    const auto s2typeM = configV->getRecord(S2::GetIdByName("MTypeE_ID")).value<DWORD>();
     if (s2typeM != Board::GetInstance().typeM())
     {
         qCritical() << "Conflict typeB, module: " <<                //
             QString::number(Board::GetInstance().typeM(), 16)       //
                     << " config: " << QString::number(s2typeM, 16); //
-        configV->setRecordValue({ XmlConfigParser::GetIdByName("MTypeE_ID"), DWORD(Board::GetInstance().typeM()) });
+        configV->setRecordValue({ S2::GetIdByName("MTypeE_ID"), DWORD(Board::GetInstance().typeM()) });
     }
 
     checkForDiff(list);

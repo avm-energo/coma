@@ -28,6 +28,9 @@ public:
     static void tester(S2DataTypes::S2ConfigType &buffer);
 
     static quint32 crc32buf(const QByteArray &data);
+    static quint16 GetIdByName(QString name);
+
+    static QMap<QString, quint16> NameIdMap;
 
 private:
     static void StoreDataMem(QByteArray &mem, const QVector<S2DataTypes::DataRec> &dr, int fname);

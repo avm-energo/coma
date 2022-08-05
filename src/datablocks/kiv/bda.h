@@ -2,7 +2,7 @@
 
 #include "../datablock.h"
 
-class Bda : public DataBlock
+class BdaA284 : public DataBlock
 {
     Q_OBJECT
 public:
@@ -13,7 +13,7 @@ public:
         float Pt100;
     };
 
-    Bda(QObject *parent = nullptr);
+    BdaA284(QObject *parent = nullptr);
     void setupValuesDesc() override;
 
     BlockData *data();

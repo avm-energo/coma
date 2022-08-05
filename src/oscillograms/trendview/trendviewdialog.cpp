@@ -394,26 +394,26 @@ void TrendViewDialog::exportToExcel()
     //    //        m_trendModel, &TrendViewModel::eventMessage, this, [&](const QString &msg) { lbl->setText(msg); },
     //    //        Qt::DirectConnection);
     //    dlg2->show();
-    try
-    {
-        //        QEventLoop loop;
-        //        connect(m_trendModel, &TrendViewModel::finished, &loop, &QEventLoop::quit);
-        m_trendModel->setFilename(filename);
-        //        QtConcurrent::run(m_trendModel, &TrendViewModel::toExcel);
-        //        loop.exec();
-        m_trendModel->toExcel();
-        //        m_trendModel->toExcel(filename);
-        //        dlg2->close();
-        EMessageBox::information(this, "Файл создан успешно");
-    } catch (ComaException e)
-    {
-        //        dlg2->close();
-        EMessageBox::error(this, e.message());
-    } catch (...)
-    {
-        //        dlg2->close();
-        EMessageBox::error(this, "Неизвестная ошибка");
-    };
+    //    try
+    //    {
+    //        QEventLoop loop;
+    //        connect(m_trendModel, &TrendViewModel::finished, &loop, &QEventLoop::quit);
+    m_trendModel->setFilename(filename);
+    //        QtConcurrent::run(m_trendModel, &TrendViewModel::toExcel);
+    //        loop.exec();
+    m_trendModel->toExcel();
+    //        m_trendModel->toExcel(filename);
+    //        dlg2->close();
+    EMessageBox::information(this, "Файл создан успешно");
+    //    } catch (ComaException e)
+    //    {
+    //        //        dlg2->close();
+    //        EMessageBox::error(this, e.message());
+    //    } catch (...)
+    //    {
+    //        //        dlg2->close();
+    //        EMessageBox::error(this, "Неизвестная ошибка");
+    //    };
 }
 
 void TrendViewDialog::analogRangeChanged(const QCPRange &range)

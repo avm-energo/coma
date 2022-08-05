@@ -3,10 +3,10 @@
 #include "../models/comboboxdelegate.h"
 #include "../module/module_kxx.h"
 #include "../s2/configv.h"
+#include "../s2/s2.h"
 #include "../widgets/checkboxgroup.h"
 #include "../widgets/flowlayout.h"
 #include "../widgets/ipctrl.h"
-#include "../xml/xmlconfigparser.h"
 
 #include <QHeaderView>
 #include <QStandardItem>
@@ -87,7 +87,7 @@ template <> QWidget *helper(const config::Item &arg, QWidget *parent, [[maybe_un
 
 template <typename T> bool WidgetFactory::fillBackItem(quint16 key, const QWidget *parent, quint16 parentKey)
 {
-    const auto mbMaster = XmlConfigParser::GetIdByName("MBMaster");
+    const auto mbMaster = S2::GetIdByName("MBMaster");
     if (parentKey == mbMaster)
     {
         return fillBackModbus(key, parent, ctti::unnamed_type_id<QTableView>(), parentKey);
@@ -95,8 +95,8 @@ template <typename T> bool WidgetFactory::fillBackItem(quint16 key, const QWidge
     else
     {
         Q_ASSERT(false && "Unsupported type");
-        return false;
     }
+    return false;
 };
 
 WidgetFactory::WidgetFactory(ConfigV *config) : configV(config)
@@ -105,7 +105,7 @@ WidgetFactory::WidgetFactory(ConfigV *config) : configV(config)
 
 QWidget *WidgetFactory::createWidget(quint16 key, QWidget *parent)
 {
-    if (key == XmlConfigParser::GetIdByName("timezone"))
+    if (key == S2::GetIdByName("timezone"))
         qWarning() << "mTimezone";
     QWidget *widget = nullptr;
     auto search = m_widgetMap.find(key);

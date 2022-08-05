@@ -5,6 +5,8 @@
 #include <QDateTime>
 #include <QDebug>
 
+QMap<QString, quint16> S2::NameIdMap;
+
 S2::S2()
 {
 }
@@ -549,6 +551,11 @@ quint32 S2::GetCRC32(char *data, quint32 len)
 quint32 S2::updateCRC32(unsigned char ch, quint32 crc)
 {
     return (_crc32_t[((crc) ^ (static_cast<quint8>(ch))) & 0xff] ^ ((crc) >> 8));
+}
+
+quint16 S2::GetIdByName(QString name)
+{
+    return NameIdMap.value(name, 0);
 }
 
 quint32 S2::crc32buf(const QByteArray &data)

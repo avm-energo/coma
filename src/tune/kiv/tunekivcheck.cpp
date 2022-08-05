@@ -80,7 +80,7 @@ Error::Msg TuneKIVCheck::showScheme()
 
 Error::Msg TuneKIVCheck::check()
 {
-    Bda *bda = new Bda;
+    BdaA284 *bda = new BdaA284;
     bda->readAndUpdate();
 #ifndef NO_LIMITS
     for (int i = 0; i < 3; ++i)

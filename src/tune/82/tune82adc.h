@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../../datablocks/82/bac.h"
-#include "../../datablocks/82/bda.h"
+#include "../../datablocks/82/bd1.h"
 #include "../../datablocks/bd0.h"
 #include "../abstracttunedialog.h"
 
@@ -13,7 +13,7 @@ public:
 
 private:
     Bac82 *m_bac;
-    Bda82 *m_bda;
+    Bd182 *m_bda;
     Bd0 *m_bd0;
     double m_pt100;
     int m_curTuneStep;

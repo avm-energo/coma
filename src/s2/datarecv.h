@@ -92,6 +92,7 @@ public:
     {
     }
     DataRecV(const unsigned _id);
+
     template <typename T, std::enable_if_t<valueMap::true_type<T>::value, bool> = true>
     DataRecV(quint16 _id, T _data) : id(_id), data(_data)
     {
