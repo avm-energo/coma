@@ -127,9 +127,10 @@ public:
         m_valuesDesc.append(vg);
     }
 
-    template <typename T> void addNewValue(const QString &name, const QString &tooltip, const T *value, int precision = 3)
+    template <typename T> void addNewValue(const QString &name, const QString &tooltip, T *value, int precision = 3)
     {
-        m_valuesDesc.append({ "", { { name, tooltip, "value[" + QString::number(valueNumberCounter) + "]", value, precision} } });
+        ValueGroupStr vg;
+        vg.values.append({ name, tooltip, "value[" + QString::number(valueNumberCounter) + "]", value, precision});
         ++valueNumberCounter;
     }
 

@@ -83,6 +83,6 @@ Error::Msg TuneCheckMipDialog::showScheme()
 Error::Msg TuneCheckMipDialog::check()
 {
     Mip *mip = new Mip(true, m_moduleType);
-    mip->takeOneMeasurement(configV->getRecord(S2::GetIdByName("I2nom")).value<DataTypes::FLOAT_6t>());
+    mip->takeOneMeasurement(configV->getRecord(S2::GetIdByName("I2nom")).value<DataTypes::FLOAT_6t>().at(3));
     return mip->check();
 }

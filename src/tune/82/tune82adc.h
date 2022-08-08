@@ -5,6 +5,7 @@
 #include "../../datablocks/82/bda.h"
 #include "../../datablocks/bd0.h"
 #include "../abstracttunedialog.h"
+#include "../mip.h"
 
 class Tune82ADC : public AbstractTuneDialog
 {
@@ -13,7 +14,7 @@ public:
     Tune82ADC(ConfigV *config, Modules::MezzanineBoard type, int tuneStep, QWidget *parent = nullptr);
 
 private:
-    Bac82 *m_bac;
+    Bac82 *m_bac, m_bacNewBlock;
     Bd182 *m_bd1;
     Bda82 *m_bda;
     Bd0 *m_bd0;
@@ -31,6 +32,7 @@ private:
     };
 
     MidTuneStruct m_midTuneStruct;
+    Mip::MipDataStruct mipdata;
 
     void setTuneFunctions() override;
 
@@ -38,7 +40,14 @@ private:
     Error::Msg getAnalogData();
     Error::Msg saveUeff();
     Error::Msg calcPhaseCorrection();
+    Error::Msg calcInterChannelCorrelation();
+    Error::Msg calcIUcoef1();
+    Error::Msg calcIcoef5();
     Error::Msg showPreWarning();
+    Error::Msg checkTune();
+
+    void setCurrentsTo(float i);
+    void getBd1();
 
 private slots:
 };
