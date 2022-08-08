@@ -7,6 +7,7 @@
 #include "../widgets/epopup.h"
 #include "../widgets/wd_func.h"
 
+#include <QEventLoop>
 #include <QSettings>
 
 Mip::Mip(bool withGUI, MType moduleType, QWidget *parent) : QObject()
@@ -192,4 +193,15 @@ void Mip::setNominalCurrent(float inom)
 UWidget *Mip::widget()
 {
     return m_widget;
+}
+
+Mip::MipDataStruct Mip::takeOneMeasurement(float i2nom)
+{
+    setNominalCurrent(i2nom);
+    start();
+    QEventLoop el;
+    connect(this, &Mip::finished, &el, &QEventLoop::quit);
+    el.exec();
+    stop();
+    return m_mipData;
 }

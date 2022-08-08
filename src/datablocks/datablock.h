@@ -112,18 +112,25 @@ public:
     virtual void setDefBlock() {};
 
     template <typename T>
-    DataBlock::ValueGroupStr addGroupToValues(
+    void addNewGroup(
         const QString &groupName, const QString &name, int howMuch, int fromWhich, T *startValue, int precision)
     {
         ValueGroupStr vg;
         vg.groupDesc = groupName;
         for (int i = 0; i < howMuch; ++i)
         {
-            vg.values.append({ name + QString::number(i), "", "value[" + QString::number(i + fromWhich) + "]",
+            vg.values.append({ name + QString::number(i), "", "value[" + QString::number(valueNumberCounter) + "]",
                 startValue, precision });
             ++startValue;
+            ++valueNumberCounter;
         }
-        return vg;
+        m_valuesDesc.append(vg);
+    }
+
+    template <typename T> void addNewValue(const QString &name, const QString &tooltip, const T *value, int precision = 3)
+    {
+        m_valuesDesc.append({ "", { { name, tooltip, "value[" + QString::number(valueNumberCounter) + "]", value, precision} } });
+        ++valueNumberCounter;
     }
 
     void readBlockFromModule();
@@ -132,14 +139,15 @@ public:
 
     bool m_widgetIsSet;
     QWidget *m_widget;
-    QList<ValueGroupStr> m_valuesDesc;
 
 signals:
 
 private:
+    int valueNumberCounter;
     BlockStruct m_block, m_defBlock;
     bool m_isBottomButtonsWidgetCreated;
     QWidget *m_bottomButtonsWidget;
+    QList<ValueGroupStr> m_valuesDesc;
 
 public slots:
     void setDefBlockAndUpdate();

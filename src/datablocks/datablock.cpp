@@ -37,6 +37,7 @@ DataBlock::DataBlock(QObject *parent) : QObject(parent)
 {
     m_widgetIsSet = false;
     m_isBottomButtonsWidgetCreated = false;
+    valueNumberCounter = 0;
 }
 
 DataBlock::~DataBlock()
@@ -46,6 +47,7 @@ DataBlock::~DataBlock()
 void DataBlock::setBlock(const DataBlock::BlockStruct &bds)
 {
     m_block = bds;
+    setupValuesDesc();
 }
 
 QWidget *DataBlock::widget(bool showButtons)

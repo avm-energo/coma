@@ -43,6 +43,7 @@ public:
     void setModuleType(MType type);
     void setNominalCurrent(float inom);
     UWidget *widget();
+    MipDataStruct takeOneMeasurement(float i2nom);
 
 private:
     UniquePointer<IEC104> m_device;

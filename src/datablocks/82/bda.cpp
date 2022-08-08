@@ -13,9 +13,8 @@ Bda82::Bda82(QObject *parent) : DataBlock(parent)
 
 void Bda82::setupValuesDesc()
 {
-    m_valuesDesc.append({ "", { { "Частота:", "Частота сигналов, Гц", "value0", &m_blockData->Frequency, 3 } } });
-    m_valuesDesc.append(
-        addGroupToValues("Значения сигналов в единицах АЦП", "NADC", 6, 0, &m_blockData->IUeff_ADC[0], 0));
+    addNewValue("Частота:", "Частота сигналов, Гц", &m_blockData->Frequency, 3);
+    addNewGroup("Значения сигналов в единицах АЦП", "NADC", 6, 0, &m_blockData->IUeff_ADC[0], 0);
 }
 
 Error::Msg Bda82::checkValues(Modules::MezzanineBoard mtypeM, DataTypes::FLOAT_6t i2Noms)

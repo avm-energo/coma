@@ -15,24 +15,21 @@ Bd182::Bd182(Modules::MezzanineBoard typem, QObject *parent) : DataBlock(parent)
 void Bd182::setupValuesDesc()
 {
     int precision = (m_typeM != Modules::MezzanineBoard::MTM_81) ? 3 : 4;
-    m_valuesDesc.append({ "", { { "Частота:", "Частота сигналов, Гц", "value0", &m_blockData->Frequency, 3 } } });
-    m_valuesDesc.append(addGroupToValues(
-        "Истинные действующие значения сигналов", "IUNF", 6, 0, &m_blockData->IUefNat_filt[0], precision));
-    m_valuesDesc.append(addGroupToValues("Действующие значения сигналов по 1-й гармонике\nотносительно ф. А 1-й группы",
-        "IUF", 6, 6, &m_blockData->IUeff_filtered[0], precision));
-    m_valuesDesc.append(
-        addGroupToValues("Угол сдвига между сигналами по первой гармонике\nотносительно ф. А 1-й группы", "PHF", 6, 12,
-            &m_blockData->phi_next_f[0], 4));
-    m_valuesDesc.append(addGroupToValues("Истинная активная мощность", "PNF", 3, 18, &m_blockData->PNatf[0], 3));
-    m_valuesDesc.append(addGroupToValues("Кажущаяся полная мощность", "SNF", 3, 21, &m_blockData->SNatf[0], 3));
-    m_valuesDesc.append(addGroupToValues("Реактивная мощность", "QNF", 3, 24, &m_blockData->QNatf[0], 3));
-    m_valuesDesc.append(
-        addGroupToValues("Cos phi по истинной активной мощности", "Cos", 3, 27, &m_blockData->CosPhiNat[0], 4));
-    m_valuesDesc.append(addGroupToValues("Активная мощность по 1-й гармонике", "PF", 3, 30, &m_blockData->Pf[0], 3));
-    m_valuesDesc.append(addGroupToValues("Полная мощность по 1-й гармонике", "SF", 3, 33, &m_blockData->Sf[0], 3));
-    m_valuesDesc.append(addGroupToValues("Реактивная мощность по 1-й гармонике", "QF", 3, 36, &m_blockData->Qf[0], 3));
-    m_valuesDesc.append(addGroupToValues("Cos phi по 1-й гармонике", "CosPhi", 3, 39, &m_blockData->CosPhi[0], 4));
-    m_valuesDesc.append(addGroupToValues("Угол между током и напряжением", "PHI", 3, 42, &PHI[0], 4));
+    addNewValue("Частота:", "Частота сигналов, Гц", &m_blockData->Frequency, 3);
+    addNewGroup("Истинные действующие значения сигналов", "IUNF", 6, 0, &m_blockData->IUefNat_filt[0], precision);
+    addNewGroup("Действующие значения сигналов по 1-й гармонике\nотносительно ф. А 1-й группы", "IUF", 6, 6,
+        &m_blockData->IUeff_filtered[0], precision);
+    addNewGroup("Угол сдвига между сигналами по первой гармонике\nотносительно ф. А 1-й группы", "PHF", 6, 12,
+        &m_blockData->phi_next_f[0], 4);
+    addNewGroup("Истинная активная мощность", "PNF", 3, 18, &m_blockData->PNatf[0], 3);
+    addNewGroup("Кажущаяся полная мощность", "SNF", 3, 21, &m_blockData->SNatf[0], 3);
+    addNewGroup("Реактивная мощность", "QNF", 3, 24, &m_blockData->QNatf[0], 3);
+    addNewGroup("Cos phi по истинной активной мощности", "Cos", 3, 27, &m_blockData->CosPhiNat[0], 4);
+    addNewGroup("Активная мощность по 1-й гармонике", "PF", 3, 30, &m_blockData->Pf[0], 3);
+    addNewGroup("Полная мощность по 1-й гармонике", "SF", 3, 33, &m_blockData->Sf[0], 3);
+    addNewGroup("Реактивная мощность по 1-й гармонике", "QF", 3, 36, &m_blockData->Qf[0], 3);
+    addNewGroup("Cos phi по 1-й гармонике", "CosPhi", 3, 39, &m_blockData->CosPhi[0], 4);
+    addNewGroup("Угол между током и напряжением", "PHI", 3, 42, &PHI[0], 4);
 }
 
 void Bd182::specificUpdateWidget()

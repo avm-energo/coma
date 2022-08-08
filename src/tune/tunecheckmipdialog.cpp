@@ -83,13 +83,6 @@ Error::Msg TuneCheckMipDialog::showScheme()
 Error::Msg TuneCheckMipDialog::check()
 {
     Mip *mip = new Mip(true, m_moduleType);
-    mip->setNominalCurrent(configV->getRecord(S2::GetIdByName("I2nom")).value<float>());
-    mip->start();
-    QEventLoop el;
-    connect(mip, &Mip::finished, &el, &QEventLoop::quit);
-    el.exec();
-    return Error::Msg::NoError;
-    waitNSeconds(5);
-    mip->stop();
+    mip->takeOneMeasurement(configV->getRecord(S2::GetIdByName("I2nom")).value<DataTypes::FLOAT_6t>());
     return mip->check();
 }

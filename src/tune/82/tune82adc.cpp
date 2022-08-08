@@ -3,138 +3,98 @@
 #include "../../gen/colors.h"
 #include "../../gen/stdfunc.h"
 #include "../../s2/configv.h"
+#include "../../s2/s2.h"
 #include "../../widgets/epopup.h"
 #include "../../widgets/waitwidget.h"
 #include "../../widgets/wd_func.h"
+#include "../mip.h"
 #include "../tunesteps.h"
 
 #include <QMessageBox>
 #include <QVBoxLayout>
 
-Tune82ADC::Tune82ADC(ConfigV *config, int tuneStep, QWidget *parent) : AbstractTuneDialog(config, tuneStep, parent)
+Tune82ADC::Tune82ADC(ConfigV *config, Modules::MezzanineBoard type, int tuneStep, QWidget *parent)
+    : AbstractTuneDialog(config, tuneStep, parent)
 {
-    /*    m_bac = new Bac(this);
-        m_bac->setup();
-        m_bda = new Bda(this);
-        //    m_bdain = new BdaIn(this);
-        m_bd0 = new Bd0(this);
-        setBac(m_bac);
-        m_BacWidgetIndex = addWidgetToTabWidget(m_bac->widget(), "Настроечные параметры");
-        //    m_BdainWidgetIndex = addWidgetToTabWidget(m_bdain->widget(), "Текущие данные");
-        m_Bd0WidgetIndex = addWidgetToTabWidget(m_bd0->widget(), "Общие данные");
-        //    m_isEnergoMonitorDialogCreated = false;
-        m_curTuneStep = 0;
-        setupUI(); */
+    m_typeM = type;
+    m_bac = new Bac82(this);
+    m_bd1 = new Bd182(type, this);
+    m_bda = new Bda82(this);
+    m_bd0 = new Bd0(this);
+    setBac(m_bac);
+    m_BacWidgetIndex = addWidgetToTabWidget(m_bac->widget(), "Настроечные параметры");
+    m_BdaWidgetIndex = addWidgetToTabWidget(m_bda->widget(), "Текущие данные");
+    m_Bd0WidgetIndex = addWidgetToTabWidget(m_bd0->widget(), "Общие данные");
+    //    m_isEnergoMonitorDialogCreated = false;
+    m_curTuneStep = 0;
+    setupUI();
 }
 
 void Tune82ADC::setTuneFunctions()
 {
-    /*
-     *    m_messages.append("Ввод пароля...");
-    m_messages.append("Сохранение текущей конфигурации...");
-    m_messages.append("Установка настроечных коэффициентов по умолчанию...");
-    m_messages.append("Получение текущих аналоговых данных и их проверка...");
-    m_messages.append("Сохранение значений фильтра...");
-    //    m_messages.append("Установка коэффициентов...");
+    addTuneFunc("Ввод пароля...", &AbstractTuneDialog::CheckPassword);
+    addTuneFunc("Сохранение текущей конфигурации...", &AbstractTuneDialog::saveWorkConfig);
+    addTuneFunc("Установка настроечных коэффициентов по умолчанию...", &Tune82ADC::setDefBac);
+    addTuneFunc("Получение текущих аналоговых данных и их проверка...", &Tune82ADC::getAnalogData);
+    addTuneFunc("Сохранение значений фильтра...", &Tune82ADC::saveUeff);
+    //    addTuneFunc("Установка коэффициентов...");
 
-    m_messages.append("7.3.3. Расчёт коррекции смещений сигналов по фазе...");
-    m_messages.append("7.3.4. Расчёт коррекции по частоте...");
-    m_messages.append("Регулировка канала Tmk0...");
-    m_messages.append("Запись настроечных коэффициентов и восстановление конфигурации...");
-    m_messages.append("Проверка регулировки...");
-
-     *     m_tuneFunctions.push_back(
-            reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&AbstractTuneDialog::CheckPassword));
-        m_tuneFunctions.push_back(
-            reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&AbstractTuneDialog::saveWorkConfig));
-        Error::Msg (AbstractTuneDialog::*func)()
-            = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&Tune82ADC::setDefBac);
-        m_tuneFunctions.push_back(func);
-        func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&Tune82ADC::getAnalogData);
-        m_tuneFunctions.push_back(func);
-        func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&Tune82ADC::saveUeff);
-        m_tuneFunctions.push_back(func);
-        func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&Tune82ADC::calcPhaseCorrection);
-        m_tuneFunctions.push_back(func);
-
-        func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&Tune82ADC::ADCCoef1);
-        m_tuneFunctions.push_back(func);
-        func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&Tune82ADC::showEnergomonitorInputDialog);
-        m_tuneFunctions.push_back(func);
-        if (m_tuneStep == KIVTS_ADCI)
-        {
-            func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&Tune82ADC::ADCCoef2);
-            m_tuneFunctions.push_back(func);
-            func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&Tune82ADC::showEnergomonitorInputDialog);
-            m_tuneFunctions.push_back(func);
-            func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&Tune82ADC::ADCCoef4);
-            m_tuneFunctions.push_back(func);
-            func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&Tune82ADC::showEnergomonitorInputDialog);
-            m_tuneFunctions.push_back(func);
-            func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&Tune82ADC::ADCCoef8);
-            m_tuneFunctions.push_back(func);
-            func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&Tune82ADC::showEnergomonitorInputDialog);
-            m_tuneFunctions.push_back(func);
-            func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&Tune82ADC::ADCCoef16);
-            m_tuneFunctions.push_back(func);
-            func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&Tune82ADC::showEnergomonitorInputDialog);
-            m_tuneFunctions.push_back(func);
-            func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&Tune82ADC::ADCCoef32);
-            m_tuneFunctions.push_back(func);
-            func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&Tune82ADC::showEnergomonitorInputDialog);
-            m_tuneFunctions.push_back(func);
-            func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&Tune82ADC::Tmk0);
-            m_tuneFunctions.push_back(func);
-        }
-        func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&Tune82ADC::SendBac);
-        m_tuneFunctions.push_back(func);
-        func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&Tune82ADC::CheckTune);
-        m_tuneFunctions.push_back(func); */
+    addTuneFunc("7.3.3. Расчёт коррекции смещений сигналов по фазе...", &Tune82ADC::calcPhaseCorrection);
+    /*    addTuneFunc("7.3.4. Расчёт коррекции по частоте...");
+        addTuneFunc("Регулировка канала Tmk0...");
+        addTuneFunc("Запись настроечных коэффициентов и восстановление конфигурации...");
+        addTuneFunc("Проверка регулировки..."); */
 }
 
 Error::Msg Tune82ADC::setDefBac()
 {
     m_bac->setDefBlock();
+    return Error::NoError;
 }
 
 Error::Msg Tune82ADC::getAnalogData()
 {
-    /*    waitNSeconds(1);
-        m_bda->readBlockFromModule();
-        waitNSeconds(1);
-        return m_bda->checkValues(60.0, 1.0, 0.0, false); */
+    waitNSeconds(1);
+    m_bd1->readBlockFromModule();
+    waitNSeconds(1);
+    return m_bda->checkValues(m_typeM, { 1, 1, 1, 1, 1, 1 });
 }
 
 Error::Msg Tune82ADC::saveUeff()
 {
     // сохраняем значения по п. 7.3.2 для выполнения п. 7.3.6
     for (int i = 0; i < 6; i++)
-        IUefNat_filt_old[i] = m_bda->data()->IUefNat_filt[i];
+        IUefNat_filt_old[i] = m_bd1->data()->IUefNat_filt[i];
     return Error::Msg::NoError;
 }
 
 Error::Msg Tune82ADC::calcPhaseCorrection()
 {
-    /*    float phiMip[6];
-        GED_Type = TD_GED_D;
-        WaitNSeconds(5);
-        GetExternalData();
-        Bac_newblock.DPsi[0] = 0;
-        phiMip[0] = 0;
-        phiMip[1] = RealData.dpsiU[0];
-        phiMip[2] = RealData.dpsiU[0] + RealData.dpsiU[1];
-        phiMip[3] = RealData.d[0];
-        phiMip[4] = RealData.d[1] + RealData.dpsiU[0];
-        phiMip[5] = RealData.d[2] + RealData.dpsiU[0] + RealData.dpsiU[1];
-        int k = (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) == Config::MTM_82) ? 3 : 6;
-        for (int i = 1; i < k; ++i)
+    Mip::MipDataStruct mipdata;
+    Mip *mip = new Mip(false, m_typeM, this);
+    DataTypes::FLOAT_6t inom = configV->getRecord(S2::GetIdByName("I2nom")).value<DataTypes::FLOAT_6t>();
+    assert(inom.size() > 3);
+    mip->takeOneMeasurement(inom.at(3));
+
+    float phiMip[6];
+    GED_Type = TD_GED_D;
+
+    Bac_newblock.DPsi[0] = 0;
+    phiMip[0] = 0;
+    phiMip[1] = RealData.dpsiU[0];
+    phiMip[2] = RealData.dpsiU[0] + RealData.dpsiU[1];
+    phiMip[3] = RealData.d[0];
+    phiMip[4] = RealData.d[1] + RealData.dpsiU[0];
+    phiMip[5] = RealData.d[2] + RealData.dpsiU[0] + RealData.dpsiU[1];
+    int k = (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) == Config::MTM_82) ? 3 : 6;
+    for (int i = 1; i < k; ++i)
+        Bac_newblock.DPsi[i] = Bac_block.DPsi[i] - phiMip[i] - Bda_block.phi_next_f[i];
+    if (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) == Config::MTM_82)
+    {
+        for (int i = 3; i < 6; ++i)
             Bac_newblock.DPsi[i] = Bac_block.DPsi[i] - phiMip[i] - Bda_block.phi_next_f[i];
-        if (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) == Config::MTM_82)
-        {
-            for (int i = 3; i < 6; ++i)
-                Bac_newblock.DPsi[i] = Bac_block.DPsi[i] - phiMip[i] - Bda_block.phi_next_f[i];
-        }
-    */
+    }
+
     return Error::Msg::NoError;
 }
 
