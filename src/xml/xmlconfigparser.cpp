@@ -4,9 +4,9 @@
 
 #include <QtXml>
 
-QMap<QString, quint16> XmlConfigParser::NameIdMap = QMap<QString, quint16>();
+// QMap<QString, quint16> XmlConfigParser::NameIdMap = QMap<QString, quint16>();
 
-void XmlConfigParser::ParseS2ConfigToMap()
+void XmlConfigParser::ParseS2ConfigToMap(QMap<QString, quint16> &map)
 {
     QDir homeDir(StdFunc::GetSystemHomeDir());
     auto flist = homeDir.entryList(QDir::Files).filter("s2files.xml");
@@ -18,8 +18,8 @@ void XmlConfigParser::ParseS2ConfigToMap()
         {
             if (domDoc->setContent(moduleFile))
             {
-                if (NameIdMap.count() > 0)
-                    NameIdMap.clear();
+                if (map.count() > 0)
+                    map.clear();
                 auto recordElement = domDoc->documentElement().firstChild().nextSibling();
                 while (!recordElement.isNull())
                 {
@@ -27,7 +27,7 @@ void XmlConfigParser::ParseS2ConfigToMap()
                     auto nameElement = idElement.nextSibling().toElement();
                     auto idValue = static_cast<quint16>(idElement.text().toInt());
                     auto nameValue = nameElement.text();
-                    NameIdMap.insert(nameValue, idValue);
+                    map.insert(nameValue, idValue);
                     recordElement = recordElement.nextSibling();
                 }
             }
@@ -40,9 +40,4 @@ void XmlConfigParser::ParseS2ConfigToMap()
     {
         qCritical("Error: \"s2files.xml\" not found");
     }
-}
-
-quint16 XmlConfigParser::GetIdByName(QString name)
-{
-    return NameIdMap.value(name, 0);
 }

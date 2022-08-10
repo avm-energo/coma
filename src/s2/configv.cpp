@@ -32,6 +32,22 @@ void ConfigV::setRecordValue(const DataTypes::DataRecV &record)
         config.push_back(record);
 }
 
+void ConfigV::setRecordValue(const quint16 key, const DataTypes::valueType &value)
+{
+    auto result
+        = std::find_if(std::begin(config), std::end(config), [key](const auto &lhs) { return (lhs.getId() == key); });
+    if (result != std::end(config))
+    {
+        result->setData(value);
+    }
+    else
+    {
+        DataTypes::DataRecV record(key);
+        record.setData(value);
+        config.push_back(record);
+    }
+}
+
 const QList<DataTypes::DataRecV> &ConfigV::getConfig() const
 {
     return config;

@@ -69,7 +69,7 @@ Error::Msg Tune84Check::showScheme()
 
 Error::Msg Tune84Check::check()
 {
-    Bda *bda = new Bda;
+    BdaA284 *bda = new BdaA284;
     bda->readAndUpdate();
 #ifndef NO_LIMITS
     for (int i = 0; i < 3; ++i)

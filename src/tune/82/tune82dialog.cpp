@@ -21,11 +21,11 @@ Tune82Dialog::Tune82Dialog(ConfigV *config, Modules::MezzanineBoard typeM, QWidg
         new Tune82Check(config, TS82_CHECKING, typeM, this) } };
     if (typeM != Modules::MezzanineBoard::MTM_81)
     {
-        m_dialogList.append({ "Регулировка каналов напряжения", new Tune82ADC(config, TS82_ADCU, this) });
+        m_dialogList.append({ "Регулировка каналов напряжения", new Tune82ADC(config, typeM, TS82_ADCU, this) });
     }
     if (typeM != Modules::MezzanineBoard::MTM_83)
     {
-        m_dialogList.append({ "Регулировка каналов тока", new Tune82ADC(config, TS82_ADCI, this) });
+        m_dialogList.append({ "Регулировка каналов тока", new Tune82ADC(config, typeM, TS82_ADCI, this) });
     }
 
     m_calibrSteps = m_dialogList.size() + 1;

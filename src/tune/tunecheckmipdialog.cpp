@@ -1,16 +1,17 @@
-#include "tune82checkmip.h"
+#include "tunecheckmipdialog.h"
 
 #include "../module/board.h"
 #include "../module/modules.h"
 #include "../s2/configv.h"
-#include "../tunesequencefile.h"
+#include "../s2/s2.h"
 #include "../widgets/epopup.h"
 #include "../widgets/wd_func.h"
 #include "../xml/xmlconfigparser.h"
+#include "tunesequencefile.h"
 
 #include <QEventLoop>
 
-Tune82CheckMip::Tune82CheckMip(ConfigV *config, int tuneStep, Modules::MezzanineBoard type, QWidget *parent)
+TuneCheckMipDialog::TuneCheckMipDialog(ConfigV *config, int tuneStep, Modules::MezzanineBoard type, QWidget *parent)
     : AbstractTuneDialog(config, tuneStep, parent)
 {
     TuneSequenceFile::init();
@@ -18,7 +19,7 @@ Tune82CheckMip::Tune82CheckMip(ConfigV *config, int tuneStep, Modules::Mezzanine
     setupUI();
 }
 
-void Tune82CheckMip::setModuleType(Modules::MezzanineBoard type)
+void TuneCheckMipDialog::setModuleType(Modules::MezzanineBoard type)
 {
     if (type == Modules::MezzanineBoard::MTM_81)
         m_moduleType = MType::MTM_81;
@@ -28,13 +29,13 @@ void Tune82CheckMip::setModuleType(Modules::MezzanineBoard type)
         m_moduleType = MType::MTM_83;
 }
 
-void Tune82CheckMip::setTuneFunctions()
+void TuneCheckMipDialog::setTuneFunctions()
 {
-    addTuneFunc("1. Отображение схемы подключения...", &Tune82CheckMip::showScheme);
-    addTuneFunc("2. Проверка связи с МИП...", &Tune82CheckMip::check);
+    addTuneFunc("1. Отображение схемы подключения...", &TuneCheckMipDialog::showScheme);
+    addTuneFunc("2. Проверка связи с МИП...", &TuneCheckMipDialog::check);
 }
 
-Error::Msg Tune82CheckMip::showScheme()
+Error::Msg TuneCheckMipDialog::showScheme()
 {
     QString pmpfile;
     switch (m_moduleType) // выводим окно с предупреждением о включении РЕТОМ-а по схеме в зависимости от исполнения
@@ -79,18 +80,9 @@ Error::Msg Tune82CheckMip::showScheme()
     return Error::Msg::NoError;
 }
 
-Error::Msg Tune82CheckMip::check()
+Error::Msg TuneCheckMipDialog::check()
 {
     Mip *mip = new Mip(true, m_moduleType);
-    //    mip->setUpdatesEnabled();
-    //    mip->show();
-    mip->setNominalCurrent(configV->getRecord(XmlConfigParser::GetIdByName("I2nom")).value<float>());
-    mip->start();
-    QEventLoop el;
-    connect(mip, &Mip::finished, &el, &QEventLoop::quit);
-    el.exec();
-    return Error::Msg::NoError;
-    //    waitNSeconds(5);
-    //    mip.stop();
-    //    return mip.check();
+    mip->takeOneMeasurement(configV->getRecord(S2::GetIdByName("I2nom")).value<DataTypes::FLOAT_6t>().at(3));
+    return mip->check();
 }

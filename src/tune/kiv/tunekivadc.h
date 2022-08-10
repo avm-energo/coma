@@ -17,7 +17,7 @@ public:
 
 private:
     BacA284 *m_bac;
-    Bda *m_bda;
+    BdaA284 *m_bda;
     BdaIn *m_bdain;
     Bd0 *m_bd0;
     double m_pt100;

@@ -7,11 +7,11 @@
 class XmlConfigParser
 {
 private:
-    static QMap<QString, quint16> NameIdMap;
+    //    static QMap<QString, quint16> NameIdMap;
 
 public:
-    static void ParseS2ConfigToMap();
-    static quint16 GetIdByName(QString name);
+    static void ParseS2ConfigToMap(QMap<QString, quint16> &map);
+    //    static quint16 GetIdByName(QString name);
 };
 
 /*

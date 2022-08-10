@@ -13,7 +13,7 @@ TuneKIVR::TuneKIVR(ConfigV *config, int tuneStep, QWidget *parent) : AbstractTun
 {
 
     m_bac = new BacA284(this);
-    m_bda = new Bda(this);
+    m_bda = new BdaA284(this);
     setBac(m_bac);
     m_BacWidgetIndex = addWidgetToTabWidget(m_bac->widget(), "Настроечные параметры");
     m_BdaWidgetIndex = addWidgetToTabWidget(m_bda->widget(), "Текущие данные");

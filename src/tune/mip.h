@@ -41,16 +41,20 @@ public:
     void stop();
     Error::Msg check();
     void setModuleType(MType type);
-    void setNominalCurrent(double inom);
+    void setNominalCurrent(float inom);
     UWidget *widget();
+    MipDataStruct takeOneMeasurement(float i2nom);
 
 private:
     UniquePointer<IEC104> m_device;
     MipDataStruct m_mipData;
     MType m_moduleType;
-    double iNom;
+    float iNom;
     UWidget *m_widget;
     QWidget *m_parent;
+    bool m_withGUI;
+    ModuleDataUpdater *m_updater;
+    QTimer *m_updateTimer;
 
     void setupWidget();
 

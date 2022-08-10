@@ -8,5 +8,5 @@ Bda21::Bda21(QObject *parent) : DataBlock(parent)
 
 void Bda21::setupValuesDesc()
 {
-    m_valuesDesc.append(addGroupToValues("Данные без настройки", "bda", 8, 0, &m_blockData->sin[0], 5));
+    addNewGroup("Данные без настройки", "bda", 8, 0, &m_blockData->sin[0], 5);
 }

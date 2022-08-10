@@ -13,6 +13,6 @@ Bd0::BlockData *Bd0::data()
 
 void Bd0::setupValuesDesc()
 {
-    m_valuesDesc.append({ "", { { "Tmk0:", "Температура процессора, C", "value0", &m_blockData->Tmk, 3 } } });
-    m_valuesDesc.append({ "", { { "VBat:", "Напряжение батарейки, В", "value1", &m_blockData->Vbat, 3 } } });
+    addNewValue("Tmk0:", "Температура процессора, C", &m_blockData->Tmk, 3);
+    addNewValue("VBat:", "Напряжение батарейки, В", &m_blockData->Vbat, 3);
 }

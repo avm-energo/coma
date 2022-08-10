@@ -20,6 +20,7 @@ public:
 
     void setupValuesDesc() override;
     BlockData *data();
+    void setDefBlock() override;
 
 private:
     std::unique_ptr<BlockData> m_blockData;

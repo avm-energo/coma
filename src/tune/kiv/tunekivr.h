@@ -16,7 +16,7 @@ public:
 
 private:
     BacA284 *m_bac;
-    Bda *m_bda;
+    BdaA284 *m_bda;
     double m_pt100;
     int m_curTuneStep;
     BdaIn m_bdain;
