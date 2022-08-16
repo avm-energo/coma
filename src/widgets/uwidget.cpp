@@ -10,7 +10,7 @@
 #include <QEventLoop>
 UWidget::UWidget(QWidget *parent) : QWidget(parent)
 {
-    m_dataUpdater = new ModuleDataUpdater;
+    m_dataUpdater = new ModuleDataUpdater(BaseInterface::iface());
     // Отключим обновление виджета по умолчанию
     m_dataUpdater->setUpdatesEnabled(false);
     connect(m_dataUpdater, &ModuleDataUpdater::itsTimeToUpdateSinglePointSignal, this, &UWidget::updateSPData);

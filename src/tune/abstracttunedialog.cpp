@@ -472,6 +472,7 @@ Error::Msg AbstractTuneDialog::loadWorkConfig()
 void AbstractTuneDialog::CancelTune()
 {
     StdFunc::Cancel();
+    emit cancelled();
 }
 
 // ##################### PROTECTED ####################

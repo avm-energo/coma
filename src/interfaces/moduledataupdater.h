@@ -16,7 +16,7 @@ public:
         quint32 sigQuantity;
     };
 
-    explicit ModuleDataUpdater(QObject *parent = nullptr);
+    explicit ModuleDataUpdater(BaseInterface *iface, QObject *parent = nullptr);
     void requestUpdates();
     bool updatesEnabled();
     void setUpdatesEnabled(bool enabled = true);
@@ -25,6 +25,7 @@ public:
     void addBs(const BdQuery &query);
 
 private:
+    BaseInterface *m_iface;
     UniquePointer<DataTypesProxy> proxyFS, proxySP, proxyBS;
 
     void setFloatQuery(const QList<BdQuery> &list);
@@ -45,6 +46,8 @@ signals:
     void itsTimeToUpdateFloatSignal(DataTypes::FloatStruct &);
     void itsTimeToUpdateSinglePointSignal(DataTypes::SinglePointWithTimeStruct &);
     void itsTimeToUpdateBitStringSignal(DataTypes::BitStringStruct &);
+
+    void ifaceChanged();
 
 private slots:
     void updateSinglePointData(const QVariant &msg);
