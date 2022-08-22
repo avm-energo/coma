@@ -11,34 +11,49 @@ DataController::DataController(QObject *parent) : QObject(parent), isModuleChang
 {
 }
 
+/// \brief Возвращает путь до файла в домашней директории пользователя.
 QString DataController::getFilePath(const QString &filename)
 {
     auto dir = QDir(StdFunc::GetSystemHomeDir());
     return dir.filePath(filename);
 }
 
+/// \brief Установка флага, что файл не изменён.
 void DataController::resetOrSaved()
 {
     isModuleChanged = false;
 }
 
+/// \brief Возвращает флаг, изменён файл или нет.
 bool DataController::getModuleState() const
 {
     return isModuleChanged;
 }
 
-/// \brief Сохраняет номер строки изменённого конфига в мастер модели
+/// \brief Сохраняет номер строки изменённого конфига в мастер модели.
 int DataController::getRow() const
 {
     return changedRow;
 }
 
-/// \brief Возвращает сохранённую строку изменённого конфига
+/// \brief Возвращает сохранённую строку изменённого конфига.
 void DataController::setRow(const int &row)
 {
     changedRow = row;
 }
 
+/// \brief Изменяет состояние флага, изменён ли файл, и отправляет
+/// сообщение редактору, чтобы выделить изменённый элемент.
+void DataController::configChanged()
+{
+    if (!isModuleChanged)
+    {
+        isModuleChanged = true;
+        emit highlightModified();
+    }
+}
+
+/// \brief Создать файл (создание конфига модуля).
 void DataController::createFile(const QStringList &creationData)
 {
     auto newFilePath = getFilePath(creationData.last());
@@ -72,6 +87,7 @@ void DataController::createFile(const QStringList &creationData)
     }
 }
 
+/// \brief Переименовать файл (если было изменено имя устройства).
 void DataController::renameFile(const QString &oldName, const QString &newName)
 {
     auto oldFilepath = getFilePath(oldName);
@@ -85,6 +101,7 @@ void DataController::renameFile(const QString &oldName, const QString &newName)
         EMessageBox::error(nullptr, "Не получилось переименовать файл!");
 }
 
+/// \brief Удалить файл (модуль был удалён).
 void DataController::removeFile(const QString &filename)
 {
     // Если файл существует
@@ -97,11 +114,21 @@ void DataController::removeFile(const QString &filename)
     }
 }
 
-void DataController::configChanged()
+void DataController::saveFile(MasterModel *masterModel, XmlModel *slaveModel)
 {
-    if (!isModuleChanged)
+
+    auto doc = new QDomDocument("module");
+    auto moduleNode = masterModel->toNode(*doc, changedRow);
+    auto resNode = slaveModel->toNode(*doc);
+    if (resNode != nullptr)
+        moduleNode->appendChild(*resNode);
+    // auto strResult = doc->toString(4);
+
+    // Запись в файл
+    auto testFile = new QFile(getFilePath("test.xml"), this);
+    if (testFile->open(QIODevice::ReadWrite))
     {
-        isModuleChanged = true;
-        emit highlightModified();
+        QTextStream out(testFile);
+        doc->save(out, 4);
     }
 }

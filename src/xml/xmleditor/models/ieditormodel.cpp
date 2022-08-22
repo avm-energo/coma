@@ -20,24 +20,30 @@ ModelType IEditorModel::getModelType() const
     return mType;
 }
 
-// TODO: Remove this function (must be pure virtual)
-QDomElement *IEditorModel::toNode()
-{
-    return nullptr;
-}
-
-void IEditorModel::setAttribute(QDomDocument &doc, const QString &attrName, const QVariant &attrVar)
+void IEditorModel::setAttribute(QDomDocument &doc, QDomElement &elem, const QString &attrName, const QVariant &attrVar)
 {
     auto attr = doc.createAttribute(attrName);
+    QString attrVal = "";
     if (attrVar.isValid() && attrVar.canConvert<QString>())
+        attrVal = attrVar.value<QString>();
+    attr.setValue(attrVal);
+    elem.setAttributeNode(attr);
+}
+
+QDomElement *IEditorModel::makeElement(QDomDocument &doc, const QString &elemName)
+{
+    return new QDomElement(doc.createElement(elemName));
+}
+
+QDomElement *IEditorModel::makeElement(QDomDocument &doc, const QString &elemName, const QVariant &data)
+{
+    auto elem = makeElement(doc, elemName);
+    if (data.isValid() && data.canConvert<QString>())
     {
-        auto attrVal = attrVar.value<QString>();
-        if (!attrVal.isEmpty())
-            attr.setValue(attrVal);
+        auto filler = doc.createTextNode(data.value<QString>());
+        elem->appendChild(filler);
     }
-    auto tempElem = doc.toElement();
-    tempElem.setAttributeNode(attr);
-    doc = tempElem.toDocument();
+    return elem;
 }
 
 /// \brief Слот который принимает запрос от диалога и отправляет сигнал с ответом

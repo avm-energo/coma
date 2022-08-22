@@ -9,6 +9,7 @@ class XmlBaseModel : public XmlModel
 public:
     explicit XmlBaseModel(int rows, int cols, ModelType type, QObject *parent = nullptr);
     virtual void parseNode(QDomNode &node, int &row) override;
+    virtual QDomElement *toNode(QDomDocument &doc) override;
 };
 
 /// SIGNALS
@@ -18,6 +19,7 @@ class XmlSignalsModel : public XmlModel
 public:
     explicit XmlSignalsModel(int rows, int cols, ModelType type, QObject *parent = nullptr);
     virtual void parseNode(QDomNode &node, int &row) override;
+    virtual QDomElement *toNode(QDomDocument &doc) override;
 };
 
 /// SECTIONS

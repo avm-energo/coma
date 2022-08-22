@@ -7,12 +7,20 @@ MasterModel::MasterModel(QObject *parent) : IEditorModel(1, 1, ModelType::Master
     readModulesToModel();
 }
 
-QDomDocument *MasterModel::toNode(const int row, QDomElement *elem)
+QDomElement *MasterModel::toNode(QDomDocument &doc, const int row)
 {
-    auto doc = new QDomDocument("module");
+    auto moduleNode = makeElement(doc, "module");
     auto btypeVar = data(index(row, 1));
     auto mtypeVar = data(index(row, 2));
-    return doc;
+    auto nameVar = data(index(row, 0));
+    auto versionVar = data(index(row, 3));
+
+    setAttribute(doc, *moduleNode, "mtypeb", btypeVar);
+    setAttribute(doc, *moduleNode, "mtypem", mtypeVar);
+    moduleNode->appendChild(*makeElement(doc, "name", nameVar));
+    moduleNode->appendChild(*makeElement(doc, "version", versionVar));
+
+    return moduleNode;
 }
 
 void MasterModel::readModulesToModel()

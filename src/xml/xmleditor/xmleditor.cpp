@@ -184,7 +184,7 @@ void XmlEditor::savingAsk()
         auto slaveModel = manager->GetRootModel();
         if (slaveModel != nullptr)
         {
-            ;
+            dc->saveFile(masterModel, slaveModel);
         }
         else
         {

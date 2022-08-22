@@ -1,5 +1,6 @@
 #pragma once
 
+#include "models/mastermodel.h"
 #include "models/xmlmodel.h"
 
 #include <QObject>
@@ -21,10 +22,11 @@ public:
     void setRow(const int &row);
 
 public slots:
+    void configChanged();
     void createFile(const QStringList &creationData);
     void renameFile(const QString &oldName, const QString &newName);
     void removeFile(const QString &filename);
-    void configChanged();
+    void saveFile(MasterModel *masterModel, XmlModel *slaveModel);
 
 signals:
     void highlightModified();

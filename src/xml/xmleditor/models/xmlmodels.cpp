@@ -1,6 +1,6 @@
 #include "xmlmodels.h"
 
-// XmlMainModel functions //
+// XmlBaseModel functions //
 
 XmlBaseModel::XmlBaseModel(int rows, int cols, ModelType type, QObject *parent) : XmlModel(rows, cols, type, parent)
 {
@@ -16,7 +16,30 @@ void XmlBaseModel::parseNode(QDomNode &node, int &row)
     setData(itemHeaderIndex, desc);
 }
 
-// XmlCheckSignalsModel functions //
+QDomElement *XmlBaseModel::toNode(QDomDocument &doc)
+{
+    auto resNode = makeElement(doc, tags::res);
+    for (auto row = 0; row < rowCount(); row++)
+    {
+        auto childVar = data(index(row, 0), ModelNodeRole);
+        if (childVar.isValid() && childVar.canConvert<ChildModelNode>())
+        {
+            auto child = childVar.value<ChildModelNode>();
+            if (child.modelPtr != nullptr)
+            {
+                auto childNode = child.modelPtr->toNode(doc);
+                if (childNode != nullptr)
+                {
+                    setAttribute(doc, *childNode, tags::desc, data(index(row, 1)));
+                    resNode->appendChild(*childNode);
+                }
+            }
+        }
+    }
+    return resNode;
+}
+
+// XmlSignalsModel functions //
 
 XmlSignalsModel::XmlSignalsModel(int rows, int cols, ModelType type, QObject *parent)
     : XmlModel(rows, cols, type, parent)
@@ -28,6 +51,19 @@ void XmlSignalsModel::parseNode(QDomNode &node, int &row)
     parseTag(node, "id", row, 0);         // ID сигнала
     parseTag(node, "start-addr", row, 1); // Стартовый адрес
     parseTag(node, "count", row, 2);      // Количество
+}
+
+QDomElement *XmlSignalsModel::toNode(QDomDocument &doc)
+{
+    auto sigNode = makeElement(doc, tags::sigs);
+    for (auto row = 0; row < rowCount(); row++)
+    {
+        auto sigItem = makeElement(doc, "signal");
+        sigItem->appendChild(*makeElement(doc, "id", data(index(row, 0))));
+        sigItem->appendChild(*makeElement(doc, "start-addr", data(index(row, 1))));
+        sigItem->appendChild(*makeElement(doc, "count", data(index(row, 2))));
+    }
+    return sigNode;
 }
 
 // XmlSectionTabsModel functions //
@@ -100,7 +136,7 @@ void XmlSectionModel::create(const QStringList &saved, int *row)
     emit modelChanged();
 }
 
-// XmlCritAlarmsModel functions //
+// XmlAlarmsModel functions //
 
 XmlAlarmsModel::XmlAlarmsModel(int rows, int cols, ModelType type, QObject *parent) : XmlModel(rows, cols, type, parent)
 {

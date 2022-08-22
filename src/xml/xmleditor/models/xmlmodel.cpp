@@ -94,7 +94,14 @@ void XmlModel::remove(const int &row)
     emit modelChanged();
 }
 
-/*! \brief Parses given XML DOM node in current XML model .
+// TODO: Remove, must be pure virtual
+QDomElement *XmlModel::toNode(QDomDocument &doc)
+{
+    Q_UNUSED(doc);
+    return nullptr;
+}
+
+/*! \brief Parses given XML DOM node in current XML model.
  *  \details For each child node of given XML DOM node applying function parseDataNode.
  *  \see parseDataNode, parseNode
  */
