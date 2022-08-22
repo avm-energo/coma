@@ -5,6 +5,15 @@
 
 #include <QtXml>
 
+namespace tags
+{
+constexpr char module[] = "module";
+constexpr char mtypeb[] = "mtypeb";
+constexpr char mtypem[] = "mtypem";
+constexpr char name[] = "name";
+constexpr char version[] = "version";
+}
+
 class MasterModel : public IEditorModel
 {
     Q_OBJECT

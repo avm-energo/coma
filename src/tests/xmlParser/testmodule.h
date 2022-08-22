@@ -111,6 +111,8 @@ private slots:
     void checkA387USB();
     void checkA387Eth();
 
+    void checkSaveXmlFile();
+
 signals:
 private:
     Module module;

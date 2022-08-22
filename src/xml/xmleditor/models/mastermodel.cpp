@@ -9,16 +9,16 @@ MasterModel::MasterModel(QObject *parent) : IEditorModel(1, 1, ModelType::Master
 
 QDomElement *MasterModel::toNode(QDomDocument &doc, const int row)
 {
-    auto moduleNode = makeElement(doc, "module");
-    auto btypeVar = data(index(row, 1));
-    auto mtypeVar = data(index(row, 2));
-    auto nameVar = data(index(row, 0));
-    auto versionVar = data(index(row, 3));
+    auto moduleNode = makeElement(doc, tags::module);
+    auto btype = data(index(row, 1));
+    auto mtype = data(index(row, 2));
+    auto name = data(index(row, 0));
+    auto version = data(index(row, 3));
 
-    setAttribute(doc, *moduleNode, "mtypeb", btypeVar);
-    setAttribute(doc, *moduleNode, "mtypem", mtypeVar);
-    moduleNode->appendChild(*makeElement(doc, "name", nameVar));
-    moduleNode->appendChild(*makeElement(doc, "version", versionVar));
+    setAttribute(doc, *moduleNode, tags::mtypeb, btype);
+    setAttribute(doc, *moduleNode, tags::mtypem, mtype);
+    makeElement(doc, moduleNode, tags::name, name);
+    makeElement(doc, moduleNode, tags::version, version);
 
     return moduleNode;
 }
@@ -66,11 +66,11 @@ void MasterModel::parseXmlNode(const QDomNode &node, const QString &filename, in
         // Получаем аттрибуты TypeB и TypeM
         auto indexTypeB = this->index(row, 1);
         auto indexTypeM = this->index(row, 2);
-        setData(indexTypeM, domElModule.attribute("mtypem", "00"));
-        setData(indexTypeB, domElModule.attribute("mtypeb", "00"));
+        setData(indexTypeB, domElModule.attribute(tags::mtypeb, "00"));
+        setData(indexTypeM, domElModule.attribute(tags::mtypem, "00"));
 
         // Получаем имя модуля
-        auto domElName = domElModule.firstChildElement("name");
+        auto domElName = domElModule.firstChildElement(tags::name);
         if (!domElName.isNull())
         {
             auto indexName = this->index(row, 0);
@@ -78,7 +78,7 @@ void MasterModel::parseXmlNode(const QDomNode &node, const QString &filename, in
         }
 
         // И его версию
-        auto domElVersion = domElModule.firstChildElement("version");
+        auto domElVersion = domElModule.firstChildElement(tags::version);
         if (!domElVersion.isNull())
         {
             auto indexVersion = this->index(row, 3);

@@ -8,6 +8,7 @@ constexpr int ModelNodeRole = 0x0105; ///< Role for setting node with submodule
 /// \brief Namespace for storaging names of base XML tags.
 namespace tags
 {
+// Main tags
 constexpr char res[] = "resources";
 constexpr char desc[] = "desc";
 constexpr char sigs[] = "signals";
@@ -26,6 +27,16 @@ constexpr char modbus[] = "modbus";
 constexpr char protocom[] = "protocom";
 constexpr char iec60870[] = "iec60870";
 constexpr char config[] = "config";
+
+// Specified tags
+constexpr char sig[] = "signal";
+constexpr char tab[] = "tab";
+
+constexpr char id[] = "id";
+constexpr char start_addr[] = "start-addr";
+constexpr char count[] = "count";
+constexpr char name_[] = "name";
+// constexpr char res[] = "";
 }
 
 // Опережающее объявление

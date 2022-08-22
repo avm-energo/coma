@@ -192,6 +192,10 @@ void XmlEditor::savingAsk()
             // вкладка, и пользователь там что-то изменил (уже)
         }
     }
+    else
+    {
+        // TODO: Додуматься, как откатить изменения
+    }
 }
 
 void XmlEditor::saveModule()

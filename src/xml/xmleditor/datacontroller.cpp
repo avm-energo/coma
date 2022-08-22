@@ -116,13 +116,16 @@ void DataController::removeFile(const QString &filename)
 
 void DataController::saveFile(MasterModel *masterModel, XmlModel *slaveModel)
 {
-
-    auto doc = new QDomDocument("module");
+    // Создание документа
+    auto doc = new QDomDocument();
+    auto instructions = doc->createProcessingInstruction("xml", "version=\"1.0\" encoding=\"utf-8\"");
+    doc->appendChild(instructions);
+    // Создаём из моделей ноды xml-документа
     auto moduleNode = masterModel->toNode(*doc, changedRow);
+    doc->appendChild(*moduleNode);
     auto resNode = slaveModel->toNode(*doc);
     if (resNode != nullptr)
         moduleNode->appendChild(*resNode);
-    // auto strResult = doc->toString(4);
 
     // Запись в файл
     auto testFile = new QFile(getFilePath("test.xml"), this);
@@ -130,5 +133,6 @@ void DataController::saveFile(MasterModel *masterModel, XmlModel *slaveModel)
     {
         QTextStream out(testFile);
         doc->save(out, 4);
+        testFile->close();
     }
 }

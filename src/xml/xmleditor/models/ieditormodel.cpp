@@ -35,7 +35,7 @@ QDomElement *IEditorModel::makeElement(QDomDocument &doc, const QString &elemNam
     return new QDomElement(doc.createElement(elemName));
 }
 
-QDomElement *IEditorModel::makeElement(QDomDocument &doc, const QString &elemName, const QVariant &data)
+void IEditorModel::makeElement(QDomDocument &doc, QDomElement *parent, const QString &elemName, const QVariant &data)
 {
     auto elem = makeElement(doc, elemName);
     if (data.isValid() && data.canConvert<QString>())
@@ -43,7 +43,7 @@ QDomElement *IEditorModel::makeElement(QDomDocument &doc, const QString &elemNam
         auto filler = doc.createTextNode(data.value<QString>());
         elem->appendChild(filler);
     }
-    return elem;
+    parent->appendChild(*elem);
 }
 
 /// \brief Слот который принимает запрос от диалога и отправляет сигнал с ответом

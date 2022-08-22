@@ -36,7 +36,7 @@ protected:
     ModelType mType;
     void setAttribute(QDomDocument &doc, QDomElement &elem, const QString &attrName, const QVariant &attrVar);
     QDomElement *makeElement(QDomDocument &doc, const QString &elemName);
-    QDomElement *makeElement(QDomDocument &doc, const QString &elemName, const QVariant &data);
+    void makeElement(QDomDocument &doc, QDomElement *parent, const QString &elemName, const QVariant &data);
 
 public:
     explicit IEditorModel(int rows, int cols, ModelType type, QObject *parent = nullptr);
