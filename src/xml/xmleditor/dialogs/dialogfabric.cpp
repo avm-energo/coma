@@ -81,7 +81,6 @@ void XmlDialogFabric::CreateOrEditDialog(IEditorModel *model, int row, QWidget *
         }
         if (dialog != nullptr)
         {
-            // TODO: Connect XmlModel fuctions
             QObject::connect(dialog, &XmlDialog::modelDataRequest, model, &IEditorModel::getDialogRequest);
             QObject::connect(model, &IEditorModel::sendDialogResponse, dialog, &XmlDialog::modelDataResponse);
             QObject::connect(dialog, &XmlDialog::createData, model, &IEditorModel::create);

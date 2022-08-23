@@ -41,7 +41,6 @@ constexpr char id[] = "id";
 constexpr char addr[] = "addr";
 constexpr char start_addr[] = "start-addr";
 constexpr char count[] = "count";
-constexpr char name_[] = "name";
 constexpr char header[] = "header";
 constexpr char tooltip[] = "toolTip";
 constexpr char str_array[] = "string-array";

@@ -28,6 +28,8 @@ enum NodeTypes : quint16
     IEC60870,
     Config
 };
+
+constexpr char name[] = "name";
 }
 using ModelType = tags::NodeTypes;
 
