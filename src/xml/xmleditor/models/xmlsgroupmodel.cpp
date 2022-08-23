@@ -52,9 +52,42 @@ void XmlSGroupModel::update(const QStringList &saved, const int &row)
 
 void XmlSGroupModel::parseNode(QDomNode &node, int &row)
 {
-    parseAttribute(node, "desc", row, 0); // Заголовок
-    parseTag(node, "start-addr", row, 1); // Адрес
+    parseAttribute(node, tags::desc, row, 0); // Заголовок
+    parseTag(node, tags::start_addr, row, 1); // Адрес
     setData(index(row, 0), QVariant::fromValue(parseHideData(node)), SGroupDataRole);
+}
+
+QDomElement *XmlSGroupModel::toNode(QDomDocument &doc)
+{
+    auto sgroupNode = makeElement(doc, tags::sgroup);
+    for (auto row = 1; row < rowCount(); row++)
+    {
+        // Видимые данные
+        auto mwidget = makeElement(doc, tags::mwidget);
+        setAttribute(doc, *mwidget, tags::desc, data(index(row, 0)));
+        makeElement(doc, mwidget, tags::start_addr, data(index(row, 1)));
+        // Скрытые данные
+        auto hideDataVar = data(index(row, 0), SGroupDataRole);
+        if (hideDataVar.isValid() && hideDataVar.canConvert<SGroupHideData>())
+        {
+            auto hideData = hideDataVar.value<SGroupHideData>();
+            if (hideData.count != 1)
+                makeElement(doc, mwidget, tags::count, QString::number(hideData.count));
+
+            if (!hideData.tooltip.isEmpty())
+                makeElement(doc, mwidget, tags::tooltip, hideData.tooltip);
+
+            if (!hideData.array.isEmpty())
+            {
+                auto strArray = makeElement(doc, tags::str_array);
+                for (const auto &str : qAsConst(hideData.array))
+                    makeElement(doc, strArray, tags::item, str);
+                mwidget->appendChild(*strArray);
+            }
+        }
+        sgroupNode->appendChild(*mwidget);
+    }
+    return sgroupNode;
 }
 
 SGroupHideData XmlSGroupModel::parseHideData(QDomNode &node)
@@ -62,7 +95,7 @@ SGroupHideData XmlSGroupModel::parseHideData(QDomNode &node)
     SGroupHideData retVal;
     auto state = false;
     // Парсим тег count
-    auto countNode = node.firstChildElement("count");
+    auto countNode = node.firstChildElement(tags::count);
     if (!countNode.isNull())
     {
         auto countText = countNode.firstChild().toText().data();
@@ -71,14 +104,14 @@ SGroupHideData XmlSGroupModel::parseHideData(QDomNode &node)
             retVal.count = count;
     }
     // Парсим тег toolTip
-    auto tooltipNode = node.firstChildElement("toolTip");
+    auto tooltipNode = node.firstChildElement(tags::tooltip);
     if (!tooltipNode.isNull())
     {
         auto tooltip = tooltipNode.firstChild().toText().data();
         retVal.tooltip = tooltip;
     }
     // Парсим тег string-array
-    auto strArrayNode = node.firstChildElement("string-array");
+    auto strArrayNode = node.firstChildElement(tags::str_array);
     if (!strArrayNode.isNull())
     {
         auto strItemNode = strArrayNode.firstChild();

@@ -36,7 +36,9 @@ void ModelFabric::CreateChildModel(ChildModelNode &mNode, QDomNode &root, QObjec
         case ModelType::Alarms:
             mNode.modelPtr = new XmlBaseModel(rows, cols, mNode.modelType, parent);
             break;
-        case ModelType::AlarmsItem:
+        case ModelType::AlarmsCrit:
+        case ModelType::AlarmsWarn:
+        case ModelType::AlarmsInfo:
             mNode.modelPtr = new XmlAlarmsModel(rows, cols, mNode.modelType, parent);
             break;
         case ModelType::Journals:

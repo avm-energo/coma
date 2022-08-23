@@ -647,7 +647,8 @@ config::Item XmlParser::parseItem(QDomElement domElement, ctti::unnamed_type_id_
     }
 }
 
-void XmlParser::traverseNode(const QDomNode &node, ModuleSettingsDeprecated *const settings, ConfigSettings &configSettings)
+void XmlParser::traverseNode(
+    const QDomNode &node, ModuleSettingsDeprecated *const settings, ConfigSettings &configSettings)
 {
     QDomNode domNode = node.firstChild();
     while (!domNode.isNull())

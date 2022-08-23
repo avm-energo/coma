@@ -25,6 +25,7 @@ template <typename T> QWidget *helper(const T &arg, QWidget *parent, quint16 key
     label->setToolTipDuration(60000);
     lyout->addWidget(label);
     widget->setLayout(lyout);
+
     switch (arg.type.hash())
     {
     case ctti::unnamed_type_id<IPCtrl>().hash():

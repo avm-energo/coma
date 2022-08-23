@@ -117,7 +117,7 @@ XmlSectionsModel::XmlSectionsModel(int rows, int cols, ModelType type, QObject *
 
 void XmlSectionsModel::parseNode(QDomNode &node, int &row)
 {
-    parseAttribute(node, "header", row, 0); // Заголовок
+    parseAttribute(node, tags::header, row, 0); // Заголовок
 }
 
 void XmlSectionsModel::create(const QStringList &saved, int *row)
@@ -136,11 +136,30 @@ void XmlSectionsModel::create(const QStringList &saved, int *row)
     emit modelChanged();
 }
 
-// TODO: Доделать
 QDomElement *XmlSectionsModel::toNode(QDomDocument &doc)
 {
-    Q_UNUSED(doc);
-    return nullptr;
+    auto sectionsNode = makeElement(doc, tags::sections);
+    // Проход по дочерним моделям
+    for (auto row = 1; row < rowCount(); row++)
+    {
+        auto dataVar = data(index(row, 0), ModelNodeRole);
+        if (dataVar.isValid() && dataVar.canConvert<ChildModelNode>())
+        {
+            auto sectionModel = dataVar.value<ChildModelNode>();
+            if (sectionModel.modelPtr != nullptr)
+            {
+                // Дочернюю XmlSectionModel в ноду
+                auto sectionNode = sectionModel.modelPtr->toNode(doc);
+                if (sectionNode != nullptr)
+                {
+                    // Добавляем описание (атрибут header)
+                    setAttribute(doc, *sectionNode, tags::header, data(index(row, 0)));
+                    sectionsNode->appendChild(*sectionNode);
+                }
+            }
+        }
+    }
+    return sectionsNode;
 }
 
 // XmlSectionModel functions //
@@ -152,8 +171,8 @@ XmlSectionModel::XmlSectionModel(int rows, int cols, ModelType type, QObject *pa
 
 void XmlSectionModel::parseNode(QDomNode &node, int &row)
 {
-    parseAttribute(node, "header", row, 0); // Заголовок
-    parseAttribute(node, "tab", row, 1);    // ID вкладки
+    parseAttribute(node, tags::header, row, 0); // Заголовок
+    parseAttribute(node, tags::tab, row, 1);    // ID вкладки
 }
 
 void XmlSectionModel::create(const QStringList &saved, int *row)
@@ -172,11 +191,31 @@ void XmlSectionModel::create(const QStringList &saved, int *row)
     emit modelChanged();
 }
 
-// TODO: Доделать
 QDomElement *XmlSectionModel::toNode(QDomDocument &doc)
 {
-    Q_UNUSED(doc);
-    return nullptr;
+    auto sectionNode = makeElement(doc, tags::section);
+    // Проход по дочерним моделям
+    for (auto row = 1; row < rowCount(); row++)
+    {
+        auto dataVar = data(index(row, 0), ModelNodeRole);
+        if (dataVar.isValid() && dataVar.canConvert<ChildModelNode>())
+        {
+            auto sgroupModel = dataVar.value<ChildModelNode>();
+            if (sgroupModel.modelPtr != nullptr)
+            {
+                // Дочернюю модель (section) в ноду
+                auto sgroupNode = sgroupModel.modelPtr->toNode(doc);
+                if (sgroupNode != nullptr)
+                {
+                    // Добавляем атрибуты
+                    setAttribute(doc, *sgroupNode, tags::header, data(index(row, 0)));
+                    setAttribute(doc, *sgroupNode, tags::tab, data(index(row, 1)));
+                    sectionNode->appendChild(*sgroupNode);
+                }
+            }
+        }
+    }
+    return sectionNode;
 }
 
 // XmlAlarmsModel functions //
@@ -187,8 +226,31 @@ XmlAlarmsModel::XmlAlarmsModel(int rows, int cols, ModelType type, QObject *pare
 
 void XmlAlarmsModel::parseNode(QDomNode &node, int &row)
 {
-    parseTag(node, "string", row, 0); // Строка с сообщением
-    parseTag(node, "addr", row, 1);   // Адрес
+    parseTag(node, tags::string, row, 0); // Строка с сообщением
+    parseTag(node, tags::addr, row, 1);   // Адрес
+}
+
+QDomElement *XmlAlarmsModel::toNode(QDomDocument &doc)
+{
+    // Выбор имени узла
+    QString nodeName = "";
+    if (mType == ModelType::AlarmsCrit)
+        nodeName = tags::critical;
+    else if (mType == ModelType::AlarmsWarn)
+        nodeName = tags::warning;
+    else
+        nodeName = tags::info;
+
+    // Обход элементов
+    auto alarmsNode = makeElement(doc, nodeName);
+    for (auto row = 1; row < rowCount(); row++)
+    {
+        auto alarmItem = makeElement(doc, tags::item);
+        makeElement(doc, alarmItem, tags::string, data(index(row, 0)));
+        makeElement(doc, alarmItem, tags::addr, data(index(row, 1)));
+        alarmsNode->appendChild(*alarmItem);
+    }
+    return alarmsNode;
 }
 
 // XmlWorkJoursModel functions //
@@ -200,8 +262,22 @@ XmlWorkJoursModel::XmlWorkJoursModel(int rows, int cols, ModelType type, QObject
 
 void XmlWorkJoursModel::parseNode(QDomNode &node, int &row)
 {
-    parseTag(node, "addr", row, 0); // Адрес
-    parseTag(node, "desc", row, 1); // Строка с сообщением
+    parseTag(node, tags::addr, row, 0); // Адрес
+    parseTag(node, tags::desc, row, 1); // Строка с сообщением
+}
+
+QDomElement *XmlWorkJoursModel::toNode(QDomDocument &doc)
+{
+    // Обход элементов
+    auto workJoursNode = makeElement(doc, tags::work);
+    for (auto row = 1; row < rowCount(); row++)
+    {
+        auto jourItem = makeElement(doc, tags::item);
+        makeElement(doc, jourItem, tags::addr, data(index(row, 0)));
+        makeElement(doc, jourItem, tags::desc, data(index(row, 1)));
+        workJoursNode->appendChild(*jourItem);
+    }
+    return workJoursNode;
 }
 
 // XmlMeasJoursModel functions //
@@ -213,7 +289,20 @@ XmlMeasJoursModel::XmlMeasJoursModel(int rows, int cols, ModelType type, QObject
 
 void XmlMeasJoursModel::parseNode(QDomNode &node, int &row)
 {
-    parseTag(node, "header", row, 0); // Адрес
+    parseTag(node, tags::header, row, 0); // Название
+}
+
+QDomElement *XmlMeasJoursModel::toNode(QDomDocument &doc)
+{
+    // Обход элементов
+    auto measJoursNode = makeElement(doc, tags::meas);
+    for (auto row = 1; row < rowCount(); row++)
+    {
+        auto jourItem = makeElement(doc, tags::item);
+        makeElement(doc, jourItem, tags::header, data(index(row, 0)));
+        measJoursNode->appendChild(*jourItem);
+    }
+    return measJoursNode;
 }
 
 // XmlModbusModel functions //
@@ -224,10 +313,26 @@ XmlModbusModel::XmlModbusModel(int rows, int cols, ModelType type, QObject *pare
 
 void XmlModbusModel::parseNode(QDomNode &node, int &row)
 {
-    parseTag(node, "signal-id", row, 0); // ID сигнала
-    parseTag(node, "reg-type", row, 1);  // Тип регистра
-    parseTag(node, "type", row, 2);      // Возвращаемый тип
-    parseTag(node, "desc", row, 3);      // Описание
+    parseTag(node, tags::sig_id, row, 0);   // ID сигнала
+    parseTag(node, tags::reg_type, row, 1); // Тип регистра
+    parseTag(node, tags::type, row, 2);     // Возвращаемый тип
+    parseTag(node, tags::desc, row, 3);     // Описание
+}
+
+QDomElement *XmlModbusModel::toNode(QDomDocument &doc)
+{
+    // Обход элементов
+    auto modbusNode = makeElement(doc, tags::modbus);
+    for (auto row = 1; row < rowCount(); row++)
+    {
+        auto modbusItem = makeElement(doc, tags::group);
+        makeElement(doc, modbusItem, tags::sig_id, data(index(row, 0)));
+        makeElement(doc, modbusItem, tags::reg_type, data(index(row, 1)));
+        makeElement(doc, modbusItem, tags::type, data(index(row, 2)));
+        makeElement(doc, modbusItem, tags::desc, data(index(row, 3)));
+        modbusNode->appendChild(*modbusItem);
+    }
+    return modbusNode;
 }
 
 // XmlProtocomModel functions //
@@ -239,8 +344,22 @@ XmlProtocomModel::XmlProtocomModel(int rows, int cols, ModelType type, QObject *
 
 void XmlProtocomModel::parseNode(QDomNode &node, int &row)
 {
-    parseTag(node, "block", row, 0);     // Номер блока
-    parseTag(node, "signal-id", row, 1); // ID сигнала
+    parseTag(node, tags::block, row, 0);  // Номер блока
+    parseTag(node, tags::sig_id, row, 1); // ID сигнала
+}
+
+QDomElement *XmlProtocomModel::toNode(QDomDocument &doc)
+{
+    // Обход элементов
+    auto protocomNode = makeElement(doc, tags::protocom);
+    for (auto row = 1; row < rowCount(); row++)
+    {
+        auto protocomItem = makeElement(doc, tags::group);
+        makeElement(doc, protocomItem, tags::block, data(index(row, 0)));
+        makeElement(doc, protocomItem, tags::sig_id, data(index(row, 1)));
+        protocomNode->appendChild(*protocomItem);
+    }
+    return protocomNode;
 }
 
 // XmlIECModel functions //
@@ -257,6 +376,22 @@ void XmlIecModel::parseNode(QDomNode &node, int &row)
     parseTag(node, "sig-group", row, 3);  // Группа
 }
 
+QDomElement *XmlIecModel::toNode(QDomDocument &doc)
+{
+    // Обход элементов
+    auto iecNode = makeElement(doc, tags::iec60870);
+    for (auto row = 1; row < rowCount(); row++)
+    {
+        auto iecItem = makeElement(doc, tags::group);
+        makeElement(doc, iecItem, tags::sig_id, data(index(row, 0)));
+        makeElement(doc, iecItem, tags::sig_type, data(index(row, 1)));
+        makeElement(doc, iecItem, tags::trans_type, data(index(row, 2)));
+        makeElement(doc, iecItem, tags::sig_group, data(index(row, 3)));
+        iecNode->appendChild(*iecItem);
+    }
+    return iecNode;
+}
+
 // XmlConfigModel functions //
 
 XmlConfigModel::XmlConfigModel(int rows, int cols, ModelType type, QObject *parent) : XmlModel(rows, cols, type, parent)
@@ -267,4 +402,18 @@ void XmlConfigModel::parseNode(QDomNode &node, int &row)
 {
     parseTag(node, "id", row, 0);           // ID
     parseTag(node, "defaultValue", row, 1); // Значение по умолчанию
+}
+
+QDomElement *XmlConfigModel::toNode(QDomDocument &doc)
+{
+    // Обход элементов
+    auto configNode = makeElement(doc, tags::config);
+    for (auto row = 1; row < rowCount(); row++)
+    {
+        auto configItem = makeElement(doc, tags::record);
+        makeElement(doc, configItem, tags::id, data(index(row, 0)));
+        makeElement(doc, configItem, tags::def_val, data(index(row, 1)));
+        configNode->appendChild(*configItem);
+    }
+    return configNode;
 }

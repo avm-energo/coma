@@ -36,7 +36,7 @@ void MasterModel::readModulesToModel()
     {
         auto domDoc = new QDomDocument;
         auto moduleFile = new QFile(dir.filePath(modules[i]));
-        if (moduleFile->open(QIODevice::ReadOnly))
+        if (moduleFile->open(QIODevice::ReadOnly | QIODevice::Text))
         {
             QString errMsg = "";
             int line = 0, column = 0;
@@ -106,7 +106,7 @@ void MasterModel::masterItemSelected(const QModelIndex &index)
         QDir homeDir(StdFunc::GetSystemHomeDir());
         auto filename = qvariant_cast<QString>(dataFilename);
         auto moduleFile = new QFile(homeDir.filePath(filename), this);
-        if (moduleFile->open(QIODevice::ReadOnly))
+        if (moduleFile->open(QIODevice::ReadOnly | QIODevice::Text))
         {
             QString errMsg = "";
             int line = 0, column = 0;

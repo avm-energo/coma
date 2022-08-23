@@ -34,7 +34,9 @@ void XmlDialogFabric::CreateOrEditDialog(IEditorModel *model, int row, QWidget *
         case ModelType::Master:
             dialog = new ModuleDialog(parent);
             break;
-        case ModelType::AlarmsItem:
+        case ModelType::AlarmsCrit:
+        case ModelType::AlarmsWarn:
+        case ModelType::AlarmsInfo:
             dialog = new XmlAlarmDialog(parent);
             break;
         case ModelType::Signals:

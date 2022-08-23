@@ -10,9 +10,9 @@ const std::map<QString, ModelType> XmlModel::types {
     { tags::section, ModelType::Section },     //
     { tags::sgroup, ModelType::SGroup },       //
     { tags::alarms, ModelType::Alarms },       //
-    { tags::critical, ModelType::AlarmsItem }, //
-    { tags::warning, ModelType::AlarmsItem },  //
-    { tags::info, ModelType::AlarmsItem },     //
+    { tags::critical, ModelType::AlarmsCrit }, //
+    { tags::warning, ModelType::AlarmsWarn },  //
+    { tags::info, ModelType::AlarmsInfo },     //
     { tags::journals, ModelType::Journals },   //
     { tags::work, ModelType::WorkJours },      //
     { tags::meas, ModelType::MeasJours },      //
@@ -30,7 +30,9 @@ const std::map<ModelType, QStringList> XmlModel::headers {
     { ModelType::Section, { "Название", "ID вкладки" } },                                    //
     { ModelType::SGroup, { "Имя", "Адрес" } },                                               //
     { ModelType::Alarms, { "XML", "Описание" } },                                            //
-    { ModelType::AlarmsItem, { "Описание", "Адрес" } },                                      //
+    { ModelType::AlarmsCrit, { "Описание", "Адрес" } },                                      //
+    { ModelType::AlarmsWarn, { "Описание", "Адрес" } },                                      //
+    { ModelType::AlarmsInfo, { "Описание", "Адрес" } },                                      //
     { ModelType::Journals, { "XML", "Описание" } },                                          //
     { ModelType::WorkJours, { "Адрес", "Описание" } },                                       //
     { ModelType::MeasJours, { "Название" } },                                                //
@@ -94,13 +96,6 @@ void XmlModel::remove(const int &row)
     emit modelChanged();
 }
 
-// TODO: Remove, must be pure virtual
-QDomElement *XmlModel::toNode(QDomDocument &doc)
-{
-    Q_UNUSED(doc);
-    return nullptr;
-}
-
 /*! \brief Parses given XML DOM node in current XML model.
  *  \details For each child node of given XML DOM node applying function parseDataNode.
  *  \see parseDataNode, parseNode
@@ -148,7 +143,7 @@ void XmlModel::parseDataNode(QDomNode &child, int &row)
  *  \details Frequently called by implementations of parseNode virtual function.
  *  \see parseAttribute, parseNode
  */
-void XmlModel::parseTag(QDomNode &node, const QString tagName, int row, int col)
+void XmlModel::parseTag(QDomNode &node, const QString &tagName, int row, int col)
 {
     auto namedNode = node.firstChildElement(tagName);
     if (!namedNode.isNull())
@@ -163,7 +158,7 @@ void XmlModel::parseTag(QDomNode &node, const QString tagName, int row, int col)
  *  \details Frequently called by implementations of parseNode virtual function.
  *  \see parseTag, parseNode
  */
-void XmlModel::parseAttribute(QDomNode &node, const QString attrName, int row, int col)
+void XmlModel::parseAttribute(QDomNode &node, const QString &attrName, int row, int col)
 {
     auto attr = node.toElement().attribute(attrName, "");
     if (!attr.isNull())

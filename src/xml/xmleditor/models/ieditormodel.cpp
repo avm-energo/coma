@@ -35,6 +35,14 @@ QDomElement *IEditorModel::makeElement(QDomDocument &doc, const QString &elemNam
     return new QDomElement(doc.createElement(elemName));
 }
 
+void IEditorModel::makeElement(QDomDocument &doc, QDomElement *parent, const QString &elemName, const QString &data)
+{
+    auto elem = makeElement(doc, elemName);
+    auto filler = doc.createTextNode(data);
+    elem->appendChild(filler);
+    parent->appendChild(*elem);
+}
+
 void IEditorModel::makeElement(QDomDocument &doc, QDomElement *parent, const QString &elemName, const QVariant &data)
 {
     auto elem = makeElement(doc, elemName);

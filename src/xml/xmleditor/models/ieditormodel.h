@@ -17,7 +17,9 @@ enum NodeTypes : quint16
     Section,
     SGroup,
     Alarms,
-    AlarmsItem,
+    AlarmsCrit,
+    AlarmsWarn,
+    AlarmsInfo,
     Journals,
     WorkJours,
     MeasJours,
@@ -36,6 +38,7 @@ protected:
     ModelType mType;
     void setAttribute(QDomDocument &doc, QDomElement &elem, const QString &attrName, const QVariant &attrVar);
     QDomElement *makeElement(QDomDocument &doc, const QString &elemName);
+    void makeElement(QDomDocument &doc, QDomElement *parent, const QString &elemName, const QString &data);
     void makeElement(QDomDocument &doc, QDomElement *parent, const QString &elemName, const QVariant &data);
 
 public:

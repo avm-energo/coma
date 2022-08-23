@@ -108,7 +108,7 @@ void DataController::removeFile(const QString &filename)
     auto filepath = getFilePath(filename);
     if (QFile::exists(filepath))
     {
-        // Перемещаем его в корзину (не хард делитим!)
+        // Перемещаем его в корзину (not hard delete!)
         if (!QFile::moveToTrash(filepath))
             EMessageBox::error(nullptr, "Не получилось удалить файл!");
     }
@@ -133,6 +133,7 @@ void DataController::saveFile(MasterModel *masterModel, XmlModel *slaveModel)
     {
         QTextStream out(testFile);
         doc->save(out, 4);
+        // out << doc->toString(4);
         testFile->close();
     }
 }

@@ -88,6 +88,7 @@ class XmlAlarmsModel : public XmlModel
 public:
     explicit XmlAlarmsModel(int rows, int cols, ModelType type, QObject *parent = nullptr);
     virtual void parseNode(QDomNode &node, int &row) override;
+    virtual QDomElement *toNode(QDomDocument &doc) override;
 };
 
 /// JOURNALS
@@ -97,6 +98,7 @@ class XmlWorkJoursModel : public XmlModel
 public:
     explicit XmlWorkJoursModel(int rows, int cols, ModelType type, QObject *parent = nullptr);
     virtual void parseNode(QDomNode &node, int &row) override;
+    virtual QDomElement *toNode(QDomDocument &doc) override;
 };
 
 class XmlMeasJoursModel : public XmlModel
@@ -104,6 +106,7 @@ class XmlMeasJoursModel : public XmlModel
 public:
     explicit XmlMeasJoursModel(int rows, int cols, ModelType type, QObject *parent = nullptr);
     virtual void parseNode(QDomNode &node, int &row) override;
+    virtual QDomElement *toNode(QDomDocument &doc) override;
 };
 
 /// DATA EXCHANGE PROTOCOLS
@@ -113,6 +116,7 @@ class XmlModbusModel : public XmlModel
 public:
     explicit XmlModbusModel(int rows, int cols, ModelType type, QObject *parent = nullptr);
     virtual void parseNode(QDomNode &node, int &row) override;
+    virtual QDomElement *toNode(QDomDocument &doc) override;
 };
 
 class XmlProtocomModel : public XmlModel
@@ -120,6 +124,7 @@ class XmlProtocomModel : public XmlModel
 public:
     explicit XmlProtocomModel(int rows, int cols, ModelType type, QObject *parent = nullptr);
     virtual void parseNode(QDomNode &node, int &row) override;
+    virtual QDomElement *toNode(QDomDocument &doc) override;
 };
 
 class XmlIecModel : public XmlModel
@@ -127,6 +132,7 @@ class XmlIecModel : public XmlModel
 public:
     explicit XmlIecModel(int rows, int cols, ModelType type, QObject *parent = nullptr);
     virtual void parseNode(QDomNode &node, int &row) override;
+    virtual QDomElement *toNode(QDomDocument &doc) override;
 };
 
 /// S2 CONFIG
@@ -136,6 +142,7 @@ class XmlConfigModel : public XmlModel
 public:
     explicit XmlConfigModel(int rows, int cols, ModelType type, QObject *parent = nullptr);
     virtual void parseNode(QDomNode &node, int &row) override;
+    virtual QDomElement *toNode(QDomDocument &doc) override;
 };
 
 #endif // XMLMODELS_H
