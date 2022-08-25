@@ -57,14 +57,14 @@ void XmlSGroupModel::parseNode(QDomNode &node, int &row)
     setData(index(row, 0), QVariant::fromValue(parseHideData(node)), SGroupDataRole);
 }
 
-QDomElement *XmlSGroupModel::toNode(QDomDocument &doc)
+QDomElement XmlSGroupModel::toNode(QDomDocument &doc)
 {
     auto sgroupNode = makeElement(doc, tags::sgroup);
     for (auto row = 1; row < rowCount(); row++)
     {
         // Видимые данные
         auto mwidget = makeElement(doc, tags::mwidget);
-        setAttribute(doc, *mwidget, tags::desc, data(index(row, 0)));
+        setAttribute(doc, mwidget, tags::desc, data(index(row, 0)));
         makeElement(doc, mwidget, tags::start_addr, data(index(row, 1)));
         // Скрытые данные
         auto hideDataVar = data(index(row, 0), SGroupDataRole);
@@ -82,10 +82,10 @@ QDomElement *XmlSGroupModel::toNode(QDomDocument &doc)
                 auto strArray = makeElement(doc, tags::str_array);
                 for (const auto &str : qAsConst(hideData.array))
                     makeElement(doc, strArray, tags::item, str);
-                mwidget->appendChild(*strArray);
+                mwidget.appendChild(strArray);
             }
         }
-        sgroupNode->appendChild(*mwidget);
+        sgroupNode.appendChild(mwidget);
     }
     return sgroupNode;
 }

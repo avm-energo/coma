@@ -76,7 +76,7 @@ void XmlContainerModel::create(const QStringList &saved, int *row)
     }
 }
 
-QDomElement *XmlContainerModel::toNode(QDomDocument &doc)
+QDomElement XmlContainerModel::toNode(QDomDocument &doc)
 {
     // Выбор имени тега исходя из типа модели
     const auto tagName = getModelTagName();
@@ -92,23 +92,20 @@ QDomElement *XmlContainerModel::toNode(QDomDocument &doc)
             {
                 // Дочернюю модель в ноду
                 auto childNode = child.modelPtr->toNode(doc);
-                if (childNode != nullptr)
+                // Для узлов <sections> и <section>
+                if (mType == ModelType::Sections || mType == ModelType::Section)
                 {
-                    // Для узлов <sections> и <section>
-                    if (mType == ModelType::Sections || mType == ModelType::Section)
-                    {
-                        // Добавляем описание (атрибут header)
-                        setAttribute(doc, *childNode, tags::header, data(index(row, 0)));
-                        if (mType == ModelType::Section)
-                            // Добавляем номер вкладки (атрибут tab)
-                            setAttribute(doc, *childNode, tags::tab, data(index(row, 1)));
-                    }
-                    // Для узлов <resources>, <alarms> и <journals>
-                    else
-                        // Добавляем описание (атрибут desc)
-                        setAttribute(doc, *childNode, tags::desc, data(index(row, 1)));
-                    node->appendChild(*childNode);
+                    // Добавляем описание (атрибут header)
+                    setAttribute(doc, childNode, tags::header, data(index(row, 0)));
+                    if (mType == ModelType::Section)
+                        // Добавляем номер вкладки (атрибут tab)
+                        setAttribute(doc, childNode, tags::tab, data(index(row, 1)));
                 }
+                // Для узлов <resources>, <alarms> и <journals>
+                else
+                    // Добавляем описание (атрибут desc)
+                    setAttribute(doc, childNode, tags::desc, data(index(row, 1)));
+                node.appendChild(childNode);
             }
         }
     }

@@ -23,7 +23,7 @@ private:
 public:
     explicit XmlSGroupModel(int rows, int cols, ModelType type, QObject *parent = nullptr);
     virtual void parseNode(QDomNode &node, int &row) override;
-    virtual QDomElement *toNode(QDomDocument &doc) override;
+    virtual QDomElement toNode(QDomDocument &doc) override;
 
 public slots:
     virtual void getDialogRequest(const int &row) override;

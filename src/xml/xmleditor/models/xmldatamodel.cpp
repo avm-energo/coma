@@ -4,10 +4,9 @@ XmlDataModel::XmlDataModel(int rows, int cols, ModelType type, QObject *parent) 
 {
 }
 
-std::tuple<QString, QString, std::function<void(QDomDocument &, QDomElement *, int &)>>
-XmlDataModel::getModelPreferences()
+std::tuple<QString, QString, std::function<void(QDomDocument &, QDomElement &, int &)>> XmlDataModel::getModelSettings()
 {
-    auto alarmHelper = [&](QDomDocument &doc, QDomElement *item, int &row) {
+    auto alarmHelper = [&](auto &doc, auto &item, auto &row) {
         makeElement(doc, item, tags::string, data(index(row, 0)));
         makeElement(doc, item, tags::addr, data(index(row, 1)));
     };
@@ -16,14 +15,14 @@ XmlDataModel::getModelPreferences()
     {
     case ModelType::Signals:
         return { tags::sigs, tags::sig, //
-            [&](QDomDocument &doc, QDomElement *item, int &row) {
+            [&](auto &doc, auto &item, auto &row) {
                 makeElement(doc, item, tags::id, data(index(row, 0)));
                 makeElement(doc, item, tags::start_addr, data(index(row, 1)));
                 makeElement(doc, item, tags::count, data(index(row, 2)));
             } };
     case ModelType::SectionTabs:
         return { tags::tabs, tags::tab, //
-            [&](QDomDocument &doc, QDomElement *item, int &row) {
+            [&](auto &doc, auto &item, auto &row) {
                 makeElement(doc, item, tags::id, data(index(row, 0)));
                 makeElement(doc, item, tags::name, data(index(row, 1)));
             } };
@@ -35,18 +34,18 @@ XmlDataModel::getModelPreferences()
         return { tags::info, tags::item, alarmHelper };
     case ModelType::WorkJours:
         return { tags::work, tags::item, //
-            [&](QDomDocument &doc, QDomElement *item, int &row) {
+            [&](auto &doc, auto &item, auto &row) {
                 makeElement(doc, item, tags::addr, data(index(row, 0)));
                 makeElement(doc, item, tags::desc, data(index(row, 1)));
             } };
     case ModelType::MeasJours:
         return { tags::meas, tags::item, //
-            [&](QDomDocument &doc, QDomElement *item, int &row) {
-                makeElement(doc, item, tags::header, data(index(row, 0)));
+            [&](auto &doc, auto &item, auto &row) {
+                makeElement(doc, item, tags::header, data(index(row, 0))); //
             } };
     case ModelType::Modbus:
         return { tags::modbus, tags::group, //
-            [&](QDomDocument &doc, QDomElement *item, int &row) {
+            [&](auto &doc, auto &item, auto &row) {
                 makeElement(doc, item, tags::sig_id, data(index(row, 0)));
                 makeElement(doc, item, tags::reg_type, data(index(row, 1)));
                 makeElement(doc, item, tags::type, data(index(row, 2)));
@@ -54,13 +53,13 @@ XmlDataModel::getModelPreferences()
             } };
     case ModelType::Protocom:
         return { tags::protocom, tags::group, //
-            [&](QDomDocument &doc, QDomElement *item, int &row) {
+            [&](auto &doc, auto &item, auto &row) {
                 makeElement(doc, item, tags::block, data(index(row, 0)));
                 makeElement(doc, item, tags::sig_id, data(index(row, 1)));
             } };
     case ModelType::IEC60870:
         return { tags::iec60870, tags::group, //
-            [&](QDomDocument &doc, QDomElement *item, int &row) {
+            [&](auto &doc, auto &item, auto &row) {
                 makeElement(doc, item, tags::sig_id, data(index(row, 0)));
                 makeElement(doc, item, tags::sig_type, data(index(row, 1)));
                 makeElement(doc, item, tags::trans_type, data(index(row, 2)));
@@ -68,13 +67,14 @@ XmlDataModel::getModelPreferences()
             } };
     case ModelType::Config:
         return { tags::config, tags::record, //
-            [&](QDomDocument &doc, QDomElement *item, int &row) {
+            [&](auto &doc, auto &item, auto &row) {
                 makeElement(doc, item, tags::id, data(index(row, 0)));
                 makeElement(doc, item, tags::def_val, data(index(row, 1)));
             } };
     default:
+        qWarning() << "Model settings not found!";
         return { "undefined", "undefined", //
-            [](QDomDocument &doc, QDomElement *item, int &row) {
+            [](auto &doc, auto &item, auto &row) {
                 Q_UNUSED(doc);
                 Q_UNUSED(item);
                 Q_UNUSED(row);
@@ -138,9 +138,9 @@ void XmlDataModel::parseNode(QDomNode &node, int &row)
     }
 }
 
-QDomElement *XmlDataModel::toNode(QDomDocument &doc)
+QDomElement XmlDataModel::toNode(QDomDocument &doc)
 {
-    const auto prefs = getModelPreferences();
+    const auto prefs = getModelSettings();
     auto node = makeElement(doc, std::get<0>(prefs));
     // Записываем со второго элемента, т.к. первый элемент - возврат назад
     for (auto row = 1; row < rowCount(); row++)
@@ -148,7 +148,7 @@ QDomElement *XmlDataModel::toNode(QDomDocument &doc)
         auto item = makeElement(doc, std::get<1>(prefs));
         auto fillNode = std::get<2>(prefs);
         fillNode(doc, item, row);
-        node->appendChild(*item);
+        node.appendChild(item);
     }
     return node;
 }

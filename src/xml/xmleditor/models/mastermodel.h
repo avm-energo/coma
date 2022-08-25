@@ -5,6 +5,8 @@
 
 #include <QtXml>
 
+constexpr int FilenameDataRole = 0x0107; ///< Роль для хранения имени файла
+
 namespace tags
 {
 constexpr char module[] = "module";
@@ -18,12 +20,13 @@ class MasterModel : public IEditorModel
     Q_OBJECT
 private:
     void readModulesToModel();
-    void parseXmlNode(const QDomNode &node, const QString &filename, int &row);
+    void parseXmlNode(const QDomNode &node, const QString &filename, const int &row);
     QStringList getNewList(const QStringList &saved);
 
 public:
     MasterModel(QObject *parent = nullptr);
-    virtual QDomElement *toNode(QDomDocument &doc, const int row);
+    virtual QDomElement toNode(QDomDocument &doc, const int &row);
+    void undoChanges(const int &row, const bool &openState);
 
 public slots:
     void masterItemSelected(const QModelIndex &index);
@@ -34,7 +37,6 @@ public slots:
 signals:
     void itemSelected(QDomNode &node);
     void createFile(const QStringList &creationData);
-    void renameFile(const QString &oldName, const QString &newName);
     void removeFile(const QString &filename);
 };
 

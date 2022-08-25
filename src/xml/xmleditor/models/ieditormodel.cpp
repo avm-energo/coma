@@ -30,28 +30,28 @@ void IEditorModel::setAttribute(QDomDocument &doc, QDomElement &elem, const QStr
     elem.setAttributeNode(attr);
 }
 
-QDomElement *IEditorModel::makeElement(QDomDocument &doc, const QString &elemName)
+QDomElement IEditorModel::makeElement(QDomDocument &doc, const QString &elemName)
 {
-    return new QDomElement(doc.createElement(elemName));
+    return doc.createElement(elemName);
 }
 
-void IEditorModel::makeElement(QDomDocument &doc, QDomElement *parent, const QString &elemName, const QString &data)
+void IEditorModel::makeElement(QDomDocument &doc, QDomElement &parent, const QString &elemName, const QString &data)
 {
     auto elem = makeElement(doc, elemName);
     auto filler = doc.createTextNode(data);
-    elem->appendChild(filler);
-    parent->appendChild(*elem);
+    elem.appendChild(filler);
+    parent.appendChild(elem);
 }
 
-void IEditorModel::makeElement(QDomDocument &doc, QDomElement *parent, const QString &elemName, const QVariant &data)
+void IEditorModel::makeElement(QDomDocument &doc, QDomElement &parent, const QString &elemName, const QVariant &data)
 {
     auto elem = makeElement(doc, elemName);
     if (data.isValid() && data.canConvert<QString>())
     {
         auto filler = doc.createTextNode(data.value<QString>());
-        elem->appendChild(filler);
+        elem.appendChild(filler);
     }
-    parent->appendChild(*elem);
+    parent.appendChild(elem);
 }
 
 /// \brief Слот который принимает запрос от диалога и отправляет сигнал с ответом

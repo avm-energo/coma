@@ -82,7 +82,6 @@ QVBoxLayout *XmlEditor::getMasterWorkspace()
     QObject::connect(masterModel, &MasterModel::itemSelected, manager, &ModelManager::SetDocument);
     // Подключение контроллера данных
     QObject::connect(masterModel, &MasterModel::createFile, dc, &DataController::createFile);
-    QObject::connect(masterModel, &MasterModel::renameFile, dc, &DataController::renameFile);
     QObject::connect(masterModel, &MasterModel::removeFile, dc, &DataController::removeFile);
     QObject::connect(masterModel, &MasterModel::modelChanged, dc, &DataController::configChanged);
     masterView->setModel(masterModel);
@@ -179,22 +178,20 @@ void XmlEditor::setFontBolding(int row, bool state)
 
 void XmlEditor::savingAsk()
 {
+    auto slaveModel = manager->GetRootModel();
     if (EMessageBox::question("Сохранить изменения?"))
     {
-        auto slaveModel = manager->GetRootModel();
         if (slaveModel != nullptr)
-        {
             dc->saveFile(masterModel, slaveModel);
-        }
         else
-        {
-            // TODO: Вкладка справа не открыта, открыта только левая
-            // вкладка, и пользователь там что-то изменил (уже)
-        }
+            dc->saveFile(masterModel);
     }
     else
     {
-        // TODO: Додуматься, как откатить изменения
+        auto isModuleOpened = false;
+        if (slaveModel != nullptr)
+            isModuleOpened = true;
+        masterModel->undoChanges(dc->getRow(), isModuleOpened);
     }
 }
 
@@ -202,8 +199,8 @@ void XmlEditor::saveModule()
 {
     if (dc->getModuleState())
     {
+        dc->resetOrSaved();
         savingAsk();
         setFontBolding(dc->getRow(), false);
-        dc->resetOrSaved();
     }
 }

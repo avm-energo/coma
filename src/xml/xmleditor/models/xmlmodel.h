@@ -87,7 +87,7 @@ public:
     virtual void update(const QStringList &saved, const int &row) override;
     virtual void remove(const int &row) override;
 
-    virtual QDomElement *toNode(QDomDocument &doc) = 0;
+    virtual QDomElement toNode(QDomDocument &doc) = 0;
     void setDataNode(bool isChildModel, QDomNode &root);
     virtual void parseNode(QDomNode &node, int &row) = 0;
 

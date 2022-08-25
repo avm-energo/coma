@@ -13,6 +13,9 @@ private:
     int changedRow;
 
     QString getFilePath(const QString &filename);
+    void replaceChild(QDomDocument &doc, QDomElement &parent, const QString &tag, const QVariant &data);
+    void replaceAttrs(QDomDocument &doc, QDomElement &node, const QStringList attrs, const QList<QVariant> &vals);
+    void writeToFile(const QDomDocument &doc, const QString &oldName, const QString &newName);
 
 public:
     explicit DataController(QObject *parent = nullptr);
@@ -27,6 +30,7 @@ public slots:
     void renameFile(const QString &oldName, const QString &newName);
     void removeFile(const QString &filename);
     void saveFile(MasterModel *masterModel, XmlModel *slaveModel);
+    void saveFile(MasterModel *masterModel);
 
 signals:
     void highlightModified();

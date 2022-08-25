@@ -103,7 +103,7 @@ void XmlDialog::saveData()
             isChanged = false;
             this->reject();
         }
-        // Еслиданные окна не прошли проверку
+        // Если данные окна не прошли проверку
         else
             EMessageBox::warning(this, "Введены некорректные данные");
     }
