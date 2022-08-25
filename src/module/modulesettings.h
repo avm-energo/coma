@@ -10,65 +10,94 @@
 class ModuleSettings
 {
 public:
-    // Configuration settings
+    /// Config settings ///
+
     using ConfigList = QList<DataTypes::RecordPair>;
     using ConfigMap = QHash<int, ConfigList>;
+
     void startNewConfig();
     void appendToCurrentConfig(DataTypes::RecordPair pair);
     const ConfigMap getConfig();
 
-    // Check settings
+    /// Section settings ///
+
+    /// \brief Контейнер для хранения информации узла <mwidget> из XML
     struct MWidget
     {
-        QString desc;
-        quint32 startAdr;
-        quint32 count;
-        QString tooltip;
-        QStringList subItemList;
+        QString desc;                 ///< атрибут "desc"
+        quint32 startAddr;            ///< узел <start-addr>
+        quint32 count = 1;            ///< узел <count>
+        QString tooltip = "";         ///< узел <toolTip>
+        QStringList subItemList = {}; ///< узел <string-array>
     };
 
-    struct MWidgetGroup
+    /// \brief Контейнер для хранения информации узла <sgroup> из XML
+    struct SGroup
     {
-        QString name;
-        MWidget widget;
-        quint32 tabNum;
+        quint32 tabId;          ///< атрибут "tab"
+        QString name;           ///< атрибут "header"
+        QList<MWidget> widgets; ///< узлы <mwidget>
     };
 
-    using MWidgetGroupList = QList<MWidgetGroup>;
-    using TabMap = QHash<int, MWidgetGroupList>;
+    // key (int) - id вкладки
+    // value (список SGroup) - список SGroup
+    using SGMap = QHash<int, QList<SGroup>>;
 
-    struct MainTab
+    /// \brief Контейнер для хранения информации узла <section> из XML
+    struct Section
     {
-        QString name;
-        TabMap widgetTabs;
+        QString name; ///< атрибут "header"
+        SGMap sgMap;  ///< узлы <sgroup>
     };
 
-    using TabsMap = QHash<int, QString>;
-    using CheckMap = QList<MainTab>;
+    // key (int) - id вкладки
+    // value (QString) - имя вкладки
+    using TabsMap = QHash<int, QString>; ///< Хранит узлы <tab> секции <section-tabs>
+    using SectionList = QList<Section>;  ///< Хранит узлы <section> секции <sections>
+
     const TabsMap getTabs();
-    const CheckMap getCheck();
+    const SectionList getSectionList();
 
-    // Alarms settings
+    /// Alarms settings ///
+
+    /// \brief Контейнер для хранения информации узла <item> в <alarms>
+    struct Alarm
+    {
+        quint32 addr; ///< узел <addr>
+        QString desc; ///< узел <desc>
+    };
 
     using HighlightMap = QMultiMap<quint32, quint32>;
-    using AlarmMap = QMap<Modules::AlarmType, DataTypes::Alarm>;
-    AlarmMap alarms;
+    // Info: DataTypes::Alarm - deprecated [see template.xml]
+    using AlarmMap = QMap<Modules::AlarmType, QList<Alarm>>; ///< Хранит узлы <item> секции <alarms>
 
-    // Journals settings
-    using JourMap = QMap<Modules::JournalType, DataTypes::JournalDesc>;
-    JourMap journals;
+    /// Journals settings ///
+
+    /// \brief Контейнер для хранения информации узла <item> в <journals>
+    struct Journal
+    {
+        quint32 addr; ///< узел <addr>
+        QString desc; ///< узел <desc>
+    };
+
+    // Info: DataTypes::JournalDesc - deprecated [see template.xml]
+    using JourMap = QMap<Modules::JournalType, QList<Journal>>; ///< Хранит узлы <item> секции <journals>
 
     ModuleSettings(const Modules::StartupInfoBlock &startupInfo);
+
+    // TODO: А где Modbus, Protocom, IEC60870 ?
 
 private:
     const Modules::StartupInfoBlock &startupInfoBlock;
 
-    ConfigMap m_config;
-    HighlightMap m_critHighlight, m_warnHighlight;
-    TabsMap m_tabs;
-    CheckMap m_checkMap;
+    ConfigMap configs;
+    HighlightMap critHighlight, warnHighlight;
+    TabsMap tabs;
+    SectionList sections;
+    AlarmMap alarms;
+    JourMap journals;
 
-    int m_curConfigIndex;
+    int curConfigIndex;
 };
 
 #endif // MODULESETTINGS_H

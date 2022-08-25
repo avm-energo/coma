@@ -115,6 +115,7 @@ public:
     void addNewGroup(
         const QString &groupName, const QString &name, int howMuch, int fromWhich, T *startValue, int precision)
     {
+        Q_UNUSED(fromWhich);
         ValueGroupStr vg;
         vg.groupDesc = groupName;
         for (int i = 0; i < howMuch; ++i)

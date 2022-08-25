@@ -6,27 +6,27 @@ ModuleSettings::ModuleSettings(const Modules::StartupInfoBlock &startupInfo) : s
 
 void ModuleSettings::startNewConfig()
 {
-    m_curConfigIndex++;
-    m_config[m_curConfigIndex] = ConfigList();
+    curConfigIndex++;
+    configs[curConfigIndex] = ConfigList();
 }
 
 void ModuleSettings::appendToCurrentConfig(DataTypes::RecordPair pair)
 {
-    assert(m_config.contains(m_curConfigIndex));
-    m_config[m_curConfigIndex].append(pair);
+    assert(configs.contains(curConfigIndex));
+    configs[curConfigIndex].append(pair);
 }
 
 const ModuleSettings::ConfigMap ModuleSettings::getConfig()
 {
-    return m_config;
+    return configs;
 }
 
 const ModuleSettings::TabsMap ModuleSettings::getTabs()
 {
-    return m_tabs;
+    return tabs;
 }
 
-const ModuleSettings::CheckMap ModuleSettings::getCheck()
+const ModuleSettings::SectionList ModuleSettings::getSectionList()
 {
-    return m_checkMap;
+    return sections;
 }

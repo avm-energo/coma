@@ -94,6 +94,7 @@ enum AlarmType
 {
     Warning,
     Critical,
+    Info,
     All,
     Base,
     Mezz
