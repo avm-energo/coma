@@ -13,7 +13,6 @@ namespace check
 
 namespace detail
 {
-
     struct Record
     {
         uint16_t start_addr;

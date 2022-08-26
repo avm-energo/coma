@@ -173,11 +173,11 @@ void Coma::SetupUI()
 void Coma::PrepareDialogs()
 {
     Q_INIT_RESOURCE(settings);
-    if (m_Module->isConfigOutdated())
-    {
-        m_Module->eraseSettings();
-        m_Module->putConfigVersion();
-    }
+    // if (m_Module->isConfigOutdated())
+    //{
+    //    m_Module->eraseSettings();
+    //    m_Module->putConfigVersion();
+    //}
 
     if (!m_Module->loadSettings())
     {
@@ -186,7 +186,6 @@ void Coma::PrepareDialogs()
             "Проверьте журнал сообщений.\n"
             "Доступны минимальные функции.");
     }
-
     Q_CLEANUP_RESOURCE(settings);
     m_Module->createAlarm(AlarmW);
     m_Module->create(BdaTimer);

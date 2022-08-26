@@ -7,7 +7,7 @@ ModuleSettings::ModuleSettings(const Modules::StartupInfoBlock &startupInfo) : s
 void ModuleSettings::startNewConfig()
 {
     curConfigIndex++;
-    configs[curConfigIndex] = ConfigList();
+    configs[curConfigIndex] = ModuleTypes::ConfigList();
 }
 
 void ModuleSettings::appendToCurrentConfig(DataTypes::RecordPair pair)
@@ -16,17 +16,17 @@ void ModuleSettings::appendToCurrentConfig(DataTypes::RecordPair pair)
     configs[curConfigIndex].append(pair);
 }
 
-const ModuleSettings::ConfigMap ModuleSettings::getConfig()
+const ModuleTypes::ConfigMap ModuleSettings::getConfig()
 {
     return configs;
 }
 
-const ModuleSettings::TabsMap ModuleSettings::getTabs()
+const ModuleTypes::TabsMap ModuleSettings::getTabs()
 {
     return tabs;
 }
 
-const ModuleSettings::SectionList ModuleSettings::getSectionList()
+const ModuleTypes::SectionList ModuleSettings::getSectionList()
 {
     return sections;
 }

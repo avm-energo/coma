@@ -18,13 +18,7 @@
 
 constexpr char versionFile[] = "coma.ver";
 
-Module::Module(QObject *parent)
-    : QObject(parent)
-#ifdef USE_INTERNAL_RCS
-    , m_directory(resourceDirectory)
-#else
-    , m_directory(StdFunc::GetSystemHomeDir())
-#endif
+Module::Module(QObject *parent) : QObject(parent)
 {
     m_gsettings = { { &DataTypes::DataRecV::map, &WidgetFactory::m_widgetMap, &WidgetFactory::m_categoryMap }, {} };
 }
@@ -115,7 +109,9 @@ bool Module::loadSettings(const Modules::StartupInfoBlock &startupInfoBlock, int
 
     m_settings = std::unique_ptr<ModuleSettingsDeprecated>(new ModuleSettingsDeprecated(startupInfoBlock));
     m_settings->interfaceType = interfaceType;
-    if (Board::isUSIO(Modules::BaseBoard(startupInfoBlock.MTypeB), Modules::MezzanineBoard(startupInfoBlock.MTypeM)))
+    auto mtypeb = Modules::BaseBoard(startupInfoBlock.MTypeB);
+    auto mtypem = Modules::MezzanineBoard(startupInfoBlock.MTypeM);
+    if (Board::isUSIO(mtypeb, mtypem))
     {
         if (!loadUsioSettings(startupInfoBlock))
             return false;
@@ -212,36 +208,6 @@ bool Module::obtainXmlFile(const QString &filename) const
         if (xmlFile.contains(filename, Qt::CaseInsensitive))
             return true;
     }
-    /*    QDir dir(m_directory);
-        qDebug() << dir;
-        auto xmlFiles = dir.entryList(QDir::Files).filter(".xml");
-        qDebug() << xmlFiles;
-        QDomDocument domDoc;
-        QFile file;
-        auto result = std::find_if(xmlFiles.cbegin(), xmlFiles.cend(),
-            [&filename](const QString &str) { return str.contains(filename, Qt::CaseInsensitive); });
-        if (result != std::cend(xmlFiles))
-            file.setFileName(dir.filePath(*result));
-
-        if (file.fileName().isEmpty())
-        {
-            dir = QDir(resourceDirectory);
-            xmlFiles = dir.entryList(QDir::Files).filter(".xml");
-            qDebug() << xmlFiles;
-            for (const auto &xmlFile : qAsConst(xmlFiles))
-            {
-                if (!xmlFile.contains(filename, Qt::CaseInsensitive))
-                    continue;
-                if (!QFile::copy(dir.filePath(xmlFile), StdFunc::GetSystemHomeDir() + xmlFile))
-                {
-                    qCritical() << Error::DescError;
-                    qInfo() << dir.filePath(xmlFile) << StdFunc::GetSystemHomeDir() + xmlFile;
-                    return false;
-                }
-
-                return obtainXmlFile(filename);
-            }
-        } */
     return false;
 }
 
@@ -297,21 +263,10 @@ void Module::putConfigVersion() const
     file.close();
 }
 
-const QString &Module::directory() const
-{
-    return m_directory;
-}
-
-void Module::setDirectory(const QString &newDirectory)
-{
-    m_directory = newDirectory;
-}
-
 void Module::create(UniquePointer<Journals> jour)
 {
     if (Board::GetInstance().interfaceType() != Board::InterfaceType::RS485)
     {
-        //     addDialogToList(new AbstractConfDialog(settings()->defaultConfig), "Конфигурирование", "conf1");
         Q_ASSERT(jour != nullptr);
         addDialogToList(new JournalDialog(std::move(jour)), "Журналы");
     }
@@ -320,9 +275,6 @@ void Module::create(UniquePointer<Journals> jour)
 void Module::createCommon()
 {
     const auto &board = Board::GetInstance();
-    //    TimeDialog *tdlg = new TimeDialog;
-    //    addDialogToList(tdlg, "Время", "time");
-
     if (board.interfaceType() != Board::InterfaceType::RS485)
         addDialogToList(new FWUploadDialog, "Загрузка ВПО");
 
@@ -333,7 +285,6 @@ void Module::createCommon()
 
 bool Module::obtainXmlConfig(const QString &filename, QList<DataTypes::RecordPair> &config) const
 {
-    //    QDir dir(m_directory);
     QDir dir(resourceDirectory);
     auto xmlFiles = dir.entryList(QDir::Files).filter(".xml");
     QDomDocument domDoc;
@@ -417,7 +368,6 @@ bool Module::loadUsioSettings(const Modules::StartupInfoBlock &startupInfoBlock)
 bool Module::loadS2Settings()
 {
     constexpr auto name = "s2files.xml";
-    //    QDir dir(m_directory);
     QDir dir(resourceDirectory);
     qDebug() << dir;
     QDomDocument domDoc;
@@ -426,14 +376,9 @@ bool Module::loadS2Settings()
     file.setFileName(dir.filePath(name));
     if (!file.exists())
     {
-        //        dir = QDir(resourceDirectory);
-        //        if (!QFile::copy(dir.filePath(name), StdFunc::GetSystemHomeDir() + name))
-        //        {
         qCritical() << Error::DescError;
         qInfo() << dir.filePath(name) << StdFunc::GetSystemHomeDir() + name;
         return false;
-        //        }
-        //        return loadS2Settings();
     }
     if (file.open(QIODevice::ReadOnly))
     {
@@ -535,15 +480,10 @@ bool Module::loadCheckSettings(CheckSettings &settings)
     file.setFileName(dir.filePath(name));
     if (!file.exists())
     {
-        //        dir = QDir(resourceDirectory);
-        //        if (!QFile::copy(dir.filePath(name), StdFunc::GetSystemHomeDir() + name))
-        //        {
         qCritical() << Error::DescError;
         qInfo() << dir.filePath(name) << StdFunc::GetSystemHomeDir() + name;
         assert(false);
         return false;
-        //        }
-        //        return loadCheckSettings();
     }
 
     if (file.open(QIODevice::ReadOnly))

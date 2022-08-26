@@ -125,7 +125,7 @@ struct StartupInfoBlock
     quint32 Cfcrc;
     quint32 Hth;
 
-    bool isOutdated(quint32 configVersion) const
+    bool isOutdated(const quint32 &configVersion) const
     {
         return Fwver < configVersion;
     }

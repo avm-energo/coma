@@ -31,7 +31,7 @@ void CreateModuleDialogs::addDialogToList(UDialog *dlg, const QString &caption, 
 
 void CreateModuleDialogs::CreateConfigDialogs()
 {
-    using ConfigHash = QHash<int, ModuleSettings::ConfigList>;
+    using ConfigHash = QHash<int, ModuleTypes::ConfigList>;
     ConfigHash config = m_settings.getConfig();
     for (ConfigHash::Iterator it = config.begin(); it != config.end(); ++it)
     {

@@ -25,7 +25,7 @@ void ServiceComa::PrepareDialogs()
 
 void ServiceComa::getAbout()
 {
-    AboutWidget *w = new AboutWidget;
+    auto w = new AboutWidget(this);
     GitVersion version;
     w->appendLine("Config version: " + version.getConfigVersion());
     w->prependLine(QString(PROGNAME) + " version " + QString(COMAVERSION) + "-" + version.getGitHash());

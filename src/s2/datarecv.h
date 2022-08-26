@@ -39,6 +39,7 @@ template <typename T, size_t N> std::array<T, N> inline operator<<(std::array<T,
 class QString;
 class S2;
 class Module;
+class NewModule;
 
 namespace DataTypes
 {
@@ -47,6 +48,7 @@ class valueMap
 {
 public:
     using value_type = std::map<int, ctti::unnamed_type_id_t>;
+
     template <typename T> struct true_type
     {
         static constexpr bool value = std_ext::is_variant_alternative<T, valueType>();
@@ -75,22 +77,15 @@ class DataRecV
 {
     friend class ::S2;
     friend class ::Module;
+    friend class ::NewModule;
 
 public:
-    friend bool operator==(const DataRecV &lhs, const DataRecV &rhs);
-    friend bool operator!=(const DataRecV &lhs, const DataRecV &rhs);
-    DataRecV(const S2DataTypes::DataRec &record) : DataRecV(record, static_cast<const char *>(record.thedata))
-    {
-    }
+    DataRecV() = default;
     DataRecV(const valueMap &_map, const S2DataTypes::DataRec &record, const char *rawdata);
-
-    DataRecV(const S2DataTypes::DataRec &record, const char *rawdata) : DataRecV(map, record, rawdata)
-    {
-    }
     DataRecV(const valueMap &_map, const unsigned _id, const QString &str);
-    DataRecV(const unsigned _id, const QString &str) : DataRecV(map, _id, str)
-    {
-    }
+    DataRecV(const S2DataTypes::DataRec &record);
+    DataRecV(const S2DataTypes::DataRec &record, const char *rawdata);
+    DataRecV(const unsigned _id, const QString &str);
     DataRecV(const unsigned _id);
 
     template <typename T, std::enable_if_t<valueMap::true_type<T>::value, bool> = true>
@@ -98,12 +93,15 @@ public:
     {
     }
 
-    DataRecV() = default;
+    friend bool operator==(const DataRecV &lhs, const DataRecV &rhs);
+    friend bool operator!=(const DataRecV &lhs, const DataRecV &rhs);
+
     void printer() const;
     S2DataTypes::DataRec serialize() const;
     quint16 getId() const;
     valueType getData() const;
     void setData(const valueType &value);
+    size_t typeIndex() const;
 
     template <typename T, std::enable_if_t<valueMap::true_type<T>::value, bool> = true> T value() const
     {
@@ -124,11 +122,6 @@ public:
         }
         else
             data = value;
-    }
-
-    size_t typeIndex() const
-    {
-        return data.index();
     }
 
 private:

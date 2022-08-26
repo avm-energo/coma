@@ -10,8 +10,10 @@
 
 #include <QHeaderView>
 #include <QStandardItem>
+
 config::widgetMap WidgetFactory::m_widgetMap;
 categoryMap WidgetFactory::m_categoryMap;
+
 // forward declarations
 // helpers for create widget
 static QWidget *createModbusView(QWidget *parent);

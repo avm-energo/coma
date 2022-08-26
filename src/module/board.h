@@ -116,7 +116,7 @@ public:
         return m_startupInfoBlockExt;
     }
 
-    static bool isUSIO(Modules::BaseBoard typeB, Modules::MezzanineBoard typeM);
+    static bool isUSIO(Modules::BaseBoard &typeB, Modules::MezzanineBoard &typeM);
 
 private:
     static constexpr int StartupInfoBlockMembers = sizeof(Modules::StartupInfoBlock) / sizeof(quint32);

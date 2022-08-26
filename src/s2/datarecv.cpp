@@ -8,39 +8,6 @@ DataTypes::valueMap DataTypes::DataRecV::map;
 
 namespace DataTypes
 {
-
-void DataRecV::printer() const
-{
-    std::cout << id << " : ";
-    valueType w = data;
-    std::visit([](auto arg) { detail::print(arg); }, w);
-    std::cout << std::endl;
-}
-
-S2DataTypes::DataRec DataRecV::serialize() const
-{
-    return std::visit(
-        [=](auto &arg) -> S2DataTypes::DataRec {
-            typedef std::remove_reference_t<decltype(arg)> internalType;
-            S2DataTypes::DataRec record { id, sizeof(internalType), (void *)(&arg) };
-            return record;
-        },
-        data);
-}
-
-template <typename T, typename F> static constexpr bool is_variant_alternative()
-{
-    constexpr auto size = std::variant_size_v<F>;
-    bool state = false;
-    std_ext::for_constexpr<size>([&](auto index) {
-        if constexpr (std::is_same_v<T, std::variant_alternative_t<index, F>>)
-        {
-            state = true;
-        }
-    });
-    return state;
-}
-
 DataRecV::DataRecV(const valueMap &_map, const S2DataTypes::DataRec &record, const char *rawdata) : id(record.header.id)
 {
     using namespace detail;
@@ -299,6 +266,18 @@ DataRecV::DataRecV(const valueMap &_map, const unsigned _id, const QString &str)
     }
 }
 
+DataRecV::DataRecV(const S2DataTypes::DataRec &record, const char *rawdata) : DataRecV(map, record, rawdata)
+{
+}
+
+DataRecV::DataRecV(const S2DataTypes::DataRec &record) : DataRecV(record, static_cast<const char *>(record.thedata))
+{
+}
+
+DataRecV::DataRecV(const unsigned _id, const QString &str) : DataRecV(map, _id, str)
+{
+}
+
 DataRecV::DataRecV(const unsigned _id) : DataRecV(_id, QString::number(0))
 {
 }
@@ -313,6 +292,25 @@ bool operator!=(const DataTypes::DataRecV &lhs, const DataTypes::DataRecV &rhs)
 {
     using namespace S2DataTypes;
     return !(lhs == rhs);
+}
+
+void DataRecV::printer() const
+{
+    std::cout << id << " : ";
+    valueType w = data;
+    std::visit([](auto arg) { detail::print(arg); }, w);
+    std::cout << std::endl;
+}
+
+S2DataTypes::DataRec DataRecV::serialize() const
+{
+    return std::visit(
+        [=](auto &arg) -> S2DataTypes::DataRec {
+            typedef std::remove_reference_t<decltype(arg)> internalType;
+            S2DataTypes::DataRec record { id, sizeof(internalType), (void *)(&arg) };
+            return record;
+        },
+        data);
 }
 
 quint16 DataRecV::getId() const
@@ -330,5 +328,10 @@ void DataRecV::setData(const valueType &value)
     // not true setter, only swapper for same internal types
     assert(data.index() == value.index());
     data = value;
+}
+
+size_t DataRecV::typeIndex() const
+{
+    return data.index();
 }
 }

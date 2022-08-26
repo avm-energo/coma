@@ -193,39 +193,8 @@ void Board::updateExt(const DataTypes::BitStringStruct &bs)
     }
 }
 
-bool Board::isUSIO(Modules::BaseBoard typeB, Modules::MezzanineBoard typeM)
+bool Board::isUSIO(Modules::BaseBoard &typeB, Modules::MezzanineBoard &typeM)
 {
-    //    using Modules::BaseBoard;
-    //    using Modules::MezzanineBoard;
-    //    bool status = false;
-    //    switch (typeB)
-    //    {
-    //    case Modules::MTB_21:
-    //    case Modules::MTB_22:
-    //    case Modules::MTB_31:
-    //    case Modules::MTB_33:
-    //    case Modules::MTB_34:
-    //    case Modules::MTB_35:
-    //        status = true;
-    //        break;
-    //    default:
-    //        status = false;
-    //    }
-    //    switch (typeM)
-    //    {
-    //    case Modules::MTM_00:
-    //    case Modules::MTM_21:
-    //    case Modules::MTM_22:
-    //    case Modules::MTM_31:
-    //    case Modules::MTM_33:
-    //    case Modules::MTM_34:
-    //    case Modules::MTM_35:
-    //        status &= true;
-    //        break;
-    //    default:
-    //        status = false;
-    //    }
-    //    return status;
     return ((typeB > 0x1F) && (typeB < 0x40) && (typeM > 0x1F) && (typeM < 0x40));
 }
 

@@ -110,7 +110,7 @@ void Mip::start()
     else
     {
         m_updater->setUpdatesEnabled();
-        QTimer *m_updateTimer = new QTimer;
+        m_updateTimer = new QTimer;
         m_updateTimer->setInterval(1000);
         connect(m_updateTimer, &QTimer::timeout, m_updater, &ModuleDataUpdater::requestUpdates);
         m_updateTimer->start();

@@ -11,21 +11,23 @@ class TestModule : public QObject
 public:
     explicit TestModule(QObject *parent = nullptr);
 private slots:
-    // вызывается перед первой тестовой функцией
+    /// \brief Вызывается перед первой тестовой функцией
     void initTestCase()
     {
         Q_INIT_RESOURCE(settings);
-        module.setDirectory(resourceDirectory);
     }
-    // вызывается перед каждой тестовой функцией
+
+    /// \brief Вызывается перед каждой тестовой функцией
     void init()
     {
     }
-    // вызывается после каждой тестовой функции
+
+    /// \brief Вызывается после каждой тестовой функции
     void cleanup()
     {
     }
-    // вызывается после последней тестовой функции
+
+    /// \brief Вызывается после последней тестовой функции
     void cleanupTestCase()
     {
     }
