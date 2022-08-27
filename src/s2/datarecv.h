@@ -36,7 +36,6 @@ template <typename T, size_t N> std::array<T, N> inline operator<<(std::array<T,
     return (array << list);
 }
 
-class QString;
 class S2;
 class Module;
 class NewModule;

@@ -55,17 +55,14 @@ public:
     bool loadSettings(const Modules::StartupInfoBlock &startupInfoBlock = Board::GetInstance().baseSerialInfo(),
         int interfaceType = Board::GetInstance().interfaceType());
 
-    bool loadS2Settings();
-    bool loadMainSettings(const QString &filename);
-
-protected:
-    ConfigV configV;
-    GlobalSettings m_gsettings;
-
 private:
     bool isFileExist(const QString &filename);
     QDomElement getFileContent(const QString &filename);
+    bool loadS2Settings();
+    bool loadMainSettings(const QString &filename);
 
     // QList<UDialog *> m_dialogs;
+    ConfigV configV;
+    GlobalSettings m_gsettings;
     std::unique_ptr<ModuleSettingsDeprecated> m_settings;
 };

@@ -420,15 +420,14 @@ bool NewModule::loadSettings(const Modules::StartupInfoBlock &startupInfoBlock, 
         auto moduleName = QString::number(startupInfoBlock.type(), 16) + ".xml";
         if (isFileExist(moduleName))
         {
-            loadMainSettings(moduleName);
+            return loadMainSettings(moduleName);
         }
         else
         {
             auto baseFile = QString::number(startupInfoBlock.MTypeB, 16) + "00.xml";
             auto measFile = "00" + QString::number(startupInfoBlock.MTypeM, 16) + ".xml";
             // TODO: парсить данные в разные структуры
-            loadMainSettings(baseFile);
-            loadMainSettings(measFile);
+            return (loadMainSettings(baseFile) && loadMainSettings(measFile));
         }
     }
     return false;

@@ -17,6 +17,7 @@ using categoryMap = QMap<delegate::WidgetGroup, QString>;
 
 namespace delegate
 {
+// TODO: так и должно быть?
 enum class ItemType : int
 {
     ModbusItem
@@ -58,9 +59,11 @@ struct DoubleSpinBoxWidget : Widget
     DoubleSpinBoxWidget(const ctti::unnamed_type_id_t type_, const delegate::WidgetGroup group_) : Widget(type_, group_)
     {
     }
+
     double min;
     double max;
     uint32_t decimals;
+
     DoubleSpinBoxWidget &merge(const DoubleSpinBoxWidget &rhs)
     {
         if (rhs.min)
@@ -78,6 +81,7 @@ struct Group
 {
     uint32_t count;
     QStringList items;
+
     Group &merge(const Group &rhs)
     {
         if (rhs.count)
@@ -87,12 +91,14 @@ struct Group
         return *this;
     }
 };
+
 struct DoubleSpinBoxGroup : DoubleSpinBoxWidget, Group
 {
     DoubleSpinBoxGroup(const ctti::unnamed_type_id_t type_, const delegate::WidgetGroup group_)
         : DoubleSpinBoxWidget(type_, group_)
     {
     }
+
     DoubleSpinBoxGroup &merge(const DoubleSpinBoxGroup &rhs)
     {
         DoubleSpinBoxWidget::merge(rhs);
@@ -100,11 +106,13 @@ struct DoubleSpinBoxGroup : DoubleSpinBoxWidget, Group
         return *this;
     }
 };
+
 struct CheckBoxGroup : Widget, Group
 {
     CheckBoxGroup(const ctti::unnamed_type_id_t type_, const delegate::WidgetGroup group_) : Widget(type_, group_)
     {
     }
+
     CheckBoxGroup &merge(const CheckBoxGroup &rhs)
     {
         Widget::merge(rhs);
@@ -121,11 +129,14 @@ struct QComboBox : Widget
         data = 1,
         bitfield = 2
     };
+
     QComboBox(const ctti::unnamed_type_id_t type_, const delegate::WidgetGroup group_) : Widget(type_, group_)
     {
     }
+
     PrimaryField primaryField = index;
     QStringList model;
+
     QComboBox &merge(const QComboBox &rhs)
     {
         if (!rhs.model.isEmpty())
@@ -142,6 +153,7 @@ struct QComboBoxGroup : QComboBox, Group
     QComboBoxGroup(const ctti::unnamed_type_id_t type_, const delegate::WidgetGroup group_) : QComboBox(type_, group_)
     {
     }
+
     QComboBoxGroup &merge(const QComboBoxGroup &rhs)
     {
         QComboBox::merge(rhs);

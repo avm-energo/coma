@@ -63,6 +63,7 @@ namespace detail
 
 template <size_t C, class F> constexpr void for_constexpr(F &&func)
 {
+    // check in runtime without std::forward
     std_ext::detail::for_constexpr_impl(std::forward<F>(func), std::make_index_sequence<C> {});
 }
 
