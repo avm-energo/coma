@@ -12,11 +12,21 @@ namespace ModuleTypes
 /// Config settings ///
 
 using ConfigList = QList<DataTypes::RecordPair>;
-using ConfigMap = QHash<int, ConfigList>;
+using ConfigMap = QHash<quint32, ConfigList>;
+
+/// Signal settings ///
+
+/// \brief Структура для хранения информации узла <signal> из XML
+struct Signal
+{
+    quint64 startAddr;
+    quint16 count;
+};
+using SignalMap = QHash<quint32, Signal>;
 
 /// Section settings ///
 
-/// \brief Контейнер для хранения информации узла <mwidget> из XML
+/// \brief Структура для хранения информации узла <mwidget> из XML
 struct MWidget
 {
     QString desc;                 ///< атрибут "desc"
@@ -26,7 +36,7 @@ struct MWidget
     QStringList subItemList = {}; ///< узел <string-array>
 };
 
-/// \brief Контейнер для хранения информации узла <sgroup> из XML
+/// \brief Структура для хранения информации узла <sgroup> из XML
 struct SGroup
 {
     quint32 tabId;          ///< атрибут "tab"
@@ -38,7 +48,7 @@ struct SGroup
 // value (список SGroup) - список SGroup
 using SGMap = QHash<int, QList<SGroup>>;
 
-/// \brief Контейнер для хранения информации узла <section> из XML
+/// \brief Структура для хранения информации узла <section> из XML
 struct Section
 {
     QString name; ///< атрибут "header"
@@ -52,7 +62,7 @@ using SectionList = QList<Section>;  ///< Хранит узлы <section> сек
 
 /// Alarms settings ///
 
-/// \brief Контейнер для хранения информации узла <item> в <alarms>
+/// \brief Структура для хранения информации узла <item> в <alarms>
 struct Alarm
 {
     quint32 addr; ///< узел <addr>
@@ -65,7 +75,7 @@ using AlarmMap = QMap<Modules::AlarmType, QList<Alarm>>; ///< Хранит уз�
 
 /// Journals settings ///
 
-/// \brief Контейнер для хранения информации узла <item> в <journals>
+/// \brief Структура для хранения информации узла <item> в <journals>
 struct Journal
 {
     quint32 addr; ///< узел <addr>
@@ -74,30 +84,76 @@ struct Journal
 
 // Info: DataTypes::JournalDesc - deprecated [see template.xml]
 using JourMap = QMap<Modules::JournalType, QList<Journal>>; ///< Хранит узлы <item> секции <journals>
+
+/// Modbus settings ///
+
+/// \brief Структура для хранения информации узла <group> из <modbus>
+struct ModbusItem
+{
+    quint32 signalId;             ///< узел <signal-id>
+    quint16 regType;              ///< узел <reg-type>
+    ctti::unnamed_type_id_t type; ///< узел <type>
+};
+
+using ModbusList = QList<ModbusItem>; ///< Хранит узлы <group> секции <modbus>
+
+/// Protocom settings ///
+
+/// \brief Структура для хранения информации узла <group> из <protocom>
+struct ProtocomItem
+{
+    quint32 signalId; ///< узел <signal-id>
+    quint32 block;    ///< узел <block>
+};
+
+using ProtocomList = QList<ProtocomItem>; ///< Хранит узлы <group> секции <protocom>
+
+/// IEC 60870-5-104 settings ///
+
+/// \brief Структура для хранения информации узла <group> из <iec60870>
+struct IecItem
+{
+    quint32 signalId;  ///< узел <signal-id>
+    quint16 sigType;   ///< узел <sig-type>
+    quint16 transType; ///< узел <trans-type>
+    quint16 sigGrioup; ///< узел <sig-group>
+};
+
+using IecList = QList<IecItem>; ///< Хранит узлы <group> секции <iec60870>
 }
 
 class ModuleSettings
 {
 public:
-    void startNewConfig();
-    void appendToCurrentConfig(DataTypes::RecordPair pair);
-    const ModuleTypes::ConfigMap getConfig();
-
-    const ModuleTypes::TabsMap getTabs();
-    const ModuleTypes::SectionList getSectionList();
-
     ModuleSettings(const Modules::StartupInfoBlock &startupInfo);
 
-    // TODO: А где Modbus, Protocom, IEC60870 ?
+    void startNewConfig();
+    void appendToCurrentConfig(DataTypes::RecordPair pair);
+
+    const ModuleTypes::ConfigMap getConfigs();
+    const ModuleTypes::SignalMap getSignals();
+    const ModuleTypes::TabsMap getTabs();
+    const ModuleTypes::SectionList getSections();
+    const ModuleTypes::AlarmMap getAlarms();
+    const ModuleTypes::JourMap getJours();
+    const ModuleTypes::ModbusList getModbus();
+    const ModuleTypes::ProtocomList getProtocom();
+    const ModuleTypes::IecList getIec();
 
 private:
     const Modules::StartupInfoBlock &startupInfoBlock;
-    ModuleTypes::ConfigMap configs;
     ModuleTypes::HighlightMap critHighlight, warnHighlight;
-    ModuleTypes::TabsMap tabs;
-    ModuleTypes::SectionList sections;
-    ModuleTypes::AlarmMap alarms;
-    ModuleTypes::JourMap journals;
+
+    ModuleTypes::ConfigMap mConfigs;
+    ModuleTypes::SignalMap mSignals;
+    ModuleTypes::TabsMap mTabs;
+    ModuleTypes::SectionList mSections;
+    ModuleTypes::AlarmMap mAlarms;
+    ModuleTypes::JourMap mJournals;
+    ModuleTypes::ModbusList mModbus;
+    ModuleTypes::ProtocomList mProtocom;
+    ModuleTypes::IecList mIec;
+
     int curConfigIndex;
 };
 
