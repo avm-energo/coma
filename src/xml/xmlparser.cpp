@@ -267,14 +267,7 @@ ctti::unnamed_type_id_t XmlParser::parseType(QDomElement domElement)
 config::itemVariant XmlParser::parseWidget(QDomElement domElement)
 {
     auto name = domElement.text();
-    QString className = domElement.attribute(keys::className);
-    /*
-    auto domType = domElement.firstChild();
-    while (domType.toElement().tagName() != keys::type) {
-        domType = domType.nextSibling();
-    }
-    auto type = parseType(domType.toElement());
-    */
+    auto className = domElement.attribute(keys::className);
     auto domType = domElement.firstChildElement(keys::type);
     auto type = parseType(domType);
 

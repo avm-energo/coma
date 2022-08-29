@@ -1,6 +1,7 @@
 #include "modulesettings.h"
 
-ModuleSettings::ModuleSettings(const Modules::StartupInfoBlock &startupInfo) : startupInfoBlock(startupInfo)
+ModuleSettings::ModuleSettings(const Modules::StartupInfoBlock &startupInfo)
+    : startupInfoBlock(startupInfo), curConfigIndex(0)
 {
 }
 
@@ -16,47 +17,47 @@ void ModuleSettings::appendToCurrentConfig(DataTypes::RecordPair pair)
     mConfigs[curConfigIndex].append(pair);
 }
 
-const ModuleTypes::ConfigMap ModuleSettings::getConfigs()
+ModuleTypes::ConfigMap &ModuleSettings::getConfigs()
 {
     return mConfigs;
 }
 
-const ModuleTypes::SignalMap ModuleSettings::getSignals()
+ModuleTypes::SignalMap &ModuleSettings::getSignals()
 {
     return mSignals;
 }
 
-const ModuleTypes::TabsMap ModuleSettings::getTabs()
+ModuleTypes::TabsMap &ModuleSettings::getTabs()
 {
     return mTabs;
 }
 
-const ModuleTypes::SectionList ModuleSettings::getSections()
+ModuleTypes::SectionList &ModuleSettings::getSections()
 {
     return mSections;
 }
 
-const ModuleTypes::AlarmMap ModuleSettings::getAlarms()
+ModuleTypes::AlarmMap &ModuleSettings::getAlarms()
 {
     return mAlarms;
 }
 
-const ModuleTypes::JourMap ModuleSettings::getJours()
+ModuleTypes::JourMap &ModuleSettings::getJours()
 {
     return mJournals;
 }
 
-const ModuleTypes::ModbusList ModuleSettings::getModbus()
+ModuleTypes::ModbusList &ModuleSettings::getModbus()
 {
     return mModbus;
 }
 
-const ModuleTypes::ProtocomList ModuleSettings::getProtocom()
+ModuleTypes::ProtocomList &ModuleSettings::getProtocom()
 {
     return mProtocom;
 }
 
-const ModuleTypes::IecList ModuleSettings::getIec()
+ModuleTypes::IecList &ModuleSettings::getIec()
 {
     return mIec;
 }

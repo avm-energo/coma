@@ -14,11 +14,12 @@ XmlEditor::XmlEditor(QWidget *parent) : QDialog(parent, Qt::Window), dc(nullptr)
     if (parent != nullptr)
     {
         dc = new DataController(this);
-        QObject::connect(dc, &DataController::highlightModified, this, [&]() {
-            auto row = masterView->selectionModel()->selectedRows().at(0).row();
-            dc->setRow(row);
-            setFontBolding(row, true);
-        });
+        QObject::connect(dc, &DataController::highlightModified, //
+            [this]() {
+                auto row = masterView->selectionModel()->selectedRows().at(0).row();
+                dc->setRow(row);
+                setFontBolding(row, true);
+            });
         manager = new ModelManager(this);
         QObject::connect(manager, &ModelManager::SaveModule, this, &XmlEditor::saveModule);
         setupUI(parent->size());
@@ -56,13 +57,13 @@ QVBoxLayout *XmlEditor::getMasterWorkspace()
     toolbar->setContextMenuPolicy(Qt::PreventContextMenu);
     toolbar->setIconSize(QSize(30, 30));
     toolbar->addAction(QIcon(":/icons/tnstart.svg"), "Создать модуль", this,     //
-        [&]() { actionDialog(DialogType::Create, masterView); });                //
+        [this]() { actionDialog(DialogType::Create, masterView); });             //
     toolbar->addSeparator();                                                     //
     toolbar->addAction(QIcon(":/icons/tnosc.svg"), "Редактировать модуль", this, //
-        [&]() { actionDialog(DialogType::Edit, masterView); });                  //
+        [this]() { actionDialog(DialogType::Edit, masterView); });               //
     toolbar->addSeparator();                                                     //
     toolbar->addAction(QIcon(":/icons/tnstop.svg"), "Удалить модуль", this,      //
-        [&]() { actionDialog(DialogType::Remove, masterView); });                //
+        [this]() { actionDialog(DialogType::Remove, masterView); });             //
     toolbar->addSeparator();                                                     //
     toolbar->addAction(QIcon(":/icons/tnsave.svg"), "Сохранить модуль", this, &XmlEditor::saveModule);
     workspace->addWidget(toolbar);
@@ -100,13 +101,13 @@ QVBoxLayout *XmlEditor::getSlaveWorkspace()
     toolbar->setContextMenuPolicy(Qt::PreventContextMenu);
     toolbar->setIconSize(QSize(30, 30));
     toolbar->addAction(QIcon(":/icons/tnstart.svg"), "Создать", this,     //
-        [&]() { actionDialog(DialogType::Create, tableSlaveView); });     //
+        [this]() { actionDialog(DialogType::Create, tableSlaveView); });  //
     toolbar->addSeparator();                                              //
     toolbar->addAction(QIcon(":/icons/tnosc.svg"), "Редактировать", this, //
-        [&]() { actionDialog(DialogType::Edit, tableSlaveView); });       //
+        [this]() { actionDialog(DialogType::Edit, tableSlaveView); });    //
     toolbar->addSeparator();                                              //
     toolbar->addAction(QIcon(":/icons/tnstop.svg"), "Удалить", this,      //
-        [&]() { actionDialog(DialogType::Remove, tableSlaveView); });     //
+        [this]() { actionDialog(DialogType::Remove, tableSlaveView); });  //
     workspace->addWidget(toolbar);                                        //
 
     // Label для отображения текущего положения в дереве моделей
@@ -124,13 +125,13 @@ QVBoxLayout *XmlEditor::getSlaveWorkspace()
 
     QObject::connect(tableSlaveView, &QTableView::doubleClicked, manager, &ModelManager::ViewModelItemClicked);
     QObject::connect(manager, &ModelManager::ModelChanged, this, //
-        [&](XmlModel *model) {
+        [this](XmlModel *model) {
             tableSlaveView->setModel(model);
             tableSlaveView->sortByColumn(0, Qt::SortOrder::AscendingOrder);
             QObject::connect(model, &XmlModel::modelChanged, dc, &DataController::configChanged);
         });
-    QObject::connect(manager, &ModelManager::EditQuery, this,       //
-        [&]() { actionDialog(DialogType::Edit, tableSlaveView); }); //
+    QObject::connect(manager, &ModelManager::EditQuery, this,          //
+        [this]() { actionDialog(DialogType::Edit, tableSlaveView); }); //
     workspace->addWidget(tableSlaveView);
 
     return workspace;

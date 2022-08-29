@@ -22,6 +22,7 @@ struct Signal
     quint64 startAddr;
     quint16 count;
 };
+
 using SignalMap = QHash<quint32, Signal>;
 
 /// Section settings ///
@@ -130,15 +131,20 @@ public:
     void startNewConfig();
     void appendToCurrentConfig(DataTypes::RecordPair pair);
 
-    const ModuleTypes::ConfigMap getConfigs();
-    const ModuleTypes::SignalMap getSignals();
-    const ModuleTypes::TabsMap getTabs();
-    const ModuleTypes::SectionList getSections();
-    const ModuleTypes::AlarmMap getAlarms();
-    const ModuleTypes::JourMap getJours();
-    const ModuleTypes::ModbusList getModbus();
-    const ModuleTypes::ProtocomList getProtocom();
-    const ModuleTypes::IecList getIec();
+    ModuleTypes::ConfigMap &getConfigs();
+    ModuleTypes::SignalMap &getSignals();
+    ModuleTypes::TabsMap &getTabs();
+    ModuleTypes::SectionList &getSections();
+    ModuleTypes::AlarmMap &getAlarms();
+    ModuleTypes::JourMap &getJours();
+    ModuleTypes::ModbusList &getModbus();
+    ModuleTypes::ProtocomList &getProtocom();
+    ModuleTypes::IecList &getIec();
+
+    const auto &getStartupInfoBlock()
+    {
+        return startupInfoBlock;
+    }
 
 private:
     const Modules::StartupInfoBlock &startupInfoBlock;

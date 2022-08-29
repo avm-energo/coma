@@ -233,9 +233,7 @@ bool S2::RestoreData(QByteArray bain, QList<DataTypes::DataRecV> &outlist)
         bain.remove(0, size);
         if (DR.header.id != S2DataTypes::dummyElement)
         {
-
             size = DR.header.numByte;
-
             auto search = DataTypes::DataRecV::map.map().find(DR.header.id);
             Q_ASSERT(search != DataTypes::DataRecV::map.map().end());
             if (search != DataTypes::DataRecV::map.map().end())
