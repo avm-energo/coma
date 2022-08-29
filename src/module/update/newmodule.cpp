@@ -7,10 +7,13 @@
 #include <QDir>
 #include <QFile>
 
+constexpr auto debug = true;
+
 NewModule::NewModule(const Modules::StartupInfoBlock &startupInfoBlock, QObject *parent)
     : QObject(parent), mSettings(startupInfoBlock)
 {
     // m_gsettings = { { &DataTypes::DataRecV::map, &WidgetFactory::m_widgetMap, &WidgetFactory::m_categoryMap }, {} };
+    mParser = new NewXmlParser(this);
 }
 
 bool NewModule::isFileExist(const QString &filename)
@@ -67,6 +70,10 @@ bool NewModule::loadSettings()
             // TODO: парсить данные в разные структуры
             auto isBaseSuccess = loadMainSettings(baseFile);
             auto isMeasSuccess = loadMainSettings(measFile);
+            if (debug)
+            {
+                qCritical() << isBaseSuccess << " " << isMeasSuccess;
+            }
             return (isBaseSuccess && isMeasSuccess);
         }
     }
@@ -81,6 +88,7 @@ bool NewModule::loadS2Settings()
     {
         // TODO: Потом закомментировать при внедрении ModuleSettings
         // XmlParser::traverseNode(content, m_gsettings.config);
+        mParser->parseS2(content);
         return true;
     }
     else

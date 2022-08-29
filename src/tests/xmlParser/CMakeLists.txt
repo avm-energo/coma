@@ -18,12 +18,19 @@ find_package(
 
 find_package(hidapi REQUIRED)
 
-add_executable(${PROJECT_NAME} testmodule.cpp testmodule.h)
+enable_testing(true)
+add_executable(${PROJECT_NAME}
+    testmodule.h
+    testdata.h
+    testmodule.cpp
+    testxmlparser.cpp
+)
 add_test(NAME ${PROJECT_NAME} COMMAND ${PROJECT_NAME})
 
-target_link_libraries(${PROJECT_NAME} gen module
-    interfaces
+target_link_libraries(${PROJECT_NAME}
     gen
+    module
+    interfaces
     widgets
     dialogs
     models

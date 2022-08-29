@@ -1,10 +1,12 @@
 #ifndef TESTPROTOCOM_H
 #define TESTPROTOCOM_H
+
 #include "../../gen/stdfunc.h"
 #include "../../module/module.h"
 
 #include <QObject>
 #include <QtTest>
+
 class TestModule : public QObject
 {
     Q_OBJECT
@@ -114,6 +116,7 @@ private slots:
     void checkA387Eth();
 
     void checkSaveXmlFile();
+    void TestS2Parsing();
 
 signals:
 private:

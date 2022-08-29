@@ -2,6 +2,7 @@
 
 #include "../board.h"
 #include "../modulesettings.h"
+#include "newxmlparser.h"
 
 #include <QtXml>
 
@@ -21,4 +22,5 @@ private:
 
     // GlobalSettings m_gsettings;
     ModuleSettings mSettings;
+    NewXmlParser *mParser;
 };
