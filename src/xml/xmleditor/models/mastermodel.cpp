@@ -139,6 +139,7 @@ void MasterModel::create(const QStringList &saved, int *row)
 {
     auto newSaved = getNewList(saved);
     IEditorModel::create(newSaved, row);
+    setData(index(*row, 0), newSaved.last(), FilenameDataRole);
     emit createFile(newSaved);
 }
 

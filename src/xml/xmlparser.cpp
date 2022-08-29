@@ -15,7 +15,6 @@ constexpr char uintSet[] = "uint-set";
 constexpr char string[] = "string";
 constexpr char color[] = "color";
 constexpr char unsigned32[] = "quint32";
-// constexpr char unsigned64[] = "quint64";
 constexpr char unsigned128[] = "quint128";
 constexpr char className[] = "class";
 constexpr char group[] = "group";
@@ -38,19 +37,12 @@ bool XmlParser::isCorrectModule(const QString &typem, const QString &typeb, quin
 {
     quint16 mtypem = typem.toUShort(nullptr, 16);
     quint16 mtypeb = typeb.toUShort(nullptr, 16);
-#ifdef XML_DEBUG
-    qDebug() << m_typem << mtypem;
-    qDebug() << m_typeb << mtypeb;
-#endif
     return (m_typeb == mtypeb && m_typem == mtypem);
 }
 
 DataTypes::Alarm XmlParser::parseAlarm(QDomElement domElement)
 {
     DataTypes::Alarm alarm;
-#ifdef XML_DEBUG
-    qDebug() << "TagName: " << domElement.tagName() << domElement.attribute("name", "");
-#endif
     alarm.name = domElement.attribute(keys::name, "");
     auto element = domElement.firstChildElement(keys::stringArray);
     alarm.desc = parseStringList(element);
@@ -72,16 +64,12 @@ DataTypes::Alarm XmlParser::parseAlarm(QDomElement domElement)
         if (name.contains("flags", Qt::CaseInsensitive))
             alarm.flags = parseHexInt128(element);
     }
-
     return alarm;
 }
 
 DataTypes::JournalDesc XmlParser::parseJournal(QDomElement domElement)
 {
     DataTypes::JournalDesc journal;
-#ifdef XML_DEBUG
-    qDebug() << "TagName: " << domElement.tagName() << domElement.attribute("name", "");
-#endif
     journal.name = domElement.attribute(keys::name, "");
     journal.id = parseInt32(domElement.firstChildElement(keys::unsigned32));
     domElement = domElement.firstChildElement(keys::stringArray);
@@ -99,9 +87,6 @@ DataTypes::JournalDesc XmlParser::parseJournal(QDomElement domElement)
 
 quint32 XmlParser::parseInt32(QDomElement domElement)
 {
-#ifdef XML_DEBUG
-    qDebug() << domElement.attribute("name", "") << domElement.text();
-#endif
     if (domElement.text().isEmpty())
         return 0;
     bool ok = false;
@@ -113,9 +98,6 @@ quint32 XmlParser::parseInt32(QDomElement domElement)
 quint64 XmlParser::parseHexInt64(QDomElement domElement)
 {
     auto str = domElement.text();
-#ifdef XML_DEBUG
-    qDebug() << domElement.attribute("name", "") << domElement.text();
-#endif
     if (domElement.text().isEmpty())
         return 0;
     Q_ASSERT(str.startsWith("0x"));
@@ -130,9 +112,6 @@ quint64 XmlParser::parseHexInt64(QDomElement domElement)
 std::bitset<128> XmlParser::parseHexInt128(QDomElement domElement)
 {
     auto str = domElement.text();
-#ifdef XML_DEBUG
-    qDebug() << domElement.attribute("name", "") << domElement.text();
-#endif
     if (domElement.text().isEmpty())
         return 0;
     return std::bitset<128>(str.toStdString());
@@ -144,9 +123,6 @@ QStringList XmlParser::parseStringList(QDomElement domElement)
     QStringList description;
     Q_ASSERT(!nodes.isEmpty());
     int i = 0;
-#ifdef XML_DEBUG
-    qDebug() << "TagName: " << domElement.tagName() << domElement.attribute("name", "");
-#endif
     while (i != nodes.count())
     {
         description.push_back(nodes.item(i++).toElement().text());
@@ -291,9 +267,6 @@ ctti::unnamed_type_id_t XmlParser::parseType(QDomElement domElement)
 config::itemVariant XmlParser::parseWidget(QDomElement domElement)
 {
     auto name = domElement.text();
-#ifdef XML_DEBUG
-    qDebug() << name;
-#endif
     QString className = domElement.attribute(keys::className);
     /*
     auto domType = domElement.firstChild();
@@ -557,7 +530,6 @@ check::detail::Record XmlParserHelper::parseRecordCheck(QDomElement domElement)
 
         rec.desc = strDesc;
     }
-
     return rec;
 }
 
@@ -616,9 +588,6 @@ config::Item XmlParser::parseItem(QDomElement domElement, ctti::unnamed_type_id_
 {
     using namespace config;
     auto name = domElement.text();
-#ifdef XML_DEBUG
-    qDebug() << name;
-#endif
     QString className = domElement.attribute(keys::className);
     if (className.isEmpty())
         return { 0 };
@@ -664,9 +633,6 @@ void XmlParser::traverseNode(
                 }
                 if (domElement.tagName() == keys::stringArray)
                 {
-#ifdef XML_DEBUG
-                    qDebug() << "Attr: " << domElement.attribute("name", "");
-#endif
                     XmlParser::parseStringList(domElement);
                     domNode = domNode.nextSibling();
                     continue;
@@ -688,9 +654,6 @@ void XmlParser::traverseNode(
                 }
                 if (domElement.tagName() == "journal")
                 {
-#ifdef XML_DEBUG
-                    qDebug() << "Attr: " << domElement.attribute("name", "");
-#endif
                     using namespace Modules;
                     const auto journal = XmlParser::parseJournal(domElement);
                     if (journal.name.contains("work", Qt::CaseInsensitive))
@@ -712,7 +675,6 @@ void XmlParser::traverseNode(
                         continue;
                     }
                 }
-
                 if (domElement.tagName() == "version")
                 {
                     if (settings->startupInfoBlock.isOutdated(StdFunc::StrToVer(domElement.text())))
@@ -720,7 +682,6 @@ void XmlParser::traverseNode(
                         throw std::runtime_error("Устаревшая версия ВПО, обновите ВПО");
                     }
                 }
-
                 if (domElement.tagName() == "multimap")
                 {
                     if (domElement.attribute("name").contains("warn", Qt::CaseInsensitive))
@@ -728,7 +689,6 @@ void XmlParser::traverseNode(
                     else if (domElement.attribute("name").contains("crit", Qt::CaseInsensitive))
                         settings->highlightCrit = parseMap<QMultiMap<quint32, quint32>>(domElement);
                 }
-
                 if (domElement.tagName() == "modbus")
                 {
                     if (settings->interfaceType == Board::RS485)
@@ -757,7 +717,6 @@ void XmlParser::traverseNode(
                             settings->ifaceSettings = { QVariant::fromValue(oldSettings) };
                         }
                     }
-
                     domNode = domNode.nextSibling();
                     continue;
                 }
@@ -768,13 +727,11 @@ void XmlParser::traverseNode(
                         IEC104 interface;
                         settings->ifaceSettings = interface.parseSettings(domElement);
                     }
-
                     domNode = domNode.nextSibling();
                     continue;
                 }
                 if (domElement.tagName() == keys::record)
                 {
-
                     settings->configSettings.general.push_back(
                         parseRecordConfig(domElement, configSettings.s2widgetMap));
                     domNode = domNode.nextSibling();
@@ -799,9 +756,6 @@ void XmlParser::traverseNode(const QDomNode &node, ConfigSettings &settings)
             {
                 if (domElement.tagName() == keys::record)
                 {
-#ifdef XML_DEBUG
-                    qDebug() << domElement.text();
-#endif
                     auto id = quint16(0);
                     auto recordChild = domElement.firstChildElement(keys::id);
                     if (!recordChild.isNull())
@@ -820,16 +774,6 @@ void XmlParser::traverseNode(const QDomNode &node, ConfigSettings &settings)
                     {
                         settings.s2widgetMap->insert({ id, parseWidget(recordChild) });
                     }
-
-                    /*
-                    domElement = domElement.firstChild().toElement();
-                    BciNumber id = static_cast<BciNumber>(XmlParser::parseInt32(domElement));
-                    domElement = domElement.nextSibling().toElement();
-                    settings.s2filesMap->insert(id, parseType(domElement));
-                    domElement = domElement.nextSibling().toElement();
-                    settings.s2widgetMap->insert({ id, parseWidget(domElement) });
-                    */
-
                     domNode = domNode.nextSibling();
                     continue;
                 }
@@ -883,9 +827,6 @@ void XmlParser::traverseNodeS2(const QDomNode &node, QList<DataTypes::RecordPair
                 }
                 if (domElement.tagName() == keys::stringArray)
                 {
-#ifdef XML_DEBUG
-                    qDebug() << "Attr: " << domElement.attribute("name", "");
-#endif
                     XmlParser::parseStringList(domElement);
                     domNode = domNode.nextSibling();
                     continue;
@@ -940,7 +881,6 @@ DataTypes::Alarm XmlParser::traverseNodeAlarm(const QDomNode &node)
             {
                 if (domElement.tagName() == "alarm")
                 {
-
                     return parseAlarm(domElement);
                 }
             }
@@ -972,7 +912,6 @@ CheckItem XmlParser::traverseNodeCheck(const QDomNode &node)
                     checkItem.itemsVector.emplace_back(parseRecordCheck(domElement));
             }
         }
-        //   traverseNodeCheck(domNode, settings);
         domNode = domNode.nextSibling();
     }
     return checkItem;
@@ -984,9 +923,6 @@ template <typename T> std::vector<T> XmlParser::parseVector(QDomElement domEleme
     std::vector<T> vector;
     Q_ASSERT(!nodes.isEmpty());
     int i = 0;
-#ifdef XML_DEBUG
-    qDebug() << "TagName: " << domElement.tagName() << domElement.attribute("name", "");
-#endif
     while (i != nodes.count())
     {
         vector.push_back(QVariant(nodes.item(i++).toElement().text()).value<T>());
@@ -1000,9 +936,6 @@ template <typename T> std::set<T> XmlParser::parseSet(QDomElement domElement)
     std::set<T> set;
     Q_ASSERT(!nodes.isEmpty());
     int i = 0;
-#ifdef XML_DEBUG
-    qDebug() << "TagName: " << domElement.tagName() << domElement.attribute("name", "");
-#endif
     while (i != nodes.count())
     {
         set.insert(QVariant(nodes.item(i++).toElement().text()).value<T>());
@@ -1028,10 +961,6 @@ template <typename Container> Container XmlParser::parseMap(QDomElement domEleme
             {
                 if (domElement.tagName() == "item")
                 {
-#ifdef XML_DEBUG
-                    qDebug() << domElement.text();
-#endif
-                    // domElement = domElement.firstChild().toElement();
                     auto nodes = domElement.childNodes();
                     Key key;
                     int i = 0;
@@ -1062,7 +991,6 @@ template <typename Container> Container XmlParser::parseMap(QDomElement domEleme
                 }
             }
         }
-
         domNode = domNode.nextSibling();
     }
     return map;

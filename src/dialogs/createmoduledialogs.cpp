@@ -32,8 +32,8 @@ void CreateModuleDialogs::addDialogToList(UDialog *dlg, const QString &caption, 
 void CreateModuleDialogs::CreateConfigDialogs()
 {
     using ConfigHash = QHash<int, ModuleTypes::ConfigList>;
-    ConfigHash config = m_settings.getConfig();
-    for (ConfigHash::Iterator it = config.begin(); it != config.end(); ++it)
+    auto config = m_settings.getConfigs();
+    for (auto it = config.cbegin(); it != config.cend(); ++it)
     {
         QString indexStr = QString::number(it.key());
         addDialogToList(new ConfigDialog(&m_configV, it.value()), "Конфигурация " + indexStr, "conf" + indexStr);

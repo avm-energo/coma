@@ -119,8 +119,9 @@ void DataController::setRow(const int &row)
 /// \brief Создать файл (создание конфига модуля).
 void DataController::createFile(const QStringList &creationData)
 {
+    constexpr char templateName[] = "module-template.xml";
     auto newFilePath = getFilePath(creationData.last());
-    auto templateFilePath = getFilePath("module-template.xml");
+    auto templateFilePath = getFilePath(templateName);
     if (!QFile::exists(newFilePath))
     {
         // Открываем шаблон
@@ -146,6 +147,8 @@ void DataController::createFile(const QStringList &creationData)
             }
             newFile->deleteLater();
         }
+        else
+            qCritical() << "Can't open file " << templateName;
         tempFile->deleteLater();
     }
 }
