@@ -292,7 +292,7 @@ config::itemVariant XmlParser::parseWidget(QDomElement domElement)
     case ctti::unnamed_type_id<QDoubleSpinBox>().hash():
     {
         bool status = false;
-        delegate::DoubleSpinBoxWidget widget(type, widgetGroup);
+        delegate::DoubleSpinBoxWidget widget(type, description, widgetGroup, toolTip);
 
         QDomElement nextChildElement = domElement.firstChildElement("min");
         widget.min = nextChildElement.text().toDouble(&status);
@@ -310,7 +310,7 @@ config::itemVariant XmlParser::parseWidget(QDomElement domElement)
     case ctti::unnamed_type_id<DoubleSpinBoxGroup>().hash():
     {
         bool status = false;
-        delegate::DoubleSpinBoxGroup widget(type, widgetGroup);
+        delegate::DoubleSpinBoxGroup widget(type, description, widgetGroup, toolTip);
 
         QDomElement nextChildElement = domElement.firstChildElement("min");
         widget.min = nextChildElement.text().toDouble(&status);
@@ -331,7 +331,7 @@ config::itemVariant XmlParser::parseWidget(QDomElement domElement)
     case ctti::unnamed_type_id<CheckBoxGroup>().hash():
     {
         bool status = false;
-        delegate::CheckBoxGroup widget(type, widgetGroup);
+        delegate::CheckBoxGroup widget(type, description, widgetGroup, toolTip);
 
         QDomElement nextChildElement = domElement.firstChildElement("count");
         widget.count = nextChildElement.text().toUInt(&status);
@@ -345,7 +345,7 @@ config::itemVariant XmlParser::parseWidget(QDomElement domElement)
     }
     case ctti::unnamed_type_id<QComboBox>().hash():
     {
-        delegate::QComboBox widget(type, widgetGroup);
+        delegate::QComboBox widget(type, description, widgetGroup, toolTip);
 
         widget.desc = description;
         widget.toolTip = toolTip;
@@ -363,7 +363,7 @@ config::itemVariant XmlParser::parseWidget(QDomElement domElement)
     }
     case ctti::unnamed_type_id<QComboBoxGroup>().hash():
     {
-        delegate::QComboBoxGroup widget(type, widgetGroup);
+        delegate::QComboBoxGroup widget(type, description, widgetGroup, toolTip);
 
         widget.desc = description;
         widget.toolTip = toolTip;
@@ -582,13 +582,13 @@ config::Item XmlParser::parseItem(QDomElement domElement, ctti::unnamed_type_id_
     using namespace config;
     auto name = domElement.text();
     QString className = domElement.attribute(keys::className);
-    if (className.isEmpty())
-        return { 0 };
+    // if (className.isEmpty())
+    //    return { 0 };
     delegate::ItemType itemType;
     if (className == "ModbusItem")
         itemType = delegate::ItemType::ModbusItem;
-    else
-        return { 0 };
+    // else
+    //    return { 0 };
 
     QDomElement childElement = domElement.firstChildElement(keys::group);
     auto widgetGroup = static_cast<delegate::WidgetGroup>(childElement.text().toInt());

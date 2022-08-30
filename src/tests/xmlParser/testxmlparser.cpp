@@ -11,6 +11,5 @@ void TestModule::TestS2Parsing()
     bsi.Fwver = StdFunc::StrToVer(version::avma284);
     auto mModule = new NewModule(bsi, this);
     auto state = mModule->loadSettings();
-    // qDebug() << "State: " << state;
     QCOMPARE(state, false);
 }

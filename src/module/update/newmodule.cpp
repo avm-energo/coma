@@ -25,7 +25,7 @@ bool NewModule::isFileExist(const QString &filename)
     return retVal;
 }
 
-QDomElement NewModule::getFileContent(const QString &filename)
+QDomDocument NewModule::getFileContent(const QString &filename)
 {
     QDomDocument doc;
     auto dir = QDir(StdFunc::GetSystemHomeDir());
@@ -50,7 +50,7 @@ QDomElement NewModule::getFileContent(const QString &filename)
         qCritical() << Error::DescError << file->fileName();
 
     file->deleteLater();
-    return doc.toElement();
+    return doc;
 }
 
 bool NewModule::loadSettings()

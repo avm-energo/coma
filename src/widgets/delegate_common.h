@@ -25,13 +25,11 @@ enum class ItemType : int
 
 struct Widget
 {
-    Widget(const ctti::unnamed_type_id_t type_) : type(type_)
-    {
-    }
     Widget(const ctti::unnamed_type_id_t type_, const delegate::WidgetGroup group_) : type(type_), group(group_)
     {
     }
-    Widget(const ctti::unnamed_type_id_t type_, const QString &desc_, const delegate::WidgetGroup group_,
+
+    Widget(const ctti::unnamed_type_id_t &type_, const QString &desc_, const delegate::WidgetGroup &group_,
         const QString &toolTip_)
         : type(type_), desc(desc_), group(group_), toolTip(toolTip_)
     {
@@ -56,7 +54,9 @@ struct Widget
 
 struct DoubleSpinBoxWidget : Widget
 {
-    DoubleSpinBoxWidget(const ctti::unnamed_type_id_t type_, const delegate::WidgetGroup group_) : Widget(type_, group_)
+    DoubleSpinBoxWidget(const ctti::unnamed_type_id_t &type_, const QString &desc_, const delegate::WidgetGroup &group_,
+        const QString &toolTip_)
+        : Widget(type_, desc_, group_, toolTip_)
     {
     }
 
@@ -94,8 +94,9 @@ struct Group
 
 struct DoubleSpinBoxGroup : DoubleSpinBoxWidget, Group
 {
-    DoubleSpinBoxGroup(const ctti::unnamed_type_id_t type_, const delegate::WidgetGroup group_)
-        : DoubleSpinBoxWidget(type_, group_)
+    DoubleSpinBoxGroup(const ctti::unnamed_type_id_t &type_, const QString &desc_, const delegate::WidgetGroup &group_,
+        const QString &toolTip_)
+        : DoubleSpinBoxWidget(type_, desc_, group_, toolTip_)
     {
     }
 
@@ -109,7 +110,9 @@ struct DoubleSpinBoxGroup : DoubleSpinBoxWidget, Group
 
 struct CheckBoxGroup : Widget, Group
 {
-    CheckBoxGroup(const ctti::unnamed_type_id_t type_, const delegate::WidgetGroup group_) : Widget(type_, group_)
+    CheckBoxGroup(const ctti::unnamed_type_id_t &type_, const QString &desc_, const delegate::WidgetGroup &group_,
+        const QString &toolTip_)
+        : Widget(type_, desc_, group_, toolTip_)
     {
     }
 
@@ -130,7 +133,9 @@ struct QComboBox : Widget
         bitfield = 2
     };
 
-    QComboBox(const ctti::unnamed_type_id_t type_, const delegate::WidgetGroup group_) : Widget(type_, group_)
+    QComboBox(const ctti::unnamed_type_id_t &type_, const QString &desc_, const delegate::WidgetGroup &group_,
+        const QString &toolTip_)
+        : Widget(type_, desc_, group_, toolTip_)
     {
     }
 
@@ -150,7 +155,9 @@ struct QComboBox : Widget
 
 struct QComboBoxGroup : QComboBox, Group
 {
-    QComboBoxGroup(const ctti::unnamed_type_id_t type_, const delegate::WidgetGroup group_) : QComboBox(type_, group_)
+    QComboBoxGroup(const ctti::unnamed_type_id_t &type_, const QString &desc_, const delegate::WidgetGroup &group_,
+        const QString &toolTip_)
+        : QComboBox(type_, desc_, group_, toolTip_)
     {
     }
 
@@ -181,21 +188,13 @@ struct Item : delegate::Widget
         DataType,
         Register
     };
-    Item(const ctti::unnamed_type_id_t type_) : Widget(type_)
-    {
-    }
-    Item(const ctti::unnamed_type_id_t type_, const delegate::ItemType itype_) : Widget(type_), itemType(itype_)
-    {
-    }
-    Item(const ctti::unnamed_type_id_t type_, const delegate::ItemType itype_, const quint16 parent_)
-        : Widget(type_), itemType(itype_), parent(parent_)
-    {
-    }
-    Item(const ctti::unnamed_type_id_t type_, const delegate::ItemType itype_, const quint16 parent_,
-        const delegate::WidgetGroup group_)
+
+    Item(const ctti::unnamed_type_id_t &type_, const delegate::ItemType &itype_, //
+        const quint16 &parent_, const delegate::WidgetGroup &group_)
         : Widget(type_, group_), itemType(itype_), parent(parent_)
     {
     }
+
     delegate::ItemType itemType;
     quint16 parent;
 };

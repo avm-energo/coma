@@ -18,6 +18,20 @@ NewXmlParser::NewXmlParser(QObject *parent) : QObject(parent)
 {
 }
 
+// /// \brief Парсинг содержимого узла numNode в uint переменную
+// uint NewXmlParser::parseUInt(const QDomElement &node)
+//{
+//    auto numString = node.text();
+//    if (!numString.isEmpty())
+//    {
+//        auto state = false;
+//        auto number = numString.toUInt(&state);
+//        if (state)
+//            return number;
+//    }
+//    return 0;
+//}
+
 /// \brief Отбрасываем необрабатываемые типы
 bool NewXmlParser::initialCheck(const QString &name)
 {
@@ -60,13 +74,14 @@ ctti::unnamed_type_id_t NewXmlParser::secondCheck(const QString &name)
         name.contains("LineEdit", Qt::CaseInsensitive) ||           //
         name.contains("TableView", Qt::CaseInsensitive))            //
     {
-        auto trueName = "Q" + name;
+        const auto trueName = "Q" + name;
         return ctti::id_from_name(trueName.toStdString());
     }
     else
         return 0;
 }
 
+/// \brief Возвращаем хэш типа для его идентификации
 ctti::unnamed_type_id_t NewXmlParser::parseType(const QDomElement &typeNode)
 {
     using namespace DataTypes;
@@ -79,107 +94,147 @@ ctti::unnamed_type_id_t NewXmlParser::parseType(const QDomElement &typeNode)
         if (val == 0)
         {
             const auto brackets = name.count('[');
-            if (brackets == 0)
-            {
-                return ctti::id_from_name(name.toStdString());
-            }
-            else
-            {
-                // auto trueName = name;
-                auto index = name.indexOf('[');
-                [[maybe_unused]] auto leftpart = name.left(index);
-                [[maybe_unused]] auto rightpart = name.right(name.length() - index);
-                return 0;
-            }
+            if (brackets != 0)
+                name = name.replace("[", "_").replace("]", "t");
+            return ctti::id_from_name(name.toStdString());
         }
         else
             return val;
     }
     else
         return 0;
+}
 
-    /*
-    switch (arrSize)
+/// \brief Парсим ноду <string-array> в QStringList
+QStringList NewXmlParser::parseStringArray(const QDomElement &strArrNode)
+{
+    const auto &nodes = strArrNode.childNodes();
+    QStringList retList = {};
+    if (!nodes.isEmpty())
     {
-    case 0:
-        // Primitive types
-        if (name.contains("BYTE", Qt::CaseInsensitive))
-            return ctti::unnamed_type_id<BYTE>().hash();
-        if (name.contains("DWORD", Qt::CaseInsensitive))
-            return ctti::unnamed_type_id<DWORD>().hash();
-        if (name.contains("WORD", Qt::CaseInsensitive))
-            return ctti::unnamed_type_id<WORD>().hash();
-        if (name.contains("INT32", Qt::CaseInsensitive))
-            return ctti::unnamed_type_id<INT32>().hash();
-        if (name.contains("FLOAT", Qt::CaseInsensitive))
-            return ctti::unnamed_type_id<float>().hash();
-        if (name.contains("DoubleSpinBoxGroup", Qt::CaseInsensitive))
-            return ctti::unnamed_type_id<DoubleSpinBoxGroup>().hash();
-        if (name.contains("CheckBoxGroup", Qt::CaseInsensitive))
-            return ctti::unnamed_type_id<CheckBoxGroup>().hash();
-
-        [[fallthrough]];
-    case 1:
-
-        if (name.contains("BYTE[4]", Qt::CaseInsensitive))
-            return ctti::unnamed_type_id<BYTE_4t>().hash();
-        if (name.contains("BYTE[8]", Qt::CaseInsensitive))
-            return ctti::unnamed_type_id<BYTE_8t>().hash();
-        if (name.contains("BYTE[16]", Qt::CaseInsensitive))
-            return ctti::unnamed_type_id<BYTE_16t>().hash();
-        if (name.contains("BYTE[32]", Qt::CaseInsensitive))
-            return ctti::unnamed_type_id<BYTE_32t>().hash();
-        if (name.contains("DWORD[8]", Qt::CaseInsensitive))
-            return ctti::unnamed_type_id<DWORD_8t>().hash();
-        if (name.contains("DWORD[16]", Qt::CaseInsensitive))
-            return ctti::unnamed_type_id<DWORD_16t>().hash();
-        if (name.contains("DWORD[32]", Qt::CaseInsensitive))
-            return ctti::unnamed_type_id<DWORD_32t>().hash();
-        if (name.contains("WORD[4]", Qt::CaseInsensitive))
-            return ctti::unnamed_type_id<WORD_4t>().hash();
-        if (name.contains("WORD[8]", Qt::CaseInsensitive))
-            return ctti::unnamed_type_id<WORD_8t>().hash();
-        if (name.contains("WORD[16]", Qt::CaseInsensitive))
-            return ctti::unnamed_type_id<WORD_16t>().hash();
-        if (name.contains("WORD[32]", Qt::CaseInsensitive))
-            return ctti::unnamed_type_id<WORD_32t>().hash();
-        if (name.contains("FLOAT[2]", Qt::CaseInsensitive))
-            return ctti::unnamed_type_id<FLOAT_2t>().hash();
-        if (name.contains("FLOAT[3]", Qt::CaseInsensitive))
-            return ctti::unnamed_type_id<FLOAT_3t>().hash();
-        if (name.contains("FLOAT[4]", Qt::CaseInsensitive))
-            return ctti::unnamed_type_id<FLOAT_4t>().hash();
-        if (name.contains("FLOAT[6]", Qt::CaseInsensitive))
-            return ctti::unnamed_type_id<FLOAT_6t>().hash();
-        if (name.contains("FLOAT[8]", Qt::CaseInsensitive))
-            return ctti::unnamed_type_id<FLOAT_8t>().hash();
-
-        [[fallthrough]];
-    default:
-        // auto what = name;
-        assert(false && "Unknown type");
+        const auto size = nodes.count();
+        for (auto i = 0; i < size; i++)
+        {
+            auto strItem = nodes.item(i++).toElement().text();
+            retList.push_back(strItem);
+        }
     }
-    */
+    return retList;
+}
+
+void NewXmlParser::dSpinBoxParse(delegate::DoubleSpinBoxWidget &dsbw, const QDomElement &widgetNode)
+{
+    parseNumFromNode(widgetNode, tags::min, dsbw.min);
+    parseNumFromNode(widgetNode, tags::max, dsbw.max);
+    parseNumFromNode(widgetNode, tags::decimals, dsbw.decimals);
+}
+
+void NewXmlParser::groupParse(delegate::Group &group, const QDomElement &widgetNode, const QStringList &items)
+{
+    parseNumFromNode(widgetNode, tags::count, group.count);
+    group.items = items;
+}
+
+void NewXmlParser::comboBoxParse(delegate::QComboBox &comboBox, //
+    const QDomElement &widgetNode, const QStringList &items)
+{
+    comboBox.model = items;
+    auto fieldNode = widgetNode.firstChildElement(tags::field);
+    // QComboBox depends on index by default
+    if (!fieldNode.isNull())
+    {
+        auto fieldStr = fieldNode.text();
+        if (!fieldStr.isEmpty())
+        {
+            if (fieldStr.contains(tags::data))
+                comboBox.primaryField = delegate::QComboBox::data;
+            else if (fieldStr.contains(tags::bitfield))
+                comboBox.primaryField = delegate::QComboBox::bitfield;
+            else
+                comboBox.primaryField = delegate::QComboBox::index;
+        }
+    }
+}
+
+config::itemVariant NewXmlParser::parseWidget(const QDomElement &widgetNode)
+{
+    auto className = widgetNode.attribute(tags::class_);
+    auto typeNode = widgetNode.firstChildElement(tags::type);
+    auto type = parseType(typeNode);
+
+    if (className.isEmpty())
+    {
+        auto groupNode = widgetNode.firstChildElement(tags::group);
+        auto widgetGroup = static_cast<delegate::WidgetGroup>(groupNode.text().toInt());
+        const auto description = widgetNode.firstChildElement(tags::string).text();
+        const auto toolTip = widgetNode.firstChildElement(tags::tooltip).text();
+
+        QStringList items = {};
+        auto strArrNode = widgetNode.firstChildElement(tags::str_arr);
+        if (!strArrNode.isNull() && strArrNode.hasChildNodes())
+            items = parseStringArray(strArrNode);
+
+        switch (type.hash())
+        {
+        case ctti::unnamed_type_id<QDoubleSpinBox>().hash():
+        {
+            delegate::DoubleSpinBoxWidget widget(type, description, widgetGroup, toolTip);
+            dSpinBoxParse(widget, widgetNode);
+            return std::move(widget);
+        }
+        case ctti::unnamed_type_id<DoubleSpinBoxGroup>().hash():
+        {
+            delegate::DoubleSpinBoxGroup widget(type, description, widgetGroup, toolTip);
+            dSpinBoxParse(widget, widgetNode);
+            groupParse(widget, widgetNode, items);
+            return std::move(widget);
+        }
+        case ctti::unnamed_type_id<CheckBoxGroup>().hash():
+        {
+            delegate::CheckBoxGroup widget(type, description, widgetGroup, toolTip);
+            groupParse(widget, widgetNode, items);
+            return std::move(widget);
+        }
+        case ctti::unnamed_type_id<QComboBox>().hash():
+        {
+            delegate::QComboBox widget(type, description, widgetGroup, toolTip);
+            comboBoxParse(widget, widgetNode, items);
+            return std::move(widget);
+        }
+        case ctti::unnamed_type_id<QComboBoxGroup>().hash():
+        {
+            delegate::QComboBoxGroup widget(type, description, widgetGroup, toolTip);
+            groupParse(widget, widgetNode, items);
+            comboBoxParse(widget, widgetNode, items);
+            widget.items.clear();
+            return std::move(widget);
+        }
+        default:
+        {
+            return delegate::Widget(type, description, widgetGroup, toolTip);
+        }
+        }
+    }
+    else
+    {
+        // return parseItem(widgetNode, type);
+    }
 }
 
 void NewXmlParser::parseS2(const QDomNode &content)
 {
-    auto recordNode = content.firstChildElement(tags::record);
+    auto s2filesNode = content.firstChildElement(tags::s2files);
+    auto recordNode = s2filesNode.firstChildElement(tags::record);
     while (!recordNode.isNull() && (recordNode.tagName() == tags::record))
     {
         auto id = quint16(0);
         auto idNode = recordNode.firstChildElement(tags::id);
         if (!idNode.isNull())
-        {
-            // id = static_cast<quint16>(XmlParser::parseInt32(recordChild));
-        }
+            id = static_cast<quint16>(parseNum<uint>(idNode));
 
         auto typeNode = recordNode.firstChildElement(tags::type);
         if (!typeNode.isNull())
-        {
-            // settings.s2filesMap->insert(id, parseType(recordChild));
             emit typeDataSending(id, parseType(typeNode));
-        }
 
         auto widgetNode = recordNode.firstChildElement(tags::widget);
         if (!widgetNode.isNull())

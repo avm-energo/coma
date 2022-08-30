@@ -16,7 +16,7 @@ public:
 
 private:
     bool isFileExist(const QString &filename);
-    QDomElement getFileContent(const QString &filename);
+    QDomDocument getFileContent(const QString &filename);
     bool loadS2Settings();
     bool loadMainSettings(const QString &filename);
 
