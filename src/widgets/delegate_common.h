@@ -25,6 +25,10 @@ enum class ItemType : int
 
 struct Widget
 {
+    Widget(const ctti::unnamed_type_id_t type_) : type(type_)
+    {
+    }
+
     Widget(const ctti::unnamed_type_id_t type_, const delegate::WidgetGroup group_) : type(type_), group(group_)
     {
     }
@@ -189,6 +193,10 @@ struct Item : delegate::Widget
         Register
     };
 
+    Item(const ctti::unnamed_type_id_t type_) : Widget(type_)
+    {
+    }
+
     Item(const ctti::unnamed_type_id_t &type_, const delegate::ItemType &itype_, //
         const quint16 &parent_, const delegate::WidgetGroup &group_)
         : Widget(type_, group_), itemType(itype_), parent(parent_)
@@ -205,8 +213,8 @@ using itemVariant = std::variant<  //
     delegate::DoubleSpinBoxGroup,  //
     delegate::DoubleSpinBoxWidget, //
     delegate::CheckBoxGroup,       //
-    Item,                          //
-    delegate::QComboBoxGroup       //
+    delegate::QComboBoxGroup,      //
+    Item                           //
     >;
 
 using widgetMap = std::map<quint16, itemVariant>;

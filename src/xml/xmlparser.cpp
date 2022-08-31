@@ -582,13 +582,13 @@ config::Item XmlParser::parseItem(QDomElement domElement, ctti::unnamed_type_id_
     using namespace config;
     auto name = domElement.text();
     QString className = domElement.attribute(keys::className);
-    // if (className.isEmpty())
-    //    return { 0 };
+    if (className.isEmpty())
+        return { 0 };
     delegate::ItemType itemType;
     if (className == "ModbusItem")
         itemType = delegate::ItemType::ModbusItem;
-    // else
-    //    return { 0 };
+    else
+        return { 0 };
 
     QDomElement childElement = domElement.firstChildElement(keys::group);
     auto widgetGroup = static_cast<delegate::WidgetGroup>(childElement.text().toInt());

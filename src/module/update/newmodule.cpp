@@ -12,8 +12,7 @@ constexpr auto debug = true;
 NewModule::NewModule(const Modules::StartupInfoBlock &startupInfoBlock, QObject *parent)
     : QObject(parent), mSettings(startupInfoBlock)
 {
-    // m_gsettings = { { &DataTypes::DataRecV::map, &WidgetFactory::m_widgetMap, &WidgetFactory::m_categoryMap }, {} };
-    mParser = new NewXmlParser(this);
+    mS2Parser = new S2XmlParser(this);
 }
 
 bool NewModule::isFileExist(const QString &filename)
@@ -88,7 +87,7 @@ bool NewModule::loadS2Settings()
     {
         // TODO: Потом закомментировать при внедрении ModuleSettings
         // XmlParser::traverseNode(content, m_gsettings.config);
-        mParser->parseS2(content);
+        mS2Parser->parse(content);
         return true;
     }
     else

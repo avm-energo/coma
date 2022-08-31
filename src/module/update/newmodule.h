@@ -2,7 +2,7 @@
 
 #include "../board.h"
 #include "../modulesettings.h"
-#include "newxmlparser.h"
+#include "s2xmlparser.h"
 
 #include <QtXml>
 
@@ -20,7 +20,6 @@ private:
     bool loadS2Settings();
     bool loadMainSettings(const QString &filename);
 
-    // GlobalSettings m_gsettings;
     ModuleSettings mSettings;
-    NewXmlParser *mParser;
+    S2XmlParser *mS2Parser;
 };

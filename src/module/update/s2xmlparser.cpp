@@ -1,4 +1,4 @@
-#include "newxmlparser.h"
+#include "s2xmlparser.h"
 
 #include "../gen/datatypes.h"
 #include "../s2/s2helper.h"
@@ -14,26 +14,12 @@ class CheckBoxGroup;
 class IPCtrl;
 class QLineEdit;
 
-NewXmlParser::NewXmlParser(QObject *parent) : QObject(parent)
+S2XmlParser::S2XmlParser(QObject *parent) : BaseXmlParser(parent)
 {
 }
 
-// /// \brief Парсинг содержимого узла numNode в uint переменную
-// uint NewXmlParser::parseUInt(const QDomElement &node)
-//{
-//    auto numString = node.text();
-//    if (!numString.isEmpty())
-//    {
-//        auto state = false;
-//        auto number = numString.toUInt(&state);
-//        if (state)
-//            return number;
-//    }
-//    return 0;
-//}
-
 /// \brief Отбрасываем необрабатываемые типы
-bool NewXmlParser::initialCheck(const QString &name)
+bool S2XmlParser::initialCheck(const QString &name)
 {
     // New types from formatted s2files.xml
     // TODO: add handler for these types
@@ -54,15 +40,16 @@ bool NewXmlParser::initialCheck(const QString &name)
 }
 
 /// \brief Обрабатываем особые типы
-ctti::unnamed_type_id_t NewXmlParser::secondCheck(const QString &name)
+ctti::unnamed_type_id_t S2XmlParser::secondCheck(const QString &name)
 {
+    using namespace DataTypes;
     // 104 types
     if (name.contains("M_SP", Qt::CaseInsensitive))
-        return ctti::unnamed_type_id<DataTypes::SinglePointWithTimeStruct>().hash();
+        return ctti::unnamed_type_id<SinglePointWithTimeStruct>().hash();
     else if (name.contains("M_BO", Qt::CaseInsensitive))
-        return ctti::unnamed_type_id<DataTypes::BitStringStruct>().hash();
+        return ctti::unnamed_type_id<BitStringStruct>().hash();
     else if (name.contains("M_ME", Qt::CaseInsensitive))
-        return ctti::unnamed_type_id<DataTypes::FloatStruct>().hash();
+        return ctti::unnamed_type_id<FloatStruct>().hash();
     // Widgets
     else if (name.contains("IpControl", Qt::CaseInsensitive))
         return ctti::unnamed_type_id<IPCtrl>().hash();
@@ -82,9 +69,8 @@ ctti::unnamed_type_id_t NewXmlParser::secondCheck(const QString &name)
 }
 
 /// \brief Возвращаем хэш типа для его идентификации
-ctti::unnamed_type_id_t NewXmlParser::parseType(const QDomElement &typeNode)
+ctti::unnamed_type_id_t S2XmlParser::parseType(const QDomElement &typeNode)
 {
-    using namespace DataTypes;
     auto name = typeNode.text();
     name.replace(" ", "");
 
@@ -105,37 +91,26 @@ ctti::unnamed_type_id_t NewXmlParser::parseType(const QDomElement &typeNode)
         return 0;
 }
 
-/// \brief Парсим ноду <string-array> в QStringList
-QStringList NewXmlParser::parseStringArray(const QDomElement &strArrNode)
-{
-    const auto &nodes = strArrNode.childNodes();
-    QStringList retList = {};
-    if (!nodes.isEmpty())
-    {
-        const auto size = nodes.count();
-        for (auto i = 0; i < size; i++)
-        {
-            auto strItem = nodes.item(i++).toElement().text();
-            retList.push_back(strItem);
-        }
-    }
-    return retList;
-}
-
-void NewXmlParser::dSpinBoxParse(delegate::DoubleSpinBoxWidget &dsbw, const QDomElement &widgetNode)
+/// \brief Парсинг тегов для структуры delegate::DoubleSpinBoxWidget и её потомков
+void S2XmlParser::dSpinBoxParse(delegate::DoubleSpinBoxWidget &dsbw, const QDomElement &widgetNode)
 {
     parseNumFromNode(widgetNode, tags::min, dsbw.min);
     parseNumFromNode(widgetNode, tags::max, dsbw.max);
     parseNumFromNode(widgetNode, tags::decimals, dsbw.decimals);
 }
 
-void NewXmlParser::groupParse(delegate::Group &group, const QDomElement &widgetNode, const QStringList &items)
+/// \brief Парсинг тегов для потомков структуры delegate::Group
+void S2XmlParser::groupParse(delegate::Group &group, const QDomElement &widgetNode, const QStringList &items)
 {
     parseNumFromNode(widgetNode, tags::count, group.count);
-    group.items = items;
+    // В оригинальном коде items для delegate::QComboBox присваивается переменной
+    // model, а не items (см. функцию S2XmlParser::comboBoxParse)
+    if constexpr (!tags::is_comboBox<decltype(group)>)
+        group.items = items;
 }
 
-void NewXmlParser::comboBoxParse(delegate::QComboBox &comboBox, //
+/// \brief Парсинг тегов для структуры delegate::QComboBox и её потомков
+void S2XmlParser::comboBoxParse(delegate::QComboBox &comboBox, //
     const QDomElement &widgetNode, const QStringList &items)
 {
     comboBox.model = items;
@@ -156,7 +131,33 @@ void NewXmlParser::comboBoxParse(delegate::QComboBox &comboBox, //
     }
 }
 
-config::itemVariant NewXmlParser::parseWidget(const QDomElement &widgetNode)
+/// \brief Парсинг тегов для структуры config::Item
+config::Item S2XmlParser::parseItem(const QDomElement &itemNode, //
+    const QString &className, const ctti::unnamed_type_id_t &type)
+{
+    delegate::ItemType itemType;
+    if (className == "ModbusItem")
+        itemType = delegate::ItemType::ModbusItem;
+    else
+        return { 0 };
+
+    int widgetGroup;
+    parseNumFromNode(itemNode, tags::group, widgetGroup);
+
+    switch (itemType)
+    {
+    case delegate::ItemType::ModbusItem:
+    {
+        uint parent;
+        parseNumFromNode(itemNode, tags::parent, parent);
+        return config::Item(type, itemType, static_cast<quint16>(parent), widgetGroup);
+    }
+    default:
+        return config::Item(type, itemType, 0, widgetGroup);
+    }
+}
+
+config::itemVariant S2XmlParser::parseWidget(const QDomElement &widgetNode)
 {
     auto className = widgetNode.attribute(tags::class_);
     auto typeNode = widgetNode.firstChildElement(tags::type);
@@ -164,15 +165,11 @@ config::itemVariant NewXmlParser::parseWidget(const QDomElement &widgetNode)
 
     if (className.isEmpty())
     {
-        auto groupNode = widgetNode.firstChildElement(tags::group);
-        auto widgetGroup = static_cast<delegate::WidgetGroup>(groupNode.text().toInt());
-        const auto description = widgetNode.firstChildElement(tags::string).text();
-        const auto toolTip = widgetNode.firstChildElement(tags::tooltip).text();
-
-        QStringList items = {};
-        auto strArrNode = widgetNode.firstChildElement(tags::str_arr);
-        if (!strArrNode.isNull() && strArrNode.hasChildNodes())
-            items = parseStringArray(strArrNode);
+        int widgetGroup;
+        parseNumFromNode(widgetNode, tags::group, widgetGroup);
+        const auto description = parseNode(widgetNode, tags::string);
+        const auto toolTip = parseNode(widgetNode, tags::tooltip);
+        const auto items = parseStringArray(widgetNode);
 
         switch (type.hash())
         {
@@ -206,22 +203,21 @@ config::itemVariant NewXmlParser::parseWidget(const QDomElement &widgetNode)
             delegate::QComboBoxGroup widget(type, description, widgetGroup, toolTip);
             groupParse(widget, widgetNode, items);
             comboBoxParse(widget, widgetNode, items);
-            widget.items.clear();
             return std::move(widget);
         }
         default:
         {
-            return delegate::Widget(type, description, widgetGroup, toolTip);
+            return std::move(delegate::Widget(type, description, widgetGroup, toolTip));
         }
         }
     }
     else
     {
-        // return parseItem(widgetNode, type);
+        return std::move(parseItem(widgetNode, className, type));
     }
 }
 
-void NewXmlParser::parseS2(const QDomNode &content)
+void S2XmlParser::parse(const QDomNode &content)
 {
     auto s2filesNode = content.firstChildElement(tags::s2files);
     auto recordNode = s2filesNode.firstChildElement(tags::record);
@@ -238,9 +234,8 @@ void NewXmlParser::parseS2(const QDomNode &content)
 
         auto widgetNode = recordNode.firstChildElement(tags::widget);
         if (!widgetNode.isNull())
-        {
-            // settings.s2widgetMap->insert({ id, parseWidget(recordChild) });
-        }
+            emit widgetDataSending(id, parseWidget(widgetNode));
+
         recordNode = recordNode.nextSibling().toElement();
     }
 }
