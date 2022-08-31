@@ -19,15 +19,15 @@ private:
     bool isS2Parsed;
 
 public:
-    explicit ConfigStorage(QObject *parent = nullptr);
+    explicit ConfigStorage(token, QObject *parent = nullptr);
     void initSettings(const Modules::StartupInfoBlock &startupInfo);
+    const Modules::StartupInfoBlock &getStartupInfoBlock() const;
+
     const bool getS2Status() const;
     void setS2Status(const bool status);
 
-    auto &getStartupInfoBlock()
-    {
-        return mSettings->getStartupInfoBlock();
-    }
+    const DataTypes::ValueMap::value_type &getS2Map() const;
+    const config::widgetMap &getWidgetMap() const;
 
 public slots:
     void typeDataReceive(const quint16 &id, const ctti::unnamed_type_id_t &type);

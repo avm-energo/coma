@@ -26,7 +26,6 @@ public:
     }
 
     void insert(int key, ctti::unnamed_type_id_t value);
-
     const ValueMap::value_type &map() const;
 
 private:
