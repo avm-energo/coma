@@ -157,6 +157,7 @@ config::Item S2XmlParser::parseItem(const QDomElement &itemNode, //
     }
 }
 
+/// \brief Парсинг ноды <widget> у <record>
 config::itemVariant S2XmlParser::parseWidget(const QDomElement &widgetNode)
 {
     auto className = widgetNode.attribute(tags::class_);
@@ -217,6 +218,7 @@ config::itemVariant S2XmlParser::parseWidget(const QDomElement &widgetNode)
     }
 }
 
+/// \brief Парсинг всех нод <record> файла s2files.xml
 void S2XmlParser::parse(const QDomNode &content)
 {
     auto s2filesNode = content.firstChildElement(tags::s2files);

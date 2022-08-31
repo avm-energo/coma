@@ -140,11 +140,7 @@ public:
     ModuleTypes::ModbusList &getModbus();
     ModuleTypes::ProtocomList &getProtocom();
     ModuleTypes::IecList &getIec();
-
-    const auto &getStartupInfoBlock()
-    {
-        return startupInfoBlock;
-    }
+    const Modules::StartupInfoBlock &getStartupInfoBlock();
 
 private:
     const Modules::StartupInfoBlock &startupInfoBlock;

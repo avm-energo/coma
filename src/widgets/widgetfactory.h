@@ -27,14 +27,17 @@ public:
     {
         return QString::number(type.hash()) + QString::number(key);
     }
+
     static auto getWidgetMap()
     {
         return m_widgetMap;
     }
+
     static auto getCategoryMap()
     {
         return m_categoryMap;
     }
+
     static auto getCategory(delegate::WidgetGroup key)
     {
         return m_categoryMap.value(key);

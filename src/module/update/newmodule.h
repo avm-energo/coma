@@ -1,8 +1,7 @@
 #pragma once
 
 #include "../board.h"
-#include "../modulesettings.h"
-#include "s2xmlparser.h"
+#include "configstorage.h"
 
 #include <QtXml>
 
@@ -18,8 +17,9 @@ private:
     bool isFileExist(const QString &filename);
     QDomDocument getFileContent(const QString &filename);
     bool loadS2Settings();
-    bool loadMainSettings(const QString &filename);
+    bool loadModuleSettings(const QString &filename);
 
-    ModuleSettings mSettings;
-    S2XmlParser *mS2Parser;
+    // ModuleSettings mSettings;
+    ConfigStorage *mStorage;
+    // S2XmlParser *mS2Parser;
 };

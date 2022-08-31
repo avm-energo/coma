@@ -61,3 +61,8 @@ ModuleTypes::IecList &ModuleSettings::getIec()
 {
     return mIec;
 }
+
+const Modules::StartupInfoBlock &ModuleSettings::getStartupInfoBlock()
+{
+    return startupInfoBlock;
+}

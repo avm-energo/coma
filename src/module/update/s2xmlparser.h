@@ -50,8 +50,8 @@ private:
     void dSpinBoxParse(delegate::DoubleSpinBoxWidget &dsbw, const QDomElement &widgetNode);
     void groupParse(delegate::Group &group, const QDomElement &widgetNode, const QStringList &items);
     void comboBoxParse(delegate::QComboBox &comboBox, const QDomElement &widgetNode, const QStringList &items);
-    config::Item parseItem(
-        const QDomElement &domElement, const QString &className, const ctti::unnamed_type_id_t &type);
+    config::Item parseItem(const QDomElement &domElement, //
+        const QString &className, const ctti::unnamed_type_id_t &type);
     config::itemVariant parseWidget(const QDomElement &widgetNode);
 };
 

@@ -38,3 +38,18 @@ const QString BaseXmlParser::parseNode(const QDomNode &node, const QString &tagN
     else
         return "";
 }
+
+template <> double BaseXmlParser::parseString(const QString &numStr, bool &state)
+{
+    return numStr.toDouble(&state);
+}
+
+template <> int BaseXmlParser::parseString(const QString &numStr, bool &state)
+{
+    return numStr.toInt(&state);
+}
+
+template <> uint BaseXmlParser::parseString(const QString &numStr, bool &state)
+{
+    return numStr.toUInt(&state);
+}

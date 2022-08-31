@@ -1,14 +1,10 @@
 #ifndef DATARECV_H
 #define DATARECV_H
 
-#include "../ctti/type_id.hpp"
-#include "../gen/std_ext.h"
 #include "datarec.h"
-#include "s2helper.h"
+#include "valuemap.h"
 
 #include <QVariant>
-#include <cassert>
-#include <map>
 
 template <typename T, size_t N1, size_t N2>
 auto inline operator<<(std::array<std::array<T, N2>, N1> &array, const QStringList &list) -> decltype(array)
@@ -43,35 +39,6 @@ class NewModule;
 namespace DataTypes
 {
 
-class valueMap
-{
-public:
-    using value_type = std::map<int, ctti::unnamed_type_id_t>;
-
-    template <typename T> struct true_type
-    {
-        static constexpr bool value = std_ext::is_variant_alternative<T, valueType>();
-    };
-
-    template <typename T, std::enable_if_t<true_type<T>::value, bool> = true> void insert(int key)
-    {
-        m_map.insert({ key, ctti::unnamed_type_id<T>() });
-    }
-
-    void insert(int key, ctti::unnamed_type_id_t value)
-    {
-        m_map.insert({ key, value });
-    }
-
-    const auto &map() const
-    {
-        return m_map;
-    }
-
-private:
-    value_type m_map;
-};
-
 class DataRecV
 {
     friend class ::S2;
@@ -80,14 +47,14 @@ class DataRecV
 
 public:
     DataRecV() = default;
-    DataRecV(const valueMap &_map, const S2DataTypes::DataRec &record, const char *rawdata);
-    DataRecV(const valueMap &_map, const unsigned _id, const QString &str);
+    DataRecV(const ValueMap &_map, const S2DataTypes::DataRec &record, const char *rawdata);
+    DataRecV(const ValueMap &_map, const unsigned _id, const QString &str);
     DataRecV(const S2DataTypes::DataRec &record);
     DataRecV(const S2DataTypes::DataRec &record, const char *rawdata);
     DataRecV(const unsigned _id, const QString &str);
     DataRecV(const unsigned _id);
 
-    template <typename T, std::enable_if_t<valueMap::true_type<T>::value, bool> = true>
+    template <typename T, std::enable_if_t<ValueMap::true_type<T>::value, bool> = true>
     DataRecV(quint16 _id, T _data) : id(_id), data(_data)
     {
     }
@@ -102,7 +69,7 @@ public:
     void setData(const valueType &value);
     size_t typeIndex() const;
 
-    template <typename T, std::enable_if_t<valueMap::true_type<T>::value, bool> = true> T value() const
+    template <typename T, std::enable_if_t<ValueMap::true_type<T>::value, bool> = true> T value() const
     {
         assert(std::holds_alternative<T>(data) && "Requested wrong type");
         if (std::holds_alternative<T>(data))
@@ -126,7 +93,7 @@ public:
 private:
     quint16 id;
     valueType data;
-    static valueMap map;
+    static ValueMap map;
 
     template <typename T> void helper(unsigned int numByte, const char *rawdata, valueType &data)
     {

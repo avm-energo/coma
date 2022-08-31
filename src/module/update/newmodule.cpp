@@ -1,8 +1,8 @@
 #include "newmodule.h"
 
+#include "../gen/error.h"
 #include "../gen/stdfunc.h"
-#include "modulealarm.h"
-//#include "../widgets/widgetfactory.h"
+#include "s2xmlparser.h"
 
 #include <QDir>
 #include <QFile>
@@ -10,9 +10,9 @@
 constexpr auto debug = true;
 
 NewModule::NewModule(const Modules::StartupInfoBlock &startupInfoBlock, QObject *parent)
-    : QObject(parent), mSettings(startupInfoBlock)
+    : QObject(parent), mStorage(&ConfigStorage::GetInstance())
 {
-    mS2Parser = new S2XmlParser(this);
+    mStorage->initSettings(startupInfoBlock);
 }
 
 bool NewModule::isFileExist(const QString &filename)
@@ -56,19 +56,19 @@ bool NewModule::loadSettings()
 {
     if (loadS2Settings())
     {
-        const auto &startupInfoBlock = mSettings.getStartupInfoBlock();
+        const auto &startupInfoBlock = mStorage->getStartupInfoBlock();
         auto moduleName = QString::number(startupInfoBlock.type(), 16) + ".xml";
         if (isFileExist(moduleName))
         {
-            return loadMainSettings(moduleName);
+            return loadModuleSettings(moduleName);
         }
         else
         {
             auto baseFile = QString::number(startupInfoBlock.MTypeB, 16) + "00.xml";
             auto measFile = "00" + QString::number(startupInfoBlock.MTypeM, 16) + ".xml";
             // TODO: парсить данные в разные структуры
-            auto isBaseSuccess = loadMainSettings(baseFile);
-            auto isMeasSuccess = loadMainSettings(measFile);
+            auto isBaseSuccess = loadModuleSettings(baseFile);
+            auto isMeasSuccess = loadModuleSettings(measFile);
             if (debug)
             {
                 qCritical() << isBaseSuccess << " " << isMeasSuccess;
@@ -81,20 +81,34 @@ bool NewModule::loadSettings()
 
 bool NewModule::loadS2Settings()
 {
-    constexpr auto filename = "s2files.xml";
-    auto content = getFileContent(filename);
-    if (!content.isNull())
+    // Если ещё не парсили s2files.xml
+    if (!mStorage->getS2Status())
     {
-        // TODO: Потом закомментировать при внедрении ModuleSettings
-        // XmlParser::traverseNode(content, m_gsettings.config);
-        mS2Parser->parse(content);
-        return true;
+        constexpr auto filename = "s2files.xml";
+        auto content = getFileContent(filename);
+        if (!content.isNull())
+        {
+            auto mS2Parser = new S2XmlParser(this);
+            auto conn1 = QObject::connect(mS2Parser, &S2XmlParser::typeDataSending,   //
+                mStorage, &ConfigStorage::typeDataReceive);                           //
+            auto conn2 = QObject::connect(mS2Parser, &S2XmlParser::widgetDataSending, //
+                mStorage, &ConfigStorage::widgetDataReceive);                         //
+            mS2Parser->parse(content);
+            // Успешно распарсили s2files.xml
+            mStorage->setS2Status(true);
+            mS2Parser->deleteLater();
+            QObject::disconnect(conn1);
+            QObject::disconnect(conn2);
+            return true;
+        }
+        else
+            return false;
     }
     else
-        return false;
+        return true;
 }
 
-bool NewModule::loadMainSettings(const QString &filename)
+bool NewModule::loadModuleSettings(const QString &filename)
 {
     auto content = getFileContent(filename);
     if (!content.isNull())

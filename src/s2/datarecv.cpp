@@ -4,11 +4,11 @@
 
 #include <type_traits>
 
-DataTypes::valueMap DataTypes::DataRecV::map;
+DataTypes::ValueMap DataTypes::DataRecV::map;
 
 namespace DataTypes
 {
-DataRecV::DataRecV(const valueMap &_map, const S2DataTypes::DataRec &record, const char *rawdata) : id(record.header.id)
+DataRecV::DataRecV(const ValueMap &_map, const S2DataTypes::DataRec &record, const char *rawdata) : id(record.header.id)
 {
     using namespace detail;
 
@@ -139,7 +139,7 @@ DataRecV::DataRecV(const valueMap &_map, const S2DataTypes::DataRec &record, con
     }
 }
 
-DataRecV::DataRecV(const valueMap &_map, const unsigned _id, const QString &str) : id(_id)
+DataRecV::DataRecV(const ValueMap &_map, const unsigned _id, const QString &str) : id(_id)
 {
     using namespace detail;
 
