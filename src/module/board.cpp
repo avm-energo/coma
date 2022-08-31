@@ -106,9 +106,10 @@ Board::ConnectionState Board::connectionState() const
 
 void Board::setConnectionState(ConnectionState connectionState)
 {
-    Q_ASSERT(connectionState != m_connectionState);
+    //    Q_ASSERT(connectionState != m_connectionState);
     if (m_connectionState == connectionState && m_connectionState == ConnectionState::Connected)
-        Q_ASSERT("Try to connect while still connected");
+        qDebug() << "Try to connect while still connected";
+    //        Q_ASSERT("Try to connect while still connected");
     m_connectionState = connectionState;
     emit connectionStateChanged(connectionState);
 }

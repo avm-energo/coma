@@ -69,6 +69,7 @@ bool SerialPort::reconnect()
 {
     if (!m_connected)
         return false;
+    disconnect();
     if (!port->open(QIODevice::ReadWrite))
     {
         qCritical() << port->metaObject()->className() << port->portName() << Error::OpenError;
