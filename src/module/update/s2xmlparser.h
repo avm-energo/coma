@@ -11,9 +11,7 @@ namespace tags
 {
 constexpr auto s2files = "s2files";
 constexpr auto record = "record";
-constexpr auto id = "id";
 constexpr auto type = "type";
-constexpr auto name = "name";
 constexpr auto widget = "widget";
 constexpr auto class_ = "class";
 constexpr auto group = "group";
@@ -22,7 +20,6 @@ constexpr auto tooltip = "toolTip";
 constexpr auto min = "min";
 constexpr auto max = "max";
 constexpr auto decimals = "decimals";
-constexpr auto count = "count";
 constexpr auto field = "field";
 constexpr auto data = "data";
 constexpr auto bitfield = "bitfield";

@@ -1,7 +1,6 @@
 #include "modulesettings.h"
 
-ModuleSettings::ModuleSettings(const Modules::StartupInfoBlock &startupInfo)
-    : startupInfoBlock(startupInfo), curConfigIndex(0)
+ModuleSettings::ModuleSettings() : curConfigIndex(0)
 {
 }
 
@@ -60,9 +59,4 @@ ModuleTypes::ProtocomList &ModuleSettings::getProtocom()
 ModuleTypes::IecList &ModuleSettings::getIec()
 {
     return mIec;
-}
-
-const Modules::StartupInfoBlock &ModuleSettings::getStartupInfoBlock()
-{
-    return startupInfoBlock;
 }

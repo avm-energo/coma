@@ -27,6 +27,10 @@ using SignalMap = QHash<quint32, Signal>;
 
 /// Section settings ///
 
+// key (int) - id вкладки
+// value (QString) - имя вкладки
+using TabsMap = QHash<quint32, QString>; ///< Хранит узлы <tab> секции <section-tabs>
+
 /// \brief Структура для хранения информации узла <mwidget> из XML
 struct MWidget
 {
@@ -56,10 +60,7 @@ struct Section
     SGMap sgMap;  ///< узлы <sgroup>
 };
 
-// key (int) - id вкладки
-// value (QString) - имя вкладки
-using TabsMap = QHash<int, QString>; ///< Хранит узлы <tab> секции <section-tabs>
-using SectionList = QList<Section>;  ///< Хранит узлы <section> секции <sections>
+using SectionList = QList<Section>; ///< Хранит узлы <section> секции <sections>
 
 /// Alarms settings ///
 
@@ -126,7 +127,7 @@ using IecList = QList<IecItem>; ///< Хранит узлы <group> секции 
 class ModuleSettings
 {
 public:
-    ModuleSettings(const Modules::StartupInfoBlock &startupInfo);
+    ModuleSettings();
 
     void startNewConfig();
     void appendToCurrentConfig(DataTypes::RecordPair pair);
@@ -140,10 +141,8 @@ public:
     ModuleTypes::ModbusList &getModbus();
     ModuleTypes::ProtocomList &getProtocom();
     ModuleTypes::IecList &getIec();
-    const Modules::StartupInfoBlock &getStartupInfoBlock();
 
 private:
-    const Modules::StartupInfoBlock &startupInfoBlock;
     ModuleTypes::HighlightMap critHighlight, warnHighlight;
 
     ModuleTypes::ConfigMap mConfigs;

@@ -14,15 +14,12 @@ class ConfigStorage : public QObject, public Singleton<ConfigStorage>
 private:
     DataTypes::ValueMap mS2Map;
     config::widgetMap mWidgetMap;
-    categoryMap mCategoryMap; ///< скорее всего, не нужно, потому что есть ModuleSettings::mTabs
+    // categoryMap mCategoryMap; ///< скорее всего, не нужно, потому что есть ModuleSettings::mTabs
     std::unique_ptr<ModuleSettings> mSettings;
     bool isS2Parsed;
 
 public:
     explicit ConfigStorage(token, QObject *parent = nullptr);
-    void initSettings(const Modules::StartupInfoBlock &startupInfo);
-    const Modules::StartupInfoBlock &getStartupInfoBlock() const;
-
     const bool getS2Status() const;
     void setS2Status(const bool status);
 

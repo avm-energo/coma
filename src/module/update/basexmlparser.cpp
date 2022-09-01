@@ -30,7 +30,7 @@ const QStringList BaseXmlParser::parseStringArray(const QDomElement &node) const
 }
 
 /// \brief Возвращаем содержимое ноды tagName в QString
-const QString BaseXmlParser::parseNode(const QDomNode &node, const QString &tagName) const
+const QString BaseXmlParser::parseSting(const QDomNode &node, const QString &tagName) const
 {
     auto textNode = node.firstChildElement(tagName);
     if (!textNode.isNull())
@@ -39,17 +39,45 @@ const QString BaseXmlParser::parseNode(const QDomNode &node, const QString &tagN
         return "";
 }
 
-template <> double BaseXmlParser::parseString(const QString &numStr, bool &state)
+void BaseXmlParser::parseNode(const QDomNode &parent, const QString &tagName, //
+    const std::function<void(const QDomNode &node)> &functor)
+{
+    auto node = parent.firstChildElement(tagName);
+    if (!node.isNull())
+    {
+        auto child = node.firstChild();
+        while (!child.isNull())
+        {
+            if (!child.isComment() && child.isElement())
+            {
+                functor(child);
+            }
+            child = child.nextSibling();
+        }
+    }
+}
+
+template <> double BaseXmlParser::parseNumString(const QString &numStr, bool &state)
 {
     return numStr.toDouble(&state);
 }
 
-template <> int BaseXmlParser::parseString(const QString &numStr, bool &state)
+template <> int BaseXmlParser::parseNumString(const QString &numStr, bool &state)
 {
     return numStr.toInt(&state);
 }
 
-template <> uint BaseXmlParser::parseString(const QString &numStr, bool &state)
+template <> quint16 BaseXmlParser::parseNumString(const QString &numStr, bool &state)
+{
+    return numStr.toUShort(&state);
+}
+
+template <> quint32 BaseXmlParser::parseNumString(const QString &numStr, bool &state)
 {
     return numStr.toUInt(&state);
+}
+
+template <> quint64 BaseXmlParser::parseNumString(const QString &numStr, bool &state)
+{
+    return numStr.toULongLong(&state);
 }

@@ -111,6 +111,7 @@ public:
     {
         return m_startupInfoBlock;
     }
+
     const Modules::StartupInfoBlockExt0 &baseSerialInfoExt() const
     {
         return m_startupInfoBlockExt;

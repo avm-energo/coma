@@ -1,17 +1,7 @@
 #include "configstorage.h"
 
-ConfigStorage::ConfigStorage(token, QObject *parent) : QObject(parent), mSettings(nullptr), isS2Parsed(false)
+ConfigStorage::ConfigStorage(token, QObject *parent) : QObject(parent), mSettings(new ModuleSettings), isS2Parsed(false)
 {
-}
-
-void ConfigStorage::initSettings(const Modules::StartupInfoBlock &startupInfo)
-{
-    mSettings = std::unique_ptr<ModuleSettings>(new ModuleSettings(startupInfo));
-}
-
-const Modules::StartupInfoBlock &ConfigStorage::getStartupInfoBlock() const
-{
-    return mSettings->getStartupInfoBlock();
 }
 
 const bool ConfigStorage::getS2Status() const

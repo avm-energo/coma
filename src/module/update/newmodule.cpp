@@ -2,6 +2,7 @@
 
 #include "../gen/error.h"
 #include "../gen/stdfunc.h"
+#include "modulexmlparser.h"
 #include "s2xmlparser.h"
 
 #include <QDir>
@@ -10,9 +11,8 @@
 constexpr auto debug = true;
 
 NewModule::NewModule(const Modules::StartupInfoBlock &startupInfoBlock, QObject *parent)
-    : QObject(parent), mStorage(&ConfigStorage::GetInstance())
+    : QObject(parent), sInfoBlock(startupInfoBlock), mStorage(&ConfigStorage::GetInstance())
 {
-    mStorage->initSettings(startupInfoBlock);
 }
 
 bool NewModule::isFileExist(const QString &filename)
@@ -56,24 +56,23 @@ bool NewModule::loadSettings()
 {
     if (loadS2Settings())
     {
-        const auto &startupInfoBlock = mStorage->getStartupInfoBlock();
-        auto moduleName = QString::number(startupInfoBlock.type(), 16) + ".xml";
+        auto moduleName = QString::number(sInfoBlock.type(), 16) + ".xml";
         if (isFileExist(moduleName))
         {
-            return loadModuleSettings(moduleName);
+            return loadModuleSettings(moduleName, sInfoBlock.MTypeB, sInfoBlock.MTypeM);
         }
         else
         {
-            auto baseFile = QString::number(startupInfoBlock.MTypeB, 16) + "00.xml";
-            auto measFile = "00" + QString::number(startupInfoBlock.MTypeM, 16) + ".xml";
+            auto baseFile = QString::number(sInfoBlock.MTypeB, 16) + "00.xml";
+            auto mezzFile = "00" + QString::number(sInfoBlock.MTypeM, 16) + ".xml";
             // TODO: парсить данные в разные структуры
-            auto isBaseSuccess = loadModuleSettings(baseFile);
-            auto isMeasSuccess = loadModuleSettings(measFile);
+            auto isBaseSuccess = loadModuleSettings(baseFile, sInfoBlock.MTypeB, 0);
+            auto isMezzSuccess = loadModuleSettings(mezzFile, 0, sInfoBlock.MTypeM);
             if (debug)
             {
-                qCritical() << isBaseSuccess << " " << isMeasSuccess;
+                qCritical() << isBaseSuccess << " " << isMezzSuccess;
             }
-            return (isBaseSuccess && isMeasSuccess);
+            return (isBaseSuccess && isMezzSuccess);
         }
     }
     return false;
@@ -108,13 +107,16 @@ bool NewModule::loadS2Settings()
         return true;
 }
 
-bool NewModule::loadModuleSettings(const QString &filename)
+bool NewModule::loadModuleSettings(const QString &filename, const quint16 &typeB, const quint16 &typeM)
 {
     auto content = getFileContent(filename);
     if (!content.isNull())
     {
         // TODO: Потом закомментировать при внедрении ModuleSettings
         // XmlParser::traverseNode(content, m_settings.get(), m_gsettings.config);
+        auto moduleParser = new ModuleXmlParser(this);
+        moduleParser->parse(content, typeB, typeM);
+        moduleParser->deleteLater();
         return true;
     }
     else

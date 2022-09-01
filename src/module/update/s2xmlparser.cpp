@@ -94,15 +94,15 @@ ctti::unnamed_type_id_t S2XmlParser::parseType(const QDomElement &typeNode)
 /// \brief Парсинг тегов для структуры delegate::DoubleSpinBoxWidget и её потомков
 void S2XmlParser::dSpinBoxParse(delegate::DoubleSpinBoxWidget &dsbw, const QDomElement &widgetNode)
 {
-    parseNumFromNode(widgetNode, tags::min, dsbw.min);
-    parseNumFromNode(widgetNode, tags::max, dsbw.max);
-    parseNumFromNode(widgetNode, tags::decimals, dsbw.decimals);
+    dsbw.min = parseNumFromNode<double>(widgetNode, tags::min);
+    dsbw.max = parseNumFromNode<double>(widgetNode, tags::max);
+    dsbw.decimals = parseNumFromNode<quint32>(widgetNode, tags::decimals);
 }
 
 /// \brief Парсинг тегов для потомков структуры delegate::Group
 void S2XmlParser::groupParse(delegate::Group &group, const QDomElement &widgetNode, const QStringList &items)
 {
-    parseNumFromNode(widgetNode, tags::count, group.count);
+    group.count = parseNumFromNode<quint32>(widgetNode, tags::count);
     // В оригинальном коде items для delegate::QComboBox присваивается переменной
     // model, а не items (см. функцию S2XmlParser::comboBoxParse)
     if constexpr (!tags::is_comboBox<decltype(group)>)
@@ -141,16 +141,13 @@ config::Item S2XmlParser::parseItem(const QDomElement &itemNode, //
     else
         return { 0 };
 
-    int widgetGroup;
-    parseNumFromNode(itemNode, tags::group, widgetGroup);
-
+    auto widgetGroup = parseNumFromNode<int>(itemNode, tags::group);
     switch (itemType)
     {
     case delegate::ItemType::ModbusItem:
     {
-        uint parent;
-        parseNumFromNode(itemNode, tags::parent, parent);
-        return config::Item(type, itemType, static_cast<quint16>(parent), widgetGroup);
+        auto parent = parseNumFromNode<quint16>(itemNode, tags::parent);
+        return config::Item(type, itemType, parent, widgetGroup);
     }
     default:
         return config::Item(type, itemType, 0, widgetGroup);
@@ -166,10 +163,9 @@ config::itemVariant S2XmlParser::parseWidget(const QDomElement &widgetNode)
 
     if (className.isEmpty())
     {
-        int widgetGroup;
-        parseNumFromNode(widgetNode, tags::group, widgetGroup);
-        const auto description = parseNode(widgetNode, tags::string);
-        const auto toolTip = parseNode(widgetNode, tags::tooltip);
+        auto widgetGroup = parseNumFromNode<int>(widgetNode, tags::group);
+        const auto description = parseSting(widgetNode, tags::string);
+        const auto toolTip = parseSting(widgetNode, tags::tooltip);
         const auto items = parseStringArray(widgetNode);
 
         switch (type.hash())
