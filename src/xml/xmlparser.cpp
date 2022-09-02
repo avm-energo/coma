@@ -429,7 +429,7 @@ DataTypes::RecordPair XmlParser::parseRecordConfig(QDomElement domElement, confi
         return {};
 
     // override settings
-    auto name = domElement.text();
+    // auto name = domElement.text();
     auto widgetElement = domElement.firstChildElement("widget");
     if (!widgetElement.isNull())
     {
@@ -827,7 +827,6 @@ void XmlParser::traverseNodeS2(const QDomNode &node, QList<DataTypes::RecordPair
 
                 if (domElement.tagName() == keys::record)
                 {
-
                     settings.push_back(parseRecordConfig(domElement, widgets));
                     domNode = domNode.nextSibling();
                     continue;

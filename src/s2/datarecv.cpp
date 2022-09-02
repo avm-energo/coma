@@ -152,115 +152,71 @@ DataRecV::DataRecV(const ValueMap &_map, const unsigned _id, const QString &str)
     switch (value.hash())
     {
     case ctti::unnamed_type_id<BYTE>().hash():
-    {
         data = helper<BYTE>(str);
         break;
-    }
     case ctti::unnamed_type_id<WORD>().hash():
-    {
         data = helper<WORD>(str);
         break;
-    }
     case ctti::unnamed_type_id<DWORD>().hash():
-    {
         data = helper<DWORD>(str);
         break;
-    }
     case ctti::unnamed_type_id<INT32>().hash():
-    {
         data = helper<INT32>(str);
         break;
-    }
     case ctti::unnamed_type_id<BYTE_4t>().hash():
-    {
         data = helper<BYTE_4t>(str);
         break;
-    }
     case ctti::unnamed_type_id<WORD_4t>().hash():
-    {
         data = helper<WORD_4t>(str);
         break;
-    }
     case ctti::unnamed_type_id<DWORD_4t>().hash():
-    {
         data = helper<DWORD_4t>(str);
         break;
-    }
     case ctti::unnamed_type_id<BYTE_8t>().hash():
-    {
         data = helper<BYTE_8t>(str);
         break;
-    }
     case ctti::unnamed_type_id<WORD_8t>().hash():
-    {
         data = helper<WORD_8t>(str);
         break;
-    }
     case ctti::unnamed_type_id<DWORD_8t>().hash():
-    {
         data = helper<DWORD_8t>(str);
         break;
-    }
     case ctti::unnamed_type_id<BYTE_16t>().hash():
-    {
         data = helper<BYTE_16t>(str);
         break;
-    }
     case ctti::unnamed_type_id<WORD_16t>().hash():
-    {
         data = helper<WORD_16t>(str);
         break;
-    }
     case ctti::unnamed_type_id<DWORD_16t>().hash():
-    {
         data = helper<DWORD_16t>(str);
         break;
-    }
     case ctti::unnamed_type_id<BYTE_32t>().hash():
-    {
         data = helper<BYTE_32t>(str);
         break;
-    }
     case ctti::unnamed_type_id<WORD_32t>().hash():
-    {
         data = helper<WORD_32t>(str);
         break;
-    }
     case ctti::unnamed_type_id<DWORD_32t>().hash():
-    {
         data = helper<DWORD_32t>(str);
         break;
-    }
     case ctti::unnamed_type_id<float>().hash():
-    {
         data = helper<float>(str);
         break;
-    }
     case ctti::unnamed_type_id<FLOAT_2t>().hash():
-    {
         data = helper<FLOAT_2t>(str);
         break;
-    }
     case ctti::unnamed_type_id<FLOAT_3t>().hash():
-    {
         data = helper<FLOAT_3t>(str);
         break;
-    }
     case ctti::unnamed_type_id<FLOAT_4t>().hash():
-    {
         data = helper<FLOAT_4t>(str);
         break;
-    }
     case ctti::unnamed_type_id<FLOAT_6t>().hash():
-    {
         data = helper<FLOAT_6t>(str);
         break;
-    }
     case ctti::unnamed_type_id<FLOAT_8t>().hash():
-    {
         data = helper<FLOAT_8t>(str);
         break;
-    }
     default:
         assert(false && "Unknown type id");
     }

@@ -1965,7 +1965,7 @@
 	<record>
 		<id>1012</id>
 		<name>DUImin_ID</name>
-		<description> Уставка контроля минимума сигналов</description>
+		<description>Уставка контроля минимума сигналов</description>
 		<type>FLOAT</type>
 		<widget>
 			<type>QDoubleSpinBox</type>

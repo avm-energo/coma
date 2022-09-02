@@ -5,7 +5,7 @@ BaseXmlParser::BaseXmlParser(QObject *parent) : QObject(parent)
 }
 
 /// \brief Парсим ноду <string-array> в QStringList
-const QStringList BaseXmlParser::parseStringArray(const QDomElement &node) const
+const QStringList BaseXmlParser::parseStringArray(const QDomNode &node) const
 {
     QStringList retList = {};
     auto strArrNode = node.firstChildElement(tags::str_arr);
@@ -30,7 +30,7 @@ const QStringList BaseXmlParser::parseStringArray(const QDomElement &node) const
 }
 
 /// \brief Возвращаем содержимое ноды tagName в QString
-const QString BaseXmlParser::parseSting(const QDomNode &node, const QString &tagName) const
+const QString BaseXmlParser::parseString(const QDomNode &node, const QString &tagName) const
 {
     auto textNode = node.firstChildElement(tagName);
     if (!textNode.isNull())
@@ -42,18 +42,28 @@ const QString BaseXmlParser::parseSting(const QDomNode &node, const QString &tag
 void BaseXmlParser::parseNode(const QDomNode &parent, const QString &tagName, //
     const std::function<void(const QDomNode &node)> &functor)
 {
+    callIfNodeExist(parent, tagName,             //
+        [this, &functor](const QDomNode &node) { //
+            callForEachChild(node, functor);     //
+        });
+}
+
+void BaseXmlParser::callIfNodeExist(const QDomNode &parent, const QString &tagName, //
+    const std::function<void(const QDomNode &node)> &functor)
+{
     auto node = parent.firstChildElement(tagName);
     if (!node.isNull())
+        functor(node);
+}
+
+void BaseXmlParser::callForEachChild(const QDomNode &parent, const std::function<void(const QDomNode &node)> &functor)
+{
+    auto child = parent.firstChild();
+    while (!child.isNull())
     {
-        auto child = node.firstChild();
-        while (!child.isNull())
-        {
-            if (!child.isComment() && child.isElement())
-            {
-                functor(child);
-            }
-            child = child.nextSibling();
-        }
+        if (!child.isComment() && child.isElement())
+            functor(child);
+        child = child.nextSibling();
     }
 }
 

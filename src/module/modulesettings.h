@@ -27,7 +27,7 @@ using SignalMap = QHash<quint32, Signal>;
 
 /// Section settings ///
 
-// key (int) - id вкладки
+// key (quint32) - id вкладки
 // value (QString) - имя вкладки
 using TabsMap = QHash<quint32, QString>; ///< Хранит узлы <tab> секции <section-tabs>
 
@@ -49,9 +49,9 @@ struct SGroup
     QList<MWidget> widgets; ///< узлы <mwidget>
 };
 
-// key (int) - id вкладки
+// key (quint32) - id вкладки
 // value (список SGroup) - список SGroup
-using SGMap = QHash<int, QList<SGroup>>;
+using SGMap = QHash<quint32, QList<SGroup>>;
 
 /// \brief Структура для хранения информации узла <section> из XML
 struct Section
@@ -73,7 +73,8 @@ struct Alarm
 
 using HighlightMap = QMultiMap<quint32, quint32>;
 // Info: DataTypes::Alarm - deprecated [see template.xml]
-using AlarmMap = QMap<Modules::AlarmType, QList<Alarm>>; ///< Хранит узлы <item> секции <alarms>
+using AlarmKey = std::pair<bool, Modules::AlarmType>; ///< bool - isBase, Modules::AlarmType - тип сигнализации
+using AlarmMap = QHash<AlarmKey, QList<Alarm>>;       ///< Хранит узлы <item> секции <alarms>
 
 /// Journals settings ///
 
@@ -85,7 +86,7 @@ struct Journal
 };
 
 // Info: DataTypes::JournalDesc - deprecated [see template.xml]
-using JourMap = QMap<Modules::JournalType, QList<Journal>>; ///< Хранит узлы <item> секции <journals>
+using JourMap = QHash<Modules::JournalType, QList<Journal>>; ///< Хранит узлы <item> секции <journals>
 
 /// Modbus settings ///
 

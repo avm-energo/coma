@@ -164,8 +164,8 @@ config::itemVariant S2XmlParser::parseWidget(const QDomElement &widgetNode)
     if (className.isEmpty())
     {
         auto widgetGroup = parseNumFromNode<int>(widgetNode, tags::group);
-        const auto description = parseSting(widgetNode, tags::string);
-        const auto toolTip = parseSting(widgetNode, tags::tooltip);
+        const auto description = parseString(widgetNode, tags::string);
+        const auto toolTip = parseString(widgetNode, tags::tooltip);
         const auto items = parseStringArray(widgetNode);
 
         switch (type.hash())
@@ -209,9 +209,7 @@ config::itemVariant S2XmlParser::parseWidget(const QDomElement &widgetNode)
         }
     }
     else
-    {
         return std::move(parseItem(widgetNode, className, type));
-    }
 }
 
 /// \brief Парсинг всех нод <record> файла s2files.xml

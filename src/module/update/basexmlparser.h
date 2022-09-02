@@ -9,7 +9,10 @@ namespace tags
 constexpr auto str_arr = "string-array";
 constexpr auto name = "name";
 constexpr auto id = "id";
+constexpr auto widget = "widget";
 constexpr auto count = "count";
+constexpr auto type = "type";
+constexpr auto tooltip = "toolTip";
 }
 
 class BaseXmlParser : public QObject
@@ -19,8 +22,11 @@ public:
     explicit BaseXmlParser(QObject *parent = nullptr);
 
 protected:
-    const QStringList parseStringArray(const QDomElement &node) const;
-    const QString parseSting(const QDomNode &node, const QString &tagName) const;
+    const QStringList parseStringArray(const QDomNode &node) const;
+    const QString parseString(const QDomNode &node, const QString &tagName) const;
+    void callIfNodeExist(const QDomNode &parent, const QString &tagName, //
+        const std::function<void(const QDomNode &node)> &functor);
+    void callForEachChild(const QDomNode &parent, const std::function<void(const QDomNode &node)> &functor);
     void parseNode(const QDomNode &parent, const QString &tagName, //
         const std::function<void(const QDomNode &node)> &functor);
 

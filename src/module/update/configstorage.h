@@ -27,8 +27,11 @@ public:
     const config::widgetMap &getWidgetMap() const;
 
 public slots:
+    // S2 files slots
     void typeDataReceive(const quint16 &id, const ctti::unnamed_type_id_t &type);
     void widgetDataReceive(const quint16 &id, const config::itemVariant &widget);
+
+    // Module files slots
 };
 
 #endif // CONFIGSTORAGE_H
