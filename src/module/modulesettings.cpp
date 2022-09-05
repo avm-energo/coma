@@ -2,6 +2,7 @@
 
 ModuleSettings::ModuleSettings() : curConfigIndex(0)
 {
+    // mConfigs[curConfigIndex] = ModuleTypes::ConfigList();
 }
 
 void ModuleSettings::startNewConfig()
@@ -16,7 +17,12 @@ void ModuleSettings::appendToCurrentConfig(DataTypes::RecordPair pair)
     mConfigs[curConfigIndex].append(pair);
 }
 
-ModuleTypes::ConfigMap &ModuleSettings::getConfigs()
+ModuleTypes::ConfigList &ModuleSettings::getConfigs()
+{
+    return mConfigs[curConfigIndex];
+}
+
+const ModuleTypes::ConfigMap &ModuleSettings::getConfigMap() const
 {
     return mConfigs;
 }

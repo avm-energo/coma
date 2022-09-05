@@ -88,16 +88,12 @@ bool NewModule::loadS2Settings()
         if (!content.isNull())
         {
             auto mS2Parser = new S2XmlParser(this);
-            auto conn1 = QObject::connect(mS2Parser, &S2XmlParser::typeDataSending,   //
-                mStorage, &ConfigStorage::typeDataReceive);                           //
-            auto conn2 = QObject::connect(mS2Parser, &S2XmlParser::widgetDataSending, //
-                mStorage, &ConfigStorage::widgetDataReceive);                         //
+            QObject::connect(mS2Parser, &S2XmlParser::typeDataSending, mStorage, &ConfigStorage::typeDataReceive);
+            QObject::connect(mS2Parser, &S2XmlParser::widgetDataSending, mStorage, &ConfigStorage::widgetDataReceive);
             mS2Parser->parse(content);
             // Успешно распарсили s2files.xml
             mStorage->setS2Status(true);
             mS2Parser->deleteLater();
-            QObject::disconnect(conn1);
-            QObject::disconnect(conn2);
             return true;
         }
         else
@@ -112,9 +108,22 @@ bool NewModule::loadModuleSettings(const QString &filename, const quint16 &typeB
     auto content = getFileContent(filename);
     if (!content.isNull())
     {
-        // TODO: Потом закомментировать при внедрении ModuleSettings
-        // XmlParser::traverseNode(content, m_settings.get(), m_gsettings.config);
         auto moduleParser = new ModuleXmlParser(this);
+        QObject::connect(moduleParser, &ModuleXmlParser::startNewConfig, mStorage, &ConfigStorage::startNewConfig);
+        QObject::connect(moduleParser, &ModuleXmlParser::signalDataSending, //
+            mStorage, &ConfigStorage::signalDataReceive);
+        QObject::connect(moduleParser, &ModuleXmlParser::tabDataSending, mStorage, &ConfigStorage::tabDataReceive);
+        QObject::connect(moduleParser, &ModuleXmlParser::sectionDataSending, //
+            mStorage, &ConfigStorage::sectionDataReceive);
+        QObject::connect(moduleParser, &ModuleXmlParser::alarmDataSending, mStorage, &ConfigStorage::alarmDataReceive);
+        QObject::connect(moduleParser, &ModuleXmlParser::jourDataSending, mStorage, &ConfigStorage::jourDataReceive);
+        QObject::connect(moduleParser, &ModuleXmlParser::modbusDataSending, //
+            mStorage, &ConfigStorage::modbusDataReceive);
+        QObject::connect(moduleParser, &ModuleXmlParser::protocomDataSending, //
+            mStorage, &ConfigStorage::protocomDataReceive);
+        QObject::connect(moduleParser, &ModuleXmlParser::iecDataSending, mStorage, &ConfigStorage::iecDataReceive);
+        QObject::connect(moduleParser, &ModuleXmlParser::configDataSending, //
+            mStorage, &ConfigStorage::configDataReceive);
         moduleParser->parse(content, typeB, typeM);
         moduleParser->deleteLater();
         return true;

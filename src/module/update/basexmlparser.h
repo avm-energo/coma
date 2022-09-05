@@ -13,6 +13,7 @@ constexpr auto widget = "widget";
 constexpr auto count = "count";
 constexpr auto type = "type";
 constexpr auto tooltip = "toolTip";
+constexpr auto string = "string";
 }
 
 class BaseXmlParser : public QObject

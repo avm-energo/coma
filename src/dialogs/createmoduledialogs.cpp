@@ -32,7 +32,7 @@ void CreateModuleDialogs::addDialogToList(UDialog *dlg, const QString &caption, 
 void CreateModuleDialogs::CreateConfigDialogs()
 {
     using ConfigHash = QHash<int, ModuleTypes::ConfigList>;
-    auto config = m_settings.getConfigs();
+    auto config = m_settings.getConfigMap();
     for (auto it = config.cbegin(); it != config.cend(); ++it)
     {
         QString indexStr = QString::number(it.key());

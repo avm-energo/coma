@@ -53,7 +53,7 @@ bool ModuleXmlParser::isCorrectModule(const QDomElement &moduleNode, const quint
 void ModuleXmlParser::parseSignal(const QDomNode &sigNode)
 {
     auto id = parseNumFromNode<quint32>(sigNode, tags::id);
-    auto addr = parseNumFromNode<quint64>(sigNode, tags::addr);
+    auto addr = parseNumFromNode<quint64>(sigNode, tags::start_addr);
     auto count = parseNumFromNode<quint16>(sigNode, tags::count);
     emit signalDataSending(id, addr, count);
 }
@@ -67,32 +67,68 @@ void ModuleXmlParser::parseSTab(const QDomNode &sTabNode)
 
 void ModuleXmlParser::parseSection(const QDomNode &sectionNode)
 {
+    using namespace ModuleTypes;
     auto secHeader = sectionNode.toElement().attribute(tags::header, "");
-    callForEachChild(sectionNode, [this, &secHeader](const QDomNode &sgroupNode) {
+    SGMap sgmap;
+    callForEachChild(sectionNode, [&](const QDomNode &sgroupNode) {
+        SGroup sgroup;
         auto sgroupElem = sgroupNode.toElement();
         auto sgroupHeader = sgroupElem.attribute(tags::header, "");
-        auto sgroupTab = sgroupElem.attribute(tags::tab, "");
+        auto sgroupTab = sgroupElem.attribute(tags::tab, "").toUInt();
         callForEachChild(sgroupNode, [&](const QDomNode &mwidgetNode) {
             auto mwidgetDesc = mwidgetNode.toElement().attribute(tags::desc, "");
-            auto addr = parseNumFromNode<quint32>(mwidgetNode, tags::addr);
+            auto addr = parseNumFromNode<quint32>(mwidgetNode, tags::start_addr);
             auto count = parseNumFromNode<quint32>(mwidgetNode, tags::count);
             count = (count == 0) ? 1 : count;
             auto tooltip = parseString(mwidgetNode, tags::tooltip);
             auto itemList = parseStringArray(mwidgetNode);
-            ModuleTypes::MWidget mwidget { mwidgetDesc, addr, count, tooltip, itemList };
-            emit sectionDataSending(mwidget, sgroupTab, sgroupHeader, secHeader);
+            sgroup.tabId = sgroupTab;
+            sgroup.name = sgroupHeader;
+            sgroup.widgets.push_back({ mwidgetDesc, addr, count, tooltip, itemList });
         });
+        sgmap[sgroupTab].push_back(sgroup);
     });
+    emit sectionDataSending(sgmap, secHeader);
 }
 
 void ModuleXmlParser::parseAlarms(const QDomNode &alarmsNode)
 {
-    parseNode(alarmsNode, tags::crit, [this](const QDomNode &alarmsNode) {});
+    parseNode(alarmsNode, tags::crit, [this](const QDomNode &alarmNode) { //
+        parseAlarm(alarmNode, Modules::AlarmType::Critical);
+    });
+    parseNode(alarmsNode, tags::warn, [this](const QDomNode &alarmNode) { //
+        parseAlarm(alarmNode, Modules::AlarmType::Warning);
+    });
+    parseNode(alarmsNode, tags::info, [this](const QDomNode &alarmNode) { //
+        parseAlarm(alarmNode, Modules::AlarmType::Info);
+    });
 }
 
-void ModuleXmlParser::parseAlarm(const QDomNode &alarmNode)
+void ModuleXmlParser::parseAlarm(const QDomNode &alarmNode, const Modules::AlarmType &aType)
 {
-    ;
+    auto addr = parseNumFromNode<quint32>(alarmNode, tags::addr);
+    auto desc = parseString(alarmNode, tags::string);
+    emit alarmDataSending(isBase, aType, addr, desc);
+}
+
+void ModuleXmlParser::parseJournals(const QDomNode &joursNode)
+{
+    parseNode(joursNode, tags::work, [this](const QDomNode &jourNode) { //
+        parseJournal(jourNode, Modules::JournalType::Work);
+    });
+    parseNode(joursNode, tags::meas, [this](const QDomNode &jourNode) { //
+        parseJournal(jourNode, Modules::JournalType::Meas);
+    });
+}
+
+void ModuleXmlParser::parseJournal(const QDomNode &jourNode, const Modules::JournalType &jType)
+{
+    quint32 addr = 0;
+    if (jType == Modules::JournalType::Work)
+        addr = parseNumFromNode<quint32>(jourNode, tags::addr);
+    auto tag = (jType == Modules::JournalType::Meas) ? tags::header : tags::desc;
+    auto desc = parseString(jourNode, tag);
+    emit jourDataSending(jType, addr, desc);
 }
 
 void ModuleXmlParser::parseModbus(const QDomNode &modbusNode)
@@ -136,27 +172,11 @@ void ModuleXmlParser::parseConfig(const QDomNode &configNode)
 
 void ModuleXmlParser::parseResources(const QDomElement &resNode)
 {
-    /*
-    auto sectionsNode = resNode.firstChildElement(tags::sections);
-    if (!sectionsNode.isNull())
-    {
-        ;
-    }
-    auto alarmsNode = resNode.firstChildElement(tags::alarms);
-    if (!alarmsNode.isNull())
-    {
-        ;
-    }
-    auto journalsNode = resNode.firstChildElement(tags::jours);
-    if (!journalsNode.isNull())
-    {
-        ;
-    }
-    */
     parseNode(resNode, tags::sigs, [this](const QDomNode &sigNode) { parseSignal(sigNode); });
     parseNode(resNode, tags::stabs, [this](const QDomNode &sTabNode) { parseSTab(sTabNode); });
     parseNode(resNode, tags::sections, [this](const QDomNode &sectionNode) { parseSection(sectionNode); });
-
+    callIfNodeExist(resNode, tags::alarms, [this](const QDomNode &alarmsNode) { parseAlarms(alarmsNode); });
+    callIfNodeExist(resNode, tags::jours, [this](const QDomNode &joursNode) { parseJournals(joursNode); });
     parseNode(resNode, tags::modbus, [this](const QDomNode &modbusNode) { parseModbus(modbusNode); });
     parseNode(resNode, tags::protocom, [this](const QDomNode &protocomNode) { parseProtocom(protocomNode); });
     parseNode(resNode, tags::iec, [this](const QDomNode &iecNode) { parseIec(iecNode); });
@@ -165,6 +185,7 @@ void ModuleXmlParser::parseResources(const QDomElement &resNode)
 
 void ModuleXmlParser::parse(const QDomNode &content, const quint16 &typeB, const quint16 &typeM)
 {
+    emit startNewConfig();
     isBase = (typeB == 0) ? false : true;
     auto moduleNode = content.firstChildElement(tags::module);
     if (!moduleNode.isNull())

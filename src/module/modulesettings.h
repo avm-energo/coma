@@ -119,7 +119,7 @@ struct IecItem
     quint32 signalId;  ///< узел <signal-id>
     quint16 sigType;   ///< узел <sig-type>
     quint16 transType; ///< узел <trans-type>
-    quint16 sigGrioup; ///< узел <sig-group>
+    quint16 sigGroup;  ///< узел <sig-group>
 };
 
 using IecList = QList<IecItem>; ///< Хранит узлы <group> секции <iec60870>
@@ -133,7 +133,8 @@ public:
     void startNewConfig();
     void appendToCurrentConfig(DataTypes::RecordPair pair);
 
-    ModuleTypes::ConfigMap &getConfigs();
+    ModuleTypes::ConfigList &getConfigs();
+    const ModuleTypes::ConfigMap &getConfigMap() const;
     ModuleTypes::SignalMap &getSignals();
     ModuleTypes::TabsMap &getTabs();
     ModuleTypes::SectionList &getSections();
@@ -156,7 +157,7 @@ private:
     ModuleTypes::ProtocomList mProtocom;
     ModuleTypes::IecList mIec;
 
-    int curConfigIndex;
+    quint32 curConfigIndex;
 };
 
 #endif // MODULESETTINGS_H

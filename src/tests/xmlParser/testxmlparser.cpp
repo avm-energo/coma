@@ -3,6 +3,18 @@
 #include "testdata.h"
 #include "testmodule.h"
 
+void printModuleSettings(const ModuleSettings &mSettings)
+{
+    auto &config = mSettings.getConfigMap();
+    qDebug() << "mapSize: " << config.size();
+    for (auto it = config.cbegin(); it != config.cend(); ++it)
+    {
+        auto &key = it.key();
+        auto &val = it.value();
+        qDebug() << "key: " << key << " value: " << val.size();
+    }
+}
+
 void TestModule::TestS2Parsing()
 {
     Modules::StartupInfoBlock bsi;
@@ -11,5 +23,7 @@ void TestModule::TestS2Parsing()
     bsi.Fwver = StdFunc::StrToVer(version::avma284);
     auto mModule = new NewModule(bsi, this);
     auto state = mModule->loadSettings();
-    QCOMPARE(state, false);
+    const auto &mSettings = ConfigStorage::GetInstance().getModuleSettings();
+    printModuleSettings(mSettings);
+    QCOMPARE(state, true);
 }
