@@ -3,23 +3,23 @@
 #include "modelfabric.h"
 
 const std::map<QString, ModelType> XmlModel::types {
-    { tags::res, ModelType::Resources },       //
-    { tags::sigs, ModelType::Signals },        //
-    { tags::tabs, ModelType::SectionTabs },    //
-    { tags::sections, ModelType::Sections },   //
-    { tags::section, ModelType::Section },     //
-    { tags::sgroup, ModelType::SGroup },       //
-    { tags::alarms, ModelType::Alarms },       //
-    { tags::critical, ModelType::AlarmsCrit }, //
-    { tags::warning, ModelType::AlarmsWarn },  //
-    { tags::info, ModelType::AlarmsInfo },     //
-    { tags::journals, ModelType::Journals },   //
-    { tags::work, ModelType::WorkJours },      //
-    { tags::meas, ModelType::MeasJours },      //
-    { tags::modbus, ModelType::Modbus },       //
-    { tags::protocom, ModelType::Protocom },   //
-    { tags::iec60870, ModelType::IEC60870 },   //
-    { tags::config, ModelType::Config }        //
+    { tags::res, ModelType::Resources },     //
+    { tags::sigs, ModelType::Signals },      //
+    { tags::tabs, ModelType::SectionTabs },  //
+    { tags::sections, ModelType::Sections }, //
+    { tags::section, ModelType::Section },   //
+    { tags::sgroup, ModelType::SGroup },     //
+    { tags::alarms, ModelType::Alarms },     //
+    { tags::crit, ModelType::AlarmsCrit },   //
+    { tags::warn, ModelType::AlarmsWarn },   //
+    { tags::info, ModelType::AlarmsInfo },   //
+    { tags::journals, ModelType::Journals }, //
+    { tags::work, ModelType::WorkJours },    //
+    { tags::meas, ModelType::MeasJours },    //
+    { tags::modbus, ModelType::Modbus },     //
+    { tags::protocom, ModelType::Protocom }, //
+    { tags::iec, ModelType::IEC60870 },      //
+    { tags::config, ModelType::Config }      //
 };
 
 const std::map<ModelType, QStringList> XmlModel::headers {

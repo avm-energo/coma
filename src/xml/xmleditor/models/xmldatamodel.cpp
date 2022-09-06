@@ -27,9 +27,9 @@ std::tuple<QString, QString, std::function<void(QDomDocument &, QDomElement &, i
                 makeElement(doc, item, tags::name, data(index(row, 1)));
             } };
     case ModelType::AlarmsCrit:
-        return { tags::critical, tags::item, alarmHelper };
+        return { tags::crit, tags::item, alarmHelper };
     case ModelType::AlarmsWarn:
-        return { tags::warning, tags::item, alarmHelper };
+        return { tags::warn, tags::item, alarmHelper };
     case ModelType::AlarmsInfo:
         return { tags::info, tags::item, alarmHelper };
     case ModelType::WorkJours:
@@ -58,7 +58,7 @@ std::tuple<QString, QString, std::function<void(QDomDocument &, QDomElement &, i
                 makeElement(doc, item, tags::sig_id, data(index(row, 1)));
             } };
     case ModelType::IEC60870:
-        return { tags::iec60870, tags::group, //
+        return { tags::iec, tags::group, //
             [&](auto &doc, auto &item, auto &row) {
                 makeElement(doc, item, tags::sig_id, data(index(row, 0)));
                 makeElement(doc, item, tags::sig_type, data(index(row, 1)));
@@ -126,15 +126,15 @@ void XmlDataModel::parseNode(QDomNode &node, int &row)
     }
     else if (mType == ModelType::IEC60870)
     {
-        parseTag(node, "signal-id", row, 0);  // ID сигнала
-        parseTag(node, "sig-type", row, 1);   // Тип сигнала
-        parseTag(node, "trans-type", row, 2); // Тип передачи
-        parseTag(node, "sig-group", row, 3);  // Группа
+        parseTag(node, tags::sig_id, row, 0);     // ID сигнала
+        parseTag(node, tags::sig_type, row, 1);   // Тип сигнала
+        parseTag(node, tags::trans_type, row, 2); // Тип передачи
+        parseTag(node, tags::sig_group, row, 3);  // Группа
     }
     else
     {
-        parseTag(node, "id", row, 0);           // ID
-        parseTag(node, "defaultValue", row, 1); // Значение по умолчанию
+        parseTag(node, tags::id, row, 0);      // ID
+        parseTag(node, tags::def_val, row, 1); // Значение по умолчанию
     }
 }
 

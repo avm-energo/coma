@@ -4,8 +4,6 @@
 
 #include <QtXml>
 
-// QMap<QString, quint16> XmlConfigParser::NameIdMap = QMap<QString, quint16>();
-
 void XmlConfigParser::ParseS2ConfigToMap(QMap<QString, quint16> &map)
 {
     QDir homeDir(StdFunc::GetSystemHomeDir());

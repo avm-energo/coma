@@ -105,7 +105,7 @@ void S2XmlParser::groupParse(delegate::Group &group, const QDomElement &widgetNo
     group.count = parseNumFromNode<quint32>(widgetNode, tags::count);
     // В оригинальном коде items для delegate::QComboBox присваивается переменной
     // model, а не items (см. функцию S2XmlParser::comboBoxParse)
-    if constexpr (!tags::is_comboBox<decltype(group)>)
+    if constexpr (!is_comboBox<decltype(group)>)
         group.items = items;
 }
 

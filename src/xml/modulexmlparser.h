@@ -4,43 +4,6 @@
 #include "../module/modulesettings.h"
 #include "basexmlparser.h"
 
-namespace tags
-{
-constexpr auto module = "module";
-constexpr auto resources = "resources";
-constexpr auto sigs = "signals";
-constexpr auto stabs = "section-tabs";
-constexpr auto sections = "sections";
-constexpr auto alarms = "alarms";
-constexpr auto jours = "journals";
-constexpr auto modbus = "modbus";
-constexpr auto protocom = "protocom";
-constexpr auto iec = "iec60870";
-constexpr auto config = "config";
-
-constexpr auto mtypeb = "mtypeb";
-constexpr auto mtypem = "mtypem";
-constexpr auto version = "version";
-constexpr auto addr = "addr";
-constexpr auto start_addr = "start-addr";
-constexpr auto header = "header";
-constexpr auto tab = "tab";
-constexpr auto desc = "desc";
-constexpr auto crit = "critical";
-constexpr auto warn = "warning";
-constexpr auto info = "info";
-constexpr auto work = "work";
-constexpr auto meas = "meas";
-constexpr auto sig_id = "signal-id";
-constexpr auto reg_type = "reg-type";
-constexpr auto block = "block";
-constexpr auto sig_type = "sig-type";
-constexpr auto trans_type = "trans-type";
-constexpr auto sig_group = "sig-group";
-constexpr auto def_val = "defaultValue";
-constexpr auto visibility = "visibility";
-}
-
 class ModuleXmlParser : public BaseXmlParser
 {
     Q_OBJECT

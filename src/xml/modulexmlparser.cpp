@@ -173,10 +173,10 @@ void ModuleXmlParser::parseConfig(const QDomNode &configNode)
 void ModuleXmlParser::parseResources(const QDomElement &resNode)
 {
     parseNode(resNode, tags::sigs, [this](const QDomNode &sigNode) { parseSignal(sigNode); });
-    parseNode(resNode, tags::stabs, [this](const QDomNode &sTabNode) { parseSTab(sTabNode); });
+    parseNode(resNode, tags::tabs, [this](const QDomNode &sTabNode) { parseSTab(sTabNode); });
     parseNode(resNode, tags::sections, [this](const QDomNode &sectionNode) { parseSection(sectionNode); });
     callIfNodeExist(resNode, tags::alarms, [this](const QDomNode &alarmsNode) { parseAlarms(alarmsNode); });
-    callIfNodeExist(resNode, tags::jours, [this](const QDomNode &joursNode) { parseJournals(joursNode); });
+    callIfNodeExist(resNode, tags::journals, [this](const QDomNode &joursNode) { parseJournals(joursNode); });
     parseNode(resNode, tags::modbus, [this](const QDomNode &modbusNode) { parseModbus(modbusNode); });
     parseNode(resNode, tags::protocom, [this](const QDomNode &protocomNode) { parseProtocom(protocomNode); });
     parseNode(resNode, tags::iec, [this](const QDomNode &iecNode) { parseIec(iecNode); });
@@ -192,7 +192,7 @@ void ModuleXmlParser::parse(const QDomNode &content, const quint16 &typeB, const
     {
         if (isCorrectModule(moduleNode, typeB, typeM))
         {
-            auto resNode = moduleNode.firstChildElement(tags::resources);
+            auto resNode = moduleNode.firstChildElement(tags::res);
             if (!resNode.isNull())
                 parseResources(resNode);
         }

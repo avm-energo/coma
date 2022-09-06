@@ -1,19 +1,12 @@
 #ifndef MASTERMODEL_H
 #define MASTERMODEL_H
 
+#include "../../xmltags.h"
 #include "ieditormodel.h"
 
 #include <QtXml>
 
 constexpr int FilenameDataRole = 0x0107; ///< Роль для хранения имени файла
-
-namespace tags
-{
-constexpr char module[] = "module";
-constexpr char mtypeb[] = "mtypeb";
-constexpr char mtypem[] = "mtypem";
-constexpr char version[] = "version";
-}
 
 class MasterModel : public IEditorModel
 {

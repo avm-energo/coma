@@ -4,24 +4,7 @@
 #include "../widgets/delegate_common.h"
 #include "basexmlparser.h"
 
-#include <type_traits>
-
-namespace tags
-{
-constexpr auto s2files = "s2files";
-constexpr auto record = "record";
-constexpr auto class_ = "class";
-constexpr auto group = "group";
-constexpr auto min = "min";
-constexpr auto max = "max";
-constexpr auto decimals = "decimals";
-constexpr auto field = "field";
-constexpr auto data = "data";
-constexpr auto bitfield = "bitfield";
-constexpr auto parent = "parent";
-
 template <typename T> constexpr auto is_comboBox = std::is_base_of_v<delegate::QComboBox, T>;
-}
 
 class S2XmlParser : public BaseXmlParser
 {

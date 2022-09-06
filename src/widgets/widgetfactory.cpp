@@ -1,7 +1,6 @@
 #include "widgetfactory.h"
 
 #include "../models/comboboxdelegate.h"
-#include "../module/configstorage.h"
 #include "../module/module_kxx.h"
 #include "../s2/configv.h"
 #include "../s2/s2.h"
@@ -104,8 +103,9 @@ QWidget *WidgetFactory::createWidget(quint16 key, QWidget *parent)
     if (key == S2::GetIdByName("timezone"))
         qWarning() << "mTimezone";
     QWidget *widget = nullptr;
-    auto search = m_widgetMap.find(key);
-    if (search == m_widgetMap.end())
+    auto &widgetMap = ConfigStorage::GetInstance().getWidgetMap();
+    auto search = widgetMap.find(key);
+    if (search == widgetMap.end())
     {
         qWarning() << "Not found" << key;
         return widget;
@@ -219,8 +219,9 @@ QWidget *WidgetFactory::createWidget(quint16 key, QWidget *parent)
 bool WidgetFactory::fillBack(quint16 key, const QWidget *parent)
 {
     bool status = false;
-    auto search = m_widgetMap.find(key);
-    if (search == m_widgetMap.end())
+    auto &widgetMap = ConfigStorage::GetInstance().getWidgetMap();
+    auto search = widgetMap.find(key);
+    if (search == widgetMap.end())
     {
         qWarning() << "Not found" << key;
         return status;

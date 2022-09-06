@@ -2,21 +2,10 @@
 #define BASEXMLPARSER_H
 
 #include "../ctti/type_id.hpp"
+#include "xmltags.h"
 
 #include <QObject>
 #include <QtXml>
-
-namespace tags
-{
-constexpr auto str_arr = "string-array";
-constexpr auto name = "name";
-constexpr auto id = "id";
-constexpr auto widget = "widget";
-constexpr auto count = "count";
-constexpr auto type = "type";
-constexpr auto tooltip = "toolTip";
-constexpr auto string = "string";
-}
 
 class BaseXmlParser : public QObject
 {
@@ -63,7 +52,7 @@ template <typename T> T BaseXmlParser::parseNum(const QDomElement &numNode)
     return T(0);
 }
 
-/// \brief Нахождение узла с указанным именем и парсинг его содержимого в указанное число по ссылке
+/// \brief Нахождение узла с указанным именем и парсинг его содержимого, возврат числа
 template <typename T> T BaseXmlParser::parseNumFromNode(const QDomNode &node, const QString &tagName)
 {
     auto numNode = node.firstChildElement(tagName);

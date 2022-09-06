@@ -8,7 +8,7 @@ BaseXmlParser::BaseXmlParser(QObject *parent) : QObject(parent)
 const QStringList BaseXmlParser::parseStringArray(const QDomNode &node) const
 {
     QStringList retList = {};
-    auto strArrNode = node.firstChildElement(tags::str_arr);
+    auto strArrNode = node.firstChildElement(tags::str_array);
     if (!strArrNode.isNull() && strArrNode.hasChildNodes())
     {
         const auto &nodes = strArrNode.childNodes();
