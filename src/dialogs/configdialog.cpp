@@ -19,11 +19,13 @@
 #include <QScrollArea>
 #include <QTextEdit>
 #include <set>
+
 namespace crypto
 {
 static constexpr char hash[] = "d93fdd6d1fb5afcca939fa650b62541d09dbcb766f41c39352dc75f348fb35dc";
 static constexpr char name[] = "confHash";
 }
+
 ConfigDialog::ConfigDialog(
     ConfigV *config, const QList<DataTypes::RecordPair> &defaultConfig, bool prereadConf, QWidget *parent)
     : UDialog(crypto::hash, crypto::name, parent)

@@ -10,9 +10,6 @@ set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-# set(CMAKE_GENERATOR "Ninja")
-# message("-- Generator is set to ${CMAKE_GENERATOR}")
-
 find_program(CONAN_FOUND "conan" NO_CACHE)
 if(CONAN_FOUND)
     set(CONAN_EXEC conan)
@@ -165,7 +162,6 @@ option(ENABLE_EMULATOR "Enable emulator interface" OFF)
 option(ENABLE_PVS "Enable PVS-Studio" OFF)
 option(BUILD_WITH_ALISE "Build with alise for AVTUK" OFF)
 
-
 if(CMAKE_BUILD_TYPE EQUAL "DEBUG")
   message(STATUS "debug mode")
   set(MODE_DIR Debug)
@@ -191,10 +187,7 @@ endif()
 
 include(${CMAKE_BINARY_DIR}/conan.cmake)
 
-
-
 if (ENABLE_PVS)
-
     if(NOT EXISTS "${CMAKE_BINARY_DIR}/PVS-Studio.cmake")
       message(STATUS "Downloading PVS-Studio.cmake from https://github.com/viva64/pvs-studio-cmake-examples")
       file(DOWNLOAD "https://raw.githubusercontent.com/viva64/pvs-studio-cmake-examples/master/PVS-Studio.cmake"
@@ -202,9 +195,7 @@ if (ENABLE_PVS)
                     EXPECTED_HASH SHA256=C53013A568A71CC4DBB10437256F16C027004B08ECA3DAF9911BAC08896B4DE7
                     TLS_VERIFY ON)
     endif()
-
     include(${CMAKE_BINARY_DIR}/PVS-Studio.cmake)
-
 endif()
 
 conan_cmake_autodetect(settings)
@@ -290,5 +281,4 @@ if (ENABLE_PVS)
         COMPILE_COMMANDS
         MODE GA:1,2
         LOG ${PROJECT_NAME}.err)
-
 endif()

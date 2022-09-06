@@ -35,7 +35,6 @@ template <typename T> QWidget *helper(const T &arg, QWidget *parent, quint16 key
         auto control = new IPCtrl(parent);
         control->setObjectName(QString::number(key));
         lyout->addWidget(control);
-
         break;
     }
     case ctti::unnamed_type_id<QCheckBox>().hash():
@@ -43,7 +42,6 @@ template <typename T> QWidget *helper(const T &arg, QWidget *parent, quint16 key
         auto checkbox = new QCheckBox(parent);
         checkbox->setObjectName(QString::number(key));
         lyout->addWidget(checkbox);
-
         break;
     }
     case ctti::unnamed_type_id<QLineEdit>().hash():
@@ -54,10 +52,8 @@ template <typename T> QWidget *helper(const T &arg, QWidget *parent, quint16 key
         lineEdit->setSizePolicy(sizePolicy);
         lineEdit->setObjectName(QString::number(key));
         lyout->addWidget(lineEdit);
-
         break;
     }
-
     default:
         qWarning() << "Type not found " << key;
         Q_ASSERT(false && "False type");
@@ -65,7 +61,6 @@ template <typename T> QWidget *helper(const T &arg, QWidget *parent, quint16 key
         widget = nullptr;
         break;
     }
-
     return widget;
 }
 
@@ -418,6 +413,7 @@ static QWidget *createModbusView(QWidget *parent)
 
     return tableView;
 }
+
 bool WidgetFactory::fillBackModbus(quint16 key, const QWidget *parent, ctti::unnamed_type_id_t type, quint16 parentKey)
 {
     auto tableView = parent->findChild<QTableView *>(WidgetFactory::hashedName(type, parentKey));
