@@ -7,6 +7,7 @@
 #include "../gen/stdfunc.h"
 #include "../gen/timefunc.h"
 #include "../module/board.h"
+#include "../module/configstorage.h"
 #include "../s2/configv.h"
 #include "../s2/s2.h"
 #include "../widgets/wd_func.h"
@@ -219,7 +220,7 @@ QWidget *widgetAt(QTabWidget *tabWidget, int index)
 
 delegate::WidgetGroup groupForId(quint16 id)
 {
-    const auto widgetMap = WidgetFactory::getWidgetMap();
+    auto &widgetMap = ConfigStorage::GetInstance().getWidgetMap();
     auto search = widgetMap.find(id);
     if (search == widgetMap.end())
     {
@@ -275,7 +276,7 @@ void ConfigDialog::SetupUI()
 void ConfigDialog::createTabs(QTabWidget *tabWidget)
 {
     std::set<delegate::WidgetGroup> currentCategories, intersection;
-    const auto categories = WidgetFactory::getCategoryMap();
+    auto &categories = ConfigStorage::GetInstance().getModuleSettings().getTabs();
     for (const auto &record : qAsConst(m_defaultValues))
     {
         auto group = groupForId(record.record.getId());
@@ -286,7 +287,7 @@ void ConfigDialog::createTabs(QTabWidget *tabWidget)
     {
         QGroupBox *subBox = nullptr;
 
-        subBox = new QGroupBox("Группа " + WidgetFactory::getCategory(group), this);
+        subBox = new QGroupBox("Группа " + categories.value(group), this);
         QVBoxLayout *subvlyout = new QVBoxLayout;
         subvlyout->setAlignment(Qt::AlignTop);
         subvlyout->setSpacing(0);
@@ -301,7 +302,7 @@ void ConfigDialog::createTabs(QTabWidget *tabWidget)
         scrollArea->setWidgetResizable(true);
         scrollArea->setWidget(subBox);
 
-        tabWidget->addTab(scrollArea, WidgetFactory::getCategory(group));
+        tabWidget->addTab(scrollArea, categories.value(group));
     }
 }
 

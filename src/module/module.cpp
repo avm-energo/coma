@@ -1,567 +1,127 @@
 #include "module.h"
 
-#include "../comaversion/comaversion.h"
-#include "../ctti/type_id.hpp"
-#include "../dialogs/fwuploaddialog.h"
-#include "../dialogs/infodialog.h"
-#include "../dialogs/journalsdialog.h"
-#include "../dialogs/timedialog.h"
+#include "../gen/error.h"
 #include "../gen/stdfunc.h"
-#include "../s2/s2.h"
-#include "../widgets/udialog.h"
-#include "../xml/xmlparser.h"
-#include "board.h"
-//#define XML_DEBUG
+#include "../xml/modulexmlparser.h"
+#include "../xml/s2xmlparser.h"
 
 #include <QDir>
-#include <QtXml>
+#include <QFile>
 
-constexpr char versionFile[] = "coma.ver";
-
-Module::Module(QObject *parent) : QObject(parent)
+NewModule::NewModule(const Modules::StartupInfoBlock &startupInfoBlock, QObject *parent)
+    : QObject(parent), sInfoBlock(startupInfoBlock), mStorage(&ConfigStorage::GetInstance())
 {
-    m_gsettings = { { &DataTypes::DataRecV::map, &WidgetFactory::m_widgetMap, &WidgetFactory::m_categoryMap }, {} };
 }
 
-void Module::createAlarm(AlarmWidget *aw)
+bool NewModule::isFileExist(const QString &filename)
 {
-    using namespace Modules;
+    auto dir = QDir(StdFunc::GetSystemHomeDir());
+    auto file = new QFile(dir.filePath(filename), this);
+    auto retVal = file->exists();
+    file->deleteLater();
+    return retVal;
+}
 
-    Q_ASSERT(aw->count() == 0);
-    AlarmStateAll *alarmStateAll = new AlarmStateAll;
-    alarmStateAll->setupUI(AVM::HthToolTip);
-    aw->addAlarm(alarmStateAll);
-    if (m_settings)
+QDomDocument NewModule::getFileContent(const QString &filename)
+{
+    QDomDocument doc;
+    auto dir = QDir(StdFunc::GetSystemHomeDir());
+    auto file = new QFile(dir.filePath(filename), this);
+    if (file->exists())
     {
-        if (settings()->alarms.contains(AlarmType::Warning))
+        if (file->open(QIODevice::ReadOnly))
         {
-            auto *alarm = new ModuleAlarm(settings()->alarms.value(AlarmType::Warning), settings()->alarmCount());
-            aw->addAlarm(alarm, tr("Предупредительная сигнализация"));
-        }
-        if (settings()->alarms.contains(AlarmType::Critical))
-        {
-            auto *alarm = new ModuleAlarm(settings()->alarms.value(AlarmType::Critical), settings()->alarmCount());
-            aw->addAlarm(alarm, tr("Аварийная сигнализация"));
-        }
-        if (settings()->alarms.contains(AlarmType::Base))
-        {
-            auto *alarm = new ModuleAlarm(
-                settings()->alarms.value(AlarmType::Base), settings()->alarms.value(AlarmType::Base).desc.count());
-            aw->addAlarm(alarm, tr("Базовая сигнализация"));
-        }
-        if (settings()->alarms.contains(AlarmType::Mezz))
-        {
-            auto *alarm = new ModuleAlarm(
-                settings()->alarms.value(AlarmType::Mezz), settings()->alarms.value(AlarmType::Mezz).desc.count());
-            aw->addAlarm(alarm, tr("Мезонинная сигнализация"));
-        }
-    }
-}
-
-QList<UDialog *> Module::dialogs()
-{
-    QList<UDialog *> list = m_dialogs;
-    return list;
-}
-
-void Module::addDialogToList(UDialog *dlg, const QString &caption, const QString &name)
-{
-    dlg->setObjectName(name);
-    dlg->setCaption(caption);
-    m_dialogs.append(dlg);
-}
-
-void Module::parentTWTabChanged(int index)
-{
-    if (index == -1 || m_dialogs.isEmpty())
-        return;
-
-    for (auto &dialog : m_dialogs)
-    {
-        //        if (dialog->updatesEnabled())
-        dialog->engine()->setUpdatesEnabled(false);
-    }
-
-    UDialog *udlg = m_dialogs.at(index);
-
-    udlg->setEnabled(true);
-    udlg->engine()->setUpdatesEnabled();
-    udlg->reqUpdate();
-}
-
-void Module::closeDialogs()
-{
-    while (!m_dialogs.isEmpty())
-        m_dialogs.takeFirst()->close();
-}
-
-ModuleSettingsDeprecated *Module::settings() const
-{
-    return m_settings.get();
-}
-
-bool Module::loadSettings(const Modules::StartupInfoBlock &startupInfoBlock, int interfaceType)
-{
-    if (!loadS2Settings())
-        return false;
-    if (!loadCheckSettings(m_gsettings.check))
-        return false;
-
-    m_settings = std::unique_ptr<ModuleSettingsDeprecated>(new ModuleSettingsDeprecated(startupInfoBlock));
-    m_settings->interfaceType = interfaceType;
-    auto mtypeb = Modules::BaseBoard(startupInfoBlock.MTypeB);
-    auto mtypem = Modules::MezzanineBoard(startupInfoBlock.MTypeM);
-    if (Board::isUSIO(mtypeb, mtypem))
-    {
-        if (!loadUsioSettings(startupInfoBlock))
-            return false;
-    }
-    auto moduleName = "avtuk-" + QString::number(startupInfoBlock.type(), 16);
-
-    if (!obtainXmlFile(moduleName))
-        return false;
-
-    QDir dir(resourceDirectory);
-    auto xmlFiles = dir.entryList(QDir::Files).filter(".xml");
-
-    auto result = std::find_if(xmlFiles.cbegin(), xmlFiles.cend(), [&module = moduleName](const QString &str) {
-        return str.contains(module, Qt::CaseInsensitive) && str.contains("avtuk", Qt::CaseInsensitive);
-    });
-    // load settings by entire module
-    if (result != std::cend(xmlFiles))
-    {
-        return loadMainSettings(dir.filePath(*result));
-    }
-    // load settings for every board of module
-    // especially for usio modules, load directly protocom settings
-    else
-        switch (interfaceType)
-        {
-        case Board::InterfaceType::USB:
-        {
+            QString errMsg = "";
+            auto line = 0, column = 0;
+            if (!doc.setContent(file, &errMsg, &line, &column))
             {
-                QString protocomBase("protocom-%0100");
-                protocomBase = protocomBase.arg(startupInfoBlock.MTypeB, 0, 16);
-                if (!obtainXmlFile(protocomBase))
-                    return false; // no valid protocom if no valid settings for base board
-                else if (!loadMainSettings(dir.filePath(protocomBase + ".xml")))
-                    qWarning() << Error::OpenError << protocomBase;
+                qCritical() << Error::WrongFileError << file->fileName();
+                qCritical() << errMsg << " Line: " << line << " Column: " << column;
             }
-            {
-                QString protocomMezz("protocom-00%1");
-                protocomMezz = protocomMezz.arg(startupInfoBlock.MTypeM, 0, 16);
-                if (!obtainXmlFile(protocomMezz))
-                    qDebug() << Error::OpenError << protocomMezz;
-                else if (!loadMainSettings(dir.filePath(protocomMezz + ".xml")))
-                    qWarning() << Error::OpenError << protocomMezz;
-            }
-            return true;
+            file->close();
         }
-        case Board::InterfaceType::Emulator:
-            return true;
-        }
-    return false;
-}
-
-bool Module::loadMainSettings(const QString &filename)
-{
-    assert(!filename.isEmpty());
-    QFile file(filename);
-    if (!file.open(QIODevice::ReadOnly))
-    {
-        qCritical() << Error::FileOpenError << file.fileName();
-        return false;
-    }
-    QDomDocument domDoc;
-    if (domDoc.setContent(&file))
-    {
-
-        QDomElement domElement = domDoc.documentElement();
-        try
-        {
-            XmlParser::traverseNode(domElement, m_settings.get(), m_gsettings.config);
-        } catch (const std::exception &e)
-        {
-            file.close();
-            qCritical() << e.what();
-            return false;
-        }
-
-        file.close();
-        return true;
+        else
+            qCritical() << Error::FileOpenError << file->fileName();
     }
     else
-    {
-        file.close();
-        qInfo() << Error::WrongFileError << file.fileName();
-        return false;
-    }
+        qCritical() << Error::DescError << file->fileName();
+
+    file->deleteLater();
+    return doc;
 }
 
-bool Module::obtainXmlFile(const QString &filename) const
+bool NewModule::loadSettings()
 {
-    QDir dir(resourceDirectory);
-    QStringList xmlFiles = dir.entryList(QDir::Files).filter(".xml");
-    qDebug() << xmlFiles;
-    for (const auto &xmlFile : qAsConst(xmlFiles))
+    if (loadS2Settings())
     {
-        if (xmlFile.contains(filename, Qt::CaseInsensitive))
-            return true;
+        auto moduleName = QString::number(sInfoBlock.type(), 16) + ".xml";
+        if (isFileExist(moduleName))
+        {
+            return loadModuleSettings(moduleName, sInfoBlock.MTypeB, sInfoBlock.MTypeM);
+        }
+        else
+        {
+            auto baseFile = QString::number(sInfoBlock.MTypeB, 16) + "00.xml";
+            auto mezzFile = "00" + QString::number(sInfoBlock.MTypeM, 16) + ".xml";
+            // TODO: парсить данные в разные структуры
+            auto isBaseSuccess = loadModuleSettings(baseFile, sInfoBlock.MTypeB, 0);
+            auto isMezzSuccess = loadModuleSettings(mezzFile, 0, sInfoBlock.MTypeM);
+            return (isBaseSuccess && isMezzSuccess);
+        }
     }
     return false;
 }
 
-quint64 Module::configVersion() const
+bool NewModule::loadS2Settings()
 {
-    QDir directory(StdFunc::GetSystemHomeDir());
-    QFile file;
-    file.setFileName(directory.filePath(versionFile));
-    if (!file.open(QIODevice::ReadOnly))
-        return 0;
-    bool status = false;
-    quint64 counter = file.readAll().toULongLong(&status);
-    if (!status)
-        return 0;
-    return counter;
-}
-
-bool Module::isConfigOutdated() const
-{
-    GitVersion version;
-    return configVersion() < version.getGitCounter();
-}
-
-void Module::eraseSettings() const
-{
-    QDir directory(StdFunc::GetSystemHomeDir());
-    auto files = directory.entryList(QDir::Files).filter(".xml");
-
-    files.push_back(versionFile);
-    // qDebug() << files;
-    for (const auto &filename : files)
+    // Если ещё не парсили s2files.xml
+    if (!mStorage->getS2Status())
     {
-        QFile file(directory.filePath(filename));
-        file.setPermissions(QFile::ReadOther | QFile::WriteOther);
-        if (!file.remove())
-            qDebug() << file;
-    }
-}
-
-void Module::putConfigVersion() const
-{
-    QDir directory(StdFunc::GetSystemHomeDir());
-    QFile file;
-    file.setFileName(directory.filePath(versionFile));
-    if (!file.open(QIODevice::WriteOnly))
-    {
-        qCritical() << Error::FileWriteError << versionFile;
-        return;
-    }
-    QTextStream out(&file);
-    GitVersion version;
-    out << version.getGitCounter();
-    file.close();
-}
-
-void Module::create(UniquePointer<Journals> jour)
-{
-    if (Board::GetInstance().interfaceType() != Board::InterfaceType::RS485)
-    {
-        Q_ASSERT(jour != nullptr);
-        addDialogToList(new JournalDialog(std::move(jour)), "Журналы");
-    }
-}
-
-void Module::createCommon()
-{
-    const auto &board = Board::GetInstance();
-    if (board.interfaceType() != Board::InterfaceType::RS485)
-        addDialogToList(new FWUploadDialog, "Загрузка ВПО");
-
-    addDialogToList(new InfoDialog, "О приборе", "info");
-}
-
-// #### C O N F I G ####
-
-bool Module::obtainXmlConfig(const QString &filename, QList<DataTypes::RecordPair> &config) const
-{
-    QDir dir(resourceDirectory);
-    auto xmlFiles = dir.entryList(QDir::Files).filter(".xml");
-    QDomDocument domDoc;
-    QFile file;
-    auto result = std::find_if(xmlFiles.cbegin(), xmlFiles.cend(),
-        [&filename](const QString &str) { return str.contains(filename, Qt::CaseInsensitive); });
-    if (result != std::cend(xmlFiles))
-        file.setFileName(dir.filePath(*result));
-
-    if (file.fileName().isEmpty())
-        return false;
-
-    if (!file.open(QIODevice::ReadOnly))
-    {
-        qCritical() << Error::FileOpenError << file.fileName();
-        return false;
-    }
-    if (domDoc.setContent(&file))
-    {
-
-        QDomElement domElement = domDoc.documentElement();
-        XmlParser::traverseNodeS2(domElement, config, m_gsettings.config.s2widgetMap);
-        file.close();
-        return true;
-    }
-    else
-    {
-        file.close();
-        qInfo() << Error::WrongFileError << file.fileName();
-        return false;
-    }
-}
-
-bool Module::loadUsioSettings(const Modules::StartupInfoBlock &startupInfoBlock)
-{
-    {
-        QString configGeneral("config-general");
-        if (!obtainXmlFile(configGeneral))
-            return false;
-        if (!obtainXmlConfig(configGeneral, m_settings->configSettings.general))
-            return false;
-    }
-    {
-        QString configBase("config-%0100");
-        configBase = configBase.arg(startupInfoBlock.MTypeB, 0, 16);
-        if (!obtainXmlFile(configBase))
-            qDebug() << Error::OpenError << configBase;
-        else if (!obtainXmlConfig(configBase, m_settings->configSettings.base))
-            qWarning() << Error::OpenError << configBase;
-    }
-    // if avtuk-3131/3535 ignore config for mezz board
-    if (startupInfoBlock.MTypeB != startupInfoBlock.MTypeM)
-    {
-        QString configMezz("config-00%1");
-        configMezz = configMezz.arg(startupInfoBlock.MTypeM, 0, 16);
-        if (!obtainXmlFile(configMezz))
-            qDebug() << Error::OpenError << configMezz;
-        else if (!obtainXmlConfig(configMezz, m_settings->configSettings.mezz))
-            qWarning() << Error::OpenError << configMezz;
-    }
-    {
-        QString alarmBase("alarm-%0100");
-        alarmBase = alarmBase.arg(startupInfoBlock.MTypeB, 0, 16);
-        if (!obtainXmlFile(alarmBase))
-            qDebug() << Error::OpenError << alarmBase;
-        else if (!obtainXmlAlarm(alarmBase, m_settings->alarms, Modules::AlarmType::Base))
-            qWarning() << Error::OpenError << alarmBase;
-    }
-    {
-        QString alarmMezz("alarm-00%1");
-        alarmMezz = alarmMezz.arg(startupInfoBlock.MTypeM, 0, 16);
-        if (!obtainXmlFile(alarmMezz))
-            qDebug() << Error::OpenError << alarmMezz;
-        else if (!obtainXmlAlarm(alarmMezz, m_settings->alarms, Modules::AlarmType::Mezz))
-            qWarning() << Error::OpenError << alarmMezz;
-    }
-
-    return true;
-}
-
-bool Module::loadS2Settings()
-{
-    constexpr auto name = "s2files.xml";
-    QDir dir(resourceDirectory);
-    qDebug() << dir;
-    QDomDocument domDoc;
-    QFile file;
-
-    file.setFileName(dir.filePath(name));
-    if (!file.exists())
-    {
-        qCritical() << Error::DescError;
-        qInfo() << dir.filePath(name) << StdFunc::GetSystemHomeDir() + name;
-        return false;
-    }
-    if (file.open(QIODevice::ReadOnly))
-    {
-        if (domDoc.setContent(&file))
+        constexpr auto filename = "s2files.xml";
+        auto content = getFileContent(filename);
+        if (!content.isNull())
         {
-            QDomElement domElement = domDoc.documentElement();
-            XmlParser::traverseNode(domElement, m_gsettings.config);
-            file.close();
+            auto mS2Parser = new S2XmlParser(this);
+            QObject::connect(mS2Parser, &S2XmlParser::typeDataSending, mStorage, &ConfigStorage::typeDataReceive);
+            QObject::connect(mS2Parser, &S2XmlParser::widgetDataSending, mStorage, &ConfigStorage::widgetDataReceive);
+            mS2Parser->parse(content);
+            // Успешно распарсили s2files.xml
+            mStorage->setS2Status(true);
+            mS2Parser->deleteLater();
             return true;
         }
-        file.close();
-        qInfo() << Error::WrongFileError << file.fileName();
-        return false;
+        else
+            return false;
     }
     else
-    {
-        qCritical() << Error::FileOpenError << file.fileName();
-        return false;
-    }
+        return true;
 }
 
-// #### C H E C K ####
-
-bool Module::obtainXmlCheck(const QString &filename, std::vector<CheckItem> &check) const
+bool NewModule::loadModuleSettings(const QString &filename, const quint16 &typeB, const quint16 &typeM)
 {
-    QDir dir(resourceDirectory);
-    auto xmlFiles = dir.entryList(QDir::Files).filter(".xml");
-    QDomDocument domDoc;
-    QFile file;
-    auto result = std::find_if(xmlFiles.cbegin(), xmlFiles.cend(),
-        [&filename](const QString &str) { return str.contains(filename, Qt::CaseInsensitive); });
-    if (result != std::cend(xmlFiles))
-        file.setFileName(dir.filePath(*result));
-
-    if (file.fileName().isEmpty())
-        return false;
-
-    if (!file.open(QIODevice::ReadOnly))
+    auto content = getFileContent(filename);
+    if (!content.isNull())
     {
-        qDebug() << Error::FileOpenError << file.fileName();
-        return false;
-    }
-    if (domDoc.setContent(&file))
-    {
-        QDomElement domElement = domDoc.documentElement();
-        XmlParser::traverseNodeCheck(domElement, check);
-        file.close();
+        auto moduleParser = new ModuleXmlParser(this);
+        QObject::connect(moduleParser, &ModuleXmlParser::startNewConfig, mStorage, &ConfigStorage::startNewConfig);
+        QObject::connect(moduleParser, &ModuleXmlParser::signalDataSending, //
+            mStorage, &ConfigStorage::signalDataReceive);
+        QObject::connect(moduleParser, &ModuleXmlParser::tabDataSending, mStorage, &ConfigStorage::tabDataReceive);
+        QObject::connect(moduleParser, &ModuleXmlParser::sectionDataSending, //
+            mStorage, &ConfigStorage::sectionDataReceive);
+        QObject::connect(moduleParser, &ModuleXmlParser::alarmDataSending, mStorage, &ConfigStorage::alarmDataReceive);
+        QObject::connect(moduleParser, &ModuleXmlParser::jourDataSending, mStorage, &ConfigStorage::jourDataReceive);
+        QObject::connect(moduleParser, &ModuleXmlParser::modbusDataSending, //
+            mStorage, &ConfigStorage::modbusDataReceive);
+        QObject::connect(moduleParser, &ModuleXmlParser::protocomDataSending, //
+            mStorage, &ConfigStorage::protocomDataReceive);
+        QObject::connect(moduleParser, &ModuleXmlParser::iecDataSending, mStorage, &ConfigStorage::iecDataReceive);
+        QObject::connect(moduleParser, &ModuleXmlParser::configDataSending, //
+            mStorage, &ConfigStorage::configDataReceive);
+        moduleParser->parse(content, typeB, typeM);
+        moduleParser->deleteLater();
         return true;
     }
     else
-    {
-        file.close();
-        qInfo() << Error::WrongFileError << file.fileName();
         return false;
-    }
-}
-
-bool Module::obtainXmlAlarm(const QString &filename, AlarmMap &alarmMap, Modules::AlarmType type) const
-{
-    QDir dir(resourceDirectory);
-    auto xmlFiles = dir.entryList(QDir::Files).filter(".xml");
-    QDomDocument domDoc;
-    QFile file;
-    auto result = std::find_if(xmlFiles.cbegin(), xmlFiles.cend(),
-        [&filename](const QString &str) { return str.contains(filename, Qt::CaseInsensitive); });
-    if (result != std::cend(xmlFiles))
-        file.setFileName(dir.filePath(*result));
-
-    if (file.fileName().isEmpty())
-        return false;
-
-    if (!file.open(QIODevice::ReadOnly))
-    {
-        qCritical() << Error::FileOpenError << file.fileName();
-        return false;
-    }
-    if (domDoc.setContent(&file))
-    {
-        QDomElement domElement = domDoc.documentElement();
-        alarmMap.insert(type, XmlParser::traverseNodeAlarm(domElement));
-        file.close();
-        return true;
-    }
-    else
-    {
-        file.close();
-        qInfo() << Error::WrongFileError << file.fileName();
-        return false;
-    }
-}
-
-bool Module::loadCheckSettings(CheckSettings &settings)
-{
-    constexpr auto name = "check.xml";
-    QDir dir(resourceDirectory);
-    QDomDocument domDoc;
-    QFile file;
-
-    file.setFileName(dir.filePath(name));
-    if (!file.exists())
-    {
-        qCritical() << Error::DescError;
-        qInfo() << dir.filePath(name) << StdFunc::GetSystemHomeDir() + name;
-        assert(false);
-        return false;
-    }
-
-    if (file.open(QIODevice::ReadOnly))
-    {
-        if (domDoc.setContent(&file))
-        {
-            const auto &board = Board::GetInstance();
-            auto typeb = static_cast<Modules::BaseBoard>(board.typeB());
-            auto typem = static_cast<Modules::MezzanineBoard>(board.typeM());
-            if (!loadCheckSettings(typeb, typem, settings.items))
-                return false;
-            auto domElement = domDoc.documentElement();
-            XmlParser::traverseNode(domElement, settings.categories);
-            file.close();
-            return true;
-        }
-        file.close();
-        qInfo() << Error::WrongFileError << file.fileName();
-        assert(false);
-    }
-    else
-    {
-        qCritical() << Error::FileOpenError << file.fileName();
-        assert(false);
-    }
-    return false;
-}
-
-bool Module::loadCheckSettings(const Modules::BaseBoard typeB, //
-    const Modules::MezzanineBoard typeM,                       //
-    std::vector<CheckItem> &check) const
-{
-    bool statusBase = true;
-    {
-        QString checkBase("check-%0100");
-        checkBase = checkBase.arg(typeB, 0, 16);
-        if (!obtainXmlFile(checkBase))
-        {
-            statusBase = false;
-            qWarning() << Error::OpenError << checkBase;
-        }
-        else if (!obtainXmlCheck(checkBase, check))
-        {
-            statusBase = false;
-            qWarning() << Error::OpenError << checkBase;
-        }
-    }
-    bool statusMezz = true;
-    {
-        QString checkMezz("check-00%1");
-        checkMezz = checkMezz.arg(typeM, 0, 16);
-        if (!obtainXmlFile(checkMezz))
-        {
-            statusMezz = false;
-            qWarning() << Error::OpenError << checkMezz;
-        }
-        else if (!obtainXmlCheck(checkMezz, check))
-        {
-            statusMezz = false;
-            qWarning() << Error::OpenError << checkMezz;
-        }
-    }
-    bool isCheckByBoard = statusBase || statusMezz;
-    if (!isCheckByBoard)
-    {
-        QString checkModule("check-");
-        checkModule.append(QString::number(quint8(typeB), 16));
-        checkModule.append(QString::number(quint8(typeM), 16));
-        if (!obtainXmlFile(checkModule))
-        {
-            qWarning() << Error::OpenError << checkModule;
-            return false;
-        }
-        else if (!obtainXmlCheck(checkModule, check))
-        {
-            qWarning() << Error::OpenError << checkModule;
-            return false;
-        }
-    }
-    return true;
 }

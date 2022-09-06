@@ -1,9 +1,8 @@
 #ifndef MODULEXMLPARSER_H
 #define MODULEXMLPARSER_H
 
-#include "../../ctti/type_id.hpp"
+#include "../module/modulesettings.h"
 #include "basexmlparser.h"
-#include "configstorage.h"
 
 namespace tags
 {

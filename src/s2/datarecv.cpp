@@ -1,22 +1,21 @@
 #include "datarecv.h"
 
+#include "../module/configstorage.h"
 #include "s2helper.h"
 
 #include <type_traits>
 
-DataTypes::ValueMap DataTypes::DataRecV::map;
-
 namespace DataTypes
 {
-DataRecV::DataRecV(const ValueMap &_map, const S2DataTypes::DataRec &record, const char *rawdata) : id(record.header.id)
+DataRecV::DataRecV(const S2DataTypes::DataRec &record, const char *rawdata) : id(record.header.id)
 {
     using namespace detail;
-
-    auto search = _map.map().find(id);
-    assert(search != _map.map().end());
+    auto &s2map = ConfigStorage::GetInstance().getS2Map();
+    auto search = s2map.find(id);
+    assert(search != s2map.end());
 
     // Exception inside ctor https://www.stroustrup.com/bs_faq2.html#ctor-exceptions
-    auto value = _map.map().at(record.header.id);
+    auto value = s2map.at(record.header.id);
     switch (value.hash())
     {
     case ctti::unnamed_type_id<BYTE>().hash():
@@ -139,16 +138,16 @@ DataRecV::DataRecV(const ValueMap &_map, const S2DataTypes::DataRec &record, con
     }
 }
 
-DataRecV::DataRecV(const ValueMap &_map, const unsigned _id, const QString &str) : id(_id)
+DataRecV::DataRecV(const unsigned _id, const QString &str) : id(_id)
 {
     using namespace detail;
-
-    auto search = _map.map().find(_id);
-    assert(search != _map.map().end());
+    auto &s2map = ConfigStorage::GetInstance().getS2Map();
+    auto search = s2map.find(_id);
+    assert(search != s2map.end());
     // return;
     // Exception inside ctor https://www.stroustrup.com/bs_faq2.html#ctor-exceptions
 
-    auto value = _map.map().at(_id);
+    auto value = s2map.at(_id);
     switch (value.hash())
     {
     case ctti::unnamed_type_id<BYTE>().hash():
@@ -222,15 +221,7 @@ DataRecV::DataRecV(const ValueMap &_map, const unsigned _id, const QString &str)
     }
 }
 
-DataRecV::DataRecV(const S2DataTypes::DataRec &record, const char *rawdata) : DataRecV(map, record, rawdata)
-{
-}
-
 DataRecV::DataRecV(const S2DataTypes::DataRec &record) : DataRecV(record, static_cast<const char *>(record.thedata))
-{
-}
-
-DataRecV::DataRecV(const unsigned _id, const QString &str) : DataRecV(map, _id, str)
 {
 }
 

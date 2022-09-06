@@ -1,6 +1,7 @@
 #include "widgetfactory.h"
 
 #include "../models/comboboxdelegate.h"
+#include "../module/configstorage.h"
 #include "../module/module_kxx.h"
 #include "../s2/configv.h"
 #include "../s2/s2.h"
@@ -10,9 +11,6 @@
 
 #include <QHeaderView>
 #include <QStandardItem>
-
-config::widgetMap WidgetFactory::m_widgetMap;
-categoryMap WidgetFactory::m_categoryMap;
 
 // forward declarations
 // helpers for create widget
@@ -311,8 +309,9 @@ QList<QStandardItem *> WidgetFactory::createItem(
     quint16 key, const DataTypes::BYTE_8t &value, [[maybe_unused]] const QWidget *parent)
 {
     QList<QStandardItem *> items {};
-    auto search = m_widgetMap.find(key);
-    if (search == m_widgetMap.end())
+    auto &widgetMap = ConfigStorage::GetInstance().getWidgetMap();
+    auto search = widgetMap.find(key);
+    if (search == widgetMap.end())
     {
         qWarning() << "Not found" << key;
         return items;

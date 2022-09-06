@@ -1,8 +1,7 @@
 #ifndef NEWXMLPARSER_H
 #define NEWXMLPARSER_H
 
-#include "../../ctti/type_id.hpp"
-#include "../../widgets/delegate_common.h"
+#include "../widgets/delegate_common.h"
 #include "basexmlparser.h"
 
 #include <type_traits>

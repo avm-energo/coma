@@ -1,5 +1,4 @@
 #pragma once
-#include "../xml/delegate_check.h"
 #include "datatypes.h"
 
 namespace settings

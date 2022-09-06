@@ -17,7 +17,6 @@
 
 #include "../s2/s2settings.h"
 #include "../widgets/udialog.h"
-// #include "check.h"
 
 #include <QBitArray>
 #include <QElapsedTimer>

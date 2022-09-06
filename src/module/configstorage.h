@@ -1,10 +1,10 @@
 #ifndef CONFIGSTORAGE_H
 #define CONFIGSTORAGE_H
 
-#include "../../gen/singleton.h"
-#include "../../s2/valuemap.h"
-#include "../../widgets/delegate_common.h"
-#include "../modulesettings.h"
+#include "../gen/singleton.h"
+#include "../s2/valuemap.h"
+#include "../widgets/delegate_common.h"
+#include "modulesettings.h"
 
 #include <QObject>
 
@@ -14,7 +14,6 @@ class ConfigStorage : public QObject, public Singleton<ConfigStorage>
 private:
     DataTypes::ValueMap mS2Map;
     config::widgetMap mWidgetMap;
-    // categoryMap mCategoryMap; ///< скорее всего, не нужно, потому что есть ModuleSettings::mTabs
     std::unique_ptr<ModuleSettings> mSettings;
     bool isS2Parsed;
 

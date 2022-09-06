@@ -32,23 +32,13 @@ template <typename T, size_t N> std::array<T, N> inline operator<<(std::array<T,
     return (array << list);
 }
 
-class S2;
-class Module;
-class NewModule;
-
 namespace DataTypes
 {
 
 class DataRecV
 {
-    friend class ::S2;
-    friend class ::Module;
-    friend class ::NewModule;
-
 public:
     DataRecV() = default;
-    DataRecV(const ValueMap &_map, const S2DataTypes::DataRec &record, const char *rawdata);
-    DataRecV(const ValueMap &_map, const unsigned _id, const QString &str);
     DataRecV(const S2DataTypes::DataRec &record);
     DataRecV(const S2DataTypes::DataRec &record, const char *rawdata);
     DataRecV(const unsigned _id, const QString &str);
@@ -93,7 +83,6 @@ public:
 private:
     quint16 id;
     valueType data;
-    static ValueMap map;
 
     template <typename T> void helper(unsigned int numByte, const char *rawdata, valueType &data)
     {

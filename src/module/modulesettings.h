@@ -133,8 +133,18 @@ public:
     void startNewConfig();
     void appendToCurrentConfig(DataTypes::RecordPair pair);
 
-    ModuleTypes::ConfigList &getConfigs();
     const ModuleTypes::ConfigMap &getConfigMap() const;
+    const ModuleTypes::ConfigList &getConfigs() const;
+    const ModuleTypes::SignalMap &getSignals() const;
+    const ModuleTypes::TabsMap &getTabs() const;
+    const ModuleTypes::SectionList &getSections() const;
+    const ModuleTypes::AlarmMap &getAlarms() const;
+    const ModuleTypes::JourMap &getJours() const;
+    const ModuleTypes::ModbusList &getModbus() const;
+    const ModuleTypes::ProtocomList &getProtocom() const;
+    const ModuleTypes::IecList &getIec() const;
+
+    ModuleTypes::ConfigList &getConfigs();
     ModuleTypes::SignalMap &getSignals();
     ModuleTypes::TabsMap &getTabs();
     ModuleTypes::SectionList &getSections();

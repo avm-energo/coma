@@ -1,6 +1,8 @@
 #ifndef BASEXMLPARSER_H
 #define BASEXMLPARSER_H
 
+#include "../ctti/type_id.hpp"
+
 #include <QObject>
 #include <QtXml>
 

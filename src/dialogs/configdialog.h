@@ -1,4 +1,5 @@
 #pragma once
+
 #include "../module/modules.h"
 #include "../widgets/udialog.h"
 #include "../widgets/widgetfactory.h"

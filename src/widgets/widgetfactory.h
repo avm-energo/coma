@@ -28,21 +28,6 @@ public:
         return QString::number(type.hash()) + QString::number(key);
     }
 
-    static auto getWidgetMap()
-    {
-        return m_widgetMap;
-    }
-
-    static auto getCategoryMap()
-    {
-        return m_categoryMap;
-    }
-
-    static auto getCategory(delegate::WidgetGroup key)
-    {
-        return m_categoryMap.value(key);
-    }
-
 private:
     // Default template like a dummy function for sfinae
     // We will be here if specialisation doesn't exist for this T
@@ -77,8 +62,6 @@ private:
     bool fillBackComboBox(quint16 key, const QWidget *parent, delegate::QComboBox::PrimaryField field);
     bool fillBackComboBoxGroup(quint16 key, const QWidget *parent, int count);
 
-    static config::widgetMap m_widgetMap;
-    static categoryMap m_categoryMap;
     ConfigV *configV;
 };
 
