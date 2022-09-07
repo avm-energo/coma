@@ -15,6 +15,7 @@
 #ifndef CHECKDIALOG_H
 #define CHECKDIALOG_H
 
+#include "../module/modulesettings.h"
 #include "../s2/s2settings.h"
 #include "../widgets/udialog.h"
 
@@ -49,7 +50,7 @@ public:
 
     using HighlightMap = QMultiMap<quint32, quint32>;
 
-    explicit CheckDialog(const CheckItem &item, const categoryMap &categories, QWidget *parent = nullptr);
+    explicit CheckDialog(const ModuleTypes::Section &mSection, QWidget *parent = nullptr);
     ~CheckDialog() override;
 
     void setupUI();
@@ -90,11 +91,13 @@ protected:
     QTimer *Timer;
     QXlsx::Document *xlsx;
 
-    const CheckItem &m_item;
-    const categoryMap &m_categories;
+    const ModuleTypes::Section &mSection;
+    // const ModuleTypes::SignalMap &mSigMap;
+    const ModuleTypes::TabsMap &mTabs;
+
     static constexpr char ValuesFormat[]
         = "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; font: bold; }";
-    void addSignals(unsigned int key, UWidget *widget);
+    void addSignals(const QList<ModuleTypes::SGroup> &groups, UWidget *widget);
     bool XlsxWriting;
     void uponInterfaceSetting() override;
 
@@ -115,8 +118,8 @@ private:
     //    UniquePointer<DataTypesProxy> proxySP, proxyFS;
 
     void ReadAnalogMeasurementsAndWriteToFile();
-    void setup(const check::detail::Record &arg, QGroupBox *gb);
-    void setup(const check::detail::RecordList &arg, QGroupBox *gb);
+    void setup(const ModuleTypes::MWidget &arg, const QString &name, QGroupBox *gb);
+    void setup(const ModuleTypes::SGroup &arg, QGroupBox *gb);
 
 public slots:
     void StopAnalogMeasurements();

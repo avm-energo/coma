@@ -50,12 +50,29 @@ bool ModuleXmlParser::isCorrectModule(const QDomElement &moduleNode, const quint
     return false;
 }
 
+ModuleTypes::SignalType ModuleXmlParser::parseSigType(const QDomNode &sigNode)
+{
+    auto typeNode = sigNode.firstChildElement(tags::type);
+    if (typeNode.isNull())
+    {
+        auto typeStr = typeNode.text();
+        if (typeStr.contains("Float", Qt::CaseInsensitive))
+            return ModuleTypes::SignalType::Float;
+        else if (typeStr.contains("BitString", Qt::CaseInsensitive))
+            return ModuleTypes::SignalType::BitString;
+        else if (typeStr.contains("SinglePoint", Qt::CaseInsensitive))
+            return ModuleTypes::SignalType::SinglePointWithTime;
+    }
+    return ModuleTypes::SignalType::Float;
+}
+
 void ModuleXmlParser::parseSignal(const QDomNode &sigNode)
 {
     auto id = parseNumFromNode<quint32>(sigNode, tags::id);
-    auto addr = parseNumFromNode<quint64>(sigNode, tags::start_addr);
+    auto addr = parseNumFromNode<quint32>(sigNode, tags::start_addr);
     auto count = parseNumFromNode<quint16>(sigNode, tags::count);
-    emit signalDataSending(id, addr, count);
+    auto sigType = parseSigType(sigNode);
+    emit signalDataSending(id, addr, count, sigType);
 }
 
 void ModuleXmlParser::parseSTab(const QDomNode &sTabNode)
@@ -82,11 +99,10 @@ void ModuleXmlParser::parseSection(const QDomNode &sectionNode)
             count = (count == 0) ? 1 : count;
             auto tooltip = parseString(mwidgetNode, tags::tooltip);
             auto itemList = parseStringArray(mwidgetNode);
-            sgroup.tabId = sgroupTab;
             sgroup.name = sgroupHeader;
             sgroup.widgets.push_back({ mwidgetDesc, addr, count, tooltip, itemList });
         });
-        sgmap[sgroupTab].push_back(sgroup);
+        sgmap.insert(sgroupTab, sgroup);
     });
     emit sectionDataSending(sgmap, secHeader);
 }
@@ -135,9 +151,7 @@ void ModuleXmlParser::parseModbus(const QDomNode &modbusNode)
 {
     auto signalId = parseNumFromNode<quint32>(modbusNode, tags::sig_id);
     auto regType = parseNumFromNode<quint16>(modbusNode, tags::reg_type);
-    auto typeStr = parseString(modbusNode, tags::type);
-    auto type = ctti::id_from_name(typeStr.toStdString());
-    emit modbusDataSending(signalId, regType, type);
+    emit modbusDataSending(signalId, regType);
 }
 
 void ModuleXmlParser::parseProtocom(const QDomNode &protocomNode)
@@ -150,10 +164,9 @@ void ModuleXmlParser::parseProtocom(const QDomNode &protocomNode)
 void ModuleXmlParser::parseIec(const QDomNode &iecNode)
 {
     auto sigId = parseNumFromNode<quint32>(iecNode, tags::sig_id);
-    auto sigType = parseNumFromNode<quint16>(iecNode, tags::sig_type);
     auto transType = parseNumFromNode<quint16>(iecNode, tags::trans_type);
     auto sigGroup = parseNumFromNode<quint16>(iecNode, tags::sig_group);
-    emit iecDataSending(sigId, sigType, transType, sigGroup);
+    emit iecDataSending(sigId, transType, sigGroup);
 }
 
 void ModuleXmlParser::parseConfig(const QDomNode &configNode)

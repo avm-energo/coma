@@ -48,12 +48,13 @@ void ConfigStorage::startNewConfig()
     mSettings->startNewConfig();
 }
 
-void ConfigStorage::signalDataReceive(const quint32 &id, const quint64 &addr, const quint16 &count)
+void ConfigStorage::signalDataReceive(const quint32 &id, const quint64 &addr, //
+    const quint16 &count, const ModuleTypes::SignalType &sigType)
 {
     if (id != 0 && addr != 0 && count != 0)
     {
         auto &sigs = mSettings->getSignals();
-        sigs.insert(id, { addr, count });
+        sigs.insert(id, { addr, count, sigType });
     }
 }
 
@@ -86,12 +87,12 @@ void ConfigStorage::jourDataReceive(const Modules::JournalType &jType, const qui
     jours[jType].push_back({ addr, desc });
 }
 
-void ConfigStorage::modbusDataReceive(const quint32 &sigId, const quint16 &regType, const ctti::unnamed_type_id_t &type)
+void ConfigStorage::modbusDataReceive(const quint32 &sigId, const quint16 &regType)
 {
-    if (sigId != 0 && type != 0)
+    if (sigId != 0)
     {
         auto &modbusItems = mSettings->getModbus();
-        modbusItems.push_back({ sigId, regType, type });
+        modbusItems.push_back({ sigId, regType });
     }
 }
 
@@ -104,13 +105,12 @@ void ConfigStorage::protocomDataReceive(const quint32 &sigId, const quint32 &blo
     }
 }
 
-void ConfigStorage::iecDataReceive(const quint32 &sigId, const quint16 &sigType, //
-    const quint16 &transType, const quint16 &sigGroup)
+void ConfigStorage::iecDataReceive(const quint32 &sigId, const quint16 &transType, const quint16 &sigGroup)
 {
     if (sigId != 0)
     {
         auto &iecItems = mSettings->getIec();
-        iecItems.push_back({ sigId, sigType, transType, sigGroup });
+        iecItems.push_back({ sigId, transType, sigGroup });
     }
 }
 

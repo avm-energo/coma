@@ -2,7 +2,6 @@
 
 ModuleSettings::ModuleSettings() : curConfigIndex(0)
 {
-    // mConfigs[curConfigIndex] = ModuleTypes::ConfigList();
 }
 
 void ModuleSettings::startNewConfig()

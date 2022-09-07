@@ -37,16 +37,16 @@ public slots:
 
     // Module data slots
     void startNewConfig();
-    void signalDataReceive(const quint32 &id, const quint64 &addr, const quint16 &count);
+    void signalDataReceive(const quint32 &id, const quint64 &addr, //
+        const quint16 &count, const ModuleTypes::SignalType &sigType);
     void tabDataReceive(const quint32 &id, const QString &name);
     void sectionDataReceive(const ModuleTypes::SGMap &sgmap, const QString &secHead);
     void alarmDataReceive(const bool &isBase, const Modules::AlarmType &aType, //
         const quint32 &addr, const QString &desc);
     void jourDataReceive(const Modules::JournalType &jType, const quint32 &addr, const QString &desc);
-    void modbusDataReceive(const quint32 &sigId, const quint16 &regType, const ctti::unnamed_type_id_t &type);
+    void modbusDataReceive(const quint32 &sigId, const quint16 &regType);
     void protocomDataReceive(const quint32 &sigId, const quint32 &block);
-    void iecDataReceive(const quint32 &sigId, const quint16 &sigType, //
-        const quint16 &transType, const quint16 &sigGroup);
+    void iecDataReceive(const quint32 &sigId, const quint16 &transType, const quint16 &sigGroup);
     void configDataReceive(const quint32 &id, const QString &defVal, const bool &visib, const quint32 &count);
 };
 

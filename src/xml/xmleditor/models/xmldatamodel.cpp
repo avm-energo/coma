@@ -48,8 +48,7 @@ std::tuple<QString, QString, std::function<void(QDomDocument &, QDomElement &, i
             [&](auto &doc, auto &item, auto &row) {
                 makeElement(doc, item, tags::sig_id, data(index(row, 0)));
                 makeElement(doc, item, tags::reg_type, data(index(row, 1)));
-                makeElement(doc, item, tags::type, data(index(row, 2)));
-                makeElement(doc, item, tags::desc, data(index(row, 3)));
+                makeElement(doc, item, tags::desc, data(index(row, 2)));
             } };
     case ModelType::Protocom:
         return { tags::protocom, tags::group, //
@@ -61,9 +60,8 @@ std::tuple<QString, QString, std::function<void(QDomDocument &, QDomElement &, i
         return { tags::iec, tags::group, //
             [&](auto &doc, auto &item, auto &row) {
                 makeElement(doc, item, tags::sig_id, data(index(row, 0)));
-                makeElement(doc, item, tags::sig_type, data(index(row, 1)));
-                makeElement(doc, item, tags::trans_type, data(index(row, 2)));
-                makeElement(doc, item, tags::sig_group, data(index(row, 3)));
+                makeElement(doc, item, tags::trans_type, data(index(row, 1)));
+                makeElement(doc, item, tags::sig_group, data(index(row, 2)));
             } };
     case ModelType::Config:
         return { tags::config, tags::record, //
@@ -116,8 +114,7 @@ void XmlDataModel::parseNode(QDomNode &node, int &row)
     {
         parseTag(node, tags::sig_id, row, 0);   // ID сигнала
         parseTag(node, tags::reg_type, row, 1); // Тип регистра
-        parseTag(node, tags::type, row, 2);     // Возвращаемый тип
-        parseTag(node, tags::desc, row, 3);     // Описание
+        parseTag(node, tags::desc, row, 2);     // Описание
     }
     else if (mType == ModelType::Protocom)
     {
@@ -127,7 +124,6 @@ void XmlDataModel::parseNode(QDomNode &node, int &row)
     else if (mType == ModelType::IEC60870)
     {
         parseTag(node, tags::sig_id, row, 0);     // ID сигнала
-        parseTag(node, tags::sig_type, row, 1);   // Тип сигнала
         parseTag(node, tags::trans_type, row, 2); // Тип передачи
         parseTag(node, tags::sig_group, row, 3);  // Группа
     }

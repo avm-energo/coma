@@ -9,136 +9,163 @@
                 <id>1</id>
                 <start-addr>1</start-addr>
                 <count>15</count>
+				<type>BitString</type>
             </signal>
             <signal>
                 <id>2</id>
                 <start-addr>101</start-addr>
                 <count>2</count>
+				<type>Float</type>
             </signal>
             <signal>
                 <id>3</id>
                 <start-addr>1000</start-addr>
                 <count>19</count>
+				<type>Float</type>
             </signal>
             <signal>
                 <id>5</id>
                 <start-addr>1028</start-addr>
                 <count>61</count>
+				<type>Float</type>
             </signal>
             <signal>
                 <id>6</id>
                 <start-addr>1089</start-addr>
                 <count>61</count>
+				<type>Float</type>
             </signal>
             <signal>
                 <id>7</id>
                 <start-addr>1150</start-addr>
                 <count>61</count>
+				<type>Float</type>
             </signal>
             <signal>
                 <id>8</id>
                 <start-addr>1220</start-addr>
                 <count>8</count>
+				<type>Float</type>
             </signal>
             <signal>
                 <id>9</id>
                 <start-addr>1400</start-addr>
                 <count>11</count>
+				<type>Float</type>
             </signal>
             <signal>
                 <id>10</id>
                 <start-addr>1420</start-addr>
                 <count>8</count>
+				<type>Float</type>
             </signal>
             <signal>
                 <id>11</id>
                 <start-addr>1428</start-addr>
                 <count>61</count>
+				<type>Float</type>
             </signal>
             <signal>
                 <id>12</id>
                 <start-addr>1489</start-addr>
                 <count>61</count>
+				<type>Float</type>
             </signal>
             <signal>
                 <id>13</id>
                 <start-addr>1550</start-addr>
                 <count>61</count>
+				<type>Float</type>
             </signal>
             <signal>
                 <id>14</id>
                 <start-addr>2400</start-addr>
                 <count>7</count>
+				<type>Float</type>
             </signal>
             <signal>
                 <id>15</id>
                 <start-addr>2420</start-addr>
                 <count>32</count>
+				<type>Float</type>
             </signal>
             <signal>
                 <id>16</id>
                 <start-addr>3020</start-addr>
                 <count>61</count>
+				<type>Float</type>
             </signal>
             <signal>
                 <id>17</id>
                 <start-addr>3146</start-addr>
                 <count>61</count>
+				<type>Float</type>
             </signal>
             <signal>
                 <id>18</id>
                 <start-addr>3272</start-addr>
                 <count>61</count>
+				<type>Float</type>
             </signal>
             <signal>
                 <id>19</id>
                 <start-addr>3420</start-addr>
                 <count>61</count>
+				<type>Float</type>
             </signal>
             <signal>
                 <id>20</id>
                 <start-addr>3546</start-addr>
                 <count>61</count>
+				<type>Float</type>
             </signal>
             <signal>
                 <id>21</id>
                 <start-addr>3672</start-addr>
                 <count>61</count>
+				<type>Float</type>
             </signal>
             <signal>
                 <id>22</id>
                 <start-addr>4000</start-addr>
                 <count>6</count>
+				<type>Float</type>
             </signal>
             <signal>
                 <id>23</id>
                 <start-addr>4010</start-addr>
                 <count>22</count>
+				<type>Float</type>
             </signal>
             <signal>
                 <id>24</id>
                 <start-addr>4500</start-addr>
                 <count>7</count>
-            </signal>
-            <signal>
-                <id>28</id>
-                <start-addr>4520</start-addr>
-                <count>2</count>
+				<type>Float</type>
             </signal>
             <signal>
                 <id>25</id>
                 <start-addr>4700</start-addr>
                 <count>6</count>
+				<type>Float</type>
             </signal>
             <signal>
                 <id>26</id>
                 <start-addr>5017</start-addr>
                 <count>26</count>
+				<type>SinglePoint</type>
             </signal>
             <signal>
                 <id>27</id>
                 <start-addr>6040</start-addr>
                 <count>36</count>
+				<type>Float</type>
+            </signal>
+            <signal>
+                <id>28</id>
+                <start-addr>4520</start-addr>
+                <count>2</count>
+				<type>BitString</type>
             </signal>
         </signals>
 
@@ -978,115 +1005,93 @@
         <!-- Протокол Modbus -->
         <modbus desc="Протокол Modbus">
             <group>
-                <reg-type>04</reg-type>
-                <type>uint32</type>
                 <signal-id>1</signal-id>
+                <reg-type>04</reg-type>
                 <desc></desc>
             </group>
             <group>
-                <reg-type>04</reg-type>
-                <type>float</type>
                 <signal-id>2</signal-id>
+                <reg-type>04</reg-type>
                 <desc></desc>
             </group>
             <group>
-                <reg-type>04</reg-type>
-                <type>float</type>
                 <signal-id>3</signal-id>
+                <reg-type>04</reg-type>
                 <desc></desc>
             </group>
             <group>
-                <reg-type>04</reg-type>
-                <type>float</type>
                 <signal-id>8</signal-id>
+                <reg-type>04</reg-type>
                 <desc>lineVoltage</desc>
             </group>
             <group>
-                <reg-type>04</reg-type>
-                <type>float</type>
-                <!--
-                    <start-addr>1400</start-addr>
-                    <count>38</count>
-                    -->
                 <signal-id>9</signal-id>
+                <reg-type>04</reg-type>
                 <desc>amperage</desc>
             </group>
             <group>
-                <reg-type>04</reg-type>
-                <type>float</type>
                 <signal-id>14</signal-id>
+                <reg-type>04</reg-type>
                 <desc>shearAngle</desc>
             </group>
             <group>
-                <reg-type>04</reg-type>
-                <type>float</type>
                 <signal-id>15</signal-id>
+                <reg-type>04</reg-type>
                 <desc>capacity</desc>
             </group>
             <group>
-                <reg-type>04</reg-type>
-                <type>float</type>
                 <signal-id>16</signal-id>
+                <reg-type>04</reg-type>
                 <desc>harmonicUA</desc>
             </group>
             <group>
-                <reg-type>04</reg-type>
-                <type>float</type>
                 <signal-id>17</signal-id>
+                <reg-type>04</reg-type>
                 <desc>harmonicUB</desc>
             </group>
             <group>
-                <reg-type>01</reg-type>
-                <type>float</type>
                 <signal-id>18</signal-id>
+                <reg-type>01</reg-type>
                 <desc>harmonicUC</desc>
             </group>
             <group>
-                <reg-type>04</reg-type>
-                <type>float</type>
                 <signal-id>19</signal-id>
+                <reg-type>04</reg-type>
                 <desc>harmonicIA</desc>
             </group>
             <group>
-                <reg-type>04</reg-type>
-                <type>float</type>
                 <signal-id>20</signal-id>
+                <reg-type>04</reg-type>
                 <desc>harmonicIB</desc>
             </group>
             <group>
-                <reg-type>04</reg-type>
-                <type>float</type>
                 <signal-id>21</signal-id>
+                <reg-type>04</reg-type>
                 <desc>harmonicIC</desc>
             </group>
             <group>
-                <reg-type>04</reg-type>
-                <type>float</type>
                 <signal-id>23</signal-id>
+                <reg-type>04</reg-type>
                 <desc>load</desc>
             </group>
             <group>
-                <reg-type>04</reg-type>
-                <type>float</type>
                 <signal-id>24</signal-id>
+                <reg-type>04</reg-type>
                 <desc>tempExtern</desc>
             </group>
             <group>
-                <reg-type>04</reg-type>
-                <type>float</type>
                 <signal-id>25</signal-id>
+                <reg-type>04</reg-type>
                 <desc>insulation</desc>
             </group>
             <group>
-                <reg-type>01</reg-type>
-                <type>bool</type>
                 <signal-id>26</signal-id>
+                <reg-type>01</reg-type>
                 <desc>alarmModule</desc>
             </group>
             <group>
-                <reg-type>04</reg-type>
-                <type>float</type>
                 <signal-id>27</signal-id>
+                <reg-type>04</reg-type>
                 <desc>vibrations</desc>
             </group>
         </modbus>
@@ -1179,9 +1184,9 @@
             3 - передача по изменению
 
             Типы сигналов (sig-type):
-            7 - строка из 32 битов (M_BO_NA)
-            13 - значение измеряемой величины, короткий формат с плавающей запятой (M_ME_NC)
-            30 - одноэлементная информация с меткой времени CP56Time2a (M_SP_TB)
+            7 - строка из 32 битов (M_BO_NA, BitStringStruct)
+            13 - значение измеряемой величины, короткий формат с плавающей запятой (M_ME_NC, FloatStruct)
+            30 - одноэлементная информация с меткой времени CP56Time2a (M_SP_TB, SinglePointWithTimeStruct)
             экзотика:
             36 - значение измеряемой величины, короткий формат с плавающей запятой с меткой времени CP56Time2a (M_ME_TF)
             51 - строка из 32 битов (C_BO_NA)
@@ -1191,104 +1196,86 @@
         <iec60870 desc="Протокол ГОСТ Р МЭК 60870-5-104">
             <group>
                 <signal-id>1</signal-id>
-                <sig-type>7</sig-type>
                 <trans-type>0</trans-type>
                 <sig-group>1</sig-group>
             </group>
             <group>
                 <signal-id>2</signal-id>
-                <sig-type>13</sig-type>
                 <trans-type>1</trans-type>
             </group>
             <group>
                 <signal-id>3</signal-id>
-                <sig-type>13</sig-type>
                 <trans-type>1</trans-type>
             </group>
             <group>
                 <signal-id>9</signal-id>
-                <sig-type>13</sig-type>
                 <trans-type>1</trans-type>
             </group>
             <group>
                 <signal-id>14</signal-id>
-                <sig-type>13</sig-type>
                 <trans-type>0</trans-type>
                 <sig-group>3</sig-group>
             </group>
             <group>
                 <signal-id>15</signal-id>
-                <sig-type>13</sig-type>
                 <trans-type>1</trans-type>
             </group>
             <group>
                 <signal-id>16</signal-id>
-                <sig-type>13</sig-type>
                 <trans-type>0</trans-type>
                 <sig-group>2</sig-group>
             </group>
             <group>
                 <signal-id>17</signal-id>
-                <sig-type>13</sig-type>
                 <trans-type>0</trans-type>
                 <sig-group>2</sig-group>
             </group>
             <group>
                 <signal-id>18</signal-id>
-                <sig-type>13</sig-type>
                 <trans-type>0</trans-type>
                 <sig-group>2</sig-group>
             </group>
             <group>
                 <signal-id>19</signal-id>
-                <sig-type>13</sig-type>
                 <trans-type>0</trans-type>
                 <sig-group>2</sig-group>
             </group>
             <group>
                 <signal-id>20</signal-id>
-                <sig-type>13</sig-type>
                 <trans-type>0</trans-type>
                 <sig-group>2</sig-group>
             </group>
             <group>
                 <signal-id>21</signal-id>
-                <sig-type>13</sig-type>
                 <trans-type>0</trans-type>
                 <sig-group>2</sig-group>
             </group>
             <group>
                 <signal-id>23</signal-id>
-                <sig-type>13</sig-type>
                 <trans-type>0</trans-type>
                 <sig-group>6</sig-group>
             </group>
             <group>
                 <signal-id>24</signal-id>
-                <sig-type>13</sig-type>
-                <trans-type>1</trans-type>
-            </group>
-            <group>
-                <signal-id>28</signal-id>
-                <sig-type>7</sig-type>
                 <trans-type>1</trans-type>
             </group>
             <group>
                 <signal-id>25</signal-id>
-                <sig-type>13</sig-type>
                 <trans-type>0</trans-type>
                 <sig-group>5</sig-group>
             </group>
             <group>
                 <signal-id>26</signal-id>
-                <sig-type>30</sig-type>
                 <trans-type>3</trans-type>
             </group>
             <group>
                 <signal-id>27</signal-id>
-                <sig-type>13</sig-type>
                 <trans-type>0</trans-type>
                 <sig-group>7</sig-group>
+            </group>
+            <group>
+                <signal-id>28</signal-id>
+                <trans-type>1</trans-type>
             </group>
         </iec60870>
 

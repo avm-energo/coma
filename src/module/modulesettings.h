@@ -16,11 +16,15 @@ using ConfigMap = QHash<quint32, ConfigList>;
 
 /// Signal settings ///
 
+/// \brief Перечисление для типа сигналов
+using SignalType = DataTypes::SignalTypes;
+
 /// \brief Структура для хранения информации узла <signal> из XML
 struct Signal
 {
-    quint64 startAddr;
+    quint32 startAddr;
     quint16 count;
+    SignalType sigType;
 };
 
 using SignalMap = QHash<quint32, Signal>;
@@ -44,14 +48,13 @@ struct MWidget
 /// \brief Структура для хранения информации узла <sgroup> из XML
 struct SGroup
 {
-    quint32 tabId;          ///< атрибут "tab"
     QString name;           ///< атрибут "header"
     QList<MWidget> widgets; ///< узлы <mwidget>
 };
 
 // key (quint32) - id вкладки
 // value (список SGroup) - список SGroup
-using SGMap = QHash<quint32, QList<SGroup>>;
+using SGMap = QMultiHash<quint32, SGroup>;
 
 /// \brief Структура для хранения информации узла <section> из XML
 struct Section
@@ -93,9 +96,8 @@ using JourMap = QHash<Modules::JournalType, QList<Journal>>; ///< Хранит �
 /// \brief Структура для хранения информации узла <group> из <modbus>
 struct ModbusItem
 {
-    quint32 signalId;             ///< узел <signal-id>
-    quint16 regType;              ///< узел <reg-type>
-    ctti::unnamed_type_id_t type; ///< узел <type>
+    quint32 signalId; ///< узел <signal-id>
+    quint16 regType;  ///< узел <reg-type>
 };
 
 using ModbusList = QList<ModbusItem>; ///< Хранит узлы <group> секции <modbus>
@@ -117,7 +119,6 @@ using ProtocomList = QList<ProtocomItem>; ///< Хранит узлы <group> с�
 struct IecItem
 {
     quint32 signalId;  ///< узел <signal-id>
-    quint16 sigType;   ///< узел <sig-type>
     quint16 transType; ///< узел <trans-type>
     quint16 sigGroup;  ///< узел <sig-group>
 };

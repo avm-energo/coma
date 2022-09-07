@@ -23,9 +23,9 @@ enum DataBlockTypes
 
 enum SignalTypes
 {
+    Float,
     BitString,
     FloatWithTime,
-    Float,
     SinglePointWithTime,
     ByteArray,
     File,
@@ -37,7 +37,6 @@ enum SignalTypes
     Timespec,
 #endif
     GeneralResponse
-
 };
 
 enum GeneralResponseTypes

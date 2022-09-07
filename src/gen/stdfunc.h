@@ -45,7 +45,7 @@ constexpr int maxRatio = 5;
 class StdFunc
 {
 public:
-    static QString DeviceIP;             ///< Deice's IP address
+    static QString DeviceIP;             ///< Device's IP address
     static QString s_OrganizationString; ///< Name of organization
 
     StdFunc();

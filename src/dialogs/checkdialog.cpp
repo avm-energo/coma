@@ -5,9 +5,9 @@
 #include "../gen/error.h"
 #include "../gen/stdfunc.h"
 #include "../module/board.h"
+#include "../module/configstorage.h"
 #include "../s2/s2helper.h"
 #include "../widgets/wd_func.h"
-//#include "xlsxdocument.h"
 
 #include <QCoreApplication>
 #include <QFileDialog>
@@ -21,16 +21,14 @@
 #include <QTime>
 #include <QVBoxLayout>
 #include <QXlsx/xlsxdocument.h>
+#include <set>
 
-CheckDialog::CheckDialog(const CheckItem &item, const categoryMap &categories, QWidget *parent)
+CheckDialog::CheckDialog(const ModuleTypes::Section &section, QWidget *parent)
     : UDialog(parent)
-    //    , proxySP(new DataTypesProxy(&DataManager::GetInstance()))
-    //    , proxyFS(new DataTypesProxy(&DataManager::GetInstance()))
-    , m_item(item)
-    , m_categories(categories)
+    , mSection(section)
+    //    , mSigMap(ConfigStorage::GetInstance().getModuleSettings().getSignals())
+    , mTabs(ConfigStorage::GetInstance().getModuleSettings().getTabs())
 {
-    //    proxySP->RegisterType<DataTypes::SinglePointWithTimeStruct>();
-    //    proxyFS->RegisterType<DataTypes::FloatStruct>();
     XlsxWriting = false;
     m_readDataInProgress = false;
     xlsx = nullptr;
@@ -52,14 +50,10 @@ void CheckDialog::setupUIAbs()
 {
     QVBoxLayout *lyout = new QVBoxLayout;
     QTabWidget *CheckTW = new QTabWidget;
-    //    connect(proxySP.get(), &DataTypesProxy::DataStorable, this, &CheckDialog::updateSPData);
     for (auto &w : m_BdUIList)
     {
         w.widget->uponInterfaceSetting();
         CheckTW->addTab(w.widget, " " + w.widgetCaption + " ");
-        //        connect(
-        //            proxyFS.get(), &DataTypesProxy::DataStorable, w.widget, &UWidget::updateFloatData,
-        //            Qt::QueuedConnection);
     }
     lyout->addWidget(CheckTW);
     setLayout(lyout);
@@ -283,7 +277,6 @@ void CheckDialog::TWTabChanged(int index)
         return;
     for (auto &item : m_BdUIList)
     {
-        //        if (item.widget->updatesEnabled())
         item.widget->engine()->setUpdatesEnabled(false);
     }
     Q_ASSERT(m_BdUIList.size() >= index);
@@ -315,98 +308,96 @@ void CheckDialog::SetTimerPeriod()
 
 void CheckDialog::setupUI()
 {
-    QMultiMap<uint16_t, check::itemVector::value_type> itemByGroup;
-    for (auto &&item : m_item.itemsVector)
+    const auto tabs = mSection.sgMap.uniqueKeys();
+    for (auto &&tab : tabs)
     {
-        std::visit(overloaded {
-                       [&](const check::detail::Record &arg)           //
-                       {                                               //
-                           itemByGroup.insert(arg.group.value(), arg); //
-                       },                                              //
-                       [&](const check::detail::RecordList &arg)       //
-                       {                                               //
-                           itemByGroup.insert(arg.group, arg);         //
-                       }                                               //
-                   },
-            item);
-    }
-    auto keys = itemByGroup.uniqueKeys();
-    for (auto &&key : keys)
-    {
-        UWidget *w = new UWidget;
-        QVBoxLayout *lyout = new QVBoxLayout;
-        auto values = itemByGroup.values(key);
-        for (auto it = values.crbegin(); it != values.crend(); it++)
+        auto widget = new UWidget;
+        auto layout = new QVBoxLayout;
+        const auto groups = mSection.sgMap.values(tab);
+        for (auto &&group : groups)
         {
-            QGroupBox *gb = new QGroupBox();
-            std::visit(overloaded { [&](const check::detail::Record &arg) { setup(arg, gb); },
-                           [&](const check::detail::RecordList &arg) { setup(arg, gb); } },
-                *it);
-            lyout->addWidget(gb);
+            auto groupBox = new QGroupBox(widget);
+            if (group.widgets.count() == 1)
+                setup(group.widgets.first(), group.name, groupBox);
+            else
+                setup(group, groupBox);
+            layout->addWidget(groupBox);
         }
-        lyout->addStretch(100);
-        w->setLayout(lyout);
-        addSignals(key, w);
-
-        m_BdUIList.push_back({ m_categories.value(key), w });
+        layout->addStretch(100);
+        widget->setLayout(layout);
+        addSignals(groups, widget);
+        m_BdUIList.push_back({ mTabs.value(tab), widget });
     }
     m_BdUIList.first().widget->engine()->setUpdatesEnabled();
     setupUIAbs();
 }
 
-void CheckDialog::addSignals(unsigned int key, UWidget *widget)
+void CheckDialog::addSignals(const QList<ModuleTypes::SGroup> &groups, UWidget *widget)
 {
-    for (auto &&sig : m_item.signlsVec)
+    std::set<quint32> sigIds;
+    auto &sigMap = ConfigStorage::GetInstance().getModuleSettings().getSignals();
+
+    // Для каждой группы...
+    for (auto &&group : groups)
     {
+        auto &widgetList = group.widgets;
+        // ... среди сигналов ищем такой, чтобы...
+        auto search = std::find_if(sigMap.cbegin(), sigMap.cend(),
+            // ... первый виджет группы попадал в допустимый диапазон сигнала...
+            [&](const ModuleTypes::Signal &signal) -> bool {
+                if (!widgetList.isEmpty())
+                {
+                    auto start = widgetList[0].startAddr;
+                    auto end = start + widgetList[0].count - 1;
+                    auto acceptStart = signal.startAddr;
+                    auto acceptEnd = acceptStart + signal.count;
+                    return ((start >= acceptStart && start < acceptEnd) && (end >= acceptStart && end < acceptEnd));
+                }
+                return false;
+            });
+        // ... и когда находим...
+        if (search != sigMap.cend())
+            // ... то добавляем в множество неповторяющихся ключей
+            sigIds.insert(search.key());
+    }
 
-        auto search = sig.groups.find(key);
-        if (search != sig.groups.cend())
+    // Для каждого найденного ID добавляем обработчик сигнала из SignalMap в виджет
+    for (auto it = sigIds.cbegin(); it != sigIds.cend(); it++)
+    {
+        auto &id = *it;
+        auto signal = sigMap.value(id);
+        switch (signal.sigType)
         {
-            using namespace DataTypes;
-            switch (sig.type.hash())
-            {
-
-            case ctti::unnamed_type_id<DataTypes::FloatStruct>().hash():
-            {
-                widget->engine()->addFloat({ sig.start_addr, sig.count });
-                break;
-            }
-
-            case ctti::unnamed_type_id<DataTypes::SinglePointWithTimeStruct>().hash():
-            {
-                widget->engine()->addSp({ sig.start_addr, sig.count });
-                break;
-            }
-
-            case ctti::unnamed_type_id<DataTypes::BitStringStruct>().hash():
-            {
-                widget->engine()->addBs({ sig.start_addr, sig.count });
-                break;
-            }
-
-            default:
-                assert(false);
-            }
+        case ModuleTypes::SignalType::Float:
+            widget->engine()->addFloat({ signal.startAddr, signal.count });
+            break;
+        case ModuleTypes::SignalType::SinglePointWithTime:
+            widget->engine()->addSp({ signal.startAddr, signal.count });
+            break;
+        case ModuleTypes::SignalType::BitString:
+            widget->engine()->addBs({ signal.startAddr, signal.count });
+            break;
+        default:
+            qWarning() << "Unknown signal type: " << signal.sigType;
+            break;
         }
     }
 }
 
-void CheckDialog::setup(const check::detail::Record &arg, QGroupBox *gb)
+void CheckDialog::setup(const ModuleTypes::MWidget &arg, const QString &name, QGroupBox *gb)
 {
-    gb->setTitle(arg.header.value());
-
-    auto count = std::size(arg.desc.value());
+    gb->setTitle(name);
+    auto gridlyout = new QGridLayout;
+    auto count = arg.desc.count();
     auto itemsOneLine = StdFunc::goldenRatio(count);
-
-    QGridLayout *gridlyout = new QGridLayout;
     for (auto i = 0; i != count; ++i)
     {
-        QVBoxLayout *layout = new QVBoxLayout;
-        layout->addWidget(new QLabel(arg.desc.value().at(i)));
-        QLabel *valueLabel = new QLabel;
-        if (arg.toolTip.has_value())
-            valueLabel->setToolTip(arg.toolTip.value().at(i));
-        valueLabel->setObjectName(QString::number(arg.start_addr + i));
+        auto layout = new QVBoxLayout;
+        layout->addWidget(new QLabel(arg.desc.at(i)));
+        auto valueLabel = new QLabel(gb);
+        if (!arg.tooltip.isEmpty())
+            valueLabel->setToolTip(arg.tooltip.at(i));
+        valueLabel->setObjectName(QString::number(arg.startAddr + i));
         valueLabel->setStyleSheet(ValuesFormat);
         layout->addWidget(valueLabel);
         gridlyout->addLayout(layout, i / itemsOneLine, i % itemsOneLine);
@@ -415,37 +406,29 @@ void CheckDialog::setup(const check::detail::Record &arg, QGroupBox *gb)
     gb->setLayout(gridlyout);
 }
 
-void CheckDialog::setup(const check::detail::RecordList &arg, QGroupBox *gb)
+void CheckDialog::setup(const ModuleTypes::SGroup &arg, QGroupBox *gb)
 {
-    gb->setTitle(arg.header);
+    gb->setTitle(arg.name);
+    auto mainLayout = new QVBoxLayout;
 
-    QVBoxLayout *mainLayout = new QVBoxLayout;
-    for (auto &&currentRecord : arg.records)
+    for (auto &&mwidget : arg.widgets)
     {
-        assert(
-            currentRecord.toolTip.has_value() ? (currentRecord.toolTip->size() == currentRecord.desc->size()) : true);
-
-        auto itemsOneLine = StdFunc::goldenRatio(currentRecord.desc->count());
-
-        QGridLayout *gridlyout = new QGridLayout;
-        for (auto i = 0; i < currentRecord.desc->count(); ++i)
+        auto count = mwidget.desc.count();
+        auto itemsOneLine = StdFunc::goldenRatio(count);
+        auto gridlyout = new QGridLayout;
+        for (auto i = 0; i < count; ++i)
         {
-            QHBoxLayout *layout = new QHBoxLayout;
-
-            QLabel *textLabel = new QLabel(currentRecord.desc->at(i));
+            auto layout = new QHBoxLayout;
+            auto textLabel = new QLabel(mwidget.desc.at(i), gb);
             textLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
-
             QFontMetrics fn(textLabel->font());
             textLabel->setMaximumHeight(fn.height());
-
             layout->addWidget(textLabel);
-
-            QLabel *valueLabel = new QLabel;
-            if (currentRecord.toolTip.has_value())
-                valueLabel->setToolTip(currentRecord.toolTip->at(i));
+            auto valueLabel = new QLabel(gb);
+            if (!mwidget.tooltip.isEmpty())
+                valueLabel->setToolTip(mwidget.tooltip.at(i));
             valueLabel->setMaximumHeight(fn.height());
-
-            valueLabel->setObjectName(QString::number(currentRecord.start_addr + i));
+            valueLabel->setObjectName(QString::number(mwidget.startAddr + i));
             valueLabel->setStyleSheet(ValuesFormat);
             valueLabel->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
             layout->addWidget(valueLabel);
@@ -453,5 +436,6 @@ void CheckDialog::setup(const check::detail::RecordList &arg, QGroupBox *gb)
         }
         mainLayout->addLayout(gridlyout);
     }
+
     gb->setLayout(mainLayout);
 }

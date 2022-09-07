@@ -46,12 +46,10 @@ bool Protocom::start(const ConnectStruct &st)
 
 bool Protocom::start(const UsbHidSettings &usbhid)
 {
-    UsbHidPort *port = new UsbHidPort(usbhid, Log);
-
-    ProtocomThread *parser = new ProtocomThread;
-
-    QThread *portThread = new QThread;
-    QThread *parseThread = new QThread;
+    auto port = new UsbHidPort(usbhid, Log);
+    auto parser = new ProtocomThread;
+    auto portThread = new QThread;
+    auto parseThread = new QThread;
 
     // NOTE После остановки потоков мы всё еще обращаемся
     // к интерфейсу для обновления данных
@@ -211,6 +209,7 @@ void Protocom::writeTime(quint32 time)
     DataManager::addToInQueue(inp);
     emit wakeUpParser();
 }
+
 #ifdef Q_OS_LINUX
 void Protocom::writeTime(const timespec &time) const
 {
@@ -219,6 +218,7 @@ void Protocom::writeTime(const timespec &time) const
     emit wakeUpParser();
 }
 #endif
+
 void Protocom::reqFloats(quint32 sigAdr, quint32 sigCount)
 {
     Q_D(Protocom);
