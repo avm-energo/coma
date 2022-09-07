@@ -28,6 +28,7 @@ Module::Module(QObject *parent)
 {
     m_gsettings = { { &DataTypes::DataRecV::map, &WidgetFactory::m_widgetMap, &WidgetFactory::m_categoryMap }, {} };
 }
+
 void Module::createAlarm(AlarmWidget *aw)
 {
     using namespace Modules;

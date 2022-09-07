@@ -37,6 +37,7 @@ static inline void loop(quint8 delay)
 #else
 static inline void loop(quint8 delay)
 {
+    QThread::sleep(delay);
 }
 
 #endif
@@ -96,7 +97,6 @@ void ModbusThread::run()
 
 void ModbusThread::parseReply(QByteArray ba)
 {
-
     m_readData.append(ba);
     if (m_readData.size() >= 2)
     {

@@ -67,6 +67,7 @@ private:
     CommandsMBS::TypeId type(const quint32 addr, const quint32 count) const;
     CommandsMBS::TypeId type(const quint32 addr, const quint32 count, const CommandsMBS::Commands cmd) const;
     void writeFloat(const DataTypes::FloatStruct &flstr);
+    void writeInt16(const quint32 addr, const qint16 value);
 
     quint8 obtainDelay(quint32 baudRate) const
     {

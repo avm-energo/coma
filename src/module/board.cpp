@@ -110,6 +110,8 @@ void Board::setConnectionState(ConnectionState connectionState)
     if (m_connectionState == connectionState && m_connectionState == ConnectionState::Connected)
         qDebug() << "Try to connect while still connected";
     //        Q_ASSERT("Try to connect while still connected");
+    if (connectionState == m_connectionState)
+        return;
     m_connectionState = connectionState;
     emit connectionStateChanged(connectionState);
 }

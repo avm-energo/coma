@@ -14,6 +14,7 @@
 #include "../startup/startupkivdialog.h"
 #include "../startup/startupktfdialog.h"
 
+#include <QElapsedTimer>
 #include <QMainWindow>
 SvcModule::SvcModule(QObject *parent) : Module(parent)
 {
@@ -61,6 +62,10 @@ void SvcModule::create(QTimer *updateTimer)
         connect(updateTimer, &QTimer::timeout, d, &UDialog::reqUpdate);
         d->uponInterfaceSetting();
     }
+//    QElapsedTimer tme;
+//    tme.start();
+//    while (tme.elapsed() < 10000)
+//        QCoreApplication::processEvents();
     BaseInterface::iface()->setSettings(settings()->ifaceSettings);
 }
 

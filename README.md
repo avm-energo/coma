@@ -8,7 +8,7 @@
 # Requires  
 
 - Python - https://www.python.org/ (with pip, for windows 7 install python 3.8.10 or older)
-- conan - https://conan.io/downloads.html (can be installed with **python -m pip install conan**)
+- conan - https://conan.io/downloads.html (can be installed with **pip install conan**, ensure that the dir with python/scripts is in the $PATH)
 - Qt 5.15.2 fully supported, a minimal functional can be compiled with Qt 5.11.1 - https://www.qt.io/ 
 - C++ compiler with full C++17 support (MSVC 2019 - 16.10+, gcc 9.3.0+, clang-11+)
 
@@ -18,18 +18,21 @@ MSVC - https://docs.microsoft.com/en-us/cpp/overview/visual-cpp-language-conform
 
 Others - https://en.cppreference.com/w/cpp/compiler_support
 
-- boost/header_only - installs by conan automatically
+- boost/header_only - installed by **conan install . --profile default** in project directory
 - LimeReport - submodule
 - QXlsx - submodule
-- hidapi - installs by conan  automatically under Windows, using system package under Linux
+- hidapi - installs by **conan install . --profile default** in project directory under Windows, using system package under Linux
 - ctti - inside project tree because project was abandoned
 - qcustomplot - inside project tree
 - protobuf - installs by conan automatically
 - zeromq - installs by conan automatically
 
 # Build 
-How to initialize conan, just run command in repository root folder
 
+conan: if there's an error: settings:compiler not set, execute the following commands (for VS2019):
+
+**conan profile update "settings.compiler=Visual Studio" default
+conan profile update "settings.compiler.version=16" default**
 
 ```bash
 $ mkdir build && cd build

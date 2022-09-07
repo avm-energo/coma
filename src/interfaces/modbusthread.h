@@ -5,7 +5,7 @@
 #include "../gen/logclass.h"
 #include "modbusprivate.h"
 
-#define RECONNECTTIME 1000
+#define RECONNECTTIME 10000
 
 class ModbusThread : public QObject
 {

@@ -127,7 +127,8 @@ message(STATUS "Current user directory for conan: " ${USER_DIRECTORY})
 set(CONAN_MAIN_INIT ${CONAN_EXEC} install . --profile ${CONAN_PROFILE} -g cmake_find_package -s arch=${CONAN_TARGET_NAME} -s arch_build=${CONAN_TARGET_NAME} -if ${CMAKE_BINARY_DIR} --build=missing)
 
 if (NOT AVTUK-12)
-    if (NOT ( EXISTS "${CMAKE_BINARY_DIR}/conanbuildinfo.txt" AND ${CACHED_PROJECT_TARGET_NAME} STREQUAL ${PROJECT_TARGET_NAME}))
+#    if (NOT ( EXISTS "${CMAKE_BINARY_DIR}/conanbuildinfo.txt" AND ${CACHED_PROJECT_TARGET_NAME} STREQUAL ${PROJECT_TARGET_NAME}))
+        if (NOT ( EXISTS "${CMAKE_BINARY_DIR}/conanbuildinfo.txt"))
         execute_process(
             COMMAND ${CMAKE_COMMAND} -E env
                 CONAN_USER_HOME=${USER_DIRECTORY} ${CONAN_MAIN_INIT}
@@ -265,8 +266,8 @@ if (BUILD_WITH_ALISE)
     add_subdirectory(protos)
 endif()
 if (Qt${QT_VERSION_MAJOR}Widgets_FOUND AND NOT AVTUK-12)
-    add_subdirectory(check)
     add_subdirectory(config)
+    add_subdirectory(check)
     add_subdirectory(oscillograms)
     add_subdirectory(qcustomplot)
     add_subdirectory(datablocks)

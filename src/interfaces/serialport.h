@@ -23,7 +23,7 @@ signals:
 
 private:
     QPointer<QSerialPort> port;
-    bool m_connected = false;
+    QTimer *m_connectionTimer;
 
 public slots:
     void writeBytes(QByteArray ba);
