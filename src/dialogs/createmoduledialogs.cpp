@@ -1,24 +1,78 @@
 #include "createmoduledialogs.h"
 
 #include "../dialogs/configdialog.h"
+#include "../dialogs/fwuploaddialog.h"
+#include "../dialogs/infodialog.h"
+#include "../module/alarmstateall.h"
+#include "../module/board.h"
+#include "../module/modulealarm.h"
 
-CreateModuleDialogs::CreateModuleDialogs(const ModuleSettings &settings) : m_settings(settings)
+CreateModuleDialogs::CreateModuleDialogs(const ModuleSettings &settings, QObject *parent)
+    : QObject(parent), settings(settings)
 {
 }
 
-QList<UDialog *> CreateModuleDialogs::CreateDialogs()
+const QList<UDialog *> &CreateModuleDialogs::createDialogs()
 {
-    DeleteDialogs();
-    CreateConfigDialogs();
-    return m_dialogs;
+    deleteDialogs();
+    createConfigDialogs();
+    //
+    createCommonDialogs();
+    return dialogs;
 }
 
-void CreateModuleDialogs::DeleteDialogs()
+void CreateModuleDialogs::createAlarms(AlarmWidget *alarmWidget)
 {
-    while (m_dialogs.size() != 0)
+    static const QHash<ModuleTypes::AlarmKey, QString> alarmSettings {
+        { { true, Modules::AlarmType::Critical }, "Базовая аварийная сигнализация" },            //
+        { { true, Modules::AlarmType::Warning }, "Базовая предупредительная сигнализация" },     //
+        { { true, Modules::AlarmType::Info }, "Базовая информационная сигнализация" },           //
+        { { false, Modules::AlarmType::Critical }, "Мезонинная аварийная сигнализация" },        //
+        { { false, Modules::AlarmType::Warning }, "Мезонинная предупредительная сигнализация" }, //
+        { { false, Modules::AlarmType::Info }, "Мезонинная информационная сигнализация" }        //
+    };
+
+    auto alarmStateAll = new AlarmStateAll(alarmWidget);
+    alarmStateAll->setupUI(AVM::HthToolTip);
+    alarmWidget->addAlarm(alarmStateAll);
+    const auto &alarmMap = settings.getAlarms();
+    if (!alarmMap.empty())
     {
-        auto d = m_dialogs.takeFirst();
-        d->deleteLater();
+        for (auto keyIter = alarmMap.keyBegin(); keyIter != alarmMap.keyEnd(); keyIter++)
+        {
+            auto &title = alarmSettings.value(*keyIter);
+            if (!title.isEmpty())
+            {
+                // auto a = std::get<bool>(*keyIter);
+                auto &alarmList = alarmMap.value(*keyIter);
+                auto alarm = new ModuleAlarm(alarmList, alarmList.count());
+                alarmWidget->addAlarm(alarm, tr("Аварийная сигнализация"));
+            }
+        }
+        //        if (settings()->alarms.contains(AlarmType::Warning))
+        //        {
+        //            auto *alarm = new ModuleAlarm(settings()->alarms.value(AlarmType::Warning),
+        //            settings()->alarmCount()); alarmWidget->addAlarm(alarm, tr("Предупредительная сигнализация"));
+        //        }
+        //        if (settings()->alarms.contains(AlarmType::Critical))
+        //        {
+        //            auto *alarm = new ModuleAlarm(settings()->alarms.value(AlarmType::Critical),
+        //            settings()->alarmCount()); alarmWidget->addAlarm(alarm, tr("Аварийная сигнализация"));
+        //        }
+        //        if (settings()->alarms.contains(AlarmType::Base))
+        //        {
+        //            auto *alarm = new ModuleAlarm(
+        //                settings()->alarms.value(AlarmType::Base),
+        //                settings()->alarms.value(AlarmType::Base).desc.count());
+        //            alarmWidget->addAlarm(alarm, tr("Базовая сигнализация"));
+        //        }
+        //        if (settings()->alarms.contains(AlarmType::Mezz))
+        //        {
+        //            auto *alarm = new ModuleAlarm(
+        //                settings()->alarms.value(AlarmType::Mezz),
+        //                settings()->alarms.value(AlarmType::Mezz).desc.count());
+        //            alarmWidget->addAlarm(alarm, tr("Мезонинная сигнализация"));
+        //        }
     }
 }
 
@@ -26,20 +80,47 @@ void CreateModuleDialogs::addDialogToList(UDialog *dlg, const QString &caption, 
 {
     dlg->setObjectName(name);
     dlg->setCaption(caption);
-    m_dialogs.append(dlg);
+    dialogs.append(dlg);
 }
 
-void CreateModuleDialogs::CreateConfigDialogs()
+void CreateModuleDialogs::deleteDialogs()
 {
-    using ConfigHash = QHash<int, ModuleTypes::ConfigList>;
-    auto config = m_settings.getConfigMap();
-    for (auto it = config.cbegin(); it != config.cend(); ++it)
+    while (!dialogs.isEmpty())
     {
-        QString indexStr = QString::number(it.key());
-        addDialogToList(new ConfigDialog(&m_configV, it.value()), "Конфигурация " + indexStr, "conf" + indexStr);
+        auto dialog = dialogs.takeFirst();
+        dialog->deleteLater();
     }
 }
 
-void CreateModuleDialogs::CreateCheckDialogs()
+void CreateModuleDialogs::createConfigDialogs()
 {
+    auto config = settings.getConfigMap();
+    for (auto it = config.cbegin(); it != config.cend(); ++it)
+    {
+        QString indexStr = QString::number(it.key());
+        addDialogToList(new ConfigDialog(&configV, it.value()), "Конфигурация " + indexStr, "conf" + indexStr);
+    }
+}
+
+void CreateModuleDialogs::createCheckDialogs()
+{
+    ;
+}
+
+void CreateModuleDialogs::createTuneDialogs()
+{
+    ;
+}
+
+void CreateModuleDialogs::createSpecificDialogs()
+{
+    ;
+}
+
+void CreateModuleDialogs::createCommonDialogs()
+{
+    const auto &board = Board::GetInstance();
+    if (board.interfaceType() != Board::InterfaceType::RS485)
+        addDialogToList(new FWUploadDialog, "Загрузка ВПО", "upload");
+    addDialogToList(new InfoDialog, "О приборе", "info");
 }

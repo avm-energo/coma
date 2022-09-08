@@ -10,7 +10,6 @@
 
 BaseAlarm::BaseAlarm(QWidget *parent) : QWidget(parent), m_actualAlarmFlags(0x0000)
 {
-
     m_normalColor = Qt::transparent;
     m_alarmColor = Qt::red;
 }
@@ -26,23 +25,20 @@ void BaseAlarm::setupUI(const QStringList &events)
     qint64 eventsCount = events.size();
     Q_ASSERT(flagsCount == eventsCount);
 
-    QVBoxLayout *lyout = new QVBoxLayout;
-    QVBoxLayout *vlayout = new QVBoxLayout;
+    auto lyout = new QVBoxLayout;
+    auto vlayout = new QVBoxLayout;
 
     unsigned int i, j;
     for (i = 0, j = 0; (i < m_alarmFlags.size()); ++i)
     {
-
         const bool flag = m_alarmFlags.test(i);
         if (!flag)
             continue;
-        QHBoxLayout *hlyout = new QHBoxLayout;
-        int number = i;
-        auto *label = WDFunc::NewLBL2(this, "", QString::number(number));
+        auto hlyout = new QHBoxLayout;
+        auto label = WDFunc::NewLBL2(this, "", QString::number(i));
         auto pixmap = WDFunc::NewCircle(m_normalColor, circleRadius);
         label->setPixmap(pixmap);
         hlyout->addWidget(label);
-
         hlyout->addWidget(WDFunc::NewLBL2(this, events.at(j++)), 1);
         vlayout->addLayout(hlyout);
     }

@@ -112,7 +112,8 @@ struct SingleCommand
     bool value;
 };
 
-struct Alarm
+/// TODO: delete
+struct [[deprecated]] Alarm
 {
     std::bitset<128> flags;
     quint32 startAddr;
@@ -121,7 +122,8 @@ struct Alarm
     QString color;
 };
 
-struct JournalDesc
+/// TODO: delete
+struct [[deprecated]] JournalDesc
 {
     quint32 id;
     QStringList header;

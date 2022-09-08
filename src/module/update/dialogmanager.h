@@ -16,11 +16,11 @@ private:
 public:
     DialogManager(QObject *parent = nullptr);
 
-    virtual void create(QTimer *updateTimer) = 0;
-    virtual void create(Modules::BaseBoard typeB, Modules::MezzanineBoard typeM) = 0;
-    virtual void createModule(Modules::Model model) = 0;
-
-    virtual void createAlarm(AlarmWidget *aw);
+    void create(QTimer *updateTimer);
+    void create(Modules::BaseBoard typeB, Modules::MezzanineBoard typeM);
+    void createUSIO(Modules::BaseBoard typeB, Modules::MezzanineBoard typeM);
+    void createModule(Modules::Model model);
+    void createAlarm(AlarmWidget *aw);
     void create(UniquePointer<Journals> jour);
     void createCommon();
 

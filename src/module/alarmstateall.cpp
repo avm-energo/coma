@@ -11,6 +11,7 @@
 
 constexpr quint32 BSIWARNMASK = 0x00005F55;
 constexpr quint32 BSIALARMMASK = 0x000020AA;
+
 AlarmStateAll::AlarmStateAll(QWidget *parent) : BaseAlarm(parent)
 {
     m_alarmFlags = BSIALARMMASK;
