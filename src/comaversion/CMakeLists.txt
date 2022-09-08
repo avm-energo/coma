@@ -3,20 +3,14 @@ cmake_minimum_required(VERSION 3.14)
 project(comaversion LANGUAGES CXX)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
-
 set(CMAKE_SCRIPT_MODE_FILE ON)
 
-find_package(
-  QT NAMES Qt6 Qt5
-  COMPONENTS Core]
-  REQUIRED)
 find_package(
   Qt${QT_VERSION_MAJOR}
   COMPONENTS Core
   REQUIRED)
 
 if(NOT SHORT_HASH)
-
     find_package(Git REQUIRED)
     execute_process(
       COMMAND ${GIT_EXECUTABLE} rev-parse --short=8 HEAD
@@ -49,13 +43,11 @@ endif()
 set(gitHash ${SHORT_HASH})
 
 if (NOT COMMIT_COUNT)
-
-execute_process(
-  COMMAND ${GIT_EXECUTABLE} rev-list --count HEAD
-  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-  RESULT_VARIABLE COMMIT_COUNT_RESULT
-  OUTPUT_VARIABLE COMMIT_COUNT)
-
+  execute_process(
+    COMMAND ${GIT_EXECUTABLE} rev-list --count HEAD
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    RESULT_VARIABLE COMMIT_COUNT_RESULT
+    OUTPUT_VARIABLE COMMIT_COUNT)
 endif()
 
 set(gitCommitCounter ${COMMIT_COUNT})

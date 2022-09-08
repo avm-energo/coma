@@ -75,7 +75,6 @@ void DialogManager::parentTWTabChanged(int index)
     }
 
     UDialog *udlg = m_dialogs.at(index);
-
     udlg->setEnabled(true);
     udlg->engine()->setUpdatesEnabled();
     udlg->reqUpdate();

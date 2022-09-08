@@ -1,17 +1,17 @@
 #ifndef COMA_H
 #define COMA_H
+
 #include "../gen/datamanager/typesproxy.h"
-#include "../gen/datatypes.h"
-#include "../gen/stdfunc.h"
 #include "../interfaces/settingstypes.h"
+#include "../module/module.h"
 #include "../oscillograms/oscmanager.h"
 #include "../xml/xmleditor/xmleditor.h"
 
+#include <QApplication>
 #include <QListWidget>
 #include <QMainWindow>
 #include <QStackedWidget>
 
-class Module;
 class AlarmWidget;
 
 enum THREAD
@@ -26,30 +26,25 @@ class Coma : public QMainWindow
     Q_OBJECT
 
 public:
-    using ModulePointer = UniquePointer<Module>;
-
     Coma(QWidget *parent = nullptr);
     ~Coma();
 
     void go();
     void clearWidgets();
     void setupMenubar();
-
     QWidget *least();
-
     void disconnect();
-    virtual void setupConnection();
-
+    void setupConnection();
     void loadOsc(QString &filename);
     void loadSwj(QString &filename);
-public slots:
-    void DisconnectAndClear();
 
+public slots:
+    void disconnectAndClear();
     void reconnect();
     void attemptToRec();
 
 protected:
-    ModulePointer m_Module;
+    UniquePointer<Module> module;
     QTimer *BdaTimer, *AlrmTimer;
     AlarmWidget *AlarmW;
     UniquePointer<DataTypesProxy> proxyBS, proxyGRS;
@@ -60,13 +55,10 @@ private slots:
     void loadOsc();
     void loadSwj();
     void openModuleEditor();
+    void getAbout();
 
-    virtual void getAbout() {};
-    virtual void checkDialog() {};
     void closeEvent(QCloseEvent *event) override;
-
     void update(const QVariant &msg);
-
     void mainTWTabChanged(int tabindex);
 
 private:
@@ -74,33 +66,28 @@ private:
     QListWidget *MainLW;
     OscManager oscManager;
     XmlEditor *editor;
-
     File::Vector fileVector;
-
     bool Reconnect;
-
     ConnectStruct ConnectSettings;
 
-    void LoadSettings();
-    void SaveSettings();
-    void SetProgressBarSize(int prbnum, int size);
-    void SetProgressBarCount(int prbnum, int count);
+    void initInterfaceConnection();
+    void loadSettings();
+    void saveSettings();
+    void setProgressBarSize(int prbnum, int size);
+    void setProgressBarCount(int prbnum, int count);
     void newTimers();
-    void SetupUI();
-    void UnpackProgramData();
-    // void CloseDialogs();
-
+    void setupUI();
+    void unpackProgramData();
     void setupConnections();
     void prepare();
-
     virtual bool nativeEvent(const QByteArray &eventType, void *message, long *result) override;
-
     QToolBar *createToolBar();
 
 protected:
     void keyPressEvent(QKeyEvent *e) override;
     void resizeEvent(QResizeEvent *e) override;
-    virtual void PrepareDialogs();
+    void prepareDialogs();
+
 signals:
     void sendMessage(void *);
 };
@@ -108,14 +95,8 @@ signals:
 class ComaHelper
 {
 public:
-    static void initResources()
-    {
-        Q_INIT_RESOURCE(darkstyle);
-        Q_INIT_RESOURCE(lightstyle);
-        Q_INIT_RESOURCE(styles);
-        Q_INIT_RESOURCE(vectorIcons);
-    }
-    static void parserHelper(const char *appName, Coma *coma);
+    static void initAppSettings(const QString &appName, const QString &orgName, const QString &version);
+    static void parserHelper(Coma *coma);
 };
 
 #endif // COMA_H

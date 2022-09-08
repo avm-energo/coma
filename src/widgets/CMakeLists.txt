@@ -6,7 +6,7 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 find_package(
   Qt${QT_VERSION_MAJOR}
-  COMPONENTS Core Xml Widgets
+  COMPONENTS Core Network Widgets Xml
   REQUIRED)
 
 find_package(Boost
@@ -44,6 +44,7 @@ target_link_libraries(
   PRIVATE s2
   PRIVATE xml
   PRIVATE Qt${QT_VERSION_MAJOR}::Core
+  PRIVATE Qt${QT_VERSION_MAJOR}::Network
   PRIVATE Qt${QT_VERSION_MAJOR}::Widgets
   PRIVATE Qt${QT_VERSION_MAJOR}::Xml
   PRIVATE QXlsx

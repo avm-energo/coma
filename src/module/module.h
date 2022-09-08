@@ -5,7 +5,7 @@
 
 #include <QtXml>
 
-class NewModule : public QObject
+class Module : public QObject
 {
     Q_OBJECT
 private:
@@ -13,7 +13,7 @@ private:
     ConfigStorage *mStorage;
 
 public:
-    explicit NewModule(const Modules::StartupInfoBlock &startupInfoBlock = Board::GetInstance().baseSerialInfo(),
+    explicit Module(const Modules::StartupInfoBlock &startupInfoBlock = Board::GetInstance().baseSerialInfo(),
         QObject *parent = nullptr);
     bool loadSettings();
 

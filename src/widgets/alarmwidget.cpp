@@ -27,6 +27,7 @@ AlarmWidget::AlarmWidget(QWidget *parent) : QWidget(parent)
     m_timer = new QTimer(this);
     m_timer->setInterval(10000);
 }
+
 // FIXME Переосмыслить индикатор
 void AlarmWidget::UpdateIndicator(bool indx)
 {
@@ -39,7 +40,6 @@ void AlarmWidget::UpdateIndicator(bool indx)
 
 void AlarmWidget::clear()
 {
-
     // Имеются ли виджеты на слое
     m_timer->stop();
     Q_ASSERT(!layout()->children().isEmpty() && "Layout doesn't have children");
@@ -54,7 +54,6 @@ void AlarmWidget::clear()
 
 void AlarmWidget::addAlarm(BaseAlarm *alarm)
 {
-
     QString alarmName = alarm->metaObject()->className();
     if (alarmName.contains("warn", Qt::CaseInsensitive))
     {

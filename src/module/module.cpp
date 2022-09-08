@@ -8,12 +8,12 @@
 #include <QDir>
 #include <QFile>
 
-NewModule::NewModule(const Modules::StartupInfoBlock &startupInfoBlock, QObject *parent)
+Module::Module(const Modules::StartupInfoBlock &startupInfoBlock, QObject *parent)
     : QObject(parent), sInfoBlock(startupInfoBlock), mStorage(&ConfigStorage::GetInstance())
 {
 }
 
-bool NewModule::isFileExist(const QString &filename)
+bool Module::isFileExist(const QString &filename)
 {
     auto dir = QDir(StdFunc::GetSystemHomeDir());
     auto file = new QFile(dir.filePath(filename), this);
@@ -22,7 +22,7 @@ bool NewModule::isFileExist(const QString &filename)
     return retVal;
 }
 
-QDomDocument NewModule::getFileContent(const QString &filename)
+QDomDocument Module::getFileContent(const QString &filename)
 {
     QDomDocument doc;
     auto dir = QDir(StdFunc::GetSystemHomeDir());
@@ -50,7 +50,7 @@ QDomDocument NewModule::getFileContent(const QString &filename)
     return doc;
 }
 
-bool NewModule::loadSettings()
+bool Module::loadSettings()
 {
     if (loadS2Settings())
     {
@@ -72,7 +72,7 @@ bool NewModule::loadSettings()
     return false;
 }
 
-bool NewModule::loadS2Settings()
+bool Module::loadS2Settings()
 {
     // Если ещё не парсили s2files.xml
     if (!mStorage->getS2Status())
@@ -97,7 +97,7 @@ bool NewModule::loadS2Settings()
         return true;
 }
 
-bool NewModule::loadModuleSettings(const QString &filename, const quint16 &typeB, const quint16 &typeM)
+bool Module::loadModuleSettings(const QString &filename, const quint16 &typeB, const quint16 &typeM)
 {
     auto content = getFileContent(filename);
     if (!content.isNull())
