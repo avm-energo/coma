@@ -334,8 +334,11 @@ bool WDFunc::SetLBLImage(QWidget *parent, const QString &lblname, QPixmap *pm)
         qDebug() << Error::DescError << lblname;
         return false;
     }
-    lbl->setPixmap(*pm);
-    return true;
+    else
+    {
+        lbl->setPixmap(*pm);
+        return true;
+    }
 }
 
 bool WDFunc::SetLBLColor(QWidget *parent, const QString &lblname, const QString &lblcolor)

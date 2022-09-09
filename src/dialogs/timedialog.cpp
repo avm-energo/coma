@@ -144,14 +144,9 @@ void TimeDialog::writeDate()
 
 void TimeDialog::uponInterfaceSetting()
 {
-    //    auto mngr = &DataManager::GetInstance();
-    //    static DataTypesProxy proxy(mngr);
-    //    proxy.RegisterType<DataTypes::BitStringStruct>();
     setupUI();
-    //    connect(&proxy, &DataTypesProxy::DataStorable, this, &TimeDialog::updateBitStringData);
 }
 
-// void TimeDialog::updateBitStringData(const DataTypes::BitStringStruct &bs)
 void TimeDialog::updateBitStringData(const DataTypes::BitStringStruct &bs)
 {
     if (bs.sigAdr              // USB doesnt know address so is empty

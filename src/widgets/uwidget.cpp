@@ -4,10 +4,13 @@
 #include "../gen/colors.h"
 #include "../gen/stdfunc.h"
 #include "wd_func.h"
+
 // #define UWIDGET_DEBUG
+
 #include <QCoreApplication>
 #include <QDebug>
 #include <QEventLoop>
+
 UWidget::UWidget(QWidget *parent) : QWidget(parent)
 {
     m_dataUpdater = new ModuleDataUpdater;

@@ -854,7 +854,7 @@ void ProtocomThread::handleRawBlock(const QByteArray &ba, quint32 blkNum)
 
 void ProtocomThread::handleCommand(const QByteArray &ba)
 {
-    qCritical("We should be here, something went wrong");
+    qCritical("We shouldn't be here, something went wrong");
     qDebug() << ba.toHex();
 }
 

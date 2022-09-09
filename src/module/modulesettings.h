@@ -67,17 +67,11 @@ using SectionList = QList<Section>; ///< Хранит узлы <section> сек�
 
 /// Alarms settings ///
 
-/// \brief Структура для хранения информации узла <item> в <alarms>
-struct Alarm
-{
-    quint32 addr; ///< узел <addr>
-    QString desc; ///< узел <desc>
-};
-
 using HighlightMap = QMultiMap<quint32, quint32>;
 // Info: DataTypes::Alarm - deprecated [see template.xml]
 using AlarmKey = std::pair<bool, Modules::AlarmType>; ///< bool - isBase, Modules::AlarmType - тип сигнализации
-using AlarmMap = QHash<AlarmKey, QList<Alarm>>;       ///< Хранит узлы <item> секции <alarms>
+using AlarmValue = QHash<quint32, QString>; ///< quint32 - адрес сигнализации, QString - нода <desc> (описание)
+using AlarmMap = QHash<AlarmKey, AlarmValue>; ///< Хранит узлы <item> секции <alarms>
 
 /// Journals settings ///
 

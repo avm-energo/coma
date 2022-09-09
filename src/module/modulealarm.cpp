@@ -1,66 +1,103 @@
 #include "modulealarm.h"
 
 #include "../gen/datamanager/typesproxy.h"
+#include "../module/configstorage.h"
+#include "../widgets/wd_func.h"
 
-ModuleAlarm::ModuleAlarm(QWidget *parent) : BaseAlarm(parent), proxy(new DataTypesProxy)
+#include <QScrollArea>
+#include <QVBoxLayout>
+
+ModuleAlarm::ModuleAlarm(const Modules::AlarmType &type, //
+    const ModuleTypes::AlarmValue &alarms, QWidget *parent)
+    : BaseAlarm(parent), mAlarms(alarms), mProxy(new DataTypesProxy)
 {
-    proxy->RegisterType<DataTypes::SinglePointWithTimeStruct>();
-    connect(proxy.get(), &DataTypesProxy::DataStorable, this, qOverload<const QVariant &>(&ModuleAlarm::update));
+    static const QHash<Modules::AlarmType, QColor> colors = {
+        { Modules::AlarmType::Critical, Qt::red },   //
+        { Modules::AlarmType::Warning, Qt::yellow }, //
+        { Modules::AlarmType::Info, Qt::green }      //
+    };
+
+    alarmColor = colors.value(type, Qt::transparent);
+    mProxy->RegisterType<DataTypes::SinglePointWithTimeStruct>();
+    connect(mProxy.get(), &DataTypesProxy::DataStorable, this, qOverload<const QVariant &>(&ModuleAlarm::update));
+    // Настройки алармов
+    followToData();
+    setupUI(mAlarms.values());
 }
 
-ModuleAlarm::ModuleAlarm(const DataTypes::Alarm &desc, const int count, QWidget *parent) : ModuleAlarm(parent)
+/// \brief Находим группу сигналов, в диапазон которых попадает первый аларм
+/// из списка и подписываемся на получение данных от этого сигнала
+void ModuleAlarm::followToData()
 {
-    m_startAlarmAddress = desc.startAddr;
-    m_alarmFlags = desc.flags;
-    Q_ASSERT(QColor::isValidColor(desc.color));
-    m_alarmColor = desc.color;
-    m_alarmAllCounts = count;
-    setupUI(desc.desc);
+    auto &sigMap = ConfigStorage::GetInstance().getModuleSettings().getSignals();
+    auto addr = mAlarms.cbegin().key();
+    auto search = std::find_if(sigMap.cbegin(), sigMap.cend(), //
+        [&addr](const ModuleTypes::Signal &signal) -> bool {   //
+            auto acceptStart = signal.startAddr;
+            auto acceptEnd = acceptStart + signal.count;
+            return (addr >= acceptStart && addr < acceptEnd);
+        });
+    if (search != sigMap.cend())
+    {
+        auto signal = sigMap.value(search.key());
+        engine()->addSp({ signal.startAddr, signal.count });
+    }
 }
 
-void ModuleAlarm::reqUpdate()
+/// \brief Настраиваем UI, создаём лейблы и индикаторы для отображения сигнализации
+void ModuleAlarm::setupUI(const QStringList &events)
 {
-    BaseInterface::iface()->reqAlarms(m_startAlarmAddress, m_alarmAllCounts);
-    update();
+    auto widget = new QWidget(this);
+    auto lyout = new QVBoxLayout;
+    auto vlayout = new QVBoxLayout;
+    widget->setLayout(vlayout);
+
+    // Создаём labels и circles
+    auto index = 0;
+    for (auto &&desc : events)
+    {
+        auto hlyout = new QHBoxLayout;
+        auto label = WDFunc::NewLBL2(this, "", QString::number(index));
+        auto pixmap = WDFunc::NewCircle(normalColor, circleRadius);
+        label->setPixmap(pixmap);
+        hlyout->addWidget(label);
+        hlyout->addWidget(WDFunc::NewLBL2(this, desc), 1);
+        vlayout->addLayout(hlyout);
+        index++;
+    }
+
+    // Делаем QScrollArea
+    auto scrollArea = new QScrollArea(this);
+    scrollArea->setWidget(widget);
+    lyout->addWidget(scrollArea);
+    lyout->addWidget(WDFunc::NewPB(this, "", "Ok", this, &QWidget::hide));
+    setLayout(lyout);
 }
 
-// void ModuleAlarm::update(const DataTypes::SinglePointWithTimeStruct &sp)
+/// \brief Обновление индикатора для отображения сигнализации
+void ModuleAlarm::updatePixmap(const bool &isset, const quint32 &position)
+{
+    auto color = isset ? alarmColor : normalColor;
+    auto pixmap = WDFunc::NewCircle(color, circleRadius);
+    auto status = WDFunc::SetLBLImage(this, QString::number(position), &pixmap);
+    if (!status)
+        qCritical() << Error::DescError;
+    emit updateColor(color);
+}
+
+/// 104 и модбас
 void ModuleAlarm::update(const QVariant &msg)
 {
     auto sp = msg.value<DataTypes::SinglePointWithTimeStruct>();
-    const auto minAddress = m_startAlarmAddress;
-    const auto maxAddress = m_startAlarmAddress + m_alarmFlags.size();
-    if (!((sp.sigAdr >= minAddress) && (sp.sigAdr <= maxAddress)))
-        return;
-
-    const int index = (sp.sigAdr - minAddress);
     const quint8 sigval = sp.sigVal;
-    if (sigval & 0x80)
-        return;
-
-    if (m_alarmFlags.test(index))
-        updatePixmap(sigval & 0x00000001, index);
-}
-
-void ModuleAlarm::update()
-{
-    using ValueType = DataTypes::SinglePointWithTimeStruct;
-    const auto minAddress = m_startAlarmAddress;
-    const auto maxAddress = m_startAlarmAddress + m_alarmFlags.size();
-    auto &manager = DataManager::GetInstance();
-    for (auto i = minAddress; i != maxAddress; ++i)
+    if (!(sigval & 0x80))
     {
-        if (!manager.containsRegister<ValueType>(i))
-            continue;
-        const auto sp = manager.getRegister<ValueType>(i);
-        const int index = (sp.sigAdr - minAddress);
-        const quint8 sigval = sp.sigVal;
-        if (sigval & 0x80)
-            return;
-
-        if (m_alarmFlags.test(index))
+        quint32 index = 0;
+        for (auto it = mAlarms.keyBegin(); it != mAlarms.keyEnd(); it++, index++)
         {
-            updatePixmap(sigval & 0x00000001, index);
+            if (sp.sigAdr == *it)
+                break;
         }
+        updatePixmap(sigval & 0x00000001, index);
     }
 }

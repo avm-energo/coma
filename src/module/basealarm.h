@@ -1,34 +1,23 @@
 #pragma once
 
-#include "../interfaces/baseinterface.h"
-
-#include <QWidget>
-#include <bitset>
+#include "../widgets/uwidget.h"
 
 constexpr int circleRadius = 15;
 
-class BaseAlarm : public QWidget
+class BaseAlarm : public UWidget
 {
     Q_OBJECT
 public:
     explicit BaseAlarm(QWidget *parent = nullptr);
     void disable();
 
-public slots:
-    virtual void reqUpdate() = 0;
-
 protected:
-    std::bitset<128> m_alarmFlags;       // '1' equals alarm
-    std::bitset<128> m_actualAlarmFlags; // '1' equals alarm
+    QColor normalColor;
+    QColor alarmColor;
 
-    QColor m_normalColor;
-    QColor m_alarmColor;
-
-    void showEvent(QShowEvent *e);
-    virtual void setupUI(const QStringList &events);
-    virtual void updatePixmap(bool isset, int position);
+    virtual void setupUI(const QStringList &events) = 0;
 
 signals:
-    void updateAlarm(bool value);
-    void updateColor(QColor);
+    void updateAlarm(const bool &value);
+    void updateColor(const QColor &color);
 };

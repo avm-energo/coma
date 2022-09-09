@@ -48,7 +48,7 @@ void ConfigStorage::startNewConfig()
     mSettings->startNewConfig();
 }
 
-void ConfigStorage::signalDataReceive(const quint32 &id, const quint64 &addr, //
+void ConfigStorage::signalDataReceive(const quint32 &id, const quint32 &addr, //
     const quint16 &count, const ModuleTypes::SignalType &sigType)
 {
     if (id != 0 && addr != 0 && count != 0)
@@ -78,7 +78,7 @@ void ConfigStorage::alarmDataReceive(const bool &isBase, //
 {
     auto &alarms = mSettings->getAlarms();
     ModuleTypes::AlarmKey key(isBase, aType);
-    alarms[key].push_back({ addr, desc });
+    alarms[key].insert(addr, desc);
 }
 
 void ConfigStorage::jourDataReceive(const Modules::JournalType &jType, const quint32 &addr, const QString &desc)

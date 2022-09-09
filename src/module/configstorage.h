@@ -37,7 +37,7 @@ public slots:
 
     // Module data slots
     void startNewConfig();
-    void signalDataReceive(const quint32 &id, const quint64 &addr, //
+    void signalDataReceive(const quint32 &id, const quint32 &addr, //
         const quint16 &count, const ModuleTypes::SignalType &sigType);
     void tabDataReceive(const quint32 &id, const QString &name);
     void sectionDataReceive(const ModuleTypes::SGMap &sgmap, const QString &secHead);

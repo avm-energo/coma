@@ -3,26 +3,25 @@
 
 #include "../gen/datatypes.h"
 #include "basealarm.h"
+#include "modulesettings.h"
 
 class ModuleAlarm : public BaseAlarm
 {
     Q_OBJECT
-public:
-    explicit ModuleAlarm(QWidget *parent = nullptr);
-    ModuleAlarm(const DataTypes::Alarm &desc, const int count, QWidget *parent = nullptr);
-    void reqUpdate() override;
+private:
+    const ModuleTypes::AlarmValue &mAlarms;
+    UniquePointer<DataTypesProxy> mProxy;
 
-protected:
-    /// Стартовый адрес регистров сигнализации
-    quint32 m_startAlarmAddress;
-    /// Общее количество регистров сигнализации
-    quint32 m_alarmAllCounts;
-    UniquePointer<DataTypesProxy> proxy;
+    virtual void setupUI(const QStringList &events) override;
+    void followToData();
+    void updatePixmap(const bool &isset, const quint32 &position);
+
+public:
+    explicit ModuleAlarm(const Modules::AlarmType &type, //
+        const ModuleTypes::AlarmValue &alarms, QWidget *parent = nullptr);
 
 public slots:
-    //    void Update(std::bitset<32> &states);
     void update(const QVariant &msg);
-    void update();
 };
 
 #endif // ALARM_H

@@ -1,11 +1,11 @@
 #include "createmoduledialogs.h"
 
-#include "../dialogs/configdialog.h"
-#include "../dialogs/fwuploaddialog.h"
-#include "../dialogs/infodialog.h"
 #include "../module/alarmstateall.h"
 #include "../module/board.h"
 #include "../module/modulealarm.h"
+#include "configdialog.h"
+#include "fwuploaddialog.h"
+#include "infodialog.h"
 
 CreateModuleDialogs::CreateModuleDialogs(const ModuleSettings &settings, QObject *parent)
     : QObject(parent), settings(settings)
@@ -23,6 +23,7 @@ const QList<UDialog *> &CreateModuleDialogs::createDialogs()
 
 void CreateModuleDialogs::createAlarms(AlarmWidget *alarmWidget)
 {
+    /// TODO: bool -> enum
     static const QHash<ModuleTypes::AlarmKey, QString> alarmSettings {
         { { true, Modules::AlarmType::Critical }, "Базовая аварийная сигнализация" },            //
         { { true, Modules::AlarmType::Warning }, "Базовая предупредительная сигнализация" },     //
@@ -43,10 +44,9 @@ void CreateModuleDialogs::createAlarms(AlarmWidget *alarmWidget)
             auto &title = alarmSettings.value(*keyIter);
             if (!title.isEmpty())
             {
-                // auto a = std::get<bool>(*keyIter);
-                auto &alarmList = alarmMap.value(*keyIter);
-                auto alarm = new ModuleAlarm(alarmList, alarmList.count());
-                alarmWidget->addAlarm(alarm, tr("Аварийная сигнализация"));
+                auto &alarms = alarmMap.value(*keyIter);
+                auto moduleAlarm = new ModuleAlarm(keyIter->second, alarms);
+                alarmWidget->addAlarm(moduleAlarm, title);
             }
         }
         //        if (settings()->alarms.contains(AlarmType::Warning))
