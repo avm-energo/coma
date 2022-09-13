@@ -11,7 +11,6 @@ public:
 
     QVector<QVariant> createMeasRecord(const char *file) override;
     virtual QVector<QVector<QVariant>> createMeas(const QByteArray &array) override;
-    ;
     int measureSize() override;
 };
 

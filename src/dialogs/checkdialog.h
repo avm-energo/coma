@@ -70,11 +70,9 @@ public:
         switch (type)
         {
         case Warning:
-
             m_highlightWarn = map;
             break;
         case Critical:
-
             m_highlightCrit = map;
             break;
         }

@@ -15,7 +15,7 @@
 #include "../startup/startupktfdialog.h"
 
 #include <QMainWindow>
-SvcModule::SvcModule(QObject *parent) : Module(parent)
+SvcModule::SvcModule(QObject *parent) : QObject(parent)
 {
 }
 
@@ -25,31 +25,7 @@ void SvcModule::create(QTimer *updateTimer)
     BaseInterface::iface()->setSettings(settings()->ifaceSettings);
     auto &board = Board::GetInstance();
     quint16 typeb = board.typeB();
-    if (BaseBoards.contains(typeb)) // there must be two-part module
-    {
-        board.setDeviceType(Board::Controller);
-        quint16 typem = board.typeM();
-        Q_UNUSED(typem)
-        switch (typeb)
-        {
-        case BaseBoard::MTB_00:
-            /*
-                str = (checkMDialog == nullptr) ? "Текущие параметры" : "Текущие параметры\nБазовая";
-                if (checkBDialog != nullptr)
-                {
-                    checkBDialog->setMinimumHeight(500);
-                    MainTW->addTab(checkBDialog, str);
-                    CheckIndex = MainTW->indexOf(checkBDialog);
-                }
-                str = (checkBDialog == nullptr) ? "Текущие параметры" : "Текущие параметры\nМезонин";
-                if (checkMDialog != nullptr)
-                    MainTW->addTab(checkMDialog, str);
-            */
-        default:
-            break;
-        }
-    }
-    else
+    if (!BaseBoards.contains(typeb)) // there must be two-part module
     {
         board.setDeviceType(Board::Module);
         quint16 mtype = board.type();
@@ -57,7 +33,7 @@ void SvcModule::create(QTimer *updateTimer)
     }
     createCommon();
     QList<UDialog *> dlgs = dialogs();
-    for (auto *d : dlgs)
+    for (auto d : dlgs)
     {
         connect(updateTimer, &QTimer::timeout, d, &UDialog::reqUpdate);
         d->uponInterfaceSetting();
@@ -94,10 +70,8 @@ void SvcModule::createModule(Modules::Model model)
                 addDialogToList(check, item.header, "check:" + item.header);
             }
         }
-
         addDialogToList(new PlotDialog, "Диаграммы");
         addDialogToList(new StartupKIVDialog, "Начальные\nзначения");
-
         Module::create(std::move(jour));
         break;
     }
@@ -154,26 +128,22 @@ void SvcModule::createModule(Modules::Model model)
         break;
     }
     default:
-        // wrong module
-        {
+    {
 
-            QString message = QString("Неизвестный модуль\n"
-                                      "Прочитан некорретный BSI: typeB:%1, typeM:%2\n"
-                                      "%3 не поддерживает такой модуль")
-                                  .arg(board.baseSerialInfo().MTypeB, 0, 16)
-                                  .arg(board.baseSerialInfo().MTypeM, 0, 16)
-                                  .arg(QCoreApplication::applicationName());
-            QWidget *parent = qobject_cast<QWidget *>(WDFunc::getMainWindow());
-            Q_CHECK_PTR(parent);
-            if (parent)
-                QMessageBox::warning(parent, "Некорретный BSI", message);
-            return;
-        }
-
-        //  assert(false);
+        QString message = QString("Неизвестный модуль\n"
+                                  "Прочитан некорретный BSI: typeB:%1, typeM:%2\n"
+                                  "%3 не поддерживает такой модуль")
+                              .arg(board.baseSerialInfo().MTypeB, 0, 16)
+                              .arg(board.baseSerialInfo().MTypeM, 0, 16)
+                              .arg(QCoreApplication::applicationName());
+        QWidget *parent = qobject_cast<QWidget *>(WDFunc::getMainWindow());
+        Q_CHECK_PTR(parent);
+        if (parent)
+            QMessageBox::warning(parent, "Некорретный BSI", message);
+        return;
     }
-    TimeDialog *tdlg = new TimeDialog;
-    addDialogToList(tdlg, "Время", "time");
+    }
+    addDialogToList(new TimeDialog, "Время", "time");
 }
 
 void SvcModule::create(Modules::BaseBoard typeB, Modules::MezzanineBoard typeM)

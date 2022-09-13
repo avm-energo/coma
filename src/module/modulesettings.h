@@ -129,7 +129,7 @@ public:
     void appendToCurrentConfig(DataTypes::RecordPair pair);
 
     const ModuleTypes::ConfigMap &getConfigMap() const;
-    const ModuleTypes::ConfigList &getConfigs() const;
+    const ModuleTypes::ConfigList getConfigs() const;
     const ModuleTypes::SignalMap &getSignals() const;
     const ModuleTypes::TabsMap &getTabs() const;
     const ModuleTypes::SectionList &getSections() const;

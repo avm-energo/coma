@@ -26,7 +26,7 @@ ModuleTypes::ConfigList &ModuleSettings::getConfigs()
     return mConfigs[curConfigIndex];
 }
 
-const ModuleTypes::ConfigList &ModuleSettings::getConfigs() const
+const ModuleTypes::ConfigList ModuleSettings::getConfigs() const
 {
     return mConfigs[curConfigIndex];
 }

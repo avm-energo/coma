@@ -20,8 +20,8 @@ private:
 public:
     explicit ConfigStorage(token, QObject *parent = nullptr);
     // S2 status functions
-    const bool getS2Status() const;
-    void setS2Status(const bool status);
+    const bool &getS2Status() const;
+    void setS2Status(const bool &status);
 
     // S2 data getters
     const DataTypes::ValueMap::value_type &getS2Map() const;

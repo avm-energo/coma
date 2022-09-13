@@ -4,12 +4,12 @@ ConfigStorage::ConfigStorage(token, QObject *parent) : QObject(parent), mSetting
 {
 }
 
-const bool ConfigStorage::getS2Status() const
+const bool &ConfigStorage::getS2Status() const
 {
     return isS2Parsed;
 }
 
-void ConfigStorage::setS2Status(const bool status)
+void ConfigStorage::setS2Status(const bool &status)
 {
     isS2Parsed = status;
 }

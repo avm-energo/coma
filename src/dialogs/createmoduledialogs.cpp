@@ -3,25 +3,36 @@
 #include "../module/alarmstateall.h"
 #include "../module/board.h"
 #include "../module/modulealarm.h"
+#include "../module/modules.h"
+#include "../tune/82/tune82dialog.h"
+#include "../tune/84/tune84dialog.h"
+#include "../tune/kiv/tunekivdialog.h"
+#include "checkdialog.h"
 #include "configdialog.h"
 #include "fwuploaddialog.h"
 #include "infodialog.h"
 
-CreateModuleDialogs::CreateModuleDialogs(const ModuleSettings &settings, QObject *parent)
-    : QObject(parent), settings(settings)
+DialogManager::DialogManager(const ModuleSettings &settings, QWidget *parent)
+    : QObject(parent), settings(settings), mParent(parent)
 {
 }
 
-const QList<UDialog *> &CreateModuleDialogs::createDialogs()
+const QList<UDialog *> &DialogManager::createDialogs(const AppConfiguration &appCfg)
 {
+    auto isBoxModule = !Modules::BaseBoards.contains(Board::GetInstance().typeB());
     deleteDialogs();
     createConfigDialogs();
-    //
+    createCheckDialogs();
+    // Регулировка
+    if (appCfg == AppConfiguration::Debug)
+        createTuneDialogs(isBoxModule);
+
+    createSpecificDialogs(isBoxModule);
     createCommonDialogs();
-    return dialogs;
+    return mDialogs;
 }
 
-void CreateModuleDialogs::createAlarms(AlarmWidget *alarmWidget)
+void DialogManager::createAlarms(AlarmWidget *alarmWidget)
 {
     /// TODO: bool -> enum
     static const QHash<ModuleTypes::AlarmKey, QString> alarmSettings {
@@ -45,82 +56,92 @@ void CreateModuleDialogs::createAlarms(AlarmWidget *alarmWidget)
             if (!title.isEmpty())
             {
                 auto &alarms = alarmMap.value(*keyIter);
-                auto moduleAlarm = new ModuleAlarm(keyIter->second, alarms);
+                auto moduleAlarm = new ModuleAlarm(keyIter->second, alarms, alarmWidget);
                 alarmWidget->addAlarm(moduleAlarm, title);
             }
         }
-        //        if (settings()->alarms.contains(AlarmType::Warning))
-        //        {
-        //            auto *alarm = new ModuleAlarm(settings()->alarms.value(AlarmType::Warning),
-        //            settings()->alarmCount()); alarmWidget->addAlarm(alarm, tr("Предупредительная сигнализация"));
-        //        }
-        //        if (settings()->alarms.contains(AlarmType::Critical))
-        //        {
-        //            auto *alarm = new ModuleAlarm(settings()->alarms.value(AlarmType::Critical),
-        //            settings()->alarmCount()); alarmWidget->addAlarm(alarm, tr("Аварийная сигнализация"));
-        //        }
-        //        if (settings()->alarms.contains(AlarmType::Base))
-        //        {
-        //            auto *alarm = new ModuleAlarm(
-        //                settings()->alarms.value(AlarmType::Base),
-        //                settings()->alarms.value(AlarmType::Base).desc.count());
-        //            alarmWidget->addAlarm(alarm, tr("Базовая сигнализация"));
-        //        }
-        //        if (settings()->alarms.contains(AlarmType::Mezz))
-        //        {
-        //            auto *alarm = new ModuleAlarm(
-        //                settings()->alarms.value(AlarmType::Mezz),
-        //                settings()->alarms.value(AlarmType::Mezz).desc.count());
-        //            alarmWidget->addAlarm(alarm, tr("Мезонинная сигнализация"));
-        //        }
     }
 }
 
-void CreateModuleDialogs::addDialogToList(UDialog *dlg, const QString &caption, const QString &name)
+void DialogManager::addDialogToList(UDialog *dlg, const QString &caption, const QString &name)
 {
     dlg->setObjectName(name);
     dlg->setCaption(caption);
-    dialogs.append(dlg);
+    mDialogs.append(dlg);
 }
 
-void CreateModuleDialogs::deleteDialogs()
+void DialogManager::deleteDialogs()
 {
-    while (!dialogs.isEmpty())
+    while (!mDialogs.isEmpty())
     {
-        auto dialog = dialogs.takeFirst();
+        auto dialog = mDialogs.takeFirst();
         dialog->deleteLater();
     }
 }
 
-void CreateModuleDialogs::createConfigDialogs()
+void DialogManager::createConfigDialogs()
 {
-    auto config = settings.getConfigMap();
-    for (auto it = config.cbegin(); it != config.cend(); ++it)
+    auto &config = settings.getConfigMap();
+    for (auto it = config.cbegin(); it != config.cend(); it++)
     {
-        QString indexStr = QString::number(it.key());
-        addDialogToList(new ConfigDialog(&configV, it.value()), "Конфигурация " + indexStr, "conf" + indexStr);
+        auto indexStr = QString::number(it.key());
+        addDialogToList(new ConfigDialog(&configV, it.value(), true, mParent), //
+            "Конфигурация " + indexStr, "conf" + indexStr);
     }
 }
 
-void CreateModuleDialogs::createCheckDialogs()
+void DialogManager::createCheckDialogs()
+{
+    auto &sections = settings.getSections();
+    auto index = 0;
+    for (auto &section : sections)
+    {
+        auto indexStr = QString::number(index);
+        addDialogToList(new CheckDialog(section, mParent), section.name, "check" + indexStr);
+        index++;
+    }
+}
+
+void DialogManager::createTuneDialogs(const bool &isBoxModule)
+{
+    using namespace Modules;
+    auto &board = Board::GetInstance();
+    // Коробочный модуль
+    if (isBoxModule)
+    {
+        auto moduleModel = Model(board.type());
+        if (moduleModel == Model::KIV)
+            addDialogToList(new TuneKIVDialog(&configV), "Регулировка", "tune");
+        else
+        {
+            // TODO: Добавить регулировку для других модулей
+        }
+    }
+    // Модуль состоит из двух плат
+    else
+    {
+        auto typeB = BaseBoard(board.typeB());
+        auto typeM = MezzanineBoard(board.typeM());
+        if (typeB == BaseBoard::MTB_80)
+        {
+            if ((typeM == MezzanineBoard::MTM_81) || (typeM == MezzanineBoard::MTM_82)
+                || (typeM == MezzanineBoard::MTM_83))
+                addDialogToList(new Tune82Dialog(&configV, typeM), "Регулировка", "tune");
+            else if (typeM == MezzanineBoard::MTM_84)
+                addDialogToList(new TuneKIVDialog(&configV), "Регулировка", "tune");
+        }
+    }
+}
+
+void DialogManager::createSpecificDialogs(const bool &isBoxModule)
 {
     ;
 }
 
-void CreateModuleDialogs::createTuneDialogs()
-{
-    ;
-}
-
-void CreateModuleDialogs::createSpecificDialogs()
-{
-    ;
-}
-
-void CreateModuleDialogs::createCommonDialogs()
+void DialogManager::createCommonDialogs()
 {
     const auto &board = Board::GetInstance();
     if (board.interfaceType() != Board::InterfaceType::RS485)
-        addDialogToList(new FWUploadDialog, "Загрузка ВПО", "upload");
-    addDialogToList(new InfoDialog, "О приборе", "info");
+        addDialogToList(new FWUploadDialog(mParent), "Загрузка ВПО", "upload");
+    addDialogToList(new InfoDialog(mParent), "О приборе", "info");
 }

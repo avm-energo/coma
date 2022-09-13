@@ -1,5 +1,5 @@
-#ifndef CREATEMODULEDIALOGS_H
-#define CREATEMODULEDIALOGS_H
+#ifndef DIALOGMANAGER_H
+#define DIALOGMANAGER_H
 
 #include "../module/modulesettings.h"
 #include "../s2/configv.h"
@@ -8,27 +8,34 @@
 
 #include <QObject>
 
-class CreateModuleDialogs : public QObject
+enum AppConfiguration : bool
+{
+    Debug = false,
+    Service = true
+};
+
+class DialogManager : public QObject
 {
     Q_OBJECT
 public:
-    CreateModuleDialogs(const ModuleSettings &settings, QObject *parent = nullptr);
+    DialogManager(const ModuleSettings &settings, QWidget *parent = nullptr);
 
-    const QList<UDialog *> &createDialogs();
+    const QList<UDialog *> &createDialogs(const AppConfiguration &appCfg);
     void createAlarms(AlarmWidget *alarmWidget);
+    void deleteDialogs();
 
 private:
     const ModuleSettings &settings;
-    QList<UDialog *> dialogs;
+    QWidget *mParent;
+    QList<UDialog *> mDialogs;
     ConfigV configV;
 
     void addDialogToList(UDialog *dlg, const QString &caption, const QString &name);
-    void deleteDialogs();
     void createConfigDialogs();
     void createCheckDialogs();
-    void createTuneDialogs();
-    void createSpecificDialogs();
+    void createTuneDialogs(const bool &isBoxModule);
+    void createSpecificDialogs(const bool &isBoxModule);
     void createCommonDialogs();
 };
 
-#endif // CREATEMODULEDIALOGS_H
+#endif // DIALOGMANAGER_H

@@ -34,6 +34,10 @@ public:
     virtual int measureSize() = 0;
     int workJournalID();
 
+public slots:
+    void FillJour(const QVariant &data);
+    void saveJour(DataTypes::FilesEnum jtype, QString filename);
+
 signals:
     void Done(QString, DataTypes::FilesEnum);
     void resendResult(int);
@@ -43,26 +47,22 @@ signals:
 
 protected:
     QStringList m_workJourDescription, m_measJourHeaders;
+    QTimeZone m_timezone;
+
     virtual QVector<QVariant> createMeasRecord(const char *file) = 0;
     virtual QVector<QVector<QVariant>> createMeas(const QByteArray &array) = 0;
     QVector<QVector<QVariant>> createCommon(const QByteArray &array, const int eventid, const QStringList &desc);
-    QTimeZone m_timezone;
 
 private:
     EDynamicTableModel *m_sysModel, *m_workModel, *m_measModel;
     QSortFilterProxyModel *_proxySysModel, *_proxyWorkModel, *_proxyMeasModel;
-
     DataTypes::FilesEnum m_jourType;
     QString m_jourFile;
     const QMap<Modules::JournalType, DataTypes::JournalDesc> m_jourMap;
+
     void FillEventsTable(const QByteArray &ba);
     void FillMeasTable(const QByteArray &ba);
     void resultReady(EDynamicTableModel *model);
-
-public slots:
-    void FillJour(const QVariant &data);
-
-    void saveJour(DataTypes::FilesEnum jtype, QString filename);
 };
 
 #endif // JOURNALS_H

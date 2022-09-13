@@ -6,7 +6,6 @@
 #include "../dialogs/journalsdialog.h"
 #include "../dialogs/plotdialog.h"
 #include "../dialogs/relaydialog.h"
-//#include "../dialogs/signaldialog84.h"
 #include "../dialogs/switchjournaldialog.h"
 #include "../dialogs/timedialog.h"
 #include "../module/journkdv.h"
@@ -20,7 +19,7 @@
 #include "../tune/84/tune84dialog.h"
 #include "../tune/kiv/tunekivdialog.h"
 
-DbgModule::DbgModule(QObject *parent) : Module(parent)
+DbgModule::DbgModule(QObject *parent) : QObject(parent)
 {
 }
 
@@ -44,10 +43,7 @@ void DbgModule::createModule(Modules::Model model)
             {
                 assert(m_gsettings.check.items.size() == 1);
                 auto &&item = m_gsettings.check.items.front();
-
                 addDialogToList(new TuneKIVDialog(&configV), "Регулировка");
-                //                addDialogToList(new SignalDialog84(), "Входные сигналы");
-
                 auto check = new CheckDialog(item, m_gsettings.check.categories);
                 check->setHighlights(CheckDialog::Warning, settings()->highlightWarn);
                 check->setHighlights(CheckDialog::Critical, settings()->highlightCrit);
@@ -110,7 +106,6 @@ void DbgModule::createModule(Modules::Model model)
     }
     default:
         break;
-        //  assert(false);
     }
     TimeDialog *tdlg = new TimeDialog;
     addDialogToList(tdlg, "Время", "time");
@@ -222,25 +217,10 @@ void DbgModule::createUSIO(Modules::BaseBoard typeB, Modules::MezzanineBoard typ
         addDialogToList(new RelayDialog(4), "Реле", "relay1");
     }
 
-    // if (typeB == BaseBoard::MTB_31 || typeB == BaseBoard::MTB_33)
-    // {
-    // addDialogToList(
-    //    new CheckBase3133Dialog(item, m_gsettings.check.categories), item.header, "check:" + item.header);
-    // }
-    // else
-    // {
     addDialogToList(new CheckDialog(item, m_gsettings.check.categories), item.header, "check:" + item.header);
-    // }
     if (m_gsettings.check.items.size() == 2)
     {
         const auto &itemIn = m_gsettings.check.items.at(1);
-        // if ((typeM == MezzanineBoard::MTM_31) || (typeM == MezzanineBoard::MTM_33))
-        // {
-        // addDialogToList(
-        //    new CheckMezz3133Dialog(itemIn, m_gsettings.check.categories), itemIn.header, "check:" +
-        //    itemIn.header);
-        // }
-        // else if ((typeM != MezzanineBoard::MTM_34) && (typeM != MezzanineBoard::MTM_35))
         addDialogToList(new CheckDialog(itemIn, m_gsettings.check.categories), itemIn.header, "check:" + itemIn.header);
     }
 }
@@ -254,31 +234,11 @@ void DbgModule::create(QTimer *updateTimer)
     quint16 typeb = board.typeB();
     if (BaseBoards.contains(typeb)) // there must be two-part module
     {
-        //        board.setDeviceType(Board::Controller);
         quint16 typem = board.typeM();
-        switch (typeb)
-        {
-        case BaseBoard::MTB_00:
-            /*
-                str = (checkMDialog == nullptr) ? "Текущие параметры" : "Текущие параметры\nБазовая";
-                if (checkBDialog != nullptr)
-                {
-                    checkBDialog->setMinimumHeight(500);
-                    MainTW->addTab(checkBDialog, str);
-                    CheckIndex = MainTW->indexOf(checkBDialog);
-                }
-                str = (checkBDialog == nullptr) ? "Текущие параметры" : "Текущие параметры\nМезонин";
-                if (checkMDialog != nullptr)
-                    MainTW->addTab(checkMDialog, str);
-            */
-        default:
-            create(static_cast<BaseBoard>(typeb), static_cast<MezzanineBoard>(typem));
-            break;
-        }
+        create(static_cast<BaseBoard>(typeb), static_cast<MezzanineBoard>(typem));
     }
     else
     {
-        //        board.setDeviceType(Board::Module);
         quint16 mtype = board.type();
         createModule(Modules::Model(mtype));
     }
