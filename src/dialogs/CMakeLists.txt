@@ -27,6 +27,7 @@ target_link_libraries(
   PRIVATE oscillograms
   PRIVATE models
   PRIVATE tune
+  PRIVATE startup
   PRIVATE Qt${QT_VERSION_MAJOR}::Core
   PRIVATE Qt${QT_VERSION_MAJOR}::Widgets
   PRIVATE Qt${QT_VERSION_MAJOR}::Xml

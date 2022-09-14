@@ -65,8 +65,6 @@ bool WDFunc::SetLEData(QObject *parent, const QString &lename, const QString &le
     le->setText(levalue);
     if (!restring.isEmpty())
     {
-        // QRegExp re;
-        // re.setPattern(restring);
         auto val = new QRegExpValidator(QRegExp(restring), parent);
         le->setValidator(val);
     }
@@ -218,7 +216,6 @@ QComboBox *WDFunc::NewCB2(QWidget *parent, const QStringList &cbsl)
 {
     auto cb = new QComboBox(parent);
     auto cblm = new QStringListModel(cbsl, cb);
-    // cblm->setStringList(cbsl);
     cb->setModel(cblm);
     return cb;
 }
@@ -723,11 +720,10 @@ QString WDFunc::ChooseFileForSave(QWidget *parent, const QString &mask, const QS
 QPushButton *WDFunc::NewPBCommon(
     QWidget *parent, const QString &pbname, const QString &text, const QString &icon, const QString &pbtooltip)
 {
-    auto pb = new QPushButton(parent);
+    auto pb = new QPushButton(text, parent);
     pb->setObjectName(pbname);
     if (!icon.isEmpty())
         pb->setIcon(QIcon(icon));
-    pb->setText(text);
     pb->setToolTip(pbtooltip);
     return pb;
 }

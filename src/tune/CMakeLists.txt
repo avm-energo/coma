@@ -34,6 +34,7 @@ target_link_libraries(
   PRIVATE Qt${QT_VERSION_MAJOR}::Qml
   PRIVATE QXlsx
   PRIVATE xml
-  PRIVATE limereport)
+  PRIVATE limereport
+  PRIVATE datablocks)
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE ${PROJECT_NAME}_LIBRARY)

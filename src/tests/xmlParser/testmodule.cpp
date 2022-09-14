@@ -7,6 +7,11 @@
 
 #include <QtXml>
 
+TestModule::TestModule(QObject *parent) : QObject(parent)
+{
+}
+
+/*
 inline int getElementCount(std::vector<CheckItem> &vec)
 {
     auto elementCount = std::accumulate(vec.cbegin(), vec.cend(), 0,       //
@@ -15,10 +20,6 @@ inline int getElementCount(std::vector<CheckItem> &vec)
             return value + static_cast<int>(container.itemsVector.size()); //
         });                                                                //
     return elementCount;
-}
-
-TestModule::TestModule(QObject *parent) : QObject(parent)
-{
 }
 
 void TestModule::checkA284()
@@ -543,7 +544,8 @@ void TestModule::check8083USB()
     QCOMPARE(elementCount, check::check8083);
 }
 
-/*void TestModule::check2100()
+
+void TestModule::check2100()
 {
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x21;

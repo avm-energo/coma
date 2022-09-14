@@ -9,7 +9,7 @@ int main(int argc, char *argv[])
     QApplication app(argc, argv);
     ComaHelper::initAppSettings(PROGNAME, SOFTDEVELOPER, COMAVERSION);
     app.setWindowIcon(QIcon(":/icons/coma.ico"));
-    Coma coma;
+    Coma coma(AppConfiguration::Service);
     // Если есть аргументы запуска
     if (argc > 1)
         ComaHelper::parserHelper(&coma);

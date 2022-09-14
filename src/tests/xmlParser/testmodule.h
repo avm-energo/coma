@@ -82,7 +82,7 @@ private slots:
         void check3534();
         void check3535();
 
-        void check3533USB(); */
+        void check3533USB();
 
     void check8081();
     void check8081USB();
@@ -114,9 +114,10 @@ private slots:
     void checkA387();
     void checkA387USB();
     void checkA387Eth();
+    */
 
-    void checkSaveXmlFile();
     void TestS2Parsing();
+    void checkSaveXmlFile();
 
 signals:
 private:

@@ -24,7 +24,6 @@ add_library(
 target_link_libraries(
   ${PROJECT_NAME}
   PRIVATE gen
-  PRIVATE modules
   PRIVATE Qt${QT_VERSION_MAJOR}::Core
   PRIVATE Qt${QT_VERSION_MAJOR}::Xml
   PRIVATE Qt${QT_VERSION_MAJOR}::Network

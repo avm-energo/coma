@@ -1,5 +1,5 @@
 #include "../../gen/stdfunc.h"
-#include "../../module/update/newmodule.h"
+#include "../../module/module.h"
 #include "testdata.h"
 #include "testmodule.h"
 
@@ -21,7 +21,7 @@ void TestModule::TestS2Parsing()
     bsi.MTypeB = 0x11;
     bsi.MTypeM = 0x11;
     bsi.Fwver = StdFunc::StrToVer(version::avma284);
-    auto mModule = new NewModule(bsi, this);
+    auto mModule = new Module(bsi, this);
     auto state = mModule->loadSettings();
     const auto &mSettings = ConfigStorage::GetInstance().getModuleSettings();
     printModuleSettings(mSettings);

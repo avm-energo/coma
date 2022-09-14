@@ -29,11 +29,11 @@ add_test(NAME ${PROJECT_NAME} COMMAND ${PROJECT_NAME})
 
 target_link_libraries(${PROJECT_NAME}
     gen
-    module
     interfaces
     widgets
     dialogs
     models
+    module
     Qt${QT_VERSION_MAJOR}::Core
     Qt${QT_VERSION_MAJOR}::Xml
     Qt${QT_VERSION_MAJOR}::Widgets

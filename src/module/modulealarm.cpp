@@ -70,7 +70,10 @@ void ModuleAlarm::setupUI(const QStringList &events)
     auto scrollArea = new QScrollArea(this);
     scrollArea->setWidget(widget);
     lyout->addWidget(scrollArea);
-    lyout->addWidget(WDFunc::NewPB(this, "", "Ok", this, &QWidget::hide));
+
+    auto pb = new QPushButton("Ok", this);
+    QObject::connect(pb, &QPushButton::clicked, this, &ModuleAlarm::hide);
+    lyout->addWidget(pb);
     setLayout(lyout);
 }
 
