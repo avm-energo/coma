@@ -1,6 +1,7 @@
 #ifndef COMA_H
 #define COMA_H
 
+#include "../dialogs/dialogmanager.h"
 #include "../gen/datamanager/typesproxy.h"
 #include "../interfaces/settingstypes.h"
 #include "../module/module.h"
@@ -26,7 +27,7 @@ class Coma : public QMainWindow
     Q_OBJECT
 
 public:
-    Coma(QWidget *parent = nullptr);
+    Coma(const AppConfiguration &appCfg, QWidget *parent = nullptr);
     ~Coma();
 
     void go();
@@ -43,12 +44,6 @@ public slots:
     void reconnect();
     void attemptToRec();
 
-protected:
-    UniquePointer<Module> module;
-    QTimer *BdaTimer, *AlrmTimer;
-    AlarmWidget *AlarmW;
-    UniquePointer<DataTypesProxy> proxyBS, proxyGRS;
-
 private slots:
     void prepareConnectDlg();
     void startWork(const ConnectStruct st);
@@ -56,12 +51,15 @@ private slots:
     void loadSwj();
     void openModuleEditor();
     void getAbout();
-
     void closeEvent(QCloseEvent *event) override;
     void update(const QVariant &msg);
     void mainTWTabChanged(int tabindex);
 
 private:
+    UniquePointer<Module> module;
+    QTimer *BdaTimer, *AlrmTimer;
+    AlarmWidget *AlarmW;
+    UniquePointer<DataTypesProxy> proxyBS, proxyGRS;
     QStackedWidget *MainTW;
     QListWidget *MainLW;
     OscManager oscManager;
@@ -69,6 +67,8 @@ private:
     File::Vector fileVector;
     bool Reconnect;
     ConnectStruct ConnectSettings;
+    const AppConfiguration &mAppConfig;
+    DialogManager *mDlgManager;
 
     void initInterfaceConnection();
     void loadSettings();
@@ -82,8 +82,6 @@ private:
     void prepare();
     virtual bool nativeEvent(const QByteArray &eventType, void *message, long *result) override;
     QToolBar *createToolBar();
-
-protected:
     void keyPressEvent(QKeyEvent *e) override;
     void resizeEvent(QResizeEvent *e) override;
     void prepareDialogs();

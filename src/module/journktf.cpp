@@ -3,8 +3,7 @@
 #include "../gen/timefunc.h"
 #include "modules.h"
 
-JournKTF::JournKTF(QMap<Modules::JournalType, DataTypes::JournalDesc> &jourMap, QObject *parent)
-    : Journals(jourMap, parent)
+JournKTF::JournKTF(const ModuleTypes::JourMap &jourMap, QObject *parent) : Journals(jourMap, parent)
 {
 }
 

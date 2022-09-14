@@ -112,25 +112,6 @@ struct SingleCommand
     bool value;
 };
 
-/// TODO: delete
-struct [[deprecated]] Alarm
-{
-    std::bitset<128> flags;
-    quint32 startAddr;
-    QStringList desc;
-    QString name;
-    QString color;
-};
-
-/// TODO: delete
-struct [[deprecated]] JournalDesc
-{
-    quint32 id;
-    QStringList header;
-    QStringList desc;
-    QString name;
-};
-
 }
 
 namespace Queries

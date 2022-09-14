@@ -89,12 +89,14 @@ void registerForDeviceNotification(QWidget *ptr)
 }
 #endif
 
-Coma::Coma(QWidget *parent)
+Coma::Coma(const AppConfiguration &appCfg, QWidget *parent)
     : QMainWindow(parent)
     , module(new Module(Board::GetInstance().baseSerialInfo(), this))
     , editor(nullptr)
     , proxyBS(new DataTypesProxy)
     , proxyGRS(new DataTypesProxy)
+    , mAppConfig(appCfg)
+    , mDlgManager(nullptr)
 {
     proxyBS->RegisterType<DataTypes::BitStringStruct>();
     proxyGRS->RegisterType<DataTypes::GeneralResponseStruct>();
@@ -178,10 +180,11 @@ void Coma::setupUI()
 
 void Coma::prepareDialogs()
 {
+    module = UniquePointer<Module>(new Module(Board::GetInstance().baseSerialInfo(), this));
     if (module->loadSettings())
     {
-        module->createAlarm(AlarmW);
-        module->create(BdaTimer);
+        mDlgManager = new DialogManager(ConfigStorage::GetInstance().getModuleSettings(), this);
+        mDlgManager->createAlarms(AlarmW);
     }
     else
     {
@@ -411,7 +414,13 @@ void Coma::prepare()
     if (board.noRegPars())
         qCritical() << Error::Msg::NoTuneError;
 
-    QList<UDialog *> dlgs = module->dialogs();
+    QList<UDialog *> dlgs = mDlgManager->createDialogs(mAppConfig);
+    for (auto dialog : dlgs)
+    {
+        connect(BdaTimer, &QTimer::timeout, dialog, &UDialog::reqUpdate);
+        dialog->uponInterfaceSetting();
+    }
+
     Q_ASSERT(MainTW->count() == 0);
     for (auto *d : dlgs)
     {
@@ -716,7 +725,8 @@ void Coma::disconnectAndClear()
     disconnect();
     if (module)
     {
-        module->closeDialogs();
+        mDlgManager->deleteDialogs();
+        // module->closeDialogs();
         clearWidgets();
     }
     Board::GetInstance().reset();
@@ -743,7 +753,7 @@ void Coma::keyPressEvent(QKeyEvent *e)
 
 void Coma::mainTWTabChanged(int tabindex)
 {
-    module->parentTWTabChanged(tabindex);
+    mDlgManager->parentTWTabChanged(tabindex);
 }
 
 void Coma::update(const QVariant &msg)

@@ -1,11 +1,12 @@
 #ifndef JOURNALS_H
 #define JOURNALS_H
 
-#include "../gen/datatypes.h"
+//#include "../gen/datatypes.h"
 #include "../gen/timefunc.h"
 #include "../models/edynamictablemodel.h"
 #include "../module/modules.h"
 #include "../s2/filestruct.h"
+#include "modulesettings.h"
 
 #include <QDebug>
 #include <QSortFilterProxyModel>
@@ -24,7 +25,7 @@ class Journals : public QObject
     };
 
 public:
-    explicit Journals(QMap<Modules::JournalType, DataTypes::JournalDesc> &jourMap, QObject *parent = nullptr);
+    explicit Journals(const ModuleTypes::JourMap &jourMap, QObject *parent = nullptr);
     ~Journals();
 
     void SetProxyModels(QSortFilterProxyModel *workmdl, QSortFilterProxyModel *sysmdl, QSortFilterProxyModel *measmdl);
@@ -32,7 +33,7 @@ public:
     void SetJourFile(const QString &jourfile);
 
     virtual int measureSize() = 0;
-    int workJournalID();
+    // int workJournalID();
 
 public slots:
     void FillJour(const QVariant &data);
@@ -58,8 +59,9 @@ private:
     QSortFilterProxyModel *_proxySysModel, *_proxyWorkModel, *_proxyMeasModel;
     DataTypes::FilesEnum m_jourType;
     QString m_jourFile;
-    const QMap<Modules::JournalType, DataTypes::JournalDesc> m_jourMap;
+    const ModuleTypes::JourMap m_jourMap;
 
+    const QStringList jourListToStrList(const QList<ModuleTypes::Journal> &jlist);
     void FillEventsTable(const QByteArray &ba);
     void FillMeasTable(const QByteArray &ba);
     void resultReady(EDynamicTableModel *model);

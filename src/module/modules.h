@@ -94,10 +94,7 @@ enum AlarmType
 {
     Warning,
     Critical,
-    Info,
-    All,
-    Base,
-    Mezz
+    Info
 };
 
 enum JournalType

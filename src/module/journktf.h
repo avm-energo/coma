@@ -5,14 +5,11 @@
 
 class JournKTF : public Journals
 {
-
     Q_OBJECT
 public:
-    JournKTF(QMap<Modules::JournalType, DataTypes::JournalDesc> &jourMap, QObject *parent = nullptr);
-
+    JournKTF(const ModuleTypes::JourMap &jourMap, QObject *parent = nullptr);
     QVector<QVariant> createMeasRecord(const char *file) override;
     virtual QVector<QVector<QVariant>> createMeas(const QByteArray &array) override;
-    ;
     int measureSize() override;
 };
 
