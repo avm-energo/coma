@@ -36,7 +36,7 @@ public:
     ~IEC104();
 
     bool start(const ConnectStruct &st) override;
-    InterfaceSettings parseSettings(QDomElement domElement) const override;
+    // InterfaceSettings parseSettings(QDomElement domElement) const override;
 public slots:
     void reqStartup(quint32 sigAdr = 0, quint32 sigCount = 0) override;
     void reqBSI() override;

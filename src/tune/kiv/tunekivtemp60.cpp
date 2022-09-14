@@ -10,7 +10,7 @@
 #include "../../widgets/wd_func.h"
 #include "../tunesequencefile.h"
 #include "../tunesteps.h"
-#include "../xml/xmlconfigparser.h"
+#include "../xml/xmlparser/xmlconfigparser.h"
 
 #include <QEventLoop>
 #include <QMessageBox>

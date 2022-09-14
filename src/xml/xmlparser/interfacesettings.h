@@ -9,6 +9,7 @@
 #include <type_traits>
 #include <utility>
 #include <variant>
+
 // Thanx to https://stackoverflow.com/questions/34672441
 template <template <typename...> class base, typename derived> struct is_base_of_template_impl
 {
@@ -20,31 +21,20 @@ template <template <typename...> class base, typename derived> struct is_base_of
 template <template <typename...> class base, typename derived>
 using is_base_of_template = typename is_base_of_template_impl<base, derived>::type;
 
-//#define XML_DEBUG
 template <typename FuncCode, typename TypeId> struct BaseRegister
 {
     BaseRegister() = default;
     BaseRegister(QDomElement domElement)
     {
-#ifdef XML_DEBUG
-        qDebug() << domElement.attribute("id", "") << domElement.text();
-#endif
         id = domElement.attribute("id", "");
-        //   Q_ASSERT(!id.isEmpty());
         domElement = domElement.firstChildElement();
         while (!domElement.isNull())
         {
             if (domElement.tagName() == "function")
             {
                 bool ok;
-#ifdef XML_DEBUG
-                qDebug() << domElement.text().toUInt(&ok, 16);
-#endif
                 function = static_cast<FuncCode>(domElement.text().toUInt(&ok, 16));
                 Q_ASSERT(ok);
-#ifdef XML_DEBUG
-                qDebug() << function;
-#endif
                 domElement = domElement.nextSiblingElement();
                 continue;
             }
@@ -52,24 +42,17 @@ template <typename FuncCode, typename TypeId> struct BaseRegister
             {
                 QString buffer = domElement.text();
                 Q_ASSERT(!buffer.isEmpty());
-#ifdef XML_DEBUG
-                qDebug() << buffer;
-#endif
                 auto types = QMetaEnum::fromType<TypeId>;
                 Q_ASSERT(types().isValid());
                 buffer[0] = buffer[0].toUpper();
                 int typeId = types().keyToValue(buffer.toStdString().c_str());
                 Q_ASSERT(typeId != -1);
                 dataType = static_cast<TypeId>(typeId);
-
                 domElement = domElement.nextSiblingElement();
                 continue;
             }
             if (domElement.tagName() == "start-addr")
             {
-#ifdef XML_DEBUG
-                qDebug() << domElement.text().toUInt();
-#endif
                 startAddr = domElement.text().toUInt();
                 domElement = domElement.nextSiblingElement();
                 continue;
@@ -77,15 +60,18 @@ template <typename FuncCode, typename TypeId> struct BaseRegister
             domElement = domElement.nextSiblingElement();
         }
     }
+
     bool operator==(const BaseRegister &rhs) const
     {
-        return (
-            (id == rhs.id) && (function == rhs.function) && (dataType == rhs.dataType) && (startAddr == rhs.startAddr));
+        return ((id == rhs.id) && (function == rhs.function) && //
+            (dataType == rhs.dataType) && (startAddr == rhs.startAddr));
     }
+
     bool operator!=(const BaseRegister &rhs) const
     {
         return !(*this == rhs);
     }
+
     QString id;
     FuncCode function;
     TypeId dataType;
@@ -98,17 +84,11 @@ template <typename FuncCode, typename TypeId> struct BaseGroup : BaseRegister<Fu
     BaseGroup() = default;
     BaseGroup(QDomElement domElement) : BaseRegister<FuncCode, TypeId>(domElement)
     {
-#ifdef XML_DEBUG
-        qDebug() << domElement.attribute("id", "") << domElement.text();
-#endif
         domElement = domElement.firstChildElement();
         while (!domElement.isNull())
         {
             if (domElement.tagName() == "count")
             {
-#ifdef XML_DEBUG
-                qDebug() << domElement.text().toUInt();
-#endif
                 count = domElement.text().toUInt();
                 domElement = domElement.nextSiblingElement();
                 continue;
@@ -116,14 +96,17 @@ template <typename FuncCode, typename TypeId> struct BaseGroup : BaseRegister<Fu
             domElement = domElement.nextSiblingElement();
         }
     }
+
     bool operator==(const BaseGroup &rhs) const
     {
         return (BaseRegister<FuncCode, TypeId>::operator==(rhs) && (count == rhs.count));
     }
+
     bool operator!=(const BaseGroup &rhs) const
     {
         return !(*this == rhs);
     }
+
     quint32 count;
 };
 
@@ -133,18 +116,19 @@ class InterfaceInfo
 {
 public:
     using Register = typename Group::base;
+
     void addGroup(const Group &gr)
     {
         m_groups.append(gr);
-
         m_dictionary.insert(gr.startAddr, gr);
     }
+
     void addReg(const Register &reg)
     {
         m_regs.append(reg);
-
         m_dictionaryRegs.insert(reg.startAddr, reg);
     }
+
     void clear()
     {
         m_groups.clear();
@@ -177,15 +161,11 @@ public:
     {
         m_groups.append(rhs.m_groups);
         for (auto it = rhs.m_dictionary.cbegin(); it != rhs.m_dictionary.cend(); it++)
-        {
             m_dictionary.insert(it.key(), it.value());
-        }
 
         m_regs.append(rhs.m_regs);
         for (auto it = rhs.m_dictionaryRegs.cbegin(); it != rhs.m_dictionaryRegs.cend(); it++)
-        {
             m_dictionaryRegs.insert(it.key(), it.value());
-        }
     }
 
 private:

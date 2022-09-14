@@ -113,10 +113,10 @@ bool IEC104::start(const ConnectStruct &st)
     return ethconnected;
 }
 
-InterfaceSettings IEC104::parseSettings(QDomElement domElement) const
-{
-    return BaseInterface::parseSettings<Commands104::Iec104Group>(domElement);
-}
+// InterfaceSettings IEC104::parseSettings(QDomElement domElement) const
+//{
+//    return BaseInterface::parseSettings<Commands104::Iec104Group>(domElement);
+//}
 
 void IEC104::reqStartup(quint32 sigAdr, quint32 sigCount)
 {

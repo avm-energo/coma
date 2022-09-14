@@ -1,7 +1,7 @@
 #ifndef MODULEXMLPARSER_H
 #define MODULEXMLPARSER_H
 
-#include "../module/modulesettings.h"
+#include "../../module/modulesettings.h"
 #include "basexmlparser.h"
 
 class ModuleXmlParser : public BaseXmlParser

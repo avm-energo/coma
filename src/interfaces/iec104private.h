@@ -1,7 +1,7 @@
 #pragma once
-#include "interfacesettings.h"
 
 #include <QObject>
+
 #define STARTUPGROUP 2
 #define BSIGROUP 1
 #define TIMEGROUP 15
@@ -278,16 +278,5 @@ struct DataUnitIdentifier
     quint8 commonAdrASDU;
 };
 
-struct Iec104Group : BaseGroup<Commands, TypeId>
-{
-    Iec104Group() = default;
-    Iec104Group(QDomElement domElement) : BaseGroup<Commands, TypeId>(domElement)
-    {
-    }
-    // NOTE Need more fileds?
-};
-
 }
-Q_DECLARE_METATYPE(InterfaceInfo<Commands104::Iec104Group>)
-// Q_DECLARE_METATYPE(Commands104::Iec104Group)
 Q_DECLARE_METATYPE(Commands104::CommandStruct)

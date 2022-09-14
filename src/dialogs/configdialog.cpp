@@ -11,7 +11,7 @@
 #include "../s2/configv.h"
 #include "../s2/s2.h"
 #include "../widgets/wd_func.h"
-#include "../xml/xmlconfigparser.h"
+#include "../xml/xmlparser/xmlconfigparser.h"
 
 #include <QDebug>
 #include <QGridLayout>

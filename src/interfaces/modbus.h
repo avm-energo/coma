@@ -56,7 +56,7 @@ public:
     void reqFloats(quint32 sigAdr, quint32 sigCount) override;
     void reqBitStrings(quint32 sigAdr, quint32 sigCount) override;
 
-    InterfaceSettings parseSettings(QDomElement domElement) const override;
+    // InterfaceSettings parseSettings(QDomElement domElement) const override;
 
 signals:
     void clearBuffer();

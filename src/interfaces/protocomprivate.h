@@ -1,5 +1,4 @@
 #pragma once
-#include "interfacesettings.h"
 
 #include <QVariant>
 // Обмен с модулями
@@ -33,7 +32,8 @@ namespace Limits
     //    constexpr byte FirmwareFileId = 3;
     //    constexpr byte SwjFileId = 17;
     //    constexpr byte EventFileId = 18;
-} // namespace Limits
+}
+
 // Канал связи с модулем
 // таймаут по USB в мс
 constexpr unsigned Timeout = 1000;
@@ -180,36 +180,7 @@ Q_ENUM_NS(TypeId)
 // GBac, GBda, GBd,GBt - float,
 // GF - file
 
-struct ProtocomGroup : BaseGroup<Commands, TypeId>
-{
-    ProtocomGroup() = default;
-    ProtocomGroup(QDomElement domElement) : BaseGroup<Commands, TypeId>(domElement)
-    {
-        domElement = domElement.firstChildElement();
-        while (!domElement.isNull())
-        {
-            if (domElement.tagName() == "block")
-            {
-#ifdef XML_DEBUG
-                qDebug() << domElement.text().toUInt();
-#endif
-                block = domElement.text().toUInt();
-            }
-            domElement = domElement.nextSiblingElement();
-        }
-    }
-    // maybe quint16 or quint8 is enough?
-    quint8 block;
-    // NOTE Need more fileds?
-};
-
 }
 Q_DECLARE_METATYPE(Proto::CommandStruct)
-Q_DECLARE_METATYPE(InterfaceInfo<Proto::ProtocomGroup>)
-// Q_DECLARE_METATYPE(Proto::ProtocomGroup)
-//#define WORK_MODE 0
-//#define TUNE_MODE_1000 1
-//#define TUNE_MODE_100 2
 
 #define HIDUSB_LOG
-//#define PROTOCOM_DEBUG

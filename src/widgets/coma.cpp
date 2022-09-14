@@ -45,7 +45,7 @@
 #include "../widgets/splashscreen.h"
 #include "../widgets/styleloader.h"
 #include "../widgets/wd_func.h"
-#include "../xml/xmlconfigparser.h"
+#include "../xml/xmlparser/xmlconfigparser.h"
 #include "alarmwidget.h"
 #include "waitwidget.h"
 

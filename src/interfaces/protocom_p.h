@@ -1,5 +1,8 @@
 #pragma once
+
+#include "../xml/xmlparser/interfacegroups.h"
 #include "protocom.h"
+
 class ProtocomPrivate
 {
     Q_DECLARE_PUBLIC(Protocom);
@@ -9,7 +12,7 @@ public:
     auto blockByReg(const quint32 regAddr)
     {
         Q_Q(Protocom);
-        return q->settings<InterfaceInfo<Proto::ProtocomGroup>>().dictionary().value(regAddr).block;
+        return q->settings<InterfaceInfo<ProtocomGroup>>().dictionary().value(regAddr).block;
     }
     void handleBlk(const Proto::Commands cmd, const quint32 blk, QByteArray data = {}, const quint32 count = 0);
     void handleBlk(const Proto::Commands cmd, const quint32 addr, const quint32 count);

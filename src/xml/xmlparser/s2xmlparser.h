@@ -1,7 +1,7 @@
 #ifndef NEWXMLPARSER_H
 #define NEWXMLPARSER_H
 
-#include "../widgets/delegate_common.h"
+#include "../../widgets/delegate_common.h"
 #include "basexmlparser.h"
 
 template <typename T> constexpr auto is_comboBox = std::is_base_of_v<delegate::QComboBox, T>;

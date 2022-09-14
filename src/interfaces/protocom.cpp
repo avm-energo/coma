@@ -1,6 +1,5 @@
 #include "protocom.h"
 
-//#include "../gen/datamanager/datamanager.h"
 #include "../gen/files.h"
 #include "../gen/stdfunc.h"
 #include "protocom_p.h"
@@ -11,6 +10,7 @@
 #include <QCoreApplication>
 #include <QDebug>
 #include <QThread>
+
 #ifdef Q_OS_WINDOWS
 // clang-format off
 #include <windows.h>
@@ -18,6 +18,7 @@
 #include <dbt.h>
 // clang-format on
 #endif
+
 using Proto::CommandStruct;
 using Proto::Starters;
 
@@ -241,10 +242,10 @@ void Protocom::writeRaw(const QByteArray &ba)
     emit wakeUpParser();
 }
 
-InterfaceSettings Protocom::parseSettings(QDomElement domElement) const
-{
-    return BaseInterface::parseSettings<Proto::ProtocomGroup>(domElement);
-}
+// InterfaceSettings Protocom::parseSettings(QDomElement domElement) const
+//{
+//    return BaseInterface::parseSettings<Proto::ProtocomGroup>(domElement);
+//}
 
 void Protocom::writeCommand(Queries::Commands cmd, QVariant item)
 {
@@ -406,7 +407,7 @@ void Protocom::writeCommand(Queries::Commands cmd, const QVariantList &list)
 
 bool Protocom::isValidRegs(const quint32 sigAdr, const quint32 sigCount)
 {
-    const auto &st = settings<InterfaceInfo<Proto::ProtocomGroup>>();
+    const auto &st = settings<InterfaceInfo<ProtocomGroup>>();
     Q_ASSERT(st.dictionary().contains(sigAdr));
     const auto val = st.dictionary().value(sigAdr);
     Q_ASSERT(val.count == sigCount);

@@ -70,7 +70,7 @@ void Emulator::reqBitStrings(quint32, quint32)
 {
 }
 
-InterfaceSettings Emulator::parseSettings(QDomElement domElement) const
-{
-    return BaseInterface::parseSettings<Proto::ProtocomGroup>(domElement);
-}
+// InterfaceSettings Emulator::parseSettings(QDomElement domElement) const
+//{
+//    return BaseInterface::parseSettings<Proto::ProtocomGroup>(domElement);
+//}

@@ -5,6 +5,7 @@
 #include "../gen/stdfunc.h"
 #include "../gen/timefunc.h"
 #include "../s2/s2.h"
+#include "../xml/xmlparser/interfacegroups.h"
 #include "modbusthread.h"
 #include "serialport.h"
 #include "settingstypes.h"
@@ -87,7 +88,7 @@ void ModBus::sendReconnectSignal()
 
 bool ModBus::isValidRegs(const CommandsMBS::CommandStruct &cmd) const
 {
-    const auto &st = settings<InterfaceInfo<CommandsMBS::ModbusGroup>>();
+    const auto &st = settings<InterfaceInfo<ModbusGroup>>();
     Q_ASSERT(st.dictionary().contains(cmd.adr));
     const auto values = st.dictionary().values(cmd.adr);
     for (const auto &val : values)
@@ -100,7 +101,7 @@ bool ModBus::isValidRegs(const CommandsMBS::CommandStruct &cmd) const
 
 bool ModBus::isValidRegs(const quint32 sigAdr, const quint32 sigCount) const
 {
-    const auto &st = settings<InterfaceInfo<CommandsMBS::ModbusGroup>>();
+    const auto &st = settings<InterfaceInfo<ModbusGroup>>();
     Q_ASSERT(st.dictionary().contains(sigAdr));
     const auto values = st.dictionary().values(sigAdr);
     for (const auto &val : values)
@@ -114,14 +115,14 @@ bool ModBus::isValidRegs(const quint32 sigAdr, const quint32 sigCount) const
 CommandsMBS::TypeId ModBus::type(const quint32 addr, const quint32 count) const
 {
     Q_UNUSED(count);
-    const auto &st = settings<InterfaceInfo<CommandsMBS::ModbusGroup>>();
+    const auto &st = settings<InterfaceInfo<ModbusGroup>>();
     return st.dictionary().value(addr).dataType;
 }
 
 TypeId ModBus::type(const quint32 addr, const quint32 count, const CommandsMBS::Commands cmd) const
 {
     Q_UNUSED(count);
-    const auto &st = settings<InterfaceInfo<CommandsMBS::ModbusGroup>>();
+    const auto &st = settings<InterfaceInfo<ModbusGroup>>();
     const auto values = st.dictionary().values(addr);
     for (const auto &val : values)
     {
@@ -279,7 +280,7 @@ void ModBus::writeCommand(Queries::Commands cmd, const QVariantList &list)
     {
         Q_ASSERT(list.first().canConvert<DataTypes::FloatStruct>());
         const quint16 start_addr = list.first().value<DataTypes::FloatStruct>().sigAdr;
-        const auto &st = settings<InterfaceInfo<CommandsMBS::ModbusGroup>>();
+        const auto &st = settings<InterfaceInfo<ModbusGroup>>();
         Q_ASSERT(isValidRegs(start_addr, list.size() * 2));
         auto group = st.dictionary().value(start_addr);
         bool found = false;
@@ -344,7 +345,7 @@ void ModBus::reqBitStrings(quint32 sigAdr, quint32 sigCount)
     Q_UNUSED(sigCount)
 }
 
-InterfaceSettings ModBus::parseSettings(QDomElement domElement) const
-{
-    return BaseInterface::parseSettings<CommandsMBS::ModbusGroup>(domElement);
-}
+// InterfaceSettings ModBus::parseSettings(QDomElement domElement) const
+//{
+//    return BaseInterface::parseSettings<CommandsMBS::ModbusGroup>(domElement);
+//}

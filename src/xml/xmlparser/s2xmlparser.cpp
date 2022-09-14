@@ -1,7 +1,7 @@
 #include "s2xmlparser.h"
 
-#include "../gen/datatypes.h"
-#include "../s2/s2helper.h"
+#include "../../gen/datatypes.h"
+#include "../../s2/s2helper.h"
 
 class DoubleSpinBoxGroup;
 class QLabel;

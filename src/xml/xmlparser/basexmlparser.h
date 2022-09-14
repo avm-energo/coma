@@ -1,8 +1,8 @@
 #ifndef BASEXMLPARSER_H
 #define BASEXMLPARSER_H
 
-#include "../ctti/type_id.hpp"
-#include "xmltags.h"
+#include "../../ctti/type_id.hpp"
+#include "../xmltags.h"
 
 #include <QObject>
 #include <QtXml>

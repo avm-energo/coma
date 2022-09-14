@@ -2,8 +2,8 @@
 
 #include "../gen/error.h"
 #include "../gen/stdfunc.h"
-#include "../xml/modulexmlparser.h"
-#include "../xml/s2xmlparser.h"
+#include "../xml/xmlparser/modulexmlparser.h"
+#include "../xml/xmlparser/s2xmlparser.h"
 
 #include <QDir>
 #include <QFile>

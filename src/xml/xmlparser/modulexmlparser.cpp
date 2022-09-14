@@ -1,7 +1,7 @@
 #include "modulexmlparser.h"
 
-#include "../gen/stdfunc.h"
-#include "../module/board.h"
+#include "../../gen/stdfunc.h"
+#include "../../module/board.h"
 
 ModuleXmlParser::ModuleXmlParser(QObject *parent) : BaseXmlParser(parent), isBase(true)
 {
