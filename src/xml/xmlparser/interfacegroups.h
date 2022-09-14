@@ -33,14 +33,6 @@ struct ModbusGroup : BaseGroup<CommandsMBS::Commands, CommandsMBS::TypeId>
 };
 Q_DECLARE_METATYPE(InterfaceInfo<ModbusGroup>)
 
-// QDebug operator<<(QDebug debug, const ModbusGroup &settings)
-//{
-//    debug.nospace() << settings.id << ":" << settings.function << ":"
-//                    << QVariant::fromValue(settings.dataType).toString() << ":" << settings.startAddr << ":"
-//                    << settings.count;
-//    return debug.maybeSpace();
-//}
-
 struct ProtocomGroup : BaseGroup<Proto::Commands, Proto::TypeId>
 {
     ProtocomGroup() = default;
@@ -58,9 +50,8 @@ struct ProtocomGroup : BaseGroup<Proto::Commands, Proto::TypeId>
 };
 Q_DECLARE_METATYPE(InterfaceInfo<ProtocomGroup>)
 
-template <class Group> const InterfaceSettings parseSettings(QDomElement domElement)
+template <class Group> const InterfaceSettings parseSettings(const QDomElement &domElement)
 {
-    using Register = typename InterfaceInfo<Group>::Register;
     const auto &nodes = domElement.childNodes();
     int i = 0;
     InterfaceInfo<Group> settings;
@@ -71,11 +62,6 @@ template <class Group> const InterfaceSettings parseSettings(QDomElement domElem
         {
             Group group(domElement);
             settings.addGroup(group);
-        }
-        else if (domElement.tagName().contains("register", Qt::CaseInsensitive))
-        {
-            Register reg(domElement);
-            settings.addReg(reg);
         }
     }
     return InterfaceSettings { QVariant::fromValue(settings) };

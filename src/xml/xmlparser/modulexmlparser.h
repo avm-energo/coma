@@ -42,9 +42,13 @@ private:
     void parseAlarm(const QDomNode &alarmNode, const Modules::AlarmType &aType);
     void parseJournals(const QDomNode &joursNode);
     void parseJournal(const QDomNode &jourNode, const Modules::JournalType &jType);
+
+    void parseInterface(const QDomNode &root);
+
     void parseModbus(const QDomNode &modbusNode);
     void parseProtocom(const QDomNode &protocomNode);
     void parseIec(const QDomNode &iecNode);
+
     void parseConfig(const QDomNode &configNode);
 };
 

@@ -147,6 +147,23 @@ void ModuleXmlParser::parseJournal(const QDomNode &jourNode, const Modules::Jour
     emit jourDataSending(jType, addr, desc);
 }
 
+void ModuleXmlParser::parseInterface(const QDomNode &root)
+{
+    auto ifaceType = Board::GetInstance().interfaceType();
+    if (ifaceType == Board::USB || ifaceType == Board::Emulator)
+    {
+        ;
+    }
+    else if (ifaceType == Board::RS485)
+    {
+        ;
+    }
+    else if (ifaceType == Board::Ethernet)
+    {
+        ;
+    }
+}
+
 void ModuleXmlParser::parseModbus(const QDomNode &modbusNode)
 {
     auto signalId = parseNumFromNode<quint32>(modbusNode, tags::sig_id);
