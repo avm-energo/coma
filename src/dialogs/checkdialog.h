@@ -16,7 +16,6 @@
 #define CHECKDIALOG_H
 
 #include "../module/modulesettings.h"
-#include "../s2/s2settings.h"
 #include "../widgets/udialog.h"
 
 #include <QBitArray>

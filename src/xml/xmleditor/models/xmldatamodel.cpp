@@ -60,8 +60,9 @@ std::tuple<QString, QString, std::function<void(QDomDocument &, QDomElement &, i
         return { tags::iec, tags::group, //
             [&](auto &doc, auto &item, auto &row) {
                 makeElement(doc, item, tags::sig_id, data(index(row, 0)));
-                makeElement(doc, item, tags::trans_type, data(index(row, 1)));
-                makeElement(doc, item, tags::sig_group, data(index(row, 2)));
+                makeElement(doc, item, tags::sig_type, data(index(row, 1)));
+                makeElement(doc, item, tags::trans_type, data(index(row, 2)));
+                makeElement(doc, item, tags::sig_group, data(index(row, 3)));
             } };
     case ModelType::Config:
         return { tags::config, tags::record, //
@@ -90,7 +91,6 @@ void XmlDataModel::parseNode(QDomNode &node, int &row)
     }
     else if (mType == ModelType::SectionTabs)
     {
-
         parseTag(node, tags::id, row, 0);   // ID вкладки
         parseTag(node, tags::name, row, 1); // Имя вкладки
     }
@@ -114,7 +114,8 @@ void XmlDataModel::parseNode(QDomNode &node, int &row)
     {
         parseTag(node, tags::sig_id, row, 0);   // ID сигнала
         parseTag(node, tags::reg_type, row, 1); // Тип регистра
-        parseTag(node, tags::desc, row, 2);     // Описание
+        parseTag(node, tags::type, row, 2);     // Возвращаемый тип
+        parseTag(node, tags::desc, row, 3);     // Описание
     }
     else if (mType == ModelType::Protocom)
     {
@@ -124,6 +125,7 @@ void XmlDataModel::parseNode(QDomNode &node, int &row)
     else if (mType == ModelType::IEC60870)
     {
         parseTag(node, tags::sig_id, row, 0);     // ID сигнала
+        parseTag(node, tags::sig_type, row, 1);   // Тип передачи
         parseTag(node, tags::trans_type, row, 2); // Тип передачи
         parseTag(node, tags::sig_group, row, 3);  // Группа
     }

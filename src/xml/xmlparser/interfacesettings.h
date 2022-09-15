@@ -1,9 +1,16 @@
 #pragma once
 
+#include "../../module/configstorage.h"
+
+#include <QDebug>
 #include <QMetaEnum>
 #include <QtXml/QDomElement>
-#include <type_traits>
 #include <utility>
+
+struct InterfaceSettings
+{
+    QVariant settings;
+};
 
 // Thanx to https://stackoverflow.com/questions/34672441
 template <template <typename...> class base, typename derived> struct is_base_of_template_impl
@@ -18,65 +25,32 @@ using is_base_of_template = typename is_base_of_template_impl<base, derived>::ty
 
 template <typename FuncCode, typename TypeId> struct BaseGroup
 {
+    FuncCode function;
+    TypeId dataType;
+    quint32 startAddr;
+    quint32 count;
+
     BaseGroup() = default;
-    BaseGroup(QDomElement domElement)
+    BaseGroup(const quint32 &sigId) : startAddr(0), count(0)
     {
-        domElement = domElement.firstChildElement();
-        while (!domElement.isNull())
+        auto &sigMap = ConfigStorage::GetInstance().getModuleSettings().getSignals();
+        if (sigMap.contains(sigId))
         {
-            if (domElement.tagName() == "function")
-            {
-                bool ok;
-                function = static_cast<FuncCode>(domElement.text().toUInt(&ok, 16));
-                Q_ASSERT(ok);
-                domElement = domElement.nextSiblingElement();
-                continue;
-            }
-            if (domElement.tagName() == "type")
-            {
-                QString buffer = domElement.text();
-                Q_ASSERT(!buffer.isEmpty());
-                auto types = QMetaEnum::fromType<TypeId>;
-                Q_ASSERT(types().isValid());
-                buffer[0] = buffer[0].toUpper();
-                int typeId = types().keyToValue(buffer.toStdString().c_str());
-                Q_ASSERT(typeId != -1);
-                dataType = static_cast<TypeId>(typeId);
-                domElement = domElement.nextSiblingElement();
-                continue;
-            }
-            if (domElement.tagName() == "start-addr")
-            {
-                startAddr = domElement.text().toUInt();
-                domElement = domElement.nextSiblingElement();
-                continue;
-            }
-            if (domElement.tagName() == "count")
-            {
-                count = domElement.text().toUInt();
-                domElement = domElement.nextSiblingElement();
-                continue;
-            }
-            domElement = domElement.nextSiblingElement();
+            auto &signal = sigMap.value(sigId);
+            startAddr = signal.startAddr;
+            count = signal.count;
         }
     }
 
     bool operator==(const BaseGroup &rhs) const
     {
-        return ((id == rhs.id) && (function == rhs.function) && //
-            (dataType == rhs.dataType) && (startAddr == rhs.startAddr));
+        return ((function == rhs.function) && (dataType == rhs.dataType) && (startAddr == rhs.startAddr));
     }
 
     bool operator!=(const BaseGroup &rhs) const
     {
         return !(*this == rhs);
     }
-
-    QString id;
-    FuncCode function;
-    TypeId dataType;
-    quint32 startAddr;
-    quint32 count;
 };
 
 // Class have to derived from BaseGroup due to dependent types

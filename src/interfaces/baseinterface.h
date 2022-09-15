@@ -6,7 +6,8 @@
 #include "../gen/error.h"
 #include "../gen/logclass.h"
 #include "../gen/stdfunc.h"
-#include "../s2/s2settings.h"
+#include "../s2/datarecv.h"
+#include "../xml/xmlparser/interfacesettings.h"
 
 #include <QTimer>
 #include <memory>

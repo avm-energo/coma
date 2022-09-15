@@ -4,51 +4,53 @@
 #include "../../interfaces/iec104private.h"
 #include "../../interfaces/modbusprivate.h"
 #include "../../interfaces/protocomprivate.h"
-#include "../../s2/s2settings.h"
 #include "interfacesettings.h"
 
-struct Iec104Group : BaseGroup<Commands104::Commands, Commands104::TypeId>
+struct ProtocomGroup : BaseGroup<Proto::Commands, Proto::TypeId>
 {
-    Iec104Group() = default;
-    Iec104Group(QDomElement domElement) : BaseGroup<Commands104::Commands, Commands104::TypeId>(domElement)
+    quint8 block;
+
+    ProtocomGroup() = default;
+    ProtocomGroup(const quint32 &sigId, const quint16 &blk)
+        : BaseGroup<Proto::Commands, Proto::TypeId>(sigId), block(blk)
     {
     }
 };
-Q_DECLARE_METATYPE(InterfaceInfo<Iec104Group>)
 
 struct ModbusGroup : BaseGroup<CommandsMBS::Commands, CommandsMBS::TypeId>
 {
     ModbusGroup() = default;
-    ModbusGroup(QDomElement domElement) : BaseGroup<CommandsMBS::Commands, CommandsMBS::TypeId>(domElement)
+    ModbusGroup(const quint32 &sigId, const quint16 &regType, const QString &type)
+        : BaseGroup<CommandsMBS::Commands, CommandsMBS::TypeId>(sigId)
     {
+        // Decimal to hex
+        auto hexRegType = QString("%1").arg(regType).toUInt(nullptr, 16);
+        function = static_cast<CommandsMBS::Commands>(hexRegType);
     }
+
     bool operator==(const ModbusGroup &rhs) const
     {
         return (BaseGroup<CommandsMBS::Commands, CommandsMBS::TypeId>::operator==(rhs));
     }
+
     bool operator!=(const ModbusGroup &rhs) const
     {
         return !(*this == rhs);
     }
 };
-Q_DECLARE_METATYPE(InterfaceInfo<ModbusGroup>)
 
-struct ProtocomGroup : BaseGroup<Proto::Commands, Proto::TypeId>
+struct Iec104Group : BaseGroup<Commands104::Commands, Commands104::TypeId>
 {
-    ProtocomGroup() = default;
-    ProtocomGroup(QDomElement domElement) : BaseGroup<Proto::Commands, Proto::TypeId>(domElement)
+    Iec104Group() = default;
+    Iec104Group(const quint32 &sigId, const quint16 &sigType, const quint16 &transType, const quint16 &sigGroup)
+        : BaseGroup<Commands104::Commands, Commands104::TypeId>(sigId)
     {
-        domElement = domElement.firstChildElement();
-        while (!domElement.isNull())
-        {
-            if (domElement.tagName() == "block")
-                block = domElement.text().toUInt();
-            domElement = domElement.nextSiblingElement();
-        }
     }
-    quint8 block;
 };
+
 Q_DECLARE_METATYPE(InterfaceInfo<ProtocomGroup>)
+Q_DECLARE_METATYPE(InterfaceInfo<ModbusGroup>)
+Q_DECLARE_METATYPE(InterfaceInfo<Iec104Group>)
 
 template <class Group> const InterfaceSettings parseSettings(const QDomElement &domElement)
 {

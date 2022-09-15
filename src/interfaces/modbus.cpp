@@ -288,12 +288,12 @@ void ModBus::writeCommand(Queries::Commands cmd, const QVariantList &list)
         auto it = dictionary.cbegin();
         while (it != dictionary.cend() && !found)
         {
-            if (it.value().id.contains(group.id.remove(0, 1)))
-                if (it.value() != group)
-                {
-                    group = it.value();
-                    found = true;
-                }
+            // if (it.value().id.contains(group.id.remove(0, 1)))
+            if (it.value() != group)
+            {
+                group = it.value();
+                found = true;
+            }
             ++it;
         }
         Q_ASSERT(found);
@@ -302,7 +302,6 @@ void ModBus::writeCommand(Queries::Commands cmd, const QVariantList &list)
         {
             auto flstr = i.value<DataTypes::FloatStruct>();
             // now write floats to the out sigArray
-
             sigArray.push_back(packReg(flstr.sigVal));
         }
 

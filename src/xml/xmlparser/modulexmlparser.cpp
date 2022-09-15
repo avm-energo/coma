@@ -147,43 +147,60 @@ void ModuleXmlParser::parseJournal(const QDomNode &jourNode, const Modules::Jour
     emit jourDataSending(jType, addr, desc);
 }
 
-void ModuleXmlParser::parseInterface(const QDomNode &root)
+void ModuleXmlParser::parseInterface(const QDomNode &resNode)
 {
     auto ifaceType = Board::GetInstance().interfaceType();
+    QVariant ifaceConfig;
     if (ifaceType == Board::USB || ifaceType == Board::Emulator)
     {
-        ;
+        InterfaceInfo<ProtocomGroup> ifaceSettings;
+        parseNode(resNode, tags::protocom, //
+            [&](const QDomNode &protocomNode) { parseProtocom(protocomNode, ifaceSettings); });
+        ifaceConfig.setValue(ifaceSettings);
     }
     else if (ifaceType == Board::RS485)
     {
-        ;
+        InterfaceInfo<ModbusGroup> ifaceSettings;
+        parseNode(resNode, tags::modbus, //
+            [&](const QDomNode &modbusNode) { parseModbus(modbusNode, ifaceSettings); });
+        ifaceConfig.setValue(ifaceSettings);
     }
     else if (ifaceType == Board::Ethernet)
     {
-        ;
+        InterfaceInfo<Iec104Group> ifaceSettings;
+        parseNode(resNode, tags::iec, //
+            [&](const QDomNode &iecNode) { parseIec(iecNode, ifaceSettings); });
+        ifaceConfig.setValue(ifaceSettings);
     }
+    // TODO: emit qvariant
 }
 
-void ModuleXmlParser::parseModbus(const QDomNode &modbusNode)
+void ModuleXmlParser::parseModbus(const QDomNode &modbusNode, InterfaceInfo<ModbusGroup> &settings)
 {
     auto signalId = parseNumFromNode<quint32>(modbusNode, tags::sig_id);
     auto regType = parseNumFromNode<quint16>(modbusNode, tags::reg_type);
-    emit modbusDataSending(signalId, regType);
+    auto type = parseString(modbusNode, tags::type);
+    if (signalId != 0)
+        settings.addGroup({ signalId, regType, type });
+    // emit modbusDataSending(signalId, regType);
 }
 
-void ModuleXmlParser::parseProtocom(const QDomNode &protocomNode)
+void ModuleXmlParser::parseProtocom(const QDomNode &protocomNode, InterfaceInfo<ProtocomGroup> &settings)
 {
     auto signalId = parseNumFromNode<quint32>(protocomNode, tags::sig_id);
-    auto block = parseNumFromNode<quint32>(protocomNode, tags::block);
-    emit protocomDataSending(signalId, block);
+    auto block = parseNumFromNode<quint16>(protocomNode, tags::block);
+    if (signalId != 0)
+        settings.addGroup({ signalId, block });
 }
 
-void ModuleXmlParser::parseIec(const QDomNode &iecNode)
+void ModuleXmlParser::parseIec(const QDomNode &iecNode, InterfaceInfo<Iec104Group> &settings)
 {
-    auto sigId = parseNumFromNode<quint32>(iecNode, tags::sig_id);
+    auto signalId = parseNumFromNode<quint32>(iecNode, tags::sig_id);
+    auto sigType = parseNumFromNode<quint16>(iecNode, tags::sig_type);
     auto transType = parseNumFromNode<quint16>(iecNode, tags::trans_type);
     auto sigGroup = parseNumFromNode<quint16>(iecNode, tags::sig_group);
-    emit iecDataSending(sigId, transType, sigGroup);
+    if (signalId != 0)
+        settings.addGroup({ signalId, sigType, transType, sigGroup });
 }
 
 void ModuleXmlParser::parseConfig(const QDomNode &configNode)
@@ -207,9 +224,9 @@ void ModuleXmlParser::parseResources(const QDomElement &resNode)
     parseNode(resNode, tags::sections, [this](const QDomNode &sectionNode) { parseSection(sectionNode); });
     callIfNodeExist(resNode, tags::alarms, [this](const QDomNode &alarmsNode) { parseAlarms(alarmsNode); });
     callIfNodeExist(resNode, tags::journals, [this](const QDomNode &joursNode) { parseJournals(joursNode); });
-    parseNode(resNode, tags::modbus, [this](const QDomNode &modbusNode) { parseModbus(modbusNode); });
-    parseNode(resNode, tags::protocom, [this](const QDomNode &protocomNode) { parseProtocom(protocomNode); });
-    parseNode(resNode, tags::iec, [this](const QDomNode &iecNode) { parseIec(iecNode); });
+    // parseNode(resNode, tags::modbus, [this](const QDomNode &modbusNode) { parseModbus(modbusNode); });
+    // parseNode(resNode, tags::protocom, [this](const QDomNode &protocomNode) { parseProtocom(protocomNode); });
+    // parseNode(resNode, tags::iec, [this](const QDomNode &iecNode) { parseIec(iecNode); });
     parseNode(resNode, tags::config, [this](const QDomNode &configNode) { parseConfig(configNode); });
 }
 

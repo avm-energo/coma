@@ -3,6 +3,7 @@
 
 #include "../../module/modulesettings.h"
 #include "basexmlparser.h"
+#include "interfacegroups.h"
 
 class ModuleXmlParser : public BaseXmlParser
 {
@@ -45,9 +46,9 @@ private:
 
     void parseInterface(const QDomNode &root);
 
-    void parseModbus(const QDomNode &modbusNode);
-    void parseProtocom(const QDomNode &protocomNode);
-    void parseIec(const QDomNode &iecNode);
+    void parseModbus(const QDomNode &modbusNode, InterfaceInfo<ModbusGroup> &settings);
+    void parseProtocom(const QDomNode &protocomNode, InterfaceInfo<ProtocomGroup> &settings);
+    void parseIec(const QDomNode &iecNode, InterfaceInfo<Iec104Group> &settings);
 
     void parseConfig(const QDomNode &configNode);
 };
