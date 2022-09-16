@@ -2,6 +2,7 @@
 
 #include "../gen/error.h"
 #include "../gen/stdfunc.h"
+#include "../interfaces/baseinterface.h"
 #include "../xml/xmlparser/modulexmlparser.h"
 #include "../xml/xmlparser/s2xmlparser.h"
 
@@ -13,15 +14,16 @@ Module::Module(const Modules::StartupInfoBlock &startupInfoBlock, QObject *paren
 {
 }
 
+/// \brief Функция для проверки, существует ли файл с
+/// указанным именем в локальной папке пользователя.
 bool Module::isFileExist(const QString &filename)
 {
     auto dir = QDir(StdFunc::GetSystemHomeDir());
-    auto file = new QFile(dir.filePath(filename), this);
-    auto retVal = file->exists();
-    file->deleteLater();
-    return retVal;
+    return QFile::exists(dir.filePath(filename));
 }
 
+/// \brief Возвращает QDomDocument для файла с указанным
+/// именем из локальной папки пользователя.
 QDomDocument Module::getFileContent(const QString &filename)
 {
     QDomDocument doc;
@@ -50,15 +52,17 @@ QDomDocument Module::getFileContent(const QString &filename)
     return doc;
 }
 
+/// \brief Загрузка настроек в ConfigStorage из
+/// файла/файлов настроек модуля и s2files.xml.
 bool Module::loadSettings()
 {
     if (loadS2Settings())
     {
         auto moduleName = QString::number(sInfoBlock.type(), 16) + ".xml";
+        // Настройки находятся в одном файле
         if (isFileExist(moduleName))
-        {
             return loadModuleSettings(moduleName, sInfoBlock.MTypeB, sInfoBlock.MTypeM);
-        }
+        // Настройки находятся в разных файлах
         else
         {
             auto baseFile = QString::number(sInfoBlock.MTypeB, 16) + "00.xml";
@@ -66,12 +70,15 @@ bool Module::loadSettings()
             // TODO: парсить данные в разные структуры
             auto isBaseSuccess = loadModuleSettings(baseFile, sInfoBlock.MTypeB, 0);
             auto isMezzSuccess = loadModuleSettings(mezzFile, 0, sInfoBlock.MTypeM);
+            BaseInterface::iface()->setSettings(mStorage->getModuleSettings().getInterfaceSettings());
             return (isBaseSuccess && isMezzSuccess);
         }
     }
-    return false;
+    else
+        return false;
 }
 
+/// \brief Загрузка настроек из файла s2files.xml с помощью S2XmlParser.
 bool Module::loadS2Settings()
 {
     // Если ещё не парсили s2files.xml
@@ -97,6 +104,8 @@ bool Module::loadS2Settings()
         return true;
 }
 
+/// \brief Загрузка настроек из файла/файлов настроек
+/// модуля с помощью ModuleXmlParser.
 bool Module::loadModuleSettings(const QString &filename, const quint16 &typeB, const quint16 &typeM)
 {
     auto content = getFileContent(filename);
@@ -111,11 +120,8 @@ bool Module::loadModuleSettings(const QString &filename, const quint16 &typeB, c
             mStorage, &ConfigStorage::sectionDataReceive);
         QObject::connect(moduleParser, &ModuleXmlParser::alarmDataSending, mStorage, &ConfigStorage::alarmDataReceive);
         QObject::connect(moduleParser, &ModuleXmlParser::jourDataSending, mStorage, &ConfigStorage::jourDataReceive);
-        QObject::connect(moduleParser, &ModuleXmlParser::modbusDataSending, //
-            mStorage, &ConfigStorage::modbusDataReceive);
-        QObject::connect(moduleParser, &ModuleXmlParser::protocomDataSending, //
-            mStorage, &ConfigStorage::protocomDataReceive);
-        QObject::connect(moduleParser, &ModuleXmlParser::iecDataSending, mStorage, &ConfigStorage::iecDataReceive);
+        QObject::connect(moduleParser, &ModuleXmlParser::interfaceSettingsSending, //
+            mStorage, &ConfigStorage::interfaceSettingsReceive);
         QObject::connect(moduleParser, &ModuleXmlParser::configDataSending, //
             mStorage, &ConfigStorage::configDataReceive);
         moduleParser->parse(content, typeB, typeM);

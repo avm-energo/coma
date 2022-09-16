@@ -5,7 +5,7 @@
 #include "../gen/stdfunc.h"
 #include "../gen/timefunc.h"
 #include "../s2/s2.h"
-#include "../xml/xmlparser/interfacegroups.h"
+#include "interfacesettings.h"
 #include "modbusthread.h"
 #include "serialport.h"
 #include "settingstypes.h"

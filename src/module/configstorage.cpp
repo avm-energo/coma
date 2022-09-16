@@ -87,31 +87,9 @@ void ConfigStorage::jourDataReceive(const Modules::JournalType &jType, const qui
     jours[jType].push_back({ addr, desc });
 }
 
-void ConfigStorage::modbusDataReceive(const quint32 &sigId, const quint16 &regType)
+void ConfigStorage::interfaceSettingsReceive(const QVariant &iSettings)
 {
-    if (sigId != 0)
-    {
-        auto &modbusItems = mSettings->getModbus();
-        modbusItems.push_back({ sigId, regType });
-    }
-}
-
-void ConfigStorage::protocomDataReceive(const quint32 &sigId, const quint32 &block)
-{
-    if (sigId != 0)
-    {
-        auto &protocomItems = mSettings->getProtocom();
-        protocomItems.push_back({ sigId, block });
-    }
-}
-
-void ConfigStorage::iecDataReceive(const quint32 &sigId, const quint16 &transType, const quint16 &sigGroup)
-{
-    if (sigId != 0)
-    {
-        auto &iecItems = mSettings->getIec();
-        iecItems.push_back({ sigId, transType, sigGroup });
-    }
+    mSettings->setInterfaceSettings({ iSettings });
 }
 
 void ConfigStorage::configDataReceive(const quint32 &id, //

@@ -44,9 +44,7 @@ public slots:
     void alarmDataReceive(const bool &isBase, const Modules::AlarmType &aType, //
         const quint32 &addr, const QString &desc);
     void jourDataReceive(const Modules::JournalType &jType, const quint32 &addr, const QString &desc);
-    void modbusDataReceive(const quint32 &sigId, const quint16 &regType);
-    void protocomDataReceive(const quint32 &sigId, const quint32 &block);
-    void iecDataReceive(const quint32 &sigId, const quint16 &transType, const quint16 &sigGroup);
+    void interfaceSettingsReceive(const QVariant &iSettings);
     void configDataReceive(const quint32 &id, const QString &defVal, const bool &visib, const quint32 &count);
 };
 

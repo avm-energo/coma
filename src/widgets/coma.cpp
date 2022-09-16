@@ -181,12 +181,7 @@ void Coma::setupUI()
 void Coma::prepareDialogs()
 {
     module = UniquePointer<Module>(new Module(Board::GetInstance().baseSerialInfo(), this));
-    if (module->loadSettings())
-    {
-        mDlgManager = new DialogManager(ConfigStorage::GetInstance().getModuleSettings(), this);
-        mDlgManager->createAlarms(AlarmW);
-    }
-    else
+    if (!module->loadSettings())
     {
         EMessageBox::error(this,
             "Не удалось найти конфигурацию для модуля.\n"
@@ -406,6 +401,9 @@ void Coma::prepare()
     Reconnect = true;
 
     prepareDialogs();
+    mDlgManager = new DialogManager(ConfigStorage::GetInstance().getModuleSettings(), this);
+    mDlgManager->createAlarms(AlarmW);
+
     setupConnections();
     // нет конфигурации
     if (board.noConfig())

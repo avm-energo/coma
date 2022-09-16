@@ -44,6 +44,7 @@ bool ModuleXmlParser::isCorrectModule(const QDomElement &moduleNode, const quint
             return true;
         else
             qCritical() << "Устаревшая версия ВПО, обновите ВПО";
+        return true;
     }
     else
         qCritical() << "Invalid module type specified in XML configuration";
@@ -172,7 +173,7 @@ void ModuleXmlParser::parseInterface(const QDomNode &resNode)
             [&](const QDomNode &iecNode) { parseIec(iecNode, ifaceSettings); });
         ifaceConfig.setValue(ifaceSettings);
     }
-    // TODO: emit qvariant
+    emit interfaceSettingsSending(ifaceConfig);
 }
 
 void ModuleXmlParser::parseModbus(const QDomNode &modbusNode, InterfaceInfo<ModbusGroup> &settings)
@@ -182,7 +183,6 @@ void ModuleXmlParser::parseModbus(const QDomNode &modbusNode, InterfaceInfo<Modb
     auto type = parseString(modbusNode, tags::type);
     if (signalId != 0)
         settings.addGroup({ signalId, regType, type });
-    // emit modbusDataSending(signalId, regType);
 }
 
 void ModuleXmlParser::parseProtocom(const QDomNode &protocomNode, InterfaceInfo<ProtocomGroup> &settings)
@@ -224,9 +224,7 @@ void ModuleXmlParser::parseResources(const QDomElement &resNode)
     parseNode(resNode, tags::sections, [this](const QDomNode &sectionNode) { parseSection(sectionNode); });
     callIfNodeExist(resNode, tags::alarms, [this](const QDomNode &alarmsNode) { parseAlarms(alarmsNode); });
     callIfNodeExist(resNode, tags::journals, [this](const QDomNode &joursNode) { parseJournals(joursNode); });
-    // parseNode(resNode, tags::modbus, [this](const QDomNode &modbusNode) { parseModbus(modbusNode); });
-    // parseNode(resNode, tags::protocom, [this](const QDomNode &protocomNode) { parseProtocom(protocomNode); });
-    // parseNode(resNode, tags::iec, [this](const QDomNode &iecNode) { parseIec(iecNode); });
+    parseInterface(resNode);
     parseNode(resNode, tags::config, [this](const QDomNode &configNode) { parseConfig(configNode); });
 }
 

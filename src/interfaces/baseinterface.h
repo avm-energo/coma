@@ -6,12 +6,14 @@
 #include "../gen/error.h"
 #include "../gen/logclass.h"
 #include "../gen/stdfunc.h"
+#include "../module/modulesettings.h"
 #include "../s2/datarecv.h"
-#include "../xml/xmlparser/interfacesettings.h"
 
 #include <QTimer>
 #include <memory>
 #include <typeinfo>
+
+using InterfaceSettings = ModuleTypes::InterfaceSettings;
 
 enum INTERVAL
 {
@@ -91,7 +93,7 @@ public:
     Error::Msg readS2FileSync(quint32 filenum);
     Error::Msg readFileSync(quint32 filenum, QByteArray &ba);
     Error::Msg reqTimeSync(void *block, quint32 blocksize);
-    InterfaceSettings settings() const;
+    ModuleTypes::InterfaceSettings settings() const;
 
     template <class T> T settings() const
     {

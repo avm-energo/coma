@@ -81,32 +81,12 @@ const ModuleTypes::JourMap &ModuleSettings::getJours() const
     return mJournals;
 }
 
-ModuleTypes::ModbusList &ModuleSettings::getModbus()
+const ModuleTypes::InterfaceSettings &ModuleSettings::getInterfaceSettings() const
 {
-    return mModbus;
+    return mIfaceSettings;
 }
 
-const ModuleTypes::ModbusList &ModuleSettings::getModbus() const
+void ModuleSettings::setInterfaceSettings(const ModuleTypes::InterfaceSettings &settings)
 {
-    return mModbus;
-}
-
-ModuleTypes::ProtocomList &ModuleSettings::getProtocom()
-{
-    return mProtocom;
-}
-
-const ModuleTypes::ProtocomList &ModuleSettings::getProtocom() const
-{
-    return mProtocom;
-}
-
-ModuleTypes::IecList &ModuleSettings::getIec()
-{
-    return mIec;
-}
-
-const ModuleTypes::IecList &ModuleSettings::getIec() const
-{
-    return mIec;
+    mIfaceSettings = settings;
 }

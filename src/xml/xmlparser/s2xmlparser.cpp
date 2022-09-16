@@ -32,7 +32,7 @@ bool S2XmlParser::initialCheck(const QString &name)
         || name.contains("DataPoint_Spect87", Qt::CaseInsensitive)   //
         || name.contains("BYTE[]", Qt::CaseInsensitive))             //
     {
-        qWarning() << "Parsed unknown type";
+        // qWarning() << "Parsed unknown type";
         return false;
     }
     else
@@ -53,6 +53,9 @@ ctti::unnamed_type_id_t S2XmlParser::secondCheck(const QString &name)
     // Widgets
     else if (name.contains("IpControl", Qt::CaseInsensitive))
         return ctti::unnamed_type_id<IPCtrl>().hash();
+    else if (name.contains("CheckBoxGroup", Qt::CaseInsensitive) || //
+        name.contains("DoubleSpinBoxGroup", Qt::CaseInsensitive))
+        return ctti::id_from_name(name.toStdString());
     else if (name.contains("ComboBoxGroup", Qt::CaseInsensitive) || //
         name.contains("Label", Qt::CaseInsensitive) ||              //
         name.contains("DoubleSpinBox", Qt::CaseInsensitive) ||      //
@@ -167,6 +170,7 @@ config::itemVariant S2XmlParser::parseWidget(const QDomElement &widgetNode)
         const auto description = parseString(widgetNode, tags::string);
         const auto toolTip = parseString(widgetNode, tags::tooltip);
         const auto items = parseStringArray(widgetNode);
+        const auto test = ctti::unnamed_type_id<CheckBoxGroup>().hash();
 
         switch (type.hash())
         {

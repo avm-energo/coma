@@ -1,9 +1,9 @@
 #ifndef MODULEXMLPARSER_H
 #define MODULEXMLPARSER_H
 
+#include "../../interfaces/interfacesettings.h"
 #include "../../module/modulesettings.h"
 #include "basexmlparser.h"
-#include "interfacegroups.h"
 
 class ModuleXmlParser : public BaseXmlParser
 {
@@ -24,9 +24,7 @@ signals:
     void alarmDataSending(const bool &isBase, const Modules::AlarmType &aType, //
         const quint32 &addr, const QString &desc);
     void jourDataSending(const Modules::JournalType &jType, const quint32 &addr, const QString &desc);
-    void modbusDataSending(const quint32 &sigId, const quint16 &regType);
-    void protocomDataSending(const quint32 &sigId, const quint32 &block);
-    void iecDataSending(const quint32 &sigId, const quint16 &transType, const quint16 &sigGroup);
+    void interfaceSettingsSending(const QVariant &iSettings);
     void configDataSending(const quint32 &id, const QString &defVal, const bool &visib, const quint32 &count);
 
 private:
@@ -43,13 +41,10 @@ private:
     void parseAlarm(const QDomNode &alarmNode, const Modules::AlarmType &aType);
     void parseJournals(const QDomNode &joursNode);
     void parseJournal(const QDomNode &jourNode, const Modules::JournalType &jType);
-
     void parseInterface(const QDomNode &root);
-
     void parseModbus(const QDomNode &modbusNode, InterfaceInfo<ModbusGroup> &settings);
     void parseProtocom(const QDomNode &protocomNode, InterfaceInfo<ProtocomGroup> &settings);
     void parseIec(const QDomNode &iecNode, InterfaceInfo<Iec104Group> &settings);
-
     void parseConfig(const QDomNode &configNode);
 };
 

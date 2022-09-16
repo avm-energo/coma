@@ -98,7 +98,7 @@ DataRecV::DataRecV(const S2DataTypes::DataRec &record, const char *rawdata) : id
         helper<DWORD_32t>(record.header.numByte, rawdata, data);
         break;
     }
-    case ctti::unnamed_type_id<float>().hash():
+    case ctti::unnamed_type_id<FLOAT>().hash():
     {
         helper<float>(record.header.numByte, rawdata, data);
         break;
@@ -144,6 +144,8 @@ DataRecV::DataRecV(const unsigned _id, const QString &str) : id(_id)
     auto &s2map = ConfigStorage::GetInstance().getS2Map();
     auto search = s2map.find(_id);
     assert(search != s2map.end());
+
+    auto test = ctti::unnamed_type_id<DataRecV>().hash();
     // return;
     // Exception inside ctor https://www.stroustrup.com/bs_faq2.html#ctor-exceptions
 

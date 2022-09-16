@@ -85,46 +85,20 @@ struct Journal
 // Info: DataTypes::JournalDesc - deprecated [see template.xml]
 using JourMap = QHash<Modules::JournalType, QList<Journal>>; ///< Хранит узлы <item> секции <journals>
 
-/// Modbus settings ///
+/// Interface settings ///
 
-/// \brief Структура для хранения информации узла <group> из <modbus>
-struct ModbusItem
+/// \brief Структура для хранения информации о протоколах protocom, modbus и iec104
+struct InterfaceSettings
 {
-    quint32 signalId; ///< узел <signal-id>
-    quint16 regType;  ///< узел <reg-type>
+    QVariant settings;
 };
 
-using ModbusList = QList<ModbusItem>; ///< Хранит узлы <group> секции <modbus>
-
-/// Protocom settings ///
-
-/// \brief Структура для хранения информации узла <group> из <protocom>
-struct ProtocomItem
-{
-    quint32 signalId; ///< узел <signal-id>
-    quint32 block;    ///< узел <block>
-};
-
-using ProtocomList = QList<ProtocomItem>; ///< Хранит узлы <group> секции <protocom>
-
-/// IEC 60870-5-104 settings ///
-
-/// \brief Структура для хранения информации узла <group> из <iec60870>
-struct IecItem
-{
-    quint32 signalId;  ///< узел <signal-id>
-    quint16 transType; ///< узел <trans-type>
-    quint16 sigGroup;  ///< узел <sig-group>
-};
-
-using IecList = QList<IecItem>; ///< Хранит узлы <group> секции <iec60870>
 }
 
 class ModuleSettings
 {
 public:
     ModuleSettings();
-
     void startNewConfig();
     void appendToCurrentConfig(DataTypes::RecordPair pair);
 
@@ -135,9 +109,7 @@ public:
     const ModuleTypes::SectionList &getSections() const;
     const ModuleTypes::AlarmMap &getAlarms() const;
     const ModuleTypes::JourMap &getJours() const;
-    const ModuleTypes::ModbusList &getModbus() const;
-    const ModuleTypes::ProtocomList &getProtocom() const;
-    const ModuleTypes::IecList &getIec() const;
+    const ModuleTypes::InterfaceSettings &getInterfaceSettings() const;
 
     ModuleTypes::ConfigList &getConfigs();
     ModuleTypes::SignalMap &getSignals();
@@ -145,12 +117,11 @@ public:
     ModuleTypes::SectionList &getSections();
     ModuleTypes::AlarmMap &getAlarms();
     ModuleTypes::JourMap &getJours();
-    ModuleTypes::ModbusList &getModbus();
-    ModuleTypes::ProtocomList &getProtocom();
-    ModuleTypes::IecList &getIec();
+    void setInterfaceSettings(const ModuleTypes::InterfaceSettings &settings);
 
 private:
     ModuleTypes::HighlightMap critHighlight, warnHighlight;
+    quint32 curConfigIndex;
 
     ModuleTypes::ConfigMap mConfigs;
     ModuleTypes::SignalMap mSignals;
@@ -158,11 +129,7 @@ private:
     ModuleTypes::SectionList mSections;
     ModuleTypes::AlarmMap mAlarms;
     ModuleTypes::JourMap mJournals;
-    ModuleTypes::ModbusList mModbus;
-    ModuleTypes::ProtocomList mProtocom;
-    ModuleTypes::IecList mIec;
-
-    quint32 curConfigIndex;
+    ModuleTypes::InterfaceSettings mIfaceSettings;
 };
 
 #endif // MODULESETTINGS_H
