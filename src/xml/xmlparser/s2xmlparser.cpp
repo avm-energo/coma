@@ -14,84 +14,57 @@ class CheckBoxGroup;
 class IPCtrl;
 class QLineEdit;
 
+const QHash<QString, std::uint64_t> S2XmlParser::nameTypeMap = {
+    { "M_SP", ctti::unnamed_type_id<DataTypes::SinglePointWithTimeStruct>().hash() }, //
+    { "M_BO", ctti::unnamed_type_id<DataTypes::BitStringStruct>().hash() },           //
+    { "M_ME", ctti::unnamed_type_id<DataTypes::FloatStruct>().hash() },               //
+    { "IpControl", ctti::unnamed_type_id<IPCtrl>().hash() },                          //
+    { "CheckBoxGroup", ctti::unnamed_type_id<CheckBoxGroup>().hash() },               //
+    { "DoubleSpinBoxGroup", ctti::unnamed_type_id<DoubleSpinBoxGroup>().hash() },     //
+    { "QComboBoxGroup", ctti::unnamed_type_id<QComboBoxGroup>().hash() },             //
+    { "QLabel", ctti::unnamed_type_id<QLabel>().hash() },                             //
+    { "QDoubleSpinBox", ctti::unnamed_type_id<QDoubleSpinBox>().hash() },             //
+    { "QCheckBox", ctti::unnamed_type_id<QCheckBox>().hash() },                       //
+    { "QComboBox", ctti::unnamed_type_id<QComboBox>().hash() },                       //
+    { "QLineEdit", ctti::unnamed_type_id<QLineEdit>().hash() },                       //
+    { "QTableView", ctti::unnamed_type_id<QTableView>().hash() },                     //
+    { "BYTE", ctti::unnamed_type_id<DataTypes::BYTE>().hash() },                      //
+    { "BYTE[4]", ctti::unnamed_type_id<DataTypes::BYTE_4t>().hash() },                //
+    { "BYTE[8]", ctti::unnamed_type_id<DataTypes::BYTE_8t>().hash() },                //
+    { "BYTE[16]", ctti::unnamed_type_id<DataTypes::BYTE_16t>().hash() },              //
+    { "BYTE[32]", ctti::unnamed_type_id<DataTypes::BYTE_32t>().hash() },              //
+    { "WORD", ctti::unnamed_type_id<DataTypes::WORD>().hash() },                      //
+    { "WORD[4]", ctti::unnamed_type_id<DataTypes::WORD_4t>().hash() },                //
+    { "WORD[8]", ctti::unnamed_type_id<DataTypes::WORD_8t>().hash() },                //
+    { "WORD[16]", ctti::unnamed_type_id<DataTypes::WORD_16t>().hash() },              //
+    { "WORD[32]", ctti::unnamed_type_id<DataTypes::WORD_32t>().hash() },              //
+    { "DWORD", ctti::unnamed_type_id<DataTypes::DWORD>().hash() },                    //
+    { "DWORD[4]", ctti::unnamed_type_id<DataTypes::DWORD_4t>().hash() },              //
+    { "DWORD[8]", ctti::unnamed_type_id<DataTypes::DWORD_8t>().hash() },              //
+    { "DWORD[16]", ctti::unnamed_type_id<DataTypes::DWORD_16t>().hash() },            //
+    { "DWORD[32]", ctti::unnamed_type_id<DataTypes::DWORD_32t>().hash() },            //
+    { "FLOAT", ctti::unnamed_type_id<DataTypes::FLOAT>().hash() },                    //
+    { "FLOAT[2]", ctti::unnamed_type_id<DataTypes::FLOAT_2t>().hash() },              //
+    { "FLOAT[3]", ctti::unnamed_type_id<DataTypes::FLOAT_3t>().hash() },              //
+    { "FLOAT[4]", ctti::unnamed_type_id<DataTypes::FLOAT_4t>().hash() },              //
+    { "FLOAT[6]", ctti::unnamed_type_id<DataTypes::FLOAT_6t>().hash() },              //
+    { "FLOAT[8]", ctti::unnamed_type_id<DataTypes::FLOAT_8t>().hash() },              //
+    { "INT32", ctti::unnamed_type_id<DataTypes::INT32>().hash() }                     //
+}; ///< Хэш-мапа для идентификации типа в рантайме
+
 S2XmlParser::S2XmlParser(QObject *parent) : BaseXmlParser(parent)
 {
 }
 
-/// \brief Отбрасываем необрабатываемые типы
-bool S2XmlParser::initialCheck(const QString &name)
-{
-    // New types from formatted s2files.xml
-    // TODO: add handler for these types
-    if (name.isEmpty() || name.contains("Type", Qt::CaseInsensitive) //
-        || name.contains("OscHeader_Data", Qt::CaseInsensitive)      //
-        || name.contains("SpectHeader_Data", Qt::CaseInsensitive)    //
-        || name.contains("DataPoint_Osc85", Qt::CaseInsensitive)     //
-        || name.contains("SwRepDataStruct", Qt::CaseInsensitive)     //
-        || name.contains("DataPoint_Osc87", Qt::CaseInsensitive)     //
-        || name.contains("DataPoint_Spect87", Qt::CaseInsensitive)   //
-        || name.contains("BYTE[]", Qt::CaseInsensitive))             //
-    {
-        // qWarning() << "Parsed unknown type";
-        return false;
-    }
-    else
-        return true;
-}
-
-/// \brief Обрабатываем особые типы
-ctti::unnamed_type_id_t S2XmlParser::secondCheck(const QString &name)
-{
-    using namespace DataTypes;
-    // 104 types
-    if (name.contains("M_SP", Qt::CaseInsensitive))
-        return ctti::unnamed_type_id<SinglePointWithTimeStruct>().hash();
-    else if (name.contains("M_BO", Qt::CaseInsensitive))
-        return ctti::unnamed_type_id<BitStringStruct>().hash();
-    else if (name.contains("M_ME", Qt::CaseInsensitive))
-        return ctti::unnamed_type_id<FloatStruct>().hash();
-    // Widgets
-    else if (name.contains("IpControl", Qt::CaseInsensitive))
-        return ctti::unnamed_type_id<IPCtrl>().hash();
-    else if (name.contains("CheckBoxGroup", Qt::CaseInsensitive) || //
-        name.contains("DoubleSpinBoxGroup", Qt::CaseInsensitive))
-        return ctti::id_from_name(name.toStdString());
-    else if (name.contains("ComboBoxGroup", Qt::CaseInsensitive) || //
-        name.contains("Label", Qt::CaseInsensitive) ||              //
-        name.contains("DoubleSpinBox", Qt::CaseInsensitive) ||      //
-        name.contains("CheckBox", Qt::CaseInsensitive) ||           //
-        name.contains("ComboBox", Qt::CaseInsensitive) ||           //
-        name.contains("LineEdit", Qt::CaseInsensitive) ||           //
-        name.contains("TableView", Qt::CaseInsensitive))            //
-    {
-        const auto trueName = "Q" + name;
-        return ctti::id_from_name(trueName.toStdString());
-    }
-    else
-        return 0;
-}
-
 /// \brief Возвращаем хэш типа для его идентификации
-ctti::unnamed_type_id_t S2XmlParser::parseType(const QDomElement &typeNode)
+uint64_t S2XmlParser::parseType(const QDomElement &typeNode)
 {
     auto name = typeNode.text();
     name.replace(" ", "");
-
-    if (initialCheck(name))
-    {
-        const auto val = secondCheck(name);
-        if (val == 0)
-        {
-            const auto brackets = name.count('[');
-            if (brackets != 0)
-                name = name.replace("[", "_").replace("]", "t");
-            return ctti::id_from_name(name.toStdString());
-        }
-        else
-            return val;
-    }
-    else
-        return 0;
+    const auto &typeId = nameTypeMap.value(name, 0);
+    if (typeId == 0)
+        qWarning() << "Parsed unknown type: " << name;
+    return typeId;
 }
 
 /// \brief Парсинг тегов для структуры delegate::DoubleSpinBoxWidget и её потомков
@@ -172,7 +145,7 @@ config::itemVariant S2XmlParser::parseWidget(const QDomElement &widgetNode)
         const auto items = parseStringArray(widgetNode);
         const auto test = ctti::unnamed_type_id<CheckBoxGroup>().hash();
 
-        switch (type.hash())
+        switch (type)
         {
         case ctti::unnamed_type_id<QDoubleSpinBox>().hash():
         {

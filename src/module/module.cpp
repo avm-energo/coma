@@ -2,7 +2,6 @@
 
 #include "../gen/error.h"
 #include "../gen/stdfunc.h"
-#include "../interfaces/baseinterface.h"
 #include "../xml/xmlparser/modulexmlparser.h"
 #include "../xml/xmlparser/s2xmlparser.h"
 
@@ -70,7 +69,6 @@ bool Module::loadSettings()
             // TODO: парсить данные в разные структуры
             auto isBaseSuccess = loadModuleSettings(baseFile, sInfoBlock.MTypeB, 0);
             auto isMezzSuccess = loadModuleSettings(mezzFile, 0, sInfoBlock.MTypeM);
-            BaseInterface::iface()->setSettings(mStorage->getModuleSettings().getInterfaceSettings());
             return (isBaseSuccess && isMezzSuccess);
         }
     }

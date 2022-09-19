@@ -1,5 +1,7 @@
 #include "configstorage.h"
 
+#include "../interfaces/baseinterface.h"
+
 ConfigStorage::ConfigStorage(token, QObject *parent) : QObject(parent), mSettings(new ModuleSettings), isS2Parsed(false)
 {
 }
@@ -29,15 +31,15 @@ const ModuleSettings &ConfigStorage::getModuleSettings() const
     return *mSettings;
 }
 
-void ConfigStorage::typeDataReceive(const quint16 &id, const ctti::unnamed_type_id_t &type)
+void ConfigStorage::typeDataReceive(const quint16 &id, const uint64_t &typeId)
 {
-    if (id != 0 && type != 0)
-        mS2Map.insert(id, type);
+    if (id != 0 && typeId != 0)
+        mS2Map.insert(id, typeId);
 }
 
 void ConfigStorage::widgetDataReceive(const quint16 &id, const config::itemVariant &widget)
 {
-    if (id != 0)
+    if (id != 0 && !widget.valueless_by_exception())
         mWidgetMap.insert({ id, widget });
 }
 
@@ -89,7 +91,11 @@ void ConfigStorage::jourDataReceive(const Modules::JournalType &jType, const qui
 
 void ConfigStorage::interfaceSettingsReceive(const QVariant &iSettings)
 {
-    mSettings->setInterfaceSettings({ iSettings });
+    if (iSettings.isValid())
+    {
+        mSettings->setInterfaceSettings({ iSettings });
+        BaseInterface::iface()->setSettings(mSettings->getInterfaceSettings());
+    }
 }
 
 void ConfigStorage::configDataReceive(const quint32 &id, //

@@ -32,7 +32,7 @@ public:
 
 public slots:
     // S2 data slots
-    void typeDataReceive(const quint16 &id, const ctti::unnamed_type_id_t &type);
+    void typeDataReceive(const quint16 &id, const std::uint64_t &typeId);
     void widgetDataReceive(const quint16 &id, const config::itemVariant &widget);
 
     // Module data slots

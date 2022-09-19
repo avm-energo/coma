@@ -1,5 +1,4 @@
-#ifndef NEWXMLPARSER_H
-#define NEWXMLPARSER_H
+#pragma once
 
 #include "../../widgets/delegate_common.h"
 #include "basexmlparser.h"
@@ -9,18 +8,19 @@ template <typename T> constexpr auto is_comboBox = std::is_base_of_v<delegate::Q
 class S2XmlParser : public BaseXmlParser
 {
     Q_OBJECT
+private:
+    static const QHash<QString, std::uint64_t> nameTypeMap;
+
 public:
     explicit S2XmlParser(QObject *parent = nullptr);
     void parse(const QDomNode &content);
 
 signals:
-    void typeDataSending(const quint16 &id, const ctti::unnamed_type_id_t &type);
+    void typeDataSending(const quint16 &id, const std::uint64_t &type);
     void widgetDataSending(const quint16 &id, const config::itemVariant &widget);
 
 private:
-    bool initialCheck(const QString &name);
-    ctti::unnamed_type_id_t secondCheck(const QString &name);
-    ctti::unnamed_type_id_t parseType(const QDomElement &typeNode);
+    std::uint64_t parseType(const QDomElement &typeNode);
 
     void dSpinBoxParse(delegate::DoubleSpinBoxWidget &dsbw, const QDomElement &widgetNode);
     void groupParse(delegate::Group &group, const QDomElement &widgetNode, const QStringList &items);
@@ -29,5 +29,3 @@ private:
         const QString &className, const ctti::unnamed_type_id_t &type);
     config::itemVariant parseWidget(const QDomElement &widgetNode);
 };
-
-#endif // NEWXMLPARSER_H

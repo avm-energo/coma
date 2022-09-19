@@ -7,6 +7,8 @@
 #include <QObject>
 #include <QtXml>
 
+/// \brief Base classe for XML parser classes.
+/// \see ModuleXmlParser, S2XmlParser.
 class BaseXmlParser : public QObject
 {
     Q_OBJECT

@@ -236,37 +236,38 @@ delegate::WidgetGroup groupForId(quint16 id)
 
 void ConfigDialog::SetupUI()
 {
-
-    QVBoxLayout *vlyout = new QVBoxLayout;
-    QTabWidget *ConfTW = new QTabWidget(this);
-
+    auto vlyout = new QVBoxLayout;
+    auto ConfTW = new QTabWidget(this);
     WidgetFactory factory(configV);
     createTabs(ConfTW);
 
     for (const auto &record : qAsConst(m_defaultValues))
     {
-        if (!record.visibility)
-            continue;
-        auto id = record.record.getId();
-        QWidget *widget = factory.createWidget(id, this);
-        if (!widget)
+        if (record.visibility)
         {
-            qWarning() << "Bad config widget for item: " << id;
-            continue;
+            auto id = record.record.getId();
+            auto widget = factory.createWidget(id, this);
+            if (widget)
+            {
+                auto group = groupForId(id);
+                auto child = widgetAt(ConfTW, group);
+                QGroupBox *subBox = qobject_cast<QGroupBox *>(child->findChild<QGroupBox *>());
+                // Q_ASSERT(subBox);
+                if (!subBox)
+                {
+                    widget->deleteLater();
+                }
+                else
+                {
+                    auto lyout = subBox->layout();
+                    lyout->addWidget(widget);
+                }
+            }
+            else
+            {
+                qWarning() << "Bad config widget for item: " << id;
+            }
         }
-
-        auto group = groupForId(id);
-        auto child = widgetAt(ConfTW, group);
-
-        QGroupBox *subBox = qobject_cast<QGroupBox *>(child->findChild<QGroupBox *>());
-        Q_ASSERT(subBox);
-        if (!subBox)
-        {
-            widget->deleteLater();
-            continue;
-        }
-        auto *lyout = subBox->layout();
-        lyout->addWidget(widget);
     }
     vlyout->addWidget(ConfTW);
     vlyout->addWidget(ConfButtons());
@@ -285,23 +286,17 @@ void ConfigDialog::createTabs(QTabWidget *tabWidget)
     }
     for (const auto &group : intersection)
     {
-        QGroupBox *subBox = nullptr;
-
-        subBox = new QGroupBox("Группа " + categories.value(group), this);
-        QVBoxLayout *subvlyout = new QVBoxLayout;
+        auto subBox = new QGroupBox("Группа " + categories.value(group), this);
+        auto subvlyout = new QVBoxLayout;
         subvlyout->setAlignment(Qt::AlignTop);
         subvlyout->setSpacing(0);
-
         subvlyout->setContentsMargins(0, 0, 0, 0);
-
         subBox->setLayout(subvlyout);
-
-        QScrollArea *scrollArea = new QScrollArea;
+        auto scrollArea = new QScrollArea;
         scrollArea->setObjectName(QString::number(group));
         scrollArea->setFrameShape(QFrame::NoFrame);
         scrollArea->setWidgetResizable(true);
         scrollArea->setWidget(subBox);
-
         tabWidget->addTab(scrollArea, categories.value(group));
     }
 }

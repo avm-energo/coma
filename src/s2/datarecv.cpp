@@ -145,10 +145,8 @@ DataRecV::DataRecV(const unsigned _id, const QString &str) : id(_id)
     auto search = s2map.find(_id);
     assert(search != s2map.end());
 
-    auto test = ctti::unnamed_type_id<DataRecV>().hash();
     // return;
     // Exception inside ctor https://www.stroustrup.com/bs_faq2.html#ctor-exceptions
-
     auto value = s2map.at(_id);
     switch (value.hash())
     {
