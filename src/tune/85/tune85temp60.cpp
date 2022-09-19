@@ -1,4 +1,4 @@
-#include "tune84temp60.h"
+#include "tune85temp60.h"
 
 #include "../../gen/colors.h"
 #include "../../gen/stdfunc.h"
@@ -15,7 +15,7 @@
 #include <QMessageBox>
 #include <QVBoxLayout>
 
-Tune84Temp60::Tune84Temp60(ConfigV *config, int tuneStep, QWidget *parent)
+Tune85Temp60::Tune85Temp60(ConfigV *config, int tuneStep, QWidget *parent)
     : AbstractTuneDialog(config, tuneStep, parent)
 {
     TuneSequenceFile::clearTuneDescrVector();
@@ -37,30 +37,30 @@ Tune84Temp60::Tune84Temp60(ConfigV *config, int tuneStep, QWidget *parent)
     setupUI();
 }
 
-void Tune84Temp60::setMessages()
+void Tune85Temp60::setMessages()
 {
 }
 
-void Tune84Temp60::setTuneFunctions()
+void Tune85Temp60::setTuneFunctions()
 {
     addTuneFunc("1. Ввод пароля...", &AbstractTuneDialog::CheckPassword);
     addTuneFunc("2. Сохранение конфигурации...", &AbstractTuneDialog::saveWorkConfig);
-    addTuneFunc("3. Задание временной конфигурации и настроечных параметров...", &Tune84Temp60::setNewConfAndTune);
-    addTuneFunc("4. Выдача диалога о температуре в камере...", &Tune84Temp60::showTempDialog);
-    addTuneFunc("5. Ожидание установления температурного режима...", &Tune84Temp60::waitForTempToRise);
-    addTuneFunc("6. Диалог об установлении входных сигналов...", &Tune84Temp60::showSignalsDialog);
-    addTuneFunc("7. Измерения...", &Tune84Temp60::analogMeasurement);
+    addTuneFunc("3. Задание временной конфигурации и настроечных параметров...", &Tune85Temp60::setNewConfAndTune);
+    addTuneFunc("4. Выдача диалога о температуре в камере...", &Tune85Temp60::showTempDialog);
+    addTuneFunc("5. Ожидание установления температурного режима...", &Tune85Temp60::waitForTempToRise);
+    addTuneFunc("6. Диалог об установлении входных сигналов...", &Tune85Temp60::showSignalsDialog);
+    addTuneFunc("7. Измерения...", &Tune85Temp60::analogMeasurement);
     if (m_tuneStep == TS84_60TUNING)
         addTuneFunc("8. Ввод данных энергомонитора и сохранение промежуточных данных...",
-            &Tune84Temp60::inputEnergomonitorValues);
+            &Tune85Temp60::inputEnergomonitorValues);
     else
     {
-        addTuneFunc("8. Ввод данных энергомонитора...", &Tune84Temp60::inputEnergomonitorValues);
+        addTuneFunc("8. Ввод данных энергомонитора...", &Tune85Temp60::inputEnergomonitorValues);
         addTuneFunc("9. Запись коэффициентов в модуль...", &AbstractTuneDialog::writeTuneCoefs);
     }
 }
 
-Error::Msg Tune84Temp60::setNewConfAndTune()
+Error::Msg Tune85Temp60::setNewConfAndTune()
 {
     configV->setRecordValue({ S2::GetIdByName("C_Pasp_ID"), DataTypes::FLOAT_3t({ 2250, 2250, 2250 }) });
     configV->setRecordValue({ S2::GetIdByName("Unom1"), float(220) });
@@ -79,7 +79,7 @@ Error::Msg Tune84Temp60::setNewConfAndTune()
     return Error::Msg::NoError;
 }
 
-Error::Msg Tune84Temp60::showTempDialog()
+Error::Msg Tune85Temp60::showTempDialog()
 {
     //    QDialog *dlg = new QDialog;
     //    QVBoxLayout *lyout = new QVBoxLayout;
@@ -97,7 +97,7 @@ Error::Msg Tune84Temp60::showTempDialog()
     return Error::Msg::NoError;
 }
 
-Error::Msg Tune84Temp60::waitForTempToRise()
+Error::Msg Tune85Temp60::waitForTempToRise()
 {
     WaitWidget *ww = new WaitWidget;
     ww->setObjectName("ww");
@@ -116,7 +116,7 @@ Error::Msg Tune84Temp60::waitForTempToRise()
     return Error::Msg::NoError;
 }
 
-Error::Msg Tune84Temp60::showSignalsDialog()
+Error::Msg Tune85Temp60::showSignalsDialog()
 {
     //    QDialog *dlg = new QDialog;
     //    QVBoxLayout *lyout = new QVBoxLayout;
@@ -169,7 +169,7 @@ Error::Msg Tune84Temp60::showSignalsDialog()
     return Error::Msg::NoError;
 }
 
-Error::Msg Tune84Temp60::analogMeasurement()
+Error::Msg Tune85Temp60::analogMeasurement()
 {
     emit setProgressSize(StdFunc::TuneRequestCount());
     //    startWait();
@@ -209,7 +209,7 @@ Error::Msg Tune84Temp60::analogMeasurement()
     return Error::Msg::NoError;
 }
 
-Error::Msg Tune84Temp60::inputEnergomonitorValues()
+Error::Msg Tune85Temp60::inputEnergomonitorValues()
 {
     EEditablePopup *popup = new EEditablePopup("Ввод значений сигналов c Энергомонитора");
     popup->addFloatParameter("Uэт, В", m_midTuneStruct.uet);
@@ -249,7 +249,7 @@ Error::Msg Tune84Temp60::inputEnergomonitorValues()
     return Error::Msg::NoError;
 }
 
-Error::Msg Tune84Temp60::calcTuneCoefs()
+Error::Msg Tune85Temp60::calcTuneCoefs()
 {
     //    m_midTuneStruct.uet = StdFunc::toFloat(WDFunc::LEData(this, "ValuetuneU"));
     //    m_midTuneStruct.iet = StdFunc::toFloat(WDFunc::LEData(this, "ValuetuneI"));
@@ -287,7 +287,7 @@ Error::Msg Tune84Temp60::calcTuneCoefs()
     //    return m_bac->writeBlockToModule();
 }
 
-void Tune84Temp60::loadIntermediateResults()
+void Tune85Temp60::loadIntermediateResults()
 {
     //    QString cpuserialnum = Board::GetInstance().UID();
     //    QSettings storedcalibrations(StdFunc::GetSystemHomeDir() + "calibr.ini", QSettings::IniFormat);
@@ -298,7 +298,7 @@ void Tune84Temp60::loadIntermediateResults()
     TuneSequenceFile::loadItemsFromFile();
 }
 
-void Tune84Temp60::saveIntermediateResults()
+void Tune85Temp60::saveIntermediateResults()
 {
     //    m_midTuneStruct.uet = StdFunc::toFloat(WDFunc::LEData(this, "ValuetuneU"));
     //    m_midTuneStruct.iet = StdFunc::toFloat(WDFunc::LEData(this, "ValuetuneI"));
@@ -312,13 +312,13 @@ void Tune84Temp60::saveIntermediateResults()
     loadWorkConfig();
 }
 
-// void Tune84Temp60::acceptTuneCoefs()
+// void Tune85Temp60::acceptTuneCoefs()
 //{
 //    m_bac->updateFromWidget();
 //    m_bac->writeBlockToModule();
 //}
 
-// void Tune84Temp60::setDefCoefs()
+// void Tune85Temp60::setDefCoefs()
 //{
 //    m_bac->setDefBlockAndUpdate();
 //    m_bd0->setDefBlockAndUpdate();

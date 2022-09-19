@@ -1,16 +1,16 @@
-#ifndef TUNE84CHECK_H
-#define TUNE84CHECK_H
+#ifndef TUNE85CHECK_H
+#define TUNE85CHECK_H
 
 #include "../abstracttunedialog.h"
 
 #include <QShowEvent>
 #include <QWidget>
 
-class Tune84Check : public AbstractTuneDialog
+class Tune85Check : public AbstractTuneDialog
 {
     Q_OBJECT
 public:
-    Tune84Check(ConfigV *config, int tuneStep, QWidget *parent = nullptr);
+    Tune85Check(ConfigV *config, int tuneStep, QWidget *parent = nullptr);
 
 private:
     void setTuneFunctions() override;
@@ -22,4 +22,4 @@ protected:
     void showEvent(QShowEvent *e) override;
 };
 
-#endif // TUNE84CHECK_H
+#endif // TUNE85CHECK_H

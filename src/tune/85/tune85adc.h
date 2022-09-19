@@ -1,5 +1,5 @@
-#ifndef TUNE84ADC_H
-#define TUNE84ADC_H
+#ifndef TUNE85ADC_H
+#define TUNE85ADC_H
 
 #include "../../datablocks/bd0.h"
 #include "../../datablocks/kiv/bac.h"
@@ -9,11 +9,11 @@
 
 #include <QWidget>
 
-class Tune84ADC : public AbstractTuneDialog
+class Tune85ADC : public AbstractTuneDialog
 {
     Q_OBJECT
 public:
-    Tune84ADC(ConfigV *config, int tuneStep, QWidget *parent = nullptr);
+    Tune85ADC(ConfigV *config, int tuneStep, QWidget *parent = nullptr);
 
 private:
     BacA284 *m_bac;
@@ -61,4 +61,4 @@ private slots:
     void CalcTuneCoefs();
 };
 
-#endif // TUNE84ADC_H
+#endif // TUNE85ADC_H

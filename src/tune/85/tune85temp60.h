@@ -1,5 +1,4 @@
-#ifndef TUNE84TEMP60_H
-#define TUNE84TEMP60_H
+#pragma once
 
 #include "../../datablocks/bd0.h"
 #include "../../datablocks/kiv/bac.h"
@@ -8,11 +7,11 @@
 
 #include <QWidget>
 
-class Tune84Temp60 : public AbstractTuneDialog
+class Tune85Temp60 : public AbstractTuneDialog
 {
     Q_OBJECT
 public:
-    Tune84Temp60(ConfigV *config, int tuneStep, QWidget *parent = nullptr);
+    Tune85Temp60(ConfigV *config, int tuneStep, QWidget *parent = nullptr);
 
 private:
     struct MidTuneStruct
@@ -76,5 +75,3 @@ private slots:
     //    int ReadAnalogMeasurements();
     //    void setDefCoefs();
 };
-
-#endif // TUNE84TEMP60_H

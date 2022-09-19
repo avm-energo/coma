@@ -12,11 +12,11 @@ Tune85Dialog::Tune85Dialog(ConfigV *config, QWidget *parent) : GeneralTuneDialog
     setAttribute(Qt::WA_DeleteOnClose);
 
     m_dialogList
-        = { { "Проверка правильности измерения входных сигналов", new Tune84Check(config, TS84_CHECKING, this) },
-              { "Регулировка каналов напряжения", new Tune84ADC(config, TS84_ADCU, this) },
-              { "Регулировка каналов тока", new Tune84ADC(config, TS84_ADCI, this) },
-              { "Настройка температурной коррекции +60 °С", new TuneKIVTemp60(config, TS84_60TUNING, this) },
-              { "Настройка температурной коррекции -20 °С", new TuneKIVTemp60(config, TS84_20TUNING, this) } };
+        = { { "Проверка правильности измерения входных сигналов", new Tune85Check(config, TS84_CHECKING, this) },
+              { "Регулировка каналов напряжения", new Tune85ADC(config, TS84_ADCU, this) },
+              { "Регулировка каналов тока", new Tune85ADC(config, TS84_ADCI, this) },
+              { "Настройка температурной коррекции +60 °С", new Tune85Temp60(config, TS84_60TUNING, this) },
+              { "Настройка температурной коррекции -20 °С", new Tune85Temp60(config, TS84_20TUNING, this) } };
     //    m_calibrSteps = m_dialogList.size() + 1;
     BacA284 *bac = new BacA284;
     m_BacWidget = bac->widget();

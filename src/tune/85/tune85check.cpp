@@ -1,4 +1,4 @@
-#include "tune84check.h"
+#include "tune85check.h"
 
 #include "../../datablocks/kiv/bda.h"
 #include "../../gen/files.h"
@@ -12,20 +12,20 @@
 #include <QPushButton>
 #include <QVBoxLayout>
 
-Tune84Check::Tune84Check(ConfigV *config, int tuneStep, QWidget *parent) : AbstractTuneDialog(config, tuneStep, parent)
+Tune85Check::Tune85Check(ConfigV *config, int tuneStep, QWidget *parent) : AbstractTuneDialog(config, tuneStep, parent)
 {
     setupUI();
 }
 
-void Tune84Check::setTuneFunctions()
+void Tune85Check::setTuneFunctions()
 {
     addTuneFunc("Ввод пароля...", &AbstractTuneDialog::CheckPassword);
     addTuneFunc("Сохранение текущей конфигурации...", &AbstractTuneDialog::saveWorkConfig);
-    addTuneFunc("Отображение схемы подключения...", &Tune84Check::showScheme);
-    addTuneFunc("Проверка...", &Tune84Check::check);
+    addTuneFunc("Отображение схемы подключения...", &Tune85Check::showScheme);
+    addTuneFunc("Проверка...", &Tune85Check::check);
 }
 
-Error::Msg Tune84Check::showScheme()
+Error::Msg Tune85Check::showScheme()
 {
     QWidget *w = new QWidget(this);
     QVBoxLayout *lyout = new QVBoxLayout;
@@ -67,7 +67,7 @@ Error::Msg Tune84Check::showScheme()
     return Error::Msg::NoError;
 }
 
-Error::Msg Tune84Check::check()
+Error::Msg Tune85Check::check()
 {
     BdaA284 *bda = new BdaA284;
     bda->readAndUpdate();
@@ -84,7 +84,7 @@ Error::Msg Tune84Check::check()
     return Error::Msg::NoError;
 }
 
-void Tune84Check::showEvent(QShowEvent *e)
+void Tune85Check::showEvent(QShowEvent *e)
 {
     e->accept();
 }

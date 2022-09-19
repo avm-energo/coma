@@ -1,4 +1,4 @@
-#include "tune84adc.h"
+#include "tune85adc.h"
 
 #include "../../gen/colors.h"
 #include "../../gen/stdfunc.h"
@@ -12,7 +12,7 @@
 #include <QMessageBox>
 #include <QVBoxLayout>
 
-Tune84ADC::Tune84ADC(ConfigV *config, int tuneStep, QWidget *parent) : AbstractTuneDialog(config, tuneStep, parent)
+Tune85ADC::Tune85ADC(ConfigV *config, int tuneStep, QWidget *parent) : AbstractTuneDialog(config, tuneStep, parent)
 {
 
     m_bac = new BacA284;
@@ -28,35 +28,35 @@ Tune84ADC::Tune84ADC(ConfigV *config, int tuneStep, QWidget *parent) : AbstractT
     setupUI();
 }
 
-void Tune84ADC::setTuneFunctions()
+void Tune85ADC::setTuneFunctions()
 {
     addTuneFunc("Ввод пароля...", &AbstractTuneDialog::CheckPassword);
     addTuneFunc("Сохранение текущей конфигурации...", &AbstractTuneDialog::saveWorkConfig);
-    addTuneFunc("Отображение предупреждения...", &Tune84ADC::showPreWarning);
+    addTuneFunc("Отображение предупреждения...", &Tune85ADC::showPreWarning);
     addTuneFunc("Запрос настроечных параметров...", &AbstractTuneDialog::readTuneCoefs);
-    addTuneFunc("Проверка настроечных параметров...", &Tune84ADC::checkTuneCoefs);
-    addTuneFunc("Задание режима конфигурирования модуля...", &Tune84ADC::setSMode2);
-    addTuneFunc("Регулировка для Кацп = 1...", &Tune84ADC::ADCCoef1);
-    addTuneFunc("Отображение диалога задания входных данных...", &Tune84ADC::showEnergomonitorInputDialog);
+    addTuneFunc("Проверка настроечных параметров...", &Tune85ADC::checkTuneCoefs);
+    addTuneFunc("Задание режима конфигурирования модуля...", &Tune85ADC::setSMode2);
+    addTuneFunc("Регулировка для Кацп = 1...", &Tune85ADC::ADCCoef1);
+    addTuneFunc("Отображение диалога задания входных данных...", &Tune85ADC::showEnergomonitorInputDialog);
     if (m_tuneStep == TS84_ADCI)
     {
-        addTuneFunc("Регулировка для Кацп = 2...", &Tune84ADC::ADCCoef2);
-        addTuneFunc("Отображение диалога задания входных данных...", &Tune84ADC::showEnergomonitorInputDialog);
-        addTuneFunc("Регулировка для Кацп = 4...", &Tune84ADC::ADCCoef4);
-        addTuneFunc("Отображение диалога задания входных данных...", &Tune84ADC::showEnergomonitorInputDialog);
-        addTuneFunc("Регулировка для Кацп = 8...", &Tune84ADC::ADCCoef8);
-        addTuneFunc("Отображение диалога задания входных данных...", &Tune84ADC::showEnergomonitorInputDialog);
-        addTuneFunc("Регулировка для Кацп = 16...", &Tune84ADC::ADCCoef16);
-        addTuneFunc("Отображение диалога задания входных данных...", &Tune84ADC::showEnergomonitorInputDialog);
-        addTuneFunc("Регулировка для Кацп = 32...", &Tune84ADC::ADCCoef32);
-        addTuneFunc("Отображение диалога задания входных данных...", &Tune84ADC::showEnergomonitorInputDialog);
-        addTuneFunc("Регулировка канала Tmk0...", &Tune84ADC::Tmk0);
+        addTuneFunc("Регулировка для Кацп = 2...", &Tune85ADC::ADCCoef2);
+        addTuneFunc("Отображение диалога задания входных данных...", &Tune85ADC::showEnergomonitorInputDialog);
+        addTuneFunc("Регулировка для Кацп = 4...", &Tune85ADC::ADCCoef4);
+        addTuneFunc("Отображение диалога задания входных данных...", &Tune85ADC::showEnergomonitorInputDialog);
+        addTuneFunc("Регулировка для Кацп = 8...", &Tune85ADC::ADCCoef8);
+        addTuneFunc("Отображение диалога задания входных данных...", &Tune85ADC::showEnergomonitorInputDialog);
+        addTuneFunc("Регулировка для Кацп = 16...", &Tune85ADC::ADCCoef16);
+        addTuneFunc("Отображение диалога задания входных данных...", &Tune85ADC::showEnergomonitorInputDialog);
+        addTuneFunc("Регулировка для Кацп = 32...", &Tune85ADC::ADCCoef32);
+        addTuneFunc("Отображение диалога задания входных данных...", &Tune85ADC::showEnergomonitorInputDialog);
+        addTuneFunc("Регулировка канала Tmk0...", &Tune85ADC::Tmk0);
     }
-    addTuneFunc("Запись настроечных коэффициентов и восстановление конфигурации...", &Tune84ADC::SendBac);
-    addTuneFunc("Проверка регулировки...", &Tune84ADC::CheckTune);
+    addTuneFunc("Запись настроечных коэффициентов и восстановление конфигурации...", &Tune85ADC::SendBac);
+    addTuneFunc("Проверка регулировки...", &Tune85ADC::CheckTune);
 }
 
-Error::Msg Tune84ADC::showPreWarning()
+Error::Msg Tune85ADC::showPreWarning()
 {
     //    QDialog *dlg = new QDialog;
     QVBoxLayout *lyout = new QVBoxLayout;
@@ -86,7 +86,7 @@ Error::Msg Tune84ADC::showPreWarning()
     return Error::Msg::NoError;
 }
 
-Error::Msg Tune84ADC::checkTuneCoefs()
+Error::Msg Tune85ADC::checkTuneCoefs()
 {
     QVector<float *> tcoefs = { &m_bac->data()->KmU[0], &m_bac->data()->KmI1[0], &m_bac->data()->KmI2[0],
         &m_bac->data()->KmI4[0], &m_bac->data()->KmI8[0], &m_bac->data()->KmI16[0], &m_bac->data()->KmI32[0] };
@@ -106,13 +106,13 @@ Error::Msg Tune84ADC::checkTuneCoefs()
     return Error::Msg::NoError;
 }
 
-Error::Msg Tune84ADC::setSMode2()
+Error::Msg Tune85ADC::setSMode2()
 {
     BaseInterface::iface()->writeCommand(Queries::QUSB_SetMode, 0x02);
     return Error::Msg::NoError;
 }
 
-Error::Msg Tune84ADC::ADCCoef(int coef)
+Error::Msg Tune85ADC::ADCCoef(int coef)
 {
     QMap<int, int> currentMap = { { 1, 290 }, { 2, 250 }, { 4, 140 }, { 8, 80 }, { 16, 40 }, { 32, 23 } };
     m_curTuneStep = coef;
@@ -164,37 +164,37 @@ Error::Msg Tune84ADC::ADCCoef(int coef)
     return Error::Msg::NoError;
 }
 
-Error::Msg Tune84ADC::ADCCoef1()
+Error::Msg Tune85ADC::ADCCoef1()
 {
     return ADCCoef(1);
 }
 
-Error::Msg Tune84ADC::ADCCoef2()
+Error::Msg Tune85ADC::ADCCoef2()
 {
     return (m_tuneStep == TS84_ADCI || m_tuneStep == TS84_ADCU) ? ADCCoef(2) : Error::Msg::ResEmpty;
 }
 
-Error::Msg Tune84ADC::ADCCoef4()
+Error::Msg Tune85ADC::ADCCoef4()
 {
     return (m_tuneStep == TS84_ADCI || m_tuneStep == TS84_ADCU) ? ADCCoef(4) : Error::Msg::ResEmpty;
 }
 
-Error::Msg Tune84ADC::ADCCoef8()
+Error::Msg Tune85ADC::ADCCoef8()
 {
     return (m_tuneStep == TS84_ADCI || m_tuneStep == TS84_ADCU) ? ADCCoef(8) : Error::Msg::ResEmpty;
 }
 
-Error::Msg Tune84ADC::ADCCoef16()
+Error::Msg Tune85ADC::ADCCoef16()
 {
     return (m_tuneStep == TS84_ADCI || m_tuneStep == TS84_ADCU) ? ADCCoef(16) : Error::Msg::ResEmpty;
 }
 
-Error::Msg Tune84ADC::ADCCoef32()
+Error::Msg Tune85ADC::ADCCoef32()
 {
     return (m_tuneStep == TS84_ADCI || m_tuneStep == TS84_ADCU) ? ADCCoef(32) : Error::Msg::ResEmpty;
 }
 
-Error::Msg Tune84ADC::Tmk0()
+Error::Msg Tune85ADC::Tmk0()
 {
     emit setProgressSize(5);
     int i = 0;
@@ -214,7 +214,7 @@ Error::Msg Tune84ADC::Tmk0()
     return Error::Msg::NoError;
 }
 
-Error::Msg Tune84ADC::SendBac()
+Error::Msg Tune85ADC::SendBac()
 {
     m_bac->updateWidget();
     if (writeTuneCoefs() != Error::Msg::NoError)
@@ -224,7 +224,7 @@ Error::Msg Tune84ADC::SendBac()
     return Error::Msg::NoError;
 }
 
-Error::Msg Tune84ADC::CheckTune()
+Error::Msg Tune85ADC::CheckTune()
 {
     EMessageBox::information(this,
         "После закрытия данного сообщения для завершения настройки нажмите Enter\nДля отказа от настройки нажмите Esc");
@@ -239,7 +239,7 @@ Error::Msg Tune84ADC::CheckTune()
     return Error::Msg::NoError;
 }
 
-Error::Msg Tune84ADC::setADCCoef(int coef)
+Error::Msg Tune85ADC::setADCCoef(int coef)
 {
     QMap<int, float> adcCoefMap = { { 1, 9000 }, { 2, 4500 }, { 4, 2250 }, { 8, 1124 }, { 16, 562 }, { 32, 281 } };
     configV->setRecordValue({ S2::GetIdByName("C_Pasp_ID"),
@@ -250,7 +250,7 @@ Error::Msg Tune84ADC::setADCCoef(int coef)
     return BaseInterface::iface()->writeConfFileSync(configV->getConfig());
 }
 
-Error::Msg Tune84ADC::showRetomDialog(int coef)
+Error::Msg Tune85ADC::showRetomDialog(int coef)
 {
     struct retomStruct
     {
@@ -314,7 +314,7 @@ Error::Msg Tune84ADC::showRetomDialog(int coef)
     return Error::Msg::NoError;
 }
 
-bool Tune84ADC::checkBdaIn(int current)
+bool Tune85ADC::checkBdaIn(int current)
 {
     for (int i = 0; i < 3; ++i)
     {
@@ -342,7 +342,7 @@ bool Tune84ADC::checkBdaIn(int current)
     return true;
 }
 
-Error::Msg Tune84ADC::showEnergomonitorInputDialog()
+Error::Msg Tune85ADC::showEnergomonitorInputDialog()
 {
     if ((m_curTuneStep != 1) && (m_tuneStep == TS84_ADCU)) // only the first input has any means
         return Error::Msg::ResEmpty;
@@ -358,7 +358,7 @@ Error::Msg Tune84ADC::showEnergomonitorInputDialog()
     return Error::Msg::NoError;
 }
 
-void Tune84ADC::CalcTuneCoefs()
+void Tune85ADC::CalcTuneCoefs()
 {
     QMap<int, float *> kmimap
         = { { 1, &m_bac->data()->KmI1[0] }, { 2, &m_bac->data()->KmI2[0] }, { 4, &m_bac->data()->KmI4[0] },
