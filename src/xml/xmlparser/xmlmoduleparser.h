@@ -1,18 +1,20 @@
-#ifndef MODULEXMLPARSER_H
-#define MODULEXMLPARSER_H
+#pragma once
 
 #include "../../interfaces/interfacesettings.h"
 #include "../../module/modulesettings.h"
-#include "basexmlparser.h"
+#include "xmlbaseparser.h"
 
-class ModuleXmlParser : public BaseXmlParser
+namespace Xml
+{
+/// \brief Class for parsing modules configuration files.
+class ModuleParser : public BaseParser
 {
     Q_OBJECT
 private:
     bool isBase;
 
 public:
-    explicit ModuleXmlParser(QObject *parent = nullptr);
+    explicit ModuleParser(QObject *parent = nullptr);
     void parse(const QDomNode &content, const quint16 &typeB, const quint16 &typeM);
 
 signals:
@@ -48,4 +50,4 @@ private:
     void parseConfig(const QDomNode &configNode);
 };
 
-#endif // MODULEXMLPARSER_H
+}

@@ -1,5 +1,4 @@
-#ifndef MODULESETTINGS_H
-#define MODULESETTINGS_H
+#pragma once
 
 #include "../gen/datatypes.h"
 #include "../s2/datarecv.h"
@@ -9,17 +8,9 @@
 
 namespace ModuleTypes
 {
-/// Config settings ///
+using SignalType = DataTypes::SignalTypes; ///< Перечисление для типа сигналов.
 
-using ConfigList = QList<DataTypes::RecordPair>;
-using ConfigMap = QHash<quint32, ConfigList>;
-
-/// Signal settings ///
-
-/// \brief Перечисление для типа сигналов
-using SignalType = DataTypes::SignalTypes;
-
-/// \brief Структура для хранения информации узла <signal> из XML
+/// \brief Структура для хранения информации узла <signal> из XML.
 struct Signal
 {
     quint32 startAddr;
@@ -27,15 +18,7 @@ struct Signal
     SignalType sigType;
 };
 
-using SignalMap = QHash<quint32, Signal>;
-
-/// Section settings ///
-
-// key (quint32) - id вкладки
-// value (QString) - имя вкладки
-using TabsMap = QHash<quint32, QString>; ///< Хранит узлы <tab> секции <section-tabs>
-
-/// \brief Структура для хранения информации узла <mwidget> из XML
+/// \brief Структура для хранения информации узла <mwidget> из XML.
 struct MWidget
 {
     QString desc;                 ///< атрибут "desc"
@@ -45,35 +28,21 @@ struct MWidget
     QStringList subItemList = {}; ///< узел <string-array>
 };
 
-/// \brief Структура для хранения информации узла <sgroup> из XML
+/// \brief Структура для хранения информации узла <sgroup> из XML.
 struct SGroup
 {
     QString name;           ///< атрибут "header"
     QList<MWidget> widgets; ///< узлы <mwidget>
 };
 
-// key (quint32) - id вкладки
-// value (список SGroup) - список SGroup
-using SGMap = QMultiHash<quint32, SGroup>;
+using SGMap = QMultiHash<quint32, SGroup>; ///< quint32 - id вкладки, SGroup - группы для вкладки
 
-/// \brief Структура для хранения информации узла <section> из XML
+/// \brief Структура для хранения информации узла <section> из XML.
 struct Section
 {
     QString name; ///< атрибут "header"
     SGMap sgMap;  ///< узлы <sgroup>
 };
-
-using SectionList = QList<Section>; ///< Хранит узлы <section> секции <sections>
-
-/// Alarms settings ///
-
-using HighlightMap = QMultiMap<quint32, quint32>;
-// Info: DataTypes::Alarm - deprecated [see template.xml]
-using AlarmKey = std::pair<bool, Modules::AlarmType>; ///< bool - isBase, Modules::AlarmType - тип сигнализации
-using AlarmValue = QHash<quint32, QString>; ///< quint32 - адрес сигнализации, QString - нода <desc> (описание)
-using AlarmMap = QHash<AlarmKey, AlarmValue>; ///< Хранит узлы <item> секции <alarms>
-
-/// Journals settings ///
 
 /// \brief Структура для хранения информации узла <item> в <journals>
 struct Journal
@@ -82,17 +51,22 @@ struct Journal
     QString desc; ///< узел <desc>
 };
 
-// Info: DataTypes::JournalDesc - deprecated [see template.xml]
-using JourMap = QHash<Modules::JournalType, QList<Journal>>; ///< Хранит узлы <item> секции <journals>
-
-/// Interface settings ///
-
 /// \brief Структура для хранения информации о протоколах protocom, modbus и iec104
 struct InterfaceSettings
 {
     QVariant settings;
 };
 
+using SignalMap = QHash<quint32, Signal>;        ///< Хранит узлы <signal> секции <signals>.
+using TabsMap = QHash<quint32, QString>;         ///< Хранит узлы <tab> секции <section-tabs>.
+using ConfigList = QList<DataTypes::RecordPair>; ///< Хранит узлы <record> секции <config>.
+using ConfigMap = QHash<quint32, ConfigList>; ///< Хранение конфигурации для базы и мезонина в разных списках.
+using HighlightMap = QMultiMap<quint32, quint32>; ///< Для подсветки элементов.
+using SectionList = QList<Section>;               ///< Хранит узлы <section> секции <sections>.
+using AlarmKey = std::pair<bool, Modules::AlarmType>; ///< bool - isBase, Modules::AlarmType - тип сигнализации
+using AlarmValue = QHash<quint32, QString>; ///< quint32 - адрес сигнализации, QString - нода <desc> (описание)
+using AlarmMap = QHash<AlarmKey, AlarmValue>;                ///< Хранит узлы <item> секции <alarms>
+using JourMap = QHash<Modules::JournalType, QList<Journal>>; ///< Хранит узлы <item> секции <journals>
 }
 
 class ModuleSettings
@@ -100,7 +74,14 @@ class ModuleSettings
 public:
     ModuleSettings();
     void startNewConfig();
-    void appendToCurrentConfig(DataTypes::RecordPair pair);
+
+    void appendToCurrentConfig(const DataTypes::RecordPair &pair);
+    void appendSignal(const quint32 &id, const ModuleTypes::Signal &sig);
+    void appendTab(const quint32 &id, const QString &tabName);
+    void appendSection(const ModuleTypes::Section &section);
+    void appendAlarm(const ModuleTypes::AlarmKey &key, const quint32 &addr, const QString &desc);
+    void appendJournal(const Modules::JournalType &key, const ModuleTypes::Journal &journal);
+    void setInterfaceSettings(const ModuleTypes::InterfaceSettings &settings);
 
     const ModuleTypes::ConfigMap &getConfigMap() const;
     const ModuleTypes::ConfigList getConfigs() const;
@@ -111,13 +92,12 @@ public:
     const ModuleTypes::JourMap &getJours() const;
     const ModuleTypes::InterfaceSettings &getInterfaceSettings() const;
 
-    ModuleTypes::ConfigList &getConfigs();
-    ModuleTypes::SignalMap &getSignals();
-    ModuleTypes::TabsMap &getTabs();
-    ModuleTypes::SectionList &getSections();
-    ModuleTypes::AlarmMap &getAlarms();
-    ModuleTypes::JourMap &getJours();
-    void setInterfaceSettings(const ModuleTypes::InterfaceSettings &settings);
+    // ModuleTypes::ConfigList &getConfigs();
+    // ModuleTypes::SignalMap &getSignals();
+    // ModuleTypes::TabsMap &getTabs();
+    // ModuleTypes::SectionList &getSections();
+    // ModuleTypes::AlarmMap &getAlarms();
+    // ModuleTypes::JourMap &getJours();
 
 private:
     ModuleTypes::HighlightMap critHighlight, warnHighlight;
@@ -131,5 +111,3 @@ private:
     ModuleTypes::JourMap mJournals;
     ModuleTypes::InterfaceSettings mIfaceSettings;
 };
-
-#endif // MODULESETTINGS_H

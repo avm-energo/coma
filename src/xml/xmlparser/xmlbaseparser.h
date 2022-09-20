@@ -1,5 +1,4 @@
-#ifndef BASEXMLPARSER_H
-#define BASEXMLPARSER_H
+#pragma once
 
 #include "../../ctti/type_id.hpp"
 #include "../xmltags.h"
@@ -7,13 +6,15 @@
 #include <QObject>
 #include <QtXml>
 
+namespace Xml
+{
 /// \brief Base classe for XML parser classes.
-/// \see ModuleXmlParser, S2XmlParser.
-class BaseXmlParser : public QObject
+/// \see ModuleParser, S2Parser.
+class BaseParser : public QObject
 {
     Q_OBJECT
 public:
-    explicit BaseXmlParser(QObject *parent = nullptr);
+    explicit BaseParser(QObject *parent = nullptr);
 
 protected:
     const QStringList parseStringArray(const QDomNode &node) const;
@@ -31,15 +32,15 @@ protected:
 
 // Template specializations
 
-template <> double BaseXmlParser::parseNumString(const QString &numStr, bool &state);
-template <> int BaseXmlParser::parseNumString(const QString &numStr, bool &state);
-template <> quint16 BaseXmlParser::parseNumString(const QString &numStr, bool &state);
-template <> quint32 BaseXmlParser::parseNumString(const QString &numStr, bool &state);
-template <> quint64 BaseXmlParser::parseNumString(const QString &numStr, bool &state);
+template <> double BaseParser::parseNumString(const QString &numStr, bool &state);
+template <> int BaseParser::parseNumString(const QString &numStr, bool &state);
+template <> quint16 BaseParser::parseNumString(const QString &numStr, bool &state);
+template <> quint32 BaseParser::parseNumString(const QString &numStr, bool &state);
+template <> quint64 BaseParser::parseNumString(const QString &numStr, bool &state);
 
 // Template definitions
 /// \brief Парсинг содержимого узла в число указанного типа
-template <typename T> T BaseXmlParser::parseNum(const QDomElement &numNode)
+template <typename T> T BaseParser::parseNum(const QDomElement &numNode)
 {
     auto numString = numNode.text();
     if (!numString.isEmpty())
@@ -55,7 +56,7 @@ template <typename T> T BaseXmlParser::parseNum(const QDomElement &numNode)
 }
 
 /// \brief Нахождение узла с указанным именем и парсинг его содержимого, возврат числа
-template <typename T> T BaseXmlParser::parseNumFromNode(const QDomNode &node, const QString &tagName)
+template <typename T> T BaseParser::parseNumFromNode(const QDomNode &node, const QString &tagName)
 {
     auto numNode = node.firstChildElement(tagName);
     if (!numNode.isNull())
@@ -64,4 +65,4 @@ template <typename T> T BaseXmlParser::parseNumFromNode(const QDomNode &node, co
         return T(0);
 }
 
-#endif // BASEXMLPARSER_H
+}

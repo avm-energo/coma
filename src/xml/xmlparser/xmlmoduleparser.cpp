@@ -1,13 +1,14 @@
-#include "modulexmlparser.h"
+#include "xmlmoduleparser.h"
 
 #include "../../gen/stdfunc.h"
 #include "../../module/board.h"
 
-ModuleXmlParser::ModuleXmlParser(QObject *parent) : BaseXmlParser(parent), isBase(true)
+Xml::ModuleParser::ModuleParser(QObject *parent) : BaseParser(parent), isBase(true)
 {
 }
 
-bool ModuleXmlParser::isCorrectModuleType(const QDomElement &moduleNode, const quint16 &typeB, const quint16 &typeM)
+/// \brief Проверка на то, совпадает ли тип модуля с указанным в файле конфигурации.
+bool Xml::ModuleParser::isCorrectModuleType(const QDomElement &moduleNode, const quint16 &typeB, const quint16 &typeM)
 {
     if (moduleNode.hasAttribute(tags::mtypeb) && moduleNode.hasAttribute(tags::mtypem))
     {
@@ -21,7 +22,8 @@ bool ModuleXmlParser::isCorrectModuleType(const QDomElement &moduleNode, const q
     return false;
 }
 
-bool ModuleXmlParser::isCorrectModuleVersion(const QDomElement &moduleNode)
+/// \brief Проверка корректности версии ВПО модуля.
+bool Xml::ModuleParser::isCorrectModuleVersion(const QDomElement &moduleNode)
 {
     auto versionNode = moduleNode.firstChildElement(tags::version);
     if (!versionNode.isNull())
@@ -30,13 +32,15 @@ bool ModuleXmlParser::isCorrectModuleVersion(const QDomElement &moduleNode)
         if (!version.isEmpty())
         {
             auto &sInfoBlock = Board::GetInstance().baseSerialInfo();
-            return sInfoBlock.isOutdated(StdFunc::StrToVer(version));
+            return !(sInfoBlock.isOutdated(StdFunc::StrToVer(version)));
         }
     }
     return false;
 }
 
-bool ModuleXmlParser::isCorrectModule(const QDomElement &moduleNode, const quint16 &typeB, const quint16 &typeM)
+/// \brief Коплексная проверка на корректность подключённого модуля.
+/// \see isCorrectModuleVersion, isCorrectModuleType.
+bool Xml::ModuleParser::isCorrectModule(const QDomElement &moduleNode, const quint16 &typeB, const quint16 &typeM)
 {
     if (isCorrectModuleType(moduleNode, typeB, typeM))
     {
@@ -44,14 +48,14 @@ bool ModuleXmlParser::isCorrectModule(const QDomElement &moduleNode, const quint
             return true;
         else
             qCritical() << "Устаревшая версия ВПО, обновите ВПО";
-        return true;
     }
     else
         qCritical() << "Invalid module type specified in XML configuration";
     return false;
 }
 
-ModuleTypes::SignalType ModuleXmlParser::parseSigType(const QDomNode &sigNode)
+/// \brief Функция для определения типа группы сигналов.
+ModuleTypes::SignalType Xml::ModuleParser::parseSigType(const QDomNode &sigNode)
 {
     auto typeNode = sigNode.firstChildElement(tags::type);
     if (typeNode.isNull())
@@ -67,7 +71,8 @@ ModuleTypes::SignalType ModuleXmlParser::parseSigType(const QDomNode &sigNode)
     return ModuleTypes::SignalType::Float;
 }
 
-void ModuleXmlParser::parseSignal(const QDomNode &sigNode)
+/// \brief Функция для парсинга узла <signals>.
+void Xml::ModuleParser::parseSignal(const QDomNode &sigNode)
 {
     auto id = parseNumFromNode<quint32>(sigNode, tags::id);
     auto addr = parseNumFromNode<quint32>(sigNode, tags::start_addr);
@@ -76,14 +81,16 @@ void ModuleXmlParser::parseSignal(const QDomNode &sigNode)
     emit signalDataSending(id, addr, count, sigType);
 }
 
-void ModuleXmlParser::parseSTab(const QDomNode &sTabNode)
+/// \brief Функция для парсинга узла <section-tabs>.
+void Xml::ModuleParser::parseSTab(const QDomNode &sTabNode)
 {
     auto id = parseNumFromNode<quint32>(sTabNode, tags::id);
     auto name = parseString(sTabNode, tags::name);
     emit tabDataSending(id, name);
 }
 
-void ModuleXmlParser::parseSection(const QDomNode &sectionNode)
+/// \brief Функция для парсинга узла <sections>.
+void Xml::ModuleParser::parseSection(const QDomNode &sectionNode)
 {
     using namespace ModuleTypes;
     auto secHeader = sectionNode.toElement().attribute(tags::header, "");
@@ -108,7 +115,8 @@ void ModuleXmlParser::parseSection(const QDomNode &sectionNode)
     emit sectionDataSending(sgmap, secHeader);
 }
 
-void ModuleXmlParser::parseAlarms(const QDomNode &alarmsNode)
+/// \brief Функция для парсинга узла <alarms>.
+void Xml::ModuleParser::parseAlarms(const QDomNode &alarmsNode)
 {
     parseNode(alarmsNode, tags::crit, [this](const QDomNode &alarmNode) { //
         parseAlarm(alarmNode, Modules::AlarmType::Critical);
@@ -121,14 +129,16 @@ void ModuleXmlParser::parseAlarms(const QDomNode &alarmsNode)
     });
 }
 
-void ModuleXmlParser::parseAlarm(const QDomNode &alarmNode, const Modules::AlarmType &aType)
+/// \brief Функция для парсинга узлов <critical>, <warning> и <info> внутри <alarms>.
+void Xml::ModuleParser::parseAlarm(const QDomNode &alarmNode, const Modules::AlarmType &aType)
 {
     auto addr = parseNumFromNode<quint32>(alarmNode, tags::addr);
     auto desc = parseString(alarmNode, tags::string);
     emit alarmDataSending(isBase, aType, addr, desc);
 }
 
-void ModuleXmlParser::parseJournals(const QDomNode &joursNode)
+/// \brief Функция для парсинга узла <journals>.
+void Xml::ModuleParser::parseJournals(const QDomNode &joursNode)
 {
     parseNode(joursNode, tags::work, [this](const QDomNode &jourNode) { //
         parseJournal(jourNode, Modules::JournalType::Work);
@@ -138,7 +148,8 @@ void ModuleXmlParser::parseJournals(const QDomNode &joursNode)
     });
 }
 
-void ModuleXmlParser::parseJournal(const QDomNode &jourNode, const Modules::JournalType &jType)
+/// \brief Функция для парсинга узлов <work> и <meas> внутри <journals>.
+void Xml::ModuleParser::parseJournal(const QDomNode &jourNode, const Modules::JournalType &jType)
 {
     quint32 addr = 0;
     if (jType == Modules::JournalType::Work)
@@ -148,7 +159,8 @@ void ModuleXmlParser::parseJournal(const QDomNode &jourNode, const Modules::Jour
     emit jourDataSending(jType, addr, desc);
 }
 
-void ModuleXmlParser::parseInterface(const QDomNode &resNode)
+/// \brief Функция для парсинга конфигурации интерфейса, по которому подключён модуль.
+void Xml::ModuleParser::parseInterface(const QDomNode &resNode)
 {
     auto ifaceType = Board::GetInstance().interfaceType();
     QVariant ifaceConfig;
@@ -176,7 +188,8 @@ void ModuleXmlParser::parseInterface(const QDomNode &resNode)
     emit interfaceSettingsSending(ifaceConfig);
 }
 
-void ModuleXmlParser::parseModbus(const QDomNode &modbusNode, InterfaceInfo<ModbusGroup> &settings)
+/// \brief Функция для парсинга узла <modbus>.
+void Xml::ModuleParser::parseModbus(const QDomNode &modbusNode, InterfaceInfo<ModbusGroup> &settings)
 {
     auto signalId = parseNumFromNode<quint32>(modbusNode, tags::sig_id);
     auto regType = parseNumFromNode<quint16>(modbusNode, tags::reg_type);
@@ -185,7 +198,8 @@ void ModuleXmlParser::parseModbus(const QDomNode &modbusNode, InterfaceInfo<Modb
         settings.addGroup({ signalId, regType, type });
 }
 
-void ModuleXmlParser::parseProtocom(const QDomNode &protocomNode, InterfaceInfo<ProtocomGroup> &settings)
+/// \brief Функция для парсинга узла <protocom>.
+void Xml::ModuleParser::parseProtocom(const QDomNode &protocomNode, InterfaceInfo<ProtocomGroup> &settings)
 {
     auto signalId = parseNumFromNode<quint32>(protocomNode, tags::sig_id);
     auto block = parseNumFromNode<quint16>(protocomNode, tags::block);
@@ -193,7 +207,8 @@ void ModuleXmlParser::parseProtocom(const QDomNode &protocomNode, InterfaceInfo<
         settings.addGroup({ signalId, block });
 }
 
-void ModuleXmlParser::parseIec(const QDomNode &iecNode, InterfaceInfo<Iec104Group> &settings)
+/// \brief Функция для парсинга узла <iec60870>.
+void Xml::ModuleParser::parseIec(const QDomNode &iecNode, InterfaceInfo<Iec104Group> &settings)
 {
     auto signalId = parseNumFromNode<quint32>(iecNode, tags::sig_id);
     auto sigType = parseNumFromNode<quint16>(iecNode, tags::sig_type);
@@ -203,7 +218,8 @@ void ModuleXmlParser::parseIec(const QDomNode &iecNode, InterfaceInfo<Iec104Grou
         settings.addGroup({ signalId, sigType, transType, sigGroup });
 }
 
-void ModuleXmlParser::parseConfig(const QDomNode &configNode)
+/// \brief Функция для парсинга узла <config>.
+void Xml::ModuleParser::parseConfig(const QDomNode &configNode)
 {
     quint32 count = 0;
     auto id = parseNumFromNode<quint32>(configNode, tags::id);
@@ -217,7 +233,8 @@ void ModuleXmlParser::parseConfig(const QDomNode &configNode)
     emit configDataSending(id, defVal, visibility, count);
 }
 
-void ModuleXmlParser::parseResources(const QDomElement &resNode)
+/// \brief Функция для парсинга узла <resources>.
+void Xml::ModuleParser::parseResources(const QDomElement &resNode)
 {
     parseNode(resNode, tags::sigs, [this](const QDomNode &sigNode) { parseSignal(sigNode); });
     parseNode(resNode, tags::tabs, [this](const QDomNode &sTabNode) { parseSTab(sTabNode); });
@@ -228,7 +245,8 @@ void ModuleXmlParser::parseResources(const QDomElement &resNode)
     parseNode(resNode, tags::config, [this](const QDomNode &configNode) { parseConfig(configNode); });
 }
 
-void ModuleXmlParser::parse(const QDomNode &content, const quint16 &typeB, const quint16 &typeM)
+/// \brief Функция для парсинга файла конфигурации модуля.
+void Xml::ModuleParser::parse(const QDomNode &content, const quint16 &typeB, const quint16 &typeM)
 {
     emit startNewConfig();
     isBase = (typeB == 0) ? false : true;
@@ -241,7 +259,5 @@ void ModuleXmlParser::parse(const QDomNode &content, const quint16 &typeB, const
             if (!resNode.isNull())
                 parseResources(resNode);
         }
-        else
-            return;
     }
 }

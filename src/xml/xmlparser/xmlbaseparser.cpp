@@ -1,11 +1,11 @@
-#include "basexmlparser.h"
+#include "xmlbaseparser.h"
 
-BaseXmlParser::BaseXmlParser(QObject *parent) : QObject(parent)
+Xml::BaseParser::BaseParser(QObject *parent) : QObject(parent)
 {
 }
 
 /// \brief Парсим ноду <string-array> в QStringList.
-const QStringList BaseXmlParser::parseStringArray(const QDomNode &node) const
+const QStringList Xml::BaseParser::parseStringArray(const QDomNode &node) const
 {
     QStringList retList = {};
     auto strArrNode = node.firstChildElement(tags::str_array);
@@ -30,7 +30,7 @@ const QStringList BaseXmlParser::parseStringArray(const QDomNode &node) const
 }
 
 /// \brief Возвращаем содержимое ноды tagName в QString.
-const QString BaseXmlParser::parseString(const QDomNode &node, const QString &tagName) const
+const QString Xml::BaseParser::parseString(const QDomNode &node, const QString &tagName) const
 {
     auto textNode = node.firstChildElement(tagName);
     if (!textNode.isNull())
@@ -39,7 +39,9 @@ const QString BaseXmlParser::parseString(const QDomNode &node, const QString &ta
         return "";
 }
 
-void BaseXmlParser::parseNode(const QDomNode &parent, const QString &tagName, //
+/// \brief Вызов callForEachChild внутри callIfNodeExist для функции functor.
+/// \see callIfNodeExist, callForEachChild.
+void Xml::BaseParser::parseNode(const QDomNode &parent, const QString &tagName, //
     const std::function<void(const QDomNode &node)> &functor)
 {
     callIfNodeExist(parent, tagName,             //
@@ -50,7 +52,7 @@ void BaseXmlParser::parseNode(const QDomNode &parent, const QString &tagName, //
 
 /// \brief Callback для вызова функции functor, если у указанного
 /// узла parent существует дочерний узел с именем tagName.
-void BaseXmlParser::callIfNodeExist(const QDomNode &parent, const QString &tagName, //
+void Xml::BaseParser::callIfNodeExist(const QDomNode &parent, const QString &tagName, //
     const std::function<void(const QDomNode &node)> &functor)
 {
     auto node = parent.firstChildElement(tagName);
@@ -60,7 +62,7 @@ void BaseXmlParser::callIfNodeExist(const QDomNode &parent, const QString &tagNa
 
 /// \brief Callback для вызова функции functor, для каждого
 /// дочернего узла node указанного узла parent.
-void BaseXmlParser::callForEachChild(const QDomNode &parent, const std::function<void(const QDomNode &node)> &functor)
+void Xml::BaseParser::callForEachChild(const QDomNode &parent, const std::function<void(const QDomNode &node)> &functor)
 {
     auto child = parent.firstChild();
     while (!child.isNull())
@@ -72,31 +74,31 @@ void BaseXmlParser::callForEachChild(const QDomNode &parent, const std::function
 }
 
 // Template specialization for converting QString to double
-template <> double BaseXmlParser::parseNumString(const QString &numStr, bool &state)
+template <> double Xml::BaseParser::parseNumString(const QString &numStr, bool &state)
 {
     return numStr.toDouble(&state);
 }
 
 // Template specialization for converting QString to int
-template <> int BaseXmlParser::parseNumString(const QString &numStr, bool &state)
+template <> int Xml::BaseParser::parseNumString(const QString &numStr, bool &state)
 {
     return numStr.toInt(&state);
 }
 
 // Template specialization for converting QString to uint16
-template <> quint16 BaseXmlParser::parseNumString(const QString &numStr, bool &state)
+template <> quint16 Xml::BaseParser::parseNumString(const QString &numStr, bool &state)
 {
     return numStr.toUShort(&state);
 }
 
 // Template specialization for converting QString to uint32
-template <> quint32 BaseXmlParser::parseNumString(const QString &numStr, bool &state)
+template <> quint32 Xml::BaseParser::parseNumString(const QString &numStr, bool &state)
 {
     return numStr.toUInt(&state);
 }
 
 // Template specialization for converting QString to uint64
-template <> quint64 BaseXmlParser::parseNumString(const QString &numStr, bool &state)
+template <> quint64 Xml::BaseParser::parseNumString(const QString &numStr, bool &state)
 {
     return numStr.toULongLong(&state);
 }

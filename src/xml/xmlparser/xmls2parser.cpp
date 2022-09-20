@@ -1,4 +1,4 @@
-#include "s2xmlparser.h"
+#include "xmls2parser.h"
 
 #include "../../gen/datatypes.h"
 #include "../../s2/s2helper.h"
@@ -14,7 +14,7 @@ class CheckBoxGroup;
 class IPCtrl;
 class QLineEdit;
 
-const QHash<QString, std::uint64_t> S2XmlParser::nameTypeMap = {
+const QHash<QString, std::uint64_t> Xml::S2Parser::nameTypeMap = {
     { "M_SP", ctti::unnamed_type_id<DataTypes::SinglePointWithTimeStruct>().hash() }, //
     { "M_BO", ctti::unnamed_type_id<DataTypes::BitStringStruct>().hash() },           //
     { "M_ME", ctti::unnamed_type_id<DataTypes::FloatStruct>().hash() },               //
@@ -52,12 +52,12 @@ const QHash<QString, std::uint64_t> S2XmlParser::nameTypeMap = {
     { "INT32", ctti::unnamed_type_id<DataTypes::INT32>().hash() }                     //
 }; ///< Хэш-мапа для идентификации типа в рантайме
 
-S2XmlParser::S2XmlParser(QObject *parent) : BaseXmlParser(parent)
+Xml::S2Parser::S2Parser(QObject *parent) : BaseParser(parent)
 {
 }
 
 /// \brief Возвращаем хэш типа для его идентификации
-uint64_t S2XmlParser::parseType(const QDomElement &typeNode)
+uint64_t Xml::S2Parser::parseType(const QDomElement &typeNode)
 {
     auto name = typeNode.text();
     name.replace(" ", "");
@@ -68,7 +68,7 @@ uint64_t S2XmlParser::parseType(const QDomElement &typeNode)
 }
 
 /// \brief Парсинг тегов для структуры delegate::DoubleSpinBoxWidget и её потомков
-void S2XmlParser::dSpinBoxParse(delegate::DoubleSpinBoxWidget &dsbw, const QDomElement &widgetNode)
+void Xml::S2Parser::dSpinBoxParse(delegate::DoubleSpinBoxWidget &dsbw, const QDomElement &widgetNode)
 {
     dsbw.min = parseNumFromNode<double>(widgetNode, tags::min);
     dsbw.max = parseNumFromNode<double>(widgetNode, tags::max);
@@ -76,7 +76,7 @@ void S2XmlParser::dSpinBoxParse(delegate::DoubleSpinBoxWidget &dsbw, const QDomE
 }
 
 /// \brief Парсинг тегов для потомков структуры delegate::Group
-void S2XmlParser::groupParse(delegate::Group &group, const QDomElement &widgetNode, const QStringList &items)
+void Xml::S2Parser::groupParse(delegate::Group &group, const QDomElement &widgetNode, const QStringList &items)
 {
     group.count = parseNumFromNode<quint32>(widgetNode, tags::count);
     // В оригинальном коде items для delegate::QComboBox присваивается переменной
@@ -86,7 +86,7 @@ void S2XmlParser::groupParse(delegate::Group &group, const QDomElement &widgetNo
 }
 
 /// \brief Парсинг тегов для структуры delegate::QComboBox и её потомков
-void S2XmlParser::comboBoxParse(delegate::QComboBox &comboBox, //
+void Xml::S2Parser::comboBoxParse(delegate::QComboBox &comboBox, //
     const QDomElement &widgetNode, const QStringList &items)
 {
     comboBox.model = items;
@@ -108,7 +108,7 @@ void S2XmlParser::comboBoxParse(delegate::QComboBox &comboBox, //
 }
 
 /// \brief Парсинг тегов для структуры config::Item
-config::Item S2XmlParser::parseItem(const QDomElement &itemNode, //
+config::Item Xml::S2Parser::parseItem(const QDomElement &itemNode, //
     const QString &className, const ctti::unnamed_type_id_t &type)
 {
     delegate::ItemType itemType;
@@ -131,7 +131,7 @@ config::Item S2XmlParser::parseItem(const QDomElement &itemNode, //
 }
 
 /// \brief Парсинг ноды <widget> у <record>
-config::itemVariant S2XmlParser::parseWidget(const QDomElement &widgetNode)
+config::itemVariant Xml::S2Parser::parseWidget(const QDomElement &widgetNode)
 {
     auto className = widgetNode.attribute(tags::class_);
     auto typeNode = widgetNode.firstChildElement(tags::type);
@@ -190,7 +190,7 @@ config::itemVariant S2XmlParser::parseWidget(const QDomElement &widgetNode)
 }
 
 /// \brief Парсинг всех нод <record> файла s2files.xml
-void S2XmlParser::parse(const QDomNode &content)
+void Xml::S2Parser::parse(const QDomNode &content)
 {
     auto s2filesNode = content.firstChildElement(tags::s2files);
     auto recordNode = s2filesNode.firstChildElement(tags::record);

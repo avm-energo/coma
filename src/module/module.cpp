@@ -2,8 +2,8 @@
 
 #include "../gen/error.h"
 #include "../gen/stdfunc.h"
-#include "../xml/xmlparser/modulexmlparser.h"
-#include "../xml/xmlparser/s2xmlparser.h"
+#include "../xml/xmlparser/xmlmoduleparser.h"
+#include "../xml/xmlparser/xmls2parser.h"
 
 #include <QDir>
 #include <QFile>
@@ -66,7 +66,6 @@ bool Module::loadSettings()
         {
             auto baseFile = QString::number(sInfoBlock.MTypeB, 16) + "00.xml";
             auto mezzFile = "00" + QString::number(sInfoBlock.MTypeM, 16) + ".xml";
-            // TODO: парсить данные в разные структуры
             auto isBaseSuccess = loadModuleSettings(baseFile, sInfoBlock.MTypeB, 0);
             auto isMezzSuccess = loadModuleSettings(mezzFile, 0, sInfoBlock.MTypeM);
             return (isBaseSuccess && isMezzSuccess);
@@ -86,9 +85,9 @@ bool Module::loadS2Settings()
         auto content = getFileContent(filename);
         if (!content.isNull())
         {
-            auto mS2Parser = new S2XmlParser(this);
-            QObject::connect(mS2Parser, &S2XmlParser::typeDataSending, mStorage, &ConfigStorage::typeDataReceive);
-            QObject::connect(mS2Parser, &S2XmlParser::widgetDataSending, mStorage, &ConfigStorage::widgetDataReceive);
+            auto mS2Parser = new Xml::S2Parser(this);
+            QObject::connect(mS2Parser, &Xml::S2Parser::typeDataSending, mStorage, &ConfigStorage::typeDataReceive);
+            QObject::connect(mS2Parser, &Xml::S2Parser::widgetDataSending, mStorage, &ConfigStorage::widgetDataReceive);
             mS2Parser->parse(content);
             // Успешно распарсили s2files.xml
             mStorage->setS2Status(true);
@@ -109,18 +108,19 @@ bool Module::loadModuleSettings(const QString &filename, const quint16 &typeB, c
     auto content = getFileContent(filename);
     if (!content.isNull())
     {
-        auto moduleParser = new ModuleXmlParser(this);
-        QObject::connect(moduleParser, &ModuleXmlParser::startNewConfig, mStorage, &ConfigStorage::startNewConfig);
-        QObject::connect(moduleParser, &ModuleXmlParser::signalDataSending, //
+        auto moduleParser = new Xml::ModuleParser(this);
+        QObject::connect(moduleParser, &Xml::ModuleParser::startNewConfig, mStorage, &ConfigStorage::startNewConfig);
+        QObject::connect(moduleParser, &Xml::ModuleParser::signalDataSending, //
             mStorage, &ConfigStorage::signalDataReceive);
-        QObject::connect(moduleParser, &ModuleXmlParser::tabDataSending, mStorage, &ConfigStorage::tabDataReceive);
-        QObject::connect(moduleParser, &ModuleXmlParser::sectionDataSending, //
+        QObject::connect(moduleParser, &Xml::ModuleParser::tabDataSending, mStorage, &ConfigStorage::tabDataReceive);
+        QObject::connect(moduleParser, &Xml::ModuleParser::sectionDataSending, //
             mStorage, &ConfigStorage::sectionDataReceive);
-        QObject::connect(moduleParser, &ModuleXmlParser::alarmDataSending, mStorage, &ConfigStorage::alarmDataReceive);
-        QObject::connect(moduleParser, &ModuleXmlParser::jourDataSending, mStorage, &ConfigStorage::jourDataReceive);
-        QObject::connect(moduleParser, &ModuleXmlParser::interfaceSettingsSending, //
+        QObject::connect(moduleParser, &Xml::ModuleParser::alarmDataSending, //
+            mStorage, &ConfigStorage::alarmDataReceive);
+        QObject::connect(moduleParser, &Xml::ModuleParser::jourDataSending, mStorage, &ConfigStorage::jourDataReceive);
+        QObject::connect(moduleParser, &Xml::ModuleParser::interfaceSettingsSending, //
             mStorage, &ConfigStorage::interfaceSettingsReceive);
-        QObject::connect(moduleParser, &ModuleXmlParser::configDataSending, //
+        QObject::connect(moduleParser, &Xml::ModuleParser::configDataSending, //
             mStorage, &ConfigStorage::configDataReceive);
         moduleParser->parse(content, typeB, typeM);
         moduleParser->deleteLater();

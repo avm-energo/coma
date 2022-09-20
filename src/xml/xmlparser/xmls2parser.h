@@ -1,18 +1,22 @@
 #pragma once
 
 #include "../../widgets/delegate_common.h"
-#include "basexmlparser.h"
+#include "xmlbaseparser.h"
 
-template <typename T> constexpr auto is_comboBox = std::is_base_of_v<delegate::QComboBox, T>;
+namespace Xml
+{
+/// \brief Template check in compile time whether T is derived from the delegate::QComboBox class.
+template <typename T> constexpr bool is_comboBox = std::is_base_of_v<delegate::QComboBox, T>;
 
-class S2XmlParser : public BaseXmlParser
+/// \brief Class for parsing "s2files.xml" file.
+class S2Parser : public BaseParser
 {
     Q_OBJECT
 private:
     static const QHash<QString, std::uint64_t> nameTypeMap;
 
 public:
-    explicit S2XmlParser(QObject *parent = nullptr);
+    explicit S2Parser(QObject *parent = nullptr);
     void parse(const QDomNode &content);
 
 signals:
@@ -29,3 +33,5 @@ private:
         const QString &className, const ctti::unnamed_type_id_t &type);
     config::itemVariant parseWidget(const QDomElement &widgetNode);
 };
+
+}

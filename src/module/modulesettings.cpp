@@ -10,10 +10,40 @@ void ModuleSettings::startNewConfig()
     mConfigs[curConfigIndex] = ModuleTypes::ConfigList();
 }
 
-void ModuleSettings::appendToCurrentConfig(DataTypes::RecordPair pair)
+void ModuleSettings::appendToCurrentConfig(const DataTypes::RecordPair &pair)
 {
-    assert(mConfigs.contains(curConfigIndex));
-    mConfigs[curConfigIndex].append(pair);
+    if (mConfigs.contains(curConfigIndex))
+        mConfigs[curConfigIndex].append(pair);
+}
+
+void ModuleSettings::appendSignal(const quint32 &id, const ModuleTypes::Signal &sig)
+{
+    mSignals.insert(id, sig);
+}
+
+void ModuleSettings::appendTab(const quint32 &id, const QString &tabName)
+{
+    mTabs.insert(id, tabName);
+}
+
+void ModuleSettings::appendSection(const ModuleTypes::Section &section)
+{
+    mSections.push_back(section);
+}
+
+void ModuleSettings::appendAlarm(const ModuleTypes::AlarmKey &key, const quint32 &addr, const QString &desc)
+{
+    mAlarms[key].insert(addr, desc);
+}
+
+void ModuleSettings::appendJournal(const Modules::JournalType &key, const ModuleTypes::Journal &journal)
+{
+    mJournals[key].push_back(journal);
+}
+
+void ModuleSettings::setInterfaceSettings(const ModuleTypes::InterfaceSettings &settings)
+{
+    mIfaceSettings = settings;
 }
 
 const ModuleTypes::ConfigMap &ModuleSettings::getConfigMap() const
@@ -21,19 +51,9 @@ const ModuleTypes::ConfigMap &ModuleSettings::getConfigMap() const
     return mConfigs;
 }
 
-ModuleTypes::ConfigList &ModuleSettings::getConfigs()
-{
-    return mConfigs[curConfigIndex];
-}
-
 const ModuleTypes::ConfigList ModuleSettings::getConfigs() const
 {
     return mConfigs[curConfigIndex];
-}
-
-ModuleTypes::SignalMap &ModuleSettings::getSignals()
-{
-    return mSignals;
 }
 
 const ModuleTypes::SignalMap &ModuleSettings::getSignals() const
@@ -41,19 +61,9 @@ const ModuleTypes::SignalMap &ModuleSettings::getSignals() const
     return mSignals;
 }
 
-ModuleTypes::TabsMap &ModuleSettings::getTabs()
-{
-    return mTabs;
-}
-
 const ModuleTypes::TabsMap &ModuleSettings::getTabs() const
 {
     return mTabs;
-}
-
-ModuleTypes::SectionList &ModuleSettings::getSections()
-{
-    return mSections;
 }
 
 const ModuleTypes::SectionList &ModuleSettings::getSections() const
@@ -61,19 +71,9 @@ const ModuleTypes::SectionList &ModuleSettings::getSections() const
     return mSections;
 }
 
-ModuleTypes::AlarmMap &ModuleSettings::getAlarms()
-{
-    return mAlarms;
-}
-
 const ModuleTypes::AlarmMap &ModuleSettings::getAlarms() const
 {
     return mAlarms;
-}
-
-ModuleTypes::JourMap &ModuleSettings::getJours()
-{
-    return mJournals;
 }
 
 const ModuleTypes::JourMap &ModuleSettings::getJours() const
@@ -84,9 +84,4 @@ const ModuleTypes::JourMap &ModuleSettings::getJours() const
 const ModuleTypes::InterfaceSettings &ModuleSettings::getInterfaceSettings() const
 {
     return mIfaceSettings;
-}
-
-void ModuleSettings::setInterfaceSettings(const ModuleTypes::InterfaceSettings &settings)
-{
-    mIfaceSettings = settings;
 }
