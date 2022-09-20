@@ -69,12 +69,12 @@ using AlarmMap = QHash<AlarmKey, AlarmValue>;                ///< Хранит �
 using JourMap = QHash<Modules::JournalType, QList<Journal>>; ///< Хранит узлы <item> секции <journals>
 }
 
+/// \brief Class for storing module settings.
 class ModuleSettings
 {
 public:
     ModuleSettings();
     void startNewConfig();
-
     void appendToCurrentConfig(const DataTypes::RecordPair &pair);
     void appendSignal(const quint32 &id, const ModuleTypes::Signal &sig);
     void appendTab(const quint32 &id, const QString &tabName);
@@ -91,13 +91,6 @@ public:
     const ModuleTypes::AlarmMap &getAlarms() const;
     const ModuleTypes::JourMap &getJours() const;
     const ModuleTypes::InterfaceSettings &getInterfaceSettings() const;
-
-    // ModuleTypes::ConfigList &getConfigs();
-    // ModuleTypes::SignalMap &getSignals();
-    // ModuleTypes::TabsMap &getTabs();
-    // ModuleTypes::SectionList &getSections();
-    // ModuleTypes::AlarmMap &getAlarms();
-    // ModuleTypes::JourMap &getJours();
 
 private:
     ModuleTypes::HighlightMap critHighlight, warnHighlight;

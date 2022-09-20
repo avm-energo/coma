@@ -188,6 +188,19 @@ void Coma::prepareDialogs()
             "Проверьте журнал сообщений.\n"
             "Доступны минимальные функции.");
     }
+    mDlgManager = new DialogManager(ConfigStorage::GetInstance().getModuleSettings(), this);
+    mDlgManager->createAlarms(AlarmW);
+    QList<UDialog *> dlgs = mDlgManager->createDialogs(mAppConfig);
+    for (auto dialog : dlgs)
+    {
+        connect(BdaTimer, &QTimer::timeout, dialog, &UDialog::reqUpdate);
+        dialog->uponInterfaceSetting();
+        auto item = new QListWidgetItem(dialog->getCaption(), MainLW);
+        item->setSizeHint(QSize(0, height() / 20));
+        item->setTextAlignment(Qt::AlignCenter);
+        MainLW->addItem(item);
+        MainTW->addWidget(dialog);
+    }
 }
 
 QWidget *Coma::least()
@@ -400,9 +413,8 @@ void Coma::prepare()
     EMessageBox::information(this, "Установлена связь с " + board.moduleName());
     Reconnect = true;
 
+    Q_ASSERT(MainTW->count() == 0);
     prepareDialogs();
-    mDlgManager = new DialogManager(ConfigStorage::GetInstance().getModuleSettings(), this);
-    mDlgManager->createAlarms(AlarmW);
 
     setupConnections();
     // нет конфигурации
@@ -412,33 +424,16 @@ void Coma::prepare()
     if (board.noRegPars())
         qCritical() << Error::Msg::NoTuneError;
 
-    QList<UDialog *> dlgs = mDlgManager->createDialogs(mAppConfig);
-    for (auto dialog : dlgs)
-    {
-        connect(BdaTimer, &QTimer::timeout, dialog, &UDialog::reqUpdate);
-        dialog->uponInterfaceSetting();
-    }
-
-    Q_ASSERT(MainTW->count() == 0);
-    for (auto *d : dlgs)
-    {
-        auto *item = new QListWidgetItem(d->getCaption(), MainLW);
-        item->setSizeHint(QSize(0, height() / 20));
-        item->setTextAlignment(Qt::AlignCenter);
-        MainLW->addItem(item);
-        MainTW->addWidget(d);
-    }
     connect(MainLW, &QListWidget::currentRowChanged, MainTW, &QStackedWidget::setCurrentIndex);
-
     MainTW->show();
     MainLW->show();
     qDebug() << MainTW->width() << width();
     AlrmTimer->start();
     qDebug() << MainTW->objectName() << "created";
     BdaTimer->start();
-    auto *msgSerialNumber = statusBar()->findChild<QLabel *>("SerialNumber");
+    auto msgSerialNumber = statusBar()->findChild<QLabel *>("SerialNumber");
     msgSerialNumber->setText(QString::number(board.serialNumber(Board::BaseMezzAdd), 16));
-    auto *msgModel = statusBar()->findChild<QLabel *>("Model");
+    auto msgModel = statusBar()->findChild<QLabel *>("Model");
     msgModel->setText(board.moduleName());
 }
 

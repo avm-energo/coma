@@ -63,7 +63,7 @@ uint64_t Xml::S2Parser::parseType(const QDomElement &typeNode)
     name.replace(" ", "");
     const auto &typeId = nameTypeMap.value(name, 0);
     if (typeId == 0)
-        qWarning() << "Parsed unknown type: " << name;
+        qDebug() << "Parsed unknown type: " << name;
     return typeId;
 }
 

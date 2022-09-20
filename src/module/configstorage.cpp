@@ -43,8 +43,6 @@ void ConfigStorage::widgetDataReceive(const quint16 &id, const config::itemVaria
         mWidgetMap.insert({ id, widget });
 }
 
-////////////////////////////////////////
-
 void ConfigStorage::startNewConfig()
 {
     mSettings->startNewConfig();

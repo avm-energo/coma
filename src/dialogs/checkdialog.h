@@ -115,6 +115,8 @@ private:
     //    UniquePointer<DataTypesProxy> proxySP, proxyFS;
 
     void ReadAnalogMeasurementsAndWriteToFile();
+    QString getTitle(const ModuleTypes::MWidget &widget, const int &number);
+    QString getTooltip(const ModuleTypes::MWidget &widget, const int &number);
     void setup(const ModuleTypes::MWidget &arg, const QString &name, QGroupBox *gb);
     void setup(const ModuleTypes::SGroup &arg, QGroupBox *gb);
 

@@ -184,28 +184,26 @@ void ConfigDialog::LoadConfFromFile()
 
 QWidget *ConfigDialog::ConfButtons()
 {
-    QWidget *wdgt = new QWidget;
-    QGridLayout *wdgtlyout = new QGridLayout;
+    auto wdgt = new QWidget;
+    auto wdgtlyout = new QGridLayout;
     QString tmps = ((DEVICETYPE == DEVICETYPE_MODULE) ? "модуля" : "прибора");
-    QPushButton *pb = new QPushButton("Прочитать из " + tmps);
-    connect(pb, &QAbstractButton::clicked, this, &ConfigDialog::ReadConf);
-
-    wdgtlyout->addWidget(pb, 0, 0, 1, 1);
+    auto button = new QPushButton("Прочитать из " + tmps);
+    connect(button, &QPushButton::clicked, this, &ConfigDialog::ReadConf);
+    wdgtlyout->addWidget(button, 0, 0, 1, 1);
     tmps = ((DEVICETYPE == DEVICETYPE_MODULE) ? "модуль" : "прибор");
-    pb = new QPushButton("Записать в " + tmps);
-    pb->setObjectName("WriteConfPB");
-    connect(pb, &QAbstractButton::clicked, this, &ConfigDialog::WriteConf);
-
-    wdgtlyout->addWidget(pb, 0, 1, 1, 1);
-    pb = new QPushButton("Прочитать из файла");
-    connect(pb, &QAbstractButton::clicked, this, &ConfigDialog::LoadConfFromFile);
-    wdgtlyout->addWidget(pb, 1, 0, 1, 1);
-    pb = new QPushButton("Записать в файл");
-    connect(pb, &QAbstractButton::clicked, this, &ConfigDialog::SaveConfToFile);
-    wdgtlyout->addWidget(pb, 1, 1, 1, 1);
-    pb = new QPushButton("Взять конфигурацию по умолчанию");
-    connect(pb, &QAbstractButton::clicked, this, [this] { SetDefConf(); });
-    wdgtlyout->addWidget(pb, 2, 0, 1, 2);
+    button = new QPushButton("Записать в " + tmps);
+    button->setObjectName("WriteConfPB");
+    connect(button, &QPushButton::clicked, this, &ConfigDialog::WriteConf);
+    wdgtlyout->addWidget(button, 0, 1, 1, 1);
+    button = new QPushButton("Прочитать из файла");
+    connect(button, &QPushButton::clicked, this, &ConfigDialog::LoadConfFromFile);
+    wdgtlyout->addWidget(button, 1, 0, 1, 1);
+    button = new QPushButton("Записать в файл");
+    connect(button, &QPushButton::clicked, this, &ConfigDialog::SaveConfToFile);
+    wdgtlyout->addWidget(button, 1, 1, 1, 1);
+    button = new QPushButton("Взять конфигурацию по умолчанию");
+    connect(button, &QPushButton::clicked, this, [this] { SetDefConf(); });
+    wdgtlyout->addWidget(button, 2, 0, 1, 2);
     wdgt->setLayout(wdgtlyout);
     return wdgt;
 }
@@ -277,16 +275,18 @@ void ConfigDialog::SetupUI()
 void ConfigDialog::createTabs(QTabWidget *tabWidget)
 {
     std::set<delegate::WidgetGroup> currentCategories, intersection;
-    auto &categories = ConfigStorage::GetInstance().getModuleSettings().getTabs();
+    auto &tabs = ConfigStorage::GetInstance().getModuleSettings().getTabs();
     for (const auto &record : qAsConst(m_defaultValues))
     {
-        auto group = groupForId(record.record.getId());
-        if (categories.contains(group))
-            intersection.insert(group);
+        auto tab = groupForId(record.record.getId());
+        if (tabs.contains(tab))
+            intersection.insert(tab);
+        else
+            qDebug() << "Undefined tab ID" << tab;
     }
     for (const auto &group : intersection)
     {
-        auto subBox = new QGroupBox("Группа " + categories.value(group), this);
+        auto subBox = new QGroupBox("Группа " + tabs.value(group), this);
         auto subvlyout = new QVBoxLayout;
         subvlyout->setAlignment(Qt::AlignTop);
         subvlyout->setSpacing(0);
@@ -297,7 +297,7 @@ void ConfigDialog::createTabs(QTabWidget *tabWidget)
         scrollArea->setFrameShape(QFrame::NoFrame);
         scrollArea->setWidgetResizable(true);
         scrollArea->setWidget(subBox);
-        tabWidget->addTab(scrollArea, categories.value(group));
+        tabWidget->addTab(scrollArea, tabs.value(group));
     }
 }
 

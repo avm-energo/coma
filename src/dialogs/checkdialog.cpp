@@ -384,19 +384,37 @@ void CheckDialog::addSignals(const QList<ModuleTypes::SGroup> &groups, UWidget *
     }
 }
 
+QString CheckDialog::getTitle(const ModuleTypes::MWidget &widget, const int &number)
+{
+    if (!widget.subItemList.empty() && number < widget.subItemList.count())
+        return widget.desc.arg(widget.subItemList.at(number));
+    else
+        return (widget.count > 1) ? widget.desc.arg(number + 1) : widget.desc;
+}
+
+QString CheckDialog::getTooltip(const ModuleTypes::MWidget &widget, const int &number)
+{
+    if (!widget.subItemList.empty() && number < widget.subItemList.count())
+        return widget.tooltip.arg(widget.subItemList.at(number));
+    else
+        return (widget.count > 1) ? widget.tooltip.arg(number + 1) : widget.tooltip;
+}
+
 void CheckDialog::setup(const ModuleTypes::MWidget &arg, const QString &name, QGroupBox *gb)
 {
     gb->setTitle(name);
     auto gridlyout = new QGridLayout;
-    auto count = arg.desc.count();
+    auto count = arg.count;
     auto itemsOneLine = StdFunc::goldenRatio(count);
-    for (auto i = 0; i != count; ++i)
+    for (auto i = 0; i != count; i++)
     {
         auto layout = new QVBoxLayout;
-        layout->addWidget(new QLabel(arg.desc.at(i)));
+        layout->addWidget(new QLabel(getTitle(arg, i), gb));
         auto valueLabel = new QLabel(gb);
         if (!arg.tooltip.isEmpty())
-            valueLabel->setToolTip(arg.tooltip.at(i));
+        {
+            valueLabel->setToolTip(getTooltip(arg, i));
+        }
         valueLabel->setObjectName(QString::number(arg.startAddr + i));
         valueLabel->setStyleSheet(ValuesFormat);
         layout->addWidget(valueLabel);
@@ -413,20 +431,22 @@ void CheckDialog::setup(const ModuleTypes::SGroup &arg, QGroupBox *gb)
 
     for (auto &&mwidget : arg.widgets)
     {
-        auto count = mwidget.desc.count();
+        auto count = mwidget.count;
         auto itemsOneLine = StdFunc::goldenRatio(count);
         auto gridlyout = new QGridLayout;
         for (auto i = 0; i < count; ++i)
         {
             auto layout = new QHBoxLayout;
-            auto textLabel = new QLabel(mwidget.desc.at(i), gb);
+            auto textLabel = new QLabel(getTitle(mwidget, i), gb);
             textLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
             QFontMetrics fn(textLabel->font());
             textLabel->setMaximumHeight(fn.height());
             layout->addWidget(textLabel);
             auto valueLabel = new QLabel(gb);
             if (!mwidget.tooltip.isEmpty())
-                valueLabel->setToolTip(mwidget.tooltip.at(i));
+            {
+                valueLabel->setToolTip(getTooltip(mwidget, i));
+            }
             valueLabel->setMaximumHeight(fn.height());
             valueLabel->setObjectName(QString::number(mwidget.startAddr + i));
             valueLabel->setStyleSheet(ValuesFormat);
