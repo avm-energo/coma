@@ -50,8 +50,10 @@ target_link_libraries(
   Qt${QT_VERSION_MAJOR}::Qml
   Qt${QT_VERSION_MAJOR}::Sql
   limereport
-  QXlsx)
+  QXlsx
+  qcustomplot)
 
+add_dependencies(${PROJECT_NAME} qcustomplot)
 
 if (ENABLE_EMULATOR)
     target_compile_definitions(${PROJECT_NAME} PRIVATE ENABLE_EMULATOR)

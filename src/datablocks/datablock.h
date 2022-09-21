@@ -117,7 +117,9 @@ public:
     {
         ValueGroupStr vg;
         vg.groupDesc = groupName;
-        for (int i = 0; i < howMuch; ++i)
+        int start = fromWhich;
+        int end = fromWhich + howMuch;
+        for (int i = start; i < end; ++i)
         {
             vg.values.append({ name + QString::number(i), "", "value[" + QString::number(valueNumberCounter) + "]",
                 startValue, precision });
@@ -130,7 +132,7 @@ public:
     template <typename T> void addNewValue(const QString &name, const QString &tooltip, T *value, int precision = 3)
     {
         ValueGroupStr vg;
-        vg.values.append({ name, tooltip, "value[" + QString::number(valueNumberCounter) + "]", value, precision});
+        vg.values.append({ name, tooltip, "value[" + QString::number(valueNumberCounter) + "]", value, precision });
         ++valueNumberCounter;
     }
 

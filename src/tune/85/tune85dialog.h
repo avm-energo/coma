@@ -5,6 +5,7 @@
 #include "../generaltunedialog.h"
 #include "tune85adc.h"
 #include "tune85check.h"
+#include "tune85temp60.h"
 
 #include <QHBoxLayout>
 #include <QLineEdit>

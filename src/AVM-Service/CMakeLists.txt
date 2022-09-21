@@ -45,8 +45,10 @@ target_link_libraries(
   Qt${QT_VERSION_MAJOR}::Xml
   Qt${QT_VERSION_MAJOR}::Widgets
   Qt${QT_VERSION_MAJOR}::Network
-  QXlsx)
+  QXlsx
+  qcustomplot)
 
+add_dependencies(${PROJECT_NAME} qcustomplot)
 
 if(CMAKE_SYSTEM_NAME_LOWER STREQUAL "windows")
 
