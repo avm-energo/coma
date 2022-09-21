@@ -22,10 +22,13 @@ public:
 signals:
     void typeDataSending(const quint16 &id, const std::uint64_t &type);
     void widgetDataSending(const quint16 &id, const config::itemVariant &widget);
+    void configTabDataSending(const quint32 &id, const QString &tabName);
 
 private:
     std::uint64_t parseType(const QDomElement &typeNode);
 
+    void parseConfigTab(const QDomNode &tabNode);
+    void parseConfigTabs(const QDomElement &s2node);
     void dSpinBoxParse(delegate::DoubleSpinBoxWidget &dsbw, const QDomElement &widgetNode);
     void groupParse(delegate::Group &group, const QDomElement &widgetNode, const QStringList &items);
     void comboBoxParse(delegate::QComboBox &comboBox, const QDomElement &widgetNode, const QStringList &items);

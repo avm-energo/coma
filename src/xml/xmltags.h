@@ -22,6 +22,7 @@ constexpr auto modbus = "modbus";
 constexpr auto protocom = "protocom";
 constexpr auto iec = "iec60870";
 constexpr auto config = "config";
+constexpr auto conf_tabs = "config-tabs";
 
 // Specified tags
 constexpr auto sig = "signal";

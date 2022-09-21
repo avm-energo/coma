@@ -26,6 +26,11 @@ const config::widgetMap &ConfigStorage::getWidgetMap() const
     return mWidgetMap;
 }
 
+const ModuleTypes::TabsMap &ConfigStorage::getConfigTabs() const
+{
+    return s2tabs;
+}
+
 const ModuleSettings &ConfigStorage::getModuleSettings() const
 {
     return *mSettings;
@@ -41,6 +46,12 @@ void ConfigStorage::widgetDataReceive(const quint16 &id, const config::itemVaria
 {
     if (id != 0 && !widget.valueless_by_exception())
         mWidgetMap.insert({ id, widget });
+}
+
+void ConfigStorage::configTabDataReceive(const quint32 &id, const QString &tabName)
+{
+    if (tabName != "")
+        s2tabs.insert(id, tabName);
 }
 
 void ConfigStorage::startNewConfig()

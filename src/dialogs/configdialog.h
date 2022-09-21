@@ -12,27 +12,25 @@ class ConfigDialog : public UDialog
 public:
     explicit ConfigDialog(ConfigV *config, const QList<DataTypes::RecordPair> &defaultConfig, bool prereadConf = true,
         QWidget *parent = nullptr);
-
-    void PrereadConf();
-
-    void FillBack() const;
-    void SetDefConf();
+    void prereadConfig();
+    void fillBack() const;
+    void setDefaultConfig();
 
 private:
     QWidget *ConfButtons();
 
-    void SetupUI();
+    void setupUI();
     void createTabs(QTabWidget *tabWidget);
-    void Fill();
-    bool PrepareConfToWrite();
+    void fill();
+    bool prepareConfigToWrite();
     void uponInterfaceSetting() override;
-    void CheckConf();
-    void SaveConfToFile();
-    void LoadConfFromFile();
-    void ReadConf();
-    void WriteConf();
+    void checkConfig();
+    void saveConfigToFile();
+    void loadConfigFromFile();
+    void readConfig();
+    void writeConfig();
     void checkForDiff(const QList<DataTypes::DataRecV> &list);
-    void confReceived(const QVariant &msg);
+    void configReceived(const QVariant &msg);
 
     bool m_prereadConf;
     QStringList CheckConfErrors;

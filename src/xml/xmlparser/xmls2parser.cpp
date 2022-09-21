@@ -67,6 +67,20 @@ uint64_t Xml::S2Parser::parseType(const QDomElement &typeNode)
     return typeId;
 }
 
+/// \brief Парсинг всех дочерних узлов <tab> узла <config-tabs>.
+void Xml::S2Parser::parseConfigTab(const QDomNode &tabNode)
+{
+    auto id = parseNumFromNode<quint32>(tabNode, tags::id);
+    auto name = parseString(tabNode, tags::name);
+    emit configTabDataSending(id, name);
+}
+
+/// \brief Парсинг узла <config-tabs>.
+void Xml::S2Parser::parseConfigTabs(const QDomElement &s2node)
+{
+    parseNode(s2node, tags::conf_tabs, [this](const QDomNode &tabNode) { parseConfigTab(tabNode); });
+}
+
 /// \brief Парсинг тегов для структуры delegate::DoubleSpinBoxWidget и её потомков
 void Xml::S2Parser::dSpinBoxParse(delegate::DoubleSpinBoxWidget &dsbw, const QDomElement &widgetNode)
 {
@@ -193,6 +207,7 @@ config::itemVariant Xml::S2Parser::parseWidget(const QDomElement &widgetNode)
 void Xml::S2Parser::parse(const QDomNode &content)
 {
     auto s2filesNode = content.firstChildElement(tags::s2files);
+    parseConfigTabs(s2filesNode);
     auto recordNode = s2filesNode.firstChildElement(tags::record);
     while (!recordNode.isNull() && (recordNode.tagName() == tags::record))
     {

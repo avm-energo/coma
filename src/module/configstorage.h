@@ -14,6 +14,7 @@ class ConfigStorage : public QObject, public Singleton<ConfigStorage>
 private:
     DataTypes::ValueMap mS2Map;
     config::widgetMap mWidgetMap;
+    ModuleTypes::TabsMap s2tabs;
     std::unique_ptr<ModuleSettings> mSettings;
     bool isS2Parsed;
 
@@ -26,6 +27,7 @@ public:
     // S2 data getters
     const DataTypes::ValueMap::value_type &getS2Map() const;
     const config::widgetMap &getWidgetMap() const;
+    const ModuleTypes::TabsMap &getConfigTabs() const;
 
     // Module data getter
     const ModuleSettings &getModuleSettings() const;
@@ -34,6 +36,7 @@ public slots:
     // S2 data slots
     void typeDataReceive(const quint16 &id, const std::uint64_t &typeId);
     void widgetDataReceive(const quint16 &id, const config::itemVariant &widget);
+    void configTabDataReceive(const quint32 &id, const QString &tabName);
 
     // Module data slots
     void startNewConfig();

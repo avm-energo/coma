@@ -36,33 +36,32 @@ ConfigDialog::ConfigDialog(
     , proxyDRL(new DataTypesProxy)
 {
     proxyDRL->RegisterType<QList<DataTypes::DataRecV>>();
-    connect(proxyDRL.get(), &DataTypesProxy::DataStorable, this, &ConfigDialog::confReceived);
+    connect(proxyDRL.get(), &DataTypesProxy::DataStorable, this, &ConfigDialog::configReceived);
 }
 
-void ConfigDialog::ReadConf()
+void ConfigDialog::readConfig()
 {
     setSuccessMsg(tr("Конфигурация прочитана успешно"));
     BaseInterface::iface()->reqFile(DataTypes::Config, Queries::FileFormat::DefaultS2);
 }
 
-void ConfigDialog::WriteConf()
+void ConfigDialog::writeConfig()
 {
     setSuccessMsg(tr("Конфигурация записана успешно"));
-    if (!checkPassword())
-        return;
-    if (!PrepareConfToWrite())
+    if (checkPassword())
     {
-        qCritical("Ошибка чтения конфигурации");
-        return;
+        if (prepareConfigToWrite())
+        {
+            S2DataTypes::S2ConfigType buffer;
+            std::transform(configV->getConfig().cbegin(), configV->getConfig().cend(), std::back_inserter(buffer),
+                [](const auto &record) -> S2DataTypes::DataRec { return record.serialize(); });
+            S2::tester(buffer);
+            buffer.push_back({ { S2DataTypes::dummyElement, 0 }, nullptr });
+            BaseInterface::iface()->writeS2File(DataTypes::Config, &buffer);
+        }
+        else
+            qCritical("Ошибка чтения конфигурации");
     }
-    S2DataTypes::S2ConfigType buffer;
-
-    std::transform(configV->getConfig().cbegin(), configV->getConfig().cend(), std::back_inserter(buffer),
-        [](const auto &record) -> S2DataTypes::DataRec { return record.serialize(); });
-    S2::tester(buffer);
-
-    buffer.push_back({ { S2DataTypes::dummyElement, 0 }, nullptr });
-    BaseInterface::iface()->writeS2File(DataTypes::Config, &buffer);
 }
 
 // thanx to P0471R0
@@ -103,10 +102,10 @@ void ConfigDialog::checkForDiff(const QList<DataTypes::DataRecV> &list)
 }
 
 // void ConfigDialog::confReceived(const QList<DataTypes::DataRecV> &list)
-void ConfigDialog::confReceived(const QVariant &msg)
+void ConfigDialog::configReceived(const QVariant &msg)
 {
     using namespace DataTypes;
-    auto list = msg.value<QList<DataTypes::DataRecV>>();
+    auto list = msg.value<QList<DataRecV>>();
     configV->setConfig(list);
 
     const auto s2typeB = configV->getRecord(S2::GetIdByName("MTypeB_ID")).value<DWORD>();
@@ -128,13 +127,13 @@ void ConfigDialog::confReceived(const QVariant &msg)
     }
 
     checkForDiff(list);
-    Fill();
+    fill();
 }
 
-void ConfigDialog::SaveConfToFile()
+void ConfigDialog::saveConfigToFile()
 {
     QByteArray ba;
-    if (!PrepareConfToWrite())
+    if (!prepareConfigToWrite())
     {
         qCritical("Ошибка чтения конфигурации");
         return;
@@ -164,7 +163,7 @@ void ConfigDialog::SaveConfToFile()
     }
 }
 
-void ConfigDialog::LoadConfFromFile()
+void ConfigDialog::loadConfigFromFile()
 {
     QByteArray ba;
     Error::Msg res = Files::LoadFromFile(WDFunc::ChooseFileForOpen(this, "Config files (*.cf)"), ba);
@@ -178,7 +177,7 @@ void ConfigDialog::LoadConfFromFile()
     QVariant outlist;
     outlist.setValue(outlistV);
 
-    confReceived(outlist);
+    configReceived(outlist);
     QMessageBox::information(this, "Успешно", "Загрузка прошла успешно!");
 }
 
@@ -188,21 +187,21 @@ QWidget *ConfigDialog::ConfButtons()
     auto wdgtlyout = new QGridLayout;
     QString tmps = ((DEVICETYPE == DEVICETYPE_MODULE) ? "модуля" : "прибора");
     auto button = new QPushButton("Прочитать из " + tmps);
-    connect(button, &QPushButton::clicked, this, &ConfigDialog::ReadConf);
+    connect(button, &QPushButton::clicked, this, &ConfigDialog::readConfig);
     wdgtlyout->addWidget(button, 0, 0, 1, 1);
     tmps = ((DEVICETYPE == DEVICETYPE_MODULE) ? "модуль" : "прибор");
     button = new QPushButton("Записать в " + tmps);
     button->setObjectName("WriteConfPB");
-    connect(button, &QPushButton::clicked, this, &ConfigDialog::WriteConf);
+    connect(button, &QPushButton::clicked, this, &ConfigDialog::writeConfig);
     wdgtlyout->addWidget(button, 0, 1, 1, 1);
     button = new QPushButton("Прочитать из файла");
-    connect(button, &QPushButton::clicked, this, &ConfigDialog::LoadConfFromFile);
+    connect(button, &QPushButton::clicked, this, &ConfigDialog::loadConfigFromFile);
     wdgtlyout->addWidget(button, 1, 0, 1, 1);
     button = new QPushButton("Записать в файл");
-    connect(button, &QPushButton::clicked, this, &ConfigDialog::SaveConfToFile);
+    connect(button, &QPushButton::clicked, this, &ConfigDialog::saveConfigToFile);
     wdgtlyout->addWidget(button, 1, 1, 1, 1);
     button = new QPushButton("Взять конфигурацию по умолчанию");
-    connect(button, &QPushButton::clicked, this, [this] { SetDefConf(); });
+    connect(button, &QPushButton::clicked, this, [this] { setDefaultConfig(); });
     wdgtlyout->addWidget(button, 2, 0, 1, 2);
     wdgt->setLayout(wdgtlyout);
     return wdgt;
@@ -232,7 +231,7 @@ delegate::WidgetGroup groupForId(quint16 id)
     return group;
 }
 
-void ConfigDialog::SetupUI()
+void ConfigDialog::setupUI()
 {
     auto vlyout = new QVBoxLayout;
     auto ConfTW = new QTabWidget(this);
@@ -250,7 +249,7 @@ void ConfigDialog::SetupUI()
                 auto group = groupForId(id);
                 auto child = widgetAt(ConfTW, group);
                 QGroupBox *subBox = qobject_cast<QGroupBox *>(child->findChild<QGroupBox *>());
-                // Q_ASSERT(subBox);
+                Q_ASSERT(subBox);
                 if (!subBox)
                 {
                     widget->deleteLater();
@@ -275,7 +274,7 @@ void ConfigDialog::SetupUI()
 void ConfigDialog::createTabs(QTabWidget *tabWidget)
 {
     std::set<delegate::WidgetGroup> currentCategories, intersection;
-    auto &tabs = ConfigStorage::GetInstance().getModuleSettings().getTabs();
+    auto &tabs = ConfigStorage::GetInstance().getConfigTabs();
     for (const auto &record : qAsConst(m_defaultValues))
     {
         auto tab = groupForId(record.record.getId());
@@ -301,7 +300,7 @@ void ConfigDialog::createTabs(QTabWidget *tabWidget)
     }
 }
 
-void ConfigDialog::Fill()
+void ConfigDialog::fill()
 {
     for (const auto &defRecord : m_defaultValues)
     {
@@ -322,18 +321,18 @@ void ConfigDialog::Fill()
     }
 }
 
-void ConfigDialog::PrereadConf()
+void ConfigDialog::prereadConfig()
 {
     if (Board::GetInstance().noConfig()) // если в модуле нет конфигурации, заполнить поля по умолчанию
     {
-        SetDefConf();
+        setDefaultConfig();
         QMessageBox::information(this, "Успешно", "Задана конфигурация по умолчанию", QMessageBox::Ok);
     }
     else
-        ReadConf();
+        readConfig();
 }
 
-void ConfigDialog::FillBack() const
+void ConfigDialog::fillBack() const
 {
     WidgetFactory factory(configV);
     for (const auto &record : m_defaultValues)
@@ -349,18 +348,18 @@ void ConfigDialog::FillBack() const
     }
 }
 
-void ConfigDialog::SetDefConf()
+void ConfigDialog::setDefaultConfig()
 {
     for (const auto &record : m_defaultValues)
         configV->setRecordValue(record.record);
-    Fill();
+    fill();
 }
 
-bool ConfigDialog::PrepareConfToWrite()
+bool ConfigDialog::prepareConfigToWrite()
 {
-    FillBack();
+    fillBack();
     CheckConfErrors.clear();
-    CheckConf();
+    checkConfig();
     if (CheckConfErrors.isEmpty())
         return true;
 
@@ -382,13 +381,13 @@ bool ConfigDialog::PrepareConfToWrite()
 
 void ConfigDialog::uponInterfaceSetting()
 {
-    SetupUI();
+    setupUI();
     if (m_prereadConf)
     {
-        PrereadConf();
+        prereadConfig();
     }
 }
 
-void ConfigDialog::CheckConf()
+void ConfigDialog::checkConfig()
 {
 }

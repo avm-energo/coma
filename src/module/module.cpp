@@ -88,6 +88,8 @@ bool Module::loadS2Settings()
             auto mS2Parser = new Xml::S2Parser(this);
             QObject::connect(mS2Parser, &Xml::S2Parser::typeDataSending, mStorage, &ConfigStorage::typeDataReceive);
             QObject::connect(mS2Parser, &Xml::S2Parser::widgetDataSending, mStorage, &ConfigStorage::widgetDataReceive);
+            QObject::connect(mS2Parser, &Xml::S2Parser::configTabDataSending, //
+                mStorage, &ConfigStorage::configTabDataReceive);
             mS2Parser->parse(content);
             // Успешно распарсили s2files.xml
             mStorage->setS2Status(true);
