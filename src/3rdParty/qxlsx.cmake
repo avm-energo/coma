@@ -81,15 +81,8 @@ set(QXLSX_LIBRARY_DIRS ${QXLSX_BINARY_DIR} ${QXLSX_LIBRARY_DIR})
 set(CMAKE_REQUIRED_INCLUDES_SAVE ${CMAKE_REQUIRED_INCLUDES})
 set(CMAKE_REQUIRED_INCLUDES ${CMAKE_REQUIRED_INCLUDES} ${QXLSX_INCLUDE_DIRS})
 
-# TODO FIX false negative
-check_include_file_cxx("QXlsx/xlsxdocument.h" HAVE_QXLSX)
+
 set(CMAKE_REQUIRED_INCLUDES ${CMAKE_REQUIRED_INCLUDES_SAVE})
-if(NOT HAVE_QXLSX)
-  message(
-    STATUS
-      "Did not build QXlsx correctly as cannot find xlsxdocument.h. Will build it."
-  )
-  set(HAVE_QXLSX 1)
-endif(NOT HAVE_QXLSX)
+
 
 add_dependencies(QXlsx QXlsxBuild)
