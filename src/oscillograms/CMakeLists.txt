@@ -26,3 +26,7 @@ target_link_libraries(
   PUBLIC QXlsx)
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE ${PROJECT_NAME}_LIBRARY)
+
+add_dependencies(
+    ${PROJECT_NAME} qcustomplot
+    )
