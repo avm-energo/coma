@@ -29,6 +29,7 @@ DialogManager::DialogManager(const ModuleSettings &settings, QWidget *parent)
 {
 }
 
+/// \brief Creating a list of dialogs based on module settings for a current connected module.
 const QList<UDialog *> &DialogManager::createDialogs(const AppConfiguration &appCfg)
 {
     deleteDialogs();
@@ -39,9 +40,10 @@ const QList<UDialog *> &DialogManager::createDialogs(const AppConfiguration &app
     return mDialogs;
 }
 
-// TODO: этим должен заниматься сам AlarmWidget
+/// \brief Filling alarms in the received alarm widget.
 void DialogManager::createAlarms(AlarmWidget *alarmWidget)
 {
+    /// TODO: этим должен заниматься сам AlarmWidget
     /// TODO: bool -> enum
     static const QHash<ModuleTypes::AlarmKey, QString> alarmSettings {
         { { true, Modules::AlarmType::Critical }, "Базовая аварийная сигнализация" },            //
@@ -71,6 +73,7 @@ void DialogManager::createAlarms(AlarmWidget *alarmWidget)
     }
 }
 
+/// \brief Adding the created dialog to the list for saving.
 void DialogManager::addDialogToList(UDialog *dlg, const QString &caption, const QString &name)
 {
     dlg->setObjectName(name);
@@ -78,6 +81,7 @@ void DialogManager::addDialogToList(UDialog *dlg, const QString &caption, const 
     mDialogs.append(dlg);
 }
 
+/// \brief Removing all dialogs in the dialog list.
 void DialogManager::deleteDialogs()
 {
     while (!mDialogs.isEmpty())
@@ -87,6 +91,7 @@ void DialogManager::deleteDialogs()
     }
 }
 
+/// \brief Changing tab widget in the dialog list.
 void DialogManager::parentTWTabChanged(int index)
 {
     if (index != -1 && !mDialogs.isEmpty())
@@ -101,6 +106,7 @@ void DialogManager::parentTWTabChanged(int index)
     }
 }
 
+/// \brief Creating config dialogs.
 void DialogManager::createConfigDialogs()
 {
     auto &config = settings.getConfigMap();
@@ -112,6 +118,7 @@ void DialogManager::createConfigDialogs()
     }
 }
 
+/// \brief Creating check dialogs.
 void DialogManager::createCheckDialogs()
 {
     auto &sections = settings.getSections();
@@ -124,6 +131,7 @@ void DialogManager::createCheckDialogs()
     }
 }
 
+/// \brief Creating tune dialogs for KIV, KTF and KDV.
 void DialogManager::createBoxTuneDialogs(const Modules::Model &boxModel)
 {
     if (boxModel == Modules::Model::KIV)
@@ -134,6 +142,7 @@ void DialogManager::createBoxTuneDialogs(const Modules::Model &boxModel)
     }
 }
 
+/// \brief Creating journal and startup dialogs for KIV, KTF and KDV.
 void DialogManager::createJournalAndStartupDialogs(const Modules::Model &boxModel)
 {
     UniquePointer<Journals> jours;
@@ -157,6 +166,7 @@ void DialogManager::createJournalAndStartupDialogs(const Modules::Model &boxMode
         addDialogToList(new JournalDialog(std::move(jours), mParent), "Журналы", "jours");
 }
 
+/// \brief Creating tune dialogs for two-part modules.
 void DialogManager::createTwoPartTuneDialogs(const Modules::BaseBoard &typeb, const Modules::MezzanineBoard &typem)
 {
     using namespace Modules;
@@ -176,6 +186,7 @@ void DialogManager::createTwoPartTuneDialogs(const Modules::BaseBoard &typeb, co
     }
 }
 
+/// \brief Creating oscillogram and switch journal dialogs.
 void DialogManager::createOscAndSwJourDialogs(const Modules::BaseBoard &typeb, const Modules::MezzanineBoard &typem)
 {
     using namespace Modules;
@@ -193,6 +204,7 @@ void DialogManager::createOscAndSwJourDialogs(const Modules::BaseBoard &typeb, c
     }
 }
 
+/// \brief Creating specific dialogs (tune, journal and startup).
 void DialogManager::createSpecificDialogs(const AppConfiguration &appCfg)
 {
     using namespace Modules;
@@ -228,6 +240,7 @@ void DialogManager::createSpecificDialogs(const AppConfiguration &appCfg)
     }
 }
 
+/// \brief Creating common dialogs (all modules).
 void DialogManager::createCommonDialogs(const AppConfiguration &appCfg)
 {
     const auto &board = Board::GetInstance();

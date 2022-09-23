@@ -9,6 +9,7 @@
 
 #include <QObject>
 
+/// \brief Enumeration for application configuration.
 enum AppConfiguration : bool
 {
     Debug = false,

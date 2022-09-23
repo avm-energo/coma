@@ -20,16 +20,11 @@ private:
 
 public:
     explicit ConfigStorage(token, QObject *parent = nullptr);
-    // S2 status functions
     const bool &getS2Status() const;
-    void setS2Status(const bool &status);
-
-    // S2 data getters
+    void setS2Status(const bool &status = true);
     const DataTypes::ValueMap::value_type &getS2Map() const;
     const config::widgetMap &getWidgetMap() const;
     const ModuleTypes::TabsMap &getConfigTabs() const;
-
-    // Module data getter
     const ModuleSettings &getModuleSettings() const;
 
 public slots:

@@ -36,7 +36,7 @@ signals:
     void PathChanged(const QString &path);
     /// \details This signal is emitted when user double-clicked at item in current XML model.
     void EditQuery();
-    /// \details This
+    /// \details This signal is emitted when user try to open a new file, but the current file is changed.
     void SaveModule();
 };
 

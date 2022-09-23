@@ -5,6 +5,7 @@ XmlContainerModel::XmlContainerModel(int rows, int cols, ModelType type, QObject
 {
 }
 
+/// \brief Returns name of XML DOM node in dependency of model type.
 QString XmlContainerModel::getModelTagName() const
 {
     switch (mType)
@@ -24,6 +25,7 @@ QString XmlContainerModel::getModelTagName() const
     }
 }
 
+/// \brief Parsing input XML nodes of file in model items.
 void XmlContainerModel::parseNode(QDomNode &node, int &row)
 {
     // Для узлов <sections> и <section>
@@ -43,6 +45,7 @@ void XmlContainerModel::parseNode(QDomNode &node, int &row)
     }
 }
 
+/// \brief Slot for inserting a new item in the model.
 void XmlContainerModel::create(const QStringList &saved, int *row)
 {
     // Создание дочерних элементов доступно для узлов <sections> и <section>
@@ -76,6 +79,7 @@ void XmlContainerModel::create(const QStringList &saved, int *row)
     }
 }
 
+/// \brief Creates XML DOM node representation of current model.
 QDomElement XmlContainerModel::toNode(QDomDocument &doc)
 {
     // Выбор имени тега исходя из типа модели

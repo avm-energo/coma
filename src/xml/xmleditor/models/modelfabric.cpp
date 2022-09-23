@@ -51,7 +51,7 @@ void ModelFabric::CreateChildModel(ChildModelNode &mNode, QDomNode &root, QObjec
     }
 }
 
-/// \brief Creates root XML model at base of given XML DOM node.
+/// \brief Creates the root XML model at base of given XML DOM node.
 XmlModel *ModelFabric::CreateRootModel(QDomNode &root, QObject *parent)
 {
     if (!root.isNull())
@@ -83,6 +83,7 @@ XmlModel *ModelFabric::CreateRootModel(QDomNode &root, QObject *parent)
     return nullptr;
 }
 
+/// \brief Creates the master XML model.
 MasterModel *ModelFabric::CreateMasterModel(QObject *parent)
 {
     auto masterModel = new MasterModel(parent);

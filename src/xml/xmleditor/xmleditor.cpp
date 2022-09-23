@@ -27,6 +27,7 @@ XmlEditor::XmlEditor(QWidget *parent) : QDialog(parent, Qt::Window), dc(nullptr)
     }
 }
 
+/// \brief Настройка интерфейса диалогового окна редактора.
 void XmlEditor::setupUI(QSize pSize)
 {
     // Размер окна
@@ -40,12 +41,14 @@ void XmlEditor::setupUI(QSize pSize)
     setLayout(mainLayout);
 }
 
+/// \brief Действия, выполняемые при закрытии окна редактора.
 void XmlEditor::reject()
 {
     saveModule();
     hide();
 }
 
+/// \brief Возвращает рабочее пространство master (левая часть окна).
 QVBoxLayout *XmlEditor::getMasterWorkspace()
 {
     auto workspace = new QVBoxLayout;
@@ -86,10 +89,10 @@ QVBoxLayout *XmlEditor::getMasterWorkspace()
     QObject::connect(masterModel, &MasterModel::removeFile, dc, &DataController::removeFile);
     QObject::connect(masterModel, &MasterModel::modelChanged, dc, &DataController::configChanged);
     masterView->setModel(masterModel);
-
     return workspace;
 }
 
+/// \brief Возвращает рабочее пространство slave (правая часть окна).
 QVBoxLayout *XmlEditor::getSlaveWorkspace()
 {
     auto workspace = new QVBoxLayout;
@@ -133,10 +136,10 @@ QVBoxLayout *XmlEditor::getSlaveWorkspace()
     QObject::connect(manager, &ModelManager::EditQuery, this,          //
         [this]() { actionDialog(DialogType::Edit, tableSlaveView); }); //
     workspace->addWidget(tableSlaveView);
-
     return workspace;
 }
 
+/// \brief Слот для создания диалогового окна создания, редактирования или удаления выбранного элемента.
 void XmlEditor::actionDialog(DialogType dlgType, QTableView *srcView)
 {
     auto model = qobject_cast<IEditorModel *>(srcView->model());
@@ -165,6 +168,7 @@ void XmlEditor::actionDialog(DialogType dlgType, QTableView *srcView)
     }
 }
 
+/// \brief Слот для смены bolding текста элемента, который был изменён (для master workspace).
 void XmlEditor::setFontBolding(int row, bool state)
 {
     auto cols = masterModel->columnCount();
@@ -177,6 +181,7 @@ void XmlEditor::setFontBolding(int row, bool state)
     }
 }
 
+/// \brief Слот для создания диалогового окна о сохранении изменений в выбранном модуле.
 void XmlEditor::savingAsk()
 {
     auto slaveModel = manager->GetRootModel();
@@ -196,6 +201,7 @@ void XmlEditor::savingAsk()
     }
 }
 
+/// \brief Слот для сохранения или сброса изменений настроек модуля.
 void XmlEditor::saveModule()
 {
     if (dc->getModuleState())

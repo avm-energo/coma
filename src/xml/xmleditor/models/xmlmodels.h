@@ -3,7 +3,7 @@
 
 #include "xmlsgroupmodel.h"
 
-/// \brief XmlContainerModel
+/// \brief Class of XML model that stores other XML models as items.
 class XmlContainerModel : public XmlModel
 {
 private:
@@ -16,7 +16,7 @@ public:
     virtual QDomElement toNode(QDomDocument &doc) override;
 };
 
-/// \brief XmlDataModel
+/// \brief Class of XML model that stores data strings as items.
 class XmlDataModel : public XmlModel
 {
 private:

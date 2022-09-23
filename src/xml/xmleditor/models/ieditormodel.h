@@ -31,6 +31,7 @@ enum NodeTypes : quint16
 }
 using ModelType = tags::NodeTypes;
 
+/// \brief Base class for models that used in XML editor.
 class IEditorModel : public QStandardItemModel
 {
     Q_OBJECT
@@ -47,7 +48,9 @@ public:
     ModelType getModelType() const;
 
 signals:
+    /// \details This signal is emitted when dialog sends a request for the model's item data.
     void sendDialogResponse(const QStringList &response);
+    /// \details This signal is emitted when model's data changes.
     void modelChanged();
 
 public slots:

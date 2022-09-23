@@ -78,18 +78,21 @@ bool XmlModel::setData(const QModelIndex &index, const QVariant &val, int nRole)
     return false;
 }
 
+/// \brief Slot for inserting a new item in the model.
 void XmlModel::create(const QStringList &saved, int *row)
 {
     IEditorModel::create(saved, row);
     emit modelChanged();
 }
 
+/// \brief Slot for updating an item's data in the model.
 void XmlModel::update(const QStringList &saved, const int &row)
 {
     IEditorModel::update(saved, row);
     emit modelChanged();
 }
 
+/// \brief Slot for deleting an exisiting item in the model.
 void XmlModel::remove(const int &row)
 {
     IEditorModel::remove(row);

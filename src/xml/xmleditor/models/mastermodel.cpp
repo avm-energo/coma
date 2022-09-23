@@ -7,21 +7,19 @@ MasterModel::MasterModel(QObject *parent) : IEditorModel(1, 1, ModelType::Master
     readModulesToModel();
 }
 
+/// \brief Creates XML DOM node at base of content selected item.
 QDomElement MasterModel::toNode(QDomDocument &doc, const int &row)
 {
-    auto moduleNode = makeElement(doc, tags::module);
-    auto btype = data(index(row, 1));
-    auto mtype = data(index(row, 2));
-    auto name = data(index(row, 0));
-    auto version = data(index(row, 3));
     // Создаём основной узел
-    setAttribute(doc, moduleNode, tags::mtypeb, btype);
-    setAttribute(doc, moduleNode, tags::mtypem, mtype);
-    makeElement(doc, moduleNode, tags::name, name);
-    makeElement(doc, moduleNode, tags::version, version);
+    auto moduleNode = makeElement(doc, tags::module);
+    setAttribute(doc, moduleNode, tags::mtypeb, data(index(row, 1)));
+    setAttribute(doc, moduleNode, tags::mtypem, data(index(row, 2)));
+    makeElement(doc, moduleNode, tags::name, data(index(row, 0)));
+    makeElement(doc, moduleNode, tags::version, data(index(row, 3)));
     return moduleNode;
 }
 
+/// \brief Undo changes of opened XML model.
 void MasterModel::undoChanges(const int &row, const bool &openState)
 {
     auto fileName = data(index(row, 0), FilenameDataRole).value<QString>();
@@ -44,6 +42,7 @@ void MasterModel::undoChanges(const int &row, const bool &openState)
         masterItemSelected(index(row, 0));
 }
 
+/// \brief Initial function for reading existing configuration files in model.
 void MasterModel::readModulesToModel()
 {
     // Создание и настройка модели для Master View
@@ -51,7 +50,6 @@ void MasterModel::readModulesToModel()
     auto modules = dir.entryList(QDir::Files).filter(".xml");
     setRowCount(modules.count());
     setColumnCount(5);
-
     // Каждый xml-файл считывается в модель
     for (int i = 0; i < modules.count(); i++)
     {
@@ -76,6 +74,7 @@ void MasterModel::readModulesToModel()
     }
 }
 
+/// \brief Parsing each file's content in model.
 void MasterModel::parseXmlNode(const QDomNode &node, const QString &filename, const int &row)
 {
     // Устанавливаем имя файла
@@ -86,12 +85,10 @@ void MasterModel::parseXmlNode(const QDomNode &node, const QString &filename, co
         // Получаем аттрибуты TypeB и TypeM
         setData(index(row, 1), domElModule.attribute(tags::mtypeb, "00"));
         setData(index(row, 2), domElModule.attribute(tags::mtypem, "00"));
-
         // Получаем имя модуля
         auto domElName = domElModule.firstChildElement(tags::name);
         if (!domElName.isNull())
             setData(index(row, 0), domElName.text());
-
         // И его версию
         auto domElVersion = domElModule.firstChildElement(tags::version);
         if (!domElVersion.isNull())
@@ -99,6 +96,7 @@ void MasterModel::parseXmlNode(const QDomNode &node, const QString &filename, co
     }
 }
 
+/// \brief Updates a data from a dialog.
 QStringList MasterModel::getNewList(const QStringList &saved)
 {
     auto filename = saved[1].toLower() + saved[2].toLower() + ".xml";
@@ -107,6 +105,7 @@ QStringList MasterModel::getNewList(const QStringList &saved)
     return newSaved;
 }
 
+/// \brief Creates XML model in slave workspace where user select item in master model.
 void MasterModel::masterItemSelected(const QModelIndex &itemIndex)
 {
     const auto row = itemIndex.row();
@@ -135,6 +134,7 @@ void MasterModel::masterItemSelected(const QModelIndex &itemIndex)
     }
 }
 
+/// \brief Slot for inserting a new item in the model.
 void MasterModel::create(const QStringList &saved, int *row)
 {
     auto newSaved = getNewList(saved);
@@ -143,6 +143,7 @@ void MasterModel::create(const QStringList &saved, int *row)
     emit createFile(newSaved);
 }
 
+/// \brief Slot for updating an item's data in the model.
 void MasterModel::update(const QStringList &saved, const int &row)
 {
     auto newSaved = getNewList(saved);
@@ -150,6 +151,7 @@ void MasterModel::update(const QStringList &saved, const int &row)
     emit modelChanged();
 }
 
+/// \brief Slot for deleting an exisiting item in the model.
 void MasterModel::remove(const int &row)
 {
     auto filename = data(index(row, 0), FilenameDataRole).value<QString>();

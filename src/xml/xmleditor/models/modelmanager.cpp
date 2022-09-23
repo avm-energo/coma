@@ -47,6 +47,7 @@ void ModelManager::SetDocument(QDomNode &doc)
     ChangeModel(root);
 }
 
+/// \brief Returns current XML root model.
 XmlModel *ModelManager::GetRootModel() const
 {
     return root;
