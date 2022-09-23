@@ -164,7 +164,7 @@ void TrendViewDialog::addSig(QString signame)
                 axisRect = mainPlot->axisRect(0);
             else
                 axisRect = mainPlot->axisRect(1);
-            auto axisIndex = (signame.at(0) == 'I') ? VOLTAGE_AXIS_INDEX : CURRENT_AXIS_INDEX;
+            auto axisIndex = (signame.at(0) == 'I') ? CURRENT_AXIS_INDEX : VOLTAGE_AXIS_INDEX;
             auto leftAxis = axisRect->axis(QCPAxis::atLeft, axisIndex);
             auto bottomAxis = axisRect->axis(QCPAxis::atBottom);
             if (!leftAxis || !bottomAxis)
@@ -660,23 +660,11 @@ void TrendViewDialog::analogAxis85(int graphNum, QCPAxisRect *axisRect)
         SignalOscPropertiesStruct SignalOscProperties;
         SignalOscProperties.type = ST_ANALOG;
         char firstChar = tmps.at(0).toLatin1();
-        auto index = 0;
-        switch (firstChar)
-        {
-        case 'I':
-        {
-            index = 0;
-            break;
-        }
-        default:
-        {
-            index = 1;
-        }
-        }
+        auto axisIndex = (tmps.at(0) == 'I') ? CURRENT_AXIS_INDEX : VOLTAGE_AXIS_INDEX;
         if (count < MAXGRAPHSPERPLOT)
         {
 
-            auto leftAxis = axisRect->axis(QCPAxis::atLeft, index);
+            auto leftAxis = axisRect->axis(QCPAxis::atLeft, axisIndex);
             auto bottomAxis = axisRect->axis(QCPAxis::atBottom);
             if (!leftAxis || !bottomAxis)
             {
@@ -688,7 +676,7 @@ void TrendViewDialog::analogAxis85(int graphNum, QCPAxisRect *axisRect)
             auto graph = mainPlot->addGraph(bottomAxis, leftAxis);
             graph->valueAxis()->setLabel(QString(firstChar));
             SignalOscProperties.graph = graph;
-            SignalOscProperties.leftAxisIndex = index;
+            SignalOscProperties.leftAxisIndex = axisIndex;
             SignalOscProperties.isVisible = true;
             signalOscPropertiesMap[tmps] = SignalOscProperties;
 
@@ -707,7 +695,7 @@ void TrendViewDialog::analogAxis85(int graphNum, QCPAxisRect *axisRect)
         }
         else // count >= MAXGRAPHSPERPLOT
         {
-            SignalOscProperties.leftAxisIndex = index;
+            SignalOscProperties.leftAxisIndex = axisIndex;
             SignalOscProperties.graph = nullptr;
             SignalOscProperties.isVisible = false;
             signalOscPropertiesMap[tmps] = SignalOscProperties;
