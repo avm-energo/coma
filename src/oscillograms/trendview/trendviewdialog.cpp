@@ -164,7 +164,7 @@ void TrendViewDialog::addSig(QString signame)
                 axisRect = mainPlot->axisRect(0);
             else
                 axisRect = mainPlot->axisRect(1);
-            auto axisIndex = (signame.at(0) == 'I') ? CURRENT_AXIS_INDEX : VOLTAGE_AXIS_INDEX;
+            auto axisIndex = (signame.at(0) == 'I') ? VOLTAGE_AXIS_INDEX : CURRENT_AXIS_INDEX;
             auto leftAxis = axisRect->axis(QCPAxis::atLeft, axisIndex);
             auto bottomAxis = axisRect->axis(QCPAxis::atBottom);
             if (!leftAxis || !bottomAxis)
@@ -292,22 +292,23 @@ void TrendViewDialog::graphClicked(QCPAbstractPlottable *plot, int dataIndex)
 
 void TrendViewDialog::signalChoosed(QString signame) const
 {
-    if (!signalOscPropertiesMap.contains(signame))
-        return;
-    auto graph = (signalOscPropertiesMap.value(signame).graph);
-    if (graph == nullptr)
-        return;
-    graph->setSelection(QCPDataSelection(QCPDataRange()));
+    if (signalOscPropertiesMap.contains(signame))
+    {
+        auto graph = signalOscPropertiesMap.value(signame).graph;
+        if (graph != nullptr)
+            graph->setSelection(QCPDataSelection(QCPDataRange()));
+    }
 }
 
 void TrendViewDialog::signalToggled(QString signame, bool isChecked)
 {
-    if (!signalOscPropertiesMap.contains(signame))
-        return;
-    if (!isChecked)
-        removeSig(signame);
-    else
-        addSig(signame);
+    if (signalOscPropertiesMap.contains(signame))
+    {
+        if (!isChecked)
+            removeSig(signame);
+        else
+            addSig(signame);
+    }
 }
 
 void TrendViewDialog::digitalRangeChanged(const QCPRange &range)
@@ -584,7 +585,6 @@ void TrendViewDialog::analogAxis(int &MainPlotLayoutRow)
     // place the title in the empty cell we've just created
     mainPlot->plotLayout()->addElement(MainPlotLayoutRow++, 0, title);
     auto AnalogAxisRect = new QCPAxisRect(mainPlot.get());
-    //    if (m_trendModel->idOsc() == AVTUK_85::OSC_ID)
     AnalogAxisRect->addAxis(QCPAxis::atLeft);
     mainPlot->plotLayout()->addElement(MainPlotLayoutRow++, 0, AnalogAxisRect);
     analog.legend = createLegend(MainPlotLayoutRow++);
@@ -592,15 +592,11 @@ void TrendViewDialog::analogAxis(int &MainPlotLayoutRow)
     switch (m_trendModel->idOsc())
     {
     case AVTUK_85::OSC_ID:
-    {
         analogAxis85(graphNum, AnalogAxisRect);
         break;
-    }
     default:
-    {
         analogAxisDefault(graphNum, AnalogAxisRect);
         break;
-    }
     }
 
     AnalogAxisRect->insetLayout()->setMargins(QMargins(12, 12, 12, 12));
