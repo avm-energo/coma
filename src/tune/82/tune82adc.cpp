@@ -49,7 +49,7 @@ void Tune82ADC::setTuneFunctions()
 Error::Msg Tune82ADC::setDefBac()
 {
     m_bac->setDefBlock();
-    return Error::NoError;
+    return Error::Msg::NoError;
 }
 
 Error::Msg Tune82ADC::getAnalogData()

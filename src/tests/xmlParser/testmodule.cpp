@@ -4,6 +4,8 @@
 #include "../../interfaces/protocomprivate.h"
 #include "../../module/board.h"
 
+#include <QtXml>
+
 namespace config
 {
 constexpr auto avtuk21 = 17;
@@ -1578,4 +1580,20 @@ void TestModule::check3533USB()
     QCOMPARE(elementCount, 2);
 }
 */
+
+void TestModule::checkSaveXmlFile()
+{
+    auto doc = QDomDocument();
+    auto instruct = doc.createProcessingInstruction("xml", "version=\"1.0\" encoding=\"utf-8\"");
+    doc.appendChild(instruct);
+    auto node1 = doc.createElement("testNode1");
+    doc.appendChild(node1);
+    auto node2 = doc.createElement("testNode2");
+    node1.appendChild(node2);
+    auto filler = doc.createTextNode("fill the data");
+    node2.appendChild(filler);
+    auto str = doc.toString(4);
+    QVERIFY(!str.isEmpty());
+}
+
 QTEST_GUILESS_MAIN(TestModule)

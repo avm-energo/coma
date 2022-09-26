@@ -9,13 +9,15 @@ class XmlModbusDialog : public XmlDialog
 {
     Q_OBJECT
 private:
-    QLineEdit *regTypeInput, *sigIdInput, *descInput;
     QComboBox *type;
 
 public:
-    XmlModbusDialog(XmlSortProxyModel *model, QWidget *parent);
-    virtual void setupUI(QStringList &selectedData) override;
+    XmlModbusDialog(QWidget *parent);
+    virtual void setupUI(QVBoxLayout *mainLayout) override;
     virtual QStringList collectData() override;
+
+public slots:
+    virtual void modelDataResponse(const QStringList &response) override;
 };
 
 #endif // XMLMODBUSDIALOG_H

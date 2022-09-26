@@ -1,9 +1,8 @@
 #ifndef MODELMANAGER_H
 #define MODELMANAGER_H
 
-#include "xmlsortproxymodel.h"
+#include "xmlmodel.h"
 
-#include <QTableView>
 #include <stack>
 
 /// \brief Class for XML models managing.
@@ -13,8 +12,8 @@ class ModelManager : public QObject
 {
     Q_OBJECT
 private:
-    XmlSortProxyModel *curModel;
-    std::stack<XmlSortProxyModel *> storage;
+    XmlModel *root, *curModel;
+    std::stack<XmlModel *> storage;
     QString curPath;
 
 protected:
@@ -24,6 +23,7 @@ protected:
 public:
     explicit ModelManager() = delete;
     explicit ModelManager(QObject *parent = nullptr);
+    XmlModel *GetRootModel() const;
 
 public slots:
     void ViewModelItemClicked(const QModelIndex &index);
@@ -31,11 +31,13 @@ public slots:
 
 signals:
     /// \details This signal is emitted when current XML model is changed.
-    void ModelChanged(XmlSortProxyModel *model);
+    void ModelChanged(XmlModel *model);
     /// \details This signal is emitted when current path in XML model is changed.
     void PathChanged(const QString &path);
     /// \details This signal is emitted when user double-clicked at item in current XML model.
     void EditQuery();
+    /// \details This
+    void SaveModule();
 };
 
 #endif // MODELMANAGER_H

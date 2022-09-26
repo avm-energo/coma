@@ -18,47 +18,27 @@ void ModelFabric::CreateChildModel(ChildModelNode &mNode, QDomNode &root, QObjec
         auto cols = labels.count(), rows = ElementsCount(root) + 1;
         switch (mNode.modelType)
         {
-        case ModelType::Signals:
-            mNode.modelPtr = new XmlSignalsModel(rows, cols, mNode.modelType, parent);
-            break;
-        case ModelType::SectionTabs:
-            mNode.modelPtr = new XmlSectionTabsModel(rows, cols, mNode.modelType, parent);
-            break;
-        case ModelType::Sections:
-            mNode.modelPtr = new XmlSectionsModel(rows, cols, mNode.modelType, parent);
-            break;
-        case ModelType::Section:
-            mNode.modelPtr = new XmlSectionModel(rows, cols, mNode.modelType, parent);
-            break;
         case ModelType::SGroup:
             mNode.modelPtr = new XmlSGroupModel(rows, cols, mNode.modelType, parent);
             break;
         case ModelType::Alarms:
-            mNode.modelPtr = new XmlBaseModel(rows, cols, mNode.modelType, parent);
-            break;
-        case ModelType::AlarmsItem:
-            mNode.modelPtr = new XmlAlarmsModel(rows, cols, mNode.modelType, parent);
-            break;
+        case ModelType::Sections:
+        case ModelType::Section:
         case ModelType::Journals:
-            mNode.modelPtr = new XmlBaseModel(rows, cols, mNode.modelType, parent);
+            mNode.modelPtr = new XmlContainerModel(rows, cols, mNode.modelType, parent);
             break;
+        case ModelType::Signals:
+        case ModelType::SectionTabs:
+        case ModelType::AlarmsCrit:
+        case ModelType::AlarmsWarn:
+        case ModelType::AlarmsInfo:
         case ModelType::WorkJours:
-            mNode.modelPtr = new XmlWorkJoursModel(rows, cols, mNode.modelType, parent);
-            break;
         case ModelType::MeasJours:
-            mNode.modelPtr = new XmlMeasJoursModel(rows, cols, mNode.modelType, parent);
-            break;
         case ModelType::Modbus:
-            mNode.modelPtr = new XmlModbusModel(rows, cols, mNode.modelType, parent);
-            break;
         case ModelType::Protocom:
-            mNode.modelPtr = new XmlProtocomModel(rows, cols, mNode.modelType, parent);
-            break;
         case ModelType::IEC60870:
-            mNode.modelPtr = new XmlIecModel(rows, cols, mNode.modelType, parent);
-            break;
         case ModelType::Config:
-            mNode.modelPtr = new XmlConfigModel(rows, cols, mNode.modelType, parent);
+            mNode.modelPtr = new XmlDataModel(rows, cols, mNode.modelType, parent);
             break;
         default:
             break;
@@ -88,7 +68,7 @@ XmlModel *ModelFabric::CreateRootModel(QDomNode &root, QObject *parent)
                 {
                     auto labels = iter->second;
                     auto cols = labels.count(), rows = ElementsCount(res);
-                    auto model = new XmlBaseModel(rows, cols, type, parent);
+                    auto model = new XmlContainerModel(rows, cols, type, parent);
                     model->setHorizontalHeaderLabels(labels);
                     model->setDataNode(false, res);
                     return model;

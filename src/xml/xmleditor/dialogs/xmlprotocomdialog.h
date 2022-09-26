@@ -6,13 +6,9 @@
 class XmlProtocomDialog : public XmlDialog
 {
     Q_OBJECT
-private:
-    QLineEdit *blockInput, *sigIdInput;
-
 public:
-    XmlProtocomDialog(XmlSortProxyModel *model, QWidget *parent);
-    virtual void setupUI(QStringList &selectedData) override;
-    virtual QStringList collectData() override;
+    XmlProtocomDialog(QWidget *parent);
+    virtual void setupUI(QVBoxLayout *mainLayout) override;
 };
 
 #endif // XMLPROTOCOMDIALOG_H

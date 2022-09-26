@@ -1,6 +1,7 @@
 #include "dialogfabric.h"
 
 #include "../../../widgets/epopup.h"
+#include "moduledialog.h"
 #include "xml104dialog.h"
 #include "xmlalarmdialog.h"
 #include "xmlconfigdialog.h"
@@ -22,50 +23,54 @@ constexpr auto edit = 0;   ///< Константа для указания ре�
 constexpr auto remove = 1; ///< Константа для указания удаления
 }
 
-void XmlDialogFabric::CreateOrEditDialog(XmlSortProxyModel *model, int row, QWidget *parent)
+void XmlDialogFabric::CreateOrEditDialog(IEditorModel *model, int row, QWidget *parent)
 {
-    auto srcModel = qobject_cast<XmlModel *>(model->sourceModel());
-    if (srcModel != nullptr)
+    if (model != nullptr)
     {
         XmlDialog *dialog = nullptr;
-        auto type = srcModel->getModelType();
+        auto type = model->getModelType();
         switch (type)
         {
-        case ModelType::AlarmsItem:
-            dialog = new XmlAlarmDialog(model, parent);
+        case ModelType::Master:
+            dialog = new ModuleDialog(parent);
+            break;
+        case ModelType::AlarmsCrit:
+        case ModelType::AlarmsWarn:
+        case ModelType::AlarmsInfo:
+            dialog = new XmlAlarmDialog(parent);
             break;
         case ModelType::Signals:
-            dialog = new XmlSignalDialog(model, parent);
+            dialog = new XmlSignalDialog(parent);
             break;
         case ModelType::SectionTabs:
-            dialog = new XmlSTabDialog(model, parent);
+            dialog = new XmlSTabDialog(parent);
             break;
         case ModelType::WorkJours:
-            dialog = new XmlWorkJourDialog(model, parent);
+            dialog = new XmlWorkJourDialog(parent);
             break;
         case ModelType::MeasJours:
-            dialog = new XmlMeasJourDialog(model, parent);
+            dialog = new XmlMeasJourDialog(parent);
             break;
         case ModelType::Modbus:
-            dialog = new XmlModbusDialog(model, parent);
+            dialog = new XmlModbusDialog(parent);
             break;
         case ModelType::Protocom:
-            dialog = new XmlProtocomDialog(model, parent);
+            dialog = new XmlProtocomDialog(parent);
             break;
         case ModelType::IEC60870:
-            dialog = new Xml104Dialog(model, parent);
+            dialog = new Xml104Dialog(parent);
             break;
         case ModelType::Config:
-            dialog = new XmlConfigDialog(model, parent);
+            dialog = new XmlConfigDialog(parent);
             break;
         case ModelType::Sections:
-            dialog = new XmlSectionDialog(model, parent);
+            dialog = new XmlSectionDialog(parent);
             break;
         case ModelType::Section:
-            dialog = new XmlSGroupDialog(model, parent);
+            dialog = new XmlSGroupDialog(parent);
             break;
         case ModelType::SGroup:
-            dialog = new XmlMWidgetDialog(model, parent);
+            dialog = new XmlMWidgetDialog(parent);
             break;
         default:
             if (row == createId)
@@ -76,14 +81,19 @@ void XmlDialogFabric::CreateOrEditDialog(XmlSortProxyModel *model, int row, QWid
         }
         if (dialog != nullptr)
         {
-            dialog->setupUICall(row);
+            QObject::connect(dialog, &XmlDialog::modelDataRequest, model, &IEditorModel::getDialogRequest);
+            QObject::connect(model, &IEditorModel::sendDialogResponse, dialog, &XmlDialog::modelDataResponse);
+            QObject::connect(dialog, &XmlDialog::createData, model, &IEditorModel::create);
+            QObject::connect(dialog, &XmlDialog::updateData, model, &IEditorModel::update);
+            dialog->startup(row);
+            dialog->exec();
         }
     }
     else
         EMessageBox::warning(parent, "Не выбрана модель");
 }
 
-void XmlDialogFabric::RemoveOrEditDialog(XmlSortProxyModel *model, QModelIndexList &selected, QWidget *parent, int type)
+void XmlDialogFabric::RemoveOrEditDialog(IEditorModel *model, QModelIndexList &selected, QWidget *parent, int type)
 {
     if (!selected.isEmpty())
     {
@@ -95,15 +105,19 @@ void XmlDialogFabric::RemoveOrEditDialog(XmlSortProxyModel *model, QModelIndexLi
                 CreateOrEditDialog(model, row, parent);
             else
             {
-                auto modelType = qobject_cast<XmlModel *>(model->sourceModel())->getModelType();
+                auto modelType = model->getModelType();
                 if (modelType == ModelType::Resources || modelType == ModelType::Alarms)
                     EMessageBox::warning(parent, "Выбран недопустимый элемент");
                 else
                 {
+                    if (EMessageBox::question("Удалить выбранный элемент?"))
+                        model->remove(row);
+                    /*
                     auto resBtn = QMessageBox::question(parent, "Удаление", "Удалить выбранный элемент?",
                         QMessageBox::No | QMessageBox::Yes, QMessageBox::No);
                     if (resBtn == QMessageBox::Yes)
                         model->remove(row);
+                    */
                 }
             }
         }
@@ -114,22 +128,17 @@ void XmlDialogFabric::RemoveOrEditDialog(XmlSortProxyModel *model, QModelIndexLi
         EMessageBox::warning(parent, "Не выбран элемент");
 }
 
-void XmlDialogFabric::CreateDialog(XmlSortProxyModel *model, QWidget *parent)
+void XmlDialogFabric::CreateDialog(IEditorModel *model, QWidget *parent)
 {
     CreateOrEditDialog(model, createId, parent);
 }
 
-void XmlDialogFabric::EditDialog(XmlSortProxyModel *model, QModelIndexList &selected, QWidget *parent)
+void XmlDialogFabric::EditDialog(IEditorModel *model, QModelIndexList &selected, QWidget *parent)
 {
     RemoveOrEditDialog(model, selected, parent, Helper::edit);
 }
 
-void XmlDialogFabric::RemoveDialog(XmlSortProxyModel *model, QModelIndexList &selected, QWidget *parent)
+void XmlDialogFabric::RemoveDialog(IEditorModel *model, QModelIndexList &selected, QWidget *parent)
 {
     RemoveOrEditDialog(model, selected, parent, Helper::remove);
-}
-
-void XmlDialogFabric::CreateModuleDialog(MasterModel *model)
-{
-    Q_UNUSED(model);
 }

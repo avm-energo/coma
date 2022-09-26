@@ -232,17 +232,11 @@
                     </mwidget>
                     <mwidget desc="KuU2, %">
                         <start-addr>1014</start-addr>
-                        <toolTip>
-                            Коэффициент несимметрии напряжения по
-                            обратной последовательности гр.1, %
-                        </toolTip>
+                        <toolTip>Коэффициент несимметрии напряжения по обратной последовательности гр.1, %</toolTip>
                     </mwidget>
                     <mwidget desc="KuU0, %">
                         <start-addr>1015</start-addr>
-                        <toolTip>
-                            Коэффициент несимметрии напряжения по
-                            нулевой последовательности гр.1, %
-                        </toolTip>
+                        <toolTip>Коэффициент несимметрии напряжения по нулевой последовательности гр.1, %</toolTip>
                     </mwidget>
                     <mwidget desc="THD_U ф.%1">
                         <start-addr>1016</start-addr>
@@ -360,17 +354,11 @@
                     </mwidget>
                     <mwidget desc="KuI2, %">
                         <start-addr>1423</start-addr>
-                        <toolTip>
-                            Коэффициент несимметрии тока по
-                            обратной последовательности гр.1, %
-                        </toolTip>
+                        <toolTip>Коэффициент несимметрии тока по обратной последовательности гр.1, %</toolTip>
                     </mwidget>
                     <mwidget desc="KuI0, %">
                         <start-addr>1424</start-addr>
-                        <toolTip>
-                            Коэффициент несимметрии тока по
-                            нулевой последовательности гр.1, %
-                        </toolTip>
+                        <toolTip>Коэффициент несимметрии тока по нулевой последовательности гр.1, %</toolTip>
                     </mwidget>
                     <mwidget desc="THD_I ф.%1">
                         <start-addr>1425</start-addr>

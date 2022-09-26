@@ -1,13 +1,13 @@
 #ifndef XMLEDITOR_H
 #define XMLEDITOR_H
 
+#include "datacontroller.h"
 #include "models/mastermodel.h"
 #include "models/modelmanager.h"
 
 #include <QDialog>
 #include <QHBoxLayout>
 #include <QTableView>
-#include <QtXml>
 
 class XmlEditor : public QDialog
 {
@@ -20,27 +20,28 @@ private:
         Edit,
         Remove
     };
-
+    DataController *dc;
     // Master items
     MasterModel *masterModel;
     QTableView *masterView;
-
     // Slave items
     ModelManager *manager;
     QTableView *tableSlaveView;
 
-    void SetupUI(QSize pSize);
-    QVBoxLayout *GetMasterWorkspace();
-    QVBoxLayout *GetSlaveWorkspace();
-    void SlaveModelDialog(DialogType dlgType);
+    void setupUI(QSize pSize);
+    QVBoxLayout *getMasterWorkspace();
+    QVBoxLayout *getSlaveWorkspace();
+    void actionDialog(DialogType dlgType, QTableView *srcView);
+    void setFontBolding(int row, bool state);
 
 public:
     XmlEditor() = delete;
     explicit XmlEditor(QWidget *parent);
+    virtual void reject() override;
 
 public slots:
-    void Close();
-    void CreateModule();
+    void savingAsk();
+    void saveModule();
 };
 
 #endif // XMLEDITOR_H

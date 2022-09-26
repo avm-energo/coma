@@ -28,23 +28,16 @@
 AppId={{4C4A32F2-8733-4C05-AF66-3996C08A228A}
 AppName={#GroupName}
 AppVerName={#EngName} {#ApplicationVersion}
-;AppVersion={#AppVersion}
-;VersionInfoVersion={#AppVersion}
-;AppVersion= {#GetStringFileInfo("{#Build_DIR}\{#ARCH}\release\{#ExeName}", "FileVersion")}
 AppPublisher={#Publisher}
 AppPublisherURL={#URL}
 AppSupportURL={#URL}
 AppUpdatesURL={#URL}
-;DefaultDirName={autopf}\{#GroupName}
-;DisableProgramGroupPage=yes
 DefaultDirName={commonpf}\{#EngName}
 DefaultGroupName={#EngName}
-; The [Icons] "quicklaunchicon" entry uses {userappdata} but its [Tasks] entry has a proper IsAdminInstallMode Check.
 UsedUserAreasWarning=no
-; Uncomment the following line to run in non administrative install mode (install for current user only.)
-;PrivilegesRequired=lowest
 SetupIconFile=..\coma.ico
 Compression=lzma
+ChangesAssociations = yes
 SolidCompression=yes
 WizardStyle=modern
 OutputBaseFilename={#EngName}-{#ApplicationVersion}-x64
@@ -52,6 +45,13 @@ OutputDir=..\output
 VersionInfoVersion={#ApplicationVersion}
 LicenseFile="..\license.txt"
 InfoAfterFile="..\AVM-Debug.NOTES"
+
+[Registry]
+
+Root: HKCR; Subkey: ".swj";                           ValueData: "{#EngName}";          Flags: uninsdeletevalue; 	ValueType: string;  ValueName: ""
+Root: HKCR; Subkey: "{#EngName}";                     ValueData: "Program {#EngName}";  Flags: uninsdeletekey;   	ValueType: string;  ValueName: ""
+Root: HKCR; Subkey: "{#EngName}\DefaultIcon";         ValueData: "{app}\{#ExeName},0";               			ValueType: string;  ValueName: ""
+Root: HKCR; Subkey: "{#EngName}\shell\open\command";  ValueData: """{app}\{#ExeName}"" ""%1""";  				ValueType: string;  ValueName: ""
 
 [Dirs]
 Name: {userappdata}\{#EngName}
@@ -66,9 +66,7 @@ Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescrip
 
 [Files]
 Source: "{#OUTPUT_DIR}\{#ARCH}\{#BUILD_TYPE}\{#EngName}\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs 
-;Source: "{#LIB_DIR}\{#ARCH}\release\*.dll"; DestDir: "{app}"; 
 Source: "{#Redist_DIR}\vc_redist.x64.exe"; DestDir: "{tmp}"; Flags: deleteafterinstall
-; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 
 [Icons]

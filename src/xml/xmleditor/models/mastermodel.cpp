@@ -2,19 +2,46 @@
 
 #include "../../../gen/stdfunc.h"
 
-MasterModel::MasterModel(QObject *parent) : QStandardItemModel(1, 1, parent)
+MasterModel::MasterModel(QObject *parent) : IEditorModel(1, 1, ModelType::Master, parent)
 {
     readModulesToModel();
 }
 
-void MasterModel::setHorizontalHeaderLabels(const QStringList &labels)
+QDomElement MasterModel::toNode(QDomDocument &doc, const int &row)
 {
-    int column = 0;
-    for (auto &label : labels)
+    auto moduleNode = makeElement(doc, tags::module);
+    auto btype = data(index(row, 1));
+    auto mtype = data(index(row, 2));
+    auto name = data(index(row, 0));
+    auto version = data(index(row, 3));
+    // Создаём основной узел
+    setAttribute(doc, moduleNode, tags::mtypeb, btype);
+    setAttribute(doc, moduleNode, tags::mtypem, mtype);
+    makeElement(doc, moduleNode, tags::name, name);
+    makeElement(doc, moduleNode, tags::version, version);
+    return moduleNode;
+}
+
+void MasterModel::undoChanges(const int &row, const bool &openState)
+{
+    auto fileName = data(index(row, 0), FilenameDataRole).value<QString>();
+    auto dir = QDir(StdFunc::GetSystemHomeDir());
+    // Заново парсим файл в модель
+    auto file = new QFile(dir.filePath(fileName));
+    if (file->open(QIODevice::ReadOnly))
     {
-        setHeaderData(column, Qt::Horizontal, label);
-        column++;
+        QDomDocument doc;
+        if (doc.setContent(file))
+        {
+            auto root = doc.documentElement();
+            parseXmlNode(root, fileName, row);
+        }
+        file->close();
     }
+    file->deleteLater();
+    // Если файл модуля был открыт в правой view
+    if (openState)
+        masterItemSelected(index(row, 0));
 }
 
 void MasterModel::readModulesToModel()
@@ -28,77 +55,75 @@ void MasterModel::readModulesToModel()
     // Каждый xml-файл считывается в модель
     for (int i = 0; i < modules.count(); i++)
     {
-        auto domDoc = new QDomDocument;
         auto moduleFile = new QFile(dir.filePath(modules[i]));
         if (moduleFile->open(QIODevice::ReadOnly))
         {
+            QDomDocument domDoc;
             QString errMsg = "";
-            int line = 0, column = 0;
-            if (domDoc->setContent(moduleFile, &errMsg, &line, &column))
+            auto line = 0, column = 0;
+            if (domDoc.setContent(moduleFile, &errMsg, &line, &column))
             {
-                auto domElement = domDoc->documentElement();
+                auto domElement = domDoc.documentElement();
                 parseXmlNode(domElement, modules[i], i);
+                setData(index(i, 0), modules[i], FilenameDataRole);
             }
             // Если QtXml парсер не смог корректно считать xml файл
             else
                 qWarning() << errMsg << " Line: " << line << " Column: " << column;
             moduleFile->close();
         }
-        delete domDoc;
-        delete moduleFile;
+        moduleFile->deleteLater();
     }
 }
 
-void MasterModel::parseXmlNode(const QDomNode &node, const QString &filename, int &row)
+void MasterModel::parseXmlNode(const QDomNode &node, const QString &filename, const int &row)
 {
     // Устанавливаем имя файла
-    auto indexFilename = this->index(row, 4);
-    setData(indexFilename, filename);
+    setData(index(row, 4), filename);
     auto domElModule = node.toElement();
     if (!domElModule.isNull())
     {
         // Получаем аттрибуты TypeB и TypeM
-        auto indexTypeB = this->index(row, 1);
-        auto indexTypeM = this->index(row, 2);
-        setData(indexTypeM, domElModule.attribute("mtypem", "00"));
-        setData(indexTypeB, domElModule.attribute("mtypeb", "00"));
+        setData(index(row, 1), domElModule.attribute(tags::mtypeb, "00"));
+        setData(index(row, 2), domElModule.attribute(tags::mtypem, "00"));
 
         // Получаем имя модуля
-        auto domElName = domElModule.firstChildElement("name");
+        auto domElName = domElModule.firstChildElement(tags::name);
         if (!domElName.isNull())
-        {
-            auto indexName = this->index(row, 0);
-            setData(indexName, domElName.text());
-        }
+            setData(index(row, 0), domElName.text());
 
         // И его версию
-        auto domElVersion = domElModule.firstChildElement("version");
+        auto domElVersion = domElModule.firstChildElement(tags::version);
         if (!domElVersion.isNull())
-        {
-            auto indexVersion = this->index(row, 3);
-            setData(indexVersion, domElVersion.text());
-        }
+            setData(index(row, 3), domElVersion.text());
     }
 }
 
-void MasterModel::masterItemSelected(const QModelIndex &index)
+QStringList MasterModel::getNewList(const QStringList &saved)
 {
-    const auto row = index.row();
-    auto indexFilename = this->index(row, 4);
-    auto dataFilename = data(indexFilename);
+    auto filename = saved[1].toLower() + saved[2].toLower() + ".xml";
+    auto newSaved = saved;
+    newSaved.append(filename);
+    return newSaved;
+}
+
+void MasterModel::masterItemSelected(const QModelIndex &itemIndex)
+{
+    const auto row = itemIndex.row();
+    auto dataFilename = data(index(row, 0), FilenameDataRole);
     if (dataFilename.canConvert<QString>())
     {
-        auto domDoc = new QDomDocument;
         QDir homeDir(StdFunc::GetSystemHomeDir());
         auto filename = qvariant_cast<QString>(dataFilename);
-        auto moduleFile = new QFile(homeDir.filePath(filename));
+        auto moduleFile = new QFile(homeDir.filePath(filename), this);
         if (moduleFile->open(QIODevice::ReadOnly))
         {
+            QDomDocument domDoc;
             QString errMsg = "";
-            int line = 0, column = 0;
-            if (domDoc->setContent(moduleFile, &errMsg, &line, &column))
+            auto line = 0, column = 0;
+            if (domDoc.setContent(moduleFile, &errMsg, &line, &column))
             {
-                auto domElement = domDoc->documentElement();
+                auto domElement = domDoc.documentElement();
                 emit itemSelected(domElement);
             }
             // Если QtXml парсер не смог корректно считать xml файл
@@ -106,60 +131,27 @@ void MasterModel::masterItemSelected(const QModelIndex &index)
                 qWarning() << errMsg << " Line: " << line << " Column: " << column;
             moduleFile->close();
         }
-        delete domDoc;
-        delete moduleFile;
-    }
-}
-
-/// \brief Слот который принимает запрос от диалога и отправляет сигнал с ответом
-void MasterModel::getDialogRequest(const int &row)
-{
-    if (row >= 0 && row < rowCount())
-    {
-        QStringList retList;
-        auto cols = columnCount();
-        retList.reserve(cols);
-        // Собираем данные
-        for (auto column = 0; column < cols; column++)
-        {
-            auto itemIndex = index(row, column);
-            auto item = data(itemIndex);
-            if (item.isValid() && item.canConvert<QString>())
-            {
-                auto itemStr = item.value<QString>();
-                retList.append(itemStr);
-            }
-        }
-        // Отправляем сигнал с ответом
-        emit sendDialogResponse(retList);
+        moduleFile->deleteLater();
     }
 }
 
 void MasterModel::create(const QStringList &saved, int *row)
 {
-    QList<QStandardItem *> items;
-    for (const auto &item : saved)
-        items.append(new QStandardItem(item));
-    insertRow(rowCount() - 1, items);
-    // TODO: Create the file - controller work
+    auto newSaved = getNewList(saved);
+    IEditorModel::create(newSaved, row);
+    emit createFile(newSaved);
 }
 
 void MasterModel::update(const QStringList &saved, const int &row)
 {
-    if (row >= 0 && row < rowCount())
-    {
-        auto cols = saved.count();
-        // Обновляем данные
-        for (auto column = 0; column < cols; column++)
-        {
-            auto itemIndex = index(row, column);
-            setData(itemIndex, saved[column]);
-        }
-    }
+    auto newSaved = getNewList(saved);
+    IEditorModel::update(newSaved, row);
+    emit modelChanged();
 }
 
 void MasterModel::remove(const int &row)
 {
-    removeRow(row);
-    // TODO: Remove the file after - controller work
+    auto filename = data(index(row, 0), FilenameDataRole).value<QString>();
+    IEditorModel::remove(row);
+    emit removeFile(filename);
 }

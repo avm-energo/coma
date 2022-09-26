@@ -83,8 +83,8 @@ void TrendViewModel::toExcel()
 {
     constexpr int c_div = 1000;
     //    emit eventMessage("Разборка осциллограммы");
-    QXlsx::Document *doc = new QXlsx::Document(m_filename, this);
-    QXlsx::Worksheet *workSheet = doc->currentWorksheet();
+    auto doc = new QXlsx::Document(m_filename, this);
+    auto workSheet = doc->currentWorksheet();
     workSheet->writeString(2, 2, "Тип осциллограммы:");
     workSheet->writeString(2, 3, QString::number(m_idOsc));
     int currentRow = 4;
@@ -106,16 +106,14 @@ void TrendViewModel::toExcel()
     //    emit eventMessage("Экспорт абсцисс");
     // emit recordsOverall(m_mainPoints.size());
     int curCount = 0;
-    for (int i = 0; i < m_mainPoints.size(); ++i)
+    for (auto &point : m_mainPoints)
     {
-        workSheet->writeNumeric(currentRow++, 1, m_mainPoints.at(i));
+        workSheet->writeNumeric(currentRow++, 1, point);
         if (curCount >= c_div)
-        {
-            // emit currentRecord(i);
             curCount = 0;
-        }
         ++curCount;
     }
+
     if (analogDescriptions().size() != analogValues().size())
     {
         emit finished();
@@ -131,18 +129,18 @@ void TrendViewModel::toExcel()
             emit finished();
             //            throw ComaException("Количество значений не соответствует описанию");
         }
-        QVector<double> vect = m_analogMainData[analogValues().at(j)];
+        auto analogVals = m_analogMainData[analogValues().at(j)];
         // emit recordsOverall(vect.size());
-        int curCount = 0;
-        for (int i = 0; i < vect.size(); ++i)
+        int count = 0;
+        for (auto &analogVal : analogVals)
         {
-            workSheet->writeNumeric(currentRow++, currentColumn, vect.at(i));
-            if (curCount >= c_div)
+            workSheet->writeNumeric(currentRow++, currentColumn, analogVal);
+            if (count >= c_div)
             {
                 // emit currentRecord(i);
-                curCount = 0;
+                count = 0;
             }
-            ++curCount;
+            ++count;
         }
         ++currentColumn;
     }
