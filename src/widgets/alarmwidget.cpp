@@ -13,17 +13,14 @@
 
 AlarmWidget::AlarmWidget(QWidget *parent) : QWidget(parent)
 {
-
-    QVBoxLayout *vlyout = new QVBoxLayout;
-
-    QHBoxLayout *hlyout2 = new QHBoxLayout;
-    QDialogButtonBox *buttons = new QDialogButtonBox;
+    auto vlyout = new QVBoxLayout;
+    auto hlyout2 = new QHBoxLayout;
+    auto buttons = new QDialogButtonBox(this);
     setMinimumWidth(parent->width() / 2);
-
     hlyout2->addWidget(buttons);
-
     vlyout->addLayout(hlyout2);
     setLayout(vlyout);
+    /// TODO: FIX THIS VLAD PLEASE
     m_timer = new QTimer(this);
     m_timer->setInterval(10000);
 }
@@ -31,9 +28,8 @@ AlarmWidget::AlarmWidget(QWidget *parent) : QWidget(parent)
 // FIXME Переосмыслить индикатор
 void AlarmWidget::UpdateIndicator(bool indx)
 {
-    auto pixmap
-        = WDFunc::NewLedIndicator((indx == 0) ? QColor(Qt::green) : QColor(0xE0, 0xE0, 0xE0), this->height() / 2);
-    // qDebug() << this->height();
+    auto &&color = (indx) ? QColor(0xE0, 0xE0, 0xE0) : QColor(Qt::green);
+    auto &&pixmap = WDFunc::NewLedIndicator(color, this->height() / 2);
     WDFunc::SetLBLImage(this, "953", &pixmap);
     WDFunc::SetVisible(this, "953", true);
 }

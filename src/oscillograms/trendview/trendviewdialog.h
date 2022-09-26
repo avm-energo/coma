@@ -92,7 +92,6 @@ private:
 
     void analogAxis(int &MainPlotLayoutRow);
     void analogAxisDefault(int graphNum, QCPAxisRect *axisRect);
-    void analogAxis85(int graphNum, QCPAxisRect *axisRect);
     void digitalAxis(int &MainPlotLayoutRow);
 
     void showAxes(QCPGraph *graph, const QVector<double> &keys, const QVector<double> &values,

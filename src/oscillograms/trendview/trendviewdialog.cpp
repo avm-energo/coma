@@ -588,17 +588,7 @@ void TrendViewDialog::analogAxis(int &MainPlotLayoutRow)
     AnalogAxisRect->addAxis(QCPAxis::atLeft);
     mainPlot->plotLayout()->addElement(MainPlotLayoutRow++, 0, AnalogAxisRect);
     analog.legend = createLegend(MainPlotLayoutRow++);
-
-    switch (m_trendModel->idOsc())
-    {
-    case AVTUK_85::OSC_ID:
-        analogAxis85(graphNum, AnalogAxisRect);
-        break;
-    default:
-        analogAxisDefault(graphNum, AnalogAxisRect);
-        break;
-    }
-
+    analogAxisDefault(graphNum, AnalogAxisRect);
     AnalogAxisRect->insetLayout()->setMargins(QMargins(12, 12, 12, 12));
     auto axis = AnalogAxisRect->axis(QCPAxis::atBottom);
     axis->setSelectableParts(QCPAxis::spAxis);
@@ -615,7 +605,8 @@ void TrendViewDialog::analogAxisDefault(int graphNum, QCPAxisRect *axisRect)
     for (auto count = 0; count < graphNum; count++)
     {
         auto tmps = analog.description.names.at(count);
-        auto axisIndex = (tmps.at(0) == 'I') ? CURRENT_AXIS_INDEX : VOLTAGE_AXIS_INDEX;
+        auto firstChar = tmps.at(0);
+        auto axisIndex = (firstChar == 'I') ? CURRENT_AXIS_INDEX : VOLTAGE_AXIS_INDEX;
         SignalOscProperties.leftAxisIndex = axisIndex;
         if (count < MAXGRAPHSPERPLOT)
         {
@@ -636,6 +627,7 @@ void TrendViewDialog::analogAxisDefault(int graphNum, QCPAxisRect *axisRect)
             else
                 pen.setColor(QColor(qSin(count * 1 + 1.2) * 80 + 80, qSin(count * 0.3 + 0) * 80 + 80,
                     qSin(count * 0.3 + 1.5) * 80 + 80));
+            graph->valueAxis()->setLabel(QString(firstChar));
             graph->setPen(pen);
             graph->valueAxis()->setRange(sizeY.min, sizeY.max);
             graph->keyAxis()->setLabel(m_trendModel->xAxisDescription());
@@ -646,60 +638,12 @@ void TrendViewDialog::analogAxisDefault(int graphNum, QCPAxisRect *axisRect)
             SignalOscProperties.graph = graph;
             SignalOscProperties.isVisible = true;
         }
-        // SignalOscProperties.graph = nullptr;
-        // SignalOscProperties.isVisible = false;
-        signalOscPropertiesMap[tmps] = SignalOscProperties;
-    }
-}
-
-void TrendViewDialog::analogAxis85(int graphNum, QCPAxisRect *axisRect)
-{
-    for (auto count = 0; count < graphNum; count++)
-    {
-        QString tmps = analog.description.names.at(count);
-        SignalOscPropertiesStruct SignalOscProperties;
-        SignalOscProperties.type = ST_ANALOG;
-        char firstChar = tmps.at(0).toLatin1();
-        auto axisIndex = (tmps.at(0) == 'I') ? CURRENT_AXIS_INDEX : VOLTAGE_AXIS_INDEX;
-        if (count < MAXGRAPHSPERPLOT)
+        else
         {
-
-            auto leftAxis = axisRect->axis(QCPAxis::atLeft, axisIndex);
-            auto bottomAxis = axisRect->axis(QCPAxis::atBottom);
-            if (!leftAxis || !bottomAxis)
-            {
-                qCritical() << "Nullptr axis";
-                Q_CHECK_PTR(leftAxis);
-                Q_CHECK_PTR(bottomAxis);
-                return;
-            }
-            auto graph = mainPlot->addGraph(bottomAxis, leftAxis);
-            graph->valueAxis()->setLabel(QString(firstChar));
-            SignalOscProperties.graph = graph;
-            SignalOscProperties.leftAxisIndex = axisIndex;
-            SignalOscProperties.isVisible = true;
-            signalOscPropertiesMap[tmps] = SignalOscProperties;
-
-            QPen pen;
-            if (!analog.description.colors[tmps].isEmpty())
-                pen.setColor(QColor(analog.description.colors[tmps]));
-            else
-                pen.setColor(QColor(qSin(count * 1 + 1.2) * 80 + 80, qSin(count * 0.3 + 0) * 80 + 80,
-                    qSin(count * 0.3 + 1.5) * 80 + 80));
-            graph->setPen(pen);
-            graph->valueAxis()->setRange(sizeY.min, sizeY.max);
-            graph->keyAxis()->setLabel("Time, ms");
-            graph->keyAxis()->setRange(sizeX.min, sizeX.max);
-            graph->setName(tmps);
-            analog.legend->addItem(new QCPPlottableLegendItem(analog.legend, graph));
-        }
-        else // count >= MAXGRAPHSPERPLOT
-        {
-            SignalOscProperties.leftAxisIndex = axisIndex;
             SignalOscProperties.graph = nullptr;
             SignalOscProperties.isVisible = false;
-            signalOscPropertiesMap[tmps] = SignalOscProperties;
         }
+        signalOscPropertiesMap[tmps] = SignalOscProperties;
     }
 }
 

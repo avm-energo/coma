@@ -30,7 +30,7 @@ ModuleAlarm::ModuleAlarm(const Modules::AlarmType &type, //
 void ModuleAlarm::followToData()
 {
     auto &sigMap = ConfigStorage::GetInstance().getModuleSettings().getSignals();
-    auto addr = mAlarms.cbegin().key();
+    auto &addr = mAlarms.cbegin().key();
     auto search = std::find_if(sigMap.cbegin(), sigMap.cend(), //
         [&addr](const ModuleTypes::Signal &signal) -> bool {   //
             auto acceptStart = signal.startAddr;
@@ -39,7 +39,7 @@ void ModuleAlarm::followToData()
         });
     if (search != sigMap.cend())
     {
-        auto signal = sigMap.value(search.key());
+        auto &signal = search.value();
         engine()->addSp({ signal.startAddr, signal.count });
     }
 }
@@ -47,9 +47,9 @@ void ModuleAlarm::followToData()
 /// \brief Настраиваем UI, создаём лейблы и индикаторы для отображения сигнализации
 void ModuleAlarm::setupUI(const QStringList &events)
 {
+    auto lyout = new QVBoxLayout(this);
     auto widget = new QWidget(this);
-    auto lyout = new QVBoxLayout;
-    auto vlayout = new QVBoxLayout;
+    auto vlayout = new QVBoxLayout(widget);
     widget->setLayout(vlayout);
 
     // Создаём labels и circles
