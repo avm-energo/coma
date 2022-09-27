@@ -9,7 +9,7 @@ class ModuleAlarm : public BaseAlarm
 {
     Q_OBJECT
 private:
-    const ModuleTypes::AlarmValue &mAlarms;
+    const ModuleTypes::AlarmValue mAlarms;
     UniquePointer<DataTypesProxy> mProxy;
 
     virtual void setupUI(const QStringList &events) override;
@@ -19,6 +19,7 @@ private:
 public:
     explicit ModuleAlarm(const Modules::AlarmType &type, //
         const ModuleTypes::AlarmValue &alarms, QWidget *parent = nullptr);
+    virtual void reqUpdate() override;
 
 public slots:
     void update(const QVariant &msg);

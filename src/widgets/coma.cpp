@@ -134,7 +134,7 @@ QToolBar *Coma::createToolBar()
     tb->addAction(QIcon(":/icons/tnsettings.svg"), "Настройки", [this]() {
         SettingsDialog *dlg = new SettingsDialog(this);
         dlg->setMinimumSize(this->size() / 4);
-        connect(dlg, &SettingsDialog::disableAlarmUpdate, AlarmW, &AlarmWidget::disableAlarm);
+        connect(dlg, &SettingsDialog::disableAlarmUpdate, AlarmW, &AlarmWidget::disableAlarms);
         dlg->setAttribute(Qt::WA_DeleteOnClose);
         dlg->show();
         this->saveSettings();

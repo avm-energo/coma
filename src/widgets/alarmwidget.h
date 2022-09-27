@@ -12,24 +12,16 @@ public:
     explicit AlarmWidget(QWidget *parent = nullptr);
     void clear();
 
-    void addAlarm(BaseAlarm *alarm);
     void addAlarm(BaseAlarm *alarm, const QString caption);
     int count() const;
-    void disableAlarm();
+    void disableAlarms();
 
 public slots:
-
-    void UpdateIndicator(bool);
+    void updateIndicator(bool);
 
 private:
     QList<BaseAlarm *> m_alarms;
-
     QTimer *m_timer;
-    const QStringList buttonDescription {
-        "Состояние устройства",           //
-        "Предупредительная сигнализация", //
-        "Аварийная сигнализация"          //
-    };
     int m_counter = 0;
 };
 

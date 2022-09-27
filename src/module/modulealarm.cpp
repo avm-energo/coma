@@ -9,7 +9,7 @@
 
 ModuleAlarm::ModuleAlarm(const Modules::AlarmType &type, //
     const ModuleTypes::AlarmValue &alarms, QWidget *parent)
-    : BaseAlarm(parent), mAlarms(alarms), mProxy(new DataTypesProxy)
+    : BaseAlarm(parent), mAlarms(std::move(alarms)), mProxy(new DataTypesProxy)
 {
     static const QHash<Modules::AlarmType, QColor> colors = {
         { Modules::AlarmType::Critical, Qt::red },   //
@@ -17,12 +17,12 @@ ModuleAlarm::ModuleAlarm(const Modules::AlarmType &type, //
         { Modules::AlarmType::Info, Qt::green }      //
     };
 
+    followToData();
     alarmColor = colors.value(type, Qt::transparent);
     mProxy->RegisterType<DataTypes::SinglePointWithTimeStruct>();
     connect(mProxy.get(), &DataTypesProxy::DataStorable, this, qOverload<const QVariant &>(&ModuleAlarm::update));
-    // Настройки алармов
-    followToData();
     setupUI(mAlarms.values());
+    engine()->setUpdatesEnabled();
 }
 
 /// \brief Находим группу сигналов, в диапазон которых попадает первый аларм
@@ -42,6 +42,11 @@ void ModuleAlarm::followToData()
         auto &signal = search.value();
         engine()->addSp({ signal.startAddr, signal.count });
     }
+}
+
+void ModuleAlarm::reqUpdate()
+{
+    UWidget::reqUpdate();
 }
 
 /// \brief Настраиваем UI, создаём лейблы и индикаторы для отображения сигнализации
@@ -96,11 +101,16 @@ void ModuleAlarm::update(const QVariant &msg)
     if (!(sigval & 0x80))
     {
         quint32 index = 0;
+        bool foundFlag = false;
         for (auto it = mAlarms.keyBegin(); it != mAlarms.keyEnd(); it++, index++)
         {
             if (sp.sigAdr == *it)
+            {
+                foundFlag = true;
                 break;
+            }
         }
-        updatePixmap(sigval & 0x00000001, index);
+        if (foundFlag)
+            updatePixmap(sigval & 0x00000001, index);
     }
 }

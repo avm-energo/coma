@@ -13,12 +13,12 @@
 
 AlarmWidget::AlarmWidget(QWidget *parent) : QWidget(parent)
 {
-    auto vlyout = new QVBoxLayout;
-    auto hlyout2 = new QHBoxLayout;
     auto buttons = new QDialogButtonBox(this);
+    auto vlyout = new QVBoxLayout(this);
+    auto hlyout = new QHBoxLayout(buttons);
     setMinimumWidth(parent->width() / 2);
-    hlyout2->addWidget(buttons);
-    vlyout->addLayout(hlyout2);
+    hlyout->addWidget(buttons);
+    vlyout->addLayout(hlyout);
     setLayout(vlyout);
     /// TODO: FIX THIS VLAD PLEASE
     m_timer = new QTimer(this);
@@ -26,7 +26,7 @@ AlarmWidget::AlarmWidget(QWidget *parent) : QWidget(parent)
 }
 
 // FIXME Переосмыслить индикатор
-void AlarmWidget::UpdateIndicator(bool indx)
+void AlarmWidget::updateIndicator(bool indx)
 {
     auto &&color = (indx) ? QColor(0xE0, 0xE0, 0xE0) : QColor(Qt::green);
     auto &&pixmap = WDFunc::NewLedIndicator(color, this->height() / 2);
@@ -38,57 +38,45 @@ void AlarmWidget::clear()
 {
     // Имеются ли виджеты на слое
     m_timer->stop();
-    Q_ASSERT(!layout()->children().isEmpty() && "Layout doesn't have children");
-    QLayout *buttonBoxLayout = qobject_cast<QLayout *>(layout()->children().first());
-    QDialogButtonBox *buttons = qobject_cast<QDialogButtonBox *>(buttonBoxLayout->itemAt(0)->widget());
-    Q_ASSERT(buttons != nullptr);
-    buttons->clear();
-    qDeleteAll(m_alarms.begin(), m_alarms.end());
-    m_alarms.clear();
-    m_counter = 0;
-}
-
-void AlarmWidget::addAlarm(BaseAlarm *alarm)
-{
-    QString alarmName = alarm->metaObject()->className();
-    if (alarmName.contains("warn", Qt::CaseInsensitive))
+    if (!layout()->children().isEmpty())
     {
-        addAlarm(alarm, buttonDescription.at(1));
-    }
-    if (alarmName.contains("crit", Qt::CaseInsensitive))
-    {
-        addAlarm(alarm, buttonDescription.at(2));
-    }
-    if (alarmName.contains("stateall", Qt::CaseInsensitive))
-    {
-        addAlarm(alarm, buttonDescription.at(0));
+        auto buttonsLayout = qobject_cast<QLayout *>(layout()->children().first());
+        auto buttons = qobject_cast<QDialogButtonBox *>(buttonsLayout->itemAt(0)->widget());
+        if (buttons != nullptr)
+        {
+            buttons->clear();
+            qDeleteAll(m_alarms.begin(), m_alarms.end());
+            m_alarms.clear();
+            m_counter = 0;
+        }
     }
 }
 
 void AlarmWidget::addAlarm(BaseAlarm *alarm, const QString caption)
 {
     // Имеются ли виджеты на слое
-    Q_ASSERT(!layout()->children().isEmpty() && "Layout doesn't have children");
-    QLayout *buttonBoxLayout = qobject_cast<QLayout *>(layout()->children().first());
-    QDialogButtonBox *buttons = qobject_cast<QDialogButtonBox *>(buttonBoxLayout->itemAt(0)->widget());
-    Q_ASSERT(buttons != nullptr);
-    alarm->setWindowTitle(caption);
-    AlarmButton *pb = new AlarmButton(alarm);
+    if (!layout()->children().isEmpty())
+    {
+        auto buttonsLayout = qobject_cast<QLayout *>(layout()->children().first());
+        auto buttons = qobject_cast<QDialogButtonBox *>(buttonsLayout->itemAt(0)->widget());
+        if (buttons != nullptr)
+        {
+            alarm->setWindowTitle(caption);
+            auto aButton = new AlarmButton(alarm);
+            aButton->setPixmap(WDFunc::NewCircle(Qt::green, circleRadius));
+            aButton->setText(caption);
+            connect(aButton, &QPushButton::clicked, alarm, &BaseAlarm::show);
+            connect(m_timer, &QTimer::timeout, alarm, &BaseAlarm::reqUpdate);
+            connect(alarm, &BaseAlarm::updateColor, aButton, //
+                [=](const QColor &color) { aButton->setPixmap(WDFunc::NewCircle(color, circleRadius)); });
 
-    pb->setPixmap(WDFunc::NewCircle(Qt::green, 15));
-    connect(pb, &QPushButton::clicked, alarm, &QDialog::show);
-
-    if (!m_timer->isActive())
-        m_timer->start();
-    connect(m_timer, &QTimer::timeout, alarm, &BaseAlarm::reqUpdate);
-    connect(alarm, &BaseAlarm::updateColor, pb, [=](QColor color) { pb->setPixmap(WDFunc::NewCircle(color, 15)); });
-
-    pb->setText(caption);
-
-    Q_ASSERT(!pb->text().isEmpty() && "Couldn't find description");
-    m_alarms.append(alarm);
-    buttons->addButton(pb, QDialogButtonBox::ActionRole);
-    ++m_counter;
+            m_alarms.append(alarm);
+            buttons->addButton(aButton, QDialogButtonBox::ActionRole);
+            ++m_counter;
+            if (!m_timer->isActive())
+                m_timer->start();
+        }
+    }
 }
 
 int AlarmWidget::count() const
@@ -96,9 +84,8 @@ int AlarmWidget::count() const
     return m_counter;
 }
 
-void AlarmWidget::disableAlarm()
+void AlarmWidget::disableAlarms()
 {
     for (const auto &alarm : qAsConst(m_alarms))
         disconnect(m_timer, &QTimer::timeout, alarm, &BaseAlarm::reqUpdate);
-    //   alarm->disable();
 }

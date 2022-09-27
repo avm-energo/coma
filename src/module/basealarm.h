@@ -9,7 +9,6 @@ class BaseAlarm : public UWidget
     Q_OBJECT
 public:
     explicit BaseAlarm(QWidget *parent = nullptr);
-    void disable();
 
 protected:
     QColor normalColor;

@@ -7,10 +7,7 @@ class AlarmButton : public QPushButton
     Q_OBJECT
 public:
     explicit AlarmButton(QWidget *parent = nullptr);
-    virtual ~AlarmButton();
-
     void setPixmap(const QPixmap &pixmap);
-
     virtual QSize sizeHint() const override;
 
 protected:

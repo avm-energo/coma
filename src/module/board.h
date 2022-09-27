@@ -152,10 +152,10 @@ signals:
     void typeChanged();
     void typeChanged(quint16);
     void connectionStateChanged(Board::ConnectionState);
-    /// This signal is emitted when StartupInfoBlock::Hth
+    /// \brief This signal is emitted when StartupInfoBlock::Hth is changed.
     void healthChanged(quint32);
-    /// This signal is emitted when all StartupInfoBlock members updated
+    /// \brief This signal is emitted when all StartupInfoBlock members are updated.
     void readyRead();
-    /// This signal is emitted when all StartupInfoBlockExt members updated
+    /// \brief This signal is emitted when all StartupInfoBlockExt members are updated.
     void readyReadExt();
 };

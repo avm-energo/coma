@@ -16,6 +16,7 @@ private:
 public:
     explicit AlarmStateAll(QWidget *parent = nullptr);
     virtual void setupUI(const QStringList &events) override;
+    virtual void reqUpdate() override;
     void update(quint32 health);
 };
 

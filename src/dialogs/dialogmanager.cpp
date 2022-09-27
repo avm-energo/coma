@@ -54,19 +54,19 @@ void DialogManager::createAlarms(AlarmWidget *alarmWidget)
         { { false, Modules::AlarmType::Info }, "Мезонинная информационная сигнализация" }        //
     };
 
-    auto alarmStateAll = new AlarmStateAll(alarmWidget);
+    auto alarmStateAll = new AlarmStateAll();
     alarmStateAll->setupUI(AVM::HthToolTip);
-    alarmWidget->addAlarm(alarmStateAll);
+    alarmWidget->addAlarm(alarmStateAll, "Состояние устройства");
     const auto &alarmMap = settings.getAlarms();
     if (!alarmMap.empty())
     {
         for (auto keyIter = alarmMap.keyBegin(); keyIter != alarmMap.keyEnd(); keyIter++)
         {
-            auto &title = alarmSettings.value(*keyIter);
+            const auto &title = alarmSettings.value(*keyIter);
             if (!title.isEmpty())
             {
-                auto &alarms = alarmMap.value(*keyIter);
-                auto moduleAlarm = new ModuleAlarm(keyIter->second, alarms, alarmWidget);
+                const auto &alarms = alarmMap.value(*keyIter);
+                auto moduleAlarm = new ModuleAlarm(keyIter->second, alarms);
                 alarmWidget->addAlarm(moduleAlarm, title);
             }
         }

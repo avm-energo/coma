@@ -14,6 +14,13 @@ AlarmStateAll::AlarmStateAll(QWidget *parent) : BaseAlarm(parent)
     mAlarmFlags = BSIALARMMASK;
 }
 
+void AlarmStateAll::reqUpdate()
+{
+    auto iface = BaseInterface::iface();
+    if (iface != nullptr)
+        iface->reqBSI();
+}
+
 void AlarmStateAll::update(quint32 health)
 {
     const std::bitset<32> healthSet = health;
@@ -28,7 +35,7 @@ void AlarmStateAll::update(quint32 health)
             else
                 color = Qt::red;
         }
-        QPixmap circle = WDFunc::NewCircle(color, circleRadius);
+        auto circle = WDFunc::NewCircle(color, circleRadius);
         WDFunc::SetLBLImage(this, QString::number(i), &circle);
     }
 
@@ -44,15 +51,19 @@ void AlarmStateAll::update(quint32 health)
 
 void AlarmStateAll::setupUI(const QStringList &events)
 {
-    auto vlayout = new QVBoxLayout(this);
+    auto mainLayout = new QVBoxLayout(this);
     for (int i = 0; i < events.size(); ++i)
     {
-        auto hlyout = new QHBoxLayout;
-        hlyout->addWidget(WDFunc::NewLBL2(this, "", QString::number(i)));
-        hlyout->addWidget(WDFunc::NewLBL2(this, events.at(i)), 1);
-        vlayout->addLayout(hlyout);
+        auto hLayout = new QHBoxLayout;
+        auto label = WDFunc::NewLBL2(this, "", QString::number(i));
+        auto pixmap = WDFunc::NewCircle(normalColor, circleRadius);
+        label->setPixmap(pixmap);
+        hLayout->addWidget(label);
+        hLayout->addWidget(WDFunc::NewLBL2(this, events.at(i)), 1);
+        mainLayout->addLayout(hLayout);
     }
-    vlayout->addWidget(WDFunc::NewPB(this, "", "Ok", static_cast<QWidget *>(this), &QWidget::hide), 0);
+    mainLayout->addWidget(WDFunc::NewPB(this, "", "Ok", static_cast<QWidget *>(this), &QWidget::hide), 0);
+    setLayout(mainLayout);
     const auto &board = Board::GetInstance();
     connect(&board, &Board::healthChanged, this, &AlarmStateAll::update);
 }
