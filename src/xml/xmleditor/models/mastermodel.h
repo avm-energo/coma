@@ -8,6 +8,7 @@
 
 constexpr int FilenameDataRole = 0x0107; ///< Роль для хранения имени файла
 
+/// \brief Class for master model (master workspace, left table view).
 class MasterModel : public IEditorModel
 {
     Q_OBJECT

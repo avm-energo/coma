@@ -9,6 +9,7 @@
 #include <QHBoxLayout>
 #include <QTableView>
 
+/// \brief Главный класс редактора XML.
 class XmlEditor : public QDialog
 {
     Q_OBJECT

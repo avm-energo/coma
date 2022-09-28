@@ -20,8 +20,6 @@ void ModuleDialog::setupUI(QVBoxLayout *mainLayout)
         { "Версия", "verInput", false }       //
     };
     mTitle += "модуля";
-
-    // https://github.com/KDE/clazy/blob/1.11/docs/checks/README-range-loop-detach.md
     for (const auto &itemSettings : qAsConst(dlgSettings))
     {
         auto labelText = std::get<0>(itemSettings);

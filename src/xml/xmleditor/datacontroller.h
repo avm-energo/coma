@@ -5,6 +5,7 @@
 
 #include <QObject>
 
+/// \brief Контроллер данных в архитектуре MVC.
 class DataController : public QObject
 {
     Q_OBJECT

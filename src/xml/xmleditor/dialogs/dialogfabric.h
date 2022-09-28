@@ -3,6 +3,7 @@
 
 #include "../models/ieditormodel.h"
 
+/// \brief Класс со статическими методами для создания диалоговых окон.
 class XmlDialogFabric
 {
 private:
@@ -11,8 +12,6 @@ private:
 
 public:
     explicit XmlDialogFabric() = delete;
-
-    // Items в Slave View
     static void CreateDialog(IEditorModel *model, QWidget *parent = nullptr);
     static void EditDialog(IEditorModel *model, QModelIndexList &selected, QWidget *parent = nullptr);
     static void RemoveDialog(IEditorModel *model, QModelIndexList &selected, QWidget *parent = nullptr);

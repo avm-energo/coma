@@ -23,6 +23,7 @@ constexpr auto edit = 0;   ///< Константа для указания ре�
 constexpr auto remove = 1; ///< Константа для указания удаления
 }
 
+/// \brief Диалог создания или изменения элемента.
 void XmlDialogFabric::CreateOrEditDialog(IEditorModel *model, int row, QWidget *parent)
 {
     if (model != nullptr)
@@ -93,6 +94,7 @@ void XmlDialogFabric::CreateOrEditDialog(IEditorModel *model, int row, QWidget *
         EMessageBox::warning(parent, "Не выбрана модель");
 }
 
+/// \brief Диалог удаления или изменения элемента.
 void XmlDialogFabric::RemoveOrEditDialog(IEditorModel *model, QModelIndexList &selected, QWidget *parent, int type)
 {
     if (!selected.isEmpty())
@@ -128,16 +130,19 @@ void XmlDialogFabric::RemoveOrEditDialog(IEditorModel *model, QModelIndexList &s
         EMessageBox::warning(parent, "Не выбран элемент");
 }
 
+/// \brief Создать и отобразить диалог создания нового элемента.
 void XmlDialogFabric::CreateDialog(IEditorModel *model, QWidget *parent)
 {
     CreateOrEditDialog(model, createId, parent);
 }
 
+/// \brief Создать и отобразить диалог редактирования выбранного элемента.
 void XmlDialogFabric::EditDialog(IEditorModel *model, QModelIndexList &selected, QWidget *parent)
 {
     RemoveOrEditDialog(model, selected, parent, Helper::edit);
 }
 
+/// \brief Создать и отобразить диалог удаления выбранного элемента.
 void XmlDialogFabric::RemoveDialog(IEditorModel *model, QModelIndexList &selected, QWidget *parent)
 {
     RemoveOrEditDialog(model, selected, parent, Helper::remove);

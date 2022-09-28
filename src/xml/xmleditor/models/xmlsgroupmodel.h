@@ -3,9 +3,9 @@
 
 #include "xmlmodel.h"
 
-constexpr int SGroupDataRole = 0x0106; ///< Роль для скрытых данных SGroup модели
+constexpr int SGroupDataRole = 0x0106; ///< Role for hiding data SGroupHideData.
 
-/// \brief Структура, хранящая скрытые данные
+/// \brief Structure, that stores a hiding data.
 struct SGroupHideData
 {
     int count = 1;
@@ -14,6 +14,7 @@ struct SGroupHideData
 };
 Q_DECLARE_METATYPE(SGroupHideData);
 
+/// \brief Class for storing hiding data.
 class XmlSGroupModel : public XmlModel
 {
 private:

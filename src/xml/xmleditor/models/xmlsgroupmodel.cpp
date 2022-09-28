@@ -4,6 +4,7 @@ XmlSGroupModel::XmlSGroupModel(int rows, int cols, ModelType type, QObject *pare
 {
 }
 
+/// \brief Slot for receiveing data request from dialog window and sending response.
 void XmlSGroupModel::getDialogRequest(const int &row)
 {
     if (row >= 0 && row < rowCount())
@@ -38,6 +39,7 @@ void XmlSGroupModel::getDialogRequest(const int &row)
     }
 }
 
+/// \brief Slot for updating an item's data in the model (including hiding data).
 void XmlSGroupModel::update(const QStringList &saved, const int &row)
 {
     Q_ASSERT(saved.count() == 5);
@@ -50,6 +52,7 @@ void XmlSGroupModel::update(const QStringList &saved, const int &row)
     emit modelChanged();
 }
 
+/// \brief Parsing input XML nodes of file in model items.
 void XmlSGroupModel::parseNode(QDomNode &node, int &row)
 {
     parseAttribute(node, tags::desc, row, 0); // Заголовок
@@ -57,6 +60,7 @@ void XmlSGroupModel::parseNode(QDomNode &node, int &row)
     setData(index(row, 0), QVariant::fromValue(parseHideData(node)), SGroupDataRole);
 }
 
+/// \brief Creates XML DOM node representation of this model.
 QDomElement XmlSGroupModel::toNode(QDomDocument &doc)
 {
     auto sgroupNode = makeElement(doc, tags::sgroup);
@@ -90,6 +94,7 @@ QDomElement XmlSGroupModel::toNode(QDomDocument &doc)
     return sgroupNode;
 }
 
+/// \brief Parsing XML DOM node to SGroupHideData structure.
 SGroupHideData XmlSGroupModel::parseHideData(QDomNode &node)
 {
     SGroupHideData retVal;
@@ -128,6 +133,7 @@ SGroupHideData XmlSGroupModel::parseHideData(QDomNode &node)
     return retVal;
 }
 
+/// \brief Converting input string list to SGroupHideData structure.
 SGroupHideData XmlSGroupModel::convertHideData(const QStringList &input)
 {
     SGroupHideData hiding;
