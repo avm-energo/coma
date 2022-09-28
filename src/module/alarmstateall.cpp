@@ -1,19 +1,17 @@
 #include "alarmstateall.h"
 
-#include "../gen/colors.h"
-#include "../gen/error.h"
 #include "../widgets/wd_func.h"
 #include "board.h"
 #include "modules.h"
 
 #include <QBoxLayout>
-#include <QDebug>
 
 AlarmStateAll::AlarmStateAll(QWidget *parent) : BaseAlarm(parent)
 {
     mAlarmFlags = BSIALARMMASK;
 }
 
+/// \brief Request for updating a BSI data.
 void AlarmStateAll::reqUpdate()
 {
     auto iface = BaseInterface::iface();
@@ -21,6 +19,7 @@ void AlarmStateAll::reqUpdate()
         iface->reqBSI();
 }
 
+/// \brief The slot called when a device health changed for updating alarms.
 void AlarmStateAll::update(quint32 health)
 {
     const std::bitset<32> healthSet = health;
@@ -49,6 +48,7 @@ void AlarmStateAll::update(quint32 health)
     emit updateColor(color);
 }
 
+/// \brief Setup UI: creating text labels and indicators (pixmaps) for alarms displaying.
 void AlarmStateAll::setupUI(const QStringList &events)
 {
     auto mainLayout = new QVBoxLayout(this);

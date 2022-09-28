@@ -1,12 +1,11 @@
-#ifndef ALARMSTATEALL_H
-#define ALARMSTATEALL_H
+#pragma once
 
 #include "../module/basealarm.h"
 
-constexpr quint32 BSI_HEALTH_MASK = 0x0000FFFF;
-constexpr quint32 BSIWARNMASK = 0x00005F55;
-constexpr quint32 BSIALARMMASK = 0x000020AA;
+constexpr quint32 BSIWARNMASK = 0x00005F55;  ///< Warning alarms bit mask.
+constexpr quint32 BSIALARMMASK = 0x000020AA; ///< Critical alarms bit mask.
 
+/// \brief The class for alarm dialog, that displaying the device general status.
 class AlarmStateAll : public BaseAlarm
 {
     Q_OBJECT
@@ -17,7 +16,7 @@ public:
     explicit AlarmStateAll(QWidget *parent = nullptr);
     virtual void setupUI(const QStringList &events) override;
     virtual void reqUpdate() override;
+
+public slots:
     void update(quint32 health);
 };
-
-#endif // ALARMSTATE_H

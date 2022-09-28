@@ -25,8 +25,8 @@ ModuleAlarm::ModuleAlarm(const Modules::AlarmType &type, //
     engine()->setUpdatesEnabled();
 }
 
-/// \brief Находим группу сигналов, в диапазон которых попадает первый аларм
-/// из списка и подписываемся на получение данных от этого сигнала
+/// \brief Folowing the data: search a signal group whose range
+/// includes the address of the first alarm from the list.
 void ModuleAlarm::followToData()
 {
     auto &sigMap = ConfigStorage::GetInstance().getModuleSettings().getSignals();
@@ -44,19 +44,13 @@ void ModuleAlarm::followToData()
     }
 }
 
-void ModuleAlarm::reqUpdate()
-{
-    UWidget::reqUpdate();
-}
-
-/// \brief Настраиваем UI, создаём лейблы и индикаторы для отображения сигнализации
+/// \brief Setup UI: creating text labels and indicators (pixmaps) for alarms displaying.
 void ModuleAlarm::setupUI(const QStringList &events)
 {
     auto lyout = new QVBoxLayout(this);
     auto widget = new QWidget(this);
     auto vlayout = new QVBoxLayout(widget);
     widget->setLayout(vlayout);
-
     // Создаём labels и circles
     auto index = 0;
     for (auto &&desc : events)
@@ -70,19 +64,18 @@ void ModuleAlarm::setupUI(const QStringList &events)
         vlayout->addLayout(hlyout);
         index++;
     }
-
-    // Делаем QScrollArea
+    // Создаём QScrollArea
     auto scrollArea = new QScrollArea(this);
     scrollArea->setWidget(widget);
     lyout->addWidget(scrollArea);
-
+    // Создаём кнопку "Ок"
     auto pb = new QPushButton("Ok", this);
     QObject::connect(pb, &QPushButton::clicked, this, &ModuleAlarm::hide);
     lyout->addWidget(pb);
     setLayout(lyout);
 }
 
-/// \brief Обновление индикатора для отображения сигнализации
+/// \brief Update a indicator (pixmap) for alarms displaying.
 void ModuleAlarm::updatePixmap(const bool &isset, const quint32 &position)
 {
     auto color = isset ? alarmColor : normalColor;
@@ -93,7 +86,7 @@ void ModuleAlarm::updatePixmap(const bool &isset, const quint32 &position)
     emit updateColor(color);
 }
 
-/// 104 и модбас
+/// \brief The slot called when a SinglePoint data is received from the communication protocol.
 void ModuleAlarm::update(const QVariant &msg)
 {
     auto sp = msg.value<DataTypes::SinglePointWithTimeStruct>();

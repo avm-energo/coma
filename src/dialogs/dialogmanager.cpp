@@ -1,11 +1,9 @@
 #include "dialogmanager.h"
 
-#include "../module/alarmstateall.h"
 #include "../module/board.h"
 #include "../module/journkdv.h"
 #include "../module/journkiv.h"
 #include "../module/journktf.h"
-#include "../module/modulealarm.h"
 #include "../oscillograms/oscdialog.h"
 #include "../startup/startupkdvdialog.h"
 #include "../startup/startupkivdialog.h"
@@ -38,39 +36,6 @@ const QList<UDialog *> &DialogManager::createDialogs(const AppConfiguration &app
     createSpecificDialogs(appCfg);
     createCommonDialogs(appCfg);
     return mDialogs;
-}
-
-/// \brief Filling alarms in the received alarm widget.
-void DialogManager::createAlarms(AlarmWidget *alarmWidget)
-{
-    /// TODO: этим должен заниматься сам AlarmWidget
-    /// TODO: bool -> enum
-    static const QHash<ModuleTypes::AlarmKey, QString> alarmSettings {
-        { { true, Modules::AlarmType::Critical }, "Базовая аварийная сигнализация" },            //
-        { { true, Modules::AlarmType::Warning }, "Базовая предупредительная сигнализация" },     //
-        { { true, Modules::AlarmType::Info }, "Базовая информационная сигнализация" },           //
-        { { false, Modules::AlarmType::Critical }, "Мезонинная аварийная сигнализация" },        //
-        { { false, Modules::AlarmType::Warning }, "Мезонинная предупредительная сигнализация" }, //
-        { { false, Modules::AlarmType::Info }, "Мезонинная информационная сигнализация" }        //
-    };
-
-    auto alarmStateAll = new AlarmStateAll();
-    alarmStateAll->setupUI(AVM::HthToolTip);
-    alarmWidget->addAlarm(alarmStateAll, "Состояние устройства");
-    const auto &alarmMap = settings.getAlarms();
-    if (!alarmMap.empty())
-    {
-        for (auto keyIter = alarmMap.keyBegin(); keyIter != alarmMap.keyEnd(); keyIter++)
-        {
-            const auto &title = alarmSettings.value(*keyIter);
-            if (!title.isEmpty())
-            {
-                const auto &alarms = alarmMap.value(*keyIter);
-                auto moduleAlarm = new ModuleAlarm(keyIter->second, alarms);
-                alarmWidget->addAlarm(moduleAlarm, title);
-            }
-        }
-    }
 }
 
 /// \brief Adding the created dialog to the list for saving.

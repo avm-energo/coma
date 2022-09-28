@@ -1,5 +1,4 @@
-#ifndef DIALOGMANAGER_H
-#define DIALOGMANAGER_H
+#pragma once
 
 #include "../module/modules.h"
 #include "../module/modulesettings.h"
@@ -22,7 +21,6 @@ class DialogManager : public QObject
 public:
     DialogManager(const ModuleSettings &settings, QWidget *parent = nullptr);
     const QList<UDialog *> &createDialogs(const AppConfiguration &appCfg);
-    void createAlarms(AlarmWidget *alarmWidget);
     void deleteDialogs();
     void parentTWTabChanged(int index);
 
@@ -42,5 +40,3 @@ private:
     void createSpecificDialogs(const AppConfiguration &appCfg);
     void createCommonDialogs(const AppConfiguration &appCfg);
 };
-
-#endif // DIALOGMANAGER_H

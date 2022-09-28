@@ -23,8 +23,7 @@ signals:
         const quint16 &count, const ModuleTypes::SignalType &sigType);
     void tabDataSending(const quint32 &id, const QString &name);
     void sectionDataSending(const ModuleTypes::SGMap &sgmap, const QString &secHead);
-    void alarmDataSending(const bool &isBase, const Modules::AlarmType &aType, //
-        const quint32 &addr, const QString &desc);
+    void alarmDataSending(const Modules::AlarmType &aType, const quint32 &addr, const QString &desc);
     void jourDataSending(const Modules::JournalType &jType, const quint32 &addr, const QString &desc);
     void interfaceSettingsSending(const QVariant &iSettings);
     void configDataSending(const quint32 &id, const QString &defVal, const bool &visib, const quint32 &count);

@@ -1,10 +1,11 @@
-#ifndef ALARM_H
-#define ALARM_H
+#pragma once
 
 #include "../gen/datatypes.h"
 #include "basealarm.h"
 #include "modulesettings.h"
 
+/// \brief The class for alarm dialog, that displaying critical,
+/// warning and info alarms from XML configuration files.
 class ModuleAlarm : public BaseAlarm
 {
     Q_OBJECT
@@ -19,10 +20,7 @@ private:
 public:
     explicit ModuleAlarm(const Modules::AlarmType &type, //
         const ModuleTypes::AlarmValue &alarms, QWidget *parent = nullptr);
-    virtual void reqUpdate() override;
 
 public slots:
     void update(const QVariant &msg);
 };
-
-#endif // ALARM_H

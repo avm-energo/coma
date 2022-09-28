@@ -189,8 +189,8 @@ void Coma::prepareDialogs()
             "Доступны минимальные функции.");
     }
     mDlgManager = new DialogManager(ConfigStorage::GetInstance().getModuleSettings(), this);
-    mDlgManager->createAlarms(AlarmW);
-    QList<UDialog *> dlgs = mDlgManager->createDialogs(mAppConfig);
+    AlarmW->configure();
+    auto &dlgs = mDlgManager->createDialogs(mAppConfig);
     for (auto dialog : dlgs)
     {
         connect(BdaTimer, &QTimer::timeout, dialog, &UDialog::reqUpdate);
