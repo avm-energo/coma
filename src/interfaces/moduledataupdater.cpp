@@ -1,7 +1,8 @@
 #include "moduledataupdater.h"
 
-ModuleDataUpdater::ModuleDataUpdater(QObject *parent) : QObject(parent)
+ModuleDataUpdater::ModuleDataUpdater(BaseInterface *iface, QObject *parent) : QObject(parent)
 {
+    m_iface = iface;
     proxyFS = UniquePointer<DataTypesProxy>(new DataTypesProxy(&DataManager::GetInstance()));
     proxySP = UniquePointer<DataTypesProxy>(new DataTypesProxy(&DataManager::GetInstance()));
     proxyBS = UniquePointer<DataTypesProxy>(new DataTypesProxy(&DataManager::GetInstance()));
@@ -19,11 +20,11 @@ void ModuleDataUpdater::requestUpdates()
     if (!m_updatesEnabled)
         return;
     for (const auto &query : qAsConst(m_floatQueryList))
-        BaseInterface::iface()->reqFloats(query.sigAdr, query.sigQuantity);
+        m_iface->reqFloats(query.sigAdr, query.sigQuantity);
     for (const auto &query : qAsConst(m_spQueryList))
-        BaseInterface::iface()->reqAlarms(query.sigAdr, query.sigQuantity);
+        m_iface->reqAlarms(query.sigAdr, query.sigQuantity);
     for (const auto &query : qAsConst(m_bsQueryList))
-        BaseInterface::iface()->reqBitStrings(query.sigAdr, query.sigQuantity);
+        m_iface->reqBitStrings(query.sigAdr, query.sigQuantity);
 }
 
 bool ModuleDataUpdater::updatesEnabled()

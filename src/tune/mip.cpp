@@ -15,20 +15,6 @@ Mip::Mip(bool withGUI, MType moduleType, QWidget *parent) : QObject()
     m_withGUI = withGUI;
     m_parent = parent;
     m_moduleType = moduleType;
-    if (m_withGUI)
-    {
-        setupWidget();
-        m_widget->engine()->addFloat({ 0, 46 });
-        connect(m_widget->engine(), &ModuleDataUpdater::itsTimeToUpdateFloatSignal, this, &Mip::updateData);
-    }
-    else
-    {
-        m_updater = new ModuleDataUpdater;
-        // Отключим обновление виджета по умолчанию
-        m_updater->setUpdatesEnabled(false);
-        m_updater->addFloat({ 0, 46 });
-        connect(m_updater, &ModuleDataUpdater::itsTimeToUpdateFloatSignal, this, &Mip::updateData);
-    }
 }
 
 void Mip::updateData(const DataTypes::FloatStruct &fl)
@@ -85,36 +71,46 @@ void Mip::setupWidget()
     lyout->addWidget(WDFunc::NewLBLAndLBL(m_widget, "17", "Температура", true), 9, 0);
     lyout->addWidget(WDFunc::NewPB(m_widget, "", "Далее",
                          [&] {
-                             emit finished();
+                             stop();
                              m_widget->close();
                          }),
         10, 0);
     m_widget->setLayout(lyout);
 }
 
-void Mip::start()
+bool Mip::start()
 {
     using namespace settings;
     auto sets = std::make_unique<QSettings>();
-    m_device = UniquePointer<IEC104>(new IEC104);
+    m_device = new IEC104;
     IEC104Settings settings;
     settings.ip = sets->value(regMap[MIPIP].name, regMap[MIPIP].defValue).toString();
     settings.baseadr = sets->value(regMap[MIPAddress].name, regMap[MIPAddress].defValue).toUInt();
     ConnectStruct st { "mip", settings };
-    m_device->start(st);
+    if (!m_device->start(st))
+        return false;
     if (m_withGUI)
     {
-        widget()->engine()->setUpdatesEnabled();
-        widget()->show();
+        setupWidget();
+        m_widget->engine()->addFloat({ 0, 46 });
+        connect(m_widget->engine(), &ModuleDataUpdater::itsTimeToUpdateFloatSignal, this, &Mip::updateData);
+        m_widget->engine()->setUpdatesEnabled();
+        m_widget->show();
     }
     else
     {
+        m_updater = new ModuleDataUpdater(m_device);
+        // Отключим обновление виджета по умолчанию
+        m_updater->setUpdatesEnabled(false);
+        m_updater->addFloat({ 0, 46 });
+        connect(m_updater, &ModuleDataUpdater::itsTimeToUpdateFloatSignal, this, &Mip::updateData);
         m_updater->setUpdatesEnabled();
         m_updateTimer = new QTimer;
         m_updateTimer->setInterval(1000);
         connect(m_updateTimer, &QTimer::timeout, m_updater, &ModuleDataUpdater::requestUpdates);
         m_updateTimer->start();
     }
+    return true;
 }
 
 void Mip::stop()
@@ -123,6 +119,7 @@ void Mip::stop()
     m_updateTimer->deleteLater();
     m_updater->setUpdatesEnabled(false);
     m_device->stop();
+    emit finished();
 }
 
 Error::Msg Mip::check()

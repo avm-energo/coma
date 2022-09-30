@@ -40,7 +40,6 @@
 #include <QAction>
 #include <QPen>
 #include <QToolBar>
-#include <QtConcurrent>
 #include <algorithm>
 
 constexpr int VOLTAGE_AXIS_INDEX = 0;

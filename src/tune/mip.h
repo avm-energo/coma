@@ -37,8 +37,7 @@ public:
 
     void updateData(const DataTypes::FloatStruct &fl);
     MipDataStruct getData();
-    void start();
-    void stop();
+    bool start();
     Error::Msg check();
     void setModuleType(MType type);
     void setNominalCurrent(float inom);
@@ -46,7 +45,7 @@ public:
     MipDataStruct takeOneMeasurement(float i2nom);
 
 private:
-    UniquePointer<IEC104> m_device;
+    IEC104 *m_device;
     MipDataStruct m_mipData;
     MType m_moduleType;
     float iNom;
@@ -60,6 +59,9 @@ private:
 
 signals:
     void finished();
+
+public slots:
+    void stop();
 };
 
 #endif // MIP_H

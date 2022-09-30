@@ -99,6 +99,7 @@ private:
 
 signals:
     void Finished();
+    void cancelled();
     void generalEventReceived();
     void LoadDefConf();
     void setProgressSize(int size);

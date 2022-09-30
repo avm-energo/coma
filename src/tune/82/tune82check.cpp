@@ -95,8 +95,13 @@ Error::Msg Tune82Check::checkMip()
     DataTypes::FLOAT_6t inom = configV->getRecord(S2::GetIdByName("I2nom")).value<DataTypes::FLOAT_6t>();
     assert(inom.size() > 3);
     mip->setNominalCurrent(inom.at(3)); // 2nd currents, phase A
-    mip->start();
+    if (!mip->start())
+    {
+        EMessageBox::error(this, "Нет соединения с МИП");
+        return Error::GeneralError;
+    }
     QEventLoop el;
+    connect(this, &AbstractTuneDialog::cancelled, mip, &Mip::stop);
     connect(mip, &Mip::finished, &el, &QEventLoop::quit);
     el.exec();
     mip->stop();

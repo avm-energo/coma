@@ -79,8 +79,7 @@ set_target_properties(limereport PROPERTIES INTERFACE_INCLUDE_DIRECTORIES
                                             ${LIMEREPORT_INCLUDE_DIRS})
 if(CMAKE_SYSTEM_NAME_LOWER STREQUAL "windows")
   set_target_properties(
-    limereport
-    PROPERTIES IMPORTED_LOCATION ${LIMEREPORT_BINARY_DIR}
+    limereport PROPERTIES IMPORTED_LOCATION ${LIMEREPORT_BINARY_DIR}
                IMPORTED_IMPLIB ${LIMEREPORT_LIBRARY_DIR}/limereport.lib)
 else()
   set_target_properties(

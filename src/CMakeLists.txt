@@ -3,12 +3,20 @@ project(coma)
 add_compile_definitions(DEVICETYPE=1)
 set(SOFTDEVELOPER "AVM-Energo")
 
+# required modules for our task
+include(CheckIncludeFile)
+include(CheckIncludeFileCXX)
+include(CheckIncludeFiles)
+include(ExternalProject)
+
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+set(CMAKE_GENERATOR "Ninja")
+message("-- Generator is set to ${CMAKE_GENERATOR}")
 
 find_program(CONAN_FOUND "conan" NO_CACHE)
 if(CONAN_FOUND)
@@ -125,7 +133,7 @@ message(STATUS "Current user directory for conan: " ${USER_DIRECTORY})
 set(CONAN_MAIN_INIT ${CONAN_EXEC} install . --profile ${CONAN_PROFILE} -g cmake_find_package -s arch=${CONAN_TARGET_NAME} -s arch_build=${CONAN_TARGET_NAME} -if ${CMAKE_BINARY_DIR} --build=missing)
 
 if (NOT AVTUK-12)
-    if (NOT ( EXISTS "${CMAKE_BINARY_DIR}/conanbuildinfo.txt" AND ${CACHED_PROJECT_TARGET_NAME} STREQUAL ${PROJECT_TARGET_NAME}))
+        if (NOT ( EXISTS "${CMAKE_BINARY_DIR}/conanbuildinfo.txt"))
         execute_process(
             COMMAND ${CMAKE_COMMAND} -E env
                 CONAN_USER_HOME=${USER_DIRECTORY} ${CONAN_MAIN_INIT}
@@ -169,13 +177,6 @@ else()
   message(STATUS "not a debug mode")
   set(MODE_DIR Release)
 endif(CMAKE_BUILD_TYPE EQUAL "DEBUG")
-
-# required modules for our task
-include(CheckIncludeFile)
-include(CheckIncludeFileCXX)
-include(CheckIncludeFiles)
-include(ExternalProject)
-
 
 if(NOT EXISTS "${CMAKE_BINARY_DIR}/conan.cmake")
   message(STATUS "Downloading conan.cmake from https://github.com/conan-io/cmake-conan")
@@ -240,7 +241,7 @@ if (NOT AVTUK-12)
 
         include(limereport)
         include(qxlsx)
-        include(qcp)
+        include(qcustomplot)
 
     endif()
 endif()
@@ -258,7 +259,6 @@ if (BUILD_WITH_ALISE)
 endif()
 if (Qt${QT_VERSION_MAJOR}Widgets_FOUND AND NOT AVTUK-12)
     add_subdirectory(oscillograms)
-    add_subdirectory(qcustomplot)
     add_subdirectory(datablocks)
     add_subdirectory(module)
     add_subdirectory(startup)
