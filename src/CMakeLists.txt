@@ -15,8 +15,11 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
-set(CMAKE_GENERATOR "Ninja")
-message("-- Generator is set to ${CMAKE_GENERATOR}")
+
+if (NOT MSVC)
+  set(CMAKE_GENERATOR "Ninja")
+  message("-- Generator is set to ${CMAKE_GENERATOR}")
+endif()
 
 find_program(CONAN_FOUND "conan" NO_CACHE)
 if(CONAN_FOUND)
