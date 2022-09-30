@@ -3,9 +3,10 @@
 #define DEVICETYPE_MODULE 1 // модуль
 #define DEVICETYPE_DEVICE 2 // прибор
 
-#include "../gen/datatypes.h"
-#include "../gen/singleton.h"
 #include "modules.h"
+
+#include <gen/datatypes.h>
+#include <gen/singleton.h>
 
 class Board : public QObject, public Singleton<Board>
 {

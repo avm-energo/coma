@@ -1,9 +1,9 @@
 #pragma once
 
-#include "../gen/std_ext.h"
 #include "s2datatypes.h"
 
 #include <array>
+#include <gen/std_ext.h>
 #include <iostream>
 
 namespace DataTypes

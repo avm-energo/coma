@@ -1,9 +1,9 @@
 #include "bda.h"
 
-#include "../../gen/stdfunc.h"
 #include "../../widgets/wd_func.h"
 
 #include <QtMath>
+#include <gen/stdfunc.h>
 
 Bda82::Bda82(QObject *parent) : DataBlock(parent)
 {

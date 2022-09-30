@@ -1,11 +1,7 @@
 #include "abstractstartupdialog.h"
 
 #include "../dialogs/keypressdialog.h"
-#include "../gen/colors.h"
-#include "../gen/helper.h"
-#include "../gen/stdfunc.h"
 #include "../module/board.h"
-//#include "../s2/datamanager.h"
 #include "../widgets/etableview.h"
 #include "../widgets/wd_func.h"
 
@@ -24,6 +20,9 @@
 #include <QMessageBox>
 #include <QPushButton>
 #include <QSpinBox>
+#include <gen/colors.h>
+#include <gen/helper.h>
+#include <gen/stdfunc.h>
 namespace crypto
 {
 static constexpr char hash[] = "d93fdd6d1fb5afcca939fa650b62541d09dbcb766f41c39352dc75f348fb35dc";

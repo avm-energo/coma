@@ -1,13 +1,13 @@
 #include "tunekivr.h"
 
-#include "../../gen/colors.h"
-#include "../../gen/stdfunc.h"
 #include "../../widgets/epopup.h"
 #include "../../widgets/waitwidget.h"
 #include "../../widgets/wd_func.h"
 
 #include <QMessageBox>
 #include <QVBoxLayout>
+#include <gen/colors.h>
+#include <gen/stdfunc.h>
 
 TuneKIVR::TuneKIVR(ConfigV *config, int tuneStep, QWidget *parent) : AbstractTuneDialog(config, tuneStep, parent)
 {

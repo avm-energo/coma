@@ -1,6 +1,5 @@
 #include "settingsdialog.h"
 
-#include "../gen/settings.h"
 #include "../widgets/styleloader.h"
 #include "../widgets/wd_func.h"
 
@@ -11,6 +10,7 @@
 #include <QTimeZone>
 #include <QVBoxLayout>
 #include <QtDebug>
+#include <gen/settings.h>
 
 SettingsDialog::SettingsDialog(QWidget *parent) : QDialog(parent)
 {

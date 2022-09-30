@@ -1,7 +1,5 @@
 #include "iec104thread.h"
 
-#include "../gen/datamanager/datamanager.h"
-#include "../gen/pch.h"
 #include "../s2/s2.h"
 #include "iec104private.h"
 
@@ -9,6 +7,9 @@
 #include <QDateTime>
 #include <QThread>
 #include <QTimer>
+#include <gen/datamanager/datamanager.h>
+#include <gen/pch.h>
+
 QMutex IEC104Thread::s_ParseReadMutex;
 QMutex IEC104Thread::s_ParseWriteMutex;
 

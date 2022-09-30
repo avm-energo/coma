@@ -1,11 +1,11 @@
 #include "board.h"
 
-#include "../gen/error.h"
-#include "../gen/registers.h"
-#include "../gen/stdfunc.h"
 #include "modules.h"
 
 #include <QDebug>
+#include <gen/error.h>
+#include <gen/registers.h>
+#include <gen/stdfunc.h>
 
 bool isKnownModule(quint16 mtypeb, quint16 mtypem)
 {

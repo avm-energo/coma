@@ -1,7 +1,5 @@
 #include "tunekivtemp60.h"
 
-#include "../../gen/colors.h"
-#include "../../gen/stdfunc.h"
 #include "../../module/board.h"
 #include "../../s2/configv.h"
 #include "../../s2/s2.h"
@@ -15,6 +13,8 @@
 #include <QEventLoop>
 #include <QMessageBox>
 #include <QVBoxLayout>
+#include <gen/colors.h>
+#include <gen/stdfunc.h>
 
 TuneKIVTemp60::TuneKIVTemp60(ConfigV *config, int tuneStep, QWidget *parent)
     : AbstractTuneDialog(config, tuneStep, parent)

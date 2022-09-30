@@ -1,15 +1,13 @@
 #include "uwidget.h"
 
 #include "../dialogs/keypressdialog.h"
-#include "../gen/colors.h"
-#include "../gen/stdfunc.h"
 #include "wd_func.h"
-
-// #define UWIDGET_DEBUG
 
 #include <QCoreApplication>
 #include <QDebug>
 #include <QEventLoop>
+#include <gen/colors.h>
+#include <gen/stdfunc.h>
 
 UWidget::UWidget(QWidget *parent) : QWidget(parent)
 {

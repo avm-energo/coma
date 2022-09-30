@@ -1,7 +1,7 @@
 #include "report.h"
 
-#include "../gen/error.h"
-#include "../gen/stdfunc.h"
+#include <gen/error.h>
+#include <gen/stdfunc.h>
 
 //#include <LimeReport>
 //#include <limereport/LimeReport>

@@ -1,6 +1,7 @@
 #pragma once
+#include "../gen/pch.h"
+
 #include <QMap>
-#include <gen/pch.h>
 
 /**
  *  Перечисление для хранения списка приборов

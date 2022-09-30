@@ -1,10 +1,10 @@
 #pragma once
-#include "../gen/std_ext.h"
-#include "../gen/stdfunc.h"
 #include "../module/modules.h"
 #include "filemanager.h"
 #include "trendview/trendviewdialog.h"
 
+#include <gen/std_ext.h>
+#include <gen/stdfunc.h>
 #include <optional>
 
 class OscManager : public FileManager<S2DataTypes::OscHeader>

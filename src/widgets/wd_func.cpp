@@ -1,9 +1,5 @@
 #include "wd_func.h"
 
-#include "../gen/colors.h"
-#include "../gen/error.h"
-#include "../gen/files.h"
-#include "../gen/stdfunc.h"
 #include "../models/etablemodel.h"
 #include "../module/board.h"
 #include "../module/filehelper.h"
@@ -28,6 +24,10 @@
 #include <QTextEdit>
 #include <QtDebug>
 #include <QtMath>
+#include <gen/colors.h>
+#include <gen/error.h>
+#include <gen/files/files.h>
+#include <gen/stdfunc.h>
 
 #ifdef __GNUC__
 #include <cfloat>

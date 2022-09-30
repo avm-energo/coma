@@ -1,10 +1,10 @@
 #include "s2.h"
 
-#include "../gen/error.h"
 #include "../module/configstorage.h"
 
 #include <QDateTime>
 #include <QDebug>
+#include <gen/error.h>
 
 QMap<QString, quint16> S2::NameIdMap;
 

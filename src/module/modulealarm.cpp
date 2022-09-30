@@ -1,11 +1,11 @@
 #include "modulealarm.h"
 
-#include "../gen/datamanager/typesproxy.h"
 #include "../module/configstorage.h"
 #include "../widgets/wd_func.h"
 
 #include <QScrollArea>
 #include <QVBoxLayout>
+#include <gen/datamanager/typesproxy.h>
 
 ModuleAlarm::ModuleAlarm(const Modules::AlarmType &type, //
     const ModuleTypes::AlarmValue &alarms, QWidget *parent)

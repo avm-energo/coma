@@ -1,18 +1,18 @@
 #include "startupkivdialog.h"
 
 #include "../dialogs/keypressdialog.h"
-#include "../gen/colors.h"
-#include "../gen/datamanager/typesproxy.h"
-#include "../gen/error.h"
-#include "../gen/files.h"
-#include "../gen/stdfunc.h"
-#include "../gen/timefunc.h"
 #include "../module/board.h"
 #include "../widgets/wd_func.h"
 
 #include <QDebug>
 #include <QGridLayout>
 #include <QMessageBox>
+#include <gen/colors.h>
+#include <gen/datamanager/typesproxy.h>
+#include <gen/error.h>
+#include <gen/files/files.h>
+#include <gen/stdfunc.h>
+#include <gen/timefunc.h>
 
 StartupKIVDialog::StartupKIVDialog(QWidget *parent) : AbstractStartupDialog(parent)
 {

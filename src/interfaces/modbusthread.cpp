@@ -1,9 +1,5 @@
 #include "modbusthread.h"
 
-#include "../gen/datamanager/datamanager.h"
-#include "../gen/helper.h"
-#include "../gen/pch.h"
-#include "../gen/stdfunc.h"
 #include "baseinterface.h"
 
 #include <QCoreApplication>
@@ -13,6 +9,10 @@
 #include <QTimer>
 #include <QtEndian>
 #include <algorithm>
+#include <gen/datamanager/datamanager.h>
+#include <gen/helper.h>
+#include <gen/pch.h>
+#include <gen/stdfunc.h>
 
 #ifdef Q_OS_WINDOWS
 #include <Windows.h>

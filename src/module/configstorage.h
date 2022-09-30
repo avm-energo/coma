@@ -1,12 +1,12 @@
 #ifndef CONFIGSTORAGE_H
 #define CONFIGSTORAGE_H
 
-#include "../gen/singleton.h"
 #include "../s2/valuemap.h"
 #include "../widgets/delegate_common.h"
 #include "modulesettings.h"
 
 #include <QObject>
+#include <gen/singleton.h>
 
 class ConfigStorage : public QObject, public Singleton<ConfigStorage>
 {

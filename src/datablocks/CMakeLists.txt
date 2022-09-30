@@ -24,6 +24,7 @@ target_link_libraries(
   PRIVATE Qt${QT_VERSION_MAJOR}::Widgets
   PRIVATE Qt${QT_VERSION_MAJOR}::Xml
   PRIVATE Qt${QT_VERSION_MAJOR}::Network
-  PRIVATE QXlsx)
+  PRIVATE QXlsx
+  PRIVATE gen)
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE ${PROJECT_NAME}_LIBRARY)

@@ -1,8 +1,9 @@
 #pragma once
 
-#include "../gen/datatypes.h"
 #include "basealarm.h"
 #include "modulesettings.h"
+
+#include <gen/datatypes.h>
 
 /// \brief The class for alarm dialog, that displaying critical,
 /// warning and info alarms from XML configuration files.

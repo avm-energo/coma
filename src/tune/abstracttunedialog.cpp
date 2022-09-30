@@ -1,11 +1,6 @@
 #include "abstracttunedialog.h"
 
 #include "../dialogs/keypressdialog.h"
-#include "../gen/datatypes.h"
-#include "../gen/error.h"
-#include "../gen/files.h"
-#include "../gen/stdfunc.h"
-#include "../gen/timefunc.h"
 #include "../interfaces/protocom.h"
 #include "../module/board.h"
 #include "../module/modules.h"
@@ -17,13 +12,17 @@
 #include "limereport/lrreportengine.h"
 #include "tunesequencefile.h"
 
-//#include <LimeReport/lrreportengine.h>
 #include <QDebug>
 #include <QMessageBox>
 #include <QProgressBar>
 #include <QScrollArea>
 #include <QScrollBar>
 #include <QVBoxLayout>
+#include <gen/datatypes.h>
+#include <gen/error.h>
+#include <gen/files/files.h>
+#include <gen/stdfunc.h>
+#include <gen/timefunc.h>
 
 namespace crypto
 {

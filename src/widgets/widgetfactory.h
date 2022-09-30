@@ -1,5 +1,4 @@
 #pragma once
-#include "../gen/std_ext.h"
 #include "../module/configstorage.h"
 #include "../s2/s2datatypes.h"
 #include "../widgets/delegate_common.h"
@@ -8,6 +7,7 @@
 
 #include <QStandardItemModel>
 #include <bitset>
+#include <gen/std_ext.h>
 
 //#define DEBUG_FACTORY
 

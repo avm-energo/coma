@@ -1,6 +1,8 @@
 #pragma once
 
-#include "../gen/pch.h"
+#include <QDebug>
+#include <gen/pch.h>
+
 struct UsbHidSettings
 {
     explicit UsbHidSettings() = default;
@@ -18,9 +20,16 @@ struct UsbHidSettings
     {
         return ((lhs.product_id == rhs.product_id) && (lhs.vendor_id == rhs.vendor_id) && (lhs.serial == rhs.serial));
     }
+
     friend bool operator!=(const UsbHidSettings &lhs, const UsbHidSettings &rhs)
     {
         return !(lhs == rhs);
+    }
+
+    friend QDebug operator<<(QDebug debug, const UsbHidSettings &data)
+    {
+        // debug.nospace() << QString::number(st.addr, 16) << ":" << QString::number(st.value, 16);
+        return debug.maybeSpace();
     }
 
     unsigned short vendor_id;

@@ -1,10 +1,10 @@
 #ifndef MODULEDATAUPDATER_H
 #define MODULEDATAUPDATER_H
 
-#include "../gen/datatypes.h"
 #include "../interfaces/baseinterface.h"
 
 #include <QObject>
+#include <gen/datatypes.h>
 
 class ModuleDataUpdater : public QObject
 {

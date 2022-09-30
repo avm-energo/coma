@@ -1,12 +1,12 @@
 #pragma once
 
-#include "../gen/error.h"
-#include "../gen/logclass.h"
 #include "baseinterface.h"
 #include "protocomprivate.h"
 #include "settingstypes.h"
 
 #include <QWaitCondition>
+#include <gen/error.h>
+#include <gen/logclass.h>
 
 struct USBMessage
 {

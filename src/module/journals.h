@@ -1,8 +1,7 @@
 #ifndef JOURNALS_H
 #define JOURNALS_H
 
-//#include "../gen/datatypes.h"
-#include "../gen/timefunc.h"
+//#include <gen/datatypes.h>
 #include "../models/edynamictablemodel.h"
 #include "../module/modules.h"
 #include "../s2/filestruct.h"
@@ -11,6 +10,7 @@
 #include <QDebug>
 #include <QSortFilterProxyModel>
 #include <QTimeZone>
+#include <gen/timefunc.h>
 
 class Journals : public QObject
 {

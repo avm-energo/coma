@@ -23,7 +23,7 @@ target_link_libraries(
   PRIVATE qcustomplot
   PRIVATE Qt${QT_VERSION_MAJOR}::Core
   PRIVATE Qt${QT_VERSION_MAJOR}::Widgets
-  PUBLIC QXlsx)
+  PUBLIC gen QXlsx)
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE ${PROJECT_NAME}_LIBRARY)
 

@@ -1,14 +1,15 @@
 #ifndef IEC104THREAD_H
 #define IEC104THREAD_H
 
-#include "../gen/datatypes.h"
-#include "../gen/error.h"
-#include "../gen/logclass.h"
 #include "../s2/s2datatypes.h"
 
 #include <QQueue>
 #include <QTimer>
 #include <QVariant>
+#include <gen/datatypes.h>
+#include <gen/error.h>
+#include <gen/logclass.h>
+
 class IEC104Thread : public QObject
 {
     Q_OBJECT

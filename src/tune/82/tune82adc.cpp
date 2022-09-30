@@ -1,7 +1,5 @@
 #include "tune82adc.h"
 
-#include "../../gen/colors.h"
-#include "../../gen/stdfunc.h"
 #include "../../s2/configv.h"
 #include "../../s2/s2.h"
 #include "../../widgets/epopup.h"
@@ -11,6 +9,8 @@
 
 #include <QMessageBox>
 #include <QVBoxLayout>
+#include <gen/colors.h>
+#include <gen/stdfunc.h>
 
 Tune82ADC::Tune82ADC(ConfigV *config, Modules::MezzanineBoard type, int tuneStep, QWidget *parent)
     : AbstractTuneDialog(config, tuneStep, parent)

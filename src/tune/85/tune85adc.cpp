@@ -1,7 +1,5 @@
 #include "tune85adc.h"
 
-#include "../../gen/colors.h"
-#include "../../gen/stdfunc.h"
 #include "../../widgets/epopup.h"
 #include "../../widgets/waitwidget.h"
 #include "../../widgets/wd_func.h"
@@ -11,6 +9,8 @@
 
 #include <QMessageBox>
 #include <QVBoxLayout>
+#include <gen/colors.h>
+#include <gen/stdfunc.h>
 
 Tune85ADC::Tune85ADC(ConfigV *config, int tuneStep, QWidget *parent) : AbstractTuneDialog(config, tuneStep, parent)
 {

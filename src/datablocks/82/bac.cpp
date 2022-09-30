@@ -1,11 +1,11 @@
 #include "bac.h"
 
-#include "../../gen/colors.h"
-#include "../../gen/stdfunc.h"
 #include "../../widgets/wd_func.h"
 
 #include <QGroupBox>
 #include <QVBoxLayout>
+#include <gen/colors.h>
+#include <gen/stdfunc.h>
 
 Bac82::Bac82(QObject *parent) : DataBlock(parent)
 {

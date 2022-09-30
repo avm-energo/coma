@@ -1,6 +1,6 @@
 #include "trendviewmodel80.h"
 
-#include "../gen/colors.h"
+#include <gen/colors.h>
 
 TrendViewModel80::TrendViewModel80(int pointsnum) : TrendViewModel(pointsnum)
 {

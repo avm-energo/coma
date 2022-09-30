@@ -1,10 +1,10 @@
 #pragma once
 
-#include "../gen/datatypes.h"
 #include "../s2/datarecv.h"
 #include "modules.h"
 
 #include <QHash>
+#include <gen/datatypes.h>
 
 namespace ModuleTypes
 {

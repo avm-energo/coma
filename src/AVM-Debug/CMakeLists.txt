@@ -53,7 +53,7 @@ target_link_libraries(
   QXlsx
   qcustomplot)
 
-add_dependencies(${PROJECT_NAME} qcustomplot)
+add_dependencies(${PROJECT_NAME} gen qcustomplot)
 
 if (ENABLE_EMULATOR)
     target_compile_definitions(${PROJECT_NAME} PRIVATE ENABLE_EMULATOR)

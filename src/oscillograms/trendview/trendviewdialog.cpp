@@ -27,11 +27,6 @@
 
 #include "trendviewdialog.h"
 
-#include "../../gen/comaexception.h"
-#include "../../gen/error.h"
-#include "../../gen/files.h"
-#include "../../gen/pch.h"
-#include "../../gen/stdfunc.h"
 #include "../../module/modules.h"
 #include "../../widgets/epopup.h"
 #include "../../widgets/signalchoosewidget.h"
@@ -41,6 +36,11 @@
 #include <QPen>
 #include <QToolBar>
 #include <algorithm>
+#include <gen/comaexception.h>
+#include <gen/error.h>
+#include <gen/files/files.h>
+#include <gen/pch.h>
+#include <gen/stdfunc.h>
 
 constexpr int VOLTAGE_AXIS_INDEX = 0;
 constexpr int CURRENT_AXIS_INDEX = 1;

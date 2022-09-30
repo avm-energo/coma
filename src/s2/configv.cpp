@@ -1,8 +1,7 @@
 #include "configv.h"
 
-#include "../gen/error.h"
-
 #include <QDebug>
+#include <gen/error.h>
 
 DataTypes::DataRecV ConfigV::getRecord(quint16 id)
 {

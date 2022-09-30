@@ -23,6 +23,6 @@ target_link_libraries(
   Qt${QT_VERSION_MAJOR}::Xml
   Qt${QT_VERSION_MAJOR}::PrintSupport
   Qt${QT_VERSION_MAJOR}::Qml
-  PUBLIC limereport QXlsx)
+  PUBLIC gen limereport QXlsx)
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE ${PROJECT_NAME}_LIBRARY)

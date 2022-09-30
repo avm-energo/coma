@@ -1,8 +1,7 @@
 #ifndef MODBUS_H
 #define MODBUS_H
 
-// #include "../gen/datamanager/datamanager.h"
-#include "../gen/logclass.h"
+// #include <gen/datamanager/datamanager.h"
 #include "baseinterface.h"
 #include "modbusprivate.h"
 #include "settingstypes.h"
@@ -10,6 +9,7 @@
 #include <QMutex>
 #include <QTimer>
 #include <array>
+#include <gen/logclass.h>
 
 namespace CommandsMBS
 {

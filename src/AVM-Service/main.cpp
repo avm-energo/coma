@@ -1,4 +1,4 @@
-#include "../gen/logger.h"
+#include <gen/logger.h"
 #include "../widgets/coma.h"
 
 #include <QApplication>

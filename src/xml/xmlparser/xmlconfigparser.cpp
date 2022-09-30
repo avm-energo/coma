@@ -1,8 +1,7 @@
 #include "xmlconfigparser.h"
 
-#include "../../gen/stdfunc.h"
-
 #include <QtXml>
+#include <gen/stdfunc.h>
 
 void XmlConfigParser::ParseS2ConfigToMap(QMap<QString, quint16> &map)
 {

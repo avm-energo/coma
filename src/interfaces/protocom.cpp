@@ -1,7 +1,5 @@
 #include "protocom.h"
 
-#include "../gen/files.h"
-#include "../gen/stdfunc.h"
 #include "protocom_p.h"
 #include "protocomthread.h"
 #include "settingstypes.h"
@@ -10,6 +8,8 @@
 #include <QCoreApplication>
 #include <QDebug>
 #include <QThread>
+#include <gen/files/files.h>
+#include <gen/stdfunc.h>
 
 #ifdef Q_OS_WINDOWS
 // clang-format off

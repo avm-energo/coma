@@ -1,8 +1,6 @@
 #include "tune82check.h"
 
 #include "../../datablocks/82/bda.h"
-#include "../../gen/files.h"
-#include "../../gen/stdfunc.h"
 #include "../../interfaces/protocom.h"
 #include "../../s2/configv.h"
 #include "../../widgets/epopup.h"
@@ -15,6 +13,8 @@
 #include <QMessageBox>
 #include <QPushButton>
 #include <QVBoxLayout>
+#include <gen/files/files.h>
+#include <gen/stdfunc.h>
 
 Tune82Check::Tune82Check(ConfigV *config, int tuneStep, Modules::MezzanineBoard type, QWidget *parent)
     : AbstractTuneDialog(config, tuneStep, parent)

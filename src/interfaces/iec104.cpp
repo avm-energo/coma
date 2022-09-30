@@ -1,8 +1,5 @@
 #include "iec104.h"
 
-#include "../gen/error.h"
-#include "../gen/files.h"
-#include "../gen/timefunc.h"
 #include "ethernet.h"
 #include "iec104thread.h"
 #include "settingstypes.h"
@@ -10,6 +7,9 @@
 #include <QCoreApplication>
 #include <QDateTime>
 #include <QThread>
+#include <gen/error.h>
+#include <gen/files/files.h>
+#include <gen/timefunc.h>
 
 IEC104::IEC104(QObject *parent)
     : BaseInterface(parent), EthThreadWorking(false), ParseThreadWorking(false), sock(new QTcpSocket(this))

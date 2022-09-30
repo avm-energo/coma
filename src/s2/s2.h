@@ -1,10 +1,12 @@
 #ifndef S2_H
 #define S2_H
-#include "../gen/datatypes.h"
+
 #include "datarecv.h"
 #include "s2datatypes.h"
 
 #include <QVector>
+#include <gen/datatypes.h>
+
 constexpr int MAXSIZE = 200000;
 
 class BaseInterface;

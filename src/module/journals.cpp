@@ -1,8 +1,5 @@
 #include "journals.h"
 
-#include "../gen/error.h"
-#include "../gen/files.h"
-#include "../gen/timefunc.h"
 #include "../widgets/wd_func.h"
 #include "board.h"
 
@@ -14,6 +11,9 @@
 #include <QVariant>
 #include <QXlsx/xlsxdocument.h>
 #include <cmath>
+#include <gen/error.h>
+#include <gen/files/files.h>
+#include <gen/timefunc.h>
 
 Journals::Journals(const ModuleTypes::JourMap &jourMap, QObject *parent)
     : QObject(parent), m_timezone(TimeFunc::userTimeZone()), m_jourMap(jourMap)

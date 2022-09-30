@@ -1,10 +1,10 @@
 #include "udialog.h"
 
-#include "../gen/datamanager/typesproxy.h"
 #include "../module/board.h"
 #include "epopup.h"
 
 #include <QSettings>
+#include <gen/datamanager/typesproxy.h>
 
 UDialog::UDialog(QWidget *parent) : UWidget(parent), proxyGRS(new DataTypesProxy())
 {

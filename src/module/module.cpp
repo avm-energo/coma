@@ -1,12 +1,12 @@
 #include "module.h"
 
-#include "../gen/error.h"
-#include "../gen/stdfunc.h"
 #include "../xml/xmlparser/xmlmoduleparser.h"
 #include "../xml/xmlparser/xmls2parser.h"
 
 #include <QDir>
 #include <QFile>
+#include <gen/error.h>
+#include <gen/stdfunc.h>
 
 Module::Module(const Modules::StartupInfoBlock &startupInfoBlock, QObject *parent)
     : QObject(parent), sInfoBlock(startupInfoBlock), mStorage(&ConfigStorage::GetInstance())

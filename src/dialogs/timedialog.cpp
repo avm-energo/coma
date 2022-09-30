@@ -1,10 +1,5 @@
 #include "../dialogs/timedialog.h"
 
-#include "../gen/colors.h"
-#include "../gen/datamanager/datamanager.h"
-#include "../gen/datamanager/typesproxy.h"
-#include "../gen/error.h"
-#include "../gen/timefunc.h"
 #include "../module/board.h"
 #include "../widgets/wd_func.h"
 
@@ -15,6 +10,11 @@
 #include <QTimeZone>
 #include <QTimer>
 #include <QVBoxLayout>
+#include <gen/colors.h>
+#include <gen/datamanager/datamanager.h>
+#include <gen/datamanager/typesproxy.h>
+#include <gen/error.h>
+#include <gen/timefunc.h>
 
 constexpr char directOrder[] = "dd-MM-yyyy HH:mm:ss";
 constexpr char reverseOrder[] = "yyyy-MM-ddTHH:mm:ss";

@@ -1,13 +1,14 @@
 #include "tune82dialog.h"
 
-#include "../../gen/colors.h"
-#include "../../gen/error.h"
-#include "../../gen/files.h"
-#include "../../gen/stdfunc.h"
 #include "../../widgets/wd_func.h"
 #include "../tunesteps.h"
 #include "tune82adc.h"
 #include "tune82check.h"
+
+#include <gen/colors.h>
+#include <gen/error.h>
+#include <gen/files/files.h>
+#include <gen/stdfunc.h>
 
 Tune82Dialog::Tune82Dialog(ConfigV *config, Modules::MezzanineBoard typeM, QWidget *parent)
     : GeneralTuneDialog(config, parent)

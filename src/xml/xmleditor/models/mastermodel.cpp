@@ -1,6 +1,6 @@
 #include "mastermodel.h"
 
-#include "../../../gen/stdfunc.h"
+#include <gen/stdfunc.h>
 
 MasterModel::MasterModel(QObject *parent) : IEditorModel(1, 1, ModelType::Master, parent)
 {

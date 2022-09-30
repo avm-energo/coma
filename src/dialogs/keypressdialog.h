@@ -8,11 +8,10 @@
 #ifndef KEYPRESSDIALOG_H
 #define KEYPRESSDIALOG_H
 
-#include "../gen/error.h"
-
 #include <QCloseEvent>
 #include <QDialog>
 #include <QKeyEvent>
+#include <gen/error.h>
 
 class KeyPressDialog : public QDialog
 {

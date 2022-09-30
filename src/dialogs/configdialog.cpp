@@ -1,11 +1,6 @@
 #include "configdialog.h"
 
 #include "../dialogs/keypressdialog.h"
-#include "../gen/datamanager/typesproxy.h"
-#include "../gen/error.h"
-#include "../gen/files.h"
-#include "../gen/stdfunc.h"
-#include "../gen/timefunc.h"
 #include "../module/board.h"
 #include "../module/configstorage.h"
 #include "../s2/configv.h"
@@ -19,6 +14,11 @@
 #include <QMessageBox>
 #include <QScrollArea>
 #include <QTextEdit>
+#include <gen/datamanager/typesproxy.h>
+#include <gen/error.h>
+#include <gen/files/files.h>
+#include <gen/stdfunc.h>
+#include <gen/timefunc.h>
 #include <set>
 
 namespace crypto

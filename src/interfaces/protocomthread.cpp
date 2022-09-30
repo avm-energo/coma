@@ -1,19 +1,18 @@
 #include "protocomthread.h"
 
-#include "../gen/datamanager/datamanager.h"
-#include "../gen/files.h"
-#include "../gen/helper.h"
-#include "../gen/logclass.h"
-#include "../gen/registers.h"
-#include "../gen/stdfunc.h"
 #include "../s2/s2.h"
 #include "baseinterface.h"
 
 #include <QDebug>
 #include <QStorageInfo>
-#include <QtEndian>
-//#include <QMetaEnum>
 #include <QThread>
+#include <QtEndian>
+#include <gen/datamanager/datamanager.h>
+#include <gen/files/files.h>
+#include <gen/helper.h>
+#include <gen/logclass.h>
+#include <gen/registers.h>
+#include <gen/stdfunc.h>
 
 #ifdef Q_OS_LINUX
 #include <time.h>

@@ -1,7 +1,5 @@
 #include "tune84temp60.h"
 
-#include "../../gen/colors.h"
-#include "../../gen/stdfunc.h"
 #include "../../module/board.h"
 #include "../../s2/configv.h"
 #include "../../widgets/epopup.h"
@@ -14,6 +12,8 @@
 #include <QEventLoop>
 #include <QMessageBox>
 #include <QVBoxLayout>
+#include <gen/colors.h>
+#include <gen/stdfunc.h>
 
 Tune84Temp60::Tune84Temp60(ConfigV *config, int tuneStep, QWidget *parent)
     : AbstractTuneDialog(config, tuneStep, parent)

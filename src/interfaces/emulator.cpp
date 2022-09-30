@@ -1,7 +1,9 @@
 #include "emulator.h"
 
-#include "../gen/datamanager/datamanager.h"
 #include "protocomprivate.h"
+
+#include <gen/datamanager/datamanager.h>
+
 Emulator::Emulator(QObject *parent) : BaseInterface(parent)
 {
 }

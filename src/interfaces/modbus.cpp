@@ -1,9 +1,5 @@
 #include "modbus.h"
 
-#include "../gen/error.h"
-#include "../gen/registers.h"
-#include "../gen/stdfunc.h"
-#include "../gen/timefunc.h"
 #include "../s2/s2.h"
 #include "interfacesettings.h"
 #include "modbusthread.h"
@@ -15,6 +11,10 @@
 #include <QThread>
 #include <QWaitCondition>
 #include <algorithm>
+#include <gen/error.h>
+#include <gen/registers.h>
+#include <gen/stdfunc.h>
+#include <gen/timefunc.h>
 
 using namespace CommandsMBS;
 

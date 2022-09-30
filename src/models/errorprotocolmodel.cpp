@@ -1,10 +1,5 @@
 #include "errorprotocolmodel.h"
 
-#include "../gen/error.h"
-#include "../gen/errorqueue.h"
-#include "../gen/helper.h"
-#include "../gen/logger.h"
-
 #include <QBrush>
 #include <QColor>
 #include <QDateTime>
@@ -12,6 +7,11 @@
 #include <QIcon>
 #include <QString>
 #include <QStringList>
+#include <gen/error.h>
+#include <gen/errorqueue.h>
+#include <gen/helper.h>
+#include <gen/logger.h>
+
 ErrorProtocolModel::ErrorProtocolModel(QObject *parent) : QAbstractTableModel(parent)
 {
 }

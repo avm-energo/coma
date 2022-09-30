@@ -1,8 +1,8 @@
-#include "../gen/logger.h"
 #include "../widgets/coma.h"
 
 #include <QApplication>
 #include <config.h>
+#include <gen/logger.h>
 
 int main(int argc, char *argv[])
 {

@@ -1,9 +1,9 @@
 #pragma once
 
-#include "../gen/stdfunc.h"
 #include "checkboxgroup.h"
 
 #include <boost/dynamic_bitset.hpp>
+#include <gen/stdfunc.h>
 
 class CheckBoxGroupPrivate
 {

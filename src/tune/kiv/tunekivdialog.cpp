@@ -1,11 +1,12 @@
 #include "tunekivdialog.h"
 
-#include "../../gen/colors.h"
-#include "../../gen/error.h"
-#include "../../gen/files.h"
-#include "../../gen/stdfunc.h"
 #include "../../widgets/wd_func.h"
 #include "../tunesteps.h"
+
+#include <gen/colors.h>
+#include <gen/error.h>
+#include <gen/files/files.h>
+#include <gen/stdfunc.h>
 
 TuneKIVDialog::TuneKIVDialog(ConfigV *config, QWidget *parent) : GeneralTuneDialog(config, parent)
 {

@@ -1,15 +1,15 @@
 #ifndef BASEINTERFACE_H
 #define BASEINTERFACE_H
 
-#include "../gen/datamanager/typesproxy.h"
-#include "../gen/datatypes.h"
-#include "../gen/error.h"
-#include "../gen/logclass.h"
-#include "../gen/stdfunc.h"
 #include "../module/modulesettings.h"
 #include "../s2/datarecv.h"
 
 #include <QTimer>
+#include <gen/datamanager/typesproxy.h>
+#include <gen/datatypes.h>
+#include <gen/error.h>
+#include <gen/logclass.h>
+#include <gen/stdfunc.h>
 #include <memory>
 #include <typeinfo>
 

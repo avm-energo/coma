@@ -28,11 +28,6 @@
 #include "../dialogs/keypressdialog.h"
 #include "../dialogs/settingsdialog.h"
 #include "../dialogs/switchjournaldialog.h"
-#include "../gen/errorqueue.h"
-#include "../gen/files.h"
-#include "../gen/logger.h"
-#include "../gen/stdfunc.h"
-#include "../gen/timefunc.h"
 #include "../interfaces/iec104.h"
 #include "../interfaces/modbus.h"
 #include "../interfaces/protocom.h"
@@ -58,6 +53,11 @@
 #include <QToolBar>
 #include <QtGlobal>
 #include <functional>
+#include <gen/errorqueue.h>
+#include <gen/files/files.h>
+#include <gen/logger.h>
+#include <gen/stdfunc.h>
+#include <gen/timefunc.h>
 #include <memory>
 
 constexpr auto resourceDirectory = ":/module";
@@ -775,8 +775,8 @@ void ComaHelper::initAppSettings(const QString &appName, const QString &orgName,
     Q_INIT_RESOURCE(lightstyle);
     Q_INIT_RESOURCE(styles);
     Q_INIT_RESOURCE(vectorIcons);
-    Logging::writeStart();
-    qInstallMessageHandler(Logging::messageHandler);
+    Logger::writeStart();
+    qInstallMessageHandler(Logger::messageHandler);
 }
 
 void ComaHelper::parserHelper(Coma *coma)

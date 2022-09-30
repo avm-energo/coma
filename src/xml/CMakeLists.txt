@@ -23,6 +23,7 @@ target_link_libraries(
   PRIVATE Qt${QT_VERSION_MAJOR}::Core
   PRIVATE Qt${QT_VERSION_MAJOR}::Network
   PRIVATE Qt${QT_VERSION_MAJOR}::Widgets
-  PRIVATE Qt${QT_VERSION_MAJOR}::Xml)
+  PRIVATE Qt${QT_VERSION_MAJOR}::Xml
+  PUBLIC gen)
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE ${PROJECT_NAME}_LIBRARY)

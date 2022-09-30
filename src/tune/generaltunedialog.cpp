@@ -1,7 +1,5 @@
 #include "generaltunedialog.h"
 
-#include "../gen/files.h"
-#include "../gen/stdfunc.h"
 #include "../module/board.h"
 #include "../widgets/epopup.h"
 #include "../widgets/wd_func.h"
@@ -14,6 +12,8 @@
 #include <QPushButton>
 #include <QSettings>
 #include <QSvgRenderer>
+#include <gen/files/files.h>
+#include <gen/stdfunc.h>
 
 GeneralTuneDialog::GeneralTuneDialog(ConfigV *config, QWidget *parent) : UDialog(parent), configV(config)
 {

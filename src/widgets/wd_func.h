@@ -1,8 +1,6 @@
 #ifndef WD_FUNC
 #define WD_FUNC
 
-#include "../gen/pch.h"
-#include "../gen/std_ext.h"
 #include "basespinboxgroup.h"
 #include "checkboxgroup.h"
 #include "ecombobox.h"
@@ -15,6 +13,8 @@
 #include <QLineEdit>
 #include <QPushButton>
 #include <QRadioButton>
+#include <gen/pch.h>
+#include <gen/std_ext.h>
 
 class PasswordLineEdit;
 class QMainWindow;

@@ -1,11 +1,11 @@
 #include "tunekiv.h"
 
-#include "../../gen/colors.h"
-#include "../../gen/stdfunc.h"
 #include "../../widgets/wd_func.h"
 
 #include <QGroupBox>
 #include <QVBoxLayout>
+#include <gen/colors.h>
+#include <gen/stdfunc.h>
 
 TuneKIV::TuneKIV()
 {

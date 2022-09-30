@@ -2,7 +2,6 @@
 #define COMA_H
 
 #include "../dialogs/dialogmanager.h"
-#include "../gen/datamanager/typesproxy.h"
 #include "../interfaces/settingstypes.h"
 #include "../module/module.h"
 #include "../oscillograms/oscmanager.h"
@@ -12,6 +11,7 @@
 #include <QListWidget>
 #include <QMainWindow>
 #include <QStackedWidget>
+#include <gen/datamanager/typesproxy.h>
 
 class AlarmWidget;
 

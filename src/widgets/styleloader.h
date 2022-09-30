@@ -1,10 +1,10 @@
 #pragma once
 
-#include "../gen/singleton.h"
-
 #include <QKeySequence>
 #include <QMap>
 #include <QObject>
+#include <gen/singleton.h>
+
 constexpr char defaultStyleFile[] = ":/qdarkstyle/light/style.qss";
 constexpr char defaultStyleKey[] = "F5";
 

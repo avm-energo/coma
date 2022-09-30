@@ -1,11 +1,12 @@
 #include "tune84dialog.h"
 
-#include "../../gen/colors.h"
-#include "../../gen/error.h"
-#include "../../gen/files.h"
-#include "../../gen/stdfunc.h"
 #include "../../widgets/wd_func.h"
 #include "../tunesteps.h"
+
+#include <gen/colors.h>
+#include <gen/error.h>
+#include <gen/files/files.h>
+#include <gen/stdfunc.h>
 
 Tune84Dialog::Tune84Dialog(ConfigV *config, QWidget *parent) : GeneralTuneDialog(config, parent)
 {

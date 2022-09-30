@@ -23,10 +23,14 @@ add_library(
 
 target_link_libraries(
   ${PROJECT_NAME}
-  PRIVATE gen
+  PUBLIC gen
   PRIVATE Qt${QT_VERSION_MAJOR}::Core
   PRIVATE Qt${QT_VERSION_MAJOR}::Xml
   PRIVATE Qt${QT_VERSION_MAJOR}::Network
   PRIVATE Qt${QT_VERSION_MAJOR}::Xml)
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE ${PROJECT_NAME}_LIBRARY)
+
+add_dependencies(
+    ${PROJECT_NAME} gen
+    )

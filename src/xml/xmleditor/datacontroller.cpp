@@ -1,11 +1,11 @@
 #include "datacontroller.h"
 
-#include "../../gen/stdfunc.h"
 #include "../../widgets/epopup.h"
 
 #include <QDir>
 #include <QFile>
 #include <QTextStream>
+#include <gen/stdfunc.h>
 
 DataController::DataController(QObject *parent) : QObject(parent), isModuleChanged(false), changedRow(-1)
 {

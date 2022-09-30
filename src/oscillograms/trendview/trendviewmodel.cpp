@@ -1,10 +1,10 @@
 #include "trendviewmodel.h"
 
-#include "../gen/comaexception.h"
 #include "../widgets/epopup.h"
 
 #include <QDebug>
 #include <QXlsx/xlsxdocument.h>
+#include <gen/comaexception.h>
 
 TrendViewModel::TrendViewModel(int pointsnum, QObject *parent) : pointsNum(pointsnum), QObject(parent)
 {

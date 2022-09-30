@@ -1,8 +1,8 @@
 #ifndef DATABLOCK_H
 #define DATABLOCK_H
 
-#include "../gen/datatypes.h"
-#include "../gen/error.h"
+#include <gen/datatypes.h>
+#include <gen/error.h>
 #include "../interfaces/baseinterface.h"
 #include "../module/board.h"
 

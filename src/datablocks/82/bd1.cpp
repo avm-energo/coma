@@ -1,9 +1,9 @@
 #include "bd1.h"
 
-#include "../../gen/stdfunc.h"
 #include "../../widgets/wd_func.h"
 
 #include <QtMath>
+#include <gen/stdfunc.h>
 
 Bd182::Bd182(Modules::MezzanineBoard typem, QObject *parent) : DataBlock(parent)
 {

@@ -1,9 +1,5 @@
 #include "checkdialog.h"
 
-#include "../gen/colors.h"
-#include "../gen/datamanager/typesproxy.h"
-#include "../gen/error.h"
-#include "../gen/stdfunc.h"
 #include "../module/board.h"
 #include "../module/configstorage.h"
 #include "../s2/s2helper.h"
@@ -21,6 +17,10 @@
 #include <QTime>
 #include <QVBoxLayout>
 #include <QXlsx/xlsxdocument.h>
+#include <gen/colors.h>
+#include <gen/datamanager/typesproxy.h>
+#include <gen/error.h>
+#include <gen/stdfunc.h>
 #include <set>
 
 CheckDialog::CheckDialog(const ModuleTypes::Section &section, QWidget *parent)

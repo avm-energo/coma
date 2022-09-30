@@ -1,7 +1,8 @@
 #include "journktf.h"
 
-#include "../gen/timefunc.h"
 #include "modules.h"
+
+#include <gen/timefunc.h>
 
 JournKTF::JournKTF(const ModuleTypes::JourMap &jourMap, QObject *parent) : Journals(jourMap, parent)
 {

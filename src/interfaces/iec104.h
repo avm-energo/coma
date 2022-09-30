@@ -1,7 +1,6 @@
 #ifndef IEC104_H
 #define IEC104_H
-//#include "../gen/datamanager/datamanager.h"
-#include "../gen/logclass.h"
+//#include <gen/datamanager/datamanager.h>
 #include "baseinterface.h"
 #include "iec104private.h"
 
@@ -9,6 +8,7 @@
 #include <QQueue>
 #include <QTcpSocket>
 #include <QTimer>
+#include <gen/logclass.h>
 
 namespace Commands104
 {

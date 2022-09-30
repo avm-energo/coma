@@ -2,9 +2,9 @@
 #define VALUEMAP_H
 
 #include "../ctti/type_id.hpp"
-#include "../gen/std_ext.h"
 #include "s2helper.h"
 
+#include <gen/std_ext.h>
 #include <map>
 
 namespace DataTypes

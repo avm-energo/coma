@@ -1,9 +1,10 @@
 #ifndef MODBUSTHREAD_H
 #define MODBUSTHREAD_H
 
-#include "../gen/datatypes.h"
-#include "../gen/logclass.h"
 #include "modbusprivate.h"
+
+#include <gen/datatypes.h>
+#include <gen/logclass.h>
 
 #define RECONNECTTIME 1000
 

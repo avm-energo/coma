@@ -1,7 +1,5 @@
 #include "tunekivadc.h"
 
-#include "../../gen/colors.h"
-#include "../../gen/stdfunc.h"
 #include "../../s2/configv.h"
 #include "../../widgets/epopup.h"
 #include "../../widgets/waitwidget.h"
@@ -11,6 +9,8 @@
 
 #include <QMessageBox>
 #include <QVBoxLayout>
+#include <gen/colors.h>
+#include <gen/stdfunc.h>
 
 TuneKIVADC::TuneKIVADC(ConfigV *config, int tuneStep, QWidget *parent) : AbstractTuneDialog(config, tuneStep, parent)
 {
