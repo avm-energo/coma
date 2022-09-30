@@ -43,3 +43,13 @@ QVariant ErrorProtocolItem::data(int column, int role) const
     }
     return QVariant();
 }
+
+QDebug operator<<(QDebug debug, const ErrorProtocolItem &item)
+{
+#ifdef QT_GUI_LIB
+    const auto &values = item.constData();
+    for (const auto &i : *values)
+        debug.nospace() << i.role << ":";
+#endif
+    return debug.maybeSpace();
+}

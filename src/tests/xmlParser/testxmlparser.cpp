@@ -1,7 +1,8 @@
-#include "../../gen/stdfunc.h"
 #include "../../module/module.h"
 #include "testdata.h"
 #include "testmodule.h"
+
+#include <gen/stdfunc.h>
 
 void printModuleSettings(const ModuleSettings &mSettings)
 {

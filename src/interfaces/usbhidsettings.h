@@ -27,7 +27,6 @@ struct UsbHidSettings
         return !(lhs == rhs);
     }
 
-
     friend QDebug operator<<(QDebug debug, const UsbHidSettings &settings);
 
     unsigned short vendor_id;
@@ -41,13 +40,3 @@ struct UsbHidSettings
     bool hasPartialMatch(const QString &str);
 };
 Q_DECLARE_METATYPE(UsbHidSettings)
-
-QDebug operator<<(QDebug debug, const UsbHidSettings &settings)
-{
-    debug.nospace() << QString::number(settings.vendor_id, 16) << ":" << QString::number(settings.product_id, 16) << ":"
-                    << settings.serial;
-#ifdef QT_DEBUG
-    debug.nospace() << ":" << settings.path;
-#endif
-    return debug.maybeSpace();
-}

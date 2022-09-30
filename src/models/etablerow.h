@@ -13,29 +13,19 @@
 class ETableItemData
 {
 public:
-    inline ETableItemData() : role(-1)
-    {
-    }
-    inline ETableItemData(int r, const QVariant &v) : role(r), value(v)
-    {
-    }
-    inline ETableItemData(const std::pair<const int &, const QVariant &> &p) : role(p.first), value(p.second)
-    {
-    }
-    ~ETableItemData()
-    {
-    }
-    int role;
-    QVariant value;
-    inline bool operator==(const ETableItemData &other) const
-    {
-        return role == other.role && value == other.value;
-    }
+    explicit ETableItemData();
+    explicit ETableItemData(int r, const QVariant &v);
+    explicit ETableItemData(const std::pair<const int &, const QVariant &> &p);
     ETableItemData(const ETableItemData &) = default;
     ETableItemData(ETableItemData &&) = default;
     ETableItemData &operator=(const ETableItemData &) = default;
     ETableItemData &operator=(ETableItemData &&) = default;
+    ~ETableItemData() = default;
+    bool operator==(const ETableItemData &other) const;
     friend QDebug operator<<(QDebug debug, const ETableItemData &item);
+
+    int role;
+    QVariant value;
 };
 
 using ETableItem = std::vector<ETableItemData>;
@@ -48,11 +38,3 @@ public:
     void setData(int column, const QVariant &value, int role) override;
     QVariant data(int column, int role) const override;
 };
-
-QDebug operator<<(QDebug debug, const ETableItemData &item)
-{
-#ifdef QT_GUI_LIB
-    debug.nospace() << item.value << ":" << item.role;
-#endif
-    return debug.maybeSpace();
-}

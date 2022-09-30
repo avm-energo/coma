@@ -1,9 +1,8 @@
 #include "console.h"
 
-#include "../../gen/datamanager/datamanager.h"
-
 #include <QDebug>
 #include <QMetaMethod>
+#include <gen/datamanager/datamanager.h>
 
 template <typename T> void print(const T &data)
 {

@@ -1,11 +1,11 @@
 #ifndef TESTPROTOCOM_H
 #define TESTPROTOCOM_H
 
-#include "../../gen/stdfunc.h"
 #include "../../module/module.h"
 
 #include <QObject>
 #include <QtTest>
+#include <gen/stdfunc.h>
 
 class TestModule : public QObject
 {
