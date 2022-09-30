@@ -1,6 +1,9 @@
 #pragma once
 
 #include "../gen/pch.h"
+
+#include <QDebug>
+
 struct UsbHidSettings
 {
     explicit UsbHidSettings() = default;
@@ -13,15 +16,19 @@ struct UsbHidSettings
 #endif
     {
     }
+
     // Не сравниваем path т.к. если переподключить устройство то path может сменится но остальные параметры - нет
     friend bool operator==(const UsbHidSettings &lhs, const UsbHidSettings &rhs)
     {
         return ((lhs.product_id == rhs.product_id) && (lhs.vendor_id == rhs.vendor_id) && (lhs.serial == rhs.serial));
     }
+
     friend bool operator!=(const UsbHidSettings &lhs, const UsbHidSettings &rhs)
     {
         return !(lhs == rhs);
     }
+
+    friend QDebug operator<<(QDebug debug, const UsbHidSettings &settings);
 
     unsigned short vendor_id;
     unsigned short product_id;
@@ -33,5 +40,14 @@ struct UsbHidSettings
     bool hasMatch(const QString &str);
     bool hasPartialMatch(const QString &str);
 };
-
 Q_DECLARE_METATYPE(UsbHidSettings)
+
+QDebug operator<<(QDebug debug, const UsbHidSettings &settings)
+{
+    debug.nospace() << QString::number(settings.vendor_id, 16) << ":" << QString::number(settings.product_id, 16) << ":"
+                    << settings.serial;
+#ifdef QT_DEBUG
+    debug.nospace() << ":" << settings.path;
+#endif
+    return debug.maybeSpace();
+}

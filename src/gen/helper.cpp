@@ -57,24 +57,7 @@ QDebug operator<<(QDebug debug, const DataTypes::GeneralResponseStruct &st)
     return debug.maybeSpace();
 }
 
-QDebug operator<<(QDebug debug, const UsbHidSettings &settings)
-{
-    debug.nospace() << QString::number(settings.vendor_id, 16) << ":" << QString::number(settings.product_id, 16) << ":"
-                    << settings.serial;
-#ifdef QT_DEBUG
-    debug.nospace() << ":" << settings.path;
-#endif
-    return debug.maybeSpace();
-}
 #ifdef QT_GUI_LIB
-QDebug operator<<(QDebug debug, const ErrorProtocolItem &item)
-{
-    const auto &values = item.constData();
-    for (const auto i : *values)
-        debug.nospace() << *i << ":";
-    return debug.maybeSpace();
-}
-
 QDebug operator<<(QDebug debug, const ETableItemData &item)
 {
     debug.nospace() << item.value << ":" << item.role;

@@ -1,13 +1,8 @@
 #pragma once
 #include "datatypes.h"
-///#include "../interfaces/interfacesettings.h"
 
 #include <QDebug>
 #include <bitset>
-
-class ErrorProtocolItem;
-class ETableItemData;
-struct UsbHidSettings;
 
 QDebug operator<<(QDebug debug, const DataTypes::BitStringStruct &st);
 QDebug operator<<(QDebug debug, const DataTypes::FloatWithTimeStruct &st);
@@ -17,7 +12,6 @@ QDebug operator<<(QDebug debug, const DataTypes::BlockStruct &st);
 QDebug operator<<(QDebug debug, const DataTypes::SignalsStruct &st);
 QDebug operator<<(QDebug debug, const DataTypes::Signal &st);
 QDebug operator<<(QDebug debug, const DataTypes::GeneralResponseStruct &st);
-QDebug operator<<(QDebug debug, const UsbHidSettings &settings);
 
 template <std::size_t N> QDebug operator<<(QDebug debug, const std::bitset<N> &bitset)
 {
@@ -27,6 +21,3 @@ template <std::size_t N> QDebug operator<<(QDebug debug, const std::bitset<N> &b
 
     return debug.maybeSpace();
 }
-
-QDebug operator<<(QDebug debug, const ErrorProtocolItem &item);
-QDebug operator<<(QDebug debug, const ETableItemData &item);
