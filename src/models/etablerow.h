@@ -3,11 +3,13 @@
 #include "abstracttablerow.h"
 
 #include <QColor>
+#include <QDebug>
 #include <QFont>
 #include <QIcon>
 #include <QStringList>
 #include <QVarLengthArray>
 #include <QVariant>
+
 class ETableItemData
 {
 public:
@@ -33,11 +35,11 @@ public:
     ETableItemData(ETableItemData &&) = default;
     ETableItemData &operator=(const ETableItemData &) = default;
     ETableItemData &operator=(ETableItemData &&) = default;
+    friend QDebug operator<<(QDebug debug, const ETableItemData &item);
 };
 
 using ETableItem = std::vector<ETableItemData>;
 using ETableItemCollection = std::vector<ETableItem>;
-// using ETableRow = AbstractTableRow<ETableItemCollection>;
 
 class ETableRow : public AbstractTableRow<ETableItemCollection>
 {
@@ -46,3 +48,11 @@ public:
     void setData(int column, const QVariant &value, int role) override;
     QVariant data(int column, int role) const override;
 };
+
+QDebug operator<<(QDebug debug, const ETableItemData &item)
+{
+#ifdef QT_GUI_LIB
+    debug.nospace() << item.value << ":" << item.role;
+#endif
+    return debug.maybeSpace();
+}
