@@ -31,8 +31,8 @@ add_test(NAME ${PROJECT_NAME} COMMAND ${PROJECT_NAME})
 target_link_libraries(${PROJECT_NAME}
     gen
     #interfaces
-    widgets
-    dialogs
+    #widgets
+    #dialogs
     models
     module
     Qt${QT_VERSION_MAJOR}::Core
