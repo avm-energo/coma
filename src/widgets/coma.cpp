@@ -601,6 +601,7 @@ void Coma::disconnect()
 
 void Coma::unpackProgramData()
 {
+    Q_INIT_RESOURCE(settings);
     QDir resDir(resourceDirectory);
     QDir homeDir(StdFunc::GetSystemHomeDir());
     auto xmlFiles = resDir.entryList(QDir::Files).filter(".xml");
@@ -622,6 +623,7 @@ void Coma::unpackProgramData()
             }
         }
     }
+    Q_CLEANUP_RESOURCE(settings);
 }
 
 void Coma::setupConnection()
@@ -754,7 +756,6 @@ void Coma::update(const QVariant &msg)
         setProgressBarCount(1, rsp.data);
 
     if (rsp.type == DataTypes::GeneralResponseTypes::DataSize)
-        //        SetProgressBar1Size(rsp.data);
         setProgressBarSize(1, rsp.data);
 }
 

@@ -20,7 +20,8 @@ file(GLOB_RECURSE files_h ${PROJECT_SOURCE_DIR}/*.h)
 
 add_executable(
   ${PROJECT_NAME}
-  ${files_cpp} ${files_h}
+  ${files_cpp}
+  ${files_h}
   ../coma.rc
   ${CMAKE_CURRENT_BINARY_DIR}/versioninfo.rc)
 

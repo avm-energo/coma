@@ -32,6 +32,7 @@ add_library(
   ${PROJECT_NAME} STATIC
   ${files_cpp} ${files_h}
   ../../images/vectorIcons.qrc
+  ../../settings/settings.qrc
   styles/QDarkStyleSheet/qdarkstyle/light/lightstyle.qrc
   styles/QDarkStyleSheet/qdarkstyle/dark/darkstyle.qrc
   styles/styles.qrc)
