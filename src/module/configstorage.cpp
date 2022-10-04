@@ -42,7 +42,7 @@ const ModuleSettings &ConfigStorage::getModuleSettings() const
     return *mSettings;
 }
 
-/// \brief Очистка настроек модуля.
+/// \brief Cleaning module settings.
 void ConfigStorage::clearModuleSettings()
 {
     mSettings->clear();
