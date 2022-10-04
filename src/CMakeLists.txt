@@ -121,7 +121,7 @@ if (NOT MSVC_C_ARCHITECTURE_ID)
     endif(NOT AVTUK-12)
 endif(NOT MSVC_C_ARCHITECTURE_ID)
 
-set(CMAKE_EXPORT_COMPILE_COMMANDS             ON)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 message(STATUS "Cached target arch: " ${CACHED_PROJECT_TARGET_NAME})
 message(STATUS "Current target arch: " ${PROJECT_TARGET_NAME})
@@ -195,7 +195,7 @@ if (ENABLE_PVS)
     if(NOT EXISTS "${CMAKE_BINARY_DIR}/PVS-Studio.cmake")
       message(STATUS "Downloading PVS-Studio.cmake from https://github.com/viva64/pvs-studio-cmake-examples")
       file(DOWNLOAD "https://raw.githubusercontent.com/viva64/pvs-studio-cmake-examples/master/PVS-Studio.cmake"
-                    "${CMAKE_BINARY_DIR}/conan.cmake"
+                    "${CMAKE_BINARY_DIR}/PVS-Studio.cmake"
                     EXPECTED_HASH SHA256=C53013A568A71CC4DBB10437256F16C027004B08ECA3DAF9911BAC08896B4DE7
                     TLS_VERIFY ON)
     endif()
@@ -226,7 +226,6 @@ if (NOT AVTUK-12)
     endif()
 
     if (Qt${QT_VERSION_MAJOR}Gui_FOUND)
-
         if(${PROJECT_ARCHITECTURE}} MATCHES "x86_64")
           set(WINDOWS_TARGET_NAME "x64")
         elseif(${PROJECT_ARCHITECTURE}} MATCHES "i386")
@@ -245,17 +244,17 @@ if (NOT AVTUK-12)
         include(limereport)
         include(qxlsx)
         include(qcustomplot)
-        include(gen)
+        #include(gen)
 
     endif()
 endif()
 
+include(gen)
+add_subdirectory(s2)
+add_subdirectory(comaversion)
 if (NOT AVTUK-12)
     add_subdirectory(interfaces)
 endif()
-#add_subdirectory(gen)
-add_subdirectory(s2)
-add_subdirectory(comaversion)
 if (BUILD_WITH_ALISE)
     set(PROTOS_GENERATED_DIR ${CMAKE_CURRENT_BINARY_DIR}/protos/protos)
     add_subdirectory(alise)

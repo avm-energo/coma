@@ -67,7 +67,7 @@ private:
     File::Vector fileVector;
     bool Reconnect;
     ConnectStruct ConnectSettings;
-    const AppConfiguration &mAppConfig;
+    AppConfiguration mAppConfig;
     DialogManager *mDlgManager;
 
     void initInterfaceConnection();
