@@ -42,6 +42,12 @@ const ModuleSettings &ConfigStorage::getModuleSettings() const
     return *mSettings;
 }
 
+/// \brief Очистка настроек модуля.
+void ConfigStorage::clearModuleSettings()
+{
+    mSettings->clear();
+}
+
 /// \brief Slot for saving S2 config record.
 void ConfigStorage::typeDataReceive(const quint16 &id, const uint64_t &typeId)
 {

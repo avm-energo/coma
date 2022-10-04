@@ -164,7 +164,7 @@ void Coma::setupUI()
     QString caption(QCoreApplication::applicationName());
     caption.append(" v. ").append(QCoreApplication::applicationVersion());
     setWindowTitle(caption);
-    setMinimumSize(QSize(1050, 700));
+    setMinimumSize(QSize(1150, 700));
     auto wdgt = new QWidget(this);
     auto lyout = new QVBoxLayout(wdgt);
     auto hlyout = new QHBoxLayout;
@@ -327,7 +327,7 @@ void Coma::initInterfaceConnection()
     BaseInterface::setIface(std::move(device));
 }
 
-void Coma::loadOsc(QString &filename)
+void Coma::loadOsc(const QString &filename)
 {
     fileVector = oscManager.loadFromFile(filename);
     TrendViewModel *oscModel = nullptr;
@@ -344,7 +344,7 @@ void Coma::loadOsc(QString &filename)
         oscManager.loadOsc(oscModel);
 }
 
-void Coma::loadSwj(QString &filename)
+void Coma::loadSwj(const QString &filename)
 {
     SwjManager swjManager;
     fileVector = oscManager.loadFromFile(filename);
@@ -711,25 +711,23 @@ void Coma::disconnectAndClear()
 {
     qDebug(__PRETTY_FUNCTION__);
     const auto &board = Board::GetInstance();
-    if (board.connectionState() == Board::ConnectionState::Closed)
-        return;
-
-    AlarmW->clear();
-    disconnect();
-    if (module)
+    if (board.connectionState() != Board::ConnectionState::Closed)
     {
-        mDlgManager->deleteDialogs();
-        // module->closeDialogs();
-        clearWidgets();
+        disconnect();
+        if (mDlgManager)
+        {
+            mDlgManager->deleteDialogs();
+            clearWidgets();
+        }
+        ConfigStorage::GetInstance().clearModuleSettings();
+        Board::GetInstance().reset();
+        // BUG Segfault
+        //    if (Reconnect)
+        //        QMessageBox::information(this, "Разрыв связи", "Связь разорвана", QMessageBox::Ok, QMessageBox::Ok);
+        //    else
+        //        QMessageBox::information(this, "Разрыв связи", "Не удалось установить связь");
+        Reconnect = false;
     }
-    Board::GetInstance().reset();
-    // BUG Segfault
-    //    if (Reconnect)
-    //        QMessageBox::information(this, "Разрыв связи", "Связь разорвана", QMessageBox::Ok, QMessageBox::Ok);
-    //    else
-    //        QMessageBox::information(this, "Разрыв связи", "Не удалось установить связь");
-
-    Reconnect = false;
 }
 
 void Coma::resizeEvent(QResizeEvent *e)
@@ -790,16 +788,15 @@ void ComaHelper::parserHelper(Coma *coma)
     const QStringList files = parser.positionalArguments();
     if (!files.isEmpty())
     {
-        QString Parameter;
-        Parameter = files.at(0);
-        QString filestail = Parameter.right(3);
+        auto &param = files.at(0);
+        auto filestail = param.right(3);
         if (filestail == "osc")
         {
-            coma->loadOsc(Parameter);
+            coma->loadOsc(param);
         }
         else if (filestail == "swj")
         {
-            coma->loadSwj(Parameter);
+            coma->loadSwj(param);
         }
         // TODO
         // else if (filestail == "vrf")

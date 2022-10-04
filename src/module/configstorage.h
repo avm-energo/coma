@@ -26,6 +26,7 @@ public:
     const config::widgetMap &getWidgetMap() const;
     const ModuleTypes::TabsMap &getConfigTabs() const;
     const ModuleSettings &getModuleSettings() const;
+    void clearModuleSettings();
 
 public slots:
     // S2 data slots

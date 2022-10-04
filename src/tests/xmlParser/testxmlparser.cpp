@@ -26,5 +26,5 @@ void TestModule::TestS2Parsing()
     auto state = mModule->loadSettings();
     const auto &mSettings = ConfigStorage::GetInstance().getModuleSettings();
     printModuleSettings(mSettings);
-    QCOMPARE(state, true);
+    QCOMPARE(state, false);
 }

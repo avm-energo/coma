@@ -11,16 +11,15 @@ TestModule::TestModule(QObject *parent) : QObject(parent)
 {
 }
 
-/*
-inline int getElementCount(std::vector<CheckItem> &vec)
-{
-    auto elementCount = std::accumulate(vec.cbegin(), vec.cend(), 0,       //
-        [](int value, const CheckItem &container)                          //
-        {                                                                  //
-            return value + static_cast<int>(container.itemsVector.size()); //
-        });                                                                //
-    return elementCount;
-}
+// inline int getElementCount(std::vector<CheckItem> &vec)
+//{
+//    auto elementCount = std::accumulate(vec.cbegin(), vec.cend(), 0,       //
+//        [](int value, const CheckItem &container)                          //
+//        {                                                                  //
+//            return value + static_cast<int>(container.itemsVector.size()); //
+//        });                                                                //
+//    return elementCount;
+//}
 
 void TestModule::checkA284()
 {
@@ -28,27 +27,29 @@ void TestModule::checkA284()
     bsi.MTypeB = 0xA2;
     bsi.MTypeM = 0x84;
     bsi.Fwver = StdFunc::StrToVer(version::avma284);
-    QVERIFY(module.loadSettings(bsi));
-    auto settings = module.settings();
-    QCOMPARE(settings->alarms.size(), 2);
-    QCOMPARE(settings->configSettings.general.size(), config::avma284);
-    QCOMPARE(settings->highlightCrit.size(), 7);
-    QCOMPARE(settings->highlightWarn.size(), 30);
-    QCOMPARE(settings->journals.size(), 2);
-    auto workJourSize = settings->journals.value(Modules::JournalType::Work).desc.size();
-    auto alarmsCount = std::accumulate(settings->alarms.cbegin(), settings->alarms.cend(), 0,
-        [](int a, auto &&alarm) { return a + alarm.desc.size(); });
-    QVERIFY(!settings->ifaceSettings.settings.isValid());
+    auto module = new Module(bsi, this);
+    QVERIFY(module->loadSettings());
+    auto &settings = ConfigStorage::GetInstance().getModuleSettings();
+    QCOMPARE(settings.getAlarms().size(), 2);
+    QCOMPARE(settings.getConfigs().size(), config::avma284);
+    // QCOMPARE(settings->highlightCrit.size(), 7);
+    // QCOMPARE(settings->highlightWarn.size(), 30);
+    QCOMPARE(settings.getJours().size(), 2);
+    auto workJourSize = settings.getJours().value(Modules::JournalType::Work).size();
+    auto alarmsCount = std::accumulate(settings.getAlarms().cbegin(), settings.getAlarms().cend(), 0,
+        [](int a, auto &&alarm) { return a + alarm.size(); });
+    QVERIFY(!settings.getInterfaceSettings().settings.isValid());
     QCOMPARE(workJourSize, alarmsCount);
 
-    std::vector<CheckItem> checkSettings;
-    QVERIFY(
-        module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM), checkSettings));
-    QCOMPARE(checkSettings.size(), 1);
-    auto elementCount = getElementCount(checkSettings);
-    QCOMPARE(elementCount, check::check8084);
+    // std::vector<CheckItem> checkSettings;
+    // QVERIFY(
+    //    module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM), checkSettings));
+    // QCOMPARE(checkSettings.size(), 1);
+    // auto elementCount = getElementCount(checkSettings);
+    // QCOMPARE(elementCount, check::check8084);
 }
 
+/*
 void TestModule::checkA284USB()
 {
     Modules::StartupInfoBlock bsi;
@@ -543,7 +544,6 @@ void TestModule::check8083USB()
     auto elementCount = getElementCount(checkSettings);
     QCOMPARE(elementCount, check::check8083);
 }
-
 
 void TestModule::check2100()
 {
@@ -1535,22 +1535,6 @@ void TestModule::check3533USB()
     auto elementCount = std::accumulate(checkSettings.cbegin(), checkSettings.cend(), 0,
         [](auto value, const CheckItem &container) { return value + container.itemsVector.size(); });
     QCOMPARE(elementCount, 2);
-}
-*/
-
-void TestModule::checkSaveXmlFile()
-{
-    auto doc = QDomDocument();
-    auto instruct = doc.createProcessingInstruction("xml", "version=\"1.0\" encoding=\"utf-8\"");
-    doc.appendChild(instruct);
-    auto node1 = doc.createElement("testNode1");
-    doc.appendChild(node1);
-    auto node2 = doc.createElement("testNode2");
-    node1.appendChild(node2);
-    auto filler = doc.createTextNode("fill the data");
-    node2.appendChild(filler);
-    auto str = doc.toString(4);
-    QVERIFY(!str.isEmpty());
-}
+}*/
 
 QTEST_GUILESS_MAIN(TestModule)

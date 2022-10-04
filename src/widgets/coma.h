@@ -36,8 +36,8 @@ public:
     QWidget *least();
     void disconnect();
     void setupConnection();
-    void loadOsc(QString &filename);
-    void loadSwj(QString &filename);
+    void loadOsc(const QString &filename);
+    void loadSwj(const QString &filename);
 
 public slots:
     void disconnectAndClear();

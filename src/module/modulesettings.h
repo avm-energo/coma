@@ -63,10 +63,10 @@ using ConfigList = QList<DataTypes::RecordPair>; ///< Хранит узлы <rec
 using ConfigMap = QHash<quint32, ConfigList>; ///< Хранение конфигурации для базы и мезонина в разных списках.
 using HighlightMap = QMultiMap<quint32, quint32>; ///< Для подсветки элементов.
 using SectionList = QList<Section>;               ///< Хранит узлы <section> секции <sections>.
-using AlarmKey = Modules::AlarmType;              ///< Modules::AlarmType - тип сигнализации
-using AlarmValue = QMap<quint32, QString>; ///< quint32 - адрес сигнализации, QString - нода <desc> (описание)
-using AlarmMap = QHash<AlarmKey, AlarmValue>;                ///< Хранит узлы <item> секции <alarms>
-using JourMap = QHash<Modules::JournalType, QList<Journal>>; ///< Хранит узлы <item> секции <journals>
+using AlarmKey = Modules::AlarmType;              ///< Modules::AlarmType - тип сигнализации.
+using AlarmValue = QMap<quint32, QString>; ///< quint32 - адрес сигнализации, QString - нода <desc> (описание).
+using AlarmMap = QHash<AlarmKey, AlarmValue>;                ///< Хранит узлы <item> секции <alarms>.
+using JourMap = QHash<Modules::JournalType, QList<Journal>>; ///< Хранит узлы <item> секции <journals>.
 }
 
 /// \brief Class for storing module settings.
@@ -74,6 +74,7 @@ class ModuleSettings
 {
 public:
     ModuleSettings();
+    void clear();
     void startNewConfig();
     void appendToCurrentConfig(const DataTypes::RecordPair &pair);
     void appendSignal(const quint32 &id, const ModuleTypes::Signal &sig);

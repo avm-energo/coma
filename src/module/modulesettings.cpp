@@ -4,6 +4,21 @@ ModuleSettings::ModuleSettings() : curConfigIndex(0)
 {
 }
 
+/// \brief Очистка настроек модуля.
+void ModuleSettings::clear()
+{
+    mConfigs.clear();
+    mSignals.clear();
+    mTabs.clear();
+    mSections.clear();
+    mAlarms.clear();
+    mJournals.clear();
+    mIfaceSettings.settings.clear();
+    critHighlight.clear();
+    warnHighlight.clear();
+    curConfigIndex = 0;
+}
+
 /// \brief Создание нового списка конфигурации.
 void ModuleSettings::startNewConfig()
 {
