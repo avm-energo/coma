@@ -19,7 +19,6 @@ SerialPort::~SerialPort()
 
 bool SerialPort::init(SerialPortSettings settings)
 {
-    m_connected = true;
     port = new QSerialPort(settings.Port, this);
     port->setBaudRate(settings.Baud);
     port->setDataBits(QSerialPort::Data8);
@@ -35,11 +34,11 @@ bool SerialPort::init(SerialPortSettings settings)
     connect(port.data(), &QSerialPort::errorOccurred, this, &SerialPort::errorOccurred);
     connect(port, &QIODevice::readyRead, this, &SerialPort::readBytes);
 
-    QTimer *connectionTimer = new QTimer(this);
-    connectionTimer->setInterval(TIMEOUT);
-    connect(port, &QIODevice::bytesWritten, this, [connectionTimer] { connectionTimer->start(); });
-    connect(port, &QIODevice::readyRead, connectionTimer, &QTimer::stop);
-    connect(connectionTimer, &QTimer::timeout, [=] {
+    m_connectionTimer = new QTimer(this);
+    m_connectionTimer->setInterval(TIMEOUT);
+    connect(port, &QIODevice::bytesWritten, this, [&] { m_connectionTimer->start(); });
+    connect(port, &QIODevice::readyRead, m_connectionTimer, &QTimer::stop);
+    connect(m_connectionTimer, &QTimer::timeout, [this] {
         qInfo() << this->metaObject()->className() << Error::Timeout;
         reconnect();
     });
@@ -61,14 +60,13 @@ void SerialPort::writeBytes(QByteArray ba)
 
 void SerialPort::disconnect()
 {
-    m_connected = false;
-    port->close();
+    if (port->isOpen())
+        port->close();
 }
 
 bool SerialPort::reconnect()
 {
-    if (!m_connected)
-        return false;
+    disconnect();
     if (!port->open(QIODevice::ReadWrite))
     {
         qCritical() << port->metaObject()->className() << port->portName() << Error::OpenError;

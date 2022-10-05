@@ -31,7 +31,7 @@ bool ModBus::start(const ConnectStruct &connectStruct)
     Log->Init(QString(metaObject()->className()) + ".log");
     Log->info(logStart);
     Q_ASSERT(std::holds_alternative<SerialPortSettings>(connectStruct.settings));
-    qInfo() << metaObject()->className() << "connect";
+    qInfo() << metaObject()->className() << "is connecting...";
     if (!std::holds_alternative<SerialPortSettings>(connectStruct.settings))
         return false;
 
@@ -45,7 +45,8 @@ bool ModBus::start(const ConnectStruct &connectStruct)
 
     connect(thr, &QThread::started, parser, &ModbusThread::run);
     connect(parser, &ModbusThread::finished, thr, &QThread::quit);
-    connect(thr, &QThread::finished, port, &SerialPort::disconnect);
+    //    connect(thr, &QThread::finished, port, &SerialPort::disconnect);
+    connect(thr, &QThread::finished, [=] { port->deleteLater(); });
     connect(thr, &QThread::finished, thr, &QObject::deleteLater);
     connect(thr, &QThread::finished, parser, &QObject::deleteLater);
     connect(port, &SerialPort::read, parser, &ModbusThread::parseReply);
@@ -75,10 +76,10 @@ void ModBus::sendReconnectSignal()
 {
     switch (state())
     {
-    case BaseInterface::Run:
+    case BaseInterface::State::Run:
         setState(BaseInterface::State::Wait);
         break;
-    case BaseInterface::Wait:
+    case BaseInterface::State::Wait:
         emit reconnect();
         break;
     default:
@@ -89,12 +90,14 @@ void ModBus::sendReconnectSignal()
 bool ModBus::isValidRegs(const CommandsMBS::CommandStruct &cmd) const
 {
     const auto &st = settings<InterfaceInfo<ModbusGroup>>();
-    Q_ASSERT(st.dictionary().contains(cmd.adr));
-    const auto values = st.dictionary().values(cmd.adr);
-    for (const auto &val : values)
+    if (st.dictionary().contains(cmd.adr))
     {
-        if ((val.count == cmd.quantity) && (val.function == cmd.cmd))
-            return true;
+        const auto values = st.dictionary().values(cmd.adr);
+        for (const auto &val : values)
+        {
+            if ((val.count == cmd.quantity) && (val.function == cmd.cmd))
+                return true;
+        }
     }
     return false;
 }
@@ -219,7 +222,7 @@ void ModBus::writeTime(quint32 time)
 
 void ModBus::writeFloat(const DataTypes::FloatStruct &flstr)
 {
-    Q_ASSERT(false && "Dont use this before test");
+    //    Q_ASSERT(false && "Dont use this before test");
     // now write floats to the out sigArray
     QByteArray sigArray = packReg(flstr.sigVal);
 
@@ -228,6 +231,20 @@ void ModBus::writeFloat(const DataTypes::FloatStruct &flstr)
         static_cast<quint16>(flstr.sigAdr),                //
         static_cast<quint16>(sigArray.size() / 2),         //
         sigArray,                                          //
+        TypeId::None,                                      //
+        __PRETTY_FUNCTION__                                //
+    };
+    // Q_ASSERT(isValidRegs(inp));
+    DataManager::addToInQueue(inp);
+}
+
+void ModBus::writeInt16(const quint32 addr, const qint16 value)
+{
+    CommandsMBS::CommandStruct inp {
+        CommandsMBS::Commands::MBS_WRITEMULTIPLEREGISTERS, //
+        static_cast<quint16>(addr),                        //
+        1,                                                 //
+        packReg(value),                                    //
         TypeId::None,                                      //
         __PRETTY_FUNCTION__                                //
     };
@@ -264,6 +281,16 @@ void ModBus::writeCommand(Queries::Commands cmd, QVariant item)
         };
         // Q_ASSERT(isValidRegs(inp));
         DataManager::addToInQueue(inp);
+        break;
+    }
+    case Queries::Commands::QC_ClearStartupValues:
+    {
+        writeInt16(AVM_KIV::Registers::ClrStrtup, 0);
+        break;
+    }
+    case Queries::Commands::QC_SetStartupValues:
+    {
+        writeInt16(AVM_KIV::Registers::SetStrtup, 0);
         break;
     }
     default:

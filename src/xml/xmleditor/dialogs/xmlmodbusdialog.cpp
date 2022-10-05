@@ -28,7 +28,7 @@ void XmlModbusDialog::setupUI(QVBoxLayout *mainLayout)
     // Виджеты для типа регистра
     auto regTypeLabel = new QLabel("Тип регистра: ", this);
     auto regTypeInput = new QLineEdit("", this);
-    regTypeInput->setValidator(new QRegExpValidator(QRegExp("^([1-9][0-9]*|0)"), this));
+    // regTypeInput->setValidator(new QRegExpValidator(QRegExp("^([1-9][0-9]*|0)"), this));
     QObject::connect(
         regTypeInput, &QLineEdit::textEdited, this, qOverload<const QString &>(&XmlModbusDialog::dataChanged));
     regTypeLayout->addWidget(regTypeLabel);

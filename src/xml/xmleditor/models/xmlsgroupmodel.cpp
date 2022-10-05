@@ -64,32 +64,36 @@ void XmlSGroupModel::parseNode(QDomNode &node, int &row)
 QDomElement XmlSGroupModel::toNode(QDomDocument &doc)
 {
     auto sgroupNode = makeElement(doc, tags::sgroup);
-    for (auto row = 1; row < rowCount(); row++)
+    for (auto row = 0; row < rowCount(); row++)
     {
-        // Видимые данные
-        auto mwidget = makeElement(doc, tags::mwidget);
-        setAttribute(doc, mwidget, tags::desc, data(index(row, 0)));
-        makeElement(doc, mwidget, tags::start_addr, data(index(row, 1)));
-        // Скрытые данные
-        auto hideDataVar = data(index(row, 0), SGroupDataRole);
-        if (hideDataVar.isValid() && hideDataVar.canConvert<SGroupHideData>())
+        // TODO: костыль
+        if (data(index(row, 0)).value<QString>() != "..")
         {
-            auto hideData = hideDataVar.value<SGroupHideData>();
-            if (hideData.count != 1)
-                makeElement(doc, mwidget, tags::count, QString::number(hideData.count));
-
-            if (!hideData.tooltip.isEmpty())
-                makeElement(doc, mwidget, tags::tooltip, hideData.tooltip);
-
-            if (!hideData.array.isEmpty())
+            // Видимые данные
+            auto mwidget = makeElement(doc, tags::mwidget);
+            setAttribute(doc, mwidget, tags::desc, data(index(row, 0)));
+            makeElement(doc, mwidget, tags::start_addr, data(index(row, 1)));
+            // Скрытые данные
+            auto hideDataVar = data(index(row, 0), SGroupDataRole);
+            if (hideDataVar.isValid() && hideDataVar.canConvert<SGroupHideData>())
             {
-                auto strArray = makeElement(doc, tags::str_array);
-                for (const auto &str : qAsConst(hideData.array))
-                    makeElement(doc, strArray, tags::item, str);
-                mwidget.appendChild(strArray);
+                auto hideData = hideDataVar.value<SGroupHideData>();
+                if (hideData.count != 1)
+                    makeElement(doc, mwidget, tags::count, QString::number(hideData.count));
+
+                if (!hideData.tooltip.isEmpty())
+                    makeElement(doc, mwidget, tags::tooltip, hideData.tooltip);
+
+                if (!hideData.array.isEmpty())
+                {
+                    auto strArray = makeElement(doc, tags::str_array);
+                    for (const auto &str : qAsConst(hideData.array))
+                        makeElement(doc, strArray, tags::item, str);
+                    mwidget.appendChild(strArray);
+                }
             }
+            sgroupNode.appendChild(mwidget);
         }
-        sgroupNode.appendChild(mwidget);
     }
     return sgroupNode;
 }

@@ -86,6 +86,7 @@ struct ModbusGroup : BaseGroup<CommandsMBS::Commands, CommandsMBS::TypeId>
     ModbusGroup(const quint32 &sigId, const quint16 &regType, const QString &type)
         : BaseGroup<CommandsMBS::Commands, CommandsMBS::TypeId>(sigId)
     {
+        count = count * 2;
         // Decimal to hex
         auto hexRegType = QString("%1").arg(regType).toUInt(nullptr, 16);
         function = static_cast<CommandsMBS::Commands>(hexRegType);
@@ -95,9 +96,12 @@ struct ModbusGroup : BaseGroup<CommandsMBS::Commands, CommandsMBS::TypeId>
         if (!buffer.isEmpty() && types().isValid())
         {
             buffer[0] = buffer[0].toUpper();
-            auto typeId = types().keyToValue(buffer.toStdString().c_str());
-            if (typeId != -1)
+            bool state = false;
+            auto typeId = types().keyToValue(buffer.toStdString().c_str(), &state);
+            if (typeId != -1 && state)
                 dataType = static_cast<CommandsMBS::TypeId>(typeId);
+            else
+                qWarning("Undefined modbus type");
         }
     }
 

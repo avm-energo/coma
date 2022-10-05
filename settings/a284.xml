@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<module mtypeb="a2" mtypem="84">
+    <name>AVM-KIV</name>
+    <version>1.1-0008</version>
+    <resources>
+        <signals desc="Сигналы">
+        </signals>
+
+        <section-tabs desc="Вкладки">
+        </section-tabs>
+
+        <sections desc="Разделы">
+        </sections>
+
+        <alarms desc="Сигнализация">
+            <critical desc="Критичные">
+            </critical>
+            <warning desc="Предупреждения">
+            </warning>
+            <info desc="Информационные">
+            </info>
+        </alarms>
+
+        <journals desc="Журналы">
+            <work desc="Рабочий журнал">
+            </work>
+            <meas desc="Журнал измерений">
+            </meas>
+        </journals>
+
+        <modbus desc="Протокол Modbus">
+        </modbus>
+
+        <protocom desc="Протокол Protocom">
+        </protocom>
+
+        <iec60870 desc="Протокол ГОСТ Р МЭК 60870-5-104">
+        </iec60870>
+
+        <config desc="Конфигурация">
+        </config>
+    </resources>
+</module>

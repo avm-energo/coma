@@ -49,7 +49,8 @@ std::tuple<QString, QString, std::function<void(QDomDocument &, QDomElement &, i
             [&](auto &doc, auto &item, auto &row) {
                 makeElement(doc, item, tags::sig_id, data(index(row, 0)));
                 makeElement(doc, item, tags::reg_type, data(index(row, 1)));
-                makeElement(doc, item, tags::desc, data(index(row, 2)));
+                makeElement(doc, item, tags::type, data(index(row, 2)));
+                makeElement(doc, item, tags::desc, data(index(row, 3)));
             } };
     case ModelType::Protocom:
         return { tags::protocom, tags::group, //
@@ -144,12 +145,16 @@ QDomElement XmlDataModel::toNode(QDomDocument &doc)
     const auto prefs = getModelSettings();
     auto node = makeElement(doc, std::get<0>(prefs));
     // Записываем со второго элемента, т.к. первый элемент - возврат назад
-    for (auto row = 1; row < rowCount(); row++)
+    for (auto row = 0; row < rowCount(); row++)
     {
-        auto item = makeElement(doc, std::get<1>(prefs));
-        auto fillNode = std::get<2>(prefs);
-        fillNode(doc, item, row);
-        node.appendChild(item);
+        // TODO: костыль
+        if (data(index(row, 0)).value<QString>() != "..")
+        {
+            auto item = makeElement(doc, std::get<1>(prefs));
+            auto fillNode = std::get<2>(prefs);
+            fillNode(doc, item, row);
+            node.appendChild(item);
+        }
     }
     return node;
 }
