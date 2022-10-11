@@ -90,6 +90,7 @@ void ModBus::sendReconnectSignal()
 bool ModBus::isValidRegs(const CommandsMBS::CommandStruct &cmd) const
 {
     const auto &st = settings<InterfaceInfo<ModbusGroup>>();
+    Q_ASSERT(st.dictionary().contains(cmd.adr));
     if (st.dictionary().contains(cmd.adr))
     {
         const auto values = st.dictionary().values(cmd.adr);

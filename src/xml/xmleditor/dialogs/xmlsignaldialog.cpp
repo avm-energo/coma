@@ -14,15 +14,6 @@ void XmlSignalDialog::setupUI(QVBoxLayout *mainLayout)
     auto countLayout = new QHBoxLayout;
     mTitle += "группы сигналов";
 
-    // Виджеты для ID группы сигналов
-    auto idLabel = new QLabel("ID группы: ", this);
-    auto idInput = new QLineEdit("", this);
-    idInput->setValidator(new QRegExpValidator(QRegExp("^([1-9][0-9]*|0)"), this));
-    QObject::connect(idInput, &QLineEdit::textEdited, this, qOverload<const QString &>(&XmlSignalDialog::dataChanged));
-    idLayout->addWidget(idLabel);
-    idLayout->addWidget(idInput);
-    dlgItems.append(idInput);
-
     // Виджеты для адресов группы сигналов
     auto addrLabel = new QLabel("Адрес начального сигнала: ", this);
     auto addrInput = new QLineEdit("", this);
@@ -43,8 +34,17 @@ void XmlSignalDialog::setupUI(QVBoxLayout *mainLayout)
     countLayout->addWidget(countInput);
     dlgItems.append(countInput);
 
+    // Виджеты для ID группы сигналов
+    auto idLabel = new QLabel("ID группы: ", this);
+    auto idInput = new QLineEdit("", this);
+    idInput->setValidator(new QRegExpValidator(QRegExp("^([1-9][0-9]*|0)"), this));
+    QObject::connect(idInput, &QLineEdit::textEdited, this, qOverload<const QString &>(&XmlSignalDialog::dataChanged));
+    idLayout->addWidget(idLabel);
+    idLayout->addWidget(idInput);
+    dlgItems.append(idInput);
+
     // Добавляем слои на главный слой
-    mainLayout->addLayout(idLayout);
     mainLayout->addLayout(addrLayout);
     mainLayout->addLayout(countLayout);
+    mainLayout->addLayout(idLayout);
 }

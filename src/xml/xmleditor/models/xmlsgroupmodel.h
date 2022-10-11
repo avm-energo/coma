@@ -29,6 +29,7 @@ public:
 public slots:
     virtual void getDialogRequest(const int &row) override;
     void update(const QStringList &saved, const int &row) override;
+    virtual void create(const QStringList &saved, int *row) override;
 };
 
 #endif // XMLSGROUPMODEL_H

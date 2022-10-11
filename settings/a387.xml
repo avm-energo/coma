@@ -763,7 +763,7 @@
             </group>
             <group>
                 <signal-id>18</signal-id>
-                <reg-type>01</reg-type>
+                <reg-type>04</reg-type>
                 <type>float</type>
                 <desc>harmonicUC</desc>
             </group>
@@ -823,7 +823,7 @@
             </group>
             <group>
                 <signal-id>29</signal-id>
-                <reg-type>04</reg-type>
+                <reg-type>01</reg-type>
                 <type>bool</type>
                 <desc>infoAlarm</desc>
             </group>
@@ -860,16 +860,44 @@
         </modbus>
         <protocom desc="Протокол Protocom">
             <group>
-                <block>0</block>
-                <signal-id>2</signal-id>
+                <block>6</block>
+                <signal-id>10</signal-id>
+            </group>
+            <group>
+                <block>17</block>
+                <signal-id>14</signal-id>
             </group>
             <group>
                 <block>10</block>
                 <signal-id>15</signal-id>
             </group>
             <group>
-                <block>100</block>
-                <signal-id>26</signal-id>
+                <block>25</block>
+                <signal-id>16</signal-id>
+            </group>
+            <group>
+                <block>35</block>
+                <signal-id>17</signal-id>
+            </group>
+            <group>
+                <block>45</block>
+                <signal-id>18</signal-id>
+            </group>
+            <group>
+                <block>27</block>
+                <signal-id>19</signal-id>
+            </group>
+            <group>
+                <block>0</block>
+                <signal-id>2</signal-id>
+            </group>
+            <group>
+                <block>37</block>
+                <signal-id>20</signal-id>
+            </group>
+            <group>
+                <block>47</block>
+                <signal-id>21</signal-id>
             </group>
             <group>
                 <block>11</block>
@@ -880,68 +908,40 @@
                 <signal-id>24</signal-id>
             </group>
             <group>
-                <block>14</block>
-                <signal-id>28</signal-id>
+                <block>9</block>
+                <signal-id>25</signal-id>
             </group>
             <group>
-                <block>17</block>
-                <signal-id>14</signal-id>
-            </group>
-            <group>
-                <block>2</block>
-                <signal-id>3</signal-id>
+                <block>100</block>
+                <signal-id>26</signal-id>
             </group>
             <group>
                 <block>20</block>
                 <signal-id>27</signal-id>
             </group>
             <group>
-                <block>25</block>
-                <signal-id>5</signal-id>
-            </group>
-            <group>
-                <block>250</block>
-                <signal-id>36</signal-id>
-            </group>
-            <group>
-                <block>27</block>
-                <signal-id>11</signal-id>
-            </group>
-            <group>
-                <block>3</block>
-                <signal-id>9</signal-id>
+                <block>14</block>
+                <signal-id>28</signal-id>
             </group>
             <group>
                 <block>30</block>
                 <signal-id>29</signal-id>
             </group>
             <group>
-                <block>35</block>
-                <signal-id>6</signal-id>
+                <block>2</block>
+                <signal-id>3</signal-id>
             </group>
             <group>
-                <block>37</block>
-                <signal-id>12</signal-id>
-            </group>
-            <group>
-                <block>45</block>
-                <signal-id>7</signal-id>
-            </group>
-            <group>
-                <block>47</block>
-                <signal-id>13</signal-id>
-            </group>
-            <group>
-                <block>6</block>
-                <signal-id>10</signal-id>
+                <block>250</block>
+                <signal-id>36</signal-id>
             </group>
             <group>
                 <block>8</block>
                 <signal-id>8</signal-id>
             </group>
             <group>
-                <block>9</block>
-                <signal-id>25</signal-id>
+                <block>3</block>
+                <signal-id>9</signal-id>
             </group>
         </protocom>
         <section-tabs desc="Вкладки">
@@ -976,37 +976,37 @@
         </section-tabs>
         <sections desc="Разделы">
             <section header="Вибрации">
-                <sgroup tab="200" header="Среднеквадратичные значения виброускорений, м/с2">
+                <sgroup header="Среднеквадратичные значения виброускорений, м/с2" tab="200">
                     <mwidget desc="Датчик №%1">
                         <start-addr>6040</start-addr>
                         <count>6</count>
                     </mwidget>
                 </sgroup>
-                <sgroup tab="200" header="Среднеквадратичные значения виброскоростей, мм/с">
+                <sgroup header="Среднеквадратичные значения виброскоростей, мм/с" tab="200">
                     <mwidget desc="Датчик №%1">
                         <start-addr>6046</start-addr>
                         <count>6</count>
                     </mwidget>
                 </sgroup>
-                <sgroup tab="200" header="Среднеквадратичные значения виброперемещений, мкм">
+                <sgroup header="Среднеквадратичные значения виброперемещений, мкм" tab="200">
                     <mwidget desc="Датчик №%1">
                         <start-addr>6052</start-addr>
                         <count>6</count>
                     </mwidget>
                 </sgroup>
-                <sgroup tab="210" header="Скорость изменения среднеквадратичного значения виброускорения, м/с2/час">
+                <sgroup header="Скорость изменения среднеквадратичного значения виброускорения, м/с2/час" tab="210">
                     <mwidget desc="Датчик №%1">
                         <start-addr>6058</start-addr>
                         <count>6</count>
                     </mwidget>
                 </sgroup>
-                <sgroup tab="210" header="Скорость изменения среднеквадратичного значения виброскорости, мм/с/час">
+                <sgroup header="Скорость изменения среднеквадратичного значения виброскорости, мм/с/час" tab="210">
                     <mwidget desc="Датчик №%1">
                         <start-addr>6064</start-addr>
                         <count>6</count>
                     </mwidget>
                 </sgroup>
-                <sgroup tab="210" header="Скорость изменения среднеквадратичного значения виброперемещения, мкм/час">
+                <sgroup header="Скорость изменения среднеквадратичного значения виброперемещения, мкм/час" tab="210">
                     <mwidget desc="Датчик №%1">
                         <start-addr>6070</start-addr>
                         <count>6</count>
@@ -1014,7 +1014,7 @@
                 </sgroup>
             </section>
             <section header="Текущие данные">
-                <sgroup tab="1" header="Данные по несимметрии и искажениям сигналов">
+                <sgroup header="Данные по несимметрии и искажениям сигналов" tab="1">
                     <mwidget desc="Vst">
                         <start-addr>4700</start-addr>
                         <toolTip>Относительная скорость старения изоляции</toolTip>
@@ -1040,7 +1040,7 @@
                         <toolTip>Общая наработка, час</toolTip>
                     </mwidget>
                 </sgroup>
-                <sgroup tab="10" header="Данные по частоте и углам сдвига сигналов">
+                <sgroup header="Данные по частоте и углам сдвига сигналов" tab="10">
                     <mwidget desc="Frequency">
                         <start-addr>2400</start-addr>
                         <toolTip>Частота в сети, Гц</toolTip>
@@ -1051,7 +1051,7 @@
                         <toolTip>Угол сдвига между каналами %1-0, градусов</toolTip>
                     </mwidget>
                 </sgroup>
-                <sgroup tab="10" header="Мощности">
+                <sgroup header="Мощности" tab="10">
                     <mwidget desc="P%1, кВт">
                         <start-addr>2420</start-addr>
                         <count>3</count>
@@ -1109,7 +1109,7 @@
                         <toolTip>Коэффициент мощности средний (по S и P)</toolTip>
                     </mwidget>
                 </sgroup>
-                <sgroup tab="10" header="Мощности по 1-й гармонике">
+                <sgroup header="Мощности по 1-й гармонике" tab="10">
                     <mwidget desc="P1%1, кВт">
                         <start-addr>2436</start-addr>
                         <count>3</count>
@@ -1167,7 +1167,7 @@
                         <toolTip>Коэффициент мощности средний (по S и P) по 1-й гармонике</toolTip>
                     </mwidget>
                 </sgroup>
-                <sgroup tab="1" header="Оставшееся время работы">
+                <sgroup header="Оставшееся время работы" tab="1">
                     <mwidget desc="Tpred">
                         <start-addr>4010</start-addr>
                         <toolTip>Температура обмотки (расчетная), °С</toolTip>
@@ -1204,7 +1204,7 @@
                         </string-array>
                     </mwidget>
                 </sgroup>
-                <sgroup tab="1" header="Температура">
+                <sgroup header="Температура" tab="1">
                     <mwidget desc="ExtTempWin%1">
                         <start-addr>4503</start-addr>
                         <count>4</count>
@@ -1225,7 +1225,7 @@
                 </sgroup>
             </section>
             <section header="Текущие данные. Вторая тройка">
-                <sgroup tab="1" header="Действующие значения и крест-факторы сигналов">
+                <sgroup header="Действующие значения и крест-факторы сигналов" tab="1">
                     <mwidget desc="I ф.%1, А">
                         <start-addr>1400</start-addr>
                         <count>3</count>
@@ -1265,7 +1265,7 @@
                         </string-array>
                     </mwidget>
                 </sgroup>
-                <sgroup tab="1" header="Данные по несимметрии и искажениям сигналов">
+                <sgroup header="Данные по несимметрии и искажениям сигналов" tab="1">
                     <mwidget desc="I0, А">
                         <start-addr>1411</start-addr>
                         <toolTip>Ток нулевой последовательности гр.1, А</toolTip>
@@ -1297,19 +1297,19 @@
                         </string-array>
                     </mwidget>
                 </sgroup>
-                <sgroup tab="311" header="Данные по гармоническому составу сигналов фазы A">
+                <sgroup header="Данные по гармоническому составу сигналов фазы A" tab="311">
                     <mwidget desc="Гм %1">
                         <start-addr>3420</start-addr>
                         <count>61</count>
                     </mwidget>
                 </sgroup>
-                <sgroup tab="312" header="Данные по гармоническому составу сигналов фазы В">
+                <sgroup header="Данные по гармоническому составу сигналов фазы В" tab="312">
                     <mwidget desc="Гм %1">
                         <start-addr>3546</start-addr>
                         <count>61</count>
                     </mwidget>
                 </sgroup>
-                <sgroup tab="313" header="Данные по гармоническому составу сигналов фазы C">
+                <sgroup header="Данные по гармоническому составу сигналов фазы C" tab="313">
                     <mwidget desc="Гм %1">
                         <start-addr>3672</start-addr>
                         <count>61</count>
@@ -1317,7 +1317,7 @@
                 </sgroup>
             </section>
             <section header="Текущие данные. Первая тройка">
-                <sgroup tab="1" header="Действующие значения и крест-факторы сигналов">
+                <sgroup header="Действующие значения и крест-факторы сигналов" tab="1">
                     <mwidget desc="U ф.%1, кВ">
                         <start-addr>1000</start-addr>
                         <count>3</count>
@@ -1357,7 +1357,7 @@
                         </string-array>
                     </mwidget>
                 </sgroup>
-                <sgroup tab="1" header="Данные по несимметрии и искажениям сигналов">
+                <sgroup header="Данные по несимметрии и искажениям сигналов" tab="1">
                     <mwidget desc="U0, кВ">
                         <start-addr>1011</start-addr>
                         <toolTip>Напряжение нулевой последовательности гр.1, кВ</toolTip>
@@ -1389,7 +1389,7 @@
                         </string-array>
                     </mwidget>
                 </sgroup>
-                <sgroup tab="1" header="Линейные напряжения">
+                <sgroup header="Линейные напряжения" tab="1">
                     <mwidget desc="U ф.%1, кВ">
                         <start-addr>1220</start-addr>
                         <count>3</count>
@@ -1419,19 +1419,19 @@
                         <toolTip>Действ. линейное напряжение по 1-й гармонике среднее, кВ</toolTip>
                     </mwidget>
                 </sgroup>
-                <sgroup tab="311" header="Данные по гармоническому составу сигналов фазы A">
+                <sgroup header="Данные по гармоническому составу сигналов фазы A" tab="311">
                     <mwidget desc="Гм %1">
                         <start-addr>3020</start-addr>
                         <count>61</count>
                     </mwidget>
                 </sgroup>
-                <sgroup tab="312" header="Данные по гармоническому составу сигналов фазы В">
+                <sgroup header="Данные по гармоническому составу сигналов фазы В" tab="312">
                     <mwidget desc="Гм %1">
                         <start-addr>3146</start-addr>
                         <count>61</count>
                     </mwidget>
                 </sgroup>
-                <sgroup tab="313" header="Данные по гармоническому составу сигналов фазы C">
+                <sgroup header="Данные по гармоническому составу сигналов фазы C" tab="313">
                     <mwidget desc="Гм %1">
                         <start-addr>3272</start-addr>
                         <count>61</count>

@@ -8,8 +8,8 @@ XmlDataModel::XmlDataModel(int rows, int cols, ModelType type, QObject *parent) 
 std::tuple<QString, QString, std::function<void(QDomDocument &, QDomElement &, int &)>> XmlDataModel::getModelSettings()
 {
     auto alarmHelper = [&](auto &doc, auto &item, auto &row) {
-        makeElement(doc, item, tags::string, data(index(row, 0)));
-        makeElement(doc, item, tags::addr, data(index(row, 1)));
+        makeElement(doc, item, tags::addr, data(index(row, 0)));
+        makeElement(doc, item, tags::string, data(index(row, 1)));
     };
 
     switch (mType)
@@ -17,9 +17,9 @@ std::tuple<QString, QString, std::function<void(QDomDocument &, QDomElement &, i
     case ModelType::Signals:
         return { tags::sigs, tags::sig, //
             [&](auto &doc, auto &item, auto &row) {
-                makeElement(doc, item, tags::id, data(index(row, 0)));
-                makeElement(doc, item, tags::start_addr, data(index(row, 1)));
-                makeElement(doc, item, tags::count, data(index(row, 2)));
+                makeElement(doc, item, tags::start_addr, data(index(row, 0)));
+                makeElement(doc, item, tags::count, data(index(row, 1)));
+                makeElement(doc, item, tags::id, data(index(row, 2)));
             } };
     case ModelType::SectionTabs:
         return { tags::tabs, tags::tab, //
@@ -88,9 +88,9 @@ void XmlDataModel::parseNode(QDomNode &node, int &row)
 {
     if (mType == ModelType::Signals)
     {
-        parseTag(node, tags::id, row, 0);         // ID сигнала
-        parseTag(node, tags::start_addr, row, 1); // Стартовый адрес
-        parseTag(node, tags::count, row, 2);      // Количество
+        parseTag(node, tags::start_addr, row, 0); // Стартовый адрес
+        parseTag(node, tags::count, row, 1);      // Количество
+        parseTag(node, tags::id, row, 2);         // ID сигнала
     }                                             //
     else if (mType == ModelType::SectionTabs)     //
     {                                             //
@@ -101,8 +101,8 @@ void XmlDataModel::parseNode(QDomNode &node, int &row)
         mType == ModelType::AlarmsWarn ||         //
         mType == ModelType::AlarmsInfo)           //
     {                                             //
-        parseTag(node, tags::string, row, 0);     // Строка с сообщением
-        parseTag(node, tags::addr, row, 1);       // Адрес
+        parseTag(node, tags::addr, row, 0);       // Адрес
+        parseTag(node, tags::string, row, 1);     // Строка с сообщением
     }                                             //
     else if (mType == ModelType::WorkJours)       //
     {                                             //

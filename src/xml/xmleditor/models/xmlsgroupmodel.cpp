@@ -39,11 +39,23 @@ void XmlSGroupModel::getDialogRequest(const int &row)
     }
 }
 
+/// \brief Slot for creating data in model.
+void XmlSGroupModel::create(const QStringList &saved, int *row)
+{
+    Q_ASSERT(saved.count() == 5);
+    IEditorModel::create({ saved[0], saved[1] }, row);
+    if (*row >= 0 && *row < rowCount())
+    {
+        auto newHide = convertHideData({ saved[2], saved[3], saved[4] });
+        setData(index(*row, 0), QVariant::fromValue(newHide), SGroupDataRole);
+    }
+}
+
 /// \brief Slot for updating an item's data in the model (including hiding data).
 void XmlSGroupModel::update(const QStringList &saved, const int &row)
 {
     Q_ASSERT(saved.count() == 5);
-    IEditorModel::update(saved, row);
+    IEditorModel::update({ saved[0], saved[1] }, row);
     if (row >= 0 && row < rowCount())
     {
         auto newHide = convertHideData({ saved[2], saved[3], saved[4] });
@@ -55,8 +67,8 @@ void XmlSGroupModel::update(const QStringList &saved, const int &row)
 /// \brief Parsing input XML nodes of file in model items.
 void XmlSGroupModel::parseNode(QDomNode &node, int &row)
 {
-    parseAttribute(node, tags::desc, row, 0); // Заголовок
-    parseTag(node, tags::start_addr, row, 1); // Адрес
+    parseTag(node, tags::start_addr, row, 0); // Адрес
+    parseAttribute(node, tags::desc, row, 1); // Заголовок
     setData(index(row, 0), QVariant::fromValue(parseHideData(node)), SGroupDataRole);
 }
 
@@ -71,8 +83,8 @@ QDomElement XmlSGroupModel::toNode(QDomDocument &doc)
         {
             // Видимые данные
             auto mwidget = makeElement(doc, tags::mwidget);
-            setAttribute(doc, mwidget, tags::desc, data(index(row, 0)));
-            makeElement(doc, mwidget, tags::start_addr, data(index(row, 1)));
+            makeElement(doc, mwidget, tags::start_addr, data(index(row, 0)));
+            setAttribute(doc, mwidget, tags::desc, data(index(row, 1)));
             // Скрытые данные
             auto hideDataVar = data(index(row, 0), SGroupDataRole);
             if (hideDataVar.isValid() && hideDataVar.canConvert<SGroupHideData>())
@@ -84,7 +96,7 @@ QDomElement XmlSGroupModel::toNode(QDomDocument &doc)
                 if (!hideData.tooltip.isEmpty())
                     makeElement(doc, mwidget, tags::tooltip, hideData.tooltip);
 
-                if (!hideData.array.isEmpty())
+                if (!(hideData.array.isEmpty() || (hideData.array.size() == 1 && hideData.array.first().isEmpty())))
                 {
                     auto strArray = makeElement(doc, tags::str_array);
                     for (const auto &str : qAsConst(hideData.array))

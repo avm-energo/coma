@@ -30,6 +30,7 @@ private:
     QList<UDialog *> mDialogs;
     ConfigV configV;
 
+    bool isBoxModule(const quint16 &type) const;
     void addDialogToList(UDialog *dlg, const QString &caption, const QString &name);
     void createConfigDialogs();
     void createCheckDialogs();

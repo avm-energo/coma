@@ -18,14 +18,6 @@ void XmlMWidgetDialog::setupUI(QVBoxLayout *mainLayout)
     auto Layout5 = new QHBoxLayout;
     mTitle += "описания мульти-виджета";
 
-    // Виджеты для имени мульти-виджета
-    auto descLabel = new QLabel("Имя: ", this);
-    auto desc = new QLineEdit("", this);
-    QObject::connect(desc, &QLineEdit::textEdited, this, qOverload<const QString &>(&XmlMWidgetDialog::dataChanged));
-    Layout1->addWidget(descLabel);
-    Layout1->addWidget(desc);
-    dlgItems.append(desc);
-
     // Виджеты для начального адреса
     auto addrLabel = new QLabel("Начальный адрес: ", this);
     auto startAddr = new QLineEdit("", this);
@@ -35,6 +27,14 @@ void XmlMWidgetDialog::setupUI(QVBoxLayout *mainLayout)
     Layout2->addWidget(addrLabel);
     Layout2->addWidget(startAddr);
     dlgItems.append(startAddr);
+
+    // Виджеты для имени мульти-виджета
+    auto descLabel = new QLabel("Имя: ", this);
+    auto desc = new QLineEdit("", this);
+    QObject::connect(desc, &QLineEdit::textEdited, this, qOverload<const QString &>(&XmlMWidgetDialog::dataChanged));
+    Layout1->addWidget(descLabel);
+    Layout1->addWidget(desc);
+    dlgItems.append(desc);
 
     // Виджеты для количества адресов
     auto countLabel = new QLabel("Количество: ", this);
@@ -63,8 +63,8 @@ void XmlMWidgetDialog::setupUI(QVBoxLayout *mainLayout)
     dlgItems.append(strArray);
 
     // Добавляем слои на главный слой
-    mainLayout->addLayout(Layout1);
     mainLayout->addLayout(Layout2);
+    mainLayout->addLayout(Layout1);
     mainLayout->addLayout(Layout3);
     mainLayout->addLayout(Layout4);
     mainLayout->addLayout(Layout5);

@@ -13,14 +13,6 @@ void XmlAlarmDialog::setupUI(QVBoxLayout *mainLayout)
     auto addrLayout = new QHBoxLayout;
     mTitle += "сигнализации";
 
-    // Виджеты для описания сигнализации
-    auto descLabel = new QLabel("Описание сигнализации: ", this);
-    auto descInput = new QLineEdit("", this);
-    QObject::connect(descInput, &QLineEdit::textEdited, this, qOverload<const QString &>(&XmlAlarmDialog::dataChanged));
-    descLayout->addWidget(descLabel);
-    descLayout->addWidget(descInput);
-    dlgItems.append(descInput);
-
     // Виджеты для адреса сигнализации
     auto addrLabel = new QLabel("Адрес сигнализации: ", this);
     auto addrInput = new QLineEdit("", this);
@@ -30,7 +22,15 @@ void XmlAlarmDialog::setupUI(QVBoxLayout *mainLayout)
     addrLayout->addWidget(addrInput);
     dlgItems.append(addrInput);
 
+    // Виджеты для описания сигнализации
+    auto descLabel = new QLabel("Описание сигнализации: ", this);
+    auto descInput = new QLineEdit("", this);
+    QObject::connect(descInput, &QLineEdit::textEdited, this, qOverload<const QString &>(&XmlAlarmDialog::dataChanged));
+    descLayout->addWidget(descLabel);
+    descLayout->addWidget(descInput);
+    dlgItems.append(descInput);
+
     // Добавляем слои на главный слой
-    mainLayout->addLayout(descLayout);
     mainLayout->addLayout(addrLayout);
+    mainLayout->addLayout(descLayout);
 }

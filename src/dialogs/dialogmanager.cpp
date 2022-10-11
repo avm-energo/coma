@@ -71,13 +71,19 @@ void DialogManager::parentTWTabChanged(int index)
     }
 }
 
+/// \brief Returns true if module in box, otherwise false.
+bool DialogManager::isBoxModule(const quint16 &type) const
+{
+    return (type == Modules::Model::KDV || type == Modules::Model::KTF || type == Modules::Model::KIV);
+}
+
 /// \brief Creating config dialogs.
 void DialogManager::createConfigDialogs()
 {
     auto &config = settings.getConfigMap();
     for (auto it = config.cbegin(); it != config.cend(); it++)
     {
-        auto indexStr = QString::number(it.key());
+        auto indexStr = (config.size() > 1) ? QString::number(it.key()) : "";
         addDialogToList(new ConfigDialog(&configV, it.value(), true, mParent), //
             "Конфигурация " + indexStr, "conf" + indexStr);
     }
@@ -174,9 +180,8 @@ void DialogManager::createSpecificDialogs(const AppConfiguration &appCfg)
 {
     using namespace Modules;
     auto &board = Board::GetInstance();
-    auto isBoxModule = !Modules::BaseBoards.contains(board.typeB());
     // Коробочный модуль
-    if (isBoxModule)
+    if (isBoxModule(board.baseSerialInfo().type()))
     {
         auto moduleModel = Model(board.type());
         // Добавляем регулировку, если АВМ Настройка

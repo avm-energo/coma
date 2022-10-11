@@ -3,10 +3,12 @@
 
 #include "modbusprivate.h"
 
+#include <QTimer>
 #include <gen/datatypes.h>
 #include <gen/logclass.h>
 
 #define RECONNECTTIME 10000
+#define TRASHTIMEOUT 1065 // 255 bytes * 10 (bit/byte) / 2400 (baud) * 1000 (msec)
 
 class ModbusThread : public QObject
 {
@@ -40,6 +42,8 @@ private:
     QByteArray m_readData;
     CommandsMBS::CommandStruct m_commandSent;
     int m_bytesToReceive;
+    QTimer *trashTimer;
+    bool mTrashEnabled;
 
     void readRegisters(CommandsMBS::CommandStruct &cms);
     void readCoils(CommandsMBS::CommandStruct &cms);
@@ -65,6 +69,9 @@ private:
 
         return *reinterpret_cast<T *>(ba.data());
     }
+
+private slots:
+    void trashTimerTimeout();
 
 signals:
 };

@@ -24,15 +24,15 @@ const std::map<QString, ModelType> XmlModel::types {
 
 const std::map<ModelType, QStringList> XmlModel::headers {
     { ModelType::Resources, { "XML", "Описание" } },                                         //
-    { ModelType::Signals, { "ID сигнала", "Стартовый адрес", "Количество" } },               //
+    { ModelType::Signals, { "Стартовый адрес", "Количество", "ID сигнала" } },               //
     { ModelType::SectionTabs, { "ID вкладки", "Название" } },                                //
     { ModelType::Sections, { "Название" } },                                                 //
     { ModelType::Section, { "Название", "ID вкладки" } },                                    //
-    { ModelType::SGroup, { "Имя", "Адрес" } },                                               //
+    { ModelType::SGroup, { "Адрес", "Имя" } },                                               //
     { ModelType::Alarms, { "XML", "Описание" } },                                            //
-    { ModelType::AlarmsCrit, { "Описание", "Адрес" } },                                      //
-    { ModelType::AlarmsWarn, { "Описание", "Адрес" } },                                      //
-    { ModelType::AlarmsInfo, { "Описание", "Адрес" } },                                      //
+    { ModelType::AlarmsCrit, { "Адрес", "Описание" } },                                      //
+    { ModelType::AlarmsWarn, { "Адрес", "Описание" } },                                      //
+    { ModelType::AlarmsInfo, { "Адрес", "Описание" } },                                      //
     { ModelType::Journals, { "XML", "Описание" } },                                          //
     { ModelType::WorkJours, { "Адрес", "Описание" } },                                       //
     { ModelType::MeasJours, { "Название" } },                                                //

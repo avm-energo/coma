@@ -13,7 +13,7 @@ Q_NAMESPACE
 
 enum Model
 {
-    KTF = 0xA287,
+    KTF = 0xA282,
     KIV = 0xA284,
     KDV = 0xA387
 };
