@@ -24,7 +24,7 @@ const std::map<QString, ModelType> XmlModel::types {
 
 const std::map<ModelType, QStringList> XmlModel::headers {
     { ModelType::Resources, { "XML", "Описание" } },                                         //
-    { ModelType::Signals, { "Стартовый адрес", "Количество", "ID сигнала" } },               //
+    { ModelType::Signals, { "Стартовый адрес", "Количество", "ID сигнала", "Тип" } },        //
     { ModelType::SectionTabs, { "ID вкладки", "Название" } },                                //
     { ModelType::Sections, { "Название" } },                                                 //
     { ModelType::Section, { "Название", "ID вкладки" } },                                    //
@@ -146,14 +146,19 @@ void XmlModel::parseDataNode(QDomNode &child, int &row)
  *  \details Frequently called by implementations of parseNode virtual function.
  *  \see parseAttribute, parseNode
  */
-void XmlModel::parseTag(QDomNode &node, const QString &tagName, int row, int col)
+void XmlModel::parseTag(QDomNode &node, const QString &tagName, int row, int col, const QString &defValue)
 {
     auto namedNode = node.firstChildElement(tagName);
+    auto tagIndex = index(row, col);
     if (!namedNode.isNull())
     {
-        auto tagIndex = index(row, col);
         auto tag = namedNode.firstChild().toText().data();
         setData(tagIndex, tag);
+    }
+    else
+    {
+        if (!defValue.isEmpty())
+            setData(tagIndex, defValue);
     }
 }
 

@@ -1,6 +1,8 @@
 #include "xmlsignaldialog.h"
 
-XmlSignalDialog::XmlSignalDialog(QWidget *parent) : XmlDialog(parent)
+#include <QComboBox>
+
+XmlSignalDialog::XmlSignalDialog(QWidget *parent) : XmlDialog(parent), type(nullptr)
 {
 }
 
@@ -12,6 +14,7 @@ void XmlSignalDialog::setupUI(QVBoxLayout *mainLayout)
     auto idLayout = new QHBoxLayout;
     auto addrLayout = new QHBoxLayout;
     auto countLayout = new QHBoxLayout;
+    auto typeLayout = new QHBoxLayout;
     mTitle += "группы сигналов";
 
     // Виджеты для адресов группы сигналов
@@ -43,8 +46,35 @@ void XmlSignalDialog::setupUI(QVBoxLayout *mainLayout)
     idLayout->addWidget(idInput);
     dlgItems.append(idInput);
 
+    // Виджеты для типа возвращаемого значения
+    auto typeLabel = new QLabel("Тип возвращаемого значения: ", this);
+    type = new QComboBox(this);
+    type->addItems({ "Float", "BitString", "SinglePoint" });
+    type->setEditable(true);
+    type->setCurrentIndex(0);
+    typeLayout->addWidget(typeLabel);
+    typeLayout->addWidget(type);
+    QObject::connect(                                          //
+        type, qOverload<int>(&QComboBox::currentIndexChanged), //
+        this, qOverload<int>(&XmlSignalDialog::dataChanged));  //
+
     // Добавляем слои на главный слой
     mainLayout->addLayout(addrLayout);
     mainLayout->addLayout(countLayout);
     mainLayout->addLayout(idLayout);
+    mainLayout->addLayout(typeLayout);
+}
+
+QStringList XmlSignalDialog::collectData()
+{
+    auto retVal = XmlDialog::collectData();
+    retVal.append(type->currentText());
+    return retVal;
+}
+
+void XmlSignalDialog::modelDataResponse(const QStringList &response)
+{
+    XmlDialog::modelDataResponse(response);
+    type->setCurrentText(response.last());
+    // type->setEditable(false);
 }

@@ -23,7 +23,7 @@ class XmlModel : public IEditorModel
     Q_OBJECT
 protected:
     void parseDataNode(QDomNode &child, int &row);
-    void parseTag(QDomNode &node, const QString &tagName, int row, int col);
+    void parseTag(QDomNode &node, const QString &tagName, int row, int col, const QString &defValue = "");
     void parseAttribute(QDomNode &node, const QString &attrName, int row, int col);
 
 public:

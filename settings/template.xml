@@ -205,7 +205,7 @@
         <sections desc="Разделы">
             <section header="Текущие данные. Первая тройка">
                 <sgroup header="Действующие значения и крест-факторы сигналов" tab="1">
-                    <mwidget desc="U ф.%1, кВ">
+                    <mwidget desc="U ф.%1, кВ" view="">
                         <start-addr>1000</start-addr>
                         <count>3</count>
                         <toolTip>Фазное истинное действующее напряжение ф.%1</toolTip>

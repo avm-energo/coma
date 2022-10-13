@@ -20,6 +20,7 @@ std::tuple<QString, QString, std::function<void(QDomDocument &, QDomElement &, i
                 makeElement(doc, item, tags::start_addr, data(index(row, 0)));
                 makeElement(doc, item, tags::count, data(index(row, 1)));
                 makeElement(doc, item, tags::id, data(index(row, 2)));
+                makeElement(doc, item, tags::type, data(index(row, 3)));
             } };
     case ModelType::SectionTabs:
         return { tags::tabs, tags::tab, //
@@ -88,54 +89,55 @@ void XmlDataModel::parseNode(QDomNode &node, int &row)
 {
     if (mType == ModelType::Signals)
     {
-        parseTag(node, tags::start_addr, row, 0); // Стартовый адрес
-        parseTag(node, tags::count, row, 1);      // Количество
-        parseTag(node, tags::id, row, 2);         // ID сигнала
-    }                                             //
-    else if (mType == ModelType::SectionTabs)     //
-    {                                             //
-        parseTag(node, tags::id, row, 0);         // ID вкладки
-        parseTag(node, tags::name, row, 1);       // Имя вкладки
-    }                                             //
-    else if (mType == ModelType::AlarmsCrit ||    //
-        mType == ModelType::AlarmsWarn ||         //
-        mType == ModelType::AlarmsInfo)           //
-    {                                             //
-        parseTag(node, tags::addr, row, 0);       // Адрес
-        parseTag(node, tags::string, row, 1);     // Строка с сообщением
-    }                                             //
-    else if (mType == ModelType::WorkJours)       //
-    {                                             //
-        parseTag(node, tags::addr, row, 0);       // Адрес
-        parseTag(node, tags::desc, row, 1);       // Строка с сообщением
-    }                                             //
-    else if (mType == ModelType::MeasJours)       //
-    {                                             //
-        parseTag(node, tags::header, row, 0);     // Название
-    }                                             //
-    else if (mType == ModelType::Modbus)          //
-    {                                             //
-        parseTag(node, tags::sig_id, row, 0);     // ID сигнала
-        parseTag(node, tags::reg_type, row, 1);   // Тип регистра
-        parseTag(node, tags::type, row, 2);       // Возвращаемый тип
-        parseTag(node, tags::desc, row, 3);       // Описание
-    }                                             //
-    else if (mType == ModelType::Protocom)        //
-    {                                             //
-        parseTag(node, tags::block, row, 0);      // Номер блока
-        parseTag(node, tags::sig_id, row, 1);     // ID сигнала
-    }                                             //
-    else if (mType == ModelType::IEC60870)        //
-    {                                             //
-        parseTag(node, tags::sig_id, row, 0);     // ID сигнала
-        parseTag(node, tags::sig_type, row, 1);   // Тип передачи
-        parseTag(node, tags::trans_type, row, 2); // Тип передачи
-        parseTag(node, tags::sig_group, row, 3);  // Группа
-    }                                             //
-    else                                          //
-    {                                             //
-        parseTag(node, tags::id, row, 0);         // ID
-        parseTag(node, tags::def_val, row, 1);    // Значение по умолчанию
+        parseTag(node, tags::start_addr, row, 0);    // Стартовый адрес
+        parseTag(node, tags::count, row, 1);         // Количество
+        parseTag(node, tags::id, row, 2);            // ID сигнала
+        parseTag(node, tags::type, row, 3, "Float"); // Тип сигнала
+    }                                                //
+    else if (mType == ModelType::SectionTabs)        //
+    {                                                //
+        parseTag(node, tags::id, row, 0);            // ID вкладки
+        parseTag(node, tags::name, row, 1);          // Имя вкладки
+    }                                                //
+    else if (mType == ModelType::AlarmsCrit ||       //
+        mType == ModelType::AlarmsWarn ||            //
+        mType == ModelType::AlarmsInfo)              //
+    {                                                //
+        parseTag(node, tags::addr, row, 0);          // Адрес
+        parseTag(node, tags::string, row, 1);        // Строка с сообщением
+    }                                                //
+    else if (mType == ModelType::WorkJours)          //
+    {                                                //
+        parseTag(node, tags::addr, row, 0);          // Адрес
+        parseTag(node, tags::desc, row, 1);          // Строка с сообщением
+    }                                                //
+    else if (mType == ModelType::MeasJours)          //
+    {                                                //
+        parseTag(node, tags::header, row, 0);        // Название
+    }                                                //
+    else if (mType == ModelType::Modbus)             //
+    {                                                //
+        parseTag(node, tags::sig_id, row, 0);        // ID сигнала
+        parseTag(node, tags::reg_type, row, 1);      // Тип регистра
+        parseTag(node, tags::type, row, 2);          // Возвращаемый тип
+        parseTag(node, tags::desc, row, 3);          // Описание
+    }                                                //
+    else if (mType == ModelType::Protocom)           //
+    {                                                //
+        parseTag(node, tags::block, row, 0);         // Номер блока
+        parseTag(node, tags::sig_id, row, 1);        // ID сигнала
+    }                                                //
+    else if (mType == ModelType::IEC60870)           //
+    {                                                //
+        parseTag(node, tags::sig_id, row, 0);        // ID сигнала
+        parseTag(node, tags::sig_type, row, 1);      // Тип передачи
+        parseTag(node, tags::trans_type, row, 2);    // Тип передачи
+        parseTag(node, tags::sig_group, row, 3);     // Группа
+    }                                                //
+    else                                             //
+    {                                                //
+        parseTag(node, tags::id, row, 0);            // ID
+        parseTag(node, tags::def_val, row, 1);       // Значение по умолчанию
     }
 }
 

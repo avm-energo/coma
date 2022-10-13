@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<module mtypeb="a2" mtypem="84">
+<module mtypem="84" mtypeb="a2">
     <name>AVM-KIV</name>
     <version>1.1-0008</version>
     <resources>
@@ -121,72 +121,8 @@
         </alarms>
         <config desc="Конфигурация">
             <record>
-                <id>3</id>
-                <defaultValue>8</defaultValue>
-            </record>
-            <record>
-                <id>4</id>
-                <defaultValue>205</defaultValue>
-            </record>
-            <record>
-                <id>5</id>
-                <defaultValue>5</defaultValue>
-            </record>
-            <record>
-                <id>6</id>
-                <defaultValue>15</defaultValue>
-            </record>
-            <record>
-                <id>7</id>
-                <defaultValue>10</defaultValue>
-            </record>
-            <record>
-                <id>8</id>
-                <defaultValue>20</defaultValue>
-            </record>
-            <record>
-                <id>9</id>
-                <defaultValue>12</defaultValue>
-            </record>
-            <record>
                 <id>10</id>
                 <defaultValue>8</defaultValue>
-            </record>
-            <record>
-                <id>20</id>
-                <defaultValue>172,16,28,254</defaultValue>
-            </record>
-            <record>
-                <id>21</id>
-                <defaultValue>255,255,255,0</defaultValue>
-            </record>
-            <record>
-                <id>22</id>
-                <defaultValue>172,16,28,1</defaultValue>
-            </record>
-            <record>
-                <id>23</id>
-                <defaultValue>2404,2405,502,0</defaultValue>
-            </record>
-            <record>
-                <id>24</id>
-                <defaultValue>172,16,28,12</defaultValue>
-            </record>
-            <record>
-                <id>25</id>
-                <defaultValue>9600</defaultValue>
-            </record>
-            <record>
-                <id>26</id>
-                <defaultValue>0</defaultValue>
-            </record>
-            <record>
-                <id>27</id>
-                <defaultValue>0</defaultValue>
-            </record>
-            <record>
-                <id>28</id>
-                <defaultValue>1</defaultValue>
             </record>
             <record>
                 <id>1003</id>
@@ -311,6 +247,70 @@
             <record>
                 <id>1064</id>
                 <defaultValue>0</defaultValue>
+            </record>
+            <record>
+                <id>20</id>
+                <defaultValue>172,16,28,254</defaultValue>
+            </record>
+            <record>
+                <id>21</id>
+                <defaultValue>255,255,255,0</defaultValue>
+            </record>
+            <record>
+                <id>22</id>
+                <defaultValue>172,16,28,1</defaultValue>
+            </record>
+            <record>
+                <id>23</id>
+                <defaultValue>2404,2405,502,0</defaultValue>
+            </record>
+            <record>
+                <id>24</id>
+                <defaultValue>172,16,28,12</defaultValue>
+            </record>
+            <record>
+                <id>25</id>
+                <defaultValue>9600</defaultValue>
+            </record>
+            <record>
+                <id>26</id>
+                <defaultValue>0</defaultValue>
+            </record>
+            <record>
+                <id>27</id>
+                <defaultValue>0</defaultValue>
+            </record>
+            <record>
+                <id>28</id>
+                <defaultValue>1</defaultValue>
+            </record>
+            <record>
+                <id>3</id>
+                <defaultValue>8</defaultValue>
+            </record>
+            <record>
+                <id>4</id>
+                <defaultValue>205</defaultValue>
+            </record>
+            <record>
+                <id>5</id>
+                <defaultValue>5</defaultValue>
+            </record>
+            <record>
+                <id>6</id>
+                <defaultValue>15</defaultValue>
+            </record>
+            <record>
+                <id>7</id>
+                <defaultValue>10</defaultValue>
+            </record>
+            <record>
+                <id>8</id>
+                <defaultValue>20</defaultValue>
+            </record>
+            <record>
+                <id>9</id>
+                <defaultValue>12</defaultValue>
             </record>
         </config>
         <iec60870 desc="Протокол ГОСТ Р МЭК 60870-5-104">
@@ -759,6 +759,10 @@
                 <block>8</block>
                 <signal-id>10</signal-id>
             </group>
+            <group>
+                <block>9</block>
+                <signal-id>15</signal-id>
+            </group>
         </protocom>
         <section-tabs desc="Вкладки">
             <tab>
@@ -772,11 +776,17 @@
         </section-tabs>
         <sections desc="Разделы">
             <section header="Текущие данные">
-                <sgroup header="Общие" tab="1">
-                    <mwidget desc="Tamb, °С">
-                        <start-addr>4501</start-addr>
-                        <toolTip>Температура окружающей среды, °С</toolTip>
+                <sgroup header="Дискретные входы-выходы" tab="1">
+                    <mwidget desc="Состояние дискретных выходов">
+                        <start-addr>4520</start-addr>
+                        <toolTip>Дискретные выходы (DIO_0)</toolTip>
                     </mwidget>
+                    <mwidget desc="Состояние дискретных входов">
+                        <start-addr>4521</start-addr>
+                        <toolTip>Дискретные входы (DIO_1)</toolTip>
+                    </mwidget>
+                </sgroup>
+                <sgroup header="Общие" tab="1">
                     <mwidget desc="Температура микроконтроллера, °С">
                         <start-addr>101</start-addr>
                         <toolTip>Температура микроконтроллера, °С</toolTip>
@@ -784,6 +794,10 @@
                     <mwidget desc="Частота, Гц">
                         <start-addr>2400</start-addr>
                         <toolTip>Частота, Гц</toolTip>
+                    </mwidget>
+                    <mwidget desc="Температура окружающей среды, °С">
+                        <start-addr>4501</start-addr>
+                        <toolTip>Температура окружающей среды, °С</toolTip>
                     </mwidget>
                 </sgroup>
                 <sgroup header="Параметры вводов" tab="1">
@@ -937,96 +951,115 @@
                 <start-addr>1</start-addr>
                 <count>15</count>
                 <id>1</id>
+                <type>BitString</type>
             </signal>
             <signal>
                 <start-addr>1000</start-addr>
                 <count>16</count>
                 <id>5</id>
+                <type>Float</type>
             </signal>
             <signal>
                 <start-addr>101</start-addr>
                 <count>2</count>
                 <id>2</id>
+                <type>Float</type>
             </signal>
             <signal>
                 <start-addr>1100</start-addr>
                 <count>16</count>
                 <id>6</id>
+                <type>Float</type>
             </signal>
             <signal>
                 <start-addr>13000</start-addr>
                 <count>7</count>
                 <id>16</id>
+                <type>Float</type>
             </signal>
             <signal>
                 <start-addr>201</start-addr>
                 <count>3</count>
                 <id>12</id>
+                <type>Float</type>
             </signal>
             <signal>
                 <start-addr>2400</start-addr>
                 <count>7</count>
                 <id>7</id>
+                <type>Float</type>
             </signal>
             <signal>
                 <start-addr>2420</start-addr>
                 <count>14</count>
                 <id>8</id>
+                <type>Float</type>
             </signal>
             <signal>
                 <start-addr>3011</start-addr>
                 <count>26</count>
                 <id>13</id>
+                <type>Float</type>
             </signal>
             <signal>
                 <start-addr>3100</start-addr>
                 <count>1</count>
                 <id>21</id>
+                <type>Float</type>
             </signal>
             <signal>
                 <start-addr>40</start-addr>
                 <count>5</count>
                 <id>20</id>
+                <type>Float</type>
             </signal>
             <signal>
                 <start-addr>4000</start-addr>
                 <count>11</count>
                 <id>9</id>
+                <type>Float</type>
             </signal>
             <signal>
                 <start-addr>4501</start-addr>
                 <count>2</count>
                 <id>10</id>
+                <type>Float</type>
             </signal>
             <signal>
                 <start-addr>4520</start-addr>
                 <count>2</count>
                 <id>15</id>
+                <type>BitString</type>
             </signal>
             <signal>
                 <start-addr>4600</start-addr>
-                <count>2</count>
+                <count>1</count>
                 <id>14</id>
+                <type>BitString</type>
             </signal>
             <signal>
                 <start-addr>7000</start-addr>
                 <count>7</count>
                 <id>11</id>
+                <type>Float</type>
             </signal>
             <signal>
                 <start-addr>801</start-addr>
                 <count>3</count>
                 <id>3</id>
+                <type>Float</type>
             </signal>
             <signal>
                 <start-addr>900</start-addr>
                 <count>8</count>
                 <id>4</id>
+                <type>Float</type>
             </signal>
             <signal>
                 <start-addr>910</start-addr>
                 <count>11</count>
                 <id>17</id>
+                <type>Float</type>
             </signal>
         </signals>
     </resources>

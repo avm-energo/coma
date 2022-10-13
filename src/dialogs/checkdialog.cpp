@@ -311,7 +311,7 @@ void CheckDialog::setupUI()
     const auto tabs = mSection.sgMap.uniqueKeys();
     for (auto &&tab : tabs)
     {
-        auto widget = new UWidget;
+        auto widget = new UWidget(this);
         auto layout = new QVBoxLayout;
         const auto groups = mSection.sgMap.values(tab);
         for (auto &&group : groups)
@@ -340,25 +340,24 @@ void CheckDialog::addSignals(const QList<ModuleTypes::SGroup> &groups, UWidget *
     // Для каждой группы...
     for (auto &&group : groups)
     {
-        auto &widgetList = group.widgets;
-        // ... среди сигналов ищем такой, чтобы...
-        auto search = std::find_if(sigMap.cbegin(), sigMap.cend(),
-            // ... первый виджет группы попадал в допустимый диапазон сигнала...
-            [&](const ModuleTypes::Signal &signal) -> bool {
-                if (!widgetList.isEmpty())
-                {
-                    auto start = widgetList[0].startAddr;
-                    auto end = start + widgetList[0].count - 1;
+        // ... для каждого виджета
+        for (auto &&widget : group.widgets)
+        {
+            // ... среди сигналов ищем такой, чтобы...
+            auto search = std::find_if(sigMap.cbegin(), sigMap.cend(),
+                // ... виджет попадал в допустимый диапазон сигнала...
+                [&](const ModuleTypes::Signal &signal) -> bool {
+                    auto start = widget.startAddr;
+                    auto end = start + widget.count - 1;
                     auto acceptStart = signal.startAddr;
                     auto acceptEnd = acceptStart + signal.count;
                     return ((start >= acceptStart && start < acceptEnd) && (end >= acceptStart && end < acceptEnd));
-                }
-                return false;
-            });
-        // ... и когда находим...
-        if (search != sigMap.cend())
-            // ... то добавляем в множество неповторяющихся ключей
-            sigIds.insert(search.key());
+                });
+            // ... и когда находим...
+            if (search != sigMap.cend())
+                // ... то добавляем в множество неповторяющихся ключей
+                sigIds.insert(search.key());
+        }
     }
 
     // Для каждого найденного ID добавляем обработчик сигнала из SignalMap в виджет
