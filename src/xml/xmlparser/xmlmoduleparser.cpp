@@ -72,6 +72,16 @@ ModuleTypes::SignalType Xml::ModuleParser::parseSigType(const QDomNode &sigNode)
     return ModuleTypes::SignalType::Float;
 }
 
+/// \brief Функция для определения типа типа отображения мультивиджета.
+ModuleTypes::ViewType Xml::ModuleParser::parseViewType(const QDomNode &mwidgetNode)
+{
+    auto viewString = mwidgetNode.toElement().attribute(tags::view, "float");
+    if (viewString.contains("bitset", Qt::CaseInsensitive))
+        return ModuleTypes::ViewType::Bitset;
+    else
+        return ModuleTypes::ViewType::Float;
+}
+
 /// \brief Функция для парсинга узла <signals>.
 void Xml::ModuleParser::parseSignal(const QDomNode &sigNode)
 {
@@ -107,9 +117,10 @@ void Xml::ModuleParser::parseSection(const QDomNode &sectionNode)
             auto count = parseNumFromNode<quint32>(mwidgetNode, tags::count);
             count = (count == 0) ? 1 : count;
             auto tooltip = parseString(mwidgetNode, tags::tooltip);
+            auto view = parseViewType(mwidgetNode);
             auto itemList = parseStringArray(mwidgetNode);
             sgroup.name = sgroupHeader;
-            sgroup.widgets.push_back({ mwidgetDesc, addr, count, tooltip, itemList });
+            sgroup.widgets.push_back({ mwidgetDesc, addr, count, tooltip, view, itemList });
         });
         sgmap.insert(sgroupTab, sgroup);
     });

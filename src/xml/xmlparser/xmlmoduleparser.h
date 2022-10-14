@@ -33,6 +33,7 @@ private:
     bool isCorrectModuleType(const QDomElement &moduleNode, const quint16 &typeB, const quint16 &typeM);
     bool isCorrectModuleVersion(const QDomElement &moduleNode);
     ModuleTypes::SignalType parseSigType(const QDomNode &sigNode);
+    ModuleTypes::ViewType parseViewType(const QDomNode &mwidgetNode);
 
     void parseResources(const QDomElement &resNode);
     void parseSignal(const QDomNode &sigNode);

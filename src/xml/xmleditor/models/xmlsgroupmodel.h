@@ -10,6 +10,7 @@ struct SGroupHideData
 {
     int count = 1;
     QString tooltip = "";
+    QString view = "float";
     QStringList array = {};
 };
 Q_DECLARE_METATYPE(SGroupHideData);

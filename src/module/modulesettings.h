@@ -18,14 +18,22 @@ struct Signal
     SignalType sigType;
 };
 
+/// \brief Перечисление для хранения типа отображения мультивиджета.
+enum ViewType : quint8
+{
+    Float = 0,
+    Bitset = 1
+};
+
 /// \brief Структура для хранения информации узла <mwidget> из XML.
 struct MWidget
 {
-    QString desc;                 ///< атрибут "desc"
-    quint32 startAddr;            ///< узел <start-addr>
-    quint32 count = 1;            ///< узел <count>
-    QString tooltip = "";         ///< узел <toolTip>
-    QStringList subItemList = {}; ///< узел <string-array>
+    QString desc;                    ///< атрибут "desc"
+    quint32 startAddr;               ///< узел <start-addr>
+    quint32 count = 1;               ///< узел <count>
+    QString tooltip = "";            ///< узел <toolTip>
+    ViewType view = ViewType::Float; ///< атрибут "view"
+    QStringList subItemList = {};    ///< узел <string-array>
 };
 
 /// \brief Структура для хранения информации узла <sgroup> из XML.

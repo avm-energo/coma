@@ -33,6 +33,7 @@ void XmlSGroupModel::getDialogRequest(const int &row)
             retList.append(QString::number(hidingVal.count));
             retList.append(hidingVal.tooltip);
             retList.append(hidingVal.array.join(','));
+            retList.append(hidingVal.view);
         }
         // Отправляем сигнал с ответом
         emit sendDialogResponse(retList);
@@ -54,11 +55,10 @@ void XmlSGroupModel::create(const QStringList &saved, int *row)
 /// \brief Slot for updating an item's data in the model (including hiding data).
 void XmlSGroupModel::update(const QStringList &saved, const int &row)
 {
-    Q_ASSERT(saved.count() == 5);
     IEditorModel::update({ saved[0], saved[1] }, row);
     if (row >= 0 && row < rowCount())
     {
-        auto newHide = convertHideData({ saved[2], saved[3], saved[4] });
+        auto newHide = convertHideData({ saved[2], saved[3], saved[5], saved[4] });
         setData(index(row, 0), QVariant::fromValue(newHide), SGroupDataRole);
     }
     emit modelChanged();
@@ -96,6 +96,9 @@ QDomElement XmlSGroupModel::toNode(QDomDocument &doc)
                 if (!hideData.tooltip.isEmpty())
                     makeElement(doc, mwidget, tags::tooltip, hideData.tooltip);
 
+                if (!hideData.view.isEmpty())
+                    setAttribute(doc, mwidget, tags::view, hideData.view);
+
                 if (!(hideData.array.isEmpty() || (hideData.array.size() == 1 && hideData.array.first().isEmpty())))
                 {
                     auto strArray = makeElement(doc, tags::str_array);
@@ -131,6 +134,8 @@ SGroupHideData XmlSGroupModel::parseHideData(QDomNode &node)
         auto tooltip = tooltipNode.firstChild().toText().data();
         retVal.tooltip = tooltip;
     }
+    // Парсим аттрибут view
+    retVal.view = node.toElement().attribute(tags::view, "float");
     // Парсим тег string-array
     auto strArrayNode = node.firstChildElement(tags::str_array);
     if (!strArrayNode.isNull())
@@ -158,6 +163,8 @@ SGroupHideData XmlSGroupModel::convertHideData(const QStringList &input)
     if (state)
         hiding.count = count;
     hiding.tooltip = input[1];
-    hiding.array = input[2].split(',');
+    hiding.view = input[2];
+    if (!input[3].isEmpty())
+        hiding.array = input[3].split(',');
     return hiding;
 }

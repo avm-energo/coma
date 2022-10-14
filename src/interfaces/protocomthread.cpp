@@ -689,7 +689,7 @@ void ProtocomThread::handleBitString(const QByteArray &ba, quint16 sigAddr)
     Q_ASSERT(ba.size() == sizeof(quint32));
 
     quint32 value = *reinterpret_cast<const quint32 *>(ba.data());
-    DataTypes::BitStringStruct resp { sigAddr, value, {} };
+    DataTypes::BitStringStruct resp { sigAddr, value, DataTypes::Quality::Good };
     DataManager::GetInstance().addSignalToOutList(resp);
 }
 #ifdef __linux
@@ -730,7 +730,7 @@ void ProtocomThread::handleFloat(const QByteArray &ba, quint32 sigAddr)
 {
     Q_ASSERT(ba.size() == 4);
     float blk = *reinterpret_cast<const float *>(ba.data());
-    DataTypes::FloatStruct resp { sigAddr, blk };
+    DataTypes::FloatStruct resp { sigAddr, DataTypes::Quality::Good, blk };
     DataManager::GetInstance().addSignalToOutList(resp);
 }
 
@@ -752,7 +752,7 @@ void ProtocomThread::handleSinglePoint(const QByteArray &ba, const quint16 addr)
     for (quint32 i = 0; i != quint32(ba.size()); ++i)
     {
         quint8 value = ba.at(i);
-        DataTypes::SinglePointWithTimeStruct data { (addr + i), value, 0 };
+        DataTypes::SinglePointWithTimeStruct data { (addr + i), value, DataTypes::Good, 0 };
         DataManager::GetInstance().addSignalToOutList(data);
     }
 }

@@ -24,9 +24,7 @@ public:
     //    bool m_withGUI;
 
     explicit UWidget(QWidget *parent = nullptr);
-
     bool updatesEnabled();
-    //    virtual void setConnections() = 0;
     const QString getCaption();
     void setCaption(const QString &caption);
     virtual void uponInterfaceSetting();
@@ -38,14 +36,11 @@ public:
 
 protected:
     QString m_hash;
-
     bool checkPassword();
 
 private:
     QMap<int, QList<HighlightWarnAlarmStruct>> m_highlightMap;
     ModuleDataUpdater *m_dataUpdater;
-
-private slots:
 };
 
 #endif // UWIDGET_H

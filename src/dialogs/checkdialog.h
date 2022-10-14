@@ -21,9 +21,10 @@
 #include <QBitArray>
 #include <QElapsedTimer>
 #include <QGroupBox>
+#include <QHBoxLayout>
 #include <QTimer>
 
-// default timer interval to check analog values
+/// \brief Default timer interval to check analog values
 constexpr int ANMEASINT = 2000;
 
 namespace QXlsx
@@ -31,51 +32,31 @@ namespace QXlsx
 class Document;
 }
 
+struct BdUIStruct
+{
+    QString widgetCaption;
+    UWidget *widget;
+};
+
+enum Highlight
+{
+    Warning,
+    Critical
+};
+
+using HighlightMap = QMultiMap<quint32, quint32>;
+
 class CheckDialog : public UDialog
 {
     Q_OBJECT
 public:
-    struct BdUIStruct
-    {
-        QString widgetCaption;
-        UWidget *widget;
-    };
-
-    enum Highlight
-    {
-        Warning,
-        Critical
-    };
-
-    using HighlightMap = QMultiMap<quint32, quint32>;
-
     explicit CheckDialog(const ModuleTypes::Section &mSection, QWidget *parent = nullptr);
     ~CheckDialog() override;
-
     void setupUI();
     void setupUIAbs();
-
-    // row - строка для записи заголовков
-    // void PrepareHeadersForFile(int row);
-    // row - номер строки для записи в файл xlsx, bdnum - номер блока данных
-    // void WriteToFile(int row, int bdnum);
-    // функция подготовки к измерениям (например,   запрос постоянных данных)
-    // void PrepareAnalogMeasurements();
-
     void SetBd(int bdnum, void *block, int blocksize, bool toxlsx = true);
     QWidget *BottomUI();
-    void setHighlights(Highlight type, const HighlightMap &map)
-    {
-        switch (type)
-        {
-        case Warning:
-            m_highlightWarn = map;
-            break;
-        case Critical:
-            m_highlightCrit = map;
-            break;
-        }
-    }
+    void setHighlights(Highlight type, const HighlightMap &map);
     void updateSPData(const DataTypes::SinglePointWithTimeStruct &sp) override;
 
 protected:
@@ -89,7 +70,6 @@ protected:
     QXlsx::Document *xlsx;
 
     const ModuleTypes::Section &mSection;
-    // const ModuleTypes::SignalMap &mSigMap;
     const ModuleTypes::TabsMap &mTabs;
 
     static constexpr char ValuesFormat[]
@@ -108,17 +88,15 @@ private:
 
     QMultiMap<quint32, quint32> m_highlightWarn, m_highlightCrit;
     QMap<int, BdBlocks *> Bd_blocks;
-
     bool m_readDataInProgress;
     QElapsedTimer *ElapsedTimeCounter;
     int WRow;
-    //    UniquePointer<DataTypesProxy> proxySP, proxyFS;
 
     void ReadAnalogMeasurementsAndWriteToFile();
-    QString getTitle(const ModuleTypes::MWidget &widget, const int &number);
-    QString getTooltip(const ModuleTypes::MWidget &widget, const int &number);
-    void setup(const ModuleTypes::MWidget &arg, const QString &name, QGroupBox *gb);
-    void setup(const ModuleTypes::SGroup &arg, QGroupBox *gb);
+    QString getFormated(const ModuleTypes::MWidget &widget, const QString &form, const int &number);
+    QVBoxLayout *setupGroup(const ModuleTypes::SGroup &arg, ModuleDataUpdater *dataUpdater);
+    QGridLayout *setupFloatWidget(const ModuleTypes::MWidget &mwidget, const int &wCount);
+    QVBoxLayout *setupBitsetWidget(const ModuleTypes::MWidget &mwidget, ModuleDataUpdater *dataUpdater);
 
 public slots:
     void StopAnalogMeasurements();

@@ -87,9 +87,9 @@ void AbstractStartupDialog::WriteCor()
         return;
     FillBackCor();
     QVariantList values;
-    for (decltype(m_regMap)::const_iterator it = m_regMap.cbegin(); it != m_regMap.cend(); ++it)
+    for (auto it = m_regMap.cbegin(); it != m_regMap.cend(); ++it)
     {
-        DataTypes::FloatStruct value { it.key(), *it.value() };
+        DataTypes::FloatStruct value { it.key(), DataTypes::Good, *it.value() };
         values.push_back(QVariant::fromValue(value));
     }
     BaseInterface::iface()->writeCommand(Queries::QC_WriteUserValues, values);
@@ -129,7 +129,12 @@ void AbstractStartupDialog::updateFloatData(const DataTypes::FloatStruct &fl)
 {
     // Игнорируем 4011 т.к. он нам не важен и все чужие регистры тоже игнорируем
     if (fl.sigAdr >= m_regMap.firstKey() && fl.sigAdr <= m_regMap.lastKey())
-        FillBd(this, QString::number(fl.sigAdr), fl.sigVal);
+    {
+        if (fl.sigQuality != 192)
+            FillBd(this, QString::number(fl.sigAdr), "***");
+        else
+            FillBd(this, QString::number(fl.sigAdr), fl.sigVal);
+    }
 }
 
 void AbstractStartupDialog::FillBd(QWidget *parent, QString Name, QString Value)

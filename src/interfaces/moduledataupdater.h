@@ -46,7 +46,6 @@ signals:
     void itsTimeToUpdateFloatSignal(DataTypes::FloatStruct &);
     void itsTimeToUpdateSinglePointSignal(DataTypes::SinglePointWithTimeStruct &);
     void itsTimeToUpdateBitStringSignal(DataTypes::BitStringStruct &);
-
     void ifaceChanged();
 
 private slots:

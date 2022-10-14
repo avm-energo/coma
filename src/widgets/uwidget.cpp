@@ -31,7 +31,11 @@ void UWidget::setCaption(const QString &caption)
 
 void UWidget::updateFloatData(const DataTypes::FloatStruct &fl)
 {
-    bool result = WDFunc::SetLBLText(this, QString::number(fl.sigAdr), WDFunc::StringFloatValueWithCheck(fl.sigVal, 3));
+    bool result;
+    if (fl.sigQuality != DataTypes::Good)
+        result = WDFunc::SetLBLText(this, QString::number(fl.sigAdr), "***");
+    else
+        result = WDFunc::SetLBLText(this, QString::number(fl.sigAdr), WDFunc::StringFloatValueWithCheck(fl.sigVal, 3));
 #ifdef UWIDGET_DEBUG
     if (!result)
         qDebug() << Error::DescError << QString::number(fl.sigAdr) << WDFunc::StringValueWithCheck(fl.sigVal, 3);
@@ -42,7 +46,7 @@ void UWidget::updateFloatData(const DataTypes::FloatStruct &fl)
 
 void UWidget::updateSPData(const DataTypes::SinglePointWithTimeStruct &sp)
 {
-    QList<HighlightWarnAlarmStruct> hstlist = m_highlightMap.value(sp.sigAdr);
+    auto hstlist = m_highlightMap.value(sp.sigAdr);
     for (const auto &hst : hstlist)
         WDFunc::SetLBLTColor(this, QString::number(hst.fieldnum), (sp.sigVal == 1) ? Colors::TABCOLORA1 : hst.color);
 }

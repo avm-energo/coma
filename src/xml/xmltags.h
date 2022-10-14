@@ -65,4 +65,5 @@ constexpr auto bitfield = "bitfield";
 constexpr auto parent = "parent";
 constexpr auto name = "name";
 constexpr auto widget = "widget";
+constexpr auto view = "view";
 }
