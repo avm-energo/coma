@@ -59,7 +59,7 @@ bool Xml::ModuleParser::isCorrectModule(const QDomElement &moduleNode, const qui
 ModuleTypes::SignalType Xml::ModuleParser::parseSigType(const QDomNode &sigNode)
 {
     auto typeNode = sigNode.firstChildElement(tags::type);
-    if (typeNode.isNull())
+    if (!typeNode.isNull())
     {
         auto typeStr = typeNode.text();
         if (typeStr.contains("Float", Qt::CaseInsensitive))

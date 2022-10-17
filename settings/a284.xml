@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<module mtypem="84" mtypeb="a2">
+<module mtypeb="a2" mtypem="84">
     <name>AVM-KIV</name>
-    <version>1.1-0008</version>
+    <version>2.2-0000</version>
     <resources>
         <alarms desc="Сигнализация">
             <critical desc="Критичные">
@@ -773,35 +773,29 @@
                 <id>2</id>
                 <name>Дополнительные</name>
             </tab>
+            <tab>
+                <id>3</id>
+                <name>Дискретные входы-выходы</name>
+            </tab>
         </section-tabs>
         <sections desc="Разделы">
             <section header="Текущие данные">
-                <sgroup header="Дискретные входы-выходы" tab="1">
-                    <mwidget desc="Состояние дискретных выходов">
-                        <start-addr>4520</start-addr>
-                        <toolTip>Дискретные выходы (DIO_0)</toolTip>
-                    </mwidget>
-                    <mwidget desc="Состояние дискретных входов">
-                        <start-addr>4521</start-addr>
-                        <toolTip>Дискретные входы (DIO_1)</toolTip>
-                    </mwidget>
-                </sgroup>
-                <sgroup header="Общие" tab="1">
-                    <mwidget desc="Температура микроконтроллера, °С">
+                <sgroup tab="1" header="Общие">
+                    <mwidget view="float" desc="Температура микроконтроллера, °С">
                         <start-addr>101</start-addr>
                         <toolTip>Температура микроконтроллера, °С</toolTip>
                     </mwidget>
-                    <mwidget desc="Частота, Гц">
+                    <mwidget view="float" desc="Частота, Гц">
                         <start-addr>2400</start-addr>
                         <toolTip>Частота, Гц</toolTip>
                     </mwidget>
-                    <mwidget desc="Температура окружающей среды, °С">
+                    <mwidget view="float" desc="Температура окружающей среды, °С">
                         <start-addr>4501</start-addr>
                         <toolTip>Температура окружающей среды, °С</toolTip>
                     </mwidget>
                 </sgroup>
-                <sgroup header="Параметры вводов" tab="1">
-                    <mwidget desc="U ф.%1, кВ">
+                <sgroup tab="1" header="Параметры вводов">
+                    <mwidget view="float" desc="U ф.%1, кВ">
                         <start-addr>1000</start-addr>
                         <count>3</count>
                         <toolTip>Фазное действующее напряжение по 1-й гармонике ф.%1, кВ</toolTip>
@@ -811,7 +805,7 @@
                             <item>C</item>
                         </string-array>
                     </mwidget>
-                    <mwidget desc="I ф.%1, мА">
+                    <mwidget view="float" desc="I ф.%1, мА">
                         <start-addr>1100</start-addr>
                         <count>3</count>
                         <toolTip>Действующее значение тока утечки ввода по 1-й гармонике ф.%1, мА</toolTip>
@@ -821,7 +815,7 @@
                             <item>C</item>
                         </string-array>
                     </mwidget>
-                    <mwidget desc="C1 ф.%1, пФ">
+                    <mwidget view="float" desc="C1 ф.%1, пФ">
                         <start-addr>2420</start-addr>
                         <count>3</count>
                         <toolTip>Емкость С1 ввода ф.%1, пФ</toolTip>
@@ -831,7 +825,7 @@
                             <item>C</item>
                         </string-array>
                     </mwidget>
-                    <mwidget desc="tgδ ф.%1, %">
+                    <mwidget view="float" desc="tgδ ф.%1, %">
                         <start-addr>2423</start-addr>
                         <count>3</count>
                         <toolTip>Тангенс дельта ввода ф.%1, %</toolTip>
@@ -841,7 +835,7 @@
                             <item>C</item>
                         </string-array>
                     </mwidget>
-                    <mwidget desc="∆C ф.%1, %">
+                    <mwidget view="float" desc="∆C ф.%1, %">
                         <start-addr>2426</start-addr>
                         <count>3</count>
                         <toolTip>Приращение емкости С1 ввода ф.%1, %</toolTip>
@@ -851,7 +845,7 @@
                             <item>C</item>
                         </string-array>
                     </mwidget>
-                    <mwidget desc="∆tgδ ф.%1, %">
+                    <mwidget view="float" desc="∆tgδ ф.%1, %">
                         <start-addr>2429</start-addr>
                         <count>3</count>
                         <toolTip>Приращение тангенса дельта ввода ф.%1, %</toolTip>
@@ -862,68 +856,68 @@
                         </string-array>
                     </mwidget>
                 </sgroup>
-                <sgroup header="Параметры небаланса токов" tab="1">
-                    <mwidget desc="Iunb, %">
+                <sgroup tab="1" header="Параметры небаланса токов">
+                    <mwidget view="float" desc="Iunb, %">
                         <start-addr>2432</start-addr>
                         <toolTip>Действующее значение небаланса токов, %</toolTip>
                     </mwidget>
-                    <mwidget desc="Phi_unb, град.">
+                    <mwidget view="float" desc="Phi_unb, град.">
                         <start-addr>2433</start-addr>
                         <toolTip>Угол небаланса токов относительно тока ф.А, град.</toolTip>
                     </mwidget>
                 </sgroup>
-                <sgroup header="Коэффициенты несимметрии" tab="2">
-                    <mwidget desc="KuI1, %">
-                        <start-addr>1114</start-addr>
-                        <toolTip>Коэффициент несимметрии тока по нулевой последовательности, %</toolTip>
-                    </mwidget>
-                    <mwidget desc="KuI2, %">
-                        <start-addr>1115</start-addr>
-                        <toolTip>Коэффициент несимметрии тока по обратной последовательности, %</toolTip>
-                    </mwidget>
-                    <mwidget desc="KuU1, %">
+                <sgroup tab="2" header="Коэффициенты несимметрии">
+                    <mwidget view="float" desc="KuU1, %">
                         <start-addr>1014</start-addr>
                         <toolTip>Коэффициент несимметрии напряжения по нулевой последовательности, %</toolTip>
                     </mwidget>
-                    <mwidget desc="KuU2, %">
+                    <mwidget view="float" desc="KuU2, %">
                         <start-addr>1015</start-addr>
                         <toolTip>Коэффициент несимметрии напряжения по обратной последовательности, %</toolTip>
                     </mwidget>
+                    <mwidget view="float" desc="KuI1, %">
+                        <start-addr>1114</start-addr>
+                        <toolTip>Коэффициент несимметрии тока по нулевой последовательности, %</toolTip>
+                    </mwidget>
+                    <mwidget view="float" desc="KuI2, %">
+                        <start-addr>1115</start-addr>
+                        <toolTip>Коэффициент несимметрии тока по обратной последовательности, %</toolTip>
+                    </mwidget>
                 </sgroup>
-                <sgroup header="Симметричные составляющие" tab="2">
-                    <mwidget desc="U0, кВ">
+                <sgroup tab="2" header="Симметричные составляющие">
+                    <mwidget view="float" desc="U0, кВ">
                         <start-addr>1011</start-addr>
                         <toolTip>Напряжение нулевой последовательности, кВ</toolTip>
                     </mwidget>
-                    <mwidget desc="U1, кВ">
+                    <mwidget view="float" desc="U1, кВ">
                         <start-addr>1012</start-addr>
                         <toolTip>Напряжение прямой последовательности, кВ</toolTip>
                     </mwidget>
-                    <mwidget desc="U2, кВ">
+                    <mwidget view="float" desc="U2, кВ">
                         <start-addr>1013</start-addr>
                         <toolTip>Напряжение обратной последовательности, кВ</toolTip>
                     </mwidget>
-                    <mwidget desc="I0, мА">
+                    <mwidget view="float" desc="I0, мА">
                         <start-addr>1111</start-addr>
                         <toolTip>Ток нулевой последовательности, мА</toolTip>
                     </mwidget>
-                    <mwidget desc="I1, мА">
+                    <mwidget view="float" desc="I1, мА">
                         <start-addr>1112</start-addr>
                         <toolTip>Ток прямой последовательности, мА</toolTip>
                     </mwidget>
-                    <mwidget desc="I2, мА">
+                    <mwidget view="float" desc="I2, мА">
                         <start-addr>1113</start-addr>
                         <toolTip>Ток обратной последовательности, мА</toolTip>
                     </mwidget>
                 </sgroup>
-                <sgroup header="Температура" tab="2">
-                    <mwidget desc="Ramb, Ом">
+                <sgroup tab="2" header="Температура">
+                    <mwidget view="float" desc="Ramb, Ом">
                         <start-addr>4502</start-addr>
                         <toolTip>Сопротивление датчика, Ом</toolTip>
                     </mwidget>
                 </sgroup>
-                <sgroup header="Угловые значения" tab="2">
-                    <mwidget desc="Phy_I ф.%1, град.">
+                <sgroup tab="2" header="Угловые значения">
+                    <mwidget view="float" desc="Phy_I ф.%1, град.">
                         <start-addr>2404</start-addr>
                         <count>3</count>
                         <toolTip>Угол по току ф.%1</toolTip>
@@ -933,7 +927,7 @@
                             <item>C</item>
                         </string-array>
                     </mwidget>
-                    <mwidget desc="Phy_U ф.%1, град.">
+                    <mwidget view="float" desc="Phy_U ф.%1, град.">
                         <start-addr>2401</start-addr>
                         <count>3</count>
                         <toolTip>Угол по напряжению ф.%1</toolTip>
@@ -942,6 +936,19 @@
                             <item>B</item>
                             <item>C</item>
                         </string-array>
+                    </mwidget>
+                </sgroup>
+                <sgroup tab="3" header="Дискретные входы">
+                    <mwidget view="bitset" desc="Состояние дискретных входов">
+                        <start-addr>4521</start-addr>
+                        <toolTip>Дискретные входы (DIO_1)</toolTip>
+                    </mwidget>
+                </sgroup>
+                <sgroup tab="3" header="Дискретные выходы">
+                    <mwidget view="bitset" desc="Состояние дискретных выходов">
+                        <start-addr>4520</start-addr>
+                        <count>3</count>
+                        <toolTip>Дискретные выходы (DIO_0)</toolTip>
                     </mwidget>
                 </sgroup>
             </section>

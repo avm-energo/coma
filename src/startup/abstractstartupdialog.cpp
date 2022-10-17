@@ -89,7 +89,7 @@ void AbstractStartupDialog::WriteCor()
     QVariantList values;
     for (auto it = m_regMap.cbegin(); it != m_regMap.cend(); ++it)
     {
-        DataTypes::FloatStruct value { it.key(), DataTypes::Good, *it.value() };
+        DataTypes::FloatStruct value { it.key(), *it.value(), DataTypes::Quality::Good };
         values.push_back(QVariant::fromValue(value));
     }
     BaseInterface::iface()->writeCommand(Queries::QC_WriteUserValues, values);

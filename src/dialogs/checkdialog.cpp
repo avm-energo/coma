@@ -21,6 +21,11 @@
 #include <gen/error.h>
 #include <gen/stdfunc.h>
 #include <set>
+#include <utility>
+
+constexpr auto circleRadius = 12;
+constexpr auto normalColor = Qt::gray;
+constexpr auto activeColor = Qt::yellow;
 
 CheckDialog::CheckDialog(const ModuleTypes::Section &section, QWidget *parent)
     : UDialog(parent), mSection(section), mTabs(ConfigStorage::GetInstance().getModuleSettings().getTabs())
@@ -197,7 +202,7 @@ void CheckDialog::ReadAnalogMeasurementsAndWriteToFile()
     // получение текущих аналоговых сигналов от модуля
     if (m_readDataInProgress)
     {
-        ERMSG("Ещё не завершена предыдущая операция");
+        qCritical("Ещё не завершена предыдущая операция");
         return;
     }
     m_readDataInProgress = true;
@@ -292,7 +297,7 @@ void CheckDialog::SetTimerPeriod()
     int per = sender()->objectName().toInt(&ok);
     if (!ok)
     {
-        ERMSG("Ошибка считывания интервала таймера");
+        qCritical("Ошибка считывания интервала таймера");
         return;
     }
     Timer->stop();
@@ -313,7 +318,7 @@ void CheckDialog::setupUI()
         {
             auto groupBox = new QGroupBox(widget);
             groupBox->setTitle(group.name);
-            groupBox->setLayout(setupGroup(group, widget->engine()));
+            groupBox->setLayout(setupGroup(group, widget));
             layout->addWidget(groupBox);
         }
         layout->addStretch(100);
@@ -347,7 +352,7 @@ void CheckDialog::addSignals(const QList<ModuleTypes::SGroup> &groups, UWidget *
     // Для каждой группы...
     for (auto &&group : groups)
     {
-        // ... для каждого виджета ...
+        // ... для каждого виджета...
         for (auto &&widget : group.widgets)
         {
             // ... среди сигналов ищем такой, чтобы...
@@ -355,14 +360,14 @@ void CheckDialog::addSignals(const QList<ModuleTypes::SGroup> &groups, UWidget *
                 // ... виджет попадал в допустимый диапазон сигнала...
                 [&](const ModuleTypes::Signal &signal) -> bool {
                     auto start = widget.startAddr;
-                    auto end = start + widget.count - 1;
+                    auto end = (widget.view == ModuleTypes::ViewType::Bitset) ? (start + 1) : (start + widget.count);
                     auto acceptStart = signal.startAddr;
                     auto acceptEnd = acceptStart + signal.count;
-                    return ((start >= acceptStart && start < acceptEnd) && (end >= acceptStart && end < acceptEnd));
+                    return ((start >= acceptStart && start < acceptEnd) && (end > acceptStart && end <= acceptEnd));
                 });
             // ... и когда находим...
             if (search != sigMap.cend())
-                // ... то добавляем в множество неповторяющихся ключей
+                // ... то добавляем в множество неповторяющихся ключей.
                 sigIds.insert(search.key());
         }
     }
@@ -398,7 +403,7 @@ QString CheckDialog::getFormated(const ModuleTypes::MWidget &widget, const QStri
         return (widget.count > 1) ? form.arg(number + 1) : form;
 }
 
-QVBoxLayout *CheckDialog::setupGroup(const ModuleTypes::SGroup &arg, ModuleDataUpdater *dataUpdater)
+QVBoxLayout *CheckDialog::setupGroup(const ModuleTypes::SGroup &arg, UWidget *uwidget)
 {
     auto groupLayout = new QVBoxLayout;
     for (auto &&mwidget : arg.widgets)
@@ -413,7 +418,7 @@ QVBoxLayout *CheckDialog::setupGroup(const ModuleTypes::SGroup &arg, ModuleDataU
         // Bitset
         else if (mwidget.view == ModuleTypes::ViewType::Bitset)
         {
-            auto widgetLayout = setupBitsetWidget(mwidget, dataUpdater);
+            auto widgetLayout = setupBitsetWidget(mwidget, uwidget);
             if (widgetLayout != nullptr)
             {
                 groupLayout->addLayout(widgetLayout);
@@ -449,20 +454,33 @@ QGridLayout *CheckDialog::setupFloatWidget(const ModuleTypes::MWidget &mwidget, 
     return gridLayout;
 }
 
-QVBoxLayout *CheckDialog::setupBitsetWidget(const ModuleTypes::MWidget &mwidget, ModuleDataUpdater *dataUpdater)
+void CheckDialog::updatePixmap(const ModuleTypes::MWidget &mwidget, DataTypes::BitStringStruct &bs, UWidget *uwidget)
 {
-    static const auto circleRadius = 15;
+    if (bs.sigAdr == mwidget.startAddr && bs.sigQuality == DataTypes::Quality::Good)
+    {
+        auto stringAddr = QString::number(mwidget.startAddr);
+        std::bitset<sizeof(bs.sigVal) * 8> bitSet(bs.sigVal);
+        for (auto i = 0; i < mwidget.count; ++i)
+        {
+            auto isSet = bitSet.test(i);
+            auto pixmap = WDFunc::NewCircle((isSet) ? activeColor : normalColor, circleRadius);
+            WDFunc::SetLBLImage(uwidget, stringAddr + "_" + QString::number(i), &pixmap);
+        }
+    }
+}
+
+QVBoxLayout *CheckDialog::setupBitsetWidget(const ModuleTypes::MWidget &mwidget, UWidget *widget)
+{
     auto widgetLayout = new QVBoxLayout;
     auto bitsetWidget = new QWidget(this);
     bitsetWidget->setObjectName(QString::number(mwidget.startAddr));
     auto gridLayout = new QVBoxLayout;
-    auto count = mwidget.count;
-    for (auto i = 0; i < count; ++i)
+    for (auto i = 0; i < mwidget.count; ++i)
     {
         auto layout = new QHBoxLayout;
         auto textLabel = new QLabel(mwidget.desc + ": " + QString::number(i) + " бит", this);
         layout->addWidget(textLabel);
-        auto pixmap = WDFunc::NewCircle(Qt::gray, circleRadius);
+        auto pixmap = WDFunc::NewCircle(normalColor, circleRadius);
         auto indicatorLabel = new QLabel(this);
         indicatorLabel->setObjectName(QString::number(mwidget.startAddr) + "_" + QString::number(i));
         indicatorLabel->setPixmap(pixmap);
@@ -472,13 +490,10 @@ QVBoxLayout *CheckDialog::setupBitsetWidget(const ModuleTypes::MWidget &mwidget,
         gridLayout->addLayout(layout);
     }
 
+    auto dataUpdater = widget->engine();
     connect(dataUpdater, &ModuleDataUpdater::itsTimeToUpdateBitStringSignal, this,
-        [mwidget, bitsetWidget](DataTypes::BitStringStruct &bs) {
-            if (bs.sigAdr == mwidget.startAddr && bs.sigQuality == DataTypes::Quality::Good)
-            {
-                qDebug() << bs.sigAdr << bitsetWidget->objectName();
-            }
-        });
+        [mwidget, widget, this](DataTypes::BitStringStruct &bs) -> void //
+        { updatePixmap(mwidget, bs, widget); });
 
     bitsetWidget->setLayout(gridLayout);
     widgetLayout->addWidget(bitsetWidget);

@@ -32,7 +32,7 @@ void UWidget::setCaption(const QString &caption)
 void UWidget::updateFloatData(const DataTypes::FloatStruct &fl)
 {
     bool result;
-    if (fl.sigQuality != DataTypes::Good)
+    if (fl.sigQuality != DataTypes::Quality::Good)
         result = WDFunc::SetLBLText(this, QString::number(fl.sigAdr), "***");
     else
         result = WDFunc::SetLBLText(this, QString::number(fl.sigAdr), WDFunc::StringFloatValueWithCheck(fl.sigVal, 3));

@@ -258,14 +258,12 @@ void Protocom::writeCommand(Queries::Commands cmd, QVariant item)
     switch (protoCmd)
     {
     case Commands::ReadBlkData:
-
         Q_ASSERT(item.canConvert<quint32>());
         if (item.canConvert<quint32>())
             d->handleBlk(protoCmd, item.toUInt());
         break;
 
     case Commands::FakeReadRegData:
-
         Q_ASSERT(item.canConvert<Signal>());
         if (item.canConvert<Signal>())
         {
@@ -276,7 +274,6 @@ void Protocom::writeCommand(Queries::Commands cmd, QVariant item)
         break;
 
     case Commands::FakeReadAlarms:
-
         Q_ASSERT(item.canConvert<Signal>());
         if (item.canConvert<Signal>())
         {
@@ -287,73 +284,61 @@ void Protocom::writeCommand(Queries::Commands cmd, QVariant item)
         break;
 
     case Commands::ReadBlkAC:
-
         Q_ASSERT(item.canConvert<quint32>());
         d->handleBlk(protoCmd, item.toUInt());
         break;
 
     case Commands::ReadBlkDataA:
-
         Q_ASSERT(item.canConvert<quint32>());
         d->handleBlk(protoCmd, item.toUInt());
         break;
 
     case Commands::ReadBlkTech:
-
         Q_ASSERT(item.canConvert<quint32>());
         d->handleBlk(protoCmd, item.toUInt());
         break;
 
     case Commands::WriteBlkAC:
-
         Q_ASSERT(item.canConvert<DataTypes::BlockStruct>());
         d->handleBlk(protoCmd, item.value<DataTypes::BlockStruct>());
         break;
 
     case Commands::WriteBlkTech:
-
         Q_ASSERT(item.canConvert<DataTypes::BlockStruct>());
         d->handleBlk(protoCmd, item.value<DataTypes::BlockStruct>());
         break;
 
     case Commands::WriteBlkCmd:
-
         Q_ASSERT(item.canConvert<quint32>());
         d->handleBlk(protoCmd, item.toUInt());
         break;
 
     case Commands::WriteSingleCommand:
-
         Q_ASSERT(item.canConvert<DataTypes::SingleCommand>());
         d->handleCommand(protoCmd, item.value<DataTypes::SingleCommand>());
         break;
 
     case Commands::WriteHardware:
-
         Q_ASSERT(item.canConvert<DataTypes::HardwareStruct>());
         d->handleBlk(protoCmd, item.value<DataTypes::BlockStruct>());
         break;
 
     case Commands::WriteBlkData:
-
         Q_ASSERT(item.canConvert<DataTypes::BlockStruct>());
         d->handleBlk(protoCmd, item.value<DataTypes::BlockStruct>());
         break;
 
     case Commands::WriteMode:
-
         Q_ASSERT(item.canConvert<quint8>());
         d->handleInt(protoCmd, StdFunc::ArrayFromNumber(item.value<quint8>()));
         break;
 
     case Commands::WriteVariant:
-
         Q_ASSERT(item.canConvert<quint8>());
         d->handleInt(protoCmd, StdFunc::ArrayFromNumber(item.value<quint8>()));
         break;
 
     case Commands::EraseTech:
-
         Q_ASSERT(item.canConvert<quint8>());
         d->handleInt(protoCmd, StdFunc::ArrayFromNumber(item.value<quint8>()));
         break;

@@ -94,9 +94,10 @@ private:
 
     void ReadAnalogMeasurementsAndWriteToFile();
     QString getFormated(const ModuleTypes::MWidget &widget, const QString &form, const int &number);
-    QVBoxLayout *setupGroup(const ModuleTypes::SGroup &arg, ModuleDataUpdater *dataUpdater);
+    void updatePixmap(const ModuleTypes::MWidget &mwidget, DataTypes::BitStringStruct &bs, UWidget *uwidget);
+    QVBoxLayout *setupGroup(const ModuleTypes::SGroup &arg, UWidget *uwidget);
     QGridLayout *setupFloatWidget(const ModuleTypes::MWidget &mwidget, const int &wCount);
-    QVBoxLayout *setupBitsetWidget(const ModuleTypes::MWidget &mwidget, ModuleDataUpdater *dataUpdater);
+    QVBoxLayout *setupBitsetWidget(const ModuleTypes::MWidget &mwidget, UWidget *dataUpdater);
 
 public slots:
     void StopAnalogMeasurements();
