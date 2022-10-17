@@ -3,6 +3,9 @@
 #include "basealarm.h"
 #include "modulesettings.h"
 
+#include <QLabel>
+#include <QList>
+#include <QPair>
 #include <gen/datatypes.h>
 
 /// \brief The class for alarm dialog, that displaying critical,
@@ -11,12 +14,15 @@ class ModuleAlarm : public BaseAlarm
 {
     Q_OBJECT
 private:
+    static const QHash<Modules::AlarmType, QColor> colors;
     const ModuleTypes::AlarmValue mAlarms;
     UniquePointer<DataTypesProxy> mProxy;
+    QList<QPair<QLabel *, bool>> labelStateStorage;
 
     virtual void setupUI(const QStringList &events) override;
     void followToData();
-    void updatePixmap(const bool &isset, const quint32 &position);
+    bool isAllPixmapInactive() const;
+    void updatePixmap(const bool &isSet, const quint32 &position);
 
 public:
     explicit ModuleAlarm(const Modules::AlarmType &type, //

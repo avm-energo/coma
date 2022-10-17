@@ -14,6 +14,18 @@ public:
     {
     }
 
+    /// \brief Setter for the alarm color.
+    inline void setAlarmColor(const QColor &newAlarmColor)
+    {
+        alarmColor = newAlarmColor;
+    }
+
+    /// \brief Setter for the normal color.
+    inline void setNormalColor(const QColor &newNormalColor)
+    {
+        normalColor = newNormalColor;
+    }
+
 protected:
     QColor normalColor;
     QColor alarmColor;

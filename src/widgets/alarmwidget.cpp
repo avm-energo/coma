@@ -15,9 +15,8 @@ AlarmWidget::AlarmWidget(QWidget *parent) : QWidget(parent)
     hlyout->addWidget(buttons);
     vlyout->addLayout(hlyout);
     setLayout(vlyout);
-    /// TODO: FIX THIS VLAD PLEASE
     m_timer = new QTimer(this);
-    m_timer->setInterval(10000);
+    m_timer->setInterval(1000);
 }
 
 /// \brief Filling alarms in this alarm widget.
@@ -46,6 +45,9 @@ void AlarmWidget::configure()
             }
         }
     }
+    // Start the timer after all module alarms was initialized
+    if (!m_timer->isActive())
+        m_timer->start();
 }
 
 /// \brief Adding a received alarm in list and
@@ -61,18 +63,18 @@ void AlarmWidget::addAlarm(BaseAlarm *alarm, const QString caption)
         {
             alarm->setWindowTitle(caption);
             auto aButton = new AlarmButton(alarm);
-            aButton->setPixmap(WDFunc::NewCircle(Qt::green, circleRadius));
+            aButton->setPixmap(WDFunc::NewCircle(Qt::transparent, circleRadius));
             aButton->setText(caption);
             connect(aButton, &QPushButton::clicked, alarm, &BaseAlarm::show);
             connect(m_timer, &QTimer::timeout, alarm, &BaseAlarm::reqUpdate);
-            connect(alarm, &BaseAlarm::updateColor, aButton, //
-                [=](const QColor &color) { aButton->setPixmap(WDFunc::NewCircle(color, circleRadius)); });
+            connect(alarm, &BaseAlarm::updateColor, aButton,                    //
+                [=](const QColor &color) {                                      //
+                    aButton->setPixmap(WDFunc::NewCircle(color, circleRadius)); //
+                });                                                             //
 
             m_alarms.append(alarm);
             buttons->addButton(aButton, QDialogButtonBox::ActionRole);
             ++m_counter;
-            if (!m_timer->isActive())
-                m_timer->start();
         }
     }
 }

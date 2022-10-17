@@ -7,22 +7,21 @@
 #include <QVBoxLayout>
 #include <gen/datamanager/typesproxy.h>
 
+const QHash<Modules::AlarmType, QColor> ModuleAlarm::colors = {
+    { Modules::AlarmType::Critical, Qt::red },   //
+    { Modules::AlarmType::Warning, Qt::yellow }, //
+    { Modules::AlarmType::Info, Qt::green }      //
+};
+
 ModuleAlarm::ModuleAlarm(const Modules::AlarmType &type, //
     const ModuleTypes::AlarmValue &alarms, QWidget *parent)
     : BaseAlarm(parent), mAlarms(std::move(alarms)), mProxy(new DataTypesProxy)
 {
-    static const QHash<Modules::AlarmType, QColor> colors = {
-        { Modules::AlarmType::Critical, Qt::red },   //
-        { Modules::AlarmType::Warning, Qt::yellow }, //
-        { Modules::AlarmType::Info, Qt::green }      //
-    };
-
-    followToData();
     alarmColor = colors.value(type, Qt::transparent);
+    followToData();
     mProxy->RegisterType<DataTypes::SinglePointWithTimeStruct>();
     connect(mProxy.get(), &DataTypesProxy::DataStorable, this, qOverload<const QVariant &>(&ModuleAlarm::update));
     setupUI(mAlarms.values());
-    engine()->setUpdatesEnabled();
 }
 
 /// \brief Folowing the data: search a signal group whose range
@@ -42,48 +41,71 @@ void ModuleAlarm::followToData()
         auto &signal = search.value();
         engine()->addSp({ signal.startAddr, signal.count });
     }
+    engine()->setUpdatesEnabled();
 }
 
 /// \brief Setup UI: creating text labels and indicators (pixmaps) for alarms displaying.
 void ModuleAlarm::setupUI(const QStringList &events)
 {
-    auto lyout = new QVBoxLayout(this);
+    auto mainLayout = new QVBoxLayout(this);
     auto widget = new QWidget(this);
-    auto vlayout = new QVBoxLayout(widget);
-    widget->setLayout(vlayout);
+    auto vLayout = new QVBoxLayout(widget);
+    widget->setLayout(vLayout);
+
     // Создаём labels и circles
+    labelStateStorage.reserve(events.size());
     auto index = 0;
     for (auto &&desc : events)
     {
-        auto hlyout = new QHBoxLayout;
-        auto label = WDFunc::NewLBL2(this, "", QString::number(index));
+        auto hLayout = new QHBoxLayout;
         auto pixmap = WDFunc::NewCircle(normalColor, circleRadius);
-        label->setPixmap(pixmap);
-        hlyout->addWidget(label);
-        hlyout->addWidget(WDFunc::NewLBL2(this, desc), 1);
-        vlayout->addLayout(hlyout);
+        auto label = WDFunc::NewLBL2(this, "", QString::number(index), &pixmap);
+        hLayout->addWidget(label);
+        hLayout->addWidget(WDFunc::NewLBL2(this, desc), 1);
+        vLayout->addLayout(hLayout);
+        labelStateStorage.append({ label, false });
         index++;
     }
+
     // Создаём QScrollArea
     auto scrollArea = new QScrollArea(this);
     scrollArea->setWidget(widget);
-    lyout->addWidget(scrollArea);
+    mainLayout->addWidget(scrollArea);
     // Создаём кнопку "Ок"
     auto pb = new QPushButton("Ok", this);
     QObject::connect(pb, &QPushButton::clicked, this, &ModuleAlarm::hide);
-    lyout->addWidget(pb);
-    setLayout(lyout);
+    mainLayout->addWidget(pb);
+    setLayout(mainLayout);
+}
+
+/// \brief Check if all pixmap labels inactive.
+bool ModuleAlarm::isAllPixmapInactive() const
+{
+    auto retFlag = true;
+    for (auto &&statePair : labelStateStorage)
+    {
+        if (statePair.second)
+        {
+            retFlag = false;
+            break;
+        }
+    }
+    return retFlag;
 }
 
 /// \brief Update a indicator (pixmap) for alarms displaying.
-void ModuleAlarm::updatePixmap(const bool &isset, const quint32 &position)
+void ModuleAlarm::updatePixmap(const bool &isSet, const quint32 &position)
 {
-    auto color = isset ? alarmColor : normalColor;
-    auto pixmap = WDFunc::NewCircle(color, circleRadius);
-    auto status = WDFunc::SetLBLImage(this, QString::number(position), &pixmap);
-    if (!status)
-        qCritical() << Error::DescError;
-    emit updateColor(color);
+    if (labelStateStorage[position].second != isSet)
+    {
+        const auto color = isSet ? alarmColor : normalColor;
+        auto label = labelStateStorage[position].first;
+        const auto pixmap = WDFunc::NewCircle(color, circleRadius);
+        label->setPixmap(pixmap);
+        labelStateStorage[position].second = isSet;
+        if (isSet or isAllPixmapInactive())
+            emit updateColor(color);
+    }
 }
 
 /// \brief The slot called when a SinglePoint data is received from the communication protocol.
