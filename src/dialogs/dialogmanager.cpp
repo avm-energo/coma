@@ -205,8 +205,6 @@ void DialogManager::createSpecificDialogs(const AppConfiguration &appCfg)
         // Добавляем диалог реле (???)
         if (typeB == BaseBoard::MTB_35)
             addDialogToList(new RelayDialog(4, mParent), "Реле", "relay1");
-        // TODO: если модуль не USIO и !ifaceSettings.settings.isNull()
-        // addDialogToList(new TimeDialog(mParent), "Время", "time");
     }
 }
 

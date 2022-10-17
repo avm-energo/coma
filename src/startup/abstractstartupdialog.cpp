@@ -21,13 +21,16 @@
 #include <QPushButton>
 #include <QSpinBox>
 #include <gen/colors.h>
+#include <gen/datatypes.h>
 #include <gen/helper.h>
 #include <gen/stdfunc.h>
+
 namespace crypto
 {
 static constexpr char hash[] = "d93fdd6d1fb5afcca939fa650b62541d09dbcb766f41c39352dc75f348fb35dc";
 static constexpr char name[] = "startHash";
 }
+
 AbstractStartupDialog::AbstractStartupDialog(QWidget *parent) : UDialog(crypto::hash, crypto::name, parent)
 {
     m_updateState = ThereWasNoUpdatesRecently;
@@ -65,13 +68,10 @@ QWidget *AbstractStartupDialog::buttonWidget()
         QPushButton *pb = new QPushButton();
         pb->setObjectName("Hexagon");
         pb->setIcon(icon);
-
         pb->setToolTip(toolTip);
         pb->setMinimumSize(50, 50);
         pb->setIconSize(QSize(50, 50));
-
         connect(pb, &QAbstractButton::clicked, this, i.second);
-
         group->addButton(pb, QDialogButtonBox::ActionRole);
     }
     group->setCenterButtons(true);
