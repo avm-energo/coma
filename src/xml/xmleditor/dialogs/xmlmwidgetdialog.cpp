@@ -1,8 +1,6 @@
 #include "xmlmwidgetdialog.h"
 
-#include "../models/xmlsgroupmodel.h"
-
-#include <QComboBox>
+#include "../models/xmlmodels.h"
 
 XmlMWidgetDialog::XmlMWidgetDialog(QWidget *parent) : XmlDialog(parent)
 {

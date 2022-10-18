@@ -3,7 +3,6 @@
 #include "../../../widgets/epopup.h"
 
 #include <QGuiApplication>
-#include <QLineEdit>
 #include <QScreen>
 
 XmlDialog::XmlDialog(QWidget *parent) : QDialog(parent, Qt::Window), isChanged(false)

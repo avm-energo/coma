@@ -23,23 +23,23 @@ const std::map<QString, ModelType> XmlModel::types {
 };
 
 const std::map<ModelType, QStringList> XmlModel::headers {
-    { ModelType::Resources, { "XML", "Описание" } },                                         //
-    { ModelType::Signals, { "Стартовый адрес", "Количество", "ID сигнала", "Тип" } },        //
-    { ModelType::SectionTabs, { "ID вкладки", "Название" } },                                //
-    { ModelType::Sections, { "Название" } },                                                 //
-    { ModelType::Section, { "Название", "ID вкладки" } },                                    //
-    { ModelType::SGroup, { "Адрес", "Имя" } },                                               //
-    { ModelType::Alarms, { "XML", "Описание" } },                                            //
-    { ModelType::AlarmsCrit, { "Адрес", "Описание" } },                                      //
-    { ModelType::AlarmsWarn, { "Адрес", "Описание" } },                                      //
-    { ModelType::AlarmsInfo, { "Адрес", "Описание" } },                                      //
-    { ModelType::Journals, { "XML", "Описание" } },                                          //
-    { ModelType::WorkJours, { "Адрес", "Описание" } },                                       //
-    { ModelType::MeasJours, { "Название" } },                                                //
-    { ModelType::Modbus, { "ID сигнала", "Тип регистра", "Возвращаемый тип", "Описание" } }, //
-    { ModelType::Protocom, { "Блок", "ID сигнала" } },                                       //
-    { ModelType::IEC60870, { "ID сигнала", "Тип сигнала", "Тип передачи", "Группа" } },      //
-    { ModelType::Config, { "ID виджета", "Значение по умолчанию" } }                         //
+    { ModelType::Resources, { "XML", "Описание" } },                                                 //
+    { ModelType::Signals, { "Стартовый адрес", "Количество", "ID сигнала", "Тип" } },                //
+    { ModelType::SectionTabs, { "ID вкладки", "Название" } },                                        //
+    { ModelType::Sections, { "Название" } },                                                         //
+    { ModelType::Section, { "Название", "ID вкладки" } },                                            //
+    { ModelType::SGroup, { "Адрес", "Имя" } },                                                       //
+    { ModelType::Alarms, { "XML", "Описание" } },                                                    //
+    { ModelType::AlarmsCrit, { "Адрес", "Описание" } },                                              //
+    { ModelType::AlarmsWarn, { "Адрес", "Описание" } },                                              //
+    { ModelType::AlarmsInfo, { "Адрес", "Описание" } },                                              //
+    { ModelType::Journals, { "XML", "Описание" } },                                                  //
+    { ModelType::WorkJours, { "Адрес", "Описание" } },                                               //
+    { ModelType::MeasJours, { "Название" } },                                                        //
+    { ModelType::Modbus, { "ID сигнала", "Тип регистра", "Возвращаемый тип", "Описание" } },         //
+    { ModelType::Protocom, { "Блок", "ID сигнала" } },                                               //
+    { ModelType::IEC60870, { "ID сигнала", "Тип сигнала", "Тип передачи", "Группа" } },              //
+    { ModelType::Config, { "ID виджета", "Значение по умолчанию", "Изм. количество", "Видимость" } } //
 };
 
 /// \brief Base XML model class ctor

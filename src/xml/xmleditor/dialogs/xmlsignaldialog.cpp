@@ -1,7 +1,5 @@
 #include "xmlsignaldialog.h"
 
-#include <QComboBox>
-
 XmlSignalDialog::XmlSignalDialog(QWidget *parent) : XmlDialog(parent), type(nullptr)
 {
 }

@@ -19,7 +19,7 @@ void ModelFabric::CreateChildModel(ChildModelNode &mNode, QDomNode &root, QObjec
         switch (mNode.modelType)
         {
         case ModelType::SGroup:
-            mNode.modelPtr = new XmlSGroupModel(rows, cols, mNode.modelType, parent);
+            mNode.modelPtr = new XmlHideDataModel(rows, cols, mNode.modelType, parent);
             break;
         case ModelType::Alarms:
         case ModelType::Sections:

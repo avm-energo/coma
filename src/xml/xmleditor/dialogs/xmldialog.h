@@ -1,6 +1,7 @@
 #ifndef XMLDIALOG_H
 #define XMLDIALOG_H
 
+#include <QComboBox>
 #include <QDialog>
 #include <QHBoxLayout>
 #include <QLabel>

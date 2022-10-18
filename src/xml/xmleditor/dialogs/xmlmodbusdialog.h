@@ -3,8 +3,6 @@
 
 #include "xmldialog.h"
 
-#include <QComboBox>
-
 class XmlModbusDialog : public XmlDialog
 {
     Q_OBJECT

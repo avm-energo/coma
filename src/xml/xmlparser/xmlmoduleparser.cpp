@@ -233,15 +233,12 @@ void Xml::ModuleParser::parseIec(const QDomNode &iecNode, InterfaceInfo<Iec104Gr
 /// \brief Функция для парсинга узла <config>.
 void Xml::ModuleParser::parseConfig(const QDomNode &configNode)
 {
-    quint32 count = 0;
     auto id = parseNumFromNode<quint32>(configNode, tags::id);
     auto defVal = parseString(configNode, tags::def_val);
     auto visibility = true;
     if (parseString(configNode, tags::visibility) == "false")
         visibility = false;
-    auto widgetNode = configNode.firstChildElement(tags::widget);
-    if (!widgetNode.isNull())
-        count = parseNumFromNode<quint32>(widgetNode, tags::count);
+    auto count = parseNumFromNode<quint32>(configNode, tags::count);
     emit configDataSending(id, defVal, visibility, count);
 }
 

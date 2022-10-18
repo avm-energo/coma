@@ -123,194 +123,242 @@
             <record>
                 <id>10</id>
                 <defaultValue>8</defaultValue>
+                <visibility>true</visibility>
             </record>
             <record>
                 <id>1003</id>
                 <defaultValue>100</defaultValue>
+                <visibility>true</visibility>
             </record>
             <record>
                 <id>1006</id>
                 <defaultValue>220</defaultValue>
+                <visibility>true</visibility>
             </record>
             <record>
                 <id>1012</id>
                 <defaultValue>0.5</defaultValue>
+                <visibility>true</visibility>
             </record>
             <record>
                 <id>1013</id>
                 <defaultValue>0.5</defaultValue>
+                <visibility>true</visibility>
             </record>
             <record>
                 <id>1018</id>
                 <defaultValue>3.0</defaultValue>
+                <visibility>true</visibility>
             </record>
             <record>
                 <id>1019</id>
                 <defaultValue>5.0</defaultValue>
+                <visibility>true</visibility>
             </record>
             <record>
                 <id>1020</id>
                 <defaultValue>1.0</defaultValue>
+                <visibility>true</visibility>
             </record>
             <record>
                 <id>1021</id>
                 <defaultValue>1.5</defaultValue>
+                <visibility>true</visibility>
             </record>
             <record>
                 <id>1022</id>
                 <defaultValue>3.0</defaultValue>
+                <visibility>true</visibility>
             </record>
             <record>
                 <id>1023</id>
                 <defaultValue>5.0</defaultValue>
+                <visibility>true</visibility>
             </record>
             <record>
                 <id>1024</id>
                 <defaultValue>2.0</defaultValue>
+                <visibility>true</visibility>
             </record>
             <record>
                 <id>1025</id>
                 <defaultValue>2.0</defaultValue>
+                <visibility>true</visibility>
             </record>
             <record>
                 <id>1026</id>
                 <defaultValue>2.0</defaultValue>
+                <visibility>true</visibility>
             </record>
             <record>
                 <id>1027</id>
                 <defaultValue>100.0</defaultValue>
+                <visibility>true</visibility>
             </record>
             <record>
                 <id>1028</id>
                 <defaultValue>1.385</defaultValue>
+                <visibility>true</visibility>
             </record>
             <record>
                 <id>1031</id>
                 <defaultValue>60</defaultValue>
+                <visibility>true</visibility>
             </record>
             <record>
                 <id>1032</id>
                 <defaultValue>80.0</defaultValue>
+                <visibility>true</visibility>
             </record>
             <record>
                 <id>1033</id>
                 <defaultValue>1</defaultValue>
+                <visibility>true</visibility>
             </record>
             <record>
                 <id>1034</id>
                 <defaultValue>1</defaultValue>
+                <visibility>true</visibility>
             </record>
             <record>
                 <id>1035</id>
                 <defaultValue>5.0</defaultValue>
+                <visibility>true</visibility>
             </record>
             <record>
                 <id>1036</id>
                 <defaultValue>5.0</defaultValue>
+                <visibility>true</visibility>
             </record>
             <record>
                 <id>1037</id>
                 <defaultValue>0</defaultValue>
+                <visibility>true</visibility>
             </record>
             <record>
                 <id>1038</id>
                 <defaultValue>0</defaultValue>
+                <visibility>true</visibility>
             </record>
             <record>
                 <id>1039</id>
                 <defaultValue>0.3,0.3,0.3</defaultValue>
+                <visibility>true</visibility>
             </record>
             <record>
                 <id>1040</id>
                 <defaultValue>2200,2200,2200</defaultValue>
+                <visibility>true</visibility>
             </record>
             <record>
                 <id>1050</id>
                 <defaultValue>100.0</defaultValue>
+                <visibility>true</visibility>
             </record>
             <record>
                 <id>1060</id>
                 <defaultValue>0</defaultValue>
+                <visibility>true</visibility>
             </record>
             <record>
                 <id>1061</id>
                 <defaultValue>0</defaultValue>
+                <visibility>true</visibility>
             </record>
             <record>
                 <id>1062</id>
                 <defaultValue>0</defaultValue>
+                <visibility>true</visibility>
             </record>
             <record>
                 <id>1063</id>
                 <defaultValue>0</defaultValue>
+                <visibility>true</visibility>
             </record>
             <record>
                 <id>1064</id>
                 <defaultValue>0</defaultValue>
+                <visibility>true</visibility>
             </record>
             <record>
                 <id>20</id>
                 <defaultValue>172,16,28,254</defaultValue>
+                <visibility>true</visibility>
             </record>
             <record>
                 <id>21</id>
                 <defaultValue>255,255,255,0</defaultValue>
+                <visibility>true</visibility>
             </record>
             <record>
                 <id>22</id>
                 <defaultValue>172,16,28,1</defaultValue>
+                <visibility>true</visibility>
             </record>
             <record>
                 <id>23</id>
                 <defaultValue>2404,2405,502,0</defaultValue>
+                <visibility>true</visibility>
             </record>
             <record>
                 <id>24</id>
                 <defaultValue>172,16,28,12</defaultValue>
+                <visibility>true</visibility>
             </record>
             <record>
                 <id>25</id>
                 <defaultValue>9600</defaultValue>
+                <visibility>true</visibility>
             </record>
             <record>
                 <id>26</id>
                 <defaultValue>0</defaultValue>
+                <visibility>true</visibility>
             </record>
             <record>
                 <id>27</id>
                 <defaultValue>0</defaultValue>
+                <visibility>true</visibility>
             </record>
             <record>
                 <id>28</id>
                 <defaultValue>1</defaultValue>
+                <visibility>true</visibility>
             </record>
             <record>
                 <id>3</id>
                 <defaultValue>8</defaultValue>
+                <visibility>true</visibility>
             </record>
             <record>
                 <id>4</id>
                 <defaultValue>205</defaultValue>
+                <visibility>true</visibility>
             </record>
             <record>
                 <id>5</id>
                 <defaultValue>5</defaultValue>
+                <visibility>true</visibility>
             </record>
             <record>
                 <id>6</id>
                 <defaultValue>15</defaultValue>
+                <visibility>true</visibility>
             </record>
             <record>
                 <id>7</id>
                 <defaultValue>10</defaultValue>
+                <visibility>true</visibility>
             </record>
             <record>
                 <id>8</id>
                 <defaultValue>20</defaultValue>
+                <visibility>true</visibility>
             </record>
             <record>
                 <id>9</id>
                 <defaultValue>12</defaultValue>
+                <visibility>true</visibility>
             </record>
         </config>
         <iec60870 desc="Протокол ГОСТ Р МЭК 60870-5-104">
@@ -781,21 +829,21 @@
         <sections desc="Разделы">
             <section header="Текущие данные">
                 <sgroup tab="1" header="Общие">
-                    <mwidget view="float" desc="Температура микроконтроллера, °С">
+                    <mwidget desc="Температура микроконтроллера, °С" view="float">
                         <start-addr>101</start-addr>
                         <toolTip>Температура микроконтроллера, °С</toolTip>
                     </mwidget>
-                    <mwidget view="float" desc="Частота, Гц">
+                    <mwidget desc="Частота, Гц" view="float">
                         <start-addr>2400</start-addr>
                         <toolTip>Частота, Гц</toolTip>
                     </mwidget>
-                    <mwidget view="float" desc="Температура окружающей среды, °С">
+                    <mwidget desc="Температура окружающей среды, °С" view="float">
                         <start-addr>4501</start-addr>
                         <toolTip>Температура окружающей среды, °С</toolTip>
                     </mwidget>
                 </sgroup>
                 <sgroup tab="1" header="Параметры вводов">
-                    <mwidget view="float" desc="U ф.%1, кВ">
+                    <mwidget desc="U ф.%1, кВ" view="float">
                         <start-addr>1000</start-addr>
                         <count>3</count>
                         <toolTip>Фазное действующее напряжение по 1-й гармонике ф.%1, кВ</toolTip>
@@ -805,7 +853,7 @@
                             <item>C</item>
                         </string-array>
                     </mwidget>
-                    <mwidget view="float" desc="I ф.%1, мА">
+                    <mwidget desc="I ф.%1, мА" view="float">
                         <start-addr>1100</start-addr>
                         <count>3</count>
                         <toolTip>Действующее значение тока утечки ввода по 1-й гармонике ф.%1, мА</toolTip>
@@ -815,7 +863,7 @@
                             <item>C</item>
                         </string-array>
                     </mwidget>
-                    <mwidget view="float" desc="C1 ф.%1, пФ">
+                    <mwidget desc="C1 ф.%1, пФ" view="float">
                         <start-addr>2420</start-addr>
                         <count>3</count>
                         <toolTip>Емкость С1 ввода ф.%1, пФ</toolTip>
@@ -825,7 +873,7 @@
                             <item>C</item>
                         </string-array>
                     </mwidget>
-                    <mwidget view="float" desc="tgδ ф.%1, %">
+                    <mwidget desc="tgδ ф.%1, %" view="float">
                         <start-addr>2423</start-addr>
                         <count>3</count>
                         <toolTip>Тангенс дельта ввода ф.%1, %</toolTip>
@@ -835,7 +883,7 @@
                             <item>C</item>
                         </string-array>
                     </mwidget>
-                    <mwidget view="float" desc="∆C ф.%1, %">
+                    <mwidget desc="∆C ф.%1, %" view="float">
                         <start-addr>2426</start-addr>
                         <count>3</count>
                         <toolTip>Приращение емкости С1 ввода ф.%1, %</toolTip>
@@ -845,7 +893,7 @@
                             <item>C</item>
                         </string-array>
                     </mwidget>
-                    <mwidget view="float" desc="∆tgδ ф.%1, %">
+                    <mwidget desc="∆tgδ ф.%1, %" view="float">
                         <start-addr>2429</start-addr>
                         <count>3</count>
                         <toolTip>Приращение тангенса дельта ввода ф.%1, %</toolTip>
@@ -857,67 +905,67 @@
                     </mwidget>
                 </sgroup>
                 <sgroup tab="1" header="Параметры небаланса токов">
-                    <mwidget view="float" desc="Iunb, %">
+                    <mwidget desc="Iunb, %" view="float">
                         <start-addr>2432</start-addr>
                         <toolTip>Действующее значение небаланса токов, %</toolTip>
                     </mwidget>
-                    <mwidget view="float" desc="Phi_unb, град.">
+                    <mwidget desc="Phi_unb, град." view="float">
                         <start-addr>2433</start-addr>
                         <toolTip>Угол небаланса токов относительно тока ф.А, град.</toolTip>
                     </mwidget>
                 </sgroup>
                 <sgroup tab="2" header="Коэффициенты несимметрии">
-                    <mwidget view="float" desc="KuU1, %">
+                    <mwidget desc="KuU1, %" view="float">
                         <start-addr>1014</start-addr>
                         <toolTip>Коэффициент несимметрии напряжения по нулевой последовательности, %</toolTip>
                     </mwidget>
-                    <mwidget view="float" desc="KuU2, %">
+                    <mwidget desc="KuU2, %" view="float">
                         <start-addr>1015</start-addr>
                         <toolTip>Коэффициент несимметрии напряжения по обратной последовательности, %</toolTip>
                     </mwidget>
-                    <mwidget view="float" desc="KuI1, %">
+                    <mwidget desc="KuI1, %" view="float">
                         <start-addr>1114</start-addr>
                         <toolTip>Коэффициент несимметрии тока по нулевой последовательности, %</toolTip>
                     </mwidget>
-                    <mwidget view="float" desc="KuI2, %">
+                    <mwidget desc="KuI2, %" view="float">
                         <start-addr>1115</start-addr>
                         <toolTip>Коэффициент несимметрии тока по обратной последовательности, %</toolTip>
                     </mwidget>
                 </sgroup>
                 <sgroup tab="2" header="Симметричные составляющие">
-                    <mwidget view="float" desc="U0, кВ">
+                    <mwidget desc="U0, кВ" view="float">
                         <start-addr>1011</start-addr>
                         <toolTip>Напряжение нулевой последовательности, кВ</toolTip>
                     </mwidget>
-                    <mwidget view="float" desc="U1, кВ">
+                    <mwidget desc="U1, кВ" view="float">
                         <start-addr>1012</start-addr>
                         <toolTip>Напряжение прямой последовательности, кВ</toolTip>
                     </mwidget>
-                    <mwidget view="float" desc="U2, кВ">
+                    <mwidget desc="U2, кВ" view="float">
                         <start-addr>1013</start-addr>
                         <toolTip>Напряжение обратной последовательности, кВ</toolTip>
                     </mwidget>
-                    <mwidget view="float" desc="I0, мА">
+                    <mwidget desc="I0, мА" view="float">
                         <start-addr>1111</start-addr>
                         <toolTip>Ток нулевой последовательности, мА</toolTip>
                     </mwidget>
-                    <mwidget view="float" desc="I1, мА">
+                    <mwidget desc="I1, мА" view="float">
                         <start-addr>1112</start-addr>
                         <toolTip>Ток прямой последовательности, мА</toolTip>
                     </mwidget>
-                    <mwidget view="float" desc="I2, мА">
+                    <mwidget desc="I2, мА" view="float">
                         <start-addr>1113</start-addr>
                         <toolTip>Ток обратной последовательности, мА</toolTip>
                     </mwidget>
                 </sgroup>
                 <sgroup tab="2" header="Температура">
-                    <mwidget view="float" desc="Ramb, Ом">
+                    <mwidget desc="Ramb, Ом" view="float">
                         <start-addr>4502</start-addr>
                         <toolTip>Сопротивление датчика, Ом</toolTip>
                     </mwidget>
                 </sgroup>
                 <sgroup tab="2" header="Угловые значения">
-                    <mwidget view="float" desc="Phy_I ф.%1, град.">
+                    <mwidget desc="Phy_I ф.%1, град." view="float">
                         <start-addr>2404</start-addr>
                         <count>3</count>
                         <toolTip>Угол по току ф.%1</toolTip>
@@ -927,7 +975,7 @@
                             <item>C</item>
                         </string-array>
                     </mwidget>
-                    <mwidget view="float" desc="Phy_U ф.%1, град.">
+                    <mwidget desc="Phy_U ф.%1, град." view="float">
                         <start-addr>2401</start-addr>
                         <count>3</count>
                         <toolTip>Угол по напряжению ф.%1</toolTip>
@@ -939,13 +987,13 @@
                     </mwidget>
                 </sgroup>
                 <sgroup tab="3" header="Дискретные входы">
-                    <mwidget view="bitset" desc="Состояние дискретных входов">
+                    <mwidget desc="Состояние дискретных входов" view="bitset">
                         <start-addr>4521</start-addr>
                         <toolTip>Дискретные входы (DIO_1)</toolTip>
                     </mwidget>
                 </sgroup>
                 <sgroup tab="3" header="Дискретные выходы">
-                    <mwidget view="bitset" desc="Состояние дискретных выходов">
+                    <mwidget desc="Состояние дискретных выходов" view="bitset">
                         <start-addr>4520</start-addr>
                         <count>3</count>
                         <toolTip>Дискретные выходы (DIO_0)</toolTip>

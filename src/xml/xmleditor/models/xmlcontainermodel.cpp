@@ -68,7 +68,7 @@ void XmlContainerModel::create(const QStringList &saved, int *row)
                 node.modelType = ModelType::SGroup;
                 labels = XmlModel::headers.find(node.modelType)->second;
                 // Узел <section> содержит узлы <sgroup>
-                node.modelPtr = new XmlSGroupModel(1, labels.count(), node.modelType, this);
+                node.modelPtr = new XmlHideDataModel(1, labels.count(), node.modelType, this);
             }
             node.modelPtr->setHorizontalHeaderLabels(labels);
             auto itemIndex = node.modelPtr->index(0, 0);

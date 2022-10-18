@@ -3,8 +3,6 @@
 
 #include "xmleditor/dialogs/xmldialog.h"
 
-#include <QDialog>
-
 class ModuleDialog : public XmlDialog
 {
     Q_OBJECT
