@@ -16,7 +16,7 @@ AlarmWidget::AlarmWidget(QWidget *parent) : QWidget(parent)
     vlyout->addLayout(hlyout);
     setLayout(vlyout);
     m_timer = new QTimer(this);
-    m_timer->setInterval(1000);
+    m_timer->setInterval(10000);
 }
 
 /// \brief Filling alarms in this alarm widget.

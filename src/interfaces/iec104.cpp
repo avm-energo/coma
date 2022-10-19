@@ -147,7 +147,7 @@ void IEC104::reqFile(quint32 filenum, FileFormat format)
 
 void IEC104::writeFile(quint32 filenum, const QByteArray &file)
 {
-    Commands104::CommandStruct inp { Commands104::CM104_WRITEFILE, filenum, 0, file };
+    Commands104::CommandStruct inp { Commands104::CM104_WRITEFILE, filenum, 0, true, file };
     DataManager::addToInQueue(inp);
 }
 

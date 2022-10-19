@@ -59,7 +59,6 @@ void StartupKIVDialog::SetupUI()
 {
     auto lyout = new QVBoxLayout;
     auto glyout = new QGridLayout;
-
     int row = 0;
 
     glyout->addWidget(WDFunc::NewLBL2(this, "Начальные значения емкостей вводов, пФ:"), row, 1, 1, 1);

@@ -251,8 +251,9 @@ enum Commands
 struct CommandStruct
 {
     Commands cmd;
-    quint32 uintarg;
+    quint32 address;
     float flarg;
+    bool blarg;
     QByteArray ba;
 };
 

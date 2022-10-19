@@ -117,7 +117,7 @@ private:
     void SectionReady();
     void SendSegments();
     void LastSection();
-    void Com45(quint32 com);
+    void Com45(quint32 com, bool value);
     void Com50(quint32 adr, float param);
     void reqGroup(int groupNum);
     void Com51WriteTime(quint32 time);
