@@ -72,8 +72,9 @@ std::tuple<QString, QString, std::function<void(QDomDocument &, QDomElement &, i
             [&](auto &doc, auto &item, auto &row) {
                 makeElement(doc, item, tags::id, data(index(row, 0)));
                 makeElement(doc, item, tags::def_val, data(index(row, 1)));
-                if (!data(index(row, 2)).value<QString>().isEmpty())
-                    makeElement(doc, item, tags::count, data(index(row, 2)));
+                QVariant countData(data(index(row, 2)));
+                if (!countData.value<QString>().isEmpty())
+                    makeElement(doc, item, tags::count, countData);
                 makeElement(doc, item, tags::visibility, data(index(row, 3)));
             } };
     default:

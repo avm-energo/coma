@@ -5,6 +5,7 @@
 
 #include <QPointer>
 #include <QSerialPort>
+#include <QTimer>
 
 class SerialPort : public QObject
 {
