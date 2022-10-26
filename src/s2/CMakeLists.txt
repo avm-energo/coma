@@ -21,14 +21,16 @@ add_library(
   ${PROJECT_NAME} STATIC
   ${files_cpp} ${files_h} )
 
+add_dependencies(${PROJECT_NAME} gen)
+
 target_link_libraries(
   ${PROJECT_NAME}
-  PUBLIC gen
+#  PUBLIC gen
   PRIVATE Qt${QT_VERSION_MAJOR}::Core
   PRIVATE Qt${QT_VERSION_MAJOR}::Xml
   PRIVATE Qt${QT_VERSION_MAJOR}::Network
   PRIVATE Qt${QT_VERSION_MAJOR}::Xml)
 
-target_compile_definitions(${PROJECT_NAME} PRIVATE ${PROJECT_NAME}_LIBRARY)
+target_link_libraries(${PROJECT_NAME} PUBLIC gen)
 
-add_dependencies(${PROJECT_NAME} gen)
+target_compile_definitions(${PROJECT_NAME} PRIVATE ${PROJECT_NAME}_LIBRARY)
