@@ -9,11 +9,11 @@
 #include <QFile>
 #include <QObject>
 #include <QVariant>
-#include <QXlsx/xlsxdocument.h>
 #include <cmath>
 #include <gen/error.h>
 #include <gen/files/files.h>
 #include <gen/timefunc.h>
+#include <xlsxdocument.h>
 
 Journals::Journals(const ModuleTypes::JourMap &jourMap, QObject *parent)
     : QObject(parent), m_timezone(TimeFunc::userTimeZone()), m_jourMap(jourMap)

@@ -3,9 +3,9 @@
 #include "../module/board.h"
 #include "../widgets/epopup.h"
 #include "../widgets/wd_func.h"
-#include "limereport/lrreportengine.h"
 #include "tunesequencefile.h"
 
+#include <LimeReport>
 #include <QHBoxLayout>
 #include <QIcon>
 #include <QPainter>

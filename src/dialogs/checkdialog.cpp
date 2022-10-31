@@ -15,13 +15,13 @@
 #include <QTabWidget>
 #include <QTime>
 #include <QVBoxLayout>
-#include <QXlsx/xlsxdocument.h>
 #include <gen/colors.h>
 #include <gen/datamanager/typesproxy.h>
 #include <gen/error.h>
 #include <gen/stdfunc.h>
 #include <set>
 #include <utility>
+#include <xlsxdocument.h>
 
 constexpr auto circleRadius = 12;
 constexpr auto normalColor = Qt::gray;

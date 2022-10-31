@@ -9,9 +9,9 @@
 #include "../widgets/waitwidget.h"
 #include "../widgets/wd_func.h"
 #include "generaltunedialog.h"
-#include "limereport/lrreportengine.h"
 #include "tunesequencefile.h"
 
+#include <LimeReport>
 #include <QDebug>
 #include <QMessageBox>
 #include <QProgressBar>
