@@ -89,4 +89,6 @@ add_dependencies(gen GenBuild)
 
 if(CMAKE_SYSTEM_NAME_LOWER STREQUAL "windows")
     install(FILES ${GEN_BINARY_DIR}/liblzma.dll DESTINATION ${CMAKE_BINARY_DIR}/bin)
+else()
+    install(FILES ${GEN_LIBRARY_DIR}/libgen.so DESTINATION ${CMAKE_BINARY_DIR}/bin)
 endif()
