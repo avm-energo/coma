@@ -52,8 +52,7 @@ ExternalProject_Add(
   USES_TERMINAL_BUILD TRUE
   USES_TERMINAL_CONFIGURE TRUE)
 
-# Hack to make it work, otherwise INTERFACE_INCLUDE_DIRECTORIES will not be
-# propagated
+# Hack to make it work, otherwise INTERFACE_INCLUDE_DIRECTORIES will not be propagated
 get_filename_component(_fullpath "${GEN_BINARY_DIR}" REALPATH)
 if(NOT EXISTS ${_fullpath})
   file(MAKE_DIRECTORY ${_fullpath})
@@ -75,14 +74,12 @@ set_target_properties(gen PROPERTIES INTERFACE_INCLUDE_DIRECTORIES
                                             ${GEN_INCLUDE_DIRS})
 message(STATUS "CMAKE_SYSTEM_NAME_LOWER: " ${CMAKE_SYSTEM_NAME_LOWER})
 if(CMAKE_SYSTEM_NAME_LOWER STREQUAL "windows")
-  set_target_properties(
-    gen
+  set_target_properties(gen
     PROPERTIES IMPORTED_LOCATION ${GEN_BINARY_DIR}
                IMPORTED_IMPLIB ${GEN_LIBRARY_DIR}/gen.lib)
 else()
-  set_target_properties(
-    gen PROPERTIES IMPORTED_LOCATION
-                          ${GEN_LIBRARY_DIR}/libgen.so)
+  set_target_properties(gen
+      PROPERTIES IMPORTED_LOCATION ${GEN_LIBRARY_DIR}/libgen.so)
 endif()
 
 set(GEN_LIBS gen)
@@ -92,6 +89,4 @@ add_dependencies(gen GenBuild)
 
 if(CMAKE_SYSTEM_NAME_LOWER STREQUAL "windows")
     install(FILES ${GEN_BINARY_DIR}/liblzma.dll DESTINATION ${CMAKE_BINARY_DIR}/bin)
-else()
-    install(FILES ${GEN_BINARY_DIR}/liblzma.so DESTINATION ${CMAKE_BINARY_DIR}/bin)
 endif()
