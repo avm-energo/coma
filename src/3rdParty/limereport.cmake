@@ -5,7 +5,7 @@ include(FetchContent)
 FetchContent_Declare(
   limereport-qt5
   GIT_REPOSITORY https://github.com/Jihadist/LimeReport.git
-  GIT_TAG        22120942129633696b99422fed6b43424e1d3e94
+  GIT_TAG        e6ead26d31385cc62e969339623ce9d45717b0f8
 )
 # If we want compile lib in static
 #set(LIMEREPORT_STATIC ON)
