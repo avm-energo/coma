@@ -137,16 +137,16 @@ message(STATUS "Current user directory for conan: " ${USER_DIRECTORY})
 set(CONAN_MAIN_INIT ${CONAN_EXEC} install . --profile ${CONAN_PROFILE} -g cmake_find_package -s arch=${CONAN_TARGET_NAME} -s arch_build=${CONAN_TARGET_NAME} -if ${CMAKE_BINARY_DIR} --build=missing)
 
 if (NOT AVTUK-12)
-        if (NOT ( EXISTS "${CMAKE_BINARY_DIR}/conanbuildinfo.txt"))
+    if (NOT ( EXISTS "${CMAKE_BINARY_DIR}/conanbuildinfo.txt"))
         execute_process(
-            COMMAND ${CMAKE_COMMAND} -E env
-                CONAN_USER_HOME=${USER_DIRECTORY} ${CONAN_MAIN_INIT}
+            COMMAND ${CMAKE_COMMAND} -E env CONAN_USER_HOME=${USER_DIRECTORY} ${CONAN_MAIN_INIT}
             RESULT_VARIABLE CMD_ERROR
             WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/..
         )
+        message(STATUS "CMAKE: ${CMAKE_COMMAND}")
         set(CACHED_PROJECT_TARGET_NAME ${PROJECT_TARGET_NAME} CACHE STRING "Cached target arch" FORCE)
         message(STATUS "Init conan for " ${PROJECT_TARGET_NAME})
-        message( STATUS "CMD_ERROR:" ${CMD_ERROR})
+        message(STATUS "CMD_ERROR:" ${CMD_ERROR})
     endif()
 endif()
 

@@ -30,7 +30,7 @@
 
 #include <QDialogButtonBox>
 #include <QGroupBox>
-#include <gen/files/files.h>
+#include <gen/files.h>
 #include <gen/stdfunc.h>
 
 DataBlock::DataBlock(QObject *parent) : QObject(parent)

@@ -13,7 +13,7 @@
 #include <QMessageBox>
 #include <QPushButton>
 #include <QVBoxLayout>
-#include <gen/files/files.h>
+#include <gen/files.h>
 #include <gen/stdfunc.h>
 
 Tune82Check::Tune82Check(ConfigV *config, int tuneStep, Modules::MezzanineBoard type, QWidget *parent)

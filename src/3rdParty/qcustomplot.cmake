@@ -77,5 +77,6 @@ endif()
 
 set(QCUSTOMPLOT_LIBS qcustomplot)
 set(QCUSTOMPLOT_LIBRARY_DIRS ${QCUSTOMPLOT_BINARY_DIR} ${QCUSTOMPLOT_LIBRARY_DIR})
+include_directories(${QCUSTOMPLOT_INCLUDE_DIRS})
 
 add_dependencies(qcustomplot qcustomplotBuild)

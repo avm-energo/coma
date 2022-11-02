@@ -54,7 +54,7 @@ target_link_libraries(
   QXlsx
   qcustomplot)
 
-add_dependencies(${PROJECT_NAME} gen qcustomplot)
+#add_dependencies(${PROJECT_NAME} gen qcustomplot)
 
 if (ENABLE_EMULATOR)
     target_compile_definitions(${PROJECT_NAME} PRIVATE ENABLE_EMULATOR)
@@ -77,6 +77,7 @@ if(CMAKE_SYSTEM_NAME_LOWER STREQUAL "windows")
     DESTINATION ${CMAKE_INSTALL_PREFIX}/${INSTALL_PROJECT_PATH}
     FILES_MATCHING
     PATTERN "*.png")
+
 
   install(
     CODE [[

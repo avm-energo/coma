@@ -8,7 +8,7 @@
 #include "parseid10040.h"
 #include "parseid10050.h"
 
-#include <gen/files/files.h>
+#include <gen/files.h>
 #include <gen/timefunc.h>
 
 OscManager::~OscManager()

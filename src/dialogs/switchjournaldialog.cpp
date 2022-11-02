@@ -10,7 +10,7 @@
 #include <QHeaderView>
 #include <QMessageBox>
 #include <gen/datamanager/typesproxy.h>
-#include <gen/files/files.h>
+#include <gen/files.h>
 #include <gen/timefunc.h>
 // constexpr int MAXSWJNUM = 262144;
 

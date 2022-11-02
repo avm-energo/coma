@@ -18,7 +18,7 @@
 #include <gen/datamanager/datamanager.h>
 #include <gen/datamanager/typesproxy.h>
 #include <gen/error.h>
-#include <gen/files/files.h>
+#include <gen/files.h>
 #include <gen/stdfunc.h>
 #include <gen/timefunc.h>
 

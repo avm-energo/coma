@@ -20,7 +20,7 @@
 #include <QVBoxLayout>
 #include <gen/datatypes.h>
 #include <gen/error.h>
-#include <gen/files/files.h>
+#include <gen/files.h>
 #include <gen/stdfunc.h>
 #include <gen/timefunc.h>
 

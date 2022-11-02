@@ -8,7 +8,7 @@
 #include <QDateTime>
 #include <QThread>
 #include <gen/error.h>
-#include <gen/files/files.h>
+#include <gen/files.h>
 #include <gen/timefunc.h>
 
 IEC104::IEC104(QObject *parent)

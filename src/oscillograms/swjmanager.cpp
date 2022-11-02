@@ -7,7 +7,7 @@
 #include <QStandardItem>
 #include <QStandardItemModel>
 #include <gen/error.h>
-#include <gen/files/files.h>
+#include <gen/files.h>
 
 File::Vector SwjManager::loadFromFile(const QString &filename) const
 {

@@ -9,7 +9,7 @@
 #include <QMessageBox>
 #include <QPushButton>
 #include <QVBoxLayout>
-#include <gen/files/files.h>
+#include <gen/files.h>
 #include <gen/stdfunc.h>
 
 Tune84Check::Tune84Check(ConfigV *config, int tuneStep, QWidget *parent) : AbstractTuneDialog(config, tuneStep, parent)

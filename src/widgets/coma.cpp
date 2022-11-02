@@ -54,7 +54,7 @@
 #include <QtGlobal>
 #include <functional>
 #include <gen/errorqueue.h>
-#include <gen/files/files.h>
+#include <gen/files.h>
 #include <gen/logger.h>
 #include <gen/stdfunc.h>
 #include <gen/timefunc.h>

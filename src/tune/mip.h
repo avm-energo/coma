@@ -1,9 +1,9 @@
 #ifndef MIP_H
 #define MIP_H
 
-#include "../../interfaces/iec104.h"
-#include "../../module/modules.h"
-#include "../../widgets/udialog.h"
+#include "../interfaces/iec104.h"
+#include "../module/modules.h"
+#include "../widgets/udialog.h"
 
 #include <gen/stdfunc.h>
 

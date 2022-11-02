@@ -21,7 +21,7 @@ add_library(
   ${PROJECT_NAME} STATIC
   ${files_cpp} ${files_h} )
 
-add_dependencies(${PROJECT_NAME} gen)
+#add_dependencies(${PROJECT_NAME} gen)
 
 target_link_libraries(
   ${PROJECT_NAME}

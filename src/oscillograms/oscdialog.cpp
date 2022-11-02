@@ -8,7 +8,7 @@
 #include "../widgets/wd_func.h"
 
 #include <gen/datamanager/typesproxy.h>
-#include <gen/files/files.h>
+#include <gen/files.h>
 #include <gen/timefunc.h>
 
 namespace crypto

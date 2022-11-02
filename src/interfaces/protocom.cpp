@@ -8,7 +8,7 @@
 #include <QCoreApplication>
 #include <QDebug>
 #include <QThread>
-#include <gen/files/files.h>
+#include <gen/files.h>
 #include <gen/stdfunc.h>
 
 #ifdef Q_OS_WINDOWS

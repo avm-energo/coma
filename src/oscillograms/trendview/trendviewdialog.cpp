@@ -38,7 +38,7 @@
 #include <algorithm>
 #include <gen/comaexception.h>
 #include <gen/error.h>
-#include <gen/files/files.h>
+#include <gen/files.h>
 #include <gen/pch.h>
 #include <gen/stdfunc.h>
 
