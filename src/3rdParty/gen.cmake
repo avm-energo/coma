@@ -3,8 +3,8 @@ include(FetchContent)
 
 FetchContent_Declare(
   gen
-  GIT_REPOSITORY ssh://git@git.avmenergo.ru:5507/avm-energo/gen.git
-  GIT_TAG        43d575657f7ed9571867f69a18d74b003701493f
+  GIT_REPOSITORY https://github.com/vladd12/gen.git
+  GIT_TAG        71e8c041de54e358ae849f4ef1b90bcdf226d5dc
 )
 set(GEN_STATIC ON)
 FetchContent_MakeAvailable(gen)

@@ -17,7 +17,3 @@
 	path = include/qcustomplot
 	url = ssh://git@git.avmenergo.ru:5507/avm-energo/qcustomplot.git
 	branch = main
-[submodule "include/gen"]
-	path = include/gen
-	url = ssh://git@git.avmenergo.ru:5507/avm-energo/gen.git
-	branch = main
