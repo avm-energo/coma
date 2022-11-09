@@ -10,7 +10,6 @@
 #include <gen/error.h>
 #include <gen/errorqueue.h>
 #include <gen/helper.h>
-#include <gen/logger.h>
 
 ErrorProtocolModel::ErrorProtocolModel(QObject *parent) : QAbstractTableModel(parent)
 {

@@ -774,7 +774,7 @@ void ComaHelper::initAppSettings(const QString &appName, const QString &orgName,
     Q_INIT_RESOURCE(lightstyle);
     Q_INIT_RESOURCE(styles);
     Q_INIT_RESOURCE(vectorIcons);
-    Logger::writeStart();
+    Logger::writeStart(StdFunc::GetSystemHomeDir() + "coma.log");
     qInstallMessageHandler(Logger::messageHandler);
 }
 
