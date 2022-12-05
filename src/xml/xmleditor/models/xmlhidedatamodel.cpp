@@ -44,13 +44,14 @@ void XmlHideDataModel::getDialogRequest(const int &row)
 /// \brief Slot for creating data in model.
 void XmlHideDataModel::create(const QStringList &saved, int *row)
 {
-    Q_ASSERT(saved.count() == 5);
+    Q_ASSERT(saved.count() == 6);
     IEditorModel::create({ saved[0], saved[1] }, row);
     if (*row >= 0 && *row < rowCount())
     {
-        auto newHide = convertHideData({ saved[2], saved[3], saved[4] });
+        auto newHide = convertHideData({ saved[2], saved[3], saved[5], saved[4] });
         setData(index(*row, 0), QVariant::fromValue(newHide), SGroupDataRole);
     }
+    emit modelChanged();
 }
 
 /// \brief Slot for updating an item's data in the model (including hiding data).
