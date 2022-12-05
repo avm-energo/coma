@@ -16,12 +16,6 @@ set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-#if (NOT MSVC)
-#  set (CMAKE_GENERATOR "Unix Makefiles" CACHE INTERNAL "" FORCE)
-#  set(CMAKE_MAKE_PROGRAM "${CMAKE_MAKE_PROGRAM} -j4")
-#  message("-- Generator is set to ${CMAKE_GENERATOR}")
-#endif()
-
 find_program(CONAN_FOUND "conan" NO_CACHE)
 if(CONAN_FOUND)
     set(CONAN_EXEC conan)
@@ -38,7 +32,6 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/../scripts")
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_BINARY_DIR}")
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/3rdParty")
-
 
 include(DetermineTargetArchitecture)
 target_architecture(PROJECT_ARCHITECTURE)

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QVariant>
+
 // Обмен с модулями
 // Канал связи с модулем
 typedef unsigned char byte;
@@ -19,8 +20,7 @@ namespace Limits
 
     // максимальный ИД осциллограмм
     constexpr unsigned MaxOscillogramId = 2999;
-    // минимальный ИД осциллограмм, нужно, т.к. файлы осциллограмм обрабатываются
-    // по-своему
+    // минимальный ИД осциллограмм, нужно, т.к. файлы осциллограмм обрабатываются по-своему
     constexpr unsigned MinOscillogramId = 1000;
 
     //    // максимальный ИД журналов
@@ -56,7 +56,6 @@ enum Starters : byte
 
 enum Commands : byte
 {
-
     // ответ "всё в порядке"
     ResultOk = 0x11,
     // запуск, остановка теста

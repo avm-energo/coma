@@ -1,8 +1,8 @@
 project(AVM-Service)
 
 set(PROJECT_VERSION_MAJOR 2)
-set(PROJECT_VERSION_MINOR 4)
-set(PROJECT_VERSION_PATCH 1)
+set(PROJECT_VERSION_MINOR 5)
+set(PROJECT_VERSION_PATCH 0)
 
 find_package(
   Qt${QT_VERSION_MAJOR}
@@ -11,6 +11,7 @@ find_package(
 
 configure_file(${CMAKE_SOURCE_DIR}/cconfig.h.in
                ${CMAKE_CURRENT_BINARY_DIR}/config.h @ONLY)
+
 configure_file(${CMAKE_SOURCE_DIR}/versioninfo.rc.in
                ${CMAKE_CURRENT_BINARY_DIR}/versioninfo.rc @ONLY)
 
