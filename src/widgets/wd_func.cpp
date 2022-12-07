@@ -870,7 +870,7 @@ QString WDFunc::StringFloatValueWithCheck(float value, int precision, bool exp)
 QVariant WDFunc::FloatValueWithCheck(float value)
 {
     QVariant tmps;
-    if (value >= MAXFLOAT || value <= MAXFLOAT)
+    if (value >= MAXFLOAT || value <= -MAXFLOAT)
         tmps = "***";
     else
         tmps = value;

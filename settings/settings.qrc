@@ -1,6 +1,11 @@
 <RCC>
     <qresource prefix="/module">
         <file>a387.xml</file>
+        <file>a282.xml</file>
+        <file>a284.xml</file>
+        <file>8082.xml</file>
+        <file>2100.xml</file>
+        <file>0022.xml</file>
 		<file>module-template.xml</file>
         <file>s2files.xml</file>
 		<file>template.xml</file>

@@ -83,9 +83,9 @@ void DialogManager::createConfigDialogs()
     auto &config = settings.getConfigMap();
     for (auto it = config.cbegin(); it != config.cend(); it++)
     {
-        auto indexStr = (config.size() > 1) ? QString::number(it.key()) : "";
+        QString indexStr = (config.size() > 1) ? ((it.key() == 1) ? "база" : "мезонин") : "";
         addDialogToList(new ConfigDialog(&configV, it.value(), true, mParent), //
-            "Конфигурация " + indexStr, "conf" + indexStr);
+            "Конфигурация " + indexStr, "conf" + QString::number(it.key()));
     }
 }
 

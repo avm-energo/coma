@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../../interfaces/interfacesettings.h"
+#include "../../module/board.h"
 #include "../../module/modulesettings.h"
 #include "xmlbaseparser.h"
 
@@ -25,7 +26,7 @@ signals:
     void sectionDataSending(const ModuleTypes::SGMap &sgmap, const QString &secHead);
     void alarmDataSending(const Modules::AlarmType &aType, const quint32 &addr, const QString &desc);
     void jourDataSending(const Modules::JournalType &jType, const quint32 &addr, const QString &desc);
-    void interfaceSettingsSending(const QVariant &iSettings);
+    void interfaceSettingsSending(const QVariant &iSettings, const Board::InterfaceType &iType);
     void configDataSending(const quint32 &id, const QString &defVal, const bool &visib, const quint32 &count);
 
 private:

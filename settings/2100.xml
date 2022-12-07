@@ -4,9 +4,7 @@
     <version>3.2-0000</version>
     <resources>
         <alarms desc="Сигнализация">
-            <critical desc="Критичные"/>
-            <info desc="Информационные"/>
-            <warning desc="Предупреждения">
+            <critical desc="Критичные">
                 <item>
                     <addr>1201</addr>
                     <string>Достигнута уставка setminmin по каналу 0</string>
@@ -39,6 +37,41 @@
                     <addr>1208</addr>
                     <string>Достигнута уставка setminmin по каналу 7</string>
                 </item>
+                <item>
+                    <addr>1225</addr>
+                    <string>Достигнута уставка setmaxmax по каналу 0</string>
+                </item>
+                <item>
+                    <addr>1226</addr>
+                    <string>Достигнута уставка setmaxmax по каналу 1</string>
+                </item>
+                <item>
+                    <addr>1227</addr>
+                    <string>Достигнута уставка setmaxmax по каналу 2</string>
+                </item>
+                <item>
+                    <addr>1228</addr>
+                    <string>Достигнута уставка setmaxmax по каналу 3</string>
+                </item>
+                <item>
+                    <addr>1229</addr>
+                    <string>Достигнута уставка setmaxmax по каналу 4</string>
+                </item>
+                <item>
+                    <addr>1230</addr>
+                    <string>Достигнута уставка setmaxmax по каналу 5</string>
+                </item>
+                <item>
+                    <addr>1231</addr>
+                    <string>Достигнута уставка setmaxmax по каналу 6</string>
+                </item>
+                <item>
+                    <addr>1232</addr>
+                    <string>Достигнута уставка setmaxmax по каналу 7</string>
+                </item>
+            </critical>
+            <info desc="Информационные"/>
+            <warning desc="Предупреждения">
                 <item>
                     <addr>1209</addr>
                     <string>Достигнута уставка setmin по каналу 0</string>
@@ -103,38 +136,6 @@
                     <addr>1224</addr>
                     <string>Достигнута уставка setmax по каналу 7</string>
                 </item>
-                <item>
-                    <addr>1225</addr>
-                    <string>Достигнута уставка setmaxmax по каналу 0</string>
-                </item>
-                <item>
-                    <addr>1226</addr>
-                    <string>Достигнута уставка setmaxmax по каналу 1</string>
-                </item>
-                <item>
-                    <addr>1227</addr>
-                    <string>Достигнута уставка setmaxmax по каналу 2</string>
-                </item>
-                <item>
-                    <addr>1228</addr>
-                    <string>Достигнута уставка setmaxmax по каналу 3</string>
-                </item>
-                <item>
-                    <addr>1229</addr>
-                    <string>Достигнута уставка setmaxmax по каналу 4</string>
-                </item>
-                <item>
-                    <addr>1230</addr>
-                    <string>Достигнута уставка setmaxmax по каналу 5</string>
-                </item>
-                <item>
-                    <addr>1231</addr>
-                    <string>Достигнута уставка setmaxmax по каналу 6</string>
-                </item>
-                <item>
-                    <addr>1232</addr>
-                    <string>Достигнута уставка setmaxmax по каналу 7</string>
-                </item>
             </warning>
         </alarms>
         <config desc="Конфигурация">
@@ -155,7 +156,7 @@
             </record>
             <record>
                 <id>104</id>
-                <defaultValue></defaultValue>
+                <defaultValue>1,1,1,1,1,1,1,1</defaultValue>
                 <visibility>true</visibility>
             </record>
             <record>
@@ -185,7 +186,7 @@
             </record>
             <record>
                 <id>111</id>
-                <defaultValue></defaultValue>
+                <defaultValue>20</defaultValue>
                 <visibility>true</visibility>
             </record>
             <record>
@@ -210,17 +211,17 @@
             </record>
             <record>
                 <id>116</id>
-                <defaultValue></defaultValue>
+                <defaultValue>0,0,0,0,0,0,0,0</defaultValue>
                 <visibility>true</visibility>
             </record>
             <record>
                 <id>117</id>
-                <defaultValue></defaultValue>
+                <defaultValue>0,0,0,0,0,0,0,0</defaultValue>
                 <visibility>true</visibility>
             </record>
             <record>
                 <id>118</id>
-                <defaultValue></defaultValue>
+                <defaultValue>0</defaultValue>
                 <visibility>true</visibility>
             </record>
         </config>
@@ -294,40 +295,40 @@
         <sections desc="Разделы">
             <section header="Текущие данные базовая">
                 <sgroup header="Значение по каналу, инж. единицы" tab="1">
-                    <mwidget desc="Канал №%1" view="float">
+                    <mwidget view="float" desc="Канал №%1">
                         <start-addr>1001</start-addr>
                         <count>8</count>
                         <toolTip>Текущее значение по каналу %1, инж. единицы</toolTip>
                     </mwidget>
                 </sgroup>
                 <sgroup header="Макс. значение по каналу, инж. единицы" tab="2">
-                    <mwidget desc="Канал №%1" view="float">
+                    <mwidget view="float" desc="Канал №%1">
                         <start-addr>1033</start-addr>
                         <count>8</count>
                         <toolTip>Макс. значение по каналу %1, инж. единицы</toolTip>
                     </mwidget>
                 </sgroup>
                 <sgroup header="Мин. значение по каналу, инж. единицы" tab="2">
-                    <mwidget desc="Канал №%1" view="float">
+                    <mwidget view="float" desc="Канал №%1">
                         <start-addr>1025</start-addr>
                         <count>8</count>
                         <toolTip>Мин. значение по каналу %1</toolTip>
                     </mwidget>
                 </sgroup>
                 <sgroup header="Общие" tab="1">
-                    <mwidget desc="Температура микроконтроллера, °С" view="float">
+                    <mwidget view="float" desc="Температура микроконтроллера, °С">
                         <start-addr>101</start-addr>
                     </mwidget>
                 </sgroup>
                 <sgroup header="Текущее значение напряжения по каналу, В" tab="1">
-                    <mwidget desc="Канал №%1" view="float">
+                    <mwidget view="float" desc="Канал №%1">
                         <start-addr>1017</start-addr>
                         <count>8</count>
                         <toolTip>Текущее значение напряжения по каналу %1, В</toolTip>
                     </mwidget>
                 </sgroup>
                 <sgroup header="Текущее значение тока по каналу, мА" tab="1">
-                    <mwidget desc="Канал №%1" view="float">
+                    <mwidget view="float" desc="Канал №%1">
                         <start-addr>1009</start-addr>
                         <count>8</count>
                         <toolTip>Текущее значение тока по каналу %1, мА</toolTip>

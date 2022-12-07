@@ -1,7 +1,5 @@
 #include "xmlmoduleparser.h"
 
-#include "../../module/board.h"
-
 #include <gen/stdfunc.h>
 
 Xml::ModuleParser::ModuleParser(QObject *parent) : BaseParser(parent), isBase(true)
@@ -171,7 +169,7 @@ void Xml::ModuleParser::parseJournal(const QDomNode &jourNode, const Modules::Jo
     emit jourDataSending(jType, addr, desc);
 }
 
-/// \brief Функция для парсинга конфигурации интерфейса, по которому подключён модуль.
+/// \brief Функция для парсинга конфигурации интерфейса, по которому подключен модуль.
 void Xml::ModuleParser::parseInterface(const QDomNode &resNode)
 {
     auto ifaceType = Board::GetInstance().interfaceType();
@@ -197,7 +195,7 @@ void Xml::ModuleParser::parseInterface(const QDomNode &resNode)
             [&](const QDomNode &iecNode) { parseIec(iecNode, ifaceSettings); });
         ifaceConfig.setValue(ifaceSettings);
     }
-    emit interfaceSettingsSending(ifaceConfig);
+    emit interfaceSettingsSending(ifaceConfig, ifaceType);
 }
 
 /// \brief Функция для парсинга узла <modbus>.

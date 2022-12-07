@@ -99,9 +99,9 @@ public:
     {
         Q_ASSERT(m_settings.settings.canConvert<T>());
         // qDebug() << m_settings.settings.type().name() << "<->" << typeid(T).name();
-        //  Q_ASSERT(m_settings.settings.type() == typeid(T));
-        //    Q_ASSERT(std::holds_alternative<T>(m_settings.settings));
-        //   return std::get<T>(m_settings.settings);
+        // Q_ASSERT(m_settings.settings.type() == typeid(T));
+        // Q_ASSERT(std::holds_alternative<T>(m_settings.settings));
+        // return std::get<T>(m_settings.settings);
         return m_settings.settings.value<T>();
     }
 

@@ -210,8 +210,8 @@ enum TypeId : char
     F_SC_NB_1 = 127
 };
 Q_ENUM_NS(Commands104::TypeId)
-// CAUSE OF TRANSMISSION: define causes
 
+// CAUSE OF TRANSMISSION: define causes
 //#define COT_PERIODIC 1
 //#define COT_BACKGROUND 2
 //#define COT_SPONTANEOUS 3

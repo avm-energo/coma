@@ -1,6 +1,7 @@
 #include "configstorage.h"
 
 #include "../interfaces/baseinterface.h"
+#include "../interfaces/interfacesettings.h"
 
 ConfigStorage::ConfigStorage(token, QObject *parent) : QObject(parent), mSettings(new ModuleSettings), isS2Parsed(false)
 {
@@ -109,12 +110,52 @@ void ConfigStorage::jourDataReceive(const Modules::JournalType &jType, const qui
 }
 
 /// \brief Slot for saving module's interface settings.
-void ConfigStorage::interfaceSettingsReceive(const QVariant &iSettings)
+void ConfigStorage::interfaceSettingsReceive(const QVariant &iSettings, const Board::InterfaceType &iType)
 {
     if (iSettings.isValid())
     {
-        mSettings->setInterfaceSettings({ iSettings });
-        BaseInterface::iface()->setSettings(mSettings->getInterfaceSettings());
+        // A L E R T! Говнокод, но по-другому сделать с двумя файлами будет сложнее :/
+        auto ifSettings = mSettings->getInterfaceSettings().settings;
+        if (!ifSettings.isNull() && ifSettings.isValid())
+        {
+            if (iType == Board::USB || iType == Board::Emulator)
+            {
+                auto ifOld = ifSettings.value<InterfaceInfo<ProtocomGroup>>();
+                auto ifNew = iSettings.value<InterfaceInfo<ProtocomGroup>>();
+                for (const auto &val : ifNew.dictionary())
+                {
+                    ifOld.addGroup(val);
+                }
+                ifSettings.setValue(ifOld);
+            }
+            else if (iType == Board::RS485)
+            {
+                auto ifOld = ifSettings.value<InterfaceInfo<ModbusGroup>>();
+                auto ifNew = iSettings.value<InterfaceInfo<ModbusGroup>>();
+                for (const auto &val : ifNew.dictionary())
+                {
+                    ifOld.addGroup(val);
+                }
+                ifSettings.setValue(ifOld);
+            }
+            else if (iType == Board::Ethernet)
+            {
+                auto ifOld = ifSettings.value<InterfaceInfo<Iec104Group>>();
+                auto ifNew = iSettings.value<InterfaceInfo<Iec104Group>>();
+                for (const auto &val : ifNew.dictionary())
+                {
+                    ifOld.addGroup(val);
+                }
+                ifSettings.setValue(ifOld);
+            }
+            mSettings->setInterfaceSettings({ ifSettings });
+            BaseInterface::iface()->setSettings(mSettings->getInterfaceSettings());
+        }
+        else
+        {
+            mSettings->setInterfaceSettings({ iSettings });
+            BaseInterface::iface()->setSettings(mSettings->getInterfaceSettings());
+        }
     }
 }
 

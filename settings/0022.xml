@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<module mtypeb="00" mtypem="22">
+    <name>AVTUK-0022</name>
+    <version>1.5-0002</version>
+    <resources>
+        <alarms desc="Сигнализация">
+            <critical desc="Критичные"/>
+            <warning desc="Предупреждения"/>
+            <info desc="Информационные"/>
+        </alarms>
+        <config desc="Конфигурация">
+            <record>
+                <id>321</id>
+                <defaultValue>1.385,1.385,1.385,1.385,1.385,1.385,1.385,1.385</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>322</id>
+                <defaultValue>-50,-50,-50,-50,-50,-50,-50,-50</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>323</id>
+                <defaultValue>150,150,150,150,150,150,150,150</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>324</id>
+                <defaultValue>-40,-40,-40,-40,-40,-40,-40,-40</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>325</id>
+                <defaultValue>-25,-25,-25,-25,-25,-25,-25,-25</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>326</id>
+                <defaultValue>900,900,900,900,900,900,900,900</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>327</id>
+                <defaultValue>100,100,100,100,100,100,100,100</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>328</id>
+                <defaultValue>10</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>329</id>
+                <defaultValue>16</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>330</id>
+                <defaultValue>2</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>331</id>
+                <defaultValue>100,100,100,100,100,100,100,100</defaultValue>
+                <visibility>true</visibility>
+            </record>
+        </config>
+        <iec60870 desc="Протокол ГОСТ Р МЭК 60870-5-104"/>
+        <journals desc="Журналы">
+            <work desc="Рабочий журнал"/>
+            <meas desc="Журнал измерений"/>
+        </journals>
+        <modbus desc="Протокол Modbus"/>
+        <protocom desc="Протокол Protocom">
+            <group>
+                <block>0</block>
+                <signal-id>104</signal-id>
+            </group>
+            <group>
+                <block>102</block>
+                <signal-id>101</signal-id>
+            </group>
+            <group>
+                <block>200</block>
+                <signal-id>102</signal-id>
+            </group>
+        </protocom>
+        <section-tabs desc="Вкладки">
+            <tab>
+                <id>3</id>
+                <name>Основные</name>
+            </tab>
+        </section-tabs>
+        <sections desc="Разделы">
+            <section header="Текущие данные мезонин">
+                <sgroup tab="3" header="Текущее значение по каналу, °C">
+                    <mwidget desc="Канал №%1" view="float">
+                        <start-addr>4501</start-addr>
+                        <count>8</count>
+                        <toolTip>Текущее значение температуры по каналу %1</toolTip>
+                    </mwidget>
+                </sgroup>
+                <sgroup tab="3" header="Текущее значение по каналу, Ом">
+                    <mwidget desc="Канал №%1" view="float">
+                        <start-addr>4509</start-addr>
+                        <count>8</count>
+                        <toolTip>Текущее значение сопротивления по каналу %1</toolTip>
+                    </mwidget>
+                </sgroup>
+            </section>
+        </sections>
+        <signals desc="Сигналы">
+            <signal>
+                <start-addr>101</start-addr>
+                <count>2</count>
+                <id>104</id>
+                <type>Float</type>
+            </signal>
+            <signal>
+                <start-addr>4501</start-addr>
+                <count>16</count>
+                <id>101</id>
+                <type>Float</type>
+            </signal>
+            <signal>
+                <start-addr>4601</start-addr>
+                <count>32</count>
+                <id>102</id>
+                <type>BitString</type>
+            </signal>
+            <signal>
+                <start-addr>4900</start-addr>
+                <count>32</count>
+                <id>103</id>
+                <type>Float</type>
+            </signal>
+        </signals>
+    </resources>
+</module>
