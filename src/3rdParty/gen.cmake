@@ -6,5 +6,5 @@ FetchContent_Declare(
   GIT_REPOSITORY https://github.com/avm-energo/gen.git
   GIT_TAG        origin/main
 )
-set(GEN_STATIC ON)
+set(GEN_STATIC OFF)
 FetchContent_MakeAvailable(gen)
