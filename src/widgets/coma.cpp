@@ -390,7 +390,7 @@ void Coma::getAbout()
     about->appendLine("Config version: " + version.getConfigVersion());
     about->prependLine(progName + " version " + QString(comaVer) + "-" + version.getGitHash());
     about->setupUI();
-    about->show();
+    about->exec();
 }
 
 void Coma::newTimers()

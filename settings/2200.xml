@@ -1,139 +1,139 @@
 <?xml version="1.0" encoding="utf-8"?>
-<module mtypem="00" mtypeb="21">
-    <name>AVTUK-2100</name>
-    <version>3.2-0000</version>
+<module mtypem="00" mtypeb="22">
+    <name>AVTUK-2200</name>
+    <version>1.5-0002</version>
     <resources>
         <alarms desc="Сигнализация">
             <critical desc="Критичные">
                 <item>
-                    <addr>1201</addr>
+                    <addr>4101</addr>
                     <string>Достигнута уставка setminmin по каналу 0 (база)</string>
                 </item>
                 <item>
-                    <addr>1202</addr>
+                    <addr>4102</addr>
                     <string>Достигнута уставка setminmin по каналу 1 (база)</string>
                 </item>
                 <item>
-                    <addr>1203</addr>
+                    <addr>4103</addr>
                     <string>Достигнута уставка setminmin по каналу 2 (база)</string>
                 </item>
                 <item>
-                    <addr>1204</addr>
+                    <addr>4104</addr>
                     <string>Достигнута уставка setminmin по каналу 3 (база)</string>
                 </item>
                 <item>
-                    <addr>1205</addr>
+                    <addr>4105</addr>
                     <string>Достигнута уставка setminmin по каналу 4 (база)</string>
                 </item>
                 <item>
-                    <addr>1206</addr>
+                    <addr>4106</addr>
                     <string>Достигнута уставка setminmin по каналу 5 (база)</string>
                 </item>
                 <item>
-                    <addr>1207</addr>
+                    <addr>4107</addr>
                     <string>Достигнута уставка setminmin по каналу 6 (база)</string>
                 </item>
                 <item>
-                    <addr>1208</addr>
+                    <addr>4108</addr>
                     <string>Достигнута уставка setminmin по каналу 7 (база)</string>
                 </item>
                 <item>
-                    <addr>1225</addr>
+                    <addr>4125</addr>
                     <string>Достигнута уставка setmaxmax по каналу 0 (база)</string>
                 </item>
                 <item>
-                    <addr>1226</addr>
+                    <addr>4126</addr>
                     <string>Достигнута уставка setmaxmax по каналу 1 (база)</string>
                 </item>
                 <item>
-                    <addr>1227</addr>
+                    <addr>4127</addr>
                     <string>Достигнута уставка setmaxmax по каналу 2 (база)</string>
                 </item>
                 <item>
-                    <addr>1228</addr>
+                    <addr>4128</addr>
                     <string>Достигнута уставка setmaxmax по каналу 3 (база)</string>
                 </item>
                 <item>
-                    <addr>1229</addr>
+                    <addr>4129</addr>
                     <string>Достигнута уставка setmaxmax по каналу 4 (база)</string>
                 </item>
                 <item>
-                    <addr>1230</addr>
+                    <addr>4130</addr>
                     <string>Достигнута уставка setmaxmax по каналу 5 (база)</string>
                 </item>
                 <item>
-                    <addr>1231</addr>
+                    <addr>4131</addr>
                     <string>Достигнута уставка setmaxmax по каналу 6 (база)</string>
                 </item>
                 <item>
-                    <addr>1232</addr>
+                    <addr>4132</addr>
                     <string>Достигнута уставка setmaxmax по каналу 7 (база)</string>
                 </item>
             </critical>
             <info desc="Информационные"/>
             <warning desc="Предупреждения">
                 <item>
-                    <addr>1209</addr>
+                    <addr>4109</addr>
                     <string>Достигнута уставка setmin по каналу 0 (база)</string>
                 </item>
                 <item>
-                    <addr>1210</addr>
+                    <addr>4110</addr>
                     <string>Достигнута уставка setmin по каналу 1 (база)</string>
                 </item>
                 <item>
-                    <addr>1211</addr>
+                    <addr>4111</addr>
                     <string>Достигнута уставка setmin по каналу 2 (база)</string>
                 </item>
                 <item>
-                    <addr>1212</addr>
+                    <addr>4112</addr>
                     <string>Достигнута уставка setmin по каналу 3 (база)</string>
                 </item>
                 <item>
-                    <addr>1213</addr>
+                    <addr>4113</addr>
                     <string>Достигнута уставка setmin по каналу 4 (база)</string>
                 </item>
                 <item>
-                    <addr>1214</addr>
+                    <addr>4114</addr>
                     <string>Достигнута уставка setmin по каналу 5 (база)</string>
                 </item>
                 <item>
-                    <addr>1215</addr>
+                    <addr>4115</addr>
                     <string>Достигнута уставка setmin по каналу 6 (база)</string>
                 </item>
                 <item>
-                    <addr>1216</addr>
+                    <addr>4116</addr>
                     <string>Достигнута уставка setmin по каналу 7 (база)</string>
                 </item>
                 <item>
-                    <addr>1217</addr>
+                    <addr>4117</addr>
                     <string>Достигнута уставка setmax по каналу 0 (база)</string>
                 </item>
                 <item>
-                    <addr>1218</addr>
+                    <addr>4118</addr>
                     <string>Достигнута уставка setmax по каналу 1 (база)</string>
                 </item>
                 <item>
-                    <addr>1219</addr>
+                    <addr>4119</addr>
                     <string>Достигнута уставка setmax по каналу 2 (база)</string>
                 </item>
                 <item>
-                    <addr>1220</addr>
+                    <addr>4120</addr>
                     <string>Достигнута уставка setmax по каналу 3 (база)</string>
                 </item>
                 <item>
-                    <addr>1221</addr>
+                    <addr>4121</addr>
                     <string>Достигнута уставка setmax по каналу 4 (база)</string>
                 </item>
                 <item>
-                    <addr>1222</addr>
+                    <addr>4122</addr>
                     <string>Достигнута уставка setmax по каналу 5 (база)</string>
                 </item>
                 <item>
-                    <addr>1223</addr>
+                    <addr>4123</addr>
                     <string>Достигнута уставка setmax по каналу 6 (база)</string>
                 </item>
                 <item>
-                    <addr>1224</addr>
+                    <addr>4124</addr>
                     <string>Достигнута уставка setmax по каналу 7 (база)</string>
                 </item>
             </warning>
@@ -145,98 +145,68 @@
                 <visibility>true</visibility>
             </record>
             <record>
-                <id>101</id>
-                <defaultValue>1,1,1,1,1,1,1,1</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>102</id>
-                <defaultValue>4,4,4,4,4,4,4,4</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>103</id>
-                <defaultValue>20,20,20,20,20,20,20,20</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>104</id>
-                <defaultValue>1,1,1,1,1,1,1,1</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>105</id>
-                <defaultValue>1000,1000,1000,1000,1000,1000,1000,1000</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>106</id>
-                <defaultValue>10,10,10,10,10,10,10,10</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>107</id>
-                <defaultValue>50,50,50,50,50,50,50,50</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>108</id>
-                <defaultValue>950,950,950,950,950,950,950,950</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>109</id>
-                <defaultValue>990,990,990,990,990,990,990,990</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
                 <id>11</id>
-                <defaultValue>0</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>111</id>
-                <defaultValue>20</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>112</id>
-                <defaultValue>2</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>113</id>
-                <defaultValue>16</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>114</id>
-                <defaultValue>5</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>115</id>
-                <defaultValue>5</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>116</id>
-                <defaultValue>0,0,0,0,0,0,0,0</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>117</id>
-                <defaultValue>0,0,0,0,0,0,0,0</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>118</id>
                 <defaultValue>0</defaultValue>
                 <visibility>true</visibility>
             </record>
             <record>
                 <id>3</id>
                 <defaultValue>1</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>301</id>
+                <defaultValue>1.385,1.385,1.385,1.385,1.385,1.385,1.385,1.385</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>302</id>
+                <defaultValue>-50,-50,-50,-50,-50,-50,-50,-50</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>303</id>
+                <defaultValue>150,150,150,150,150,150,150,150</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>304</id>
+                <defaultValue>-40,-40,-40,-40,-40,-40,-40,-40</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>305</id>
+                <defaultValue>-25,-25,-25,-25,-25,-25,-25,-25</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>306</id>
+                <defaultValue>900,900,900,900,900,900,900,900</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>307</id>
+                <defaultValue>100,100,100,100,100,100,100,100</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>308</id>
+                <defaultValue>10</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>309</id>
+                <defaultValue>16</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>310</id>
+                <defaultValue>2</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>311</id>
+                <defaultValue>100,100,100,100,100,100,100,100</defaultValue>
                 <visibility>true</visibility>
             </record>
             <record>
@@ -292,8 +262,8 @@
             <group>
                 <signal-id>4</signal-id>
                 <sig-type>13</sig-type>
-                <trans-type>0</trans-type>
-                <sig-group>5</sig-group>
+                <trans-type>1</trans-type>
+                <sig-group></sig-group>
             </group>
             <group>
                 <signal-id>5</signal-id>
@@ -313,12 +283,12 @@
                 <signal-id>3</signal-id>
             </group>
             <group>
-                <block>1</block>
-                <signal-id>4</signal-id>
-            </group>
-            <group>
                 <block>100</block>
                 <signal-id>5</signal-id>
+            </group>
+            <group>
+                <block>2</block>
+                <signal-id>4</signal-id>
             </group>
         </protocom>
         <section-tabs desc="Вкладки">
@@ -326,34 +296,9 @@
                 <id>1</id>
                 <name>Основные</name>
             </tab>
-            <tab>
-                <id>2</id>
-                <name>Дополнительные</name>
-            </tab>
         </section-tabs>
         <sections desc="Разделы">
             <section header="Текущие данные базовая">
-                <sgroup tab="1" header="Значение по каналу, инж. единицы">
-                    <mwidget view="float" desc="Канал №%1">
-                        <start-addr>1001</start-addr>
-                        <count>8</count>
-                        <toolTip>Текущее значение по каналу %1, инж. единицы</toolTip>
-                    </mwidget>
-                </sgroup>
-                <sgroup tab="2" header="Макс. значение по каналу, инж. единицы">
-                    <mwidget view="float" desc="Канал №%1">
-                        <start-addr>1033</start-addr>
-                        <count>8</count>
-                        <toolTip>Макс. значение по каналу %1, инж. единицы</toolTip>
-                    </mwidget>
-                </sgroup>
-                <sgroup tab="2" header="Мин. значение по каналу, инж. единицы">
-                    <mwidget view="float" desc="Канал №%1">
-                        <start-addr>1025</start-addr>
-                        <count>8</count>
-                        <toolTip>Мин. значение по каналу %1</toolTip>
-                    </mwidget>
-                </sgroup>
                 <sgroup tab="1" header="Общие">
                     <mwidget view="float" desc="Температура микроконтроллера, °С">
                         <start-addr>101</start-addr>
@@ -362,18 +307,18 @@
                         <start-addr>102</start-addr>
                     </mwidget>
                 </sgroup>
-                <sgroup tab="1" header="Текущее значение напряжения по каналу, В">
+                <sgroup tab="1" header="Текущее значение по каналу, °C">
                     <mwidget view="float" desc="Канал №%1">
-                        <start-addr>1017</start-addr>
+                        <start-addr>4001</start-addr>
                         <count>8</count>
-                        <toolTip>Текущее значение напряжения по каналу %1, В</toolTip>
+                        <toolTip>Текущее значение температуры по каналу %1</toolTip>
                     </mwidget>
                 </sgroup>
-                <sgroup tab="1" header="Текущее значение тока по каналу, мА">
+                <sgroup tab="1" header="Текущее значение по каналу, Ом">
                     <mwidget view="float" desc="Канал №%1">
-                        <start-addr>1009</start-addr>
+                        <start-addr>4009</start-addr>
                         <count>8</count>
-                        <toolTip>Текущее значение тока по каналу %1, мА</toolTip>
+                        <toolTip>Текущее значение сопротивления по каналу %1</toolTip>
                     </mwidget>
                 </sgroup>
             </section>
@@ -386,26 +331,26 @@
                 <type>BitString</type>
             </signal>
             <signal>
-                <start-addr>40</start-addr>
-                <count>5</count>
-                <id>2</id>
-                <type>BitString</type>
-            </signal>
-            <signal>
                 <start-addr>101</start-addr>
                 <count>2</count>
                 <id>3</id>
                 <type>Float</type>
             </signal>
             <signal>
-                <start-addr>1001</start-addr>
-                <count>40</count>
+                <start-addr>40</start-addr>
+                <count>5</count>
+                <id>2</id>
+                <type>BitString</type>
+            </signal>
+            <signal>
+                <start-addr>4001</start-addr>
+                <count>16</count>
                 <id>4</id>
                 <type>Float</type>
             </signal>
             <signal>
-                <start-addr>1201</start-addr>
-                <count>40</count>
+                <start-addr>4101</start-addr>
+                <count>32</count>
                 <id>5</id>
                 <type>BitString</type>
             </signal>
