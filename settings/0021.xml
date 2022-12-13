@@ -292,11 +292,11 @@
         <protocom desc="Протокол Protocom">
             <group>
                 <block>101</block>
-                <signal-id>1</signal-id>
+                <signal-id>101</signal-id>
             </group>
             <group>
                 <block>200</block>
-                <signal-id>2</signal-id>
+                <signal-id>102</signal-id>
             </group>
         </protocom>
         <section-tabs desc="Вкладки">
@@ -311,35 +311,35 @@
         </section-tabs>
         <sections desc="Разделы">
             <section header="Текущие данные мезонин">
-                <sgroup tab="1" header="Значение по каналу, инж. единицы">
+                <sgroup tab="101" header="Значение по каналу, инж. единицы">
                     <mwidget view="float" desc="Канал №%1">
                         <start-addr>2001</start-addr>
                         <count>8</count>
                         <toolTip>Текущее значение по каналу %1, инж. единицы</toolTip>
                     </mwidget>
                 </sgroup>
-                <sgroup tab="2" header="Макс. значение по каналу, инж. единицы">
+                <sgroup tab="102" header="Макс. значение по каналу, инж. единицы">
                     <mwidget view="float" desc="Канал №%1">
                         <start-addr>2033</start-addr>
                         <count>8</count>
                         <toolTip>Макс. значение по каналу %1, инж. единицы</toolTip>
                     </mwidget>
                 </sgroup>
-                <sgroup tab="2" header="Мин. значение по каналу, инж. единицы">
+                <sgroup tab="102" header="Мин. значение по каналу, инж. единицы">
                     <mwidget view="float" desc="Канал №%1">
                         <start-addr>2025</start-addr>
                         <count>8</count>
                         <toolTip>Мин. значение по каналу %1</toolTip>
                     </mwidget>
                 </sgroup>
-                <sgroup tab="1" header="Текущее значение напряжения по каналу, В">
+                <sgroup tab="101" header="Текущее значение напряжения по каналу, В">
                     <mwidget view="float" desc="Канал №%1">
                         <start-addr>2017</start-addr>
                         <count>8</count>
                         <toolTip>Текущее значение напряжения по каналу %1, В</toolTip>
                     </mwidget>
                 </sgroup>
-                <sgroup tab="1" header="Текущее значение тока по каналу, мА">
+                <sgroup tab="101" header="Текущее значение тока по каналу, мА">
                     <mwidget view="float" desc="Канал №%1">
                         <start-addr>2009</start-addr>
                         <count>8</count>

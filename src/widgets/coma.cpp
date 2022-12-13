@@ -132,11 +132,10 @@ QToolBar *Coma::createToolBar()
     tb->addAction(QIcon(":/icons/tnstop.svg"), "Разрыв соединения", this, &Coma::disconnectAndClear);
     tb->addSeparator();
     tb->addAction(QIcon(":/icons/tnsettings.svg"), "Настройки", [this]() {
-        SettingsDialog *dlg = new SettingsDialog(this);
-        dlg->setMinimumSize(this->size() / 4);
-        connect(dlg, &SettingsDialog::disableAlarmUpdate, AlarmW, &AlarmWidget::disableAlarms);
-        dlg->setAttribute(Qt::WA_DeleteOnClose);
-        dlg->show();
+        auto dialog = new SettingsDialog(this);
+        dialog->setMinimumSize(this->size() / 4);
+        connect(dialog, &SettingsDialog::disableAlarmUpdate, AlarmW, &AlarmWidget::disableAlarms);
+        dialog->exec();
         this->saveSettings();
     });
     const QIcon jourIcon(":/icons/tnfrosya.svg");
@@ -168,7 +167,7 @@ void Coma::setupUI()
     auto wdgt = new QWidget(this);
     auto lyout = new QVBoxLayout(wdgt);
     auto hlyout = new QHBoxLayout;
-    hlyout->addWidget(createToolBar() /*, Qt::AlignTop | Qt::AlignLeft*/);
+    hlyout->addWidget(createToolBar(), Qt::AlignTop | Qt::AlignLeft);
     AlarmW = new AlarmWidget(this);
     hlyout->addWidget(AlarmW, Qt::AlignCenter);
     lyout->addLayout(hlyout);
@@ -256,7 +255,6 @@ void Coma::setupMenubar()
     menu->setTitle("Автономная работа");
     menu->addAction("Загрузка осциллограммы", this, qOverload<>(&Coma::loadOsc));
     menu->addAction("Загрузка файла переключений", this, qOverload<>(&Coma::loadSwj));
-    // menu->addAction("Проверка диалога", this, &Coma::checkDialog);
     menu->addAction("Редактор модулей", this, &Coma::openModuleEditor);
     menubar->addMenu(menu);
     setMenuBar(menubar);
@@ -532,11 +530,11 @@ void Coma::attemptToRec()
 
 void Coma::loadSettings()
 {
-    QString HomeDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/"
+    auto homeDirectory = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/"
         + QCoreApplication::applicationName() + "/";
     auto sets = std::unique_ptr<QSettings>(new QSettings);
     StyleLoader::GetInstance().attach();
-    StdFunc::SetHomeDir(sets->value("Homedir", HomeDir).toString());
+    StdFunc::SetHomeDir(sets->value("Homedir", homeDirectory).toString());
 }
 
 void Coma::saveSettings()

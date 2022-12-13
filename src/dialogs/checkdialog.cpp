@@ -8,7 +8,6 @@
 #include <QCoreApplication>
 #include <QFileDialog>
 #include <QGroupBox>
-#include <QLabel>
 #include <QLineEdit>
 #include <QMessageBox>
 #include <QPushButton>
@@ -420,9 +419,7 @@ QVBoxLayout *CheckDialog::setupGroup(const ModuleTypes::SGroup &arg, UWidget *uw
         {
             auto widgetLayout = setupBitsetWidget(mwidget, uwidget);
             if (widgetLayout != nullptr)
-            {
                 groupLayout->addLayout(widgetLayout);
-            }
         }
     }
     return groupLayout;
@@ -433,7 +430,7 @@ QGridLayout *CheckDialog::setupFloatWidget(const ModuleTypes::MWidget &mwidget, 
     auto gridLayout = new QGridLayout;
     auto &count = mwidget.count;
     auto itemsOneLine = StdFunc::goldenRatio(count);
-    for (auto i = 0; i < count; ++i)
+    for (auto i = 0; i < count; i++)
     {
         QBoxLayout *layout = nullptr;
         if (wCount == 1)
@@ -469,24 +466,39 @@ void CheckDialog::updatePixmap(const ModuleTypes::MWidget &mwidget, DataTypes::B
     }
 }
 
+QLabel *CheckDialog::createPixmapIndicator(const ModuleTypes::MWidget &mwidget, const quint32 &index)
+{
+    auto pixmap = WDFunc::NewCircle(normalColor, circleRadius);
+    auto indicatorLabel = new QLabel(this);
+    indicatorLabel->setObjectName(QString::number(mwidget.startAddr) + "_" + QString::number(index));
+    indicatorLabel->setPixmap(pixmap);
+    if (!mwidget.tooltip.isEmpty())
+        indicatorLabel->setToolTip(getFormated(mwidget, mwidget.tooltip, index));
+    return indicatorLabel;
+}
+
 QVBoxLayout *CheckDialog::setupBitsetWidget(const ModuleTypes::MWidget &mwidget, UWidget *widget)
 {
     auto widgetLayout = new QVBoxLayout;
     auto bitsetWidget = new QWidget(this);
     bitsetWidget->setObjectName(QString::number(mwidget.startAddr));
     auto gridLayout = new QVBoxLayout;
-    for (auto i = 0; i < mwidget.count; ++i)
+    for (auto i = 0; i < mwidget.count; i++)
     {
         auto layout = new QHBoxLayout;
-        auto textLabel = new QLabel(mwidget.desc + ": " + QString::number(i) + " бит", this);
-        layout->addWidget(textLabel);
-        auto pixmap = WDFunc::NewCircle(normalColor, circleRadius);
-        auto indicatorLabel = new QLabel(this);
-        indicatorLabel->setObjectName(QString::number(mwidget.startAddr) + "_" + QString::number(i));
-        indicatorLabel->setPixmap(pixmap);
-        if (!mwidget.tooltip.isEmpty())
-            indicatorLabel->setToolTip(mwidget.tooltip + ": " + QString::number(i) + " бит");
-        layout->addWidget(indicatorLabel);
+        if (mwidget.desc.isEmpty())
+        {
+            // По 10 индикаторов в строке, если нет описания
+            for (; (i < mwidget.count) && (i < i + 10); i++)
+                layout->addWidget(createPixmapIndicator(mwidget, i));
+        }
+        else
+        {
+            // По 1 индикатору и описанию в строку, если оно есть
+            auto textLabel = new QLabel(getFormated(mwidget, mwidget.desc, i), this);
+            layout->addWidget(textLabel);
+            layout->addWidget(createPixmapIndicator(mwidget, i));
+        }
         gridLayout->addLayout(layout);
     }
 

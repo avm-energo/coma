@@ -22,6 +22,7 @@
 #include <QElapsedTimer>
 #include <QGroupBox>
 #include <QHBoxLayout>
+#include <QLabel>
 #include <QTimer>
 
 /// \brief Default timer interval to check analog values
@@ -95,6 +96,7 @@ private:
     void ReadAnalogMeasurementsAndWriteToFile();
     QString getFormated(const ModuleTypes::MWidget &widget, const QString &form, const int &number);
     void updatePixmap(const ModuleTypes::MWidget &mwidget, DataTypes::BitStringStruct &bs, UWidget *uwidget);
+    QLabel *createPixmapIndicator(const ModuleTypes::MWidget &mwidget, const quint32 &index);
     QVBoxLayout *setupGroup(const ModuleTypes::SGroup &arg, UWidget *uwidget);
     QGridLayout *setupFloatWidget(const ModuleTypes::MWidget &mwidget, const int &wCount);
     QVBoxLayout *setupBitsetWidget(const ModuleTypes::MWidget &mwidget, UWidget *dataUpdater);
