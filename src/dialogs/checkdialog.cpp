@@ -489,8 +489,10 @@ QVBoxLayout *CheckDialog::setupBitsetWidget(const ModuleTypes::MWidget &mwidget,
         if (mwidget.desc.isEmpty())
         {
             // По 10 индикаторов в строке, если нет описания
-            for (; (i < mwidget.count) && (i < i + 10); i++)
+            const auto limit = i + 10;
+            for (; (i < mwidget.count) && (i < limit); i++)
                 layout->addWidget(createPixmapIndicator(mwidget, i));
+            i--;
         }
         else
         {

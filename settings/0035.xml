@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<module mtypem="31" mtypeb="00">
-    <name>AVTUK-0031</name>
-    <version>0.0-0000</version>
+<module mtypem="35" mtypeb="00">
+    <name>AVTUK-0035</name>
+    <version>1.0-0000</version>
     <resources>
         <alarms desc="Сигнализация">
             <critical desc="Критичные"/>
@@ -20,33 +20,6 @@
                 <visibility>true</visibility>
             </record>
             <record>
-                <id>231</id>
-                <defaultValue>0</defaultValue>
-                <visibility>true</visibility>
-                <count>11</count>
-            </record>
-            <record>
-                <id>232</id>
-                <defaultValue>2</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>234</id>
-                <defaultValue>2</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>235</id>
-                <defaultValue>2</defaultValue>
-                <visibility>true</visibility>
-                <count>11</count>
-            </record>
-            <record>
-                <id>236</id>
-                <defaultValue>0</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
                 <id>3</id>
                 <defaultValue>1</defaultValue>
                 <visibility>true</visibility>
@@ -54,6 +27,43 @@
             <record>
                 <id>4</id>
                 <defaultValue>205</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>421</id>
+                <defaultValue>0</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>422</id>
+                <defaultValue>0</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>423</id>
+                <defaultValue>0</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>424</id>
+                <defaultValue>0</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>425</id>
+                <defaultValue>0</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>427</id>
+                <defaultValue>0</defaultValue>
+                <count>4</count>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>428</id>
+                <defaultValue>0</defaultValue>
+                <count>4</count>
                 <visibility>true</visibility>
             </record>
             <record>
@@ -92,14 +102,8 @@
             <group>
                 <signal-id>105</signal-id>
                 <sig-type>7</sig-type>
-                <trans-type>0</trans-type>
-                <sig-group>7</sig-group>
-            </group>
-            <group>
-                <signal-id>106</signal-id>
-                <sig-type>30</sig-type>
                 <trans-type>3</trans-type>
-                <sig-group></sig-group>
+                <sig-group>6</sig-group>
             </group>
         </iec60870>
         <journals desc="Журналы">
@@ -121,33 +125,27 @@
         </section-tabs>
         <sections desc="Разделы">
             <section header="Текущие данные мезонин">
-                <sgroup tab="101" header="Текущее состояние входов">
+                <sgroup header="Текущее состояние выходов" tab="101">
                     <mwidget desc="" view="bitset">
-                        <start-addr>3002</start-addr>
+                        <start-addr>5003</start-addr>
                         <count>11</count>
-                        <toolTip>Дискретный вход (DIO_%1)</toolTip>
+                        <toolTip>Дискретный выход (DIO_%1)</toolTip>
                     </mwidget>
                 </sgroup>
             </section>
         </sections>
         <signals desc="Сигналы">
             <signal>
-                <start-addr>3002</start-addr>
+                <start-addr>5003</start-addr>
                 <count>1</count>
                 <id>104</id>
                 <type>BitString</type>
             </signal>
             <signal>
-                <start-addr>3501</start-addr>
-                <count>150</count>
+                <start-addr>5004</start-addr>
+                <count>1</count>
                 <id>105</id>
                 <type>BitString</type>
-            </signal>
-            <signal>
-                <start-addr>3701</start-addr>
-                <count>30</count>
-                <id>106</id>
-                <type>Float</type>
             </signal>
         </signals>
     </resources>

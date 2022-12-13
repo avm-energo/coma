@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<module mtypem="31" mtypeb="00">
-    <name>AVTUK-0031</name>
-    <version>0.0-0000</version>
+<module mtypem="00" mtypeb="33">
+    <name>AVTUK-3300</name>
+    <version>1.0-0000</version>
     <resources>
         <alarms desc="Сигнализация">
             <critical desc="Критичные"/>
@@ -20,30 +20,18 @@
                 <visibility>true</visibility>
             </record>
             <record>
-                <id>231</id>
+                <id>205</id>
+                <defaultValue>2</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>211</id>
                 <defaultValue>0</defaultValue>
                 <visibility>true</visibility>
-                <count>11</count>
             </record>
             <record>
-                <id>232</id>
+                <id>212</id>
                 <defaultValue>2</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>234</id>
-                <defaultValue>2</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>235</id>
-                <defaultValue>2</defaultValue>
-                <visibility>true</visibility>
-                <count>11</count>
-            </record>
-            <record>
-                <id>236</id>
-                <defaultValue>0</defaultValue>
                 <visibility>true</visibility>
             </record>
             <record>
@@ -84,19 +72,37 @@
         </config>
         <iec60870 desc="Протокол ГОСТ Р МЭК 60870-5-104">
             <group>
-                <signal-id>104</signal-id>
+                <signal-id>1</signal-id>
+                <sig-type>7</sig-type>
+                <trans-type>0</trans-type>
+                <sig-group>1</sig-group>
+            </group>
+            <group>
+                <signal-id>2</signal-id>
+                <sig-type>7</sig-type>
+                <trans-type>0</trans-type>
+                <sig-group>1</sig-group>
+            </group>
+            <group>
+                <signal-id>3</signal-id>
+                <sig-type>13</sig-type>
+                <trans-type>1</trans-type>
+                <sig-group></sig-group>
+            </group>
+            <group>
+                <signal-id>4</signal-id>
                 <sig-type>7</sig-type>
                 <trans-type>0</trans-type>
                 <sig-group>6</sig-group>
             </group>
             <group>
-                <signal-id>105</signal-id>
+                <signal-id>5</signal-id>
                 <sig-type>7</sig-type>
                 <trans-type>0</trans-type>
                 <sig-group>7</sig-group>
             </group>
             <group>
-                <signal-id>106</signal-id>
+                <signal-id>6</signal-id>
                 <sig-type>30</sig-type>
                 <trans-type>3</trans-type>
                 <sig-group></sig-group>
@@ -109,22 +115,34 @@
         <modbus desc="Протокол Modbus"/>
         <protocom desc="Протокол Protocom">
             <group>
-                <block>103</block>
-                <signal-id>104</signal-id>
+                <block>0</block>
+                <signal-id>3</signal-id>
+            </group>
+            <group>
+                <block>3</block>
+                <signal-id>4</signal-id>
             </group>
         </protocom>
         <section-tabs desc="Вкладки">
             <tab>
-                <id>101</id>
+                <id>1</id>
                 <name>Основные</name>
             </tab>
         </section-tabs>
         <sections desc="Разделы">
-            <section header="Текущие данные мезонин">
-                <sgroup tab="101" header="Текущее состояние входов">
+            <section header="Текущие данные базовая">
+                <sgroup tab="1" header="Общие">
+                    <mwidget view="float" desc="Температура микроконтроллера, °С">
+                        <start-addr>101</start-addr>
+                    </mwidget>
+                    <mwidget view="float" desc="Напряжение на батарейке, В">
+                        <start-addr>102</start-addr>
+                    </mwidget>
+                </sgroup>
+                <sgroup tab="1" header="Текущее состояние входов">
                     <mwidget desc="" view="bitset">
-                        <start-addr>3002</start-addr>
-                        <count>11</count>
+                        <start-addr>3001</start-addr>
+                        <count>30</count>
                         <toolTip>Дискретный вход (DIO_%1)</toolTip>
                     </mwidget>
                 </sgroup>
@@ -132,21 +150,39 @@
         </sections>
         <signals desc="Сигналы">
             <signal>
-                <start-addr>3002</start-addr>
+                <start-addr>1</start-addr>
+                <count>15</count>
+                <id>1</id>
+                <type>BitString</type>
+            </signal>
+            <signal>
+                <start-addr>40</start-addr>
+                <count>5</count>
+                <id>2</id>
+                <type>BitString</type>
+            </signal>
+            <signal>
+                <start-addr>101</start-addr>
+                <count>2</count>
+                <id>3</id>
+                <type>Float</type>
+            </signal>
+            <signal>
+                <start-addr>3001</start-addr>
                 <count>1</count>
-                <id>104</id>
+                <id>4</id>
                 <type>BitString</type>
             </signal>
             <signal>
-                <start-addr>3501</start-addr>
+                <start-addr>3101</start-addr>
                 <count>150</count>
-                <id>105</id>
+                <id>5</id>
                 <type>BitString</type>
             </signal>
             <signal>
-                <start-addr>3701</start-addr>
+                <start-addr>3301</start-addr>
                 <count>30</count>
-                <id>106</id>
+                <id>6</id>
                 <type>Float</type>
             </signal>
         </signals>

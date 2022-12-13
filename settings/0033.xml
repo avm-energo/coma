@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<module mtypem="31" mtypeb="00">
-    <name>AVTUK-0031</name>
-    <version>0.0-0000</version>
+<module mtypem="33" mtypeb="00">
+    <name>AVTUK-0033</name>
+    <version>1.0-0000</version>
     <resources>
         <alarms desc="Сигнализация">
             <critical desc="Критичные"/>
@@ -20,30 +20,18 @@
                 <visibility>true</visibility>
             </record>
             <record>
-                <id>231</id>
-                <defaultValue>0</defaultValue>
-                <visibility>true</visibility>
-                <count>11</count>
-            </record>
-            <record>
-                <id>232</id>
-                <defaultValue>2</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>234</id>
-                <defaultValue>2</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
                 <id>235</id>
                 <defaultValue>2</defaultValue>
                 <visibility>true</visibility>
-                <count>11</count>
             </record>
             <record>
-                <id>236</id>
+                <id>241</id>
                 <defaultValue>0</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>242</id>
+                <defaultValue>2</defaultValue>
                 <visibility>true</visibility>
             </record>
             <record>
@@ -124,7 +112,7 @@
                 <sgroup tab="101" header="Текущее состояние входов">
                     <mwidget desc="" view="bitset">
                         <start-addr>3002</start-addr>
-                        <count>11</count>
+                        <count>30</count>
                         <toolTip>Дискретный вход (DIO_%1)</toolTip>
                     </mwidget>
                 </sgroup>

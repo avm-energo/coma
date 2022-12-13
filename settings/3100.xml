@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <module mtypem="00" mtypeb="31">
     <name>AVTUK-3100</name>
-    <version>1.1-0001</version>
+    <version>0.0-0000</version>
     <resources>
         <alarms desc="Сигнализация">
             <critical desc="Критичные"/>
@@ -23,6 +23,7 @@
                 <id>201</id>
                 <defaultValue>0</defaultValue>
                 <visibility>true</visibility>
+                <count>11</count>
             </record>
             <record>
                 <id>202</id>
@@ -38,6 +39,7 @@
                 <id>205</id>
                 <defaultValue>2</defaultValue>
                 <visibility>true</visibility>
+                <count>11</count>
             </record>
             <record>
                 <id>206</id>
