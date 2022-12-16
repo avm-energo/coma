@@ -429,6 +429,12 @@
                 <sig-group></sig-group>
             </group>
             <group>
+                <signal-id>20</signal-id>
+                <sig-type>7</sig-type>
+                <trans-type>0</trans-type>
+                <sig-group>1</sig-group>
+            </group>
+            <group>
                 <signal-id>21</signal-id>
                 <sig-type>30</sig-type>
                 <trans-type>3</trans-type>
@@ -986,17 +992,17 @@
                         </string-array>
                     </mwidget>
                 </sgroup>
-                <sgroup tab="3" header="Дискретные входы">
-                    <mwidget desc="Состояние дискретных входов" view="bitset">
+                <sgroup tab="3" header="Состояние дискретных входов">
+                    <mwidget desc="DIO_1" view="bitset">
                         <start-addr>4521</start-addr>
-                        <toolTip>Дискретные входы (DIO_1)</toolTip>
+                        <toolTip>Дискретные вход DIO_1</toolTip>
                     </mwidget>
                 </sgroup>
-                <sgroup tab="3" header="Дискретные выходы">
-                    <mwidget desc="Состояние дискретных выходов" view="bitset">
+                <sgroup tab="3" header="Состояние дискретных выходов">
+                    <mwidget desc="DIO_%1" view="bitset">
                         <start-addr>4520</start-addr>
                         <count>3</count>
-                        <toolTip>Дискретные выходы (DIO_0)</toolTip>
+                        <toolTip>Дискретные выход DIO_%1</toolTip>
                     </mwidget>
                 </sgroup>
             </section>
