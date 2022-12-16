@@ -6,14 +6,7 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 find_package(
   Qt${QT_VERSION_MAJOR}
-  COMPONENTS Core
-             Network
-             Xml
-             Widgets
-             Svg
-             PrintSupport
-             Qml
-  REQUIRED)
+  COMPONENTS Core Network Xml Widgets Svg PrintSupport REQUIRED)
 
 file(GLOB_RECURSE files_cpp *.cpp)
 file(GLOB_RECURSE files_h *.h)
@@ -31,7 +24,6 @@ target_link_libraries(
   PRIVATE Qt${QT_VERSION_MAJOR}::Network
   PRIVATE Qt${QT_VERSION_MAJOR}::Svg
   PRIVATE Qt${QT_VERSION_MAJOR}::PrintSupport
-  PRIVATE Qt${QT_VERSION_MAJOR}::Qml
   PRIVATE QXlsx
   PRIVATE xml
   PRIVATE limereport

@@ -6,7 +6,7 @@ set(PROJECT_VERSION_PATCH 0)
 
 find_package(
   Qt${QT_VERSION_MAJOR}
-  COMPONENTS Core Xml Widgets Sql Qml
+  COMPONENTS Core Widgets
   REQUIRED)
 
 configure_file(${CMAKE_SOURCE_DIR}/cconfig.h.in
@@ -46,10 +46,7 @@ target_link_libraries(
   datablocks
   comaversion
   Qt${QT_VERSION_MAJOR}::Core
-  Qt${QT_VERSION_MAJOR}::Xml
   Qt${QT_VERSION_MAJOR}::Widgets
-  Qt${QT_VERSION_MAJOR}::Qml
-  Qt${QT_VERSION_MAJOR}::Sql
   limereport
   QXlsx
   qcustomplot)
@@ -77,7 +74,6 @@ if(CMAKE_SYSTEM_NAME_LOWER STREQUAL "windows")
     DESTINATION ${CMAKE_INSTALL_PREFIX}/${INSTALL_PROJECT_PATH}
     FILES_MATCHING
     PATTERN "*.png")
-
 
   install(
     CODE [[

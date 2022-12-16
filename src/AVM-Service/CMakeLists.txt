@@ -6,7 +6,7 @@ set(PROJECT_VERSION_PATCH 0)
 
 find_package(
   Qt${QT_VERSION_MAJOR}
-  COMPONENTS Core Xml Widgets Network
+  COMPONENTS Core Widgets
   REQUIRED)
 
 configure_file(${CMAKE_SOURCE_DIR}/cconfig.h.in
@@ -45,9 +45,7 @@ target_link_libraries(
   comaversion
   oscillograms
   Qt${QT_VERSION_MAJOR}::Core
-  Qt${QT_VERSION_MAJOR}::Xml
   Qt${QT_VERSION_MAJOR}::Widgets
-  Qt${QT_VERSION_MAJOR}::Network
   QXlsx
   qcustomplot)
 
