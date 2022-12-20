@@ -167,10 +167,11 @@ void ModBus::reqBSI()
 
 void ModBus::reqBSIExt()
 {
+    // 31 (40) - magic number for BSI EXT ?????????????
     constexpr auto regCount = sizeof(Modules::StartupInfoBlockExt0) / sizeof(quint32);
     CommandsMBS::CommandStruct inp {
         CommandsMBS::Commands::MBS_READINPUTREGISTER, //
-        31,                                           //
+        40,                                           //
         static_cast<quint8>(regCount * 2),            //
         {},                                           //
         TypeId::Uint32,                               //

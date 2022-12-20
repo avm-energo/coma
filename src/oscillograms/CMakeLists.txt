@@ -27,6 +27,4 @@ target_link_libraries(
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE ${PROJECT_NAME}_LIBRARY)
 
-add_dependencies(
-    ${PROJECT_NAME} qcustomplot
-    )
+add_dependencies(${PROJECT_NAME} qcustomplot)

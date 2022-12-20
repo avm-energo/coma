@@ -19,7 +19,7 @@ set(__determine_target_architecture INCLUDED)
 function(determine_target_architecture FLAG)
   if (MSVC)
     if("${MSVC_C_ARCHITECTURE_ID}" STREQUAL "X86")
-      set(ARCH "i386")
+      set(ARCH "i686")
     elseif("${MSVC_C_ARCHITECTURE_ID}" STREQUAL "x64")
       set(ARCH "x86_64")
     elseif("${MSVC_C_ARCHITECTURE_ID}" STREQUAL "ARM")
@@ -46,13 +46,6 @@ function(determine_target_architecture FLAG)
   message(STATUS "Target architecture - ${ARCH}")
   set(FLAG ${ARCH} PARENT_SCOPE)
 endfunction()
-
-
-
-
-
-
-
 
 # https://raw.githubusercontent.com/axr/solar-cmake/master/TargetArch.cmake
 # Based on the Qt 5 processor detection code, so should be very accurate

@@ -1,3 +1,5 @@
+include(ExternalProject)
+
 find_package(
   QT NAMES Qt6 Qt5
   COMPONENTS Core Widgets PrintSupport REQUIRED

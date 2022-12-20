@@ -8,7 +8,7 @@
 #include <gen/logclass.h>
 
 #define RECONNECTTIME 10000
-#define TRASHTIMEOUT 1065 // 255 bytes * 10 (bit/byte) / 2400 (baud) * 1000 (msec)
+constexpr auto TRASHTIMEOUT = (255 * 10 * 1000) / 2400; // 255 bytes * 10 (bit/byte) * 1000 (msec) / 2400 (baud)
 
 class ModbusThread : public QObject
 {
