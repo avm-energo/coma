@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <module mtypem="33" mtypeb="00">
     <name>AVTUK-0033</name>
-    <version>1.0-0000</version>
+    <version>3.7-0000</version>
     <resources>
         <alarms desc="Сигнализация">
             <critical desc="Критичные"/>
@@ -9,16 +9,6 @@
             <info desc="Информационные"/>
         </alarms>
         <config desc="Конфигурация">
-            <record>
-                <id>10</id>
-                <defaultValue>8</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>11</id>
-                <defaultValue>0</defaultValue>
-                <visibility>true</visibility>
-            </record>
             <record>
                 <id>235</id>
                 <defaultValue>2</defaultValue>
@@ -32,41 +22,6 @@
             <record>
                 <id>242</id>
                 <defaultValue>2</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>3</id>
-                <defaultValue>1</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>4</id>
-                <defaultValue>205</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>5</id>
-                <defaultValue>5</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>6</id>
-                <defaultValue>15</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>7</id>
-                <defaultValue>10</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>8</id>
-                <defaultValue>20</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>9</id>
-                <defaultValue>12</defaultValue>
                 <visibility>true</visibility>
             </record>
         </config>

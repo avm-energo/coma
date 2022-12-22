@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <module mtypem="35" mtypeb="00">
     <name>AVTUK-0035</name>
-    <version>1.0-0000</version>
+    <version>4.1-0000</version>
     <resources>
         <alarms desc="Сигнализация">
             <critical desc="Критичные"/>
@@ -9,26 +9,6 @@
             <info desc="Информационные"/>
         </alarms>
         <config desc="Конфигурация">
-            <record>
-                <id>10</id>
-                <defaultValue>8</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>11</id>
-                <defaultValue>0</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>3</id>
-                <defaultValue>1</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>4</id>
-                <defaultValue>205</defaultValue>
-                <visibility>true</visibility>
-            </record>
             <record>
                 <id>421</id>
                 <defaultValue>0</defaultValue>
@@ -66,31 +46,6 @@
                 <count>4</count>
                 <visibility>true</visibility>
             </record>
-            <record>
-                <id>5</id>
-                <defaultValue>5</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>6</id>
-                <defaultValue>15</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>7</id>
-                <defaultValue>10</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>8</id>
-                <defaultValue>20</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>9</id>
-                <defaultValue>12</defaultValue>
-                <visibility>true</visibility>
-            </record>
         </config>
         <iec60870 desc="Протокол ГОСТ Р МЭК 60870-5-104">
             <group>
@@ -116,6 +71,10 @@
                 <block>103</block>
                 <signal-id>104</signal-id>
             </group>
+            <group>
+                <block>107</block>
+                <signal-id>105</signal-id>
+            </group>
         </protocom>
         <section-tabs desc="Вкладки">
             <tab>
@@ -125,10 +84,15 @@
         </section-tabs>
         <sections desc="Разделы">
             <section header="Текущие данные мезонин">
-                <sgroup header="Текущее состояние выходов" tab="101">
+                <sgroup header="Общие" tab="101">
+                    <mwidget desc="Состояние WatchDog" view="float">
+                        <start-addr>5004</start-addr>
+                    </mwidget>
+                </sgroup>
+                <sgroup header="Ожидаемое состояние выходов" tab="101">
                     <mwidget desc="" view="bitset">
                         <start-addr>5003</start-addr>
-                        <count>11</count>
+                        <count>4</count>
                         <toolTip>Дискретный выход (DIO_%1)</toolTip>
                     </mwidget>
                 </sgroup>
@@ -145,7 +109,7 @@
                 <start-addr>5004</start-addr>
                 <count>1</count>
                 <id>105</id>
-                <type>BitString</type>
+                <type>Float</type>
             </signal>
         </signals>
     </resources>

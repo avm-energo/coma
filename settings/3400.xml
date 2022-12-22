@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<module mtypem="00" mtypeb="35">
-    <name>AVTUK-3500</name>
+<module mtypem="00" mtypeb="34">
+    <name>AVTUK-3400</name>
     <version>4.1-0000</version>
     <resources>
         <alarms desc="Сигнализация">
@@ -149,6 +149,10 @@
                 <signal-id>5</signal-id>
             </group>
             <group>
+                <block>8</block>
+                <signal-id>7</signal-id>
+            </group>
+            <group>
                 <block>250</block>
                 <signal-id>6</signal-id>
             </group>
@@ -168,23 +172,21 @@
                     <mwidget desc="Напряжение на батарейке, В" view="float">
                         <start-addr>102</start-addr>
                     </mwidget>
-                    <!--<mwidget desc="Состояние WatchDog" view="map">
-                        <start-addr>5002</start-addr>
-                        <map>
-                            <item key="0">Disabled</item>
-                            <item key="1">Stopped</item>
-                            <item key="3">Started</item>
-                            <item key="7">Latched</item>
-                        </map>
-                    </mwidget>-->
                     <mwidget desc="Состояние WatchDog" view="float">
                         <start-addr>5002</start-addr>
                     </mwidget>
                 </sgroup>
-                <sgroup header="Ожидаемое состояние выходов" tab="1">
+                <sgroup header="Ожидаемое состояние дискретных выходов" tab="1">
                     <mwidget desc="" view="bitset">
                         <start-addr>5001</start-addr>
-                        <count>4</count>
+                        <count>28</count>
+                        <toolTip>Дискретный выход (DIO_%1)</toolTip>
+                    </mwidget>
+                </sgroup>
+                <sgroup header="Реальное состояние дискретных выходов" tab="1">
+                    <mwidget desc="" view="bitset">
+                        <start-addr>6001</start-addr>
+                        <count>28</count>
                         <toolTip>Дискретный выход (DIO_%1)</toolTip>
                     </mwidget>
                 </sgroup>
@@ -220,6 +222,12 @@
                 <count>1</count>
                 <id>5</id>
                 <type>Float</type>
+            </signal>
+            <signal>
+                <start-addr>6001</start-addr>
+                <count>1</count>
+                <id>7</id>
+                <type>BitString</type>
             </signal>
             <signal>
                 <start-addr>13000</start-addr>

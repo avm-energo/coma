@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <module mtypem="00" mtypeb="33">
     <name>AVTUK-3300</name>
-    <version>1.0-0000</version>
+    <version>3.7-0000</version>
     <resources>
         <alarms desc="Сигнализация">
             <critical desc="Критичные"/>
@@ -98,12 +98,6 @@
             <group>
                 <signal-id>5</signal-id>
                 <sig-type>7</sig-type>
-                <trans-type>0</trans-type>
-                <sig-group>7</sig-group>
-            </group>
-            <group>
-                <signal-id>6</signal-id>
-                <sig-type>30</sig-type>
                 <trans-type>3</trans-type>
                 <sig-group></sig-group>
             </group>
@@ -121,6 +115,10 @@
             <group>
                 <block>3</block>
                 <signal-id>4</signal-id>
+            </group>
+            <group>
+                <block>250</block>
+                <signal-id>5</signal-id>
             </group>
         </protocom>
         <section-tabs desc="Вкладки">
@@ -174,16 +172,10 @@
                 <type>BitString</type>
             </signal>
             <signal>
-                <start-addr>3101</start-addr>
-                <count>150</count>
+                <start-addr>13000</start-addr>
+                <count>7</count>
                 <id>5</id>
                 <type>BitString</type>
-            </signal>
-            <signal>
-                <start-addr>3301</start-addr>
-                <count>30</count>
-                <id>6</id>
-                <type>Float</type>
             </signal>
         </signals>
     </resources>

@@ -85,6 +85,10 @@ if(CMAKE_SYSTEM_NAME_LOWER STREQUAL "windows")
               DIRECTORIES
                 "$<TARGET_PROPERTY:AVM-Service,LINK_DIRECTORIES>"
                 "$<TARGET_PROPERTY:QXlsx,IMPORTED_LOCATION>"
+                "$<TARGET_PROPERTY:limereport,IMPORTED_LOCATION>"
+                "$<TARGET_PROPERTY:qcustomplot,IMPORTED_LOCATION>"
+                "$<TARGET_PROPERTY:gen,IMPORTED_LOCATION>"
+                ${QT_BIN_DIR}
                 ${hidapi_BIN_DIRS}
               RESOLVED_DEPENDENCIES_VAR RES
               UNRESOLVED_DEPENDENCIES_VAR UNRES
