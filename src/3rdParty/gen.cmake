@@ -3,7 +3,7 @@ include(FetchContent)
 
 FetchContent_Declare(
   gen
-  GIT_REPOSITORY https://github.com/avm-energo/gen.git
+  GIT_REPOSITORY ssh://git@git.avmenergo.ru:5507/avm-energo/gen.git
   GIT_TAG        origin/main
 )
 set(GEN_STATIC OFF)
