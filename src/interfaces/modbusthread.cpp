@@ -399,6 +399,7 @@ QByteArray ModbusThread::createADU(const QByteArray &pdu) const
     QByteArray ba;
     ba.append(deviceAddress);
     ba.append(pdu);
+    // здесь мог бы быть Ваш рефакторинг
     quint16 KSS = calcCRC(ba);
     ba.append(static_cast<char>(KSS >> 8));
     ba.append(static_cast<char>(KSS));
