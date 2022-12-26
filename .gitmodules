@@ -13,7 +13,3 @@
 [submodule "src/alise"]
 	path = src/alise
 	url = ../../avm-energo/alise.git
-[submodule "include/qcustomplot"]
-	path = include/qcustomplot
-	url = ssh://git@git.avmenergo.ru:5507/avm-energo/qcustomplot.git
-	branch = main
