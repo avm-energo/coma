@@ -18,11 +18,8 @@ configure_file(${CMAKE_SOURCE_DIR}/versioninfo.rc.in
 file(GLOB_RECURSE files_cpp ${PROJECT_SOURCE_DIR}/*.cpp)
 file(GLOB_RECURSE files_h ${PROJECT_SOURCE_DIR}/*.h)
 
-add_executable(
-  ${PROJECT_NAME}
-  ${files_cpp}
-  ${files_h}
-  ../coma.rc
+add_executable(${PROJECT_NAME}
+  ${files_cpp} ${files_h} ../coma.rc
   ${CMAKE_CURRENT_BINARY_DIR}/versioninfo.rc)
 
 target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
@@ -31,10 +28,8 @@ if(CMAKE_BUILD_TYPE STREQUAL "Release")
   set_property(TARGET ${PROJECT_NAME} PROPERTY WIN32_EXECUTABLE true)
 endif()
 
-target_link_libraries(
-  ${PROJECT_NAME}
+target_link_libraries(${PROJECT_NAME} PUBLIC
   interfaces
-  gen
   s2
   module
   widgets
@@ -45,16 +40,10 @@ target_link_libraries(
   comaversion
   oscillograms
   Qt${QT_VERSION_MAJOR}::Core
-  Qt${QT_VERSION_MAJOR}::Widgets
-  QXlsx
-  qcustomplot)
-
-add_dependencies(${PROJECT_NAME} qcustomplot)
+  Qt${QT_VERSION_MAJOR}::Widgets)
 
 if(CMAKE_SYSTEM_NAME_LOWER STREQUAL "windows")
-
   set(INSTALL_PROJECT_PATH ${PROJECT_TARGET_NAME}/${MODE_DIR}/${PROJECT_NAME})
-
   install(CODE "set(INSTALL_PROJECT_PATH \"${INSTALL_PROJECT_PATH}\")")
 
   add_custom_command(
@@ -84,10 +73,7 @@ if(CMAKE_SYSTEM_NAME_LOWER STREQUAL "windows")
                 ".*system32/.*\\.dll"
               DIRECTORIES
                 "$<TARGET_PROPERTY:AVM-Service,LINK_DIRECTORIES>"
-                "$<TARGET_PROPERTY:QXlsx,IMPORTED_LOCATION>"
-                "$<TARGET_PROPERTY:limereport,IMPORTED_LOCATION>"
-                "$<TARGET_PROPERTY:qcustomplot,IMPORTED_LOCATION>"
-                "$<TARGET_PROPERTY:gen,IMPORTED_LOCATION>"
+                "${CMAKE_INSTALL_PREFIX}/bin"
                 ${QT_BIN_DIR}
                 ${hidapi_BIN_DIRS}
               RESOLVED_DEPENDENCIES_VAR RES
@@ -108,8 +94,6 @@ if(CMAKE_SYSTEM_NAME_LOWER STREQUAL "windows")
               file(INSTALL
                   DESTINATION "${CMAKE_INSTALL_PREFIX}/${INSTALL_PROJECT_PATH}"
                   TYPE SHARED_LIBRARY
-                  #TODO requires 3.15+
-                  #FOLLLOW_SYMLINK_CHAIN
                   FILES "${_file}"
               )
           endforeach()
@@ -124,7 +108,13 @@ if(CMAKE_SYSTEM_NAME_LOWER STREQUAL "windows")
   message(STATUS "windeployqt: " ${QT_BIN_DIR}/windeployqt.exe)
 
   install(
-    CODE [[execute_process(COMMAND ${QT_BIN_DIR}/windeployqt.exe --no-quick-import --no-system-d3d-compiler --no-virtualkeyboard --no-compiler-runtime --no-webkit2 --no-angle --no-opengl-sw ${CMAKE_INSTALL_PREFIX}/${INSTALL_PROJECT_PATH}/AVM-Service.exe
-        WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX}/${INSTALL_PROJECT_PATH})]])
+    CODE [[
+      execute_process(COMMAND ${QT_BIN_DIR}/windeployqt.exe --no-quick-import --no-system-d3d-compiler --no-virtualkeyboard --no-compiler-runtime
+          --no-webkit2 --no-angle --no-opengl-sw ${CMAKE_INSTALL_PREFIX}/${INSTALL_PROJECT_PATH}/AVM-Service.exe
+        WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX}/${INSTALL_PROJECT_PATH})
+    execute_process(COMMAND ${QT_BIN_DIR}/windeployqt.exe --no-quick-import --no-system-d3d-compiler --no-virtualkeyboard --no-compiler-runtime
+        --no-webkit2 --no-angle --no-opengl-sw ${CMAKE_INSTALL_PREFIX}/${INSTALL_PROJECT_PATH}/limereport-qt5.dll
+      WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX}/${INSTALL_PROJECT_PATH})
+    ]])
 
 endif()

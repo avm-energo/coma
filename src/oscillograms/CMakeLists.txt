@@ -14,17 +14,9 @@ file(GLOB_RECURSE files_h *.h)
 
 add_library(
   ${PROJECT_NAME} STATIC
-  ${files_cpp}
-  ${files_h}
-)
+  ${files_cpp} ${files_h})
 
-target_link_libraries(
-  ${PROJECT_NAME}
-  PRIVATE qcustomplot
-  PRIVATE Qt${QT_VERSION_MAJOR}::Core
-  PRIVATE Qt${QT_VERSION_MAJOR}::Widgets
-  PUBLIC gen QXlsx)
-
-target_compile_definitions(${PROJECT_NAME} PRIVATE ${PROJECT_NAME}_LIBRARY)
-
-add_dependencies(${PROJECT_NAME} qcustomplot)
+target_link_libraries(${PROJECT_NAME} PUBLIC
+  gen qcustomplot QXlsx
+  Qt${QT_VERSION_MAJOR}::Core
+  Qt${QT_VERSION_MAJOR}::Widgets)

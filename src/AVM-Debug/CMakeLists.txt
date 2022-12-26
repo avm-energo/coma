@@ -18,11 +18,8 @@ configure_file(${CMAKE_SOURCE_DIR}/versioninfo.rc.in
 file(GLOB_RECURSE files_cpp ${PROJECT_SOURCE_DIR}/*.cpp)
 file(GLOB_RECURSE files_h ${PROJECT_SOURCE_DIR}/*.h)
 
-add_executable(
-  ${PROJECT_NAME}
-  ${files_cpp}
-  ${files_h}
-  ../coma.rc
+add_executable(${PROJECT_NAME}
+  ${files_cpp} ${files_h} ../coma.rc
   ${CMAKE_CURRENT_BINARY_DIR}/versioninfo.rc)
 
 target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
@@ -31,10 +28,8 @@ if(CMAKE_BUILD_TYPE STREQUAL "Release")
   set_property(TARGET ${PROJECT_NAME} PROPERTY WIN32_EXECUTABLE true)
 endif()
 
-target_link_libraries(
-  ${PROJECT_NAME}
+target_link_libraries(${PROJECT_NAME} PUBLIC
   interfaces
-  gen
   s2
   module
   widgets
@@ -58,7 +53,6 @@ if (ENABLE_EMULATOR)
 endif()
 
 if(CMAKE_SYSTEM_NAME_LOWER STREQUAL "windows")
-
   set(INSTALL_PROJECT_PATH ${PROJECT_TARGET_NAME}/${MODE_DIR}/${PROJECT_NAME})
 
   install(CODE "set(INSTALL_PROJECT_PATH \"${INSTALL_PROJECT_PATH}\")")
@@ -84,10 +78,10 @@ if(CMAKE_SYSTEM_NAME_LOWER STREQUAL "windows")
                     ".*system32/.*\\.dll"
                 DIRECTORIES
                 "$<TARGET_PROPERTY:AVM-Debug,LINK_DIRECTORIES>"
-                "$<TARGET_PROPERTY:QXlsx,IMPORTED_LOCATION>"
+                "$<TARGET_PROPERTY:gen,IMPORTED_LOCATION>"
                 "$<TARGET_PROPERTY:limereport,IMPORTED_LOCATION>"
                 "$<TARGET_PROPERTY:qcustomplot,IMPORTED_LOCATION>"
-                "$<TARGET_PROPERTY:gen,IMPORTED_LOCATION>"
+                "$<TARGET_PROPERTY:QXlsx,IMPORTED_LOCATION>"
                 ${QT_BIN_DIR}
                 ${hidapi_BIN_DIRS}
                 RESOLVED_DEPENDENCIES_VAR RES
