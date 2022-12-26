@@ -22,6 +22,7 @@ option(BUILD_WITH_ALISE "Build with alise for AVTUK" OFF)
 include(DetermineTargetArchitecture)
 include(SetProjectTargetName)
 include(ConanInstallDependencies)
+include(WinDeployQt)
 
 # Finding Qt libraries
 find_package(QT NAMES Qt6 Qt5)
@@ -52,11 +53,11 @@ if(NOT MSVC)
   endif()
   # GCC / Clang compilation flags
   if(AVTUK-14)
-      # Compiler's and linker's flags for x86_64 architecture
+      # Compiling and linking flags for x86_64 architecture
       string(APPEND CMAKE_CXX_FLAGS_DEBUG " -fno-omit-frame-pointer -fsanitize=address,undefined -fstack-protector")
       string(APPEND CMAKE_LINKER_FLAGS_DEBUG " -fno-omit-frame-pointer -fsanitize=address,undefined -fstack-protector")
   else()
-      # Compiler's and linker's flags for armhf architecture
+      # Compiling and linking flags for armhf architecture
       string(APPEND CMAKE_CXX_FLAGS_DEBUG " -fno-omit-frame-pointer -fstack-protector")
       string(APPEND CMAKE_LINKER_FLAGS_DEBUG " -fno-omit-frame-pointer -fstack-protector")
   endif()
@@ -67,14 +68,6 @@ else()
 endif()
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-
-if(CMAKE_BUILD_TYPE EQUAL "DEBUG")
-  message(STATUS "debug mode")
-  set(MODE_DIR Debug)
-else()
-  message(STATUS "not a debug mode")
-  set(MODE_DIR Release)
-endif()
 
 if(ENABLE_PVS)
   if(NOT EXISTS "${CMAKE_BINARY_DIR}/PVS-Studio.cmake")
@@ -129,9 +122,9 @@ if(Qt${QT_VERSION_MAJOR}Widgets_FOUND AND NOT AVTUK-12)
     add_subdirectory(tune)
     add_subdirectory(models)
     add_subdirectory(xml)
-    #add_subdirectory(tests)
+    add_subdirectory(tests)
     add_subdirectory(AVM-Service)
-    #add_subdirectory(AVM-Debug)
+    add_subdirectory(AVM-Debug)
 else()
     message(STATUS "Build without GUI")
 endif()

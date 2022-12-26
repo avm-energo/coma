@@ -29,9 +29,6 @@ Makefile*
 *bin*
 *.lib
 lib
-win*
-linux*
-unix*
 
 # QtCreator
 *.autosave
