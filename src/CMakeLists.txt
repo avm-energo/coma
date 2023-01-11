@@ -19,6 +19,7 @@ option(ENABLE_EMULATOR "Enable emulator interface" OFF)
 option(ENABLE_PVS "Enable PVS-Studio" OFF)
 option(BUILD_WITH_ALISE "Build with alise for AVTUK" OFF)
 
+# Including cmake scripts for some functions usage
 include(DetermineTargetArchitecture)
 include(SetProjectTargetName)
 include(ConanInstallDependencies)
@@ -61,14 +62,15 @@ if(NOT MSVC)
       string(APPEND CMAKE_CXX_FLAGS_DEBUG " -fno-omit-frame-pointer -fstack-protector")
       string(APPEND CMAKE_LINKER_FLAGS_DEBUG " -fno-omit-frame-pointer -fstack-protector")
   endif()
+# Visual Studio compilation flags
 else()
-  # Visual Studio compilation flags
   add_compile_options(/permissive-)
   string(APPEND CMAKE_CXX_FLAGS " /w14456 /w14189 /w14458 /w14100 /w14996")
 endif()
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+# Enabling PVS Studio static analyzer
 if(ENABLE_PVS)
   if(NOT EXISTS "${CMAKE_BINARY_DIR}/PVS-Studio.cmake")
     message(STATUS "Downloading PVS-Studio.cmake from https://github.com/viva64/pvs-studio-cmake-examples")
@@ -80,6 +82,7 @@ if(ENABLE_PVS)
   include(${CMAKE_BINARY_DIR}/PVS-Studio.cmake)
 endif()
 
+# Downloading conan CMake script and using for autodetecting
 if(NOT EXISTS "${CMAKE_BINARY_DIR}/conan.cmake")
   message(STATUS "Downloading conan.cmake from https://github.com/conan-io/cmake-conan")
   file(DOWNLOAD "https://raw.githubusercontent.com/conan-io/cmake-conan/0.18.1/conan.cmake"
@@ -90,19 +93,16 @@ endif()
 include(${CMAKE_BINARY_DIR}/conan.cmake)
 conan_cmake_autodetect(settings)
 
-if(CMAKE_GENERATOR MATCHES "Visual Studio")
-  set(CUSTOM_TARGET_PLATFORM_ARG -A${WINDOWS_TARGET_NAME})
-else()
-  set(CUSTOM_TARGET_GENERATOR "-G${CMAKE_GENERATOR}")
-endif()
-
+# Getting CMake system name
 string(TOLOWER "${CMAKE_SYSTEM_NAME}" CMAKE_SYSTEM_NAME_LOWER)
 
+# Building libraries and targets
 include(gen)
 add_subdirectory(comaversion)
 if(NOT AVTUK-12)
     add_subdirectory(interfaces)
 endif()
+# Alise build
 if (BUILD_WITH_ALISE)
     set(PROTOS_GENERATED_DIR ${CMAKE_CURRENT_BINARY_DIR}/protos/protos)
     add_subdirectory(protos)
@@ -122,13 +122,16 @@ if(Qt${QT_VERSION_MAJOR}Widgets_FOUND AND NOT AVTUK-12)
     add_subdirectory(tune)
     add_subdirectory(models)
     add_subdirectory(xml)
+    # Tests binaries sub-build
     add_subdirectory(tests)
+    # Applications: COMA Service and COMA Debug
     add_subdirectory(AVM-Service)
     add_subdirectory(AVM-Debug)
 else()
     message(STATUS "Build without GUI")
 endif()
 
+# Running PVS Studio static analyzer
 if(ENABLE_PVS)
     pvs_studio_add_target(
         TARGET ${PROJECT_NAME}.analyze ALL

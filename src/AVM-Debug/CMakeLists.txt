@@ -45,6 +45,13 @@ if (ENABLE_EMULATOR)
     target_compile_definitions(${PROJECT_NAME} PRIVATE ENABLE_EMULATOR)
 endif()
 
+add_custom_command(
+  TARGET ${PROJECT_NAME} POST_BUILD
+  COMMAND
+    ${CMAKE_COMMAND} -E copy_directory
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../images
+    $<TARGET_FILE_DIR:${PROJECT_NAME}>/images/)
+
 if(CMAKE_SYSTEM_NAME_LOWER STREQUAL "windows")
-    include(WinDeployDebug)
+  include(WinDeployDebug)
 endif()

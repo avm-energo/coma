@@ -488,12 +488,12 @@ void Coma::go()
 
     Reconnect = false;
     newTimers();
-    splash->finish(this);
     loadSettings();
-    splash->deleteLater();
     setStatusBar(WDFunc::NewSB(this));
     unpackProgramData();
     setupUI();
+    splash->finish(this);
+    splash->deleteLater();
     show();
 }
 
@@ -608,7 +608,8 @@ void Coma::unpackProgramData()
     // Копируем файлы из ресурсов в AppData/Local/AVM-Debug
     if (homeFiles.count() < xmlFiles.count())
     {
-        constexpr QFileDevice::Permissions filePermissions = QFile::ReadOther | QFile::WriteOther | QFile::ReadOwner | QFile::WriteOwner | QFile::ReadUser  | QFile::WriteUser;
+        constexpr QFileDevice::Permissions filePermissions = QFile::ReadOther | QFile::WriteOther | QFile::ReadOwner
+            | QFile::WriteOwner | QFile::ReadUser | QFile::WriteUser;
         for (auto &filename : xmlFiles)
         {
             if (!QFile::copy(resDir.filePath(filename), homeDir.filePath(filename)))

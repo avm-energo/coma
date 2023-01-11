@@ -8,10 +8,8 @@ conan_cmake_configure(REQUIRES hidapi/0.10.1 GENERATORS cmake_find_package)
 
 find_package(hidapi REQUIRED)
 
-find_package(
-  Qt${QT_VERSION_MAJOR}
-  COMPONENTS Core Network SerialPort
-  REQUIRED)
+find_package(Qt${QT_VERSION_MAJOR}
+  COMPONENTS Core Network SerialPort REQUIRED)
 
 file(GLOB_RECURSE files_cpp ${PROJECT_SOURCE_DIR}/*.cpp)
 file(GLOB_RECURSE files_h ${PROJECT_SOURCE_DIR}/*.h)
@@ -23,14 +21,10 @@ endif()
 
 add_library(
   ${PROJECT_NAME} STATIC
-  ${files_cpp} ${files_h} )
+  ${files_cpp} ${files_h})
 
-target_link_libraries(${PROJECT_NAME} PUBLIC gen)
-
-target_link_libraries(
-  ${PROJECT_NAME}
-  PRIVATE
-#  gen
+target_link_libraries(${PROJECT_NAME} PRIVATE
+  gen
   module
   Qt${QT_VERSION_MAJOR}::Core
   Qt${QT_VERSION_MAJOR}::Network

@@ -40,6 +40,13 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
   Qt${QT_VERSION_MAJOR}::Core
   Qt${QT_VERSION_MAJOR}::Widgets)
 
+add_custom_command(
+  TARGET ${PROJECT_NAME} POST_BUILD
+  COMMAND
+    ${CMAKE_COMMAND} -E copy_directory
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../images
+    $<TARGET_FILE_DIR:${PROJECT_NAME}>/images/)
+
 if(CMAKE_SYSTEM_NAME_LOWER STREQUAL "windows")
   include(WinDeployService)
 endif()
