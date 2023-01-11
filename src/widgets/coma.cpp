@@ -608,6 +608,7 @@ void Coma::unpackProgramData()
     // Копируем файлы из ресурсов в AppData/Local/AVM-Debug
     if (homeFiles.count() < xmlFiles.count())
     {
+        constexpr QFileDevice::Permissions filePermissions = QFile::ReadOther | QFile::WriteOther | QFile::ReadOwner | QFile::WriteOwner | QFile::ReadUser  | QFile::WriteUser;
         for (auto &filename : xmlFiles)
         {
             if (!QFile::copy(resDir.filePath(filename), homeDir.filePath(filename)))
@@ -615,7 +616,7 @@ void Coma::unpackProgramData()
                 qCritical() << Error::DescError << resDir.filePath(filename);
             }
             QFile file(homeDir.filePath(filename));
-            if (!file.setPermissions(QFile::ReadOther | QFile::WriteOther))
+            if (!file.setPermissions(filePermissions))
             {
                 qCritical() << "Произошло что-то плохое!";
             }
