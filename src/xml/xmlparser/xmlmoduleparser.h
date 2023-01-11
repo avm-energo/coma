@@ -27,7 +27,7 @@ signals:
     void alarmDataSending(const Modules::AlarmType &aType, const quint32 &addr, const QString &desc);
     void jourDataSending(const Modules::JournalType &jType, const quint32 &addr, const QString &desc);
     void interfaceSettingsSending(const QVariant &iSettings, const Board::InterfaceType &iType);
-    void configDataSending(const quint32 &id, const QString &defVal, const bool &visib, const quint32 &count);
+    void configDataSending(const quint16 &id, const QString &defVal, const bool &visib, const quint16 &count);
 
 private:
     bool isCorrectModule(const QDomElement &moduleNode, const quint16 &typeB, const quint16 &typeM);

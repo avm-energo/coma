@@ -75,6 +75,7 @@ using AlarmKey = Modules::AlarmType;              ///< Modules::AlarmType - ти
 using AlarmValue = QMap<quint32, QString>; ///< quint32 - адрес сигнализации, QString - нода <desc> (описание).
 using AlarmMap = QHash<AlarmKey, AlarmValue>;                ///< Хранит узлы <item> секции <alarms>.
 using JourMap = QHash<Modules::JournalType, QList<Journal>>; ///< Хранит узлы <item> секции <journals>.
+using DetailCountMap = QHash<quint16, quint16>;              ///<
 }
 
 /// \brief Class for storing module settings.
@@ -85,6 +86,7 @@ public:
     void clear();
     void startNewConfig();
     void appendToCurrentConfig(const DataTypes::RecordPair &pair);
+    void appendDetailCount(const quint16 &id, const quint16 &count);
     void appendSignal(const quint32 &id, const ModuleTypes::Signal &sig);
     void appendTab(const quint32 &id, const QString &tabName);
     void appendSection(const ModuleTypes::Section &section);
@@ -94,6 +96,7 @@ public:
 
     const ModuleTypes::ConfigMap &getConfigMap() const;
     const ModuleTypes::ConfigList getConfigs() const;
+    const ModuleTypes::DetailCountMap &getDetailConfigCount() const;
     const ModuleTypes::SignalMap &getSignals() const;
     const ModuleTypes::TabsMap &getTabs() const;
     const ModuleTypes::SectionList &getSections() const;
@@ -106,6 +109,7 @@ private:
     quint32 curConfigIndex;
 
     ModuleTypes::ConfigMap mConfigs;
+    ModuleTypes::DetailCountMap mCountMap;
     ModuleTypes::SignalMap mSignals;
     ModuleTypes::TabsMap mTabs;
     ModuleTypes::SectionList mSections;

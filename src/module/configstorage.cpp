@@ -160,13 +160,13 @@ void ConfigStorage::interfaceSettingsReceive(const QVariant &iSettings, const Bo
 }
 
 /// \brief Slot for saving module's config record.
-void ConfigStorage::configDataReceive(const quint32 &id, //
-    const QString &defVal, const bool &visib, const quint32 &count)
+void ConfigStorage::configDataReceive(const quint16 &id, //
+    const QString &defVal, const bool &visib, const quint16 &count)
 {
     if (id != 0 && defVal != "")
     {
         mSettings->appendToCurrentConfig({ { id, defVal }, visib });
-        // TODO: парсить это дело в новую мапу: key = quint32 (id), value = quint32 (count).
-        Q_UNUSED(count);
+        if (count != 0)
+            mSettings->appendDetailCount(id, count);
     }
 }

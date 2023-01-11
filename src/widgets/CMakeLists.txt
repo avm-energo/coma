@@ -13,17 +13,16 @@ find_package(Boost
     COMPONENTS headers
     REQUIRED)
 
-set(QDARKSTYLESHEET_PATH
-    ${CMAKE_CURRENT_SOURCE_DIR}/styles/QDarkStyleSheet/qdarkstyle)
+set(QDARKSTYLESHEET_PATH ${CMAKE_CURRENT_SOURCE_DIR}/styles/QDarkStyleSheet/qdarkstyle)
 
-if(NOT EXISTS ${QDARKSTYLESHEET_PATH}/dark/darkstyle.qrc)
-  file(RENAME ${QDARKSTYLESHEET_PATH}/dark/style.qrc
-       ${QDARKSTYLESHEET_PATH}/dark/darkstyle.qrc)
-endif()
-if(NOT EXISTS ${QDARKSTYLESHEET_PATH}/light/lightstyle.qrc)
-  file(RENAME ${QDARKSTYLESHEET_PATH}/light/style.qrc
-       ${QDARKSTYLESHEET_PATH}/light/lightstyle.qrc)
-endif()
+#if(NOT EXISTS ${QDARKSTYLESHEET_PATH}/dark/darkstyle.qrc)
+#  file(RENAME ${QDARKSTYLESHEET_PATH}/dark/style.qrc
+#       ${QDARKSTYLESHEET_PATH}/dark/darkstyle.qrc)
+#endif()
+#if(NOT EXISTS ${QDARKSTYLESHEET_PATH}/light/lightstyle.qrc)
+#  file(RENAME ${QDARKSTYLESHEET_PATH}/light/style.qrc
+#       ${QDARKSTYLESHEET_PATH}/light/lightstyle.qrc)
+#endif()
 
 file(GLOB_RECURSE files_cpp ${PROJECT_SOURCE_DIR}/*.cpp)
 file(GLOB_RECURSE files_h ${PROJECT_SOURCE_DIR}/*.h)

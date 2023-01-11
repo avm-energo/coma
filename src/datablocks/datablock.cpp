@@ -192,15 +192,16 @@ void DataBlock::readBlockFromModule()
     case DataTypes::DataBlockTypes::BdBlock:
     case DataTypes::DataBlockTypes::BdaBlock:
     {
-        if (BaseInterface::iface()->reqBlockSync(m_block.blocknum, m_block.blocktype, m_block.block, m_block.blocksize)
-            != Error::Msg::NoError)
-
+        const auto err = BaseInterface::iface()->reqBlockSync(
+            m_block.blocknum, m_block.blocktype, m_block.block, m_block.blocksize);
+        if (err != Error::Msg::NoError)
             qCritical("Не удалось прочитать блок");
         break;
     }
     case DataTypes::DataBlockTypes::BciBlock:
     {
-        if (BaseInterface::iface()->readS2FileSync(DataTypes::Config) != Error::Msg::NoError)
+        const auto err = BaseInterface::iface()->readS2FileSync(DataTypes::Config);
+        if (err != Error::Msg::NoError)
             qCritical("Не удалось прочитать блок");
     }
     default:

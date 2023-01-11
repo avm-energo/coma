@@ -44,7 +44,7 @@ public slots:
     void alarmDataReceive(const Modules::AlarmType &aType, const quint32 &addr, const QString &desc);
     void jourDataReceive(const Modules::JournalType &jType, const quint32 &addr, const QString &desc);
     void interfaceSettingsReceive(const QVariant &iSettings, const Board::InterfaceType &iType);
-    void configDataReceive(const quint32 &id, const QString &defVal, const bool &visib, const quint32 &count);
+    void configDataReceive(const quint16 &id, const QString &defVal, const bool &visib, const quint16 &count);
 };
 
 #endif // CONFIGSTORAGE_H

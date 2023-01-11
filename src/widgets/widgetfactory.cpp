@@ -725,3 +725,12 @@ bool WidgetFactory::fillBackComboBoxGroup(quint16 key, const QWidget *parent, in
         record.getData());
     return status;
 }
+
+bool WidgetFactory::fillCheckBox(const QWidget *parent, quint16 key, bool value)
+{
+    auto widget = parent->findChild<QCheckBox *>(QString::number(key));
+    if (!widget)
+        return false;
+    widget->setChecked(bool(value));
+    return true;
+}

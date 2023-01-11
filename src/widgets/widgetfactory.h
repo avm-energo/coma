@@ -66,15 +66,6 @@ private:
     ConfigV *configV;
 };
 
-inline bool WidgetFactory::fillCheckBox(const QWidget *parent, quint16 key, bool value)
-{
-    auto widget = parent->findChild<QCheckBox *>(QString::number(key));
-    if (!widget)
-        return false;
-    widget->setChecked(bool(value));
-    return true;
-}
-
 const inline QString widgetName(int group, int item)
 {
     return QString::number(group) + "-" + QString::number(item);

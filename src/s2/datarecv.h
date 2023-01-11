@@ -6,10 +6,10 @@
 
 #include <QVariant>
 
-template <typename T, size_t N1, size_t N2>
+template <typename T, std::size_t N1, std::size_t N2>
 auto inline operator<<(std::array<std::array<T, N2>, N1> &array, const QStringList &list) -> decltype(array)
 {
-    Q_ASSERT(size_t(list.size()) <= (N1 * N2));
+    Q_ASSERT(std::size_t(list.size()) <= (N1 * N2));
     T *ptr = reinterpret_cast<T *>(array.data());
     for (auto i = 0; i != (N1 * N2); ++i)
     {
@@ -20,13 +20,13 @@ auto inline operator<<(std::array<std::array<T, N2>, N1> &array, const QStringLi
 
 template <typename T, size_t N> std::array<T, N> inline operator<<(std::array<T, N> &array, const QStringList &list)
 {
-    Q_ASSERT(size_t(list.size()) <= array.size());
+    Q_ASSERT(std::size_t(list.size()) <= array.size());
     std::transform(
         list.cbegin(), list.cend(), array.begin(), [](const QString &str) { return QVariant(str).value<T>(); });
     return array;
 }
 
-template <typename T, size_t N> std::array<T, N> inline operator<<(std::array<T, N> &array, const QString str)
+template <typename T, std::size_t N> std::array<T, N> inline operator<<(std::array<T, N> &array, const QString str)
 {
     const auto list = str.split(',');
     return (array << list);
@@ -41,8 +41,8 @@ public:
     DataRecV() = default;
     DataRecV(const S2DataTypes::DataRec &record);
     DataRecV(const S2DataTypes::DataRec &record, const char *rawdata);
-    DataRecV(const unsigned _id, const QString &str);
-    DataRecV(const unsigned _id);
+    DataRecV(quint16 _id, const QString &str);
+    DataRecV(quint16 _id);
 
     template <typename T, std::enable_if_t<ValueMap::true_type<T>::value, bool> = true>
     DataRecV(quint16 _id, T _data) : id(_id), data(_data)

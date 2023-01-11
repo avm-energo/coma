@@ -8,6 +8,7 @@ ModuleSettings::ModuleSettings() : curConfigIndex(0)
 void ModuleSettings::clear()
 {
     mConfigs.clear();
+    mCountMap.clear();
     mSignals.clear();
     mTabs.clear();
     mSections.clear();
@@ -31,6 +32,12 @@ void ModuleSettings::appendToCurrentConfig(const DataTypes::RecordPair &pair)
 {
     if (mConfigs.contains(curConfigIndex))
         mConfigs[curConfigIndex].append(pair);
+}
+
+/// \brief Добавление уточнённого числа элементов для виджета в разделе конфигурирования.
+void ModuleSettings::appendDetailCount(const quint16 &id, const quint16 &count)
+{
+    mCountMap.insert(id, count);
 }
 
 /// \brief Добавление нового сигнала в список сигналов.
@@ -79,6 +86,12 @@ const ModuleTypes::ConfigMap &ModuleSettings::getConfigMap() const
 const ModuleTypes::ConfigList ModuleSettings::getConfigs() const
 {
     return mConfigs[curConfigIndex];
+}
+
+/// \brief Constant getter for detailed count hashmap for current config list.
+const ModuleTypes::DetailCountMap &ModuleSettings::getDetailConfigCount() const
+{
+    return mCountMap;
 }
 
 /// \brief Constant getter for signals list.

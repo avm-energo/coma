@@ -138,7 +138,7 @@ DataRecV::DataRecV(const S2DataTypes::DataRec &record, const char *rawdata) : id
     }
 }
 
-DataRecV::DataRecV(const unsigned _id, const QString &str) : id(_id)
+DataRecV::DataRecV(quint16 _id, const QString &str) : id(_id)
 {
     using namespace detail;
     auto &s2map = ConfigStorage::GetInstance().getS2Map();
@@ -225,7 +225,7 @@ DataRecV::DataRecV(const S2DataTypes::DataRec &record) : DataRecV(record, static
 {
 }
 
-DataRecV::DataRecV(const unsigned _id) : DataRecV(_id, QString::number(0))
+DataRecV::DataRecV(quint16 _id) : DataRecV(_id, QString::number(0))
 {
 }
 
