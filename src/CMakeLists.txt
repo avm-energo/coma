@@ -12,7 +12,7 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/../scripts")
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_BINARY_DIR}")
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../cmake")
 
 ##### OPTIONS #####
 option(ENABLE_EMULATOR "Enable emulator interface" OFF)
@@ -22,7 +22,7 @@ option(BUILD_WITH_ALISE "Build with alise for AVTUK" OFF)
 # Including cmake scripts for some functions usage
 include(DetermineTargetArchitecture)
 include(SetProjectTargetName)
-include(ConanInstallDependencies)
+#include(ConanInstallDependencies)
 include(WinDeployQt)
 
 # Finding Qt libraries
@@ -40,8 +40,9 @@ if(NOT DEFINED PROJECT_ARCHITECTURE)
   set_project_target_name(${PROJECT_ARCHITECTURE} PROJECT_TARGET_NAME USER_DIRECTORY)
   message(STATUS "Current target arch: " ${PROJECT_TARGET_NAME})
   message(STATUS "Current user directory for conan: " ${USER_DIRECTORY})
-  conan_install_dependencies(${PROJECT_ARCHITECTURE} ${PROJECT_TARGET_NAME} ${USER_DIRECTORY})
 endif()
+# Getting CMake system name
+string(TOLOWER "${CMAKE_SYSTEM_NAME}" CMAKE_SYSTEM_NAME_LOWER)
 
 if(NOT MSVC)
   # AVTUK settings
@@ -54,13 +55,13 @@ if(NOT MSVC)
   endif()
   # GCC / Clang compilation flags
   if(AVTUK-14)
-      # Compiling and linking flags for x86_64 architecture
-      string(APPEND CMAKE_CXX_FLAGS_DEBUG " -fno-omit-frame-pointer -fsanitize=address,undefined -fstack-protector")
-      string(APPEND CMAKE_LINKER_FLAGS_DEBUG " -fno-omit-frame-pointer -fsanitize=address,undefined -fstack-protector")
+    # Compiling and linking flags for x86_64 architecture
+    string(APPEND CMAKE_CXX_FLAGS_DEBUG " -fno-omit-frame-pointer -fsanitize=address,undefined -fstack-protector")
+    string(APPEND CMAKE_LINKER_FLAGS_DEBUG " -fno-omit-frame-pointer -fsanitize=address,undefined -fstack-protector")
   else()
-      # Compiling and linking flags for armhf architecture
-      string(APPEND CMAKE_CXX_FLAGS_DEBUG " -fno-omit-frame-pointer -fstack-protector")
-      string(APPEND CMAKE_LINKER_FLAGS_DEBUG " -fno-omit-frame-pointer -fstack-protector")
+    # Compiling and linking flags for armhf architecture
+    string(APPEND CMAKE_CXX_FLAGS_DEBUG " -fno-omit-frame-pointer -fstack-protector")
+    string(APPEND CMAKE_LINKER_FLAGS_DEBUG " -fno-omit-frame-pointer -fstack-protector")
   endif()
 # Visual Studio compilation flags
 else()
@@ -91,10 +92,27 @@ if(NOT EXISTS "${CMAKE_BINARY_DIR}/conan.cmake")
                 TLS_VERIFY ON)
 endif()
 include(${CMAKE_BINARY_DIR}/conan.cmake)
-conan_cmake_autodetect(settings)
 
-# Getting CMake system name
-string(TOLOWER "${CMAKE_SYSTEM_NAME}" CMAKE_SYSTEM_NAME_LOWER)
+# Getting build type, compiler, etc... (other settings)
+conan_cmake_autodetect(settings)
+# Collecting Boost headers and hidapi library on windows
+if(CMAKE_SYSTEM_NAME_LOWER STREQUAL "windows")
+  conan_cmake_configure(
+    REQUIRES hidapi/0.10.1 boost/1.75.0
+    GENERATORS cmake_find_package
+    OPTIONS hidapi:shared=True boost:header_only=True)
+else()
+  conan_cmake_configure(
+    REQUIRES boost/1.75.0
+    GENERATORS cmake_find_package
+    OPTIONS boost:header_only=True)
+endif()
+# Installing libraries
+conan_cmake_install(
+  PATH_OR_REFERENCE .
+  BUILD missing
+  REMOTE conancenter
+  SETTINGS ${settings})
 
 # Building libraries and targets
 include(gen)

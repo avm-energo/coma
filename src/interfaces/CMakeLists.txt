@@ -4,10 +4,6 @@ project(interfaces LANGUAGES CXX)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-conan_cmake_configure(REQUIRES hidapi/0.10.1 GENERATORS cmake_find_package)
-
-find_package(hidapi REQUIRED)
-
 find_package(Qt${QT_VERSION_MAJOR}
   COMPONENTS Core Network SerialPort REQUIRED)
 
@@ -34,6 +30,7 @@ if(UNIX)
   target_link_libraries(${PROJECT_NAME} PRIVATE hidapi-hidraw)
 endif()
 if(WIN32)
+  find_package(hidapi REQUIRED)
   target_link_libraries(${PROJECT_NAME} PRIVATE hidapi::hidapi)
 endif()
 target_compile_definitions(${PROJECT_NAME} PRIVATE ${PROJECT_NAME}_LIBRARY)
