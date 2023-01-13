@@ -16,7 +16,7 @@ find_package(
   COMPONENTS Core Xml Test
   REQUIRED)
 
-find_package(hidapi REQUIRED)
+#find_package(hidapi REQUIRED)
 
 add_executable(${PROJECT_NAME}
     testfiles.cpp

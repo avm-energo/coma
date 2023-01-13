@@ -17,22 +17,17 @@ find_package(
   COMPONENTS Core Xml Test
   REQUIRED)
 
-find_package(hidapi REQUIRED)
-
 enable_testing(true)
 add_executable(${PROJECT_NAME}
-    testmodule.h
-    testdata.h
-    testmodule.cpp
-    testxmlparser.cpp
+  testmodule.h
+  testdata.h
+  testmodule.cpp
+  testxmlparser.cpp
 )
 add_test(NAME ${PROJECT_NAME} COMMAND ${PROJECT_NAME})
 
 target_link_libraries(${PROJECT_NAME}
     gen
-    #interfaces
-    #widgets
-    #dialogs
     models
     module
     Qt${QT_VERSION_MAJOR}::Core
@@ -49,5 +44,4 @@ if(CMAKE_SYSTEM_NAME_LOWER STREQUAL "windows")
         # Make sure DLL is found by adding its directory to PATH
         ENVIRONMENT "PATH=${hidapi_BIN_DIR}\;${QT_BIN_DIR}\;$<TARGET_PROPERTY:QXlsx,IMPORTED_LOCATION>;"
     )
-
 endif()
