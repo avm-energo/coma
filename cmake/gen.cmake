@@ -6,7 +6,9 @@ FetchContent_Declare(
   GIT_TAG        origin/develop
 )
 
-if(NOT BUILD_WITH_ALISE)
+if(BUILD_WITH_ALISE)
+  set(GEN_STATIC ON)
+else()
   set(GEN_STATIC OFF)
 endif()
 
