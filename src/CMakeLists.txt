@@ -22,7 +22,6 @@ option(BUILD_WITH_ALISE "Build with alise for AVTUK" OFF)
 # Including cmake scripts for some functions usage
 include(DetermineTargetArchitecture)
 include(SetProjectTargetName)
-#include(ConanInstallDependencies)
 include(WinDeployQt)
 
 # Finding Qt libraries
@@ -43,33 +42,30 @@ if(NOT DEFINED PROJECT_ARCHITECTURE)
 endif()
 # Getting CMake system name
 string(TOLOWER "${CMAKE_SYSTEM_NAME}" CMAKE_SYSTEM_NAME_LOWER)
+# Export compile commands. See:
+# - https://cmake.org/cmake/help/latest/variable/CMAKE_EXPORT_COMPILE_COMMANDS.html
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-if(NOT MSVC)
-  # AVTUK settings
+# Visual Studio compilation flags
+if (MSVC)
+  add_compile_options(/permissive-)
+  string(APPEND CMAKE_CXX_FLAGS " /w14456 /w14189 /w14458 /w14100 /w14996")
+# GCC / Clang compilation flags
+else()
+  # Compiling flags for x86_64 architecture
   if(${PROJECT_ARCHITECTURE}} MATCHES "x86_64")
+    string(APPEND CMAKE_CXX_FLAGS_DEBUG " -fno-omit-frame-pointer -fsanitize=address,undefined -fstack-protector")
+    string(APPEND CMAKE_LINKER_FLAGS_DEBUG " -fno-omit-frame-pointer -fsanitize=address,undefined -fstack-protector")
     set(AVTUK-14 TRUE)
     set(CPACK_DEBIAN_PACKAGE_ARCHITECTURE amd64)
+  # Compiling flags for armhf architecture
   elseif(${PROJECT_ARCHITECTURE}} MATCHES "armv7")
+    string(APPEND CMAKE_CXX_FLAGS_DEBUG " -fno-omit-frame-pointer -fstack-protector")
+    string(APPEND CMAKE_LINKER_FLAGS_DEBUG " -fno-omit-frame-pointer -fstack-protector")
     set(AVTUK-12 TRUE)
     set(CPACK_DEBIAN_PACKAGE_ARCHITECTURE armhf)
   endif()
-  # GCC / Clang compilation flags
-  if(AVTUK-14)
-    # Compiling and linking flags for x86_64 architecture
-    string(APPEND CMAKE_CXX_FLAGS_DEBUG " -fno-omit-frame-pointer -fsanitize=address,undefined -fstack-protector")
-    string(APPEND CMAKE_LINKER_FLAGS_DEBUG " -fno-omit-frame-pointer -fsanitize=address,undefined -fstack-protector")
-  else()
-    # Compiling and linking flags for armhf architecture
-    string(APPEND CMAKE_CXX_FLAGS_DEBUG " -fno-omit-frame-pointer -fstack-protector")
-    string(APPEND CMAKE_LINKER_FLAGS_DEBUG " -fno-omit-frame-pointer -fstack-protector")
-  endif()
-# Visual Studio compilation flags
-else()
-  add_compile_options(/permissive-)
-  string(APPEND CMAKE_CXX_FLAGS " /w14456 /w14189 /w14458 /w14100 /w14996")
 endif()
-
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # Enabling PVS Studio static analyzer
 if(ENABLE_PVS)
@@ -118,43 +114,43 @@ conan_cmake_install(
 include(gen)
 add_subdirectory(comaversion)
 if(NOT AVTUK-12)
-    add_subdirectory(interfaces)
+  add_subdirectory(interfaces)
 endif()
 # Alise build
 if (BUILD_WITH_ALISE)
-    set(PROTOS_GENERATED_DIR ${CMAKE_CURRENT_BINARY_DIR}/protos/protos)
-    add_subdirectory(protos)
-    add_subdirectory(alise)
+  set(PROTOS_GENERATED_DIR ${CMAKE_CURRENT_BINARY_DIR}/protos/protos)
+  add_subdirectory(protos)
+  add_subdirectory(alise)
 endif()
 if(Qt${QT_VERSION_MAJOR}Widgets_FOUND AND NOT AVTUK-12)
-    include(qcustomplot)
-    include(limereport)
-    include(qxlsx)
-    add_subdirectory(s2)
-    add_subdirectory(datablocks)
-    add_subdirectory(module)
-    add_subdirectory(oscillograms)
-    add_subdirectory(startup)
-    add_subdirectory(widgets)
-    add_subdirectory(dialogs)
-    add_subdirectory(tune)
-    add_subdirectory(models)
-    add_subdirectory(xml)
-    # Tests binaries sub-build
-    add_subdirectory(tests)
-    # Applications: COMA Service and COMA Debug
-    add_subdirectory(AVM-Service)
-    add_subdirectory(AVM-Debug)
+  include(qcustomplot)
+  include(limereport)
+  include(qxlsx)
+  add_subdirectory(s2)
+  add_subdirectory(datablocks)
+  add_subdirectory(module)
+  add_subdirectory(oscillograms)
+  add_subdirectory(startup)
+  add_subdirectory(widgets)
+  add_subdirectory(dialogs)
+  add_subdirectory(tune)
+  add_subdirectory(models)
+  add_subdirectory(xml)
+  # Tests binaries sub-build
+  add_subdirectory(tests)
+  # Applications: COMA Service and COMA Debug
+  add_subdirectory(AVM-Service)
+  add_subdirectory(AVM-Debug)
 else()
-    message(STATUS "Build without GUI")
+  message(STATUS "Build without GUI")
 endif()
 
 # Running PVS Studio static analyzer
 if(ENABLE_PVS)
-    pvs_studio_add_target(
-        TARGET ${PROJECT_NAME}.analyze ALL
-        OUTPUT FORMAT errorfile
-        COMPILE_COMMANDS
-        MODE GA:1,2
-        LOG ${PROJECT_NAME}.err)
+  pvs_studio_add_target(
+    TARGET ${PROJECT_NAME}.analyze ALL
+    OUTPUT FORMAT errorfile
+    COMPILE_COMMANDS
+    MODE GA:1,2
+    LOG ${PROJECT_NAME}.err)
 endif()
