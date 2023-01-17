@@ -30,7 +30,7 @@ message(STATUS "PROTOBUF_EXECUTABLE ${Protobuf_PROTOC_EXECUTABLE}")
 message(STATUS "Generated srcs: " ${PROTO_SRCS})
 message(STATUS "Generated hdrs: " ${PROTO_HDRS})
 
-add_library(${PROJECT_NAME} ${PROTO_SRCS} ${PROTO_HDRS})
+add_library(${PROJECT_NAME} STATIC ${PROTO_SRCS} ${PROTO_HDRS})
 target_include_directories(${PROJECT_NAME} PUBLIC ${protobuf_INCLUDE_DIR})
 target_link_libraries(${PROJECT_NAME} PRIVATE protobuf::protobuf)
 target_compile_definitions(${PROJECT_NAME} PRIVATE ${PROJECT_NAME}_LIBRARY)
