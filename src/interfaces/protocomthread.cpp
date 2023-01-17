@@ -4,6 +4,7 @@
 #include "baseinterface.h"
 
 #include <QDebug>
+#include <QQueue>
 #include <QStorageInfo>
 #include <QThread>
 #include <QtEndian>
@@ -222,7 +223,7 @@ void ProtocomThread::handle(const Proto::Commands cmd)
 void ProtocomThread::checkQueue()
 {
     CommandStruct inp;
-    if (DataManager::deQueue(inp) != Error::Msg::NoError)
+    if (DataManager::GetInstance().deQueue(inp) != Error::Msg::NoError)
         return;
 
     isCommandRequested = true;

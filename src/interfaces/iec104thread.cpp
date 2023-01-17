@@ -75,7 +75,7 @@ void IEC104Thread::Run()
         if (!m_isFileSending && !m_writingToPortBlocked)
         {
             Commands104::CommandStruct inp;
-            if (DataManager::deQueue(inp) == Error::Msg::NoError)
+            if (DataManager::GetInstance().deQueue(inp) == Error::Msg::NoError)
             {
                 switch (inp.cmd)
                 {

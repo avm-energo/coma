@@ -149,7 +149,7 @@ void ModBus::reqStartup(quint32 sigAdr, quint32 sigCount)
         __PRETTY_FUNCTION__                           //
     };
     Q_ASSERT(isValidRegs(inp));
-    DataManager::addToInQueue(inp);
+    DataManager::GetInstance().addToInQueue(inp);
 }
 
 void ModBus::reqBSI()
@@ -162,7 +162,7 @@ void ModBus::reqBSI()
         TypeId::Uint32,                               //
         __PRETTY_FUNCTION__                           //
     };
-    DataManager::addToInQueue(inp);
+    DataManager::GetInstance().addToInQueue(inp);
 }
 
 void ModBus::reqBSIExt()
@@ -177,7 +177,7 @@ void ModBus::reqBSIExt()
         TypeId::Uint32,                               //
         __PRETTY_FUNCTION__                           //
     };
-    DataManager::addToInQueue(inp);
+    DataManager::GetInstance().addToInQueue(inp);
 }
 
 void ModBus::reqFile(quint32 filenum, FileFormat format)
@@ -203,7 +203,7 @@ void ModBus::reqTime()
         __PRETTY_FUNCTION__                              //
     };
     Q_ASSERT(isValidRegs(inp));
-    DataManager::addToInQueue(inp);
+    DataManager::GetInstance().addToInQueue(inp);
 }
 
 void ModBus::writeTime(quint32 time)
@@ -219,7 +219,7 @@ void ModBus::writeTime(quint32 time)
         __PRETTY_FUNCTION__                                //
     };
     Q_ASSERT(isValidRegs(inp));
-    DataManager::addToInQueue(inp);
+    DataManager::GetInstance().addToInQueue(inp);
 }
 
 void ModBus::writeFloat(const DataTypes::FloatStruct &flstr)
@@ -237,7 +237,7 @@ void ModBus::writeFloat(const DataTypes::FloatStruct &flstr)
         __PRETTY_FUNCTION__                                //
     };
     // Q_ASSERT(isValidRegs(inp));
-    DataManager::addToInQueue(inp);
+    DataManager::GetInstance().addToInQueue(inp);
 }
 
 void ModBus::writeInt16(const quint32 addr, const qint16 value)
@@ -251,7 +251,7 @@ void ModBus::writeInt16(const quint32 addr, const qint16 value)
         __PRETTY_FUNCTION__                                //
     };
     // Q_ASSERT(isValidRegs(inp));
-    DataManager::addToInQueue(inp);
+    DataManager::GetInstance().addToInQueue(inp);
 }
 
 void ModBus::writeCommand(Queries::Commands cmd, QVariant item)
@@ -282,7 +282,7 @@ void ModBus::writeCommand(Queries::Commands cmd, QVariant item)
             __PRETTY_FUNCTION__                   //
         };
         // Q_ASSERT(isValidRegs(inp));
-        DataManager::addToInQueue(inp);
+        DataManager::GetInstance().addToInQueue(inp);
         break;
     }
     case Queries::Commands::QC_ClearStartupValues:
@@ -344,7 +344,7 @@ void ModBus::writeCommand(Queries::Commands cmd, const QVariantList &list)
         };
         qDebug() << inp;
         Q_ASSERT(isValidRegs(inp));
-        DataManager::addToInQueue(inp);
+        DataManager::GetInstance().addToInQueue(inp);
         break;
     }
     default:
@@ -364,7 +364,7 @@ void ModBus::reqFloats(quint32 sigAdr, quint32 sigCount)
         __PRETTY_FUNCTION__                           //
     };
     Q_ASSERT(isValidRegs(inp));
-    DataManager::addToInQueue(inp);
+    DataManager::GetInstance().addToInQueue(inp);
 }
 
 void ModBus::reqBitStrings(quint32 sigAdr, quint32 sigCount)

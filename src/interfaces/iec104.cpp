@@ -124,13 +124,13 @@ void IEC104::reqStartup(quint32 sigAdr, quint32 sigCount)
     Q_UNUSED(sigAdr)
     Q_UNUSED(sigCount)
     Commands104::CommandStruct inp { Commands104::CM104_REQGROUP, STARTUPGROUP, 0, {} };
-    DataManager::addToInQueue(inp);
+    DataManager::GetInstance().addToInQueue(inp);
 }
 
 void IEC104::reqBSI()
 {
     Commands104::CommandStruct inp { Commands104::CM104_REQGROUP, BSIGROUP, 0, {} };
-    DataManager::addToInQueue(inp);
+    DataManager::GetInstance().addToInQueue(inp);
 }
 
 void IEC104::reqBSIExt()
@@ -142,25 +142,25 @@ void IEC104::reqFile(quint32 filenum, FileFormat format)
 {
     Commands104::CommandStruct inp { (format) ? Commands104::CM104_REQCONFIGFILE : Commands104::CM104_REQFILE, filenum,
         0, {} };
-    DataManager::addToInQueue(inp);
+    DataManager::GetInstance().addToInQueue(inp);
 }
 
 void IEC104::writeFile(quint32 filenum, const QByteArray &file)
 {
     Commands104::CommandStruct inp { Commands104::CM104_WRITEFILE, filenum, 0, true, file };
-    DataManager::addToInQueue(inp);
+    DataManager::GetInstance().addToInQueue(inp);
 }
 
 void IEC104::reqTime()
 {
     Commands104::CommandStruct inp { Commands104::CM104_REQGROUP, TIMEGROUP, 0, {} };
-    DataManager::addToInQueue(inp);
+    DataManager::GetInstance().addToInQueue(inp);
 }
 
 void IEC104::writeTime(quint32 time)
 {
     Commands104::CommandStruct inp { Commands104::CM104_COM51, time, 0, {} };
-    DataManager::addToInQueue(inp);
+    DataManager::GetInstance().addToInQueue(inp);
 }
 
 void IEC104::writeCommand(Queries::Commands cmd, QVariant item)
@@ -176,19 +176,19 @@ void IEC104::writeCommand(Queries::Commands cmd, QVariant item)
 
         DataTypes::FloatStruct flstr = item.value<DataTypes::FloatStruct>();
         inp = { Commands104::CM104_COM50, flstr.sigAdr, flstr.sigVal, {} };
-        DataManager::addToInQueue(inp);
+        DataManager::GetInstance().addToInQueue(inp);
         break;
     }
     case Queries::QC_ReqAlarms:
     {
         inp = { Commands104::CM104_REQGROUP, ALARMGROUP, 0, {} };
-        DataManager::addToInQueue(inp);
+        DataManager::GetInstance().addToInQueue(inp);
         break;
     }
     default:
     {
         inp = Commands104::CommandsTranslateMap.value(cmd);
-        DataManager::addToInQueue(inp);
+        DataManager::GetInstance().addToInQueue(inp);
     }
     }
 }
@@ -198,7 +198,7 @@ void IEC104::reqFloats(quint32 sigAdr, quint32 sigCount)
     Q_UNUSED(sigAdr)
     Q_UNUSED(sigCount)
     Commands104::CommandStruct inp { Commands104::CM104_REQGROUP, MAINFLOATGROUP, 0, {} };
-    DataManager::addToInQueue(inp);
+    DataManager::GetInstance().addToInQueue(inp);
 }
 
 void IEC104::reqBitStrings(quint32 sigAdr, quint32 sigCount)
@@ -206,7 +206,7 @@ void IEC104::reqBitStrings(quint32 sigAdr, quint32 sigCount)
     Q_UNUSED(sigAdr)
     Q_UNUSED(sigCount)
     Commands104::CommandStruct inp { Commands104::CM104_REQGROUP, MAINBITSTRINGGROUP, 0, {} };
-    DataManager::addToInQueue(inp);
+    DataManager::GetInstance().addToInQueue(inp);
 }
 
 void IEC104::EthThreadFinished()

@@ -69,14 +69,13 @@ endif()
 
 # Enabling PVS Studio static analyzer
 if(ENABLE_PVS)
-  if(NOT EXISTS "${CMAKE_BINARY_DIR}/PVS-Studio.cmake")
-    message(STATUS "Downloading PVS-Studio.cmake from https://github.com/viva64/pvs-studio-cmake-examples")
-    file(DOWNLOAD "https://raw.githubusercontent.com/viva64/pvs-studio-cmake-examples/master/PVS-Studio.cmake"
-                  "${CMAKE_BINARY_DIR}/PVS-Studio.cmake"
-                  EXPECTED_HASH SHA256=C53013A568A71CC4DBB10437256F16C027004B08ECA3DAF9911BAC08896B4DE7
-                  TLS_VERIFY ON)
-  endif()
-  include(${CMAKE_BINARY_DIR}/PVS-Studio.cmake)
+  include(FetchContent)
+  FetchContent_Declare(
+    PVS_CMakeModule
+    GIT_REPOSITORY "https://github.com/viva64/pvs-studio-cmake-module.git"
+    GIT_TAG        "master")
+  FetchContent_MakeAvailable(PVS_CMakeModule)
+  include("${pvs_cmakemodule_SOURCE_DIR}/PVS-Studio.cmake")
 endif()
 
 # Downloading conan CMake script and using for autodetecting

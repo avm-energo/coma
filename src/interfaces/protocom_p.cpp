@@ -18,7 +18,7 @@ void ProtocomPrivate::handleBlk(const Proto::Commands cmd, const quint32 blk, QB
         count, // Null arg or regCount
         data   // QByteArray data, maybe empty
     };
-    DataManager::addToInQueue(inp);
+    DataManager::GetInstance().addToInQueue(inp);
 }
 
 void ProtocomPrivate::handleBlk(const Proto::Commands cmd, const quint32 addr, const quint32 count)
@@ -44,24 +44,24 @@ void ProtocomPrivate::handleInt(const Proto::Commands cmd, const QByteArray data
         QVariant(), // Null arg or regCount
         data        // QByteArray data, maybe empty
     };
-    DataManager::addToInQueue(inp);
+    DataManager::GetInstance().addToInQueue(inp);
 }
 
 void ProtocomPrivate::handleCommand(const Proto::Commands cmd)
 {
     Proto::CommandStruct inp { cmd, QVariant(), QVariant(), QByteArray {} };
-    DataManager::addToInQueue(inp);
+    DataManager::GetInstance().addToInQueue(inp);
 }
 
 void ProtocomPrivate::handleCommand(const Proto::WCommands cmd)
 {
     Proto::CommandStruct inp { Proto::WriteBlkCmd, cmd, QVariant(), QByteArray {} };
-    DataManager::addToInQueue(inp);
+    DataManager::GetInstance().addToInQueue(inp);
 }
 
 void ProtocomPrivate::handleCommand(const Proto::Commands cmd, const DataTypes::SingleCommand singleCmd)
 {
     Proto::CommandStruct inp { cmd, QVariant::fromValue(singleCmd.addr), QVariant(),
         StdFunc::ArrayFromNumber(singleCmd.value) };
-    DataManager::addToInQueue(inp);
+    DataManager::GetInstance().addToInQueue(inp);
 }

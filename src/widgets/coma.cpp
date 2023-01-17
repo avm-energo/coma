@@ -692,7 +692,7 @@ void Coma::setupConnection()
         return;
     }
 
-    DataManager::clearQueue();
+    DataManager::GetInstance().clearQueue();
     BaseInterface::iface()->reqBSI();
     connect(this, &Coma::sendMessage, BaseInterface::iface(), &BaseInterface::nativeEvent);
 }

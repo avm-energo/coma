@@ -68,9 +68,8 @@ void ModbusThread::run()
     while (iface->state() != State::Stop)
     {
         CommandsMBS::CommandStruct inp;
-        if (DataManager::deQueue(inp) == Error::Msg::NoError)
+        if (DataManager::GetInstance().deQueue(inp) == Error::Msg::NoError)
         {
-
 #ifdef MODBUS_DEBUG
             qDebug() << inp.cmd << inp.adr << inp.quantity;
 #endif

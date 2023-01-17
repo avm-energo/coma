@@ -119,7 +119,7 @@ bool Protocom::start(const UsbHidSettings &usbhid)
 void Protocom::reqTime()
 {
     CommandStruct inp { Proto::Commands::ReadTime, QVariant(), QVariant(), {} };
-    DataManager::addToInQueue(inp);
+    DataManager::GetInstance().addToInQueue(inp);
     emit wakeUpParser();
 }
 
@@ -133,7 +133,7 @@ void Protocom::reqFile(quint32 filenum, FileFormat format)
         format,                    // Is file should be restored
         ba                         // Empty QByteArray
     };
-    DataManager::addToInQueue(inp);
+    DataManager::GetInstance().addToInQueue(inp);
     emit wakeUpParser();
 }
 
@@ -148,7 +148,7 @@ void Protocom::reqStartup(quint32 sigAdr, quint32 sigCount)
         sigCount,                                       // Count signals
         StdFunc::ArrayFromNumber(d->blockByReg(sigAdr)) // Protocom block
     };
-    DataManager::addToInQueue(inp);
+    DataManager::GetInstance().addToInQueue(inp);
     emit wakeUpParser();
 }
 
@@ -160,7 +160,7 @@ void Protocom::reqBSI()
         QVariant(),                        // Null arg
         {}                                 // Null
     };
-    DataManager::addToInQueue(inp);
+    DataManager::GetInstance().addToInQueue(inp);
     emit wakeUpParser();
 }
 
@@ -172,7 +172,7 @@ void Protocom::reqBSIExt()
         QVariant(),                           // Null arg
         {}                                    // Null
     };
-    DataManager::addToInQueue(inp);
+    DataManager::GetInstance().addToInQueue(inp);
     emit wakeUpParser();
 }
 
@@ -187,7 +187,7 @@ void Protocom::reqBitStrings(quint32 sigAdr, quint32 sigCount)
         sigCount,                                       // Count signals
         StdFunc::ArrayFromNumber(d->blockByReg(sigAdr)) // Protocom block
     };
-    DataManager::addToInQueue(inp);
+    DataManager::GetInstance().addToInQueue(inp);
     emit wakeUpParser();
 }
 
@@ -200,14 +200,14 @@ void Protocom::writeFile(quint32 filenum, const QByteArray &file)
         QVariant(),                                    // Null arg
         file                                           // Buffer with file
     };
-    DataManager::addToInQueue(inp);
+    DataManager::GetInstance().addToInQueue(inp);
     emit wakeUpParser();
 }
 
 void Protocom::writeTime(quint32 time)
 {
     CommandStruct inp { Proto::Commands::WriteTime, time, QVariant(), {} };
-    DataManager::addToInQueue(inp);
+    DataManager::GetInstance().addToInQueue(inp);
     emit wakeUpParser();
 }
 
@@ -215,7 +215,7 @@ void Protocom::writeTime(quint32 time)
 void Protocom::writeTime(const timespec &time) const
 {
     CommandStruct inp { Proto::Commands::WriteTime, QVariant::fromValue(time), QVariant(), {} };
-    DataManager::addToInQueue(inp);
+    DataManager::GetInstance().addToInQueue(inp);
     emit wakeUpParser();
 }
 #endif
@@ -231,14 +231,14 @@ void Protocom::reqFloats(quint32 sigAdr, quint32 sigCount)
         sigCount,                                       // Count signals
         StdFunc::ArrayFromNumber(d->blockByReg(sigAdr)) // Protocom block
     };
-    DataManager::addToInQueue(inp);
+    DataManager::GetInstance().addToInQueue(inp);
     emit wakeUpParser();
 }
 
 void Protocom::writeRaw(const QByteArray &ba)
 {
     CommandStruct inp { Proto::Commands::RawCommand, QVariant(), QVariant(), ba };
-    DataManager::addToInQueue(inp);
+    DataManager::GetInstance().addToInQueue(inp);
     emit wakeUpParser();
 }
 
