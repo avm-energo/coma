@@ -21,6 +21,7 @@ class XmlDataModel : public XmlModel
 {
 private:
     std::tuple<QString, QString, std::function<void(QDomDocument &, QDomElement &, int &)>> getModelSettings();
+    void parseAlarmHighlights(QDomNode &node, int row, int col);
 
 public:
     explicit XmlDataModel(int rows, int cols, ModelType type, QObject *parent = nullptr);

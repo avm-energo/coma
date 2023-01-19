@@ -91,6 +91,7 @@ public:
     void appendTab(const quint32 &id, const QString &tabName);
     void appendSection(const ModuleTypes::Section &section);
     void appendAlarm(const ModuleTypes::AlarmKey &key, const quint32 &addr, const QString &desc);
+    void appendHighlight(const Modules::AlarmType &type, const quint32 &key, const QList<quint32> &values);
     void appendJournal(const Modules::JournalType &key, const ModuleTypes::Journal &journal);
     void setInterfaceSettings(const ModuleTypes::InterfaceSettings &settings);
 
@@ -101,19 +102,19 @@ public:
     const ModuleTypes::TabsMap &getTabs() const;
     const ModuleTypes::SectionList &getSections() const;
     const ModuleTypes::AlarmMap &getAlarms() const;
+    const ModuleTypes::HighlightMap &getHighlights(const Modules::AlarmType &type) const;
     const ModuleTypes::JourMap &getJours() const;
     const ModuleTypes::InterfaceSettings &getInterfaceSettings() const;
 
 private:
-    ModuleTypes::HighlightMap critHighlight, warnHighlight;
     quint32 curConfigIndex;
-
     ModuleTypes::ConfigMap mConfigs;
     ModuleTypes::DetailCountMap mCountMap;
     ModuleTypes::SignalMap mSignals;
     ModuleTypes::TabsMap mTabs;
     ModuleTypes::SectionList mSections;
     ModuleTypes::AlarmMap mAlarms;
+    ModuleTypes::HighlightMap critHighlight, warnHighlight;
     ModuleTypes::JourMap mJournals;
     ModuleTypes::InterfaceSettings mIfaceSettings;
 };

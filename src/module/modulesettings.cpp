@@ -64,6 +64,21 @@ void ModuleSettings::appendAlarm(const ModuleTypes::AlarmKey &key, const quint32
     mAlarms[key].insert(addr, desc);
 }
 
+/// \brief Добавление подсветки указанных полей для подсветки при появлении сигнализации.
+void ModuleSettings::appendHighlight(const Modules::AlarmType &type, const quint32 &key, const QList<quint32> &values)
+{
+    if (type == Modules::AlarmType::Critical)
+    {
+        for (auto &value : values)
+            critHighlight.insert(key, value);
+    }
+    else if (type == Modules::AlarmType::Warning)
+    {
+        for (auto &value : values)
+            warnHighlight.insert(key, value);
+    }
+}
+
 /// \brief Добавление жрунала в список журанлов по заданному типу журнала (key).
 void ModuleSettings::appendJournal(const Modules::JournalType &key, const ModuleTypes::Journal &journal)
 {
@@ -116,6 +131,15 @@ const ModuleTypes::SectionList &ModuleSettings::getSections() const
 const ModuleTypes::AlarmMap &ModuleSettings::getAlarms() const
 {
     return mAlarms;
+}
+
+/// \brief Constant getter for alarm's highlights.
+const ModuleTypes::HighlightMap &ModuleSettings::getHighlights(const Modules::AlarmType &type) const
+{
+    if (type == Modules::AlarmType::Critical)
+        return critHighlight;
+    else
+        return warnHighlight;
 }
 
 /// \brief Constant getter for journals hashmap.

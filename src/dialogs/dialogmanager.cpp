@@ -97,7 +97,10 @@ void DialogManager::createCheckDialogs()
     for (auto &section : sections)
     {
         auto indexStr = QString::number(index);
-        addDialogToList(new CheckDialog(section, mParent), section.name, "check" + indexStr);
+        auto checkDialog = new CheckDialog(section, mParent);
+        checkDialog->setHighlights(Modules::AlarmType::Critical, settings.getHighlights(Modules::AlarmType::Critical));
+        checkDialog->setHighlights(Modules::AlarmType::Warning, settings.getHighlights(Modules::AlarmType::Warning));
+        addDialogToList(checkDialog, section.name, "check" + indexStr);
         index++;
     }
 }
@@ -106,7 +109,10 @@ void DialogManager::createCheckDialogs()
 void DialogManager::createBoxTuneDialogs(const Modules::Model &boxModel)
 {
     if (boxModel == Modules::Model::KIV)
-        addDialogToList(new TuneKIVDialog(&configV, mParent), "Регулировка", "tune");
+    {
+        // TODO: Реанимировать регулировку для КИВ, временно не работает :(
+        // addDialogToList(new TuneKIVDialog(&configV, mParent), "Регулировка", "tune");
+    }
     else
     {
         // TODO: Добавить регулировку для других модулей

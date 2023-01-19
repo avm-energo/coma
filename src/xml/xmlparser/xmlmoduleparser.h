@@ -24,7 +24,8 @@ signals:
         const quint16 &count, const ModuleTypes::SignalType &sigType);
     void tabDataSending(const quint32 &id, const QString &name);
     void sectionDataSending(const ModuleTypes::SGMap &sgmap, const QString &secHead);
-    void alarmDataSending(const Modules::AlarmType &aType, const quint32 &addr, const QString &desc);
+    void alarmDataSending(const Modules::AlarmType &aType, const quint32 &addr, //
+        const QString &desc, const QList<quint32> highlights);
     void jourDataSending(const Modules::JournalType &jType, const quint32 &addr, const QString &desc);
     void interfaceSettingsSending(const QVariant &iSettings, const Board::InterfaceType &iType);
     void configDataSending(const quint16 &id, const QString &defVal, const bool &visib, const quint16 &count);

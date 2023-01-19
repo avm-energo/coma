@@ -144,7 +144,8 @@ void Xml::ModuleParser::parseAlarm(const QDomNode &alarmNode, const Modules::Ala
 {
     auto addr = parseNumFromNode<quint32>(alarmNode, tags::addr);
     auto desc = parseString(alarmNode, tags::string);
-    emit alarmDataSending(aType, addr, desc);
+    auto hlValues = parseNumArray<quint32>(alarmNode, tags::highlights);
+    emit alarmDataSending(aType, addr, desc, hlValues);
 }
 
 /// \brief Функция для парсинга узла <journals>.

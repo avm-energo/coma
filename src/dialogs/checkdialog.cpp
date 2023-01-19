@@ -98,15 +98,17 @@ QWidget *CheckDialog::BottomUI()
     return w;
 }
 
-void CheckDialog::setHighlights(Highlight type, const HighlightMap &map)
+void CheckDialog::setHighlights(Modules::AlarmType type, const HighlightMap &map)
 {
     switch (type)
     {
-    case Warning:
+    case Modules::AlarmType::Warning:
         m_highlightWarn = map;
         break;
-    case Critical:
+    case Modules::AlarmType::Critical:
         m_highlightCrit = map;
+        break;
+    default:
         break;
     }
 }

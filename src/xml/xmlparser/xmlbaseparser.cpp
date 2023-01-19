@@ -4,11 +4,11 @@ Xml::BaseParser::BaseParser(QObject *parent) : QObject(parent)
 {
 }
 
-/// \brief Парсим ноду <string-array> в QStringList.
-const QStringList Xml::BaseParser::parseStringArray(const QDomNode &node) const
+/// \brief Парсим ноду с дочерними элементами в QStringList.
+const QStringList Xml::BaseParser::parseArray(const QDomNode &node, const QString &tag) const
 {
     QStringList retList = {};
-    auto strArrNode = node.firstChildElement(tags::str_array);
+    auto strArrNode = node.firstChildElement(tag);
     if (!strArrNode.isNull() && strArrNode.hasChildNodes())
     {
         const auto &nodes = strArrNode.childNodes();
@@ -27,6 +27,12 @@ const QStringList Xml::BaseParser::parseStringArray(const QDomNode &node) const
         }
     }
     return retList;
+}
+
+/// \brief Парсим ноду <string-array> в QStringList.
+const QStringList Xml::BaseParser::parseStringArray(const QDomNode &node) const
+{
+    return parseArray(node, tags::str_array);
 }
 
 /// \brief Возвращаем содержимое ноды tagName в QString.
@@ -74,31 +80,31 @@ void Xml::BaseParser::callForEachChild(const QDomNode &parent, const std::functi
 }
 
 // Template specialization for converting QString to double
-template <> double Xml::BaseParser::parseNumString(const QString &numStr, bool &state)
+template <> double Xml::BaseParser::parseNumString(const QString &numStr, bool &state) const
 {
     return numStr.toDouble(&state);
 }
 
 // Template specialization for converting QString to int
-template <> int Xml::BaseParser::parseNumString(const QString &numStr, bool &state)
+template <> int Xml::BaseParser::parseNumString(const QString &numStr, bool &state) const
 {
     return numStr.toInt(&state);
 }
 
 // Template specialization for converting QString to uint16
-template <> quint16 Xml::BaseParser::parseNumString(const QString &numStr, bool &state)
+template <> quint16 Xml::BaseParser::parseNumString(const QString &numStr, bool &state) const
 {
     return numStr.toUShort(&state);
 }
 
 // Template specialization for converting QString to uint32
-template <> quint32 Xml::BaseParser::parseNumString(const QString &numStr, bool &state)
+template <> quint32 Xml::BaseParser::parseNumString(const QString &numStr, bool &state) const
 {
     return numStr.toUInt(&state);
 }
 
 // Template specialization for converting QString to uint64
-template <> quint64 Xml::BaseParser::parseNumString(const QString &numStr, bool &state)
+template <> quint64 Xml::BaseParser::parseNumString(const QString &numStr, bool &state) const
 {
     return numStr.toULongLong(&state);
 }

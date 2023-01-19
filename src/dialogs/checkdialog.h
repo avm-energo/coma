@@ -39,25 +39,19 @@ struct BdUIStruct
     UWidget *widget;
 };
 
-enum Highlight
-{
-    Warning,
-    Critical
-};
-
-using HighlightMap = QMultiMap<quint32, quint32>;
-
 class CheckDialog : public UDialog
 {
     Q_OBJECT
 public:
+    using HighlightMap = QMultiMap<quint32, quint32>;
+
     explicit CheckDialog(const ModuleTypes::Section &mSection, QWidget *parent = nullptr);
     ~CheckDialog() override;
     void setupUI();
     void setupUIAbs();
     void SetBd(int bdnum, void *block, int blocksize, bool toxlsx = true);
     QWidget *BottomUI();
-    void setHighlights(Highlight type, const HighlightMap &map);
+    void setHighlights(Modules::AlarmType type, const HighlightMap &map);
     void updateSPData(const DataTypes::SinglePointWithTimeStruct &sp) override;
 
 protected:
@@ -87,7 +81,7 @@ private:
         bool toxlsxwrite;
     };
 
-    QMultiMap<quint32, quint32> m_highlightWarn, m_highlightCrit;
+    HighlightMap m_highlightWarn, m_highlightCrit;
     QMap<int, BdBlocks *> Bd_blocks;
     bool m_readDataInProgress;
     QElapsedTimer *ElapsedTimeCounter;

@@ -101,8 +101,8 @@ QDomElement XmlContainerModel::toNode(QDomDocument &doc)
                 {
                     // Добавляем описание (атрибут header)
                     setAttribute(doc, childNode, tags::header, data(index(row, 0)));
+                    // Добавляем номер вкладки (атрибут tab)
                     if (mType == ModelType::Section)
-                        // Добавляем номер вкладки (атрибут tab)
                         setAttribute(doc, childNode, tags::tab, data(index(row, 1)));
                 }
                 // Для узлов <resources>, <alarms> и <journals>

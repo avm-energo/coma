@@ -98,9 +98,11 @@ void ConfigStorage::sectionDataReceive(const ModuleTypes::SGMap &sgmap, const QS
 }
 
 /// \brief Slot for saving module's alarm record.
-void ConfigStorage::alarmDataReceive(const Modules::AlarmType &aType, const quint32 &addr, const QString &desc)
+void ConfigStorage::alarmDataReceive(const Modules::AlarmType &aType, const quint32 &addr, //
+    const QString &desc, const QList<quint32> highlights)
 {
     mSettings->appendAlarm(aType, addr, desc);
+    mSettings->appendHighlight(aType, addr, highlights);
 }
 
 /// \brief Slot for saving module's journal record.

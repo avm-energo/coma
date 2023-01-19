@@ -31,6 +31,7 @@ constexpr auto mwidget = "mwidget";
 constexpr auto item = "item";
 constexpr auto group = "group";
 constexpr auto record = "record";
+constexpr auto highlights = "highlights";
 
 // Common tags
 constexpr auto mtypeb = "mtypeb";

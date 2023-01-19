@@ -30,8 +30,8 @@ const std::map<ModelType, QStringList> XmlModel::headers {
     { ModelType::Section, { "Название", "ID вкладки" } },                                            //
     { ModelType::SGroup, { "Адрес", "Имя" } },                                                       //
     { ModelType::Alarms, { "XML", "Описание" } },                                                    //
-    { ModelType::AlarmsCrit, { "Адрес", "Описание" } },                                              //
-    { ModelType::AlarmsWarn, { "Адрес", "Описание" } },                                              //
+    { ModelType::AlarmsCrit, { "Адрес", "Описание", "Подсветка" } },                                 //
+    { ModelType::AlarmsWarn, { "Адрес", "Описание", "Подсветка" } },                                 //
     { ModelType::AlarmsInfo, { "Адрес", "Описание" } },                                              //
     { ModelType::Journals, { "XML", "Описание" } },                                                  //
     { ModelType::WorkJours, { "Адрес", "Описание" } },                                               //

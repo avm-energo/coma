@@ -10,6 +10,17 @@ std::tuple<QString, QString, std::function<void(QDomDocument &, QDomElement &, i
     auto alarmHelper = [&](auto &doc, auto &item, auto &row) {
         makeElement(doc, item, tags::addr, data(index(row, 0)));
         makeElement(doc, item, tags::string, data(index(row, 1)));
+        if (rowCount() > 2)
+        {
+            auto highlights = data(index(row, 2)).toString().split(',');
+            if (!(highlights.isEmpty() || (highlights.size() == 1 && highlights.first().isEmpty())))
+            {
+                auto highlightsNode = makeElement(doc, tags::highlights);
+                for (const auto &value : qAsConst(highlights))
+                    makeElement(doc, highlightsNode, tags::item, value);
+                item.appendChild(highlightsNode);
+            }
+        }
     };
 
     switch (mType)
@@ -109,11 +120,13 @@ void XmlDataModel::parseNode(QDomNode &node, int &row)
     {                                                     //
         parseTag(node, tags::addr, row, 0);               // Адрес
         parseTag(node, tags::string, row, 1);             // Строка с сообщением
+        if (rowCount() > 2)                               // Highlights
+            parseAlarmHighlights(node, row, 2);           //
     }                                                     //
     else if (mType == ModelType::WorkJours)               //
     {                                                     //
         parseTag(node, tags::addr, row, 0);               // Адрес
-        parseTag(node, tags::desc, row, 1);               // Строка с сообщением
+        parseTag(node, tags::desc, row, 1);               // Строка с описанием
     }                                                     //
     else if (mType == ModelType::MeasJours)               //
     {                                                     //
@@ -145,6 +158,28 @@ void XmlDataModel::parseNode(QDomNode &node, int &row)
         parseTag(node, tags::count, row, 2, "");          // new count
         parseTag(node, tags::visibility, row, 3, "true"); // Видимость
     }
+}
+
+/// \brief Parsing <highlights> node from alarm DOM nodes (<crit> and <warn> only).
+void XmlDataModel::parseAlarmHighlights(QDomNode &node, int row, int col)
+{
+    QStringList highlightsValues = {};
+    auto highlightsNode = node.firstChildElement(tags::highlights);
+    if (!highlightsNode.isNull())
+    {
+        auto valueNode = highlightsNode.firstChild();
+        while (!valueNode.isNull())
+        {
+            if (!valueNode.isComment())
+            {
+                auto value = valueNode.firstChild().toText().data();
+                highlightsValues.append(value);
+            }
+            valueNode = valueNode.nextSibling();
+        }
+    }
+    if (!highlightsValues.isEmpty())
+        setData(index(row, col), highlightsValues.join(','));
 }
 
 /// \brief Creates XML DOM node representation of current model.
