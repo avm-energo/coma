@@ -23,11 +23,9 @@ public:
     QWidget *createWidget(quint16 key, QWidget *parent = nullptr);
     template <typename T> bool fillWidget(const QWidget *parent, quint16 key, const T &value);
     bool fillBack(quint16 key, const QWidget *parent);
-
-    static QString hashedName(ctti::unnamed_type_id_t type, quint16 key)
-    {
-        return QString::number(type.hash()) + QString::number(key);
-    }
+    static QString hashedName(ctti::unnamed_type_id_t type, quint16 key);
+    static const QString widgetName(int group, int item);
+    static const quint16 getRealCount(const quint16 key);
 
 private:
     // Default template like a dummy function for sfinae
@@ -65,11 +63,6 @@ private:
 
     ConfigV *configV;
 };
-
-const inline QString widgetName(int group, int item)
-{
-    return QString::number(group) + "-" + QString::number(item);
-}
 
 // Template specialisation
 
@@ -249,7 +242,7 @@ template <typename T> bool WidgetFactory::fillWidget(const QWidget *parent, quin
                            qDebug() << "QComboBoxGroup" << key;
 #endif
                            std::bitset<sizeof(T) *CHAR_BIT> bitset = value;
-                           int count = arg.count;
+                           auto count = getRealCount(key);
                            bool flag = false;
                            for (auto i = 0; i != count; ++i)
                            {

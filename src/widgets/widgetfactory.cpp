@@ -159,7 +159,8 @@ QWidget *WidgetFactory::createWidget(quint16 key, QWidget *parent)
                 label->setToolTip(arg.toolTip);
                 lyout->addWidget(label);
 
-                auto group = new CheckBoxGroup(arg.items, arg.count, parent);
+                auto count = getRealCount(key);
+                auto group = new CheckBoxGroup(arg.items, count, parent);
                 group->setObjectName(QString::number(key));
                 lyout->addWidget(group);
                 widget->setLayout(lyout);
@@ -189,7 +190,7 @@ QWidget *WidgetFactory::createWidget(quint16 key, QWidget *parent)
                 label->setToolTip(arg.toolTip);
                 mainLyout->addWidget(label);
 
-                int count = arg.count;
+                auto count = getRealCount(key);
 
                 FlowLayout *flowLayout = new FlowLayout;
                 for (auto i = 0; i != count; ++i)
@@ -412,6 +413,46 @@ static QWidget *createModbusView(QWidget *parent)
     }
 
     return tableView;
+}
+
+QString WidgetFactory::hashedName(ctti::unnamed_type_id_t type, quint16 key)
+{
+    return QString::number(type.hash()) + QString::number(key);
+}
+
+const QString WidgetFactory::widgetName(int group, int item)
+{
+    return QString::number(group) + "-" + QString::number(item);
+}
+
+/// TODO: ОЧЕНЬ ПЛОХОЕ РЕШЕНИЕ, МАКСИМАЛЬНЫЙ КОСТЫЛЬ
+const quint16 WidgetFactory::getRealCount(const quint16 key)
+{
+    const auto &cfgStorage = ConfigStorage::GetInstance();
+    auto &widgetMap = cfgStorage.getWidgetMap();
+    auto widgetSearch = widgetMap.find(key);
+    if (widgetSearch != widgetMap.end())
+    {
+        quint16 realCount = 0;
+        auto &cfgCountMap = cfgStorage.getModuleSettings().getDetailConfigCount();
+        auto countSearch = cfgCountMap.find(key);
+        if (countSearch != cfgCountMap.end())
+        {
+            realCount = countSearch.value();
+        }
+        else
+        {
+            std::visit(overloaded {
+                           [&](const delegate::CheckBoxGroup &val) { realCount = val.count; },
+                           [&](const delegate::QComboBoxGroup &val) { realCount = val.count; },
+                           [&]([[maybe_unused]] const auto &arg) { realCount = 0; },
+                       },
+                widgetSearch->second);
+        }
+        return realCount;
+    }
+    else
+        return 0;
 }
 
 bool WidgetFactory::fillBackModbus(quint16 key, const QWidget *parent, ctti::unnamed_type_id_t type, quint16 parentKey)
