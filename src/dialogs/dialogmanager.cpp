@@ -208,7 +208,7 @@ void DialogManager::createSpecificDialogs(const AppConfiguration &appCfg)
             createTwoPartTuneDialogs(typeB, typeM);
         // Добавляем диалоги осциллограмм и журналов переключений
         createOscAndSwJourDialogs(typeB, typeM);
-        // Добавляем диалог реле (???)
+        // Добавляем диалог переключений
         if (typeB == BaseBoard::MTB_35)
             addDialogToList(new RelayDialog(4, mParent), "Реле", "relay1");
     }

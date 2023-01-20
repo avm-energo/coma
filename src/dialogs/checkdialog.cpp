@@ -29,15 +29,15 @@ constexpr auto activeColor = Qt::yellow;
 CheckDialog::CheckDialog(const ModuleTypes::Section &section, QWidget *parent)
     : UDialog(parent), mSection(section), mTabs(ConfigStorage::GetInstance().getModuleSettings().getTabs())
 {
-    XlsxWriting = false;
-    m_readDataInProgress = false;
-    xlsx = nullptr;
-    WRow = 0;
-    Timer = new QTimer(this);
-    Timer->setObjectName("checktimer");
-    connect(Timer, &QTimer::timeout, this, &CheckDialog::TimerTimeout);
-    Timer->setInterval(1000);
-    Timer->setInterval(ANMEASINT);
+    // XlsxWriting = false;
+    // m_readDataInProgress = false;
+    // xlsx = nullptr;
+    // WRow = 0;
+    // Timer = new QTimer(this);
+    // Timer->setObjectName("checktimer");
+    // connect(Timer, &QTimer::timeout, this, &CheckDialog::TimerTimeout);
+    // Timer->setInterval(1000);
+    // Timer->setInterval(ANMEASINT);
 }
 
 CheckDialog::~CheckDialog()
@@ -46,6 +46,7 @@ CheckDialog::~CheckDialog()
     Bd_blocks.clear();
 }
 
+/*
 void CheckDialog::SetBd(int bdnum, void *block, int blocksize, bool toxlsx)
 {
     auto bdblock = new BdBlocks;
@@ -96,64 +97,6 @@ QWidget *CheckDialog::BottomUI()
     lyout->addWidget(pb);
     w->setLayout(lyout);
     return w;
-}
-
-void CheckDialog::setHighlights(Modules::AlarmType type, const HighlightMap &map)
-{
-    switch (type)
-    {
-    case Modules::AlarmType::Warning:
-        m_highlightWarn = map;
-        break;
-    case Modules::AlarmType::Critical:
-        m_highlightCrit = map;
-        break;
-    default:
-        break;
-    }
-}
-
-void CheckDialog::updateSPData(const DataTypes::SinglePointWithTimeStruct &sp)
-{
-    bool status = sp.sigVal;
-    if (m_highlightCrit.contains(sp.sigAdr))
-    {
-        const QList<HighlightMap::mapped_type> regs = m_highlightCrit.values(sp.sigAdr);
-        const QString color = "red";
-        for (const auto reg : qAsConst(regs))
-        {
-            QLabel *lbl = findChild<QLabel *>(QString::number(reg));
-            if (!lbl)
-                continue;
-            if (status)
-            {
-                lbl->setStyleSheet("QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; font: bold; "
-                                   "background-color:"
-                    + color + "; color : black; }");
-            }
-        }
-    }
-    else if (m_highlightWarn.contains(sp.sigAdr))
-    {
-        const QList<HighlightMap::mapped_type> regs = m_highlightWarn.values(sp.sigAdr);
-        const QString color = "yellow";
-        for (const auto reg : qAsConst(regs))
-        {
-            QLabel *lbl = findChild<QLabel *>(QString::number(reg));
-            if (!lbl)
-                continue;
-            if (status)
-            {
-                lbl->setStyleSheet("QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; font: bold; "
-                                   "background-color:"
-                    + color + "; color : black; }");
-            }
-            else
-            {
-                lbl->setStyleSheet(ValuesFormat);
-            }
-        }
-    }
 }
 
 void CheckDialog::StartAnalogMeasurementsToFile()
@@ -222,11 +165,6 @@ void CheckDialog::ReadAnalogMeasurementsAndWriteToFile()
     m_readDataInProgress = false;
 }
 
-void CheckDialog::uponInterfaceSetting()
-{
-    setupUI();
-}
-
 void CheckDialog::StartAnalogMeasurements()
 {
     // PrepareAnalogMeasurements();
@@ -257,36 +195,9 @@ void CheckDialog::StopAnalogMeasurements()
     Timer->stop();
 }
 
-void CheckDialog::reqUpdate()
-{
-    if (updatesEnabled())
-    {
-        for (auto &bd : m_BdUIList)
-            bd.widget->reqUpdate();
-    }
-}
-
 void CheckDialog::TimerTimeout()
 {
     ReadAnalogMeasurementsAndWriteToFile();
-}
-
-void CheckDialog::TWTabChanged(int index)
-{
-    if (index != -1)
-    {
-        for (auto &item : m_BdUIList)
-            item.widget->engine()->setUpdatesEnabled(false);
-
-        if (m_BdUIList.size() >= index)
-        {
-            auto w = m_BdUIList.at(index).widget;
-            w->engine()->setUpdatesEnabled();
-            w->reqUpdate();
-        }
-        else
-            qCritical("Undefined check tab selected");
-    }
 }
 
 void CheckDialog::SetTimerPeriod()
@@ -305,6 +216,97 @@ void CheckDialog::SetTimerPeriod()
     Timer->setInterval(per);
     if (TimerIsActive)
         Timer->start();
+}
+*/
+
+void CheckDialog::setHighlights(Modules::AlarmType type, const HighlightMap &map)
+{
+    switch (type)
+    {
+    case Modules::AlarmType::Warning:
+        m_highlightWarn = map;
+        break;
+    case Modules::AlarmType::Critical:
+        m_highlightCrit = map;
+        break;
+    default:
+        break;
+    }
+}
+
+void CheckDialog::updateSPData(const DataTypes::SinglePointWithTimeStruct &sp)
+{
+    bool status = sp.sigVal;
+    if (m_highlightCrit.contains(sp.sigAdr))
+    {
+        const QList<HighlightMap::mapped_type> regs = m_highlightCrit.values(sp.sigAdr);
+        const QString color = "red";
+        for (const auto reg : qAsConst(regs))
+        {
+            QLabel *lbl = findChild<QLabel *>(QString::number(reg));
+            if (!lbl)
+                continue;
+            if (status)
+            {
+                lbl->setStyleSheet("QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; font: bold; "
+                                   "background-color:"
+                    + color + "; color : black; }");
+            }
+        }
+    }
+    else if (m_highlightWarn.contains(sp.sigAdr))
+    {
+        const QList<HighlightMap::mapped_type> regs = m_highlightWarn.values(sp.sigAdr);
+        const QString color = "yellow";
+        for (const auto reg : qAsConst(regs))
+        {
+            QLabel *lbl = findChild<QLabel *>(QString::number(reg));
+            if (!lbl)
+                continue;
+            if (status)
+            {
+                lbl->setStyleSheet("QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; font: bold; "
+                                   "background-color:"
+                    + color + "; color : black; }");
+            }
+            else
+            {
+                lbl->setStyleSheet(ValuesFormat);
+            }
+        }
+    }
+}
+
+void CheckDialog::uponInterfaceSetting()
+{
+    setupUI();
+}
+
+void CheckDialog::reqUpdate()
+{
+    if (updatesEnabled())
+    {
+        for (auto &bd : m_BdUIList)
+            bd.widget->reqUpdate();
+    }
+}
+
+void CheckDialog::TWTabChanged(int index)
+{
+    if (index != -1)
+    {
+        for (auto &item : m_BdUIList)
+            item.widget->engine()->setUpdatesEnabled(false);
+
+        if (m_BdUIList.size() >= index)
+        {
+            auto w = m_BdUIList.at(index).widget;
+            w->engine()->setUpdatesEnabled();
+            w->reqUpdate();
+        }
+        else
+            qCritical("Undefined check tab selected");
+    }
 }
 
 void CheckDialog::setupUI()

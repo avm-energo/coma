@@ -49,8 +49,8 @@ public:
     ~CheckDialog() override;
     void setupUI();
     void setupUIAbs();
-    void SetBd(int bdnum, void *block, int blocksize, bool toxlsx = true);
-    QWidget *BottomUI();
+    // void SetBd(int bdnum, void *block, int blocksize, bool toxlsx = true);
+    // QWidget *BottomUI();
     void setHighlights(Modules::AlarmType type, const HighlightMap &map);
     void updateSPData(const DataTypes::SinglePointWithTimeStruct &sp) override;
 
@@ -61,16 +61,16 @@ protected:
      *  необходимо включить обновление для нее
      */
     QList<BdUIStruct> m_BdUIList;
-    QTimer *Timer;
-    QXlsx::Document *xlsx;
+    // QTimer *Timer;
+    // QXlsx::Document *xlsx;
 
     const ModuleTypes::Section &mSection;
     const ModuleTypes::TabsMap &mTabs;
 
-    static constexpr char ValuesFormat[]
+    static constexpr auto ValuesFormat
         = "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; font: bold; }";
     void addSignals(const QList<ModuleTypes::SGroup> &groups, UWidget *widget);
-    bool XlsxWriting;
+    // bool XlsxWriting;
     void uponInterfaceSetting() override;
 
 private:
@@ -83,11 +83,11 @@ private:
 
     HighlightMap m_highlightWarn, m_highlightCrit;
     QMap<int, BdBlocks *> Bd_blocks;
-    bool m_readDataInProgress;
+    // bool m_readDataInProgress;
     QElapsedTimer *ElapsedTimeCounter;
-    int WRow;
+    // int WRow;
 
-    void ReadAnalogMeasurementsAndWriteToFile();
+    // void ReadAnalogMeasurementsAndWriteToFile();
     QString getFormated(const ModuleTypes::MWidget &widget, const QString &form, const int &number);
     void updatePixmap(const ModuleTypes::MWidget &mwidget, DataTypes::BitStringStruct &bs, UWidget *uwidget);
     QLabel *createPixmapIndicator(const ModuleTypes::MWidget &mwidget, const quint32 &index);
@@ -96,14 +96,14 @@ private:
     QVBoxLayout *setupBitsetWidget(const ModuleTypes::MWidget &mwidget, UWidget *dataUpdater);
 
 public slots:
-    void StopAnalogMeasurements();
+    // void StopAnalogMeasurements();
     void reqUpdate() override;
 
 private slots:
-    void SetTimerPeriod();
-    void StartAnalogMeasurementsToFile();
-    void StartAnalogMeasurements();
-    void TimerTimeout();
+    // void SetTimerPeriod();
+    // void StartAnalogMeasurementsToFile();
+    // void StartAnalogMeasurements();
+    // void TimerTimeout();
     void TWTabChanged(int index);
 };
 
