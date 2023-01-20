@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <module mtypeb="86" mtypem="00">
     <name>AVTUK-8600</name>
-    <version>1.0-0003</version>
+    <version>2.1-0000</version>
     <resources>
         <alarms desc="Сигнализация">
             <critical desc="Критичные">

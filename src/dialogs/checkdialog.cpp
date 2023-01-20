@@ -5,39 +5,24 @@
 #include "../s2/s2helper.h"
 #include "../widgets/wd_func.h"
 
-#include <QCoreApplication>
-#include <QFileDialog>
 #include <QGroupBox>
-#include <QLineEdit>
-#include <QMessageBox>
-#include <QPushButton>
 #include <QTabWidget>
-#include <QTime>
-#include <QVBoxLayout>
 #include <gen/colors.h>
 #include <gen/datamanager/typesproxy.h>
 #include <gen/error.h>
 #include <gen/stdfunc.h>
 #include <set>
-#include <utility>
-#include <xlsxdocument.h>
 
 constexpr auto circleRadius = 12;
 constexpr auto normalColor = Qt::gray;
 constexpr auto activeColor = Qt::yellow;
+constexpr auto defaultStyle = "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; font: bold; }";
+constexpr auto errStyle = "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; font: bold; "
+                          "background-color: %1; color: black;}";
 
 CheckDialog::CheckDialog(const ModuleTypes::Section &section, QWidget *parent)
     : UDialog(parent), mSection(section), mTabs(ConfigStorage::GetInstance().getModuleSettings().getTabs())
 {
-    // XlsxWriting = false;
-    // m_readDataInProgress = false;
-    // xlsx = nullptr;
-    // WRow = 0;
-    // Timer = new QTimer(this);
-    // Timer->setObjectName("checktimer");
-    // connect(Timer, &QTimer::timeout, this, &CheckDialog::TimerTimeout);
-    // Timer->setInterval(1000);
-    // Timer->setInterval(ANMEASINT);
 }
 
 CheckDialog::~CheckDialog()
@@ -45,179 +30,6 @@ CheckDialog::~CheckDialog()
     qDeleteAll(Bd_blocks);
     Bd_blocks.clear();
 }
-
-/*
-void CheckDialog::SetBd(int bdnum, void *block, int blocksize, bool toxlsx)
-{
-    auto bdblock = new BdBlocks;
-    bdblock->block = block;
-    bdblock->blocknum = blocksize;
-    bdblock->toxlsxwrite = toxlsx;
-    Bd_blocks[bdnum] = bdblock;
-}
-
-QWidget *CheckDialog::BottomUI()
-{
-    QWidget *w = new QWidget;
-    QVBoxLayout *lyout = new QVBoxLayout;
-    QHBoxLayout *hlyout = new QHBoxLayout;
-    QLabel *lbl = new QLabel("Период обновления данных измерения, сек:");
-    hlyout->addWidget(lbl);
-    QRadioButton *rb = new QRadioButton;
-    rb->setObjectName("1000");
-    rb->setText("1");
-    connect(rb, &QAbstractButton::clicked, this, &CheckDialog::SetTimerPeriod);
-    hlyout->addWidget(rb);
-    rb = new QRadioButton;
-    rb->setObjectName("2000");
-    rb->setText("2");
-    rb->setChecked(true);
-    connect(rb, &QAbstractButton::clicked, this, &CheckDialog::SetTimerPeriod);
-    hlyout->addWidget(rb);
-    rb = new QRadioButton;
-    rb->setObjectName("10000");
-    rb->setText("10");
-    connect(rb, &QAbstractButton::clicked, this, &CheckDialog::SetTimerPeriod);
-    hlyout->addWidget(rb);
-    lyout->addLayout(hlyout);
-
-    QPushButton *pb = new QPushButton("Запустить чтение аналоговых сигналов");
-    pb->setObjectName("pbmeasurements");
-    connect(pb, &QAbstractButton::clicked, this, &CheckDialog::StartAnalogMeasurements);
-
-    lyout->addWidget(pb);
-    pb = new QPushButton("Запустить чтение аналоговых сигналов в файл");
-    pb->setObjectName("pbfilemeasurements");
-    connect(pb, &QAbstractButton::clicked, this, &CheckDialog::StartAnalogMeasurementsToFile);
-
-    lyout->addWidget(pb);
-    pb = new QPushButton("Остановить чтение аналоговых сигналов");
-    connect(pb, &QAbstractButton::clicked, this, &CheckDialog::StopAnalogMeasurements);
-
-    lyout->addWidget(pb);
-    w->setLayout(lyout);
-    return w;
-}
-
-void CheckDialog::StartAnalogMeasurementsToFile()
-{
-    QFileDialog *dlg = new QFileDialog;
-    dlg->setAttribute(Qt::WA_DeleteOnClose);
-    dlg->setFileMode(QFileDialog::AnyFile);
-    QString Filename = dlg->getSaveFileName(this, "Сохранить данные", StdFunc::GetHomeDir(), "Excel files (*.xlsx)",
-        Q_NULLPTR, QFileDialog::DontUseNativeDialog);
-    dlg->close();
-    if (Filename == "")
-    {
-        ERMSG("Не задано имя файла");
-        return; // !!! ошибка - не задано имя файла
-    }
-    if (Filename.split(".").last() != "xlsx")
-        Filename += ".xlsx";
-    // удаляем файл, если он есть
-    QFile fn;
-    fn.setFileName(Filename);
-    if (fn.exists())
-        fn.remove();
-    XlsxWriting = true;
-    xlsx = new QXlsx::Document(Filename);
-    QString tmps = ((DEVICETYPE == DEVICETYPE_MODULE) ? "Модуль" : "Прибор");
-
-    xlsx->write(1, 1,
-        QVariant(tmps + ": " + Board::GetInstance().moduleName() + " сер. ном. "
-            + QString::number(Board::GetInstance().serialNumber(Board::BaseMezzAdd))));
-    xlsx->write(2, 1, QVariant("Дата начала записи: " + QDateTime::currentDateTime().toString("dd-MM-yyyy")));
-    xlsx->write(3, 1, QVariant("Время начала записи: " + QDateTime::currentDateTime().toString("hh:mm:ss")));
-    xlsx->write(5, 1, QVariant("Дата и время отсчёта"));
-    WRow = 7;
-    QPushButton *pb = this->findChild<QPushButton *>("pbfilemeasurements");
-    if (pb != nullptr)
-        pb->setEnabled(false);
-    pb = this->findChild<QPushButton *>("pbmeasurements");
-    if (pb != nullptr)
-        pb->setEnabled(false);
-    ElapsedTimeCounter = new QElapsedTimer;
-    ElapsedTimeCounter->start();
-    StartAnalogMeasurements();
-}
-
-void CheckDialog::ReadAnalogMeasurementsAndWriteToFile()
-{
-    // получение текущих аналоговых сигналов от модуля
-    if (m_readDataInProgress)
-    {
-        qCritical("Ещё не завершена предыдущая операция");
-        return;
-    }
-    m_readDataInProgress = true;
-    if (XlsxWriting)
-    {
-        xlsx->write(WRow, 1, QVariant(QDateTime::currentDateTime().toString("hh:mm:ss.zzz")));
-        QPushButton *pb = this->findChild<QPushButton *>("pbfilemeasurements");
-        if (pb != nullptr)
-        {
-            int MSecs = ElapsedTimeCounter->elapsed();
-            QString TimeElapsed = QTime::fromMSecsSinceStartOfDay(MSecs).toString("hh:mm:ss.zzz");
-            pb->setText("Идёт запись: " + TimeElapsed);
-        }
-    }
-    WRow++;
-    m_readDataInProgress = false;
-}
-
-void CheckDialog::StartAnalogMeasurements()
-{
-    // PrepareAnalogMeasurements();
-    Timer->start();
-}
-
-void CheckDialog::StopAnalogMeasurements()
-{
-    if (XlsxWriting)
-    {
-        if (xlsx)
-        {
-            xlsx->save();
-            QMessageBox::information(this, "Внимание", "Файл создан успешно");
-            delete xlsx;
-        }
-        auto pb = this->findChild<QPushButton *>("pbfilemeasurements");
-        if (pb != nullptr)
-        {
-            pb->setEnabled(true);
-            pb->setText("Запустить чтение аналоговых сигналов в файл");
-        }
-        pb = this->findChild<QPushButton *>("pbmeasurements");
-        if (pb != nullptr)
-            pb->setEnabled(true);
-        XlsxWriting = false;
-    }
-    Timer->stop();
-}
-
-void CheckDialog::TimerTimeout()
-{
-    ReadAnalogMeasurementsAndWriteToFile();
-}
-
-void CheckDialog::SetTimerPeriod()
-{
-    bool TimerIsActive = false;
-    if (Timer->isActive())
-        TimerIsActive = true;
-    bool ok;
-    int per = sender()->objectName().toInt(&ok);
-    if (!ok)
-    {
-        qCritical("Ошибка считывания интервала таймера");
-        return;
-    }
-    Timer->stop();
-    Timer->setInterval(per);
-    if (TimerIsActive)
-        Timer->start();
-}
-*/
 
 void CheckDialog::setHighlights(Modules::AlarmType type, const HighlightMap &map)
 {
@@ -240,39 +52,29 @@ void CheckDialog::updateSPData(const DataTypes::SinglePointWithTimeStruct &sp)
     if (m_highlightCrit.contains(sp.sigAdr))
     {
         const QList<HighlightMap::mapped_type> regs = m_highlightCrit.values(sp.sigAdr);
-        const QString color = "red";
+        const auto errorStyle = QString(errStyle).arg("red");
         for (const auto reg : qAsConst(regs))
         {
-            QLabel *lbl = findChild<QLabel *>(QString::number(reg));
-            if (!lbl)
+            auto label = findChild<QLabel *>(QString::number(reg));
+            if (!label)
                 continue;
             if (status)
-            {
-                lbl->setStyleSheet("QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; font: bold; "
-                                   "background-color:"
-                    + color + "; color : black; }");
-            }
+                label->setStyleSheet(errorStyle);
         }
     }
     else if (m_highlightWarn.contains(sp.sigAdr))
     {
         const QList<HighlightMap::mapped_type> regs = m_highlightWarn.values(sp.sigAdr);
-        const QString color = "yellow";
+        const auto errorStyle = QString(errStyle).arg("yellow");
         for (const auto reg : qAsConst(regs))
         {
-            QLabel *lbl = findChild<QLabel *>(QString::number(reg));
-            if (!lbl)
+            auto label = findChild<QLabel *>(QString::number(reg));
+            if (!label)
                 continue;
             if (status)
-            {
-                lbl->setStyleSheet("QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; font: bold; "
-                                   "background-color:"
-                    + color + "; color : black; }");
-            }
+                label->setStyleSheet(errorStyle);
             else
-            {
-                lbl->setStyleSheet(ValuesFormat);
-            }
+                label->setStyleSheet(defaultStyle);
         }
     }
 }
@@ -448,7 +250,7 @@ QGridLayout *CheckDialog::setupFloatWidget(const ModuleTypes::MWidget &mwidget, 
             valueLabel->setToolTip(getFormated(mwidget, mwidget.tooltip, i));
 
         valueLabel->setObjectName(QString::number(mwidget.startAddr + i));
-        valueLabel->setStyleSheet(ValuesFormat);
+        valueLabel->setStyleSheet(defaultStyle);
         layout->addWidget(valueLabel);
         gridLayout->addLayout(layout, i / itemsOneLine, i % itemsOneLine);
     }
