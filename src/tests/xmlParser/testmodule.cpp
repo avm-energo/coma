@@ -1,6 +1,9 @@
 #include "testmodule.h"
 
+#include "../../interfaces/iec104.h"
+#include "../../interfaces/modbus.h"
 #include "../../interfaces/modbusprivate.h"
+#include "../../interfaces/protocom.h"
 #include "../../interfaces/protocomprivate.h"
 #include "../../module/board.h"
 #include "testdata.h"
@@ -10,6 +13,63 @@
 
 TestModule::TestModule(QObject *parent) : QObject(parent)
 {
+}
+
+int TestModule::getGroupsCount(const ModuleTypes::SectionList &list)
+{
+    auto groupCount = std::accumulate(list.cbegin(), list.cend(), 0, //
+        [](int value, const ModuleTypes::Section &section)           //
+        {                                                            //
+            return value + section.sgMap.count();                    //
+        });                                                          //
+    return groupCount;                                               //
+}
+
+int TestModule::getWidgetsCount(const ModuleTypes::SectionList &list)
+{
+    auto widgetCount = std::accumulate(list.cbegin(), list.cend(), 0,      //
+        [](int value, const ModuleTypes::Section &section)                 //
+        {                                                                  //
+            const auto &map = section.sgMap;                               //
+            auto innerCount = std::accumulate(map.cbegin(), map.cend(), 0, //
+                [](int inner, auto &&group) {                              //
+                    return inner + group.widgets.count();                  //
+                });                                                        //
+            return value + innerCount;                                     //
+        });                                                                //
+    return widgetCount;                                                    //
+}
+
+int TestModule::getAlarmsCount(const ModuleTypes::AlarmMap &map)
+{
+    auto alarmCount = std::accumulate(map.cbegin(), map.cend(), 0, //
+        [](int count, auto &&alarm)                                //
+        {                                                          //
+            return count + alarm.size();                           //
+        });                                                        //
+    return alarmCount;                                             //
+}
+
+void TestModule::createInterfaceContext(const Board::InterfaceType &ifaceType)
+{
+    BaseInterface::InterfacePointer device;
+    switch (ifaceType)
+    {
+    case Board::InterfaceType::USB:
+        device = BaseInterface::InterfacePointer(new Protocom());
+        break;
+    case Board::InterfaceType::Ethernet:
+        device = BaseInterface::InterfacePointer(new IEC104());
+        break;
+    case Board::InterfaceType::RS485:
+        device = BaseInterface::InterfacePointer(new ModBus());
+        break;
+    default:
+        device = nullptr;
+        break;
+    }
+    BaseInterface::setIface(std::move(device));
+    Board::GetInstance().setInterfaceType(ifaceType);
 }
 
 void TestModule::initTestCase()
@@ -37,41 +97,6 @@ void TestModule::cleanupTestCase()
     {
         QVERIFY(QFile::remove(homeDir.filePath(filename)));
     }
-}
-
-inline int getGroupsCount(const ModuleTypes::SectionList &list)
-{
-    auto groupCount = std::accumulate(list.cbegin(), list.cend(), 0, //
-        [](int value, const ModuleTypes::Section &section)           //
-        {                                                            //
-            return value + section.sgMap.count();                    //
-        });                                                          //
-    return groupCount;                                               //
-}
-
-inline int getWidgetsCount(const ModuleTypes::SectionList &list)
-{
-    auto widgetCount = std::accumulate(list.cbegin(), list.cend(), 0,      //
-        [](int value, const ModuleTypes::Section &section)                 //
-        {                                                                  //
-            const auto &map = section.sgMap;                               //
-            auto innerCount = std::accumulate(map.cbegin(), map.cend(), 0, //
-                [](int inner, auto &&group) {                              //
-                    return inner + group.widgets.count();                  //
-                });                                                        //
-            return value + innerCount;                                     //
-        });                                                                //
-    return widgetCount;                                                    //
-}
-
-inline int getAlarmsCount(const ModuleTypes::AlarmMap &map)
-{
-    auto alarmCount = std::accumulate(map.cbegin(), map.cend(), 0, //
-        [](int count, auto &&alarm)                                //
-        {                                                          //
-            return count + alarm.size();                           //
-        });                                                        //
-    return alarmCount;                                             //
 }
 
 void TestModule::checkA284()
@@ -102,86 +127,40 @@ void TestModule::checkA284()
     QCOMPARE(widgetsCount, a284::mwidgets);
 }
 
-/*
 void TestModule::checkA284USB()
 {
-    Modules::StartupInfoBlock bsi;
-    bsi.MTypeB = 0xA2;
-    bsi.MTypeM = 0x84;
-    bsi.Fwver = StdFunc::StrToVer(version::avma284);
-    QVERIFY(module.loadSettings(bsi, Board::InterfaceType::USB));
-    auto settings = module.settings();
-    QVERIFY(settings->ifaceSettings.settings.isValid());
-    QCOMPARE(settings->alarms.size(), 2);
-    QCOMPARE(settings->configSettings.general.size(), config::avma284);
-    QCOMPARE(settings->highlightCrit.size(), 7);
-    QCOMPARE(settings->highlightWarn.size(), 30);
-    QCOMPARE(settings->journals.size(), 2);
-    QVERIFY(settings->ifaceSettings.settings.canConvert<InterfaceInfo<Proto::ProtocomGroup>>());
-    const auto &st = settings->ifaceSettings.settings.value<InterfaceInfo<Proto::ProtocomGroup>>();
-    QCOMPARE(st.dictionary().size(), 8);
-    QCOMPARE(st.groups().size(), 8);
-
-    std::vector<CheckItem> checkSettings;
-    QVERIFY(
-        module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM), checkSettings));
-    QCOMPARE(checkSettings.size(), 1);
-    auto elementCount = getElementCount(checkSettings);
-    QCOMPARE(elementCount, check::check8084);
+    // Interface settings
+    createInterfaceContext(Board::InterfaceType::USB);
+    Modules::StartupInfoBlock bsi = { 0xA2, 0x84, 0, StdFunc::StrToVer(a284::version) };
+    auto module = new Module(false, bsi, this);
+    QVERIFY(module->loadSettings());
+    auto &settings = ConfigStorage::GetInstance().getModuleSettings();
+    QVERIFY(settings.getInterfaceSettings().settings.isValid());
 }
 
 void TestModule::checkA284Eth()
 {
-    Modules::StartupInfoBlock bsi;
-    bsi.MTypeB = 0xA2;
-    bsi.MTypeM = 0x84;
-    bsi.Fwver = StdFunc::StrToVer(version::avma284);
-    QVERIFY(module.loadSettings(bsi, Board::InterfaceType::Ethernet));
-    auto settings = module.settings();
-    QVERIFY(settings->ifaceSettings.settings.isValid());
-    QCOMPARE(settings->alarms.size(), 2);
-    QCOMPARE(settings->configSettings.general.size(), config::avma284);
-    QCOMPARE(settings->highlightCrit.size(), 7);
-    QCOMPARE(settings->highlightWarn.size(), 30);
-    QCOMPARE(settings->journals.size(), 2);
-
-    std::vector<CheckItem> checkSettings;
-    QVERIFY(
-        module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM), checkSettings));
-    QCOMPARE(checkSettings.size(), 1);
-    auto elementCount = getElementCount(checkSettings);
-    QCOMPARE(elementCount, check::check8084);
+    createInterfaceContext(Board::InterfaceType::Ethernet);
+    Board::GetInstance().setInterfaceType(Board::InterfaceType::Ethernet);
+    Modules::StartupInfoBlock bsi = { 0xA2, 0x84, 0, StdFunc::StrToVer(a284::version) };
+    auto module = new Module(false, bsi, this);
+    QVERIFY(module->loadSettings());
+    auto &settings = ConfigStorage::GetInstance().getModuleSettings();
+    QVERIFY(settings.getInterfaceSettings().settings.isValid());
 }
 
 void TestModule::checkA284Modbus()
 {
-    Modules::StartupInfoBlock bsi;
-    bsi.MTypeB = 0xA2;
-    bsi.MTypeM = 0x84;
-    bsi.Fwver = StdFunc::StrToVer(version::avma284);
-    QVERIFY(module.loadSettings(bsi, Board::InterfaceType::RS485));
-    auto settings = module.settings();
-    QVERIFY(settings->ifaceSettings.settings.isValid());
-    QCOMPARE(settings->alarms.size(), 2);
-    QCOMPARE(settings->configSettings.general.size(), config::avma284);
-    QCOMPARE(settings->highlightCrit.size(), 7);
-    QCOMPARE(settings->highlightWarn.size(), 30);
-    QCOMPARE(settings->journals.size(), 2);
-    QVERIFY(settings->ifaceSettings.settings.canConvert<InterfaceInfo<CommandsMBS::ModbusGroup>>());
-    const auto &st = settings->ifaceSettings.settings.value<InterfaceInfo<CommandsMBS::ModbusGroup>>();
-    QCOMPARE(st.dictionary().size(), 15);
-    QCOMPARE(st.groups().size(), 15);
-    QCOMPARE(st.regs().size(), 2);
-    QCOMPARE(st.dictionaryRegs().size(), 2);
-
-    std::vector<CheckItem> checkSettings;
-    QVERIFY(
-        module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM), checkSettings));
-    QCOMPARE(checkSettings.size(), 1);
-    auto elementCount = getElementCount(checkSettings);
-    QCOMPARE(elementCount, check::check8084);
+    createInterfaceContext(Board::InterfaceType::RS485);
+    Board::GetInstance().setInterfaceType(Board::InterfaceType::RS485);
+    Modules::StartupInfoBlock bsi = { 0xA2, 0x84, 0, StdFunc::StrToVer(a284::version) };
+    auto module = new Module(false, bsi, this);
+    QVERIFY(module->loadSettings());
+    auto &settings = ConfigStorage::GetInstance().getModuleSettings();
+    QVERIFY(settings.getInterfaceSettings().settings.isValid());
 }
 
+/*
 void TestModule::checkA287()
 {
     Modules::StartupInfoBlock bsi;

@@ -7,8 +7,20 @@
 class TestModule : public QObject
 {
     Q_OBJECT
+    // Helpers
+private:
+    /// \brief Returns groups number from all sections.
+    int getGroupsCount(const ModuleTypes::SectionList &list);
+    /// \brief Returns widgets number from all sections.
+    int getWidgetsCount(const ModuleTypes::SectionList &list);
+    /// \brief Returns alarms number from alarm map (list with all alarm types).
+    int getAlarmsCount(const ModuleTypes::AlarmMap &map);
+
+    void createInterfaceContext(const Board::InterfaceType &ifaceType);
+
 public:
     explicit TestModule(QObject *parent = nullptr);
+
 private slots:
     /// \brief Вызывается перед первой тестовой функцией
     void initTestCase();
@@ -82,9 +94,9 @@ private slots:
     //    void check8600();
     //    void check8600USB();
     void checkA284();
-    //    void checkA284USB();
-    //    void checkA284Eth();
-    //    void checkA284Modbus();
+    void checkA284USB();
+    void checkA284Eth();
+    void checkA284Modbus();
     //    void checkA287();
     //    void checkA287USB();
     //    void checkA287Eth();

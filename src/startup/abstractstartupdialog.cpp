@@ -39,17 +39,14 @@ AbstractStartupDialog::AbstractStartupDialog(QWidget *parent) : UDialog(crypto::
 
 void AbstractStartupDialog::SetStartupBlock(int blocknum, void *block, quint32 blocksize, quint32 startAdr)
 {
-    m_startupBlockDescription.num = blocknum;
-    m_startupBlockDescription.block = block;
-    m_startupBlockDescription.size = blocksize;
-    m_startupBlockDescription.initStartRegAdr = startAdr;
+    m_startupBlockDescription = { startAdr, blocknum, block, blocksize };
 }
 
 QWidget *AbstractStartupDialog::buttonWidget()
 {
-    QWidget *w = new QWidget;
-    QVBoxLayout *lyout = new QVBoxLayout;
-    QDialogButtonBox *group = new QDialogButtonBox;
+    auto widget = new QWidget;
+    auto layout = new QVBoxLayout;
+    auto group = new QDialogButtonBox;
     QString tmps = ((DEVICETYPE == DEVICETYPE_MODULE) ? "модуля" : "прибора");
 
     const QList<QPair<QPair<QString, QIcon>, std::function<void()>>> funcs {
@@ -61,24 +58,24 @@ QWidget *AbstractStartupDialog::buttonWidget()
         { { "Сохранить значения в файл", QIcon(":/icons/tnsave.svg") }, [this]() { SaveToFile(); } }      //
     };
 
-    for (auto &i : funcs)
+    for (auto &func : funcs)
     {
-        const QIcon &icon = i.first.second;
-        const QString &toolTip = i.first.first;
+        const QIcon &icon = func.first.second;
+        const QString &toolTip = func.first.first;
         QPushButton *pb = new QPushButton();
         pb->setObjectName("Hexagon");
         pb->setIcon(icon);
         pb->setToolTip(toolTip);
         pb->setMinimumSize(50, 50);
         pb->setIconSize(QSize(50, 50));
-        connect(pb, &QAbstractButton::clicked, this, i.second);
+        connect(pb, &QAbstractButton::clicked, this, func.second);
         group->addButton(pb, QDialogButtonBox::ActionRole);
     }
-    group->setCenterButtons(true);
-    lyout->addWidget(group);
 
-    w->setLayout(lyout);
-    return w;
+    group->setCenterButtons(true);
+    layout->addWidget(group);
+    widget->setLayout(layout);
+    return widget;
 }
 
 void AbstractStartupDialog::WriteCor()
