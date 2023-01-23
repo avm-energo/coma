@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<module mtypem="33" mtypeb="00">
+    <name>AVTUK-0033</name>
+    <version>3.7-0000</version>
+    <resources>
+        <alarms desc="Сигнализация">
+            <critical desc="Критичные"/>
+            <warning desc="Предупреждения"/>
+            <info desc="Информационные"/>
+        </alarms>
+        <config desc="Конфигурация">
+            <record>
+                <id>235</id>
+                <defaultValue>2</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>241</id>
+                <defaultValue>0</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>242</id>
+                <defaultValue>2</defaultValue>
+                <visibility>true</visibility>
+            </record>
+        </config>
+        <iec60870 desc="Протокол ГОСТ Р МЭК 60870-5-104">
+            <group>
+                <signal-id>104</signal-id>
+                <sig-type>7</sig-type>
+                <trans-type>0</trans-type>
+                <sig-group>6</sig-group>
+            </group>
+            <group>
+                <signal-id>105</signal-id>
+                <sig-type>7</sig-type>
+                <trans-type>0</trans-type>
+                <sig-group>7</sig-group>
+            </group>
+            <group>
+                <signal-id>106</signal-id>
+                <sig-type>30</sig-type>
+                <trans-type>3</trans-type>
+                <sig-group></sig-group>
+            </group>
+        </iec60870>
+        <journals desc="Журналы">
+            <work desc="Рабочий журнал"/>
+            <meas desc="Журнал измерений"/>
+        </journals>
+        <modbus desc="Протокол Modbus"/>
+        <protocom desc="Протокол Protocom">
+            <group>
+                <block>103</block>
+                <signal-id>104</signal-id>
+            </group>
+        </protocom>
+        <section-tabs desc="Вкладки">
+            <tab>
+                <id>101</id>
+                <name>Основные</name>
+            </tab>
+        </section-tabs>
+        <sections desc="Разделы">
+            <section header="Текущие данные мезонин">
+                <sgroup tab="101" header="Текущее состояние входов">
+                    <mwidget desc="" view="bitset">
+                        <start-addr>3002</start-addr>
+                        <count>30</count>
+                        <toolTip>Дискретный вход (DIO_%1)</toolTip>
+                    </mwidget>
+                </sgroup>
+            </section>
+        </sections>
+        <signals desc="Сигналы">
+            <signal>
+                <start-addr>3002</start-addr>
+                <count>1</count>
+                <id>104</id>
+                <type>BitString</type>
+            </signal>
+            <signal>
+                <start-addr>3501</start-addr>
+                <count>150</count>
+                <id>105</id>
+                <type>BitString</type>
+            </signal>
+            <signal>
+                <start-addr>3701</start-addr>
+                <count>30</count>
+                <id>106</id>
+                <type>Float</type>
+            </signal>
+        </signals>
+    </resources>
+</module>

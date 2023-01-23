@@ -1,9 +1,12 @@
 #include "s2.h"
 
-#include "../gen/error.h"
+#include "../module/configstorage.h"
 
 #include <QDateTime>
 #include <QDebug>
+#include <gen/error.h>
+
+QMap<QString, quint16> S2::NameIdMap;
 
 S2::S2()
 {
@@ -231,12 +234,11 @@ bool S2::RestoreData(QByteArray bain, QList<DataTypes::DataRecV> &outlist)
         bain.remove(0, size);
         if (DR.header.id != S2DataTypes::dummyElement)
         {
-
             size = DR.header.numByte;
-
-            auto search = DataTypes::DataRecV::map.map().find(DR.header.id);
-            Q_ASSERT(search != DataTypes::DataRecV::map.map().end());
-            if (search != DataTypes::DataRecV::map.map().end())
+            auto &s2map = ConfigStorage::GetInstance().getS2Map();
+            auto search = s2map.find(DR.header.id);
+            Q_ASSERT(search != s2map.end());
+            if (search != s2map.end())
             {
                 DataTypes::DataRecV DRV(DR, bain.left(size));
                 outlist.append(DRV);
@@ -549,6 +551,11 @@ quint32 S2::GetCRC32(char *data, quint32 len)
 quint32 S2::updateCRC32(unsigned char ch, quint32 crc)
 {
     return (_crc32_t[((crc) ^ (static_cast<quint8>(ch))) & 0xff] ^ ((crc) >> 8));
+}
+
+quint16 S2::GetIdByName(QString name)
+{
+    return NameIdMap.value(name, 0);
 }
 
 quint32 S2::crc32buf(const QByteArray &data)

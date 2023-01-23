@@ -1,13 +1,14 @@
 #pragma once
 
-#include "../gen/datatypes.h"
-#include "../gen/error.h"
 #include "../s2/s2datatypes.h"
 #include "protocomprivate.h"
 
 #include <QMutex>
 #include <QReadWriteLock>
 #include <QWaitCondition>
+#include <gen/datatypes.h>
+#include <gen/error.h>
+
 class LogClass;
 class ProtocomThread : public QObject
 {

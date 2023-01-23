@@ -27,11 +27,6 @@
 
 #include "trendviewdialog.h"
 
-#include "../../gen/comaexception.h"
-#include "../../gen/error.h"
-#include "../../gen/files.h"
-#include "../../gen/pch.h"
-#include "../../gen/stdfunc.h"
 #include "../../module/modules.h"
 #include "../../widgets/epopup.h"
 #include "../../widgets/signalchoosewidget.h"
@@ -40,8 +35,12 @@
 #include <QAction>
 #include <QPen>
 #include <QToolBar>
-#include <QtConcurrent>
 #include <algorithm>
+#include <gen/comaexception.h>
+#include <gen/error.h>
+#include <gen/files.h>
+#include <gen/pch.h>
+#include <gen/stdfunc.h>
 
 constexpr int VOLTAGE_AXIS_INDEX = 0;
 constexpr int CURRENT_AXIS_INDEX = 1;
@@ -53,6 +52,7 @@ TrendViewDialog::TrendViewDialog(QWidget *parent)
     digital.rescaleActivated = false;
     analog.type = ST_ANALOG;
     digital.type = ST_DIGITAL;
+    setAttribute(Qt::WA_DeleteOnClose);
 }
 
 SignalChooseWidget *TrendViewDialog::setupHelper(const TrendViewDialog::Signals &sig)
@@ -378,39 +378,42 @@ void TrendViewDialog::exportToExcel()
     QFileInfo info(filename);
     StdFunc::SetHomeDir(info.absolutePath());
     dlg->close();
-    QDialog *dlg2 = new QDialog(this);
-    QVBoxLayout *lyout = new QVBoxLayout;
-    QLabel *lbl = new QLabel;
-    lyout->addWidget(lbl);
-    QProgressBar *bar = new QProgressBar;
-    bar->setMinimum(0);
-    lyout->addWidget(bar);
-    dlg2->setLayout(lyout);
-    connect(m_trendModel, &TrendViewModel::recordsOverall, bar, &QProgressBar::setMaximum, Qt::DirectConnection);
-    connect(m_trendModel, &TrendViewModel::currentRecord, bar, &QProgressBar::setValue, Qt::DirectConnection);
-    connect(
-        m_trendModel, &TrendViewModel::eventMessage, this, [&](const QString &msg) { lbl->setText(msg); },
-        Qt::DirectConnection);
-    dlg2->show();
-    try
-    {
-        QEventLoop loop;
-        connect(m_trendModel, &TrendViewModel::finished, &loop, &QEventLoop::quit);
-        m_trendModel->setFilename(filename);
-        QtConcurrent::run(m_trendModel, &TrendViewModel::toExcel);
-        loop.exec();
-        //        m_trendModel->toExcel(filename);
-        dlg2->close();
-        EMessageBox::information(this, "Файл создан успешно");
-    } catch (ComaException e)
-    {
-        dlg2->close();
-        EMessageBox::error(this, e.message());
-    } catch (...)
-    {
-        dlg2->close();
-        EMessageBox::error(this, "Неизвестная ошибка");
-    };
+    //    QDialog *dlg2 = new QDialog(this);
+    //    QVBoxLayout *lyout = new QVBoxLayout;
+    //    QLabel *lbl = new QLabel;
+    //    lyout->addWidget(lbl);
+    //    QProgressBar *bar = new QProgressBar;
+    //    bar->setMinimum(0);
+    //    lyout->addWidget(bar);
+    //    dlg2->setLayout(lyout);
+    //    //    connect(m_trendModel, &TrendViewModel::recordsOverall, bar, &QProgressBar::setMaximum,
+    //    Qt::DirectConnection);
+    //    //    connect(m_trendModel, &TrendViewModel::currentRecord, bar, &QProgressBar::setValue,
+    //    Qt::DirectConnection);
+    //    //    connect(
+    //    //        m_trendModel, &TrendViewModel::eventMessage, this, [&](const QString &msg) { lbl->setText(msg); },
+    //    //        Qt::DirectConnection);
+    //    dlg2->show();
+    //    try
+    //    {
+    //        QEventLoop loop;
+    //        connect(m_trendModel, &TrendViewModel::finished, &loop, &QEventLoop::quit);
+    m_trendModel->setFilename(filename);
+    //        QtConcurrent::run(m_trendModel, &TrendViewModel::toExcel);
+    //        loop.exec();
+    m_trendModel->toExcel();
+    //        m_trendModel->toExcel(filename);
+    //        dlg2->close();
+    EMessageBox::information(this, "Файл создан успешно");
+    //    } catch (ComaException e)
+    //    {
+    //        //        dlg2->close();
+    //        EMessageBox::error(this, e.message());
+    //    } catch (...)
+    //    {
+    //        //        dlg2->close();
+    //        EMessageBox::error(this, "Неизвестная ошибка");
+    //    };
 }
 
 void TrendViewDialog::analogRangeChanged(const QCPRange &range)

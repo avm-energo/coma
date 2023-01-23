@@ -1,81 +1,79 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<?xml-stylesheet type="text/xsl" href="s2files.xsl"?>
-<s2files xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="s2files.xsd">
-	<map name="categories">
-		<item>
-			<key>0</key>
-			<value>Пустая группа</value>
-		</item>
-		<item>
-			<key>210</key>
-			<value>IEC 60870-5-104</value>
-		</item>
-		<item>
-			<key>220</key>
-			<value>Настройки IP</value>
-		</item>
-		<item>
-			<key>50</key>
-			<value>Коммутируемое оборудование</value>
-		</item>
-		<item>
-			<key>100</key>
-			<value>Аналоговые параметры</value>
-		</item>
-		<item>
-			<key>102</key>
-			<value>Параметры выключателя</value>
-		</item>
-		<item>
-			<key>200</key>
-			<value>Уставки</value>
-		</item>
-		<item>
-			<key>201</key>
-			<value>Пред. уставки</value>
-		</item>
-		<item>
-			<key>202</key>
-			<value>Авар. уставки</value>
-		</item>
-		<item>
-			<key>203</key>
-			<value>Ресурс</value>
-		</item>
-		<item>
-			<key>51</key>
-			<value>Параметры алгоритма</value>
-		</item>
-		<item>
-			<key>52</key>
-			<value>Коррекция по внешним условиям</value>
-		</item>
-		<item>
-			<key>5</key>
-			<value>Пустая группа</value>
-		</item>
-		<item>
-			<key>6</key>
-			<value>Пустая группа</value>
-		</item>
-		<item>
-			<key>300</key>
-			<value>Остальные</value>
-		</item>
-		<item>
-			<key>230</key>
-			<value>Modbus RTU</value>
-		</item>
-		<item>
-			<key>9</key>
-			<value>Пустая группа</value>
-		</item>
-		<item>
-			<key>10</key>
-			<value>Пустая группа</value>
-		</item>
-		
-	</map>
+<s2files>
+	<config-tabs>
+		<tab>
+			<id>0</id>
+			<name>Пустая группа</name>
+		</tab>
+		<tab>
+			<id>210</id>
+			<name>IEC 60870-5-104</name>
+		</tab>
+		<tab>
+			<id>220</id>
+			<name>Настройки IP</name>
+		</tab>
+		<tab>
+			<id>50</id>
+			<name>Коммутируемое оборудование</name>
+		</tab>
+		<tab>
+			<id>100</id>
+			<name>Аналоговые параметры</name>
+		</tab>
+		<tab>
+			<id>102</id>
+			<name>Параметры выключателя</name>
+		</tab>
+		<tab>
+			<id>200</id>
+			<name>Уставки</name>
+		</tab>
+		<tab>
+			<id>201</id>
+			<name>Пред. уставки</name>
+		</tab>
+		<tab>
+			<id>202</id>
+			<name>Авар. уставки</name>
+		</tab>
+		<tab>
+			<id>203</id>
+			<name>Ресурс</name>
+		</tab>
+		<tab>
+			<id>51</id>
+			<name>Параметры алгоритма</name>
+		</tab>
+		<tab>
+			<id>52</id>
+			<name>Коррекция по внешним условиям</name>
+		</tab>
+		<tab>
+			<id>5</id>
+			<name>Гистерезис сигнализации</name>
+		</tab>
+		<tab>
+			<id>6</id>
+			<name>Пустая группа</name>
+		</tab>
+		<tab>
+			<id>300</id>
+			<name>Остальные</name>
+		</tab>
+		<tab>
+			<id>230</id>
+			<name>Modbus RTU</name>
+		</tab>
+		<tab>
+			<id>9</id>
+			<name>Параметры двигателя</name>
+		</tab>
+		<tab>
+			<id>10</id>
+			<name>Пустая группа</name>
+		</tab>
+</config-tabs>
 	<record>
 		<id>1</id>
 		<name>MTypeB_ID</name>
@@ -1108,7 +1106,7 @@
 				<item>Не использовать вход 15</item>
 				<item>Не использовать вход 16</item>
 			</string-array>
-			<count>11</count>
+			<count>16</count>
 		</widget>
 	</record>
 	<record>
@@ -1965,7 +1963,7 @@
 	<record>
 		<id>1012</id>
 		<name>DUImin_ID</name>
-		<description> Уставка контроля минимума сигналов</description>
+		<description>Уставка контроля минимума сигналов</description>
 		<type>FLOAT</type>
 		<widget>
 			<type>QDoubleSpinBox</type>

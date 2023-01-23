@@ -1,69 +1,131 @@
 #include "modulealarm.h"
 
-#include "../gen/datamanager/typesproxy.h"
+#include "../module/configstorage.h"
+#include "../widgets/wd_func.h"
 
-ModuleAlarm::ModuleAlarm(QWidget *parent) : BaseAlarm(parent), proxy(new DataTypesProxy)
+#include <QScrollArea>
+#include <QVBoxLayout>
+#include <gen/datamanager/typesproxy.h>
+
+const QHash<Modules::AlarmType, QColor> ModuleAlarm::colors = {
+    { Modules::AlarmType::Critical, Qt::red },   //
+    { Modules::AlarmType::Warning, Qt::yellow }, //
+    { Modules::AlarmType::Info, Qt::green }      //
+};
+
+ModuleAlarm::ModuleAlarm(const Modules::AlarmType &type, //
+    const ModuleTypes::AlarmValue &alarms, QWidget *parent)
+    : BaseAlarm(parent), mAlarms(std::move(alarms)), mProxy(new DataTypesProxy)
 {
-    proxy->RegisterType<DataTypes::SinglePointWithTimeStruct>();
-    connect(proxy.get(), &DataTypesProxy::DataStorable, this, qOverload<const QVariant &>(&ModuleAlarm::update));
+    alarmColor = colors.value(type, Qt::transparent);
+    followToData();
+    mProxy->RegisterType<DataTypes::SinglePointWithTimeStruct>();
+    connect(mProxy.get(), &DataTypesProxy::DataStorable, this, qOverload<const QVariant &>(&ModuleAlarm::update));
+    setupUI(mAlarms.values());
 }
 
-ModuleAlarm::ModuleAlarm(const DataTypes::Alarm &desc, const int count, QWidget *parent) : ModuleAlarm(parent)
+/// \brief Folowing the data: search a signal group whose range
+/// includes the address of the first alarm from the list.
+void ModuleAlarm::followToData()
 {
-    m_startAlarmAddress = desc.startAddr;
-    m_alarmFlags = std::bitset<sizeof(desc.flags) * 8>(desc.flags);
-    Q_ASSERT(QColor::isValidColor(desc.color));
-    m_alarmColor = desc.color;
-    m_alarmAllCounts = count;
-    setupUI(desc.desc);
-}
-
-void ModuleAlarm::reqUpdate()
-{
-    BaseInterface::iface()->reqAlarms(m_startAlarmAddress, m_alarmAllCounts);
-    update();
-}
-
-// void ModuleAlarm::update(const DataTypes::SinglePointWithTimeStruct &sp)
-void ModuleAlarm::update(const QVariant &msg)
-{
-    auto sp = msg.value<DataTypes::SinglePointWithTimeStruct>();
-    const auto minAddress = m_startAlarmAddress;
-    const auto maxAddress = m_startAlarmAddress + m_alarmFlags.size();
-    if (!((sp.sigAdr >= minAddress) && (sp.sigAdr <= maxAddress)))
-        return;
-
-    const int index = (sp.sigAdr - minAddress);
-
-    const quint8 sigval = sp.sigVal;
-    if (sigval & 0x80)
-        return;
-
-    if (m_alarmFlags.test(index))
+    auto &sigMap = ConfigStorage::GetInstance().getModuleSettings().getSignals();
+    auto &addr = mAlarms.cbegin().key();
+    auto search = std::find_if(sigMap.cbegin(), sigMap.cend(), //
+        [&addr](const ModuleTypes::Signal &signal) -> bool {   //
+            auto acceptStart = signal.startAddr;
+            auto acceptEnd = acceptStart + signal.count;
+            return (addr >= acceptStart && addr < acceptEnd);
+        });
+    if (search != sigMap.cend())
     {
-        updatePixmap(sigval & 0x00000001, index);
+        auto &signal = search.value();
+        engine()->addSp({ signal.startAddr, signal.count });
+    }
+    engine()->setUpdatesEnabled();
+}
+
+/// \brief Setup UI: creating text labels and indicators (pixmaps) for alarms displaying.
+void ModuleAlarm::setupUI(const QStringList &events)
+{
+    auto mainLayout = new QVBoxLayout(this);
+    auto widget = new QWidget(this);
+    auto vLayout = new QVBoxLayout(widget);
+    widget->setLayout(vLayout);
+
+    // Создаём labels и circles
+    labelStateStorage.reserve(events.size());
+    auto index = 0;
+    for (auto &&desc : events)
+    {
+        auto hLayout = new QHBoxLayout;
+        auto pixmap = WDFunc::NewCircle(normalColor, circleRadius);
+        auto label = WDFunc::NewLBL2(this, "", QString::number(index), &pixmap);
+        hLayout->addWidget(label);
+        hLayout->addWidget(WDFunc::NewLBL2(this, desc), 1);
+        vLayout->addLayout(hLayout);
+        labelStateStorage.append({ label, false });
+        index++;
+    }
+
+    // Создаём QScrollArea
+    auto scrollArea = new QScrollArea(this);
+    scrollArea->setWidget(widget);
+    mainLayout->addWidget(scrollArea);
+    // Создаём кнопку "Ок"
+    auto pb = new QPushButton("Ok", this);
+    QObject::connect(pb, &QPushButton::clicked, this, &ModuleAlarm::hide);
+    mainLayout->addWidget(pb);
+    setLayout(mainLayout);
+}
+
+/// \brief Check if all pixmap labels inactive.
+bool ModuleAlarm::isAllPixmapInactive() const
+{
+    auto retFlag = true;
+    for (auto &&statePair : labelStateStorage)
+    {
+        if (statePair.second)
+        {
+            retFlag = false;
+            break;
+        }
+    }
+    return retFlag;
+}
+
+/// \brief Update a indicator (pixmap) for alarms displaying.
+void ModuleAlarm::updatePixmap(const bool &isSet, const quint32 &position)
+{
+    if (labelStateStorage[position].second != isSet)
+    {
+        const auto color = isSet ? alarmColor : normalColor;
+        auto label = labelStateStorage[position].first;
+        const auto pixmap = WDFunc::NewCircle(color, circleRadius);
+        label->setPixmap(pixmap);
+        labelStateStorage[position].second = isSet;
+        if (isSet or isAllPixmapInactive())
+            emit updateColor(color);
     }
 }
 
-void ModuleAlarm::update()
+/// \brief The slot called when a SinglePoint data is received from the communication protocol.
+void ModuleAlarm::update(const QVariant &msg)
 {
-    using ValueType = DataTypes::SinglePointWithTimeStruct;
-    const auto minAddress = m_startAlarmAddress;
-    const auto maxAddress = m_startAlarmAddress + m_alarmFlags.size();
-    auto &manager = DataManager::GetInstance();
-    for (auto i = minAddress; i != maxAddress; ++i)
+    auto sp = msg.value<DataTypes::SinglePointWithTimeStruct>();
+    const quint8 sigval = sp.sigVal;
+    if (!(sigval & 0x80))
     {
-        if (!manager.containsRegister<ValueType>(i))
-            continue;
-        const auto sp = manager.getRegister<ValueType>(i);
-        const int index = (sp.sigAdr - minAddress);
-        const quint8 sigval = sp.sigVal;
-        if (sigval & 0x80)
-            return;
-
-        if (m_alarmFlags.test(index))
+        quint32 index = 0;
+        bool foundFlag = false;
+        for (auto it = mAlarms.keyBegin(); it != mAlarms.keyEnd(); it++, index++)
         {
-            updatePixmap(sigval & 0x00000001, index);
+            if (sp.sigAdr == *it)
+            {
+                foundFlag = true;
+                break;
+            }
         }
+        if (foundFlag)
+            updatePixmap(sigval & 0x00000001, index);
     }
 }

@@ -1,8 +1,9 @@
 #include "filehelper.h"
 
-#include "../gen/files.h"
-#include "../gen/stdfunc.h"
 #include "board.h"
+
+#include <gen/files.h>
+#include <gen/stdfunc.h>
 
 QString FileHelper::ChooseFileForSave(const QString &ext)
 {

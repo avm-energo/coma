@@ -1,18 +1,17 @@
 #include "modbusthread.h"
 
-#include "../gen/datamanager/datamanager.h"
-#include "../gen/helper.h"
-#include "../gen/pch.h"
-#include "../gen/stdfunc.h"
 #include "baseinterface.h"
 
 #include <QCoreApplication>
 #include <QDebug>
 #include <QElapsedTimer>
 #include <QThread>
-#include <QTimer>
 #include <QtEndian>
 #include <algorithm>
+#include <gen/datamanager/datamanager.h>
+#include <gen/helper.h>
+#include <gen/pch.h>
+#include <gen/stdfunc.h>
 
 #ifdef Q_OS_WINDOWS
 #include <Windows.h>
@@ -60,14 +59,17 @@ void ModbusThread::run()
     log->Init(QString(metaObject()->className()) + ".log");
     log->info(logStart);
 
+    trashTimer = new QTimer();
+    trashTimer->setInterval(TRASHTIMEOUT);
+    mTrashEnabled = false;
+    connect(trashTimer, &QTimer::timeout, this, &ModbusThread::trashTimerTimeout);
     const auto &iface = BaseInterface::iface();
     using State = BaseInterface::State;
     while (iface->state() != State::Stop)
     {
         CommandsMBS::CommandStruct inp;
-        if (DataManager::deQueue(inp) == Error::Msg::NoError)
+        if (DataManager::GetInstance().deQueue(inp) == Error::Msg::NoError)
         {
-
 #ifdef MODBUS_DEBUG
             qDebug() << inp.cmd << inp.adr << inp.quantity;
 #endif
@@ -97,16 +99,22 @@ void ModbusThread::run()
 
 void ModbusThread::parseReply(QByteArray ba)
 {
+    if (mTrashEnabled)
+    {
+        log->error("Trash continues: " + ba.toHex());
+        return;
+    }
     m_readData.append(ba);
     if (m_readData.size() >= 2)
     {
         quint8 receivedCommand = m_readData.at(1);
-        if ((receivedCommand & 0x80) || (receivedCommand != m_commandSent.cmd))
+        // if ((receivedCommand & 0x80) || (receivedCommand != m_commandSent.cmd))
+        if (receivedCommand & 0x80)
         {
             log->error("Modbus error response: " + m_readData.toHex());
             qCritical() << Error::ReadError << metaObject()->className();
-            m_readData.clear();
-            busy = false;
+            mTrashEnabled = true;
+            trashTimer->start();
             return;
         }
     }
@@ -320,6 +328,13 @@ quint16 ModbusThread::calcCRC(QByteArray &ba) const
     return crc;
 }
 
+void ModbusThread::trashTimerTimeout()
+{
+    m_readData.clear();
+    busy = false;
+    mTrashEnabled = false;
+}
+
 void ModbusThread::readRegisters(CommandsMBS::CommandStruct &cms)
 {
 
@@ -383,6 +398,7 @@ QByteArray ModbusThread::createADU(const QByteArray &pdu) const
     QByteArray ba;
     ba.append(deviceAddress);
     ba.append(pdu);
+    // здесь мог бы быть Ваш рефакторинг
     quint16 KSS = calcCRC(ba);
     ba.append(static_cast<char>(KSS >> 8));
     ba.append(static_cast<char>(KSS));

@@ -1,10 +1,10 @@
 #include "trendviewmodel.h"
 
-#include "../gen/comaexception.h"
 #include "../widgets/epopup.h"
 
 #include <QDebug>
-#include <QXlsx/xlsxdocument.h>
+#include <gen/comaexception.h>
+#include <xlsxdocument.h>
 
 TrendViewModel::TrendViewModel(int pointsnum, QObject *parent) : pointsNum(pointsnum), QObject(parent)
 {
@@ -82,9 +82,9 @@ void TrendViewModel::processAnalogNames(const QStringList &list)
 void TrendViewModel::toExcel()
 {
     constexpr int c_div = 1000;
-    emit eventMessage("Разборка осциллограммы");
-    QXlsx::Document doc(m_filename);
-    QXlsx::Worksheet *workSheet = doc.currentWorksheet();
+    //    emit eventMessage("Разборка осциллограммы");
+    auto doc = new QXlsx::Document(m_filename, this);
+    auto workSheet = doc->currentWorksheet();
     workSheet->writeString(2, 2, "Тип осциллограммы:");
     workSheet->writeString(2, 3, QString::number(m_idOsc));
     int currentRow = 4;
@@ -96,59 +96,58 @@ void TrendViewModel::toExcel()
     if (m_mainPoints.size() < 2)
     {
         emit finished();
-        throw ComaException("Недостаточно данных по оси абсцисс");
+        //        throw ComaException("Недостаточно данных по оси абсцисс");
     }
     //    else
     //    {
     //        throw ComaException("Test exception");
     //        emit finished();
     //    }
-    emit eventMessage("Экспорт абсцисс");
-    emit recordsOverall(m_mainPoints.size());
+    //    emit eventMessage("Экспорт абсцисс");
+    // emit recordsOverall(m_mainPoints.size());
     int curCount = 0;
-    for (int i = 0; i < m_mainPoints.size(); ++i)
+    for (auto &point : m_mainPoints)
     {
-        workSheet->writeNumeric(currentRow++, 1, m_mainPoints.at(i));
+        workSheet->writeNumeric(currentRow++, 1, point);
         if (curCount >= c_div)
-        {
-            emit currentRecord(i);
             curCount = 0;
-        }
         ++curCount;
     }
+
     if (analogDescriptions().size() != analogValues().size())
     {
         emit finished();
-        throw ComaException("Размерности массивов значений и описаний не совпадают");
+        //        throw ComaException("Размерности массивов значений и описаний не совпадают");
     }
     int currentColumn = 2;
-    emit eventMessage("Экспорт ординат");
+    //    emit eventMessage("Экспорт ординат");
     for (int j = 0; j < analogDescriptions().size(); ++j)
     {
         currentRow = pushRow;
         if (!m_analogMainData.contains(analogValues().at(j)))
         {
             emit finished();
-            throw ComaException("Количество значений не соответствует описанию");
+            //            throw ComaException("Количество значений не соответствует описанию");
         }
-        QVector<double> vect = m_analogMainData[analogValues().at(j)];
-        emit recordsOverall(vect.size());
-        int curCount = 0;
-        for (int i = 0; i < vect.size(); ++i)
+        auto analogVals = m_analogMainData[analogValues().at(j)];
+        // emit recordsOverall(vect.size());
+        int count = 0;
+        for (auto &analogVal : analogVals)
         {
-            workSheet->writeNumeric(currentRow++, currentColumn, vect.at(i));
-            if (curCount >= c_div)
+            workSheet->writeNumeric(currentRow++, currentColumn, analogVal);
+            if (count >= c_div)
             {
-                emit currentRecord(i);
-                curCount = 0;
+                // emit currentRecord(i);
+                count = 0;
             }
-            ++curCount;
+            ++count;
         }
         ++currentColumn;
     }
-    emit eventMessage("Запись файла");
-    doc.save();
-    emit finished();
+    //    emit eventMessage("Запись файла");
+    doc->save();
+    //    emit finished();
+    doc->deleteLater();
 }
 
 float TrendViewModel::xmin() const

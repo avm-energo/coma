@@ -1,11 +1,11 @@
 #include "baseinterface.h"
 
-#include "../gen/registers.h"
-#include "../gen/stdfunc.h"
 #include "../s2/s2.h"
 
 #include <QCoreApplication>
 #include <QMutexLocker>
+#include <gen/registers.h>
+#include <gen/stdfunc.h>
 #include <memory>
 
 // Static members

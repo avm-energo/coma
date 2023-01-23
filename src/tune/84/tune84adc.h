@@ -16,8 +16,8 @@ public:
     Tune84ADC(ConfigV *config, int tuneStep, QWidget *parent = nullptr);
 
 private:
-    Bac *m_bac;
-    Bda *m_bda;
+    BacA284 *m_bac;
+    BdaA284 *m_bda;
     BdaIn *m_bdain;
     Bd0 *m_bd0;
     double m_pt100;
@@ -35,7 +35,6 @@ private:
 
     MidTuneStruct m_midTuneStruct;
 
-    void setMessages() override;
     void setTuneFunctions() override;
 
     Error::Msg showPreWarning();

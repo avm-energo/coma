@@ -7,8 +7,7 @@ class JournKIV : public Journals
 {
     Q_OBJECT
 public:
-    JournKIV(QMap<Modules::JournalType, DataTypes::JournalDesc> &jourMap, QObject *parent = nullptr);
-
+    JournKIV(const ModuleTypes::JourMap &jourMap, QObject *parent = nullptr);
     QVector<QVariant> createMeasRecord(const char *file) override;
     virtual QVector<QVector<QVariant>> createMeas(const QByteArray &array) override;
     int measureSize() override;

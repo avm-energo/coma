@@ -1,17 +1,19 @@
 #ifndef BASEINTERFACE_H
 #define BASEINTERFACE_H
 
-#include "../gen/datamanager/typesproxy.h"
-#include "../gen/datatypes.h"
-#include "../gen/error.h"
-#include "../gen/logclass.h"
-#include "../gen/stdfunc.h"
-#include "../s2/s2settings.h"
-#include "interfacesettings.h"
+#include "../module/modulesettings.h"
+#include "../s2/datarecv.h"
 
 #include <QTimer>
+#include <gen/datamanager/typesproxy.h>
+#include <gen/datatypes.h>
+#include <gen/error.h>
+#include <gen/logclass.h>
+#include <gen/stdfunc.h>
 #include <memory>
 #include <typeinfo>
+
+using InterfaceSettings = ModuleTypes::InterfaceSettings;
 
 enum INTERVAL
 {
@@ -81,10 +83,6 @@ public:
     virtual void writeRaw(const QByteArray &)
     {
     }
-    //    bool isWorking()
-    //    {
-    //        return m_working;
-    //    }
 
     // Bac & Bda blocks only supported for now
     Error::Msg reqBlockSync(quint32 blocknum, DataTypes::DataBlockTypes blocktype, void *block, quint32 blocksize);
@@ -95,16 +93,18 @@ public:
     Error::Msg readS2FileSync(quint32 filenum);
     Error::Msg readFileSync(quint32 filenum, QByteArray &ba);
     Error::Msg reqTimeSync(void *block, quint32 blocksize);
-    InterfaceSettings settings() const;
+    ModuleTypes::InterfaceSettings settings() const;
+
     template <class T> T settings() const
     {
         Q_ASSERT(m_settings.settings.canConvert<T>());
         // qDebug() << m_settings.settings.type().name() << "<->" << typeid(T).name();
-        //  Q_ASSERT(m_settings.settings.type() == typeid(T));
-        //    Q_ASSERT(std::holds_alternative<T>(m_settings.settings));
-        //   return std::get<T>(m_settings.settings);
+        // Q_ASSERT(m_settings.settings.type() == typeid(T));
+        // Q_ASSERT(std::holds_alternative<T>(m_settings.settings));
+        // return std::get<T>(m_settings.settings);
         return m_settings.settings.value<T>();
     }
+
     void setSettings(const InterfaceSettings &settings);
     template <class T> void setSettings(const T &settings)
     {
@@ -113,44 +113,6 @@ public:
 
     State state();
     void setState(const State &state);
-
-    template <class Group> InterfaceSettings parseSettings(QDomElement domElement) const
-    {
-        using Register = typename InterfaceInfo<Group>::Register;
-#ifdef XML_DEBUG
-        qDebug() << domElement.text();
-        qDebug() << "TagName: " << domElement.tagName();
-#endif
-        const auto &nodes = domElement.childNodes();
-        // NOTE Temporary commented
-        // Q_ASSERT(!nodes.isEmpty());
-        int i = 0;
-        InterfaceInfo<Group> settings;
-
-        while (i != nodes.count())
-        {
-            const auto &domElement = nodes.item(i++).toElement();
-            if (domElement.tagName().contains("group", Qt::CaseInsensitive))
-            {
-                Group group(domElement);
-                settings.addGroup(group);
-            }
-            else if (domElement.tagName().contains("register", Qt::CaseInsensitive))
-            {
-                Register reg(domElement);
-                settings.addReg(reg);
-            }
-#ifdef XML_DEBUG
-            qDebug() << group.attribute("id", "") << group.text();
-#endif
-        }
-#ifdef XML_DEBUG
-        qDebug() << settings.groups().count();
-#endif
-        return InterfaceSettings { QVariant::fromValue(settings) };
-    }
-    virtual InterfaceSettings parseSettings(QDomElement domElement) const = 0;
-
     bool virtual supportBSIExt();
 
 signals:
@@ -159,7 +121,6 @@ signals:
     void nativeEvent(void *const message);
     void stateChanged(BaseInterface::State m_state);
 
-protected:
 private:
     bool m_busy, m_timeout;
     QByteArray m_byteArrayResult;

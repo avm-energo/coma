@@ -1,11 +1,6 @@
 #include "abstracttunedialog.h"
 
 #include "../dialogs/keypressdialog.h"
-#include "../gen/datatypes.h"
-#include "../gen/error.h"
-#include "../gen/files.h"
-#include "../gen/stdfunc.h"
-#include "../gen/timefunc.h"
 #include "../interfaces/protocom.h"
 #include "../module/board.h"
 #include "../module/modules.h"
@@ -14,16 +9,20 @@
 #include "../widgets/waitwidget.h"
 #include "../widgets/wd_func.h"
 #include "generaltunedialog.h"
-#include "limereport/lrreportengine.h"
 #include "tunesequencefile.h"
 
-//#include <LimeReport/lrreportengine.h>
+#include <LimeReport>
 #include <QDebug>
 #include <QMessageBox>
 #include <QProgressBar>
 #include <QScrollArea>
 #include <QScrollBar>
 #include <QVBoxLayout>
+#include <gen/datatypes.h>
+#include <gen/error.h>
+#include <gen/files.h>
+#include <gen/stdfunc.h>
+#include <gen/timefunc.h>
 
 namespace crypto
 {
@@ -61,10 +60,8 @@ void AbstractTuneDialog::setupUI()
 
 QWidget *AbstractTuneDialog::tuneUI()
 {
-    m_messages.clear();
     m_tuneFunctions.clear();
 
-    setMessages();
     setTuneFunctions();
     int i;
     // CP1 - НАСТРОЙКА ПРИБОРА/МОДУЛЯ
@@ -88,10 +85,10 @@ QWidget *AbstractTuneDialog::tuneUI()
     QWidget *w2 = new QWidget;
     QVBoxLayout *w2lyout = new QVBoxLayout;
     w2lyout->addWidget(WDFunc::NewLBL2(this, "Для запуска регулировки нажмите кнопку \"Начать настройку\""));
-    for (i = 0; i < m_messages.size(); ++i)
+    for (i = 0; i < m_tuneFunctions.size(); ++i)
     {
         hlyout = new QHBoxLayout;
-        hlyout->addWidget(WDFunc::NewLBL2(w2, m_messages.at(i), "tunemsg" + QString::number(i)));
+        hlyout->addWidget(WDFunc::NewLBL2(w2, m_tuneFunctions.at(i).message, "tunemsg" + QString::number(i)));
         hlyout->addWidget(WDFunc::NewLBL2(w2, "", "tunemsgres" + QString::number(i)));
         hlyout->addStretch(1);
         w2lyout->addLayout(hlyout);
@@ -102,7 +99,7 @@ QWidget *AbstractTuneDialog::tuneUI()
     area->setWidget(w2);
     lyout->addWidget(area);
     lyout->addWidget(WDFunc::NewLBL2(w2, "Настройка завершена!", "tunemsg" + QString::number(i)));
-    for (i = 0; i < m_messages.size(); ++i)
+    for (i = 0; i < m_tuneFunctions.size(); ++i)
     {
         WDFunc::SetVisible(w2, "tunemsg" + QString::number(i), false);
         WDFunc::SetVisible(w2, "tunemsgres" + QString::number(i), false);
@@ -234,7 +231,7 @@ void AbstractTuneDialog::MsgSetVisible(AbstractTuneDialog::MsgTypes type, int ms
 void AbstractTuneDialog::MsgClear()
 {
     int i;
-    for (i = 0; i < m_messages.size(); ++i)
+    for (i = 0; i < m_tuneFunctions.size(); ++i)
     {
         MsgSetVisible(NoMsg, i, false);
         MsgSetVisible(OkMsg, i, false);
@@ -250,13 +247,6 @@ void AbstractTuneDialog::startTune()
     WDFunc::SetEnabled(this, "starttune", false);
     WDFunc::SetEnabled(this, "finishpb", false);
     WDFunc::SetEnabled(this, "stoptune", true);
-    if (m_messages.size() != m_tuneFunctions.size())
-    {
-        DBGMSG("lbls size != pf size");
-        WDFunc::SetEnabled(this, "starttune", true);
-        WDFunc::SetEnabled(this, "finishpb", true);
-        return;
-    }
     // сохраняем на всякий случай настроечные коэффициенты
     //    if (SaveBlocksToFiles(DataBlock::DataBlockTypes::BacBlock) != Error::Msg::NoError)
     readTuneCoefs();
@@ -267,10 +257,10 @@ void AbstractTuneDialog::startTune()
     }
     StdFunc::ClearCancel();
     MsgClear(); // очистка экрана с сообщениями
-    for (bStep = 0; bStep < m_messages.size(); ++bStep)
+    for (bStep = 0; bStep < m_tuneFunctions.size(); ++bStep)
     {
         MsgSetVisible(NoMsg, bStep);
-        res = (this->*m_tuneFunctions.at(bStep))();
+        res = (this->*m_tuneFunctions.at(bStep).func)();
         if ((res == Error::Msg::GeneralError) || (StdFunc::IsCancelled()))
         {
             MsgSetVisible(ErMsg, bStep);
@@ -346,6 +336,11 @@ Error::Msg AbstractTuneDialog::loadAllTuneCoefs()
             memcpy(it.value()->block().block, &(ba.data()[0]), it.value()->block().blocksize);
     }
     return Error::Msg::NoError;
+}
+
+Error::Msg AbstractTuneDialog::writeTuneCoefs()
+{
+    return writeTuneCoefs(true);
 }
 
 Error::Msg AbstractTuneDialog::readTuneCoefs()
@@ -476,6 +471,7 @@ Error::Msg AbstractTuneDialog::loadWorkConfig()
 void AbstractTuneDialog::CancelTune()
 {
     StdFunc::Cancel();
+    emit cancelled();
 }
 
 // ##################### PROTECTED ####################

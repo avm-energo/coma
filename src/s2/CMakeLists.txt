@@ -14,28 +14,23 @@ find_package(
   COMPONENTS Core Network Xml Widgets
   REQUIRED)
 
+file(GLOB_RECURSE files_cpp ${PROJECT_SOURCE_DIR}/*.cpp)
+file(GLOB_RECURSE files_h ${PROJECT_SOURCE_DIR}/*.h)
+
 add_library(
   ${PROJECT_NAME} STATIC
-  configv.h
-  configv.cpp
-  datarec.h
-  datarecv.h
-  datarecv.cpp
-  filestruct.h
-  filestruct.cpp
-  s2.h
-  s2.cpp
-  s2datatypes.h
-  s2helper.h
-  s2helper.cpp
-  s2settings.h)
+  ${files_cpp} ${files_h} )
+
+#add_dependencies(${PROJECT_NAME} gen)
 
 target_link_libraries(
   ${PROJECT_NAME}
-  PRIVATE gen
+#  PUBLIC gen
   PRIVATE Qt${QT_VERSION_MAJOR}::Core
   PRIVATE Qt${QT_VERSION_MAJOR}::Xml
   PRIVATE Qt${QT_VERSION_MAJOR}::Network
   PRIVATE Qt${QT_VERSION_MAJOR}::Xml)
+
+target_link_libraries(${PROJECT_NAME} PUBLIC gen)
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE ${PROJECT_NAME}_LIBRARY)

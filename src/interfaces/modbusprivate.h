@@ -1,10 +1,8 @@
 #pragma once
-#include "interfacesettings.h"
 
+#include <QDebug>
 #include <QObject>
-//#define POLLINGINTERVAL 300 // polling cycle time
-//#define SIGNALGROUPSNUM 7
-//#define MAINSLEEPCYCLETIME 50
+#include <QVariant>
 
 namespace CommandsMBS
 {
@@ -96,26 +94,8 @@ struct Coils
     QByteArray Bytes;
 };
 
-struct ModbusGroup : BaseGroup<Commands, TypeId>
-{
-    ModbusGroup() = default;
-    ModbusGroup(QDomElement domElement) : BaseGroup<Commands, TypeId>(domElement)
-    {
-    }
-    bool operator==(const ModbusGroup &rhs) const
-    {
-        return (BaseGroup<Commands, TypeId>::operator==(rhs));
-    }
-    bool operator!=(const ModbusGroup &rhs) const
-    {
-        return !(*this == rhs);
-    }
-    // NOTE Need more fileds?
-};
 QDebug operator<<(QDebug debug, const CommandsMBS::CommandStruct &cmd);
-QDebug operator<<(QDebug debug, const CommandsMBS::ModbusGroup &settings);
 }
-Q_DECLARE_METATYPE(InterfaceInfo<CommandsMBS::ModbusGroup>)
 Q_DECLARE_METATYPE(CommandsMBS::CommandStruct)
 // Q_DECLARE_METATYPE(CommandsMBS::ModbusGroup)
 

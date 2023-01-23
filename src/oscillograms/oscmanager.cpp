@@ -1,7 +1,5 @@
 #include "oscmanager.h"
 
-#include "../gen/files.h"
-#include "../gen/timefunc.h"
 #include "../s2/s2.h"
 #include "../widgets/wd_func.h"
 #include "parseid10001.h"
@@ -10,13 +8,16 @@
 #include "parseid10040.h"
 #include "parseid10050.h"
 
+#include <gen/files.h>
+#include <gen/timefunc.h>
+
 OscManager::~OscManager()
 {
 }
 
 void OscManager::loadOsc(TrendViewModel *model)
 {
-    trendDialog = UniquePointer<TrendViewDialog>(new TrendViewDialog);
+    trendDialog = new TrendViewDialog;
     model->setXmax((static_cast<float>(model->length() / 2)));
     model->setXmin(-model->xmax());
 

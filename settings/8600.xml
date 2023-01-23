@@ -1,0 +1,729 @@
+<?xml version="1.0" encoding="utf-8"?>
+<module mtypeb="86" mtypem="00">
+    <name>AVTUK-8600</name>
+    <version>2.1-0000</version>
+    <resources>
+        <alarms desc="Сигнализация">
+            <critical desc="Критичные">
+                <item>
+                    <addr>5019</addr>
+                    <string>Аварийное сообщение по недопустимому уровню виброускорения канал 1</string>
+                </item>
+                <item>
+                    <addr>5020</addr>
+                    <string>Аварийное сообщение по недопустимому уровню виброускорения канал 2</string>
+                </item>
+                <item>
+                    <addr>5021</addr>
+                    <string>Аварийное сообщение по недопустимому уровню виброускорения канал 3</string>
+                </item>
+                <item>
+                    <addr>5022</addr>
+                    <string>Аварийное сообщение по недопустимому уровню виброускорения канал 4</string>
+                </item>
+                <item>
+                    <addr>5023</addr>
+                    <string>Аварийное сообщение по недопустимому уровню виброускорения канал 5</string>
+                </item>
+                <item>
+                    <addr>5024</addr>
+                    <string>Аварийное сообщение по недопустимому уровню виброускорения канал 6</string>
+                </item>
+                <item>
+                    <addr>5025</addr>
+                    <string>Аварийное сообщение по недопустимому уровню виброскорости канал 1</string>
+                </item>
+                <item>
+                    <addr>5026</addr>
+                    <string>Аварийное сообщение по недопустимому уровню виброскорости канал 2</string>
+                </item>
+                <item>
+                    <addr>5027</addr>
+                    <string>Аварийное сообщение по недопустимому уровню виброскорости канал 3</string>
+                </item>
+                <item>
+                    <addr>5028</addr>
+                    <string>Аварийное сообщение по недопустимому уровню виброскорости канал 4</string>
+                </item>
+                <item>
+                    <addr>5029</addr>
+                    <string>Аварийное сообщение по недопустимому уровню виброскорости канал 5</string>
+                </item>
+                <item>
+                    <addr>5030</addr>
+                    <string>Аварийное сообщение по недопустимому уровню виброскорости канал 6</string>
+                </item>
+                <item>
+                    <addr>5031</addr>
+                    <string>Аварийное сообщение по недопустимому уровню виброперемещения канал 1</string>
+                </item>
+                <item>
+                    <addr>5032</addr>
+                    <string>Аварийное сообщение по недопустимому уровню виброперемещения канал 2</string>
+                </item>
+                <item>
+                    <addr>5033</addr>
+                    <string>Аварийное сообщение по недопустимому уровню виброперемещения канал 3</string>
+                </item>
+                <item>
+                    <addr>5034</addr>
+                    <string>Аварийное сообщение по недопустимому уровню виброперемещения канал 4</string>
+                </item>
+                <item>
+                    <addr>5035</addr>
+                    <string>Аварийное сообщение по недопустимому уровню виброперемещения канал 5</string>
+                </item>
+                <item>
+                    <addr>5036</addr>
+                    <string>Аварийное сообщение по недопустимому уровню виброперемещения канал 6</string>
+                </item>
+                <item>
+                    <addr>5055</addr>
+                    <string>Аварийное сообщение по недопустимой скорости роста уровня виброускорения канал 1</string>
+                </item>
+                <item>
+                    <addr>5056</addr>
+                    <string>Аварийное сообщение по недопустимой скорости роста уровня виброускорения канал 2</string>
+                </item>
+                <item>
+                    <addr>5057</addr>
+                    <string>Аварийное сообщение по недопустимой скорости роста уровня виброускорения канал 3</string>
+                </item>
+                <item>
+                    <addr>5058</addr>
+                    <string>Аварийное сообщение по недопустимой скорости роста уровня виброускорения канал 4</string>
+                </item>
+                <item>
+                    <addr>5059</addr>
+                    <string>Аварийное сообщение по недопустимой скорости роста уровня виброускорения канал 5</string>
+                </item>
+                <item>
+                    <addr>5060</addr>
+                    <string>Аварийное сообщение по недопустимой скорости роста уровня виброускорения канал 6</string>
+                </item>
+                <item>
+                    <addr>5061</addr>
+                    <string>Аварийное сообщение по недопустимой скорости роста уровня виброскорости канал 1</string>
+                </item>
+                <item>
+                    <addr>5062</addr>
+                    <string>Аварийное сообщение по недопустимой скорости роста уровня виброскорости канал 2</string>
+                </item>
+                <item>
+                    <addr>5063</addr>
+                    <string>Аварийное сообщение по недопустимой скорости роста уровня виброскорости канал 3</string>
+                </item>
+                <item>
+                    <addr>5064</addr>
+                    <string>Аварийное сообщение по недопустимой скорости роста уровня виброскорости канал 4</string>
+                </item>
+                <item>
+                    <addr>5065</addr>
+                    <string>Аварийное сообщение по недопустимой скорости роста уровня виброскорости канал 5</string>
+                </item>
+                <item>
+                    <addr>5066</addr>
+                    <string>Аварийное сообщение по недопустимой скорости роста уровня виброскорости канал 6</string>
+                </item>
+                <item>
+                    <addr>5067</addr>
+                    <string>Аварийное сообщение по недопустимой скорости роста уровня виброперемещения канал 1</string>
+                </item>
+                <item>
+                    <addr>5068</addr>
+                    <string>Аварийное сообщение по недопустимой скорости роста уровня виброперемещения канал 2</string>
+                </item>
+                <item>
+                    <addr>5069</addr>
+                    <string>Аварийное сообщение по недопустимой скорости роста уровня виброперемещения канал 3</string>
+                </item>
+                <item>
+                    <addr>5070</addr>
+                    <string>Аварийное сообщение по недопустимой скорости роста уровня виброперемещения канал 4</string>
+                </item>
+                <item>
+                    <addr>5071</addr>
+                    <string>Аварийное сообщение по недопустимой скорости роста уровня виброперемещения канал 5</string>
+                </item>
+                <item>
+                    <addr>5072</addr>
+                    <string>Аварийное сообщение по недопустимой скорости роста уровня виброперемещения канал 6</string>
+                </item>
+            </critical>
+            <info desc="Информационные"/>
+            <warning desc="Предупреждения">
+                <item>
+                    <addr>5001</addr>
+                    <string>Сигнализация по опасному уровню виброускорения канал 1</string>
+                </item>
+                <item>
+                    <addr>5002</addr>
+                    <string>Сигнализация по опасному уровню виброускорения канал 2</string>
+                </item>
+                <item>
+                    <addr>5003</addr>
+                    <string>Сигнализация по опасному уровню виброускорения канал 3</string>
+                </item>
+                <item>
+                    <addr>5004</addr>
+                    <string>Сигнализация по опасному уровню виброускорения канал 4</string>
+                </item>
+                <item>
+                    <addr>5005</addr>
+                    <string>Сигнализация по опасному уровню виброускорения канал 5</string>
+                </item>
+                <item>
+                    <addr>5006</addr>
+                    <string>Сигнализация по опасному уровню виброускорения канал 6</string>
+                </item>
+                <item>
+                    <addr>5007</addr>
+                    <string>Сигнализация по опасному уровню виброскорости канал 1</string>
+                </item>
+                <item>
+                    <addr>5008</addr>
+                    <string>Сигнализация по опасному уровню виброскорости канал 2</string>
+                </item>
+                <item>
+                    <addr>5009</addr>
+                    <string>Сигнализация по опасному уровню виброскорости канал 3</string>
+                </item>
+                <item>
+                    <addr>5010</addr>
+                    <string>Сигнализация по опасному уровню виброскорости канал 4</string>
+                </item>
+                <item>
+                    <addr>5011</addr>
+                    <string>Сигнализация по опасному уровню виброскорости канал 5</string>
+                </item>
+                <item>
+                    <addr>5012</addr>
+                    <string>Сигнализация по опасному уровню виброскорости канал 6</string>
+                </item>
+                <item>
+                    <addr>5013</addr>
+                    <string>Сигнализация по опасному уровню виброперемещения канал 1</string>
+                </item>
+                <item>
+                    <addr>5014</addr>
+                    <string>Сигнализация по опасному уровню виброперемещения канал 2</string>
+                </item>
+                <item>
+                    <addr>5015</addr>
+                    <string>Сигнализация по опасному уровню виброперемещения канал 3</string>
+                </item>
+                <item>
+                    <addr>5016</addr>
+                    <string>Сигнализация по опасному уровню виброперемещения канал 4</string>
+                </item>
+                <item>
+                    <addr>5017</addr>
+                    <string>Сигнализация по опасному уровню виброперемещения канал 5</string>
+                </item>
+                <item>
+                    <addr>5018</addr>
+                    <string>Сигнализация по опасному уровню виброперемещения канал 6</string>
+                </item>
+                <item>
+                    <addr>5037</addr>
+                    <string>Сигнализация по опасной скорости роста уровня виброускорения канал 1</string>
+                </item>
+                <item>
+                    <addr>5038</addr>
+                    <string>Сигнализация по опасной скорости роста уровня виброускорения канал 2</string>
+                </item>
+                <item>
+                    <addr>5039</addr>
+                    <string>Сигнализация по опасной скорости роста уровня виброускорения канал 3</string>
+                </item>
+                <item>
+                    <addr>5040</addr>
+                    <string>Сигнализация по опасной скорости роста уровня виброускорения канал 4</string>
+                </item>
+                <item>
+                    <addr>5041</addr>
+                    <string>Сигнализация по опасной скорости роста уровня виброускорения канал 5</string>
+                </item>
+                <item>
+                    <addr>5042</addr>
+                    <string>Сигнализация по опасной скорости роста уровня виброускорения канал 6</string>
+                </item>
+                <item>
+                    <addr>5043</addr>
+                    <string>Сигнализация по опасной скорости роста уровня виброскорости канал 1</string>
+                </item>
+                <item>
+                    <addr>5044</addr>
+                    <string>Сигнализация по опасной скорости роста уровня виброскорости канал 2</string>
+                </item>
+                <item>
+                    <addr>5045</addr>
+                    <string>Сигнализация по опасной скорости роста уровня виброскорости канал 3</string>
+                </item>
+                <item>
+                    <addr>5046</addr>
+                    <string>Сигнализация по опасной скорости роста уровня виброскорости канал 4</string>
+                </item>
+                <item>
+                    <addr>5047</addr>
+                    <string>Сигнализация по опасной скорости роста уровня виброскорости канал 5</string>
+                </item>
+                <item>
+                    <addr>5048</addr>
+                    <string>Сигнализация по опасной скорости роста уровня виброскорости канал 6</string>
+                </item>
+                <item>
+                    <addr>5049</addr>
+                    <string>Сигнализация по опасной скорости роста уровня виброперемещения канал 1</string>
+                </item>
+                <item>
+                    <addr>5050</addr>
+                    <string>Сигнализация по опасной скорости роста уровня виброперемещения канал 2</string>
+                </item>
+                <item>
+                    <addr>5051</addr>
+                    <string>Сигнализация по опасной скорости роста уровня виброперемещения канал 3</string>
+                </item>
+                <item>
+                    <addr>5052</addr>
+                    <string>Сигнализация по опасной скорости роста уровня виброперемещения канал 4</string>
+                </item>
+                <item>
+                    <addr>5053</addr>
+                    <string>Сигнализация по опасной скорости роста уровня виброперемещения канал 5</string>
+                </item>
+                <item>
+                    <addr>5054</addr>
+                    <string>Сигнализация по опасной скорости роста уровня виброперемещения канал 6</string>
+                </item>
+            </warning>
+        </alarms>
+        <config desc="Конфигурация">
+            <record>
+                <id>10</id>
+                <defaultValue>8</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>1003</id>
+                <defaultValue>100</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>1031</id>
+                <defaultValue>900</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>1201</id>
+                <defaultValue>50</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>1203</id>
+                <defaultValue>5</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>1207</id>
+                <defaultValue>0</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>1208</id>
+                <defaultValue>3</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>1209</id>
+                <defaultValue>0.1</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>1210</id>
+                <defaultValue>8</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>1211</id>
+                <defaultValue>25</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>1212</id>
+                <defaultValue>80</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>1213</id>
+                <defaultValue>9.85</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>1214</id>
+                <defaultValue>31.4</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>1215</id>
+                <defaultValue>100</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>1216</id>
+                <defaultValue>0.3</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>1217</id>
+                <defaultValue>1</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>1218</id>
+                <defaultValue>3</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>1219</id>
+                <defaultValue>0.6</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>1220</id>
+                <defaultValue>2</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>1221</id>
+                <defaultValue>6</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>20</id>
+                <defaultValue>172,16,29,12</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>21</id>
+                <defaultValue>255,255,252,0</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>22</id>
+                <defaultValue>172,16,29,1</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>23</id>
+                <defaultValue>2404,2405,502,502</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>24</id>
+                <defaultValue>172,16,29,12</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>25</id>
+                <defaultValue>9600</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>26</id>
+                <defaultValue>0</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>27</id>
+                <defaultValue>0</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>28</id>
+                <defaultValue>0</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>3</id>
+                <defaultValue>1</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>4</id>
+                <defaultValue>205</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>5</id>
+                <defaultValue>5</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>6</id>
+                <defaultValue>15</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>7</id>
+                <defaultValue>10</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>8</id>
+                <defaultValue>20</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>9</id>
+                <defaultValue>12</defaultValue>
+                <visibility>true</visibility>
+            </record>
+        </config>
+        <iec60870 desc="Протокол ГОСТ Р МЭК 60870-5-104">
+            <group>
+                <signal-id>1</signal-id>
+                <sig-type>13</sig-type>
+                <trans-type>1</trans-type>
+                <sig-group></sig-group>
+            </group>
+            <group>
+                <signal-id>2</signal-id>
+                <sig-type>30</sig-type>
+                <trans-type>3</trans-type>
+                <sig-group></sig-group>
+            </group>
+            <group>
+                <signal-id>3</signal-id>
+                <sig-type>13</sig-type>
+                <trans-type>1</trans-type>
+                <sig-group>7</sig-group>
+            </group>
+        </iec60870>
+        <journals desc="Журналы">
+            <meas desc="Журнал измерений">
+                <item>
+                    <header> № </header>
+                </item>
+                <item>
+                    <header>CosPhi</header>
+                </item>
+                <item>
+                    <header>Frequency</header>
+                </item>
+                <item>
+                    <header>I0</header>
+                </item>
+                <item>
+                    <header>I1</header>
+                </item>
+                <item>
+                    <header>I2</header>
+                </item>
+                <item>
+                    <header>Ieff фA</header>
+                </item>
+                <item>
+                    <header>Ieff фB</header>
+                </item>
+                <item>
+                    <header>Ieff фC</header>
+                </item>
+                <item>
+                    <header>Pf сумм.</header>
+                </item>
+                <item>
+                    <header>Qf сумм.</header>
+                </item>
+                <item>
+                    <header>Sf сумм.</header>
+                </item>
+                <item>
+                    <header>Tamb,°С</header>
+                </item>
+                <item>
+                    <header>Tmk,°С</header>
+                </item>
+                <item>
+                    <header>Twin,°С</header>
+                </item>
+                <item>
+                    <header>U0</header>
+                </item>
+                <item>
+                    <header>U1</header>
+                </item>
+                <item>
+                    <header>U2</header>
+                </item>
+                <item>
+                    <header>Ueff фA</header>
+                </item>
+                <item>
+                    <header>Ueff фB</header>
+                </item>
+                <item>
+                    <header>Ueff фC</header>
+                </item>
+                <item>
+                    <header>VibrSCZ_D фA</header>
+                </item>
+                <item>
+                    <header>VibrSCZ_D фA</header>
+                </item>
+                <item>
+                    <header>VibrSCZ_D фB</header>
+                </item>
+                <item>
+                    <header>VibrSCZ_D фB</header>
+                </item>
+                <item>
+                    <header>VibrSCZ_D фC</header>
+                </item>
+                <item>
+                    <header>VibrSCZ_D фC</header>
+                </item>
+                <item>
+                    <header>VibrSCZ_V фA</header>
+                </item>
+                <item>
+                    <header>VibrSCZ_V фB</header>
+                </item>
+                <item>
+                    <header>VibrSCZ_V фB</header>
+                </item>
+                <item>
+                    <header>VibrSCZ_V фC</header>
+                </item>
+                <item>
+                    <header>VibrSCZ_V фC</header>
+                </item>
+                <item>
+                    <header>VibrSCZ_V №1</header>
+                </item>
+                <item>
+                    <header>Дата/Время UTC</header>
+                </item>
+            </meas>
+            <work desc="Рабочий журнал">
+                <item>
+                    <addr>5026</addr>
+                    <desc>Сигнализация по опасному уровню вибраций</desc>
+                </item>
+                <item>
+                    <addr>5027</addr>
+                    <desc>Аварийное сообщение по недопустимому уровню вибраций</desc>
+                </item>
+                <item>
+                    <addr>5028</addr>
+                    <desc>Сигнализация по опасной скорости роста уровня вибраций</desc>
+                </item>
+                <item>
+                    <addr>5029</addr>
+                    <desc>Аварийное сообщение по недопустимой  скорости роста уровня вибраций</desc>
+                </item>
+            </work>
+        </journals>
+        <modbus desc="Протокол Modbus"/>
+        <protocom desc="Протокол Protocom">
+            <group>
+                <block>0</block>
+                <signal-id>1</signal-id>
+            </group>
+            <group>
+                <block>100</block>
+                <signal-id>2</signal-id>
+            </group>
+            <group>
+                <block>20</block>
+                <signal-id>3</signal-id>
+            </group>
+        </protocom>
+        <section-tabs desc="Вкладки">
+            <tab>
+                <id>1</id>
+                <name>Основные</name>
+            </tab>
+            <tab>
+                <id>2</id>
+                <name>Среднеквадратичные значения</name>
+            </tab>
+            <tab>
+                <id>3</id>
+                <name>Скорости изменения</name>
+            </tab>
+        </section-tabs>
+        <sections desc="Разделы">
+            <section header="Вибрации">
+                <sgroup header="Скорость изменения среднеквадратичного значения виброперемещения, мкм/час" tab="3">
+                    <mwidget view="float" desc="Датчик №%1">
+                        <start-addr>6070</start-addr>
+                        <count>6</count>
+                    </mwidget>
+                </sgroup>
+                <sgroup header="Скорость изменения среднеквадратичного значения виброскорости, мм/с/час" tab="3">
+                    <mwidget view="float" desc="Датчик №%1">
+                        <start-addr>6064</start-addr>
+                        <count>6</count>
+                    </mwidget>
+                </sgroup>
+                <sgroup header="Скорость изменения среднеквадратичного значения виброускорения, м/с2/час" tab="3">
+                    <mwidget view="float" desc="Датчик №%1">
+                        <start-addr>6058</start-addr>
+                        <count>6</count>
+                    </mwidget>
+                </sgroup>
+                <sgroup header="Среднеквадратичные значения виброперемещений, мкм" tab="2">
+                    <mwidget view="float" desc="Датчик №%1">
+                        <start-addr>6052</start-addr>
+                        <count>6</count>
+                    </mwidget>
+                </sgroup>
+                <sgroup header="Среднеквадратичные значения виброскоростей, мм/с" tab="2">
+                    <mwidget view="float" desc="Датчик №%1">
+                        <start-addr>6046</start-addr>
+                        <count>6</count>
+                    </mwidget>
+                </sgroup>
+                <sgroup header="Среднеквадратичные значения виброускорений, м/с2" tab="2">
+                    <mwidget view="float" desc="Датчик №%1">
+                        <start-addr>6040</start-addr>
+                        <count>6</count>
+                    </mwidget>
+                </sgroup>
+            </section>
+            <section header="Текущие данные">
+                <sgroup header="Основные" tab="1">
+                    <mwidget view="float" desc="Температура микроконтроллера, °С">
+                        <start-addr>101</start-addr>
+                        <toolTip>Температура микроконтроллера, °С</toolTip>
+                    </mwidget>
+                    <mwidget view="float" desc="Напряжение батареи, В">
+                        <start-addr>102</start-addr>
+                        <toolTip>Напряжение батареи, В</toolTip>
+                    </mwidget>
+                </sgroup>
+            </section>
+        </sections>
+        <signals desc="Сигналы">
+            <signal>
+                <start-addr>101</start-addr>
+                <count>2</count>
+                <id>1</id>
+                <type>Float</type>
+            </signal>
+            <signal>
+                <start-addr>5001</start-addr>
+                <count>72</count>
+                <id>2</id>
+                <type>SinglePoint</type>
+            </signal>
+            <signal>
+                <start-addr>6040</start-addr>
+                <count>36</count>
+                <id>3</id>
+                <type>Float</type>
+            </signal>
+        </signals>
+    </resources>
+</module>

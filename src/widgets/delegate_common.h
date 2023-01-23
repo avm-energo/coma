@@ -11,12 +11,8 @@
 namespace delegate
 {
 using WidgetGroup = int;
-}
 
-using categoryMap = QMap<delegate::WidgetGroup, QString>;
-
-namespace delegate
-{
+// TODO: так и должно быть?
 enum class ItemType : int
 {
     ModbusItem
@@ -27,11 +23,13 @@ struct Widget
     Widget(const ctti::unnamed_type_id_t type_) : type(type_)
     {
     }
-    Widget(const ctti::unnamed_type_id_t type_, const delegate::WidgetGroup group_) : type(type_), group(group_)
+
+    Widget(const ctti::unnamed_type_id_t type_, const WidgetGroup group_) : type(type_), group(group_)
     {
     }
-    Widget(const ctti::unnamed_type_id_t type_, const QString &desc_, const delegate::WidgetGroup group_,
-        const QString &toolTip_)
+
+    Widget(
+        const ctti::unnamed_type_id_t &type_, const QString &desc_, const WidgetGroup &group_, const QString &toolTip_)
         : type(type_), desc(desc_), group(group_), toolTip(toolTip_)
     {
     }
@@ -49,18 +47,22 @@ struct Widget
 
     ctti::unnamed_type_id_t type;
     QString desc;
-    delegate::WidgetGroup group;
+    WidgetGroup group;
     QString toolTip;
 };
 
 struct DoubleSpinBoxWidget : Widget
 {
-    DoubleSpinBoxWidget(const ctti::unnamed_type_id_t type_, const delegate::WidgetGroup group_) : Widget(type_, group_)
+    DoubleSpinBoxWidget(
+        const ctti::unnamed_type_id_t &type_, const QString &desc_, const WidgetGroup &group_, const QString &toolTip_)
+        : Widget(type_, desc_, group_, toolTip_)
     {
     }
+
     double min;
     double max;
     uint32_t decimals;
+
     DoubleSpinBoxWidget &merge(const DoubleSpinBoxWidget &rhs)
     {
         if (rhs.min)
@@ -78,6 +80,7 @@ struct Group
 {
     uint32_t count;
     QStringList items;
+
     Group &merge(const Group &rhs)
     {
         if (rhs.count)
@@ -87,12 +90,15 @@ struct Group
         return *this;
     }
 };
+
 struct DoubleSpinBoxGroup : DoubleSpinBoxWidget, Group
 {
-    DoubleSpinBoxGroup(const ctti::unnamed_type_id_t type_, const delegate::WidgetGroup group_)
-        : DoubleSpinBoxWidget(type_, group_)
+    DoubleSpinBoxGroup(
+        const ctti::unnamed_type_id_t &type_, const QString &desc_, const WidgetGroup &group_, const QString &toolTip_)
+        : DoubleSpinBoxWidget(type_, desc_, group_, toolTip_)
     {
     }
+
     DoubleSpinBoxGroup &merge(const DoubleSpinBoxGroup &rhs)
     {
         DoubleSpinBoxWidget::merge(rhs);
@@ -100,11 +106,15 @@ struct DoubleSpinBoxGroup : DoubleSpinBoxWidget, Group
         return *this;
     }
 };
+
 struct CheckBoxGroup : Widget, Group
 {
-    CheckBoxGroup(const ctti::unnamed_type_id_t type_, const delegate::WidgetGroup group_) : Widget(type_, group_)
+    CheckBoxGroup(
+        const ctti::unnamed_type_id_t &type_, const QString &desc_, const WidgetGroup &group_, const QString &toolTip_)
+        : Widget(type_, desc_, group_, toolTip_)
     {
     }
+
     CheckBoxGroup &merge(const CheckBoxGroup &rhs)
     {
         Widget::merge(rhs);
@@ -121,11 +131,16 @@ struct QComboBox : Widget
         data = 1,
         bitfield = 2
     };
-    QComboBox(const ctti::unnamed_type_id_t type_, const delegate::WidgetGroup group_) : Widget(type_, group_)
+
+    QComboBox(
+        const ctti::unnamed_type_id_t &type_, const QString &desc_, const WidgetGroup &group_, const QString &toolTip_)
+        : Widget(type_, desc_, group_, toolTip_)
     {
     }
+
     PrimaryField primaryField = index;
     QStringList model;
+
     QComboBox &merge(const QComboBox &rhs)
     {
         if (!rhs.model.isEmpty())
@@ -139,9 +154,12 @@ struct QComboBox : Widget
 
 struct QComboBoxGroup : QComboBox, Group
 {
-    QComboBoxGroup(const ctti::unnamed_type_id_t type_, const delegate::WidgetGroup group_) : QComboBox(type_, group_)
+    QComboBoxGroup(
+        const ctti::unnamed_type_id_t &type_, const QString &desc_, const WidgetGroup &group_, const QString &toolTip_)
+        : QComboBox(type_, desc_, group_, toolTip_)
     {
     }
+
     QComboBoxGroup &merge(const QComboBoxGroup &rhs)
     {
         QComboBox::merge(rhs);
@@ -169,21 +187,17 @@ struct Item : delegate::Widget
         DataType,
         Register
     };
+
     Item(const ctti::unnamed_type_id_t type_) : Widget(type_)
     {
     }
-    Item(const ctti::unnamed_type_id_t type_, const delegate::ItemType itype_) : Widget(type_), itemType(itype_)
-    {
-    }
-    Item(const ctti::unnamed_type_id_t type_, const delegate::ItemType itype_, const quint16 parent_)
-        : Widget(type_), itemType(itype_), parent(parent_)
-    {
-    }
-    Item(const ctti::unnamed_type_id_t type_, const delegate::ItemType itype_, const quint16 parent_,
-        const delegate::WidgetGroup group_)
+
+    Item(const ctti::unnamed_type_id_t &type_, const delegate::ItemType &itype_, //
+        const quint16 &parent_, const delegate::WidgetGroup &group_)
         : Widget(type_, group_), itemType(itype_), parent(parent_)
     {
     }
+
     delegate::ItemType itemType;
     quint16 parent;
 };
@@ -194,8 +208,8 @@ using itemVariant = std::variant<  //
     delegate::DoubleSpinBoxGroup,  //
     delegate::DoubleSpinBoxWidget, //
     delegate::CheckBoxGroup,       //
-    Item,                          //
-    delegate::QComboBoxGroup       //
+    delegate::QComboBoxGroup,      //
+    Item                           //
     >;
 
 using widgetMap = std::map<quint16, itemVariant>;

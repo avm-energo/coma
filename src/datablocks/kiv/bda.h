@@ -1,9 +1,8 @@
-#ifndef KIV_BDA_H
-#define KIV_BDA_H
+#pragma once
 
 #include "../datablock.h"
 
-class Bda : public DataBlock
+class BdaA284 : public DataBlock
 {
     Q_OBJECT
 public:
@@ -14,16 +13,11 @@ public:
         float Pt100;
     };
 
-    Bda(QObject *parent = nullptr);
+    BdaA284(QObject *parent = nullptr);
+    void setupValuesDesc() override;
 
-    void createWidget() override;
-    void setDefBlock() override;
-    void updateWidget() override;
     BlockData *data();
 
 private:
     std::unique_ptr<BlockData> m_blockData;
-    //    QWidget *m_widget;
 };
-
-#endif // KIV_BDA_H

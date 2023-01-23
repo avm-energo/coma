@@ -2,7 +2,6 @@
 /output/*
 
 # C++ objects and libs
-
 *.slo
 *.lo
 *.o
@@ -14,7 +13,6 @@
 *.dylib
 
 # Qt-es
-
 **/.qmake.cache
 **/.qmake.stash
 *.pro.user
@@ -31,22 +29,18 @@ Makefile*
 *bin*
 *.lib
 lib
-win*
-linux*
-unix*
-# QtCreator
 
+# QtCreator
 *.autosave
 
-#QtCtreator Qml
+# QtCtreator Qml
 *.qmlproject.user
 *.qmlproject.user.*
 
-#MSVS
+# MSVS
 **/.vs
 *.vcxproj.filters
 *.vcxproj.user
-
 *msvc_make.bat
 /conan*
 /graph_info.json
@@ -57,7 +51,7 @@ unix*
 /src/include*
 /src/out/build
 /include
-/doc/doxy-doc/*
-/html/*
-/latex/*
 CMakeLists.txt.user*
+
+# Doxygen
+/doc/doxy-doc/*

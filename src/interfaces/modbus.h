@@ -1,8 +1,7 @@
 #ifndef MODBUS_H
 #define MODBUS_H
 
-// #include "../gen/datamanager/datamanager.h"
-#include "../gen/logclass.h"
+// #include <gen/datamanager/datamanager.h"
 #include "baseinterface.h"
 #include "modbusprivate.h"
 #include "settingstypes.h"
@@ -10,6 +9,7 @@
 #include <QMutex>
 #include <QTimer>
 #include <array>
+#include <gen/logclass.h>
 
 namespace CommandsMBS
 {
@@ -56,7 +56,7 @@ public:
     void reqFloats(quint32 sigAdr, quint32 sigCount) override;
     void reqBitStrings(quint32 sigAdr, quint32 sigCount) override;
 
-    InterfaceSettings parseSettings(QDomElement domElement) const override;
+    // InterfaceSettings parseSettings(QDomElement domElement) const override;
 
 signals:
     void clearBuffer();

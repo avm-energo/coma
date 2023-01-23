@@ -1,19 +1,19 @@
 #include "generaltunedialog.h"
 
-#include "../gen/files.h"
-#include "../gen/stdfunc.h"
 #include "../module/board.h"
 #include "../widgets/epopup.h"
 #include "../widgets/wd_func.h"
-#include "limereport/lrreportengine.h"
 #include "tunesequencefile.h"
 
+#include <LimeReport>
 #include <QHBoxLayout>
 #include <QIcon>
 #include <QPainter>
 #include <QPushButton>
 #include <QSettings>
 #include <QSvgRenderer>
+#include <gen/files.h>
+#include <gen/stdfunc.h>
 
 GeneralTuneDialog::GeneralTuneDialog(ConfigV *config, QWidget *parent) : UDialog(parent), configV(config)
 {
@@ -28,6 +28,7 @@ void GeneralTuneDialog::SetupUI()
 
     lyout->addStretch(100);
     int count = 1;
+    m_calibrSteps = m_dialogList.size() + 1;
     for (auto &d : m_dialogList)
     {
         QString tns = "tn" + QString::number(count++);

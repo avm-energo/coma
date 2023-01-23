@@ -28,22 +28,20 @@
 #include "../dialogs/keypressdialog.h"
 #include "../dialogs/settingsdialog.h"
 #include "../dialogs/switchjournaldialog.h"
-#include "../gen/errorqueue.h"
-#include "../gen/files.h"
-#include "../gen/logger.h"
-#include "../gen/stdfunc.h"
-#include "../gen/timefunc.h"
+#include "../interfaces/iec104.h"
+#include "../interfaces/modbus.h"
 #include "../interfaces/protocom.h"
 #include "../interfaces/settingstypes.h"
 #include "../module/board.h"
-#include "../module/module.h"
 #include "../oscillograms/swjmanager.h"
+#include "../s2/s2.h"
 #include "../widgets/aboutwidget.h"
 #include "../widgets/epopup.h"
 #include "../widgets/splashscreen.h"
 #include "../widgets/styleloader.h"
 #include "../widgets/wd_func.h"
-#include "../xml/xmlconfigparser.h"
+#include "../xml/xmlparser/xmlconfigparser.h"
+#include "alarmwidget.h"
 #include "waitwidget.h"
 
 #include <QApplication>
@@ -55,7 +53,13 @@
 #include <QToolBar>
 #include <QtGlobal>
 #include <functional>
+#include <gen/errorqueue.h>
+#include <gen/files.h>
+#include <gen/logger.h>
+#include <gen/stdfunc.h>
+#include <gen/timefunc.h>
 #include <memory>
+
 #ifdef Q_OS_WINDOWS
 // clang-format off
 #include <windows.h>
@@ -83,8 +87,13 @@ void registerForDeviceNotification(QWidget *ptr)
 }
 #endif
 
-Coma::Coma(QWidget *parent)
-    : QMainWindow(parent), editor(nullptr), proxyBS(new DataTypesProxy), proxyGRS(new DataTypesProxy)
+Coma::Coma(const AppConfiguration &appCfg, QWidget *parent)
+    : QMainWindow(parent)
+    , editor(nullptr)
+    , proxyBS(new DataTypesProxy)
+    , proxyGRS(new DataTypesProxy)
+    , mAppConfig(appCfg)
+    , mDlgManager(nullptr)
 {
     proxyBS->RegisterType<DataTypes::BitStringStruct>();
     proxyGRS->RegisterType<DataTypes::GeneralResponseStruct>();
@@ -93,6 +102,7 @@ Coma::Coma(QWidget *parent)
 Coma::~Coma()
 {
 }
+
 void convertPixmap(size_t size, QAction *jourAct)
 {
     const QIcon jourIcon(":/icons/tnfrosya.svg");
@@ -112,23 +122,22 @@ void convertPixmap(size_t size, QAction *jourAct)
 
 QToolBar *Coma::createToolBar()
 {
-    QToolBar *tb = new QToolBar(this);
+    auto tb = new QToolBar(this);
     tb->setContextMenuPolicy(Qt::PreventContextMenu);
     tb->setIconSize(QSize(40, 40));
     tb->addAction(QIcon(":/icons/tnstart.svg"), "Соединение", this, &Coma::prepareConnectDlg);
-    tb->addAction(QIcon(":/icons/tnstop.svg"), "Разрыв соединения", this, &Coma::DisconnectAndClear);
+    tb->addAction(QIcon(":/icons/tnstop.svg"), "Разрыв соединения", this, &Coma::disconnectAndClear);
     tb->addSeparator();
     tb->addAction(QIcon(":/icons/tnsettings.svg"), "Настройки", [this]() {
-        SettingsDialog *dlg = new SettingsDialog(this);
-        dlg->setMinimumSize(this->size() / 4);
-        connect(dlg, &SettingsDialog::disableAlarmUpdate, AlarmW, &AlarmWidget::disableAlarm);
-        dlg->setAttribute(Qt::WA_DeleteOnClose);
-        dlg->show();
-        this->SaveSettings();
+        auto dialog = new SettingsDialog(this);
+        dialog->setMinimumSize(this->size() / 4);
+        connect(dialog, &SettingsDialog::disableAlarmUpdate, AlarmW, &AlarmWidget::disableAlarms);
+        dialog->exec();
+        this->saveSettings();
     });
     const QIcon jourIcon(":/icons/tnfrosya.svg");
 
-    QAction *jourAct = new QAction(jourIcon, tr("&Журнал..."), this);
+    auto jourAct = new QAction(jourIcon, tr("&Журнал..."), this);
     jourAct->setShortcuts(QKeySequence::Open);
     jourAct->setStatusTip(tr("Открыть протокол работы"));
 
@@ -146,22 +155,18 @@ QToolBar *Coma::createToolBar()
     return tb;
 }
 
-void Coma::SetupUI()
+void Coma::setupUI()
 {
     QString caption(QCoreApplication::applicationName());
     caption.append(" v. ").append(QCoreApplication::applicationVersion());
     setWindowTitle(caption);
-    setMinimumSize(QSize(1050, 700));
-    QWidget *wdgt = new QWidget(this);
-    QVBoxLayout *lyout = new QVBoxLayout(wdgt);
-    QHBoxLayout *hlyout = new QHBoxLayout;
-
-    hlyout->addWidget(createToolBar() /*, Qt::AlignTop | Qt::AlignLeft*/);
-
+    setMinimumSize(QSize(1150, 700));
+    auto wdgt = new QWidget(this);
+    auto lyout = new QVBoxLayout(wdgt);
+    auto hlyout = new QHBoxLayout;
+    hlyout->addWidget(createToolBar(), Qt::AlignTop | Qt::AlignLeft);
     AlarmW = new AlarmWidget(this);
-
     hlyout->addWidget(AlarmW, Qt::AlignCenter);
-
     lyout->addLayout(hlyout);
     lyout->addWidget(least());
     wdgt->setLayout(lyout);
@@ -169,42 +174,41 @@ void Coma::SetupUI()
     setupMenubar();
 }
 
-void Coma::PrepareDialogs()
+void Coma::prepareDialogs()
 {
-    Q_INIT_RESOURCE(settings);
-    if (m_Module->isConfigOutdated())
-    {
-        m_Module->eraseSettings();
-        m_Module->putConfigVersion();
-    }
-
-    if (!m_Module->loadSettings())
+    module = UniquePointer<Module>(new Module(true, Board::GetInstance().baseSerialInfo(), this));
+    if (!module->loadSettings())
     {
         EMessageBox::error(this,
             "Не удалось найти конфигурацию для модуля.\n"
             "Проверьте журнал сообщений.\n"
             "Доступны минимальные функции.");
     }
-
-    Q_CLEANUP_RESOURCE(settings);
-    m_Module->createAlarm(AlarmW);
-    m_Module->create(BdaTimer);
+    mDlgManager = new DialogManager(ConfigStorage::GetInstance().getModuleSettings(), this);
+    AlarmW->configure();
+    auto &dlgs = mDlgManager->createDialogs(mAppConfig);
+    for (auto dialog : dlgs)
+    {
+        connect(BdaTimer, &QTimer::timeout, dialog, &UDialog::reqUpdate);
+        dialog->uponInterfaceSetting();
+        auto item = new QListWidgetItem(dialog->getCaption(), MainLW);
+        item->setSizeHint(QSize(0, height() / 20));
+        item->setTextAlignment(Qt::AlignCenter);
+        MainLW->addItem(item);
+        MainTW->addWidget(dialog);
+    }
 }
 
 QWidget *Coma::least()
 {
-    QWidget *w = new QWidget;
-
-    QVBoxLayout *lyout = new QVBoxLayout;
-
-    QHBoxLayout *inlyout = new QHBoxLayout;
+    auto w = new QWidget;
+    auto lyout = new QVBoxLayout;
+    auto inlyout = new QHBoxLayout;
     lyout->addLayout(inlyout);
-
     MainTW = new QStackedWidget(this);
     auto sizePolizy = MainTW->sizePolicy();
     sizePolizy.setRetainSizeWhenHidden(true);
     MainTW->setSizePolicy(sizePolizy);
-
     MainLW = new QListWidget(this);
     sizePolizy = MainLW->sizePolicy();
     sizePolizy.setRetainSizeWhenHidden(true);
@@ -219,22 +223,19 @@ QWidget *Coma::least()
 
     QFrame *line = new QFrame;
     lyout->addWidget(line);
-
     inlyout = new QHBoxLayout;
     inlyout->addWidget(WDFunc::NewLBL2(this, "Обмен"));
     inlyout->addWidget(WDFunc::NewLBL2(this, "", "prb1lbl"));
-
     QProgressBar *prb = new QProgressBar;
     prb->setObjectName("prb1prb");
     prb->setOrientation(Qt::Horizontal);
-
     prb->setMaximumHeight(height() / 50);
     inlyout->addWidget(prb);
     lyout->addLayout(inlyout);
-
     w->setLayout(lyout);
     return w;
 }
+
 void Coma::setupMenubar()
 {
     auto menubar = new QMenuBar(this);
@@ -242,7 +243,7 @@ void Coma::setupMenubar()
     menu->setTitle("Главное");
     menu->addAction("Выход", this, &Coma::close);
     menu->addAction(QIcon(":/icons/tnstart.svg"), "Соединение", this, &Coma::prepareConnectDlg);
-    menu->addAction(QIcon(":/icons/tnstop.svg"), "Разрыв соединения", this, &Coma::DisconnectAndClear);
+    menu->addAction(QIcon(":/icons/tnstop.svg"), "Разрыв соединения", this, &Coma::disconnectAndClear);
     menubar->addMenu(menu);
     menubar->addAction("О программе", this, &Coma::getAbout);
     menubar->addSeparator();
@@ -251,16 +252,14 @@ void Coma::setupMenubar()
     menu->setTitle("Автономная работа");
     menu->addAction("Загрузка осциллограммы", this, qOverload<>(&Coma::loadOsc));
     menu->addAction("Загрузка файла переключений", this, qOverload<>(&Coma::loadSwj));
-    menu->addAction("Проверка диалога", this, &Coma::checkDialog);
     menu->addAction("Редактор модулей", this, &Coma::openModuleEditor);
-
     menubar->addMenu(menu);
     setMenuBar(menubar);
 }
 
 void Coma::prepareConnectDlg()
 {
-    QAction *action = qobject_cast<QAction *>(sender());
+    auto action = qobject_cast<QAction *>(sender());
     Q_ASSERT(action);
     action->setDisabled(true);
     auto const &board = Board::GetInstance();
@@ -271,9 +270,8 @@ void Coma::prepareConnectDlg()
     }
     if (!Reconnect)
     {
-
         QEventLoop loop;
-        ConnectDialog *dlg = new ConnectDialog(this);
+        auto dlg = new ConnectDialog(this);
         connect(dlg, &ConnectDialog::accepted, this, [=](const ConnectStruct st) {
             dlg->close();
             startWork(st);
@@ -284,22 +282,47 @@ void Coma::prepareConnectDlg()
     }
     else
         action->setEnabled(true);
-
     // Stage3
-
-    DisconnectAndClear();
+    disconnectAndClear();
 }
 
 void Coma::startWork(const ConnectStruct st)
 {
     ConnectSettings = st;
-    SaveSettings();
+    saveSettings();
     QApplication::setOverrideCursor(Qt::WaitCursor);
-
+    initInterfaceConnection();
     setupConnection();
 }
 
-void Coma::loadOsc(QString &filename)
+void Coma::initInterfaceConnection()
+{
+    auto const &board = Board::GetInstance();
+    connect(proxyBS.get(), &DataTypesProxy::DataStorable, &board, &Board::update);
+    BaseInterface::InterfacePointer device;
+    switch (board.interfaceType())
+    {
+#ifdef ENABLE_EMULATOR
+    case Board::InterfaceType::Emulator:
+        device = BaseInterface::InterfacePointer(new Emulator());
+        break;
+#endif
+    case Board::InterfaceType::USB:
+        device = BaseInterface::InterfacePointer(new Protocom());
+        break;
+    case Board::InterfaceType::Ethernet:
+        device = BaseInterface::InterfacePointer(new IEC104());
+        break;
+    case Board::InterfaceType::RS485:
+        device = BaseInterface::InterfacePointer(new ModBus());
+        break;
+    default:
+        qFatal("Connection type error");
+    }
+    BaseInterface::setIface(std::move(device));
+}
+
+void Coma::loadOsc(const QString &filename)
 {
     fileVector = oscManager.loadFromFile(filename);
     TrendViewModel *oscModel = nullptr;
@@ -313,12 +336,10 @@ void Coma::loadOsc(QString &filename)
             item);
     }
     if (oscModel)
-    {
         oscManager.loadOsc(oscModel);
-    }
 }
 
-void Coma::loadSwj(QString &filename)
+void Coma::loadSwj(const QString &filename)
 {
     SwjManager swjManager;
     fileVector = oscManager.loadFromFile(filename);
@@ -341,7 +362,6 @@ void Coma::loadSwj(QString &filename)
     auto dialog = new SwitchJournalViewDialog(*swjModel, *oscModel, oscManager);
     dialog->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     dialog->setAttribute(Qt::WA_DeleteOnClose);
-
     dialog->show();
     dialog->setMinimumHeight(WDFunc::getMainWindow()->height());
     dialog->setMinimumWidth(WDFunc::getMainWindow()->width());
@@ -356,19 +376,25 @@ void Coma::openModuleEditor()
         editor->exec();
 }
 
+void Coma::getAbout()
+{
+    auto about = new AboutWidget(this);
+    const auto progName(QCoreApplication::applicationName());
+    const auto comaVer(QCoreApplication::applicationVersion());
+    GitVersion version;
+    about->appendLine("Config version: " + version.getConfigVersion());
+    about->prependLine(progName + " version " + QString(comaVer) + "-" + version.getGitHash());
+    about->setupUI();
+    about->exec();
+}
+
 void Coma::newTimers()
 {
     BdaTimer = new QTimer(this);
     BdaTimer->setInterval(1000);
-
     AlrmTimer = new QTimer(this);
     AlrmTimer->setInterval(5000);
     AlrmTimer->start();
-
-    //    ReconnectTimer = new QTimer(this);
-    //    ReconnectTimer->setInterval(INTERVAL::RECONNECT);
-    //    ReconnectTimer->setSingleShot(true);
-    //    connect(ReconnectTimer, &QTimer::timeout, this, &Coma::AttemptToRec);
 }
 
 void Coma::setupConnections()
@@ -382,7 +408,9 @@ void Coma::prepare()
     EMessageBox::information(this, "Установлена связь с " + board.moduleName());
     Reconnect = true;
 
-    PrepareDialogs();
+    Q_ASSERT(MainTW->count() == 0);
+    prepareDialogs();
+
     setupConnections();
     // нет конфигурации
     if (board.noConfig())
@@ -391,30 +419,16 @@ void Coma::prepare()
     if (board.noRegPars())
         qCritical() << Error::Msg::NoTuneError;
 
-    QList<UDialog *> dlgs = m_Module->dialogs();
-    Q_ASSERT(MainTW->count() == 0);
-    for (auto *d : dlgs)
-    {
-        auto *item = new QListWidgetItem(d->getCaption(), MainLW);
-        item->setSizeHint(QSize(0, height() / 20));
-        item->setTextAlignment(Qt::AlignCenter);
-        MainLW->addItem(item);
-        MainTW->addWidget(d);
-    }
-
     connect(MainLW, &QListWidget::currentRowChanged, MainTW, &QStackedWidget::setCurrentIndex);
-
     MainTW->show();
     MainLW->show();
     qDebug() << MainTW->width() << width();
-
     AlrmTimer->start();
-    qDebug() << NAMEOF(MainTW) << "created";
-
+    qDebug() << MainTW->objectName() << "created";
     BdaTimer->start();
-    auto *msgSerialNumber = statusBar()->findChild<QLabel *>("SerialNumber");
+    auto msgSerialNumber = statusBar()->findChild<QLabel *>("SerialNumber");
     msgSerialNumber->setText(QString::number(board.serialNumber(Board::BaseMezzAdd), 16));
-    auto *msgModel = statusBar()->findChild<QLabel *>("Model");
+    auto msgModel = statusBar()->findChild<QLabel *>("Model");
     msgModel->setText(board.moduleName());
 }
 
@@ -427,7 +441,7 @@ bool Coma::nativeEvent(const QByteArray &eventType, void *message, long *result)
     if (eventType == "windows_generic_MSG")
     {
 #ifdef Q_OS_WINDOWS
-        MSG *msg = static_cast<MSG *>(message);
+        auto msg = static_cast<MSG *>(message);
         int msgType = msg->message;
         if (msgType != WM_DEVICECHANGE)
             return false;
@@ -451,8 +465,7 @@ bool Coma::nativeEvent(const QByteArray &eventType, void *message, long *result)
 void Coma::go()
 {
     // Load settings before anything
-
-    SplashScreen *splash = new SplashScreen(QPixmap("images/surgery.png"));
+    auto splash = new SplashScreen(QPixmap("images/surgery.png"));
     splash->show();
     // http://stackoverflow.com/questions/2241808/checking-if-a-folder-exists-and-creating-folders-in-qt-c
     QDir dir(StdFunc::GetHomeDir());
@@ -471,16 +484,13 @@ void Coma::go()
 #endif
 
     Reconnect = false;
-
     newTimers();
-
-    splash->finish(this);
-    LoadSettings();
-    splash->deleteLater();
+    loadSettings();
     setStatusBar(WDFunc::NewSB(this));
-
-    UnpackProgramData();
-    SetupUI();
+    unpackProgramData();
+    setupUI();
+    splash->finish(this);
+    splash->deleteLater();
     show();
 }
 
@@ -510,21 +520,21 @@ void Coma::reconnect()
 void Coma::attemptToRec()
 {
     QApplication::setOverrideCursor(Qt::WaitCursor);
-    SaveSettings();
+    saveSettings();
     QApplication::restoreOverrideCursor();
     prepareConnectDlg();
 }
 
-void Coma::LoadSettings()
+void Coma::loadSettings()
 {
-    QString HomeDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/"
+    auto homeDirectory = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/"
         + QCoreApplication::applicationName() + "/";
     auto sets = std::unique_ptr<QSettings>(new QSettings);
     StyleLoader::GetInstance().attach();
-    StdFunc::SetHomeDir(sets->value("Homedir", HomeDir).toString());
+    StdFunc::SetHomeDir(sets->value("Homedir", homeDirectory).toString());
 }
 
-void Coma::SaveSettings()
+void Coma::saveSettings()
 {
     auto sets = std::unique_ptr<QSettings>(new QSettings);
     sets->setValue("Homedir", StdFunc::GetHomeDir());
@@ -543,7 +553,7 @@ void Coma::clearWidgets()
     MainLW->hide();
 }
 
-void Coma::SetProgressBarSize(int prbnum, int size)
+void Coma::setProgressBarSize(int prbnum, int size)
 {
     QString prbname = "prb" + QString::number(prbnum) + "prb";
     QString lblname = "prb" + QString::number(prbnum) + "lbl";
@@ -558,7 +568,7 @@ void Coma::SetProgressBarSize(int prbnum, int size)
     prb->setMaximum(size);
 }
 
-void Coma::SetProgressBarCount(int prbnum, int count)
+void Coma::setProgressBarCount(int prbnum, int count)
 {
     QString prbname = "prb" + QString::number(prbnum) + "prb";
     QString lblname = "prb" + QString::number(prbnum) + "lbl";
@@ -575,7 +585,6 @@ void Coma::disconnect()
     qInfo(__PRETTY_FUNCTION__);
     BdaTimer->stop();
     AlarmW->clear();
-
     BaseInterface::iface()->stop();
 
     //     emit StopCommunications();
@@ -585,8 +594,9 @@ void Coma::disconnect()
     // Board::GetInstance().setConnectionState(Board::ConnectionState::Closed);
 }
 
-void Coma::UnpackProgramData()
+void Coma::unpackProgramData()
 {
+    Q_INIT_RESOURCE(settings);
     QDir resDir(resourceDirectory);
     QDir homeDir(StdFunc::GetSystemHomeDir());
     auto xmlFiles = resDir.entryList(QDir::Files).filter(".xml");
@@ -595,20 +605,27 @@ void Coma::UnpackProgramData()
     // Копируем файлы из ресурсов в AppData/Local/AVM-Debug
     if (homeFiles.count() < xmlFiles.count())
     {
-        foreach (QString filename, xmlFiles)
+        constexpr QFileDevice::Permissions filePermissions = QFile::ReadOther | QFile::WriteOther | QFile::ReadOwner
+            | QFile::WriteOwner | QFile::ReadUser | QFile::WriteUser;
+        for (auto &filename : xmlFiles)
         {
             if (!QFile::copy(resDir.filePath(filename), homeDir.filePath(filename)))
             {
-                qCritical() << Error::DescError;
-                qInfo() << resDir.filePath(filename);
+                qCritical() << Error::DescError << resDir.filePath(filename);
+            }
+            QFile file(homeDir.filePath(filename));
+            if (!file.setPermissions(filePermissions))
+            {
+                qCritical() << "Произошло что-то плохое!";
             }
         }
     }
+    Q_CLEANUP_RESOURCE(settings);
 }
 
 void Coma::setupConnection()
 {
-    XmlConfigParser::ParseS2ConfigToMap();
+    XmlConfigParser::ParseS2ConfigToMap(S2::NameIdMap);
     auto const &board = Board::GetInstance();
 
     connect(BaseInterface::iface(), &BaseInterface::stateChanged, [](const BaseInterface::State state) {
@@ -628,8 +645,8 @@ void Coma::setupConnection()
             break;
         }
     });
-    WaitWidget *ww = new WaitWidget;
 
+    auto ww = new WaitWidget;
     auto connectionReady = std::shared_ptr<QMetaObject::Connection>(new QMetaObject::Connection);
     auto connectionTimeout = std::shared_ptr<QMetaObject::Connection>(new QMetaObject::Connection);
     *connectionTimeout = connect(ww, &WaitWidget::destroyed, this, [=] {
@@ -639,7 +656,7 @@ void Coma::setupConnection()
             return;
 
         EMessageBox::error(this, "Не удалось соединиться с прибором");
-        DisconnectAndClear();
+        disconnectAndClear();
         qCritical() << "Cannot connect" << Error::Timeout;
         QApplication::restoreOverrideCursor();
     });
@@ -666,15 +683,13 @@ void Coma::setupConnection()
         QObject::disconnect(*connectionReady);
         QObject::disconnect(*connectionTimeout);
         //        ww->Stop();
-
         EMessageBox::error(this, "Не удалось установить связь");
         QApplication::restoreOverrideCursor();
         qCritical() << "Cannot connect" << Error::GeneralError;
-
         return;
     }
 
-    DataManager::clearQueue();
+    DataManager::GetInstance().clearQueue();
     BaseInterface::iface()->reqBSI();
     connect(this, &Coma::sendMessage, BaseInterface::iface(), &BaseInterface::nativeEvent);
 }
@@ -691,28 +706,27 @@ void Coma::loadSwj()
     loadSwj(filename);
 }
 
-void Coma::DisconnectAndClear()
+void Coma::disconnectAndClear()
 {
     qDebug(__PRETTY_FUNCTION__);
     const auto &board = Board::GetInstance();
-    if (board.connectionState() == Board::ConnectionState::Closed)
-        return;
-
-    AlarmW->clear();
-    disconnect();
-    if (m_Module)
+    if (board.connectionState() != Board::ConnectionState::Closed)
     {
-        m_Module->closeDialogs();
-        clearWidgets();
+        disconnect();
+        if (mDlgManager)
+        {
+            mDlgManager->deleteDialogs();
+            clearWidgets();
+        }
+        ConfigStorage::GetInstance().clearModuleSettings();
+        Board::GetInstance().reset();
+        // BUG Segfault
+        //    if (Reconnect)
+        //        QMessageBox::information(this, "Разрыв связи", "Связь разорвана", QMessageBox::Ok, QMessageBox::Ok);
+        //    else
+        //        QMessageBox::information(this, "Разрыв связи", "Не удалось установить связь");
+        Reconnect = false;
     }
-    Board::GetInstance().reset();
-    // BUG Segfault
-    //    if (Reconnect)
-    //        QMessageBox::information(this, "Разрыв связи", "Связь разорвана", QMessageBox::Ok, QMessageBox::Ok);
-    //    else
-    //        QMessageBox::information(this, "Разрыв связи", "Не удалось установить связь");
-
-    Reconnect = false;
 }
 
 void Coma::resizeEvent(QResizeEvent *e)
@@ -729,31 +743,42 @@ void Coma::keyPressEvent(QKeyEvent *e)
 
 void Coma::mainTWTabChanged(int tabindex)
 {
-    m_Module->parentTWTabChanged(tabindex);
+    mDlgManager->parentTWTabChanged(tabindex);
 }
 
-// void Coma::update(const DataTypes::GeneralResponseStruct &rsp)
 void Coma::update(const QVariant &msg)
 {
     auto rsp = msg.value<DataTypes::GeneralResponseStruct>();
     if (rsp.type == DataTypes::GeneralResponseTypes::DataCount)
-        SetProgressBarCount(1, rsp.data);
+        setProgressBarCount(1, rsp.data);
 
     if (rsp.type == DataTypes::GeneralResponseTypes::DataSize)
-        //        SetProgressBar1Size(rsp.data);
-        SetProgressBarSize(1, rsp.data);
+        setProgressBarSize(1, rsp.data);
 }
 
 void Coma::closeEvent(QCloseEvent *event)
 {
-    DisconnectAndClear();
+    disconnectAndClear();
     event->accept();
 }
 
-void ComaHelper::parserHelper(const char *appName, Coma *coma)
+void ComaHelper::initAppSettings(const QString &appName, const QString &orgName, const QString &version)
+{
+    QCoreApplication::setApplicationName(appName);
+    QCoreApplication::setOrganizationName(orgName);
+    QCoreApplication::setApplicationVersion(version);
+    Q_INIT_RESOURCE(darkstyle);
+    Q_INIT_RESOURCE(lightstyle);
+    Q_INIT_RESOURCE(styles);
+    Q_INIT_RESOURCE(vectorIcons);
+    Logger::writeStart(StdFunc::GetSystemHomeDir() + "coma.log");
+    qInstallMessageHandler(Logger::messageHandler);
+}
+
+void ComaHelper::parserHelper(Coma *coma)
 {
     QCommandLineParser parser;
-    parser.setApplicationDescription(appName);
+    parser.setApplicationDescription(QCoreApplication::applicationName());
     parser.addHelpOption();
     parser.addVersionOption();
     parser.addPositionalArgument("file", "file with oscillogramm (*.osc) or with switch journal (*.swj)");
@@ -761,16 +786,15 @@ void ComaHelper::parserHelper(const char *appName, Coma *coma)
     const QStringList files = parser.positionalArguments();
     if (!files.isEmpty())
     {
-        QString Parameter;
-        Parameter = files.at(0);
-        QString filestail = Parameter.right(3);
+        auto &param = files.at(0);
+        auto filestail = param.right(3);
         if (filestail == "osc")
         {
-            coma->loadOsc(Parameter);
+            coma->loadOsc(param);
         }
         else if (filestail == "swj")
         {
-            coma->loadSwj(Parameter);
+            coma->loadSwj(param);
         }
         // TODO
         // else if (filestail == "vrf")

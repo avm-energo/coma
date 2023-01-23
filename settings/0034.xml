@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<module mtypem="34" mtypeb="00">
+    <name>AVTUK-0034</name>
+    <version>4.1-0000</version>
+    <resources>
+        <alarms desc="Сигнализация">
+            <critical desc="Критичные"/>
+            <warning desc="Предупреждения"/>
+            <info desc="Информационные"/>
+        </alarms>
+        <config desc="Конфигурация">
+            <record>
+                <id>421</id>
+                <defaultValue>0</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>422</id>
+                <defaultValue>0</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>423</id>
+                <defaultValue>0</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>424</id>
+                <defaultValue>0</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>425</id>
+                <defaultValue>0</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>427</id>
+                <defaultValue>0</defaultValue>
+                <count>4</count>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>428</id>
+                <defaultValue>0</defaultValue>
+                <count>4</count>
+                <visibility>true</visibility>
+            </record>
+        </config>
+        <iec60870 desc="Протокол ГОСТ Р МЭК 60870-5-104">
+            <group>
+                <signal-id>104</signal-id>
+                <sig-type>7</sig-type>
+                <trans-type>0</trans-type>
+                <sig-group>6</sig-group>
+            </group>
+            <group>
+                <signal-id>105</signal-id>
+                <sig-type>7</sig-type>
+                <trans-type>3</trans-type>
+                <sig-group>6</sig-group>
+            </group>
+        </iec60870>
+        <journals desc="Журналы">
+            <work desc="Рабочий журнал"/>
+            <meas desc="Журнал измерений"/>
+        </journals>
+        <modbus desc="Протокол Modbus"/>
+        <protocom desc="Протокол Protocom">
+            <group>
+                <block>103</block>
+                <signal-id>104</signal-id>
+            </group>
+            <group>
+                <block>107</block>
+                <signal-id>105</signal-id>
+            </group>
+            <group>
+                <block>108</block>
+                <signal-id>107</signal-id>
+            </group>
+        </protocom>
+        <section-tabs desc="Вкладки">
+            <tab>
+                <id>101</id>
+                <name>Основные</name>
+            </tab>
+        </section-tabs>
+        <sections desc="Разделы">
+            <section header="Текущие данные мезонин">
+                <sgroup header="Общие" tab="101">
+                    <mwidget desc="Состояние WatchDog" view="float">
+                        <start-addr>5004</start-addr>
+                    </mwidget>
+                </sgroup>
+                <sgroup header="Ожидаемое состояние выходов" tab="101">
+                    <mwidget desc="" view="bitset">
+                        <start-addr>5003</start-addr>
+                        <count>28</count>
+                        <toolTip>Дискретный выход (DIO_%1)</toolTip>
+                    </mwidget>
+                </sgroup>
+                <sgroup header="Реальное состояние дискретных выходов" tab="1">
+                    <mwidget desc="" view="bitset">
+                        <start-addr>6003</start-addr>
+                        <count>28</count>
+                        <toolTip>Дискретный выход (DIO_%1)</toolTip>
+                    </mwidget>
+                </sgroup>
+            </section>
+        </sections>
+        <signals desc="Сигналы">
+            <signal>
+                <start-addr>5003</start-addr>
+                <count>1</count>
+                <id>104</id>
+                <type>BitString</type>
+            </signal>
+            <signal>
+                <start-addr>5004</start-addr>
+                <count>1</count>
+                <id>105</id>
+                <type>Float</type>
+            </signal>
+            <signal>
+                <start-addr>6003</start-addr>
+                <count>1</count>
+                <id>107</id>
+                <type>BitString</type>
+            </signal>
+        </signals>
+    </resources>
+</module>

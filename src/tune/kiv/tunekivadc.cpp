@@ -1,22 +1,21 @@
 #include "tunekivadc.h"
 
-#include "../../gen/colors.h"
-#include "../../gen/stdfunc.h"
 #include "../../s2/configv.h"
 #include "../../widgets/epopup.h"
 #include "../../widgets/waitwidget.h"
 #include "../../widgets/wd_func.h"
+#include "../s2/s2.h"
 #include "../tunesteps.h"
-#include "../xml/xmlconfigparser.h"
 
 #include <QMessageBox>
 #include <QVBoxLayout>
+#include <gen/colors.h>
+#include <gen/stdfunc.h>
 
 TuneKIVADC::TuneKIVADC(ConfigV *config, int tuneStep, QWidget *parent) : AbstractTuneDialog(config, tuneStep, parent)
 {
-
-    m_bac = new Bac(this);
-    m_bda = new Bda(this);
+    m_bac = new BacA284(this);
+    m_bda = new BdaA284(this);
     m_bdain = new BdaIn(this);
     m_bd0 = new Bd0(this);
     setBac(m_bac);
@@ -28,82 +27,32 @@ TuneKIVADC::TuneKIVADC(ConfigV *config, int tuneStep, QWidget *parent) : Abstrac
     setupUI();
 }
 
-void TuneKIVADC::setMessages()
-{
-    m_messages.append("Ввод пароля...");
-    m_messages.append("Сохранение текущей конфигурации...");
-    m_messages.append("Отображение предупреждения...");
-    m_messages.append("Запрос настроечных параметров...");
-    m_messages.append("Проверка настроечных параметров...");
-    m_messages.append("Задание режима конфигурирования модуля...");
-    m_messages.append("Регулировка для Кацп = 1...");
-    m_messages.append("Отображение диалога задания входных данных...");
-    if (m_tuneStep == KIVTS_ADCI)
-    {
-        m_messages.append("Регулировка для Кацп = 2...");
-        m_messages.append("Отображение диалога задания входных данных...");
-        m_messages.append("Регулировка для Кацп = 4...");
-        m_messages.append("Отображение диалога задания входных данных...");
-        m_messages.append("Регулировка для Кацп = 8...");
-        m_messages.append("Отображение диалога задания входных данных...");
-        m_messages.append("Регулировка для Кацп = 16...");
-        m_messages.append("Отображение диалога задания входных данных...");
-        m_messages.append("Регулировка для Кацп = 32...");
-        m_messages.append("Отображение диалога задания входных данных...");
-        m_messages.append("Регулировка канала Tmk0...");
-    }
-    m_messages.append("Запись настроечных коэффициентов и восстановление конфигурации...");
-    m_messages.append("Проверка регулировки...");
-}
-
 void TuneKIVADC::setTuneFunctions()
 {
-    m_tuneFunctions.push_back(
-        reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&AbstractTuneDialog::CheckPassword));
-    m_tuneFunctions.push_back(
-        reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&AbstractTuneDialog::saveWorkConfig));
-    Error::Msg (AbstractTuneDialog::*func)()
-        = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVADC::showPreWarning);
-    m_tuneFunctions.push_back(func);
-    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&AbstractTuneDialog::readTuneCoefs);
-    m_tuneFunctions.push_back(func);
-    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVADC::checkTuneCoefs);
-    m_tuneFunctions.push_back(func);
-    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVADC::setSMode2);
-    m_tuneFunctions.push_back(func);
-    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVADC::ADCCoef1);
-    m_tuneFunctions.push_back(func);
-    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVADC::showEnergomonitorInputDialog);
-    m_tuneFunctions.push_back(func);
+    addTuneFunc("Ввод пароля...", &AbstractTuneDialog::CheckPassword);
+    addTuneFunc("Сохранение текущей конфигурации...", &AbstractTuneDialog::saveWorkConfig);
+    addTuneFunc("Отображение предупреждения...", &TuneKIVADC::showPreWarning);
+    addTuneFunc("Запрос настроечных параметров...", &AbstractTuneDialog::readTuneCoefs);
+    addTuneFunc("Проверка настроечных параметров...", &TuneKIVADC::checkTuneCoefs);
+    addTuneFunc("Задание режима конфигурирования модуля...", &TuneKIVADC::setSMode2);
+    addTuneFunc("Регулировка для Кацп = 1...", &TuneKIVADC::ADCCoef1);
+    addTuneFunc("Отображение диалога задания входных данных...", &TuneKIVADC::showEnergomonitorInputDialog);
     if (m_tuneStep == KIVTS_ADCI)
     {
-        func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVADC::ADCCoef2);
-        m_tuneFunctions.push_back(func);
-        func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVADC::showEnergomonitorInputDialog);
-        m_tuneFunctions.push_back(func);
-        func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVADC::ADCCoef4);
-        m_tuneFunctions.push_back(func);
-        func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVADC::showEnergomonitorInputDialog);
-        m_tuneFunctions.push_back(func);
-        func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVADC::ADCCoef8);
-        m_tuneFunctions.push_back(func);
-        func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVADC::showEnergomonitorInputDialog);
-        m_tuneFunctions.push_back(func);
-        func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVADC::ADCCoef16);
-        m_tuneFunctions.push_back(func);
-        func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVADC::showEnergomonitorInputDialog);
-        m_tuneFunctions.push_back(func);
-        func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVADC::ADCCoef32);
-        m_tuneFunctions.push_back(func);
-        func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVADC::showEnergomonitorInputDialog);
-        m_tuneFunctions.push_back(func);
-        func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVADC::Tmk0);
-        m_tuneFunctions.push_back(func);
+        addTuneFunc("Регулировка для Кацп = 2...", &TuneKIVADC::ADCCoef2);
+        addTuneFunc("Отображение диалога задания входных данных...", &TuneKIVADC::showEnergomonitorInputDialog);
+        addTuneFunc("Регулировка для Кацп = 4...", &TuneKIVADC::ADCCoef4);
+        addTuneFunc("Отображение диалога задания входных данных...", &TuneKIVADC::showEnergomonitorInputDialog);
+        addTuneFunc("Регулировка для Кацп = 8...", &TuneKIVADC::ADCCoef8);
+        addTuneFunc("Отображение диалога задания входных данных...", &TuneKIVADC::showEnergomonitorInputDialog);
+        addTuneFunc("Регулировка для Кацп = 16...", &TuneKIVADC::ADCCoef16);
+        addTuneFunc("Отображение диалога задания входных данных...", &TuneKIVADC::showEnergomonitorInputDialog);
+        addTuneFunc("Регулировка для Кацп = 32...", &TuneKIVADC::ADCCoef32);
+        addTuneFunc("Отображение диалога задания входных данных...", &TuneKIVADC::showEnergomonitorInputDialog);
+        addTuneFunc("Регулировка канала Tmk0...", &TuneKIVADC::Tmk0);
     }
-    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVADC::SendBac);
-    m_tuneFunctions.push_back(func);
-    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVADC::CheckTune);
-    m_tuneFunctions.push_back(func);
+    addTuneFunc("Запись настроечных коэффициентов и восстановление конфигурации...", &TuneKIVADC::SendBac);
+    addTuneFunc("Проверка регулировки...", &TuneKIVADC::CheckTune);
 }
 
 Error::Msg TuneKIVADC::showPreWarning()
@@ -169,7 +118,7 @@ Error::Msg TuneKIVADC::ADCCoef(int coef)
     QMap<int, int> currentMap = { { 1, 290 }, { 2, 250 }, { 4, 140 }, { 8, 80 }, { 16, 40 }, { 32, 23 } };
     m_curTuneStep = coef;
     //  CKIV->Bci_block.Unom1 = 220;
-    configV->setRecordValue({ XmlConfigParser::GetIdByName("Unom1"), float(220) });
+    configV->setRecordValue({ S2::GetIdByName("Unom1"), float(220) });
 
     Error::Msg res = setADCCoef(coef);
     if (res != Error::Msg::NoError)
@@ -296,7 +245,7 @@ Error::Msg TuneKIVADC::CheckTune()
 Error::Msg TuneKIVADC::setADCCoef(const int coef)
 {
     const QMap<int, float> adcCoefMap { { 1, 9000 }, { 2, 4500 }, { 4, 2250 }, { 8, 1124 }, { 16, 562 }, { 32, 281 } };
-    configV->setRecordValue({ XmlConfigParser::GetIdByName("C_Pasp_ID"),
+    configV->setRecordValue({ S2::GetIdByName("C_Pasp_ID"),
         DataTypes::FLOAT_3t({ adcCoefMap.value(coef), adcCoefMap.value(coef), adcCoefMap.value(coef) }) });
 
     // CKIV->Bci_block.C_pasp[0] = CKIV->Bci_block.C_pasp[1] = CKIV->Bci_block.C_pasp[2] = adcCoefMap[coef];

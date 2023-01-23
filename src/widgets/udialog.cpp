@@ -1,10 +1,11 @@
 #include "udialog.h"
 
-#include "../gen/datamanager/typesproxy.h"
 #include "../module/board.h"
 #include "epopup.h"
 
+#include <QMessageBox>
 #include <QSettings>
+#include <gen/datamanager/typesproxy.h>
 
 UDialog::UDialog(QWidget *parent) : UWidget(parent), proxyGRS(new DataTypesProxy())
 {
@@ -36,7 +37,8 @@ void UDialog::updateGeneralResponse(const QVariant &msg)
     {
         if (successMsg().isEmpty())
             break;
-        EMessageBox::information(this, successMsg());
+        QMessageBox::information(this, "Information", successMsg());
+        // EMessageBox::information(this, successMsg());
         break;
     }
     case DataTypes::Error:
@@ -58,7 +60,8 @@ void UDialog::updateGeneralResponse(const QVariant &msg)
             msg = Error::MsgStr[Error::Msg(response.data)];
             break;
         }
-        EMessageBox::warning(this, errorMsg() + " : " + msg);
+        QMessageBox::critical(this, "Error", errorMsg() + " : " + msg);
+        // EMessageBox::warning(this, errorMsg() + " : " + msg);
         break;
     }
     default:

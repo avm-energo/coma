@@ -1,7 +1,6 @@
 #ifndef IEC104_H
 #define IEC104_H
-//#include "../gen/datamanager/datamanager.h"
-#include "../gen/logclass.h"
+//#include <gen/datamanager/datamanager.h>
 #include "baseinterface.h"
 #include "iec104private.h"
 
@@ -9,6 +8,7 @@
 #include <QQueue>
 #include <QTcpSocket>
 #include <QTimer>
+#include <gen/logclass.h>
 
 namespace Commands104
 {
@@ -16,13 +16,13 @@ using namespace Queries;
 // map to translate real commands like "erase memory block" into
 // iec104 commands: 45 or 50 or something else
 const QMap<Queries::Commands, CommandStruct> CommandsTranslateMap {
-    { QC_SetNewConfiguration, { CM104_COM45, SetNewConfigurationReg, 0, {} } }, //
-    { QC_ClearStartupValues, { CM104_COM45, ClearStartupValuesReg, 0, {} } },   //
-    { QC_WriteUserValues, { CM104_COM50, 0, 0, {} } },                          //
+    { QC_SetNewConfiguration, { CM104_COM45, SetNewConfigurationReg, 0, true, {} } }, //
+    { QC_ClearStartupValues, { CM104_COM45, ClearStartupValuesReg, 0, true, {} } },   //
+    { QC_WriteUserValues, { CM104_COM50, 0, 0, true, {} } },                          //
     //{ QC_EraseJournals, { CM104_COM45, EraseJournalsReg, 0, {} } },               //
-    { QC_SetStartupValues, { CM104_COM45, SetStartupValuesReg, 0, {} } },         //
-    { QC_StartFirmwareUpgrade, { CM104_COM45, StartFirmwareUpgradeReg, 0, {} } }, //
-    { QC_StartWorkingChannel, { CM104_COM45, StartWorkingChannelReg, 0, {} } }    //
+    { QC_SetStartupValues, { CM104_COM45, SetStartupValuesReg, 0, true, {} } },         //
+    { QC_StartFirmwareUpgrade, { CM104_COM45, StartFirmwareUpgradeReg, 0, true, {} } }, //
+    { QC_StartWorkingChannel, { CM104_COM45, StartWorkingChannelReg, 0, true, {} } }    //
 
 };
 }
@@ -36,7 +36,7 @@ public:
     ~IEC104();
 
     bool start(const ConnectStruct &st) override;
-    InterfaceSettings parseSettings(QDomElement domElement) const override;
+    // InterfaceSettings parseSettings(QDomElement domElement) const override;
 public slots:
     void reqStartup(quint32 sigAdr = 0, quint32 sigCount = 0) override;
     void reqBSI() override;

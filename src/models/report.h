@@ -1,9 +1,8 @@
 #ifndef REPORT_H
 #define REPORT_H
 
-#include "../gen/error.h"
-
 #include <QStandardItemModel>
+#include <gen/error.h>
 
 namespace LimeReport
 {

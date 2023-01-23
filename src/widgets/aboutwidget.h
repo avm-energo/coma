@@ -1,42 +1,33 @@
-#ifndef ABOUTWIDGET_H
-#define ABOUTWIDGET_H
+#pragma once
 
-#include <QPaintEvent>
-#include <QWidget>
+#include <QDialog>
 
 namespace AboutText
 {
-constexpr char name_ru[] = "АВМ-Сервис";
-constexpr char department[] = "ООО \"АВМ-Энерго\", 2016-2021";
-constexpr char modules[] = "Modules used:";
-constexpr char zlib[] = "Data Compression Library (zlib), version 1.2.11 (http://zlib.net/)";
-constexpr char hidapi[] = "HIDAPI library, version 0.9.0 (https://github.com/libusb/hidapi)";
-constexpr char qxlsx[] = "QXlsx library, version 1.3.56 (https://qtexcel.github.io/QXlsx/)";
-constexpr char limereport[] = "LimeReport, version 1.5.1 (http://limereport.ru/)";
-constexpr char icons[] = "Icons are based on the iconset by 0melapics / Freepik";
-constexpr char fonts[] = "Font used: FlorenceSans by ShyFoundry (http://www.shyfoundry.com)";
+constexpr auto name_ru = "АВМ-Сервис";
+constexpr auto department = "ООО \"АВМ-Энерго\", 2016-2023";
+constexpr auto modules = "Modules used:";
+constexpr auto liblzma = "LZMA Library from XZ Utils, version 5.2.5 (https://tukaani.org/xz/)";
+constexpr auto hidapi = "HIDAPI library, version 0.9.0 (https://github.com/libusb/hidapi)";
+constexpr auto qxlsx = "QXlsx library, version 1.3.56 (https://qtexcel.github.io/QXlsx/)";
+constexpr auto limereport = "LimeReport, version 1.5.1 (http://limereport.ru/)";
+constexpr auto qcustomplot = "QCustomPlot, version 2.1.0 (https://www.qcustomplot.com/)";
+constexpr auto icons = "Icons are based on the iconset by 0melapics / Freepik";
+constexpr auto fonts = "Font used: FlorenceSans by ShyFoundry (http://www.shyfoundry.com)";
 }
 
-class AboutWidget : public QWidget
+class AboutWidget : public QDialog
 {
     Q_OBJECT
 public:
     explicit AboutWidget(QWidget *parent = nullptr);
     void setupUI();
-    void prependLine(const QString &str)
-    {
-        m_lines.prepend(str);
-    }
-    void appendLine(const QString &str)
-    {
-        m_lines.append(str);
-    }
-signals:
+    void prependLine(const QString &str);
+    void appendLine(const QString &str);
 
-protected:
 private:
-    QStringList m_lines { AboutText::department, AboutText::modules, AboutText::zlib, AboutText::hidapi,
-        AboutText::qxlsx, AboutText::limereport, AboutText::icons, AboutText::fonts };
+    QStringList m_lines { //
+        AboutText::department, AboutText::modules, AboutText::liblzma, AboutText::hidapi, AboutText::qxlsx,
+        AboutText::limereport, AboutText::qcustomplot, AboutText::icons, AboutText::fonts
+    };
 };
-
-#endif // ABOUTWIDGET_H

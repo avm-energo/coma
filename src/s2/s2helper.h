@@ -1,9 +1,9 @@
 #pragma once
 
-#include "../gen/std_ext.h"
 #include "s2datatypes.h"
 
 #include <array>
+#include <gen/std_ext.h>
 #include <iostream>
 
 namespace DataTypes
@@ -24,16 +24,17 @@ using DWORD_16t = std::array<DWORD, 16>;
 using BYTE_32t = std::array<BYTE, 32>;
 using WORD_32t = std::array<WORD, 32>;
 using DWORD_32t = std::array<DWORD, 32>;
-using FLOAT_2t = std::array<float, 2>;
-using FLOAT_3t = std::array<float, 3>;
-using FLOAT_4t = std::array<float, 4>;
-using FLOAT_6t = std::array<float, 6>;
-using FLOAT_8t = std::array<float, 8>;
+using FLOAT = float;
+using FLOAT_2t = std::array<FLOAT, 2>;
+using FLOAT_3t = std::array<FLOAT, 3>;
+using FLOAT_4t = std::array<FLOAT, 4>;
+using FLOAT_6t = std::array<FLOAT, 6>;
+using FLOAT_8t = std::array<FLOAT, 8>;
 
 static_assert(sizeof(BYTE) != sizeof(WORD), "Broken datatypes");
 static_assert(sizeof(BYTE) != sizeof(DWORD), "Broken datatypes");
 static_assert(sizeof(INT32) == sizeof(DWORD), "Broken datatypes");
-static_assert(sizeof(float) == sizeof(DWORD), "Broken datatypes");
+static_assert(sizeof(FLOAT) == sizeof(DWORD), "Broken datatypes");
 static_assert(sizeof(WORD_4t) == sizeof(BYTE_8t), "Broken datatypes");
 static_assert(sizeof(DWORD_4t) == sizeof(BYTE_16t), "Broken datatypes");
 static_assert(sizeof(FLOAT_2t) == sizeof(BYTE_8t), "Broken datatypes");
@@ -68,5 +69,5 @@ using valueType = std::variant<BYTE, WORD, DWORD, INT32, //
     BYTE_8t, WORD_8t, DWORD_8t,                          //
     BYTE_16t, WORD_16t, DWORD_16t,                       //
     BYTE_32t, WORD_32t, DWORD_32t,                       //
-    float, FLOAT_2t, FLOAT_3t, FLOAT_4t, FLOAT_6t, FLOAT_8t>;
+    FLOAT, FLOAT_2t, FLOAT_3t, FLOAT_4t, FLOAT_6t, FLOAT_8t>;
 }

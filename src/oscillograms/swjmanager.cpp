@@ -1,13 +1,13 @@
 #include "swjmanager.h"
 
-#include "../gen/error.h"
-#include "../gen/files.h"
 #include "../s2/s2.h"
 #include "oscmanager.h"
 
 #include <QDebug>
 #include <QStandardItem>
 #include <QStandardItemModel>
+#include <gen/error.h>
+#include <gen/files.h>
 
 File::Vector SwjManager::loadFromFile(const QString &filename) const
 {

@@ -1,8 +1,6 @@
 #include "tune84check.h"
 
 #include "../../datablocks/kiv/bda.h"
-#include "../../gen/files.h"
-#include "../../gen/stdfunc.h"
 #include "../../interfaces/protocom.h"
 #include "../../widgets/epopup.h"
 #include "../../widgets/wd_func.h"
@@ -11,31 +9,20 @@
 #include <QMessageBox>
 #include <QPushButton>
 #include <QVBoxLayout>
+#include <gen/files.h>
+#include <gen/stdfunc.h>
 
 Tune84Check::Tune84Check(ConfigV *config, int tuneStep, QWidget *parent) : AbstractTuneDialog(config, tuneStep, parent)
 {
     setupUI();
 }
 
-void Tune84Check::setMessages()
-{
-    m_messages.append("1. Ввод пароля...");
-    m_messages.append("2. Сохранение текущей конфигурации...");
-    m_messages.append("3. Отображение схемы подключения...");
-    m_messages.append("4. Проверка...");
-}
-
 void Tune84Check::setTuneFunctions()
 {
-    m_tuneFunctions.push_back(
-        reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&AbstractTuneDialog::CheckPassword));
-    Error::Msg (AbstractTuneDialog::*func)()
-        = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&AbstractTuneDialog::saveWorkConfig);
-    m_tuneFunctions.push_back(func);
-    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&Tune84Check::showScheme);
-    m_tuneFunctions.push_back(func);
-    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&Tune84Check::check);
-    m_tuneFunctions.push_back(func);
+    addTuneFunc("Ввод пароля...", &AbstractTuneDialog::CheckPassword);
+    addTuneFunc("Сохранение текущей конфигурации...", &AbstractTuneDialog::saveWorkConfig);
+    addTuneFunc("Отображение схемы подключения...", &Tune84Check::showScheme);
+    addTuneFunc("Проверка...", &Tune84Check::check);
 }
 
 Error::Msg Tune84Check::showScheme()
@@ -82,7 +69,7 @@ Error::Msg Tune84Check::showScheme()
 
 Error::Msg Tune84Check::check()
 {
-    Bda *bda = new Bda;
+    BdaA284 *bda = new BdaA284;
     bda->readAndUpdate();
 #ifndef NO_LIMITS
     for (int i = 0; i < 3; ++i)

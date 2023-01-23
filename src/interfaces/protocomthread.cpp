@@ -1,19 +1,19 @@
 #include "protocomthread.h"
 
-#include "../gen/datamanager/datamanager.h"
-#include "../gen/files.h"
-#include "../gen/helper.h"
-#include "../gen/logclass.h"
-#include "../gen/registers.h"
-#include "../gen/stdfunc.h"
 #include "../s2/s2.h"
 #include "baseinterface.h"
 
 #include <QDebug>
+#include <QQueue>
 #include <QStorageInfo>
-#include <QtEndian>
-//#include <QMetaEnum>
 #include <QThread>
+#include <QtEndian>
+#include <gen/datamanager/datamanager.h>
+#include <gen/files.h>
+#include <gen/helper.h>
+#include <gen/logclass.h>
+#include <gen/registers.h>
+#include <gen/stdfunc.h>
 
 #ifdef Q_OS_LINUX
 #include <time.h>
@@ -143,7 +143,6 @@ void ProtocomThread::handle(const Proto::Commands cmd)
     case Commands::ResultError:
     {
         const quint8 errorCode = m_buffer.second.front();
-
         handleBool(false, m_buffer.first, errorCode);
         emit errorOccurred(static_cast<Error::Msg>(errorCode));
         break;
@@ -161,29 +160,24 @@ void ProtocomThread::handle(const Proto::Commands cmd)
         break;
 
     case Commands::ReadBlkStartInfoExt:
-
         handleBitStringArray(m_buffer.second, Regs::bsiExtStartReg);
         break;
 
     case Commands::ReadBlkStartInfo:
-
         handleBitStringArray(m_buffer.second, Regs::bsiReg);
         break;
 
     case Commands::ReadBlkAC:
-
         // Ожидается что в addr хранится номер блока
         handleRawBlock(m_buffer.second, addr);
         break;
 
     case Commands::ReadBlkDataA:
-
         // Ожидается что в addr хранится номер блока
         handleRawBlock(m_buffer.second, addr);
         break;
 
     case Commands::ReadBlkData:
-
         switch (m_currentCommand.cmd)
         {
         case Commands::FakeReadRegData:
@@ -193,7 +187,7 @@ void ProtocomThread::handle(const Proto::Commands cmd)
             handleSinglePoint(m_buffer.second, addr);
             break;
         case Commands::FakeReadBitString:
-            handleBitString(m_buffer.second, addr);
+            handleBitStringArray(m_buffer.second, addr);
             break;
         default:
             handleRawBlock(m_buffer.second, addr);
@@ -229,7 +223,7 @@ void ProtocomThread::handle(const Proto::Commands cmd)
 void ProtocomThread::checkQueue()
 {
     CommandStruct inp;
-    if (DataManager::deQueue(inp) != Error::Msg::NoError)
+    if (DataManager::GetInstance().deQueue(inp) != Error::Msg::NoError)
         return;
 
     isCommandRequested = true;
@@ -690,7 +684,7 @@ void ProtocomThread::handleBitString(const QByteArray &ba, quint16 sigAddr)
     Q_ASSERT(ba.size() == sizeof(quint32));
 
     quint32 value = *reinterpret_cast<const quint32 *>(ba.data());
-    DataTypes::BitStringStruct resp { sigAddr, value, {} };
+    DataTypes::BitStringStruct resp { sigAddr, value, DataTypes::Quality::Good };
     DataManager::GetInstance().addSignalToOutList(resp);
 }
 #ifdef __linux
@@ -731,7 +725,7 @@ void ProtocomThread::handleFloat(const QByteArray &ba, quint32 sigAddr)
 {
     Q_ASSERT(ba.size() == 4);
     float blk = *reinterpret_cast<const float *>(ba.data());
-    DataTypes::FloatStruct resp { sigAddr, blk };
+    DataTypes::FloatStruct resp { sigAddr, blk, DataTypes::Quality::Good };
     DataManager::GetInstance().addSignalToOutList(resp);
 }
 
@@ -753,7 +747,7 @@ void ProtocomThread::handleSinglePoint(const QByteArray &ba, const quint16 addr)
     for (quint32 i = 0; i != quint32(ba.size()); ++i)
     {
         quint8 value = ba.at(i);
-        DataTypes::SinglePointWithTimeStruct data { (addr + i), value, 0 };
+        DataTypes::SinglePointWithTimeStruct data { (addr + i), value, 0, DataTypes::Quality::Good };
         DataManager::GetInstance().addSignalToOutList(data);
     }
 }
@@ -854,7 +848,7 @@ void ProtocomThread::handleRawBlock(const QByteArray &ba, quint32 blkNum)
 
 void ProtocomThread::handleCommand(const QByteArray &ba)
 {
-    qCritical("We should be here, something went wrong");
+    qCritical("We shouldn't be here, something went wrong");
     qDebug() << ba.toHex();
 }
 

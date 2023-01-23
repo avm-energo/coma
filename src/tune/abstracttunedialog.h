@@ -36,13 +36,27 @@ public:
         NoMsg
     };
 
+    using TuneFunc = Error::Msg (AbstractTuneDialog::*)();
+
+    struct TuneFuncStruct
+    {
+        QString message;
+        TuneFunc func;
+    };
+
     explicit AbstractTuneDialog(ConfigV *config, int tuneStep, QWidget *parent = nullptr);
     ~AbstractTuneDialog();
 
+    template <typename T> void addTuneFunc(const QString &msg, Error::Msg (T::*func)())
+    {
+        m_tuneFunctions.append({ msg, reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(func) });
+    }
+
     bool IsNeededDefConf;
     int m_blockCount;
-    QStringList m_messages;
-    QList<Error::Msg (AbstractTuneDialog::*)()> m_tuneFunctions;
+    //    QStringList m_messages;
+    //    QList<Error::Msg (AbstractTuneDialog::*)()> m_tuneFunctions;
+    QList<TuneFuncStruct> m_tuneFunctions;
     quint8 bStep;
     int TuneVariant; // вариант регулировочных параметров
     // ReportModel *RepModel; // модель, в которую заносим данные для отчёта
@@ -57,7 +71,6 @@ public:
     void startWait();
     void stopWait();
     Error::Msg CheckPassword();
-    virtual void setMessages() = 0;      // заполнить список сообщений
     virtual void setTuneFunctions() = 0; // заполнить список функций настройки
     int addWidgetToTabWidget(QWidget *w, const QString &caption);
     void MsgSetVisible(MsgTypes type, int msg, bool Visible = true);
@@ -69,7 +82,8 @@ public:
     Error::Msg loadWorkConfig();
     Error::Msg saveAllTuneCoefs();
     Error::Msg loadAllTuneCoefs();
-    Error::Msg writeTuneCoefs(bool isUserChoosingRequired = true);
+    Error::Msg writeTuneCoefs();
+    Error::Msg writeTuneCoefs(bool isUserChoosingRequired);
     Error::Msg readTuneCoefs();
 
 private:
@@ -85,6 +99,7 @@ private:
 
 signals:
     void Finished();
+    void cancelled();
     void generalEventReceived();
     void LoadDefConf();
     void setProgressSize(int size);
@@ -108,5 +123,7 @@ protected:
 
     ConfigV *configV;
 };
+
+using TuneFunc = Error::Msg (AbstractTuneDialog::*)();
 
 #endif // ABSTRACTTUNEDIALOG_H

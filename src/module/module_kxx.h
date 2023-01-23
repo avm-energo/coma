@@ -1,7 +1,9 @@
 #ifndef MODULE_KXX_H
 #define MODULE_KXX_H
-#include "../gen/pch.h"
+
 #include "../interfaces/modbusprivate.h"
+
+#include <gen/pch.h>
 
 namespace Bci
 {

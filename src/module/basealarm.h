@@ -1,32 +1,39 @@
 #pragma once
 
-#include "../interfaces/baseinterface.h"
+#include "../widgets/uwidget.h"
 
-#include <QWidget>
-#include <bitset>
-constexpr int circleRadius = 15;
-class BaseAlarm : public QWidget
+constexpr int circleRadius = 15; ///< Indicator's circle radius.
+
+/// \brief Abstract base class for alarm's dialogs.
+/// \see AlarmStateAll, ModuleAlarm.
+class BaseAlarm : public UWidget
 {
-
     Q_OBJECT
 public:
-    explicit BaseAlarm(QWidget *parent = nullptr);
+    explicit BaseAlarm(QWidget *parent = nullptr) : UWidget(parent), normalColor(Qt::transparent), alarmColor(Qt::red)
+    {
+    }
 
-    void disable();
-public slots:
-    virtual void reqUpdate() = 0;
+    /// \brief Setter for the alarm color.
+    inline void setAlarmColor(const QColor &newAlarmColor)
+    {
+        alarmColor = newAlarmColor;
+    }
+
+    /// \brief Setter for the normal color.
+    inline void setNormalColor(const QColor &newNormalColor)
+    {
+        normalColor = newNormalColor;
+    }
 
 protected:
-    std::bitset<128> m_alarmFlags;       // '1' equals alarm
-    std::bitset<128> m_actualAlarmFlags; // '1' equals alarm
+    QColor normalColor;
+    QColor alarmColor;
 
-    QColor m_normalColor;
-    QColor m_alarmColor;
-    void showEvent(QShowEvent *e);
-    virtual void setupUI(const QStringList &events);
-    virtual void updatePixmap(bool isset, int position);
+    /// \details Pure virtual function for UI setup.
+    virtual void setupUI(const QStringList &events) = 0;
 
 signals:
-    void updateAlarm(bool value);
-    void updateColor(QColor);
+    /// \details This signal is emitted when indicator color is changed.
+    void updateColor(const QColor &color);
 };

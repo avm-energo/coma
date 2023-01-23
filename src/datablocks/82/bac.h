@@ -1,9 +1,8 @@
-#ifndef KIV_BAC_H
-#define KIV_BAC_H
+#pragma once
 
 #include "../datablock.h"
 
-class Bac : public DataBlock
+class Bac82 : public DataBlock
 {
     Q_OBJECT
 public:
@@ -17,16 +16,12 @@ public:
         float Kinter;   // коэффициент взаимного влияния каналов
     };
 
-    Bac(QObject *parent = nullptr);
+    Bac82(QObject *parent = nullptr);
 
-    void createWidget() override;
-    void setDefBlock() override;
-    void updateWidget() override;
-    void updateFromWidget() override;
+    void setupValuesDesc() override;
     BlockData *data();
+    void setDefBlock() override;
 
 private:
     std::unique_ptr<BlockData> m_blockData;
 };
-
-#endif // KIV_BAC_H

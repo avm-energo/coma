@@ -2,8 +2,7 @@
 
 #include "modules.h"
 
-JournKDV::JournKDV(QMap<Modules::JournalType, DataTypes::JournalDesc> &jourMap, QObject *parent)
-    : Journals(jourMap, parent)
+JournKDV::JournKDV(const ModuleTypes::JourMap &jourMap, QObject *parent) : Journals(jourMap, parent)
 {
 }
 

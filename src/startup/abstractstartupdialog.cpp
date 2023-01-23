@@ -1,11 +1,7 @@
 #include "abstractstartupdialog.h"
 
 #include "../dialogs/keypressdialog.h"
-#include "../gen/colors.h"
-#include "../gen/helper.h"
-#include "../gen/stdfunc.h"
 #include "../module/board.h"
-//#include "../s2/datamanager.h"
 #include "../widgets/etableview.h"
 #include "../widgets/wd_func.h"
 
@@ -24,11 +20,17 @@
 #include <QMessageBox>
 #include <QPushButton>
 #include <QSpinBox>
+#include <gen/colors.h>
+#include <gen/datatypes.h>
+#include <gen/helper.h>
+#include <gen/stdfunc.h>
+
 namespace crypto
 {
 static constexpr char hash[] = "d93fdd6d1fb5afcca939fa650b62541d09dbcb766f41c39352dc75f348fb35dc";
 static constexpr char name[] = "startHash";
 }
+
 AbstractStartupDialog::AbstractStartupDialog(QWidget *parent) : UDialog(crypto::hash, crypto::name, parent)
 {
     m_updateState = ThereWasNoUpdatesRecently;
@@ -37,17 +39,14 @@ AbstractStartupDialog::AbstractStartupDialog(QWidget *parent) : UDialog(crypto::
 
 void AbstractStartupDialog::SetStartupBlock(int blocknum, void *block, quint32 blocksize, quint32 startAdr)
 {
-    m_startupBlockDescription.num = blocknum;
-    m_startupBlockDescription.block = block;
-    m_startupBlockDescription.size = blocksize;
-    m_startupBlockDescription.initStartRegAdr = startAdr;
+    m_startupBlockDescription = { startAdr, blocknum, block, blocksize };
 }
 
 QWidget *AbstractStartupDialog::buttonWidget()
 {
-    QWidget *w = new QWidget;
-    QVBoxLayout *lyout = new QVBoxLayout;
-    QDialogButtonBox *group = new QDialogButtonBox;
+    auto widget = new QWidget;
+    auto layout = new QVBoxLayout;
+    auto group = new QDialogButtonBox;
     QString tmps = ((DEVICETYPE == DEVICETYPE_MODULE) ? "модуля" : "прибора");
 
     const QList<QPair<QPair<QString, QIcon>, std::function<void()>>> funcs {
@@ -59,27 +58,24 @@ QWidget *AbstractStartupDialog::buttonWidget()
         { { "Сохранить значения в файл", QIcon(":/icons/tnsave.svg") }, [this]() { SaveToFile(); } }      //
     };
 
-    for (auto &i : funcs)
+    for (auto &func : funcs)
     {
-        const QIcon &icon = i.first.second;
-        const QString &toolTip = i.first.first;
+        const QIcon &icon = func.first.second;
+        const QString &toolTip = func.first.first;
         QPushButton *pb = new QPushButton();
         pb->setObjectName("Hexagon");
         pb->setIcon(icon);
-
         pb->setToolTip(toolTip);
         pb->setMinimumSize(50, 50);
         pb->setIconSize(QSize(50, 50));
-
-        connect(pb, &QAbstractButton::clicked, this, i.second);
-
+        connect(pb, &QAbstractButton::clicked, this, func.second);
         group->addButton(pb, QDialogButtonBox::ActionRole);
     }
-    group->setCenterButtons(true);
-    lyout->addWidget(group);
 
-    w->setLayout(lyout);
-    return w;
+    group->setCenterButtons(true);
+    layout->addWidget(group);
+    widget->setLayout(layout);
+    return widget;
 }
 
 void AbstractStartupDialog::WriteCor()
@@ -88,9 +84,9 @@ void AbstractStartupDialog::WriteCor()
         return;
     FillBackCor();
     QVariantList values;
-    for (decltype(m_regMap)::const_iterator it = m_regMap.cbegin(); it != m_regMap.cend(); ++it)
+    for (auto it = m_regMap.cbegin(); it != m_regMap.cend(); ++it)
     {
-        DataTypes::FloatStruct value { it.key(), *it.value() };
+        DataTypes::FloatStruct value { it.key(), *it.value(), DataTypes::Quality::Good };
         values.push_back(QVariant::fromValue(value));
     }
     BaseInterface::iface()->writeCommand(Queries::QC_WriteUserValues, values);
@@ -126,15 +122,14 @@ float AbstractStartupDialog::ToFloat(QString text)
 }
 
 // void AbstractStartupDialog::updateFloatData(const DataTypes::FloatStruct &fl)
-void AbstractStartupDialog::updateFloatData(const QVariant &msg)
+void AbstractStartupDialog::updateFloatData(const DataTypes::FloatStruct &fl)
 {
-    if (msg.canConvert<DataTypes::FloatStruct>())
+    // Игнорируем 4011 т.к. он нам не важен и все чужие регистры тоже игнорируем
+    if (fl.sigAdr >= m_regMap.firstKey() && fl.sigAdr <= m_regMap.lastKey())
     {
-        if (!updatesEnabled())
-            return;
-        auto fl = msg.value<DataTypes::FloatStruct>();
-        // Игнорируем 4011 т.к. он нам не важен и все чужие регистры тоже игнорируем
-        if (fl.sigAdr >= m_regMap.firstKey() && fl.sigAdr <= m_regMap.lastKey())
+        if (fl.sigQuality != 192)
+            FillBd(this, QString::number(fl.sigAdr), "***");
+        else
             FillBd(this, QString::number(fl.sigAdr), fl.sigVal);
     }
 }

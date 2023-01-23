@@ -1,53 +1,48 @@
 #ifndef XMLEDITOR_H
 #define XMLEDITOR_H
 
-#include <QDialog>
-#include <QDir>
-#include <QHBoxLayout>
-#include <QStackedWidget>
-#include <QStandardItemModel>
-#include <QTableView>
-#include <QTreeView>
-#include <QtXml>
+#include "datacontroller.h"
+#include "models/mastermodel.h"
+#include "models/modelmanager.h"
 
+#include <QDialog>
+#include <QHBoxLayout>
+#include <QTableView>
+
+/// \brief Главный класс редактора XML.
 class XmlEditor : public QDialog
 {
     Q_OBJECT
 
 private:
-    enum WorkspaceType
+    enum DialogType : quint16
     {
-        Master = 1,
-        Slave = 2
+        Create = 0,
+        Edit,
+        Remove
     };
-
+    DataController *dc;
     // Master items
-    QStandardItemModel *masterModel;
+    MasterModel *masterModel;
     QTableView *masterView;
-
     // Slave items
-    QStackedWidget *stackWidget;
-    QStandardItemModel *slaveModel;
-    QTreeView *mainSlaveView;
-    QTableView *specSlaveView;
+    ModelManager *manager;
+    QTableView *tableSlaveView;
 
-    void SetupUI(QSize pSize);
-    QVBoxLayout *GetWorkspace(WorkspaceType);
-    void ReadModulesToMasterModel();
-    QStandardItemModel *CreateMasterModel(const int rows);
-    QStandardItemModel *CreateSlaveModel();
-
-    /// Parsing section
-    void ParseXmlToMasterModel(const QDomNode &node, const QString &filename, int &index);
-    void ParseXmlToSlaveModel(QDomNode &node, int index, QStandardItem *parent);
-    int ParseXmlFindAllAttributes(QDomNode &domElement, QStandardItem *element);
+    void setupUI(QSize pSize);
+    QVBoxLayout *getMasterWorkspace();
+    QVBoxLayout *getSlaveWorkspace();
+    void actionDialog(DialogType dlgType, QTableView *srcView);
+    void setFontBolding(int row, bool state);
 
 public:
-    explicit XmlEditor(QWidget *parent = nullptr);
+    XmlEditor() = delete;
+    explicit XmlEditor(QWidget *parent);
+    virtual void reject() override;
 
 public slots:
-    void Close();
-    void MasterItemSelected(const QModelIndex &index);
+    void savingAsk();
+    void saveModule();
 };
 
 #endif // XMLEDITOR_H

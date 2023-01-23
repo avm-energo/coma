@@ -1,8 +1,5 @@
 #include "protocom.h"
 
-//#include "../gen/datamanager/datamanager.h"
-#include "../gen/files.h"
-#include "../gen/stdfunc.h"
 #include "protocom_p.h"
 #include "protocomthread.h"
 #include "settingstypes.h"
@@ -11,6 +8,9 @@
 #include <QCoreApplication>
 #include <QDebug>
 #include <QThread>
+#include <gen/files.h>
+#include <gen/stdfunc.h>
+
 #ifdef Q_OS_WINDOWS
 // clang-format off
 #include <windows.h>
@@ -18,6 +18,7 @@
 #include <dbt.h>
 // clang-format on
 #endif
+
 using Proto::CommandStruct;
 using Proto::Starters;
 
@@ -46,12 +47,10 @@ bool Protocom::start(const ConnectStruct &st)
 
 bool Protocom::start(const UsbHidSettings &usbhid)
 {
-    UsbHidPort *port = new UsbHidPort(usbhid, Log);
-
-    ProtocomThread *parser = new ProtocomThread;
-
-    QThread *portThread = new QThread;
-    QThread *parseThread = new QThread;
+    auto port = new UsbHidPort(usbhid, Log);
+    auto parser = new ProtocomThread;
+    auto portThread = new QThread;
+    auto parseThread = new QThread;
 
     // NOTE После остановки потоков мы всё еще обращаемся
     // к интерфейсу для обновления данных
@@ -120,7 +119,7 @@ bool Protocom::start(const UsbHidSettings &usbhid)
 void Protocom::reqTime()
 {
     CommandStruct inp { Proto::Commands::ReadTime, QVariant(), QVariant(), {} };
-    DataManager::addToInQueue(inp);
+    DataManager::GetInstance().addToInQueue(inp);
     emit wakeUpParser();
 }
 
@@ -134,7 +133,7 @@ void Protocom::reqFile(quint32 filenum, FileFormat format)
         format,                    // Is file should be restored
         ba                         // Empty QByteArray
     };
-    DataManager::addToInQueue(inp);
+    DataManager::GetInstance().addToInQueue(inp);
     emit wakeUpParser();
 }
 
@@ -149,7 +148,7 @@ void Protocom::reqStartup(quint32 sigAdr, quint32 sigCount)
         sigCount,                                       // Count signals
         StdFunc::ArrayFromNumber(d->blockByReg(sigAdr)) // Protocom block
     };
-    DataManager::addToInQueue(inp);
+    DataManager::GetInstance().addToInQueue(inp);
     emit wakeUpParser();
 }
 
@@ -161,7 +160,7 @@ void Protocom::reqBSI()
         QVariant(),                        // Null arg
         {}                                 // Null
     };
-    DataManager::addToInQueue(inp);
+    DataManager::GetInstance().addToInQueue(inp);
     emit wakeUpParser();
 }
 
@@ -173,7 +172,7 @@ void Protocom::reqBSIExt()
         QVariant(),                           // Null arg
         {}                                    // Null
     };
-    DataManager::addToInQueue(inp);
+    DataManager::GetInstance().addToInQueue(inp);
     emit wakeUpParser();
 }
 
@@ -188,7 +187,7 @@ void Protocom::reqBitStrings(quint32 sigAdr, quint32 sigCount)
         sigCount,                                       // Count signals
         StdFunc::ArrayFromNumber(d->blockByReg(sigAdr)) // Protocom block
     };
-    DataManager::addToInQueue(inp);
+    DataManager::GetInstance().addToInQueue(inp);
     emit wakeUpParser();
 }
 
@@ -201,24 +200,26 @@ void Protocom::writeFile(quint32 filenum, const QByteArray &file)
         QVariant(),                                    // Null arg
         file                                           // Buffer with file
     };
-    DataManager::addToInQueue(inp);
+    DataManager::GetInstance().addToInQueue(inp);
     emit wakeUpParser();
 }
 
 void Protocom::writeTime(quint32 time)
 {
     CommandStruct inp { Proto::Commands::WriteTime, time, QVariant(), {} };
-    DataManager::addToInQueue(inp);
+    DataManager::GetInstance().addToInQueue(inp);
     emit wakeUpParser();
 }
+
 #ifdef Q_OS_LINUX
 void Protocom::writeTime(const timespec &time) const
 {
     CommandStruct inp { Proto::Commands::WriteTime, QVariant::fromValue(time), QVariant(), {} };
-    DataManager::addToInQueue(inp);
+    DataManager::GetInstance().addToInQueue(inp);
     emit wakeUpParser();
 }
 #endif
+
 void Protocom::reqFloats(quint32 sigAdr, quint32 sigCount)
 {
     Q_D(Protocom);
@@ -230,21 +231,21 @@ void Protocom::reqFloats(quint32 sigAdr, quint32 sigCount)
         sigCount,                                       // Count signals
         StdFunc::ArrayFromNumber(d->blockByReg(sigAdr)) // Protocom block
     };
-    DataManager::addToInQueue(inp);
+    DataManager::GetInstance().addToInQueue(inp);
     emit wakeUpParser();
 }
 
 void Protocom::writeRaw(const QByteArray &ba)
 {
     CommandStruct inp { Proto::Commands::RawCommand, QVariant(), QVariant(), ba };
-    DataManager::addToInQueue(inp);
+    DataManager::GetInstance().addToInQueue(inp);
     emit wakeUpParser();
 }
 
-InterfaceSettings Protocom::parseSettings(QDomElement domElement) const
-{
-    return BaseInterface::parseSettings<Proto::ProtocomGroup>(domElement);
-}
+// InterfaceSettings Protocom::parseSettings(QDomElement domElement) const
+//{
+//    return BaseInterface::parseSettings<Proto::ProtocomGroup>(domElement);
+//}
 
 void Protocom::writeCommand(Queries::Commands cmd, QVariant item)
 {
@@ -257,14 +258,12 @@ void Protocom::writeCommand(Queries::Commands cmd, QVariant item)
     switch (protoCmd)
     {
     case Commands::ReadBlkData:
-
         Q_ASSERT(item.canConvert<quint32>());
         if (item.canConvert<quint32>())
             d->handleBlk(protoCmd, item.toUInt());
         break;
 
     case Commands::FakeReadRegData:
-
         Q_ASSERT(item.canConvert<Signal>());
         if (item.canConvert<Signal>())
         {
@@ -275,7 +274,6 @@ void Protocom::writeCommand(Queries::Commands cmd, QVariant item)
         break;
 
     case Commands::FakeReadAlarms:
-
         Q_ASSERT(item.canConvert<Signal>());
         if (item.canConvert<Signal>())
         {
@@ -286,73 +284,61 @@ void Protocom::writeCommand(Queries::Commands cmd, QVariant item)
         break;
 
     case Commands::ReadBlkAC:
-
         Q_ASSERT(item.canConvert<quint32>());
         d->handleBlk(protoCmd, item.toUInt());
         break;
 
     case Commands::ReadBlkDataA:
-
         Q_ASSERT(item.canConvert<quint32>());
         d->handleBlk(protoCmd, item.toUInt());
         break;
 
     case Commands::ReadBlkTech:
-
         Q_ASSERT(item.canConvert<quint32>());
         d->handleBlk(protoCmd, item.toUInt());
         break;
 
     case Commands::WriteBlkAC:
-
         Q_ASSERT(item.canConvert<DataTypes::BlockStruct>());
         d->handleBlk(protoCmd, item.value<DataTypes::BlockStruct>());
         break;
 
     case Commands::WriteBlkTech:
-
         Q_ASSERT(item.canConvert<DataTypes::BlockStruct>());
         d->handleBlk(protoCmd, item.value<DataTypes::BlockStruct>());
         break;
 
     case Commands::WriteBlkCmd:
-
         Q_ASSERT(item.canConvert<quint32>());
         d->handleBlk(protoCmd, item.toUInt());
         break;
 
     case Commands::WriteSingleCommand:
-
         Q_ASSERT(item.canConvert<DataTypes::SingleCommand>());
         d->handleCommand(protoCmd, item.value<DataTypes::SingleCommand>());
         break;
 
     case Commands::WriteHardware:
-
         Q_ASSERT(item.canConvert<DataTypes::HardwareStruct>());
         d->handleBlk(protoCmd, item.value<DataTypes::BlockStruct>());
         break;
 
     case Commands::WriteBlkData:
-
         Q_ASSERT(item.canConvert<DataTypes::BlockStruct>());
         d->handleBlk(protoCmd, item.value<DataTypes::BlockStruct>());
         break;
 
     case Commands::WriteMode:
-
         Q_ASSERT(item.canConvert<quint8>());
         d->handleInt(protoCmd, StdFunc::ArrayFromNumber(item.value<quint8>()));
         break;
 
     case Commands::WriteVariant:
-
         Q_ASSERT(item.canConvert<quint8>());
         d->handleInt(protoCmd, StdFunc::ArrayFromNumber(item.value<quint8>()));
         break;
 
     case Commands::EraseTech:
-
         Q_ASSERT(item.canConvert<quint8>());
         d->handleInt(protoCmd, StdFunc::ArrayFromNumber(item.value<quint8>()));
         break;
@@ -406,7 +392,7 @@ void Protocom::writeCommand(Queries::Commands cmd, const QVariantList &list)
 
 bool Protocom::isValidRegs(const quint32 sigAdr, const quint32 sigCount)
 {
-    const auto &st = settings<InterfaceInfo<Proto::ProtocomGroup>>();
+    const auto &st = settings<InterfaceInfo<ProtocomGroup>>();
     Q_ASSERT(st.dictionary().contains(sigAdr));
     const auto val = st.dictionary().value(sigAdr);
     Q_ASSERT(val.count == sigCount);

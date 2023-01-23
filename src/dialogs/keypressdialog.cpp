@@ -1,6 +1,5 @@
 #include "keypressdialog.h"
 
-#include "../gen/error.h"
 #include "../widgets/passwordlineedit.h"
 #include "../widgets/wd_func.h"
 
@@ -9,6 +8,8 @@
 #include <QEventLoop>
 #include <QMessageBox>
 #include <QVBoxLayout>
+#include <gen/error.h>
+
 KeyPressDialog::KeyPressDialog(QWidget *parent) : QDialog(parent)
 {
     setAttribute(Qt::WA_DeleteOnClose);

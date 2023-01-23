@@ -5,30 +5,18 @@ project(datablocks LANGUAGES CXX)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 find_package(
-  QT NAMES Qt6 Qt5
-  COMPONENTS Core Network Widgets
-  REQUIRED)
-find_package(
   Qt${QT_VERSION_MAJOR}
   COMPONENTS Core Network Xml Widgets
   REQUIRED)
-find_package(
-  Qt${QT_VERSION_MAJOR}
-  COMPONENTS Widgets
-  REQUIRED)
+
+file(GLOB_RECURSE files_cpp ${PROJECT_SOURCE_DIR}/*.cpp)
+file(GLOB_RECURSE files_h ${PROJECT_SOURCE_DIR}/*.h)
 
 add_library(
   ${PROJECT_NAME} STATIC
-  bd0.cpp
-  bd0.h
-  datablock.cpp
-  datablock.h
-  kiv/bac.cpp
-  kiv/bac.h
-  kiv/bda.cpp
-  kiv/bda.h
-  kiv/bdain.cpp
-  kiv/bdain.h)
+  ${files_cpp}
+  ${files.h}
+)
 
 target_link_libraries(
   ${PROJECT_NAME}
@@ -36,6 +24,7 @@ target_link_libraries(
   PRIVATE Qt${QT_VERSION_MAJOR}::Widgets
   PRIVATE Qt${QT_VERSION_MAJOR}::Xml
   PRIVATE Qt${QT_VERSION_MAJOR}::Network
-  PRIVATE QXlsx)
+  PRIVATE QXlsx
+  PRIVATE gen)
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE ${PROJECT_NAME}_LIBRARY)

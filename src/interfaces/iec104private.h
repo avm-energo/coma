@@ -1,7 +1,7 @@
 #pragma once
-#include "interfacesettings.h"
 
 #include <QObject>
+
 #define STARTUPGROUP 2
 #define BSIGROUP 1
 #define TIMEGROUP 15
@@ -210,8 +210,8 @@ enum TypeId : char
     F_SC_NB_1 = 127
 };
 Q_ENUM_NS(Commands104::TypeId)
-// CAUSE OF TRANSMISSION: define causes
 
+// CAUSE OF TRANSMISSION: define causes
 //#define COT_PERIODIC 1
 //#define COT_BACKGROUND 2
 //#define COT_SPONTANEOUS 3
@@ -251,8 +251,9 @@ enum Commands
 struct CommandStruct
 {
     Commands cmd;
-    quint32 uintarg;
+    quint32 address;
     float flarg;
+    bool blarg;
     QByteArray ba;
 };
 
@@ -278,16 +279,5 @@ struct DataUnitIdentifier
     quint8 commonAdrASDU;
 };
 
-struct Iec104Group : BaseGroup<Commands, TypeId>
-{
-    Iec104Group() = default;
-    Iec104Group(QDomElement domElement) : BaseGroup<Commands, TypeId>(domElement)
-    {
-    }
-    // NOTE Need more fileds?
-};
-
 }
-Q_DECLARE_METATYPE(InterfaceInfo<Commands104::Iec104Group>)
-// Q_DECLARE_METATYPE(Commands104::Iec104Group)
 Q_DECLARE_METATYPE(Commands104::CommandStruct)

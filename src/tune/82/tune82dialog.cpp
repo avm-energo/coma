@@ -1,27 +1,38 @@
 #include "tune82dialog.h"
 
-#include "../../gen/colors.h"
-#include "../../gen/error.h"
-#include "../../gen/files.h"
-#include "../../gen/stdfunc.h"
 #include "../../widgets/wd_func.h"
 #include "../tunesteps.h"
+#include "tune82adc.h"
+#include "tune82check.h"
 
-Tune82Dialog::Tune82Dialog(ConfigV *config, QWidget *parent) : GeneralTuneDialog(config, parent)
+#include <gen/colors.h>
+#include <gen/error.h>
+#include <gen/files.h>
+#include <gen/stdfunc.h>
+
+Tune82Dialog::Tune82Dialog(ConfigV *config, Modules::MezzanineBoard typeM, QWidget *parent)
+    : GeneralTuneDialog(config, parent)
 {
     setAttribute(Qt::WA_DeleteOnClose);
 
-    /*    m_dialogList
-            = { { "Проверка правильности измерения входных сигналов", new Tune82Check(config, TS82_CHECKING, this) },
-                  { "Регулировка каналов напряжения", new Tune82ADC(config, TS82_ADCU, this) },
-                  { "Регулировка каналов тока", new Tune82ADC(config, TS82_ADCI, this) },
-                  //              { "Настройка температурной коррекции +60 °С", new TuneKIVTemp60(config, TS84_60TUNING,
-                  //              this) }, { "Настройка температурной коррекции -20 °С", new TuneKIVTemp60(config,
-                  //              TS84_20TUNING, this) } };
-                  m_calibrSteps = m_dialogList.size() + 1;
-        Bac *bac = new Bac;
-        m_BacWidget = bac->widget();
-        SetupUI(); */
+    QStringList sl;
+    QString str;
+    sl = str.split(',');
+    m_dialogList = { { "Проверка правильности измерения входных сигналов",
+        new Tune82Check(config, TS82_CHECKING, typeM, this) } };
+    if (typeM != Modules::MezzanineBoard::MTM_81)
+    {
+        m_dialogList.append({ "Регулировка каналов напряжения", new Tune82ADC(config, typeM, TS82_ADCU, this) });
+    }
+    if (typeM != Modules::MezzanineBoard::MTM_83)
+    {
+        m_dialogList.append({ "Регулировка каналов тока", new Tune82ADC(config, typeM, TS82_ADCI, this) });
+    }
+
+    m_calibrSteps = m_dialogList.size() + 1;
+    Bac82 *bac = new Bac82;
+    m_BacWidget = bac->widget();
+    SetupUI();
 }
 
 void Tune82Dialog::prepareReport()
