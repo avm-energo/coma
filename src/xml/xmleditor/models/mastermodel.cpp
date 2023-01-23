@@ -53,7 +53,15 @@ void MasterModel::readModulesToModel()
     // Каждый xml-файл считывается в модель
     for (int i = 0; i < modules.count(); i++)
     {
-        auto moduleFile = new QFile(dir.filePath(modules[i]));
+        // Фильтр для s2files и шаблонного файла
+        const auto &name = modules[i];
+        if (name.contains("template") || name.contains("s2files"))
+        {
+            setRowCount(rowCount() - 1);
+            continue;
+        }
+
+        auto moduleFile = new QFile(dir.filePath(name));
         if (moduleFile->open(QIODevice::ReadOnly))
         {
             QDomDocument domDoc;

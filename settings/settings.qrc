@@ -6,6 +6,7 @@
         <file>8081.xml</file>
         <file>8082.xml</file>
         <file>8083.xml</file>
+        <file>8084.xml</file>
         <file>8585.xml</file>
         <file>8600.xml</file>
         <file>2100.xml</file>
@@ -20,6 +21,5 @@
         <file>0035.xml</file>
 		<file>module-template.xml</file>
         <file>s2files.xml</file>
-		<file>template.xml</file>
     </qresource>
 </RCC>

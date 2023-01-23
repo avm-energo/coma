@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <module mtypem="83" mtypeb="80">
-    <name>AVTUK-83</name>
+    <name>AVTUK-8083</name>
     <version>2.5-0002</version>
     <resources>
         <alarms desc="Сигнализация">
