@@ -60,8 +60,6 @@
 #include <gen/timefunc.h>
 #include <memory>
 
-constexpr auto resourceDirectory = ":/module";
-
 #ifdef Q_OS_WINDOWS
 // clang-format off
 #include <windows.h>
@@ -91,7 +89,6 @@ void registerForDeviceNotification(QWidget *ptr)
 
 Coma::Coma(const AppConfiguration &appCfg, QWidget *parent)
     : QMainWindow(parent)
-    , module(new Module(Board::GetInstance().baseSerialInfo(), this))
     , editor(nullptr)
     , proxyBS(new DataTypesProxy)
     , proxyGRS(new DataTypesProxy)
@@ -179,7 +176,7 @@ void Coma::setupUI()
 
 void Coma::prepareDialogs()
 {
-    module = UniquePointer<Module>(new Module(Board::GetInstance().baseSerialInfo(), this));
+    module = UniquePointer<Module>(new Module(true, Board::GetInstance().baseSerialInfo(), this));
     if (!module->loadSettings())
     {
         EMessageBox::error(this,

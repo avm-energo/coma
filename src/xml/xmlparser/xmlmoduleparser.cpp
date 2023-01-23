@@ -196,6 +196,8 @@ void Xml::ModuleParser::parseInterface(const QDomNode &resNode)
             [&](const QDomNode &iecNode) { parseIec(iecNode, ifaceSettings); });
         ifaceConfig.setValue(ifaceSettings);
     }
+    else
+        qCritical() << "Undefined interface type";
     emit interfaceSettingsSending(ifaceConfig, ifaceType);
 }
 
@@ -254,14 +256,14 @@ void Xml::ModuleParser::parseResources(const QDomElement &resNode)
 }
 
 /// \brief Функция для парсинга файла конфигурации модуля.
-void Xml::ModuleParser::parse(const QDomNode &content, const quint16 &typeB, const quint16 &typeM)
+void Xml::ModuleParser::parse(const QDomNode &content, const quint16 &typeB, const quint16 &typeM, const bool checks)
 {
     emit startNewConfig();
     isBase = (typeB == 0) ? false : true;
     auto moduleNode = content.firstChildElement(tags::module);
     if (!moduleNode.isNull())
     {
-        if (isCorrectModule(moduleNode, typeB, typeM))
+        if (isCorrectModule(moduleNode, typeB, typeM) || !checks)
         {
             auto resNode = moduleNode.firstChildElement(tags::res);
             if (!resNode.isNull())

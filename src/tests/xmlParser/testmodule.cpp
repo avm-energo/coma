@@ -6,47 +6,100 @@
 #include "testdata.h"
 
 #include <QtXml>
+#include <gen/stdfunc.h>
 
 TestModule::TestModule(QObject *parent) : QObject(parent)
 {
 }
 
-// inline int getElementCount(std::vector<CheckItem> &vec)
-//{
-//    auto elementCount = std::accumulate(vec.cbegin(), vec.cend(), 0,       //
-//        [](int value, const CheckItem &container)                          //
-//        {                                                                  //
-//            return value + static_cast<int>(container.itemsVector.size()); //
-//        });                                                                //
-//    return elementCount;
-//}
+void TestModule::initTestCase()
+{
+    Q_INIT_RESOURCE(settings);
+    QDir resDir(resourceDirectory);
+    QDir homeDir(StdFunc::GetSystemHomeDir());
+    auto xmlFiles = resDir.entryList(QDir::Files).filter(".xml");
+    constexpr auto perm = QFile::ReadOther | QFile::WriteOther | QFile::ReadOwner | QFile::WriteOwner | QFile::ReadUser
+        | QFile::WriteUser;
+    for (auto &filename : xmlFiles)
+    {
+        QVERIFY(QFile::copy(resDir.filePath(filename), homeDir.filePath(filename)));
+        QFile file(homeDir.filePath(filename));
+        QVERIFY(file.setPermissions(perm));
+    }
+    Q_CLEANUP_RESOURCE(settings);
+}
+
+void TestModule::cleanupTestCase()
+{
+    QDir homeDir(StdFunc::GetSystemHomeDir());
+    auto xmlFiles = homeDir.entryList(QDir::Files).filter(".xml");
+    for (auto &filename : xmlFiles)
+    {
+        QVERIFY(QFile::remove(homeDir.filePath(filename)));
+    }
+}
+
+inline int getGroupsCount(const ModuleTypes::SectionList &list)
+{
+    auto groupCount = std::accumulate(list.cbegin(), list.cend(), 0, //
+        [](int value, const ModuleTypes::Section &section)           //
+        {                                                            //
+            return value + section.sgMap.count();                    //
+        });                                                          //
+    return groupCount;                                               //
+}
+
+inline int getWidgetsCount(const ModuleTypes::SectionList &list)
+{
+    auto widgetCount = std::accumulate(list.cbegin(), list.cend(), 0,      //
+        [](int value, const ModuleTypes::Section &section)                 //
+        {                                                                  //
+            const auto &map = section.sgMap;                               //
+            auto innerCount = std::accumulate(map.cbegin(), map.cend(), 0, //
+                [](int inner, auto &&group) {                              //
+                    return inner + group.widgets.count();                  //
+                });                                                        //
+            return value + innerCount;                                     //
+        });                                                                //
+    return widgetCount;                                                    //
+}
+
+inline int getAlarmsCount(const ModuleTypes::AlarmMap &map)
+{
+    auto alarmCount = std::accumulate(map.cbegin(), map.cend(), 0, //
+        [](int count, auto &&alarm)                                //
+        {                                                          //
+            return count + alarm.size();                           //
+        });                                                        //
+    return alarmCount;                                             //
+}
 
 void TestModule::checkA284()
 {
-    Modules::StartupInfoBlock bsi;
-    bsi.MTypeB = 0xA2;
-    bsi.MTypeM = 0x84;
-    bsi.Fwver = StdFunc::StrToVer(version::avma284);
-    auto module = new Module(bsi, this);
+    Modules::StartupInfoBlock bsi = { 0xA2, 0x84, 0, StdFunc::StrToVer(a284::version) };
+    auto module = new Module(false, bsi, this);
     QVERIFY(module->loadSettings());
     auto &settings = ConfigStorage::GetInstance().getModuleSettings();
-    QCOMPARE(settings.getAlarms().size(), 2);
-    QCOMPARE(settings.getConfigs().size(), config::avma284);
-    // QCOMPARE(settings->highlightCrit.size(), 7);
-    // QCOMPARE(settings->highlightWarn.size(), 30);
-    QCOMPARE(settings.getJours().size(), 2);
+    // Journals comparing
     auto workJourSize = settings.getJours().value(Modules::JournalType::Work).size();
-    auto alarmsCount = std::accumulate(settings.getAlarms().cbegin(), settings.getAlarms().cend(), 0,
-        [](int a, auto &&alarm) { return a + alarm.size(); });
+    QCOMPARE(workJourSize, a284::workJours);
+    auto measJourSize = settings.getJours().value(Modules::JournalType::Meas).size();
+    QCOMPARE(measJourSize, a284::measJours);
+    // Alarms comparing
+    auto alarmsCount = getAlarmsCount(settings.getAlarms());
+    QCOMPARE(alarmsCount, a284::alarms);
+    // Highlights
+    QCOMPARE(settings.getHighlights(Modules::AlarmType::Critical).size(), a284::critHighlights);
+    QCOMPARE(settings.getHighlights(Modules::AlarmType::Warning).size(), a284::warnHighlights);
+    // Interface settings verifying
     QVERIFY(!settings.getInterfaceSettings().settings.isValid());
-    QCOMPARE(workJourSize, alarmsCount);
-
-    // std::vector<CheckItem> checkSettings;
-    // QVERIFY(
-    //    module.loadCheckSettings(Modules::BaseBoard(bsi.MTypeB), Modules::MezzanineBoard(bsi.MTypeM), checkSettings));
-    // QCOMPARE(checkSettings.size(), 1);
-    // auto elementCount = getElementCount(checkSettings);
-    // QCOMPARE(elementCount, check::check8084);
+    // Sections comparing
+    const auto &sections = settings.getSections();
+    QCOMPARE(sections.size(), a284::sections);
+    auto groupsCount = getGroupsCount(sections);
+    QCOMPARE(groupsCount, a284::sgroups);
+    auto widgetsCount = getWidgetsCount(sections);
+    QCOMPARE(widgetsCount, a284::mwidgets);
 }
 
 /*

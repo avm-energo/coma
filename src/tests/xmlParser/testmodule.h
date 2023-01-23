@@ -1,11 +1,8 @@
-#ifndef TESTPROTOCOM_H
-#define TESTPROTOCOM_H
-
+#pragma once
 #include "../../module/module.h"
 
 #include <QObject>
 #include <QtTest>
-#include <gen/stdfunc.h>
 
 class TestModule : public QObject
 {
@@ -14,10 +11,7 @@ public:
     explicit TestModule(QObject *parent = nullptr);
 private slots:
     /// \brief Вызывается перед первой тестовой функцией
-    void initTestCase()
-    {
-        Q_INIT_RESOURCE(settings);
-    }
+    void initTestCase();
 
     /// \brief Вызывается перед каждой тестовой функцией
     void init()
@@ -30,9 +24,7 @@ private slots:
     }
 
     /// \brief Вызывается после последней тестовой функции
-    void cleanupTestCase()
-    {
-    }
+    void cleanupTestCase();
 
     //    void check2100();
     //    void check2121();
@@ -102,5 +94,3 @@ private slots:
 
     void TestS2Parsing();
 };
-
-#endif // TESTPROTOCOM_H

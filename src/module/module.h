@@ -9,11 +9,13 @@ class Module : public QObject
 {
     Q_OBJECT
 private:
+    bool checks;
     const Modules::StartupInfoBlock &sInfoBlock;
     ConfigStorage *mStorage;
 
 public:
-    explicit Module(const Modules::StartupInfoBlock &startupInfoBlock = Board::GetInstance().baseSerialInfo(),
+    explicit Module(const bool criticalCheck = true,
+        const Modules::StartupInfoBlock &startupInfoBlock = Board::GetInstance().baseSerialInfo(),
         QObject *parent = nullptr);
     bool loadSettings();
 

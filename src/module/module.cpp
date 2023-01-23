@@ -8,21 +8,19 @@
 #include <gen/error.h>
 #include <gen/stdfunc.h>
 
-Module::Module(const Modules::StartupInfoBlock &startupInfoBlock, QObject *parent)
-    : QObject(parent), sInfoBlock(startupInfoBlock), mStorage(&ConfigStorage::GetInstance())
+Module::Module(const bool criticalCheck, const Modules::StartupInfoBlock &startupInfoBlock, QObject *parent)
+    : QObject(parent), checks(criticalCheck), sInfoBlock(startupInfoBlock), mStorage(&ConfigStorage::GetInstance())
 {
 }
 
-/// \brief Функция для проверки, существует ли файл с
-/// указанным именем в локальной папке пользователя.
+/// \brief Функция для проверки, существует ли файл с указанным именем в локальной папке пользователя.
 bool Module::isFileExist(const QString &filename)
 {
     auto dir = QDir(StdFunc::GetSystemHomeDir());
     return QFile::exists(dir.filePath(filename));
 }
 
-/// \brief Возвращает QDomDocument для файла с указанным
-/// именем из локальной папки пользователя.
+/// \brief Возвращает QDomDocument для файла с указанным именем из локальной папки пользователя.
 QDomDocument Module::getFileContent(const QString &filename)
 {
     QDomDocument doc;
@@ -51,8 +49,7 @@ QDomDocument Module::getFileContent(const QString &filename)
     return doc;
 }
 
-/// \brief Загрузка настроек в ConfigStorage из
-/// файла/файлов настроек модуля и s2files.xml.
+/// \brief Загрузка настроек в ConfigStorage из файла/файлов настроек модуля и s2files.xml.
 bool Module::loadSettings()
 {
     if (loadS2Settings())
@@ -103,8 +100,7 @@ bool Module::loadS2Settings()
         return true;
 }
 
-/// \brief Загрузка настроек из файла/файлов настроек
-/// модуля с помощью ModuleXmlParser.
+/// \brief Загрузка настроек из файла/файлов настроек модуля с помощью ModuleXmlParser.
 bool Module::loadModuleSettings(const QString &filename, const quint16 &typeB, const quint16 &typeM)
 {
     auto content = getFileContent(filename);
@@ -124,7 +120,7 @@ bool Module::loadModuleSettings(const QString &filename, const quint16 &typeB, c
             mStorage, &ConfigStorage::interfaceSettingsReceive);
         QObject::connect(moduleParser, &Xml::ModuleParser::configDataSending, //
             mStorage, &ConfigStorage::configDataReceive);
-        moduleParser->parse(content, typeB, typeM);
+        moduleParser->parse(content, typeB, typeM, checks);
         moduleParser->deleteLater();
         return true;
     }

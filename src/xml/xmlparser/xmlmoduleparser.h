@@ -16,7 +16,7 @@ private:
 
 public:
     explicit ModuleParser(QObject *parent = nullptr);
-    void parse(const QDomNode &content, const quint16 &typeB, const quint16 &typeM);
+    void parse(const QDomNode &content, const quint16 &typeB, const quint16 &typeM, const bool checks);
 
 signals:
     void startNewConfig();

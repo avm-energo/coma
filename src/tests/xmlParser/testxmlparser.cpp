@@ -21,8 +21,8 @@ void TestModule::TestS2Parsing()
     Modules::StartupInfoBlock bsi;
     bsi.MTypeB = 0x11;
     bsi.MTypeM = 0x11;
-    bsi.Fwver = StdFunc::StrToVer(version::avma284);
-    auto mModule = new Module(bsi, this);
+    bsi.Fwver = StdFunc::StrToVer(a284::version);
+    auto mModule = new Module(true, bsi, this);
     auto state = mModule->loadSettings();
     const auto &mSettings = ConfigStorage::GetInstance().getModuleSettings();
     printModuleSettings(mSettings);
