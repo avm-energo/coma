@@ -47,6 +47,7 @@ ModbusThread::ModbusThread(QObject *parent) : QObject(parent), log(new LogClass(
 
 ModbusThread::~ModbusThread()
 {
+    trashTimer->deleteLater();
 }
 
 void ModbusThread::setDeviceAddress(quint8 adr)
@@ -59,7 +60,7 @@ void ModbusThread::run()
     log->Init(QString(metaObject()->className()) + ".log");
     log->info(logStart);
 
-    trashTimer = new QTimer();
+    trashTimer = new QTimer(this);
     trashTimer->setInterval(TRASHTIMEOUT);
     mTrashEnabled = false;
     connect(trashTimer, &QTimer::timeout, this, &ModbusThread::trashTimerTimeout);
@@ -75,16 +76,16 @@ void ModbusThread::run()
 #endif
             switch (inp.cmd)
             {
-            case CommandsMBS::MBS_READINPUTREGISTER:
+            case CommandsMBS::ReadInputRegister:
                 readRegisters(inp); // send command to the port
                 break;
-            case CommandsMBS::MBS_READHOLDINGREGISTERS:
+            case CommandsMBS::ReadHoldingRegisters:
                 readRegisters(inp);
                 break;
-            case CommandsMBS::MBS_WRITEMULTIPLEREGISTERS:
+            case CommandsMBS::WriteMultipleRegisters:
                 writeMultipleRegisters(inp);
                 break;
-            case CommandsMBS::MBS_READCOILS:
+            case CommandsMBS::ReadCoils:
                 readCoils(inp);
                 break;
             default:
@@ -168,11 +169,13 @@ void ModbusThread::sendWithoutCrc(const QByteArray &ba)
     log->info("-> " + ba.toHex());
     emit write(ba);
     QElapsedTimer tme;
-
     tme.start();
-    while ((busy) && (tme.elapsed() < RECONNECTTIME)) // ждём, пока либо сервер не отработает,
+    while ((busy) && (tme.elapsed() < RECONNECTTIME))
+    {
+        // ждём, пока либо сервер не отработает,
         // либо не наступит таймаут
         QCoreApplication::processEvents();
+    }
     if (busy)
     {
         busy = false;
@@ -184,7 +187,6 @@ void ModbusThread::sendWithoutCrc(const QByteArray &ba)
 
 void ModbusThread::parseAndSetToOutList(QByteArray &ba)
 {
-
     using namespace CommandsMBS;
     switch (m_commandSent.type)
     {
@@ -256,7 +258,7 @@ void ModbusThread::getCommandResponse(QByteArray &bain)
     if (bain.size() < 3)
     {
         qCritical() << Error::SizeError << metaObject()->className();
-        // Log->error("Wrong inbuf size");
+        log->error("Wrong inbuf size");
         return;
     }
     // ?
@@ -265,7 +267,7 @@ void ModbusThread::getCommandResponse(QByteArray &bain)
     if (byteSize > ba.size())
     {
         qCritical() << Error::SizeError << metaObject()->className();
-        // qCritical("Wrong byte size in response");
+        log->error("Wrong byte size in response");
         return;
     }
     DataTypes::GeneralResponseStruct grs;
@@ -306,7 +308,6 @@ void ModbusThread::getSinglePointSignals(QByteArray &bain)
 void ModbusThread::finishThread()
 {
     qDebug() << __PRETTY_FUNCTION__;
-    // AboutToFinish = true;
 }
 
 quint16 ModbusThread::calcCRC(QByteArray &ba) const
@@ -337,7 +338,6 @@ void ModbusThread::trashTimerTimeout()
 
 void ModbusThread::readRegisters(CommandsMBS::CommandStruct &cms)
 {
-
     m_commandSent = cms;
     QByteArray ba(createReadPDU(cms));
     ba = createADU(ba);

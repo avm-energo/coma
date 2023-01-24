@@ -33,8 +33,8 @@ bool IEC104::start(const ConnectStruct &st)
     EthThreadWorking = false;
     ParseThreadWorking = false;
 
-    IEC104Thread *parser = new IEC104Thread(Log);
-    QThread *parserThread = new QThread;
+    auto parser = new IEC104Thread(Log.get());
+    auto parserThread = new QThread;
     parserThread->setObjectName("parserThread");
 
     connect(parserThread, &QThread::started, [&] { ParseThreadWorking = true; });

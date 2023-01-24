@@ -4,7 +4,6 @@
 #ifdef Q_OS_WINDOWS
 bool UsbHidSettings::hasMatch(const QString &str)
 {
-
     //(?<=[a-zA-Z]{3}.)[a-fA-F0-9]+
     if (!hasPartialMatch(str))
         return false;

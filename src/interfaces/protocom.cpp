@@ -47,7 +47,7 @@ bool Protocom::start(const ConnectStruct &st)
 
 bool Protocom::start(const UsbHidSettings &usbhid)
 {
-    auto port = new UsbHidPort(usbhid, Log);
+    auto port = new UsbHidPort(usbhid, Log.get());
     auto parser = new ProtocomThread;
     auto portThread = new QThread;
     auto parseThread = new QThread;
@@ -91,10 +91,10 @@ bool Protocom::start(const UsbHidSettings &usbhid)
     connect(
         this, &BaseInterface::nativeEvent, port,
         [port](auto &&msg) {
-            MSG *message = static_cast<MSG *>(msg);
+            auto message = static_cast<MSG *>(msg);
             if (!msg)
                 return;
-            auto *devint = reinterpret_cast<DEV_BROADCAST_DEVICEINTERFACE *>(message->lParam);
+            auto devint = reinterpret_cast<DEV_BROADCAST_DEVICEINTERFACE *>(message->lParam);
             if (!devint)
                 return;
             USBMessage usbMessage;

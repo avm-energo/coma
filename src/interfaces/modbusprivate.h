@@ -15,11 +15,11 @@ enum CommandRegisters
 
 enum Commands : quint8
 {
-    MBS_READCOILS = 0x01,
-    MBS_INPUTSTATUS = 0x02,
-    MBS_READHOLDINGREGISTERS = 0x03,
-    MBS_READINPUTREGISTER = 0x04,
-    MBS_WRITEMULTIPLEREGISTERS = 0x10
+    ReadCoils = 0x01,
+    ReadDiscreteInputs = 0x02,
+    ReadHoldingRegisters = 0x03,
+    ReadInputRegister = 0x04,
+    WriteMultipleRegisters = 0x10
 };
 Q_ENUM_NS(Commands)
 
@@ -32,22 +32,18 @@ enum ModbusGroupsEnum
     SECONDBYTEQ = 4
 };
 
+/// \brief Enumeration for type identification.
 enum TypeId : quint8
-/// 1 register is int16
 {
-    /// 1 register contains 16 bit uint (WORD)
-    Uint16 = 0,
-    /// 1 register contains 16 bit int
-    Int16 = 1,
-    /// 1 register contains 1 bit
-    Bool,
-    /// 2 registers contain uint32 (bitstring)
-    Uint32,
-    /// 4 registers contain float
-    Float = 4,
-    None,
-
+    Uint16 = 0, ///< 1 register contains 16 bit uint (WORD)
+    Int16 = 1,  ///< 1 register contains 16 bit int
+    Bool,       ///< 1 register contains 1 bit
+    Uint32,     ///< 2 registers contain uint32 (bitstring)
+    Float = 4,  ///< 4 registers contain float
+    // ...
     // Smth else
+    // ...
+    None = 255
 };
 Q_ENUM_NS(TypeId)
 
@@ -82,7 +78,6 @@ struct CommandStruct
     Commands cmd;
     quint16 adr;
     quint16 quantity;
-    //    quint8 sizebytes;
     QByteArray data;
     TypeId type;
     QString sender;
@@ -97,7 +92,6 @@ struct Coils
 QDebug operator<<(QDebug debug, const CommandsMBS::CommandStruct &cmd);
 }
 Q_DECLARE_METATYPE(CommandsMBS::CommandStruct)
-// Q_DECLARE_METATYPE(CommandsMBS::ModbusGroup)
 
 constexpr unsigned char TabCRChi[256] = { 0x00, 0xC1, 0x81, 0x40, 0x01, 0xC0, 0x80, 0x41, 0x01, 0xC0, 0x80, 0x41, 0x00,
     0xC1, 0x81, 0x40, 0x01, 0xC0, 0x80, 0x41, 0x00, 0xC1, 0x81, 0x40, 0x00, 0xC1, 0x81, 0x40, 0x01, 0xC0, 0x80, 0x41,

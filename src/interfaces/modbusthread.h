@@ -6,9 +6,9 @@
 #include <QTimer>
 #include <gen/datatypes.h>
 #include <gen/logclass.h>
+#include <gen/stdfunc.h>
 
-#define RECONNECTTIME 10000
-
+constexpr auto RECONNECTTIME = 10000;
 constexpr auto TRASHTIMEOUT = (255 * 10 * 1000) / 2400; // 255 bytes * 10 (bit/byte) * 1000 (msec) / 2400 (baud)
 
 class ModbusThread : public QObject
@@ -18,7 +18,6 @@ public:
     explicit ModbusThread(QObject *parent = nullptr);
     ~ModbusThread();
     void setDeviceAddress(quint8 adr);
-
     void setDelay(quint8 newDelay);
 
 public slots:
@@ -27,19 +26,16 @@ public slots:
     void parseReply(QByteArray ba);
 
 signals:
-
     void clearBuffer();
     void finished();
     void write(QByteArray);
 
 private:
-    bool busy; // port is busy with write/read operation
-
+    bool busy; ///< Port is busy with write/read operation
     quint8 deviceAddress;
-    // delay in ms
-    quint8 delay;
+    quint8 delay; ///< Delay in ms
 
-    LogClass *log;
+    UniquePointer<LogClass> log;
     QByteArray m_readData;
     CommandsMBS::CommandStruct m_commandSent;
     int m_bytesToReceive;
@@ -59,7 +55,6 @@ private:
     void getIntegerSignals(QByteArray &bain);
     void getCommandResponse(QByteArray &bain);
     void getSinglePointSignals(QByteArray &bain);
-
     quint16 calcCRC(QByteArray &ba) const;
 
     template <typename T> T unpackReg(QByteArray ba) const
@@ -67,14 +62,11 @@ private:
         assert(sizeof(T) == ba.size());
         for (auto i = 0; i < ba.size(); i = i + 2)
             std::swap(ba.data()[i], ba.data()[i + 1]);
-
         return *reinterpret_cast<T *>(ba.data());
     }
 
 private slots:
     void trashTimerTimeout();
-
-signals:
 };
 
 #endif // MODBUSTHREAD_H

@@ -45,7 +45,7 @@ public:
         None
     };
 
-    LogClass *Log;
+    UniquePointer<LogClass> Log;
 
     explicit BaseInterface(QObject *parent = nullptr);
     ~BaseInterface();
