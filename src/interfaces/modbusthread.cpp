@@ -13,6 +13,10 @@
 #include <gen/pch.h>
 #include <gen/stdfunc.h>
 
+constexpr auto RECONNECTTIME = 1000;
+constexpr auto TRASHTIMEOUT = (255 * 10 * 1000) / 2400; // 255 bytes * 10 (bit/byte) * 1000 (msec) / 2400 (baud)
+
+/*
 #ifdef Q_OS_WINDOWS
 #include <Windows.h>
 
@@ -40,6 +44,7 @@ static inline void loop(quint8 delay)
 }
 
 #endif
+*/
 
 ModbusThread::ModbusThread(QObject *parent) : QObject(parent), log(new LogClass(this))
 {
@@ -92,8 +97,9 @@ void ModbusThread::run()
                 break;
             }
         }
-        // Magic wait delay
-        loop(delay);
+        // Silent interval for Modbus (3.5 characters)
+        QThread::msleep(delay);
+        // loop(delay);
     }
     emit finished();
 }
@@ -116,6 +122,7 @@ void ModbusThread::parseReply(QByteArray ba)
             qCritical() << Error::ReadError << metaObject()->className();
             mTrashEnabled = true;
             trashTimer->start();
+            busy = false;
             return;
         }
     }
@@ -154,23 +161,28 @@ void ModbusThread::setDelay(quint8 newDelay)
     delay = newDelay;
 }
 
-void ModbusThread::send(QByteArray &ba)
+void ModbusThread::calcCRCAndSend(QByteArray &ba)
 {
-    quint16 KSS = calcCRC(ba);
-    ba.append(static_cast<char>(KSS >> 8));
-    ba.append(static_cast<char>(KSS));
-    sendWithoutCrc(ba);
+    quint16 crc = calcCRC(ba);
+    ba.append(static_cast<char>(crc >> 8));
+    ba.append(static_cast<char>(crc));
+    send(ba);
 }
 
-void ModbusThread::sendWithoutCrc(const QByteArray &ba)
+void ModbusThread::send(const QByteArray &ba)
 {
     m_readData.clear();
     busy = true;
     log->info("-> " + ba.toHex());
     emit write(ba);
-    QElapsedTimer tme;
-    tme.start();
-    while ((busy) && (tme.elapsed() < RECONNECTTIME))
+    waitReply();
+}
+
+void ModbusThread::waitReply()
+{
+    QElapsedTimer timer;
+    timer.start();
+    while ((busy) && (timer.elapsed() < RECONNECTTIME))
     {
         // ждём, пока либо сервер не отработает,
         // либо не наступит таймаут
@@ -225,6 +237,7 @@ void ModbusThread::getFloatSignals(QByteArray &bain)
         DataTypes::FloatStruct signal;
         signal.sigVal = unpackReg<float>(ba.mid(i, sizeof(float)));
         signal.sigAdr = m_commandSent.adr + i / sizeof(float);
+        signal.sigQuality = DataTypes::Quality::Good;
         DataManager::GetInstance().addSignalToOutList(signal);
     }
 }
@@ -249,6 +262,7 @@ void ModbusThread::getIntegerSignals(QByteArray &bain)
         DataTypes::BitStringStruct signal;
         signal.sigVal = unpackReg<quint32>(ba.mid(i, sizeof(quint32)));
         signal.sigAdr = m_commandSent.adr + i / sizeof(quint32);
+        signal.sigQuality = DataTypes::Quality::Good;
         DataManager::GetInstance().addSignalToOutList(signal);
     }
 }
@@ -300,6 +314,7 @@ void ModbusThread::getSinglePointSignals(QByteArray &bain)
         {
             signal.sigAdr = m_commandSent.adr + i * 8 + j;
             signal.sigVal = ((0x01 << j) & ival) ? 1 : 0;
+            signal.sigQuality = DataTypes::Quality::Good;
             DataManager::GetInstance().addSignalToOutList(signal);
         }
     }
@@ -343,9 +358,9 @@ void ModbusThread::readRegisters(CommandsMBS::CommandStruct &cms)
     ba = createADU(ba);
     if (cms.data.size())
         ba.append(cms.data);
-    log->info("Send bytes: " + ba.toHex());
+    // log->info("Send bytes: " + ba.toHex());
     m_bytesToReceive = cms.quantity * 2 + 5; // address, function code, bytes count, crc (2)
-    sendWithoutCrc(ba);
+    send(ba);
 }
 
 void ModbusThread::readCoils(CommandsMBS::CommandStruct &cms)
@@ -353,11 +368,11 @@ void ModbusThread::readCoils(CommandsMBS::CommandStruct &cms)
     m_commandSent = cms;
     QByteArray ba(createReadPDU(cms));
     ba = createADU(ba);
-    log->info("Send bytes: " + ba.toHex());
+    // log->info("Send bytes: " + ba.toHex());
     auto temp = cms.quantity / 2 + cms.quantity % 2;
     temp = temp / 8 + temp % 8;  // try to count bytes for coils
     m_bytesToReceive = temp + 3; // address, function code, bytes count, crc (2)
-    sendWithoutCrc(ba);
+    send(ba);
 }
 
 void ModbusThread::writeMultipleRegisters(CommandsMBS::CommandStruct &cms)
@@ -367,9 +382,9 @@ void ModbusThread::writeMultipleRegisters(CommandsMBS::CommandStruct &cms)
     ba.append(cms.quantity * 2);
     if (cms.data.size())
         ba.append(cms.data);
-    log->info("Send bytes: " + ba.toHex());
+    // log->info("Send bytes: " + ba.toHex());
     m_bytesToReceive = 8; // address, function code, address (2), quantity (2), crc (2)
-    send(ba);
+    calcCRCAndSend(ba);
 }
 
 void ModbusThread::setQueryStartBytes(CommandsMBS::CommandStruct &cms, QByteArray &ba)
@@ -399,8 +414,8 @@ QByteArray ModbusThread::createADU(const QByteArray &pdu) const
     ba.append(deviceAddress);
     ba.append(pdu);
     // здесь мог бы быть Ваш рефакторинг
-    quint16 KSS = calcCRC(ba);
-    ba.append(static_cast<char>(KSS >> 8));
-    ba.append(static_cast<char>(KSS));
+    quint16 crc = calcCRC(ba);
+    ba.append(static_cast<char>(crc >> 8));
+    ba.append(static_cast<char>(crc));
     return ba;
 }

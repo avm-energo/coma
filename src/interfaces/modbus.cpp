@@ -85,7 +85,7 @@ void ModBus::sendReconnectSignal()
     }
 }
 
-bool ModBus::isValidRegs(const CommandsMBS::CommandStruct &cmd) const
+bool ModBus::isValidRegs(CommandsMBS::CommandStruct &cmd) const
 {
     const auto &st = settings<InterfaceInfo<ModbusGroup>>();
     Q_ASSERT(st.dictionary().contains(cmd.adr));
@@ -94,8 +94,16 @@ bool ModBus::isValidRegs(const CommandsMBS::CommandStruct &cmd) const
         const auto values = st.dictionary().values(cmd.adr);
         for (const auto &val : values)
         {
-            if ((val.count == cmd.quantity) && (val.function == cmd.cmd))
-                return true;
+            if (val.function == cmd.cmd)
+            {
+                if (val.count == cmd.quantity * 2)
+                {
+                    cmd.quantity *= 2;
+                    return true;
+                }
+                if (val.count == cmd.quantity)
+                    return true;
+            }
         }
     }
     return false;
@@ -122,7 +130,6 @@ CommandsMBS::TypeId ModBus::type(const quint32 addr) const
 
 TypeId ModBus::type(const quint32 addr, const quint32 count, const CommandsMBS::Commands cmd) const
 {
-    Q_UNUSED(count);
     const auto &st = settings<InterfaceInfo<ModbusGroup>>();
     const auto values = st.dictionary().values(addr);
     for (const auto &val : values)
@@ -149,6 +156,7 @@ void ModBus::reqStartup(quint32 sigAdr, quint32 sigCount)
     DataManager::GetInstance().addToInQueue(inp);
 }
 
+/// TODO: Переписать
 void ModBus::reqBSI()
 {
     CommandsMBS::CommandStruct inp {
@@ -162,6 +170,7 @@ void ModBus::reqBSI()
     DataManager::GetInstance().addToInQueue(inp);
 }
 
+/// TODO: Переписать
 void ModBus::reqBSIExt()
 {
     // 31 (40) - magic number for BSI EXT ?????????????
@@ -177,12 +186,14 @@ void ModBus::reqBSIExt()
     DataManager::GetInstance().addToInQueue(inp);
 }
 
+/// TODO: требуется реализация
 void ModBus::reqFile(quint32 filenum, FileFormat format)
 {
     Q_UNUSED(filenum)
     Q_UNUSED(format)
 }
 
+/// TODO: требуется реализация
 void ModBus::writeFile(quint32 filenum, const QByteArray &file)
 {
     Q_UNUSED(filenum)
@@ -224,7 +235,6 @@ void ModBus::writeFloat(const DataTypes::FloatStruct &flstr)
     //    Q_ASSERT(false && "Dont use this before test");
     // now write floats to the out sigArray
     QByteArray sigArray = packReg(flstr.sigVal);
-
     CommandsMBS::CommandStruct inp {
         CommandsMBS::Commands::WriteMultipleRegisters, //
         static_cast<quint16>(flstr.sigAdr),            //
@@ -372,7 +382,7 @@ void ModBus::reqFloats(quint32 sigAdr, quint32 sigCount)
     CommandsMBS::CommandStruct inp {
         CommandsMBS::Commands::ReadInputRegister, //
         static_cast<quint16>(sigAdr),             //
-        static_cast<quint8>(sigCount * 2),        //
+        static_cast<quint8>(sigCount),            //
         {},                                       //
         type(sigAdr),                             //
         __PRETTY_FUNCTION__                       //
@@ -383,6 +393,13 @@ void ModBus::reqFloats(quint32 sigAdr, quint32 sigCount)
 
 void ModBus::reqBitStrings(quint32 sigAdr, quint32 sigCount)
 {
-    Q_UNUSED(sigAdr)
-    Q_UNUSED(sigCount)
+    CommandsMBS::CommandStruct inp {
+        CommandsMBS::Commands::ReadInputRegister, //
+        static_cast<quint16>(sigAdr),             //
+        static_cast<quint8>(sigCount * 2),        //
+        {},                                       //
+        TypeId::Uint32,                           //
+        __PRETTY_FUNCTION__                       //
+    };
+    DataManager::GetInstance().addToInQueue(inp);
 }

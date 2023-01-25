@@ -23,6 +23,16 @@ enum Commands : quint8
 };
 Q_ENUM_NS(Commands)
 
+enum Exception : quint8
+{
+    InvalidFunctionCode = 0x01,
+    InvalidDataAddress = 0x02,
+    InvalidDataValue = 0x03,
+    ExecutionFailed1 = 0x04,
+    ExecutionFailed2 = 0x05,
+    ExecutionFailed3 = 0x06
+};
+
 enum ModbusGroupsEnum
 {
     SIGNALTYPE = 0,

@@ -12,6 +12,7 @@
 #include <QTimeZone>
 #include <gen/timefunc.h>
 
+/// TODO: здесь мог быть ваш рефакторинг
 class Journals : public QObject
 {
     Q_OBJECT

@@ -57,7 +57,7 @@ signals:
     void clearBuffer();
 
 private:
-    bool isValidRegs(const CommandsMBS::CommandStruct &cmd) const;
+    bool isValidRegs(CommandsMBS::CommandStruct &cmd) const;
     bool isValidRegs(const quint32 sigAdr, const quint32 sigCount) const;
     CommandsMBS::TypeId type(const quint32 addr) const;
     CommandsMBS::TypeId type(const quint32 addr, const quint32 count, const CommandsMBS::Commands cmd) const;

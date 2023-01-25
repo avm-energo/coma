@@ -8,9 +8,6 @@
 #include <gen/logclass.h>
 #include <gen/stdfunc.h>
 
-constexpr auto RECONNECTTIME = 10000;
-constexpr auto TRASHTIMEOUT = (255 * 10 * 1000) / 2400; // 255 bytes * 10 (bit/byte) * 1000 (msec) / 2400 (baud)
-
 class ModbusThread : public QObject
 {
     Q_OBJECT
@@ -31,9 +28,9 @@ signals:
     void write(QByteArray);
 
 private:
-    bool busy; ///< Port is busy with write/read operation
-    quint8 deviceAddress;
-    quint8 delay; ///< Delay in ms
+    bool busy;            ///< Port is busy with write/read operation
+    quint8 deviceAddress; ///< Deivce address
+    quint8 delay;         ///< Delay in ms
 
     UniquePointer<LogClass> log;
     QByteArray m_readData;
@@ -48,8 +45,9 @@ private:
     void setQueryStartBytes(CommandsMBS::CommandStruct &cms, QByteArray &ba);
     QByteArray createReadPDU(const CommandsMBS::CommandStruct &cms) const;
     QByteArray createADU(const QByteArray &pdu) const;
-    void send(QByteArray &ba);
-    void sendWithoutCrc(const QByteArray &ba);
+    void calcCRCAndSend(QByteArray &ba);
+    void send(const QByteArray &ba);
+    void waitReply();
     void parseAndSetToOutList(QByteArray &ba);
     void getFloatSignals(QByteArray &bain);
     void getIntegerSignals(QByteArray &bain);
