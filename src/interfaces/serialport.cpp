@@ -4,6 +4,7 @@
 
 #include <QCoreApplication>
 #include <QDebug>
+#include <QThread>
 #include <QTimer>
 
 #define TIMEOUT 3000
@@ -95,7 +96,10 @@ void SerialPort::readBytes()
 {
     QByteArray ba;
     while (port->bytesAvailable())
+    {
         ba += port->readAll();
+        QThread::msleep(2);
+    }
     if (ba.size())
         emit read(ba);
 }
