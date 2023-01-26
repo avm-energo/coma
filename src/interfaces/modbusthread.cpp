@@ -120,8 +120,8 @@ void ModbusThread::parseReply(QByteArray ba)
         {
             log->error("Modbus error response: " + m_readData.toHex());
             qCritical() << Error::ReadError << metaObject()->className();
-            mTrashEnabled = true;
-            trashTimer->start();
+            // mTrashEnabled = true;
+            // trashTimer->start();
             busy = false;
             return;
         }

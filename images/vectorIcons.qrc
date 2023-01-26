@@ -37,5 +37,8 @@
         <file>pkdn.svg</file>
         <file>tnosc.svg</file>
         <file>excel.svg</file>
+        <file>createModule.svg</file>
+        <file>deleteModule.svg</file>
+        <file>editModule.svg</file>
     </qresource>
 </RCC>

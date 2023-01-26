@@ -9,6 +9,9 @@
 #include <QLabel>
 #include <QToolBar>
 
+constexpr auto iconSize = 40;
+constexpr auto contentMargin = 5;
+
 XmlEditor::XmlEditor(QWidget *parent) : QDialog(parent, Qt::Window), dc(nullptr), masterModel(nullptr), manager(nullptr)
 {
     if (parent != nullptr)
@@ -58,16 +61,16 @@ QVBoxLayout *XmlEditor::getMasterWorkspace()
     masterView = new QTableView(this);
     auto toolbar = new QToolBar(this);
     toolbar->setContextMenuPolicy(Qt::PreventContextMenu);
-    toolbar->setIconSize(QSize(30, 30));
-    toolbar->addAction(QIcon(":/icons/tnstart.svg"), "Создать модуль", this,     //
-        [this]() { actionDialog(DialogType::Create, masterView); });             //
-    toolbar->addSeparator();                                                     //
-    toolbar->addAction(QIcon(":/icons/tnosc.svg"), "Редактировать модуль", this, //
-        [this]() { actionDialog(DialogType::Edit, masterView); });               //
-    toolbar->addSeparator();                                                     //
-    toolbar->addAction(QIcon(":/icons/tnstop.svg"), "Удалить модуль", this,      //
-        [this]() { actionDialog(DialogType::Remove, masterView); });             //
-    toolbar->addSeparator();                                                     //
+    toolbar->setIconSize(QSize(iconSize, iconSize));
+    toolbar->addAction(QIcon(":/icons/createModule.svg"), "Создать модуль", this,     //
+        [this]() { actionDialog(DialogType::Create, masterView); });                  //
+    toolbar->addSeparator();                                                          //
+    toolbar->addAction(QIcon(":/icons/editModule.svg"), "Редактировать модуль", this, //
+        [this]() { actionDialog(DialogType::Edit, masterView); });                    //
+    toolbar->addSeparator();                                                          //
+    toolbar->addAction(QIcon(":/icons/deleteModule.svg"), "Удалить модуль", this,     //
+        [this]() { actionDialog(DialogType::Remove, masterView); });                  //
+    toolbar->addSeparator();                                                          //
     toolbar->addAction(QIcon(":/icons/tnsave.svg"), "Сохранить модуль", this, &XmlEditor::saveModule);
     workspace->addWidget(toolbar);
 
@@ -96,22 +99,22 @@ QVBoxLayout *XmlEditor::getMasterWorkspace()
 QVBoxLayout *XmlEditor::getSlaveWorkspace()
 {
     auto workspace = new QVBoxLayout;
-    workspace->setContentsMargins(5, 5, 5, 5);
+    workspace->setContentsMargins(contentMargin, contentMargin, contentMargin, contentMargin);
 
     // Настройка тулбара
     tableSlaveView = new QTableView(this);
     auto toolbar = new QToolBar(this);
     toolbar->setContextMenuPolicy(Qt::PreventContextMenu);
-    toolbar->setIconSize(QSize(30, 30));
-    toolbar->addAction(QIcon(":/icons/tnstart.svg"), "Создать", this,     //
-        [this]() { actionDialog(DialogType::Create, tableSlaveView); });  //
-    toolbar->addSeparator();                                              //
-    toolbar->addAction(QIcon(":/icons/tnosc.svg"), "Редактировать", this, //
-        [this]() { actionDialog(DialogType::Edit, tableSlaveView); });    //
-    toolbar->addSeparator();                                              //
-    toolbar->addAction(QIcon(":/icons/tnstop.svg"), "Удалить", this,      //
-        [this]() { actionDialog(DialogType::Remove, tableSlaveView); });  //
-    workspace->addWidget(toolbar);                                        //
+    toolbar->setIconSize(QSize(iconSize, iconSize));
+    toolbar->addAction(QIcon(":/icons/createModule.svg"), "Создать", this,     //
+        [this]() { actionDialog(DialogType::Create, tableSlaveView); });       //
+    toolbar->addSeparator();                                                   //
+    toolbar->addAction(QIcon(":/icons/editModule.svg"), "Редактировать", this, //
+        [this]() { actionDialog(DialogType::Edit, tableSlaveView); });         //
+    toolbar->addSeparator();                                                   //
+    toolbar->addAction(QIcon(":/icons/deleteModule.svg"), "Удалить", this,     //
+        [this]() { actionDialog(DialogType::Remove, tableSlaveView); });       //
+    workspace->addWidget(toolbar);                                             //
 
     // Label для отображения текущего положения в дереве моделей
     auto curPath = new QLabel("", this);
