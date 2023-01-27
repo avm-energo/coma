@@ -82,8 +82,8 @@ private:
     void prepare();
     virtual bool nativeEvent(const QByteArray &eventType, void *message, long *result) override;
     QToolBar *createToolBar();
-    void keyPressEvent(QKeyEvent *e) override;
-    void resizeEvent(QResizeEvent *e) override;
+    void keyPressEvent(QKeyEvent *event) override;
+    void resizeEvent(QResizeEvent *event) override;
     void prepareDialogs();
 
 signals:

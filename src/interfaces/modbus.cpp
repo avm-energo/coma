@@ -167,7 +167,7 @@ void ModBus::reqBSI()
 
 void ModBus::reqBSIExt()
 {
-    // 31 (40) - magic number for BSI EXT ?????????????
+    // 31 (40) - начальный адрес первого регистра блока BSI Ext
     constexpr auto regCount = sizeof(Modules::StartupInfoBlockExt0) / sizeof(quint32);
     CommandsMBS::CommandStruct inp {
         CommandsMBS::Commands::MBS_READINPUTREGISTER, //

@@ -4,8 +4,7 @@ project(startup LANGUAGES CXX)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-find_package(
-  Qt${QT_VERSION_MAJOR}
+find_package(Qt${QT_VERSION_MAJOR}
   COMPONENTS Core Widgets
   REQUIRED)
 
@@ -14,12 +13,11 @@ file(GLOB_RECURSE files_h ${PROJECT_SOURCE_DIR}/*.h)
 
 add_library(
   ${PROJECT_NAME} STATIC
-  ${files_cpp} ${files_h} )
+  ${files_cpp} ${files_h})
 
-target_link_libraries(
-  ${PROJECT_NAME}
-  PUBLIC gen
-  PRIVATE Qt${QT_VERSION_MAJOR}::Core
-  Qt${QT_VERSION_MAJOR}::Widgets)
+target_link_libraries(${PROJECT_NAME} PRIVATE
+  Qt${QT_VERSION_MAJOR}::Core
+  Qt${QT_VERSION_MAJOR}::Widgets
+  PUBLIC gen)
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE INTERFACES_LIBRARY)

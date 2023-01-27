@@ -186,7 +186,8 @@ void Coma::prepareDialogs()
     }
     mDlgManager = new DialogManager(ConfigStorage::GetInstance().getModuleSettings(), this);
     AlarmW->configure();
-    auto &dlgs = mDlgManager->createDialogs(mAppConfig);
+    mDlgManager->createDialogs(mAppConfig);
+    auto &dlgs = mDlgManager->getDialogs();
     for (auto dialog : dlgs)
     {
         connect(BdaTimer, &QTimer::timeout, dialog, &UDialog::reqUpdate);
@@ -221,7 +222,7 @@ QWidget *Coma::least()
     MainLW->hide();
     connect(MainTW, &QStackedWidget::currentChanged, this, &Coma::mainTWTabChanged);
 
-    QFrame *line = new QFrame;
+    auto line = new QFrame;
     lyout->addWidget(line);
     inlyout = new QHBoxLayout;
     inlyout->addWidget(WDFunc::NewLBL2(this, "Обмен"));
@@ -729,16 +730,16 @@ void Coma::disconnectAndClear()
     }
 }
 
-void Coma::resizeEvent(QResizeEvent *e)
+void Coma::resizeEvent(QResizeEvent *event)
 {
-    QMainWindow::resizeEvent(e);
+    QMainWindow::resizeEvent(event);
 }
 
-void Coma::keyPressEvent(QKeyEvent *e)
+void Coma::keyPressEvent(QKeyEvent *event)
 {
-    if (e->key() == Qt::Key_Escape)
+    if (event->key() == Qt::Key_Escape)
         StdFunc::Cancel();
-    QMainWindow::keyPressEvent(e);
+    QMainWindow::keyPressEvent(event);
 }
 
 void Coma::mainTWTabChanged(int tabindex)

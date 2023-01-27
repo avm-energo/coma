@@ -20,8 +20,9 @@ class DialogManager : public QObject
     Q_OBJECT
 public:
     DialogManager(const ModuleSettings &settings, QWidget *parent = nullptr);
-    const QList<UDialog *> &createDialogs(const AppConfiguration &appCfg);
+    void createDialogs(const AppConfiguration appCfg);
     void deleteDialogs();
+    const QList<UDialog *> &getDialogs() const;
     void parentTWTabChanged(int index);
 
 private:
@@ -38,6 +39,6 @@ private:
     void createJournalAndStartupDialogs(const Modules::Model &boxModel);
     void createTwoPartTuneDialogs(const Modules::BaseBoard &typeb, const Modules::MezzanineBoard &typem);
     void createOscAndSwJourDialogs(const Modules::BaseBoard &typeb, const Modules::MezzanineBoard &typem);
-    void createSpecificDialogs(const AppConfiguration &appCfg);
-    void createCommonDialogs(const AppConfiguration &appCfg);
+    void createSpecificDialogs(const AppConfiguration appCfg);
+    void createCommonDialogs(const AppConfiguration appCfg);
 };

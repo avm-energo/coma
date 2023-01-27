@@ -28,14 +28,13 @@ DialogManager::DialogManager(const ModuleSettings &settings, QWidget *parent)
 }
 
 /// \brief Creating a list of dialogs based on module settings for a current connected module.
-const QList<UDialog *> &DialogManager::createDialogs(const AppConfiguration &appCfg)
+void DialogManager::createDialogs(const AppConfiguration appCfg)
 {
     deleteDialogs();
     createConfigDialogs();
     createCheckDialogs();
     createSpecificDialogs(appCfg);
     createCommonDialogs(appCfg);
-    return mDialogs;
 }
 
 /// \brief Adding the created dialog to the list for saving.
@@ -56,10 +55,16 @@ void DialogManager::deleteDialogs()
     }
 }
 
+/// \brief Returns list with dialogs.
+const QList<UDialog *> &DialogManager::getDialogs() const
+{
+    return mDialogs;
+}
+
 /// \brief Changing tab widget in the dialog list.
 void DialogManager::parentTWTabChanged(int index)
 {
-    if (index != -1 && !mDialogs.isEmpty())
+    if (index >= 0 && !mDialogs.isEmpty())
     {
         for (auto &dialog : mDialogs)
             dialog->engine()->setUpdatesEnabled(false);
@@ -182,7 +187,7 @@ void DialogManager::createOscAndSwJourDialogs(const Modules::BaseBoard &typeb, c
 }
 
 /// \brief Creating specific dialogs (tune, journal and startup).
-void DialogManager::createSpecificDialogs(const AppConfiguration &appCfg)
+void DialogManager::createSpecificDialogs(const AppConfiguration appCfg)
 {
     using namespace Modules;
     auto &board = Board::GetInstance();
@@ -215,7 +220,7 @@ void DialogManager::createSpecificDialogs(const AppConfiguration &appCfg)
 }
 
 /// \brief Creating common dialogs (all modules).
-void DialogManager::createCommonDialogs(const AppConfiguration &appCfg)
+void DialogManager::createCommonDialogs(const AppConfiguration appCfg)
 {
     const auto &board = Board::GetInstance();
     if (board.interfaceType() != Board::InterfaceType::RS485)

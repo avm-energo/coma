@@ -4,8 +4,7 @@ project(module LANGUAGES CXX)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-find_package(
-  Qt${QT_VERSION_MAJOR}
+find_package(Qt${QT_VERSION_MAJOR}
   COMPONENTS Core Network Widgets Xml
   REQUIRED)
 
@@ -14,11 +13,9 @@ file(GLOB_RECURSE files_h ${PROJECT_SOURCE_DIR}/*.h)
 
 add_library(
   ${PROJECT_NAME} STATIC
-  ${files_cpp}
-  ${files_h})
+  ${files_cpp} ${files_h})
 
-target_link_libraries(
-  ${PROJECT_NAME} PUBLIC
+target_link_libraries(${PROJECT_NAME} PRIVATE
   comaversion
   dialogs
   models

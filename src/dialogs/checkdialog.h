@@ -26,7 +26,7 @@ private:
         bool toxlsxwrite;
     };
 
-    struct BdUIStruct
+    struct TabWidget
     {
         QString widgetCaption;
         UWidget *widget;
@@ -37,18 +37,18 @@ private:
      *  для всех вкладок, если хотим обновлять какую-то вкладку сразу, то
      *  необходимо включить обновление для нее
      */
-    QList<BdUIStruct> m_BdUIList;
+    QList<TabWidget> m_TabList;
     QMap<int, BdBlocks *> Bd_blocks;
     const ModuleTypes::Section &mSection;
-    const ModuleTypes::TabsMap &mTabs;
+    int currentTabIndex;
     HighlightMap m_highlightWarn, m_highlightCrit;
 
     void setupUI();
-    void setupUIAbs();
+    void setupTabWidget();
     void addSignals(const QList<ModuleTypes::SGroup> &groups, UWidget *widget);
     void uponInterfaceSetting() override;
     void updateSPData(const DataTypes::SinglePointWithTimeStruct &sp) override;
-    QString getFormated(const ModuleTypes::MWidget &widget, const QString &form, const int &number);
+    QString getFormatted(const ModuleTypes::MWidget &widget, const QString &form, const int &number);
     void updatePixmap(const ModuleTypes::MWidget &mwidget, DataTypes::BitStringStruct &bs, UWidget *uwidget);
     QLabel *createPixmapIndicator(const ModuleTypes::MWidget &mwidget, const quint32 &index);
     QVBoxLayout *setupGroup(const ModuleTypes::SGroup &arg, UWidget *uwidget);
@@ -56,5 +56,5 @@ private:
     QVBoxLayout *setupBitsetWidget(const ModuleTypes::MWidget &mwidget, UWidget *dataUpdater);
 
 private slots:
-    void TWTabChanged(int index);
+    void tabChanged(int newIndex);
 };

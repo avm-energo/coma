@@ -5,15 +5,11 @@ project(interfaces LANGUAGES CXX)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 find_package(Qt${QT_VERSION_MAJOR}
-  COMPONENTS Core Network SerialPort REQUIRED)
+  COMPONENTS Core Network SerialPort
+  REQUIRED)
 
 file(GLOB_RECURSE files_cpp ${PROJECT_SOURCE_DIR}/*.cpp)
 file(GLOB_RECURSE files_h ${PROJECT_SOURCE_DIR}/*.h)
-
-if (ENABLE_EMULATOR)
-    list(APPEND files_cpp emulator.cpp )
-    list(APPEND files_h emulator.h)
-endif()
 
 add_library(
   ${PROJECT_NAME} STATIC
