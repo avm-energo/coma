@@ -31,7 +31,7 @@ public:
     ~Coma();
 
     void go();
-    void clearWidgets();
+    // void clearWidgets();
     void setupMenubar();
     QWidget *least();
     void disconnect();
@@ -53,22 +53,22 @@ private slots:
     void getAbout();
     void closeEvent(QCloseEvent *event) override;
     void update(const QVariant &msg);
-    void mainTWTabChanged(int tabindex);
+    // void mainTWTabChanged(int tabindex);
 
 private:
     UniquePointer<Module> module;
     QTimer *BdaTimer, *AlrmTimer;
     AlarmWidget *AlarmW;
     UniquePointer<DataTypesProxy> proxyBS, proxyGRS;
-    QStackedWidget *MainTW;
-    QListWidget *MainLW;
+    // QStackedWidget *MainTW;
+    // QListWidget *MainLW;
     OscManager oscManager;
     XmlEditor *editor;
     File::Vector fileVector;
     bool Reconnect;
     ConnectStruct ConnectSettings;
     AppConfiguration mAppConfig;
-    DialogManager *mDlgManager;
+    UniquePointer<DialogManager> mDlgManager;
 
     void initInterfaceConnection();
     void loadSettings();

@@ -93,7 +93,7 @@ Coma::Coma(const AppConfiguration &appCfg, QWidget *parent)
     , proxyBS(new DataTypesProxy)
     , proxyGRS(new DataTypesProxy)
     , mAppConfig(appCfg)
-    , mDlgManager(nullptr)
+    , mDlgManager(new DialogManager(ConfigStorage::GetInstance().getModuleSettings(), this))
 {
     proxyBS->RegisterType<DataTypes::BitStringStruct>();
     proxyGRS->RegisterType<DataTypes::GeneralResponseStruct>();
@@ -184,20 +184,23 @@ void Coma::prepareDialogs()
             "Проверьте журнал сообщений.\n"
             "Доступны минимальные функции.");
     }
-    mDlgManager = new DialogManager(ConfigStorage::GetInstance().getModuleSettings(), this);
     AlarmW->configure();
-    mDlgManager->createDialogs(mAppConfig);
-    auto &dlgs = mDlgManager->getDialogs();
-    for (auto dialog : dlgs)
-    {
-        connect(BdaTimer, &QTimer::timeout, dialog, &UDialog::reqUpdate);
-        dialog->uponInterfaceSetting();
-        auto item = new QListWidgetItem(dialog->getCaption(), MainLW);
-        item->setSizeHint(QSize(0, height() / 20));
-        item->setTextAlignment(Qt::AlignCenter);
-        MainLW->addItem(item);
-        MainTW->addWidget(dialog);
-    }
+    mDlgManager->setupUI(mAppConfig, size());
+    connect(BdaTimer, &QTimer::timeout, mDlgManager.get(), &DialogManager::reqUpdate);
+
+    // mDlgManager = new DialogManager(ConfigStorage::GetInstance().getModuleSettings(), this);
+    // mDlgManager->createDialogs(mAppConfig);
+    // auto &dlgs = mDlgManager->getDialogs();
+    // for (auto dialog : dlgs)
+    //{
+    //    connect(BdaTimer, &QTimer::timeout, dialog, &UDialog::reqUpdate);
+    //    dialog->uponInterfaceSetting();
+    //    auto item = new QListWidgetItem(dialog->getCaption(), MainLW);
+    //    item->setSizeHint(QSize(0, height() / 20));
+    //    item->setTextAlignment(Qt::AlignCenter);
+    //    MainLW->addItem(item);
+    //    MainTW->addWidget(dialog);
+    //}
 }
 
 QWidget *Coma::least()
@@ -206,21 +209,22 @@ QWidget *Coma::least()
     auto lyout = new QVBoxLayout;
     auto inlyout = new QHBoxLayout;
     lyout->addLayout(inlyout);
-    MainTW = new QStackedWidget(this);
-    auto sizePolizy = MainTW->sizePolicy();
-    sizePolizy.setRetainSizeWhenHidden(true);
-    MainTW->setSizePolicy(sizePolizy);
-    MainLW = new QListWidget(this);
-    sizePolizy = MainLW->sizePolicy();
-    sizePolizy.setRetainSizeWhenHidden(true);
-    MainLW->setSizePolicy(sizePolizy);
-    inlyout->addWidget(MainLW);
-    inlyout->addWidget(MainTW);
-    MainLW->setMinimumWidth(width() / 6);
-    MainLW->setMaximumWidth(width() / 5);
-    MainTW->hide();
-    MainLW->hide();
-    connect(MainTW, &QStackedWidget::currentChanged, this, &Coma::mainTWTabChanged);
+    auto workspace = mDlgManager->getUI();
+    // MainTW = new QStackedWidget(this);
+    // auto sizePolizy = MainTW->sizePolicy();
+    // sizePolizy.setRetainSizeWhenHidden(true);
+    // MainTW->setSizePolicy(sizePolizy);
+    // MainLW = new QListWidget(this);
+    // sizePolizy = MainLW->sizePolicy();
+    // sizePolizy.setRetainSizeWhenHidden(true);
+    // MainLW->setSizePolicy(sizePolizy);
+    inlyout->addWidget(workspace.first);
+    inlyout->addWidget(workspace.second);
+    // MainLW->setMinimumWidth(width() / 6);
+    // MainLW->setMaximumWidth(width() / 5);
+    // MainTW->hide();
+    // MainLW->hide();
+    // connect(MainTW, &QStackedWidget::currentChanged, this, &Coma::mainTWTabChanged);
 
     auto line = new QFrame;
     lyout->addWidget(line);
@@ -409,7 +413,7 @@ void Coma::prepare()
     EMessageBox::information(this, "Установлена связь с " + board.moduleName());
     Reconnect = true;
 
-    Q_ASSERT(MainTW->count() == 0);
+    // Q_ASSERT(MainTW->count() == 0);
     prepareDialogs();
 
     setupConnections();
@@ -420,12 +424,12 @@ void Coma::prepare()
     if (board.noRegPars())
         qCritical() << Error::Msg::NoTuneError;
 
-    connect(MainLW, &QListWidget::currentRowChanged, MainTW, &QStackedWidget::setCurrentIndex);
-    MainTW->show();
-    MainLW->show();
-    qDebug() << MainTW->width() << width();
+    // connect(MainLW, &QListWidget::currentRowChanged, MainTW, &QStackedWidget::setCurrentIndex);
+    // MainTW->show();
+    // MainLW->show();
+    // qDebug() << MainTW->width() << width();
+    // qDebug() << MainTW->objectName() << "created";
     AlrmTimer->start();
-    qDebug() << MainTW->objectName() << "created";
     BdaTimer->start();
     auto msgSerialNumber = statusBar()->findChild<QLabel *>("SerialNumber");
     msgSerialNumber->setText(QString::number(board.serialNumber(Board::BaseMezzAdd), 16));
@@ -505,8 +509,9 @@ void Coma::reconnect()
     {
         qDebug() << "call Disconnect";
         disconnect();
-        clearWidgets();
-        MainTW->hide();
+        mDlgManager->clearDialogs();
+        // clearWidgets();
+        // MainTW->hide();
     }
 
     /*    QMessageBox msgBox;
@@ -541,18 +546,18 @@ void Coma::saveSettings()
     sets->setValue("Homedir", StdFunc::GetHomeDir());
 }
 
-void Coma::clearWidgets()
-{
-    while (MainTW->count())
-    {
-        QWidget *wdgt = MainTW->widget(0);
-        MainTW->removeWidget(wdgt);
-        wdgt->deleteLater();
-    }
-    MainLW->clear();
-    MainTW->hide();
-    MainLW->hide();
-}
+// void Coma::clearWidgets()
+//{
+//    while (MainTW->count())
+//    {
+//        QWidget *wdgt = MainTW->widget(0);
+//        MainTW->removeWidget(wdgt);
+//        wdgt->deleteLater();
+//    }
+//    MainLW->clear();
+//    MainTW->hide();
+//    MainLW->hide();
+//}
 
 void Coma::setProgressBarSize(int prbnum, int size)
 {
@@ -716,8 +721,10 @@ void Coma::disconnectAndClear()
         disconnect();
         if (mDlgManager)
         {
-            mDlgManager->deleteDialogs();
-            clearWidgets();
+
+            mDlgManager->clearDialogs();
+            // mDlgManager->deleteDialogs();
+            // clearWidgets();
         }
         ConfigStorage::GetInstance().clearModuleSettings();
         Board::GetInstance().reset();
@@ -742,10 +749,10 @@ void Coma::keyPressEvent(QKeyEvent *event)
     QMainWindow::keyPressEvent(event);
 }
 
-void Coma::mainTWTabChanged(int tabindex)
-{
-    mDlgManager->parentTWTabChanged(tabindex);
-}
+// void Coma::mainTWTabChanged(int tabindex)
+//{
+//    mDlgManager->parentTWTabChanged(tabindex);
+//}
 
 void Coma::update(const QVariant &msg)
 {
