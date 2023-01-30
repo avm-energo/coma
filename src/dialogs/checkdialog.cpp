@@ -13,6 +13,7 @@
 #include <gen/stdfunc.h>
 #include <set>
 
+constexpr auto maxIndicatorCountInRow = 10;
 constexpr auto circleRadius = 12;
 constexpr auto normalColor = Qt::gray;
 constexpr auto activeColor = Qt::yellow;
@@ -20,8 +21,7 @@ constexpr auto defaultStyle = "QLabel {border: 1px solid green; border-radius: 4
 constexpr auto errStyle = "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; font: bold; "
                           "background-color: %1; color: black;}";
 
-CheckDialog::CheckDialog(const ModuleTypes::Section &section, QWidget *parent)
-    : UDialog(parent), mSection(section), mTabs(ConfigStorage::GetInstance().getModuleSettings().getTabs())
+CheckDialog::CheckDialog(const ModuleTypes::Section &section, QWidget *parent) : UDialog(parent), mSection(section)
 {
 }
 
@@ -49,16 +49,14 @@ void CheckDialog::setHighlights(Modules::AlarmType type, const HighlightMap &map
 void CheckDialog::updateSPData(const DataTypes::SinglePointWithTimeStruct &sp)
 {
     bool status = sp.sigVal;
-    if (m_highlightCrit.contains(sp.sigAdr))
+    if (m_highlightCrit.contains(sp.sigAdr) && status)
     {
         const QList<HighlightMap::mapped_type> regs = m_highlightCrit.values(sp.sigAdr);
         const auto errorStyle = QString(errStyle).arg("red");
         for (const auto reg : qAsConst(regs))
         {
             auto label = findChild<QLabel *>(QString::number(reg));
-            if (!label)
-                continue;
-            if (status)
+            if (label)
                 label->setStyleSheet(errorStyle);
         }
     }
@@ -88,37 +86,36 @@ void CheckDialog::reqUpdate()
 {
     if (updatesEnabled())
     {
-        for (auto &bd : m_BdUIList)
-            bd.widget->reqUpdate();
+        for (auto &tab : m_TabList)
+            tab.widget->reqUpdate();
     }
 }
 
-void CheckDialog::TWTabChanged(int index)
+void CheckDialog::tabChanged(int newIndex)
 {
-    if (index != -1)
+    if (newIndex >= 0 && newIndex < m_TabList.size())
     {
-        for (auto &item : m_BdUIList)
-            item.widget->engine()->setUpdatesEnabled(false);
-
-        if (m_BdUIList.size() >= index)
-        {
-            auto w = m_BdUIList.at(index).widget;
-            w->engine()->setUpdatesEnabled();
-            w->reqUpdate();
-        }
-        else
-            qCritical("Undefined check tab selected");
+        // Disable updates on old tab
+        m_TabList[currentTabIndex].widget->engine()->setUpdatesEnabled(false);
+        // Enabling updates on new tab
+        auto widget = m_TabList[newIndex].widget;
+        widget->engine()->setUpdatesEnabled(true);
+        widget->reqUpdate();
+        // Update current tab index
+        currentTabIndex = newIndex;
     }
+    else
+        qCritical("Undefined check tab selected");
 }
 
 void CheckDialog::setupUI()
 {
-    const auto tabs = mSection.sgMap.uniqueKeys();
-    for (auto &&tab : tabs)
+    const auto tabIds = mSection.sgMap.uniqueKeys();
+    for (auto &&tabId : tabIds)
     {
         auto widget = new UWidget(this);
         auto layout = new QVBoxLayout;
-        const auto groups = mSection.sgMap.values(tab);
+        const auto groups = mSection.sgMap.values(tabId);
         for (auto &&group : groups)
         {
             auto groupBox = new QGroupBox(widget);
@@ -129,24 +126,26 @@ void CheckDialog::setupUI()
         layout->addStretch(100);
         widget->setLayout(layout);
         addSignals(groups, widget);
-        m_BdUIList.push_back({ mTabs.value(tab), widget });
+        const auto &tabs = ConfigStorage::GetInstance().getModuleSettings().getTabs();
+        m_TabList.push_back({ tabs.value(tabId), widget });
     }
-    m_BdUIList.first().widget->engine()->setUpdatesEnabled();
-    setupUIAbs();
+    m_TabList.first().widget->engine()->setUpdatesEnabled();
+    currentTabIndex = 0;
+    setupTabWidget();
 }
 
-void CheckDialog::setupUIAbs()
+void CheckDialog::setupTabWidget()
 {
     auto layout = new QVBoxLayout;
-    auto checkTabWidget = new QTabWidget;
-    for (auto &UIPair : m_BdUIList)
+    auto checkTabWidget = new QTabWidget(this);
+    for (auto &tab : m_TabList)
     {
-        UIPair.widget->uponInterfaceSetting();
-        checkTabWidget->addTab(UIPair.widget, " " + UIPair.widgetCaption + " ");
+        tab.widget->uponInterfaceSetting();
+        checkTabWidget->addTab(tab.widget, " " + tab.widgetCaption + " ");
     }
     layout->addWidget(checkTabWidget);
     setLayout(layout);
-    connect(checkTabWidget, &QTabWidget::currentChanged, this, &CheckDialog::TWTabChanged);
+    connect(checkTabWidget, &QTabWidget::currentChanged, this, &CheckDialog::tabChanged);
 }
 
 void CheckDialog::addSignals(const QList<ModuleTypes::SGroup> &groups, UWidget *widget)
@@ -200,7 +199,7 @@ void CheckDialog::addSignals(const QList<ModuleTypes::SGroup> &groups, UWidget *
     }
 }
 
-QString CheckDialog::getFormated(const ModuleTypes::MWidget &widget, const QString &form, const int &number)
+QString CheckDialog::getFormatted(const ModuleTypes::MWidget &widget, const QString &form, const int &number)
 {
     if (!widget.subItemList.empty() && number < widget.subItemList.count())
         return form.arg(widget.subItemList.at(number));
@@ -243,11 +242,11 @@ QGridLayout *CheckDialog::setupFloatWidget(const ModuleTypes::MWidget &mwidget, 
             layout = new QVBoxLayout;
         else
             layout = new QHBoxLayout;
-        auto textLabel = new QLabel(getFormated(mwidget, mwidget.desc, i), this);
+        auto textLabel = new QLabel(getFormatted(mwidget, mwidget.desc, i), this);
         layout->addWidget(textLabel);
         auto valueLabel = new QLabel(this);
         if (!mwidget.tooltip.isEmpty())
-            valueLabel->setToolTip(getFormated(mwidget, mwidget.tooltip, i));
+            valueLabel->setToolTip(getFormatted(mwidget, mwidget.tooltip, i));
 
         valueLabel->setObjectName(QString::number(mwidget.startAddr + i));
         valueLabel->setStyleSheet(defaultStyle);
@@ -279,7 +278,7 @@ QLabel *CheckDialog::createPixmapIndicator(const ModuleTypes::MWidget &mwidget, 
     indicatorLabel->setObjectName(QString::number(mwidget.startAddr) + "_" + QString::number(index));
     indicatorLabel->setPixmap(pixmap);
     if (!mwidget.tooltip.isEmpty())
-        indicatorLabel->setToolTip(getFormated(mwidget, mwidget.tooltip, index));
+        indicatorLabel->setToolTip(getFormatted(mwidget, mwidget.tooltip, index));
     return indicatorLabel;
 }
 
@@ -295,7 +294,7 @@ QVBoxLayout *CheckDialog::setupBitsetWidget(const ModuleTypes::MWidget &mwidget,
         if (mwidget.desc.isEmpty())
         {
             // По 10 индикаторов в строке, если нет описания
-            const auto limit = i + 10;
+            const auto limit = i + maxIndicatorCountInRow;
             for (; (i < mwidget.count) && (i < limit); i++)
                 layout->addWidget(createPixmapIndicator(mwidget, i));
             i--;
@@ -303,7 +302,7 @@ QVBoxLayout *CheckDialog::setupBitsetWidget(const ModuleTypes::MWidget &mwidget,
         else
         {
             // По 1 индикатору и описанию в строку, если оно есть
-            auto textLabel = new QLabel(getFormated(mwidget, mwidget.desc, i), this);
+            auto textLabel = new QLabel(getFormatted(mwidget, mwidget.desc, i), this);
             layout->addWidget(textLabel);
             layout->addWidget(createPixmapIndicator(mwidget, i));
         }

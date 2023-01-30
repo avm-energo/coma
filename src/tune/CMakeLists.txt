@@ -4,12 +4,12 @@ project(tune LANGUAGES CXX)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-find_package(
-  Qt${QT_VERSION_MAJOR}
-  COMPONENTS Core Network Xml Widgets Svg PrintSupport REQUIRED)
+find_package(Qt${QT_VERSION_MAJOR}
+  COMPONENTS Core Network Xml Widgets Svg PrintSupport
+  REQUIRED)
 
-file(GLOB_RECURSE files_cpp *.cpp)
-file(GLOB_RECURSE files_h *.h)
+file(GLOB_RECURSE files_cpp ${PROJECT_SOURCE_DIR}/*.cpp)
+file(GLOB_RECURSE files_h ${PROJECT_SOURCE_DIR}/*.h)
 
 add_library(
   ${PROJECT_NAME} STATIC
@@ -17,16 +17,16 @@ add_library(
   ${files_h})
 
 target_link_libraries(
-  ${PROJECT_NAME}
-  PRIVATE Qt${QT_VERSION_MAJOR}::Core
-  PRIVATE Qt${QT_VERSION_MAJOR}::Widgets
-  PRIVATE Qt${QT_VERSION_MAJOR}::Xml
-  PRIVATE Qt${QT_VERSION_MAJOR}::Network
-  PRIVATE Qt${QT_VERSION_MAJOR}::Svg
-  PRIVATE Qt${QT_VERSION_MAJOR}::PrintSupport
-  PRIVATE QXlsx
-  PRIVATE xml
-  PRIVATE limereport
-  PRIVATE datablocks)
+  ${PROJECT_NAME} PRIVATE
+  Qt${QT_VERSION_MAJOR}::Core
+  Qt${QT_VERSION_MAJOR}::Widgets
+  Qt${QT_VERSION_MAJOR}::Xml
+  Qt${QT_VERSION_MAJOR}::Network
+  Qt${QT_VERSION_MAJOR}::Svg
+  Qt${QT_VERSION_MAJOR}::PrintSupport
+  QXlsx
+  xml
+  limereport
+  datablocks)
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE ${PROJECT_NAME}_LIBRARY)

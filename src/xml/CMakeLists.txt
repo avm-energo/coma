@@ -4,8 +4,7 @@ project(xml LANGUAGES CXX)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-find_package(
-  Qt${QT_VERSION_MAJOR}
+find_package(Qt${QT_VERSION_MAJOR}
   COMPONENTS Core Network Xml Widgets
   REQUIRED)
 
@@ -18,12 +17,12 @@ add_library(
   ${files_h})
 
 target_link_libraries(
-  ${PROJECT_NAME}
-  PRIVATE widgets
-  PRIVATE Qt${QT_VERSION_MAJOR}::Core
-  PRIVATE Qt${QT_VERSION_MAJOR}::Network
-  PRIVATE Qt${QT_VERSION_MAJOR}::Widgets
-  PRIVATE Qt${QT_VERSION_MAJOR}::Xml
+  ${PROJECT_NAME} PRIVATE
+  widgets
+  Qt${QT_VERSION_MAJOR}::Core
+  Qt${QT_VERSION_MAJOR}::Network
+  Qt${QT_VERSION_MAJOR}::Widgets
+  Qt${QT_VERSION_MAJOR}::Xml
   PUBLIC gen)
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE ${PROJECT_NAME}_LIBRARY)
