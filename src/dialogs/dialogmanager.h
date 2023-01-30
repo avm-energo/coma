@@ -7,17 +7,16 @@
 #include <QPair>
 #include <QStackedWidget>
 
+/// \brief Class for managing dialogs.
 class DialogManager : public UDialog
 {
     Q_OBJECT
 private:
     int curDialogIndex;
-    // QList<UDialog *> mDialogs;
     UniquePointer<DialogCreator> mDlgCreator;
     UniquePointer<QStackedWidget> mWorkspace;
     UniquePointer<QListWidget> mSidebar;
 
-    void init();
     void hideUI();
     void showUI();
 

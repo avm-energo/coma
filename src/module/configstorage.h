@@ -1,9 +1,9 @@
 #ifndef CONFIGSTORAGE_H
 #define CONFIGSTORAGE_H
 
-#include "../module/board.h"
 #include "../s2/valuemap.h"
 #include "../widgets/delegate_common.h"
+#include "board.h"
 #include "modulesettings.h"
 
 #include <QObject>

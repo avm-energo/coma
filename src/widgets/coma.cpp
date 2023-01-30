@@ -187,20 +187,6 @@ void Coma::prepareDialogs()
     AlarmW->configure();
     mDlgManager->setupUI(mAppConfig, size());
     connect(BdaTimer, &QTimer::timeout, mDlgManager.get(), &DialogManager::reqUpdate);
-
-    // mDlgManager = new DialogManager(ConfigStorage::GetInstance().getModuleSettings(), this);
-    // mDlgManager->createDialogs(mAppConfig);
-    // auto &dlgs = mDlgManager->getDialogs();
-    // for (auto dialog : dlgs)
-    //{
-    //    connect(BdaTimer, &QTimer::timeout, dialog, &UDialog::reqUpdate);
-    //    dialog->uponInterfaceSetting();
-    //    auto item = new QListWidgetItem(dialog->getCaption(), MainLW);
-    //    item->setSizeHint(QSize(0, height() / 20));
-    //    item->setTextAlignment(Qt::AlignCenter);
-    //    MainLW->addItem(item);
-    //    MainTW->addWidget(dialog);
-    //}
 }
 
 QWidget *Coma::least()
@@ -210,21 +196,8 @@ QWidget *Coma::least()
     auto inlyout = new QHBoxLayout;
     lyout->addLayout(inlyout);
     auto workspace = mDlgManager->getUI();
-    // MainTW = new QStackedWidget(this);
-    // auto sizePolizy = MainTW->sizePolicy();
-    // sizePolizy.setRetainSizeWhenHidden(true);
-    // MainTW->setSizePolicy(sizePolizy);
-    // MainLW = new QListWidget(this);
-    // sizePolizy = MainLW->sizePolicy();
-    // sizePolizy.setRetainSizeWhenHidden(true);
-    // MainLW->setSizePolicy(sizePolizy);
     inlyout->addWidget(workspace.first);
     inlyout->addWidget(workspace.second);
-    // MainLW->setMinimumWidth(width() / 6);
-    // MainLW->setMaximumWidth(width() / 5);
-    // MainTW->hide();
-    // MainLW->hide();
-    // connect(MainTW, &QStackedWidget::currentChanged, this, &Coma::mainTWTabChanged);
 
     auto line = new QFrame;
     lyout->addWidget(line);
@@ -412,11 +385,9 @@ void Coma::prepare()
     auto const &board = Board::GetInstance();
     EMessageBox::information(this, "Установлена связь с " + board.moduleName());
     Reconnect = true;
-
-    // Q_ASSERT(MainTW->count() == 0);
     prepareDialogs();
-
     setupConnections();
+
     // нет конфигурации
     if (board.noConfig())
         qCritical() << Error::Msg::NoConfError;
@@ -424,11 +395,6 @@ void Coma::prepare()
     if (board.noRegPars())
         qCritical() << Error::Msg::NoTuneError;
 
-    // connect(MainLW, &QListWidget::currentRowChanged, MainTW, &QStackedWidget::setCurrentIndex);
-    // MainTW->show();
-    // MainLW->show();
-    // qDebug() << MainTW->width() << width();
-    // qDebug() << MainTW->objectName() << "created";
     AlrmTimer->start();
     BdaTimer->start();
     auto msgSerialNumber = statusBar()->findChild<QLabel *>("SerialNumber");
@@ -510,15 +476,7 @@ void Coma::reconnect()
         qDebug() << "call Disconnect";
         disconnect();
         mDlgManager->clearDialogs();
-        // clearWidgets();
-        // MainTW->hide();
     }
-
-    /*    QMessageBox msgBox;
-        msgBox.setText("Связь разорвана.\nПопытка переподключения");
-        msgBox.setIcon(QMessageBox::Warning);
-        msgBox.show();
-        msgBox.button(QMessageBox::Ok)->animateClick(3000); */
     EMessageBox::infoWithoutButtons(this, "Связь разорвана.\nПопытка переподключения", 3);
     attemptToRec();
 }
@@ -545,19 +503,6 @@ void Coma::saveSettings()
     auto sets = std::unique_ptr<QSettings>(new QSettings);
     sets->setValue("Homedir", StdFunc::GetHomeDir());
 }
-
-// void Coma::clearWidgets()
-//{
-//    while (MainTW->count())
-//    {
-//        QWidget *wdgt = MainTW->widget(0);
-//        MainTW->removeWidget(wdgt);
-//        wdgt->deleteLater();
-//    }
-//    MainLW->clear();
-//    MainTW->hide();
-//    MainLW->hide();
-//}
 
 void Coma::setProgressBarSize(int prbnum, int size)
 {
@@ -719,13 +664,8 @@ void Coma::disconnectAndClear()
     if (board.connectionState() != Board::ConnectionState::Closed)
     {
         disconnect();
-        if (mDlgManager)
-        {
+        mDlgManager->clearDialogs();
 
-            mDlgManager->clearDialogs();
-            // mDlgManager->deleteDialogs();
-            // clearWidgets();
-        }
         ConfigStorage::GetInstance().clearModuleSettings();
         Board::GetInstance().reset();
         // BUG Segfault
@@ -748,11 +688,6 @@ void Coma::keyPressEvent(QKeyEvent *event)
         StdFunc::Cancel();
     QMainWindow::keyPressEvent(event);
 }
-
-// void Coma::mainTWTabChanged(int tabindex)
-//{
-//    mDlgManager->parentTWTabChanged(tabindex);
-//}
 
 void Coma::update(const QVariant &msg)
 {

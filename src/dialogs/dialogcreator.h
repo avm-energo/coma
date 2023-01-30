@@ -15,6 +15,7 @@ enum AppConfiguration : bool
     Service = true
 };
 
+/// \brief Class for creating dialogs.
 class DialogCreator : public QObject
 {
     Q_OBJECT
@@ -23,7 +24,6 @@ public:
     void createDialogs(const AppConfiguration appCfg);
     void deleteDialogs();
     QList<UDialog *> &getDialogs();
-    // void parentTWTabChanged(int index);
 
 private:
     const ModuleSettings &settings;

@@ -6,6 +6,8 @@
 #include <QHash>
 #include <gen/datatypes.h>
 
+constexpr auto baseConfigIndex = 0;
+
 namespace ModuleTypes
 {
 using SignalType = DataTypes::SignalTypes; ///< Перечисление для типа сигналов.
@@ -107,7 +109,7 @@ public:
     const ModuleTypes::InterfaceSettings &getInterfaceSettings() const;
 
 private:
-    quint32 curConfigIndex;
+    int curConfigIndex;
     ModuleTypes::ConfigMap mConfigs;
     ModuleTypes::DetailCountMap mCountMap;
     ModuleTypes::SignalMap mSignals;

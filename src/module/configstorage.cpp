@@ -52,21 +52,31 @@ void ConfigStorage::clearModuleSettings()
 /// \brief Slot for saving S2 config record.
 void ConfigStorage::typeDataReceive(const quint16 &id, const uint64_t &typeId)
 {
-    if (id != 0 && typeId != 0)
+    if (id == 0)
+        qWarning() << "Invalid S2 config id: " << id;
+    else if (typeId == 0)
+        qWarning() << "Invalid S2 config datatype id: " << typeId;
+    else
         mS2Map.insert(id, typeId);
 }
 
 /// \brief Slot for saving S2 widget record.
 void ConfigStorage::widgetDataReceive(const quint16 &id, const config::itemVariant &widget)
 {
-    if (id != 0 && !widget.valueless_by_exception())
+    if (id == 0)
+        qWarning() << "Invalid S2 widget id: " << id;
+    else if (widget.valueless_by_exception())
+        qWarning() << "Invalid S2 widget data, widget id: " << id;
+    else
         mWidgetMap.insert({ id, widget });
 }
 
 /// \brief Slot for saving S2 tab record.
 void ConfigStorage::configTabDataReceive(const quint32 &id, const QString &tabName)
 {
-    if (tabName != "")
+    if (tabName == "")
+        qWarning() << "Empty tab name, tab id: " << id;
+    else
         s2tabs.insert(id, tabName);
 }
 
@@ -80,14 +90,24 @@ void ConfigStorage::startNewConfig()
 void ConfigStorage::signalDataReceive(const quint32 &id, const quint32 &addr, //
     const quint16 &count, const ModuleTypes::SignalType &sigType)
 {
-    if (id != 0 && addr != 0 && count != 0)
+    if (id == 0)
+        qWarning() << "Invalid signal id: " << id;
+    else if (addr == 0)
+        qWarning() << "Invalid signal address, signal id: " << id;
+    else if (count == 0)
+        qWarning() << "Invalid signal count, signal id: " << id;
+    else
         mSettings->appendSignal(id, { addr, count, sigType });
 }
 
 /// \brief Slot for saving check's tab record.
 void ConfigStorage::tabDataReceive(const quint32 &id, const QString &name)
 {
-    if (id != 0 and name != "")
+    if (id == 0)
+        qWarning() << "Invalid tab id: " << id;
+    else if (name == "")
+        qWarning() << "Empty tab name, tab id: " << id;
+    else
         mSettings->appendTab(id, name);
 }
 
@@ -165,7 +185,11 @@ void ConfigStorage::interfaceSettingsReceive(const QVariant &iSettings, const Bo
 void ConfigStorage::configDataReceive(const quint16 &id, //
     const QString &defVal, const bool &visib, const quint16 &count)
 {
-    if (id != 0 && defVal != "")
+    if (id == 0)
+        qWarning() << "Invalid config id: " << id;
+    else if (defVal == "")
+        qWarning() << "Invalid default value, config id: " << id;
+    else
     {
         mSettings->appendToCurrentConfig({ { id, defVal }, visib });
         if (count != 0)

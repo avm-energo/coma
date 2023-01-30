@@ -1,6 +1,6 @@
 #include "modulesettings.h"
 
-ModuleSettings::ModuleSettings() : curConfigIndex(0)
+ModuleSettings::ModuleSettings() : curConfigIndex(-1)
 {
 }
 

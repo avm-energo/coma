@@ -7,11 +7,7 @@ DialogManager::DialogManager(const ModuleSettings &settings, QWidget *parent)
     , mWorkspace(new QStackedWidget(this))
     , mSidebar(new QListWidget(this))
 {
-    init();
-}
-
-void DialogManager::init()
-{
+    // Init settings for sidebar and main workspace.
     auto sizePolizy = mWorkspace->sizePolicy();
     sizePolizy.setRetainSizeWhenHidden(true);
     mWorkspace->setSizePolicy(sizePolizy);
@@ -22,24 +18,27 @@ void DialogManager::init()
     hideUI();
 }
 
+/// \brief Hiding sidebar and main workspace.
 void DialogManager::hideUI()
 {
     mSidebar->hide();
     mWorkspace->hide();
 }
 
+/// \brief Showing sidebar and main workspace.
 void DialogManager::showUI()
 {
     mSidebar->show();
     mWorkspace->show();
 }
 
+/// \brief Returns pointers to UI elements (sidebar and main workspace) in QPair struct.
 QPair<QListWidget *, QStackedWidget *> DialogManager::getUI()
 {
     return { mSidebar.get(), mWorkspace.get() };
 }
 
-/// \brief Changing tab widget in the dialog list.
+/// \brief Changing dialog in the sidebar.
 void DialogManager::dialogChanged(int newIndex)
 {
     auto &dialogs = mDlgCreator->getDialogs();
@@ -52,11 +51,12 @@ void DialogManager::dialogChanged(int newIndex)
         newDialog->setEnabled(true);
         newDialog->reqUpdate();
     }
-    // Индекс -1 норма, когда дестроятся диалоги
+    // Индекс -1 норма, когда удаляются диалоги
     // else
     //    qWarning() << "Неправильный индекс диалога: " << newIndex;
 }
 
+/// \brief Overloaded virtual function for update request.
 void DialogManager::reqUpdate()
 {
     if (updatesEnabled())
@@ -66,8 +66,10 @@ void DialogManager::reqUpdate()
     }
 }
 
+/// \brief Setup UI using DialogCreator for creating dialogs for current device.
 void DialogManager::setupUI(const AppConfiguration appCfg, const QSize size)
 {
+    Q_ASSERT(mWorkspace->count() == 0);
     mDlgCreator->createDialogs(appCfg);
     for (auto &dialog : mDlgCreator->getDialogs())
     {
@@ -87,6 +89,7 @@ void DialogManager::setupUI(const AppConfiguration appCfg, const QSize size)
     showUI();
 }
 
+/// \brief Removing dialogs, clear and hide UI elements.
 void DialogManager::clearDialogs()
 {
     hideUI();

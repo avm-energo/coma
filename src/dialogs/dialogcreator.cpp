@@ -61,20 +61,6 @@ QList<UDialog *> &DialogCreator::getDialogs()
     return mDialogs;
 }
 
-// void DialogCreator::parentTWTabChanged(int index)
-//{
-//    if (index >= 0 && !mDialogs.isEmpty())
-//    {
-//        for (auto &dialog : mDialogs)
-//            dialog->engine()->setUpdatesEnabled(false);
-
-//        auto dialog = mDialogs.at(index);
-//        dialog->setEnabled(true);
-//        dialog->engine()->setUpdatesEnabled();
-//        dialog->reqUpdate();
-//    }
-//}
-
 /// \brief Returns true if module in box, otherwise false.
 bool DialogCreator::isBoxModule(const quint16 &type) const
 {
@@ -87,7 +73,7 @@ void DialogCreator::createConfigDialogs()
     auto &config = settings.getConfigMap();
     for (auto it = config.cbegin(); it != config.cend(); it++)
     {
-        QString indexStr = (config.size() > 1) ? ((it.key() == 1) ? "база" : "мезонин") : "";
+        QString indexStr = (config.size() > 1) ? ((it.key() == baseConfigIndex) ? "база" : "мезонин") : "";
         addDialogToList(new ConfigDialog(&configV, it.value(), true, mParent), //
             "Конфигурация " + indexStr, "conf" + QString::number(it.key()));
     }
@@ -115,7 +101,7 @@ void DialogCreator::createBoxTuneDialogs(const Modules::Model &boxModel)
     if (boxModel == Modules::Model::KIV)
     {
         // TODO: Реанимировать регулировку для КИВ, временно не работает :(
-        // addDialogToList(new TuneKIVDialog(&configV, mParent), "Регулировка", "tune");
+        addDialogToList(new TuneKIVDialog(&configV, mParent), "Регулировка", "tune");
     }
     else
     {

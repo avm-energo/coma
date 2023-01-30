@@ -38,6 +38,7 @@ public:
         Emulator
     };
 
+    // TODO: Здесь мог бы быть ваш рефакторинг ;)
     enum Types
     {
         None = 0,
