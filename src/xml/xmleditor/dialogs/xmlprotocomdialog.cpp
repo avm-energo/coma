@@ -15,20 +15,26 @@ void XmlProtocomDialog::setupUI(QVBoxLayout *mainLayout)
 
     // Виджеты для описания
     auto blockLabel = new QLabel("Номер блока: ", this);
-    auto blockInput = new QLineEdit("", this);
-    blockInput->setValidator(new QRegExpValidator(QRegExp("^([1-9][0-9]*|0)"), this));
-    QObject::connect(
-        blockInput, &QLineEdit::textEdited, this, qOverload<const QString &>(&XmlProtocomDialog::dataChanged));
+    auto blockInput = new QSpinBox(this);
+    blockInput->setMinimum(idMin);
+    blockInput->setMaximum(idMax);
+    QObject::connect(blockInput, &QSpinBox::textChanged, this, //
+        qOverload<const QString &>(&XmlProtocomDialog::dataChanged));
+    QObject::connect(blockInput, qOverload<int>(&QSpinBox::valueChanged), //
+        this, qOverload<int>(&XmlProtocomDialog::dataChanged));
     blockLayout->addWidget(blockLabel);
     blockLayout->addWidget(blockInput);
     dlgItems.append(blockInput);
 
     // Виджеты для ID сигнала
     auto sigIdLabel = new QLabel("ID сигнала: ", this);
-    auto sigIdInput = new QLineEdit("", this);
-    sigIdInput->setValidator(new QRegExpValidator(QRegExp("^([1-9][0-9]*|0)"), this));
-    QObject::connect(
-        sigIdInput, &QLineEdit::textEdited, this, qOverload<const QString &>(&XmlProtocomDialog::dataChanged));
+    auto sigIdInput = new QSpinBox(this);
+    sigIdInput->setMinimum(idMin);
+    sigIdInput->setMaximum(idMax);
+    QObject::connect(sigIdInput, &QSpinBox::textChanged, this, //
+        qOverload<const QString &>(&XmlProtocomDialog::dataChanged));
+    QObject::connect(sigIdInput, qOverload<int>(&QSpinBox::valueChanged), //
+        this, qOverload<int>(&XmlProtocomDialog::dataChanged));
     sigIdLayout->addWidget(sigIdLabel);
     sigIdLayout->addWidget(sigIdInput);
     dlgItems.append(sigIdInput);

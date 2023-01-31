@@ -16,9 +16,12 @@ void XmlAlarmDialog::setupUI(QVBoxLayout *mainLayout)
 
     // Виджеты для адреса сигнализации
     auto addrLabel = new QLabel("Адрес сигнализации: ", this);
-    auto addrInput = new QLineEdit("", this);
-    addrInput->setValidator(new QRegExpValidator(QRegExp("^([1-9][0-9]*|0)"), this));
-    QObject::connect(addrInput, &QLineEdit::textEdited, this, qOverload<const QString &>(&XmlAlarmDialog::dataChanged));
+    auto addrInput = new QSpinBox(this);
+    addrInput->setMinimum(addrMin);
+    addrInput->setMaximum(addrMax);
+    QObject::connect(addrInput, &QSpinBox::textChanged, this, qOverload<const QString &>(&XmlAlarmDialog::dataChanged));
+    QObject::connect(addrInput, qOverload<int>(&QSpinBox::valueChanged), //
+        this, qOverload<int>(&XmlAlarmDialog::dataChanged));
     addrLayout->addWidget(addrLabel);
     addrLayout->addWidget(addrInput);
     dlgItems.append(addrInput);

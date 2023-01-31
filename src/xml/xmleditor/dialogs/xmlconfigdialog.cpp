@@ -17,9 +17,12 @@ void XmlConfigDialog::setupUI(QVBoxLayout *mainLayout)
 
     // Виджеты для ID конфига
     auto idLabel = new QLabel("S2 ID: ", this);
-    auto idInput = new QLineEdit("", this);
-    idInput->setValidator(new QRegExpValidator(QRegExp("^([1-9][0-9]*|0)"), this));
-    QObject::connect(idInput, &QLineEdit::textEdited, this, qOverload<const QString &>(&XmlConfigDialog::dataChanged));
+    auto idInput = new QSpinBox(this);
+    idInput->setMinimum(idMin);
+    idInput->setMaximum(idMax);
+    QObject::connect(idInput, &QSpinBox::textChanged, this, qOverload<const QString &>(&XmlConfigDialog::dataChanged));
+    QObject::connect(idInput, qOverload<int>(&QSpinBox::valueChanged), //
+        this, qOverload<int>(&XmlConfigDialog::dataChanged));
     idLayout->addWidget(idLabel);
     idLayout->addWidget(idInput);
     dlgItems.append(idInput);
@@ -35,42 +38,33 @@ void XmlConfigDialog::setupUI(QVBoxLayout *mainLayout)
 
     // Виджеты для уточнённого значения количества элементов конфига
     auto countLabel = new QLabel("Уточнённое кол-во: ", this);
-    auto countInput = new QLineEdit("", this);
-    countInput->setValidator(new QRegExpValidator(QRegExp("^([1-9][0-9]*|0)"), this));
-    QObject::connect(
-        countInput, &QLineEdit::textEdited, this, qOverload<const QString &>(&XmlConfigDialog::dataChanged));
+    auto countInput = new QSpinBox(this);
+    countInput->setMinimum(configCountMin);
+    countInput->setMaximum(configCountMax);
+    QObject::connect(countInput, &QSpinBox::textChanged, //
+        this, qOverload<const QString &>(&XmlConfigDialog::dataChanged));
+    QObject::connect(countInput, qOverload<int>(&QSpinBox::valueChanged), //
+        this, qOverload<int>(&XmlConfigDialog::dataChanged));
     countLayout->addWidget(countLabel);
     countLayout->addWidget(countInput);
     dlgItems.append(countInput);
 
     // Виджеты для видимости конфигурационного параметра
     auto visibLabel = new QLabel("Видимость: ", this);
-    visibility = new QComboBox(this);
-    visibility->addItems({ "true", "false" });
-    visibility->setEditable(true);
-    visibility->setCurrentIndex(0);
+    auto visibInput = new QComboBox(this);
+    visibInput->addItems({ "true", "false" });
+    // visibInput->setEditable(true);
+    visibInput->setCurrentIndex(0);
     visibLayout->addWidget(visibLabel);
-    visibLayout->addWidget(visibility);
+    visibLayout->addWidget(visibInput);
     QObject::connect(                                                //
-        visibility, qOverload<int>(&QComboBox::currentIndexChanged), //
+        visibInput, qOverload<int>(&QComboBox::currentIndexChanged), //
         this, qOverload<int>(&XmlConfigDialog::dataChanged));        //
+    dlgItems.append(visibInput);
 
     // Добавляем слои на главный слой
     mainLayout->addLayout(idLayout);
     mainLayout->addLayout(defLayout);
     mainLayout->addLayout(countLayout);
     mainLayout->addLayout(visibLayout);
-}
-
-QStringList XmlConfigDialog::collectData()
-{
-    auto retVal = XmlDialog::collectData();
-    retVal.append(visibility->currentText());
-    return retVal;
-}
-
-void XmlConfigDialog::modelDataResponse(const QStringList &response)
-{
-    XmlDialog::modelDataResponse(response);
-    visibility->setCurrentText(response.last());
 }

@@ -1,6 +1,6 @@
 #include "xmlsignaldialog.h"
 
-XmlSignalDialog::XmlSignalDialog(QWidget *parent) : XmlDialog(parent), type(nullptr)
+XmlSignalDialog::XmlSignalDialog(QWidget *parent) : XmlDialog(parent)
 {
 }
 
@@ -16,63 +16,60 @@ void XmlSignalDialog::setupUI(QVBoxLayout *mainLayout)
     mTitle += "группы сигналов";
 
     // Виджеты для адресов группы сигналов
-    auto addrLabel = new QLabel("Адрес начального сигнала: ", this);
-    auto addrInput = new QLineEdit("", this);
-    addrInput->setValidator(new QRegExpValidator(QRegExp("^([1-9][0-9]*|0)"), this));
-    QObject::connect(
-        addrInput, &QLineEdit::textEdited, this, qOverload<const QString &>(&XmlSignalDialog::dataChanged));
+    auto addrLabel = new QLabel("Адрес сигнализации: ", this);
+    auto addrInput = new QSpinBox(this);
+    addrInput->setMinimum(addrMin);
+    addrInput->setMaximum(addrMax);
+    QObject::connect(addrInput, &QSpinBox::textChanged, this, //
+        qOverload<const QString &>(&XmlSignalDialog::dataChanged));
+    QObject::connect(addrInput, qOverload<int>(&QSpinBox::valueChanged), //
+        this, qOverload<int>(&XmlSignalDialog::dataChanged));
     addrLayout->addWidget(addrLabel);
     addrLayout->addWidget(addrInput);
     dlgItems.append(addrInput);
 
     // Виджеты для количества сигналов в группе
-    auto countLabel = new QLabel("Количество сигналов в группе: ", this);
-    auto countInput = new QLineEdit("", this);
-    countInput->setValidator(new QRegExpValidator(QRegExp("^([1-9][0-9]*|0)"), this));
-    QObject::connect(
-        countInput, &QLineEdit::textEdited, this, qOverload<const QString &>(&XmlSignalDialog::dataChanged));
+    auto countLabel = new QLabel("Количество: ", this);
+    auto countInput = new QSpinBox(this);
+    countInput->setMinimum(countMin);
+    countInput->setMaximum(countMax);
+    QObject::connect(countInput, &QSpinBox::textChanged, this, //
+        qOverload<const QString &>(&XmlSignalDialog::dataChanged));
+    QObject::connect(countInput, qOverload<int>(&QSpinBox::valueChanged), //
+        this, qOverload<int>(&XmlSignalDialog::dataChanged));
     countLayout->addWidget(countLabel);
     countLayout->addWidget(countInput);
     dlgItems.append(countInput);
 
     // Виджеты для ID группы сигналов
-    auto idLabel = new QLabel("ID группы: ", this);
-    auto idInput = new QLineEdit("", this);
-    idInput->setValidator(new QRegExpValidator(QRegExp("^([1-9][0-9]*|0)"), this));
-    QObject::connect(idInput, &QLineEdit::textEdited, this, qOverload<const QString &>(&XmlSignalDialog::dataChanged));
+    auto idLabel = new QLabel("ID вкладки: ", this);
+    auto idInput = new QSpinBox(this);
+    idInput->setMinimum(idMin);
+    idInput->setMaximum(idMax);
+    QObject::connect(idInput, &QSpinBox::textChanged, this, //
+        qOverload<const QString &>(&XmlSignalDialog::dataChanged));
+    QObject::connect(idInput, qOverload<int>(&QSpinBox::valueChanged), //
+        this, qOverload<int>(&XmlSignalDialog::dataChanged));
     idLayout->addWidget(idLabel);
     idLayout->addWidget(idInput);
     dlgItems.append(idInput);
 
     // Виджеты для типа возвращаемого значения
     auto typeLabel = new QLabel("Тип возвращаемого значения: ", this);
-    type = new QComboBox(this);
-    type->addItems({ "Float", "BitString", "SinglePoint" });
-    type->setEditable(true);
-    type->setCurrentIndex(0);
+    auto typeInput = new QComboBox(this);
+    typeInput->addItems({ "Float", "BitString", "SinglePoint" });
+    // typeInput->setEditable(true);
+    typeInput->setCurrentIndex(0);
     typeLayout->addWidget(typeLabel);
-    typeLayout->addWidget(type);
-    QObject::connect(                                          //
-        type, qOverload<int>(&QComboBox::currentIndexChanged), //
-        this, qOverload<int>(&XmlSignalDialog::dataChanged));  //
+    typeLayout->addWidget(typeInput);
+    QObject::connect(                                               //
+        typeInput, qOverload<int>(&QComboBox::currentIndexChanged), //
+        this, qOverload<int>(&XmlSignalDialog::dataChanged));       //
+    dlgItems.append(typeInput);
 
     // Добавляем слои на главный слой
     mainLayout->addLayout(addrLayout);
     mainLayout->addLayout(countLayout);
     mainLayout->addLayout(idLayout);
     mainLayout->addLayout(typeLayout);
-}
-
-QStringList XmlSignalDialog::collectData()
-{
-    auto retVal = XmlDialog::collectData();
-    retVal.append(type->currentText());
-    return retVal;
-}
-
-void XmlSignalDialog::modelDataResponse(const QStringList &response)
-{
-    XmlDialog::modelDataResponse(response);
-    type->setCurrentText(response.last());
-    // type->setEditable(false);
 }

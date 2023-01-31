@@ -14,11 +14,14 @@ void XmlWorkJourDialog::setupUI(QVBoxLayout *mainLayout)
     mTitle += "события рабочего журнала";
 
     // Виджеты для адреса события
-    auto addrLabel = new QLabel("Адрес события: ", this);
-    auto addrInput = new QLineEdit("", this);
-    addrInput->setValidator(new QRegExpValidator(QRegExp("^([1-9][0-9]*|0)"), this));
-    QObject::connect(
-        addrInput, &QLineEdit::textEdited, this, qOverload<const QString &>(&XmlWorkJourDialog::dataChanged));
+    auto addrLabel = new QLabel("Адрес сигнализации: ", this);
+    auto addrInput = new QSpinBox(this);
+    addrInput->setMinimum(addrMin);
+    addrInput->setMaximum(addrMax);
+    QObject::connect(addrInput, &QSpinBox::textChanged, this, //
+        qOverload<const QString &>(&XmlWorkJourDialog::dataChanged));
+    QObject::connect(addrInput, qOverload<int>(&QSpinBox::valueChanged), //
+        this, qOverload<int>(&XmlWorkJourDialog::dataChanged));
     addrLayout->addWidget(addrLabel);
     addrLayout->addWidget(addrInput);
     dlgItems.append(addrInput);

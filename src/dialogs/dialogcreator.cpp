@@ -101,7 +101,7 @@ void DialogCreator::createBoxTuneDialogs(const Modules::Model &boxModel)
     if (boxModel == Modules::Model::KIV)
     {
         // TODO: Реанимировать регулировку для КИВ, временно не работает :(
-        addDialogToList(new TuneKIVDialog(&configV, mParent), "Регулировка", "tune");
+        // addDialogToList(new TuneKIVDialog(&configV, mParent), "Регулировка", "tune");
     }
     else
     {

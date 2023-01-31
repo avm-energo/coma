@@ -20,14 +20,17 @@ void XmlMWidgetDialog::setupUI(QVBoxLayout *mainLayout)
     mTitle += "описания мульти-виджета";
 
     // Виджеты для начального адреса
-    auto addrLabel = new QLabel("Начальный адрес: ", this);
-    auto startAddr = new QLineEdit("", this);
-    startAddr->setValidator(new QRegExpValidator(QRegExp("^([1-9][0-9]*|0)"), this));
-    QObject::connect(
-        startAddr, &QLineEdit::textEdited, this, qOverload<const QString &>(&XmlMWidgetDialog::dataChanged));
+    auto addrLabel = new QLabel("Адрес сигнализации: ", this);
+    auto addrInput = new QSpinBox(this);
+    addrInput->setMinimum(addrMin);
+    addrInput->setMaximum(addrMax);
+    QObject::connect(addrInput, &QSpinBox::textChanged, this, //
+        qOverload<const QString &>(&XmlMWidgetDialog::dataChanged));
+    QObject::connect(addrInput, qOverload<int>(&QSpinBox::valueChanged), //
+        this, qOverload<int>(&XmlMWidgetDialog::dataChanged));
     addrLayout->addWidget(addrLabel);
-    addrLayout->addWidget(startAddr);
-    dlgItems.append(startAddr);
+    addrLayout->addWidget(addrInput);
+    dlgItems.append(addrInput);
 
     // Виджеты для имени мульти-виджета
     auto descLabel = new QLabel("Имя: ", this);
@@ -39,12 +42,16 @@ void XmlMWidgetDialog::setupUI(QVBoxLayout *mainLayout)
 
     // Виджеты для количества адресов
     auto countLabel = new QLabel("Количество: ", this);
-    auto count = new QLineEdit("", this);
-    count->setValidator(new QRegExpValidator(QRegExp("^([1-9][0-9]*|0)"), this));
-    QObject::connect(count, &QLineEdit::textEdited, this, qOverload<const QString &>(&XmlMWidgetDialog::dataChanged));
+    auto countInput = new QSpinBox(this);
+    countInput->setMinimum(countMin);
+    countInput->setMaximum(countMax);
+    QObject::connect(countInput, &QSpinBox::textChanged, this, //
+        qOverload<const QString &>(&XmlMWidgetDialog::dataChanged));
+    QObject::connect(countInput, qOverload<int>(&QSpinBox::valueChanged), //
+        this, qOverload<int>(&XmlMWidgetDialog::dataChanged));
     countLayout->addWidget(countLabel);
-    countLayout->addWidget(count);
-    dlgItems.append(count);
+    countLayout->addWidget(countInput);
+    dlgItems.append(countInput);
 
     // Виджеты для тултипа
     auto tooltipLabel = new QLabel("Тултип: ", this);
@@ -53,18 +60,6 @@ void XmlMWidgetDialog::setupUI(QVBoxLayout *mainLayout)
     tooltipLayout->addWidget(tooltipLabel);
     tooltipLayout->addWidget(tooltip);
     dlgItems.append(tooltip);
-
-    // Виджеты для типа отображения
-    auto viewLabel = new QLabel("Тип отображения: ", this);
-    view = new QComboBox(this);
-    view->addItems({ "float", "bitset" });
-    view->setEditable(true);
-    view->setCurrentIndex(0);
-    viewLayout->addWidget(viewLabel);
-    viewLayout->addWidget(view);
-    QObject::connect(                                          //
-        view, qOverload<int>(&QComboBox::currentIndexChanged), //
-        this, qOverload<int>(&XmlMWidgetDialog::dataChanged)); //
 
     // Виджеты для массива строк
     auto strArrLabel = new QLabel("String Array: ", this);
@@ -75,6 +70,19 @@ void XmlMWidgetDialog::setupUI(QVBoxLayout *mainLayout)
     strArrLayout->addWidget(strArray);
     dlgItems.append(strArray);
 
+    // Виджеты для типа отображения
+    auto viewLabel = new QLabel("Тип отображения: ", this);
+    auto viewInput = new QComboBox(this);
+    viewInput->addItems({ "float", "bitset" });
+    // viewInput->setEditable(true);
+    viewInput->setCurrentIndex(0);
+    viewLayout->addWidget(viewLabel);
+    viewLayout->addWidget(viewInput);
+    QObject::connect(                                               //
+        viewInput, qOverload<int>(&QComboBox::currentIndexChanged), //
+        this, qOverload<int>(&XmlMWidgetDialog::dataChanged));      //
+    dlgItems.append(viewInput);
+
     // Добавляем слои на главный слой
     mainLayout->addLayout(addrLayout);
     mainLayout->addLayout(descLayout);
@@ -82,17 +90,4 @@ void XmlMWidgetDialog::setupUI(QVBoxLayout *mainLayout)
     mainLayout->addLayout(tooltipLayout);
     mainLayout->addLayout(viewLayout);
     mainLayout->addLayout(strArrLayout);
-}
-
-QStringList XmlMWidgetDialog::collectData()
-{
-    auto retVal = XmlDialog::collectData();
-    retVal.append(view->currentText());
-    return retVal;
-}
-
-void XmlMWidgetDialog::modelDataResponse(const QStringList &response)
-{
-    XmlDialog::modelDataResponse(response);
-    view->setCurrentText(response.last());
 }

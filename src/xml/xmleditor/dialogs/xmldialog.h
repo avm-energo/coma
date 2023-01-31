@@ -1,5 +1,4 @@
-#ifndef XMLDIALOG_H
-#define XMLDIALOG_H
+#pragma once
 
 #include <QComboBox>
 #include <QDialog>
@@ -8,18 +7,31 @@
 #include <QLineEdit>
 #include <QPushButton>
 #include <QRegExpValidator>
+#include <QSpinBox>
+#include <variant>
 
 constexpr auto createId = -1;
+constexpr auto idMin = 1;
+constexpr auto idMax = 0xffff;
+constexpr auto addrMin = idMin;
+constexpr auto addrMax = 0xffffff;
+constexpr auto configCountMin = 0;
+constexpr auto configCountMax = 0xff;
+constexpr auto countMin = addrMin;
+constexpr auto countMax = configCountMax;
 
 /// \brief Базовый абстрактный класс для создания диалоговых окон XML редактора.
 class XmlDialog : public QDialog
 {
     Q_OBJECT
+private:
+    using Widget = std::variant<QLineEdit *, QComboBox *, QSpinBox *>;
+
 protected:
     QString mTitle;
     bool isChanged;
     int mRow;
-    QList<QWidget *> dlgItems;
+    QList<Widget> dlgItems;
 
     /// \brief Функция устанавливает фиксированный размер окна и отображает его в центре экрана.
     void setupSizePos(int width, int height);
@@ -34,7 +46,7 @@ protected:
     virtual QStringList collectData();
 
     /// \brief Виртуальный метод для проверки на корректность введённых данных.
-    virtual bool checkDataBeforeSaving();
+    virtual bool checkDataBeforeSaving(const QStringList &savedData);
 
 public:
     explicit XmlDialog() = delete;
@@ -77,6 +89,9 @@ public slots:
     /// \brief Перегрузка слота, вызываемого при изменении данных в диалоговом окне.
     /// \see dataChanged.
     void dataChanged(int data);
-};
 
-#endif // XMLDIALOG_H
+    /// \brief Вызывается, когда приходящие от модели данные изменили состояние
+    /// диалогового окна, однако нам не нужно при создании окна изменения состояния change.
+    /// \see dataChanged.
+    void resetChangeState();
+};

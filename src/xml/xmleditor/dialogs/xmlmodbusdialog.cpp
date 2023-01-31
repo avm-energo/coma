@@ -17,10 +17,13 @@ void XmlModbusDialog::setupUI(QVBoxLayout *mainLayout)
 
     // Виджеты для ID сигнала
     auto sigIdLabel = new QLabel("ID сигнала: ", this);
-    auto sigIdInput = new QLineEdit("", this);
-    sigIdInput->setValidator(new QRegExpValidator(QRegExp("^([1-9][0-9]*|0)"), this));
-    QObject::connect(
-        sigIdInput, &QLineEdit::textEdited, this, qOverload<const QString &>(&XmlModbusDialog::dataChanged));
+    auto sigIdInput = new QSpinBox(this);
+    sigIdInput->setMinimum(idMin);
+    sigIdInput->setMaximum(idMax);
+    QObject::connect(sigIdInput, &QSpinBox::textChanged, //
+        this, qOverload<const QString &>(&XmlModbusDialog::dataChanged));
+    QObject::connect(sigIdInput, qOverload<int>(&QSpinBox::valueChanged), //
+        this, qOverload<int>(&XmlModbusDialog::dataChanged));
     sigIdLayout->addWidget(sigIdLabel);
     sigIdLayout->addWidget(sigIdInput);
     dlgItems.append(sigIdInput);
@@ -28,7 +31,6 @@ void XmlModbusDialog::setupUI(QVBoxLayout *mainLayout)
     // Виджеты для типа регистра
     auto regTypeLabel = new QLabel("Тип регистра: ", this);
     auto regTypeInput = new QLineEdit("", this);
-    // regTypeInput->setValidator(new QRegExpValidator(QRegExp("^([1-9][0-9]*|0)"), this));
     QObject::connect(
         regTypeInput, &QLineEdit::textEdited, this, qOverload<const QString &>(&XmlModbusDialog::dataChanged));
     regTypeLayout->addWidget(regTypeLabel);
@@ -36,16 +38,17 @@ void XmlModbusDialog::setupUI(QVBoxLayout *mainLayout)
     dlgItems.append(regTypeInput);
 
     // Виджеты для типа возвращаемого значения
-    auto typeLabel = new QLabel("Тип возвращаемого значения: ", this);
-    type = new QComboBox(this);
-    type->addItems({ "uint32", "float", "bool" });
-    type->setEditable(true);
-    type->setCurrentIndex(0);
+    auto typeLabel = new QLabel("Тип передаваемого значения: ", this);
+    auto typeInput = new QComboBox(this);
+    typeInput->addItems({ "uint32", "float", "bool" });
+    // typeInput->setEditable(true);
+    typeInput->setCurrentIndex(0);
     typeLayout->addWidget(typeLabel);
-    typeLayout->addWidget(type);
-    QObject::connect(                                          //
-        type, qOverload<int>(&QComboBox::currentIndexChanged), //
-        this, qOverload<int>(&XmlModbusDialog::dataChanged));  //
+    typeLayout->addWidget(typeInput);
+    QObject::connect(                                               //
+        typeInput, qOverload<int>(&QComboBox::currentIndexChanged), //
+        this, qOverload<int>(&XmlModbusDialog::dataChanged));       //
+    dlgItems.append(typeInput);
 
     // Виджеты для описания
     auto descLabel = new QLabel("Описание: ", this);
@@ -61,30 +64,4 @@ void XmlModbusDialog::setupUI(QVBoxLayout *mainLayout)
     mainLayout->addLayout(regTypeLayout);
     mainLayout->addLayout(typeLayout);
     mainLayout->addLayout(descLayout);
-}
-
-QStringList XmlModbusDialog::collectData()
-{
-    auto retVal = XmlDialog::collectData();
-    retVal.insert(2, type->currentText());
-    return retVal;
-}
-
-void XmlModbusDialog::modelDataResponse(const QStringList &response)
-{
-    auto size = response.count();
-    for (auto i = 0; i < size; i++)
-    {
-        if (i == 2)
-        {
-            type->setCurrentText(response[i]);
-            break;
-        }
-        else
-        {
-            auto input = qobject_cast<QLineEdit *>(dlgItems[i]);
-            input->setText(response[i]);
-        }
-    }
-    qobject_cast<QLineEdit *>(dlgItems.last())->setText(response.last());
 }

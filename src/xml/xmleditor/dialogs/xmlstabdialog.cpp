@@ -15,12 +15,16 @@ void XmlSTabDialog::setupUI(QVBoxLayout *mainLayout)
 
     // Виджеты для ID вкладки
     auto idLabel = new QLabel("ID вкладки: ", this);
-    auto idInput = new QLineEdit("", this);
-    idInput->setValidator(new QRegExpValidator(QRegExp("^([1-9][0-9]*|0)"), this));
-    QObject::connect(idInput, &QLineEdit::textEdited, this, qOverload<const QString &>(&XmlSTabDialog::dataChanged));
+    auto idTabInput = new QSpinBox(this);
+    idTabInput->setMinimum(idMin);
+    idTabInput->setMaximum(idMax);
+    QObject::connect(idTabInput, &QSpinBox::textChanged, this, //
+        qOverload<const QString &>(&XmlSTabDialog::dataChanged));
+    QObject::connect(idTabInput, qOverload<int>(&QSpinBox::valueChanged), //
+        this, qOverload<int>(&XmlSTabDialog::dataChanged));
     idLayout->addWidget(idLabel);
-    idLayout->addWidget(idInput);
-    dlgItems.append(idInput);
+    idLayout->addWidget(idTabInput);
+    dlgItems.append(idTabInput);
 
     // Виджеты для имени вкладки
     auto nameLabel = new QLabel("Имя вкладки: ", this);

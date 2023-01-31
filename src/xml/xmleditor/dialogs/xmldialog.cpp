@@ -4,6 +4,7 @@
 
 #include <QGuiApplication>
 #include <QScreen>
+#include <gen/std_ext.h>
 
 XmlDialog::XmlDialog(QWidget *parent) : QDialog(parent, Qt::Window), isChanged(false)
 {
@@ -49,8 +50,20 @@ QStringList XmlDialog::collectData()
     QStringList collected;
     for (auto &item : dlgItems)
     {
-        auto input = qobject_cast<QLineEdit *>(item);
-        collected.append(input->text());
+        std::visit( //
+            overloaded {
+                [&](const QLineEdit *widget) { //
+                    collected.append(widget->text());
+                },
+                [&](const QComboBox *widget) { //
+                    collected.append(widget->currentText());
+                },
+                [&](const QSpinBox *widget) { //
+                    auto value = QString::number(widget->value());
+                    collected.append(value);
+                },
+            },
+            item);
     }
     return collected;
 }
@@ -66,20 +79,40 @@ void XmlDialog::reject()
     QDialog::reject();
 }
 
-bool XmlDialog::checkDataBeforeSaving()
+bool XmlDialog::checkDataBeforeSaving(const QStringList &savedData)
 {
+    // TODO: метод должен быть pure virtual
+    Q_UNUSED(savedData);
     return true;
 }
 
 void XmlDialog::modelDataResponse(const QStringList &response)
 {
-    auto sizeR = response.count(), sizeD = dlgItems.count();
-    auto size = (sizeR > sizeD ? sizeD : sizeR);
+    auto responseCount = response.count(), widgetsCount = dlgItems.count();
+    // Находим минимальное количество, при несовпадении игнорируем
+    auto size = (responseCount > widgetsCount ? widgetsCount : responseCount);
     for (auto i = 0; i < size; i++)
     {
-        auto input = qobject_cast<QLineEdit *>(dlgItems[i]);
-        input->setText(response[i]);
+        auto &item = dlgItems[i];
+        std::visit( //
+            overloaded {
+                [&](QLineEdit *widget) { //
+                    widget->setText(response[i]);
+                },
+                [&](QComboBox *widget) { //
+                    auto itemIndex = widget->findText(response[i]);
+                    if (itemIndex != -1)
+                        widget->setCurrentIndex(itemIndex);
+                    else
+                        widget->setCurrentText(response[i]);
+                },
+                [&](QSpinBox *widget) { //
+                    widget->setValue(response[i].toInt());
+                },
+            },
+            item);
     }
+    resetChangeState();
 }
 
 void XmlDialog::saveData()
@@ -87,10 +120,11 @@ void XmlDialog::saveData()
     // Если есть изменения
     if (isChanged)
     {
-        if (checkDataBeforeSaving())
+        // Собираем изменения из полей
+        auto collectedData = collectData();
+        // Проверяем данные перед сохранением
+        if (checkDataBeforeSaving(collectedData))
         {
-            // Собираем изменения из полей
-            auto collectedData = collectData();
             // Отсылаем изменения в модель
             if (mRow == createId)
                 emit createData(collectedData, &mRow);
@@ -129,4 +163,14 @@ void XmlDialog::dataChanged(int index)
 {
     Q_UNUSED(index);
     dataChanged();
+}
+
+void XmlDialog::resetChangeState()
+{
+    // Сброс изменённого состояния окна
+    if (isChanged)
+    {
+        setWindowTitle(mTitle);
+        isChanged = false;
+    }
 }

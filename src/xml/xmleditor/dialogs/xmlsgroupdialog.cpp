@@ -22,14 +22,18 @@ void XmlSGroupDialog::setupUI(QVBoxLayout *mainLayout)
     nameLayout->addWidget(nameInput);
     dlgItems.append(nameInput);
 
-    // Виджеты для ID вкладки
+    // Виджеты для ID группы
     auto idLabel = new QLabel("ID вкладки: ", this);
-    auto idTab = new QLineEdit("", this);
-    idTab->setValidator(new QRegExpValidator(QRegExp("^([1-9][0-9]*|0)"), this));
-    QObject::connect(idTab, &QLineEdit::textEdited, this, qOverload<const QString &>(&XmlSGroupDialog::dataChanged));
+    auto idInput = new QSpinBox(this);
+    idInput->setMinimum(idMin);
+    idInput->setMaximum(idMax);
+    QObject::connect(idInput, &QSpinBox::textChanged, this, //
+        qOverload<const QString &>(&XmlSGroupDialog::dataChanged));
+    QObject::connect(idInput, qOverload<int>(&QSpinBox::valueChanged), //
+        this, qOverload<int>(&XmlSGroupDialog::dataChanged));
     idLayout->addWidget(idLabel);
-    idLayout->addWidget(idTab);
-    dlgItems.append(idTab);
+    idLayout->addWidget(idInput);
+    dlgItems.append(idInput);
 
     // Добавляем слои на главный слой
     mainLayout->addLayout(nameLayout);
