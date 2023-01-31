@@ -1,12 +1,12 @@
-#include "ieditormodel.h"
+#include "baseeditormodel.h"
 
-IEditorModel::IEditorModel(int rows, int cols, ModelType type, QObject *parent)
+BaseEditorModel::BaseEditorModel(int rows, int cols, ModelType type, QObject *parent)
     : QStandardItemModel(rows, cols, parent), mType(type)
 {
 }
 
 /// \brief Sets horizontal header labels of model from an input string list.
-void IEditorModel::setHorizontalHeaderLabels(const QStringList &labels)
+void BaseEditorModel::setHorizontalHeaderLabels(const QStringList &labels)
 {
     int column = 0;
     for (auto &label : labels)
@@ -17,7 +17,7 @@ void IEditorModel::setHorizontalHeaderLabels(const QStringList &labels)
 }
 
 /// \brief Returns a model type.
-ModelType IEditorModel::getModelType() const
+ModelType BaseEditorModel::getModelType() const
 {
     return mType;
 }
@@ -27,7 +27,8 @@ ModelType IEditorModel::getModelType() const
 /// \param elem - XML DOM node, child of doc. New attribute creates for this node.
 /// \param attrName - a name of creating attribute.
 /// \param attrVar - QVariant with string value of creating attribute.
-void IEditorModel::setAttribute(QDomDocument &doc, QDomElement &elem, const QString &attrName, const QVariant &attrVar)
+void BaseEditorModel::setAttribute(
+    QDomDocument &doc, QDomElement &elem, const QString &attrName, const QVariant &attrVar)
 {
     auto attr = doc.createAttribute(attrName);
     auto attrVal = (attrVar.isValid() && attrVar.canConvert<QString>()) ? attrVar.value<QString>() : "";
@@ -36,7 +37,7 @@ void IEditorModel::setAttribute(QDomDocument &doc, QDomElement &elem, const QStr
 }
 
 /// \brief Creates QDomNode at base of input QDomDocument.
-QDomElement IEditorModel::makeElement(QDomDocument &doc, const QString &elemName)
+QDomElement BaseEditorModel::makeElement(QDomDocument &doc, const QString &elemName)
 {
     return doc.createElement(elemName);
 }
@@ -46,7 +47,7 @@ QDomElement IEditorModel::makeElement(QDomDocument &doc, const QString &elemName
 /// \param parent - XML DOM node, parent of creating node.
 /// \param elemName - name of creating node.
 /// \param data - string data for the new node.
-void IEditorModel::makeElement(QDomDocument &doc, QDomElement &parent, const QString &elemName, const QString &data)
+void BaseEditorModel::makeElement(QDomDocument &doc, QDomElement &parent, const QString &elemName, const QString &data)
 {
     auto elem = makeElement(doc, elemName);
     auto filler = doc.createTextNode(data);
@@ -59,14 +60,14 @@ void IEditorModel::makeElement(QDomDocument &doc, QDomElement &parent, const QSt
 /// \param parent - XML DOM node, parent of creating node.
 /// \param elemName - name of creating node.
 /// \param data - QVariant with string data for the new node.
-void IEditorModel::makeElement(QDomDocument &doc, QDomElement &parent, const QString &elemName, const QVariant &data)
+void BaseEditorModel::makeElement(QDomDocument &doc, QDomElement &parent, const QString &elemName, const QVariant &data)
 {
     auto str = (data.isValid() && data.canConvert<QString>()) ? data.value<QString>() : "";
     makeElement(doc, parent, elemName, str);
 }
 
 /// \brief Slot for receiving a request from dialog and emits signal with response.
-void IEditorModel::getDialogRequest(const int &row)
+void BaseEditorModel::getDialogRequest(const int &row)
 {
     if (row >= 0 && row < rowCount())
     {
@@ -92,7 +93,7 @@ void IEditorModel::getDialogRequest(const int &row)
 }
 
 /// \brief Slot for inserting a new item in the model.
-void IEditorModel::create(const QStringList &saved, int *row)
+void BaseEditorModel::create(const QStringList &saved, int *row)
 {
     *row = rowCount();
     QList<QStandardItem *> items;
@@ -102,7 +103,7 @@ void IEditorModel::create(const QStringList &saved, int *row)
 }
 
 /// \brief Slot for updating an item's data in the model.
-void IEditorModel::update(const QStringList &saved, const int &row)
+void BaseEditorModel::update(const QStringList &saved, const int &row)
 {
     if (row >= 0 && row < rowCount())
     {
@@ -117,7 +118,7 @@ void IEditorModel::update(const QStringList &saved, const int &row)
 }
 
 /// \brief Slot for deleting an exisiting item in the model.
-void IEditorModel::remove(const int &row)
+void BaseEditorModel::remove(const int &row)
 {
     removeRow(row);
 }

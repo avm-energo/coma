@@ -130,9 +130,9 @@ void DataController::createFile(const QStringList &creationData)
         {
             // Читаем данные и форматируем
             QTextStream in(tempFile);
-            auto formated = in.readAll();
+            auto formatted = in.readAll();
             for (auto &argument : creationData)
-                formated = formated.arg(argument);
+                formatted = formatted.arg(argument);
             tempFile->close();
             in.reset();
 
@@ -142,7 +142,7 @@ void DataController::createFile(const QStringList &creationData)
             {
                 // Записываем отформатированные данные
                 in.setDevice(newFile);
-                in << formated;
+                in << formatted;
                 newFile->close();
             }
             newFile->deleteLater();

@@ -32,7 +32,7 @@ enum NodeTypes : quint16
 using ModelType = tags::NodeTypes;
 
 /// \brief Base class for models that used in XML editor.
-class IEditorModel : public QStandardItemModel
+class BaseEditorModel : public QStandardItemModel
 {
     Q_OBJECT
 protected:
@@ -43,7 +43,7 @@ protected:
     void makeElement(QDomDocument &doc, QDomElement &parent, const QString &elemName, const QVariant &data);
 
 public:
-    explicit IEditorModel(int rows, int cols, ModelType type, QObject *parent = nullptr);
+    explicit BaseEditorModel(int rows, int cols, ModelType type, QObject *parent = nullptr);
     virtual void setHorizontalHeaderLabels(const QStringList &labels);
     ModelType getModelType() const;
 

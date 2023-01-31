@@ -1,8 +1,7 @@
-#ifndef XMLMODEL_H
-#define XMLMODEL_H
+#pragma once
 
 #include "../../xmltags.h"
-#include "ieditormodel.h"
+#include "baseeditormodel.h"
 
 constexpr int ModelNodeRole = 0x0105; ///< Role for setting node with submodule
 
@@ -18,7 +17,7 @@ struct ChildModelNode
 Q_DECLARE_METATYPE(ChildModelNode);
 
 /// \brief Base abstract XML model class.
-class XmlModel : public IEditorModel
+class XmlModel : public BaseEditorModel
 {
     Q_OBJECT
 protected:
@@ -42,5 +41,3 @@ public:
     void setDataNode(bool isChildModel, QDomNode &root);
     virtual void parseNode(QDomNode &node, int &row) = 0;
 };
-
-#endif // XMLMODEL_H

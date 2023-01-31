@@ -2,14 +2,14 @@
 #define MASTERMODEL_H
 
 #include "../../xmltags.h"
-#include "ieditormodel.h"
+#include "baseeditormodel.h"
 
 #include <QtXml>
 
 constexpr int FilenameDataRole = 0x0107; ///< Роль для хранения имени файла
 
 /// \brief Class for master model (master workspace, left table view).
-class MasterModel : public IEditorModel
+class MasterModel : public BaseEditorModel
 {
     Q_OBJECT
 private:

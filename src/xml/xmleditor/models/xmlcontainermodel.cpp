@@ -1,4 +1,6 @@
-#include "xmlmodels.h"
+#include "xmlcontainermodel.h"
+
+#include "xmlhidedatamodel.h"
 
 XmlContainerModel::XmlContainerModel(int rows, int cols, ModelType type, QObject *parent)
     : XmlModel(rows, cols, type, parent)
@@ -8,21 +10,14 @@ XmlContainerModel::XmlContainerModel(int rows, int cols, ModelType type, QObject
 /// \brief Returns name of XML DOM node in dependency of model type.
 QString XmlContainerModel::getModelTagName() const
 {
-    switch (mType)
-    {
-    case ModelType::Resources:
-        return tags::res;
-    case ModelType::Alarms:
-        return tags::alarms;
-    case ModelType::Journals:
-        return tags::journals;
-    case ModelType::Sections:
-        return tags::sections;
-    case ModelType::Section:
-        return tags::section;
-    default:
-        return "undefined";
-    }
+    static const QHash<ModelType, QString> tagByModelType = {
+        { ModelType::Resources, tags::res },     //
+        { ModelType::Alarms, tags::alarms },     //
+        { ModelType::Journals, tags::journals }, //
+        { ModelType::Sections, tags::sections }, //
+        { ModelType::Section, tags::section }    //
+    };
+    return tagByModelType.value(mType, "undefined");
 }
 
 /// \brief Parsing input XML nodes of file in model items.
@@ -51,7 +46,7 @@ void XmlContainerModel::create(const QStringList &saved, int *row)
     // Создание дочерних элементов доступно для узлов <sections> и <section>
     if (mType == ModelType::Sections || mType == ModelType::Section)
     {
-        IEditorModel::create(saved, row);
+        BaseEditorModel::create(saved, row);
         if (*row >= 0)
         {
             ChildModelNode node { nullptr, ModelType::None };

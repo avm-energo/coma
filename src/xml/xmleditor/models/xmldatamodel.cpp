@@ -1,4 +1,4 @@
-#include "xmlmodels.h"
+#include "xmldatamodel.h"
 
 XmlDataModel::XmlDataModel(int rows, int cols, ModelType type, QObject *parent) : XmlModel(rows, cols, type, parent)
 {

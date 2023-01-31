@@ -2,7 +2,7 @@
 
 #include <gen/stdfunc.h>
 
-MasterModel::MasterModel(QObject *parent) : IEditorModel(1, 1, ModelType::Master, parent)
+MasterModel::MasterModel(QObject *parent) : BaseEditorModel(1, 1, ModelType::Master, parent)
 {
     readModulesToModel();
 }
@@ -135,7 +135,7 @@ void MasterModel::masterItemSelected(const QModelIndex &itemIndex)
             }
             // Если QtXml парсер не смог корректно считать xml файл
             else
-                qWarning() << errMsg << " Line: " << line << " Column: " << column;
+                qWarning() << errMsg << " File: " << filename << " Line: " << line << " Column: " << column;
             moduleFile->close();
         }
         moduleFile->deleteLater();
@@ -146,7 +146,7 @@ void MasterModel::masterItemSelected(const QModelIndex &itemIndex)
 void MasterModel::create(const QStringList &saved, int *row)
 {
     auto newSaved = getNewList(saved);
-    IEditorModel::create(newSaved, row);
+    BaseEditorModel::create(newSaved, row);
     setData(index(*row, 0), newSaved.last(), FilenameDataRole);
     emit createFile(newSaved);
 }
@@ -155,7 +155,7 @@ void MasterModel::create(const QStringList &saved, int *row)
 void MasterModel::update(const QStringList &saved, const int &row)
 {
     auto newSaved = getNewList(saved);
-    IEditorModel::update(newSaved, row);
+    BaseEditorModel::update(newSaved, row);
     emit modelChanged();
 }
 
@@ -163,6 +163,6 @@ void MasterModel::update(const QStringList &saved, const int &row)
 void MasterModel::remove(const int &row)
 {
     auto filename = data(index(row, 0), FilenameDataRole).value<QString>();
-    IEditorModel::remove(row);
+    BaseEditorModel::remove(row);
     emit removeFile(filename);
 }

@@ -1,4 +1,4 @@
-#include "xmlmodels.h"
+#include "xmlhidedatamodel.h"
 
 XmlHideDataModel::XmlHideDataModel(int rows, int cols, ModelType type, QObject *parent)
     : XmlModel(rows, cols, type, parent)
@@ -45,7 +45,7 @@ void XmlHideDataModel::getDialogRequest(const int &row)
 void XmlHideDataModel::create(const QStringList &saved, int *row)
 {
     Q_ASSERT(saved.count() == 6);
-    IEditorModel::create({ saved[0], saved[1] }, row);
+    BaseEditorModel::create({ saved[0], saved[1] }, row);
     if (*row >= 0 && *row < rowCount())
     {
         auto newHide = convertHideData({ saved[2], saved[3], saved[5], saved[4] });
@@ -57,7 +57,7 @@ void XmlHideDataModel::create(const QStringList &saved, int *row)
 /// \brief Slot for updating an item's data in the model (including hiding data).
 void XmlHideDataModel::update(const QStringList &saved, const int &row)
 {
-    IEditorModel::update({ saved[0], saved[1] }, row);
+    BaseEditorModel::update({ saved[0], saved[1] }, row);
     if (row >= 0 && row < rowCount())
     {
         auto newHide = convertHideData({ saved[2], saved[3], saved[5], saved[4] });

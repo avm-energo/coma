@@ -43,7 +43,7 @@ const std::map<ModelType, QStringList> XmlModel::headers {
 };
 
 /// \brief Base XML model class ctor
-XmlModel::XmlModel(int rows, int cols, ModelType type, QObject *parent) : IEditorModel(rows, cols, type, parent)
+XmlModel::XmlModel(int rows, int cols, ModelType type, QObject *parent) : BaseEditorModel(rows, cols, type, parent)
 {
 }
 
@@ -81,21 +81,21 @@ bool XmlModel::setData(const QModelIndex &index, const QVariant &val, int nRole)
 /// \brief Slot for inserting a new item in the model.
 void XmlModel::create(const QStringList &saved, int *row)
 {
-    IEditorModel::create(saved, row);
+    BaseEditorModel::create(saved, row);
     emit modelChanged();
 }
 
 /// \brief Slot for updating an item's data in the model.
 void XmlModel::update(const QStringList &saved, const int &row)
 {
-    IEditorModel::update(saved, row);
+    BaseEditorModel::update(saved, row);
     emit modelChanged();
 }
 
 /// \brief Slot for deleting an exisiting item in the model.
 void XmlModel::remove(const int &row)
 {
-    IEditorModel::remove(row);
+    BaseEditorModel::remove(row);
     emit modelChanged();
 }
 

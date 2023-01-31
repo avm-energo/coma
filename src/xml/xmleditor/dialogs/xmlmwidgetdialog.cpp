@@ -1,7 +1,5 @@
 #include "xmlmwidgetdialog.h"
 
-#include "../models/xmlmodels.h"
-
 XmlMWidgetDialog::XmlMWidgetDialog(QWidget *parent) : XmlDialog(parent)
 {
 }

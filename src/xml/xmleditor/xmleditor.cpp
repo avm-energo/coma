@@ -145,7 +145,7 @@ QVBoxLayout *XmlEditor::getSlaveWorkspace()
 /// \brief Слот для создания диалогового окна создания, редактирования или удаления выбранного элемента.
 void XmlEditor::actionDialog(DialogType dlgType, QTableView *srcView)
 {
-    auto model = qobject_cast<IEditorModel *>(srcView->model());
+    auto model = qobject_cast<BaseEditorModel *>(srcView->model());
     switch (dlgType)
     {
     // Диалог создания элемента
