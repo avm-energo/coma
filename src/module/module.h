@@ -20,8 +20,6 @@ public:
     bool loadSettings();
 
 private:
-    bool isFileExist(const QString &filename);
-    QDomDocument getFileContent(const QString &filename);
     bool loadS2Settings();
     bool loadModuleSettings(const QString &filename, const quint16 &typeB, const quint16 &typeM);
 };

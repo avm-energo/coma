@@ -242,11 +242,6 @@ void Protocom::writeRaw(const QByteArray &ba)
     emit wakeUpParser();
 }
 
-// InterfaceSettings Protocom::parseSettings(QDomElement domElement) const
-//{
-//    return BaseInterface::parseSettings<Proto::ProtocomGroup>(domElement);
-//}
-
 void Protocom::writeCommand(Queries::Commands cmd, QVariant item)
 {
     Q_D(Protocom);

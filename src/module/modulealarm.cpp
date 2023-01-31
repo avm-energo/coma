@@ -81,16 +81,12 @@ void ModuleAlarm::setupUI(const QStringList &events)
 /// \brief Check if all pixmap labels inactive.
 bool ModuleAlarm::isAllPixmapInactive() const
 {
-    auto retFlag = true;
     for (auto &&statePair : labelStateStorage)
     {
         if (statePair.second)
-        {
-            retFlag = false;
-            break;
-        }
+            return false;
     }
-    return retFlag;
+    return true;
 }
 
 /// \brief Update a indicator (pixmap) for alarms displaying.
@@ -116,16 +112,13 @@ void ModuleAlarm::update(const QVariant &msg)
     if (!(sigval & 0x80))
     {
         quint32 index = 0;
-        bool foundFlag = false;
         for (auto it = mAlarms.keyBegin(); it != mAlarms.keyEnd(); it++, index++)
         {
             if (sp.sigAdr == *it)
             {
-                foundFlag = true;
+                updatePixmap(sigval & 0x00000001, index);
                 break;
             }
         }
-        if (foundFlag)
-            updatePixmap(sigval & 0x00000001, index);
     }
 }

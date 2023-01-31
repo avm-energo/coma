@@ -2,6 +2,7 @@
 
 #include "../xml/xmlparser/xmlmoduleparser.h"
 #include "../xml/xmlparser/xmls2parser.h"
+#include "filehelper.h"
 
 #include <QDir>
 #include <QFile>
@@ -13,42 +14,6 @@ Module::Module(const bool criticalCheck, const Modules::StartupInfoBlock &startu
 {
 }
 
-/// \brief Функция для проверки, существует ли файл с указанным именем в локальной папке пользователя.
-bool Module::isFileExist(const QString &filename)
-{
-    auto dir = QDir(StdFunc::GetSystemHomeDir());
-    return QFile::exists(dir.filePath(filename));
-}
-
-/// \brief Возвращает QDomDocument для файла с указанным именем из локальной папки пользователя.
-QDomDocument Module::getFileContent(const QString &filename)
-{
-    QDomDocument doc;
-    auto dir = QDir(StdFunc::GetSystemHomeDir());
-    auto file = new QFile(dir.filePath(filename), this);
-    if (file->exists())
-    {
-        if (file->open(QIODevice::ReadOnly))
-        {
-            QString errMsg = "";
-            auto line = 0, column = 0;
-            if (!doc.setContent(file, &errMsg, &line, &column))
-            {
-                qCritical() << Error::WrongFileError << file->fileName();
-                qCritical() << errMsg << " Line: " << line << " Column: " << column;
-            }
-            file->close();
-        }
-        else
-            qCritical() << Error::FileOpenError << file->fileName();
-    }
-    else
-        qCritical() << Error::DescError << file->fileName();
-
-    file->deleteLater();
-    return doc;
-}
-
 /// \brief Загрузка настроек в ConfigStorage из файла/файлов настроек модуля и s2files.xml.
 bool Module::loadSettings()
 {
@@ -56,7 +21,7 @@ bool Module::loadSettings()
     {
         auto moduleName = QString::number(sInfoBlock.type(), 16) + ".xml";
         // Настройки находятся в одном файле
-        if (isFileExist(moduleName))
+        if (FileHelper::isFileExist(moduleName))
             return loadModuleSettings(moduleName, sInfoBlock.MTypeB, sInfoBlock.MTypeM);
         // Настройки находятся в разных файлах
         else
@@ -79,7 +44,7 @@ bool Module::loadS2Settings()
     if (!mStorage->getS2Status())
     {
         constexpr auto filename = "s2files.xml";
-        auto content = getFileContent(filename);
+        auto content = FileHelper::getFileContent(filename);
         if (!content.isNull())
         {
             auto mS2Parser = new Xml::S2Parser(this);
@@ -103,7 +68,7 @@ bool Module::loadS2Settings()
 /// \brief Загрузка настроек из файла/файлов настроек модуля с помощью ModuleXmlParser.
 bool Module::loadModuleSettings(const QString &filename, const quint16 &typeB, const quint16 &typeM)
 {
-    auto content = getFileContent(filename);
+    auto content = FileHelper::getFileContent(filename);
     if (!content.isNull())
     {
         auto moduleParser = new Xml::ModuleParser(this);

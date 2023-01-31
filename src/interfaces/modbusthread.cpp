@@ -16,36 +16,6 @@
 constexpr auto RECONNECTTIME = 1000;
 constexpr auto TRASHTIMEOUT = (255 * 10 * 1000) / 2400; // 255 bytes * 10 (bit/byte) * 1000 (msec) / 2400 (baud)
 
-/*
-#ifdef Q_OS_WINDOWS
-#include <Windows.h>
-
-static inline void loop(quint8 delay)
-{
-    // https://docs.microsoft.com/en-us/windows/win32/sysinfo/acquiring-high-resolution-time-stamps
-    LARGE_INTEGER StartingTime, EndingTime, ElapsedMicroseconds;
-    LARGE_INTEGER Frequency;
-
-    QueryPerformanceFrequency(&Frequency);
-    QueryPerformanceCounter(&StartingTime);
-
-    do
-    {
-        QueryPerformanceCounter(&EndingTime);
-        ElapsedMicroseconds.QuadPart = EndingTime.QuadPart - StartingTime.QuadPart;
-        ElapsedMicroseconds.QuadPart *= 1000000;
-        ElapsedMicroseconds.QuadPart /= Frequency.QuadPart;
-    } while (ElapsedMicroseconds.QuadPart < (delay));
-}
-#else
-static inline void loop(quint8 delay)
-{
-    QThread::sleep(delay);
-}
-
-#endif
-*/
-
 ModbusThread::ModbusThread(QObject *parent) : QObject(parent), log(new LogClass(this))
 {
 }
@@ -99,7 +69,6 @@ void ModbusThread::run()
         }
         // Silent interval for Modbus (3.5 characters)
         QThread::msleep(delay);
-        // loop(delay);
     }
     emit finished();
 }
@@ -115,7 +84,6 @@ void ModbusThread::parseReply(QByteArray ba)
     if (m_readData.size() >= 2)
     {
         quint8 receivedCommand = m_readData.at(1);
-        // if ((receivedCommand & 0x80) || (receivedCommand != m_commandSent.cmd))
         if (receivedCommand & 0x80)
         {
             log->error("Modbus error response: " + m_readData.toHex());
