@@ -10,7 +10,7 @@
 BacA284::BacA284(QObject *parent) : DataBlock(parent)
 {
     m_blockData = std::unique_ptr<BlockData>(new BlockData);
-    setBlock({ 2, "Настроечные параметры", DataTypes::DataBlockTypes::BacBlock, m_blockData.get(), sizeof(BlockData) });
+    setBlock({ 1, "Настроечные параметры", DataTypes::DataBlockTypes::BacBlock, m_blockData.get(), sizeof(BlockData) });
     //    createWidget();
     readBlockFromModule();
     //    updateWidget();
@@ -36,18 +36,12 @@ void BacA284::setupValuesDesc()
     addNewGroup("Коэффициенты линейной коррекции по U и I", "TKUa", 36, 6, &m_blockData->TKUa[0], 5);
 
     addNewGroup("Коэффициенты квадратичной коррекции по U и I", "TKUb", 42, 6, &m_blockData->TKUb[0], 5);
-    addNewValue("K_freq", "Коррекция частоты", &m_blockData->K_freq);
-    addNewValue("Art", "Коэффициент в канале Pt100", &m_blockData->Art);
-    addNewValue("Brt", "Смещение в канале Pt100", &m_blockData->Brt);
     addNewValue("Tmk0", "Начальная температура МК для коррекции", &m_blockData->Tmk0);
 }
 
 void BacA284::setDefBlock()
 {
-    m_blockData->Art = 81.5f;
-    m_blockData->Brt = 6033.0f;
     m_blockData->Tmk0 = 24;
-    m_blockData->K_freq = 1;
 
     for (int i = 0; i < 6; i++)
     {

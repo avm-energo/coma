@@ -88,21 +88,21 @@ Error::Msg Tune85ADC::showPreWarning()
 
 Error::Msg Tune85ADC::checkTuneCoefs()
 {
-    QVector<float *> tcoefs = { &m_bac->data()->KmU[0], &m_bac->data()->KmI1[0], &m_bac->data()->KmI2[0],
-        &m_bac->data()->KmI4[0], &m_bac->data()->KmI8[0], &m_bac->data()->KmI16[0], &m_bac->data()->KmI32[0] };
-    for (int i = 0; i < 3; ++i)
-    {
-        foreach (float *coef, tcoefs)
-            if (!WDFunc::floatIsWithinLimits("коэффициента по току", *(coef + i), 1.0, 0.05))
-                return Error::Msg::GeneralError;
-    }
-    if (!WDFunc::floatIsWithinLimits("коэффициента по частоте", m_bac->data()->K_freq, 1.0, 0.05))
-        return Error::Msg::GeneralError;
-    for (int i = 0; i < 6; ++i)
-    {
-        if (!WDFunc::floatIsWithinLimits("коэффициента по углу", m_bac->data()->DPsi[i], 0.0, 1.0))
+    /*    QVector<float *> tcoefs = { &m_bac->data()->KmU[0], &m_bac->data()->KmI1[0], &m_bac->data()->KmI2[0],
+            &m_bac->data()->KmI4[0], &m_bac->data()->KmI8[0], &m_bac->data()->KmI16[0], &m_bac->data()->KmI32[0] };
+        for (int i = 0; i < 3; ++i)
+        {
+            foreach (float *coef, tcoefs)
+                if (!WDFunc::floatIsWithinLimits("коэффициента по току", *(coef + i), 1.0, 0.05))
+                    return Error::Msg::GeneralError;
+        }
+        if (!WDFunc::floatIsWithinLimits("коэффициента по частоте", m_bac->data()->K_freq, 1.0, 0.05))
             return Error::Msg::GeneralError;
-    }
+        for (int i = 0; i < 6; ++i)
+        {
+            if (!WDFunc::floatIsWithinLimits("коэффициента по углу", m_bac->data()->DPsi[i], 0.0, 1.0))
+                return Error::Msg::GeneralError;
+        } */
     return Error::Msg::NoError;
 }
 
@@ -360,58 +360,58 @@ Error::Msg Tune85ADC::showEnergomonitorInputDialog()
 
 void Tune85ADC::CalcTuneCoefs()
 {
-    QMap<int, float *> kmimap
-        = { { 1, &m_bac->data()->KmI1[0] }, { 2, &m_bac->data()->KmI2[0] }, { 4, &m_bac->data()->KmI4[0] },
-              { 8, &m_bac->data()->KmI8[0] }, { 16, &m_bac->data()->KmI16[0] }, { 32, &m_bac->data()->KmI32[0] } };
-    //    float uet, iet, yet, fet;
-    //    bool ok;
+    /*    QMap<int, float *> kmimap
+            = { { 1, &m_bac->data()->KmI1[0] }, { 2, &m_bac->data()->KmI2[0] }, { 4, &m_bac->data()->KmI4[0] },
+                  { 8, &m_bac->data()->KmI8[0] }, { 16, &m_bac->data()->KmI16[0] }, { 32, &m_bac->data()->KmI32[0] } };
+        //    float uet, iet, yet, fet;
+        //    bool ok;
 
-    if (m_tuneStep == TS84_ADCI)
-    {
-        //        iet = StdFunc::toFloat(WDFunc::LEData(this, "ValuetuneI"), &ok);
-        //        if (ok)
-        //        {
-        assert(kmimap.contains(m_curTuneStep));
-        for (int i = 0; i < 3; ++i)
-            *(kmimap.value(m_curTuneStep) + i)
-                = *(kmimap.value(m_curTuneStep) + i) * m_midTuneStruct.iet / m_bdainBlockData.IUefNat_filt[i + 3];
-        QDialog *dlg = this->findChild<QDialog *>("energomonitordlg");
-        if (dlg != nullptr)
-            dlg->close();
-        return;
-        //        }
-        //        else
-        //        {
-        //            EMessageBox::error("Не задано значение тока!");
-        //        }
-    }
-    else
-    {
-        //        uet = StdFunc::toFloat(WDFunc::LEData(this, "ValuetuneU"), &ok);
-        //        if (ok)
-        //        {
-        //            yet = StdFunc::toFloat(WDFunc::LEData(this, "ValuetuneY"), &ok);
-        //            if (ok)
-        //            {
-        //                fet = StdFunc::toFloat(WDFunc::LEData(this, "ValuetuneF"), &ok);
-        //                if (ok)
-        //                {
-        for (int i = 0; i < 3; ++i)
-            m_bac->data()->KmU[i] = m_bac->data()->KmU[i] * m_midTuneStruct.uet / m_bdainBlockData.IUefNat_filt[i];
-        m_bac->data()->K_freq = m_bac->data()->K_freq * m_midTuneStruct.fet / m_bdainBlockData.Frequency;
-        for (int i = 1; i < 3; ++i)
-            m_bac->data()->DPsi[i] = m_bac->data()->DPsi[i] - m_bdainBlockData.phi_next_f[i];
-        for (int i = 3; i < 6; ++i)
-            m_bac->data()->DPsi[i] = m_bac->data()->DPsi[i] + m_midTuneStruct.yet - m_bdainBlockData.phi_next_f[i];
-        //                    QDialog *dlg = this->findChild<QDialog *>("energomonitordlg");
-        //                    if (dlg != nullptr)
-        //                        dlg->close();
-        //                    return;
-        //                }
-        //            }
-        //        }
-        //        QMessageBox::critical(this, "Ошибка!", "Не задано одно из значений!");
-        //        return;
-    }
-    //    StdFunc::cancel();
+        if (m_tuneStep == TS84_ADCI)
+        {
+            //        iet = StdFunc::toFloat(WDFunc::LEData(this, "ValuetuneI"), &ok);
+            //        if (ok)
+            //        {
+            assert(kmimap.contains(m_curTuneStep));
+            for (int i = 0; i < 3; ++i)
+                *(kmimap.value(m_curTuneStep) + i)
+                    = *(kmimap.value(m_curTuneStep) + i) * m_midTuneStruct.iet / m_bdainBlockData.IUefNat_filt[i + 3];
+            QDialog *dlg = this->findChild<QDialog *>("energomonitordlg");
+            if (dlg != nullptr)
+                dlg->close();
+            return;
+            //        }
+            //        else
+            //        {
+            //            EMessageBox::error("Не задано значение тока!");
+            //        }
+        }
+        else
+        {
+            //        uet = StdFunc::toFloat(WDFunc::LEData(this, "ValuetuneU"), &ok);
+            //        if (ok)
+            //        {
+            //            yet = StdFunc::toFloat(WDFunc::LEData(this, "ValuetuneY"), &ok);
+            //            if (ok)
+            //            {
+            //                fet = StdFunc::toFloat(WDFunc::LEData(this, "ValuetuneF"), &ok);
+            //                if (ok)
+            //                {
+            for (int i = 0; i < 3; ++i)
+                m_bac->data()->KmU[i] = m_bac->data()->KmU[i] * m_midTuneStruct.uet / m_bdainBlockData.IUefNat_filt[i];
+            m_bac->data()->K_freq = m_bac->data()->K_freq * m_midTuneStruct.fet / m_bdainBlockData.Frequency;
+            for (int i = 1; i < 3; ++i)
+                m_bac->data()->DPsi[i] = m_bac->data()->DPsi[i] - m_bdainBlockData.phi_next_f[i];
+            for (int i = 3; i < 6; ++i)
+                m_bac->data()->DPsi[i] = m_bac->data()->DPsi[i] + m_midTuneStruct.yet - m_bdainBlockData.phi_next_f[i];
+            //                    QDialog *dlg = this->findChild<QDialog *>("energomonitordlg");
+            //                    if (dlg != nullptr)
+            //                        dlg->close();
+            //                    return;
+            //                }
+            //            }
+            //        }
+            //        QMessageBox::critical(this, "Ошибка!", "Не задано одно из значений!");
+            //        return;
+        }
+        //    StdFunc::cancel(); */
 }

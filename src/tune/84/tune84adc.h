@@ -3,6 +3,7 @@
 
 #include "../../datablocks/bd0.h"
 #include "../../datablocks/kiv/bac.h"
+#include "../../datablocks/kiv/bac2.h"
 #include "../../datablocks/kiv/bda.h"
 #include "../../datablocks/kiv/bdain.h"
 #include "../abstracttunedialog.h"
@@ -17,6 +18,7 @@ public:
 
 private:
     BacA284 *m_bac;
+    Bac2A284 *m_bac2;
     BdaA284 *m_bda;
     BdaIn *m_bdain;
     Bd0 *m_bd0;

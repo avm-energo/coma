@@ -1,7 +1,7 @@
 #ifndef TUNEKIVMAIN_H
 #define TUNEKIVMAIN_H
 
-#include "../../datablocks/kiv/bac.h"
+#include "../../datablocks/kiv/bac2.h"
 #include "../../datablocks/kiv/bda.h"
 #include "../../datablocks/kiv/bdain.h"
 #include "../abstracttunedialog.h"
@@ -15,7 +15,7 @@ public:
     TuneKIVR(ConfigV *config, int tuneStep, QWidget *parent = nullptr);
 
 private:
-    BacA284 *m_bac;
+    Bac2A284 *m_bac;
     BdaA284 *m_bda;
     double m_pt100;
     int m_curTuneStep;

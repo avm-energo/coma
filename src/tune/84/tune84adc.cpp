@@ -14,12 +14,13 @@
 
 Tune84ADC::Tune84ADC(ConfigV *config, int tuneStep, QWidget *parent) : AbstractTuneDialog(config, tuneStep, parent)
 {
-
     m_bac = new BacA284;
+    m_bac2 = new Bac2A284;
     m_bda = new BdaA284;
     m_bdain = new BdaIn;
     m_bd0 = new Bd0;
     setBac(m_bac);
+    setBac(m_bac2);
     m_BacWidgetIndex = addWidgetToTabWidget(m_bac->widget(), "Настроечные параметры");
     m_BdainWidgetIndex = addWidgetToTabWidget(m_bdain->widget(), "Текущие данные");
     m_Bd0WidgetIndex = addWidgetToTabWidget(m_bd0->widget(), "Общие данные");
@@ -96,7 +97,7 @@ Error::Msg Tune84ADC::checkTuneCoefs()
             if (!WDFunc::floatIsWithinLimits("коэффициента по току", *(coef + i), 1.0, 0.05))
                 return Error::Msg::GeneralError;
     }
-    if (!WDFunc::floatIsWithinLimits("коэффициента по частоте", m_bac->data()->K_freq, 1.0, 0.05))
+    if (!WDFunc::floatIsWithinLimits("коэффициента по частоте", m_bac2->data()->K_freq, 1.0, 0.05))
         return Error::Msg::GeneralError;
     for (int i = 0; i < 6; ++i)
     {
@@ -398,7 +399,7 @@ void Tune84ADC::CalcTuneCoefs()
         //                {
         for (int i = 0; i < 3; ++i)
             m_bac->data()->KmU[i] = m_bac->data()->KmU[i] * m_midTuneStruct.uet / m_bdainBlockData.IUefNat_filt[i];
-        m_bac->data()->K_freq = m_bac->data()->K_freq * m_midTuneStruct.fet / m_bdainBlockData.Frequency;
+        m_bac2->data()->K_freq = m_bac2->data()->K_freq * m_midTuneStruct.fet / m_bdainBlockData.Frequency;
         for (int i = 1; i < 3; ++i)
             m_bac->data()->DPsi[i] = m_bac->data()->DPsi[i] - m_bdainBlockData.phi_next_f[i];
         for (int i = 3; i < 6; ++i)
