@@ -33,18 +33,6 @@
                 <defaultValue>0</defaultValue>
                 <visibility>true</visibility>
             </record>
-            <record>
-                <id>427</id>
-                <defaultValue>0</defaultValue>
-                <count>4</count>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>428</id>
-                <defaultValue>0</defaultValue>
-                <count>4</count>
-                <visibility>true</visibility>
-            </record>
         </config>
         <iec60870 desc="Протокол ГОСТ Р МЭК 60870-5-104">
             <group>
@@ -55,6 +43,12 @@
             </group>
             <group>
                 <signal-id>105</signal-id>
+                <sig-type>7</sig-type>
+                <trans-type>3</trans-type>
+                <sig-group>6</sig-group>
+            </group>
+            <group>
+                <signal-id>106</signal-id>
                 <sig-type>7</sig-type>
                 <trans-type>3</trans-type>
                 <sig-group>6</sig-group>
@@ -76,7 +70,7 @@
             </group>
             <group>
                 <block>108</block>
-                <signal-id>107</signal-id>
+                <signal-id>106</signal-id>
             </group>
         </protocom>
         <section-tabs desc="Вкладки">
@@ -92,16 +86,16 @@
                         <start-addr>5004</start-addr>
                     </mwidget>
                 </sgroup>
-                <sgroup header="Ожидаемое состояние выходов" tab="101">
+                <sgroup header="Ожидаемое состояние дискретных выходов" tab="101">
                     <mwidget desc="" view="bitset">
                         <start-addr>5003</start-addr>
                         <count>28</count>
                         <toolTip>Дискретный выход (DIO_%1)</toolTip>
                     </mwidget>
                 </sgroup>
-                <sgroup header="Реальное состояние дискретных выходов" tab="1">
+                <sgroup header="Реальное состояние дискретных выходов" tab="101">
                     <mwidget desc="" view="bitset">
-                        <start-addr>6003</start-addr>
+                        <start-addr>5011</start-addr>
                         <count>28</count>
                         <toolTip>Дискретный выход (DIO_%1)</toolTip>
                     </mwidget>
@@ -122,9 +116,9 @@
                 <type>Float</type>
             </signal>
             <signal>
-                <start-addr>6003</start-addr>
+                <start-addr>5011</start-addr>
                 <count>1</count>
-                <id>107</id>
+                <id>106</id>
                 <type>BitString</type>
             </signal>
         </signals>

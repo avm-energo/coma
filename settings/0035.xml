@@ -33,18 +33,6 @@
                 <defaultValue>0</defaultValue>
                 <visibility>true</visibility>
             </record>
-            <record>
-                <id>427</id>
-                <defaultValue>0</defaultValue>
-                <count>4</count>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>428</id>
-                <defaultValue>0</defaultValue>
-                <count>4</count>
-                <visibility>true</visibility>
-            </record>
         </config>
         <iec60870 desc="Протокол ГОСТ Р МЭК 60870-5-104">
             <group>
@@ -88,7 +76,7 @@
                         <start-addr>5004</start-addr>
                     </mwidget>
                 </sgroup>
-                <sgroup header="Ожидаемое состояние выходов" tab="101">
+                <sgroup header="Текущее состояние выходов" tab="101">
                     <mwidget desc="" view="bitset">
                         <start-addr>5003</start-addr>
                         <count>4</count>

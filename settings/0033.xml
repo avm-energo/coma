@@ -10,7 +10,7 @@
         <config desc="Конфигурация">
             <record>
                 <id>235</id>
-                <defaultValue>2</defaultValue>
+                <defaultValue>0</defaultValue>
                 <visibility>true</visibility>
             </record>
             <record>
@@ -89,7 +89,7 @@
                 <start-addr>3701</start-addr>
                 <count>30</count>
                 <id>106</id>
-                <type>Float</type>
+                <type>SinglePoint</type>
             </signal>
         </signals>
     </resources>
