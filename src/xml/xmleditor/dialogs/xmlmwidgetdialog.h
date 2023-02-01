@@ -1,5 +1,4 @@
-#ifndef XMLMWIDGETDIALOG_H
-#define XMLMWIDGETDIALOG_H
+#pragma once
 
 #include "xmldialog.h"
 
@@ -10,5 +9,3 @@ public:
     XmlMWidgetDialog(QWidget *parent);
     virtual void setupUI(QVBoxLayout *mainLayout) override;
 };
-
-#endif // XMLMWIDGETDIALOG_H

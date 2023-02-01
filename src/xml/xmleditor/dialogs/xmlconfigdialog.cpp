@@ -53,7 +53,6 @@ void XmlConfigDialog::setupUI(QVBoxLayout *mainLayout)
     auto visibLabel = new QLabel("Видимость: ", this);
     auto visibInput = new QComboBox(this);
     visibInput->addItems({ "true", "false" });
-    // visibInput->setEditable(true);
     visibInput->setCurrentIndex(0);
     visibLayout->addWidget(visibLabel);
     visibLayout->addWidget(visibInput);

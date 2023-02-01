@@ -1,5 +1,4 @@
-#ifndef XMLEDITOR_H
-#define XMLEDITOR_H
+#pragma once
 
 #include "datacontroller.h"
 #include "models/mastermodel.h"
@@ -44,5 +43,3 @@ public slots:
     void savingAsk();
     void saveModule();
 };
-
-#endif // XMLEDITOR_H

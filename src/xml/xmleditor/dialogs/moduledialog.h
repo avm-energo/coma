@@ -1,5 +1,4 @@
-#ifndef MODULEDIALOG_H
-#define MODULEDIALOG_H
+#pragma once
 
 #include "xmleditor/dialogs/xmldialog.h"
 
@@ -7,11 +6,9 @@ class ModuleDialog : public XmlDialog
 {
     Q_OBJECT
 private:
-    QList<std::tuple<QString, QString, bool>> dlgSettings;
+    QList<QPair<QString, QString>> dlgSettings;
 
 public:
     explicit ModuleDialog(QWidget *parent);
     virtual void setupUI(QVBoxLayout *mainLayout) override;
 };
-
-#endif // MODULEDIALOG_H

@@ -14,24 +14,20 @@ void ModuleDialog::setupUI(QVBoxLayout *mainLayout)
     // Настройки окна (размер, положение)
     setupSizePos(380, 220);
     dlgSettings = {
-        { "Название", "nameInput", false },   //
-        { "База: ", "bTypeInput", false },    //
-        { "Мезонин: ", "mTypeInput", false }, //
-        { "Версия", "verInput", false }       //
+        { "Название", "nameInput" },   //
+        { "База: ", "bTypeInput" },    //
+        { "Мезонин: ", "mTypeInput" }, //
+        { "Версия", "verInput" }       //
     };
     mTitle += "модуля";
     for (const auto &itemSettings : qAsConst(dlgSettings))
     {
-        auto labelText = std::get<0>(itemSettings);
-        auto itemName = std::get<1>(itemSettings);
+        auto labelText = itemSettings.first;
+        auto itemName = itemSettings.second;
         auto labelItem = WDFunc::NewLBL2(this, labelText, itemName + "Label");
         auto inputItem = WDFunc::NewLE2(this, itemName);
         QObject::connect(
             inputItem, &QLineEdit::textEdited, this, qOverload<const QString &>(&ModuleDialog::dataChanged));
-        if (std::get<2>(itemSettings) && inputItem != nullptr)
-        {
-            inputItem->setValidator(new QRegExpValidator(QRegExp("^([1-9][0-9]*|0)"), this));
-        }
 
         auto itemLayout = new QHBoxLayout;
         itemLayout->addWidget(labelItem);

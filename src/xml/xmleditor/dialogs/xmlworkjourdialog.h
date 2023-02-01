@@ -1,5 +1,4 @@
-#ifndef XMLWORKJOURDIALOG_H
-#define XMLWORKJOURDIALOG_H
+#pragma once
 
 #include "xmldialog.h"
 
@@ -10,5 +9,3 @@ public:
     explicit XmlWorkJourDialog(QWidget *parent);
     virtual void setupUI(QVBoxLayout *mainLayout) override;
 };
-
-#endif // XMLWORKJOURDIALOG_H

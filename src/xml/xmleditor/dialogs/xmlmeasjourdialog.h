@@ -1,5 +1,4 @@
-#ifndef XMLMEASJOURDIALOG_H
-#define XMLMEASJOURDIALOG_H
+#pragma once
 
 #include "xmldialog.h"
 
@@ -10,5 +9,3 @@ public:
     explicit XmlMeasJourDialog(QWidget *parent);
     virtual void setupUI(QVBoxLayout *mainLayout) override;
 };
-
-#endif // XMLMEASJOURDIALOG_H

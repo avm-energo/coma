@@ -806,127 +806,127 @@
         <modbus desc="Протокол Modbus">
             <group>
                 <signal-id>1</signal-id>
-                <reg-type>04</reg-type>
+                <reg-type>4</reg-type>
                 <type>uint32</type>
                 <desc>Bsi</desc>
             </group>
             <group>
                 <signal-id>14</signal-id>
-                <reg-type>04</reg-type>
+                <reg-type>4</reg-type>
                 <type>float</type>
                 <desc>shearAngle</desc>
             </group>
             <group>
                 <signal-id>15</signal-id>
-                <reg-type>04</reg-type>
+                <reg-type>4</reg-type>
                 <type>float</type>
                 <desc>power</desc>
             </group>
             <group>
                 <signal-id>16</signal-id>
-                <reg-type>04</reg-type>
+                <reg-type>4</reg-type>
                 <type>float</type>
                 <desc>harmonicUA</desc>
             </group>
             <group>
                 <signal-id>17</signal-id>
-                <reg-type>04</reg-type>
+                <reg-type>4</reg-type>
                 <type>float</type>
                 <desc>harmonicUB</desc>
             </group>
             <group>
                 <signal-id>18</signal-id>
-                <reg-type>04</reg-type>
+                <reg-type>4</reg-type>
                 <type>float</type>
                 <desc>harmonicUC</desc>
             </group>
             <group>
                 <signal-id>19</signal-id>
-                <reg-type>04</reg-type>
+                <reg-type>4</reg-type>
                 <type>float</type>
                 <desc>harmonicIA</desc>
             </group>
             <group>
                 <signal-id>2</signal-id>
-                <reg-type>04</reg-type>
+                <reg-type>4</reg-type>
                 <type>float</type>
                 <desc>tempAndU</desc>
             </group>
             <group>
                 <signal-id>20</signal-id>
-                <reg-type>04</reg-type>
+                <reg-type>4</reg-type>
                 <type>float</type>
                 <desc>harmonicIB</desc>
             </group>
             <group>
                 <signal-id>21</signal-id>
-                <reg-type>04</reg-type>
+                <reg-type>4</reg-type>
                 <type>float</type>
                 <desc>harmonicIC</desc>
             </group>
             <group>
                 <signal-id>23</signal-id>
-                <reg-type>04</reg-type>
+                <reg-type>4</reg-type>
                 <type>float</type>
                 <desc>load</desc>
             </group>
             <group>
                 <signal-id>24</signal-id>
-                <reg-type>04</reg-type>
+                <reg-type>4</reg-type>
                 <type>float</type>
                 <desc>tempExtern</desc>
             </group>
             <group>
                 <signal-id>25</signal-id>
-                <reg-type>04</reg-type>
+                <reg-type>4</reg-type>
                 <type>float</type>
                 <desc>insulation</desc>
             </group>
             <group>
                 <signal-id>26</signal-id>
-                <reg-type>01</reg-type>
+                <reg-type>1</reg-type>
                 <type>bool</type>
                 <desc>alarmModule</desc>
             </group>
             <group>
                 <signal-id>27</signal-id>
-                <reg-type>04</reg-type>
+                <reg-type>4</reg-type>
                 <type>float</type>
                 <desc>vibrations</desc>
             </group>
             <group>
                 <signal-id>29</signal-id>
-                <reg-type>01</reg-type>
+                <reg-type>1</reg-type>
                 <type>bool</type>
                 <desc>infoAlarm</desc>
             </group>
             <group>
                 <signal-id>3</signal-id>
-                <reg-type>04</reg-type>
+                <reg-type>4</reg-type>
                 <type>float</type>
                 <desc>current</desc>
             </group>
             <group>
                 <signal-id>35</signal-id>
-                <reg-type>04</reg-type>
+                <reg-type>4</reg-type>
                 <type>float</type>
                 <desc>time</desc>
             </group>
             <group>
                 <signal-id>37</signal-id>
-                <reg-type>04</reg-type>
+                <reg-type>4</reg-type>
                 <type>uint32</type>
                 <desc>BsiExt</desc>
             </group>
             <group>
                 <signal-id>8</signal-id>
-                <reg-type>04</reg-type>
+                <reg-type>4</reg-type>
                 <type>float</type>
                 <desc>lineVoltage</desc>
             </group>
             <group>
                 <signal-id>9</signal-id>
-                <reg-type>04</reg-type>
+                <reg-type>4</reg-type>
                 <type>float</type>
                 <desc>amperage</desc>
             </group>

@@ -776,85 +776,85 @@
         <modbus desc="Протокол Modbus">
             <group>
                 <signal-id>1</signal-id>
-                <reg-type>04</reg-type>
+                <reg-type>4</reg-type>
                 <type>uint32</type>
                 <desc>bsi</desc>
             </group>
             <group>
                 <signal-id>10</signal-id>
-                <reg-type>04</reg-type>
+                <reg-type>4</reg-type>
                 <type>float</type>
                 <desc>TambRamp</desc>
             </group>
             <group>
                 <signal-id>11</signal-id>
-                <reg-type>04</reg-type>
+                <reg-type>4</reg-type>
                 <type>float</type>
                 <desc>C_tg_Iunb</desc>
             </group>
             <group>
                 <signal-id>12</signal-id>
-                <reg-type>01</reg-type>
+                <reg-type>1</reg-type>
                 <type>bool</type>
                 <desc>alarm1</desc>
             </group>
             <group>
                 <signal-id>13</signal-id>
-                <reg-type>01</reg-type>
+                <reg-type>1</reg-type>
                 <type>bool</type>
                 <desc>alarm2</desc>
             </group>
             <group>
                 <signal-id>15</signal-id>
-                <reg-type>04</reg-type>
+                <reg-type>4</reg-type>
                 <type>uint32</type>
                 <desc>D_RD</desc>
             </group>
             <group>
                 <signal-id>16</signal-id>
-                <reg-type>01</reg-type>
+                <reg-type>1</reg-type>
                 <type>bool</type>
                 <desc>ErrCfg</desc>
             </group>
             <group>
                 <signal-id>2</signal-id>
-                <reg-type>04</reg-type>
+                <reg-type>4</reg-type>
                 <type>float</type>
                 <desc>TempAndVbat</desc>
             </group>
             <group>
                 <signal-id>21</signal-id>
-                <reg-type>01</reg-type>
+                <reg-type>1</reg-type>
                 <type>bool</type>
                 <desc>alarmInfo</desc>
             </group>
             <group>
                 <signal-id>5</signal-id>
-                <reg-type>04</reg-type>
+                <reg-type>4</reg-type>
                 <type>float</type>
                 <desc>U</desc>
             </group>
             <group>
                 <signal-id>6</signal-id>
-                <reg-type>04</reg-type>
+                <reg-type>4</reg-type>
                 <type>float</type>
                 <desc>I</desc>
             </group>
             <group>
                 <signal-id>7</signal-id>
-                <reg-type>04</reg-type>
+                <reg-type>4</reg-type>
                 <type>float</type>
                 <desc>Phi</desc>
             </group>
             <group>
                 <signal-id>8</signal-id>
-                <reg-type>04</reg-type>
+                <reg-type>4</reg-type>
                 <type>float</type>
                 <desc>C_tg</desc>
             </group>
             <group>
                 <signal-id>9</signal-id>
-                <reg-type>04</reg-type>
+                <reg-type>4</reg-type>
                 <type>float</type>
                 <desc>BgC_Tg</desc>
             </group>

@@ -1,5 +1,4 @@
-#ifndef MODELMANAGER_H
-#define MODELMANAGER_H
+#pragma once
 
 #include "xmlmodel.h"
 
@@ -39,5 +38,3 @@ signals:
     /// \details This signal is emitted when user try to open a new file, but the current file is changed.
     void SaveModule();
 };
-
-#endif // MODELMANAGER_H

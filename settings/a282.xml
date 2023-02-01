@@ -644,127 +644,127 @@
         <modbus desc="Протокол Modbus">
             <group>
                 <signal-id>1</signal-id>
-                <reg-type>04</reg-type>
+                <reg-type>4</reg-type>
                 <type>uint32</type>
                 <desc>bsi</desc>
             </group>
             <group>
                 <signal-id>2</signal-id>
-                <reg-type>04</reg-type>
+                <reg-type>4</reg-type>
                 <type>uint32</type>
                 <desc>bsiExt</desc>
             </group>
             <group>
                 <signal-id>3</signal-id>
-                <reg-type>04</reg-type>
+                <reg-type>4</reg-type>
                 <type>float</type>
                 <desc>tempVbat</desc>
             </group>
             <group>
                 <signal-id>5</signal-id>
-                <reg-type>04</reg-type>
+                <reg-type>4</reg-type>
                 <type>float</type>
                 <desc></desc>
             </group>
             <group>
                 <signal-id>6</signal-id>
-                <reg-type>04</reg-type>
+                <reg-type>4</reg-type>
                 <type>float</type>
                 <desc></desc>
             </group>
             <group>
                 <signal-id>7</signal-id>
-                <reg-type>04</reg-type>
+                <reg-type>4</reg-type>
                 <type>float</type>
                 <desc></desc>
             </group>
             <group>
                 <signal-id>8</signal-id>
-                <reg-type>04</reg-type>
+                <reg-type>4</reg-type>
                 <type>float</type>
                 <desc></desc>
             </group>
             <group>
                 <signal-id>9</signal-id>
-                <reg-type>04</reg-type>
+                <reg-type>4</reg-type>
                 <type>float</type>
                 <desc></desc>
             </group>
             <group>
                 <signal-id>28</signal-id>
-                <reg-type>04</reg-type>
+                <reg-type>4</reg-type>
                 <type>float</type>
                 <desc></desc>
             </group>
             <group>
                 <signal-id>10</signal-id>
-                <reg-type>04</reg-type>
+                <reg-type>4</reg-type>
                 <type>float</type>
                 <desc></desc>
             </group>
             <group>
                 <signal-id>11</signal-id>
-                <reg-type>04</reg-type>
+                <reg-type>4</reg-type>
                 <type>float</type>
                 <desc></desc>
             </group>
             <group>
                 <signal-id>12</signal-id>
-                <reg-type>04</reg-type>
+                <reg-type>4</reg-type>
                 <type>float</type>
                 <desc></desc>
             </group>
             <group>
                 <signal-id>13</signal-id>
-                <reg-type>04</reg-type>
+                <reg-type>4</reg-type>
                 <type>float</type>
                 <desc></desc>
             </group>
             <group>
                 <signal-id>14</signal-id>
-                <reg-type>04</reg-type>
+                <reg-type>4</reg-type>
                 <type>float</type>
                 <desc></desc>
             </group>
             <group>
                 <signal-id>15</signal-id>
-                <reg-type>04</reg-type>
+                <reg-type>4</reg-type>
                 <type>float</type>
                 <desc></desc>
             </group>
             <group>
                 <signal-id>21</signal-id>
-                <reg-type>04</reg-type>
+                <reg-type>4</reg-type>
                 <type>float</type>
                 <desc></desc>
             </group>
             <group>
                 <signal-id>22</signal-id>
-                <reg-type>04</reg-type>
+                <reg-type>4</reg-type>
                 <type>float</type>
                 <desc></desc>
             </group>
             <group>
                 <signal-id>23</signal-id>
-                <reg-type>04</reg-type>
+                <reg-type>4</reg-type>
                 <type>float</type>
                 <desc></desc>
             </group>
             <group>
                 <signal-id>24</signal-id>
-                <reg-type>04</reg-type>
+                <reg-type>4</reg-type>
                 <type>uint32</type>
                 <desc></desc>
             </group>
             <group>
                 <signal-id>25</signal-id>
-                <reg-type>01</reg-type>
+                <reg-type>1</reg-type>
                 <type>bool</type>
                 <desc></desc>
             </group>
             <group>
                 <signal-id>26</signal-id>
-                <reg-type>01</reg-type>
+                <reg-type>1</reg-type>
                 <type>bool</type>
                 <desc></desc>
             </group>

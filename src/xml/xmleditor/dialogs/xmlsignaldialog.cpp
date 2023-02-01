@@ -58,7 +58,6 @@ void XmlSignalDialog::setupUI(QVBoxLayout *mainLayout)
     auto typeLabel = new QLabel("Тип возвращаемого значения: ", this);
     auto typeInput = new QComboBox(this);
     typeInput->addItems({ "Float", "BitString", "SinglePoint" });
-    // typeInput->setEditable(true);
     typeInput->setCurrentIndex(0);
     typeLayout->addWidget(typeLabel);
     typeLayout->addWidget(typeInput);
