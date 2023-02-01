@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <module mtypem="33" mtypeb="00">
     <name>AVTUK-0033</name>
-    <version>3.7-0000</version>
     <resources>
         <alarms desc="Сигнализация">
             <critical desc="Критичные"/>

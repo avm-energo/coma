@@ -54,9 +54,7 @@ void ConfigStorage::typeDataReceive(const quint16 &id, const uint64_t &typeId)
 {
     if (id == 0)
         qWarning() << "Invalid S2 config id: " << id;
-    else if (typeId == 0)
-        qWarning() << "Invalid S2 config datatype id: " << typeId;
-    else
+    else if (typeId != 0)
         mS2Map.insert(id, typeId);
 }
 
