@@ -24,7 +24,7 @@ TuneKIVDialog::TuneKIVDialog(ConfigV *config, QWidget *parent) : GeneralTuneDial
         { "Настройка температурной коррекции -20 °С", TKIV20Dialog } };
     //    m_calibrSteps = m_dialogList.size() + 1;
     BacA284 *bac = new BacA284(this);
-    m_BacWidget = bac->widget();
+    m_BacWidget->setWidget(bac->widget());
     SetupUI();
 }
 

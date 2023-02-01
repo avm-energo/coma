@@ -15,8 +15,10 @@
 #include <gen/files.h>
 #include <gen/stdfunc.h>
 
-GeneralTuneDialog::GeneralTuneDialog(ConfigV *config, QWidget *parent) : UDialog(parent), configV(config)
+GeneralTuneDialog::GeneralTuneDialog(ConfigV *config, QWidget *parent)
+    : UDialog(parent), configV(config), m_BacWidget(new QScrollArea(this))
 {
+    m_BacWidget->setWidgetResizable(true);
     TuneSequenceFile::init();
     m_calibrSteps = 0;
 }

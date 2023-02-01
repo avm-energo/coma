@@ -8,6 +8,7 @@
 
 #include <QHBoxLayout>
 #include <QWidget>
+#include <QScrollArea>
 
 class DataBlock : public QObject
 {
@@ -113,9 +114,9 @@ public:
 
     template <typename T>
     void addNewGroup(
-        const QString &groupName, const QString &name, int howMuch, int fromWhich, T *startValue, int precision)
+        const QString &groupName, const QString &name, int fromWhich, int howMuch, T *startValue, int precision)
     {
-        Q_UNUSED(fromWhich);
+//        Q_UNUSED(fromWhich);
         ValueGroupStr vg;
         vg.groupDesc = groupName;
         int start = fromWhich;

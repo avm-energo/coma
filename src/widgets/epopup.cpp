@@ -26,7 +26,6 @@ void ESimplePopup::Create(MessageTypes &type, QWidget *w, QWidget *parent)
     QHBoxLayout *hlyout = new QHBoxLayout;
     hlyout->addStretch(100);
     if (type == ESimplePopup::QUESTMSG)
-
     {
         hlyout->addWidget(WDFunc::NewPB(parent, "", "Ага", this, &ESimplePopup::acceptSlot));
         hlyout->addStretch(5);

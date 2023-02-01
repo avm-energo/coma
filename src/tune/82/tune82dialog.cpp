@@ -31,7 +31,7 @@ Tune82Dialog::Tune82Dialog(ConfigV *config, Modules::MezzanineBoard typeM, QWidg
 
     m_calibrSteps = m_dialogList.size() + 1;
     Bac82 *bac = new Bac82;
-    m_BacWidget = bac->widget();
+    m_BacWidget->setWidget(bac->widget());
     SetupUI();
 }
 

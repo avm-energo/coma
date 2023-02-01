@@ -20,7 +20,7 @@ Tune85Dialog::Tune85Dialog(ConfigV *config, QWidget *parent) : GeneralTuneDialog
               { "Настройка температурной коррекции -20 °С", new Tune85Temp60(config, TS84_20TUNING, this) } };
     //    m_calibrSteps = m_dialogList.size() + 1;
     BacA284 *bac = new BacA284;
-    m_BacWidget = bac->widget();
+    m_BacWidget->setWidget(bac->widget());
     SetupUI();
 }
 

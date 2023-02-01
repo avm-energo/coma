@@ -192,8 +192,8 @@ void AbstractTuneDialog::stopWait()
 
 Error::Msg AbstractTuneDialog::CheckPassword()
 {
-    KeyPressDialog dlg; // = new KeyPressDialog;
-    return (dlg.CheckPassword(crypto::hash)) ? Error::Msg::NoError : Error::Msg::GeneralError;
+    auto dlg = new KeyPressDialog(this);
+    return (dlg->CheckPassword(crypto::hash)) ? Error::Msg::NoError : Error::Msg::GeneralError;
 }
 
 int AbstractTuneDialog::addWidgetToTabWidget(QWidget *w, const QString &caption)

@@ -104,7 +104,7 @@ Error::Msg BaseInterface::reqBlockSync(
     while (m_busy)
     {
         QCoreApplication::processEvents(QEventLoop::AllEvents);
-        StdFunc::Wait();
+        // StdFunc::Wait();
     }
 
     quint32 resultsize = m_byteArrayResult.size();

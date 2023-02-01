@@ -84,6 +84,7 @@ void DataBlock::createWidget()
         gb->setLayout(gridlyout);
         lyout->addWidget(gb);
     }
+    lyout->addWidget(blockButtonsUI());
     m_widget->setLayout(lyout);
 }
 
