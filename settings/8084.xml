@@ -213,6 +213,11 @@
                 <visibility>true</visibility>
             </record>
             <record>
+                <id>11</id>
+                <defaultValue>0</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
                 <id>1003</id>
                 <defaultValue>100</defaultValue>
                 <visibility>true</visibility>
@@ -234,12 +239,12 @@
             </record>
             <record>
                 <id>1018</id>
-                <defaultValue>0.5</defaultValue>
+                <defaultValue>3.0</defaultValue>
                 <visibility>true</visibility>
             </record>
             <record>
                 <id>1019</id>
-                <defaultValue>1.0</defaultValue>
+                <defaultValue>5.0</defaultValue>
                 <visibility>true</visibility>
             </record>
             <record>
@@ -254,32 +259,42 @@
             </record>
             <record>
                 <id>1022</id>
-                <defaultValue>1.0</defaultValue>
+                <defaultValue>4.0</defaultValue>
                 <visibility>true</visibility>
             </record>
             <record>
                 <id>1023</id>
-                <defaultValue>1.5</defaultValue>
+                <defaultValue>6.0</defaultValue>
                 <visibility>true</visibility>
             </record>
             <record>
                 <id>1024</id>
-                <defaultValue>0</defaultValue>
+                <defaultValue>0.1</defaultValue>
                 <visibility>true</visibility>
             </record>
             <record>
                 <id>1025</id>
-                <defaultValue>0</defaultValue>
+                <defaultValue>0.2</defaultValue>
                 <visibility>true</visibility>
             </record>
             <record>
                 <id>1026</id>
-                <defaultValue>0</defaultValue>
+                <defaultValue>0.2</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>1027</id>
+                <defaultValue>100.0</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>1028</id>
+                <defaultValue>1.385</defaultValue>
                 <visibility>true</visibility>
             </record>
             <record>
                 <id>1031</id>
-                <defaultValue>60</defaultValue>
+                <defaultValue>3600</defaultValue>
                 <visibility>true</visibility>
             </record>
             <record>
@@ -294,7 +309,7 @@
             </record>
             <record>
                 <id>1034</id>
-                <defaultValue>1</defaultValue>
+                <defaultValue>2</defaultValue>
                 <visibility>true</visibility>
             </record>
             <record>
@@ -304,6 +319,16 @@
             </record>
             <record>
                 <id>1036</id>
+                <defaultValue>0</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>1037</id>
+                <defaultValue>0</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>1038</id>
                 <defaultValue>0</defaultValue>
                 <visibility>true</visibility>
             </record>
@@ -324,7 +349,7 @@
             </record>
             <record>
                 <id>20</id>
-                <defaultValue>172,16,29,12</defaultValue>
+                <defaultValue>172,16,30,39</defaultValue>
                 <visibility>true</visibility>
             </record>
             <record>
@@ -344,7 +369,7 @@
             </record>
             <record>
                 <id>24</id>
-                <defaultValue>172,16,29,12</defaultValue>
+                <defaultValue>172,16,31,220</defaultValue>
                 <visibility>true</visibility>
             </record>
             <record>
@@ -364,12 +389,12 @@
             </record>
             <record>
                 <id>28</id>
-                <defaultValue>0</defaultValue>
+                <defaultValue>1</defaultValue>
                 <visibility>true</visibility>
             </record>
             <record>
                 <id>3</id>
-                <defaultValue>1</defaultValue>
+                <defaultValue>4</defaultValue>
                 <visibility>true</visibility>
             </record>
             <record>
@@ -461,99 +486,6 @@
         </iec60870>
         <journals desc="Журналы">
             <meas desc="Журнал измерений">
-                <item>
-                    <header> № </header>
-                </item>
-                <item>
-                    <header>C1 ф.A</header>
-                </item>
-                <item>
-                    <header>C1 ф.B</header>
-                </item>
-                <item>
-                    <header>C1 ф.C</header>
-                </item>
-                <item>
-                    <header>F</header>
-                </item>
-                <item>
-                    <header>I ф.A</header>
-                </item>
-                <item>
-                    <header>I ф.B</header>
-                </item>
-                <item>
-                    <header>I ф.C</header>
-                </item>
-                <item>
-                    <header>I0</header>
-                </item>
-                <item>
-                    <header>I1</header>
-                </item>
-                <item>
-                    <header>I2</header>
-                </item>
-                <item>
-                    <header>Iunb</header>
-                </item>
-                <item>
-                    <header>Phy_unb</header>
-                </item>
-                <item>
-                    <header>Tamb, °С</header>
-                </item>
-                <item>
-                    <header>Tmk, °С</header>
-                </item>
-                <item>
-                    <header>U ф.A</header>
-                </item>
-                <item>
-                    <header>U ф.B</header>
-                </item>
-                <item>
-                    <header>U ф.C</header>
-                </item>
-                <item>
-                    <header>U0</header>
-                </item>
-                <item>
-                    <header>U1</header>
-                </item>
-                <item>
-                    <header>U2</header>
-                </item>
-                <item>
-                    <header>tg δ ф.A</header>
-                </item>
-                <item>
-                    <header>tg δ ф.B</header>
-                </item>
-                <item>
-                    <header>tg δ ф.C</header>
-                </item>
-                <item>
-                    <header>Дата/Время UTC</header>
-                </item>
-                <item>
-                    <header>∆C ф.A</header>
-                </item>
-                <item>
-                    <header>∆C ф.B</header>
-                </item>
-                <item>
-                    <header>∆C ф.C</header>
-                </item>
-                <item>
-                    <header>∆tg δ ф.A</header>
-                </item>
-                <item>
-                    <header>∆tg δ ф.B</header>
-                </item>
-                <item>
-                    <header>∆tg δ ф.C</header>
-                </item>
             </meas>
             <work desc="Рабочий журнал">
                 <item>

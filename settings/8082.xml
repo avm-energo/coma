@@ -51,7 +51,7 @@
             </record>
             <record>
                 <id>1008</id>
-                <defaultValue>600,600,600,1000,1000,1000</defaultValue>
+                <defaultValue>600,600,600,600,600,600</defaultValue>
                 <visibility>true</visibility>
             </record>
             <record>
@@ -514,7 +514,7 @@
                     <mwidget view="float" desc="KrF_U ф.%1">
                         <start-addr>1008</start-addr>
                         <count>3</count>
-                        <toolTip>Крест-фактор напряжения в фазе %1</toolTip>
+                        <toolTip>Крест-фактор напряжения в фазе %1, отн. ед.</toolTip>
                         <string-array>
                             <item>A</item>
                             <item>B</item>
@@ -636,7 +636,7 @@
                     <mwidget view="float" desc="KrF_I ф.%1, А">
                         <start-addr>1408</start-addr>
                         <count>3</count>
-                        <toolTip>Крест-фактор тока в фазе %1, А</toolTip>
+                        <toolTip>Крест-фактор тока в фазе %1, отн. ед.</toolTip>
                         <string-array>
                             <item>A</item>
                             <item>B</item>
