@@ -1,7 +1,9 @@
 #include "epopup.h"
 
 #include "../widgets/wd_func.h"
+#include "../widgets/passwordlineedit.h"
 
+#include <QCryptographicHash>
 #include <QEventLoop>
 #include <QPropertyAnimation>
 #include <QTimer>
@@ -55,6 +57,22 @@ void ESimplePopup::cancelSlot()
 }
 
 bool EMessageBox::m_result = false;
+
+bool EMessageBox::password(QWidget *parent, const QString &hash)
+{
+    m_result = false;
+    auto dlg = new EPasswordPopup(hash, parent);
+    QObject::connect(dlg, &EPasswordPopup::passwordIsCorrect, [] {
+        m_result = true;
+    });
+//    QObject::connect(dlg, &EPasswordPopup::cancel, [] {
+//        m_result = false;
+//    });
+    dlg->exec();
+    if (m_result == true)
+        m_result = true;
+    return m_result;
+}
 
 void EMessageBox::information(QWidget *parent, const QString &msg)
 {
@@ -234,4 +252,54 @@ void EEditablePopup::acceptSlot()
 void EEditablePopup::cancelSlot()
 {
     EPopup::cancelSlot();
+}
+
+EPasswordPopup::EPasswordPopup(const QString &hash, QWidget *parent) : EPopup(parent)
+{
+    m_hash = hash;
+    QVBoxLayout *vlyout = new QVBoxLayout;
+    vlyout->addWidget(
+        WDFunc::NewLBL2(this, "Введите пароль\nПодтверждение: клавиша Enter\nОтмена: клавиша Esc", "pswlbl"));
+    vlyout->addWidget(WDFunc::NewPswLE2(this, "pswle", QLineEdit::Password));
+    setLayout(vlyout);
+}
+
+bool EPasswordPopup::checkPassword(const QString &psw)
+{
+    QCryptographicHash hasher(QCryptographicHash::Sha3_256);
+    hasher.addData(psw.toUtf8());
+    auto buffer = QString::fromUtf8(hasher.result().toHex());
+    return (m_hash == buffer);
+}
+
+void EPasswordPopup::keyPressEvent(QKeyEvent *e)
+{
+    if ((e->modifiers() == Qt::AltModifier) || (e->modifiers() == Qt::ControlModifier))
+    {
+        qCritical("Ошибка при обработке пароля");
+        return;
+    }
+
+    if ((e->key() == Qt::Key_Enter) || (e->key() == Qt::Key_Return))
+    {
+        if (checkPassword(WDFunc::LEData(this, "pswle")))
+        {
+            emit passwordIsCorrect();
+            aboutToClose();
+        }
+        else
+            EMessageBox::warning(this, "Пароль неверен");
+    }
+    if (e->key() == Qt::Key_Escape)
+    {
+        emit cancel();
+        aboutToClose();
+    }
+    QDialog::keyPressEvent(e);
+}
+
+void EPasswordPopup::closeEvent(QCloseEvent *e)
+{
+    emit cancel();
+    e->accept();
 }

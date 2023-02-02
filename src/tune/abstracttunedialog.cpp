@@ -192,8 +192,9 @@ void AbstractTuneDialog::stopWait()
 
 Error::Msg AbstractTuneDialog::CheckPassword()
 {
-    auto dlg = new KeyPressDialog(this);
-    return (dlg->CheckPassword(crypto::hash)) ? Error::Msg::NoError : Error::Msg::GeneralError;
+    return (EMessageBox::password(this, crypto::hash) ? Error::Msg::NoError : Error::Msg::GeneralError);
+//    auto dlg = new KeyPressDialog(this);
+//    return (dlg->CheckPassword(crypto::hash)) ? Error::Msg::NoError : Error::Msg::GeneralError;
 }
 
 int AbstractTuneDialog::addWidgetToTabWidget(QWidget *w, const QString &caption)
@@ -268,9 +269,9 @@ void AbstractTuneDialog::startTune()
             WDFunc::SetEnabled(this, "starttune", true);
             WDFunc::SetEnabled(this, "stoptune", false);
             WDFunc::SetEnabled(this, "finishpb", true);
-            qWarning() << m_messages.at(bStep);
+            qWarning() << m_tuneFunctions.at(bStep).message;
             loadAllTuneCoefs();
-            EMessageBox::error(Error::MsgStr[res]);
+            EMessageBox::error(this, Error::MsgStr[res]);
             return;
 #endif
         }

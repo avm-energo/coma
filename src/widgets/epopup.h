@@ -73,10 +73,30 @@ private slots:
     void cancelSlot();
 };
 
+class EPasswordPopup : public EPopup
+{
+    Q_OBJECT
+public:
+    EPasswordPopup(const QString &hash, QWidget *parent);
+
+private:
+    QString m_hash;
+    bool checkPassword(const QString &psw);
+
+signals:
+    void passwordIsCorrect();
+    void cancel();
+
+protected:
+    void keyPressEvent(QKeyEvent *e);
+    void closeEvent(QCloseEvent *e);
+};
+
 class EMessageBox
 {
 public:
     static bool m_result;
+    static bool password(QWidget *parent, const QString &hash);
     static void information(QWidget *parent, const QString &msg);
     static bool question(const QString &msg); // yes (1) / no (0)
     static void warning(QWidget *parent, const QString &msg);
