@@ -283,16 +283,6 @@
                 <visibility>true</visibility>
             </record>
             <record>
-                <id>1027</id>
-                <defaultValue>100.0</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>1028</id>
-                <defaultValue>1.385</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
                 <id>1031</id>
                 <defaultValue>3600</defaultValue>
                 <visibility>true</visibility>
@@ -323,16 +313,6 @@
                 <visibility>true</visibility>
             </record>
             <record>
-                <id>1037</id>
-                <defaultValue>0</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>1038</id>
-                <defaultValue>0</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
                 <id>1039</id>
                 <defaultValue>0.3,0.3,0.3</defaultValue>
                 <visibility>true</visibility>
@@ -345,51 +325,6 @@
             <record>
                 <id>1050</id>
                 <defaultValue>100.0</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>20</id>
-                <defaultValue>172,16,30,39</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>21</id>
-                <defaultValue>255,255,252,0</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>22</id>
-                <defaultValue>172,16,29,1</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>23</id>
-                <defaultValue>2404,2405,502,502</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>24</id>
-                <defaultValue>172,16,31,220</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>25</id>
-                <defaultValue>9600</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>26</id>
-                <defaultValue>0</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>27</id>
-                <defaultValue>0</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>28</id>
-                <defaultValue>1</defaultValue>
                 <visibility>true</visibility>
             </record>
             <record>

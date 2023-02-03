@@ -171,6 +171,15 @@ DataRecV::DataRecV(quint16 _id, const QString &str) : id(_id)
     case ctti::unnamed_type_id<DWORD_4t>().hash():
         data = helper<DWORD_4t>(str);
         break;
+    case ctti::unnamed_type_id<BYTE_6t>().hash():
+        data = helper<BYTE_6t>(str);
+        break;
+    case ctti::unnamed_type_id<WORD_6t>().hash():
+        data = helper<WORD_6t>(str);
+        break;
+    case ctti::unnamed_type_id<DWORD_6t>().hash():
+        data = helper<DWORD_6t>(str);
+        break;
     case ctti::unnamed_type_id<BYTE_8t>().hash():
         data = helper<BYTE_8t>(str);
         break;
