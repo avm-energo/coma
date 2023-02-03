@@ -9,7 +9,7 @@ Bd182::Bd182(Modules::MezzanineBoard typem, QObject *parent) : DataBlock(parent)
 {
     m_typeM = typem;
     m_blockData = std::unique_ptr<BlockData>(new BlockData);
-    setBlock({ 1, "Текущие данные", DataTypes::DataBlockTypes::BdaBlock, m_blockData.get(), sizeof(BlockData) });
+    setBlock({ 1, "Текущие данные", DataTypes::DataBlockTypes::BdaBlock, m_blockData.get(), sizeof(BlockData), false });
 }
 
 void Bd182::setupValuesDesc()

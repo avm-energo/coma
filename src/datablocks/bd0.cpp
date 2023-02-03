@@ -3,7 +3,7 @@
 Bd0::Bd0(QObject *parent) : DataBlock(parent)
 {
     m_blockData = std::unique_ptr<BlockData>(new BlockData);
-    setBlock({ 0, "Общие", DataTypes::DataBlockTypes::BdBlock, m_blockData.get(), sizeof(BlockData) });
+    setBlock({ 0, "Общие", DataTypes::DataBlockTypes::BdBlock, m_blockData.get(), sizeof(BlockData), false });
 }
 
 Bd0::BlockData *Bd0::data()

@@ -26,7 +26,7 @@ private:
     //    bool m_isEnergoMonitorDialogCreated;
     int m_curTuneStep;
     BdaIn::BlockData m_bdainBlockData;
-    int m_BacWidgetIndex, m_BdainWidgetIndex, m_Bd0WidgetIndex;
+    int m_BacWidgetIndex, m_BacWidgetIndex2, m_BdainWidgetIndex, m_Bd0WidgetIndex;
     struct MidTuneStruct
     {
         float fet;

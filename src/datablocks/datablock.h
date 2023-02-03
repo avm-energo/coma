@@ -25,6 +25,7 @@ public:
         void *block;   // pointer to the block, for S2Config blocks it's a pointer to S2ConfigDataType
                        //        void *defblock; // pointer to the block with default values
         int blocksize; // size of the block to make a mem copy
+        bool bottomButtonsVisible;
     };
 
     struct FilePropertiesStruct
@@ -136,6 +137,7 @@ public:
         ValueGroupStr vg;
         vg.values.append({ name, tooltip, "value[" + QString::number(valueNumberCounter) + "]", value, precision });
         ++valueNumberCounter;
+        m_valuesDesc.append(vg);
     }
 
     void readBlockFromModule();

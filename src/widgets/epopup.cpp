@@ -24,7 +24,9 @@ void ESimplePopup::Create(MessageTypes &type, QWidget *w, QWidget *parent)
     if (type < c_captions.size())
         setWindowTitle(c_captions.at(type));
     QVBoxLayout *lyout = new QVBoxLayout;
-    lyout->addWidget(w);
+    QVBoxLayout *lyout2 = new QVBoxLayout;
+    lyout2->addWidget(w);
+    lyout->addLayout(lyout2);
     QHBoxLayout *hlyout = new QHBoxLayout;
     hlyout->addStretch(100);
     if (type == ESimplePopup::QUESTMSG)
@@ -256,6 +258,7 @@ void EEditablePopup::cancelSlot()
 
 EPasswordPopup::EPasswordPopup(const QString &hash, QWidget *parent) : EPopup(parent)
 {
+    isAboutToClose = false;
     m_hash = hash;
     QVBoxLayout *vlyout = new QVBoxLayout;
     vlyout->addWidget(
@@ -290,8 +293,9 @@ void EPasswordPopup::keyPressEvent(QKeyEvent *e)
         else
             EMessageBox::warning(this, "Пароль неверен");
     }
-    if (e->key() == Qt::Key_Escape)
+    if ((e->key() == Qt::Key_Escape) && !isAboutToClose)
     {
+        isAboutToClose = true;
         emit cancel();
         aboutToClose();
     }

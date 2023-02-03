@@ -29,6 +29,7 @@ void TuneKIVCheck::setTuneFunctions()
 Error::Msg TuneKIVCheck::showScheme()
 {
     auto dialog = new QDialog(this);
+    dialog->setFixedSize(800, 600);
     // auto widget = new QWidget(this);
     auto layout = new QVBoxLayout;
     layout->addWidget(WDFunc::NewLBL2(this, "", "", new QPixmap("images/tunekiv1.png")));

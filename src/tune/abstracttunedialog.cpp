@@ -412,7 +412,10 @@ void AbstractTuneDialog::writeTuneCoefsSlot()
     {
         it.value()->updateFromWidget();
         if (it.value()->writeBlockToModule() != Error::Msg::NoError)
+        {
             CancelTune();
+            return;
+        }
     }
     EMessageBox::information(this, "Коэффициенты записаны успешно!");
     emit generalEventReceived();

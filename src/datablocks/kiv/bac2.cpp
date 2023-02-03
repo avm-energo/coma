@@ -10,7 +10,7 @@
 Bac2A284::Bac2A284(QObject *parent) : DataBlock(parent)
 {
     m_blockData = std::unique_ptr<BlockData>(new BlockData);
-    setBlock({ 1, "Настроечные параметры", DataTypes::DataBlockTypes::BacBlock, m_blockData.get(), sizeof(BlockData) });
+    setBlock({ 1, "Настроечные параметры", DataTypes::DataBlockTypes::BacBlock, m_blockData.get(), sizeof(BlockData), true });
     //    createWidget();
     readBlockFromModule();
     //    updateWidget();

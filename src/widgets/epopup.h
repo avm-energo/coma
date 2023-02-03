@@ -81,6 +81,7 @@ public:
 
 private:
     QString m_hash;
+    bool isAboutToClose;
     bool checkPassword(const QString &psw);
 
 signals:

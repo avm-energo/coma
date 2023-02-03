@@ -3,7 +3,7 @@
 Bda21::Bda21(QObject *parent) : DataBlock(parent)
 {
     m_blockData = new BlockData;
-    setBlock({ 1, "Сырые измерения", DataTypes::DataBlockTypes::BdaBlock, m_blockData, sizeof(BlockData) });
+    setBlock({ 1, "Сырые измерения", DataTypes::DataBlockTypes::BdaBlock, m_blockData, sizeof(BlockData), false });
 }
 
 void Bda21::setupValuesDesc()

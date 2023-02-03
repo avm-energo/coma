@@ -10,12 +10,12 @@
 BdaIn::BdaIn(QObject *parent) : DataBlock(parent)
 {
     m_blockData = std::unique_ptr<BlockData>(new BlockData);
-    setBlock({ 1, "Текущие данные", DataTypes::DataBlockTypes::BdBlock, m_blockData.get(), sizeof(BlockData) });
+    setBlock({ 1, "Текущие данные", DataTypes::DataBlockTypes::BdBlock, m_blockData.get(), sizeof(BlockData), false });
 }
 
 void BdaIn::setupValuesDesc()
 {
-    addNewGroup("Истинные действующие значения напряжения в В на входе", "IUefNat_filt[U]", 3, 0,
+    addNewGroup("Истинные действующие значения напряжения в В на входе", "IUefNat_filt[U]", 0, 3,
         &m_blockData->IUefNat_filt[0], 3);
     addNewGroup(
         "Истинные действующие значения тока в мА на входе", "IUefNat_filt[I]", 3, 3, &m_blockData->IUefNat_filt[3], 4);

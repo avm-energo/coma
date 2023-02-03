@@ -35,7 +35,7 @@ Error::Msg TuneKIVR::showPreWarning()
 {
     showTWTab(m_BacWidgetIndex);
     //    QDialog *dlg = new QDialog;
-    auto widget = new QWidget(this);
+    auto widget = new QWidget;
     auto layout = new QVBoxLayout;
 
     layout->addWidget(WDFunc::NewLBL2(this, "", "", new QPixmap("images/tunekiv1.png")));
@@ -56,7 +56,10 @@ Error::Msg TuneKIVR::showPreWarning()
     //    WDFunc::PBConnect(dlg, "cancelpb", static_cast<AbstractTuneDialog *>(this), &AbstractTuneDialog::CancelTune);
     //    dlg->exec();
     if (!EMessageBox::next(this, widget))
+    {
         CancelTune();
+        return Error::Msg::GeneralError;
+    }
     return Error::Msg::NoError;
 }
 

@@ -22,6 +22,7 @@ TuneKIVADC::TuneKIVADC(ConfigV *config, int tuneStep, QWidget *parent) : Abstrac
     setBac(m_bac);
     setBac(m_bac2);
     m_BacWidgetIndex = addWidgetToTabWidget(m_bac->widget(), "Настроечные параметры");
+    m_BacWidgetIndex2 = addWidgetToTabWidget(m_bac2->widget(), "Настроечные параметры 2");
     m_BdainWidgetIndex = addWidgetToTabWidget(m_bdain->widget(), "Текущие данные");
     m_Bd0WidgetIndex = addWidgetToTabWidget(m_bd0->widget(), "Общие данные");
     //    m_isEnergoMonitorDialogCreated = false;
@@ -63,6 +64,7 @@ Error::Msg TuneKIVADC::showPreWarning()
     QVBoxLayout *lyout = new QVBoxLayout;
 
     QWidget *w = new QWidget(this);
+    w->setFixedSize(800, 600);
     lyout->addWidget(WDFunc::NewLBL2(this, "", "", new QPixmap("images/tunekiv1.png")));
     lyout->addWidget(WDFunc::NewLBL2(this, "1. Соберите схему подключения по одной из вышеприведённых картинок;"));
     lyout->addWidget(WDFunc::NewLBL2(this,

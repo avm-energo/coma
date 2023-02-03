@@ -61,16 +61,16 @@ QWidget *DataBlock::widget(bool showButtons)
 
 void DataBlock::createWidget()
 {
-    m_widget = new QWidget;
+    QWidget *w = new QWidget;
     QVBoxLayout *lyout = new QVBoxLayout;
     int count = 0;
     for (auto &group : m_valuesDesc)
     {
         if (group.values.size() == 1) // for only one parameter it doesn't need to make a groupbox
         {
-            QWidget *w = new QWidget;
-            w->setLayout(addBlockValueToWidget(group.values.first()));
-            lyout->addWidget(w);
+            QWidget *w2 = new QWidget;
+            w2->setLayout(addBlockValueToWidget(group.values.first()));
+            lyout->addWidget(w2);
             continue;
         }
         QGroupBox *gb = new QGroupBox(group.groupDesc);
@@ -84,8 +84,14 @@ void DataBlock::createWidget()
         gb->setLayout(gridlyout);
         lyout->addWidget(gb);
     }
-    lyout->addWidget(blockButtonsUI());
-    m_widget->setLayout(lyout);
+    if (m_block.bottomButtonsVisible)
+        lyout->addWidget(blockButtonsUI());
+    w->setLayout(lyout);
+    auto scrollArea = new QScrollArea;
+    scrollArea->setFrameShape(QFrame::NoFrame);
+    scrollArea->setWidgetResizable(true);
+    scrollArea->setWidget(w);
+    m_widget = scrollArea;
 }
 
 QHBoxLayout *DataBlock::addBlockValueToWidget(ValueStr &value)
@@ -97,7 +103,7 @@ QHBoxLayout *DataBlock::addBlockValueToWidget(ValueStr &value)
     textLabel->setMaximumHeight(fn.height());
     layout->addWidget(textLabel);
 
-    QLabel *valueLabel = new QLabel;
+    QLineEdit *valueLabel = new QLineEdit;
     valueLabel->setToolTip(value.tooltip);
     valueLabel->setMaximumHeight(fn.height());
     valueLabel->setObjectName(value.valueId);
@@ -121,12 +127,12 @@ void DataBlock::updateWidget()
         {
             std::visit(overloaded { [&](float *arg)                                                       //
                            {                                                                              //
-                               WDFunc::SetLBLText(                                                        //
+                               WDFunc::SetLEData(                                                        //
                                    m_widget, valueDesc.valueId, WDFunc::StringFloatValueWithCheck(*arg)); //
                            },                                                                             //
                            [&](quint32 *arg)                                                              //
                            {                                                                              //
-                               WDFunc::SetLBLText(m_widget, valueDesc.valueId, QString::number(*arg));    //
+                               WDFunc::SetLEData(m_widget, valueDesc.valueId, QString::number(*arg));    //
                            } },                                                                           //
                 valueDesc.value);
         }
@@ -140,15 +146,21 @@ void DataBlock::updateFromWidget()
     {
         for (auto &valueDesc : group.values)
         {
-            std::visit(overloaded { [&](float *arg)                                                  //
-                           {                                                                         //
-                               *arg = StdFunc::ToFloat(WDFunc::LEData(m_widget, valueDesc.valueId)); //
-                           },                                                                        //
-                           [&](quint32 *arg)                                                         //
-                           {                                                                         //
-                               *arg = WDFunc::LEData(m_widget, valueDesc.valueId).toUInt();          //
-                           } },                                                                      //
-                valueDesc.value);
+            std::visit([&](auto *arg) {
+                        using T = std::remove_pointer_t<decltype(arg)>;
+                        if constexpr (std::is_same_v<T, float>)
+                        {
+                            float tmpf = StdFunc::ToFloat(WDFunc::LEData(m_widget, valueDesc.valueId));
+                            *arg = tmpf;
+                        }
+                        else if constexpr (std::is_same_v<T, quint32>)
+                        {
+                            quint32 tmpi = WDFunc::LEData(m_widget, valueDesc.valueId).toUInt();
+                            *arg = tmpi;
+                        }
+                        else
+                            static_assert(false, "non-exhaustive visitor!");
+                    }, valueDesc.value);
         }
     }
 }

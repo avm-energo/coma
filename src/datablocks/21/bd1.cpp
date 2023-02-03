@@ -3,7 +3,7 @@
 Bd21_1::Bd21_1(QObject *parent) : DataBlock(parent)
 {
     m_blockData = new BlockData;
-    setBlock({ 1, "Все", DataTypes::DataBlockTypes::BdBlock, m_blockData, sizeof(BlockData) });
+    setBlock({ 1, "Все", DataTypes::DataBlockTypes::BdBlock, m_blockData, sizeof(BlockData), false });
 }
 
 void Bd21_1::setupValuesDesc()
