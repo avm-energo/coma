@@ -45,7 +45,7 @@ Error::Msg TuneKIVCheck::showScheme()
     vLayout->addWidget(WDFunc::newHLine(this));
     vLayout->addWidget(WDFunc::NewLBL2(this,
         "3. Включите питание источника сигналов. Задайте напряжение U1 равным 60,0 В с углом 0 град., "
-        "ток I1 равным 5 А с углом 89,9 град., включите выходы РЕТОМ-51;"));
+        "ток I1 равным 2,9 А с углом 89,9 град., включите выходы РЕТОМ-51;"));
     hLayout->addLayout(vLayout);
     hLayout->addWidget(WDFunc::newVLine(this));
     vLayout = new QVBoxLayout;
@@ -58,7 +58,7 @@ Error::Msg TuneKIVCheck::showScheme()
     layout->addLayout(hLayout);
     layout->addWidget(WDFunc::NewLBL2(this,
         "4. По показаниям Энергомонитора убедитесь, что входное напряжение от источника "
-        "составляет 60 ± 0,25 В, ток – 0,500 ± 25 мА, частота – 51,0 ± 0,05 Гц;"));
+        "составляет 60 ± 0,25 В, ток – 0,290 ± 25 мА, частота – 51,0 ± 0,05 Гц;"));
     layout->addWidget(WDFunc::NewLBL2(
         this, "5. Убедитесь, что частота мигания светодиода «Работа»  на лицевой панели увеличилась до 1 Гц;"));
     layout->addWidget(WDFunc::NewLBL2(this, "6. Установите на магазине сопротивлений сопротивление 100,0 Ом."));

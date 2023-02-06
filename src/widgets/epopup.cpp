@@ -6,6 +6,8 @@
 #include <QCryptographicHash>
 #include <QEventLoop>
 #include <QGuiApplication>
+#include <QApplication>
+#include <QDesktopWidget>
 #include <QPropertyAnimation>
 #include <QScreen>
 #include <QTimer>
@@ -13,11 +15,13 @@
 ESimplePopup::ESimplePopup(MessageTypes type, const QString &msg, QWidget *parent) : EPopup(parent)
 {
     Create(type, WDFunc::NewLBL2(parent, msg), parent);
+    adjustPosition();
 }
 
 ESimplePopup::ESimplePopup(MessageTypes type, QWidget *w, QWidget *parent) : EPopup(parent)
 {
     Create(type, w, parent);
+    adjustPosition();
 }
 
 void ESimplePopup::Create(MessageTypes &type, QWidget *w, QWidget *parent)
@@ -164,13 +168,10 @@ void EMessageBox::infoWithoutButtons(QWidget *parent, const QString &msg, int ti
     loop.exec();
 }
 
-EPopup::EPopup(QWidget *parent) : QFrame(parent)
+EPopup::EPopup(QWidget *parent) : QFrame(parent), m_parent(parent)
 {
-    Q_UNUSED(parent)
     setWindowFlags(Qt::Dialog | Qt::FramelessWindowHint);
     setWindowModality(Qt::WindowModal);
-    QPoint point = (parent == nullptr) ? QPoint(0, 0) : parent->frameGeometry().center();
-    move(QGuiApplication::screens().at(0)->geometry().center() - point);
     setStyleSheet("QFrame {border-radius: 10px; border-style: solid; border-width: 2px;}");
 }
 
@@ -194,6 +195,32 @@ void EPopup::exec()
     QEventLoop el;
     connect(this, &EPopup::closed, &el, &QEventLoop::quit);
     el.exec();
+}
+
+void EPopup::adjustPosition()
+{
+    QRect globalGeometry = QGuiApplication::primaryScreen()->geometry();
+    int globalWidth = globalGeometry.width();
+    int globalHeight = globalGeometry.height();
+    int width2 = width() * 0.5;
+    int height2 = height() * 0.5;
+    QPoint centerPoint, pos;
+    if (m_parent == nullptr)
+    {
+        centerPoint = globalGeometry.center();
+        pos = QPoint(0,0);
+    }
+    else
+    {
+        centerPoint = m_parent->geometry().center();
+        pos = m_parent->pos();
+    }
+    int right = centerPoint.x() + width2;
+    int down = centerPoint.y() + height2;
+    if ((right > globalWidth) || (down > globalHeight))
+        move(0, 0);
+    else
+        move(centerPoint.x() - width2, centerPoint.y() - height2);
 }
 
 void EPopup::showEvent(QShowEvent *e)
@@ -257,6 +284,7 @@ void EEditablePopup::execPopup()
     lyout->addLayout(hlyout);
     setLayout(lyout);
     this->adjustSize();
+    adjustPosition();
     exec();
 }
 
@@ -298,6 +326,7 @@ EPasswordPopup::EPasswordPopup(const QString &hash, QWidget *parent) : EPopup(pa
     vlyout->addWidget(WDFunc::NewPswLE2(this, "pswle", QLineEdit::Password));
     setLayout(vlyout);
     this->adjustSize();
+    adjustPosition();
 }
 
 bool EPasswordPopup::checkPassword(const QString &psw)
@@ -339,17 +368,4 @@ void EPasswordPopup::closeEvent(QCloseEvent *e)
 {
     emit cancel();
     EPopup::closeEvent(e);
-}
-
-EMsgBox::EMsgBox(QWidget *parent) : EPopup(parent)
-{
-}
-
-bool EMsgBox::next()
-{
-    bool m_result = false;
-    QObject::connect(this, &EPopup::accepted, [&] { m_result = true; });
-    QObject::connect(this, &EPopup::cancelled, [&] { m_result = false; });
-    show();
-    return m_result;
 }

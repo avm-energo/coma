@@ -15,6 +15,7 @@ public:
     EPopup(QWidget *parent = nullptr);
     void aboutToClose();
     void exec();
+    void adjustPosition();
 
 signals:
     void accepted();
@@ -24,6 +25,9 @@ signals:
 public slots:
     void acceptSlot();
     void cancelSlot();
+
+private:
+    QWidget *m_parent;
 
 protected:
     void showEvent(QShowEvent *e);
@@ -110,13 +114,6 @@ public:
     static bool editableNext(EEditablePopup *popup);
     static void infoWithoutButtons(
         QWidget *parent, const QString &msg, int timeout = 1); // timeout to close dialog in seconds
-};
-
-class EMsgBox : public EPopup
-{
-public:
-    EMsgBox(QWidget *parent = nullptr);
-    bool next();
 };
 
 #endif // EPOPUP_H

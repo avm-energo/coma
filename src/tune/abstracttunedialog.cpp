@@ -387,7 +387,10 @@ Error::Msg AbstractTuneDialog::writeTuneCoefs(bool isUserChoosingRequired)
         lyout->addWidget(WDFunc::NewLBL2(this, "Вопрос", "Записать регулировочные коэффициенты?"));
         QTabWidget *tw = new QTabWidget;
         for (QMap<int, DataBlock *>::Iterator it = AbsBac.begin(); it != AbsBac.end(); ++it)
+        {
             tw->addTab(it.value()->widget(false), it.value()->block().caption); // do not show buttons
+            it.value()->updateWidget();
+        }
         lyout->addWidget(tw);
         hlyout->addWidget(WDFunc::NewPB(this, "", "Записать", this, &AbstractTuneDialog::writeTuneCoefsSlot));
         hlyout->addWidget(WDFunc::NewPB(this, "", "Отмена", [this]() {
