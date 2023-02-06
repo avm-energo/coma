@@ -2331,6 +2331,62 @@
 		</widget>
 	</record>
 	<record>
+		<id>1041</id>
+		<name>SourseT</name>
+		<description>Источник температуры окр. среды: 0-Pt100, 1-RS485</description>
+		<type>BYTE</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>100</group>
+			<string>Источник температуры окр. среды: 0-Pt100, 1-RS485</string>
+			<min>0</min>
+			<max>1</max>
+			<decimals>0</decimals>
+		</widget>
+	</record>
+    <record>
+		<id>1042</id>
+		<name>NoSign</name>
+		<description>Запрет сигнализации по фазам (побитно)</description>
+		<type>BYTE</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>200</group>
+			<string>Запрет сигнализации по фазам (побитно)</string>
+			<min>0</min>
+			<max>255</max>
+			<decimals>0</decimals>
+		</widget>
+	</record>
+    <record>
+		<id>1043</id>
+		<name>DinEn</name>
+		<description>Разрешение использования дискретного входа</description>
+		<type>BYTE</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>100</group>
+			<string>Разрешение использования дискретного входа</string>
+			<min>0</min>
+			<max>1</max>
+			<decimals>0</decimals>
+		</widget>
+	</record>
+    <record>
+		<id>1044</id>
+		<name>filtrDI</name>
+		<description>Фильтр (mc)</description>
+		<type>WORD</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>100</group>
+			<string>Фильтр (mc)</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>0</decimals>
+		</widget>
+	</record>
+	<record>
 		<id>1050</id>
 		<name>U2nom</name>
 		<description>Номинальное линейное вторичное напряжение, В</description>

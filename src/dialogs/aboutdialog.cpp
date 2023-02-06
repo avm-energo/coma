@@ -1,13 +1,13 @@
-#include "aboutwidget.h"
+#include "aboutdialog.h"
 
-#include "wd_func.h"
+#include "../widgets/wd_func.h"
 
-AboutWidget::AboutWidget(QWidget *parent) : QDialog(parent, Qt::Window | Qt::Dialog)
+AboutDialog::AboutDialog(QWidget *parent) : QDialog(parent, Qt::Window | Qt::Dialog)
 {
     setAttribute(Qt::WA_DeleteOnClose);
 }
 
-void AboutWidget::setupUI()
+void AboutDialog::setupUI()
 {
     auto hlyout = new QHBoxLayout;
     auto lyout = new QVBoxLayout;
@@ -32,12 +32,12 @@ void AboutWidget::setupUI()
     setFixedSize(QSize(450, 400));
 }
 
-void AboutWidget::prependLine(const QString &str)
+void AboutDialog::prependLine(const QString &str)
 {
     m_lines.prepend(str);
 }
 
-void AboutWidget::appendLine(const QString &str)
+void AboutDialog::appendLine(const QString &str)
 {
     m_lines.append(str);
 }

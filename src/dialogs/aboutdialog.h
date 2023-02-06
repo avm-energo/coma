@@ -9,17 +9,17 @@ constexpr auto modules = "Modules used:";
 constexpr auto liblzma = "LZMA library from XZ Utils, version 5.2.5 (https://tukaani.org/xz/)";
 constexpr auto hidapi = "HIDAPI library, version 0.9.0 (https://github.com/libusb/hidapi)";
 constexpr auto qxlsx = "QXlsx library, version 1.3.56 (https://qtexcel.github.io/QXlsx/)";
-constexpr auto limereport = "LimeReport library, version 1.5.1 (http://limereport.ru/)";
+constexpr auto limereport = "LimeReport library, version 1.5.1 (https://limereport.ru/)";
 constexpr auto qcustomplot = "QCustomPlot library, version 2.1.0 (https://www.qcustomplot.com/)";
 constexpr auto icons = "Icons are based on the iconset by 0melapics / Freepik";
-constexpr auto fonts = "Font used: FlorenceSans by ShyFoundry (http://www.shyfoundry.com)";
+constexpr auto fonts = "Font used: FlorenceSans by ShyFoundry (https://shyfoundry.com/home)";
 }
 
-class AboutWidget : public QDialog
+class AboutDialog : public QDialog
 {
     Q_OBJECT
 public:
-    explicit AboutWidget(QWidget *parent = nullptr);
+    explicit AboutDialog(QWidget *parent = nullptr);
     void setupUI();
     void prependLine(const QString &str);
     void appendLine(const QString &str);
