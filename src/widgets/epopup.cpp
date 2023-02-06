@@ -1,11 +1,13 @@
 #include "epopup.h"
 
-#include "../widgets/wd_func.h"
 #include "../widgets/passwordlineedit.h"
+#include "../widgets/wd_func.h"
 
 #include <QCryptographicHash>
 #include <QEventLoop>
+#include <QGuiApplication>
 #include <QPropertyAnimation>
+#include <QScreen>
 #include <QTimer>
 
 ESimplePopup::ESimplePopup(MessageTypes type, const QString &msg, QWidget *parent) : EPopup(parent)
@@ -20,14 +22,31 @@ ESimplePopup::ESimplePopup(MessageTypes type, QWidget *w, QWidget *parent) : EPo
 
 void ESimplePopup::Create(MessageTypes &type, QWidget *w, QWidget *parent)
 {
+    struct msgsStruct
+    {
+        QString pxFile;
+        QString bgrdColor;
+    };
+
+    QMap<MessageTypes, msgsStruct> map = {
+        { INFOMESSAGE, { "images/info-hex.svg", "c8fcff" } },
+        { WARNMESSAGE, { "images/warn-hex.svg", "ffffc3" } },
+        { QUESTMSG, { "images/question-hex.svg", "b5b6ff" } },
+        { ERMESSAGE, { "images/err-hex.svg", "ffd4d4" } },
+        { NEXTMSG, { "images/next-hex.svg", "d6ffce" } },
+        { WITHOUTANYBUTTONS, { "images/ordinary-hex.svg", "f3ffc5" } },
+    };
     setAttribute(Qt::WA_DeleteOnClose);
+    setStyleSheet("QFrame {background-color: #" + map[type].bgrdColor + ";}");
+    w->setStyleSheet("QWidget {background-color: #" + map[type].bgrdColor + ";}");
     if (type < c_captions.size())
         setWindowTitle(c_captions.at(type));
     QVBoxLayout *lyout = new QVBoxLayout;
-    QVBoxLayout *lyout2 = new QVBoxLayout;
-    lyout2->addWidget(w);
-    lyout->addLayout(lyout2);
     QHBoxLayout *hlyout = new QHBoxLayout;
+    hlyout->addWidget(WDFunc::NewLBL2(parent, "", "", new QPixmap(map[type].pxFile)));
+    hlyout->addWidget(w);
+    lyout->addLayout(hlyout);
+    hlyout = new QHBoxLayout;
     hlyout->addStretch(100);
     if (type == ESimplePopup::QUESTMSG)
     {
@@ -46,6 +65,7 @@ void ESimplePopup::Create(MessageTypes &type, QWidget *w, QWidget *parent)
     hlyout->addStretch(100);
     lyout->addLayout(hlyout);
     setLayout(lyout);
+    this->adjustSize();
 }
 
 void ESimplePopup::acceptSlot()
@@ -63,68 +83,61 @@ bool EMessageBox::m_result = false;
 bool EMessageBox::password(QWidget *parent, const QString &hash)
 {
     m_result = false;
-    auto dlg = new EPasswordPopup(hash, parent);
-    QObject::connect(dlg, &EPasswordPopup::passwordIsCorrect, [] {
-        m_result = true;
-    });
-//    QObject::connect(dlg, &EPasswordPopup::cancel, [] {
-//        m_result = false;
-//    });
-    dlg->exec();
-    if (m_result == true)
-        m_result = true;
+    auto popup = new EPasswordPopup(hash, parent);
+    QObject::connect(popup, &EPasswordPopup::passwordIsCorrect, [] { m_result = true; });
+    popup->exec();
     return m_result;
 }
 
 void EMessageBox::information(QWidget *parent, const QString &msg)
 {
     m_result = false;
-    auto dlg = new ESimplePopup(ESimplePopup::INFOMESSAGE, msg, parent);
-    dlg->exec();
+    auto popup = new ESimplePopup(ESimplePopup::INFOMESSAGE, msg, parent);
+    popup->exec();
 }
 
 bool EMessageBox::question(const QString &msg)
 {
     m_result = false;
-    auto dlg = new ESimplePopup(ESimplePopup::QUESTMSG, msg);
-    QObject::connect(dlg, &ESimplePopup::accepted, [] { m_result = true; });
-    QObject::connect(dlg, &ESimplePopup::cancelled, [] { m_result = false; });
-    dlg->exec();
+    auto popup = new ESimplePopup(ESimplePopup::QUESTMSG, msg);
+    QObject::connect(popup, &ESimplePopup::accepted, [] { m_result = true; });
+    QObject::connect(popup, &ESimplePopup::cancelled, [] { m_result = false; });
+    popup->exec();
     return m_result;
 }
 
 void EMessageBox::warning(QWidget *parent, const QString &msg)
 {
     m_result = false;
-    auto dlg = new ESimplePopup(ESimplePopup::WARNMESSAGE, WDFunc::NewLBL2(parent, msg), parent);
-    dlg->exec();
+    auto popup = new ESimplePopup(ESimplePopup::WARNMESSAGE, WDFunc::NewLBL2(parent, msg), parent);
+    popup->exec();
 }
 
 void EMessageBox::error(QWidget *parent, const QString &msg)
 {
     m_result = false;
-    auto dlg = new ESimplePopup(ESimplePopup::ERMESSAGE, msg, parent);
-    dlg->setWindowFlag(Qt::WindowStaysOnTopHint, true);
-    dlg->exec();
+    auto popup = new ESimplePopup(ESimplePopup::ERMESSAGE, msg, parent);
+    popup->setWindowFlag(Qt::WindowStaysOnTopHint, true);
+    popup->exec();
 }
 
 bool EMessageBox::next(QWidget *parent, const QString &msg)
 {
     m_result = false;
-    auto dlg = new ESimplePopup(ESimplePopup::NEXTMSG, msg, parent);
-    QObject::connect(dlg, &ESimplePopup::accepted, [&] { m_result = true; });
-    QObject::connect(dlg, &ESimplePopup::cancelled, [&] { m_result = false; });
-    dlg->exec();
+    auto popup = new ESimplePopup(ESimplePopup::NEXTMSG, msg, parent);
+    QObject::connect(popup, &ESimplePopup::accepted, [&] { m_result = true; });
+    QObject::connect(popup, &ESimplePopup::cancelled, [&] { m_result = false; });
+    popup->exec();
     return m_result;
 }
 
 bool EMessageBox::next(QWidget *parent, QWidget *w)
 {
     m_result = false;
-    auto dlg = new ESimplePopup(ESimplePopup::NEXTMSG, w, parent);
-    QObject::connect(dlg, &ESimplePopup::accepted, [] { m_result = true; });
-    QObject::connect(dlg, &ESimplePopup::cancelled, [] { m_result = false; });
-    dlg->exec();
+    auto popup = new ESimplePopup(ESimplePopup::NEXTMSG, w, parent);
+    QObject::connect(popup, &ESimplePopup::accepted, [] { m_result = true; });
+    QObject::connect(popup, &ESimplePopup::cancelled, [] { m_result = false; });
+    popup->exec();
     return m_result;
 }
 
@@ -151,8 +164,14 @@ void EMessageBox::infoWithoutButtons(QWidget *parent, const QString &msg, int ti
     loop.exec();
 }
 
-EPopup::EPopup(QWidget *parent) : QDialog(parent)
+EPopup::EPopup(QWidget *parent) : QFrame(parent)
 {
+    Q_UNUSED(parent)
+    setWindowFlags(Qt::Dialog | Qt::FramelessWindowHint);
+    setWindowModality(Qt::WindowModal);
+    QPoint point = (parent == nullptr) ? QPoint(0, 0) : parent->frameGeometry().center();
+    move(QGuiApplication::screens().at(0)->geometry().center() - point);
+    setStyleSheet("QFrame {border-radius: 10px; border-style: solid; border-width: 2px;}");
 }
 
 void EPopup::aboutToClose()
@@ -168,9 +187,18 @@ void EPopup::aboutToClose()
     close();
 }
 
+void EPopup::exec()
+{
+    this->show();
+    adjustSize();
+    QEventLoop el;
+    connect(this, &EPopup::closed, &el, &QEventLoop::quit);
+    el.exec();
+}
+
 void EPopup::showEvent(QShowEvent *e)
 {
-    QDialog::showEvent(e);
+    QFrame::showEvent(e);
     auto anim = new QPropertyAnimation(this, "windowOpacity");
     anim->setStartValue(0.0);
     anim->setEndValue(1.0);
@@ -180,7 +208,8 @@ void EPopup::showEvent(QShowEvent *e)
 
 void EPopup::closeEvent(QCloseEvent *e)
 {
-    QDialog::closeEvent(e);
+    emit closed();
+    QFrame::closeEvent(e);
 }
 
 void EPopup::keyPressEvent(QKeyEvent *e)
@@ -216,7 +245,6 @@ void EEditablePopup::execPopup()
 {
     auto lyout = new QVBoxLayout;
     lyout->addWidget(WDFunc::NewLBL2(this, caption));
-    // QHBoxLayout *hlyout;
     for (std::map<QString, std::unique_ptr<float>>::iterator it = m_floatParList.begin(); it != m_floatParList.end();
          ++it)
         lyout->addWidget(WDFunc::NewLBLAndLE(this, it->first, it->first, true));
@@ -228,6 +256,7 @@ void EEditablePopup::execPopup()
     hlyout->addStretch(100);
     lyout->addLayout(hlyout);
     setLayout(lyout);
+    this->adjustSize();
     exec();
 }
 
@@ -260,11 +289,15 @@ EPasswordPopup::EPasswordPopup(const QString &hash, QWidget *parent) : EPopup(pa
 {
     isAboutToClose = false;
     m_hash = hash;
-    QVBoxLayout *vlyout = new QVBoxLayout;
-    vlyout->addWidget(
+    QHBoxLayout *hlyout = new QHBoxLayout;
+    hlyout->addWidget(WDFunc::NewLBL2(parent, "", "", new QPixmap("images/psw-hex.svg")));
+    hlyout->addWidget(
         WDFunc::NewLBL2(this, "Введите пароль\nПодтверждение: клавиша Enter\nОтмена: клавиша Esc", "pswlbl"));
+    QVBoxLayout *vlyout = new QVBoxLayout;
+    vlyout->addLayout(hlyout);
     vlyout->addWidget(WDFunc::NewPswLE2(this, "pswle", QLineEdit::Password));
     setLayout(vlyout);
+    this->adjustSize();
 }
 
 bool EPasswordPopup::checkPassword(const QString &psw)
@@ -299,11 +332,24 @@ void EPasswordPopup::keyPressEvent(QKeyEvent *e)
         emit cancel();
         aboutToClose();
     }
-    QDialog::keyPressEvent(e);
+    QFrame::keyPressEvent(e);
 }
 
 void EPasswordPopup::closeEvent(QCloseEvent *e)
 {
     emit cancel();
-    e->accept();
+    EPopup::closeEvent(e);
+}
+
+EMsgBox::EMsgBox(QWidget *parent) : EPopup(parent)
+{
+}
+
+bool EMsgBox::next()
+{
+    bool m_result = false;
+    QObject::connect(this, &EPopup::accepted, [&] { m_result = true; });
+    QObject::connect(this, &EPopup::cancelled, [&] { m_result = false; });
+    show();
+    return m_result;
 }

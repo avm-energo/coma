@@ -3,20 +3,23 @@
 
 #include <QCloseEvent>
 #include <QDialog>
+#include <QFrame>
 #include <QKeyEvent>
 #include <QShowEvent>
 #include <map>
 
-class EPopup : public QDialog
+class EPopup : public QFrame
 {
     Q_OBJECT
 public:
     EPopup(QWidget *parent = nullptr);
     void aboutToClose();
+    void exec();
 
 signals:
     void accepted();
     void cancelled();
+    void closed();
 
 public slots:
     void acceptSlot();
@@ -107,6 +110,13 @@ public:
     static bool editableNext(EEditablePopup *popup);
     static void infoWithoutButtons(
         QWidget *parent, const QString &msg, int timeout = 1); // timeout to close dialog in seconds
+};
+
+class EMsgBox : public EPopup
+{
+public:
+    EMsgBox(QWidget *parent = nullptr);
+    bool next();
 };
 
 #endif // EPOPUP_H

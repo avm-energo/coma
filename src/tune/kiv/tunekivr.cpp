@@ -34,27 +34,22 @@ void TuneKIVR::setTuneFunctions()
 Error::Msg TuneKIVR::showPreWarning()
 {
     showTWTab(m_BacWidgetIndex);
-    //    QDialog *dlg = new QDialog;
-    auto widget = new QWidget;
+    auto widget = new QWidget(this);
     auto layout = new QVBoxLayout;
 
-    layout->addWidget(WDFunc::NewLBL2(this, "", "", new QPixmap("images/tunekiv1.png")));
+    layout->addWidget(WDFunc::NewLBL2(this, "", "", new QPixmap("images/tunekiv1.png")), 0);
     layout->addWidget(WDFunc::NewLBL2(this, "1. Соберите схему подключения по одной из вышеприведённых картинок;"));
     layout->addWidget(WDFunc::NewLBL2(this,
-        "2. Включите питание Энергомонитор 3.1КМ и настройте его на режим измерения тока"
-        "и напряжения в однофазной сети переменного тока, установите предел измерения"
+        "2. Включите питание Энергомонитор 3.1КМ и настройте его на режим измерения тока "
+        "и напряжения в однофазной сети переменного тока, установите предел измерения "
         "по напряжению 60 В, по току - 2,5 А;"));
     layout->addWidget(WDFunc::NewLBL2(this,
-        "3. Данный этап регулировки должен выполняться при температуре"
-        "окружающего воздуха +20±7 °С. Если температура окружающего воздуха отличается от указанной,"
+        "3. Данный этап регулировки должен выполняться при температуре "
+        "окружающего воздуха +20±7 °С. Если температура окружающего воздуха отличается от указанной, "
         "разместите модуль в термокамеру с диапазоном регулирования температуры "
         "от минус 20 до +60°С. Установите нормальное значение температуры "
         "в камере 20±5°С"));
-    //    lyout->addWidget(WDFunc::NewPB(this, "", "Готово", [dlg] { dlg->close(); }));
-    //    lyout->addWidget(WDFunc::NewPB(this, "cancelpb", "Отмена", [dlg] { dlg->close(); }));
-    //    dlg->setLayout(lyout);
-    //    WDFunc::PBConnect(dlg, "cancelpb", static_cast<AbstractTuneDialog *>(this), &AbstractTuneDialog::CancelTune);
-    //    dlg->exec();
+    widget->setLayout(layout);
     if (!EMessageBox::next(this, widget))
     {
         CancelTune();

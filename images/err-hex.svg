@@ -1,0 +1,14 @@
+<svg width="7.8588mm" height="6.806mm" version="1.1" viewBox="0 0 7.8588 6.806" xmlns="http://www.w3.org/2000/svg">
+ <path d="m5.8567 6.7413-3.8546-2e-7 -1.9274-3.3382 1.9274-3.3382 3.8546 2e-7 1.9274 3.3382z" fill="none" stroke="#e70000" stroke-width=".23548"/>
+ <text transform="translate(.39892 -1.8552)" font-family="Saira" font-size="10.583px" font-weight="bold" style="line-height:1.25;shape-inside:url(#rect1564);white-space:pre" xml:space="preserve"/>
+ <text x="29.950945" y="12.251613" font-family="Saira" font-size="10.583px" stroke-width=".26458" style="line-height:1.25" xml:space="preserve"><tspan x="29.950945" y="12.251613" stroke-width=".26458"/></text>
+ <g fill="none" stroke="#e70000">
+  <g stroke-width=".26458px">
+   <path d="m3.3605 2.1237-0.80331 0.80331"/>
+   <path d="m2.5723 2.1374 0.80331 0.80331" opacity=".995"/>
+   <path d="m5.3924 2.1222-0.80331 0.80331"/>
+   <path d="m4.6041 2.1358 0.80331 0.80331" opacity=".995"/>
+  </g>
+  <path d="m2.5792 4.7742 2.7929-0.46156" stroke-width=".29532px"/>
+ </g>
+</svg>

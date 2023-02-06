@@ -105,6 +105,8 @@ QLabel *WDFunc::NewLBL2(
     QWidget *parent, const QString &text, const QString &lblname, const QPixmap *pm, const QString &lbltip)
 {
     auto lbl = new QLabel(parent);
+    lbl->setStyleSheet("QLabel {border: none;}");
+    lbl->setWordWrap(true);
     lbl->setText(text);
     if (!lblname.isEmpty())
         lbl->setObjectName(lblname);

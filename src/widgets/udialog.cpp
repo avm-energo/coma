@@ -37,8 +37,8 @@ void UDialog::updateGeneralResponse(const QVariant &msg)
     {
         if (successMsg().isEmpty())
             break;
-        QMessageBox::information(this, "Information", successMsg());
-        // EMessageBox::information(this, successMsg());
+        //        QMessageBox::information(this, "Information", successMsg());
+        EMessageBox::information(this, successMsg());
         break;
     }
     case DataTypes::Error:
@@ -60,8 +60,8 @@ void UDialog::updateGeneralResponse(const QVariant &msg)
             msg = Error::MsgStr[Error::Msg(response.data)];
             break;
         }
-        QMessageBox::critical(this, "Error", errorMsg() + " : " + msg);
-        // EMessageBox::warning(this, errorMsg() + " : " + msg);
+        //        QMessageBox::critical(this, "Error", errorMsg() + " : " + msg);
+        EMessageBox::error(this, errorMsg() + " : " + msg);
         break;
     }
     default:

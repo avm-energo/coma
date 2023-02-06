@@ -5,13 +5,14 @@
 #include "../module/configstorage.h"
 #include "../s2/configv.h"
 #include "../s2/s2.h"
+#include "../widgets/epopup.h"
 #include "../widgets/wd_func.h"
 #include "../xml/xmlparser/xmlconfigparser.h"
 
 #include <QDebug>
 #include <QGridLayout>
 #include <QGroupBox>
-#include <QMessageBox>
+//#include <QMessageBox>
 #include <QScrollArea>
 #include <QTextEdit>
 #include <gen/datamanager/typesproxy.h>
@@ -147,7 +148,8 @@ void ConfigDialog::saveConfigToFile()
     switch (res)
     {
     case Error::Msg::NoError:
-        QMessageBox::information(this, "Внимание", "Записано успешно!");
+        //        QMessageBox::information(this, "Внимание", "Записано успешно!");
+        EMessageBox::information(this, "Записано успешно!");
         break;
     case Error::Msg::FileWriteError:
         qCritical("Ошибка при записи файла!");
@@ -178,7 +180,8 @@ void ConfigDialog::loadConfigFromFile()
     outlist.setValue(outlistV);
 
     configReceived(outlist);
-    QMessageBox::information(this, "Успешно", "Загрузка прошла успешно!");
+    //    QMessageBox::information(this, "Успешно", "Загрузка прошла успешно!");
+    EMessageBox::information(this, "Загрузка прошла успешно!");
 }
 
 QWidget *ConfigDialog::ConfButtons()
@@ -326,7 +329,8 @@ void ConfigDialog::prereadConfig()
     if (Board::GetInstance().noConfig()) // если в модуле нет конфигурации, заполнить поля по умолчанию
     {
         setDefaultConfig();
-        QMessageBox::information(this, "Успешно", "Задана конфигурация по умолчанию", QMessageBox::Ok);
+        EMessageBox::information(this, "Задана конфигурация по умолчанию");
+        //        QMessageBox::information(this, "Успешно", "Задана конфигурация по умолчанию", QMessageBox::Ok);
     }
     else
         readConfig();

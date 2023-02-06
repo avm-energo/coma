@@ -30,6 +30,7 @@
 
 #include <QDialogButtonBox>
 #include <QGroupBox>
+#include <QScrollBar>
 #include <gen/files.h>
 #include <gen/stdfunc.h>
 
@@ -99,18 +100,47 @@ QHBoxLayout *DataBlock::addBlockValueToWidget(ValueStr &value)
     QHBoxLayout *layout = new QHBoxLayout;
     QLabel *textLabel = new QLabel(value.desc);
     textLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
-    QFontMetrics fn(textLabel->font());
-    textLabel->setMaximumHeight(fn.height());
     layout->addWidget(textLabel);
 
     QLineEdit *valueLabel = new QLineEdit;
     valueLabel->setToolTip(value.tooltip);
-    valueLabel->setMaximumHeight(fn.height());
     valueLabel->setObjectName(value.valueId);
     valueLabel->setStyleSheet(ValuesFormat);
-    valueLabel->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
     layout->addWidget(valueLabel);
     return layout;
+}
+
+QWidget *DataBlock::blockButtonsUI()
+{
+    if (!m_isBottomButtonsWidgetCreated)
+    {
+        m_bottomButtonsWidget = new QWidget;
+        QVBoxLayout *lyout = new QVBoxLayout;
+        QDialogButtonBox *group = new QDialogButtonBox;
+
+        const QList<QPair<QPair<QString, QString>, std::function<void()>>> funcs {
+            { { "Получить", ":/icons/tnread.svg" }, [this]() { readAndUpdate(); } },
+            { { "Записать", ":/icons/tnwrite.svg" }, [this]() { writeBlockToModule(); } },
+            { { "Задать по умолчанию", ":/icons/tnyes.svg" }, [this]() { setDefBlockAndUpdate(); } },
+            { { "Прочитать из файла и записать в устройство", ":/icons/tnload.svg" },
+                [this]() { readFromFileUserChoose(); } },
+            { { "Прочитать из устройства и сохранить в файл", ":/icons/tnsave.svg" },
+                [this]() { saveToFileUserChoose(); } }
+        };
+
+        for (auto &i : funcs)
+        {
+            const QString &toolTip = i.first.first;
+            group->addButton(WDFunc::NewHexagonPB(m_bottomButtonsWidget, "", i.second, i.first.second, toolTip),
+                QDialogButtonBox::ActionRole);
+        }
+        group->setCenterButtons(true);
+        lyout->addWidget(group);
+        m_bottomButtonsWidget->setLayout(lyout);
+
+        m_isBottomButtonsWidgetCreated = true;
+    }
+    return m_bottomButtonsWidget;
 }
 
 DataBlock::BlockStruct DataBlock::block()
@@ -127,12 +157,12 @@ void DataBlock::updateWidget()
         {
             std::visit(overloaded { [&](float *arg)                                                       //
                            {                                                                              //
-                               WDFunc::SetLEData(                                                        //
+                               WDFunc::SetLEData(                                                         //
                                    m_widget, valueDesc.valueId, WDFunc::StringFloatValueWithCheck(*arg)); //
                            },                                                                             //
                            [&](quint32 *arg)                                                              //
                            {                                                                              //
-                               WDFunc::SetLEData(m_widget, valueDesc.valueId, QString::number(*arg));    //
+                               WDFunc::SetLEData(m_widget, valueDesc.valueId, QString::number(*arg));     //
                            } },                                                                           //
                 valueDesc.value);
         }
@@ -146,21 +176,23 @@ void DataBlock::updateFromWidget()
     {
         for (auto &valueDesc : group.values)
         {
-            std::visit([&](auto *arg) {
-                        using T = std::remove_pointer_t<decltype(arg)>;
-                        if constexpr (std::is_same_v<T, float>)
-                        {
-                            float tmpf = StdFunc::ToFloat(WDFunc::LEData(m_widget, valueDesc.valueId));
-                            *arg = tmpf;
-                        }
-                        else if constexpr (std::is_same_v<T, quint32>)
-                        {
-                            quint32 tmpi = WDFunc::LEData(m_widget, valueDesc.valueId).toUInt();
-                            *arg = tmpi;
-                        }
-                        else
-                            static_assert(false, "non-exhaustive visitor!");
-                    }, valueDesc.value);
+            std::visit(
+                [&](auto *arg) {
+                    using T = std::remove_pointer_t<decltype(arg)>;
+                    if constexpr (std::is_same_v<T, float>)
+                    {
+                        float tmpf = StdFunc::ToFloat(WDFunc::LEData(m_widget, valueDesc.valueId));
+                        *arg = tmpf;
+                    }
+                    else if constexpr (std::is_same_v<T, quint32>)
+                    {
+                        quint32 tmpi = WDFunc::LEData(m_widget, valueDesc.valueId).toUInt();
+                        *arg = tmpi;
+                    }
+                    //                        else
+                    //                            static_assert(false, "non-exhaustive visitor!");
+                },
+                valueDesc.value);
         }
     }
 }
@@ -267,39 +299,6 @@ void DataBlock::readAndUpdate()
 {
     readBlockFromModule();
     updateWidget();
-}
-
-QWidget *DataBlock::blockButtonsUI()
-{
-    if (!m_isBottomButtonsWidgetCreated)
-    {
-        m_bottomButtonsWidget = new QWidget;
-        QVBoxLayout *lyout = new QVBoxLayout;
-        QDialogButtonBox *group = new QDialogButtonBox;
-
-        const QList<QPair<QPair<QString, QString>, std::function<void()>>> funcs {
-            { { "Получить", ":/icons/tnread.svg" }, [this]() { readAndUpdate(); } },
-            { { "Записать", ":/icons/tnwrite.svg" }, [this]() { writeBlockToModule(); } },
-            { { "Задать по умолчанию", ":/icons/tnyes.svg" }, [this]() { setDefBlockAndUpdate(); } },
-            { { "Прочитать из файла и записать в устройство", ":/icons/tnload.svg" },
-                [this]() { readFromFileUserChoose(); } },
-            { { "Прочитать из устройства и сохранить в файл", ":/icons/tnsave.svg" },
-                [this]() { saveToFileUserChoose(); } }
-        };
-
-        for (auto &i : funcs)
-        {
-            const QString &toolTip = i.first.first;
-            group->addButton(WDFunc::NewHexagonPB(m_bottomButtonsWidget, "", i.second, i.first.second, toolTip),
-                QDialogButtonBox::ActionRole);
-        }
-        group->setCenterButtons(true);
-        lyout->addWidget(group);
-        m_bottomButtonsWidget->setLayout(lyout);
-
-        m_isBottomButtonsWidgetCreated = true;
-    }
-    return m_bottomButtonsWidget;
 }
 
 void DataBlock::setDefBlockAndUpdate()
