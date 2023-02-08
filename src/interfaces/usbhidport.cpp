@@ -1,8 +1,5 @@
 #include "usbhidport.h"
 
-#include "../gen/helper.h"
-#include "../gen/settings.h"
-#include "../gen/stdfunc.h"
 #include "baseinterface.h"
 #include "hidapi/hidapi.h"
 
@@ -14,6 +11,9 @@
 #include <QSettings>
 #include <QTimer>
 #include <array>
+#include <gen/helper.h>
+#include <gen/settings.h>
+#include <gen/stdfunc.h>
 
 #ifdef Q_OS_WINDOWS
 // clang-format off

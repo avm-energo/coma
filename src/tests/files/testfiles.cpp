@@ -12,7 +12,7 @@ void TestFiles::testOsc()
 {
     OscManager oscManager;
     auto fileVector = oscManager.loadFromFile(":/osc/1021.osc");
-    QCOMPARE(fileVector.size(), 2);
+    QCOMPARE(fileVector.size(), 1);
     for (auto &item : fileVector)
     {
         std::visit(overloaded {

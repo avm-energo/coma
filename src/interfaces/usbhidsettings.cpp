@@ -4,7 +4,6 @@
 #ifdef Q_OS_WINDOWS
 bool UsbHidSettings::hasMatch(const QString &str)
 {
-
     //(?<=[a-zA-Z]{3}.)[a-fA-F0-9]+
     if (!hasPartialMatch(str))
         return false;
@@ -22,7 +21,6 @@ bool UsbHidSettings::hasMatch(const QString &str)
 
 bool UsbHidSettings::hasPartialMatch(const QString &str)
 {
-
     if (str.isEmpty())
         return false;
     QRegularExpression regex("(?<=[#&]).+(?=[#&])");
@@ -60,3 +58,13 @@ bool UsbHidSettings::hasPartialMatch(const QString &str)
     return true;
 }
 #endif
+
+QDebug operator<<(QDebug debug, const UsbHidSettings &settings)
+{
+    debug.nospace() << QString::number(settings.vendor_id, 16) << ":" << QString::number(settings.product_id, 16) << ":"
+                    << settings.serial;
+#ifdef QT_DEBUG
+    debug.nospace() << ":" << settings.path;
+#endif
+    return debug.maybeSpace();
+}

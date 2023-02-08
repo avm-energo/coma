@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="utf-8"?>
+<module mtypem="22" mtypeb="00">
+    <name>AVTUK-0022</name>
+    <resources>
+        <alarms desc="Сигнализация">
+            <critical desc="Критичные">
+                <item>
+                    <addr>4601</addr>
+                    <string>Достигнута уставка setminmin по каналу 0 (мезонин)</string>
+                </item>
+                <item>
+                    <addr>4602</addr>
+                    <string>Достигнута уставка setminmin по каналу 1 (мезонин)</string>
+                </item>
+                <item>
+                    <addr>4603</addr>
+                    <string>Достигнута уставка setminmin по каналу 2 (мезонин)</string>
+                </item>
+                <item>
+                    <addr>4604</addr>
+                    <string>Достигнута уставка setminmin по каналу 3 (мезонин)</string>
+                </item>
+                <item>
+                    <addr>4605</addr>
+                    <string>Достигнута уставка setminmin по каналу 4 (мезонин)</string>
+                </item>
+                <item>
+                    <addr>4606</addr>
+                    <string>Достигнута уставка setminmin по каналу 5 (мезонин)</string>
+                </item>
+                <item>
+                    <addr>4607</addr>
+                    <string>Достигнута уставка setminmin по каналу 6 (мезонин)</string>
+                </item>
+                <item>
+                    <addr>4608</addr>
+                    <string>Достигнута уставка setminmin по каналу 7 (мезонин)</string>
+                </item>
+                <item>
+                    <addr>4625</addr>
+                    <string>Достигнута уставка setmaxmax по каналу 0 (мезонин)</string>
+                </item>
+                <item>
+                    <addr>4626</addr>
+                    <string>Достигнута уставка setmaxmax по каналу 1 (мезонин)</string>
+                </item>
+                <item>
+                    <addr>4627</addr>
+                    <string>Достигнута уставка setmaxmax по каналу 2 (мезонин)</string>
+                </item>
+                <item>
+                    <addr>4628</addr>
+                    <string>Достигнута уставка setmaxmax по каналу 3 (мезонин)</string>
+                </item>
+                <item>
+                    <addr>4629</addr>
+                    <string>Достигнута уставка setmaxmax по каналу 4 (мезонин)</string>
+                </item>
+                <item>
+                    <addr>4630</addr>
+                    <string>Достигнута уставка setmaxmax по каналу 5 (мезонин)</string>
+                </item>
+                <item>
+                    <addr>4631</addr>
+                    <string>Достигнута уставка setmaxmax по каналу 6 (мезонин)</string>
+                </item>
+                <item>
+                    <addr>4632</addr>
+                    <string>Достигнута уставка setmaxmax по каналу 7 (мезонин)</string>
+                </item>
+            </critical>
+            <info desc="Информационные"/>
+            <warning desc="Предупреждения">
+                <item>
+                    <addr>4609</addr>
+                    <string>Достигнута уставка setmin по каналу 0 (мезонин)</string>
+                </item>
+                <item>
+                    <addr>4610</addr>
+                    <string>Достигнута уставка setmin по каналу 1 (мезонин)</string>
+                </item>
+                <item>
+                    <addr>4611</addr>
+                    <string>Достигнута уставка setmin по каналу 2 (мезонин)</string>
+                </item>
+                <item>
+                    <addr>4612</addr>
+                    <string>Достигнута уставка setmin по каналу 3 (мезонин)</string>
+                </item>
+                <item>
+                    <addr>4613</addr>
+                    <string>Достигнута уставка setmin по каналу 4 (мезонин)</string>
+                </item>
+                <item>
+                    <addr>4614</addr>
+                    <string>Достигнута уставка setmin по каналу 5 (мезонин)</string>
+                </item>
+                <item>
+                    <addr>4615</addr>
+                    <string>Достигнута уставка setmin по каналу 6 (мезонин)</string>
+                </item>
+                <item>
+                    <addr>4616</addr>
+                    <string>Достигнута уставка setmin по каналу 7 (мезонин)</string>
+                </item>
+                <item>
+                    <addr>4617</addr>
+                    <string>Достигнута уставка setmax по каналу 0 (мезонин)</string>
+                </item>
+                <item>
+                    <addr>4618</addr>
+                    <string>Достигнута уставка setmax по каналу 1 (мезонин)</string>
+                </item>
+                <item>
+                    <addr>4619</addr>
+                    <string>Достигнута уставка setmax по каналу 2 (мезонин)</string>
+                </item>
+                <item>
+                    <addr>4620</addr>
+                    <string>Достигнута уставка setmax по каналу 3 (мезонин)</string>
+                </item>
+                <item>
+                    <addr>4621</addr>
+                    <string>Достигнута уставка setmax по каналу 4 (мезонин)</string>
+                </item>
+                <item>
+                    <addr>4622</addr>
+                    <string>Достигнута уставка setmax по каналу 5 (мезонин)</string>
+                </item>
+                <item>
+                    <addr>4623</addr>
+                    <string>Достигнута уставка setmax по каналу 6 (мезонин)</string>
+                </item>
+                <item>
+                    <addr>4624</addr>
+                    <string>Достигнута уставка setmax по каналу 7 (мезонин)</string>
+                </item>
+            </warning>
+        </alarms>
+        <config desc="Конфигурация">
+            <record>
+                <id>321</id>
+                <defaultValue>1.385,1.385,1.385,1.385,1.385,1.385,1.385,1.385</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>322</id>
+                <defaultValue>-50,-50,-50,-50,-50,-50,-50,-50</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>323</id>
+                <defaultValue>150,150,150,150,150,150,150,150</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>324</id>
+                <defaultValue>-40,-40,-40,-40,-40,-40,-40,-40</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>325</id>
+                <defaultValue>-25,-25,-25,-25,-25,-25,-25,-25</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>326</id>
+                <defaultValue>90,90,90,90,90,90,90,90</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>327</id>
+                <defaultValue>100,100,100,100,100,100,100,100</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>328</id>
+                <defaultValue>5</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>329</id>
+                <defaultValue>16</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>330</id>
+                <defaultValue>2</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>331</id>
+                <defaultValue>100,100,100,100,100,100,100,100</defaultValue>
+                <visibility>true</visibility>
+            </record>
+        </config>
+        <iec60870 desc="Протокол ГОСТ Р МЭК 60870-5-104">
+            <group>
+                <signal-id>101</signal-id>
+                <sig-type>13</sig-type>
+                <trans-type>1</trans-type>
+                <sig-group></sig-group>
+            </group>
+            <group>
+                <signal-id>102</signal-id>
+                <sig-type>30</sig-type>
+                <trans-type>3</trans-type>
+                <sig-group></sig-group>
+            </group>
+        </iec60870>
+        <journals desc="Журналы">
+            <work desc="Рабочий журнал"/>
+            <meas desc="Журнал измерений"/>
+        </journals>
+        <modbus desc="Протокол Modbus"/>
+        <protocom desc="Протокол Protocom">
+            <group>
+                <block>102</block>
+                <signal-id>101</signal-id>
+            </group>
+            <group>
+                <block>200</block>
+                <signal-id>102</signal-id>
+            </group>
+        </protocom>
+        <section-tabs desc="Вкладки">
+            <tab>
+                <id>10</id>
+                <name>Основные</name>
+            </tab>
+        </section-tabs>
+        <sections desc="Разделы">
+            <section header="Текущие данные мезонин">
+                <sgroup tab="10" header="Текущее значение по каналу, °C">
+                    <mwidget view="float" desc="Канал №%1">
+                        <start-addr>4501</start-addr>
+                        <count>8</count>
+                        <toolTip>Текущее значение температуры по каналу %1</toolTip>
+                    </mwidget>
+                </sgroup>
+                <sgroup tab="10" header="Текущее значение по каналу, Ом">
+                    <mwidget view="float" desc="Канал №%1">
+                        <start-addr>4509</start-addr>
+                        <count>8</count>
+                        <toolTip>Текущее значение сопротивления по каналу %1</toolTip>
+                    </mwidget>
+                </sgroup>
+            </section>
+        </sections>
+        <signals desc="Сигналы">
+            <signal>
+                <start-addr>4501</start-addr>
+                <count>16</count>
+                <id>101</id>
+                <type>Float</type>
+            </signal>
+            <signal>
+                <start-addr>4601</start-addr>
+                <count>32</count>
+                <id>102</id>
+                <type>BitString</type>
+            </signal>
+        </signals>
+    </resources>
+</module>

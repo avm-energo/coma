@@ -1,11 +1,12 @@
 #include "tunekivdialog.h"
 
-#include "../../gen/colors.h"
-#include "../../gen/error.h"
-#include "../../gen/files.h"
-#include "../../gen/stdfunc.h"
 #include "../../widgets/wd_func.h"
 #include "../tunesteps.h"
+
+#include <gen/colors.h>
+#include <gen/error.h>
+#include <gen/files.h>
+#include <gen/stdfunc.h>
 
 TuneKIVDialog::TuneKIVDialog(ConfigV *config, QWidget *parent) : GeneralTuneDialog(config, parent)
 {
@@ -21,8 +22,8 @@ TuneKIVDialog::TuneKIVDialog(ConfigV *config, QWidget *parent) : GeneralTuneDial
         { "Регулировка канала Pt100", TKIVRDialog }, { "Регулировка каналов напряжения", TKIVADCUDialog },
         { "Регулировка каналов тока", TKIVADCIDialog }, { "Настройка температурной коррекции +60 °С", TKIV60Dialog },
         { "Настройка температурной коррекции -20 °С", TKIV20Dialog } };
-    m_calibrSteps = m_dialogList.size() + 1;
-    Bac *bac = new Bac(this);
+    //    m_calibrSteps = m_dialogList.size() + 1;
+    BacA284 *bac = new BacA284(this);
     m_BacWidget = bac->widget();
     SetupUI();
 }

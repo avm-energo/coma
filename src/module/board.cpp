@@ -1,11 +1,11 @@
 #include "board.h"
 
-#include "../gen/error.h"
-#include "../gen/registers.h"
-#include "../gen/stdfunc.h"
 #include "modules.h"
 
 #include <QDebug>
+#include <gen/error.h>
+#include <gen/registers.h>
+#include <gen/stdfunc.h>
 
 bool isKnownModule(quint16 mtypeb, quint16 mtypem)
 {
@@ -106,7 +106,7 @@ Board::ConnectionState Board::connectionState() const
 
 void Board::setConnectionState(ConnectionState connectionState)
 {
-    //    Q_ASSERT(connectionState != m_connectionState);
+    // Q_ASSERT(connectionState != m_connectionState);
     if (m_connectionState == connectionState && m_connectionState == ConnectionState::Connected)
         qDebug() << "Try to connect while still connected";
     //        Q_ASSERT("Try to connect while still connected");
@@ -196,39 +196,9 @@ void Board::updateExt(const DataTypes::BitStringStruct &bs)
     }
 }
 
-bool Board::isUSIO(Modules::BaseBoard typeB, Modules::MezzanineBoard typeM)
+bool Board::isUSIO(Modules::BaseBoard &typeB, Modules::MezzanineBoard &typeM)
 {
-    using Modules::BaseBoard;
-    using Modules::MezzanineBoard;
-    bool status = false;
-    switch (typeB)
-    {
-    case Modules::MTB_21:
-    case Modules::MTB_22:
-    case Modules::MTB_31:
-    case Modules::MTB_33:
-    case Modules::MTB_34:
-    case Modules::MTB_35:
-        status = true;
-        break;
-    default:
-        status = false;
-    }
-    switch (typeM)
-    {
-    case Modules::MTM_00:
-    case Modules::MTM_21:
-    case Modules::MTM_22:
-    case Modules::MTM_31:
-    case Modules::MTM_33:
-    case Modules::MTM_34:
-    case Modules::MTM_35:
-        status &= true;
-        break;
-    default:
-        status = false;
-    }
-    return status;
+    return ((typeB > 0x1F) && (typeB < 0x40) && (typeM > 0x1F) && (typeM < 0x40));
 }
 
 Board::Types Board::boardType() const

@@ -1,6 +1,5 @@
 #include "settingsdialog.h"
 
-#include "../gen/settings.h"
 #include "../widgets/styleloader.h"
 #include "../widgets/wd_func.h"
 
@@ -11,6 +10,7 @@
 #include <QTimeZone>
 #include <QVBoxLayout>
 #include <QtDebug>
+#include <gen/settings.h>
 
 SettingsDialog::SettingsDialog(QWidget *parent) : QDialog(parent)
 {
@@ -24,7 +24,7 @@ void SettingsDialog::SetupUI()
 {
     using namespace Style;
     using namespace settings;
-    QVBoxLayout *vlyout = new QVBoxLayout;
+    auto vlyout = new QVBoxLayout;
     vlyout->addWidget(WDFunc::NewChB2(this, regMap[logKey].name, "Запись обмена данными в файл"));
     auto pb = new QPushButton("Выключить обновление сигнализации");
     connect(pb, &QCheckBox::clicked, this, &SettingsDialog::disableAlarmUpdate);
@@ -40,33 +40,34 @@ void SettingsDialog::SetupUI()
     {
         values.push_back(themeEnum().key(i));
     }
-    auto *themeCB = WDFunc::NewCB2(this, values);
+    auto themeCB = WDFunc::NewCB2(this, values);
     int position = StyleLoader::GetInstance().styleNumber();
     themeCB->setCurrentIndex(position);
 
-    QHBoxLayout *hlyout = new QHBoxLayout;
+    auto hlyout = new QHBoxLayout;
     hlyout->addWidget(new QLabel("Тема", this));
     hlyout->addWidget(themeCB);
     vlyout->addLayout(hlyout);
     connect(themeCB, &QComboBox::currentTextChanged, [=](const QString &text) {
         auto answer = QMessageBox::question(
             this, "Предупреждение", "Тема будет изменена\n Приложение может не отвечать некоторое время");
-        if (answer == QMessageBox::No)
-            return;
-        Name key = Name(themeEnum().keyToValue(text.toStdString().c_str()));
-        auto &styleLoader = StyleLoader::GetInstance();
-        styleLoader.setStyleFile(themes.value(key));
-        styleLoader.setAppStyleSheet();
-        styleLoader.save();
+        if (answer == QMessageBox::Yes)
+        {
+            auto key = Name(themeEnum().keyToValue(text.toStdString().c_str()));
+            auto &styleLoader = StyleLoader::GetInstance();
+            styleLoader.setStyleFile(themes.value(key));
+            styleLoader.setAppStyleSheet();
+            styleLoader.save();
+        }
     });
-    QList<QByteArray> zoneList = QTimeZone::availableTimeZoneIds();
 
+    auto zoneList = QTimeZone::availableTimeZoneIds();
     QStringList zonestrList;
     std::copy_if(zoneList.cbegin(), zoneList.cend(), std::back_inserter(zonestrList),
         [](const auto array) { return (array.contains("UTC+")); });
 
-    auto *timezoneCB = WDFunc::NewCB2(this, regMap[timezoneKey].name, zonestrList);
-    QString timezone = QTimeZone::systemTimeZone().displayName(QTimeZone::StandardTime, QTimeZone::OffsetName);
+    auto timezoneCB = WDFunc::NewCB2(this, regMap[timezoneKey].name, zonestrList);
+    auto timezone = QTimeZone::systemTimeZone().displayName(QTimeZone::StandardTime, QTimeZone::OffsetName);
     timezoneCB->setCurrentText(timezone);
     hlyout = new QHBoxLayout;
     hlyout->addWidget(new QLabel("Часовой пояс", this));

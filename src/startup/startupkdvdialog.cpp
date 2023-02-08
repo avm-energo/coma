@@ -1,10 +1,5 @@
 #include "startupkdvdialog.h"
 
-#include "../gen/colors.h"
-#include "../gen/error.h"
-#include "../gen/files.h"
-#include "../gen/stdfunc.h"
-#include "../gen/timefunc.h"
 #include "../module/board.h"
 #include "../widgets/etableview.h"
 #include "../widgets/wd_func.h"
@@ -25,6 +20,12 @@
 #include <QTabBar>
 #include <QTabWidget>
 #include <QVBoxLayout>
+#include <gen/colors.h>
+#include <gen/error.h>
+#include <gen/files.h>
+#include <gen/stdfunc.h>
+#include <gen/timefunc.h>
+
 StartupKDVDialog::StartupKDVDialog(QWidget *parent) : AbstractStartupDialog(parent)
 {
     // int i;

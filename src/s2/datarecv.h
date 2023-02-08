@@ -1,19 +1,15 @@
 #ifndef DATARECV_H
 #define DATARECV_H
 
-#include "../ctti/type_id.hpp"
-#include "../gen/std_ext.h"
 #include "datarec.h"
-#include "s2helper.h"
+#include "valuemap.h"
 
 #include <QVariant>
-#include <cassert>
-#include <map>
 
-template <typename T, size_t N1, size_t N2>
+template <typename T, std::size_t N1, std::size_t N2>
 auto inline operator<<(std::array<std::array<T, N2>, N1> &array, const QStringList &list) -> decltype(array)
 {
-    Q_ASSERT(size_t(list.size()) <= (N1 * N2));
+    Q_ASSERT(std::size_t(list.size()) <= (N1 * N2));
     T *ptr = reinterpret_cast<T *>(array.data());
     for (auto i = 0; i != (N1 * N2); ++i)
     {
@@ -24,87 +20,46 @@ auto inline operator<<(std::array<std::array<T, N2>, N1> &array, const QStringLi
 
 template <typename T, size_t N> std::array<T, N> inline operator<<(std::array<T, N> &array, const QStringList &list)
 {
-    Q_ASSERT(size_t(list.size()) <= array.size());
+    Q_ASSERT(std::size_t(list.size()) <= array.size());
     std::transform(
         list.cbegin(), list.cend(), array.begin(), [](const QString &str) { return QVariant(str).value<T>(); });
     return array;
 }
 
-template <typename T, size_t N> std::array<T, N> inline operator<<(std::array<T, N> &array, const QString str)
+template <typename T, std::size_t N> std::array<T, N> inline operator<<(std::array<T, N> &array, const QString str)
 {
     const auto list = str.split(',');
     return (array << list);
 }
 
-class QString;
-class S2;
-class Module;
-
 namespace DataTypes
 {
 
-class valueMap
-{
-public:
-    using value_type = std::map<int, ctti::unnamed_type_id_t>;
-    template <typename T> struct true_type
-    {
-        static constexpr bool value = std_ext::is_variant_alternative<T, valueType>();
-    };
-
-    template <typename T, std::enable_if_t<true_type<T>::value, bool> = true> void insert(int key)
-    {
-        m_map.insert({ key, ctti::unnamed_type_id<T>() });
-    }
-
-    void insert(int key, ctti::unnamed_type_id_t value)
-    {
-        m_map.insert({ key, value });
-    }
-
-    const auto &map() const
-    {
-        return m_map;
-    }
-
-private:
-    value_type m_map;
-};
-
 class DataRecV
 {
-    friend class ::S2;
-    friend class ::Module;
-
 public:
-    friend bool operator==(const DataRecV &lhs, const DataRecV &rhs);
-    friend bool operator!=(const DataRecV &lhs, const DataRecV &rhs);
-    DataRecV(const S2DataTypes::DataRec &record) : DataRecV(record, static_cast<const char *>(record.thedata))
-    {
-    }
-    DataRecV(const valueMap &_map, const S2DataTypes::DataRec &record, const char *rawdata);
+    DataRecV() = default;
+    DataRecV(const S2DataTypes::DataRec &record);
+    DataRecV(const S2DataTypes::DataRec &record, const char *rawdata);
+    DataRecV(quint16 _id, const QString &str);
+    DataRecV(quint16 _id);
 
-    DataRecV(const S2DataTypes::DataRec &record, const char *rawdata) : DataRecV(map, record, rawdata)
-    {
-    }
-    DataRecV(const valueMap &_map, const unsigned _id, const QString &str);
-    DataRecV(const unsigned _id, const QString &str) : DataRecV(map, _id, str)
-    {
-    }
-    DataRecV(const unsigned _id);
-    template <typename T, std::enable_if_t<valueMap::true_type<T>::value, bool> = true>
+    template <typename T, std::enable_if_t<ValueMap::true_type<T>::value, bool> = true>
     DataRecV(quint16 _id, T _data) : id(_id), data(_data)
     {
     }
 
-    DataRecV() = default;
+    friend bool operator==(const DataRecV &lhs, const DataRecV &rhs);
+    friend bool operator!=(const DataRecV &lhs, const DataRecV &rhs);
+
     void printer() const;
     S2DataTypes::DataRec serialize() const;
     quint16 getId() const;
     valueType getData() const;
     void setData(const valueType &value);
+    size_t typeIndex() const;
 
-    template <typename T, std::enable_if_t<valueMap::true_type<T>::value, bool> = true> T value() const
+    template <typename T, std::enable_if_t<ValueMap::true_type<T>::value, bool> = true> T value() const
     {
         assert(std::holds_alternative<T>(data) && "Requested wrong type");
         if (std::holds_alternative<T>(data))
@@ -125,15 +80,9 @@ public:
             data = value;
     }
 
-    size_t typeIndex() const
-    {
-        return data.index();
-    }
-
 private:
     quint16 id;
     valueType data;
-    static valueMap map;
 
     template <typename T> void helper(unsigned int numByte, const char *rawdata, valueType &data)
     {

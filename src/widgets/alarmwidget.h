@@ -1,36 +1,25 @@
-#ifndef ALARMWIDGET_H
-#define ALARMWIDGET_H
+#pragma once
+
+#include "../module/alarmstateall.h"
+#include "../module/modulealarm.h"
 
 #include <QWidget>
 
-class BaseAlarm;
-
+/// \brief Alarm widget with buttons for alarms dialogs.
+/// \see AlarmStateAll, ModuleAlarm.
 class AlarmWidget : public QWidget
 {
     Q_OBJECT
-public:
-    explicit AlarmWidget(QWidget *parent = nullptr);
-    void clear();
-
-    void addAlarm(BaseAlarm *alarm);
-    void addAlarm(BaseAlarm *alarm, const QString caption);
-    int count() const;
-    void disableAlarm();
-
-public slots:
-
-    void UpdateIndicator(bool);
-
 private:
     QList<BaseAlarm *> m_alarms;
-
     QTimer *m_timer;
-    const QStringList buttonDescription {
-        "Состояние устройства",           //
-        "Предупредительная сигнализация", //
-        "Аварийная сигнализация"          //
-    };
     int m_counter = 0;
-};
 
-#endif // ALARMWIDGET_H
+    void addAlarm(BaseAlarm *alarm, const QString caption);
+
+public:
+    explicit AlarmWidget(QWidget *parent = nullptr);
+    void configure();
+    void disableAlarms();
+    void clear();
+};

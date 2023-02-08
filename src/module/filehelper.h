@@ -1,7 +1,7 @@
-#ifndef FILEHELPER_H
-#define FILEHELPER_H
+#pragma once
 
 #include <QString>
+#include <QtXml>
 
 namespace FileHelper
 {
@@ -12,6 +12,10 @@ namespace FileHelper
 /// for using result string in Files::ChooseFileForSave
 QString ChooseFileForSave(const QString &ext);
 
-}
+/// \brief Checking whether a file with the specified name exists in the user's local folder.
+bool isFileExist(const QString &filename);
 
-#endif // FILEHELPER_H
+/// \brief Returns QDomDocument for a file with the specified filename from user's local folder.
+QDomDocument getFileContent(const QString &filename);
+
+}

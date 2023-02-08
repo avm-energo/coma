@@ -4,30 +4,19 @@ project(oscillograms LANGUAGES CXX)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-find_package(
-  QT NAMES Qt6 Qt5
-  COMPONENTS Core Widgets Concurrent
-  REQUIRED)
-find_package(
-  Qt${QT_VERSION_MAJOR}
-  COMPONENTS Core Widgets Concurrent
+find_package(Qt${QT_VERSION_MAJOR}
+  COMPONENTS Core Widgets
   REQUIRED)
 
-file(GLOB_RECURSE files_cpp *.cpp)
-file(GLOB_RECURSE files_h *.h)
+file(GLOB_RECURSE files_cpp ${PROJECT_SOURCE_DIR}/*.cpp)
+file(GLOB_RECURSE files_h ${PROJECT_SOURCE_DIR}/*.h)
 
 add_library(
   ${PROJECT_NAME} STATIC
-  ${files_cpp}
-  ${files_h}
-)
+  ${files_cpp} ${files_h})
 
-target_link_libraries(
-  ${PROJECT_NAME}
-  PUBLIC qcustomplot
-  PRIVATE Qt${QT_VERSION_MAJOR}::Core
-  PRIVATE Qt${QT_VERSION_MAJOR}::Widgets
-  PRIVATE Qt${QT_VERSION_MAJOR}::Concurrent
-  PUBLIC QXlsx)
-
-target_compile_definitions(${PROJECT_NAME} PRIVATE ${PROJECT_NAME}_LIBRARY)
+target_link_libraries(${PROJECT_NAME} PRIVATE
+  gen QXlsx
+  Qt${QT_VERSION_MAJOR}::Core
+  Qt${QT_VERSION_MAJOR}::Widgets
+  PUBLIC qcustomplot)

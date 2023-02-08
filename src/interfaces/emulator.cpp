@@ -1,7 +1,9 @@
 #include "emulator.h"
 
-#include "../gen/datamanager.h"
 #include "protocomprivate.h"
+
+#include <gen/datamanager/datamanager.h>
+
 Emulator::Emulator(QObject *parent) : BaseInterface(parent)
 {
 }
@@ -17,7 +19,7 @@ bool Emulator::start(const ConnectStruct &st)
     return true;
 }
 
-void Emulator::reqStartup(quint32 sigAdr, quint32 sigCount)
+void Emulator::reqStartup(quint32, quint32)
 {
 }
 
@@ -34,7 +36,7 @@ void Emulator::reqBSI()
         DataTypes::BitStringStruct bitString;
         bitString.sigAdr = counter++;
         bitString.sigVal = i;
-        DataManager::GetInstance().addSignalToOutList(DataTypes::BitString, bitString);
+        DataManager::GetInstance().addSignalToOutList(bitString);
     }
 }
 
@@ -42,7 +44,7 @@ void Emulator::reqBSIExt()
 {
 }
 
-void Emulator::reqFile(quint32, FileFormat format)
+void Emulator::reqFile(quint32, FileFormat)
 {
 }
 
@@ -62,15 +64,15 @@ void Emulator::writeCommand(Queries::Commands, QVariant)
 {
 }
 
-void Emulator::reqFloats(quint32 sigAdr, quint32 sigCount)
+void Emulator::reqFloats(quint32, quint32)
 {
 }
 
-void Emulator::reqBitStrings(quint32 sigAdr, quint32 sigCount)
+void Emulator::reqBitStrings(quint32, quint32)
 {
 }
 
-InterfaceSettings Emulator::parseSettings(QDomElement domElement) const
-{
-    return BaseInterface::parseSettings<Proto::ProtocomGroup>(domElement);
-}
+// InterfaceSettings Emulator::parseSettings(QDomElement domElement) const
+//{
+//    return BaseInterface::parseSettings<Proto::ProtocomGroup>(domElement);
+//}

@@ -4,6 +4,7 @@
 
 #include <QCoreApplication>
 #include <QDebug>
+#include <QThread>
 #include <QTimer>
 
 #define TIMEOUT 3000
@@ -38,7 +39,7 @@ bool SerialPort::init(SerialPortSettings settings)
     m_connectionTimer->setInterval(TIMEOUT);
     connect(port, &QIODevice::bytesWritten, this, [&] { m_connectionTimer->start(); });
     connect(port, &QIODevice::readyRead, m_connectionTimer, &QTimer::stop);
-    connect(m_connectionTimer, &QTimer::timeout, [=] {
+    connect(m_connectionTimer, &QTimer::timeout, [this] {
         qInfo() << this->metaObject()->className() << Error::Timeout;
         reconnect();
     });
@@ -95,7 +96,10 @@ void SerialPort::readBytes()
 {
     QByteArray ba;
     while (port->bytesAvailable())
+    {
         ba += port->readAll();
+        QThread::msleep(2);
+    }
     if (ba.size())
         emit read(ba);
 }

@@ -1,302 +1,216 @@
 #include "xmleditor.h"
 
-#include "../../gen/error.h"
-#include "../../gen/stdfunc.h"
-#include "../xmlconfigparser.h"
+#include "../../widgets/epopup.h"
+#include "dialogs/dialogfabric.h"
+#include "models/modelfabric.h"
 
-#include <QPushButton>
-#include <QStringList>
+#include <QFont>
+#include <QHeaderView>
+#include <QLabel>
 #include <QToolBar>
 
-XmlEditor::XmlEditor(QWidget *parent) : QDialog(parent, Qt::Window), slaveModel(nullptr), masterModel(nullptr)
+constexpr auto iconSize = 40;
+constexpr auto contentMargin = 5;
+
+XmlEditor::XmlEditor(QWidget *parent) : QDialog(parent, Qt::Window), dc(nullptr), masterModel(nullptr), manager(nullptr)
 {
     if (parent != nullptr)
     {
-        SetupUI(parent->size());
-        ReadModulesToMasterModel();
-        XmlConfigParser::ParseS2ConfigToMap();
-        this->exec();
+        dc = new DataController(this);
+        QObject::connect(dc, &DataController::highlightModified, //
+            [this]() {
+                auto row = masterView->selectionModel()->selectedRows().at(0).row();
+                dc->setRow(row);
+                setFontBolding(row, true);
+            });
+        manager = new ModelManager(this);
+        QObject::connect(manager, &ModelManager::SaveModule, this, &XmlEditor::saveModule);
+        setupUI(parent->size());
+        exec();
     }
 }
 
-void XmlEditor::SetupUI(QSize pSize)
+/// \brief Настройка интерфейса диалогового окна редактора.
+void XmlEditor::setupUI(QSize pSize)
 {
+    // Размер окна
     this->setGeometry(0, 0, pSize.width(), pSize.height());
     this->setWindowTitle("Modules Editor");
-    auto mainLayout = new QHBoxLayout(this);
 
     // Добавление рабочих пространств на основной слой
-    mainLayout->addLayout(GetWorkspace(WorkspaceType::Master));
-    mainLayout->addLayout(GetWorkspace(WorkspaceType::Slave));
-    this->setLayout(mainLayout);
+    auto mainLayout = new QHBoxLayout(this);
+    mainLayout->addLayout(getMasterWorkspace());
+    mainLayout->addLayout(getSlaveWorkspace());
+    setLayout(mainLayout);
 }
 
-void XmlEditor::Close()
+/// \brief Действия, выполняемые при закрытии окна редактора.
+void XmlEditor::reject()
 {
-    this->hide();
+    saveModule();
+    hide();
 }
 
-QVBoxLayout *XmlEditor::GetWorkspace(WorkspaceType type)
+/// \brief Возвращает рабочее пространство master (левая часть окна).
+QVBoxLayout *XmlEditor::getMasterWorkspace()
 {
-    // Создание рабочего пространства
-    auto workspace = new QVBoxLayout();
+    auto workspace = new QVBoxLayout;
     workspace->setContentsMargins(5, 5, 5, 5);
 
     // Настройка тулбара
+    masterView = new QTableView(this);
     auto toolbar = new QToolBar(this);
     toolbar->setContextMenuPolicy(Qt::PreventContextMenu);
-    toolbar->setIconSize(QSize(30, 30));
-    if (type == Master)
-    {
-        toolbar->addAction(QIcon(":/icons/tnstart.svg"), "Создать модуль", this, &XmlEditor::Close);
-        toolbar->addSeparator();
-        toolbar->addAction(QIcon(":/icons/tnstop.svg"), "Удалить модуль", this, &XmlEditor::Close);
-    }
-    else
-    {
-        toolbar->addAction(QIcon(":/icons/tnstart.svg"), "Создать свойство", this, &XmlEditor::Close);
-        toolbar->addSeparator();
-        toolbar->addAction(QIcon(":/icons/tnstop.svg"), "Удалить свойство", this, &XmlEditor::Close);
-    }
+    toolbar->setIconSize(QSize(iconSize, iconSize));
+    toolbar->addAction(QIcon(":/icons/createModule.svg"), "Создать модуль", this,     //
+        [this]() { actionDialog(DialogType::Create, masterView); });                  //
+    toolbar->addSeparator();                                                          //
+    toolbar->addAction(QIcon(":/icons/editModule.svg"), "Редактировать модуль", this, //
+        [this]() { actionDialog(DialogType::Edit, masterView); });                    //
+    toolbar->addSeparator();                                                          //
+    toolbar->addAction(QIcon(":/icons/deleteModule.svg"), "Удалить модуль", this,     //
+        [this]() { actionDialog(DialogType::Remove, masterView); });                  //
+    toolbar->addSeparator();                                                          //
+    toolbar->addAction(QIcon(":/icons/tnsave.svg"), "Сохранить модуль", this, &XmlEditor::saveModule);
     workspace->addWidget(toolbar);
 
-    if (type == Master)
-    {
-        // Создание и настройка QTableView
-        masterView = new QTableView(this);
-        masterView->setSortingEnabled(true);
-        QObject::connect(masterView, &QTableView::clicked, this, &XmlEditor::MasterItemSelected);
-        masterView->setSelectionBehavior(QAbstractItemView::SelectionBehavior::SelectRows);
-        masterView->setSelectionMode(QAbstractItemView::SelectionMode::SingleSelection);
-        workspace->addWidget(masterView);
-    }
-    else
-    {
-        // Создание и настройка QTreeView для slave
-        mainSlaveView = new QTreeView(this);
-        mainSlaveView->setSortingEnabled(true);
-        mainSlaveView->setHeaderHidden(false);
+    // Настройка QTableView для master
+    masterView->setSortingEnabled(true);
+    masterView->setSelectionBehavior(QAbstractItemView::SelectionBehavior::SelectRows);
+    masterView->setSelectionMode(QAbstractItemView::SelectionMode::SingleSelection);
+    masterView->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    auto header = masterView->horizontalHeader();
+    header->setSectionResizeMode(QHeaderView::Stretch);
+    workspace->addWidget(masterView);
 
-        // Создание и настройка QTableView для slave
-        specSlaveView = new QTableView(this);
-        specSlaveView->setSortingEnabled(true);
-
-        // Создание и настройка QStackedWidget
-        stackWidget = new QStackedWidget(this);
-        stackWidget->addWidget(mainSlaveView);
-        stackWidget->addWidget(specSlaveView);
-        stackWidget->setCurrentWidget(mainSlaveView);
-        workspace->addWidget(stackWidget);
-    }
-
+    // Создание и настройка мастер модели
+    masterModel = ModelFabric::CreateMasterModel(this);
+    QObject::connect(masterView, &QTableView::doubleClicked, masterModel, &MasterModel::masterItemSelected);
+    QObject::connect(masterModel, &MasterModel::itemSelected, manager, &ModelManager::SetDocument);
+    // Подключение контроллера данных
+    QObject::connect(masterModel, &MasterModel::createFile, dc, &DataController::createFile);
+    QObject::connect(masterModel, &MasterModel::removeFile, dc, &DataController::removeFile);
+    QObject::connect(masterModel, &MasterModel::modelChanged, dc, &DataController::configChanged);
+    masterView->setModel(masterModel);
     return workspace;
 }
 
-void XmlEditor::ReadModulesToMasterModel()
+/// \brief Возвращает рабочее пространство slave (правая часть окна).
+QVBoxLayout *XmlEditor::getSlaveWorkspace()
 {
-    // Создание и настройка модели для master
-    auto dir = QDir(StdFunc::GetSystemHomeDir());
-    auto modules = dir.entryList(QDir::Files).filter(".xml");
-    if (masterModel == nullptr)
-        masterModel = CreateMasterModel(modules.count());
-    masterView->setModel(masterModel);
+    auto workspace = new QVBoxLayout;
+    workspace->setContentsMargins(contentMargin, contentMargin, contentMargin, contentMargin);
 
-    // Каждый xml-файл считывается в модель
-    for (int i = 0; i < modules.count(); i++)
+    // Настройка тулбара
+    tableSlaveView = new QTableView(this);
+    auto toolbar = new QToolBar(this);
+    toolbar->setContextMenuPolicy(Qt::PreventContextMenu);
+    toolbar->setIconSize(QSize(iconSize, iconSize));
+    toolbar->addAction(QIcon(":/icons/createModule.svg"), "Создать", this,     //
+        [this]() { actionDialog(DialogType::Create, tableSlaveView); });       //
+    toolbar->addSeparator();                                                   //
+    toolbar->addAction(QIcon(":/icons/editModule.svg"), "Редактировать", this, //
+        [this]() { actionDialog(DialogType::Edit, tableSlaveView); });         //
+    toolbar->addSeparator();                                                   //
+    toolbar->addAction(QIcon(":/icons/deleteModule.svg"), "Удалить", this,     //
+        [this]() { actionDialog(DialogType::Remove, tableSlaveView); });       //
+    workspace->addWidget(toolbar);                                             //
+
+    // Label для отображения текущего положения в дереве моделей
+    auto curPath = new QLabel("", this);
+    QObject::connect(manager, &ModelManager::PathChanged, curPath, &QLabel::setText);
+    workspace->addWidget(curPath);
+
+    // Настройка QTableView для slave
+    tableSlaveView->setSortingEnabled(true);
+    tableSlaveView->setSelectionBehavior(QAbstractItemView::SelectionBehavior::SelectRows);
+    tableSlaveView->setSelectionMode(QAbstractItemView::SelectionMode::SingleSelection);
+    tableSlaveView->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    auto header = tableSlaveView->horizontalHeader();
+    header->setSectionResizeMode(QHeaderView::ResizeToContents);
+
+    QObject::connect(tableSlaveView, &QTableView::doubleClicked, manager, &ModelManager::ViewModelItemClicked);
+    QObject::connect(manager, &ModelManager::ModelChanged, this, //
+        [this](XmlModel *model) {
+            tableSlaveView->setModel(model);
+            tableSlaveView->sortByColumn(0, Qt::SortOrder::AscendingOrder);
+            QObject::connect(model, &XmlModel::modelChanged, dc, &DataController::configChanged);
+        });
+    QObject::connect(manager, &ModelManager::EditQuery, this,          //
+        [this]() { actionDialog(DialogType::Edit, tableSlaveView); }); //
+    workspace->addWidget(tableSlaveView);
+    return workspace;
+}
+
+/// \brief Слот для создания диалогового окна создания, редактирования или удаления выбранного элемента.
+void XmlEditor::actionDialog(DialogType dlgType, QTableView *srcView)
+{
+    auto model = qobject_cast<BaseEditorModel *>(srcView->model());
+    switch (dlgType)
     {
-        auto domDoc = new QDomDocument;
-        auto moduleFile = new QFile(dir.filePath(modules[i]));
-        if (moduleFile->open(QIODevice::ReadOnly))
+    // Диалог создания элемента
+    case DialogType::Create:
+        if (model != nullptr)
+            XmlDialogFabric::CreateDialog(model, this);
+        break;
+    // Диалоги редактирования или удаления элементов
+    case DialogType::Edit:
+    case DialogType::Remove:
+        auto selectModel = srcView->selectionModel();
+        if (selectModel != nullptr)
         {
-            QString errMsg = "";
-            int line = 0, column = 0;
-            if (domDoc->setContent(moduleFile, &errMsg, &line, &column))
-            {
-                auto domElement = domDoc->documentElement();
-                ParseXmlToMasterModel(domElement, modules[i], i);
-            }
-            // Если QtXml парсер не смог корректно считать xml файл
+            auto selected = selectModel->selectedRows();
+            // Диалог редактирования элемента
+            if (dlgType == DialogType::Edit)
+                XmlDialogFabric::EditDialog(model, selected, this);
+            // Диалог удаления элемента
             else
-                qWarning() << errMsg << " Line: " << line << " Column: " << column;
-            moduleFile->close();
+                XmlDialogFabric::RemoveDialog(model, selected, this);
         }
-        delete domDoc;
-        delete moduleFile;
+        break;
     }
 }
 
-QStandardItemModel *XmlEditor::CreateMasterModel(const int rows)
+/// \brief Слот для смены bolding текста элемента, который был изменён (для master workspace).
+void XmlEditor::setFontBolding(int row, bool state)
 {
-    const int cols = 5;
-    auto model = new QStandardItemModel(rows, cols);
-    model->setHeaderData(0, Qt::Horizontal, "Файл");
-    model->setHeaderData(1, Qt::Horizontal, "Устройство");
-    model->setHeaderData(2, Qt::Horizontal, "Type B");
-    model->setHeaderData(3, Qt::Horizontal, "Type M");
-    model->setHeaderData(4, Qt::Horizontal, "Версия");
-    return model;
-}
-
-QStandardItemModel *XmlEditor::CreateSlaveModel()
-{
-    auto model = new QStandardItemModel(this);
-    model->setColumnCount(1);
-    model->setHeaderData(0, Qt::Horizontal, "Свойства");
-    return model;
-}
-
-void XmlEditor::ParseXmlToMasterModel(const QDomNode &node, const QString &filename, int &index)
-{
-    // Устанавливаем имя файла
-    auto indexFilename = masterModel->index(index, 0);
-    masterModel->setData(indexFilename, filename);
-
-    auto domElModule = node.firstChildElement("module");
-    if (!domElModule.isNull())
+    auto cols = masterModel->columnCount();
+    for (auto column = 0; column < cols; column++)
     {
-        // Получаем аттрибуты TypeB и TypeM
-        auto indexTypeB = masterModel->index(index, 2);
-        auto indexTypeM = masterModel->index(index, 3);
-        masterModel->setData(indexTypeM, domElModule.attribute("mtypem", "00"));
-        masterModel->setData(indexTypeB, domElModule.attribute("mtypeb", "00"));
-
-        // Получаем имя модуля
-        auto domElName = domElModule.firstChildElement("name");
-        if (!domElName.isNull())
-        {
-            auto indexName = masterModel->index(index, 1);
-            masterModel->setData(indexName, domElName.text());
-        }
-
-        // И его версию
-        auto domElVersion = domElModule.firstChildElement("version");
-        if (!domElVersion.isNull())
-        {
-            auto indexVersion = masterModel->index(index, 4);
-            masterModel->setData(indexVersion, domElVersion.text());
-        }
+        auto index = masterModel->index(row, column);
+        auto font = masterModel->data(index, Qt::FontRole).value<QFont>();
+        font.setBold(state);
+        masterModel->setData(index, font, Qt::FontRole);
     }
 }
 
-void XmlEditor::MasterItemSelected(const QModelIndex &index)
+/// \brief Слот для создания диалогового окна о сохранении изменений в выбранном модуле.
+void XmlEditor::savingAsk()
 {
-    const auto row = index.row();
-    auto indexFilename = masterModel->index(row, 0);
-    auto dataFilename = masterModel->data(indexFilename);
-    if (dataFilename.canConvert<QString>())
+    auto slaveModel = manager->GetRootModel();
+    if (EMessageBox::question("Сохранить изменения?"))
     {
-        if (slaveModel == nullptr)
-        {
-            slaveModel = CreateSlaveModel();
-            mainSlaveView->setModel(slaveModel);
-        }
+        if (slaveModel != nullptr)
+            dc->saveFile(masterModel, slaveModel);
         else
-        {
-            slaveModel->clear();
-            slaveModel->setHorizontalHeaderLabels({ "Свойства" });
-        }
-
-        auto domDoc = new QDomDocument;
-        QDir homeDir(StdFunc::GetSystemHomeDir());
-        auto filename = qvariant_cast<QString>(dataFilename);
-        auto moduleFile = new QFile(homeDir.filePath(filename));
-        if (moduleFile->open(QIODevice::ReadOnly))
-        {
-            QString errMsg = "";
-            int line = 0, column = 0;
-            if (domDoc->setContent(moduleFile, &errMsg, &line, &column))
-            {
-                // auto domElement = domDoc->documentElement().firstChild();
-                auto domElement = domDoc->documentElement();
-                // ParseXmlToSlaveModel(domElement, 0, nullptr);
-            }
-            // Если QtXml парсер не смог корректно считать xml файл
-            else
-                qWarning() << errMsg << " Line: " << line << " Column: " << column;
-            moduleFile->close();
-        }
-        delete domDoc;
-        delete moduleFile;
+            dc->saveFile(masterModel);
+    }
+    else
+    {
+        auto isModuleOpened = false;
+        if (slaveModel != nullptr)
+            isModuleOpened = true;
+        masterModel->undoChanges(dc->getRow(), isModuleOpened);
     }
 }
 
-void XmlEditor::ParseXmlToSlaveModel(QDomNode &node, int index, QStandardItem *parent)
+/// \brief Слот для сохранения или сброса изменений настроек модуля.
+void XmlEditor::saveModule()
 {
-    while (!node.isNull())
+    if (dc->getModuleState())
     {
-        QStandardItem *element = nullptr;
-        auto newIndex = 0;
-        // auto state = true;
-        if (node.isElement() && !node.isComment())
-        {
-            auto name = node.nodeName();
-            // Парсим ноду check
-            // if (name == "check")
-            // {
-            //    auto checkParser = new XmlEditCheckParser(slaveModel, this);
-            //    checkParser->ParseXmlCheck(node, index, parent);
-            //    state = false;
-            // }
-            // if (state)
-            // {
-            element = new QStandardItem(name);
-            if (parent == nullptr)
-            {
-                parent = element;
-                slaveModel->setItem(0, parent);
-            }
-            else
-            {
-                parent->setChild(index, element);
-                index++;
-            }
-            newIndex = ParseXmlFindAllAttributes(node, element);
-            // }
-        }
-        else if (node.isText())
-        {
-            auto text = node.toText();
-            if (!text.isNull())
-            {
-                if (parent != nullptr)
-                {
-                    element = new QStandardItem(text.data());
-                    parent->setChild(0, element);
-                }
-            }
-            break;
-        }
-        // Делаем это всё рекурсивно
-        // if (state)
-        // {
-        auto cnode = node.firstChild();
-        ParseXmlToSlaveModel(cnode, newIndex, element);
-        // }
-        node = node.nextSibling();
+        dc->resetOrSaved();
+        savingAsk();
+        setFontBolding(dc->getRow(), false);
     }
-}
-
-int XmlEditor::ParseXmlFindAllAttributes(QDomNode &domNode, QStandardItem *element)
-{
-    // Поиск аттрибутов
-    auto domElement = domNode.toElement();
-    if (!domElement.isNull())
-    {
-        auto attrs = domElement.attributes();
-        if (attrs.count() > 0)
-        {
-            auto attributes = new QStandardItem("attributes");
-            element->setChild(0, attributes);
-            for (int i = 0; i < attrs.count(); i++)
-            {
-                auto attr = attrs.item(i).toAttr();
-                auto aName = new QStandardItem(attr.name());
-                attributes->setChild(i, aName);
-                auto aValue = new QStandardItem(attr.value());
-                aName->setChild(0, aValue);
-            }
-            return 1;
-        }
-    }
-    return 0;
 }

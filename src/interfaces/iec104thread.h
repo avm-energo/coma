@@ -1,14 +1,15 @@
 #ifndef IEC104THREAD_H
 #define IEC104THREAD_H
 
-#include "../gen/datatypes.h"
-#include "../gen/error.h"
-#include "../gen/logclass.h"
 #include "../s2/s2datatypes.h"
 
 #include <QQueue>
 #include <QTimer>
 #include <QVariant>
+#include <gen/datatypes.h>
+#include <gen/error.h>
+#include <gen/logclass.h>
+
 class IEC104Thread : public QObject
 {
     Q_OBJECT
@@ -116,7 +117,7 @@ private:
     void SectionReady();
     void SendSegments();
     void LastSection();
-    void Com45(quint32 com);
+    void Com45(quint32 com, bool value);
     void Com50(quint32 adr, float param);
     void reqGroup(int groupNum);
     void Com51WriteTime(quint32 time);

@@ -1,10 +1,10 @@
 #pragma once
-#include "../gen/std_ext.h"
-#include "../gen/stdfunc.h"
 #include "../module/modules.h"
 #include "filemanager.h"
 #include "trendview/trendviewdialog.h"
 
+#include <gen/std_ext.h>
+#include <gen/stdfunc.h>
 #include <optional>
 
 class OscManager : public FileManager<S2DataTypes::OscHeader>
@@ -74,7 +74,7 @@ protected:
 
 private:
     std::unique_ptr<TrendViewModel> m_model;
-    UniquePointer<TrendViewDialog> trendDialog;
+    TrendViewDialog *trendDialog;
     std::optional<Record> oscHeader;
     const QStringList phases { "фазы А, В, С", "фаза А", "фаза В", "фаза С" };
 };

@@ -1,8 +1,7 @@
 #include "configv.h"
 
-#include "../gen/error.h"
-
 #include <QDebug>
+#include <gen/error.h>
 
 DataTypes::DataRecV ConfigV::getRecord(quint16 id)
 {
@@ -30,6 +29,22 @@ void ConfigV::setRecordValue(const DataTypes::DataRecV &record)
     }
     else
         config.push_back(record);
+}
+
+void ConfigV::setRecordValue(const quint16 key, const DataTypes::valueType &value)
+{
+    auto result
+        = std::find_if(std::begin(config), std::end(config), [key](const auto &lhs) { return (lhs.getId() == key); });
+    if (result != std::end(config))
+    {
+        result->setData(value);
+    }
+    else
+    {
+        DataTypes::DataRecV record(key);
+        record.setData(value);
+        config.push_back(record);
+    }
 }
 
 const QList<DataTypes::DataRecV> &ConfigV::getConfig() const

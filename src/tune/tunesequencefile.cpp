@@ -1,9 +1,9 @@
 #include "tunesequencefile.h"
 
-#include "../gen/stdfunc.h"
 #include "../module/board.h"
 
 #include <QDebug>
+#include <gen/stdfunc.h>
 
 std::map<QString, std::unique_ptr<float>> TuneSequenceFile::s_tuneDescrMap;
 std::unique_ptr<QSettings> TuneSequenceFile::s_tsSettings;

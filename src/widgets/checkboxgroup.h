@@ -1,8 +1,8 @@
 #pragma once
 #include "../s2/s2helper.h"
-#include "../gen/std_ext.h"
 
 #include <QCheckBox>
+#include <gen/std_ext.h>
 #include <map>
 
 class CheckBoxGroupPrivate;

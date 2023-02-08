@@ -1,8 +1,5 @@
 #include "journals.h"
 
-#include "../gen/error.h"
-#include "../gen/files.h"
-#include "../gen/timefunc.h"
 #include "../widgets/wd_func.h"
 #include "board.h"
 
@@ -12,15 +9,17 @@
 #include <QFile>
 #include <QObject>
 #include <QVariant>
-#include <QXlsx/xlsxdocument.h>
 #include <cmath>
+#include <gen/error.h>
+#include <gen/files.h>
+#include <gen/timefunc.h>
+#include <xlsxdocument.h>
 
-Journals::Journals(QMap<Modules::JournalType, DataTypes::JournalDesc> &jourMap, QObject *parent)
+Journals::Journals(const ModuleTypes::JourMap &jourMap, QObject *parent)
     : QObject(parent), m_timezone(TimeFunc::userTimeZone()), m_jourMap(jourMap)
 {
-    m_workJourDescription = jourMap.value(Modules::JournalType::Work).desc;
-
-    m_measJourHeaders = jourMap.value(Modules::JournalType::Meas).header;
+    m_workJourDescription = jourListToStrList(jourMap.value(Modules::JournalType::Work));
+    m_measJourHeaders = jourListToStrList(jourMap.value(Modules::JournalType::Meas));
     auto time_pos = std::find_if(
         m_measJourHeaders.begin(), m_measJourHeaders.end(), [](const QString &str) { return str.contains("UTC"); });
     if (time_pos != m_measJourHeaders.end())
@@ -30,6 +29,15 @@ Journals::Journals(QMap<Modules::JournalType, DataTypes::JournalDesc> &jourMap, 
     m_workModel = new EDynamicTableModel(this);
     m_measModel = new EDynamicTableModel(this);
 }
+
+const QStringList Journals::jourListToStrList(const QList<ModuleTypes::Journal> &jlist)
+{
+    QStringList retVal = {};
+    for (auto &journal : jlist)
+        retVal.push_back(journal.desc);
+    return retVal;
+}
+
 void Journals::SetProxyModels(
     QSortFilterProxyModel *workmdl, QSortFilterProxyModel *sysmdl, QSortFilterProxyModel *measmdl)
 {
@@ -52,10 +60,10 @@ void Journals::SetJourFile(const QString &jourfile)
     m_jourFile = jourfile;
 }
 
-int Journals::workJournalID()
-{
-    return m_jourMap.value(Modules::JournalType::Work).id;
-}
+// int Journals::workJournalID()
+//{
+//    return m_jourMap.value(Modules::JournalType::Work).id;
+//}
 
 QVector<QVector<QVariant>> Journals::createCommon(const QByteArray &array, const int eventid, const QStringList &desc)
 {
@@ -77,8 +85,9 @@ QVector<QVector<QVariant>> Journals::createCommon(const QByteArray &array, const
         if (event.Time == ULLONG_MAX)
             continue;
         ++counter;
-        int N;
 
+        // TODO: FIX THAT
+        int N;
         memcpy(&N, &event.EvNum, sizeof(event.EvNum));
         N = (N & 0x00FFFFFF) - eventid;
         Q_ASSERT((N <= desc.size()) && (N >= 0));
@@ -124,7 +133,7 @@ void Journals::FillEventsTable(const QByteArray &ba)
     }
     else
     {
-        mineventid = workJournalID();
+        mineventid = 100;
         sl = m_workJourDescription;
         model = m_workModel;
     }

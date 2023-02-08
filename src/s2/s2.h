@@ -1,10 +1,12 @@
 #ifndef S2_H
 #define S2_H
-#include "../gen/datatypes.h"
+
 #include "datarecv.h"
 #include "s2datatypes.h"
 
 #include <QVector>
+#include <gen/datatypes.h>
+
 constexpr int MAXSIZE = 200000;
 
 class BaseInterface;
@@ -28,6 +30,9 @@ public:
     static void tester(S2DataTypes::S2ConfigType &buffer);
 
     static quint32 crc32buf(const QByteArray &data);
+    static quint16 GetIdByName(QString name);
+
+    static QMap<QString, quint16> NameIdMap;
 
 private:
     static void StoreDataMem(QByteArray &mem, const QVector<S2DataTypes::DataRec> &dr, int fname);

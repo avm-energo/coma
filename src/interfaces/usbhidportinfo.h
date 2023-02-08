@@ -1,11 +1,13 @@
 #pragma once
 #include "protocomprivate.h"
 #include "settingstypes.h"
+
 namespace HID
 {
 constexpr quint16 VID = 0xC251;
 constexpr quint16 PID = 0x3505;
 }
+
 class UsbHidPortInfo
 {
 public:

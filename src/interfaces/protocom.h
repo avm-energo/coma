@@ -2,6 +2,7 @@
 
 #include "baseinterface.h"
 #include "protocomprivate.h"
+
 struct UsbHidSettings;
 class ProtocomPrivate;
 class Protocom final : public BaseInterface
@@ -31,7 +32,6 @@ public:
     void writeCommand(Queries::Commands cmd, const QVariantList &list) override;
     void reqFloats(quint32 sigAdr, quint32 sigCount) override;
     void writeRaw(const QByteArray &ba) override;
-    InterfaceSettings parseSettings(QDomElement domElement) const override;
 
 protected:
     ProtocomPrivate *const d_ptr;
@@ -48,7 +48,6 @@ namespace
 {
 
 inline const QMap<Queries::Commands, Proto::Commands> getProtoCommand {
-
     { Queries::Commands::QC_StartFirmwareUpgrade, Proto::Commands::WriteUpgrade }, //
     { Queries::QC_SetNewConfiguration, Proto::Commands::WriteBlkTech },            //
     { Queries::QC_WriteUserValues, Proto::Commands::WriteBlkData },                //
@@ -72,7 +71,6 @@ inline const QMap<Queries::Commands, Proto::Commands> getProtoCommand {
 };
 
 inline const QMap<Queries::Commands, Proto::WCommands> getWCommand {
-
     { Queries::QC_SetStartupValues, Proto::WCommands::InitStartupValues },    //
     { Queries::QC_ClearStartupValues, Proto::WCommands::EraseStartupValues }, //
 

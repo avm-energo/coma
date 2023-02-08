@@ -1,14 +1,13 @@
 #include "ethernet.h"
 
-#include "../gen/error.h"
-#include "../gen/pch.h"
-#include "../gen/stdfunc.h"
-#include "../gen/timefunc.h"
-
 #include <QCoreApplication>
 #include <QNetworkProxy>
 #include <QSettings>
 #include <QThread>
+#include <gen/error.h>
+#include <gen/pch.h>
+#include <gen/stdfunc.h>
+#include <gen/timefunc.h>
 
 Ethernet::Ethernet(QObject *parent) : QObject(parent)
 {

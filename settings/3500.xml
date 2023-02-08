@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="utf-8"?>
+<module mtypem="00" mtypeb="35">
+    <name>AVTUK-3500</name>
+    <version>4.1-0000</version>
+    <resources>
+        <alarms desc="Сигнализация">
+            <critical desc="Критичные"/>
+            <warning desc="Предупреждения"/>
+            <info desc="Информационные"/>
+        </alarms>
+        <config desc="Конфигурация">
+            <record>
+                <id>10</id>
+                <defaultValue>8</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>11</id>
+                <defaultValue>0</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>3</id>
+                <defaultValue>4</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>4</id>
+                <defaultValue>205</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>401</id>
+                <defaultValue>0</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>402</id>
+                <defaultValue>0</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>403</id>
+                <defaultValue>0</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>404</id>
+                <defaultValue>0</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>405</id>
+                <defaultValue>0</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>5</id>
+                <defaultValue>5</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>6</id>
+                <defaultValue>15</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>7</id>
+                <defaultValue>10</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>8</id>
+                <defaultValue>20</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>9</id>
+                <defaultValue>12</defaultValue>
+                <visibility>true</visibility>
+            </record>
+        </config>
+        <iec60870 desc="Протокол ГОСТ Р МЭК 60870-5-104">
+            <group>
+                <signal-id>1</signal-id>
+                <sig-type>7</sig-type>
+                <trans-type>0</trans-type>
+                <sig-group>1</sig-group>
+            </group>
+            <group>
+                <signal-id>2</signal-id>
+                <sig-type>7</sig-type>
+                <trans-type>0</trans-type>
+                <sig-group>1</sig-group>
+            </group>
+            <group>
+                <signal-id>3</signal-id>
+                <sig-type>13</sig-type>
+                <trans-type>1</trans-type>
+                <sig-group></sig-group>
+            </group>
+            <group>
+                <signal-id>4</signal-id>
+                <sig-type>7</sig-type>
+                <trans-type>0</trans-type>
+                <sig-group>6</sig-group>
+            </group>
+            <group>
+                <signal-id>5</signal-id>
+                <sig-type>7</sig-type>
+                <trans-type>3</trans-type>
+                <sig-group>6</sig-group>
+            </group>
+            <group>
+                <signal-id>6</signal-id>
+                <sig-type>7</sig-type>
+                <trans-type>3</trans-type>
+                <sig-group></sig-group>
+            </group>
+        </iec60870>
+        <journals desc="Журналы">
+            <work desc="Рабочий журнал"/>
+            <meas desc="Журнал измерений"/>
+        </journals>
+        <modbus desc="Протокол Modbus"/>
+        <protocom desc="Протокол Protocom">
+            <group>
+                <block>0</block>
+                <signal-id>3</signal-id>
+            </group>
+            <group>
+                <block>3</block>
+                <signal-id>4</signal-id>
+            </group>
+            <group>
+                <block>7</block>
+                <signal-id>5</signal-id>
+            </group>
+            <group>
+                <block>250</block>
+                <signal-id>6</signal-id>
+            </group>
+        </protocom>
+        <section-tabs desc="Вкладки">
+            <tab>
+                <id>1</id>
+                <name>Основные</name>
+            </tab>
+        </section-tabs>
+        <sections desc="Разделы">
+            <section header="Текущие данные базовая">
+                <sgroup header="Общие" tab="1">
+                    <mwidget desc="Температура микроконтроллера, °С" view="float">
+                        <start-addr>101</start-addr>
+                    </mwidget>
+                    <mwidget desc="Напряжение на батарейке, В" view="float">
+                        <start-addr>102</start-addr>
+                    </mwidget>
+                    <!--<mwidget desc="Состояние WatchDog" view="map">
+                        <start-addr>5002</start-addr>
+                        <map>
+                            <item key="0">Disabled</item>
+                            <item key="1">Stopped</item>
+                            <item key="3">Started</item>
+                            <item key="7">Latched</item>
+                        </map>
+                    </mwidget>-->
+                    <mwidget desc="Состояние WatchDog" view="float">
+                        <start-addr>5002</start-addr>
+                    </mwidget>
+                </sgroup>
+                <sgroup header="Ожидаемое состояние выходов" tab="1">
+                    <mwidget desc="" view="bitset">
+                        <start-addr>5001</start-addr>
+                        <count>4</count>
+                        <toolTip>Дискретный выход (DIO_%1)</toolTip>
+                    </mwidget>
+                </sgroup>
+            </section>
+        </sections>
+        <signals desc="Сигналы">
+            <signal>
+                <start-addr>1</start-addr>
+                <count>15</count>
+                <id>1</id>
+                <type>BitString</type>
+            </signal>
+            <signal>
+                <start-addr>40</start-addr>
+                <count>5</count>
+                <id>2</id>
+                <type>BitString</type>
+            </signal>
+            <signal>
+                <start-addr>101</start-addr>
+                <count>2</count>
+                <id>3</id>
+                <type>Float</type>
+            </signal>
+            <signal>
+                <start-addr>5001</start-addr>
+                <count>1</count>
+                <id>4</id>
+                <type>BitString</type>
+            </signal>
+            <signal>
+                <start-addr>5002</start-addr>
+                <count>1</count>
+                <id>5</id>
+                <type>Float</type>
+            </signal>
+            <signal>
+                <start-addr>13000</start-addr>
+                <count>7</count>
+                <id>6</id>
+                <type>BitString</type>
+            </signal>
+        </signals>
+    </resources>
+</module>

@@ -1,10 +1,10 @@
 #ifndef S2DATATYPES_H
 #define S2DATATYPES_H
 
-#include "../gen/std_ext.h"
 #include "filestruct.h"
 
 #include <QVariant>
+#include <gen/std_ext.h>
 
 namespace S2DataTypes
 {

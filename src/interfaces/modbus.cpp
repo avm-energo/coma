@@ -1,10 +1,7 @@
 #include "modbus.h"
 
-#include "../gen/error.h"
-#include "../gen/registers.h"
-#include "../gen/stdfunc.h"
-#include "../gen/timefunc.h"
 #include "../s2/s2.h"
+#include "interfacesettings.h"
 #include "modbusthread.h"
 #include "serialport.h"
 #include "settingstypes.h"
@@ -14,6 +11,10 @@
 #include <QThread>
 #include <QWaitCondition>
 #include <algorithm>
+#include <gen/error.h>
+#include <gen/registers.h>
+#include <gen/stdfunc.h>
+#include <gen/timefunc.h>
 
 using namespace CommandsMBS;
 
@@ -35,19 +36,17 @@ bool ModBus::start(const ConnectStruct &connectStruct)
         return false;
 
     const auto &st = std::get<SerialPortSettings>(connectStruct.settings);
-    SerialPort *port = new SerialPort(this);
-    ModbusThread *parser = new ModbusThread;
+    auto thr = new QThread;
+    auto port = new SerialPort(this);
+    auto parser = new ModbusThread;
     parser->setDelay(obtainDelay(st.Baud));
     parser->setDeviceAddress(st.Address);
-    QThread *thr = new QThread;
     thr->setObjectName("Modbus thread");
 
     connect(thr, &QThread::started, parser, &ModbusThread::run);
     connect(parser, &ModbusThread::finished, thr, &QThread::quit);
-//    connect(thr, &QThread::finished, port, &SerialPort::disconnect);
-    connect(thr, &QThread::finished, [=] {
-        port->deleteLater();
-    });
+    connect(thr, &QThread::finished, port, &SerialPort::disconnect);
+    connect(thr, &QThread::finished, port, &QObject::deleteLater);
     connect(thr, &QThread::finished, thr, &QObject::deleteLater);
     connect(thr, &QThread::finished, parser, &QObject::deleteLater);
     connect(port, &SerialPort::read, parser, &ModbusThread::parseReply);
@@ -68,8 +67,6 @@ bool ModBus::start(const ConnectStruct &connectStruct)
         thr->deleteLater();
         return false;
     }
-    //  setState(State::Run);
-
     return true;
 }
 
@@ -88,22 +85,33 @@ void ModBus::sendReconnectSignal()
     }
 }
 
-bool ModBus::isValidRegs(const CommandsMBS::CommandStruct &cmd) const
+bool ModBus::isValidRegs(CommandsMBS::CommandStruct &cmd) const
 {
-    const auto &st = settings<InterfaceInfo<CommandsMBS::ModbusGroup>>();
+    const auto &st = settings<InterfaceInfo<ModbusGroup>>();
     Q_ASSERT(st.dictionary().contains(cmd.adr));
-    const auto values = st.dictionary().values(cmd.adr);
-    for (const auto &val : values)
+    if (st.dictionary().contains(cmd.adr))
     {
-        if ((val.count == cmd.quantity) && (val.function == cmd.cmd))
-            return true;
+        const auto values = st.dictionary().values(cmd.adr);
+        for (const auto &val : values)
+        {
+            if (val.function == cmd.cmd)
+            {
+                if (val.count == cmd.quantity * 2)
+                {
+                    cmd.quantity *= 2;
+                    return true;
+                }
+                if (val.count == cmd.quantity)
+                    return true;
+            }
+        }
     }
     return false;
 }
 
 bool ModBus::isValidRegs(const quint32 sigAdr, const quint32 sigCount) const
 {
-    const auto &st = settings<InterfaceInfo<CommandsMBS::ModbusGroup>>();
+    const auto &st = settings<InterfaceInfo<ModbusGroup>>();
     Q_ASSERT(st.dictionary().contains(sigAdr));
     const auto values = st.dictionary().values(sigAdr);
     for (const auto &val : values)
@@ -114,17 +122,15 @@ bool ModBus::isValidRegs(const quint32 sigAdr, const quint32 sigCount) const
     return false;
 }
 
-CommandsMBS::TypeId ModBus::type(const quint32 addr, const quint32 count) const
+CommandsMBS::TypeId ModBus::type(const quint32 addr) const
 {
-    Q_UNUSED(count);
-    const auto &st = settings<InterfaceInfo<CommandsMBS::ModbusGroup>>();
+    const auto &st = settings<InterfaceInfo<ModbusGroup>>();
     return st.dictionary().value(addr).dataType;
 }
 
 TypeId ModBus::type(const quint32 addr, const quint32 count, const CommandsMBS::Commands cmd) const
 {
-    Q_UNUSED(count);
-    const auto &st = settings<InterfaceInfo<CommandsMBS::ModbusGroup>>();
+    const auto &st = settings<InterfaceInfo<ModbusGroup>>();
     const auto values = st.dictionary().values(addr);
     for (const auto &val : values)
     {
@@ -139,50 +145,55 @@ void ModBus::reqStartup(quint32 sigAdr, quint32 sigCount)
     const quint16 addr = sigAdr;
     const quint8 count = (sigCount * 2);
     CommandsMBS::CommandStruct inp {
-        CommandsMBS::Commands::MBS_READINPUTREGISTER, //
-        addr,                                         //
-        count,                                        //
-        {},                                           //
-        type(addr, count),                            //
-        __PRETTY_FUNCTION__                           //
+        CommandsMBS::Commands::ReadInputRegister, //
+        addr,                                     //
+        count,                                    //
+        {},                                       //
+        type(addr),                               //
+        __PRETTY_FUNCTION__                       //
     };
     Q_ASSERT(isValidRegs(inp));
-    DataManager::addToInQueue(inp);
+    DataManager::GetInstance().addToInQueue(inp);
 }
 
+/// TODO: Переписать
 void ModBus::reqBSI()
 {
     CommandsMBS::CommandStruct inp {
-        CommandsMBS::Commands::MBS_READINPUTREGISTER, //
-        Regs::bsiStartReg,                            //
-        static_cast<quint8>(Regs::bsiEndReg * 2),     //
-        {},                                           //
-        TypeId::Uint32,                               //
-        __PRETTY_FUNCTION__                           //
+        CommandsMBS::Commands::ReadInputRegister, //
+        Regs::bsiStartReg,                        //
+        static_cast<quint8>(Regs::bsiEndReg * 2), //
+        {},                                       //
+        TypeId::Uint32,                           //
+        __PRETTY_FUNCTION__                       //
     };
-    DataManager::addToInQueue(inp);
+    DataManager::GetInstance().addToInQueue(inp);
 }
 
+/// TODO: Переписать
 void ModBus::reqBSIExt()
 {
+    // 31 (40) - начальный адрес первого регистра блока BSI Ext
     constexpr auto regCount = sizeof(Modules::StartupInfoBlockExt0) / sizeof(quint32);
     CommandsMBS::CommandStruct inp {
-        CommandsMBS::Commands::MBS_READINPUTREGISTER, //
-        31,                                           //
-        static_cast<quint8>(regCount * 2),            //
-        {},                                           //
-        TypeId::Uint32,                               //
-        __PRETTY_FUNCTION__                           //
+        CommandsMBS::Commands::ReadInputRegister, //
+        40,                                       //
+        static_cast<quint8>(regCount * 2),        //
+        {},                                       //
+        TypeId::Uint32,                           //
+        __PRETTY_FUNCTION__                       //
     };
-    DataManager::addToInQueue(inp);
+    DataManager::GetInstance().addToInQueue(inp);
 }
 
+/// TODO: требуется реализация
 void ModBus::reqFile(quint32 filenum, FileFormat format)
 {
     Q_UNUSED(filenum)
     Q_UNUSED(format)
 }
 
+/// TODO: требуется реализация
 void ModBus::writeFile(quint32 filenum, const QByteArray &file)
 {
     Q_UNUSED(filenum)
@@ -192,15 +203,15 @@ void ModBus::writeFile(quint32 filenum, const QByteArray &file)
 void ModBus::reqTime()
 {
     CommandsMBS::CommandStruct inp {
-        CommandsMBS::Commands::MBS_READHOLDINGREGISTERS, //
-        Regs::timeReg,                                   //
-        2,                                               //
-        {},                                              //
-        type(Regs::timeReg, 2),                          //
-        __PRETTY_FUNCTION__                              //
+        CommandsMBS::Commands::ReadHoldingRegisters, //
+        Regs::timeReg,                               //
+        2,                                           //
+        {},                                          //
+        type(Regs::timeReg),                         //
+        __PRETTY_FUNCTION__                          //
     };
     Q_ASSERT(isValidRegs(inp));
-    DataManager::addToInQueue(inp);
+    DataManager::GetInstance().addToInQueue(inp);
 }
 
 void ModBus::writeTime(quint32 time)
@@ -208,47 +219,63 @@ void ModBus::writeTime(quint32 time)
     QByteArray timeArray = packReg(time);
 
     CommandsMBS::CommandStruct inp {
-        CommandsMBS::Commands::MBS_WRITEMULTIPLEREGISTERS, //
-        Regs::timeReg,                                     //
-        2,                                                 //
-        timeArray,                                         //
-        TypeId::None,                                      //
-        __PRETTY_FUNCTION__                                //
+        CommandsMBS::Commands::WriteMultipleRegisters, //
+        Regs::timeReg,                                 //
+        2,                                             //
+        timeArray,                                     //
+        TypeId::None,                                  //
+        __PRETTY_FUNCTION__                            //
     };
     Q_ASSERT(isValidRegs(inp));
-    DataManager::addToInQueue(inp);
+    DataManager::GetInstance().addToInQueue(inp);
 }
 
 void ModBus::writeFloat(const DataTypes::FloatStruct &flstr)
 {
-//    Q_ASSERT(false && "Dont use this before test");
+    //    Q_ASSERT(false && "Dont use this before test");
     // now write floats to the out sigArray
     QByteArray sigArray = packReg(flstr.sigVal);
-
     CommandsMBS::CommandStruct inp {
-        CommandsMBS::Commands::MBS_WRITEMULTIPLEREGISTERS, //
-        static_cast<quint16>(flstr.sigAdr),                //
-        static_cast<quint16>(sigArray.size() / 2),         //
-        sigArray,                                          //
-        TypeId::None,                                      //
-        __PRETTY_FUNCTION__                                //
+        CommandsMBS::Commands::WriteMultipleRegisters, //
+        static_cast<quint16>(flstr.sigAdr),            //
+        static_cast<quint16>(sigArray.size() / 2),     //
+        sigArray,                                      //
+        TypeId::None,                                  //
+        __PRETTY_FUNCTION__                            //
     };
     // Q_ASSERT(isValidRegs(inp));
-    DataManager::addToInQueue(inp);
+    DataManager::GetInstance().addToInQueue(inp);
 }
 
 void ModBus::writeInt16(const quint32 addr, const qint16 value)
 {
     CommandsMBS::CommandStruct inp {
-        CommandsMBS::Commands::MBS_WRITEMULTIPLEREGISTERS, //
-        static_cast<quint16>(addr),                //
-        1,         //
-        packReg(value),                                          //
-        TypeId::None,                                      //
-        __PRETTY_FUNCTION__                                //
+        CommandsMBS::Commands::WriteMultipleRegisters, //
+        static_cast<quint16>(addr),                    //
+        1,                                             //
+        packReg(value),                                //
+        TypeId::None,                                  //
+        __PRETTY_FUNCTION__                            //
     };
     // Q_ASSERT(isValidRegs(inp));
-    DataManager::addToInQueue(inp);
+    DataManager::GetInstance().addToInQueue(inp);
+}
+
+const quint8 ModBus::obtainDelay(const quint32 baudRate) const
+{
+    switch (baudRate)
+    {
+    case 2400:
+        return 16;
+    case 4800:
+        return 8;
+    case 9600:
+        return 4;
+    case 19200:
+        return 3;
+    default:
+        return 2;
+    }
 }
 
 void ModBus::writeCommand(Queries::Commands cmd, QVariant item)
@@ -271,15 +298,15 @@ void ModBus::writeCommand(Queries::Commands cmd, QVariant item)
             return;
         const auto signal = qvariant_cast<DataTypes::Signal>(item);
         CommandsMBS::CommandStruct inp {
-            CommandsMBS::Commands::MBS_READCOILS, //
-            signal.addr,                          //
-            static_cast<quint16>(signal.value),   //
-            {},                                   //
-            type(signal.addr, signal.value),      //
-            __PRETTY_FUNCTION__                   //
+            CommandsMBS::Commands::ReadCoils,   //
+            signal.addr,                        //
+            static_cast<quint16>(signal.value), //
+            {},                                 //
+            type(signal.addr),                  //
+            __PRETTY_FUNCTION__                 //
         };
         // Q_ASSERT(isValidRegs(inp));
-        DataManager::addToInQueue(inp);
+        DataManager::GetInstance().addToInQueue(inp);
         break;
     }
     case Queries::Commands::QC_ClearStartupValues:
@@ -306,7 +333,7 @@ void ModBus::writeCommand(Queries::Commands cmd, const QVariantList &list)
     {
         Q_ASSERT(list.first().canConvert<DataTypes::FloatStruct>());
         const quint16 start_addr = list.first().value<DataTypes::FloatStruct>().sigAdr;
-        const auto &st = settings<InterfaceInfo<CommandsMBS::ModbusGroup>>();
+        const auto &st = settings<InterfaceInfo<ModbusGroup>>();
         Q_ASSERT(isValidRegs(start_addr, list.size() * 2));
         auto group = st.dictionary().value(start_addr);
         bool found = false;
@@ -314,12 +341,12 @@ void ModBus::writeCommand(Queries::Commands cmd, const QVariantList &list)
         auto it = dictionary.cbegin();
         while (it != dictionary.cend() && !found)
         {
-            if (it.value().id.contains(group.id.remove(0, 1)))
-                if (it.value() != group)
-                {
-                    group = it.value();
-                    found = true;
-                }
+            // if (it.value().id.contains(group.id.remove(0, 1)))
+            if (it.value() != group)
+            {
+                group = it.value();
+                found = true;
+            }
             ++it;
         }
         Q_ASSERT(found);
@@ -328,21 +355,20 @@ void ModBus::writeCommand(Queries::Commands cmd, const QVariantList &list)
         {
             auto flstr = i.value<DataTypes::FloatStruct>();
             // now write floats to the out sigArray
-
             sigArray.push_back(packReg(flstr.sigVal));
         }
 
         CommandsMBS::CommandStruct inp {
-            CommandsMBS::Commands::MBS_WRITEMULTIPLEREGISTERS, //
-            static_cast<quint16>(group.startAddr),             //
-            static_cast<quint16>(sigArray.size() / 2),         //
-            sigArray,                                          //
-            TypeId::None,                                      //
-            __PRETTY_FUNCTION__                                //
+            CommandsMBS::Commands::WriteMultipleRegisters, //
+            static_cast<quint16>(group.startAddr),         //
+            static_cast<quint16>(sigArray.size() / 2),     //
+            sigArray,                                      //
+            TypeId::None,                                  //
+            __PRETTY_FUNCTION__                            //
         };
         qDebug() << inp;
         Q_ASSERT(isValidRegs(inp));
-        DataManager::addToInQueue(inp);
+        DataManager::GetInstance().addToInQueue(inp);
         break;
     }
     default:
@@ -354,24 +380,26 @@ void ModBus::writeCommand(Queries::Commands cmd, const QVariantList &list)
 void ModBus::reqFloats(quint32 sigAdr, quint32 sigCount)
 {
     CommandsMBS::CommandStruct inp {
-        CommandsMBS::Commands::MBS_READINPUTREGISTER, //
-        static_cast<quint16>(sigAdr),                 //
-        static_cast<quint8>(sigCount * 2),            //
-        {},                                           //
-        type(sigAdr, sigCount * 2),                   //
-        __PRETTY_FUNCTION__                           //
+        CommandsMBS::Commands::ReadInputRegister, //
+        static_cast<quint16>(sigAdr),             //
+        static_cast<quint8>(sigCount),            //
+        {},                                       //
+        type(sigAdr),                             //
+        __PRETTY_FUNCTION__                       //
     };
     Q_ASSERT(isValidRegs(inp));
-    DataManager::addToInQueue(inp);
+    DataManager::GetInstance().addToInQueue(inp);
 }
 
 void ModBus::reqBitStrings(quint32 sigAdr, quint32 sigCount)
 {
-    Q_UNUSED(sigAdr)
-    Q_UNUSED(sigCount)
-}
-
-InterfaceSettings ModBus::parseSettings(QDomElement domElement) const
-{
-    return BaseInterface::parseSettings<CommandsMBS::ModbusGroup>(domElement);
+    CommandsMBS::CommandStruct inp {
+        CommandsMBS::Commands::ReadInputRegister, //
+        static_cast<quint16>(sigAdr),             //
+        static_cast<quint8>(sigCount * 2),        //
+        {},                                       //
+        TypeId::Uint32,                           //
+        __PRETTY_FUNCTION__                       //
+    };
+    DataManager::GetInstance().addToInQueue(inp);
 }

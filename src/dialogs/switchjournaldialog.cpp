@@ -1,17 +1,17 @@
 #include "switchjournaldialog.h"
 
-#include "../module/board.h"
-#include "../gen/datamanager/typesproxy.h"
-#include "../gen/files.h"
-#include "../s2/s2.h"
-#include "../gen/timefunc.h"
 #include "../models/etablemodel.h"
-#include "../widgets/wd_func.h"
-#include "../widgets/pushbuttondelegate.h"
+#include "../module/board.h"
 #include "../oscillograms/swjmanager.h"
+#include "../s2/s2.h"
+#include "../widgets/pushbuttondelegate.h"
+#include "../widgets/wd_func.h"
 
 #include <QHeaderView>
 #include <QMessageBox>
+#include <gen/datamanager/typesproxy.h>
+#include <gen/files.h>
+#include <gen/timefunc.h>
 // constexpr int MAXSWJNUM = 262144;
 
 constexpr unsigned char TECH_SWJ = 0x04;
@@ -69,8 +69,8 @@ void SwitchJournalDialog::fillJour(const QVariant &msg)
 {
     if (!updatesEnabled())
         return;
-        
-    auto fs = msg.value<DataTypes::FileStruct>(); 
+
+    auto fs = msg.value<DataTypes::FileStruct>();
     fileBuffer.push_back(fs);
 
     switch (fs.ID)
@@ -126,7 +126,7 @@ void SwitchJournalDialog::fillJour(const QVariant &msg)
 // void SwitchJournalDialog::fillSwJInfo(S2DataTypes::SwitchJourInfo swjInfo)
 void SwitchJournalDialog::fillSwJInfo(const QVariant &msg)
 {
-	auto swjInfo = msg.value<S2DataTypes::SwitchJourInfo>();
+    auto swjInfo = msg.value<S2DataTypes::SwitchJourInfo>();
     if (swjInfo.num == 0)
         return;
     if (swjMap.contains(swjInfo.num))

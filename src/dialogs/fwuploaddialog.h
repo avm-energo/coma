@@ -1,8 +1,9 @@
 #ifndef FWUPDIALOG_H
 #define FWUPDIALOG_H
 
-#include "../gen/error.h"
 #include "../widgets/udialog.h"
+
+#include <gen/error.h>
 
 class FWUploadDialog : public UDialog
 {

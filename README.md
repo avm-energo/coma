@@ -59,6 +59,9 @@ supported options:
   - A x64/Win32 - used to change target arch only with Visual Studio cmake generator, ninja uses only provided compilers
   - BUILD_WITH_ALISE:BOOL=ON (off by default) - do u wanna build Alise? Use only if you know her.
   - ENABLE_EMULATOR:BOOL=ON (off by default) - coma'll be built with dummy interface, it can be used without real device 
+
+For the build of ALiSe run: conan profile update settings.compiler.libcxx=libstdc++11 default
+
   ```$ cmake --build . [<options>]```
 
 supported options for multi-config generators:

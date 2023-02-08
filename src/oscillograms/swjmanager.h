@@ -1,10 +1,10 @@
 #pragma once
-#include "../gen/std_ext.h"
 #include "../module/modules.h"
 #include "filemanager.h"
 #include "oscmanager.h"
 
 #include <QAbstractItemModel>
+#include <gen/std_ext.h>
 class SwjManager : public FileManager<S2DataTypes::SwitchJourRecord>
 {
     using SwitchJourRecord = S2DataTypes::SwitchJourRecord;

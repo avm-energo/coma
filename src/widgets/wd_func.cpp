@@ -1,9 +1,5 @@
 #include "wd_func.h"
 
-#include "../gen/colors.h"
-#include "../gen/error.h"
-#include "../gen/files.h"
-#include "../gen/stdfunc.h"
 #include "../models/etablemodel.h"
 #include "../module/board.h"
 #include "../module/filehelper.h"
@@ -28,107 +24,108 @@
 #include <QTextEdit>
 #include <QtDebug>
 #include <QtMath>
+#include <gen/colors.h>
+#include <gen/error.h>
+#include <gen/files.h>
+#include <gen/stdfunc.h>
 
 #ifdef __GNUC__
 #include <cfloat>
 #endif
 
-QLineEdit *WDFunc::NewLE2(QWidget *w, const QString &lename, const QString &letext, const QString &tooltip)
+QLineEdit *WDFunc::NewLE2(QWidget *parent, const QString &lename, const QString &letext, const QString &tooltip)
 {
-    QLineEdit *le = new QLineEdit(w);
+    auto le = new QLineEdit(parent);
     le->setObjectName(lename);
     le->setText(letext);
     le->setToolTip(tooltip);
     return le;
 }
 
-PasswordLineEdit *WDFunc::NewPswLE2(QWidget *w, const QString &lename, QLineEdit::EchoMode echostyle)
+PasswordLineEdit *WDFunc::NewPswLE2(QWidget *parent, const QString &lename, QLineEdit::EchoMode echostyle)
 {
-    PasswordLineEdit *le = new PasswordLineEdit(echostyle, w);
+    auto le = new PasswordLineEdit(echostyle, parent);
     le->setObjectName(lename);
     return le;
 }
 
-QString WDFunc::LEData(QObject *w, const QString &lename)
+QString WDFunc::LEData(QObject *parent, const QString &lename)
 {
-    QLineEdit *le = w->findChild<QLineEdit *>(lename);
+    auto le = parent->findChild<QLineEdit *>(lename);
     if (le == nullptr)
         return QString();
     return le->text();
 }
 
-bool WDFunc::SetLEData(QObject *w, const QString &lename, const QString &levalue, const QString &restring)
+bool WDFunc::SetLEData(QObject *parent, const QString &lename, const QString &levalue, const QString &restring)
 {
-    QLineEdit *le = w->findChild<QLineEdit *>(lename);
+    auto le = parent->findChild<QLineEdit *>(lename);
     if (le == nullptr)
         return false;
     le->setText(levalue);
     if (!restring.isEmpty())
     {
-        QRegExp re;
-        re.setPattern(restring);
-        QValidator *val = new QRegExpValidator(re, w);
+        auto val = new QRegExpValidator(QRegExp(restring), parent);
         le->setValidator(val);
     }
     return true;
 }
 
-bool WDFunc::SetLEColor(QWidget *w, const QString &lename, const QColor &color)
+bool WDFunc::SetLEColor(QWidget *parent, const QString &lename, const QColor &color)
 {
-    QLineEdit *le = w->findChild<QLineEdit *>(lename);
+    auto le = parent->findChild<QLineEdit *>(lename);
     if (le == nullptr)
         return false;
     // http://forum.sources.ru/index.php?showtopic=313950
-    QPalette pal = le->palette();
+    auto pal = le->palette();
     pal.setColor(QPalette::Text, color);
     le->setPalette(pal);
     return true;
 }
 
-QLabel *WDFunc::NewLBL(QWidget *w, const QString &text, const QString &lblcolor, const QString &lblname,
+QLabel *WDFunc::NewLBL(QWidget *parent, const QString &text, const QString &lblcolor, const QString &lblname,
     const QPixmap *pm, const QString &lbltip)
 {
-    QLabel *lbl = new QLabel(w);
+    auto lbl = new QLabel(parent);
     lbl->setText(text);
     if (!lblname.isEmpty())
         lbl->setObjectName(lblname);
     if (!lblcolor.isEmpty())
     {
-        QString tmps = "QLabel {background-color: " + lblcolor + ";}";
+        auto tmps = "QLabel {background-color: " + lblcolor + ";}";
         lbl->setStyleSheet(tmps);
     }
-    if (pm != Q_NULLPTR)
+    if (pm != nullptr)
         lbl->setPixmap(*pm);
     lbl->setToolTip(lbltip);
     return lbl;
 }
 
 QLabel *WDFunc::NewLBL2(
-    QWidget *w, const QString &text, const QString &lblname, const QPixmap *pm, const QString &lbltip)
+    QWidget *parent, const QString &text, const QString &lblname, const QPixmap *pm, const QString &lbltip)
 {
-    QLabel *lbl = new QLabel(w);
+    auto lbl = new QLabel(parent);
     lbl->setText(text);
     if (!lblname.isEmpty())
         lbl->setObjectName(lblname);
-    if (pm != Q_NULLPTR)
+    if (pm != nullptr)
         lbl->setPixmap(*pm);
     lbl->setToolTip(lbltip);
     return lbl;
 }
 
-/*!
-Копирует содержимое из исходной области памяти в целевую область память
-\param w Родитель будущего виджета
-\param text Текст для QLabel
-\param lblname Имя для QLabel
-\param lblstyle StyleSheet для QLabel
-\param lbltip ToolTip для QLabel
-\param Fixed Фиксированного размера?
-*/
-QLabel *WDFunc::NewLBLT(
-    QWidget *w, const QString &text, const QString &lblname, const QString &lblstyle, const QString &lbltip, bool Fixed)
+/*! \brief Копирует содержимое из исходной области памяти в целевую область память
+ *  \param w Родитель будущего виджета
+ *  \param text Текст для QLabel
+ *  \param lblname Имя для QLabel
+ *  \param lblstyle StyleSheet для QLabel
+ *  \param lbltip ToolTip для QLabel
+ *  \param Fixed Фиксированного размера?
+ */
+QLabel *WDFunc::NewLBLT(QWidget *parent, const QString &text, const QString &lblname, const QString &lblstyle,
+    const QString &lbltip, bool Fixed)
 {
-    QLabel *lbl = new QLabel(w);
+    auto lbl = new QLabel(parent);
     lbl->setText(text);
     lbl->setObjectName(lblname);
     lbl->setStyleSheet(lblstyle);
@@ -138,9 +135,10 @@ QLabel *WDFunc::NewLBLT(
     return lbl;
 }
 
-QLabel *WDFunc::NewLBLT2(QWidget *w, const QString &text, const QString &lblname, const QString &lbltip, bool fixed)
+QLabel *WDFunc::NewLBLT2(
+    QWidget *parent, const QString &text, const QString &lblname, const QString &lbltip, bool fixed)
 {
-    QLabel *lbl = new QLabel(w);
+    auto lbl = new QLabel(parent);
     lbl->setText(text);
     lbl->setObjectName(lblname);
     lbl->setToolTip(lbltip);
@@ -150,15 +148,15 @@ QLabel *WDFunc::NewLBLT2(QWidget *w, const QString &text, const QString &lblname
     return lbl;
 }
 
-bool WDFunc::SetLBLTColor(QWidget *w, const QString &lblname, const QString &color)
+bool WDFunc::SetLBLTColor(QWidget *parent, const QString &lblname, const QString &color)
 {
 
-    QString style = "QLabel {border: 1px solid green; border-radius: 4px; "
-                    "padding: 1px; color: black;"
-                    "background-color: "
+    auto style = "QLabel {border: 1px solid green; border-radius: 4px; "
+                 "padding: 1px; color: black;"
+                 "background-color: "
         + QString(color) + "; font: bold 10px;}";
 
-    QLabel *lblt = w->findChild<QLabel *>(lblname);
+    auto lblt = parent->findChild<QLabel *>(lblname);
     if (lblt == nullptr)
         return false;
 
@@ -180,27 +178,27 @@ bool WDFunc::SetLBLTColor(QWidget *w, const QString &lblname, const QString &col
     return true;
 }
 
-bool WDFunc::SetTEData(QWidget *w, const QString &tename, const QString &tetext)
+bool WDFunc::SetTEData(QWidget *parent, const QString &tename, const QString &tetext)
 {
-    QTextEdit *te = w->findChild<QTextEdit *>(tename);
+    auto te = parent->findChild<QTextEdit *>(tename);
     if (te == nullptr)
         return false;
     te->setText(tetext);
     return true;
 }
 
-bool WDFunc::AppendTEData(QWidget *w, const QString &tename, const QString &tetext)
+bool WDFunc::AppendTEData(QWidget *parent, const QString &tename, const QString &tetext)
 {
-    QTextEdit *te = w->findChild<QTextEdit *>(tename);
+    auto te = parent->findChild<QTextEdit *>(tename);
     if (te == nullptr)
         return false;
     te->append(tetext);
     return true;
 }
 
-bool WDFunc::TEData(QWidget *w, const QString &tename, QString &tevalue)
+bool WDFunc::TEData(QWidget *parent, const QString &tename, QString &tevalue)
 {
-    QTextEdit *te = w->findChild<QTextEdit *>(tename);
+    auto te = parent->findChild<QTextEdit *>(tename);
     if (te == nullptr)
         return false;
     tevalue = te->toPlainText();
@@ -209,40 +207,47 @@ bool WDFunc::TEData(QWidget *w, const QString &tename, QString &tevalue)
 
 QComboBox *WDFunc::NewCB2(QWidget *parent, const QString &cbname, const QStringList &cbsl)
 {
-    QComboBox *cb = NewCB2(parent, cbsl);
+    auto cb = NewCB2(parent, cbsl);
     cb->setObjectName(cbname);
     return cb;
 }
 
 QComboBox *WDFunc::NewCB2(QWidget *parent, const QStringList &cbsl)
 {
-    QComboBox *cb = new QComboBox(parent);
-    QStringListModel *cblm = new QStringListModel(cb);
-    cblm->setStringList(cbsl);
+    auto cb = new QComboBox(parent);
+    auto cblm = new QStringListModel(cbsl, cb);
     cb->setModel(cblm);
     return cb;
 }
 
-QString WDFunc::CBData(const QWidget *w, const QString &cbname)
+QString WDFunc::CBData(const QWidget *parent, const QString &cbname)
 {
-    QComboBox *cb = w->findChild<QComboBox *>(cbname);
+    auto cb = parent->findChild<QComboBox *>(cbname);
     if (cb == nullptr)
         return QString();
     return cb->currentText();
 }
 
-bool WDFunc::SetCBData(const QWidget *w, const QString &cbname, const QString &cbvalue)
+int WDFunc::CBIndex(const QObject *parent, const QString &cbname)
 {
-    QComboBox *cb = w->findChild<QComboBox *>(cbname);
+    auto cb = parent->findChild<QComboBox *>(cbname);
+    if (cb == nullptr)
+        return -1;
+    return cb->currentIndex();
+}
+
+bool WDFunc::SetCBData(const QWidget *parent, const QString &cbname, const QString &cbvalue)
+{
+    auto cb = parent->findChild<QComboBox *>(cbname);
     if (cb == nullptr)
         return false;
     cb->setCurrentText(cbvalue);
     return true;
 }
 
-bool WDFunc::SetCBIndex(const QObject *w, const QString &cbname, int index)
+bool WDFunc::SetCBIndex(const QObject *parent, const QString &cbname, int index)
 {
-    QComboBox *cb = w->findChild<QComboBox *>(cbname);
+    auto cb = parent->findChild<QComboBox *>(cbname);
     if (cb == nullptr)
         return false;
     if (index < cb->count())
@@ -254,13 +259,13 @@ bool WDFunc::SetCBIndex(const QObject *w, const QString &cbname, int index)
     return false;
 }
 
-bool WDFunc::SetCBColor(QWidget *w, const QString &cbname, const QString &color)
+bool WDFunc::SetCBColor(QWidget *parent, const QString &cbname, const QString &color)
 {
-    QComboBox *cb = w->findChild<QComboBox *>(cbname);
+    auto cb = parent->findChild<QComboBox *>(cbname);
     if (cb == nullptr)
         return false;
     // http://forum.sources.ru/index.php?showtopic=313950
-    QPalette pal = cb->palette();
+    auto pal = cb->palette();
     pal.setColor(QPalette::Text, QColor(color));
     cb->setPalette(pal);
     return true;
@@ -269,8 +274,7 @@ bool WDFunc::SetCBColor(QWidget *w, const QString &cbname, const QString &color)
 QDoubleSpinBox *WDFunc::NewSPB2(
     QWidget *parent, const QString &spbname, const double min, const double max, const int decimals)
 {
-    EDoubleSpinBox *dsb = new EDoubleSpinBox(parent);
-
+    auto dsb = new EDoubleSpinBox(parent);
     double step = qPow(0.1f, decimals);
     dsb->setObjectName(spbname);
     dsb->setSingleStep(step);
@@ -280,9 +284,35 @@ QDoubleSpinBox *WDFunc::NewSPB2(
     return dsb;
 }
 
-bool WDFunc::SetSPBData(const QObject *w, const QString &spbname, const double &spbvalue)
+DoubleSpinBoxGroup *WDFunc::NewSPBG(
+    QWidget *parent, const QString &spbname, int count, const double min, const double max, const int decimals)
 {
-    QDoubleSpinBox *spb = w->findChild<QDoubleSpinBox *>(spbname);
+    auto spinBoxGroup = new DoubleSpinBoxGroup(count, parent);
+    spinBoxGroup->setObjectName(spbname);
+    double step = std::pow(0.1f, decimals);
+    spinBoxGroup->setSingleStep(step);
+    spinBoxGroup->setDecimals(decimals);
+    spinBoxGroup->setMinimum(min);
+    spinBoxGroup->setMaximum(max);
+    return spinBoxGroup;
+}
+
+DoubleSpinBoxGroup *WDFunc::NewSPBG(QWidget *parent, const QString &spbname, const QStringList &list, const double min,
+    const double max, const int decimals)
+{
+    auto spinBoxGroup = new DoubleSpinBoxGroup(list, parent);
+    spinBoxGroup->setObjectName(spbname);
+    double step = std::pow(0.1f, decimals);
+    spinBoxGroup->setSingleStep(step);
+    spinBoxGroup->setDecimals(decimals);
+    spinBoxGroup->setMinimum(min);
+    spinBoxGroup->setMaximum(max);
+    return spinBoxGroup;
+}
+
+bool WDFunc::SetSPBData(const QObject *parent, const QString &spbname, const double &spbvalue)
+{
+    auto spb = parent->findChild<QDoubleSpinBox *>(spbname);
     if (spb == nullptr)
     {
         qDebug() << Error::NullDataError << spbname;
@@ -292,107 +322,110 @@ bool WDFunc::SetSPBData(const QObject *w, const QString &spbname, const double &
     return true;
 }
 
-bool WDFunc::SetLBLImage(QWidget *w, const QString &lblname, QPixmap *pm)
+bool WDFunc::SetLBLImage(QWidget *parent, const QString &lblname, QPixmap *pm)
 {
-    QLabel *lbl = w->findChild<QLabel *>(lblname);
+    auto lbl = parent->findChild<QLabel *>(lblname);
     Q_ASSERT(lbl != nullptr);
     if (lbl == nullptr)
     {
         qDebug() << Error::DescError << lblname;
         return false;
     }
-    lbl->setPixmap(*pm);
-    return true;
+    else
+    {
+        lbl->setPixmap(*pm);
+        return true;
+    }
 }
 
-bool WDFunc::SetLBLColor(QWidget *w, const QString &lblname, const QString &lblcolor)
+bool WDFunc::SetLBLColor(QWidget *parent, const QString &lblname, const QString &lblcolor)
 {
-    QLabel *lbl = w->findChild<QLabel *>(lblname);
+    auto lbl = parent->findChild<QLabel *>(lblname);
     if (lbl == nullptr)
         return false;
     // http://forum.sources.ru/index.php?showtopic=313950
-    QPalette pal = lbl->palette();
+    auto pal = lbl->palette();
     pal.setColor(QPalette::Text, QColor(lblcolor));
     lbl->setPalette(pal);
     return true;
 }
 
-bool WDFunc::SetLBLText(QWidget *w, const QString &lblname, const QString &lbltext, bool enabled)
+bool WDFunc::SetLBLText(QWidget *parent, const QString &lblname, const QString &lbltext, bool enabled)
 {
-    QLabel *lbl = w->findChild<QLabel *>(lblname);
+    auto lbl = parent->findChild<QLabel *>(lblname);
     if (lbl == nullptr)
         return false;
     if (!lbltext.isEmpty()) // if label text is empty save previous text in QLabel
         lbl->setText(lbltext);
     lbl->setEnabled(enabled);
-
     return true;
 }
 
-QString WDFunc::LBLText(QWidget *w, const QString &lblname)
+QString WDFunc::LBLText(QWidget *parent, const QString &lblname)
 {
-    QLabel *lbl = w->findChild<QLabel *>(lblname);
+    auto lbl = parent->findChild<QLabel *>(lblname);
     if (lbl == nullptr)
         return QString();
-    QString text = lbl->text();
+    auto text = lbl->text();
     return text;
 }
 
 QRadioButton *WDFunc::NewRB2(QWidget *parent, const QString &rbtext, const QString &rbname)
 {
-    QRadioButton *rb = new QRadioButton(parent);
+    auto rb = new QRadioButton(parent);
     rb->setObjectName(rbname);
     rb->setText(rbtext);
     return rb;
 }
 
-bool WDFunc::RBData(QWidget *w, const QString &rbname, bool &data)
+bool WDFunc::RBData(QWidget *parent, const QString &rbname, bool &data)
 {
-    QRadioButton *rb = w->findChild<QRadioButton *>(rbname);
+    auto rb = parent->findChild<QRadioButton *>(rbname);
     if (rb == nullptr)
         return false;
     data = rb->isChecked();
     return true;
 }
 
-bool WDFunc::SetRBData(QWidget *w, const QString &rbname, bool data)
+bool WDFunc::SetRBData(QWidget *parent, const QString &rbname, bool data)
 {
-    QRadioButton *rb = w->findChild<QRadioButton *>(rbname);
+    auto rb = parent->findChild<QRadioButton *>(rbname);
     if (rb == nullptr)
         return false;
     rb->setChecked(data);
     return true;
 }
 
-bool WDFunc::SetIPCtrlData(const QObject *w, const QString &name, const std::array<quint8, 4> &value)
+bool WDFunc::SetIPCtrlData(const QObject *parent, const QString &name, const std::array<quint8, 4> &value)
 {
-    auto *ipControl = w->findChild<IPCtrl *>(name);
+    auto ipControl = parent->findChild<IPCtrl *>(name);
     if (ipControl == nullptr)
         return false;
     ipControl->setIP(value);
     return true;
 }
 
-std::array<quint8, 4> WDFunc::IPCtrlData(const QObject *w, const QString &name)
+std::array<quint8, 4> WDFunc::IPCtrlData(const QObject *parent, const QString &name)
 {
-    auto *ipControl = w->findChild<IPCtrl *>(name);
+    auto ipControl = parent->findChild<IPCtrl *>(name);
     if (ipControl == nullptr)
         return { 0, 0, 0, 0 };
     return ipControl->getIP();
 }
 
-QString WDFunc::TVField(QWidget *w, const QString &tvname, int column, bool isid)
+QString WDFunc::TVField(QWidget *parent, const QString &tvname, int column, bool isid)
 {
-    ETableView *tv = w->findChild<ETableView *>(tvname);
+    auto tv = parent->findChild<ETableView *>(tvname);
     if (tv == nullptr)
         return QString();
-    QString tmps = tv->model()
-                       ->data(tv->model()->index(tv->currentIndex().row(), column, QModelIndex()), Qt::DisplayRole)
-                       .toString();
-    if (isid) // если поле с ИД, надо убрать первую цифру - номер таблицы и
-              // разделяющую точку, если они присутствуют
+    auto tvModel = tv->model();
+    auto tvIndex = tvModel->index(tv->currentIndex().row(), column);
+    auto tmps = tvModel->data(tvIndex, Qt::DisplayRole).toString();
+    // если поле с ИД, надо убрать первую цифру - номер таблицы и
+    // разделяющую точку, если они присутствуют
+    if (isid)
     {
-        QStringList sl = tmps.split(".");
+        auto sl = tmps.split(".");
         if (sl.size() > 1) // есть номер таблицы
             tmps = sl.at(1);
         bool ok;
@@ -404,9 +437,9 @@ QString WDFunc::TVField(QWidget *w, const QString &tvname, int column, bool isid
     return tmps;
 }
 
-void WDFunc::TVAutoResize(QWidget *w, const QString &tvname)
+void WDFunc::TVAutoResize(QWidget *parent, const QString &tvname)
 {
-    ETableView *tv = w->findChild<ETableView *>(tvname);
+    auto tv = parent->findChild<ETableView *>(tvname);
     if (tv == nullptr)
     {
         DBGMSG("Пустой tv");
@@ -418,19 +451,18 @@ void WDFunc::TVAutoResize(QWidget *w, const QString &tvname)
     tv->resizeRowsToContents();
 }
 
-QVariant WDFunc::TVData(QWidget *w, const QString &tvname, int column)
+QVariant WDFunc::TVData(QWidget *parent, const QString &tvname, int column)
 {
-    QString tmps;
-    ETableView *tv = w->findChild<ETableView *>(tvname);
+    auto tv = parent->findChild<ETableView *>(tvname);
     if (tv == nullptr)
         return QVariant();
-    ETableModel *m = static_cast<ETableModel *>(tv->model());
+    auto m = static_cast<ETableModel *>(tv->model());
     if (m != nullptr)
         return m->index(tv->currentIndex().row(), column, QModelIndex()).data(Qt::DisplayRole);
     return QVariant();
 }
 
-QStatusBar *WDFunc::NewSB(QWidget *w)
+QStatusBar *WDFunc::NewSB(QWidget *parent)
 {
     const QMap<Board::InterfaceType, QString> images {
         { Board::InterfaceType::USB, ":/icons/usb.svg" },           //
@@ -439,40 +471,42 @@ QStatusBar *WDFunc::NewSB(QWidget *w)
         { Board::InterfaceType::Unknown, ":/icons/stop.svg" }       //
     };
 
-    QStatusBar *bar = new QStatusBar(w);
-    bar->setMaximumHeight(w->height() / 20);
+    auto bar = new QStatusBar(parent);
+    bar->setMaximumHeight(parent->height() / 20);
 
-    QWidget *widget = new QWidget(w);
+    auto widget = new QWidget(parent);
     widget->setMaximumHeight(bar->height());
-    QHBoxLayout *layout = new QHBoxLayout;
-    layout->setSpacing(w->width() / 20);
+
+    auto layout = new QHBoxLayout;
+    layout->setSpacing(parent->width() / 20);
     layout->setContentsMargins(1, 1, 1, 1);
 
-    QLabel *msgModel = new QLabel(bar);
+    auto msgModel = new QLabel(bar);
     msgModel->setObjectName("Model");
     layout->addWidget(msgModel);
 
-    QLabel *msgSerialNumber = new QLabel(bar);
+    auto msgSerialNumber = new QLabel(bar);
     msgSerialNumber->setObjectName("SerialNumber");
     layout->addWidget(msgSerialNumber);
 
-    QLabel *msgConnectionState = new QLabel(bar);
+    auto msgConnectionState = new QLabel(bar);
     msgConnectionState->setObjectName("ConnectionState");
     layout->addWidget(msgConnectionState);
 
-    QLabel *msgConnectionImage = new QLabel(bar);
+    auto msgConnectionImage = new QLabel(bar);
     msgConnectionImage->setObjectName("ConnectionImage");
     layout->addWidget(msgConnectionImage);
 
-    QLabel *msgConnectionType = new QLabel(bar);
+    auto msgConnectionType = new QLabel(bar);
     msgConnectionType->setObjectName("ConnectionType");
     layout->addWidget(msgConnectionType);
 
-    int height = bar->height() - layout->contentsMargins().bottom();
-    for (int i = 0; i < layout->count(); ++i)
+    auto height = bar->height() - layout->contentsMargins().bottom();
+    for (auto i = 0; i < layout->count(); ++i)
     {
         layout->itemAt(i)->widget()->setFixedHeight(height);
     }
+
     auto board = &Board::GetInstance();
     QObject::connect(
         board, qOverload<>(&Board::typeChanged), msgModel, [=]() { msgModel->setText(board->moduleName()); });
@@ -520,7 +554,6 @@ QPixmap WDFunc::NewCircle(QColor color, int radius)
 
 QPixmap WDFunc::NewLedIndicator(QColor color, float height)
 {
-
     QColor lightColor(QColor(0xE0, 0xE0, 0xE0));
     QColor shadowColor(QColor(0x70, 0x70, 0x70));
     QColor ringShadowDarkColor(QColor(0x50, 0x50, 0x50, 0xFF));
@@ -612,18 +645,18 @@ QPixmap WDFunc::NewLedIndicator(QColor color, float height)
     return myPix;
 }
 
-QFrame *WDFunc::newHLine(QWidget *w)
+QFrame *WDFunc::newHLine(QWidget *parent)
 {
-    QFrame *line = new QFrame(w);
+    auto line = new QFrame(parent);
     line->setFrameShape(QFrame::HLine); // Horizontal line
     line->setFrameShadow(QFrame::Sunken);
     line->setLineWidth(1);
     return line;
 }
 
-QFrame *WDFunc::newVLine(QWidget *w)
+QFrame *WDFunc::newVLine(QWidget *parent)
 {
-    QFrame *line = new QFrame(w);
+    auto line = new QFrame(parent);
     line->setFrameShape(QFrame::VLine); // Vertical line
     line->setFrameShadow(QFrame::Sunken);
     line->setLineWidth(1);
@@ -633,9 +666,12 @@ QFrame *WDFunc::newVLine(QWidget *w)
 QMainWindow *WDFunc::getMainWindow()
 {
     const auto widgets = qApp->topLevelWidgets();
-    for (QWidget *w : widgets)
-        if (QMainWindow *mainWin = qobject_cast<QMainWindow *>(w))
+    for (auto parent : widgets)
+    {
+        auto mainWin = qobject_cast<QMainWindow *>(parent);
+        if (mainWin != nullptr)
             return mainWin;
+    }
     return nullptr;
 }
 
@@ -656,10 +692,10 @@ bool WDFunc::floatIsWithinLimits(const QString &varname, double var, double base
 
 QString WDFunc::ChooseFileForOpen(QWidget *parent, QString mask)
 {
-    QFileDialog *dlg = new QFileDialog;
+    auto dlg = new QFileDialog;
     dlg->setAttribute(Qt::WA_DeleteOnClose);
     dlg->setFileMode(QFileDialog::AnyFile);
-    QString filename = dlg->getOpenFileName(
+    auto filename = dlg->getOpenFileName(
         parent, "Открыть файл", StdFunc::GetHomeDir(), mask, Q_NULLPTR, QFileDialog::DontUseNativeDialog);
     QFileInfo info(filename);
     StdFunc::SetHomeDir(info.absolutePath());
@@ -669,12 +705,12 @@ QString WDFunc::ChooseFileForOpen(QWidget *parent, QString mask)
 
 QString WDFunc::ChooseFileForSave(QWidget *parent, const QString &mask, const QString &ext, const QString &filenamestr)
 {
-    QString tmps = Files::ChooseFileForSave(FileHelper::ChooseFileForSave(ext), filenamestr);
-    QFileDialog *dlg = new QFileDialog;
+    auto tmps = Files::ChooseFileForSave(FileHelper::ChooseFileForSave(ext), filenamestr);
+    auto dlg = new QFileDialog;
     dlg->setAttribute(Qt::WA_DeleteOnClose);
     dlg->setFileMode(QFileDialog::AnyFile);
-    QString filename
-        = dlg->getSaveFileName(parent, "Сохранить файл", tmps, mask, Q_NULLPTR, QFileDialog::DontUseNativeDialog);
+    auto filename = dlg->getSaveFileName(parent, "Сохранить файл", //
+        tmps, mask, Q_NULLPTR, QFileDialog::DontUseNativeDialog);
     QFileInfo info(filename);
     StdFunc::SetHomeDir(info.absolutePath());
     dlg->close();
@@ -684,35 +720,34 @@ QString WDFunc::ChooseFileForSave(QWidget *parent, const QString &mask, const QS
 QPushButton *WDFunc::NewPBCommon(
     QWidget *parent, const QString &pbname, const QString &text, const QString &icon, const QString &pbtooltip)
 {
-    QPushButton *pb = new QPushButton(parent);
+    auto pb = new QPushButton(text, parent);
     pb->setObjectName(pbname);
     if (!icon.isEmpty())
         pb->setIcon(QIcon(icon));
-    pb->setText(text);
     pb->setToolTip(pbtooltip);
     return pb;
 }
 
 QCheckBox *WDFunc::NewChB2(QWidget *parent, const QString &chbname, const QString &chbtext)
 {
-    QCheckBox *chb = new QCheckBox(parent);
+    auto chb = new QCheckBox(parent);
     chb->setObjectName(chbname);
     chb->setText(chbtext);
     return chb;
 }
 
-bool WDFunc::ChBData(const QWidget *w, const QString &chbname, bool &data)
+bool WDFunc::ChBData(const QWidget *parent, const QString &chbname, bool &data)
 {
-    QCheckBox *chb = w->findChild<QCheckBox *>(chbname);
+    auto chb = parent->findChild<QCheckBox *>(chbname);
     if (chb == nullptr)
         return false;
     data = chb->isChecked();
     return true;
 }
 
-bool WDFunc::ChBData(const QWidget *w, const QString &chbname)
+bool WDFunc::ChBData(const QWidget *parent, const QString &chbname)
 {
-    QCheckBox *chb = w->findChild<QCheckBox *>(chbname);
+    auto chb = parent->findChild<QCheckBox *>(chbname);
     if (chb == nullptr)
     {
         qDebug() << Error::NullDataError;
@@ -721,9 +756,9 @@ bool WDFunc::ChBData(const QWidget *w, const QString &chbname)
     return chb->isChecked();
 }
 
-bool WDFunc::SetChBData(QWidget *w, const QString &chbname, bool data)
+bool WDFunc::SetChBData(QWidget *parent, const QString &chbname, bool data)
 {
-    QCheckBox *chb = w->findChild<QCheckBox *>(chbname);
+    auto chb = parent->findChild<QCheckBox *>(chbname);
     if (chb == nullptr)
         return false;
     chb->setChecked(data);
@@ -745,10 +780,10 @@ bool WDFunc::SetChBData(QWidget *w, const QString &chbname, bool data)
 
 void WDFunc::AddLabelAndLineeditH(QLayout *lyout, QString caption, QString lename, bool enabled)
 {
-    QHBoxLayout *hlyout = static_cast<QHBoxLayout *>(lyout);
-    QLabel *lbl = new QLabel(caption);
+    auto hlyout = static_cast<QHBoxLayout *>(lyout);
+    auto lbl = new QLabel(caption);
     hlyout->addWidget(lbl, 0);
-    QLineEdit *le = new QLineEdit("");
+    auto le = new QLineEdit("");
     le->setObjectName(lename);
     le->setEnabled(enabled);
     hlyout->addWidget(le, 10);
@@ -758,63 +793,63 @@ QWidget *WDFunc::NewLBLAndLBL(QWidget *parent, QString lblname, QString caption,
 {
     static constexpr char valuesFormat[]
         = "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; font: bold; }";
-    QWidget *w = new QWidget(parent);
-    w->setContentsMargins(0, 0, 0, 0);
-    QHBoxLayout *hlyout = new QHBoxLayout;
-    QLabel *lbl = new QLabel(caption);
+    auto widget = new QWidget(parent);
+    widget->setContentsMargins(0, 0, 0, 0);
+    auto hlyout = new QHBoxLayout;
+    auto lbl = new QLabel(caption, widget);
     hlyout->addWidget(lbl, 0);
-    lbl = new QLabel("");
+    lbl = new QLabel("", widget);
     lbl->setObjectName(lblname);
     lbl->setEnabled(enabled);
     lbl->setStyleSheet(valuesFormat);
     hlyout->addWidget(lbl, 10);
-    w->setLayout(hlyout);
-    return w;
+    widget->setLayout(hlyout);
+    return widget;
 }
 
 QWidget *WDFunc::NewLBLAndLE(QWidget *parent, QString caption, QString lename, bool enabled)
 {
-    QWidget *w = new QWidget(parent);
-    w->setContentsMargins(0, 0, 0, 0);
-    QHBoxLayout *hlyout = new QHBoxLayout;
-    QLabel *lbl = new QLabel(caption);
+    auto widget = new QWidget(parent);
+    widget->setContentsMargins(0, 0, 0, 0);
+    auto hlyout = new QHBoxLayout;
+    auto lbl = new QLabel(caption, widget);
     hlyout->addWidget(lbl, 0);
-    QLineEdit *le = new QLineEdit("");
+    auto le = new QLineEdit("", widget);
     le->setObjectName(lename);
     le->setEnabled(enabled);
     hlyout->addWidget(le, 10);
-    w->setLayout(hlyout);
-    return w;
+    widget->setLayout(hlyout);
+    return widget;
 }
 
-void WDFunc::SetEnabled(QWidget *w, const QString &wname, bool enabled)
+void WDFunc::SetEnabled(QWidget *parent, const QString &wname, bool enabled)
 {
-    QWidget *wdgt = w->findChild<QWidget *>(wname);
-    if (wdgt != nullptr)
-        wdgt->setEnabled(enabled);
+    auto widget = parent->findChild<QWidget *>(wname);
+    if (widget != nullptr)
+        widget->setEnabled(enabled);
 }
 
-void WDFunc::SetVisible(QWidget *w, const QString &wname, bool visible)
+void WDFunc::SetVisible(QWidget *parent, const QString &wname, bool visible)
 {
-    QWidget *wdgt = w->findChild<QWidget *>(wname);
-    if (wdgt != nullptr)
+    auto widget = parent->findChild<QWidget *>(wname);
+    if (widget != nullptr)
     {
         if (visible)
-            wdgt->show();
+            widget->show();
         else
-            wdgt->hide();
+            widget->hide();
     }
     else
         qDebug() << "No such widget to set it visible";
 }
 
-void WDFunc::setMinimumSize(QWidget *w, const QString &wname, int width, int height)
+void WDFunc::setMinimumSize(QWidget *parent, const QString &wname, int width, int height)
 {
-    QWidget *wdgt = w->findChild<QWidget *>(wname);
-    if (wdgt != nullptr)
+    auto widget = parent->findChild<QWidget *>(wname);
+    if (widget != nullptr)
     {
-        wdgt->setMinimumSize(width, height);
-        QPushButton *pb = qobject_cast<QPushButton *>(wdgt);
+        widget->setMinimumSize(width, height);
+        auto pb = qobject_cast<QPushButton *>(widget);
         if (pb != nullptr)
             pb->setIconSize(QSize(width - 10, height - 10));
     }
@@ -822,7 +857,7 @@ void WDFunc::setMinimumSize(QWidget *w, const QString &wname, int width, int hei
         qDebug() << "No such widget to set size";
 }
 
-QString WDFunc::StringValueWithCheck(float value, int precision, bool exp)
+QString WDFunc::StringFloatValueWithCheck(float value, int precision, bool exp)
 {
     if (value >= MAXFLOAT || value <= -MAXFLOAT)
         return "***";
@@ -835,7 +870,7 @@ QString WDFunc::StringValueWithCheck(float value, int precision, bool exp)
 QVariant WDFunc::FloatValueWithCheck(float value)
 {
     QVariant tmps;
-    if (value >= MAXFLOAT || value <= MAXFLOAT)
+    if (value >= MAXFLOAT || value <= -MAXFLOAT)
         tmps = "***";
     else
         tmps = value;
@@ -844,9 +879,9 @@ QVariant WDFunc::FloatValueWithCheck(float value)
 
 QImage *WDFunc::TwoImages(const QString &first, const QString &second)
 {
-    QImage *image = new QImage;
-    QString FirstImage = "images/" + first + ".png";
-    QString SecondImage = "images/" + second + ".png";
+    auto image = new QImage;
+    auto FirstImage = "images/" + first + ".png";
+    auto SecondImage = "images/" + second + ".png";
     QImage FirstI(FirstImage);
     QImage SecondI(SecondImage);
     if ((first.isEmpty()) && (!SecondI.isNull()))
@@ -867,9 +902,9 @@ QImage *WDFunc::TwoImages(const QString &first, const QString &second)
     return image;
 }
 
-ETableView *WDFunc::NewTV(QWidget *w, const QString &tvname, QAbstractItemModel *model)
+ETableView *WDFunc::NewTV(QWidget *parent, const QString &tvname, QAbstractItemModel *model)
 {
-    ETableView *tv = new ETableView(w);
+    auto tv = new ETableView(parent);
     tv->setObjectName(tvname);
     tv->horizontalHeader()->setVisible(true);
     tv->verticalHeader()->setVisible(false);
@@ -880,9 +915,9 @@ ETableView *WDFunc::NewTV(QWidget *w, const QString &tvname, QAbstractItemModel 
     return tv;
 }
 
-QTableView *WDFunc::NewQTV(QWidget *w, const QString &tvname, QAbstractItemModel *model)
+QTableView *WDFunc::NewQTV(QWidget *parent, const QString &tvname, QAbstractItemModel *model)
 {
-    QTableView *tv = new QTableView(w);
+    auto tv = new QTableView(parent);
     if (model != nullptr)
         tv->setModel(model);
     tv->setObjectName(tvname);
@@ -897,9 +932,9 @@ QTableView *WDFunc::NewQTV(QWidget *w, const QString &tvname, QAbstractItemModel
     return tv;
 }
 
-void WDFunc::SetTVModel(QWidget *w, const QString &tvname, QAbstractItemModel *model, bool sortenable)
+void WDFunc::SetTVModel(QWidget *parent, const QString &tvname, QAbstractItemModel *model, bool sortenable)
 {
-    ETableView *tv = w->findChild<ETableView *>(tvname);
+    auto tv = parent->findChild<ETableView *>(tvname);
     if (tv == nullptr)
     {
         qDebug("Empty tv");
@@ -912,24 +947,24 @@ void WDFunc::SetTVModel(QWidget *w, const QString &tvname, QAbstractItemModel *m
     delete m;
 }
 
-void WDFunc::SetQTVModel(QWidget *w, const QString &tvname, QAbstractItemModel *model, bool sortenable)
+void WDFunc::SetQTVModel(QWidget *parent, const QString &tvname, QAbstractItemModel *model, bool sortenable)
 {
-    QTableView *tv = w->findChild<QTableView *>(tvname);
+    auto tv = parent->findChild<QTableView *>(tvname);
     if (tv == nullptr)
     {
         DBGMSG("Пустой tv");
         return;
     }
-    QItemSelectionModel *m = tv->selectionModel();
+    auto selectModel = tv->selectionModel();
     tv->setModel(model);
     tv->resizeColumnsToContents();
     tv->setSortingEnabled(sortenable);
-    delete m;
+    delete selectModel;
 }
 
-void WDFunc::SortTV(QWidget *w, const QString &tvname, int column, Qt::SortOrder sortorder)
+void WDFunc::SortTV(QWidget *parent, const QString &tvname, int column, Qt::SortOrder sortorder)
 {
-    ETableView *tv = w->findChild<ETableView *>(tvname);
+    auto tv = parent->findChild<ETableView *>(tvname);
     if (tv == nullptr)
     {
         DBGMSG("Пустой tv");
@@ -939,9 +974,9 @@ void WDFunc::SortTV(QWidget *w, const QString &tvname, int column, Qt::SortOrder
         tv->sortByColumn(column, sortorder);
 }
 
-QAbstractItemModel *WDFunc::TVModel(QWidget *w, const QString &tvname)
+QAbstractItemModel *WDFunc::TVModel(QWidget *parent, const QString &tvname)
 {
-    ETableView *tv = w->findChild<ETableView *>(tvname);
+    auto tv = parent->findChild<ETableView *>(tvname);
     if (tv == nullptr)
         return nullptr;
     return tv->model();

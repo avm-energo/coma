@@ -1,7 +1,5 @@
 #include "hiddendialog.h"
 
-#include "../gen/datatypes.h"
-#include "../gen/error.h"
 #include "../interfaces/baseinterface.h"
 #include "../module/board.h"
 #include "../module/modules.h"
@@ -19,6 +17,9 @@
 #include <QPixmap>
 #include <QPushButton>
 #include <QtSvg/QSvgRenderer>
+#include <gen/datatypes.h>
+#include <gen/error.h>
+
 namespace crypto
 {
 static constexpr char hash[] = "d93fdd6d1fb5afcca939fa650b62541d09dbcb766f41c39352dc75f348fb35dc";

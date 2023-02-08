@@ -1,18 +1,18 @@
 #include "startupkivdialog.h"
 
 #include "../dialogs/keypressdialog.h"
-#include "../gen/colors.h"
-#include "../gen/datamanager/typesproxy.h"
-#include "../gen/error.h"
-#include "../gen/files.h"
-#include "../gen/stdfunc.h"
-#include "../gen/timefunc.h"
 #include "../module/board.h"
 #include "../widgets/wd_func.h"
 
 #include <QDebug>
 #include <QGridLayout>
 #include <QMessageBox>
+#include <gen/colors.h>
+#include <gen/datamanager/typesproxy.h>
+#include <gen/error.h>
+#include <gen/files.h>
+#include <gen/stdfunc.h>
+#include <gen/timefunc.h>
 
 StartupKIVDialog::StartupKIVDialog(QWidget *parent) : AbstractStartupDialog(parent)
 {
@@ -59,7 +59,6 @@ void StartupKIVDialog::SetupUI()
 {
     auto lyout = new QVBoxLayout;
     auto glyout = new QGridLayout;
-
     int row = 0;
 
     glyout->addWidget(WDFunc::NewLBL2(this, "Начальные значения емкостей вводов, пФ:"), row, 1, 1, 1);
@@ -102,7 +101,6 @@ void StartupKIVDialog::SetupUI()
 
     setLayout(lyout);
     setObjectName("corDialog");
-    connect(proxyFS.get(), &DataTypesProxy::DataStorable, this, &UWidget::updateFloatData, Qt::QueuedConnection);
 }
 
 void StartupKIVDialog::SaveToFile()

@@ -1,40 +1,43 @@
-#ifndef XMLMODEL_H
-#define XMLMODEL_H
+#pragma once
 
-#include <QAbstractTableModel>
-#include <QtXml>
+#include "../../xmltags.h"
+#include "baseeditormodel.h"
 
-constexpr int GroupTypeRole = 0x0105;
+constexpr int ModelNodeRole = 0x0105; ///< Role for setting node with submodule
 
-enum GroupTypes : quint16
+// Опережающее объявление
+class XmlModel;
+
+/// \brief Structure for storaging child XML model node.
+struct ChildModelNode
 {
-    Resources = 0,
-    Check,
-    Groups,
-    Signals,
-    Records
+    XmlModel *modelPtr = nullptr;
+    ModelType modelType = ModelType::None;
 };
+Q_DECLARE_METATYPE(ChildModelNode);
 
-class XmlModel : public QAbstractTableModel
+/// \brief Base abstract XML model class.
+class XmlModel : public BaseEditorModel
 {
     Q_OBJECT
 protected:
-    int mRows, mCols;
-    QHash<QModelIndex, QVariant> mHashTable;
-
-    static const std::map<QString, GroupTypes> types;        ///< Types Map with enumeration, key = name of group type
-    static const std::map<GroupTypes, QStringList> settings; ///< Settings Map, key = group type enumeration
+    void parseDataNode(QDomNode &child, int &row);
+    void parseTag(QDomNode &node, const QString &tagName, int row, int col, const QString &defValue = "");
+    void parseAttribute(QDomNode &node, const QString &attrName, int row, int col);
 
 public:
-    XmlModel(int rows, int cols, QObject *parent = nullptr);
-    virtual QVariant data(const QModelIndex &index, int nRole = Qt::UserRole + 1) const override;
-    virtual bool setData(const QModelIndex &index, const QVariant &val, int nRole = Qt::UserRole + 1) override;
-    virtual int rowCount(const QModelIndex &index = QModelIndex()) const override;
-    virtual int columnCount(const QModelIndex &index = QModelIndex()) const override;
-    virtual Qt::ItemFlags flags(const QModelIndex &index) const override;
-    void setHorizontalHeaderLabels(const QStringList &labels);
+    static const std::map<QString, ModelType> types;       ///< Types Map with enumeration, key = name of group type
+    static const std::map<ModelType, QStringList> headers; ///< Settings Map, key = group type enumeration
 
-    virtual void setDataNode(GroupTypes type, QDomNode &root) = 0;
+    explicit XmlModel() = delete;
+    explicit XmlModel(int rows, int cols, ModelType type, QObject *parent = nullptr);
+    virtual QVariant data(const QModelIndex &index, int nRole = Qt::DisplayRole) const override;
+    virtual bool setData(const QModelIndex &index, const QVariant &val, int nRole = Qt::EditRole) override;
+    virtual void create(const QStringList &saved, int *row) override;
+    virtual void update(const QStringList &saved, const int &row) override;
+    virtual void remove(const int &row) override;
+
+    virtual QDomElement toNode(QDomDocument &doc) = 0;
+    void setDataNode(bool isChildModel, QDomNode &root);
+    virtual void parseNode(QDomNode &node, int &row) = 0;
 };
-
-#endif // XMLMODEL_H

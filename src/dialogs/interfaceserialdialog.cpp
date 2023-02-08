@@ -1,6 +1,5 @@
 #include "interfaceserialdialog.h"
 
-#include "../gen/error.h"
 #include "../interfaces/settingstypes.h"
 #include "../widgets/wd_func.h"
 
@@ -11,7 +10,9 @@
 #include <QSettings>
 #include <QStandardItemModel>
 #include <QVBoxLayout>
+#include <gen/error.h>
 #include <memory>
+
 InterfaceSerialDialog::InterfaceSerialDialog(QWidget *parent) : AbstractInterfaceDialog(parent)
 {
 }

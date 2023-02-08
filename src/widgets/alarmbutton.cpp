@@ -1,11 +1,8 @@
 #include "alarmbutton.h"
 
 #include <QPainter>
-AlarmButton::AlarmButton(QWidget *parent) : QPushButton(parent)
-{
-}
 
-AlarmButton::~AlarmButton()
+AlarmButton::AlarmButton(QWidget *parent) : QPushButton(parent)
 {
 }
 
@@ -19,8 +16,7 @@ void AlarmButton::setPixmap(const QPixmap &pixmap)
 
 QSize AlarmButton::sizeHint() const
 {
-    const auto parentHint = QPushButton::sizeHint();
-
+    const auto &parentHint = QPushButton::sizeHint();
     return QSize(parentHint.width() + 4 * m_pixmap.width(),
         std::max(parentHint.height(), m_pixmap.height()) + m_pixmap.height());
 }
@@ -28,7 +24,6 @@ QSize AlarmButton::sizeHint() const
 void AlarmButton::paintEvent(QPaintEvent *e)
 {
     QPushButton::paintEvent(e);
-
     if (!m_pixmap.isNull())
     {
         const int y = (height() - m_pixmap.height()) / 2;

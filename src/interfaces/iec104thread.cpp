@@ -1,7 +1,5 @@
 #include "iec104thread.h"
 
-#include "../gen/datamanager/datamanager.h"
-#include "../gen/pch.h"
 #include "../s2/s2.h"
 #include "iec104private.h"
 
@@ -9,6 +7,9 @@
 #include <QDateTime>
 #include <QThread>
 #include <QTimer>
+#include <gen/datamanager/datamanager.h>
+#include <gen/pch.h>
+
 QMutex IEC104Thread::s_ParseReadMutex;
 QMutex IEC104Thread::s_ParseWriteMutex;
 
@@ -74,36 +75,36 @@ void IEC104Thread::Run()
         if (!m_isFileSending && !m_writingToPortBlocked)
         {
             Commands104::CommandStruct inp;
-            if (DataManager::deQueue(inp) == Error::Msg::NoError)
+            if (DataManager::GetInstance().deQueue(inp) == Error::Msg::NoError)
             {
                 switch (inp.cmd)
                 {
                 case Commands104::CM104_COM45:
-                    Com45(inp.uintarg);
+                    Com45(inp.address, inp.blarg);
                     break;
                 case Commands104::CM104_COM50:
-                    Com50(inp.uintarg, inp.flarg);
+                    Com50(inp.address, inp.flarg);
                     break;
                 case Commands104::CM104_WRITEFILE:
                 {
                     m_fileIsConfigFile = Queries::FileFormat::Binary;
                     m_file = inp.ba;
-                    FileReady(inp.uintarg);
+                    FileReady(inp.address);
                     break;
                 }
                 case Commands104::CM104_REQCONFIGFILE:
                     m_fileIsConfigFile = Queries::FileFormat::DefaultS2;
-                    SelectFile(inp.uintarg);
+                    SelectFile(inp.address);
                     break;
                 case Commands104::CM104_REQFILE:
                     m_fileIsConfigFile = Queries::FileFormat::Binary;
-                    SelectFile(inp.uintarg);
+                    SelectFile(inp.address);
                     break;
                 case Commands104::CM104_COM51:
-                    Com51WriteTime(inp.uintarg);
+                    Com51WriteTime(inp.address);
                     break;
                 case Commands104::CM104_REQGROUP:
-                    reqGroup(inp.uintarg);
+                    reqGroup(inp.address);
                     break;
                 default:
                     break;
@@ -819,10 +820,11 @@ void IEC104Thread::LastSection()
     Send(1, GI, cmd); // ASDU = QByteArray()
 }
 
-void IEC104Thread::Com45(quint32 com)
+void IEC104Thread::Com45(quint32 com, bool value)
 {
+    quint8 data = value ? '\x01' : '\x00';
     ASDU cmd = ASDU6Prefix(C_SC_NA_1, com);
-    cmd.append('\x01');
+    cmd.append(data);
     APCI GI = CreateGI(0x0e);
     Send(1, GI, cmd);
 }

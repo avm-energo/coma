@@ -1,9 +1,8 @@
-#ifndef KIV_BAC_H
-#define KIV_BAC_H
+#pragma once
 
 #include "../datablock.h"
 
-class Bac : public DataBlock
+class BacA284 : public DataBlock
 {
     Q_OBJECT
 public:
@@ -32,16 +31,12 @@ public:
         float Brt;    // смещение в канале Pt100, ед.АЦП
     };
 
-    Bac(QObject *parent = nullptr);
+    BacA284(QObject *parent = nullptr);
 
-    void createWidget() override;
-    void setDefBlock() override;
-    void updateWidget() override;
-    void updateFromWidget() override;
+    void setupValuesDesc() override;
     BlockData *data();
+    void setDefBlock() override;
 
 private:
     std::unique_ptr<BlockData> m_blockData;
 };
-
-#endif // KIV_BAC_H

@@ -23,19 +23,16 @@ public:
     };
 
     explicit AbstractStartupDialog(QWidget *parent = nullptr);
-    //    ~AbstractCorDialog();
     void SetStartupBlock(int blocknum, void *block, quint32 blocksize, quint32 startAdr);
-
     QWidget *buttonWidget();
 
 protected:
     virtual void WriteCor();
     virtual void SetupCor();
-
     virtual void ResetCor();
     virtual void GetCorBd();
 
-    void updateFloatData(const QVariant &msg) override;
+    void updateFloatData(const DataTypes::FloatStruct &fl) override;
     virtual void SaveToFile() = 0;
     virtual void ReadFromFile() = 0;
     void ErrorRead();
@@ -55,7 +52,6 @@ private:
     void FillBd(QWidget *parent, QString Name, float Value);
 
 public slots:
-
     void reqUpdate() override;
 };
 

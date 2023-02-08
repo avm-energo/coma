@@ -1,11 +1,13 @@
 #pragma once
 
-#include "../../gen/helper.h"
+#include "../../interfaces/usbhidsettings.h"
 #include "../../s2/filestruct.h"
 #include "../../s2/s2datatypes.h"
 
 #include <QDebug>
 #include <QObject>
+#include <gen/helper.h>
+
 class Console : public QObject
 {
     Q_OBJECT

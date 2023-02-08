@@ -1,19 +1,20 @@
 #include "tunekivtemp60.h"
 
-#include "../../gen/colors.h"
-#include "../../gen/stdfunc.h"
 #include "../../module/board.h"
 #include "../../s2/configv.h"
+#include "../../s2/s2.h"
 #include "../../widgets/epopup.h"
 #include "../../widgets/waitwidget.h"
 #include "../../widgets/wd_func.h"
 #include "../tunesequencefile.h"
 #include "../tunesteps.h"
-#include "../xml/xmlconfigparser.h"
+#include "../xml/xmlparser/xmlconfigparser.h"
 
 #include <QEventLoop>
 #include <QMessageBox>
 #include <QVBoxLayout>
+#include <gen/colors.h>
+#include <gen/stdfunc.h>
 
 TuneKIVTemp60::TuneKIVTemp60(ConfigV *config, int tuneStep, QWidget *parent)
     : AbstractTuneDialog(config, tuneStep, parent)
@@ -29,7 +30,7 @@ TuneKIVTemp60::TuneKIVTemp60(ConfigV *config, int tuneStep, QWidget *parent)
     TuneSequenceFile::addItemToTuneDescrVector("yet_p", m_midTuneStruct.yet);
 
     // CKIV = ckiv;
-    m_bac = new Bac(this);
+    m_bac = new BacA284(this);
     m_bdain = new BdaIn(this);
     m_bd0 = new Bd0(this);
     setBac(m_bac);
@@ -39,47 +40,22 @@ TuneKIVTemp60::TuneKIVTemp60(ConfigV *config, int tuneStep, QWidget *parent)
     setupUI();
 }
 
-void TuneKIVTemp60::setMessages()
-{
-    m_messages.append("1. Ввод пароля...");
-    m_messages.append("2. Сохранение конфигурации...");
-    m_messages.append("3. Задание временной конфигурации и настроечных параметров...");
-    m_messages.append("4. Выдача диалога о температуре в камере...");
-    m_messages.append("5. Ожидание установления температурного режима...");
-    m_messages.append("6. Диалог об установлении входных сигналов...");
-    m_messages.append("7. Измерения...");
-    if (m_tuneStep == KIVTS_60TUNING)
-        m_messages.append("8. Ввод данных энергомонитора и сохранение промежуточных данных...");
-    else
-    {
-        m_messages.append("8. Ввод данных энергомонитора...");
-        m_messages.append("9. Запись коэффициентов в модуль...");
-    }
-}
-
 void TuneKIVTemp60::setTuneFunctions()
 {
-    m_tuneFunctions.push_back(
-        reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&AbstractTuneDialog::CheckPassword));
-    Error::Msg (AbstractTuneDialog::*func)()
-        = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&AbstractTuneDialog::saveWorkConfig);
-    m_tuneFunctions.push_back(func);
-    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVTemp60::setNewConfAndTune);
-    m_tuneFunctions.push_back(func);
-    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVTemp60::showTempDialog);
-    m_tuneFunctions.push_back(func);
-    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVTemp60::waitForTempToRise);
-    m_tuneFunctions.push_back(func);
-    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVTemp60::showSignalsDialog);
-    m_tuneFunctions.push_back(func);
-    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVTemp60::analogMeasurement);
-    m_tuneFunctions.push_back(func);
-    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVTemp60::inputEnergomonitorValues);
-    m_tuneFunctions.push_back(func);
-    if (m_tuneStep == KIVTS_20TUNING)
+    addTuneFunc("1. Ввод пароля...", &AbstractTuneDialog::CheckPassword);
+    addTuneFunc("2. Сохранение конфигурации...", &AbstractTuneDialog::saveWorkConfig);
+    addTuneFunc("3. Задание временной конфигурации и настроечных параметров...", &TuneKIVTemp60::setNewConfAndTune);
+    addTuneFunc("4. Выдача диалога о температуре в камере...", &TuneKIVTemp60::showTempDialog);
+    addTuneFunc("5. Ожидание установления температурного режима...", &TuneKIVTemp60::waitForTempToRise);
+    addTuneFunc("6. Диалог об установлении входных сигналов...", &TuneKIVTemp60::showSignalsDialog);
+    addTuneFunc("7. Измерения...", &TuneKIVTemp60::analogMeasurement);
+    if (m_tuneStep == KIVTS_60TUNING)
+        addTuneFunc("8. Ввод данных энергомонитора и сохранение промежуточных данных...",
+            &TuneKIVTemp60::inputEnergomonitorValues);
+    else
     {
-        func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVTemp60::writeTuneCoefs);
-        m_tuneFunctions.push_back(func);
+        addTuneFunc("8. Ввод данных энергомонитора...", &TuneKIVTemp60::inputEnergomonitorValues);
+        addTuneFunc("9. Запись коэффициентов в модуль...", &TuneKIVTemp60::writeTuneCoefs);
     }
 }
 
@@ -88,8 +64,8 @@ Error::Msg TuneKIVTemp60::setNewConfAndTune()
     // CKIV->Bci_block.C_pasp[0] = CKIV->Bci_block.C_pasp[1] = CKIV->Bci_block.C_pasp[2] = 2250;
     // CKIV->Bci_block.Unom1 = 220;
 
-    configV->setRecordValue({ XmlConfigParser::GetIdByName("C_Pasp_ID"), DataTypes::FLOAT_3t({ 2250, 2250, 2250 }) });
-    configV->setRecordValue({ XmlConfigParser::GetIdByName("Unom1"), float(220) });
+    configV->setRecordValue({ S2::GetIdByName("C_Pasp_ID"), DataTypes::FLOAT_3t({ 2250, 2250, 2250 }) });
+    configV->setRecordValue({ S2::GetIdByName("Unom1"), float(220) });
 
     if (BaseInterface::iface()->writeConfFileSync(configV->getConfig()) != Error::Msg::NoError)
         return Error::Msg::GeneralError;

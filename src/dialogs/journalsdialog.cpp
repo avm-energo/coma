@@ -1,25 +1,27 @@
 #include "../dialogs/journalsdialog.h"
 
 #include "../dialogs/keypressdialog.h"
-#include "../gen/colors.h"
-#include "../gen/datamanager/datamanager.h"
-#include "../gen/datamanager/typesproxy.h"
-#include "../gen/error.h"
-#include "../gen/files.h"
-#include "../gen/stdfunc.h"
-#include "../gen/timefunc.h"
 #include "../module/board.h"
+#include "../widgets/QProgressIndicator.h"
 #include "../widgets/wd_func.h"
+
 #ifdef MODELDEBUG
 #include <QAbstractItemModelTester>
 #endif
-#include "../widgets/QProgressIndicator.h"
 
 #include <QDateTime>
 #include <QDebug>
 #include <QHeaderView>
 #include <QSortFilterProxyModel>
 #include <QVBoxLayout>
+#include <gen/colors.h>
+#include <gen/datamanager/datamanager.h>
+#include <gen/datamanager/typesproxy.h>
+#include <gen/error.h>
+#include <gen/files.h>
+#include <gen/stdfunc.h>
+#include <gen/timefunc.h>
+
 namespace crypto
 {
 static constexpr char hash[] = "d93fdd6d1fb5afcca939fa650b62541d09dbcb766f41c39352dc75f348fb35dc";

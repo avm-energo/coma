@@ -3,8 +3,8 @@
 
 #include "trendviewmodel.h"
 
-#include <../qcustomplot/qcustomplot.h>
 #include <QDialog>
+#include <qcustomplot.h>
 
 class QToolBar;
 class SignalChooseWidget;

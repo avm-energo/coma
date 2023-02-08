@@ -1,7 +1,5 @@
 #include "interfaceethernetdialog.h"
 
-#include "../gen/error.h"
-#include "../gen/stdfunc.h"
 #include "../widgets/wd_func.h"
 
 #include <QCoreApplication>
@@ -16,6 +14,9 @@
 #include <QtConcurrent/QtConcurrent>
 #include <QtConcurrent/QtConcurrentMap>
 #include <QtNetwork/QHostAddress>
+#include <gen/error.h>
+#include <gen/stdfunc.h>
+
 InterfaceEthernetDialog::InterfaceEthernetDialog(QWidget *parent) : AbstractInterfaceDialog(parent)
 {
 }

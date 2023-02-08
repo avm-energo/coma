@@ -1,6 +1,6 @@
 #include "trendviewmodelkdv.h"
 
-#include "../gen/colors.h"
+#include <gen/colors.h>
 
 TrendViewModelKDV::TrendViewModelKDV(int pointsnum) : TrendViewModel(pointsnum)
 {

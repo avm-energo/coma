@@ -1,55 +1,21 @@
 #include "datarecv.h"
 
+#include "../module/configstorage.h"
 #include "s2helper.h"
 
 #include <type_traits>
 
-DataTypes::valueMap DataTypes::DataRecV::map;
-
 namespace DataTypes
 {
-
-void DataRecV::printer() const
-{
-    std::cout << id << " : ";
-    valueType w = data;
-    std::visit([](auto arg) { detail::print(arg); }, w);
-    std::cout << std::endl;
-}
-
-S2DataTypes::DataRec DataRecV::serialize() const
-{
-    return std::visit(
-        [=](auto &arg) -> S2DataTypes::DataRec {
-            typedef std::remove_reference_t<decltype(arg)> internalType;
-            S2DataTypes::DataRec record { id, sizeof(internalType), (void *)(&arg) };
-            return record;
-        },
-        data);
-}
-
-template <typename T, typename F> static constexpr bool is_variant_alternative()
-{
-    constexpr auto size = std::variant_size_v<F>;
-    bool state = false;
-    std_ext::for_constexpr<size>([&](auto index) {
-        if constexpr (std::is_same_v<T, std::variant_alternative_t<index, F>>)
-        {
-            state = true;
-        }
-    });
-    return state;
-}
-
-DataRecV::DataRecV(const valueMap &_map, const S2DataTypes::DataRec &record, const char *rawdata) : id(record.header.id)
+DataRecV::DataRecV(const S2DataTypes::DataRec &record, const char *rawdata) : id(record.header.id)
 {
     using namespace detail;
-
-    auto search = _map.map().find(id);
-    assert(search != _map.map().end());
+    auto &s2map = ConfigStorage::GetInstance().getS2Map();
+    auto search = s2map.find(id);
+    assert(search != s2map.end());
 
     // Exception inside ctor https://www.stroustrup.com/bs_faq2.html#ctor-exceptions
-    auto value = _map.map().at(record.header.id);
+    auto value = s2map.at(record.header.id);
     switch (value.hash())
     {
     case ctti::unnamed_type_id<BYTE>().hash():
@@ -132,7 +98,7 @@ DataRecV::DataRecV(const valueMap &_map, const S2DataTypes::DataRec &record, con
         helper<DWORD_32t>(record.header.numByte, rawdata, data);
         break;
     }
-    case ctti::unnamed_type_id<float>().hash():
+    case ctti::unnamed_type_id<FLOAT>().hash():
     {
         helper<float>(record.header.numByte, rawdata, data);
         break;
@@ -172,134 +138,103 @@ DataRecV::DataRecV(const valueMap &_map, const S2DataTypes::DataRec &record, con
     }
 }
 
-DataRecV::DataRecV(const valueMap &_map, const unsigned _id, const QString &str) : id(_id)
+DataRecV::DataRecV(quint16 _id, const QString &str) : id(_id)
 {
     using namespace detail;
+    auto &s2map = ConfigStorage::GetInstance().getS2Map();
+    auto search = s2map.find(_id);
+    assert(search != s2map.end());
 
-    auto search = _map.map().find(_id);
-    assert(search != _map.map().end());
     // return;
     // Exception inside ctor https://www.stroustrup.com/bs_faq2.html#ctor-exceptions
-
-    auto value = _map.map().at(_id);
+    auto value = s2map.at(_id);
     switch (value.hash())
     {
     case ctti::unnamed_type_id<BYTE>().hash():
-    {
         data = helper<BYTE>(str);
         break;
-    }
     case ctti::unnamed_type_id<WORD>().hash():
-    {
         data = helper<WORD>(str);
         break;
-    }
     case ctti::unnamed_type_id<DWORD>().hash():
-    {
         data = helper<DWORD>(str);
         break;
-    }
     case ctti::unnamed_type_id<INT32>().hash():
-    {
         data = helper<INT32>(str);
         break;
-    }
     case ctti::unnamed_type_id<BYTE_4t>().hash():
-    {
         data = helper<BYTE_4t>(str);
         break;
-    }
     case ctti::unnamed_type_id<WORD_4t>().hash():
-    {
         data = helper<WORD_4t>(str);
         break;
-    }
     case ctti::unnamed_type_id<DWORD_4t>().hash():
-    {
         data = helper<DWORD_4t>(str);
         break;
-    }
+    case ctti::unnamed_type_id<BYTE_6t>().hash():
+        data = helper<BYTE_6t>(str);
+        break;
+    case ctti::unnamed_type_id<WORD_6t>().hash():
+        data = helper<WORD_6t>(str);
+        break;
+    case ctti::unnamed_type_id<DWORD_6t>().hash():
+        data = helper<DWORD_6t>(str);
+        break;
     case ctti::unnamed_type_id<BYTE_8t>().hash():
-    {
         data = helper<BYTE_8t>(str);
         break;
-    }
     case ctti::unnamed_type_id<WORD_8t>().hash():
-    {
         data = helper<WORD_8t>(str);
         break;
-    }
     case ctti::unnamed_type_id<DWORD_8t>().hash():
-    {
         data = helper<DWORD_8t>(str);
         break;
-    }
     case ctti::unnamed_type_id<BYTE_16t>().hash():
-    {
         data = helper<BYTE_16t>(str);
         break;
-    }
     case ctti::unnamed_type_id<WORD_16t>().hash():
-    {
         data = helper<WORD_16t>(str);
         break;
-    }
     case ctti::unnamed_type_id<DWORD_16t>().hash():
-    {
         data = helper<DWORD_16t>(str);
         break;
-    }
     case ctti::unnamed_type_id<BYTE_32t>().hash():
-    {
         data = helper<BYTE_32t>(str);
         break;
-    }
     case ctti::unnamed_type_id<WORD_32t>().hash():
-    {
         data = helper<WORD_32t>(str);
         break;
-    }
     case ctti::unnamed_type_id<DWORD_32t>().hash():
-    {
         data = helper<DWORD_32t>(str);
         break;
-    }
     case ctti::unnamed_type_id<float>().hash():
-    {
         data = helper<float>(str);
         break;
-    }
     case ctti::unnamed_type_id<FLOAT_2t>().hash():
-    {
         data = helper<FLOAT_2t>(str);
         break;
-    }
     case ctti::unnamed_type_id<FLOAT_3t>().hash():
-    {
         data = helper<FLOAT_3t>(str);
         break;
-    }
     case ctti::unnamed_type_id<FLOAT_4t>().hash():
-    {
         data = helper<FLOAT_4t>(str);
         break;
-    }
     case ctti::unnamed_type_id<FLOAT_6t>().hash():
-    {
         data = helper<FLOAT_6t>(str);
         break;
-    }
     case ctti::unnamed_type_id<FLOAT_8t>().hash():
-    {
         data = helper<FLOAT_8t>(str);
         break;
-    }
     default:
         assert(false && "Unknown type id");
     }
 }
 
-DataRecV::DataRecV(const unsigned _id) : DataRecV(_id, QString::number(0))
+DataRecV::DataRecV(const S2DataTypes::DataRec &record) : DataRecV(record, static_cast<const char *>(record.thedata))
+{
+}
+
+DataRecV::DataRecV(quint16 _id) : DataRecV(_id, QString::number(0))
 {
 }
 
@@ -313,6 +248,25 @@ bool operator!=(const DataTypes::DataRecV &lhs, const DataTypes::DataRecV &rhs)
 {
     using namespace S2DataTypes;
     return !(lhs == rhs);
+}
+
+void DataRecV::printer() const
+{
+    std::cout << id << " : ";
+    valueType w = data;
+    std::visit([](auto arg) { detail::print(arg); }, w);
+    std::cout << std::endl;
+}
+
+S2DataTypes::DataRec DataRecV::serialize() const
+{
+    return std::visit(
+        [=](auto &arg) -> S2DataTypes::DataRec {
+            typedef std::remove_reference_t<decltype(arg)> internalType;
+            S2DataTypes::DataRec record { id, sizeof(internalType), (void *)(&arg) };
+            return record;
+        },
+        data);
 }
 
 quint16 DataRecV::getId() const
@@ -330,5 +284,10 @@ void DataRecV::setData(const valueType &value)
     // not true setter, only swapper for same internal types
     assert(data.index() == value.index());
     data = value;
+}
+
+size_t DataRecV::typeIndex() const
+{
+    return data.index();
 }
 }

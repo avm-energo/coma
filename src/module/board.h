@@ -3,9 +3,10 @@
 #define DEVICETYPE_MODULE 1 // модуль
 #define DEVICETYPE_DEVICE 2 // прибор
 
-#include "../gen/datatypes.h"
-#include "../gen/singleton.h"
 #include "modules.h"
+
+#include <gen/datatypes.h>
+#include <gen/singleton.h>
 
 class Board : public QObject, public Singleton<Board>
 {
@@ -37,6 +38,7 @@ public:
         Emulator
     };
 
+    // TODO: Здесь мог бы быть ваш рефакторинг ;)
     enum Types
     {
         None = 0,
@@ -111,12 +113,13 @@ public:
     {
         return m_startupInfoBlock;
     }
+
     const Modules::StartupInfoBlockExt0 &baseSerialInfoExt() const
     {
         return m_startupInfoBlockExt;
     }
 
-    static bool isUSIO(Modules::BaseBoard typeB, Modules::MezzanineBoard typeM);
+    static bool isUSIO(Modules::BaseBoard &typeB, Modules::MezzanineBoard &typeM);
 
 private:
     static constexpr int StartupInfoBlockMembers = sizeof(Modules::StartupInfoBlock) / sizeof(quint32);
@@ -151,10 +154,10 @@ signals:
     void typeChanged();
     void typeChanged(quint16);
     void connectionStateChanged(Board::ConnectionState);
-    /// This signal is emitted when StartupInfoBlock::Hth
+    /// \brief This signal is emitted when StartupInfoBlock::Hth is changed.
     void healthChanged(quint32);
-    /// This signal is emitted when all StartupInfoBlock members updated
+    /// \brief This signal is emitted when all StartupInfoBlock members are updated.
     void readyRead();
-    /// This signal is emitted when all StartupInfoBlockExt members updated
+    /// \brief This signal is emitted when all StartupInfoBlockExt members are updated.
     void readyReadExt();
 };
