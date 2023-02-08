@@ -94,9 +94,9 @@ conan_cmake_autodetect(settings)
 # Collecting Boost headers and hidapi library on windows
 if(CMAKE_SYSTEM_NAME_LOWER STREQUAL "windows")
   conan_cmake_configure(
-    REQUIRES hidapi/0.10.1 boost/1.75.0
+    REQUIRES hidapi/0.10.1 boost/1.75.0 xz_utils/5.2.5
     GENERATORS cmake_find_package
-    OPTIONS hidapi:shared=True boost:header_only=True)
+    OPTIONS hidapi:shared=True boost:header_only=True xz_utils:shared=False)
 else()
   conan_cmake_configure(
     REQUIRES boost/1.75.0
