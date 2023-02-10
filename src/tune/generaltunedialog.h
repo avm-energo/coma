@@ -3,6 +3,7 @@
 
 #include "../widgets/udialog.h"
 #include "abstracttunedialog.h"
+#include "../widgets/tunetabwidget.h"
 
 #include <QDomDocument>
 #include <QWidget>
@@ -25,11 +26,14 @@ public:
     GeneralTuneDialog(ConfigV *config, QWidget *parent = nullptr);
     void SetupUI();
     virtual void prepareReport();
+    int addWidgetToTabWidget(QWidget *w, const QString &caption);
 
 protected:
     ConfigV *configV;
 
 private:
+    TuneTabWidget *tuneTabWidget;
+
     void setIconProcessed(const QString &name);
     void setIconRestricted(const QString &name);
     void setIconNormal(const QString &name);

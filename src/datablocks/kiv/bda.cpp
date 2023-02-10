@@ -12,7 +12,7 @@ BdaA284::BdaA284(QObject *parent) : DataBlock(parent)
 
 void BdaA284::setupValuesDesc()
 {
-    addNewGroup("Измеренные сигналы в кодах АЦП без регулировки", "Ueff_ADC", 0, 6, &m_blockData->Ueff_ADC[0], 4);
+    addNewGroup("Измеренные сигналы в кодах АЦП без регулировки", "Ueff_ADC", 0, 6, &m_blockData->Ueff_ADC[0], 0);
     addNewValue("Frequency", "Частота, Гц", &m_blockData->Frequency, 4);
     addNewValue("Pt100", "Температура, Ом", &m_blockData->Pt100, 4);
 }

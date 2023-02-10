@@ -3,6 +3,7 @@
 
 #include "../datablocks/datablock.h"
 #include "../models/report.h"
+#include "../widgets/tunetabwidget.h"
 
 #include <QByteArray>
 #include <QCloseEvent>
@@ -88,13 +89,7 @@ public:
 
 private:
     QMap<int, DataBlock *> AbsBac;
-    struct MainWidgetStruct
-    {
-        QWidget *widget;
-        QString caption;
-    };
-    QList<MainWidgetStruct> m_mainWidgetList;
-
+    TuneTabWidget *tuneTabWidget;
     void readTuneCoefsByBac(int bacnum);
 
 signals:

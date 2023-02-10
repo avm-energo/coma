@@ -18,6 +18,7 @@
 GeneralTuneDialog::GeneralTuneDialog(ConfigV *config, QWidget *parent)
     : UDialog(parent), configV(config), m_BacWidget(new QScrollArea(this))
 {
+    tuneTabWidget = new TuneTabWidget;
     m_BacWidget->setWidgetResizable(true);
     TuneSequenceFile::init();
     m_calibrSteps = 0;
@@ -42,13 +43,18 @@ void GeneralTuneDialog::SetupUI()
         "Генерация протокола регулировки"));
     lyout->addStretch(100);
     hlyout->addLayout(lyout);
-    hlyout->addWidget(m_BacWidget, 100);
+    hlyout->addWidget(tuneTabWidget->set(), 100);
     setLayout(hlyout);
     setCalibrButtons();
 }
 
 void GeneralTuneDialog::prepareReport()
 {
+}
+
+int GeneralTuneDialog::addWidgetToTabWidget(QWidget *w, const QString &caption)
+{
+    return tuneTabWidget->addTabWidget(w, caption);
 }
 
 void GeneralTuneDialog::setCalibrButtons()

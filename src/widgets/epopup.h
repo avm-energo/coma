@@ -7,14 +7,15 @@
 #include <QKeyEvent>
 #include <QShowEvent>
 #include <map>
+#include <QMessageBox>
 
-class EPopup : public QFrame
+class EPopup : public QDialog
 {
     Q_OBJECT
 public:
     EPopup(QWidget *parent = nullptr);
     void aboutToClose();
-    void exec();
+    void Exec();
     void adjustPosition();
 
 signals:
@@ -27,7 +28,7 @@ public slots:
     void cancelSlot();
 
 private:
-    QWidget *m_parent;
+//    QWidget *m_parent;
 
 protected:
     void showEvent(QShowEvent *e);

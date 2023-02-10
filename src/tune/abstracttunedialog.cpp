@@ -37,6 +37,7 @@ AbstractTuneDialog::AbstractTuneDialog(ConfigV *config, int tuneStep, QWidget *p
     m_blockCount = 0;
     m_tuneStep = tuneStep;
     m_finished = false;
+    tuneTabWidget = new TuneTabWidget;
     GeneralTuneDialog *dlg = qobject_cast<GeneralTuneDialog *>(parent);
     if (dlg)
         connect(this, &AbstractTuneDialog::Finished, dlg, &GeneralTuneDialog::setCalibrButtons);
@@ -51,7 +52,7 @@ void AbstractTuneDialog::setupUI()
     QHBoxLayout *hlyout = new QHBoxLayout;
     QVBoxLayout *vlyout = new QVBoxLayout;
     hlyout->addWidget(tuneUI());
-    if (!m_mainWidgetList.isEmpty())
+//    if (!m_mainWidgetList.isEmpty())
         hlyout->addWidget(mainUI());
     vlyout->addLayout(hlyout);
     vlyout->addWidget(bottomUI());
@@ -126,11 +127,12 @@ QWidget *AbstractTuneDialog::mainUI()
 {
     QWidget *w = new QWidget;
     QVBoxLayout *lyout = new QVBoxLayout;
-    QTabWidget *tw = new QTabWidget;
-    tw->setObjectName("tunetw");
-    for (int i = 0; i < m_mainWidgetList.size(); ++i)
-        tw->addTab(m_mainWidgetList.at(i).widget, m_mainWidgetList.at(i).caption);
-    lyout->addWidget(tw);
+    lyout->addWidget(tuneTabWidget->set());
+//    QTabWidget *tw = new QTabWidget;
+//    tw->setObjectName("tunetw");
+//    for (int i = 0; i < m_mainWidgetList.size(); ++i)
+//        tw->addTab(m_mainWidgetList.at(i).widget, m_mainWidgetList.at(i).caption);
+//    lyout->addWidget(tw);
     w->setLayout(lyout);
     return w;
 }
@@ -199,12 +201,13 @@ Error::Msg AbstractTuneDialog::CheckPassword()
 
 int AbstractTuneDialog::addWidgetToTabWidget(QWidget *w, const QString &caption)
 {
-    MainWidgetStruct str;
-    str.widget = w;
-    str.caption = caption;
-    int widgetindex = m_mainWidgetList.size();
-    m_mainWidgetList.append(str);
-    return widgetindex;
+    return tuneTabWidget->addTabWidget(w, caption);
+//    MainWidgetStruct str;
+//    str.widget = w;
+//    str.caption = caption;
+//    int widgetindex = m_mainWidgetList.size();
+//    m_mainWidgetList.append(str);
+//    return widgetindex;
 }
 
 void AbstractTuneDialog::MsgSetVisible(AbstractTuneDialog::MsgTypes type, int msg, bool Visible)

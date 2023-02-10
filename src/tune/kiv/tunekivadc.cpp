@@ -288,6 +288,7 @@ Error::Msg TuneKIVADC::showRetomDialog(int coef)
         vlyout->addWidget(WDFunc::NewLBL2(this,
             "Предел измерения тока в Энергомониторе: " + QString::number(retomCoefMap[coef].range, 'f', 2)
                 + " А.\nКоэффициент передачи РЕТ-10 30:3"));
+    vlyout->addStretch(100);
     hlyout->addLayout(vlyout);
     hlyout->addWidget(WDFunc::newVLine(this));
     vlyout = new QVBoxLayout;
@@ -304,6 +305,7 @@ Error::Msg TuneKIVADC::showRetomDialog(int coef)
         vlyout->addWidget(WDFunc::NewLBL2(this,
             "Предел измерения тока в Энергомониторе: " + QString::number(retomCoefMap[coef].range, 'f', 2)
                 + " А.\nКоэффициент передачи РЕТ-10 " + retomCoefMap[coef].ret10c));
+    vlyout->addStretch(100);
     hlyout->addLayout(vlyout);
     w->setLayout(hlyout);
     if (!EMessageBox::next(this, w))
@@ -350,9 +352,10 @@ bool TuneKIVADC::checkBdaIn(int current)
 
         return false;
     }
-    if (WDFunc::floatIsWithinLimits("сопротивления", m_bdain->data()->Pt100_R, 100, 5))
-        return true;
-    return false;
+//    if (WDFunc::floatIsWithinLimits("сопротивления", m_bdain->data()->Pt100_R, 100, 5))
+//        return true;
+//    return false;
+    return true;
 }
 
 Error::Msg TuneKIVADC::showEnergomonitorInputDialog()

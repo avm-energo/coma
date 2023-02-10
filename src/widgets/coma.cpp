@@ -67,6 +67,8 @@
 #include <dbt.h>
 // clang-format on
 
+QPoint Coma::s_comaCenter = QPoint(0,0);
+
 void registerForDeviceNotification(QWidget *ptr)
 {
     DEV_BROADCAST_DEVICEINTERFACE devInt;
@@ -344,6 +346,16 @@ void Coma::loadSwj(const QString &filename)
     dialog->setMinimumHeight(WDFunc::getMainWindow()->height());
     dialog->setMinimumWidth(WDFunc::getMainWindow()->width());
     dialog->adjustSize();
+}
+
+//QPoint Coma::ComaPos()
+//{
+//    return Coma::s_comaPos;
+//}
+
+QPoint Coma::ComaCenter()
+{
+    return Coma::s_comaCenter;
 }
 
 void Coma::openModuleEditor()
@@ -679,7 +691,21 @@ void Coma::disconnectAndClear()
 
 void Coma::resizeEvent(QResizeEvent *event)
 {
+    s_comaCenter = geometry().center();
     QMainWindow::resizeEvent(event);
+}
+
+void Coma::moveEvent(QMoveEvent *event)
+{
+//    Coma::s_comaPos = event->pos();
+    s_comaCenter = geometry().center();
+    QMainWindow::moveEvent(event);
+}
+
+void Coma::showEvent(QShowEvent *event)
+{
+    s_comaCenter = geometry().center();
+    QMainWindow::showEvent(event);
 }
 
 void Coma::keyPressEvent(QKeyEvent *event)

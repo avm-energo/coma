@@ -93,6 +93,7 @@ void DataBlock::createWidget()
     scrollArea->setWidgetResizable(true);
     scrollArea->setWidget(w);
     m_widget = scrollArea;
+    m_widgetIsSet = true;
 }
 
 QHBoxLayout *DataBlock::addBlockValueToWidget(ValueStr &value)

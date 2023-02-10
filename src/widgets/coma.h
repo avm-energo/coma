@@ -37,6 +37,8 @@ public:
     void setupConnection();
     void loadOsc(const QString &filename);
     void loadSwj(const QString &filename);
+//    static QPoint ComaPos();
+    static QPoint ComaCenter();
 
 public slots:
     void disconnectAndClear();
@@ -65,6 +67,8 @@ private:
     ConnectStruct ConnectSettings;
     AppConfiguration mAppConfig;
     UniquePointer<DialogManager> mDlgManager;
+//    static QPoint s_comaPos, s_comaCenter;
+    static QPoint s_comaCenter;
 
     void initInterfaceConnection();
     void loadSettings();
@@ -80,6 +84,8 @@ private:
     QToolBar *createToolBar();
     void keyPressEvent(QKeyEvent *event) override;
     void resizeEvent(QResizeEvent *event) override;
+    void moveEvent(QMoveEvent *event) override;
+    void showEvent(QShowEvent *event) override;
     void prepareDialogs();
 
 signals:
