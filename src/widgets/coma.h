@@ -50,8 +50,8 @@ private slots:
     void startWork(const ConnectStruct st);
     void loadOsc();
     void loadSwj();
-    void openModuleEditor();
-    void getAbout();
+    void openXmlEditor();
+    void showAboutDialog();
     void closeEvent(QCloseEvent *event) override;
     void update(const QVariant &msg);
 

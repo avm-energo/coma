@@ -1,5 +1,4 @@
-#ifndef XMLSIGNALDIALOG_H
-#define XMLSIGNALDIALOG_H
+#pragma once
 
 #include "xmldialog.h"
 
@@ -10,5 +9,3 @@ public:
     explicit XmlSignalDialog(QWidget *parent);
     virtual void setupUI(QVBoxLayout *mainLayout) override;
 };
-
-#endif // XMLSIGNALDIALOG_H

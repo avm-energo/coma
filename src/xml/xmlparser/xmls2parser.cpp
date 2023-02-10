@@ -31,16 +31,19 @@ const QHash<QString, std::uint64_t> Xml::S2Parser::nameTypeMap = {
     { "QTableView", ctti::unnamed_type_id<QTableView>().hash() },                     //
     { "BYTE", ctti::unnamed_type_id<DataTypes::BYTE>().hash() },                      //
     { "BYTE[4]", ctti::unnamed_type_id<DataTypes::BYTE_4t>().hash() },                //
+    { "BYTE[6]", ctti::unnamed_type_id<DataTypes::BYTE_6t>().hash() },                //
     { "BYTE[8]", ctti::unnamed_type_id<DataTypes::BYTE_8t>().hash() },                //
     { "BYTE[16]", ctti::unnamed_type_id<DataTypes::BYTE_16t>().hash() },              //
     { "BYTE[32]", ctti::unnamed_type_id<DataTypes::BYTE_32t>().hash() },              //
     { "WORD", ctti::unnamed_type_id<DataTypes::WORD>().hash() },                      //
     { "WORD[4]", ctti::unnamed_type_id<DataTypes::WORD_4t>().hash() },                //
+    { "WORD[6]", ctti::unnamed_type_id<DataTypes::WORD_6t>().hash() },                //
     { "WORD[8]", ctti::unnamed_type_id<DataTypes::WORD_8t>().hash() },                //
     { "WORD[16]", ctti::unnamed_type_id<DataTypes::WORD_16t>().hash() },              //
     { "WORD[32]", ctti::unnamed_type_id<DataTypes::WORD_32t>().hash() },              //
     { "DWORD", ctti::unnamed_type_id<DataTypes::DWORD>().hash() },                    //
     { "DWORD[4]", ctti::unnamed_type_id<DataTypes::DWORD_4t>().hash() },              //
+    { "DWORD[6]", ctti::unnamed_type_id<DataTypes::DWORD_6t>().hash() },              //
     { "DWORD[8]", ctti::unnamed_type_id<DataTypes::DWORD_8t>().hash() },              //
     { "DWORD[16]", ctti::unnamed_type_id<DataTypes::DWORD_16t>().hash() },            //
     { "DWORD[32]", ctti::unnamed_type_id<DataTypes::DWORD_32t>().hash() },            //

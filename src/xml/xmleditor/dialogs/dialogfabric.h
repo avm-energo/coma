@@ -1,5 +1,4 @@
-#ifndef XMLDIALOGFABRIC_H
-#define XMLDIALOGFABRIC_H
+#pragma once
 
 #include "../models/baseeditormodel.h"
 
@@ -16,5 +15,3 @@ public:
     static void EditDialog(BaseEditorModel *model, QModelIndexList &selected, QWidget *parent = nullptr);
     static void RemoveDialog(BaseEditorModel *model, QModelIndexList &selected, QWidget *parent = nullptr);
 };
-
-#endif // XMLDIALOGFABRIC_H

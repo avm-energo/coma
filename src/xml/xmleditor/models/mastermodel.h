@@ -1,5 +1,4 @@
-#ifndef MASTERMODEL_H
-#define MASTERMODEL_H
+#pragma once
 
 #include "../../xmltags.h"
 #include "baseeditormodel.h"
@@ -33,5 +32,3 @@ signals:
     void createFile(const QStringList &creationData);
     void removeFile(const QString &filename);
 };
-
-#endif // MASTERMODEL_H

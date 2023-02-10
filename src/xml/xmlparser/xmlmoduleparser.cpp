@@ -43,10 +43,16 @@ bool Xml::ModuleParser::isCorrectModule(const QDomElement &moduleNode, const qui
 {
     if (isCorrectModuleType(moduleNode, typeB, typeM))
     {
-        if (isCorrectModuleVersion(moduleNode))
-            return true;
+        // Проверяем корректность версии только для базы
+        if (isBase)
+        {
+            if (isCorrectModuleVersion(moduleNode))
+                return true;
+            else
+                qCritical() << "Устаревшая версия ВПО, обновите ВПО";
+        }
         else
-            qCritical() << "Устаревшая версия ВПО, обновите ВПО";
+            return true;
     }
     else
         qCritical() << "Invalid module type specified in XML configuration";

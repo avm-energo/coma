@@ -1,5 +1,4 @@
-#ifndef XMLSECTIONDIALOG_H
-#define XMLSECTIONDIALOG_H
+#pragma once
 
 #include "xmldialog.h"
 
@@ -10,5 +9,3 @@ public:
     XmlSectionDialog(QWidget *parent);
     virtual void setupUI(QVBoxLayout *mainLayout) override;
 };
-
-#endif // XMLSECTIONDIALOG_H

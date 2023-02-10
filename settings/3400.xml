@@ -21,7 +21,7 @@
             </record>
             <record>
                 <id>3</id>
-                <defaultValue>1</defaultValue>
+                <defaultValue>4</defaultValue>
                 <visibility>true</visibility>
             </record>
             <record>
@@ -52,18 +52,6 @@
             <record>
                 <id>405</id>
                 <defaultValue>0</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>407</id>
-                <defaultValue>0</defaultValue>
-                <count>4</count>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>408</id>
-                <defaultValue>0</defaultValue>
-                <count>4</count>
                 <visibility>true</visibility>
             </record>
             <record>
@@ -129,6 +117,12 @@
                 <trans-type>3</trans-type>
                 <sig-group></sig-group>
             </group>
+            <group>
+                <signal-id>7</signal-id>
+                <sig-type>7</sig-type>
+                <trans-type>3</trans-type>
+                <sig-group>6</sig-group>
+            </group>
         </iec60870>
         <journals desc="Журналы">
             <work desc="Рабочий журнал"/>
@@ -185,7 +179,7 @@
                 </sgroup>
                 <sgroup header="Реальное состояние дискретных выходов" tab="1">
                     <mwidget desc="" view="bitset">
-                        <start-addr>6001</start-addr>
+                        <start-addr>5010</start-addr>
                         <count>28</count>
                         <toolTip>Дискретный выход (DIO_%1)</toolTip>
                     </mwidget>
@@ -224,7 +218,7 @@
                 <type>Float</type>
             </signal>
             <signal>
-                <start-addr>6001</start-addr>
+                <start-addr>5010</start-addr>
                 <count>1</count>
                 <id>7</id>
                 <type>BitString</type>

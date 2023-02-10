@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <module mtypem="31" mtypeb="00">
     <name>AVTUK-0031</name>
-    <version>3.7-0000</version>
     <resources>
         <alarms desc="Сигнализация">
             <critical desc="Критичные"/>
@@ -27,7 +26,7 @@
             </record>
             <record>
                 <id>235</id>
-                <defaultValue>2</defaultValue>
+                <defaultValue>0</defaultValue>
                 <visibility>true</visibility>
                 <count>11</count>
             </record>
@@ -102,7 +101,7 @@
                 <start-addr>3701</start-addr>
                 <count>30</count>
                 <id>106</id>
-                <type>Float</type>
+                <type>SinglePoint</type>
             </signal>
         </signals>
     </resources>

@@ -1,5 +1,4 @@
-#ifndef MODELFABRIC_H
-#define MODELFABRIC_H
+#pragma once
 
 #include "mastermodel.h"
 #include "xmlmodel.h"
@@ -16,5 +15,3 @@ public:
     static XmlModel *CreateRootModel(QDomNode &root, QObject *parent = nullptr);
     static MasterModel *CreateMasterModel(QObject *parent = nullptr);
 };
-
-#endif // MODELFABRIC_H

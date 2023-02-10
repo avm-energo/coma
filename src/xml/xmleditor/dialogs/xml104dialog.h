@@ -1,5 +1,4 @@
-#ifndef XML104DIALOG_H
-#define XML104DIALOG_H
+#pragma once
 
 #include "xmldialog.h"
 
@@ -18,5 +17,3 @@ public:
 public slots:
     virtual void modelDataResponse(const QStringList &response) override;
 };
-
-#endif // XML104DIALOG_H
