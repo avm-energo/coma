@@ -15,6 +15,9 @@ using INT32 = int32_t;
 using BYTE_4t = std::array<BYTE, 4>;
 using WORD_4t = std::array<WORD, 4>;
 using DWORD_4t = std::array<DWORD, 4>;
+using BYTE_6t = std::array<BYTE, 6>;
+using WORD_6t = std::array<WORD, 6>;
+using DWORD_6t = std::array<DWORD, 6>;
 using BYTE_8t = std::array<BYTE, 8>;
 using WORD_8t = std::array<WORD, 8>;
 using DWORD_8t = std::array<DWORD, 8>;
@@ -66,6 +69,7 @@ namespace detail
 
 using valueType = std::variant<BYTE, WORD, DWORD, INT32, //
     BYTE_4t, WORD_4t, DWORD_4t,                          //
+    BYTE_6t, WORD_6t, DWORD_6t,                          //
     BYTE_8t, WORD_8t, DWORD_8t,                          //
     BYTE_16t, WORD_16t, DWORD_16t,                       //
     BYTE_32t, WORD_32t, DWORD_32t,                       //

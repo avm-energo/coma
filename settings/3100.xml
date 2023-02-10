@@ -37,7 +37,7 @@
             </record>
             <record>
                 <id>205</id>
-                <defaultValue>2</defaultValue>
+                <defaultValue>0</defaultValue>
                 <visibility>true</visibility>
                 <count>11</count>
             </record>
@@ -48,7 +48,7 @@
             </record>
             <record>
                 <id>3</id>
-                <defaultValue>1</defaultValue>
+                <defaultValue>4</defaultValue>
                 <visibility>true</visibility>
             </record>
             <record>

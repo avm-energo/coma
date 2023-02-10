@@ -23,6 +23,7 @@
 #include "coma.h"
 
 #include "../comaversion/comaversion.h"
+#include "../dialogs/aboutdialog.h"
 #include "../dialogs/connectdialog.h"
 #include "../dialogs/errordialog.h"
 #include "../dialogs/keypressdialog.h"
@@ -35,14 +36,13 @@
 #include "../module/board.h"
 #include "../oscillograms/swjmanager.h"
 #include "../s2/s2.h"
-#include "../widgets/aboutwidget.h"
-#include "../widgets/epopup.h"
-#include "../widgets/splashscreen.h"
-#include "../widgets/styleloader.h"
-#include "../widgets/wd_func.h"
 #include "../xml/xmlparser/xmlconfigparser.h"
 #include "alarmwidget.h"
+#include "epopup.h"
+#include "splashscreen.h"
+#include "styleloader.h"
 #include "waitwidget.h"
+#include "wd_func.h"
 
 #include <QApplication>
 #include <QDir>
@@ -223,14 +223,14 @@ void Coma::setupMenubar()
     menu->addAction(QIcon(":/icons/tnstart.svg"), "Соединение", this, &Coma::prepareConnectDlg);
     menu->addAction(QIcon(":/icons/tnstop.svg"), "Разрыв соединения", this, &Coma::disconnectAndClear);
     menubar->addMenu(menu);
-    menubar->addAction("О программе", this, &Coma::getAbout);
+    menubar->addAction("О программе", this, &Coma::showAboutDialog);
     menubar->addSeparator();
 
     menu = new QMenu(menubar);
     menu->setTitle("Автономная работа");
     menu->addAction("Загрузка осциллограммы", this, qOverload<>(&Coma::loadOsc));
     menu->addAction("Загрузка файла переключений", this, qOverload<>(&Coma::loadSwj));
-    menu->addAction("Редактор модулей", this, &Coma::openModuleEditor);
+    menu->addAction("Редактор XML модулей", this, &Coma::openXmlEditor);
     menubar->addMenu(menu);
     setMenuBar(menubar);
 }
@@ -346,7 +346,7 @@ void Coma::loadSwj(const QString &filename)
     dialog->adjustSize();
 }
 
-void Coma::openModuleEditor()
+void Coma::openXmlEditor()
 {
     if (editor == nullptr)
         editor = new XmlEditor(this);
@@ -354,16 +354,16 @@ void Coma::openModuleEditor()
         editor->exec();
 }
 
-void Coma::getAbout()
+void Coma::showAboutDialog()
 {
-    auto about = new AboutWidget(this);
+    auto aboutDialog = new AboutDialog(this);
     const auto progName(QCoreApplication::applicationName());
     const auto comaVer(QCoreApplication::applicationVersion());
     GitVersion version;
-    about->appendLine("Config version: " + version.getConfigVersion());
-    about->prependLine(progName + " version " + QString(comaVer) + "-" + version.getGitHash());
-    about->setupUI();
-    about->exec();
+    aboutDialog->appendLine("Config version: " + version.getConfigVersion());
+    aboutDialog->prependLine(progName + " version " + QString(comaVer) + "-" + version.getGitHash());
+    aboutDialog->setupUI();
+    aboutDialog->exec();
 }
 
 void Coma::newTimers()
@@ -407,11 +407,12 @@ bool Coma::nativeEvent(const QByteArray &eventType, void *message, long *result)
 {
     Q_UNUSED(result)
 #ifdef __linux
-    Q_UNUSED(message)
+    Q_UNUSED(eventType);
+    Q_UNUSED(message);
 #endif
+#ifdef Q_OS_WINDOWS
     if (eventType == "windows_generic_MSG")
     {
-#ifdef Q_OS_WINDOWS
         auto msg = static_cast<MSG *>(message);
         int msgType = msg->message;
         if (msgType != WM_DEVICECHANGE)
@@ -427,9 +428,8 @@ bool Coma::nativeEvent(const QByteArray &eventType, void *message, long *result)
             BdaTimer->start();
             AlrmTimer->start();
         }
-#endif
     }
-
+#endif
     return false;
 }
 

@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <module mtypem="21" mtypeb="00">
     <name>AVTUK-0021</name>
-    <version>3.2-0000</version>
     <resources>
         <alarms desc="Сигнализация">
             <critical desc="Критичные">
@@ -140,16 +139,6 @@
         </alarms>
         <config desc="Конфигурация">
             <record>
-                <id>10</id>
-                <defaultValue>8</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>11</id>
-                <defaultValue>0</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
                 <id>121</id>
                 <defaultValue>1,1,1,1,1,1,1,1</defaultValue>
                 <visibility>true</visibility>
@@ -166,7 +155,7 @@
             </record>
             <record>
                 <id>124</id>
-                <defaultValue>1,1,1,1,1,1,1,1</defaultValue>
+                <defaultValue>0,0,0,0,0,0,0,0</defaultValue>
                 <visibility>true</visibility>
             </record>
             <record>
@@ -196,27 +185,27 @@
             </record>
             <record>
                 <id>131</id>
-                <defaultValue>20</defaultValue>
+                <defaultValue>0</defaultValue>
                 <visibility>true</visibility>
             </record>
             <record>
                 <id>132</id>
-                <defaultValue>2</defaultValue>
+                <defaultValue>5</defaultValue>
                 <visibility>true</visibility>
             </record>
             <record>
                 <id>133</id>
-                <defaultValue>16</defaultValue>
+                <defaultValue>5</defaultValue>
                 <visibility>true</visibility>
             </record>
             <record>
                 <id>134</id>
-                <defaultValue>5</defaultValue>
+                <defaultValue>16</defaultValue>
                 <visibility>true</visibility>
             </record>
             <record>
                 <id>135</id>
-                <defaultValue>5</defaultValue>
+                <defaultValue>2</defaultValue>
                 <visibility>true</visibility>
             </record>
             <record>
@@ -231,42 +220,7 @@
             </record>
             <record>
                 <id>138</id>
-                <defaultValue>0</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>3</id>
-                <defaultValue>1</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>4</id>
-                <defaultValue>205</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>5</id>
-                <defaultValue>5</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>6</id>
-                <defaultValue>15</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>7</id>
-                <defaultValue>10</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>8</id>
-                <defaultValue>20</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>9</id>
-                <defaultValue>12</defaultValue>
+                <defaultValue>0,0,0,0,0,0,0,0</defaultValue>
                 <visibility>true</visibility>
             </record>
         </config>
@@ -311,36 +265,36 @@
         </section-tabs>
         <sections desc="Разделы">
             <section header="Текущие данные мезонин">
-                <sgroup tab="101" header="Значение по каналу, инж. единицы">
-                    <mwidget view="float" desc="Канал №%1">
+                <sgroup header="Значение по каналу, инж. единицы" tab="101">
+                    <mwidget desc="Канал №%1" view="float">
                         <start-addr>2001</start-addr>
                         <count>8</count>
                         <toolTip>Текущее значение по каналу %1, инж. единицы</toolTip>
                     </mwidget>
                 </sgroup>
-                <sgroup tab="102" header="Макс. значение по каналу, инж. единицы">
-                    <mwidget view="float" desc="Канал №%1">
+                <sgroup header="Макс. значение по каналу, инж. единицы" tab="102">
+                    <mwidget desc="Канал №%1" view="float">
                         <start-addr>2033</start-addr>
                         <count>8</count>
                         <toolTip>Макс. значение по каналу %1, инж. единицы</toolTip>
                     </mwidget>
                 </sgroup>
-                <sgroup tab="102" header="Мин. значение по каналу, инж. единицы">
-                    <mwidget view="float" desc="Канал №%1">
+                <sgroup header="Мин. значение по каналу, инж. единицы" tab="102">
+                    <mwidget desc="Канал №%1" view="float">
                         <start-addr>2025</start-addr>
                         <count>8</count>
-                        <toolTip>Мин. значение по каналу %1</toolTip>
+                        <toolTip>Мин. значение по каналу %1, инж. единицы</toolTip>
                     </mwidget>
                 </sgroup>
-                <sgroup tab="101" header="Текущее значение напряжения по каналу, В">
-                    <mwidget view="float" desc="Канал №%1">
+                <sgroup header="Текущее значение напряжения по каналу, В" tab="101">
+                    <mwidget desc="Канал №%1" view="float">
                         <start-addr>2017</start-addr>
                         <count>8</count>
                         <toolTip>Текущее значение напряжения по каналу %1, В</toolTip>
                     </mwidget>
                 </sgroup>
-                <sgroup tab="101" header="Текущее значение тока по каналу, мА">
-                    <mwidget view="float" desc="Канал №%1">
+                <sgroup header="Текущее значение тока по каналу, мА" tab="101">
+                    <mwidget desc="Канал №%1" view="float">
                         <start-addr>2009</start-addr>
                         <count>8</count>
                         <toolTip>Текущее значение тока по каналу %1, мА</toolTip>

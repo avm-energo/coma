@@ -9,9 +9,12 @@ namespace StringData
 constexpr auto requestTransfering = "Опрос";
 constexpr auto cycleTransfering = "Циклическая передача";
 constexpr auto changeDataTransfering = "Спорадика (по изменению)";
+constexpr auto none = "None";
+
 constexpr auto zeroNum = "0";
 constexpr auto oneNum = "1";
 constexpr auto threeNum = "3";
+constexpr auto noneNum = "";
 }
 
 constexpr auto transTypeIndex = 2;
@@ -22,20 +25,24 @@ Xml104Dialog::Xml104Dialog(QWidget *parent) : XmlDialog(parent)
 
 QString Xml104Dialog::convertStringToType(const QString &namedTransType)
 {
+    using namespace StringData;
     static const QHash<QString, QString> convertMap = {
-        { StringData::requestTransfering, StringData::zeroNum },    //
-        { StringData::cycleTransfering, StringData::oneNum },       //
-        { StringData::changeDataTransfering, StringData::threeNum } //
+        { requestTransfering, zeroNum },     //
+        { cycleTransfering, oneNum },        //
+        { changeDataTransfering, threeNum }, //
+        { none, noneNum }                    //
     };
-    return convertMap.value(namedTransType, StringData::zeroNum);
+    return convertMap.value(namedTransType, zeroNum);
 }
 
 int Xml104Dialog::convertTypeToIndex(const QString &transTypeNum)
 {
+    using namespace StringData;
     static const QHash<QString, int> convertMap = {
-        { StringData::zeroNum, 0 }, //
-        { StringData::oneNum, 1 },  //
-        { StringData::threeNum, 2 } //
+        { zeroNum, 0 },  //
+        { oneNum, 1 },   //
+        { threeNum, 2 }, //
+        { noneNum, 3 }   //
     };
     return convertMap.value(transTypeNum, 0);
 }
@@ -76,16 +83,15 @@ void Xml104Dialog::setupUI(QVBoxLayout *mainLayout)
 
     // Виджеты для типа передачи
     auto transTypeLabel = new QLabel("Тип передачи: ", this);
-    auto transType = new QComboBox(this);
-    transType->addItems({ requestTransfering, cycleTransfering, changeDataTransfering });
-    transType->setEditable(true);
-    transType->setCurrentIndex(0);
-    QObject::connect(                                               //
-        transType, qOverload<int>(&QComboBox::currentIndexChanged), //
-        this, qOverload<int>(&Xml104Dialog::dataChanged));          //
+    auto transTypeInput = new QComboBox(this);
+    transTypeInput->addItems({ requestTransfering, cycleTransfering, changeDataTransfering, none });
+    transTypeInput->setCurrentIndex(0);
+    QObject::connect(                                                    //
+        transTypeInput, qOverload<int>(&QComboBox::currentIndexChanged), //
+        this, qOverload<int>(&Xml104Dialog::dataChanged));               //
     transTypeLayout->addWidget(transTypeLabel);
-    transTypeLayout->addWidget(transType);
-    dlgItems.append(transType);
+    transTypeLayout->addWidget(transTypeInput);
+    dlgItems.append(transTypeInput);
 
     // Виджеты для описания
     auto sigGroupLabel = new QLabel("Группа сигналов: ", this);
@@ -113,7 +119,7 @@ QStringList Xml104Dialog::collectData()
 void Xml104Dialog::modelDataResponse(const QStringList &response)
 {
     XmlDialog::modelDataResponse(response);
-    auto transType = std::get<QComboBox *>(dlgItems[transTypeIndex]);
-    transType->setCurrentIndex(convertTypeToIndex(response[transTypeIndex]));
+    auto transTypeInput = std::get<QComboBox *>(dlgItems[transTypeIndex]);
+    transTypeInput->setCurrentIndex(convertTypeToIndex(response[transTypeIndex]));
     resetChangeState();
 }

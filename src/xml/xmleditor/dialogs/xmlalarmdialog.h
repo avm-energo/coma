@@ -1,5 +1,4 @@
-#ifndef XMLALARMDIALOG_H
-#define XMLALARMDIALOG_H
+#pragma once
 
 #include "xmldialog.h"
 
@@ -10,5 +9,3 @@ public:
     explicit XmlAlarmDialog(QWidget *parent);
     virtual void setupUI(QVBoxLayout *mainLayout) override;
 };
-
-#endif // XMLALARMDIALOG_H

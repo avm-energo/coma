@@ -150,6 +150,11 @@
                 <visibility>true</visibility>
             </record>
             <record>
+                <id>11</id>
+                <defaultValue>0</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
                 <id>1003</id>
                 <defaultValue>100</defaultValue>
                 <visibility>true</visibility>
@@ -301,7 +306,7 @@
             </record>
             <record>
                 <id>1081</id>
-                <defaultValue>32</defaultValue>
+                <defaultValue>256</defaultValue>
                 <visibility>true</visibility>
             </record>
             <record>
@@ -430,6 +435,36 @@
                 <visibility>true</visibility>
             </record>
             <record>
+                <id>1223</id>
+                <defaultValue>600</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>1224</id>
+                <defaultValue>700</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>1225</id>
+                <defaultValue>2.5</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>1226</id>
+                <defaultValue>3.0</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>1227</id>
+                <defaultValue>5.0</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>1228</id>
+                <defaultValue>7.0</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
                 <id>20</id>
                 <defaultValue>172,16,29,12</defaultValue>
                 <visibility>true</visibility>
@@ -451,12 +486,12 @@
             </record>
             <record>
                 <id>24</id>
-                <defaultValue>172,16,29,12</defaultValue>
+                <defaultValue>172,16,31,220</defaultValue>
                 <visibility>true</visibility>
             </record>
             <record>
                 <id>25</id>
-                <defaultValue>9600</defaultValue>
+                <defaultValue>0</defaultValue>
                 <visibility>true</visibility>
             </record>
             <record>
@@ -466,7 +501,7 @@
             </record>
             <record>
                 <id>27</id>
-                <defaultValue>0</defaultValue>
+                <defaultValue>1</defaultValue>
                 <visibility>true</visibility>
             </record>
             <record>
@@ -476,7 +511,7 @@
             </record>
             <record>
                 <id>3</id>
-                <defaultValue>1</defaultValue>
+                <defaultValue>8</defaultValue>
                 <visibility>true</visibility>
             </record>
             <record>
@@ -806,127 +841,127 @@
         <modbus desc="Протокол Modbus">
             <group>
                 <signal-id>1</signal-id>
-                <reg-type>04</reg-type>
+                <reg-type>4</reg-type>
                 <type>uint32</type>
                 <desc>Bsi</desc>
             </group>
             <group>
                 <signal-id>14</signal-id>
-                <reg-type>04</reg-type>
+                <reg-type>4</reg-type>
                 <type>float</type>
                 <desc>shearAngle</desc>
             </group>
             <group>
                 <signal-id>15</signal-id>
-                <reg-type>04</reg-type>
+                <reg-type>4</reg-type>
                 <type>float</type>
                 <desc>power</desc>
             </group>
             <group>
                 <signal-id>16</signal-id>
-                <reg-type>04</reg-type>
+                <reg-type>4</reg-type>
                 <type>float</type>
                 <desc>harmonicUA</desc>
             </group>
             <group>
                 <signal-id>17</signal-id>
-                <reg-type>04</reg-type>
+                <reg-type>4</reg-type>
                 <type>float</type>
                 <desc>harmonicUB</desc>
             </group>
             <group>
                 <signal-id>18</signal-id>
-                <reg-type>04</reg-type>
+                <reg-type>4</reg-type>
                 <type>float</type>
                 <desc>harmonicUC</desc>
             </group>
             <group>
                 <signal-id>19</signal-id>
-                <reg-type>04</reg-type>
+                <reg-type>4</reg-type>
                 <type>float</type>
                 <desc>harmonicIA</desc>
             </group>
             <group>
                 <signal-id>2</signal-id>
-                <reg-type>04</reg-type>
+                <reg-type>4</reg-type>
                 <type>float</type>
                 <desc>tempAndU</desc>
             </group>
             <group>
                 <signal-id>20</signal-id>
-                <reg-type>04</reg-type>
+                <reg-type>4</reg-type>
                 <type>float</type>
                 <desc>harmonicIB</desc>
             </group>
             <group>
                 <signal-id>21</signal-id>
-                <reg-type>04</reg-type>
+                <reg-type>4</reg-type>
                 <type>float</type>
                 <desc>harmonicIC</desc>
             </group>
             <group>
                 <signal-id>23</signal-id>
-                <reg-type>04</reg-type>
+                <reg-type>4</reg-type>
                 <type>float</type>
                 <desc>load</desc>
             </group>
             <group>
                 <signal-id>24</signal-id>
-                <reg-type>04</reg-type>
+                <reg-type>4</reg-type>
                 <type>float</type>
                 <desc>tempExtern</desc>
             </group>
             <group>
                 <signal-id>25</signal-id>
-                <reg-type>04</reg-type>
+                <reg-type>4</reg-type>
                 <type>float</type>
                 <desc>insulation</desc>
             </group>
             <group>
                 <signal-id>26</signal-id>
-                <reg-type>01</reg-type>
+                <reg-type>1</reg-type>
                 <type>bool</type>
                 <desc>alarmModule</desc>
             </group>
             <group>
                 <signal-id>27</signal-id>
-                <reg-type>04</reg-type>
+                <reg-type>4</reg-type>
                 <type>float</type>
                 <desc>vibrations</desc>
             </group>
             <group>
                 <signal-id>29</signal-id>
-                <reg-type>01</reg-type>
+                <reg-type>1</reg-type>
                 <type>bool</type>
                 <desc>infoAlarm</desc>
             </group>
             <group>
                 <signal-id>3</signal-id>
-                <reg-type>04</reg-type>
+                <reg-type>4</reg-type>
                 <type>float</type>
                 <desc>current</desc>
             </group>
             <group>
                 <signal-id>35</signal-id>
-                <reg-type>04</reg-type>
+                <reg-type>4</reg-type>
                 <type>float</type>
                 <desc>time</desc>
             </group>
             <group>
                 <signal-id>37</signal-id>
-                <reg-type>04</reg-type>
+                <reg-type>4</reg-type>
                 <type>uint32</type>
                 <desc>BsiExt</desc>
             </group>
             <group>
                 <signal-id>8</signal-id>
-                <reg-type>04</reg-type>
+                <reg-type>4</reg-type>
                 <type>float</type>
                 <desc>lineVoltage</desc>
             </group>
             <group>
                 <signal-id>9</signal-id>
-                <reg-type>04</reg-type>
+                <reg-type>4</reg-type>
                 <type>float</type>
                 <desc>amperage</desc>
             </group>

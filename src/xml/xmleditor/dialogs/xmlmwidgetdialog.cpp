@@ -72,7 +72,6 @@ void XmlMWidgetDialog::setupUI(QVBoxLayout *mainLayout)
     auto viewLabel = new QLabel("Тип отображения: ", this);
     auto viewInput = new QComboBox(this);
     viewInput->addItems({ "float", "bitset" });
-    // viewInput->setEditable(true);
     viewInput->setCurrentIndex(0);
     viewLayout->addWidget(viewLabel);
     viewLayout->addWidget(viewInput);

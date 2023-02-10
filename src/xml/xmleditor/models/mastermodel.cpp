@@ -12,10 +12,13 @@ QDomElement MasterModel::toNode(QDomDocument &doc, const int &row)
 {
     // Создаём основной узел
     auto moduleNode = makeElement(doc, tags::module);
-    setAttribute(doc, moduleNode, tags::mtypeb, data(index(row, 1)));
+    const auto typeB = data(index(row, 1));
+    setAttribute(doc, moduleNode, tags::mtypeb, typeB);
     setAttribute(doc, moduleNode, tags::mtypem, data(index(row, 2)));
     makeElement(doc, moduleNode, tags::name, data(index(row, 0)));
-    makeElement(doc, moduleNode, tags::version, data(index(row, 3)));
+    // Для мезонинных плат не сохраняем ноду <version>
+    if (typeB.value<QString>() != "00")
+        makeElement(doc, moduleNode, tags::version, data(index(row, 3)));
     return moduleNode;
 }
 
@@ -75,7 +78,7 @@ void MasterModel::readModulesToModel()
             }
             // Если QtXml парсер не смог корректно считать xml файл
             else
-                qWarning() << errMsg << " Line: " << line << " Column: " << column;
+                qWarning() << errMsg << " File: " << name << " Line: " << line << " Column: " << column;
             moduleFile->close();
         }
         moduleFile->deleteLater();
@@ -99,7 +102,9 @@ void MasterModel::parseXmlNode(const QDomNode &node, const QString &filename, co
             setData(index(row, 0), domElName.text());
         // И его версию
         auto domElVersion = domElModule.firstChildElement(tags::version);
-        if (!domElVersion.isNull())
+        if (domElVersion.isNull())
+            setData(index(row, 3), "No version");
+        else
             setData(index(row, 3), domElVersion.text());
     }
 }
