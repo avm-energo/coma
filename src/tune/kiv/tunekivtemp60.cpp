@@ -222,9 +222,9 @@ Error::Msg TuneKIVTemp60::inputEnergomonitorValues()
     //    QVBoxLayout *vlyout = new QVBoxLayout;
     //    vlyout->addWidget(WDFunc::NewLBL2(this, "Ввод значений сигналов c Энергомонитора"));
 
-    popup->addFloatParameter("Uэт, В", m_midTuneStruct.uet);
-    popup->addFloatParameter("Iэт, мА", m_midTuneStruct.iet);
-    popup->addFloatParameter("Yэт, град", m_midTuneStruct.yet);
+    popup->addFloatParameter("Uэт, В", &m_midTuneStruct.uet);
+    popup->addFloatParameter("Iэт, мА", &m_midTuneStruct.iet);
+    popup->addFloatParameter("Yэт, град", &m_midTuneStruct.yet);
     //    vlyout->addWidget(WDFunc::NewLBLAndLE(this, "Uэт, В", "ValuetuneU", true));
     //    vlyout->addWidget(WDFunc::NewLBLAndLE(this, "Iэт, мА", "ValuetuneI", true));
     //    vlyout->addWidget(WDFunc::NewLBLAndLE(this, "Yэт, град", "ValuetuneY", true));

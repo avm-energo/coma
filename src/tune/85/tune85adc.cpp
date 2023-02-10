@@ -349,12 +349,12 @@ Error::Msg Tune85ADC::showEnergomonitorInputDialog()
     EEditablePopup *popup = new EEditablePopup("Ввод значений сигналов c Энергомонитора");
     if (m_tuneStep == TS84_ADCU)
     {
-        popup->addFloatParameter("Uэт, В", m_midTuneStruct.uet);
-        popup->addFloatParameter("fэт, Гц", m_midTuneStruct.fet);
-        popup->addFloatParameter("Yэт, град", m_midTuneStruct.yet);
+        popup->addFloatParameter("Uэт, В", &m_midTuneStruct.uet);
+        popup->addFloatParameter("fэт, Гц", &m_midTuneStruct.fet);
+        popup->addFloatParameter("Yэт, град", &m_midTuneStruct.yet);
     }
     else
-        popup->addFloatParameter("Iэт, мА", m_midTuneStruct.iet);
+        popup->addFloatParameter("Iэт, мА", &m_midTuneStruct.iet);
     return Error::Msg::NoError;
 }
 

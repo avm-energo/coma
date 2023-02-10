@@ -70,7 +70,7 @@ Error::Msg TuneKIVADC::showPreWarning()
     lyout->addWidget(WDFunc::NewLBL2(this,
         "2. Включите питание Энергомонитор 3.1КМ и настройте его на режим измерения тока"
         "и напряжения в однофазной сети переменного тока, установите предел измерения"
-        "по напряжению 60 В, по току - 2,5 А;"));
+        "по напряжению 60 В, по току - 500 мА;"));
     lyout->addWidget(WDFunc::NewLBL2(this,
         "3. Данный этап регулировки должен выполняться при температуре"
         "окружающего воздуха +20±7 °С. Если температура окружающего воздуха отличается от указанной,"
@@ -276,11 +276,11 @@ Error::Msg TuneKIVADC::showRetomDialog(int coef)
     vlyout->addWidget(WDFunc::NewLBL2(this, "РЕТОМ"));
     vlyout->addWidget(WDFunc::newHLine(this));
     QString tmps;
-    tmps = "Задайте на РЕТОМ-51 трёхфазный режим токов и напряжений (Uabc, Iabc)\n"
-           "Угол между токами и напряжениями: 89.9 град.\n"
-           "Значения напряжений: 57.75 В";
+    tmps = "Задайте на РЕТОМ-51 режим однофазного напряжения и тока (ф. А)\n"
+           "Угол между током и напряжением: 89.9 град.\n"
+           "Значение напряжения ф. А: 57.75 В";
     if (m_tuneStep == KIVTS_ADCI)
-        tmps += ", токов: " + QString::number(retomCoefMap[coef].i, 'f', 2) + " мА";
+        tmps += ", тока: " + QString::number(retomCoefMap[coef].i, 'f', 2) + " мА";
     vlyout->addWidget(WDFunc::NewLBL2(this, tmps));
     vlyout->addWidget(
         WDFunc::NewLBL2(this, "Значения тока и напряжения контролируются по показаниям прибора Энергомонитор.\n"));
@@ -360,8 +360,8 @@ bool TuneKIVADC::checkBdaIn(int current)
 
 Error::Msg TuneKIVADC::showEnergomonitorInputDialog()
 {
-    if ((m_curTuneStep != 1) && (m_tuneStep == KIVTS_ADCU)) // only the first input has any means
-        return Error::Msg::ResEmpty;
+//    if ((m_curTuneStep != 1) && (m_tuneStep == KIVTS_ADCU)) // only the first input has any means
+//        return Error::Msg::ResEmpty;
     EEditablePopup *popup = new EEditablePopup("Ввод значений сигналов c Энергомонитора");
     //    if (!m_isEnergoMonitorDialogCreated)
     //    {
@@ -371,15 +371,18 @@ Error::Msg TuneKIVADC::showEnergomonitorInputDialog()
     //        vlyout->addWidget(WDFunc::NewLBL2(this, "Ввод значений сигналов c Энергомонитора"));
     if (m_tuneStep == KIVTS_ADCU)
     {
-        popup->addFloatParameter("Uэт, В", m_midTuneStruct.uet);
-        popup->addFloatParameter("fэт, Гц", m_midTuneStruct.fet);
-        popup->addFloatParameter("Yэт, град", m_midTuneStruct.yet);
+        popup->addFloatParameter("Uэт, В", &m_midTuneStruct.uet);
+        popup->addFloatParameter("fэт, Гц", &m_midTuneStruct.fet);
+        popup->addFloatParameter("Yэт, град", &m_midTuneStruct.yet);
         //            vlyout->addWidget(WDFunc::NewLBLAndLE(this, "Uэт, В", "ValuetuneU", true));
         //            vlyout->addWidget(WDFunc::NewLBLAndLE(this, "fэт, Гц:", "ValuetuneF", true));
         //            vlyout->addWidget(WDFunc::NewLBLAndLE(this, "Yэт, град", "ValuetuneY", true));
     }
     else
-        popup->addFloatParameter("Iэт, мА", m_midTuneStruct.iet);
+        popup->addFloatParameter("Iэт, мА", &m_midTuneStruct.iet);
+    connect(popup, &EEditablePopup::accepted, this, &TuneKIVADC::CalcTuneCoefs);
+    connect(popup, &EEditablePopup::cancelled, [this] { return Error::GeneralError; });
+    popup->execPopup();
     //            vlyout->addWidget(WDFunc::NewLBLAndLE(this, "Iэт, мА", "ValuetuneI", true));
 
     //        QPushButton *pb = new QPushButton("Продолжить");

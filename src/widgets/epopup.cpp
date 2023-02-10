@@ -206,17 +206,7 @@ void EPopup::adjustPosition()
     int width2 = width() * 0.5;
     int height2 = height() * 0.5;
     QPoint centerPoint, pos;
-//    if (m_parent == nullptr)
-//    {
-//        centerPoint = globalGeometry.center();
-//        pos = QPoint(0,0);
-//    }
-//    else
-//    {
-//        centerPoint = m_parent->geometry().center();
-//        pos = m_parent->pos();
-        centerPoint = Coma::ComaCenter();
-//    }
+    centerPoint = Coma::ComaCenter();
     int right = centerPoint.x() + width2;
     int down = centerPoint.y() + height2;
     if ((right > globalWidth) || (down > globalHeight))
@@ -265,16 +255,16 @@ EEditablePopup::EEditablePopup(const QString &caption, QWidget *parent) : EPopup
     this->caption = caption;
 }
 
-void EEditablePopup::addFloatParameter(const QString &name, float &parameter)
+void EEditablePopup::addFloatParameter(const QString &name, float *parameter)
 {
-    m_floatParList[name] = std::make_unique<float>(parameter);
+    m_floatParList[name] = parameter;
 }
 
 void EEditablePopup::execPopup()
 {
     auto lyout = new QVBoxLayout;
     lyout->addWidget(WDFunc::NewLBL2(this, caption));
-    for (std::map<QString, std::unique_ptr<float>>::iterator it = m_floatParList.begin(); it != m_floatParList.end();
+    for (std::map<QString, float *>::iterator it = m_floatParList.begin(); it != m_floatParList.end();
          ++it)
         lyout->addWidget(WDFunc::NewLBLAndLE(this, it->first, it->first, true));
     auto hlyout = new QHBoxLayout;
@@ -292,7 +282,7 @@ void EEditablePopup::execPopup()
 
 void EEditablePopup::acceptSlot()
 {
-    for (std::map<QString, std::unique_ptr<float>>::iterator it = m_floatParList.begin(); it != m_floatParList.end();
+    for (std::map<QString, float *>::iterator it = m_floatParList.begin(); it != m_floatParList.end();
          ++it)
     {
         bool isOk = false;
@@ -305,9 +295,9 @@ void EEditablePopup::acceptSlot()
             EMessageBox::warning(this, "Значение " + it->first + "ошибочно, будет принудительно приравнено нулю");
             *it->second = 0.0;
         }
-        emit accepted();
-        aboutToClose();
     }
+    emit accepted();
+    aboutToClose();
 }
 
 void EEditablePopup::cancelSlot()

@@ -212,9 +212,9 @@ Error::Msg Tune84Temp60::analogMeasurement()
 Error::Msg Tune84Temp60::inputEnergomonitorValues()
 {
     EEditablePopup *popup = new EEditablePopup("Ввод значений сигналов c Энергомонитора");
-    popup->addFloatParameter("Uэт, В", m_midTuneStruct.uet);
-    popup->addFloatParameter("Iэт, мА", m_midTuneStruct.iet);
-    popup->addFloatParameter("Yэт, град", m_midTuneStruct.yet);
+    popup->addFloatParameter("Uэт, В", &m_midTuneStruct.uet);
+    popup->addFloatParameter("Iэт, мА", &m_midTuneStruct.iet);
+    popup->addFloatParameter("Yэт, град", &m_midTuneStruct.yet);
     if (EMessageBox::editableNext(popup))
     {
         if (m_tuneStep == TS84_60TUNING)

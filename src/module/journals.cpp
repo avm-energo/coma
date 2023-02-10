@@ -87,17 +87,17 @@ QVector<QVector<QVariant>> Journals::createCommon(const QByteArray &array, const
         ++counter;
 
         // TODO: FIX THAT
-        int N;
+        int N = 0;
         memcpy(&N, &event.EvNum, sizeof(event.EvNum));
         N = (N & 0x00FFFFFF) - eventid;
-        Q_ASSERT((N <= desc.size()) && (N >= 0));
+//        Q_ASSERT((N <= desc.size()) && (N >= 0));
         QString eventDesc;
         if ((N <= desc.size()) && (N >= 0))
         {
             eventDesc = desc.at(N);
         }
         else
-            eventDesc = "Некорректный номер события";
+            eventDesc = "Некорректный номер события: " + QString::number(N);
 
         QString eventType;
         if (event.EvType)
@@ -133,7 +133,7 @@ void Journals::FillEventsTable(const QByteArray &ba)
     }
     else
     {
-        mineventid = 100;
+        mineventid = 100; // ЧТО ЭТО ЗА ХУРМА???
         sl = m_workJourDescription;
         model = m_workModel;
     }
