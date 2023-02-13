@@ -310,7 +310,7 @@ void TuneKIVADC::IULayout(RegType type, int coef, QVBoxLayout *lyout)
     if (m_tuneStep == KIVTS_ADCI)
         lyout->addWidget(WDFunc::NewLBL2(this,
             "Предел измерения тока в Энергомониторе: " + map[type][coef].EMRange
-                + " А.\nКоэффициент передачи РЕТ-10: " + map[type][coef].Ret10Coef));
+                + "\nКоэффициент передачи РЕТ-10: " + map[type][coef].Ret10Coef));
     lyout->addStretch(100);
 }
 
