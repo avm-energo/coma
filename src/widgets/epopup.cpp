@@ -1,14 +1,14 @@
 #include "epopup.h"
 
+#include "coma.h"
 #include "passwordlineedit.h"
 #include "wd_func.h"
-#include "coma.h"
 
+#include <QApplication>
 #include <QCryptographicHash>
+#include <QDesktopWidget>
 #include <QEventLoop>
 #include <QGuiApplication>
-#include <QApplication>
-#include <QDesktopWidget>
 #include <QPropertyAnimation>
 #include <QScreen>
 #include <QTimer>
@@ -205,7 +205,7 @@ void EPopup::adjustPosition()
     int globalHeight = globalGeometry.height();
     int width2 = width() * 0.5;
     int height2 = height() * 0.5;
-    QPoint centerPoint, pos;
+    QPoint centerPoint;
     centerPoint = Coma::ComaCenter();
     int right = centerPoint.x() + width2;
     int down = centerPoint.y() + height2;
@@ -235,6 +235,8 @@ void EPopup::keyPressEvent(QKeyEvent *e)
 {
     if (e->key() == Qt::Key_Escape)
         cancelSlot();
+    if ((e->key() == Qt::Key_Enter) || (e->key() == Qt::Key_Return))
+        acceptSlot();
 }
 
 void EPopup::acceptSlot()
@@ -264,8 +266,7 @@ void EEditablePopup::execPopup()
 {
     auto lyout = new QVBoxLayout;
     lyout->addWidget(WDFunc::NewLBL2(this, caption));
-    for (std::map<QString, float *>::iterator it = m_floatParList.begin(); it != m_floatParList.end();
-         ++it)
+    for (std::map<QString, float *>::iterator it = m_floatParList.begin(); it != m_floatParList.end(); ++it)
         lyout->addWidget(WDFunc::NewLBLAndLE(this, it->first, it->first, true));
     auto hlyout = new QHBoxLayout;
     hlyout->addStretch(100);
@@ -282,8 +283,7 @@ void EEditablePopup::execPopup()
 
 void EEditablePopup::acceptSlot()
 {
-    for (std::map<QString, float *>::iterator it = m_floatParList.begin(); it != m_floatParList.end();
-         ++it)
+    for (std::map<QString, float *>::iterator it = m_floatParList.begin(); it != m_floatParList.end(); ++it)
     {
         bool isOk = false;
         float fl;

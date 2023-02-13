@@ -14,6 +14,12 @@ class TuneKIVADC : public AbstractTuneDialog
 {
     Q_OBJECT
 public:
+    enum RegType
+    {
+        RETOM = 0,
+        IMITATOR = 1
+    };
+
     TuneKIVADC(ConfigV *config, int tuneStep, QWidget *parent = nullptr);
 
 private:
@@ -55,6 +61,7 @@ private:
     Error::Msg ADCCoef(int coef);
     Error::Msg setADCCoef(const int coef);
     Error::Msg showRetomDialog(int coef);
+    void IULayout(RegType type, int coef, QVBoxLayout *lyout);
     QWidget *BdWidget();
     bool checkBdaIn(int current);
     Error::Msg showEnergomonitorInputDialog();

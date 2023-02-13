@@ -252,75 +252,66 @@ Error::Msg TuneKIVADC::setADCCoef(const int coef)
     configV->setRecordValue({ S2::GetIdByName("C_Pasp_ID"),
         DataTypes::FLOAT_3t({ adcCoefMap.value(coef), adcCoefMap.value(coef), adcCoefMap.value(coef) }) });
 
-    // CKIV->Bci_block.C_pasp[0] = CKIV->Bci_block.C_pasp[1] = CKIV->Bci_block.C_pasp[2] = adcCoefMap[coef];
-
     return BaseInterface::iface()->writeConfFileSync(configV->getConfig());
 }
 
 Error::Msg TuneKIVADC::showRetomDialog(int coef)
 {
-    struct retomStruct
-    {
-        double i;
-        double range;
-        QString ret10c;
-    };
-
-    QMap<int, retomStruct> retomCoefMap
-        = { { 1, { 290, 2.5, "30:3" } }, { 2, { 250, 2.5, "30:3" } }, { 4, { 140, 1, "30:6" } },
-              { 8, { 80, 0.5, "30:6" } }, { 16, { 40, 0.1, "1:1" } }, { 32, { 23, 0.05, "1:1" } } };
-    //    QDialog *dlg = new QDialog;
     QWidget *w = new QWidget(this);
     QHBoxLayout *hlyout = new QHBoxLayout;
     QVBoxLayout *vlyout = new QVBoxLayout;
     vlyout->addWidget(WDFunc::NewLBL2(this, "РЕТОМ"));
     vlyout->addWidget(WDFunc::newHLine(this));
-    QString tmps;
-    tmps = "Задайте на РЕТОМ-51 режим однофазного напряжения и тока (ф. А)\n"
-           "Угол между током и напряжением: 89.9 град.\n"
-           "Значение напряжения ф. А: 57.75 В";
-    if (m_tuneStep == KIVTS_ADCI)
-        tmps += ", тока: " + QString::number(retomCoefMap[coef].i, 'f', 2) + " мА";
-    vlyout->addWidget(WDFunc::NewLBL2(this, tmps));
-    vlyout->addWidget(
-        WDFunc::NewLBL2(this, "Значения тока и напряжения контролируются по показаниям прибора Энергомонитор.\n"));
-    if (m_tuneStep == KIVTS_ADCI)
-        vlyout->addWidget(WDFunc::NewLBL2(this,
-            "Предел измерения тока в Энергомониторе: " + QString::number(retomCoefMap[coef].range, 'f', 2)
-                + " А.\nКоэффициент передачи РЕТ-10 30:3"));
-    vlyout->addStretch(100);
+    IULayout(RegType::RETOM, coef, vlyout);
     hlyout->addLayout(vlyout);
     hlyout->addWidget(WDFunc::newVLine(this));
+
     vlyout = new QVBoxLayout;
     vlyout->addWidget(WDFunc::NewLBL2(this, "ИМИТАТОР"));
     vlyout->addWidget(WDFunc::newHLine(this));
-    tmps = "Установите на имитаторе АВМ-КИВ tg = 2 %,\n"
-           "Значения напряжений: 57.75 В";
-    if (m_tuneStep == KIVTS_ADCI)
-        tmps += ", токов: " + QString::number(retomCoefMap[coef].i, 'f', 2) + " мА";
-    vlyout->addWidget(WDFunc::NewLBL2(this, tmps));
-    vlyout->addWidget(
-        WDFunc::NewLBL2(this, "Значения тока и напряжения контролируются по показаниям прибора Энергомонитор.\n"));
-    if (m_tuneStep == KIVTS_ADCI)
-        vlyout->addWidget(WDFunc::NewLBL2(this,
-            "Предел измерения тока в Энергомониторе: " + QString::number(retomCoefMap[coef].range, 'f', 2)
-                + " А.\nКоэффициент передачи РЕТ-10 " + retomCoefMap[coef].ret10c));
-    vlyout->addStretch(100);
+    IULayout(RegType::IMITATOR, coef, vlyout);
     hlyout->addLayout(vlyout);
+
     w->setLayout(hlyout);
     if (!EMessageBox::next(this, w))
         CancelTune();
-    //    lyout->addWidget(WDFunc::NewLBL2(this, tmps));
-    //    QPushButton *pb = new QPushButton("Готово");
-    //    connect(pb, &QAbstractButton::clicked, dlg, &QWidget::close);
-    //    lyout->addWidget(pb);
-    //    pb = new QPushButton("Отмена");
-    //    connect(pb, &QAbstractButton::clicked, this, &AbstractTuneDialog::CancelTune);
-    //    connect(pb, &QAbstractButton::clicked, dlg, &QWidget::close);
-    //    lyout->addWidget(pb);
-    //    dlg->setLayout(lyout);
-    //    dlg->exec();
     return Error::Msg::NoError;
+}
+
+void TuneKIVADC::IULayout(RegType type, int coef, QVBoxLayout *lyout)
+{
+    struct retomStruct
+    {
+        QString I;
+        QString EMRange;
+        QString Ret10Coef;
+    };
+    QMap<int, retomStruct> retomCoefMap = { { 1, { "2,9 A", "500 mA", "30:3" } }, { 2, { "2,5 A", "500 mA", "30:3" } },
+        { 4, { "1,4 A", "250 mA", "30:3" } }, { 8, { "8 A", "100 mA", "300:3" } }, { 16, { "4 A", "50 mA", "300:3" } },
+        { 32, { "2.3 A", "50 mA", "300:3" } } };
+    QMap<int, retomStruct> ImCoefMap = { { 1, { "290 mA", "500 mA", "30:3" } }, { 2, { "250 mA", "500 mA", "30:3" } },
+        { 4, { "140 mA", "250 mA", "30:6" } }, { 8, { "80 mA", "100 mA", "30:6" } },
+        { 16, { "40 mA", "50 mA", "1:1" } }, { 32, { "23 mA", "50 mA", "1:1" } } };
+    QMap<RegType, QMap<int, retomStruct>> map = { { RegType::IMITATOR, ImCoefMap }, { RegType::RETOM, retomCoefMap } };
+
+    QString tmps;
+    if (type == RegType::IMITATOR)
+        tmps = "Установите на имитаторе АВМ-КИВ tg = 2 %,\n"
+               "Значения напряжений: 57.75 В";
+    else
+        tmps = "Задайте на РЕТОМ-51 режим однофазного напряжения и тока (ф. А)\n"
+               "Угол между током и напряжением: 89.9 град.\n"
+               "Значение напряжения ф. А: 57.75 В";
+    if (m_tuneStep == KIVTS_ADCI)
+        tmps += ", тока: " + map[type][coef].I;
+    lyout->addWidget(WDFunc::NewLBL2(this, tmps));
+    lyout->addWidget(
+        WDFunc::NewLBL2(this, "Значения тока и напряжения контролируются по показаниям прибора Энергомонитор.\n"));
+    if (m_tuneStep == KIVTS_ADCI)
+        lyout->addWidget(WDFunc::NewLBL2(this,
+            "Предел измерения тока в Энергомониторе: " + map[type][coef].EMRange
+                + " А.\nКоэффициент передачи РЕТ-10: " + map[type][coef].Ret10Coef));
+    lyout->addStretch(100);
 }
 
 bool TuneKIVADC::checkBdaIn(int current)
@@ -352,52 +343,23 @@ bool TuneKIVADC::checkBdaIn(int current)
 
         return false;
     }
-//    if (WDFunc::floatIsWithinLimits("сопротивления", m_bdain->data()->Pt100_R, 100, 5))
-//        return true;
-//    return false;
     return true;
 }
 
 Error::Msg TuneKIVADC::showEnergomonitorInputDialog()
 {
-//    if ((m_curTuneStep != 1) && (m_tuneStep == KIVTS_ADCU)) // only the first input has any means
-//        return Error::Msg::ResEmpty;
     EEditablePopup *popup = new EEditablePopup("Ввод значений сигналов c Энергомонитора");
-    //    if (!m_isEnergoMonitorDialogCreated)
-    //    {
-    //        QDialog *dlg = new QDialog(this);
-    //        dlg->setObjectName("energomonitordlg");
-    //        QVBoxLayout *vlyout = new QVBoxLayout;
-    //        vlyout->addWidget(WDFunc::NewLBL2(this, "Ввод значений сигналов c Энергомонитора"));
     if (m_tuneStep == KIVTS_ADCU)
     {
         popup->addFloatParameter("Uэт, В", &m_midTuneStruct.uet);
         popup->addFloatParameter("fэт, Гц", &m_midTuneStruct.fet);
         popup->addFloatParameter("Yэт, град", &m_midTuneStruct.yet);
-        //            vlyout->addWidget(WDFunc::NewLBLAndLE(this, "Uэт, В", "ValuetuneU", true));
-        //            vlyout->addWidget(WDFunc::NewLBLAndLE(this, "fэт, Гц:", "ValuetuneF", true));
-        //            vlyout->addWidget(WDFunc::NewLBLAndLE(this, "Yэт, град", "ValuetuneY", true));
     }
     else
         popup->addFloatParameter("Iэт, мА", &m_midTuneStruct.iet);
     connect(popup, &EEditablePopup::accepted, this, &TuneKIVADC::CalcTuneCoefs);
-    connect(popup, &EEditablePopup::cancelled, [this] { return Error::GeneralError; });
+    connect(popup, &EEditablePopup::cancelled, [] { return Error::GeneralError; });
     popup->execPopup();
-    //            vlyout->addWidget(WDFunc::NewLBLAndLE(this, "Iэт, мА", "ValuetuneI", true));
-
-    //        QPushButton *pb = new QPushButton("Продолжить");
-    //        connect(pb, &QAbstractButton::clicked, this, &TuneKIVADC::CalcTuneCoefs);
-    //        vlyout->addWidget(pb);
-    //        dlg->setLayout(vlyout);
-    //        m_isEnergoMonitorDialogCreated = true;
-    //        dlg->exec();
-    //    }
-    //    else
-    //    {
-    //        QDialog *dlg = this->findChild<QDialog *>("energomonitordlg");
-    //        if (dlg != nullptr)
-    //            dlg->exec();
-    //    }
     return Error::Msg::NoError;
 }
 
@@ -406,40 +368,16 @@ void TuneKIVADC::CalcTuneCoefs()
     QMap<int, float *> kmimap
         = { { 1, &m_bac->data()->KmI1[0] }, { 2, &m_bac->data()->KmI2[0] }, { 4, &m_bac->data()->KmI4[0] },
               { 8, &m_bac->data()->KmI8[0] }, { 16, &m_bac->data()->KmI16[0] }, { 32, &m_bac->data()->KmI32[0] } };
-    //    float uet, iet, yet, fet;
-    //    bool ok;
 
     if (m_tuneStep == KIVTS_ADCI)
     {
-        //        iet = StdFunc::toFloat(WDFunc::LEData(this, "ValuetuneI"), &ok);
-        //        if (ok)
-        //        {
         assert(kmimap.contains(m_curTuneStep));
         for (int i = 0; i < 3; ++i)
             *(kmimap.value(m_curTuneStep) + i)
                 = *(kmimap.value(m_curTuneStep) + i) * m_midTuneStruct.iet / m_bdainBlockData.IUefNat_filt[i + 3];
-        //            QDialog *dlg = this->findChild<QDialog *>("energomonitordlg");
-        //            if (dlg != nullptr)
-        //                dlg->close();
-        //            return;
-        //        }
-        //        else
-        //        {
-        //            //            QMessageBox::critical(this, "Ошибка!", "Не задано значение тока!");
-        //            EMessageBox::error("Не задано значение тока!");
-        //        }
     }
     else
     {
-        //        m_midTuneStruct.uet = StdFunc::toFloat(WDFunc::LEData(this, "ValuetuneU"), &ok);
-        //        if (ok)
-        //        {
-        //            yet = StdFunc::toFloat(WDFunc::LEData(this, "ValuetuneY"), &ok);
-        //            if (ok)
-        //            {
-        //                fet = StdFunc::toFloat(WDFunc::LEData(this, "ValuetuneF"), &ok);
-        //                if (ok)
-        //                {
         for (int i = 0; i < 3; ++i)
             m_bac->data()->KmU[i] = m_bac->data()->KmU[i] * m_midTuneStruct.uet / m_bdainBlockData.IUefNat_filt[i];
         m_bac2->data()->K_freq = m_bac2->data()->K_freq * m_midTuneStruct.fet / m_bdainBlockData.Frequency;
@@ -447,14 +385,5 @@ void TuneKIVADC::CalcTuneCoefs()
             m_bac->data()->DPsi[i] = m_bac->data()->DPsi[i] - m_bdainBlockData.phi_next_f[i];
         for (int i = 3; i < 6; ++i)
             m_bac->data()->DPsi[i] = m_bac->data()->DPsi[i] + m_midTuneStruct.yet - m_bdainBlockData.phi_next_f[i];
-        //        QDialog *dlg = this->findChild<QDialog *>("energomonitordlg");
-        //        if (dlg != nullptr)
-        //            dlg->close();
-        //        return;
-        //                }
-        //            }
-        //        }
-        //        EMessageBox::error("Не задано одно из значений!");
-        //        QMessageBox::critical(this, "Ошибка!", "Не задано одно из значений!");
     }
 }
