@@ -27,6 +27,7 @@ target_link_libraries(
   QXlsx
   xml
   limereport
-  datablocks)
+  datablocks
+  widgets)
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE ${PROJECT_NAME}_LIBRARY)
