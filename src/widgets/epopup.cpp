@@ -288,12 +288,13 @@ void EEditablePopup::acceptSlot()
         bool isOk = false;
         float fl;
         fl = WDFunc::LEData(this, it->first).toFloat(&isOk);
+        float *tmpf = it->second;
         if (isOk)
-            *it->second = fl;
+            *tmpf = fl;
         else
         {
             EMessageBox::warning(this, "Значение " + it->first + "ошибочно, будет принудительно приравнено нулю");
-            *it->second = 0.0;
+            *tmpf = 0.0;
         }
     }
     emit accepted();
