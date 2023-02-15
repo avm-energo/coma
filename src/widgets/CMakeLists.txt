@@ -27,16 +27,16 @@ add_library(
   styles/styles.qrc)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
-  dialogs
-  module
-  oscillograms
-  s2
-  xml
   Qt${QT_VERSION_MAJOR}::Core
   Qt${QT_VERSION_MAJOR}::Network
   Qt${QT_VERSION_MAJOR}::Widgets
   Qt${QT_VERSION_MAJOR}::Xml
   Boost::headers
-  QXlsx)
+  QXlsx
+  dialogs
+  module
+  oscillograms
+  s2
+  xml)
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE ${PROJECT_NAME}_LIBRARY)

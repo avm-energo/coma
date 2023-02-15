@@ -17,10 +17,10 @@ add_library(
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
   comaversion
+  widgets
   dialogs
   models
   s2
-  widgets
   xml
   Qt${QT_VERSION_MAJOR}::Core
   Qt${QT_VERSION_MAJOR}::Network
