@@ -195,12 +195,11 @@ const QStringList sysJourDescription {
     "Произошла запись в блок Bhbd (hidden block)(доп)"                       //
 };
 
-const QStringList eventJourHeaders {
-    " № ",              //
-    "Дата/Время UTC",   //
-    "Описание события", //
-    "Тип события"       //
-};
+const QStringList eventJourHeaders { " № ", //
+    "Дата/Время UTC",                       //
+    "Описание события",                     //
+    "Тип события",                          //
+    "Доп поле" };
 
 constexpr quint32 sysJourId = 1;
 struct EventStruct

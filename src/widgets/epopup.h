@@ -5,9 +5,9 @@
 #include <QDialog>
 #include <QFrame>
 #include <QKeyEvent>
+#include <QMessageBox>
 #include <QShowEvent>
 #include <map>
-#include <QMessageBox>
 
 class EPopup : public QDialog
 {
@@ -24,11 +24,11 @@ signals:
     void closed();
 
 public slots:
-    void acceptSlot();
+    virtual void acceptSlot();
     void cancelSlot();
 
 private:
-//    QWidget *m_parent;
+    //    QWidget *m_parent;
 
 protected:
     void showEvent(QShowEvent *e);
@@ -59,7 +59,7 @@ private:
     void Create(MessageTypes &type, QWidget *w, QWidget *parent = nullptr);
 
 public slots:
-    void acceptSlot();
+    void acceptSlot() override;
     void cancelSlot();
 };
 
@@ -77,8 +77,11 @@ private:
     QString caption;
 
 private slots:
-    void acceptSlot();
+    void acceptSlot() override;
     void cancelSlot();
+
+protected:
+    void keyPressEvent(QKeyEvent *e) override;
 };
 
 class EPasswordPopup : public EPopup
@@ -94,11 +97,10 @@ private:
 
 signals:
     void passwordIsCorrect();
-    void cancel();
 
 protected:
-    void keyPressEvent(QKeyEvent *e);
-    void closeEvent(QCloseEvent *e);
+    void keyPressEvent(QKeyEvent *e) override;
+    void closeEvent(QCloseEvent *e) override;
 };
 
 class EMessageBox

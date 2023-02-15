@@ -40,5 +40,6 @@
         <file>createModule.svg</file>
         <file>deleteModule.svg</file>
         <file>editModule.svg</file>
+        <file>stop.png</file>
     </qresource>
 </RCC>

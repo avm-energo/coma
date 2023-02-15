@@ -305,6 +305,14 @@ void EEditablePopup::cancelSlot()
     EPopup::cancelSlot();
 }
 
+void EEditablePopup::keyPressEvent(QKeyEvent *e)
+{
+    if (e->key() == Qt::Key_Escape)
+        cancelSlot();
+    if ((e->key() == Qt::Key_Enter) || (e->key() == Qt::Key_Return))
+        acceptSlot();
+}
+
 EPasswordPopup::EPasswordPopup(const QString &hash, QWidget *parent) : EPopup(parent)
 {
     isAboutToClose = false;
@@ -350,14 +358,12 @@ void EPasswordPopup::keyPressEvent(QKeyEvent *e)
     if ((e->key() == Qt::Key_Escape) && !isAboutToClose)
     {
         isAboutToClose = true;
-        emit cancel();
-        aboutToClose();
+        EPopup::cancelSlot();
     }
     QDialog::keyPressEvent(e);
 }
 
 void EPasswordPopup::closeEvent(QCloseEvent *e)
 {
-    emit cancel();
     EPopup::closeEvent(e);
 }

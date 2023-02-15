@@ -90,7 +90,7 @@ QVector<QVector<QVariant>> Journals::createCommon(const QByteArray &array, const
         int N = 0;
         memcpy(&N, &event.EvNum, sizeof(event.EvNum));
         N = (N & 0x00FFFFFF) - eventid;
-//        Q_ASSERT((N <= desc.size()) && (N >= 0));
+        //        Q_ASSERT((N <= desc.size()) && (N >= 0));
         QString eventDesc;
         if ((N <= desc.size()) && (N >= 0))
         {
@@ -105,7 +105,7 @@ QVector<QVector<QVariant>> Journals::createCommon(const QByteArray &array, const
         else
             eventType = "Ушло";
 
-        CommonEvent commonEvent { counter, event.Time, eventDesc, eventType };
+        CommonEvent commonEvent { counter, event.Time, eventDesc, eventType, QString::number(event.Reserv, 16) };
         events.push_back(commonEvent);
     }
     std::sort(events.begin(), events.end(),
@@ -114,7 +114,7 @@ QVector<QVector<QVariant>> Journals::createCommon(const QByteArray &array, const
     std::transform(
         events.cbegin(), events.cend(), std::back_inserter(ValueLists), [timeZone](const CommonEvent &event) {
             return QVector<QVariant> { event.counter, TimeFunc::UnixTime64ToInvStringFractional(event.time, timeZone),
-                event.desc, event.direction };
+                event.desc, event.direction, event.hexField };
         });
     return ValueLists;
 }
