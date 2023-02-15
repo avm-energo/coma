@@ -14,45 +14,11 @@
 #include <QPushButton>
 #include <QStandardItemModel>
 
-//#define TUNEFILELENGTH 256
-
-// // voltages
-//#define V60 60.0
-//#define V57 57.74
-
-// // frequencies
-//#define HZ50 50.0
-
-// // currents
-//#define I1 1.0
-//#define I5 5.0
-
-//#define C5012 5012
-//#define C10024 10024
-//#define C15036 15036
-//#define C2506 2506
-//#define C1253 1253
-//#define C626 626
-
-// // parameters for GetExtData
-//#define TD_GED_U 0x01 // напряжение
-//#define TD_GED_I 0x02 // ток
-//#define TD_GED_F 0x04 // частота
-//#define TD_GED_D 0x08 // угол нагрузки
-
-//#define TD_TMK 25.0 // degrees
-//#define TD_VBAT 3.0 // voltage
-//#define TD_FREQ 50  // Hz
-//#define CONST2PIF 314.15926
-
 class TuneKIVDialog : public GeneralTuneDialog
 {
     Q_OBJECT
 public:
     explicit TuneKIVDialog(ConfigV *config, QWidget *parent = nullptr);
-
-    // signals:
-    //    void Send();
 
 public slots:
 
@@ -60,28 +26,9 @@ private:
     TuneKIVCheck *TKIVCheckDialog;
     TuneKIVADC *TKIVADCUDialog, *TKIVADCIDialog;
     TuneKIVR *TKIVRDialog;
-    TuneKIVTemp60 *TKIV60Dialog, *TKIV20Dialog;
     void prepareReport() override;
 
-    //    QDialog *ask;
-    //    QLineEdit *ledit;
-    //    QTimer *timer;
-
-    //    enum TuneModes
-    //    {
-    //        TUNEMIP,
-    //        TUNERET,
-    //        TUNEMAN
-    //    };
-
     //    LimeReport::ReportEngine *m_Report;
-
-    //    int m_tuneControlType;
-    //    bool m_Cancelled = false, m_defConfig;
-
-    //    void SetupUI();
-
-    //    int m_filterSteps;
 
     /*struct ReportHeaderStructure
     {
@@ -128,21 +75,8 @@ private:
     int RowCount, ColumnCount; // количество рядов и столбцов в модели
     */
 
-    //    QHBoxLayout *newTunePBLayout(const QString &pbtext, const std::function<void()> fun);
-
 private slots:
 
-    /*  void ReadN();
-        int ReadAnalogMeasurements();
-        void SetExtData();
-        void CancelExtData();
-        void CancelTune();
-        int TuneTempCor();
-        int CalcTuneCoefs();
-        void SaveValuesTemp20();
-        void SaveValuesTempMinus20();
-        void SaveValuesTemp60();
-        void CloseAsk(); */
     //    void GenerateReport();
 };
 

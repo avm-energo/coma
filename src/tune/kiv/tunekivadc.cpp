@@ -38,10 +38,15 @@ void TuneKIVADC::setTuneFunctions()
     addTuneFunc("Запрос настроечных параметров...", &AbstractTuneDialog::readTuneCoefs);
     addTuneFunc("Проверка настроечных параметров...", &TuneKIVADC::checkTuneCoefs);
     addTuneFunc("Задание режима конфигурирования модуля...", &TuneKIVADC::setSMode2);
-    addTuneFunc("Регулировка для Кацп = 1...", &TuneKIVADC::ADCCoef1);
-    addTuneFunc("Отображение диалога задания входных данных...", &TuneKIVADC::showEnergomonitorInputDialog);
+    if (m_tuneStep == KIVTS_ADCU)
+    {
+        addTuneFunc("Регулировка...", &TuneKIVADC::ADCCoef1);
+        addTuneFunc("Отображение диалога задания входных данных...", &TuneKIVADC::showEnergomonitorInputDialog);
+    }
     if (m_tuneStep == KIVTS_ADCI)
     {
+        addTuneFunc("Регулировка для Кацп = 1...", &TuneKIVADC::ADCCoef1);
+        addTuneFunc("Отображение диалога задания входных данных...", &TuneKIVADC::showEnergomonitorInputDialog);
         addTuneFunc("Регулировка для Кацп = 2...", &TuneKIVADC::ADCCoef2);
         addTuneFunc("Отображение диалога задания входных данных...", &TuneKIVADC::showEnergomonitorInputDialog);
         addTuneFunc("Регулировка для Кацп = 4...", &TuneKIVADC::ADCCoef4);
