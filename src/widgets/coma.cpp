@@ -470,11 +470,63 @@ void Coma::go()
     newTimers();
     loadSettings();
     setStatusBar(WDFunc::NewSB(this));
+    connectSB();
     unpackProgramData();
     setupUI();
     splash->finish(this);
     splash->deleteLater();
     show();
+}
+
+void Coma::connectSB()
+{
+    const QMap<Board::InterfaceType, QString> images {
+        { Board::InterfaceType::USB, ":/icons/usb.svg" },           //
+        { Board::InterfaceType::RS485, ":/icons/rs485.svg" },       //
+        { Board::InterfaceType::Ethernet, ":/icons/ethernet.svg" }, //
+        { Board::InterfaceType::Unknown, ":/icons/stop.svg" }       //
+    };
+
+    auto msgModel = this->findChild<QLabel *>("Model");
+    if (msgModel != nullptr)
+    {
+        auto msgConnectionState = this->findChild<QLabel *>("ConnectionState");
+        if (msgConnectionState != nullptr)
+        {
+            auto msgConnectionType = this->findChild<QLabel *>("ConnectionType");
+            if (msgConnectionType != nullptr)
+            {
+                auto msgConnectionImage = this->findChild<QLabel *>("ConnectionImage");
+                if (msgModel != nullptr)
+                {
+                    int height = this->statusBar()->height() - this->statusBar()->layout()->contentsMargins().bottom();
+                    auto board = &Board::GetInstance();
+                    QObject::connect(board, qOverload<>(&Board::typeChanged), msgModel,
+                        [=]() { msgModel->setText(board->moduleName()); });
+
+                    QObject::connect(
+                        board, &Board::connectionStateChanged, msgConnectionState,
+                        [=](Board::ConnectionState state) {
+                            QString connState = QVariant::fromValue(Board::ConnectionState(state)).toString();
+                            msgConnectionState->setText(connState);
+                            msgConnectionState->setForegroundRole(QPalette::Highlight);
+                            msgConnectionState->setBackgroundRole(QPalette::HighlightedText);
+                        },
+                        Qt::DirectConnection);
+                    QObject::connect(board, &Board::interfaceTypeChanged, msgConnectionType,
+                        [=](const Board::InterfaceType &interfaceType) {
+                            QString connName = QVariant::fromValue(Board::InterfaceType(interfaceType)).toString();
+                            msgConnectionType->setText(connName);
+                        });
+                    QObject::connect(board, &Board::interfaceTypeChanged, msgConnectionImage,
+                        [=](const Board::InterfaceType &interfaceType) {
+                            QPixmap pixmap = QIcon(QString(images.value(interfaceType))).pixmap(QSize(height, height));
+                            msgConnectionImage->setPixmap(pixmap);
+                        });
+                }
+            }
+        }
+    }
 }
 
 void Coma::reconnect()

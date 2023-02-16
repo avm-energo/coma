@@ -23,6 +23,7 @@ class Journals : public QObject
         quint64 time;
         QString desc;
         QString direction;
+        QString hexField; // дополнительное поле
     };
 
 public:

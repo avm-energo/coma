@@ -14,20 +14,15 @@ TuneKIVDialog::TuneKIVDialog(ConfigV *config, QWidget *parent) : GeneralTuneDial
     setAttribute(Qt::WA_DeleteOnClose);
     TKIVADCUDialog = new TuneKIVADC(config, KIVTS_ADCU, this);
     TKIVADCIDialog = new TuneKIVADC(config, KIVTS_ADCI, this);
-    TKIV60Dialog = new TuneKIVTemp60(config, KIVTS_60TUNING, this);
-    TKIV20Dialog = new TuneKIVTemp60(config, KIVTS_20TUNING, this);
     TKIVCheckDialog = new TuneKIVCheck(config, KIVTS_CHECKING, this);
     TKIVRDialog = new TuneKIVR(config, KIVTS_PT100, this);
     m_dialogList = { { "Проверка правильности измерения входных сигналов", TKIVCheckDialog },
         { "Регулировка канала Pt100", TKIVRDialog }, { "Регулировка каналов напряжения", TKIVADCUDialog },
-        { "Регулировка каналов тока", TKIVADCIDialog }, { "Настройка температурной коррекции +60 °С", TKIV60Dialog },
-        { "Настройка температурной коррекции -20 °С", TKIV20Dialog } };
-    //    m_calibrSteps = m_dialogList.size() + 1;
+        { "Регулировка каналов тока", TKIVADCIDialog } };
     BacA284 *bac = new BacA284(this);
     Bac2A284 *bac2 = new Bac2A284(this);
     addWidgetToTabWidget(bac->widget(), "Первая часть");
     addWidgetToTabWidget(bac2->widget(), "Вторая часть");
-//    m_BacWidget->setWidget(bac->widget());
     SetupUI();
 }
 

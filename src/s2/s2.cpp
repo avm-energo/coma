@@ -237,7 +237,7 @@ bool S2::RestoreData(QByteArray bain, QList<DataTypes::DataRecV> &outlist)
             size = DR.header.numByte;
             auto &s2map = ConfigStorage::GetInstance().getS2Map();
             auto search = s2map.find(DR.header.id);
-            Q_ASSERT(search != s2map.end());
+//            Q_ASSERT(search != s2map.end());
             if (search != s2map.end())
             {
                 DataTypes::DataRecV DRV(DR, bain.left(size));

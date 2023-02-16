@@ -57,6 +57,7 @@ QWidget *DataBlock::widget(bool showButtons)
         createWidget();
     if (m_isBottomButtonsWidgetCreated)
         m_bottomButtonsWidget->setVisible(showButtons);
+    setEnabled(showButtons);
     return m_widget;
 }
 
@@ -142,6 +143,17 @@ QWidget *DataBlock::blockButtonsUI()
         m_isBottomButtonsWidgetCreated = true;
     }
     return m_bottomButtonsWidget;
+}
+
+void DataBlock::setEnabled(bool isEnabled)
+{
+    for (auto &group : m_valuesDesc)
+    {
+        for (auto &valueDesc : group.values)
+        {
+            WDFunc::SetEnabled(m_widget, valueDesc.valueId, isEnabled);
+        }
+    }
 }
 
 DataBlock::BlockStruct DataBlock::block()

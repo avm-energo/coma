@@ -1,7 +1,7 @@
 #include "wd_func.h"
 
 #include "../models/etablemodel.h"
-#include "../module/board.h"
+//#include "../module/board.h"
 #include "../module/filehelper.h"
 #include "../module/modules.h"
 #include "edoublespinbox.h"
@@ -466,13 +466,6 @@ QVariant WDFunc::TVData(QWidget *parent, const QString &tvname, int column)
 
 QStatusBar *WDFunc::NewSB(QWidget *parent)
 {
-    const QMap<Board::InterfaceType, QString> images {
-        { Board::InterfaceType::USB, ":/icons/usb.svg" },           //
-        { Board::InterfaceType::RS485, ":/icons/rs485.svg" },       //
-        { Board::InterfaceType::Ethernet, ":/icons/ethernet.svg" }, //
-        { Board::InterfaceType::Unknown, ":/icons/stop.svg" }       //
-    };
-
     auto bar = new QStatusBar(parent);
     bar->setMaximumHeight(parent->height() / 20);
 
@@ -509,29 +502,6 @@ QStatusBar *WDFunc::NewSB(QWidget *parent)
         layout->itemAt(i)->widget()->setFixedHeight(height);
     }
 
-    auto board = &Board::GetInstance();
-    QObject::connect(
-        board, qOverload<>(&Board::typeChanged), msgModel, [=]() { msgModel->setText(board->moduleName()); });
-
-    QObject::connect(
-        board, &Board::connectionStateChanged, msgConnectionState,
-        [=](Board::ConnectionState state) {
-            QString connState = QVariant::fromValue(Board::ConnectionState(state)).toString();
-            msgConnectionState->setText(connState);
-            msgConnectionState->setForegroundRole(QPalette::Highlight);
-            msgConnectionState->setBackgroundRole(QPalette::HighlightedText);
-        },
-        Qt::DirectConnection);
-    QObject::connect(
-        board, &Board::interfaceTypeChanged, msgConnectionType, [=](const Board::InterfaceType &interfaceType) {
-            QString connName = QVariant::fromValue(Board::InterfaceType(interfaceType)).toString();
-            msgConnectionType->setText(connName);
-        });
-    QObject::connect(
-        board, &Board::interfaceTypeChanged, msgConnectionImage, [=](const Board::InterfaceType &interfaceType) {
-            QPixmap pixmap = QIcon(QString(images.value(interfaceType))).pixmap(QSize(height, height));
-            msgConnectionImage->setPixmap(pixmap);
-        });
     widget->setLayout(layout);
     bar->addPermanentWidget(widget);
     return bar;

@@ -1,14 +1,14 @@
 #ifndef DATABLOCK_H
 #define DATABLOCK_H
 
-#include <gen/datatypes.h>
-#include <gen/error.h>
 #include "../interfaces/baseinterface.h"
 #include "../module/board.h"
 
 #include <QHBoxLayout>
-#include <QWidget>
 #include <QScrollArea>
+#include <QWidget>
+#include <gen/datatypes.h>
+#include <gen/error.h>
 
 class DataBlock : public QObject
 {
@@ -117,7 +117,7 @@ public:
     void addNewGroup(
         const QString &groupName, const QString &name, int fromWhich, int howMuch, T *startValue, int precision)
     {
-//        Q_UNUSED(fromWhich);
+        //        Q_UNUSED(fromWhich);
         ValueGroupStr vg;
         vg.groupDesc = groupName;
         int start = fromWhich;
@@ -143,6 +143,8 @@ public:
     void readBlockFromModule();
     Error::Msg writeBlockToModule();
     QWidget *blockButtonsUI();
+
+    void setEnabled(bool isEnabled);
 
     bool m_widgetIsSet;
     QWidget *m_widget;

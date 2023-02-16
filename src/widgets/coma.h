@@ -31,13 +31,14 @@ public:
     ~Coma();
 
     void go();
+    void connectSB();
     void setupMenubar();
     QWidget *least();
     void disconnect();
     void setupConnection();
     void loadOsc(const QString &filename);
     void loadSwj(const QString &filename);
-//    static QPoint ComaPos();
+    //    static QPoint ComaPos();
     static QPoint ComaCenter();
 
 public slots:
@@ -67,7 +68,7 @@ private:
     ConnectStruct ConnectSettings;
     AppConfiguration mAppConfig;
     UniquePointer<DialogManager> mDlgManager;
-//    static QPoint s_comaPos, s_comaCenter;
+    //    static QPoint s_comaPos, s_comaCenter;
     static QPoint s_comaCenter;
 
     void initInterfaceConnection();
