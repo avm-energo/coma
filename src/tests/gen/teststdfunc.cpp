@@ -1,5 +1,8 @@
 #include "teststdfunc.h"
 
+#include <gen/error.h>
+#include <gen/stdfunc.h>
+
 TestStdFunc::TestStdFunc(QObject *parent) : QObject(parent)
 {
 }
@@ -18,6 +21,15 @@ void TestStdFunc::StrToVer()
     QVERIFY(expectedValue == realValue);
     QVERIFY(StdFunc::StrToVer("3.3-0001") > StdFunc::StrToVer("3.3-0000"));
     QVERIFY(StdFunc::StrToVer("4.3-0001") > StdFunc::StrToVer("3.3-0000"));
+}
+
+void TestStdFunc::EnumToStr()
+{
+    auto err = Error::Msg::CrcError;
+    auto metaEnum = QMetaEnum::fromType<decltype(err)>();
+    QString errStr(metaEnum.valueToKey(err));
+    QString expected = "CrcError";
+    QVERIFY(errStr == expected);
 }
 
 QTEST_GUILESS_MAIN(TestStdFunc)
