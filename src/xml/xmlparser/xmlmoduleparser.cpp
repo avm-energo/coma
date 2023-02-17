@@ -157,6 +157,8 @@ void Xml::ModuleParser::parseAlarm(const QDomNode &alarmNode, const Modules::Ala
 /// \brief Функция для парсинга узла <journals>.
 void Xml::ModuleParser::parseJournals(const QDomNode &joursNode)
 {
+    if (!(joursNode.firstChildElement(tags::system).isNull()))
+        emit jourDataSending(Modules::JournalType::System, 0, "");
     parseNode(joursNode, tags::work, [this](const QDomNode &jourNode) { //
         parseJournal(jourNode, Modules::JournalType::Work);
     });

@@ -18,6 +18,7 @@ constexpr auto info = "info";
 constexpr auto journals = "journals";
 constexpr auto work = "work";
 constexpr auto meas = "meas";
+constexpr auto system = "system";
 constexpr auto modbus = "modbus";
 constexpr auto protocom = "protocom";
 constexpr auto iec = "iec60870";
