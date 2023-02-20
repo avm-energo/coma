@@ -369,27 +369,27 @@
             </record>
             <record>
                 <id>20</id>
-                <defaultValue>172,16,28,254</defaultValue>
+                <defaultValue>172,16,30,39</defaultValue>
                 <visibility>true</visibility>
             </record>
             <record>
                 <id>21</id>
-                <defaultValue>255,255,255,0</defaultValue>
+                <defaultValue>255,255,252,0</defaultValue>
                 <visibility>true</visibility>
             </record>
             <record>
                 <id>22</id>
-                <defaultValue>172,16,28,1</defaultValue>
+                <defaultValue>172,16,29,1</defaultValue>
                 <visibility>true</visibility>
             </record>
             <record>
                 <id>23</id>
-                <defaultValue>2404,2405,502,0</defaultValue>
+                <defaultValue>2404,2405,502,502</defaultValue>
                 <visibility>true</visibility>
             </record>
             <record>
                 <id>24</id>
-                <defaultValue>172,16,28,12</defaultValue>
+                <defaultValue>172,16,31,220</defaultValue>
                 <visibility>true</visibility>
             </record>
             <record>
