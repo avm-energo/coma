@@ -2,10 +2,11 @@
 #define BASEEVENTSJOURNALMODEL_H
 
 #include "../models/edynamictablemodel.h"
+#include "basejournalmodel.h"
 
 #include <QObject>
 
-class BaseEventsJournalClass
+class BaseEventsJournalModel : public BaseJournalModel
 {
     struct CommonEvent
     {
@@ -27,9 +28,13 @@ class BaseEventsJournalClass
 
     Q_OBJECT
 public:
-    BaseEventsJournalClass();
+    BaseEventsJournalModel(QObject *parent = nullptr);
 
     QVector<QVector<QVariant>> createCommon(const QByteArray &array, const int eventid, const QStringList &desc);
+    void FillEventsTable(const QByteArray &ba);
+
+private:
+    EDynamicTableModel *m_model;
 };
 
 #endif // BASEEVENTSJOURNALMODEL_H

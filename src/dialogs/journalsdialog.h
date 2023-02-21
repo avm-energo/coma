@@ -1,6 +1,7 @@
 #ifndef JOURNALDIALOG_H
 #define JOURNALDIALOG_H
 
+#include "../module/basejournalmodel.h"
 #include "../module/journals.h"
 #include "../widgets/udialog.h"
 

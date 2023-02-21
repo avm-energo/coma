@@ -18,18 +18,27 @@
 Journals::Journals(const ModuleTypes::JourMap &jourMap, QObject *parent)
     : QObject(parent), m_timezone(TimeFunc::userTimeZone()), m_jourMap(jourMap)
 {
+    // ***
     m_workJourDescription = jourListToStrList(jourMap.value(Modules::JournalType::Work));
     m_measJourHeaders = jourListToStrList(jourMap.value(Modules::JournalType::Meas));
     auto time_pos = std::find_if(
         m_measJourHeaders.begin(), m_measJourHeaders.end(), [](const QString &str) { return str.contains("UTC"); });
     if (time_pos != m_measJourHeaders.end())
         time_pos->replace("UTC", TimeFunc::userTimeZoneName());
+    // ***
+
+    // ---
+    _sysModel = new SystemEventsJournalModel(this);
+    _measModel = new KIVMeasJournalModel(jourMap.value(Modules::JournalType::Meas), this);
+    _workModel = new WorkEventsJournalModel(this);
+    // ---
 
     m_sysModel = new EDynamicTableModel(this);
     m_workModel = new EDynamicTableModel(this);
     m_measModel = new EDynamicTableModel(this);
 }
 
+// ***
 const QStringList Journals::jourListToStrList(const QList<ModuleTypes::Journal> &jlist)
 {
     QStringList retVal = {};
@@ -37,6 +46,7 @@ const QStringList Journals::jourListToStrList(const QList<ModuleTypes::Journal> 
         retVal.push_back(journal.desc);
     return retVal;
 }
+// ***
 
 void Journals::SetProxyModels(
     QSortFilterProxyModel *workmdl, QSortFilterProxyModel *sysmdl, QSortFilterProxyModel *measmdl)
@@ -65,6 +75,7 @@ void Journals::SetJourFile(const QString &jourfile)
 //    return m_jourMap.value(Modules::JournalType::Work).id;
 //}
 
+// ***
 QVector<QVector<QVariant>> Journals::createCommon(const QByteArray &array, const int eventid, const QStringList &desc)
 {
     const auto basize = array.size();
@@ -118,6 +129,7 @@ QVector<QVector<QVariant>> Journals::createCommon(const QByteArray &array, const
         });
     return ValueLists;
 }
+// ***
 
 void Journals::FillEventsTable(const QByteArray &ba)
 {

@@ -1,6 +1,5 @@
 #include "systemeventsjournalmodel.h"
 
-SystemEventsJournalModel::SystemEventsJournalModel()
+SystemEventsJournalModel::SystemEventsJournalModel(QObject *parent) : BaseEventsJournalModel(parent)
 {
-
 }
