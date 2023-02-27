@@ -334,12 +334,12 @@
             </record>
             <record>
                 <id>1039</id>
-                <defaultValue>0.3</defaultValue>
+                <defaultValue>0.3,0.3,0.3</defaultValue>
                 <visibility>true</visibility>
             </record>
             <record>
                 <id>1040</id>
-                <defaultValue>1500</defaultValue>
+                <defaultValue>1500,1500,1500</defaultValue>
                 <visibility>true</visibility>
             </record>
             <record>
