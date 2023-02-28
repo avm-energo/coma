@@ -85,7 +85,7 @@ public:
      */
     void createWidget();
 
-    QHBoxLayout *addBlockValueToWidget(ValueStr &values);
+    QHBoxLayout *addBlockValueToWidget(ValueStr &values, QWidget* parent = nullptr);
 
     /*! \brief Return block
      */
@@ -113,11 +113,10 @@ public:
 
     virtual void setDefBlock() {};
 
-    template <typename T>
-    void addNewGroup(
-        const QString &groupName, const QString &name, int fromWhich, int howMuch, T *startValue, int precision)
+    template <typename T> //
+    void addNewGroup(const QString &groupName, const QString &name, //
+        int fromWhich, int howMuch, T *startValue, int precision)
     {
-        //        Q_UNUSED(fromWhich);
         ValueGroupStr vg;
         vg.groupDesc = groupName;
         int start = fromWhich;
@@ -132,7 +131,8 @@ public:
         m_valuesDesc.append(vg);
     }
 
-    template <typename T> void addNewValue(const QString &name, const QString &tooltip, T *value, int precision = 3)
+    template <typename T> //
+    void addNewValue(const QString &name, const QString &tooltip, T *value, int precision = 3)
     {
         ValueGroupStr vg;
         vg.values.append({ name, tooltip, "value[" + QString::number(valueNumberCounter) + "]", value, precision });

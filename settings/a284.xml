@@ -1080,16 +1080,16 @@
                     </mwidget>
                 </sgroup>
                 <sgroup header="Состояние дискретных входов" tab="3">
-                    <mwidget desc="DI_1" view="bitset">
+                    <mwidget desc="DI24" view="bitset">
                         <start-addr>4521</start-addr>
-                        <toolTip>Дискретный вход DI_1</toolTip>
+                        <toolTip>Дискретный вход DI24</toolTip>
                     </mwidget>
                 </sgroup>
                 <sgroup header="Состояние дискретных выходов" tab="3">
-                    <mwidget desc="DO_%1" view="bitset">
+                    <mwidget desc="DO%1" view="bitset">
                         <start-addr>4520</start-addr>
                         <count>3</count>
-                        <toolTip>Дискретный выход DO_%1</toolTip>
+                        <toolTip>Дискретный выход DO%1</toolTip>
                     </mwidget>
                 </sgroup>
             </section>
