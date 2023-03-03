@@ -17,6 +17,13 @@ install(
     PATTERN "*.svg"
   PERMISSIONS OWNER_READ GROUP_READ)
 
+# Copying XML configuration
+install(
+  DIRECTORY ${CMAKE_SOURCE_DIR}/../settings
+  DESTINATION ${CMAKE_INSTALL_PREFIX}/${INSTALL_PROJECT_PATH}
+  FILES_MATCHING PATTERN "*.xml"
+  PERMISSIONS OWNER_READ GROUP_READ)
+
 # Runtime dependencies installation
 install(CODE [[
   message("Project name: ${PROJECT_NAME}")

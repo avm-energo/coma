@@ -471,7 +471,7 @@ void Coma::go()
     loadSettings();
     setStatusBar(WDFunc::NewSB(this));
     connectSB();
-    unpackProgramData();
+    // unpackProgramData();
     setupUI();
     splash->finish(this);
     splash->deleteLater();
