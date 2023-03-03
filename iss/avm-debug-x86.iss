@@ -17,18 +17,19 @@
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application. Do not use the same AppId value in installers for other applications.
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
-AppId={{4C4A32F2-8733-4C05-AF66-3996C08A228A}
+AppId={{500C46FE-9656-4A4C-A910-A3D4575CDB0B}
 AppName={#GroupName}
 AppVerName={#EngName} {#ApplicationVersion}
 AppPublisher={#Publisher}
 AppPublisherURL={#URL}
 AppSupportURL={#URL}
 AppUpdatesURL={#URL}
-DefaultDirName={commonpf}\{#EngName}
-DefaultGroupName={#EngName}
+DefaultDirName={commonpf32}\{#EngName}
+DefaultGroupName="{#EngName} (x86)"
 UsedUserAreasWarning=no
 SetupIconFile=..\coma.ico
 Compression=lzma
+ChangesAssociations=yes
 SolidCompression=yes
 WizardStyle=modern
 OutputBaseFilename={#EngName}-{#ApplicationVersion}-x86
@@ -36,6 +37,12 @@ OutputDir=..\output
 VersionInfoVersion={#ApplicationVersion}
 LicenseFile="..\license.txt"
 InfoAfterFile="..\AVM-Debug.NOTES"
+
+[Registry]
+Root: HKCR; Subkey: ".swj";                           ValueData: "{#EngName}";          Flags: uninsdeletevalue;    ValueType: string;  ValueName: ""
+Root: HKCR; Subkey: "{#EngName}";                     ValueData: "Program {#EngName}";  Flags: uninsdeletekey;      ValueType: string;  ValueName: ""
+Root: HKCR; Subkey: "{#EngName}\DefaultIcon";         ValueData: "{app}\{#ExeName},0";                              ValueType: string;  ValueName: ""
+Root: HKCR; Subkey: "{#EngName}\shell\open\command";  ValueData: """{app}\{#ExeName}"" ""%1""";                     ValueType: string;  ValueName: ""
 
 [Dirs]
 Name: {userappdata}\{#EngName}

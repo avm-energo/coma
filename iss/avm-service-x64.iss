@@ -17,19 +17,16 @@
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application. Do not use the same AppId value in installers for other applications.
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
-AppId={{4C4A32F2-8733-4C05-AF66-3996C08A228A}
+AppId={{0543FE28-6CB4-4DFE-8566-0B5E96AC4D1A}
 AppName={#GroupName}
 AppVerName={#EngName} {#ApplicationVersion}
 AppPublisher={#Publisher}
 AppPublisherURL={#URL}
 AppSupportURL={#URL}
 AppUpdatesURL={#URL}
-DefaultDirName={commonpf}\{#EngName}
-DefaultGroupName={#EngName}
-; The [Icons] "quicklaunchicon" entry uses {userappdata} but its [Tasks] entry has a proper IsAdminInstallMode Check.
+DefaultDirName={commonpf64}\{#EngName}
+DefaultGroupName="{#EngName} (x64)"
 UsedUserAreasWarning=no
-; Uncomment the following line to run in non administrative install mode (install for current user only.)
-;PrivilegesRequired=lowest
 SetupIconFile=..\coma.ico
 Compression=lzma
 SolidCompression=yes
@@ -54,7 +51,6 @@ Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescrip
 Source: "{#OUTPUT_DIR}\{#ARCH}\{#BUILD_TYPE}\{#EngName}\*"; DestDir: "{app}"; Excludes: "*.xml"; Flags: ignoreversion recursesubdirs 
 Source: "{#Redist_DIR}\vc_redist.x64.exe"; DestDir: "{tmp}"; Flags: deleteafterinstall
 Source: "{#OUTPUT_DIR}\{#ARCH}\{#BUILD_TYPE}\{#EngName}\settings\*.xml"; DestDir: "{localappdata}\{#EngName}"
-; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
 Name: "{group}\{#Name}"; Filename: "{app}\{#ExeName}"

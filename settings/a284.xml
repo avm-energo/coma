@@ -1080,7 +1080,7 @@
                     </mwidget>
                 </sgroup>
                 <sgroup header="Состояние дискретных входов" tab="3">
-                    <mwidget desc="DI24" view="bitset">
+                    <mwidget desc="Транформатор отключён (DI24)" view="bitset">
                         <start-addr>4521</start-addr>
                         <toolTip>Дискретный вход DI24</toolTip>
                     </mwidget>
