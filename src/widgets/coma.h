@@ -68,7 +68,6 @@ private:
     ConnectStruct ConnectSettings;
     AppConfiguration mAppConfig;
     UniquePointer<DialogManager> mDlgManager;
-    //    static QPoint s_comaPos, s_comaCenter;
     static QPoint s_comaCenter;
 
     void initInterfaceConnection();
@@ -78,7 +77,6 @@ private:
     void setProgressBarCount(int prbnum, int count);
     void newTimers();
     void setupUI();
-    void unpackProgramData();
     void setupConnections();
     void prepare();
     virtual bool nativeEvent(const QByteArray &eventType, void *message, long *result) override;

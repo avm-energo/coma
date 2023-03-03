@@ -471,7 +471,6 @@ void Coma::go()
     loadSettings();
     setStatusBar(WDFunc::NewSB(this));
     connectSB();
-    // unpackProgramData();
     setupUI();
     splash->finish(this);
     splash->deleteLater();
@@ -607,35 +606,6 @@ void Coma::disconnect()
     //    QCoreApplication::processEvents();
     //  }
     // Board::GetInstance().setConnectionState(Board::ConnectionState::Closed);
-}
-
-void Coma::unpackProgramData()
-{
-    Q_INIT_RESOURCE(settings);
-    QDir resDir(resourceDirectory);
-    QDir homeDir(StdFunc::GetSystemHomeDir());
-    auto xmlFiles = resDir.entryList(QDir::Files).filter(".xml");
-    auto homeFiles = homeDir.entryList(QDir::Files).filter(".xml");
-
-    // Копируем файлы из ресурсов в AppData/Local/AVM-Debug
-    if (homeFiles.count() < xmlFiles.count())
-    {
-        constexpr QFileDevice::Permissions filePermissions = QFile::ReadOther | QFile::WriteOther | QFile::ReadOwner
-            | QFile::WriteOwner | QFile::ReadUser | QFile::WriteUser;
-        for (auto &filename : xmlFiles)
-        {
-            if (!QFile::copy(resDir.filePath(filename), homeDir.filePath(filename)))
-            {
-                qCritical() << Error::DescError << resDir.filePath(filename);
-            }
-            QFile file(homeDir.filePath(filename));
-            if (!file.setPermissions(filePermissions))
-            {
-                qCritical() << "Произошло что-то плохое!";
-            }
-        }
-    }
-    Q_CLEANUP_RESOURCE(settings);
 }
 
 void Coma::setupConnection()

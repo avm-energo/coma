@@ -40,6 +40,7 @@ if(NOT DEFINED PROJECT_ARCHITECTURE)
   message(STATUS "Current target arch: " ${PROJECT_TARGET_NAME})
   message(STATUS "Current user directory for conan: " ${USER_DIRECTORY})
 endif()
+
 # Getting CMake system name
 string(TOLOWER "${CMAKE_SYSTEM_NAME}" CMAKE_SYSTEM_NAME_LOWER)
 # Export compile commands. See:
@@ -90,7 +91,6 @@ include(${CMAKE_BINARY_DIR}/conan.cmake)
 
 # Getting build type, compiler, etc... (other settings)
 conan_cmake_autodetect(settings)
-
 # Collecting Boost headers and hidapi library on windows
 if(CMAKE_SYSTEM_NAME_LOWER STREQUAL "windows")
   conan_cmake_configure(
