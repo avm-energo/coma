@@ -2,28 +2,30 @@
 
 #include "../dialogs/keypressdialog.h"
 #include "../module/board.h"
-#include "../widgets/etableview.h"
 #include "../widgets/wd_func.h"
 
-#include <QButtonGroup>
-#include <QCheckBox>
-#include <QComboBox>
-#include <QCoreApplication>
-#include <QDebug>
 #include <QDialogButtonBox>
-#include <QDoubleSpinBox>
-#include <QFileDialog>
-#include <QGridLayout>
-#include <QGroupBox>
-#include <QLabel>
-#include <QLineEdit>
 #include <QMessageBox>
 #include <QPushButton>
-#include <QSpinBox>
-#include <gen/colors.h>
-#include <gen/datatypes.h>
-#include <gen/helper.h>
-#include <gen/stdfunc.h>
+#include <tuple>
+
+//#include "../widgets/etableview.h"
+//#include <QButtonGroup>
+//#include <QCheckBox>
+//#include <QComboBox>
+//#include <QCoreApplication>
+//#include <QDebug>
+//#include <QDoubleSpinBox>
+//#include <QFileDialog>
+//#include <QGridLayout>
+//#include <QGroupBox>
+//#include <QLabel>
+//#include <QLineEdit>
+//#include <QSpinBox>
+//#include <gen/colors.h>
+//#include <gen/datatypes.h>
+//#include <gen/helper.h>
+//#include <gen/stdfunc.h>
 
 namespace crypto
 {
@@ -31,7 +33,9 @@ static constexpr char hash[] = "d93fdd6d1fb5afcca939fa650b62541d09dbcb766f41c393
 static constexpr char name[] = "startHash";
 }
 
-AbstractStartupDialog::AbstractStartupDialog(QWidget *parent) : UDialog(crypto::hash, crypto::name, parent)
+AbstractStartupDialog::AbstractStartupDialog(QWidget *parent)
+    : UDialog(crypto::hash, crypto::name, parent) //
+    , m_updateState(ThereWasNoUpdatesRecently)
 {
     m_updateState = ThereWasNoUpdatesRecently;
     setSuccessMsg("Стартовые значения записаны успешно");
@@ -46,30 +50,31 @@ QWidget *AbstractStartupDialog::buttonWidget()
 {
     auto widget = new QWidget;
     auto layout = new QVBoxLayout;
-    auto group = new QDialogButtonBox;
+    auto group = new QDialogButtonBox(widget);
     QString tmps = ((DEVICETYPE == DEVICETYPE_MODULE) ? "модуля" : "прибора");
 
-    const QList<QPair<QPair<QString, QIcon>, std::function<void()>>> funcs {
-        { { "Задать начальные значения", QIcon(":/icons/tnapprove.svg") }, [this]() { SetupCor(); } },    //
-        { { "Сбросить начальные значения", QIcon(":/icons/tnreset.svg") }, [this]() { ResetCor(); } },    //
-        { { "Получить из " + tmps, QIcon(":/icons/tnread.svg") }, [this]() { GetCorBd(); } },             //
-        { { "Записать в модуль", QIcon(":/icons/tnwrite.svg") }, [this]() { WriteCor(); } },              //
-        { { "Прочитать значения из файла", QIcon(":/icons/tnload.svg") }, [this]() { ReadFromFile(); } }, //
-        { { "Сохранить значения в файл", QIcon(":/icons/tnsave.svg") }, [this]() { SaveToFile(); } }      //
+    using VoidFunction = std::function<void()>;
+    const QList<std::tuple<QString, QIcon, VoidFunction>> funcs {
+        { "Задать начальные значения", QIcon(":/icons/tnapprove.svg"), [this]() { SetupCor(); } },    //
+        { "Сбросить начальные значения", QIcon(":/icons/tnreset.svg"), [this]() { ResetCor(); } },    //
+        { "Получить из " + tmps, QIcon(":/icons/tnread.svg"), [this]() { GetCorBd(); } },             //
+        { "Записать в модуль", QIcon(":/icons/tnwrite.svg"), [this]() { WriteCor(); } },              //
+        { "Прочитать значения из файла", QIcon(":/icons/tnload.svg"), [this]() { ReadFromFile(); } }, //
+        { "Сохранить значения в файл", QIcon(":/icons/tnsave.svg"), [this]() { SaveToFile(); } }      //
     };
 
     for (auto &func : funcs)
     {
-        const QIcon &icon = func.first.second;
-        const QString &toolTip = func.first.first;
-        QPushButton *pb = new QPushButton();
-        pb->setObjectName("Hexagon");
-        pb->setIcon(icon);
-        pb->setToolTip(toolTip);
-        pb->setMinimumSize(50, 50);
-        pb->setIconSize(QSize(50, 50));
-        connect(pb, &QAbstractButton::clicked, this, func.second);
-        group->addButton(pb, QDialogButtonBox::ActionRole);
+        const auto &toolTip = std::get<0>(func);
+        const auto &icon = std::get<1>(func);
+        auto pButton = new QPushButton(group);
+        pButton->setObjectName("Hexagon");
+        pButton->setIcon(icon);
+        pButton->setToolTip(toolTip);
+        pButton->setMinimumSize(50, 50);
+        pButton->setIconSize(QSize(50, 50));
+        connect(pButton, &QAbstractButton::clicked, this, std::get<2>(func));
+        group->addButton(pButton, QDialogButtonBox::ActionRole);
     }
 
     group->setCenterButtons(true);

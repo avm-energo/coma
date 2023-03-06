@@ -28,7 +28,8 @@ TuneKIVDialog::TuneKIVDialog(ConfigV *config, QWidget *parent) : GeneralTuneDial
 
 void TuneKIVDialog::prepareReport()
 {
-    /*    // данные в таблицу уже получены или из файла, или в процессе работы
+    /*
+        // данные в таблицу уже получены или из файла, или в процессе работы
         // отобразим таблицу
        // ShowTable();
        // QString GOST = (PovType == GOST_1983) ? "1983" : "23625";
@@ -218,7 +219,8 @@ void TuneKIVDialog::prepareReport()
         else
             QMessageBox::information(this, "Отменено", "Действие отменено");
     }
-    delete report; */
+    delete report;
+*/
 }
 
 /*
@@ -253,8 +255,8 @@ void TuneKIVDialog::SetupUI()
     setLayout(hlyout);
     setCalibrButtons();
 }
-*/
 
-// void TuneKIVDialog::GenerateReport()
-//{
-//}
+void TuneKIVDialog::GenerateReport()
+{
+}
+*/

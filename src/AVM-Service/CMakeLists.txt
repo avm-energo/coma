@@ -40,12 +40,32 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
   Qt${QT_VERSION_MAJOR}::Core
   Qt${QT_VERSION_MAJOR}::Widgets)
 
+# Copying images folder to executable file after building
 add_custom_command(
   TARGET ${PROJECT_NAME} POST_BUILD
   COMMAND
     ${CMAKE_COMMAND} -E copy_directory
     ${CMAKE_CURRENT_SOURCE_DIR}/../../images
     $<TARGET_FILE_DIR:${PROJECT_NAME}>/images/)
+
+# Copying XML settings to local appdata after building
+if(CMAKE_SYSTEM_NAME_LOWER STREQUAL "windows")
+  # On windows
+  add_custom_command(
+    TARGET ${PROJECT_NAME} POST_BUILD
+    COMMAND
+      ${CMAKE_COMMAND} -E copy_directory
+      ${CMAKE_CURRENT_SOURCE_DIR}/../../settings
+      $ENV{LOCALAPPDATA}/${PROJECT_NAME})
+else()
+  # On linux
+  add_custom_command(
+    TARGET ${PROJECT_NAME} POST_BUILD
+    COMMAND
+      ${CMAKE_COMMAND} -E copy_directory
+      ${CMAKE_CURRENT_SOURCE_DIR}/../../settings
+      $ENV{HOME}/.local/share/${PROJECT_NAME})
+endif()
 
 if(CMAKE_SYSTEM_NAME_LOWER STREQUAL "windows")
   include(WinDeployService)

@@ -63,48 +63,50 @@ QWidget *DataBlock::widget(bool showButtons)
 
 void DataBlock::createWidget()
 {
-    QWidget *w = new QWidget;
-    QVBoxLayout *lyout = new QVBoxLayout;
+    auto mainWidget = new QWidget;
+    auto mainLayout = new QVBoxLayout;
     int count = 0;
     for (auto &group : m_valuesDesc)
     {
         if (group.values.size() == 1) // for only one parameter it doesn't need to make a groupbox
         {
-            QWidget *w2 = new QWidget;
-            w2->setLayout(addBlockValueToWidget(group.values.first()));
-            lyout->addWidget(w2);
+            auto singleWidget = new QWidget(mainWidget);
+            auto widgetLayout = addBlockValueToWidget(group.values.first(), singleWidget);
+            singleWidget->setLayout(widgetLayout);
+            mainLayout->addWidget(singleWidget);
             continue;
         }
-        QGroupBox *gb = new QGroupBox(group.groupDesc);
-        QGridLayout *gridlyout = new QGridLayout;
+        auto gb = new QGroupBox(group.groupDesc, mainWidget);
+        auto gridLayout = new QGridLayout;
         auto itemsPerLine = StdFunc::goldenRatio(group.values.count());
         for (auto &valueDesc : group.values)
         {
-            gridlyout->addLayout(addBlockValueToWidget(valueDesc), count / itemsPerLine, count % itemsPerLine);
+            auto widgetLayout = addBlockValueToWidget(valueDesc, gb);
+            gridLayout->addLayout(widgetLayout, count / itemsPerLine, count % itemsPerLine);
             ++count;
         }
-        gb->setLayout(gridlyout);
-        lyout->addWidget(gb);
+        gb->setLayout(gridLayout);
+        mainLayout->addWidget(gb);
     }
     if (m_block.bottomButtonsVisible)
-        lyout->addWidget(blockButtonsUI());
-    w->setLayout(lyout);
+        mainLayout->addWidget(blockButtonsUI());
+    mainWidget->setLayout(mainLayout);
     auto scrollArea = new QScrollArea;
     scrollArea->setFrameShape(QFrame::NoFrame);
     scrollArea->setWidgetResizable(true);
-    scrollArea->setWidget(w);
+    scrollArea->setWidget(mainWidget);
     m_widget = scrollArea;
     m_widgetIsSet = true;
 }
 
-QHBoxLayout *DataBlock::addBlockValueToWidget(ValueStr &value)
+QHBoxLayout *DataBlock::addBlockValueToWidget(ValueStr &value, QWidget *parent)
 {
-    QHBoxLayout *layout = new QHBoxLayout;
-    QLabel *textLabel = new QLabel(value.desc);
+    auto layout = new QHBoxLayout;
+    auto textLabel = new QLabel(value.desc, parent);
     textLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
     layout->addWidget(textLabel);
 
-    QLineEdit *valueLabel = new QLineEdit;
+    auto valueLabel = new QLineEdit(parent);
     valueLabel->setToolTip(value.tooltip);
     valueLabel->setObjectName(value.valueId);
     valueLabel->setStyleSheet(ValuesFormat);
