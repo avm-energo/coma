@@ -54,6 +54,10 @@
                         <item>2432</item>
                     </highlights>
                 </item>
+                <item>
+                    <addr>3036</addr>
+                    <string>Ошибка задания начальных значений</string>
+                </item>
             </critical>
             <info desc="Информационные">
                 <item>
@@ -414,7 +418,7 @@
             </record>
             <record>
                 <id>3</id>
-                <defaultValue>4</defaultValue>
+                <defaultValue>8</defaultValue>
                 <visibility>true</visibility>
             </record>
             <record>

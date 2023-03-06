@@ -2333,29 +2333,33 @@
 	<record>
 		<id>1041</id>
 		<name>SourseT</name>
-		<description>Источник температуры окр. среды: 0-Pt100, 1-RS485</description>
+		<description>Источник температуры окр. среды</description>
 		<type>BYTE</type>
 		<widget>
-			<type>QDoubleSpinBox</type>
+			<type>QComboBox</type>
 			<group>100</group>
-			<string>Источник температуры окр. среды: 0-Pt100, 1-RS485</string>
-			<min>0</min>
-			<max>1</max>
-			<decimals>0</decimals>
+			<string>Источник температуры окр. среды</string>
+			<string-array>
+				<item>Pt100</item>
+				<item>RS485</item>
+			</string-array>
 		</widget>
 	</record>
     <record>
 		<id>1042</id>
 		<name>NoSign</name>
-		<description>Запрет сигнализации по фазам (побитно)</description>
+		<description>Запрет сигнализации по фазам</description>
 		<type>BYTE</type>
 		<widget>
-			<type>QDoubleSpinBox</type>
+			<type>CheckBoxGroup</type>
 			<group>200</group>
-			<string>Запрет сигнализации по фазам (побитно)</string>
-			<min>0</min>
-			<max>255</max>
-			<decimals>0</decimals>
+			<string>Запрет сигнализации по фазам</string>
+			<string-array>
+				<item>Фаза A</item>
+				<item>Фаза B</item>
+				<item>Фаза C</item>
+			</string-array>
+			<count>3</count>
 		</widget>
 	</record>
     <record>
@@ -2364,23 +2368,24 @@
 		<description>Разрешение использования дискретного входа</description>
 		<type>BYTE</type>
 		<widget>
-			<type>QDoubleSpinBox</type>
+			<type>QComboBox</type>
 			<group>100</group>
 			<string>Разрешение использования дискретного входа</string>
-			<min>0</min>
-			<max>1</max>
-			<decimals>0</decimals>
+            <string-array>
+				<item>Не использовать</item>
+				<item>Использовать</item>
+			</string-array>
 		</widget>
 	</record>
     <record>
 		<id>1044</id>
 		<name>filtrDI</name>
-		<description>Фильтр (mc)</description>
+		<description>Период фильтрации дискретного входа DI24 (мс)</description>
 		<type>WORD</type>
 		<widget>
 			<type>QDoubleSpinBox</type>
 			<group>100</group>
-			<string>Фильтр (mc)</string>
+			<string>Период фильтрации дискретного входа DI24 (мс)</string>
 			<min>0</min>
 			<max>10000</max>
 			<decimals>0</decimals>
