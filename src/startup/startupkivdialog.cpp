@@ -3,8 +3,8 @@
 #include "../widgets/wd_func.h"
 
 #include <QGridLayout>
+#include <QGroupBox>
 #include <QMessageBox>
-#include <QPushButton>
 #include <gen/error.h>
 #include <gen/files.h>
 
@@ -102,59 +102,53 @@ QWidget *StartupKIVDialog::uiCommandsTab(QWidget *parent)
 {
     auto widget = new QWidget(parent);
     auto layout = new QVBoxLayout(widget);
-    auto grid = new QGridLayout(widget);
 
-    // Prepare UI step
-    constexpr auto columns = 4;
-    constexpr auto rows = 10;
-    constexpr auto phasesCount = 3;
-    const char *phases[] = { "A", "B", "C" };
-    // Labels for columns
-    QList<QWidget *> labelList = {
-        WDFunc::NewLBL2(widget, "Начальные значения емкостей вводов, пФ:"), //
-        WDFunc::NewLBL2(widget, "Начальные значения tg δ вводов, %:"),      //
-        WDFunc::NewLBL2(widget, "Коррекция  tg δ вводов,%:")                //
-    };
-    // Adding column labels to grid layout
-    for (auto col = 1; col < columns; col++)
-        grid->addWidget(labelList[col - 1], 0, col, 1, 1, Qt::AlignTop);
-
-    const QList<std::tuple<double, double, int>> spinBoxSettings = { { 0, 10000, 1 }, { -10, 10, 2 }, { -10, 10, 2 } };
-
-    // Create Matrix-styled UI
-    for (auto phase = 0; phase < phasesCount; phase++)
+    // Create UI commands for phases
+    const QStringList phases = { "A", "B", "C" };
+    for (const auto &phase : phases)
     {
-        auto phaseLable = WDFunc::NewLBL2(widget, QString("Фаза %1").arg(phases[phase]));
-        const auto row = phase * phasesCount + 1;
-        grid->addWidget(phaseLable, row, 0, 1, 1, Qt::AlignTop);
-        for (auto col = 1; col < columns; col++)
-        {
-            const auto index = col - 1;
-            const auto offset = (phasesCount * index) + phase;
-            auto &min = std::get<0>(spinBoxSettings[index]);
-            auto &max = std::get<1>(spinBoxSettings[index]);
-            auto &decimals = std::get<2>(spinBoxSettings[index]);
-            auto spinBox = WDFunc::NewSPB2(widget, QString::number(KIVSTARTUPINITREG + offset), min, max, decimals);
-            grid->addWidget(spinBox, row, col, 1, 1, Qt::AlignTop);
-        }
-        auto setupValues = new QPushButton(QString("Задать начальные значения по фазе %1").arg(phases[phase]), widget);
-        // TODO: connect
-        grid->addWidget(setupValues, row + 1, 0, 1, columns, Qt::AlignTop);
+        auto phaseGroupBox = new QGroupBox(widget);
+        phaseGroupBox->setTitle(QString("Фаза %1").arg(phase));
+        auto phaseLayout = new QVBoxLayout(phaseGroupBox);
 
-        auto resetValues
-            = new QPushButton(QString("Сбросить начальные значения по фазе %1").arg(phases[phase]), widget);
+        auto setupValues = new QPushButton(QString("Задать начальные значения по фазе %1").arg(phase), phaseGroupBox);
         // TODO: connect
-        grid->addWidget(resetValues, row + 2, 0, 1, columns, Qt::AlignTop);
+        phaseLayout->addWidget(setupValues);
+
+        auto resetValues = new QPushButton(QString("Сбросить начальные значения по фазе %1").arg(phase), phaseGroupBox);
+        // TODO: connect
+        phaseLayout->addWidget(resetValues);
+
+        phaseGroupBox->setLayout(phaseLayout);
+        layout->addWidget(phaseGroupBox);
     }
 
-    /// TODO: Здесь будет готовый код
-    // auto resetStartupErrorBtn = new QPushButton("Сброс ошибки задания начальных значений", widget);
-    // grid->addWidget(resetStartupErrorBtn, 0, 0, 1, 1);
+    // Create UI commands for unbalance current
+    {
+        auto unbalanceGroupBox = new QGroupBox(widget);
+        unbalanceGroupBox->setTitle("Ток небланса");
+        auto unbalanceLayout = new QVBoxLayout(unbalanceGroupBox);
 
-    // auto transOffBtn = new QPushButton("Команда \"Трансформатор отключён\"", widget);
-    // grid->addWidget(transOffBtn, 1, 0, 1, 1);
+        auto setupValues = new QPushButton("Задать начальные значения тока небаланса", unbalanceGroupBox);
+        // TODO: connect
+        unbalanceLayout->addWidget(setupValues);
 
-    layout->addLayout(grid, Qt::AlignTop);
+        auto resetValues = new QPushButton("Сбросить начальные значения тока небаланса", unbalanceGroupBox);
+        // TODO: connect
+        unbalanceLayout->addWidget(resetValues);
+
+        unbalanceGroupBox->setLayout(unbalanceLayout);
+        layout->addWidget(unbalanceGroupBox);
+    }
+
+    auto resetStartupErrorBtn = new QPushButton("Сброс ошибки задания начальных значений", widget);
+    // TODO: connect
+    layout->addWidget(resetStartupErrorBtn);
+
+    auto transOffBtn = new QPushButton("Послать команду \"Трансформатор отключён\"", widget);
+    // TODO: connect
+    layout->addWidget(transOffBtn);
+
     widget->setLayout(layout);
     widget->setObjectName("commandsTab");
     return widget;

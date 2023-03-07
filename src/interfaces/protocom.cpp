@@ -248,7 +248,7 @@ void Protocom::writeCommand(Queries::Commands cmd, QVariant item)
     using namespace Proto;
     using DataTypes::Signal;
 
-    auto protoCmd = getProtoCommand.value(cmd);
+    auto protoCmd = getProtoCommand(cmd);
 
     switch (protoCmd)
     {
@@ -343,7 +343,7 @@ void Protocom::writeCommand(Queries::Commands cmd, QVariant item)
     {
         if (!protoCmd)
         {
-            auto wCmd = getWCommand.value(cmd);
+            auto wCmd = getWCommand(cmd);
             if (!wCmd)
             {
                 qCritical() << Error::WrongCommandError;
