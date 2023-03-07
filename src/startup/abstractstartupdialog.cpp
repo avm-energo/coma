@@ -51,25 +51,25 @@ QWidget *AbstractStartupDialog::buttonWidget()
     auto widget = new QWidget;
     auto layout = new QVBoxLayout;
     auto group = new QDialogButtonBox(widget);
-    QString tmps = ((DEVICETYPE == DEVICETYPE_MODULE) ? "модуля" : "прибора");
+    const QString tmps = ((DEVICETYPE == DEVICETYPE_MODULE) ? "модуля" : "прибора");
 
     using VoidFunction = std::function<void()>;
-    const QList<std::tuple<QString, QIcon, VoidFunction>> funcs {
-        { "Задать начальные значения", QIcon(":/icons/tnapprove.svg"), [this]() { SetupCor(); } },    //
-        { "Сбросить начальные значения", QIcon(":/icons/tnreset.svg"), [this]() { ResetCor(); } },    //
-        { "Получить из " + tmps, QIcon(":/icons/tnread.svg"), [this]() { GetCorBd(); } },             //
-        { "Записать в модуль", QIcon(":/icons/tnwrite.svg"), [this]() { WriteCor(); } },              //
-        { "Прочитать значения из файла", QIcon(":/icons/tnload.svg"), [this]() { ReadFromFile(); } }, //
-        { "Сохранить значения в файл", QIcon(":/icons/tnsave.svg"), [this]() { SaveToFile(); } }      //
+    const QList<std::tuple<QString, QString, VoidFunction>> funcs {
+        { "Задать начальные значения", ":/icons/tnapprove.svg", [this]() { SetupCor(); } },    //
+        { "Сбросить начальные значения", ":/icons/tnreset.svg", [this]() { ResetCor(); } },    //
+        { "Получить из " + tmps, ":/icons/tnread.svg", [this]() { GetCorBd(); } },             //
+        { "Записать в модуль", ":/icons/tnwrite.svg", [this]() { WriteCor(); } },              //
+        { "Прочитать значения из файла", ":/icons/tnload.svg", [this]() { ReadFromFile(); } }, //
+        { "Сохранить значения в файл", ":/icons/tnsave.svg", [this]() { SaveToFile(); } }      //
     };
 
     for (auto &func : funcs)
     {
-        const auto &toolTip = std::get<0>(func);
-        const auto &icon = std::get<1>(func);
+        auto &toolTip = std::get<0>(func);
+        auto &iconPath = std::get<1>(func);
         auto pButton = new QPushButton(group);
         pButton->setObjectName("Hexagon");
-        pButton->setIcon(icon);
+        pButton->setIcon(QIcon(iconPath));
         pButton->setToolTip(toolTip);
         pButton->setMinimumSize(50, 50);
         pButton->setIconSize(QSize(50, 50));
@@ -191,14 +191,14 @@ bool AbstractStartupDialog::addReg(quint16 reg, float *ptr)
 
 void AbstractStartupDialog::FillCor()
 {
-    for (decltype(m_regMap)::const_iterator it = m_regMap.cbegin(); it != m_regMap.cend(); ++it)
+    for (auto it = m_regMap.cbegin(); it != m_regMap.cend(); ++it)
         if (!WDFunc::SetSPBData(this, QString::number(it.key()), *it.value()))
             qDebug() << "Not found";
 }
 
 void AbstractStartupDialog::FillBackCor()
 {
-    for (decltype(m_regMap)::iterator it = m_regMap.begin(); it != m_regMap.end(); ++it)
+    for (auto it = m_regMap.begin(); it != m_regMap.end(); ++it)
         if (!WDFunc::SPBData(this, QString::number(it.key()), *it.value()))
             qDebug() << "Not found";
 }

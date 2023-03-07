@@ -1,18 +1,20 @@
 #include "startupkivdialog.h"
 
-#include "../dialogs/keypressdialog.h"
-#include "../module/board.h"
 #include "../widgets/wd_func.h"
 
-#include <QDebug>
 #include <QGridLayout>
 #include <QMessageBox>
-#include <gen/colors.h>
-#include <gen/datamanager/typesproxy.h>
+#include <QPushButton>
 #include <gen/error.h>
 #include <gen/files.h>
-#include <gen/stdfunc.h>
-#include <gen/timefunc.h>
+
+//#include "../module/board.h"
+//#include "../dialogs/keypressdialog.h"
+//#include <QDebug>
+//#include <gen/colors.h>
+//#include <gen/datamanager/typesproxy.h>
+//#include <gen/stdfunc.h>
+//#include <gen/timefunc.h>
 
 StartupKIVDialog::StartupKIVDialog(QWidget *parent) : AbstractStartupDialog(parent)
 {
@@ -30,7 +32,6 @@ StartupKIVDialog::StartupKIVDialog(QWidget *parent) : AbstractStartupDialog(pare
     addReg(4008, &CorBlock->corTg[2]);
     addReg(4009, &CorBlock->Iunb_init);
     addReg(4010, &CorBlock->Phy_unb_init);
-
     SetStartupBlock(7, &CorBlock, sizeof(CorData), KIVSTARTUPINITREG);
 }
 
@@ -55,32 +56,28 @@ void StartupKIVDialog::SetupCor()
     AbstractStartupDialog::SetupCor();
 }
 
-void StartupKIVDialog::SetupUI()
+QWidget *StartupKIVDialog::uiValuesTab(QWidget *parent)
 {
-    auto lyout = new QVBoxLayout;
+    auto widget = new QWidget(parent);
+    auto layout = new QVBoxLayout;
     auto glyout = new QGridLayout;
     int row = 0;
 
     glyout->addWidget(WDFunc::NewLBL2(this, "Начальные значения емкостей вводов, пФ:"), row, 1, 1, 1);
-
     for (int i = 0; i < 3; i++)
     {
         glyout->addWidget(WDFunc::NewSPB2(this, QString::number(4000 + i), 0, 10000, 1), row, 2 + i, 1, 1);
     }
-
     row++;
 
     glyout->addWidget(WDFunc::NewLBL2(this, "Начальные значения tg δ вводов, %:"), row, 1, 1, 1);
-
     for (int i = 0; i < 3; i++)
     {
         glyout->addWidget(WDFunc::NewSPB2(this, QString::number(4003 + i), -10, 10, 2), row, 2 + i, 1, 1);
     }
-
     row++;
 
     glyout->addWidget(WDFunc::NewLBL2(this, "Коррекция  tg δ вводов,%:"), row, 1, 1, 1);
-
     for (int i = 0; i < 3; i++)
     {
         glyout->addWidget(WDFunc::NewSPB2(this, QString::number(4006 + i), -10, 10, 2), row, 2 + i, 1, 1);
@@ -89,18 +86,88 @@ void StartupKIVDialog::SetupUI()
 
     glyout->addWidget(WDFunc::NewLBL2(this, "Начальное значение небаланса токов, %:"), row, 1, 1, 1);
     glyout->addWidget(WDFunc::NewSPB2(this, QString::number(4009), 0, 10000, 1), row, 2, 1, 3);
-
     row++;
     glyout->addWidget(WDFunc::NewLBL2(this, "Начальное значение угла тока небаланса, град.:"), row, 1, 1, 1);
     glyout->addWidget(WDFunc::NewSPB2(this, QString::number(4010), 0, 10000, 1), row, 2, 1, 3);
 
-    //    row++;
+    layout->addLayout(glyout, Qt::AlignTop);
+    layout->addWidget(buttonWidget());
 
-    lyout->addLayout(glyout, Qt::AlignTop);
-    lyout->addWidget(buttonWidget());
+    widget->setLayout(layout);
+    widget->setObjectName("corDialog");
+    return widget;
+}
 
-    setLayout(lyout);
-    setObjectName("corDialog");
+QWidget *StartupKIVDialog::uiCommandsTab(QWidget *parent)
+{
+    auto widget = new QWidget(parent);
+    auto layout = new QVBoxLayout(widget);
+    auto grid = new QGridLayout(widget);
+
+    // Prepare UI step
+    constexpr auto columns = 4;
+    constexpr auto rows = 10;
+    constexpr auto phasesCount = 3;
+    const char *phases[] = { "A", "B", "C" };
+    // Labels for columns
+    QList<QWidget *> labelList = {
+        WDFunc::NewLBL2(widget, "Начальные значения емкостей вводов, пФ:"), //
+        WDFunc::NewLBL2(widget, "Начальные значения tg δ вводов, %:"),      //
+        WDFunc::NewLBL2(widget, "Коррекция  tg δ вводов,%:")                //
+    };
+    // Adding column labels to grid layout
+    for (auto col = 1; col < columns; col++)
+        grid->addWidget(labelList[col - 1], 0, col, 1, 1, Qt::AlignTop);
+
+    const QList<std::tuple<double, double, int>> spinBoxSettings = { { 0, 10000, 1 }, { -10, 10, 2 }, { -10, 10, 2 } };
+
+    // Create Matrix-styled UI
+    for (auto phase = 0; phase < phasesCount; phase++)
+    {
+        auto phaseLable = WDFunc::NewLBL2(widget, QString("Фаза %1").arg(phases[phase]));
+        const auto row = phase * phasesCount + 1;
+        grid->addWidget(phaseLable, row, 0, 1, 1, Qt::AlignTop);
+        for (auto col = 1; col < columns; col++)
+        {
+            const auto index = col - 1;
+            const auto offset = (phasesCount * index) + phase;
+            auto &min = std::get<0>(spinBoxSettings[index]);
+            auto &max = std::get<1>(spinBoxSettings[index]);
+            auto &decimals = std::get<2>(spinBoxSettings[index]);
+            auto spinBox = WDFunc::NewSPB2(widget, QString::number(KIVSTARTUPINITREG + offset), min, max, decimals);
+            grid->addWidget(spinBox, row, col, 1, 1, Qt::AlignTop);
+        }
+        auto setupValues = new QPushButton(QString("Задать начальные значения по фазе %1").arg(phases[phase]), widget);
+        // TODO: connect
+        grid->addWidget(setupValues, row + 1, 0, 1, columns, Qt::AlignTop);
+
+        auto resetValues
+            = new QPushButton(QString("Сбросить начальные значения по фазе %1").arg(phases[phase]), widget);
+        // TODO: connect
+        grid->addWidget(resetValues, row + 2, 0, 1, columns, Qt::AlignTop);
+    }
+
+    /// TODO: Здесь будет готовый код
+    // auto resetStartupErrorBtn = new QPushButton("Сброс ошибки задания начальных значений", widget);
+    // grid->addWidget(resetStartupErrorBtn, 0, 0, 1, 1);
+
+    // auto transOffBtn = new QPushButton("Команда \"Трансформатор отключён\"", widget);
+    // grid->addWidget(transOffBtn, 1, 0, 1, 1);
+
+    layout->addLayout(grid, Qt::AlignTop);
+    widget->setLayout(layout);
+    widget->setObjectName("commandsTab");
+    return widget;
+}
+
+void StartupKIVDialog::SetupUI()
+{
+    auto layout = new QVBoxLayout;
+    auto startupTabWidget = new QTabWidget(this);
+    startupTabWidget->addTab(uiCommandsTab(startupTabWidget), "Команды");
+    startupTabWidget->addTab(uiValuesTab(startupTabWidget), "Значения");
+    layout->addWidget(startupTabWidget);
+    setLayout(layout);
 }
 
 void StartupKIVDialog::SaveToFile()
