@@ -7,6 +7,7 @@
 #include <QMessageBox>
 #include <gen/error.h>
 #include <gen/files.h>
+#include <tuple>
 
 //#include "../module/board.h"
 //#include "../dialogs/keypressdialog.h"
@@ -104,19 +105,27 @@ QWidget *StartupKIVDialog::uiCommandsTab(QWidget *parent)
     auto layout = new QVBoxLayout(widget);
 
     // Create UI commands for phases
-    const QStringList phases = { "A", "B", "C" };
-    for (const auto &phase : phases)
+    const QList<std::tuple<Queries::Commands, Queries::Commands, QString>> phaseSettings {
+        { Queries::QC_SetStartupPhaseA, Queries::QC_ClearStartupPhaseA, "A" },
+        { Queries::QC_SetStartupPhaseB, Queries::QC_ClearStartupPhaseB, "B" },
+        { Queries::QC_SetStartupPhaseC, Queries::QC_ClearStartupPhaseC, "C" }
+    };
+    for (auto &step : phaseSettings)
     {
+        auto setupCmd = std::get<0>(step);
+        auto resetCmd = std::get<1>(step);
+        auto &phase = std::get<2>(step);
+
         auto phaseGroupBox = new QGroupBox(widget);
         phaseGroupBox->setTitle(QString("Фаза %1").arg(phase));
         auto phaseLayout = new QVBoxLayout(phaseGroupBox);
 
         auto setupValues = new QPushButton(QString("Задать начальные значения по фазе %1").arg(phase), phaseGroupBox);
-        // TODO: connect
+        connect(setupValues, &QPushButton::clicked, this, [this, setupCmd]() { sendCommand(setupCmd); });
         phaseLayout->addWidget(setupValues);
 
         auto resetValues = new QPushButton(QString("Сбросить начальные значения по фазе %1").arg(phase), phaseGroupBox);
-        // TODO: connect
+        connect(resetValues, &QPushButton::clicked, this, [this, resetCmd]() { sendCommand(resetCmd); });
         phaseLayout->addWidget(resetValues);
 
         phaseGroupBox->setLayout(phaseLayout);
@@ -126,32 +135,44 @@ QWidget *StartupKIVDialog::uiCommandsTab(QWidget *parent)
     // Create UI commands for unbalance current
     {
         auto unbalanceGroupBox = new QGroupBox(widget);
-        unbalanceGroupBox->setTitle("Ток небланса");
+        unbalanceGroupBox->setTitle("Ток небаланса");
         auto unbalanceLayout = new QVBoxLayout(unbalanceGroupBox);
 
         auto setupValues = new QPushButton("Задать начальные значения тока небаланса", unbalanceGroupBox);
-        // TODO: connect
+        connect(setupValues, &QPushButton::clicked, this, [this]() { sendCommand(Queries::QC_SetStartupUnbounced); });
         unbalanceLayout->addWidget(setupValues);
 
         auto resetValues = new QPushButton("Сбросить начальные значения тока небаланса", unbalanceGroupBox);
-        // TODO: connect
+        connect(resetValues, &QPushButton::clicked, this, [this]() { sendCommand(Queries::QC_ClearStartupUnbounced); });
         unbalanceLayout->addWidget(resetValues);
 
         unbalanceGroupBox->setLayout(unbalanceLayout);
         layout->addWidget(unbalanceGroupBox);
     }
 
-    auto resetStartupErrorBtn = new QPushButton("Сброс ошибки задания начальных значений", widget);
-    // TODO: connect
-    layout->addWidget(resetStartupErrorBtn);
+    // Create UI commands trans off and reset starup init error
+    {
+        auto resetStartupErr = new QPushButton("Сброс ошибки задания начальных значений", widget);
+        connect(resetStartupErr, &QPushButton::clicked, this, [this]() { sendCommand(Queries::QC_ClearStartupError); });
+        layout->addWidget(resetStartupErr);
 
-    auto transOffBtn = new QPushButton("Послать команду \"Трансформатор отключён\"", widget);
-    // TODO: connect
-    layout->addWidget(transOffBtn);
+        auto setTransOff = new QPushButton("Послать команду \"Трансформатор отключён\"", widget);
+        connect(setTransOff, &QPushButton::clicked, this, [this]() { sendCommand(Queries::QC_SetTransOff); });
+        layout->addWidget(setTransOff);
+    }
 
     widget->setLayout(layout);
     widget->setObjectName("commandsTab");
     return widget;
+}
+
+void StartupKIVDialog::sendCommand(Queries::Commands cmd)
+{
+    if (checkPassword())
+    {
+        BaseInterface::iface()->writeCommand(cmd);
+        GetCorBd();
+    }
 }
 
 void StartupKIVDialog::SetupUI()

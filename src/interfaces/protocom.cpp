@@ -346,8 +346,13 @@ void Protocom::writeCommand(Queries::Commands cmd, QVariant item)
             auto wCmd = getWCommand(cmd);
             if (!wCmd)
             {
-                qCritical() << Error::WrongCommandError;
-                return;
+                auto wsCmd = getWSCommand(cmd);
+                if (!wsCmd)
+                {
+                    qCritical() << Error::WrongCommandError;
+                    return;
+                }
+                d->handleCommand(wsCmd);
             }
             d->handleCommand(wCmd);
         }
@@ -392,4 +397,59 @@ bool Protocom::isValidRegs(const quint32 sigAdr, const quint32 sigCount)
     const auto val = st.dictionary().value(sigAdr);
     Q_ASSERT(val.count == sigCount);
     return val.count == sigCount;
+}
+
+Proto::Commands Protocom::getProtoCommand(Queries::Commands cmd)
+{
+    static const QMap<Queries::Commands, Proto::Commands> protoCommandMap {
+        { Queries::QC_StartFirmwareUpgrade, Proto::WriteUpgrade },     //
+        { Queries::QC_SetNewConfiguration, Proto::WriteBlkTech },      //
+        { Queries::QC_WriteUserValues, Proto::WriteBlkData },          //
+        { Queries::QC_EraseJournals, Proto::EraseTech },               //
+        { Queries::QC_ReqBitStrings, Proto::ReadProgress },            //
+        { Queries::QC_EraseTechBlock, Proto::EraseTech },              //
+        { Queries::QC_Test, Proto::Test },                             //
+        { Queries::QC_WriteSingleCommand, Proto::WriteSingleCommand }, //
+        { Queries::QUSB_ReqTuningCoef, Proto::ReadBlkAC },             //
+        { Queries::QUSB_WriteTuningCoef, Proto::WriteBlkAC },          //
+        { Queries::QUSB_ReqBlkData, Proto::ReadBlkData },              //
+        { Queries::QUSB_ReqBlkDataA, Proto::ReadBlkDataA },            //
+        { Queries::QUSB_ReqBlkDataTech, Proto::ReadBlkTech },          //
+        { Queries::QUSB_ReqOscInfo, Proto::ReadBlkTech },              //
+        { Queries::QUSB_WriteBlkDataTech, Proto::WriteBlkTech },       //
+        { Queries::QUSB_Reboot, Proto::WriteBlkCmd },                  //
+        { Queries::QC_ReqAlarms, Proto::FakeReadAlarms },              //
+        { Queries::QUSB_GetMode, Proto::ReadMode },                    //
+        { Queries::QUSB_SetMode, Proto::WriteMode },                   //
+        { Queries::QUSB_WriteHardware, Proto::WriteHardware }          //
+    };
+    return protoCommandMap.value(cmd);
+}
+
+Proto::WCommands Protocom::getWCommand(Queries::Commands cmd)
+{
+    static const QMap<Queries::Commands, Proto::WCommands> protoWCommandMap {
+        { Queries::QC_SetStartupValues, Proto::InitStartupValues },    //
+        { Queries::QC_ClearStartupValues, Proto::EraseStartupValues }, //
+    };
+    return protoWCommandMap.value(cmd);
+}
+
+Proto::WSCommands Protocom::getWSCommand(Queries::Commands cmd)
+{
+    static const QMap<Queries::Commands, Proto::WSCommands> protoWSCommandMap {
+        { Queries::QC_SetStartupValues, Proto::InitStartupAll },          //
+        { Queries::QC_SetStartupPhaseA, Proto::InitStartupPhaseA },       //
+        { Queries::QC_SetStartupPhaseB, Proto::InitStartupPhaseB },       //
+        { Queries::QC_SetStartupPhaseC, Proto::InitStartupPhaseC },       //
+        { Queries::QC_SetStartupUnbounced, Proto::InitStartupUnbounced }, //
+        { Queries::QC_SetTransOff, Proto::SetTransOff },                  //
+        { Queries::QC_ClearStartupValues, Proto::EraseStartupAll },       //
+        { Queries::QC_ClearStartupPhaseA, Proto::EraseStartupAll },       //
+        { Queries::QC_ClearStartupPhaseB, Proto::EraseStartupAll },       //
+        { Queries::QC_ClearStartupPhaseC, Proto::EraseStartupAll },       //
+        { Queries::QC_ClearStartupUnbounced, Proto::EraseStartupAll },    //
+        { Queries::QC_ClearStartupError, Proto::EraseStartupInitError },  //
+    };
+    return protoWSCommandMap.value(cmd);
 }

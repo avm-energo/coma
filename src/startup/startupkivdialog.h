@@ -12,7 +12,6 @@ class StartupKIVDialog : public AbstractStartupDialog
 public:
     explicit StartupKIVDialog(QWidget *parent = nullptr);
     ~StartupKIVDialog();
-
     void SetupCor() override;
 
 private:
@@ -30,6 +29,7 @@ private:
 
     QWidget *uiValuesTab(QWidget *parent = nullptr);
     QWidget *uiCommandsTab(QWidget *parent = nullptr);
+    void sendCommand(Queries::Commands cmd);
     void SetupUI() override;
 
 public slots:

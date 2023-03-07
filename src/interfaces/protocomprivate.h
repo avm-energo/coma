@@ -147,7 +147,7 @@ enum WSCommands
     InitStartupPhaseC,
     InitStartupUnbounced,
     EraseStartupAll,
-    EraseStartupinitError,
+    EraseStartupInitError,
     SetTransOff
 };
 

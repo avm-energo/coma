@@ -26,6 +26,7 @@ public:
     void handleInt(const Proto::Commands cmd, const QByteArray data);
     void handleCommand(const Proto::Commands cmd);
     void handleCommand(const Proto::WCommands cmd);
+    void handleCommand(const Proto::WSCommands cmd);
     void handleCommand(const Proto::Commands cmd, const DataTypes::SingleCommand singleCmd);
 
     Protocom *q_ptr;
