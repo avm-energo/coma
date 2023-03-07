@@ -44,6 +44,6 @@ private:
     Proto::WSCommands getWSCommand(Queries::Commands cmd);
 
 signals:
-    void wakeUpParser();
+    void wakeUpParser() const;
     void wakeUpPort();
 };

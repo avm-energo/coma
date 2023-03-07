@@ -343,18 +343,13 @@ void Protocom::writeCommand(Queries::Commands cmd, QVariant item)
     {
         if (!protoCmd)
         {
-            auto wCmd = getWCommand(cmd);
-            if (!wCmd)
+            auto wsCmd = getWSCommand(cmd);
+            if (!wsCmd)
             {
-                auto wsCmd = getWSCommand(cmd);
-                if (!wsCmd)
-                {
-                    qCritical() << Error::WrongCommandError;
-                    return;
-                }
-                d->handleCommand(wsCmd);
+                qCritical() << Error::WrongCommandError;
+                return;
             }
-            d->handleCommand(wCmd);
+            d->handleCommand(wsCmd);
         }
         else
             d->handleCommand(protoCmd);
