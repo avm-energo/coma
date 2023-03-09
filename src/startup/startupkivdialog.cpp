@@ -156,9 +156,13 @@ QWidget *StartupKIVDialog::uiCommandsTab(QWidget *parent)
         connect(resetStartupErr, &QPushButton::clicked, this, [this]() { sendCommand(Queries::QC_ClearStartupError); });
         layout->addWidget(resetStartupErr);
 
-        auto setTransOff = new QPushButton("Послать команду \"Трансформатор отключён\"", widget);
-        connect(setTransOff, &QPushButton::clicked, this, [this]() { sendCommand(Queries::QC_SetTransOff); });
+        auto setTransOff = new QPushButton("Послать команду \"Трансформатор включён\"", widget);
+        connect(setTransOff, &QPushButton::clicked, this, [this]() { sendCommand(Queries::QC_SetTransOff, false); });
         layout->addWidget(setTransOff);
+
+        auto setTransOn = new QPushButton("Послать команду \"Трансформатор отключён\"", widget);
+        connect(setTransOn, &QPushButton::clicked, this, [this]() { sendCommand(Queries::QC_SetTransOff); });
+        layout->addWidget(setTransOn);
     }
 
     widget->setLayout(layout);
@@ -166,11 +170,11 @@ QWidget *StartupKIVDialog::uiCommandsTab(QWidget *parent)
     return widget;
 }
 
-void StartupKIVDialog::sendCommand(Queries::Commands cmd)
+void StartupKIVDialog::sendCommand(Queries::Commands cmd, bool value)
 {
     if (checkPassword())
     {
-        BaseInterface::iface()->writeCommand(cmd);
+        BaseInterface::iface()->writeCommand(cmd, value);
         GetCorBd();
     }
 }

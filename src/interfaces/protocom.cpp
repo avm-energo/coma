@@ -349,7 +349,7 @@ void Protocom::writeCommand(Queries::Commands cmd, QVariant item)
                 qCritical() << Error::WrongCommandError;
                 return;
             }
-            d->handleCommand(wsCmd);
+            d->handleCommand(wsCmd, item.value<bool>());
         }
         else
             d->handleCommand(protoCmd);

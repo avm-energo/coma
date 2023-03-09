@@ -173,11 +173,10 @@ void ModBus::reqBSI()
 /// TODO: Переписать
 void ModBus::reqBSIExt()
 {
-    // 31 (40) - начальный адрес первого регистра блока BSI Ext
     constexpr auto regCount = sizeof(Modules::StartupInfoBlockExt0) / sizeof(quint32);
     CommandsMBS::CommandStruct inp {
         CommandsMBS::Commands::ReadInputRegister, //
-        40,                                       //
+        Regs::bsiExtStartReg,                     //
         static_cast<quint8>(regCount * 2),        //
         {},                                       //
         TypeId::Uint32,                           //
@@ -243,7 +242,7 @@ void ModBus::writeFloat(const DataTypes::FloatStruct &flstr)
         TypeId::None,                                  //
         __PRETTY_FUNCTION__                            //
     };
-    // Q_ASSERT(isValidRegs(inp));
+    Q_ASSERT(isValidRegs(inp));
     DataManager::GetInstance().addToInQueue(inp);
 }
 
@@ -257,7 +256,7 @@ void ModBus::writeInt16(const quint32 addr, const qint16 value)
         TypeId::None,                                  //
         __PRETTY_FUNCTION__                            //
     };
-    // Q_ASSERT(isValidRegs(inp));
+    Q_ASSERT(isValidRegs(inp));
     DataManager::GetInstance().addToInQueue(inp);
 }
 

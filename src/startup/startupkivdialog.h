@@ -29,7 +29,7 @@ private:
 
     QWidget *uiValuesTab(QWidget *parent = nullptr);
     QWidget *uiCommandsTab(QWidget *parent = nullptr);
-    void sendCommand(Queries::Commands cmd);
+    void sendCommand(Queries::Commands cmd, bool value = true);
     void SetupUI() override;
 
 public slots:

@@ -58,12 +58,9 @@ void ProtocomPrivate::handleCommand(const Proto::WCommands cmd)
     DataManager::GetInstance().addToInQueue(inp);
 }
 
-void ProtocomPrivate::handleCommand(const Proto::WSCommands cmd)
+void ProtocomPrivate::handleCommand(const Proto::WSCommands cmd, const bool value)
 {
-    DataTypes::SingleCommand singleCmd { uint24(cmd), true };
-    //    Proto::CommandStruct inp { Proto::WriteSingleCommand, QVariant::fromValue(singleCmd.addr), QVariant(),
-    //        StdFunc::ArrayFromNumber(singleCmd.value) };
-    //    DataManager::GetInstance().addToInQueue(inp);
+    DataTypes::SingleCommand singleCmd { uint24(cmd), value };
     handleCommand(Proto::WriteSingleCommand, singleCmd);
 }
 
