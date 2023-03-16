@@ -2348,12 +2348,12 @@
     <record>
 		<id>1042</id>
 		<name>NoSign</name>
-		<description>Запрет сигнализации по фазам</description>
+		<description>Запрет фаз</description>
 		<type>BYTE</type>
 		<widget>
 			<type>CheckBoxGroup</type>
 			<group>200</group>
-			<string>Запрет сигнализации по фазам</string>
+			<string>Запрет фаз</string>
 			<string-array>
 				<item>Фаза A</item>
 				<item>Фаза B</item>

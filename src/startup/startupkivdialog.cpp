@@ -105,49 +105,25 @@ QWidget *StartupKIVDialog::uiCommandsTab(QWidget *parent)
     auto layout = new QVBoxLayout(widget);
 
     // Create UI commands for phases
-    const QList<std::tuple<Queries::Commands, Queries::Commands, QString>> phaseSettings {
-        { Queries::QC_SetStartupPhaseA, Queries::QC_ClearStartupPhaseA, "A" },
-        { Queries::QC_SetStartupPhaseB, Queries::QC_ClearStartupPhaseB, "B" },
-        { Queries::QC_SetStartupPhaseC, Queries::QC_ClearStartupPhaseC, "C" }
+    const QList<std::tuple<Queries::Commands, QString>> phaseSettings {
+        { Queries::QC_SetStartupPhaseA, "A" }, //
+        { Queries::QC_SetStartupPhaseB, "B" }, //
+        { Queries::QC_SetStartupPhaseC, "C" }  //
     };
     for (auto &step : phaseSettings)
     {
         auto setupCmd = std::get<0>(step);
-        auto resetCmd = std::get<1>(step);
-        auto &phase = std::get<2>(step);
-
-        auto phaseGroupBox = new QGroupBox(widget);
-        phaseGroupBox->setTitle(QString("Фаза %1").arg(phase));
-        auto phaseLayout = new QVBoxLayout(phaseGroupBox);
-
-        auto setupValues = new QPushButton(QString("Задать начальные значения по фазе %1").arg(phase), phaseGroupBox);
+        auto &phase = std::get<1>(step);
+        auto setupValues = new QPushButton(QString("Задать начальные значения по фазе %1").arg(phase), widget);
         connect(setupValues, &QPushButton::clicked, this, [this, setupCmd]() { sendCommand(setupCmd); });
-        phaseLayout->addWidget(setupValues);
-
-        auto resetValues = new QPushButton(QString("Сбросить начальные значения по фазе %1").arg(phase), phaseGroupBox);
-        connect(resetValues, &QPushButton::clicked, this, [this, resetCmd]() { sendCommand(resetCmd); });
-        phaseLayout->addWidget(resetValues);
-
-        phaseGroupBox->setLayout(phaseLayout);
-        layout->addWidget(phaseGroupBox);
+        layout->addWidget(setupValues);
     }
 
     // Create UI commands for unbalance current
     {
-        auto unbalanceGroupBox = new QGroupBox(widget);
-        unbalanceGroupBox->setTitle("Ток небаланса");
-        auto unbalanceLayout = new QVBoxLayout(unbalanceGroupBox);
-
-        auto setupValues = new QPushButton("Задать начальные значения тока небаланса", unbalanceGroupBox);
+        auto setupValues = new QPushButton("Задать начальные значения небаланса токов", widget);
         connect(setupValues, &QPushButton::clicked, this, [this]() { sendCommand(Queries::QC_SetStartupUnbounced); });
-        unbalanceLayout->addWidget(setupValues);
-
-        auto resetValues = new QPushButton("Сбросить начальные значения тока небаланса", unbalanceGroupBox);
-        connect(resetValues, &QPushButton::clicked, this, [this]() { sendCommand(Queries::QC_ClearStartupUnbounced); });
-        unbalanceLayout->addWidget(resetValues);
-
-        unbalanceGroupBox->setLayout(unbalanceLayout);
-        layout->addWidget(unbalanceGroupBox);
+        layout->addWidget(setupValues);
     }
 
     // Create UI commands trans off and reset starup init error

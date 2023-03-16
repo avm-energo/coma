@@ -55,12 +55,12 @@ QWidget *AbstractStartupDialog::buttonWidget()
 
     using VoidFunction = std::function<void()>;
     const QList<std::tuple<QString, QString, VoidFunction>> funcs {
-        { "Задать начальные значения", ":/icons/tnapprove.svg", [this]() { SetupCor(); } },    //
-        { "Сбросить начальные значения", ":/icons/tnreset.svg", [this]() { ResetCor(); } },    //
-        { "Получить из " + tmps, ":/icons/tnread.svg", [this]() { GetCorBd(); } },             //
-        { "Записать в модуль", ":/icons/tnwrite.svg", [this]() { WriteCor(); } },              //
-        { "Прочитать значения из файла", ":/icons/tnload.svg", [this]() { ReadFromFile(); } }, //
-        { "Сохранить значения в файл", ":/icons/tnsave.svg", [this]() { SaveToFile(); } }      //
+        { "Задать все начальные значения", ":/icons/tnapprove.svg", [this]() { SetupCor(); } }, //
+        { "Сбросить все начальные значения", ":/icons/tnreset.svg", [this]() { ResetCor(); } }, //
+        { "Получить из " + tmps, ":/icons/tnread.svg", [this]() { GetCorBd(); } },              //
+        { "Записать в модуль", ":/icons/tnwrite.svg", [this]() { WriteCor(); } },               //
+        { "Прочитать значения из файла", ":/icons/tnload.svg", [this]() { ReadFromFile(); } },  //
+        { "Сохранить значения в файл", ":/icons/tnsave.svg", [this]() { SaveToFile(); } }       //
     };
 
     for (auto &func : funcs)

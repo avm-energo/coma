@@ -440,11 +440,11 @@ Proto::WSCommands Protocom::getWSCommand(Queries::Commands cmd)
         { Queries::QC_SetStartupUnbounced, Proto::InitStartupUnbounced }, //
         { Queries::QC_SetTransOff, Proto::SetTransOff },                  //
         { Queries::QC_ClearStartupValues, Proto::EraseStartupAll },       //
-        { Queries::QC_ClearStartupPhaseA, Proto::EraseStartupAll },       //
-        { Queries::QC_ClearStartupPhaseB, Proto::EraseStartupAll },       //
-        { Queries::QC_ClearStartupPhaseC, Proto::EraseStartupAll },       //
-        { Queries::QC_ClearStartupUnbounced, Proto::EraseStartupAll },    //
-        { Queries::QC_ClearStartupError, Proto::EraseStartupInitError },  //
+        //        { Queries::QC_ClearStartupPhaseA, Proto::EraseStartupAll },       //
+        //        { Queries::QC_ClearStartupPhaseB, Proto::EraseStartupAll },       //
+        //        { Queries::QC_ClearStartupPhaseC, Proto::EraseStartupAll },       //
+        //        { Queries::QC_ClearStartupUnbounced, Proto::EraseStartupAll },    //
+        { Queries::QC_ClearStartupError, Proto::EraseStartupInitError }, //
     };
     return protoWSCommandMap.value(cmd);
 }
