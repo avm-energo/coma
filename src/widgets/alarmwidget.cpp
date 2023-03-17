@@ -28,7 +28,7 @@ void AlarmWidget::configure()
         { Modules::AlarmType::Info, "Информационная сигнализация" }        //
     };
 
-    auto alarmStateAll = new AlarmStateAll();
+    auto alarmStateAll = new AlarmStateAll(this);
     alarmStateAll->setupUI(AVM::HthToolTip);
     addAlarm(alarmStateAll, "Состояние устройства");
     const auto &alarmMap = ConfigStorage::GetInstance().getModuleSettings().getAlarms();
@@ -40,7 +40,7 @@ void AlarmWidget::configure()
             if (!title.isEmpty())
             {
                 const auto &alarms = alarmMap.value(*keyIter);
-                auto moduleAlarm = new ModuleAlarm(*keyIter, alarms);
+                auto moduleAlarm = new ModuleAlarm(*keyIter, alarms, this);
                 addAlarm(moduleAlarm, title);
             }
         }

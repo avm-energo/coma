@@ -62,8 +62,9 @@ private:
     CommandsMBS::TypeId type(const quint32 addr) const;
     CommandsMBS::TypeId type(const quint32 addr, const quint32 count, const CommandsMBS::Commands cmd) const;
     void writeFloat(const DataTypes::FloatStruct &flstr);
-    void writeInt16(const quint32 addr, const qint16 value);
+    void writeInt16(const quint32 addr, const quint16 value);
     const quint8 obtainDelay(const quint32 baudRate) const;
+    CommandsMBS::CommandRegisters getAddrByCommand(Queries::Commands cmd);
 
     template <typename T> QByteArray packReg(T value)
     {

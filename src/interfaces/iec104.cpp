@@ -183,7 +183,6 @@ void IEC104::writeCommand(Queries::Commands cmd, QVariant item)
     default:
     {
         auto iec104cmd = get104Command(cmd);
-        // inp = Commands104::CommandsTranslateMap.value(cmd);
         inp = { Commands104::CM104_COM45, iec104cmd, 0, true, {} };
         DataManager::GetInstance().addToInQueue(inp);
     }
@@ -195,18 +194,14 @@ Commands104::CommandRegisters IEC104::get104Command(Queries::Commands cmd)
     using namespace Queries;
     using namespace Commands104;
     static const QMap<Queries::Commands, Commands104::CommandRegisters> iec104CommandMap {
-        { QC_SetNewConfiguration, SetNewConfigurationReg }, //
-        { QC_SetStartupValues, SetStartupValuesReg },       //
-        { QC_SetStartupPhaseA, SetStartupPhaseA },          //
-        { QC_SetStartupPhaseB, SetStartupPhaseB },          //
-        { QC_SetStartupPhaseC, SetStartupPhaseC },          //
-        { QC_SetStartupUnbounced, SetStartupUnbounced },    //
-        { QC_SetTransOff, SetTransOff },                    //
-        { QC_ClearStartupValues, ClearStartupValuesReg },   //
-        //        { QC_ClearStartupPhaseA, ClearStartupValuesReg },     //
-        //        { QC_ClearStartupPhaseB, ClearStartupValuesReg },     //
-        //        { QC_ClearStartupPhaseC, ClearStartupValuesReg },     //
-        //        { QC_ClearStartupUnbounced, ClearStartupValuesReg },  //
+        { QC_SetNewConfiguration, SetNewConfigurationReg },   //
+        { QC_SetStartupValues, SetStartupValuesReg },         //
+        { QC_SetStartupPhaseA, SetStartupPhaseA },            //
+        { QC_SetStartupPhaseB, SetStartupPhaseB },            //
+        { QC_SetStartupPhaseC, SetStartupPhaseC },            //
+        { QC_SetStartupUnbounced, SetStartupUnbounced },      //
+        { QC_SetTransOff, SetTransOff },                      //
+        { QC_ClearStartupValues, ClearStartupValuesReg },     //
         { QC_ClearStartupError, ClearStartupSetError },       //
         { QC_StartFirmwareUpgrade, StartFirmwareUpgradeReg }, //
         { QC_StartWorkingChannel, StartWorkingChannelReg }    //

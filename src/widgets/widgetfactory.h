@@ -37,7 +37,7 @@ private:
         return {};
     };
 
-    template <typename T, std::enable_if_t<std::is_same<T, IPCtrl::container_type>::value, bool> = true>
+    template <typename T, std::enable_if_t<std::is_same<T, IPCtrl::ip_container>::value, bool> = true>
     bool fillIpCtrl(const QWidget *parent, quint16 key, const T &value);
     bool fillCheckBox(const QWidget *parent, quint16 key, bool value);
     template <typename T, std::enable_if_t<!std_ext::is_container<T>::value, bool> = true>
@@ -71,7 +71,7 @@ QList<QStandardItem *> WidgetFactory::createItem(quint16 key, const DataTypes::B
 
 // Template definition
 
-template <typename T, std::enable_if_t<std::is_same<T, IPCtrl::container_type>::value, bool>>
+template <typename T, std::enable_if_t<std::is_same<T, IPCtrl::ip_container>::value, bool>>
 bool WidgetFactory::fillIpCtrl(const QWidget *parent, quint16 key, const T &value)
 {
     auto widget = parent->findChild<IPCtrl *>(QString::number(key));
@@ -149,7 +149,7 @@ template <typename T> bool WidgetFactory::fillWidget(const QWidget *parent, quin
                        qDebug() << "DefaultWidget" << key;
 #endif
                        using namespace delegate;
-                       if constexpr (std::is_same<T, IPCtrl::container_type>::value)
+                       if constexpr (std::is_same<T, IPCtrl::ip_container>::value)
                        {
                            if (arg.type == ctti::unnamed_type_id<IPCtrl>())
                            {

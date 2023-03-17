@@ -7,24 +7,27 @@ class QLineEdit;
 class IPCtrl : public QFrame
 {
     Q_OBJECT
-    enum
-    {
-        QTUTL_IP_SIZE = 4, // число октетов IP адресе
-        MAX_DIGITS = 3     // число символов в LineEdit
-    };
+    //    enum
+    //    {
+    //        QTUTL_IP_SIZE = 4, // число октетов IP адресе
+    //        MAX_DIGITS = 3     // число символов в LineEdit
+    //    };
 
 public:
+    // typedef quint8 value_type;
+    // typedef std::array<quint8, QTUTL_IP_SIZE> container_type;
+
+    static constexpr auto QTUTL_IP_SIZE = 4;
+    static constexpr auto MAX_DIGITS = 3;
+    using ip_container = std::array<quint8, QTUTL_IP_SIZE>;
+
     IPCtrl(QWidget *parent = 0);
     ~IPCtrl();
 
     virtual bool eventFilter(QObject *obj, QEvent *event);
 
-    std::array<quint8, QTUTL_IP_SIZE> getIP() const;
-    void setIP(const std::array<quint8, QTUTL_IP_SIZE> ipAddr);
-
-    typedef quint8 value_type;
-    typedef std::array<quint8, QTUTL_IP_SIZE> container_type;
-    static constexpr size_t size = QTUTL_IP_SIZE;
+    ip_container getIP() const;
+    void setIP(const ip_container ipAddr);
 
 signals:
     void signalTextChanged(QLineEdit *pEdit);
