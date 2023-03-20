@@ -91,9 +91,9 @@ const QMap<quint16, QString> MezzanineBoards {
 
 enum AlarmType
 {
+    Info,
     Warning,
-    Critical,
-    Info
+    Critical
 };
 
 enum JournalType

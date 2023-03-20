@@ -302,7 +302,7 @@ QVBoxLayout *CheckDialog::setupBitsetWidget(const ModuleTypes::MWidget &mwidget,
         else
         {
             // По 1 индикатору и описанию в строку, если оно есть
-            auto textLabel = new QLabel(getFormatted(mwidget, mwidget.desc, i), this);
+            auto textLabel = new QLabel(getFormatted(mwidget, mwidget.desc, i - 1), this);
             layout->addWidget(textLabel);
             layout->addWidget(createPixmapIndicator(mwidget, i));
         }

@@ -256,7 +256,7 @@ void ModBus::writeInt16(const quint32 addr, const quint16 value)
         TypeId::None,                                  //
         __PRETTY_FUNCTION__                            //
     };
-    Q_ASSERT(isValidRegs(inp));
+    // Q_ASSERT(isValidRegs(inp));
     DataManager::GetInstance().addToInQueue(inp);
 }
 
@@ -335,19 +335,6 @@ void ModBus::writeCommand(Queries::Commands cmd, QVariant item)
             qCritical() << "Unsupported command in Modbus: " << Error::WrongCommandError;
         break;
     }
-        //    case Queries::Commands::QC_ClearStartupValues:
-        //    {
-        //        writeInt16(AVM_KIV::Registers::ClrStrtup, 0);
-        //        break;
-        //    }
-        //    case Queries::Commands::QC_SetStartupValues:
-        //    {
-        //        writeInt16(AVM_KIV::Registers::SetStrtup, 0);
-        //        break;
-        //    }
-        //    default:
-        //        Q_ASSERT(false && "Unsupported in Modbus");
-        //        break;
     }
 }
 

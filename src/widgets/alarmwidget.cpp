@@ -22,36 +22,34 @@ AlarmWidget::AlarmWidget(QWidget *parent) : QWidget(parent)
 /// \brief Filling alarms in this alarm widget.
 void AlarmWidget::configure()
 {
-    static const QHash<ModuleTypes::AlarmKey, QString> alarmSettings {
-        { Modules::AlarmType::Critical, "Аварийная сигнализация" },        //
+    static const QList<QPair<ModuleTypes::AlarmKey, QString>> alarmSettings {
+        { Modules::AlarmType::Info, "Информационная сигнализация" },       //
         { Modules::AlarmType::Warning, "Предупредительная сигнализация" }, //
-        { Modules::AlarmType::Info, "Информационная сигнализация" }        //
+        { Modules::AlarmType::Critical, "Аварийная сигнализация" }         //
     };
 
     auto alarmStateAll = new AlarmStateAll();
     alarmStateAll->setupUI(AVM::HthToolTip);
     addAlarm(alarmStateAll, "Состояние устройства");
     const auto &alarmMap = ConfigStorage::GetInstance().getModuleSettings().getAlarms();
-    if (!alarmMap.empty())
+
+    for (auto &pair : alarmSettings)
     {
-        for (auto keyIter = alarmMap.keyBegin(); keyIter != alarmMap.keyEnd(); keyIter++)
+        const auto &title = pair.second;
+        const auto &alarms = alarmMap.value(pair.first);
+        if (!alarms.isEmpty())
         {
-            const auto &title = alarmSettings.value(*keyIter);
-            if (!title.isEmpty())
-            {
-                const auto &alarms = alarmMap.value(*keyIter);
-                auto moduleAlarm = new ModuleAlarm(*keyIter, alarms);
-                addAlarm(moduleAlarm, title);
-            }
+            auto moduleAlarm = new ModuleAlarm(pair.first, alarms);
+            addAlarm(moduleAlarm, title);
         }
     }
+
     // Start the timer after all module alarms was initialized
     if (!m_timer->isActive())
         m_timer->start();
 }
 
-/// \brief Adding a received alarm in list and
-/// creating a button for a received alarm.
+/// \brief Adding a received alarm in list and creating a button for a received alarm.
 void AlarmWidget::addAlarm(BaseAlarm *alarm, const QString caption)
 {
     // Имеются ли виджеты на слое
