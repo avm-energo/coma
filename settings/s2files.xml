@@ -342,6 +342,11 @@
 		<name>IsNTP_ID</name>
 		<description>Наличие NTP сервера</description>
 		<type>BYTE</type>
+		<widget>
+			<type>QCheckBox</type>
+			<group>220</group>
+			<string>Наличие NTP сервера</string>
+		</widget>
 	</record>
 	<record>
 		<id>30</id>
