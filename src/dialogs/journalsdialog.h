@@ -1,7 +1,7 @@
 #ifndef JOURNALDIALOG_H
 #define JOURNALDIALOG_H
 
-#include "../module/journals.h"
+#include "../journals/journals.h"
 #include "../widgets/udialog.h"
 
 #include <QMessageBox>

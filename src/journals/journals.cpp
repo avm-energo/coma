@@ -1,7 +1,7 @@
 #include "journals.h"
 
+#include "../module/board.h"
 #include "../widgets/wd_func.h"
-#include "board.h"
 
 #include <QApplication>
 #include <QDate>

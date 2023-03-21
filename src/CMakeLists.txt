@@ -131,6 +131,7 @@ if(Qt${QT_VERSION_MAJOR}Widgets_FOUND AND NOT AVTUK-12)
   add_subdirectory(tune)
   add_subdirectory(models)
   add_subdirectory(xml)
+  add_subdirectory(journals)
   # Tests binaries sub-build
   add_subdirectory(tests)
   # Applications: COMA Service and COMA Debug

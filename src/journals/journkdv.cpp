@@ -1,7 +1,5 @@
 #include "journkdv.h"
 
-#include "modules.h"
-
 JournKDV::JournKDV(const ModuleTypes::JourMap &jourMap, QObject *parent) : Journals(jourMap, parent)
 {
 }

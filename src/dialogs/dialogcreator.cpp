@@ -1,9 +1,9 @@
 #include "dialogcreator.h"
 
+#include "../journals/journkdv.h"
+#include "../journals/journkiv.h"
+#include "../journals/journktf.h"
 #include "../module/board.h"
-#include "../module/journkdv.h"
-#include "../module/journkiv.h"
-#include "../module/journktf.h"
 #include "../oscillograms/oscdialog.h"
 #include "../startup/startupkdvdialog.h"
 #include "../startup/startupkivdialog.h"
