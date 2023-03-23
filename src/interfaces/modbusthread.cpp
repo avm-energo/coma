@@ -22,7 +22,7 @@ ModbusThread::ModbusThread(QObject *parent) : QObject(parent), log(new LogClass(
 
 ModbusThread::~ModbusThread()
 {
-    trashTimer->deleteLater();
+//    trashTimer->deleteLater();
 }
 
 void ModbusThread::setDeviceAddress(quint8 adr)
@@ -338,9 +338,10 @@ void ModbusThread::readCoils(CommandsMBS::CommandStruct &cms)
     QByteArray ba(createReadPDU(cms));
     ba = createADU(ba);
     // log->info("Send bytes: " + ba.toHex());
-    auto temp = cms.quantity / 2 + cms.quantity % 2;
-    temp = temp / 8 + temp % 8;  // try to count bytes for coils
-    m_bytesToReceive = temp + 3; // address, function code, bytes count, crc (2)
+//    auto temp = cms.quantity / 2 + cms.quantity % 2;
+//    temp = temp / 8 + temp % 8;  // try to count bytes for coils
+    auto temp = cms.quantity / 8 + ((cms.quantity % 8) != 0);
+    m_bytesToReceive = temp + 5; // address, function code, bytes count, crc (2)
     send(ba);
 }
 
