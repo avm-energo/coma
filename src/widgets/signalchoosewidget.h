@@ -3,8 +3,9 @@
 
 #include <QLabel>
 #include <QMouseEvent>
+#include <QScrollArea>
 
-class SignalChooseWidget : public QWidget
+class SignalChooseWidget : public QScrollArea
 {
     Q_OBJECT
 public:

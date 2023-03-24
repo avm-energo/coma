@@ -39,7 +39,7 @@ bool SerialPort::init(SerialPortSettings settings)
     m_connectionTimer->setInterval(TIMEOUT);
     connect(port, &QIODevice::bytesWritten, this, [&] { m_connectionTimer->start(); });
     connect(port, &QIODevice::readyRead, m_connectionTimer, &QTimer::stop);
-    connect(m_connectionTimer, &QTimer::timeout, [this] {
+    connect(m_connectionTimer, &QTimer::timeout, this, [this] {
         qInfo() << this->metaObject()->className() << Error::Timeout;
         reconnect();
     });

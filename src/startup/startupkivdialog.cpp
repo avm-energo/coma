@@ -1,18 +1,21 @@
 #include "startupkivdialog.h"
 
-#include "../dialogs/keypressdialog.h"
-#include "../module/board.h"
 #include "../widgets/wd_func.h"
 
-#include <QDebug>
 #include <QGridLayout>
+#include <QGroupBox>
 #include <QMessageBox>
-#include <gen/colors.h>
-#include <gen/datamanager/typesproxy.h>
 #include <gen/error.h>
 #include <gen/files.h>
-#include <gen/stdfunc.h>
-#include <gen/timefunc.h>
+#include <tuple>
+
+//#include "../module/board.h"
+//#include "../dialogs/keypressdialog.h"
+//#include <QDebug>
+//#include <gen/colors.h>
+//#include <gen/datamanager/typesproxy.h>
+//#include <gen/stdfunc.h>
+//#include <gen/timefunc.h>
 
 StartupKIVDialog::StartupKIVDialog(QWidget *parent) : AbstractStartupDialog(parent)
 {
@@ -30,7 +33,6 @@ StartupKIVDialog::StartupKIVDialog(QWidget *parent) : AbstractStartupDialog(pare
     addReg(4008, &CorBlock->corTg[2]);
     addReg(4009, &CorBlock->Iunb_init);
     addReg(4010, &CorBlock->Phy_unb_init);
-
     SetStartupBlock(7, &CorBlock, sizeof(CorData), KIVSTARTUPINITREG);
 }
 
@@ -55,32 +57,28 @@ void StartupKIVDialog::SetupCor()
     AbstractStartupDialog::SetupCor();
 }
 
-void StartupKIVDialog::SetupUI()
+QWidget *StartupKIVDialog::uiValuesTab(QWidget *parent)
 {
-    auto lyout = new QVBoxLayout;
+    auto widget = new QWidget(parent);
+    auto layout = new QVBoxLayout;
     auto glyout = new QGridLayout;
     int row = 0;
 
     glyout->addWidget(WDFunc::NewLBL2(this, "Начальные значения емкостей вводов, пФ:"), row, 1, 1, 1);
-
     for (int i = 0; i < 3; i++)
     {
         glyout->addWidget(WDFunc::NewSPB2(this, QString::number(4000 + i), 0, 10000, 1), row, 2 + i, 1, 1);
     }
-
     row++;
 
     glyout->addWidget(WDFunc::NewLBL2(this, "Начальные значения tg δ вводов, %:"), row, 1, 1, 1);
-
     for (int i = 0; i < 3; i++)
     {
         glyout->addWidget(WDFunc::NewSPB2(this, QString::number(4003 + i), -10, 10, 2), row, 2 + i, 1, 1);
     }
-
     row++;
 
     glyout->addWidget(WDFunc::NewLBL2(this, "Коррекция  tg δ вводов,%:"), row, 1, 1, 1);
-
     for (int i = 0; i < 3; i++)
     {
         glyout->addWidget(WDFunc::NewSPB2(this, QString::number(4006 + i), -10, 10, 2), row, 2 + i, 1, 1);
@@ -89,18 +87,82 @@ void StartupKIVDialog::SetupUI()
 
     glyout->addWidget(WDFunc::NewLBL2(this, "Начальное значение небаланса токов, %:"), row, 1, 1, 1);
     glyout->addWidget(WDFunc::NewSPB2(this, QString::number(4009), 0, 10000, 1), row, 2, 1, 3);
-
     row++;
     glyout->addWidget(WDFunc::NewLBL2(this, "Начальное значение угла тока небаланса, град.:"), row, 1, 1, 1);
     glyout->addWidget(WDFunc::NewSPB2(this, QString::number(4010), 0, 10000, 1), row, 2, 1, 3);
 
-    //    row++;
+    layout->addLayout(glyout, Qt::AlignTop);
+    layout->addWidget(buttonWidget());
 
-    lyout->addLayout(glyout, Qt::AlignTop);
-    lyout->addWidget(buttonWidget());
+    widget->setLayout(layout);
+    widget->setObjectName("corDialog");
+    return widget;
+}
 
-    setLayout(lyout);
-    setObjectName("corDialog");
+QWidget *StartupKIVDialog::uiCommandsTab(QWidget *parent)
+{
+    auto widget = new QWidget(parent);
+    auto layout = new QVBoxLayout(widget);
+
+    // Create UI commands for phases
+    const QList<std::tuple<Queries::Commands, QString>> phaseSettings {
+        { Queries::QC_SetStartupPhaseA, "A" }, //
+        { Queries::QC_SetStartupPhaseB, "B" }, //
+        { Queries::QC_SetStartupPhaseC, "C" }  //
+    };
+    for (auto &step : phaseSettings)
+    {
+        auto setupCmd = std::get<0>(step);
+        auto &phase = std::get<1>(step);
+        auto setupValues = new QPushButton(QString("Задать начальные значения по фазе %1").arg(phase), widget);
+        connect(setupValues, &QPushButton::clicked, this, [this, setupCmd]() { sendCommand(setupCmd); });
+        layout->addWidget(setupValues);
+    }
+
+    // Create UI commands for unbalance current
+    {
+        auto setupValues = new QPushButton("Задать начальные значения небаланса токов", widget);
+        connect(setupValues, &QPushButton::clicked, this, [this]() { sendCommand(Queries::QC_SetStartupUnbounced); });
+        layout->addWidget(setupValues);
+    }
+
+    // Create UI commands trans off and reset starup init error
+    {
+        auto resetStartupErr = new QPushButton("Сброс ошибки задания начальных значений", widget);
+        connect(resetStartupErr, &QPushButton::clicked, this, [this]() { sendCommand(Queries::QC_ClearStartupError); });
+        layout->addWidget(resetStartupErr);
+
+        auto setTransOff = new QPushButton("Послать команду \"Трансформатор включён\"", widget);
+        connect(setTransOff, &QPushButton::clicked, this, [this]() { sendCommand(Queries::QC_SetTransOff, false); });
+        layout->addWidget(setTransOff);
+
+        auto setTransOn = new QPushButton("Послать команду \"Трансформатор отключён\"", widget);
+        connect(setTransOn, &QPushButton::clicked, this, [this]() { sendCommand(Queries::QC_SetTransOff); });
+        layout->addWidget(setTransOn);
+    }
+
+    widget->setLayout(layout);
+    widget->setObjectName("commandsTab");
+    return widget;
+}
+
+void StartupKIVDialog::sendCommand(Queries::Commands cmd, bool value)
+{
+    if (checkPassword())
+    {
+        BaseInterface::iface()->writeCommand(cmd, value);
+        GetCorBd();
+    }
+}
+
+void StartupKIVDialog::SetupUI()
+{
+    auto layout = new QVBoxLayout;
+    auto startupTabWidget = new QTabWidget(this);
+    startupTabWidget->addTab(uiCommandsTab(startupTabWidget), "Команды");
+    startupTabWidget->addTab(uiValuesTab(startupTabWidget), "Значения");
+    layout->addWidget(startupTabWidget);
+    setLayout(layout);
 }
 
 void StartupKIVDialog::SaveToFile()

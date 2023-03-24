@@ -53,9 +53,9 @@ struct Widget
 
 struct DoubleSpinBoxWidget : Widget
 {
-    DoubleSpinBoxWidget(
-        const ctti::unnamed_type_id_t &type_, const QString &desc_, const WidgetGroup &group_, const QString &toolTip_)
-        : Widget(type_, desc_, group_, toolTip_)
+    DoubleSpinBoxWidget(const ctti::unnamed_type_id_t &type_, const QString &desc_, //
+        const WidgetGroup &group_, const QString &toolTip_)                         //
+        : Widget(type_, desc_, group_, toolTip_)                                    //
     {
     }
 

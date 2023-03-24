@@ -3,7 +3,7 @@
 
 #include "abstractstartupdialog.h"
 
-#define KIVSTARTUPINITREG 4000
+constexpr auto KIVSTARTUPINITREG = 4000;
 
 class StartupKIVDialog : public AbstractStartupDialog
 {
@@ -12,7 +12,6 @@ class StartupKIVDialog : public AbstractStartupDialog
 public:
     explicit StartupKIVDialog(QWidget *parent = nullptr);
     ~StartupKIVDialog();
-
     void SetupCor() override;
 
 private:
@@ -28,6 +27,9 @@ private:
 
     CorData *CorBlock;
 
+    QWidget *uiValuesTab(QWidget *parent = nullptr);
+    QWidget *uiCommandsTab(QWidget *parent = nullptr);
+    void sendCommand(Queries::Commands cmd, bool value = true);
     void SetupUI() override;
 
 public slots:

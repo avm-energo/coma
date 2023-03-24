@@ -14,7 +14,7 @@ class DataBlock : public QObject
 {
     Q_OBJECT
 public:
-    static constexpr char ValuesFormat[]
+    static constexpr auto ValuesFormat
         = "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; font: bold; }";
 
     struct BlockStruct
@@ -42,8 +42,7 @@ public:
 
     using ValueType = std::variant<float *, quint32 *>;
 
-    /*! \brief Структура, описывающая значение
-     */
+    /// \brief Структура, описывающая значение
     struct ValueStr
     {
         QString desc;
@@ -69,55 +68,45 @@ public:
     explicit DataBlock(QObject *parent = nullptr);
     ~DataBlock();
 
-    /*! \brief Copy prepared block to inner variable m_block
-     *  \param bds[in] - prepared block
-     */
+    /// \brief Copy prepared block to inner variable m_block
+    /// \param bds[in] - prepared block
     void setBlock(const BlockStruct &bds);
 
-    /*! \brief Returns block visualisation for insert into GUI
-     *  \param showButtons[in] (bool) - show or not bottom buttons widget (load/save to/from file,
-     *         load/save to/from module, set defaults - for configuration and tune parameters
-     *  \returns QWidget - widget to insert into GUI
-     */
+    /// \brief Returns block visualisation for insert into GUI
+    /// \param showButtons[in] (bool) - show or not bottom buttons widget (load/save to/from file,
+    ///         load/save to/from module, set defaults - for configuration and tune parameters
+    /// \returns QWidget - widget to insert into GUI
     QWidget *widget(bool showButtons = true);
 
-    /*! \brief Create block widget
-     */
+    /// \brief Create block widget
     void createWidget();
 
-    QHBoxLayout *addBlockValueToWidget(ValueStr &values);
+    QHBoxLayout *addBlockValueToWidget(ValueStr &values, QWidget *parent = nullptr);
 
-    /*! \brief Return block
-     */
+    /// \brief Return block
     BlockStruct block();
 
-    /*! \brief Copy values from block to widget fields
-     */
+    /// \brief Copy values from block to widget fields
     void updateWidget();
 
-    /*! \brief Update specific fields
-     */
+    /// \brief Update specific fields
     virtual void specificUpdateWidget() {};
 
-    /*! \brief Update block values from widget fields
-     */
+    /// \brief Update block values from widget fields
     void updateFromWidget();
 
-    /*! \brief Update specific values
-     */
+    /// \brief Update specific values
     virtual void specificUpdateFromWidget() {};
 
-    /*! \brief Setup visual representation of block data
-     */
+    /// \brief Setup visual representation of block data
     virtual void setupValuesDesc() = 0;
 
     virtual void setDefBlock() {};
 
-    template <typename T>
-    void addNewGroup(
-        const QString &groupName, const QString &name, int fromWhich, int howMuch, T *startValue, int precision)
+    template <typename T>                                           //
+    void addNewGroup(const QString &groupName, const QString &name, //
+        int fromWhich, int howMuch, T *startValue, int precision)
     {
-        //        Q_UNUSED(fromWhich);
         ValueGroupStr vg;
         vg.groupDesc = groupName;
         int start = fromWhich;
@@ -132,7 +121,8 @@ public:
         m_valuesDesc.append(vg);
     }
 
-    template <typename T> void addNewValue(const QString &name, const QString &tooltip, T *value, int precision = 3)
+    template <typename T> //
+    void addNewValue(const QString &name, const QString &tooltip, T *value, int precision = 3)
     {
         ValueGroupStr vg;
         vg.values.append({ name, tooltip, "value[" + QString::number(valueNumberCounter) + "]", value, precision });
@@ -143,20 +133,7 @@ public:
     void readBlockFromModule();
     Error::Msg writeBlockToModule();
     QWidget *blockButtonsUI();
-
     void setEnabled(bool isEnabled);
-
-    bool m_widgetIsSet;
-    QWidget *m_widget;
-
-signals:
-
-private:
-    int valueNumberCounter;
-    BlockStruct m_block, m_defBlock;
-    bool m_isBottomButtonsWidgetCreated;
-    QWidget *m_bottomButtonsWidget;
-    QList<ValueGroupStr> m_valuesDesc;
 
 public slots:
     void setDefBlockAndUpdate();
@@ -166,6 +143,15 @@ public slots:
     Error::Msg loadFromFileAndWriteToModule(const QString &filename);
     Error::Msg saveToFile();
     void saveToFileUserChoose();
+
+private:
+    bool m_widgetIsSet;
+    QWidget *m_widget;
+    int valueNumberCounter;
+    BlockStruct m_block, m_defBlock;
+    bool m_isBottomButtonsWidgetCreated;
+    QWidget *m_bottomButtonsWidget;
+    QList<ValueGroupStr> m_valuesDesc;
 };
 
 #endif // DATABLOCK_H

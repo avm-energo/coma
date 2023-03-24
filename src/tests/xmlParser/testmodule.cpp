@@ -74,19 +74,6 @@ void TestModule::createInterfaceContext(const Board::InterfaceType &ifaceType)
 
 void TestModule::initTestCase()
 {
-    Q_INIT_RESOURCE(settings);
-    QDir resDir(resourceDirectory);
-    QDir homeDir(StdFunc::GetSystemHomeDir());
-    auto xmlFiles = resDir.entryList(QDir::Files).filter(".xml");
-    constexpr auto perm = QFile::ReadOther | QFile::WriteOther | QFile::ReadOwner | QFile::WriteOwner | QFile::ReadUser
-        | QFile::WriteUser;
-    for (auto &filename : xmlFiles)
-    {
-        QVERIFY(QFile::copy(resDir.filePath(filename), homeDir.filePath(filename)));
-        QFile file(homeDir.filePath(filename));
-        QVERIFY(file.setPermissions(perm));
-    }
-    Q_CLEANUP_RESOURCE(settings);
 }
 
 void TestModule::cleanupTestCase()

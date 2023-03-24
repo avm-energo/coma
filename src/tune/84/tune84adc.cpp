@@ -14,11 +14,11 @@
 
 Tune84ADC::Tune84ADC(ConfigV *config, int tuneStep, QWidget *parent) : AbstractTuneDialog(config, tuneStep, parent)
 {
-    m_bac = new BacA284;
-    m_bac2 = new Bac2A284;
-    m_bda = new BdaA284;
-    m_bdain = new BdaIn;
-    m_bd0 = new Bd0;
+    m_bac = new BacA284(this);
+    m_bac2 = new Bac2A284(this);
+    m_bda = new BdaA284(this);
+    m_bdain = new BdaIn(this);
+    m_bd0 = new Bd0(this);
     setBac(m_bac);
     setBac(m_bac2);
     m_BacWidgetIndex = addWidgetToTabWidget(m_bac->widget(), "Настроечные параметры");

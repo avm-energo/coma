@@ -227,11 +227,14 @@ QToolBar *TrendViewDialog::createToolBar(SignalTypes type)
     act->setIcon(QIcon(":/icons/resize.svg"));
     connect(act, &QAction::triggered, this, &TrendViewDialog::setRescale);
     bar->addAction(act);
-    act = new QAction(bar);
-    act->setToolTip("Экспорт в Excel");
-    act->setIcon(QIcon(":/icons/excel.svg"));
-    connect(act, &QAction::triggered, this, &TrendViewDialog::exportToExcel);
-    bar->addAction(act);
+    if (type == SignalTypes::ST_ANALOG)
+    {
+        act = new QAction(bar);
+        act->setToolTip("Экспорт в Excel");
+        act->setIcon(QIcon(":/icons/excel.svg"));
+        connect(act, &QAction::triggered, this, &TrendViewDialog::exportToExcel);
+        bar->addAction(act);
+    }
     return bar;
 }
 
@@ -378,42 +381,9 @@ void TrendViewDialog::exportToExcel()
     QFileInfo info(filename);
     StdFunc::SetHomeDir(info.absolutePath());
     dlg->close();
-    //    QDialog *dlg2 = new QDialog(this);
-    //    QVBoxLayout *lyout = new QVBoxLayout;
-    //    QLabel *lbl = new QLabel;
-    //    lyout->addWidget(lbl);
-    //    QProgressBar *bar = new QProgressBar;
-    //    bar->setMinimum(0);
-    //    lyout->addWidget(bar);
-    //    dlg2->setLayout(lyout);
-    //    //    connect(m_trendModel, &TrendViewModel::recordsOverall, bar, &QProgressBar::setMaximum,
-    //    Qt::DirectConnection);
-    //    //    connect(m_trendModel, &TrendViewModel::currentRecord, bar, &QProgressBar::setValue,
-    //    Qt::DirectConnection);
-    //    //    connect(
-    //    //        m_trendModel, &TrendViewModel::eventMessage, this, [&](const QString &msg) { lbl->setText(msg); },
-    //    //        Qt::DirectConnection);
-    //    dlg2->show();
-    //    try
-    //    {
-    //        QEventLoop loop;
-    //        connect(m_trendModel, &TrendViewModel::finished, &loop, &QEventLoop::quit);
     m_trendModel->setFilename(filename);
-    //        QtConcurrent::run(m_trendModel, &TrendViewModel::toExcel);
-    //        loop.exec();
     m_trendModel->toExcel();
-    //        m_trendModel->toExcel(filename);
-    //        dlg2->close();
     EMessageBox::information(this, "Файл создан успешно");
-    //    } catch (ComaException e)
-    //    {
-    //        //        dlg2->close();
-    //        EMessageBox::error(this, e.message());
-    //    } catch (...)
-    //    {
-    //        //        dlg2->close();
-    //        EMessageBox::error(this, "Неизвестная ошибка");
-    //    };
 }
 
 void TrendViewDialog::analogRangeChanged(const QCPRange &range)

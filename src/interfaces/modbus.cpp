@@ -173,11 +173,10 @@ void ModBus::reqBSI()
 /// TODO: Переписать
 void ModBus::reqBSIExt()
 {
-    // 31 (40) - начальный адрес первого регистра блока BSI Ext
     constexpr auto regCount = sizeof(Modules::StartupInfoBlockExt0) / sizeof(quint32);
     CommandsMBS::CommandStruct inp {
         CommandsMBS::Commands::ReadInputRegister, //
-        40,                                       //
+        Regs::bsiExtStartReg,                     //
         static_cast<quint8>(regCount * 2),        //
         {},                                       //
         TypeId::Uint32,                           //
@@ -243,11 +242,11 @@ void ModBus::writeFloat(const DataTypes::FloatStruct &flstr)
         TypeId::None,                                  //
         __PRETTY_FUNCTION__                            //
     };
-    // Q_ASSERT(isValidRegs(inp));
+    Q_ASSERT(isValidRegs(inp));
     DataManager::GetInstance().addToInQueue(inp);
 }
 
-void ModBus::writeInt16(const quint32 addr, const qint16 value)
+void ModBus::writeInt16(const quint32 addr, const quint16 value)
 {
     CommandsMBS::CommandStruct inp {
         CommandsMBS::Commands::WriteMultipleRegisters, //
@@ -278,18 +277,25 @@ const quint8 ModBus::obtainDelay(const quint32 baudRate) const
     }
 }
 
+CommandsMBS::CommandRegisters ModBus::getAddrByCommand(Queries::Commands cmd)
+{
+    static const QMap<Queries::Commands, CommandsMBS::CommandRegisters> cmdMap {
+        { Queries::QC_SetStartupValues, CommandsMBS::SetStartupValues },       //
+        { Queries::QC_SetStartupPhaseA, CommandsMBS::SetStartupPhaseA },       //
+        { Queries::QC_SetStartupPhaseB, CommandsMBS::SetStartupPhaseB },       //
+        { Queries::QC_SetStartupPhaseC, CommandsMBS::SetStartupPhaseC },       //
+        { Queries::QC_SetStartupUnbounced, CommandsMBS::SetStartupUnbounced }, //
+        { Queries::QC_SetTransOff, CommandsMBS::SetTransOff },                 //
+        { Queries::QC_ClearStartupValues, CommandsMBS::ClearStartupValues },   //
+        { Queries::QC_ClearStartupError, CommandsMBS::ClearStartupSetError }   //
+    };
+    return cmdMap.value(cmd);
+}
+
 void ModBus::writeCommand(Queries::Commands cmd, QVariant item)
 {
     switch (cmd)
     {
-    case Queries::QC_WriteUserValues:
-    {
-        Q_ASSERT(item.canConvert<DataTypes::FloatStruct>());
-        if (!item.canConvert<DataTypes::FloatStruct>())
-            return;
-        writeFloat(item.value<DataTypes::FloatStruct>());
-        break;
-    }
     case Queries::QC_ReqAlarms:
     {
         Q_ASSERT(item.canConvert<DataTypes::Signal>());
@@ -309,19 +315,26 @@ void ModBus::writeCommand(Queries::Commands cmd, QVariant item)
         DataManager::GetInstance().addToInQueue(inp);
         break;
     }
-    case Queries::Commands::QC_ClearStartupValues:
+    case Queries::QC_WriteUserValues:
     {
-        writeInt16(AVM_KIV::Registers::ClrStrtup, 0);
-        break;
-    }
-    case Queries::Commands::QC_SetStartupValues:
-    {
-        writeInt16(AVM_KIV::Registers::SetStrtup, 0);
+        Q_ASSERT(item.canConvert<DataTypes::FloatStruct>());
+        if (!item.canConvert<DataTypes::FloatStruct>())
+            return;
+        writeFloat(item.value<DataTypes::FloatStruct>());
         break;
     }
     default:
-        Q_ASSERT(false && "Unsupported in Modbus");
+    {
+        auto cmdAddr = getAddrByCommand(cmd);
+        if (cmdAddr)
+        {
+            auto value = static_cast<quint16>(item.value<bool>());
+            writeInt16(cmdAddr, value);
+        }
+        else
+            qCritical() << "Unsupported command in Modbus: " << Error::WrongCommandError;
         break;
+    }
     }
 }
 
@@ -341,7 +354,6 @@ void ModBus::writeCommand(Queries::Commands cmd, const QVariantList &list)
         auto it = dictionary.cbegin();
         while (it != dictionary.cend() && !found)
         {
-            // if (it.value().id.contains(group.id.remove(0, 1)))
             if (it.value() != group)
             {
                 group = it.value();

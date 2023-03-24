@@ -54,6 +54,10 @@
                         <item>2432</item>
                     </highlights>
                 </item>
+                <item>
+                    <addr>3036</addr>
+                    <string>Ошибка задания начальных значений</string>
+                </item>
             </critical>
             <info desc="Информационные">
                 <item>
@@ -334,12 +338,12 @@
             </record>
             <record>
                 <id>1039</id>
-                <defaultValue>0.3</defaultValue>
+                <defaultValue>0.3,0.3,0.3</defaultValue>
                 <visibility>true</visibility>
             </record>
             <record>
                 <id>1040</id>
-                <defaultValue>1500</defaultValue>
+                <defaultValue>1500,1500,1500</defaultValue>
                 <visibility>true</visibility>
             </record>
             <record>
@@ -369,27 +373,27 @@
             </record>
             <record>
                 <id>20</id>
-                <defaultValue>172,16,28,254</defaultValue>
+                <defaultValue>172,16,30,39</defaultValue>
                 <visibility>true</visibility>
             </record>
             <record>
                 <id>21</id>
-                <defaultValue>255,255,255,0</defaultValue>
+                <defaultValue>255,255,252,0</defaultValue>
                 <visibility>true</visibility>
             </record>
             <record>
                 <id>22</id>
-                <defaultValue>172,16,28,1</defaultValue>
+                <defaultValue>172,16,29,1</defaultValue>
                 <visibility>true</visibility>
             </record>
             <record>
                 <id>23</id>
-                <defaultValue>2404,2405,502,0</defaultValue>
+                <defaultValue>2404,2405,502,502</defaultValue>
                 <visibility>true</visibility>
             </record>
             <record>
                 <id>24</id>
-                <defaultValue>172,16,28,12</defaultValue>
+                <defaultValue>172,16,31,220</defaultValue>
                 <visibility>true</visibility>
             </record>
             <record>
@@ -413,9 +417,14 @@
                 <visibility>true</visibility>
             </record>
             <record>
-                <id>3</id>
-                <defaultValue>4</defaultValue>
+                <id>29</id>
+                <defaultValue>1</defaultValue>
                 <visibility>true</visibility>
+            </record>
+            <record>
+                <id>3</id>
+                <defaultValue>8</defaultValue>
+                <visibility>false</visibility>
             </record>
             <record>
                 <id>4</id>
@@ -1080,16 +1089,16 @@
                     </mwidget>
                 </sgroup>
                 <sgroup header="Состояние дискретных входов" tab="3">
-                    <mwidget desc="DIO_1" view="bitset">
+                    <mwidget desc="Транформатор отключён (DI24)" view="bitset">
                         <start-addr>4521</start-addr>
-                        <toolTip>Дискретные вход DIO_1</toolTip>
+                        <toolTip>Дискретный вход DI24</toolTip>
                     </mwidget>
                 </sgroup>
                 <sgroup header="Состояние дискретных выходов" tab="3">
-                    <mwidget desc="DIO_%1" view="bitset">
+                    <mwidget desc="DO%1" view="bitset">
                         <start-addr>4520</start-addr>
                         <count>3</count>
-                        <toolTip>Дискретные выход DIO_%1</toolTip>
+                        <toolTip>Дискретный выход DO%1</toolTip>
                     </mwidget>
                 </sgroup>
             </section>

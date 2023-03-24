@@ -6,6 +6,7 @@
 #include <QKeyEvent>
 #include <QLabel>
 #include <QLineEdit>
+
 IPCtrl::IPCtrl(QWidget *parent) : QFrame(parent)
 {
     setFrameShape(QFrame::StyledPanel);
@@ -153,15 +154,15 @@ bool IPCtrl::eventFilter(QObject *obj, QEvent *event)
     return bRes;
 }
 
-std::array<quint8, IPCtrl::QTUTL_IP_SIZE> IPCtrl::getIP() const
+IPCtrl::ip_container IPCtrl::getIP() const
 {
-    std::array<quint8, QTUTL_IP_SIZE> ipAddr;
+    ip_container ipAddr;
     std::transform(m_pLineEdit.cbegin(), m_pLineEdit.cend(), ipAddr.begin(),
         [](const QLineEdit *lineEdit) -> quint8 { return lineEdit->text().toUInt(); });
     return ipAddr;
 }
 
-void IPCtrl::setIP(const std::array<quint8, IPCtrl::QTUTL_IP_SIZE> ipAddr)
+void IPCtrl::setIP(const ip_container ipAddr)
 {
     for (auto i = 0; i != QTUTL_IP_SIZE; ++i)
     {

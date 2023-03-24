@@ -9,8 +9,14 @@ namespace CommandsMBS
 Q_NAMESPACE
 enum CommandRegisters
 {
-    SetStartupValuesReg = 900,
-    ClearStartupValuesReg = 905
+    SetStartupValues = 900,     ///< Задать начальные значения по всем фазам
+    SetStartupPhaseA = 901,     ///< Задать начальные значения по фазе A
+    SetStartupPhaseB = 902,     ///< Задать начальные значения по фазе B
+    SetStartupPhaseC = 903,     ///< Задать начальные значения по фазе C
+    SetStartupUnbounced = 904,  ///< Задать начальные значения по току небаланса
+    ClearStartupValues = 905,   ///< Сбросить начальные значения по всем фазам
+    ClearStartupSetError = 906, ///< Сбросить ошибку задания начальных значений
+    SetTransOff = 907           ///< Послать команду "Трансфоратор отключён"
 };
 
 enum Commands : quint8

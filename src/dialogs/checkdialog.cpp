@@ -278,7 +278,7 @@ QLabel *CheckDialog::createPixmapIndicator(const ModuleTypes::MWidget &mwidget, 
     indicatorLabel->setObjectName(QString::number(mwidget.startAddr) + "_" + QString::number(index));
     indicatorLabel->setPixmap(pixmap);
     if (!mwidget.tooltip.isEmpty())
-        indicatorLabel->setToolTip(getFormatted(mwidget, mwidget.tooltip, index));
+        indicatorLabel->setToolTip(getFormatted(mwidget, mwidget.tooltip, index - 1));
     return indicatorLabel;
 }
 
@@ -302,7 +302,7 @@ QVBoxLayout *CheckDialog::setupBitsetWidget(const ModuleTypes::MWidget &mwidget,
         else
         {
             // По 1 индикатору и описанию в строку, если оно есть
-            auto textLabel = new QLabel(getFormatted(mwidget, mwidget.desc, i), this);
+            auto textLabel = new QLabel(getFormatted(mwidget, mwidget.desc, i - 1), this);
             layout->addWidget(textLabel);
             layout->addWidget(createPixmapIndicator(mwidget, i));
         }

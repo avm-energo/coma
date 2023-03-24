@@ -60,11 +60,8 @@ void DialogManager::dialogChanged(int newIndex)
 /// \brief Overloaded virtual function for update request.
 void DialogManager::reqUpdate()
 {
-//    if (updatesEnabled())
-//    {
-        auto currentDialog = mDlgCreator->getDialogs()[curDialogIndex];
-        currentDialog->reqUpdate();
-//    }
+    auto currentDialog = mDlgCreator->getDialogs()[curDialogIndex];
+    currentDialog->reqUpdate();
 }
 
 /// \brief Setup UI using DialogCreator for creating dialogs for current device.

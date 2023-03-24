@@ -3,6 +3,7 @@ project(coma)
 add_compile_definitions(DEVICETYPE=1)
 set(SOFTDEVELOPER "AVM-Energo")
 
+message(STATUS "Local App Data path: $ENV{HOME}/.local/share/AVM-Debug")
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_AUTOMOC ON)
@@ -40,6 +41,7 @@ if(NOT DEFINED PROJECT_ARCHITECTURE)
   message(STATUS "Current target arch: " ${PROJECT_TARGET_NAME})
   message(STATUS "Current user directory for conan: " ${USER_DIRECTORY})
 endif()
+
 # Getting CMake system name
 string(TOLOWER "${CMAKE_SYSTEM_NAME}" CMAKE_SYSTEM_NAME_LOWER)
 # Export compile commands. See:
@@ -90,7 +92,6 @@ include(${CMAKE_BINARY_DIR}/conan.cmake)
 
 # Getting build type, compiler, etc... (other settings)
 conan_cmake_autodetect(settings)
-
 # Collecting Boost headers and hidapi library on windows
 if(CMAKE_SYSTEM_NAME_LOWER STREQUAL "windows")
   conan_cmake_configure(
@@ -130,6 +131,7 @@ if(Qt${QT_VERSION_MAJOR}Widgets_FOUND AND NOT AVTUK-12)
   add_subdirectory(tune)
   add_subdirectory(models)
   add_subdirectory(xml)
+  add_subdirectory(journals)
   # Tests binaries sub-build
   add_subdirectory(tests)
   # Applications: COMA Service and COMA Debug

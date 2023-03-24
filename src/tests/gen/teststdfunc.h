@@ -3,7 +3,6 @@
 
 #include <QObject>
 #include <QtTest>
-#include <gen/stdfunc.h>
 
 class TestStdFunc : public QObject
 {
@@ -27,10 +26,10 @@ private slots:
     void cleanupTestCase()
     {
     }
+
     void VerToStr();
     void StrToVer();
-signals:
-private:
+    void EnumToStr();
 };
 
 #endif // TESTPROTOCOM_H

@@ -161,7 +161,6 @@ config::itemVariant Xml::S2Parser::parseWidget(const QDomElement &widgetNode)
         const auto description = parseString(widgetNode, tags::string);
         const auto toolTip = parseString(widgetNode, tags::tooltip);
         const auto items = parseStringArray(widgetNode);
-        const auto test = ctti::unnamed_type_id<CheckBoxGroup>().hash();
 
         switch (type)
         {

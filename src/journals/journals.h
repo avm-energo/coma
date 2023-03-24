@@ -1,14 +1,17 @@
 #ifndef JOURNALS_H
 #define JOURNALS_H
 
-//#include <gen/datatypes.h>
 #include "../models/edynamictablemodel.h"
 #include "../module/modules.h"
+#include "../module/modulesettings.h"
 #include "../s2/filestruct.h"
+<<<<<<< HEAD:src/module/journals.h
 #include "kivmeasjournalmodel.h"
 #include "modulesettings.h"
 #include "systemeventsjournalmodel.h"
 #include "workeventsjournalmodel.h"
+=======
+>>>>>>> develop:src/journals/journals.h
 
 #include <QDebug>
 #include <QSortFilterProxyModel>

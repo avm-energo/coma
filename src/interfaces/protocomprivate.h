@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QVariant>
+#include <gen/uint24.h>
 
 // Обмен с модулями
 // Канал связи с модулем
@@ -113,11 +114,9 @@ enum Commands : byte
     WriteTime = 0x2A,
     // переход на новое ПО
     WriteUpgrade = 0x40,
-
     ///
     /// namespace ERASE
     ///
-
     // стирание технологического блока
     EraseTech = 0x45,
     // стирание счётчиков дискретных состояний
@@ -138,6 +137,18 @@ enum WCommands
     /// Блок дополнительных команд
     EraseStartupValues = 0x05,
     InitStartupValues = 0x01
+};
+
+enum WSCommands
+{
+    InitStartupAll = 0x384,
+    InitStartupPhaseA,
+    InitStartupPhaseB,
+    InitStartupPhaseC,
+    InitStartupUnbounced,
+    EraseStartupAll,
+    EraseStartupInitError,
+    SetTransOff
 };
 
 enum HiddenBlockModule : byte

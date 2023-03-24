@@ -5,8 +5,9 @@
 #include <QVBoxLayout>
 
 SignalChooseWidget::SignalChooseWidget(const QStringList &snames, const QStringList &discr, QWidget *parent)
-    : QWidget(parent)
+    : QScrollArea(parent)
 {
+    QWidget *w = new QWidget(this);
     QVBoxLayout *lyout = new QVBoxLayout;
     for (int i = 0; i < snames.size(); ++i)
     {
@@ -23,7 +24,8 @@ SignalChooseWidget::SignalChooseWidget(const QStringList &snames, const QStringL
         hlyout->addWidget(w);
         lyout->addLayout(hlyout);
     }
-    setLayout(lyout);
+    w->setLayout(lyout);
+    setWidget(w);
 }
 
 void SignalChooseWidget::setChecked(QString signame, bool checked)

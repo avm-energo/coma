@@ -69,6 +69,7 @@ void ModbusThread::run()
         }
         // Silent interval for Modbus (3.5 characters)
         QThread::msleep(delay);
+        qApp->processEvents(QEventLoop::AllEvents);
     }
     emit finished();
 }
