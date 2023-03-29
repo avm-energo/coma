@@ -2,7 +2,7 @@
 #define MEASJOURNALMODEL_H
 
 #include "basejournalmodel.h"
-#include "modulesettings.h"
+//#include "modulesettings.h"
 
 #include <QObject>
 

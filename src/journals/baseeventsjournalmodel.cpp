@@ -2,7 +2,7 @@
 
 #include <gen/timefunc.h>
 
-BaseEventsJournalModel::BaseEventsJournalModel(QObject *parent) : QSortFilterProxyModel(parent)
+BaseEventsJournalModel::BaseEventsJournalModel(QObject *parent) : BaseJournalModel(parent)
 {
 }
 

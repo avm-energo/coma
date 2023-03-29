@@ -1,7 +1,7 @@
 #ifndef BASEJOURNALMODEL_H
 #define BASEJOURNALMODEL_H
 
-#include "modulesettings.h"
+#include "../module/modulesettings.h"
 
 #include <QObject>
 #include <QSortFilterProxyModel>
