@@ -235,7 +235,7 @@ void ModBus::writeFloat(const DataTypes::FloatStruct &flstr)
     CommandsMBS::CommandStruct inp {
         CommandsMBS::Commands::WriteMultipleRegisters, //
         static_cast<quint16>(flstr.sigAdr),            //
-        static_cast<quint16>(sigArray.size() / 2),     //
+        static_cast<quint16>(sigArray.size()),         //
         sigArray,                                      //
         TypeId::None,                                  //
         __PRETTY_FUNCTION__                            //
