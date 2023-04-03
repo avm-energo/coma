@@ -97,10 +97,8 @@ bool ModBus::isValidRegs(CommandsMBS::CommandStruct &cmd) const
             if (val.function == cmd.cmd)
             {
                 if (val.count == cmd.quantity * 2)
-                {
-                    cmd.quantity *= 2;
                     return true;
-                }
+
                 if (val.count == cmd.quantity)
                     return true;
             }
@@ -237,7 +235,7 @@ void ModBus::writeFloat(const DataTypes::FloatStruct &flstr)
     CommandsMBS::CommandStruct inp {
         CommandsMBS::Commands::WriteMultipleRegisters, //
         static_cast<quint16>(flstr.sigAdr),            //
-        static_cast<quint16>(sigArray.size() / 2),     //
+        static_cast<quint16>(sigArray.size()),         //
         sigArray,                                      //
         TypeId::None,                                  //
         __PRETTY_FUNCTION__                            //
@@ -373,7 +371,7 @@ void ModBus::writeCommand(Queries::Commands cmd, const QVariantList &list)
         CommandsMBS::CommandStruct inp {
             CommandsMBS::Commands::WriteMultipleRegisters, //
             static_cast<quint16>(group.startAddr),         //
-            static_cast<quint16>(sigArray.size() / 2),     //
+            static_cast<quint16>(sigArray.size()),         //
             sigArray,                                      //
             TypeId::None,                                  //
             __PRETTY_FUNCTION__                            //
@@ -394,7 +392,7 @@ void ModBus::reqFloats(quint32 sigAdr, quint32 sigCount)
     CommandsMBS::CommandStruct inp {
         CommandsMBS::Commands::ReadInputRegister, //
         static_cast<quint16>(sigAdr),             //
-        static_cast<quint8>(sigCount),            //
+        static_cast<quint8>(sigCount * 2),        //
         {},                                       //
         type(sigAdr),                             //
         __PRETTY_FUNCTION__                       //

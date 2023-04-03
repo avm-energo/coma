@@ -230,7 +230,7 @@ Error::Msg BaseInterface::readFileSync(quint32 filenum, QByteArray &ba)
 
 Error::Msg BaseInterface::reqTimeSync(void *block, quint32 blocksize)
 {
-    Q_ASSERT(blocksize == sizeof(timespec) || sizeof(DataTypes::BitStringStruct));
+    Q_ASSERT(blocksize == sizeof(timespec) || blocksize == sizeof(DataTypes::BitStringStruct));
     m_busy = true;
     m_timeout = false;
     auto connection = std::shared_ptr<QMetaObject::Connection>(new QMetaObject::Connection);
