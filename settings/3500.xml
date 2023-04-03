@@ -45,16 +45,6 @@
                 <visibility>true</visibility>
             </record>
             <record>
-                <id>404</id>
-                <defaultValue>0</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>405</id>
-                <defaultValue>0</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
                 <id>5</id>
                 <defaultValue>5</defaultValue>
                 <visibility>true</visibility>

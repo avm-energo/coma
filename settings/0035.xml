@@ -23,16 +23,6 @@
                 <defaultValue>0</defaultValue>
                 <visibility>true</visibility>
             </record>
-            <record>
-                <id>424</id>
-                <defaultValue>0</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>425</id>
-                <defaultValue>0</defaultValue>
-                <visibility>true</visibility>
-            </record>
         </config>
         <iec60870 desc="Протокол ГОСТ Р МЭК 60870-5-104">
             <group>
