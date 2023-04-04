@@ -40,7 +40,7 @@ AbstractStartupDialog::AbstractStartupDialog(QWidget *parent)
     , m_updateState(ThereWasNoUpdatesRecently)
 {
     m_updateState = ThereWasNoUpdatesRecently;
-    setSuccessMsg("Стартовые значения записаны успешно");
+    //    setSuccessMsg("Стартовые значения записаны успешно");
     _corNeedsToCheck = NoChecks;
     connect(this, &AbstractStartupDialog::corWasChecked, this, &AbstractStartupDialog::setMessageUponCheck);
 }
@@ -93,7 +93,7 @@ void AbstractStartupDialog::WriteCor()
         return;
     FillBackCor();
     QVariantList values;
-    for (auto it = m_regMap.cbegin(); it != m_regMap.cend(); ++it)
+    for (auto it = m_regMapW.cbegin(); it != m_regMapW.cend(); ++it)
     {
         DataTypes::FloatStruct value { it.key(), *it.value(), DataTypes::Quality::Good };
         values.push_back(QVariant::fromValue(value));
@@ -137,13 +137,13 @@ float AbstractStartupDialog::ToFloat(QString text)
 void AbstractStartupDialog::updateFloatData(const DataTypes::FloatStruct &fl)
 {
     // Игнорируем 4011 т.к. он нам не важен и все чужие регистры тоже игнорируем
-    if (fl.sigAdr >= m_regMap.firstKey() && fl.sigAdr <= m_regMap.lastKey())
+    if (fl.sigAdr >= m_regMapR.firstKey() && fl.sigAdr <= m_regMapR.lastKey())
     {
         if (fl.sigQuality != 192)
             FillBd(this, QString::number(fl.sigAdr), "***");
         else
             FillBd(this, QString::number(fl.sigAdr), fl.sigVal);
-        float valueToCheck = (_corNeedsToCheck == CheckForRegMap) ? *(m_regMap.value(fl.sigAdr)) : 0;
+        float valueToCheck = (_corNeedsToCheck == CheckForRegMap) ? *(m_regMapR.value(fl.sigAdr)) : 0;
         if (_corNeedsToCheck != NoChecks)
         {
             if (StdFunc::FloatIsWithinLimits(fl.sigVal, valueToCheck, 0.1))
@@ -200,25 +200,27 @@ void AbstractStartupDialog::uponInterfaceSetting()
     SetupUI();
 }
 
-bool AbstractStartupDialog::addReg(quint16 reg, float *ptr)
+bool AbstractStartupDialog::addReg(quint16 regW, quint16 regR, float *ptr)
 {
-    Q_ASSERT(!m_regMap.key(ptr) && "Pointer already exist");
-    if (m_regMap.key(ptr))
+    Q_ASSERT(!m_regMapW.key(ptr) && "Pointer already exist");
+    Q_ASSERT(!m_regMapR.key(ptr) && "Pointer already exist");
+    if (m_regMapW.key(ptr))
         return false;
-    m_regMap.insert(reg, ptr);
+    m_regMapW.insert(regW, ptr);
+    m_regMapR.insert(regR, ptr);
     return true;
 }
 
 void AbstractStartupDialog::FillCor()
 {
-    for (auto it = m_regMap.cbegin(); it != m_regMap.cend(); ++it)
+    for (auto it = m_regMapR.cbegin(); it != m_regMapR.cend(); ++it)
         if (!WDFunc::SetSPBData(this, QString::number(it.key()), *it.value()))
             qDebug() << "Not found";
 }
 
 void AbstractStartupDialog::FillBackCor()
 {
-    for (auto it = m_regMap.begin(); it != m_regMap.end(); ++it)
+    for (auto it = m_regMapR.begin(); it != m_regMapR.end(); ++it)
         if (!WDFunc::SPBData(this, QString::number(it.key()), *it.value()))
             qDebug() << "Not found";
 }

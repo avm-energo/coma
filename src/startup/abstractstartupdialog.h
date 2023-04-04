@@ -44,14 +44,14 @@ protected:
     virtual void ReadFromFile() = 0;
     void ErrorRead();
     void uponInterfaceSetting() override;
-    bool addReg(quint16 reg, float *ptr);
+    bool addReg(quint16 regW, quint16 regR, float *ptr);
     virtual void FillCor();
     virtual void FillBackCor();
 
 private:
     UpdateStates m_updateState;
     StartupBlockStruct m_startupBlockDescription;
-    QMap<quint16, float *> m_regMap;
+    QMap<quint16, float *> m_regMapW, m_regMapR;
     CheckStyle _corNeedsToCheck; // flag indicating that we should check corRegs from module to be
                                  // equal to these stored in m_regMap
     int _regCountToCheck, _uncheckedRegCount;

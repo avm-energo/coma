@@ -348,35 +348,40 @@ void ModBus::writeCommand(Queries::Commands cmd, const QVariantList &list)
     case Queries::QC_WriteUserValues:
     {
         Q_ASSERT(list.first().canConvert<DataTypes::FloatStruct>());
-        const quint16 some_addr = list.first().value<DataTypes::FloatStruct>().sigAdr;
+        quint16 some_addr = list.first().value<DataTypes::FloatStruct>().sigAdr;
         const auto &st = settings<InterfaceInfo<ModbusGroup>>();
-        Q_ASSERT(isValidRegs(some_addr, list.size() * 2));
-        auto group = st.dictionary().value(some_addr);
-        bool found = false;
-        auto dictionary = st.dictionary();
-        auto it = dictionary.cbegin();
-        while (it != dictionary.cend() && !found)
-        {
-            if (it.value() != group)
-            {
-                group = it.value();
-                found = true;
-            }
-            ++it;
-        }
-        Q_ASSERT(found);
+        //        Q_ASSERT(isValidRegs(some_addr, list.size() * 2)); не имеет смысла, если адрес не является начальным
+
+        if (!st.dictionary().contains(some_addr))
+            qDebug() << "Описание регистров ModBus не содержит адрес " + QString::number(some_addr);
+        //        auto group = st.dictionary().value(some_addr);
+        //        bool found = false;
+        //        auto dictionary = st.dictionary();
+        //        auto it = dictionary.cbegin();
+        //        while (it != dictionary.cend() && !found)
+        //        {
+        //            if (it.value() != group)
+        //            {
+        //                group = it.value();
+        //                found = true;
+        //            }
+        //            ++it;
+        //        }
+        //        Q_ASSERT(found);
         QByteArray sigArray;
         for (auto &i : list)
         {
             auto flstr = i.value<DataTypes::FloatStruct>();
+            if (flstr.sigAdr < some_addr)
+                some_addr = flstr.sigAdr; // search for minimum sig addr
             // now write floats to the out sigArray
             sigArray.push_back(packReg(flstr.sigVal));
         }
 
         CommandsMBS::CommandStruct inp {
             CommandsMBS::Commands::WriteMultipleRegisters, //
-            static_cast<quint16>(group.startAddr),         //
-            static_cast<quint16>(sigArray.size()),         //
+            static_cast<quint16>(some_addr),               //
+            static_cast<quint16>(list.size() * 2),         // количество регистров типа int16
             sigArray,                                      //
             TypeId::None,                                  //
             __PRETTY_FUNCTION__                            //

@@ -9,31 +9,23 @@
 #include <gen/files.h>
 #include <tuple>
 
-//#include "../module/board.h"
-//#include "../dialogs/keypressdialog.h"
-//#include <QDebug>
-//#include <gen/colors.h>
-//#include <gen/datamanager/typesproxy.h>
-//#include <gen/stdfunc.h>
-//#include <gen/timefunc.h>
-
 StartupKIVDialog::StartupKIVDialog(QWidget *parent) : AbstractStartupDialog(parent)
 {
     // Default initialization
     // Do not need set null value
     CorBlock = new CorData;
-    addReg(4000, &CorBlock->C_init[0]);
-    addReg(4001, &CorBlock->C_init[1]);
-    addReg(4002, &CorBlock->C_init[2]);
-    addReg(4003, &CorBlock->Tg_init[0]);
-    addReg(4004, &CorBlock->Tg_init[1]);
-    addReg(4005, &CorBlock->Tg_init[2]);
-    addReg(4006, &CorBlock->corTg[0]);
-    addReg(4007, &CorBlock->corTg[1]);
-    addReg(4008, &CorBlock->corTg[2]);
-    addReg(4009, &CorBlock->Iunb_init);
-    addReg(4010, &CorBlock->Phy_unb_init);
-    SetStartupBlock(7, &CorBlock, sizeof(CorData), KIVSTARTUPINITREG);
+    addReg(KIVSTARTUPINITREGW, KIVSTARTUPINITREGR, &CorBlock->C_init[0]);
+    addReg(KIVSTARTUPINITREGW + 1, KIVSTARTUPINITREGR + 1, &CorBlock->C_init[1]);
+    addReg(KIVSTARTUPINITREGW + 2, KIVSTARTUPINITREGR + 2, &CorBlock->C_init[2]);
+    addReg(KIVSTARTUPINITREGW + 3, KIVSTARTUPINITREGR + 3, &CorBlock->Tg_init[0]);
+    addReg(KIVSTARTUPINITREGW + 4, KIVSTARTUPINITREGR + 4, &CorBlock->Tg_init[1]);
+    addReg(KIVSTARTUPINITREGW + 5, KIVSTARTUPINITREGR + 5, &CorBlock->Tg_init[2]);
+    addReg(KIVSTARTUPINITREGW + 6, KIVSTARTUPINITREGR + 6, &CorBlock->corTg[0]);
+    addReg(KIVSTARTUPINITREGW + 7, KIVSTARTUPINITREGR + 7, &CorBlock->corTg[1]);
+    addReg(KIVSTARTUPINITREGW + 8, KIVSTARTUPINITREGR + 8, &CorBlock->corTg[2]);
+    addReg(KIVSTARTUPINITREGW + 9, KIVSTARTUPINITREGR + 9, &CorBlock->Iunb_init);
+    addReg(KIVSTARTUPINITREGW + 10, KIVSTARTUPINITREGR + 10, &CorBlock->Phy_unb_init);
+    SetStartupBlock(7, &CorBlock, sizeof(CorData), KIVSTARTUPINITREGR);
 }
 
 StartupKIVDialog::~StartupKIVDialog()
@@ -67,29 +59,32 @@ QWidget *StartupKIVDialog::uiValuesTab(QWidget *parent)
     glyout->addWidget(WDFunc::NewLBL2(this, "Начальные значения емкостей вводов, пФ:"), row, 1, 1, 1);
     for (int i = 0; i < 3; i++)
     {
-        glyout->addWidget(WDFunc::NewSPB2(this, QString::number(4000 + i), 0, 10000, 1), row, 2 + i, 1, 1);
+        glyout->addWidget(
+            WDFunc::NewSPB2(this, QString::number(KIVSTARTUPINITREGR + i), 0, 10000, 1), row, 2 + i, 1, 1);
     }
     row++;
 
     glyout->addWidget(WDFunc::NewLBL2(this, "Начальные значения tg δ вводов, %:"), row, 1, 1, 1);
     for (int i = 0; i < 3; i++)
     {
-        glyout->addWidget(WDFunc::NewSPB2(this, QString::number(4003 + i), -10, 10, 2), row, 2 + i, 1, 1);
+        glyout->addWidget(
+            WDFunc::NewSPB2(this, QString::number(KIVSTARTUPINITREGR + 3 + i), -10, 10, 2), row, 2 + i, 1, 1);
     }
     row++;
 
     glyout->addWidget(WDFunc::NewLBL2(this, "Коррекция  tg δ вводов,%:"), row, 1, 1, 1);
     for (int i = 0; i < 3; i++)
     {
-        glyout->addWidget(WDFunc::NewSPB2(this, QString::number(4006 + i), -10, 10, 2), row, 2 + i, 1, 1);
+        glyout->addWidget(
+            WDFunc::NewSPB2(this, QString::number(KIVSTARTUPINITREGR + 6 + i), -10, 10, 2), row, 2 + i, 1, 1);
     }
     row++;
 
     glyout->addWidget(WDFunc::NewLBL2(this, "Начальное значение небаланса токов, %:"), row, 1, 1, 1);
-    glyout->addWidget(WDFunc::NewSPB2(this, QString::number(4009), 0, 10000, 1), row, 2, 1, 3);
+    glyout->addWidget(WDFunc::NewSPB2(this, QString::number(KIVSTARTUPINITREGR + 9), 0, 10000, 1), row, 2, 1, 3);
     row++;
     glyout->addWidget(WDFunc::NewLBL2(this, "Начальное значение угла тока небаланса, град.:"), row, 1, 1, 1);
-    glyout->addWidget(WDFunc::NewSPB2(this, QString::number(4010), 0, 10000, 1), row, 2, 1, 3);
+    glyout->addWidget(WDFunc::NewSPB2(this, QString::number(KIVSTARTUPINITREGR + 10), 0, 10000, 1), row, 2, 1, 3);
 
     layout->addLayout(glyout, Qt::AlignTop);
     layout->addWidget(buttonWidget());

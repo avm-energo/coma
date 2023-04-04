@@ -3,7 +3,8 @@
 
 #include "abstractstartupdialog.h"
 
-constexpr auto KIVSTARTUPINITREG = 4000;
+constexpr auto KIVSTARTUPINITREGR = 4000;
+constexpr auto KIVSTARTUPINITREGW = 910;
 
 class StartupKIVDialog : public AbstractStartupDialog
 {
