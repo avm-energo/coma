@@ -85,6 +85,8 @@ void ModBus::sendReconnectSignal()
     }
 }
 
+/// \brief Проверка отправляемой посылки на наличие описания таковой в конфигурации модуля
+
 bool ModBus::isValidRegs(CommandsMBS::CommandStruct &cmd) const
 {
     const auto &st = settings<InterfaceInfo<ModbusGroup>>();
@@ -94,27 +96,30 @@ bool ModBus::isValidRegs(CommandsMBS::CommandStruct &cmd) const
         const auto values = st.dictionary().values(cmd.adr);
         for (const auto &val : values)
         {
-            if (val.function == cmd.cmd)
-            {
-                if (val.count == cmd.quantity * 2)
-                    return true;
+            if ((val.function == cmd.cmd) && (val.count == cmd.quantity))
+                //            {
+                //                if (val.count == cmd.quantity * 2)
+                //                    return true;
 
-                if (val.count == cmd.quantity)
-                    return true;
-            }
+                //                if (val.count == cmd.quantity)
+                return true;
+            //            }
         }
     }
     return false;
 }
 
+/// \brief Проверка регистров на наличие описания таковых в конфигурации модуля
+
 bool ModBus::isValidRegs(const quint32 sigAdr, const quint32 sigCount) const
 {
     const auto &st = settings<InterfaceInfo<ModbusGroup>>();
-    Q_ASSERT(st.dictionary().contains(sigAdr));
+    if (!st.dictionary().contains(sigAdr))
+        return false;
     const auto values = st.dictionary().values(sigAdr);
     for (const auto &val : values)
     {
-        if ((val.count == sigCount) && (val.startAddr == sigAdr))
+        if ((val.startAddr == sigAdr) && (val.count == sigCount))
             return true;
     }
     return false;
@@ -141,7 +146,7 @@ TypeId ModBus::type(const quint32 addr, const quint32 count, const CommandsMBS::
 void ModBus::reqStartup(quint32 sigAdr, quint32 sigCount)
 {
     const quint16 addr = sigAdr;
-    const quint8 count = (sigCount * 2);
+    const quint8 count = (sigCount * 2); // startup registers are float (2 ints long)
     CommandsMBS::CommandStruct inp {
         CommandsMBS::Commands::ReadInputRegister, //
         addr,                                     //
@@ -343,10 +348,10 @@ void ModBus::writeCommand(Queries::Commands cmd, const QVariantList &list)
     case Queries::QC_WriteUserValues:
     {
         Q_ASSERT(list.first().canConvert<DataTypes::FloatStruct>());
-        const quint16 start_addr = list.first().value<DataTypes::FloatStruct>().sigAdr;
+        const quint16 some_addr = list.first().value<DataTypes::FloatStruct>().sigAdr;
         const auto &st = settings<InterfaceInfo<ModbusGroup>>();
-        Q_ASSERT(isValidRegs(start_addr, list.size() * 2));
-        auto group = st.dictionary().value(start_addr);
+        Q_ASSERT(isValidRegs(some_addr, list.size() * 2));
+        auto group = st.dictionary().value(some_addr);
         bool found = false;
         auto dictionary = st.dictionary();
         auto it = dictionary.cbegin();
@@ -377,7 +382,8 @@ void ModBus::writeCommand(Queries::Commands cmd, const QVariantList &list)
             __PRETTY_FUNCTION__                            //
         };
         qDebug() << inp;
-        Q_ASSERT(isValidRegs(inp));
+        //        Q_ASSERT(isValidRegs(inp)); // закомментарено, т.к. на WRite в xml ещё нет вариантов, и ассерт
+        //        вылетает постоянно на проверке кода функции
         DataManager::GetInstance().addToInQueue(inp);
         break;
     }

@@ -2,11 +2,13 @@
 
 #include "../dialogs/keypressdialog.h"
 #include "../module/board.h"
+#include "../widgets/epopup.h"
 #include "../widgets/wd_func.h"
 
 #include <QDialogButtonBox>
 #include <QMessageBox>
 #include <QPushButton>
+#include <gen/stdfunc.h>
 #include <tuple>
 
 //#include "../widgets/etableview.h"
@@ -39,6 +41,8 @@ AbstractStartupDialog::AbstractStartupDialog(QWidget *parent)
 {
     m_updateState = ThereWasNoUpdatesRecently;
     setSuccessMsg("Стартовые значения записаны успешно");
+    _corNeedsToCheck = NoChecks;
+    connect(this, &AbstractStartupDialog::corWasChecked, this, &AbstractStartupDialog::setMessageUponCheck);
 }
 
 void AbstractStartupDialog::SetStartupBlock(int blocknum, void *block, quint32 blocksize, quint32 startAdr)
@@ -95,11 +99,13 @@ void AbstractStartupDialog::WriteCor()
         values.push_back(QVariant::fromValue(value));
     }
     BaseInterface::iface()->writeCommand(Queries::QC_WriteUserValues, values);
+    _corNeedsToCheck = CheckForRegMap; // we should check regs for equality at the next sigs receive
     GetCorBd();
 }
 
 void AbstractStartupDialog::GetCorBd()
 {
+    _uncheckedRegCount = _regCountToCheck = m_startupBlockDescription.size / sizeof(float);
     BaseInterface::iface()->reqStartup(m_startupBlockDescription.initStartRegAdr,
         m_startupBlockDescription.size / sizeof(float)); // /4 => float by default
 }
@@ -109,6 +115,7 @@ void AbstractStartupDialog::ResetCor()
     if (checkPassword())
     {
         BaseInterface::iface()->writeCommand(Queries::QC_ClearStartupValues);
+        _corNeedsToCheck = CheckForZeroes; // we should check regs for equality at the next sigs receive
         GetCorBd();
     }
 }
@@ -136,6 +143,19 @@ void AbstractStartupDialog::updateFloatData(const DataTypes::FloatStruct &fl)
             FillBd(this, QString::number(fl.sigAdr), "***");
         else
             FillBd(this, QString::number(fl.sigAdr), fl.sigVal);
+        float valueToCheck = (_corNeedsToCheck == CheckForRegMap) ? *(m_regMap.value(fl.sigAdr)) : 0;
+        if (_corNeedsToCheck != NoChecks)
+        {
+            if (StdFunc::FloatIsWithinLimits(fl.sigVal, valueToCheck, 0.1))
+            {
+                --_uncheckedRegCount;
+            }
+            if (--_regCountToCheck <= 0)
+            {
+                _corNeedsToCheck = NoChecks;
+                emit corWasChecked(_uncheckedRegCount);
+            }
+        }
     }
 }
 
@@ -228,4 +248,12 @@ void AbstractStartupDialog::reqUpdate()
     }
     else
         m_updateState = ThereWasNoUpdatesRecently;
+}
+
+void AbstractStartupDialog::setMessageUponCheck(int uncheckedRegCount)
+{
+    if (uncheckedRegCount == 0)
+        EMessageBox::information(this, "Записано успешно");
+    else
+        EMessageBox::warning(this, "Запись не состоялась");
 }
