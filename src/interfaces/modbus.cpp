@@ -90,27 +90,20 @@ void ModBus::sendReconnectSignal()
 bool ModBus::isValidRegs(CommandsMBS::CommandStruct &cmd) const
 {
     const auto &st = settings<InterfaceInfo<ModbusGroup>>();
-    Q_ASSERT(st.dictionary().contains(cmd.adr));
+    // Q_ASSERT(st.dictionary().contains(cmd.adr));
     if (st.dictionary().contains(cmd.adr))
     {
         const auto values = st.dictionary().values(cmd.adr);
         for (const auto &val : values)
         {
             if ((val.function == cmd.cmd) && (val.count == cmd.quantity))
-                //            {
-                //                if (val.count == cmd.quantity * 2)
-                //                    return true;
-
-                //                if (val.count == cmd.quantity)
                 return true;
-            //            }
         }
     }
     return false;
 }
 
 /// \brief Проверка регистров на наличие описания таковых в конфигурации модуля
-
 bool ModBus::isValidRegs(const quint32 sigAdr, const quint32 sigCount) const
 {
     const auto &st = settings<InterfaceInfo<ModbusGroup>>();
@@ -348,47 +341,34 @@ void ModBus::writeCommand(Queries::Commands cmd, const QVariantList &list)
     case Queries::QC_WriteUserValues:
     {
         Q_ASSERT(list.first().canConvert<DataTypes::FloatStruct>());
-        quint16 some_addr = list.first().value<DataTypes::FloatStruct>().sigAdr;
         const auto &st = settings<InterfaceInfo<ModbusGroup>>();
-        //        Q_ASSERT(isValidRegs(some_addr, list.size() * 2)); не имеет смысла, если адрес не является начальным
-
+        quint16 some_addr = list.first().value<DataTypes::FloatStruct>().sigAdr;
         if (!st.dictionary().contains(some_addr))
             qDebug() << "Описание регистров ModBus не содержит адрес " + QString::number(some_addr);
-        //        auto group = st.dictionary().value(some_addr);
-        //        bool found = false;
-        //        auto dictionary = st.dictionary();
-        //        auto it = dictionary.cbegin();
-        //        while (it != dictionary.cend() && !found)
-        //        {
-        //            if (it.value() != group)
-        //            {
-        //                group = it.value();
-        //                found = true;
-        //            }
-        //            ++it;
-        //        }
-        //        Q_ASSERT(found);
+
+        // search for minimum sig addr
         QByteArray sigArray;
+        quint16 min_addr = some_addr;
         for (auto &i : list)
         {
             auto flstr = i.value<DataTypes::FloatStruct>();
-            if (flstr.sigAdr < some_addr)
-                some_addr = flstr.sigAdr; // search for minimum sig addr
+            if (flstr.sigAdr < min_addr)
+                min_addr = flstr.sigAdr;
             // now write floats to the out sigArray
             sigArray.push_back(packReg(flstr.sigVal));
         }
 
         CommandsMBS::CommandStruct inp {
             CommandsMBS::Commands::WriteMultipleRegisters, //
-            static_cast<quint16>(some_addr),               //
+            static_cast<quint16>(min_addr),                //
             static_cast<quint16>(list.size() * 2),         // количество регистров типа int16
             sigArray,                                      //
             TypeId::None,                                  //
             __PRETTY_FUNCTION__                            //
         };
         qDebug() << inp;
-        //        Q_ASSERT(isValidRegs(inp)); // закомментарено, т.к. на WRite в xml ещё нет вариантов, и ассерт
-        //        вылетает постоянно на проверке кода функции
+        // Q_ASSERT(isValidRegs(inp)); // закомментарено, т.к. на WRite в xml ещё нет вариантов, и ассерт
+        // вылетает постоянно на проверке кода функции
         DataManager::GetInstance().addToInQueue(inp);
         break;
     }

@@ -52,9 +52,9 @@ private:
     UpdateStates m_updateState;
     StartupBlockStruct m_startupBlockDescription;
     QMap<quint16, float *> m_regMapW, m_regMapR;
-    CheckStyle _corNeedsToCheck; // flag indicating that we should check corRegs from module to be
-                                 // equal to these stored in m_regMap
-    int _regCountToCheck, _uncheckedRegCount;
+    CheckStyle m_corNeedsToCheck; // flag indicating that we should check corRegs from module to be
+                                  // equal to these stored in m_regMap
+    int m_regCountToCheck, m_uncheckedRegCount;
 
     float ToFloat(QString text);
     virtual void SetupUI() = 0;

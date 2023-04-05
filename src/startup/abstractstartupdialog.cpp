@@ -11,24 +11,6 @@
 #include <gen/stdfunc.h>
 #include <tuple>
 
-//#include "../widgets/etableview.h"
-//#include <QButtonGroup>
-//#include <QCheckBox>
-//#include <QComboBox>
-//#include <QCoreApplication>
-//#include <QDebug>
-//#include <QDoubleSpinBox>
-//#include <QFileDialog>
-//#include <QGridLayout>
-//#include <QGroupBox>
-//#include <QLabel>
-//#include <QLineEdit>
-//#include <QSpinBox>
-//#include <gen/colors.h>
-//#include <gen/datatypes.h>
-//#include <gen/helper.h>
-//#include <gen/stdfunc.h>
-
 namespace crypto
 {
 static constexpr char hash[] = "d93fdd6d1fb5afcca939fa650b62541d09dbcb766f41c39352dc75f348fb35dc";
@@ -41,7 +23,7 @@ AbstractStartupDialog::AbstractStartupDialog(QWidget *parent)
 {
     m_updateState = ThereWasNoUpdatesRecently;
     //    setSuccessMsg("Стартовые значения записаны успешно");
-    _corNeedsToCheck = NoChecks;
+    m_corNeedsToCheck = NoChecks;
     connect(this, &AbstractStartupDialog::corWasChecked, this, &AbstractStartupDialog::setMessageUponCheck);
 }
 
@@ -99,13 +81,13 @@ void AbstractStartupDialog::WriteCor()
         values.push_back(QVariant::fromValue(value));
     }
     BaseInterface::iface()->writeCommand(Queries::QC_WriteUserValues, values);
-    _corNeedsToCheck = CheckForRegMap; // we should check regs for equality at the next sigs receive
+    m_corNeedsToCheck = CheckForRegMap; // we should check regs for equality at the next sigs receive
     GetCorBd();
 }
 
 void AbstractStartupDialog::GetCorBd()
 {
-    _uncheckedRegCount = _regCountToCheck = m_startupBlockDescription.size / sizeof(float);
+    m_uncheckedRegCount = m_regCountToCheck = m_startupBlockDescription.size / sizeof(float);
     BaseInterface::iface()->reqStartup(m_startupBlockDescription.initStartRegAdr,
         m_startupBlockDescription.size / sizeof(float)); // /4 => float by default
 }
@@ -115,7 +97,7 @@ void AbstractStartupDialog::ResetCor()
     if (checkPassword())
     {
         BaseInterface::iface()->writeCommand(Queries::QC_ClearStartupValues);
-        _corNeedsToCheck = CheckForZeroes; // we should check regs for equality at the next sigs receive
+        m_corNeedsToCheck = CheckForZeroes; // we should check regs for equality at the next sigs receive
         GetCorBd();
     }
 }
@@ -133,7 +115,6 @@ float AbstractStartupDialog::ToFloat(QString text)
     return tmpf;
 }
 
-// void AbstractStartupDialog::updateFloatData(const DataTypes::FloatStruct &fl)
 void AbstractStartupDialog::updateFloatData(const DataTypes::FloatStruct &fl)
 {
     // Игнорируем 4011 т.к. он нам не важен и все чужие регистры тоже игнорируем
@@ -143,17 +124,17 @@ void AbstractStartupDialog::updateFloatData(const DataTypes::FloatStruct &fl)
             FillBd(this, QString::number(fl.sigAdr), "***");
         else
             FillBd(this, QString::number(fl.sigAdr), fl.sigVal);
-        float valueToCheck = (_corNeedsToCheck == CheckForRegMap) ? *(m_regMapR.value(fl.sigAdr)) : 0;
-        if (_corNeedsToCheck != NoChecks)
+        float valueToCheck = (m_corNeedsToCheck == CheckForRegMap) ? *(m_regMapR.value(fl.sigAdr)) : 0;
+        if (m_corNeedsToCheck != NoChecks)
         {
             if (StdFunc::FloatIsWithinLimits(fl.sigVal, valueToCheck, 0.1))
             {
-                --_uncheckedRegCount;
+                --m_uncheckedRegCount;
             }
-            if (--_regCountToCheck <= 0)
+            if (--m_regCountToCheck <= 0)
             {
-                _corNeedsToCheck = NoChecks;
-                emit corWasChecked(_uncheckedRegCount);
+                m_corNeedsToCheck = NoChecks;
+                emit corWasChecked(m_uncheckedRegCount);
             }
         }
     }
