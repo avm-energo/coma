@@ -368,7 +368,11 @@ void Protocom::writeCommand(Queries::Commands cmd, const QVariantList &list)
     {
         Q_ASSERT(list.first().canConvert<DataTypes::FloatStruct>());
         const quint16 start_addr = list.first().value<DataTypes::FloatStruct>().sigAdr;
-        Q_ASSERT(isValidRegs(start_addr, list.size()));
+        if (!isValidRegs(start_addr, list.size()))
+        {
+            qCritical() << Error::UnknownBlock;
+            return;
+        }
         const auto blockNum = d->blockByReg(start_addr);
         DataTypes::BlockStruct block { blockNum, {} };
         for (const auto &i : list)
@@ -388,9 +392,9 @@ void Protocom::writeCommand(Queries::Commands cmd, const QVariantList &list)
 bool Protocom::isValidRegs(const quint32 sigAdr, const quint32 sigCount)
 {
     const auto &st = settings<InterfaceInfo<ProtocomGroup>>();
-    Q_ASSERT(st.dictionary().contains(sigAdr));
+    if (!st.dictionary().contains(sigAdr))
+        return false;
     const auto val = st.dictionary().value(sigAdr);
-    Q_ASSERT(val.count == sigCount);
     return val.count == sigCount;
 }
 

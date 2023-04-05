@@ -55,9 +55,9 @@ void ESimplePopup::Create(MessageTypes &type, QWidget *w, QWidget *parent)
     hlyout->addStretch(100);
     if (type == ESimplePopup::QUESTMSG)
     {
-        hlyout->addWidget(WDFunc::NewPB(parent, "", "Ага", this, &ESimplePopup::acceptSlot));
+        hlyout->addWidget(WDFunc::NewPB(parent, "", "Да", this, &ESimplePopup::acceptSlot));
         hlyout->addStretch(5);
-        hlyout->addWidget(WDFunc::NewPB(parent, "", "Неа", this, &ESimplePopup::cancelSlot));
+        hlyout->addWidget(WDFunc::NewPB(parent, "", "Нет", this, &ESimplePopup::cancelSlot));
     }
     else if (type == ESimplePopup::NEXTMSG)
     {
@@ -66,7 +66,7 @@ void ESimplePopup::Create(MessageTypes &type, QWidget *w, QWidget *parent)
         hlyout->addWidget(WDFunc::NewPB(parent, "", "Отмена", this, &ESimplePopup::cancelSlot));
     }
     else if (type != ESimplePopup::WITHOUTANYBUTTONS)
-        hlyout->addWidget(WDFunc::NewPB(parent, "", "Ага", [&] { this->aboutToClose(); }));
+        hlyout->addWidget(WDFunc::NewPB(parent, "", "Далее", [&] { this->aboutToClose(); }));
     hlyout->addStretch(100);
     lyout->addLayout(hlyout);
     setLayout(lyout);
