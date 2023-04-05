@@ -199,12 +199,13 @@ void CheckDialog::addSignals(const QList<ModuleTypes::SGroup> &groups, UWidget *
     }
 }
 
-QString CheckDialog::getFormatted(const ModuleTypes::MWidget &widget, const QString &form, const int &number)
+QString CheckDialog::getFormatted(const ModuleTypes::MWidget &widget, //
+    const QString &form, const quint32 number, const quint32 start)
 {
     if (!widget.subItemList.empty() && number < widget.subItemList.count())
         return form.arg(widget.subItemList.at(number));
     else
-        return (widget.count > 1) ? form.arg(number + 1) : form;
+        return (widget.count > 1) ? form.arg(start + number) : form;
 }
 
 QVBoxLayout *CheckDialog::setupGroup(const ModuleTypes::SGroup &arg, UWidget *uwidget)
@@ -230,10 +231,10 @@ QVBoxLayout *CheckDialog::setupGroup(const ModuleTypes::SGroup &arg, UWidget *uw
     return groupLayout;
 }
 
-QGridLayout *CheckDialog::setupFloatWidget(const ModuleTypes::MWidget &mwidget, const int &wCount)
+QGridLayout *CheckDialog::setupFloatWidget(const ModuleTypes::MWidget &mwidget, const int wCount)
 {
     auto gridLayout = new QGridLayout;
-    auto &count = mwidget.count;
+    auto count = mwidget.count;
     auto itemsOneLine = StdFunc::goldenRatio(count);
     for (auto i = 0; i < count; i++)
     {
@@ -271,14 +272,17 @@ void CheckDialog::updatePixmap(const ModuleTypes::MWidget &mwidget, DataTypes::B
     }
 }
 
-QLabel *CheckDialog::createPixmapIndicator(const ModuleTypes::MWidget &mwidget, const quint32 &index)
+QLabel *CheckDialog::createPixmapIndicator(const ModuleTypes::MWidget &mwidget, const quint32 index)
 {
+    // TODO: Must be member of mwidget
+    constexpr auto startIndex = 0;
+
     auto pixmap = WDFunc::NewCircle(normalColor, circleRadius);
     auto indicatorLabel = new QLabel(this);
     indicatorLabel->setObjectName(QString::number(mwidget.startAddr) + "_" + QString::number(index));
     indicatorLabel->setPixmap(pixmap);
     if (!mwidget.tooltip.isEmpty())
-        indicatorLabel->setToolTip(getFormatted(mwidget, mwidget.tooltip, index - 1));
+        indicatorLabel->setToolTip(getFormatted(mwidget, mwidget.tooltip, index, startIndex));
     return indicatorLabel;
 }
 
@@ -288,6 +292,10 @@ QVBoxLayout *CheckDialog::setupBitsetWidget(const ModuleTypes::MWidget &mwidget,
     auto bitsetWidget = new QWidget(this);
     bitsetWidget->setObjectName(QString::number(mwidget.startAddr));
     auto gridLayout = new QVBoxLayout;
+
+    // TODO: Must be member of mwidget
+    constexpr auto startIndex = 0;
+
     for (auto i = 0; i < mwidget.count; i++)
     {
         auto layout = new QHBoxLayout;
@@ -302,7 +310,7 @@ QVBoxLayout *CheckDialog::setupBitsetWidget(const ModuleTypes::MWidget &mwidget,
         else
         {
             // По 1 индикатору и описанию в строку, если оно есть
-            auto textLabel = new QLabel(getFormatted(mwidget, mwidget.desc, i - 1), this);
+            auto textLabel = new QLabel(getFormatted(mwidget, mwidget.desc, i, startIndex), this);
             layout->addWidget(textLabel);
             layout->addWidget(createPixmapIndicator(mwidget, i));
         }

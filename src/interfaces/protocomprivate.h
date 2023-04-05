@@ -141,7 +141,7 @@ enum WCommands
 
 enum WSCommands
 {
-    InitStartupAll = 0x384,
+    InitStartupAll = 900,
     InitStartupPhaseA,
     InitStartupPhaseB,
     InitStartupPhaseC,
