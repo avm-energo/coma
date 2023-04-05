@@ -59,12 +59,17 @@ else()
 endif()
 message(STATUS "Local appdata path: ${APPDATA}")
 
-# Copying XML settings to appdata directory after building
-add_custom_command(
-  TARGET ${PROJECT_NAME} POST_BUILD COMMAND
-    ${CMAKE_COMMAND} -E copy_directory
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../settings
-    ${APPDATA})
+# Copy settings one time at first build
+set(SVC_CHECK_PATH "${CMAKE_CURRENT_BINARY_DIR}/check.txt")
+if(NOT EXISTS ${SVC_CHECK_PATH})
+    file(TOUCH ${SVC_CHECK_PATH})
+    # Copying XML settings to appdata directory after building
+    add_custom_command(
+      TARGET ${PROJECT_NAME} POST_BUILD COMMAND
+        ${CMAKE_COMMAND} -E copy_directory
+        ${CMAKE_CURRENT_SOURCE_DIR}/../../settings
+        ${APPDATA})
+endif()
 
 if(CMAKE_SYSTEM_NAME_LOWER STREQUAL "windows")
   include(WinDeployService)
