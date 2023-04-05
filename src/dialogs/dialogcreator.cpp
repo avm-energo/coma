@@ -185,8 +185,9 @@ void DialogCreator::createSpecificDialogs(const AppConfiguration appCfg)
         // Добавляем регулировку, если АВМ Настройка
         if (appCfg == AppConfiguration::Debug)
             createBoxTuneDialogs(moduleModel);
-        // Добавляем диалоги журналов и начальных значений
-        createJournalAndStartupDialogs(moduleModel);
+        // TODO: Временно выключено для модбаса, надо допилить журналы
+        if (board.interfaceType() != Board::InterfaceType::RS485)
+            createJournalAndStartupDialogs(moduleModel);
         addDialogToList(new PlotDialog(mParent), "Диаграммы", "plot");
         addDialogToList(new TimeDialog(mParent), "Время", "time");
     }
