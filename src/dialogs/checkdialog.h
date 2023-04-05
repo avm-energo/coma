@@ -48,11 +48,12 @@ private:
     void addSignals(const QList<ModuleTypes::SGroup> &groups, UWidget *widget);
     void uponInterfaceSetting() override;
     void updateSPData(const DataTypes::SinglePointWithTimeStruct &sp) override;
-    QString getFormatted(const ModuleTypes::MWidget &widget, const QString &form, const int &number);
+    QString getFormatted(const ModuleTypes::MWidget &widget, //
+        const QString &form, const quint32 number, const quint32 start = 1);
     void updatePixmap(const ModuleTypes::MWidget &mwidget, DataTypes::BitStringStruct &bs, UWidget *uwidget);
-    QLabel *createPixmapIndicator(const ModuleTypes::MWidget &mwidget, const quint32 &index);
+    QLabel *createPixmapIndicator(const ModuleTypes::MWidget &mwidget, const quint32 index);
     QVBoxLayout *setupGroup(const ModuleTypes::SGroup &arg, UWidget *uwidget);
-    QGridLayout *setupFloatWidget(const ModuleTypes::MWidget &mwidget, const int &wCount);
+    QGridLayout *setupFloatWidget(const ModuleTypes::MWidget &mwidget, const int wCount);
     QVBoxLayout *setupBitsetWidget(const ModuleTypes::MWidget &mwidget, UWidget *dataUpdater);
 
 private slots:
