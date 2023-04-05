@@ -32,7 +32,7 @@ void DialogCreator::createDialogs(const AppConfiguration appCfg)
 {
     deleteDialogs();
     const auto &board = Board::GetInstance();
-    if (board.interfaceType() != Board::InterfaceType::RS485)
+    if (board.interfaceType() == Board::InterfaceType::USB)
         createConfigDialogs();
     createCheckDialogs();
     createSpecificDialogs(appCfg);
@@ -186,7 +186,7 @@ void DialogCreator::createSpecificDialogs(const AppConfiguration appCfg)
         if (appCfg == AppConfiguration::Debug)
             createBoxTuneDialogs(moduleModel);
         // TODO: Временно выключено для модбаса, надо допилить журналы
-        if (board.interfaceType() != Board::InterfaceType::RS485)
+        if (board.interfaceType() == Board::InterfaceType::USB)
             createJournalAndStartupDialogs(moduleModel);
         addDialogToList(new PlotDialog(mParent), "Диаграммы", "plot");
         addDialogToList(new TimeDialog(mParent), "Время", "time");
