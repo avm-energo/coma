@@ -31,7 +31,9 @@ DialogCreator::DialogCreator(const ModuleSettings &settings, QWidget *parent)
 void DialogCreator::createDialogs(const AppConfiguration appCfg)
 {
     deleteDialogs();
-    createConfigDialogs();
+    const auto &board = Board::GetInstance();
+    if (board.interfaceType() != Board::InterfaceType::RS485)
+        createConfigDialogs();
     createCheckDialogs();
     createSpecificDialogs(appCfg);
     createCommonDialogs(appCfg);
