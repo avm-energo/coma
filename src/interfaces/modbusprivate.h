@@ -55,7 +55,7 @@ enum TypeId : quint8
     Int16 = 1,  ///< 1 register contains 16 bit int
     Bool,       ///< 1 register contains 1 bit
     Uint32,     ///< 2 registers contain uint32 (bitstring)
-    Float = 4,  ///< 4 registers contain float
+    Float,      ///< 2 registers contain float
     // ...
     // Smth else
     // ...

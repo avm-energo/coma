@@ -14,6 +14,13 @@ public:
         AnswerWasReceived = 2
     };
 
+    enum CheckStyle
+    {
+        NoChecks = 0,
+        CheckForRegMap = 1,
+        CheckForZeroes = 2
+    };
+
     struct StartupBlockStruct
     {
         quint32 initStartRegAdr;
@@ -37,14 +44,17 @@ protected:
     virtual void ReadFromFile() = 0;
     void ErrorRead();
     void uponInterfaceSetting() override;
-    bool addReg(quint16 reg, float *ptr);
+    bool addReg(quint16 regW, quint16 regR, float *ptr);
     virtual void FillCor();
     virtual void FillBackCor();
 
 private:
     UpdateStates m_updateState;
     StartupBlockStruct m_startupBlockDescription;
-    QMap<quint16, float *> m_regMap;
+    QMap<quint16, float *> m_regMapW, m_regMapR;
+    CheckStyle m_corNeedsToCheck; // flag indicating that we should check corRegs from module to be
+                                  // equal to these stored in m_regMap
+    int m_regCountToCheck, m_uncheckedRegCount;
 
     float ToFloat(QString text);
     virtual void SetupUI() = 0;
@@ -53,6 +63,12 @@ private:
 
 public slots:
     void reqUpdate() override;
+
+signals:
+    void corWasChecked(int uncheckedRegCount);
+
+private slots:
+    void setMessageUponCheck(int uncheckedRegCount);
 };
 
 #endif // ABSTRACTCORDIALOG_H

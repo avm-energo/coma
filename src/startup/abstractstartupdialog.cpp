@@ -2,30 +2,14 @@
 
 #include "../dialogs/keypressdialog.h"
 #include "../module/board.h"
+#include "../widgets/epopup.h"
 #include "../widgets/wd_func.h"
 
 #include <QDialogButtonBox>
 #include <QMessageBox>
 #include <QPushButton>
+#include <gen/stdfunc.h>
 #include <tuple>
-
-//#include "../widgets/etableview.h"
-//#include <QButtonGroup>
-//#include <QCheckBox>
-//#include <QComboBox>
-//#include <QCoreApplication>
-//#include <QDebug>
-//#include <QDoubleSpinBox>
-//#include <QFileDialog>
-//#include <QGridLayout>
-//#include <QGroupBox>
-//#include <QLabel>
-//#include <QLineEdit>
-//#include <QSpinBox>
-//#include <gen/colors.h>
-//#include <gen/datatypes.h>
-//#include <gen/helper.h>
-//#include <gen/stdfunc.h>
 
 namespace crypto
 {
@@ -38,7 +22,9 @@ AbstractStartupDialog::AbstractStartupDialog(QWidget *parent)
     , m_updateState(ThereWasNoUpdatesRecently)
 {
     m_updateState = ThereWasNoUpdatesRecently;
-    setSuccessMsg("Стартовые значения записаны успешно");
+    //    setSuccessMsg("Стартовые значения записаны успешно");
+    m_corNeedsToCheck = NoChecks;
+    connect(this, &AbstractStartupDialog::corWasChecked, this, &AbstractStartupDialog::setMessageUponCheck);
 }
 
 void AbstractStartupDialog::SetStartupBlock(int blocknum, void *block, quint32 blocksize, quint32 startAdr)
@@ -89,17 +75,19 @@ void AbstractStartupDialog::WriteCor()
         return;
     FillBackCor();
     QVariantList values;
-    for (auto it = m_regMap.cbegin(); it != m_regMap.cend(); ++it)
+    for (auto it = m_regMapW.cbegin(); it != m_regMapW.cend(); ++it)
     {
         DataTypes::FloatStruct value { it.key(), *it.value(), DataTypes::Quality::Good };
         values.push_back(QVariant::fromValue(value));
     }
     BaseInterface::iface()->writeCommand(Queries::QC_WriteUserValues, values);
+    m_corNeedsToCheck = CheckForRegMap; // we should check regs for equality at the next sigs receive
     GetCorBd();
 }
 
 void AbstractStartupDialog::GetCorBd()
 {
+    m_uncheckedRegCount = m_regCountToCheck = m_startupBlockDescription.size / sizeof(float);
     BaseInterface::iface()->reqStartup(m_startupBlockDescription.initStartRegAdr,
         m_startupBlockDescription.size / sizeof(float)); // /4 => float by default
 }
@@ -109,6 +97,7 @@ void AbstractStartupDialog::ResetCor()
     if (checkPassword())
     {
         BaseInterface::iface()->writeCommand(Queries::QC_ClearStartupValues);
+        m_corNeedsToCheck = CheckForZeroes; // we should check regs for equality at the next sigs receive
         GetCorBd();
     }
 }
@@ -126,16 +115,28 @@ float AbstractStartupDialog::ToFloat(QString text)
     return tmpf;
 }
 
-// void AbstractStartupDialog::updateFloatData(const DataTypes::FloatStruct &fl)
 void AbstractStartupDialog::updateFloatData(const DataTypes::FloatStruct &fl)
 {
     // Игнорируем 4011 т.к. он нам не важен и все чужие регистры тоже игнорируем
-    if (fl.sigAdr >= m_regMap.firstKey() && fl.sigAdr <= m_regMap.lastKey())
+    if (fl.sigAdr >= m_regMapR.firstKey() && fl.sigAdr <= m_regMapR.lastKey())
     {
         if (fl.sigQuality != 192)
             FillBd(this, QString::number(fl.sigAdr), "***");
         else
             FillBd(this, QString::number(fl.sigAdr), fl.sigVal);
+        float valueToCheck = (m_corNeedsToCheck == CheckForRegMap) ? *(m_regMapR.value(fl.sigAdr)) : 0;
+        if (m_corNeedsToCheck != NoChecks)
+        {
+            if (StdFunc::FloatIsWithinLimits(fl.sigVal, valueToCheck, 0.1))
+            {
+                --m_uncheckedRegCount;
+            }
+            if (--m_regCountToCheck <= 0)
+            {
+                m_corNeedsToCheck = NoChecks;
+                emit corWasChecked(m_uncheckedRegCount);
+            }
+        }
     }
 }
 
@@ -180,25 +181,27 @@ void AbstractStartupDialog::uponInterfaceSetting()
     SetupUI();
 }
 
-bool AbstractStartupDialog::addReg(quint16 reg, float *ptr)
+bool AbstractStartupDialog::addReg(quint16 regW, quint16 regR, float *ptr)
 {
-    Q_ASSERT(!m_regMap.key(ptr) && "Pointer already exist");
-    if (m_regMap.key(ptr))
+    Q_ASSERT(!m_regMapW.key(ptr) && "Pointer already exist");
+    Q_ASSERT(!m_regMapR.key(ptr) && "Pointer already exist");
+    if (m_regMapW.key(ptr))
         return false;
-    m_regMap.insert(reg, ptr);
+    m_regMapW.insert(regW, ptr);
+    m_regMapR.insert(regR, ptr);
     return true;
 }
 
 void AbstractStartupDialog::FillCor()
 {
-    for (auto it = m_regMap.cbegin(); it != m_regMap.cend(); ++it)
+    for (auto it = m_regMapR.cbegin(); it != m_regMapR.cend(); ++it)
         if (!WDFunc::SetSPBData(this, QString::number(it.key()), *it.value()))
             qDebug() << "Not found";
 }
 
 void AbstractStartupDialog::FillBackCor()
 {
-    for (auto it = m_regMap.begin(); it != m_regMap.end(); ++it)
+    for (auto it = m_regMapR.begin(); it != m_regMapR.end(); ++it)
         if (!WDFunc::SPBData(this, QString::number(it.key()), *it.value()))
             qDebug() << "Not found";
 }
@@ -228,4 +231,12 @@ void AbstractStartupDialog::reqUpdate()
     }
     else
         m_updateState = ThereWasNoUpdatesRecently;
+}
+
+void AbstractStartupDialog::setMessageUponCheck(int uncheckedRegCount)
+{
+    if (uncheckedRegCount == 0)
+        EMessageBox::information(this, "Записано успешно");
+    else
+        EMessageBox::warning(this, "Запись не состоялась");
 }
