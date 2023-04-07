@@ -185,7 +185,8 @@ void DialogCreator::createSpecificDialogs(const AppConfiguration appCfg)
             createBoxTuneDialogs(moduleModel);
         // Добавляем диалоги журналов и начальных значений
         createJournalAndStartupDialogs(moduleModel);
-        addDialogToList(new PlotDialog(mParent), "Диаграммы", "plot");
+        //        addDialogToList(new PlotDialog(mParent), "Диаграммы", "plot"); // векторные диаграммы нужны для
+        //        АВ-ТУК-82 и АВМ-КТФ, а не для всех коробочных модулей
         addDialogToList(new TimeDialog(mParent), "Время", "time");
     }
     // Модуль состоит из двух плат
