@@ -66,11 +66,7 @@ void ESimplePopup::Create(MessageTypes &type, QWidget *w, QWidget *parent)
         hlyout->addWidget(WDFunc::NewPB(parent, "", "Отмена", this, &ESimplePopup::cancelSlot));
     }
     else if (type != ESimplePopup::WITHOUTANYBUTTONS)
-<<<<<<< HEAD
-        hlyout->addWidget(WDFunc::NewPB(parent, "", "Ага", this, [&] { this->aboutToClose(); }));
-=======
         hlyout->addWidget(WDFunc::NewPB(parent, "", "Далее", [&] { this->aboutToClose(); }));
->>>>>>> 866d2dd... [*] 910 signal addresses included now in protocom block 7 for a284 (KIV) [*] "Aga" -> "Dalee" [-] some asserts to make debug process easier
     hlyout->addStretch(100);
     lyout->addLayout(hlyout);
     setLayout(lyout);
