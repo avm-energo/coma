@@ -106,6 +106,7 @@ protected:
 class EMessageBox
 {
 public:
+    static bool m_isActive;
     static bool m_result;
     static bool password(QWidget *parent, const QString &hash);
     static void information(QWidget *parent, const QString &msg);
