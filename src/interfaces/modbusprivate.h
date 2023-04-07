@@ -16,7 +16,8 @@ enum CommandRegisters
     SetStartupUnbounced = 904,  ///< Задать начальные значения по току небаланса
     ClearStartupValues = 905,   ///< Сбросить начальные значения по всем фазам
     ClearStartupSetError = 906, ///< Сбросить ошибку задания начальных значений
-    SetTransOff = 907           ///< Послать команду "Трансфоратор отключён"
+    SetTransOff = 907,          ///< Послать команду "Трансфоратор отключён"
+    ClearStartupUnbounced = 908 ///< Сбросить начальное значение тока небаланса
 };
 
 enum Commands : quint8

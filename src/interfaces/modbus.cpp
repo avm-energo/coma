@@ -276,14 +276,15 @@ const quint8 ModBus::obtainDelay(const quint32 baudRate) const
 CommandsMBS::CommandRegisters ModBus::getAddrByCommand(Queries::Commands cmd)
 {
     static const QMap<Queries::Commands, CommandsMBS::CommandRegisters> cmdMap {
-        { Queries::QC_SetStartupValues, CommandsMBS::SetStartupValues },       //
-        { Queries::QC_SetStartupPhaseA, CommandsMBS::SetStartupPhaseA },       //
-        { Queries::QC_SetStartupPhaseB, CommandsMBS::SetStartupPhaseB },       //
-        { Queries::QC_SetStartupPhaseC, CommandsMBS::SetStartupPhaseC },       //
-        { Queries::QC_SetStartupUnbounced, CommandsMBS::SetStartupUnbounced }, //
-        { Queries::QC_SetTransOff, CommandsMBS::SetTransOff },                 //
-        { Queries::QC_ClearStartupValues, CommandsMBS::ClearStartupValues },   //
-        { Queries::QC_ClearStartupError, CommandsMBS::ClearStartupSetError }   //
+        { Queries::QC_SetStartupValues, CommandsMBS::SetStartupValues },           //
+        { Queries::QC_SetStartupPhaseA, CommandsMBS::SetStartupPhaseA },           //
+        { Queries::QC_SetStartupPhaseB, CommandsMBS::SetStartupPhaseB },           //
+        { Queries::QC_SetStartupPhaseC, CommandsMBS::SetStartupPhaseC },           //
+        { Queries::QC_SetStartupUnbounced, CommandsMBS::SetStartupUnbounced },     //
+        { Queries::QC_ClearStartupUnbounced, CommandsMBS::ClearStartupUnbounced }, //
+        { Queries::QC_SetTransOff, CommandsMBS::SetTransOff },                     //
+        { Queries::QC_ClearStartupValues, CommandsMBS::ClearStartupValues },       //
+        { Queries::QC_ClearStartupError, CommandsMBS::ClearStartupSetError }       //
     };
     return cmdMap.value(cmd);
 }

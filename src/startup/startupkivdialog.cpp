@@ -119,6 +119,9 @@ QWidget *StartupKIVDialog::uiCommandsTab(QWidget *parent)
         auto setupValues = new QPushButton("Задать начальные значения небаланса токов", widget);
         connect(setupValues, &QPushButton::clicked, this, [this]() { sendCommand(Queries::QC_SetStartupUnbounced); });
         layout->addWidget(setupValues);
+        auto clearValues = new QPushButton("Сбросить начальные значения небаланса токов", widget);
+        connect(clearValues, &QPushButton::clicked, this, [this]() { sendCommand(Queries::QC_ClearStartupUnbounced); });
+        layout->addWidget(clearValues);
     }
 
     // Create UI commands trans off and reset starup init error
