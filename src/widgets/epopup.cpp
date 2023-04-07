@@ -66,11 +66,7 @@ void ESimplePopup::Create(MessageTypes &type, QWidget *w, QWidget *parent)
         hlyout->addWidget(WDFunc::NewPB(parent, "", "Отмена", this, &ESimplePopup::cancelSlot));
     }
     else if (type != ESimplePopup::WITHOUTANYBUTTONS)
-<<<<<<< HEAD
         hlyout->addWidget(WDFunc::NewPB(parent, "", "Далее", [&] { this->aboutToClose(); }));
-=======
-        hlyout->addWidget(WDFunc::NewPB(parent, "", "Ага", this, [&] { this->aboutToClose(); }));
->>>>>>> cbe1450... [*] KOSTYL for preventing of two EMessageBox creation
     hlyout->addStretch(100);
     lyout->addLayout(hlyout);
     setLayout(lyout);
