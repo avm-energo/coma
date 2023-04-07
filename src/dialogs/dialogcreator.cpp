@@ -188,7 +188,8 @@ void DialogCreator::createSpecificDialogs(const AppConfiguration appCfg)
         // TODO: Временно выключено для модбаса, надо допилить журналы
         if (board.interfaceType() == Board::InterfaceType::USB)
             createJournalAndStartupDialogs(moduleModel);
-        addDialogToList(new PlotDialog(mParent), "Диаграммы", "plot");
+        //        addDialogToList(new PlotDialog(mParent), "Диаграммы", "plot"); // векторные диаграммы нужны для
+        //        АВ-ТУК-82 и АВМ-КТФ, а не для всех коробочных модулей
         addDialogToList(new TimeDialog(mParent), "Время", "time");
     }
     // Модуль состоит из двух плат

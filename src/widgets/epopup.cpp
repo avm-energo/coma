@@ -84,80 +84,115 @@ void ESimplePopup::cancelSlot()
 }
 
 bool EMessageBox::m_result = false;
+bool EMessageBox::m_isActive = false;
 
 bool EMessageBox::password(QWidget *parent, const QString &hash)
 {
+    if (m_isActive)
+        return false;
+    m_isActive = true;
     m_result = false;
     auto popup = new EPasswordPopup(hash, parent);
     QObject::connect(popup, &EPasswordPopup::passwordIsCorrect, [] { m_result = true; });
     popup->Exec();
+    m_isActive = false;
     return m_result;
 }
 
 void EMessageBox::information(QWidget *parent, const QString &msg)
 {
+    if (m_isActive)
+        return;
+    m_isActive = true;
     m_result = false;
     auto popup = new ESimplePopup(ESimplePopup::INFOMESSAGE, msg, parent);
     popup->Exec();
+    m_isActive = false;
 }
 
 bool EMessageBox::question(const QString &msg)
 {
+    if (m_isActive)
+        return false;
+    m_isActive = true;
     m_result = false;
     auto popup = new ESimplePopup(ESimplePopup::QUESTMSG, msg);
     QObject::connect(popup, &ESimplePopup::accepted, [] { m_result = true; });
     QObject::connect(popup, &ESimplePopup::cancelled, [] { m_result = false; });
     popup->Exec();
+    m_isActive = false;
     return m_result;
 }
 
 void EMessageBox::warning(QWidget *parent, const QString &msg)
 {
+    if (m_isActive)
+        return;
+    m_isActive = true;
     m_result = false;
     auto popup = new ESimplePopup(ESimplePopup::WARNMESSAGE, WDFunc::NewLBL2(parent, msg), parent);
     popup->Exec();
+    m_isActive = false;
 }
 
 void EMessageBox::error(QWidget *parent, const QString &msg)
 {
+    if (m_isActive)
+        return;
+    m_isActive = true;
     m_result = false;
     auto popup = new ESimplePopup(ESimplePopup::ERMESSAGE, msg, parent);
     popup->setWindowFlag(Qt::WindowStaysOnTopHint, true);
     popup->Exec();
+    m_isActive = false;
 }
 
 bool EMessageBox::next(QWidget *parent, const QString &msg)
 {
+    if (m_isActive)
+        return false;
+    m_isActive = true;
     m_result = false;
     auto popup = new ESimplePopup(ESimplePopup::NEXTMSG, msg, parent);
     QObject::connect(popup, &ESimplePopup::accepted, [&] { m_result = true; });
     QObject::connect(popup, &ESimplePopup::cancelled, [&] { m_result = false; });
     popup->Exec();
+    m_isActive = false;
     return m_result;
 }
 
 bool EMessageBox::next(QWidget *parent, QWidget *w)
 {
+    if (m_isActive)
+        return false;
+    m_isActive = true;
     m_result = false;
     auto popup = new ESimplePopup(ESimplePopup::NEXTMSG, w, parent);
     QObject::connect(popup, &ESimplePopup::accepted, [] { m_result = true; });
     QObject::connect(popup, &ESimplePopup::cancelled, [] { m_result = false; });
     popup->Exec();
+    m_isActive = false;
     return m_result;
 }
 
 bool EMessageBox::editableNext(EEditablePopup *popup)
 {
+    if (m_isActive)
+        return false;
+    m_isActive = true;
     m_result = false;
     popup->execPopup();
     QObject::connect(popup, &EPopup::accepted, [] { m_result = true; });
     QObject::connect(popup, &EPopup::cancelled, [] { m_result = false; });
+    m_isActive = false;
     return m_result;
 }
 
 void EMessageBox::infoWithoutButtons(QWidget *parent, const QString &msg, int timeout)
 {
-    m_result = false;
+    if (m_isActive)
+        return;
+    m_isActive = true;
     auto dlg = new ESimplePopup(ESimplePopup::WITHOUTANYBUTTONS, msg, parent);
     dlg->show();
     auto tmr = new QTimer(parent);
@@ -167,6 +202,7 @@ void EMessageBox::infoWithoutButtons(QWidget *parent, const QString &msg, int ti
     QEventLoop loop;
     QObject::connect(dlg, &ESimplePopup::destroyed, &loop, &QEventLoop::quit);
     loop.exec();
+    m_isActive = false;
 }
 
 EPopup::EPopup(QWidget *parent) : QDialog(parent)
