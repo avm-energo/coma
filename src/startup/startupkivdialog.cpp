@@ -33,20 +33,26 @@ StartupKIVDialog::~StartupKIVDialog()
     delete CorBlock;
 }
 
-void StartupKIVDialog::SetupCor()
+bool StartupKIVDialog::checkSpinBoxes(QList<QDoubleSpinBox *> spinBoxes)
 {
-    auto spinBoxes = findChildren<QDoubleSpinBox *>();
-    for (const auto spinBox : spinBoxes)
+    for (const auto &spinBox : spinBoxes)
     {
         if (spinBox->value())
         {
             QString message(tr("Сбросьте начальные значения и подождите 30 секунд\n"
                                "После чего повторите операцию задания начальных значений"));
             QMessageBox::warning(this, tr("Начальные значения"), message);
-            return;
+            return false;
         }
     }
-    AbstractStartupDialog::SetupCor();
+    return true;
+}
+
+void StartupKIVDialog::SetupCor()
+{
+    auto spinBoxes = findChildren<QDoubleSpinBox *>();
+    if (checkSpinBoxes(spinBoxes))
+        AbstractStartupDialog::SetupCor();
 }
 
 QWidget *StartupKIVDialog::uiValuesTab(QWidget *parent)
@@ -121,17 +127,8 @@ QWidget *StartupKIVDialog::uiCommandsTab(QWidget *parent)
             [this]() {
                 auto assocFields = findChildren<QDoubleSpinBox *>(QString::number(KIVSTARTUPINITREGR + 9));
                 assocFields.append(findChildren<QDoubleSpinBox *>(QString::number(KIVSTARTUPINITREGR + 10)));
-                for (auto field : assocFields)
-                {
-                    if (field->value())
-                    {
-                        QString message(tr("Сбросьте начальные значения и подождите 30 секунд\n"
-                                           "После чего повторите операцию задания начальных значений"));
-                        QMessageBox::warning(this, tr("Начальные значения"), message);
-                        return;
-                    }
-                }
-                sendCommand(Queries::QC_SetStartupUnbounced);
+                if (checkSpinBoxes(assocFields))
+                    sendCommand(Queries::QC_SetStartupUnbounced);
             });
         layout->addWidget(setupValues);
 
