@@ -100,8 +100,11 @@ void StartupKTFDialog::GetCorBd()
         //            emit CorReadRequest();
         //            break;
         //        }
+    default:
+        break;
     }
 }
+
 // void StartupKTFDialog::GetCorBdButton()
 //{
 //    switch (Board::GetInstance().interfaceType())
@@ -178,6 +181,8 @@ void StartupKTFDialog::WriteCor()
             //                    FillCor();
             break;
         }
+    default:
+        break;
     }
 }
 
