@@ -6,27 +6,37 @@
 
 #include <QObject>
 #include <QSortFilterProxyModel>
+#include <QTimeZone>
 #include <gen/stdfunc.h>
-#include <gen/timefunc.h>
 
-class BaseJournal : QObject
+class BaseJournal : public QObject
 {
     Q_OBJECT
-private:
+protected:
     QString jourName;
     QString viewName;
-
-    const QStringList jourListToStringList(const QList<ModuleTypes::Journal> &jourList);
-    void setupJournal(Modules::JournalType jourType);
-
-protected:
-    QTimeZone timezone;
     QStringList headers;
+    QStringList description;
+    QTimeZone timezone;
     UniquePointer<EDynamicTableModel> dataModel;
     UniquePointer<QSortFilterProxyModel> proxyModel;
 
+    const QStringList jourListToStringList(const QList<ModuleTypes::Journal> &jourList) const;
+    void setUserTimezone(QStringList &data) const;
+
+    virtual void fillTable(const QByteArray &ba) = 0;
+
 public:
-    BaseJournal(Modules::JournalType jourType, QList<ModuleTypes::Journal> &jourList, QObject *parent = nullptr);
+    // BaseJournal(Modules::JournalType jourType, QList<ModuleTypes::Journal> &jourList, QObject *parent = nullptr);
+    explicit BaseJournal(QObject *parent = nullptr);
     UniquePointer<ETableView> createModelView(QWidget *parent);
-    const QString &getJournalName() const;
+    const QString &getName() const;
+
+signals:
+    void done(const QString &msg);
+    void error(const QString &msg);
+
+public slots:
+    void fill(const QVariant &data);
+    void save(const QString &filename);
 };

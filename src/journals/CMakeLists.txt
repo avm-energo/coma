@@ -17,6 +17,7 @@ set(files_h
     journkdv.h
     journkiv.h
     journktf.h
+    sysjournal.h
 )
 set(files_cpp
     basejournal.cpp
@@ -24,6 +25,7 @@ set(files_cpp
     journkdv.cpp
     journkiv.cpp
     journktf.cpp
+    sysjournal.cpp
 )
 
 add_library(${PROJECT_NAME} STATIC ${files_cpp} ${files_h})

@@ -202,6 +202,7 @@ const QStringList eventJourHeaders { " № ", //
     "Доп поле" };
 
 constexpr quint32 sysJourId = 1;
+
 struct EventStruct
 {
     EventStruct() = default;
