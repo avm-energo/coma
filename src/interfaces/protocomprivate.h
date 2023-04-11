@@ -148,7 +148,8 @@ enum WSCommands
     InitStartupUnbounced,
     EraseStartupAll,
     EraseStartupInitError,
-    SetTransOff
+    SetTransOff,
+    ClearStartupUnbounced
 };
 
 enum HiddenBlockModule : byte

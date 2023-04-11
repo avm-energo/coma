@@ -200,6 +200,7 @@ Commands104::CommandRegisters IEC104::get104Command(Queries::Commands cmd)
         { QC_SetStartupPhaseB, SetStartupPhaseB },            //
         { QC_SetStartupPhaseC, SetStartupPhaseC },            //
         { QC_SetStartupUnbounced, SetStartupUnbounced },      //
+        { QC_ClearStartupUnbounced, ClearStartupUnbounced },  //
         { QC_SetTransOff, SetTransOff },                      //
         { QC_ClearStartupValues, ClearStartupValuesReg },     //
         { QC_ClearStartupError, ClearStartupSetError },       //

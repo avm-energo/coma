@@ -437,14 +437,15 @@ Proto::WCommands Protocom::getWCommand(Queries::Commands cmd)
 Proto::WSCommands Protocom::getWSCommand(Queries::Commands cmd)
 {
     static const QMap<Queries::Commands, Proto::WSCommands> protoWSCommandMap {
-        { Queries::QC_SetStartupValues, Proto::InitStartupAll },          //
-        { Queries::QC_SetStartupPhaseA, Proto::InitStartupPhaseA },       //
-        { Queries::QC_SetStartupPhaseB, Proto::InitStartupPhaseB },       //
-        { Queries::QC_SetStartupPhaseC, Proto::InitStartupPhaseC },       //
-        { Queries::QC_SetStartupUnbounced, Proto::InitStartupUnbounced }, //
-        { Queries::QC_SetTransOff, Proto::SetTransOff },                  //
-        { Queries::QC_ClearStartupValues, Proto::EraseStartupAll },       //
-        { Queries::QC_ClearStartupError, Proto::EraseStartupInitError },  //
+        { Queries::QC_SetStartupValues, Proto::InitStartupAll },             //
+        { Queries::QC_SetStartupPhaseA, Proto::InitStartupPhaseA },          //
+        { Queries::QC_SetStartupPhaseB, Proto::InitStartupPhaseB },          //
+        { Queries::QC_SetStartupPhaseC, Proto::InitStartupPhaseC },          //
+        { Queries::QC_SetStartupUnbounced, Proto::InitStartupUnbounced },    //
+        { Queries::QC_SetTransOff, Proto::SetTransOff },                     //
+        { Queries::QC_ClearStartupValues, Proto::EraseStartupAll },          //
+        { Queries::QC_ClearStartupError, Proto::EraseStartupInitError },     //
+        { Queries::QC_ClearStartupUnbounced, Proto::ClearStartupUnbounced }, //
     };
     return protoWSCommandMap.value(cmd);
 }

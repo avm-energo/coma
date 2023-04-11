@@ -16,7 +16,8 @@ ConnectDialog::ConnectDialog(QWidget *parent) : QDialog(parent)
 {
     QStringList intersl { "USB" };
     if (QCoreApplication::applicationName().contains("service", Qt::CaseInsensitive))
-        intersl += QStringList { "Ethernet", "RS485" };
+        //        intersl += QStringList { "Ethernet", "RS485" };
+        intersl += QStringList { "RS485" };
 #ifdef ENABLE_EMULATOR
     intersl.push_back("Emulator");
 #endif

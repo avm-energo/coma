@@ -33,20 +33,26 @@ StartupKIVDialog::~StartupKIVDialog()
     delete CorBlock;
 }
 
-void StartupKIVDialog::SetupCor()
+bool StartupKIVDialog::checkSpinBoxes(QList<QDoubleSpinBox *> spinBoxes)
 {
-    auto spinBoxes = findChildren<QDoubleSpinBox *>();
-    for (const auto spinBox : spinBoxes)
+    for (const auto &spinBox : spinBoxes)
     {
         if (spinBox->value())
         {
             QString message(tr("Сбросьте начальные значения и подождите 30 секунд\n"
                                "После чего повторите операцию задания начальных значений"));
             QMessageBox::warning(this, tr("Начальные значения"), message);
-            return;
+            return false;
         }
     }
-    AbstractStartupDialog::SetupCor();
+    return true;
+}
+
+void StartupKIVDialog::SetupCor()
+{
+    auto spinBoxes = findChildren<QDoubleSpinBox *>();
+    if (checkSpinBoxes(spinBoxes))
+        AbstractStartupDialog::SetupCor();
 }
 
 QWidget *StartupKIVDialog::uiValuesTab(QWidget *parent)
@@ -117,8 +123,18 @@ QWidget *StartupKIVDialog::uiCommandsTab(QWidget *parent)
     // Create UI commands for unbalance current
     {
         auto setupValues = new QPushButton("Задать начальные значения небаланса токов", widget);
-        connect(setupValues, &QPushButton::clicked, this, [this]() { sendCommand(Queries::QC_SetStartupUnbounced); });
+        connect(setupValues, &QPushButton::clicked, this, //
+            [this]() {
+                auto assocFields = findChildren<QDoubleSpinBox *>(QString::number(KIVSTARTUPINITREGR + 9));
+                assocFields.append(findChildren<QDoubleSpinBox *>(QString::number(KIVSTARTUPINITREGR + 10)));
+                if (checkSpinBoxes(assocFields))
+                    sendCommand(Queries::QC_SetStartupUnbounced);
+            });
         layout->addWidget(setupValues);
+
+        auto clearValues = new QPushButton("Сбросить начальные значения небаланса токов", widget);
+        connect(clearValues, &QPushButton::clicked, this, [this]() { sendCommand(Queries::QC_ClearStartupUnbounced); });
+        layout->addWidget(clearValues);
     }
 
     // Create UI commands trans off and reset starup init error

@@ -2218,7 +2218,7 @@
 		<type>BYTE</type>
 		<widget>
 			<type>QCheckBox</type>
-			<group>50</group>
+			<group>51</group>
 			<string>Метод прямого измерения параметров изоляции</string>
 			<toolTip>
 				&lt;p&gt;
@@ -2237,7 +2237,7 @@
 		<type>BYTE</type>
 		<widget>
 			<type>QCheckBox</type>
-			<group>50</group>
+			<group>51</group>
 			<string>Метод контроля небаланса токов</string>
 			<toolTip>
 				&lt;p&gt;
@@ -2357,7 +2357,7 @@
 		<type>BYTE</type>
 		<widget>
 			<type>CheckBoxGroup</type>
-			<group>200</group>
+			<group>51</group>
 			<string>Запрет фаз</string>
 			<string-array>
 				<item>Фаза A</item>

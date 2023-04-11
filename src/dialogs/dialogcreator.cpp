@@ -31,7 +31,9 @@ DialogCreator::DialogCreator(const ModuleSettings &settings, QWidget *parent)
 void DialogCreator::createDialogs(const AppConfiguration appCfg)
 {
     deleteDialogs();
-    createConfigDialogs();
+    const auto &board = Board::GetInstance();
+    if (board.interfaceType() == Board::InterfaceType::USB)
+        createConfigDialogs();
     createCheckDialogs();
     createSpecificDialogs(appCfg);
     createCommonDialogs(appCfg);
@@ -183,8 +185,11 @@ void DialogCreator::createSpecificDialogs(const AppConfiguration appCfg)
         // Добавляем регулировку, если АВМ Настройка
         if (appCfg == AppConfiguration::Debug)
             createBoxTuneDialogs(moduleModel);
-        // Добавляем диалоги журналов и начальных значений
-        createJournalAndStartupDialogs(moduleModel);
+        // TODO: Временно выключено для модбаса, надо допилить журналы
+        if (board.interfaceType() == Board::InterfaceType::USB)
+            // Добавляем диалоги журналов и начальных значений
+            createJournalAndStartupDialogs(moduleModel);
+        // TODO: Fix it
         //        addDialogToList(new PlotDialog(mParent), "Диаграммы", "plot"); // векторные диаграммы нужны для
         //        АВ-ТУК-82 и АВМ-КТФ, а не для всех коробочных модулей
         addDialogToList(new TimeDialog(mParent), "Время", "time");

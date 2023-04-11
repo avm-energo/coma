@@ -37,10 +37,10 @@ QWidget *AbstractStartupDialog::buttonWidget()
     auto widget = new QWidget;
     auto layout = new QVBoxLayout;
     auto group = new QDialogButtonBox(widget);
-    const QString tmps = ((DEVICETYPE == DEVICETYPE_MODULE) ? "модуля" : "прибора");
 
+    const QString tmps = ((DEVICETYPE == DEVICETYPE_MODULE) ? "модуля" : "прибора");
     using VoidFunction = std::function<void()>;
-    const QList<std::tuple<QString, QString, VoidFunction>> funcs {
+    static const QList<std::tuple<QString, QString, VoidFunction>> funcs {
         { "Задать все начальные значения", ":/icons/tnapprove.svg", [this]() { SetupCor(); } }, //
         { "Сбросить все начальные значения", ":/icons/tnreset.svg", [this]() { ResetCor(); } }, //
         { "Получить из " + tmps, ":/icons/tnread.svg", [this]() { GetCorBd(); } },              //

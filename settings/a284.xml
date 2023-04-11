@@ -85,21 +85,21 @@
                 </item>
                 <item>
                     <addr>3014</addr>
-                    <string>Нет реактивного тока канала А (ток меньше 2мА)</string>
+                    <string>Нет тока канала А (ток меньше допустимого)</string>
                     <highlights>
                         <item>1100</item>
                     </highlights>
                 </item>
                 <item>
                     <addr>3015</addr>
-                    <string>Нет реактивного тока канала B (ток меньше 2мА)</string>
+                    <string>Нет тока канала B (ток меньше допустимого)</string>
                     <highlights>
                         <item>1101</item>
                     </highlights>
                 </item>
                 <item>
                     <addr>3016</addr>
-                    <string>Нет реактивного тока канала C (ток меньше 2мА)</string>
+                    <string>Нет тока канала C (ток меньше допустимого)</string>
                     <highlights>
                         <item>1102</item>
                     </highlights>

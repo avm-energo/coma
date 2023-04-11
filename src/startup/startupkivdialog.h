@@ -3,6 +3,8 @@
 
 #include "abstractstartupdialog.h"
 
+#include <QDoubleSpinBox>
+
 constexpr auto KIVSTARTUPINITREGR = 4000;
 constexpr auto KIVSTARTUPINITREGW = 910;
 
@@ -30,6 +32,7 @@ private:
 
     QWidget *uiValuesTab(QWidget *parent = nullptr);
     QWidget *uiCommandsTab(QWidget *parent = nullptr);
+    bool checkSpinBoxes(QList<QDoubleSpinBox *> spinBoxes);
     void sendCommand(Queries::Commands cmd, bool value = true);
     void SetupUI() override;
 
