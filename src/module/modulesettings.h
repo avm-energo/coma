@@ -45,7 +45,7 @@ struct SGroup
     QList<MWidget> widgets; ///< узлы <mwidget>
 };
 
-using SGMap = QMultiHash<quint32, SGroup>; ///< quint32 - id вкладки, SGroup - группы для вкладки
+using SGMap = QMultiMap<quint32, SGroup>; ///< quint32 - id вкладки, SGroup - группы для вкладки
 
 /// \brief Структура для хранения информации узла <section> из XML.
 struct Section
