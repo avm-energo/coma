@@ -98,9 +98,9 @@ enum AlarmType
 
 enum JournalType
 {
-    Work,
-    Meas,
-    System
+    System = 4,
+    Work = 5,
+    Meas = 6
 };
 
 struct StartupInfoBlock

@@ -94,7 +94,7 @@ QWidget *JournalDialog::jourTab(DataTypes::FilesEnum jourtype)
         mdl = proxyMeasModel;
         break;
     default:
-        qDebug("Default case");
+        qCritical() << "Unknown journal type: " << jourtype;
         return w;
     }
     auto *modelView = WDFunc::NewTV(this, tvname, mdl);
@@ -221,15 +221,17 @@ int JournalDialog::getJourNum(const QString &objname)
 
 void JournalDialog::done(QString msg)
 {
-    disconnect(m_jour.get(), &Journals::resendMaxResult, this->progress, &QProgressDialog::setMaximum);
-    disconnect(m_jour.get(), &Journals::resendResult, this->progress, &QProgressDialog::setValue);
-    QMessageBox::information(this, "Успешно", msg);
+    disconnect(m_jour.get(), &Journals::resendMaxResult, progress, &QProgressDialog::setMaximum);
+    disconnect(m_jour.get(), &Journals::resendResult, progress, &QProgressDialog::setValue);
+    setSuccessMsg(msg);
+    // QMessageBox::information(this, "Успешно", msg);
 }
 
 void JournalDialog::error(QString msg)
 {
-    disconnect(m_jour.get(), &Journals::resendMaxResult, this->progress, &QProgressDialog::setMaximum);
-    disconnect(m_jour.get(), &Journals::resendResult, this->progress, &QProgressDialog::setValue);
+    disconnect(m_jour.get(), &Journals::resendMaxResult, progress, &QProgressDialog::setMaximum);
+    disconnect(m_jour.get(), &Journals::resendResult, progress, &QProgressDialog::setValue);
     qCritical() << msg;
+    setErrorMsg(msg);
     QMessageBox::critical(this, "Ошибка", msg);
 }

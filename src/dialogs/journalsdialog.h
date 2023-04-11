@@ -1,7 +1,7 @@
 #ifndef JOURNALDIALOG_H
 #define JOURNALDIALOG_H
 
-#include "../journals/basejournalmodel.h"
+//#include "../journals/basejournalmodel.h"
 #include "../journals/journals.h"
 #include "../widgets/udialog.h"
 
@@ -25,7 +25,6 @@ private:
     void setupUI();
     QWidget *jourTab(DataTypes::FilesEnum jourtype);
     int getJourNum(const QString &objname);
-    void createProgressDialog();
 
 private slots:
     void jourFileChoosed(QString &file);
