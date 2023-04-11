@@ -20,15 +20,15 @@ public:
 
 signals:
     void startNewConfig();
-    void signalDataSending(const quint32 &id, const quint64 &addr, //
-        const quint16 &count, const ModuleTypes::SignalType &sigType);
-    void tabDataSending(const quint32 &id, const QString &name);
+    void signalDataSending(const quint32 id, const quint64 addr, //
+        const quint16 count, const ModuleTypes::SignalType sigType);
+    void tabDataSending(const quint32 id, const QString &name);
     void sectionDataSending(const ModuleTypes::SGMap &sgmap, const QString &secHead);
-    void alarmDataSending(const Modules::AlarmType &aType, const quint32 &addr, //
-        const QString &desc, const QList<quint32> highlights);
-    void jourDataSending(const Modules::JournalType &jType, const quint32 &addr, const QString &desc);
-    void interfaceSettingsSending(const QVariant &iSettings, const Board::InterfaceType &iType);
-    void configDataSending(const quint16 &id, const QString &defVal, const bool &visib, const quint16 &count);
+    void alarmDataSending(const Modules::AlarmType aType, const quint32 addr, //
+        const QString &desc, const QList<quint32> &highlights);
+    [[deprecated]] void jourDataSending(const Modules::JournalType jType, const quint32 addr, const QString &desc);
+    void interfaceSettingsSending(const QVariant &iSettings, const Board::InterfaceType iType);
+    void configDataSending(const quint16 id, const QString &defVal, const bool visib, const quint16 count);
 
 private:
     bool isCorrectModule(const QDomElement &moduleNode, const quint16 &typeB, const quint16 &typeM);
@@ -44,7 +44,11 @@ private:
     void parseAlarms(const QDomNode &alarmsNode);
     void parseAlarm(const QDomNode &alarmNode, const Modules::AlarmType &aType);
     void parseJournals(const QDomNode &joursNode);
-    void parseJournal(const QDomNode &jourNode, const Modules::JournalType &jType);
+    [[deprecated]] void parseJournal(const QDomNode &jourNode, const Modules::JournalType &jType);
+
+    void parseWorkJournal(const QDomNode &jourNode);
+    void parseMeasJournal(const QDomNode &jourNode);
+
     void parseInterface(const QDomNode &root);
     void parseModbus(const QDomNode &modbusNode, InterfaceInfo<ModbusGroup> &settings);
     void parseProtocom(const QDomNode &protocomNode, InterfaceInfo<ProtocomGroup> &settings);

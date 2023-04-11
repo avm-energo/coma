@@ -1,7 +1,7 @@
 #ifndef JOURNALDIALOG_H
 #define JOURNALDIALOG_H
 
-#include "../journals/basejournalmodel.h"
+//#include "../journals/basejournalmodel.h"
 #include "../journals/journals.h"
 #include "../widgets/udialog.h"
 
@@ -19,24 +19,24 @@ public:
     ~JournalDialog();
 
 signals:
-    void StartSaveJour(DataTypes::FilesEnum, QString);
+    void startSaveJour(DataTypes::FilesEnum, QString);
 
 private:
-    void SetupUI();
-    QWidget *JourTab(DataTypes::FilesEnum jourtype);
-    int GetJourNum(const QString &objname);
+    void setupUI();
+    QWidget *jourTab(DataTypes::FilesEnum jourtype);
+    int getJourNum(const QString &objname);
 
 private slots:
-    void JourFileChoosed(QString &file);
-    void EraseJour();
-    void SaveJour(DataTypes::FilesEnum jourType);
-    void Done(QString msg);
-    void Error(QString msg);
+    void jourFileChoosed(QString &file);
+    void eraseJour();
+    void saveJour(DataTypes::FilesEnum jourType);
+    void done(QString msg);
+    void error(QString msg);
 
 private:
     QString JourFile;
     UniquePointer<Journals> m_jour;
-    QSortFilterProxyModel *ProxyWorkModel, *ProxySysModel, *ProxyMeasModel;
+    QSortFilterProxyModel *proxyWorkModel, *proxySysModel, *proxyMeasModel;
     QProgressDialog *progress;
     QMap<DataTypes::FilesEnum, QTableView *> views;
 };

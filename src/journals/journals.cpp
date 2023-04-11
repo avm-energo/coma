@@ -2,6 +2,7 @@
 
 #include "../module/board.h"
 #include "../widgets/wd_func.h"
+#include "jourparser.h"
 
 #include <QApplication>
 #include <QDate>
@@ -70,16 +71,13 @@ void Journals::SetJourFile(const QString &jourfile)
     m_jourFile = jourfile;
 }
 
-// int Journals::workJournalID()
-//{
-//    return m_jourMap.value(Modules::JournalType::Work).id;
-//}
-
 // ***
 QVector<QVector<QVariant>> Journals::createCommon(const QByteArray &array, const int eventid, const QStringList &desc)
 {
     const auto basize = array.size();
     const char *file = array.constData();
+
+    auto newFile = reinterpret_cast<const AVM::EventStruct *>(array.constData());
 
     const auto recordsize = sizeof(AVM::EventStruct);
     QVector<QVector<QVariant>> ValueLists;
@@ -89,8 +87,12 @@ QVector<QVector<QVariant>> Journals::createCommon(const QByteArray &array, const
     std::vector<CommonEvent> events;
     for (i = 0, counter = 0; i < basize; i += recordsize)
     {
-        AVM::EventStruct event;
+        AVM::EventStruct event, newEvent;
         memcpy(&event, file, recordsize);
+
+        newEvent = *newFile;
+        newFile++;
+
         file += recordsize;
         i += recordsize;
         if (event.Time == ULLONG_MAX)
@@ -98,9 +100,14 @@ QVector<QVector<QVariant>> Journals::createCommon(const QByteArray &array, const
         ++counter;
 
         // TODO: FIX THAT
-        int N = 0;
+        int N = 0, N2 = 0;
         memcpy(&N, &event.EvNum, sizeof(event.EvNum));
-        N = (N & 0x00FFFFFF) - eventid;
+        N = (N & 0x00FFFFFF);
+
+        N2 = (((newEvent.EvNum[2] << 8) + newEvent.EvNum[1]) << 8) + newEvent.EvNum[0];
+        N2 = (N2 & 0x00FFFFFF);
+
+        N = N - eventid;
         //        Q_ASSERT((N <= desc.size()) && (N >= 0));
         QString eventDesc;
         if ((N <= desc.size()) && (N >= 0))
@@ -130,6 +137,39 @@ QVector<QVector<QVariant>> Journals::createCommon(const QByteArray &array, const
     return ValueLists;
 }
 // ***
+
+// QVector<QVector<QVariant>> Journals::createCommonUpdate(
+//    const QByteArray &array, const int eventid, const QStringList &desc)
+//{
+//    journals::JournalParser<AVM::EventStruct> parser(array);
+//    auto filter = [](const AVM::EventStruct &rec) { return (rec.Time != UINT64_MAX); };
+//    parser.validate(filter);
+
+//    auto convert = [eventid, &desc](const AVM::EventStruct &rec) {
+//        QString eventDesc;
+//        QString eventType;
+//        int N = (((rec.EvNum[2] << 8) + rec.EvNum[1]) << 8) + rec.EvNum[0];
+//        N = (N & 0x00FFFFFF);
+//        N = N - eventid;
+//        if ((N <= desc.size()) && (N >= 0))
+//            eventDesc = desc.at(N);
+//        else
+//            eventDesc = "Некорректный номер события: " + QString::number(N);
+//        if (rec.EvType)
+//            eventType = "Пришло";
+//        else
+//            eventType = "Ушло";
+//        return CommonEvent { 0, rec.Time, eventDesc, eventType, QString::number(rec.Reserv, 16) };
+//    };
+//    journals::JournalParser<CommonEvent> parser2nd(parser.translate<CommonEvent>(convert));
+//    parser2nd.sort([](const CommonEvent &lhs, const CommonEvent &rhs) { return lhs.time > rhs.time; });
+
+//    auto resolver = [this](const CommonEvent &event) {
+//        return QVector<QVariant> { event.counter, TimeFunc::UnixTime64ToInvStringFractional(event.time, m_timezone),
+//            event.desc, event.direction, event.hexField };
+//    };
+//    return parser2nd.finalize(resolver);
+//}
 
 void Journals::FillEventsTable(const QByteArray &ba)
 {

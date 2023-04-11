@@ -178,6 +178,16 @@ void Xml::ModuleParser::parseJournal(const QDomNode &jourNode, const Modules::Jo
     emit jourDataSending(jType, addr, desc);
 }
 
+void Xml::ModuleParser::parseWorkJournal(const QDomNode &jourNode)
+{
+    Q_UNUSED(jourNode);
+}
+
+void Xml::ModuleParser::parseMeasJournal(const QDomNode &jourNode)
+{
+    Q_UNUSED(jourNode);
+}
+
 /// \brief Функция для парсинга конфигурации интерфейса, по которому подключен модуль.
 void Xml::ModuleParser::parseInterface(const QDomNode &resNode)
 {
