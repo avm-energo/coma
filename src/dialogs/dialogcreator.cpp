@@ -114,6 +114,8 @@ void DialogCreator::createBoxTuneDialogs(const Modules::Model &boxModel)
 /// \brief Creating journal and startup dialogs for KIV, KTF and KDV.
 void DialogCreator::createJournalAndStartupDialogs(const Modules::Model &boxModel)
 {
+    Journals *journals;
+
     UniquePointer<Journals> jours;
     if (boxModel == Modules::Model::KIV)
     {

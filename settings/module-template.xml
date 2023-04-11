@@ -22,6 +22,8 @@
         </alarms>
 
         <journals desc="Журналы">
+            <system desc="Системный журнал">
+            </system>
             <work desc="Рабочий журнал">
             </work>
             <meas desc="Журнал измерений">

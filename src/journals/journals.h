@@ -5,6 +5,10 @@
 #include "../module/modules.h"
 #include "../module/modulesettings.h"
 #include "../s2/filestruct.h"
+#include "kivmeasjournalmodel.h"
+//#include "modulesettings.h"
+#include "systemeventsjournalmodel.h"
+#include "workeventsjournalmodel.h"
 
 #include <QDebug>
 #include <QSortFilterProxyModel>
@@ -58,6 +62,13 @@ protected:
 private:
     EDynamicTableModel *m_sysModel, *m_workModel, *m_measModel;
     QSortFilterProxyModel *_proxySysModel, *_proxyWorkModel, *_proxyMeasModel;
+
+    // ---
+    SystemEventsJournalModel *_sysModel;
+    WorkEventsJournalModel *_workModel;
+    KIVMeasJournalModel *_measModel;
+    // ---
+
     DataTypes::FilesEnum m_jourType;
     QString m_jourFile;
     const ModuleTypes::JourMap m_jourMap;

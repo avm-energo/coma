@@ -77,7 +77,9 @@ using AlarmKey = Modules::AlarmType;              ///< Modules::AlarmType - ти
 using AlarmValue = QMap<quint32, QString>; ///< quint32 - адрес сигнализации, QString - нода <desc> (описание).
 using AlarmMap = QHash<AlarmKey, AlarmValue>;                ///< Хранит узлы <item> секции <alarms>.
 using JourMap = QHash<Modules::JournalType, QList<Journal>>; ///< Хранит узлы <item> секции <journals>.
-using DetailCountMap = QHash<quint16, quint16>;              ///<
+using DetailCountMap
+    = QHash<quint16, quint16>; ///< Хранит количество элементов для конфигурационных параметров, имеющих одинаковые id
+
 }
 
 /// \brief Class for storing module settings.
