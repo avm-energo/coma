@@ -13,8 +13,10 @@ find_package(Qt${QT_VERSION_MAJOR}
 
 set(files_h
     basejournal.h
-    jourparser.h
+    eventparser.h
+    #jourparser.h
     sysjournal.h
+    workjournal.h
 
     #journals.h
     #journkdv.h
@@ -24,7 +26,9 @@ set(files_h
 
 set(files_cpp
     basejournal.cpp
+    eventparser.cpp
     sysjournal.cpp
+    workjournal.cpp
 
     #journals.cpp
     #journkdv.cpp

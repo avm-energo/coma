@@ -70,13 +70,6 @@ struct MeasJournal
     bool visibility; ///< атрибут "visibility"
 };
 
-///// \brief Структура для хранения информации узла <item> в <journals>.
-// struct Journal
-//{
-//    quint32 addr; ///< узел <addr>
-//    QString desc; ///< узел <desc>
-//};
-
 /// \brief Структура для хранения информации о протоколах protocom, modbus и iec104.
 struct InterfaceSettings
 {
@@ -92,10 +85,8 @@ using SectionList = QList<Section>;               ///< Хранит узлы <se
 using AlarmKey = Modules::AlarmType;              ///< Modules::AlarmType - тип сигнализации.
 using AlarmValue = QMap<quint32, QString>; ///< quint32 - адрес сигнализации, QString - нода <desc> (описание).
 using AlarmMap = QHash<AlarmKey, AlarmValue>; ///< Хранит узлы <item> секции <alarms>.
-// using JourMap = QHash<Modules::JournalType, QList<Journal>>; ///< Хранит узлы <item> секции <journals>.
-using WorkJourMap = QMap<quint32, QString>; ///< Хранит узлы <item> секции <work> из <journals>.
-using MeasJourList = QList<MeasJournal>;    ///< Хранит узлы <item> секции <meas> из <journals>.
-
+using WorkJourMap = QMap<quint32, QString>;   ///< Хранит узлы <item> секции <work> из <journals>.
+using MeasJourList = QList<MeasJournal>;      ///< Хранит узлы <item> секции <meas> из <journals>.
 using DetailCountMap
     = QHash<quint16, quint16>; ///< Хранит количество элементов для конфигурационных параметров, имеющих одинаковые id.
 
@@ -115,7 +106,6 @@ public:
     void appendSection(const ModuleTypes::Section &section);
     void appendAlarm(const ModuleTypes::AlarmKey &key, const quint32 &addr, const QString &desc);
     void appendHighlight(const Modules::AlarmType &type, const quint32 &key, const QList<quint32> &values);
-    // void appendJournal(const Modules::JournalType &key, const ModuleTypes::Journal &journal);
     void appendWorkJournal(const quint32 id, const QString &desc);
     void appendMeasJournal(const quint32 index, const QString &header, //
         const ModuleTypes::BinaryType type, bool visib);
@@ -129,7 +119,6 @@ public:
     const ModuleTypes::SectionList &getSections() const;
     const ModuleTypes::AlarmMap &getAlarms() const;
     const ModuleTypes::HighlightMap &getHighlights(const Modules::AlarmType &type) const;
-    // const ModuleTypes::JourMap &getJours() const;
     const ModuleTypes::WorkJourMap &getWorkJours() const;
     const ModuleTypes::MeasJourList &getMeasJours() const;
     const ModuleTypes::InterfaceSettings &getInterfaceSettings() const;
@@ -143,7 +132,6 @@ private:
     ModuleTypes::SectionList mSections;
     ModuleTypes::AlarmMap mAlarms;
     ModuleTypes::HighlightMap critHighlight, warnHighlight;
-    // ModuleTypes::JourMap mJournals;
     ModuleTypes::WorkJourMap workJournals;
     ModuleTypes::MeasJourList measJournals;
     ModuleTypes::InterfaceSettings mIfaceSettings;

@@ -163,17 +163,6 @@ void Xml::ModuleParser::parseJournals(const QDomNode &joursNode)
     parseNode(joursNode, tags::meas, [this](const QDomNode &jourNode) { parseMeasJournal(jourNode); });
 }
 
-///// \brief Функция для парсинга узлов <work> и <meas> внутри <journals>.
-// void Xml::ModuleParser::parseJournal(const QDomNode &jourNode, const Modules::JournalType &jType)
-//{
-//    quint32 addr = 0;
-//    if (jType == Modules::JournalType::Work)
-//        addr = parseNumFromNode<quint32>(jourNode, tags::addr);
-//    auto tag = (jType == Modules::JournalType::Meas) ? tags::header : tags::desc;
-//    auto desc = parseString(jourNode, tag);
-//    emit jourDataSending(jType, addr, desc);
-//}
-
 /// \brief Функция для парсинга узла <work> внутри <journals>.
 void Xml::ModuleParser::parseWorkJournal(const QDomNode &jourNode)
 {

@@ -12,15 +12,6 @@ BaseJournal::BaseJournal(QObject *parent)
 {
 }
 
-// const QStringList BaseJournal::jourListToStringList(const QList<ModuleTypes::Journal> &jourList) const
-//{
-//    QStringList retVal;
-//    retVal.reserve(jourList.size());
-//    for (auto &journal : jourList)
-//        retVal.push_back(journal.desc);
-//    return retVal;
-//}
-
 void BaseJournal::setUserTimezone(QStringList &data)
 {
     auto time_pos = std::find_if(data.begin(), data.end(), [](const QString &str) { return str.contains("UTC"); });

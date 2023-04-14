@@ -123,12 +123,6 @@ void ConfigStorage::alarmDataReceive(const Modules::AlarmType aType, const quint
     mSettings->appendHighlight(aType, addr, highlights);
 }
 
-///// \brief Slot for saving module's journal record.
-// void ConfigStorage::jourDataReceive(const Modules::JournalType jType, const quint32 addr, const QString &desc)
-//{
-//    mSettings->appendJournal(jType, { addr, desc });
-//}
-
 /// \brief Slot for saving module a work journal's record.
 void ConfigStorage::workJourDataReceive(const quint32 id, const QString &desc)
 {

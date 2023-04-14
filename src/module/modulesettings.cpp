@@ -13,7 +13,6 @@ void ModuleSettings::clear()
     mTabs.clear();
     mSections.clear();
     mAlarms.clear();
-    // mJournals.clear();
     workJournals.clear();
     measJournals.clear();
     mIfaceSettings.settings.clear();
@@ -80,12 +79,6 @@ void ModuleSettings::appendHighlight(const Modules::AlarmType &type, const quint
             warnHighlight.insert(key, value);
     }
 }
-
-///// \brief Добавление журнала в список журанлов по заданному типу журнала (key).
-// void ModuleSettings::appendJournal(const Modules::JournalType &key, const ModuleTypes::Journal &journal)
-//{
-//    mJournals[key].push_back(journal);
-//}
 
 /// \brief Добавление записи в список описаний рабочего журналов.
 void ModuleSettings::appendWorkJournal(const quint32 id, const QString &desc)
@@ -156,12 +149,6 @@ const ModuleTypes::HighlightMap &ModuleSettings::getHighlights(const Modules::Al
     else
         return warnHighlight;
 }
-
-///// \brief Constant getter for journals hashmap.
-// const ModuleTypes::JourMap &ModuleSettings::getJours() const
-//{
-//    return mJournals;
-//}
 
 /// \brief Constant getter for work journals.
 const ModuleTypes::WorkJourMap &ModuleSettings::getWorkJours() const
