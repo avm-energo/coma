@@ -21,7 +21,7 @@ protected:
     UniquePointer<EDynamicTableModel> dataModel;
     UniquePointer<QSortFilterProxyModel> proxyModel;
 
-    const QStringList jourListToStringList(const QList<ModuleTypes::Journal> &jourList) const;
+    // const QStringList jourListToStringList(const QList<ModuleTypes::Journal> &jourList) const;
     void setUserTimezone(QStringList &data);
 
     virtual void fillTable(const QByteArray &ba) = 0;

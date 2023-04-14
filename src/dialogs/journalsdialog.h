@@ -2,11 +2,12 @@
 #define JOURNALDIALOG_H
 
 //#include "../journals/basejournalmodel.h"
-#include "../journals/journals.h"
+//#include "../journals/journals.h"
 #include "../widgets/udialog.h"
 
 #include <QMessageBox>
 #include <QProgressDialog>
+#include <QSortFilterProxyModel>
 #include <QTableView>
 
 //#define MAXSWJNUM 262144
@@ -15,7 +16,8 @@ class JournalDialog : public UDialog
 {
     Q_OBJECT
 public:
-    JournalDialog(UniquePointer<Journals> jour, QWidget *parent = nullptr);
+    JournalDialog( // UniquePointer<Journals> jour,
+        QWidget *parent = nullptr);
     ~JournalDialog();
 
 signals:
@@ -35,7 +37,7 @@ private slots:
 
 private:
     QString JourFile;
-    UniquePointer<Journals> m_jour;
+    //    UniquePointer<Journals> m_jour;
     QSortFilterProxyModel *proxyWorkModel, *proxySysModel, *proxyMeasModel;
     QProgressDialog *progress;
     QMap<DataTypes::FilesEnum, QTableView *> views;

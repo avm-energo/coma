@@ -1,8 +1,8 @@
 #include "dialogcreator.h"
 
-#include "../journals/journkdv.h"
-#include "../journals/journkiv.h"
-#include "../journals/journktf.h"
+//#include "../journals/journkdv.h"
+//#include "../journals/journkiv.h"
+//#include "../journals/journktf.h"
 #include "../module/board.h"
 #include "../oscillograms/oscdialog.h"
 #include "../startup/startupkdvdialog.h"
@@ -114,27 +114,26 @@ void DialogCreator::createBoxTuneDialogs(const Modules::Model &boxModel)
 /// \brief Creating journal and startup dialogs for KIV, KTF and KDV.
 void DialogCreator::createJournalAndStartupDialogs(const Modules::Model &boxModel)
 {
-    Journals *journals;
-
-    UniquePointer<Journals> jours;
-    if (boxModel == Modules::Model::KIV)
-    {
-        jours = UniquePointer<Journals>(new JournKIV(settings.getJours(), this));
-        addDialogToList(new StartupKIVDialog(mParent), "Начальные\nзначения", "startup");
-    }
-    else if (boxModel == Modules::Model::KTF)
-    {
-        jours = UniquePointer<Journals>(new JournKTF(settings.getJours(), this));
-        addDialogToList(new StartupKTFDialog(mParent), "Начальные\nзначения", "startup");
-    }
-    else if (boxModel == Modules::Model::KDV)
-    {
-        jours = UniquePointer<Journals>(new JournKDV(settings.getJours(), this));
-        addDialogToList(new StartupKDVDialog(mParent), "Начальные\nзначения", "startup");
-    }
-    // Делаем проверку и создаём диалог для журналов
-    if (Board::GetInstance().interfaceType() != Board::InterfaceType::RS485 && jours != nullptr)
-        addDialogToList(new JournalDialog(std::move(jours), mParent), "Журналы", "jours");
+    //    Journals *journals;
+    //    UniquePointer<Journals> jours;
+    //    if (boxModel == Modules::Model::KIV)
+    //    {
+    //        jours = UniquePointer<Journals>(new JournKIV(settings.getJours(), this));
+    //        addDialogToList(new StartupKIVDialog(mParent), "Начальные\nзначения", "startup");
+    //    }
+    //    else if (boxModel == Modules::Model::KTF)
+    //    {
+    //        jours = UniquePointer<Journals>(new JournKTF(settings.getJours(), this));
+    //        addDialogToList(new StartupKTFDialog(mParent), "Начальные\nзначения", "startup");
+    //    }
+    //    else if (boxModel == Modules::Model::KDV)
+    //    {
+    //        jours = UniquePointer<Journals>(new JournKDV(settings.getJours(), this));
+    //        addDialogToList(new StartupKDVDialog(mParent), "Начальные\nзначения", "startup");
+    //    }
+    //    // Делаем проверку и создаём диалог для журналов
+    //    if (Board::GetInstance().interfaceType() != Board::InterfaceType::RS485 && jours != nullptr)
+    //        addDialogToList(new JournalDialog(std::move(jours), mParent), "Журналы", "jours");
 }
 
 /// \brief Creating tune dialogs for two-part modules.

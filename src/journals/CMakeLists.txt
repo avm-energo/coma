@@ -16,20 +16,20 @@ set(files_h
     jourparser.h
     sysjournal.h
 
-    journals.h
-    journkdv.h
-    journkiv.h
-    journktf.h
+    #journals.h
+    #journkdv.h
+    #journkiv.h
+    #journktf.h
 )
 
 set(files_cpp
     basejournal.cpp
     sysjournal.cpp
 
-    journals.cpp
-    journkdv.cpp
-    journkiv.cpp
-    journktf.cpp
+    #journals.cpp
+    #journkdv.cpp
+    #journkiv.cpp
+    #journktf.cpp
 )
 
 add_library(${PROJECT_NAME} STATIC ${files_cpp} ${files_h})
