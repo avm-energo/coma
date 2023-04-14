@@ -3,6 +3,10 @@
 //#include "../journals/journkdv.h"
 //#include "../journals/journkiv.h"
 //#include "../journals/journktf.h"
+//
+#include "../journals/sysjournal.h"
+#include "../journals/workjournal.h"
+//
 #include "../module/board.h"
 #include "../oscillograms/oscdialog.h"
 #include "../startup/startupkdvdialog.h"
@@ -114,6 +118,12 @@ void DialogCreator::createBoxTuneDialogs(const Modules::Model &boxModel)
 /// \brief Creating journal and startup dialogs for KIV, KTF and KDV.
 void DialogCreator::createJournalAndStartupDialogs(const Modules::Model &boxModel)
 {
+    using namespace journals;
+    QList<BaseJournal *> journals;
+    journals.append(new SysJournal(this));
+    if (!settings.getWorkJours().isEmpty())
+        journals.append(new WorkJournal(settings.getWorkJours(), this));
+
     //    Journals *journals;
     //    UniquePointer<Journals> jours;
     //    if (boxModel == Modules::Model::KIV)
@@ -131,9 +141,10 @@ void DialogCreator::createJournalAndStartupDialogs(const Modules::Model &boxMode
     //        jours = UniquePointer<Journals>(new JournKDV(settings.getJours(), this));
     //        addDialogToList(new StartupKDVDialog(mParent), "Начальные\nзначения", "startup");
     //    }
-    //    // Делаем проверку и создаём диалог для журналов
-    //    if (Board::GetInstance().interfaceType() != Board::InterfaceType::RS485 && jours != nullptr)
-    //        addDialogToList(new JournalDialog(std::move(jours), mParent), "Журналы", "jours");
+
+    // Делаем проверку и создаём диалог для журналов
+    if (Board::GetInstance().interfaceType() != Board::InterfaceType::RS485)
+        addDialogToList(new JournalDialog(journals, mParent), "Журналы", "jours");
 }
 
 /// \brief Creating tune dialogs for two-part modules.

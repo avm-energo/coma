@@ -1,8 +1,8 @@
-#ifndef JOURNALDIALOG_H
-#define JOURNALDIALOG_H
+#pragma once
 
 //#include "../journals/basejournalmodel.h"
 //#include "../journals/journals.h"
+#include "../journals/basejournal.h"
 #include "../widgets/udialog.h"
 
 #include <QMessageBox>
@@ -12,19 +12,20 @@
 
 //#define MAXSWJNUM 262144
 
+using Journal = journals::BaseJournal;
+
 class JournalDialog : public UDialog
 {
     Q_OBJECT
 public:
-    JournalDialog( // UniquePointer<Journals> jour,
-        QWidget *parent = nullptr);
+    JournalDialog(const QList<Journal *> &journals, QWidget *parent = nullptr);
     ~JournalDialog();
 
 signals:
     void startSaveJour(DataTypes::FilesEnum, QString);
 
 private:
-    void setupUI();
+    void setupUI(const QList<Journal *> &journals);
     QWidget *jourTab(DataTypes::FilesEnum jourtype);
     int getJourNum(const QString &objname);
 
@@ -37,10 +38,7 @@ private slots:
 
 private:
     QString JourFile;
-    //    UniquePointer<Journals> m_jour;
-    QSortFilterProxyModel *proxyWorkModel, *proxySysModel, *proxyMeasModel;
+    // QSortFilterProxyModel *proxyWorkModel, *proxySysModel, *proxyMeasModel;
     QProgressDialog *progress;
     QMap<DataTypes::FilesEnum, QTableView *> views;
 };
-
-#endif // JOURNALDIALOG_H

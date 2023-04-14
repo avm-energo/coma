@@ -45,7 +45,7 @@ const QMap<quint32, QString> SysJournal::desriptions = {
 
 SysJournal::SysJournal(QObject *parent) : BaseJournal(parent), parser(new EventParser(this))
 {
-    jourName = "системный журнал";
+    jourName = "Системный журнал";
     viewName = "system";
     headers = AVM::eventJourHeaders;
     setUserTimezone(headers);

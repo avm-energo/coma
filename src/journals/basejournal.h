@@ -12,6 +12,13 @@
 namespace journals
 {
 
+enum JournalType
+{
+    System = 4,
+    Work = 5,
+    Meas = 6
+};
+
 class BaseJournal : public QObject
 {
     Q_OBJECT
@@ -19,7 +26,7 @@ protected:
     QString jourName;
     QString viewName;
     QStringList headers;
-    // QMap<quint32, QString> descriptions;
+    JournalType type;
     QTimeZone timezone;
     UniquePointer<EDynamicTableModel> dataModel;
     UniquePointer<QSortFilterProxyModel> proxyModel;

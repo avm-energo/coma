@@ -28,15 +28,16 @@ static constexpr char hash[] = "d93fdd6d1fb5afcca939fa650b62541d09dbcb766f41c393
 static constexpr char name[] = "jourHash";
 }
 
-JournalDialog::JournalDialog(QWidget *parent) : UDialog(crypto::hash, crypto::name, parent) //, m_jour(std::move(jour))
+JournalDialog::JournalDialog(const QList<Journal *> &journals, QWidget *parent)
+    : UDialog(crypto::hash, crypto::name, parent)
 {
     auto mngr = &DataManager::GetInstance();
     static DataTypesProxy proxy(mngr);
     proxy.RegisterType<DataTypes::FileStruct>();
     // connect(&proxy, &DataTypesProxy::DataStorable, m_jour.get(), &Journals::FillJour);
-    proxyWorkModel = new QSortFilterProxyModel(this);
-    proxySysModel = new QSortFilterProxyModel(this);
-    proxyMeasModel = new QSortFilterProxyModel(this);
+    // proxyWorkModel = new QSortFilterProxyModel(this);
+    // proxySysModel = new QSortFilterProxyModel(this);
+    // proxyMeasModel = new QSortFilterProxyModel(this);
     progress = new QProgressDialog(this);
     progress->setCancelButton(nullptr);
     progress->cancel();
@@ -47,24 +48,25 @@ JournalDialog::JournalDialog(QWidget *parent) : UDialog(crypto::hash, crypto::na
     //    connect(m_jour.get(), &Journals::Error, this, &JournalDialog::error);
     //    connect(this, &JournalDialog::startSaveJour, m_jour.get(), &Journals::saveJour);
 
-    setupUI();
+    setupUI(journals);
 }
 
 JournalDialog::~JournalDialog()
 {
 }
 
-void JournalDialog::setupUI()
+void JournalDialog::setupUI(const QList<Journal *> &journals)
 {
-    QVBoxLayout *lyout = new QVBoxLayout;
-    QTabWidget *ConfTW = new QTabWidget;
-    ConfTW->setObjectName("conftw4");
-    ConfTW->addTab(jourTab(DataTypes::JourWork), "Рабочий журнал");
-    ConfTW->addTab(jourTab(DataTypes::JourSys), "Системный журнал");
-    ConfTW->addTab(jourTab(DataTypes::JourMeas), "Журнал измерений");
+    auto layout = new QVBoxLayout;
+    auto tabWidget = new QTabWidget;
+    tabWidget->setObjectName("conftw4");
 
-    lyout->addWidget(ConfTW);
-    setLayout(lyout);
+    tabWidget->addTab(jourTab(DataTypes::JourWork), "Рабочий журнал");
+    tabWidget->addTab(jourTab(DataTypes::JourSys), "Системный журнал");
+    tabWidget->addTab(jourTab(DataTypes::JourMeas), "Журнал измерений");
+
+    layout->addWidget(tabWidget);
+    setLayout(layout);
 }
 
 QWidget *JournalDialog::jourTab(DataTypes::FilesEnum jourtype)
@@ -80,17 +82,17 @@ QWidget *JournalDialog::jourTab(DataTypes::FilesEnum jourtype)
     case DataTypes::JourWork:
         str = "рабочий журнал";
         tvname = "work";
-        mdl = proxyWorkModel;
+        // mdl = proxyWorkModel;
         break;
     case DataTypes::JourSys:
         str = "системный журнал";
         tvname = "system";
-        mdl = proxySysModel;
+        // mdl = proxySysModel;
         break;
     case DataTypes::JourMeas:
         str = "журнал измерений";
         tvname = "meas";
-        mdl = proxyMeasModel;
+        // mdl = proxyMeasModel;
         break;
     default:
         qCritical() << "Unknown journal type: " << jourtype;
@@ -209,14 +211,6 @@ int JournalDialog::getJourNum(const QString &objname)
     }
     return jourtype;
 }
-
-// void JournalDialog::StartReadJourFile()
-//{
-//    progress->setMinimumDuration(0);
-//    connect(m_jour.get(), &Journals::resendMaxResult, progress, &QProgressDialog::setMaximum);
-//    connect(m_jour.get(), &Journals::resendResult, progress, &QProgressDialog::setValue);
-//    emit StartReadFile();
-//}
 
 void JournalDialog::done(QString msg)
 {

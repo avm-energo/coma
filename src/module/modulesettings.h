@@ -58,7 +58,9 @@ struct Section
 enum BinaryType : quint8
 {
     uint32 = 0,
-    float32
+    float32,
+    time32,
+    time64
 };
 
 /// \brief Структура для хранения информации узла <item> в <meas>.
