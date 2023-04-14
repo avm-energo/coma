@@ -22,15 +22,25 @@ void BaseJournal::setUserTimezone(QStringList &data)
         time_pos->replace("UTC", TimeFunc::userTimeZoneName());
 }
 
-UniquePointer<ETableView> BaseJournal::createModelView(QWidget *parent)
+ETableView *BaseJournal::createModelView(QWidget *parent) const
 {
     auto modelView = WDFunc::NewTV(parent, viewName, proxyModel.get());
-    return UniquePointer<ETableView>(modelView);
+    return modelView;
 }
 
 const QString &BaseJournal::getName() const
 {
     return jourName;
+}
+
+const QString &BaseJournal::getViewName() const
+{
+    return viewName;
+}
+
+const JournalType BaseJournal::getType() const
+{
+    return type;
 }
 
 void BaseJournal::fill(const QVariant &data)

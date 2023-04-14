@@ -12,7 +12,7 @@
 namespace journals
 {
 
-enum JournalType
+enum JournalType : quint8
 {
     System = 4,
     Work = 5,
@@ -36,8 +36,10 @@ protected:
 
 public:
     explicit BaseJournal(QObject *parent = nullptr);
-    UniquePointer<ETableView> createModelView(QWidget *parent);
+    ETableView *createModelView(QWidget *parent) const;
     const QString &getName() const;
+    const QString &getViewName() const;
+    const JournalType getType() const;
 
 signals:
     void done(const QString &msg);

@@ -9,6 +9,7 @@ WorkJournal::WorkJournal(const QMap<quint32, QString> &desc, QObject *parent)
     jourName = "Рабочий журнал";
     viewName = "work";
     headers = AVM::eventJourHeaders;
+    type = JournalType::Work;
     setUserTimezone(headers);
 }
 

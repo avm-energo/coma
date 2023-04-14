@@ -22,11 +22,11 @@ public:
     ~JournalDialog();
 
 signals:
-    void startSaveJour(DataTypes::FilesEnum, QString);
+    void startSaveJour(QString);
 
 private:
     void setupUI(const QList<Journal *> &journals);
-    QWidget *jourTab(DataTypes::FilesEnum jourtype);
+    QWidget *jourTab(const Journal *journal);
     int getJourNum(const QString &objname);
 
 private slots:
@@ -40,5 +40,5 @@ private:
     QString JourFile;
     // QSortFilterProxyModel *proxyWorkModel, *proxySysModel, *proxyMeasModel;
     QProgressDialog *progress;
-    QMap<DataTypes::FilesEnum, QTableView *> views;
+    // QMap<DataTypes::FilesEnum, QTableView *> views;
 };
