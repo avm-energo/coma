@@ -2399,12 +2399,12 @@
 	<record>
 		<id>1050</id>
 		<name>U2nom</name>
-		<description>Номинальное линейное вторичное напряжение, В</description>
+		<description>Номинальное линейное вторичное напряжение ТН, В</description>
 		<type>FLOAT</type>
 		<widget>
 			<type>QDoubleSpinBox</type>
 			<group>100</group>
-			<string>Номинальное вторичное напряжение первой тройки, В</string>
+			<string>Номинальное линейное вторичное напряжение ТН, В</string>
 			<min>0</min>
 			<max>10000</max>
 			<decimals>1</decimals>
