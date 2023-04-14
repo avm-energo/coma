@@ -9,6 +9,9 @@
 #include <QTimeZone>
 #include <gen/stdfunc.h>
 
+namespace journals
+{
+
 class BaseJournal : public QObject
 {
     Q_OBJECT
@@ -16,7 +19,7 @@ protected:
     QString jourName;
     QString viewName;
     QStringList headers;
-    QStringList description;
+    // QMap<quint32, QString> descriptions;
     QTimeZone timezone;
     UniquePointer<EDynamicTableModel> dataModel;
     UniquePointer<QSortFilterProxyModel> proxyModel;
@@ -37,3 +40,5 @@ public slots:
     void fill(const QVariant &data);
     void save(const QString &filename);
 };
+
+}

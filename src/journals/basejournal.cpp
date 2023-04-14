@@ -4,6 +4,9 @@
 
 #include <gen/timefunc.h>
 
+namespace journals
+{
+
 BaseJournal::BaseJournal(QObject *parent)
     : QObject(parent)
     , timezone(TimeFunc::userTimeZone())
@@ -47,4 +50,6 @@ void BaseJournal::fill(const QVariant &data)
 void BaseJournal::save(const QString &filename)
 {
     Q_UNUSED(filename);
+}
+
 }
