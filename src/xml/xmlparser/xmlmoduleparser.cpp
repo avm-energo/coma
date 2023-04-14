@@ -157,35 +157,48 @@ void Xml::ModuleParser::parseAlarm(const QDomNode &alarmNode, const Modules::Ala
 /// \brief Функция для парсинга узла <journals>.
 void Xml::ModuleParser::parseJournals(const QDomNode &joursNode)
 {
-    if (!(joursNode.firstChildElement(tags::system).isNull()))
-        emit jourDataSending(Modules::JournalType::System, 0, "");
-    parseNode(joursNode, tags::work, [this](const QDomNode &jourNode) { //
-        parseJournal(jourNode, Modules::JournalType::Work);
-    });
-    parseNode(joursNode, tags::meas, [this](const QDomNode &jourNode) { //
-        parseJournal(jourNode, Modules::JournalType::Meas);
-    });
+    // if (!(joursNode.firstChildElement(tags::system).isNull()))
+    //    emit jourDataSending(Modules::JournalType::System, 0, "");
+    parseNode(joursNode, tags::work, [this](const QDomNode &jourNode) { parseWorkJournal(jourNode); });
+    parseNode(joursNode, tags::meas, [this](const QDomNode &jourNode) { parseMeasJournal(jourNode); });
 }
 
-/// \brief Функция для парсинга узлов <work> и <meas> внутри <journals>.
-void Xml::ModuleParser::parseJournal(const QDomNode &jourNode, const Modules::JournalType &jType)
-{
-    quint32 addr = 0;
-    if (jType == Modules::JournalType::Work)
-        addr = parseNumFromNode<quint32>(jourNode, tags::addr);
-    auto tag = (jType == Modules::JournalType::Meas) ? tags::header : tags::desc;
-    auto desc = parseString(jourNode, tag);
-    emit jourDataSending(jType, addr, desc);
-}
+///// \brief Функция для парсинга узлов <work> и <meas> внутри <journals>.
+// void Xml::ModuleParser::parseJournal(const QDomNode &jourNode, const Modules::JournalType &jType)
+//{
+//    quint32 addr = 0;
+//    if (jType == Modules::JournalType::Work)
+//        addr = parseNumFromNode<quint32>(jourNode, tags::addr);
+//    auto tag = (jType == Modules::JournalType::Meas) ? tags::header : tags::desc;
+//    auto desc = parseString(jourNode, tag);
+//    emit jourDataSending(jType, addr, desc);
+//}
 
+/// \brief Функция для парсинга узла <work> внутри <journals>.
 void Xml::ModuleParser::parseWorkJournal(const QDomNode &jourNode)
 {
-    Q_UNUSED(jourNode);
+    auto id = parseNumFromNode<quint32>(jourNode, tags::addr);
+    auto desc = parseString(jourNode, tags::desc);
+    emit workJourDataSending(id, desc);
 }
 
+/// \brief Функция для парсинга узла <meas> внутри <journals>.
 void Xml::ModuleParser::parseMeasJournal(const QDomNode &jourNode)
 {
-    Q_UNUSED(jourNode);
+    auto index = parseNumFromNode<quint32>(jourNode, tags::index);
+    auto header = parseString(jourNode, tags::header);
+
+    auto strType = parseString(jourNode, tags::type);
+    ModuleTypes::BinaryType type;
+    if (strType == "uint32")
+        type = ModuleTypes::BinaryType::uint32;
+    else
+        type = ModuleTypes::BinaryType::float32;
+
+    auto visibility = true;
+    if (parseString(jourNode, tags::visibility) == "false")
+        visibility = false;
+    emit measJourDataSending(index, header, type, visibility);
 }
 
 /// \brief Функция для парсинга конфигурации интерфейса, по которому подключен модуль.

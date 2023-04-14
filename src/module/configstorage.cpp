@@ -123,10 +123,23 @@ void ConfigStorage::alarmDataReceive(const Modules::AlarmType aType, const quint
     mSettings->appendHighlight(aType, addr, highlights);
 }
 
-/// \brief Slot for saving module's journal record.
-void ConfigStorage::jourDataReceive(const Modules::JournalType jType, const quint32 addr, const QString &desc)
+///// \brief Slot for saving module's journal record.
+// void ConfigStorage::jourDataReceive(const Modules::JournalType jType, const quint32 addr, const QString &desc)
+//{
+//    mSettings->appendJournal(jType, { addr, desc });
+//}
+
+/// \brief Slot for saving module a work journal's record.
+void ConfigStorage::workJourDataReceive(const quint32 id, const QString &desc)
 {
-    mSettings->appendJournal(jType, { addr, desc });
+    mSettings->appendWorkJournal(id, desc);
+}
+
+/// \brief Slot for saving module a measurement journal's record.
+void ConfigStorage::measJourDataReceive(const quint32 index, const QString &header, //
+    const ModuleTypes::BinaryType type, bool visib)
+{
+    mSettings->appendMeasJournal(index, header, type, visib);
 }
 
 /// \brief Slot for saving module's interface settings.
