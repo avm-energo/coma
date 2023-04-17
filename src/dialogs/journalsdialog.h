@@ -18,27 +18,29 @@ class JournalDialog : public UDialog
 {
     Q_OBJECT
 public:
-    JournalDialog(const QList<Journal *> &journals, QWidget *parent = nullptr);
-    ~JournalDialog();
+    JournalDialog(const ModuleSettings &settings, QWidget *parent = nullptr);
 
 signals:
     void startSaveJour(QString);
 
 private:
-    void setupUI(const QList<Journal *> &journals);
+    void createJournals(const ModuleSettings &settings);
+    void setupUI();
     QWidget *jourTab(const Journal *journal);
     int getJourNum(const QString &objname);
 
 private slots:
+    void tabChanged(const int index);
     void jourFileChoosed(QString &file);
     void eraseJour();
     void saveJour(DataTypes::FilesEnum jourType);
-    void done(QString msg);
-    void error(QString msg);
+    void done(const QString &msg);
+    void error(const QString &msg);
 
 private:
+    int currentTab;
+    QList<Journal *> journals;
     QString JourFile;
-    // QSortFilterProxyModel *proxyWorkModel, *proxySysModel, *proxyMeasModel;
     QProgressDialog *progress;
-    // QMap<DataTypes::FilesEnum, QTableView *> views;
+    DataTypesProxy proxy;
 };

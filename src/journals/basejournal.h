@@ -23,6 +23,8 @@ class BaseJournal : public QObject
 {
     Q_OBJECT
 protected:
+    const static QStringList eventJourHeaders;
+
     QString jourName;
     QString viewName;
     QStringList headers;
@@ -44,6 +46,8 @@ public:
 signals:
     void done(const QString &msg);
     void error(const QString &msg);
+    void resendResult(const int);
+    void resendMaxResult(const int);
 
 public slots:
     void fill(const QVariant &data);

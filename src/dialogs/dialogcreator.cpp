@@ -118,11 +118,11 @@ void DialogCreator::createBoxTuneDialogs(const Modules::Model &boxModel)
 /// \brief Creating journal and startup dialogs for KIV, KTF and KDV.
 void DialogCreator::createJournalAndStartupDialogs(const Modules::Model &boxModel)
 {
-    using namespace journals;
-    QList<BaseJournal *> journals;
-    journals.append(new SysJournal(this));
-    if (!settings.getWorkJours().isEmpty())
-        journals.append(new WorkJournal(settings.getWorkJours(), this));
+    //    using namespace journals;
+    //    QList<BaseJournal *> journals;
+    //    journals.append(new SysJournal(this));
+    //    if (!settings.getWorkJours().isEmpty())
+    //        journals.append(new WorkJournal(settings.getWorkJours(), this));
 
     //    Journals *journals;
     //    UniquePointer<Journals> jours;
@@ -144,7 +144,7 @@ void DialogCreator::createJournalAndStartupDialogs(const Modules::Model &boxMode
 
     // Делаем проверку и создаём диалог для журналов
     if (Board::GetInstance().interfaceType() != Board::InterfaceType::RS485)
-        addDialogToList(new JournalDialog(journals, mParent), "Журналы", "jours");
+        addDialogToList(new JournalDialog(settings, mParent), "Журналы", "jours");
 }
 
 /// \brief Creating tune dialogs for two-part modules.

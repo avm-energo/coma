@@ -148,11 +148,6 @@ constexpr int HTH_TUPP = 0x00000004;    // перегрев модуля
 
 namespace AVM
 {
-const QStringList eventJourHeaders { " № ", //
-    "Дата/Время UTC",                       //
-    "Описание события",                     //
-    "Тип события",                          //
-    "Доп поле" };
 
 const QStringList Health {
     "ADCI", //

@@ -1,6 +1,8 @@
 #include "../dialogs/journalsdialog.h"
 
 #include "../dialogs/keypressdialog.h"
+#include "../journals/sysjournal.h"
+#include "../journals/workjournal.h"
 #include "../module/board.h"
 #include "../widgets/QProgressIndicator.h"
 #include "../widgets/wd_func.h"
@@ -28,39 +30,42 @@ static constexpr char hash[] = "d93fdd6d1fb5afcca939fa650b62541d09dbcb766f41c393
 static constexpr char name[] = "jourHash";
 }
 
-JournalDialog::JournalDialog(const QList<Journal *> &journals, QWidget *parent)
-    : UDialog(crypto::hash, crypto::name, parent)
+JournalDialog::JournalDialog(const ModuleSettings &settings, QWidget *parent)
+    : UDialog(crypto::hash, crypto::name, parent), proxy(&DataManager::GetInstance())
 {
-    auto mngr = &DataManager::GetInstance();
-    static DataTypesProxy proxy(mngr);
     proxy.RegisterType<DataTypes::FileStruct>();
-    for (auto &journal : journals)
-    {
-        connect(&proxy, &DataTypesProxy::DataStorable, journal, &Journal::fill);
-    }
+    createJournals(settings);
 
-    // connect(&proxy, &DataTypesProxy::DataStorable, m_jour.get(), &Journals::FillJour);
-    // proxyWorkModel = new QSortFilterProxyModel(this);
-    // proxySysModel = new QSortFilterProxyModel(this);
-    // proxyMeasModel = new QSortFilterProxyModel(this);
     progress = new QProgressDialog(this);
     progress->setCancelButton(nullptr);
     progress->cancel();
-
-    //    m_jour->SetProxyModels(proxyWorkModel, proxySysModel, proxyMeasModel);
-
-    //    connect(m_jour.get(), &Journals::Done, this, &JournalDialog::done);
-    //    connect(m_jour.get(), &Journals::Error, this, &JournalDialog::error);
-    //    connect(this, &JournalDialog::startSaveJour, m_jour.get(), &Journals::saveJour);
-
-    setupUI(journals);
+    setupUI();
 }
 
-JournalDialog::~JournalDialog()
+void JournalDialog::createJournals(const ModuleSettings &settings)
 {
+    using namespace journals;
+    journals.append(new SysJournal(this));
+    if (!settings.getWorkJours().isEmpty())
+        journals.append(new WorkJournal(settings.getWorkJours(), this));
+
+    for (auto &journal : journals)
+    {
+        connect(journal, &Journal::done, this, &JournalDialog::done);
+        connect(journal, &Journal::error, this, &JournalDialog::error);
+    }
 }
 
-void JournalDialog::setupUI(const QList<Journal *> &journals)
+void JournalDialog::tabChanged(const int index)
+{
+    disconnect(&proxy, &DataTypesProxy::DataStorable, journals[currentTab], &Journal::fill);
+    disconnect(this, &JournalDialog::startSaveJour, journals[currentTab], &Journal::save);
+    currentTab = index;
+    connect(&proxy, &DataTypesProxy::DataStorable, journals[currentTab], &Journal::fill);
+    connect(this, &JournalDialog::startSaveJour, journals[currentTab], &Journal::save);
+}
+
+void JournalDialog::setupUI()
 {
     auto layout = new QVBoxLayout;
     auto tabWidget = new QTabWidget;
@@ -71,46 +76,21 @@ void JournalDialog::setupUI(const QList<Journal *> &journals)
         auto journalTab = jourTab(journal);
         tabWidget->addTab(journalTab, journal->getName());
     }
-
-    // tabWidget->addTab(jourTab(DataTypes::JourWork), "Рабочий журнал");
-    // tabWidget->addTab(jourTab(DataTypes::JourSys), "Системный журнал");
-    // tabWidget->addTab(jourTab(DataTypes::JourMeas), "Журнал измерений");
-
     layout->addWidget(tabWidget);
     setLayout(layout);
+
+    connect(tabWidget, &QTabWidget::currentChanged, this, &JournalDialog::tabChanged);
+    currentTab = 0;
+    connect(&proxy, &DataTypesProxy::DataStorable, journals[currentTab], &Journal::fill);
+    connect(this, &JournalDialog::startSaveJour, journals[currentTab], &Journal::save);
 }
 
 QWidget *JournalDialog::jourTab(const Journal *journal)
 {
-    QSortFilterProxyModel *mdl;
     QHBoxLayout *hlyout = new QHBoxLayout;
     QVBoxLayout *vlyout = new QVBoxLayout;
-    QWidget *w = new QWidget;
-    QString str, tvname;
-
-    //    switch (jourtype)
-    //    {
-    //    case DataTypes::JourWork:
-    //        str = "рабочий журнал";
-    //        tvname = "work";
-    //        // mdl = proxyWorkModel;
-    //        break;
-    //    case DataTypes::JourSys:
-    //        str = "системный журнал";
-    //        tvname = "system";
-    //        // mdl = proxySysModel;
-    //        break;
-    //    case DataTypes::JourMeas:
-    //        str = "журнал измерений";
-    //        tvname = "meas";
-    //        // mdl = proxyMeasModel;
-    //        break;
-    //    default:
-    //        qCritical() << "Unknown journal type: " << jourtype;
-    //        return w;
-    //    }
-    //    auto *modelView = WDFunc::NewTV(this, tvname, mdl);
-
+    QWidget *w = new QWidget(this);
+    auto str = journal->getName().toLower();
     auto modelView = journal->createModelView(this);
     auto jourtype = journal->getType();
 
@@ -140,17 +120,10 @@ QWidget *JournalDialog::jourTab(const Journal *journal)
     saveButton->setEnabled(false);
     connect(journal, &Journal::done, this, [saveButton](const QString &str) {
         Q_UNUSED(str)
-        // if (saveButton->objectName().back().digitValue() == number)
         saveButton->setEnabled(true);
     });
     hlyout->addWidget(saveButton);
     vlyout->addLayout(hlyout);
-
-    connect(journal, &Journal::done, this, &JournalDialog::done);
-    connect(journal, &Journal::done, this, &JournalDialog::error);
-    connect(this, &JournalDialog::startSaveJour, journal, &Journal::save);
-
-    // views.insert(DataTypes::FilesEnum(jourtype), modelView);
     vlyout->addWidget(modelView, 89);
     w->setLayout(vlyout);
     return w;
@@ -206,8 +179,8 @@ void JournalDialog::saveJour(DataTypes::FilesEnum jourType)
     QString filename = WDFunc::ChooseFileForSave(nullptr, "Excel documents (*.xlsx)", "xlsx", jourfilestr);
 
     progress->setMinimumDuration(0);
-    // connect(m_jour.get(), &Journals::resendMaxResult, progress, &QProgressDialog::setMaximum);
-    // connect(m_jour.get(), &Journals::resendResult, progress, &QProgressDialog::setValue);
+    connect(journals[currentTab], &Journal::resendMaxResult, progress, &QProgressDialog::setMaximum);
+    connect(journals[currentTab], &Journal::resendResult, progress, &QProgressDialog::setValue);
     emit startSaveJour(filename);
 }
 
@@ -231,18 +204,17 @@ int JournalDialog::getJourNum(const QString &objname)
     return jourtype;
 }
 
-void JournalDialog::done(QString msg)
+void JournalDialog::done(const QString &msg)
 {
-    // disconnect(m_jour.get(), &Journals::resendMaxResult, progress, &QProgressDialog::setMaximum);
-    // disconnect(m_jour.get(), &Journals::resendResult, progress, &QProgressDialog::setValue);
+    disconnect(journals[currentTab], &Journal::resendMaxResult, progress, &QProgressDialog::setMaximum);
+    disconnect(journals[currentTab], &Journal::resendResult, progress, &QProgressDialog::setValue);
     setSuccessMsg(msg);
-    // QMessageBox::information(this, "Успешно", msg);
 }
 
-void JournalDialog::error(QString msg)
+void JournalDialog::error(const QString &msg)
 {
-    // disconnect(m_jour.get(), &Journals::resendMaxResult, progress, &QProgressDialog::setMaximum);
-    // disconnect(m_jour.get(), &Journals::resendResult, progress, &QProgressDialog::setValue);
+    disconnect(journals[currentTab], &Journal::resendMaxResult, progress, &QProgressDialog::setMaximum);
+    disconnect(journals[currentTab], &Journal::resendResult, progress, &QProgressDialog::setValue);
     qCritical() << msg;
     setErrorMsg(msg);
     QMessageBox::critical(this, "Ошибка", msg);

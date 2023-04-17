@@ -47,7 +47,7 @@ SysJournal::SysJournal(QObject *parent) : BaseJournal(parent), parser(new EventP
 {
     jourName = "Системный журнал";
     viewName = "system";
-    headers = AVM::eventJourHeaders;
+    headers = BaseJournal::eventJourHeaders;
     type = JournalType::System;
     setUserTimezone(headers);
 }
