@@ -42,6 +42,8 @@ private:
     std::size_t size;
     QVector<EventView> records;
 
+    QString eventTypeToString(const EventType type);
+
 public:
     EventParser(QObject *parent = nullptr);
     void update(const QByteArray &ba);

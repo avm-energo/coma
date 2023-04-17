@@ -16,7 +16,13 @@ class BaseParser : public QObject
 public:
     explicit BaseParser(QObject *parent = nullptr);
 
+signals:
+    void parseError(const QString &errMsg);
+
 protected:
+    bool isFileExist(const QString &filename);
+    QDomDocument getFileContent(const QString &filename);
+
     const QStringList parseArray(const QDomNode &node, const QString &tag) const;
     const QStringList parseStringArray(const QDomNode &node) const;
     template <typename T> const QList<T> parseNumArray(const QDomNode &node, const QString &tag) const;

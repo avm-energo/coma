@@ -10,6 +10,7 @@ class Module : public QObject
     Q_OBJECT
 private:
     bool checks;
+    bool state;
     const Modules::StartupInfoBlock &sInfoBlock;
     ConfigStorage *mStorage;
 
@@ -20,6 +21,9 @@ public:
     bool loadSettings();
 
 private:
-    bool loadS2Settings();
-    bool loadModuleSettings(const QString &filename, const quint16 &typeB, const quint16 &typeM);
+    void loadS2Settings();
+    void loadModuleSettings(const quint16 &typeB, const quint16 &typeM);
+
+private slots:
+    void parseErrorHandle(const QString errMsg);
 };

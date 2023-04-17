@@ -12,11 +12,11 @@ class ModuleParser : public BaseParser
 {
     Q_OBJECT
 private:
-    bool isBase;
+    QDomElement resources;
 
 public:
-    explicit ModuleParser(QObject *parent = nullptr);
-    void parse(const QDomNode &content, const quint16 &typeB, const quint16 &typeM, const bool checks);
+    explicit ModuleParser(const quint16 typeB, const quint16 typeM, const bool check, QObject *parent = nullptr);
+    void parse(const QStringList &nodes = {});
 
 signals:
     void startNewConfig();
@@ -33,13 +33,14 @@ signals:
     void configDataSending(const quint16 id, const QString &defVal, const bool visib, const quint16 count);
 
 private:
+    QString getFileName(const quint16 typeB, const quint16 typeM);
     bool isCorrectModule(const QDomElement &moduleNode, const quint16 &typeB, const quint16 &typeM);
     bool isCorrectModuleType(const QDomElement &moduleNode, const quint16 &typeB, const quint16 &typeM);
     bool isCorrectModuleVersion(const QDomElement &moduleNode);
     ModuleTypes::SignalType parseSigType(const QDomNode &sigNode);
     ModuleTypes::ViewType parseViewType(const QDomNode &mwidgetNode);
 
-    void parseResources(const QDomElement &resNode);
+    void parseDetector(const QDomNode &node);
     void parseSignal(const QDomNode &sigNode);
     void parseSTab(const QDomNode &sTabNode);
     void parseSection(const QDomNode &sectionNode);
