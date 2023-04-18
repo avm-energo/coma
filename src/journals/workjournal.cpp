@@ -13,7 +13,7 @@ WorkJournal::WorkJournal(const QMap<quint32, QString> &desc, QObject *parent)
     setUserTimezone(headers);
 }
 
-void WorkJournal::fillTable(const QByteArray &ba)
+void WorkJournal::fillModel(const QByteArray &ba)
 {
     parser->update(ba);
     const auto data = parser->parse(desriptions, timezone);

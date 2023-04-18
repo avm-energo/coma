@@ -58,13 +58,13 @@ void BaseJournal::fill(const QVariant &data)
 {
     if (data.canConvert<DataTypes::FileStruct>())
     {
-        if (!dataModel->isEmpty())
-            dataModel->clearModel();
         auto file = data.value<DataTypes::FileStruct>();
         if (file.ID == type)
         {
+            if (!dataModel->isEmpty())
+                dataModel->clearModel();
             dataModel->setHorizontalHeaderLabels(headers);
-            fillTable(file.data);
+            fillModel(file.data);
             proxyModel->setSourceModel(dataModel.get());
             emit done("Прочитано успешно");
         }

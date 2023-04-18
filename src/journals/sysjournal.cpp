@@ -41,7 +41,7 @@ const QMap<quint32, QString> SysJournal::desriptions = {
     { 35, "Ошибка АЦП (доп)" },                                                      //
     { 36, "Произошла запись регулировочные коэффициенты (доп)" },                    //
     { 37, "Произошла запись в блок Bhbd (hidden block)(доп)" }                       //
-};
+}; ///< Статическая хэш-карта с описанием событий системного журнала.
 
 SysJournal::SysJournal(QObject *parent) : BaseJournal(parent), parser(new EventParser(this))
 {
@@ -52,7 +52,7 @@ SysJournal::SysJournal(QObject *parent) : BaseJournal(parent), parser(new EventP
     setUserTimezone(headers);
 }
 
-void SysJournal::fillTable(const QByteArray &ba)
+void SysJournal::fillModel(const QByteArray &ba)
 {
     parser->update(ba);
     const auto data = parser->parse(desriptions, timezone);

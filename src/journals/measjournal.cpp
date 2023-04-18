@@ -29,7 +29,7 @@ QStringList MeasJournal::getHeaders()
     return retVal;
 }
 
-void MeasJournal::fillTable(const QByteArray &ba)
+void MeasJournal::fillModel(const QByteArray &ba)
 {
     parser->update(ba, settings);
     const auto data = parser->parse(settings);

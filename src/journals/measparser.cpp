@@ -1,7 +1,5 @@
 #include "measparser.h"
 
-#include <gen/timefunc.h>
-
 namespace journals
 {
 
@@ -70,49 +68,50 @@ bool MeasParser::parseRecord(const MeasSettings &settings)
     QVariant storage;
     for (auto &rec : settings)
     {
-        if (rec.visibility)
+        switch (rec.type)
         {
-            switch (rec.type)
-            {
-            case BinaryType::float32:
-            {
-                auto value = *reinterpret_cast<const float *>(iter);
-                iter += sizeof(float);
-                storage.setValue(value);
-                break;
-            }
-            case BinaryType::uint32:
-            {
-                auto value = *reinterpret_cast<const quint32 *>(iter);
-                iter += sizeof(quint32);
-                storage.setValue(value);
-                break;
-            }
-            case BinaryType::time32:
-            {
-                auto value = *reinterpret_cast<const quint32 *>(iter);
-                iter += sizeof(quint32);
-                if (value == UINT32_MAX)
-                    status = false;
-                auto time = TimeFunc::UnixTime32ToInvString(value, timezone);
-                storage.setValue(time);
-                break;
-            }
-            case BinaryType::time64:
-            {
-                auto value = *reinterpret_cast<const quint64 *>(iter);
-                iter += sizeof(quint64);
-                if (value == UINT64_MAX)
-                    status = false;
-                auto time = TimeFunc::UnixTime64ToInvStringFractional(value, timezone);
-                storage.setValue(time);
-                break;
-            }
-            }
-            record.append(storage);
+        case BinaryType::float32:
+        {
+            // auto value = *reinterpret_cast<const float *>(iter);
+            // iter += sizeof(float);
+            // storage.setValue(value);
+            storage = iterateValue<float>();
+            break;
         }
-        else
-            iter += sizeof(quint32);
+        case BinaryType::uint32:
+        {
+            // auto value = *reinterpret_cast<const quint32 *>(iter);
+            // iter += sizeof(quint32);
+            // storage.setValue(value);
+            storage = iterateValue<quint32>();
+            break;
+        }
+        case BinaryType::time32:
+        {
+            // auto value = *reinterpret_cast<const quint32 *>(iter);
+            // iter += sizeof(quint32);
+            // if (value == UINT32_MAX)
+            //    status = false;
+            // auto time = TimeFunc::UnixTime32ToInvString(value, timezone);
+            // storage.setValue(time);
+            storage = iterateTime<quint32>(status);
+            break;
+        }
+        case BinaryType::time64:
+        {
+            // auto value = *reinterpret_cast<const quint64 *>(iter);
+            // iter += sizeof(quint64);
+            // if (value == UINT64_MAX)
+            //    status = false;
+            // auto time = TimeFunc::UnixTime64ToInvStringFractional(value, timezone);
+            // storage.setValue(time);
+            storage = iterateTime<quint64>(status);
+            break;
+        }
+        }
+
+        if (rec.visibility)
+            record.append(storage);
     }
     return status;
 }
