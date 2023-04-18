@@ -578,97 +578,196 @@
         <journals desc="Журналы">
             <meas desc="Журнал измерений">
                 <item>
+                    <index>0</index>
                     <header> № </header>
-                </item>
-                <item>
-                    <header>C1 ф.A</header>
-                </item>
-                <item>
-                    <header>C1 ф.B</header>
-                </item>
-                <item>
-                    <header>C1 ф.C</header>
-                </item>
-                <item>
-                    <header>F</header>
-                </item>
-                <item>
-                    <header>I ф.A</header>
-                </item>
-                <item>
-                    <header>I ф.B</header>
-                </item>
-                <item>
-                    <header>I ф.C</header>
-                </item>
-                <item>
-                    <header>I0</header>
-                </item>
-                <item>
-                    <header>I1</header>
-                </item>
-                <item>
-                    <header>I2</header>
-                </item>
-                <item>
-                    <header>Iunb</header>
-                </item>
-                <item>
-                    <header>Phy_unb</header>
-                </item>
-                <item>
-                    <header>Tamb, °С</header>
-                </item>
-                <item>
-                    <header>Tmk, °С</header>
-                </item>
-                <item>
-                    <header>U ф.A</header>
-                </item>
-                <item>
-                    <header>U ф.B</header>
-                </item>
-                <item>
-                    <header>U ф.C</header>
-                </item>
-                <item>
-                    <header>U0</header>
-                </item>
-                <item>
-                    <header>U1</header>
-                </item>
-                <item>
-                    <header>U2</header>
-                </item>
-                <item>
-                    <header>tg δ ф.A</header>
-                </item>
-                <item>
-                    <header>tg δ ф.B</header>
-                </item>
-                <item>
-                    <header>tg δ ф.C</header>
+                    <type>uint32</type>
+                    <visibility>true</visibility>
                 </item>
                 <item>
                     <header>Дата/Время UTC</header>
+                    <index>1</index>
+                    <type>time32</type>
+                    <visibility>true</visibility>
+                </item>
+                <item>
+                    <header>U ф.A</header>
+                    <index>2</index>
+                    <type>float32</type>
+                    <visibility>true</visibility>
+                </item>
+                <item>
+                    <header>U ф.B</header>
+                    <index>3</index>
+                    <type>float32</type>
+                    <visibility>true</visibility>
+                </item>
+                <item>
+                    <header>U ф.C</header>
+                    <index>4</index>
+                    <type>float32</type>
+                    <visibility>true</visibility>
+                </item>
+                <item>
+                    <header>I ф.A</header>
+                    <index>5</index>
+                    <type>float32</type>
+                    <visibility>true</visibility>
+                </item>
+                <item>
+                    <header>I ф.B</header>
+                    <index>6</index>
+                    <type>float32</type>
+                    <visibility>true</visibility>
+                </item>
+                <item>
+                    <header>I ф.C</header>
+                    <index>7</index>
+                    <type>float32</type>
+                    <visibility>true</visibility>
+                </item>
+                <item>
+                    <header>F</header>
+                    <index>8</index>
+                    <type>float32</type>
+                    <visibility>true</visibility>
+                </item>
+                <item>
+                    <header>U0</header>
+                    <index>9</index>
+                    <type>float32</type>
+                    <visibility>true</visibility>
+                </item>
+                <item>
+                    <header>U1</header>
+                    <index>10</index>
+                    <type>float32</type>
+                    <visibility>true</visibility>
+                </item>
+                <item>
+                    <header>U2</header>
+                    <index>11</index>
+                    <type>float32</type>
+                    <visibility>true</visibility>
+                </item>
+                <item>
+                    <header>I0</header>
+                    <index>12</index>
+                    <type>float32</type>
+                    <visibility>true</visibility>
+                </item>
+                <item>
+                    <header>I1</header>
+                    <index>13</index>
+                    <type>float32</type>
+                    <visibility>true</visibility>
+                </item>
+                <item>
+                    <header>I2</header>
+                    <index>14</index>
+                    <type>float32</type>
+                    <visibility>true</visibility>
+                </item>
+                <item>
+                    <header>C1 ф.A</header>
+                    <index>15</index>
+                    <type>float32</type>
+                    <visibility>true</visibility>
+                </item>
+                <item>
+                    <header>C1 ф.B</header>
+                    <index>16</index>
+                    <type>float32</type>
+                    <visibility>true</visibility>
+                </item>
+                <item>
+                    <header>C1 ф.C</header>
+                    <index>17</index>
+                    <type>float32</type>
+                    <visibility>true</visibility>
+                </item>
+                <item>
+                    <header>tg δ ф.A</header>
+                    <index>18</index>
+                    <type>float32</type>
+                    <visibility>true</visibility>
+                </item>
+                <item>
+                    <header>tg δ ф.B</header>
+                    <index>19</index>
+                    <type>float32</type>
+                    <visibility>true</visibility>
+                </item>
+                <item>
+                    <header>tg δ ф.C</header>
+                    <index>20</index>
+                    <type>float32</type>
+                    <visibility>true</visibility>
                 </item>
                 <item>
                     <header>∆C ф.A</header>
+                    <index>21</index>
+                    <type>float32</type>
+                    <visibility>true</visibility>
                 </item>
                 <item>
                     <header>∆C ф.B</header>
+                    <index>22</index>
+                    <type>float32</type>
+                    <visibility>true</visibility>
                 </item>
                 <item>
                     <header>∆C ф.C</header>
+                    <index>23</index>
+                    <type>float32</type>
+                    <visibility>true</visibility>
                 </item>
                 <item>
                     <header>∆tg δ ф.A</header>
+                    <index>24</index>
+                    <type>float32</type>
+                    <visibility>true</visibility>
                 </item>
                 <item>
                     <header>∆tg δ ф.B</header>
+                    <index>25</index>
+                    <type>float32</type>
+                    <visibility>true</visibility>
                 </item>
                 <item>
                     <header>∆tg δ ф.C</header>
+                    <index>26</index>
+                    <type>float32</type>
+                    <visibility>true</visibility>
+                </item>
+                <item>
+                    <header>Iunb</header>
+                    <index>27</index>
+                    <type>float32</type>
+                    <visibility>true</visibility>
+                </item>
+                <item>
+                    <header>Phy_unb</header>
+                    <index>28</index>
+                    <type>float32</type>
+                    <visibility>true</visibility>
+                </item>
+                <item>
+                    <header>Tmk, °С</header>
+                    <index>29</index>
+                    <type>float32</type>
+                    <visibility>true</visibility>
+                </item>
+                <item>
+                    <header>Tamb, °С</header>
+                    <index>30</index>
+                    <type>float32</type>
+                    <visibility>true</visibility>
+                </item>
+                <item>
+                    <header>res</header>
+                    <index>31</index>
+                    <type>uint32</type>
+                    <visibility>false</visibility>
                 </item>
             </meas>
             <work desc="Рабочий журнал">

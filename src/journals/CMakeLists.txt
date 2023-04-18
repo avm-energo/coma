@@ -17,11 +17,7 @@ set(files_h
     sysjournal.h
     workjournal.h
     measjournal.h
-
-    #journals.h
-    #journkdv.h
-    #journkiv.h
-    #journktf.h
+    measparser.h
 )
 
 set(files_cpp
@@ -30,11 +26,7 @@ set(files_cpp
     sysjournal.cpp
     workjournal.cpp
     measjournal.cpp
-
-    #journals.cpp
-    #journkdv.cpp
-    #journkiv.cpp
-    #journktf.cpp
+    measparser.cpp
 )
 
 add_library(${PROJECT_NAME} STATIC ${files_cpp} ${files_h})

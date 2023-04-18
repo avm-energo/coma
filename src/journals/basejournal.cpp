@@ -60,12 +60,15 @@ void BaseJournal::fill(const QVariant &data)
     {
         if (!dataModel->isEmpty())
             dataModel->clearModel();
-        auto fs = data.value<DataTypes::FileStruct>();
-        dataModel->setHorizontalHeaderLabels(headers);
-        fillTable(fs.data);
+        auto file = data.value<DataTypes::FileStruct>();
+        if (file.ID == type)
+        {
+            dataModel->setHorizontalHeaderLabels(headers);
+            fillTable(file.data);
+            proxyModel->setSourceModel(dataModel.get());
+            emit done("Прочитано успешно");
+        }
     }
-    proxyModel->setSourceModel(dataModel.get());
-    emit done("Прочитано успешно");
 }
 
 void BaseJournal::save(const QString &filename)

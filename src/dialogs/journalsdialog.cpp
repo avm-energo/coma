@@ -1,6 +1,7 @@
 #include "../dialogs/journalsdialog.h"
 
 #include "../dialogs/keypressdialog.h"
+#include "../journals/measjournal.h"
 #include "../journals/sysjournal.h"
 #include "../journals/workjournal.h"
 #include "../module/board.h"
@@ -45,9 +46,12 @@ JournalDialog::JournalDialog(const ModuleSettings &settings, QWidget *parent)
 void JournalDialog::createJournals(const ModuleSettings &settings)
 {
     using namespace journals;
+    journals.reserve(4);
     journals.append(new SysJournal(this));
     if (!settings.getWorkJours().isEmpty())
         journals.append(new WorkJournal(settings.getWorkJours(), this));
+    if (!settings.getMeasJours().isEmpty())
+        journals.append(new MeasJournal(settings.getMeasJours(), this));
 
     for (auto &journal : journals)
     {
