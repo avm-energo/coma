@@ -67,7 +67,7 @@ private:
     ByteQueue prepareLongBlk(Proto::CommandStruct &cmdStr);
 
     void handleBitString(const QByteArray &ba, quint16 sigAddr);
-#ifdef __linux
+#ifdef Q_OS_LINUX
     void handleUnixTime(const QByteArray &ba, quint16 sigAddr);
 #endif
     template <std::size_t N> void handleBitStringArray(const QByteArray &ba, std::array<quint16, N> arr_addr);

@@ -19,14 +19,6 @@
 #include <time.h>
 #endif
 
-#ifdef Q_OS_WINDOWS
-#define BUFFERSIZE 5
-
-#include <Windows.h>
-#include <fileapi.h>
-#include <memoryapi.h>
-#endif
-
 typedef QQueue<QByteArray> ByteQueue;
 using Proto::CommandStruct;
 using Proto::Direction;
@@ -110,7 +102,6 @@ void ProtocomThread::handle(const Proto::Commands cmd)
     switch (cmd)
     {
     case Commands::ResultOk:
-
         // Ignore good replies to splitted packet
         // Не прибавляем никаких 1 или 2, надо будет проверить
         if (isSplitted(m_currentCommand.ba.size()))
@@ -148,7 +139,6 @@ void ProtocomThread::handle(const Proto::Commands cmd)
         break;
     }
     case Commands::ReadTime:
-
 #ifdef Q_OS_LINUX
         if (m_buffer.second.size() == sizeof(quint64))
         {
@@ -231,104 +221,6 @@ void ProtocomThread::checkQueue()
     m_currentCommand = inp;
     parseRequest(inp);
 }
-#if defined(Q_OS_WINDOWS)
-void ProtocomThread::fileHelper(DataTypes::FilesEnum fileNum)
-{
-    std::wstring fileToFind;
-    switch (fileNum)
-    {
-    case DataTypes::JourSys:
-    {
-
-        fileToFind = L"system.dat";
-        break;
-    }
-    case DataTypes::JourMeas:
-    {
-        fileToFind = L"measj.dat";
-        break;
-    }
-    case DataTypes::JourWork:
-    {
-        fileToFind = L"workj.dat";
-        break;
-    }
-    default:
-    {
-        m_currentCommand.ba = StdFunc::ArrayFromNumber(fileNum);
-        QByteArray ba = prepareBlock(m_currentCommand);
-        emit writeDataAttempt(ba);
-        return;
-    }
-    }
-    isCommandRequested = false;
-
-    QStringList drives = Files::Drives();
-    if (drives.isEmpty())
-    {
-        qCritical() << Error::NoDeviceError;
-        return;
-    }
-    QStringList files = Files::SearchForFile(drives, QString::fromStdWString(fileToFind));
-    if (files.isEmpty())
-    {
-        qCritical() << Error::FileNameError;
-        return;
-    }
-    QString JourFile = Files::GetFirstDriveWithLabel(files, "AVM");
-    if (JourFile.isEmpty())
-    {
-        qCritical() << Error::FileNameError;
-        return;
-    }
-    QFile file(JourFile);
-    QStorageInfo storageInfo(JourFile);
-    QString nativePath = storageInfo.rootPath().replace(('/'), ('\\'));
-    std::wstring nativePathW(nativePath.toStdWString().c_str());
-    nativePathW += fileToFind;
-    HANDLE hFile;
-    OVERLAPPED ol = { 0 };
-    hFile = CreateFile(nativePathW.c_str(),                                        // file to open
-        GENERIC_READ,                                                              // open for reading
-        FILE_SHARE_READ,                                                           // share for reading
-        NULL,                                                                      // default security
-        OPEN_EXISTING,                                                             // existing file only
-        FILE_ATTRIBUTE_NORMAL /*| FILE_FLAG_OVERLAPPED*/ | FILE_FLAG_NO_BUFFERING, // normal file
-        NULL);
-    if (hFile == INVALID_HANDLE_VALUE)
-    {
-        qCritical() << Error::FileNameError;
-        return;
-    }
-
-    QByteArray buffer;
-    buffer.resize(file.size());
-    DWORD lpNumberOfBytesRead;
-    if (FALSE == ReadFile(hFile, buffer.data(), buffer.size(), &lpNumberOfBytesRead, &ol))
-    {
-        DWORD dwLastError = GetLastError();
-
-        if (dwLastError != 0)
-        { // Don't want to see a "operation done successfully" error
-            TCHAR lpBuffer[256] = L"?";
-            FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM,      // It´s a system error
-                NULL,                                      // No string to be formatted needed
-                dwLastError,                               // Hey Windows: Please explain this error!
-                MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // Do it in the standard language
-                lpBuffer,                                  // Put the message here
-                255,                                       // Number of bytes to store the message
-                NULL);
-            qCritical() << Error::FileOpenError << std::wstring(lpBuffer);
-        }
-        qDebug() << "Fail to read";
-        CloseHandle(hFile);
-        return;
-    }
-    CloseHandle(hFile);
-    QByteArray ba = buffer;
-    handleFile(ba, fileNum, FileFormat::Binary);
-}
-#else
 
 void ProtocomThread::fileHelper(DataTypes::FilesEnum fileNum)
 {
@@ -350,7 +242,6 @@ void ProtocomThread::fileHelper(DataTypes::FilesEnum fileNum)
         fileToFind = "workj.dat";
         break;
     }
-
     default:
     {
         m_currentCommand.ba = StdFunc::ArrayFromNumber(fileNum);
@@ -389,7 +280,6 @@ void ProtocomThread::fileHelper(DataTypes::FilesEnum fileNum)
     handleFile(ba, fileNum, Queries::FileFormat::Binary);
 }
 
-#endif
 void ProtocomThread::parseRequest(const CommandStruct &cmdStr)
 {
 #ifdef PROTOCOM_DEBUG
@@ -462,7 +352,6 @@ void ProtocomThread::parseRequest(const CommandStruct &cmdStr)
     case Commands::WriteFile:
     {
     }
-
     default:
     {
         if (isSplitted(m_currentCommand.ba.size()))
@@ -687,7 +576,7 @@ void ProtocomThread::handleBitString(const QByteArray &ba, quint16 sigAddr)
     DataTypes::BitStringStruct resp { sigAddr, value, DataTypes::Quality::Good };
     DataManager::GetInstance().addSignalToOutList(resp);
 }
-#ifdef __linux
+#ifdef Q_OS_LINUX
 void ProtocomThread::handleUnixTime(const QByteArray &ba, [[maybe_unused]] quint16 sigAddr)
 {
     Q_ASSERT(ba.size() == sizeof(quint64));
@@ -856,7 +745,7 @@ void ProtocomThread::handleTechBlock(const QByteArray &ba, quint32 blkNum)
 {
     switch (blkNum)
     {
-        //  Блок наличия осциллограмм Bo
+    // Блок наличия осциллограмм Bo
     case 0x01:
     {
         Q_ASSERT(ba.size() % sizeof(S2DataTypes::OscInfo) == 0);
@@ -871,13 +760,13 @@ void ProtocomThread::handleTechBlock(const QByteArray &ba, quint32 blkNum)
 
         break;
     }
-        //  Блок текущих событий Be
+    // Блок текущих событий Be
     case 0x02:
     {
         qDebug("Блок текущих событий Be");
         break;
     }
-        // Блок технологических событий BTe
+    // Блок технологических событий BTe
     case 0x03:
     {
         qDebug("Блок технологических событий BTe");
@@ -897,8 +786,7 @@ void ProtocomThread::handleTechBlock(const QByteArray &ba, quint32 blkNum)
         }
         break;
     }
-
-        // Блок рабочего архива (Bra)
+    // Блок рабочего архива (Bra)
     case 0x05:
     {
         qDebug("Блок рабочего архива (Bra)");
