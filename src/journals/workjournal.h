@@ -20,7 +20,7 @@ private:
 
 public:
     /// \brief Конструктор класса модели рабочего журнала.
-    /// \param desc [in] - хэш-карта с описанием событий рабочего
+    /// \param desc[in] - хэш-карта с описанием событий рабочего
     /// журнала. Парсится из XML конфигурации устройства.
     explicit WorkJournal(const QMap<quint32, QString> &desc, QObject *parent = nullptr);
 };

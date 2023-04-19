@@ -3,7 +3,9 @@
 namespace journals
 {
 
-MeasParser::MeasParser(QTimeZone timeZone, QObject *parent) : QObject(parent), timezone(timeZone)
+constexpr auto notFound = -1;
+
+MeasParser::MeasParser(QTimeZone timeZone, QObject *parent) : QObject(parent), timezone(timeZone), timeIndex(notFound)
 {
 }
 
@@ -35,7 +37,7 @@ std::size_t MeasParser::getRecordSize(const MeasSettings &settings)
 int MeasParser::findTimeIndex(const MeasSettings &settings)
 {
     using namespace ModuleTypes;
-    int index = 0;
+    int index = notFound;
     for (auto i = 0; i < settings.size(); i++)
     {
         auto type = settings[i].type;
@@ -71,45 +73,18 @@ bool MeasParser::parseRecord(const MeasSettings &settings)
         switch (rec.type)
         {
         case BinaryType::float32:
-        {
-            // auto value = *reinterpret_cast<const float *>(iter);
-            // iter += sizeof(float);
-            // storage.setValue(value);
             storage = iterateValue<float>();
             break;
-        }
         case BinaryType::uint32:
-        {
-            // auto value = *reinterpret_cast<const quint32 *>(iter);
-            // iter += sizeof(quint32);
-            // storage.setValue(value);
             storage = iterateValue<quint32>();
             break;
-        }
         case BinaryType::time32:
-        {
-            // auto value = *reinterpret_cast<const quint32 *>(iter);
-            // iter += sizeof(quint32);
-            // if (value == UINT32_MAX)
-            //    status = false;
-            // auto time = TimeFunc::UnixTime32ToInvString(value, timezone);
-            // storage.setValue(time);
             storage = iterateTime<quint32>(status);
             break;
-        }
         case BinaryType::time64:
-        {
-            // auto value = *reinterpret_cast<const quint64 *>(iter);
-            // iter += sizeof(quint64);
-            // if (value == UINT64_MAX)
-            //    status = false;
-            // auto time = TimeFunc::UnixTime64ToInvStringFractional(value, timezone);
-            // storage.setValue(time);
             storage = iterateTime<quint64>(status);
             break;
         }
-        }
-
         if (rec.visibility)
             record.append(storage);
     }
@@ -120,8 +95,6 @@ bool MeasParser::sortByTime(const QVector<QVariant> &lhs, const QVector<QVariant
 {
     auto lStrTime = lhs[timeIndex].value<QString>();
     auto rStrTime = rhs[timeIndex].value<QString>();
-    // auto lTime = TimeFunc::InvStringToUnixTime32(lStrTime, timezone);
-    // auto rTime = TimeFunc::InvStringToUnixTime32(rStrTime, timezone);
     return lStrTime > rStrTime;
 }
 
@@ -137,7 +110,7 @@ const Data MeasParser::parse(const MeasSettings &settings)
         record.clear();
     }
 
-    if (timeIndex != 0)
+    if (timeIndex != notFound)
         std::sort(retVal.begin(), retVal.end(),
             [this](const QVector<QVariant> &lhs, const QVector<QVariant> &rhs) { return sortByTime(lhs, rhs); });
 

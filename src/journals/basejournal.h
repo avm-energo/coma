@@ -42,7 +42,7 @@ protected:
     void setUserTimezone(QStringList &data);
 
     /// \brief Заполняет модель данными, от полученного бинарного файла.
-    /// \param ba [in] - массив байт бинарного файла журнала.
+    /// \param ba[in] - массив байт бинарного файла журнала.
     virtual void fillModel(const QByteArray &ba) = 0;
 
 public:
@@ -76,7 +76,7 @@ signals:
 
 public slots:
     /// \brief Заполняет модель данными, приходящими извне.
-    /// \param data [in] - FileStruct, содержащий прочитанный бинарный файл журнала.
+    /// \param data[in] - FileStruct, содержащий прочитанный бинарный файл журнала.
     void fill(const QVariant &data);
 
     /// \brief Сохраняет модель в Excel-файл с указанным именем.

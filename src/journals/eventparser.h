@@ -52,12 +52,12 @@ public:
     EventParser(QObject *parent = nullptr);
 
     /// \brief По полученному массиву байт получаем итератор и количество событий в файле.
-    /// \param ba [in] - массив байт бинарного файла журнала.
+    /// \param ba[in] - массив байт бинарного файла журнала.
     void update(const QByteArray &ba);
 
     /// \brief Функция парсинга полученного файла в представление для ETableModel.
-    /// \param desc [in] - хеш-карта, key - ID события, value - строка с описанием события.
-    /// \param timeZone [in] - часовой пояс для получения корректного времени событий в журнале.
+    /// \param desc[in] - хеш-карта, key - ID события, value - строка с описанием события.
+    /// \param timeZone[in] - часовой пояс для получения корректного времени событий в журнале.
     const Data parse(const Descriptions &desc, const QTimeZone timeZone);
 };
 
