@@ -1,42 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<module mtypem="87" mtypeb="a3">
+<module mtypeb="a3" mtypem="87">
     <name>AVM-KDV</name>
     <version>0.10-0002</version>
     <resources>
         <alarms desc="Сигнализация">
             <critical desc="Критичные">
-                <item>
-                    <addr>5034</addr>
-                    <string>Аварийное состояние машины</string>
-                </item>
-                <item>
-                    <addr>5040</addr>
-                    <string>Вероятно аварийное состояние подшипников</string>
-                </item>
-                <item>
-                    <addr>5038</addr>
-                    <string>Вероятно аварийное состояние ротора</string>
-                </item>
-                <item>
-                    <addr>5036</addr>
-                    <string>Вероятно аварийное состояние статора</string>
-                </item>
-                <item>
-                    <addr>5042</addr>
-                    <string>Вероятно сильное смещение вала</string>
-                </item>
-                <item>
-                    <addr>5028</addr>
-                    <string>Высокая скорость нарастания вибрации</string>
-                </item>
-                <item>
-                    <addr>5032</addr>
-                    <string>Высокий уровень искажения токов</string>
-                </item>
-                <item>
-                    <addr>5030</addr>
-                    <string>Высокий уровень несимметрии токов</string>
-                </item>
                 <item>
                     <addr>5022</addr>
                     <string>Недопустимо высокая температура обмотки</string>
@@ -49,15 +17,47 @@
                     <addr>5026</addr>
                     <string>Недопустимо высокий уровень вибрации</string>
                 </item>
+                <item>
+                    <addr>5028</addr>
+                    <string>Высокая скорость нарастания вибрации</string>
+                </item>
+                <item>
+                    <addr>5030</addr>
+                    <string>Высокий уровень несимметрии токов</string>
+                </item>
+                <item>
+                    <addr>5032</addr>
+                    <string>Высокий уровень искажения токов</string>
+                </item>
+                <item>
+                    <addr>5034</addr>
+                    <string>Аварийное состояние машины</string>
+                </item>
+                <item>
+                    <addr>5036</addr>
+                    <string>Вероятно аварийное состояние статора</string>
+                </item>
+                <item>
+                    <addr>5038</addr>
+                    <string>Вероятно аварийное состояние ротора</string>
+                </item>
+                <item>
+                    <addr>5040</addr>
+                    <string>Вероятно аварийное состояние подшипников</string>
+                </item>
+                <item>
+                    <addr>5042</addr>
+                    <string>Вероятно сильное смещение вала</string>
+                </item>
             </critical>
             <info desc="Информационные">
                 <item>
-                    <addr>5105</addr>
-                    <string>Длинная осциллограмма готова</string>
-                </item>
-                <item>
                     <addr>5100</addr>
                     <string>Машина включена</string>
+                </item>
+                <item>
+                    <addr>5101</addr>
+                    <string>Тннт 0-расчётная, 1-измереная</string>
                 </item>
                 <item>
                     <addr>5102</addr>
@@ -72,39 +72,15 @@
                     <string>Отсутствует сигнал напряжения фазы C</string>
                 </item>
                 <item>
+                    <addr>5105</addr>
+                    <string>Длинная осциллограмма готова</string>
+                </item>
+                <item>
                     <addr>5106</addr>
                     <string>Спектрограмма готова</string>
                 </item>
-                <item>
-                    <addr>5101</addr>
-                    <string>Тннт 0-расчётная, 1-измереная</string>
-                </item>
             </info>
             <warning desc="Предупреждения">
-                <item>
-                    <addr>5041</addr>
-                    <string>Вероятно смещение вала</string>
-                </item>
-                <item>
-                    <addr>5039</addr>
-                    <string>Вероятно ухудшенное состояние подшипников</string>
-                </item>
-                <item>
-                    <addr>5037</addr>
-                    <string>Вероятно ухудшенное состояние ротора</string>
-                </item>
-                <item>
-                    <addr>5035</addr>
-                    <string>Вероятно ухудшенное состояние статора</string>
-                </item>
-                <item>
-                    <addr>5021</addr>
-                    <string>Неисправны все датчики температуры обмотки</string>
-                </item>
-                <item>
-                    <addr>5020</addr>
-                    <string>Опасное превышение температуры обмотки</string>
-                </item>
                 <item>
                     <addr>5017</addr>
                     <string>Перегрузка по току фазы A</string>
@@ -118,16 +94,12 @@
                     <string>Перегрузка по току фазы C</string>
                 </item>
                 <item>
-                    <addr>5029</addr>
-                    <string>Повышенная несимметрия токов</string>
+                    <addr>5020</addr>
+                    <string>Опасное превышение температуры обмотки</string>
                 </item>
                 <item>
-                    <addr>5027</addr>
-                    <string>Повышенная скорость нарастания вибрации</string>
-                </item>
-                <item>
-                    <addr>5031</addr>
-                    <string>Повышенные искажения токов</string>
+                    <addr>5021</addr>
+                    <string>Неисправны все датчики температуры обмотки</string>
                 </item>
                 <item>
                     <addr>5023</addr>
@@ -138,12 +110,75 @@
                     <string>Повышенный уровень вибрации</string>
                 </item>
                 <item>
+                    <addr>5027</addr>
+                    <string>Повышенная скорость нарастания вибрации</string>
+                </item>
+                <item>
+                    <addr>5029</addr>
+                    <string>Повышенная несимметрия токов</string>
+                </item>
+                <item>
+                    <addr>5031</addr>
+                    <string>Повышенные искажения токов</string>
+                </item>
+                <item>
                     <addr>5033</addr>
                     <string>Ухудшенное состояние машины</string>
+                </item>
+                <item>
+                    <addr>5035</addr>
+                    <string>Вероятно ухудшенное состояние статора</string>
+                </item>
+                <item>
+                    <addr>5037</addr>
+                    <string>Вероятно ухудшенное состояние ротора</string>
+                </item>
+                <item>
+                    <addr>5039</addr>
+                    <string>Вероятно ухудшенное состояние подшипников</string>
+                </item>
+                <item>
+                    <addr>5041</addr>
+                    <string>Вероятно смещение вала</string>
                 </item>
             </warning>
         </alarms>
         <config desc="Конфигурация">
+            <record>
+                <id>3</id>
+                <defaultValue>8</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>4</id>
+                <defaultValue>205</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>5</id>
+                <defaultValue>5</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>6</id>
+                <defaultValue>15</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>7</id>
+                <defaultValue>10</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>8</id>
+                <defaultValue>20</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>9</id>
+                <defaultValue>12</defaultValue>
+                <visibility>true</visibility>
+            </record>
             <record>
                 <id>10</id>
                 <defaultValue>8</defaultValue>
@@ -151,6 +186,51 @@
             </record>
             <record>
                 <id>11</id>
+                <defaultValue>0</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>20</id>
+                <defaultValue>172,16,29,12</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>21</id>
+                <defaultValue>255,255,252,0</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>22</id>
+                <defaultValue>172,16,29,1</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>23</id>
+                <defaultValue>2404,2405,502,502</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>24</id>
+                <defaultValue>172,16,31,220</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>25</id>
+                <defaultValue>0</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>26</id>
+                <defaultValue>0</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>27</id>
+                <defaultValue>1</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>28</id>
                 <defaultValue>0</defaultValue>
                 <visibility>true</visibility>
             </record>
@@ -464,86 +544,6 @@
                 <defaultValue>7.0</defaultValue>
                 <visibility>true</visibility>
             </record>
-            <record>
-                <id>20</id>
-                <defaultValue>172,16,29,12</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>21</id>
-                <defaultValue>255,255,252,0</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>22</id>
-                <defaultValue>172,16,29,1</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>23</id>
-                <defaultValue>2404,2405,502,502</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>24</id>
-                <defaultValue>172,16,31,220</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>25</id>
-                <defaultValue>0</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>26</id>
-                <defaultValue>0</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>27</id>
-                <defaultValue>1</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>28</id>
-                <defaultValue>0</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>3</id>
-                <defaultValue>8</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>4</id>
-                <defaultValue>205</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>5</id>
-                <defaultValue>5</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>6</id>
-                <defaultValue>15</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>7</id>
-                <defaultValue>10</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>8</id>
-                <defaultValue>20</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>9</id>
-                <defaultValue>12</defaultValue>
-                <visibility>true</visibility>
-            </record>
         </config>
         <iec60870 desc="Протокол ГОСТ Р МЭК 60870-5-104">
             <group>
@@ -658,97 +658,196 @@
         <journals desc="Журналы">
             <meas desc="Журнал измерений">
                 <item>
-                    <header>CosPhi</header>
+                    <index>0</index>
+                    <header> № </header>
+                    <type>uint32</type>
+                    <visibility>true</visibility>
                 </item>
                 <item>
-                    <header>Frequency</header>
-                </item>
-                <item>
-                    <header>I1</header>
-                </item>
-                <item>
-                    <header>I2</header>
-                </item>
-                <item>
-                    <header>Ieff фA</header>
-                </item>
-                <item>
-                    <header>Ieff фB</header>
-                </item>
-                <item>
-                    <header>Ieff фC</header>
-                </item>
-                <item>
-                    <header>Pf сумм.</header>
-                </item>
-                <item>
-                    <header>Qf сумм.</header>
-                </item>
-                <item>
-                    <header>Sf сумм.</header>
-                </item>
-                <item>
-                    <header>Tamb,°С</header>
-                </item>
-                <item>
-                    <header>Tmk,°С</header>
-                </item>
-                <item>
-                    <header>Twin,°С</header>
-                </item>
-                <item>
-                    <header>U1</header>
-                </item>
-                <item>
-                    <header>U2</header>
-                </item>
-                <item>
-                    <header>Ueff фA</header>
-                </item>
-                <item>
-                    <header>Ueff фB</header>
-                </item>
-                <item>
-                    <header>Ueff фC</header>
-                </item>
-                <item>
-                    <header>VibrSCZ_D фA</header>
-                </item>
-                <item>
-                    <header>VibrSCZ_D фA</header>
-                </item>
-                <item>
-                    <header>VibrSCZ_D фB</header>
-                </item>
-                <item>
-                    <header>VibrSCZ_D фB</header>
-                </item>
-                <item>
-                    <header>VibrSCZ_D фC</header>
-                </item>
-                <item>
-                    <header>VibrSCZ_D фC</header>
-                </item>
-                <item>
-                    <header>VibrSCZ_V фA</header>
-                </item>
-                <item>
-                    <header>VibrSCZ_V фB</header>
-                </item>
-                <item>
-                    <header>VibrSCZ_V фB</header>
-                </item>
-                <item>
-                    <header>VibrSCZ_V фC</header>
-                </item>
-                <item>
-                    <header>VibrSCZ_V фC</header>
-                </item>
-                <item>
-                    <header>VibrSCZ_V №1</header>
-                </item>
-                <item>
+                    <index>1</index>
                     <header>Дата/Время UTC</header>
+                    <type>time32</type>
+                    <visibility>true</visibility>
+                </item>
+                <item>
+                    <index>2</index>
+                    <header>Ueff фA</header>
+                    <type>float32</type>
+                    <visibility>true</visibility>
+                </item>
+                <item>
+                    <index>3</index>
+                    <header>Ueff фB</header>
+                    <type>float32</type>
+                    <visibility>true</visibility>
+                </item>
+                <item>
+                    <index>4</index>
+                    <header>Ueff фC</header>
+                    <type>float32</type>
+                    <visibility>true</visibility>
+                </item>
+                <item>
+                    <index>5</index>
+                    <header>Ieff фA</header>
+                    <type>float32</type>
+                    <visibility>true</visibility>
+                </item>
+                <item>
+                    <index>6</index>
+                    <header>Ieff фB</header>
+                    <type>float32</type>
+                    <visibility>true</visibility>
+                </item>
+                <item>
+                    <index>7</index>
+                    <header>Ieff фC</header>
+                    <type>float32</type>
+                    <visibility>true</visibility>
+                </item>
+                <item>
+                    <index>8</index>
+                    <header>Frequency</header>
+                    <type>float32</type>
+                    <visibility>true</visibility>
+                </item>
+                <item>
+                    <index>9</index>
+                    <header>U1</header>
+                    <type>float32</type>
+                    <visibility>true</visibility>
+                </item>
+                <item>
+                    <index>10</index>
+                    <header>U2</header>
+                    <type>float32</type>
+                    <visibility>true</visibility>
+                </item>
+                <item>
+                    <index>11</index>
+                    <header>I1</header>
+                    <type>float32</type>
+                    <visibility>true</visibility>
+                </item>
+                <item>
+                    <index>12</index>
+                    <header>I2</header>
+                    <type>float32</type>
+                    <visibility>true</visibility>
+                </item>
+                <item>
+                    <index>13</index>
+                    <header>Pf сумм.</header>
+                    <type>float32</type>
+                    <visibility>true</visibility>
+                </item>
+                <item>
+                    <index>14</index>
+                    <header>Qf сумм.</header>
+                    <type>float32</type>
+                    <visibility>true</visibility>
+                </item>
+                <item>
+                    <index>15</index>
+                    <header>Sf сумм.</header>
+                    <type>float32</type>
+                    <visibility>true</visibility>
+                </item>
+                <item>
+                    <index>16</index>
+                    <header>CosPhi</header>
+                    <type>float32</type>
+                    <visibility>true</visibility>
+                </item>
+                <item>
+                    <index>17</index>
+                    <header>Tmk,°С</header>
+                    <type>float32</type>
+                    <visibility>true</visibility>
+                </item>
+                <item>
+                    <index>18</index>
+                    <header>Tamb,°С</header>
+                    <type>float32</type>
+                    <visibility>true</visibility>
+                </item>
+                <item>
+                    <index>19</index>
+                    <header>Twin,°С</header>
+                    <type>float32</type>
+                    <visibility>true</visibility>
+                </item>
+                <item>
+                    <index>20</index>
+                    <header>VibrSCZ_V фA</header>
+                    <type>float32</type>
+                    <visibility>true</visibility>
+                </item>
+                <item>
+                    <index>21</index>
+                    <header>VibrSCZ_V фA</header>
+                    <type>float32</type>
+                    <visibility>true</visibility>
+                </item>
+                <item>
+                    <index>22</index>
+                    <header>VibrSCZ_V фB</header>
+                    <type>float32</type>
+                    <visibility>true</visibility>
+                </item>
+                <item>
+                    <index>23</index>
+                    <header>VibrSCZ_V фB</header>
+                    <type>float32</type>
+                    <visibility>true</visibility>
+                </item>
+                <item>
+                    <index>24</index>
+                    <header>VibrSCZ_V фC</header>
+                    <type>float32</type>
+                    <visibility>true</visibility>
+                </item>
+                <item>
+                    <index>25</index>
+                    <header>VibrSCZ_V фC</header>
+                    <type>float32</type>
+                    <visibility>true</visibility>
+                </item>
+                <item>
+                    <index>26</index>
+                    <header>VibrSCZ_D фA</header>
+                    <type>float32</type>
+                    <visibility>true</visibility>
+                </item>
+                <item>
+                    <index>27</index>
+                    <header>VibrSCZ_D фA</header>
+                    <type>float32</type>
+                    <visibility>true</visibility>
+                </item>
+                <item>
+                    <index>28</index>
+                    <header>VibrSCZ_D фB</header>
+                    <type>float32</type>
+                    <visibility>true</visibility>
+                </item>
+                <item>
+                    <index>29</index>
+                    <header>VibrSCZ_D фB</header>
+                    <type>float32</type>
+                    <visibility>true</visibility>
+                </item>
+                <item>
+                    <index>30</index>
+                    <header>VibrSCZ_D фC</header>
+                    <type>float32</type>
+                    <visibility>true</visibility>
+                </item>
+                <item>
+                    <index>31</index>
+                    <header>VibrSCZ_D фC</header>
+                    <type>float32</type>
+                    <visibility>true</visibility>
                 </item>
             </meas>
             <work desc="Рабочий журнал">
@@ -846,6 +945,30 @@
                 <desc>Bsi</desc>
             </group>
             <group>
+                <signal-id>2</signal-id>
+                <reg-type>4</reg-type>
+                <type>float</type>
+                <desc>tempAndU</desc>
+            </group>
+            <group>
+                <signal-id>3</signal-id>
+                <reg-type>4</reg-type>
+                <type>float</type>
+                <desc>current</desc>
+            </group>
+            <group>
+                <signal-id>8</signal-id>
+                <reg-type>4</reg-type>
+                <type>float</type>
+                <desc>lineVoltage</desc>
+            </group>
+            <group>
+                <signal-id>9</signal-id>
+                <reg-type>4</reg-type>
+                <type>float</type>
+                <desc>amperage</desc>
+            </group>
+            <group>
                 <signal-id>14</signal-id>
                 <reg-type>4</reg-type>
                 <type>float</type>
@@ -880,12 +1003,6 @@
                 <reg-type>4</reg-type>
                 <type>float</type>
                 <desc>harmonicIA</desc>
-            </group>
-            <group>
-                <signal-id>2</signal-id>
-                <reg-type>4</reg-type>
-                <type>float</type>
-                <desc>tempAndU</desc>
             </group>
             <group>
                 <signal-id>20</signal-id>
@@ -936,12 +1053,6 @@
                 <desc>infoAlarm</desc>
             </group>
             <group>
-                <signal-id>3</signal-id>
-                <reg-type>4</reg-type>
-                <type>float</type>
-                <desc>current</desc>
-            </group>
-            <group>
                 <signal-id>35</signal-id>
                 <reg-type>4</reg-type>
                 <type>float</type>
@@ -953,59 +1064,35 @@
                 <type>uint32</type>
                 <desc>BsiExt</desc>
             </group>
-            <group>
-                <signal-id>8</signal-id>
-                <reg-type>4</reg-type>
-                <type>float</type>
-                <desc>lineVoltage</desc>
-            </group>
-            <group>
-                <signal-id>9</signal-id>
-                <reg-type>4</reg-type>
-                <type>float</type>
-                <desc>amperage</desc>
-            </group>
         </modbus>
         <protocom desc="Протокол Protocom">
-            <group>
-                <block>6</block>
-                <signal-id>10</signal-id>
-            </group>
-            <group>
-                <block>17</block>
-                <signal-id>14</signal-id>
-            </group>
-            <group>
-                <block>10</block>
-                <signal-id>15</signal-id>
-            </group>
-            <group>
-                <block>25</block>
-                <signal-id>16</signal-id>
-            </group>
-            <group>
-                <block>35</block>
-                <signal-id>17</signal-id>
-            </group>
-            <group>
-                <block>45</block>
-                <signal-id>18</signal-id>
-            </group>
-            <group>
-                <block>27</block>
-                <signal-id>19</signal-id>
-            </group>
             <group>
                 <block>0</block>
                 <signal-id>2</signal-id>
             </group>
             <group>
-                <block>37</block>
-                <signal-id>20</signal-id>
+                <block>2</block>
+                <signal-id>3</signal-id>
             </group>
             <group>
-                <block>47</block>
-                <signal-id>21</signal-id>
+                <block>3</block>
+                <signal-id>9</signal-id>
+            </group>
+            <group>
+                <block>6</block>
+                <signal-id>10</signal-id>
+            </group>
+            <group>
+                <block>8</block>
+                <signal-id>8</signal-id>
+            </group>
+            <group>
+                <block>9</block>
+                <signal-id>25</signal-id>
+            </group>
+            <group>
+                <block>10</block>
+                <signal-id>15</signal-id>
             </group>
             <group>
                 <block>11</block>
@@ -1016,40 +1103,52 @@
                 <signal-id>24</signal-id>
             </group>
             <group>
-                <block>9</block>
-                <signal-id>25</signal-id>
+                <block>14</block>
+                <signal-id>28</signal-id>
             </group>
             <group>
-                <block>100</block>
-                <signal-id>26</signal-id>
+                <block>17</block>
+                <signal-id>14</signal-id>
             </group>
             <group>
                 <block>20</block>
                 <signal-id>27</signal-id>
             </group>
             <group>
-                <block>14</block>
-                <signal-id>28</signal-id>
+                <block>25</block>
+                <signal-id>16</signal-id>
+            </group>
+            <group>
+                <block>27</block>
+                <signal-id>19</signal-id>
             </group>
             <group>
                 <block>30</block>
                 <signal-id>29</signal-id>
             </group>
             <group>
-                <block>2</block>
-                <signal-id>3</signal-id>
+                <block>35</block>
+                <signal-id>17</signal-id>
+            </group>
+            <group>
+                <block>37</block>
+                <signal-id>20</signal-id>
+            </group>
+            <group>
+                <block>45</block>
+                <signal-id>18</signal-id>
+            </group>
+            <group>
+                <block>47</block>
+                <signal-id>21</signal-id>
+            </group>
+            <group>
+                <block>100</block>
+                <signal-id>26</signal-id>
             </group>
             <group>
                 <block>250</block>
                 <signal-id>36</signal-id>
-            </group>
-            <group>
-                <block>8</block>
-                <signal-id>8</signal-id>
-            </group>
-            <group>
-                <block>3</block>
-                <signal-id>9</signal-id>
             </group>
         </protocom>
         <section-tabs desc="Вкладки">
@@ -1084,45 +1183,45 @@
         </section-tabs>
         <sections desc="Разделы">
             <section header="Вибрации">
-                <sgroup header="Среднеквадратичные значения виброперемещений, мкм" tab="200">
-                    <mwidget desc="Датчик №%1" view="float">
-                        <start-addr>6052</start-addr>
-                        <count>6</count>
-                    </mwidget>
-                </sgroup>
-                <sgroup header="Среднеквадратичные значения виброскоростей, мм/с" tab="200">
-                    <mwidget desc="Датчик №%1" view="float">
-                        <start-addr>6046</start-addr>
-                        <count>6</count>
-                    </mwidget>
-                </sgroup>
-                <sgroup header="Среднеквадратичные значения виброускорений, м/с2" tab="200">
-                    <mwidget desc="Датчик №%1" view="float">
-                        <start-addr>6040</start-addr>
-                        <count>6</count>
-                    </mwidget>
-                </sgroup>
-                <sgroup header="Скорость изменения среднеквадратичного значения виброперемещения, мкм/час" tab="210">
+                <sgroup tab="210" header="Скорость изменения среднеквадратичного значения виброперемещения, мкм/час">
                     <mwidget desc="Датчик №%1" view="float">
                         <start-addr>6070</start-addr>
                         <count>6</count>
                     </mwidget>
                 </sgroup>
-                <sgroup header="Скорость изменения среднеквадратичного значения виброскорости, мм/с/час" tab="210">
+                <sgroup tab="210" header="Скорость изменения среднеквадратичного значения виброскорости, мм/с/час">
                     <mwidget desc="Датчик №%1" view="float">
                         <start-addr>6064</start-addr>
                         <count>6</count>
                     </mwidget>
                 </sgroup>
-                <sgroup header="Скорость изменения среднеквадратичного значения виброускорения, м/с2/час" tab="210">
+                <sgroup tab="210" header="Скорость изменения среднеквадратичного значения виброускорения, м/с2/час">
                     <mwidget desc="Датчик №%1" view="float">
                         <start-addr>6058</start-addr>
                         <count>6</count>
                     </mwidget>
                 </sgroup>
+                <sgroup tab="200" header="Среднеквадратичные значения виброперемещений, мкм">
+                    <mwidget desc="Датчик №%1" view="float">
+                        <start-addr>6052</start-addr>
+                        <count>6</count>
+                    </mwidget>
+                </sgroup>
+                <sgroup tab="200" header="Среднеквадратичные значения виброскоростей, мм/с">
+                    <mwidget desc="Датчик №%1" view="float">
+                        <start-addr>6046</start-addr>
+                        <count>6</count>
+                    </mwidget>
+                </sgroup>
+                <sgroup tab="200" header="Среднеквадратичные значения виброускорений, м/с2">
+                    <mwidget desc="Датчик №%1" view="float">
+                        <start-addr>6040</start-addr>
+                        <count>6</count>
+                    </mwidget>
+                </sgroup>
             </section>
             <section header="Текущие данные">
-                <sgroup header="Данные по несимметрии и искажениям сигналов" tab="1">
+                <sgroup tab="1" header="Данные по несимметрии и искажениям сигналов">
                     <mwidget desc="Vst" view="float">
                         <start-addr>4700</start-addr>
                         <toolTip>Относительная скорость старения изоляции</toolTip>
@@ -1148,7 +1247,7 @@
                         <toolTip>Общая наработка, час</toolTip>
                     </mwidget>
                 </sgroup>
-                <sgroup header="Оставшееся время работы" tab="1">
+                <sgroup tab="1" header="Оставшееся время работы">
                     <mwidget desc="Tpred" view="float">
                         <start-addr>4010</start-addr>
                         <toolTip>Температура обмотки (расчетная), °С</toolTip>
@@ -1185,7 +1284,7 @@
                         </string-array>
                     </mwidget>
                 </sgroup>
-                <sgroup header="Температура" tab="1">
+                <sgroup tab="1" header="Температура">
                     <mwidget desc="ExtTempWin%1" view="float">
                         <start-addr>4503</start-addr>
                         <count>4</count>
@@ -1204,7 +1303,7 @@
                         <toolTip>Температура обмотки (расчетная), °С</toolTip>
                     </mwidget>
                 </sgroup>
-                <sgroup header="Данные по частоте и углам сдвига сигналов" tab="10">
+                <sgroup tab="10" header="Данные по частоте и углам сдвига сигналов">
                     <mwidget desc="Frequency" view="float">
                         <start-addr>2400</start-addr>
                         <toolTip>Частота в сети, Гц</toolTip>
@@ -1215,7 +1314,7 @@
                         <toolTip>Угол сдвига между каналами %1-0, градусов</toolTip>
                     </mwidget>
                 </sgroup>
-                <sgroup header="Мощности" tab="10">
+                <sgroup tab="10" header="Мощности">
                     <mwidget desc="P%1, кВт" view="float">
                         <start-addr>2420</start-addr>
                         <count>3</count>
@@ -1273,7 +1372,7 @@
                         <toolTip>Коэффициент мощности средний (по S и P)</toolTip>
                     </mwidget>
                 </sgroup>
-                <sgroup header="Мощности по 1-й гармонике" tab="10">
+                <sgroup tab="10" header="Мощности по 1-й гармонике">
                     <mwidget desc="P1%1, кВт" view="float">
                         <start-addr>2436</start-addr>
                         <count>3</count>
@@ -1333,7 +1432,7 @@
                 </sgroup>
             </section>
             <section header="Текущие данные. Вторая тройка">
-                <sgroup header="Данные по несимметрии и искажениям сигналов" tab="1">
+                <sgroup tab="1" header="Данные по несимметрии и искажениям сигналов">
                     <mwidget desc="I0, А" view="float">
                         <start-addr>1411</start-addr>
                         <toolTip>Ток нулевой последовательности гр.1, А</toolTip>
@@ -1365,7 +1464,7 @@
                         </string-array>
                     </mwidget>
                 </sgroup>
-                <sgroup header="Действующие значения и крест-факторы сигналов" tab="1">
+                <sgroup tab="1" header="Действующие значения и крест-факторы сигналов">
                     <mwidget desc="I ф.%1, А" view="float">
                         <start-addr>1400</start-addr>
                         <count>3</count>
@@ -1405,19 +1504,19 @@
                         </string-array>
                     </mwidget>
                 </sgroup>
-                <sgroup header="Данные по гармоническому составу сигналов фазы A" tab="311">
+                <sgroup tab="311" header="Данные по гармоническому составу сигналов фазы A">
                     <mwidget desc="Гм %1" view="float">
                         <start-addr>3420</start-addr>
                         <count>61</count>
                     </mwidget>
                 </sgroup>
-                <sgroup header="Данные по гармоническому составу сигналов фазы В" tab="312">
+                <sgroup tab="312" header="Данные по гармоническому составу сигналов фазы В">
                     <mwidget desc="Гм %1" view="float">
                         <start-addr>3546</start-addr>
                         <count>61</count>
                     </mwidget>
                 </sgroup>
-                <sgroup header="Данные по гармоническому составу сигналов фазы C" tab="313">
+                <sgroup tab="313" header="Данные по гармоническому составу сигналов фазы C">
                     <mwidget desc="Гм %1" view="float">
                         <start-addr>3672</start-addr>
                         <count>61</count>
@@ -1425,7 +1524,7 @@
                 </sgroup>
             </section>
             <section header="Текущие данные. Первая тройка">
-                <sgroup header="Данные по несимметрии и искажениям сигналов" tab="1">
+                <sgroup tab="1" header="Данные по несимметрии и искажениям сигналов">
                     <mwidget desc="U0, кВ" view="float">
                         <start-addr>1011</start-addr>
                         <toolTip>Напряжение нулевой последовательности гр.1, кВ</toolTip>
@@ -1457,7 +1556,7 @@
                         </string-array>
                     </mwidget>
                 </sgroup>
-                <sgroup header="Действующие значения и крест-факторы сигналов" tab="1">
+                <sgroup tab="1" header="Действующие значения и крест-факторы сигналов">
                     <mwidget desc="U ф.%1, кВ" view="float">
                         <start-addr>1000</start-addr>
                         <count>3</count>
@@ -1497,7 +1596,7 @@
                         </string-array>
                     </mwidget>
                 </sgroup>
-                <sgroup header="Линейные напряжения" tab="1">
+                <sgroup tab="1" header="Линейные напряжения">
                     <mwidget desc="U ф.%1, кВ" view="float">
                         <start-addr>1220</start-addr>
                         <count>3</count>
@@ -1527,19 +1626,19 @@
                         <toolTip>Действ. линейное напряжение по 1-й гармонике среднее, кВ</toolTip>
                     </mwidget>
                 </sgroup>
-                <sgroup header="Данные по гармоническому составу сигналов фазы A" tab="311">
+                <sgroup tab="311" header="Данные по гармоническому составу сигналов фазы A">
                     <mwidget desc="Гм %1" view="float">
                         <start-addr>3020</start-addr>
                         <count>61</count>
                     </mwidget>
                 </sgroup>
-                <sgroup header="Данные по гармоническому составу сигналов фазы В" tab="312">
+                <sgroup tab="312" header="Данные по гармоническому составу сигналов фазы В">
                     <mwidget desc="Гм %1" view="float">
                         <start-addr>3146</start-addr>
                         <count>61</count>
                     </mwidget>
                 </sgroup>
-                <sgroup header="Данные по гармоническому составу сигналов фазы C" tab="313">
+                <sgroup tab="313" header="Данные по гармоническому составу сигналов фазы C">
                     <mwidget desc="Гм %1" view="float">
                         <start-addr>3272</start-addr>
                         <count>61</count>
@@ -1555,9 +1654,9 @@
                 <type>BitString</type>
             </signal>
             <signal>
-                <start-addr>1000</start-addr>
-                <count>19</count>
-                <id>3</id>
+                <start-addr>40</start-addr>
+                <count>9</count>
+                <id>37</id>
                 <type>Float</type>
             </signal>
             <signal>
@@ -1567,15 +1666,15 @@
                 <type>Float</type>
             </signal>
             <signal>
-                <start-addr>1220</start-addr>
-                <count>8</count>
-                <id>8</id>
+                <start-addr>1000</start-addr>
+                <count>19</count>
+                <id>3</id>
                 <type>Float</type>
             </signal>
             <signal>
-                <start-addr>13000</start-addr>
-                <count>7</count>
-                <id>36</id>
+                <start-addr>1220</start-addr>
+                <count>8</count>
+                <id>8</id>
                 <type>Float</type>
             </signal>
             <signal>
@@ -1687,12 +1786,6 @@
                 <type>Float</type>
             </signal>
             <signal>
-                <start-addr>40</start-addr>
-                <count>9</count>
-                <id>37</id>
-                <type>Float</type>
-            </signal>
-            <signal>
                 <start-addr>4010</start-addr>
                 <count>22</count>
                 <id>23</id>
@@ -1738,6 +1831,12 @@
                 <start-addr>6040</start-addr>
                 <count>36</count>
                 <id>27</id>
+                <type>Float</type>
+            </signal>
+            <signal>
+                <start-addr>13000</start-addr>
+                <count>7</count>
+                <id>36</id>
                 <type>Float</type>
             </signal>
         </signals>

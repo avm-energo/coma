@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<module mtypeb="a2" mtypem="84">
+<module mtypem="84" mtypeb="a2">
     <name>AVM-KIV</name>
     <version>2.2-0000</version>
     <resources>
@@ -208,6 +208,41 @@
         </alarms>
         <config desc="Конфигурация">
             <record>
+                <id>3</id>
+                <defaultValue>8</defaultValue>
+                <visibility>false</visibility>
+            </record>
+            <record>
+                <id>4</id>
+                <defaultValue>205</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>5</id>
+                <defaultValue>5</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>6</id>
+                <defaultValue>15</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>7</id>
+                <defaultValue>10</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>8</id>
+                <defaultValue>20</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>9</id>
+                <defaultValue>12</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
                 <id>10</id>
                 <defaultValue>8</defaultValue>
                 <visibility>true</visibility>
@@ -215,6 +250,56 @@
             <record>
                 <id>11</id>
                 <defaultValue>0</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>20</id>
+                <defaultValue>172,16,30,39</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>21</id>
+                <defaultValue>255,255,252,0</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>22</id>
+                <defaultValue>172,16,29,1</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>23</id>
+                <defaultValue>2404,2405,502,502</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>24</id>
+                <defaultValue>172,16,31,220</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>25</id>
+                <defaultValue>9600</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>26</id>
+                <defaultValue>0</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>27</id>
+                <defaultValue>0</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>28</id>
+                <defaultValue>1</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>29</id>
+                <defaultValue>1</defaultValue>
                 <visibility>true</visibility>
             </record>
             <record>
@@ -367,91 +452,6 @@
                 <defaultValue>100.0</defaultValue>
                 <visibility>true</visibility>
             </record>
-            <record>
-                <id>20</id>
-                <defaultValue>172,16,30,39</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>21</id>
-                <defaultValue>255,255,252,0</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>22</id>
-                <defaultValue>172,16,29,1</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>23</id>
-                <defaultValue>2404,2405,502,502</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>24</id>
-                <defaultValue>172,16,31,220</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>25</id>
-                <defaultValue>9600</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>26</id>
-                <defaultValue>0</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>27</id>
-                <defaultValue>0</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>28</id>
-                <defaultValue>1</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>29</id>
-                <defaultValue>1</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>3</id>
-                <defaultValue>8</defaultValue>
-                <visibility>false</visibility>
-            </record>
-            <record>
-                <id>4</id>
-                <defaultValue>205</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>5</id>
-                <defaultValue>5</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>6</id>
-                <defaultValue>15</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>7</id>
-                <defaultValue>10</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>8</id>
-                <defaultValue>20</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>9</id>
-                <defaultValue>12</defaultValue>
-                <visibility>true</visibility>
-            </record>
         </config>
         <iec60870 desc="Протокол ГОСТ Р МЭК 60870-5-104">
             <group>
@@ -459,6 +459,54 @@
                 <sig-type>7</sig-type>
                 <trans-type>0</trans-type>
                 <sig-group>1</sig-group>
+            </group>
+            <group>
+                <signal-id>2</signal-id>
+                <sig-type>13</sig-type>
+                <trans-type>1</trans-type>
+                <sig-group></sig-group>
+            </group>
+            <group>
+                <signal-id>3</signal-id>
+                <sig-type>45</sig-type>
+                <trans-type></trans-type>
+                <sig-group></sig-group>
+            </group>
+            <group>
+                <signal-id>4</signal-id>
+                <sig-type>45</sig-type>
+                <trans-type></trans-type>
+                <sig-group></sig-group>
+            </group>
+            <group>
+                <signal-id>5</signal-id>
+                <sig-type>13</sig-type>
+                <trans-type>1</trans-type>
+                <sig-group></sig-group>
+            </group>
+            <group>
+                <signal-id>6</signal-id>
+                <sig-type>13</sig-type>
+                <trans-type>1</trans-type>
+                <sig-group></sig-group>
+            </group>
+            <group>
+                <signal-id>7</signal-id>
+                <sig-type>13</sig-type>
+                <trans-type>1</trans-type>
+                <sig-group></sig-group>
+            </group>
+            <group>
+                <signal-id>8</signal-id>
+                <sig-type>13</sig-type>
+                <trans-type>1</trans-type>
+                <sig-group></sig-group>
+            </group>
+            <group>
+                <signal-id>9</signal-id>
+                <sig-type>13</sig-type>
+                <trans-type>0</trans-type>
+                <sig-group>2</sig-group>
             </group>
             <group>
                 <signal-id>10</signal-id>
@@ -515,12 +563,6 @@
                 <sig-group></sig-group>
             </group>
             <group>
-                <signal-id>2</signal-id>
-                <sig-type>13</sig-type>
-                <trans-type>1</trans-type>
-                <sig-group></sig-group>
-            </group>
-            <group>
                 <signal-id>20</signal-id>
                 <sig-type>7</sig-type>
                 <trans-type>0</trans-type>
@@ -532,48 +574,6 @@
                 <trans-type>3</trans-type>
                 <sig-group></sig-group>
             </group>
-            <group>
-                <signal-id>3</signal-id>
-                <sig-type>45</sig-type>
-                <trans-type></trans-type>
-                <sig-group></sig-group>
-            </group>
-            <group>
-                <signal-id>4</signal-id>
-                <sig-type>45</sig-type>
-                <trans-type></trans-type>
-                <sig-group></sig-group>
-            </group>
-            <group>
-                <signal-id>5</signal-id>
-                <sig-type>13</sig-type>
-                <trans-type>1</trans-type>
-                <sig-group></sig-group>
-            </group>
-            <group>
-                <signal-id>6</signal-id>
-                <sig-type>13</sig-type>
-                <trans-type>1</trans-type>
-                <sig-group></sig-group>
-            </group>
-            <group>
-                <signal-id>7</signal-id>
-                <sig-type>13</sig-type>
-                <trans-type>1</trans-type>
-                <sig-group></sig-group>
-            </group>
-            <group>
-                <signal-id>8</signal-id>
-                <sig-type>13</sig-type>
-                <trans-type>1</trans-type>
-                <sig-group></sig-group>
-            </group>
-            <group>
-                <signal-id>9</signal-id>
-                <sig-type>13</sig-type>
-                <trans-type>0</trans-type>
-                <sig-group>2</sig-group>
-            </group>
         </iec60870>
         <journals desc="Журналы">
             <meas desc="Журнал измерений">
@@ -584,189 +584,189 @@
                     <visibility>true</visibility>
                 </item>
                 <item>
-                    <header>Дата/Время UTC</header>
                     <index>1</index>
+                    <header>Дата/Время UTC</header>
                     <type>time32</type>
                     <visibility>true</visibility>
                 </item>
                 <item>
-                    <header>U ф.A</header>
                     <index>2</index>
+                    <header>U ф.A</header>
                     <type>float32</type>
                     <visibility>true</visibility>
                 </item>
                 <item>
-                    <header>U ф.B</header>
                     <index>3</index>
+                    <header>U ф.B</header>
                     <type>float32</type>
                     <visibility>true</visibility>
                 </item>
                 <item>
-                    <header>U ф.C</header>
                     <index>4</index>
+                    <header>U ф.C</header>
                     <type>float32</type>
                     <visibility>true</visibility>
                 </item>
                 <item>
-                    <header>I ф.A</header>
                     <index>5</index>
+                    <header>I ф.A</header>
                     <type>float32</type>
                     <visibility>true</visibility>
                 </item>
                 <item>
-                    <header>I ф.B</header>
                     <index>6</index>
+                    <header>I ф.B</header>
                     <type>float32</type>
                     <visibility>true</visibility>
                 </item>
                 <item>
-                    <header>I ф.C</header>
                     <index>7</index>
+                    <header>I ф.C</header>
                     <type>float32</type>
                     <visibility>true</visibility>
                 </item>
                 <item>
-                    <header>F</header>
                     <index>8</index>
+                    <header>F</header>
                     <type>float32</type>
                     <visibility>true</visibility>
                 </item>
                 <item>
-                    <header>U0</header>
                     <index>9</index>
+                    <header>U0</header>
                     <type>float32</type>
                     <visibility>true</visibility>
                 </item>
                 <item>
-                    <header>U1</header>
                     <index>10</index>
+                    <header>U1</header>
                     <type>float32</type>
                     <visibility>true</visibility>
                 </item>
                 <item>
-                    <header>U2</header>
                     <index>11</index>
+                    <header>U2</header>
                     <type>float32</type>
                     <visibility>true</visibility>
                 </item>
                 <item>
-                    <header>I0</header>
                     <index>12</index>
+                    <header>I0</header>
                     <type>float32</type>
                     <visibility>true</visibility>
                 </item>
                 <item>
-                    <header>I1</header>
                     <index>13</index>
+                    <header>I1</header>
                     <type>float32</type>
                     <visibility>true</visibility>
                 </item>
                 <item>
-                    <header>I2</header>
                     <index>14</index>
+                    <header>I2</header>
                     <type>float32</type>
                     <visibility>true</visibility>
                 </item>
                 <item>
-                    <header>C1 ф.A</header>
                     <index>15</index>
+                    <header>C1 ф.A</header>
                     <type>float32</type>
                     <visibility>true</visibility>
                 </item>
                 <item>
-                    <header>C1 ф.B</header>
                     <index>16</index>
+                    <header>C1 ф.B</header>
                     <type>float32</type>
                     <visibility>true</visibility>
                 </item>
                 <item>
-                    <header>C1 ф.C</header>
                     <index>17</index>
+                    <header>C1 ф.C</header>
                     <type>float32</type>
                     <visibility>true</visibility>
                 </item>
                 <item>
-                    <header>tg δ ф.A</header>
                     <index>18</index>
+                    <header>tg δ ф.A</header>
                     <type>float32</type>
                     <visibility>true</visibility>
                 </item>
                 <item>
-                    <header>tg δ ф.B</header>
                     <index>19</index>
+                    <header>tg δ ф.B</header>
                     <type>float32</type>
                     <visibility>true</visibility>
                 </item>
                 <item>
-                    <header>tg δ ф.C</header>
                     <index>20</index>
+                    <header>tg δ ф.C</header>
                     <type>float32</type>
                     <visibility>true</visibility>
                 </item>
                 <item>
-                    <header>∆C ф.A</header>
                     <index>21</index>
+                    <header>∆C ф.A</header>
                     <type>float32</type>
                     <visibility>true</visibility>
                 </item>
                 <item>
-                    <header>∆C ф.B</header>
                     <index>22</index>
+                    <header>∆C ф.B</header>
                     <type>float32</type>
                     <visibility>true</visibility>
                 </item>
                 <item>
-                    <header>∆C ф.C</header>
                     <index>23</index>
+                    <header>∆C ф.C</header>
                     <type>float32</type>
                     <visibility>true</visibility>
                 </item>
                 <item>
-                    <header>∆tg δ ф.A</header>
                     <index>24</index>
+                    <header>∆tg δ ф.A</header>
                     <type>float32</type>
                     <visibility>true</visibility>
                 </item>
                 <item>
-                    <header>∆tg δ ф.B</header>
                     <index>25</index>
+                    <header>∆tg δ ф.B</header>
                     <type>float32</type>
                     <visibility>true</visibility>
                 </item>
                 <item>
-                    <header>∆tg δ ф.C</header>
                     <index>26</index>
+                    <header>∆tg δ ф.C</header>
                     <type>float32</type>
                     <visibility>true</visibility>
                 </item>
                 <item>
-                    <header>Iunb</header>
                     <index>27</index>
+                    <header>Iunb</header>
                     <type>float32</type>
                     <visibility>true</visibility>
                 </item>
                 <item>
-                    <header>Phy_unb</header>
                     <index>28</index>
+                    <header>Phy_unb</header>
                     <type>float32</type>
                     <visibility>true</visibility>
                 </item>
                 <item>
-                    <header>Tmk, °С</header>
                     <index>29</index>
+                    <header>Tmk, °С</header>
                     <type>float32</type>
                     <visibility>true</visibility>
                 </item>
                 <item>
-                    <header>Tamb, °С</header>
                     <index>30</index>
+                    <header>Tamb, °С</header>
                     <type>float32</type>
                     <visibility>true</visibility>
                 </item>
                 <item>
-                    <header>res</header>
                     <index>31</index>
-                    <type>uint32</type>
+                    <header>Влажность</header>
+                    <type>float32</type>
                     <visibility>false</visibility>
                 </item>
             </meas>
@@ -885,6 +885,42 @@
                 <desc>bsi</desc>
             </group>
             <group>
+                <signal-id>2</signal-id>
+                <reg-type>4</reg-type>
+                <type>float</type>
+                <desc>TempAndVbat</desc>
+            </group>
+            <group>
+                <signal-id>5</signal-id>
+                <reg-type>4</reg-type>
+                <type>float</type>
+                <desc>U</desc>
+            </group>
+            <group>
+                <signal-id>6</signal-id>
+                <reg-type>4</reg-type>
+                <type>float</type>
+                <desc>I</desc>
+            </group>
+            <group>
+                <signal-id>7</signal-id>
+                <reg-type>4</reg-type>
+                <type>float</type>
+                <desc>Phi</desc>
+            </group>
+            <group>
+                <signal-id>8</signal-id>
+                <reg-type>4</reg-type>
+                <type>float</type>
+                <desc>C_tg</desc>
+            </group>
+            <group>
+                <signal-id>9</signal-id>
+                <reg-type>4</reg-type>
+                <type>float</type>
+                <desc>BgC_Tg</desc>
+            </group>
+            <group>
                 <signal-id>10</signal-id>
                 <reg-type>4</reg-type>
                 <type>float</type>
@@ -927,46 +963,10 @@
                 <desc>ErrCfg</desc>
             </group>
             <group>
-                <signal-id>2</signal-id>
-                <reg-type>4</reg-type>
-                <type>float</type>
-                <desc>TempAndVbat</desc>
-            </group>
-            <group>
                 <signal-id>21</signal-id>
                 <reg-type>1</reg-type>
                 <type>bool</type>
                 <desc>alarmInfo</desc>
-            </group>
-            <group>
-                <signal-id>5</signal-id>
-                <reg-type>4</reg-type>
-                <type>float</type>
-                <desc>U</desc>
-            </group>
-            <group>
-                <signal-id>6</signal-id>
-                <reg-type>4</reg-type>
-                <type>float</type>
-                <desc>I</desc>
-            </group>
-            <group>
-                <signal-id>7</signal-id>
-                <reg-type>4</reg-type>
-                <type>float</type>
-                <desc>Phi</desc>
-            </group>
-            <group>
-                <signal-id>8</signal-id>
-                <reg-type>4</reg-type>
-                <type>float</type>
-                <desc>C_tg</desc>
-            </group>
-            <group>
-                <signal-id>9</signal-id>
-                <reg-type>4</reg-type>
-                <type>float</type>
-                <desc>BgC_Tg</desc>
             </group>
         </modbus>
         <protocom desc="Протокол Protocom">
@@ -975,20 +975,8 @@
                 <signal-id>2</signal-id>
             </group>
             <group>
-                <block>100</block>
-                <signal-id>13</signal-id>
-            </group>
-            <group>
                 <block>2</block>
                 <signal-id>5</signal-id>
-            </group>
-            <group>
-                <block>200</block>
-                <signal-id>21</signal-id>
-            </group>
-            <group>
-                <block>250</block>
-                <signal-id>16</signal-id>
             </group>
             <group>
                 <block>3</block>
@@ -1007,6 +995,10 @@
                 <signal-id>9</signal-id>
             </group>
             <group>
+                <block>7</block>
+                <signal-id>17</signal-id>
+            </group>
+            <group>
                 <block>8</block>
                 <signal-id>10</signal-id>
             </group>
@@ -1015,8 +1007,16 @@
                 <signal-id>15</signal-id>
             </group>
             <group>
-                <block>7</block>
-                <signal-id>17</signal-id>
+                <block>100</block>
+                <signal-id>13</signal-id>
+            </group>
+            <group>
+                <block>200</block>
+                <signal-id>21</signal-id>
+            </group>
+            <group>
+                <block>250</block>
+                <signal-id>16</signal-id>
             </group>
         </protocom>
         <section-tabs desc="Вкладки">
@@ -1035,22 +1035,40 @@
         </section-tabs>
         <sections desc="Разделы">
             <section header="Текущие данные">
+                <sgroup tab="2" header="Коэффициенты несимметрии">
+                    <mwidget desc="KuU1, %" view="float">
+                        <start-addr>1014</start-addr>
+                        <toolTip>Коэффициент несимметрии напряжения по нулевой последовательности, %</toolTip>
+                    </mwidget>
+                    <mwidget desc="KuU2, %" view="float">
+                        <start-addr>1015</start-addr>
+                        <toolTip>Коэффициент несимметрии напряжения по обратной последовательности, %</toolTip>
+                    </mwidget>
+                    <mwidget desc="KuI1, %" view="float">
+                        <start-addr>1114</start-addr>
+                        <toolTip>Коэффициент несимметрии тока по нулевой последовательности, %</toolTip>
+                    </mwidget>
+                    <mwidget desc="KuI2, %" view="float">
+                        <start-addr>1115</start-addr>
+                        <toolTip>Коэффициент несимметрии тока по обратной последовательности, %</toolTip>
+                    </mwidget>
+                </sgroup>
                 <sgroup tab="1" header="Общие">
-                    <mwidget view="float" desc="Температура микроконтроллера, °С">
+                    <mwidget desc="Температура микроконтроллера, °С" view="float">
                         <start-addr>101</start-addr>
                         <toolTip>Температура микроконтроллера, °С</toolTip>
                     </mwidget>
-                    <mwidget view="float" desc="Частота, Гц">
+                    <mwidget desc="Частота, Гц" view="float">
                         <start-addr>2400</start-addr>
                         <toolTip>Частота, Гц</toolTip>
                     </mwidget>
-                    <mwidget view="float" desc="Температура окружающей среды, °С">
+                    <mwidget desc="Температура окружающей среды, °С" view="float">
                         <start-addr>4501</start-addr>
                         <toolTip>Температура окружающей среды, °С</toolTip>
                     </mwidget>
                 </sgroup>
                 <sgroup tab="1" header="Параметры вводов">
-                    <mwidget view="float" desc="U ф.%1, кВ">
+                    <mwidget desc="U ф.%1, кВ" view="float">
                         <start-addr>1000</start-addr>
                         <count>3</count>
                         <toolTip>Фазное действующее напряжение по 1-й гармонике ф.%1, кВ</toolTip>
@@ -1060,7 +1078,7 @@
                             <item>C</item>
                         </string-array>
                     </mwidget>
-                    <mwidget view="float" desc="I ф.%1, мА">
+                    <mwidget desc="I ф.%1, мА" view="float">
                         <start-addr>1100</start-addr>
                         <count>3</count>
                         <toolTip>Действующее значение тока утечки ввода по 1-й гармонике ф.%1, мА</toolTip>
@@ -1070,7 +1088,7 @@
                             <item>C</item>
                         </string-array>
                     </mwidget>
-                    <mwidget view="float" desc="C1 ф.%1, пФ">
+                    <mwidget desc="C1 ф.%1, пФ" view="float">
                         <start-addr>2420</start-addr>
                         <count>3</count>
                         <toolTip>Емкость С1 ввода ф.%1, пФ</toolTip>
@@ -1080,7 +1098,7 @@
                             <item>C</item>
                         </string-array>
                     </mwidget>
-                    <mwidget view="float" desc="tgδ ф.%1, %">
+                    <mwidget desc="tgδ ф.%1, %" view="float">
                         <start-addr>2423</start-addr>
                         <count>3</count>
                         <toolTip>Тангенс дельта ввода ф.%1, %</toolTip>
@@ -1090,7 +1108,7 @@
                             <item>C</item>
                         </string-array>
                     </mwidget>
-                    <mwidget view="float" desc="∆C ф.%1, %">
+                    <mwidget desc="∆C ф.%1, %" view="float">
                         <start-addr>2426</start-addr>
                         <count>3</count>
                         <toolTip>Приращение емкости С1 ввода ф.%1, %</toolTip>
@@ -1100,7 +1118,7 @@
                             <item>C</item>
                         </string-array>
                     </mwidget>
-                    <mwidget view="float" desc="∆tgδ ф.%1, %">
+                    <mwidget desc="∆tgδ ф.%1, %" view="float">
                         <start-addr>2429</start-addr>
                         <count>3</count>
                         <toolTip>Приращение тангенса дельта ввода ф.%1, %</toolTip>
@@ -1112,67 +1130,62 @@
                     </mwidget>
                 </sgroup>
                 <sgroup tab="1" header="Параметры небаланса токов">
-                    <mwidget view="float" desc="Iunb, %">
+                    <mwidget desc="Iunb, %" view="float">
                         <start-addr>2432</start-addr>
                         <toolTip>Действующее значение небаланса токов, %</toolTip>
                     </mwidget>
-                    <mwidget view="float" desc="Phi_unb, град.">
+                    <mwidget desc="Phi_unb, град." view="float">
                         <start-addr>2433</start-addr>
                         <toolTip>Угол небаланса токов относительно тока ф.А, град.</toolTip>
                     </mwidget>
                 </sgroup>
-                <sgroup tab="2" header="Коэффициенты несимметрии">
-                    <mwidget view="float" desc="KuU1, %">
-                        <start-addr>1014</start-addr>
-                        <toolTip>Коэффициент несимметрии напряжения по нулевой последовательности, %</toolTip>
-                    </mwidget>
-                    <mwidget view="float" desc="KuU2, %">
-                        <start-addr>1015</start-addr>
-                        <toolTip>Коэффициент несимметрии напряжения по обратной последовательности, %</toolTip>
-                    </mwidget>
-                    <mwidget view="float" desc="KuI1, %">
-                        <start-addr>1114</start-addr>
-                        <toolTip>Коэффициент несимметрии тока по нулевой последовательности, %</toolTip>
-                    </mwidget>
-                    <mwidget view="float" desc="KuI2, %">
-                        <start-addr>1115</start-addr>
-                        <toolTip>Коэффициент несимметрии тока по обратной последовательности, %</toolTip>
-                    </mwidget>
-                </sgroup>
                 <sgroup tab="2" header="Симметричные составляющие">
-                    <mwidget view="float" desc="U0, кВ">
+                    <mwidget desc="U0, кВ" view="float">
                         <start-addr>1011</start-addr>
                         <toolTip>Напряжение нулевой последовательности, кВ</toolTip>
                     </mwidget>
-                    <mwidget view="float" desc="U1, кВ">
+                    <mwidget desc="U1, кВ" view="float">
                         <start-addr>1012</start-addr>
                         <toolTip>Напряжение прямой последовательности, кВ</toolTip>
                     </mwidget>
-                    <mwidget view="float" desc="U2, кВ">
+                    <mwidget desc="U2, кВ" view="float">
                         <start-addr>1013</start-addr>
                         <toolTip>Напряжение обратной последовательности, кВ</toolTip>
                     </mwidget>
-                    <mwidget view="float" desc="I0, мА">
+                    <mwidget desc="I0, мА" view="float">
                         <start-addr>1111</start-addr>
                         <toolTip>Ток нулевой последовательности, мА</toolTip>
                     </mwidget>
-                    <mwidget view="float" desc="I1, мА">
+                    <mwidget desc="I1, мА" view="float">
                         <start-addr>1112</start-addr>
                         <toolTip>Ток прямой последовательности, мА</toolTip>
                     </mwidget>
-                    <mwidget view="float" desc="I2, мА">
+                    <mwidget desc="I2, мА" view="float">
                         <start-addr>1113</start-addr>
                         <toolTip>Ток обратной последовательности, мА</toolTip>
                     </mwidget>
                 </sgroup>
+                <sgroup tab="3" header="Состояние дискретных входов">
+                    <mwidget desc="Транформатор отключён (DI24)" view="bitset">
+                        <start-addr>4521</start-addr>
+                        <toolTip>Дискретный вход DI24</toolTip>
+                    </mwidget>
+                </sgroup>
+                <sgroup tab="3" header="Состояние дискретных выходов">
+                    <mwidget desc="DO%1" view="bitset">
+                        <start-addr>4520</start-addr>
+                        <count>3</count>
+                        <toolTip>Дискретный выход DO%1</toolTip>
+                    </mwidget>
+                </sgroup>
                 <sgroup tab="2" header="Температура">
-                    <mwidget view="float" desc="Ramb, Ом">
+                    <mwidget desc="Ramb, Ом" view="float">
                         <start-addr>4502</start-addr>
                         <toolTip>Сопротивление датчика, Ом</toolTip>
                     </mwidget>
                 </sgroup>
                 <sgroup tab="2" header="Угловые значения">
-                    <mwidget view="float" desc="Phy_I ф.%1, град.">
+                    <mwidget desc="Phy_I ф.%1, град." view="float">
                         <start-addr>2404</start-addr>
                         <count>3</count>
                         <toolTip>Угол по току ф.%1</toolTip>
@@ -1182,7 +1195,7 @@
                             <item>C</item>
                         </string-array>
                     </mwidget>
-                    <mwidget view="float" desc="Phy_U ф.%1, град.">
+                    <mwidget desc="Phy_U ф.%1, град." view="float">
                         <start-addr>2401</start-addr>
                         <count>3</count>
                         <toolTip>Угол по напряжению ф.%1</toolTip>
@@ -1191,19 +1204,6 @@
                             <item>B</item>
                             <item>C</item>
                         </string-array>
-                    </mwidget>
-                </sgroup>
-                <sgroup tab="3" header="Состояние дискретных входов">
-                    <mwidget view="bitset" desc="Транформатор отключён (DI24)">
-                        <start-addr>4521</start-addr>
-                        <toolTip>Дискретный вход DI24</toolTip>
-                    </mwidget>
-                </sgroup>
-                <sgroup tab="3" header="Состояние дискретных выходов">
-                    <mwidget view="bitset" desc="DO%1">
-                        <start-addr>4520</start-addr>
-                        <count>3</count>
-                        <toolTip>Дискретный выход DO%1</toolTip>
                     </mwidget>
                 </sgroup>
             </section>
@@ -1216,9 +1216,9 @@
                 <type>BitString</type>
             </signal>
             <signal>
-                <start-addr>1000</start-addr>
-                <count>16</count>
-                <id>5</id>
+                <start-addr>40</start-addr>
+                <count>5</count>
+                <id>20</id>
                 <type>Float</type>
             </signal>
             <signal>
@@ -1228,21 +1228,39 @@
                 <type>Float</type>
             </signal>
             <signal>
-                <start-addr>1100</start-addr>
-                <count>16</count>
-                <id>6</id>
-                <type>Float</type>
-            </signal>
-            <signal>
-                <start-addr>13000</start-addr>
-                <count>7</count>
-                <id>16</id>
-                <type>Float</type>
-            </signal>
-            <signal>
                 <start-addr>201</start-addr>
                 <count>3</count>
                 <id>12</id>
+                <type>Float</type>
+            </signal>
+            <signal>
+                <start-addr>801</start-addr>
+                <count>3</count>
+                <id>3</id>
+                <type>Float</type>
+            </signal>
+            <signal>
+                <start-addr>900</start-addr>
+                <count>8</count>
+                <id>4</id>
+                <type>Float</type>
+            </signal>
+            <signal>
+                <start-addr>910</start-addr>
+                <count>11</count>
+                <id>17</id>
+                <type>Float</type>
+            </signal>
+            <signal>
+                <start-addr>1000</start-addr>
+                <count>16</count>
+                <id>5</id>
+                <type>Float</type>
+            </signal>
+            <signal>
+                <start-addr>1100</start-addr>
+                <count>16</count>
+                <id>6</id>
                 <type>Float</type>
             </signal>
             <signal>
@@ -1267,12 +1285,6 @@
                 <start-addr>3100</start-addr>
                 <count>1</count>
                 <id>21</id>
-                <type>Float</type>
-            </signal>
-            <signal>
-                <start-addr>40</start-addr>
-                <count>5</count>
-                <id>20</id>
                 <type>Float</type>
             </signal>
             <signal>
@@ -1306,21 +1318,9 @@
                 <type>Float</type>
             </signal>
             <signal>
-                <start-addr>801</start-addr>
-                <count>3</count>
-                <id>3</id>
-                <type>Float</type>
-            </signal>
-            <signal>
-                <start-addr>900</start-addr>
-                <count>8</count>
-                <id>4</id>
-                <type>Float</type>
-            </signal>
-            <signal>
-                <start-addr>910</start-addr>
-                <count>11</count>
-                <id>17</id>
+                <start-addr>13000</start-addr>
+                <count>7</count>
+                <id>16</id>
                 <type>Float</type>
             </signal>
         </signals>
