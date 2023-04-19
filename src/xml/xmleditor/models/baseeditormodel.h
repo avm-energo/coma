@@ -54,8 +54,8 @@ signals:
     void modelChanged();
 
 public slots:
-    virtual void getDialogRequest(const int &row);
+    virtual void getDialogRequest(const int row);
     virtual void create(const QStringList &saved, int *row);
-    virtual void update(const QStringList &saved, const int &row);
-    virtual void remove(const int &row);
+    virtual void update(const QStringList &saved, const int row);
+    virtual void remove(const int row);
 };

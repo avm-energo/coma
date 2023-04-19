@@ -67,7 +67,7 @@ void BaseEditorModel::makeElement(QDomDocument &doc, QDomElement &parent, const 
 }
 
 /// \brief Slot for receiving a request from dialog and emits signal with response.
-void BaseEditorModel::getDialogRequest(const int &row)
+void BaseEditorModel::getDialogRequest(const int row)
 {
     if (row >= 0 && row < rowCount())
     {
@@ -103,7 +103,7 @@ void BaseEditorModel::create(const QStringList &saved, int *row)
 }
 
 /// \brief Slot for updating an item's data in the model.
-void BaseEditorModel::update(const QStringList &saved, const int &row)
+void BaseEditorModel::update(const QStringList &saved, const int row)
 {
     if (row >= 0 && row < rowCount())
     {
@@ -118,7 +118,7 @@ void BaseEditorModel::update(const QStringList &saved, const int &row)
 }
 
 /// \brief Slot for deleting an exisiting item in the model.
-void BaseEditorModel::remove(const int &row)
+void BaseEditorModel::remove(const int row)
 {
     removeRow(row);
 }

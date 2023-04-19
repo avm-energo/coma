@@ -22,7 +22,8 @@ class XmlModel : public BaseEditorModel
     Q_OBJECT
 protected:
     void parseDataNode(QDomNode &child, int &row);
-    void parseTag(QDomNode &node, const QString &tagName, int row, int col, const QString &defValue = "");
+    void parseTag(QDomNode &node, const QString &tagName, int row, int col, //
+        const QString &defValue = "", bool isInt = false);
     void parseAttribute(QDomNode &node, const QString &attrName, int row, int col);
 
 public:
@@ -34,8 +35,8 @@ public:
     virtual QVariant data(const QModelIndex &index, int nRole = Qt::DisplayRole) const override;
     virtual bool setData(const QModelIndex &index, const QVariant &val, int nRole = Qt::EditRole) override;
     virtual void create(const QStringList &saved, int *row) override;
-    virtual void update(const QStringList &saved, const int &row) override;
-    virtual void remove(const int &row) override;
+    virtual void update(const QStringList &saved, const int row) override;
+    virtual void remove(const int row) override;
 
     virtual QDomElement toNode(QDomDocument &doc) = 0;
     void setDataNode(bool isChildModel, QDomNode &root);

@@ -24,8 +24,8 @@ public:
 public slots:
     void masterItemSelected(const QModelIndex &index);
     virtual void create(const QStringList &saved, int *row) override;
-    virtual void update(const QStringList &saved, const int &row) override;
-    virtual void remove(const int &row) override;
+    virtual void update(const QStringList &saved, const int row) override;
+    virtual void remove(const int row) override;
 
 signals:
     void itemSelected(QDomNode &node);
