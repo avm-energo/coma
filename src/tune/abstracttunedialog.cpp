@@ -267,6 +267,8 @@ void AbstractTuneDialog::startTune()
         res = (this->*m_tuneFunctions.at(bStep).func)();
         if ((res == Error::Msg::GeneralError) || (StdFunc::IsCancelled()))
         {
+            if (StdFunc::IsCancelled())
+                res = Error::Cancelled;
             MsgSetVisible(ErMsg, bStep);
 #ifndef DEBUGISON
             WDFunc::SetEnabled(this, "starttune", true);
