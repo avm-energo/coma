@@ -2,8 +2,10 @@
 
 #include "../../datablocks/kiv/bda.h"
 #include "../../interfaces/protocom.h"
+#include "../../s2/configv.h"
 #include "../../widgets/epopup.h"
 #include "../../widgets/wd_func.h"
+#include "../s2/s2.h"
 
 #include <QDialog>
 #include <QMessageBox>
@@ -82,21 +84,35 @@ Error::Msg TuneKIVCheck::showScheme()
 
 Error::Msg TuneKIVCheck::check()
 {
+    QList<DataTypes::DataRecV> recordList;
+
+    recordList = { { S2::GetIdByName("C_Pasp_ID"), DataTypes::FLOAT_3t({ 9000, 9000, 9000 }) },
+        { S2::GetIdByName("Unom1"), float(220) } };
+
+    if (BaseInterface::iface()->pushAndWriteConfFileSync(configV, recordList) != Error::NoError)
+    {
+        EMessageBox::error(this, "Ошибка при записи конфигурации");
+        return Error::GeneralError;
+    }
+
     BdaA284 *bda = new BdaA284;
     bda->readAndUpdate();
 #ifndef NO_LIMITS
     for (int i = 0; i < 3; ++i)
         if (!WDFunc::floatIsWithinLimits("напряжения", bda->data()->Ueff_ADC[i], 2150000.0, 150000.0))
-            return Error::Msg::GeneralError;
+            goto FaultLabel;
     for (int i = 3; i < 6; ++i)
         if (!WDFunc::floatIsWithinLimits("тока", bda->data()->Ueff_ADC[i], 1220000.0, 60000.0))
-            return Error::Msg::GeneralError;
+            goto FaultLabel;
     if (!WDFunc::floatIsWithinLimits("сопротивления", bda->data()->Pt100, 2123.0, 120.0))
-        return Error::Msg::GeneralError;
+        goto FaultLabel;
     if (!WDFunc::floatIsWithinLimits("частоты", bda->data()->Frequency, 51.0, 0.05))
-        return Error::Msg::GeneralError;
+        goto FaultLabel;
 #endif
     return Error::Msg::NoError;
+FaultLabel:
+    BaseInterface::iface()->popAndWriteConfFileSync(configV);
+    return Error::Msg::GeneralError;
 }
 
 void TuneKIVCheck::showEvent(QShowEvent *e)

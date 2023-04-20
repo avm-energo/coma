@@ -14,6 +14,10 @@ public:
     const QList<DataTypes::DataRecV> &getConfig() const;
     void setConfig(const QList<DataTypes::DataRecV> &newConfig);
 
+    void pushConfig();
+    void popConfig();
+
 private:
     QList<DataTypes::DataRecV> config;
+    QList<DataTypes::DataRecV> savedConfig;
 };
