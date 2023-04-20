@@ -30,10 +30,5 @@ public:
     static QMap<QString, quint16> NameIdMap;
 
 private:
-    // S2: Поиск элемента в массиве описаний
-    // static bool RestoreDataMem(void *mem, quint32 memsize, const QVector<S2DataTypes::DataRec> &dr);
-    // static void findElemAndWriteIt(QVector<S2DataTypes::DataRec> *s2config, const DataTypes::S2Record &cfp);
-    // static bool findElemAndWriteIt(S2DataTypes::DataRec *record, const DataTypes::S2Record &cfp);
-    // static const S2DataTypes::DataRec *FindElem(const QVector<S2DataTypes::DataRec> *, quint32);
     static quint32 getTime32();
 };
