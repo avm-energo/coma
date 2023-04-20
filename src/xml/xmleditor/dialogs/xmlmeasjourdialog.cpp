@@ -16,7 +16,7 @@ void XmlMeasJourDialog::setupUI(QVBoxLayout *mainLayout)
     mTitle += "элемента журнала измерений";
 
     // Виджеты для индекса измерения
-    auto indexLabel = new QLabel("S2 ID: ", this);
+    auto indexLabel = new QLabel("Индекс измерения: ", this);
     auto idndexInput = new QSpinBox(this);
     idndexInput->setMinimum(0);
     idndexInput->setMaximum(idMax);
@@ -38,7 +38,7 @@ void XmlMeasJourDialog::setupUI(QVBoxLayout *mainLayout)
     dlgItems.append(headInput);
 
     // Виджеты для выбора типа элемента журнала измерений
-    auto typeLabel = new QLabel("Видимость: ", this);
+    auto typeLabel = new QLabel("Тип данных: ", this);
     auto typeInput = new QComboBox(this);
     typeInput->addItems({ "uint32", "float32", "time32", "time64" });
     typeInput->setCurrentIndex(0);

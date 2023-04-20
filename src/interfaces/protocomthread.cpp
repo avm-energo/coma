@@ -304,7 +304,6 @@ void ProtocomThread::parseRequest(const CommandStruct &cmdStr)
     case Commands::FakeReadBitString:
     case Commands::FakeReadRegData:
     {
-
         QByteArray ba = prepareBlock(Commands::ReadBlkData, m_currentCommand.ba);
         emit writeDataAttempt(ba);
         break;
@@ -342,9 +341,7 @@ void ProtocomThread::parseRequest(const CommandStruct &cmdStr)
     {
         assert(m_currentCommand.arg1.canConvert<uint24>());
         uint24 addr = m_currentCommand.arg1.value<uint24>();
-
         QByteArray buffer = StdFunc::ArrayFromNumber((addr)) + m_currentCommand.ba;
-
         QByteArray ba = prepareBlock(Commands::WriteSingleCommand, buffer);
         emit writeDataAttempt(ba);
         break;

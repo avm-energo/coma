@@ -40,7 +40,10 @@ static_assert(sizeof(INT32) == sizeof(DWORD), "Broken datatypes");
 static_assert(sizeof(FLOAT) == sizeof(DWORD), "Broken datatypes");
 static_assert(sizeof(WORD_4t) == sizeof(BYTE_8t), "Broken datatypes");
 static_assert(sizeof(DWORD_4t) == sizeof(BYTE_16t), "Broken datatypes");
+static_assert(sizeof(DWORD_8t) == sizeof(BYTE_32t), "Broken datatypes");
 static_assert(sizeof(FLOAT_2t) == sizeof(BYTE_8t), "Broken datatypes");
+static_assert(sizeof(FLOAT_4t) == sizeof(BYTE_16t), "Broken datatypes");
+static_assert(sizeof(FLOAT_8t) == sizeof(BYTE_32t), "Broken datatypes");
 
 namespace detail
 {
