@@ -15,22 +15,17 @@ S2::S2()
 
 void S2::StoreDataMem(QByteArray &mem, const QVector<S2DataTypes::DataRec> &dr, int fname)
 {
-    // quint32 crc = 0xFFFFFFFF;
     S2Dev::CRC32 crc;
     S2DataTypes::FileHeader header;
     QByteArray ba;
-    // quint32 i = 0;
     header.size = 0;
     for (const S2DataTypes::DataRec &record : dr)
     {
-        // const char *Rptr = reinterpret_cast<const char *>(&record);
         auto tmpi = sizeof(record.header);
-        ba = QByteArray::fromRawData(reinterpret_cast<const char *>(&record.header), tmpi);
-        mem.append(ba);
         header.size += tmpi;
-        crc.update(record.header);
-        // for (i = 0; i < tmpi; i++)
-        //    updCRC32((Rptr)[i], &crc);
+        ba = QByteArray::fromRawData(reinterpret_cast<const char *>(&record.header), tmpi);
+        crc.update(ba);
+        mem.append(ba);
         if (record.header.id == S2DataTypes::dummyElement)
             break;
         if (record.thedata != nullptr)
@@ -38,10 +33,8 @@ void S2::StoreDataMem(QByteArray &mem, const QVector<S2DataTypes::DataRec> &dr, 
             tmpi = record.header.numByte;
             header.size += tmpi;
             auto data = reinterpret_cast<const char *>(record.thedata);
-            crc.update(reinterpret_cast<const quint8 *>(data), tmpi);
-            // for (i = 0; i < tmpi; i++)
-            //    updCRC32(data[i], &crc);
             ba = QByteArray::fromRawData(data, tmpi);
+            crc.update(ba);
             mem.append(ba);
         }
     }
@@ -171,7 +164,6 @@ bool S2::RestoreData(QByteArray bain, QList<DataTypes::S2Record> &outlist)
     // проверка контрольной суммы
     Q_ASSERT(bain.size() == fh.size);
     S2Dev::CRC32 crc32(bain);
-    // if (!CheckCRC32(&bain.data()[0], fh.size, fh.crc32))
     if (crc32 != fh.crc32)
     {
         qCritical() << "S2" << Error::Msg::CrcError; // выход за границу принятых байт
@@ -221,7 +213,6 @@ bool S2::RestoreData(QByteArray bain, QList<DataTypes::DataRecV> &outlist)
     // проверка контрольной суммы
     Q_ASSERT(bain.size() == fh.size);
     S2Dev::CRC32 crc32(bain);
-    // if (!CheckCRC32(&bain.data()[0], bain.size(), fh.crc32))
     if (crc32 != fh.crc32)
     {
         qCritical() << Error::Msg::CrcError << "S2"; // выход за границу принятых байт
@@ -260,17 +251,17 @@ bool S2::RestoreData(QByteArray bain, QList<DataTypes::DataRecV> &outlist)
     return true;
 }
 
-const S2DataTypes::DataRec *S2::FindElem(const QVector<S2DataTypes::DataRec> *dr, quint32 id)
-{
-    for (auto it = dr->cbegin(); it != dr->cend(); ++it)
-    {
-        if (it->header.id == id)
-            return it;
-        if (it->header.id == S2DataTypes::dummyElement)
-            return nullptr;
-    }
-    return nullptr;
-}
+// const S2DataTypes::DataRec *S2::FindElem(const QVector<S2DataTypes::DataRec> *dr, quint32 id)
+//{
+//    for (auto it = dr->cbegin(); it != dr->cend(); ++it)
+//    {
+//        if (it->header.id == id)
+//            return it;
+//        if (it->header.id == S2DataTypes::dummyElement)
+//            return nullptr;
+//    }
+//    return nullptr;
+//}
 
 // void S2::findElemAndWriteIt(QVector<S2DataTypes::DataRec> *s2config, const DataTypes::S2Record &cfp)
 //{
@@ -525,49 +516,10 @@ S2DataTypes::S2ConfigType S2::ParseHexToS2(QByteArray &ba)
     return S2DR;
 }
 
-// void inline S2::updCRC32(const char byte, quint32 *dwCRC32)
-//{
-//    *dwCRC32 = ((*dwCRC32) >> 8) ^ _crc32_t[static_cast<const quint8>(byte) ^ ((*dwCRC32) & 0x000000FF)];
-//}
-
-// bool S2::CheckCRC32(void *m, const quint32 length, const quint32 crctocheck)
-//{
-//    quint32 crc = 0xFFFFFFFF;
-//    auto *mem = static_cast<char *>(m);
-//    for (quint32 i = 0; i < length; ++i)
-//    {
-//        updCRC32(*mem, &crc);
-//        ++mem;
-//    }
-//    return (crctocheck == crc);
-//}
-
-// quint32 S2::GetCRC32(char *data, quint32 len)
-//{
-//    quint32 dwCRC32 = 0xFFFFFFFF;
-//    for (quint32 i = 0; i < len; i++)
-//    {
-//        updCRC32(*data, &dwCRC32);
-//        data++;
-//    }
-//    return dwCRC32;
-//}
-
-// quint32 S2::updateCRC32(unsigned char ch, quint32 crc)
-//{
-//    return (_crc32_t[((crc) ^ (static_cast<quint8>(ch))) & 0xff] ^ ((crc) >> 8));
-//}
-
 quint16 S2::GetIdByName(QString name)
 {
     return NameIdMap.value(name, 0);
 }
-
-// quint32 S2::crc32buf(const QByteArray &data)
-//{
-//    return ~std::accumulate(data.begin(), data.end(), quint32(0xFFFFFFFF),
-//        [](quint32 oldcrc32, char buf) { return updateCRC32(buf, oldcrc32); });
-//}
 
 void S2::tester(S2DataTypes::S2ConfigType &buffer)
 {

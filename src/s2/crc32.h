@@ -21,12 +21,6 @@ public:
     void update(const QByteArray &data);
     void update(const quint8 *data, const quint32 size);
 
-    template <class T> void update(const T &value)
-    {
-        auto dataPtr = reinterpret_cast<const quint8 *>(&value);
-        update(dataPtr, sizeof(value));
-    }
-
     operator quint32() const;
     friend bool operator==(const CRC32 lhs, const CRC32 rhs);
     friend bool operator==(const quint32 lhs, const CRC32 rhs);
