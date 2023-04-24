@@ -51,15 +51,15 @@ void S2::StoreDataMem(QByteArray &mem, const QList<DataTypes::DataRecV> &dr, int
 {
     QVector<S2DataTypes::DataRec> recVec;
     std::transform(dr.cbegin(), dr.cend(), std::back_inserter(recVec), //
-        [](const auto &record) { return record.serialize(); });
+        [](const DataTypes::DataRecV &record) { return record.serialize(); });
     StoreDataMem(mem, recVec, fname);
 }
 
-void S2::StoreDataMem(QByteArray &mem, std::vector<DataTypes::FileStruct> &dr, int fname)
+void S2::StoreDataMem(QByteArray &mem, const std::vector<DataTypes::FileStruct> &dr, int fname)
 {
     QVector<S2DataTypes::DataRec> recVec;
     std::transform(dr.cbegin(), dr.cend(), std::back_inserter(recVec), //
-        [](const auto &record) { return record.serialize(); });
+        [](const DataTypes::FileStruct &record) { return record.serialize(); });
     StoreDataMem(mem, recVec, fname);
 }
 

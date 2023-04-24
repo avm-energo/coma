@@ -17,9 +17,11 @@ FileStruct::FileStruct(const quint8 num) : ID(num)
 {
 }
 
-S2DataTypes::DataRec FileStruct::serialize()
+S2DataTypes::DataRec FileStruct::serialize() const
 {
-    return { { ID, quint32(data.size()) }, static_cast<void *>(data.data()) };
+    auto constDataPtr = static_cast<const void *>(data.data());
+    auto dataPtr = const_cast<void *>(constDataPtr);
+    return { { ID, quint32(data.size()) }, dataPtr };
 }
 
 QDataStream &operator<<(QDataStream &stream, const FileStruct &str)
