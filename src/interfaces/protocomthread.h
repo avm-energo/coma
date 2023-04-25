@@ -34,7 +34,7 @@ private:
 
     void parseResponse(QByteArray ba);
     void parseRequest(const Proto::CommandStruct &cmdStr);
-    void handle(const Proto::Commands cmd);
+    void handleResponse(const Proto::Commands cmd);
 
     QMutex _mutex;
 
@@ -46,7 +46,7 @@ private:
     }
 
     Proto::CommandStruct m_currentCommand;
-    QPair<quint64, QByteArray> m_buffer;
+    QByteArray m_buffer;
     void checkQueue();
     void fileHelper(DataTypes::FilesEnum fileNum);
 
@@ -67,7 +67,7 @@ private:
     ByteQueue prepareLongBlk(Proto::CommandStruct &cmdStr);
 
     void handleBitString(const QByteArray &ba, quint16 sigAddr);
-#ifdef __linux
+#ifdef Q_OS_LINUX
     void handleUnixTime(const QByteArray &ba, quint16 sigAddr);
 #endif
     template <std::size_t N> void handleBitStringArray(const QByteArray &ba, std::array<quint16, N> arr_addr);
@@ -77,7 +77,7 @@ private:
     void handleSinglePoint(const QByteArray &ba, const quint16 addr);
     void handleFile(QByteArray &ba, DataTypes::FilesEnum addr, Queries::FileFormat format);
     void handleInt(const byte num);
-    void handleBool(const bool status = true, int errorSize = 0, int errorCode = 0);
+    void handleBool(int errorCode = 0);
     void handleProgress(const quint64 count);
     void handleMaxProgress(const quint64 count);
     void handleRawBlock(const QByteArray &ba, quint32 blkNum);

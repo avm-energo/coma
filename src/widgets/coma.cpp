@@ -91,9 +91,9 @@ QPoint Coma::s_comaCenter = QPoint(0, 0);
 
 Coma::Coma(const AppConfiguration &appCfg, QWidget *parent)
     : QMainWindow(parent)
-    , editor(nullptr)
     , proxyBS(new DataTypesProxy)
     , proxyGRS(new DataTypesProxy)
+    , editor(nullptr)
     , mAppConfig(appCfg)
     , mDlgManager(new DialogManager(ConfigStorage::GetInstance().getModuleSettings(), this))
 {
