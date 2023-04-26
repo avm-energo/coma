@@ -30,6 +30,7 @@ private:
     QByteArray m_readData;
     bool isCommandRequested = false;
     quint64 progress = 0;
+    bool isFirstBlock;
     void finish(Error::Msg msg);
 
     void parseResponse(QByteArray ba);

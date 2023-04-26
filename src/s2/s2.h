@@ -31,6 +31,7 @@ public:
 
     static quint32 crc32buf(const QByteArray &data);
     static quint16 GetIdByName(QString name);
+    static quint64 GetFileSize(const QByteArray &data);
 
     static QMap<QString, quint16> NameIdMap;
 

@@ -27,6 +27,7 @@ using Queries::FileFormat;
 
 ProtocomThread::ProtocomThread(QObject *parent) : QObject(parent), m_currentCommand({})
 {
+    isFirstBlock = true;
 }
 
 void ProtocomThread::setReadDataChunk(const QByteArray &readDataChunk)
@@ -408,12 +409,16 @@ void ProtocomThread::parseResponse(QByteArray ba)
             // Progress for big files
             if (m_currentCommand.cmd == Proto::Commands::ReadFile)
             {
+                if (isFirstBlock)
+                    handleMaxProgress(S2::GetFileSize(ba));
                 //                if (filenum != DataTypes::Config)
                 //                {
                 progress += size;
                 handleProgress(progress);
                 //                }
             }
+            isFirstBlock = true; // there was a last (or the only) segment
+            return;
         }
         else
         {
@@ -423,6 +428,8 @@ void ProtocomThread::parseResponse(QByteArray ba)
             // Progress for big files
             if (m_currentCommand.cmd == Proto::Commands::ReadFile)
             {
+                if (isFirstBlock)
+                    handleMaxProgress(S2::GetFileSize(ba));
                 //                if (filenum != DataTypes::Config)
                 //                {
                 progress += Proto::Limits::MaxSegmenthLength;
@@ -430,6 +437,7 @@ void ProtocomThread::parseResponse(QByteArray ba)
                 //                }
             }
         }
+        isFirstBlock = false; // there'll be another segment
         break;
     }
     default:
