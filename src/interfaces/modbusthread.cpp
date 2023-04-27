@@ -22,7 +22,6 @@ ModbusThread::ModbusThread(QObject *parent) : QObject(parent), log(new LogClass(
 
 ModbusThread::~ModbusThread()
 {
-    //    trashTimer->deleteLater();
 }
 
 void ModbusThread::setDeviceAddress(quint8 adr)

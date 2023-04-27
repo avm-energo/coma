@@ -177,7 +177,7 @@ bool S2::RestoreData(QByteArray bain, QList<DataTypes::S2Record> &outlist)
     while ((DR.header.id != S2DataTypes::dummyElement) && (!bain.isEmpty()))
     {
         auto size = sizeof(S2DataTypes::DataRec) - sizeof(void *);
-        if (size > bain.size())
+        if (size > static_cast<quint64>(bain.size()))
         {
             qCritical() << "S2" << Error::Msg::SizeError; // выход за границу принятых байт
             return false;
@@ -190,7 +190,7 @@ bool S2::RestoreData(QByteArray bain, QList<DataTypes::S2Record> &outlist)
             DataTypes::S2Record cfp;
             cfp.ID = DR.header.id;
             size = DR.header.numByte;
-            if (size > bain.size())
+            if (size > static_cast<quint64>(bain.size()))
             {
                 qCritical() << "S2" << Error::Msg::SizeError; // выход за границу принятых байт
                 return false;
@@ -224,7 +224,7 @@ bool S2::RestoreData(QByteArray bain, QList<DataTypes::DataRecV> &outlist)
     while ((DR.header.id != S2DataTypes::dummyElement) && (!bain.isEmpty()))
     {
         auto size = sizeof(S2DataTypes::DataRec) - sizeof(void *);
-        if (size > bain.size())
+        if (size > static_cast<quint64>(bain.size()))
         {
             qCritical() << Error::Msg::SizeError << "S2: out of memory"; // выход за границу принятых байт
             return false;
@@ -500,10 +500,10 @@ S2DataTypes::S2ConfigType S2::ParseHexToS2(QByteArray &ba)
     PV_file->void_recHeader.id = 0xFFFFFFFF;
     PV_file->void_recHeader.numByte = 0;
 
-    S2DR.append({ PV_file->type.typeHeader.id, PV_file->type.typeHeader.numByte, &PV_file->type.typeTheData });
-    S2DR.append({ PV_file->file.fileDataHeader.id, PV_file->file.fileDataHeader.numByte,
+    S2DR.append({ { PV_file->type.typeHeader.id, PV_file->type.typeHeader.numByte }, &PV_file->type.typeTheData });
+    S2DR.append({ { PV_file->file.fileDataHeader.id, PV_file->file.fileDataHeader.numByte },
         &PV_file->file.data.data()[0] }); // BaForSend->data_ptr()
-    S2DR.append({ PV_file->void_recHeader.id, PV_file->void_recHeader.numByte, nullptr });
+    S2DR.append({ { PV_file->void_recHeader.id, PV_file->void_recHeader.numByte }, nullptr });
 
     /*ForProcess->clear();
     ForProcess->resize(MAXSIZE);
@@ -557,6 +557,8 @@ quint16 S2::GetIdByName(QString name)
 {
     return NameIdMap.value(name, 0);
 }
+
+/// \brief get file size from fileheader given ByteArray representing the file in S2 terms
 
 quint64 S2::GetFileSize(const QByteArray &bain)
 {

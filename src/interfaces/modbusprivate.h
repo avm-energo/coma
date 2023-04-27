@@ -26,28 +26,11 @@ enum Commands : quint8
     ReadDiscreteInputs = 0x02,
     ReadHoldingRegisters = 0x03,
     ReadInputRegister = 0x04,
-    WriteMultipleRegisters = 0x10
+    WriteMultipleRegisters = 0x10,
+    ReadFileSection = 0x41,
+    WriteFileSection = 0x42
 };
 Q_ENUM_NS(Commands)
-
-enum Exception : quint8
-{
-    InvalidFunctionCode = 0x01,
-    InvalidDataAddress = 0x02,
-    InvalidDataValue = 0x03,
-    ExecutionFailed1 = 0x04,
-    ExecutionFailed2 = 0x05,
-    ExecutionFailed3 = 0x06
-};
-
-enum ModbusGroupsEnum
-{
-    SIGNALTYPE = 0,
-    FIRSTBYTEADR = 1,
-    SECONDBYTEADR = 2,
-    FIRSTBYTEQ = 3,
-    SECONDBYTEQ = 4
-};
 
 /// \brief Enumeration for type identification.
 enum TypeId : quint8
@@ -98,12 +81,6 @@ struct CommandStruct
     QByteArray data;
     TypeId type;
     QString sender;
-};
-
-struct Coils
-{
-    int countBytes;
-    QByteArray Bytes;
 };
 
 QDebug operator<<(QDebug debug, const CommandsMBS::CommandStruct &cmd);

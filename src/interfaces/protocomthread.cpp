@@ -400,8 +400,6 @@ void ProtocomThread::parseResponse(QByteArray ba)
         ba.resize(size);
         m_buffer.append(ba);
 
-        //        quint32 filenum = m_currentCommand.arg1.value<quint32>();
-
         // Потому что на эту команду модуль не отдает пустой ответ
         if (isOneSegment(size) || (cmd == Proto::ReadBlkStartInfo))
         {
@@ -411,11 +409,8 @@ void ProtocomThread::parseResponse(QByteArray ba)
             {
                 if (isFirstBlock)
                     handleMaxProgress(S2::GetFileSize(ba));
-                //                if (filenum != DataTypes::Config)
-                //                {
                 progress += size;
                 handleProgress(progress);
-                //                }
             }
             isFirstBlock = true; // there was a last (or the only) segment
             return;
@@ -430,11 +425,8 @@ void ProtocomThread::parseResponse(QByteArray ba)
             {
                 if (isFirstBlock)
                     handleMaxProgress(S2::GetFileSize(ba));
-                //                if (filenum != DataTypes::Config)
-                //                {
                 progress += Proto::Limits::MaxSegmenthLength;
                 handleProgress(progress);
-                //                }
             }
         }
         isFirstBlock = false; // there'll be another segment
