@@ -184,8 +184,15 @@ void ModBus::reqBSIExt()
 /// TODO: требуется реализация
 void ModBus::reqFile(quint32 filenum, FileFormat format)
 {
-    Q_UNUSED(filenum)
-    Q_UNUSED(format)
+    CommandsMBS::CommandStruct inp {
+        CommandsMBS::Commands::ReadFileSection, //
+        filenum,                                //
+        static_cast<quint8>(regCount * 2),      //
+        {},                                     //
+        TypeId::Uint32,                         //
+        __PRETTY_FUNCTION__                     //
+    };
+    DataManager::GetInstance().addToInQueue(inp);
 }
 
 /// TODO: требуется реализация

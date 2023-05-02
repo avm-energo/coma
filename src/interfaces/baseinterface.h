@@ -46,6 +46,28 @@ public:
         None
     };
 
+    enum BI_Commands
+    {
+        C_ReqStartup,
+        C_ReqBSI,
+        C_ReqBSIExt,
+        C_ReqAlarms,
+        C_ReqFile,
+        C_WriteFile,
+        C_ReqTime,
+        C_WriteTime,
+        C_WriteCommand,
+        C_ReqFloats,
+        C_ReqBitStrings
+    };
+
+    struct BI_CommandStruct
+    {
+        BI_Commands command;
+        QVariant arg1; // reqFile, writeFile: id, reqStartup: sigAddr, WriteTime: time, WriteCommand: command
+        QVariant arg2; // reqFile: format, reqStartup: sigCount, WriteFile: &bytearray, WriteCommand: value
+    };
+
     UniquePointer<LogClass> Log;
 
     explicit BaseInterface(QObject *parent = nullptr);
@@ -59,31 +81,26 @@ public:
     virtual void pause();
     virtual void resume();
     virtual void stop();
-    virtual void reqStartup(quint32 sigAdr = 0, quint32 sigCount = 0) = 0;
-    virtual void reqBSI() = 0;
-    virtual void reqBSIExt() = 0;
-    virtual void reqFile(quint32, FileFormat format = FileFormat::Binary) = 0;
-    void reqFile(quint32 id, FileFormat format, quint32 expectedSize);
-    virtual void writeFile(quint32, const QByteArray &) = 0;
+
+    // commands to send
+    void reqStartup(quint32 sigAdr = 0, quint32 sigCount = 0);
+    void reqBSI();
+    void reqBSIExt();
+    void reqFile(quint32 id, FileFormat format = FileFormat::Binary, quint32 expectedSize = 0);
+    void writeFile(quint32 id, const QByteArray &ba);
     void writeS2File(DataTypes::FilesEnum number, S2DataTypes::S2ConfigType *file);
-    // void writeConfigFile();
-    virtual void reqTime() = 0;
-    virtual void writeTime(quint32) = 0;
-    virtual void writeCommand(Queries::Commands, QVariant = 0) = 0;
-    virtual void writeCommand(Queries::Commands cmd, const QVariantList &list)
+    void reqTime();
+    void writeTime(quint32 time);
+    void writeCommand(Queries::Commands cmd, QVariant value = 0);
+    void writeCommand(Queries::Commands cmd, const QVariantList &list)
     {
         // for each signal in list form the command and set it into the input queue
         for (const auto &item : list)
             writeCommand(cmd, item);
     }
-
     void reqAlarms(quint32 sigAdr = 0, quint32 sigCount = 0);
-    virtual void reqFloats(quint32 sigAdr = 0, quint32 sigCount = 0) = 0;
-    virtual void reqBitStrings(quint32 sigAdr = 0, quint32 sigCount = 0) = 0;
-    /// Прямая запись данных
-    virtual void writeRaw(const QByteArray &)
-    {
-    }
+    void reqFloats(quint32 sigAdr = 0, quint32 sigCount = 0);
+    void reqBitStrings(quint32 sigAdr = 0, quint32 sigCount = 0);
 
     // Bac & Bda blocks only supported for now
     Error::Msg reqBlockSync(quint32 blocknum, DataTypes::DataBlockTypes blocktype, void *block, quint32 blocksize);
@@ -96,15 +113,12 @@ public:
     Error::Msg readS2FileSync(quint32 filenum);
     Error::Msg readFileSync(quint32 filenum, QByteArray &ba);
     Error::Msg reqTimeSync(void *block, quint32 blocksize);
+
     ModuleTypes::InterfaceSettings settings() const;
 
     template <class T> T settings() const
     {
         Q_ASSERT(m_settings.settings.canConvert<T>());
-        // qDebug() << m_settings.settings.type().name() << "<->" << typeid(T).name();
-        // Q_ASSERT(m_settings.settings.type() == typeid(T));
-        // Q_ASSERT(std::holds_alternative<T>(m_settings.settings));
-        // return std::get<T>(m_settings.settings);
         return m_settings.settings.value<T>();
     }
 
@@ -147,5 +161,6 @@ private slots:
 };
 
 Q_DECLARE_METATYPE(BaseInterface::State)
+Q_DECLARE_METATYPE(BaseInterface::BI_CommandStruct)
 
 #endif // BASEINTERFACE_H

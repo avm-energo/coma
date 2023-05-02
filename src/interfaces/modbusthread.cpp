@@ -14,7 +14,6 @@
 #include <gen/stdfunc.h>
 
 constexpr auto RECONNECTTIME = 1000;
-constexpr auto TRASHTIMEOUT = (255 * 10 * 1000) / 2400; // 255 bytes * 10 (bit/byte) * 1000 (msec) / 2400 (baud)
 
 ModbusThread::ModbusThread(QObject *parent) : QObject(parent), log(new LogClass(this))
 {
@@ -34,10 +33,6 @@ void ModbusThread::run()
     log->Init(QString(metaObject()->className()) + ".log");
     log->info(logStart);
 
-    trashTimer = new QTimer(this);
-    trashTimer->setInterval(TRASHTIMEOUT);
-    mTrashEnabled = false;
-    connect(trashTimer, &QTimer::timeout, this, &ModbusThread::trashTimerTimeout);
     const auto &iface = BaseInterface::iface();
     using State = BaseInterface::State;
     while (iface->state() != State::Stop)
@@ -62,6 +57,12 @@ void ModbusThread::run()
             case CommandsMBS::ReadCoils:
                 readCoils(inp);
                 break;
+            case CommandsMBS::ReadFileSection:
+                ReadFile(inp);
+                break;
+            case CommandsMBS::WriteFileSection:
+                WriteFile(inp);
+                break;
             default:
                 break;
             }
@@ -75,11 +76,6 @@ void ModbusThread::run()
 
 void ModbusThread::parseReply(QByteArray ba)
 {
-    if (mTrashEnabled)
-    {
-        log->error("Trash continues: " + ba.toHex());
-        return;
-    }
     m_readData.append(ba);
     if (m_readData.size() >= 2)
     {
@@ -88,8 +84,6 @@ void ModbusThread::parseReply(QByteArray ba)
         {
             log->error("Modbus error response: " + m_readData.toHex());
             qCritical() << Error::ReadError << metaObject()->className();
-            // mTrashEnabled = true;
-            // trashTimer->start();
             busy = false;
             return;
         }
@@ -312,13 +306,6 @@ quint16 ModbusThread::calcCRC(QByteArray &ba) const
     return crc;
 }
 
-void ModbusThread::trashTimerTimeout()
-{
-    m_readData.clear();
-    busy = false;
-    mTrashEnabled = false;
-}
-
 void ModbusThread::readRegisters(CommandsMBS::CommandStruct &cms)
 {
     m_commandSent = cms;
@@ -352,6 +339,14 @@ void ModbusThread::writeMultipleRegisters(CommandsMBS::CommandStruct &cms)
     // log->info("Send bytes: " + ba.toHex());
     m_bytesToReceive = 8; // address, function code, address (2), quantity (2), crc (2)
     calcCRCAndSend(ba);
+}
+
+void ModbusThread::ReadFile(CommandsMBS::CommandStruct &cms)
+{
+}
+
+void ModbusThread::WriteFile(CommandsMBS::CommandStruct &cms)
+{
 }
 
 void ModbusThread::setQueryStartBytes(CommandsMBS::CommandStruct &cms, QByteArray &ba)

@@ -16,22 +16,18 @@ public:
     bool start(const ConnectStruct &st) override;
     bool start(const UsbHidSettings &usbhid);
 
-    void reqTime() override;
-    void reqFile(quint32 filenum, FileFormat format) override;
-    void reqStartup(quint32 sigAdr, quint32 sigCount) override;
-    void reqBSI() override;
-    void reqBSIExt() override;
-    void reqBitStrings(quint32 sigAdr = 0, quint32 sigCount = 0) override;
-    // Support only S2 format
-    void writeFile(quint32 filenum, const QByteArray &file) override;
-    void writeTime(quint32 time) override;
-#ifdef Q_OS_LINUX
-    void writeTime(const timespec &time) const;
-#endif
-    void writeCommand(Queries::Commands cmd, QVariant item = 0) override;
-    void writeCommand(Queries::Commands cmd, const QVariantList &list) override;
-    void reqFloats(quint32 sigAdr, quint32 sigCount) override;
-    void writeRaw(const QByteArray &ba) override;
+    //    void reqTime() override;
+    //    void reqFile(quint32 filenum, FileFormat format) override;
+    //    void reqStartup(quint32 sigAdr, quint32 sigCount) override;
+    //    void reqBSI() override;
+    //    void reqBSIExt() override;
+    //    void reqBitStrings(quint32 sigAdr = 0, quint32 sigCount = 0) override;
+    //    // Support only S2 format
+    //    void writeFile(quint32 filenum, const QByteArray &file) override;
+    //    void writeTime(quint32 time) override;
+    //    void writeCommand(Queries::Commands cmd, QVariant item = 0) override;
+    //    void writeCommand(Queries::Commands cmd, const QVariantList &list) override;
+    //    void reqFloats(quint32 sigAdr, quint32 sigCount) override;
 
 protected:
     ProtocomPrivate *const d_ptr;

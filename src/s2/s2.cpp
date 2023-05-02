@@ -47,6 +47,10 @@ void S2::StoreDataMem(QByteArray &mem, const QVector<S2DataTypes::DataRec> &dr, 
     header.fname = static_cast<quint16>(fname);
     ba = QByteArray::fromRawData(reinterpret_cast<char *>(&header), sizeof(header));
     mem.prepend(ba);
+    // с 4 байта начинается FileHeader.size
+    quint32 length = *reinterpret_cast<quint32 *>(&mem.data()[4]);
+    length += sizeof(S2DataTypes::FileHeader);
+    Q_ASSERT(length == quint32(mem.size()));
     return;
 }
 

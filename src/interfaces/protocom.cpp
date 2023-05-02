@@ -57,7 +57,7 @@ bool Protocom::start(const UsbHidSettings &usbhid)
     QList<QMetaObject::Connection> connections;
     // Старт
     connect(portThread, &QThread::started, port, &UsbHidPort::poll);
-    connect(parseThread, &QThread::started, parser, &ProtocomThread::parse);
+    connect(parseThread, &QThread::started, parser, &ProtocomThread::run);
     // Рабочий режим
     connections << connect(this, &Protocom::wakeUpParser, parser, &ProtocomThread::wakeUp, Qt::DirectConnection);
     connect(port, &UsbHidPort::dataReceived, parser, &ProtocomThread::appendReadDataChunk, Qt::DirectConnection);
@@ -211,15 +211,6 @@ void Protocom::writeTime(quint32 time)
     emit wakeUpParser();
 }
 
-#ifdef Q_OS_LINUX
-void Protocom::writeTime(const timespec &time) const
-{
-    CommandStruct inp { Proto::Commands::WriteTime, QVariant::fromValue(time), QVariant(), {} };
-    DataManager::GetInstance().addToInQueue(inp);
-    emit wakeUpParser();
-}
-#endif
-
 void Protocom::reqFloats(quint32 sigAdr, quint32 sigCount)
 {
     Q_D(Protocom);
@@ -231,13 +222,6 @@ void Protocom::reqFloats(quint32 sigAdr, quint32 sigCount)
         sigCount,                                       // Count signals
         StdFunc::ArrayFromNumber(d->blockByReg(sigAdr)) // Protocom block
     };
-    DataManager::GetInstance().addToInQueue(inp);
-    emit wakeUpParser();
-}
-
-void Protocom::writeRaw(const QByteArray &ba)
-{
-    CommandStruct inp { Proto::Commands::RawCommand, QVariant(), QVariant(), ba };
     DataManager::GetInstance().addToInQueue(inp);
     emit wakeUpParser();
 }

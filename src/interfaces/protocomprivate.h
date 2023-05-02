@@ -126,9 +126,7 @@ enum Commands : byte
     /// Fake commands
     FakeReadRegData,
     FakeReadAlarms,
-    FakeReadBitString,
-    RawCommand = 0x01
-
+    FakeReadBitString
 };
 Q_ENUM_NS(Proto::Commands);
 

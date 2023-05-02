@@ -36,13 +36,17 @@ private:
     QByteArray m_readData;
     CommandsMBS::CommandStruct m_commandSent;
     int m_bytesToReceive;
-    QTimer *trashTimer;
-    bool mTrashEnabled;
 
+    // commands to send
     void readRegisters(CommandsMBS::CommandStruct &cms);
     void readCoils(CommandsMBS::CommandStruct &cms);
     void writeMultipleRegisters(CommandsMBS::CommandStruct &cms);
+    void ReadFile(CommandsMBS::CommandStruct &cms);
+    void WriteFile(CommandsMBS::CommandStruct &cms);
+
+    // prepare start bytes for data to send
     void setQueryStartBytes(CommandsMBS::CommandStruct &cms, QByteArray &ba);
+
     QByteArray createReadPDU(const CommandsMBS::CommandStruct &cms) const;
     QByteArray createADU(const QByteArray &pdu) const;
     void calcCRCAndSend(QByteArray &ba);
@@ -62,9 +66,6 @@ private:
             std::swap(ba.data()[i], ba.data()[i + 1]);
         return *reinterpret_cast<T *>(ba.data());
     }
-
-private slots:
-    void trashTimerTimeout();
 };
 
 #endif // MODBUSTHREAD_H

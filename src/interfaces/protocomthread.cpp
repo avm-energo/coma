@@ -25,17 +25,9 @@ using Proto::Direction;
 using Proto::Starters;
 using Queries::FileFormat;
 
-ProtocomThread::ProtocomThread(QObject *parent) : QObject(parent), m_currentCommand({})
+ProtocomThread::ProtocomThread(QObject *parent) : BaseInterfaceThread(parent)
 {
     isFirstBlock = true;
-}
-
-void ProtocomThread::setReadDataChunk(const QByteArray &readDataChunk)
-{
-    QMutexLocker locker(&_mutex);
-    m_readData = readDataChunk;
-    _waiter.wakeOne();
-    emit readyRead();
 }
 
 void ProtocomThread::appendReadDataChunk(const QByteArray &readDataChunk)
@@ -51,12 +43,12 @@ void ProtocomThread::wakeUp()
     _waiter.wakeOne();
 }
 
-void ProtocomThread::parse()
+void ProtocomThread::run()
 {
     while (BaseInterface::iface()->state() != BaseInterface::State::Stop)
     {
         QMutexLocker locker(&_mutex);
-        if (!isCommandRequested)
+        if (!m_isCommandRequested)
             checkQueue();
         if (m_readData.isEmpty())
             _waiter.wait(&_mutex);
@@ -71,22 +63,9 @@ void ProtocomThread::parse()
 void ProtocomThread::clear()
 {
     QMutexLocker locker(&_mutex);
-    isCommandRequested = false;
     m_readData.clear();
-    progress = 0;
-    m_currentCommand = Proto::CommandStruct();
     m_buffer.clear();
-}
-
-void ProtocomThread::finish(Error::Msg msg)
-{
-    if (msg != Error::Msg::NoError)
-    {
-        // writeLog("### ОШИБКА В ПЕРЕДАННЫХ ДАННЫХ ###");
-        qWarning("ОШИБКА В ПЕРЕДАННЫХ ДАННЫХ!!!");
-        qCritical() << msg;
-        emit errorOccurred(msg);
-    }
+    BaseInterfaceThread::clear();
 }
 
 ProtocomThread::~ProtocomThread()
@@ -136,7 +115,6 @@ void ProtocomThread::handleResponse(const Proto::Commands cmd)
     {
         const quint8 errorCode = m_buffer.front();
         handleBool(errorCode);
-        emit errorOccurred(static_cast<Error::Msg>(errorCode));
         break;
     }
     case Commands::ReadTime:
@@ -207,20 +185,8 @@ void ProtocomThread::handleResponse(const Proto::Commands cmd)
         handleCommand(m_buffer);
         break;
     }
-    isCommandRequested = false;
+    m_isCommandRequested = false;
     m_buffer.clear();
-}
-
-void ProtocomThread::checkQueue()
-{
-    CommandStruct inp;
-    if (DataManager::GetInstance().deQueue(inp) != Error::Msg::NoError)
-        return;
-
-    isCommandRequested = true;
-    progress = 0;
-    m_currentCommand = inp;
-    parseRequest(inp);
 }
 
 void ProtocomThread::fileHelper(DataTypes::FilesEnum fileNum)
@@ -282,7 +248,7 @@ void ProtocomThread::fileHelper(DataTypes::FilesEnum fileNum)
     handleFile(ba, fileNum, Queries::FileFormat::Binary);
 }
 
-void ProtocomThread::parseRequest(const CommandStruct &cmdStr)
+void ProtocomThread::parseRequest(const BaseInterface::BI_CommandStruct &cmdStr)
 {
 #ifdef PROTOCOM_DEBUG
     qDebug("Start parse request");
@@ -643,55 +609,6 @@ void ProtocomThread::handleSinglePoint(const QByteArray &ba, const quint16 addr)
 
 void ProtocomThread::handleFile(QByteArray &ba, DataTypes::FilesEnum addr, Queries::FileFormat format)
 {
-    switch (format)
-    {
-    case FileFormat::Binary:
-    {
-        DataTypes::GeneralResponseStruct genResp { DataTypes::GeneralResponseTypes::Ok,
-            static_cast<quint64>(ba.size()) };
-        DataManager::GetInstance().addSignalToOutList(genResp);
-        DataTypes::FileStruct resp { addr, ba };
-        DataManager::GetInstance().addSignalToOutList(resp);
-        break;
-    }
-    case FileFormat::DefaultS2:
-    {
-        QList<DataTypes::DataRecV> outlistV;
-
-        if (!S2::RestoreData(ba, outlistV))
-        {
-            DataTypes::GeneralResponseStruct resp { DataTypes::GeneralResponseTypes::Error,
-                static_cast<quint64>(ba.size()) };
-            DataManager::GetInstance().addSignalToOutList(resp);
-            return;
-        }
-        DataTypes::GeneralResponseStruct genResp { DataTypes::GeneralResponseTypes::Ok,
-            static_cast<quint64>(ba.size()) };
-        DataManager::GetInstance().addSignalToOutList(genResp);
-        DataManager::GetInstance().addSignalToOutList(outlistV);
-        break;
-    }
-    case FileFormat::CustomS2:
-    {
-        DataTypes::S2FilePack outlist;
-        if (!S2::RestoreData(ba, outlist))
-        {
-            DataTypes::GeneralResponseStruct resp { DataTypes::GeneralResponseTypes::Error,
-                static_cast<quint64>(ba.size()) };
-            DataManager::GetInstance().addSignalToOutList(resp);
-            return;
-        }
-        DataTypes::GeneralResponseStruct genResp { DataTypes::GeneralResponseTypes::Ok,
-            static_cast<quint64>(ba.size()) };
-        DataManager::GetInstance().addSignalToOutList(genResp);
-        for (auto &&file : outlist)
-        {
-            DataTypes::FileStruct resp { DataTypes::FilesEnum(file.ID), file.data };
-            DataManager::GetInstance().addSignalToOutList(resp);
-        }
-        break;
-    }
-    }
 }
 
 void ProtocomThread::handleInt(const byte num)

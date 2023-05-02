@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../s2/s2datatypes.h"
+#include "baseinterfacethread.h"
 #include "protocomprivate.h"
 
 #include <QMutex>
@@ -10,7 +11,7 @@
 #include <gen/error.h>
 
 class LogClass;
-class ProtocomThread : public QObject
+class ProtocomThread : public BaseInterfaceThread
 {
     typedef QQueue<QByteArray> ByteQueue;
     Q_OBJECT
@@ -18,23 +19,18 @@ public:
     explicit ProtocomThread(QObject *parent = nullptr);
     ~ProtocomThread();
 
-    void setReadDataChunk(const QByteArray &readDataChunk);
     void appendReadDataChunk(const QByteArray &readDataChunk);
     void wakeUp();
-
-    void parse();
-
+    void run();
     void clear();
 
 private:
     QByteArray m_readData;
-    bool isCommandRequested = false;
-    quint64 progress = 0;
     bool isFirstBlock;
-    void finish(Error::Msg msg);
+
+    void parseRequest(const BaseInterface::BI_CommandStruct &cmdStr);
 
     void parseResponse(QByteArray ba);
-    void parseRequest(const Proto::CommandStruct &cmdStr);
     void handleResponse(const Proto::Commands cmd);
 
     QMutex _mutex;
@@ -46,9 +42,7 @@ private:
         writeLog(QVariant::fromValue(msg).toByteArray(), dir);
     }
 
-    Proto::CommandStruct m_currentCommand;
     QByteArray m_buffer;
-    void checkQueue();
     void fileHelper(DataTypes::FilesEnum fileNum);
 
     quint16 extractLength(const QByteArray &ba);
@@ -86,7 +80,6 @@ private:
     void handleTechBlock(const QByteArray &ba, quint32 blkNum);
 signals:
     void writeDataAttempt(const QByteArray);
-    void errorOccurred(Error::Msg);
     /// Like a QIODevice::readyRead()
     void readyRead();
 };
