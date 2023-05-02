@@ -44,7 +44,6 @@ void S2::StoreDataMem(QByteArray &mem, const QVector<S2DataTypes::DataRec> &dr, 
     header.fname = static_cast<quint16>(fname);
     ba = QByteArray::fromRawData(reinterpret_cast<char *>(&header), sizeof(header));
     mem.prepend(ba);
-    return;
 }
 
 void S2::StoreDataMem(QByteArray &mem, const QList<DataTypes::DataRecV> &dr, int fname)
@@ -67,38 +66,38 @@ bool S2::RestoreData(QByteArray bain, QList<DataTypes::S2Record> &outlist)
 {
     Q_ASSERT(bain.size() >= sizeof(S2DataTypes::FileHeader));
     qInfo() << "S2 File size:" << bain.size();
-    S2DataTypes::DataRec DR;
+    S2DataTypes::DataRecHeader recordHeader;
 
     // копируем FileHeader
-    S2DataTypes::FileHeader fh;
-    memcpy(&fh, &bain.data()[0], sizeof(S2DataTypes::FileHeader));
+    S2DataTypes::FileHeader fileHeader;
+    memcpy(&fileHeader, &bain.data()[0], sizeof(S2DataTypes::FileHeader));
     bain.remove(0, sizeof(S2DataTypes::FileHeader));
 
     // проверка контрольной суммы
-    Q_ASSERT(bain.size() == fh.size);
+    Q_ASSERT(bain.size() == fileHeader.size);
     S2Dev::CRC32 crc32(bain);
-    if (crc32 != fh.crc32)
+    if (crc32 != fileHeader.crc32)
     {
         qCritical() << "S2" << Error::Msg::CrcError; // выход за границу принятых байт
         return false;
     }
-    DR.header.id = 0;
-    while ((DR.header.id != S2DataTypes::dummyElement) && (!bain.isEmpty()))
+    recordHeader.id = 0;
+    while ((recordHeader.id != S2DataTypes::dummyElement) && (!bain.isEmpty()))
     {
-        auto size = sizeof(S2DataTypes::DataRec) - sizeof(void *);
+        auto size = sizeof(S2DataTypes::DataRecHeader);
         if (size > bain.size())
         {
             qCritical() << "S2" << Error::Msg::SizeError; // выход за границу принятых байт
             return false;
         }
-        memcpy(&DR, &bain.data()[0], size);
+        memcpy(&recordHeader, &bain.data()[0], size);
         bain.remove(0, size);
 
-        if (DR.header.id != S2DataTypes::dummyElement)
+        if (recordHeader.id != S2DataTypes::dummyElement)
         {
             DataTypes::S2Record cfp;
-            cfp.ID = DR.header.id;
-            size = DR.header.numByte;
+            cfp.ID = recordHeader.id;
+            size = recordHeader.numByte;
             if (size > bain.size())
             {
                 qCritical() << "S2" << Error::Msg::SizeError; // выход за границу принятых байт
@@ -141,14 +140,13 @@ bool S2::RestoreData(QByteArray bain, QList<DataTypes::DataRecV> &outlist)
             return false;
         }
         memcpy(&DR, &bain.data()[0], size);
-
         bain.remove(0, size);
+
         if (DR.header.id != S2DataTypes::dummyElement)
         {
             size = DR.header.numByte;
             auto &s2map = ConfigStorage::GetInstance().getS2Map();
             auto search = s2map.find(DR.header.id);
-            //            Q_ASSERT(search != s2map.end());
             if (search != s2map.end())
             {
                 DataTypes::DataRecV DRV(DR, bain.left(size));

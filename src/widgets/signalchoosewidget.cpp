@@ -7,7 +7,7 @@
 SignalChooseWidget::SignalChooseWidget(const QStringList &snames, const QStringList &discr, QWidget *parent)
     : QScrollArea(parent)
 {
-    QWidget *w = new QWidget(this);
+    auto widget = new QWidget(this);
     QVBoxLayout *lyout = new QVBoxLayout;
     for (int i = 0; i < snames.size(); ++i)
     {
@@ -17,15 +17,15 @@ SignalChooseWidget::SignalChooseWidget(const QStringList &snames, const QStringL
         QCheckBox *chb = WDFunc::NewChB2(this, name, "");
         connect(chb, &QAbstractButton::toggled, this, [=](bool isChecked) { emit signalToggled(name, isChecked); });
         hlyout->addWidget(chb);
-        MarkSignalWidget *w = new MarkSignalWidget(name, this);
-        w->setToolTip(discr.at(idx));
+        auto msWidget = new MarkSignalWidget(name, this);
+        msWidget->setToolTip(discr.at(idx));
         // w->setObjectName(name);
-        connect(w, &MarkSignalWidget::clicked, this, [=] { emit signalChoosed(name); });
-        hlyout->addWidget(w);
+        connect(msWidget, &MarkSignalWidget::clicked, this, [=] { emit signalChoosed(name); });
+        hlyout->addWidget(msWidget);
         lyout->addLayout(hlyout);
     }
-    w->setLayout(lyout);
-    setWidget(w);
+    widget->setLayout(lyout);
+    setWidget(widget);
 }
 
 void SignalChooseWidget::setChecked(QString signame, bool checked)
