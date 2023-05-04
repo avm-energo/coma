@@ -21,7 +21,6 @@ public:
     int m_calibrSteps;
     QList<TuneDialogStruct> m_dialogList;
     LimeReport::ReportEngine *m_Report;
-    QScrollArea *m_BacWidget;
 
     GeneralTuneDialog(ConfigV *config, QWidget *parent = nullptr);
     void SetupUI();

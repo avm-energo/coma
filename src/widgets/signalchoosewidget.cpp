@@ -17,11 +17,11 @@ SignalChooseWidget::SignalChooseWidget(const QStringList &snames, const QStringL
         QCheckBox *chb = WDFunc::NewChB2(this, name, "");
         connect(chb, &QAbstractButton::toggled, this, [=](bool isChecked) { emit signalToggled(name, isChecked); });
         hlyout->addWidget(chb);
-        MarkSignalWidget *w = new MarkSignalWidget(name, this);
-        w->setToolTip(discr.at(idx));
-        // w->setObjectName(name);
-        connect(w, &MarkSignalWidget::clicked, this, [=] { emit signalChoosed(name); });
-        hlyout->addWidget(w);
+        MarkSignalWidget *wn = new MarkSignalWidget(name, this);
+        wn->setToolTip(discr.at(idx));
+        // wn->setObjectName(name);
+        connect(wn, &MarkSignalWidget::clicked, this, [=] { emit signalChoosed(name); });
+        hlyout->addWidget(wn);
         lyout->addLayout(hlyout);
     }
     w->setLayout(lyout);

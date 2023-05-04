@@ -12,18 +12,18 @@ TuneKIVDialog::TuneKIVDialog(ConfigV *config, QWidget *parent) : GeneralTuneDial
 {
 
     setAttribute(Qt::WA_DeleteOnClose);
-    /*    TKIVADCUDialog = new TuneKIVADC(config, KIVTS_ADCU, this);
-        TKIVADCIDialog = new TuneKIVADC(config, KIVTS_ADCI, this);
-        TKIVCheckDialog = new TuneKIVCheck(config, KIVTS_CHECKING, this);
-        TKIVRDialog = new TuneKIVR(config, KIVTS_PT100, this);
-        m_dialogList = { { "Проверка правильности измерения входных сигналов", TKIVCheckDialog },
-            { "Регулировка канала Pt100", TKIVRDialog }, { "Регулировка каналов напряжения", TKIVADCUDialog },
-            { "Регулировка каналов тока", TKIVADCIDialog } };
-        BacA284 *bac = new BacA284(this);
-        Bac2A284 *bac2 = new Bac2A284(this);
-        addWidgetToTabWidget(bac->widget(), "Первая часть");
-        addWidgetToTabWidget(bac2->widget(), "Вторая часть");
-        SetupUI(); */
+    TKIVADCUDialog = new TuneKIVADC(config, KIVTS_ADCU, this);
+    TKIVADCIDialog = new TuneKIVADC(config, KIVTS_ADCI, this);
+    TKIVCheckDialog = new TuneKIVCheck(config, KIVTS_CHECKING, this);
+    TKIVRDialog = new TuneKIVR(config, KIVTS_PT100, this);
+    m_dialogList = { { "Проверка правильности измерения входных сигналов", TKIVCheckDialog },
+        { "Регулировка канала Pt100", TKIVRDialog }, { "Регулировка каналов напряжения", TKIVADCUDialog },
+        { "Регулировка каналов тока", TKIVADCIDialog } };
+    BacA284 *bac = new BacA284(this);
+    Bac2A284 *bac2 = new Bac2A284(this);
+    addWidgetToTabWidget(bac->widget(), "Первая часть");
+    addWidgetToTabWidget(bac2->widget(), "Вторая часть");
+    SetupUI();
 }
 
 void TuneKIVDialog::prepareReport()
