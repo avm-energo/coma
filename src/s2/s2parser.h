@@ -5,14 +5,14 @@
 #include "s2datatypes.h"
 
 #include <QByteArray>
-#include <QObject>
-#include <QVector>
+#include <gen/datatypes.h>
 #include <vector>
 
 namespace S2Dev
 {
 
 using S2Record = std::variant<S2DataTypes::DataRec, DataTypes::DataRecV, DataTypes::FileStruct>;
+using S2RecordArray = std::vector<S2Record>;
 
 class S2Parser : public QObject
 {
@@ -22,75 +22,40 @@ private:
     CRC32 crc;
     bool status;
 
-    QByteArray storeRecord(const S2DataTypes::DataRec &record)
+    QByteArray storeRecord(const S2DataTypes::DataRec &record);
+    void storeFile(const S2RecordArray &records);
+    quint32 getTime32();
+    QByteArray createHeader(const DataTypes::FilesEnum fname);
+
+    void parseHeader()
     {
-        if (record.header.id == S2DataTypes::dummyElement || record.thedata == nullptr)
-        {
-            status = false;
-            return QByteArray();
-        }
-        else
-        {
-            QByteArray binaryRecord;
-            auto tmpSize = sizeof(record.header);
-            quint32 size = tmpSize;
-            auto ba = QByteArray::fromRawData(reinterpret_cast<const char *>(&record.header), tmpSize);
-            binaryRecord.append(ba);
-            tmpSize = record.header.numByte;
-            size += tmpSize;
-            ba = QByteArray::fromRawData(reinterpret_cast<const char *>(record.thedata), tmpSize);
-            binaryRecord.append(ba);
-            assert(size == binaryRecord.size());
-            crc.update(binaryRecord);
-            return binaryRecord;
-        }
+        ;
     }
 
 public:
     explicit S2Parser(QObject *parent = nullptr);
 
-    void store(const QVector<S2DataTypes::DataRec> &records, int fname)
+    void store(const S2RecordArray &records, const DataTypes::FilesEnum fname)
     {
-        binaryData.clear();
-        status = true;
-        for (auto &record : records)
+        storeFile(records);
+        if (status)
         {
-            storeRecord(record);
+            crc.reset();
+            crc.update(binaryData);
+            binaryData.prepend(createHeader(fname));
+            emit binaryFileReady(binaryData);
         }
     }
 
-    void store(const QVector<DataTypes::DataRecV> &objects, int fname)
+    void parse(const QByteArray &file)
     {
-        binaryData.clear();
-        status = true;
-        for (auto &object : objects)
-        {
-            storeRecord(object.serialize());
-        }
+        binaryData = file;
     }
 
-    void store(const QVector<DataTypes::FileStruct> &objects, int fname)
-    {
-        binaryData.clear();
-        status = true;
-        for (auto &object : objects)
-        {
-            storeRecord(object.serialize());
-        }
-    }
-
-    //    template <typename Object, typename Serial = decltype(std::declval<Object>().serialize())> //
-    //    void store(const QVector<Object> &objects)
-    //    {
-    //        static_assert(std::is_same_v<Serial, S2DataTypes::DataRec>, "Unsupported type.");
-    //        binaryData.clear();
-    //        status = true;
-    //        for (auto &object : objects)
-    //        {
-    //            auto record = object.serialize();
-    //            storeRecord(record);
-    //        }
-    //    }
+signals:
+    void binaryFileReady(const QByteArray &file);
+    void s2record1(const DataTypes::S2Record &record);
+    void s2record2(const DataTypes::DataRecV &record);
 };
 
 }

@@ -201,25 +201,20 @@ S2DataTypes::S2ConfigType S2::ParseHexToS2(QByteArray &ba)
                         process.clear();
                         iVal = QString("%1%2").arg(str.at(8 + j)).arg(str.at(9 + j)).toInt(&ok, 16); // size
                         binnumber = st.setNum(iVal, 2);
-
                         byte = '\0';
-
                         if ((binnumber.size() - 1) < 7)
                         {
                             for (k = 0; k < (8 - binnumber.size()); k++)
                                 process.append("0");
-
                             process.append(binnumber);
                             binnumber = process;
                         }
 
                         for (h = 7, p = 0; h >= 0; h--, p++)
                         {
-
                             if (binnumber.at(h).toLatin1() & 1)
                                 byte |= 0b00000001 << p;
                         }
-
                         BaForSend->append(byte);
                     }
                     st = QString("%1%2").arg(str.at(14)).arg(str.at(15));
@@ -234,18 +229,15 @@ S2DataTypes::S2ConfigType S2::ParseHexToS2(QByteArray &ba)
                         {
                             for (k = 0; k < (8 - binnumber.size()); k++)
                                 process.append("0");
-
                             process.append(binnumber);
                             binnumber = process;
                         }
 
                         for (h = 7, p = 0; h >= 0; h--, p++)
                         {
-
                             if (binnumber.at(h).toLatin1() & 1)
                                 byte |= 0b00000001 << p;
                         }
-
                         BaForSend->append(byte);
                     }
                 }
@@ -274,7 +266,6 @@ S2DataTypes::S2ConfigType S2::ParseHexToS2(QByteArray &ba)
                         {
                             for (k = 0; k < (8 - binnumber.size()); k++)
                                 process.append("0");
-
                             process.append(binnumber);
                             binnumber = process;
                         }
@@ -284,7 +275,6 @@ S2DataTypes::S2ConfigType S2::ParseHexToS2(QByteArray &ba)
                             if (binnumber.at(h).toLatin1() & 1)
                                 byte |= 0b00000001 << p;
                         }
-
                         BaForSend->append(byte);
                     }
                 }
