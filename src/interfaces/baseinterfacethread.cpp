@@ -15,6 +15,11 @@ void BaseInterfaceThread::clear()
     m_currentCommand = BaseInterface::BI_CommandStruct();
 }
 
+void BaseInterfaceThread::wakeUp()
+{
+    _waiter.wakeOne();
+}
+
 void BaseInterfaceThread::FilePostpone(QByteArray &ba, DataTypes::FilesEnum addr, Queries::FileFormat format)
 {
     switch (format)

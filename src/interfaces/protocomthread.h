@@ -20,7 +20,6 @@ public:
     ~ProtocomThread();
 
     void appendReadDataChunk(const QByteArray &readDataChunk);
-    void wakeUp();
     void run();
     void clear();
 
@@ -33,9 +32,6 @@ private:
     void parseResponse(QByteArray ba);
     void handleResponse(const Proto::Commands cmd);
 
-    QMutex _mutex;
-
-    QWaitCondition _waiter;
     void writeLog(QByteArray ba, Proto::Direction dir = Proto::NoDirection);
     void writeLog(Error::Msg msg, Proto::Direction dir = Proto::NoDirection)
     {

@@ -38,11 +38,6 @@ void ProtocomThread::appendReadDataChunk(const QByteArray &readDataChunk)
     emit readyRead();
 }
 
-void ProtocomThread::wakeUp()
-{
-    _waiter.wakeOne();
-}
-
 void ProtocomThread::run()
 {
     while (BaseInterface::iface()->state() != BaseInterface::State::Stop)
