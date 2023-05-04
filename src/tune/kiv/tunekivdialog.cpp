@@ -12,18 +12,18 @@ TuneKIVDialog::TuneKIVDialog(ConfigV *config, QWidget *parent) : GeneralTuneDial
 {
 
     setAttribute(Qt::WA_DeleteOnClose);
-    TKIVADCUDialog = new TuneKIVADC(config, KIVTS_ADCU, this);
-    TKIVADCIDialog = new TuneKIVADC(config, KIVTS_ADCI, this);
-    TKIVCheckDialog = new TuneKIVCheck(config, KIVTS_CHECKING, this);
-    TKIVRDialog = new TuneKIVR(config, KIVTS_PT100, this);
-    m_dialogList = { { "Проверка правильности измерения входных сигналов", TKIVCheckDialog },
-        { "Регулировка канала Pt100", TKIVRDialog }, { "Регулировка каналов напряжения", TKIVADCUDialog },
-        { "Регулировка каналов тока", TKIVADCIDialog } };
-    BacA284 *bac = new BacA284(this);
-    Bac2A284 *bac2 = new Bac2A284(this);
-    addWidgetToTabWidget(bac->widget(), "Первая часть");
-    addWidgetToTabWidget(bac2->widget(), "Вторая часть");
-    SetupUI();
+    /*    TKIVADCUDialog = new TuneKIVADC(config, KIVTS_ADCU, this);
+        TKIVADCIDialog = new TuneKIVADC(config, KIVTS_ADCI, this);
+        TKIVCheckDialog = new TuneKIVCheck(config, KIVTS_CHECKING, this);
+        TKIVRDialog = new TuneKIVR(config, KIVTS_PT100, this);
+        m_dialogList = { { "Проверка правильности измерения входных сигналов", TKIVCheckDialog },
+            { "Регулировка канала Pt100", TKIVRDialog }, { "Регулировка каналов напряжения", TKIVADCUDialog },
+            { "Регулировка каналов тока", TKIVADCIDialog } };
+        BacA284 *bac = new BacA284(this);
+        Bac2A284 *bac2 = new Bac2A284(this);
+        addWidgetToTabWidget(bac->widget(), "Первая часть");
+        addWidgetToTabWidget(bac2->widget(), "Вторая часть");
+        SetupUI(); */
 }
 
 void TuneKIVDialog::prepareReport()
@@ -222,41 +222,3 @@ void TuneKIVDialog::prepareReport()
     delete report;
 */
 }
-
-/*
-void TuneKIVDialog::SetupUI()
-{
-    QHBoxLayout *hlyout = new QHBoxLayout;
-    QVBoxLayout *lyout = new QVBoxLayout;
-
-    lyout->addStretch(100);
-    lyout->addWidget(WDFunc::NewHexagonPB(
-        this, "tn1", [this]() { TKIVCheckDialog->show(); }, ":/icons/tn1.svg",
-        "Проверка правильности измерения входных сигналов"));
-    lyout->addWidget(WDFunc::NewHexagonPB(
-        this, "tn2", [this]() { TKIVRDialog->show(); }, ":/icons/tn2.svg", "Регулировка канала Pt100"));
-    lyout->addWidget(WDFunc::NewHexagonPB(
-        this, "tn3", [this]() { TKIVADCUDialog->show(); }, ":/icons/tn3.svg", "Регулировка каналов напряжения"));
-    lyout->addWidget(WDFunc::NewHexagonPB(
-        this, "tn4", [this]() { TKIVADCIDialog->show(); }, ":/icons/tn4.svg", "Регулировка каналов тока"));
-    lyout->addWidget(WDFunc::NewHexagonPB(
-        this, "tn5", [this]() { TKIV60Dialog->show(); }, ":/icons/tn5.svg",
-        "Настройка температурной коррекции +60 °С"));
-    lyout->addWidget(WDFunc::NewHexagonPB(
-        this, "tn6", [this]() { TKIV20Dialog->show(); }, ":/icons/tn6.svg",
-        "Настройка температурной коррекции -20 °С"));
-    lyout->addWidget(WDFunc::NewHexagonPB(
-        this, "tnprotocol", [this]() { GenerateReport(); }, ":/icons/tnprotocol.svg",
-        "Генерация протокола регулировки"));
-    lyout->addStretch(100);
-    hlyout->addLayout(lyout);
-    Bac *bac = new Bac;
-    hlyout->addWidget(bac->widget(), 100);
-    setLayout(hlyout);
-    setCalibrButtons();
-}
-
-void TuneKIVDialog::GenerateReport()
-{
-}
-*/
