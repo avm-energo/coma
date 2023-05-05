@@ -1,7 +1,7 @@
 #include "hexparser.h"
 
+#include <QDebug>
 #include <algorithm>
-#include <vector>
 
 namespace S2Dev
 {
@@ -63,20 +63,76 @@ bool HexParser::parseASCII(const QString &strRecord, HexRecord &record)
 void HexParser::parseFile(const QByteArray &binaryFile)
 {
     QString fileString = binaryFile;
-    auto records = fileString.split("\r\n");
-    std::vector<HexRecord> hexFile;
-    hexFile.reserve(records.size());
-    for (const auto &strRecord : records)
+    auto strRecords = fileString.split("\r\n");
+    records.clear();
+    records.reserve(strRecords.size());
+    for (const auto &strRecord : strRecords)
     {
         if (strRecord.length() > 0)
         {
             HexRecord record;
             if (parseASCII(strRecord, record))
-                hexFile.push_back(record);
+                records.push_back(record);
             else
                 break;
         }
     }
+}
+
+quint16 HexParser::getIdByAddress(const QByteArray &binAddr)
+{
+    Q_ASSERT(binAddr.size() == 2);
+    auto dataPtr = reinterpret_cast<const quint8 *>(binAddr.data());
+    quint16 address = dataPtr[0] << 8 | dataPtr[1];
+    if (address == 0x0800)
+        return 8000;
+    else if (address == 0x0801)
+        return 8001;
+    else
+        return idNotFound;
+}
+
+std::vector<DataTypes::FileStruct> HexParser::getS2Format()
+{
+    std::vector<DataTypes::FileStruct> retVal;
+    QByteArray data;
+    quint16 prevBlockId, currBlockId;
+
+    for (auto &record : records)
+    {
+        if (record.recordType == RecordType::LinearAddr)
+        {
+            currBlockId = getIdByAddress(record.data);
+            if (currBlockId == idNotFound)
+            {
+                emit error(InvalidBlockAddress);
+                data.clear();
+                break;
+            }
+
+            if (!data.isEmpty())
+            {
+                retVal.push_back({ prevBlockId, data });
+                data.clear();
+            }
+            prevBlockId = currBlockId;
+        }
+        else if (record.recordType == RecordType::BinaryData)
+        {
+            data.append(record.data);
+        }
+        else
+        {
+            // TODO: Handle other record types?
+        }
+    }
+
+    if (!data.isEmpty())
+    {
+        retVal.push_back({ prevBlockId, data });
+    }
+
+    return retVal;
 }
 
 }

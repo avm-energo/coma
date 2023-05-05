@@ -30,8 +30,8 @@ struct FileStruct
 
     FileStruct() = default;
     FileStruct(const FilesEnum num, const QByteArray &file);
-    FileStruct(const quint8 num, const QByteArray &file);
-    FileStruct(const quint8 num);
+    FileStruct(const quint16 num, const QByteArray &file);
+    // FileStruct(const quint16 num);
     S2DataTypes::DataRec serialize() const;
 
     friend QDataStream &operator<<(QDataStream &stream, const FileStruct &str);

@@ -9,13 +9,13 @@ FileStruct::FileStruct(const FilesEnum num, const QByteArray &file) : ID(num), d
 {
 }
 
-FileStruct::FileStruct(const quint8 num, const QByteArray &file) : ID(num), data(file)
+FileStruct::FileStruct(const quint16 num, const QByteArray &file) : ID(num), data(file)
 {
 }
 
-FileStruct::FileStruct(const quint8 num) : ID(num)
-{
-}
+// FileStruct::FileStruct(const quint16 num) : ID(num)
+//{
+//}
 
 S2DataTypes::DataRec FileStruct::serialize() const
 {
