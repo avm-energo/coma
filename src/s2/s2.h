@@ -23,7 +23,7 @@ public:
     // restore IDs and contents in ConfParameters list
     static bool RestoreData(QByteArray bain, QList<DataTypes::S2Record> &outlist);
     static bool RestoreData(QByteArray bain, QList<DataTypes::DataRecV> &outlist);
-    static S2DataTypes::S2ConfigType ParseHexToS2(QByteArray &ba);
+    [[deprecated("Use S2Dev::HexParser instead.")]] static S2DataTypes::S2ConfigType ParseHexToS2(QByteArray &ba);
     static void tester(S2DataTypes::S2ConfigType &buffer);
     static quint16 GetIdByName(QString name);
 

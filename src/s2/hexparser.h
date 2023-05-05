@@ -3,6 +3,9 @@
 #include <QByteArray>
 #include <QObject>
 
+namespace S2Dev
+{
+
 /// \brief Enumeration to represent the HEX record types.
 /// \see https://en.wikipedia.org/wiki/Intel_HEX
 enum RecordType : quint8
@@ -25,22 +28,31 @@ struct HexRecord
     QByteArray data;       ///< Data unit of the record (may be null).
 };
 
+constexpr quint8 startCode = ':';                    ///< HEX record start code.
+constexpr auto minRecordSize = 5;                    ///< Min HEX record size.
+constexpr auto maxRecordSize = 0xff + minRecordSize; ///< Max HEX record size.
+
 enum HexParseError : quint8
 {
     InvalidHexRecord = 0,
+    InvalidRecordSize,
     IncorrectChecksum
 };
-
-constexpr quint8 startCode = ':';
 
 class HexParser : public QObject
 {
     Q_OBJECT
 private:
-    bool parseASCII(const QString &strRecord);
+    QByteArray stringToByteArray(const QString &string);
+    bool verifyChecksum(const quint8 *data, int size);
+    bool parseASCII(const QString &strRecord, HexRecord &record);
 
 public:
     explicit HexParser(QObject *parent = nullptr);
+    void parseFile(const QByteArray &binaryFile);
 
-    void parseFile(const QByteArray &hexFile);
+signals:
+    void error(S2Dev::HexParseError error);
 };
+
+}
