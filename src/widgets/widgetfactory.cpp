@@ -100,8 +100,8 @@ WidgetFactory::WidgetFactory(ConfigV *config) : configV(config)
 
 QWidget *WidgetFactory::createWidget(quint16 key, QWidget *parent)
 {
-    if (key == S2::GetIdByName("timezone"))
-        qWarning() << "mTimezone";
+    //    if (key == S2::GetIdByName("timezone"))
+    //        qWarning() << "mTimezone";
     QWidget *widget = nullptr;
     auto &widgetMap = ConfigStorage::GetInstance().getWidgetMap();
     auto search = widgetMap.find(key);

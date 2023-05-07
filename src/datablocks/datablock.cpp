@@ -64,19 +64,20 @@ QWidget *DataBlock::widget(bool showButtons)
 void DataBlock::createWidget()
 {
     auto mainWidget = new QWidget;
+    auto scrollWidget = new QWidget;
     auto mainLayout = new QVBoxLayout;
     int count = 0;
     for (auto &group : m_valuesDesc)
     {
         if (group.values.size() == 1) // for only one parameter it doesn't need to make a groupbox
         {
-            auto singleWidget = new QWidget(mainWidget);
+            auto singleWidget = new QWidget(scrollWidget);
             auto widgetLayout = addBlockValueToWidget(group.values.first(), singleWidget);
             singleWidget->setLayout(widgetLayout);
             mainLayout->addWidget(singleWidget);
             continue;
         }
-        auto gb = new QGroupBox(group.groupDesc, mainWidget);
+        auto gb = new QGroupBox(group.groupDesc, scrollWidget);
         auto gridLayout = new QGridLayout;
         auto itemsPerLine = StdFunc::goldenRatio(group.values.count());
         for (auto &valueDesc : group.values)
@@ -88,14 +89,17 @@ void DataBlock::createWidget()
         gb->setLayout(gridLayout);
         mainLayout->addWidget(gb);
     }
-    if (m_block.bottomButtonsVisible)
-        mainLayout->addWidget(blockButtonsUI());
-    mainWidget->setLayout(mainLayout);
+    scrollWidget->setLayout(mainLayout);
     auto scrollArea = new QScrollArea;
     scrollArea->setFrameShape(QFrame::NoFrame);
     scrollArea->setWidgetResizable(true);
-    scrollArea->setWidget(mainWidget);
-    m_widget = scrollArea;
+    scrollArea->setWidget(scrollWidget);
+    mainLayout = new QVBoxLayout;
+    mainLayout->addWidget(scrollArea);
+    if (m_block.bottomButtonsVisible)
+        mainLayout->addWidget(blockButtonsUI());
+    mainWidget->setLayout(mainLayout);
+    m_widget = mainWidget;
     m_widgetIsSet = true;
 }
 
