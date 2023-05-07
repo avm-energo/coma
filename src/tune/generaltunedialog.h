@@ -1,9 +1,9 @@
 #ifndef GENERALTUNEDIALOG_H
 #define GENERALTUNEDIALOG_H
 
+#include "../widgets/tunetabwidget.h"
 #include "../widgets/udialog.h"
 #include "abstracttunedialog.h"
-#include "../widgets/tunetabwidget.h"
 
 #include <QDomDocument>
 #include <QWidget>
@@ -21,7 +21,6 @@ public:
     int m_calibrSteps;
     QList<TuneDialogStruct> m_dialogList;
     LimeReport::ReportEngine *m_Report;
-    QScrollArea *m_BacWidget;
 
     GeneralTuneDialog(ConfigV *config, QWidget *parent = nullptr);
     void SetupUI();
@@ -32,7 +31,7 @@ protected:
     ConfigV *configV;
 
 private:
-    TuneTabWidget *tuneTabWidget;
+    TuneTabWidget *m_tuneTabWidget;
 
     void setIconProcessed(const QString &name);
     void setIconRestricted(const QString &name);

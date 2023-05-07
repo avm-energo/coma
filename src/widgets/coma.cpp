@@ -540,7 +540,7 @@ void Coma::reconnect()
         disconnect();
         mDlgManager->clearDialogs();
     }
-    EMessageBox::infoWithoutButtons(this, "Связь разорвана.\nПопытка переподключения", 3);
+    EMessageBox::infoWithoutButtons(this, "Связь разорвана.\nПопытка переподключения");
     attemptToRec();
 }
 
